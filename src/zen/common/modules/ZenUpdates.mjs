@@ -17,12 +17,17 @@ export default function checkForZenUpdates() {
     !gZenUIManager.testingEnabled &&
     Services.prefs.getBoolPref(ZEN_UPDATE_SHOW, true)
   ) {
-    const updateUrl = Services.prefs.getStringPref("app.releaseNotesURL.prompt", "");
+    const updateUrl = Services.prefs.getStringPref(
+      "app.releaseNotesURL.prompt",
+      ""
+    );
     createSidebarNotification({
       headingL10nId: "zen-sidebar-notification-updated-heading",
       links: [
         {
-          url: Services.urlFormatter.formatURL(updateUrl.replace("%VERSION%", version)),
+          url: Services.urlFormatter.formatURL(
+            updateUrl.replace("%VERSION%", version)
+          ),
           l10nId: "zen-sidebar-notification-updated",
           special: true,
           icon: "chrome://browser/skin/zen-icons/heart-circle-fill.svg",

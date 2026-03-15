@@ -38,6 +38,16 @@
     /* Fix for issue https://github.com/zen-browser/desktop/issues/7564 */
     position: absolute;
   }
+
+  :root[inDOMFullscreen="true"] & {
+    &:not(.deck-selected) {
+      -moz-subtree-hidden-only-visually: 1 !important;
+    }
+
+    &.deck-selected {
+      inset: 0 !important;
+    }
+  }
 }
 
 .browserSidebarContainer[is-zen-split="true"],
@@ -67,7 +77,7 @@
   }
 }
 
-#tabbrowser-tabpanels[zen-split-view="true"] .browserSidebarContainer.deck-selected {
+:root:not([inDOMFullscreen="true"]) #tabbrowser-tabpanels[zen-split-view="true"] .browserSidebarContainer.deck-selected {
   &:not(.zen-glance-overlay) {
     outline: 2px solid var(--zen-active-split-outline-color) !important;
   }

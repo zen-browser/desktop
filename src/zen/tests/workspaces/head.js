@@ -8,8 +8,14 @@ const TAB_STATE_NEEDS_RESTORE = 1;
 const TAB_STATE_RESTORING = 2;
 
 const ROOT = getRootDirectory(gTestPath);
-const HTTPROOT = ROOT.replace("chrome://mochitests/content/", "https://example.com/");
-const HTTPSROOT = ROOT.replace("chrome://mochitests/content/", "https://example.com/");
+const HTTPROOT = ROOT.replace(
+  "chrome://mochitests/content/",
+  "https://example.com/"
+);
+const HTTPSROOT = ROOT.replace(
+  "chrome://mochitests/content/",
+  "https://example.com/"
+);
 
 const { SessionSaver } = ChromeUtils.importESModule(
   "resource:///modules/sessionstore/SessionSaver.sys.mjs"
@@ -102,13 +108,13 @@ function promiseTabState(tab, state) {
 }
 
 function promiseWindowRestoring(win) {
-  return new Promise((resolve) =>
+  return new Promise(resolve =>
     win.addEventListener("SSWindowRestoring", resolve, { once: true })
   );
 }
 
 function promiseWindowRestored(win) {
-  return new Promise((resolve) =>
+  return new Promise(resolve =>
     win.addEventListener("SSWindowRestored", resolve, { once: true })
   );
 }
@@ -119,7 +125,11 @@ async function setBrowserState(state, win = window) {
 }
 
 async function setWindowState(win, state, overwrite = false) {
-  ss.setWindowState(win, typeof state != "string" ? JSON.stringify(state) : state, overwrite);
+  ss.setWindowState(
+    win,
+    typeof state != "string" ? JSON.stringify(state) : state,
+    overwrite
+  );
   await promiseWindowRestored(win);
 }
 
@@ -164,12 +174,13 @@ function waitForTopic(aTopic, aTimeout, aCallback) {
  * otherwise, it is passed |false|.
  */
 function waitForSaveState(aCallback) {
-  let timeout = 100 + Services.prefs.getIntPref("browser.sessionstore.interval");
+  let timeout =
+    100 + Services.prefs.getIntPref("browser.sessionstore.interval");
   return waitForTopic("sessionstore-state-write-complete", timeout, aCallback);
 }
 function promiseSaveState() {
   return new Promise((resolve, reject) => {
-    waitForSaveState((isSuccessful) => {
+    waitForSaveState(isSuccessful => {
       if (!isSuccessful) {
         reject(new Error("Save state timeout"));
       } else {
@@ -208,7 +219,11 @@ var promiseForEachSessionRestoreFile = async function (cb) {
   }
 };
 
-function promiseBrowserLoaded(aBrowser, ignoreSubFrames = true, wantLoad = null) {
+function promiseBrowserLoaded(
+  aBrowser,
+  ignoreSubFrames = true,
+  wantLoad = null
+) {
   return BrowserTestUtils.browserLoaded(aBrowser, !ignoreSubFrames, wantLoad);
 }
 
@@ -224,7 +239,7 @@ function whenWindowLoaded(aWindow, aCallback) {
   );
 }
 function promiseWindowLoaded(aWindow) {
-  return new Promise((resolve) => whenWindowLoaded(aWindow, resolve));
+  return new Promise(resolve => whenWindowLoaded(aWindow, resolve));
 }
 
 var gUniqueCounter = 0;
@@ -357,12 +372,12 @@ function forgetClosedTabs(win) {
 
 function forgetSavedTabGroups() {
   const tabGroups = ss.getSavedTabGroups();
-  tabGroups.forEach((tabGroup) => ss.forgetSavedTabGroup(tabGroup.id));
+  tabGroups.forEach(tabGroup => ss.forgetSavedTabGroup(tabGroup.id));
 }
 
 function forgetClosedTabGroups(win) {
   const tabGroups = ss.getClosedTabGroups(win);
-  tabGroups.forEach((tabGroup) => ss.forgetClosedTabGroup(win, tabGroup.id));
+  tabGroups.forEach(tabGroup => ss.forgetClosedTabGroup(win, tabGroup.id));
 }
 
 /**
@@ -385,10 +400,15 @@ function whenNewWindowLoaded(aOptions, aCallback) {
     url = "about:privatebrowsing";
   }
 
-  let win = openDialog(AppConstants.BROWSER_CHROME_URL, "", "chrome,all,dialog=no" + features, url);
+  let win = openDialog(
+    AppConstants.BROWSER_CHROME_URL,
+    "",
+    "chrome,all,dialog=no" + features,
+    url
+  );
   let delayedStartup = promiseDelayedStartupFinished(win);
 
-  let browserLoaded = new Promise((resolve) => {
+  let browserLoaded = new Promise(resolve => {
     if (url == "about:blank") {
       resolve();
       return;
@@ -407,7 +427,7 @@ function whenNewWindowLoaded(aOptions, aCallback) {
   Promise.all([delayedStartup, browserLoaded]).then(() => aCallback(win));
 }
 function promiseNewWindowLoaded(aOptions) {
-  return new Promise((resolve) => whenNewWindowLoaded(aOptions, resolve));
+  return new Promise(resolve => whenNewWindowLoaded(aOptions, resolve));
 }
 
 /**
@@ -427,7 +447,7 @@ function whenDelayedStartupFinished(aWindow, aCallback) {
   }, "browser-delayed-startup-finished");
 }
 function promiseDelayedStartupFinished(aWindow) {
-  return new Promise((resolve) => whenDelayedStartupFinished(aWindow, resolve));
+  return new Promise(resolve => whenDelayedStartupFinished(aWindow, resolve));
 }
 
 function promiseTabRestored(tab) {
@@ -462,7 +482,7 @@ function modifySessionStorage(browser, storageData, storageOptions = {}) {
       let isClearing = !keys.size;
       let storage = frame.sessionStorage;
 
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         docShell.chromeEventHandler.addEventListener(
           "MozSessionStorageChanged",
           function onStorageChanged(event) {
@@ -504,7 +524,7 @@ function popPrefs() {
 
 function setScrollPosition(bc, x, y) {
   return SpecialPowers.spawn(bc, [x, y], (childX, childY) => {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       content.addEventListener(
         "mozvisualscroll",
         function onScroll(event) {
@@ -563,7 +583,7 @@ function setPropertyOfFormField(browserContext, selector, propName, newValue) {
 }
 
 function promiseOnHistoryReplaceEntry(browser) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     let sessionHistory = browser.browsingContext?.sessionHistory;
     if (sessionHistory) {
       var historyListener = {
@@ -578,7 +598,10 @@ function promiseOnHistoryReplaceEntry(browser) {
           resolve();
         },
 
-        QueryInterface: ChromeUtils.generateQI(["nsISHistoryListener", "nsISupportsWeakReference"]),
+        QueryInterface: ChromeUtils.generateQI([
+          "nsISHistoryListener",
+          "nsISupportsWeakReference",
+        ]),
       };
 
       sessionHistory.addSHistoryListener(historyListener);
@@ -622,7 +645,7 @@ function openAndCloseTab(window, url) {
  */
 function promiseSessionStoreLoads(numberOfLoads) {
   let loadsSeen = 0;
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     Services.obs.addObserver(function obs(browser) {
       loadsSeen++;
       if (loadsSeen == numberOfLoads) {
@@ -652,7 +675,11 @@ async function openTabMenuFor(tab) {
   let tabMenu = tab.ownerDocument.getElementById("tabContextMenu");
 
   let tabMenuShown = BrowserTestUtils.waitForEvent(tabMenu, "popupshown");
-  EventUtils.synthesizeMouseAtCenter(tab, { type: "contextmenu" }, tab.ownerGlobal);
+  EventUtils.synthesizeMouseAtCenter(
+    tab,
+    { type: "contextmenu" },
+    tab.ownerGlobal
+  );
   await tabMenuShown;
 
   return tabMenu;
@@ -670,9 +697,9 @@ var withBookmarksDialog = async function (autoCancel, openFn, taskFn, closeFn) {
       isSubDialog: true,
     });
   } else {
-    dialogPromise = BrowserTestUtils.domWindowOpenedAndLoaded(null, (win) => {
+    dialogPromise = BrowserTestUtils.domWindowOpenedAndLoaded(null, win => {
       return win.document.documentURI.startsWith(dialogUrl);
-    }).then((win) => {
+    }).then(win => {
       ok(
         win.location.href.startsWith(dialogUrl),
         "The bookmark properties dialog is open: " + win.location.href
@@ -681,7 +708,7 @@ var withBookmarksDialog = async function (autoCancel, openFn, taskFn, closeFn) {
       return SimpleTest.promiseFocus(win).then(() => win);
     });
   }
-  let dialogClosePromise = dialogPromise.then((win) => {
+  let dialogClosePromise = dialogPromise.then(win => {
     if (!hasDialogBox) {
       return BrowserTestUtils.domWindowClosed(win);
     }

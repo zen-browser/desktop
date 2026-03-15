@@ -46,7 +46,9 @@ export class ZenModsMarketplaceParent extends JSWindowActorParent {
       }
       case "ZenModsMarketplace:CheckForUpdates": {
         const updates = await this.modsManager.checkForModsUpdates();
-        this.sendAsyncMessage("ZenModsMarketplace:CheckForUpdatesFinished", { updates });
+        this.sendAsyncMessage("ZenModsMarketplace:CheckForUpdatesFinished", {
+          updates,
+        });
         break;
       }
 

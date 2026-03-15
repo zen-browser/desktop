@@ -20,10 +20,16 @@ add_task(async function test_Ub_Actions_Search() {
       waitForFocus,
       value: label,
     });
-    await new Promise((resolve) =>
+    await new Promise(resolve =>
       setTimeout(async () => {
-        let index = typeof action.suggestedIndex === "number" ? action.suggestedIndex : Infinity;
-        let { result } = await UrlbarTestUtils.getRowAt(window, Math.min(index, 1));
+        let index =
+          typeof action.suggestedIndex === "number"
+            ? action.suggestedIndex
+            : Infinity;
+        let { result } = await UrlbarTestUtils.getRowAt(
+          window,
+          Math.min(index, 1)
+        );
         Assert.equal(result.providerName, "ZenUrlbarProviderGlobalActions");
         Assert.equal(result.payload.title, label);
         resolve();

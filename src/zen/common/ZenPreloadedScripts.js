@@ -5,7 +5,7 @@
 // prettier-ignore
 // eslint-disable-next-line no-lone-blocks
 {
-  Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenWorkspaceBookmarksStorage.js", this);
+  Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenSpaceBookmarksStorage.js", this);
 
   ChromeUtils.importESModule("chrome://browser/content/ZenStartup.mjs", { global: "current" });
   ChromeUtils.importESModule("chrome://browser/content/zen-components/ZenCompactMode.mjs", { global: "current" });

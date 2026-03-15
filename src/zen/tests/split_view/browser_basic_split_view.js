@@ -19,7 +19,8 @@ add_task(async function test_Basic_Split_View() {
 add_task(async function test_Browser_Elements_Attributes() {
   await basicSplitNTabs(() => {
     Assert.equal(
-      document.querySelectorAll('.browserSidebarContainer[zen-split="true"]').length,
+      document.querySelectorAll('.browserSidebarContainer[zen-split="true"]')
+        .length,
       2,
       "There should be two split browser sidebars"
     );

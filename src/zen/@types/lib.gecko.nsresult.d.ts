@@ -705,4 +705,5 @@ interface nsIXPCComponents_Results {
   NS_ERROR_DOM_QM_CLIENT_INIT_ORIGIN_UNINITIALIZED: 0x80730001;
 }
 
-type nsIXPCComponents_Values = nsIXPCComponents_Results[keyof nsIXPCComponents_Results];
+type nsIXPCComponents_Values =
+  nsIXPCComponents_Results[keyof nsIXPCComponents_Results];

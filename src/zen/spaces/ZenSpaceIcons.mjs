@@ -14,7 +14,7 @@ class nsZenWorkspaceIcons extends MozXULElement {
     window.addEventListener("ZenWorkspacesUIUpdate", this, true);
 
     this.initDragAndDrop();
-    this.addEventListener("mouseover", (e) => {
+    this.addEventListener("mouseover", e => {
       if (this.isReorderMode) {
         return;
       }
@@ -29,13 +29,14 @@ class nsZenWorkspaceIcons extends MozXULElement {
     let dragStart = 0;
     let draggedTab = null;
 
-    this.addEventListener("mousedown", (e) => {
+    this.addEventListener("mousedown", e => {
       const target = e.target.closest("toolbarbutton[zen-workspace-id]");
       if (!target || e.button != 0 || e.ctrlKey || e.shiftKey || e.altKey) {
         return;
       }
 
-      const isVertical = document.documentElement.getAttribute("zen-sidebar-expanded") != "true";
+      const isVertical =
+        document.documentElement.getAttribute("zen-sidebar-expanded") != "true";
       const clientPos = isVertical ? "clientY" : "clientX";
 
       this.isReorderMode = false;
@@ -45,7 +46,7 @@ class nsZenWorkspaceIcons extends MozXULElement {
 
       e.stopPropagation();
 
-      const mouseMoveHandler = (moveEvent) => {
+      const mouseMoveHandler = moveEvent => {
         if (Math.abs(moveEvent[clientPos] - dragStart) > 5) {
           this.isReorderMode = true;
         }
@@ -66,7 +67,8 @@ class nsZenWorkspaceIcons extends MozXULElement {
               const nextSibling = draggedTab.nextSibling;
               if (
                 mouse <
-                rect[isVertical ? "top" : "left"] + rect[isVertical ? "height" : "width"] / 2
+                rect[isVertical ? "top" : "left"] +
+                  rect[isVertical ? "height" : "width"] / 2
               ) {
                 this.insertBefore(draggedTab, tab);
               } else {
@@ -87,7 +89,10 @@ class nsZenWorkspaceIcons extends MozXULElement {
 
         draggedTab.removeAttribute("dragged");
 
-        this.reorderWorkspaceToIndex(draggedTab, Array.from(this.children).indexOf(draggedTab));
+        this.reorderWorkspaceToIndex(
+          draggedTab,
+          Array.from(this.children).indexOf(draggedTab)
+        );
 
         draggedTab = null;
         this.isReorderMode = false;

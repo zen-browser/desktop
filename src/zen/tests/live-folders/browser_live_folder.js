@@ -9,7 +9,7 @@ ChromeUtils.defineESModuleGetters(this, {
 });
 
 function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 describe("Zen Live Folder Scheduling", () => {
@@ -64,7 +64,11 @@ describe("Zen Live Folder Scheduling", () => {
     const startSpy = sandbox.spy(instance, "start");
 
     await sleep(INTERVAL + INTERVAL_OFFSET);
-    Assert.equal(fetchStub.callCount, 1, "Should have fetched once after the first interval");
+    Assert.equal(
+      fetchStub.callCount,
+      1,
+      "Should have fetched once after the first interval"
+    );
 
     await sleep(INTERVAL + INTERVAL_OFFSET);
     Assert.equal(fetchStub.callCount, 2, "Should have fetched 2 times");
@@ -107,7 +111,11 @@ describe("Zen Live Folder Scheduling", () => {
     Assert.equal(fetchStub.callCount, 1, "Should have fetched once");
 
     await sleep(INTERVAL + INTERVAL_OFFSET);
-    Assert.equal(fetchStub.callCount, 2, "Should have fetched once with normal interval");
+    Assert.equal(
+      fetchStub.callCount,
+      2,
+      "Should have fetched once with normal interval"
+    );
   });
 
   it("should re-start the timer if interval was changed", async () => {
@@ -121,7 +129,11 @@ describe("Zen Live Folder Scheduling", () => {
 
     sinon.assert.notCalled(fetchStub);
     await sleep(INTERVAL + INTERVAL_OFFSET);
-    Assert.equal(fetchStub.callCount, 1, "Should have fetched once after the first interval");
+    Assert.equal(
+      fetchStub.callCount,
+      1,
+      "Should have fetched once after the first interval"
+    );
 
     const NEW_INTERVAL = 500;
     instance.state.interval = NEW_INTERVAL;
@@ -130,6 +142,10 @@ describe("Zen Live Folder Scheduling", () => {
     instance.start();
 
     await sleep(NEW_INTERVAL + INTERVAL_OFFSET);
-    Assert.equal(fetchStub.callCount, 2, "Should have once after the new interval");
+    Assert.equal(
+      fetchStub.callCount,
+      2,
+      "Should have once after the new interval"
+    );
   });
 });

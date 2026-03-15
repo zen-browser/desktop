@@ -19,7 +19,8 @@ function getToolbarNodeForItemGuid(aItemTitle) {
 }
 
 function isToolbarVisible(aToolbar) {
-  let hidingAttribute = aToolbar.getAttribute("type") == "menubar" ? "autohide" : "collapsed";
+  let hidingAttribute =
+    aToolbar.getAttribute("type") == "menubar" ? "autohide" : "collapsed";
   let hidingValue = aToolbar.getAttribute(hidingAttribute)?.toLowerCase();
   // Check for both collapsed="true" and collapsed="collapsed"
   return hidingValue !== "true" && hidingValue !== hidingAttribute;
@@ -27,7 +28,9 @@ function isToolbarVisible(aToolbar) {
 
 function promiseSetToolbarVisibility(aToolbar, aVisible) {
   if (isToolbarVisible(aToolbar) != aVisible) {
-    let visibilityChanged = TestUtils.waitForCondition(() => aToolbar.collapsed != aVisible);
+    let visibilityChanged = TestUtils.waitForCondition(
+      () => aToolbar.collapsed != aVisible
+    );
     setToolbarVisibility(aToolbar, aVisible, undefined, false);
     return visibilityChanged;
   }
@@ -41,14 +44,19 @@ async function changeWorkspaceForBookmark(aBookmark, aWorkspace) {
     false,
     async function openPropertiesDialog() {
       let placesContext = document.getElementById("placesContext");
-      let promisePopup = BrowserTestUtils.waitForEvent(placesContext, "popupshown");
+      let promisePopup = BrowserTestUtils.waitForEvent(
+        placesContext,
+        "popupshown"
+      );
       EventUtils.synthesizeMouseAtCenter(toolbarNode, {
         button: 2,
         type: "contextmenu",
       });
       await promisePopup;
 
-      let properties = document.getElementById("placesContext_show_bookmark:info");
+      let properties = document.getElementById(
+        "placesContext_show_bookmark:info"
+      );
       placesContext.activateItem(properties, {});
     },
     async function test(dialogWin) {
@@ -63,7 +71,9 @@ async function changeWorkspaceForBookmark(aBookmark, aWorkspace) {
       openWorkspaceSelectorButton.click();
 
       await setTimeout(() => {}, 100);
-      const checkbox = dialogWin.document.querySelector(`input[value="${aWorkspace.uuid}"]`);
+      const checkbox = dialogWin.document.querySelector(
+        `input[value="${aWorkspace.uuid}"]`
+      );
 
       // Check the checkbox for the workspace.
       checkbox.click();
@@ -128,7 +138,7 @@ add_task(async function test_workspace_bookmark() {
 
     await changeWorkspaceForBookmark(bookmark1, firstWorkspace);
 
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise(resolve => setTimeout(resolve, 100));
     const bookmark2 = await PlacesUtils.bookmarks.insert({
       parentGuid: PlacesUtils.bookmarks.toolbarGuid,
       title: "workspace2",
@@ -138,14 +148,14 @@ add_task(async function test_workspace_bookmark() {
     await changeWorkspaceForBookmark(bookmark2, secondWorkspace);
 
     await gZenWorkspaces.changeWorkspace(secondWorkspace);
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise(resolve => setTimeout(resolve, 100));
     const toolbarNode1 = getToolbarNodeForItemGuid(bookmark1.title);
     const toolbarNode2 = getToolbarNodeForItemGuid(bookmark2.title);
     ok(!toolbarNode1, "Bookmark1 should not be in the toolbar");
     ok(toolbarNode2, "Bookmark2 should be in the toolbar");
 
     await gZenWorkspaces.changeWorkspace(firstWorkspace);
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise(resolve => setTimeout(resolve, 100));
     const toolbarNode3 = getToolbarNodeForItemGuid(bookmark1.title);
     const toolbarNode4 = getToolbarNodeForItemGuid(bookmark2.title);
     ok(toolbarNode3, "Bookmark1 should be in the toolbar");

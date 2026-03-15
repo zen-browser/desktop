@@ -25,6 +25,10 @@ add_task(async function test_Change_To_Empty() {
   );
 
   const workspacesAfterRemove = gZenWorkspaces.getWorkspaces();
-  Assert.strictEqual(workspacesAfterRemove.length, 1, "One workspace should exist.");
+  Assert.strictEqual(
+    workspacesAfterRemove.length,
+    1,
+    "One workspace should exist."
+  );
   Assert.strictEqual(gBrowser.tabs.length, 2, "There should be two tabs.");
 });

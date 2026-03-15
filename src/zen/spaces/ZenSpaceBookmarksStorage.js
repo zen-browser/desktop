@@ -19,7 +19,7 @@ window.ZenWorkspaceBookmarksStorage = {
   async _ensureTable() {
     await this.lazy.PlacesUtils.withConnectionWrapper(
       "ZenWorkspaceBookmarksStorage.init",
-      async (db) => {
+      async db => {
         // Create table using GUIDs instead of IDs
         await db.execute(`
         CREATE TABLE IF NOT EXISTS zen_bookmarks_workspaces (
@@ -102,7 +102,7 @@ window.ZenWorkspaceBookmarksStorage = {
       { bookmark_guid: bookmarkGuid }
     );
 
-    return rows.map((row) => row.getResultByName("workspace_uuid"));
+    return rows.map(row => row.getResultByName("workspace_uuid"));
   },
 
   /**
@@ -164,7 +164,7 @@ window.ZenWorkspaceBookmarksStorage = {
   async clearChangedIDs() {
     await this.lazy.PlacesUtils.withConnectionWrapper(
       "ZenWorkspaceBookmarksStorage.clearChangedIDs",
-      async (db) => {
+      async db => {
         await db.execute(`DELETE FROM zen_bookmarks_workspaces_changes`);
       }
     );

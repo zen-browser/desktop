@@ -5,7 +5,7 @@
 
 function goToRightSideTabs(callback) {
   // eslint-disable-next-line no-async-promise-executor
-  return new Promise(async (resolve) => {
+  return new Promise(async resolve => {
     await SpecialPowers.pushPrefEnv({
       set: [["zen.tabs.vertical.right-side", true]],
     });
@@ -23,13 +23,13 @@ function goToRightSideTabs(callback) {
 
 async function testSidebarWidth() {
   let resolvePromise;
-  const promise = new Promise((resolve) => {
+  const promise = new Promise(resolve => {
     resolvePromise = resolve;
   });
 
   let hasRan = false;
   const ogSize = gNavToolbox.getBoundingClientRect().width;
-  const onCompactChanged = (_event) => {
+  const onCompactChanged = _event => {
     if (hasRan) {
       // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
       setTimeout(() => {
@@ -40,7 +40,9 @@ async function testSidebarWidth() {
     }
     // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
     setTimeout(() => {
-      const newSize = gNavToolbox.style.getPropertyValue("--zen-sidebar-width").replace("px", "");
+      const newSize = gNavToolbox.style
+        .getPropertyValue("--zen-sidebar-width")
+        .replace("px", "");
       Assert.equal(
         newSize,
         ogSize,

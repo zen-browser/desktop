@@ -21,7 +21,11 @@ add_task(async function test_Selection_Remains_Double_Toolbar() {
     await selectWithMouseDrag(100, 200);
 
     Assert.greater(gURLBar.selectionStart, 0, "Selection start is positive.");
-    Assert.greater(gURLBar.selectionEnd, gURLBar.selectionStart, "Selection is not empty.");
+    Assert.greater(
+      gURLBar.selectionEnd,
+      gURLBar.selectionStart,
+      "Selection is not empty."
+    );
 
     Assert.equal(gURLBar.value, untrimmedValue, `Value should be untrimmed`);
 

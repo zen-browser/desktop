@@ -38,7 +38,7 @@ export class nsZenMenuBar {
         </menupopup>
       </menu>`);
     const menu = appearanceMenu.querySelector("menu");
-    menu.addEventListener("command", (event) => {
+    menu.addEventListener("command", event => {
       const type = event.target.getAttribute("data-type");
       const schemeValue = WINDOW_SCHEME_MAPPING[type];
       Services.prefs.setIntPref(WINDOW_SCHEME_PREF, schemeValue);
@@ -97,15 +97,17 @@ export class nsZenMenuBar {
         </menupopup>
       </menu>`);
     document.getElementById("view-menu").after(spacesMenubar);
-    document.getElementById("zen-spaces-menubar").addEventListener("popupshowing", () => {
-      if (AppConstants.platform === "linux") {
-        // On linux, there seems to be a bug where the menu freezes up and makes the browser
-        // suppiciously unresponsive if we try to update the menu while it's opening.
-        // See https://github.com/zen-browser/desktop/issues/12024
-        return;
-      }
-      gZenWorkspaces.updateWorkspacesChangeContextMenu();
-    });
+    document
+      .getElementById("zen-spaces-menubar")
+      .addEventListener("popupshowing", () => {
+        if (AppConstants.platform === "linux") {
+          // On linux, there seems to be a bug where the menu freezes up and makes the browser
+          // suppiciously unresponsive if we try to update the menu while it's opening.
+          // See https://github.com/zen-browser/desktop/issues/12024
+          return;
+        }
+        gZenWorkspaces.updateWorkspacesChangeContextMenu();
+      });
   }
 
   #initAppMenu() {
@@ -133,7 +135,10 @@ export class nsZenMenuBar {
     if (!Services.prefs.getBoolPref("zen.window-sync.enabled", true)) {
       return;
     }
-    const itemsToHide = ["appMenuRecentlyClosedWindows", "historyUndoWindowMenu"];
+    const itemsToHide = [
+      "appMenuRecentlyClosedWindows",
+      "historyUndoWindowMenu",
+    ];
     for (const id of itemsToHide) {
       const element = PanelMultiView.getViewNode(document, id);
       element.setAttribute("hidden", "true");

@@ -7,7 +7,7 @@
 
 add_task(async function test_Welcome_Steps() {
   const selectedTab = gBrowser.selectedTab;
-  await new Promise((resolve) => {
+  await new Promise(resolve => {
     setTimeout(async () => {
       await waitForFocus();
       await EventUtils.synthesizeMouseAtCenter(
@@ -28,7 +28,9 @@ add_task(async function test_Welcome_Steps() {
 
   const welcomeContent = document.getElementById("zen-welcome-page-content");
 
-  for (const button of document.querySelectorAll("#zen-welcome-page-sidebar-buttons button")) {
+  for (const button of document.querySelectorAll(
+    "#zen-welcome-page-sidebar-buttons button"
+  )) {
     Assert.notStrictEqual(
       getComputedStyle(button).pointerEvents,
       "none",
@@ -54,11 +56,14 @@ add_task(async function test_Welcome_Steps() {
 
   await EventUtils.synthesizeMouseAtCenter(welcomeContent.children[1], {});
 
-  await new Promise((resolve) => {
+  await new Promise(resolve => {
     setTimeout(async () => {
       let engineName = await Services.search.getDefault();
       const selectedLabel = welcomeContent.children[1];
-      ok(selectedLabel.querySelector("input").checked, "The selected label should be checked");
+      ok(
+        selectedLabel.querySelector("input").checked,
+        "The selected label should be checked"
+      );
       Assert.equal(
         engineName.name,
         selectedLabel.querySelector("label").textContent.trim(),
@@ -71,7 +76,7 @@ add_task(async function test_Welcome_Steps() {
   await goNextWelcomePage("zen-generic-next");
   ok(true, "Welcome Search Step Test Finished");
 
-  await new Promise((resolve) => {
+  await new Promise(resolve => {
     setTimeout(async () => {
       const essentials = welcomeContent.querySelector(
         "#zen-welcome-initial-essentials-browser-sidebar-essentials"
@@ -102,12 +107,15 @@ add_task(async function test_Welcome_Steps() {
         essentials[2].getAttribute("data-url"),
       ];
       for (const url of urlsToCheck) {
-        ok(url.startsWith("https://"), `The URL "${url}" should start with "https://"`);
+        ok(
+          url.startsWith("https://"),
+          `The URL "${url}" should start with "https://"`
+        );
       }
 
       await goNextWelcomePage("zen-generic-next");
 
-      await new Promise((r) => {
+      await new Promise(r => {
         setTimeout(async () => {
           for (const url of urlsToCheck) {
             ok(
@@ -128,7 +136,7 @@ add_task(async function test_Welcome_Steps() {
   await goNextWelcomePage("zen-welcome-start-browsing");
   ok(true, "Welcome Finish Step Test Finished");
 
-  await new Promise((resolve) => {
+  await new Promise(resolve => {
     setTimeout(async () => {
       Assert.greater(
         gBrowser._numZenEssentials,
@@ -136,14 +144,20 @@ add_task(async function test_Welcome_Steps() {
         "There should be more than 3 Zen Essentials after the welcome process"
       );
       Assert.equal(
-        gBrowser.tabs.filter((tab) => tab.pinned && !tab.hasAttribute("zen-essential")).length,
+        gBrowser.tabs.filter(
+          tab => tab.pinned && !tab.hasAttribute("zen-essential")
+        ).length,
         3,
         "There should be 3 pinned tabs after the welcome process"
       );
 
       gBrowser.selectedTab = selectedTab;
       const groups = gBrowser.tabGroups;
-      Assert.equal(groups.length, 1, "There should be one tab group after the welcome process");
+      Assert.equal(
+        groups.length,
+        1,
+        "There should be one tab group after the welcome process"
+      );
       const group = groups[0];
       Assert.equal(
         group.tabs.length,
@@ -165,7 +179,11 @@ add_task(async function test_Welcome_Steps() {
               tab.hasAttribute("zen-workspace-id"),
               "Pinned tabs should have a zen-workspace-id attribute"
             );
-            Assert.equal(tab.group, group, "Pinned tabs should belong to the first tab group");
+            Assert.equal(
+              tab.group,
+              group,
+              "Pinned tabs should belong to the first tab group"
+            );
           }
         }
       }

@@ -89,7 +89,7 @@
 # They must all go from the middle to the right side. They must always stay verically centered.
 # And reach to 180 on the right side, meaning we must divide the width in 16 segments.
             <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
-                data-position="337.5,180" style="background: rgb(224, 224, 224);"></box>
+                data-position="340,180" style="background: rgb(224, 224, 224);"></box>
             <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
                 data-position="337.5,180" style="background: rgb(224, 224, 224);"></box>
             <box data-type="explicit-black-white" data-algo="float" data-num-dots="1" 
@@ -131,11 +131,11 @@
             </box>
             <html:input type="range" value="0.4" step="0.001" id="PanelUI-zen-gradient-generator-opacity"
 #ifdef XP_MACOSX
-              max="0.75"
-              min="0.35"
+              max="0.9"
+              min="0.30"
 #else
               max="0.9"
-              min="0.35"
+              min="0.25"
 #endif
               />
           </vbox>

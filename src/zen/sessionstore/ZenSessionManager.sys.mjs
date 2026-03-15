@@ -8,7 +8,8 @@ import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
-  ZenLiveFoldersManager: "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
+  ZenLiveFoldersManager:
+    "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
   SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
   SessionStartup: "resource:///modules/sessionstore/SessionStartup.sys.mjs",
@@ -17,7 +18,12 @@ ChromeUtils.defineESModuleGetters(lazy, {
   DeferredTask: "resource://gre/modules/DeferredTask.sys.mjs",
 });
 
-XPCOMUtils.defineLazyPreferenceGetter(lazy, "gShouldLog", "zen.session-store.log", true);
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "gShouldLog",
+  "zen.session-store.log",
+  true
+);
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
   "gMaxSessionBackups",
@@ -31,7 +37,10 @@ XPCOMUtils.defineLazyPreferenceGetter(
   3
 );
 
-const SHOULD_BACKUP_FILE = Services.prefs.getBoolPref("zen.session-store.backup-file", true);
+const SHOULD_BACKUP_FILE = Services.prefs.getBoolPref(
+  "zen.session-store.backup-file",
+  true
+);
 const FILE_NAME = "zen-sessions.jsonlz4";
 
 const LAST_BUILD_ID_PREF = "zen.session-store.last-build-id";
@@ -120,7 +129,7 @@ export class nsZenSessionManager {
     try {
       let files = await IOUtils.getChildren(this.#backupFolderPath);
       files = files
-        .filter((file) => file.startsWith(prefix))
+        .filter(file => file.startsWith(prefix))
         .sort()
         .reverse();
       backupFiles.push(files[0]);
@@ -142,9 +151,11 @@ export class nsZenSessionManager {
       );
       const db = await PlacesUtils.promiseDBConnection();
       let data = {};
-      let rows = await db.execute("SELECT * FROM zen_workspaces ORDER BY created_at ASC");
+      let rows = await db.execute(
+        "SELECT * FROM zen_workspaces ORDER BY created_at ASC"
+      );
       try {
-        data.spaces = rows.map((row) => ({
+        data.spaces = rows.map(row => ({
           uuid: row.getResultByName("uuid"),
           name: row.getResultByName("name"),
           icon: row.getResultByName("icon"),
@@ -162,11 +173,14 @@ export class nsZenSessionManager {
         }));
       } catch (e) {
         /* ignore errors reading spaces data, as it is not critical and we want to migrate even if we fail to read it */
-        console.error("Failed to read spaces data from database during migration", e);
+        console.error(
+          "Failed to read spaces data from database during migration",
+          e
+        );
       }
       try {
         rows = await db.execute("SELECT * FROM zen_pins ORDER BY position ASC");
-        data.pins = rows.map((row) => ({
+        data.pins = rows.map(row => ({
           uuid: row.getResultByName("uuid"),
           title: row.getResultByName("title"),
           url: row.getResultByName("url"),
@@ -178,11 +192,16 @@ export class nsZenSessionManager {
           parentUuid: row.getResultByName("folder_parent_uuid"),
           editedTitle: Boolean(row.getResultByName("edited_title")),
           folderIcon: row.getResultByName("folder_icon"),
-          isFolderCollapsed: Boolean(row.getResultByName("is_folder_collapsed")),
+          isFolderCollapsed: Boolean(
+            row.getResultByName("is_folder_collapsed")
+          ),
         }));
       } catch (e) {
         /* ignore errors reading pins data, as it is not critical and we want to migrate even if we fail to read it */
-        console.error("Failed to read pins data from database during migration", e);
+        console.error(
+          "Failed to read pins data from database during migration",
+          e
+        );
       }
       try {
         data.recoveryData = await IOUtils.readJSON(
@@ -263,14 +282,19 @@ export class nsZenSessionManager {
     }
     this.#sidebar = this._dataFromFile || {};
     if (!this.#sidebar.spaces?.length && !this._shouldRunMigration) {
-      this.log("No spaces data found in session file, running migration", this.#sidebar);
+      this.log(
+        "No spaces data found in session file, running migration",
+        this.#sidebar
+      );
       // If we have no spaces data, we should run migration
       // to restore them from the database. Note we also do a
       // check if we already planned to run migration for optimization.
       this._shouldRunMigration = true;
       await this.#getDataFromDBForMigration();
     }
-    if (Services.prefs.getBoolPref("zen.session-store.log-tab-entries", false)) {
+    if (
+      Services.prefs.getBoolPref("zen.session-store.log-tab-entries", false)
+    ) {
       for (const tab of this.#sidebar.tabs || []) {
         this.log("Tab entry in session file:", tab);
       }
@@ -285,15 +309,19 @@ export class nsZenSessionManager {
     if (buildIdChanged) {
       // If the build ID has changed since the last session, it means the user has updated the app,
       // so we should not remove the unpinned tabs as they might want to keep them after the update.
-      this.log("Build ID has changed since last session, not restoring only pinned tabs", {
-        buildId,
-        lastBuildId,
-      });
+      this.log(
+        "Build ID has changed since last session, not restoring only pinned tabs",
+        {
+          buildId,
+          lastBuildId,
+        }
+      );
       Services.prefs.setStringPref(LAST_BUILD_ID_PREF, buildId);
       return false;
     }
     return (
-      Services.prefs.getIntPref("browser.startup.page", 1) !== BROWSER_STARTUP_RESUME_SESSION ||
+      Services.prefs.getIntPref("browser.startup.page", 1) !==
+        BROWSER_STARTUP_RESUME_SESSION ||
       lazy.PrivateBrowsingUtils.permanentPrivateBrowsing
     );
   }
@@ -325,7 +353,7 @@ export class nsZenSessionManager {
         this.log("Window sync disabled, restoring only pinned tabs");
         for (let i = 0; i < initialState.windows.length; i++) {
           let winData = initialState.windows[i];
-          winData.tabs = (winData.tabs || []).filter((tab) => tab.pinned);
+          winData.tabs = (winData.tabs || []).filter(tab => tab.pinned);
         }
       }
       return initialState;
@@ -335,7 +363,7 @@ export class nsZenSessionManager {
       true
     );
     if (initialState?.windows?.length && !allowRestoreUnsynced) {
-      initialState.windows = initialState.windows.filter((win) => {
+      initialState.windows = initialState.windows.filter(win => {
         if (win.isZenUnsynced) {
           this.log("Skipping unsynced window during restore");
         }
@@ -348,7 +376,11 @@ export class nsZenSessionManager {
     // This would happen on first run after having a single private window
     // open when quitting the app, for example.
     let normalWindowsExist = initialState?.windows?.some(
-      (win) => !win.isPrivate && !win.isPopup && !win.isTaskbarTab && !win.isZenUnsynced
+      win =>
+        !win.isPrivate &&
+        !win.isPopup &&
+        !win.isTaskbarTab &&
+        !win.isZenUnsynced
     );
     if (!initialState?.windows?.length || !normalWindowsExist) {
       this.log("No windows found in initial state, creating an empty one");
@@ -376,20 +408,31 @@ export class nsZenSessionManager {
     }
     // When we don't have browser.startup.page set to resume session,
     // we only want to restore the pinned tabs into the new windows.
-    if (this.#shouldRestoreOnlyPinned && !this.#shouldRestoreFromCrash && this.#sidebar?.tabs) {
+    if (
+      this.#shouldRestoreOnlyPinned &&
+      !this.#shouldRestoreFromCrash &&
+      this.#sidebar?.tabs
+    ) {
       this.log("Restoring only pinned tabs into windows");
       const sidebar = this.#sidebar;
-      sidebar.tabs = (sidebar.tabs || []).filter((tab) => tab.pinned);
+      sidebar.tabs = (sidebar.tabs || []).filter(tab => tab.pinned);
       this.#sidebar = sidebar;
     }
     // Restore all windows with the same sidebar object, this will
     // guarantee that all tabs, groups, folders and split view data
     // are properly synced across all windows.
     if (!this._shouldRunMigration) {
-      this.log(`Restoring Zen session data into ${initialState.windows?.length || 0} windows`);
+      this.log(
+        `Restoring Zen session data into ${initialState.windows?.length || 0} windows`
+      );
       for (let i = 0; i < initialState.windows.length; i++) {
         let winData = initialState.windows[i];
-        if (winData.isZenUnsynced || winData.isPrivate || winData.isPopup || winData.isTaskbarTab) {
+        if (
+          winData.isZenUnsynced ||
+          winData.isPrivate ||
+          winData.isPopup ||
+          winData.isTaskbarTab
+        ) {
           continue;
         }
         this.#restoreWindowData(winData);
@@ -441,7 +484,9 @@ export class nsZenSessionManager {
       !initialState?.windows?.length &&
       (initialState?.lastSessionState || initialState?.deferredInitialState)
     ) {
-      initialState = { ...(initialState.lastSessionState || initialState.deferredInitialState) };
+      initialState = {
+        ...(initialState.lastSessionState || initialState.deferredInitialState),
+      };
     }
     // There might be cases where there are no windows in the
     // initial state, for example if the user had 'restore previous
@@ -449,7 +494,7 @@ export class nsZenSessionManager {
     // to restore the last closed normal window.
     if (!initialState?.windows?.length) {
       let normalClosedWindow = initialState?._closedWindows?.find(
-        (win) => !win.isPopup && !win.isTaskbarTab && !win.isPrivate
+        win => !win.isPopup && !win.isTaskbarTab && !win.isPrivate
       );
       if (normalClosedWindow) {
         initialState.windows = [Cu.cloneInto(normalClosedWindow, {})];
@@ -466,15 +511,21 @@ export class nsZenSessionManager {
     }
     for (const winData of initialState?.windows || []) {
       winData.spaces =
-        (winData.spaces?.length ? winData.spaces : this._migrationData?.spaces) || [];
+        (winData.spaces?.length
+          ? winData.spaces
+          : this._migrationData?.spaces) || [];
       if (winData.tabs) {
         for (const tabData of winData.tabs) {
           let storeId = tabData.zenSyncId || tabData.zenPinnedId;
-          const pinData = this._migrationData?.pins?.find((pin) => pin.uuid === storeId);
+          const pinData = this._migrationData?.pins?.find(
+            pin => pin.uuid === storeId
+          );
           // We need to migrate the static label from the pin data as this information
           // was not stored in the session file before.
           if (pinData) {
-            tabData.zenStaticLabel = pinData.editedTitle ? pinData.title : undefined;
+            tabData.zenStaticLabel = pinData.editedTitle
+              ? pinData.title
+              : undefined;
           }
         }
       }
@@ -497,8 +548,8 @@ export class nsZenSessionManager {
    * @param {object} aWindow - The window data object to filter.
    */
   #filterUnpinnedTabs(aWindow) {
-    aWindow.tabs = aWindow.tabs.filter((tab) => tab.pinned);
-    aWindow.groups = aWindow.groups?.filter((group) => group.pinned);
+    aWindow.tabs = aWindow.tabs.filter(tab => tab.pinned);
+    aWindow.groups = aWindow.groups?.filter(group => group.pinned);
   }
 
   /**
@@ -508,7 +559,9 @@ export class nsZenSessionManager {
    * @returns {boolean} True if the window is saveable, false otherwise.
    */
   #isWindowSaveable(aWinData) {
-    return !aWinData.isPopup && !aWinData.isTaskbarTab && !aWinData.isZenUnsynced;
+    return (
+      !aWinData.isPopup && !aWinData.isTaskbarTab && !aWinData.isZenUnsynced
+    );
   }
 
   /**
@@ -521,17 +574,19 @@ export class nsZenSessionManager {
    */
   saveState(state, soon = false) {
     let windows = state?.windows || [];
-    windows = windows.filter((win) => this.#isWindowSaveable(win));
+    windows = windows.filter(win => this.#isWindowSaveable(win));
     if (!windows.length) {
       // Don't save (or even collect) anything in permanent private
       // browsing mode. We also don't want to save if there are no windows.
       return;
     }
     const cleanPath = PathUtils.join(this.#backupFolderPath, "clean.jsonlz4");
-    IOUtils.copy(this.#storeFilePath, cleanPath, { recursive: true }).catch(() => {
-      /* ignore errors creating clean backup, as it is not critical and
-       * we want to save the session even if we fail to create it */
-    });
+    IOUtils.copy(this.#storeFilePath, cleanPath, { recursive: true }).catch(
+      () => {
+        /* ignore errors creating clean backup, as it is not critical and
+         * we want to save the session even if we fail to create it */
+      }
+    );
     this.#collectWindowData(windows);
     // This would save the data to disk asynchronously or when quitting the app.
     let sidebar = this.#sidebar;
@@ -591,19 +646,24 @@ export class nsZenSessionManager {
       const todayFilePath = PathUtils.join(backupFolder, todayFileName);
       const sessionFilePath = this.#file.path;
       this.log(`Backing up session file to ${todayFileName}`);
-      await IOUtils.copy(sessionFilePath, todayFilePath, { noOverwrite: false });
+      await IOUtils.copy(sessionFilePath, todayFilePath, {
+        noOverwrite: false,
+      });
       // Now we need to check if we have exceeded the maximum
       // number of backups allowed, and delete the oldest ones
       // if needed.
       let prefix = PathUtils.join(backupFolder, "zen-sessions-");
       let files = await IOUtils.getChildren(backupFolder);
-      files = files.filter((file) => file.startsWith(prefix)).sort();
+      files = files.filter(file => file.startsWith(prefix)).sort();
       for (let i = 0; i < files.length - lazy.gMaxSessionBackups; i++) {
         this.log(`Deleting old backup file ${files[i]}`);
         await IOUtils.remove(files[i]);
       }
     } catch (e) {
-      console.error("ZenSessionManager: Failed to create session file backups", e);
+      console.error(
+        "ZenSessionManager: Failed to create session file backups",
+        e
+      );
     }
   }
 
@@ -618,7 +678,12 @@ export class nsZenSessionManager {
     // We only want to save the *last* normal window that is closed.
     // If its not the last window, we can still update the sidebar object
     // based on other open windows.
-    if (aWinData.isPopup || aWinData.isTaskbarTab || aWinData.isZenUnsynced || !isLastWindow) {
+    if (
+      aWinData.isPopup ||
+      aWinData.isTaskbarTab ||
+      aWinData.isZenUnsynced ||
+      !isLastWindow
+    ) {
       return;
     }
     this.log("Saving closed window session data into Zen session store");
@@ -652,7 +717,7 @@ export class nsZenSessionManager {
    * @returns {Array} The filtered array of tab data objects.
    */
   #filterUnusedTabs(tabs) {
-    return tabs.filter((tab) => {
+    return tabs.filter(tab => {
       // We need to ignore empty tabs with no group association
       // as they are not useful to restore.
       return !(tab.zenIsEmpty && !tab.groupId);
@@ -673,13 +738,18 @@ export class nsZenSessionManager {
       // state when multiple windows are open. Note that if we a tab without
       // this flag set in any other window, we just add it anyway.
       for (const tabData of window.tabs || []) {
-        if (!tabIdRelationMap.has(tabData.zenSyncId) || tabData._zenIsActiveTab) {
+        if (
+          !tabIdRelationMap.has(tabData.zenSyncId) ||
+          tabData._zenIsActiveTab
+        ) {
           tabIdRelationMap.set(tabData.zenSyncId, tabData);
         }
       }
     }
 
-    sidebarData.tabs = this.#filterUnusedTabs(Array.from(tabIdRelationMap.values()));
+    sidebarData.tabs = this.#filterUnusedTabs(
+      Array.from(tabIdRelationMap.values())
+    );
 
     let firstWindow = aStateWindows[0];
     sidebarData.folders = firstWindow.folders;
@@ -704,10 +774,10 @@ export class nsZenSessionManager {
     // tabs in the window data and keep the pinned tabs from the window data,
     // as they should be the same as the ones in the sidebar.
     if (lazy.gSyncOnlyPinnedTabs) {
-      let pinnedTabs = (sidebar.tabs || []).filter((tab) => tab.pinned);
+      let pinnedTabs = (sidebar.tabs || []).filter(tab => tab.pinned);
       let unpinedWindowTabs = [];
       if (!this.#shouldRestoreOnlyPinned) {
-        unpinedWindowTabs = (aWindowData.tabs || []).filter((tab) => !tab.pinned);
+        unpinedWindowTabs = (aWindowData.tabs || []).filter(tab => !tab.pinned);
       }
       aWindowData.tabs = [...pinnedTabs, ...unpinedWindowTabs];
 
@@ -719,7 +789,10 @@ export class nsZenSessionManager {
       ];
       // Same thing with groups, we restore all the groups from the sidebar, if they don't have any
       // existing tabs in the window, they should be a no-op.
-      aWindowData.groups = [...(sidebar.groups || []), ...(aWindowData.groups || [])];
+      aWindowData.groups = [
+        ...(sidebar.groups || []),
+        ...(aWindowData.groups || []),
+      ];
     } else {
       aWindowData.tabs = sidebar.tabs || [];
       aWindowData.splitViewData = sidebar.splitViewData;
@@ -755,11 +828,16 @@ export class nsZenSessionManager {
     this.log("Restoring new window with Zen session data");
     const state = lazy.SessionStore.getCurrentState(true);
     const windows = (state.windows || []).filter(
-      (win) => !win.isPrivate && !win.isPopup && !win.isTaskbarTab && !win.isZenUnsynced
+      win =>
+        !win.isPrivate &&
+        !win.isPopup &&
+        !win.isTaskbarTab &&
+        !win.isZenUnsynced
     );
     let windowToClone = windows[0] || {};
     let newWindow = Cu.cloneInto(windowToClone, {});
-    let shouldRestoreOnlyPinned = !lazy.gWindowSyncEnabled || lazy.gSyncOnlyPinnedTabs;
+    let shouldRestoreOnlyPinned =
+      !lazy.gWindowSyncEnabled || lazy.gSyncOnlyPinnedTabs;
     if (windows.length < 2) {
       // We only want to restore the sidebar object if we found
       // only one normal window to clone from (which is the one

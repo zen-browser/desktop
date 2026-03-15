@@ -111,7 +111,9 @@ class ZenUrlbarResultsLearner {
    */
   sortCommandsByPriority(commands) {
     const db = this.database;
-    return commands.sort((a, b) => (db[b.commandId] || 0) - (db[a.commandId] || 0));
+    return commands.sort(
+      (a, b) => (db[b.commandId] || 0) - (db[a.commandId] || 0)
+    );
   }
 }
 

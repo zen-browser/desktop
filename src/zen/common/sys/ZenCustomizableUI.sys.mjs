@@ -8,7 +8,11 @@ export const ZenCustomizableUI = new (class {
   constructor() {}
 
   TYPE_TOOLBAR = "toolbar";
-  defaultSidebarIcons = ["downloads-button", "zen-workspaces-button", "zen-create-new-button"];
+  defaultSidebarIcons = [
+    "downloads-button",
+    "zen-workspaces-button",
+    "zen-create-new-button",
+  ];
 
   startup(CustomizableUIInternal) {
     CustomizableUIInternal.registerArea(
@@ -39,7 +43,8 @@ export const ZenCustomizableUI = new (class {
   }
 
   #addSidebarButtons(window) {
-    const kDefaultSidebarWidth = AppConstants.platform === "macosx" ? "230px" : "186px";
+    const kDefaultSidebarWidth =
+      AppConstants.platform === "macosx" ? "230px" : "186px";
     const toolbox = window.gNavToolbox;
 
     // Set a splitter to navigator-toolbox
@@ -81,7 +86,7 @@ export const ZenCustomizableUI = new (class {
       </toolbar>
     `);
     toolbox.prepend(sidebarBox);
-    new window.MutationObserver((e) => {
+    new window.MutationObserver(e => {
       if (e[0].type !== "attributes" || e[0].attributeName !== "width") {
         return;
       }
@@ -96,7 +101,7 @@ export const ZenCustomizableUI = new (class {
     toolbox.style.width = width;
     toolbox.setAttribute("width", width);
 
-    splitter.addEventListener("dblclick", (e) => {
+    splitter.addEventListener("dblclick", e => {
       if (e.button !== 0) {
         return;
       }
@@ -104,7 +109,9 @@ export const ZenCustomizableUI = new (class {
       toolbox.setAttribute("width", kDefaultSidebarWidth);
     });
 
-    const newTab = window.document.getElementById("vertical-tabs-newtab-button");
+    const newTab = window.document.getElementById(
+      "vertical-tabs-newtab-button"
+    );
     newTab.classList.add("zen-sidebar-action-button");
 
     for (let id of this.defaultSidebarIcons) {
@@ -124,7 +131,7 @@ export const ZenCustomizableUI = new (class {
     // If we use "mousedown" event for private windows (which open a new tab on "click"), we might end up with
     // the urlbar flicking and therefore we use "command" event to avoid that.
     let isPrivateMode = window.gZenWorkspaces.privateWindowOrDisabled;
-    button.addEventListener(isPrivateMode ? "command" : "mousedown", (event) => {
+    button.addEventListener(isPrivateMode ? "command" : "mousedown", event => {
       if (isPrivateMode) {
         window.document.getElementById("cmd_newNavigatorTab").doCommand();
         return;
@@ -146,7 +153,9 @@ export const ZenCustomizableUI = new (class {
   }
 
   #moveWindowButtons(window) {
-    const windowControls = window.document.getElementsByClassName("titlebar-buttonbox-container");
+    const windowControls = window.document.getElementsByClassName(
+      "titlebar-buttonbox-container"
+    );
     const toolboxIcons = window.document.getElementById(
       "zen-sidebar-top-buttons-customization-target"
     );
@@ -173,7 +182,9 @@ export const ZenCustomizableUI = new (class {
         wrapper.prepend(elem);
       }
     }
-    window.document.getElementById("stop-reload-button").removeAttribute("overflows");
+    window.document
+      .getElementById("stop-reload-button")
+      .removeAttribute("overflows");
   }
 
   _dispatchResizeEvent(window) {

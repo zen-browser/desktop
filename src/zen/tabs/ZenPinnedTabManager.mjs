@@ -67,7 +67,10 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     if (!this.enabled) {
       return;
     }
-    this._canLog = Services.prefs.getBoolPref("zen.pinned-tab-manager.debug", false);
+    this._canLog = Services.prefs.getBoolPref(
+      "zen.pinned-tab-manager.debug",
+      false
+    );
     this.observer = new ZenPinnedTabsObserver();
     this._initClosePinnedTabShortcut();
     this._insertItemsIntoTabContextMenu();
@@ -97,7 +100,9 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   }
 
   onTabIconChanged(tab, url = null) {
-    tab.dispatchEvent(new CustomEvent("ZenTabIconChanged", { bubbles: true, detail: { tab } }));
+    tab.dispatchEvent(
+      new CustomEvent("ZenTabIconChanged", { bubbles: true, detail: { tab } })
+    );
     if (tab.hasAttribute("zen-essential")) {
       this.setEssentialTabIcon(tab, url);
     }
@@ -110,7 +115,19 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
   _onTabResetPinButton(event, tab) {
     event.stopPropagation();
-    this._resetTabToStoredState(tab);
+    if (event.getModifierState("Accel")) {
+      let newTab = gBrowser.duplicateTab(tab, true);
+      newTab.addEventListener(
+        "SSTabRestored",
+        () => {
+          this._resetTabToStoredState(tab);
+        },
+        { once: true }
+      );
+    } else {
+      this._resetTabToStoredState(tab);
+    }
+    gBrowser.selectedTab = tab;
   }
 
   get enabled() {
@@ -157,9 +174,43 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     const tab = e.target?.closest("tab");
     if (e.button === 1 && tab) {
       await this.onCloseTabShortcut(e, tab, {
-        closeIfPending: Services.prefs.getBoolPref("zen.pinned-tab-manager.wheel-close-if-pending"),
+        closeIfPending: Services.prefs.getBoolPref(
+          "zen.pinned-tab-manager.wheel-close-if-pending"
+        ),
       });
     }
+  }
+
+  _onAccelKeyChange(e) {
+    let tab = this._tabWithResetPinButtonHovered;
+    if (!tab) {
+      return;
+    }
+    let accelHeld =
+      e.getModifierState("Accel") || (e.metaKey && e.type == "keydown");
+    this._setResetPinSublabel(tab, accelHeld);
+    // Up <-> down events until the mouse leaves the button.
+    // When hovered with accelHeld, we should listen to the next keyup event
+    let nextEvent = accelHeld ? "keyup" : "keydown";
+    let handler = nextE => this._onAccelKeyChange(nextE);
+    window.addEventListener(nextEvent, handler, { once: true });
+  }
+
+  _setResetPinSublabel(tab, accelHeld) {
+    let label = tab.querySelector(".zen-tab-sublabel");
+    document.l10n.setArgs(label, {
+      tabSubtitle: accelHeld ? "zen-default-pinned-cmd" : "zen-default-pinned",
+    });
+  }
+
+  onResetPinButtonMouseOver(tab, event) {
+    this._tabWithResetPinButtonHovered = tab;
+    this._onAccelKeyChange(event);
+  }
+
+  onResetPinButtonMouseOut(tab) {
+    this._setResetPinSublabel(tab, false);
+    delete this._tabWithResetPinButtonHovered;
   }
 
   resetPinnedTab(tab) {
@@ -210,13 +261,13 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       const pinnedTabs = [
         ...new Set(
           tabs
-            .flatMap((tab) => {
+            .flatMap(tab => {
               if (tab.group?.hasAttribute("split-view-group")) {
                 return tab.group.tabs;
               }
               return tab;
             })
-            .filter((tab) => tab?.pinned)
+            .filter(tab => tab?.pinned)
         ),
       ];
 
@@ -224,7 +275,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         return;
       }
 
-      const selectedTabs = pinnedTabs.filter((tab) => tab.selected);
+      const selectedTabs = pinnedTabs.filter(tab => tab.selected);
 
       event.stopPropagation();
       event.preventDefault();
@@ -233,8 +284,13 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         behavior = "unload-switch";
       }
 
-      if (alwaysUnload && ["close", "reset", "switch", "reset-switch"].includes(behavior)) {
-        behavior = behavior.contains("reset") ? "reset-unload-switch" : "unload-switch";
+      if (
+        alwaysUnload &&
+        ["close", "reset", "switch", "reset-switch"].includes(behavior)
+      ) {
+        behavior = behavior.contains("reset")
+          ? "reset-unload-switch"
+          : "unload-switch";
       }
 
       switch (behavior) {
@@ -255,19 +311,23 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
                 // before we used to just ignore it but now we need to fully close
                 // it as well.
                 gZenGlanceManager.manageTabClose(tab.glanceTab);
-                await new Promise((resolve) => {
+                await new Promise(resolve => {
                   let hasRan = false;
                   const onGlanceClose = () => {
                     hasRan = true;
                     resolve();
                   };
-                  window.addEventListener("GlanceClose", onGlanceClose, { once: true });
+                  window.addEventListener("GlanceClose", onGlanceClose, {
+                    once: true,
+                  });
                   // Set a timeout to resolve the promise if the event doesn't fire.
                   // We do this to prevent any future issues where glance woudnt close such as
                   // glance requering to ask for permit unload.
                   setTimeout(() => {
                     if (!hasRan) {
-                      console.warn("GlanceClose event did not fire within 3 seconds");
+                      console.warn(
+                        "GlanceClose event did not fire within 3 seconds"
+                      );
                       resolve();
                     }
                   }, 3000);
@@ -284,11 +344,15 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
               await gZenFolders.animateUnloadAll(folderToUnload);
             }
             const allAreUnloaded = pinnedTabs.every(
-              (tab) => tab.hasAttribute("pending") && !tab.hasAttribute("zen-essential")
+              tab =>
+                tab.hasAttribute("pending") &&
+                !tab.hasAttribute("zen-essential")
             );
             for (const tabItem of pinnedTabs) {
               if (allAreUnloaded && closeIfPending) {
-                await this.onCloseTabShortcut(event, tabItem, { behavior: "close" });
+                await this.onCloseTabShortcut(event, tabItem, {
+                  behavior: "close",
+                });
                 return;
               }
             }
@@ -322,10 +386,10 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     if (selectedTab !== gBrowser.selectedTab) {
       return;
     }
-    const findNextTab = (direction) =>
+    const findNextTab = direction =>
       gBrowser.tabContainer.findNextTab(selectedTab, {
         direction,
-        filter: (tab) => !tab.hidden && !tab.pinned,
+        filter: tab => !tab.hidden && !tab.pinned,
       });
 
     let nextTab = findNextTab(1) || findNextTab(-1);
@@ -440,8 +504,14 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       // eslint-disable-next-line no-shadow
       const tab = tabs[i];
       tab.removeAttribute("zen-essential");
-      if (gZenWorkspaces.workspaceEnabled && gZenWorkspaces.getActiveWorkspaceFromCache().uuid) {
-        tab.setAttribute("zen-workspace-id", gZenWorkspaces.getActiveWorkspaceFromCache().uuid);
+      if (
+        gZenWorkspaces.workspaceEnabled &&
+        gZenWorkspaces.getActiveWorkspaceFromCache().uuid
+      ) {
+        tab.setAttribute(
+          "zen-workspace-id",
+          gZenWorkspaces.getActiveWorkspaceFromCache().uuid
+        );
       }
       if (unpin) {
         gBrowser.unpinTab(tab);
@@ -499,28 +569,32 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         `);
 
     document.getElementById("context_pinTab")?.before(element);
-    document.getElementById("context_zen-edit-tab-title").addEventListener("command", (event) => {
-      gZenVerticalTabsManager.renameTabStart(event);
-    });
-    document.getElementById("context_zen-edit-tab-icon").addEventListener("command", () => {
-      const tab = TabContextMenu.contextTab;
-      gZenEmojiPicker.open(tab.iconImage, {
-        emojiAsSVG: true,
-        closeOnSelect: false,
-        allowNone: Boolean(tab.zenStaticIcon),
-        onSelect: (icon) => {
-          if (icon) {
-            tab.zenStaticIcon = icon;
-          } else {
-            delete tab.zenStaticIcon;
-          }
-          gBrowser.setIcon(tab, icon);
-          lazy.TabStateCache.update(tab.permanentKey, {
-            image: null,
-          });
-        },
+    document
+      .getElementById("context_zen-edit-tab-title")
+      .addEventListener("command", event => {
+        gZenVerticalTabsManager.renameTabStart(event);
       });
-    });
+    document
+      .getElementById("context_zen-edit-tab-icon")
+      .addEventListener("command", () => {
+        const tab = TabContextMenu.contextTab;
+        gZenEmojiPicker.open(tab.iconImage, {
+          emojiAsSVG: true,
+          closeOnSelect: false,
+          allowNone: Boolean(tab.zenStaticIcon),
+          onSelect: icon => {
+            if (icon) {
+              tab.zenStaticIcon = icon;
+            } else {
+              delete tab.zenStaticIcon;
+            }
+            gBrowser.setIcon(tab, icon);
+            lazy.TabStateCache.update(tab.permanentKey, {
+              image: null,
+            });
+          },
+        });
+      });
   }
 
   updatePinnedTabContextMenu(contextTab) {
@@ -530,12 +604,16 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
     const isVisible = contextTab.pinned && !contextTab.multiselected;
     const isEssential = contextTab.getAttribute("zen-essential");
-    const zenAddEssential = document.getElementById("context_zen-add-essential");
-    const zenResetPinnedTab = document.getElementById("context_zen-reset-pinned-tab");
+    const zenAddEssential = document.getElementById(
+      "context_zen-add-essential"
+    );
+    const zenResetPinnedTab = document.getElementById(
+      "context_zen-reset-pinned-tab"
+    );
     const zenReplacePinnedUrl = document.getElementById(
       "context_zen-replace-pinned-url-with-current"
     );
-    [zenResetPinnedTab, zenReplacePinnedUrl].forEach((element) => {
+    [zenResetPinnedTab, zenReplacePinnedUrl].forEach(element => {
       if (element) {
         element.hidden = !isVisible;
         document.l10n.setArgs(element, { isEssential });
@@ -547,19 +625,23 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         num: gBrowser._numZenEssentials,
         max: this.maxEssentialTabs,
       })
-      .then((badgeText) => {
+      .then(badgeText => {
         zenAddEssential.setAttribute("badge", badgeText);
       });
     document
       .getElementById("cmd_contextZenAddToEssentials")
       .setAttribute("disabled", !this.canEssentialBeAdded(contextTab));
-    document.getElementById("context_closeTab").hidden = contextTab.hasAttribute("zen-essential");
-    document.getElementById("context_zen-remove-essential").hidden = !isEssential;
+    document.getElementById("context_closeTab").hidden =
+      contextTab.hasAttribute("zen-essential");
+    document.getElementById("context_zen-remove-essential").hidden =
+      !isEssential;
     document.getElementById("context_unpinTab").hidden =
       document.getElementById("context_unpinTab").hidden || isEssential;
     document.getElementById("context_unpinSelectedTabs").hidden =
-      document.getElementById("context_unpinSelectedTabs").hidden || isEssential;
-    document.getElementById("context_zen-pinned-tab-separator").hidden = !isVisible;
+      document.getElementById("context_unpinSelectedTabs").hidden ||
+      isEssential;
+    document.getElementById("context_zen-pinned-tab-separator").hidden =
+      !isVisible;
     document.getElementById("context_zen-edit-tab-title").hidden =
       isEssential ||
       !Services.prefs.getBoolPref("zen.tabs.rename-tabs") ||
@@ -567,12 +649,17 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   }
 
   // eslint-disable-next-line complexity
-  moveToAnotherTabContainerIfNecessary(event, draggedTab, movingTabs, dropIndex) {
+  moveToAnotherTabContainerIfNecessary(
+    event,
+    draggedTab,
+    movingTabs,
+    dropIndex
+  ) {
     let newIndex = dropIndex;
     let fromDifferentWindow = false;
     movingTabs = Array.from(movingTabs || draggedTab)
       .reverse()
-      .map((tab) => {
+      .map(tab => {
         if (!gBrowser.isTab(tab)) {
           return tab;
         }
@@ -581,13 +668,12 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
           fromDifferentWindow = true;
           if (
             !tab.hasAttribute("zen-essential") &&
-            tab.getAttribute("zen-workspace-id") != gZenWorkspaces.activeWorkspace
+            tab.getAttribute("zen-workspace-id") !=
+              gZenWorkspaces.activeWorkspace
           ) {
             workspaceId = gZenWorkspaces.activeWorkspace;
-            tab.ownerGlobal.gBrowser.selectedTab = tab.ownerGlobal.gBrowser._findTabToBlurTo(
-              tab,
-              movingTabs
-            );
+            tab.ownerGlobal.gBrowser.selectedTab =
+              tab.ownerGlobal.gBrowser._findTabToBlurTo(tab, movingTabs);
             tab.ownerGlobal.gZenWorkspaces.moveTabToWorkspace(tab, workspaceId);
           }
           // Move the tabs into this window. To avoid multiple tab-switches in
@@ -616,14 +702,17 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       const pinnedTabsTarget = event.target.closest(
         ":is(.zen-current-workspace-indicator, .zen-workspace-pinned-tabs-section)"
       );
-      const essentialTabsTarget = event.target.closest(".zen-essentials-container");
+      const essentialTabsTarget = event.target.closest(
+        ".zen-essentials-container"
+      );
       const tabsTarget = !pinnedTabsTarget;
-      let currentEssenialContainer = gZenWorkspaces.getCurrentEssentialsContainer();
+      let currentEssenialContainer =
+        gZenWorkspaces.getCurrentEssentialsContainer();
       if (currentEssenialContainer?.essentialsPromo) {
         currentEssenialContainer.essentialsPromo.remove();
       }
 
-      movingTabs = movingTabs.filter((tab) =>
+      movingTabs = movingTabs.filter(tab =>
         gBrowser.isTabGroupLabel(tab) && tab.group?.isZenFolder
           ? !tabsTarget && !essentialTabsTarget
           : true
@@ -650,7 +739,10 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         let isRegularTabs = false;
         // Check for essentials container
         if (essentialTabsTarget) {
-          if (!tab.hasAttribute("zen-essential") && !tab?.group?.hasAttribute("split-view-group")) {
+          if (
+            !tab.hasAttribute("zen-essential") &&
+            !tab?.group?.hasAttribute("split-view-group")
+          ) {
             moved = true;
             isVertical = false;
             hasActuallyMoved = this.addToEssentials(tab);
@@ -763,7 +855,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         tab.removeAttribute("zen-show-sublabel");
 
         const label = tab.querySelector(".zen-tab-sublabel");
-        window.document.l10n.setArgs(label, {
+        document.l10n.setArgs(label, {
           tabSubtitle: "zen-default-pinned",
         });
       }
@@ -774,7 +866,10 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     } else {
       tab.setAttribute("zen-pinned-changed", "true");
     }
-    tab.style.setProperty("--zen-original-tab-icon", `url(${tab._zenPinnedInitialState.image})`);
+    tab.style.setProperty(
+      "--zen-original-tab-icon",
+      `url(${tab._zenPinnedInitialState.image})`
+    );
   }
 
   removeTabContainersDragoverClass(hideIndicator = true) {
@@ -795,7 +890,9 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   }
 
   get expandedSidebarMode() {
-    return document.documentElement.getAttribute("zen-sidebar-expanded") === "true";
+    return (
+      document.documentElement.getAttribute("zen-sidebar-expanded") === "true"
+    );
   }
 
   canEssentialBeAdded(tab) {
@@ -822,16 +919,24 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       this.removeTabContainersDragoverClass();
       return;
     }
-    const pinnedTabsTarget = event.target.closest(".zen-workspace-pinned-tabs-section");
-    const essentialTabsTarget = event.target.closest(".zen-essentials-container");
-    const tabsTarget = event.target.closest(".zen-workspace-normal-tabs-section");
+    const pinnedTabsTarget = event.target.closest(
+      ".zen-workspace-pinned-tabs-section"
+    );
+    const essentialTabsTarget = event.target.closest(
+      ".zen-essentials-container"
+    );
+    const tabsTarget = event.target.closest(
+      ".zen-workspace-normal-tabs-section"
+    );
     const folderTarget = event.target.closest("zen-folder");
     let targetTab = event.target.closest(".tabbrowser-tab");
     targetTab = targetTab?.group || targetTab;
     draggedTab = draggedTab?.group?.hasAttribute("split-view-group")
       ? draggedTab.group
       : draggedTab;
-    const isHoveringIndicator = !!event.target.closest(".zen-current-workspace-indicator");
+    const isHoveringIndicator = !!event.target.closest(
+      ".zen-current-workspace-indicator"
+    );
     if (isHoveringIndicator) {
       this.removeTabContainersDragoverClass(false);
       gZenWorkspaces.activeWorkspaceIndicator?.setAttribute("open", true);
@@ -847,7 +952,10 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
     // Decide whether we should show a dragover class for the given target
     if (essentialTabsTarget) {
-      if (!draggedTab.hasAttribute("zen-essential") && this.canEssentialBeAdded(draggedTab)) {
+      if (
+        !draggedTab.hasAttribute("zen-essential") &&
+        this.canEssentialBeAdded(draggedTab)
+      ) {
         shouldAddDragOverElement = true;
         isVertical = false;
       }
@@ -861,7 +969,11 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       }
     }
 
-    if (!shouldAddDragOverElement || (!targetTab && !folderTarget) || !targetTab) {
+    if (
+      !shouldAddDragOverElement ||
+      (!targetTab && !folderTarget) ||
+      !targetTab
+    ) {
       this.removeTabContainersDragoverClass(!isHoveringIndicator);
       return;
     }
@@ -884,8 +996,14 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         shouldPlayHapticFeedback = true;
       }
       indicator.setAttribute("orientation", "horizontal");
-      indicator.style.setProperty("--indicator-left", rect.left + separation / 2 + "px");
-      indicator.style.setProperty("--indicator-width", rect.width - separation + "px");
+      indicator.style.setProperty(
+        "--indicator-left",
+        rect.left + separation / 2 + "px"
+      );
+      indicator.style.setProperty(
+        "--indicator-width",
+        rect.width - separation + "px"
+      );
       indicator.style.top = top;
       indicator.style.removeProperty("left");
     } else {
@@ -902,8 +1020,14 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         shouldPlayHapticFeedback = true;
       }
       indicator.setAttribute("orientation", "vertical");
-      indicator.style.setProperty("--indicator-top", rect.top + separation / 2 + "px");
-      indicator.style.setProperty("--indicator-height", rect.height - separation + "px");
+      indicator.style.setProperty(
+        "--indicator-top",
+        rect.top + separation / 2 + "px"
+      );
+      indicator.style.setProperty(
+        "--indicator-height",
+        rect.height - separation + "px"
+      );
       indicator.style.left = left;
       indicator.style.removeProperty("top");
     }
@@ -914,7 +1038,9 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   }
 
   onTabLabelChanged(tab) {
-    tab.dispatchEvent(new CustomEvent("ZenTabLabelChanged", { bubbles: true, detail: { tab } }));
+    tab.dispatchEvent(
+      new CustomEvent("ZenTabLabelChanged", { bubbles: true, detail: { tab } })
+    );
   }
 }
 

@@ -5,7 +5,10 @@
 {
   let _tabsToPinEssentials = [];
 
-  const kZenElementsToIgnore = ["zen-browser-background", "zen-toast-container"];
+  const kZenElementsToIgnore = [
+    "zen-browser-background",
+    "zen-toast-container",
+  ];
 
   function clearBrowserElements() {
     for (const element of document.getElementById("browser").children) {
@@ -63,7 +66,7 @@
     }
     const blob = await response.blob();
     const reader = new FileReader();
-    const data = await new Promise((resolve) => {
+    const data = await new Promise(resolve => {
       reader.onloadend = () => {
         const base64Data = reader.result.split(",")[1];
         _iconToData[iconURL] = `data:${blob.type};base64,${base64Data}`;
@@ -89,12 +92,19 @@
       document.getElementById("zen-welcome-pages").style.display = "flex";
       document.getElementById("zen-welcome-start").remove();
       window.maximize();
-      animate("#zen-welcome-pages", { opacity: [0, 1] }, { delay: 0.2, duration: 0.1 });
+      animate(
+        "#zen-welcome-pages",
+        { opacity: [0, 1] },
+        { delay: 0.2, duration: 0.1 }
+      );
     }
 
     async fadeInTitles(page) {
-      const [title1, description1, description2] = await document.l10n.formatValues(page.text);
-      const titleElement = document.getElementById("zen-welcome-page-sidebar-content");
+      const [title1, description1, description2] =
+        await document.l10n.formatValues(page.text);
+      const titleElement = document.getElementById(
+        "zen-welcome-page-sidebar-content"
+      );
       /* eslint-disable no-unsanitized/property */
       titleElement.innerHTML =
         `<html:h1>${title1}</html:h1><html:p>${description1}</html:p>` +
@@ -111,7 +121,9 @@
     }
 
     async fadeInButtons(page) {
-      const buttons = document.getElementById("zen-welcome-page-sidebar-buttons");
+      const buttons = document.getElementById(
+        "zen-welcome-page-sidebar-buttons"
+      );
       let i = 0;
       const insertedButtons = [];
       for (const button of page.buttons) {
@@ -167,8 +179,10 @@
           delay: getMotion().stagger(0.1, { startDelay: 0.4 }),
         }
       );
-      document.getElementById("zen-welcome-page-sidebar-buttons").innerHTML = "";
-      document.getElementById("zen-welcome-page-sidebar-content").innerHTML = "";
+      document.getElementById("zen-welcome-page-sidebar-buttons").innerHTML =
+        "";
+      document.getElementById("zen-welcome-page-sidebar-content").innerHTML =
+        "";
     }
 
     async fadeOutTitles() {
@@ -213,7 +227,10 @@
         this.finish();
         return;
       }
-      await Promise.all([this.fadeInTitles(currentPage), this.fadeInButtons(currentPage)]);
+      await Promise.all([
+        this.fadeInTitles(currentPage),
+        this.fadeInButtons(currentPage),
+      ]);
       await currentPage.fadeIn();
       await this.fadeInContent();
     }
@@ -221,7 +238,11 @@
     async finish() {
       _iconToData = undefined; // Unload icon data
       gZenWorkspaces.reorganizeTabsAfterWelcome();
-      await animate("#zen-welcome-page-content", { x: [0, "100%"] }, { bounce: 0 });
+      await animate(
+        "#zen-welcome-page-content",
+        { x: [0, "100%"] },
+        { bounce: 0 }
+      );
       document.getElementById("zen-welcome-page-content").remove();
       await this.animHeart();
       await this.#pinRemainingTabs();
@@ -236,8 +257,12 @@
         element.style.removeProperty("display");
       }
       gZenUIManager.updateTabsToolbar();
-      let elementsToIgnore = kZenElementsToIgnore.map((id) => `#${id}`).join(", ");
-      await animate(`#browser > *:not(${elementsToIgnore})`, { opacity: [0, 1] });
+      let elementsToIgnore = kZenElementsToIgnore
+        .map(id => `#${id}`)
+        .join(", ");
+      await animate(`#browser > *:not(${elementsToIgnore})`, {
+        opacity: [0, 1],
+      });
       gZenUIManager.showToast("zen-welcome-finished");
     }
 
@@ -290,7 +315,7 @@
 
     getEngines() {
       return this._engines.filter(
-        (engine) =>
+        engine =>
           !(
             engine.name.toLowerCase().includes("wikipedia") ||
             engine.name.toLowerCase().includes("ebay")
@@ -310,7 +335,7 @@
     }
 
     getEngineByName(aName) {
-      return this._engines.find((engine) => engine.name == aName);
+      return this._engines.find(engine => engine.name == aName);
     }
 
     _cloneEngine(aEngine) {
@@ -359,8 +384,12 @@
               MigrationUtils.showMigrationWizard(window, {
                 isStartupMigration: true,
               });
-              document.querySelector("#zen-welcome-page-sidebar-buttons button").remove();
-              const newButton = document.querySelector("#zen-welcome-page-sidebar-buttons button");
+              document
+                .querySelector("#zen-welcome-page-sidebar-buttons button")
+                .remove();
+              const newButton = document.querySelector(
+                "#zen-welcome-page-sidebar-buttons button"
+              );
               newButton.classList.add("primary");
               document.l10n.setAttributes(newButton, "zen-generic-next");
               return false;
@@ -385,7 +414,9 @@
             </html:label>
           `;
           const fragment = window.MozXULElement.parseXULToFragment(xul);
-          document.getElementById("zen-welcome-page-content").appendChild(fragment);
+          document
+            .getElementById("zen-welcome-page-content")
+            .appendChild(fragment);
         },
         async fadeOut() {
           const shouldSetDefault = document.getElementById(
@@ -431,7 +462,7 @@
 
           const defaultEngine = await Services.search.getDefault();
           const promises = [];
-          engineStore.getEngines().forEach((engine) => {
+          engineStore.getEngines().forEach(engine => {
             const label = document.createElement("label");
             const engineId = engine.name.replace(/\s+/g, "-").toLowerCase();
             label.setAttribute("for", engineId);
@@ -449,7 +480,10 @@
             const icon = document.createElement("img");
             promises.push(
               (async () => {
-                icon.setAttribute("src", await engine.originalEngine.getIconURL());
+                icon.setAttribute(
+                  "src",
+                  await engine.originalEngine.getIconURL()
+                );
               })()
             );
             icon.setAttribute("width", "32");
@@ -468,7 +502,9 @@
           await Promise.all(promises);
         },
         async fadeOut() {
-          document.getElementById("zen-welcome-page-content").removeAttribute("select-engine");
+          document
+            .getElementById("zen-welcome-page-content")
+            .removeAttribute("select-engine");
         },
       },
       {
@@ -553,10 +589,14 @@
             </hbox>
           `;
           const fragment = window.MozXULElement.parseXULToFragment(xul);
-          document.getElementById("zen-welcome-page-content").appendChild(fragment);
           document
-            .getElementById("zen-welcome-initial-essentials-browser-sidebar-essentials")
-            .addEventListener("click", async (event) => {
+            .getElementById("zen-welcome-page-content")
+            .appendChild(fragment);
+          document
+            .getElementById(
+              "zen-welcome-initial-essentials-browser-sidebar-essentials"
+            )
+            .addEventListener("click", async event => {
               const tab = event.target.closest(".tabbrowser-tab");
               if (!tab) {
                 return;
@@ -566,12 +606,14 @@
         },
         async fadeOut() {
           const selectedTabs = document
-            .getElementById("zen-welcome-initial-essentials-browser-sidebar-essentials")
+            .getElementById(
+              "zen-welcome-initial-essentials-browser-sidebar-essentials"
+            )
             .querySelectorAll(".tabbrowser-tab[visuallyselected]");
 
           if (selectedTabs.length) {
             await PlacesUtils.history.insertMany(
-              [...selectedTabs].map((tab) => ({
+              [...selectedTabs].map(tab => ({
                 url: tab.getAttribute("data-url"),
                 visits: [
                   {
@@ -591,9 +633,13 @@
               inBackground: true,
               createLazyBrowser: true,
             });
-            let essentialIconUrl = tab.style.getPropertyValue("--zen-essential-tab-icon");
+            let essentialIconUrl = tab.style.getPropertyValue(
+              "--zen-essential-tab-icon"
+            );
             // Remove url() from the icon URL
-            essentialIconUrl = essentialIconUrl.replace(/url\(['"]?/, "").replace(/['"]?\)/, "");
+            essentialIconUrl = essentialIconUrl
+              .replace(/url\(['"]?/, "")
+              .replace(/['"]?\)/, "");
             essentialIconUrl = await getIconData(essentialIconUrl);
             // Update the persistent tab state cache with |tabData| information.
             TabStateCache.update(createdTab.linkedBrowser.permanentKey, {
@@ -625,7 +671,9 @@
         fadeIn() {
           const anchor = document.createElement("div");
           anchor.id = "zen-welcome-workspace-colors-anchor";
-          document.getElementById("zen-welcome-page-content").appendChild(anchor);
+          document
+            .getElementById("zen-welcome-page-content")
+            .appendChild(anchor);
           gZenThemePicker.panel.setAttribute("noautohide", "true");
           gZenThemePicker.panel.setAttribute("consumeoutsideclicks", "false");
           gZenThemePicker.panel.setAttribute("nonnativepopover", "true");

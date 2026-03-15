@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] Reimposta e fissa la scheda
            *[other] Reimposta e fissa le { $tabCount } schede
         }
-tab-reset-pin-label = Torna all'url fissato
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

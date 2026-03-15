@@ -4,16 +4,16 @@
 
 :root {
   --zen-ctrl-tab-panel-thumbnail-height: 120px;
-  --zen-ctrl-tab-panel-info-height: 24px; 
+  --zen-ctrl-tab-panel-info-height: 24px;
   --zen-ctrl-tab-panel-padding: 15px;
-  
+
   --zen-ctrl-tab-panel-card-gap: 12px;
-  --zen-ctrl-tab-panel-card-inner-padding: 11px; 
-  
+  --zen-ctrl-tab-panel-card-inner-padding: 11px;
+
   /* Card height = thumbnail + gap + info + padding*2 = 120 + 12 + 24 + 11*2 = 178px */
   --zen-ctrl-tab-panel-card-width: 200px;
   --zen-ctrl-tab-panel-card-height: 178px;
-  
+
   --zen-ctrl-tab-panel-card-border-radius: 14px;
   --zen-ctrl-tab-panel-thumbnail-border-radius: 8px;
 }
@@ -22,7 +22,7 @@
   --panel-padding: var(--zen-ctrl-tab-panel-padding);
   min-width: fit-content;
   max-width: 100vw;
-  height: fit-content; 
+  height: fit-content;
 
   /* Disable Mica on Windows to prevent desktop background bleed-through */
   @media (-moz-platform: windows) {
@@ -143,7 +143,7 @@
   flex: 1;
   font-size: 15px;
   font-weight: 600;
-  line-height: 1.4; 
+  line-height: 1.4;
   color: light-dark(rgba(0, 0, 0, 0.85), rgba(255, 255, 255, 0.9));
   white-space: nowrap;
   overflow: hidden;

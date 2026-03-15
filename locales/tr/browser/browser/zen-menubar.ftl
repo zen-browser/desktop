@@ -18,5 +18,5 @@ zen-menubar-appearance-light =
     .label = Açık
 zen-menubar-appearance-dark = 
     .label = Koyu
-zen-menubar-new-unsynced-window = 
-    .label = Yeni Boş Pencere
+zen-menubar-new-blank-window = 
+    .label = New Blank Window

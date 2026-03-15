@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] Сбросить и закрепить вкладку
            *[other] Сбросить и закрепить { $tabCount } вкладки(-ок)
         }
-tab-reset-pin-label = Вернуться к закреплённому адресу
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

@@ -1,0 +1,11 @@
+[DEFAULT]
+run-if = [
+  "os != 'android'",
+]
+firefox-appdir = "browser"
+tags = "native-messaging"
+
+["test_native_messaging_zen_paths.js"]
+run-if = [
+  "os == 'linux'",
+]

@@ -15,6 +15,3 @@ zen-split-link =
 zen-split-view-modifier-header = 分割表示
 zen-split-view-modifier-activate-reallocation = 
     .label = 再配置を有効にする
-zen-split-view-modifier-enabled-toast = 分割表示の再配置はONになっています。
-zen-split-view-modifier-enabled-toast-description = ドラッグアンドドロップで表示を並べ替えます。Escキーを押して操作をキャンセルします。
-zen-split-view-modifier-disabled-toast = 分割表示の再配置はOFFになっています。

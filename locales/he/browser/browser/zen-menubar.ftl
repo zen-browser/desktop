@@ -18,5 +18,5 @@ zen-menubar-appearance-light =
     .label = בהיר
 zen-menubar-appearance-dark = 
     .label = כהה
-zen-menubar-new-unsynced-window = 
-    .label = חלון ריק חדש
+zen-menubar-new-blank-window = 
+    .label = New Blank Window

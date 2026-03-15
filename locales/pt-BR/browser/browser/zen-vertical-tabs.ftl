@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] Redefinir e fixar aba
            *[other] Redefinir e fixar { $tabCount } abas
         }
-tab-reset-pin-label = Voltar para a Url fixada
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

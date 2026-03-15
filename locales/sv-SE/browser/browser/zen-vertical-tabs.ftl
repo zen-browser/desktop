@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] Återställ och fäst flik
            *[other] Återställ och fäst { $tabCount } flikar
         }
-tab-reset-pin-label = Tillbaka till fäst url
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

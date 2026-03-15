@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] Tải lại và ghim thẻ
            *[other] Tải lại và ghim { $tabCount } thẻ
         }
-tab-reset-pin-label = Quay lại địa chỉ đã ghim
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

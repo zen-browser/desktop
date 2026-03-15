@@ -18,5 +18,5 @@ zen-menubar-appearance-light =
     .label = Clara
 zen-menubar-appearance-dark = 
     .label = Fosca
-zen-menubar-new-unsynced-window = 
-    .label = Nova finestra en blanc
+zen-menubar-new-blank-window = 
+    .label = New Blank Window

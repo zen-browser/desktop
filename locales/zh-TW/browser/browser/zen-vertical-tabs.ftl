@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] 重設並釘選分頁
            *[other] 重設並釘選 { $tabCount } 個分頁
         }
-tab-reset-pin-label = 返回釘選網址
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

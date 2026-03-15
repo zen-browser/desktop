@@ -828,7 +828,7 @@
 
     #createFakeTabSplit(dropElement, dropSide) {
       // Remove drop indicator
-      this.clearDragOverVisuals();
+      this.clearDragOverVisuals({ clearSplitDropIndicator: false });
 
       // Remove any existing fake tab
       if (this.#dragOverSplit.fakeTab) {
@@ -1191,8 +1191,11 @@
       }
     }
 
-    clearDragOverVisuals() {
+    clearDragOverVisuals({ clearSplitDropIndicator = true } = {}) {
       this.#removeDragOverBackground();
+      if (clearSplitDropIndicator) {
+        this._clearDragOverSplit();
+      }
       gZenPinnedTabManager.removeTabContainersDragoverClass();
     }
 

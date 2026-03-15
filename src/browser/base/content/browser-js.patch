@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index e2e0526a0ddd617291f1f6c17bcfb807954b481f..c3d2afff6eaa788309d1c1a7fa40f9b8b4f0fffe 100644
+index e2e0526a0ddd617291f1f6c17bcfb807954b481f..1373fe072b3c74a52413859d4ad3612cbe1a2bda 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -28,7 +28,7 @@ index e2e0526a0ddd617291f1f6c17bcfb807954b481f..c3d2afff6eaa788309d1c1a7fa40f9b8
      AboutReaderParent.updateReaderButton(gBrowser.selectedBrowser);
      TranslationsParent.onLocationChange(gBrowser.selectedBrowser);
  
-+    gZenPinnedTabManager.onLocationChange(gBrowser.selectedBrowser);
++    gZenPinnedTabManager.onLocationChange(gBrowser.selectedBrowser, location);
 +
      PictureInPicture.updateUrlbarToggle(gBrowser.selectedBrowser);
  

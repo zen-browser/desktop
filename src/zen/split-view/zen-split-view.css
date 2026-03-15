@@ -69,7 +69,7 @@
 }
 
 #tabbrowser-tabpanels[zen-split-view="true"]:not(.zen-split-view-no-transition):not([zen-split-resizing]) > [zen-split="true"] {
-  --zen-active-split-outline-color: light-dark(var(--zen-primary-color), var(--button-background-color-primary));
+  --zen-active-split-outline-color: light-dark(hsl(from var(--zen-primary-color) h s calc(l - 20)), var(--button-background-color-primary));
 
   transition: inset 0.09s ease-out !important;
   & browser {
@@ -173,7 +173,8 @@
   display: flex;
   -moz-context-properties: fill, fill-opacity;
   border-radius: var(--tab-border-radius);
-  color: inherit;
+  color: contrast-color(var(--zen-active-split-outline-color));
+  opacity: 0.8;
   fill: currentColor;
   width: 16px;
   height: 16px;

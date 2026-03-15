@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = 현재 프로필
 unified-extensions-description = 확장 프로그램은 { -brand-short-name }에 더 많은 추가 기능을 제공하는 데 사용됩니다.
 tab-context-zen-reset-pinned-tab = 
-    .label = 고정된 탭 초기화
+    .label =
+        { $isEssential ->
+            [true] Reset Essential Tab
+           *[false] Reset Pinned Tab
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = 에센셜에 추가
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = 에센셜에서 제거하기
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = 고정된 URL을 현재 URL로 변경
+    .label =
+        { $isEssential ->
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = 라벨 편집...
@@ -33,6 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = 최소화
 zen-panel-ui-gradient-generator-custom-color = 커스텀 색상
 zen-copy-current-url-confirmation = 현재 URL을 복사했습니다!
+zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
 zen-general-cancel-label = 
     .label = 취소
 zen-general-confirm = 
@@ -113,3 +122,5 @@ zen-window-sync-migration-dialog-title = 창을 동기화 상태로 유지
 zen-window-sync-migration-dialog-message = Zen이 이제 같은 기기에서 창을 동기화합니다. 한 창에서의 변경이 다른 창에서도 즉시 적용됩니다.
 zen-window-sync-migration-dialog-learn-more = 더 알아보기
 zen-window-sync-migration-dialog-accept = 알겠습니다
+zen-appmenu-new-blank-window = 
+    .label = New blank window

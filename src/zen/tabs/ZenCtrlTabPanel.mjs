@@ -34,15 +34,18 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
   #setupLazyGetters() {
     ChromeUtils.defineLazyGetter(this, "panel", () =>
-      document.getElementById("zen-ctrl-tab-panel")
+      document.getElementById("zen-ctrl-tab-panel"),
     );
     ChromeUtils.defineLazyGetter(this, "tabsContainer", () =>
-      document.getElementById("zen-ctrl-tab-panel-tabs")
+      document.getElementById("zen-ctrl-tab-panel-tabs"),
     );
   }
 
   #disableDefaultCtrlTab() {
-    const enabled = Services.prefs.getBoolPref("zen.tabs.ctrl-tab-panel.enabled", true);
+    const enabled = Services.prefs.getBoolPref(
+      "zen.tabs.ctrl-tab-panel.enabled",
+      true,
+    );
     const method = enabled ? "uninit" : "readPref";
     window.ctrlTab?.[method]?.();
   }
@@ -52,13 +55,12 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       this.#lazyPrefs,
       "enabled",
       "zen.tabs.ctrl-tab-panel.enabled",
-      true
+      true,
     );
 
     try {
       Services.prefs.removeObserver("zen.tabs.ctrl-tab-panel.enabled", this);
-    } catch (e) {
-    }
+    } catch (e) {}
 
     Services.prefs.addObserver("zen.tabs.ctrl-tab-panel.enabled", this);
   }
@@ -158,7 +160,10 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
         currentTabIndex >= 0 ? (currentTabIndex + 1) % this.#tabList.length : 0;
     }
 
-    this.#actualVisibleCards = Math.min(this.#tabList.length, nsZenCtrlTabPanel.MAX_VISIBLE_CARDS);
+    this.#actualVisibleCards = Math.min(
+      this.#tabList.length,
+      nsZenCtrlTabPanel.MAX_VISIBLE_CARDS,
+    );
 
     await this.#cacheThumbnailsForVisible();
 
@@ -167,9 +172,13 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
 
-    const containerWidth = nsZenCtrlTabPanel.CARD_WIDTH * this.#actualVisibleCards;
+    const containerWidth =
+      nsZenCtrlTabPanel.CARD_WIDTH * this.#actualVisibleCards;
     // Ensure the panel doesn't get cut off by screen edge (always shows full panel on screen)
-    const panelWidth = Math.min(containerWidth + nsZenCtrlTabPanel.PANEL_HORIZONTAL_PADDING, windowWidth);
+    const panelWidth = Math.min(
+      containerWidth + nsZenCtrlTabPanel.PANEL_HORIZONTAL_PADDING,
+      windowWidth,
+    );
 
     const centerX = (windowWidth - panelWidth) / 2;
     const centerY = (windowHeight - nsZenCtrlTabPanel.PANEL_HEIGHT) / 2;
@@ -181,11 +190,15 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       y: centerY,
     });
 
-    this.panel.addEventListener("popuphiding", () => {
-      if (this.#isOpen) {
-        this.close(false);
-      }
-    }, { once: true });
+    this.panel.addEventListener(
+      "popuphiding",
+      () => {
+        if (this.#isOpen) {
+          this.close(false);
+        }
+      },
+      { once: true },
+    );
 
     setTimeout(() => this.#scrollToSelected(), 0);
 
@@ -222,7 +235,10 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
    */
   async #cacheThumbnailsForVisible() {
     const pageStartIndex = this.#getPageStartIndex(this.#currentIndex);
-    const endIndex = Math.min(this.#tabList.length, pageStartIndex + this.#actualVisibleCards);
+    const endIndex = Math.min(
+      this.#tabList.length,
+      pageStartIndex + this.#actualVisibleCards,
+    );
     const tabsToCache = this.#tabList.slice(pageStartIndex, endIndex);
     await Promise.all(tabsToCache.map((tab) => this.#captureThumbnail(tab)));
   }
@@ -253,7 +269,10 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       const targetHeight = nsZenCtrlTabPanel.THUMBNAIL_CANVAS_HEIGHT;
       const targetWidth = Math.round(targetHeight * viewportAspect);
 
-      const canvas = document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
+      const canvas = document.createElementNS(
+        "http://www.w3.org/1999/xhtml",
+        "canvas",
+      );
       canvas.width = targetWidth;
       canvas.height = targetHeight;
 
@@ -264,8 +283,12 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       this.#thumbnailCache.set(tabId, dataUrl);
 
       if (this.#isOpen) {
-        const card = this.tabsContainer?.querySelector(`[data-tab-id="${tabId}"]`);
-        const thumbnailContainer = card?.querySelector(".zen-ctrl-tab-panel-thumbnail");
+        const card = this.tabsContainer?.querySelector(
+          `[data-tab-id="${tabId}"]`,
+        );
+        const thumbnailContainer = card?.querySelector(
+          ".zen-ctrl-tab-panel-thumbnail",
+        );
 
         if (thumbnailContainer) {
           thumbnailContainer.innerHTML = "";
@@ -316,7 +339,9 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       const thumbnailContainer = document.createXULElement("box");
       thumbnailContainer.className = "zen-ctrl-tab-panel-thumbnail";
 
-      const thumbnail = tab.hasAttribute("pending") ? null : this.#thumbnailCache.get(tab.linkedPanel);
+      const thumbnail = tab.hasAttribute("pending")
+        ? null
+        : this.#thumbnailCache.get(tab.linkedPanel);
 
       if (thumbnail) {
         const img = document.createXULElement("image");
@@ -392,11 +417,13 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       return;
     }
 
-    this.tabsContainer.querySelectorAll(".zen-ctrl-tab-panel-card").forEach((card) => {
-      const cardIndex = parseInt(card.getAttribute("data-index"), 10);
-      const isSelected = cardIndex === this.#currentIndex;
-      card.classList.toggle("zen-ctrl-tab-panel-selected", isSelected);
-    });
+    this.tabsContainer
+      .querySelectorAll(".zen-ctrl-tab-panel-card")
+      .forEach((card) => {
+        const cardIndex = parseInt(card.getAttribute("data-index"), 10);
+        const isSelected = cardIndex === this.#currentIndex;
+        card.classList.toggle("zen-ctrl-tab-panel-selected", isSelected);
+      });
 
     this.#scrollToSelected();
   }
@@ -411,7 +438,9 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     if (!this.tabsContainer) {
       return;
     }
-    const selectedCard = this.tabsContainer.querySelector(".zen-ctrl-tab-panel-selected");
+    const selectedCard = this.tabsContainer.querySelector(
+      ".zen-ctrl-tab-panel-selected",
+    );
     if (!selectedCard) {
       return;
     }
@@ -468,7 +497,8 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
    * @returns {void}
    */
   #navigateBackward() {
-    this.#currentIndex = (this.#currentIndex - 1 + this.#tabList.length) % this.#tabList.length;
+    this.#currentIndex =
+      (this.#currentIndex - 1 + this.#tabList.length) % this.#tabList.length;
     this.#updateSelection();
   }
 }

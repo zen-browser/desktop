@@ -59,7 +59,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       Services.prefs.removeObserver("zen.tabs.ctrl-tab-panel.enabled", this);
     } catch (e) {
     }
-    
+
     Services.prefs.addObserver("zen.tabs.ctrl-tab-panel.enabled", this);
   }
 
@@ -130,10 +130,10 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Initializes tab switcher panel. 
+   * Initializes tab switcher panel.
    * Captures visible tab thumbnails before showing panel, then captures remaining thumbnails in background.
    *
-   * @param {boolean} shiftKey 
+   * @param {boolean} shiftKey
    * @returns {Promise<void>} Resolves when the panel is fully initialized and displayed.
    */
   async open(shiftKey = false) {
@@ -147,7 +147,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     this.#isOpen = true;
 
     const currentTabIndex = this.#tabList.indexOf(gBrowser.selectedTab);
-    
+
     if (shiftKey) {
       this.#currentIndex =
         currentTabIndex >= 0
@@ -252,7 +252,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       const viewportAspect = window.innerWidth / window.innerHeight;
       const targetHeight = nsZenCtrlTabPanel.THUMBNAIL_CANVAS_HEIGHT;
       const targetWidth = Math.round(targetHeight * viewportAspect);
-      
+
       const canvas = document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
       canvas.width = targetWidth;
       canvas.height = targetHeight;
@@ -266,7 +266,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       if (this.#isOpen) {
         const card = this.tabsContainer?.querySelector(`[data-tab-id="${tabId}"]`);
         const thumbnailContainer = card?.querySelector(".zen-ctrl-tab-panel-thumbnail");
-        
+
         if (thumbnailContainer) {
           thumbnailContainer.innerHTML = "";
           card.classList.remove("zen-ctrl-tab-panel-no-thumbnail");

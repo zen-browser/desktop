@@ -15,6 +15,3 @@ zen-split-link =
 zen-split-view-modifier-header = Skiptingarsýn
 zen-split-view-modifier-activate-reallocation = 
     .label = Virkja umröðun
-zen-split-view-modifier-enabled-toast = Umröðun skiptingarsýnar er VIRK.
-zen-split-view-modifier-enabled-toast-description = Dragðu og slepptu gluggahlutum til að umraða. Ýttu á ESC til að hætta.
-zen-split-view-modifier-disabled-toast = Umröðun skiptingarsýnar er ÓVIRK.

@@ -1,0 +1,14 @@
+Package: zen-browser
+Version: VERSION
+Architecture: ARCH
+Maintainer: Zen Browser <team@zen-browser.app>
+Installed-Size: INSTALLED_SIZE
+Depends: libgtk-3-0, libdbus-glib-1-2, libx11-xcb1, libxtst6, libxrandr2, libxcomposite1, libxdamage1, libxfixes3, libxcursor1, libxi6, libasound2, libpulse0, libssl3, libglib2.0-0
+Recommends: fonts-liberation, xdg-utils
+Section: web
+Priority: optional
+Homepage: https://zen-browser.app
+Description: Zen Browser — experience tranquillity while browsing the web
+ Zen is a privacy-focused, beautifully designed web browser based on
+ Firefox. It offers a calm browsing experience without compromising on
+ speed, security, or compatibility with modern web standards.

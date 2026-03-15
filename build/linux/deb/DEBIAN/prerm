@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+
+update-alternatives --remove x-www-browser /usr/lib/zen/zen 2>/dev/null || true
+update-alternatives --remove zen-browser    /usr/lib/zen/zen 2>/dev/null || true
+
+if command -v update-desktop-database > /dev/null 2>&1; then
+  update-desktop-database -q /usr/share/applications || true
+fi

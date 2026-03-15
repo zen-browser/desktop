@@ -1,0 +1,30 @@
+#!/bin/sh
+set -e
+
+# Register zen as a browser alternative
+update-alternatives --install \
+  /usr/bin/x-www-browser x-www-browser /usr/lib/zen/zen 200 \
+  --slave /usr/share/man/man1/x-www-browser.1.gz x-www-browser.1.gz /dev/null 2>/dev/null || true
+
+# Register MIME handler
+update-alternatives --install \
+  /usr/bin/zen-browser zen-browser /usr/lib/zen/zen 200 2>/dev/null || true
+
+# Ensure native messaging hosts directory exists with correct permissions
+# This allows system-installed apps (1Password, Bitwarden, KeePassXC, etc.)
+# to place their manifests here and be discovered by Zen automatically.
+install -d -m 755 /usr/lib/zen/native-messaging-hosts
+
+# Refresh desktop database and icon cache
+if command -v update-desktop-database > /dev/null 2>&1; then
+  update-desktop-database -q /usr/share/applications || true
+fi
+
+if command -v gtk-update-icon-cache > /dev/null 2>&1; then
+  gtk-update-icon-cache -q -t /usr/share/icons/hicolor || true
+fi
+
+if command -v xdg-mime > /dev/null 2>&1; then
+  xdg-mime default zen-browser.desktop x-scheme-handler/http  || true
+  xdg-mime default zen-browser.desktop x-scheme-handler/https || true
+fi

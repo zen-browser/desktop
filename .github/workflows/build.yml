@@ -360,6 +360,15 @@ jobs:
       build-version: ${{ needs.build-data.outputs.version }}
       release-branch: ${{ inputs.update_branch }}
 
+  linux-packages:
+    name: Linux packages (.deb / .rpm)
+    uses: ./.github/workflows/linux-package-build.yml
+    needs: [linux, build-data]
+    secrets: inherit
+    with:
+      build-version: ${{ needs.build-data.outputs.version }}
+      release-branch: ${{ inputs.update_branch }}
+
   appimage:
     name: AppImage build - Linux ${{ matrix.arch }}
     permissions:
@@ -481,6 +490,7 @@ jobs:
         check-release,
         mac-uni,
         appimage,
+        linux-packages,
         source,
         lint,
         stop-self-hosted,
@@ -557,6 +567,10 @@ jobs:
             ./zen-x86_64.AppImage.zsync/*
             ./zen-aarch64.AppImage/*
             ./zen-aarch64.AppImage.zsync/*
+            ./zen-browser_*_amd64.deb/*
+            ./zen-browser_*_arm64.deb/*
+            ./zen-browser_*_x86_64.rpm/*
+            ./zen-browser_*_aarch64.rpm/*
             ./zen.win-x86_64.zip/*
             ./zen.win-arm64.zip/*
             ./linux.mar/*
@@ -596,6 +610,10 @@ jobs:
             ./zen-x86_64.AppImage.zsync/*
             ./zen-aarch64.AppImage/*
             ./zen-aarch64.AppImage.zsync/*
+            ./zen-browser_*_amd64.deb/*
+            ./zen-browser_*_arm64.deb/*
+            ./zen-browser_*_x86_64.rpm/*
+            ./zen-browser_*_aarch64.rpm/*
             ./.github/workflows/object/windows-x64-signed-x86_64/zen.win-x86_64.zip
             ./.github/workflows/object/windows-x64-signed-arm64/zen.win-arm64.zip
             ./linux.mar/*

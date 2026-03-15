@@ -1,0 +1,94 @@
+name: Linux Package Build (.deb / .rpm)
+
+on:
+  workflow_call:
+    inputs:
+      build-version:
+        description: "Release version string"
+        required: true
+        type: string
+      release-branch:
+        description: "Release branch (release | twilight)"
+        required: true
+        type: string
+
+jobs:
+  deb:
+    name: Debian package — ${{ matrix.arch }}
+    runs-on: blacksmith-2vcpu-ubuntu-2404
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            artifact: zen.linux-x86_64.tar.xz
+          - arch: arm64
+            artifact: zen.linux-aarch64.tar.xz
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Download Linux build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+
+      - name: Install dpkg tools
+        run: sudo apt-get install -y dpkg-dev
+
+      - name: Build .deb
+        run: |
+          chmod +x scripts/package-linux-deb.sh
+          bash scripts/package-linux-deb.sh \
+            "${{ inputs.build-version }}" \
+            "${{ matrix.arch }}" \
+            "${{ matrix.artifact }}"
+
+      - name: Upload .deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          retention-days: 5
+          name: zen-browser_${{ inputs.build-version }}_${{ matrix.arch }}.deb
+          path: dist/zen-browser_${{ inputs.build-version }}_${{ matrix.arch }}.deb
+
+  rpm:
+    name: RPM package — ${{ matrix.arch }}
+    runs-on: blacksmith-2vcpu-ubuntu-2404
+    strategy:
+      matrix:
+        include:
+          - arch: x86_64
+            artifact: zen.linux-x86_64.tar.xz
+          - arch: aarch64
+            artifact: zen.linux-aarch64.tar.xz
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Download Linux build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+
+      - name: Install rpm tools
+        run: sudo apt-get install -y rpm
+
+      - name: Build .rpm
+        run: |
+          chmod +x scripts/package-linux-rpm.sh
+          bash scripts/package-linux-rpm.sh \
+            "${{ inputs.build-version }}" \
+            "${{ matrix.arch }}" \
+            "${{ matrix.artifact }}"
+
+      - name: Upload .rpm artifact
+        uses: actions/upload-artifact@v4
+        with:
+          retention-days: 5
+          name: zen-browser_${{ inputs.build-version }}_${{ matrix.arch }}.rpm
+          path: dist/*.rpm

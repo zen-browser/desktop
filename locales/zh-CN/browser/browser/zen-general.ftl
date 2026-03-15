@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = 当前配置
 unified-extensions-description = 扩展用于为 { -brand-short-name } 带来更多额外功能。
 tab-context-zen-reset-pinned-tab = 
-    .label = 重置固定标签页
+    .label =
+        { $isEssential ->
+            [true] Reset Essential Tab
+           *[false] Reset Pinned Tab
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = 添加到常驻标签页
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = 从常驻标签页中移除
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = 将固定标签页的 URL 替换为当前页面 URL
+    .label =
+        { $isEssential ->
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = 更改标签…
@@ -31,6 +39,7 @@ pictureinpicture-minimize-btn =
     .tooltip = 最小化
 zen-panel-ui-gradient-generator-custom-color = 自定义颜色
 zen-copy-current-url-confirmation = 网址已复制到剪贴板！
+zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
 zen-general-cancel-label = 
     .label = 取消
 zen-general-confirm = 
@@ -111,3 +120,5 @@ zen-window-sync-migration-dialog-title = 保持您的窗口同步
 zen-window-sync-migration-dialog-message = Zen 现已支持同一设备上的窗口同步，一个窗口的更改将即时同步到其他窗口。
 zen-window-sync-migration-dialog-learn-more = 了解更多
 zen-window-sync-migration-dialog-accept = 知道了
+zen-appmenu-new-blank-window = 
+    .label = New blank window

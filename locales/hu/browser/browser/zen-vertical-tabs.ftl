@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] Lap visszaállítása és rögzítése
            *[other] { $tabCount } lap visszaállítása és rögzítése
         }
-tab-reset-pin-label = Vissza a rögzített url címre
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

@@ -1022,8 +1022,8 @@ var gZenCKSSettings = {
       shortcut = event.code.slice(3);
     } else if (event.code && event.code.startsWith("Digit")) {
       shortcut = event.code.slice(5);
-    } else if (AppConstants.platform === "macosx") {
-      // On macOS, we want to use the physical key for symbols to avoid alt-codes.
+    } else {
+      // Use physical key mapping for common symbols
       const CODE_TO_KEY_MAP = {
         Comma: ",",
         Period: ".",
@@ -1038,8 +1038,6 @@ var gZenCKSSettings = {
         Equal: "=",
       };
       shortcut = CODE_TO_KEY_MAP[event.code] || event.key;
-    } else {
-      shortcut = event.key;
     }
 
     shortcut = shortcut.replace(/Ctrl|Control|Shift|Alt|Option|Cmd|Meta/, ""); // Remove all modifiers

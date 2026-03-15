@@ -18,5 +18,5 @@ zen-menubar-appearance-light =
     .label = Golau
 zen-menubar-appearance-dark = 
     .label = Tywyll
-zen-menubar-new-unsynced-window = 
-    .label = Ffenestr Wag Newydd
+zen-menubar-new-blank-window = 
+    .label = New Blank Window

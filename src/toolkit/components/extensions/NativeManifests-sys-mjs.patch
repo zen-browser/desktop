@@ -1,0 +1,21 @@
+# HG changeset patch
+# Zen Browser patch: add zen-specific system paths to NativeManifests host discovery
+diff --git a/toolkit/components/extensions/NativeManifests.sys.mjs b/toolkit/components/extensions/NativeManifests.sys.mjs
+--- a/toolkit/components/extensions/NativeManifests.sys.mjs
++++ b/toolkit/components/extensions/NativeManifests.sys.mjs
+@@ -36,9 +36,17 @@ export var NativeManifests = {
+       } else if (platform == "macosx" || platform == "linux") {
+         let dirs = [
+           Services.dirsvc.get("XREUserNativeManifests", Ci.nsIFile).path,
+           Services.dirsvc.get("XRESysNativeManifests", Ci.nsIFile).path,
++          // Zen-specific system paths for native messaging hosts.
++          // System-level apps (e.g. 1Password, Bitwarden) may install manifests
++          // targeting Zen directly under /usr/lib/zen/ rather than /usr/lib/mozilla/.
++          // These are additive — mozilla paths above remain searched first.
++          "/usr/lib/zen/native-messaging-hosts",
++          "/usr/lib64/zen/native-messaging-hosts",
++          "/usr/lib/x86_64-linux-gnu/zen/native-messaging-hosts",
+         ];
+         this._lookup = (type, name, context) =>
+           this._tryPaths(type, name, dirs, context);
+       } else {

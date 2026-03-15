@@ -13,9 +13,6 @@ zen-panel-ui-workspaces-create =
 zen-panel-ui-folder-create =
     .label = Create Folder
 
-zen-panel-ui-live-folder-create =
-    .label = Live Folder
-
 zen-panel-ui-new-empty-split =
     .label = New Split
 
@@ -34,9 +31,6 @@ zen-workspaces-panel-context-default-profile =
 
 zen-workspaces-panel-unload =
     .label = Unload Space
-
-zen-workspaces-panel-unload-others =
-    .label = Unload All Other Spaces
 
 zen-workspaces-how-to-reorder-title = How to reorder spaces
 zen-workspaces-how-to-reorder-desc = Drag the space icons at the bottom of the sidebar to reorder them

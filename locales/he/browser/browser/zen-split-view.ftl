@@ -15,6 +15,3 @@ zen-split-link =
 zen-split-view-modifier-header = תצוגה מפוצלת
 zen-split-view-modifier-activate-reallocation = 
     .label = הזזה בפעולה
-zen-split-view-modifier-enabled-toast = הזזת תצוגה מפוצלת פעילה.
-zen-split-view-modifier-enabled-toast-description = גרירה ושחרור כדי להזיז. Esc ליציאה.
-zen-split-view-modifier-disabled-toast = הזזת תצוגה מפוצלת כבויה.

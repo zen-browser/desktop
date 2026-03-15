@@ -40,4 +40,9 @@ tabbrowser-reset-pin-button =
             [many] Atkurti ir prisegti { $tabCount } kortelės
            *[other] Atkurti ir prisegti { $tabCount } kortelių
         }
-tab-reset-pin-label = Atgal į prisegtą URL
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

@@ -53,14 +53,11 @@ category-zen-workspaces =
     .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = Workspaces
 
-zen-tabs-select-recently-used-on-close =
-    .label = When closing a tab, switch to the most recently used tab instead of the next tab
+zen-tabs-unloader-enabled =
+    .label = Enable Tab Unloader
 
 zen-tabs-close-on-back-with-no-history =
     .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
-
-zen-settings-workspaces-sync-unpinned-tabs =
-    .label = Sync only pinned tabs in workspaces
 
 zen-tabs-cycle-by-attribute =
   .label = Ctrl+Tab cycles within Essential or Workspace tabs only

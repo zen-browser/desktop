@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] Tab zurücksetzen und anheften
            *[other] { $tabCount } Tabs zurücksetzen und anheften
         }
-tab-reset-pin-label = Zur ursprünglichen URL zurückkehren
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

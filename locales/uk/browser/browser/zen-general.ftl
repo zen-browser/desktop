@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = поточний профіль
 unified-extensions-description = Розширення використовуються, щоб додати більше функціональних можливостей до { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Скинути прикріплену вкладку
+    .label =
+        { $isEssential ->
+            [true] Reset Essential Tab
+           *[false] Reset Pinned Tab
+        }
     .accesskey = Р
 tab-context-zen-add-essential = 
     .label = Додати до необхідного
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = Вилучити з основних елементів
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Замінити закріплений URL на поточний
+    .label =
+        { $isEssential ->
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = Змінити мітку...
@@ -33,6 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Згорнути
 zen-panel-ui-gradient-generator-custom-color = Власний колір
 zen-copy-current-url-confirmation = Скопійовано поточну URL-адресу!
+zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
 zen-general-cancel-label = 
     .label = Скасувати
 zen-general-confirm = 
@@ -113,3 +122,5 @@ zen-window-sync-migration-dialog-title = Тримати ваші вікна си
 zen-window-sync-migration-dialog-message = Zen тепер синхронізує вікна на одному пристрої, тому зміни в одному вікні миттєво показуватимуться в інших.
 zen-window-sync-migration-dialog-learn-more = Дізнатися більше
 zen-window-sync-migration-dialog-accept = Зрозуміло
+zen-appmenu-new-blank-window = 
+    .label = New blank window

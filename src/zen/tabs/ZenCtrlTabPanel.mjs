@@ -13,7 +13,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   static CARD_WIDTH = 200;
   static MAX_VISIBLE_CARDS = 5;
   static PANEL_HORIZONTAL_PADDING = 30;
-  static PANEL_HEIGHT = 200;
+  static PANEL_HEIGHT = 210;
   static THUMBNAIL_CANVAS_HEIGHT = 200;
 
   #isOpen = false;
@@ -41,11 +41,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     );
   }
 
-  /**
-   * Disables or enables the default Firefox Ctrl+Tab behavior based on user preference.
-   *
-   * @returns {void}
-   */
   #disableDefaultCtrlTab() {
     const enabled = Services.prefs.getBoolPref("zen.tabs.ctrl-tab-panel.enabled", true);
     const method = enabled ? "uninit" : "readPref";
@@ -68,38 +63,31 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     Services.prefs.addObserver("zen.tabs.ctrl-tab-panel.enabled", this);
   }
 
-  /**
-   * Handles cleanup on shutdown and preference change reactions.
-   *
-   * @param {nsISupports} subject
-   * @param {string} topic
-   * @param {string} data
-   * @returns {void}
-   */
   observe(subject, topic, data) {
     if (data === "zen.tabs.ctrl-tab-panel.enabled") {
       this.#disableDefaultCtrlTab();
     }
   }
 
-  /**
-   * Sets up keyboard event listeners for Ctrl+Tab navigation and Escape key handling.
-   * Also handles window blur events to close the switcher when focus is lost.
-   *
-   * @returns {void}
-   */
   #setupKeyboardListeners() {
     window.addEventListener("keydown", (e) => this.#handleKeyDown(e), true);
     window.addEventListener("keyup", (e) => this.#handleKeyUp(e), true);
     window.addEventListener("blur", () => this.#isOpen && this.close(false));
+    window.addEventListener("click", (e) => this.#handleClick(e), true);
   }
 
-  /**
-   * Observes tab open, close, attribute changes, moves, and selection events.
-   * Updates the thumbnail cache to reflect current changes and modifies recently used list.
-   *
-   * @returns {void}
-   */
+  #handleClick(event) {
+    if (!this.#isOpen) {
+      return;
+    }
+
+    if (!this.panel.contains(event.target)) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.close(false);
+    }
+  }
+
   #observeTabChanges() {
     window.addEventListener("TabOpen", () => this.#thumbnailCache.clear());
     window.addEventListener("TabClose", () => this.#thumbnailCache.clear());
@@ -109,12 +97,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     window.addEventListener("TabMove", () => this.#thumbnailCache.clear());
   }
 
-  /**
-   * Handles Escape (to close panel) and Ctrl+Tab/Shift+Ctrl+Tab (to open/navigate panel).
-   *
-   * @param {KeyboardEvent} event - The key press event.
-   * @returns {void}
-   */
   #handleKeyDown(event) {
     if (!this.#lazyPrefs.enabled) {
       return;
@@ -141,12 +123,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     }
   }
 
-  /**
-   * Detects when Control key is released to close the panel and switch to selected tab.
-   *
-   * @param {KeyboardEvent} event - The key release event.
-   * @returns {void}
-   */
   #handleKeyUp(event) {
     if (this.#isOpen && event.key === "Control") {
       this.close(document.hasFocus());
@@ -216,12 +192,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     this.#tabList.forEach((tab) => this.#captureThumbnail(tab));
   }
 
-  /**
-   * Closes the tab switcher and switches to the selected tab.
-   *
-   * @param {boolean} switchTab - Whether to switch to the selected tab.
-   * @returns {void}
-   */
   close(switchTab = true) {
     if (!this.#isOpen) {
       return;
@@ -237,11 +207,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     this.#resetState();
   }
 
-  /**
-   * Hides the panel and resets internal state variables.
-   *
-   * @returns {void}
-   */
   #resetState() {
     this.#isOpen = false;
     this.#currentIndex = 0;
@@ -283,7 +248,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     }
 
     try {
-      // Calculate canvas dimensions based on window viewport aspect ratio
+      // Calculate canvas dimensions based on window aspect ratio
       const viewportAspect = window.innerWidth / window.innerHeight;
       const targetHeight = nsZenCtrlTabPanel.THUMBNAIL_CANVAS_HEIGHT;
       const targetWidth = Math.round(targetHeight * viewportAspect);

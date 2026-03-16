@@ -28,7 +28,7 @@ tabbrowser-unload-tab-button =
     .tooltiptext =
         { $tabCount ->
             [one] Dezaktywuj i przełącz na kartę
-           *[other] Dezaktywuj { $tabCount } kart(y) i przełącz na pierwszą
+           *[other] Dezaktywuj { $tabCount } karty i przełącz na pierwszą
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] Zresetuj i przypnij kartę
            *[other] Zresetuj i przypnij karty w liczbie: { $tabCount }
         }
-tab-reset-pin-label = Wróć do przypiętego adresu
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Cofnij do przypiętego adresu URL
+        [zen-default-pinned-cmd] Oddziel od przypiętej karty
+       *[other] { $tabSubtitle }
+    }

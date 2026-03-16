@@ -9,31 +9,36 @@ zen-toolbar-context-compact-mode =
     .label = الوضع المدمج
 zen-toolbar-context-compact-mode-enable = 
     .label = تمكين الوضع المدمج
-    .accesskey = D
+    .accesskey = د
 zen-toolbar-context-compact-mode-just-tabs = 
-    .label = Hide sidebar
+    .label = إخفاء الشريط الجانبي
 zen-toolbar-context-compact-mode-just-toolbar = 
     .label = إخفاء شريط الأدوات
 zen-toolbar-context-compact-mode-hide-both = 
     .label = إخفاء كليهما
     .accesskey = خ
 zen-toolbar-context-new-folder = 
-    .label = New Folder
-    .accesskey = N
+    .label = مجلّد جديد
+    .accesskey = ن
 sidebar-zen-expand = 
-    .label = Expand Sidebar
+    .label = توسيع الشريط الجانبي
 sidebar-zen-create-new = 
-    .label = Create New...
+    .label = إنشاء جديد...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
-        { $tabCount ->
-            [one] Unload and switch to tab
-           *[other] Unload { $tabCount } tabs and switch to the first
+        {$tabCount ->
+            [one] تفريغ والتبديل إلى علامة التبويب
+           *[other] تفريغ { $tabCount } علامات التبويب والتبديل إلى الأولى
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
-        { $tabCount ->
-            [one] Reset and pin tab
-           *[other] Reset and pin { $tabCount } tabs
+        {$tabCount ->
+            [one] إعادة تعيين علامة التبويب وتثبيتها
+           *[other] إعادة تعيين وتثبيت { $tabCount}
         }
-tab-reset-pin-label = Back to pinned url
+zen-tab-sublabel =
+    {$tabSubtitle ->
+        [zen-default-pinned] العودة إلى الرابط المثبت
+        [zen-default-pinned-cmd] فصل عن علامة التبويب المثبتة
+       *[other] { $tabSubtitle}
+    }

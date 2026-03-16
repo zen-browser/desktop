@@ -710,18 +710,35 @@ export class nsZenSessionManager {
   }
 
   /**
-   * Filters out tabs that are not useful to restore, such as empty tabs with no group association.
-   * If removeUnpinnedTabs is true, it also filters out unpinned tabs.
+   * Determines whether a tab should be collected based on its data.
    *
-   * @param {Array} tabs - The array of tab data objects to filter.
-   * @returns {Array} The filtered array of tab data objects.
+   * @param {object} tabData - The tab data object to evaluate.
+   * @returns {boolean} True if the tab should be collected, false otherwise.
    */
-  #filterUnusedTabs(tabs) {
-    return tabs.filter(tab => {
-      // We need to ignore empty tabs with no group association
-      // as they are not useful to restore.
-      return !(tab.zenIsEmpty && !tab.groupId);
-    });
+  #shouldCollectTab(tabData) {
+    return tabData && !(tabData.zenIsEmpty && !tabData.groupId);
+  }
+
+  #collectUsedTabsFromWindows(aStateWindows) {
+    const tabIdRelationMap = new Map();
+    for (const window of aStateWindows) {
+      // Only accept the tabs with `_zenIsActiveTab` set to true from
+      // every window. We do this to avoid collecting tabs with invalid
+      // state when multiple windows are open. Note that if we a tab without
+      // this flag set in any other window, we just add it anyway.
+      for (const tabData of window.tabs || []) {
+        if (!this.#shouldCollectTab(tabData)) {
+          continue;
+        }
+        if (
+          !tabIdRelationMap.has(tabData.zenSyncId) ||
+          tabData._zenIsActiveTab
+        ) {
+          tabIdRelationMap.set(tabData.zenSyncId, tabData);
+        }
+      }
+    }
+    return Array.from(tabIdRelationMap.values());
   }
 
   /**
@@ -731,25 +748,7 @@ export class nsZenSessionManager {
    * @param {object} aStateWindows The array of window state objects.
    */
   #collectTabsData(sidebarData, aStateWindows) {
-    const tabIdRelationMap = new Map();
-    for (const window of aStateWindows) {
-      // Only accept the tabs with `_zenIsActiveTab` set to true from
-      // every window. We do this to avoid collecting tabs with invalid
-      // state when multiple windows are open. Note that if we a tab without
-      // this flag set in any other window, we just add it anyway.
-      for (const tabData of window.tabs || []) {
-        if (
-          !tabIdRelationMap.has(tabData.zenSyncId) ||
-          tabData._zenIsActiveTab
-        ) {
-          tabIdRelationMap.set(tabData.zenSyncId, tabData);
-        }
-      }
-    }
-
-    sidebarData.tabs = this.#filterUnusedTabs(
-      Array.from(tabIdRelationMap.values())
-    );
+    sidebarData.tabs = this.#collectUsedTabsFromWindows(aStateWindows);
 
     let firstWindow = aStateWindows[0];
     sidebarData.folders = firstWindow.folders;
@@ -826,19 +825,31 @@ export class nsZenSessionManager {
       return;
     }
     this.log("Restoring new window with Zen session data");
-    const state = lazy.SessionStore.getCurrentState(true);
-    const windows = (state.windows || []).filter(
-      win =>
-        !win.isPrivate &&
-        !win.isPopup &&
-        !win.isTaskbarTab &&
-        !win.isZenUnsynced
-    );
+    void lazy.SessionStore.getCurrentState(true);
+    // We want to iterate all windows except from aWindow.__SSi (string).
+    // SessionStoreInternal._windows is an object, with the ID as key and the
+    // window data as value, so we need to filter out the values that have the
+    // same ID as aWindow.__SSi. but lets filter it into an array to make it easier to work with.
+    let windows = [];
+    for (const winKey of Object.keys(SessionStoreInternal._windows)) {
+      const winData = SessionStoreInternal._windows[winKey];
+      if (
+        winData &&
+        winKey !== aWindow.__SSi &&
+        !winData.isPrivate &&
+        !winData.isPopup &&
+        !winData.isTaskbarTab &&
+        !winData.isZenUnsynced
+      ) {
+        windows.push(winData);
+      }
+    }
     let windowToClone = windows[0] || {};
     let newWindow = Cu.cloneInto(windowToClone, {});
+    newWindow.tabs = this.#collectUsedTabsFromWindows(windows);
     let shouldRestoreOnlyPinned =
       !lazy.gWindowSyncEnabled || lazy.gSyncOnlyPinnedTabs;
-    if (windows.length < 2) {
+    if (windows.length < 1) {
       // We only want to restore the sidebar object if we found
       // only one normal window to clone from (which is the one
       // we are opening).
@@ -846,7 +857,6 @@ export class nsZenSessionManager {
       this.#restoreWindowData(newWindow);
       shouldRestoreOnlyPinned ||= this.#shouldRestoreOnlyPinned;
     }
-    newWindow.tabs = this.#filterUnusedTabs(newWindow.tabs || []);
     if (shouldRestoreOnlyPinned) {
       // Don't bring over any unpinned tabs if window sync is disabled or if syncing only pinned tabs.
       this.#filterUnpinnedTabs(newWindow);

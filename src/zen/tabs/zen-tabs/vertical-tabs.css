@@ -325,11 +325,15 @@
       display: none;
     }
 
-    #tabbrowser-tabs:not([movingtab]) &:active:not(:has(.tab-content > image:active)) {
+    :root:not([zen-renaming-tab="true"])
+    #tabbrowser-tabs:not([movingtab])
+    &:active:not(:has(.tab-content > image:active)) {
       scale: var(--zen-active-tab-scale);
     }
 
-    #tabbrowser-tabs:not([movingtab]) & .tab-content > image:active {
+    :root:not([zen-renaming-tab="true"])
+    #tabbrowser-tabs:not([movingtab])
+    & .tab-content > image:active {
       scale: 0.92;
     }
 

@@ -818,8 +818,15 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
-  onLocationChange(browser) {
-    const tab = gBrowser.getTabForBrowser(browser);
+  onLocationChange(aBrowser, aLocation) {
+    if (
+      (aLocation == "about:blank" &&
+        BrowserUIUtils.checkEmptyPageOrigin(aBrowser)) ||
+      aLocation == ""
+    ) {
+      return;
+    }
+    const tab = gBrowser.getTabForBrowser(aBrowser);
     if (
       !tab ||
       !tab.pinned ||
@@ -830,7 +837,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
     // Remove # and ? from the URL
     const pinUrl = tab._zenPinnedInitialState.entry.url.split("#")[0];
-    const currentUrl = browser.currentURI.spec.split("#")[0];
+    const currentUrl = aLocation.split("#")[0];
     // Add an indicator that the pin has been changed
     if (pinUrl === currentUrl) {
       this.resetPinChangedUrl(tab);

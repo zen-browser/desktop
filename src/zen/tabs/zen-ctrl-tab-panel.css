@@ -7,12 +7,12 @@
   --zen-ctrl-tab-panel-info-height: 24px;
   --zen-ctrl-tab-panel-padding: 15px;
 
-  --zen-ctrl-tab-panel-card-gap: 12px;
+  --zen-ctrl-tab-panel-card-gap: 11px;
   --zen-ctrl-tab-panel-card-inner-padding: 11px;
 
-  /* Card height = thumbnail + gap + info + padding*2 = 120 + 12 + 24 + 11*2 = 178px */
+  /* Card height = thumbnail + gap + info + padding*2 = 120 + 11 + 24 + 11*2 = 177px */
   --zen-ctrl-tab-panel-card-width: 200px;
-  --zen-ctrl-tab-panel-card-height: 178px;
+  --zen-ctrl-tab-panel-card-height: 177px;
 
   --zen-ctrl-tab-panel-card-border-radius: 14px;
   --zen-ctrl-tab-panel-thumbnail-border-radius: 8px;
@@ -76,8 +76,8 @@
 
 .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected {
   background: light-dark(
-    color-mix(in srgb, var(--zen-primary-color) 50%, rgb(150, 150, 150) 50%),
-    color-mix(in srgb, var(--zen-primary-color) 50%, rgb(100, 100, 100) 50%)
+    color-mix(in srgb, var(--zen-primary-color) 60%, rgb(150, 150, 150) 40%),
+    color-mix(in srgb, var(--zen-primary-color) 60%, rgb(120, 120, 120) 40%)
   ) !important;
   color: white !important;
 }
@@ -98,8 +98,8 @@
 
 .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-thumbnail {
   background: light-dark(
-    color-mix(in srgb, var(--zen-primary-color) 50%, rgb(150, 150, 150) 50%),
-    color-mix(in srgb, var(--zen-primary-color) 50%, rgb(100, 100, 100) 50%)
+    color-mix(in srgb, var(--zen-primary-color) 60%, rgb(150, 150, 150) 40%),
+    color-mix(in srgb, var(--zen-primary-color) 60%, rgb(120, 120, 120) 40%)
   );
   border: none;
 }

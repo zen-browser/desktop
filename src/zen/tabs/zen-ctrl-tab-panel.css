@@ -24,7 +24,7 @@
   max-width: 100vw;
   height: fit-content;
 
-  /* Disable Mica on Windows to prevent desktop background bleed-through */
+  /* Disable Mica on Windows to prevent occasional desktop background bleed-through */
   @media (-moz-platform: windows) {
     background: var(--arrowpanel-background) !important;
     backdrop-filter: none !important;
@@ -75,7 +75,10 @@
 }
 
 .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected {
-  background: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%) !important;
+  background: light-dark(
+    color-mix(in srgb, var(--zen-primary-color) 50%, rgb(150, 150, 150) 50%),
+    color-mix(in srgb, var(--zen-primary-color) 50%, rgb(100, 100, 100) 50%)
+  ) !important;
   color: white !important;
 }
 
@@ -94,7 +97,10 @@
 }
 
 .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-thumbnail {
-  background: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%);
+  background: light-dark(
+    color-mix(in srgb, var(--zen-primary-color) 50%, rgb(150, 150, 150) 50%),
+    color-mix(in srgb, var(--zen-primary-color) 50%, rgb(100, 100, 100) 50%)
+  );
   border: none;
 }
 

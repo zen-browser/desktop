@@ -248,8 +248,9 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     }
 
     try {
-      // Calculate canvas dimensions based on window aspect ratio
-      const viewportAspect = window.innerWidth / window.innerHeight;
+      // Calculate canvas dimensions based on browser content area (excluding sidebar + toolbar)
+      const browserRect = gBrowser.tabbox.getBoundingClientRect();
+      const viewportAspect = browserRect.width / browserRect.height;
       const targetHeight = nsZenCtrlTabPanel.THUMBNAIL_CANVAS_HEIGHT;
       const targetWidth = Math.round(targetHeight * viewportAspect);
 

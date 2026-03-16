@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = 使用中のプロファイル
 unified-extensions-description = 拡張機能は{ -brand-short-name }に多く追加機能をもたらすために使用されます。
 tab-context-zen-reset-pinned-tab = 
-    .label = 固定したタブをリセット
+    .label =
+        { $isEssential ->
+            [true] Reset Essential Tab
+           *[false] Reset Pinned Tab
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Essentialsに追加
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = Essentialsから削除
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = 固定したURLを現在のURLに置き換える
+    .label =
+        { $isEssential ->
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = ラベルを変更する...
@@ -33,6 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = 最小化
 zen-panel-ui-gradient-generator-custom-color = カスタムカラー
 zen-copy-current-url-confirmation = URLをクリップボードにコピーしました！
+zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
 zen-general-cancel-label = 
     .label = キャンセル
 zen-general-confirm = 
@@ -75,7 +84,7 @@ zen-site-data-security-info-secure =
 zen-site-data-security-info-not-secure = 
     .label = 保護されていません
 zen-site-data-manage-addons = 
-    .label = 拡張機能の管理
+    .label = 拡張機能を管理
 zen-site-data-get-addons = 
     .label = 拡張機能を追加
 zen-site-data-site-settings = 
@@ -109,7 +118,9 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = 何か壊れましたか？
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = セーフモードで再起動する
-zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
-zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
-zen-window-sync-migration-dialog-learn-more = Learn More
-zen-window-sync-migration-dialog-accept = Got It
+zen-window-sync-migration-dialog-title = Windowsを同期させておく
+zen-window-sync-migration-dialog-message = Zenは同一デバイス内のウィンドウを同期するようになり、１つのウィンドウでの操作が、他のウィンドウに、即座に反映されます。
+zen-window-sync-migration-dialog-learn-more = もっと詳しく
+zen-window-sync-migration-dialog-accept = わかりました
+zen-appmenu-new-blank-window = 
+    .label = 新しい空のウィンドウ

@@ -90,23 +90,21 @@ window.gZenCompactModeManager = {
     this.addHasPolyfillObserver();
 
     // Clear hover states when window state changes (minimize, maximize, etc.)
-    window.addEventListener("sizemodechange", () => {
+    const onWindowResize = () => {
+      // Fix #12299: block hover events until the mouse genuinely moves after a resize.
+      // During snap-restore on Windows, the window moves under the cursor firing fake
+      // mouseenter events. We suppress them until a real mousemove is detected.
+      this._mouseMovedSinceResize = false;
       this._clearAllHoverStates();
-      document.documentElement.setAttribute("zen-resizing", "true");
-      clearTimeout(this._zenResizingTimeout);
-      this._zenResizingTimeout = setTimeout(() => {
-        document.documentElement.removeAttribute("zen-resizing");
-      }, 400);
+    };
+
+    window.addEventListener("sizemodechange", () => {
+      onWindowResize();
     });
 
     window.addEventListener("resize", event => {
       if (!event.isTrusted) return;
-      this._clearAllHoverStates();
-      document.documentElement.setAttribute("zen-resizing", "true");
-      clearTimeout(this._zenResizingTimeout);
-      this._zenResizingTimeout = setTimeout(() => {
-        document.documentElement.removeAttribute("zen-resizing");
-      }, 400);
+      onWindowResize();
     });
 
     this._canShowBackgroundTabToast = Services.prefs.getBoolPref(
@@ -387,9 +385,6 @@ window.gZenCompactModeManager = {
   // NOTE: Dont actually use event, it's just so we make sure
   // the caller is from the ResizeObserver
   getAndApplySidebarWidth(event = undefined) {
-    if (this._isResizing) {
-      return;
-    }
     if (this._ignoreNextResize) {
       delete this._ignoreNextResize;
       return;
@@ -749,13 +744,12 @@ window.gZenCompactModeManager = {
   },
 
   addMouseActions() {
-    // Fix #12299: track last known mouse screen position from genuine movement
-    this._lastScreenX = -1;
-    this._lastScreenY = -1;
-    window.addEventListener("mousemove", e => {
-      this._lastScreenX = e.screenX;
-      this._lastScreenY = e.screenY;
-    }, true);
+    this._mouseMovedSinceResize = true;
+    this._onMouseMove = () => { this._mouseMovedSinceResize = true; };
+    window.addEventListener("mousemove", this._onMouseMove, true);
+    window.addEventListener("unload", () => {
+      window.removeEventListener("mousemove", this._onMouseMove, true);
+    }, { once: true });
 
     gURLBar.addEventListener("mouseenter", event => {
       this.log("Mouse entered URL bar:", event.target);
@@ -783,21 +777,9 @@ window.gZenCompactModeManager = {
           if (event.type === "mouseenter" && !event.target.matches(":hover")) {
             return;
           }
-          if (this._isResizing) {
+          if (!this._mouseMovedSinceResize) {
             return;
           }
-          // Fix #12299: if mouse screenX/Y hasnt changed since last mousemove,
-          // the window moved under the mouse (snap-drag), not genuine hover.
-          // Only block if _lastScreenX has been set (mouse has moved at least once)
-          // AND the position matches exactly (no real movement happened)
-          if (this._lastScreenX !== -1 &&
-              event.screenX === this._lastScreenX &&
-              event.screenY === this._lastScreenY) {
-            return;
-          }
-          // Update last screen position on genuine hover entry
-          this._lastScreenX = event.screenX;
-          this._lastScreenY = event.screenY;
           if (event.target.closest("panel")) {
             return;
           }
@@ -865,9 +847,6 @@ window.gZenCompactModeManager = {
             return;
           }
 
-          if (this._isResizing) {
-            return;
-          }
 
           if (this.hoverableElements[i].keepHoverDuration) {
             this.flashElement(
@@ -893,9 +872,6 @@ window.gZenCompactModeManager = {
 
     document.documentElement.addEventListener("mouseleave", event => {
       setTimeout(() => {
-        if (this._isResizing) {
-          return;
-        }
         const screenEdgeCrossed = this._getCrossedEdge(
           event.pageX,
           event.pageY

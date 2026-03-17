@@ -1,4 +1,4 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
+﻿/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -90,9 +90,24 @@ window.gZenCompactModeManager = {
     this.addHasPolyfillObserver();
 
     // Clear hover states when window state changes (minimize, maximize, etc.)
-    window.addEventListener("sizemodechange", () =>
-      this._clearAllHoverStates()
-    );
+    window.addEventListener("sizemodechange", () => {
+      this._clearAllHoverStates();
+      document.documentElement.setAttribute("zen-resizing", "true");
+      clearTimeout(this._zenResizingTimeout);
+      this._zenResizingTimeout = setTimeout(() => {
+        document.documentElement.removeAttribute("zen-resizing");
+      }, 400);
+    });
+
+    window.addEventListener("resize", event => {
+      if (!event.isTrusted) return;
+      this._clearAllHoverStates();
+      document.documentElement.setAttribute("zen-resizing", "true");
+      clearTimeout(this._zenResizingTimeout);
+      this._zenResizingTimeout = setTimeout(() => {
+        document.documentElement.removeAttribute("zen-resizing");
+      }, 400);
+    });
 
     this._canShowBackgroundTabToast = Services.prefs.getBoolPref(
       "zen.view.compact.show-background-tab-toast",
@@ -372,6 +387,9 @@ window.gZenCompactModeManager = {
   // NOTE: Dont actually use event, it's just so we make sure
   // the caller is from the ResizeObserver
   getAndApplySidebarWidth(event = undefined) {
+    if (this._isResizing) {
+      return;
+    }
     if (this._ignoreNextResize) {
       delete this._ignoreNextResize;
       return;
@@ -731,6 +749,14 @@ window.gZenCompactModeManager = {
   },
 
   addMouseActions() {
+    // Fix #12299: track last known mouse screen position from genuine movement
+    this._lastScreenX = -1;
+    this._lastScreenY = -1;
+    window.addEventListener("mousemove", e => {
+      this._lastScreenX = e.screenX;
+      this._lastScreenY = e.screenY;
+    }, true);
+
     gURLBar.addEventListener("mouseenter", event => {
       this.log("Mouse entered URL bar:", event.target);
       if (event.target.closest("#urlbar[zen-floating-urlbar]")) {
@@ -757,6 +783,21 @@ window.gZenCompactModeManager = {
           if (event.type === "mouseenter" && !event.target.matches(":hover")) {
             return;
           }
+          if (this._isResizing) {
+            return;
+          }
+          // Fix #12299: if mouse screenX/Y hasnt changed since last mousemove,
+          // the window moved under the mouse (snap-drag), not genuine hover.
+          // Only block if _lastScreenX has been set (mouse has moved at least once)
+          // AND the position matches exactly (no real movement happened)
+          if (this._lastScreenX !== -1 &&
+              event.screenX === this._lastScreenX &&
+              event.screenY === this._lastScreenY) {
+            return;
+          }
+          // Update last screen position on genuine hover entry
+          this._lastScreenX = event.screenX;
+          this._lastScreenY = event.screenY;
           if (event.target.closest("panel")) {
             return;
           }
@@ -824,6 +865,10 @@ window.gZenCompactModeManager = {
             return;
           }
 
+          if (this._isResizing) {
+            return;
+          }
+
           if (this.hoverableElements[i].keepHoverDuration) {
             this.flashElement(
               target,
@@ -848,6 +893,9 @@ window.gZenCompactModeManager = {
 
     document.documentElement.addEventListener("mouseleave", event => {
       setTimeout(() => {
+        if (this._isResizing) {
+          return;
+        }
         const screenEdgeCrossed = this._getCrossedEdge(
           event.pageX,
           event.pageY

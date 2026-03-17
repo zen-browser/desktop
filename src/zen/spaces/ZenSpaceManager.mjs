@@ -1261,12 +1261,14 @@ class nsZenWorkspaces {
   }
 
   removeWorkspace(windowID) {
+    this.#deleteWorkspaceOwnedTabs(windowID);
     let workspacesData = this.getWorkspaces();
     // Remove the workspace from the cache
     workspacesData = workspacesData.filter(
       workspace => workspace.uuid !== windowID
     );
     this.#propagateWorkspaceData(workspacesData);
+    this._allStoredTabs = null;
   }
 
   isWorkspaceActive(workspace) {
@@ -1438,6 +1440,15 @@ class nsZenWorkspaces {
     );
   }
 
+  #workspaceOwnedTabs(workspaceID) {
+    return gBrowser.tabs.filter(
+      tab =>
+        tab.getAttribute("zen-workspace-id") === workspaceID &&
+        !tab.hasAttribute("zen-essential") &&
+        !tab.hasAttribute("zen-empty-tab")
+    );
+  }
+
   #getClosableTabs(tabs) {
     const remainingTabs = tabs.filter(tab => {
       const attributes = [
@@ -1470,6 +1481,18 @@ class nsZenWorkspaces {
     gBrowser.removeTabs(tabs, {
       closeWindowWithLastTab: false,
     });
+  }
+
+  #deleteWorkspaceOwnedTabs(workspaceID) {
+    const tabs = this.#workspaceOwnedTabs(workspaceID);
+    if (!tabs.length) {
+      return;
+    }
+
+    gBrowser.removeTabs(tabs, {
+      closeWindowWithLastTab: false,
+    });
+    this._allStoredTabs = null;
   }
 
   async unloadWorkspace() {
@@ -1659,7 +1682,7 @@ class nsZenWorkspaces {
       onInit,
       previousWorkspace.uuid
     );
-    if (tabToSelect.linkedBrowser) {
+    if (tabToSelect?.linkedBrowser) {
       gBrowser.warmupTab(tabToSelect);
     }
 

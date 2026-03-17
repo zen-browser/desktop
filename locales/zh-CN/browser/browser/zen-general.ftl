@@ -7,8 +7,8 @@ unified-extensions-description = 扩展用于为 { -brand-short-name } 带来更
 tab-context-zen-reset-pinned-tab = 
     .label =
         { $isEssential ->
-            [true] Reset Essential Tab
-           *[false] Reset Pinned Tab
+            [true] 重置常驻标签页
+           *[false] 重置标签页
         }
     .accesskey = R
 tab-context-zen-add-essential = 
@@ -21,8 +21,8 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] Replace Essential URL with Current
-           *[false] Replace Pinned URL with Current
+            [true] 用当前内容替换常驻标签页URL
+           *[false] 用当前内容替换标签页URL
         }
     .accesskey = C
 tab-context-zen-edit-title = 

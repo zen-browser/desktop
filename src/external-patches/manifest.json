@@ -28,10 +28,6 @@
     "name": "Add urlbar closeOnWindowBlur preference"
   },
   {
-    "type": "local",
-    "path": "firefox/no_liquid_glass_icon.patch"
-  },
-  {
     "type": "patch",
     "url": "https://codeberg.org/librewolf/source/raw/branch/main/patches/firefox-in-ua.patch",
     "dest": "librewolf",

@@ -120,12 +120,12 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       newTab.addEventListener(
         "SSTabRestored",
         () => {
-          this._resetTabToStoredState(tab);
+          this.#resetTabToStoredState(tab);
         },
         { once: true }
       );
     } else {
-      this._resetTabToStoredState(tab);
+      this.#resetTabToStoredState(tab);
     }
     gBrowser.selectedTab = tab;
   }
@@ -198,8 +198,17 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
   _setResetPinSublabel(tab, accelHeld) {
     let label = tab.querySelector(".zen-tab-sublabel");
+    const getLabel = b => (b ? "zen-default-pinned-cmd" : "zen-default-pinned");
+    // We might not want to change the sublabel if it was already customized by,
+    // for example, live folders, so only change it if it's currently the default one.
+    if (
+      document.l10n.getAttributes(label).args.tabSubtitle !=
+      getLabel(!accelHeld)
+    ) {
+      return;
+    }
     document.l10n.setArgs(label, {
-      tabSubtitle: accelHeld ? "zen-default-pinned-cmd" : "zen-default-pinned",
+      tabSubtitle: getLabel(accelHeld),
     });
   }
 
@@ -222,7 +231,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       return;
     }
 
-    this._resetTabToStoredState(tab);
+    this.#resetTabToStoredState(tab);
   }
 
   replacePinnedUrlWithCurrent(tab = undefined) {
@@ -366,13 +375,13 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
           }
           if (behavior.includes("reset")) {
             for (const tab of pinnedTabs) {
-              this._resetTabToStoredState(tab);
+              this.#resetTabToStoredState(tab);
             }
           }
           break;
         case "reset":
           for (const tab of pinnedTabs) {
-            this._resetTabToStoredState(tab);
+            this.#resetTabToStoredState(tab);
           }
           break;
         default:
@@ -404,7 +413,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
-  _resetTabToStoredState(tab) {
+  #resetTabToStoredState(tab) {
     const state = this.#getTabState(tab);
 
     const initialState = tab._zenPinnedInitialState;

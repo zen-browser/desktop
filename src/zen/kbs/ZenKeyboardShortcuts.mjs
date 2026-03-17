@@ -832,7 +832,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 16;
+  static LATEST_KBS_VERSION = 17;
 
   constructor() {}
 
@@ -1196,6 +1196,30 @@ class nsZenKeyboardShortcutsVersioner {
       }
     }
 
+    if (version < 17) {
+      data.push(
+        new KeyShortcut(
+          "zen-tab-shortcut-forward",
+          "",
+          "",
+          "windowAndTabManagement",
+          nsKeyShortcutModifiers.fromObject({}),
+          "Browser:NextTab",
+          "zen-tab-shortcut-forward"
+        )
+      );
+      data.push(
+        new KeyShortcut(
+          "zen-tab-shortcut-backward",
+          "",
+          "",
+          "windowAndTabManagement",
+          nsKeyShortcutModifiers.fromObject({}),
+          "Browser:PrevTab",
+          "zen-tab-shortcut-backward"
+        )
+      );
+    }
     return data;
   }
 }

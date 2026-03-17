@@ -76,6 +76,10 @@ window.gZenUIManager = {
     this._initBookmarkCollapseListener();
 
     gURLBar._setPlaceholder(null);
+
+    document
+      .getElementById("PersonalToolbar")
+      .setAttribute("fullscreentoolbar", "true");
   },
 
   /**
@@ -498,6 +502,12 @@ window.gZenUIManager = {
 
     if (!shouldOpenURLBar) {
       return false;
+    }
+
+    // Close the new tab popup on cmd/ctrl + t
+    if (!overridePreferance && gURLBar.hasAttribute("zen-newtab")) {
+      this.handleUrlbarClose();
+      return true;
     }
 
     // Clear any existing timeout

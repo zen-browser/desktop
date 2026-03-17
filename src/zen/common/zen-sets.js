@@ -129,6 +129,10 @@ document.addEventListener(
             gZenWorkspaces.unloadWorkspace();
             break;
           }
+          case "cmd_zenUnloadAllOtherWorkspace": {
+            gZenWorkspaces.unloadAllOtherWorkspaces();
+            break;
+          }
           case "cmd_zenNewNavigatorUnsynced":
             OpenBrowserWindow({ zenSyncedWindow: false });
             break;

@@ -828,7 +828,7 @@
 
     #createFakeTabSplit(dropElement, dropSide) {
       // Remove drop indicator
-      this.clearDragOverVisuals();
+      this.clearDragOverVisuals({ clearSplitDropIndicator: false });
 
       // Remove any existing fake tab
       if (this.#dragOverSplit.fakeTab) {
@@ -1191,8 +1191,11 @@
       }
     }
 
-    clearDragOverVisuals() {
+    clearDragOverVisuals({ clearSplitDropIndicator = true } = {}) {
       this.#removeDragOverBackground();
+      if (clearSplitDropIndicator) {
+        this._clearDragOverSplit();
+      }
       gZenPinnedTabManager.removeTabContainersDragoverClass();
     }
 
@@ -1217,6 +1220,10 @@
       return true;
     }
 
+    _moveTogetherSelectedTabs() {
+      // Override the default behavior of only moving together selected tabs.
+    }
+
     // eslint-disable-next-line complexity
     #applyDragoverIndicator(event, dropElement, movingTabs, draggedTab) {
       // Doesn't show indicator when dragOverSplit
@@ -1229,6 +1236,10 @@
       let showIndicatorUnderNewTabButton = false;
       let dropBefore = false;
       let dropElementFromEvent = event.target.closest(dropZoneSelector);
+      if (!dropElement && dropElementFromEvent?.isZenFolder) {
+        // If we're dragging over a folder, we want to show the indicator on the folder itself, not the label.
+        dropElementFromEvent = dropElementFromEvent.labelElement;
+      }
       dropElement = dropElementFromEvent || dropElement;
       if (!dropElementFromEvent) {
         let hoveringPeriphery = !!event.target.closest(

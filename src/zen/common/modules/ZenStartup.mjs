@@ -11,6 +11,9 @@ class ZenStartup {
   #hasInitializedLayout = false;
 
   isReady = false;
+  promiseInitialized = new Promise(resolve => {
+    this.promiseInitializedResolve = resolve;
+  });
 
   init() {
     this.openWatermark();
@@ -94,6 +97,8 @@ class ZenStartup {
         .getElementById("tabbrowser-arrowscrollbox")
         .setAttribute("orient", "vertical");
       this.isReady = true;
+      this.promiseInitializedResolve();
+      delete this.promiseInitializedResolve;
     });
   }
 

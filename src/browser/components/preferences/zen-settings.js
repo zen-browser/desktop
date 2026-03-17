@@ -1020,8 +1020,24 @@ var gZenCKSSettings = {
     let shortcut;
     if (event.code && event.code.startsWith("Key")) {
       shortcut = event.code.slice(3);
+    } else if (event.code && event.code.startsWith("Digit")) {
+      shortcut = event.code.slice(5);
     } else {
-      shortcut = event.key;
+      // Use physical key mapping for common symbols
+      const CODE_TO_KEY_MAP = {
+        Comma: ",",
+        Period: ".",
+        Slash: "/",
+        Semicolon: ";",
+        Quote: "'",
+        BracketLeft: "[",
+        BracketRight: "]",
+        Backslash: "\\",
+        Backquote: "`",
+        Minus: "-",
+        Equal: "=",
+      };
+      shortcut = CODE_TO_KEY_MAP[event.code] || event.key;
     }
 
     shortcut = shortcut.replace(/Ctrl|Control|Shift|Alt|Option|Cmd|Meta/, ""); // Remove all modifiers

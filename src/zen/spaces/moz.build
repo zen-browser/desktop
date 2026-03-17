@@ -2,9 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#include zen-panels/theme-picker.inc
-#include zen-panels/emojis-picker.inc
-#include zen-panels/folders-search.inc
-#include zen-panels/site-data.inc
-
-#include zen-panels/popups.inc
+EXTRA_JS_MODULES.zen += [
+  "ZenGradientGenerator.mjs",
+  "ZenSpace.mjs",
+  "ZenSpaceCreation.mjs",
+  "ZenSpaceIcons.mjs",
+  "ZenSpaceManager.mjs",
+  "ZenSpacesSwipe.mjs",
+]

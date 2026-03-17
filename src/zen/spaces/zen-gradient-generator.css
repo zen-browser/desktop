@@ -274,7 +274,7 @@
     &:first-of-type {
       width: 38px;
       height: 38px;
-      border-width: 4px;
+      border-width: 6px;
       pointer-events: all;
       transition: transform 0.2s;
       z-index: 999;

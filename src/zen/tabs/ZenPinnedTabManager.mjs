@@ -115,7 +115,18 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 
   _onTabResetPinButton(event, tab) {
     event.stopPropagation();
-    this._resetTabToStoredState(tab);
+    if (event.getModifierState("Accel")) {
+      let newTab = gBrowser.duplicateTab(tab, true);
+      newTab.addEventListener(
+        "SSTabRestored",
+        () => {
+          this.#resetTabToStoredState(tab);
+        },
+        { once: true }
+      );
+    } else {
+      this.#resetTabToStoredState(tab);
+    }
     gBrowser.selectedTab = tab;
   }
 
@@ -170,6 +181,47 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
+  _onAccelKeyChange(e) {
+    let tab = this._tabWithResetPinButtonHovered;
+    if (!tab) {
+      return;
+    }
+    let accelHeld =
+      e.getModifierState("Accel") || (e.metaKey && e.type == "keydown");
+    this._setResetPinSublabel(tab, accelHeld);
+    // Up <-> down events until the mouse leaves the button.
+    // When hovered with accelHeld, we should listen to the next keyup event
+    let nextEvent = accelHeld ? "keyup" : "keydown";
+    let handler = nextE => this._onAccelKeyChange(nextE);
+    window.addEventListener(nextEvent, handler, { once: true });
+  }
+
+  _setResetPinSublabel(tab, accelHeld) {
+    let label = tab.querySelector(".zen-tab-sublabel");
+    const getLabel = b => (b ? "zen-default-pinned-cmd" : "zen-default-pinned");
+    // We might not want to change the sublabel if it was already customized by,
+    // for example, live folders, so only change it if it's currently the default one.
+    if (
+      document.l10n.getAttributes(label).args.tabSubtitle !=
+      getLabel(!accelHeld)
+    ) {
+      return;
+    }
+    document.l10n.setArgs(label, {
+      tabSubtitle: getLabel(accelHeld),
+    });
+  }
+
+  onResetPinButtonMouseOver(tab, event) {
+    this._tabWithResetPinButtonHovered = tab;
+    this._onAccelKeyChange(event);
+  }
+
+  onResetPinButtonMouseOut(tab) {
+    this._setResetPinSublabel(tab, false);
+    delete this._tabWithResetPinButtonHovered;
+  }
+
   resetPinnedTab(tab) {
     if (!tab) {
       tab = TabContextMenu.contextTab;
@@ -179,7 +231,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       return;
     }
 
-    this._resetTabToStoredState(tab);
+    this.#resetTabToStoredState(tab);
   }
 
   replacePinnedUrlWithCurrent(tab = undefined) {
@@ -323,13 +375,13 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
           }
           if (behavior.includes("reset")) {
             for (const tab of pinnedTabs) {
-              this._resetTabToStoredState(tab);
+              this.#resetTabToStoredState(tab);
             }
           }
           break;
         case "reset":
           for (const tab of pinnedTabs) {
-            this._resetTabToStoredState(tab);
+            this.#resetTabToStoredState(tab);
           }
           break;
         default:
@@ -361,7 +413,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
-  _resetTabToStoredState(tab) {
+  #resetTabToStoredState(tab) {
     const state = this.#getTabState(tab);
 
     const initialState = tab._zenPinnedInitialState;
@@ -775,8 +827,15 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
-  onLocationChange(browser) {
-    const tab = gBrowser.getTabForBrowser(browser);
+  onLocationChange(aBrowser, aLocation) {
+    if (
+      (aLocation == "about:blank" &&
+        BrowserUIUtils.checkEmptyPageOrigin(aBrowser)) ||
+      aLocation == ""
+    ) {
+      return;
+    }
+    const tab = gBrowser.getTabForBrowser(aBrowser);
     if (
       !tab ||
       !tab.pinned ||
@@ -787,7 +846,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
     // Remove # and ? from the URL
     const pinUrl = tab._zenPinnedInitialState.entry.url.split("#")[0];
-    const currentUrl = browser.currentURI.spec.split("#")[0];
+    const currentUrl = aLocation.split("#")[0];
     // Add an indicator that the pin has been changed
     if (pinUrl === currentUrl) {
       this.resetPinChangedUrl(tab);
@@ -812,7 +871,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         tab.removeAttribute("zen-show-sublabel");
 
         const label = tab.querySelector(".zen-tab-sublabel");
-        window.document.l10n.setArgs(label, {
+        document.l10n.setArgs(label, {
           tabSubtitle: "zen-default-pinned",
         });
       }

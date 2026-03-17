@@ -810,11 +810,18 @@ class nsZenWindowSync {
       aOtherTab,
       () => {
         this.log(`Swapping docshells between windows for tab ${aOurTab.id}`);
-        aOurTab.ownerGlobal.gBrowser.swapBrowsersAndCloseOther(
-          aOurTab,
-          aOtherTab,
-          false
-        );
+        try {
+          aOurTab.ownerGlobal.gBrowser.swapBrowsersAndCloseOther(
+            aOurTab,
+            aOtherTab,
+            false
+          );
+        } catch (e) {
+          console.error(
+            `Error swapping browsers for tabs ${aOurTab.id} and ${aOtherTab.id}:`,
+            e
+          );
+        }
 
         // Swap permanent keys
         if (!onClose) {
@@ -902,15 +909,19 @@ class nsZenWindowSync {
             }
           );
 
-        let mySrc = await new Promise((r, re) => {
+        let mySrc = await new Promise(r => {
           const reader = new FileReader();
+          if (!browserBlob) {
+            r("");
+            return;
+          }
           reader.readAsDataURL(browserBlob);
           reader.onloadend = function () {
             // result includes identifier 'data:image/png;base64,' plus the base64 data
             r(reader.result);
           };
           reader.onerror = function () {
-            re(new Error("Failed to read blob as data URL"));
+            r("");
           };
         });
 
@@ -1221,9 +1232,15 @@ class nsZenWindowSync {
         {},
         /* zenForceSync = */ true
       );
-      win.gZenWorkspaces.promiseInitialized.then(() => {
-        moveAllTabsToWindow();
-      });
+      win.addEventListener(
+        "MozBeforeInitialXULLayout",
+        () => {
+          win.gZenStartup.promiseInitialized.then(() => {
+            moveAllTabsToWindow();
+          });
+        },
+        { once: true }
+      );
       return;
     }
     moveAllTabsToWindow(true);

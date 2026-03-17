@@ -4,7 +4,8 @@
 
 /* eslint-disable no-shadow */
 
-import { nsZenThemePicker } from "chrome://browser/content/zen-components/ZenGradientGenerator.mjs";
+import { nsZenThemePicker } from "resource:///modules/zen/ZenGradientGenerator.mjs";
+import { ZenSpacesSwipe } from "resource:///modules/zen/ZenSpacesSwipe.mjs";
 
 const lazy = {};
 
@@ -39,12 +40,6 @@ class nsZenWorkspaces {
 
   #canDebug = Services.prefs.getBoolPref("zen.workspaces.debug", false);
   #activeWorkspace = "";
-
-  _swipeState = {
-    isGestureActive: true,
-    lastDelta: 0,
-    direction: null,
-  };
 
   _workspaceCache = [];
 
@@ -194,7 +189,7 @@ class nsZenWorkspaces {
       this.workspaceEnabled &&
       !this.isPrivateWindow
     ) {
-      this.initializeGestureHandlers();
+      this._swipeManager = new ZenSpacesSwipe();
       this.initializeWorkspaceNavigation();
     }
   }
@@ -647,185 +642,14 @@ class nsZenWorkspaces {
     );
   }
 
-  initializeGestureHandlers() {
-    const elements = [
-      gNavToolbox,
-      // event handlers do not work on elements inside shadow DOM so we need to attach them directly
-      document
-        .getElementById("tabbrowser-arrowscrollbox")
-        .shadowRoot.querySelector("scrollbox"),
-    ];
-
-    // Attach gesture handlers to each element
-    for (const element of elements) {
-      if (!element) {
-        continue;
-      }
-      this.attachGestureHandlers(element);
-    }
-  }
-
-  attachGestureHandlers(element) {
-    element.addEventListener(
-      "MozSwipeGestureMayStart",
-      this._handleSwipeMayStart.bind(this),
-      true
-    );
-    element.addEventListener(
-      "MozSwipeGestureStart",
-      this._handleSwipeStart.bind(this),
-      true
-    );
-    element.addEventListener(
-      "MozSwipeGestureUpdate",
-      this._handleSwipeUpdate.bind(this),
-      true
-    );
-
-    // Use MozSwipeGesture instead of MozSwipeGestureEnd because MozSwipeGestureEnd is fired after animation ends,
-    // while MozSwipeGesture is fired immediately after swipe ends.
-    element.addEventListener(
-      "MozSwipeGesture",
-      this._handleSwipeEnd.bind(this),
-      true
-    );
-
-    element.addEventListener(
-      "MozSwipeGestureEnd",
-      () => {
-        Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", false);
-        document.documentElement.removeAttribute("swipe-gesture");
-        gZenUIManager.tabsWrapper.style.removeProperty("scrollbar-width");
-        [lazy.browserBackgroundElement, lazy.toolbarBackgroundElement].forEach(
-          element => {
-            element.style.setProperty("--zen-background-opacity", "1");
-          }
-        );
-        delete this._hasAnimatedBackgrounds;
-        this.updateTabsContainers();
-        document.removeEventListener("popupshown", this.popupOpenHandler, {
-          once: true,
-        });
-      },
-      true
-    );
-  }
-
   _popupOpenHandler() {
     // If a popup is opened, we should stop the swipe gesture
-    if (this._swipeState?.isGestureActive) {
+    if (this._swipeManager?.isGestureActive) {
       document.documentElement.removeAttribute("swipe-gesture");
       gZenUIManager.tabsWrapper.style.removeProperty("scrollbar-width");
       this.updateTabsContainers();
       this._cancelSwipeAnimation();
     }
-  }
-
-  _handleSwipeMayStart(event) {
-    if (this.privateWindowOrDisabled || this.#inChangingWorkspace) {
-      return;
-    }
-    if (
-      event.target.closest("#zen-sidebar-foot-buttons") ||
-      event.target.closest('#urlbar[zen-floating-urlbar="true"]')
-    ) {
-      return;
-    }
-
-    // Only handle horizontal swipes
-    if (
-      event.direction === event.DIRECTION_LEFT ||
-      event.direction === event.DIRECTION_RIGHT
-    ) {
-      event.preventDefault();
-      event.stopPropagation();
-
-      // Set allowed directions based on available workspaces
-      event.allowedDirections |= event.DIRECTION_LEFT | event.DIRECTION_RIGHT;
-    }
-  }
-
-  _handleSwipeStart(event) {
-    if (!this.workspaceEnabled) {
-      return;
-    }
-
-    gZenFolders.cancelPopupTimer();
-
-    document.documentElement.setAttribute("swipe-gesture", "true");
-    document.addEventListener("popupshown", this.popupOpenHandler, {
-      once: true,
-    });
-
-    event.preventDefault();
-    event.stopPropagation();
-    this._swipeState = {
-      isGestureActive: true,
-      lastDelta: 0,
-      direction: null,
-    };
-    Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", true);
-  }
-
-  _handleSwipeUpdate(event) {
-    if (!this.workspaceEnabled || !this._swipeState?.isGestureActive) {
-      return;
-    }
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    const delta = event.delta * 300;
-    const stripWidth =
-      window.windowUtils.getBoundsWithoutFlushing(
-        document.getElementById("navigator-toolbox")
-      ).width +
-      window.windowUtils.getBoundsWithoutFlushing(
-        document.getElementById("zen-sidebar-splitter")
-      ).width *
-        2;
-    let translateX = this._swipeState.lastDelta + delta;
-    // Add a force multiplier as we are translating the strip depending on how close to the edge we are
-    let forceMultiplier = Math.min(
-      1,
-      1 - Math.abs(translateX) / (stripWidth * 4.5)
-    ); // 4.5 instead of 4 to add a bit of a buffer
-    if (forceMultiplier > 0.5) {
-      translateX *= forceMultiplier;
-      this._swipeState.lastDelta = delta + (translateX - delta) * 0.5;
-    } else {
-      translateX = this._swipeState.lastDelta;
-    }
-
-    if (Math.abs(delta) > 0.8) {
-      this._swipeState.direction = delta > 0 ? "left" : "right";
-    }
-
-    // Apply a translateX to the tab strip to give the user feedback on the swipe
-    const currentWorkspace = this.getActiveWorkspaceFromCache();
-    this._organizeWorkspaceStripLocations(currentWorkspace, true, translateX);
-  }
-
-  async _handleSwipeEnd(event) {
-    if (!this.workspaceEnabled) {
-      return;
-    }
-    event.preventDefault();
-    event.stopPropagation();
-    const isRTL = document.documentElement.matches(":-moz-locale-dir(rtl)");
-    const moveForward =
-      (event.direction === SimpleGestureEvent.DIRECTION_RIGHT) !== isRTL;
-
-    const rawDirection = moveForward ? 1 : -1;
-    const direction = this.naturalScroll ? -1 : 1;
-    await this.changeWorkspaceShortcut(rawDirection * direction, true);
-
-    // Reset swipe state
-    this._swipeState = {
-      isGestureActive: false,
-      lastDelta: 0,
-      direction: null,
-    };
   }
 
   get activeWorkspace() {
@@ -845,6 +669,10 @@ class nsZenWorkspaces {
       return;
     }
     Services.prefs.setStringPref("zen.workspaces.active", value);
+  }
+
+  get isChangingWorkspace() {
+    return this.#inChangingWorkspace;
   }
 
   get shouldHaveWorkspaces() {
@@ -1665,6 +1493,21 @@ class nsZenWorkspaces {
     await gBrowser.explicitUnloadTabs(tabsToUnload); // TODO: unit test this
   }
 
+  async unloadAllOtherWorkspaces() {
+    const workspaceId =
+      this.#contextMenuData?.workspaceId || this.activeWorkspace;
+
+    const tabsToUnload = this.allStoredTabs.filter(
+      tab =>
+        tab.getAttribute("zen-workspace-id") !== workspaceId &&
+        !tab.hasAttribute("zen-empty-tab") &&
+        !tab.hasAttribute("zen-essential") &&
+        !tab.hasAttribute("pending")
+    );
+
+    await gBrowser.explicitUnloadTabs(tabsToUnload); // TODO: unit test this
+  }
+
   moveTabToWorkspace(tab, workspaceID) {
     return this.moveTabsToWorkspace([tab], workspaceID);
   }
@@ -2072,14 +1915,10 @@ class nsZenWorkspaces {
         const essentialsContainer = this.getEssentialsSection(
           workspace.containerTabId
         );
-        if (
-          clonedEssentials[clonedEssentials.length - 1]?.contextId ==
-          workspace.containerTabId
-        ) {
-          clonedEssentials[clonedEssentials.length - 1].repeat++;
-          clonedEssentials[clonedEssentials.length - 1].workspaces.push(
-            workspace
-          );
+        let lastCloned = clonedEssentials[clonedEssentials.length - 1];
+        if (lastCloned && lastCloned.contextId == workspace.containerTabId) {
+          lastCloned.repeat++;
+          lastCloned.workspaces.push(workspace);
           continue;
         }
         essentialsContainer.setAttribute("hidden", "true");

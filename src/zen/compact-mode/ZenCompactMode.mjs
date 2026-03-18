@@ -91,11 +91,14 @@ window.gZenCompactModeManager = {
 
     // Clear hover states when window state changes (minimize, maximize, etc.)
     const onWindowResize = () => {
-      // Fix #12299: block hover events until the mouse genuinely moves after a resize.
+      // Fix gh-12299: block hover events until the mouse genuinely moves after a resize.
       // During snap-restore on Windows, the window moves under the cursor firing fake
       // mouseenter events. We suppress them until a real mousemove is detected.
       this._mouseMovedSinceResize = false;
       this._clearAllHoverStates();
+      window.addEventListener("mousemove", () => {
+        this._mouseMovedSinceResize = true;
+      }, { once: true });
     };
 
     window.addEventListener("sizemodechange", () => {
@@ -556,9 +559,9 @@ window.gZenCompactModeManager = {
               this.sidebar,
               this.sidebarIsOnRight
                 ? {
-                    marginRight: [`-${sidebarWidth}px`, 0],
-                    transform: ["translateX(100%)", "translateX(0)"],
-                  }
+                  marginRight: [`-${sidebarWidth}px`, 0],
+                  transform: ["translateX(100%)", "translateX(0)"],
+                }
                 : { marginLeft: 0 },
               {
                 ease: "easeOut",
@@ -745,11 +748,6 @@ window.gZenCompactModeManager = {
 
   addMouseActions() {
     this._mouseMovedSinceResize = true;
-    this._onMouseMove = () => { this._mouseMovedSinceResize = true; };
-    window.addEventListener("mousemove", this._onMouseMove, true);
-    window.addEventListener("unload", () => {
-      window.removeEventListener("mousemove", this._onMouseMove, true);
-    }, { once: true });
 
     gURLBar.addEventListener("mouseenter", event => {
       this.log("Mouse entered URL bar:", event.target);

@@ -1492,7 +1492,6 @@ class nsZenWorkspaces {
     gBrowser.removeTabs(tabs, {
       closeWindowWithLastTab: false,
     });
-    this._allStoredTabs = null;
   }
 
   async unloadWorkspace() {

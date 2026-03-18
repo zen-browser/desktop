@@ -184,11 +184,6 @@ jobs:
           commit_user_name: Zen Browser Robot
           commit_user_email: zen-browser-auto@users.noreply.github.com
 
-  lint:
-    uses: ./.github/workflows/code-linter.yml
-    needs: [build-data]
-    name: Lint
-
   check-release:
     runs-on: ubuntu-latest
     needs: [build-data, lint]

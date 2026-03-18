@@ -10,11 +10,11 @@ ChromeUtils.defineESModuleGetters(lazy, {
 });
 
 class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
-  static CARD_WIDTH = 200;
+  static CARD_WIDTH = 240;
   static MAX_VISIBLE_CARDS = 5;
-  static PANEL_HORIZONTAL_PADDING = 30;
-  static PANEL_HEIGHT = 210;
-  static THUMBNAIL_CANVAS_HEIGHT = 200;
+  static PANEL_HORIZONTAL_PADDING = 36;
+  static PANEL_HEIGHT = 250;
+  static THUMBNAIL_CANVAS_HEIGHT = 300;
 
   #isOpen = false;
   #currentIndex = 0;
@@ -158,7 +158,9 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
         currentTabIndex >= 0 ? (currentTabIndex + 1) % this.#tabList.length : 0;
     }
 
-    this.#actualVisibleCards = Math.min(this.#tabList.length, nsZenCtrlTabPanel.MAX_VISIBLE_CARDS);
+    // Reduce max cards and panel width on narrow displays 
+    const maxCards = screen.width < 1400 ? 4 : nsZenCtrlTabPanel.MAX_VISIBLE_CARDS;
+    this.#actualVisibleCards = Math.min(this.#tabList.length, maxCards);
 
     await this.#cacheThumbnailsForVisible();
 

@@ -3,17 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 :root {
-  --zen-ctrl-tab-panel-thumbnail-height: 120px;
-  --zen-ctrl-tab-panel-info-height: 24px;
-  --zen-ctrl-tab-panel-padding: 15px;
-
-  --zen-ctrl-tab-panel-card-gap: 11px;
-  --zen-ctrl-tab-panel-card-inner-padding: 11px;
-
-  /* Card height = thumbnail + gap + info + padding*2 = 120 + 11 + 24 + 11*2 = 177px */
-  --zen-ctrl-tab-panel-card-width: 200px;
-  --zen-ctrl-tab-panel-card-height: 177px;
-
+  --zen-ctrl-tab-panel-thumbnail-height: 145px;
+  --zen-ctrl-tab-panel-info-height: 30px;
+  --zen-ctrl-tab-panel-padding: 18px;
+  --zen-ctrl-tab-panel-card-gap: 12px;
+  --zen-ctrl-tab-panel-card-inner-padding: 12px;
+  --zen-ctrl-tab-panel-card-width: 240px;
   --zen-ctrl-tab-panel-card-border-radius: 14px;
   --zen-ctrl-tab-panel-thumbnail-border-radius: 8px;
 }
@@ -58,7 +53,7 @@
 .zen-ctrl-tab-panel-card {
   flex-shrink: 0;
   width: var(--zen-ctrl-tab-panel-card-width);
-  height: var(--zen-ctrl-tab-panel-card-height);
+  height: fit-content; 
   background: transparent;
   border: none;
   border-radius: var(--zen-ctrl-tab-panel-card-border-radius);
@@ -105,6 +100,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center top;
   border-radius: var(--zen-ctrl-tab-panel-thumbnail-border-radius);
 }
 
@@ -117,7 +113,7 @@
 }
 
 .zen-ctrl-tab-panel-info {
-  padding: 0 4px;
+  padding: 0 5px;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -125,8 +121,8 @@
 }
 
 .zen-ctrl-tab-panel-favicon {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
   -moz-context-properties: fill;
   fill: currentColor;
@@ -142,7 +138,7 @@
 
 .zen-ctrl-tab-panel-title {
   flex: 1;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   line-height: 1.4;
   color: var(--zen-branding-bg-reverse);

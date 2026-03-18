@@ -82,7 +82,6 @@
 .zen-ctrl-tab-panel-thumbnail {
   width: 100%;
   height: var(--zen-ctrl-tab-panel-thumbnail-height);
-  background: color-mix(in srgb, var(--zen-branding-bg), transparent 10%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -107,11 +106,6 @@
   height: 100%;
   object-fit: cover;
   border-radius: var(--zen-ctrl-tab-panel-thumbnail-border-radius);
-}
-
-.zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-pending .zen-ctrl-tab-panel-thumbnail,
-.zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-no-thumbnail .zen-ctrl-tab-panel-thumbnail {
-  background: color-mix(in srgb, color-mix(in srgb, var(--zen-colors-border) 30%, var(--zen-branding-bg)) 30%, transparent);
 }
 
 .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected.zen-ctrl-tab-panel-pending .zen-ctrl-tab-panel-thumbnail,

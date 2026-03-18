@@ -65,7 +65,7 @@ zen-workspaces-delete-workspace-title = Eyða svæði?
 zen-workspaces-delete-workspace-body = Ertu viss um að þú viljir eyða { $name }? Þessi aðgerð er ekki afturkallanleg.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
-zen-workspaces-close-all-unpinned-tabs-toast = Flipa lokað! Notaðu <span>{ $shortcut }</span> til að afturkalla.
+zen-workspaces-close-all-unpinned-tabs-toast = Flipum lokað! Notaðu <span>{ $shortcut }</span> til að afturkalla.
 zen-workspaces-close-all-unpinned-tabs-title = 
     .label = Hreinsa
     .tooltiptext = Loka öllum ófestum flipum

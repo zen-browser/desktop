@@ -88,7 +88,7 @@
   overflow: hidden;
   position: relative;
   border-radius: var(--zen-ctrl-tab-panel-thumbnail-border-radius);
-  border: 1px solid light-dark(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.15));
+  border: 1px solid var(--panel-separator-color);
   box-sizing: border-box;
 }
 
@@ -128,9 +128,8 @@
   width: 18px;
   height: 18px;
   flex-shrink: 0;
-  -moz-context-properties: fill, fill-opacity;
+  -moz-context-properties: fill;
   fill: currentColor;
-  fill-opacity: var(--urlbar-icon-fill-opacity);
 }
 
 .zen-ctrl-tab-panel-favicon.zen-ctrl-tab-panel-favicon-zen {
@@ -146,7 +145,7 @@
   font-size: 15px;
   font-weight: 600;
   line-height: 1.4;
-  color: light-dark(rgba(0, 0, 0, 0.85), rgba(255, 255, 255, 0.9));
+  color: var(--zen-branding-bg-reverse);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

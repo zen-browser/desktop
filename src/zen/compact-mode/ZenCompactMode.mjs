@@ -94,9 +94,11 @@ window.gZenCompactModeManager = {
       // Fix gh-12299: block hover events until the mouse genuinely moves after a resize.
       // During snap-restore on Windows, the window moves under the cursor firing fake
       // mouseenter events. We suppress them until a real mousemove is detected.
+      this.log("Window resized, blocking hover until next mouse move");
       this._mouseMovedSinceResize = false;
       this._clearAllHoverStates();
       window.addEventListener("mousemove", () => {
+        this.log("Mouse moved after resize, hover unblocked");
         this._mouseMovedSinceResize = true;
       }, { once: true });
     };
@@ -748,6 +750,7 @@ window.gZenCompactModeManager = {
 
   addMouseActions() {
     this._mouseMovedSinceResize = true;
+    this.log("Compact mode mouse actions initialized");
 
     gURLBar.addEventListener("mouseenter", event => {
       this.log("Mouse entered URL bar:", event.target);

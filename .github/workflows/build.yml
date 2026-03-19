@@ -186,7 +186,7 @@ jobs:
 
   check-release:
     runs-on: ubuntu-latest
-    needs: [build-data, lint]
+    needs: [build-data]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -477,7 +477,6 @@ jobs:
         mac-uni,
         appimage,
         source,
-        lint,
         stop-self-hosted,
       ]
     runs-on: blacksmith-2vcpu-ubuntu-2404

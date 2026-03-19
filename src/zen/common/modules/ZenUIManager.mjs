@@ -331,7 +331,39 @@ window.gZenUIManager = {
     this._popupTrackingElements.remove(element);
   },
 
+  // On macOS, the app menu panel is displayed as a native NSPopover which
+  // silently clips content beyond the screen without informing Firefox's
+  // layout engine. This makes bottom menu items unreachable by scrolling.
+  // Setting max-height based on available screen space lets Firefox's layout
+  // handle the constraint, enabling proper overflow scrolling.
+  // See gh-12782
+  _constrainNativePopoverHeight(panel) {
+    if (panel.id !== "appMenu-popup") {
+      return;
+    }
+    const anchor = panel.anchorNode;
+    if (!anchor) {
+      return;
+    }
+    const anchorRect = anchor.getBoundingClientRect();
+    const screenBottom = window.screen.availTop + window.screen.availHeight;
+    const anchorScreenBottom = window.screenY + anchorRect.bottom;
+    const anchorScreenTop = window.screenY + anchorRect.top;
+    const spaceBelow = screenBottom - anchorScreenBottom;
+    const spaceAbove = anchorScreenTop - window.screen.availTop;
+    const maxHeight = Math.max(spaceBelow, spaceAbove);
+    if (maxHeight > 0 && maxHeight < window.screen.availHeight) {
+      panel.style.maxHeight = `${maxHeight}px`;
+    }
+  },
+
   onPopupShowing(showEvent) {
+    if (
+      AppConstants.platform === "macosx" &&
+      Services.prefs.getBoolPref("widget.macos.native-context-menus", false)
+    ) {
+      this._constrainNativePopoverHeight(showEvent.target);
+    }
     for (const el of this._popupTrackingElements) {
       // target may be inside a shadow root, not directly under the element
       // we also ignore menus inside panels

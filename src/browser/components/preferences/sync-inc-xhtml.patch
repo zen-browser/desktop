@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/sync.inc.xhtml b/browser/components/preferences/sync.inc.xhtml
-index 86053cbf35ef1b004185ee54e9d7b9f2e2b8d550..a8fe2db034ffe99e01fd0f92d629151df7f708a8 100644
+index d473643ccf12b1f1116acaed2d5541622982ee6e..2e3496c24533f4c663c9b07bf689d18c1ed11b95 100644
 --- a/browser/components/preferences/sync.inc.xhtml
 +++ b/browser/components/preferences/sync.inc.xhtml
 @@ -223,6 +223,10 @@

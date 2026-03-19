@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/nsContextMenu.sys.mjs b/browser/base/content/nsContextMenu.sys.mjs
-index 90c8d48fa992ca5ac125fa2998741db79264de4a..a598431671e42b9ede23b0595790564202408a8e 100644
+index a929907fcaf893c00259f56815f202ba475e1e41..9e15f5b8f8eb3fa31fd463e383794acd18314767 100644
 --- a/browser/base/content/nsContextMenu.sys.mjs
 +++ b/browser/base/content/nsContextMenu.sys.mjs
-@@ -371,6 +371,9 @@ export class nsContextMenu {
+@@ -377,6 +377,9 @@ export class nsContextMenu {
      this.initPDFItems();
      this.initTextFragmentItems();
  

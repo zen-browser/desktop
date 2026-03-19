@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser-sets.inc b/browser/base/content/browser-sets.inc
-index df768aaa77a6986260da5052ed14c8403d48de6b..a30e3a2784a6215c959d23802b5c2c966f89ca10 100644
+index 8871fc984acccfd9c54c7aef9f91934d81ba00c0..923ab3bda423eae77518f437221c32ca4990f5ce 100644
 --- a/browser/base/content/browser-sets.inc
 +++ b/browser/base/content/browser-sets.inc
-@@ -414,3 +414,4 @@
+@@ -415,3 +415,4 @@
           internal="true"/>
  #endif
    </keyset>

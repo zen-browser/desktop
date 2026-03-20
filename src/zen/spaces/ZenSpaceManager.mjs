@@ -153,7 +153,7 @@ class nsZenWorkspaces {
     if (!this.privateWindowOrDisabled) {
       const observerFunction = async () => {
         delete this._workspaceBookmarksCache;
-        await this.workspaceBookmarks();
+        await this.#ensureWorkspaceBookmarksCache();
         this._invalidateBookmarkContainers();
       };
       Services.obs.addObserver(observerFunction, "workspace-bookmarks-updated");
@@ -746,17 +746,17 @@ class nsZenWorkspaces {
     return spacesForSS;
   }
 
-  async workspaceBookmarks() {
+  async #ensureWorkspaceBookmarksCache() {
     if (this.privateWindowOrDisabled) {
       this._workspaceBookmarksCache = {
         bookmarks: [],
         lastChangeTimestamp: 0,
       };
-      return this._workspaceBookmarksCache;
+      return;
     }
 
     if (this._workspaceBookmarksCache) {
-      return this._workspaceBookmarksCache;
+      return;
     }
 
     const [bookmarks, lastChangeTimestamp] = await Promise.all([
@@ -765,8 +765,6 @@ class nsZenWorkspaces {
     ]);
 
     this._workspaceBookmarksCache = { bookmarks, lastChangeTimestamp };
-
-    return this._workspaceBookmarksCache;
   }
 
   restoreWorkspacesFromSessionStore(aWinData = {}) {
@@ -826,7 +824,7 @@ class nsZenWorkspaces {
     return (async () => {
       await this.#waitForPromises();
       this.#afterLoadInit();
-      await this.workspaceBookmarks();
+      await this.#ensureWorkspaceBookmarksCache();
       await this.changeWorkspace(activeWorkspace, { onInit: true });
       this.#fixTabPositions();
       this.onWindowResize();
@@ -3018,7 +3016,7 @@ class nsZenWorkspaces {
 
   isBookmarkInAnotherWorkspace(bookmark) {
     const workspaceBookmarks = this._workspaceBookmarksCache?.bookmarks;
-    if (!workspaceBookmarks || typeof workspaceBookmarks !== "object") {
+    if (typeof workspaceBookmarks !== "object") {
       return false;
     }
 

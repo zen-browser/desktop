@@ -79,3 +79,6 @@
 
 - name: browser.tabs.dragDrop.moveOverThresholdPercent
   value: 50 # Percentage of tab height to trigger move over on drag-and-drop
+
+- name: browser.settings-redesign.enabled
+  value: true

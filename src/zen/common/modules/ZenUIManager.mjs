@@ -579,8 +579,7 @@ window.gZenUIManager = {
         this._lastTab &&
         !this._lastTab.closing &&
         this._lastTab.ownerGlobal &&
-        !this._lastTab.ownerGlobal.closed &&
-        !onSwitch
+        !this._lastTab.ownerGlobal.closed
       ) {
         this._lastTab._visuallySelected = true;
         this._lastTab = null;

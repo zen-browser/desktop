@@ -639,7 +639,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       });
     document
       .getElementById("cmd_contextZenAddToEssentials")
-      .setAttribute("disabled", !this.canEssentialBeAdded(contextTab));
+      .toggleAttribute("disabled", !this.canEssentialBeAdded(contextTab));
     document.getElementById("context_closeTab").hidden =
       contextTab.hasAttribute("zen-essential");
     document.getElementById("context_zen-remove-essential").hidden =

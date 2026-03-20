@@ -3,12 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 :root {
-  --zen-ctrl-tab-panel-thumbnail-height: 145px;
+  --zen-ctrl-tab-panel-thumbnail-height: 155px;
   --zen-ctrl-tab-panel-info-height: 30px;
   --zen-ctrl-tab-panel-padding: 18px;
   --zen-ctrl-tab-panel-card-gap: 12px;
   --zen-ctrl-tab-panel-card-inner-padding: 12px;
-  --zen-ctrl-tab-panel-card-width: 240px;
+  --zen-ctrl-tab-panel-card-width: 250px;
   --zen-ctrl-tab-panel-card-border-radius: 14px;
   --zen-ctrl-tab-panel-thumbnail-border-radius: 8px;
 }
@@ -53,7 +53,7 @@
 .zen-ctrl-tab-panel-card {
   flex-shrink: 0;
   width: var(--zen-ctrl-tab-panel-card-width);
-  height: fit-content; 
+  height: fit-content;
   background: transparent;
   border: none;
   border-radius: var(--zen-ctrl-tab-panel-card-border-radius);
@@ -108,7 +108,11 @@
 .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected.zen-ctrl-tab-panel-no-thumbnail .zen-ctrl-tab-panel-thumbnail {
   background: light-dark(
     color-mix(in srgb, color-mix(in srgb, var(--zen-colors-border) 30%, var(--zen-branding-bg)) 30%, transparent),
-    color-mix(in srgb, color-mix(in srgb, color-mix(in srgb, var(--zen-colors-border) 30%, var(--zen-branding-bg)) 30%, transparent) 75%, var(--zen-primary-color) 25%)
+    color-mix(
+      in srgb,
+      color-mix(in srgb, color-mix(in srgb, var(--zen-colors-border) 30%, var(--zen-branding-bg)) 30%, transparent) 75%,
+      var(--zen-primary-color) 25%
+    )
   );
 }
 

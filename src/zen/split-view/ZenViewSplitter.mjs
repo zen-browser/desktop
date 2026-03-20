@@ -2408,7 +2408,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const shouldBeDisabled = !this.canOpenLinkInSplitView();
     document
       .getElementById("cmd_zenSplitViewLinkInNewTab")
-      .setAttribute("disabled", shouldBeDisabled);
+      .toggleAttribute("disabled", shouldBeDisabled);
     const splitGlanceCommand = document.getElementById("cmd_zenGlanceSplit");
     if (shouldBeDisabled) {
       splitGlanceCommand.setAttribute("disabled", true);

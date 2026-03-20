@@ -24,7 +24,10 @@
   {
     "type": "phabricator",
     "id": "D284404",
-    "name": "Add urlbar closeOnWindowBlur preference"
+    "name": "Add urlbar closeOnWindowBlur preference",
+    "replaces": {
+      "\n\n": "\n     // may want to figure out a more robust way to detect abandonment."
+    }
   },
   {
     "type": "local",

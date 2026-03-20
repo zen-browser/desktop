@@ -1495,6 +1495,12 @@ class nsZenWindowSync {
 
   on_TabGroupCreate(aEvent) {
     const tabGroup = aEvent.target;
+    // See gh-12841, when creating a new space, the tab group create
+    // event is fired for the zen-workspace-collapsible-pins element, but
+    // its not something we want to sync across windows, so we can just ignore it.
+    if (tabGroup.tagName === "zen-workspace-collapsible-pins") {
+      return;
+    }
     if (tabGroup.id && tabGroup.alreadySynced) {
       // This tab group was opened as part of a sync operation.
       return;

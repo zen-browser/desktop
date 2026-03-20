@@ -631,7 +631,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     zenAddEssential.hidden = isEssential || !!contextTab.group;
     document.l10n
       .formatValue("tab-context-zen-add-essential-badge", {
-        num: gBrowser._numZenEssentials,
+        num: this._numEssentialsForCurrentWorkspace(),
         max: this.maxEssentialTabs,
       })
       .then(badgeText => {
@@ -911,13 +911,31 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     );
   }
 
+  _numEssentialsForCurrentWorkspace() {
+    if (!gZenWorkspaces.containerSpecificEssentials) {
+      return gBrowser._numZenEssentials;
+    }
+    const activeContainerId =
+      gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId;
+    let count = 0;
+    for (let tab of gBrowser.tabs) {
+      if (
+        tab.hasAttribute("zen-essential") &&
+        (tab.getAttribute("usercontextid") || 0) == activeContainerId
+      ) {
+        count++;
+      }
+    }
+    return count;
+  }
+
   canEssentialBeAdded(tab) {
     return (
       !(
         (tab.getAttribute("usercontextid") || 0) !=
           gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId &&
         gZenWorkspaces.containerSpecificEssentials
-      ) && gBrowser._numZenEssentials < this.maxEssentialTabs
+      ) && this._numEssentialsForCurrentWorkspace() < this.maxEssentialTabs
     );
   }
 

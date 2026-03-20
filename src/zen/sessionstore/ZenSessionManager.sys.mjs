@@ -755,6 +755,7 @@ export class nsZenSessionManager {
     sidebarData.splitViewData = firstWindow.splitViewData;
     sidebarData.groups = firstWindow.groups;
     sidebarData.spaces = firstWindow.spaces;
+    sidebarData.activeZenSpace = firstWindow.activeZenSpace;
   }
 
   /**
@@ -801,6 +802,9 @@ export class nsZenSessionManager {
     // Folders are always pinned, so we dont need to check for the pinned state here.
     aWindowData.folders = sidebar.folders;
     aWindowData.spaces = sidebar.spaces;
+    if (!aWindowData.activeZenSpace && sidebar.activeZenSpace) {
+      aWindowData.activeZenSpace = sidebar.activeZenSpace;
+    }
     this.log("Restored sidebar data into window", {
       tabs: aWindowData.tabs?.length || 0,
       groups: aWindowData.groups?.length || 0,
@@ -895,8 +899,10 @@ export class nsZenSessionManager {
    */
   onNewEmptySession(aWindow) {
     this.log("Restoring empty session with Zen session data");
+    const sidebar = this.#sidebar;
     aWindow.gZenWorkspaces.restoreWorkspacesFromSessionStore({
-      spaces: this.#sidebar.spaces || [],
+      spaces: sidebar.spaces || [],
+      activeZenSpace: sidebar.activeZenSpace || null,
     });
   }
 

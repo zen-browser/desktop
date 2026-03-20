@@ -1,8 +1,8 @@
 diff --git a/.prettierignore b/.prettierignore
-index cbca8bb4b36cecc44e6b498e9ef15bc4bdc21871..8f3a14e14a2d58875bdd6f04bd31f57e23073148 100644
+index 3e562d74d744bb703c9ebb8ea2df496feb40f48a..3285ee51c32029ce80e8b22616389bc776345da4 100644
 --- a/.prettierignore
 +++ b/.prettierignore
-@@ -1795,3 +1795,12 @@ tools/ts/test/baselines/
+@@ -1804,3 +1804,12 @@ tools/ts/test/baselines/
  try_task_config.json
  xpcom/idl-parser/xpidl/fixtures/xpctest.d.json
  **/package-lock.json

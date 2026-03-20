@@ -1,12 +1,12 @@
 diff --git a/toolkit/themes/shared/popup.css b/toolkit/themes/shared/popup.css
-index c2618b86d7e8bb71f9f7f71ef9916c8140ca1ead..9e2006015e22f1ac043c46066c4c9a85fe053a21 100644
+index 064d39c586c01270545877ee9506ef3befa45a87..9b40bae87c3dd74cb921b5c486be01610c008216 100644
 --- a/toolkit/themes/shared/popup.css
 +++ b/toolkit/themes/shared/popup.css
-@@ -22,8 +22,8 @@ panel {
+@@ -23,8 +23,8 @@ panel {
    --panel-border-color: ThreeDShadow;
    --panel-width: initial;
  
--  --panel-shadow-margin: 4px;
+-  --panel-shadow-margin: var(--dimension-4);
 -  --panel-shadow: 0 0 var(--panel-shadow-margin) hsla(0, 0%, 0%, 0.2);
 +  --panel-shadow-margin: 10px;
 +  --panel-shadow: var(--zen-big-shadow);

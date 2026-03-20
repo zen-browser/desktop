@@ -4,7 +4,7 @@
 
 if test "$ZEN_CROSS_COMPILING"; then
 
-  export WINSYSROOT="$(echo ~)/win-cross/vs2022"
+  export WINSYSROOT="$(echo ~)/win-cross/vs2026"
 
   export WINE="$(echo ~)/win-cross/wine/bin/wine"
   export WINEDEBUG=-all
@@ -16,9 +16,9 @@ if test "$ZEN_CROSS_COMPILING"; then
   CROSS_COMPILE=1
 
   if test "$SURFER_COMPAT" = "aarch64"; then
-    export WIN32_REDIST_DIR="$(echo ~)/win-cross/vs2022/VC/Redist/MSVC/14.38.33135/arm64/Microsoft.VC143.CRT"
+    export WIN32_REDIST_DIR="$(echo ~)/win-cross/vs2026/VC/Redist/MSVC/14.50.35719/arm64/Microsoft.VC143.CRT"
   else
-    export WIN32_REDIST_DIR="$(echo ~)/win-cross/vs2022/VC/Redist/MSVC/14.38.33135/x64/Microsoft.VC143.CRT"
+    export WIN32_REDIST_DIR="$(echo ~)/win-cross/vs2026/VC/Redist/MSVC/14.50.35719/x64/Microsoft.VC143.CRT"
   fi
 fi
 

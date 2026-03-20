@@ -1269,7 +1269,7 @@ class nsZenWorkspaces {
       workspace => workspace.uuid !== windowID
     );
     this.#propagateWorkspaceData(workspacesData);
-    this._allStoredTabs = null;
+    gBrowser.tabContainer._invalidateCachedVisibleTabs();
   }
 
   isWorkspaceActive(workspace) {
@@ -1442,7 +1442,7 @@ class nsZenWorkspaces {
   }
 
   #workspaceOwnedTabs(workspaceID) {
-    return gBrowser.tabs.filter(
+    return this.allStoredTabs.filter(
       tab =>
         tab.getAttribute("zen-workspace-id") === workspaceID &&
         !tab.hasAttribute("zen-essential") &&
@@ -1451,15 +1451,14 @@ class nsZenWorkspaces {
   }
 
   #workspaceFolders(workspaceID) {
-    const workspaceElement = this.workspaceElement(workspaceID);
-    if (!workspaceElement) {
-      return [];
-    }
-
-    return [
-      ...workspaceElement.pinnedTabsContainer.children,
-      ...workspaceElement.tabsContainer.children,
-    ].filter(item => item?.isZenFolder);
+    return gBrowser.tabGroups.filter(
+      group =>
+        group?.isZenFolder &&
+        !group.group &&
+        group.allItemsRecursive.some(
+          item => item.getAttribute("zen-workspace-id") === workspaceID
+        )
+    );
   }
 
   #getClosableTabs(tabs) {

@@ -214,6 +214,9 @@ add_task(async function test_DeleteWorkspace_RemovesWorkspaceOwnedTabs() {
     BrowserTestUtils.waitForEvent(folder, "TabGroupRemoved"),
   ];
 
+  await gZenWorkspaces.changeWorkspaceWithID(originalWorkspaceId);
+  await waitForActiveWorkspace(originalWorkspaceId);
+
   gZenWorkspaces.removeWorkspace(deletedWorkspaceId);
   await Promise.all(removalEvents);
 

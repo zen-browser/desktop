@@ -23,6 +23,15 @@ async function openWorkspaceTab(workspaceId, title) {
   return tab;
 }
 
+function waitForTabClose(tab) {
+  return BrowserTestUtils.waitForEvent(
+    window,
+    "TabClose",
+    false,
+    event => event.target === tab
+  );
+}
+
 function removeNonWorkspaceTabs(excludedTabs = []) {
   const excluded = new Set(excludedTabs);
   for (const tab of [...gBrowser.tabs]) {
@@ -184,8 +193,29 @@ add_task(async function test_DeleteWorkspace_RemovesWorkspaceOwnedTabs() {
   const pinnedTab = await openWorkspaceTab(deletedWorkspaceId, "Delete Me Pinned");
   gBrowser.pinTab(pinnedTab);
   gZenWorkspaces.moveTabToWorkspace(pinnedTab, deletedWorkspaceId);
+  const folderTab = await openWorkspaceTab(deletedWorkspaceId, "Delete Me Folder");
+  const folder = await gZenFolders.createFolder([folderTab], {
+    label: "Folder To Delete",
+    renameFolder: false,
+    workspaceId: deletedWorkspaceId,
+  });
+  const folderEmptyTab = folder.tabs[0];
 
-  await gZenWorkspaces.removeWorkspace(deletedWorkspaceId);
+  ok(
+    folderEmptyTab.hasAttribute("zen-empty-tab"),
+    "Workspace folder should create an empty placeholder tab"
+  );
+
+  const removalEvents = [
+    waitForTabClose(regularTab),
+    waitForTabClose(pinnedTab),
+    waitForTabClose(folderTab),
+    waitForTabClose(folderEmptyTab),
+    BrowserTestUtils.waitForEvent(folder, "TabGroupRemoved"),
+  ];
+
+  gZenWorkspaces.removeWorkspace(deletedWorkspaceId);
+  await Promise.all(removalEvents);
 
   ok(
     !gBrowser.tabs.includes(regularTab),
@@ -194,6 +224,14 @@ add_task(async function test_DeleteWorkspace_RemovesWorkspaceOwnedTabs() {
   ok(
     !gBrowser.tabs.includes(pinnedTab),
     "Pinned workspace-owned tab should be removed when deleting the workspace"
+  );
+  ok(
+    !gBrowser.tabs.includes(folderTab),
+    "Folder tab should be removed when deleting the workspace"
+  );
+  ok(
+    !gBrowser.tabs.includes(folderEmptyTab),
+    "Folder empty tab should be removed when deleting the workspace"
   );
   ok(
     gBrowser.tabs.includes(originalWorkspaceTab),

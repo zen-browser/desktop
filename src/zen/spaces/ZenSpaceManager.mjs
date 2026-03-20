@@ -1261,6 +1261,7 @@ class nsZenWorkspaces {
   }
 
   removeWorkspace(windowID) {
+    this.#deleteWorkspaceFolders(windowID);
     this.#deleteWorkspaceOwnedTabs(windowID);
     let workspacesData = this.getWorkspaces();
     // Remove the workspace from the cache
@@ -1449,6 +1450,18 @@ class nsZenWorkspaces {
     );
   }
 
+  #workspaceFolders(workspaceID) {
+    const workspaceElement = this.workspaceElement(workspaceID);
+    if (!workspaceElement) {
+      return [];
+    }
+
+    return [
+      ...workspaceElement.pinnedTabsContainer.children,
+      ...workspaceElement.tabsContainer.children,
+    ].filter(item => item?.isZenFolder);
+  }
+
   #getClosableTabs(tabs) {
     const remainingTabs = tabs.filter(tab => {
       const attributes = [
@@ -1492,6 +1505,12 @@ class nsZenWorkspaces {
     gBrowser.removeTabs(tabs, {
       closeWindowWithLastTab: false,
     });
+  }
+
+  #deleteWorkspaceFolders(workspaceID) {
+    for (const folder of this.#workspaceFolders(workspaceID)) {
+      folder.delete();
+    }
   }
 
   async unloadWorkspace() {

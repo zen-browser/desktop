@@ -56,7 +56,6 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Deilbhíní
 urlbar-search-mode-zen_actions = Gníomhartha
-urlbar-search-mode-workspaces = { zen-panel-ui-workspaces-text }
 zen-site-data-settings = Socruithe
 zen-generic-manage = Bainistigh
 zen-generic-more = Tuilleadh

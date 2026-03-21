@@ -54,7 +54,6 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = סמלים
 urlbar-search-mode-zen_actions = פעולות
-urlbar-search-mode-workspaces = { zen-panel-ui-workspaces-text }
 zen-site-data-settings = הגדרות
 zen-generic-manage = ניהול
 zen-generic-more = עוד

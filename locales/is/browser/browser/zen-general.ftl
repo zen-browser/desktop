@@ -54,7 +54,6 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Táknmyndir
 urlbar-search-mode-zen_actions = Aðgerðir
-urlbar-search-mode-workspaces = { zen-panel-ui-workspaces-text }
 zen-site-data-settings = Stillingar
 zen-generic-manage = Stýra
 zen-generic-more = Meira

@@ -54,7 +54,6 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = 图标集
 urlbar-search-mode-zen_actions = 操作
-urlbar-search-mode-workspaces = { zen-panel-ui-workspaces-text }
 zen-site-data-settings = 设置
 zen-generic-manage = 管理
 zen-generic-more = 更多

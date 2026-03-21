@@ -56,7 +56,6 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Simgeler
 urlbar-search-mode-zen_actions = Eylemler
-urlbar-search-mode-workspaces = { zen-panel-ui-workspaces-text }
 zen-site-data-settings = Ayarlar
 zen-generic-manage = Yönet
 zen-generic-more = Daha

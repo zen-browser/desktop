@@ -54,7 +54,6 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Biểu tượng
 urlbar-search-mode-zen_actions = Hành động
-urlbar-search-mode-workspaces = { zen-panel-ui-workspaces-text }
 zen-site-data-settings = Thiết lập
 zen-generic-manage = Quản lý
 zen-generic-more = Thêm

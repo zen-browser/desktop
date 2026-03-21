@@ -56,7 +56,6 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Ikon
 urlbar-search-mode-zen_actions = Aksi
-urlbar-search-mode-workspaces = { zen-panel-ui-workspaces-text }
 zen-site-data-settings = Pengaturan
 zen-generic-manage = Kelola
 zen-generic-more = Selengkapnya

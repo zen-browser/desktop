@@ -10,8 +10,8 @@ tab-zen-split-tabs =
         }
     .accesskey = S
 zen-split-link = 
-    .label = Skipta tengli í nýjan flipa
+    .label = Kljúfa tengil í nýjan flipa
     .accesskey = S
-zen-split-view-modifier-header = Skiptingarsýn
+zen-split-view-modifier-header = Klofningarsýn
 zen-split-view-modifier-activate-reallocation = 
     .label = Virkja umröðun

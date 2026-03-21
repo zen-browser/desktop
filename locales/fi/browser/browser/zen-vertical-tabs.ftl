@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] Nollaa ja kiinnitä välilehti
            *[other] Nollaa ja kiinnitä { $tabCount } välilehdet
         }
-tab-reset-pin-label = Takaisin kiinnitettyyn URL-osoitteeseen
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

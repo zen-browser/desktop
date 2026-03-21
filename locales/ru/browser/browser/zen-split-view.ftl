@@ -17,6 +17,3 @@ zen-split-link =
 zen-split-view-modifier-header = Разделение вкладок
 zen-split-view-modifier-activate-reallocation = 
     .label = Активировать перемещение вкладок
-zen-split-view-modifier-enabled-toast = Перемещение разделённых вкладок активировано.
-zen-split-view-modifier-enabled-toast-description = Перетащите вкладку, чтобы изменить её расположение. Нажмите Esc для выхода.
-zen-split-view-modifier-disabled-toast = Перемещение разделённых вкладок деактивировано.

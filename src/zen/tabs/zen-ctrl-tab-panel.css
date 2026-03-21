@@ -21,8 +21,8 @@
 
   /* Disable Mica on Windows to prevent occasional desktop background bleed-through */
   @media (-moz-platform: windows) {
-    background: var(--arrowpanel-background) !important;
-    backdrop-filter: none !important;
+    background: var(--arrowpanel-background);
+    backdrop-filter: none;
   }
 
   /* Disable fade-in on Linux */
@@ -70,8 +70,8 @@
 }
 
 .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected {
-  background: color-mix(in srgb, var(--zen-primary-color) 60%, rgb(110, 110, 110) 40%) !important;
-  color: white !important;
+  background: color-mix(in srgb, var(--zen-primary-color) 60%, rgb(110, 110, 110) 40%);
+  color: white;
 }
 
 .zen-ctrl-tab-panel-thumbnail {
@@ -154,6 +154,6 @@
 
 .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-info,
 .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-title {
-  color: white !important;
-  -moz-text-fill-color: white !important;
+  color: white;
+  -moz-text-fill-color: white;
 }

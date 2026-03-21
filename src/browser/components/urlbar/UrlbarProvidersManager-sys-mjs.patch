@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarProvidersManager.sys.mjs b/browser/components/urlbar/UrlbarProvidersManager.sys.mjs
-index d9a0566c5ad2a9ae375a23769f856aecc6efd86c..f6e5004806d24e009f96de9482e24c88590939b1 100644
+index d9a0566c5ad2a9ae375a23769f856aecc6efd86c..3e4951f4efdf62acb06b38ad2ae4bd507ca5e71f 100644
 --- a/browser/components/urlbar/UrlbarProvidersManager.sys.mjs
 +++ b/browser/components/urlbar/UrlbarProvidersManager.sys.mjs
 @@ -912,6 +912,7 @@ export class Query {
@@ -10,3 +10,26 @@ index d9a0566c5ad2a9ae375a23769f856aecc6efd86c..f6e5004806d24e009f96de9482e24c88
        (!this.context.trimmedSearchString ||
          (!this.context.searchMode.engineName && !result.autofill))
      ) {
+@@ -1042,6 +1043,7 @@ function updateSourcesIfEmpty(context) {
+             lazy.UrlbarTokenizer.TYPE.RESTRICT_TITLE,
+             lazy.UrlbarTokenizer.TYPE.RESTRICT_URL,
+             lazy.UrlbarTokenizer.TYPE.RESTRICT_ACTION,
++            lazy.UrlbarTokenizer.TYPE.RESTRICT_WORKSPACE,
+           ].includes(t.type)
+         );
+ 
+@@ -1099,6 +1101,14 @@ function updateSourcesIfEmpty(context) {
+           acceptedSources.push(source);
+         }
+         break;
++      case lazy.UrlbarUtils.RESULT_SOURCE.WORKSPACES:
++        if (
++          restrictTokenType === lazy.UrlbarTokenizer.TYPE.RESTRICT_WORKSPACE ||
++          !restrictTokenType
++        ) {
++          acceptedSources.push(source);
++        }
++        break;
+       case lazy.UrlbarUtils.RESULT_SOURCE.OTHER_LOCAL:
+       case lazy.UrlbarUtils.RESULT_SOURCE.ADDON:
+       default:

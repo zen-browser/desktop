@@ -1,12 +1,21 @@
 diff --git a/browser/components/urlbar/UrlbarPrefs.sys.mjs b/browser/components/urlbar/UrlbarPrefs.sys.mjs
-index ec7b7eeee7999aba76286e84808ed09ffc6df463..12bfafdc7e34c5d6345579cd0aaf515a19d82b31 100644
+index ec7b7eeee7999aba76286e84808ed09ffc6df463..65154e4b78e391ceca19c629aa3309d9fc52966e 100644
 --- a/browser/components/urlbar/UrlbarPrefs.sys.mjs
 +++ b/browser/components/urlbar/UrlbarPrefs.sys.mjs
-@@ -760,6 +760,7 @@ function makeDefaultResultGroups({ showSearchSuggestionsFirst }) {
+@@ -454,6 +457,7 @@ const PREF_URLBAR_DEFAULTS = /** @type {PreferenceDefinition[]} */ ([
+   ["shortcuts.tabs", true],
+   ["shortcuts.history", true],
+   ["shortcuts.actions", true],
++  ["shortcuts.workspaces", true],
+ 
+   // Boolean to determine if the providers defined in `exposureResults`
+   // should be displayed in search results. This can be set by a
+@@ -791,6 +795,8 @@ function makeDefaultResultGroups({ showSearchSuggestionsFirst }) {
     */
    let rootGroup = {
      children: [
 +      { children: [{ group: lazy.UrlbarUtils.RESULT_GROUP.ZEN_ACTION }] },
++      { children: [{ group: lazy.UrlbarUtils.RESULT_GROUP.ZEN_WORKSPACE }] },
        // heuristic
        {
          maxResultCount: 1,

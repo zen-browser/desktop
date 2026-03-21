@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = Dein aktuelles Profil
 unified-extensions-description = Mit Erweiterungen kannst du { -brand-short-name } um zusätzliche Funktionen erweitern.
 tab-context-zen-reset-pinned-tab = 
-    .label = Angehefteten Tab zurücksetzen
+    .label =
+        { $isEssential ->
+            [true] Reset Essential Tab
+           *[false] Reset Pinned Tab
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Zu Essentials hinzufügen
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = Aus Essentials entfernen
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Angeheftete URL durch aktuelle ersetzen
+    .label =
+        { $isEssential ->
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = Titel ändern...
@@ -33,6 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimieren
 zen-panel-ui-gradient-generator-custom-color = Eigene Farbe
 zen-copy-current-url-confirmation = URL kopiert!
+zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
 zen-general-cancel-label = 
     .label = Abbrechen
 zen-general-confirm = 
@@ -109,7 +118,9 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = Funktioniert etwas nicht?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Im abgesicherten Modus neu starten
-zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
-zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
-zen-window-sync-migration-dialog-learn-more = Learn More
-zen-window-sync-migration-dialog-accept = Got It
+zen-window-sync-migration-dialog-title = Halte deine Fenster synchron
+zen-window-sync-migration-dialog-message = Zen synchronisiert jetzt Fenster auf demselben Gerät, sodass Änderungen in einem Fenster sofort in den anderen übernommen werden.
+zen-window-sync-migration-dialog-learn-more = Mehr erfahren
+zen-window-sync-migration-dialog-accept = Verstanden
+zen-appmenu-new-blank-window = 
+    .label = New blank window

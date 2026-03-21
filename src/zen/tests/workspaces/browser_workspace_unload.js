@@ -179,7 +179,7 @@ add_task(async function test_DeleteWorkspace_RemovesWorkspaceOwnedTabs() {
     "Original Workspace Tab"
   );
 
-  const deletedWorkspace = 
+  const deletedWorkspace =
     await gZenWorkspaces.createAndSaveWorkspace(
       "Workspace To Delete",
       undefined,

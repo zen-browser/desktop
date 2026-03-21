@@ -579,7 +579,8 @@ window.gZenUIManager = {
         this._lastTab &&
         !this._lastTab.closing &&
         this._lastTab.ownerGlobal &&
-        !this._lastTab.ownerGlobal.closed
+        !this._lastTab.ownerGlobal.closed &&
+        gBrowser.selectedTab === this._lastTab
       ) {
         this._lastTab._visuallySelected = true;
         this._lastTab = null;

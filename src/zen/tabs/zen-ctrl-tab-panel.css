@@ -27,8 +27,8 @@
 
   /* Disable fade-in on Linux */
   @media (-moz-platform: linux) {
-    animation: none !important;
-    transition: none !important;
+    animation: none;
+    transition: none;
   }
 }
 

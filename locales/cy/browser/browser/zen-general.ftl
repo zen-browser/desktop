@@ -56,6 +56,7 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Eiconau
 urlbar-search-mode-zen_actions = Gweithredoedd
+urlbar-search-mode-workspaces = { zen-panel-ui-workspaces-text }
 zen-site-data-settings = Gosodiadau
 zen-generic-manage = Rheoli
 zen-generic-more = Rhagor

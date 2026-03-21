@@ -56,6 +56,7 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = ไอคอน
 urlbar-search-mode-zen_actions = Actions
+urlbar-search-mode-workspaces = { zen-panel-ui-workspaces-text }
 zen-site-data-settings = การตั้งค่า
 zen-generic-manage = จัดการ
 zen-generic-more = เพิ่มเติม

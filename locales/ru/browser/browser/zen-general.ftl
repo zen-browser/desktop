@@ -56,6 +56,7 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Иконки
 urlbar-search-mode-zen_actions = Действия
+urlbar-search-mode-workspaces = { zen-panel-ui-workspaces-text }
 zen-site-data-settings = Настройки
 zen-generic-manage = Изменить
 zen-generic-more = Ещё

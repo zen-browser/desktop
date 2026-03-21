@@ -56,6 +56,7 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Ikoonid
 urlbar-search-mode-zen_actions = Tegevused
+urlbar-search-mode-workspaces = { zen-panel-ui-workspaces-text }
 zen-site-data-settings = Sätted
 zen-generic-manage = Halda
 zen-generic-more = Rohkem

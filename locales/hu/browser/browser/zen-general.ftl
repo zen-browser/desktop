@@ -56,6 +56,7 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Ikonok
 urlbar-search-mode-zen_actions = Műveletek
+urlbar-search-mode-workspaces = { zen-panel-ui-workspaces-text }
 zen-site-data-settings = Beállítások
 zen-generic-manage = Kezelés
 zen-generic-more = Több

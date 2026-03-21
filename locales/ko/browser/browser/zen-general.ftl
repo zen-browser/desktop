@@ -56,6 +56,7 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = 아이콘
 urlbar-search-mode-zen_actions = 액션
+urlbar-search-mode-workspaces = { zen-panel-ui-workspaces-text }
 zen-site-data-settings = 설정
 zen-generic-manage = 관리
 zen-generic-more = 더 보기

@@ -56,6 +56,7 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Piktogramos
 urlbar-search-mode-zen_actions = Veiksmai
+urlbar-search-mode-workspaces = { zen-panel-ui-workspaces-text }
 zen-site-data-settings = Nustatymai
 zen-generic-manage = Tvarkyti
 zen-generic-more = Daugiau

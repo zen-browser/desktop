@@ -15,6 +15,3 @@ zen-split-link =
 zen-split-view-modifier-header = 스플릿 뷰
 zen-split-view-modifier-activate-reallocation = 
     .label = 재정렬 모드 활성화
-zen-split-view-modifier-enabled-toast = 재정렬 모드 활성화됨
-zen-split-view-modifier-enabled-toast-description = 끌어서 재정렬할 수 있습니다. 나가려면 Esc를 누르세요.
-zen-split-view-modifier-disabled-toast = 재정렬 모드 비활성화됨

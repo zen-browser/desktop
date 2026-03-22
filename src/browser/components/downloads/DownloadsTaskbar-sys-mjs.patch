@@ -1,0 +1,20 @@
+diff --git a/browser/components/downloads/DownloadsTaskbar.sys.mjs b/browser/components/downloads/DownloadsTaskbar.sys.mjs
+--- a/browser/components/downloads/DownloadsTaskbar.sys.mjs
++++ b/browser/components/downloads/DownloadsTaskbar.sys.mjs
+@@ -140,6 +140,16 @@
+         (!aForcedBackend && gInterfaces.macTaskbarProgress)
+       ) {
+         // On Mac OS X, we have to register the global indicator only once.
++        // Skip if dock progress is disabled (workaround for macOS Tahoe
++        // Clear icon style reverting to coloured). See Bug 1997246.
++        if (
++          !Services.prefs.getBoolPref(
++            "browser.taskbar.dockProgress.enabled",
++            true
++          )
++        ) {
++          return;
++        }
+         this.#taskbarProgresses.add(gInterfaces.macTaskbarProgress);
+         // Free the XPCOM reference on shutdown, to prevent detecting a leak.
+         Services.obs.addObserver(() => {

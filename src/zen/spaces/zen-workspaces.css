@@ -411,7 +411,7 @@ zen-workspace {
   .zen-current-workspace-indicator-chevron {
     width: 16px;
     height: 16px;
-    transition: transform 0.1s, opacity 0.1s;
+    transition: transform 0.1s, opacity 0.15s;
     transform: rotate(90deg);
     padding: 1px;
 

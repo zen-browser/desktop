@@ -1014,7 +1014,7 @@ window.gZenVerticalTabsManager = {
             marginBottom: isLastItem() ? ["0px", "0px"] : [transform, "0px"],
           },
           {
-            duration: 0.075,
+            duration: 0.1,
             easing: "easeOut",
           }
         )

@@ -66,7 +66,21 @@ class nsZenLiveFoldersManager {
   // Event Handling
   // --------------
   #initEventListeners() {
+    Services.obs.addObserver(this, "wake_notification");
     lazy.ZenWindowSync.addSyncHandler(this.handleEvent.bind(this));
+  }
+
+  observe(_subject, topic, _data) {
+    switch (topic) {
+      case "wake_notification": {
+        // Woke from sleep, re-schedule all fetch
+        for (const liveFolder of this.liveFolders.values()) {
+          liveFolder.stop();
+          liveFolder.start();
+        }
+        break;
+      }
+    }
   }
 
   handleEvent(aEvent) {

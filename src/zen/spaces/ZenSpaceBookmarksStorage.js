@@ -13,6 +13,9 @@ window.ZenWorkspaceBookmarksStorage = {
     if (!window.gZenWorkspaces) {
       return;
     }
+    this.promiseInitialized = new Promise(resolve => {
+      this._resolveInitialized = resolve;
+    });
     await this._ensureTable();
   },
 
@@ -54,9 +57,12 @@ window.ZenWorkspaceBookmarksStorage = {
 
         // Create index for changes tracking
         await db.execute(`
-        CREATE INDEX IF NOT EXISTS idx_bookmarks_workspaces_changes
-          ON zen_bookmarks_workspaces_changes(bookmark_guid, workspace_uuid)
-      `);
+          CREATE INDEX IF NOT EXISTS idx_bookmarks_workspaces_changes
+            ON zen_bookmarks_workspaces_changes(bookmark_guid, workspace_uuid)
+        `);
+
+        this._resolveInitialized();
+        delete this._resolveInitialized;
       }
     );
   },
@@ -68,6 +74,7 @@ window.ZenWorkspaceBookmarksStorage = {
    */
   async updateLastChangeTimestamp(db) {
     const now = Date.now();
+    await this.promiseInitialized;
     await db.execute(
       `
       INSERT OR REPLACE INTO moz_meta (key, value)
@@ -84,6 +91,7 @@ window.ZenWorkspaceBookmarksStorage = {
    */
   async getLastChangeTimestamp() {
     const db = await this.lazy.PlacesUtils.promiseDBConnection();
+    await this.promiseInitialized;
     const result = await db.executeCached(`
       SELECT value FROM moz_meta WHERE key = 'zen_bookmarks_workspaces_last_change'
     `);
@@ -91,16 +99,21 @@ window.ZenWorkspaceBookmarksStorage = {
   },
 
   async getBookmarkWorkspaces(bookmarkGuid) {
+    await this.promiseInitialized;
     const db = await this.lazy.PlacesUtils.promiseDBConnection();
-
-    const rows = await db.execute(
-      `
+    let rows = [];
+    try {
+      rows = await db.execute(
+        `
       SELECT workspace_uuid
       FROM zen_bookmarks_workspaces
       WHERE bookmark_guid = :bookmark_guid
     `,
-      { bookmark_guid: bookmarkGuid }
-    );
+        { bookmark_guid: bookmarkGuid }
+      );
+    } catch (e) {
+      console.error("Error fetching bookmark workspaces:", e);
+    }
 
     return rows.map(row => row.getResultByName("workspace_uuid"));
   },
@@ -117,8 +130,8 @@ window.ZenWorkspaceBookmarksStorage = {
    * }
    */
   async getBookmarkGuidsByWorkspace() {
+    await this.promiseInitialized;
     const db = await this.lazy.PlacesUtils.promiseDBConnection();
-
     const rows = await db.execute(`
       SELECT workspace_uuid, GROUP_CONCAT(bookmark_guid) as bookmark_guids
       FROM zen_bookmarks_workspaces
@@ -141,6 +154,7 @@ window.ZenWorkspaceBookmarksStorage = {
    * @returns {Promise<object>} An object mapping bookmark+workspace pairs to their change data.
    */
   async getChangedIDs() {
+    await this.promiseInitialized;
     const db = await this.lazy.PlacesUtils.promiseDBConnection();
     const rows = await db.execute(`
       SELECT bookmark_guid, workspace_uuid, change_type, timestamp
@@ -162,6 +176,7 @@ window.ZenWorkspaceBookmarksStorage = {
    * Clear all recorded changes.
    */
   async clearChangedIDs() {
+    await this.promiseInitialized;
     await this.lazy.PlacesUtils.withConnectionWrapper(
       "ZenWorkspaceBookmarksStorage.clearChangedIDs",
       async db => {

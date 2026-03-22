@@ -1261,15 +1261,23 @@ class nsZenWorkspaces {
   }
 
   removeWorkspace(windowID) {
-    this.#deleteWorkspaceFolders(windowID);
+    let { promise, resolve } = Promise.withResolvers();
     this.#deleteWorkspaceOwnedTabs(windowID);
     let workspacesData = this.getWorkspaces();
     // Remove the workspace from the cache
     workspacesData = workspacesData.filter(
       workspace => workspace.uuid !== windowID
     );
+    window.addEventListener(
+      "ZenWorkspacesUIUpdate",
+      () => {
+        resolve();
+      },
+      { once: true }
+    );
     this.#propagateWorkspaceData(workspacesData);
     gBrowser.tabContainer._invalidateCachedVisibleTabs();
+    return promise;
   }
 
   isWorkspaceActive(workspace) {
@@ -1441,26 +1449,6 @@ class nsZenWorkspaces {
     );
   }
 
-  #workspaceOwnedTabs(workspaceID) {
-    return this.allStoredTabs.filter(
-      tab =>
-        tab.getAttribute("zen-workspace-id") === workspaceID &&
-        !tab.hasAttribute("zen-essential") &&
-        !tab.hasAttribute("zen-empty-tab")
-    );
-  }
-
-  #workspaceFolders(workspaceID) {
-    return gBrowser.tabGroups.filter(
-      group =>
-        group?.isZenFolder &&
-        !group.group &&
-        group.allItemsRecursive.some(
-          item => item.getAttribute("zen-workspace-id") === workspaceID
-        )
-    );
-  }
-
   #getClosableTabs(tabs) {
     const remainingTabs = tabs.filter(tab => {
       const attributes = [
@@ -1496,20 +1484,15 @@ class nsZenWorkspaces {
   }
 
   #deleteWorkspaceOwnedTabs(workspaceID) {
-    const tabs = this.#workspaceOwnedTabs(workspaceID);
-    if (!tabs.length) {
-      return;
-    }
-
+    const tabs = this.allStoredTabs.filter(
+      tab =>
+        tab.getAttribute("zen-workspace-id") === workspaceID &&
+        !tab.hasAttribute("zen-essential") &&
+        !(tab.hasAttribute("zen-empty-tab") && !tab.group)
+    );
     gBrowser.removeTabs(tabs, {
       closeWindowWithLastTab: false,
     });
-  }
-
-  #deleteWorkspaceFolders(workspaceID) {
-    for (const folder of this.#workspaceFolders(workspaceID)) {
-      folder.delete();
-    }
   }
 
   async unloadWorkspace() {

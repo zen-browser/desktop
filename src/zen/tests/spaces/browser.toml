@@ -25,5 +25,3 @@ support-files = [
 ["browser_private_mode_startup.js"]
 
 ["browser_workspace_bookmarks.js"]
-
-["browser_workspace_unload.js"]

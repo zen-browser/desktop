@@ -384,13 +384,18 @@ class nsZenLiveFoldersManager {
       animate: !folder.collapsed,
     });
 
-    // Remove the dismissed items that are no longer in the given list
-    for (const dismissedItemId of this.dismissedItems) {
-      if (
-        dismissedItemId.startsWith(`${liveFolder.id}:`) &&
-        !itemIds.has(dismissedItemId)
-      ) {
-        this.dismissedItems.delete(dismissedItemId);
+    // Remove the dismissed items that are no longer in the given list.
+    // Only do this when the fetch returned results — an empty list may
+    // indicate a transient failure (e.g. auth expired, HTML changed)
+    // and we must not wipe all dismissals in that case.
+    if (itemIds.size > 0) {
+      for (const dismissedItemId of this.dismissedItems) {
+        if (
+          dismissedItemId.startsWith(`${liveFolder.id}:`) &&
+          !itemIds.has(dismissedItemId)
+        ) {
+          this.dismissedItems.delete(dismissedItemId);
+        }
       }
     }
 

@@ -1,0 +1,22 @@
+diff --git a/browser/components/tabbrowser/TabUnloader.sys.mjs b/browser/components/tabbrowser/TabUnloader.sys.mjs
+index aefccef39f0b81176a5710a794e8a5e2650d6507..53c838b3bc322cadee4ef9b411d02fc0af8c35e5 100644
+--- a/browser/components/tabbrowser/TabUnloader.sys.mjs
++++ b/browser/components/tabbrowser/TabUnloader.sys.mjs
+@@ -52,7 +52,7 @@ let CRITERIA_WEIGHT = 1;
+  */
+ let DefaultTabUnloaderMethods = {
+   isNonDiscardable(tab, weight) {
+-    if (tab.undiscardable || tab.selected) {
++    if (tab.undiscardable || tab.selected || tab.zenModeActive) {
+       return weight;
+     }
+ 
+@@ -106,7 +106,7 @@ let DefaultTabUnloaderMethods = {
+ 
+   *iterateTabs() {
+     for (let win of Services.wm.getEnumerator("navigator:browser")) {
+-      for (let tab of win.gBrowser.tabs) {
++      for (let tab of win.gZenWorkspaces.allStoredTabs) {
+         yield { tab, gBrowser: win.gBrowser };
+       }
+     }

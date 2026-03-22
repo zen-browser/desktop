@@ -1,0 +1,126 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-panel-ui-current-profile-text = текущий профиль
+unified-extensions-description = Расширения дополняют функционал { -brand-short-name }.
+tab-context-zen-reset-pinned-tab = 
+    .label =
+        { $isEssential ->
+            [true] Сбросить важную вкладку
+           *[false] Сбросить закрепленную вкладку
+        }
+    .accesskey = К
+tab-context-zen-add-essential = 
+    .label = Добавить в важное
+    .accesskey = У
+tab-context-zen-add-essential-badge = { $num }/{ $max } мест занято
+tab-context-zen-remove-essential = 
+    .label = Удалить из важного
+    .accesskey = К
+tab-context-zen-replace-pinned-url-with-current = 
+    .label =
+        { $isEssential ->
+            [true] Заменить адрес важной вкладки на текущий
+           *[false] Заменить адрес закреплённой вкладки на текущий
+        }
+    .accesskey = С
+tab-context-zen-edit-title = 
+    .label = Переименовать...
+tab-context-zen-edit-icon = 
+    .label = Изменить значок...
+zen-themes-corrupted = Файл модов { -brand-short-name } повреждён. Тема сброшена к стандартной.
+zen-shortcuts-corrupted = Файл сочетаний клавиш { -brand-short-name } повреждён. Возвращены сочетания клавиш по умолчанию.
+# note: Do not translate the "<br/>" tags in the following string
+zen-new-urlbar-notification =
+    Новая адресная строка активирована, теперь нет необходимости использовать отдельные страницы для новых вкладок.<br/><br/>
+    Попробуйте открыть новую вкладку, чтобы увидеть новую адресную строку в действии!
+zen-disable = Выключить
+pictureinpicture-minimize-btn = 
+    .aria-label = Свернуть
+    .tooltip = Свернуть
+zen-panel-ui-gradient-generator-custom-color = Свой цвет
+zen-copy-current-url-confirmation = Адрес скопирован!
+zen-copy-current-url-as-markdown-confirmation = Текущий адрес скопирован как Markdown!
+zen-general-cancel-label = 
+    .label = Отменить
+zen-general-confirm = 
+    .label = Подтвердить
+zen-pinned-tab-replaced = Адрес закреплённой вкладки заменён на текущий адрес!
+zen-tabs-renamed = Вкладка успешно переименована!
+zen-background-tab-opened-toast = Открыта новая фоновая вкладка!
+zen-workspace-renamed-toast = Пространство успешно переименовано!
+zen-toggle-compact-mode-button = 
+    .label = Компактный режим
+    .tooltiptext = Переключить компактный режим
+
+# note: Do not translate the "<br/>" tags in the following string
+
+zen-learn-more-text = Узнать больше
+zen-close-label = Закрыть
+zen-singletoolbar-urlbar-placeholder-with-name = 
+    .placeholder = Найти...
+zen-icons-picker-emoji = 
+    .label = Эмодзи
+zen-icons-picker-svg = 
+    .label = Иконки
+urlbar-search-mode-zen_actions = Действия
+zen-site-data-settings = Настройки
+zen-generic-manage = Изменить
+zen-generic-more = Ещё
+zen-generic-next = Далее
+zen-essentials-promo-label = Добавить в важное
+zen-essentials-promo-sublabel = Доступ к любимым вкладкам в один клик
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Разрешено
+zen-site-data-setting-block = Запрещено
+zen-site-data-protections-enabled = Включено
+zen-site-data-protections-disabled = Отключено
+zen-site-data-setting-cross-site = Межсайтовые куки
+zen-site-data-security-info-extension = 
+    .label = Расширение
+zen-site-data-security-info-secure = 
+    .label = Безопасно
+zen-site-data-security-info-not-secure = 
+    .label = Небезопасно
+zen-site-data-manage-addons = 
+    .label = Управление расширениями
+zen-site-data-get-addons = 
+    .label = Добавить расширения
+zen-site-data-site-settings = 
+    .label = Все настройки сайта
+zen-site-data-header-share = 
+    .tooltiptext = Поделиться страницей
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Режим чтения
+zen-site-data-header-screenshot = 
+    .tooltiptext = Сделать снимок экрана
+zen-site-data-header-bookmark = 
+    .tooltiptext = Добавить в закладки
+zen-urlbar-copy-url-button = 
+    .tooltiptext = Скопировать URL
+zen-site-data-setting-site-protection = Защита от отслеживания
+
+# Section: Feature callouts
+
+zen-site-data-panel-feature-callout-title = Новый дом для расширений, разрешений и всего остального
+zen-site-data-panel-feature-callout-subtitle = Нажмите на значок для доступа к настройкам сайта, параметрам безопасности, расширениям и прочим действиям.
+zen-open-link-in-glance = 
+    .label = Открыть ссылку в предпросмотре
+    .accesskey = П
+zen-sidebar-notification-updated-heading = Обновление завершено!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = Что нового в { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = Примечания к выпуску
+zen-sidebar-notification-restart-safe-mode-label = Что-то пошло не так?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Перезапустить в безопасном режиме
+zen-window-sync-migration-dialog-title = Синхронизируйте окна
+zen-window-sync-migration-dialog-message = Теперь Zen синхронизирует окна на одном устройстве, поэтому изменения в одном окне будут мгновенно отображаться в других.
+zen-window-sync-migration-dialog-learn-more = Узнать больше
+zen-window-sync-migration-dialog-accept = Понятно
+zen-appmenu-new-blank-window = 
+    .label = Новое пустое окно

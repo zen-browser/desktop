@@ -1,0 +1,30 @@
+diff --git a/browser/components/sessionstore/TabState.sys.mjs b/browser/components/sessionstore/TabState.sys.mjs
+index eb24c3ffdd2cfb33379aca993af5171fdb91ac2c..15d3fbff397df23f112355e22ca5dba5bf29528f 100644
+--- a/browser/components/sessionstore/TabState.sys.mjs
++++ b/browser/components/sessionstore/TabState.sys.mjs
+@@ -99,7 +99,25 @@ class _TabState {
+       }
+     }
+ 
++    tabData.zenWorkspace = tab.getAttribute("zen-workspace-id");
++    tabData.zenSyncId = tab.getAttribute("id");
++    tabData.zenEssential = tab.getAttribute("zen-essential") === "true";
++    tabData.pinned = tabData.pinned || tabData.zenEssential;
++    tabData.zenDefaultUserContextId = tab.getAttribute("zenDefaultUserContextId");
++    tabData.zenPinnedIcon = tab.getAttribute("zen-pinned-icon");
++    tabData.zenIsEmpty = tab.hasAttribute("zen-empty-tab");
++    tabData.zenStaticLabel = tab.zenStaticLabel;
++    tabData.zenHasStaticIcon = !!tab.zenStaticIcon;
++    tabData.zenGlanceId = tab.getAttribute("glance-id");
++    tabData.zenIsGlance = tab.hasAttribute("zen-glance-tab");
++    tabData._zenPinnedInitialState = tab._zenPinnedInitialState;
++    tabData._zenIsActiveTab = tab._zenContentsVisible;
++    tabData.zenLiveFolderItemId = tab.getAttribute("zen-live-folder-item-id");
++
+     tabData.searchMode = tab.ownerGlobal.gURLBar.getSearchMode(browser, true);
++    if (tabData.searchMode?.source === tab.ownerGlobal.UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS) {
++      delete tabData.searchMode;
++    }
+ 
+     tabData.userContextId = tab.userContextId || 0;
+ 

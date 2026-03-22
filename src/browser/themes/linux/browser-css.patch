@@ -1,0 +1,39 @@
+diff --git a/browser/themes/linux/browser.css b/browser/themes/linux/browser.css
+index dfb3e2c843d748e46c0f5878c9d06cebacffb603..4805a0bed7e60713218530c1b03f0f5dd65fe3af 100644
+--- a/browser/themes/linux/browser.css
++++ b/browser/themes/linux/browser.css
+@@ -14,7 +14,6 @@
+     @media (-moz-gtk-theme-family) {
+       --tabs-navbar-separator-style: none;
+       @media (prefers-color-scheme: light) {
+-        --urlbar-box-bgcolor: #fafafa;
+       }
+     }
+   }
+@@ -58,7 +57,8 @@
+       -moz-default-appearance: -moz-window-decorations;
+       appearance: auto;
+ 
+-      #navigator-toolbox,
++      #zen-main-app-wrapper,
++      #zen-browser-background,
+       dialog::backdrop {
+         border-top-left-radius: env(-moz-gtk-csd-titlebar-radius);
+         border-top-right-radius: env(-moz-gtk-csd-titlebar-radius);
+@@ -66,13 +66,11 @@
+ 
+       /* stylelint-disable-next-line media-query-no-invalid */
+       @media -moz-pref("widget.gtk.rounded-bottom-corners.enabled") {
+-        #navigator-toolbox {
+-          /* The body clip below covers this. */
+-          border-radius: 0;
+-        }
+ 
+         body,
+-        dialog::backdrop {
++        dialog::backdrop,
++        #zen-main-app-wrapper,
++        #zen-browser-background {
+           /* Use an uniform clip to allow WebRender to optimize it better */
+           border-radius: env(-moz-gtk-csd-titlebar-radius);
+         }

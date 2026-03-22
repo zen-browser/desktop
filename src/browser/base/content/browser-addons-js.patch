@@ -1,0 +1,195 @@
+diff --git a/browser/base/content/browser-addons.js b/browser/base/content/browser-addons.js
+index 737ccf0feff4910426f7f75a20ac20ec480461dc..177ab12f9478e1ce664b7b2c66b0e2c8bca63573 100644
+--- a/browser/base/content/browser-addons.js
++++ b/browser/base/content/browser-addons.js
+@@ -1061,7 +1061,7 @@ var gXPInstallObserver = {
+       persistent: true,
+       hideClose: true,
+       popupOptions: {
+-        position: "bottomright topright",
++        position: gZenUIManager.panelUIPosition(),
+       },
+     };
+ 
+@@ -1283,7 +1283,7 @@ var gXPInstallObserver = {
+       hideClose: true,
+       timeout: Date.now() + 30000,
+       popupOptions: {
+-        position: "bottomright topright",
++        position: gZenUIManager.panelUIPosition(),
+       },
+     };
+ 
+@@ -2210,7 +2210,7 @@ var gUnifiedExtensions = {
+   // If the new ID is not added in NOTIFICATION_IDS, consider handling the case
+   // in the "PopupNotificationsBeforeAnchor" handler elsewhere in this file.
+   getPopupAnchorID(aBrowser, aWindow) {
+-    const anchorID = "unified-extensions-button";
++    const anchorID = "zen-site-data-icon-button";
+     const attr = anchorID + "popupnotificationanchor";
+ 
+     if (!aBrowser[attr]) {
+@@ -2221,7 +2221,7 @@ var gUnifiedExtensions = {
+         anchorID
+         // Anchor on the toolbar icon to position the popup right below the
+         // button.
+-      ).firstElementChild;
++      );
+     }
+ 
+     return anchorID;
+@@ -2546,7 +2546,7 @@ var gUnifiedExtensions = {
+     requestAnimationFrame(() => this.updateAttention());
+   },
+ 
+-  onToolbarVisibilityChange(toolbarId, isVisible) {
++  onToolbarVisibilityChange(toolbarId, isVisible, panel = this.panel) {
+     // A list of extension widget IDs (possibly empty).
+     let widgetIDs;
+ 
+@@ -2560,7 +2560,7 @@ var gUnifiedExtensions = {
+     }
+ 
+     // The list of overflowed extensions in the extensions panel.
+-    const overflowedExtensionsList = this.panel.querySelector(
++    const overflowedExtensionsList = panel.querySelector(
+       "#overflowed-extensions-list"
+     );
+ 
+@@ -2661,37 +2661,41 @@ var gUnifiedExtensions = {
+       );
+       template.replaceWith(template.content);
+       this._panel = document.getElementById("unified-extensions-panel");
+-      let customizationArea = this._panel.querySelector(
+-        "#unified-extensions-area"
+-      );
+-      CustomizableUI.registerPanelNode(
+-        customizationArea,
+-        CustomizableUI.AREA_ADDONS
+-      );
+-      CustomizableUI.addPanelCloseListeners(this._panel);
+-
+-      this._panel
+-        .querySelector("#unified-extensions-manage-extensions")
+-        .addEventListener("command", () => {
+-          BrowserAddonUI.openAddonsMgr("addons://list/extension");
+-        });
+-
+-      // Lazy-load the l10n strings. Those strings are used for the CUI and
+-      // non-CUI extensions in the unified extensions panel.
+-      document
+-        .getElementById("unified-extensions-context-menu")
+-        .querySelectorAll("[data-lazy-l10n-id]")
+-        .forEach(el => {
+-          el.setAttribute("data-l10n-id", el.getAttribute("data-lazy-l10n-id"));
+-          el.removeAttribute("data-lazy-l10n-id");
+-        });
++      this.initializePanel(this._panel);
+     }
+     return this._panel;
+   },
+ 
++  initializePanel(panel) {
++    let customizationArea = panel.querySelector(
++      "#unified-extensions-area"
++    );
++    CustomizableUI.registerPanelNode(
++      customizationArea,
++      CustomizableUI.AREA_ADDONS
++    );
++    CustomizableUI.addPanelCloseListeners(panel);
++
++    panel
++      .querySelector("#unified-extensions-manage-extensions")
++      .addEventListener("command", () => {
++        BrowserAddonUI.openAddonsMgr("addons://list/extension");
++      });
++
++    // Lazy-load the l10n strings. Those strings are used for the CUI and
++    // non-CUI extensions in the unified extensions panel.
++    document
++      .getElementById("unified-extensions-context-menu")
++      .querySelectorAll("[data-lazy-l10n-id]")
++      .forEach(el => {
++        el.setAttribute("data-l10n-id", el.getAttribute("data-lazy-l10n-id"));
++        el.removeAttribute("data-lazy-l10n-id");
++      });
++  },
++
+   // `aEvent` and `reason` are optional. If `reason` is specified, it should be
+   // a valid argument to gUnifiedExtensions.recordButtonTelemetry().
+-  async togglePanel(aEvent, reason) {
++  async togglePanel(aEvent, reason, panel = this._panel, view = "unified-extensions-view", button = this._button) {
+     if (!CustomizationHandler.isCustomizing()) {
+       if (aEvent) {
+         if (
+@@ -2713,6 +2717,7 @@ var gUnifiedExtensions = {
+         // and no alternative content is available for display in the panel.
+         const policies = this.getActivePolicies();
+         if (
++          false &&
+           policies.length &&
+           !this.hasExtensionsInPanel(policies) &&
+           !this.isPrivateWindowMissingExtensionsWithoutPBMAccess() &&
+@@ -2728,32 +2733,30 @@ var gUnifiedExtensions = {
+       this.blocklistAttentionInfo =
+         await AddonManager.getBlocklistAttentionInfo();
+ 
+-      let panel = this.panel;
+-
+       if (!this._listView) {
+         this._listView = PanelMultiView.getViewNode(
+           document,
+-          "unified-extensions-view"
++          view,
+         );
+         this._listView.addEventListener("ViewShowing", this);
+         this._listView.addEventListener("ViewHiding", this);
+       }
+ 
+-      if (this._button.open) {
++      if (button.open) {
+         PanelMultiView.hidePopup(panel);
+-        this._button.open = false;
++        button.open = false;
+       } else {
+         // Overflow extensions placed in collapsed toolbars, if any.
+         for (const toolbarId of CustomizableUI.getCollapsedToolbarIds(window)) {
+           // We pass `false` because all these toolbars are collapsed.
+-          this.onToolbarVisibilityChange(toolbarId, /* isVisible */ false);
++          this.onToolbarVisibilityChange(toolbarId, /* isVisible */ false, panel);
+         }
+ 
+         panel.hidden = false;
+         this.recordButtonTelemetry(reason || "extensions_panel_showing");
+         this.ensureButtonShownBeforeAttachingPanel(panel);
+-        PanelMultiView.openPopup(panel, this._button, {
+-          position: "bottomright topright",
++        PanelMultiView.openPopup(panel, button, {
++          position: gZenUIManager.panelUIPosition(panel, button),
+           triggerEvent: aEvent,
+         });
+       }
+@@ -2948,18 +2951,20 @@ var gUnifiedExtensions = {
+       this._maybeMoveWidgetNodeBack(widgetId);
+     }
+ 
+-    this.pinToToolbar(widgetId, shouldPinToToolbar);
++    await this.pinToToolbar(widgetId, shouldPinToToolbar);
+   },
+ 
+-  pinToToolbar(widgetId, shouldPinToToolbar) {
++  async pinToToolbar(widgetId, shouldPinToToolbar) {
+     let newArea = shouldPinToToolbar
+       ? CustomizableUI.AREA_NAVBAR
+       : CustomizableUI.AREA_ADDONS;
+     let newPosition = shouldPinToToolbar ? undefined : 0;
++    await gZenVerticalTabsManager._preCustomize();
+ 
+     CustomizableUI.addWidgetToArea(widgetId, newArea, newPosition);
+     // addWidgetToArea() will trigger onWidgetAdded or onWidgetMoved as needed,
+     // and our handlers will call updateAttention() as needed.
++    await gZenVerticalTabsManager._postCustomize();
+   },
+ 
+   async moveWidget(menu, direction) {

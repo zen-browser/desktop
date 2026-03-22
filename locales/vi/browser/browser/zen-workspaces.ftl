@@ -1,0 +1,75 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-panel-ui-workspaces-text = Không gian
+zen-panel-ui-spaces-label = 
+    .label = Không gian
+zen-panel-ui-workspaces-create = 
+    .label = Tạo không gian
+zen-panel-ui-folder-create = 
+    .label = Tạo thư mục thẻ
+zen-panel-ui-live-folder-create = 
+    .label = Thư mục động
+zen-panel-ui-new-empty-split = 
+    .label = Khung chia mới
+zen-workspaces-panel-context-delete = 
+    .label = Xóa không gian
+    .accesskey = D
+zen-workspaces-panel-change-name = 
+    .label = Đổi tên
+zen-workspaces-panel-change-icon = 
+    .label = Đổi biểu tượng
+zen-workspaces-panel-context-default-profile = 
+    .label = Thiết lập hồ sơ
+zen-workspaces-panel-unload = 
+    .label = Giải phóng không gian
+zen-workspaces-panel-unload-others = 
+    .label = Ngưng tải tất cả không gian khác
+zen-workspaces-how-to-reorder-title = Cách sắp xếp thứ tự không gian
+zen-workspaces-how-to-reorder-desc = Kéo các biểu tượng không gian dưới thanh bên để sắp xếp thứ tự
+zen-workspaces-change-theme = 
+    .label = Chỉnh sửa chủ đề
+zen-workspaces-panel-context-open = 
+    .label = Mở không gian làm việc
+    .accesskey = O
+zen-workspaces-panel-context-edit = 
+    .label = Chỉnh sửa không gian
+    .accesskey = E
+zen-bookmark-edit-panel-workspace-selector = 
+    .value = Không gian
+    .accesskey = W
+zen-panel-ui-gradient-generator-algo-complementary = 
+    .label = Bổ túc
+zen-panel-ui-gradient-generator-algo-splitComplementary = 
+    .label = Xen kẽ
+zen-panel-ui-gradient-generator-algo-analogous = 
+    .label = Tương đồng
+zen-panel-ui-gradient-generator-algo-triadic = 
+    .label = Bộ ba
+zen-panel-ui-gradient-generator-algo-floating = 
+    .label = Nổi
+zen-panel-ui-gradient-click-to-add = Nhấn để thêm màu sắc
+zen-workspace-creation-name = 
+    .placeholder = Tên không gian
+zen-move-tab-to-workspace-button = 
+    .label = Di chuyển đến...
+    .tooltiptext = Di chuyển toàn bộ thẻ trong cửa sổ này đến một không gian
+zen-workspaces-panel-context-reorder = 
+    .label = Sắp xếp lại không gian
+zen-workspace-creation-profile = Hồ sơ
+    .tooltiptext = Các hồ sơ sẽ không dùng chung dữ liệu giữa các không gian làm việc.
+zen-workspace-creation-header = Tạo không gian
+zen-workspace-creation-label = Không gian dùng để sắp xếp các thẻ và phiên làm việc của bạn.
+zen-workspaces-delete-workspace-title = Xóa không gian?
+zen-workspaces-delete-workspace-body = Bạn có chắc chắn muốn xóa { $name }? Thao tác này không thể hoàn tác.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Đã đóng các thẻ! Nhấn <span>{ $shortcut }</span> để hoàn tác.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Đóng
+    .tooltiptext = Đóng toàn bộ thẻ chưa ghim
+zen-panel-ui-workspaces-change-forward = 
+    .label = Không gian tiếp theo
+zen-panel-ui-workspaces-change-back = 
+    .label = Không gian trước đó

@@ -1,0 +1,13 @@
+diff --git a/layout/style/nsStyleSheetService.h b/layout/style/nsStyleSheetService.h
+index 86a6767302820221f879e31e06cf012137185ffd..50c8cdfb94f186ffdc9f1ebdedf8db294f8b8366 100644
+--- a/layout/style/nsStyleSheetService.h
++++ b/layout/style/nsStyleSheetService.h
+@@ -49,6 +49,8 @@ class nsStyleSheetService final : public nsIStyleSheetService,
+ 
+   size_t SizeOfIncludingThis(mozilla::MallocSizeOf aMallocSizeOf) const;
+ 
++  void ZenMarkStylesAsChanged();
++
+   static nsStyleSheetService* GetInstance();
+   static nsStyleSheetService* gInstance;
+ 

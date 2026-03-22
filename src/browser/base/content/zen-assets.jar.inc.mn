@@ -1,0 +1,21 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+#include ../../../zen/common/jar.inc.mn
+#include ../../../zen/compact-mode/jar.inc.mn
+#include ../../../zen/drag-and-drop/jar.inc.mn
+#include ../../../zen/split-view/jar.inc.mn
+#include ../../../zen/mods/jar.inc.mn
+#include ../../../zen/spaces/jar.inc.mn
+#include ../../../zen/tabs/jar.inc.mn
+#include ../../../zen/kbs/jar.inc.mn
+#include ../../../zen/glance/jar.inc.mn
+#include ../../../zen/folders/jar.inc.mn
+#include ../../../zen/welcome/jar.inc.mn
+#include ../../../zen/media/jar.inc.mn
+#include ../../../zen/downloads/jar.inc.mn
+#include ../../../zen/images/jar.inc.mn
+#include ../../../zen/vendor/jar.inc.mn
+#include ../../../zen/fonts/jar.inc.mn
+#include ../../../zen/live-folders/jar.inc.mn

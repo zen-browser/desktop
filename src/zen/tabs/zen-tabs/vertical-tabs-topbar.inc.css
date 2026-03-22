@@ -1,0 +1,43 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+--zen-toolbar-height: 34px;
+
+height: var(--zen-toolbar-height);
+z-index: 1;
+
+#zen-appcontent-navbar-container {
+  display: flex;
+  min-height: var(--zen-toolbar-height);
+}
+
+@media -moz-pref('zen.view.hide-window-controls') {
+  transition: height var(--zen-hidden-toolbar-transition), opacity var(--zen-hidden-toolbar-transition);
+  will-change: height, opacity;
+  transition-delay: 0.2s;
+  overflow: clip;
+
+%include ../../compact-mode/windows-captions-fix-active.inc.css
+
+  &:not([zen-has-hover='true']):not([has-popup-menu]):not([zen-compact-mode-active]) {
+    height: var(--zen-element-separation);
+    opacity: 0;
+    & #zen-appcontent-navbar-container {
+      pointer-events: none;
+    }
+
+%include ../../compact-mode/windows-captions-fix-default.inc.css
+  }
+
+  @media -moz-pref('zen.view.experimental-no-window-controls') {
+    :root:not([zen-has-bookmarks]) & {
+      max-height: 0 !important;
+      overflow: hidden;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+  }
+}

@@ -1,0 +1,75 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-panel-ui-workspaces-text = Χώροι Εργασίας
+zen-panel-ui-spaces-label = 
+    .label = Χώροι Εργασίας
+zen-panel-ui-workspaces-create = 
+    .label = Δημιουργία Χώρου
+zen-panel-ui-folder-create = 
+    .label = Δημιουργία Φακέλου
+zen-panel-ui-live-folder-create = 
+    .label = Live Folder
+zen-panel-ui-new-empty-split = 
+    .label = Νέος Διαχωρισμός
+zen-workspaces-panel-context-delete = 
+    .label = Διαγραφή Χώρου Εργασίας
+    .accesskey = D
+zen-workspaces-panel-change-name = 
+    .label = Αλλαγή Ονόματος
+zen-workspaces-panel-change-icon = 
+    .label = Αλλαγή Εικονιδίου
+zen-workspaces-panel-context-default-profile = 
+    .label = Ορισμός Προφίλ
+zen-workspaces-panel-unload = 
+    .label = Εκφόρτωση Χώρου Εργασίας
+zen-workspaces-panel-unload-others = 
+    .label = Unload All Other Spaces
+zen-workspaces-how-to-reorder-title = Πώς να αναδιατάξετε τους χώρους
+zen-workspaces-how-to-reorder-desc = Σύρετε τα εικονίδια χώρου στο κάτω μέρος της πλαϊνής μπάρας για να τα αναδιατάξετε
+zen-workspaces-change-theme = 
+    .label = Επεξεργασία Θέματος
+zen-workspaces-panel-context-open = 
+    .label = Άνοιγμα Χώρου Εργασίας
+    .accesskey = O
+zen-workspaces-panel-context-edit = 
+    .label = Επεξεργασία Χώρου Εργασίας
+    .accesskey = E
+zen-bookmark-edit-panel-workspace-selector = 
+    .value = Χώροι Εργασίας
+    .accesskey = W
+zen-panel-ui-gradient-generator-algo-complementary = 
+    .label = Συμπληρωματικό
+zen-panel-ui-gradient-generator-algo-splitComplementary = 
+    .label = Διάσπαση
+zen-panel-ui-gradient-generator-algo-analogous = 
+    .label = Ανάλογο
+zen-panel-ui-gradient-generator-algo-triadic = 
+    .label = Τριαδικό
+zen-panel-ui-gradient-generator-algo-floating = 
+    .label = Αιωρούμενο
+zen-panel-ui-gradient-click-to-add = Κλικ για προσθήκη χρώματος
+zen-workspace-creation-name = 
+    .placeholder = Όνομα Χώρου
+zen-move-tab-to-workspace-button = 
+    .label = Μετακίνησή προς...
+    .tooltiptext = Μετακίνηση όλων των καρτελών από αυτό το παράθυρο σε χώρο εργασίας
+zen-workspaces-panel-context-reorder = 
+    .label = Αναδιάταξη Χώρων
+zen-workspace-creation-profile = Προφίλ
+    .tooltiptext = Τα προφίλ χρησιμοποιούνται για να διαχωρίζουν τα cookies και τα δεδομένα του ιστότοπου μεταξύ των χώρων.
+zen-workspace-creation-header = Δημιουργία Χώρου
+zen-workspace-creation-label = Οι χώροι χρησιμοποιούνται για την οργάνωση των καρτελών και των συνεδριών σας.
+zen-workspaces-delete-workspace-title = Διαγραφή Χώρου Εργασίας;
+zen-workspaces-delete-workspace-body = Είστε σίγουροι ότι Θέλετε να διαγράψετε το { $name }; Αυτή η πράξη δεν μπορεί να αναιρεθεί.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Οι καρτέλες έκλεισαν! Χρησιμοποιήστε <span>{ $shortcut }</span> για αναίρεσή.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Εκκαθάρισή
+    .tooltiptext = Κλείσιμο όλων των μη καρφιτσωμένων καρτελών
+zen-panel-ui-workspaces-change-forward = 
+    .label = Επόμενος Χώρος Εργασίας
+zen-panel-ui-workspaces-change-back = 
+    .label = Προηγούμενος Χώρος Εργασίας

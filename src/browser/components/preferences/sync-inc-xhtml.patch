@@ -1,0 +1,15 @@
+diff --git a/browser/components/preferences/sync.inc.xhtml b/browser/components/preferences/sync.inc.xhtml
+index d473643ccf12b1f1116acaed2d5541622982ee6e..2e3496c24533f4c663c9b07bf689d18c1ed11b95 100644
+--- a/browser/components/preferences/sync.inc.xhtml
++++ b/browser/components/preferences/sync.inc.xhtml
+@@ -223,6 +223,10 @@
+                     <image class="sync-engine-image sync-engine-prefs" alt=""/>
+                     <label data-l10n-id="sync-currently-syncing-settings"/>
+                   </html:div>
++                  <html:div engine_preference="services.sync.engine.workspaces">
++                    <image class="sync-engine-image sync-engine-workspaces" alt=""/>
++                    <label data-l10n-id="sync-currently-syncing-workspaces"/>
++                  </html:div>
+                 </html:div>
+                 <hbox>
+                   <button id="syncChangeOptions"

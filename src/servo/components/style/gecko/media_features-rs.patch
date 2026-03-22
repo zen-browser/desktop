@@ -1,0 +1,43 @@
+diff --git a/servo/components/style/gecko/media_features.rs b/servo/components/style/gecko/media_features.rs
+index 21c274075116ace81c29babbf8b2ce94fa749e4f..512f34734d6a4d81bde1aed3df5a655e9310a2ec 100644
+--- a/servo/components/style/gecko/media_features.rs
++++ b/servo/components/style/gecko/media_features.rs
+@@ -15,6 +15,9 @@ use crate::values::computed::{CSSPixelLength, Context, Ratio, Resolution};
+ use crate::values::specified::color::ForcedColors;
+ use app_units::Au;
+ use euclid::default::Size2D;
++use crate::queries::condition::MozPrefFeatureValue;
++use selectors::kleene_value::KleeneValue;
++use crate::values::AtomString;
+ 
+ fn device_size(device: &Device) -> Size2D<Au> {
+     let mut width = 0;
+@@ -617,6 +620,13 @@ fn eval_scripting(context: &Context, query_value: Option<Scripting>) -> bool {
+ fn eval_moz_overlay_scrollbars(context: &Context) -> bool {
+     unsafe { bindings::Gecko_MediaFeatures_UseOverlayScrollbars(context.device().document()) }
+ }
++ 
++fn eval_moz_bool_pref(_: &Context, pref: Option<&AtomString>) -> KleeneValue {
++    let Some(pref) = pref else {
++        return KleeneValue::False;
++    };
++    KleeneValue::from(unsafe { bindings::Gecko_EvalMozPrefFeature(pref.as_ptr(), &MozPrefFeatureValue::<i32>::None) })
++}
+ 
+ fn eval_moz_mac_rtl(context: &Context) -> bool {
+     unsafe { bindings::Gecko_MediaFeatures_MacRTL(context.device().document()) }
+@@ -660,7 +670,13 @@ macro_rules! lnf_int_feature {
+ /// to support new types in these entries and (2) ensuring that either
+ /// nsPresContext::MediaFeatureValuesChanged is called when the value that
+ /// would be returned by the evaluator function could change.
+-pub static MEDIA_FEATURES: [QueryFeatureDescription; 60] = [
++pub static MEDIA_FEATURES: [QueryFeatureDescription; 61] = [
++    feature!(
++        atom!("-moz-bool-pref"),
++        AllowsRanges::No,
++        Evaluator::String(eval_moz_bool_pref),
++        FeatureFlags::CHROME_AND_UA_ONLY,
++    ),
+     feature!(
+         atom!("width"),
+         AllowsRanges::Yes,

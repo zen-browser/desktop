@@ -1,0 +1,63 @@
+{
+  "name": "zen-desktop",
+  "version": "1.0.0",
+  "description": "",
+  "lint-staged": {
+    "**/*": ""
+  },
+  "type": "module",
+  "scripts": {
+    "build": "surfer build",
+    "build:ui": "surfer build --ui",
+    "start": "cd engine && python3 ./mach run --noprofile",
+    "import": "npm run ffprefs && npm run import:dumps && surfer import",
+    "import:dumps": "python3 scripts/update_service_dumps.py",
+    "export": "surfer export",
+    "init": "npm run download && npm run import && npm run bootstrap",
+    "download": "surfer download",
+    "bootstrap": "surfer bootstrap",
+    "package": "surfer package",
+    "sync": "python3 scripts/update_ff.py",
+    "sync:raw": "surfer update",
+    "sync:rc": "python3 scripts/update_ff.py --rc",
+    "sync:l10n": "python3 scripts/update_ff.py --just-l10n",
+    "lint": "cd engine && ./mach lint zen",
+    "lint:fix": "npm run lint -- --fix",
+    "prepare": "husky",
+    "reset-ff": "surfer reset",
+    "surfer": "surfer",
+    "test": "python3 scripts/run_tests.py",
+    "test:dbg": "python3 scripts/run_tests.py --jsdebugger --debug-on-failure",
+    "ffprefs": "cd tools/ffprefs && cargo run --bin ffprefs -- ../../",
+    "lc": "surfer license-check",
+    "lc:fix": "surfer license-check --fix",
+    "use-moz-src": "cd engine && ./mach use-moz-src",
+    "ci": "surfer ci --brand release --display-version"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zen-browser/desktop.git"
+  },
+  "hooks": {
+    "pre-commit": "npm run prepare"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/zen-browser/desktop/issues"
+  },
+  "homepage": "https://github.com/zen-browser/desktop#readme",
+  "devDependencies": {
+    "@babel/preset-typescript": "^7.27.0",
+    "@zen-browser/prettier": "^3.9.3",
+    "@zen-browser/surfer": "^1.13.4",
+    "formal-git": "^1.2.9",
+    "globals": "^16.3.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.3.0",
+    "typescript": "^5.9.3"
+  },
+  "notes(private)": "We don't want to publish to npm, so this is marked as private",
+  "private": true
+}

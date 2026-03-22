@@ -1,0 +1,38 @@
+diff --git a/dom/media/mediacontrol/MediaController.cpp b/dom/media/mediacontrol/MediaController.cpp
+index 51369c404f10d6c83e83c4284efc6c19a08961a0..3d5c2e48187d59fba0dde348894da4dc03a66eee 100644
+--- a/dom/media/mediacontrol/MediaController.cpp
++++ b/dom/media/mediacontrol/MediaController.cpp
+@@ -51,6 +51,25 @@ void MediaController::GetSupportedKeys(
+   }
+ }
+ 
++void MediaController::GetPositionState(MediaControllerPositionState& aPositionState, ErrorResult& aRv) {
++  if (!IsActive() || mShutdown) {
++    LOG("Cannot get position state: controller is inactive or shut down");
++    aRv.Throw(NS_ERROR_NOT_AVAILABLE);
++    return;
++  }
++
++  Maybe<PositionState> currentPositionState = GetCurrentPositionState();
++  if (!currentPositionState) {
++    LOG("No position state available for controller %" PRId64, Id());
++    aRv.Throw(NS_ERROR_NOT_AVAILABLE);
++    return;
++  }
++
++  aPositionState.mDuration = currentPositionState->mDuration;
++  aPositionState.mPosition = currentPositionState->mLastReportedPlaybackPosition;
++  aPositionState.mPlaybackRate = currentPositionState->mPlaybackRate;
++}
++
+ void MediaController::GetMetadata(MediaMetadataInit& aMetadata,
+                                   ErrorResult& aRv) {
+   if (!IsActive() || mShutdown) {
+@@ -412,6 +431,7 @@ void MediaController::SetIsInPictureInPictureMode(
+   ForceToBecomeMainControllerIfNeeded();
+   UpdateDeactivationTimerIfNeeded();
+   mPictureInPictureModeChangedEvent.Notify(mIsInPictureInPictureMode);
++  DispatchAsyncEvent(u"pictureinpicturemodechange"_ns);
+ }
+ 
+ void MediaController::NotifyMediaFullScreenState(uint64_t aBrowsingContextId,

@@ -1,0 +1,12 @@
+diff --git a/browser/components/urlbar/UrlbarPrefs.sys.mjs b/browser/components/urlbar/UrlbarPrefs.sys.mjs
+index ec7b7eeee7999aba76286e84808ed09ffc6df463..12bfafdc7e34c5d6345579cd0aaf515a19d82b31 100644
+--- a/browser/components/urlbar/UrlbarPrefs.sys.mjs
++++ b/browser/components/urlbar/UrlbarPrefs.sys.mjs
+@@ -760,6 +760,7 @@ function makeDefaultResultGroups({ showSearchSuggestionsFirst }) {
+    */
+   let rootGroup = {
+     children: [
++      { children: [{ group: lazy.UrlbarUtils.RESULT_GROUP.ZEN_ACTION }] },
+       // heuristic
+       {
+         maxResultCount: 1,

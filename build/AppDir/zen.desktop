@@ -1,0 +1,31 @@
+[Desktop Entry]
+Name=Zen Browser
+Comment=Experience tranquillity while browsing the web without people tracking you!
+Exec=zen %u
+Icon=zen
+Type=Application
+MimeType=text/html;text/xml;application/xhtml+xml;x-scheme-handler/http;x-scheme-handler/https;application/x-xpinstall;application/pdf;application/json;
+StartupWMClass=zen
+Categories=Network;WebBrowser;
+StartupNotify=true
+Terminal=false
+X-MultipleArgs=false
+Keywords=Internet;WWW;Browser;Web;Explorer;
+Actions=new-window;new-blank-window;new-private-window;profilemanager;
+X-AppImage-Version=$VERSION
+
+[Desktop Action new-window]
+Name=Open a New Window
+Exec=zen %u
+
+[Desktop Action new-blank-window]
+Name=Open a New Blank Window
+Exec=zen --blank-window %u
+
+[Desktop Action new-private-window]
+Name=Open a New Private Window
+Exec=zen --private-window %u
+
+[Desktop Action profilemanager]
+Name=Open the Profile Manager
+Exec=zen --ProfileManager %u

@@ -1,0 +1,40 @@
+diff --git a/toolkit/xre/nsXREDirProvider.cpp b/toolkit/xre/nsXREDirProvider.cpp
+index 1b346ce2e62b6947e9f6b5f5f88ec16454847e09..301f896842a3f598b99eb3b9f617b361d423ca0e 100644
+--- a/toolkit/xre/nsXREDirProvider.cpp
++++ b/toolkit/xre/nsXREDirProvider.cpp
+@@ -1342,9 +1342,11 @@ nsresult nsXREDirProvider::AppendFromAppData(nsIFile* aFile, bool aIsDotted) {
+   // Similar to nsXREDirProvider::AppendProfilePath.
+   // TODO: Bug 1990407 - Evaluate if refactoring might be required there in the
+   // future?
+-  if (gAppData->profile) {
++  // Use aIsDotted for a different purpose here, will probably break in the future
++  if (gAppData->profile && aIsDotted) {
+     nsAutoCString profile;
+     profile = gAppData->profile;
++    profile = "."_ns + nsDependentCString(gAppData->profile);
+     MOZ_TRY(aFile->AppendRelativeNativePath(profile));
+   } else {
+     nsAutoCString vendor;
+@@ -1354,8 +1356,6 @@ nsresult nsXREDirProvider::AppendFromAppData(nsIFile* aFile, bool aIsDotted) {
+     ToLowerCase(vendor);
+     ToLowerCase(appName);
+ 
+-    MOZ_TRY(aFile->AppendRelativeNativePath(aIsDotted ? ("."_ns + vendor)
+-                                                      : vendor));
+     MOZ_TRY(aFile->AppendRelativeNativePath(appName));
+   }
+ 
+@@ -1523,13 +1523,8 @@ nsresult nsXREDirProvider::GetLegacyOrXDGHomePath(const char* aHomeDir,
+ 
+     // If the build was made against a specific profile name, MOZ_APP_PROFILE=
+     // then make sure we respect this and dont move to XDG directory
+-    if (gAppData->profile) {
+-      MOZ_TRY(NS_NewNativeLocalFile(nsDependentCString(aHomeDir),
+-                                    getter_AddRefs(localDir)));
+-    } else {
+       MOZ_TRY(GetLegacyOrXDGConfigHome(aHomeDir, getter_AddRefs(localDir)));
+       MOZ_TRY(localDir->Clone(getter_AddRefs(parentDir)));
+-    }
+ 
+     MOZ_TRY(AppendFromAppData(localDir, false));
+   }

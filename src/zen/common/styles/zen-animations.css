@@ -1,0 +1,58 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+@keyframes zen-back-and-forth-text {
+  0%,
+  10% {
+    transform: translateX(0);
+    left: 0;
+  }
+
+  45%,
+  65% {
+    transform: translateX(calc(-100% - 5px));
+    left: 100%;
+  }
+
+  90%,
+  100% {
+    transform: translateX(0);
+    left: 0;
+  }
+}
+
+/* Mark: URL Bar */
+@keyframes zen-urlbar-searchmode {
+  0% {
+    box-shadow: 0 0 20px
+      color-mix(in srgb, color-mix(in srgb, var(--zen-primary-color), var(--toolbox-textcolor) 20%), light-dark(rgba(0, 0, 0, 0.3), transparent) 50%);
+  }
+
+  100% {
+    box-shadow: 0 0 250px color-mix(in srgb, var(--zen-primary-color), transparent 100%);
+  }
+}
+
+@keyframes zen-dialog-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes zen-text-gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: -400% 50%;
+  }
+}

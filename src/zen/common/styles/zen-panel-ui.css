@@ -1,0 +1,58 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+menupopup,
+panel[type="arrow"]:not(#feature-callout) {
+  @media (-moz-windows-mica-popups) {
+    appearance: auto !important;
+    -moz-default-appearance: menupopup;
+    /* The blur behind doesn't blur all that much, add a semi-transparent
+     * background to improve contrast */
+    --panel-background: light-dark(rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.5)) !important;
+
+    /* The mica rendering already adds a shadow and a border, so we
+     * remove the one we add via CSS */
+    --panel-shadow-margin: 0px !important;
+    --panel-border-color: transparent !important;
+    border: none !important;
+
+    transition-duration: 0s !important;
+
+    &::part(content) {
+      /* Refrain from animating for now as we haven't found a
+       * way to properly animate the popup without having the mica
+       * backdrop staying still while the popup animates */
+      animation: none !important;
+    }
+  }
+
+  @media (-moz-platform: macos) {
+    &:where([nonnativepopover="true"], :not([type="arrow"])) {
+      appearance: auto !important;
+      -moz-default-appearance: menupopup;
+      /* We set the default background here, rather than on ::part(content),
+       * because otherwise it'd interfere with the native look. Non-native-looking
+       * popups should get their background via --panel-background */
+      background-color: Menu !important;
+    }
+
+    --panel-shadow-margin: 0px !important;
+    --panel-background: transparent !important;
+    --panel-border-color: transparent;
+
+    /* Remove the shadow for the native panels, as macos already
+     * adds the shadows to the window. This is specially important
+     * on Tahoe, where we *don't* apply an image mask, meaning that
+     * trying to render a shadow would end up in having weird borders
+     * around the panel */
+    --panel-shadow: none;
+
+    &::part(content) {
+      /* This shoudn't really be needed, but just in case */
+      background-color: transparent !important;
+    }
+  }
+}

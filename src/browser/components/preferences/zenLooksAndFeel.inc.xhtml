@@ -1,0 +1,118 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+<script type="text/javascript" src="chrome://browser/content/preferences/zen-settings.js"/>
+<html:template id="template-paneZenLooks">
+
+<hbox id="zenVerticalTabsCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenLooks">
+<html:h1 data-l10n-id="zen-vertical-tabs-title"/>
+</hbox>
+
+<groupbox id="zenVerticalTabsGroup" data-category="paneZenLooks" hidden="true" class="highlighting-group">
+  <label><html:h2 data-l10n-id="zen-vertical-tabs-layout-header"/></label>
+    <description class="description-deemphasized" data-l10n-id="zen-vertical-tabs-layout-description" />
+    <hbox id="zenLayoutList">
+      <hbox layout="single">
+        <html:img src="chrome://browser/content/zen-images/layouts/single-toolbar.png" />
+        <label data-l10n-id="zen-layout-single-toolbar"></label>
+      </hbox>
+      <hbox layout="multiple">
+        <html:img src="chrome://browser/content/zen-images/layouts/multiple-toolbar.png" />
+        <label data-l10n-id="zen-layout-multiple-toolbar"></label>
+      </hbox>
+      <hbox layout="collapsed">
+        <html:img src="chrome://browser/content/zen-images/layouts/collapsed.png" />
+        <label data-l10n-id="zen-layout-collapsed-toolbar"></label>
+      </hbox>
+    </hbox>
+  <label><html:h2 data-l10n-id="zen-vertical-tabs-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-vertical-tabs-description" />
+
+      <checkbox id="zenLooksAndFeelNewtabUnderLastTab"
+            data-l10n-id="zen-vertical-tabs-newtab-on-tab-list"
+            preference="zen.tabs.show-newtab-vertical"/>
+    <vbox class="indent">
+        <checkbox id="zenLooksAndFeelMoveNewtabToTop"
+                data-l10n-id="zen-vertical-tabs-newtab-top-button-up"
+                preference="zen.view.show-newtab-button-top"/>
+    </vbox>
+    <html:div data-l10n-id="preferences-web-appearance-footer">
+        <html:a id="web-appearance-manage-themes-link" class="text-link" data-l10n-name="themes-link" href="about:addons" target="_blank" />
+    </html:div>
+</groupbox>
+
+<hbox id="zenThemeCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenLooks">
+<html:h1 data-l10n-id="pane-zen-theme-title"/>
+</hbox>
+
+<groupbox id="zenThemeGroup" data-category="paneZenLooks" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-look-and-feel-compact-view-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-look-and-feel-compact-view-description" />
+
+      <vbox class="indent">
+            <checkbox id="zenLooksAndFeelEnableToolbarFlashPopup"
+                      data-l10n-id="zen-look-and-feel-compact-toolbar-flash-popup"
+                      preference="zen.view.compact.toolbar-flash-popup"/>
+      </vbox>
+</groupbox>
+
+<hbox id="zenGlanceCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenLooks">
+<html:h1 data-l10n-id="zen-glance-title"/>
+</hbox>
+
+<groupbox id="zenGlanceGroup" data-category="paneZenLooks" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-glance-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-glance-description" />
+
+      <checkbox id="zenLooksAndFeelGlanceEnabled"
+            data-l10n-id="zen-glance-enabled"
+            preference="zen.glance.enabled"/>
+      <hbox align="center">
+            <label id="zenGlanceTriggerLabel" data-l10n-id="zen-glance-trigger-label"/>
+            <menulist id="zenGlanceTrigger" preference="zen.glance.activation-method">
+                  <menupopup>
+                        <menuitem data-l10n-id="zen-glance-trigger-ctrl-click" value="ctrl"/>
+                        <menuitem data-l10n-id="zen-glance-trigger-alt-click" value="alt"/>
+                        <menuitem data-l10n-id="zen-glance-trigger-shift-click" value="shift"/>
+#ifdef XP_MACOSX
+                        <menuitem data-l10n-id="zen-glance-trigger-meta-click" value="meta"/>
+#endif
+                  </menupopup>
+            </menulist>
+        </hbox>
+</groupbox>
+
+<hbox id="zenUrlBarCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenLooks">
+<html:h1 data-l10n-id="zen-urlbar-title"/>
+</hbox>
+
+<groupbox id="zenUrlbarGroup" data-category="paneZenLooks" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-urlbar-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-urlbar-description" />
+
+      <hbox align="center">
+            <label data-l10n-id="zen-urlbar-behavior-label"/>
+            <menulist preference="zen.urlbar.behavior">
+                  <menupopup>
+                        <menuitem data-l10n-id="zen-urlbar-behavior-normal" value="normal"/>
+                        <menuitem data-l10n-id="zen-urlbar-behavior-floating-on-type" value="floating-on-type"/>
+                        <menuitem data-l10n-id="zen-urlbar-behavior-float" value="float"/>
+                  </menupopup>
+            </menulist>
+        </hbox>
+</groupbox>
+
+</html:template>

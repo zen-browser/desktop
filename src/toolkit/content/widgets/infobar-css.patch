@@ -1,0 +1,23 @@
+diff --git a/toolkit/content/widgets/infobar.css b/toolkit/content/widgets/infobar.css
+index 4c224f90b747aa674743ac2182066f5da5e730e0..0ef2c8691459a5c3ace5b3530bfaf245b440678b 100644
+--- a/toolkit/content/widgets/infobar.css
++++ b/toolkit/content/widgets/infobar.css
+@@ -102,3 +102,18 @@ strong {
+ :host([type="system"]) .content {
+   margin-inline-start: 0;
+ }
++
++/**
++ * Zen Override
++ */
++:host(.infobar) {
++  --info-bar-background-color: transparent !important;
++  margin: 0;
++  border: 0;
++  border-top: 1px solid var(--arrowpanel-border-color);
++
++  &::before {
++    border-start-start-radius: 0px;
++    border-end-start-radius: 0px;
++  }
++}

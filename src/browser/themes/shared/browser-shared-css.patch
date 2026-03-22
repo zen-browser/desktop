@@ -1,0 +1,29 @@
+diff --git a/browser/themes/shared/browser-shared.css b/browser/themes/shared/browser-shared.css
+index 4e7ca6259c92da2c45c6ea3157863b971fbd6201..15da124b3e10da664bc0ba3a63cd02b33e31337c 100644
+--- a/browser/themes/shared/browser-shared.css
++++ b/browser/themes/shared/browser-shared.css
+@@ -155,8 +155,6 @@ body {
+    */
+   &.fullscreen-with-menubar {
+     z-index: var(--browser-area-z-index-toolbox-while-animating);
+-    box-shadow: var(--content-area-shadow);
+-    border-bottom-color: var(--chrome-content-separator-color);
+   }
+ 
+   /* Themes define a set of toolbox foreground and background colors which we
+@@ -265,13 +263,13 @@ body {
+ 
+   @media (-moz-platform: macos) and (not (-moz-mac-rtl)) {
+     &:-moz-locale-dir(ltr) {
+-      order: -1;
++      order: -2;
+     }
+   }
+ 
+   @media (-moz-mac-rtl) {
+     &:-moz-locale-dir(rtl) {
+-      order: -1;
++      order: -2;
+     }
+   }
+ 

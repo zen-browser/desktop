@@ -1,0 +1,527 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+@namespace html "http://www.w3.org/1999/xhtml";
+
+:root {
+  --in-content-box-background: var(--zen-colors-tertiary) !important;
+}
+
+.main-content {
+  padding-top: 60px !important;
+}
+
+.pane-container {
+  margin: auto;
+}
+
+description {
+  margin-top: 0 !important;
+}
+
+@keyframes dialogPopin {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+html|dialog {
+  animation: dialogPopin 0.2s ease-out;
+}
+
+.sticky-inner-container {
+  display: none !important;
+}
+
+.subcategory {
+  border-top: none !important;
+}
+
+.navigation {
+  padding: 4%;
+  background: var(--zen-colors-tertiary);
+}
+
+groupbox button {
+  border-radius: 5px !important;
+}
+
+groupbox button,
+groupbox menulist {
+  background-color: light-dark(#f1f1f1, #363636);
+  color: light-dark(black, white);
+}
+
+groupbox h2 {
+  opacity: 0.7;
+  font-size: 15px;
+}
+
+#categories {
+  margin: 0 !important;
+}
+
+#categories > .category {
+  margin-left: 0 !important;
+  min-height: 40px !important;
+  position: relative;
+  padding-inline: 20px !important;
+}
+
+.textbox-search-sign {
+  margin-right: 15px;
+}
+
+.sidebar-footer-list {
+  margin-left: 0 !important;
+}
+
+.category-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+
+/* Look and feel */
+
+#webAppearanceSettings {
+  margin-bottom: 15px;
+}
+
+#category-zen-looks > .category-icon {
+  list-style-image: url("chrome://browser/skin/customize.svg");
+}
+
+#zenLooksAndFeelGroup > html|div:last-of-type {
+  margin-top: 15px;
+}
+
+.zen-compact-mode-styles-browser-wrapper {
+  width: 55%;
+  height: 60px;
+  display: flex;
+  border-radius: 10px;
+  border: 1px solid var(--zen-colors-border);
+  background: var(--zen-colors-tertiary);
+  position: relative;
+  --zen-compact-mode-styles-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.1);
+
+  @media not (prefers-color-scheme: dark) {
+    --zen-compact-mode-styles-shadow: 0 0 0.5px 0.5px rgba(0, 0, 0, 0.1);
+  }
+
+  box-shadow: var(--zen-compact-mode-styles-shadow);
+
+  padding: 7px;
+
+  &[top] div {
+    width: 100%;
+    background: var(--zen-primary-color);
+    border-radius: 5px;
+    height: 18px;
+    box-shadow: var(--zen-compact-mode-styles-shadow);
+  }
+
+  &[left] div {
+    width: 18px;
+    background: var(--zen-primary-color);
+    border-radius: 5px;
+    height: 100%;
+    box-shadow: var(--zen-compact-mode-styles-shadow);
+  }
+
+  &[both] div {
+    width: 100%;
+    height: 100%;
+    background: var(--zen-colors-secondary);
+    border-radius: 5px;
+    box-shadow: var(--zen-compact-mode-styles-shadow);
+  }
+}
+
+/* Workspace */
+
+#category-zen-tabs-management > .category-icon {
+  list-style-image: url("chrome://browser/skin/window.svg");
+}
+
+#zenTabsUnloadDelayContainer {
+  display: flex;
+  align-items: center;
+
+  & #zenTabsUnloadDelay {
+    margin-left: auto;
+  }
+}
+
+/* CKS */
+
+#category-zen-CKS > .category-icon {
+  list-style-image: url("chrome://browser/skin/quickactions.svg");
+}
+
+.zenCKSOption-input {
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid var(--zen-colors-border);
+  margin-left: auto;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 40%;
+  user-select: none;
+  cursor: text;
+  background: transparent;
+  transition: border-color 0.1s;
+}
+
+.zenCKSOption {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+
+  & > vbox {
+    width: fit-content;
+    justify-content: end;
+    min-width: 70%;
+
+    & > label {
+      margin-left: auto;
+    }
+  }
+}
+
+.zenCKSOption > label {
+  font-size: 14px;
+  color: light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.7));
+  width: 100%;
+}
+
+.zenCKSOption-input.zenCKSOption-input-not-set {
+  color: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.3));
+}
+
+.zenCKSOption-input.zenCKSOption-input-editing {
+  border-color: transparent;
+  box-shadow: 0 0 0 2px var(--zen-primary-color);
+}
+
+.zenCKSOption-conflict {
+  color: red;
+  margin-left: 10px;
+  margin-top: 5px;
+}
+
+.zenCKSOption-unsafed {
+  color: light-dark(orange, yellow);
+  margin-left: 10px;
+  margin-top: 5px;
+}
+
+.zenCKSOption-input.zenCKSOption-input-invalid {
+  border-color: red;
+}
+
+.zenCKSOption-input.zenCKSOption-input-unsafed {
+  border-color: light-dark(orange, yellow);
+}
+
+.zenCKSOption-input.zenCKSOption-input-valid {
+  border-color: green;
+}
+
+#zenCKSOption-wrapper > [data-group] {
+  border-bottom: 1px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+  padding-top: 20px;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+/* Theme builder */
+
+#zen-theme-builder {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 15px;
+  background: var(--zen-colors-tertiary);
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+#zen-theme-builder-color-picker {
+  width: 180px;
+  height: 180px;
+  border-radius: 10px;
+  margin-right: 10px;
+  position: relative;
+}
+
+#zen-theme-builder-color-picker-canvas {
+  border-radius: 10px;
+  width: 100%;
+  height: 100%;
+}
+
+#zen-theme-builder-color-picker-deck {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% - 20px);
+  height: calc(100% - 20px);
+  border-radius: 10px;
+  margin: 10px;
+  background: light-dark(rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0.3));
+  backdrop-filter: blur(15px);
+  border: 2px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+}
+
+#zen-theme-builder-color-picker-thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 4px solid light-dark(white, black);
+  width: 20px;
+  height: 20px;
+  border-radius: 50px;
+  background: var(--zen-primary-color);
+  transform: translate(-50%, -50%);
+}
+
+/* THemes marketplace */
+
+#category-zen-marketplace > .category-icon {
+  list-style-image: url("chrome://mozapps/skin/extensions/category-themes.svg");
+}
+
+.zenThemeMarketplaceItem {
+  border: 1px solid var(--zen-colors-border);
+  border-radius: 5px;
+  padding: var(--space-medium);
+  position: relative;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.zenThemeMarketplaceItemHomepageButton {
+  width: 30px;
+  min-width: 0;
+  position: relative;
+  cursor: pointer;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 18px;
+    height: 18px;
+    background-image: url("chrome://browser/skin/home.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    fill: currentColor;
+    -moz-context-properties: fill, fill-opacity;
+  }
+}
+
+.zenThemeMarketplaceItemConfigureButton {
+  width: 30px;
+  min-width: 0;
+  position: relative;
+  cursor: pointer;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 15px;
+    height: 15px;
+    background-image: url("chrome://global/skin/icons/settings.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+}
+
+.zenThemeMarketplaceItemPreferenceCheckbox {
+  margin-right: 10px;
+}
+
+.zenThemeMarketplaceItemPreference:first-of-type {
+  margin-top: 10px;
+}
+
+.zenThemeMarketplaceItemPreference:not(:last-of-type) {
+  margin-bottom: 10px;
+}
+
+.zenThemeMarketplaceItemPreferenceData > * {
+  margin: 0;
+}
+
+.zenThemeMarketplaceItemContent {
+  max-width: 100%;
+  width: 100%;
+}
+
+.zenThemeMarketplaceItemTitle,
+.zenThemeMarketplaceItemDescription {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.zenThemeMarketplaceItemActions {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-top: var(--space-small);
+  justify-content: space-between;
+}
+
+#zenThemeMarketplaceList {
+  display: grid;
+  gap: var(--space-medium);
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+#zenThemeMarketplaceList:has(> *) {
+  margin: 15px 0;
+}
+
+.zenThemeMarketplaceItemUninstallButton,
+#zenThemeMarketplaceImport {
+  margin-left: auto;
+  cursor: pointer;
+}
+
+#zenThemeMarketplaceExport,
+#zenThemeMarketplaceCheckForUpdates {
+  cursor: pointer;
+}
+
+.zenThemeMarketplaceItemPreferenceDialog {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  min-width: 650px;
+}
+
+.zenThemeMarketplaceItemPreferenceDialogTopBar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.zenThemeMarketplaceItemPreferenceDialogContent {
+  display: flex;
+  flex-direction: row;
+}
+
+#zenMarketplaceHeader {
+  display: flex;
+  justify-content: space-between;
+
+  & h2 {
+    margin: 0;
+  }
+}
+
+.zenThemeMarketplaceDisableAllToggle {
+  align-self: center;
+}
+
+#zenThemeMarketplaceItemContentHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  & moz-toggle {
+    margin-left: 10px;
+  }
+}
+
+#zenLayoutList {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 10px;
+
+  & > [layout] {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &[disabled="true"] {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    & img {
+      width: 250px;
+      border-radius: 10px;
+      border: 4px solid transparent;
+    }
+
+    &.selected img {
+      border: 4px solid var(--zen-colors-primary);
+    }
+  }
+}
+
+@media (max-width: 1320px) {
+  #zenLayoutList {
+    flex-wrap: wrap;
+  }
+}
+
+/* Disable mozilla's settings */
+
+#dataCollectionCategory,
+#dataCollectionGroup,
+#websiteAdvertisingCategory,
+#websiteAdvertisingGroup,
+#helpButton,
+#support-firefox,
+#tabGroupSuggestions,
+#web-appearance-manage-themes-link,
+#setting-control-sidebarChatbotFieldset,
+#aiControlsDescription,
+#category-ai-features,
+.mission-message,
+html|setting-group[data-subcategory="layout"] {
+  display: none !important;
+}
+
+.sync-engine-workspaces .checkbox-icon,
+.sync-engine-workspaces.sync-engine-image {
+  list-style-image: url("chrome://devtools/skin/images/tool-storage.svg");
+}
+
+@media -moz-pref("zen.theme.disable-lightweight") {
+  html|div[data-l10n-id="preferences-web-appearance-footer"] {
+    display: none;
+  }
+}
+
+@media -moz-pref("zen.urlbar.replace-newtab") {
+  #category-home {
+    display: none !important;
+  }
+}

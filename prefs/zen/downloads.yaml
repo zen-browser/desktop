@@ -1,0 +1,15 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+- name: zen.downloads.download-animation
+  value: true
+
+- name: zen.downloads.download-animation-duration
+  value: 1000 # ms
+
+- name: zen.downloads.icon-popup-position
+  # 0: Follow tab's position
+  # 1: Left side always
+  # 2: Right side always
+  value: 0

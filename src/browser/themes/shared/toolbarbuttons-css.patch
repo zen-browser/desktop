@@ -1,0 +1,73 @@
+diff --git a/browser/themes/shared/toolbarbuttons.css b/browser/themes/shared/toolbarbuttons.css
+index 08e7ff0d00f2f41b0ca253a6a895d5111d65668e..9b24e9f386edb881b95de75776e46a4d5e40c4cd 100644
+--- a/browser/themes/shared/toolbarbuttons.css
++++ b/browser/themes/shared/toolbarbuttons.css
+@@ -13,20 +13,6 @@
+     --toolbarbutton-inner-padding: var(--toolbarbutton-inner-padding-touch);
+     --bookmark-block-padding: 7px;
+   }
+-  @media (width <= 900px) {
+-    --toolbarbutton-outer-padding: var(--toolbarbutton-outer-padding-narrow);
+-  }
+-  @media (width <= 800px) {
+-    --toolbarbutton-inner-padding: var(--toolbarbutton-inner-padding-narrow);
+-    &:where([uidensity="touch"]) {
+-      --toolbarbutton-inner-padding: var(--toolbarbutton-inner-padding-touch-narrow);
+-    }
+-  }
+-  /* 700px is just above half of the popular 1366px screen width, so two browser
+-     windows put next to each other will be below this threshold. */
+-  @media (width <= 700px) {
+-    --toolbarbutton-inner-padding: var(--toolbarbutton-inner-padding-compact);
+-  }
+   &:where([uidensity="compact"]) {
+     --toolbarbutton-inner-padding: var(--toolbarbutton-inner-padding-compact);
+     --bookmark-block-padding: 1px;
+@@ -65,9 +51,7 @@
+ #TabsToolbar {
+   /* Override the inner padding to ensure the dimensions match the tabs, but also making sure
+      different types of buttons (combined-buttons-dropmarker or text) still look correct. */
+-  @media (width > 900px) {
+     --toolbarbutton-inner-padding: calc((var(--tab-min-height) - 16px) / 2);
+-  }
+ }
+ 
+ /* Primary toolbar buttons */
+@@ -146,8 +130,8 @@ toolbar .toolbarbutton-1 {
+ 
+   > .toolbarbutton-icon {
+     /* horizontal padding + actual icon width */
+-    width: calc(2 * var(--toolbarbutton-inner-padding) + 16px);
+-    height: calc(2 * var(--toolbarbutton-inner-padding) + 16px);
++    width: calc(2 * var(--toolbarbutton-inner-padding) + var(--zen-toolbar-button-size, 16px));
++    height: calc(2 * var(--toolbarbutton-inner-padding) + var(--zen-toolbar-button-size, 16px));
+   }
+ 
+   > .toolbarbutton-text {
+@@ -157,7 +141,7 @@ toolbar .toolbarbutton-1 {
+      * height as the button icons and the same vertical padding, but as a minimum,
+      * because otherwise an increase in text sizes would break things.
+      */
+-    min-height: calc(16px + 2 * var(--toolbarbutton-inner-padding));
++    min-height: calc(var(--zen-toolbar-button-size, 16px) + 2 * var(--toolbarbutton-inner-padding));
+ 
+     @media (-moz-platform: macos) {
+       padding-top: calc(var(--toolbarbutton-inner-padding) + 1px);
+@@ -277,7 +261,7 @@ toolbar .toolbaritem-combined-buttons {
+ #nav-bar-overflow-button {
+   list-style-image: url("chrome://global/skin/icons/chevron.svg");
+ 
+-  #nav-bar:not([overflowing], [nonemptyoverflow], [customizing]) > & {
++  toolbar:not([overflowing], [nonemptyoverflow], [customizing]) > & {
+     display: none;
+   }
+ 
+@@ -487,7 +471,7 @@ toolbarbutton.bookmark-item:not(.subviewbutton) {
+      */
+     align-items: stretch;
+     > .toolbarbutton-icon {
+-      height: auto;
++      margin-top: auto; margin-bottom: auto;
+     }
+     > .toolbarbutton-badge-stack {
+       align-items: center;

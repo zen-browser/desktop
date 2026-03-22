@@ -1,0 +1,126 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-panel-ui-current-profile-text = huidig profiel
+unified-extensions-description = Extensies worden gebruikt om extra functionaliteit toe te voegen aan { -brand-short-name }.
+tab-context-zen-reset-pinned-tab = 
+    .label =
+        { $isEssential ->
+            [true] Essential-tabblad herstellen
+           *[false] Vastgezet tabblad herstellen
+        }
+    .accesskey = R
+tab-context-zen-add-essential = 
+    .label = Toevoegen aan Essentials
+    .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } plekken gevuld
+tab-context-zen-remove-essential = 
+    .label = Verwijderen uit Essentials
+    .accesskey = R
+tab-context-zen-replace-pinned-url-with-current = 
+    .label =
+        { $isEssential ->
+            [true] Essential-URL vervangen door huidige
+           *[false] Vastgezette URL vervangen door huidige
+        }
+    .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Naam veranderen...
+tab-context-zen-edit-icon = 
+    .label = Icoon veranderen...
+zen-themes-corrupted = Je { -brand-short-name } mods bestand is beschadigd. Ze zijn gereset naar het standaard thema.
+zen-shortcuts-corrupted = Je { -brand-short-name } snelkoppelingsbestand is beschadigd. Ze zijn gereset naar de standaard snelkoppelingen.
+# note: Do not translate the "<br/>" tags in the following string
+zen-new-urlbar-notification =
+    De nieuwe URL-balk is ingeschakeld, waardoor nieuwe tabbladen niet meer nodig zijn.<br/><br/>
+    Probeer een nieuw tabblad te openen om de nieuwe URL-balk in actie te zien!
+zen-disable = Uitschakelen
+pictureinpicture-minimize-btn = 
+    .aria-label = Minimaliseren
+    .tooltip = Minimaliseren
+zen-panel-ui-gradient-generator-custom-color = Aangepaste kleur
+zen-copy-current-url-confirmation = Huidige URL gekopieerd!
+zen-copy-current-url-as-markdown-confirmation = Huidige URL gekopieerd als Markdown!
+zen-general-cancel-label = 
+    .label = Annuleren
+zen-general-confirm = 
+    .label = Bevestigen
+zen-pinned-tab-replaced = Vastgemaakte tabblad URL is vervangen met de huidige URL!
+zen-tabs-renamed = Tabblad is succesvol hernoemd!
+zen-background-tab-opened-toast = Nieuw achtergrondtabblad geopend!
+zen-workspace-renamed-toast = Werkruimte succesvol is hernoemd!
+zen-toggle-compact-mode-button = 
+    .label = Compacte modus
+    .tooltiptext = Compacte modus togglen
+
+# note: Do not translate the "<br/>" tags in the following string
+
+zen-learn-more-text = Meer leren
+zen-close-label = Sluiten
+zen-singletoolbar-urlbar-placeholder-with-name = 
+    .placeholder = Zoeken…
+zen-icons-picker-emoji = 
+    .label = Emoji's
+zen-icons-picker-svg = 
+    .label = Iconen
+urlbar-search-mode-zen_actions = Acties
+zen-site-data-settings = Instellingen
+zen-generic-manage = Beheren
+zen-generic-more = Meer
+zen-generic-next = Volgende
+zen-essentials-promo-label = Toevoegen aan Essentials
+zen-essentials-promo-sublabel = Krijg in één klik toegang tot je favoriete tabbladen
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Toegestaan
+zen-site-data-setting-block = Geblokkeerd
+zen-site-data-protections-enabled = Ingeschakeld
+zen-site-data-protections-disabled = Uitgeschakeld
+zen-site-data-setting-cross-site = Cross-site cookie
+zen-site-data-security-info-extension = 
+    .label = Extensie
+zen-site-data-security-info-secure = 
+    .label = Beveiligd
+zen-site-data-security-info-not-secure = 
+    .label = Niet beveiligd
+zen-site-data-manage-addons = 
+    .label = Extensies beheren
+zen-site-data-get-addons = 
+    .label = Extensies toevoegen
+zen-site-data-site-settings = 
+    .label = Alle site-instellingen
+zen-site-data-header-share = 
+    .tooltiptext = Deze pagina delen
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Leesmodus openen
+zen-site-data-header-screenshot = 
+    .tooltiptext = Maak een schermafbeelding
+zen-site-data-header-bookmark = 
+    .tooltiptext = Bladwijzer toevoegen voor deze pagina
+zen-urlbar-copy-url-button = 
+    .tooltiptext = URL kopiëren
+zen-site-data-setting-site-protection = Tracking bescherming
+
+# Section: Feature callouts
+
+zen-site-data-panel-feature-callout-title = Een nieuw thuis voor add-ons, machtigingen en meer
+zen-site-data-panel-feature-callout-subtitle = Klik op het icoon om de site-instellingen te beheren, beveiligingsinfo te bekijken, extensies te openen en gemeenschappelijke acties uit te voeren.
+zen-open-link-in-glance = 
+    .label = Link openen in Glance
+    .accesskey = G
+zen-sidebar-notification-updated-heading = Update voltooid!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = Wat is er veranderd in { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = Versie-informatie bekijken
+zen-sidebar-notification-restart-safe-mode-label = Werkt er iets niet?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Herstarten in veilige modus
+zen-window-sync-migration-dialog-title = Hou je vensters gesynchroniseerd
+zen-window-sync-migration-dialog-message = Vanaf nu synchroniseert Zen alle vensters op hetzelfde apparaat, dus aanpassingen in het ene venster worden tegelijkertijd op het andere venster toegepast.
+zen-window-sync-migration-dialog-learn-more = Meer info
+zen-window-sync-migration-dialog-accept = Begrepen
+zen-appmenu-new-blank-window = 
+    .label = Nieuw blanco venster

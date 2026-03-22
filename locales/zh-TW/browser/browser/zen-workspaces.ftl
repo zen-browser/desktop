@@ -1,0 +1,75 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-panel-ui-workspaces-text = 工作區
+zen-panel-ui-spaces-label = 
+    .label = 工作區
+zen-panel-ui-workspaces-create = 
+    .label = 建立工作區
+zen-panel-ui-folder-create = 
+    .label = 建立分頁夾
+zen-panel-ui-live-folder-create = 
+    .label = 建立動態分頁夾
+zen-panel-ui-new-empty-split = 
+    .label = 新分頁分割
+zen-workspaces-panel-context-delete = 
+    .label = 刪除工作區
+    .accesskey = D
+zen-workspaces-panel-change-name = 
+    .label = 重新命名
+zen-workspaces-panel-change-icon = 
+    .label = 變更圖示
+zen-workspaces-panel-context-default-profile = 
+    .label = 設定設定檔
+zen-workspaces-panel-unload = 
+    .label = 卸載工作區
+zen-workspaces-panel-unload-others = 
+    .label = 缷載全部其它工作區
+zen-workspaces-how-to-reorder-title = 如何排序工作區
+zen-workspaces-how-to-reorder-desc = 拖曳側邊欄底部工作區圖示以重新排序
+zen-workspaces-change-theme = 
+    .label = 編輯主題
+zen-workspaces-panel-context-open = 
+    .label = 打開工作區
+    .accesskey = O
+zen-workspaces-panel-context-edit = 
+    .label = 編輯工作區
+    .accesskey = E
+zen-bookmark-edit-panel-workspace-selector = 
+    .value = 工作區
+    .accesskey = W
+zen-panel-ui-gradient-generator-algo-complementary = 
+    .label = 互補色
+zen-panel-ui-gradient-generator-algo-splitComplementary = 
+    .label = 補色分割
+zen-panel-ui-gradient-generator-algo-analogous = 
+    .label = 相似色
+zen-panel-ui-gradient-generator-algo-triadic = 
+    .label = 三等分色
+zen-panel-ui-gradient-generator-algo-floating = 
+    .label = 懸浮
+zen-panel-ui-gradient-click-to-add = 點擊新增顏色
+zen-workspace-creation-name = 
+    .placeholder = 工作區名稱
+zen-move-tab-to-workspace-button = 
+    .label = 移動至…
+    .tooltiptext = 將此視窗所有頁面移至單一工作區
+zen-workspaces-panel-context-reorder = 
+    .label = 排序工作區
+zen-workspace-creation-profile = 設定檔
+    .tooltiptext = 設定檔用於隔離不同工作區的 Cookie 和網站資料。
+zen-workspace-creation-header = 建立工作區
+zen-workspace-creation-label = 工作區用於組織您的分頁與工作階段。
+zen-workspaces-delete-workspace-title = 刪除工作區？
+zen-workspaces-delete-workspace-body = 您確定要刪除 { $name } 嗎？此操作無法復原。
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = 分頁已關閉！使用 <span>{ $shortcut }</span> 來回復此動作。
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = 清除
+    .tooltiptext = 關閉所有未釘選的分頁
+zen-panel-ui-workspaces-change-forward = 
+    .label = 下一工作區
+zen-panel-ui-workspaces-change-back = 
+    .label = 上一工作區

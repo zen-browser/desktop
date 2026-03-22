@@ -1,0 +1,22 @@
+diff --git a/toolkit/modules/LightweightThemeConsumer.sys.mjs b/toolkit/modules/LightweightThemeConsumer.sys.mjs
+index 3b455ba0cdf8782bef1d44856a72556f8b62d200..18dd1f681dc72c6d08cd7196629ab272d0c0ff68 100644
+--- a/toolkit/modules/LightweightThemeConsumer.sys.mjs
++++ b/toolkit/modules/LightweightThemeConsumer.sys.mjs
+@@ -34,7 +34,7 @@ const toolkitVariableMap = [
+       lwtProperty: "accentcolor",
+       processColor(rgbaChannels) {
+         if (!rgbaChannels || rgbaChannels.a == 0) {
+-          return "white";
++          return "var(--zen-colors-primary)";
+         }
+         // Remove the alpha channel
+         const { r, g, b } = rgbaChannels;
+@@ -377,7 +377,7 @@ LightweightThemeConsumer.prototype = {
+     let forcedColorsThemeOverride =
+       this.FORCED_COLORS_OVERRIDE_ENABLED &&
+       this.forcedColorsMediaQuery?.matches;
+-    if (!theme || forcedColorsThemeOverride) {
++    if (!theme || forcedColorsThemeOverride || Services.prefs.getBoolPref("zen.theme.disable-lightweight")) {
+       theme = { id: DEFAULT_THEME_ID };
+     }
+     let builtinThemeConfig = lazy.BuiltInThemeConfig.get(theme.id);

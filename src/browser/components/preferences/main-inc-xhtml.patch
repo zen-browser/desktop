@@ -1,0 +1,12 @@
+diff --git a/browser/components/preferences/main.inc.xhtml b/browser/components/preferences/main.inc.xhtml
+index f23beeb5c793bc7a6cbea4512a5f2cd379ec98c7..09617b8fbbd01e87b97e323cb3f7ca055bc06778 100644
+--- a/browser/components/preferences/main.inc.xhtml
++++ b/browser/components/preferences/main.inc.xhtml
+@@ -96,6 +96,7 @@
+               languages-customize-add.label,
+             " />
+   </hbox>
++  <label class="zenLanguageWarning-label"><html:b data-l10n-id="zen-warning-language"/></label>
+ 
+   <checkbox id="useSystemLocale" hidden="true"
+             data-l10n-id="use-system-locale"

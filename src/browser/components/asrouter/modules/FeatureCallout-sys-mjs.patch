@@ -1,0 +1,12 @@
+diff --git a/browser/components/asrouter/modules/FeatureCallout.sys.mjs b/browser/components/asrouter/modules/FeatureCallout.sys.mjs
+index a380e024e4ad6f77ad3ad74bb7a0784d7dfb6ff3..e990f8c2412f48ca5272a7741dcb7445a406462e 100644
+--- a/browser/components/asrouter/modules/FeatureCallout.sys.mjs
++++ b/browser/components/asrouter/modules/FeatureCallout.sys.mjs
+@@ -778,6 +778,7 @@ export class FeatureCallout {
+     ) {
+       return false;
+     }
++    if (el?.id === "zen-site-data-icon-button") return true;
+ 
+     const style = this.win.getComputedStyle(el);
+     return style?.visibility === "visible" && style?.display !== "none";

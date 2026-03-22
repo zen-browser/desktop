@@ -1,0 +1,99 @@
+diff --git a/browser/components/preferences/preferences.xhtml b/browser/components/preferences/preferences.xhtml
+index b006d5e5e64c418fbf930c010401e4ea3a3647a3..27886c04258e40f7c6ec444320a9a2a1cf960db0 100644
+--- a/browser/components/preferences/preferences.xhtml
++++ b/browser/components/preferences/preferences.xhtml
+@@ -42,6 +42,8 @@
+   <link rel="stylesheet" href="chrome://browser/content/preferences/widgets/setting-pane.css" />
+   <link rel="stylesheet" href="chrome://browser/content/preferences/widgets/setting-control.css" />
+ 
++#include zen-preferences-links.xhtml
++
+   <link rel="localization" href="branding/brand.ftl"/>
+   <link rel="localization" href="browser/browser.ftl"/>
+     <!-- Used by fontbuilder.js -->
+@@ -112,6 +114,11 @@
+   <hbox flex="1">
+ 
+     <vbox class="navigation">
++      <html:moz-input-search
++        id="searchInput"
++        data-l10n-id="search-input-box2"
++        data-l10n-attrs="placeholder, style"
++        />
+       <!-- category list -->
+       <richlistbox id="categories" data-l10n-id="category-list" data-l10n-attrs="aria-label">
+         <richlistitem id="category-general"
+@@ -124,6 +131,50 @@
+           <label class="category-name" flex="1" data-l10n-id="pane-general-title"></label>
+         </richlistitem>
+ 
++        <richlistitem id="category-zen-looks"
++                      class="category"
++                      value="paneZenLooks"
++                      helpTopic="prefs-main"
++                      data-l10n-id="category-zen-looks"
++                      data-l10n-attrs="tooltiptext"
++                      align="center">
++          <image class="category-icon"/>
++          <label class="category-name" flex="1" data-l10n-id="pane-zen-looks-title"></label>
++        </richlistitem>
++
++        <richlistitem id="category-zen-tabs-management"
++                      class="category"
++                      value="paneZenTabManagement"
++                      helpTopic="prefs-main"
++                      data-l10n-id="category-zen-workspaces"
++                      data-l10n-attrs="tooltiptext"
++                      align="center">
++          <image class="category-icon"/>
++          <label class="category-name" flex="1" data-l10n-id="pane-zen-tabs-title"></label>
++        </richlistitem>
++
++        <richlistitem id="category-zen-CKS"
++                      class="category"
++                      value="paneZenCKS"
++                      helpTopic="prefs-main"
++                      data-l10n-id="category-zen-CKS"
++                      data-l10n-attrs="tooltiptext"
++                      align="center">
++          <image class="category-icon"/>
++          <label class="category-name" flex="1" data-l10n-id="pane-zen-CKS-title"></label>
++        </richlistitem>
++
++        <richlistitem id="category-zen-marketplace"
++                      class="category"
++                      value="paneZenMarketplace"
++                      helpTopic="prefs-main"
++                      data-l10n-id="category-zen-marketplace"
++                      data-l10n-attrs="tooltiptext"
++                      align="center">
++          <image class="category-icon"/>
++          <label class="category-name" flex="1" data-l10n-id="pane-zen-marketplace-title"></label>
++        </richlistitem>
++
+         <richlistitem id="category-home"
+                       class="category"
+                       value="paneHome"
+@@ -249,11 +300,6 @@
+                 <html:a href="about:policies" target="_blank" data-l10n-id="managed-notice"/>
+               </hbox>
+             </hbox>
+-            <html:moz-input-search
+-              id="searchInput"
+-              data-l10n-id="search-input-box2"
+-              data-l10n-attrs="placeholder, style"
+-              />
+           </hbox>
+         </hbox>
+         <vbox id="mainPrefPane">
+@@ -266,6 +312,10 @@
+ #include sync.inc.xhtml
+ #include experimental.inc.xhtml
+ #include moreFromMozilla.inc.xhtml
++#include zenLooksAndFeel.inc.xhtml
++#include zenKeyboardShortcuts.inc.xhtml
++#include zenTabsManagement.inc.xhtml
++#include zenMarketplace.inc.xhtml
+         </vbox>
+       </vbox>
+     </vbox>

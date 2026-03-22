@@ -1,0 +1,32 @@
+diff --git a/tools/signing/macos/mach_commands.py b/tools/signing/macos/mach_commands.py
+index f11ddae6ee8a76df28a21bfe3894f8ca4bdef6de..4f0530d682617d3d7dc30d06497350eee6ec5df3 100644
+--- a/tools/signing/macos/mach_commands.py
++++ b/tools/signing/macos/mach_commands.py
+@@ -37,7 +37,6 @@ from mozbuild.base import MachCommandConditions as conditions
+     "Release channel entitlements, but the configuration used will be the "
+     "Release configuration as defined in the repo working directory, not the "
+     "configuration from the revision of the earlier 120 build.",
+-    conditions=[conditions.is_firefox],
+ )
+ @CommandArgument(
+     "-v",
+@@ -343,6 +342,10 @@ def macos_sign(
+     cs_reset_cmd = ["find", app, "-exec", "codesign", "--remove-signature", "{}", ";"]
+     run(command_context, cs_reset_cmd, capture_output=not verbose_arg)
+ 
++    originProfile = os.path.join(os.curdir, "embedded.provisionprofile")
++    endProfile = os.path.join(app, "Contents", "embedded.provisionprofile")
++    print(f"ZEN: Moving {originProfile} to {endProfile}")
++    os.rename(originProfile, endProfile)
+     if use_rcodesign_arg is True:
+         sign_with_rcodesign(
+             command_context,
+@@ -627,7 +630,7 @@ def sign_with_rcodesign(
+     # input path and its options are specified as standard arguments.
+     ctx.log(logging.INFO, "macos-sign", {}, "Signing with rcodesign")
+ 
+-    cs_cmd = ["rcodesign", "sign"]
++    cs_cmd = ["rcodesign", "sign", "--for-notarization"]
+     if p12_file_arg is not None:
+         cs_cmd.append("--p12-file")
+         cs_cmd.append(p12_file_arg)

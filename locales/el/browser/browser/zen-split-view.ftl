@@ -1,0 +1,17 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+tab-zen-split-tabs = 
+    .label =
+        { $tabCount ->
+            [1] Διαίρεση Καρτέλας (απαιτούνται πολλαπλές επιλεγμένες καρτέλες)
+           *[other] Διαίρεση { $tabCount } Καρτελών
+        }
+    .accesskey = S
+zen-split-link = 
+    .label = Διαίρεση συνδέσμου σε νέα καρτέλα
+    .accesskey = S
+zen-split-view-modifier-header = Διαιρεμένη Προβολή
+zen-split-view-modifier-activate-reallocation = 
+    .label = Ενεργοποίηση ανακατανομής

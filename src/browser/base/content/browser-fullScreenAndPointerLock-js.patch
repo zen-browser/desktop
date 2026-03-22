@@ -1,0 +1,13 @@
+diff --git a/browser/base/content/browser-fullScreenAndPointerLock.js b/browser/base/content/browser-fullScreenAndPointerLock.js
+index 38b4267c737ba247068e1001c12f1cb93cd248f7..f0d7002246645de48dd3ed24a84122d0bcc95b5a 100644
+--- a/browser/base/content/browser-fullScreenAndPointerLock.js
++++ b/browser/base/content/browser-fullScreenAndPointerLock.js
+@@ -461,8 +461,6 @@ var FullScreen = {
+     gNavToolbox.classList.toggle("fullscreen-with-menubar", shiftSize > 0);
+ 
+     let transform = shiftSize > 0 ? `translateY(${shiftSize}px)` : "";
+-    gNavToolbox.style.transform = transform;
+-    gURLBar.style.transform = gURLBar.hasAttribute("breakout") ? transform : "";
+     let searchbar = document.getElementById("searchbar-new");
+     if (searchbar) {
+       searchbar.style.transform = searchbar.hasAttribute("breakout")

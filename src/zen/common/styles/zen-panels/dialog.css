@@ -1,0 +1,12 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+.dialogBox {
+  outline: 1px solid light-dark(transparent, #646464);
+  animation: zen-dialog-fade-in 0.3s ease-out;
+  border-radius: 12px !important;
+  border: 1px solid light-dark(#a8a8a9, black);
+  outline-offset: -1.5px;
+}

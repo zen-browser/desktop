@@ -1,0 +1,15 @@
+# Any copyright is dedicated to the Public Domain.
+# http://creativecommons.org/publicdomain/zero/1.0/
+[DEFAULT]
+skip-if = [
+  "ccov",
+  "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11' && asan", # bug 1784517
+  "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11' && tsan", # bug 1784517
+]
+tags = "contentsandbox"
+environment = "XDG_CONFIG_DIRS=:/opt"
+
+["browser_content_sandbox_bug1717599_XDG-CONFIG-DIRS.js"]
+run-if = [
+  "os == 'linux'",
+]

@@ -1,0 +1,78 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+@namespace html "http://www.w3.org/1999/xhtml";
+@namespace xul "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+
+/** This file is used to override UI inside "common-shared.css" */
+
+/** These types of buttons look INSAINELY bad in the preferences page */
+xul|button {
+  --size-item-large: 34px;
+
+  padding: var(--zen-button-padding) !important;
+  transition: 0.1s;
+}
+
+dialog::part(dialog-button) {
+  --button-background-color: light-dark(white, #302f63);
+  --button-background-color-hover: color-mix(in srgb, var(--button-background-color) 90%, transparent);
+  --button-background-color-active: color-mix(in srgb, var(--button-background-color) 80%, transparent);
+  --button-background-color-primary: #3138fc;
+  --button-background-color-primary-hover: color-mix(in srgb, var(--button-background-color-primary) 95%, transparent);
+  --button-text-color-primary: white;
+  --button-text-color-primary-hover: var(--button-text-color-primary);
+  border-color: light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.2)) !important;
+  border-bottom-width: 2px !important;
+  position: relative;
+}
+
+dialog[defaultButton="accept"]::part(dialog-button) {
+  &:is([dlgtype="accept"], [dlgtype="cancel"]) {
+    padding-inline-end: 3.7em;
+    @media (-moz-platform: windows) {
+      padding-inline-end: 4em;
+    }
+
+    &::after {
+      border-radius: 4px;
+      font-weight: 600;
+      position: absolute;
+      right: 0.6em;
+      padding: 3px 0;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      width: 34px;
+      text-align: center;
+    }
+
+    &[dlgtype="accept"]::after {
+      content: "⏎";
+      background: rgba(255, 255, 255, 0.1);
+      outline: 2px solid color-mix(in srgb, currentColor 20%, transparent);
+      outline-offset: -2px;
+    }
+
+    &[dlgtype="cancel"]::after {
+      content: "ESC";
+      background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+    }
+  }
+}
+
+xul|button:not(#zen-workspaces-button):active {
+  transform: scale(0.98);
+}
+
+.footer-button {
+  font-weight: 500 !important;
+
+  transition: scale 0.2s;
+  &:active {
+    scale: 0.98;
+  }
+}

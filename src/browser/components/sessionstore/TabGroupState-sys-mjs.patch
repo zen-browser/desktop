@@ -1,0 +1,14 @@
+diff --git a/browser/components/sessionstore/TabGroupState.sys.mjs b/browser/components/sessionstore/TabGroupState.sys.mjs
+index 1289549cf33ce6efb620c877bd1ba1c24475d2b0..4c34c923f4b129dd9ea79414d978c6432317340c 100644
+--- a/browser/components/sessionstore/TabGroupState.sys.mjs
++++ b/browser/components/sessionstore/TabGroupState.sys.mjs
+@@ -65,6 +65,9 @@ class _TabGroupState {
+    */
+   collect(tabGroup) {
+     return {
++      pinned: tabGroup.pinned,
++      essential: tabGroup.essential,
++      splitView: tabGroup.hasAttribute("split-view-group"),
+       id: tabGroup.id,
+       name: tabGroup.label,
+       color: tabGroup.color,

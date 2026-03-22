@@ -1,0 +1,29 @@
+diff --git a/browser/components/urlbar/UrlbarUtils.sys.mjs b/browser/components/urlbar/UrlbarUtils.sys.mjs
+index 9e9f786b6fd3441000d9cdb0b582f817b73ad814..8f86652520a433c94e34fc0e35dc8aad4a86faa2 100644
+--- a/browser/components/urlbar/UrlbarUtils.sys.mjs
++++ b/browser/components/urlbar/UrlbarUtils.sys.mjs
+@@ -84,6 +84,7 @@ export var UrlbarUtils = {
+     RESTRICT_SEARCH_KEYWORD: "restrictSearchKeyword",
+     SUGGESTED_INDEX: "suggestedIndex",
+     TAIL_SUGGESTION: "tailSuggestion",
++    ZEN_ACTION: "zenAction",
+   }),
+ 
+   // Defines provider types.
+@@ -145,6 +146,7 @@ export var UrlbarUtils = {
+     OTHER_NETWORK: 6,
+     ADDON: 7,
+     ACTIONS: 8,
++    ZEN_ACTIONS: 9,
+   }),
+ 
+   // Per-result exposure telemetry.
+@@ -585,6 +587,8 @@ export var UrlbarUtils = {
+           return this.RESULT_GROUP.HEURISTIC_FALLBACK;
+         case "UrlbarProviderHistoryUrlHeuristic":
+           return this.RESULT_GROUP.HEURISTIC_HISTORY_URL;
++        case "ZenUrlbarProviderGlobalActions":
++          return this.RESULT_GROUP.ZEN_ACTION;
+         case "UrlbarProviderOmnibox":
+           return this.RESULT_GROUP.HEURISTIC_OMNIBOX;
+         case "UrlbarProviderRestrictKeywordsAutofill":

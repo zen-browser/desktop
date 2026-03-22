@@ -1,0 +1,22 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+[DEFAULT]
+support-files = [
+  "head.js",
+]
+
+["browser_glance_basic.js"]
+
+["browser_glance_close.js"]
+
+["browser_glance_close_select.js"]
+
+["browser_glance_expand.js"]
+
+["browser_glance_next_tab.js"]
+
+["browser_glance_prev_tab.js"]
+
+["browser_glance_select_parent.js"]

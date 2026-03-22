@@ -1,0 +1,13 @@
+diff --git a/browser/modules/ExtensionsUI.sys.mjs b/browser/modules/ExtensionsUI.sys.mjs
+index 5251697341bf94f3ca6c877d87a6fe5f4debf03a..71d9247a669cea2135e6f0b76b2c10a869bf35bc 100644
+--- a/browser/modules/ExtensionsUI.sys.mjs
++++ b/browser/modules/ExtensionsUI.sys.mjs
+@@ -500,7 +500,7 @@ export var ExtensionsUI = {
+         eventCallback,
+         removeOnDismissal: true,
+         popupOptions: {
+-          position: "bottomright topright",
++          position: window.gZenUIManager.panelUIPosition(),
+         },
+         // Pass additional options used internally by the
+         // addon-webext-permissions-notification custom element

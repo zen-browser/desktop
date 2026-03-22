@@ -1,0 +1,44 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+[
+  {
+    "type": "phabricator",
+    "id": "D279007",
+    "name": "Fix MacOS Crash on Shutdown Firefox 149"
+  },
+  {
+    "type": "phabricator",
+    "id": "D284084",
+    "name": "Native MacOS popovers",
+    "replaces": {
+      // Specifically trying to target FeatureCallout.sys.mjs's change.
+      // IMPORTANT: Make sure Feature callouts STILL use native popopvers when
+      //    syncing from upstream, as this is a critical part of the patch.
+      "+            nonnativepopover=\"true\"": "+ ",
+      "body,": ".browser-toolbox-background,"
+    }
+  },
+  {
+    "type": "phabricator",
+    "id": "D284404",
+    "name": "Add urlbar closeOnWindowBlur preference",
+    "replaces": {
+      "\n\n": "\n     // may want to figure out a more robust way to detect abandonment."
+    }
+  },
+  {
+    "type": "local",
+    "path": "firefox/no_liquid_glass_icon.patch"
+  },
+  {
+    "type": "patch",
+    "url": "https://codeberg.org/librewolf/source/raw/branch/main/patches/firefox-in-ua.patch",
+    "dest": "librewolf",
+    "replaces": {
+      // They don't correctly export this patch, so we need to replace
+      // the parameter's help description with the correct one.
+      "application": "Application"
+    }
+  }
+]

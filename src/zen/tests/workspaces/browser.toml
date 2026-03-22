@@ -1,0 +1,27 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+[DEFAULT]
+prefs = ["zen.workspaces.separate-essentials=false"]
+support-files = [
+  "head.js",
+]
+
+["browser_basic_workspaces.js"]
+
+["browser_double_click_newtab.js"]
+
+["browser_issue_10455.js"]
+
+["browser_issue_8699.js"]
+
+["browser_issue_9900.js"]
+
+["browser_overflow_scrollbox.js"]
+
+["browser_private_mode.js"]
+
+["browser_private_mode_startup.js"]
+
+["browser_workspace_bookmarks.js"]

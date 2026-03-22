@@ -1,0 +1,77 @@
+app-id: app.zen_browser.zen
+runtime: org.freedesktop.Platform
+runtime-version: '25.08'
+sdk: org.freedesktop.Sdk
+base: org.mozilla.firefox.BaseApp
+base-version: '25.08'
+add-extensions:
+  app.zen_browser.zen.systemconfig:
+    directory: etc/zen
+    no-autodownload: true
+command: launch-script.sh
+finish-args:
+  - --allow=devel
+  - --share=ipc
+  - --share=network
+  - --socket=pulseaudio
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --socket=pcsc
+  - --socket=cups
+  - --persist=.zen
+  - --env=DICPATH=/usr/share/hunspell
+  - --filesystem=xdg-download:rw
+  - --filesystem=/run/.heim_org.h5l.kcm-socket
+  - --filesystem=xdg-run/speech-dispatcher:ro
+  - --device=all
+  - --talk-name=org.freedesktop.FileManager1
+  - --system-talk-name=org.freedesktop.NetworkManager
+  - --talk-name=org.a11y.Bus
+  - --talk-name=org.gtk.vfs.*
+  - --own-name=org.mpris.MediaPlayer2.firefox.*
+  - --own-name=org.mozilla.zen.*
+cleanup:
+  - /include
+  - /lib/pkgconfig
+  - /share/pkgconfig
+  - /share/aclocal
+  - /share/gtk-doc
+  - /share/doc
+  - /share/info
+  - /man
+  - /share/man
+  - '*.la'
+  - '*.a'
+modules:
+  - name: zen_browser
+    buildsystem: simple
+    build-commands:
+      - mv zen /app/
+      - mkdir -p /app/etc/zen
+
+      - install -Dm0755 metadata/launch-script.sh ${{FLATPAK_DEST}}/bin/launch-script.sh
+      - install -Dm0644 metadata/policies.json ${{FLATPAK_DEST}}/bin/distribution/policies.json
+      - install -Dm0644 metadata/icons/${{FLATPAK_ID}}.svg ${{FLATPAK_DEST}}/share/icons/hicolor/scalable/apps/${{FLATPAK_ID}}.svg
+      - install -Dm0644 metadata/${{FLATPAK_ID}}.metainfo.xml ${{FLATPAK_DEST}}/share/metainfo/${{FLATPAK_ID}}.metainfo.xml
+      - install -Dm0644 metadata/${{FLATPAK_ID}}.desktop ${{FLATPAK_DEST}}/share/applications/${{FLATPAK_ID}}.desktop
+
+    sources:
+      - type: archive
+        url: https://github.com/zen-browser/desktop/releases/download/{version}/zen.linux-x86_64.tar.xz
+        sha256: {linux_sha256}
+        strip-components: 0
+        only-arches:
+          - x86_64
+
+      - type: archive
+        url: https://github.com/zen-browser/desktop/releases/download/{version}/zen.linux-aarch64.tar.xz
+        sha256: {linux_aarch64_sha256}
+        strip-components: 0
+        only-arches:
+          - aarch64
+
+      - type: archive
+        url: https://github.com/zen-browser/flatpak/releases/download/{version}/archive.tar
+        sha256: {flatpak_sha256}
+        strip-components: 0
+        dest: metadata

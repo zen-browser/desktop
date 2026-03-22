@@ -1,0 +1,48 @@
+diff --git a/browser/components/places/content/editBookmarkPanel.inc.xhtml b/browser/components/places/content/editBookmarkPanel.inc.xhtml
+index 40366677b60123c66bf0739d1b2374b423d3061c..a2774e99726407d95011126ea2a272f08eaf0961 100644
+--- a/browser/components/places/content/editBookmarkPanel.inc.xhtml
++++ b/browser/components/places/content/editBookmarkPanel.inc.xhtml
+@@ -12,14 +12,15 @@
+   <html:input id="editBMPanel_namePicker"
+               class="editBMPanel_nameRow hideable"
+               type="text"/>
+-
++<hbox flex="1" class="zenEditBMPanel_fieldContainer">
+   <label data-l10n-id="bookmark-overlay-url"
+          class="editBMPanel_locationRow hideable"
+          control="editBMPanel_locationField"/>
+   <html:input id="editBMPanel_locationField"
+               class="editBMPanel_locationRow uri-element hideable"
+               type="text"/>
+-
++</hbox>
++<hbox flex="1" class="zenEditBMPanel_fieldContainer">
+   <label data-l10n-id="bookmark-overlay-location-2"
+          class="editBMPanel_folderRow hideable"
+          control="editBMPanel_folderMenuList"/>
+@@ -47,7 +48,25 @@
+             class="expander-down panel-button"
+             data-l10n-id="bookmark-overlay-folders-expander2"/>
+   </hbox>
++  </hbox>
++    <hbox flex="1" class="zenEditBMPanel_fieldContainer">
++      <label data-l10n-id="zen-bookmark-edit-panel-workspace-selector"
++             class="hideable"
++             control="editBMPanel_workspacesSelectorExpander"/>
++      <div id="editBMPanel_workspaceDropdown"
++           class="editBMPanel_workspaceRow hideable workspace-dropdown">
++        <div
++                id="editBMPanel_workspaceSummary"
++                class="workspace-trigger">-</div>
++        <button id="editBMPanel_workspacesSelectorExpander"
++                class="expander-down panel-button"
++                data-l10n-id="bookmark-overlay-tags-expander2"/>
++
++      </div>
++    </hbox>
+ 
++    <ul id="editBMPanel_workspaceList" class="workspace-list hideable" hidden="true">
++    </ul>
+   <vbox id="editBMPanel_folderTreeRow"
+         class="hideable"
+         hidden="true">

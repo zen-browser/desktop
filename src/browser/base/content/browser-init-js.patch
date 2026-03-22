@@ -1,0 +1,20 @@
+diff --git a/browser/base/content/browser-init.js b/browser/base/content/browser-init.js
+index dba83914d1131616ead67f48949bda74105b7d46..86294fe79cd30b2a24b20738c9cd1f5114e8e669 100644
+--- a/browser/base/content/browser-init.js
++++ b/browser/base/content/browser-init.js
+@@ -247,6 +247,7 @@ var gBrowserInit = {
+   },
+ 
+   onLoad() {
++    Services.scriptloader.loadSubScript("chrome://browser/content/zenThemeModifier.js", window);
+     gBrowser.addEventListener("DOMUpdateBlockedPopups", e =>
+       PopupAndRedirectBlockerObserver.handleEvent(e)
+     );
+@@ -444,6 +445,7 @@ var gBrowserInit = {
+ 
+     this._handleURIToLoad();
+ 
++    gZenWorkspaces.selectStartPage();
+     Services.obs.addObserver(gIdentityHandler, "perm-changed");
+     Services.obs.addObserver(gRemoteControl, "devtools-socket");
+     Services.obs.addObserver(gRemoteControl, "marionette-listening");

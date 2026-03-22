@@ -1,0 +1,53 @@
+diff --git a/widget/cocoa/VibrancyManager.mm b/widget/cocoa/VibrancyManager.mm
+index b4c14233c64dd3515518d3167f8ee2877fe41a93..2b91fa3044794765b8e15c6b66b348de4111f29f 100644
+--- a/widget/cocoa/VibrancyManager.mm
++++ b/widget/cocoa/VibrancyManager.mm
+@@ -13,6 +13,7 @@
+ 
+ #include "nsCocoaWindow.h"
+ #include "mozilla/StaticPrefs_widget.h"
++#include "mozilla/StaticPrefs_zen.h"
+ 
+ using namespace mozilla;
+ 
+@@ -38,7 +39,23 @@ static NSVisualEffectMaterial VisualEffectMaterialForVibrancyType(
+     VibrancyType aType) {
+   switch (aType) {
+     case VibrancyType::Sidebar:
+-      return NSVisualEffectMaterialSidebar;
++      switch (StaticPrefs::zen_widget_macos_window_material()) {
++        case 1:
++          return NSVisualEffectMaterialHUDWindow;
++        case 2:
++          return NSVisualEffectMaterialFullScreenUI;
++        case 3:
++          return NSVisualEffectMaterialPopover;
++        case 4:
++          return NSVisualEffectMaterialMenu;
++        case 5:
++          return NSVisualEffectMaterialToolTip;
++        case 6:
++          return NSVisualEffectMaterialHeaderView;
++        case 7:
++        default:
++          return NSVisualEffectMaterialUnderWindowBackground;
++      }
+     case VibrancyType::Titlebar:
+       return NSVisualEffectMaterialTitlebar;
+   }
+@@ -78,6 +95,7 @@ - (NSView*)hitTest:(NSPoint)aPoint {
+ 
+ - (void)prefChanged {
+   self.blendingMode = VisualEffectBlendingModeForVibrancyType(mType);
++  self.material = VisualEffectMaterialForVibrancyType(mType);
+ }
+ @end
+ 
+@@ -88,6 +106,7 @@ static void PrefChanged(const char* aPref, void* aClosure) {
+ static constexpr nsLiteralCString kObservedPrefs[] = {
+     "widget.macos.sidebar-blend-mode.behind-window"_ns,
+     "widget.macos.titlebar-blend-mode.behind-window"_ns,
++    "zen.widget.macos.window-material"_ns,
+ };
+ 
+ VibrancyManager::VibrancyManager(const nsCocoaWindow& aCoordinateConverter,

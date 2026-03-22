@@ -1,0 +1,13 @@
+diff --git a/browser/components/customizableui/content/panelUI.inc.xhtml b/browser/components/customizableui/content/panelUI.inc.xhtml
+index 6cb22be6526b17d952a90fd414c49a31e9afde7a..84f8156e88027a79a40f14c77c83d6a2d19c8a72 100644
+--- a/browser/components/customizableui/content/panelUI.inc.xhtml
++++ b/browser/components/customizableui/content/panelUI.inc.xhtml
+@@ -139,7 +139,7 @@
+   <panel id="appMenu-notification-popup"
+          class="popup-notification-panel panel-no-padding"
+          type="arrow"
+-         position="after_start"
++         position="after_end"
+          flip="slide"
+          orient="vertical"
+          noautofocus="true"

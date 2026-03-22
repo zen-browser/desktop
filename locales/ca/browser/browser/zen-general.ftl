@@ -1,0 +1,126 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-panel-ui-current-profile-text = perfil actual
+unified-extensions-description = Les extensions aporten funcionalitats addicionals a { -brand-short-name }.
+tab-context-zen-reset-pinned-tab = 
+    .label =
+        { $isEssential ->
+            [true] Restableix la pestanya essencial
+           *[false] Restableix la pestanya fixada
+        }
+    .accesskey = R
+tab-context-zen-add-essential = 
+    .label = Afegeix als essencials
+    .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } espais ocupats
+tab-context-zen-remove-essential = 
+    .label = Elimina dels essencials
+    .accesskey = R
+tab-context-zen-replace-pinned-url-with-current = 
+    .label =
+        { $isEssential ->
+            [true] Substitueix l'URL essencial per l'actual
+           *[false] Substitueix l'URL fixat per l'actual
+        }
+    .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Canvia l'etiqueta...
+tab-context-zen-edit-icon = 
+    .label = Canvia la icona...
+zen-themes-corrupted = El vostre fitxer de modificacions { -brand-short-name } està malmès. S'ha restablert al tema per defecte.
+zen-shortcuts-corrupted = El vostre fitxer de dreceres { -brand-short-name } està malmès. S'ha restablert a les dreceres per defecte.
+# note: Do not translate the "<br/>" tags in the following string
+zen-new-urlbar-notification =
+    La nova barra d'URL s'ha activat, eliminant la necessitat de noves pàgines de pestanya.<br/><br/>
+    Proveu d'obrir una pestanya nova per veure la nova barra d'URL en acció!
+zen-disable = Deshabilita
+pictureinpicture-minimize-btn = 
+    .aria-label = Minimitza
+    .tooltip = Minimitza
+zen-panel-ui-gradient-generator-custom-color = Color personalitzat
+zen-copy-current-url-confirmation = L'URL actual s'ha copiat.
+zen-copy-current-url-as-markdown-confirmation = L'URL actual s'ha copiat com a Markdown!
+zen-general-cancel-label = 
+    .label = Cancel·la
+zen-general-confirm = 
+    .label = Confirma
+zen-pinned-tab-replaced = L'URL de la pestanya fixada s'ha substituït per l'URL actual.
+zen-tabs-renamed = S'ha canviat el nom de la pestanya correctament
+zen-background-tab-opened-toast = S'ha obert una nova pestanya de fons
+zen-workspace-renamed-toast = S'ha canviat el nom de l'espai de treball correctament
+zen-toggle-compact-mode-button = 
+    .label = Mode compacte
+    .tooltiptext = Commuta el mode compacte
+
+# note: Do not translate the "<br/>" tags in the following string
+
+zen-learn-more-text = Més informació
+zen-close-label = Tanca
+zen-singletoolbar-urlbar-placeholder-with-name = 
+    .placeholder = Cerca...
+zen-icons-picker-emoji = 
+    .label = Emojis
+zen-icons-picker-svg = 
+    .label = Icones
+urlbar-search-mode-zen_actions = Accions
+zen-site-data-settings = Configuració
+zen-generic-manage = Gestiona
+zen-generic-more = Més
+zen-generic-next = Següent
+zen-essentials-promo-label = Afegeix als essencials
+zen-essentials-promo-sublabel = Mantingueu les vostres pestanyes preferides a només un clic de distància
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Permès
+zen-site-data-setting-block = Bloquejat
+zen-site-data-protections-enabled = Habilitat
+zen-site-data-protections-disabled = Deshabilitat
+zen-site-data-setting-cross-site = Galetes entre llocs
+zen-site-data-security-info-extension = 
+    .label = Extensió
+zen-site-data-security-info-secure = 
+    .label = Segur
+zen-site-data-security-info-not-secure = 
+    .label = No és segur
+zen-site-data-manage-addons = 
+    .label = Gestiona les extensions
+zen-site-data-get-addons = 
+    .label = Afegeix extensions
+zen-site-data-site-settings = 
+    .label = Totes les configuracions del lloc
+zen-site-data-header-share = 
+    .tooltiptext = Comparteix aquesta pàgina
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Accedeix al mode lectura
+zen-site-data-header-screenshot = 
+    .tooltiptext = Fes una captura de pantalla
+zen-site-data-header-bookmark = 
+    .tooltiptext = Afegeix la pàgina a les adreces d'interès
+zen-urlbar-copy-url-button = 
+    .tooltiptext = Copia l'URL
+zen-site-data-setting-site-protection = Protecció contra el seguiment
+
+# Section: Feature callouts
+
+zen-site-data-panel-feature-callout-title = Una nova ubicació per a les extenions, permisos i molt més
+zen-site-data-panel-feature-callout-subtitle = Feu clic a la icona per gestionar la configuració del lloc, veure la informació de seguretat, accedir a les extensions i dur a terme accions habituals.
+zen-open-link-in-glance = 
+    .label = Obre l'enllaç en un cop d'ull
+    .accesskey = G
+zen-sidebar-notification-updated-heading = Actualització completada!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = Novetats a { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = Mostra les notes de la versió
+zen-sidebar-notification-restart-safe-mode-label = Alguna cosa no funciona?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Reinici en mode segur
+zen-window-sync-migration-dialog-title = Mantingueu les finestres sincronitzades
+zen-window-sync-migration-dialog-message = El Zen ara sincronitza les finestres del mateix dispositiu, de manera que els canvis en una finestra es reflecteixen a les altres a l'instant.
+zen-window-sync-migration-dialog-learn-more = Més informació
+zen-window-sync-migration-dialog-accept = D'acord
+zen-appmenu-new-blank-window = 
+    .label = Nova finestra en blanc

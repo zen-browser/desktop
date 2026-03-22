@@ -1,0 +1,44 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-toolbar-context-tabs-right = 
+    .label = Lapok a jobb oldalon
+    .accesskey = R
+zen-toolbar-context-compact-mode = 
+    .label = Kompakt mód
+zen-toolbar-context-compact-mode-enable = 
+    .label = Kompakt mód engedélyezése
+    .accesskey = D
+zen-toolbar-context-compact-mode-just-tabs = 
+    .label = Oldalsáv elrejtése
+zen-toolbar-context-compact-mode-just-toolbar = 
+    .label = Eszköztár elrejtése
+zen-toolbar-context-compact-mode-hide-both = 
+    .label = Mindkettő elrejtése
+    .accesskey = H
+zen-toolbar-context-new-folder = 
+    .label = Új mappa
+    .accesskey = N
+sidebar-zen-expand = 
+    .label = Oldalsáv kibontása
+sidebar-zen-create-new = 
+    .label = Új létrehozása...
+tabbrowser-unload-tab-button = 
+    .tooltiptext =
+        { $tabCount ->
+            [one] Ürítés és lap váltás
+           *[other] { $tabCount } lap ürítése és első lapra váltás
+        }
+tabbrowser-reset-pin-button = 
+    .tooltiptext =
+        { $tabCount ->
+            [one] Lap visszaállítása és rögzítése
+           *[other] { $tabCount } lap visszaállítása és rögzítése
+        }
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Vissza a rögzített URL-hez
+        [zen-default-pinned-cmd] Leválás a rögzített lapról
+       *[other] { $tabSubtitle }
+    }

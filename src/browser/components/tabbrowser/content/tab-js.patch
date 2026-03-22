@@ -1,0 +1,208 @@
+diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
+index e4266a159a0d5c42cc294602d00b8f66131f35d5..88c321f05dabd948d06e155f6e0474669fc15c20 100644
+--- a/browser/components/tabbrowser/content/tab.js
++++ b/browser/components/tabbrowser/content/tab.js
+@@ -21,6 +21,7 @@
+           <hbox class="tab-group-line"/>
+         </vbox>
+         <hbox class="tab-content" align="center">
++          <box class="tab-reset-pin-button" role="button" data-l10n-id="tabbrowser-reset-pin-button" data-l10n-args='{"tabCount": 1}' keyNav="false"><image/></box>
+           <stack class="tab-icon-stack">
+             <hbox class="tab-throbber"/>
+             <hbox class="tab-icon-pending"/>
+@@ -38,9 +39,11 @@
+             <hbox class="tab-secondary-label">
+               <label class="tab-icon-sound-label tab-icon-sound-pip-label" data-l10n-id="browser-tab-audio-pip" role="presentation"/>
+             </hbox>
++            <label class="zen-tab-sublabel" data-l10n-id="zen-tab-sublabel" data-l10n-args='{"tabSubtitle": "zen-default-pinned"}' role="presentation"/>
+           </vbox>
+           <image class="tab-note-icon" role="presentation"/>
+           <image class="tab-close-button close-icon" role="button" data-l10n-id="tabbrowser-close-tabs-button" data-l10n-args='{"tabCount": 1}' keyNav="false"/>
++          <image class="tab-reset-button reset-icon" role="button" data-l10n-id="tabbrowser-unload-tab-button" data-l10n-args='{"tabCount": 1}' keyNav="false"/>
+         </hbox>
+       </stack>
+       `;
+@@ -87,7 +90,7 @@
+         ".tab-content":
+           "pinned,selected=visuallyselected,multiselected,titlechanged,attention",
+         ".tab-icon-stack":
+-          "sharing,pictureinpicture,crashed,busy,soundplaying,soundplaying-scheduledremoval,pinned,muted,blocked,selected=visuallyselected,activemedia-blocked",
++          "zen-essential,sharing,pictureinpicture,crashed,busy,soundplaying,soundplaying-scheduledremoval,pinned,muted,blocked,selected=visuallyselected,activemedia-blocked",
+         ".tab-throbber":
+           "fadein,pinned,busy,progress,selected=visuallyselected",
+         ".tab-icon-pending":
+@@ -96,9 +99,9 @@
+           "src=image,requestcontextid,fadein,pinned,selected=visuallyselected,busy,crashed,sharing,pictureinpicture,pending,discarded",
+         ".tab-sharing-icon-overlay": "sharing,selected=visuallyselected,pinned",
+         ".tab-icon-overlay":
+-          "sharing,pictureinpicture,crashed,busy,soundplaying,soundplaying-scheduledremoval,pinned,muted,blocked,selected=visuallyselected,activemedia-blocked",
++          "zen-essential,sharing,pictureinpicture,crashed,busy,soundplaying,soundplaying-scheduledremoval,pinned,muted,blocked,selected=visuallyselected,activemedia-blocked",
+         ".tab-audio-button":
+-          "crashed,soundplaying,soundplaying-scheduledremoval,pinned,muted,activemedia-blocked",
++          "zen-essential,crashed,soundplaying,soundplaying-scheduledremoval,pinned,muted,activemedia-blocked",
+         ".tab-label-container":
+           "pinned,selected=visuallyselected,labeldirection",
+         ".tab-label":
+@@ -189,7 +192,7 @@
+     }
+ 
+     set _visuallySelected(val) {
+-      if (val == this.hasAttribute("visuallyselected")) {
++      if (val == this.hasAttribute("visuallyselected") || (!val && this.linkedBrowser?.closest('.browserSidebarContainer').classList.contains('zen-glance-background'))) {
+         return;
+       }
+ 
+@@ -225,11 +228,23 @@
+     }
+ 
+     get visible() {
+-      return (
+-        this.isOpen &&
+-        !this.hidden &&
+-        (!this.group || this.group.isTabVisibleInGroup(this))
+-      );
++      if (!this.isOpen || this.hidden || this.hasAttribute("zen-empty-tab")) {
++        return false;
++      }
++      // Selected tabs are always visible
++      if (this.selected || this.multiselected) return true;
++      // Recursively check all parent groups
++      let currentParent = this.group;
++      while (currentParent) {
++        if (currentParent.collapsed && !currentParent.activeTabs?.includes(this)) {
++          return false;
++        }
++        currentParent = currentParent.group;
++      }
++      if (this.pinned && !this.hasAttribute("zen-essential") && gZenWorkspaces.activeWorkspaceElement?.hasCollapsedPinnedTabs) {
++        return false;
++      }
++      return true;
+     }
+ 
+     get hidden() {
+@@ -308,7 +323,7 @@
+         return false;
+       }
+ 
+-      return true;
++      return !this.hasAttribute("zen-empty-tab");
+     }
+ 
+     get lastAccessed() {
+@@ -393,7 +408,18 @@
+     }
+ 
+     get group() {
+-      return this.closest("tab-group");
++      if (typeof gBrowser === "undefined") {
++        return null;
++      }
++      if (gBrowser.isTabGroup(this.parentElement?.parentElement)) {
++        return this.parentElement.parentElement;
++      }
++      if (this.pinned && !this.hasAttribute('zen-essential')) {
++        let collapsiblePins = gZenWorkspaces.workspaceElement(this.getAttribute('zen-workspace-id'))?.collapsiblePins;
++        if (collapsiblePins?.collapsed) {
++          return collapsiblePins;
++        }
++      }
+     }
+ 
+     get splitview() {
+@@ -475,6 +501,10 @@
+         }
+       }
+ 
++      if (event.target.classList.contains("tab-reset-pin-button")) {
++        gZenPinnedTabManager.onResetPinButtonMouseOver(this, event);
++      }
++
+       // If the previous target wasn't part of this tab then this is a mouseenter event.
+       if (!this.contains(event.relatedTarget)) {
+         this._mouseenter();
+@@ -504,6 +534,7 @@
+       if (!this.contains(event.relatedTarget)) {
+         this._mouseleave();
+       }
++      gZenPinnedTabManager.onResetPinButtonMouseOut(this);
+     }
+ 
+     on_dragstart(event) {
+@@ -538,6 +569,8 @@
+         this.style.MozUserFocus = "ignore";
+       } else if (
+         event.target.classList.contains("tab-close-button") ||
++        event.target.classList.contains("tab-reset-button") ||
++        event.target.classList.contains("tab-reset-pin-button") ||
+         event.target.classList.contains("tab-icon-overlay") ||
+         event.target.classList.contains("tab-audio-button")
+       ) {
+@@ -592,16 +625,21 @@
+       this.style.MozUserFocus = "";
+     }
+ 
++    get glanceTab() {
++      return this.querySelector("tab[zen-glance-tab]");
++    }
++
+     on_click(event) {
+       if (event.button != 0) {
+         return;
+       }
+ 
+-      if (event.getModifierState("Accel") || event.shiftKey) {
++      if (event.shiftKey) {
+         return;
+       }
+ 
+       if (
++        !event.getModifierState("Accel") &&
+         gBrowser.multiSelectedTabsCount > 0 &&
+         !event.target.classList.contains("tab-close-button") &&
+         !event.target.classList.contains("tab-icon-overlay") &&
+@@ -613,8 +651,9 @@
+       }
+ 
+       if (
+-        event.target.classList.contains("tab-icon-overlay") ||
+-        event.target.classList.contains("tab-audio-button")
++        !event.getModifierState("Accel") &&
++        (event.target.classList.contains("tab-icon-overlay") ||
++        event.target.classList.contains("tab-audio-button"))
+       ) {
+         if (this.activeMediaBlocked) {
+           if (this.multiselected) {
+@@ -632,7 +671,7 @@
+         return;
+       }
+ 
+-      if (event.target.classList.contains("tab-close-button")) {
++      if (!event.getModifierState("Accel") && event.target.classList.contains("tab-close-button")) {
+         if (this.multiselected) {
+           gBrowser.removeMultiSelectedTabs(
+             lazy.TabMetrics.userTriggeredContext(
+@@ -652,6 +691,14 @@
+         // (see tabbrowser-tabs 'click' handler).
+         gBrowser.tabContainer._blockDblClick = true;
+       }
++
++      if (event.target.classList.contains("tab-reset-pin-button")) {
++        gZenPinnedTabManager._onTabResetPinButton(event, this, 'reset');
++        gBrowser.tabContainer._blockDblClick = true;
++      } else if (!event.getModifierState("Accel") && event.target.classList.contains("tab-reset-button")) {
++        gZenPinnedTabManager.onCloseTabShortcut(event, this);
++        gBrowser.tabContainer._blockDblClick = true;
++      }
+     }
+ 
+     on_dblclick(event) {
+@@ -675,6 +722,8 @@
+           animate: true,
+           triggeringEvent: event,
+         });
++      } else if (this.hasAttribute('zen-essential') && !event.target.classList.contains("tab-icon-overlay")) {
++        gZenPinnedTabManager._onTabResetPinButton(event, this, 'reset');
+       }
+     }
+ 

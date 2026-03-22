@@ -1,0 +1,28 @@
+diff --git a/browser/components/preferences/dialogs/syncChooseWhatToSync.xhtml b/browser/components/preferences/dialogs/syncChooseWhatToSync.xhtml
+index ef127a1bc2e3ea4221b641156c38a74edb3b44ae..acd39fe7f6dc7ec03ea50928e2d002791b834dcf 100644
+--- a/browser/components/preferences/dialogs/syncChooseWhatToSync.xhtml
++++ b/browser/components/preferences/dialogs/syncChooseWhatToSync.xhtml
+@@ -27,6 +27,10 @@
+         rel="localization"
+         href="browser/preferences/preferences.ftl"
+       />
++      <html:link
++        rel="localization"
++        href="browser/preferences/zen-preferences.ftl"
++      />
+     </linkset>
+     <script src="chrome://global/content/preferencesBindings.js" />
+     <script src="chrome://browser/content/preferences/dialogs/syncChooseWhatToSync.js" />
+@@ -87,6 +91,12 @@
+           preference="services.sync.engine.prefs"
+         />
+       </html:div>
++      <html:div class="sync-engine-workspaces">
++        <checkbox
++                data-l10n-id="sync-engine-workspaces"
++                preference="services.sync.engine.workspaces"
++        />
++      </html:div>
+     </html:div>
+   </dialog>
+ </window>

@@ -1,0 +1,51 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+/* All overrides for compact mode go here */
+
+.zen-toolbar-background {
+  display: none;
+  pointer-events: none;
+
+  overflow: clip;
+  z-index: -1;
+  background: light-dark(#e9e9e9, #131313);
+  box-shadow: var(--zen-big-shadow);
+  @media -moz-pref('zen.theme.acrylic-elements') {
+    background: transparent;
+    backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
+  }
+
+  &::before,
+  &::after {
+    outline: 1px solid rgba(255, 255, 255, .15);
+    outline-offset: -1px;
+    background-attachment: fixed !important;
+    background-size: 100vw 100vh !important;
+  }
+
+  &,
+  &::before,
+  &::after {
+    border-radius: calc(var(--zen-native-inner-radius) - var(--zen-compact-mode-no-padding-radius-fix, 0px));
+  }
+}
+
+:root[zen-compact-mode='true']:not([customizing]):not([inDOMFullscreen='true']) {
+
+%include ../tabs/zen-tabs/vertical-tabs-topbuttons-fix.css
+
+  & #urlbar {
+    visibility: visible;
+  }
+
+  @media -moz-pref('zen.view.compact.hide-tabbar') or -moz-pref('zen.view.use-single-toolbar') {
+%include sidebar.inc.css
+  }
+
+  @media -moz-pref('zen.view.compact.hide-toolbar') {
+%include toolbar.inc.css
+  }
+}

@@ -1,0 +1,126 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-panel-ui-current-profile-text = aktualny profil
+unified-extensions-description = Rozszerzenia są używane, aby zapewnić dodatkową funkcjonalność w { -brand-short-name }.
+tab-context-zen-reset-pinned-tab = 
+    .label =
+        { $isEssential ->
+            [true] Zresetuj niezbędną kartę
+           *[false] Zresetuj przypiętą kartę
+        }
+    .accesskey = R
+tab-context-zen-add-essential = 
+    .label = Dodaj do niezbędnych
+    .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } zajętych miejsc
+tab-context-zen-remove-essential = 
+    .label = Usuń z niezbędnych
+    .accesskey = R
+tab-context-zen-replace-pinned-url-with-current = 
+    .label =
+        { $isEssential ->
+            [true] Zastąp adres URL niezbędnej karty bieżącym
+           *[false] Zastąp adres URL przypiętej karty bieżącym
+        }
+    .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Zmień nazwę...
+tab-context-zen-edit-icon = 
+    .label = Zmień ikonę...
+zen-themes-corrupted = Twój plik modyfikacji { -brand-short-name } jest uszkodzony. Został on zresetowany do domyślnego stanu.
+zen-shortcuts-corrupted = Twój plik skrótów { -brand-short-name } jest uszkodzony. Został on zresetowany do domyślnego stanu.
+# note: Do not translate the "<br/>" tags in the following string
+zen-new-urlbar-notification =
+    Włączono nowy pasek adresu URL, dzięki czemu nie ma już potrzeby korzystania ze strony nowej karty.<br/><br/>
+    Spróbuj otworzyć nową kartę, aby zobaczyć, jak działa nowy pasek adresu URL!
+zen-disable = Deaktywuj
+pictureinpicture-minimize-btn = 
+    .aria-label = Zminimalizuj
+    .tooltip = Zminimalizuj
+zen-panel-ui-gradient-generator-custom-color = Niestandardowy kolor
+zen-copy-current-url-confirmation = Skopiowano bieżący URL!
+zen-copy-current-url-as-markdown-confirmation = Skopiowano bieżący adres URL jako Markdown!
+zen-general-cancel-label = 
+    .label = Anuluj
+zen-general-confirm = 
+    .label = Potwierdź
+zen-pinned-tab-replaced = URL przypiętej karty został zastąpiony bieżącym adresem!
+zen-tabs-renamed = Nazwa karty została z powodzeniem zmieniona!
+zen-background-tab-opened-toast = Nowa karta została otworzona w tle!
+zen-workspace-renamed-toast = Zmieniono nazwę przestrzeni roboczej!
+zen-toggle-compact-mode-button = 
+    .label = Tryb kompaktowy
+    .tooltiptext = Przełącz tryb kompaktowy
+
+# note: Do not translate the "<br/>" tags in the following string
+
+zen-learn-more-text = Dowiedz się więcej
+zen-close-label = Zamknij
+zen-singletoolbar-urlbar-placeholder-with-name = 
+    .placeholder = Szukaj...
+zen-icons-picker-emoji = 
+    .label = Emotikony
+zen-icons-picker-svg = 
+    .label = Ikony
+urlbar-search-mode-zen_actions = Akcje
+zen-site-data-settings = Ustawienia
+zen-generic-manage = Zarządzaj
+zen-generic-more = Więcej
+zen-generic-next = Następne
+zen-essentials-promo-label = Dodaj do niezbędnych
+zen-essentials-promo-sublabel = Utrzymuj swoje ulubione karty w zasięgu myszki
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Dozwolone
+zen-site-data-setting-block = Zablokowane
+zen-site-data-protections-enabled = Włączone
+zen-site-data-protections-disabled = Wyłączone
+zen-site-data-setting-cross-site = Pliki cookie między witrynami
+zen-site-data-security-info-extension = 
+    .label = Rozszerzenie
+zen-site-data-security-info-secure = 
+    .label = Zabezpieczone
+zen-site-data-security-info-not-secure = 
+    .label = Niezabezpieczone
+zen-site-data-manage-addons = 
+    .label = Zarządzaj rozszerzeniami
+zen-site-data-get-addons = 
+    .label = Dodaj rozszerzenia
+zen-site-data-site-settings = 
+    .label = Wszystkie ustawienia strony
+zen-site-data-header-share = 
+    .tooltiptext = Udostępnij tę stronę
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Wejdź do trybu czytnika
+zen-site-data-header-screenshot = 
+    .tooltiptext = Zrzut ekranu
+zen-site-data-header-bookmark = 
+    .tooltiptext = Dodaj tę stronę do zakładek
+zen-urlbar-copy-url-button = 
+    .tooltiptext = Kopiuj URL
+zen-site-data-setting-site-protection = Ochrona przed śledzeniem
+
+# Section: Feature callouts
+
+zen-site-data-panel-feature-callout-title = Nowy dom dla dodatków, uprawnień i więcej
+zen-site-data-panel-feature-callout-subtitle = Kliknij ikonę, aby zarządzać ustawieniami witryny, wyświetlić informacje o zabezpieczeniach, rozszerzeniach i wykonać akcje.
+zen-open-link-in-glance = 
+    .label = Otwórz link w szybkim podglądzie
+    .accesskey = G
+zen-sidebar-notification-updated-heading = Aktualizacja ukończona!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = Co nowego w { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = Zobacz informacje o aktualizacji
+zen-sidebar-notification-restart-safe-mode-label = Coś się zepsuło?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Zrestartuj w trybie bezpiecznym
+zen-window-sync-migration-dialog-title = Utrzymuj synchronizację okien
+zen-window-sync-migration-dialog-message = Zen synchronizuje okna na jednym urządzeniu, żeby zmiany w jednym oknie były natychmiast odzwierciedlone w pozostałych.
+zen-window-sync-migration-dialog-learn-more = Dowiedz się więcej
+zen-window-sync-migration-dialog-accept = Rozumiem
+zen-appmenu-new-blank-window = 
+    .label = Nowe puste okno

@@ -1,0 +1,57 @@
+{
+  "name": "Zen Browser",
+  "vendor": "Zen OSS Team",
+  "appId": "zen",
+  "binaryName": "zen",
+  "version": {
+    "product": "firefox",
+    "version": "148.0.2",
+    "candidate": "149.0",
+    "candidateBuild": 1
+  },
+  "buildOptions": {
+    "generateBranding": true
+  },
+  "addons": {},
+  "brands": {
+    "release": {
+      "backgroundColor": "#282A33",
+      "brandShorterName": "Zen",
+      "brandShortName": "Zen",
+      "brandFullName": "Zen Browser",
+      "release": {
+        "displayVersion": "1.19.3b",
+        "github": {
+          "repo": "zen-browser/desktop"
+        },
+        "archives": {
+          "windows": "windows.mar",
+          "macos-aarch64": "macos-aarch64.mar",
+          "linux": "linux.mar",
+          "macos-x64": "macos-x64.mar",
+          "windows-arm64": "windows-arm64.mar",
+          "linux-aarch64": "linux-aarch64.mar"
+        }
+      }
+    },
+    "twilight": {
+      "backgroundColor": "#282A33",
+      "brandShorterName": "Zen",
+      "brandShortName": "Twilight",
+      "brandFullName": "Zen Twilight",
+      "release": {
+        "displayVersion": "1.20t",
+        "github": {
+          "repo": "zen-browser/desktop"
+        }
+      }
+    }
+  },
+  "license": {
+    "ignoredFiles": [
+      ".*\\.json"
+    ],
+    "licenseType": "MPL-2.0"
+  },
+  "updateHostname": "updates.zen-browser.app"
+}

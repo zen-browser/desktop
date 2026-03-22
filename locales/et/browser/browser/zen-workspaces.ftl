@@ -1,0 +1,75 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-panel-ui-workspaces-text = Tööruumid
+zen-panel-ui-spaces-label = 
+    .label = Spaces
+zen-panel-ui-workspaces-create = 
+    .label = Uus tööruum
+zen-panel-ui-folder-create = 
+    .label = Uus kaust
+zen-panel-ui-live-folder-create = 
+    .label = Live Folder
+zen-panel-ui-new-empty-split = 
+    .label = Uus jaotatud vaade
+zen-workspaces-panel-context-delete = 
+    .label = Kustuta tööruum
+    .accesskey = K
+zen-workspaces-panel-change-name = 
+    .label = Nimeta ümber
+zen-workspaces-panel-change-icon = 
+    .label = Muuda ikooni
+zen-workspaces-panel-context-default-profile = 
+    .label = Määra profiil
+zen-workspaces-panel-unload = 
+    .label = Tööruumi mälust eemaldamine
+zen-workspaces-panel-unload-others = 
+    .label = Unload All Other Spaces
+zen-workspaces-how-to-reorder-title = Kuidas vahetada tööruumide järjestust
+zen-workspaces-how-to-reorder-desc = Lohista tööruumide ikoone külgriba alumises servas, et nende järjestust muuta
+zen-workspaces-change-theme = 
+    .label = Muuda teemat
+zen-workspaces-panel-context-open = 
+    .label = Ava tööruum
+    .accesskey = A
+zen-workspaces-panel-context-edit = 
+    .label = Muuda tööruumi
+    .accesskey = M
+zen-bookmark-edit-panel-workspace-selector = 
+    .value = Spaces
+    .accesskey = T
+zen-panel-ui-gradient-generator-algo-complementary = 
+    .label = Täiendvärvid
+zen-panel-ui-gradient-generator-algo-splitComplementary = 
+    .label = Täiendvärvide kolmik
+zen-panel-ui-gradient-generator-algo-analogous = 
+    .label = Lähedased värvid
+zen-panel-ui-gradient-generator-algo-triadic = 
+    .label = Kolmkõla
+zen-panel-ui-gradient-generator-algo-floating = 
+    .label = Hõljuv
+zen-panel-ui-gradient-click-to-add = Klõpsa värvi lisamiseks
+zen-workspace-creation-name = 
+    .placeholder = Tööruumi nimi
+zen-move-tab-to-workspace-button = 
+    .label = Move To...
+    .tooltiptext = Move all tabs in this window to a Space
+zen-workspaces-panel-context-reorder = 
+    .label = Muuda tööruumide järjestust
+zen-workspace-creation-profile = Profiil
+    .tooltiptext = Profiile kasutatakse küpsiste ning saidi andmete eraldamiseks tööruumide vahel.
+zen-workspace-creation-header = Loo uus tööruum
+zen-workspace-creation-label = Tööruume kasutatakse kaartide ja sessioonide organiseerimiseks.
+zen-workspaces-delete-workspace-title = Delete Workspace?
+zen-workspaces-delete-workspace-body = Kas oled kindel, et soovid kustutada tööruumi { $name }? Seda tegevust ei saa tagasi võtta.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcut }</span> to undo.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Clear
+    .tooltiptext = Close all unpinned tabs
+zen-panel-ui-workspaces-change-forward = 
+    .label = Next Space
+zen-panel-ui-workspaces-change-back = 
+    .label = Previous Space

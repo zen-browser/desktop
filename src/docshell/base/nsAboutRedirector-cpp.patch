@@ -1,0 +1,13 @@
+diff --git a/docshell/base/nsAboutRedirector.cpp b/docshell/base/nsAboutRedirector.cpp
+index 6789b3d1d8ba3477c30da8b8dff54a659206c37f..a13b07368c8ea1b7510d55ac9e3dcae50f226158 100644
+--- a/docshell/base/nsAboutRedirector.cpp
++++ b/docshell/base/nsAboutRedirector.cpp
+@@ -117,7 +117,7 @@ static const RedirEntry kRedirMap[] = {
+     {"crashes", "chrome://global/content/crashes.html",
+      nsIAboutModule::IS_SECURE_CHROME_UI},
+ #endif
+-    {"credits", "https://www.mozilla.org/credits/",
++    {"credits", "https://zen-browser.app/about/",
+      nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT |
+          nsIAboutModule::URI_MUST_LOAD_IN_CHILD},
+     {"fingerprintingprotection",

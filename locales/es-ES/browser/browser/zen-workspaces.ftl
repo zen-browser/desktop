@@ -1,0 +1,75 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-panel-ui-workspaces-text = Espacios de trabajo
+zen-panel-ui-spaces-label = 
+    .label = Espacios
+zen-panel-ui-workspaces-create = 
+    .label = Crear espacio
+zen-panel-ui-folder-create = 
+    .label = Crear carpeta
+zen-panel-ui-live-folder-create = 
+    .label = Carpeta activa
+zen-panel-ui-new-empty-split = 
+    .label = Nueva división
+zen-workspaces-panel-context-delete = 
+    .label = Eliminar espacio de trabajo
+    .accesskey = D
+zen-workspaces-panel-change-name = 
+    .label = Cambiar nombre
+zen-workspaces-panel-change-icon = 
+    .label = Cambiar icono
+zen-workspaces-panel-context-default-profile = 
+    .label = Establecer perfil
+zen-workspaces-panel-unload = 
+    .label = Suspender espacio
+zen-workspaces-panel-unload-others = 
+    .label = Suspender todos los demás espacios
+zen-workspaces-how-to-reorder-title = Cómo reordenar espacios
+zen-workspaces-how-to-reorder-desc = Arrastre los iconos de los espacios en la parte inferior de la barra lateral para reordenarlos
+zen-workspaces-change-theme = 
+    .label = Editar tema
+zen-workspaces-panel-context-open = 
+    .label = Abrir espacio de trabajo
+    .accesskey = O
+zen-workspaces-panel-context-edit = 
+    .label = Editar espacio de trabajo
+    .accesskey = E
+zen-bookmark-edit-panel-workspace-selector = 
+    .value = Espacios
+    .accesskey = W
+zen-panel-ui-gradient-generator-algo-complementary = 
+    .label = Complementario
+zen-panel-ui-gradient-generator-algo-splitComplementary = 
+    .label = Dividir
+zen-panel-ui-gradient-generator-algo-analogous = 
+    .label = Análogo
+zen-panel-ui-gradient-generator-algo-triadic = 
+    .label = Triádico
+zen-panel-ui-gradient-generator-algo-floating = 
+    .label = Flotante
+zen-panel-ui-gradient-click-to-add = Haga clic para añadir un color
+zen-workspace-creation-name = 
+    .placeholder = Nombre del espacio
+zen-move-tab-to-workspace-button = 
+    .label = Mover a...
+    .tooltiptext = Mover todas las pestañas de esta ventana a un espacio
+zen-workspaces-panel-context-reorder = 
+    .label = Reordenar espacios
+zen-workspace-creation-profile = Perfil
+    .tooltiptext = Los perfiles se utilizan para separar las cookies y los datos de sitios entre espacios.
+zen-workspace-creation-header = Crear un espacio
+zen-workspace-creation-label = Los espacios se utilizan para organizar sus pestañas y sesiones.
+zen-workspaces-delete-workspace-title = ¿Eliminar espacio de trabajo?
+zen-workspaces-delete-workspace-body = ¿Seguro que quiere eliminar { $name }? Esta acción no se puede deshacer.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = ¡Pestañas cerradas! Use <span>{ $shortcut }</span> para deshacerlo.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Limpiar
+    .tooltiptext = Cerrar todas las pestañas sin fijar
+zen-panel-ui-workspaces-change-forward = 
+    .label = Espacio siguiente
+zen-panel-ui-workspaces-change-back = 
+    .label = Espacio anterior

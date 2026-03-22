@@ -1,0 +1,82 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+<html:template id="template-paneZenTabManagement">
+<hbox id="ZenWorkspacesCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenTabManagement">
+</hbox>
+
+<hbox id="zenTabManagementCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenTabManagement">
+<html:h1 data-l10n-id="pane-settings-workspaces-title"/>
+</hbox>
+
+<groupbox id="zenWorkspacesGroup" data-category="paneZenTabManagement" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-settings-workspaces-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-settings-workspaces-description" />
+
+      <checkbox id="zenWorkspacesSyncUnpinnedTabs"
+            data-l10n-id="zen-settings-workspaces-sync-unpinned-tabs"
+            preference="zen.window-sync.sync-only-pinned-tabs"/>
+      <checkbox id="zenWorkspacesHideDefaultContainer"
+            data-l10n-id="zen-settings-workspaces-hide-default-container-indicator"
+            preference="zen.workspaces.hide-default-container-indicator"/>
+      <checkbox id="zenWorkspacesForceContainerTabsToWorkspace"
+            data-l10n-id="zen-settings-workspaces-force-container-tabs-to-workspace"
+            preference="zen.workspaces.force-container-workspace"/>
+      <checkbox id="zenTabsCloseOnBackWithNoHistory"
+            data-l10n-id="zen-tabs-close-on-back-with-no-history"
+            preference="zen.tabs.close-on-back-with-no-history"/>
+      <checkbox data-l10n-id="zen-tabs-cycle-ignore-pending-tabs"
+            preference="zen.tabs.ctrl-tab.ignore-pending-tabs"/>
+      <checkbox data-l10n-id="zen-tabs-cycle-by-attribute"
+            preference="zen.tabs.ctrl-tab.ignore-essential-tabs"/>
+      <description id="zenTabsCycleByAttributeWarning"
+            class="description-deemphasized"
+            data-l10n-id="zen-tabs-cycle-by-attribute-warning"
+            hidden="true"/>
+      <checkbox data-l10n-id="zen-tabs-select-recently-used-on-close"
+            preference="zen.tabs.select-recently-used-on-close"/>
+</groupbox>
+
+<hbox id="zenPinnedTabsManagerCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenTabManagement">
+      <html:h1 data-l10n-id="pane-zen-pinned-tab-manager-title"/>
+</hbox>
+
+<groupbox id="zenPinnedTabsManagerGroup" data-category="paneZenTabManagement" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-pinned-tab-manager-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-pinned-tab-manager-description" />
+
+      <checkbox id="zenPinnedTabRestorePinnedTabsToPinnedUrl"
+                data-l10n-id="zen-pinned-tab-manager-restore-pinned-tabs-to-pinned-url"
+                preference="zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url"/>
+      <checkbox id="zenPinnedTabContainerSpecificEssentials"
+                data-l10n-id="zen-pinned-tab-manager-container-specific-essentials-enabled"
+                preference="zen.workspaces.separate-essentials"/>
+
+      <hbox align="center">
+            <label id="zenPinnedTabCloseShortcutBehaviorLabel" data-l10n-id="zen-pinned-tab-manager-close-shortcut-behavior-label"/>
+            <menulist id="zenPinnedTabCloseShortcutBehavior" preference="zen.pinned-tab-manager.close-shortcut-behavior">
+                  <menupopup>
+                        <menuitem data-l10n-id="zen-pinned-tab-manager-reset-unload-switch-close-shortcut-option" value="reset-unload-switch"/>
+                        <menuitem data-l10n-id="zen-pinned-tab-manager-unload-switch-close-shortcut-option" value="unload-switch"/>
+                        <menuitem data-l10n-id="zen-pinned-tab-manager-reset-switch-close-shortcut-option" value="reset-switch"/>
+                        <menuitem data-l10n-id="zen-pinned-tab-manager-switch-close-shortcut-option" value="switch"/>
+                        <menuitem data-l10n-id="zen-pinned-tab-manager-reset-close-shortcut-option" value="reset"/>
+                        <menuitem data-l10n-id="zen-pinned-tab-manager-close-close-shortcut-option" value="close"/>
+                  </menupopup>
+            </menulist>
+      </hbox>
+</groupbox>
+
+</html:template>
+
+

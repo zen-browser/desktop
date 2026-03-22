@@ -1,0 +1,313 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+#zen-media-controls-toolbar {
+  --progress-height: 4px;
+  --button-spacing: 2px;
+
+  display: flex;
+  min-width: 0;
+  justify-content: space-between;
+  background: transparent;
+  container-type: inline-size;
+
+  .toolbarbutton-1 {
+    border-radius: 5px;
+  }
+
+  #zen-media-buttons-hbox {
+    align-items: start;
+    margin-top: -4px;
+    --toolbarbutton-outer-padding: 2px;
+  }
+
+  &:not([media-sharing]) {
+    #media-device-buttons {
+      display: none;
+    }
+  }
+
+  #media-device-buttons {
+    gap: 2px;
+  }
+
+  &[media-sharing] :is(#zen-media-playback-buttons, #zen-media-mute-button) {
+    display: none;
+  }
+
+  &:not([can-pip]) {
+    #zen-media-info-vbox {
+      width: calc(100% - 26px);
+      flex-shrink: 0;
+    }
+
+    #zen-media-pip-button {
+      display: none;
+    }
+  }
+
+  #zen-media-prev-button,
+  #zen-media-play-pause-button,
+  #zen-media-next-button {
+    margin: 0;
+  }
+
+  image.toolbarbutton-icon {
+    padding: 5px;
+    width: 26px;
+    height: 26px;
+  }
+
+  #zen-media-progress-bar {
+    appearance: none;
+    width: 100%;
+    height: var(--progress-height);
+    margin: 0 8px;
+    border-radius: 2px;
+    background-color: rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: height 0.15s ease-out;
+
+    &::-moz-range-track {
+      background: var(--zen-toolbar-element-bg);
+      border-radius: 999px;
+      height: var(--progress-height);
+    }
+
+    &::-moz-range-progress {
+      background: color-mix(in srgb, var(--zen-primary-color) 70%, light-dark(black, white) 30%);
+      border-radius: 999px;
+      height: var(--progress-height);
+    }
+
+    &::-moz-range-thumb {
+      background: color-mix(in srgb, var(--zen-primary-color) 70%, light-dark(black, white) 30%);
+      border: none;
+      width: calc(var(--progress-height) * 2);
+      height: calc(var(--progress-height) * 2);
+      border-radius: 50%;
+      cursor: pointer;
+      transform: scale(0);
+      transition: transform 0.15s ease-out;
+    }
+
+    &:hover::-moz-range-thumb {
+      transform: scale(1);
+    }
+  }
+
+  &:hover {
+    .show-on-hover {
+      max-height: 50px;
+      padding: 5px;
+      margin-bottom: 0;
+      opacity: 1;
+      transform: translateY(0) !important;
+      pointer-events: auto;
+    }
+
+    & #zen-media-info-vbox label[overflow] {
+      animation: zen-back-and-forth-text 10s infinite ease-in-out;
+    }
+  }
+
+  & #zen-media-focus-button::after {
+    content: "";
+    position: absolute;
+    width: 110%;
+    height: 110%;
+    background: url("chrome://browser/content/zen-images/note-indicator.svg") no-repeat;
+    top: -70%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 0;
+    pointer-events: none;
+    transition: opacity 0.8s ease;
+    opacity: 1;
+  }
+
+  &:is(:not(.playing:not([muted])), :hover) #zen-media-focus-button::after {
+    opacity: 0;
+  }
+
+  #zen-media-focus-button {
+    align-self: center;
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
+    position: relative;
+
+    & image {
+      &:-moz-broken {
+        content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3C/svg%3E") !important;
+        background: color-mix(in srgb, var(--zen-primary-color) 70%, transparent 30%);
+      }
+    }
+  }
+
+  & > toolbaritem {
+    flex-grow: 1;
+    transition: padding 0.3s ease-out;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    padding: 4px 6px;
+    border-radius: var(--border-radius-medium);
+    box-shadow: var(--zen-sidebar-notification-shadow);
+    background-color: var(--zen-sidebar-notification-bg);
+    width: 100%;
+  }
+
+  .show-on-hover {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(1rem);
+    padding: 0 6px;
+    pointer-events: none;
+    transition:
+      max-height 0.2s ease,
+      opacity 0.2s ease,
+      transform 0.2s ease,
+      padding 0.2s ease;
+  }
+
+  #zen-media-current-time,
+  #zen-media-duration {
+    margin: 0 0 0 1px;
+    font-size: x-small;
+    opacity: 0.7;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+#zen-media-controls-toolbar {
+  display: none;
+  animation: none;
+  transition: none;
+
+  &:not([hidden]) {
+    display: flex;
+    height: 2.5rem;
+    overflow: visible;
+    position: relative;
+    z-index: 2;
+  }
+}
+
+#zen-media-title,
+#zen-media-artist {
+  align-self: start;
+}
+
+#zen-media-artist {
+  opacity: 0.7;
+  font-size: smaller;
+
+  &:empty {
+    display: none;
+  }
+}
+
+#zen-media-title {
+  height: var(--size-item-small);
+  font-size: math;
+}
+
+#zen-media-main-vbox,
+#zen-media-info-vbox,
+#zen-media-progress-hbox {
+  width: 100%;
+}
+
+#zen-media-info-vbox {
+  #zen-media-controls-toolbar:not([media-position-hidden]) & {
+    transition-delay: 0.01s !important;
+  }
+  overflow-x: hidden;
+  overflow-x: visible;
+  white-space: nowrap;
+  /* Overflow inner box shadow from the left to simulate overflow */
+  mask-image: linear-gradient(to left, transparent, var(--zen-sidebar-notification-bg) 0.6em);
+  min-width: 1px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    width: 0.6em;
+    background: linear-gradient(to right, var(--zen-sidebar-notification-bg) 0%, transparent 100%);
+    pointer-events: none;
+    top: 6px;
+    left: 0;
+    height: calc(100% - 6px);
+    z-index: 1;
+  }
+
+  & label {
+    min-height: var(--size-item-small);
+    margin-left: 0;
+    font-weight: 500;
+    position: relative; /* For the animation */
+  }
+}
+
+#zen-media-main-vbox {
+  height: 100%;
+  justify-content: space-between;
+}
+
+#zen-media-progress-hbox {
+  flex-grow: 1;
+  height: var(--size-item-large);
+  align-items: center;
+  padding-top: 0 !important;
+
+  #zen-media-controls-toolbar[media-position-hidden] & {
+    display: none;
+  }
+}
+
+#zen-media-controls-hbox {
+  align-items: flex-end;
+  justify-content: space-between;
+  max-width: 100%;
+  --toolbarbutton-outer-padding: 0;
+  container: media-controls / inline-size;
+  gap: 0.7rem;
+}
+
+#zen-media-playback-buttons {
+  justify-content: space-between;
+  max-width: 10em;
+  width: 100%;
+}
+
+/* Hide #zen-media-focus-button if it doesn't fit in the toolbar */
+@container media-controls (max-width: 165px) {
+  #zen-media-focus-button {
+    display: none;
+  }
+}
+
+#zen-media-info-container {
+  padding-right: 0 !important;
+}
+
+#zen-media-controls-toolbar[can-pip] {
+  #zen-media-info-vbox {
+    flex-shrink: 1;
+  }
+
+  #zen-media-pip-button {
+    display: flex;
+  }
+}
+
+:root:not([zen-sidebar-expanded="true"]) {
+  #zen-media-controls-toolbar {
+    display: none;
+  }
+}

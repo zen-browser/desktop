@@ -1,0 +1,38 @@
+diff --git a/browser/base/content/browser-siteIdentity.js b/browser/base/content/browser-siteIdentity.js
+index cff28e1cdb550357662e8a7a41856e80b1de0018..9d569c1a1e6249c58a1e30fbb224c316c52ef204 100644
+--- a/browser/base/content/browser-siteIdentity.js
++++ b/browser/base/content/browser-siteIdentity.js
+@@ -464,11 +464,6 @@ var gIdentityHandler = {
+     // avoid a pretty ugly transition. Also hide it even
+     // if the update resulted in no site data, to keep the
+     // illusion that clicking the button had an effect.
+-    let hidden = new Promise(c => {
+-      this._identityPopup.addEventListener("popuphidden", c, { once: true });
+-    });
+-    PanelMultiView.hidePopup(this._identityPopup);
+-    await hidden;
+ 
+     let baseDomain = SiteDataManager.getBaseDomainFromHost(this._uri.host);
+     if (SiteDataManager.promptSiteDataRemoval(window, [baseDomain])) {
+@@ -853,7 +848,7 @@ var gIdentityHandler = {
+       // This is a secure internal Firefox page.
+       this._identityBox.className = "chromeUI";
+       let brandBundle = document.getElementById("bundle_brand");
+-      icon_label = brandBundle.getString("brandShorterName");
++      icon_label = brandBundle.getString("brandShortName");
+     } else if (this._pageExtensionPolicy) {
+       // This is a WebExtension page.
+       this._identityBox.className = "extensionPage";
+@@ -1196,6 +1191,12 @@ var gIdentityHandler = {
+       }
+     }
+ 
++    if (connection == "chrome" || connection == "extension" || connection == "file") {
++      document.getElementById("identity-popup-mainView-panel-header").setAttribute("hidden", "true");
++    } else {
++      document.getElementById("identity-popup-mainView-panel-header").removeAttribute("hidden");
++    }
++
+     // Push the appropriate strings out to the UI.
+     document.l10n.setAttributes(
+       this._identityPopupMainViewHeaderLabel,

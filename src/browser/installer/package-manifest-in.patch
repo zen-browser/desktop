@@ -1,0 +1,26 @@
+diff --git a/browser/installer/package-manifest.in b/browser/installer/package-manifest.in
+index 36eafe35063f02fe3d4acaab24a08dc1b7b0ae24..951889b156498f66118d67d4245aca649e27a3a2 100644
+--- a/browser/installer/package-manifest.in
++++ b/browser/installer/package-manifest.in
+@@ -378,17 +378,17 @@ bin/libfreebl_64int_3.so
+ ; [MaintenanceService]
+ ;
+ #ifdef MOZ_MAINTENANCE_SERVICE
+-@BINPATH@/maintenanceservice.exe
+-@BINPATH@/maintenanceservice_installer.exe
++;@BINPATH@/maintenanceservice.exe
++;@BINPATH@/maintenanceservice_installer.exe
+ #endif
+ 
+ ; [Crash Reporter]
+ ;
+ #ifdef MOZ_CRASHREPORTER
+ #ifdef XP_MACOSX
+-@BINPATH@/crashreporter.app/
++;@BINPATH@/crashreporter.app/
+ #else
+-@BINPATH@/crashreporter@BIN_SUFFIX@
++;@BINPATH@/crashreporter@BIN_SUFFIX@
+ #if defined(XP_WIN)
+ @BINPATH@/@DLL_PREFIX@mozwer@DLL_SUFFIX@
+ #endif

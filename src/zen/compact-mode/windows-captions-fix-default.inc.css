@@ -1,0 +1,19 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+& .titlebar-buttonbox-container {
+  max-height: 0px;
+  /* We need to hide them since on Windows the native
+   * panels when hovering over them can interfere with the
+   * web content */
+  transition: max-height 0s;
+  transition-delay: calc(var(--zen-hidden-toolbar-transition-duration) + 0.2s);
+
+  & .titlebar-button {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+}

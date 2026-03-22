@@ -1,0 +1,19 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+#include ../../../zen/media/zen-media-controls.inc.xhtml
+
+<toolbar brighttext="true"
+  id="zen-sidebar-foot-buttons"
+  fullscreentoolbar="true"
+  class="browser-toolbar customization-target"
+  data-l10n-id="tabs-toolbar"
+  customizable="true"
+  skipintoolbarset="true"
+  context="toolbar-context-menu"
+  mode="icons">
+  <toolbarbutton removable="true" class="chromeclass-toolbar-additional toolbarbutton-1 zen-sidebar-action-button" id="zen-expand-sidebar-button" command="cmd_zenToggleSidebar" data-l10n-id="sidebar-zen-expand"></toolbarbutton>
+  <zen-workspace-icons id="zen-workspaces-button" overflows="false" removable="false"></zen-workspace-icons>
+  <toolbarbutton removable="true" class="chromeclass-toolbar-additional toolbarbutton-1 zen-sidebar-action-button" id="zen-create-new-button" context="zenCreateNewPopup" data-l10n-id="sidebar-zen-create-new"></toolbarbutton>
+</toolbar>

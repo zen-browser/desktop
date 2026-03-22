@@ -1,0 +1,21 @@
+diff --git a/widget/SwipeTracker.cpp b/widget/SwipeTracker.cpp
+index b09252fd60beb10d5865d226c39ee0c8a9c22d87..91f68161209c6ca3f3bac22997d4e2066f1fafec 100644
+--- a/widget/SwipeTracker.cpp
++++ b/widget/SwipeTracker.cpp
+@@ -5,6 +5,7 @@
+  * You can obtain one at http://mozilla.org/MPL/2.0/. */
+ 
+ #include "SwipeTracker.h"
++#include "mozilla/StaticPrefs_zen.h"
+ 
+ #include "InputData.h"
+ #include "mozilla/FlushType.h"
+@@ -90,7 +91,7 @@ bool SwipeTracker::ComputeSwipeSuccess() const {
+ 
+   return (mGestureAmount * targetValue +
+           mCurrentVelocity * targetValue *
+-              StaticPrefs::widget_swipe_success_velocity_contribution()) >=
++              (StaticPrefs::zen_swipe_is_fast_swipe() ? 0.5 : StaticPrefs::widget_swipe_success_velocity_contribution())) >=
+          kSwipeSuccessThreshold;
+ }
+ 

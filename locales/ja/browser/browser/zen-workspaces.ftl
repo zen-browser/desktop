@@ -1,0 +1,75 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-panel-ui-workspaces-text = スペース
+zen-panel-ui-spaces-label = 
+    .label = スペース
+zen-panel-ui-workspaces-create = 
+    .label = スペースを作成
+zen-panel-ui-folder-create = 
+    .label = フォルダーを作成
+zen-panel-ui-live-folder-create = 
+    .label = ライブフォルダー
+zen-panel-ui-new-empty-split = 
+    .label = 新しい分割表示
+zen-workspaces-panel-context-delete = 
+    .label = スペースを削除する
+    .accesskey = D
+zen-workspaces-panel-change-name = 
+    .label = 名前を変更する
+zen-workspaces-panel-change-icon = 
+    .label = アイコンを変更する
+zen-workspaces-panel-context-default-profile = 
+    .label = プロファイルを設定する
+zen-workspaces-panel-unload = 
+    .label = スペースをアンロードする
+zen-workspaces-panel-unload-others = 
+    .label = Unload All Other Spaces
+zen-workspaces-how-to-reorder-title = 並べ替える方法
+zen-workspaces-how-to-reorder-desc = サイドバーの下部にあるスペースアイコンをドラッグして並べ替えます
+zen-workspaces-change-theme = 
+    .label = テーマを編集する
+zen-workspaces-panel-context-open = 
+    .label = ワークスペースを開く
+    .accesskey = O
+zen-workspaces-panel-context-edit = 
+    .label = ワークスペースを編集する
+    .accesskey = E
+zen-bookmark-edit-panel-workspace-selector = 
+    .value = スペース
+    .accesskey = W
+zen-panel-ui-gradient-generator-algo-complementary = 
+    .label = 補完的
+zen-panel-ui-gradient-generator-algo-splitComplementary = 
+    .label = 分割
+zen-panel-ui-gradient-generator-algo-analogous = 
+    .label = 類推的
+zen-panel-ui-gradient-generator-algo-triadic = 
+    .label = トライド的
+zen-panel-ui-gradient-generator-algo-floating = 
+    .label = フローティング
+zen-panel-ui-gradient-click-to-add = クリックして色を追加する
+zen-workspace-creation-name = 
+    .placeholder = スペース名
+zen-move-tab-to-workspace-button = 
+    .label = 移動先…
+    .tooltiptext = このウィンドウ内のすべてのタブをスペースに移動する
+zen-workspaces-panel-context-reorder = 
+    .label = スペースの順序を変更する
+zen-workspace-creation-profile = プロファイル
+    .tooltiptext = プロファイルはスペース間でクッキーとサイトデータを分離するために使用されます。
+zen-workspace-creation-header = スペースを作成する
+zen-workspace-creation-label = スペースはタブやセッションを整理するために使用されます。
+zen-workspaces-delete-workspace-title = スペースを削除しますか？
+zen-workspaces-delete-workspace-body = { $name }を削除してもよろしいですか？この操作は元に戻せません。
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = タブを閉じました！元に戻すには、 <span>{ $shortcut }</span>を使用してください。
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = 削除する
+    .tooltiptext = すべての固定しなかったタブを閉じる
+zen-panel-ui-workspaces-change-forward = 
+    .label = 次のスペースに移動
+zen-panel-ui-workspaces-change-back = 
+    .label = 前のスペースに移動

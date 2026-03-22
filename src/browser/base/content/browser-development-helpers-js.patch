@@ -1,0 +1,13 @@
+diff --git a/browser/base/content/browser-development-helpers.js b/browser/base/content/browser-development-helpers.js
+index 5155b280b8ff1dec8c53b12861ed4401f5499659..2184440335bbbf397f14d7c5e4b099f57022d03a 100644
+--- a/browser/base/content/browser-development-helpers.js
++++ b/browser/base/content/browser-development-helpers.js
+@@ -33,7 +33,7 @@ var DevelopmentHelpers = {
+     key.setAttribute("key", "r");
+     key.setAttribute("modifiers", "accel,alt");
+     key.setAttribute("command", "cmd_quickRestart");
+-    document.getElementById("mainKeyset").prepend(key);
++    document.getElementById(ZEN_KEYSET_ID).prepend(key);
+ 
+     let menuitem = document.createXULElement("menuitem");
+     menuitem.setAttribute("id", "menu_FileRestartItem");

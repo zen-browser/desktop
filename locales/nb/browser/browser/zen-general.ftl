@@ -1,0 +1,126 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-panel-ui-current-profile-text = nåværende profil
+unified-extensions-description = Utvidelser er brukt for å bringe mer ekstra funksjonalitet til { -brand-short-name }.
+tab-context-zen-reset-pinned-tab = 
+    .label =
+        { $isEssential ->
+            [true] Nullstill essensiell fane
+           *[false] Nullstill festet fane
+        }
+    .accesskey = R
+tab-context-zen-add-essential = 
+    .label = Legg til i essensielle
+    .accesskey = E
+tab-context-zen-add-essential-badge = { $num } / { $max } felt utfylt
+tab-context-zen-remove-essential = 
+    .label = Fjern fra essensielle
+    .accesskey = R
+tab-context-zen-replace-pinned-url-with-current = 
+    .label =
+        { $isEssential ->
+            [true] Erstatt essensiell nettadresse med gjeldende
+           *[false] Erstatt festet nettadresse med gjeldende
+        }
+    .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Endre etikett...
+tab-context-zen-edit-icon = 
+    .label = Endre ikon...
+zen-themes-corrupted = Din { -brand-short-name }-mods fil er skadet. De har blitt tilbakestilt til standardtemaet.
+zen-shortcuts-corrupted = { -brand-short-name } snarvei-filen din er skadet. De har blitt tilbakestilt til standard snarveier.
+# note: Do not translate the "<br/>" tags in the following string
+zen-new-urlbar-notification =
+    Det nye nettadressefeltet har blitt aktivert, som tar vekk behovet for nye fanesider.<br/><br/>
+    Prøv å åpne en ny fane for å se det nye nettadressefeltet i action!
+zen-disable = Deaktiver
+pictureinpicture-minimize-btn = 
+    .aria-label = Minimer
+    .tooltip = Minimer
+zen-panel-ui-gradient-generator-custom-color = Tilpasset Farge
+zen-copy-current-url-confirmation = Kopierte gjeldende nettadresse!
+zen-copy-current-url-as-markdown-confirmation = Kopierte gjeldende nettadresse som Markdown!
+zen-general-cancel-label = 
+    .label = Avbryt
+zen-general-confirm = 
+    .label = Bekreft
+zen-pinned-tab-replaced = Nettadressen til den festede fanen har blitt erstattet med gjeldende nettadresse!
+zen-tabs-renamed = Fanen har fått nytt navn!
+zen-background-tab-opened-toast = Ny bakgrunnsfane åpnet!
+zen-workspace-renamed-toast = Arbeidsområdet har fått nytt navn!
+zen-toggle-compact-mode-button = 
+    .label = Kompaktmodus
+    .tooltiptext = Veksle kompaktmodus
+
+# note: Do not translate the "<br/>" tags in the following string
+
+zen-learn-more-text = Lær mer
+zen-close-label = Lukk
+zen-singletoolbar-urlbar-placeholder-with-name = 
+    .placeholder = Søk...
+zen-icons-picker-emoji = 
+    .label = Emojier
+zen-icons-picker-svg = 
+    .label = Ikoner
+urlbar-search-mode-zen_actions = Handlinger
+zen-site-data-settings = Innstillinger
+zen-generic-manage = Behandle
+zen-generic-more = Mer
+zen-generic-next = Neste
+zen-essentials-promo-label = Legg til i essensielle
+zen-essentials-promo-sublabel = Hold favorittfanene dine bare et klikk unna
+# These labels will be used for the site data panel settings
+zen-site-data-setting-allow = Tillat
+zen-site-data-setting-block = Blokker
+zen-site-data-protections-enabled = Aktivert
+zen-site-data-protections-disabled = Deaktivert
+zen-site-data-setting-cross-site = Tvers-side informasjonskapsel
+zen-site-data-security-info-extension = 
+    .label = Utvidelse
+zen-site-data-security-info-secure = 
+    .label = Sikker
+zen-site-data-security-info-not-secure = 
+    .label = Ikke sikker
+zen-site-data-manage-addons = 
+    .label = Behandle Utvidelser
+zen-site-data-get-addons = 
+    .label = Legg til utvidelser
+zen-site-data-site-settings = 
+    .label = Alle nettstedsinnstillinger
+zen-site-data-header-share = 
+    .tooltiptext = Del denne siden
+zen-site-data-header-reader-mode = 
+    .tooltiptext = Gå til lesermodus
+zen-site-data-header-screenshot = 
+    .tooltiptext = Ta et skjermbilde
+zen-site-data-header-bookmark = 
+    .tooltiptext = Bokmerk denne siden
+zen-urlbar-copy-url-button = 
+    .tooltiptext = Kopier nettadresse
+zen-site-data-setting-site-protection = Sporingsbeskyttelse
+
+# Section: Feature callouts
+
+zen-site-data-panel-feature-callout-title = Et nytt hjem for tillegg, tillatelser, og mer
+zen-site-data-panel-feature-callout-subtitle = Klikk på ikonet for å behandle nettstedsinnstillinger, se sikkerhetsinformasjon, behandle utvidelser, og utføre vanlige handlinger.
+zen-open-link-in-glance = 
+    .label = Åpne lenke i Glance
+    .accesskey = G
+zen-sidebar-notification-updated-heading = Oppdatering fullført!
+
+# See ZenSidebarNotification.mjs to see how these would be used
+
+zen-sidebar-notification-updated-label = Hva er nytt i { -brand-short-name }
+zen-sidebar-notification-updated-tooltip = 
+    .title = Se versjonsnotater
+zen-sidebar-notification-restart-safe-mode-label = Er noe ødelagt?
+zen-sidebar-notification-restart-safe-mode-tooltip = 
+    .title = Start på nytt i sikker modus
+zen-window-sync-migration-dialog-title = Hold vinduene dine synkronisert
+zen-window-sync-migration-dialog-message = Zen synkroniserer nå vinduer på samme enhet, så endringer i ett vindu blir reflekterte på tvers de andre med en gang.
+zen-window-sync-migration-dialog-learn-more = Lær mer
+zen-window-sync-migration-dialog-accept = Skjønner
+zen-appmenu-new-blank-window = 
+    .label = Nytt tomt vindu

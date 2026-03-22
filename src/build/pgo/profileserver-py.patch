@@ -1,0 +1,19 @@
+diff --git a/build/pgo/profileserver.py b/build/pgo/profileserver.py
+index faf15719a0537d7c5fc0a62afb93fa4a61605bf7..68d114fd6651b7c210aa1a58e6fcf4fa749f53b1 100755
+--- a/build/pgo/profileserver.py
++++ b/build/pgo/profileserver.py
+@@ -17,7 +17,13 @@ from mozprofile import FirefoxProfile, Preferences
+ from mozprofile.permissions import ServerLocations
+ from mozrunner import CLI, FirefoxRunner
+ 
+-PORT = 8888
++import socket
++def find_free_port():
++    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
++        s.bind(('', 0))
++        return s.getsockname()[1]
++
++PORT = find_free_port()
+ 
+ PATH_MAPPINGS = {
+     "/webkit/PerformanceTests": "third_party/webkit/PerformanceTests",

@@ -1,0 +1,22 @@
+diff --git a/browser/installer/windows/nsis/defines.nsi.in b/browser/installer/windows/nsis/defines.nsi.in
+index c6bb41695d70d17e5691e0d1856b79f7111d5026..8a9393a79a60aca23f80fc989fe2ae333ba54e39 100644
+--- a/browser/installer/windows/nsis/defines.nsi.in
++++ b/browser/installer/windows/nsis/defines.nsi.in
+@@ -90,7 +90,7 @@
+ !define BETA_UPDATE_CHANNEL
+ !endif
+ 
+-!define BaseURLStubPing "http://download-stats.mozilla.org/stub"
++!define BaseURLStubPing ""
+ 
+ # ARCH is used when it is necessary to differentiate the x64 registry keys from
+ # the x86 registry keys (e.g. the uninstall registry key).
+@@ -152,7 +152,7 @@ VIAddVersionKey "ProductVersion"  "${AppVersion}"
+ !define APPROXIMATE_REQUIRED_SPACE_MB "145"
+ 
+ # Constants for parts of the telemetry submission URL
+-!define TELEMETRY_BASE_URL https://incoming.telemetry.mozilla.org/submit
++!define TELEMETRY_BASE_URL 
+ !define TELEMETRY_NAMESPACE firefox-installer
+ !define TELEMETRY_INSTALL_PING_VERSION 1
+ !define TELEMETRY_INSTALL_PING_DOCTYPE install

@@ -1,0 +1,44 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-toolbar-context-tabs-right = 
+    .label = Onglets à droite
+    .accesskey = R
+zen-toolbar-context-compact-mode = 
+    .label = Mode compact
+zen-toolbar-context-compact-mode-enable = 
+    .label = Activer le mode compact
+    .accesskey = D
+zen-toolbar-context-compact-mode-just-tabs = 
+    .label = Masquer la barre latérale
+zen-toolbar-context-compact-mode-just-toolbar = 
+    .label = Masquer la barre d’outils
+zen-toolbar-context-compact-mode-hide-both = 
+    .label = Masquer les deux
+    .accesskey = H
+zen-toolbar-context-new-folder = 
+    .label = Nouveau dossier
+    .accesskey = N
+sidebar-zen-expand = 
+    .label = Étendre la barre latérale
+sidebar-zen-create-new = 
+    .label = Créer...
+tabbrowser-unload-tab-button = 
+    .tooltiptext =
+        { $tabCount ->
+            [one] Décharger et passer à l’onglet
+           *[other] Décharger les { $tabCount } onglets et passer au premier
+        }
+tabbrowser-reset-pin-button = 
+    .tooltiptext =
+        { $tabCount ->
+            [one] Rétablir et épingler l'onglet
+           *[other] Rétablir et épingler { $tabCount } onglets
+        }
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Retour à l'URL épinglée
+        [zen-default-pinned-cmd] Séparer de l'onglet épinglé
+       *[other] { $tabSubtitle }
+    }

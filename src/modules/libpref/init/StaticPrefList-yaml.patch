@@ -1,0 +1,12 @@
+diff --git a/modules/libpref/init/StaticPrefList.yaml b/modules/libpref/init/StaticPrefList.yaml
+index 262eee800b3f2bf7b84809cd1f4a7aa2020eafb6..0812945dca0c0610c5d5f8792cb3f25dc642fb1e 100644
+--- a/modules/libpref/init/StaticPrefList.yaml
++++ b/modules/libpref/init/StaticPrefList.yaml
+@@ -20036,6 +20036,7 @@
+   mirror: always
+ #endif
+ 
++#include zen-static-prefs.inc
+ #---------------------------------------------------------------------------
+ # Prefs starting with "zoom."
+ #---------------------------------------------------------------------------

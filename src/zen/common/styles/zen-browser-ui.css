@@ -1,0 +1,347 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+#tabbrowser-tabpanels {
+  background: transparent !important;
+}
+
+#navigator-toolbox {
+  /* see issue #426 */
+  background: var(--zen-navigator-toolbox-background, transparent) !important;
+  --inactive-titlebar-opacity: 0.8;
+}
+
+#nav-bar,
+#navigator-toolbox {
+  position: inherit;
+}
+
+:root:is([inDOMFullscreen="true"], [chromehidden~="location"], [chromehidden~="toolbar"]) {
+  #navigator-toolbox,
+  #zen-sidebar-splitter {
+    visibility: collapse;
+  }
+}
+
+:root[zen-before-loaded="true"] #browser > *:not(#zen-toast-container),
+:root[zen-before-loaded="true"] #urlbar {
+  opacity: 0 !important;
+}
+
+#browser {
+  background: transparent !important;
+  width: 100%;
+}
+
+.zen-browser-generic-background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: clip;
+
+  isolation: isolate;
+
+  &::after,
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  &::after {
+    background: var(--zen-main-browser-background);
+    opacity: var(--zen-background-opacity);
+    transition: 0s;
+    background-blend-mode: screen;
+  }
+
+  &:is(.zen-toolbar-background) {
+    &::after {
+      background: var(--zen-main-browser-background-toolbar);
+    }
+  }
+
+  &::before {
+    background: var(--zen-main-browser-background-old);
+    opacity: calc(1 - var(--zen-background-opacity));
+    transition: 0s;
+    background-blend-mode: screen;
+  }
+
+  &:is(.zen-toolbar-background) {
+    &::before {
+      background: var(--zen-main-browser-background-toolbar-old);
+    }
+  }
+
+  :root:not([animating-background="true"]) &::before {
+    transition: background-color var(--inactive-window-transition);
+  }
+
+  & .zen-browser-grain {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background-image: url(chrome://browser/content/zen-images/grain-bg.png);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &[zen-show-grainy-background="true"] .zen-browser-grain {
+    display: flex;
+    opacity: var(--zen-grainy-background-opacity, 0);
+
+    :root:not([swipe-gesture="true"]) & {
+      /* note: Keep in sync with kGlobalAnimationDuration */
+      transition: opacity 0.2s ease-in-out;
+    }
+  }
+}
+
+#zen-browser-background {
+  /* This is conceptually a background, but putting this on a pseudo-element
+    * avoids it from suppressing the chrome-content separator border, etc.
+    *
+    * See bugzilla's 1949528 and bug 1476281 (which would make this unnecessary). */
+  @media (-moz-platform: macos) {
+    -moz-default-appearance: -moz-sidebar;
+    appearance: auto;
+  }
+
+  /*
+   *  Important: We set the color to `AccentColor` so we can
+   *  Compute the stylings and get the native accent color.
+   *  Please, do not remove this.
+   */
+  color: AccentColor;
+}
+
+#sidebar-box {
+  /** Sidebar is already hidden in full screen mode */
+  border: none;
+}
+
+:root:not([zen-single-toolbar="true"]) #zen-appcontent-wrapper {
+  z-index: 3;
+}
+
+#nav-bar {
+  border-top-color: transparent !important;
+
+  :root[zen-single-toolbar="true"] & {
+    border-top: none !important;
+    --zen-toolbar-height: 37px;
+  }
+}
+
+#zen-main-app-wrapper {
+  background: var(--zen-themed-toolbar-bg-transparent);
+  /* See bug #8814, don't add overflow here as it causes issues
+   * with firefox's rendering of the tab bar */
+
+  /* stylelint-disable-next-line media-query-no-invalid */
+  @media (-moz-pref("zen.view.grey-out-inactive-windows")) {
+    &:-moz-window-inactive {
+      background: InactiveCaption;
+    }
+  }
+
+  & > * {
+    z-index: 1;
+  }
+
+  /* stylelint-disable-next-line media-query-no-invalid */
+  @media (-moz-windows-accent-color-in-titlebar) and ((-moz-windows-mica) or -moz-pref("browser.theme.windows.accent-color-in-tabs.enabled")) {
+    background: ActiveCaption;
+    color: CaptionText;
+  }
+}
+
+#zen-appcontent-wrapper {
+  z-index: 1;
+  /* Use this trick to prevent bookmarks from overflowing the window,
+   * without using overflow: hidden.
+   */
+  min-width: 1px;
+}
+
+:root:not([inDOMFullscreen="true"]):not([chromehidden~="location"]):not([chromehidden~="toolbar"]) {
+  & #zen-tabbox-wrapper {
+    margin: var(--zen-element-separation);
+    margin-top: 0;
+  }
+
+  &:not([zen-right-side="true"]) #zen-tabbox-wrapper {
+    margin-left: 0;
+  }
+
+  &[zen-right-side="true"] #zen-tabbox-wrapper {
+    margin-right: 0;
+  }
+}
+
+#tabbrowser-tabbox {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  gap: var(--zen-element-separation);
+}
+
+@media not (-moz-platform: macos) {
+  .titlebar-buttonbox-container {
+    height: 100%;
+  }
+}
+
+@media (-moz-platform: macos) {
+  .titlebar-buttonbox-container {
+    margin-inline-end: 8px;
+    padding: 3px 0;
+
+    & > .titlebar-buttonbox {
+      margin-inline-start: var(--zen-toolbox-padding);
+    }
+  }
+
+  /* stylelint-disable-next-line media-query-no-invalid */
+  @media -moz-pref("zen.widget.mac.mono-window-controls") {
+    :root:not([window-modal-open="true"]) .titlebar-buttonbox-container {
+      color: var(--toolbox-textcolor);
+
+      --zen-traffic-light-size: 6px;
+
+      @media (-moz-mac-tahoe-theme) {
+        --zen-traffic-light-size: 7px;
+      }
+
+      /* Draw 3 dots as background to represent the window controls,
+        all with the same cololr as the titlebar */
+      background-image: radial-gradient(circle, var(--zen-toolbar-element-bg) var(--zen-traffic-light-size), transparent 0.5px);
+      background-size: var(--icon-size-medium) 22px;
+      background-position: 53% 50%;
+
+      @media (-moz-mac-tahoe-theme) {
+        background-size: 23px 22px;
+        background-position: 52% 50%;
+      }
+
+      &:not([zen-has-hover="true"]) > .titlebar-buttonbox {
+        opacity: 0;
+      }
+    }
+  }
+}
+
+@media (-moz-platform: macos) {
+  :root[zen-window-buttons-reversed="true"][zen-right-side="true"] .titlebar-buttonbox-container {
+    margin-inline-start: max(calc(var(--zen-element-separation) - 3px), 4px);
+    margin-block: auto;
+  }
+}
+
+.zen-split-view-splitter[orient="vertical"],
+#zen-sidebar-splitter {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: var(--zen-element-separation);
+  background: transparent;
+  border: none;
+  cursor: ew-resize;
+  z-index: 3;
+
+  &:is(.zen-split-view-splitter[orient="vertical"]) {
+    /* Bit of a hacky solution, but it works */
+    width: var(--zen-split-row-gap);
+    margin-left: calc(var(--zen-element-separation) * -1 - 1px);
+    height: unset;
+    cursor: ew-resize;
+  }
+
+  &::before {
+    height: 50px;
+    width: 2px;
+    background: var(--button-background-color-primary);
+    border-radius: 2px;
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    opacity: 0;
+    transition: opacity 0.1s ease-in-out;
+    pointer-events: none;
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+}
+.zen-split-view-splitter[orient="horizontal"] {
+  &::before {
+    height: 2px;
+    width: 50px;
+    background: var(--button-background-color-primary);
+    border-radius: 2px;
+    content: "";
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    opacity: 0;
+    transition: opacity 0.1s ease-in-out;
+    pointer-events: none;
+    transform: translateX(-50%);
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
+}
+
+:root:not([customizing]) #TabsToolbar-customization-target > #alltabs-button {
+  display: none;
+}
+
+:root[customizing] #TabsToolbar-customization-target {
+  visibility: collapse;
+}
+
+:root[customizing] #zen-sidebar-top-buttons-customization-target {
+  border: 1px dashed;
+  border-radius: 2px;
+  margin: 10px 2px 0 0;
+}
+
+#zen-sidebar-splitter {
+  border-radius: 14px;
+  transition:
+    background 0.2s ease-in-out,
+    opacity 0.2s ease-in-out;
+
+  &:hover {
+    background: var(--zen-primary-color);
+    transition: background 0.2s ease-in-out;
+    transition-delay: 0.2s;
+    opacity: 1;
+  }
+}
+
+#zen-appcontent-navbar-wrapper {
+  z-index: 1;
+  & #zen-sidebar-top-buttons {
+    max-width: fit-content;
+    :root[zen-right-side="true"] & {
+      order: 1;
+    }
+  }
+}
+
+:root[zen-right-side="true"] #zen-appcontent-navbar-wrapper #PanelUI-button {
+  order: 2;
+}

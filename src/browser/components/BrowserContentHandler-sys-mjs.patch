@@ -1,0 +1,41 @@
+diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/components/BrowserContentHandler.sys.mjs
+index 2152327b42c884456785ef065422e3ca6cc8c50b..932150495d23c0a63987abf14b3dc8a12eb42d6c 100644
+--- a/browser/components/BrowserContentHandler.sys.mjs
++++ b/browser/components/BrowserContentHandler.sys.mjs
+@@ -603,6 +603,28 @@ nsBrowserContentHandler.prototype = {
+       }
+     }
+ 
++    try {
++      let blankWindowParam = cmdLine.handleFlagWithParam("blank-window", false);
++      if (blankWindowParam !== null) {
++        let { uri, principal } = resolveURIInternal(cmdLine, blankWindowParam);
++        if (shouldLoadURI(uri)) {
++          let win = openBrowserWindow(cmdLine, principal, uri.spec);
++          win._zenStartupSyncFlag = 'unsynced';
++          cmdLine.preventDefault = true;
++        }
++      }
++    } catch (e) {
++      if (e.result != Cr.NS_ERROR_INVALID_ARG) {
++        throw e;
++      }
++      if (cmdLine.handleFlag("blank-window", false)) {
++        let win = openBrowserWindow(cmdLine, null, null);
++        win._zenStartupSyncFlag = 'unsynced';
++        cmdLine.preventDefault = true;
++      }
++    }
++
++
+     var searchParam = cmdLine.handleFlagWithParam("search", false);
+     if (searchParam) {
+       doSearch(searchParam, cmdLine);
+@@ -672,6 +694,7 @@ nsBrowserContentHandler.prototype = {
+       "  --new-window <url> Open <url> in a new window.\n" +
+       "  --new-tab <url>    Open <url> in a new tab.\n" +
+       "  --private-window [<url>] Open <url> in a new private window.\n";
++    info += "  --blank-window [<url>]  Open the new blank window.\n";
+     if (AppConstants.platform == "win") {
+       info += "  --preferences      Open Options dialog.\n";
+     } else {

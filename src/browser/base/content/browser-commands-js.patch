@@ -1,0 +1,49 @@
+diff --git a/browser/base/content/browser-commands.js b/browser/base/content/browser-commands.js
+index 75ddd82c18979571f377dec94fe1883f1349cc16..58ae4d88f7f0b37187cb61fcaf4cf84a9af7991f 100644
+--- a/browser/base/content/browser-commands.js
++++ b/browser/base/content/browser-commands.js
+@@ -14,6 +14,10 @@ var BrowserCommands = {
+     const where = BrowserUtils.whereToOpenLink(aEvent, false, true);
+ 
+     if (where == "current") {
++      if (!gBrowser.webNavigation.canGoBack && gZenCommonActions.shouldCloseTabOnBack()) {
++        gBrowser.removeTab(gBrowser.selectedTab, { animate: true });
++        return;
++      }
+       try {
+         gBrowser.goBack();
+       } catch (ex) {}
+@@ -315,6 +319,10 @@ var BrowserCommands = {
+       }
+     }
+ 
++    if (gZenUIManager.handleNewTab(werePassedURL, searchClipboard, where)) {
++      return;
++    }
++
+     // A notification intended to be useful for modular peformance tracking
+     // starting as close as is reasonably possible to the time when the user
+     // expressed the intent to open a new tab.  Since there are a lot of
+@@ -399,6 +407,11 @@ var BrowserCommands = {
+       return;
+     }
+ 
++    if (gBrowser.selectedTab.hasAttribute("zen-empty-tab")) {
++      gZenWorkspaces.handleTabCloseWindow();
++      return;
++    }
++
+     // Keyboard shortcuts that would close a tab that is pinned select the first
+     // unpinned tab instead.
+     if (
+@@ -406,8 +419,8 @@ var BrowserCommands = {
+       (event.ctrlKey || event.metaKey || event.altKey) &&
+       gBrowser.selectedTab.pinned
+     ) {
+-      if (gBrowser.visibleTabs.length > gBrowser.pinnedTabCount) {
+-        gBrowser.tabContainer.selectedIndex = gBrowser.pinnedTabCount;
++      if (gBrowser.visibleTabs.length > gBrowser._numVisiblePinTabs) {
++        gBrowser.tabContainer.selectedIndex = gBrowser._numVisiblePinTabs;
+       }
+       return;
+     }

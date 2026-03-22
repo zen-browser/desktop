@@ -1,0 +1,64 @@
+diff --git a/toolkit/components/extensions/parent/ext-tabs-base.js b/toolkit/components/extensions/parent/ext-tabs-base.js
+index b915a9bed9a08afc4cabcc9c7268ecfddeb5a9f6..f318a20a17caf3d4c9ebaa67715ad3835bf89970 100644
+--- a/toolkit/components/extensions/parent/ext-tabs-base.js
++++ b/toolkit/components/extensions/parent/ext-tabs-base.js
+@@ -1964,6 +1964,7 @@ class TabManagerBase {
+    */
+   addActiveTabPermission(nativeTab) {
+     let tab = this.getWrapper(nativeTab);
++    if (!tab) return; // Empty tabs aren't tracked, nothing to add
+     if (
+       this.extension.hasPermission("activeTab") ||
+       (this.extension.originControls &&
+@@ -1985,7 +1986,9 @@ class TabManagerBase {
+    *        The native tab for which to revoke permissions.
+    */
+   revokeActiveTabPermission(nativeTab) {
+-    this.getWrapper(nativeTab).activeTabWindowID = null;
++    let wrapper = this.getWrapper(nativeTab);
++    if (!wrapper) return; // Empty tabs arent tracked, nothing to revoke
++    wrapper.activeTabWindowID = null;
+   }
+ 
+   /**
+@@ -1998,7 +2001,9 @@ class TabManagerBase {
+    *        True if the extension has activeTab permissions for this tab.
+    */
+   hasActiveTabPermission(nativeTab) {
+-    return this.getWrapper(nativeTab).hasActiveTabPermission;
++    let wrapper = this.getWrapper(nativeTab);
++    if (!wrapper) return false; // Empty tabs arent tracked, nothing to check
++    return wrapper.hasActiveTabPermission;
+   }
+ 
+   /**
+@@ -2009,6 +2014,7 @@ class TabManagerBase {
+    */
+   activateScripts(nativeTab) {
+     let tab = this.getWrapper(nativeTab);
++    if (!tab) return; // Empty tabs aren't tracked, nothing to activate
+     if (
+       this.extension.originControls &&
+       !tab.matchesHostPermission &&
+@@ -2041,7 +2047,9 @@ class TabManagerBase {
+    *        True if the extension has permissions for this tab.
+    */
+   hasTabPermission(nativeTab) {
+-    return this.getWrapper(nativeTab).hasTabPermission;
++    let wrapper = this.getWrapper(nativeTab);
++    if (!wrapper) return false; // Empty tabs arent tracked, nothing to check
++    return wrapper.hasTabPermission;
+   }
+ 
+   /**
+@@ -2088,7 +2096,9 @@ class TabManagerBase {
+    * @returns {object}
+    */
+   convert(nativeTab, fallbackTabSize = null) {
+-    return this.getWrapper(nativeTab).convert(fallbackTabSize);
++    let wrapper = this.getWrapper(nativeTab);
++    if (!wrapper) return null; // Empty tabs aren't tracked, can't convert
++    return wrapper.convert(fallbackTabSize);
+   }
+ 
+   /**

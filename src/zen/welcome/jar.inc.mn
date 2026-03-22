@@ -1,0 +1,6 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+        content/browser/zen-components/ZenWelcome.mjs                           (../../zen/welcome/ZenWelcome.mjs)
+        content/browser/zen-styles/zen-welcome.css                              (../../zen/welcome/zen-welcome.css)

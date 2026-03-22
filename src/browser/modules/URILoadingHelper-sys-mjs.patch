@@ -1,0 +1,39 @@
+diff --git a/browser/modules/URILoadingHelper.sys.mjs b/browser/modules/URILoadingHelper.sys.mjs
+index a005dbdf84609622ef8054f73f78c0c290e76125..d5bf6fb51c9af5e60f69a73612ee91598080730a 100644
+--- a/browser/modules/URILoadingHelper.sys.mjs
++++ b/browser/modules/URILoadingHelper.sys.mjs
+@@ -224,6 +224,7 @@ function openInWindow(url, params, sourceWindow) {
+     features,
+     sa
+   );
++  win._zenStartupSyncFlag = Services.prefs.getBoolPref('zen.window-sync.open-link-in-new-unsynced-window') ? 'unsynced' : 'synced';
+ }
+ 
+ function openInCurrentTab(targetBrowser, url, uriObj, params) {
+@@ -541,7 +542,7 @@ export const URILoadingHelper = {
+       // page. If a load request bounces off for the currently selected tab,
+       // we'll open a new tab instead.
+       let tab = w.gBrowser.getTabForBrowser(targetBrowser);
+-      if (tab == w.FirefoxViewHandler.tab) {
++      if (tab == w.FirefoxViewHandler.tab || tab.hasAttribute("zen-empty-tab")) {
+         where = "tab";
+         targetBrowser = null;
+       } else if (
+@@ -974,7 +975,7 @@ export const URILoadingHelper = {
+         ignoreQueryString || replaceQueryString,
+         ignoreFragmentWhenComparing
+       );
+-      let browsers = aWindow.gBrowser.browsers;
++      let browsers = aWindow.gZenWorkspaces.allUsedBrowsers;
+       for (let i = 0; i < browsers.length; i++) {
+         let browser = browsers[i];
+         let browserCompare = cleanURL(
+@@ -1030,7 +1031,7 @@ export const URILoadingHelper = {
+               );
+               aSplitView.ownerGlobal.focus();
+             } else {
+-              aWindow.gBrowser.tabContainer.selectedIndex = i;
++              aWindow.gZenWorkspaces.switchIfNeeded(browser);
+             }
+           }
+ 

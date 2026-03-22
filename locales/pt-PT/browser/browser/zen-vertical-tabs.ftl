@@ -1,0 +1,44 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-toolbar-context-tabs-right = 
+    .label = Separadores à direita
+    .accesskey = R
+zen-toolbar-context-compact-mode = 
+    .label = Modo compacto
+zen-toolbar-context-compact-mode-enable = 
+    .label = Ativar modo compacto
+    .accesskey = D
+zen-toolbar-context-compact-mode-just-tabs = 
+    .label = Ocultar a barra lateral
+zen-toolbar-context-compact-mode-just-toolbar = 
+    .label = Ocultar a barra de ferramentas
+zen-toolbar-context-compact-mode-hide-both = 
+    .label = Ocultar ambas
+    .accesskey = H
+zen-toolbar-context-new-folder = 
+    .label = Nova Pasta
+    .accesskey = N
+sidebar-zen-expand = 
+    .label = Expandir Barra Lateral
+sidebar-zen-create-new = 
+    .label = Criar Novo...
+tabbrowser-unload-tab-button = 
+    .tooltiptext =
+        { $tabCount ->
+            [one] Hibernar e mudar para o separador
+           *[other] Hibernar { $tabCount } separadores mudar para o primeiro
+        }
+tabbrowser-reset-pin-button = 
+    .tooltiptext =
+        { $tabCount ->
+            [one] Restaurar e fixar separador
+           *[other] Restaurar e fixar { $tabCount } separadores
+        }
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

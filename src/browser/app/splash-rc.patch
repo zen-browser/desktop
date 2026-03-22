@@ -1,0 +1,14 @@
+diff --git a/browser/app/splash.rc b/browser/app/splash.rc
+index 259a8068c3aa256b8c50487a04f1844292b90b2e..8b9c792e1484bb801246b06b6ce43fb6d6271ee8 100644
+--- a/browser/app/splash.rc
++++ b/browser/app/splash.rc
+@@ -6,6 +6,9 @@
+ #include <windows.h>
+ #include "nsNativeAppSupportWin.h"
+ 
++#define MANIFEST_PATH "firefox.exe.manifest" 
++CREATEPROCESS_MANIFEST_RESOURCE_ID  RT_MANIFEST             MANIFEST_PATH
++
+ IDI_APPICON ICON FIREFOX_ICO
+ IDI_DOCUMENT ICON DOCUMENT_ICO
+ IDI_APPLICATION ICON FIREFOX_ICO

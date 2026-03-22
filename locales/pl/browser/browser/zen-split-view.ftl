@@ -5,8 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] Podziel zakładkę (potrzeba wielu wybranych kart)
-           *[other] Zakładki do podzielenia: { $tabCount }
+            [-1] Rozdziel karty
+            [1] Podziel kartę (wymagane zaznaczenie wielu kart)
+           *[other] Podziel karty w liczbie: { $tabCount }
         }
     .accesskey = S
 zen-split-link = 

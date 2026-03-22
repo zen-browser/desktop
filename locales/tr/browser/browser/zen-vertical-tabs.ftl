@@ -27,18 +27,18 @@ sidebar-zen-create-new =
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [bir] Kapatın ve sekmeye geçin
+            [one] Kapatın ve sekmeye geçin
            *[other] { $tabCount } sekmesini kaldır ve ilkine geç
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-            [bir] Sıfırlayın ve sabitleyin
+            [one] Sıfırlayın ve sabitleyin
            *[other] { $tabCount } Sekmeyi sıfırla ve sabitle
         }
 zen-tab-sublabel =
     { $tabSubtitle ->
-    [zen-default-pinned] Sabitlenmiş URL’ye geri dön
-    [zen-default-pinned-cmd] Sabitlenmiş sekmeden ayır
-    *[other] { $tabSubtitle }
+        [zen-default-pinned] Sabitlenmiş URL’ye geri dön
+        [zen-default-pinned-cmd] Sabitlenmiş sekmeden ayır
+       *[other] { $tabSubtitle }
     }

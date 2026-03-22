@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] 탭 초기화 후 고정
            *[other] { $tabCount }개 탭 초기화 후 고정
         }
-tab-reset-pin-label = 고정된 URL로 되돌리기
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] 고정된 URL로 돌아가기
+        [zen-default-pinned-cmd] 고정된 탭에서 분리
+       *[other] { $tabSubtitle }
+    }

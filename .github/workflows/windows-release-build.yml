@@ -159,7 +159,7 @@ jobs:
           tar --zstd -xf wine.tar.zst -C ~/win-cross
           rm wine.tar.zst
           echo Setup Visual Studio
-          ./mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2022.yaml ~/win-cross/vs2022
+          ./mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2026.yaml ~/win-cross/vs2026
 
       - name: Import
         if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}
@@ -174,7 +174,7 @@ jobs:
         run: |
           set -x
           cd engine/
-          chmod -R +x "$(echo ~)/win-cross/vs2022" || true
+          chmod -R +x "$(echo ~)/win-cross/vs2026" || true
           cd ..
           export SURFER_PLATFORM="win32"
           npm run bootstrap
@@ -185,7 +185,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install dos2unix
           ls ~/win-cross/wine || true
-          ls ~/win-cross/vs2022 || true
+          ls ~/win-cross/vs2026 || true
 
       - name: Setup Rust
         if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}

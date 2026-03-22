@@ -1,5 +1,5 @@
 diff --git a/servo/components/style/gecko/media_features.rs b/servo/components/style/gecko/media_features.rs
-index 9db79f86868edd798177bc04a8520025c4cf4568..fe0e74f9a047fd101d8e510eda3abf690b33f41f 100644
+index 21c274075116ace81c29babbf8b2ce94fa749e4f..512f34734d6a4d81bde1aed3df5a655e9310a2ec 100644
 --- a/servo/components/style/gecko/media_features.rs
 +++ b/servo/components/style/gecko/media_features.rs
 @@ -15,6 +15,9 @@ use crate::values::computed::{CSSPixelLength, Context, Ratio, Resolution};

@@ -638,7 +638,7 @@ class nsZenWorkspaces {
 
         this.#lastScrollTime = currentTime;
       },
-      { passive: true }
+      { passive: true, capture: true }
     );
   }
 

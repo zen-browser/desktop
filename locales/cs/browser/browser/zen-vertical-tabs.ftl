@@ -38,4 +38,9 @@ tabbrowser-reset-pin-button =
             [few] Resetovat a připnout { $tabCount } panely
            *[other] Resetovat a připnout { $tabCount } panelů
         }
-tab-reset-pin-label = Zpět na původní adresu
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

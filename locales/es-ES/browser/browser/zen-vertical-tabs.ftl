@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] Restablecer y fijar pestaña
            *[other] Restablecer y fijar { $tabCount } pestañas
         }
-tab-reset-pin-label = Volver a la URL fijada
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Volver a la URL fijada
+        [zen-default-pinned-cmd] Separar de la pestaña fijada
+       *[other] { $tabSubtitle }
+    }

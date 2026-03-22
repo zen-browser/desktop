@@ -101,9 +101,9 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       const newSubfolderItem = document.getElementById(
         "context_zenFolderNewSubfolder"
       );
-      newSubfolderItem.setAttribute(
+      newSubfolderItem.toggleAttribute(
         "disabled",
-        folder.level >= this.#ZEN_MAX_SUBFOLDERS - 1 ? "true" : "false"
+        folder.level >= this.#ZEN_MAX_SUBFOLDERS - 1
       );
 
       const changeFolderSpace = document

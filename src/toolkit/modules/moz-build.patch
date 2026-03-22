@@ -1,8 +1,8 @@
 diff --git a/toolkit/modules/moz.build b/toolkit/modules/moz.build
-index fec07181bc5ee7c9086d0d273d9355f3ce76a969..2deab6b10c67898e7383b194b0f949ba970b639e 100644
+index c7322c51ce2e0b750186ba575cca21ad03491822..e208b02f8afccfa28f78dcedf7f98cc54fc1429a 100644
 --- a/toolkit/modules/moz.build
 +++ b/toolkit/modules/moz.build
-@@ -286,6 +286,7 @@ for var in (
+@@ -290,6 +290,7 @@ for var in (
      "DLL_SUFFIX",
      "DEBUG_JS_MODULES",
      "OMNIJAR_NAME",

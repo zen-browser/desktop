@@ -15,6 +15,3 @@ zen-split-link =
 zen-split-view-modifier-header = تقسيم العرض
 zen-split-view-modifier-activate-reallocation = 
     .label = تنشيط إعادة التخصيص
-zen-split-view-modifier-enabled-toast = إعادة ترتيب عرض التقسيم مشغل.
-zen-split-view-modifier-enabled-toast-description = قم بسحب وإسقاط العرض لإعادة الترتيب. اضغط Esc للخروج.
-zen-split-view-modifier-disabled-toast = إعادة ترتيب عرض التقسيم متوقف.

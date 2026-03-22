@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = τρέχον προφίλ
 unified-extensions-description = Οι επεκτάσεις χρησιμοποιούνται για να φέρουν περισσότερη επιπλέον λειτουργικότητα στο { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Επαναφορά Καρφιτσωμένης Καρτέλας
+    .label =
+        { $isEssential ->
+            [true] Reset Essential Tab
+           *[false] Reset Pinned Tab
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Προσθήκη στα Απαραίτητα
@@ -15,12 +19,16 @@ tab-context-zen-remove-essential =
     .label = Αφαίρεση από Απαραίτητα
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Αντικατάσταση καρφιτσωμένου URL με το τρέχον
+    .label =
+        { $isEssential ->
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
-    .label = Change Label...
+    .label = Αλλαγή Ετικέτας...
 tab-context-zen-edit-icon = 
-    .label = Change Icon...
+    .label = Αλλαγή Εικονιδίου...
 zen-themes-corrupted = Το αρχείο { -brand-short-name } mods είναι κατεστραμμένο. Έχει γίνει επαναφορά στο προεπιλεγμένο θέμα.
 zen-shortcuts-corrupted = Το αρχείο συντομεύσεων σας { -brand-short-name } είναι κατεστραμμένο. Έχει γίνει επαναφορά στις προεπιλεγμένες συντομεύσεις.
 # note: Do not translate the "<br/>" tags in the following string
@@ -33,6 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Ελαχιστοποίηση
 zen-panel-ui-gradient-generator-custom-color = Προσαρμοσμένο Χρώμα
 zen-copy-current-url-confirmation = Αντιγράφηκε το τρέχον URL!
+zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
 zen-general-cancel-label = 
     .label = Ακύρωση
 zen-general-confirm = 
@@ -43,7 +52,7 @@ zen-background-tab-opened-toast = Άνοιξε νέα καρτέλα στο πα
 zen-workspace-renamed-toast = Ο χώρος εργασίας μετονομάστηκε επιτυχώς!
 zen-toggle-compact-mode-button = 
     .label = Συμπαγής Λειτουργία
-    .tooltiptext = Toggle Compact Mode
+    .tooltiptext = Εναλλαγή Συμπαγούς Λειτουργίας
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -52,7 +61,7 @@ zen-close-label = Κλείσιμο
 zen-singletoolbar-urlbar-placeholder-with-name = 
     .placeholder = Αναζήτηση...
 zen-icons-picker-emoji = 
-    .label = Emojis
+    .label = Εμότζι
 zen-icons-picker-svg = 
     .label = Εικονίδια
 urlbar-search-mode-zen_actions = Ενέργειες
@@ -60,14 +69,14 @@ zen-site-data-settings = Ρυθμίσεις
 zen-generic-manage = Διαχείριση
 zen-generic-more = Περισσότερα
 zen-generic-next = Επόμενο
-zen-essentials-promo-label = Add to Essentials
-zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
+zen-essentials-promo-label = Προσθήκη στα Απαραίτητα
+zen-essentials-promo-sublabel = Κρατήστε τις αγαπημένες σας καρτέλες ένα κλικ μακριά
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Επιτρέπεται
 zen-site-data-setting-block = Αποκλείστηκε
 zen-site-data-protections-enabled = Ενεργό
 zen-site-data-protections-disabled = Ανενεργό
-zen-site-data-setting-cross-site = Cross-Site cookie
+zen-site-data-setting-cross-site = Cookies Mεταξύ Iστότοπων
 zen-site-data-security-info-extension = 
     .label = Επέκταση
 zen-site-data-security-info-secure = 
@@ -94,10 +103,10 @@ zen-site-data-setting-site-protection = Προστασία Ανίχνευσης
 
 # Section: Feature callouts
 
-zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
-zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-site-data-panel-feature-callout-title = Ένα νέο σπίτι για επεκτάσεις, άδειες, και άλλα
+zen-site-data-panel-feature-callout-subtitle = Κανε κλικ στο εικονίδιο για διαχείριση ρυθμίσεων ιστότοπων, εμφάνιση πληροφοριών ασφαλείας, πρόσβαση σε επεκτάσεις, και εκτέλεση συχνών ενεργειών.
 zen-open-link-in-glance = 
-    .label = Open Link in Glance
+    .label = Άνοιγμα συνδέσμου με ματιά
     .accesskey = G
 zen-sidebar-notification-updated-heading = Η Ενημέρωση Ολοκληρώθηκε!
 
@@ -109,7 +118,9 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = Χάλασε κάτι;
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Επανεκκίνηση σε Ασφαλή Λειτουργία
-zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
-zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
-zen-window-sync-migration-dialog-learn-more = Learn More
-zen-window-sync-migration-dialog-accept = Got It
+zen-window-sync-migration-dialog-title = Κρατήστε τα παράθυρα σας συγχρονισμένα
+zen-window-sync-migration-dialog-message = Το Zen άρα στην ίδια συσκευή, άρα αλλαγές σε ένα παράθυρο τώρα αντικατροπτίζονται στα άλλα άμεσα.
+zen-window-sync-migration-dialog-learn-more = Περισσότερα
+zen-window-sync-migration-dialog-accept = Κατάλαβα
+zen-appmenu-new-blank-window = 
+    .label = New blank window

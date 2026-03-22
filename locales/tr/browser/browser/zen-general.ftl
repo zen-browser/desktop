@@ -7,8 +7,8 @@ unified-extensions-description = Uzantılar { -brand-short-name }'e daha fazla e
 tab-context-zen-reset-pinned-tab = 
     .label =
         { $isEssential ->
-        [true] Temel sekmeyi sıfırla
-        *[false] Sabitlenmiş sekmeyi sıfırla
+            [true] Temel sekmeyi sıfırla
+           *[false] Sabitlenmiş sekmeyi sıfırla
         }
     .accesskey = R
 tab-context-zen-add-essential = 
@@ -21,8 +21,8 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-        [true] Temel sekmenin URL’sini geçerli olanla değiştir
-        *[false] Sabitlenmiş sekme URL’sini geçerli olanla değiştir
+            [true] Temel sekmenin URL’sini geçerli olanla değiştir
+           *[false] Sabitlenmiş sekme URL’sini geçerli olanla değiştir
         }
     .accesskey = C
 tab-context-zen-edit-title = 
@@ -88,7 +88,7 @@ zen-site-data-manage-addons =
 zen-site-data-get-addons = 
     .label = Uzantı ekle
 zen-site-data-site-settings = 
-    .label = Tüm Site Ayarları
+    .label = Tüm site ayarları
 zen-site-data-header-share = 
     .tooltiptext = Bu sayfayı paylaş
 zen-site-data-header-reader-mode = 

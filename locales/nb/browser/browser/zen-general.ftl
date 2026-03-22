@@ -5,17 +5,25 @@
 zen-panel-ui-current-profile-text = nåværende profil
 unified-extensions-description = Utvidelser er brukt for å bringe mer ekstra funksjonalitet til { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Nullstill Festet Fane
+    .label =
+        { $isEssential ->
+            [true] Nullstill essensiell fane
+           *[false] Nullstill festet fane
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = E
+    .label = Legg til i essensielle
     .accesskey = E
 tab-context-zen-add-essential-badge = { $num } / { $max } felt utfylt
 tab-context-zen-remove-essential = 
-    .label = Fjern fra Essensielle
+    .label = Fjern fra essensielle
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Erstatt Festet Nettadresse med Aktiv
+    .label =
+        { $isEssential ->
+            [true] Erstatt essensiell nettadresse med gjeldende
+           *[false] Erstatt festet nettadresse med gjeldende
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = Endre etikett...
@@ -33,21 +41,22 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimer
 zen-panel-ui-gradient-generator-custom-color = Tilpasset Farge
 zen-copy-current-url-confirmation = Kopierte gjeldende nettadresse!
+zen-copy-current-url-as-markdown-confirmation = Kopierte gjeldende nettadresse som Markdown!
 zen-general-cancel-label = 
     .label = Avbryt
 zen-general-confirm = 
     .label = Bekreft
-zen-pinned-tab-replaced = Nettadressen av den festede fanen har blitt erstattet med gjeldende nettadresse!
-zen-tabs-renamed = Fanen har blitt omnavnet!
+zen-pinned-tab-replaced = Nettadressen til den festede fanen har blitt erstattet med gjeldende nettadresse!
+zen-tabs-renamed = Fanen har fått nytt navn!
 zen-background-tab-opened-toast = Ny bakgrunnsfane åpnet!
-zen-workspace-renamed-toast = Arbeidsområdet har blitt omnavnet!
+zen-workspace-renamed-toast = Arbeidsområdet har fått nytt navn!
 zen-toggle-compact-mode-button = 
-    .label = Kompakt Modus
-    .tooltiptext = Veksle Kompakt Modus
+    .label = Kompaktmodus
+    .tooltiptext = Veksle kompaktmodus
 
 # note: Do not translate the "<br/>" tags in the following string
 
-zen-learn-more-text = Lær Mer
+zen-learn-more-text = Lær mer
 zen-close-label = Lukk
 zen-singletoolbar-urlbar-placeholder-with-name = 
     .placeholder = Søk...
@@ -60,14 +69,14 @@ zen-site-data-settings = Innstillinger
 zen-generic-manage = Behandle
 zen-generic-more = Mer
 zen-generic-next = Neste
-zen-essentials-promo-label = Legg til Essensielle
+zen-essentials-promo-label = Legg til i essensielle
 zen-essentials-promo-sublabel = Hold favorittfanene dine bare et klikk unna
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Tillat
 zen-site-data-setting-block = Blokker
 zen-site-data-protections-enabled = Aktivert
 zen-site-data-protections-disabled = Deaktivert
-zen-site-data-setting-cross-site = Kryss-side informasjonskapsel
+zen-site-data-setting-cross-site = Tvers-side informasjonskapsel
 zen-site-data-security-info-extension = 
     .label = Utvidelse
 zen-site-data-security-info-secure = 
@@ -77,13 +86,13 @@ zen-site-data-security-info-not-secure =
 zen-site-data-manage-addons = 
     .label = Behandle Utvidelser
 zen-site-data-get-addons = 
-    .label = Legg til Utvidelser
+    .label = Legg til utvidelser
 zen-site-data-site-settings = 
     .label = Alle nettstedsinnstillinger
 zen-site-data-header-share = 
     .tooltiptext = Del denne siden
 zen-site-data-header-reader-mode = 
-    .tooltiptext = Gå til Lesermodus
+    .tooltiptext = Gå til lesermodus
 zen-site-data-header-screenshot = 
     .tooltiptext = Ta et skjermbilde
 zen-site-data-header-bookmark = 
@@ -113,3 +122,5 @@ zen-window-sync-migration-dialog-title = Hold vinduene dine synkronisert
 zen-window-sync-migration-dialog-message = Zen synkroniserer nå vinduer på samme enhet, så endringer i ett vindu blir reflekterte på tvers de andre med en gang.
 zen-window-sync-migration-dialog-learn-more = Lær mer
 zen-window-sync-migration-dialog-accept = Skjønner
+zen-appmenu-new-blank-window = 
+    .label = Nytt tomt vindu

@@ -15,6 +15,3 @@ zen-split-link =
 zen-split-view-modifier-header = 分割畫面
 zen-split-view-modifier-activate-reallocation = 
     .label = 啟用重新排列
-zen-split-view-modifier-enabled-toast = 已開啟分割畫面重新排列功能。
-zen-split-view-modifier-enabled-toast-description = 拖曳畫面以重新排列。按 Esc 鍵退出。
-zen-split-view-modifier-disabled-toast = 已關閉分割畫面重新排列功能。

@@ -5,22 +5,30 @@
 zen-panel-ui-current-profile-text = huidig profiel
 unified-extensions-description = Extensies worden gebruikt om extra functionaliteit toe te voegen aan { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Vastgezette tabblad resetten
+    .label =
+        { $isEssential ->
+            [true] Essential-tabblad herstellen
+           *[false] Vastgezet tabblad herstellen
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Add to Essentials
+    .label = Toevoegen aan Essentials
     .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
+tab-context-zen-add-essential-badge = { $num } / { $max } plekken gevuld
 tab-context-zen-remove-essential = 
     .label = Verwijderen uit Essentials
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Vastgezette URL vervangen met huidige
+    .label =
+        { $isEssential ->
+            [true] Essential-URL vervangen door huidige
+           *[false] Vastgezette URL vervangen door huidige
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
-    .label = Change Label...
+    .label = Naam veranderen...
 tab-context-zen-edit-icon = 
-    .label = Change Icon...
+    .label = Icoon veranderen...
 zen-themes-corrupted = Je { -brand-short-name } mods bestand is beschadigd. Ze zijn gereset naar het standaard thema.
 zen-shortcuts-corrupted = Je { -brand-short-name } snelkoppelingsbestand is beschadigd. Ze zijn gereset naar de standaard snelkoppelingen.
 # note: Do not translate the "<br/>" tags in the following string
@@ -33,6 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimaliseren
 zen-panel-ui-gradient-generator-custom-color = Aangepaste kleur
 zen-copy-current-url-confirmation = Huidige URL gekopieerd!
+zen-copy-current-url-as-markdown-confirmation = Huidige URL gekopieerd als Markdown!
 zen-general-cancel-label = 
     .label = Annuleren
 zen-general-confirm = 
@@ -60,8 +69,8 @@ zen-site-data-settings = Instellingen
 zen-generic-manage = Beheren
 zen-generic-more = Meer
 zen-generic-next = Volgende
-zen-essentials-promo-label = Add to Essentials
-zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
+zen-essentials-promo-label = Toevoegen aan Essentials
+zen-essentials-promo-sublabel = Krijg in één klik toegang tot je favoriete tabbladen
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Toegestaan
 zen-site-data-setting-block = Geblokkeerd
@@ -97,19 +106,21 @@ zen-site-data-setting-site-protection = Tracking bescherming
 zen-site-data-panel-feature-callout-title = Een nieuw thuis voor add-ons, machtigingen en meer
 zen-site-data-panel-feature-callout-subtitle = Klik op het icoon om de site-instellingen te beheren, beveiligingsinfo te bekijken, extensies te openen en gemeenschappelijke acties uit te voeren.
 zen-open-link-in-glance = 
-    .label = Open Link in Glance
+    .label = Link openen in Glance
     .accesskey = G
-zen-sidebar-notification-updated-heading = Update Complete!
+zen-sidebar-notification-updated-heading = Update voltooid!
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-label = Wat is er veranderd in { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
-    .title = View Release Notes
-zen-sidebar-notification-restart-safe-mode-label = Something broke?
+    .title = Versie-informatie bekijken
+zen-sidebar-notification-restart-safe-mode-label = Werkt er iets niet?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = Restart in Safe Mode
-zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
-zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
-zen-window-sync-migration-dialog-learn-more = Learn More
-zen-window-sync-migration-dialog-accept = Got It
+    .title = Herstarten in veilige modus
+zen-window-sync-migration-dialog-title = Hou je vensters gesynchroniseerd
+zen-window-sync-migration-dialog-message = Vanaf nu synchroniseert Zen alle vensters op hetzelfde apparaat, dus aanpassingen in het ene venster worden tegelijkertijd op het andere venster toegepast.
+zen-window-sync-migration-dialog-learn-more = Meer info
+zen-window-sync-migration-dialog-accept = Begrepen
+zen-appmenu-new-blank-window = 
+    .label = Nieuw blanco venster

@@ -328,12 +328,13 @@ index 2e6e2be9d7e28c3f189131ec19a26d552d13af99..101b5a3a70c24f28a755f2ca6630a6bc
            break;
          }
  
-@@ -5235,7 +5354,7 @@ export class UrlbarInput extends HTMLElement {
+@@ -5235,7 +5354,8 @@ export class UrlbarInput extends HTMLElement {
      // When we are in actions search mode we can show more results so
      // increase the limit.
      let maxResults =
 -      this.searchMode?.source != lazy.UrlbarUtils.RESULT_SOURCE.ACTIONS
-+      this.searchMode?.source != lazy.UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS
++      this.searchMode?.source != lazy.UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS &&
++      this.searchMode?.source != lazy.UrlbarUtils.RESULT_SOURCE.ZEN_WORKSPACES
          ? lazy.UrlbarPrefs.get("maxRichResults")
          : UNLIMITED_MAX_RESULTS;
      let options = {

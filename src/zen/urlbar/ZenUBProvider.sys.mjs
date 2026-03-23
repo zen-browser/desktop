@@ -9,6 +9,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
   /* eslint-disable mozilla/valid-lazy */
   ZenUrlbarProviderGlobalActions:
     "resource:///modules/ZenUBActionsProvider.sys.mjs",
+  ZenUrlbarProviderWorkspaces:
+    "resource:///modules/ZenUrlbarProviderWorkspaces.sys.mjs",
 });
 
 export function registerZenUrlbarProviders() {

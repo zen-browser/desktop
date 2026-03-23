@@ -158,6 +158,8 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       queryContext.searchMode?.source ==
         UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS ||
       (lazy.enabledPref &&
+        queryContext.searchMode?.source !==
+          UrlbarUtils.RESULT_SOURCE.ZEN_WORKSPACES &&
         queryContext.searchString &&
         queryContext.searchString.length < UrlbarUtils.MAX_TEXT_LENGTH &&
         queryContext.searchString.length > 2 &&

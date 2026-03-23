@@ -192,6 +192,20 @@ window.gZenUIManager = {
     registerZenUrlbarProviders();
     window.gZenSiteDataPanel = new ZenSiteDataPanel(window);
     gURLBar._zenTrimURL = this.urlbarTrim.bind(this);
+
+    // Listen for '!' as the workspace restriction character in the URL bar.
+    // When the user types '!' as the first character, we enter workspace search
+    // mode (similar to how Firefox uses '*' for bookmarks or '%' for open tabs).
+    gURLBar.inputField.addEventListener("input", () => {
+      const value = gURLBar.inputField.value;
+      if (
+        value.startsWith("!") &&
+        gURLBar.hasAttribute("breakout-extend") &&
+        !this._handlingWorkspaceMode
+      ) {
+        this.enableWorkspaceSearchMode();
+      }
+    });
   },
 
   _debloatContextMenus() {
@@ -446,6 +460,49 @@ window.gZenUIManager = {
       allowAutofill: false,
       event,
     });
+  },
+
+  /**
+   * Enter workspace search mode when the user types '!' in the URL bar.
+   * This is the workspace equivalent of Firefox's restriction characters
+   * (e.g. '*' for bookmarks, '%' for open tabs).
+   */
+  _handlingWorkspaceMode: false,
+  enableWorkspaceSearchMode() {
+    if (!gURLBar.hasAttribute("breakout-extend") || this._animatingSearchMode) {
+      return;
+    }
+    const currentSearchMode = gURLBar.getSearchMode(gBrowser.selectedBrowser);
+    if (currentSearchMode) {
+      // Already in a search mode (e.g. commands mode) — do not override.
+      return;
+    }
+
+    this._handlingWorkspaceMode = true;
+    try {
+      // Strip the leading '!' from the URL bar value so it becomes the
+      // workspace name filter (empty string = show all workspaces).
+      const rawValue = gURLBar.inputField.value;
+      const workspaceQuery = rawValue.startsWith("!")
+        ? rawValue.slice(1).trimStart()
+        : rawValue;
+
+      gURLBar.searchMode = {
+        source: UrlbarUtils.RESULT_SOURCE.ZEN_WORKSPACES,
+        isPreview: true,
+      };
+
+      // Update the URL bar value to the stripped query so the user sees the
+      // workspace filter text without the leading '!'.
+      gURLBar.value = workspaceQuery;
+
+      gURLBar.startQuery({
+        allowAutofill: false,
+        searchString: workspaceQuery,
+      });
+    } finally {
+      this._handlingWorkspaceMode = false;
+    }
   },
 
   get newtabButtons() {

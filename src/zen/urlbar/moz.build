@@ -8,4 +8,5 @@ EXTRA_JS_MODULES += [
   "ZenUBGlobalActions.sys.mjs",
   "ZenUBProvider.sys.mjs",
   "ZenUBResultsLearner.sys.mjs",
+  "ZenUrlbarProviderWorkspaces.sys.mjs",
 ]

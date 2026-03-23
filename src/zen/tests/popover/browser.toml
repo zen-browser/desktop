@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 [DEFAULT]
+prefs = ["zen.view.mac.show-three-dot-menu=true"]
 
 ["browser_popover_height_constraint.js"]
 run-if = [

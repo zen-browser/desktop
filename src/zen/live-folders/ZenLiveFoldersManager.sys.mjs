@@ -34,7 +34,9 @@ class nsZenLiveFoldersManager {
   #saveFilename = "zen-live-folders.jsonlz4";
   #file = null;
 
+  #boundHandleEvent = null;
   stateRestored = Promise.withResolvers();
+
   constructor() {
     this.liveFolders = new Map();
     this.registry = new Map();
@@ -63,11 +65,35 @@ class nsZenLiveFoldersManager {
     this.#isInitialized = true;
   }
 
+  uninit() {
+    if (!this.#isInitialized) {
+      return;
+    }
+
+    Services.obs.removeObserver(this, "wake_notification");
+    if (this.#boundHandleEvent) {
+      lazy.ZenWindowSync.removeSyncHandler(this.#boundHandleEvent);
+      this.#boundHandleEvent = null;
+    }
+
+    for (const liveFolder of this.liveFolders.values()) {
+      liveFolder.stop();
+    }
+
+    this.registry.clear();
+    this.liveFolders.clear();
+    this.dismissedItems.clear();
+
+    this.#isInitialized = false;
+  }
+
   // Event Handling
   // --------------
   #initEventListeners() {
     Services.obs.addObserver(this, "wake_notification");
-    lazy.ZenWindowSync.addSyncHandler(this.handleEvent.bind(this));
+
+    this.#boundHandleEvent = this.handleEvent.bind(this);
+    lazy.ZenWindowSync.addSyncHandler(this.#boundHandleEvent);
   }
 
   observe(_subject, topic, _data) {

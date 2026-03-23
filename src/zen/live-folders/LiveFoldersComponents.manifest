@@ -3,3 +3,4 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 category browser-window-delayed-startup resource:///modules/zen/ZenLiveFoldersManager.sys.mjs ZenLiveFoldersManager.init
+category browser-quit-application-granted resource:///modules/zen/ZenLiveFoldersManager.sys.mjs ZenLiveFoldersManager.uninit

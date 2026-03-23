@@ -120,7 +120,7 @@ tab-group[split-view-group] {
       }
     }
 
-    &:active {
+    &:active:not(:has(.tab-content > image:active)) {
       scale: var(--zen-active-tab-scale);
     }
 

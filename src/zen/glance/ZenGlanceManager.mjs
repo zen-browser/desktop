@@ -461,25 +461,21 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
     this.overlay.removeAttribute("fade-out");
     this.browserWrapper.setAttribute("animate", true);
-    this.browserWrapper.style.top = `${top}px`;
-    this.browserWrapper.style.left = `${left}px`;
+    this.browserWrapper.style.transform = `translate(${left - width / 2}px, ${top - height / 2}px)`;
     this.browserWrapper.style.width = `${width}px`;
     this.browserWrapper.style.height = `${height}px`;
 
-    this.#storeOriginalPosition();
+    this.#storeOriginalPosition({ top, left, width, height });
     this.overlay.style.overflow = "visible";
   }
 
   /**
    * Store the original position for later restoration
+   *
+   * @param {object} position - The original position and dimensions of the glance
    */
-  #storeOriginalPosition() {
-    this.#glances.get(this.#currentGlanceID).originalPosition = {
-      top: this.browserWrapper.style.top,
-      left: this.browserWrapper.style.left,
-      width: this.browserWrapper.style.width,
-      height: this.browserWrapper.style.height,
-    };
+  #storeOriginalPosition(position) {
+    this.#glances.get(this.#currentGlanceID).originalPosition = position;
   }
 
   #createGlancePreviewElement(src) {
@@ -653,8 +649,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     );
 
     const sequence = {
-      top: [],
-      left: [],
+      transform: [],
       width: [],
       height: [],
     };
@@ -697,8 +692,9 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
         distanceY * eased +
         arcDirection * arcHeight * (1 - (2 * eased - 1) ** 2);
 
-      sequence.top.push(`${y}px`);
-      sequence.left.push(`${x}px`);
+      sequence.transform.push(
+        `translate(${x - currentWidth / 2}px, ${y - currentHeight / 2}px)`
+      );
       sequence.width.push(`${currentWidth}px`);
       sequence.height.push(`${currentHeight}px`);
     }
@@ -1316,7 +1312,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     }
 
     this.#currentBrowser.removeAttribute("zen-glance-selected");
-    this.overlay.classList.remove("zen-glance-overlay");
   }
 
   /**
@@ -1721,7 +1716,14 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     this.#handleZenFolderPinningForSplit(currentParentTab);
     await this.fullyOpenGlance({ forSplit: true });
 
-    gZenViewSplitter.splitTabs([currentTab, currentParentTab], "vsep", 1);
+    const isRightSidebar = gZenVerticalTabsManager._prefsRightSide;
+    gZenViewSplitter.splitTabs(
+      isRightSidebar
+        ? [currentTab, currentParentTab]
+        : [currentParentTab, currentTab],
+      "vsep",
+      isRightSidebar ? 0 : 1
+    );
 
     const browserContainer = currentTab.linkedBrowser?.closest(
       ".browserSidebarContainer"

@@ -18,11 +18,11 @@
   width: fit-content;
   height: fit-content;
 
-  /* Disable Mica on Windows to prevent occasional desktop background bleed-through */
+  /* Disable Mica on Windows to prevent occasional desktop background bleed-through
   @media (-moz-platform: windows) {
     background: var(--arrowpanel-background);
     backdrop-filter: none;
-  }
+  }*/
 
   /* Disable fade-in on Linux */
   @media (-moz-platform: linux) {

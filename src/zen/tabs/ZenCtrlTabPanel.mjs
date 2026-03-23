@@ -12,7 +12,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   static CARD_WIDTH = 250;
   static MAX_VISIBLE_CARDS = 5;
-  static PANEL_HORIZONTAL_PADDING = 30;
+  static PANEL_HORIZONTAL_PADDING = 32;
   static PANEL_HEIGHT = 255;
   static THUMBNAIL_CANVAS_HEIGHT = 300;
 

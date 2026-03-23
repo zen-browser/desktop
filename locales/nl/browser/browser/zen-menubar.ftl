@@ -5,18 +5,18 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Expand Pinned Tabs
-           *[false] Collapse Pinned Tabs
+            [true] Vastgezette tabbladen uitklappen
+           *[false] Vastgezette tabbladen inklappen
         }
 zen-menubar-appearance = 
-    .label = Appearance
+    .label = Uiterlijk
 zen-menubar-appearance-description = 
-    .label = Websites will use:
+    .label = Website modus:
 zen-menubar-appearance-auto = 
-    .label = Automatic
+    .label = Automatisch
 zen-menubar-appearance-light = 
-    .label = Light
+    .label = Licht
 zen-menubar-appearance-dark = 
-    .label = Dark
-zen-menubar-new-unsynced-window = 
+    .label = Donker
+zen-menubar-new-blank-window = 
     .label = New Blank Window

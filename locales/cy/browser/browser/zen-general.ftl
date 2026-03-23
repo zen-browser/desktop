@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = y proffil cyfredol
 unified-extensions-description = Mae estyniadau'n cael ei defnyddio er mwyn ychwanegu fwy o swyddogaeth i { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Ailosod Tab wedi'i Binio
+    .label =
+        { $isEssential ->
+            [true] Ailosod y Tab Hanfodol
+           *[false] Ailosod y Tab wedi'i Binio
+        }
     .accesskey = A
 tab-context-zen-add-essential = 
     .label = Ychwanegu at Hanfodion
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = Dileu o'r Hanfodion
     .accesskey = D
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Ailosod URL wedi'i Binio gyda'r Cyfredol
+    .label =
+        { $isEssential ->
+            [true] Amnewid URL Hanfodol gyda'r Cyfredol
+          *[false] Amnewid URL wedi'i binio gyda'r Cyfredol
+        }
     .accesskey = P
 tab-context-zen-edit-title = 
     .label = Newid Label...
@@ -33,6 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Lleihau
 zen-panel-ui-gradient-generator-custom-color = Lliw Cyfaddas
 zen-copy-current-url-confirmation = Wedi copïo'r URL cyfredol!
+zen-copy-current-url-as-markdown-confirmation = Wedi copïo'r URL cyfredol fel Markdown!
 zen-general-cancel-label = 
     .label = Na
 zen-general-confirm = 
@@ -113,3 +122,5 @@ zen-window-sync-migration-dialog-title = Cadw Eich Ffenestr Wedi'u Cydweddu
 zen-window-sync-migration-dialog-message = Mae Zen bellach yn cydweddu ffenestri ar yr un ddyfais, felly mae newidiadau mewn un ffenestr yn cael eu dangos ar y lleill yn syth.
 zen-window-sync-migration-dialog-learn-more = Dysgu Rhagor
 zen-window-sync-migration-dialog-accept = Iawn
+zen-appmenu-new-blank-window = 
+    .label = Ffenestr wag newydd

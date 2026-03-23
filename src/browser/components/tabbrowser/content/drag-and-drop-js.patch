@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/drag-and-drop.js b/browser/components/tabbrowser/content/drag-and-drop.js
-index ced2bfd88de2d16e2c028ca3f4d9d27516363575..752eeca60ecb8693fb56a3a594a341d1c3587e35 100644
+index ced2bfd88de2d16e2c028ca3f4d9d27516363575..aaf6e82782357c819ca875f05020723600e41e6b 100644
 --- a/browser/components/tabbrowser/content/drag-and-drop.js
 +++ b/browser/components/tabbrowser/content/drag-and-drop.js
 @@ -35,6 +35,9 @@
@@ -26,7 +26,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..752eeca60ecb8693fb56a3a594a341d1
            !draggedTab.group.collapsed
          ) {
            draggedTab.group.collapsed = true;
-+          gZenFolders.animateGroupMove(tab.group);
++          gZenFolders.animateGroupMove(draggedTab.group);
          }
  
          if (dropEffect == "move") {

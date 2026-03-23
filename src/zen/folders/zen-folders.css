@@ -225,7 +225,9 @@ zen-folder[collapsed] > .tab-group-container {
 /* Tabs popup */
 #zen-folder-tabs-popup {
   --arrowpanel-padding: 0;
-  width: 250px;
+  min-width: 250px;
+  max-width: 400px;
+  width: max-content;
 
   & #zen-folder-tabs-search-no-results {
     height: 100%;
@@ -298,7 +300,6 @@ zen-folder[collapsed] > .tab-group-container {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 250px;
   color: light-dark(black, white);
 }
 

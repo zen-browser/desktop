@@ -5,111 +5,123 @@
 zen-panel-ui-current-profile-text = الملف الشخصي الحالي
 unified-extensions-description = تستخدم الإضافات لجلب المزيد من الوظائف الإضافية إلى { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = إعادة تعيين علامة التبويب المثبتة
+    .label =
+        {$isEssential ->
+            [true]  إعادة تعيين علامة التبويب الأساسية 
+           *[false]  إعادة تعيين التبويب المثبت
+        }
     .accesskey = ر
 tab-context-zen-add-essential = 
-    .label = Add to Essentials
+    .label = أضف إلى الأساسيات
     .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
+tab-context-zen-add-essential-badge = { $num } / { $max } مملؤة
 tab-context-zen-remove-essential = 
-    .label = Remove from Essentials
+    .label = إزالة من الأساسيات
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = استبدال الرابط المثبت بالرابط الحالي
+    .label =
+        {$isEssential ->
+            [true] استبدل الرابط الأساسي بـ
+           *[false] استبدل الرابط المثبت بـ
+         الحالي
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
-    .label = Change Label...
+    .label = تغيير الاسم...
 tab-context-zen-edit-icon = 
-    .label = Change Icon...
+    .label = تغيير الأيقونة...
 zen-themes-corrupted = ملف التعديل { -brand-short-name } الخاص بك تالف. تم إعادة تعيينه إلى السمة الافتراضية.
-zen-shortcuts-corrupted = Your { -brand-short-name } shortcuts file is corrupted. They have been reset to the default shortcuts.
+zen-shortcuts-corrupted = ملف الاختصارات { -brand-short-name } الخاص بك تالف. تم إعادة تعيينه إلى الاختصارات الافتراضية.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
-    The new URL bar has been enabled, removing the need for new tab pages.<br/><br/>
-    Try opening a new tab to see the new URL bar in action!
-zen-disable = Disable
+    تم تمكين شريط URL الجديد، بإزالة الحاجة إلى صفحات علامة تبويب جديدة.<br/><br/>
+    حاول فتح علامة تبويب جديدة لمشاهدة شريط URL الجديد قيد العمل!
+zen-disable = تعطيل
 pictureinpicture-minimize-btn = 
-    .aria-label = Minimize
-    .tooltip = Minimize
+    .aria-label = تقليص
+    .tooltip = تقليص
 zen-panel-ui-gradient-generator-custom-color = لون مخصص
-zen-copy-current-url-confirmation = Copied current URL!
+zen-copy-current-url-confirmation = تم نسخ الرابط الحالي!
+zen-copy-current-url-as-markdown-confirmation = نسخ الرابط الحالي كـ Markdown!
 zen-general-cancel-label = 
-    .label = Cancel
+    .label = إلغاء
 zen-general-confirm = 
-    .label = Confirm
+    .label = تأكيد
 zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL.
-zen-tabs-renamed = Tab has been successfully renamed!
-zen-background-tab-opened-toast = New background tab opened!
-zen-workspace-renamed-toast = Workspace has been successfully renamed!
+zen-tabs-renamed = تم تغيير اسم التبويب بنجاح!
+zen-background-tab-opened-toast = تم فتح علامة تبويب خلفية جديدة!
+zen-workspace-renamed-toast = تم تغيير اسم مساحة العمل بنجاح!
 zen-toggle-compact-mode-button = 
-    .label = Compact Mode
-    .tooltiptext = Toggle Compact Mode
+    .label = الوضع المدمج
+    .tooltiptext = تبديل الوضع المدمج
 
 # note: Do not translate the "<br/>" tags in the following string
 
 zen-learn-more-text = إلى المزيد تعرف
-zen-close-label = Close
+zen-close-label = أغلق
 zen-singletoolbar-urlbar-placeholder-with-name = 
-    .placeholder = Search...
+    .placeholder = ابحث...
 zen-icons-picker-emoji = 
-    .label = Emojis
+    .label = ايموجي
 zen-icons-picker-svg = 
-    .label = Icons
-urlbar-search-mode-zen_actions = Actions
-zen-site-data-settings = Settings
-zen-generic-manage = Manage
-zen-generic-more = More
-zen-generic-next = Next
-zen-essentials-promo-label = Add to Essentials
-zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
+    .label = الأيقونات
+urlbar-search-mode-zen_actions = الإجراءات
+zen-site-data-settings = الاعدادات
+zen-generic-manage = إدارة
+zen-generic-more = المزيد
+zen-generic-next = التالي
+zen-essentials-promo-label = أضف إلى الأساسيات
+zen-essentials-promo-sublabel = إبقاء علامات التبويب المفضلة لديك فقط بنقرة
 # These labels will be used for the site data panel settings
-zen-site-data-setting-allow = Allowed
-zen-site-data-setting-block = Blocked
-zen-site-data-protections-enabled = Enabled
-zen-site-data-protections-disabled = Disabled
-zen-site-data-setting-cross-site = Cross-Site cookie
+zen-site-data-setting-allow = مسموح
+zen-site-data-setting-block = محظور
+zen-site-data-protections-enabled = مفعّل
+zen-site-data-protections-disabled = معطَّل
+zen-site-data-setting-cross-site = ملف تعريف الارتباط عبر المواقع
 zen-site-data-security-info-extension = 
-    .label = Extension
+    .label = ملحق
 zen-site-data-security-info-secure = 
-    .label = Secure
+    .label = آمن
 zen-site-data-security-info-not-secure = 
-    .label = Not Secure
+    .label = غير آمن
 zen-site-data-manage-addons = 
-    .label = Manage Extensions
+    .label = إدارة الملحقات
 zen-site-data-get-addons = 
-    .label = Add Extensions
+    .label = إضافة ملحق
 zen-site-data-site-settings = 
-    .label = All Site Settings
+    .label = جميع إعدادات الموقع
 zen-site-data-header-share = 
-    .tooltiptext = Share This Page
+    .tooltiptext = شارك هذه الصفحة
 zen-site-data-header-reader-mode = 
-    .tooltiptext = Enter Reader Mode
+    .tooltiptext = أدخل وضع القارئ
 zen-site-data-header-screenshot = 
-    .tooltiptext = Take a Screenshot
+    .tooltiptext = التقاط الشاشة
 zen-site-data-header-bookmark = 
-    .tooltiptext = Bookmark This Page
+    .tooltiptext = ضع إشارة مرجعية على هذه الصفحة
 zen-urlbar-copy-url-button = 
-    .tooltiptext = Copy URL
-zen-site-data-setting-site-protection = Tracking Protection
+    .tooltiptext = نسخ الرابط
+zen-site-data-setting-site-protection = حماية التتبع
 
 # Section: Feature callouts
 
-zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
-zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-site-data-panel-feature-callout-title = منزل جديد للإضافات والأذونات والمزيد
+zen-site-data-panel-feature-callout-subtitle = انقر على أيقونة لإدارة إعدادات الموقع، وعرض معلومات الأمان، والوصول إلى الملحقات، وتنفيذ الإجراءات الشائعة.
 zen-open-link-in-glance = 
-    .label = Open Link in Glance
+    .label = فتح الرابط بلمحة
     .accesskey = G
-zen-sidebar-notification-updated-heading = Update Complete!
+zen-sidebar-notification-updated-heading = اكتمل التحديث!
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-label = ما الجديد في { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
-    .title = View Release Notes
-zen-sidebar-notification-restart-safe-mode-label = Something broke?
+    .title = عرض ملاحظات الإصدار
+zen-sidebar-notification-restart-safe-mode-label = شيء معطل؟
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = Restart in Safe Mode
-zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
-zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
-zen-window-sync-migration-dialog-learn-more = Learn More
-zen-window-sync-migration-dialog-accept = Got It
+    .title = إعادة التشغيل في الوضع الآمن
+zen-window-sync-migration-dialog-title = حافظ على تزامن نوافذك
+zen-window-sync-migration-dialog-message = يقوم Zen الآن بمزامنة النوافذ على نفس الجهاز، لذا فإن التغييرات في نافذة واحدة تنعكس في النوافذ الأخرى على الفور.
+zen-window-sync-migration-dialog-learn-more = تعرف على المزيد
+zen-window-sync-migration-dialog-accept = فهمت
+zen-appmenu-new-blank-window = 
+    .label = نافذة فارغة جديدة

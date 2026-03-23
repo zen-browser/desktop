@@ -26,7 +26,7 @@ add_task(async function test_Check_Creation() {
   await gZenWorkspaces.removeWorkspace(gZenWorkspaces.activeWorkspace);
   const workspacesAfterRemove = gZenWorkspaces.getWorkspaces();
   Assert.strictEqual(
-    workspacesAfterRemove.workspaces.length,
+    workspacesAfterRemove.length,
     1,
     "One workspace should exist."
   );

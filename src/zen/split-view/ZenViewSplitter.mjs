@@ -1164,17 +1164,21 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   insetUpdateContextMenuItems() {
     const contentAreaContextMenu = document.getElementById("tabContextMenu");
     contentAreaContextMenu.addEventListener("popupshowing", () => {
-      const tabCountInfo = JSON.stringify({
-        tabCount: window.gBrowser.selectedTabs.length,
+      let isExistingSplitView = gBrowser.selectedTabs.some(tab =>
+        tab.group?.hasAttribute("split-view-group")
+      );
+      const splitTabCommand = document.getElementById("context_zenSplitTabs");
+      document.l10n.setAttributes(splitTabCommand, "tab-zen-split-tabs", {
+        tabCount: isExistingSplitView ? -1 : gBrowser.selectedTabs.length,
       });
-      document
-        .getElementById("context_zenSplitTabs")
-        .setAttribute("data-l10n-args", tabCountInfo);
-      const splitTabs = document.getElementById("context_zenSplitTabs");
+      if (isExistingSplitView) {
+        splitTabCommand.removeAttribute("hidden");
+        return;
+      }
       if (!this.contextCanSplitTabs()) {
-        splitTabs.setAttribute("hidden", "true");
+        splitTabCommand.setAttribute("hidden", "true");
       } else {
-        splitTabs.removeAttribute("hidden");
+        splitTabCommand.removeAttribute("hidden");
       }
     });
   }
@@ -1189,7 +1193,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
                 data-l10n-args='{"tabCount": 1}'
                 command="cmd_zenSplitViewContextMenu"/>
     `);
-    document.getElementById("context_duplicateTab").before(element);
+    document.getElementById("context_moveTabToSplitView").before(element);
   }
 
   /**
@@ -1234,6 +1238,15 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    */
   contextSplitTabs() {
     const tabs = window.gBrowser.selectedTabs;
+    // If any is already in a split view, we unsplit them first
+    if (tabs.some(tab => tab.splitView)) {
+      for (const tab of tabs) {
+        if (tab.splitView) {
+          this.removeTabFromGroup(tab);
+        }
+      }
+      return;
+    }
     this.splitTabs(tabs);
   }
 

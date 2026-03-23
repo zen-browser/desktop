@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] Reset dan sematkan tab
            *[other] Reset dan sematkan { $tabCount } tab
         }
-tab-reset-pin-label = Kembali ke URL awal
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

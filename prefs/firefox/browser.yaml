@@ -82,3 +82,7 @@
 
 - name: browser.settings-redesign.enabled
   value: true
+
+- name: browser.tabs.splitView.enabled
+  value: false
+  locked: true

@@ -142,9 +142,9 @@ function SignAndPackage($name) {
     $env:ZEN_SETUP_EXE_PATH="$PWD\windsign-temp\windows-x64-obj-$name\browser\installer\windows\instgen\setup.exe"
 
     if ($name -eq "arm64") {
-        $env:WIN32_REDIST_DIR="$PWD\win-cross\vs2026\VC\Redist\MSVC\14.50.35719\arm64\Microsoft.VC143.CRT"
+        $env:WIN32_REDIST_DIR="$PWD\win-cross\vs2026\VC\Redist\MSVC\14.50.35710\arm64\Microsoft.VC145.CRT"
     } else {
-        $env:WIN32_REDIST_DIR="$PWD\win-cross\vs2026\VC\Redist\MSVC\14.50.35719\x64\Microsoft.VC143.CRT"
+        $env:WIN32_REDIST_DIR="$PWD\win-cross\vs2026\VC\Redist\MSVC\14.50.35710\x64\Microsoft.VC145.CRT"
     }
 
     $env:MAR="..\\build\\windows\\mar.exe"

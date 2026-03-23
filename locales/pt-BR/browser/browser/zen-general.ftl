@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = Perfil atual
 unified-extensions-description = As extensões são usadas para trazer mais recursos adicionais para o { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Redefinir Guia Fixada
+    .label =
+        { $isEssential ->
+            [true] Reiniciar Aba Essencial
+           *[false] Reiniciar Aba Fixada
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Adicionar aos Essenciais
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = Remover dos Essenciais
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Substituir URL da Guia Fixada pela Atual
+    .label =
+        { $isEssential ->
+            [true] Substituir URL Essencial pela atual
+           *[false] Substituir URL Fixada pela atual
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = Alterar Rótulo...
@@ -31,6 +39,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimizar
 zen-panel-ui-gradient-generator-custom-color = Cor Personalizada
 zen-copy-current-url-confirmation = URL atual copiada!
+zen-copy-current-url-as-markdown-confirmation = URL atual copiada como Markdown!
 zen-general-cancel-label = 
     .label = Cancelar
 zen-general-confirm = 
@@ -111,3 +120,5 @@ zen-window-sync-migration-dialog-title = Mantenha Suas Janelas em Sincronia
 zen-window-sync-migration-dialog-message = Zen agora sincroniza as janelas no mesmo dispositivo, assim as mudanças feitas em uma janela são refletidas para as outras instantaneamente.
 zen-window-sync-migration-dialog-learn-more = Saiba Mais
 zen-window-sync-migration-dialog-accept = Entendi
+zen-appmenu-new-blank-window = 
+    .label = Nova janela em branco

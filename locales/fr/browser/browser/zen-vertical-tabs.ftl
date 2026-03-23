@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] Rétablir et épingler l'onglet
            *[other] Rétablir et épingler { $tabCount } onglets
         }
-tab-reset-pin-label = Retour à l’URL épinglée
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Retour à l'URL épinglée
+        [zen-default-pinned-cmd] Séparer de l'onglet épinglé
+       *[other] { $tabSubtitle }
+    }

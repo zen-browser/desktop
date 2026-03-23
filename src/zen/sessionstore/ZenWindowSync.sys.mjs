@@ -256,6 +256,26 @@ class nsZenWindowSync {
     for (let eventName of EVENTS) {
       aWindow.addEventListener(eventName, this, true);
     }
+    this.#maybeTriggerInitialTabSync(aWindow);
+  }
+
+  /**
+   * Determines if the initial tab should be synced for the given window
+   * and triggers the sync if necessary. See gh-12258 for more details.
+   *
+   * @param {Window} aWindow - The browser window to check and potentially sync.
+   */
+  #maybeTriggerInitialTabSync(aWindow) {
+    let initialTab = aWindow.gBrowser?.selectedTab;
+    aWindow.gZenStartup.promiseInitialized.then(() => {
+      if (initialTab && !initialTab.closing) {
+        // If the initial tab is still open after startup, we trigger a fake TabSelect event
+        // to ensure the tab gets synced properly. This is needed in cases where the window
+        // is opened with a URL and the TabSelect event happens before the window sync is fully initialized.
+        this.log("Triggering initial tab sync for window", initialTab);
+        this.on_TabOpen({ target: initialTab }, { ignoreExistingId: true });
+      }
+    });
   }
 
   /**
@@ -1267,11 +1287,11 @@ class nsZenWindowSync {
 
   /* Mark: Event Handlers */
 
-  on_TabOpen(aEvent, { duringPinning = false } = {}) {
+  on_TabOpen(aEvent, { ignoreExistingId = false } = {}) {
     const tab = aEvent.target;
     const window = tab.ownerGlobal;
     const isUnsyncedWindow = window.gZenWorkspaces.privateWindowOrDisabled;
-    if (tab.id && !duringPinning) {
+    if (tab.id && !ignoreExistingId) {
       // This tab was opened as part of a sync operation.
       return;
     }
@@ -1297,7 +1317,7 @@ class nsZenWindowSync {
         SYNC_FLAG_ICON | SYNC_FLAG_LABEL | SYNC_FLAG_MOVE
       );
     });
-    if (duringPinning && tab?.splitView) {
+    if (ignoreExistingId && tab?.splitView) {
       this.on_ZenSplitViewTabsSplit({ target: tab.group });
     }
   }
@@ -1365,7 +1385,7 @@ class nsZenWindowSync {
       tabStatePromise,
       this.on_TabMove(aEvent).then(() => {
         if (lazy.gSyncOnlyPinnedTabs) {
-          this.on_TabOpen({ target: tab }, { duringPinning: true });
+          this.on_TabOpen({ target: tab }, { ignoreExistingId: true });
         }
       }),
     ]);

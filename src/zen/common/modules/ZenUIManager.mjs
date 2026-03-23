@@ -1181,6 +1181,9 @@ window.gZenVerticalTabsManager = {
   },
 
   recalculateURLBarHeight(updateFormat = false) {
+    if (gZenWorkspaces._processingResize) {
+      return;
+    }
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         gURLBar.removeAttribute("--urlbar-height");

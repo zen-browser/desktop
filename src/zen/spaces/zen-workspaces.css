@@ -308,7 +308,6 @@
 
 /* mark: workspace element */
 zen-workspace {
-  will-change: transform;
   flex-direction: column;
   transition: padding-top 0.1s;
   width: calc(100% + var(--zen-toolbox-padding) * 2);

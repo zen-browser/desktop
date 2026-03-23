@@ -566,7 +566,6 @@
 
       transition: transform 0.12s ease-in-out;
       box-sizing: border-box;
-      will-change: transform;
     }
 
     &.active {

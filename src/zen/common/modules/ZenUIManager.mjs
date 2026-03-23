@@ -341,20 +341,12 @@ window.gZenUIManager = {
     if (panel.id !== "appMenu-popup") {
       return;
     }
-    const anchor = panel.anchorNode;
-    if (!anchor) {
-      return;
-    }
-    const anchorRect = anchor.getBoundingClientRect();
-    const screenBottom = window.screen.availTop + window.screen.availHeight;
-    const anchorScreenBottom = window.screenY + anchorRect.bottom;
-    const anchorScreenTop = window.screenY + anchorRect.top;
-    const spaceBelow = screenBottom - anchorScreenBottom;
-    const spaceAbove = anchorScreenTop - window.screen.availTop;
-    const maxHeight = Math.max(spaceBelow, spaceAbove);
-    if (maxHeight > 0 && maxHeight < window.screen.availHeight) {
-      panel.style.maxHeight = `${maxHeight}px`;
-    }
+    // NSPopover adds 13px of chrome on all sides (26px vertical total),
+    // measured via Accessibility Inspector on macOS 26 (Tahoe).
+    // Previous macOS versions have similar or smaller values, so this is a
+    // conservative upper bound.
+    const popoverChrome = 26;
+    panel.style.maxHeight = `${window.screen.availHeight - popoverChrome}px`;
   },
 
   onPopupShowing(showEvent) {

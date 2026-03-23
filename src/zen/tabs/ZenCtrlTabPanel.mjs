@@ -157,10 +157,15 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     if (this.#isOpen) {
       return;
     }
-    this.#buildTabList();
+
+    this.#tabList = [...gBrowser.tabs].filter(tab => {
+      return !tab.closing && !tab.hidden && !tab.hasAttribute("zen-empty-tab");
+    });
+
     if (this.#tabList.length <= 1) {
       return;
     }
+
     this.#isOpen = true;
 
     const currentTabIndex = this.#tabList.indexOf(gBrowser.selectedTab);
@@ -319,17 +324,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Creates the list of tabs to show in the switcher.
-   *
-   * @returns {void}
-   */
-  #buildTabList() {
-    this.#tabList = [...gBrowser.tabs].filter(tab => {
-      return !tab.closing && !tab.hidden && !tab.hasAttribute("zen-empty-tab");
-    });
-  }
-
-  /**
    * Creates the visual tab cards and adds them to the DOM.
    * Clears existing cards and renders new ones based on the current tab list.
    *
@@ -443,8 +437,8 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Scrolls the tab container to show the selected card.
-   * First press uses instant scroll, subsequent ones use smooth.
+   * Scrolls the tab container when card is selected on previous/next page.
+   * First ctrl+tab/ctrl+shift+tab uses instant scroll, subsequent ones use smooth.
    *
    * @returns {void}
    */
@@ -494,7 +488,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Navigates forward to the next tab in the list.
+   * Selects the next tab in the list.
    * Wraps around to the first tab if at the end of the list.
    *
    * @returns {void}
@@ -505,7 +499,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Navigates backward to the previous tab in the list.
+   * Selects the previous tab in the list.
    * Wraps around to the last tab if at the start of the list.
    *
    * @returns {void}

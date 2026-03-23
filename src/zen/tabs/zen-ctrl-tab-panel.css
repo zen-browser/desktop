@@ -15,8 +15,7 @@
 
 #zen-ctrl-tab-panel {
   --panel-padding: var(--zen-ctrl-tab-panel-padding);
-  min-width: fit-content;
-  max-width: 100vw;
+  width: fit-content;
   height: fit-content;
 
   /* Disable Mica on Windows to prevent occasional desktop background bleed-through */
@@ -42,8 +41,7 @@
 #zen-ctrl-tab-panel-tabs {
   display: flex;
   flex-direction: row;
-  overflow-x: hidden;
-  overflow-y: hidden;
+  overflow: hidden;
   scrollbar-width: none;
   position: relative;
   box-sizing: border-box;
@@ -107,12 +105,8 @@
 .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected.zen-ctrl-tab-panel-pending .zen-ctrl-tab-panel-thumbnail,
 .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected.zen-ctrl-tab-panel-no-thumbnail .zen-ctrl-tab-panel-thumbnail {
   background: light-dark(
-    color-mix(in srgb, color-mix(in srgb, var(--zen-colors-border) 30%, var(--zen-branding-bg)) 30%, transparent),
-    color-mix(
-      in srgb,
-      color-mix(in srgb, color-mix(in srgb, var(--zen-colors-border) 30%, var(--zen-branding-bg)) 30%, transparent) 75%,
-      var(--zen-primary-color) 25%
-    )
+    color-mix(in srgb, var(--zen-branding-bg) 25%, transparent),
+    color-mix(in srgb, var(--zen-primary-color) 25%, color-mix(in srgb, var(--zen-branding-bg) 25%, transparent))
   );
 }
 

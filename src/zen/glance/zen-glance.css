@@ -23,8 +23,8 @@
   }
 
   & toolbarbutton {
-    width: 32px;
-    height: 32px;
+    width: var(--size-item-large);
+    height: var(--size-item-large);
     background: color-mix(in srgb, light-dark(rgb(24, 24, 24), rgb(231, 231, 231)) 96%, var(--zen-primary-color));
     transition:
       background 0.05s ease,
@@ -65,7 +65,7 @@
     width: fit-content;
     & label {
       display: block;
-      max-width: 0px;
+      max-width: 0;
       margin: 0;
       overflow: hidden;
       transition:
@@ -96,6 +96,12 @@
 
 .browserSidebarContainer.zen-glance-background {
   box-shadow: var(--zen-big-shadow);
+
+  & .browserContainer {
+    /* For rounding the corners of the content to work while
+     * applying a transformation to the container. */
+    will-change: transform;
+  }
 }
 
 .browserSidebarContainer.zen-glance-background,
@@ -107,8 +113,6 @@
   box-shadow: none !important;
   visibility: inherit;
   z-index: 1;
-  /* Hint compositor to optimize animations and scrolling */
-  will-change: transform, opacity, filter;
 
   :root[zen-no-padding="true"] & {
     --zen-native-inner-radius: 0px;
@@ -117,11 +121,7 @@
   & .browserContainer {
     transform: translate(-50%, -50%);
     position: fixed;
-    top: 0;
-    left: 0;
     flex: unset !important;
-    /* Promote to its own layer during transitions to reduce jank */
-    will-change: transform, top, left;
     width: 85%;
     height: 100%;
 
@@ -134,8 +134,6 @@
       transition: 0s !important;
       transform: none !important;
       margin: auto !important;
-      top: 0 !important;
-      left: 0 !important;
     }
 
     & .browserStack {
@@ -173,7 +171,6 @@
   top: 0%;
   left: 50%;
   translate: -50% 0%;
-  will-change: transform, opacity;
   background: rgba(255, 255, 255, 0.1);
 
   & image {

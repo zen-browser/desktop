@@ -1,0 +1,13 @@
+diff --git a/tools/lint/eslint/eslint-plugin-mozilla/lib/configs/require-jsdoc.mjs b/tools/lint/eslint/eslint-plugin-mozilla/lib/configs/require-jsdoc.mjs
+index 87fc32f6a1bdf21a56fb3ce18c767ebbb12c6d67..174fcc3a679ae655c9bce907461f9c3a9030c2a9 100644
+--- a/tools/lint/eslint/eslint-plugin-mozilla/lib/configs/require-jsdoc.mjs
++++ b/tools/lint/eslint/eslint-plugin-mozilla/lib/configs/require-jsdoc.mjs
+@@ -13,7 +13,7 @@ export default {
+       "error",
+       {
+         require: {
+-          ClassDeclaration: true,
++          ClassDeclaration: false,
+           FunctionDeclaration: false,
+         },
+       },

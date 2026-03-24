@@ -39,29 +39,35 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
       const elements = doc.querySelectorAll(selector);
 
       const items = Array.from(elements)
-        .map((item) => {
+        .map(item => {
           const title = item.querySelector("title")?.textContent || "";
 
           const linkNode = item.querySelector("link");
           const url =
-            isAtom && linkNode ? linkNode.getAttribute("href") : linkNode?.textContent || "";
+            isAtom && linkNode
+              ? linkNode.getAttribute("href")
+              : linkNode?.textContent || "";
 
           const guid = item.querySelector(isAtom ? "id" : "guid")?.textContent;
           const id = guid || url;
 
-          const dateStr = item.querySelector(isAtom ? "updated" : "pubDate")?.textContent;
+          const dateStr = item.querySelector(
+            isAtom ? "updated" : "pubDate"
+          )?.textContent;
           const date = dateStr ? new Date(dateStr) : null;
 
           return { title, url, id, date };
         })
-        .filter((item) => {
+        .filter(item => {
           if (!item.url || !item.date) {
             return false;
           }
           if (!this.state.timeRange) {
             return true;
           }
-          return !isNaN(item.date.getTime()) && item.date.getTime() >= cutoffTime;
+          return (
+            !isNaN(item.date.getTime()) && item.date.getTime() >= cutoffTime
+          );
         })
         .slice(0, this.state.maxItems);
       for (let item of items) {
@@ -99,7 +105,7 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
 
   _buildItemLimitOptions() {
     const entries = [5, 10, 25, 50];
-    return entries.map((entry) => {
+    return entries.map(entry => {
       return this._buildRadioOption({
         key: "maxItems",
         value: entry,
@@ -128,13 +134,15 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
         l10nId: "zen-live-folder-time-range-all-time",
       }),
       { type: "separator" },
-      ...entries.map((entry) => {
+      ...entries.map(entry => {
         const isDays = "days" in entry;
 
         return this._buildRadioOption({
           key: "timeRange",
           value: entry.ms,
-          l10nId: isDays ? "zen-live-folder-time-range-days" : "zen-live-folder-time-range-hours",
+          l10nId: isDays
+            ? "zen-live-folder-time-range-days"
+            : "zen-live-folder-time-range-hours",
           l10nArgs: isDays ? { days: entry.days } : { hours: entry.hours },
         });
       }),
@@ -165,7 +173,10 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
     try {
       const response = await fetch(url);
       if (!response.ok) {
-        return { label: "", icon: window.gZenEmojiPicker.getSVGURL("logo-rss.svg") };
+        return {
+          label: "",
+          icon: window.gZenEmojiPicker.getSVGURL("logo-rss.svg"),
+        };
       }
 
       const text = await response.text();
@@ -175,14 +186,20 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
       const title = (
         isAtom
           ? doc.querySelector("feed > title")?.textContent
-          : doc.querySelector("rss > channel > title, channel > title")?.textContent
+          : doc.querySelector("rss > channel > title, channel > title")
+              ?.textContent
       )?.trim();
 
       const linkNode = isAtom
-        ? doc.querySelector("feed > link[rel='alternate'][href], feed > link[href]")
+        ? doc.querySelector(
+            "feed > link[rel='alternate'][href], feed > link[href]"
+          )
         : doc.querySelector("rss > channel > link, channel > link");
       const feedLink =
-        (isAtom ? linkNode?.getAttribute("href") : linkNode?.textContent)?.trim() || "";
+        (isAtom
+          ? linkNode?.getAttribute("href")
+          : linkNode?.textContent
+        )?.trim() || "";
 
       const faviconPageUrl = feedLink ? new URL(feedLink, url).href : url;
       let favicon = await lazy.PlacesUtils.favicons.getFaviconForPage(
@@ -191,16 +208,23 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
 
       return {
         label: title || "",
-        icon: favicon?.dataURI.spec || window.gZenEmojiPicker.getSVGURL("logo-rss.svg"),
+        icon:
+          favicon?.dataURI.spec ||
+          window.gZenEmojiPicker.getSVGURL("logo-rss.svg"),
       };
     } catch (e) {
-      return { label: "", icon: window.gZenEmojiPicker.getSVGURL("logo-rss.svg") };
+      return {
+        label: "",
+        icon: window.gZenEmojiPicker.getSVGURL("logo-rss.svg"),
+      };
     }
   }
 
   static async promptForFeedUrl(window, initialUrl = "") {
     const input = { value: initialUrl };
-    const [prompt] = await lazy.l10n.formatValues(["zen-live-folder-rss-prompt-feed-url"]);
+    const [prompt] = await lazy.l10n.formatValues([
+      "zen-live-folder-rss-prompt-feed-url",
+    ]);
     const promptOk = Services.prompt.prompt(window, prompt, null, input, null, {
       value: null,
     });
@@ -228,7 +252,10 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
   }
 
   async getMetadata() {
-    return nsRssLiveFolderProvider.getMetadata(this.state.url, this.manager.window);
+    return nsRssLiveFolderProvider.getMetadata(
+      this.state.url,
+      this.manager.window
+    );
   }
 
   async onOptionTrigger(option) {
@@ -237,7 +264,7 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
     const key = option.getAttribute("option-key");
     const value = option.getAttribute("option-value");
 
-    if (!this.options.some((x) => x.key === key)) {
+    if (!this.options.some(x => x.key === key)) {
       return;
     }
 

@@ -22,4 +22,3 @@ interface nsIZenModsBackend : nsISupports {
    */
   void rebuildModsStyles(in ACString aContents);
 };
-

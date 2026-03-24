@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] Athshocraigh agus priontáil an cluaisín
            *[other] Athshocraigh agus priontáil an cluaisín { $tabCount }
         }
-tab-reset-pin-label = Ar ais chuig an url bioráilte
+zen-tab-sublabel =
+    { $tabSubtitle ->
+    [zen-default-pinned] Ar ais go dtí an url bioráilte
+    [zen-default-pinned-cmd] Ar leithligh ón gcluaisín bioráilte
+    *[other] { $tabSubtitle }
+    }

@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] Tabblad resetten en vastmaken
            *[other] { $tabCount } tabbladen resetten en vastmaken
         }
-tab-reset-pin-label = Terug naar vastgemaakte URL
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

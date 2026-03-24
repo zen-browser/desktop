@@ -9,9 +9,15 @@ support-files = [
 ]
 
 ["browser_basic_split_view.js"]
-["browser_split_inset_checks.js"]
-["browser_split_groups.js"]
+
 ["browser_split_browser_duplication.js"]
-["browser_split_view_with_glance.js"]
-["browser_split_view_with_folders.js"]
+
+["browser_split_groups.js"]
+
+["browser_split_inset_checks.js"]
+
 ["browser_split_view_empty.js"]
+
+["browser_split_view_with_folders.js"]
+
+["browser_split_view_with_glance.js"]

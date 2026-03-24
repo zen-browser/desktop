@@ -7,22 +7,22 @@
 
 namespace zen {
 /**
-* @brief Helper function to convert UTF-8 to UTF-16.
-* @param aStr The UTF-8 string to convert.
-* @returns The converted UTF-16 string.
-*/
+ * @brief Helper function to convert UTF-8 to UTF-16.
+ * @param aStr The UTF-8 string to convert.
+ * @returns The converted UTF-16 string.
+ */
 inline NS_ConvertUTF8toUTF16 NS_ConvertUTF8toUTF16_MaybeVoid(
     const nsACString& aStr) {
   auto str = NS_ConvertUTF8toUTF16(aStr);
   str.SetIsVoid(aStr.IsVoid());
   return str;
 }
-} // namespace: zen
+}  // namespace zen
 
 auto nsZenNativeShareInternal::ShowNativeDialog(
-      nsCOMPtr<mozIDOMWindowProxy>& aWindow, nsIURI* aUrl, const nsACString& aTitle, 
-      const nsACString& aText, uint32_t aX, uint32_t aY, uint32_t aWidth, uint32_t aHeight)
-    -> nsresult {
+    nsCOMPtr<mozIDOMWindowProxy>& aWindow, nsIURI* aUrl,
+    const nsACString& aTitle, const nsACString& aText, uint32_t aX, uint32_t aY,
+    uint32_t aWidth, uint32_t aHeight) -> nsresult {
   nsAutoCString urlString;
   if (aUrl) {
     nsresult rv = aUrl->GetSpec(urlString);

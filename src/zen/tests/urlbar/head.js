@@ -35,13 +35,19 @@ function selectWithMouseDrag(fromX, toX, win = window) {
     { type: "mousemove" },
     target.ownerGlobal
   );
-  EventUtils.synthesizeMouse(target, toX, rect.height / 2, { type: "mouseup" }, target.ownerGlobal);
+  EventUtils.synthesizeMouse(
+    target,
+    toX,
+    rect.height / 2,
+    { type: "mouseup" },
+    target.ownerGlobal
+  );
   return promise;
 }
 
 function goToMultipleLayouts(callback) {
   // eslint-disable-next-line no-async-promise-executor
-  return new Promise(async (resolve) => {
+  return new Promise(async resolve => {
     await SpecialPowers.pushPrefEnv({
       set: [["zen.view.use-single-toolbar", false]],
     });

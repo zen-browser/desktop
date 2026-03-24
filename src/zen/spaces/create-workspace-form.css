@@ -1,0 +1,170 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+zen-workspace-creation {
+  flex: 1;
+  max-width: calc(var(--zen-sidebar-width) - var(--zen-toolbox-padding));
+  padding: 3px;
+  visibility: collapse;
+
+  & .zen-workspace-creation {
+    justify-content: center;
+
+    & .zen-workspace-creation-title {
+      font-size: large;
+      margin-bottom: 5px;
+      text-align: center;
+    }
+
+    & .zen-workspace-creation-label {
+      margin: 0;
+      opacity: 0.4;
+      text-align: center;
+    }
+
+    & form {
+      --input-bgcolor: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.05));
+
+      display: flex;
+      flex-direction: column;
+      width: calc(100% - 10px);
+      margin: auto;
+      gap: 3.2rem;
+      margin-top: 0.6rem;
+      height: 100%;
+
+      & .zen-workspace-creation-form {
+        gap: 0.6rem;
+      }
+
+      & xul|button {
+        margin: 0;
+        font-weight: 400 !important;
+
+        &:not(.footer-button.primary) {
+          border: none;
+        }
+      }
+
+      & .zen-workspace-creation-name-wrapper {
+        padding: 9px 6px;
+        border-radius: 8px !important;
+        margin: 0;
+        background-color: var(--input-bgcolor);
+        gap: 8px;
+        align-items: center;
+        padding-left: 8px;
+
+        & .zen-workspace-creation-icon-label {
+          position: relative;
+          width: var(--size-item-medium);
+          height: var(--icon-size-medium);
+          justify-content: center;
+          align-items: center;
+          cursor: pointer;
+          background: transparent !important;
+          appearance: none;
+          align-content: center;
+          padding: 0;
+          fill-opacity: 0.6;
+
+          & image {
+            position: absolute;
+            width: var(--size-item-small);
+            height: var(--size-item-small);
+            -moz-context-properties: fill-opacity, fill;
+            fill: currentColor;
+          }
+
+          &:not([has-svg-icon="true"]) image {
+            display: none;
+          }
+
+          & label {
+            display: flex;
+            font-size: 12px;
+            justify-content: center;
+          }
+
+          &[has-svg-icon="true"] label {
+            display: none;
+          }
+
+          &::before {
+            border: 1px dashed light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.5));
+            border-radius: 4px;
+            width: calc(100% + 2px);
+            height: calc(100% + 2px);
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            pointer-events: none;
+          }
+        }
+
+        & .zen-workspace-creation-name {
+          --input-border-color: transparent;
+          --input-bgcolor: transparent;
+          padding: 0 !important;
+          width: 100%;
+          outline: none;
+          border-radius: 0;
+        }
+      }
+
+      & .zen-workspace-creation-profile-wrapper {
+        padding: 4px;
+        border-radius: 8px !important;
+        margin: 0;
+        background-color: var(--input-bgcolor);
+        gap: 4px;
+        align-items: center;
+        flex-wrap: wrap;
+
+        & .zen-workspace-creation-profile-label {
+          cursor: help;
+        }
+
+        & .zen-workspace-creation-profile {
+          margin: 0;
+          padding: 6px !important;
+          padding-inline-end: 0;
+          appearance: none;
+          background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+          margin-left: auto;
+          min-width: unset !important;
+          border-radius: 6px;
+        }
+      }
+
+      & .zen-workspace-creation-edit-theme-button {
+        border-radius: 8px !important;
+        margin: 0;
+        background-color: var(--input-bgcolor);
+        justify-content: center;
+        align-items: center;
+        appearance: none;
+        padding: 10px !important;
+
+        &:hover {
+          background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+        }
+      }
+
+      & .zen-workspace-creation-buttons {
+        gap: 0.5rem;
+        margin-top: auto;
+
+        & .zen-workspace-creation-create-button {
+          color: var(--button-text-color-primary) !important;
+          background: var(--color-accent-primary) !important;
+          width: 100%;
+        }
+      }
+    }
+  }
+}

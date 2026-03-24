@@ -63,7 +63,9 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
       case "command":
         if (event.target.id === "PanelUI-zen-emojis-picker-none") {
           this.#selectEmoji(null);
-        } else if (event.target.id === "PanelUI-zen-emojis-picker-change-emojis") {
+        } else if (
+          event.target.id === "PanelUI-zen-emojis-picker-change-emojis"
+        ) {
           this.#changePage(false);
         } else if (event.target.id === "PanelUI-zen-emojis-picker-change-svg") {
           this.#changePage(true);
@@ -104,7 +106,9 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
   #changePage(toSvg = false) {
     const itemToScroll = toSvg
       ? this.svgList
-      : document.getElementById("PanelUI-zen-emojis-picker-pages").querySelector('[emojis="true"]');
+      : document
+          .getElementById("PanelUI-zen-emojis-picker-pages")
+          .querySelector('[emojis="true"]');
     itemToScroll.scrollIntoView({
       behavior: "smooth",
       block: "nearest",
@@ -137,15 +141,19 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     const value = input.value.trim().toLowerCase();
     // search for emojis.tags and order by emojis.order
     const filteredEmojis = this.#emojis
-      .filter((emoji) => {
-        return emoji.tags.some((tag) => tag.toLowerCase().includes(value));
+      .filter(emoji => {
+        return emoji.tags.some(tag => tag.toLowerCase().includes(value));
       })
       .sort((a, b) => a.order - b.order);
     for (const button of this.emojiList.children) {
       const buttonEmoji = button.getAttribute("label");
-      const emojiObject = filteredEmojis.find((emoji) => emoji.emoji === buttonEmoji);
+      const emojiObject = filteredEmojis.find(
+        emoji => emoji.emoji === buttonEmoji
+      );
       if (emojiObject) {
-        button.hidden = !emojiObject.tags.some((tag) => tag.toLowerCase().includes(value));
+        button.hidden = !emojiObject.tags.some(tag =>
+          tag.toLowerCase().includes(value)
+        );
         button.style.order = emojiObject.order;
       } else {
         button.hidden = true;
@@ -205,7 +213,9 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     this.svgList.innerHTML = "";
 
     if (!this.#hasSelection) {
-      this.#currentPromiseReject?.(new Error("Emoji picker closed without selection"));
+      this.#currentPromiseReject?.(
+        new Error("Emoji picker closed without selection")
+      );
     } else if (!this.#closeOnSelect) {
       this.#currentPromiseResolve?.(this.#lastSelectedEmoji);
     }

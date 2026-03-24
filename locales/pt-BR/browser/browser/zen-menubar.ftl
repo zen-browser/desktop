@@ -18,5 +18,5 @@ zen-menubar-appearance-light =
     .label = Claro
 zen-menubar-appearance-dark = 
     .label = Escuro
-zen-menubar-new-unsynced-window = 
-    .label = Nova janela em branco
+zen-menubar-new-blank-window = 
+    .label = Nova Janela em Branco

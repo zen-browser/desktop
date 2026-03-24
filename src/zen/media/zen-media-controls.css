@@ -119,8 +119,6 @@
     position: absolute;
     width: 110%;
     height: 110%;
-    background-repeat: no-repeat;
-    opacity: 1;
     background: url("chrome://browser/content/zen-images/note-indicator.svg") no-repeat;
     top: -70%;
     left: 50%;
@@ -152,7 +150,6 @@
 
   & > toolbaritem {
     flex-grow: 1;
-    padding: 0;
     transition: padding 0.3s ease-out;
     position: absolute;
     left: 0;
@@ -216,7 +213,7 @@
 }
 
 #zen-media-title {
-  height: 16px;
+  height: var(--size-item-small);
   font-size: math;
 }
 
@@ -250,7 +247,7 @@
   }
 
   & label {
-    min-height: 16px;
+    min-height: var(--size-item-small);
     margin-left: 0;
     font-weight: 500;
     position: relative; /* For the animation */
@@ -264,9 +261,9 @@
 
 #zen-media-progress-hbox {
   flex-grow: 1;
-  height: 2rem;
+  height: var(--size-item-large);
   align-items: center;
-  padding-top: 0px !important;
+  padding-top: 0 !important;
 
   #zen-media-controls-toolbar[media-position-hidden] & {
     display: none;

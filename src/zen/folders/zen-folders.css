@@ -88,7 +88,6 @@ zen-folder {
       width: 28px;
       height: 28px;
       align-content: center;
-      pointer-events: none;
       position: absolute;
       pointer-events: none;
 
@@ -266,8 +265,8 @@ zen-folder[collapsed] > .tab-group-container {
 }
 
 #zen-folder-tabs-popup .zen-folder-tabs-list-search-icon {
-  width: 16px;
-  height: 16px;
+  width: var(--size-item-small);
+  height: var(--size-item-small);
   margin: 10px 2px 10px 10px;
   -moz-context-properties: fill;
   fill: currentColor;
@@ -275,8 +274,8 @@ zen-folder[collapsed] > .tab-group-container {
 }
 
 .folders-tabs-list-item-icon {
-  width: 16px;
-  height: 16px;
+  width: var(--size-item-small);
+  height: var(--size-item-small);
   flex-shrink: 0;
   margin-inline-end: 10px;
   margin-inline-start: 4px;

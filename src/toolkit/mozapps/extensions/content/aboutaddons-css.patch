@@ -1,8 +1,8 @@
 diff --git a/toolkit/mozapps/extensions/content/aboutaddons.css b/toolkit/mozapps/extensions/content/aboutaddons.css
-index da127019467107973300b4df8d9b95e8bfb0e05c..bcee9583654609bdcba55605eebb97be8bec286e 100644
+index af6f7f42da3eb14c18058a9cc0516620a20a461b..fe049902b3c0606c038ad1bf076175593f1a1d76 100644
 --- a/toolkit/mozapps/extensions/content/aboutaddons.css
 +++ b/toolkit/mozapps/extensions/content/aboutaddons.css
-@@ -106,6 +106,13 @@ h2 {
+@@ -105,6 +105,13 @@ h2 {
  .category[name="theme"] {
    background-image: url("chrome://mozapps/skin/extensions/category-themes.svg");
  }

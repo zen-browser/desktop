@@ -33,11 +33,15 @@ interface Document {
 }
 
 type nsIGleanPingNoReason = {
-  [K in keyof nsIGleanPing]: K extends "submit" ? (_?: never) => void : nsIGleanPing[K];
+  [K in keyof nsIGleanPing]: K extends "submit"
+    ? (_?: never) => void
+    : nsIGleanPing[K];
 };
 
 type nsIGleanPingWithReason<T> = {
-  [K in keyof nsIGleanPing]: K extends "submit" ? (reason: T) => void : nsIGleanPing[K];
+  [K in keyof nsIGleanPing]: K extends "submit"
+    ? (reason: T) => void
+    : nsIGleanPing[K];
 };
 
 interface MessageListenerManagerMixin {

@@ -12,7 +12,10 @@ export class ZenGlanceParent extends JSWindowActorParent {
   async receiveMessage(message) {
     switch (message.name) {
       case "ZenGlance:GetActivationMethod": {
-        return Services.prefs.getStringPref("zen.glance.activation-method", "ctrl");
+        return Services.prefs.getStringPref(
+          "zen.glance.activation-method",
+          "ctrl"
+        );
       }
       case "ZenGlance:OpenGlance": {
         this.openGlance(this.browsingContext.topChromeWindow, message.data);
@@ -23,11 +26,14 @@ export class ZenGlanceParent extends JSWindowActorParent {
           onTabClose: true,
           ...message.data,
         };
-        this.browsingContext.topChromeWindow.gZenGlanceManager.closeGlance(params);
+        this.browsingContext.topChromeWindow.gZenGlanceManager.closeGlance(
+          params
+        );
         break;
       }
       case "ZenGlance:RecordLinkClickData": {
-        this.browsingContext.topChromeWindow.gZenGlanceManager.lastLinkClickData = message.data;
+        this.browsingContext.topChromeWindow.gZenGlanceManager.lastLinkClickData =
+          message.data;
         break;
       }
       default:

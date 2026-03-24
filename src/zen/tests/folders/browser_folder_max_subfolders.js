@@ -11,7 +11,9 @@ add_task(async function test_Max_Subfolders() {
     renameFolder: false,
   });
 
-  const subfolderItem = document.getElementById("context_zenFolderNewSubfolder");
+  const subfolderItem = document.getElementById(
+    "context_zenFolderNewSubfolder"
+  );
   let currentFolder = folder;
   for (let i = 1; i < TEST_MAX_FOLDERS; i++) {
     await openFolderContextMenu(currentFolder);
@@ -20,7 +22,10 @@ add_task(async function test_Max_Subfolders() {
       "true",
       `Subfolder item should be enabled`
     );
-    const folderCreateEvent = BrowserTestUtils.waitForEvent(window, "TabGroupCreate");
+    const folderCreateEvent = BrowserTestUtils.waitForEvent(
+      window,
+      "TabGroupCreate"
+    );
     EventUtils.synthesizeMouseAtCenter(subfolderItem, {});
     await folderCreateEvent;
     const items = currentFolder.allItems;

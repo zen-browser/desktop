@@ -1,29 +1,29 @@
 diff --git a/browser/themes/shared/toolbarbuttons.css b/browser/themes/shared/toolbarbuttons.css
-index f681decf193605b633f1cffa493ac3b000b542bd..21ee9ce2594308aba0ae6d86e4f82bef6ef95b6d 100644
+index 08e7ff0d00f2f41b0ca253a6a895d5111d65668e..9b24e9f386edb881b95de75776e46a4d5e40c4cd 100644
 --- a/browser/themes/shared/toolbarbuttons.css
 +++ b/browser/themes/shared/toolbarbuttons.css
-@@ -44,20 +44,6 @@
-     --toolbarbutton-inner-padding: 9px;
+@@ -13,20 +13,6 @@
+     --toolbarbutton-inner-padding: var(--toolbarbutton-inner-padding-touch);
      --bookmark-block-padding: 7px;
    }
 -  @media (width <= 900px) {
--    --toolbarbutton-outer-padding: 1px;
+-    --toolbarbutton-outer-padding: var(--toolbarbutton-outer-padding-narrow);
 -  }
 -  @media (width <= 800px) {
--    --toolbarbutton-inner-padding: 7px;
+-    --toolbarbutton-inner-padding: var(--toolbarbutton-inner-padding-narrow);
 -    &:where([uidensity="touch"]) {
--      --toolbarbutton-inner-padding: 8px;
+-      --toolbarbutton-inner-padding: var(--toolbarbutton-inner-padding-touch-narrow);
 -    }
 -  }
 -  /* 700px is just above half of the popular 1366px screen width, so two browser
 -     windows put next to each other will be below this threshold. */
 -  @media (width <= 700px) {
--    --toolbarbutton-inner-padding: 6px;
+-    --toolbarbutton-inner-padding: var(--toolbarbutton-inner-padding-compact);
 -  }
    &:where([uidensity="compact"]) {
-     --toolbarbutton-inner-padding: 6px;
+     --toolbarbutton-inner-padding: var(--toolbarbutton-inner-padding-compact);
      --bookmark-block-padding: 1px;
-@@ -67,9 +53,7 @@
+@@ -65,9 +51,7 @@
  #TabsToolbar {
    /* Override the inner padding to ensure the dimensions match the tabs, but also making sure
       different types of buttons (combined-buttons-dropmarker or text) still look correct. */
@@ -33,7 +33,7 @@ index f681decf193605b633f1cffa493ac3b000b542bd..21ee9ce2594308aba0ae6d86e4f82bef
  }
  
  /* Primary toolbar buttons */
-@@ -148,8 +132,8 @@ toolbar .toolbarbutton-1 {
+@@ -146,8 +130,8 @@ toolbar .toolbarbutton-1 {
  
    > .toolbarbutton-icon {
      /* horizontal padding + actual icon width */
@@ -44,7 +44,7 @@ index f681decf193605b633f1cffa493ac3b000b542bd..21ee9ce2594308aba0ae6d86e4f82bef
    }
  
    > .toolbarbutton-text {
-@@ -159,7 +143,7 @@ toolbar .toolbarbutton-1 {
+@@ -157,7 +141,7 @@ toolbar .toolbarbutton-1 {
       * height as the button icons and the same vertical padding, but as a minimum,
       * because otherwise an increase in text sizes would break things.
       */
@@ -53,7 +53,7 @@ index f681decf193605b633f1cffa493ac3b000b542bd..21ee9ce2594308aba0ae6d86e4f82bef
  
      @media (-moz-platform: macos) {
        padding-top: calc(var(--toolbarbutton-inner-padding) + 1px);
-@@ -279,7 +263,7 @@ toolbar .toolbaritem-combined-buttons {
+@@ -277,7 +261,7 @@ toolbar .toolbaritem-combined-buttons {
  #nav-bar-overflow-button {
    list-style-image: url("chrome://global/skin/icons/chevron.svg");
  
@@ -62,7 +62,7 @@ index f681decf193605b633f1cffa493ac3b000b542bd..21ee9ce2594308aba0ae6d86e4f82bef
      display: none;
    }
  
-@@ -489,7 +473,7 @@ toolbarbutton.bookmark-item:not(.subviewbutton) {
+@@ -487,7 +471,7 @@ toolbarbutton.bookmark-item:not(.subviewbutton) {
       */
      align-items: stretch;
      > .toolbarbutton-icon {

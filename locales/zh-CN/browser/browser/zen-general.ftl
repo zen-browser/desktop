@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = 当前配置
 unified-extensions-description = 扩展用于为 { -brand-short-name } 带来更多额外功能。
 tab-context-zen-reset-pinned-tab = 
-    .label = 重置固定标签页
+    .label =
+        { $isEssential ->
+            [true] 重置常驻标签页
+           *[false] 重置标签页
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = 添加到常驻标签页
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = 从常驻标签页中移除
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = 将固定标签页的 URL 替换为当前页面 URL
+    .label =
+        { $isEssential ->
+            [true] 用当前内容替换常驻标签页URL
+           *[false] 用当前内容替换标签页URL
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = 更改标签…
@@ -24,13 +32,14 @@ tab-context-zen-edit-icon =
 zen-themes-corrupted = 您的 { -brand-short-name } 模组文件已损坏。它们已重置为默认主题。
 zen-shortcuts-corrupted = 您的 { -brand-short-name } 快捷键文件已损坏。它们已重置为默认快捷键。
 # note: Do not translate the "<br/>" tags in the following string
-zen-new-urlbar-notification = 新的 URL 栏已启用，不再需要新标签页。<br/><br/>打开一个新标签页来试试看新 URL 栏！
+zen-new-urlbar-notification = 新的地址栏已启用，不再需要新标签页。<br/><br/>打开一个新标签页来试试看新地址栏！
 zen-disable = 禁用
 pictureinpicture-minimize-btn = 
     .aria-label = 最小化
     .tooltip = 最小化
 zen-panel-ui-gradient-generator-custom-color = 自定义颜色
 zen-copy-current-url-confirmation = 网址已复制到剪贴板！
+zen-copy-current-url-as-markdown-confirmation = 已将当前网址复制为 Markdown 格式！
 zen-general-cancel-label = 
     .label = 取消
 zen-general-confirm = 
@@ -111,3 +120,5 @@ zen-window-sync-migration-dialog-title = 保持您的窗口同步
 zen-window-sync-migration-dialog-message = Zen 现已支持同一设备上的窗口同步，一个窗口的更改将即时同步到其他窗口。
 zen-window-sync-migration-dialog-learn-more = 了解更多
 zen-window-sync-migration-dialog-accept = 知道了
+zen-appmenu-new-blank-window = 
+    .label = 新空白窗口

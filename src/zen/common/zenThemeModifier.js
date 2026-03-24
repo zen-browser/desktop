@@ -38,7 +38,8 @@
      * begin listening to changes in preferred color scheme.
      */
     init() {
-      this._inMainBrowserWindow = window.location.href == "chrome://browser/content/browser.xhtml";
+      this._inMainBrowserWindow =
+        window.location.href == "chrome://browser/content/browser.xhtml";
       this.listenForEvents();
       this.updateAllThemeBasics();
     },
@@ -91,14 +92,23 @@
     },
 
     updateBorderRadius() {
-      const borderRadius = Services.prefs.getIntPref("zen.theme.border-radius", -1);
+      const borderRadius = Services.prefs.getIntPref(
+        "zen.theme.border-radius",
+        -1
+      );
 
       // -1 is the default value, will use platform-native values
       // otherwise, use the custom value
       if (borderRadius == -1) {
         if (AppConstants.platform == "macosx") {
-          const targetRadius = window.matchMedia("(-moz-mac-tahoe-theme)").matches ? 16 : 10;
-          document.documentElement.style.setProperty("--zen-border-radius", targetRadius + "px");
+          const targetRadius = window.matchMedia("(-moz-mac-tahoe-theme)")
+            .matches
+            ? 16
+            : 10;
+          document.documentElement.style.setProperty(
+            "--zen-border-radius",
+            targetRadius + "px"
+          );
         } else if (AppConstants.platform == "linux") {
           // Linux uses GTK CSD titlebar radius, default to 8px
           document.documentElement.style.setProperty(
@@ -107,11 +117,17 @@
           );
         } else {
           // Windows defaults to 8px
-          document.documentElement.style.setProperty("--zen-border-radius", "8px");
+          document.documentElement.style.setProperty(
+            "--zen-border-radius",
+            "8px"
+          );
         }
       } else {
         // Use the overridden value
-        document.documentElement.style.setProperty("--zen-border-radius", borderRadius + "px");
+        document.documentElement.style.setProperty(
+          "--zen-border-radius",
+          borderRadius + "px"
+        );
       }
     },
 
@@ -121,14 +137,19 @@
       if (
         document.documentElement.hasAttribute("inFullscreen") &&
         window.gZenCompactModeManager?.preference &&
-        !document.getElementById("tabbrowser-tabbox")?.hasAttribute("zen-split-view") &&
+        !document
+          .getElementById("tabbrowser-tabbox")
+          ?.hasAttribute("zen-split-view") &&
         Services.prefs.getBoolPref("zen.view.borderless-fullscreen", true)
       ) {
         separation = 0;
       }
       // In order to still use it on fullscreen, even if it's 0px, add .1px (almost invisible)
       separation = Math.max(kMinElementSeparation, separation);
-      document.documentElement.style.setProperty("--zen-element-separation", separation + "px");
+      document.documentElement.style.setProperty(
+        "--zen-element-separation",
+        separation + "px"
+      );
       if (separation == kMinElementSeparation) {
         document.documentElement.setAttribute("zen-no-padding", true);
       } else {
@@ -147,8 +168,13 @@
      * Update the accent color.
      */
     updateAccentColor() {
-      const accentColor = Services.prefs.getStringPref("zen.theme.accent-color");
-      document.documentElement.style.setProperty("--zen-primary-color", accentColor);
+      const accentColor = Services.prefs.getStringPref(
+        "zen.theme.accent-color"
+      );
+      document.documentElement.style.setProperty(
+        "--zen-primary-color",
+        accentColor
+      );
     },
   };
 

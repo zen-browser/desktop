@@ -4,9 +4,9 @@
 
 zen-menubar-toggle-pinned-tabs = 
     .label =
-        { $pinnedAreCollapsed -> 
-         [true] Perluas Tab yang Disematkan 
-         *[false] Ciutkan Tab yang Disematkan 
+        { $pinnedAreCollapsed ->
+            [true] Perluas Tab yang Disematkan
+           *[false] Ciutkan Tab yang Disematkan
         }
 zen-menubar-appearance = 
     .label = Tampilan
@@ -18,5 +18,5 @@ zen-menubar-appearance-light =
     .label = Terang
 zen-menubar-appearance-dark = 
     .label = Gelap
-zen-menubar-new-unsynced-window = 
-    .label = Jendela Kosong Baru
+zen-menubar-new-blank-window = 
+    .label = New Blank Window

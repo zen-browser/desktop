@@ -14,10 +14,17 @@ add_task(async function test_Issue_9981() {
   gBrowser.addRangeToMultiSelectedTabs(tab1, tab2);
   ok(tab1.multiselected, "Tab 1 should be multiselected");
   ok(tab2.multiselected, "Tab 2 should be multiselected");
-  Assert.equal(gBrowser.multiSelectedTabsCount, 2, "There should be 2 multiselected tabs");
-  await new Promise((resolve) => setTimeout(resolve, 0));
+  Assert.equal(
+    gBrowser.multiSelectedTabsCount,
+    2,
+    "There should be 2 multiselected tabs"
+  );
+  await new Promise(resolve => setTimeout(resolve, 0));
 
-  const collapseEvent = BrowserTestUtils.waitForEvent(window, "TabGroupCollapse");
+  const collapseEvent = BrowserTestUtils.waitForEvent(
+    window,
+    "TabGroupCollapse"
+  );
   EventUtils.synthesizeMouseAtCenter(folder.labelElement, {});
   await collapseEvent;
 
@@ -26,15 +33,27 @@ add_task(async function test_Issue_9981() {
 
   Assert.equal(folder.activeTabs.length, 2, "Folder should have 2 active tabs");
 
-  ok(tab1.hasAttribute("folder-active"), "Tab 1 should be in the active folder");
-  ok(tab2.hasAttribute("folder-active"), "Tab 2 should be in the active folder");
+  ok(
+    tab1.hasAttribute("folder-active"),
+    "Tab 1 should be in the active folder"
+  );
+  ok(
+    tab2.hasAttribute("folder-active"),
+    "Tab 2 should be in the active folder"
+  );
 
   const tab2ResetButton = tab2.querySelector(".tab-reset-button");
   tab2ResetButton.style.display = "flex";
   EventUtils.synthesizeMouseAtCenter(tab2ResetButton, {});
 
-  ok(tab1.hasAttribute("folder-active"), "Tab 1 should be in the active folder");
-  ok(!tab2.hasAttribute("folder-active"), "Tab 2 should not be in the active folder");
+  ok(
+    tab1.hasAttribute("folder-active"),
+    "Tab 1 should be in the active folder"
+  );
+  ok(
+    !tab2.hasAttribute("folder-active"),
+    "Tab 2 should not be in the active folder"
+  );
 
   await removeFolder(folder);
 });

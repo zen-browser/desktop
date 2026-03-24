@@ -46,7 +46,7 @@ export class nsZenBoostEditor {
 
     this.killOtherEditorInstances();
 
-    nsZenBoostEditor.OBSERVERS.forEach((observe) => {
+    nsZenBoostEditor.OBSERVERS.forEach(observe => {
       Services.obs.addObserver(this, observe);
     });
 
@@ -60,10 +60,13 @@ export class nsZenBoostEditor {
    * Initializes the boost editor by setting up event listeners for all UI controls.
    */
   init() {
-    this.editorWindow.addEventListener("unload", () => this.handleClose(), { once: true });
+    this.editorWindow.addEventListener("unload", () => this.handleClose(), {
+      once: true,
+    });
 
     this.doc.getElementById("zen-boost-editor-root").style.display = "flex";
-    this.doc.getElementById("zen-boost-code-editor-root").style.display = "none";
+    this.doc.getElementById("zen-boost-code-editor-root").style.display =
+      "none";
 
     this.doc
       .getElementById("zen-boost-color-contrast")
@@ -95,7 +98,7 @@ export class nsZenBoostEditor {
       .addEventListener("click", this.onToggleInvert.bind(this));
     this.doc
       .getElementById("zen-boost-controls")
-      .addEventListener("click", (event) => this.openAdvancedColorOptions(event));
+      .addEventListener("click", event => this.openAdvancedColorOptions(event));
     this.doc
       .getElementById("zen-boost-save")
       .addEventListener("click", this.onSaveBoostClick.bind(this));
@@ -118,8 +121,11 @@ export class nsZenBoostEditor {
       .getElementById("zen-boost-css-inspector")
       .addEventListener("click", this.onInspectorButtonPressed.bind(this));
 
-    this.doc.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" || (event.key === "w" && (event.ctrlKey || event.metaKey))) {
+    this.doc.addEventListener("keydown", event => {
+      if (
+        event.key === "Escape" ||
+        (event.key === "w" && (event.ctrlKey || event.metaKey))
+      ) {
         this.onClosePressed();
       }
     });
@@ -133,7 +139,7 @@ export class nsZenBoostEditor {
   uninit() {
     this.uninitColorPicker();
 
-    nsZenBoostEditor.OBSERVERS.forEach((observe) => {
+    nsZenBoostEditor.OBSERVERS.forEach(observe => {
       Services.obs.removeObserver(this, observe);
     });
   }
@@ -328,7 +334,9 @@ export class nsZenBoostEditor {
    * @returns {Array<AString>} An array with names of available fonts.
    */
   fetchFontList() {
-    const enumerator = Cc["@mozilla.org/gfx/fontenumerator;1"].createInstance(Ci.nsIFontEnumerator);
+    const enumerator = Cc["@mozilla.org/gfx/fontenumerator;1"].createInstance(
+      Ci.nsIFontEnumerator
+    );
 
     return enumerator.EnumerateFonts(null, null);
   }
@@ -339,7 +347,8 @@ export class nsZenBoostEditor {
   onCodeButtonPressed() {
     const offset = 265;
     const openRightAligned =
-      this.openerWindow.screenX + this.openerWindow.outerWidth / 2 < this.editorWindow.screenX;
+      this.openerWindow.screenX + this.openerWindow.outerWidth / 2 <
+      this.editorWindow.screenX;
     const windowElem = this.doc.getElementById("zenBoostWindow");
 
     if (windowElem.getAttribute("editor") == "code") {
@@ -353,13 +362,20 @@ export class nsZenBoostEditor {
     // being smaller than it should be
     this._boostEditorWidth = this.editorWindow.outerWidth;
 
-    this.editorWindow.resizeTo(this._codeEditorWidth, this.editorWindow.outerHeight);
+    this.editorWindow.resizeTo(
+      this._codeEditorWidth,
+      this.editorWindow.outerHeight
+    );
     if (openRightAligned) {
-      this.editorWindow.moveTo(this.editorWindow.screenX - offset, this.editorWindow.screenY);
+      this.editorWindow.moveTo(
+        this.editorWindow.screenX - offset,
+        this.editorWindow.screenY
+      );
     }
 
     this.doc.getElementById("zen-boost-editor-root").style.display = "none";
-    this.doc.getElementById("zen-boost-code-editor-root").style.display = "initial";
+    this.doc.getElementById("zen-boost-code-editor-root").style.display =
+      "initial";
   }
 
   /**
@@ -368,7 +384,8 @@ export class nsZenBoostEditor {
   onCodeBackButtonPressed() {
     const offset = 265;
     const openRightAligned =
-      this.openerWindow.screenX + this.openerWindow.outerWidth / 2 < this.editorWindow.screenX;
+      this.openerWindow.screenX + this.openerWindow.outerWidth / 2 <
+      this.editorWindow.screenX;
     const windowElem = this.doc.getElementById("zenBoostWindow");
 
     if (windowElem.getAttribute("editor") == "boost") {
@@ -376,13 +393,20 @@ export class nsZenBoostEditor {
     }
     windowElem.setAttribute("editor", "boost");
 
-    this.editorWindow.resizeTo(this._boostEditorWidth, this.editorWindow.outerHeight);
+    this.editorWindow.resizeTo(
+      this._boostEditorWidth,
+      this.editorWindow.outerHeight
+    );
     if (openRightAligned) {
-      this.editorWindow.moveTo(this.editorWindow.screenX + offset, this.editorWindow.screenY);
+      this.editorWindow.moveTo(
+        this.editorWindow.screenX + offset,
+        this.editorWindow.screenY
+      );
     }
 
     this.doc.getElementById("zen-boost-editor-root").style.display = "flex";
-    this.doc.getElementById("zen-boost-code-editor-root").style.display = "none";
+    this.doc.getElementById("zen-boost-code-editor-root").style.display =
+      "none";
 
     // Disable picker mode
     this.disableAllPickers();
@@ -390,7 +414,8 @@ export class nsZenBoostEditor {
 
   async onZapButtonPressed() {
     const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
+    const actor =
+      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
     actor.sendQuery("ZenBoost:ToggleZapMode");
 
     // Focus the parent browser window
@@ -399,7 +424,8 @@ export class nsZenBoostEditor {
 
   async onPickerButtonPressed() {
     const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
+    const actor =
+      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
     actor.sendQuery("ZenBoost:TogglePickerMode");
   }
 
@@ -425,13 +451,15 @@ ${cssSelector} {
 
   onInspectorButtonPressed() {
     const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
+    const actor =
+      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
     actor.sendQuery("ZenBoost:OpenInspector");
   }
 
   async onUpdateZapButtonVisual() {
     const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
+    const actor =
+      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
     const zapButton = this.doc.getElementById("zen-boost-zap");
     const zapEnabled = await actor.sendQuery("ZenBoost:ZapModeEnabled");
 
@@ -440,10 +468,13 @@ ${cssSelector} {
 
   async onUpdatePickerButtonVisual() {
     const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor = linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
+    const actor =
+      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
 
     const pickerButton = this.doc.getElementById("zen-boost-css-picker");
-    const selectEnabled = await actor.sendQuery("ZenBoost:SelectorPickerModeEnabled");
+    const selectEnabled = await actor.sendQuery(
+      "ZenBoost:SelectorPickerModeEnabled"
+    );
 
     pickerButton.setAttribute("enabled", selectEnabled ? "true" : "false");
   }
@@ -479,7 +510,9 @@ ${cssSelector} {
    * interactive color selection on the gradient picker.
    */
   initColorPicker() {
-    const themePicker = this.doc.querySelector(".zen-boost-color-picker-gradient");
+    const themePicker = this.doc.querySelector(
+      ".zen-boost-color-picker-gradient"
+    );
     this._onMouseMove = this.onMouseMove.bind(this);
     this._onMouseUp = this.onMouseUp.bind(this);
     this._onMouseDown = this.onMouseDown.bind(this);
@@ -494,7 +527,9 @@ ${cssSelector} {
    * Uninitializes the color picker by removing all mouse event listeners.
    */
   uninitColorPicker() {
-    const themePicker = this.doc.querySelector(".zen-boost-color-picker-gradient");
+    const themePicker = this.doc.querySelector(
+      ".zen-boost-color-picker-gradient"
+    );
     this.doc.removeEventListener("mousemove", this._onMouseMove);
     this.doc.removeEventListener("mouseup", this._onMouseUp);
     themePicker.removeEventListener("mousedown", this._onMouseDown);
@@ -579,9 +614,15 @@ ${cssSelector} {
    * and updates the current boost data accordingly.
    */
   onColorOptionChange() {
-    this.currentBoostData.contrast = this.doc.getElementById("zen-boost-color-contrast").value;
-    this.currentBoostData.brightness = this.doc.getElementById("zen-boost-color-brightness").value;
-    this.currentBoostData.saturation = this.doc.getElementById("zen-boost-color-saturation").value;
+    this.currentBoostData.contrast = this.doc.getElementById(
+      "zen-boost-color-contrast"
+    ).value;
+    this.currentBoostData.brightness = this.doc.getElementById(
+      "zen-boost-color-brightness"
+    ).value;
+    this.currentBoostData.saturation = this.doc.getElementById(
+      "zen-boost-color-saturation"
+    ).value;
 
     this.updateCurrentBoost();
   }
@@ -592,7 +633,9 @@ ${cssSelector} {
    * @param {Event} event - The click event that triggered this action.
    */
   openAdvancedColorOptions(event) {
-    const panel = this.doc.getElementById("zen-boost-advanced-color-options-panel");
+    const panel = this.doc.getElementById(
+      "zen-boost-advanced-color-options-panel"
+    );
     panel.openPopup(event.target, "bottomcenter topcenter", 0, 2);
   }
 
@@ -646,7 +689,8 @@ ${cssSelector} {
 
     if (!animate) {
       let nDistance = Math.sqrt(
-        (pixelX - this.lastDotSetPos.x) ** 2 + (pixelY - this.lastDotSetPos.y) ** 2
+        (pixelX - this.lastDotSetPos.x) ** 2 +
+          (pixelY - this.lastDotSetPos.y) ** 2
       );
 
       if (nDistance > 15) {
@@ -667,7 +711,9 @@ ${cssSelector} {
       this.currentBoostData.dotAngleDeg = 0;
       this.currentBoostData.dotDistance = 0;
     } else {
-      let distance = Math.sqrt((pixelX - centerX) ** 2 + (pixelY - centerY) ** 2);
+      let distance = Math.sqrt(
+        (pixelX - centerX) ** 2 + (pixelY - centerY) ** 2
+      );
       distance = Math.min(distance, radius); // Clamp distance
 
       const angle = Math.atan2(pixelY - centerY, pixelX - centerX);
@@ -677,7 +723,9 @@ ${cssSelector} {
 
       // Rad to degree
       this.currentBoostData.dotAngleDeg =
-        ((Math.atan2(pixelY - centerY, pixelX - centerX) * 180) / Math.PI + 100) % 360;
+        ((Math.atan2(pixelY - centerY, pixelX - centerX) * 180) / Math.PI +
+          100) %
+        360;
       if (this.currentBoostData.dotAngleDeg < 0) {
         this.currentBoostData.dotAngleDeg += 360;
       }
@@ -723,6 +771,8 @@ ${cssSelector} {
 
   /**
    * Updates the radius of the circle based on the dot's position.
+   *
+   * @param {boolean} animate - Whether to animate the radius change (default: true).
    */
   updateCircleRadius(animate = true) {
     const gradient = this.doc.querySelector(".zen-boost-color-picker-gradient");
@@ -743,7 +793,8 @@ ${cssSelector} {
    * @param {boolean} userAction - Whether this was triggered by a user action (default: true).
    */
   onToggleDisable(userAction = true) {
-    this.currentBoostData.enableColorBoost = !this.currentBoostData.enableColorBoost;
+    this.currentBoostData.enableColorBoost =
+      !this.currentBoostData.enableColorBoost;
 
     if (userAction) {
       this.currentBoostData.changeWasMade = true;
@@ -816,7 +867,10 @@ ${cssSelector} {
     // Give the gradient a grayscale effect
     // when the color boosting is disabled
     // or the theme is set automatically
-    if (!this.currentBoostData.enableColorBoost || this.currentBoostData.autoTheme) {
+    if (
+      !this.currentBoostData.enableColorBoost ||
+      this.currentBoostData.autoTheme
+    ) {
       gradient.classList.add("zen-boost-panel-disabled");
     } else {
       gradient.classList.remove("zen-boost-panel-disabled");
@@ -828,8 +882,12 @@ ${cssSelector} {
    */
   updateColorControlSliderVisuals() {
     const contrastSlider = this.doc.getElementById("zen-boost-color-contrast");
-    const brightnessSlider = this.doc.getElementById("zen-boost-color-brightness");
-    const saturationSlider = this.doc.getElementById("zen-boost-color-saturation");
+    const brightnessSlider = this.doc.getElementById(
+      "zen-boost-color-brightness"
+    );
+    const saturationSlider = this.doc.getElementById(
+      "zen-boost-color-saturation"
+    );
 
     contrastSlider.value = this.currentBoostData.contrast;
     brightnessSlider.value = this.currentBoostData.brightness;
@@ -882,7 +940,9 @@ ${cssSelector} {
     const fontButtonGroup = this.doc.getElementById("zen-boost-font-grid");
     for (let i = 0; i < fontButtonGroup.children.length; i++) {
       const fontButton = fontButtonGroup.children[i];
-      if (fontButton.getAttribute("font-data") == this.currentBoostData.fontFamily) {
+      if (
+        fontButton.getAttribute("font-data") == this.currentBoostData.fontFamily
+      ) {
         fontButton.classList.add("zen-boost-font-button-active");
       } else {
         fontButton.classList.remove("zen-boost-font-button-active");
@@ -904,7 +964,10 @@ ${cssSelector} {
    * This triggers notifications to observers but does not persist to disk.
    */
   updateCurrentBoost() {
-    const boost = gZenBoostsManager.loadBoostFromStore(this.boostInfo.domain, this.boostInfo.id);
+    const boost = gZenBoostsManager.loadBoostFromStore(
+      this.boostInfo.domain,
+      this.boostInfo.id
+    );
     boost.boostEntry.boostData = this.currentBoostData;
     gZenBoostsManager.updateBoost(boost);
   }
@@ -913,7 +976,10 @@ ${cssSelector} {
    * Deletes the current boost for the domain and closes the editor window.
    */
   deleteBoost() {
-    const boost = gZenBoostsManager.loadBoostFromStore(this.boostInfo.domain, this.boostInfo.id);
+    const boost = gZenBoostsManager.loadBoostFromStore(
+      this.boostInfo.domain,
+      this.boostInfo.id
+    );
     gZenBoostsManager.deleteBoost(boost);
 
     this.currentBoostData = null;
@@ -954,7 +1020,9 @@ ${cssSelector} {
   async editBoostName() {
     const nameText = this.doc.getElementById("zen-boost-name-text");
 
-    const [title] = await this.doc.l10n.formatMessages(["zen-boost-rename-boost-prompt"]);
+    const [title] = await this.doc.l10n.formatMessages([
+      "zen-boost-rename-boost-prompt",
+    ]);
 
     let input = {
       value: this.currentBoostData.boostName, // Default value and also output
@@ -996,11 +1064,16 @@ ${cssSelector} {
     const loadButton = this.doc.getElementById("zen-boost-save");
     loadButton.setAttribute("mode", "blue");
 
-    const success = await gZenBoostsManager.exportBoost(this.editorWindow, this.currentBoostData);
+    const success = await gZenBoostsManager.exportBoost(
+      this.editorWindow,
+      this.currentBoostData
+    );
 
     loadButton.setAttribute("mode", "");
     if (success) {
-      this.openerWindow.gZenUIManager.showToast("zen-panel-ui-boosts-exported-message");
+      this.openerWindow.gZenUIManager.showToast(
+        "zen-panel-ui-boosts-exported-message"
+      );
     }
   }
 
@@ -1074,11 +1147,14 @@ ${cssSelector} {
         }
       );
 
-      const anim3 = elementShadow.animate([{ opacity: 0 }, { opacity: 1 }, { opacity: 0 }], {
-        duration: 460,
-        fill: "forwards",
-        easing: "ease-out",
-      });
+      const anim3 = elementShadow.animate(
+        [{ opacity: 0 }, { opacity: 1 }, { opacity: 0 }],
+        {
+          duration: 460,
+          fill: "forwards",
+          easing: "ease-out",
+        }
+      );
 
       Promise.all([anim1.finished, anim2.finished, anim3.finished]).then(() => {
         element.remove();
@@ -1138,8 +1214,14 @@ ${cssSelector} {
     this.uninit();
     if (this.currentBoostData != null && this.currentBoostData.changeWasMade) {
       this.saveBoost();
-    } else if (this.currentBoostData != null && !this.currentBoostData.changeWasMade) {
-      const boost = gZenBoostsManager.loadBoostFromStore(this.boostInfo.domain, this.boostInfo.id);
+    } else if (
+      this.currentBoostData != null &&
+      !this.currentBoostData.changeWasMade
+    ) {
+      const boost = gZenBoostsManager.loadBoostFromStore(
+        this.boostInfo.domain,
+        this.boostInfo.id
+      );
       gZenBoostsManager.deleteBoost(boost);
     }
 
@@ -1166,13 +1248,19 @@ ${cssSelector} {
   }
 
   updateAllVisuals() {
-    this.doc.getElementById("zen-boost-name-text").textContent = this.currentBoostData.boostName;
+    this.doc.getElementById("zen-boost-name-text").textContent =
+      this.currentBoostData.boostName;
     const dot = this.doc.querySelector(".zen-boost-color-picker-dot");
 
-    if (this.currentBoostData.dotPos.x == null || this.currentBoostData.dotPos.y == null) {
+    if (
+      this.currentBoostData.dotPos.x == null ||
+      this.currentBoostData.dotPos.y == null
+    ) {
       this.resetDotPosition();
     } else {
-      const gradient = this.doc.querySelector(".zen-boost-color-picker-gradient");
+      const gradient = this.doc.querySelector(
+        ".zen-boost-color-picker-gradient"
+      );
       const rect = gradient.getBoundingClientRect();
 
       // Test if the stored position is a non-normalized dot position
@@ -1183,8 +1271,10 @@ ${cssSelector} {
         this.currentBoostData.dotPos.y < 0
       ) {
         // Normalize position
-        this.currentBoostData.dotPos.x = this.currentBoostData.dotPos.x / rect.width;
-        this.currentBoostData.dotPos.y = this.currentBoostData.dotPos.y / rect.height;
+        this.currentBoostData.dotPos.x =
+          this.currentBoostData.dotPos.x / rect.width;
+        this.currentBoostData.dotPos.y =
+          this.currentBoostData.dotPos.y / rect.height;
       }
 
       // Convert normalized position to relative position
@@ -1215,7 +1305,10 @@ ${cssSelector} {
       return;
     }
 
-    const boost = gZenBoostsManager.loadBoostFromStore(this.boostInfo.domain, this.boostInfo.id);
+    const boost = gZenBoostsManager.loadBoostFromStore(
+      this.boostInfo.domain,
+      this.boostInfo.id
+    );
     boost.boostEntry.boostData = this.currentBoostData;
 
     gZenBoostsManager.saveBoostToStore(boost);

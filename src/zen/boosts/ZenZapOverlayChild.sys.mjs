@@ -6,7 +6,8 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   ZapDissolve: "resource:///modules/zen/boosts/ZenZapDissolve.sys.mjs",
-  SelectorComponent: "resource:///modules/zen/boosts/ZenSelectorComponent.sys.mjs",
+  SelectorComponent:
+    "resource:///modules/zen/boosts/ZenSelectorComponent.sys.mjs",
 });
 
 ChromeUtils.defineLazyGetter(lazy, "overlayLocalization", () => {
@@ -40,7 +41,11 @@ export class ZapOverlay {
       zenBoostsChild,
       this.#zapContentIDs,
       this.handleSelectComponentSelect.bind(this),
-      [{ id: "zen-zap-this" }, { id: "zen-zap-related" }, { id: "zen-zap-cancel" }]
+      [
+        { id: "zen-zap-this" },
+        { id: "zen-zap-related" },
+        { id: "zen-zap-cancel" },
+      ]
     );
 
     // Remove the bottom unzap bar to the safe area
@@ -52,7 +57,9 @@ export class ZapOverlay {
    */
   async initialize() {
     if (this.#initialized) {
-      console.warn("[ZenZapOverlayChild]: Skipping initialize because initialized.");
+      console.warn(
+        "[ZenZapOverlayChild]: Skipping initialize because initialized."
+      );
       return;
     }
 
@@ -70,7 +77,10 @@ export class ZapOverlay {
    */
   #initializeElements() {
     this.zapDoneButton = this.getElementById("zap-done");
-    this.zapDoneButton.addEventListener("click", this.#disableZapMode.bind(this));
+    this.zapDoneButton.addEventListener(
+      "click",
+      this.#disableZapMode.bind(this)
+    );
 
     this.#updateZappedList();
   }
@@ -91,7 +101,8 @@ export class ZapOverlay {
 
     // Capture current index and increment for next call
     const returnIndex = this.#currentDissolveIndex;
-    this.#currentDissolveIndex = (this.#currentDissolveIndex + 1) % this.#dissolvePoolSize;
+    this.#currentDissolveIndex =
+      (this.#currentDissolveIndex + 1) % this.#dissolvePoolSize;
 
     return this.#dissolveEffectPool[returnIndex];
   }
@@ -105,6 +116,8 @@ export class ZapOverlay {
 
   /**
    * Helper for getting an anonymous element by id
+   *
+   * @param {string} id The id of the element
    */
   getElementById(id) {
     return this.content.root.getElementById(id);
@@ -112,7 +125,9 @@ export class ZapOverlay {
 
   get markup() {
     // Fetch localizations
-    let [done] = lazy.overlayLocalization.formatMessagesSync([{ id: "zen-zap-done" }]);
+    let [done] = lazy.overlayLocalization.formatMessagesSync([
+      { id: "zen-zap-done" },
+    ]);
 
     return `
     <template>
@@ -131,7 +146,10 @@ export class ZapOverlay {
     if (!this.template) {
       let parser = new DOMParser();
       let doc = parser.parseFromString(this.markup, "text/html");
-      this.template = this.document.importNode(doc.querySelector("template"), true);
+      this.template = this.document.importNode(
+        doc.querySelector("template"),
+        true
+      );
     }
     let fragment = this.template.content.cloneNode(true);
     return fragment;
@@ -139,6 +157,8 @@ export class ZapOverlay {
 
   /**
    * Handles the onSelect callback from the SelectComponent
+   *
+   * @param {string} cssSelector The CSS selector of the selected element
    */
   handleSelectComponentSelect(cssSelector) {
     this.#handleZap(cssSelector);
@@ -154,20 +174,24 @@ export class ZapOverlay {
 
   /**
    * Handles the addition of the given zap selector
+   *
+   * @param {string} cssPath The css selector of the zap
    */
   #handleZap(cssPath) {
-    const useDissolve = Services.prefs.getBoolPref("zen.boosts.dissolve-on-zap");
+    const useDissolve = Services.prefs.getBoolPref(
+      "zen.boosts.dissolve-on-zap"
+    );
     if (!this.window.gReduceMotion && useDissolve) {
       const elements = this.document.querySelectorAll(cssPath);
 
       let counter = 0;
-      elements.forEach(async (element) => {
+      elements.forEach(async element => {
         if (counter > this.#dissolvePoolSize) {
           return;
         }
         counter++;
 
-        this.#getNextDissolveEffect().then((dissolve) => {
+        this.#getNextDissolveEffect().then(dissolve => {
           dissolve.dissolve(element);
         });
       });
@@ -211,7 +235,7 @@ export class ZapOverlay {
     const boost = await this.zenBoostsChild.getWebsiteBoost();
     const { boostData } = boost.boostEntry;
 
-    boostData.zapSelectors.forEach((selector) => {
+    boostData.zapSelectors.forEach(selector => {
       const unzapButton = zapList.ownerDocument.createElement("input");
       unzapButton.type = "button";
       unzapButton.id = "zen-zap-unzap";
@@ -236,10 +260,11 @@ export class ZapOverlay {
     });
 
     // Fetch localizations
-    let [addZapHelper, removeZapHelper] = lazy.overlayLocalization.formatMessagesSync([
-      { id: "zen-add-zap-helper" },
-      { id: "zen-remove-zap-helper" },
-    ]);
+    let [addZapHelper, removeZapHelper] =
+      lazy.overlayLocalization.formatMessagesSync([
+        { id: "zen-add-zap-helper" },
+        { id: "zen-remove-zap-helper" },
+      ]);
 
     if (!boostData.zapSelectors.length) {
       const addZapHelperText = zapList.ownerDocument.createElement("p");
@@ -318,7 +343,7 @@ export class ZapOverlay {
     this.#selectorComponent.tearDown();
     this.#selectorComponent = null;
 
-    this.#dissolveEffectPool.forEach((dissolve) => {
+    this.#dissolveEffectPool.forEach(dissolve => {
       dissolve.tearDown();
     });
 

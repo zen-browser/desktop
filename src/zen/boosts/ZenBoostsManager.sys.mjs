@@ -231,7 +231,9 @@ class nsZenBoostsManager {
       }
 
       if (domainEntry.boostEntries.has(domainEntry.activeBoostId)) {
-        const boostEntry = domainEntry.boostEntries.get(domainEntry.activeBoostId);
+        const boostEntry = domainEntry.boostEntries.get(
+          domainEntry.activeBoostId
+        );
         return { id: domainEntry.activeBoostId, domain, boostEntry };
       }
     }
@@ -323,13 +325,17 @@ class nsZenBoostsManager {
       if (domainEntry.boostEntries.has(id)) {
         if (domainEntry.activeBoostId === id) {
           domainEntry.activeBoostId = null;
-          Services.obs.notifyObservers(null, "zen-boosts-active-change", { id: null });
+          Services.obs.notifyObservers(null, "zen-boosts-active-change", {
+            id: null,
+          });
 
           this.#stylesManager.invalidateStyleForDomain(domain);
           this.notify(true);
         } else {
           domainEntry.activeBoostId = id;
-          Services.obs.notifyObservers(null, "zen-boosts-active-change", { id });
+          Services.obs.notifyObservers(null, "zen-boosts-active-change", {
+            id,
+          });
 
           this.#stylesManager.invalidateStyleForDomain(domain);
           this.notify();
@@ -374,6 +380,8 @@ class nsZenBoostsManager {
   /**
    * Notifies all observers that boost data has been updated.
    * This triggers a 'zen-boosts-update' notification event.
+   *
+   * @param {boolean} unloadStyles - Whether to unload styles during the update.
    */
   notify(unloadStyles = false) {
     Services.obs.notifyObservers(null, "zen-boosts-update", { unloadStyles });
@@ -400,7 +408,7 @@ class nsZenBoostsManager {
    * @private
    */
   #readBoostsFromStore(done) {
-    this.#readFromDisk().then((data) => {
+    this.#readFromDisk().then(data => {
       this.registeredDomains = data;
       done();
     });
@@ -587,7 +595,9 @@ class nsZenBoostsManager {
    */
   openBoostWindow(parentWindow, boost, domainUri) {
     if (!this.canBoostSite(domainUri)) {
-      console.error("[ZenBoostsManager] Cannot open editor for boost with invalid domain.");
+      console.error(
+        "[ZenBoostsManager] Cannot open editor for boost with invalid domain."
+      );
       return null;
     }
 
@@ -624,12 +634,16 @@ class nsZenBoostsManager {
     );
 
     // Close the editor if the tab is switched
-    parentWindow.gBrowser.tabContainer.addEventListener("TabSelect", editor.close.bind(editor), {
-      once: true,
-    });
+    parentWindow.gBrowser.tabContainer.addEventListener(
+      "TabSelect",
+      editor.close.bind(editor),
+      {
+        once: true,
+      }
+    );
 
     const progressListener = {
-      onLocationChange: (webProgress) => {
+      onLocationChange: webProgress => {
         if (webProgress.isTopLevel) {
           editor.close();
           parentWindow.gBrowser.removeTabsProgressListener(progressListener);
@@ -654,6 +668,7 @@ class nsZenBoostsManager {
    * Will spawn a file save dialog and export the selected boost
    *
    * @param {Window} parentWindow The window that will instance the file picker
+   * @param {object} boostData The data of the boost to be exported
    * @returns {Promise<void>} Returns a promise which will be resolved after the export action is complete
    */
   exportBoost(parentWindow, boostData) {
@@ -693,8 +708,8 @@ class nsZenBoostsManager {
     fp.defaultExtension = "json";
     fp.appendFilters(nsIFilePicker.filterAll);
 
-    return new Promise((resolve) => {
-      fp.open(async (result) => {
+    return new Promise(resolve => {
+      fp.open(async result => {
         if (result === nsIFilePicker.returnOK && fp.file) {
           try {
             const boostJSON = JSON.stringify(boostData);
@@ -721,12 +736,16 @@ class nsZenBoostsManager {
     const nsIFilePicker = Ci.nsIFilePicker;
     const fp = Cc["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
 
-    fp.init(parentWindow.browsingContext, "Importing Boost from JSON", nsIFilePicker.modeOpen);
+    fp.init(
+      parentWindow.browsingContext,
+      "Importing Boost from JSON",
+      nsIFilePicker.modeOpen
+    );
 
     fp.appendFilters(nsIFilePicker.filterAll);
 
-    return new Promise((resolve) => {
-      fp.open(async (result) => {
+    return new Promise(resolve => {
+      fp.open(async result => {
         if (result === nsIFilePicker.returnOK && fp.file) {
           try {
             const fileContent = await IOUtils.readUTF8(fp.file.path);

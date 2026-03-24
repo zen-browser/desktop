@@ -24,7 +24,7 @@ export class ZenBoostsParent extends JSWindowActorParent {
     super();
 
     this._observe = this.observe.bind(this);
-    ZenBoostsParent.OBSERVERS.forEach((observe) => {
+    ZenBoostsParent.OBSERVERS.forEach(observe => {
       Services.obs.addObserver(this._observe, observe);
     });
   }
@@ -33,7 +33,7 @@ export class ZenBoostsParent extends JSWindowActorParent {
    * Called when the actor is destroyed. Cleans up the observer.
    */
   didDestroy() {
-    ZenBoostsParent.OBSERVERS.forEach((observe) => {
+    ZenBoostsParent.OBSERVERS.forEach(observe => {
       Services.obs.removeObserver(this._observe, observe);
     });
   }
@@ -49,7 +49,9 @@ export class ZenBoostsParent extends JSWindowActorParent {
     switch (topic) {
       case "zen-boosts-update":
       case "zen-space-gradient-update":
-        this.sendAsyncMessage("ZenBoost:BoostDataUpdated", { unloadStyles: true });
+        this.sendAsyncMessage("ZenBoost:BoostDataUpdated", {
+          unloadStyles: true,
+        });
         break;
       case "zen-boosts-disable-zap":
         this.sendAsyncMessage("ZenBoost:DisableZapMode");
@@ -89,7 +91,11 @@ export class ZenBoostsParent extends JSWindowActorParent {
         break;
       }
       case "ZenBoost:Notify": {
-        Services.obs.notifyObservers(null, message.data.topic, message.data.msg);
+        Services.obs.notifyObservers(
+          null,
+          message.data.topic,
+          message.data.msg
+        );
         break;
       }
       case "ZenBoost:ZapSelector": {
@@ -106,9 +112,15 @@ export class ZenBoostsParent extends JSWindowActorParent {
         }
 
         if (data.action == "add") {
-          lazy.gZenBoostsManager.addZapSelectorToActive(data.selector, data.domain);
+          lazy.gZenBoostsManager.addZapSelectorToActive(
+            data.selector,
+            data.domain
+          );
         } else if (data.action == "remove") {
-          lazy.gZenBoostsManager.removeZapSelectorToActive(data.selector, data.domain);
+          lazy.gZenBoostsManager.removeZapSelectorToActive(
+            data.selector,
+            data.domain
+          );
         } else if (data.action == "clear") {
           lazy.gZenBoostsManager.clearZapSelectorsForActive(data.domain);
         }
@@ -128,13 +140,15 @@ export class ZenBoostsParent extends JSWindowActorParent {
         }
 
         const topWindowIsDarkMode =
-          embedder.ownerGlobal.getComputedStyle(embedder).colorScheme === "dark";
+          embedder.ownerGlobal.getComputedStyle(embedder).colorScheme ===
+          "dark";
 
         const boost = lazy.gZenBoostsManager.loadActiveBoostFromStore(domain);
         const currentWorkspace =
           await this.browsingContext.topChromeWindow.gZenWorkspaces.getActiveWorkspace();
 
-        const styleData = await lazy.gZenBoostsManager.getStyleSheetForBoost(domain);
+        const styleData =
+          await lazy.gZenBoostsManager.getStyleSheetForBoost(domain);
 
         return {
           ...boost,

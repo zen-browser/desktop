@@ -101,7 +101,7 @@ export class nsZenSiteDataPanel {
   #initBrowserListeners() {
     Services.obs.addObserver(this, "zen-boosts-update");
     this.window.gBrowser.addProgressListener({
-      onLocationChange: (aWebProgress) => {
+      onLocationChange: aWebProgress => {
         if (aWebProgress.isTopLevel) {
           this.checkIfTabIsBoosted();
         }
@@ -266,7 +266,7 @@ export class nsZenSiteDataPanel {
 
     if (boosts) {
       const activeBoostId = lazy.gZenBoostsManager.getActiveBoostId(domain);
-      boosts.forEach((boost) => {
+      boosts.forEach(boost => {
         const boostData = boost.boostEntry.boostData;
         if (!boostData.changeWasMade) {
           return;
@@ -296,7 +296,14 @@ export class nsZenSiteDataPanel {
     this.#setSiteBoost();
   }
 
-  #createBoostPanelItem(iconClass, title, description, actionId, boost = null, enabled = false) {
+  #createBoostPanelItem(
+    iconClass,
+    title,
+    description,
+    actionId,
+    boost = null,
+    enabled = false
+  ) {
     const container = this.document.createXULElement("hbox");
     container.classList.add("permission-popup-boost-item");
 
@@ -311,7 +318,10 @@ export class nsZenSiteDataPanel {
     }
 
     const img = this.document.createXULElement("toolbarbutton");
-    img.classList.add("permission-popup-boost-icon", "zen-site-data-boost-icon");
+    img.classList.add(
+      "permission-popup-boost-icon",
+      "zen-site-data-boost-icon"
+    );
     img.setAttribute("closemenu", "none");
     img.classList.add(iconClass);
 
@@ -341,7 +351,7 @@ export class nsZenSiteDataPanel {
       editorButton.classList.add("zen-permission-popup-boost-editor-button");
       container.appendChild(editorButton);
 
-      editorButton.addEventListener("click", (event) => {
+      editorButton.addEventListener("click", event => {
         event.stopPropagation(); // Prevents the container event
         this.#onBoostClick(event);
       });
@@ -425,7 +435,9 @@ export class nsZenSiteDataPanel {
   }
 
   #resetSiteOptionsList() {
-    const settingsList = this.document.getElementById("zen-site-data-settings-list");
+    const settingsList = this.document.getElementById(
+      "zen-site-data-settings-list"
+    );
     settingsList.innerHTML = "";
     const boostList = this.document.getElementById("zen-site-data-boost-list");
     boostList.innerHTML = "";
@@ -865,7 +877,10 @@ export class nsZenSiteDataPanel {
       case "zen-site-data-edit-boost": {
         const boostId = target.getAttribute("data-boost-id");
         const uri = this.window.gBrowser.currentURI;
-        const boost = lazy.gZenBoostsManager.loadBoostFromStore(domain, boostId);
+        const boost = lazy.gZenBoostsManager.loadBoostFromStore(
+          domain,
+          boostId
+        );
         lazy.gZenBoostsManager.openBoostWindow(this.window, boost, uri);
         this.unifiedPanel.hidePopup();
         break;

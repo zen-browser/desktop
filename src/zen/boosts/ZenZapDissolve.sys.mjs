@@ -239,10 +239,16 @@ void main() {
    */
   async #createProgram(gl, vertContent, fragContent) {
     const vertexShader = this.#compileShader(gl, vertContent, gl.VERTEX_SHADER);
-    const fragmentShader = this.#compileShader(gl, fragContent, gl.FRAGMENT_SHADER);
+    const fragmentShader = this.#compileShader(
+      gl,
+      fragContent,
+      gl.FRAGMENT_SHADER
+    );
 
     if (!vertexShader || !fragmentShader) {
-      console.error("Program creation aborted: One or more shaders failed to compile.");
+      console.error(
+        "Program creation aborted: One or more shaders failed to compile."
+      );
       return null;
     }
 
@@ -257,7 +263,10 @@ void main() {
     gl.deleteShader(fragmentShader);
 
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      console.error("Shader program initializiation failure:", gl.getProgramInfoLog(program));
+      console.error(
+        "Shader program initializiation failure:",
+        gl.getProgramInfoLog(program)
+      );
     }
 
     return program;
@@ -292,8 +301,9 @@ void main() {
    * @returns {ImageData} Image data
    */
   #getImageData(image) {
-    const canvas =
-      this.getElementById("zen-zap-dissolve-canvas").ownerDocument.createElement("canvas");
+    const canvas = this.getElementById(
+      "zen-zap-dissolve-canvas"
+    ).ownerDocument.createElement("canvas");
     canvas.width = image.width;
     canvas.height = image.height;
 
@@ -337,7 +347,12 @@ void main() {
       this.#webglContext.NEAREST
     );
 
-    if (image && image instanceof Ci.nsIImageLoadingContent && image.width && image.height) {
+    if (
+      image &&
+      image instanceof Ci.nsIImageLoadingContent &&
+      image.width &&
+      image.height
+    ) {
       this.#webglContext.texImage2D(
         this.#webglContext.TEXTURE_2D,
         0,
@@ -422,7 +437,7 @@ void main() {
    * Requests an animation frame
    */
   #requestDraw() {
-    this.#rafId = this.window.requestAnimationFrame((t) => this.#draw(t));
+    this.#rafId = this.window.requestAnimationFrame(t => this.#draw(t));
   }
 
   /**
@@ -487,7 +502,14 @@ void main() {
     const canvas = this.getElementById("zen-zap-dissolve-canvas");
     this.#resizeCanvasToClientSize(canvas);
 
-    ctx.drawWindow(this.window, rect.left, rect.top, rect.width, rect.height, "rgba(0,0,0,0)");
+    ctx.drawWindow(
+      this.window,
+      rect.left,
+      rect.top,
+      rect.width,
+      rect.height,
+      "rgba(0,0,0,0)"
+    );
 
     this.#loadTexture(captureCanvas);
     this.#bindParameters(element);
@@ -505,6 +527,8 @@ void main() {
 
   /**
    * Helper for getting an anonymous element by id
+   *
+   * @param {string} id The id of the element
    */
   getElementById(id) {
     return this.content.root.getElementById(id);
@@ -523,7 +547,10 @@ void main() {
     if (!this.template) {
       let parser = new DOMParser();
       let doc = parser.parseFromString(this.markup, "text/html");
-      this.template = this.document.importNode(doc.querySelector("template"), true);
+      this.template = this.document.importNode(
+        doc.querySelector("template"),
+        true
+      );
     }
     let fragment = this.template.content.cloneNode(true);
     return fragment;

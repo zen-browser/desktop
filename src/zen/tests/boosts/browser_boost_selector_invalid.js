@@ -8,7 +8,11 @@ add_task(async function test_getSelectionPath_invalidNode() {
   const component = new SelectorComponent(doc, null, [], () => {});
 
   // Null element
-  Assert.equal(component.getSelectionPath(doc, 0, null), null, "Null element should return null");
+  Assert.equal(
+    component.getSelectionPath(doc, 0, null),
+    null,
+    "Null element should return null"
+  );
 
   // Body element
   Assert.equal(

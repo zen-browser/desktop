@@ -34,6 +34,10 @@ add_task(async function test_getSelectionPath_nthchild() {
       "Selector must include the selected node"
     );
 
-    Assert.equal(selectedElements.length, 1, "Selector should uniquely identify the element");
+    Assert.equal(
+      selectedElements.length,
+      1,
+      "Selector should uniquely identify the element"
+    );
   }
 });

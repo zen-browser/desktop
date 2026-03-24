@@ -23,6 +23,7 @@ export class nsZenBoostStyles {
    * Caches styles to optimize performance.
    *
    * @param {object} boostData - The boost configuration data.
+   * @param {string} domain - The domain associated with the boost.
    * @returns {string} The generated CSS style string.
    */
   getStyleForBoost(boostData, domain) {
@@ -59,7 +60,9 @@ export class nsZenBoostStyles {
     let style = ``;
 
     const fontFamily =
-      boostData.fontFamily != "" ? `font-family: ${boostData.fontFamily} !important;` : ``;
+      boostData.fontFamily != ""
+        ? `font-family: ${boostData.fontFamily} !important;`
+        : ``;
     const fontCase = `text-transform: ${boostData.textCaseOverride} !important;`;
 
     let zapBlocks = "";
@@ -107,7 +110,6 @@ export class nsZenBoostStyles {
    *
    * @param {string} styleUri - The data URI of the CSS style.
    * @param {string} domain - The domain associated with the boost.
-   * @returns {string} The cached style sheet URI.
    * @private
    */
   #cacheStyle(styleUri, domain) {

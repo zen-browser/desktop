@@ -33,7 +33,8 @@ nsZenModsBackend::nsZenModsBackend() { (void)CheckEnabled(); }
 auto nsZenModsBackend::CheckEnabled() -> void {
   // Check if the mods backend is enabled based on the preference.
   bool inSafeMode = false;
-  if (nsCOMPtr<nsIXULRuntime> appInfo = do_GetService("@mozilla.org/xre/app-info;1")) {
+  if (nsCOMPtr<nsIXULRuntime> appInfo =
+          do_GetService("@mozilla.org/xre/app-info;1")) {
     appInfo->GetInSafeMode(&inSafeMode);
   }
   mEnabled = !inSafeMode &&

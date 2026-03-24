@@ -23,7 +23,10 @@ add_task(async function test_getSelectionPath_basic() {
 
   for (let i = 0; i <= 7; i++) {
     const path = component.getSelectionPath(doc, i, child2);
-    ok(path, `getSelectionPath should return a path for relatedValueIndex=${i}`);
+    ok(
+      path,
+      `getSelectionPath should return a path for relatedValueIndex=${i}`
+    );
 
     const selectedElements = doc.querySelectorAll(path);
 
@@ -33,6 +36,9 @@ add_task(async function test_getSelectionPath_basic() {
         "For relatedValueIndex=1 there should be exactly one queried element"
       );
 
-    ok(selectedElements.length >= 1, "CSS path should select at least one element");
+    ok(
+      selectedElements.length >= 1,
+      "CSS path should select at least one element"
+    );
   }
 });

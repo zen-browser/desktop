@@ -31,7 +31,7 @@
     background-color: #f6f6f8c0;
   }
 
-  border: solid 0px #ededef;
+  border: solid 0 #ededef;
   border-bottom-width: 1px;
 }
 
@@ -70,7 +70,7 @@
     background-color: #f6f6f8c0;
   }
 
-  border: solid 0px #ededef;
+  border: solid 0 #ededef;
   border-top-width: 1px;
 
   display: flex;
@@ -100,8 +100,8 @@ body {
 
   width: 100%;
   height: 100%;
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
 
   & button {
     border-radius: 6px;
@@ -216,7 +216,7 @@ body {
 #zen-boost-font-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 0px;
+  gap: 0;
   width: 100%;
 
   padding: 2px;
@@ -299,7 +299,7 @@ body {
   list-style-type: none;
 
   & hbox {
-    margin-right: 0px;
+    margin-right: 0;
   }
 }
 
@@ -375,20 +375,20 @@ body {
 }
 
 #zen-boost-close {
-  margin-left: 0px;
+  margin-left: 0;
   margin-right: 6px;
   @media (-moz-platform: macos) {
     margin-left: 6px;
-    margin-right: 0px;
+    margin-right: 0;
   }
 }
 
 #zen-boost-shuffle {
-  margin-right: 0px;
+  margin-right: 0;
   margin-left: 4px;
   @media (-moz-platform: macos) {
     margin-right: 10px;
-    margin-left: 0px;
+    margin-left: 0;
   }
 }
 
@@ -415,7 +415,7 @@ body {
   margin-top: 12px;
 
   z-index: 4;
-  box-shadow: 0px 2px 4px #00000010;
+  box-shadow: 0 2px 4px #00000010;
 
   position: relative;
   margin-left: auto;
@@ -456,12 +456,11 @@ body {
   transition: 0.4s opacity cubic-bezier(0.075, 0.82, 0.165, 1) !important;
 
   color: #727272;
-  background-color: transparent;
   background: none;
 
   font-size: 9pt;
 
-  padding: 0px;
+  padding: 0;
   text-indent: 2px;
 
   margin-left: 8px;
@@ -492,7 +491,7 @@ body {
 }
 
 #zen-boost-font-wrapper {
-  box-shadow: 0px 2px 8px #00000010;
+  box-shadow: 0 2px 8px #00000010;
   background-color: #ffffff;
 
   border-radius: 6px;
@@ -659,10 +658,10 @@ body {
   position: relative;
   overflow: hidden;
   border-radius: 16px;
-  box-shadow: 0px 4px 12px #00000021;
+  box-shadow: 0 4px 12px #00000021;
   width: 100%;
   aspect-ratio: 1 /1;
-  margin: 10px 0px 4px 0px;
+  margin: 10px 0 4px 0;
 
   min-height: calc(var(--panel-width) - var(--panel-padding) * 2 - 2px);
 
@@ -687,7 +686,7 @@ body {
   }
 
   & .zen-boost-color-picker-dot {
-    box-shadow: 0px 2px 4px #00000022;
+    box-shadow: 0 2px 4px #00000022;
     position: absolute;
     z-index: 4;
     width: 24px;

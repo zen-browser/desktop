@@ -89,13 +89,19 @@ export class SelectorComponent {
     this.cancelButton.addEventListener("click", this.#cancelSelect.bind(this));
 
     this.selectThisButton = this.getElementById("select-this");
-    this.selectThisButton.addEventListener("click", this.#handleSelect.bind(this));
+    this.selectThisButton.addEventListener(
+      "click",
+      this.#handleSelect.bind(this)
+    );
 
     this.selectRelatedSlider = this.getElementById("select-related");
-    this.selectRelatedSlider.addEventListener("click", this.#handleSelect.bind(this));
+    this.selectRelatedSlider.addEventListener(
+      "click",
+      this.#handleSelect.bind(this)
+    );
 
     // Initialize the related elements button
-    this.selectRelatedSlider.addEventListener("mousemove", (e) => {
+    this.selectRelatedSlider.addEventListener("mousemove", e => {
       const r = e.currentTarget.getBoundingClientRect();
       const mouseX = e.clientX;
 
@@ -113,7 +119,7 @@ export class SelectorComponent {
       }
     });
 
-    this.selectRelatedSlider.addEventListener("mouseout", (e) => {
+    this.selectRelatedSlider.addEventListener("mouseout", e => {
       e.currentTarget.style.removeProperty("--related-elements-value");
 
       this.#relatedValueIndex = 0;
@@ -159,6 +165,8 @@ export class SelectorComponent {
 
   /**
    * Helper for getting an anonymous element by id
+   *
+   * @param {string} id The id of the element
    */
   getElementById(id) {
     return this.content.root.getElementById(id);
@@ -166,9 +174,8 @@ export class SelectorComponent {
 
   get markup() {
     // Fetch localizations
-    let [thisElement, relatedElements, cancelAction] = lazy.overlayLocalization.formatMessagesSync(
-      this.#localizationArray
-    );
+    let [thisElement, relatedElements, cancelAction] =
+      lazy.overlayLocalization.formatMessagesSync(this.#localizationArray);
 
     return `
     <template>
@@ -194,7 +201,10 @@ export class SelectorComponent {
     if (!this.template) {
       let parser = new DOMParser();
       let doc = parser.parseFromString(this.markup, "text/html");
-      this.template = this.document.importNode(doc.querySelector("template"), true);
+      this.template = this.document.importNode(
+        doc.querySelector("template"),
+        true
+      );
     }
     let fragment = this.template.content.cloneNode(true);
     return fragment;
@@ -389,12 +399,18 @@ export class SelectorComponent {
     const top = this.clamp(
       bounds.top + bounds.height + distance,
       windowPadding + this.safeAreaPadding.top,
-      windowHeight - zapComponentHeight - windowPadding - this.safeAreaPadding.bottom
+      windowHeight -
+        zapComponentHeight -
+        windowPadding -
+        this.safeAreaPadding.bottom
     );
     const left = this.clamp(
       bounds.left + bounds.width / 2 - zapComponentWidth / 2,
       windowPadding + this.safeAreaPadding.left,
-      windowWidth - zapComponentWidth - windowPadding - this.safeAreaPadding.right
+      windowWidth -
+        zapComponentWidth -
+        windowPadding -
+        this.safeAreaPadding.right
     );
 
     Object.assign(this.selectorComponent.style, {
@@ -491,7 +507,10 @@ export class SelectorComponent {
       this.#hideHoverDiv();
     }
 
-    if (this.#currentState !== SelectorComponent.STATES.SELECTING || !event.target) {
+    if (
+      this.#currentState !== SelectorComponent.STATES.SELECTING ||
+      !event.target
+    ) {
       return;
     }
 
@@ -522,7 +541,10 @@ export class SelectorComponent {
       return;
     }
 
-    if (this.#currentState === SelectorComponent.STATES.SELECTING && !isZenContent) {
+    if (
+      this.#currentState === SelectorComponent.STATES.SELECTING &&
+      !isZenContent
+    ) {
       this.setState(SelectorComponent.STATES.SELECTED, event.target);
     }
   }
@@ -560,14 +582,18 @@ export class SelectorComponent {
   /**
    * Used for retreiving the css path from the selected element and taking
    * the related objects into account
+   *
+   * @param {Element} document
+   * @param {Element} relatedValueIndex
+   * @param {Element} selectedElement
    */
   getSelectionPath(document, relatedValueIndex, selectedElement) {
     let path = [];
 
-    const cssescape = (str) => CSS.escape(str);
+    const cssescape = str => CSS.escape(str);
 
     // Body and Html nodes are not considered valid here
-    const isValidNode = (element) => {
+    const isValidNode = element => {
       if (!element) {
         return false;
       } else if (element.tagName.toLowerCase() === "body") {
@@ -578,7 +604,7 @@ export class SelectorComponent {
       return true;
     };
 
-    const nthChild = (element) => {
+    const nthChild = element => {
       if (!element) {
         return "";
       }
@@ -604,7 +630,7 @@ export class SelectorComponent {
       const id = specifity < 2 && element.id ? `#${cssescape(element.id)}` : "";
       const cls =
         specifity < 1 && element.classList.length
-          ? "." + [...element.classList].map((c) => cssescape(c)).join(".")
+          ? "." + [...element.classList].map(c => cssescape(c)).join(".")
           : "";
       const tag = element.tagName ? element.tagName.toLowerCase() : "";
       return `${tag}${id}${cls}`;
@@ -637,7 +663,7 @@ export class SelectorComponent {
       }
     };
 
-    const build = (pathArray) => pathArray.toReversed().join("");
+    const build = pathArray => pathArray.toReversed().join("");
 
     const findBestExactSelector = (element, doc) => {
       let buildMap = new Map();
@@ -675,7 +701,9 @@ export class SelectorComponent {
 
       const pathParentElementBuilt = build(parentExactElement);
       const pathParentElementLength = (
-        pathParentElementBuilt ? doc.querySelectorAll(pathParentElementBuilt) : []
+        pathParentElementBuilt
+          ? doc.querySelectorAll(pathParentElementBuilt)
+          : []
       ).length;
 
       if (!buildMap.has(pathParentElementLength)) {

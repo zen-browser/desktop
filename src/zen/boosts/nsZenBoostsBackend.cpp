@@ -25,16 +25,15 @@
 // serialization/deserialization between parent and content processes.
 #define NS_GET_CONTRAST(_c) NS_GET_A(_c)
 
-#define MARK_MEDIA_FEATURE_CHANGED(_pc) \
-  (_pc)->MediaFeatureValuesChanged(                                     \
-      {mozilla::RestyleHint::RecascadeSubtree(), NS_STYLE_HINT_VISUAL,  \
-      mozilla::MediaFeatureChangeReason::PreferenceChange},             \
+#define MARK_MEDIA_FEATURE_CHANGED(_pc)                                \
+  (_pc)->MediaFeatureValuesChanged(                                    \
+      {mozilla::RestyleHint::RecascadeSubtree(), NS_STYLE_HINT_VISUAL, \
+       mozilla::MediaFeatureChangeReason::PreferenceChange},           \
       mozilla::MediaFeatureChangePropagation::All);
 
-#define TRIGGER_PRES_CONTEXT_RESTYLE()        \
-  WalkPresContexts([&](nsPresContext* aPc) {  \
-    MARK_MEDIA_FEATURE_CHANGED(aPc);          \
-  });
+#define TRIGGER_PRES_CONTEXT_RESTYLE() \
+  WalkPresContexts(                    \
+      [&](nsPresContext* aPc) { MARK_MEDIA_FEATURE_CHANGED(aPc); });
 
 using BrowsingContext = mozilla::dom::BrowsingContext;
 
@@ -80,47 +79,18 @@ void BrowsingContext::DidSet(FieldIndex<IDX_IsZenBoostsInverted>,
 }
 
 namespace zen {
+
+nsZenAccentOklab nsZenBoostsBackend::mCachedAccent{0};
+
 namespace {
 
-/** 
- * Inherited from the Oklab blog
- * Source: https://bottosson.github.io/posts/oklab/
- */
+struct Lab {
+  float L, a, b;
+};
 
-struct Lab {float L; float a; float b;};
-struct RGB {float r; float g; float b;};
-
-Lab rgb2oklab(RGB c)  {
-  float l = 0.4122214708f * c.r + 0.5363325363f * c.g + 0.0514459929f * c.b;
-	float m = 0.2119034982f * c.r + 0.6806995451f * c.g + 0.1073969566f * c.b;
-	float s = 0.0883024619f * c.r + 0.2817188376f * c.g + 0.6299787005f * c.b;
-
-  float l_ = cbrtf(l);
-  float m_ = cbrtf(m);
-  float s_ = cbrtf(s);
-
-  return {
-      0.2104542553f*l_ + 0.7936177850f*m_ - 0.0040720468f*s_,
-      1.9779984951f*l_ - 2.4285922050f*m_ + 0.4505937099f*s_,
-      0.0259040371f*l_ + 0.7827717662f*m_ - 0.8086757660f*s_,
-  };
-}
-
-RGB oklab2rgb(Lab c) {
-  float l_ = c.L + 0.3963377774f * c.a + 0.2158037573f * c.b;
-  float m_ = c.L - 0.1055613458f * c.a - 0.0638541728f * c.b;
-  float s_ = c.L - 0.0894841775f * c.a - 1.2914855480f * c.b;
-
-  float l = l_*l_*l_;
-  float m = m_*m_*m_;
-  float s = s_*s_*s_;
-
-  return {
-  +4.0767416621f * l - 3.3077115913f * m + 0.2309699292f * s,
-  -1.2684380046f * l + 2.6097574011f * m - 0.3413193965f * s,
-  -0.0041960863f * l - 0.7034186147f * m + 1.7076147010f * s,
-  };
-}
+struct RGB {
+  float r, g, b;
+};
 
 /**
  * @brief Clamps a value to the range [0, 255] using branchless operations.
@@ -134,6 +104,47 @@ static __inline int32_t clamp255(int32_t v) {
 }
 
 /**
+ * @brief A fast approximation of the cube root function using bit manipulation
+ * and two Newton-Raphson iterations. This is used to optimize the Oklab color
+ * conversion in the color filtering process.
+ */
+inline static float fast_cbrt(float x) {
+  // Bit-level initial approximation (works for positive floats only — fine
+  // here)
+  uint32_t bits;
+  memcpy(&bits, &x, 4);
+  bits = (bits / 3) + 0x2A512400u;  // magic constant for cube root
+  float y;
+  memcpy(&y, &bits, 4);
+  // Two Newton-Raphson iterations: y = y - (y³ - x) / (3y²)
+  y = (2.0f / 3.0f) * y + (1.0f / 3.0f) * x / (y * y);
+  y = (2.0f / 3.0f) * y + (1.0f / 3.0f) * x / (y * y);
+  return y;
+}
+
+/**
+ * @brief Converts an Oklab color back to the RGB color space.
+ * @param c The Oklab color to convert.
+ * @return The corresponding RGB color.
+ */
+[[nodiscard]]
+static inline auto oklab2rgb(Lab c) -> RGB {
+  float l_ = c.L + 0.3963377774f * c.a + 0.2158037573f * c.b;
+  float m_ = c.L - 0.1055613458f * c.a - 0.0638541728f * c.b;
+  float s_ = c.L - 0.0894841775f * c.a - 1.2914855480f * c.b;
+
+  // Cubing is just 2 multiplies — no cbrtf needed on the way back
+  return {
+      4.0767416621f * (l_ * l_ * l_) - 3.3077115913f * (m_ * m_ * m_) +
+          0.2309699292f * (s_ * s_ * s_),
+      -1.2684380046f * (l_ * l_ * l_) + 2.6097574011f * (m_ * m_ * m_) -
+          0.3413193965f * (s_ * s_ * s_),
+      -0.0041960863f * (l_ * l_ * l_) - 0.7034186147f * (m_ * m_ * m_) +
+          1.7076147010f * (s_ * s_ * s_),
+  };
+}
+
+/**
  * @brief Applies a color filter to transform an original color toward an accent
  * color. Preserves the original color's perceived luminance while shifting
  * hue/chroma toward the accent. Uses the alpha channel of the accent color to
@@ -143,68 +154,86 @@ static __inline int32_t clamp255(int32_t v) {
  * contrast value).
  * @return The filtered color with transformations applied.
  */
+[[nodiscard]]
+static inline Lab rgb2oklab_fast(RGB c) {
+  float l = 0.4122214708f * c.r + 0.5363325363f * c.g + 0.0514459929f * c.b;
+  float m = 0.2119034982f * c.r + 0.6806995451f * c.g + 0.1073969566f * c.b;
+  float s = 0.0883024619f * c.r + 0.2817188376f * c.g + 0.6299787005f * c.b;
+  float l_ = fast_cbrt(l), m_ = fast_cbrt(m), s_ = fast_cbrt(s);
+  return {
+      0.2104542553f * l_ + 0.7936177850f * m_ - 0.0040720468f * s_,
+      1.9779984951f * l_ - 2.4285922050f * m_ + 0.4505937099f * s_,
+      0.0259040371f * l_ + 0.7827717662f * m_ - 0.8086757660f * s_,
+  };
+}
+
+inline static auto zenPrecomputeAccent(nscolor aAccentColor)
+    -> nsZenAccentOklab {
+  constexpr float kInv255 = 1.0f / 255.0f;
+  RGB rgb = {NS_GET_R(aAccentColor) * kInv255, NS_GET_G(aAccentColor) * kInv255,
+             NS_GET_B(aAccentColor) * kInv255};
+  auto lab = rgb2oklab_fast(rgb);
+  float contrast = NS_GET_CONTRAST(aAccentColor);
+  float vibranceBase = 1.0f - ((contrast - 128.0f) * (1.0f / 128.0f));
+  return {lab.L, lab.a, lab.b, vibranceBase, 0.25f + lab.L};
+}
+
+/**
+ * @brief Applies a color filter to transform an original color toward an accent
+ * color. Preserves the original color's perceived luminance while shifting
+ * hue/chroma toward the accent. Uses the alpha channel of the accent color to
+ * store contrast information.
+ * @param aOriginalColor The original color to filter.
+ * @param aAccentColor The accent color to filter toward (alpha channel contains
+ * contrast value).
+ * @return The filtered color with transformations applied.
+ */
+[[nodiscard]]
 static nscolor zenFilterColorChannel(nscolor aOriginalColor,
-                                     nscolor aAccentColor) {
-  const auto r1 = NS_GET_R(aOriginalColor);
-  const auto g1 = NS_GET_G(aOriginalColor);
-  const auto b1 = NS_GET_B(aOriginalColor);
-  const auto a1 = NS_GET_A(aOriginalColor);
-  if (a1 == 0) {
-    // Skip processing fully transparent colors since they won't be visible and
-    // we want to avoid unnecessary computations with the accent color's alpha
-    // channel used for contrast information.
-    return aOriginalColor;
-  }
+                                     const nsZenAccentOklab& aAccent) {
+  const uint8_t a1 = NS_GET_A(aOriginalColor);
+  if (a1 == 0) return aOriginalColor;
 
-  const auto r2 = NS_GET_R(aAccentColor);
-  const auto g2 = NS_GET_G(aAccentColor);
-  const auto b2 = NS_GET_B(aAccentColor);
+  constexpr float kInv255 = 1.0f / 255.0f;
+  constexpr float kTint = 0.6f;
+  constexpr float kInvTint = 1.0f - kTint;
 
-  // It's a bit of a hacky solution, but instead of using alpha as what it is
-  // (opacity), we use it to store contrast information for now.
-  // We do this primarily to avoid having to deal with WebIDL structs and
-  // serialization/deserialization between parent and content processes.
-  const auto contrast = NS_GET_CONTRAST(aAccentColor);
+  RGB orig = {
+      NS_GET_R(aOriginalColor) * kInv255,
+      NS_GET_G(aOriginalColor) * kInv255,
+      NS_GET_B(aOriginalColor) * kInv255,
+  };
+  const auto lab = rgb2oklab_fast(orig);
 
-  RGB originalRgb(r1 / 255.0, g1 / 255.0, b1 / 255.0);
-  const auto originalOklab = rgb2oklab(originalRgb);
+  const float aBlend = kInvTint * lab.a + kTint * aAccent.a;
+  const float bBlend = kInvTint * lab.b + kTint * aAccent.b;
 
-  RGB accentRgb(r2 / 255.0, g2 / 255.0, b2 / 255.0);
-  const auto accentOklab = rgb2oklab(accentRgb);
-  
-  double tintStrength = 0.6; // Decides how strongly the accent should influence the original color
-  double aBlend = (1.0 - tintStrength) * originalOklab.a + tintStrength * accentOklab.a;
-  double bBlend = (1.0 - tintStrength) * originalOklab.b + tintStrength * accentOklab.b;
+  // Avoid sqrt: compare squared chroma against squared threshold (0.4^2 = 0.16)
+  // vibranceFactor = chromaMixed/chromaBlend which simplifies to just
+  // vibranceFactor since the sqrt cancels in the normalize+scale round-trip
+  // (see below)
+  const float chromaSq = aBlend * aBlend + bBlend * bBlend;
+  const float saturation =
+      (chromaSq < 0.16f) ? chromaSq * (1.0f / 0.16f) : 1.0f;
+  const float vibranceFactor =
+      1.0f + aAccent.vibranceBase * (1.0f - saturation);
 
-  // Calculating chroma with the length of the vector of (a b)
-  double chromaBlend = sqrt(aBlend * aBlend + bBlend * bBlend);
-  
-  // Normalizing against 0.4 since usually Oklab chroma maxes out around there
-  double vibranceAmount = 1 - ((contrast - 128.0) / 128.0);
-  double vibranceFactor = 1.0 + vibranceAmount * (1.0 - std::clamp(chromaBlend / 0.4, 0.0, 1.0));
+  // sqrt cancellation: chromaMixed/chromaBlend =
+  // (chromaBlend*vibranceFactor)/chromaBlend = vibranceFactor, so we multiply
+  // directly with no sqrt needed
+  const float aMixed = aBlend * vibranceFactor;
+  const float bMixed = bBlend * vibranceFactor;
 
-  // Essentially the equivalent of 'hue' for Oklab
-  double chromaMixed = chromaBlend * vibranceFactor;
-  double scale = (chromaBlend > 1e-6) ? (chromaMixed / chromaBlend) : 1.0;
+  float LMixed = 0.5f + (lab.L - 0.5f) * (1.0f + aAccent.vibranceBase * 0.5f);
+  LMixed *= aAccent.accentLOffset;
+  if (LMixed < 0.0f) LMixed = 0.0f;
+  if (LMixed > 1.0f) LMixed = 1.0f;
 
-  double aMixed = aBlend * scale;
-  double bMixed = bBlend * scale;
+  const auto rgb = oklab2rgb({LMixed, aMixed, bMixed});
 
-  // Lightness contrast
-  double contrastFactor = 1.0 + vibranceAmount * 0.5;
-
-  // Lightness factor
-  double LMixed = 0.5 + (originalOklab.L - 0.5) * contrastFactor;
-  LMixed = std::clamp(LMixed * (0.25 + accentOklab.L), 0.0, 1.0);
-  
-  Lab tintedOklab(LMixed, aMixed, bMixed);
-
-  auto tintedRgb = oklab2rgb(tintedOklab);
-  const uint8_t fr8 = clamp255(tintedRgb.r * 255);
-  const uint8_t fg8 = clamp255(tintedRgb.g * 255);
-  const uint8_t fb8 = clamp255(tintedRgb.b * 255);
-
-  return NS_RGBA(fr8, fg8, fb8, a1);
+  return NS_RGBA(clamp255((int32_t)(rgb.r * 255.0f + 0.5f)),
+                 clamp255((int32_t)(rgb.g * 255.0f + 0.5f)),
+                 clamp255((int32_t)(rgb.b * 255.0f + 0.5f)), a1);
 }
 
 /**
@@ -243,9 +272,9 @@ inline static nscolor zenInvertColorChannel(nscolor aColor) {
 /**
  * @brief Retrieves the current boost data from the browsing context.
  */
-inline static void GetZenBoostsDataFromBrowsingContext(ZenBoostData* aData,
-                                                       bool* aIsInverted,
-                                                       nsPresContext* aPresContext = nullptr) {
+inline static void GetZenBoostsDataFromBrowsingContext(
+    ZenBoostData* aData, bool* aIsInverted,
+    nsPresContext* aPresContext = nullptr) {
   auto zenBoosts = nsZenBoostsBackend::GetInstance();
   if (!zenBoosts || (zenBoosts->mCurrentFrameIsAnonymousContent)) {
     return;
@@ -257,7 +286,8 @@ inline static void GetZenBoostsDataFromBrowsingContext(ZenBoostData* aData,
         *aIsInverted = browsingContext->IsZenBoostsInverted();
       }
     }
-  } else if (auto currentBrowsingContext = zenBoosts->GetCurrentBrowsingContext()) {
+  } else if (auto currentBrowsingContext =
+                 zenBoosts->GetCurrentBrowsingContext()) {
     *aData = currentBrowsingContext->ZenBoostsData();
     *aIsInverted = currentBrowsingContext->IsZenBoostsInverted();
   }
@@ -268,8 +298,8 @@ inline static void GetZenBoostsDataFromBrowsingContext(ZenBoostData* aData,
 auto nsZenBoostsBackend::GetInstance() -> nsZenBoostsBackend* {
   static nsZenBoostsBackend* zenBoosts;
   if (!XRE_IsContentProcess()) {
-    // Zen boosts are only supported in content, so if we're in the parent process,
-    // just return null.
+    // Zen boosts are only supported in content, so if we're in the parent
+    // process, just return null.
     return nullptr;
   }
   if (!zenBoosts) {
@@ -283,9 +313,8 @@ auto nsZenBoostsBackend::onPresShellEntered(mozilla::dom::Document* aDocument)
   // Note that aDocument can be null when entering anonymous content frames.
   // We explicitly do this to prevent applying boosts to anonymous content, such
   // as devtools or screenshots.
-  mozilla::dom::BrowsingContext* browsingContext = aDocument
-    ? aDocument->GetBrowsingContext()
-    : nullptr;
+  mozilla::dom::BrowsingContext* browsingContext =
+      aDocument ? aDocument->GetBrowsingContext() : nullptr;
   if (!browsingContext) {
     return;
   }
@@ -293,7 +322,8 @@ auto nsZenBoostsBackend::onPresShellEntered(mozilla::dom::Document* aDocument)
 }
 
 auto nsZenBoostsBackend::FilterColorFromPresContext(nscolor aColor,
-    nsPresContext* aPresContext) -> nscolor {
+                                                    nsPresContext* aPresContext)
+    -> nscolor {
   if (!XRE_IsContentProcess()) {
     // Zen boosts are only supported in content, so if we somehow end up here
     // without a prescontext or in the parent process, just return the original
@@ -304,13 +334,16 @@ auto nsZenBoostsBackend::FilterColorFromPresContext(nscolor aColor,
   bool invertColors = false;
   GetZenBoostsDataFromBrowsingContext(&accentNS, &invertColors, aPresContext);
   if (accentNS) {
+    if (mCachedAccent.accentNS != accentNS) {
+      mCachedAccent = zenPrecomputeAccent(accentNS);
+    }
     // Apply a filter-like tint:
     // - Preserve the original color's perceived luminance
     // - Map hue/chroma toward the accent by scaling the accent's RGB
     //   to match the original luminance
     // - Keep the original alpha
     // Convert both colors to nscolor to access channels
-    aColor = zenFilterColorChannel(aColor, (nscolor)accentNS);
+    aColor = zenFilterColorChannel(aColor, mCachedAccent);
   }
   if (invertColors) {
     aColor = zenInvertColorChannel(aColor);

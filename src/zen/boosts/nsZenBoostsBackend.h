@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef mozilla_ZenBoostsBackend_h__
-#define mozilla_ZenBoostsBackend_h__
+#ifndef mozilla_ZenBoostsBackend_h_
+#define mozilla_ZenBoostsBackend_h_
 
 #include "nsColor.h"
 #include "nsPresContext.h"
@@ -15,6 +15,13 @@
 using ZenBoostData = nscolor;  // For now, Zen boosts data is just a color.
 
 namespace zen {
+
+struct nsZenAccentOklab {
+  float L, a, b;
+  float vibranceBase;   // 1.0f - ((contrast - 128) / 128)
+  float accentLOffset;  // 0.25f + L, precomputed
+  nscolor accentNS;     // Used to keep track of the original accent color
+};
 
 class nsZenBoostsBackend final {
  public:
@@ -42,8 +49,9 @@ class nsZenBoostsBackend final {
    * @param aPresContext The presentation context to use for filtering.
    * @return The filtered color.
    */
-  static auto FilterColorFromPresContext(nscolor aColor, 
-      nsPresContext* aPresContext = nullptr) -> nscolor;
+  static auto FilterColorFromPresContext(nscolor aColor,
+                                         nsPresContext* aPresContext = nullptr)
+      -> nscolor;
 
   /**
    * @brief Called when a presshell is entered during rendering.
@@ -63,6 +71,8 @@ class nsZenBoostsBackend final {
    * The presshell of the current document being rendered.
    */
   RefPtr<mozilla::dom::BrowsingContext> mCurrentBrowsingContext;
+
+  static nsZenAccentOklab mCachedAccent;
 
  public:
   /**

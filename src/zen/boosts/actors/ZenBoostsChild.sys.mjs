@@ -8,7 +8,8 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   ZapOverlay: "resource:///modules/zen/boosts/ZenZapOverlayChild.sys.mjs",
-  SelectorComponent: "resource:///modules/zen/boosts/ZenSelectorComponent.sys.mjs",
+  SelectorComponent:
+    "resource:///modules/zen/boosts/ZenSelectorComponent.sys.mjs",
 });
 
 export class ZenBoostsChild extends JSWindowActorChild {
@@ -25,7 +26,14 @@ export class ZenBoostsChild extends JSWindowActorChild {
     PICKER: "picker",
   };
 
-  static OVERLAY_EVENTS = ["click", "pointerdown", "pointermove", "pointerup", "scroll", "resize"];
+  static OVERLAY_EVENTS = [
+    "click",
+    "pointerdown",
+    "pointermove",
+    "pointerup",
+    "scroll",
+    "resize",
+  ];
 
   // A list of events that will be prevented from
   // reaching the document
@@ -175,7 +183,10 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
   handleZapEvent(event) {
     if (ZenBoostsChild.ALL_EVENTS_SET.has(event.type)) {
-      this.#overlay.handleEvent(event, ZenBoostsChild.PREVENTABLE_SET.has(event.type));
+      this.#overlay.handleEvent(
+        event,
+        ZenBoostsChild.PREVENTABLE_SET.has(event.type)
+      );
     }
   }
 
@@ -263,6 +274,10 @@ export class ZenBoostsChild extends JSWindowActorChild {
   /**
    * From ZenGradientGenerator.mjs
    * Helper function for hslToRgb conversion
+   *
+   * @param {number} p
+   * @param {number} q
+   * @param {number} t
    */
   #hueToRgb(p, q, t) {
     if (t < 0) {
@@ -327,10 +342,16 @@ export class ZenBoostsChild extends JSWindowActorChild {
       if (boostData.enableColorBoost) {
         if (boostData.autoTheme) {
           // Workspace color is converted to the HSL color space
-          let primaryGradientColor = boost.workspaceGradient[0]?.c ?? [0, 0, 0.6];
-          boost.workspaceGradient.forEach((color) => {
+          let primaryGradientColor = boost.workspaceGradient[0]?.c ?? [
+            0, 0, 0.6,
+          ];
+          boost.workspaceGradient.forEach(color => {
             if (color.isPrimary) {
-              primaryGradientColor = this.#rgbToHsl(color.c[0], color.c[1], color.c[2]);
+              primaryGradientColor = this.#rgbToHsl(
+                color.c[0],
+                color.c[1],
+                color.c[2]
+              );
             }
           });
 
@@ -343,7 +364,10 @@ export class ZenBoostsChild extends JSWindowActorChild {
           );
 
           const rgbColor = primaryGradientColor;
-          const nsColor = this.#rgbToNSColor(rgbColor, (1 - boostData.contrast) * 255);
+          const nsColor = this.#rgbToNSColor(
+            rgbColor,
+            (1 - boostData.contrast) * 255
+          );
           browsingContext.zenBoostsData = nsColor;
         } else {
           let colorWheelColor = this.#hslToRgb(
@@ -355,7 +379,10 @@ export class ZenBoostsChild extends JSWindowActorChild {
           );
 
           const rgbColor = colorWheelColor;
-          const nsColor = this.#rgbToNSColor(rgbColor, (1 - boostData.contrast) * 255);
+          const nsColor = this.#rgbToNSColor(
+            rgbColor,
+            (1 - boostData.contrast) * 255
+          );
           browsingContext.zenBoostsData = nsColor;
         }
         return;
@@ -454,7 +481,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
   }
 
   async tempShowZappedElement(selector) {
-    this.document.querySelectorAll(selector).forEach((element) => {
+    this.document.querySelectorAll(selector).forEach(element => {
       element.setAttribute("zen-zap-unhide", "true");
     });
 
@@ -464,8 +491,8 @@ export class ZenBoostsChild extends JSWindowActorChild {
   }
 
   async tempHideZappedElement() {
-    this.#zappedElementsTempShown.forEach((selector) => {
-      this.document.querySelectorAll(selector).forEach((element) => {
+    this.#zappedElementsTempShown.forEach(selector => {
+      this.document.querySelectorAll(selector).forEach(element => {
         element.removeAttribute("zen-zap-unhide");
       });
     });

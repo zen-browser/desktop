@@ -86,7 +86,6 @@
 }
 
 .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-thumbnail {
-  background: color-mix(in srgb, var(--zen-primary-color) 60%, rgb(110, 110, 110) 40%);
   border: none;
 }
 
@@ -124,14 +123,6 @@
   flex-shrink: 0;
   -moz-context-properties: fill;
   fill: currentColor;
-}
-
-.zen-ctrl-tab-panel-favicon.zen-ctrl-tab-panel-favicon-zen {
-  filter: light-dark(brightness(0), brightness(0) invert(1));
-}
-
-.zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-favicon.zen-ctrl-tab-panel-favicon-zen {
-  filter: brightness(0) invert(1);
 }
 
 .zen-ctrl-tab-panel-title {

@@ -376,16 +376,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
       favicon.setAttribute("src", iconSrc);
 
-      if (
-        iconSrc === defaultFavicon ||
-        iconSrc.startsWith("page-icon:") ||
-        iconSrc === "chrome://browser/skin/zen-icons/new-tab-image.svg" ||
-        iconSrc === "chrome://global/skin/icons/settings.svg" ||
-        iconSrc === "chrome://browser/skin/zen-icons/settings.svg"
-      ) {
-        favicon.classList.add("zen-ctrl-tab-panel-favicon-zen");
-      }
-
       infoContainer.appendChild(favicon);
       const title = document.createXULElement("label");
       title.className = "zen-ctrl-tab-panel-title";

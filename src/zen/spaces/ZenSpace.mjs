@@ -61,7 +61,7 @@ export class nsZenWorkspace extends MozXULElement {
           <toolbarbutton class="toolbarbutton-1 chromeclass-toolbar-additional zen-workspaces-actions" context="zenWorkspaceMoreActions" />
         </vbox>
         <arrowscrollbox orient="vertical" class="workspace-arrowscrollbox">
-          <vbox class="zen-workspace-tabs-section zen-workspace-pinned-tabs-section" hide-separator="true">
+          <box class="zen-workspace-tabs-section zen-workspace-pinned-tabs-section" hide-separator="true">
             <html:div class="zen-tab-group-start space-fake-collapsible-start" style="order: -9999;" />
             <hbox class="pinned-tabs-container-separator">
               <toolbarseparator flex="1" />
@@ -70,7 +70,7 @@ export class nsZenWorkspace extends MozXULElement {
                              data-l10n-id="zen-workspaces-close-all-unpinned-tabs-title"
                              class="zen-workspace-close-unpinned-tabs-button" />
             </hbox>
-          </vbox>
+          </box>
           <vbox class="zen-workspace-tabs-section zen-workspace-normal-tabs-section">
             <!-- Let it as an ID to mantain compatibility with firefox's tabbrowser -->
             <hbox id="tabbrowser-arrowscrollbox-periphery">

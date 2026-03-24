@@ -157,10 +157,7 @@
   #tabbrowser-tabs[movingtab] & {
     transition:
       height 0.08s ease-in-out,
-      padding 0.08s ease-in-out,
-      opacity 0.06s ease-in-out,
-      transform 0.1s ease-in-out;
-  }
+      padding 0.08s ease-in-o }
 
   .zen-workspace-pinned-tabs-section[hide-separator] & {
     height: 0;
@@ -1326,6 +1323,7 @@
 .zen-workspace-tabs-section {
   &:not(.zen-essentials-container) {
     display: flex;
+    flex-direction: column;
 
     :root[zen-sidebar-expanded="true"] & {
       min-width: calc(100% - var(--zen-toolbox-padding) * 2);

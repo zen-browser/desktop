@@ -438,7 +438,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       parentSidebarContainer,
       {
         scale: [1, 0.98],
-        opacity: [1, 0.4],
+        opacity: [1, 0.3],
       },
       {
         duration: this.#GLANCE_ANIMATION_DURATION,
@@ -581,6 +581,14 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     }
 
     this.#animateParentBackground();
+    let activeValue = browserElement.zenModeActive;
+    let shouldDeactivateDocShell = Services.prefs.getBoolPref(
+      "zen.glance.deactivate-docshell-during-animation"
+    );
+    if (shouldDeactivateDocShell) {
+      browserElement.zenModeActive = false;
+      browserElement.docShellIsActive = false;
+    }
     gZenUIManager.motion
       .animate(this.browserWrapper, arcSequence, {
         duration: gZenUIManager.testingEnabled
@@ -589,6 +597,10 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
         ease: "easeInOut",
       })
       .then(() => {
+        if (shouldDeactivateDocShell) {
+          browserElement.zenModeActive = activeValue;
+          browserElement.docShellIsActive = true;
+        }
         this.#finalizeGlanceOpening(imageDataElement, browserElement, resolve);
       });
   }
@@ -993,7 +1005,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
         browserSidebarContainer,
         {
           scale: [0.98, 1],
-          opacity: [0.4, 1],
+          opacity: [0.3, 1],
         },
         {
           duration: this.#GLANCE_ANIMATION_DURATION / 1.5,

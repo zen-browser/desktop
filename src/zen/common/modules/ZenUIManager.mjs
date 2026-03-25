@@ -1027,7 +1027,8 @@ window.gZenVerticalTabsManager = {
     };
 
     try {
-      const itemSize = aItem.getBoundingClientRect().height;
+      const itemSize =
+        window.windowUtils.getBoundsWithoutFlushing(aItem).height;
       const transform = `-${itemSize}px`;
       gZenUIManager.motion
         .animate(
@@ -1038,7 +1039,7 @@ window.gZenVerticalTabsManager = {
             marginBottom: isLastItem() ? ["0px", "0px"] : [transform, "0px"],
           },
           {
-            duration: 0.1,
+            duration: 0.12,
             easing: "easeOut",
           }
         )
@@ -1061,7 +1062,7 @@ window.gZenVerticalTabsManager = {
             filter: ["blur(1px)", "blur(0px)"],
           },
           {
-            duration: 0.075,
+            duration: 0.1,
             easing: "easeOut",
           }
         )
@@ -1086,7 +1087,7 @@ window.gZenVerticalTabsManager = {
     ) {
       return Promise.resolve();
     }
-    const height = aItem.getBoundingClientRect().height;
+    const height = window.windowUtils.getBoundsWithoutFlushing(aItem).height;
     const visibleItems = gBrowser.tabContainer.ariaFocusableItems;
     const isLastItem = visibleItems[visibleItems.length - 1] === aItem;
     return gZenUIManager.motion.animate(
@@ -1101,7 +1102,7 @@ window.gZenVerticalTabsManager = {
             }),
       },
       {
-        duration: 0.075,
+        duration: 0.1,
         easing: "easeOut",
       }
     );

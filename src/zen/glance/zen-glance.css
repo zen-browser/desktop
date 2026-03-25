@@ -148,7 +148,7 @@
     }
 
     & browser {
-      background: light-dark(rgb(255, 255, 255), rgb(32, 32, 32)) !important;
+      background: light-dark(rgb(255, 255, 255), rgb(17, 17, 17)) !important;
       width: 100%;
       height: 100%;
     }

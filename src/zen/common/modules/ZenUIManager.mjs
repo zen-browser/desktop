@@ -338,7 +338,8 @@ window.gZenUIManager = {
   // handle the constraint, enabling proper overflow scrolling.
   // See gh-12782
   _constrainNativePopoverHeight(panel) {
-    if (panel.id !== "appMenu-popup") {
+    const panelIds = ["appMenu-popup", "customizationui-widget-panel", "widget-overflow"];
+    if (!panelIds.includes(panel.id)) {
       return;
     }
     // NSPopover adds 13px of chrome on all sides (26px vertical total),

@@ -4,7 +4,7 @@
 
 :root {
   --zen-ctrl-tab-panel-thumbnail-height: 155px;
-  --zen-ctrl-tab-panel-info-height: 30px;
+  --zen-ctrl-tab-panel-info-height: 26px;
   --zen-ctrl-tab-panel-padding: 16px;
   --zen-ctrl-tab-panel-card-gap: 12px;
   --zen-ctrl-tab-panel-card-inner-padding: 12px;
@@ -35,7 +35,6 @@
   display: flex;
   flex-direction: row;
   overflow: hidden;
-  scrollbar-width: none;
   position: relative;
   box-sizing: border-box;
   flex-shrink: 0;
@@ -45,8 +44,6 @@
   flex-shrink: 0;
   width: var(--zen-ctrl-tab-panel-card-width);
   height: fit-content;
-  background: transparent;
-  border: none;
   border-radius: var(--zen-ctrl-tab-panel-card-border-radius);
   padding: var(--zen-ctrl-tab-panel-card-inner-padding);
   cursor: pointer;

@@ -75,28 +75,12 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     window.addEventListener("keydown", e => this.#handleKeyDown(e), true);
     window.addEventListener("keyup", e => this.#handleKeyUp(e), true);
     window.addEventListener("blur", () => this.#isOpen && this.close(false));
-    window.addEventListener("click", e => this.#handleClick(e), true);
-  }
-
-  #handleClick(event) {
-    if (!this.#isOpen) {
-      return;
-    }
-
-    if (!this.panel.contains(event.target)) {
-      event.preventDefault();
-      event.stopPropagation();
-      this.close(false);
-    }
   }
 
   #observeTabChanges() {
-    window.addEventListener("TabOpen", () => this.#thumbnailCache.clear());
-    window.addEventListener("TabClose", () => this.#thumbnailCache.clear());
-    window.addEventListener("TabAttrModified", () => {
-      this.#thumbnailCache.clear();
+    ["TabOpen", "TabClose", "TabAttrModified", "TabMove"].forEach(event => {
+      window.addEventListener(event, () => this.#thumbnailCache.clear());
     });
-    window.addEventListener("TabMove", () => this.#thumbnailCache.clear());
   }
 
   #handleKeyDown(event) {
@@ -133,10 +117,10 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
   #getMaxCards() {
     const screenWidth = screen.width;
-    const cardWidth = nsZenCtrlTabPanel.CARD_WIDTH;
-    const padding = nsZenCtrlTabPanel.PANEL_HORIZONTAL_PADDING;
 
-    const getPanelWidth = cards => cardWidth * cards + padding;
+    const getPanelWidth = cards =>
+      nsZenCtrlTabPanel.CARD_WIDTH * cards +
+      nsZenCtrlTabPanel.PANEL_HORIZONTAL_PADDING;
 
     if (screenWidth < getPanelWidth(4)) {
       return 3;
@@ -148,7 +132,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
   /**
    * Initializes tab switcher panel.
-   * Captures visible tab thumbnails before showing panel, then captures remaining thumbnails in background.
+   * Captures initial thumbnails before showing panel, then captures remaining thumbnails in background.
    *
    * @param {boolean} shiftKey
    * @returns {Promise<void>} Resolves when the panel is fully initialized and displayed.
@@ -190,15 +174,13 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
 
-    const containerWidth =
-      nsZenCtrlTabPanel.CARD_WIDTH * this.#actualVisibleCards;
+    const panelWidth =
+      nsZenCtrlTabPanel.CARD_WIDTH * this.#actualVisibleCards +
+      nsZenCtrlTabPanel.PANEL_HORIZONTAL_PADDING;
     // Ensure the panel doesn't get cut off by screen edge (always shows full panel on screen)
-    const panelWidth = Math.min(
-      containerWidth + nsZenCtrlTabPanel.PANEL_HORIZONTAL_PADDING,
-      windowWidth
-    );
+    const horizontalOffset = Math.min(panelWidth, windowWidth);
 
-    const centerX = (windowWidth - panelWidth) / 2;
+    const centerX = (windowWidth - horizontalOffset) / 2;
     const centerY = (windowHeight - nsZenCtrlTabPanel.PANEL_HEIGHT) / 2;
 
     PanelMultiView.openPopup(this.panel, document.documentElement, {
@@ -228,11 +210,9 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       return;
     }
 
-    if (switchTab) {
-      const selectedTab = this.#tabList[this.#currentIndex];
-      if (selectedTab && selectedTab !== gBrowser.selectedTab) {
-        gBrowser.selectedTab = selectedTab;
-      }
+    const selectedTab = this.#tabList[this.#currentIndex];
+    if (switchTab && selectedTab && selectedTab !== gBrowser.selectedTab) {
+      gBrowser.selectedTab = selectedTab;
     }
 
     this.#resetState();
@@ -324,7 +304,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Creates the visual tab cards and adds them to the DOM.
+   * Inserts cards into the cards container.
    * Clears existing cards and renders new ones based on the current tab list.
    *
    * @returns {void}
@@ -335,21 +315,21 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     }
 
     this.tabsContainer.innerHTML = "";
-    const containerWidth = `${nsZenCtrlTabPanel.CARD_WIDTH * this.#actualVisibleCards}px`;
-    this.tabsContainer.style.width = containerWidth;
+    this.tabsContainer.style.width = `${nsZenCtrlTabPanel.CARD_WIDTH * this.#actualVisibleCards}px`;
 
     this.#tabList.forEach((tab, index) => {
+      const tabId = tab.linkedPanel;
+      const isPending = tab.hasAttribute("pending");
+
       const card = document.createXULElement("vbox");
       card.className = "zen-ctrl-tab-panel-card";
       card.setAttribute("data-index", index);
-      card.setAttribute("data-tab-id", tab.linkedPanel);
+      card.setAttribute("data-tab-id", tabId);
 
       const thumbnailContainer = document.createXULElement("box");
       thumbnailContainer.className = "zen-ctrl-tab-panel-thumbnail";
 
-      const thumbnail = tab.hasAttribute("pending")
-        ? null
-        : this.#thumbnailCache.get(tab.linkedPanel);
+      const thumbnail = isPending ? null : this.#thumbnailCache.get(tabId);
 
       if (thumbnail) {
         const img = document.createXULElement("image");
@@ -384,7 +364,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       infoContainer.appendChild(title);
       card.appendChild(infoContainer);
 
-      if (tab.hasAttribute("pending")) {
+      if (isPending) {
         card.classList.add("zen-ctrl-tab-panel-pending");
       }
 
@@ -405,11 +385,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     });
   }
 
-  /**
-   * Updates the card appearance when selection changes.
-   *
-   * @returns {void}
-   */
   #updateSelection() {
     if (!this.tabsContainer) {
       return;
@@ -477,23 +452,11 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     return pageStartIndex;
   }
 
-  /**
-   * Selects the next tab in the list.
-   * Wraps around to the first tab if at the end of the list.
-   *
-   * @returns {void}
-   */
   #navigateForward() {
     this.#currentIndex = (this.#currentIndex + 1) % this.#tabList.length;
     this.#updateSelection();
   }
 
-  /**
-   * Selects the previous tab in the list.
-   * Wraps around to the last tab if at the start of the list.
-   *
-   * @returns {void}
-   */
   #navigateBackward() {
     this.#currentIndex =
       (this.#currentIndex - 1 + this.#tabList.length) % this.#tabList.length;

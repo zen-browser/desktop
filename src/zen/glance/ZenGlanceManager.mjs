@@ -6,6 +6,8 @@
 
 import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
+const GLANCE_BACKGROUND_SCALE = 0.97;
+
 /**
  * Manages the Zen Glance feature - a preview overlay system for tabs
  * Allows users to preview content without fully opening new tabs
@@ -32,7 +34,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
   // Arc animation configuration
   #ARC_CONFIG = Object.freeze({
-    ARC_STEPS: 70, // Increased for smoother bounce
+    ARC_STEPS: 120, // Increased for smoother bounce
     MAX_ARC_HEIGHT: 25,
     ARC_HEIGHT_RATIO: 0.2, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
   });
@@ -437,7 +439,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     gZenUIManager.motion.animate(
       parentSidebarContainer,
       {
-        scale: [1, 0.98],
+        scale: [1, GLANCE_BACKGROUND_SCALE],
         opacity: [1, 0.3],
       },
       {
@@ -528,8 +530,8 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     const rect = window.windowUtils.getBoundsWithoutFlushing(
       this.browserWrapper.parentElement
     );
-    const minWidth = rect.width * 0.85;
-    const minHeight = rect.height * 0.85;
+    const minWidth = rect.width * 0.8;
+    const minHeight = rect.height * 0.8;
 
     browserElement.style.minWidth = `${minWidth}px`;
     browserElement.style.minHeight = `${minHeight}px`;
@@ -571,7 +573,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
           this.contentWrapper,
           { opacity: [0, 1] },
           {
-            duration: this.#GLANCE_ANIMATION_DURATION / 2,
+            duration: this.#GLANCE_ANIMATION_DURATION / 4,
             easing: "easeInOut",
           }
         )
@@ -622,7 +624,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       gBrowser.tabpanels
     );
 
-    const widthPercent = 0.85;
+    const widthPercent = 0.8;
     if (direction === "opening") {
       startPosition = {
         x: clientX + width / 2,
@@ -778,7 +780,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     browserElement.style.minHeight = "";
 
     this.browserWrapper.style.height = "100%";
-    this.browserWrapper.style.width = "85%";
+    this.browserWrapper.style.width = "80%";
 
     gBrowser.tabContainer._invalidateCachedTabs();
     this.overlay.style.removeProperty("overflow");
@@ -1004,7 +1006,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       .animate(
         browserSidebarContainer,
         {
-          scale: [0.98, 1],
+          scale: [GLANCE_BACKGROUND_SCALE, 1],
           opacity: [0.3, 1],
         },
         {
@@ -1623,7 +1625,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     await gZenUIManager.motion.animate(
       this.browserWrapper,
       {
-        width: ["85%", "100%"],
+        width: ["80%", "100%"],
         height: ["100%", "100%"],
       },
       {

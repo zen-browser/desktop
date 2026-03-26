@@ -596,9 +596,7 @@
 
 /* Overflow panel */
 #widget-overflow-mainView {
-  /* Overflow popover can contain any panel depending on user settings,
-   * so match appMenu-popup width to ensure most titles are visible. */
-  --menu-panel-width-wide: calc(var(--menu-panel-width) + 32px);
+  --menu-panel-width-wide: 200px;
 
   & toolbarbutton {
     scale: 1 !important;

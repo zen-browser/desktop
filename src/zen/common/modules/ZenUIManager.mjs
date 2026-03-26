@@ -338,7 +338,11 @@ window.gZenUIManager = {
   // handle the constraint, enabling proper overflow scrolling.
   // See gh-12782
   _constrainNativePopoverHeight(panel) {
-    const panelIds = ["appMenu-popup", "customizationui-widget-panel", "widget-overflow"];
+    const panelIds = [
+      "appMenu-popup",
+      "customizationui-widget-panel",
+      "widget-overflow",
+    ];
     if (!panelIds.includes(panel.id)) {
       return;
     }
@@ -347,14 +351,8 @@ window.gZenUIManager = {
     // Previous macOS versions have similar or smaller values, so this is a
     // conservative upper bound.
     const popoverChrome = 26;
-    const anchorHeight = panel.anchorNode?.getBoundingClientRect().height ?? 30;
     const maxHeight = window.screen.availHeight - popoverChrome;
     panel.style.maxHeight = `${maxHeight}px`;
-    // Maxed-out panels with arrows look ugly on smaller/normal screens,
-    // and we don't want to patch panelUI.inc.xhtml for now, so we hide them here.
-    if (panel.id === "widget-overflow" || panel.getBoundingClientRect().height >= maxHeight - anchorHeight) {
-      panel.setAttribute("hidepopovertail", "true");
-    }
   },
 
   onPopupShowing(showEvent) {

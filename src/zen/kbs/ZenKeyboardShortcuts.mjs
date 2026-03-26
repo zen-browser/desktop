@@ -675,6 +675,13 @@ class nsZenKeyboardShortcutsLoader {
             shift: true,
           })
         );
+        return;
+      }
+
+      if (AppConstants.platform == "macosx" && shortcut.getID() === "key_viewSourceSafari") {
+        shortcut.setModifiers(
+          nsKeyShortcutModifiers.fromObject({ accel: true, alt: true, shift: true })
+        );
       }
     };
 
@@ -832,7 +839,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 16;
+  static LATEST_KBS_VERSION = 17;
 
   constructor() {}
 
@@ -1193,6 +1200,33 @@ class nsZenKeyboardShortcutsVersioner {
           shortcut._setAction("cmd_toggleCompactModeIgnoreHover");
           break;
         }
+      }
+    }
+
+    if (version < 17 && AppConstants.platform == "macosx") {
+      // Migrate old macOS Safari view-source alias shortcut from Cmd+Opt+U
+      // to Cmd+Opt+Shift+U to avoid colliding with split-view unsplit.
+      for (let shortcut of data) {
+        if (shortcut.getID() != "key_viewSourceSafari") {
+          continue;
+        }
+
+        const modifiers = shortcut.getModifiers();
+        const isOldDefault =
+          shortcut.getKeyName() == "u" &&
+          !shortcut.getKeyCode() &&
+          modifiers.accel &&
+          modifiers.alt &&
+          !modifiers.shift &&
+          !modifiers.control &&
+          !modifiers.meta;
+
+        if (isOldDefault) {
+          shortcut.setModifiers(
+            nsKeyShortcutModifiers.fromObject({ accel: true, alt: true, shift: true })
+          );
+        }
+        break;
       }
     }
 

@@ -1062,6 +1062,7 @@ class nsZenWorkspaces {
   }
 
   handleTabBeforeClose(tab, closeWindowWithLastTab) {
+    delete this._isClosingWindow;
     if (
       !this.workspaceEnabled ||
       this.__contextIsDelete ||
@@ -1096,10 +1097,6 @@ class nsZenWorkspaces {
           // This call actually closes the window, unless the user
           // cancels the operation.  We are finished here in both cases.
           this._isClosingWindow = true;
-          // Inside a setTimeout to avoid reentrancy issues.
-          setTimeout(() => {
-            document.getElementById("cmd_closeWindow").doCommand();
-          }, 100);
         }
         return null;
       }
@@ -1108,6 +1105,19 @@ class nsZenWorkspaces {
     }
 
     return null;
+  }
+
+  handleTabBeforeRemove() {
+    // We run this AFTER the beforeunload event check, so we can
+    // be sure that if we get here, the tab is actually going to be removed,
+    // and beforeunload won't be called again. See gh-12922 for an example.
+    if (!this.workspaceEnabled || !this._isClosingWindow) {
+      return;
+    }
+    // Inside a setTimeout to avoid reentrancy issues.
+    setTimeout(() => {
+      document.getElementById("cmd_closeWindow").doCommand();
+    }, 100);
   }
 
   addPopupListeners() {

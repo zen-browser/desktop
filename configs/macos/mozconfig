@@ -43,10 +43,6 @@ else
   fi
 fi
 
-if test "$ZEN_RELEASE"; then
-  ac_add_options --with-macos-sdk=/Library/Developer/CommandLineTools/SDKs/MacOSX26.2.sdk
-fi
-
 # Keep using ld64 on PGO/LTO builds because of performance regressions when using lld.
 # Mozilla sets "MOZ_LD64_KNOWN_GOOD" to true when they do automated builds with PGO/LTO on macOS.
 # See https://searchfox.org/firefox-main/rev/e61d59b5c9a651fd7bf28043f87c0dc669833496/build/moz.configure/lto-pgo.configure#261

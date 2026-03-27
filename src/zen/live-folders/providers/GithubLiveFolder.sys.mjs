@@ -209,7 +209,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     super.onOptionTrigger(option);
 
     const key = option.getAttribute("option-key");
-    const checked = option.getAttribute("checked") === "true";
+    const checked = option.hasAttribute("checked");
     if (!this.options.some(x => x.key === key)) {
       return;
     }

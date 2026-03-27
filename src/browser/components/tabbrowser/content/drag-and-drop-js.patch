@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/drag-and-drop.js b/browser/components/tabbrowser/content/drag-and-drop.js
-index ced2bfd88de2d16e2c028ca3f4d9d27516363575..aaf6e82782357c819ca875f05020723600e41e6b 100644
+index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184925e5610 100644
 --- a/browser/components/tabbrowser/content/drag-and-drop.js
 +++ b/browser/components/tabbrowser/content/drag-and-drop.js
 @@ -35,6 +35,9 @@
@@ -277,7 +277,11 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..aaf6e82782357c819ca875f050207236
          tab.removeAttribute("small-stack");
          tab.removeAttribute("big-stack");
        }
-@@ -2582,7 +2585,6 @@
+@@ -2578,11 +2581,9 @@
+       )) {
+         label.style.width = "";
+         label.style.maxWidth = "";
+-        label.style.height = "";
          label.style.left = "";
          label.style.top = "";
          label.style.pointerEvents = "";

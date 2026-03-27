@@ -32,7 +32,6 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       const searchParams = this.#buildSearchOptions();
       const url = `${this.state.url}?${searchParams}`;
 
-      console.log(url)
       const { text, status } = await this.fetch(url);
 
       // Assume no auth

@@ -32,6 +32,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       const searchParams = this.#buildSearchOptions();
       const url = `${this.state.url}?${searchParams}`;
 
+      console.log(url)
       const { text, status } = await this.fetch(url);
 
       // Assume no auth
@@ -209,7 +210,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     super.onOptionTrigger(option);
 
     const key = option.getAttribute("option-key");
-    const checked = option.getAttribute("checked") === "true";
+    const checked = option.hasAttribute("checked");
     if (!this.options.some(x => x.key === key)) {
       return;
     }

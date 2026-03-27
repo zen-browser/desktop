@@ -777,7 +777,7 @@ class nsZenWorkspaces {
     if (
       !this.privateWindowOrDisabled &&
       spacesFromStore.length === 0 &&
-      lazy.ZenSessionStore._migrationData
+      lazy.ZenSessionStore._migrationData?.spaces
     ) {
       spacesFromStore.push(...lazy.ZenSessionStore._migrationData.spaces);
     }

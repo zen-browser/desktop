@@ -10,9 +10,6 @@ window.ZenWorkspaceBookmarksStorage = {
     ChromeUtils.defineESModuleGetters(this.lazy, {
       PlacesUtils: "resource://gre/modules/PlacesUtils.sys.mjs",
     });
-    if (!window.gZenWorkspaces) {
-      return;
-    }
     this.promiseInitialized = new Promise(resolve => {
       this._resolveInitialized = resolve;
     });

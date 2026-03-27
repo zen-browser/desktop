@@ -54,11 +54,15 @@
 }
 
 .zen-ctrl-tab-panel-card:hover {
-  background: var(--toolbarbutton-hover-background);
+  background: color-mix(in srgb, currentColor 5%, transparent);
 }
 
 .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected {
-  background: color-mix(in oklch, var(--zen-primary-color) 65%, oklch(0.65 0.1 none) 35%);
+  background: var(--arrowpanel-dimmed);
+}
+
+#zen-ctrl-tab-panel[zen-match-theme] .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected {
+  background: color-mix(in oklch, var(--zen-primary-color) 75%, oklch(0.7 0.15 none) 25%);
   color: white;
 }
 
@@ -75,10 +79,7 @@
   box-sizing: border-box;
 }
 
-.zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-thumbnail {
-  border: none;
-}
-
+#zen-ctrl-tab-panel[zen-match-theme] .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-thumbnail,
 .zen-ctrl-tab-panel-thumbnail:has(image) {
   border: none;
 }
@@ -93,9 +94,18 @@
 
 .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected.zen-ctrl-tab-panel-pending .zen-ctrl-tab-panel-thumbnail,
 .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected.zen-ctrl-tab-panel-no-thumbnail .zen-ctrl-tab-panel-thumbnail {
+  background: transparent;
+}
+
+#zen-ctrl-tab-panel[zen-match-theme] .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected.zen-ctrl-tab-panel-pending .zen-ctrl-tab-panel-thumbnail,
+#zen-ctrl-tab-panel[zen-match-theme] .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected.zen-ctrl-tab-panel-no-thumbnail .zen-ctrl-tab-panel-thumbnail {
   background: light-dark(
     color-mix(in srgb, var(--zen-branding-bg) 25%, transparent),
-    color-mix(in srgb, var(--zen-primary-color) 30%, color-mix(in srgb, var(--zen-branding-bg) 20%, transparent))
+    color-mix(
+      in srgb,
+      color-mix(in oklch, var(--zen-primary-color) 75%, oklch(0.7 0.15 none) 25%) 30%,
+      color-mix(in srgb, var(--zen-branding-bg) 20%, transparent)
+    )
   );
 }
 
@@ -129,6 +139,12 @@
 
 .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-info,
 .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-title {
+  color: var(--zen-branding-bg-reverse);
+  -moz-text-fill-color: var(--zen-branding-bg-reverse);
+}
+
+#zen-ctrl-tab-panel[zen-match-theme] .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-info,
+#zen-ctrl-tab-panel[zen-match-theme] .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-title {
   color: white;
   -moz-text-fill-color: white;
 }

@@ -58,17 +58,38 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       true
     );
 
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this.#lazyPrefs,
+      "matchTheme",
+      "zen.tabs.ctrl-tab-panel.accent-color",
+      false
+    );
+
     try {
       Services.prefs.removeObserver("zen.tabs.ctrl-tab-panel.enabled", this);
+      Services.prefs.removeObserver(
+        "zen.tabs.ctrl-tab-panel.accent-color",
+        this
+      );
     } catch (e) {}
 
     Services.prefs.addObserver("zen.tabs.ctrl-tab-panel.enabled", this);
+    Services.prefs.addObserver("zen.tabs.ctrl-tab-panel.accent-color", this);
   }
 
   observe(subject, topic, data) {
     if (data === "zen.tabs.ctrl-tab-panel.enabled") {
       this.#disableDefaultCtrlTab();
+    } else if (data === "zen.tabs.ctrl-tab-panel.accent-color") {
+      this.#updateThemeMatching();
     }
+  }
+
+  #updateThemeMatching() {
+    if (!this.panel) {
+      return;
+    }
+    this.panel.toggleAttribute("zen-match-theme", this.#lazyPrefs.matchTheme);
   }
 
   #setupKeyboardListeners() {
@@ -182,6 +203,8 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
     const centerX = (windowWidth - horizontalOffset) / 2;
     const centerY = (windowHeight - nsZenCtrlTabPanel.PANEL_HEIGHT) / 2;
+
+    this.#updateThemeMatching();
 
     PanelMultiView.openPopup(this.panel, document.documentElement, {
       position: "overlap",

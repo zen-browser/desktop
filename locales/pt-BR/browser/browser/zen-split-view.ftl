@@ -15,6 +15,3 @@ zen-split-link =
 zen-split-view-modifier-header = Visão dividida
 zen-split-view-modifier-activate-reallocation = 
     .label = Ativar realocação
-zen-split-view-modifier-enabled-toast = Reorganizar a visualização dividida está ATIVADO.
-zen-split-view-modifier-enabled-toast-description = Arraste e solte a vista para rearranjar. Pressione Esc para sair.
-zen-split-view-modifier-disabled-toast = Reorganizar a visão dividida está DESLIGADA.

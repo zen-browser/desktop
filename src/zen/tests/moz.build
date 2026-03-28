@@ -9,13 +9,14 @@ BROWSER_CHROME_MANIFESTS += [
     "glance/browser.toml",
     "live-folders/browser.toml",
     "pinned/browser.toml",
+    "popover/browser.toml",
+    "spaces/browser.toml",
     "split_view/browser.toml",
     "tabs/browser.toml",
     "ub-actions/browser.toml",
     "urlbar/browser.toml",
     "welcome/browser.toml",
     "window_sync/browser.toml",
-    "workspaces/browser.toml",
 ]
 
 DIRS += [

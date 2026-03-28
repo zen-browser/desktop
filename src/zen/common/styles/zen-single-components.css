@@ -304,6 +304,7 @@
   flex-wrap: wrap;
   gap: 8px;
   overflow: visible;
+  flex-direction: row;
 
   unified-extensions-item-messagebar-wrapper,
   .unified-extensions-item-contents {
@@ -480,7 +481,7 @@
 
 #identity-box,
 #page-action-buttons {
-  opacity: 0.6;
+  fill-opacity: 0.6;
 }
 
 #zen-site-data-footer {
@@ -565,7 +566,6 @@
 
       transition: transform 0.12s ease-in-out;
       box-sizing: border-box;
-      will-change: transform;
     }
 
     &.active {

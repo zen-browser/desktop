@@ -88,7 +88,9 @@ declare namespace MockedExports {
      *
      * Then add the file path to the KnownModules above.
      */
-    importESModule: <S extends keyof KnownModules>(module: S) => KnownModules[S];
+    importESModule: <S extends keyof KnownModules>(
+      module: S
+    ) => KnownModules[S];
     defineESModuleGetters: (target: any, mappings: any) => void;
   }
 
@@ -160,7 +162,11 @@ declare namespace MockedExports {
     setIntPref: SetPref<number>;
     getBoolPref: GetPref<boolean>;
     setBoolPref: SetPref<boolean>;
-    addObserver: (aDomain: string, aObserver: PrefObserver, aHoldWeak?: boolean) => void;
+    addObserver: (
+      aDomain: string,
+      aObserver: PrefObserver,
+      aHoldWeak?: boolean
+    ) => void;
     removeObserver: (aDomain: string, aObserver: PrefObserver) => void;
   };
 
@@ -299,7 +305,11 @@ declare namespace MockedExports {
   class nsIFilePicker {}
 
   interface FilePicker {
-    init: (browsingContext: BrowsingContext, title: string, mode: number) => void;
+    init: (
+      browsingContext: BrowsingContext,
+      title: string,
+      mode: number
+    ) => void;
     open: (callback: (rv: number) => unknown) => void;
     // The following are enum values.
     modeGetFolder: number;
@@ -330,7 +340,11 @@ declare namespace MockedExports {
      * This function sets the attributes data-l10n-id and possibly data-l10n-args
      * on the element.
      */
-    setAttributes(target: Element, id?: string, args?: Record<string, string>): void;
+    setAttributes(
+      target: Element,
+      id?: string,
+      args?: Record<string, string>
+    ): void;
   }
 }
 
@@ -365,7 +379,8 @@ declare interface ChromeDocument extends Document {
    * Create a XUL element of a specific type. Right now this function
    * only refines iframes, but more tags could be added.
    */
-  createXULElement: ((type: "iframe") => XULIframeElement) & ((type: string) => XULElement);
+  createXULElement: ((type: "iframe") => XULIframeElement) &
+    ((type: string) => XULElement);
 
   /**
    * This is a fluent instance connected to this document.
@@ -406,7 +421,9 @@ declare interface Window {
       userContextId: number;
       forceNonPrivate: boolean;
       relatedToCurrent: boolean;
-      resolveOnContentBrowserCreated: (contentBrowser: MockedExports.ChromeBrowser) => unknown;
+      resolveOnContentBrowserCreated: (
+        contentBrowser: MockedExports.ChromeBrowser
+      ) => unknown;
     }>
   ) => void;
   openTrustedLinkIn: (
@@ -417,7 +434,9 @@ declare interface Window {
       userContextId: number;
       forceNonPrivate: boolean;
       relatedToCurrent: boolean;
-      resolveOnContentBrowserCreated: (contentBrowser: MockedExports.ChromeBrowser) => unknown;
+      resolveOnContentBrowserCreated: (
+        contentBrowser: MockedExports.ChromeBrowser
+      ) => unknown;
     }>
   ) => void;
 }

@@ -4,19 +4,19 @@
 
 zen-menubar-toggle-pinned-tabs = 
     .label =
-        { $pinnedAreCollapsed ->
-            [true] Expand Pinned Tabs
-           *[false] Collapse Pinned Tabs
+        {$pinnedAreCollapsed ->
+            [true] توسيع علامات التبويب المثبتة
+           *[false] طي علامات التبويب المثبتة
         }
 zen-menubar-appearance = 
-    .label = Appearance
+    .label = المظهر
 zen-menubar-appearance-description = 
-    .label = Websites will use:
+    .label = مواقع الويب ستستخدم:
 zen-menubar-appearance-auto = 
-    .label = Automatic
+    .label = تلقائي
 zen-menubar-appearance-light = 
-    .label = Light
+    .label = فاتح
 zen-menubar-appearance-dark = 
-    .label = Dark
-zen-menubar-new-unsynced-window = 
-    .label = New Blank Window
+    .label = داكن
+zen-menubar-new-blank-window = 
+    .label = نافذة فارغة جديدة

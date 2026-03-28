@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [un] Ailosod a phinio tab
            *[arall] Ailosod a phinio { $tabCount } tab
         }
-tab-reset-pin-label = Nôl i'r url wedi'i binio
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Nôl i'r url wedi'i binio
+        [zen-default-pinned-cmd] Gwahanu rhag y tab wedi'i binio
+       *[other] { $tabSubtitle }
+    }

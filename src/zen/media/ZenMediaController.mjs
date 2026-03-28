@@ -43,12 +43,16 @@ class nsZenMediaController {
 
     this.mediaTitle = document.querySelector("#zen-media-title");
     this.mediaArtist = document.querySelector("#zen-media-artist");
-    this.mediaControlBar = document.querySelector("#zen-media-controls-toolbar");
+    this.mediaControlBar = document.querySelector(
+      "#zen-media-controls-toolbar"
+    );
     this.mediaProgressBar = document.querySelector("#zen-media-progress-bar");
     this.mediaCurrentTime = document.querySelector("#zen-media-current-time");
     this.mediaDuration = document.querySelector("#zen-media-duration");
     this.mediaFocusButton = document.querySelector("#zen-media-focus-button");
-    this.mediaProgressBarContainer = document.querySelector("#zen-media-progress-hbox");
+    this.mediaProgressBarContainer = document.querySelector(
+      "#zen-media-progress-hbox"
+    );
 
     this.onPositionstateChange = this._onPositionstateChange.bind(this);
     this.onPlaybackstateChange = this._onPlaybackstateChange.bind(this);
@@ -61,14 +65,14 @@ class nsZenMediaController {
   }
 
   #initEventListeners() {
-    this.mediaControlBar.addEventListener("mousedown", (event) => {
+    this.mediaControlBar.addEventListener("mousedown", event => {
       if (event.target.closest(":is(toolbarbutton,#zen-media-progress-hbox)")) {
         return;
       }
       this.onMediaFocus();
     });
 
-    this.mediaControlBar.addEventListener("command", (event) => {
+    this.mediaControlBar.addEventListener("command", event => {
       const button = event.target.closest("toolbarbutton");
       if (!button) {
         return;
@@ -104,10 +108,16 @@ class nsZenMediaController {
       }
     });
 
-    this.mediaProgressBar.addEventListener("input", this.onMediaSeekDrag.bind(this));
-    this.mediaProgressBar.addEventListener("change", this.onMediaSeekComplete.bind(this));
+    this.mediaProgressBar.addEventListener(
+      "input",
+      this.onMediaSeekDrag.bind(this)
+    );
+    this.mediaProgressBar.addEventListener(
+      "change",
+      this.onMediaSeekComplete.bind(this)
+    );
 
-    window.addEventListener("TabSelect", (event) => {
+    window.addEventListener("TabSelect", event => {
       if (this.isSharing) {
         return;
       }
@@ -140,7 +150,7 @@ class nsZenMediaController {
     window.addEventListener("TabClose", onTabDiscardedOrClosed);
     window.addEventListener("TabBrowserDiscarded", onTabDiscardedOrClosed);
 
-    window.addEventListener("DOMAudioPlaybackStarted", (event) => {
+    window.addEventListener("DOMAudioPlaybackStarted", event => {
       setTimeout(() => {
         if (
           this._currentMediaController?.isPlaying &&
@@ -154,15 +164,21 @@ class nsZenMediaController {
         }
       }, 1000);
 
-      this.activateMediaControls(event.target.browsingContext.mediaController, event.target);
+      this.activateMediaControls(
+        event.target.browsingContext.mediaController,
+        event.target
+      );
     });
 
-    window.addEventListener("DOMAudioPlaybackStopped", () => this.updateMuteState());
+    window.addEventListener("DOMAudioPlaybackStopped", () =>
+      this.updateMuteState()
+    );
   }
 
   onTabDiscardedOrClosed(event) {
     const { linkedBrowser } = event.target;
-    const isCurrentBrowser = linkedBrowser?.browserId === this._currentBrowser?.browserId;
+    const isCurrentBrowser =
+      linkedBrowser?.browserId === this._currentBrowser?.browserId;
 
     if (isCurrentBrowser) {
       this.isSharing = false;
@@ -186,11 +202,26 @@ class nsZenMediaController {
     shouldHide = true
   ) {
     if (shouldForget && mediaController) {
-      mediaController.removeEventListener("pictureinpicturemodechange", this.onPipModeChange);
-      mediaController.removeEventListener("positionstatechange", this.onPositionstateChange);
-      mediaController.removeEventListener("playbackstatechange", this.onPlaybackstateChange);
-      mediaController.removeEventListener("supportedkeyschange", this.onSupportedKeysChange);
-      mediaController.removeEventListener("metadatachange", this.onMetadataChange);
+      mediaController.removeEventListener(
+        "pictureinpicturemodechange",
+        this.onPipModeChange
+      );
+      mediaController.removeEventListener(
+        "positionstatechange",
+        this.onPositionstateChange
+      );
+      mediaController.removeEventListener(
+        "playbackstatechange",
+        this.onPlaybackstateChange
+      );
+      mediaController.removeEventListener(
+        "supportedkeyschange",
+        this.onSupportedKeysChange
+      );
+      mediaController.removeEventListener(
+        "metadatachange",
+        this.onMetadataChange
+      );
       mediaController.removeEventListener("deactivated", this.onDeactivated);
 
       this.mediaControllersMap.delete(mediaController.id);
@@ -219,7 +250,10 @@ class nsZenMediaController {
 
   set isSharing(value) {
     if (this._currentBrowser?.browsingContext && !value) {
-      const webRTC = this._currentBrowser.browsingContext.currentWindowGlobal.getActor("WebRTC");
+      const webRTC =
+        this._currentBrowser.browsingContext.currentWindowGlobal.getActor(
+          "WebRTC"
+        );
       webRTC.sendAsyncMessage("webrtc:UnmuteMicrophone");
       webRTC.sendAsyncMessage("webrtc:UnmuteCamera");
     }
@@ -281,7 +315,9 @@ class nsZenMediaController {
     this.mediaControlBar.removeAttribute("hidden");
     window.requestAnimationFrame(() => {
       this.mediaControlBar.style.height =
-        this.mediaControlBar.querySelector("toolbaritem").getBoundingClientRect().height + "px";
+        this.mediaControlBar
+          .querySelector("toolbaritem")
+          .getBoundingClientRect().height + "px";
       this.mediaControlBar.style.opacity = 0;
       gZenUIManager.updateTabsToolbar();
       gZenUIManager.motion.animate(
@@ -326,7 +362,8 @@ class nsZenMediaController {
     }
 
     const iconURL =
-      this._currentBrowser.mIconURL || `page-icon:${this._currentBrowser.currentURI.spec}`;
+      this._currentBrowser.mIconURL ||
+      `page-icon:${this._currentBrowser.currentURI.spec}`;
     this.mediaFocusButton.style.listStyleImage = `url(${iconURL})`;
 
     this.mediaTitle.textContent = metadata.title || "";
@@ -341,8 +378,11 @@ class nsZenMediaController {
     this.updateMediaPosition();
 
     for (const key of this.supportedKeys) {
-      const button = this.mediaControlBar.querySelector(`#zen-media-${key}-button`);
-      button.disabled = !this._currentMediaController.supportedKeys.includes(key);
+      const button = this.mediaControlBar.querySelector(
+        `#zen-media-${key}-button`
+      );
+      button.disabled =
+        !this._currentMediaController.supportedKeys.includes(key);
     }
   }
 
@@ -350,7 +390,10 @@ class nsZenMediaController {
     this.updateMuteState();
     this.switchController();
 
-    if (!mediaController.isActive || this._currentBrowser?.browserId === browser.browserId) {
+    if (
+      !mediaController.isActive ||
+      this._currentBrowser?.browserId === browser.browserId
+    ) {
       return;
     }
 
@@ -370,21 +413,36 @@ class nsZenMediaController {
       this.setupMediaControlUI(metadata, positionState);
     }
 
-    mediaController.addEventListener("pictureinpicturemodechange", this.onPipModeChange);
-    mediaController.addEventListener("positionstatechange", this.onPositionstateChange);
-    mediaController.addEventListener("playbackstatechange", this.onPlaybackstateChange);
-    mediaController.addEventListener("supportedkeyschange", this.onSupportedKeysChange);
+    mediaController.addEventListener(
+      "pictureinpicturemodechange",
+      this.onPipModeChange
+    );
+    mediaController.addEventListener(
+      "positionstatechange",
+      this.onPositionstateChange
+    );
+    mediaController.addEventListener(
+      "playbackstatechange",
+      this.onPlaybackstateChange
+    );
+    mediaController.addEventListener(
+      "supportedkeyschange",
+      this.onSupportedKeysChange
+    );
     mediaController.addEventListener("metadatachange", this.onMetadataChange);
     mediaController.addEventListener("deactivated", this.onDeactivated);
   }
 
   activateMediaDeviceControls(browser) {
-    if (browser?.browsingContext.currentWindowGlobal.hasActivePeerConnections()) {
+    if (
+      browser?.browsingContext.currentWindowGlobal.hasActivePeerConnections()
+    ) {
       this.mediaControlBar.removeAttribute("can-pip");
       this._currentBrowser = browser;
 
       const tab = window.gBrowser.getTabForBrowser(browser);
-      const iconURL = browser.mIconURL || `page-icon:${browser.currentURI.spec}`;
+      const iconURL =
+        browser.mIconURL || `page-icon:${browser.currentURI.spec}`;
 
       this.isSharing = true;
 
@@ -401,14 +459,16 @@ class nsZenMediaController {
 
     for (const browser of window.gBrowser.browsers) {
       const isMatch = browser.innerWindowID === windowId;
-      const isCurrentBrowser = this._currentBrowser?.browserId === browser.browserId;
+      const isCurrentBrowser =
+        this._currentBrowser?.browserId === browser.browserId;
       const shouldShow = showCameraIndicator || showMicrophoneIndicator;
 
       if (!isMatch) {
         continue;
       }
       if (shouldShow && !(isCurrentBrowser && this.isSharing)) {
-        const webRTC = browser.browsingContext.currentWindowGlobal.getActor("WebRTC");
+        const webRTC =
+          browser.browsingContext.currentWindowGlobal.getActor("WebRTC");
         webRTC.sendAsyncMessage("webrtc:UnmuteMicrophone");
         webRTC.sendAsyncMessage("webrtc:UnmuteCamera");
 
@@ -417,9 +477,11 @@ class nsZenMediaController {
         }
         if (this._currentMediaController) {
           this._currentMediaController.pause();
-          this.deinitMediaController(this._currentMediaController, true, true).then(() =>
-            this.activateMediaDeviceControls(browser)
-          );
+          this.deinitMediaController(
+            this._currentMediaController,
+            true,
+            true
+          ).then(() => this.activateMediaDeviceControls(browser));
         } else {
           this.activateMediaDeviceControls(browser);
         }
@@ -457,7 +519,9 @@ class nsZenMediaController {
       return;
     }
     for (const key of this.supportedKeys) {
-      const button = this.mediaControlBar.querySelector(`#zen-media-${key}-button`);
+      const button = this.mediaControlBar.querySelector(
+        `#zen-media-${key}-button`
+      );
       button.disabled = !event.target.supportedKeys.includes(key);
     }
   }
@@ -505,7 +569,7 @@ class nsZenMediaController {
       if (!this._currentMediaController?.isPlaying || force) {
         const nextController = Array.from(this.mediaControllersMap.values())
           .filter(
-            (ctrl) =>
+            ctrl =>
               ctrl.controller.isPlaying &&
               gBrowser.selectedBrowser.browserId !== ctrl.browser.browserId &&
               ctrl.controller.id !== this._currentMediaController?.id
@@ -514,13 +578,23 @@ class nsZenMediaController {
           .shift();
 
         if (nextController) {
-          this.deinitMediaController(this._currentMediaController, false, true).then(() => {
-            this.setupMediaController(nextController.controller, nextController.browser);
-            const elapsedTime = Math.floor((Date.now() - nextController.lastUpdated) / 1000);
+          this.deinitMediaController(
+            this._currentMediaController,
+            false,
+            true
+          ).then(() => {
+            this.setupMediaController(
+              nextController.controller,
+              nextController.browser
+            );
+            const elapsedTime = Math.floor(
+              (Date.now() - nextController.lastUpdated) / 1000
+            );
 
             this.setupMediaControlUI(nextController.controller.getMetadata(), {
               position:
-                nextController.position + (nextController.controller.isPlaying ? elapsedTime : 0),
+                nextController.position +
+                (nextController.controller.isPlaying ? elapsedTime : 0),
               duration: nextController.duration,
               playbackRate: nextController.playbackRate,
             });
@@ -550,9 +624,14 @@ class nsZenMediaController {
       return;
     }
 
-    this.mediaCurrentTime.textContent = this.formatSecondsToTime(this._currentPosition);
-    this.mediaDuration.textContent = this.formatSecondsToTime(this._currentDuration);
-    this.mediaProgressBar.value = (this._currentPosition / this._currentDuration) * 100;
+    this.mediaCurrentTime.textContent = this.formatSecondsToTime(
+      this._currentPosition
+    );
+    this.mediaDuration.textContent = this.formatSecondsToTime(
+      this._currentDuration
+    );
+    this.mediaProgressBar.value =
+      (this._currentPosition / this._currentDuration) * 100;
 
     this._mediaUpdateInterval = setInterval(() => {
       if (this._currentMediaController?.isPlaying) {
@@ -560,8 +639,11 @@ class nsZenMediaController {
         if (this._currentPosition > this._currentDuration) {
           this._currentPosition = this._currentDuration;
         }
-        this.mediaCurrentTime.textContent = this.formatSecondsToTime(this._currentPosition);
-        this.mediaProgressBar.value = (this._currentPosition / this._currentDuration) * 100;
+        this.mediaCurrentTime.textContent = this.formatSecondsToTime(
+          this._currentPosition
+        );
+        this.mediaProgressBar.value =
+          (this._currentPosition / this._currentDuration) * 100;
       } else {
         clearInterval(this._mediaUpdateInterval);
         this._mediaUpdateInterval = null;
@@ -730,7 +812,10 @@ class nsZenMediaController {
     if (!this._currentBrowser) {
       return;
     }
-    this.mediaControlBar.toggleAttribute("muted", this._currentBrowser.audioMuted);
+    this.mediaControlBar.toggleAttribute(
+      "muted",
+      this._currentBrowser.audioMuted
+    );
   }
 
   updatePipButton() {
@@ -741,10 +826,11 @@ class nsZenMediaController {
       return;
     }
 
-    const { totalPipCount, totalPipDisabled } = PictureInPicture.getEligiblePipVideoCount(
-      this._currentBrowser
-    );
-    const canPip = totalPipCount === 1 || (totalPipDisabled > 0 && lazy.RESPECT_PIP_DISABLED);
+    const { totalPipCount, totalPipDisabled } =
+      PictureInPicture.getEligiblePipVideoCount(this._currentBrowser);
+    const canPip =
+      totalPipCount === 1 ||
+      (totalPipDisabled > 0 && lazy.RESPECT_PIP_DISABLED);
 
     this.mediaControlBar.toggleAttribute("can-pip", canPip);
   }

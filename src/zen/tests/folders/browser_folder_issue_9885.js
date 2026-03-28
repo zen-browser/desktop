@@ -21,7 +21,10 @@ add_task(async function test_Issue_9885() {
 
   subfolder.labelElement.click();
   ok(subfolder.collapsed, "Subfolder should be collapsed after clicking on it");
-  ok(!parent.collapsed, "Parent folder should be collapsed after clicking on subfolder");
+  ok(
+    !parent.collapsed,
+    "Parent folder should be collapsed after clicking on subfolder"
+  );
 
   await removeFolder(subfolder);
   await removeFolder(parent);

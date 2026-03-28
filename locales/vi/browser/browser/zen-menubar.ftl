@@ -5,18 +5,18 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Expand Pinned Tabs
-           *[false] Collapse Pinned Tabs
+            [true] Mở rộng các thẻ đã ghim
+           *[false] Thu gọn các thẻ đã ghim
         }
 zen-menubar-appearance = 
-    .label = Ngoại hình
+    .label = Giao diện
 zen-menubar-appearance-description = 
     .label = Trang web sẽ sử dụng:
 zen-menubar-appearance-auto = 
-    .label = Automatic
+    .label = Tự động
 zen-menubar-appearance-light = 
-    .label = Light
+    .label = Sáng
 zen-menubar-appearance-dark = 
-    .label = Dark
-zen-menubar-new-unsynced-window = 
-    .label = New Blank Window
+    .label = Tối
+zen-menubar-new-blank-window = 
+    .label = Cửa sổ trống mới

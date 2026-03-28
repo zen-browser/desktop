@@ -112,7 +112,7 @@
   outline: none !important;
 
   margin-bottom: auto;
-  padding: 6px 8px !important;
+  padding: 6px !important;
   :root:not([zen-single-toolbar="true"]) & {
     padding-block: 2px !important;
   }

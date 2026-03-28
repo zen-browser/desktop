@@ -47,19 +47,24 @@ class ZenSidebarNotification extends MozLitElement {
     return html`
       <link
         rel="stylesheet"
-        href="chrome://browser/content/zen-styles/zen-sidebar-notification.css" />
+        href="chrome://browser/content/zen-styles/zen-sidebar-notification.css"
+      />
       <div class="zen-sidebar-notification-header">
         <label
           class="zen-sidebar-notification-heading"
           flex="1"
-          data-l10n-id=${this.headingL10nId}></label>
-        <div class="zen-sidebar-notification-close-button" @click=${() => this.remove()}>
+          data-l10n-id=${this.headingL10nId}
+        ></label>
+        <div
+          class="zen-sidebar-notification-close-button"
+          @click=${() => this.remove()}
+        >
           <img src="chrome://browser/skin/zen-icons/close.svg" />
         </div>
       </div>
       <div class="zen-sidebar-notification-body">
         ${this.links.map(
-          (link) => html`
+          link => html`
             <div
               class="zen-sidebar-notification-link-container"
               data-l10n-id="${link.l10nId}-tooltip"
@@ -70,15 +75,21 @@ class ZenSidebarNotification extends MozLitElement {
                   return;
                 }
                 window.openLinkIn(link.url, "tab", {
-                  triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+                  triggeringPrincipal:
+                    Services.scriptSecurityManager.getSystemPrincipal(),
                   forceForeground: true,
                 });
                 this.remove();
-              }}>
-              <img class="zen-sidebar-notification-link-icon" src=${link.icon} />
+              }}
+            >
+              <img
+                class="zen-sidebar-notification-link-icon"
+                src=${link.icon}
+              />
               <label
                 class="zen-sidebar-notification-link-text"
-                data-l10n-id="${link.l10nId}-label"></label>
+                data-l10n-id="${link.l10nId}-label"
+              ></label>
             </div>
           `
         )}

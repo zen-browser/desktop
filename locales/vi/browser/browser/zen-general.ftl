@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = Hồ sơ hiện tại
 unified-extensions-description = Các tiện ích mở rộng được sử dụng để mang thêm tính năng vào { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Đặt lại thẻ đã ghim
+    .label =
+        { $isEssential ->
+          [true] Đặt lại thẻ chính
+         *[false] Đặt lại thẻ đã ghim
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Thêm vào thẻ chính
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = Gỡ khỏi thẻ chính
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Thay địa chỉ đã ghim bằng hiện tại
+    .label =
+        { $isEssential ->
+            [true] Thay thế URL của thẻ chính bằng URL hiện tại
+           *[false] Thay thế URL của thẻ đã ghim bằng URL hiện tại
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = Đổi tên...
@@ -31,6 +39,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Thu nhỏ
 zen-panel-ui-gradient-generator-custom-color = Tùy chỉnh màu sắc
 zen-copy-current-url-confirmation = Đã sao chép URL hiện tại!
+zen-copy-current-url-as-markdown-confirmation = Đã sao chép URL hiện tại dưới dạng Markdown!
 zen-general-cancel-label = 
     .label = Hủy
 zen-general-confirm = 
@@ -58,8 +67,8 @@ zen-site-data-settings = Thiết lập
 zen-generic-manage = Quản lý
 zen-generic-more = Thêm
 zen-generic-next = Tiếp
-zen-essentials-promo-label = Add to Essentials
-zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
+zen-essentials-promo-label = Thêm vào thẻ chính
+zen-essentials-promo-sublabel = Thẻ yêu thích luôn trong tầm tay
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Đã cho phép
 zen-site-data-setting-block = Đã chặn
@@ -107,7 +116,9 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = Có lỗi xảy ra?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Khởi động lại ở Chế độ an toàn
-zen-window-sync-migration-dialog-title = Giữ cho các cửa sổ của bạn luôn được đồng bộ
-zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
+zen-window-sync-migration-dialog-title = Luôn đồng bộ các cửa sổ
+zen-window-sync-migration-dialog-message = Zen hiện đã đồng bộ hóa các cửa sổ trên cùng một thiết bị, mọi thay đổi sẽ được cập nhật tức thì trên toàn bộ cửa sổ còn lại.
 zen-window-sync-migration-dialog-learn-more = Tìm hiểu thêm
-zen-window-sync-migration-dialog-accept = Got It
+zen-window-sync-migration-dialog-accept = Đã hiểu
+zen-appmenu-new-blank-window = 
+    .label = Cửa sổ trống mới

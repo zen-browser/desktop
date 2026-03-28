@@ -3,21 +3,21 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-folders-search-placeholder = 
-    .placeholder = Search { $folder-name }...
+    .placeholder = Hľadať v { $folder-name }...
 zen-folders-panel-rename-folder = 
-    .label = Rename Folder
+    .label = Premenovať priečinok
 zen-folders-panel-unpack-folder = 
-    .label = Unpack Folder
+    .label = Rozbaliť priečinok
 zen-folders-new-subfolder = 
-    .label = New Subfolder
+    .label = Nový podpriečinok
 zen-folders-panel-delete-folder = 
-    .label = Delete Folder
+    .label = Odstrániť priečinok
 zen-folders-panel-convert-folder-to-space = 
-    .label = Convert folder to Space
+    .label = Konvertovať priečinok na Priestor
 zen-folders-panel-change-folder-space = 
-    .label = Change Space...
+    .label = Zmeniť Priestor...
 zen-folders-unload-all-tooltip = 
-    .tooltiptext = Unload active in this folder
+    .tooltiptext = Uspať aktívne v tomto priečinku
 zen-folders-unload-folder = 
-    .label = Unload All Tabs
-zen-folders-search-no-results = No tabs matching that search 🤔
+    .label = Uspať všetky karty
+zen-folders-search-no-results = Hľadaniu nezodpovedajú žiadne karty 🤔

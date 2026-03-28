@@ -5,7 +5,8 @@
 
 ChromeUtils.defineESModuleGetters(this, {
   sinon: "resource://testing-common/Sinon.sys.mjs",
-  nsGithubLiveFolderProvider: "resource:///modules/zen/GithubLiveFolder.sys.mjs",
+  nsGithubLiveFolderProvider:
+    "resource:///modules/zen/GithubLiveFolder.sys.mjs",
 });
 
 function getGithubProviderForTest(sandbox, customOptions = {}) {
@@ -39,7 +40,9 @@ function getGithubProviderForTest(sandbox, customOptions = {}) {
 }
 
 add_task(async function test_fetch_items_url_construction() {
-  info("should construct the correct GitHub search URL based on default options");
+  info(
+    "should construct the correct GitHub search URL based on default options"
+  );
 
   let sandbox = sinon.createSandbox();
 
@@ -69,7 +72,10 @@ add_task(async function test_fetch_items_url_construction() {
   Assert.ok(query.includes("is:pr"), "Should include is:PR");
   Assert.ok(query.includes("author:@me"), "Should include author:@me");
   Assert.ok(!query.includes("assignee:@me"), "Should NOT include assignee:@me");
-  Assert.ok(!query.includes("review-requested:@me"), "Should NOT include review-requested");
+  Assert.ok(
+    !query.includes("review-requested:@me"),
+    "Should NOT include review-requested"
+  );
 
   sandbox.restore();
 });
@@ -97,7 +103,10 @@ add_task(async function test_fetch_items_url_complex_options() {
 
   Assert.ok(query.includes("author:@me"), "Should include author");
   Assert.ok(query.includes("assignee:@me"), "Should include assignee");
-  Assert.ok(query.includes("review-requested:@me"), "Should include review-requested");
+  Assert.ok(
+    query.includes("review-requested:@me"),
+    "Should include review-requested"
+  );
 
   Assert.ok(query.includes(" OR "), "Should contain OR operators");
   sandbox.restore();
@@ -159,7 +168,11 @@ add_task(async function test_fetch_network_error() {
   instance.fetch.rejects(new Error("Network down"));
 
   const errorId = await instance.fetchItems();
-  Assert.equal(errorId, "zen-live-folder-failed-fetch", "Should return an error on failed fetch");
+  Assert.equal(
+    errorId,
+    "zen-live-folder-failed-fetch",
+    "Should return an error on failed fetch"
+  );
 
   sandbox.restore();
 });

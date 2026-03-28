@@ -9,3 +9,12 @@ tags = "os_integration"
 run-if = [
   "os == 'mac'",
 ]
+
+["test_writeShortcutIcon.js"]
+run-if = [
+  "os == 'win'",
+]
+support-files = [
+  "../../../places/tests/browser/favicon-normal16.png",
+  "../../../../base/content/test/favicons/icon.svg",
+]

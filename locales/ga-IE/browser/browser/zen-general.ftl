@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = próifíl reatha
 unified-extensions-description = Úsáidtear síntí chun níos mó feidhmiúlachta breise a thabhairt isteach i { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Athshocraigh an Cluaisín Prionáilte
+    .label =
+        { $isEssential ->
+        [true] Athshocraigh an Cluaisín Riachtanach
+        *[false] Athshocraigh an Cluaisín Priontáilte
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Cuir leis na Bunriachtanais
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = Bain de na Bunriachtanais
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Cuir URL Prionáilte in ionad an URL Reatha
+    .label =
+        { $isEssential ->
+        [true] Cuir an URL Riachtanach in ionad an URL Reatha
+        *[false] Cuir an URL Priontáilte in ionad an URL Reatha
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = Athraigh Lipéad...
@@ -33,6 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Íoslaghdaigh
 zen-panel-ui-gradient-generator-custom-color = Dath Saincheaptha
 zen-copy-current-url-confirmation = Cóipeáladh an URL reatha!
+zen-copy-current-url-as-markdown-confirmation = Cóipeáladh an URL reatha mar Markdown!
 zen-general-cancel-label = 
     .label = Cealaigh
 zen-general-confirm = 
@@ -113,3 +122,5 @@ zen-window-sync-migration-dialog-title = Coinnigh Do Windows Sioncrónaithe
 zen-window-sync-migration-dialog-message = Déanann Zen sioncrónú ar fhuinneoga ar an ngléas céanna anois, mar sin léirítear athruithe i bhfuinneog amháin sna fuinneoga eile láithreach.
 zen-window-sync-migration-dialog-learn-more = Foghlaim Tuilleadh
 zen-window-sync-migration-dialog-accept = Tuigim é
+zen-appmenu-new-blank-window = 
+    .label = Fuinneog bán nua

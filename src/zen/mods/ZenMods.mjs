@@ -38,7 +38,9 @@ class nsZenMods extends nsZenPreloadedFeature {
 
   get #modsBackend() {
     if (!this.#_modsBackend) {
-      this.#_modsBackend = Cc["@mozilla.org/zen/mods-backend;1"].getService(Ci.nsIZenModsBackend);
+      this.#_modsBackend = Cc["@mozilla.org/zen/mods-backend;1"].getService(
+        Ci.nsIZenModsBackend
+      );
     }
     return this.#_modsBackend;
   }
@@ -78,7 +80,7 @@ class nsZenMods extends nsZenPreloadedFeature {
     await this.#writeStylesheet(mods);
 
     const modsWithPreferences = await Promise.all(
-      mods.map(async (mod) => {
+      mods.map(async mod => {
         const preferences = await this.getModPreferences(mod);
 
         return {
@@ -103,7 +105,7 @@ class nsZenMods extends nsZenPreloadedFeature {
     }
     const modsObject = await this.getMods();
     const mods = Object.values(modsObject).filter(
-      (mod) => mod.enabled === undefined || mod.enabled
+      mod => mod.enabled === undefined || mod.enabled
     );
 
     // eslint-disable-next-line no-shadow
@@ -131,9 +133,13 @@ class nsZenMods extends nsZenPreloadedFeature {
         }
 
         const getProperty =
-          type === "checkbox" ? Services.prefs.getBoolPref : Services.prefs.getStringPref;
+          type === "checkbox"
+            ? Services.prefs.getBoolPref
+            : Services.prefs.getStringPref;
         const setProperty =
-          type === "checkbox" ? Services.prefs.setBoolPref : Services.prefs.setStringPref;
+          type === "checkbox"
+            ? Services.prefs.setBoolPref
+            : Services.prefs.setStringPref;
 
         try {
           getProperty(property);
@@ -155,7 +161,9 @@ class nsZenMods extends nsZenPreloadedFeature {
 
           setProperty(
             property,
-            typeof defaultValue === "boolean" ? defaultValue : defaultValue.toString()
+            typeof defaultValue === "boolean"
+              ? defaultValue
+              : defaultValue.toString()
           );
         }
       }
@@ -175,10 +183,14 @@ class nsZenMods extends nsZenPreloadedFeature {
             element.remove();
           }
 
-          for (const { property } of preferences.filter(({ type }) => type !== "checkbox")) {
+          for (const { property } of preferences.filter(
+            ({ type }) => type !== "checkbox"
+          )) {
             const sanitizedProperty = property?.replaceAll(/\./g, "-");
 
-            browser.document.querySelector(":root").style.removeProperty(`--${sanitizedProperty}`);
+            browser.document
+              .querySelector(":root")
+              .style.removeProperty(`--${sanitizedProperty}`);
           }
 
           continue;
@@ -303,7 +315,9 @@ class nsZenMods extends nsZenPreloadedFeature {
         const response = await fetch(url);
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status} for url: ${url}`);
+          throw new Error(
+            `HTTP error! status: ${response.status} for url: ${url}`
+          );
         }
 
         const data = await response.text();
@@ -316,14 +330,18 @@ class nsZenMods extends nsZenPreloadedFeature {
       } catch (e) {
         attempt++;
         if (attempt >= maxRetries) {
-          console.error("[ZenMods]: Error downloading file after retries", url, e);
+          console.error(
+            "[ZenMods]: Error downloading file after retries",
+            url,
+            e
+          );
         } else {
           console.warn(
             `[ZenMods]: Download failed (attempt ${attempt} of ${maxRetries}), retrying in ${retryDelayMs}ms...`,
             url,
             e
           );
-          await new Promise((res) => setTimeout(res, retryDelayMs));
+          await new Promise(res => setTimeout(res, retryDelayMs));
         }
       }
     }
@@ -409,7 +427,11 @@ class nsZenMods extends nsZenPreloadedFeature {
   }
 
   async getModPreferences(mod) {
-    const modPath = PathUtils.join(this.modsRootPath, mod.id, "preferences.json");
+    const modPath = PathUtils.join(
+      this.modsRootPath,
+      mod.id,
+      "preferences.json"
+    );
 
     if (!(await IOUtils.exists(modPath)) || !mod.preferences) {
       return [];
@@ -419,10 +441,15 @@ class nsZenMods extends nsZenPreloadedFeature {
       const preferences = await IOUtils.readJSON(modPath);
 
       return preferences.filter(({ disabledOn = [] }) => {
-        return !disabledOn.includes(gZenOperatingSystemCommonUtils.currentOperatingSystem);
+        return !disabledOn.includes(
+          gZenOperatingSystemCommonUtils.currentOperatingSystem
+        );
       });
     } catch (e) {
-      console.error(`[ZenMods]: Error reading mod preferences for ${mod.name}:`, e);
+      console.error(
+        `[ZenMods]: Error reading mod preferences for ${mod.name}:`,
+        e
+      );
       return [];
     }
   }
@@ -443,7 +470,7 @@ class nsZenMods extends nsZenPreloadedFeature {
       const mods = await this.#getEnabledMods();
 
       const modsWithPreferences = await Promise.all(
-        mods.map(async (mod) => {
+        mods.map(async mod => {
           const preferences = await this.getModPreferences(mod);
 
           return {
@@ -475,21 +502,38 @@ class nsZenMods extends nsZenPreloadedFeature {
       console.error("[ZenMods]: Error loading Zen Mods:", e);
     }
 
-    Services.prefs.addObserver(this.updatePref, this.#rebuildModsStylesheet.bind(this));
-    Services.prefs.addObserver("zen.themes.disable-all", this.#handleDisableMods.bind(this));
+    Services.prefs.addObserver(
+      this.updatePref,
+      this.#rebuildModsStylesheet.bind(this)
+    );
+    Services.prefs.addObserver(
+      "zen.themes.disable-all",
+      this.#handleDisableMods.bind(this)
+    );
   }
 
   #setNewMilestoneIfNeeded() {
-    const previousMilestone = Services.prefs.getStringPref("zen.mods.milestone", "");
+    const previousMilestone = Services.prefs.getStringPref(
+      "zen.mods.milestone",
+      ""
+    );
     if (previousMilestone != Services.appinfo.version) {
-      Services.prefs.setStringPref("zen.mods.milestone", Services.appinfo.version);
+      Services.prefs.setStringPref(
+        "zen.mods.milestone",
+        Services.appinfo.version
+      );
       Services.prefs.clearUserPref("zen.mods.last-update");
     }
   }
 
   #shouldAutoUpdate() {
-    const daysBeforeUpdate = Services.prefs.getIntPref("zen.mods.auto-update-days");
-    const lastUpdatedSec = Services.prefs.getIntPref("zen.mods.last-update", -1);
+    const daysBeforeUpdate = Services.prefs.getIntPref(
+      "zen.mods.auto-update-days"
+    );
+    const lastUpdatedSec = Services.prefs.getIntPref(
+      "zen.mods.last-update",
+      -1
+    );
     const nowSec = Math.floor(Date.now() / 1000);
     const daysSinceUpdate = (nowSec - lastUpdatedSec) / (60 * 60 * 24);
 
@@ -504,7 +548,7 @@ class nsZenMods extends nsZenPreloadedFeature {
     const mods = await this.getMods();
 
     const updates = await Promise.all(
-      Object.values(mods).map(async (currentMod) => {
+      Object.values(mods).map(async currentMod => {
         try {
           const possibleNewModVersion = await this.requestMod(currentMod.id);
 
@@ -513,7 +557,10 @@ class nsZenMods extends nsZenPreloadedFeature {
           }
 
           if (
-            !this.#compareVersions(possibleNewModVersion.version, currentMod.version ?? "0.0.0") &&
+            !this.#compareVersions(
+              possibleNewModVersion.version,
+              currentMod.version ?? "0.0.0"
+            ) &&
             possibleNewModVersion.version != currentMod.version
           ) {
             console.warn(
@@ -539,8 +586,11 @@ class nsZenMods extends nsZenPreloadedFeature {
     );
 
     await this.updateMods(mods);
-    Services.prefs.setIntPref("zen.mods.last-update", Math.floor(Date.now() / 1000));
-    return updates.filter((update) => {
+    Services.prefs.setIntPref(
+      "zen.mods.last-update",
+      Math.floor(Date.now() / 1000)
+    );
+    return updates.filter(update => {
       return update !== null;
     });
   }
@@ -595,7 +645,10 @@ class nsZenMods extends nsZenPreloadedFeature {
   }
 
   triggerModsUpdate() {
-    Services.prefs.setBoolPref(this.updatePref, !Services.prefs.getBoolPref(this.updatePref));
+    Services.prefs.setBoolPref(
+      this.updatePref,
+      !Services.prefs.getBoolPref(this.updatePref)
+    );
   }
 
   async installMod(mod) {
@@ -603,11 +656,20 @@ class nsZenMods extends nsZenPreloadedFeature {
       const modPath = PathUtils.join(this.modsRootPath, mod.id);
       await IOUtils.makeDirectory(modPath, { ignoreExisting: true });
 
-      await this.#downloadUrlToFile(mod.style, PathUtils.join(modPath, "chrome.css"));
-      await this.#downloadUrlToFile(mod.readme, PathUtils.join(modPath, "readme.md"));
+      await this.#downloadUrlToFile(
+        mod.style,
+        PathUtils.join(modPath, "chrome.css")
+      );
+      await this.#downloadUrlToFile(
+        mod.readme,
+        PathUtils.join(modPath, "readme.md")
+      );
 
       if (mod.preferences) {
-        await this.#downloadUrlToFile(mod.preferences, PathUtils.join(modPath, "preferences.json"));
+        await this.#downloadUrlToFile(
+          mod.preferences,
+          PathUtils.join(modPath, "preferences.json")
+        );
       }
     } catch (e) {
       console.error("[ZenMods]: Error installing mod", mod.id, e);
@@ -652,7 +714,10 @@ class nsZenMods extends nsZenPreloadedFeature {
         console.error(`[ZenMods]: Error parsing mod ${modId} info:`, e);
       }
     } else {
-      console.error(`[ZenMods]: Error fetching mod ${modId} info:`, data.status);
+      console.error(
+        `[ZenMods]: Error fetching mod ${modId} info:`,
+        data.status
+      );
     }
 
     return null;

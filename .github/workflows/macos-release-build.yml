@@ -128,7 +128,6 @@ jobs:
           # Always exist with 0, even if bootstrap fails
           ./mach --no-interactive bootstrap --application-choice browser --exclude macos-sdk || true
           cd ..
-          ls /Library/Developer/CommandLineTools/SDKs/MacOSX26.2.sdk
 
       - name: Build language packs
         run: sh scripts/download-language-packs.sh

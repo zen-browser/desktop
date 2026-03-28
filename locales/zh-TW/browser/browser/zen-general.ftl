@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = 當前設定檔
 unified-extensions-description = 擴充功能可為 { -brand-short-name } 帶來更多額外功能。
 tab-context-zen-reset-pinned-tab = 
-    .label = 重置釘選的分頁
+    .label =
+        { $isEssential ->
+            [true] 重置Essentials
+           *[false] 重置釘選分頁
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = 新增至 Essentials
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = 從 Essentials 中移除
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = 將釘選的網址換成目前的網址
+    .label =
+        { $isEssential ->
+            [true] 以當前URL替換Essentials
+           *[false] 以當前URL替換釘選分頁
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = 重新命名
@@ -31,6 +39,7 @@ pictureinpicture-minimize-btn =
     .tooltip = 最小化
 zen-panel-ui-gradient-generator-custom-color = 自訂顏色
 zen-copy-current-url-confirmation = 網址已複製到剪貼簿！
+zen-copy-current-url-as-markdown-confirmation = 已以Markdown格式複製當前URL！
 zen-general-cancel-label = 
     .label = 取消
 zen-general-confirm = 
@@ -108,6 +117,8 @@ zen-sidebar-notification-restart-safe-mode-label = 有東西壞掉了嗎？
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = 在安全模式下重新啟動
 zen-window-sync-migration-dialog-title = 讓您的視窗處於同步狀態
-zen-window-sync-migration-dialog-message = Zen現在能同步同一裝置上的各個視窗，在某一視窗上的變動將會立即在其它視窗上反映出來。
+zen-window-sync-migration-dialog-message = Zen現在能同步同裝置上的各個視窗，在某一視窗上的變動將會立即在其它視窗上反映出來。
 zen-window-sync-migration-dialog-learn-more = 了解更多
 zen-window-sync-migration-dialog-accept = 明白了
+zen-appmenu-new-blank-window = 
+    .label = 新簡白視窗

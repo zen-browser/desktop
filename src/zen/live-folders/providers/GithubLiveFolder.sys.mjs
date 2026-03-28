@@ -34,7 +34,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
 
       const queries = this.#buildSearchOptions();
       const requests = await Promise.all(
-        queries.map((query) => {
+        queries.map(query => {
           const url = new URL(this.state.url);
           url.searchParams.set("q", query);
 
@@ -43,7 +43,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
           }
 
           return this.parseIssues(url.href);
-        }),
+        })
       );
 
       const combinedItems = new Map();
@@ -56,11 +56,11 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         }
 
         if (items) {
-          items.forEach((item) => combinedItems.set(item.id, item));
+          items.forEach(item => combinedItems.set(item.id, item));
         }
 
         if (activeRepos) {
-          activeRepos.forEach((repo) => combinedActiveRepos.add(repo));
+          activeRepos.forEach(repo => combinedActiveRepos.add(repo));
         }
       }
 

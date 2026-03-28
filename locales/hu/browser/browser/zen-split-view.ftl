@@ -15,6 +15,3 @@ zen-split-link =
 zen-split-view-modifier-header = Osztott nézet
 zen-split-view-modifier-activate-reallocation = 
     .label = Újraosztás aktiválása
-zen-split-view-modifier-enabled-toast = Osztott nézet átrendezése BEKAPCSOLVA.
-zen-split-view-modifier-enabled-toast-description = Fogd és vidd a nézetet az átrendezéshez. Nyomd meg az ESC gombot a kilépéshez.
-zen-split-view-modifier-disabled-toast = Osztott nézet átrendezése KIKAPCSOLVA.

@@ -5,8 +5,8 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Expand Pinned Tabs
-           *[false] Collapse Pinned Tabs
+            [true] Rozbalit Připnuté karty
+           *[false] Sbalit Připnuté karty
         }
 zen-menubar-appearance = 
     .label = Vzhled
@@ -18,5 +18,5 @@ zen-menubar-appearance-light =
     .label = Světlý
 zen-menubar-appearance-dark = 
     .label = Tmavý
-zen-menubar-new-unsynced-window = 
+zen-menubar-new-blank-window = 
     .label = New Blank Window

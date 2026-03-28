@@ -24,7 +24,9 @@ class nsZenUIMigration {
     }
     this.clearVariables();
     if (this.shouldRestart) {
-      Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);
+      Services.startup.quit(
+        Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart
+      );
     }
   }
 
@@ -61,13 +63,24 @@ class nsZenUIMigration {
     userContentFile.append("userContent.css");
     Services.prefs.setBoolPref(
       "zen.workspaces.separate-essentials",
-      Services.prefs.getBoolPref("zen.workspaces.container-specific-essentials-enabled", false)
+      Services.prefs.getBoolPref(
+        "zen.workspaces.container-specific-essentials-enabled",
+        false
+      )
     );
-    const theme = Services.prefs.getIntPref("layout.css.prefers-color-scheme.content-override", 0);
+    const theme = Services.prefs.getIntPref(
+      "layout.css.prefers-color-scheme.content-override",
+      0
+    );
     Services.prefs.setIntPref("zen.view.window.scheme", theme);
     if (userChromeFile.exists() || userContentFile.exists()) {
-      Services.prefs.setBoolPref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
-      console.warn("ZenUIMigration: User stylesheets detected, enabling legacy stylesheets.");
+      Services.prefs.setBoolPref(
+        "toolkit.legacyUserProfileCustomizations.stylesheets",
+        true
+      );
+      console.warn(
+        "ZenUIMigration: User stylesheets detected, enabling legacy stylesheets."
+      );
       this.shouldRestart = true;
     }
   }
@@ -79,7 +92,11 @@ class nsZenUIMigration {
   }
 
   _migrateV3() {
-    if (Services.prefs.getStringPref("zen.theme.accent-color", "").startsWith("system")) {
+    if (
+      Services.prefs
+        .getStringPref("zen.theme.accent-color", "")
+        .startsWith("system")
+    ) {
       Services.prefs.setStringPref("zen.theme.accent-color", "AccentColor");
     }
   }
@@ -100,20 +117,23 @@ class nsZenUIMigration {
     lazy.SessionStore.promiseAllWindowsRestored.then(() => {
       const win = Services.wm.getMostRecentWindow("navigator:browser");
       win.setTimeout(async () => {
-        const [title, message, learnMore, accept] = await win.document.l10n.formatMessages([
-          "zen-window-sync-migration-dialog-title",
-          "zen-window-sync-migration-dialog-message",
-          "zen-window-sync-migration-dialog-learn-more",
-          "zen-window-sync-migration-dialog-accept",
-        ]);
+        const [title, message, learnMore, accept] =
+          await win.document.l10n.formatMessages([
+            "zen-window-sync-migration-dialog-title",
+            "zen-window-sync-migration-dialog-message",
+            "zen-window-sync-migration-dialog-learn-more",
+            "zen-window-sync-migration-dialog-accept",
+          ]);
 
         // buttonPressed will be 0 for cancel, 1 for "more info"
         let buttonPressed = Services.prompt.confirmEx(
           win,
           title.value,
           message.value,
-          Services.prompt.BUTTON_POS_0 * Services.prompt.BUTTON_TITLE_IS_STRING +
-            Services.prompt.BUTTON_POS_1 * Services.prompt.BUTTON_TITLE_IS_STRING,
+          Services.prompt.BUTTON_POS_0 *
+            Services.prompt.BUTTON_TITLE_IS_STRING +
+            Services.prompt.BUTTON_POS_1 *
+              Services.prompt.BUTTON_TITLE_IS_STRING,
           learnMore.value,
           accept.value,
           null,
@@ -122,7 +142,10 @@ class nsZenUIMigration {
         );
         // User has clicked on "Learn More"
         if (buttonPressed === 0) {
-          win.openTrustedLinkIn("https://docs.zen-browser.app/user-manual/window-sync", "tab");
+          win.openTrustedLinkIn(
+            "https://docs.zen-browser.app/user-manual/window-sync",
+            "tab"
+          );
         }
       }, 1000);
     });

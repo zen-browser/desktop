@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = profil actuel
 unified-extensions-description = Les extensions sont utilisées pour ajouter plus de fonctionnalités à { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Réinitialiser l’onglet épinglé
+    .label =
+        { $isEssential ->
+            [true] Réinitialiser l'onglet Essential
+           *[false] Réinitialiser l'onglet épinglé
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Ajouter aux Essentials
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = Retirer des Essentials
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Remplacer l’URL épinglée par l’actuelle
+    .label =
+        { $isEssential ->
+            [true] Remplacer l'URL de l'Essential par l'actuelle
+           *[false] Remplacer l'URL de l'onglet épinglé par l'actuelle
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = Changer le libellé...
@@ -33,6 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimiser
 zen-panel-ui-gradient-generator-custom-color = Couleur personnalisée
 zen-copy-current-url-confirmation = URL actuelle copiée !
+zen-copy-current-url-as-markdown-confirmation = URL actuelle copiée en tant que Markdown !
 zen-general-cancel-label = 
     .label = Annuler
 zen-general-confirm = 
@@ -113,3 +122,5 @@ zen-window-sync-migration-dialog-title = Gardez vos fenêtres synchronisées
 zen-window-sync-migration-dialog-message = Zen synchronise désormais les fenêtres sur le même appareil, de sorte que les modifications apportées à une fenêtre sont instantanément répercutées sur les autres.
 zen-window-sync-migration-dialog-learn-more = En savoir plus
 zen-window-sync-migration-dialog-accept = J'ai compris
+zen-appmenu-new-blank-window = 
+    .label = Nouvelle fenêtre vide

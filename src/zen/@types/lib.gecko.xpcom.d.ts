@@ -143,7 +143,10 @@ declare global {
   interface nsIBitsRequest extends nsIRequest {
     readonly bitsId: string;
     readonly transferError: nsBitsErrorType;
-    changeMonitorInterval(monitorIntervalMs: u32, callback: nsIBitsCallback): void;
+    changeMonitorInterval(
+      monitorIntervalMs: u32,
+      callback: nsIBitsCallback
+    ): void;
     cancelAsync(status: nsresult, callback: nsIBitsCallback): void;
     setPriorityHigh(callback: nsIBitsCallback): void;
     setPriorityLow(callback: nsIBitsCallback): void;
@@ -193,7 +196,10 @@ declare global {
     getAccessibleFromCache(aNode: Node): nsIAccessible;
     setCacheDomains(aCacheDomains: u64): void;
     createAccessiblePivot(aRoot: nsIAccessible): nsIAccessiblePivot;
-    createTextLeafPoint(aAccessible: nsIAccessible, aOffset: i32): nsIAccessibleTextLeafPoint;
+    createTextLeafPoint(
+      aAccessible: nsIAccessible,
+      aOffset: i32
+    ): nsIAccessibleTextLeafPoint;
     setLogging(aModules: string): void;
     isLogged(aModule: string): boolean;
     getConsumers(): string;
@@ -835,7 +841,11 @@ declare global {
       startOffset: OutParam<i32>,
       endOffset: OutParam<i32>
     ): void;
-    setSelectionBounds(selectionNum: i32, startOffset: i32, endOffset: i32): void;
+    setSelectionBounds(
+      selectionNum: i32,
+      startOffset: i32,
+      endOffset: i32
+    ): void;
     addSelection(startOffset: i32, endOffset: i32): void;
     removeSelection(selectionNum: i32): void;
     scrollSubstringTo(startIndex: i32, endIndex: i32, scrollType: u32): void;
@@ -1033,7 +1043,10 @@ declare global {
       aInitialWidth: i32,
       aInitialHeight: i32
     ): nsIAppWindow;
-    createWindowlessBrowser(aIsChrome?: boolean, aChromeMask?: u32): nsIWindowlessBrowser;
+    createWindowlessBrowser(
+      aIsChrome?: boolean,
+      aChromeMask?: u32
+    ): nsIWindowlessBrowser;
     readonly hiddenWindow: nsIAppWindow;
     readonly hiddenDOMWindow: mozIDOMWindowProxy;
     registerTopLevelWindow(aWindow: nsIAppWindow): void;
@@ -1058,7 +1071,10 @@ declare global {
     lockAspectRatio(aShouldLock: boolean): void;
     chromeFlags: u32;
     assumeChromeFlagsAreFrozen(): void;
-    createNewWindow(aChromeFlags: i32, aOpenWindowInfo: nsIOpenWindowInfo): nsIAppWindow;
+    createNewWindow(
+      aChromeFlags: i32,
+      aOpenWindowInfo: nsIOpenWindowInfo
+    ): nsIAppWindow;
     XULBrowserWindow: nsIXULBrowserWindow;
     readonly initialOpenWindowInfo: nsIOpenWindowInfo;
     needFastSnaphot(): void;
@@ -1070,7 +1086,10 @@ declare global {
   interface nsIWindowMediator extends nsISupports {
     getEnumerator(aWindowType: string): nsISimpleEnumerator;
     getAppWindowEnumerator(aWindowType: string): nsISimpleEnumerator;
-    getZOrderAppWindowEnumerator(aWindowType: string, aFrontToBack: boolean): nsISimpleEnumerator;
+    getZOrderAppWindowEnumerator(
+      aWindowType: string,
+      aFrontToBack: boolean
+    ): nsISimpleEnumerator;
     getMostRecentWindow(aWindowType: string): mozIDOMWindowProxy;
     getMostRecentBrowserWindow(): mozIDOMWindowProxy;
     getMostRecentNonPBWindow(aWindowType: string): mozIDOMWindowProxy;
@@ -1100,7 +1119,13 @@ declare global {
 
   interface nsIXULBrowserWindow extends nsISupports {
     setOverLink(link: string): void;
-    showTooltip(x: i32, y: i32, tooltip: string, direction: string, browser: Element): void;
+    showTooltip(
+      x: i32,
+      y: i32,
+      tooltip: string,
+      direction: string,
+      browser: Element
+    ): void;
     hideTooltip(): void;
   }
 
@@ -1124,7 +1149,8 @@ declare global {
     type IDLShutdownPhase = nsIAppStartup_IDLShutdownPhase;
   }
 
-  interface nsIAppStartup extends nsISupports, Enums<typeof nsIAppStartup_IDLShutdownPhase> {
+  interface nsIAppStartup
+    extends nsISupports, Enums<typeof nsIAppStartup_IDLShutdownPhase> {
     readonly eConsiderQuit?: 1;
     readonly eAttemptQuit?: 2;
     readonly eForceQuit?: 3;
@@ -1282,7 +1308,10 @@ declare global {
   }
 
   interface nsIAutoCompleteObserver extends nsISupports {
-    onSearchResult(search: nsIAutoCompleteSearch, result: nsIAutoCompleteResult): void;
+    onSearchResult(
+      search: nsIAutoCompleteSearch,
+      result: nsIAutoCompleteResult
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/toolkit/components/autocomplete/nsIAutoCompleteSimpleResult.idl
@@ -1367,7 +1396,11 @@ declare global {
     getExtensionPageCSP(aAddonId: string): string;
     getGeneratedBackgroundPageUrl(aAddonId: string): string;
     addonHasPermission(aAddonId: string, aPerm: string): boolean;
-    addonMayLoadURI(aAddonId: string, aURI: nsIURI, aExplicit?: boolean): boolean;
+    addonMayLoadURI(
+      aAddonId: string,
+      aURI: nsIURI,
+      aExplicit?: boolean
+    ): boolean;
     getExtensionName(aAddonId: string): string;
     sourceMayLoadExtensionURI(
       aSourceURI: nsIURI,
@@ -1442,7 +1475,10 @@ declare global {
     isURIInList(list: string): boolean;
     isContentAccessibleAboutURI(): boolean;
     isSameOrigin(otherURI: nsIURI): boolean;
-    hasFirstpartyStorageAccess(aWindow: mozIDOMWindow, rejectedReason: OutParam<u32>): boolean;
+    hasFirstpartyStorageAccess(
+      aWindow: mozIDOMWindow,
+      rejectedReason: OutParam<u32>
+    ): boolean;
     readonly localStorageQuotaKey: string;
     readonly isOriginPotentiallyTrustworthy: boolean;
     readonly isLoopbackHost: boolean;
@@ -1498,13 +1534,30 @@ declare global {
       flags?: u32,
       innerWindowID?: u64
     ): void;
-    checkLoadURIStrWithPrincipalXPCOM(aPrincipal: nsIPrincipal, uri: string, flags: u32): void;
-    checkLoadURIStrWithPrincipal(aPrincipal: nsIPrincipal, uri: string, flags?: u32): void;
+    checkLoadURIStrWithPrincipalXPCOM(
+      aPrincipal: nsIPrincipal,
+      uri: string,
+      flags: u32
+    ): void;
+    checkLoadURIStrWithPrincipal(
+      aPrincipal: nsIPrincipal,
+      uri: string,
+      flags?: u32
+    ): void;
     inFileURIAllowlist(aUri: nsIURI): boolean;
     getSystemPrincipal(): nsIPrincipal;
-    getLoadContextContentPrincipal(uri: nsIURI, loadContext: nsILoadContext): nsIPrincipal;
-    getDocShellContentPrincipal(uri: nsIURI, docShell: nsIDocShell): nsIPrincipal;
-    principalWithOA(principal: nsIPrincipal, originAttributes: any): nsIPrincipal;
+    getLoadContextContentPrincipal(
+      uri: nsIURI,
+      loadContext: nsILoadContext
+    ): nsIPrincipal;
+    getDocShellContentPrincipal(
+      uri: nsIURI,
+      docShell: nsIDocShell
+    ): nsIPrincipal;
+    principalWithOA(
+      principal: nsIPrincipal,
+      originAttributes: any
+    ): nsIPrincipal;
     createContentPrincipal(uri: nsIURI, originAttributes: any): nsIPrincipal;
     createContentPrincipalFromOrigin(origin: string): nsIPrincipal;
     principalToJSON(principal: nsIPrincipal): string;
@@ -1538,7 +1591,10 @@ declare global {
   }
 
   interface nsICaptivePortalDetector extends nsISupports {
-    checkCaptivePortal(ifname: string, callback: nsICaptivePortalCallback): void;
+    checkCaptivePortal(
+      ifname: string,
+      callback: nsICaptivePortalCallback
+    ): void;
     abort(ifname: string): void;
     cancelLogin(eventId: string): void;
     finishPreparation(ifname: string): void;
@@ -1579,10 +1635,22 @@ declare global {
   // https://searchfox.org/mozilla-central/source/dom/commandhandler/nsICommandManager.idl
 
   interface nsICommandManager extends nsISupports {
-    addCommandObserver(aCommandObserver: nsIObserver, aCommandToObserve: string): void;
-    removeCommandObserver(aCommandObserver: nsIObserver, aCommandObserved: string): void;
-    isCommandSupported(aCommandName: string, aTargetWindow: mozIDOMWindowProxy): boolean;
-    isCommandEnabled(aCommandName: string, aTargetWindow: mozIDOMWindowProxy): boolean;
+    addCommandObserver(
+      aCommandObserver: nsIObserver,
+      aCommandToObserve: string
+    ): void;
+    removeCommandObserver(
+      aCommandObserver: nsIObserver,
+      aCommandObserved: string
+    ): void;
+    isCommandSupported(
+      aCommandName: string,
+      aTargetWindow: mozIDOMWindowProxy
+    ): boolean;
+    isCommandEnabled(
+      aCommandName: string,
+      aTargetWindow: mozIDOMWindowProxy
+    ): boolean;
     getCommandState(
       aCommandName: string,
       aTargetWindow: mozIDOMWindowProxy,
@@ -1807,7 +1875,8 @@ declare global {
   }
 
   interface nsIDocShell
-    extends nsIDocShellTreeItem,
+    extends
+      nsIDocShellTreeItem,
       Enums<
         typeof nsIDocShell_DocShellEnumeratorDirection &
           typeof nsIDocShell_AppType &
@@ -1933,7 +2002,10 @@ declare global {
   // https://searchfox.org/mozilla-central/source/docshell/base/nsIDocShellTreeOwner.idl
 
   interface nsIDocShellTreeOwner extends nsISupports {
-    contentShellAdded(aContentShell: nsIDocShellTreeItem, aPrimary: boolean): void;
+    contentShellAdded(
+      aContentShell: nsIDocShellTreeItem,
+      aPrimary: boolean
+    ): void;
     contentShellRemoved(aContentShell: nsIDocShellTreeItem): void;
     readonly primaryContentShell: nsIDocShellTreeItem;
     remoteTabAdded(aTab: nsIRemoteTab, aPrimary: boolean): void;
@@ -1999,9 +2071,11 @@ declare global {
   }
 
   interface nsIDocumentViewer
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<
-        typeof nsIDocumentViewer_PermitUnloadAction & typeof nsIDocumentViewer_PermitUnloadResult
+        typeof nsIDocumentViewer_PermitUnloadAction &
+          typeof nsIDocumentViewer_PermitUnloadResult
       > {
     readonly eDelayResize?: 1;
 
@@ -2021,7 +2095,10 @@ declare global {
     sticky: boolean;
     open(aState: nsISupports, aSHEntry: nsISHEntry): void;
     clearHistoryEntry(): void;
-    setPageModeForTesting(aPageMode: boolean, aPrintSettings: nsIPrintSettings): void;
+    setPageModeForTesting(
+      aPageMode: boolean,
+      aPrintSettings: nsIPrintSettings
+    ): void;
     readonly historyEntry: nsISHEntry;
     readonly isTabModalPromptAllowed: boolean;
     isHidden: boolean;
@@ -2087,7 +2164,10 @@ declare global {
 
   interface nsIReflowObserver extends nsISupports {
     reflow(start: DOMHighResTimeStamp, end: DOMHighResTimeStamp): void;
-    reflowInterruptible(start: DOMHighResTimeStamp, end: DOMHighResTimeStamp): void;
+    reflowInterruptible(
+      start: DOMHighResTimeStamp,
+      end: DOMHighResTimeStamp
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/docshell/base/nsIRefreshURI.idl
@@ -2102,14 +2182,23 @@ declare global {
   // https://searchfox.org/mozilla-central/source/docshell/base/nsITooltipListener.idl
 
   interface nsITooltipListener extends nsISupports {
-    onShowTooltip(aXCoords: i32, aYCoords: i32, aTipText: string, aTipDir: string): void;
+    onShowTooltip(
+      aXCoords: i32,
+      aYCoords: i32,
+      aTipText: string,
+      aTipDir: string
+    ): void;
     onHideTooltip(): void;
   }
 
   // https://searchfox.org/mozilla-central/source/docshell/base/nsITooltipTextProvider.idl
 
   interface nsITooltipTextProvider extends nsISupports {
-    getNodeText(aNode: Node, aText: OutParam<string>, aDirection: OutParam<string>): boolean;
+    getNodeText(
+      aNode: Node,
+      aText: OutParam<string>,
+      aDirection: OutParam<string>
+    ): boolean;
   }
 
   // https://searchfox.org/mozilla-central/source/docshell/base/nsIURIFixup.idl
@@ -2136,9 +2225,16 @@ declare global {
 
     getFixupURIInfo(aURIText: string, aFixupFlags?: u32): nsIURIFixupInfo;
     webNavigationFlagsToFixupFlags(aURIText: string, aDocShellFlags: u32): u32;
-    keywordToURI(aKeyword: string, aIsPrivateContext?: boolean): nsIURIFixupInfo;
+    keywordToURI(
+      aKeyword: string,
+      aIsPrivateContext?: boolean
+    ): nsIURIFixupInfo;
     forceHttpFixup(aUriString: string): nsIURIFixupInfo;
-    checkHost(aURI: nsIURI, aListener: nsIDNSListener, aOriginAttributes?: any): void;
+    checkHost(
+      aURI: nsIURI,
+      aListener: nsIDNSListener,
+      aOriginAttributes?: any
+    ): void;
     isDomainKnown(aDomain: string): boolean;
   }
 
@@ -2178,7 +2274,10 @@ declare global {
     readonly canGoBackIgnoringUserInteraction: boolean;
     readonly canGoForward: boolean;
     goBack(aRequireUserInteraction?: boolean, aUserActivation?: boolean): void;
-    goForward(aRequireUserInteraction?: boolean, aUserActivation?: boolean): void;
+    goForward(
+      aRequireUserInteraction?: boolean,
+      aUserActivation?: boolean
+    ): void;
     gotoIndex(index: i32, aUserActivation?: boolean): void;
     loadURI(aURI: nsIURI, aLoadURIOptions: any): void;
     fixupAndLoadURIString(aURIString: string, aLoadURIOptions: any): void;
@@ -2288,8 +2387,7 @@ declare global {
   }
 
   interface nsIContentPolicy
-    extends nsISupports,
-      Enums<typeof nsIContentPolicy_nsContentPolicyType> {
+    extends nsISupports, Enums<typeof nsIContentPolicy_nsContentPolicyType> {
     readonly REJECT_REQUEST?: -1;
     readonly REJECT_TYPE?: -2;
     readonly REJECT_SERVER?: -3;
@@ -2311,8 +2409,15 @@ declare global {
 
   interface nsIDroppedLinkHandler extends nsISupports {
     canDropLink(aEvent: DragEvent, aAllowSameDocument: boolean): boolean;
-    dropLinks(aEvent: DragEvent, aDisallowInherit?: boolean): nsIDroppedLinkItem[];
-    validateURIsForDrop(aEvent: DragEvent, aURIs: string[], aDisallowInherit?: boolean): void;
+    dropLinks(
+      aEvent: DragEvent,
+      aDisallowInherit?: boolean
+    ): nsIDroppedLinkItem[];
+    validateURIsForDrop(
+      aEvent: DragEvent,
+      aURIs: string[],
+      aDisallowInherit?: boolean
+    ): void;
     queryLinks(aDataTransfer: DataTransfer): nsIDroppedLinkItem[];
     getTriggeringPrincipal(aEvent: DragEvent): nsIPrincipal;
     getPolicyContainer(aEvent: DragEvent): nsIPolicyContainer;
@@ -2334,8 +2439,14 @@ declare global {
   }
 
   interface nsIEventSourceEventService extends nsISupports {
-    addListener(aInnerWindowID: u64, aListener: nsIEventSourceEventListener): void;
-    removeListener(aInnerWindowID: u64, aListener: nsIEventSourceEventListener): void;
+    addListener(
+      aInnerWindowID: u64,
+      aListener: nsIEventSourceEventListener
+    ): void;
+    removeListener(
+      aInnerWindowID: u64,
+      aListener: nsIEventSourceEventListener
+    ): void;
     hasListenerFor(aInnerWindowID: u64): boolean;
   }
 
@@ -2381,10 +2492,17 @@ declare global {
   }
 
   interface nsIScriptableContentIterator
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<typeof nsIScriptableContentIterator_IteratorType> {
-    initWithRootNode(aType: nsIScriptableContentIterator.IteratorType, aRoot: Node): void;
-    initWithRange(aType: nsIScriptableContentIterator.IteratorType, aRange: Range): void;
+    initWithRootNode(
+      aType: nsIScriptableContentIterator.IteratorType,
+      aRoot: Node
+    ): void;
+    initWithRange(
+      aType: nsIScriptableContentIterator.IteratorType,
+      aRange: Range
+    ): void;
     initWithRangeAllowCrossShadowBoundary(
       aType: nsIScriptableContentIterator.IteratorType,
       aRange: Range
@@ -2424,7 +2542,8 @@ declare global {
   }
 
   interface nsISelectionController
-    extends nsISelectionDisplay,
+    extends
+      nsISelectionDisplay,
       Enums<typeof nsISelectionController_ControllerScrollFlags> {
     readonly SELECTION_NONE?: 0;
     readonly SELECTION_NORMAL?: 1;
@@ -2516,7 +2635,12 @@ declare global {
     readonly NO_AMOUNT?: 7;
     readonly PARAGRAPH_AMOUNT?: 8;
 
-    notifySelectionChanged(doc: Document, sel: Selection, reason: i16, amount: i32): void;
+    notifySelectionChanged(
+      doc: Document,
+      sel: Selection,
+      reason: i16,
+      amount: i32
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/dom/base/nsISlowScriptDebug.idl
@@ -2625,7 +2749,11 @@ declare global {
     readonly referrerInfo: nsIReferrerInfo;
     isNavigating: boolean;
     mayEnableCharacterEncodingMenu: boolean;
-    updateForStateChange(aCharset: string, aDocumentURI: nsIURI, aContentType: string): void;
+    updateForStateChange(
+      aCharset: string,
+      aDocumentURI: nsIURI,
+      aContentType: string
+    ): void;
     updateWebNavigationForLocationChange(
       aCanGoBack: boolean,
       aCanGoBackIgnoringUserInteraction: boolean,
@@ -2755,14 +2883,27 @@ declare global {
   // https://searchfox.org/mozilla-central/source/dom/interfaces/base/nsIContentPrefService2.idl
 
   interface nsIContentPrefObserver extends nsISupports {
-    onContentPrefSet(aGroup: string, aName: string, aValue: nsIVariant, aIsPrivate?: boolean): void;
-    onContentPrefRemoved(aGroup: string, aName: string, aIsPrivate?: boolean): void;
+    onContentPrefSet(
+      aGroup: string,
+      aName: string,
+      aValue: nsIVariant,
+      aIsPrivate?: boolean
+    ): void;
+    onContentPrefRemoved(
+      aGroup: string,
+      aName: string,
+      aIsPrivate?: boolean
+    ): void;
   }
 
   interface nsIContentPrefService2 extends nsISupports {
     readonly GROUP_NAME_MAX_LENGTH?: 2000;
 
-    getByName(name: string, context: nsILoadContext, callback: nsIContentPrefCallback2): void;
+    getByName(
+      name: string,
+      context: nsILoadContext,
+      callback: nsIContentPrefCallback2
+    ): void;
     getByDomainAndName(
       domain: string,
       name: string,
@@ -2775,8 +2916,16 @@ declare global {
       context: nsILoadContext,
       callback: nsIContentPrefCallback2
     ): void;
-    getGlobal(name: string, context: nsILoadContext, callback: nsIContentPrefCallback2): void;
-    getCachedByDomainAndName(domain: string, name: string, context: nsILoadContext): nsIContentPref;
+    getGlobal(
+      name: string,
+      context: nsILoadContext,
+      callback: nsIContentPrefCallback2
+    ): void;
+    getCachedByDomainAndName(
+      domain: string,
+      name: string,
+      context: nsILoadContext
+    ): nsIContentPref;
     getCachedBySubdomainAndName(
       domain: string,
       name: string,
@@ -2808,7 +2957,11 @@ declare global {
       context: nsILoadContext,
       callback?: nsIContentPrefCallback2
     ): void;
-    removeGlobal(name: string, context: nsILoadContext, callback?: nsIContentPrefCallback2): void;
+    removeGlobal(
+      name: string,
+      context: nsILoadContext,
+      callback?: nsIContentPrefCallback2
+    ): void;
     removeByDomain(
       domain: string,
       context: nsILoadContext,
@@ -2819,14 +2972,24 @@ declare global {
       context: nsILoadContext,
       callback?: nsIContentPrefCallback2
     ): void;
-    removeByName(name: string, context: nsILoadContext, callback?: nsIContentPrefCallback2): void;
-    removeAllDomains(context: nsILoadContext, callback?: nsIContentPrefCallback2): void;
+    removeByName(
+      name: string,
+      context: nsILoadContext,
+      callback?: nsIContentPrefCallback2
+    ): void;
+    removeAllDomains(
+      context: nsILoadContext,
+      callback?: nsIContentPrefCallback2
+    ): void;
     removeAllDomainsSince(
       since: u64,
       context: nsILoadContext,
       callback?: nsIContentPrefCallback2
     ): void;
-    removeAllGlobals(context: nsILoadContext, callback?: nsIContentPrefCallback2): void;
+    removeAllGlobals(
+      context: nsILoadContext,
+      callback?: nsIContentPrefCallback2
+    ): void;
     addObserverForName(name: string, observer: nsIContentPrefObserver): void;
     removeObserverForName(name: string, observer: nsIContentPrefObserver): void;
     extractDomain(str: string): string;
@@ -2875,8 +3038,7 @@ declare global {
   }
 
   interface nsIDOMWindowUtils
-    extends nsISupports,
-      Enums<typeof nsIDOMWindowUtils_AsyncEnabledOption> {
+    extends nsISupports, Enums<typeof nsIDOMWindowUtils_AsyncEnabledOption> {
     readonly MODIFIER_ALT?: 1;
     readonly MODIFIER_CONTROL?: 2;
     readonly MODIFIER_SHIFT?: 4;
@@ -3000,7 +3162,10 @@ declare global {
     readonly docCharsetIsForced: boolean;
     readonly physicalMillimeterInCSSPixels: float;
     getDocumentMetadata(aName: string): string;
-    getLastOverWindowPointerLocationInCSSPixels(aX: OutParam<float>, aY: OutParam<float>): void;
+    getLastOverWindowPointerLocationInCSSPixels(
+      aX: OutParam<float>,
+      aY: OutParam<float>
+    ): void;
     updateLayerTree(): void;
     readonly lastTransactionId: u64;
     getViewportInfo(
@@ -3015,8 +3180,15 @@ declare global {
       aAutoSize: OutParam<boolean>
     ): void;
     getViewportFitInfo(): string;
-    getDocumentViewerSize(aDisplayWidth: OutParam<u32>, aDisplayHeight: OutParam<u32>): void;
-    setMousewheelAutodir(aElement: Element, aEnabled: boolean, aHonourRoot: boolean): void;
+    getDocumentViewerSize(
+      aDisplayWidth: OutParam<u32>,
+      aDisplayHeight: OutParam<u32>
+    ): void;
+    setMousewheelAutodir(
+      aElement: Element,
+      aEnabled: boolean,
+      aHonourRoot: boolean
+    ): void;
     setDisplayPortForElement(
       aXPx: float,
       aYPx: float,
@@ -3047,7 +3219,11 @@ declare global {
     ): void;
     setResolutionAndScaleTo(aResolution: float): void;
     getResolution(): float;
-    setRestoreResolution(aResolution: float, aDisplayWidth: u32, aDisplayHeight: u32): void;
+    setRestoreResolution(
+      aResolution: float,
+      aDisplayWidth: u32,
+      aDisplayHeight: u32
+    ): void;
     isFirstPaint: boolean;
     getPresShellId(): u32;
     isCORSSafelistedRequestHeader(name: string, value: string): boolean;
@@ -3174,7 +3350,11 @@ declare global {
       aCallback?: nsISynthesizedEventCallback,
       aElement?: Element
     ): void;
-    sendNativeTouchpadDoubleTap(aScreenX: i32, aScreenY: i32, aModifierFlags: i32): void;
+    sendNativeTouchpadDoubleTap(
+      aScreenX: i32,
+      aScreenY: i32,
+      aModifierFlags: i32
+    ): void;
     sendNativeTouchpadPan(
       aEventPhase: u32,
       aScreenX: i32,
@@ -3231,25 +3411,56 @@ declare global {
     readonly isInputTaskManagerSuspended: boolean;
     suppressEventHandling(aSuppress: boolean): void;
     disableNonTestMouseEvents(aDisable: boolean): void;
-    getScrollXY(aFlushLayout: boolean, aScrollX: OutParam<i32>, aScrollY: OutParam<i32>): void;
+    getScrollXY(
+      aFlushLayout: boolean,
+      aScrollX: OutParam<i32>,
+      aScrollY: OutParam<i32>
+    ): void;
     getScrollXYFloat(
       aFlushLayout: boolean,
       aScrollX: OutParam<float>,
       aScrollY: OutParam<float>
     ): void;
-    getScrollbarSize(aFlushLayout: boolean, aWidth: OutParam<i32>, aHeight: OutParam<i32>): void;
+    getScrollbarSize(
+      aFlushLayout: boolean,
+      aWidth: OutParam<i32>,
+      aHeight: OutParam<i32>
+    ): void;
     getBoundsWithoutFlushing(aElement: Element): DOMRect;
     getWidgetOpaqueRegion(): DOMRect[];
-    scrollToVisual(aOffsetX: float, aOffsetY: float, aUpdateType: i32, aScrollMode: i32): void;
+    scrollToVisual(
+      aOffsetX: float,
+      aOffsetY: float,
+      aUpdateType: i32,
+      aScrollMode: i32
+    ): void;
     getVisualViewportOffsetRelativeToLayoutViewport(
       aOffsetX: OutParam<float>,
       aOffsetY: OutParam<float>
     ): void;
-    getVisualViewportOffset(aOffsetX: OutParam<i32>, aOffsetY: OutParam<i32>): void;
-    transformRectLayoutToVisual(aX: float, aY: float, aWidth: float, aHeight: float): DOMRect;
-    toScreenRectInCSSUnits(aX: float, aY: float, aWidth: float, aHeight: float): DOMRect;
+    getVisualViewportOffset(
+      aOffsetX: OutParam<i32>,
+      aOffsetY: OutParam<i32>
+    ): void;
+    transformRectLayoutToVisual(
+      aX: float,
+      aY: float,
+      aWidth: float,
+      aHeight: float
+    ): DOMRect;
+    toScreenRectInCSSUnits(
+      aX: float,
+      aY: float,
+      aWidth: float,
+      aHeight: float
+    ): DOMRect;
     toScreenRect(aX: float, aY: float, aWidth: float, aHeight: float): DOMRect;
-    toTopLevelWidgetRect(aX: float, aY: float, aWidth: float, aHeight: float): DOMRect;
+    toTopLevelWidgetRect(
+      aX: float,
+      aY: float,
+      aWidth: float,
+      aHeight: float
+    ): DOMRect;
     convertFromParentProcessWidgetToLocal(
       aX: float,
       aY: float,
@@ -3265,7 +3476,10 @@ declare global {
     readonly inputContextURI: nsIURI;
     readonly inputContextOrigin: u32;
     readonly nodeObservedByIMEContentObserver: Node;
-    dispatchDOMEventViaPresShellForTesting(aTarget: Node, aEvent: Event): boolean;
+    dispatchDOMEventViaPresShellForTesting(
+      aTarget: Node,
+      aEvent: Event
+    ): boolean;
     dispatchEventToChromeOnly(aTarget: EventTarget, aEvent: Event): boolean;
     getClassName(aObject: any): string;
     sendContentCommandEvent(
@@ -3288,7 +3502,11 @@ declare global {
     remoteFrameFullscreenReverted(): void;
     handleFullscreenRequests(): boolean;
     exitFullscreen(aDontRestoreViewSize?: boolean): void;
-    sendSelectionSetEvent(aOffset: u32, aLength: u32, aAdditionalFlags?: u32): boolean;
+    sendSelectionSetEvent(
+      aOffset: u32,
+      aLength: u32,
+      aAdditionalFlags?: u32
+    ): boolean;
     selectAtPoint(aX: float, aY: float, aSelectBehavior: u32): boolean;
     getVisitedDependentComputedStyle(
       aElement: Element,
@@ -3373,7 +3591,11 @@ declare global {
     allowScriptsToClose(): void;
     readonly isParentWindowMainWidgetVisible: boolean;
     isNodeDisabledForEvents(aNode: Node): boolean;
-    getOMTAStyle(aElement: Element, aProperty: string, aPseudoElement?: string): string;
+    getOMTAStyle(
+      aElement: Element,
+      aProperty: string,
+      aPseudoElement?: string
+    ): string;
     setHandlingUserInput(aHandlingInput: boolean): nsIJSRAIIHelper;
     isKeyboardEventUserActivity(aKeyboardEvent: Event): boolean;
     getContentAPZTestData(aElement?: Element): any;
@@ -3540,7 +3762,8 @@ declare global {
     type NavigationType = nsIRemoteTab_NavigationType;
   }
 
-  interface nsIRemoteTab extends nsISupports, Enums<typeof nsIRemoteTab_NavigationType> {
+  interface nsIRemoteTab
+    extends nsISupports, Enums<typeof nsIRemoteTab_NavigationType> {
     renderLayers: boolean;
     readonly hasLayers: boolean;
     priorityHint: boolean;
@@ -3630,9 +3853,15 @@ declare global {
 
   interface nsIServiceWorkerManager extends nsISupports {
     reloadRegistrationsForTest(): void;
-    registerForTest(aPrincipal: nsIPrincipal, aScope: string, aScriptURL: string): Promise<any>;
+    registerForTest(
+      aPrincipal: nsIPrincipal,
+      aScope: string,
+      aScriptURL: string
+    ): Promise<any>;
     registerForAddonPrincipal(aPrincipal: nsIPrincipal): Promise<any>;
-    getRegistrationForAddonPrincipal(aPrincipal: nsIPrincipal): nsIServiceWorkerRegistrationInfo;
+    getRegistrationForAddonPrincipal(
+      aPrincipal: nsIPrincipal
+    ): nsIServiceWorkerRegistrationInfo;
     wakeForExtensionAPIEvent(
       aExtensionBaseURL: string,
       aAPINamespace: string,
@@ -3655,7 +3884,11 @@ declare global {
       aCallback: nsIServiceWorkerUnregisterCallback,
       aScope: string
     ): void;
-    sendPushEvent(aOriginAttributes: string, aScope: string, aDataBytes?: u8[]): void;
+    sendPushEvent(
+      aOriginAttributes: string,
+      aScope: string,
+      aDataBytes?: u8[]
+    ): void;
     sendPushSubscriptionChangeEvent(
       aOriginAttributes: string,
       scope: string,
@@ -3709,14 +3942,25 @@ declare global {
     setCaretInPendingComposition(aOffset: u32): void;
     flushPendingComposition(aKeyboardEvent?: Event, aKeyFlags?: u32): boolean;
     commitComposition(aKeyboardEvent?: Event, aKeyFlags?: u32): void;
-    commitCompositionWith(aCommitString: string, aKeyboardEvent?: Event, aKeyFlags?: u32): boolean;
+    commitCompositionWith(
+      aCommitString: string,
+      aKeyboardEvent?: Event,
+      aKeyFlags?: u32
+    ): boolean;
     cancelComposition(aKeyboardEvent?: Event, aKeyFlags?: u32): void;
     keydown(aKeyboardEvent: Event, aKeyFlags?: u32): u32;
     keyup(aKeyboardEvent: Event, aKeyFlags?: u32): boolean;
-    insertTextWithKeyPress(aString: string, aKeyboardEvent?: Event, aKeyFlags?: u32): boolean;
+    insertTextWithKeyPress(
+      aString: string,
+      aKeyboardEvent?: Event,
+      aKeyFlags?: u32
+    ): boolean;
     getModifierState(aModifierKey: string): boolean;
     shareModifierStateOf(aOther: nsITextInputProcessor): void;
-    computeCodeValueOfNonPrintableKey(aKeyValue: string, aLocation?: any): string;
+    computeCodeValueOfNonPrintableKey(
+      aKeyValue: string,
+      aLocation?: any
+    ): string;
     guessCodeValueOfPrintableKeyInUSEnglishKeyboardLayout(
       aKeyValue: string,
       aLocation?: any
@@ -3869,11 +4113,22 @@ declare global {
 
   interface nsICredentialChooserService extends nsISupports {
     fetchImageToDataURI(window: mozIDOMWindow, uri: nsIURI): Promise<any>;
-    fetchWellKnown(uri: nsIURI, triggeringPrincipal: nsIPrincipal): Promise<any>;
+    fetchWellKnown(
+      uri: nsIURI,
+      triggeringPrincipal: nsIPrincipal
+    ): Promise<any>;
     fetchConfig(uri: nsIURI, triggeringPrincipal: nsIPrincipal): Promise<any>;
     fetchAccounts(uri: nsIURI, triggeringPrincipal: nsIPrincipal): Promise<any>;
-    fetchToken(uri: nsIURI, body: string, triggeringPrincipal: nsIPrincipal): Promise<any>;
-    fetchDisconnect(uri: nsIURI, body: string, triggeringPrincipal: nsIPrincipal): Promise<any>;
+    fetchToken(
+      uri: nsIURI,
+      body: string,
+      triggeringPrincipal: nsIPrincipal
+    ): Promise<any>;
+    fetchDisconnect(
+      uri: nsIURI,
+      body: string,
+      triggeringPrincipal: nsIPrincipal
+    ): Promise<any>;
   }
 
   // https://searchfox.org/mozilla-central/source/toolkit/components/credentialmanagement/nsICredentialChosenCallback.idl
@@ -3916,7 +4171,11 @@ declare global {
       registered: OutParam<boolean>,
       allowLogout: OutParam<boolean>
     ): void;
-    delete(rpPrincipal: nsIPrincipal, idpPrincipal: nsIPrincipal, credentialID: string): void;
+    delete(
+      rpPrincipal: nsIPrincipal,
+      idpPrincipal: nsIPrincipal,
+      credentialID: string
+    ): void;
     connected(
       rpPrincipal: nsIPrincipal,
       idpPrincipal: nsIPrincipal,
@@ -4069,7 +4328,11 @@ declare global {
   }>;
 
   interface nsINotificationStorage extends nsISupports {
-    put(aOrigin: string, aEntry: nsINotificationStorageEntry, aScope: string): void;
+    put(
+      aOrigin: string,
+      aEntry: nsINotificationStorageEntry,
+      aScope: string
+    ): void;
     get(
       origin: string,
       scope: string,
@@ -4362,14 +4625,24 @@ declare global {
 
   interface nsIPushNotifier extends nsISupports {
     notifyPush(scope: string, principal: nsIPrincipal, messageId: string): void;
-    notifyPushWithData(scope: string, principal: nsIPrincipal, messageId: string, data: u8[]): void;
+    notifyPushWithData(
+      scope: string,
+      principal: nsIPrincipal,
+      messageId: string,
+      data: u8[]
+    ): void;
     notifySubscriptionChange(
       scope: string,
       principal: nsIPrincipal,
       oldSubscription?: nsIPushSubscription
     ): void;
     notifySubscriptionModified(scope: string, principal: nsIPrincipal): void;
-    notifyError(scope: string, principal: nsIPrincipal, message: string, flags: u32): void;
+    notifyError(
+      scope: string,
+      principal: nsIPrincipal,
+      message: string,
+      flags: u32
+    ): void;
   }
 
   interface nsIPushData extends nsISupports {
@@ -4398,7 +4671,10 @@ declare global {
   }
 
   type nsIPushSubscriptionCallback = Callable<{
-    onPushSubscription(status: nsresult, subscription: nsIPushSubscription): void;
+    onPushSubscription(
+      status: nsresult,
+      subscription: nsIPushSubscription
+    ): void;
   }>;
 
   type nsIUnsubscribeResultCallback = Callable<{
@@ -4413,7 +4689,11 @@ declare global {
     readonly pushTopic: string;
     readonly subscriptionChangeTopic: string;
     readonly subscriptionModifiedTopic: string;
-    subscribe(scope: string, principal: nsIPrincipal, callback: nsIPushSubscriptionCallback): void;
+    subscribe(
+      scope: string,
+      principal: nsIPrincipal,
+      callback: nsIPushSubscriptionCallback
+    ): void;
     subscribeWithKey(
       scope: string,
       principal: nsIPrincipal,
@@ -4435,7 +4715,10 @@ declare global {
       originAttributesPattern: any,
       callback: nsIPushClearResultCallback
     ): void;
-    clearForPrincipal(principal: nsIPrincipal, callback: nsIPushClearResultCallback): void;
+    clearForPrincipal(
+      principal: nsIPrincipal,
+      callback: nsIPushClearResultCallback
+    ): void;
   }
 
   interface nsIPushQuotaManager extends nsISupports {
@@ -4459,8 +4742,7 @@ declare global {
   }
 
   interface nsIQuotaArtificialFailure
-    extends nsISupports,
-      Enums<typeof nsIQuotaArtificialFailure_Category> {}
+    extends nsISupports, Enums<typeof nsIQuotaArtificialFailure_Category> {}
 
   // https://searchfox.org/mozilla-central/source/dom/quota/nsIQuotaCallbacks.idl
 
@@ -4481,7 +4763,10 @@ declare global {
     temporaryStorageInitialized(): nsIQuotaRequest;
     temporaryGroupInitialized(aPrincipal: nsIPrincipal): nsIQuotaRequest;
     persistentOriginInitialized(aPrincipal: nsIPrincipal): nsIQuotaRequest;
-    temporaryOriginInitialized(aPersistenceType: string, aPrincipal: nsIPrincipal): nsIQuotaRequest;
+    temporaryOriginInitialized(
+      aPersistenceType: string,
+      aPrincipal: nsIPrincipal
+    ): nsIQuotaRequest;
     init(): nsIQuotaRequest;
     initializePersistentStorage(): nsIQuotaRequest;
     initTemporaryStorage(): nsIQuotaRequest;
@@ -4493,15 +4778,24 @@ declare global {
       aPrincipal: nsIPrincipal,
       aCreateIfNonExistent?: boolean
     ): nsIQuotaRequest;
-    initializePersistentClient(aPrincipal: nsIPrincipal, aClientType: string): nsIQuotaRequest;
+    initializePersistentClient(
+      aPrincipal: nsIPrincipal,
+      aClientType: string
+    ): nsIQuotaRequest;
     initializeTemporaryClient(
       aPersistenceType: string,
       aPrincipal: nsIPrincipal,
       aClientType: string,
       aCreateIfNonExistent?: boolean
     ): nsIQuotaRequest;
-    getFullOriginMetadata(aPersistenceType: string, aPrincipal: nsIPrincipal): nsIQuotaRequest;
-    getUsage(aCallback: nsIQuotaUsageCallback, aGetAll?: boolean): nsIQuotaUsageRequest;
+    getFullOriginMetadata(
+      aPersistenceType: string,
+      aPrincipal: nsIPrincipal
+    ): nsIQuotaRequest;
+    getUsage(
+      aCallback: nsIQuotaUsageCallback,
+      aGetAll?: boolean
+    ): nsIQuotaUsageRequest;
     getUsageForPrincipal(
       aPrincipal: nsIPrincipal,
       aCallback: nsIQuotaUsageCallback
@@ -4512,7 +4806,10 @@ declare global {
     clear(): nsIQuotaRequest;
     clearStoragesForPrivateBrowsing(): nsIQuotaRequest;
     clearStoragesForOriginAttributesPattern(aPattern: string): nsIQuotaRequest;
-    clearStoragesForPrincipal(aPrincipal: nsIPrincipal, aPersistenceType?: string): nsIQuotaRequest;
+    clearStoragesForPrincipal(
+      aPrincipal: nsIPrincipal,
+      aPersistenceType?: string
+    ): nsIQuotaRequest;
     clearStoragesForClient(
       aPrincipal: nsIPrincipal,
       aClientType: string,
@@ -4523,7 +4820,10 @@ declare global {
       aPersistenceType?: string
     ): nsIQuotaRequest;
     reset(): nsIQuotaRequest;
-    resetStoragesForPrincipal(aPrincipal: nsIPrincipal, aPersistenceType?: string): nsIQuotaRequest;
+    resetStoragesForPrincipal(
+      aPrincipal: nsIPrincipal,
+      aPersistenceType?: string
+    ): nsIQuotaRequest;
     resetStoragesForClient(
       aPrincipal: nsIPrincipal,
       aClientType: string,
@@ -4661,7 +4961,8 @@ declare global {
   }
 
   interface nsIContentSecurityPolicy
-    extends nsISerializable,
+    extends
+      nsISerializable,
       Enums<
         typeof nsIContentSecurityPolicy_CSPDirective &
           typeof nsIContentSecurityPolicy_RequireTrustedTypesForDirectiveState
@@ -4674,7 +4975,11 @@ declare global {
     readonly upgradeInsecureRequests: boolean;
     readonly blockAllMixedContent: boolean;
     readonly enforcesFrameAncestors: boolean;
-    appendPolicy(policyString: string, reportOnly: boolean, deliveredViaMetaTag: boolean): void;
+    appendPolicy(
+      policyString: string,
+      reportOnly: boolean,
+      deliveredViaMetaTag: boolean
+    ): void;
     readonly requireTrustedTypesForDirectiveState: nsIContentSecurityPolicy.RequireTrustedTypesForDirectiveState;
     getAllowsInline(
       aDirective: nsIContentSecurityPolicy.CSPDirective,
@@ -4764,8 +5069,7 @@ declare global {
   }
 
   interface nsIReferrerInfo
-    extends nsISerializable,
-      Enums<typeof nsIReferrerInfo_ReferrerPolicyIDL> {
+    extends nsISerializable, Enums<typeof nsIReferrerInfo_ReferrerPolicyIDL> {
     readonly originalReferrer: nsIURI;
     readonly referrerPolicy: nsIReferrerInfo.ReferrerPolicyIDL;
     getReferrerPolicyString(): string;
@@ -4897,7 +5201,10 @@ declare global {
   // https://searchfox.org/mozilla-central/source/dom/interfaces/storage/nsIDOMStorageManager.idl
 
   interface nsIDOMStorageManager extends nsISupports {
-    precacheStorage(aPrincipal: nsIPrincipal, aStoragePrincipal: nsIPrincipal): Storage;
+    precacheStorage(
+      aPrincipal: nsIPrincipal,
+      aStoragePrincipal: nsIPrincipal
+    ): Storage;
     createStorage(
       aWindow: mozIDOMWindow,
       aPrincipal: nsIPrincipal,
@@ -4937,7 +5244,10 @@ declare global {
     readonly PERMISSION_STATE_DENIED?: 2;
     readonly PERMISSION_STATE_AUTHORIZED?: 3;
 
-    getMediaCapturePermissionState(aVideo: OutParam<u16>, aAudio: OutParam<u16>): void;
+    getMediaCapturePermissionState(
+      aVideo: OutParam<u16>,
+      aAudio: OutParam<u16>
+    ): void;
     getAudioCapturePermissionState(aAudio: OutParam<u16>): void;
     getVideoCapturePermissionState(aVideo: OutParam<u16>): void;
     getScreenCapturePermissionState(aScreen: OutParam<u16>): void;
@@ -5032,7 +5342,12 @@ declare global {
     dispatchPause(aElapsedTime: float, aCharIndex: u32): void;
     dispatchResume(aElapsedTime: float, aCharIndex: u32): void;
     dispatchError(aElapsedTime: float, aCharIndex: u32): void;
-    dispatchBoundary(aName: string, aElapsedTime: float, aCharIndex: u32, aCharLength?: u32): void;
+    dispatchBoundary(
+      aName: string,
+      aElapsedTime: float,
+      aCharIndex: u32,
+      aCharLength?: u32
+    ): void;
     dispatchMark(aName: string, aElapsedTime: float, aCharIndex: u32): void;
   }
 
@@ -5131,7 +5446,12 @@ declare global {
   // https://searchfox.org/mozilla-central/source/dom/xslt/xslt/txIEXSLTFunctions.idl
 
   interface txIEXSLTFunctions extends nsISupports {
-    match(str: string, regex: string, flags: string, doc: Document): DocumentFragment;
+    match(
+      str: string,
+      regex: string,
+      flags: string,
+      doc: Document
+    ): DocumentFragment;
     replace(str: string, regex: string, flags: string, replace: string): string;
     test(str: string, regex: string, flags: string): boolean;
   }
@@ -5272,7 +5592,12 @@ declare global {
 
   interface nsIEditActionListener extends nsISupports {
     DidDeleteNode(aChild: Node, aResult: nsresult): void;
-    DidInsertText(aTextNode: CharacterData, aOffset: i32, aString: string, aResult: nsresult): void;
+    DidInsertText(
+      aTextNode: CharacterData,
+      aOffset: i32,
+      aString: string,
+      aResult: nsresult
+    ): void;
     WillDeleteText(aTextNode: CharacterData, aOffset: i32, aLength: i32): void;
     WillDeleteRanges(aRangesToDelete: Range[]): void;
   }
@@ -5354,10 +5679,19 @@ declare global {
     selectAll(): void;
     beginningOfDocument(): void;
     endOfDocument(): void;
-    setAttribute(aElement: Element, attributestr: string, attvalue: string): void;
+    setAttribute(
+      aElement: Element,
+      attributestr: string,
+      attvalue: string
+    ): void;
     removeAttribute(aElement: Element, aAttribute: string): void;
     cloneAttributes(aDestElement: Element, aSourceElement: Element): void;
-    insertNode(node: Node, parent: Node, aPosition: u32, aPreserveSelection?: boolean): void;
+    insertNode(
+      node: Node,
+      parent: Node,
+      aPosition: u32,
+      aPreserveSelection?: boolean
+    ): void;
     deleteNode(child: Node, aPreserveSelection?: boolean): void;
     outputToString(formatType: string, flags: u32): string;
     addEditActionListener(listener: nsIEditActionListener): void;
@@ -5381,7 +5715,11 @@ declare global {
   // https://searchfox.org/mozilla-central/source/editor/nsIEditorMailSupport.idl
 
   interface nsIEditorMailSupport extends nsISupports {
-    insertAsCitedQuotation(aQuotedText: string, aCitation: string, aInsertHTML: boolean): Node;
+    insertAsCitedQuotation(
+      aQuotedText: string,
+      aCitation: string,
+      aInsertHTML: boolean
+    ): Node;
     rewrap(aRespectNewlines: boolean): void;
     insertTextWithQuotations(aStringToInsert: string): void;
     wrapWidth: i32;
@@ -5403,7 +5741,11 @@ declare global {
     GetSuggestedWord(): string;
     CheckCurrentWord(suggestedWord: string): boolean;
     suggest(aCheckingWorkd: string, aMaxCount: u32): Promise<any>;
-    ReplaceWord(misspelledWord: string, replaceWord: string, allOccurrences: boolean): void;
+    ReplaceWord(
+      misspelledWord: string,
+      replaceWord: string,
+      allOccurrences: boolean
+    ): void;
     IgnoreWordAllOccurrences(word: string): void;
     AddWordToDictionary(word: string): void;
     RemoveWordFromDictionary(word: string): void;
@@ -5436,7 +5778,11 @@ declare global {
     readonly eRight?: 2;
     readonly eJustify?: 3;
 
-    setInlineProperty(aProperty: string, aAttribute: string, aValue: string): void;
+    setInlineProperty(
+      aProperty: string,
+      aAttribute: string,
+      aValue: string
+    ): void;
     getInlinePropertyWithAttrValue(
       aProperty: string,
       aAttribute: string,
@@ -5448,7 +5794,10 @@ declare global {
     removeInlineProperty(aProperty: string, aAttribute: string): void;
     nodeIsBlock(aNode: Node): boolean;
     insertHTML(aInputString: string): void;
-    insertElementAtSelection(aElement: Element, aDeleteSelection: boolean): void;
+    insertElementAtSelection(
+      aElement: Element,
+      aDeleteSelection: boolean
+    ): void;
     updateBaseURL(): void;
     selectElement(aElement: Element): void;
     getParagraphState(aMixed: OutParam<boolean>): string;
@@ -5467,7 +5816,11 @@ declare global {
       aDD: OutParam<boolean>
     ): void;
     getAlignment(aMixed: OutParam<boolean>, aAlign: OutParam<i16>): void;
-    makeOrChangeList(aListType: string, entireList: boolean, aBulletType: string): void;
+    makeOrChangeList(
+      aListType: string,
+      entireList: boolean,
+      aBulletType: string
+    ): void;
     removeList(aListType: string): void;
     getElementOrParentByTagName(aTagName: string, aNode: Node): Element;
     getSelectedElement(aTagName: string): nsISupports;
@@ -5511,9 +5864,18 @@ declare global {
     readonly ePreviousColumn?: 1;
     readonly ePreviousRow?: 2;
 
-    insertTableCell(aNumberOfColumnsToInsert: i32, aInsertAfterSelectedCell: boolean): void;
-    insertTableColumn(aNumberOfColumnsToInsert: i32, aInsertAfterSelectedCell: boolean): void;
-    insertTableRow(aNumberOfRowsToInsert: i32, aInsertAfterSelectedCell: boolean): void;
+    insertTableCell(
+      aNumberOfColumnsToInsert: i32,
+      aInsertAfterSelectedCell: boolean
+    ): void;
+    insertTableColumn(
+      aNumberOfColumnsToInsert: i32,
+      aInsertAfterSelectedCell: boolean
+    ): void;
+    insertTableRow(
+      aNumberOfRowsToInsert: i32,
+      aInsertAfterSelectedCell: boolean
+    ): void;
     deleteTable(): void;
     deleteTableCellContents(): void;
     deleteTableCell(aNumberOfCellsToDelete: i32): void;
@@ -5538,7 +5900,11 @@ declare global {
       aRowCount: OutParam<i32>,
       aColCount: OutParam<i32>
     ): void;
-    getCellAt(aTableElement: Element, aRowIndex: i32, aColumnIndex: i32): Element;
+    getCellAt(
+      aTableElement: Element,
+      aRowIndex: i32,
+      aColumnIndex: i32
+    ): Element;
     getCellDataAt(
       aTableElement: Element,
       aRowIndex: i32,
@@ -5553,9 +5919,15 @@ declare global {
       aIsSelected: OutParam<boolean>
     ): void;
     getFirstRow(aTableElement: Element): Element;
-    getSelectedOrParentTableElement(aTagName: OutParam<string>, aCount: OutParam<i32>): Element;
+    getSelectedOrParentTableElement(
+      aTagName: OutParam<string>,
+      aCount: OutParam<i32>
+    ): Element;
     getSelectedCellsType(aElement: Element): u32;
-    getFirstSelectedCellInTable(aRowIndex: OutParam<i32>, aColIndex: OutParam<i32>): Element;
+    getFirstSelectedCellInTable(
+      aRowIndex: OutParam<i32>,
+      aColIndex: OutParam<i32>
+    ): Element;
     getSelectedCells(): Element[];
   }
 
@@ -5628,7 +6000,10 @@ declare global {
       aForceSave: boolean,
       aWindowContext?: nsIInterfaceRequestor
     ): nsIStreamListener;
-    applyDecodingForExtension(aExtension: string, aEncodingType: string): boolean;
+    applyDecodingForExtension(
+      aExtension: string,
+      aEncodingType: string
+    ): boolean;
     getPreferredDownloadsDirectory(): nsIFile;
   }
 
@@ -5664,7 +6039,10 @@ declare global {
       aProtocolScheme: string,
       aFound: OutParam<boolean>
     ): nsIHandlerInfo;
-    setProtocolHandlerDefaults(aHandlerInfo: nsIHandlerInfo, aOSHandlerExists: boolean): void;
+    setProtocolHandlerDefaults(
+      aHandlerInfo: nsIHandlerInfo,
+      aOSHandlerExists: boolean
+    ): void;
     loadURI(
       aURI: nsIURI,
       aTriggeringPrincipal?: nsIPrincipal,
@@ -5734,7 +6112,12 @@ declare global {
     readonly FIND_PENDING?: 3;
 
     init(aDocShell: nsIDocShell): void;
-    find(aSearchString: string, aLinksOnly: boolean, aMode: u32, aDontIterateFrames: boolean): u16;
+    find(
+      aSearchString: string,
+      aLinksOnly: boolean,
+      aMode: u32,
+      aDontIterateFrames: boolean
+    ): u16;
     getFoundRange(): Range;
     setDocShell(aDocShell: nsIDocShell): void;
     setSelectionModeAndRepaint(toggle: i16): void;
@@ -5762,7 +6145,11 @@ declare global {
     setLogPings(aEnableLogPings: boolean): void;
     setTagPings(aDebugTag: string): void;
     sendPing(aPingName: string): void;
-    setExperimentActive(aExperimentId: string, aBranch: string, aExtra?: any): void;
+    setExperimentActive(
+      aExperimentId: string,
+      aBranch: string,
+      aExtra?: any
+    ): void;
     setExperimentInactive(aExperimentId: string): void;
     testGetExperimentData(aExperimentId: string): any;
     applyServerKnobsConfig(aJsonConfig: string): void;
@@ -5903,8 +6290,16 @@ declare global {
     ): void;
     HandleCharacterData(aData: string, aLength: u32): void;
     HandleProcessingInstruction(aTarget: string, aData: string): void;
-    HandleXMLDeclaration(aVersion: string, aEncoding: string, aStandalone: i32): void;
-    ReportError(aErrorText: string, aSourceText: string, aError: nsIScriptError): boolean;
+    HandleXMLDeclaration(
+      aVersion: string,
+      aEncoding: string,
+      aStandalone: i32
+    ): void;
+    ReportError(
+      aErrorText: string,
+      aSourceText: string,
+      aError: nsIScriptError
+    ): boolean;
   }
 
   // https://searchfox.org/mozilla-central/source/netwerk/base/http-sfv/nsIStructuredFieldValues.idl
@@ -6005,7 +6400,10 @@ declare global {
   interface imgICache extends nsISupports {
     clearCache(chrome?: any): void;
     removeEntriesFromPrincipalInAllProcesses(aPrincipal: nsIPrincipal): void;
-    removeEntriesFromSiteInAllProcesses(aBaseDomain: string, OriginAttributesPattern: any): void;
+    removeEntriesFromSiteInAllProcesses(
+      aBaseDomain: string,
+      OriginAttributesPattern: any
+    ): void;
     findEntryProperties(uri: nsIURI, doc?: Document): nsIProperties;
     respectPrivacyNotifications(): void;
   }
@@ -6024,7 +6422,8 @@ declare global {
     type DecodeResult = imgIContainer_DecodeResult;
   }
 
-  interface imgIContainer extends nsISupports, Enums<typeof imgIContainer_DecodeResult> {
+  interface imgIContainer
+    extends nsISupports, Enums<typeof imgIContainer_DecodeResult> {
     readonly TYPE_RASTER?: 0;
     readonly TYPE_VECTOR?: 1;
     readonly TYPE_REQUEST?: 2;
@@ -6088,7 +6487,12 @@ declare global {
       outputOptions: string,
       randomizationKey: string
     ): void;
-    startImageEncode(width: u32, height: u32, inputFormat: u32, outputOptions: string): void;
+    startImageEncode(
+      width: u32,
+      height: u32,
+      inputFormat: u32,
+      outputOptions: string
+    ): void;
     addImageFrame(
       data: u8[],
       length: u32,
@@ -6200,8 +6604,15 @@ declare global {
   // https://searchfox.org/mozilla-central/source/image/imgITools.idl
 
   interface imgITools extends nsISupports {
-    decodeImageFromBuffer(aBuffer: string, aSize: u32, aMimeType: string): imgIContainer;
-    decodeImageFromArrayBuffer(aArrayBuffer: any, aMimeType: string): imgIContainer;
+    decodeImageFromBuffer(
+      aBuffer: string,
+      aSize: u32,
+      aMimeType: string
+    ): imgIContainer;
+    decodeImageFromArrayBuffer(
+      aArrayBuffer: any,
+      aMimeType: string
+    ): imgIContainer;
     decodeImageFromChannelAsync(
       aURI: nsIURI,
       aChannel: nsIChannel,
@@ -6237,7 +6648,9 @@ declare global {
       aHeight: i32,
       outputOptions?: string
     ): nsIInputStream;
-    createScriptedObserver(aObserver: imgIScriptedNotificationObserver): imgINotificationObserver;
+    createScriptedObserver(
+      aObserver: imgIScriptedNotificationObserver
+    ): imgINotificationObserver;
   }
 
   type imgIContainerCallback = Callable<{
@@ -6368,9 +6781,12 @@ declare global {
   }
 
   interface nsIKeyValueService
-    extends nsISupports,
-      Enums<typeof nsIKeyValueService_RecoveryStrategy> {
-    getOrCreate(callback: nsIKeyValueDatabaseCallback, path: string, name: string): void;
+    extends nsISupports, Enums<typeof nsIKeyValueService_RecoveryStrategy> {
+    getOrCreate(
+      callback: nsIKeyValueDatabaseCallback,
+      path: string,
+      name: string
+    ): void;
     getOrCreateWithOptions(
       callback: nsIKeyValueDatabaseCallback,
       path: string,
@@ -6405,8 +6821,12 @@ declare global {
   }
 
   interface nsIKeyValueImporter
-    extends nsIKeyValueImportSourceSpec,
-      Enums<typeof nsIKeyValueImporter_ConflictPolicy & typeof nsIKeyValueImporter_CleanupPolicy> {
+    extends
+      nsIKeyValueImportSourceSpec,
+      Enums<
+        typeof nsIKeyValueImporter_ConflictPolicy &
+          typeof nsIKeyValueImporter_CleanupPolicy
+      > {
     readonly type: string;
     addPath(path: string): nsIKeyValueImportSourceSpec;
     import(callback: nsIKeyValueVoidCallback): void;
@@ -6425,14 +6845,33 @@ declare global {
     isEmpty(callback: nsIKeyValueVariantCallback): void;
     count(callback: nsIKeyValueVariantCallback): void;
     size(callback: nsIKeyValueVariantCallback): void;
-    put(callback: nsIKeyValueVoidCallback, key: string, value: nsIVariant): void;
-    writeMany(callback: nsIKeyValueVoidCallback, pairs: nsIKeyValuePair[]): void;
-    get(callback: nsIKeyValueVariantCallback, key: string, defaultValue?: nsIVariant): void;
+    put(
+      callback: nsIKeyValueVoidCallback,
+      key: string,
+      value: nsIVariant
+    ): void;
+    writeMany(
+      callback: nsIKeyValueVoidCallback,
+      pairs: nsIKeyValuePair[]
+    ): void;
+    get(
+      callback: nsIKeyValueVariantCallback,
+      key: string,
+      defaultValue?: nsIVariant
+    ): void;
     has(callback: nsIKeyValueVariantCallback, key: string): void;
     delete(callback: nsIKeyValueVoidCallback, key: string): void;
-    deleteRange(callback: nsIKeyValueVoidCallback, fromKey?: string, toKey?: string): void;
+    deleteRange(
+      callback: nsIKeyValueVoidCallback,
+      fromKey?: string,
+      toKey?: string
+    ): void;
     clear(callback: nsIKeyValueVoidCallback): void;
-    enumerate(callback: nsIKeyValueEnumeratorCallback, fromKey?: string, toKey?: string): void;
+    enumerate(
+      callback: nsIKeyValueEnumeratorCallback,
+      fromKey?: string,
+      toKey?: string
+    ): void;
     close(callback: nsIKeyValueVoidCallback): void;
   }
 
@@ -6622,7 +7061,11 @@ declare global {
     readonly systemLocales: string[];
     readonly regionalPrefsLocales: string[];
     readonly systemLocale: string;
-    getDateTimePattern(timeFormatStyle: i32, dateFormatStyle: i32, locale?: string): string;
+    getDateTimePattern(
+      timeFormatStyle: i32,
+      dateFormatStyle: i32,
+      locale?: string
+    ): string;
   }
 
   // https://searchfox.org/mozilla-central/source/toolkit/components/passwordmgr/nsILoginInfo.idl
@@ -6681,8 +7124,16 @@ declare global {
     getAllDisabledHosts(): string[];
     getLoginSavingEnabled(aHost: string): boolean;
     setLoginSavingEnabled(aHost: string, isEnabled: boolean): void;
-    findLogins(aOrigin: string, aActionOrigin: string, aHttpRealm: string): nsILoginInfo[];
-    countLogins(aOrigin: string, aActionOrigin: string, aHttpRealm: string): u32;
+    findLogins(
+      aOrigin: string,
+      aActionOrigin: string,
+      aHttpRealm: string
+    ): nsILoginInfo[];
+    countLogins(
+      aOrigin: string,
+      aActionOrigin: string,
+      aHttpRealm: string
+    ): u32;
     searchLoginsAsync(matchData: any): Promise<any>;
     searchLogins(matchData: nsIPropertyBag): nsILoginInfo[];
     getSyncID(): Promise<any>;
@@ -6880,7 +7331,11 @@ declare global {
       aOriginalURI: nsIURI,
       aFlags: u32
     ): string;
-    validateFileNameForSaving(aFileName: string, aType: string, aFlags: u32): string;
+    validateFileNameForSaving(
+      aFileName: string,
+      aType: string,
+      aFlags: u32
+    ): string;
   }
 
   // https://searchfox.org/mozilla-central/source/toolkit/components/ml/nsIMLUtils.idl
@@ -6899,7 +7354,12 @@ declare global {
     caseSensitive: boolean;
     entireWord: boolean;
     matchDiacritics: boolean;
-    Find(aPatText: string, aSearchRange: Range, aStartPoint: Range, aEndPoint: Range): Range;
+    Find(
+      aPatText: string,
+      aSearchRange: Range,
+      aStartPoint: Range,
+      aEndPoint: Range
+    ): Range;
   }
 
   // https://searchfox.org/mozilla-central/source/toolkit/components/find/nsIFindService.idl
@@ -7000,7 +7460,10 @@ declare global {
       aCloseSource: boolean,
       aCloseSink: boolean
     ): void;
-    asyncCopy(aObserver: nsIRequestObserver, aObserverContext: nsISupports): void;
+    asyncCopy(
+      aObserver: nsIRequestObserver,
+      aObserverContext: nsISupports
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/netwerk/base/nsIAsyncStreamCopier2.idl
@@ -7014,7 +7477,10 @@ declare global {
       aCloseSource: boolean,
       aCloseSink: boolean
     ): void;
-    asyncCopy(aObserver: nsIRequestObserver, aObserverContext: nsISupports): void;
+    asyncCopy(
+      aObserver: nsIRequestObserver,
+      aObserverContext: nsISupports
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/netwerk/base/nsIAsyncVerifyRedirectCallback.idl
@@ -7097,7 +7563,11 @@ declare global {
     readonly LEVEL_PW_ENCRYPTED?: 1;
     readonly LEVEL_SECURE?: 2;
 
-    promptAuth(aChannel: nsIChannel, level: u32, authInfo: nsIAuthInformation): boolean;
+    promptAuth(
+      aChannel: nsIChannel,
+      level: u32,
+      authInfo: nsIAuthInformation
+    ): boolean;
     asyncPromptAuth(
       aChannel: nsIChannel,
       aCallback: nsIAuthPromptCallback,
@@ -7200,7 +7670,8 @@ declare global {
   }
 
   interface nsICacheInfoChannel
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<
         typeof nsICacheInfoChannel_PreferredAlternativeDataDeliveryType &
           typeof nsICacheInfoChannel_CacheDisposition
@@ -7222,7 +7693,10 @@ declare global {
     readonly alternativeDataType: string;
     readonly alternativeDataInputStream: nsIInputStream;
     getOriginalInputStream(aReceiver: nsIInputStreamReceiver): void;
-    openAlternativeOutputStream(type: string, predictedSize: i64): nsIAsyncOutputStream;
+    openAlternativeOutputStream(
+      type: string,
+      predictedSize: i64
+    ): nsIAsyncOutputStream;
     getCacheDisposition(): nsICacheInfoChannel.CacheDisposition;
   }
 
@@ -7343,7 +7817,8 @@ declare global {
     type FetchPriority = nsIClassOfService_FetchPriority;
   }
 
-  interface nsIClassOfService extends nsISupports, Enums<typeof nsIClassOfService_FetchPriority> {
+  interface nsIClassOfService
+    extends nsISupports, Enums<typeof nsIClassOfService_FetchPriority> {
     readonly Leader?: 1;
     readonly Follower?: 2;
     readonly Speculative?: 4;
@@ -7395,7 +7870,8 @@ declare global {
   }
 
   interface nsIClassifiedChannel
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<typeof nsIClassifiedChannel_ClassificationFlags> {
     setMatchedInfo(aList: string, aProvider: string, aFullHash: string): void;
     readonly matchedList: string;
@@ -7414,7 +7890,11 @@ declare global {
   // https://searchfox.org/mozilla-central/source/netwerk/base/nsIContentSniffer.idl
 
   interface nsIContentSniffer extends nsISupports {
-    getMIMETypeFromContent(aRequest: nsIRequest, aData: u8[], aLength: u32): string;
+    getMIMETypeFromContent(
+      aRequest: nsIRequest,
+      aData: u8[],
+      aLength: u32
+    ): string;
   }
 
   // https://searchfox.org/mozilla-central/source/netwerk/base/nsIDHCPClient.idl
@@ -7514,7 +7994,10 @@ declare global {
   }
 
   interface nsIAsyncFileMetadata extends nsIFileMetadata {
-    asyncFileMetadataWait(aCallback: nsIFileMetadataCallback, aEventTarget: nsIEventTarget): void;
+    asyncFileMetadataWait(
+      aCallback: nsIFileMetadataCallback,
+      aEventTarget: nsIEventTarget
+    ): void;
   }
 
   type nsIFileMetadataCallback = Callable<{
@@ -7555,7 +8038,10 @@ declare global {
       aSecurityFlags: u32,
       aContentPolicyType: nsContentPolicyType
     ): nsIChannel;
-    newChannelFromURIWithLoadInfo(aURI: nsIURI, aLoadInfo: nsILoadInfo): nsIChannel;
+    newChannelFromURIWithLoadInfo(
+      aURI: nsIURI,
+      aLoadInfo: nsILoadInfo
+    ): nsIChannel;
     newChannel(
       aSpec: string,
       aOriginCharset: string,
@@ -7566,7 +8052,9 @@ declare global {
       aSecurityFlags: u32,
       aContentPolicyType: nsContentPolicyType
     ): nsIChannel;
-    newSuspendableChannelWrapper(innerChannel: nsIChannel): nsISuspendableChannelWrapper;
+    newSuspendableChannelWrapper(
+      innerChannel: nsIChannel
+    ): nsISuspendableChannelWrapper;
     newWebTransport(): nsIWebTransport;
     originAttributesForNetworkState(aChannel: nsIChannel): any;
     offline: boolean;
@@ -7689,7 +8177,10 @@ declare global {
     readonly private: nsILoadContextInfo;
     readonly anonymous: nsILoadContextInfo;
     custom(aAnonymous: boolean, aOriginAttributes: any): nsILoadContextInfo;
-    fromLoadContext(aLoadContext: nsILoadContext, aAnonymous: boolean): nsILoadContextInfo;
+    fromLoadContext(
+      aLoadContext: nsILoadContext,
+      aAnonymous: boolean
+    ): nsILoadContextInfo;
     fromWindow(aWindow: nsIDOMWindow, aAnonymous: boolean): nsILoadContextInfo;
   }
 
@@ -7699,7 +8190,11 @@ declare global {
     groupObserver: nsIRequestObserver;
     defaultLoadRequest: nsIRequest;
     addRequest(aRequest: nsIRequest, aContext: nsISupports): void;
-    removeRequest(aRequest: nsIRequest, aContext: nsISupports, aStatus: nsresult): void;
+    removeRequest(
+      aRequest: nsIRequest,
+      aContext: nsISupports,
+      aStatus: nsresult
+    ): void;
     readonly requests: nsISimpleEnumerator;
     totalKeepAliveBytes: u64;
     readonly activeCount: u32;
@@ -7785,7 +8280,8 @@ declare global {
   }
 
   interface nsILoadInfo
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<
         typeof nsILoadInfo_StoragePermissionState &
           typeof nsILoadInfo_IPAddressSpace &
@@ -7931,7 +8427,10 @@ declare global {
     originAttributes: any;
     initialSecurityCheckDone: boolean;
     loadTriggeredFromExternal: boolean;
-    appendRedirectHistoryEntry(channelToDeriveFrom: nsIChannel, isInternalRedirect: boolean): void;
+    appendRedirectHistoryEntry(
+      channelToDeriveFrom: nsIChannel,
+      isInternalRedirect: boolean
+    ): void;
     readonly redirectChainIncludingInternalRedirects: any;
     readonly redirectChain: any;
     readonly forcePreflight: boolean;
@@ -8089,7 +8588,8 @@ declare global {
   }
 
   interface nsINetworkConnectivityService
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<typeof nsINetworkConnectivityService_ConnectivityState> {
     DNSv4: nsINetworkConnectivityService.ConnectivityState;
     DNSv6: nsINetworkConnectivityService.ConnectivityState;
@@ -8265,7 +8765,11 @@ declare global {
       type: string,
       permission: u32
     ): void;
-    addDefaultFromPrincipal(principal: nsIPrincipal, type: string, permission: u32): void;
+    addDefaultFromPrincipal(
+      principal: nsIPrincipal,
+      type: string,
+      permission: u32
+    ): void;
     removeFromPrincipal(principal: nsIPrincipal, type: string): void;
     removePermission(perm: nsIPermission): void;
     removeAll(): void;
@@ -8273,11 +8777,21 @@ declare global {
     removeByType(type: string): void;
     removeAllExceptTypes(typeExceptions: string[]): void;
     removeByTypeSince(type: string, since: i64): void;
-    removeAllSinceWithTypeExceptions(since: i64, typeExceptions: string[]): void;
+    removeAllSinceWithTypeExceptions(
+      since: i64,
+      typeExceptions: string[]
+    ): void;
     testPermissionFromPrincipal(principal: nsIPrincipal, type: string): u32;
-    testExactPermissionFromPrincipal(principal: nsIPrincipal, type: string): u32;
+    testExactPermissionFromPrincipal(
+      principal: nsIPrincipal,
+      type: string
+    ): u32;
     testExactPermanentPermission(principal: nsIPrincipal, type: string): u32;
-    getPermissionObject(principal: nsIPrincipal, type: string, exactHost: boolean): nsIPermission;
+    getPermissionObject(
+      principal: nsIPrincipal,
+      type: string,
+      exactHost: boolean
+    ): nsIPermission;
     readonly all: nsIPermission[];
     removePermissionsWithAttributes(
       patternAsJSON: string,
@@ -8360,7 +8874,11 @@ declare global {
       checkMsg: string,
       checkValue: InOutParam<boolean>
     ): boolean;
-    promptPassword(dialogTitle: string, text: string, password: InOutParam<string>): boolean;
+    promptPassword(
+      dialogTitle: string,
+      text: string,
+      password: InOutParam<string>
+    ): boolean;
     promptUsernameAndPassword(
       dialogTitle: string,
       text: string,
@@ -8432,7 +8950,11 @@ declare global {
   }
 
   interface nsIProtocolProxyFilter extends nsISupports {
-    applyFilter(aURI: nsIURI, aProxy: nsIProxyInfo, aCallback: nsIProxyProtocolFilterResult): void;
+    applyFilter(
+      aURI: nsIURI,
+      aProxy: nsIProxyInfo,
+      aCallback: nsIProxyProtocolFilterResult
+    ): void;
   }
 
   interface nsIProtocolProxyChannelFilter extends nsISupports {
@@ -8498,9 +9020,16 @@ declare global {
       aFailoverTimeout: u32,
       aFailoverProxy: nsIProxyInfo
     ): nsIProxyInfo;
-    getFailoverForProxy(aProxyInfo: nsIProxyInfo, aURI: nsIURI, aReason: nsresult): nsIProxyInfo;
+    getFailoverForProxy(
+      aProxyInfo: nsIProxyInfo,
+      aURI: nsIURI,
+      aReason: nsresult
+    ): nsIProxyInfo;
     registerFilter(aFilter: nsIProtocolProxyFilter, aPosition: u32): void;
-    registerChannelFilter(aFilter: nsIProtocolProxyChannelFilter, aPosition: u32): void;
+    registerChannelFilter(
+      aFilter: nsIProtocolProxyChannelFilter,
+      aPosition: u32
+    ): void;
     unregisterFilter(aFilter: nsIProtocolProxyFilter): void;
     unregisterChannelFilter(aFilter: nsIProtocolProxyChannelFilter): void;
     readonly hasProxyFilterRegistered: boolean;
@@ -8702,7 +9231,11 @@ declare global {
     init(aPort: i32, aLoopbackOnly: boolean, aBackLog: i32): void;
     initIPv6(aPort: i32, aLoopbackOnly: boolean, aBackLog: i32): void;
     initDualStack(aPort: i32, aBackLog: i32): void;
-    initSpecialConnection(aPort: i32, aFlags: nsServerSocketFlag, aBackLog: i32): void;
+    initSpecialConnection(
+      aPort: i32,
+      aFlags: nsServerSocketFlag,
+      aBackLog: i32
+    ): void;
     initWithFilename(aPath: nsIFile, aPermissions: u32, aBacklog: i32): void;
     initWithAbstractAddress(aName: string, aBacklog: i32): void;
     close(): void;
@@ -8711,7 +9244,10 @@ declare global {
   }
 
   interface nsIServerSocketListener extends nsISupports {
-    onSocketAccepted(aServ: nsIServerSocket, aTransport: nsISocketTransport): void;
+    onSocketAccepted(
+      aServ: nsIServerSocket,
+      aTransport: nsISocketTransport
+    ): void;
     onStopListening(aServ: nsIServerSocket, aStatus: nsresult): void;
   }
 
@@ -8894,7 +9430,10 @@ declare global {
   }
 
   interface nsIStreamLoader extends nsIThreadRetargetableStreamListener {
-    init(aStreamObserver: nsIStreamLoaderObserver, aRequestObserver?: nsIRequestObserver): void;
+    init(
+      aStreamObserver: nsIStreamLoaderObserver,
+      aRequestObserver?: nsIRequestObserver
+    ): void;
     readonly numBytesRead: u32;
     readonly request: nsIRequest;
   }
@@ -8902,7 +9441,10 @@ declare global {
   // https://searchfox.org/mozilla-central/source/netwerk/base/nsIStreamTransportService.idl
 
   interface nsIStreamTransportService extends nsISupports {
-    createInputTransport(aStream: nsIInputStream, aCloseWhenDone: boolean): nsITransport;
+    createInputTransport(
+      aStream: nsIInputStream,
+      aCloseWhenDone: boolean
+    ): nsITransport;
   }
 
   // https://searchfox.org/mozilla-central/source/netwerk/base/nsISuspendableChannelWrapper.idl
@@ -8920,9 +9462,19 @@ declare global {
   interface nsISystemProxySettings extends nsISupports {
     readonly mainThreadOnly: boolean;
     readonly PACURI: string;
-    getProxyForURI(testSpec: string, testScheme: string, testHost: string, testPort: i32): string;
+    getProxyForURI(
+      testSpec: string,
+      testScheme: string,
+      testHost: string,
+      testPort: i32
+    ): string;
     readonly systemWPADSetting: boolean;
-    setSystemProxyInfo(host: string, port: i32, pacFileUrl: string, exclusionList: string[]): void;
+    setSystemProxyInfo(
+      host: string,
+      port: i32,
+      pacFileUrl: string,
+      exclusionList: string[]
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/netwerk/base/nsITLSServerSocket.idl
@@ -8962,7 +9514,10 @@ declare global {
   }
 
   interface nsITLSServerSecurityObserver extends nsISupports {
-    onHandshakeDone(aServer: nsITLSServerSocket, aStatus: nsITLSClientStatus): void;
+    onHandshakeDone(
+      aServer: nsITLSServerSocket,
+      aStatus: nsITLSClientStatus
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/netwerk/base/nsIThreadRetargetableRequest.idl
@@ -9008,7 +9563,8 @@ declare global {
     type BodyInfoAccess = nsITimedChannel_BodyInfoAccess;
   }
 
-  interface nsITimedChannel extends nsISupports, Enums<typeof nsITimedChannel_BodyInfoAccess> {
+  interface nsITimedChannel
+    extends nsISupports, Enums<typeof nsITimedChannel_BodyInfoAccess> {
     redirectCount: u8;
     internalRedirectCount: u8;
     initiatorType: string;
@@ -9054,10 +9610,21 @@ declare global {
     readonly STATUS_READING?: 4915208;
     readonly STATUS_WRITING?: 4915209;
 
-    openInputStream(aFlags: u32, aSegmentSize: u32, aSegmentCount: u32): nsIInputStream;
-    openOutputStream(aFlags: u32, aSegmentSize: u32, aSegmentCount: u32): nsIOutputStream;
+    openInputStream(
+      aFlags: u32,
+      aSegmentSize: u32,
+      aSegmentCount: u32
+    ): nsIInputStream;
+    openOutputStream(
+      aFlags: u32,
+      aSegmentSize: u32,
+      aSegmentCount: u32
+    ): nsIOutputStream;
     close(aReason: nsresult): void;
-    setEventSink(aSink: nsITransportEventSink, aEventTarget: nsIEventTarget): void;
+    setEventSink(
+      aSink: nsITransportEventSink,
+      aEventTarget: nsIEventTarget
+    ): void;
   }
 
   interface nsITransportEventSink extends nsISupports {
@@ -9078,7 +9645,12 @@ declare global {
       aPrincipal: nsIPrincipal,
       aAddressReuse?: boolean
     ): void;
-    init2(aAddr: string, aPort: i32, aPrincipal: nsIPrincipal, aAddressReuse?: boolean): void;
+    init2(
+      aAddr: string,
+      aPort: i32,
+      aPrincipal: nsIPrincipal,
+      aAddressReuse?: boolean
+    ): void;
     close(): void;
     asyncListen(aListener: nsIUDPSocketListener): void;
     readonly localAddr: nsINetAddr;
@@ -9257,7 +9829,11 @@ declare global {
   // https://searchfox.org/mozilla-central/source/netwerk/base/nsIUploadChannel.idl
 
   interface nsIUploadChannel extends nsISupports {
-    setUploadStream(aStream: nsIInputStream, aContentType: string, aContentLength: i64): void;
+    setUploadStream(
+      aStream: nsIInputStream,
+      aContentType: string,
+      aContentLength: i64
+    ): void;
     readonly uploadStream: nsIInputStream;
   }
 
@@ -9353,7 +9929,10 @@ declare global {
     readonly dataSize: i64;
     readonly altDataSize: i64;
     readonly altDataType: string;
-    openAlternativeOutputStream(type: string, predictedSize: i64): nsIAsyncOutputStream;
+    openAlternativeOutputStream(
+      type: string,
+      predictedSize: i64
+    ): nsIAsyncOutputStream;
     openAlternativeInputStream(type: string): nsIInputStream;
     readonly loadContextInfo: nsILoadContextInfo;
     setBypassWriterLock(aBypass: boolean): void;
@@ -9378,7 +9957,11 @@ declare global {
     readonly ENTRY_NOT_WANTED?: 3;
 
     onCacheEntryCheck(aEntry: nsICacheEntry): u32;
-    onCacheEntryAvailable(aEntry: nsICacheEntry, aNew: boolean, aResult: nsresult): void;
+    onCacheEntryAvailable(
+      aEntry: nsICacheEntry,
+      aNew: boolean,
+      aResult: nsresult
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/netwerk/cache2/nsICachePurgeLock.idl
@@ -9423,9 +10006,16 @@ declare global {
       aHasAltData: OutParam<boolean>,
       aSizeInKB: OutParam<u32>
     ): void;
-    asyncDoomURI(aURI: nsIURI, aIdExtension: string, aCallback: nsICacheEntryDoomCallback): void;
+    asyncDoomURI(
+      aURI: nsIURI,
+      aIdExtension: string,
+      aCallback: nsICacheEntryDoomCallback
+    ): void;
     asyncEvictStorage(aCallback: nsICacheEntryDoomCallback): void;
-    asyncVisitStorage(aVisitor: nsICacheStorageVisitor, aVisitEntries: boolean): void;
+    asyncVisitStorage(
+      aVisitor: nsICacheStorageVisitor,
+      aVisitEntries: boolean
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/netwerk/cache2/nsICacheStorageService.idl
@@ -9446,8 +10036,13 @@ declare global {
     clearAllOriginDictionaries(): void;
     purgeFromMemory(aWhat: u32): void;
     readonly ioTarget: nsIEventTarget;
-    asyncGetDiskConsumption(aObserver: nsICacheStorageConsumptionObserver): void;
-    asyncVisitAllStorages(aVisitor: nsICacheStorageVisitor, aVisitEntries: boolean): void;
+    asyncGetDiskConsumption(
+      aObserver: nsICacheStorageConsumptionObserver
+    ): void;
+    asyncVisitAllStorages(
+      aVisitor: nsICacheStorageVisitor,
+      aVisitEntries: boolean
+    ): void;
   }
 
   interface nsICacheStorageConsumptionObserver extends nsISupports {
@@ -9551,7 +10146,12 @@ declare global {
     readonly cookies: nsICookie[];
     readonly sessionCookies: nsICookie[];
     getCookieBehavior(aIsPrivate: boolean): u32;
-    remove(aHost: string, aName: string, aPath: string, aOriginAttributes: any): void;
+    remove(
+      aHost: string,
+      aName: string,
+      aPath: string,
+      aOriginAttributes: any
+    ): void;
     add(
       aHost: string,
       aPath: string,
@@ -9580,9 +10180,18 @@ declare global {
       aSchemeMap: nsICookie.schemeType,
       aIsPartitioned?: boolean
     ): nsICookieValidation;
-    cookieExists(aHost: string, aPath: string, aName: string, aOriginAttributes: any): boolean;
+    cookieExists(
+      aHost: string,
+      aPath: string,
+      aName: string,
+      aOriginAttributes: any
+    ): boolean;
     countCookiesFromHost(aHost: string): u32;
-    getCookiesFromHost(aHost: string, aOriginAttributes: any, aSorted?: boolean): nsICookie[];
+    getCookiesFromHost(
+      aHost: string,
+      aOriginAttributes: any,
+      aSorted?: boolean
+    ): nsICookie[];
     getCookiesWithOriginAttributes(
       aPattern: string,
       aHost?: string,
@@ -9592,7 +10201,9 @@ declare global {
     removeCookiesFromExactHost(aHost: string, aPattern: string): void;
     removeAllSince(aSinceWhen: i64): Promise<any>;
     getCookiesSince(aSinceWhen: i64): nsICookie[];
-    addThirdPartyCookieBlockingExceptions(aExcpetions: nsIThirdPartyCookieExceptionEntry[]): void;
+    addThirdPartyCookieBlockingExceptions(
+      aExcpetions: nsIThirdPartyCookieExceptionEntry[]
+    ): void;
     removeThirdPartyCookieBlockingExceptions(
       aExceptions: nsIThirdPartyCookieExceptionEntry[]
     ): void;
@@ -9616,7 +10227,8 @@ declare global {
     type Action = nsICookieNotification_Action;
   }
 
-  interface nsICookieNotification extends nsISupports, Enums<typeof nsICookieNotification_Action> {
+  interface nsICookieNotification
+    extends nsISupports, Enums<typeof nsICookieNotification_Action> {
     readonly action: nsICookieNotification.Action;
     readonly cookie: nsICookie;
     readonly baseDomain: string;
@@ -9652,7 +10264,11 @@ declare global {
     readonly BEHAVIOR_LAST?: 5;
 
     getCookieStringFromHttp(aURI: nsIURI, aChannel: nsIChannel): string;
-    setCookieStringFromHttp(aURI: nsIURI, aCookie: string, aChannel: nsIChannel): void;
+    setCookieStringFromHttp(
+      aURI: nsIURI,
+      aCookie: string,
+      aChannel: nsIChannel
+    ): void;
     runInTransaction(aCallback: nsICookieTransactionCallback): void;
   }
 
@@ -9684,8 +10300,7 @@ declare global {
   }
 
   interface nsICookieValidation
-    extends nsISupports,
-      Enums<typeof nsICookieValidation_ValidationError> {
+    extends nsISupports, Enums<typeof nsICookieValidation_ValidationError> {
     readonly result: nsICookieValidation.ValidationError;
     readonly errorString: string;
   }
@@ -9779,13 +10394,21 @@ declare global {
       aAllRecordsHaveEchConfig: OutParam<boolean>,
       aAllRecordsInH3ExcludedList: OutParam<boolean>
     ): nsISVCBRecord[];
-    GetAllRecords(aNoHttp2: boolean, aNoHttp3: boolean, aCName: string): nsISVCBRecord[];
+    GetAllRecords(
+      aNoHttp2: boolean,
+      aNoHttp3: boolean,
+      aCName: string
+    ): nsISVCBRecord[];
   }
 
   // https://searchfox.org/mozilla-central/source/netwerk/dns/nsIDNSListener.idl
 
   interface nsIDNSListener extends nsISupports {
-    onLookupComplete(aRequest: nsICancelable, aRecord: nsIDNSRecord, aStatus: nsresult): void;
+    onLookupComplete(
+      aRequest: nsICancelable,
+      aRecord: nsIDNSRecord,
+      aStatus: nsresult
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/netwerk/dns/nsIDNSRecord.idl
@@ -9867,7 +10490,8 @@ declare global {
   }
 
   interface nsIDNSService
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<
         typeof nsIDNSService_ResolveType &
           typeof nsIDNSService_ResolverMode &
@@ -10014,7 +10638,8 @@ declare global {
     type value = nsITRRSkipReason_value;
   }
 
-  interface nsITRRSkipReason extends nsISupports, Enums<typeof nsITRRSkipReason_value> {}
+  interface nsITRRSkipReason
+    extends nsISupports, Enums<typeof nsITRRSkipReason_value> {}
 
   // https://searchfox.org/mozilla-central/source/netwerk/dns/nsPIDNSService.idl
 
@@ -10095,7 +10720,11 @@ declare global {
   // https://searchfox.org/mozilla-central/source/netwerk/protocol/http/nsIEarlyHintObserver.idl
 
   interface nsIEarlyHintObserver extends nsISupports {
-    earlyHint(linkHeader: string, referrerPolicy: string, cspHeader: string): void;
+    earlyHint(
+      linkHeader: string,
+      referrerPolicy: string,
+      cspHeader: string
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/netwerk/protocol/http/nsIHttpActivityObserver.idl
@@ -10212,7 +10841,10 @@ declare global {
     getResponseHeader(header: string): string;
     setResponseHeader(header: string, value: string, merge: boolean): void;
     visitResponseHeaders(aVisitor: nsIHttpHeaderVisitor): void;
-    getOriginalResponseHeader(aHeader: string, aVisitor: nsIHttpHeaderVisitor): void;
+    getOriginalResponseHeader(
+      aHeader: string,
+      aVisitor: nsIHttpHeaderVisitor
+    ): void;
     visitOriginalResponseHeaders(aVisitor: nsIHttpHeaderVisitor): void;
     isNoStoreResponse(): boolean;
     isNoCacheResponse(): boolean;
@@ -10220,7 +10852,11 @@ declare global {
     upgradeToSecure(): void;
     topLevelContentWindowId: u64;
     browserId: u64;
-    logBlockedCORSRequest(aMessage: string, aCategory: string, aIsWarning: boolean): void;
+    logBlockedCORSRequest(
+      aMessage: string,
+      aCategory: string,
+      aIsWarning: boolean
+    ): void;
     logMimeTypeMismatch(
       aMessageName: string,
       aWarning: boolean,
@@ -10305,7 +10941,9 @@ declare global {
     setEarlyHintObserver(aObserver: nsIEarlyHintObserver): void;
     earlyHintPreloaderId: u64;
     readonly isProxyUsed: boolean;
-    setWebTransportSessionEventListener(aListener: WebTransportSessionEventListener): void;
+    setWebTransportSessionEventListener(
+      aListener: WebTransportSessionEventListener
+    ): void;
     earlyHintLinkType: u32;
     isUserAgentHeaderModified: boolean;
     setResponseOverride(aReplacedHttpResponse: nsIReplacedHttpResponse): void;
@@ -10366,14 +11004,24 @@ declare global {
   }
 
   interface nsIObliviousHttp extends nsISupports {
-    encapsulateRequest(encodedConfig: u8[], request: u8[]): nsIObliviousHttpClientRequest;
+    encapsulateRequest(
+      encodedConfig: u8[],
+      request: u8[]
+    ): nsIObliviousHttpClientRequest;
     server(): nsIObliviousHttpServer;
     decodeConfigList(encodedConfigList: u8[]): u8[][];
   }
 
   interface nsIObliviousHttpService extends nsISupports {
-    newChannel(relayURI: nsIURI, targetURI: nsIURI, encodedConfig: u8[]): nsIChannel;
-    getTRRSettings(relayURI: OutParam<nsIURI>, encodedConfig: OutParam<u8[]>): void;
+    newChannel(
+      relayURI: nsIURI,
+      targetURI: nsIURI,
+      encodedConfig: u8[]
+    ): nsIChannel;
+    getTRRSettings(
+      relayURI: OutParam<nsIURI>,
+      encodedConfig: OutParam<u8[]>
+    ): void;
     clearTRRConfig(): void;
   }
 
@@ -10601,7 +11249,10 @@ declare global {
     pingInterval: u32;
     pingTimeout: u32;
     serial: u32;
-    setServerParameters(aProvider: nsITransportProvider, aNegotiatedExtensions: string): void;
+    setServerParameters(
+      aProvider: nsITransportProvider,
+      aNegotiatedExtensions: string
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/netwerk/protocol/websocket/nsIWebSocketEventService.idl
@@ -10630,7 +11281,11 @@ declare global {
     readonly TYPE_BLOB?: 1;
     readonly TYPE_ARRAYBUFFER?: 2;
 
-    webSocketCreated(aWebSocketSerialID: u32, aURI: string, aProtocols: string): void;
+    webSocketCreated(
+      aWebSocketSerialID: u32,
+      aURI: string,
+      aProtocols: string
+    ): void;
     webSocketOpened(
       aWebSocketSerialID: u32,
       aEffectiveURI: string,
@@ -10638,16 +11293,31 @@ declare global {
       aExtensions: string,
       aHttpChannelId: u64
     ): void;
-    webSocketMessageAvailable(aWebSocketSerialID: u32, aMessage: string, aType: u16): void;
-    webSocketClosed(aWebSocketSerialID: u32, aWasClean: boolean, aCode: u16, aReason: string): void;
+    webSocketMessageAvailable(
+      aWebSocketSerialID: u32,
+      aMessage: string,
+      aType: u16
+    ): void;
+    webSocketClosed(
+      aWebSocketSerialID: u32,
+      aWasClean: boolean,
+      aCode: u16,
+      aReason: string
+    ): void;
     frameReceived(aWebSocketSerialID: u32, aFrame: nsIWebSocketFrame): void;
     frameSent(aWebSocketSerialID: u32, aFrame: nsIWebSocketFrame): void;
   }
 
   interface nsIWebSocketEventService extends nsISupports {
     sendMessage(aWebSocketSerialID: u32, aMessage: string): void;
-    addListener(aInnerWindowID: u64, aListener: nsIWebSocketEventListener): void;
-    removeListener(aInnerWindowID: u64, aListener: nsIWebSocketEventListener): void;
+    addListener(
+      aInnerWindowID: u64,
+      aListener: nsIWebSocketEventListener
+    ): void;
+    removeListener(
+      aInnerWindowID: u64,
+      aListener: nsIWebSocketEventListener
+    ): void;
     hasListenerFor(aInnerWindowID: u64): boolean;
   }
 
@@ -10689,8 +11359,12 @@ declare global {
   }
 
   interface nsIWebTransport
-    extends nsISupports,
-      Enums<typeof nsIWebTransport_WebTransportError & typeof nsIWebTransport_HTTPVersion> {
+    extends
+      nsISupports,
+      Enums<
+        typeof nsIWebTransport_WebTransportError &
+          typeof nsIWebTransport_HTTPVersion
+      > {
     asyncConnect(
       aURI: nsIURI,
       aDedicated: boolean,
@@ -10702,8 +11376,12 @@ declare global {
     ): void;
     getStats(): void;
     closeSession(aErrorCode: u32, aReason: string): void;
-    createOutgoingBidirectionalStream(aListener: nsIWebTransportStreamCallback): void;
-    createOutgoingUnidirectionalStream(aListener: nsIWebTransportStreamCallback): void;
+    createOutgoingBidirectionalStream(
+      aListener: nsIWebTransportStreamCallback
+    ): void;
+    createOutgoingUnidirectionalStream(
+      aListener: nsIWebTransportStreamCallback
+    ): void;
     sendDatagram(aData: u8[], aTrackingId: u64): void;
     getMaxDatagramSize(): void;
   }
@@ -10721,12 +11399,17 @@ declare global {
   }
 
   interface WebTransportSessionEventListener
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<typeof WebTransportSessionEventListener_DatagramOutcome> {
     onSessionReady(aSessionId: u64): void;
     onSessionClosed(aCleanly: boolean, aErrorCode: u32, aReason: string): void;
-    onIncomingBidirectionalStreamAvailable(aStream: nsIWebTransportBidirectionalStream): void;
-    onIncomingUnidirectionalStreamAvailable(aStream: nsIWebTransportReceiveStream): void;
+    onIncomingBidirectionalStreamAvailable(
+      aStream: nsIWebTransportBidirectionalStream
+    ): void;
+    onIncomingUnidirectionalStreamAvailable(
+      aStream: nsIWebTransportReceiveStream
+    ): void;
     onStopSending(aStreamId: u64, aError: nsresult): void;
     onResetReceived(aStreamId: u64, aError: nsresult): void;
     onDatagramReceived(aData: u8[]): void;
@@ -10738,7 +11421,9 @@ declare global {
   }
 
   interface nsIWebTransportStreamCallback extends nsISupports {
-    onBidirectionalStreamReady(aStream: nsIWebTransportBidirectionalStream): void;
+    onBidirectionalStreamReady(
+      aStream: nsIWebTransportBidirectionalStream
+    ): void;
     onUnidirectionalStreamReady(aStream: nsIWebTransportSendStream): void;
     onError(aError: u8): void;
   }
@@ -10845,7 +11530,12 @@ declare global {
     readonly blockFileDownloadsEnabled: boolean;
     isAllowed(aAction: i16, aUri?: nsIURI): boolean;
     readonly loggingEnabled: boolean;
-    log(aEntryType: i16, aFlag: boolean, aSource: nsIURI, aTarget?: nsIFile): void;
+    log(
+      aEntryType: i16,
+      aFlag: boolean,
+      aSource: nsIURI,
+      aTarget?: nsIFile
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/dom/media/bridge/IPeerConnection.idl
@@ -10919,10 +11609,16 @@ declare global {
       aCert: nsIX509Cert,
       aIsTemporary: OutParam<boolean>
     ): boolean;
-    clearValidityOverride(aHostName: string, aPort: i32, aOriginAttributes: any): void;
+    clearValidityOverride(
+      aHostName: string,
+      aPort: i32,
+      aOriginAttributes: any
+    ): void;
     clearAllOverrides(): void;
     getOverrides(): nsICertOverride[];
-    setDisableAllSecurityChecksAndLetAttackersInterceptMyData(aDisable: boolean): void;
+    setDisableAllSecurityChecksAndLetAttackersInterceptMyData(
+      aDisable: boolean
+    ): void;
     setDisableAllSecurityChecksAndLetAttackersInterceptMyDataForUserContext(
       aUserContextId: u32,
       aDisable: boolean
@@ -10974,14 +11670,29 @@ declare global {
     readonly TRUST_ANCHOR?: 1;
 
     hasPriorData(type: u8, callback: nsICertStorageCallback): void;
-    setRevocations(revocations: nsIRevocationState[], callback: nsICertStorageCallback): void;
-    getRevocationState(issuer: u8[], serial: u8[], subject: u8[], pubkey: u8[]): i16;
+    setRevocations(
+      revocations: nsIRevocationState[],
+      callback: nsICertStorageCallback
+    ): void;
+    getRevocationState(
+      issuer: u8[],
+      serial: u8[],
+      subject: u8[],
+      pubkey: u8[]
+    ): i16;
     setFullCRLiteFilter(filter: u8[], callback: nsICertStorageCallback): void;
-    addCRLiteDelta(delta: u8[], filename: string, callback: nsICertStorageCallback): void;
+    addCRLiteDelta(
+      delta: u8[],
+      filename: string,
+      callback: nsICertStorageCallback
+    ): void;
     testNoteCRLiteUpdateTime(callback: nsICertStorageCallback): void;
     addCerts(certs: nsICertInfo[], callback: nsICertStorageCallback): void;
     TestHelperAddCert(cert: string, subject: string, trust: i16): void;
-    removeCertsByHashes(hashes: string[], callback: nsICertStorageCallback): void;
+    removeCertsByHashes(
+      hashes: string[],
+      callback: nsICertStorageCallback
+    ): void;
     findCertsBySubject(subject: u8[]): u8[][];
     hasAllCertsByHash(hashes: u8[][]): boolean;
     findCertByHash(cert_hash: u8[]): u8[];
@@ -11009,8 +11720,14 @@ declare global {
       cert: nsIX509Cert,
       trust: OutParam<u32>
     ): boolean;
-    setPKCS12FilePassword(ctx: nsIInterfaceRequestor, password: OutParam<string>): boolean;
-    getPKCS12FilePassword(ctx: nsIInterfaceRequestor, password: OutParam<string>): boolean;
+    setPKCS12FilePassword(
+      ctx: nsIInterfaceRequestor,
+      password: OutParam<string>
+    ): boolean;
+    getPKCS12FilePassword(
+      ctx: nsIInterfaceRequestor,
+      password: OutParam<string>
+    ): boolean;
   }
 
   // https://searchfox.org/mozilla-central/source/security/manager/ssl/nsIClientAuthDialogService.idl
@@ -11053,8 +11770,7 @@ declare global {
   }
 
   interface nsIClientAuthRememberService
-    extends nsISupports,
-      Enums<typeof nsIClientAuthRememberService_Duration> {
+    extends nsISupports, Enums<typeof nsIClientAuthRememberService_Duration> {
     forgetRememberedDecision(key: string): void;
     getDecisions(): nsIClientAuthRememberRecord[];
     rememberDecisionScriptable(
@@ -11120,8 +11836,7 @@ declare global {
   }
 
   interface nsIDataStorageManager
-    extends nsISupports,
-      Enums<typeof nsIDataStorageManager_DataStorage> {
+    extends nsISupports, Enums<typeof nsIDataStorageManager_DataStorage> {
     get(dataStorage: nsIDataStorageManager.DataStorage): nsIDataStorage;
   }
 } // global
@@ -11137,7 +11852,8 @@ declare global {
     type DataType = nsIDataStorage_DataType;
   }
 
-  interface nsIDataStorage extends nsISupports, Enums<typeof nsIDataStorage_DataType> {
+  interface nsIDataStorage
+    extends nsISupports, Enums<typeof nsIDataStorage_DataType> {
     get(key: string, type: nsIDataStorage.DataType): string;
     put(key: string, value: string, type: nsIDataStorage.DataType): void;
     remove(key: string, type: nsIDataStorage.DataType): void;
@@ -11337,8 +12053,7 @@ declare global {
   }
 
   interface nsISiteSecurityService
-    extends nsISupports,
-      Enums<typeof nsISiteSecurityService_ResetStateBy> {
+    extends nsISupports, Enums<typeof nsISiteSecurityService_ResetStateBy> {
     readonly Success?: 0;
     readonly ERROR_UNKNOWN?: 1;
     readonly ERROR_COULD_NOT_PARSE_HEADER?: 3;
@@ -11390,7 +12105,11 @@ declare global {
     readonly earlyDataAccepted: boolean;
     driveHandshake(): void;
     joinConnection(npnProtocol: string, hostname: string, port: i32): boolean;
-    testJoinConnection(npnProtocol: string, hostname: string, port: i32): boolean;
+    testJoinConnection(
+      npnProtocol: string,
+      hostname: string,
+      port: i32
+    ): boolean;
     isAcceptableForHost(hostname: string): boolean;
     readonly KEAUsed: i16;
     readonly KEAKeyBits: u32;
@@ -11428,11 +12147,13 @@ declare enum nsITransportSecurityInfo_OverridableErrorCategory {
 
 declare global {
   namespace nsITransportSecurityInfo {
-    type OverridableErrorCategory = nsITransportSecurityInfo_OverridableErrorCategory;
+    type OverridableErrorCategory =
+      nsITransportSecurityInfo_OverridableErrorCategory;
   }
 
   interface nsITransportSecurityInfo
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<typeof nsITransportSecurityInfo_OverridableErrorCategory> {
     readonly SSL_VERSION_3?: 0;
     readonly TLS_VERSION_1?: 1;
@@ -11519,8 +12240,7 @@ declare global {
   }
 
   interface nsIAppSignatureInfo
-    extends nsISupports,
-      Enums<typeof nsIAppSignatureInfo_SignatureAlgorithm> {
+    extends nsISupports, Enums<typeof nsIAppSignatureInfo_SignatureAlgorithm> {
     readonly signerCert: nsIX509Cert;
     readonly signatureAlgorithm: nsIAppSignatureInfo.SignatureAlgorithm;
   }
@@ -11576,7 +12296,8 @@ declare global {
   }
 
   interface nsIX509CertDB
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<
         typeof nsIX509CertDB_VerifyUsage &
           typeof nsIX509CertDB_QWACType &
@@ -11601,16 +12322,33 @@ declare global {
     readonly FLAG_MUST_BE_EV?: 2;
 
     findCertByDBKey(aDBkey: string): nsIX509Cert;
-    importCertificates(data: u8[], length: u32, type: u32, ctx: nsIInterfaceRequestor): void;
-    importEmailCertificate(data: u8[], length: u32, ctx: nsIInterfaceRequestor): void;
-    importUserCertificate(data: u8[], length: u32, ctx: nsIInterfaceRequestor): void;
+    importCertificates(
+      data: u8[],
+      length: u32,
+      type: u32,
+      ctx: nsIInterfaceRequestor
+    ): void;
+    importEmailCertificate(
+      data: u8[],
+      length: u32,
+      ctx: nsIInterfaceRequestor
+    ): void;
+    importUserCertificate(
+      data: u8[],
+      length: u32,
+      ctx: nsIInterfaceRequestor
+    ): void;
     deleteCertificate(aCert: nsIX509Cert): void;
     setCertTrust(cert: nsIX509Cert, type: u32, trust: u32): void;
     setCertTrustFromString(cert: nsIX509Cert, trustString: string): void;
     isCertTrusted(cert: nsIX509Cert, certType: u32, trustType: u32): boolean;
     importCertsFromFile(aFile: nsIFile, aType: u32): void;
     importPKCS12File(aFile: nsIFile, aPassword: string): u32;
-    exportPKCS12File(aFile: nsIFile, aCerts: nsIX509Cert[], aPassword: string): u32;
+    exportPKCS12File(
+      aFile: nsIFile,
+      aCerts: nsIX509Cert[],
+      aPassword: string
+    ): u32;
     constructX509FromBase64(base64: string): nsIX509Cert;
     constructX509(certDER: u8[]): nsIX509Cert;
     openSignedAppFileAsync(
@@ -11718,9 +12456,11 @@ declare global {
   }
 
   interface mozIPlacesAutoComplete
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<
-        typeof mozIPlacesAutoComplete_MatchBehaviors & typeof mozIPlacesAutoComplete_SearchBehaviors
+        typeof mozIPlacesAutoComplete_MatchBehaviors &
+          typeof mozIPlacesAutoComplete_SearchBehaviors
       > {}
 
   // https://searchfox.org/mozilla-central/source/toolkit/components/places/mozIPlacesPendingOperation.idl
@@ -11732,8 +12472,18 @@ declare global {
   // https://searchfox.org/mozilla-central/source/toolkit/components/places/mozISyncedBookmarksMirror.idl
 
   interface mozISyncedBookmarksMirrorProgressListener extends nsISupports {
-    onFetchLocalTree(took: i64, itemCount: i64, deletedCount: i64, problems: nsIPropertyBag): void;
-    onFetchRemoteTree(took: i64, itemCount: i64, deletedCount: i64, problems: nsIPropertyBag): void;
+    onFetchLocalTree(
+      took: i64,
+      itemCount: i64,
+      deletedCount: i64,
+      problems: nsIPropertyBag
+    ): void;
+    onFetchRemoteTree(
+      took: i64,
+      itemCount: i64,
+      deletedCount: i64,
+      problems: nsIPropertyBag
+    ): void;
     onMerge(took: i64, counts: nsIPropertyBag): void;
     onApply(took: i64): void;
   }
@@ -11765,7 +12515,8 @@ declare global {
   }
 
   interface mozISyncedBookmarksMerger
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<
         typeof mozISyncedBookmarksMerger_SyncedItemKinds &
           typeof mozISyncedBookmarksMerger_SyncedItemValidity
@@ -11801,7 +12552,11 @@ declare global {
       isRichIcon?: boolean
     ): Promise<any>;
     getFaviconForPage(aPageURI: nsIURI, aPreferredWidth?: u16): Promise<any>;
-    tryCopyFavicons(aFromPageURI: nsIURI, aToPageURI: nsIURI, aFaviconLoadType: u32): Promise<any>;
+    tryCopyFavicons(
+      aFromPageURI: nsIURI,
+      aToPageURI: nsIURI,
+      aFaviconLoadType: u32
+    ): Promise<any>;
   }
 
   interface nsIFavicon extends nsISupports {
@@ -11838,9 +12593,11 @@ declare global {
   }
 
   interface nsINavBookmarksService
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<
-        typeof nsINavBookmarksService_BookmarkType & typeof nsINavBookmarksService_ChangeSource
+        typeof nsINavBookmarksService_BookmarkType &
+          typeof nsINavBookmarksService_ChangeSource
       > {
     readonly DEFAULT_INDEX?: -1;
     readonly SYNC_STATUS_UNKNOWN?: 0;
@@ -11858,10 +12615,20 @@ declare global {
       aSource?: u16
     ): i64;
     removeItem(aItemId: i64, aSource?: u16): void;
-    createFolder(aParentFolder: i64, name: string, index: i32, aGuid?: string, aSource?: u16): i64;
+    createFolder(
+      aParentFolder: i64,
+      name: string,
+      index: i32,
+      aGuid?: string,
+      aSource?: u16
+    ): i64;
     setItemTitle(aItemId: i64, aTitle: string, aSource?: u16): void;
     getItemTitle(aItemId: i64): string;
-    setItemLastModified(aItemId: i64, aLastModified: PRTime, aSource?: u16): void;
+    setItemLastModified(
+      aItemId: i64,
+      aLastModified: PRTime,
+      aSource?: u16
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/toolkit/components/places/nsINavHistoryService.idl
@@ -11881,8 +12648,7 @@ declare global {
   }
 
   interface nsINavHistoryResultNode
-    extends nsISupports,
-      Enums<typeof nsINavHistoryResultNode_ResultType> {
+    extends nsISupports, Enums<typeof nsINavHistoryResultNode_ResultType> {
     readonly parent: nsINavHistoryContainerResultNode;
     readonly parentResult: nsINavHistoryResult;
     readonly uri: string;
@@ -11951,9 +12717,18 @@ declare global {
       aOldAccessCount: u32
     ): void;
     nodeTagsChanged(aNode: nsINavHistoryResultNode): void;
-    nodeKeywordChanged(aNode: nsINavHistoryResultNode, aNewKeyword: string): void;
-    nodeDateAddedChanged(aNode: nsINavHistoryResultNode, aNewValue: PRTime): void;
-    nodeLastModifiedChanged(aNode: nsINavHistoryResultNode, aNewValue: PRTime): void;
+    nodeKeywordChanged(
+      aNode: nsINavHistoryResultNode,
+      aNewKeyword: string
+    ): void;
+    nodeDateAddedChanged(
+      aNode: nsINavHistoryResultNode,
+      aNewValue: PRTime
+    ): void;
+    nodeLastModifiedChanged(
+      aNode: nsINavHistoryResultNode,
+      aNewValue: PRTime
+    ): void;
     containerStateChanged(
       aContainerNode: nsINavHistoryContainerResultNode,
       aOldState: u32,
@@ -11968,7 +12743,10 @@ declare global {
   interface nsINavHistoryResult extends nsISupports {
     sortingMode: u16;
     suppressNotifications: boolean;
-    addObserver(aObserver: nsINavHistoryResultObserver, aOwnsWeak?: boolean): void;
+    addObserver(
+      aObserver: nsINavHistoryResultObserver,
+      aOwnsWeak?: boolean
+    ): void;
     removeObserver(aObserver: nsINavHistoryResultObserver): void;
     readonly root: nsINavHistoryContainerResultNode;
     onBeginUpdateBatch(): void;
@@ -12048,9 +12826,11 @@ declare global {
   }
 
   interface nsINavHistoryQueryOptions
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<
-        typeof nsINavHistoryQueryOptions_SortByType & typeof nsINavHistoryQueryOptions_ResultType
+        typeof nsINavHistoryQueryOptions_SortByType &
+          typeof nsINavHistoryQueryOptions_ResultType
       > {
     readonly QUERY_TYPE_HISTORY?: 0;
     readonly QUERY_TYPE_BOOKMARKS?: 1;
@@ -12086,8 +12866,7 @@ declare global {
   }
 
   interface nsINavHistoryService
-    extends nsISupports,
-      Enums<typeof nsINavHistoryService_TransitionType> {
+    extends nsISupports, Enums<typeof nsINavHistoryService_TransitionType> {
     readonly DATABASE_SCHEMA_VERSION?: 82;
     readonly DATABASE_STATUS_OK?: 0;
     readonly DATABASE_STATUS_CREATE?: 1;
@@ -12115,10 +12894,17 @@ declare global {
       aQuery: OutParam<nsINavHistoryQuery>,
       options: OutParam<nsINavHistoryQueryOptions>
     ): void;
-    queryToQueryString(aQuery: nsINavHistoryQuery, options: nsINavHistoryQueryOptions): string;
+    queryToQueryString(
+      aQuery: nsINavHistoryQuery,
+      options: nsINavHistoryQueryOptions
+    ): string;
     readonly historyDisabled: boolean;
     makeGuid(): string;
-    pageFrecencyThreshold(aVisitAgeInDays: i32, aNumVisits: i32, aBookmarked: boolean): i64;
+    pageFrecencyThreshold(
+      aVisitAgeInDays: i32,
+      aNumVisits: i32,
+      aBookmarked: boolean
+    ): i64;
     hashURL(aSpec: string, aMode?: string): u64;
     isFrecencyDecaying: boolean;
     readonly isAlternativeFrecencyEnabled: boolean;
@@ -12166,7 +12952,10 @@ declare global {
     setStringPref(aPrefName: string, aValue: string): void;
     getIntPref(aPrefName: string, aDefaultValue?: i32): i32;
     setIntPref(aPrefName: string, aValue: i32): void;
-    getComplexValue<T extends nsIID>(aPrefName: string, aType: T): nsQIResult<T>;
+    getComplexValue<T extends nsIID>(
+      aPrefName: string,
+      aType: T
+    ): nsQIResult<T>;
     setComplexValue(aPrefName: string, aType: nsID, aValue: nsISupports): void;
     clearUserPref(aPrefName: string): void;
     lockPref(aPrefName: string): void;
@@ -12177,7 +12966,11 @@ declare global {
     unlockPref(aPrefName: string): void;
     deleteBranch(aStartingAt: string): void;
     getChildList(aStartingAt: string): string[];
-    addObserver(aDomain: string, aObserver: nsIObserver, aHoldWeak?: boolean): void;
+    addObserver(
+      aDomain: string,
+      aObserver: nsIObserver,
+      aHoldWeak?: boolean
+    ): void;
     removeObserver(aDomain: string, aObserver: nsIObserver): void;
   }
 
@@ -12206,7 +12999,13 @@ declare global {
       isSticky: boolean,
       isLocked: boolean
     ): void;
-    onIntPref(kind: string, name: string, value: i32, isSticky: boolean, isLocked: boolean): void;
+    onIntPref(
+      kind: string,
+      name: string,
+      value: i32,
+      isSticky: boolean,
+      isLocked: boolean
+    ): void;
     onBoolPref(
       kind: string,
       name: string,
@@ -12220,7 +13019,10 @@ declare global {
   interface nsIPrefService extends nsISupports {
     resetPrefs(): void;
     savePrefFile(aFile: nsIFile): void;
-    backupPrefFile(aFile: nsIFile, aOverrideMap?: nsIPrefOverrideMap): Promise<any>;
+    backupPrefFile(
+      aFile: nsIFile,
+      aOverrideMap?: nsIPrefOverrideMap
+    ): Promise<any>;
     getBranch(aPrefRoot: string): nsIPrefBranch;
     getDefaultBranch(aPrefRoot: string): nsIPrefBranch;
     readonly dirty: boolean;
@@ -12228,7 +13030,11 @@ declare global {
     readUserPrefsFromFile(aFile: nsIFile): void;
     readStats(callback: nsIPrefStatsCallback): void;
     resetStats(): void;
-    parsePrefsFromBuffer(bytes: u8[], observer: nsIPrefObserver, pathLabel?: string): void;
+    parsePrefsFromBuffer(
+      bytes: u8[],
+      observer: nsIPrefObserver,
+      pathLabel?: string
+    ): void;
     readonly userPrefsFileLastModifiedAtStartup: PRTime;
     readonly prefsJsPreamble: string;
   }
@@ -12306,7 +13112,10 @@ declare global {
     getProfileDataAsync(aSinceTime?: double): Promise<any>;
     getProfileDataAsArrayBuffer(aSinceTime?: double): Promise<any>;
     getProfileDataAsGzippedArrayBuffer(aSinceTime?: double): Promise<any>;
-    dumpProfileToFileAsync(aFilename: string, aSinceTime?: double): Promise<any>;
+    dumpProfileToFileAsync(
+      aFilename: string,
+      aSinceTime?: double
+    ): Promise<any>;
     dumpProfileToFile(aFilename: string): void;
     IsActive(): boolean;
     ClearAllPages(): void;
@@ -12410,12 +13219,21 @@ declare global {
     readonly storageVersion: i32;
     readonly allowSkippedRecord: boolean;
     getLastSync(callback: mozIBridgedSyncEngineCallback): void;
-    setLastSync(lastSyncMillis: i64, callback: mozIBridgedSyncEngineCallback): void;
+    setLastSync(
+      lastSyncMillis: i64,
+      callback: mozIBridgedSyncEngineCallback
+    ): void;
     getSyncId(callback: mozIBridgedSyncEngineCallback): void;
     resetSyncId(callback: mozIBridgedSyncEngineCallback): void;
-    ensureCurrentSyncId(newSyncId: string, callback: mozIBridgedSyncEngineCallback): void;
+    ensureCurrentSyncId(
+      newSyncId: string,
+      callback: mozIBridgedSyncEngineCallback
+    ): void;
     syncStarted(callback: mozIBridgedSyncEngineCallback): void;
-    storeIncoming(incomingEnvelopesAsJSON: string[], callback: mozIBridgedSyncEngineCallback): void;
+    storeIncoming(
+      incomingEnvelopesAsJSON: string[],
+      callback: mozIBridgedSyncEngineCallback
+    ): void;
     apply(callback: mozIBridgedSyncEngineApplyCallback): void;
     setUploaded(
       newTimestampMillis: i64,
@@ -12461,15 +13279,29 @@ declare global {
     scroll: string;
     addTextField(aIsXPath: boolean, aIdOrXPath: string, aValue: string): void;
     addCheckbox(aIsXPath: boolean, aIdOrXPath: string, aValue: boolean): void;
-    addFileList(aIsXPath: boolean, aIdOrXPath: string, aType: string, aFileList: string[]): void;
+    addFileList(
+      aIsXPath: boolean,
+      aIdOrXPath: string,
+      aType: string,
+      aFileList: string[]
+    ): void;
     addSingleSelect(
       aIsXPath: boolean,
       aIdOrXPath: string,
       aSelectedIndex: u32,
       aValue: string
     ): void;
-    addMultipleSelect(aIsXPath: boolean, aIdOrXPath: string, aValues: string[]): void;
-    addCustomElement(aIsXPath: boolean, aIdOrXPath: string, aValue: any, aState: any): void;
+    addMultipleSelect(
+      aIsXPath: boolean,
+      aIdOrXPath: string,
+      aValues: string[]
+    ): void;
+    addCustomElement(
+      aIsXPath: boolean,
+      aIdOrXPath: string,
+      aValue: any,
+      aState: any
+    ): void;
     addChild(aChild: nsISessionStoreRestoreData, aIndex: u32): void;
   }
 
@@ -12485,7 +13317,11 @@ declare global {
 
     isDefaultBrowser(aForAllTypes?: boolean): boolean;
     setDefaultBrowser(aForAllUsers: boolean): void;
-    setDesktopBackground(aElement: Element, aPosition: i32, aImageName: string): void;
+    setDesktopBackground(
+      aElement: Element,
+      aPosition: i32,
+      aImageName: string
+    ): void;
     desktopBackgroundColor: u32;
   }
 
@@ -12548,7 +13384,11 @@ declare global {
     abandonBFCacheEntry(): void;
     sharesDocumentWith(aEntry: nsISHEntry): boolean;
     setLoadTypeAsHistory(): void;
-    AddChild(aChild: nsISHEntry, aOffset: i32, aUseRemoteSubframes?: boolean): void;
+    AddChild(
+      aChild: nsISHEntry,
+      aOffset: i32,
+      aUseRemoteSubframes?: boolean
+    ): void;
     GetChildAt(aIndex: i32): nsISHEntry;
     readonly bfcacheID: u64;
     wireframe: any;
@@ -12639,7 +13479,10 @@ declare global {
     variableLimit: i32;
     readonly transactionInProgress: boolean;
     asyncClose(aCallback?: mozIStorageCompletionCallback): void;
-    asyncClone(aReadOnly: boolean, aCallback: mozIStorageCompletionCallback): void;
+    asyncClone(
+      aReadOnly: boolean,
+      aCallback: mozIStorageCompletionCallback
+    ): void;
     readonly databaseFile: nsIFile;
     interrupt(): void;
     asyncVacuum(
@@ -12656,8 +13499,15 @@ declare global {
       aSQLStatement: string,
       aCallback?: mozIStorageStatementCallback
     ): mozIStoragePendingStatement;
-    loadExtension(aExtensionName: string, aCallback?: mozIStorageCompletionCallback): void;
-    createFunction(aFunctionName: string, aNumArguments: i32, aFunction: mozIStorageFunction): void;
+    loadExtension(
+      aExtensionName: string,
+      aCallback?: mozIStorageCompletionCallback
+    ): void;
+    createFunction(
+      aFunctionName: string,
+      aNumArguments: i32,
+      aFunction: mozIStorageFunction
+    ): void;
     removeFunction(aFunctionName: string): void;
     setProgressHandler(
       aGranularity: i32,
@@ -12686,7 +13536,9 @@ declare global {
     finalize(): void;
     bindParameters(aParameters: mozIStorageBindingParamsArray): void;
     newBindingParamsArray(): mozIStorageBindingParamsArray;
-    executeAsync(aCallback?: mozIStorageStatementCallback): mozIStoragePendingStatement;
+    executeAsync(
+      aCallback?: mozIStorageStatementCallback
+    ): mozIStoragePendingStatement;
     readonly state: i32;
     escapeStringForLIKE(aValue: string, aEscapeChar: string): string;
     escapeUTF8StringForLIKE(aValue: string, aEscapeChar: string): string;
@@ -12835,8 +13687,14 @@ declare global {
       aName?: string,
       aConnectionFlags?: u32
     ): mozIStorageConnection;
-    openDatabase(aDatabaseFile: nsIFile, aConnectionFlags?: u32): mozIStorageConnection;
-    openUnsharedDatabase(aDatabaseFile: nsIFile, aConnectionFlags?: u32): mozIStorageConnection;
+    openDatabase(
+      aDatabaseFile: nsIFile,
+      aConnectionFlags?: u32
+    ): mozIStorageConnection;
+    openUnsharedDatabase(
+      aDatabaseFile: nsIFile,
+      aConnectionFlags?: u32
+    ): mozIStorageConnection;
     openDatabaseWithFileURL(
       aFileURL: nsIFileURL,
       aTelemetryFilename?: string,
@@ -12955,7 +13813,11 @@ declare global {
       aClearStore?: boolean,
       aFilterTest?: boolean
     ): any;
-    getSnapshotForScalars(aStoreName?: string, aClearStore?: boolean, aFilterTest?: boolean): any;
+    getSnapshotForScalars(
+      aStoreName?: string,
+      aClearStore?: boolean,
+      aFilterTest?: boolean
+    ): any;
     getSnapshotForKeyedScalars(
       aStoreName?: string,
       aClearStore?: boolean,
@@ -13001,7 +13863,11 @@ declare global {
     start_ipv6(port: i32): void;
     start_dualStack(port: i32): void;
     stop(callback: nsIHttpServerStoppedCallback): void;
-    registerFile(path: string, file: nsIFile, handler?: nsIHttpRequestHandler): void;
+    registerFile(
+      path: string,
+      file: nsIFile,
+      handler?: nsIHttpRequestHandler
+    ): void;
     registerPathHandler(path: string, handler: nsIHttpRequestHandler): void;
     registerPrefixHandler(prefix: string, handler: nsIHttpRequestHandler): void;
     registerErrorHandler(code: u32, handler: nsIHttpRequestHandler): void;
@@ -13051,7 +13917,11 @@ declare global {
   }
 
   interface nsIHttpResponse extends nsISupports {
-    setStatusLine(httpVersion: string, statusCode: u16, description: string): void;
+    setStatusLine(
+      httpVersion: string,
+      statusCode: u16,
+      description: string
+    ): void;
     setHeader(name: string, value: string, merge?: boolean): void;
     setHeaderNoCheck(name: string, value: string): void;
     readonly bodyOutputStream: nsIOutputStream;
@@ -13104,10 +13974,12 @@ declare global {
   }
 
   interface nsIBounceTrackingProtection
-    extends nsISupports,
-      Enums<typeof nsIBounceTrackingProtection_Modes> {
+    extends nsISupports, Enums<typeof nsIBounceTrackingProtection_Modes> {
     clearAll(): void;
-    clearBySiteHostAndOriginAttributes(aSiteHost: string, originAttributes: any): void;
+    clearBySiteHostAndOriginAttributes(
+      aSiteHost: string,
+      originAttributes: any
+    ): void;
     clearBySiteHostAndOriginAttributesPattern(
       aSiteHost: string,
       aOriginAttributesPattern: any
@@ -13120,22 +13992,34 @@ declare global {
     testGetSiteHostExceptions(): string[];
     testRunPurgeBounceTrackers(): Promise<any>;
     testClearExpiredUserActivations(): void;
-    testGetBounceTrackerCandidateHosts(originAttributes: any): nsIBounceTrackingMapEntry[];
-    testGetUserActivationHosts(originAttributes: any): nsIBounceTrackingMapEntry[];
+    testGetBounceTrackerCandidateHosts(
+      originAttributes: any
+    ): nsIBounceTrackingMapEntry[];
+    testGetUserActivationHosts(
+      originAttributes: any
+    ): nsIBounceTrackingMapEntry[];
     testAddBounceTrackerCandidate(
       originAttributes: any,
       aSiteHost: string,
       aBounceTime: PRTime
     ): void;
-    testAddUserActivation(originAttributes: any, aSiteHost: string, aActivationTime: PRTime): void;
-    testGetRecentlyPurgedTrackers(originAttributes: any): nsIBounceTrackingPurgeEntry[];
+    testAddUserActivation(
+      originAttributes: any,
+      aSiteHost: string,
+      aActivationTime: PRTime
+    ): void;
+    testGetRecentlyPurgedTrackers(
+      originAttributes: any
+    ): nsIBounceTrackingPurgeEntry[];
     testMaybeMigrateUserInteractionPermissions(): void;
   }
 
   // https://searchfox.org/mozilla-central/source/toolkit/components/antitracking/nsIContentBlockingAllowList.idl
 
   interface nsIContentBlockingAllowList extends nsISupports {
-    computeContentBlockingAllowListPrincipal(aPrincipal: nsIPrincipal): nsIPrincipal;
+    computeContentBlockingAllowListPrincipal(
+      aPrincipal: nsIPrincipal
+    ): nsIPrincipal;
   }
 
   // https://searchfox.org/mozilla-central/source/toolkit/components/antitracking/nsIPartitioningExceptionListService.idl
@@ -13145,8 +14029,12 @@ declare global {
   }>;
 
   interface nsIPartitioningExceptionListService extends nsISupports {
-    registerAndRunExceptionListObserver(aObserver: nsIPartitioningExceptionListObserver): void;
-    unregisterExceptionListObserver(aObserver: nsIPartitioningExceptionListObserver): void;
+    registerAndRunExceptionListObserver(
+      aObserver: nsIPartitioningExceptionListObserver
+    ): void;
+    unregisterExceptionListObserver(
+      aObserver: nsIPartitioningExceptionListObserver
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/toolkit/components/antitracking/nsIPurgeTrackerService.idl
@@ -13200,9 +14088,13 @@ declare global {
 
   interface nsIURLQueryStrippingListService extends nsISupports {
     registerAndRunObserver(aObserver: nsIURLQueryStrippingListObserver): void;
-    registerAndRunObserverStripOnShare(aObserver: nsIURLQueryStrippingListObserver): void;
+    registerAndRunObserverStripOnShare(
+      aObserver: nsIURLQueryStrippingListObserver
+    ): void;
     unregisterObserver(aObserver: nsIURLQueryStrippingListObserver): void;
-    unregisterStripOnShareObserver(aObserver: nsIURLQueryStrippingListObserver): void;
+    unregisterStripOnShareObserver(
+      aObserver: nsIURLQueryStrippingListObserver
+    ): void;
     clearLists(): void;
     testWaitForInit(): Promise<any>;
     testSetList(testFile: any): Promise<any>;
@@ -13262,7 +14154,10 @@ declare global {
   // https://searchfox.org/mozilla-central/source/toolkit/components/backgroundtasks/nsIBackgroundTasksManager.idl
 
   interface nsIBackgroundTasksManager extends nsICommandLineHandler {
-    runBackgroundTaskNamed(aTaskName: string, aCommandLine: nsICommandLine): void;
+    runBackgroundTaskNamed(
+      aTaskName: string,
+      aCommandLine: nsICommandLine
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/toolkit/components/backgroundtasks/nsIBackgroundTasksRunner.idl
@@ -13376,7 +14271,10 @@ declare global {
       aFrom?: PRTime,
       aCallback?: nsIClearDataCallback
     ): void;
-    cleanupAfterDeletionAtShutdown(aFlags: u32, aCallback: nsIClearDataCallback): void;
+    cleanupAfterDeletionAtShutdown(
+      aFlags: u32,
+      aCallback: nsIClearDataCallback
+    ): void;
     hostMatchesSite(
       aHost: string,
       aOriginAttributes: any,
@@ -13413,7 +14311,8 @@ declare global {
   }
 
   interface nsIContentAnalysisAcknowledgement
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<
         typeof nsIContentAnalysisAcknowledgement_Result &
           typeof nsIContentAnalysisAcknowledgement_FinalAction
@@ -13453,9 +14352,11 @@ declare global {
   }
 
   interface nsIContentAnalysisResponse
-    extends nsIContentAnalysisResult,
+    extends
+      nsIContentAnalysisResult,
       Enums<
-        typeof nsIContentAnalysisResponse_Action & typeof nsIContentAnalysisResponse_CancelError
+        typeof nsIContentAnalysisResponse_Action &
+          typeof nsIContentAnalysisResponse_CancelError
       > {
     readonly action: nsIContentAnalysisResponse.Action;
     readonly cancelError: nsIContentAnalysisResponse.CancelError;
@@ -13515,7 +14416,8 @@ declare global {
   }
 
   interface nsIContentAnalysisRequest
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<
         typeof nsIContentAnalysisRequest_AnalysisType &
           typeof nsIContentAnalysisRequest_Reason &
@@ -13622,7 +14524,8 @@ declare global {
     type RunContext = nsIClickRule_RunContext;
   }
 
-  interface nsIClickRule extends nsISupports, Enums<typeof nsIClickRule_RunContext> {
+  interface nsIClickRule
+    extends nsISupports, Enums<typeof nsIClickRule_RunContext> {
     readonly presence: string;
     readonly skipPresenceVisibilityCheck: boolean;
     readonly runContext: nsIClickRule.RunContext;
@@ -13689,16 +14592,26 @@ declare global {
     type Modes = nsICookieBannerService_Modes;
   }
 
-  interface nsICookieBannerService extends nsISupports, Enums<typeof nsICookieBannerService_Modes> {
+  interface nsICookieBannerService
+    extends nsISupports, Enums<typeof nsICookieBannerService_Modes> {
     readonly isEnabled: boolean;
     readonly rules: nsICookieBannerRule[];
     resetRules(doImport?: boolean): void;
-    getCookiesForURI(aURI: nsIURI, aIsPrivateBrowsing: boolean): nsICookieRule[];
-    getClickRulesForDomain(aDomain: string, aIsTopLevel: boolean): nsIClickRule[];
+    getCookiesForURI(
+      aURI: nsIURI,
+      aIsPrivateBrowsing: boolean
+    ): nsICookieRule[];
+    getClickRulesForDomain(
+      aDomain: string,
+      aIsTopLevel: boolean
+    ): nsIClickRule[];
     insertRule(aRule: nsICookieBannerRule): void;
     removeRule(aRule: nsICookieBannerRule): void;
     hasRuleForBrowsingContextTree(aBrowsingContext: BrowsingContext): boolean;
-    getDomainPref(aTopLevelURI: nsIURI, aIsPrivate: boolean): nsICookieBannerService.Modes;
+    getDomainPref(
+      aTopLevelURI: nsIURI,
+      aIsPrivate: boolean
+    ): nsICookieBannerService.Modes;
     setDomainPref(
       aTopLevelURI: nsIURI,
       aMode: nsICookieBannerService.Modes,
@@ -13715,7 +14628,11 @@ declare global {
       aIsTopLevel: boolean,
       aIsPrivate: boolean
     ): boolean;
-    markSiteExecuted(aSite: string, aIsTopLevel: boolean, aIsPrivate: boolean): void;
+    markSiteExecuted(
+      aSite: string,
+      aIsTopLevel: boolean,
+      aIsPrivate: boolean
+    ): void;
     removeExecutedRecordForSite(aSite: string, aIsPrivate: boolean): void;
     removeAllExecutedRecords(aIsPrivate: boolean): void;
   }
@@ -13845,7 +14762,10 @@ declare global {
   }
 
   interface nsISearchEngine extends nsISupports {
-    getSubmission(searchTerms: string, responseType?: string): nsISearchSubmission;
+    getSubmission(
+      searchTerms: string,
+      responseType?: string
+    ): nsISearchSubmission;
     readonly searchURLWithNoTerms: nsIURI;
     searchTermFromResult(uri: nsIURI): string;
     readonly searchUrlQueryParamName: string;
@@ -13912,7 +14832,8 @@ declare global {
   }
 
   interface nsISearchService
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<
         typeof nsISearchService_OpenSearchInstallErrors &
           typeof nsISearchService_DefaultEngineChangeReason
@@ -13923,7 +14844,11 @@ declare global {
     readonly hasSuccessfullyInitialized: boolean;
     runBackgroundChecks(): Promise<any>;
     resetToAppDefaultEngine(): void;
-    addOpenSearchEngine(engineURL: string, iconURL: string, originAttributes?: any): Promise<any>;
+    addOpenSearchEngine(
+      engineURL: string,
+      iconURL: string,
+      originAttributes?: any
+    ): Promise<any>;
     addUserEngine(formInfo: any): Promise<any>;
     addEnginesFromExtension(extension: any): Promise<any>;
     restoreDefaultEngines(): void;
@@ -13988,7 +14913,11 @@ declare global {
   }
 
   interface nsIProfileMigrator extends nsISupports {
-    migrate(aStartup: nsIProfileStartup, aKey: string, aProfileName?: string): void;
+    migrate(
+      aStartup: nsIProfileStartup,
+      aKey: string,
+      aProfileName?: string
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/toolkit/profile/nsIProfileUnlocker.idl
@@ -14046,7 +14975,8 @@ declare global {
   }
 
   interface nsIToolkitProfileService
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<
         typeof nsIToolkitProfileService_downgradeUIFlags &
           typeof nsIToolkitProfileService_downgradeUIChoice &
@@ -14069,12 +14999,19 @@ declare global {
     getProfileByName(aName: string): nsIToolkitProfile;
     getProfileByDir(aRootDir: nsIFile, aLocalDir?: nsIFile): nsIToolkitProfile;
     createProfile(aRootDir: nsIFile, aName: string): nsIToolkitProfile;
-    createUniqueProfile(aRootDir: nsIFile, aNamePrefix: string): nsIToolkitProfile;
+    createUniqueProfile(
+      aRootDir: nsIFile,
+      aNamePrefix: string
+    ): nsIToolkitProfile;
     readonly profileCount: u32;
     flush(): void;
     asyncFlush(): Promise<any>;
     asyncFlushCurrentProfile(): Promise<any>;
-    removeProfileFilesByPath(aRootDir: nsIFile, aLocalDir: nsIFile, aTimeout: u32): Promise<any>;
+    removeProfileFilesByPath(
+      aRootDir: nsIFile,
+      aLocalDir: nsIFile,
+      aTimeout: u32
+    ): Promise<any>;
   }
 
   // https://searchfox.org/mozilla-central/source/toolkit/components/remote/nsIRemoteService.idl
@@ -14153,7 +15090,12 @@ declare global {
   // https://searchfox.org/mozilla-central/source/toolkit/components/timermanager/nsIUpdateTimerManager.idl
 
   interface nsIUpdateTimerManager extends nsISupports {
-    registerTimer(id: string, callback: nsITimerCallback, interval: u32, skipFirst?: boolean): void;
+    registerTimer(
+      id: string,
+      callback: nsITimerCallback,
+      interval: u32,
+      skipFirst?: boolean
+    ): void;
     unregisterTimer(id: string): void;
   }
 
@@ -14392,7 +15334,10 @@ declare global {
       aRequest: nsIRequest,
       aContentHandler: OutParam<nsIStreamListener>
     ): boolean;
-    isPreferred(aContentType: string, aDesiredContentType: OutParam<string>): boolean;
+    isPreferred(
+      aContentType: string,
+      aDesiredContentType: OutParam<string>
+    ): boolean;
     canHandleContent(
       aContentType: string,
       aIsContentPreferred: boolean,
@@ -14411,7 +15356,11 @@ declare global {
 
     registerContentListener(aContentListener: nsIURIContentListener): void;
     unRegisterContentListener(aContentListener: nsIURIContentListener): void;
-    openURI(aChannel: nsIChannel, aFlags: u32, aWindowContext: nsIInterfaceRequestor): void;
+    openURI(
+      aChannel: nsIChannel,
+      aFlags: u32,
+      aWindowContext: nsIInterfaceRequestor
+    ): void;
     openChannel(
       aChannel: nsIChannel,
       aFlags: u32,
@@ -14436,7 +15385,10 @@ declare global {
     readonly NOTIFY_CONTENT_BLOCKING?: 512;
     readonly NOTIFY_ALL?: 1023;
 
-    addProgressListener(aListener: nsIWebProgressListener, aNotifyMask: u32): void;
+    addProgressListener(
+      aListener: nsIWebProgressListener,
+      aNotifyMask: u32
+    ): void;
     removeProgressListener(aListener: nsIWebProgressListener): void;
     readonly browsingContext: BrowsingContext;
     readonly DOMWindow: mozIDOMWindowProxy;
@@ -14539,8 +15491,16 @@ declare global {
       aStatus: nsresult,
       aMessage: string
     ): void;
-    onSecurityChange(aWebProgress: nsIWebProgress, aRequest: nsIRequest, aState: u32): void;
-    onContentBlockingEvent(aWebProgress: nsIWebProgress, aRequest: nsIRequest, aEvent: u32): void;
+    onSecurityChange(
+      aWebProgress: nsIWebProgress,
+      aRequest: nsIRequest,
+      aState: u32
+    ): void;
+    onContentBlockingEvent(
+      aWebProgress: nsIWebProgress,
+      aRequest: nsIRequest,
+      aEvent: u32
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/uriloader/base/nsIWebProgressListener2.idl
@@ -14599,7 +15559,10 @@ declare global {
   }>;
 
   interface nsIURIClassifier extends nsISupports {
-    classify(aPrincipal: nsIPrincipal, aCallback: nsIURIClassifierCallback): boolean;
+    classify(
+      aPrincipal: nsIPrincipal,
+      aCallback: nsIURIClassifierCallback
+    ): boolean;
     asyncClassifyLocalWithFeatures(
       aURI: nsIURI,
       aFeatures: nsIUrlClassifierFeature[],
@@ -14633,7 +15596,11 @@ declare global {
   interface nsIUrlClassifierExceptionList extends nsISupports {
     init(aFeature: string): void;
     addEntry(aEntry: nsIUrlClassifierExceptionListEntry): void;
-    matches(aURI: nsIURI, aTopLevelURI: nsIURI, aIsPrivateBrowsing: boolean): boolean;
+    matches(
+      aURI: nsIURI,
+      aTopLevelURI: nsIURI,
+      aIsPrivateBrowsing: boolean
+    ): boolean;
     testGetEntries(): nsIUrlClassifierExceptionListEntry[];
   }
 
@@ -14652,7 +15619,8 @@ declare global {
   }
 
   interface nsIUrlClassifierExceptionListEntry
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<typeof nsIUrlClassifierExceptionListEntry_Category> {
     init(
       aCategory: nsIUrlClassifierExceptionListEntry.Category,
@@ -14662,7 +15630,11 @@ declare global {
       aFilterContentBlockingCategories: string[],
       aClassifierFeatures: string[]
     ): void;
-    matches(aURI: nsIURI, aTopLevelURI: nsIURI, aIsPrivateBrowsing: boolean): boolean;
+    matches(
+      aURI: nsIURI,
+      aTopLevelURI: nsIURI,
+      aIsPrivateBrowsing: boolean
+    ): boolean;
     readonly category: nsIUrlClassifierExceptionListEntry.Category;
     readonly urlPattern: string;
     readonly topLevelUrlPattern: string;
@@ -14712,8 +15684,12 @@ declare global {
   }
 
   interface nsIUrlClassifierFeature
-    extends nsISupports,
-      Enums<typeof nsIUrlClassifierFeature_listType & typeof nsIUrlClassifierFeature_URIType> {
+    extends
+      nsISupports,
+      Enums<
+        typeof nsIUrlClassifierFeature_listType &
+          typeof nsIUrlClassifierFeature_URIType
+      > {
     readonly name: string;
     readonly exceptionList: nsIUrlClassifierExceptionList;
   }
@@ -14779,11 +15755,22 @@ declare global {
   }
 
   interface nsIUrlClassifierDBService extends nsISupports {
-    lookup(principal: nsIPrincipal, tables: string, c: nsIUrlClassifierCallback): void;
+    lookup(
+      principal: nsIPrincipal,
+      tables: string,
+      c: nsIUrlClassifierCallback
+    ): void;
     getTables(c: nsIUrlClassifierCallback): void;
-    setHashCompleter(tableName: string, completer: nsIUrlClassifierHashCompleter): void;
+    setHashCompleter(
+      tableName: string,
+      completer: nsIUrlClassifierHashCompleter
+    ): void;
     clearLastResults(): void;
-    beginUpdate(updater: nsIUrlClassifierUpdateObserver, tables: string, provider: string): void;
+    beginUpdate(
+      updater: nsIUrlClassifierUpdateObserver,
+      tables: string,
+      provider: string
+    ): void;
     beginStream(table: string): void;
     updateStream(updateChunk: string): void;
     finishStream(): void;
@@ -14845,7 +15832,10 @@ declare global {
   }>;
 
   interface nsIUrlClassifierInfo extends nsISupports {
-    getCacheInfo(table: string, callback: nsIUrlClassifierGetCacheCallback): void;
+    getCacheInfo(
+      table: string,
+      callback: nsIUrlClassifierGetCacheCallback
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/toolkit/components/url-classifier/nsIUrlClassifierPrefixSet.idl
@@ -14918,7 +15908,11 @@ declare global {
       aPrefixes: string[]
     ): string;
     makeFindFullHashRequestV5(aHashPrefixes: string[]): string;
-    makeThreatHitReport(aChannel: nsIChannel, aListName: string, aHashBase64: string): string;
+    makeThreatHitReport(
+      aChannel: nsIChannel,
+      aListName: string,
+      aHashBase64: string
+    ): string;
     parseFindFullHashResponseV4(
       aResponse: string,
       aCallback: nsIUrlClassifierParseFindFullHashCallback
@@ -15104,7 +16098,11 @@ declare global {
 
   interface nsIWebBrowserPersistURIMap extends nsISupports {
     readonly numMappedURIs: u32;
-    getURIMapping(aIndex: u32, aMapFrom: OutParam<string>, aMapTo: OutParam<string>): void;
+    getURIMapping(
+      aIndex: u32,
+      aMapFrom: OutParam<string>,
+      aMapTo: OutParam<string>
+    ): void;
     readonly targetBaseURI: string;
   }
 
@@ -15144,7 +16142,10 @@ declare global {
       aDocument: nsIWebBrowserPersistDocument,
       aSubDocument: nsIWebBrowserPersistDocument
     ): void;
-    visitBrowsingContext(aDocument: nsIWebBrowserPersistDocument, aContext: BrowsingContext): void;
+    visitBrowsingContext(
+      aDocument: nsIWebBrowserPersistDocument,
+      aContext: BrowsingContext
+    ): void;
     endVisit(aDocument: nsIWebBrowserPersistDocument, aStatus: nsresult): void;
   }
 
@@ -15165,7 +16166,11 @@ declare global {
   // https://searchfox.org/mozilla-central/source/toolkit/components/extensions/extIWebNavigation.idl
 
   interface extIWebNavigation extends nsISupports {
-    onDocumentChange(bc: BrowsingContext, transitionData: any, location: nsIURI): void;
+    onDocumentChange(
+      bc: BrowsingContext,
+      transitionData: any,
+      location: nsIURI
+    ): void;
     onHistoryChange(
       bc: BrowsingContext,
       transitionData: any,
@@ -15173,8 +16178,17 @@ declare global {
       isHistoryStateUpdated: boolean,
       isReferenceFragmentUpdated: boolean
     ): void;
-    onStateChange(bc: BrowsingContext, requestURI: nsIURI, status: nsresult, stateFlags: u32): void;
-    onCreatedNavigationTarget(bc: BrowsingContext, sourceBC: BrowsingContext, url: string): void;
+    onStateChange(
+      bc: BrowsingContext,
+      requestURI: nsIURI,
+      status: nsresult,
+      stateFlags: u32
+    ): void;
+    onCreatedNavigationTarget(
+      bc: BrowsingContext,
+      sourceBC: BrowsingContext,
+      url: string
+    ): void;
     onDOMContentLoaded(bc: BrowsingContext, documentURI: nsIURI): void;
   }
 
@@ -15205,7 +16219,8 @@ declare global {
   }
 
   interface mozIExtensionListenerCallOptions
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<
         typeof mozIExtensionListenerCallOptions_APIObjectType &
           typeof mozIExtensionListenerCallOptions_CallbackType
@@ -15217,7 +16232,10 @@ declare global {
   }
 
   interface mozIExtensionEventListener extends nsISupports {
-    callListener(args: any[], listenerCallOptions?: mozIExtensionListenerCallOptions): Promise<any>;
+    callListener(
+      args: any[],
+      listenerCallOptions?: mozIExtensionListenerCallOptions
+    ): Promise<any>;
   }
 } // global
 
@@ -15236,8 +16254,7 @@ declare global {
   }
 
   interface mozIExtensionAPIRequest
-    extends nsISupports,
-      Enums<typeof mozIExtensionAPIRequest_RequestType> {
+    extends nsISupports, Enums<typeof mozIExtensionAPIRequest_RequestType> {
     toString(): string;
     readonly requestType: string;
     readonly apiNamespace: string;
@@ -15263,7 +16280,8 @@ declare global {
   }
 
   interface mozIExtensionAPIRequestResult
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<typeof mozIExtensionAPIRequestResult_ResultType> {
     readonly type: mozIExtensionAPIRequestResult.ResultType;
     readonly value: any;
@@ -15278,8 +16296,14 @@ declare global {
       extension: nsISupports,
       serviceWorkerInfo: mozIExtensionServiceWorkerInfo
     ): void;
-    onExtensionWorkerLoaded(extension: nsISupports, serviceWorkerDescriptorId: u64): void;
-    onExtensionWorkerDestroyed(extension: nsISupports, serviceWorkerDescriptorId: u64): void;
+    onExtensionWorkerLoaded(
+      extension: nsISupports,
+      serviceWorkerDescriptorId: u64
+    ): void;
+    onExtensionWorkerDestroyed(
+      extension: nsISupports,
+      serviceWorkerDescriptorId: u64
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/toolkit/components/extensions/mozIExtensionProcessScript.idl
@@ -15290,7 +16314,11 @@ declare global {
       contentScript: WebExtensionContentScript,
       window: mozIDOMWindow
     ): Promise<any>;
-    initExtensionDocument(extension: nsISupports, doc: Document, privileged: boolean): void;
+    initExtensionDocument(
+      extension: nsISupports,
+      doc: Document,
+      privileged: boolean
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/toolkit/components/extensions/nsINativeMessagingPortal.idl
@@ -15300,7 +16328,11 @@ declare global {
     readonly available: Promise<any>;
     createSession(aApplication: string): Promise<any>;
     closeSession(aHandle: string): Promise<any>;
-    getManifest(aHandle: string, aName: string, aExtension: string): Promise<any>;
+    getManifest(
+      aHandle: string,
+      aName: string,
+      aExtension: string
+    ): Promise<any>;
     start(aHandle: string, aName: string, aExtension: string): Promise<any>;
   }
 
@@ -15320,7 +16352,10 @@ declare global {
     flush(): void;
     watch(callback: nsIWebVTTListener): void;
     cancel(): void;
-    convertCueToDOMTree(window: mozIDOMWindow, cue: nsISupports): DocumentFragment;
+    convertCueToDOMTree(
+      window: mozIDOMWindow,
+      cue: nsISupports
+    ): DocumentFragment;
     processCues(
       window: mozIDOMWindow,
       cues: nsIVariant,
@@ -15380,7 +16415,10 @@ declare global {
   interface nsIClipboardDataSnapshot extends nsISupports {
     readonly valid: boolean;
     readonly flavorList: string[];
-    getData(aTransferable: nsITransferable, aCallback: nsIAsyncClipboardRequestCallback): void;
+    getData(
+      aTransferable: nsITransferable,
+      aCallback: nsIAsyncClipboardRequestCallback
+    ): void;
     getDataSync(aTransferable: nsITransferable): void;
   }
 
@@ -15402,7 +16440,8 @@ declare global {
     type ClipboardType = nsIClipboard_ClipboardType;
   }
 
-  interface nsIClipboard extends nsISupports, Enums<typeof nsIClipboard_ClipboardType> {
+  interface nsIClipboard
+    extends nsISupports, Enums<typeof nsIClipboard_ClipboardType> {
     setData(
       aTransferable: nsITransferable,
       anOwner: nsIClipboardOwner,
@@ -15436,7 +16475,9 @@ declare global {
       aFlavorList: string[],
       aWhichClipboard: nsIClipboard.ClipboardType
     ): boolean;
-    isClipboardTypeSupported(aWhichClipboard: nsIClipboard.ClipboardType): boolean;
+    isClipboardTypeSupported(
+      aWhichClipboard: nsIClipboard.ClipboardType
+    ): boolean;
   }
 
   // https://searchfox.org/mozilla-central/source/widget/nsIClipboardHelper.idl
@@ -15452,7 +16493,8 @@ declare global {
     type SensitiveData = nsIClipboardHelper_SensitiveData;
   }
 
-  interface nsIClipboardHelper extends nsISupports, Enums<typeof nsIClipboardHelper_SensitiveData> {
+  interface nsIClipboardHelper
+    extends nsISupports, Enums<typeof nsIClipboardHelper_SensitiveData> {
     copyStringToClipboard(
       aString: string,
       aClipboardID: nsIClipboard.ClipboardType,
@@ -15506,7 +16548,10 @@ declare global {
     readonly DRAGDROP_ACTION_UNINITIALIZED?: 64;
 
     getCurrentSession(aWidgetProvider?: nsISupports): nsIDragSession;
-    startDragSessionForTests(aWidgetProvider: nsISupports, aAllowedEffect: u32): void;
+    startDragSessionForTests(
+      aWidgetProvider: nsISupports,
+      aAllowedEffect: u32
+    ): void;
     suppress(): void;
     unsuppress(): void;
     getMockDragController(): nsIMockDragServiceController;
@@ -15574,7 +16619,8 @@ declare global {
   }
 
   interface nsIFilePicker
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<
         typeof nsIFilePicker_Mode &
           typeof nsIFilePicker_ResultCode &
@@ -15592,7 +16638,11 @@ declare global {
     readonly filterVideo?: 512;
     readonly filterPDF?: 1024;
 
-    init(browsingContext: BrowsingContext, title: string, mode: nsIFilePicker.Mode): void;
+    init(
+      browsingContext: BrowsingContext,
+      title: string,
+      mode: nsIFilePicker.Mode
+    ): void;
     isModeSupported(mode: nsIFilePicker.Mode): Promise<any>;
     appendFilters(filterMask: i32): void;
     appendFilter(title: string, filter: string): void;
@@ -15663,11 +16713,13 @@ declare enum nsIGfxInfo_FontVisibilityDeviceDetermination {
 
 declare global {
   namespace nsIGfxInfo {
-    type FontVisibilityDeviceDetermination = nsIGfxInfo_FontVisibilityDeviceDetermination;
+    type FontVisibilityDeviceDetermination =
+      nsIGfxInfo_FontVisibilityDeviceDetermination;
   }
 
   interface nsIGfxInfo
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<typeof nsIGfxInfo_FontVisibilityDeviceDetermination> {
     readonly DWriteEnabled: boolean;
     readonly EmbeddedInFirefoxReality: boolean;
@@ -15710,7 +16762,10 @@ declare global {
     getMonitors(): any;
     getFailures(indices: OutParam<i32[]>): string[];
     getFeatureStatus(aFeature: i32, aFailureId?: OutParam<string>): i32;
-    getFeatureStatusStr(aFeature: string, aFailureId?: OutParam<string>): string;
+    getFeatureStatusStr(
+      aFeature: string,
+      aFailureId?: OutParam<string>
+    ): string;
     getFeatureSuggestedDriverVersion(aFeature: i32): string;
     getFeatureSuggestedDriverVersionStr(aFeature: string): string;
     getInfo(): any;
@@ -15729,8 +16784,17 @@ declare global {
     spoofDeviceID(aDeviceID: string): void;
     spoofDriverVersion(aDriverVersion: string): void;
     spoofOSVersion(aVersion: u32): void;
-    spoofOSVersionEx(aMajor: u32, aMinor: u32, aBuild: u32, aRevision: u32): void;
-    spoofMonitorInfo(aScreenCount: u32, aMinRefreshRate: i32, aMaxRefreshRate: i32): void;
+    spoofOSVersionEx(
+      aMajor: u32,
+      aMinor: u32,
+      aBuild: u32,
+      aRevision: u32
+    ): void;
+    spoofMonitorInfo(
+      aScreenCount: u32,
+      aMinRefreshRate: i32,
+      aMaxRefreshRate: i32
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/widget/nsIMockDragServiceController.idl
@@ -15752,8 +16816,7 @@ declare global {
   }
 
   interface nsIMockDragServiceController
-    extends nsISupports,
-      Enums<typeof nsIMockDragServiceController_EventType> {
+    extends nsISupports, Enums<typeof nsIMockDragServiceController_EventType> {
     readonly mockDragService: nsIDragService;
     sendEvent(
       aBC: BrowsingContext,
@@ -15793,7 +16856,10 @@ declare global {
       aHaveSelection: boolean,
       aPrintSettings: nsIPrintSettings
     ): void;
-    showPageSetupDialog(aParent: mozIDOMWindowProxy, aPrintSettings: nsIPrintSettings): void;
+    showPageSetupDialog(
+      aParent: mozIDOMWindowProxy,
+      aPrintSettings: nsIPrintSettings
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/widget/nsIPrintSettings.idl
@@ -15811,8 +16877,7 @@ declare global {
   }
 
   interface nsIPrintSettings
-    extends nsISupports,
-      Enums<typeof nsIPrintSettings_OutputDestinationType> {
+    extends nsISupports, Enums<typeof nsIPrintSettings_OutputDestinationType> {
     readonly kInitSaveHeaderLeft?: 2;
     readonly kInitSaveHeaderCenter?: 4;
     readonly kInitSaveHeaderRight?: 8;
@@ -15851,7 +16916,10 @@ declare global {
     readonly kDuplexFlipOnLongEdge?: 1;
     readonly kDuplexFlipOnShortEdge?: 2;
 
-    GetEffectivePageSize(aWidth: OutParam<double>, aHeight: OutParam<double>): void;
+    GetEffectivePageSize(
+      aWidth: OutParam<double>,
+      aHeight: OutParam<double>
+    ): void;
     clone(): nsIPrintSettings;
     assign(aPS: nsIPrintSettings): void;
     equivalentTo(aPrintSettings: nsIPrintSettings): boolean;
@@ -15912,13 +16980,19 @@ declare global {
   interface nsIPrintSettingsService extends nsISupports {
     createNewPrintSettings(): nsIPrintSettings;
     readonly lastUsedPrinterName: string;
-    initPrintSettingsFromPrinter(aPrinterName: string, aPrintSettings: nsIPrintSettings): void;
+    initPrintSettingsFromPrinter(
+      aPrinterName: string,
+      aPrintSettings: nsIPrintSettings
+    ): void;
     initPrintSettingsFromPrefs(
       aPrintSettings: nsIPrintSettings,
       aUsePrinterNamePrefix: boolean,
       aFlags: u32
     ): void;
-    maybeSavePrintSettingsToPrefs(aPrintSettings: nsIPrintSettings, aFlags: u32): void;
+    maybeSavePrintSettingsToPrefs(
+      aPrintSettings: nsIPrintSettings,
+      aFlags: u32
+    ): void;
     maybeSaveLastUsedPrinterNameToPrefs(aPrinterName: string): void;
   }
 
@@ -15943,7 +17017,10 @@ declare global {
   // https://searchfox.org/mozilla-central/source/widget/nsIPrinterList.idl
 
   interface nsIPrinterList extends nsISupports {
-    initPrintSettingsFromPrinter(aPrinterName: string, aPrintSettings: nsIPrintSettings): void;
+    initPrintSettingsFromPrinter(
+      aPrinterName: string,
+      aPrintSettings: nsIPrintSettings
+    ): void;
     readonly systemDefaultPrinterName: string;
     getPrinterByName(aPrinterName: string): Promise<any>;
     getPrinterBySystemName(aPrinterName: string): Promise<any>;
@@ -16043,7 +17120,10 @@ declare global {
     init(aContext: nsILoadContext): void;
     flavorsTransferableCanExport(): string[];
     getTransferData(aFlavor: string, aData: OutParam<nsISupports>): void;
-    getAnyTransferData(aFlavor: OutParam<string>, aData: OutParam<nsISupports>): void;
+    getAnyTransferData(
+      aFlavor: OutParam<string>,
+      aData: OutParam<nsISupports>
+    ): void;
     flavorsTransferableCanImport(): string[];
     setTransferData(aFlavor: string, aData: nsISupports): void;
     clearAllData(): void;
@@ -16113,13 +17193,19 @@ declare global {
   interface nsIPromptCollection extends nsISupports {
     asyncBeforeUnloadCheck(aBrowsingContext: BrowsingContext): Promise<any>;
     confirmRepost(aBrowsingContext: BrowsingContext): boolean;
-    confirmFolderUpload(aBrowsingContext: BrowsingContext, aDirectoryName: string): boolean;
+    confirmFolderUpload(
+      aBrowsingContext: BrowsingContext,
+      aDirectoryName: string
+    ): boolean;
   }
 
   // https://searchfox.org/mozilla-central/source/toolkit/components/windowwatcher/nsIPromptFactory.idl
 
   interface nsIPromptFactory extends nsISupports {
-    getPrompt<T extends nsIID>(aParent: mozIDOMWindowProxy, iid: T): nsQIResult<T>;
+    getPrompt<T extends nsIID>(
+      aParent: mozIDOMWindowProxy,
+      iid: T
+    ): nsQIResult<T>;
   }
 
   // https://searchfox.org/mozilla-central/source/toolkit/components/windowwatcher/nsIPromptService.idl
@@ -16151,7 +17237,11 @@ declare global {
     readonly MODAL_TYPE_WINDOW?: 3;
     readonly MODAL_TYPE_INTERNAL_WINDOW?: 4;
 
-    alert(aParent: mozIDOMWindowProxy, aDialogTitle: string, aText: string): void;
+    alert(
+      aParent: mozIDOMWindowProxy,
+      aDialogTitle: string,
+      aText: string
+    ): void;
     alertBC(
       aBrowsingContext: BrowsingContext,
       modalType: u32,
@@ -16187,7 +17277,11 @@ declare global {
       aCheckMsg: string,
       aCheckState: boolean
     ): Promise<any>;
-    confirm(aParent: mozIDOMWindowProxy, aDialogTitle: string, aText: string): boolean;
+    confirm(
+      aParent: mozIDOMWindowProxy,
+      aDialogTitle: string,
+      aText: string
+    ): boolean;
     confirmBC(
       aBrowsingContext: BrowsingContext,
       modalType: u32,
@@ -16443,9 +17537,13 @@ declare global {
     type OutputMode = nsIConsoleService_OutputMode;
   }
 
-  interface nsIConsoleService extends nsISupports, Enums<typeof nsIConsoleService_OutputMode> {
+  interface nsIConsoleService
+    extends nsISupports, Enums<typeof nsIConsoleService_OutputMode> {
     logMessage(message: nsIConsoleMessage): void;
-    logMessageWithMode(message: nsIConsoleMessage, mode: nsIConsoleService.OutputMode): void;
+    logMessageWithMode(
+      message: nsIConsoleMessage,
+      mode: nsIConsoleService.OutputMode
+    ): void;
     logStringMessage(message: string): void;
     getMessageArray(): nsIConsoleMessage[];
     registerListener(listener: nsIConsoleListener): void;
@@ -16457,7 +17555,11 @@ declare global {
   // https://searchfox.org/mozilla-central/source/xpcom/base/nsICycleCollectorListener.idl
 
   interface nsICycleCollectorHandler extends nsISupports {
-    noteRefCountedObject(aAddress: string, aRefCount: u32, aObjectDescription: string): void;
+    noteRefCountedObject(
+      aAddress: string,
+      aRefCount: u32,
+      aObjectDescription: string
+    ): void;
     noteGCedObject(
       aAddress: string,
       aMarked: boolean,
@@ -16556,7 +17658,10 @@ declare global {
       aDumpChildProcesses: boolean,
       aCallback: nsIDumpGCAndCCLogsCallback
     ): void;
-    dumpGCAndCCLogsToSink(aDumpAllTraces: boolean, aSink: nsICycleCollectorLogSink): void;
+    dumpGCAndCCLogsToSink(
+      aDumpAllTraces: boolean,
+      aSink: nsICycleCollectorLogSink
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/xpcom/base/nsIMemoryReporter.idl
@@ -16582,7 +17687,11 @@ declare global {
     readonly UNITS_COUNT_CUMULATIVE?: 2;
     readonly UNITS_PERCENTAGE?: 3;
 
-    collectReports(callback: nsIHandleReportCallback, data: nsISupports, anonymize: boolean): void;
+    collectReports(
+      callback: nsIHandleReportCallback,
+      data: nsISupports,
+      anonymize: boolean
+    ): void;
   }
 
   type nsIFinishReportingCallback = Callable<{
@@ -16705,7 +17814,11 @@ declare global {
       aPersist: boolean,
       aReplace: boolean
     ): string;
-    deleteCategoryEntry(aCategory: string, aEntry: string, aPersist: boolean): void;
+    deleteCategoryEntry(
+      aCategory: string,
+      aEntry: string,
+      aPersist: boolean
+    ): void;
     deleteCategory(aCategory: string): void;
     enumerateCategory(aCategory: string): nsISimpleEnumerator;
     enumerateCategories(): nsISimpleEnumerator;
@@ -16730,7 +17843,10 @@ declare global {
 
   interface nsIComponentManager extends nsISupports {
     getClassObject<T extends nsIID>(aClass: nsID, aIID: T): nsQIResult<T>;
-    getClassObjectByContractID<T extends nsIID>(aContractID: string, aIID: T): nsQIResult<T>;
+    getClassObjectByContractID<T extends nsIID>(
+      aContractID: string,
+      aIID: T
+    ): nsQIResult<T>;
     getManifestLocations(): nsIArray;
     getComponentESModules(): nsIUTF8StringEnumerator;
   }
@@ -16762,7 +17878,10 @@ declare global {
 
   interface nsIServiceManager extends nsISupports {
     getService<T extends nsIID>(aClass: nsID, aIID: T): nsQIResult<T>;
-    getServiceByContractID<T extends nsIID>(aContractID: string, aIID: T): nsQIResult<T>;
+    getServiceByContractID<T extends nsIID>(
+      aContractID: string,
+      aIID: T
+    ): nsQIResult<T>;
     isServiceInstantiated(aClass: nsID, aIID: nsID): boolean;
     isServiceInstantiatedByContractID(aContractID: string, aIID: nsID): boolean;
   }
@@ -16822,9 +17941,17 @@ declare global {
   // https://searchfox.org/mozilla-central/source/xpcom/ds/nsIObserverService.idl
 
   interface nsIObserverService extends nsISupports {
-    addObserver(anObserver: nsIObserver, aTopic: string, ownsWeak?: boolean): void;
+    addObserver(
+      anObserver: nsIObserver,
+      aTopic: string,
+      ownsWeak?: boolean
+    ): void;
     removeObserver(anObserver: nsIObserver, aTopic: string): void;
-    notifyObservers(aSubject: nsISupports, aTopic: string, someData?: string): void;
+    notifyObservers(
+      aSubject: nsISupports,
+      aTopic: string,
+      someData?: string
+    ): void;
     enumerateObservers(aTopic: string): nsISimpleEnumerator;
   }
 
@@ -16879,7 +18006,10 @@ declare global {
     getPropertyAsACString(prop: string): string;
     getPropertyAsAUTF8String(prop: string): string;
     getPropertyAsBool(prop: string): boolean;
-    getPropertyAsInterface<T extends nsIID>(prop: string, iid: T): nsQIResult<T>;
+    getPropertyAsInterface<T extends nsIID>(
+      prop: string,
+      iid: T
+    ): nsQIResult<T>;
     get(prop: string): nsIVariant;
     hasKey(prop: string): boolean;
   }
@@ -17217,7 +18347,12 @@ declare global {
     readonly DEFAULT_REPLACEMENT_CHARACTER?: 65533;
     readonly ERRORS_ARE_FATAL?: 0;
 
-    init(aStream: nsIInputStream, aCharset: string, aBufferSize: i32, aReplacementChar: u16): void;
+    init(
+      aStream: nsIInputStream,
+      aCharset: string,
+      aBufferSize: i32,
+      aReplacementChar: u16
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/xpcom/io/nsIConverterOutputStream.idl
@@ -17376,7 +18511,11 @@ declare global {
   interface nsIObjectOutputStream extends nsIBinaryOutputStream {
     writeObject(aObject: nsISupports, aIsStrongRef: boolean): void;
     writeSingleRefObject(aObject: nsISupports): void;
-    writeCompoundObject(aObject: nsISupports, aIID: nsID, aIsStrongRef: boolean): void;
+    writeCompoundObject(
+      aObject: nsISupports,
+      aIID: nsID,
+      aIsStrongRef: boolean
+    ): void;
     writeID(aID: nsID): void;
   }
 
@@ -17698,7 +18837,8 @@ declare global {
   }
 
   interface nsIXULRuntime
-    extends nsISupports,
+    extends
+      nsISupports,
       Enums<
         typeof nsIXULRuntime_ExperimentStatus &
           typeof nsIXULRuntime_ContentWin32kLockdownState &
@@ -17786,7 +18926,8 @@ declare global {
     type DispatchFlags = nsIEventTarget_DispatchFlags;
   }
 
-  interface nsIEventTarget extends nsISupports, Enums<typeof nsIEventTarget_DispatchFlags> {
+  interface nsIEventTarget
+    extends nsISupports, Enums<typeof nsIEventTarget_DispatchFlags> {
     isOnCurrentThread(): boolean;
     dispatch(event: nsIRunnable, flags: nsIEventTarget.DispatchFlags): void;
   }
@@ -17805,9 +18946,19 @@ declare global {
     init(executable: nsIFile): void;
     kill(): void;
     run(blocking: boolean, args: string[], count: u32): void;
-    runAsync(args: string[], count: u32, observer?: nsIObserver, holdWeak?: boolean): void;
+    runAsync(
+      args: string[],
+      count: u32,
+      observer?: nsIObserver,
+      holdWeak?: boolean
+    ): void;
     runw(blocking: boolean, args: string[], count: u32): void;
-    runwAsync(args: string[], count: u32, observer?: nsIObserver, holdWeak?: boolean): void;
+    runwAsync(
+      args: string[],
+      count: u32,
+      observer?: nsIObserver,
+      holdWeak?: boolean
+    ): void;
     startHidden: boolean;
     noShell: boolean;
     readonly pid: u32;
@@ -17865,7 +19016,8 @@ declare global {
     type QoSPriority = nsIThread_QoSPriority;
   }
 
-  interface nsIThread extends nsISerialEventTarget, Enums<typeof nsIThread_QoSPriority> {
+  interface nsIThread
+    extends nsISerialEventTarget, Enums<typeof nsIThread_QoSPriority> {
     shutdown(): void;
     hasPendingEvents(): boolean;
     hasPendingHighPriorityEvents(): boolean;
@@ -17926,7 +19078,11 @@ declare global {
     readonly TYPE_ONE_SHOT_LOW_PRIORITY?: 5;
 
     init(aObserver: nsIObserver, aDelayInMs: u32, aType: u32): void;
-    initWithCallback(aCallback: nsITimerCallback, aDelayInMs: u32, aType: u32): void;
+    initWithCallback(
+      aCallback: nsITimerCallback,
+      aDelayInMs: u32,
+      aType: u32
+    ): void;
     cancel(): void;
     delay: u32;
     type: u32;
@@ -18014,7 +19170,11 @@ declare global {
     intentionallyLeak(): void;
     getJSTestingFunctions(): any;
     getFunctionSourceLocation(func: any): any;
-    callFunctionWithAsyncStack(func: any, stack: nsIStackFrame, asyncCause: string): any;
+    callFunctionWithAsyncStack(
+      func: any,
+      stack: nsIStackFrame,
+      asyncCause: string
+    ): any;
     getGlobalForObject(obj: any): any;
     isProxy(vobject: any): boolean;
     exportFunction(vfunction: any, vscope: any, voptions?: any): any;
@@ -18048,7 +19208,11 @@ declare global {
     readUTF8File(file: nsIFile): string;
     readUTF8URI(url: nsIURI): string;
     createSpellChecker(): nsIEditorSpellCheck;
-    createCommandLine(args: string[], workingDir: nsIFile, state: u32): nsISupports;
+    createCommandLine(
+      args: string[],
+      workingDir: nsIFile,
+      state: u32
+    ): nsISupports;
     createCommandParams(): nsICommandParams;
     createLoadContext(): nsILoadContext;
     createPrivateLoadContext(): nsILoadContext;
@@ -18099,11 +19263,25 @@ declare global {
 
   interface nsIXPCTestBug809674 extends nsISupports {
     addArgs(x: u32, y: u32): u32;
-    addSubMulArgs(x: u32, y: u32, subOut: OutParam<u32>, mulOut: OutParam<u32>): u32;
+    addSubMulArgs(
+      x: u32,
+      y: u32,
+      subOut: OutParam<u32>,
+      mulOut: OutParam<u32>
+    ): u32;
     addVals(x: any, y: any): any;
     methodNoArgs(): u32;
     methodNoArgsNoRetVal(): void;
-    addMany(x1: u32, x2: u32, x3: u32, x4: u32, x5: u32, x6: u32, x7: u32, x8: u32): u32;
+    addMany(
+      x1: u32,
+      x2: u32,
+      x3: u32,
+      x4: u32,
+      x5: u32,
+      x6: u32,
+      x7: u32,
+      x8: u32
+    ): u32;
     valProperty: any;
     uintProperty: u32;
     methodWithOptionalArgc(): void;
@@ -18138,8 +19316,12 @@ declare global {
   }
 
   interface nsIXPCTestCEnums
-    extends nsISupports,
-      Enums<typeof nsIXPCTestCEnums_testFlagsExplicit & typeof nsIXPCTestCEnums_testFlagsImplicit> {
+    extends
+      nsISupports,
+      Enums<
+        typeof nsIXPCTestCEnums_testFlagsExplicit &
+          typeof nsIXPCTestCEnums_testFlagsImplicit
+      > {
     readonly testConst?: 1;
 
     testCEnumInput(abc: nsIXPCTestCEnums.testFlagsExplicit): void;
@@ -18251,7 +19433,10 @@ declare global {
     ): any[];
     testOutAString(o: OutParam<string>): void;
     testStringArrayOptionalSize(a: string[], aLength?: u32): string;
-    testOmittedOptionalOut(aJSObj: nsIXPCTestParams, aOut?: OutParam<nsIURI>): void;
+    testOmittedOptionalOut(
+      aJSObj: nsIXPCTestParams,
+      aOut?: OutParam<nsIURI>
+    ): void;
     readonly testNaN: double;
   }
 
@@ -18277,7 +19462,9 @@ declare global {
   }>;
 
   interface nsIXPCTestUtils extends nsISupports {
-    doubleWrapFunction(f: nsIXPCTestFunctionInterface): nsIXPCTestFunctionInterface;
+    doubleWrapFunction(
+      f: nsIXPCTestFunctionInterface
+    ): nsIXPCTestFunctionInterface;
   }
 
   interface nsIXPCTestTypeScript extends nsISupports {
@@ -18305,8 +19492,14 @@ declare global {
   }
 
   interface nsICommandController extends nsISupports {
-    getCommandStateWithParams(command: string, aCommandParams: nsICommandParams): void;
-    doCommandWithParams(command: string, aCommandParams: nsICommandParams): void;
+    getCommandStateWithParams(
+      command: string,
+      aCommandParams: nsICommandParams
+    ): void;
+    doCommandWithParams(
+      command: string,
+      aCommandParams: nsICommandParams
+    ): void;
     getSupportedCommands(): string[];
   }
 
@@ -18354,8 +19547,17 @@ declare global {
     open(aFile: nsIFile, aIoFlags: i32): void;
     getEntry(aZipEntry: string): nsIZipEntry;
     hasEntry(aZipEntry: string): boolean;
-    addEntryDirectory(aZipEntry: string, aModTime: PRTime, aQueue: boolean): void;
-    addEntryFile(aZipEntry: string, aCompression: i32, aFile: nsIFile, aQueue: boolean): void;
+    addEntryDirectory(
+      aZipEntry: string,
+      aModTime: PRTime,
+      aQueue: boolean
+    ): void;
+    addEntryFile(
+      aZipEntry: string,
+      aCompression: i32,
+      aFile: nsIFile,
+      aQueue: boolean
+    ): void;
     addEntryChannel(
       aZipEntry: string,
       aModTime: PRTime,
@@ -18424,7 +19626,10 @@ declare global {
     nsIWindowMediatorListener: nsJSIID<nsIWindowMediatorListener>;
     nsIWindowlessBrowser: nsJSIID<nsIWindowlessBrowser>;
     nsIXULBrowserWindow: nsJSIID<nsIXULBrowserWindow>;
-    nsIAppStartup: nsJSIID<nsIAppStartup, typeof nsIAppStartup_IDLShutdownPhase>;
+    nsIAppStartup: nsJSIID<
+      nsIAppStartup,
+      typeof nsIAppStartup_IDLShutdownPhase
+    >;
     nsIAutoCompleteController: nsJSIID<nsIAutoCompleteController>;
     nsIAutoCompleteInput: nsJSIID<nsIAutoCompleteInput>;
     nsIAutoCompletePopup: nsJSIID<nsIAutoCompletePopup>;
@@ -18474,7 +19679,8 @@ declare global {
     nsIDocumentLoaderFactory: nsJSIID<nsIDocumentLoaderFactory>;
     nsIDocumentViewer: nsJSIID<
       nsIDocumentViewer,
-      typeof nsIDocumentViewer_PermitUnloadAction & typeof nsIDocumentViewer_PermitUnloadResult
+      typeof nsIDocumentViewer_PermitUnloadAction &
+        typeof nsIDocumentViewer_PermitUnloadResult
     >;
     nsIDocumentViewerEdit: nsJSIID<nsIDocumentViewerEdit>;
     nsILoadContext: nsJSIID<nsILoadContext>;
@@ -18491,7 +19697,10 @@ declare global {
     nsIWebPageDescriptor: nsJSIID<nsIWebPageDescriptor>;
     mozIDOMWindow: nsJSIID<mozIDOMWindow>;
     mozIDOMWindowProxy: nsJSIID<mozIDOMWindowProxy>;
-    nsIContentPolicy: nsJSIID<nsIContentPolicy, typeof nsIContentPolicy_nsContentPolicyType>;
+    nsIContentPolicy: nsJSIID<
+      nsIContentPolicy,
+      typeof nsIContentPolicy_nsContentPolicyType
+    >;
     nsIDroppedLinkItem: nsJSIID<nsIDroppedLinkItem>;
     nsIDroppedLinkHandler: nsJSIID<nsIDroppedLinkHandler>;
     nsIEventSourceEventListener: nsJSIID<nsIEventSourceEventListener>;
@@ -18536,7 +19745,10 @@ declare global {
     nsIDOMGlobalPropertyInitializer: nsJSIID<nsIDOMGlobalPropertyInitializer>;
     nsIDOMWindow: nsJSIID<nsIDOMWindow>;
     nsISynthesizedEventCallback: nsJSIID<nsISynthesizedEventCallback>;
-    nsIDOMWindowUtils: nsJSIID<nsIDOMWindowUtils, typeof nsIDOMWindowUtils_AsyncEnabledOption>;
+    nsIDOMWindowUtils: nsJSIID<
+      nsIDOMWindowUtils,
+      typeof nsIDOMWindowUtils_AsyncEnabledOption
+    >;
     nsITranslationNodeList: nsJSIID<nsITranslationNodeList>;
     nsIJSRAIIHelper: nsJSIID<nsIJSRAIIHelper>;
     nsIFocusManager: nsJSIID<nsIFocusManager>;
@@ -18637,7 +19849,10 @@ declare global {
     nsICSPEventListener: nsJSIID<nsICSPEventListener>;
     nsIIntegrityPolicy: nsJSIID<nsIIntegrityPolicy>;
     nsIPolicyContainer: nsJSIID<nsIPolicyContainer>;
-    nsIReferrerInfo: nsJSIID<nsIReferrerInfo, typeof nsIReferrerInfo_ReferrerPolicyIDL>;
+    nsIReferrerInfo: nsJSIID<
+      nsIReferrerInfo,
+      typeof nsIReferrerInfo_ReferrerPolicyIDL
+    >;
     nsIHttpsOnlyModePermission: nsJSIID<nsIHttpsOnlyModePermission>;
     nsIDocumentEncoderNodeFixup: nsJSIID<nsIDocumentEncoderNodeFixup>;
     nsIDocumentEncoder: nsJSIID<nsIDocumentEncoder>;
@@ -18744,11 +19959,15 @@ declare global {
     nsIZipReaderCache: nsJSIID<nsIZipReaderCache>;
     IJSDebugger: nsJSIID<IJSDebugger>;
     nsIJSInspector: nsJSIID<nsIJSInspector>;
-    nsIKeyValueService: nsJSIID<nsIKeyValueService, typeof nsIKeyValueService_RecoveryStrategy>;
+    nsIKeyValueService: nsJSIID<
+      nsIKeyValueService,
+      typeof nsIKeyValueService_RecoveryStrategy
+    >;
     nsIKeyValueImportSourceSpec: nsJSIID<nsIKeyValueImportSourceSpec>;
     nsIKeyValueImporter: nsJSIID<
       nsIKeyValueImporter,
-      typeof nsIKeyValueImporter_ConflictPolicy & typeof nsIKeyValueImporter_CleanupPolicy
+      typeof nsIKeyValueImporter_ConflictPolicy &
+        typeof nsIKeyValueImporter_CleanupPolicy
     >;
     nsIKeyValueDatabaseImportOptions: nsJSIID<nsIKeyValueDatabaseImportOptions>;
     nsIKeyValueDatabase: nsJSIID<nsIKeyValueDatabase>;
@@ -18822,7 +20041,10 @@ declare global {
     nsIIdentChannel: nsJSIID<nsIIdentChannel>;
     nsIChannelEventSink: nsJSIID<nsIChannelEventSink>;
     nsIChildChannel: nsJSIID<nsIChildChannel>;
-    nsIClassOfService: nsJSIID<nsIClassOfService, typeof nsIClassOfService_FetchPriority>;
+    nsIClassOfService: nsJSIID<
+      nsIClassOfService,
+      typeof nsIClassOfService_FetchPriority
+    >;
     nsIClassifiedChannel: nsJSIID<
       nsIClassifiedChannel,
       typeof nsIClassifiedChannel_ClassificationFlags
@@ -18945,7 +20167,10 @@ declare global {
     nsIInputChannelThrottleQueue: nsJSIID<nsIInputChannelThrottleQueue>;
     nsIThrottledInputChannel: nsJSIID<nsIThrottledInputChannel>;
     nsIServerTiming: nsJSIID<nsIServerTiming>;
-    nsITimedChannel: nsJSIID<nsITimedChannel, typeof nsITimedChannel_BodyInfoAccess>;
+    nsITimedChannel: nsJSIID<
+      nsITimedChannel,
+      typeof nsITimedChannel_BodyInfoAccess
+    >;
     nsITraceableChannel: nsJSIID<nsITraceableChannel>;
     nsITransport: nsJSIID<nsITransport>;
     nsITransportEventSink: nsJSIID<nsITransportEventSink>;
@@ -18977,11 +20202,17 @@ declare global {
     nsICookie: nsJSIID<nsICookie, typeof nsICookie_schemeType>;
     nsICookieJarSettings: nsJSIID<nsICookieJarSettings>;
     nsICookieManager: nsJSIID<nsICookieManager>;
-    nsICookieNotification: nsJSIID<nsICookieNotification, typeof nsICookieNotification_Action>;
+    nsICookieNotification: nsJSIID<
+      nsICookieNotification,
+      typeof nsICookieNotification_Action
+    >;
     nsICookiePermission: nsJSIID<nsICookiePermission>;
     nsICookieTransactionCallback: nsJSIID<nsICookieTransactionCallback>;
     nsICookieService: nsJSIID<nsICookieService>;
-    nsICookieValidation: nsJSIID<nsICookieValidation, typeof nsICookieValidation_ValidationError>;
+    nsICookieValidation: nsJSIID<
+      nsICookieValidation,
+      typeof nsICookieValidation_ValidationError
+    >;
     nsIThirdPartyCookieBlockingExceptionListService: nsJSIID<nsIThirdPartyCookieBlockingExceptionListService>;
     nsIThirdPartyCookieExceptionEntry: nsJSIID<nsIThirdPartyCookieExceptionEntry>;
     nsIDNSAdditionalInfo: nsJSIID<nsIDNSAdditionalInfo>;
@@ -19061,7 +20292,8 @@ declare global {
     nsIWebSocketListener: nsJSIID<nsIWebSocketListener>;
     nsIWebTransport: nsJSIID<
       nsIWebTransport,
-      typeof nsIWebTransport_WebTransportError & typeof nsIWebTransport_HTTPVersion
+      typeof nsIWebTransport_WebTransportError &
+        typeof nsIWebTransport_HTTPVersion
     >;
     WebTransportSessionEventListener: nsJSIID<
       WebTransportSessionEventListener,
@@ -19102,7 +20334,10 @@ declare global {
     >;
     nsIContentSignatureVerifier: nsJSIID<nsIContentSignatureVerifier>;
     nsICryptoHash: nsJSIID<nsICryptoHash>;
-    nsIDataStorageManager: nsJSIID<nsIDataStorageManager, typeof nsIDataStorageManager_DataStorage>;
+    nsIDataStorageManager: nsJSIID<
+      nsIDataStorageManager,
+      typeof nsIDataStorageManager_DataStorage
+    >;
     nsIDataStorage: nsJSIID<nsIDataStorage, typeof nsIDataStorage_DataType>;
     nsIDataStorageItem: nsJSIID<nsIDataStorageItem>;
     nsINSSComponent: nsJSIID<nsINSSComponent>;
@@ -19150,7 +20385,8 @@ declare global {
     mozIAsyncHistory: nsJSIID<mozIAsyncHistory>;
     mozIPlacesAutoComplete: nsJSIID<
       mozIPlacesAutoComplete,
-      typeof mozIPlacesAutoComplete_MatchBehaviors & typeof mozIPlacesAutoComplete_SearchBehaviors
+      typeof mozIPlacesAutoComplete_MatchBehaviors &
+        typeof mozIPlacesAutoComplete_SearchBehaviors
     >;
     mozIPlacesPendingOperation: nsJSIID<mozIPlacesPendingOperation>;
     mozISyncedBookmarksMirrorProgressListener: nsJSIID<mozISyncedBookmarksMirrorProgressListener>;
@@ -19164,7 +20400,8 @@ declare global {
     nsIFavicon: nsJSIID<nsIFavicon>;
     nsINavBookmarksService: nsJSIID<
       nsINavBookmarksService,
-      typeof nsINavBookmarksService_BookmarkType & typeof nsINavBookmarksService_ChangeSource
+      typeof nsINavBookmarksService_BookmarkType &
+        typeof nsINavBookmarksService_ChangeSource
     >;
     nsINavHistoryResultNode: nsJSIID<
       nsINavHistoryResultNode,
@@ -19177,9 +20414,13 @@ declare global {
     nsINavHistoryQuery: nsJSIID<nsINavHistoryQuery>;
     nsINavHistoryQueryOptions: nsJSIID<
       nsINavHistoryQueryOptions,
-      typeof nsINavHistoryQueryOptions_SortByType & typeof nsINavHistoryQueryOptions_ResultType
+      typeof nsINavHistoryQueryOptions_SortByType &
+        typeof nsINavHistoryQueryOptions_ResultType
     >;
-    nsINavHistoryService: nsJSIID<nsINavHistoryService, typeof nsINavHistoryService_TransitionType>;
+    nsINavHistoryService: nsJSIID<
+      nsINavHistoryService,
+      typeof nsINavHistoryService_TransitionType
+    >;
     nsIPlacesPreviewsHelperService: nsJSIID<nsIPlacesPreviewsHelperService>;
     nsITaggingService: nsJSIID<nsITaggingService>;
     nsIPrefBranch: nsJSIID<nsIPrefBranch>;
@@ -19278,7 +20519,8 @@ declare global {
     nsIContentAnalysisResult: nsJSIID<nsIContentAnalysisResult>;
     nsIContentAnalysisResponse: nsJSIID<
       nsIContentAnalysisResponse,
-      typeof nsIContentAnalysisResponse_Action & typeof nsIContentAnalysisResponse_CancelError
+      typeof nsIContentAnalysisResponse_Action &
+        typeof nsIContentAnalysisResponse_CancelError
     >;
     nsIClientDownloadResource: nsJSIID<nsIClientDownloadResource>;
     nsIContentAnalysisRequest: nsJSIID<
@@ -19293,7 +20535,10 @@ declare global {
     nsIClickRule: nsJSIID<nsIClickRule, typeof nsIClickRule_RunContext>;
     nsICookieBannerListService: nsJSIID<nsICookieBannerListService>;
     nsICookieBannerRule: nsJSIID<nsICookieBannerRule>;
-    nsICookieBannerService: nsJSIID<nsICookieBannerService, typeof nsICookieBannerService_Modes>;
+    nsICookieBannerService: nsJSIID<
+      nsICookieBannerService,
+      typeof nsICookieBannerService_Modes
+    >;
     nsICookieBannerTelemetryService: nsJSIID<nsICookieBannerTelemetryService>;
     nsICookieRule: nsJSIID<nsICookieRule>;
     nsICrashService: nsJSIID<nsICrashService>;
@@ -19374,7 +20619,8 @@ declare global {
     nsIUrlClassifierExceptionListService: nsJSIID<nsIUrlClassifierExceptionListService>;
     nsIUrlClassifierFeature: nsJSIID<
       nsIUrlClassifierFeature,
-      typeof nsIUrlClassifierFeature_listType & typeof nsIUrlClassifierFeature_URIType
+      typeof nsIUrlClassifierFeature_listType &
+        typeof nsIUrlClassifierFeature_URIType
     >;
     nsIUrlClassifierFeatureResult: nsJSIID<nsIUrlClassifierFeatureResult>;
     nsIUrlClassifierFeatureCallback: nsJSIID<nsIUrlClassifierFeatureCallback>;
@@ -19436,7 +20682,10 @@ declare global {
     nsIClipboardDataSnapshot: nsJSIID<nsIClipboardDataSnapshot>;
     nsIClipboardGetDataSnapshotCallback: nsJSIID<nsIClipboardGetDataSnapshotCallback>;
     nsIClipboard: nsJSIID<nsIClipboard, typeof nsIClipboard_ClipboardType>;
-    nsIClipboardHelper: nsJSIID<nsIClipboardHelper, typeof nsIClipboardHelper_SensitiveData>;
+    nsIClipboardHelper: nsJSIID<
+      nsIClipboardHelper,
+      typeof nsIClipboardHelper_SensitiveData
+    >;
     nsIClipboardOwner: nsJSIID<nsIClipboardOwner>;
     nsIColorPickerShownCallback: nsJSIID<nsIColorPickerShownCallback>;
     nsIColorPicker: nsJSIID<nsIColorPicker>;
@@ -19451,7 +20700,10 @@ declare global {
     >;
     nsIFilePickerShownCallback: nsJSIID<nsIFilePickerShownCallback>;
     nsIFormatConverter: nsJSIID<nsIFormatConverter>;
-    nsIGfxInfo: nsJSIID<nsIGfxInfo, typeof nsIGfxInfo_FontVisibilityDeviceDetermination>;
+    nsIGfxInfo: nsJSIID<
+      nsIGfxInfo,
+      typeof nsIGfxInfo_FontVisibilityDeviceDetermination
+    >;
     nsIGfxInfoDebug: nsJSIID<nsIGfxInfoDebug>;
     nsIMockDragServiceController: nsJSIID<
       nsIMockDragServiceController,
@@ -19460,7 +20712,10 @@ declare global {
     nsIPaper: nsJSIID<nsIPaper>;
     nsIPaperMargin: nsJSIID<nsIPaperMargin>;
     nsIPrintDialogService: nsJSIID<nsIPrintDialogService>;
-    nsIPrintSettings: nsJSIID<nsIPrintSettings, typeof nsIPrintSettings_OutputDestinationType>;
+    nsIPrintSettings: nsJSIID<
+      nsIPrintSettings,
+      typeof nsIPrintSettings_OutputDestinationType
+    >;
     nsIPrintSettingsService: nsJSIID<nsIPrintSettingsService>;
     nsIPrinterInfo: nsJSIID<nsIPrinterInfo>;
     nsIPrinter: nsJSIID<nsIPrinter>;
@@ -19486,7 +20741,10 @@ declare global {
     nsIAvailableMemoryWatcherBase: nsJSIID<nsIAvailableMemoryWatcherBase>;
     nsIConsoleListener: nsJSIID<nsIConsoleListener>;
     nsIConsoleMessage: nsJSIID<nsIConsoleMessage>;
-    nsIConsoleService: nsJSIID<nsIConsoleService, typeof nsIConsoleService_OutputMode>;
+    nsIConsoleService: nsJSIID<
+      nsIConsoleService,
+      typeof nsIConsoleService_OutputMode
+    >;
     nsICycleCollectorHandler: nsJSIID<nsICycleCollectorHandler>;
     nsICycleCollectorLogSink: nsJSIID<nsICycleCollectorLogSink>;
     nsICycleCollectorListener: nsJSIID<nsICycleCollectorListener>;
@@ -19620,7 +20878,10 @@ declare global {
         typeof nsIXULRuntime_FissionDecisionStatus
     >;
     nsIEnvironment: nsJSIID<nsIEnvironment>;
-    nsIEventTarget: nsJSIID<nsIEventTarget, typeof nsIEventTarget_DispatchFlags>;
+    nsIEventTarget: nsJSIID<
+      nsIEventTarget,
+      typeof nsIEventTarget_DispatchFlags
+    >;
     nsINamed: nsJSIID<nsINamed>;
     nsIProcess: nsJSIID<nsIProcess>;
     nsIRunnable: nsJSIID<nsIRunnable>;
@@ -19652,7 +20913,8 @@ declare global {
     nsIXPCTestBug809674: nsJSIID<nsIXPCTestBug809674>;
     nsIXPCTestCEnums: nsJSIID<
       nsIXPCTestCEnums,
-      typeof nsIXPCTestCEnums_testFlagsExplicit & typeof nsIXPCTestCEnums_testFlagsImplicit
+      typeof nsIXPCTestCEnums_testFlagsExplicit &
+        typeof nsIXPCTestCEnums_testFlagsImplicit
     >;
     nsIXPCTestInterfaceA: nsJSIID<nsIXPCTestInterfaceA>;
     nsIXPCTestInterfaceB: nsJSIID<nsIXPCTestInterfaceB>;

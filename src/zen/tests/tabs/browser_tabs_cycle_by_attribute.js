@@ -16,7 +16,10 @@ const URL6 = "data:text/plain,tab6";
  * @param {MozTabbrowserTab} tab - tab to select
  */
 async function selectTab(tab) {
-  const onSelect = BrowserTestUtils.waitForEvent(gBrowser.tabContainer, "TabSelect");
+  const onSelect = BrowserTestUtils.waitForEvent(
+    gBrowser.tabContainer,
+    "TabSelect"
+  );
   gBrowser.selectedTab = tab;
   await onSelect;
 }
@@ -37,22 +40,29 @@ add_setup(async () => {
 
   gZenPinnedTabManager.addToEssentials(tabs.slice(0, 3));
   await BrowserTestUtils.waitForCondition(
-    () => tabs.slice(0, 3).every((tab) => tab.hasAttribute("zen-essential")),
+    () => tabs.slice(0, 3).every(tab => tab.hasAttribute("zen-essential")),
     "all essentials ready"
   );
 
-  const essentialTabs = gBrowser.tabs.filter((tab) => tab.hasAttribute("zen-essential"));
+  const essentialTabs = gBrowser.tabs.filter(tab =>
+    tab.hasAttribute("zen-essential")
+  );
   Assert.equal(essentialTabs.length, 3, "3 essential tabs created");
 
   const workspaceTabs = gBrowser.tabs.filter(
-    (tab) => !tab.hasAttribute("zen-essential") && !tab.hasAttribute("zen-empty-tab")
+    tab =>
+      !tab.hasAttribute("zen-essential") && !tab.hasAttribute("zen-empty-tab")
   );
-  Assert.equal(workspaceTabs.length, 3, "3 workspace tabs created, excluding empty tab");
+  Assert.equal(
+    workspaceTabs.length,
+    3,
+    "3 workspace tabs created, excluding empty tab"
+  );
 
   registerCleanupFunction(async () => {
     // replace the default new tab in the test window
     addTabTo(gBrowser, "about:blank");
-    tabs.forEach((element) => {
+    tabs.forEach(element => {
       BrowserTestUtils.removeTab(element);
     });
     await SpecialPowers.popPrefEnv();
@@ -64,7 +74,9 @@ add_task(async function cycleTabsByAttribute() {
     set: [["zen.tabs.ctrl-tab.ignore-essential-tabs", true]],
   });
 
-  const essentialTabs = gBrowser.tabs.filter((tab) => tab.hasAttribute("zen-essential"));
+  const essentialTabs = gBrowser.tabs.filter(tab =>
+    tab.hasAttribute("zen-essential")
+  );
   await selectTab(essentialTabs[0]);
 
   gBrowser.tabContainer.advanceSelectedTab(1, true);
@@ -77,7 +89,8 @@ add_task(async function cycleTabsByAttribute() {
   );
 
   const workspaceTabs = gBrowser.tabs.filter(
-    (tab) => !tab.hasAttribute("zen-essential") && !tab.hasAttribute("zen-empty-tab")
+    tab =>
+      !tab.hasAttribute("zen-essential") && !tab.hasAttribute("zen-empty-tab")
   );
   await selectTab(workspaceTabs[0]);
 

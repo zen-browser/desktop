@@ -25,7 +25,7 @@ add_task(async function test_Split_View_Empty() {
     let result = await UrlbarTestUtils.getDetailsOfResultAt(window, 0);
     EventUtils.synthesizeMouseAtCenter(result.element.row, {});
     await waitForActivationPromise;
-    await new Promise((resolve) => {
+    await new Promise(resolve => {
       /* eslint-disable mozilla/no-arbitrary-setTimeout */
       setTimeout(async () => {
         resolve();
@@ -36,8 +36,14 @@ add_task(async function test_Split_View_Empty() {
       gBrowser.tabpanels.hasAttribute("zen-split-view"),
       "The split view should not have crashed with two tabs in it"
     );
-    ok(!gZenWorkspaces._emptyTab.splitView, "The empty tab should not be in split view");
-    ok(!gZenWorkspaces._emptyTab.group, "The empty tab should not be in a group");
+    ok(
+      !gZenWorkspaces._emptyTab.splitView,
+      "The empty tab should not be in split view"
+    );
+    ok(
+      !gZenWorkspaces._emptyTab.group,
+      "The empty tab should not be in a group"
+    );
     ok(selectedTab.splitView, "The selected tab should be in split view");
     ok(originalTab.splitView, "The original tab should be in split view");
     Assert.equal(

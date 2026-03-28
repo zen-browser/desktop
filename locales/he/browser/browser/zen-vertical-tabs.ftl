@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] איפוס והצמדת לשונית
            *[other] איפוס והצמדת { $tabCount } לשוניות
         }
-tab-reset-pin-label = חזרה לכתובת המוצמדת
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

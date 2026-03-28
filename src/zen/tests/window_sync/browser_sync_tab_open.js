@@ -9,6 +9,10 @@ add_task(async function test_SimpleTabOpen() {
     let otherTab = gZenWindowSync.getItemFromWindow(win, tabId);
     Assert.ok(otherTab, "The opened tab should be found in the synced window");
     Assert.ok(newTab._zenContentsVisible, "The opened tab should be visible");
-    Assert.equal(otherTab.id, tabId, "The opened tab ID should match the synced tab ID");
+    Assert.equal(
+      otherTab.id,
+      tabId,
+      "The opened tab ID should match the synced tab ID"
+    );
   });
 });

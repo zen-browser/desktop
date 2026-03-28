@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = פרופיל נוכחי
 unified-extensions-description = הרחבות מוסיפות פונקציונליות נוספת ל{ -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = איפוס לשונית מוצמדת
+    .label =
+        { $isEssential ->
+            [true] Reset Essential Tab
+           *[false] Reset Pinned Tab
+        }
     .accesskey = ר
 tab-context-zen-add-essential = 
     .label = הוספה לחיוניות
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = הסרה מהחיוניות
     .accesskey = ר
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = החלפת הכתובת המוצמדת בנוכחית
+    .label =
+        { $isEssential ->
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
+        }
     .accesskey = ב
 tab-context-zen-edit-title = 
     .label = שינוי תווית...
@@ -31,6 +39,7 @@ pictureinpicture-minimize-btn =
     .tooltip = מזעור
 zen-panel-ui-gradient-generator-custom-color = צבע מותאם אישית
 zen-copy-current-url-confirmation = הכתובת הנוכחית הועתקה!
+zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
 zen-general-cancel-label = 
     .label = ביטול
 zen-general-confirm = 
@@ -107,7 +116,9 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = משהו השתבש?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = הפעלה מחדש במצב בטוח
-zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
-zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
+zen-window-sync-migration-dialog-title = החלונות שלך עכשיו מסונכרנים
+zen-window-sync-migration-dialog-message = Zen עכשיו מסנכרן חלונות על אותו מכשיר, כך ששינוים בחלון אחד מושקפים מיידית על האחרים.
 zen-window-sync-migration-dialog-learn-more = מידע נוסף
 zen-window-sync-migration-dialog-accept = הבנתי
+zen-appmenu-new-blank-window = 
+    .label = New blank window

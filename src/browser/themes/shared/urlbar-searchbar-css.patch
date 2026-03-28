@@ -1,8 +1,8 @@
 diff --git a/browser/themes/shared/urlbar-searchbar.css b/browser/themes/shared/urlbar-searchbar.css
-index 78a2c85af51f90958b445eac53a540b382163102..7509b28c6d868a6f1c34f36330e695c163e12788 100644
+index cbbf55f31ae5e456401172f79ddbbe41256025a4..8cab0f2809a43c0aa4249453732eb0e006c2c676 100644
 --- a/browser/themes/shared/urlbar-searchbar.css
 +++ b/browser/themes/shared/urlbar-searchbar.css
-@@ -9,7 +9,7 @@
+@@ -10,7 +10,7 @@
    /* Usually we wouldn't need snapping border widths manually, but we use this
     * for other layout calculations too */
    --urlbar-container-border-width: max(env(hairline), round(down, 1px, env(hairline)));
@@ -11,7 +11,7 @@ index 78a2c85af51f90958b445eac53a540b382163102..7509b28c6d868a6f1c34f36330e695c1
    --urlbar-container-border-padding: calc(var(--urlbar-container-border-width) + var(--urlbar-container-padding));
    --urlbar-margin-inline: 5px;
    --urlbar-padding-block: 4px;
-@@ -54,7 +54,7 @@ toolbar[inactive="true"] .urlbar,
+@@ -55,7 +55,7 @@ toolbar[inactive="true"] .urlbar,
  .urlbar:not([usertyping]) > .urlbar-input-container > .urlbar-go-button,
  .urlbar:not(#searchbar-new, [focused]) > .urlbar-input-container > .urlbar-go-button,
  #urlbar-revert-button-container {
@@ -19,8 +19,8 @@ index 78a2c85af51f90958b445eac53a540b382163102..7509b28c6d868a6f1c34f36330e695c1
 +  display: none !important;
  }
  
- /* When rich suggestions are enabled the urlbar identity icon is given extra padding to
-@@ -325,10 +325,14 @@ toolbar[inactive="true"] .urlbar,
+ /* Document Picture-in-Picture API window */
+@@ -333,10 +333,14 @@ toolbar[inactive="true"] .urlbar,
  
  .urlbar[breakout][breakout-extend] {
    height: auto;

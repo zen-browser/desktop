@@ -210,7 +210,11 @@ add_task(async function test_invalid_dates() {
 
   const items = await instance.fetchItems();
 
-  Assert.equal(items.length, 0, "Items with invalid/missing dates should be filtered");
+  Assert.equal(
+    items.length,
+    0,
+    "Items with invalid/missing dates should be filtered"
+  );
   sandbox.restore();
 });
 
@@ -223,7 +227,11 @@ add_task(async function test_fetch_network_error() {
   instance.fetch.rejects(new Error("Network down"));
 
   const items = await instance.fetchItems();
-  Assert.equal(items, "zen-live-folder-failed-fetch", "Should return an error on failed fetch");
+  Assert.equal(
+    items,
+    "zen-live-folder-failed-fetch",
+    "Should return an error on failed fetch"
+  );
 
   sandbox.restore();
 });

@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] Restaurar e fixar separador
            *[other] Restaurar e fixar { $tabCount } separadores
         }
-tab-reset-pin-label = Voltar ao URL fixado
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

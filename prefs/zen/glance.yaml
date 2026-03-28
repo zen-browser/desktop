@@ -16,3 +16,6 @@
 
 - name: zen.glance.animation-duration
   value: 350 # in milliseconds
+
+- name: zen.glance.deactivate-docshell-during-animation
+  value: true

@@ -15,6 +15,8 @@ prefs = ["zen.workspaces.separate-essentials=false"]
 
 ["browser_pinned_nounload_reset.js"]
 
+["browser_pinned_reset_button.js"]
+
 ["browser_pinned_reset_noswitch.js"]
 
 ["browser_pinned_switch.js"]

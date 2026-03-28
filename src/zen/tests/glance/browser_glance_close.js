@@ -5,13 +5,13 @@
 
 add_task(async function test_Glance_Basic_Close() {
   const currentTab = gBrowser.selectedTab;
-  await openGlanceOnTab(async (glanceTab) => {
+  await openGlanceOnTab(async glanceTab => {
     ok(
       currentTab.hasAttribute("glance-id"),
       "The glance tab should have the zen-glance-tab attribute"
     );
     await BrowserTestUtils.removeTab(glanceTab);
-    await new Promise((resolve) => {
+    await new Promise(resolve => {
       /* eslint-disable mozilla/no-arbitrary-setTimeout */
       setTimeout(() => {
         resolve();

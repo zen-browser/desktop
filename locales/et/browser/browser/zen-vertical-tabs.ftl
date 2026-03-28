@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] Lähtesta ja tee püsikaardiks
            *[other] Lähtesta ja tee püsikaardiks { $tabCount } kaarti
         }
-tab-reset-pin-label = Tagasi püsikaardi URL-ile
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

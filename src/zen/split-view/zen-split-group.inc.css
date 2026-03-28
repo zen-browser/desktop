@@ -104,7 +104,7 @@ tab-group[split-view-group] {
       }
     }
 
-    &:has(> tab:is([visuallyselected], [multiselected])) {
+    tab-group[split-view-group]:where([hasactivetab]) & {
       background-color: var(--tab-selected-bgcolor);
       box-shadow: var(--tab-selected-shadow);
 
@@ -120,7 +120,7 @@ tab-group[split-view-group] {
       }
     }
 
-    &:active {
+    &:active:not(:has(.tab-content > image:active)) {
       scale: var(--zen-active-tab-scale);
     }
 

@@ -53,9 +53,15 @@ declare global {
     dockMenu: nsIStandaloneNativeMenu;
     activateApplication(aIgnoreOtherApplications: boolean): void;
     badgeText: string;
-    setBadgeImage(aBadgeImage: imgIContainer, aPaintContext?: nsISVGPaintContext): void;
+    setBadgeImage(
+      aBadgeImage: imgIContainer,
+      aPaintContext?: nsISVGPaintContext
+    ): void;
     readonly isAppInDock: boolean;
-    ensureAppIsPinnedToDock(aAppPath?: string, aAppToReplacePath?: string): boolean;
+    ensureAppIsPinnedToDock(
+      aAppPath?: string,
+      aAppToReplacePath?: string
+    ): boolean;
     launchAppBundle(
       aAppBundle: nsIFile,
       aArgs: string[],
@@ -70,7 +76,10 @@ declare global {
   }>;
 
   interface nsIMacFinderProgress extends nsISupports {
-    init(path: string, canceledCallback: nsIMacFinderProgressCanceledCallback): void;
+    init(
+      path: string,
+      canceledCallback: nsIMacFinderProgressCanceledCallback
+    ): void;
     updateProgress(currentProgress: u64, totalProgress: u64): void;
     end(): void;
   }
@@ -86,7 +95,11 @@ declare global {
   // https://searchfox.org/mozilla-central/source/widget/nsIMacUserActivityUpdater.idl
 
   interface nsIMacUserActivityUpdater extends nsISupports {
-    updateLocation(pageUrl: string, pageTitle: string, window: nsIBaseWindow): void;
+    updateLocation(
+      pageUrl: string,
+      pageTitle: string,
+      window: nsIBaseWindow
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/widget/nsIMacWebAppUtils.idl
@@ -120,7 +133,11 @@ declare global {
     readonly STATE_ERROR?: 3;
     readonly STATE_PAUSED?: 4;
 
-    setProgressState(state: nsTaskbarProgressState, currentValue?: u64, maxValue?: u64): void;
+    setProgressState(
+      state: nsTaskbarProgressState,
+      currentValue?: u64,
+      maxValue?: u64
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/widget/nsITouchBarHelper.idl
@@ -157,11 +174,18 @@ declare global {
   // https://searchfox.org/mozilla-central/source/widget/nsITouchBarUpdater.idl
 
   interface nsITouchBarUpdater extends nsISupports {
-    updateTouchBarInputs(aWindow: nsIBaseWindow, aInputs: nsITouchBarInput[]): void;
+    updateTouchBarInputs(
+      aWindow: nsIBaseWindow,
+      aInputs: nsITouchBarInput[]
+    ): void;
     enterCustomizeMode(): void;
     isTouchBarInitialized(): boolean;
     setTouchBarInitialized(aIsInitialized: boolean): void;
-    showPopover(aWindow: nsIBaseWindow, aPopover: nsITouchBarInput, aShowing: boolean): void;
+    showPopover(
+      aWindow: nsIBaseWindow,
+      aPopover: nsITouchBarInput,
+      aShowing: boolean
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/xpcom/base/nsIMacPreferencesReader.idl

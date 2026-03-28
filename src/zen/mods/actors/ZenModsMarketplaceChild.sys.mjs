@@ -45,11 +45,15 @@ export class ZenModsMarketplaceChild extends JSWindowActorChild {
   }
 
   get actionButtonUninstall() {
-    return this.contentWindow.document.getElementById("install-theme-uninstall");
+    return this.contentWindow.document.getElementById(
+      "install-theme-uninstall"
+    );
   }
 
   async isThemeInstalled(themeId) {
-    return await this.sendQuery("ZenModsMarketplace:IsModInstalled", { themeId });
+    return await this.sendQuery("ZenModsMarketplace:IsModInstalled", {
+      themeId,
+    });
   }
 
   async receiveMessage(message) {
@@ -79,7 +83,9 @@ export class ZenModsMarketplaceChild extends JSWindowActorChild {
         const updates = message.data.updates;
 
         this.contentWindow.document.dispatchEvent(
-          new CustomEvent("ZenModsMarketplace:CheckForUpdatesFinished", { detail: { updates } })
+          new CustomEvent("ZenModsMarketplace:CheckForUpdatesFinished", {
+            detail: { updates },
+          })
         );
 
         break;
@@ -88,15 +94,21 @@ export class ZenModsMarketplaceChild extends JSWindowActorChild {
   }
 
   injectMarketplaceAPI() {
-    Cu.exportFunction(this.handleModInstallationEvent.bind(this), this.contentWindow, {
-      defineAs: "ZenInstallMod",
-    });
+    Cu.exportFunction(
+      this.handleModInstallationEvent.bind(this),
+      this.contentWindow,
+      {
+        defineAs: "ZenInstallMod",
+      }
+    );
   }
 
   async addButtons() {
     const actionButton = this.actionButton;
     const actionButtonUninstall = this.actionButtonUninstall;
-    const errorMessage = this.contentWindow.document.getElementById("install-theme-error");
+    const errorMessage = this.contentWindow.document.getElementById(
+      "install-theme-error"
+    );
     if (!actionButton || !actionButtonUninstall) {
       return;
     }
@@ -110,8 +122,14 @@ export class ZenModsMarketplaceChild extends JSWindowActorChild {
       actionButton.classList.remove("hidden");
     }
 
-    actionButton.addEventListener("click", this.handleModInstallationEvent.bind(this));
-    actionButtonUninstall.addEventListener("click", this.handleModUninstallEvent.bind(this));
+    actionButton.addEventListener(
+      "click",
+      this.handleModInstallationEvent.bind(this)
+    );
+    actionButtonUninstall.addEventListener(
+      "click",
+      this.handleModUninstallEvent.bind(this)
+    );
   }
 
   async handleModUninstallEvent(event) {

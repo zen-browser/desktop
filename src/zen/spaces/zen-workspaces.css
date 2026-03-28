@@ -1,0 +1,442 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+@namespace html 'http://www.w3.org/1999/xhtml';
+@namespace xul 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul';
+
+#zen-workspaces-button {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  font-size: x-small;
+  margin: 0 3px;
+  padding: 0;
+
+  position: relative;
+  -moz-window-dragging: no-drag;
+
+  &[dont-show='true'] {
+    display: none !important;
+  }
+
+  border-radius: var(--button-border-radius) !important;
+  background: transparent;
+  appearance: unset !important;
+  height: fit-content;
+  gap: 3px;
+
+  container-type: inline-size;
+  width: 100%;
+
+  & toolbarbutton {
+    margin: 0;
+    max-width: 28px;
+    height: 28px;
+    display: flex;
+    justify-content: center;
+    padding: 0 !important;
+    align-items: center;
+    position: relative;
+    fill-opacity: 0.6;
+
+    & .zen-workspace-icon {
+      pointer-events: none;
+      line-height: 0;
+      position: absolute;
+      font-size: 12px;
+
+      @media (-moz-platform: macos) {
+        font-size: 14px;
+      }
+
+      &:is(img) {
+        width: 14px;
+      }
+
+      &[no-icon='true'] {
+        width: 6px;
+        height: 6px;
+        background: light-dark(rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0.4));
+        border-radius: 50%;
+      }
+    }
+
+    filter: grayscale(1);
+    opacity: 0.7;
+    transition:
+      filter 0.2s,
+      opacity 0.2s,
+      width 0.1s,
+      transform 0.2s;
+
+    &[active='true'],
+    &:hover,
+    &[dragged='true'] {
+      filter: grayscale(0);
+      opacity: 1;
+    }
+
+    &:hover,
+    &[dragged='true']{
+      background-color: var(--zen-toolbar-element-bg);
+    }
+
+    & label {
+      margin: 0 !important;
+    }
+
+    :root:not([zen-sidebar-expanded='true']) & {
+      min-width: 36px;
+    }
+  }
+
+  &[reorder-mode='true'] toolbarbutton:not([dragged='true']) {
+    opacity: 0.2 !important;
+    filter: grayscale(1) !important;
+  }
+
+  &[icons-overflow] {
+    gap: 0 !important;
+    justify-content: center;
+
+    & toolbarbutton {
+      margin: 0;
+      background: transparent;
+      /* Ignore press state when in overflow, to allow clicks to happen */
+      scale: 1 !important;
+    }
+
+    /* Include separately since ther'es a bug in the
+     * rendering of XUL in firefox */
+    & toolbarbutton:not([active='true']) {
+%include overflow-icons.inc.css
+    }
+
+    &:has(toolbarbutton:hover) toolbarbutton[active='true']:not([dragged='true']) {
+%include overflow-icons.inc.css
+    }
+  }
+}
+
+#zen-workspaces-button .zen-workspace-sidebar-wrapper {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+#zen-workspaces-button .zen-workspace-sidebar-name {
+  margin-left: 0.2rem;
+  display: none;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 13px;
+}
+
+/** Keep these selectors in sync with the ones in vertical-tabs.css */
+#navigator-toolbox {
+  & #zen-workspaces-button .zen-workspace-sidebar-name {
+    display: block;
+  }
+
+  & #zen-workspaces-button .zen-workspace-sidebar-icon {
+    margin-inline-end: 5px;
+  }
+
+  & #zen-workspaces-button {
+    overflow: hidden;
+    display: flex;
+    gap: 0.5ch;
+    overflow-x: auto;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+  }
+}
+
+/* Mark workspaces indicator */
+.zen-current-workspace-indicator {
+  --indicator-gap: calc(var(--toolbarbutton-inner-padding) - 1px);
+  padding: calc(3px + var(--tab-inline-padding) + var(--zen-toolbox-padding));
+  font-weight: 500;
+  position: relative;
+  max-height: var(--zen-workspace-indicator-height);
+  min-height: var(--zen-workspace-indicator-height);
+  gap: var(--indicator-gap);
+  align-items: center;
+  flex-direction: row !important;
+  max-width: 100%;
+  width: 100%;
+  font-size: small;
+  padding-right: 12px;
+  -moz-window-dragging: no-drag;
+
+  &::before {
+    border-radius: var(--border-radius-medium);
+    background: transparent;
+    pointer-events: none;
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: calc(var(--zen-toolbox-padding) + 2px);
+    width: calc(100% - var(--zen-toolbox-padding) * 2.5);
+    height: calc(100% - 8px);
+  }
+
+  :root[zen-private-window] & {
+    pointer-events: none;
+  }
+
+  :root[zen-unsynced-window='true'][zen-sidebar-expanded='true'] & {
+    padding: calc(-2px + var(--tab-inline-padding) + var(--zen-toolbox-padding));
+  }
+
+  :root:not([zen-unsynced-window]) & {
+    &:hover,
+    &[open='true'] {
+      &::before {
+        background: var(--tab-hover-background-color);
+      }
+    }
+  }
+
+  & .zen-current-workspace-indicator-icon {
+    position: relative;
+    width: 16px;
+    height: 16px;
+    justify-content: center;
+    align-items: center;
+    fill-opacity: 0.6;
+    -moz-context-properties: fill-opacity, fill;
+    fill: var(--toolbox-textcolor);
+    font-size: 16px;
+    padding-top: 2px;
+    color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8));
+
+    & img {
+      transform: translateY(-1px);
+    }
+
+    &[zen-emoji-open='true']::before {
+      border: 1px dashed light-dark(rgba(0, 0, 0, .5), rgba(255, 255, 255, .5));
+      border-radius: 6px;
+      width: calc(100% + 6px);
+      height: calc(100% + 6px);
+      content: '';
+      position: absolute;
+      top: -4px;
+      left: -4px;
+      pointer-events: none;
+    }
+
+    @media (-moz-platform: windows) {
+      & img {
+        margin-bottom: -2px;
+      }
+    }
+  }
+
+  .zen-current-workspace-indicator-name {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: auto;
+    white-space: nowrap;
+    font-weight: 600;
+    margin: 0;
+
+    :root[zen-unsynced-window] & {
+      pointer-events: none;
+      background: var(--zen-toolbar-element-bg);
+      padding: 4px 8px;
+      border-radius: 99px;
+      font-size: 10px;
+    }
+
+    :root:not([zen-unsynced-window]) & {
+      flex: 1;
+    }
+  }
+
+  .zen-workspaces-actions {
+    margin-left: auto !important;
+    transition: opacity 0.1s;
+    order: 5;
+    --toolbarbutton-inner-padding: 6px !important;
+    opacity: 0;
+    visibility: collapse;
+
+    & image {
+      border-radius: max(calc(var(--border-radius-medium) - 4px), 4px) !important;
+      width: 26px;
+      height: 26px;
+      margin-right: -1px;
+    }
+
+    :root[zen-renaming-tab='true'] & {
+      display: none;
+    }
+
+    :root[zen-unsynced-window] & {
+      .toolbarbutton-text {
+        display: flex;
+        font-size: 10px;
+        min-height: 22px;
+        padding: 6px 8px;
+      }
+
+      .toolbarbutton-icon {
+        display: none;
+      }
+    }
+  }
+
+  :root[zen-unsynced-window='true']
+    #navigator-toolbox[zen-has-implicit-hover='true']
+    & .zen-workspaces-actions,
+  :root:not([zen-unsynced-window]) &:hover .zen-workspaces-actions,
+  & .zen-workspaces-actions[open='true'] {
+    visibility: visible;
+    pointer-events: auto;
+    opacity: 1;
+  }
+}
+
+/* mark: workspace element */
+zen-workspace {
+  flex-direction: column;
+  transition: padding-top 0.1s;
+  width: calc(100% + var(--zen-toolbox-padding) * 2);
+  position: absolute;
+  height: 100%;
+  overflow: hidden;
+  color: var(--toolbox-textcolor);
+
+  :root:not([zen-sidebar-expanded='true']) & {
+    width: 100%;
+  }
+
+  & > arrowscrollbox {
+    max-height: 100%;
+    overflow: hidden;
+    position: relative;
+
+    &::part(scrollbutton-up),
+    &::part(scrollbutton-down) {
+      display: none;
+    }
+
+    &[overflowing]::part(scrollbox) {
+      scrollbar-width: auto;
+      scrollbar-color: color-mix(in srgb, currentColor 35%, transparent 65%) transparent; /* Custom scrollbar */
+      overflow-y: auto;
+    }
+
+    :root[swipe-gesture] &::part(scrollbox) {
+      scrollbar-width: none;
+    }
+
+    &[overflowing] {
+      --zen-scrollbar-overflow-background: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.08));
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.1s;
+        background-color: var(--zen-scrollbar-overflow-background);
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.1s;
+        background-color: var(--zen-scrollbar-overflow-background);
+      }
+
+      &:not([scrolledtostart])::before {
+        opacity: 1;
+      }
+
+      &:not([scrolledtoend])::after {
+        opacity: 1;
+      }
+    }
+  }
+
+  @media -moz-pref('zen.view.draggable-sidebar') {
+    &[active] .zen-workspace-empty-space {
+      -moz-window-dragging: drag;
+    }
+  }
+}
+
+/** Customizable UI, this is an auto generated ID */
+#wrapper-zen-workspaces-button {
+  width: 100%;
+}
+
+%include create-workspace-form.css
+
+/* Pinned tabs collapse styles */
+
+.zen-current-workspace-indicator-chevron {
+  display: none;
+}
+
+:root[zen-sidebar-expanded] {
+  .zen-current-workspace-indicator-stack {
+    transition: margin-inline-end 0.1s;
+
+    &[no-icon='true']:not([zen-emoji-open='true']) {
+      margin-inline-end: calc(-1 * (var(--indicator-gap) + 16px));
+    }
+  }
+
+  .zen-current-workspace-indicator-chevron {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.1s, opacity 0.15s;
+    transform: rotate(90deg);
+    padding: 1px;
+
+    .zen-current-workspace-indicator-stack[no-icon='true']:not([zen-emoji-open='true']) & {
+      display: flex;
+      opacity: 0;
+    }
+  }
+
+  & zen-workspace[haspinnedtabs] .zen-current-workspace-indicator:hover,
+  & zen-workspace[collapsedpinnedtabs] .zen-current-workspace-indicator {
+    .zen-current-workspace-indicator-stack:not([zen-emoji-open='true']) {
+      margin-inline-end: 0;
+
+      .zen-current-workspace-indicator-chevron {
+        display: flex;
+        opacity: 1;
+      }
+
+      .zen-current-workspace-indicator-icon {
+        display: none;
+      }
+    }
+  }
+
+  zen-workspace[collapsedpinnedtabs] .zen-current-workspace-indicator-chevron {
+    transform: rotate(0deg);
+  }
+}

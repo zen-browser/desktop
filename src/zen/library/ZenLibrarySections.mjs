@@ -21,7 +21,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 ChromeUtils.defineLazyGetter(
   lazy,
   "l10n",
-  () => new Localization(["browser/zen-library.ftl"], true),
+  () => new Localization(["browser/zen-library.ftl"], true)
 );
 
 const SEARCH_DEBOUNCE_MS = 300;
@@ -52,8 +52,8 @@ class LibrarySection extends MozLitElement {
     throw new Error("LibrarySection subclass must define a static `label`.");
   }
 
-  _l10n(key, fallback) {
-    return lazy.l10n.formatValueSync(key) || fallback;
+  _l10n(key) {
+    return lazy.l10n.formatValueSync(key);
   }
 }
 
@@ -66,6 +66,7 @@ class SearchSection extends LibrarySection {
     searchTerm: { type: String },
     inputValue: { type: String },
     isEmpty: { type: Boolean },
+    isScrolledToTop: { type: Boolean },
   };
 
   #canDebug = false;
@@ -79,6 +80,7 @@ class SearchSection extends LibrarySection {
     if (this.inputValue === undefined) {
       this.inputValue = this.searchTerm;
     }
+    this.isScrolledToTop = true;
     this.isEmpty = false;
     super.connectedCallback();
 
@@ -86,7 +88,7 @@ class SearchSection extends LibrarySection {
       this,
       "#canDebug",
       "zen.library.debug",
-      false,
+      false
     );
   }
 
@@ -131,10 +133,10 @@ class SearchSection extends LibrarySection {
     const dayStart = new Date(d).setHours(0, 0, 0, 0);
     const diffDays = Math.round((todayStart - dayStart) / 86_400_000);
     if (diffDays === 0) {
-      return this._l10n("library-history-today", "Today");
+      return this._l10n("library-history-today");
     }
     if (diffDays === 1) {
-      return this._l10n("library-history-yesterday", "Yesterday");
+      return this._l10n("library-history-yesterday");
     }
     if (diffDays < 7) {
       return WEEKDAY_FORMATTER.format(d);
@@ -143,7 +145,7 @@ class SearchSection extends LibrarySection {
   }
 
   get _searchPlaceholder() {
-    return this._l10n("library-search-placeholder", "Search…");
+    return "library-search-placeholder";
   }
 
   _formatTime(date) {
@@ -164,6 +166,7 @@ class SearchSection extends LibrarySection {
         rel="stylesheet"
         href="chrome://browser/content/zen-styles/zen-library.css"
       />
+      <link rel="localization" href="browser/zen-library.ftl" />
       <div class="search-bar">
         <div class="search-urlbar">
           <div class="search-urlbar-background"></div>
@@ -179,7 +182,7 @@ class SearchSection extends LibrarySection {
               type="text"
               inputmode="search"
               aria-autocomplete="list"
-              placeholder=${this._searchPlaceholder}
+              data-l10n-id=${this._searchPlaceholder}
               @input=${this._onSearchInput}
               .value=${this.inputValue}
             />
@@ -194,10 +197,22 @@ class SearchSection extends LibrarySection {
         </div>
         <button class="search-filter-button">
           <img src="chrome://browser/skin/zen-icons/search-glass.svg" alt="" />
-          <span>${this._l10n("library-filter-button", "Filter")}</span>
+          <label data-l10n-id="library-filter-button"></label>
         </button>
       </div>
-      <div class="search-results">${this.renderSearchResults()}</div>
+      <div
+        class="search-results"
+        @scroll=${() => {
+            const el = this.renderRoot.querySelector(".search-results");
+            if (!el) {
+              return;
+            }
+            this.isScrolledToTop = el.scrollTop === 0;
+          }}
+        ?scrolled-to-top=${this.isScrolledToTop}
+      >
+        ${this.renderSearchResults()}
+      </div>
     `;
   }
 }
@@ -229,7 +244,7 @@ class ProgressiveSearchSection extends SearchSection {
   _maintainProgressiveRender() {
     this.#renderedItemCount = Math.max(
       this.#renderedItemCount,
-      Math.min(50, this._allItems.length),
+      Math.min(50, this._allItems.length)
     );
     this.isEmpty = this._allItems.length === 0;
     this.#scheduleNextBatch();
@@ -243,7 +258,7 @@ class ProgressiveSearchSection extends SearchSection {
       this.#renderTask = null;
       this.#renderedItemCount = Math.min(
         this.#renderedItemCount + 100,
-        this._allItems.length,
+        this._allItems.length
       );
       this.requestUpdate();
       this.#scheduleNextBatch();
@@ -286,7 +301,7 @@ class ZenLibraryHistorySection extends ProgressiveSearchSection {
   #rebuildTimer = null;
 
   get _searchPlaceholder() {
-    return this._l10n("library-history-search-placeholder", "Search History…");
+    return "library-history-search-placeholder";
   }
 
   async connectedCallback() {
@@ -324,6 +339,7 @@ class ZenLibraryHistorySection extends ProgressiveSearchSection {
     this.#teardownResult();
 
     const NHQO = Ci.nsINavHistoryQueryOptions;
+    // eslint-disable-next-line no-shadow
     const history = lazy.PlacesUtils.history;
     const query = history.getNewQuery();
     const options = history.getNewQueryOptions();
@@ -383,7 +399,7 @@ class ZenLibraryHistorySection extends ProgressiveSearchSection {
       }
 
       this.log(
-        `#walkAndPopulate — ${this._allItems.length} items, search=${!!this.searchTerm}`,
+        `#walkAndPopulate — ${this._allItems.length} items, search=${!!this.searchTerm}`
       );
     } finally {
       this.#walking = false;
@@ -458,17 +474,16 @@ class ZenLibraryHistorySection extends ProgressiveSearchSection {
     }
     if (this.isEmpty) {
       return html`
-        <div class="empty-state">
-          ${this.searchTerm
-            ? this._l10n("library-search-no-results", "No results")
-            : this._l10n("library-history-empty", "No history found")}
-        </div>
+        <div
+          class="empty-state"
+          data-l10n-id=${this.searchTerm ? "library-search-no-results" : "library-history-empty"}
+        ></div>
       `;
     }
 
     const slice = this._getRenderedSlice();
     this.log(
-      `renderSearchResults — ${slice.length}/${this._allItems.length} items`,
+      `renderSearchResults — ${slice.length}/${this._allItems.length} items`
     );
 
     const rows = [];
@@ -479,9 +494,7 @@ class ZenLibraryHistorySection extends ProgressiveSearchSection {
       if (dayLabel !== lastLabel) {
         lastLabel = dayLabel;
         rows.push(html`
-          <div class="library-date-separator">
-            <span>${lastLabel}</span>
-          </div>
+          <label class="library-date-separator"> ${lastLabel} </label>
         `);
       }
 
@@ -499,10 +512,16 @@ class ZenLibraryHistorySection extends ProgressiveSearchSection {
                 />
               </div>
               <div class="library-item-label-container">
-                <span class="library-item-label">${v.title || v.url}</span>
-                <span class="library-item-sublabel">${v.url}</span>
+                <label class="library-item-label">${v.title || v.url}</label>
+                <label class="library-item-sublabel"
+                  >${
+                  v.url?.replace(/^[\w-]+:\/\//, "").replace(/\/$/, "") || ""
+                }</label
+                >
               </div>
-              <span class="library-item-time">${this._formatTime(v.date)}</span>
+              <label class="library-item-time"
+                >${this._formatTime(v.date)}</label
+              >
             </div>
           </div>
         </div>
@@ -527,10 +546,7 @@ class ZenLibraryDownloadsSection extends ProgressiveSearchSection {
   #batchLoading = false;
 
   get _searchPlaceholder() {
-    return this._l10n(
-      "library-downloads-search-placeholder",
-      "Search Downloads…",
-    );
+    return "library-downloads-search-placeholder";
   }
 
   connectedCallback() {
@@ -550,7 +566,7 @@ class ZenLibraryDownloadsSection extends ProgressiveSearchSection {
 
   #setupDownloadsView() {
     this.#downloadsView = {
-      onDownloadAdded: (dl) => {
+      onDownloadAdded: dl => {
         if (this.#batchLoading) {
           this.#allDownloads.push(dl);
           return;
@@ -566,11 +582,11 @@ class ZenLibraryDownloadsSection extends ProgressiveSearchSection {
       onDownloadBatchEnded: async () => {
         this.#batchLoading = false;
         this.#allDownloads.sort(
-          (a, b) => this.#downloadTime(b) - this.#downloadTime(a),
+          (a, b) => this.#downloadTime(b) - this.#downloadTime(a)
         );
         this.#rebuildItems();
         this.log(
-          `batch complete — ${this.#allDownloads.length} downloads loaded`,
+          `batch complete — ${this.#allDownloads.length} downloads loaded`
         );
         await this.updateComplete;
         // Guard: library may have closed while the batch was loading.
@@ -583,7 +599,7 @@ class ZenLibraryDownloadsSection extends ProgressiveSearchSection {
       onDownloadChanged: () => {
         this.requestUpdate();
       },
-      onDownloadRemoved: (dl) => {
+      onDownloadRemoved: dl => {
         const idx = this.#allDownloads.indexOf(dl);
         if (idx !== -1) {
           this.#allDownloads.splice(idx, 1);
@@ -610,7 +626,7 @@ class ZenLibraryDownloadsSection extends ProgressiveSearchSection {
 
   _onSearch(term) {
     this.log(
-      `_onSearch — term: "${term}", total: ${this.#allDownloads.length}`,
+      `_onSearch — term: "${term}", total: ${this.#allDownloads.length}`
     );
     this.#rebuildItems();
     this._resetProgressiveRender();
@@ -622,11 +638,10 @@ class ZenLibraryDownloadsSection extends ProgressiveSearchSection {
 
     if (this.isEmpty) {
       return html`
-        <div class="empty-state">
-          ${this.searchTerm
-            ? this._l10n("library-search-no-results", "No results")
-            : this._l10n("library-downloads-empty", "No downloads found")}
-        </div>
+        <div
+          class="empty-state"
+          data-l10n-id=${this.searchTerm ? "library-search-no-results" : "library-downloads-empty"}
+        ></div>
       `;
     }
 
@@ -634,11 +649,11 @@ class ZenLibraryDownloadsSection extends ProgressiveSearchSection {
     return html`
       ${Array.from(groups).map(
         ([key, downloads]) => html`
-          <div class="library-date-separator">
-            <span>${this._dayLabel(new Date(key))}</span>
-          </div>
-          ${downloads.map((dl) => this.#renderDownloadItem(dl))}
-        `,
+          <label class="library-date-separator">
+            ${this._dayLabel(new Date(key))}
+          </label>
+          ${downloads.map(dl => this.#renderDownloadItem(dl))}
+        `
       )}
     `;
   }
@@ -660,18 +675,20 @@ class ZenLibraryDownloadsSection extends ProgressiveSearchSection {
             <div class="library-item-icon-stack">
               <img
                 class="library-item-icon-image"
-                src="${iconPath}"
+                src=${iconPath}
                 alt=""
                 role="presentation"
               />
             </div>
             <div class="library-item-label-container">
-              <span class="library-item-label">${nameStr}</span>
-              <span class="library-item-sublabel">${this.#getStatusLabel(dl)}</span>
+              <label class="library-item-label">${nameStr}</label>
+              <label class="library-item-sublabel"
+                >${this.#getStatusLabel(dl)}</label
+              >
             </div>
-            <span class="library-item-time">
+            <label class="library-item-time">
               ${this._formatTime(this.#downloadTime(dl))}
-            </span>
+            </label>
           </div>
         </div>
       </div>
@@ -686,6 +703,8 @@ class ZenLibraryDownloadsSection extends ProgressiveSearchSection {
   /**
    * Binary insertion into #allDownloads (newest-first).
    * O(log N) vs O(N log N) for a full sort on every add.
+   *
+   * @param {object} dl - Download object from DownloadsCommon.getData()
    */
   #insertSorted(dl) {
     const time = this.#downloadTime(dl);
@@ -705,8 +724,8 @@ class ZenLibraryDownloadsSection extends ProgressiveSearchSection {
   #rebuildItems() {
     const term = this.searchTerm?.trim().toLowerCase();
     if (term) {
-      this._allItems = this.#allDownloads.filter((dl) =>
-        this.#matchesSearchTerm(dl, term),
+      this._allItems = this.#allDownloads.filter(dl =>
+        this.#matchesSearchTerm(dl, term)
       );
     } else {
       this._allItems = [...this.#allDownloads];
@@ -720,11 +739,7 @@ class ZenLibraryDownloadsSection extends ProgressiveSearchSection {
     const displayName = lazy.DownloadsViewUI.getDisplayName(dl);
     const nameStr =
       typeof displayName === "string" ? displayName.toLowerCase() : "";
-    const url = (
-      dl.source.originalUrl ||
-      dl.source.url ||
-      ""
-    ).toLowerCase();
+    const url = (dl.source.originalUrl || dl.source.url || "").toLowerCase();
     return nameStr.includes(term) || url.includes(term);
   }
 
@@ -751,10 +766,11 @@ class ZenLibraryDownloadsSection extends ProgressiveSearchSection {
     switch (state) {
       case lazy.DownloadsCommon.DOWNLOAD_DOWNLOADING: {
         const totalBytes = dl.hasProgress ? dl.totalBytes : -1;
+        // eslint-disable-next-line no-shadow
         const [status] = lazy.DownloadUtils.getDownloadStatus(
           dl.currentBytes,
           totalBytes,
-          dl.speed,
+          dl.speed
         );
         return status;
       }
@@ -774,11 +790,11 @@ class ZenLibraryDownloadsSection extends ProgressiveSearchSection {
         const total = dl.hasProgress ? dl.totalBytes : -1;
         const transfer = lazy.DownloadUtils.getTransferTotal(
           dl.currentBytes,
-          total,
+          total
         );
         return strings.statusSeparatorBeforeNumber(
           strings.statePaused,
-          transfer,
+          transfer
         );
       }
       case lazy.DownloadsCommon.DOWNLOAD_BLOCKED_PARENTAL:

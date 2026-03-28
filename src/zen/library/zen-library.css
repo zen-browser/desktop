@@ -12,9 +12,9 @@
   }
 
   @media (-moz-platform: macos) {
-    --border-radius-medium: 12px;
+    --border-radius-medium: 14px;
     --tab-border-radius: 8px;
-    font-size: 1.25rem; /* Slightly larger font on macOS */
+    font-size: 1rem; /* Slightly larger font on macOS */
   }
 
   display: flex;
@@ -39,13 +39,14 @@
   height: 100%;
   padding: 8px;
   background: rgba(255, 255, 255, 0.05);
-  box-shadow: var(--zen-big-shadow);
+  box-shadow: rgba(0, 0, 0, 0.1) 0 10px 50px;
+  border-right: 1px solid rgba(0,0,0,.08);
   -moz-window-dragging: drag;
 }
 
 #zen-library-content {
   display: flex;
-  width: 25rem;
+  width: 27rem;
   max-width: 80vh;
   overflow: hidden;
   transition: width 0.15s ease-in-out;
@@ -62,8 +63,8 @@
      */
     display: flex;
     flex-direction: column;
-    width: 25rem;
-    min-width: 25rem;
+    width: 27rem;
+    min-width: 27rem;
     flex-shrink: 0;
     overflow: hidden;
   }
@@ -102,10 +103,6 @@
   &[active]::before {
     background: color-mix(in srgb, currentColor 10%, transparent);
   }
-
-  &:active:hover::before {
-    transform: scale(0.95);
-  }
 }
 
 /* Search Bar */
@@ -120,7 +117,7 @@
   box-sizing: border-box;
 
   @media (-moz-platform: macos) {
-    font-size: 1.25rem; /* Slightly larger font on macOS */
+    font-size: 1rem; /* Slightly larger font on macOS */
   }
 }
 
@@ -162,8 +159,8 @@
   overflow: hidden;
 
   & .search-icon {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     margin-inline-end: 6px;
     padding: 4px;
     flex-shrink: 0;
@@ -216,14 +213,14 @@
     fill: currentColor;
     -moz-context-properties: fill, fill-opacity;
 
+    & img {
+      width: 14px;
+      height: 14px;
+    }
+
     &:hover {
       background: var(--urlbar-box-hover-bgcolor, light-dark(rgba(0,0,0,0.08), rgba(255,255,255,0.1)));
     }
-  }
-
-  &:has(.search-input:not(:placeholder-shown)) .search-clear-button {
-    opacity: 0.5;
-    pointer-events: auto;
   }
 }
 
@@ -262,7 +259,7 @@
   flex: 1;
   flex-direction: column;
   align-items: stretch;
-  padding: var(--tab-inline-padding);
+  padding: 10px;
   padding-top: 0 !important;
   overflow-y: auto;
   scrollbar-width: auto;
@@ -270,6 +267,10 @@
 
   @media (-moz-platform: macos) {
     font-size: 1.25rem; /* Slightly larger font on macOS */
+  }
+
+  &:not([scrolled-to-top]) {
+    box-shadow: inset 0 10px 10px -10px var(--zen-toolbar-element-bg);
   }
 }
 
@@ -280,8 +281,9 @@
   flex-shrink: 0;
   gap: 8px;
   padding: 4px;
-  font-size: 1em;
-  font-weight: 700;
+  padding-top: 12px;
+  font-size: .9em;
+  font-weight: 500;
   letter-spacing: 0.05em;
   opacity: 0.65;
 
@@ -297,10 +299,9 @@
 
 .library-item {
   --tab-label-mask-size: 1em;
-  
+
   display: flex;
   align-items: stretch;
-  margin: 2px 0 2px 0;
   appearance: none;
   background-color: transparent;
   border-width: 0;
@@ -308,10 +309,6 @@
   color: inherit;
   color-scheme: unset;
   overflow: clip;
-
-  &:active {
-    scale: var(--zen-active-tab-scale);
-  }
 }
 
 .library-item-stack {
@@ -341,8 +338,8 @@
   position: relative;
   align-items: center;
   min-width: 0;
-  height: 36px;
-  padding: 0 var(--tab-inline-padding);
+  padding: 12px 10px;
+  overflow: clip;
 }
 
 .library-item-icon-stack {
@@ -354,11 +351,11 @@
 
 .library-item-icon-image {
   flex-shrink: 0;
-  width: var(--size-item-small);
-  height: var(--size-item-small);
-  margin-inline-start: calc(var(--toolbarbutton-inner-padding) / 3) !important;
-  margin-inline-end: var(--toolbarbutton-inner-padding) !important;
-  padding: 0 !important;
+  width: 18px;
+  height: 18px;
+  margin-inline-start: calc(var(--toolbarbutton-inner-padding) / 2);
+  margin-inline-end: calc(var(--toolbarbutton-inner-padding) * 1.5);
+  padding: 0;
   border-radius: 4px;
   fill: currentColor;
   -moz-context-properties: fill, stroke;
@@ -373,21 +370,21 @@
   direction: ltr;
   mask-image: linear-gradient(to left, transparent, black var(--tab-label-mask-size));
   overflow: hidden;
+  gap: 4px;
 }
 
 .library-item-label {
   margin-inline: 0;
-  line-height: var(--tab-label-line-height);
   white-space: nowrap;
+  line-height: 1;
 }
 
 /* finished (i hope so) */
 .library-item-sublabel {
   margin: 0;
-  font-size: x-small;
+  font-size: 11px;
   white-space: nowrap;
-  opacity: 0.65; /* what opacity should i keep? */
-  transform: translateY(-4px);
+  opacity: 0.6; /* what opacity should i keep? */
   pointer-events: none;
   overflow: hidden;
 }
@@ -395,12 +392,17 @@
 /* unfinished */
 .library-item-time {
   flex-shrink: 0;
-  margin-inline-start: calc(var(--toolbarbutton-inner-padding) - 0.5em); /* idk why this calc makes sense to me 
+  margin-inline-start: calc(var(--toolbarbutton-inner-padding) - 0.5em); /* idk why this calc makes sense to me
   but it is inconsistant so please fix it if you have an idea */
   padding-inline-end: calc(var(--toolbarbutton-inner-padding) / 3);
   font-size: x-small;
   white-space: nowrap;
   opacity: 0.65;
+  display: none;
+
+  .library-item-content:hover & {
+    display: flex;
+  }
 }
 
 /* unfinished */

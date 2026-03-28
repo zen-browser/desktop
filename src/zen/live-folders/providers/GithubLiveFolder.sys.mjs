@@ -94,7 +94,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
             activeRepos.push(repo);
           }
 
-          const idMatch = authors[i].parentElement?.textContent
+          const idMatch = authors[i].parentElement.textContent
             .match(/#[0-9]+/)
             .shift();
 
@@ -115,7 +115,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         activeRepos,
       };
     } catch (err) {
-      console.error("Failed to parse Github Issues", err);
+      console.error("Failed to parse Github pull requests", err);
       return {
         status,
       };
@@ -175,7 +175,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         activeRepos,
       };
     } catch (err) {
-      console.error("Failed to parse Github pull requests", err);
+      console.error("Failed to parse Github Issues", err);
       return {
         status,
       };

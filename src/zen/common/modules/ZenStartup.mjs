@@ -59,6 +59,7 @@ class ZenStartup {
       setTimeout(() => {
         gZenUIManager.init();
         this.#checkForWelcomePage();
+        this.#editZenDesktopLinux();
       }, 0);
     } catch (e) {
       console.error("ZenThemeModifier: Error initializing browser layout", e);
@@ -77,6 +78,39 @@ class ZenStartup {
       Services.obs.removeObserver(this, "browser-delayed-startup-finished");
       this.delayedStartupFinished();
     }
+  }
+
+  async #editZenDesktopLinux() {
+    if (AppConstants.platform !== "linux") {
+      return;
+    }
+
+    if (Services.prefs.getBoolPref("zen-desktop-linux-external-app-links", false)) {
+      return;
+    }
+
+    let dataHome = Services.env.get("XDG_DATA_HOME");
+    if (!dataHome || !PathUtils.isAbsolute(dataHome)) {
+      dataHome = PathUtils.join(
+        Services.dirsvc.get("Home", Ci.nsIFile).path,
+        ".local",
+        "share"
+      );
+    }
+
+    const desktopFilePath = PathUtils.join(dataHome, "applications", "zen.desktop");
+    if (!(await IOUtils.exists(desktopFilePath))) {
+      return;
+    }
+
+    try {
+      let content = await IOUtils.readUTF8(desktopFilePath);
+      if (!/^Exec=.*%[uU]/m.test(content)) {
+        content = content.replace(/^(Exec=.+)$/m, "$1 %u");
+        await IOUtils.writeUTF8(desktopFilePath, content);
+      }
+      Services.prefs.setBoolPref("zen-desktop-linux-external-app-links", true);
+    } catch (ex) {}
   }
 
   delayedStartupFinished() {

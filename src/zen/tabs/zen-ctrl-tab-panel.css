@@ -4,7 +4,7 @@
 
 :root {
   --zen-ctrl-tab-panel-thumbnail-height: 155px;
-  --zen-ctrl-tab-panel-info-height: 28px;
+  --zen-ctrl-tab-panel-info-height: 40px;
   --zen-ctrl-tab-panel-padding: 16px;
   --zen-ctrl-tab-panel-card-gap: 12px;
   --zen-ctrl-tab-panel-card-inner-padding: 12px;
@@ -129,12 +129,10 @@
   flex: 1;
   font-size: 16px;
   font-weight: 600;
-  line-height: 1.4;
   color: var(--zen-branding-bg-reverse);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-width: 0;
 }
 
 .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-info,

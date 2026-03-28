@@ -166,8 +166,7 @@ index fc1e0870696fb5866663cdab0fc96faff0d5a3f8..2430d7afd4761c66cd5ad05a7f262001
    list-style-image: url(chrome://global/skin/icons/plus.svg);
  }
  
- #tabbrowser-tabs[hasadjacentnewtabbutton]:not([overflow]) ~ #new-tab-button,
+-#tabbrowser-tabs[hasadjacentnewtabbutton]:not([overflow]) ~ #new-tab-button,
  #tabbrowser-tabs[orient="horizontal"] > #vertical-tabs-newtab-button,
  #tabbrowser-tabs[orient="vertical"]:not([overflow]) > #vertical-tabs-newtab-button,
- #tabbrowser-arrowscrollbox[overflowing] > #tabbrowser-arrowscrollbox-periphery > #tabs-newtab-button {
-}
+ #tabbrowser-arrowscrollbox[overflowing] > #tabbrowser-arrowscrollbox-periphery > #tabs-newtab-button,

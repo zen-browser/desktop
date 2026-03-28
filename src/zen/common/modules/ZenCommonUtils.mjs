@@ -78,7 +78,9 @@ export class nsZenDOMOperatedFeature {
 export class nsZenPreloadedFeature {
   constructor() {
     var initBound = this.init.bind(this);
-    document.addEventListener("MozBeforeInitialXULLayout", initBound, { once: true });
+    document.addEventListener("MozBeforeInitialXULLayout", initBound, {
+      once: true,
+    });
   }
 }
 
@@ -92,7 +94,7 @@ window.gZenCommonActions = {
     if (Services.zen.canShare() && displaySpec.startsWith("http")) {
       button = {
         id: "zen-copy-current-url-button",
-        command: (event) => {
+        command: event => {
           const buttonRect = event.target.getBoundingClientRect();
           /* eslint-disable mozilla/valid-services */
           Services.zen.share(
@@ -107,7 +109,10 @@ window.gZenCommonActions = {
         },
       };
     }
-    gZenUIManager.showToast("zen-copy-current-url-confirmation", { button, timeout: 3000 });
+    gZenUIManager.showToast("zen-copy-current-url-confirmation", {
+      button,
+      timeout: 3000,
+    });
   },
 
   copyCurrentURLAsMarkdownToClipboard() {
@@ -115,7 +120,9 @@ window.gZenCommonActions = {
     const tabTitle = gBrowser.selectedTab.label;
     const markdownLink = `[${tabTitle}](${currentUrl.displaySpec})`;
     ClipboardHelper.copyString(markdownLink);
-    gZenUIManager.showToast("zen-copy-current-url-as-markdown-confirmation", { timeout: 3000 });
+    gZenUIManager.showToast("zen-copy-current-url-as-markdown-confirmation", {
+      timeout: 3000,
+    });
   },
 
   throttle(f, delay) {
@@ -134,10 +141,17 @@ window.gZenCommonActions = {
    * @returns {boolean} True if the tab should be closed on back
    */
   shouldCloseTabOnBack() {
-    if (!Services.prefs.getBoolPref("zen.tabs.close-on-back-with-no-history", true)) {
+    if (
+      !Services.prefs.getBoolPref(
+        "zen.tabs.close-on-back-with-no-history",
+        true
+      )
+    ) {
       return false;
     }
     const tab = gBrowser.selectedTab;
-    return Boolean(tab.owner && !tab.pinned && !tab.hasAttribute("zen-empty-tab"));
+    return Boolean(
+      tab.owner && !tab.pinned && !tab.hasAttribute("zen-empty-tab")
+    );
   },
 };

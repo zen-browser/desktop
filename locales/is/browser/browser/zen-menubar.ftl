@@ -18,5 +18,5 @@ zen-menubar-appearance-light =
     .label = Ljóst
 zen-menubar-appearance-dark = 
     .label = Dökkt
-zen-menubar-new-unsynced-window = 
+zen-menubar-new-blank-window = 
     .label = Nýr auður gluggi

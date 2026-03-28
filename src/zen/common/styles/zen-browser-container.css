@@ -33,7 +33,9 @@
     @media -moz-pref("zen.theme.acrylic-elements") {
       & browser[type="content"] {
         /* For the rendering engine to apply layering optimizations. This
-           * is a hacky solution, but it works for now. */
+         * is a hacky solution, but it works for now. Note that this makes
+         * zen REALLY slow, so lets not enable it by default until we have
+         * a better solution. */
         will-change: transform;
       }
     }

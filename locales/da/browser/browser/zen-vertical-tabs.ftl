@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] Nulstil og fastgør fane
            *[other] Nulstil og fastgør { $tabCount } faner
         }
-tab-reset-pin-label = Tilbage til fastgjort URL
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

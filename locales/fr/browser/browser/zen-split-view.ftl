@@ -15,6 +15,3 @@ zen-split-link =
 zen-split-view-modifier-header = Vue fractionnée
 zen-split-view-modifier-activate-reallocation = 
     .label = Activer le réarrangement
-zen-split-view-modifier-enabled-toast = La réorganisation de la vue fractionnée est activée.
-zen-split-view-modifier-enabled-toast-description = Glissez-déposez les onglets pour réorganiser. Appuyez sur Échap pour quitter.
-zen-split-view-modifier-disabled-toast = La réorganisation de la vue fractionnée est désactivée.

@@ -248,7 +248,7 @@
 
   --panel-separator-color: color-mix(in srgb, currentColor 15%, transparent) !important;
 
-  --zen-big-shadow: 0 0 9.73px 0px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.25));
+  --zen-big-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   --zen-active-tab-scale: 0.98;
 
   /* Define tab hover background color */

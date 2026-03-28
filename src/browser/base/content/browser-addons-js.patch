@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser-addons.js b/browser/base/content/browser-addons.js
-index cfb6b8dd5443966d0635c3d7b477a68eca8fa9e0..c876890706b1a314c7760bbe1ff5e9eb57857e60 100644
+index 737ccf0feff4910426f7f75a20ac20ec480461dc..177ab12f9478e1ce664b7b2c66b0e2c8bca63573 100644
 --- a/browser/base/content/browser-addons.js
 +++ b/browser/base/content/browser-addons.js
-@@ -1069,7 +1069,7 @@ var gXPInstallObserver = {
+@@ -1061,7 +1061,7 @@ var gXPInstallObserver = {
        persistent: true,
        hideClose: true,
        popupOptions: {
@@ -11,7 +11,7 @@ index cfb6b8dd5443966d0635c3d7b477a68eca8fa9e0..c876890706b1a314c7760bbe1ff5e9eb
        },
      };
  
-@@ -1279,7 +1279,7 @@ var gXPInstallObserver = {
+@@ -1283,7 +1283,7 @@ var gXPInstallObserver = {
        hideClose: true,
        timeout: Date.now() + 30000,
        popupOptions: {
@@ -20,7 +20,7 @@ index cfb6b8dd5443966d0635c3d7b477a68eca8fa9e0..c876890706b1a314c7760bbe1ff5e9eb
        },
      };
  
-@@ -2212,7 +2212,7 @@ var gUnifiedExtensions = {
+@@ -2210,7 +2210,7 @@ var gUnifiedExtensions = {
    // If the new ID is not added in NOTIFICATION_IDS, consider handling the case
    // in the "PopupNotificationsBeforeAnchor" handler elsewhere in this file.
    getPopupAnchorID(aBrowser, aWindow) {
@@ -29,7 +29,7 @@ index cfb6b8dd5443966d0635c3d7b477a68eca8fa9e0..c876890706b1a314c7760bbe1ff5e9eb
      const attr = anchorID + "popupnotificationanchor";
  
      if (!aBrowser[attr]) {
-@@ -2223,7 +2223,7 @@ var gUnifiedExtensions = {
+@@ -2221,7 +2221,7 @@ var gUnifiedExtensions = {
          anchorID
          // Anchor on the toolbar icon to position the popup right below the
          // button.
@@ -38,7 +38,7 @@ index cfb6b8dd5443966d0635c3d7b477a68eca8fa9e0..c876890706b1a314c7760bbe1ff5e9eb
      }
  
      return anchorID;
-@@ -2548,7 +2548,7 @@ var gUnifiedExtensions = {
+@@ -2546,7 +2546,7 @@ var gUnifiedExtensions = {
      requestAnimationFrame(() => this.updateAttention());
    },
  
@@ -47,7 +47,7 @@ index cfb6b8dd5443966d0635c3d7b477a68eca8fa9e0..c876890706b1a314c7760bbe1ff5e9eb
      // A list of extension widget IDs (possibly empty).
      let widgetIDs;
  
-@@ -2562,7 +2562,7 @@ var gUnifiedExtensions = {
+@@ -2560,7 +2560,7 @@ var gUnifiedExtensions = {
      }
  
      // The list of overflowed extensions in the extensions panel.
@@ -56,7 +56,7 @@ index cfb6b8dd5443966d0635c3d7b477a68eca8fa9e0..c876890706b1a314c7760bbe1ff5e9eb
        "#overflowed-extensions-list"
      );
  
-@@ -2663,37 +2663,41 @@ var gUnifiedExtensions = {
+@@ -2661,37 +2661,41 @@ var gUnifiedExtensions = {
        );
        template.replaceWith(template.content);
        this._panel = document.getElementById("unified-extensions-panel");
@@ -123,7 +123,7 @@ index cfb6b8dd5443966d0635c3d7b477a68eca8fa9e0..c876890706b1a314c7760bbe1ff5e9eb
      if (!CustomizationHandler.isCustomizing()) {
        if (aEvent) {
          if (
-@@ -2715,6 +2719,7 @@ var gUnifiedExtensions = {
+@@ -2713,6 +2717,7 @@ var gUnifiedExtensions = {
          // and no alternative content is available for display in the panel.
          const policies = this.getActivePolicies();
          if (
@@ -131,7 +131,7 @@ index cfb6b8dd5443966d0635c3d7b477a68eca8fa9e0..c876890706b1a314c7760bbe1ff5e9eb
            policies.length &&
            !this.hasExtensionsInPanel(policies) &&
            !this.isPrivateWindowMissingExtensionsWithoutPBMAccess() &&
-@@ -2730,32 +2735,30 @@ var gUnifiedExtensions = {
+@@ -2728,32 +2733,30 @@ var gUnifiedExtensions = {
        this.blocklistAttentionInfo =
          await AddonManager.getBlocklistAttentionInfo();
  
@@ -170,7 +170,7 @@ index cfb6b8dd5443966d0635c3d7b477a68eca8fa9e0..c876890706b1a314c7760bbe1ff5e9eb
            triggerEvent: aEvent,
          });
        }
-@@ -2942,18 +2945,20 @@ var gUnifiedExtensions = {
+@@ -2948,18 +2951,20 @@ var gUnifiedExtensions = {
        this._maybeMoveWidgetNodeBack(widgetId);
      }
  

@@ -2,37 +2,46 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-current-profile-text = Aktualny profil
-unified-extensions-description = Rozszerzenia są używane do dodatkowej funkcjonalności { -brand-short-name }.
+zen-panel-ui-current-profile-text = aktualny profil
+unified-extensions-description = Rozszerzenia są używane, aby zapewnić dodatkową funkcjonalność w { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Resetuj przypiętą kartę
+    .label =
+        { $isEssential ->
+            [true] Zresetuj niezbędną kartę
+           *[false] Zresetuj przypiętą kartę
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Dodaj do niezbędnych
     .accesskey = E
-tab-context-zen-add-essential-badge = Wypełnione pola { $num } / { $max }
+tab-context-zen-add-essential-badge = { $num } / { $max } zajętych miejsc
 tab-context-zen-remove-essential = 
-    .label = Usuń z Niezbędnych
+    .label = Usuń z niezbędnych
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Zastąp przypięty adres URL aktualnym
+    .label =
+        { $isEssential ->
+            [true] Zastąp adres URL niezbędnej karty bieżącym
+           *[false] Zastąp adres URL przypiętej karty bieżącym
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = Zmień nazwę...
 tab-context-zen-edit-icon = 
     .label = Zmień ikonę...
-zen-themes-corrupted = Twój plik modyfikacji { -brand-short-name } jest uszkodzony. Zostały one zresetowane do domyślnego stanu.
-zen-shortcuts-corrupted = Twój plik skrótów { -brand-short-name } jest popsuty. Skróty zostały zresetowane do domyślnych.
+zen-themes-corrupted = Twój plik modyfikacji { -brand-short-name } jest uszkodzony. Został on zresetowany do domyślnego stanu.
+zen-shortcuts-corrupted = Twój plik skrótów { -brand-short-name } jest uszkodzony. Został on zresetowany do domyślnego stanu.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
-    Nowy pasek adresu został aktywowany, strona nowej karty nie jest już potrzebna.<br/><br/>
-    Wypróbuj nowy pasek URL otwierając nową kartę!
+    Włączono nowy pasek adresu URL, dzięki czemu nie ma już potrzeby korzystania ze strony nowej karty.<br/><br/>
+    Spróbuj otworzyć nową kartę, aby zobaczyć, jak działa nowy pasek adresu URL!
 zen-disable = Deaktywuj
 pictureinpicture-minimize-btn = 
     .aria-label = Zminimalizuj
     .tooltip = Zminimalizuj
 zen-panel-ui-gradient-generator-custom-color = Niestandardowy kolor
-zen-copy-current-url-confirmation = Skopiowano bieżący URL
+zen-copy-current-url-confirmation = Skopiowano bieżący URL!
+zen-copy-current-url-as-markdown-confirmation = Skopiowano bieżący adres URL jako Markdown!
 zen-general-cancel-label = 
     .label = Anuluj
 zen-general-confirm = 
@@ -40,7 +49,7 @@ zen-general-confirm =
 zen-pinned-tab-replaced = URL przypiętej karty został zastąpiony bieżącym adresem!
 zen-tabs-renamed = Nazwa karty została z powodzeniem zmieniona!
 zen-background-tab-opened-toast = Nowa karta została otworzona w tle!
-zen-workspace-renamed-toast = Zmieniono nazwę Przestrzeni roboczej!
+zen-workspace-renamed-toast = Zmieniono nazwę przestrzeni roboczej!
 zen-toggle-compact-mode-button = 
     .label = Tryb kompaktowy
     .tooltiptext = Przełącz tryb kompaktowy
@@ -60,20 +69,20 @@ zen-site-data-settings = Ustawienia
 zen-generic-manage = Zarządzaj
 zen-generic-more = Więcej
 zen-generic-next = Następne
-zen-essentials-promo-label = Dodaj do kluczowych kart
+zen-essentials-promo-label = Dodaj do niezbędnych
 zen-essentials-promo-sublabel = Utrzymuj swoje ulubione karty w zasięgu myszki
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Dozwolone
 zen-site-data-setting-block = Zablokowane
 zen-site-data-protections-enabled = Włączone
 zen-site-data-protections-disabled = Wyłączone
-zen-site-data-setting-cross-site = Ciasteczka międzydomenowe
+zen-site-data-setting-cross-site = Pliki cookie między witrynami
 zen-site-data-security-info-extension = 
     .label = Rozszerzenie
 zen-site-data-security-info-secure = 
     .label = Zabezpieczone
 zen-site-data-security-info-not-secure = 
-    .label = Nie zabezpieczone
+    .label = Niezabezpieczone
 zen-site-data-manage-addons = 
     .label = Zarządzaj rozszerzeniami
 zen-site-data-get-addons = 
@@ -113,3 +122,5 @@ zen-window-sync-migration-dialog-title = Utrzymuj synchronizację okien
 zen-window-sync-migration-dialog-message = Zen synchronizuje okna na jednym urządzeniu, żeby zmiany w jednym oknie były natychmiast odzwierciedlone w pozostałych.
 zen-window-sync-migration-dialog-learn-more = Dowiedz się więcej
 zen-window-sync-migration-dialog-accept = Rozumiem
+zen-appmenu-new-blank-window = 
+    .label = Nowe puste okno

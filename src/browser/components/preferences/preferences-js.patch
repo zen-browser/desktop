@@ -1,8 +1,8 @@
 diff --git a/browser/components/preferences/preferences.js b/browser/components/preferences/preferences.js
-index 7a279d4655523156ff259c9f6bcb2a0def9d1749..de71cec7693d1fe3bf34017ab76027b83631830a 100644
+index 3c60cc9f199ba5836ea1233fbbeb74a6dd63b0c0..252966bca1c8c915885b6c6391360fb6cd90f5ba 100644
 --- a/browser/components/preferences/preferences.js
 +++ b/browser/components/preferences/preferences.js
-@@ -121,6 +121,7 @@ ChromeUtils.defineLazyGetter(this, "gSubDialog", function () {
+@@ -119,6 +119,7 @@ ChromeUtils.defineLazyGetter(this, "gSubDialog", function () {
        styleSheets: [
          "chrome://browser/skin/preferences/dialog.css",
          "chrome://browser/skin/preferences/preferences.css",
@@ -10,7 +10,7 @@ index 7a279d4655523156ff259c9f6bcb2a0def9d1749..de71cec7693d1fe3bf34017ab76027b8
        ],
        resizeCallback: async ({ title, frame }) => {
          // Search within main document and highlight matched keyword.
-@@ -350,6 +351,10 @@ function init_all() {
+@@ -359,6 +360,10 @@ function init_all() {
    register_module("paneSearch", gSearchPane);
    register_module("panePrivacy", gPrivacyPane);
    register_module("paneContainers", gContainersPane);

@@ -15,6 +15,3 @@ zen-split-link =
 zen-split-view-modifier-header = Splittet visning
 zen-split-view-modifier-activate-reallocation = 
     .label = Aktiver reallokasjon
-zen-split-view-modifier-enabled-toast = Omorganisering av splittet visning er PÅ.
-zen-split-view-modifier-enabled-toast-description = Dra og slipp visningen for å omorganisere. Trykk Esc for å avslutte.
-zen-split-view-modifier-disabled-toast = Omorganisering av splittet visning er AV.

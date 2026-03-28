@@ -4,7 +4,12 @@
 "use strict";
 
 add_task(async function test_Check_Creation() {
-  await gZenWorkspaces.createAndSaveWorkspace("Container Profile 1", undefined, false, 1);
+  await gZenWorkspaces.createAndSaveWorkspace(
+    "Container Profile 1",
+    undefined,
+    false,
+    1
+  );
   const workspaces = gZenWorkspaces.getWorkspaces();
   Assert.strictEqual(workspaces.length, 2, "Two workspaces should exist.");
 
@@ -16,12 +21,14 @@ add_task(async function test_Check_Creation() {
   ok(newTab, "New tab should be opened.");
   gZenPinnedTabManager.addToEssentials(newTab);
   ok(
-    newTab.hasAttribute("zen-essential") && newTab.parentNode.getAttribute("container") == "1",
+    newTab.hasAttribute("zen-essential") &&
+      newTab.parentNode.getAttribute("container") == "1",
     "New tab should be marked as essential."
   );
   ok(
     gBrowser.tabs.find(
-      (t) => t.hasAttribute("zen-essential") && t.getAttribute("usercontextid") == 1
+      t =>
+        t.hasAttribute("zen-essential") && t.getAttribute("usercontextid") == 1
     ),
     "New tab should be marked as essential."
   );
@@ -31,7 +38,8 @@ add_task(async function test_Check_Creation() {
   await gZenWorkspaces.changeWorkspace(workspaces[0]);
   ok(
     !gBrowser.tabs.find(
-      (t) => t.hasAttribute("zen-essential") && t.getAttribute("usercontextid") == 1
+      t =>
+        t.hasAttribute("zen-essential") && t.getAttribute("usercontextid") == 1
     ),
     "No essential tabs should be found in the original workspace."
   );

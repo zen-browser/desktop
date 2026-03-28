@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = текущий профиль
 unified-extensions-description = Расширения дополняют функционал { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Сбросить закреплённую вкладку
+    .label =
+        { $isEssential ->
+            [true] Сбросить важную вкладку
+           *[false] Сбросить закрепленную вкладку
+        }
     .accesskey = К
 tab-context-zen-add-essential = 
     .label = Добавить в важное
@@ -15,14 +19,18 @@ tab-context-zen-remove-essential =
     .label = Удалить из важного
     .accesskey = К
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Заменить закреплённый адрес на текущий
+    .label =
+        { $isEssential ->
+            [true] Заменить адрес важной вкладки на текущий
+           *[false] Заменить адрес закреплённой вкладки на текущий
+        }
     .accesskey = С
 tab-context-zen-edit-title = 
     .label = Переименовать...
 tab-context-zen-edit-icon = 
-    .label = Изменить иконку...
+    .label = Изменить значок...
 zen-themes-corrupted = Файл модов { -brand-short-name } повреждён. Тема сброшена к стандартной.
-zen-shortcuts-corrupted = Файл комбинаций клавиш { -brand-short-name } повреждён. Возвращены комбинации клавиш по умолчанию.
+zen-shortcuts-corrupted = Файл сочетаний клавиш { -brand-short-name } повреждён. Возвращены сочетания клавиш по умолчанию.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Новая адресная строка активирована, теперь нет необходимости использовать отдельные страницы для новых вкладок.<br/><br/>
@@ -31,8 +39,9 @@ zen-disable = Выключить
 pictureinpicture-minimize-btn = 
     .aria-label = Свернуть
     .tooltip = Свернуть
-zen-panel-ui-gradient-generator-custom-color = Пользовательский цвет
+zen-panel-ui-gradient-generator-custom-color = Свой цвет
 zen-copy-current-url-confirmation = Адрес скопирован!
+zen-copy-current-url-as-markdown-confirmation = Текущий адрес скопирован как Markdown!
 zen-general-cancel-label = 
     .label = Отменить
 zen-general-confirm = 
@@ -113,3 +122,5 @@ zen-window-sync-migration-dialog-title = Синхронизируйте окна
 zen-window-sync-migration-dialog-message = Теперь Zen синхронизирует окна на одном устройстве, поэтому изменения в одном окне будут мгновенно отображаться в других.
 zen-window-sync-migration-dialog-learn-more = Узнать больше
 zen-window-sync-migration-dialog-accept = Понятно
+zen-appmenu-new-blank-window = 
+    .label = Новое пустое окно

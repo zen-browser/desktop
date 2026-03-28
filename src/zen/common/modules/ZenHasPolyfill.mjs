@@ -14,7 +14,12 @@ class nsHasPolyfill {
    * @param {string} stateAttribute
    * @param {Array<string>} attributeFilter
    */
-  observeSelectorExistence(element, descendantSelectors, stateAttribute, attributeFilter = []) {
+  observeSelectorExistence(
+    element,
+    descendantSelectors,
+    stateAttribute,
+    attributeFilter = []
+  ) {
     const updateState = () => {
       const exists = descendantSelectors.some(({ selector }) => {
         let selected = element.querySelector(selector);
@@ -26,10 +31,18 @@ class nsHasPolyfill {
       const { exists: shouldExist = true } = descendantSelectors;
       if (exists === shouldExist) {
         if (!element.hasAttribute(stateAttribute)) {
-          gZenCompactModeManager._setElementExpandAttribute(element, true, stateAttribute);
+          gZenCompactModeManager._setElementExpandAttribute(
+            element,
+            true,
+            stateAttribute
+          );
         }
       } else if (element.hasAttribute(stateAttribute)) {
-        gZenCompactModeManager._setElementExpandAttribute(element, false, stateAttribute);
+        gZenCompactModeManager._setElementExpandAttribute(
+          element,
+          false,
+          stateAttribute
+        );
       }
     };
 
@@ -46,31 +59,35 @@ class nsHasPolyfill {
   }
 
   disconnectObserver(observerId) {
-    const index = this.observers.findIndex((o) => o.id === observerId);
+    const index = this.observers.findIndex(o => o.id === observerId);
     if (index !== -1) {
       this.observers[index].observer.disconnect();
     }
   }
 
   connectObserver(observerId) {
-    const observer = this.observers.find((o) => o.id === observerId);
+    const observer = this.observers.find(o => o.id === observerId);
     if (observer) {
       observer.observer.observe(observer.element, {
         childList: true,
         subtree: true,
         attributes: true,
-        attributeFilter: observer.attributeFilter.length ? observer.attributeFilter : undefined,
+        attributeFilter: observer.attributeFilter.length
+          ? observer.attributeFilter
+          : undefined,
       });
     }
   }
 
   destroy() {
-    this.observers.forEach((observer) => observer.observer.disconnect());
+    this.observers.forEach(observer => observer.observer.disconnect());
     this.observers = [];
   }
 }
 
 const hasPolyfillInstance = new nsHasPolyfill();
-window.addEventListener("unload", () => hasPolyfillInstance.destroy(), { once: true });
+window.addEventListener("unload", () => hasPolyfillInstance.destroy(), {
+  once: true,
+});
 
 window.ZenHasPolyfill = hasPolyfillInstance;

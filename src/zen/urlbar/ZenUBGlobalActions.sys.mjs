@@ -6,7 +6,12 @@ import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 
 const lazy = {};
 
-XPCOMUtils.defineLazyPreferenceGetter(lazy, "currentTheme", "zen.view.window.scheme", 2);
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "currentTheme",
+  "zen.view.window.scheme",
+  2
+);
 
 function isNotEmptyTab(window) {
   return !window.gBrowser.selectedTab.hasAttribute("zen-empty-tab");
@@ -40,7 +45,7 @@ const globalActionsTemplate = [
   },
   {
     label: "Settings",
-    command: (window) => window.openPreferences(),
+    command: window => window.openPreferences(),
     icon: "chrome://browser/skin/zen-icons/settings.svg",
   },
   {
@@ -62,7 +67,7 @@ const globalActionsTemplate = [
     label: "Pin Tab",
     command: "cmd_zenTogglePinTab",
     icon: "chrome://browser/skin/zen-icons/pin.svg",
-    isAvailable: (window) => {
+    isAvailable: window => {
       const tab = window.gBrowser.selectedTab;
       return !tab.hasAttribute("zen-empty-tab") && !tab.pinned;
     },
@@ -71,7 +76,7 @@ const globalActionsTemplate = [
     label: "Unpin Tab",
     command: "cmd_zenTogglePinTab",
     icon: "chrome://browser/skin/zen-icons/unpin.svg",
-    isAvailable: (window) => {
+    isAvailable: window => {
       const tab = window.gBrowser.selectedTab;
       return !tab.hasAttribute("zen-empty-tab") && tab.pinned;
     },
@@ -80,7 +85,7 @@ const globalActionsTemplate = [
     label: "Next Space",
     command: "cmd_zenWorkspaceForward",
     icon: "chrome://browser/skin/zen-icons/forward.svg",
-    isAvailable: (window) => {
+    isAvailable: window => {
       return window.gZenWorkspaces._workspaceCache.length > 1;
     },
   },
@@ -88,7 +93,7 @@ const globalActionsTemplate = [
     label: "Previous Space",
     command: "cmd_zenWorkspaceBackward",
     icon: "chrome://browser/skin/zen-icons/back.svg",
-    isAvailable: (window) => {
+    isAvailable: window => {
       // This also covers the case of being in private mode
       return window.gZenWorkspaces._workspaceCache.length > 1;
     },
@@ -97,7 +102,7 @@ const globalActionsTemplate = [
     label: "Close Tab",
     command: "cmd_close",
     icon: "chrome://browser/skin/zen-icons/close.svg",
-    isAvailable: (window) => {
+    isAvailable: window => {
       return isNotEmptyTab(window);
     },
   },
@@ -125,7 +130,7 @@ const globalActionsTemplate = [
     label: "Capture Screenshot",
     command: "Browser:Screenshot",
     icon: "chrome://browser/skin/zen-icons/screenshot.svg",
-    isAvailable: (window) => {
+    isAvailable: window => {
       return isNotEmptyTab(window);
     },
   },
@@ -136,26 +141,30 @@ const globalActionsTemplate = [
   },
   {
     label: "Add to Essentials",
-    command: (window) => window.gZenPinnedTabManager.addToEssentials(window.gBrowser.selectedTab),
-    isAvailable: (window) => {
+    command: window =>
+      window.gZenPinnedTabManager.addToEssentials(window.gBrowser.selectedTab),
+    isAvailable: window => {
       return (
-        window.gZenPinnedTabManager.canEssentialBeAdded(window.gBrowser.selectedTab) &&
-        !window.gBrowser.selectedTab.hasAttribute("zen-essential")
+        window.gZenPinnedTabManager.canEssentialBeAdded(
+          window.gBrowser.selectedTab
+        ) && !window.gBrowser.selectedTab.hasAttribute("zen-essential")
       );
     },
     icon: "chrome://browser/skin/zen-icons/essential-add.svg",
   },
   {
     label: "Remove from Essentials",
-    command: (window) => window.gZenPinnedTabManager.removeEssentials(window.gBrowser.selectedTab),
-    isAvailable: (window) => window.gBrowser.selectedTab.hasAttribute("zen-essential"),
+    command: window =>
+      window.gZenPinnedTabManager.removeEssentials(window.gBrowser.selectedTab),
+    isAvailable: window =>
+      window.gBrowser.selectedTab.hasAttribute("zen-essential"),
     icon: "chrome://browser/skin/zen-icons/essential-remove.svg",
   },
   {
     label: "Find in Page",
     command: "cmd_find",
     icon: "chrome://browser/skin/zen-icons/search-page.svg",
-    isAvailable: (window) => {
+    isAvailable: window => {
       return isNotEmptyTab(window);
     },
   },
@@ -192,15 +201,19 @@ const globalActionsTemplate = [
     label: "Print",
     command: "cmd_print",
     icon: "chrome://browser/skin/zen-icons/print.svg",
-    isAvailable: (window) => {
+    isAvailable: window => {
       return isNotEmptyTab(window);
     },
   },
 ];
 
-export const globalActions = globalActionsTemplate.map((action) => ({
-  isAvailable: (window) => {
-    return window.document.getElementById(action.command)?.getAttribute("disabled") !== "true";
+export const globalActions = globalActionsTemplate.map(action => ({
+  isAvailable: window => {
+    return (
+      window.document
+        .getElementById(action.command)
+        ?.getAttribute("disabled") !== "true"
+    );
   },
   commandId:
     typeof action.command === "string"

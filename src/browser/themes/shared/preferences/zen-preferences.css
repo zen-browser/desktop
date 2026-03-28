@@ -504,7 +504,8 @@ groupbox h2 {
 #setting-control-sidebarChatbotFieldset,
 #aiControlsDescription,
 #category-ai-features,
-.mission-message {
+.mission-message,
+html|setting-group[data-subcategory="layout"] {
   display: none !important;
 }
 

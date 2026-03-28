@@ -9,7 +9,7 @@ class ZenSessionStore extends nsZenPreloadedFeature {
     this.#waitAndCleanup();
   }
 
-  promiseInitialized = new Promise((resolve) => {
+  promiseInitialized = new Promise(resolve => {
     this._resolveInitialized = resolve;
   });
 

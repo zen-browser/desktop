@@ -121,4 +121,4 @@ zen-window-sync-migration-dialog-message = Zen 现已支持同一设备上的窗
 zen-window-sync-migration-dialog-learn-more = 了解更多
 zen-window-sync-migration-dialog-accept = 知道了
 zen-appmenu-new-blank-window = 
-    .label = 新空白窗口
+    .label = 新建空白窗口

@@ -44,6 +44,10 @@ class nsZenWorkspaces {
   _workspaceCache = [];
 
   #lastScrollTime = 0;
+  #currentSpaceSwitchContext = {
+    promise: null,
+    animations: [],
+  };
 
   bookmarkMenus = [
     "PlacesToolbar",
@@ -1631,9 +1635,18 @@ class nsZenWorkspaces {
   }
 
   async changeWorkspace(workspace, ...args) {
-    if (!this.workspaceEnabled || this.#inChangingWorkspace) {
+    if (!this.workspaceEnabled) {
       return;
     }
+    this.#currentSpaceSwitchContext.animations.forEach(animation => {
+      animation.complete();
+    });
+    await this.#currentSpaceSwitchContext.promise;
+    let { resolve, promise } = Promise.withResolvers();
+    this.#currentSpaceSwitchContext = {
+      promise,
+      animations: [],
+    };
     this.#inChangingWorkspace = true;
     try {
       this.log("Changing workspace to", workspace?.uuid);
@@ -1642,10 +1655,11 @@ class nsZenWorkspaces {
       console.error("gZenWorkspaces: Error changing workspace", e);
     }
     this.#inChangingWorkspace = false;
+    resolve();
   }
 
   _cancelSwipeAnimation() {
-    this._animateTabs(this.getActiveWorkspaceFromCache(), true);
+    this.#animateTabs(this.getActiveWorkspaceFromCache(), true);
   }
 
   async #performWorkspaceChange(
@@ -1923,7 +1937,7 @@ class nsZenWorkspaces {
   }
 
   /* eslint-disable complexity */
-  async _animateTabs(
+  async #animateTabs(
     newWorkspace,
     shouldAnimate,
     tabToSelect = null,
@@ -2253,12 +2267,14 @@ class nsZenWorkspaces {
     let promiseTimeout = new Promise(resolve =>
       setTimeout(resolve, kGlobalAnimationDuration * 1000 + 50)
     );
+    this.#currentSpaceSwitchContext.animations = animations;
     // See issue https://github.com/zen-browser/desktop/issues/9334, we need to add
     // some sort of timeout to the animation promise, just in case it gets stuck.
     // We are doing a race between the timeout and the animations finishing.
     await Promise.race([Promise.all(animations), promiseTimeout]).catch(
       console.error
     );
+    this.#currentSpaceSwitchContext.animations = [];
     document.documentElement.removeAttribute("animating-background");
     if (shouldAnimate) {
       for (const cloned of clonedEssentials) {
@@ -2420,7 +2436,7 @@ class nsZenWorkspaces {
 
     gZenUIManager.tabsWrapper.scrollbarWidth = "none";
     this.workspaceIcons.activeIndex = workspace.uuid;
-    await this._animateTabs(
+    await this.#animateTabs(
       workspace,
       !onInit && !this._animatingChange,
       tabToSelect,

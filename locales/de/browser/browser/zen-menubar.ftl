@@ -5,18 +5,18 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Fixierte Tabs ausklappen
-           *[false] Fixierte Tabs einklappen
+            [true] Angeheftete Tabs ausklappen
+           *[false] Angeheftete Tabs einklappen
         }
 zen-menubar-appearance = 
     .label = Erscheinungsbild
 zen-menubar-appearance-description = 
-    .label = Webseiten werden nutzen:
+    .label = Websites verwenden:
 zen-menubar-appearance-auto = 
     .label = Automatisch
 zen-menubar-appearance-light = 
     .label = Hell
 zen-menubar-appearance-dark = 
     .label = Dunkel
-zen-menubar-new-unsynced-window = 
-    .label = New Blank Window
+zen-menubar-new-blank-window = 
+    .label = Neues leeres Fenster

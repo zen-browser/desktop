@@ -1278,7 +1278,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return `rgba(${baseColor[0]}, ${baseColor[1]}, ${baseColor[2]}, ${opacity})`;
   }
 
-  getSingleRGBColor(color, forToolbar = false) {
+  #getSingleRGBColor(color, forToolbar = false) {
     if (color.isCustom) {
       return color.c;
     }
@@ -1345,13 +1345,13 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       };
       return forToolbar ? this.getToolbarModifiedBase() : getBrowserBg();
     } else if (themedColors.length === 1) {
-      return this.getSingleRGBColor(themedColors[0], forToolbar);
+      return this.#getSingleRGBColor(themedColors[0], forToolbar);
     }
     // If there are custom colors, we just return a linear gradient with all colors
     if (themedColors.find(color => color.isCustom)) {
       // Just return a linear gradient with all colors
       const gradientColors = themedColors.map(color =>
-        this.getSingleRGBColor(color, forToolbar)
+        this.#getSingleRGBColor(color, forToolbar)
       );
       // Divide all colors evenly in the gradient
       const colorStops = gradientColors
@@ -1365,17 +1365,17 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     if (themedColors.length === 2) {
       if (!forToolbar) {
         return [
-          `linear-gradient(${rotation}deg, ${this.getSingleRGBColor(themedColors[1], forToolbar)} 0%, transparent 100%)`,
-          `linear-gradient(${rotation + 180}deg, ${this.getSingleRGBColor(themedColors[0], forToolbar)} 0%, transparent 100%)`,
+          `linear-gradient(${rotation}deg, ${this.#getSingleRGBColor(themedColors[1], forToolbar)} 0%, transparent 100%)`,
+          `linear-gradient(${rotation + 180}deg, ${this.#getSingleRGBColor(themedColors[0], forToolbar)} 0%, transparent 100%)`,
         ]
           .reverse()
           .join(", ");
       }
-      return `linear-gradient(${rotation}deg, ${this.getSingleRGBColor(themedColors[1], forToolbar)} 0%, ${this.getSingleRGBColor(themedColors[0], forToolbar)} 100%)`;
+      return `linear-gradient(${rotation}deg, ${this.#getSingleRGBColor(themedColors[1], forToolbar)} 0%, ${this.#getSingleRGBColor(themedColors[0], forToolbar)} 100%)`;
     } else if (themedColors.length === 3) {
-      let color1 = this.getSingleRGBColor(themedColors[2], forToolbar);
-      let color2 = this.getSingleRGBColor(themedColors[0], forToolbar);
-      let color3 = this.getSingleRGBColor(themedColors[1], forToolbar);
+      let color1 = this.#getSingleRGBColor(themedColors[2], forToolbar);
+      let color2 = this.#getSingleRGBColor(themedColors[0], forToolbar);
+      let color3 = this.#getSingleRGBColor(themedColors[1], forToolbar);
       return [
         `linear-gradient(-5deg, ${color1} 10%, transparent 80%)`,
         `radial-gradient(circle at 95% 0%, ${color3} 0%, transparent 75%)`,

@@ -211,7 +211,6 @@
   border-radius: var(--zen-native-inner-radius);
   box-shadow: var(--zen-big-shadow);
   overflow: hidden;
-  will-change: width, margin-left;
 
   &[side="top"],
   &[side="bottom"] {

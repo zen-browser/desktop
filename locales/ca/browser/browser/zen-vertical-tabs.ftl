@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] Restableix i fixa la pestanya
            *[other] Restableix i fixa les { $tabCount } pestanyes
         }
-tab-reset-pin-label = Torna a l'URL fixat
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Torna a l'URL fixat
+        [zen-default-pinned-cmd] Separa de la pestanya fixada
+       *[other] { $tabSubtitle }
+    }

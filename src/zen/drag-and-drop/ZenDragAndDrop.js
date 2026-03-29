@@ -305,7 +305,7 @@
       let lastMovingTabScreen = endEdge(lastMovingTab);
       let firstMovingTabScreen = firstMovingTab[screenAxis];
       let shiftSize = lastMovingTabScreen - firstMovingTabScreen;
-      let translate = screen - dragData[screenAxis];
+      let translate = screen - draggedTab[screenAxis] - tabSize / 2;
 
       // Constrain the range over which the moving tabs can move between the edge of the tabstrip and periphery.
       // Add 1 to periphery so we don't overlap it.
@@ -320,19 +320,6 @@
       startBound = firstTab[screenAxis] - firstMovingTabScreen;
       endBound = endEdge(lastTab) - lastMovingTabScreen;
       translate = Math.min(Math.max(translate, startBound), endBound);
-
-      // Center the tab under the cursor if the tab is not under the cursor while dragging
-      let draggedTabScreenAxis = draggedTab[screenAxis] + translate;
-      if (
-        (screen < draggedTabScreenAxis ||
-          screen > draggedTabScreenAxis + tabSize) &&
-        draggedTabScreenAxis + tabSize < endBound &&
-        draggedTabScreenAxis > startBound
-      ) {
-        translate = screen - draggedTab[screenAxis] - tabSize / 2;
-        // Ensure, after the above calculation, we are still within bounds
-        translate = Math.min(Math.max(translate, startBound), endBound);
-      }
 
       dragData.translatePos = translate;
 

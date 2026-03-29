@@ -1,4 +1,4 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
+﻿/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -349,6 +349,7 @@ window.gZenCompactModeManager = {
     // IF we are animating IN, call the callbacks first so we can calculate the width
     // once the window buttons are shown
     this.updateContextMenu();
+    gZenWorkspaces._processingResize = true;
     if (!this.preference) {
       this.callAllEventListeners();
       await this.animateCompactMode();
@@ -356,6 +357,7 @@ window.gZenCompactModeManager = {
       await this.animateCompactMode();
       this.callAllEventListeners();
     }
+    gZenWorkspaces._processingResize = false;
     if (isUrlbarFocused) {
       gURLBar.focus();
     }
@@ -392,7 +394,9 @@ window.gZenCompactModeManager = {
         "--actual-zen-sidebar-width",
         `${sidebarWidth}px`
       );
-      window.dispatchEvent(new window.Event("resize")); // To recalculate the layout
+      if (!gZenWorkspaces._processingResize) {
+        window.dispatchEvent(new window.Event("resize")); // To recalculate the layout
+      }
       if (
         event &&
         shouldRecalculate &&

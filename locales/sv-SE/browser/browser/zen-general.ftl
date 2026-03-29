@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = nuvarande profil
 unified-extensions-description = Tillägg används för att få fler extra funktioner i { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Återställ Fäst flik
+    .label =
+        { $isEssential ->
+            [true] Återställ Essential flik
+           *[false] Återställ fäst flik
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Lägg till Essentials
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = Ta bort från Essentials
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Ersätt fäst fliks URL med nuvarande
+    .label =
+        { $isEssential ->
+            [true] Ersätt Essential webbadress med nuvarande
+           *[false] Ersätt fäst webbadress med nuvarande
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = Ändra etikett...
@@ -33,6 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimera
 zen-panel-ui-gradient-generator-custom-color = Anpassad färg
 zen-copy-current-url-confirmation = Kopierade nuvarande URL!
+zen-copy-current-url-as-markdown-confirmation = Kopierade nuvarande webbadress som Markdown!
 zen-general-cancel-label = 
     .label = Avbryt
 zen-general-confirm = 
@@ -113,3 +122,5 @@ zen-window-sync-migration-dialog-title = Behåll dina fönster i Sync
 zen-window-sync-migration-dialog-message = Zen synkroniserar nu fönster på samma enhet, så ändringar i ett fönster återspeglas direkt i de andra.
 zen-window-sync-migration-dialog-learn-more = Läs mer
 zen-window-sync-migration-dialog-accept = Jag förstår
+zen-appmenu-new-blank-window = 
+    .label = Nytt blankt fönster

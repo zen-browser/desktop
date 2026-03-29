@@ -638,7 +638,7 @@ class nsZenWorkspaces {
 
         this.#lastScrollTime = currentTime;
       },
-      { passive: true }
+      { passive: true, capture: true }
     );
   }
 
@@ -777,7 +777,7 @@ class nsZenWorkspaces {
     if (
       !this.privateWindowOrDisabled &&
       spacesFromStore.length === 0 &&
-      lazy.ZenSessionStore._migrationData
+      lazy.ZenSessionStore._migrationData?.spaces
     ) {
       spacesFromStore.push(...lazy.ZenSessionStore._migrationData.spaces);
     }
@@ -1062,6 +1062,7 @@ class nsZenWorkspaces {
   }
 
   handleTabBeforeClose(tab, closeWindowWithLastTab) {
+    delete this._isClosingWindow;
     if (
       !this.workspaceEnabled ||
       this.__contextIsDelete ||
@@ -1096,10 +1097,6 @@ class nsZenWorkspaces {
           // This call actually closes the window, unless the user
           // cancels the operation.  We are finished here in both cases.
           this._isClosingWindow = true;
-          // Inside a setTimeout to avoid reentrancy issues.
-          setTimeout(() => {
-            document.getElementById("cmd_closeWindow").doCommand();
-          }, 100);
         }
         return null;
       }
@@ -1108,6 +1105,19 @@ class nsZenWorkspaces {
     }
 
     return null;
+  }
+
+  handleTabBeforeRemove() {
+    // We run this AFTER the beforeunload event check, so we can
+    // be sure that if we get here, the tab is actually going to be removed,
+    // and beforeunload won't be called again. See gh-12922 for an example.
+    if (!this.workspaceEnabled || !this._isClosingWindow) {
+      return;
+    }
+    // Inside a setTimeout to avoid reentrancy issues.
+    setTimeout(() => {
+      document.getElementById("cmd_closeWindow").doCommand();
+    }, 100);
   }
 
   addPopupListeners() {
@@ -1261,12 +1271,23 @@ class nsZenWorkspaces {
   }
 
   removeWorkspace(windowID) {
+    let { promise, resolve } = Promise.withResolvers();
+    this.#deleteWorkspaceOwnedTabs(windowID);
     let workspacesData = this.getWorkspaces();
     // Remove the workspace from the cache
     workspacesData = workspacesData.filter(
       workspace => workspace.uuid !== windowID
     );
+    window.addEventListener(
+      "ZenWorkspacesUIUpdate",
+      () => {
+        resolve();
+      },
+      { once: true }
+    );
     this.#propagateWorkspaceData(workspacesData);
+    gBrowser.tabContainer._invalidateCachedVisibleTabs();
+    return promise;
   }
 
   isWorkspaceActive(workspace) {
@@ -1472,6 +1493,18 @@ class nsZenWorkspaces {
     });
   }
 
+  #deleteWorkspaceOwnedTabs(workspaceID) {
+    const tabs = this.allStoredTabs.filter(
+      tab =>
+        tab.getAttribute("zen-workspace-id") === workspaceID &&
+        !tab.hasAttribute("zen-essential") &&
+        !(tab.hasAttribute("zen-empty-tab") && !tab.group)
+    );
+    gBrowser.removeTabs(tabs, {
+      closeWindowWithLastTab: false,
+    });
+  }
+
   async unloadWorkspace() {
     const workspaceId =
       this.#contextMenuData?.workspaceId || this.activeWorkspace;
@@ -1659,7 +1692,7 @@ class nsZenWorkspaces {
       onInit,
       previousWorkspace.uuid
     );
-    if (tabToSelect.linkedBrowser) {
+    if (tabToSelect?.linkedBrowser) {
       gBrowser.warmupTab(tabToSelect);
     }
 

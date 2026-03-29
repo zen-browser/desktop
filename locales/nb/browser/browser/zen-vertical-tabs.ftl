@@ -6,9 +6,9 @@ zen-toolbar-context-tabs-right =
     .label = Faner til høyre
     .accesskey = R
 zen-toolbar-context-compact-mode = 
-    .label = Kompakt modus
+    .label = Kompaktmodus
 zen-toolbar-context-compact-mode-enable = 
-    .label = Aktiver kompakt modus
+    .label = Aktiver kompaktmodus
     .accesskey = D
 zen-toolbar-context-compact-mode-just-tabs = 
     .label = Skjul sidepanelet
@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] Tilbakestill og fest fane
            *[other] Tilbakestill og fest { $tabCount } faner
         }
-tab-reset-pin-label = Tilbake til festet nettadresse
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Tilbake til festet nettadresse
+        [zen-default-pinned-cmd] Separer fra festet nettadresse
+       *[other] { $tabSubtitle }
+    }

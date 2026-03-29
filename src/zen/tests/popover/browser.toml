@@ -1,0 +1,12 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+[DEFAULT]
+prefs = ["zen.view.mac.show-three-dot-menu=true"]
+
+["browser_popover_height_constraint.js"]
+run-if = [
+  "os == 'mac'", # gh-12782
+]
+prefs = ["widget.macos.native-context-menus=true"]

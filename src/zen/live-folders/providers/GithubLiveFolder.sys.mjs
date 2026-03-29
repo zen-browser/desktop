@@ -10,8 +10,11 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
   constructor({ id, state, manager }) {
     super({ id, state, manager });
 
-    this.state.url = "https://github.com/issues/assigned";
     this.state.type = state.type;
+    this.state.url =
+      this.state.type === "pull-requests"
+        ? "https://github.com/pulls"
+        : "https://github.com/issues/assigned";
 
     this.state.options = state.options ?? {};
     this.state.repos = new Set(state.repos ?? []);
@@ -29,22 +32,106 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         return "zen-live-folder-github-no-filter";
       }
 
-      const searchParams = this.#buildSearchOptions();
-      const url = `${this.state.url}?${searchParams}`;
+      const queries = this.#buildSearchOptions();
+      const requests = await Promise.all(
+        queries.map(query => {
+          const url = new URL(this.state.url);
+          url.searchParams.set("q", query);
 
-      const { text, status } = await this.fetch(url);
+          if (this.state.type === "pull-requests") {
+            return this.parsePullRequests(url.href);
+          }
 
-      // Assume no auth
-      if (status === 404) {
-        return "zen-live-folder-github-no-auth";
+          return this.parseIssues(url.href);
+        })
+      );
+
+      const combinedItems = new Map();
+      const combinedActiveRepos = new Set();
+
+      for (const { status, items, activeRepos } of requests) {
+        // Assume no auth
+        if (status === 404) {
+          return "zen-live-folder-github-no-auth";
+        }
+
+        if (items) {
+          items.forEach(item => combinedItems.set(item.id, item));
+        }
+
+        if (activeRepos) {
+          activeRepos.forEach(repo => combinedActiveRepos.add(repo));
+        }
       }
 
+      this.state.repos = combinedActiveRepos;
+      return Array.from(combinedItems.values());
+    } catch (error) {
+      console.error("Error fetching or parsing GitHub issues:", error);
+      return "zen-live-folder-failed-fetch";
+    }
+  }
+
+  async parsePullRequests(url) {
+    const { text, status } = await this.fetch(url);
+
+    try {
+      const document = new DOMParser().parseFromString(text, "text/html");
+      const issues = document.querySelectorAll("div[id^=issue_]");
+      const items = [];
+      const activeRepos = [];
+
+      if (issues.length) {
+        const authors = document.querySelectorAll(".opened-by a");
+        const titles = document.querySelectorAll("a[id^=issue_]");
+
+        for (let i = 0; i < issues.length; i++) {
+          const author = authors[i].textContent;
+          const title = titles[i].textContent;
+
+          const repo = titles[i].previousElementSibling.textContent.trim();
+          if (repo) {
+            activeRepos.push(repo);
+          }
+
+          const idMatch = authors[i].parentElement.textContent
+            .match(/#[0-9]+/)
+            .shift();
+
+          items.push({
+            title,
+            subtitle: author,
+            icon: "chrome://browser/content/zen-images/favicons/github.svg",
+            url: new URL(titles[i].href, this.state.url),
+            id: `${repo}${idMatch}`,
+          });
+        }
+      }
+
+      return {
+        status,
+
+        items,
+        activeRepos,
+      };
+    } catch (err) {
+      console.error("Failed to parse Github pull requests", err);
+      return {
+        status,
+      };
+    }
+  }
+
+  async parseIssues(url) {
+    const { text, status } = await this.fetch(url);
+
+    try {
       const document = new DOMParser().parseFromString(text, "text/html");
       const issues = document.querySelectorAll(
         "div[class^=IssueItem-module__defaultRepoContainer]"
       );
       const items = [];
-      const activeRepos = new Set();
+      const activeRepos = [];
 
       if (issues.length) {
         const authors = document.querySelectorAll(
@@ -65,7 +152,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
 
           const repo = rawRepo.textContent?.trim();
           if (repo) {
-            activeRepos.add(repo);
+            activeRepos.push(repo);
           }
 
           const numberMatch = rawNumber?.textContent?.match(/[0-9]+/);
@@ -81,76 +168,67 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         }
       }
 
-      this.state.repos = activeRepos;
+      return {
+        status,
 
-      return items;
-    } catch (error) {
-      console.error("Error fetching or parsing GitHub issues:", error);
-      return "zen-live-folder-failed-fetch";
+        items,
+        activeRepos,
+      };
+    } catch (err) {
+      console.error("Failed to parse Github Issues", err);
+      return {
+        status,
+      };
     }
   }
 
   #buildSearchOptions() {
-    let searchParams = new URLSearchParams();
+    const baseQuery = [
+      this.state.type === "pull-requests" ? "is:pr" : "is:issue",
+      "state:open",
+      "sort:updated-desc",
+    ];
+
     const options = [
       {
-        value: "state:open",
-        enabled: true,
+        value: "author:@me",
+        enabled: this.state.options.authorMe ?? false,
       },
       {
-        value: "sort:updated-desc",
-        enabled: true,
+        value: "assignee:@me",
+        enabled: this.state.options.assignedMe ?? true,
       },
-      [
-        {
-          value: "is:pr",
-          enabled: this.state.type === "pull-requests",
-        },
-        {
-          value: "is:issue",
-          enabled: this.state.type === "issues",
-        },
-      ],
-      [
-        {
-          value: "author:@me",
-          enabled: this.state.options.authorMe ?? false,
-        },
-        {
-          value: "assignee:@me",
-          enabled: this.state.options.assignedMe ?? true,
-        },
-        {
-          value: "review-requested:@me",
-          enabled: this.state.options.reviewRequested ?? false,
-        },
-      ],
+      {
+        value: "review-requested:@me",
+        enabled: this.state.options.reviewRequested ?? false,
+      },
     ];
 
     const excluded = this.state.options.repoExcludes;
     for (const repo of excluded) {
       if (repo && repo.trim()) {
-        options.push({ value: `-repo:${repo.trim()}`, enabled: true });
+        baseQuery.push(`-repo:${repo.trim()}`);
       }
     }
 
-    let outputString = "";
+    const queries = [];
     for (const option of options) {
-      if (Array.isArray(option)) {
-        const enabledOptions = option.filter(x => x.enabled).map(x => x.value);
-        if (enabledOptions.length) {
-          outputString += ` (${enabledOptions.join(" OR ")}) `;
-        }
-        continue;
-      }
-
       if (option.enabled) {
-        outputString += ` ${option.value} `;
+        queries.push(option.value);
       }
     }
 
-    searchParams.set("q", outputString.trim().replace(/ +(?= )/g, ""));
-    return searchParams.toString();
+    const searchParams = [];
+    if (this.state.type === "pull-requests") {
+      for (const query of queries) {
+        searchParams.push(`${baseQuery.join(" ")} ${query}`);
+      }
+
+      return searchParams;
+    }
+
+    // type: issues
+    return [`${baseQuery.join(" ")} ${queries.join(" OR ")}`];
   }
 
   get options() {
@@ -209,7 +287,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     super.onOptionTrigger(option);
 
     const key = option.getAttribute("option-key");
-    const checked = option.getAttribute("checked") === "true";
+    const checked = option.hasAttribute("checked");
     if (!this.options.some(x => x.key === key)) {
       return;
     }

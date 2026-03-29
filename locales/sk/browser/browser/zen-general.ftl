@@ -2,114 +2,123 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-current-profile-text = current profile
-unified-extensions-description = Extensions are used to bring more extra functionality into { -brand-short-name }.
+zen-panel-ui-current-profile-text = aktuálny profil
+unified-extensions-description = Rozšírenia slúžia na pridanie ďalších funkcií do { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Reset Pinned Tab
+    .label =
+        { $isEssential ->
+            [true] Reset Essential Tab
+           *[false] Reset Pinned Tab
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Add to Essentials
+    .label = Pridať medzi hlavné
     .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
+tab-context-zen-add-essential-badge = Využité pozície: { $num } / { $max }
 tab-context-zen-remove-essential = 
-    .label = Remove from Essentials
+    .label = Odstrániť z hlavných
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace Pinned URL with Current
+    .label =
+        { $isEssential ->
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
-    .label = Change Label...
+    .label = Zmeniť Označenie...
 tab-context-zen-edit-icon = 
-    .label = Change Icon...
-zen-themes-corrupted = Your { -brand-short-name } mods file is corrupted. They have been reset to the default theme.
-zen-shortcuts-corrupted = Your { -brand-short-name } shortcuts file is corrupted. They have been reset to the default shortcuts.
+    .label = Zmeniť Ikonu...
+zen-themes-corrupted = Váš súbor módov { -brand-short-name } je poškodený. Témy boli resetované na predvolené.
+zen-shortcuts-corrupted = Váš súbor skratiek { -brand-short-name } je poškodený. Skratky boli resetované na predvolené.
 # note: Do not translate the "<br/>" tags in the following string
-zen-new-urlbar-notification =
-    The new URL bar has been enabled, removing the need for new tab pages.<br/><br/>
-    Try opening a new tab to see the new URL bar in action!
-zen-disable = Disable
+zen-new-urlbar-notification = Nový panel adries bol aktivovaný, takže stránky novej karty už nie sú potrebné.<br/><br/>Skúste otvoriť novú kartu a pozrite si nový panel adries v akcii!
+zen-disable = Zakázať
 pictureinpicture-minimize-btn = 
-    .aria-label = Minimize
-    .tooltip = Minimize
-zen-panel-ui-gradient-generator-custom-color = Custom Color
-zen-copy-current-url-confirmation = Copied current URL!
+    .aria-label = Minimalizovať
+    .tooltip = Minimalizovať
+zen-panel-ui-gradient-generator-custom-color = Vlastná Farba
+zen-copy-current-url-confirmation = Aktuálna URL skopírovaná!
+zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
 zen-general-cancel-label = 
-    .label = Cancel
+    .label = Zrušiť
 zen-general-confirm = 
-    .label = Confirm
-zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL!
-zen-tabs-renamed = Tab has been successfully renamed!
-zen-background-tab-opened-toast = New background tab opened!
-zen-workspace-renamed-toast = Workspace has been successfully renamed!
+    .label = Potvrdiť
+zen-pinned-tab-replaced = URL pripnutej karty bola nahradená aktuálnou URL!
+zen-tabs-renamed = Karta bola úspešne premenovaná!
+zen-background-tab-opened-toast = Nová karta otvorená na pozadí!
+zen-workspace-renamed-toast = Pracovný priestor bol úspešne premenovaný!
 zen-toggle-compact-mode-button = 
-    .label = Compact Mode
-    .tooltiptext = Toggle Compact Mode
+    .label = Kompaktný Režim
+    .tooltiptext = Prepnúť Kompaktný Režim
 
 # note: Do not translate the "<br/>" tags in the following string
 
-zen-learn-more-text = Learn More
-zen-close-label = Close
+zen-learn-more-text = Zistiť Viac
+zen-close-label = Zatvoriť
 zen-singletoolbar-urlbar-placeholder-with-name = 
-    .placeholder = Search...
+    .placeholder = Hľadať...
 zen-icons-picker-emoji = 
-    .label = Emojis
+    .label = Emoji
 zen-icons-picker-svg = 
-    .label = Icons
-urlbar-search-mode-zen_actions = Actions
-zen-site-data-settings = Settings
-zen-generic-manage = Manage
-zen-generic-more = More
-zen-generic-next = Next
-zen-essentials-promo-label = Add to Essentials
-zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
+    .label = Ikony
+urlbar-search-mode-zen_actions = Akcie
+zen-site-data-settings = Nastavenia
+zen-generic-manage = Spravovať
+zen-generic-more = Viac
+zen-generic-next = Ďalšie
+zen-essentials-promo-label = Pridať do Hlavných
+zen-essentials-promo-sublabel = Majte svoje obľúbené karty na dosah jediným kliknutím
 # These labels will be used for the site data panel settings
-zen-site-data-setting-allow = Allowed
-zen-site-data-setting-block = Blocked
-zen-site-data-protections-enabled = Enabled
-zen-site-data-protections-disabled = Disabled
-zen-site-data-setting-cross-site = Cross-Site cookie
+zen-site-data-setting-allow = Povolené
+zen-site-data-setting-block = Zablokované
+zen-site-data-protections-enabled = Zapnuté
+zen-site-data-protections-disabled = Vypnuté
+zen-site-data-setting-cross-site = Cookie tretích strán
 zen-site-data-security-info-extension = 
-    .label = Extension
+    .label = Rozšírenie
 zen-site-data-security-info-secure = 
-    .label = Secure
+    .label = Zabezpečené
 zen-site-data-security-info-not-secure = 
-    .label = Not Secure
+    .label = Nezabezpečené
 zen-site-data-manage-addons = 
-    .label = Manage Extensions
+    .label = Spravovať Rozšírenia
 zen-site-data-get-addons = 
-    .label = Add Extensions
+    .label = Pridať Rozšírenia
 zen-site-data-site-settings = 
-    .label = All Site Settings
+    .label = Všetky Nastavenia Webov
 zen-site-data-header-share = 
-    .tooltiptext = Share This Page
+    .tooltiptext = Zdieľať Túto Stránku
 zen-site-data-header-reader-mode = 
-    .tooltiptext = Enter Reader Mode
+    .tooltiptext = Prejsť do Režimu Čítačky
 zen-site-data-header-screenshot = 
-    .tooltiptext = Take a Screenshot
+    .tooltiptext = Vytvoriť Snímku Obrazovky
 zen-site-data-header-bookmark = 
-    .tooltiptext = Bookmark This Page
+    .tooltiptext = Pridať Túto Stránku k Záložkám
 zen-urlbar-copy-url-button = 
-    .tooltiptext = Copy URL
-zen-site-data-setting-site-protection = Tracking Protection
+    .tooltiptext = Kopírovať URL adresu
+zen-site-data-setting-site-protection = Ochrana pred Sledovaním
 
 # Section: Feature callouts
 
-zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
-zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-site-data-panel-feature-callout-title = Nové miesto pre doplnky, povolenia a ďalšie funkcie
+zen-site-data-panel-feature-callout-subtitle = Kliknutím na túto ikonu môžete spravovať nastavenia webu, zobraziť informácie o zabezpečení, pristupovať k rozšíreniam a vykonávať bežné akcie.
 zen-open-link-in-glance = 
-    .label = Open Link in Glance
+    .label = Otvoriť odkaz v Glance
     .accesskey = G
-zen-sidebar-notification-updated-heading = Update Complete!
+zen-sidebar-notification-updated-heading = Aktualizácia Dokončená!
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-label = Čo je nové v { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
-    .title = View Release Notes
-zen-sidebar-notification-restart-safe-mode-label = Something broke?
+    .title = Zobraziť Poznámky k Vydaniu
+zen-sidebar-notification-restart-safe-mode-label = Niečo sa pokazilo?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = Restart in Safe Mode
-zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
-zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
-zen-window-sync-migration-dialog-learn-more = Learn More
-zen-window-sync-migration-dialog-accept = Got It
+    .title = Reštartovať v Núdzovom Režime
+zen-window-sync-migration-dialog-title = Majte svoje okná synchronizované
+zen-window-sync-migration-dialog-message = Zen teraz synchronizuje okná v rámci jedného zariadenia, takže zmeny v jednom okne sa okamžite prejavia vo všetkých ostatných.
+zen-window-sync-migration-dialog-learn-more = Dozvedieť sa Viac
+zen-window-sync-migration-dialog-accept = Rozumiem
+zen-appmenu-new-blank-window = 
+    .label = New blank window

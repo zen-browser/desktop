@@ -36,4 +36,9 @@ tabbrowser-reset-pin-button =
             [one] 重置并固定标签页
            *[other] 重置并固定 { $tabCount } 个标签页
         }
-tab-reset-pin-label = 返回已固定网址
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] 返回标签页
+        [zen-default-pinned-cmd] 从标签页分离
+       *[other] { $tabSubtitle }
+    }

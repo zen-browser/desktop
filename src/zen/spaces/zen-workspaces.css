@@ -308,7 +308,6 @@
 
 /* mark: workspace element */
 zen-workspace {
-  will-change: transform;
   flex-direction: column;
   transition: padding-top 0.1s;
   width: calc(100% + var(--zen-toolbox-padding) * 2);
@@ -411,7 +410,7 @@ zen-workspace {
   .zen-current-workspace-indicator-chevron {
     width: 16px;
     height: 16px;
-    transition: transform 0.1s, opacity 0.1s;
+    transition: transform 0.1s, opacity 0.15s;
     transform: rotate(90deg);
     padding: 1px;
 

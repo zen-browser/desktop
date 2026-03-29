@@ -4,6 +4,7 @@
 "use strict";
 
 add_task(async function test_Issue_10455() {
+  debugger;
   await SpecialPowers.pushPrefEnv({
     set: [["browser.tabs.closeWindowWithLastTab", true]],
   });
@@ -24,6 +25,7 @@ add_task(async function test_Issue_10455() {
 });
 
 add_task(async function test_Issue_10455_Dont_Close() {
+  debugger;
   await SpecialPowers.pushPrefEnv({
     set: [["browser.tabs.closeWindowWithLastTab", false]],
   });

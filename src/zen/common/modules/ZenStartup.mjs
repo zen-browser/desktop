@@ -46,17 +46,14 @@ class ZenStartup {
         }
         newContainer.appendChild(node);
       }
-     // Fix notification deck
-const deckTemplate = document.getElementById(
-  "tab-notification-deck-template"
-);
+      // Fix notification deck
+      const deckTemplate =
+        document.getElementById("tab-notification-deck-template") ||
+        document.getElementById("tab-notification-deck");
 
-if (deckTemplate) {
-  // overlap and interaction issues with vertical tabs
-  const browser = document.getElementById("browser");
-  browser.prepend(deckTemplate);
-}
-      
+      // overlap and interaction issues with vertical tabs
+      document.getElementById("browser").prepend(deckTemplate);
+
       gZenWorkspaces.init();
       setTimeout(() => {
         gZenUIManager.init();

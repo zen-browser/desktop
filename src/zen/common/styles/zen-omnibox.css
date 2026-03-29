@@ -404,32 +404,6 @@
   min-width: 26px;
 }
 
-/* Notification Stack */
-
-.notificationbox-stack {
-  background: transparent;
-
-  &[notificationside="top"] {
-    position: fixed;
-    bottom: calc(var(--zen-element-separation) * 1.5);
-    right: calc(var(--zen-element-separation) * 1.5);
-    width: fit-content;
-    max-width: 30rem !important;
-    z-index: 9999;
-
-    & notification-message {
-      background: color-mix(in srgb, var(--zen-colors-tertiary) 70%, transparent 30%);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--arrowpanel-border-color);
-      border-radius: var(--zen-border-radius);
-
-      &::before {
-        display: none;
-      }
-    }
-  }
-}
-
 #nav-bar,
 #zen-sidebar-top-buttons {
   min-height: var(--zen-toolbar-height) !important;

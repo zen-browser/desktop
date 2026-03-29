@@ -6,7 +6,7 @@ tab-zen-split-tabs =
     .label =
         { $tabCount ->
             [1] Split Tab (sono necessarie più schede selezionate)
-           *[other] Split { $tabCount } Tabs
+           *[other] Join { $tabCount } Tabs
         }
     .accesskey = S
 zen-split-link = 

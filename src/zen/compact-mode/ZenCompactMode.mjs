@@ -247,7 +247,7 @@ window.gZenCompactModeManager = {
       }
     }
 
-    document.getElementById("viewToolbarsMenuSeparator").before(fragment);
+    document.getElementById("toolbar-context-customize").before(fragment);
     this.updateContextMenu();
   },
 

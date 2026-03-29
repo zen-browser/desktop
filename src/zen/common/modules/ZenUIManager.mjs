@@ -999,7 +999,7 @@ window.gZenVerticalTabsManager = {
                 command="cmd_zenToggleTabsOnRight"
         />
     `);
-    document.getElementById("viewToolbarsMenuSeparator").before(fragment);
+    document.getElementById("toolbar-context-customize").before(fragment);
   },
 
   get _topButtonsSeparatorElement() {

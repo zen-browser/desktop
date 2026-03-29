@@ -65,28 +65,32 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       false
     );
 
-    Services.prefs.addObserver("zen.tabs.ctrl-tab-panel.enabled", this);
-    Services.prefs.addObserver("zen.tabs.ctrl-tab-panel.accent-color", this);
+    const enabledObserver = () => this.#disableDefaultCtrlTab();
+    const themeObserver = () => this.#updateThemeMatching();
+
+    Services.prefs.addObserver(
+      "zen.tabs.ctrl-tab-panel.enabled",
+      enabledObserver
+    );
+    Services.prefs.addObserver(
+      "zen.tabs.ctrl-tab-panel.accent-color",
+      themeObserver
+    );
 
     window.addEventListener(
       "unload",
       () => {
-        Services.prefs.removeObserver("zen.tabs.ctrl-tab-panel.enabled", this);
+        Services.prefs.removeObserver(
+          "zen.tabs.ctrl-tab-panel.enabled",
+          enabledObserver
+        );
         Services.prefs.removeObserver(
           "zen.tabs.ctrl-tab-panel.accent-color",
-          this
+          themeObserver
         );
       },
       { once: true }
     );
-  }
-
-  observe(subject, topic, data) {
-    if (data === "zen.tabs.ctrl-tab-panel.enabled") {
-      this.#disableDefaultCtrlTab();
-    } else if (data === "zen.tabs.ctrl-tab-panel.accent-color") {
-      this.#updateThemeMatching();
-    }
   }
 
   #updateThemeMatching() {
@@ -186,8 +190,8 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
    * Opens tab switcher panel with thumbnail previews.
    * Captures visible thumbnails before showing panel, then remaining thumbnails in background.
    *
-   * @param {boolean} shiftKey - Navigate backward (true) or forward (false)
-   * @returns {Promise<void>} Resolves when panel is displayed
+   * @param {boolean} shiftKey - Navigate backward (true) or forward (false).
+   * @returns {Promise<void>} Resolves when panel is displayed.
    */
   async open(shiftKey = false) {
     if (this.#isOpen) {
@@ -222,6 +226,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     await this.#cacheThumbnailsForVisible();
 
     this.#createTabCards();
+    this.#updateThemeMatching();
 
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
@@ -234,8 +239,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
     const centerX = (windowWidth - horizontalOffset) / 2;
     const centerY = (windowHeight - nsZenCtrlTabPanel.PANEL_HEIGHT) / 2;
-
-    this.#updateThemeMatching();
 
     PanelMultiView.openPopup(this.panel, document.documentElement, {
       position: "overlap",
@@ -256,7 +259,8 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
     requestAnimationFrame(() => this.#scrollToSelected());
 
-    this.#tabList.forEach(tab => this.#captureThumbnail(tab));
+    const browserRect = gBrowser.tabbox.getBoundingClientRect();
+    this.#tabList.forEach(tab => this.#captureThumbnail(tab, browserRect));
   }
 
   close(switchTab = true) {
@@ -292,16 +296,20 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       pageStartIndex + this.#actualVisibleCards
     );
     const tabsToCache = this.#tabList.slice(pageStartIndex, endIndex);
-    await Promise.all(tabsToCache.map(tab => this.#captureThumbnail(tab)));
+    const browserRect = gBrowser.tabbox.getBoundingClientRect();
+    await Promise.all(
+      tabsToCache.map(tab => this.#captureThumbnail(tab, browserRect))
+    );
   }
 
   /**
-   * Captures tab screenshot and caches it. Immediately displays in card if panel is already visible.
+   * Captures tab screenshot and caches it. Immediately displays in card if panel is visible.
    *
-   * @param {object} tab - The tab to capture a thumbnail for
-   * @returns {Promise<void>} Resolves when captured or skipped
+   * @param {object} tab - The tab to capture a thumbnail for.
+   * @param {DOMRect} browserRect - The browser content area dimensions.
+   * @returns {Promise<void>} Resolves when captured or skipped.
    */
-  async #captureThumbnail(tab) {
+  async #captureThumbnail(tab, browserRect) {
     if (tab.hasAttribute("pending")) {
       return;
     }
@@ -316,7 +324,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
     try {
       // Calculate canvas dimensions based on browser content area (excluding sidebar + toolbar)
-      const browserRect = gBrowser.tabbox.getBoundingClientRect();
       const viewportAspect = browserRect.width / browserRect.height;
       const targetHeight = nsZenCtrlTabPanel.THUMBNAIL_CANVAS_HEIGHT;
       const targetWidth = Math.round(targetHeight * viewportAspect);
@@ -365,7 +372,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       return;
     }
 
-    this.tabsContainer.innerHTML = "";
+    this.tabsContainer.replaceChildren();
     this.tabsContainer.style.width = `${nsZenCtrlTabPanel.CARD_WIDTH * this.#actualVisibleCards}px`;
 
     const fragment = document.createDocumentFragment();

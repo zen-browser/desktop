@@ -24,6 +24,10 @@
   }
 }
 
+#zen-ctrl-tab-panel[zen-match-theme] {
+  --zen-ctrl-tab-selected-bg: color-mix(in oklch, var(--zen-primary-color) 75%, oklch(0.7 0.15 none) 25%);
+}
+
 #zen-ctrl-tab-panel .panel-viewcontainer,
 #zen-ctrl-tab-panel .panel-viewstack {
   display: flex;
@@ -62,7 +66,7 @@
 }
 
 #zen-ctrl-tab-panel[zen-match-theme] .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected {
-  background: color-mix(in oklch, var(--zen-primary-color) 75%, oklch(0.7 0.15 none) 25%);
+  background: var(--zen-ctrl-tab-selected-bg);
   color: white;
 }
 
@@ -92,20 +96,16 @@
   border-radius: var(--zen-ctrl-tab-panel-thumbnail-border-radius);
 }
 
-.zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected.zen-ctrl-tab-panel-pending .zen-ctrl-tab-panel-thumbnail,
-.zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected.zen-ctrl-tab-panel-no-thumbnail .zen-ctrl-tab-panel-thumbnail {
+.zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected:is(.zen-ctrl-tab-panel-pending, .zen-ctrl-tab-panel-no-thumbnail) .zen-ctrl-tab-panel-thumbnail {
   background: transparent;
 }
 
-#zen-ctrl-tab-panel[zen-match-theme] .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected.zen-ctrl-tab-panel-pending .zen-ctrl-tab-panel-thumbnail,
-#zen-ctrl-tab-panel[zen-match-theme] .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected.zen-ctrl-tab-panel-no-thumbnail .zen-ctrl-tab-panel-thumbnail {
+#zen-ctrl-tab-panel[zen-match-theme]
+  .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected:is(.zen-ctrl-tab-panel-pending, .zen-ctrl-tab-panel-no-thumbnail)
+  .zen-ctrl-tab-panel-thumbnail {
   background: light-dark(
     color-mix(in srgb, var(--zen-branding-bg) 25%, transparent),
-    color-mix(
-      in srgb,
-      color-mix(in oklch, var(--zen-primary-color) 75%, oklch(0.7 0.15 none) 25%) 30%,
-      color-mix(in srgb, var(--zen-branding-bg) 20%, transparent)
-    )
+    color-mix(in srgb, var(--zen-ctrl-tab-selected-bg) 30%, color-mix(in srgb, var(--zen-branding-bg) 20%, transparent))
   );
 }
 
@@ -115,6 +115,8 @@
   align-items: center;
   gap: 6px;
   height: var(--zen-ctrl-tab-panel-info-height);
+  color: var(--zen-branding-bg-reverse);
+  -moz-text-fill-color: var(--zen-branding-bg-reverse);
 }
 
 .zen-ctrl-tab-panel-favicon {
@@ -129,20 +131,12 @@
   flex: 1;
   font-size: 16px;
   font-weight: 600;
-  color: var(--zen-branding-bg-reverse);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-info,
-.zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-title {
-  color: var(--zen-branding-bg-reverse);
-  -moz-text-fill-color: var(--zen-branding-bg-reverse);
-}
-
-#zen-ctrl-tab-panel[zen-match-theme] .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-info,
-#zen-ctrl-tab-panel[zen-match-theme] .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-title {
+#zen-ctrl-tab-panel[zen-match-theme] .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-info {
   color: white;
   -moz-text-fill-color: white;
 }

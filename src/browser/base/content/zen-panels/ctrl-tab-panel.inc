@@ -13,7 +13,6 @@
                 class="cui-widget-panelview"
                 mainview-with-header="true">
       <hbox id="zen-ctrl-tab-panel-tabs" class="zen-ctrl-tab-panel-tabs">
-        <!-- Tab cards will be dynamically inserted here -->
       </hbox>
     </panelview>
   </panelmultiview>

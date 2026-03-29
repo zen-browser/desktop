@@ -1237,7 +1237,12 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * Splits the selected tabs.
    */
   contextSplitTabs() {
-    const tabs = window.gBrowser.selectedTabs;
+    let tabs;
+    if (TabContextMenu.contextTab.multiselected) {
+      tabs = gBrowser.selectedTabs;
+    } else {
+      tabs = [TabContextMenu.contextTab];
+    }
     // If any is already in a split view, we unsplit them first
     if (tabs.some(tab => tab.splitView)) {
       for (const tab of tabs) {

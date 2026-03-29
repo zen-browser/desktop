@@ -1014,6 +1014,7 @@ window.gZenVerticalTabsManager = {
 
   animateItemOpen(aItem) {
     if (
+      gReduceMotion ||
       !gZenUIManager.motion ||
       !aItem ||
       !gZenUIManager._hasLoadedDOM ||

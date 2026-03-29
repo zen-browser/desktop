@@ -310,11 +310,13 @@
   }
 
   & .tabbrowser-tab {
-    &,
-    & .tab-content > image {
-      transition:
-        scale 0.2s ease,
-        var(--zen-tabbox-element-indent-transition);
+    @media not (prefers-reduced-motion: reduce) {
+      &,
+      & .tab-content > image {
+        transition:
+          scale 0.2s ease,
+          var(--zen-tabbox-element-indent-transition);
+      }
     }
 
     :root[zen-sidebar-expanded="true"] &:not([zen-glance-tab]) {

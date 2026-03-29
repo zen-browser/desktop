@@ -590,7 +590,7 @@ window.gZenCompactModeManager = {
     if (!toggle) {
       return;
     }
-    toggle.setAttribute("checked", this.preference);
+    toggle.toggleAttribute("checked", this.preference);
 
     const hideTabBar = this.canHideSidebar;
     const hideToolbar = this.canHideToolbar;
@@ -600,9 +600,9 @@ window.gZenCompactModeManager = {
     const sidebarItem = document.getElementById(idName + "sidebar");
     const toolbarItem = document.getElementById(idName + "toolbar");
     const bothItem = document.getElementById(idName + "both");
-    sidebarItem.setAttribute("checked", !hideBoth && hideTabBar);
-    toolbarItem.setAttribute("checked", !hideBoth && hideToolbar);
-    bothItem.setAttribute("checked", hideBoth);
+    sidebarItem.toggleAttribute("checked", !hideBoth && hideTabBar);
+    toolbarItem.toggleAttribute("checked", !hideBoth && hideToolbar);
+    bothItem.toggleAttribute("checked", hideBoth);
   },
 
   _removeOpenStateOnUnifiedExtensions() {

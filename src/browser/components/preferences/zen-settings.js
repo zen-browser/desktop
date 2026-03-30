@@ -1082,7 +1082,7 @@ var gZenCKSSettings = {
 
           document.l10n.setAttributes(input.nextElementSibling, "zen-key-conflict", {
             group: group ?? "",
-            shortcut: conflictName ?? "",
+            shortcut: conflictName ?? shortcut ?? "",
           });
         }
       } else {

@@ -682,7 +682,8 @@
   }
 
   #identity-box {
-    margin-inline-end: 0;
+    margin-inline-end: 3px !important;
+    margin-inline-start: 2px !important;
   }
 }
 

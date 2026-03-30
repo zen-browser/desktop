@@ -38,7 +38,7 @@ tabbrowser-reset-pin-button =
         }
 zen-tab-sublabel =
     { $tabSubtitle ->
-        [zen-default-pinned] Back to pinned url
-        [zen-default-pinned-cmd] Separate from pinned tab
+        [zen-default-pinned] Kembali ke URL Awal
+        [zen-default-pinned-cmd] Pisahkan dari tab tersemat
        *[other] { $tabSubtitle }
     }

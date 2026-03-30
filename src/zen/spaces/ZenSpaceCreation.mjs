@@ -199,25 +199,27 @@ class nsZenWorkspaceCreation extends MozXULElement {
         this.style.visibility = "visible";
         gZenCompactModeManager.getAndApplySidebarWidth();
         this.resolveInitialized();
-        gZenUIManager.motion
-          .animate(
-            this.elementsToAnimate,
-            {
-              y: [20, 0],
-              opacity: [0, 1],
-              filter: ["blur(2px)", "blur(0)"],
-            },
-            {
-              duration: 0.6,
-              type: "spring",
-              bounce: 0,
-              delay: gZenUIManager.motion.stagger(0.05, { startDelay: 0.2 }),
-            }
-          )
-          .then(() => {
-            this.inputName.focus();
-            gZenWorkspaces.workspaceElement(this.workspaceId).hidden = false;
-          });
+        let animation = gZenUIManager.motion.animate(
+          this.elementsToAnimate,
+          {
+            y: [20, 0],
+            opacity: [0, 1],
+            filter: ["blur(2px)", "blur(0)"],
+          },
+          {
+            duration: 0.6,
+            type: "spring",
+            bounce: 0,
+            delay: gZenUIManager.motion.stagger(0.05, { startDelay: 0.2 }),
+          }
+        );
+        if (gReduceMotion) {
+          animation.complete();
+        }
+        animation.then(() => {
+          this.inputName.focus();
+          gZenWorkspaces.workspaceElement(this.workspaceId).hidden = false;
+        });
       });
   }
 
@@ -303,20 +305,22 @@ class nsZenWorkspaceCreation extends MozXULElement {
   }
 
   async #cleanup() {
-    await gZenUIManager.motion.animate(
-      this.elementsToAnimate.reverse(),
-      {
-        y: [0, 20],
-        opacity: [1, 0],
-        filter: ["blur(0)", "blur(2px)"],
-      },
-      {
-        duration: 0.4,
-        type: "spring",
-        bounce: 0,
-        delay: gZenUIManager.motion.stagger(0.05),
-      }
-    );
+    if (!gReduceMotion) {
+      await gZenUIManager.motion.animate(
+        this.elementsToAnimate.reverse(),
+        {
+          y: [0, 20],
+          opacity: [1, 0],
+          filter: ["blur(0)", "blur(2px)"],
+        },
+        {
+          duration: 0.4,
+          type: "spring",
+          bounce: 0,
+          delay: gZenUIManager.motion.stagger(0.05),
+        }
+      );
+    }
 
     document.getElementById("zen-sidebar-splitter").style.pointerEvents = "";
 

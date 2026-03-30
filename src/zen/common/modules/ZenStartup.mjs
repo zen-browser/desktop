@@ -46,14 +46,13 @@ class ZenStartup {
         }
         newContainer.appendChild(node);
       }
-
       // Fix notification deck
-      const deckTemplate = document.getElementById(
-        "tab-notification-deck-template"
-      );
-      if (deckTemplate) {
-        document.getElementById("zen-appcontent-wrapper").prepend(deckTemplate);
-      }
+      const deckTemplate =
+        document.getElementById("tab-notification-deck-template") ||
+        document.getElementById("tab-notification-deck");
+
+      // overlap and interaction issues with vertical tabs
+      document.getElementById("browser").prepend(deckTemplate);
 
       gZenWorkspaces.init();
       setTimeout(() => {

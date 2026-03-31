@@ -25,9 +25,9 @@ XPCOMUtils.defineLazyPreferenceGetter(
 
 class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   static CARD_WIDTH = 250;
+  static CARD_HEIGHT = 220;
   static MAX_VISIBLE_CARDS = 5;
   static PANEL_PADDING = 16;
-  static PANEL_HEIGHT = 255;
   static THUMBNAIL_CANVAS_HEIGHT = 300;
 
   #isOpen = false;
@@ -236,7 +236,9 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
     // Math.max(0, ...) prevents panel from being cut off by screen edge on narrow browser windows.
     const centerX = Math.max(0, (windowWidth - panelWidth) / 2);
-    const centerY = (windowHeight - nsZenCtrlTabPanel.PANEL_HEIGHT) / 2;
+    const panelHeight =
+      nsZenCtrlTabPanel.CARD_HEIGHT + nsZenCtrlTabPanel.PANEL_PADDING * 2;
+    const centerY = (windowHeight - panelHeight) / 2;
 
     PanelMultiView.openPopup(this.panel, document.documentElement, {
       position: "overlap",

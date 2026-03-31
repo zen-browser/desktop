@@ -3,12 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 :root {
-  --zen-ctrl-tab-panel-thumbnail-height: 155px;
+  --zen-ctrl-tab-panel-thumbnail-height: 156px;
   --zen-ctrl-tab-panel-info-height: 28px;
   --zen-ctrl-tab-panel-padding: 16px;
   --zen-ctrl-tab-panel-card-gap: 12px;
   --zen-ctrl-tab-panel-card-inner-padding: 12px;
   --zen-ctrl-tab-panel-card-width: 250px;
+  --zen-ctrl-tab-panel-card-height: 220px;
   --zen-ctrl-tab-panel-card-border-radius: 14px;
   --zen-ctrl-tab-panel-thumbnail-border-radius: 8px;
 }
@@ -42,12 +43,13 @@
   position: relative;
   box-sizing: border-box;
   flex-shrink: 0;
+  height: var(--zen-ctrl-tab-panel-card-height);
 }
 
 .zen-ctrl-tab-panel-card {
   flex-shrink: 0;
   width: var(--zen-ctrl-tab-panel-card-width);
-  height: fit-content;
+  height: var(--zen-ctrl-tab-panel-card-height);
   border-radius: var(--zen-ctrl-tab-panel-card-border-radius);
   padding: var(--zen-ctrl-tab-panel-card-inner-padding);
   cursor: pointer;

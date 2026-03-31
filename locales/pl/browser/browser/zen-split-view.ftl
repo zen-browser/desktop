@@ -5,15 +5,15 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Rozdziel karty
-            [1] Podziel kartę (potrzeba wielu zaznaczonych kart)
-            [few] Podziel { $tabCount } karty
-           *[other] Podziel { $tabCount } kart
+            [-1] Oddziel kartę
+            [1] Złącz kartę (potrzeba wielu zaznaczonych kart)
+            [few] Złącz { $tabCount } karty
+           *[other] Złącz { $tabCount } kart
         }
     .accesskey = S
 zen-split-link = 
-    .label = Podziel link na nową kartę
+    .label = Otwórz link w widoku podzielonym
     .accesskey = S
-zen-split-view-modifier-header = Podziel widok
+zen-split-view-modifier-header = Widok podzielony
 zen-split-view-modifier-activate-reallocation = 
     .label = Aktywuj realokację

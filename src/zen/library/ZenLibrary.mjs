@@ -8,15 +8,16 @@ import { MozLitElement } from "chrome://global/content/lit-utils.mjs";
 let lazy = {};
 let gZenLibraryInstance = null;
 
-ChromeUtils.defineESModuleGetters(lazy, {
-  ZenLibrarySections: "moz-src:///zen/library/ZenLibrarySections.mjs",
-}, { global: "current" });
+ChromeUtils.defineESModuleGetters(
+  lazy,
+  {
+    ZenLibrarySections: "moz-src:///zen/library/ZenLibrarySections.mjs",
+  },
+  { global: "current" }
+);
 
 ChromeUtils.defineLazyGetter(lazy, "l10n", function () {
-  return new Localization(
-    ["browser/zen-library.ftl"],
-    true
-  );
+  return new Localization(["browser/zen-library.ftl"], true);
 });
 
 ChromeUtils.defineLazyGetter(lazy, "appContentWrapper", function () {
@@ -58,14 +59,17 @@ export class ZenLibrary extends MozLitElement {
     this.#resizeObserver = new ResizeObserver(() => {
       requestAnimationFrame(() => {
         let isRightSide = gZenVerticalTabsManager._prefsRightSide;
-        let translateX = window.windowUtils.getBoundsWithoutFlushing(this)[
-          isRightSide ? "left" : "right"
-        ];
-        let contentPosition = window.windowUtils.getBoundsWithoutFlushing(lazy.appContentWrapper)[
-          isRightSide ? "right" : "left"
-        ]
-        let existingTransform = new DOMMatrix(lazy.appContentWrapper.style.transform).m41;
-        translateX = translateX-contentPosition + existingTransform;
+        let translateX =
+          window.windowUtils.getBoundsWithoutFlushing(this)[
+            isRightSide ? "left" : "right"
+          ];
+        let contentPosition = window.windowUtils.getBoundsWithoutFlushing(
+          lazy.appContentWrapper
+        )[isRightSide ? "right" : "left"];
+        let existingTransform = new DOMMatrix(
+          lazy.appContentWrapper.style.transform
+        ).m41;
+        translateX = translateX - contentPosition + existingTransform;
         if (isRightSide) {
           translateX = -translateX;
         }
@@ -96,7 +100,10 @@ export class ZenLibrary extends MozLitElement {
 
   render() {
     return html`
-      <link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-library.css" />
+      <link
+        rel="stylesheet"
+        href="chrome://browser/content/zen-styles/zen-library.css"
+      />
       <vbox id="zen-library-sidebar">
         <vbox id="zen-library-sidebar-header"></vbox>
         <vbox id="zen-library-sidebar-tabs">
@@ -105,7 +112,7 @@ export class ZenLibrary extends MozLitElement {
               <vbox
                 class="zen-library-tab"
                 ?active=${this.activeTab === Section.id}
-                @click=${() => this.activeTab = Section.id}
+                @click=${() => (this.activeTab = Section.id)}
               >
                 <label>${lazy.l10n.formatValueSync(Section.label)}</label>
               </vbox>
@@ -114,7 +121,11 @@ export class ZenLibrary extends MozLitElement {
         </vbox>
         <vbox id="zen-library-sidebar-footer"></vbox>
       </vbox>
-      <vbox id="zen-library-content" flex="1" ?large-content=${lazy.ZenLibrarySections[this.activeTab].largeContent}>
+      <vbox
+        id="zen-library-content"
+        flex="1"
+        ?large-content=${lazy.ZenLibrarySections[this.activeTab].largeContent}
+      >
         ${this.#sections.find(section => section.constructor.id === this.activeTab)}
       </vbox>
     `;
@@ -152,16 +163,19 @@ export class ZenLibrary extends MozLitElement {
   }
 
   static toggle() {
-    window.docShell.treeOwner.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIAppWindow).rollupAllPopups();
+    window.docShell.treeOwner
+      .QueryInterface(Ci.nsIInterfaceRequestor)
+      .getInterface(Ci.nsIAppWindow)
+      .rollupAllPopups();
     let instance = this.getInstance();
     instance.toggleAttribute("open");
     if (!instance.isOpen) {
       gNavToolbox.removeAttribute("zen-library-open");
       lazy.appContentWrapper.style.transform = "";
       if (!instance._deletionIdleCallbackId) {
-      instance._deletionIdleCallbackId = requestIdleCallback(() => {
-        this.clearInstance();
-      });
+        instance._deletionIdleCallbackId = requestIdleCallback(() => {
+          this.clearInstance();
+        });
       }
     } else {
       if (instance._deletionIdleCallbackId) {

@@ -38,7 +38,7 @@ tabbrowser-reset-pin-button =
         }
 zen-tab-sublabel =
     { $tabSubtitle ->
-    [zen-default-pinned] Ar ais go dtí an url bioráilte
-    [zen-default-pinned-cmd] Ar leithligh ón gcluaisín bioráilte
-    *[other] { $tabSubtitle }
+        [zen-default-pinned] Ar ais go dtí an url bioráilte
+        [zen-default-pinned-cmd] Ar leithligh ón gcluaisín bioráilte
+       *[other] { $tabSubtitle }
     }

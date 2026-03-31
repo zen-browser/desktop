@@ -5,8 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] 탭 나누기 (여러 탭이 선택되어 있어야 함)
-           *[other] 탭 { $tabCount }개 나누기
+           [-1] 탭 쪼개기
+           [1] 탭 합치기 (여러개의 탭이 선택되어 있어야 함)
+          *[other] { $tabCount }개의 탭 합치기
         }
     .accesskey = S
 zen-split-link = 

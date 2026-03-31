@@ -135,9 +135,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
   #handleKeyDown(event) {
     if (event.key === "Escape" && this.#isOpen) {
-      if (!lazy.enabled) {
-        return;
-      }
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation();

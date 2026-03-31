@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabgroup.js b/browser/components/tabbrowser/content/tabgroup.js
-index 3ca119e8dc72fac652c98505211864483d98add2..8ed5d87a1e5fc9b8612026c3225dda8bf1e71ed6 100644
+index 3ca119e8dc72fac652c98505211864483d98add2..b65307ee8df896488a4c51e3a25bf9ad9e1c8179 100644
 --- a/browser/components/tabbrowser/content/tabgroup.js
 +++ b/browser/components/tabbrowser/content/tabgroup.js
 @@ -14,11 +14,11 @@
@@ -105,7 +105,7 @@ index 3ca119e8dc72fac652c98505211864483d98add2..8ed5d87a1e5fc9b8612026c3225dda8b
        if (!this.#tabChangeObserver) {
          this.#tabChangeObserver = new window.MutationObserver(mutations => {
            if (!this.tabs.length) {
-+            if (this.tagName.toUpperCase() == "ZEN-ESSENTIALS-PROMO") {
++            if (this.tagName === "zen-workspace-collapsible-pins") {
 +              return;
 +            }
              this.dispatchEvent(

@@ -9,6 +9,20 @@ ChromeUtils.defineESModuleGetters(lazy, {
   PageThumbs: "resource://gre/modules/PageThumbs.sys.mjs",
 });
 
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "enabled",
+  "zen.tabs.ctrl-tab-panel.enabled",
+  true
+);
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "matchTheme",
+  "zen.tabs.ctrl-tab-panel.accent-color",
+  false
+);
+
 class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   static CARD_WIDTH = 250;
   static MAX_VISIBLE_CARDS = 5;
@@ -20,7 +34,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   #currentIndex = 0;
   #tabList = [];
   #thumbnailCache = new Map();
-  #lazyPrefs = {};
   #actualVisibleCards = nsZenCtrlTabPanel.MAX_VISIBLE_CARDS;
   #firstPress = true;
 
@@ -42,29 +55,11 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   }
 
   #disableDefaultCtrlTab() {
-    const enabled = Services.prefs.getBoolPref(
-      "zen.tabs.ctrl-tab-panel.enabled",
-      true
-    );
-    const method = enabled ? "uninit" : "readPref";
+    const method = lazy.enabled ? "uninit" : "readPref";
     window.ctrlTab?.[method]?.();
   }
 
   #setupPreferences() {
-    XPCOMUtils.defineLazyPreferenceGetter(
-      this.#lazyPrefs,
-      "enabled",
-      "zen.tabs.ctrl-tab-panel.enabled",
-      true
-    );
-
-    XPCOMUtils.defineLazyPreferenceGetter(
-      this.#lazyPrefs,
-      "matchTheme",
-      "zen.tabs.ctrl-tab-panel.accent-color",
-      false
-    );
-
     const enabledObserver = () => this.#disableDefaultCtrlTab();
     const themeObserver = () => this.#updateThemeMatching();
 
@@ -97,7 +92,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     if (!this.panel) {
       return;
     }
-    this.panel.toggleAttribute("zen-match-theme", this.#lazyPrefs.matchTheme);
+    this.panel.toggleAttribute("zen-match-theme", lazy.matchTheme);
   }
 
   #setupKeyboardListeners() {
@@ -140,7 +135,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   }
 
   #handleKeyDown(event) {
-    if (!this.#lazyPrefs.enabled) {
+    if (!lazy.enabled) {
       return;
     }
 
@@ -198,8 +193,13 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       return;
     }
 
-    this.#tabList = [...gBrowser.tabs].filter(tab => {
-      return !tab.closing && !tab.hidden && !tab.hasAttribute("zen-empty-tab");
+    this.#tabList = gBrowser.tabs.filter(tab => {
+      return (
+        !tab.closing &&
+        !tab.hidden &&
+        !tab.hasAttribute("zen-empty-tab") &&
+        tab.visible
+      );
     });
 
     if (this.#tabList.length <= 1) {
@@ -234,10 +234,9 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     const panelWidth =
       nsZenCtrlTabPanel.CARD_WIDTH * this.#actualVisibleCards +
       nsZenCtrlTabPanel.PANEL_PADDING * 2;
-    // Ensure the panel doesn't get cut off by screen edge (always shows full panel on screen)
-    const horizontalOffset = Math.min(panelWidth, windowWidth);
 
-    const centerX = (windowWidth - horizontalOffset) / 2;
+    // Math.max(0, ...) prevents panel from being cut off by screen edge on narrow browser windows.
+    const centerX = Math.max(0, (windowWidth - panelWidth) / 2);
     const centerY = (windowHeight - nsZenCtrlTabPanel.PANEL_HEIGHT) / 2;
 
     PanelMultiView.openPopup(this.panel, document.documentElement, {
@@ -377,6 +376,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
     const fragment = document.createDocumentFragment();
     const defaultFavicon = PlacesUtils.favicons.defaultFavicon.spec;
+    const newTabFavicon = "chrome://browser/skin/zen-icons/new-tab-image.svg";
 
     this.#tabList.forEach((tab, index) => {
       const tabId = tab.linkedPanel;
@@ -411,7 +411,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       let iconSrc = gBrowser.getIcon(tab) || defaultFavicon;
 
       if (iconSrc.startsWith("chrome://branding/content/")) {
-        iconSrc = "chrome://browser/skin/zen-icons/new-tab-image.svg";
+        iconSrc = newTabFavicon;
       }
 
       favicon.setAttribute("src", iconSrc);

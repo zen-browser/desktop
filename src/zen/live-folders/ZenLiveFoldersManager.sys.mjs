@@ -9,6 +9,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
   ZenWindowSync: "resource:///modules/zen/ZenWindowSync.sys.mjs",
   FeatureCallout: "resource:///modules/asrouter/FeatureCallout.sys.mjs",
+  GithubTokenManager: "resource:///modules/zen/GithubAuth.sys.mjs",
 });
 
 ChromeUtils.defineLazyGetter(
@@ -372,6 +373,21 @@ class nsZenLiveFoldersManager {
     }
 
     liveFolder.stop();
+
+    // Clean up stored PAT if this is a GitHub folder and no other folder shares the host
+    if (liveFolder.constructor.type === "github" && liveFolder.state.host) {
+      const host = liveFolder.state.host;
+      const otherFolderUsesHost = Array.from(this.liveFolders.values()).some(
+        f =>
+          f !== liveFolder &&
+          f.constructor.type === "github" &&
+          f.state.host === host
+      );
+      if (!otherFolderUsesHost) {
+        lazy.GithubTokenManager.removeToken(host).catch(() => {});
+      }
+    }
+
     this.liveFolders.delete(id);
 
     const prefix = `${id}:`;

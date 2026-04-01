@@ -79,17 +79,6 @@ export class GithubTokenManager {
   }
 
   /**
-   * Returns whether a PAT is stored for the given origin.
-   *
-   * @param {string} origin - The GitHub host origin
-   * @returns {Promise<boolean>}
-   */
-  static async hasToken(origin) {
-    const token = await GithubTokenManager.getToken(origin);
-    return token !== null;
-  }
-
-  /**
    * Shows a password prompt for the user to enter a PAT, validates it,
    * stores it if valid, and returns whether a token was successfully stored.
    *

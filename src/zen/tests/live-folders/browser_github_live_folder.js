@@ -181,8 +181,8 @@ add_task(async function test_fetch_network_error() {
   sandbox.restore();
 });
 
-add_task(async function test_custom_host_url_construction() {
-  info("should use custom GitHub Enterprise host for fetch URLs");
+add_task(async function test_ghe_without_token_returns_auth_error() {
+  info("GHE instance without token should return auth error immediately");
 
   let sandbox = sinon.createSandbox();
 
@@ -199,64 +199,62 @@ add_task(async function test_custom_host_url_construction() {
     text: "<html></html>",
   });
 
-  await instance.fetchItems();
+  const result = await instance.fetchItems();
 
-  Assert.ok(instance.fetch.calledOnce, "Fetch should be called once");
-
-  const fetchedUrl = new URL(instance.fetch.firstCall.args[0]);
+  Assert.equal(
+    result,
+    "zen-live-folder-github-no-auth",
+    "GHE without token should return auth error"
+  );
   Assert.ok(
-    fetchedUrl.href.startsWith("https://github.corp.com/pulls"),
-    "Should use custom host for PR endpoint"
+    !instance.fetch.called,
+    "Should not attempt to fetch without a token for GHE"
   );
 
   sandbox.restore();
 });
 
-add_task(async function test_custom_host_issue_parsing() {
-  info("should use custom host when parsing issue URLs");
+add_task(async function test_custom_host_state_construction() {
+  info("should construct state correctly with custom host");
 
   let sandbox = sinon.createSandbox();
-  let instance = getGithubProviderForTest(sandbox, {
+
+  // PR type
+  let prInstance = getGithubProviderForTest(sandbox, {
+    type: "pull-requests",
     host: "https://github.corp.com",
   });
-
-  const mockHtml = `
-    <html>
-      <body>
-        <div>
-           <div class="IssueItem-module__defaultRepoContainer"><span>org/repo</span><span>#42</span></div>
-           <a class="IssueItem-module__authorCreatedLink">TestUser</a>
-           <div class="Title-module__container">Test issue</div>
-           <a data-testid="issue-pr-title-link" href="/issues/42"></a>
-        </div>
-      </body>
-    </html>
-  `;
-
-  instance.fetch.resolves({
-    text: mockHtml,
-    status: 200,
-  });
-
-  const items = await instance.fetchItems();
-
-  Assert.equal(items.length, 1, "Should find 1 item");
   Assert.equal(
-    items[0].url,
-    "https://github.corp.com/issues/42",
-    "Should use custom host in parsed issue URL"
+    prInstance.state.host,
+    "https://github.corp.com",
+    "Custom host should be preserved"
+  );
+  Assert.ok(
+    prInstance.state.url.startsWith("https://github.corp.com/pulls"),
+    "URL should use custom host for PRs"
+  );
+
+  // Issues type
+  let issueInstance = getGithubProviderForTest(sandbox, {
+    type: "issues",
+    host: "https://github.corp.com",
+  });
+  Assert.ok(
+    issueInstance.state.url.startsWith(
+      "https://github.corp.com/issues/assigned"
+    ),
+    "URL should use custom host for issues"
   );
 
   sandbox.restore();
 });
 
 add_task(async function test_non_2xx_triggers_auth_error() {
-  info("should treat non-2xx responses as auth errors");
+  info("should treat non-2xx responses as auth errors for github.com");
 
   let sandbox = sinon.createSandbox();
   let instance = getGithubProviderForTest(sandbox, {
     type: "pull-requests",
-    host: "https://github.corp.com",
   });
 
   instance.fetch.resolves({

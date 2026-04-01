@@ -19,7 +19,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     super({ id, state, manager });
 
     this.state.type = state.type;
-    this.state.host = state.host ?? "https://github.com";
+    this.state.host = state.host || "https://github.com";
     this.state.url =
       this.state.type === "pull-requests"
         ? new URL("/pulls", this.state.host).href
@@ -117,20 +117,23 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       const combinedItems = new Map();
       const combinedActiveRepos = new Set();
 
-      for (const query of queries) {
-        const url = new URL(`${apiBase}/search/issues`);
-        url.searchParams.set("q", query);
-        url.searchParams.set("per_page", "50");
+      const requests = await Promise.all(
+        queries.map(async query => {
+          const url = new URL(`${apiBase}/search/issues`);
+          url.searchParams.set("q", query);
+          url.searchParams.set("per_page", "50");
 
-        const { text, status } = await this.fetch(url.href, {
-          headers: {
-            Authorization: `token ${token}`,
-            Accept: "application/vnd.github.v3+json",
-          },
-        });
+          return this.fetch(url.href, {
+            headers: {
+              Authorization: `token ${token}`,
+              Accept: "application/vnd.github.v3+json",
+            },
+          });
+        })
+      );
 
+      for (const { text, status } of requests) {
         if (status === 401 || status === 403) {
-          // Token expired or revoked — clear it and fall back
           await GithubTokenManager.removeToken(this.state.host);
           return "zen-live-folder-github-token-expired";
         }
@@ -543,7 +546,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     try {
       const raw = (input.value ?? "").trim();
       const parsed = new URL(raw);
-      if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      if (parsed.protocol !== "https:") {
         throw new Error();
       }
       return parsed.origin;
@@ -561,9 +564,10 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
   }
 
   serialize() {
+    const { _hasToken, ...serializableState } = this.state;
     return {
       state: {
-        ...this.state,
+        ...serializableState,
         repos: Array.from(this.state.repos),
         options: {
           ...this.state.options,

@@ -427,6 +427,11 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     state.image = tab.zenStaticIcon || initialState.image;
     state.index = 0;
 
+    // See gh-13024, we need to remove the scroll position from the state,
+    // otherwise when we reset the pinned tab, it will scroll to the previous position
+    // which can be confusing for the user, especially if they have a long page.
+    delete state.scroll;
+
     SessionStore.setTabState(tab, state);
     this.resetPinChangedUrl(tab);
   }

@@ -17,10 +17,9 @@ using ZenBoostData = nscolor;  // For now, Zen boosts data is just a color.
 namespace zen {
 
 struct nsZenAccentOklab {
-  float L, a, b;
-  float vibranceBase;   // 1.0f - ((contrast - 128) / 128)
-  float accentLOffset;  // 0.25f + L, precomputed
-  nscolor accentNS;     // Used to keep track of the original accent color
+  nscolor accentNS;
+  float accL, accA, accB;
+  float contrastFactor;
 };
 
 class nsZenBoostsBackend final {

@@ -38,7 +38,7 @@
   <!-- Loading in the window module -->
   <script>
     const { nsZenBoostEditor } = ChromeUtils.importESModule( "resource:///modules/zen/boosts/ZenBoostsEditor.mjs" );
-    window.addEventListener("load", () => {           
+    window.addEventListener("load", () => {
       window.boostEditor = new nsZenBoostEditor(document, window.domain, window, window.openerWindow);
     });
   </script>
@@ -73,7 +73,7 @@
         </vbox>
         <html:div class="visible-separator"></html:div>
         <hbox flex="1" id="zen-boost-font-toolbar">
-          <html:select name="font" id="zen-boost-font-select" class="mod-button">  
+          <html:select name="font" id="zen-boost-font-select" class="mod-button">
             <!-- Additional font options will be injected here -->
           </html:select>
           <button data-l10n-id="zen-boost-text-case-toggle" id="zen-boost-text-case-toggle" class="subviewbutton mod-button"></button>
@@ -88,7 +88,7 @@
       <button id="zen-boost-code" class="subviewbutton mod-button big-button">
         <html:p data-l10n-id="zen-boost-code" id="zen-boost-code-text"></html:p>
       </button>
-      
+
       <hbox flex="1" id="zen-boost-toolbar-wrapper">
         <button data-l10n-id="zen-boost-save" id="zen-boost-save" class="subviewbutton mod-button med"></button>
         <button data-l10n-id="zen-boost-load" id="zen-boost-load" class="subviewbutton mod-button med"></button>
@@ -101,7 +101,7 @@
         <html:p data-l10n-id="zen-boost-back" id="zen-boost-back-text"></html:p>
       </button>
     </hbox>
-    
+
     <vbox flex="1" id="zen-boost-code-editor">
     </vbox>
 

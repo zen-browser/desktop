@@ -34,16 +34,14 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   #currentIndex = 0;
   #tabList = [];
   #thumbnailCache = new Map();
-  #thumbnailCanvas = null;
   #actualVisibleCards = nsZenCtrlTabPanel.MAX_VISIBLE_CARDS;
   #firstPress = true;
 
   init() {
     this.#setupPreferences();
     this.#disableDefaultCtrlTab();
-    this.#setupKeyboardListeners();
+    this.#setupEventListeners();
     this.#setupLazyGetters();
-    this.#observeTabChanges();
   }
 
   #setupLazyGetters() {
@@ -96,14 +94,16 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     this.panel.toggleAttribute("zen-match-theme", lazy.matchTheme);
   }
 
-  #setupKeyboardListeners() {
+  #setupEventListeners() {
     const keydownListener = e => this.#handleKeyDown(e);
     const keyupListener = e => this.#handleKeyUp(e);
     const blurListener = () => this.#isOpen && this.close(false);
+    const onTabClose = e => this.#thumbnailCache.delete(e.target.linkedPanel);
 
     window.addEventListener("keydown", keydownListener, true);
     window.addEventListener("keyup", keyupListener, true);
     window.addEventListener("blur", blurListener);
+    window.addEventListener("TabClose", onTabClose);
 
     window.addEventListener(
       "unload",
@@ -111,23 +111,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
         window.removeEventListener("keydown", keydownListener, true);
         window.removeEventListener("keyup", keyupListener, true);
         window.removeEventListener("blur", blurListener);
-      },
-      { once: true }
-    );
-  }
-
-  #observeTabChanges() {
-    const invalidateTab = e =>
-      this.#thumbnailCache.delete(e.target.linkedPanel);
-
-    window.addEventListener("TabClose", invalidateTab);
-    window.addEventListener("TabAttrModified", invalidateTab);
-
-    window.addEventListener(
-      "unload",
-      () => {
-        window.removeEventListener("TabClose", invalidateTab);
-        window.removeEventListener("TabAttrModified", invalidateTab);
+        window.removeEventListener("TabClose", onTabClose);
       },
       { once: true }
     );
@@ -201,6 +185,9 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       return;
     }
 
+    // Recapture the current tab to show updated scroll position or page
+    this.#thumbnailCache.delete(gBrowser.selectedTab.linkedPanel);
+
     this.#isOpen = true;
 
     const currentTabIndex = this.#tabList.indexOf(gBrowser.selectedTab);
@@ -219,8 +206,12 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     this.#actualVisibleCards = Math.min(this.#tabList.length, maxCards);
 
     const browserRect = gBrowser.tabbox.getBoundingClientRect();
+    const thumbnailHeight = nsZenCtrlTabPanel.THUMBNAIL_CANVAS_HEIGHT;
+    const thumbnailWidth = Math.round(
+      thumbnailHeight * (browserRect.width / browserRect.height)
+    );
 
-    await this.#cacheThumbnailsForVisible(browserRect);
+    await this.#cacheThumbnailsForVisible(thumbnailWidth, thumbnailHeight);
 
     this.#createTabCards();
     this.#updateThemeMatching();
@@ -259,7 +250,9 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
     requestAnimationFrame(() => this.#scrollToSelected());
 
-    this.#tabList.forEach(tab => this.#captureThumbnail(tab, browserRect));
+    this.#tabList.forEach(tab =>
+      this.#captureThumbnail(tab, thumbnailWidth, thumbnailHeight)
+    );
   }
 
   close(switchTab = true) {
@@ -286,10 +279,11 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   /**
    * Captures screenshots only for the tabs that are initially visible.
    *
-   * @param {DOMRect} browserRect - The browser content area dimensions.
+   * @param {number} thumbnailWidth
+   * @param {number} thumbnailHeight
    * @returns {Promise<void>} Resolves when all visible thumbnails are captured.
    */
-  async #cacheThumbnailsForVisible(browserRect) {
+  async #cacheThumbnailsForVisible(thumbnailWidth, thumbnailHeight) {
     const pageStartIndex = this.#getPageStartIndex(this.#currentIndex);
     const endIndex = Math.min(
       this.#tabList.length,
@@ -297,18 +291,21 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     );
     const tabsToCache = this.#tabList.slice(pageStartIndex, endIndex);
     await Promise.all(
-      tabsToCache.map(tab => this.#captureThumbnail(tab, browserRect))
+      tabsToCache.map(tab =>
+        this.#captureThumbnail(tab, thumbnailWidth, thumbnailHeight)
+      )
     );
   }
 
   /**
    * Captures tab screenshot and caches it. Immediately displays in card if panel is visible.
    *
-   * @param {object} tab - The tab to capture a thumbnail for.
-   * @param {DOMRect} browserRect - The browser content area dimensions.
+   * @param {object} tab
+   * @param {number} thumbnailWidth
+   * @param {number} thumbnailHeight
    * @returns {Promise<void>} Resolves when captured or skipped.
    */
-  async #captureThumbnail(tab, browserRect) {
+  async #captureThumbnail(tab, thumbnailWidth, thumbnailHeight) {
     if (tab.hasAttribute("pending")) {
       return;
     }
@@ -322,24 +319,17 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     }
 
     try {
-      // Calculate canvas dimensions based on browser content area (excluding sidebar + toolbar)
-      const viewportAspect = browserRect.width / browserRect.height;
-      const targetHeight = nsZenCtrlTabPanel.THUMBNAIL_CANVAS_HEIGHT;
-      const targetWidth = Math.round(targetHeight * viewportAspect);
+      const canvas = document.createElementNS(
+        "http://www.w3.org/1999/xhtml",
+        "canvas"
+      );
+      canvas.width = thumbnailWidth;
+      canvas.height = thumbnailHeight;
 
-      if (!this.#thumbnailCanvas) {
-        this.#thumbnailCanvas = document.createElementNS(
-          "http://www.w3.org/1999/xhtml",
-          "canvas"
-        );
-      }
-      this.#thumbnailCanvas.width = targetWidth;
-      this.#thumbnailCanvas.height = targetHeight;
-
-      await lazy.PageThumbs.captureToCanvas(browser, this.#thumbnailCanvas, {
+      await lazy.PageThumbs.captureToCanvas(browser, canvas, {
         fullViewport: true,
       });
-      const dataUrl = this.#thumbnailCanvas.toDataURL("image/png");
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
       this.#thumbnailCache.set(tabId, dataUrl);
 
       if (this.#isOpen) {
@@ -541,4 +531,4 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   }
 }
 
-export var gZenCtrlTabPanel = new nsZenCtrlTabPanel();
+export const gZenCtrlTabPanel = new nsZenCtrlTabPanel();

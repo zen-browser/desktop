@@ -86,7 +86,7 @@
 }
 
 #zen-ctrl-tab-panel[zen-match-theme] .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected .zen-ctrl-tab-panel-thumbnail,
-.zen-ctrl-tab-panel-thumbnail:has(image) {
+.zen-ctrl-tab-panel-card:not(.zen-ctrl-tab-panel-no-thumbnail) .zen-ctrl-tab-panel-thumbnail {
   border: none;
 }
 

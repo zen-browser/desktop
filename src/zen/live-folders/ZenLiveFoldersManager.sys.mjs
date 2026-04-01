@@ -226,9 +226,14 @@ class nsZenLiveFoldersManager {
         break;
       }
       case "github": {
-        host = await ProviderClass.promptForHost(this.window);
-        if (!host) {
-          return -1;
+        // First GitHub folder defaults to github.com, subsequent ones show prompt
+        if (this.hasGitHubLiveFolder()) {
+          host = await ProviderClass.promptForHost(this.window);
+          if (!host) {
+            return -1;
+          }
+        } else {
+          host = "https://github.com";
         }
 
         const [message] = await lazy.l10n.formatMessages([
@@ -513,6 +518,15 @@ class nsZenLiveFoldersManager {
 
   // Helpers
   // -------
+  hasGitHubLiveFolder() {
+    for (const liveFolder of this.liveFolders.values()) {
+      if (liveFolder.constructor.type === "github") {
+        return true;
+      }
+    }
+    return false;
+  }
+
   #applyDefaultStateValues(state) {
     state.interval ||= DEFAULT_FETCH_INTERVAL;
     state.lastFetched ||= 0;

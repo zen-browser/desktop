@@ -3,6 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { nsZenLiveFolderProvider } from "resource:///modules/zen/ZenLiveFolder.sys.mjs";
+import { GithubTokenManager } from "resource:///modules/zen/GithubAuth.sys.mjs";
 
 const lazy = {};
 ChromeUtils.defineLazyGetter(
@@ -18,18 +19,26 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     super({ id, state, manager });
 
     this.state.type = state.type;
-    this.state.host = state.host || "https://github.com";
-    const path =
-      this.state.type === "pull-requests" ? "/pulls" : "/issues/assigned";
-    this.state.url = new URL(path, this.state.host).href;
+    this.state.host = state.host ?? "https://github.com";
+    this.state.url =
+      this.state.type === "pull-requests"
+        ? new URL("/pulls", this.state.host).href
+        : new URL("/issues/assigned", this.state.host).href;
 
     this.state.options = state.options ?? {};
     this.state.repos = new Set(state.repos ?? []);
     this.state.options.repoExcludes = new Set(state.options.repoExcludes ?? []);
+    this.state._hasToken = false;
   }
 
   async fetchItems() {
     try {
+      const token = await GithubTokenManager.getToken(this.state.host);
+      this.state._hasToken = !!token;
+      if (token) {
+        return this.#fetchItemsViaApi(token);
+      }
+
       const hasAnyFilterEnabled =
         (this.state.options.authorMe ?? false) ||
         (this.state.options.assignedMe ?? true) ||
@@ -83,6 +92,94 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       console.error("Error fetching or parsing GitHub issues:", error);
       return "zen-live-folder-failed-fetch";
     }
+  }
+
+  async #fetchItemsViaApi(token) {
+    try {
+      const hasAnyFilterEnabled =
+        (this.state.options.authorMe ?? false) ||
+        (this.state.options.assignedMe ?? true) ||
+        (this.state.options.reviewRequested ?? false);
+
+      if (!hasAnyFilterEnabled) {
+        return "zen-live-folder-github-no-filter";
+      }
+
+      const queries = this.#buildSearchOptions();
+      const apiBase = this.#getApiBaseUrl();
+
+      const combinedItems = new Map();
+      const combinedActiveRepos = new Set();
+
+      for (const query of queries) {
+        const url = new URL(`${apiBase}/search/issues`);
+        url.searchParams.set("q", query);
+        url.searchParams.set("per_page", "50");
+
+        const { text, status } = await this.fetch(url.href, {
+          headers: {
+            Authorization: `token ${token}`,
+            Accept: "application/vnd.github.v3+json",
+          },
+        });
+
+        if (status === 401 || status === 403) {
+          // Token expired or revoked — clear it and fall back
+          await GithubTokenManager.removeToken(this.state.host);
+          return "zen-live-folder-github-token-expired";
+        }
+
+        if (status && (status < 200 || status >= 300)) {
+          return "zen-live-folder-github-no-auth";
+        }
+
+        try {
+          const data = JSON.parse(text);
+          if (data.items) {
+            for (const item of data.items) {
+              const repoFullName = item.repository_url
+                ? item.repository_url.replace(/.*\/repos\//, "")
+                : "";
+              const id = `${repoFullName}#${item.number}`;
+
+              if (repoFullName) {
+                combinedActiveRepos.add(repoFullName);
+              }
+
+              combinedItems.set(id, {
+                title: item.title,
+                subtitle: item.user?.login || "",
+                icon: "chrome://browser/content/zen-images/favicons/github.svg",
+                url: item.html_url,
+                id,
+              });
+            }
+          }
+        } catch {
+          // JSON parse failure
+        }
+      }
+
+      this.state.repos = combinedActiveRepos;
+
+      if (combinedItems.size === 0) {
+        return "zen-live-folder-github-no-auth";
+      }
+
+      return Array.from(combinedItems.values());
+    } catch (error) {
+      console.error("Error fetching GitHub API:", error);
+      return "zen-live-folder-failed-fetch";
+    }
+  }
+
+  #getApiBaseUrl() {
+    const hostUrl = new URL(this.state.host);
+    if (hostUrl.hostname === "github.com") {
+      return "https://api.github.com";
+    }
+    // GitHub Enterprise Server uses /api/v3 prefix
+    return `${this.state.host}/api/v3`;
   }
 
   async parsePullRequests(url) {
@@ -299,6 +396,16 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         l10nArgs: { host: new URL(this.state.host).hostname },
         key: "githubInstance",
       },
+      {
+        l10nId: "zen-live-folder-github-option-set-token",
+        key: "setToken",
+        hidden: this.state._hasToken === true,
+      },
+      {
+        l10nId: "zen-live-folder-github-option-remove-token",
+        key: "removeToken",
+        hidden: this.state._hasToken !== true,
+      },
     ];
   }
 
@@ -308,6 +415,25 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     const key = option.getAttribute("option-key");
     const checked = option.hasAttribute("checked");
     if (!this.options.some(x => x.key === key)) {
+      return;
+    }
+
+    if (key === "setToken") {
+      const success = await GithubTokenManager.promptForToken(
+        this.manager.window,
+        this.state.host
+      );
+      if (success) {
+        this.state._hasToken = true;
+        this.refresh();
+      }
+      return;
+    }
+
+    if (key === "removeToken") {
+      await GithubTokenManager.removeToken(this.state.host);
+      this.state._hasToken = false;
+      this.refresh();
       return;
     }
 
@@ -321,6 +447,12 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         const path =
           this.state.type === "pull-requests" ? "/pulls" : "/issues/assigned";
         this.state.url = new URL(path, host).href;
+
+        // For non-github.com hosts, guide user to create a PAT
+        if (new URL(host).hostname !== "github.com") {
+          await this.#promptForPat(host);
+        }
+
         this.refresh();
         this.requestSave();
       }
@@ -364,6 +496,35 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         this.refresh();
         break;
       }
+      case "zen-live-folder-github-token-expired": {
+        const success = await GithubTokenManager.promptForToken(
+          this.manager.window,
+          this.state.host
+        );
+        if (success) {
+          this.refresh();
+        }
+        break;
+      }
+    }
+  }
+
+  async #promptForPat(host) {
+    // Open the PAT creation page with pre-selected scopes
+    const tokenUrl = new URL("/settings/tokens/new", host);
+    tokenUrl.searchParams.set("scopes", "repo");
+    tokenUrl.searchParams.set("description", "Zen Browser Live Folders");
+
+    const tab = this.manager.window.gBrowser.addTrustedTab(tokenUrl.href);
+    this.manager.window.gBrowser.selectedTab = tab;
+
+    // Prompt for the token
+    const success = await GithubTokenManager.promptForToken(
+      this.manager.window,
+      host
+    );
+    if (success) {
+      this.state._hasToken = true;
     }
   }
 

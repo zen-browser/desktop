@@ -249,3 +249,83 @@ add_task(async function test_custom_host_issue_parsing() {
 
   sandbox.restore();
 });
+
+add_task(async function test_non_2xx_triggers_auth_error() {
+  info("should treat non-2xx responses as auth errors");
+
+  let sandbox = sinon.createSandbox();
+  let instance = getGithubProviderForTest(sandbox, {
+    type: "pull-requests",
+    host: "https://github.corp.com",
+  });
+
+  instance.fetch.resolves({
+    status: 403,
+    text: "<html>Forbidden</html>",
+  });
+
+  const errorId = await instance.fetchItems();
+  Assert.equal(
+    errorId,
+    "zen-live-folder-github-no-auth",
+    "Should return auth error for 403 status"
+  );
+
+  sandbox.restore();
+});
+
+add_task(async function test_empty_results_triggers_auth_error() {
+  info("should treat empty results as auth error (login page returned)");
+
+  let sandbox = sinon.createSandbox();
+  let instance = getGithubProviderForTest(sandbox);
+
+  instance.fetch.resolves({
+    status: 200,
+    text: "<html><body>Please log in</body></html>",
+  });
+
+  const errorId = await instance.fetchItems();
+  Assert.equal(
+    errorId,
+    "zen-live-folder-github-no-auth",
+    "Should return auth error when 200 but no items parsed"
+  );
+
+  sandbox.restore();
+});
+
+add_task(async function test_state_host_defaults() {
+  info("should default host to github.com when not specified");
+
+  let sandbox = sinon.createSandbox();
+
+  let instance = getGithubProviderForTest(sandbox, {
+    type: "pull-requests",
+  });
+  Assert.equal(
+    instance.state.host,
+    "https://github.com",
+    "Default host should be github.com"
+  );
+  Assert.ok(
+    instance.state.url.startsWith("https://github.com/pulls"),
+    "URL should use github.com for PRs"
+  );
+
+  let gheInstance = getGithubProviderForTest(sandbox, {
+    type: "issues",
+    host: "https://github.corp.com",
+  });
+  Assert.equal(
+    gheInstance.state.host,
+    "https://github.corp.com",
+    "Custom host should be preserved"
+  );
+  Assert.ok(
+    gheInstance.state.url.startsWith("https://github.corp.com/issues/assigned"),
+    "URL should use custom host for issues"
+  );
+
+  sandbox.restore();
+});

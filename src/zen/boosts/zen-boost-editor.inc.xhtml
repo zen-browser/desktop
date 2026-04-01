@@ -113,16 +113,18 @@
 
   <popupset id="mainPopupSet">
     <panel type="arrow" popupalign="topmiddle" id="zen-boost-advanced-color-options-panel">
-      <html:div flex="1" id="zen-boost-advanced-color-options-container">
+      <vbox>
         <p data-l10n-id="zen-bootst-color-contrast"></p>
         <html:input id="zen-boost-color-contrast" type="range" min="0" max="1" value="0.5" step="0.01"/>
-        <separator />
+      </vbox>
+      <vbox>
         <p data-l10n-id="zen-bootst-color-brightness"></p>
         <html:input id="zen-boost-color-brightness" type="range" min="0" max="1" value="0.5" step="0.01"/>
-        <separator />
+      </vbox>
+      <vbox>
         <p data-l10n-id="zen-bootst-color-original-saturation"></p>
         <html:input id="zen-boost-color-saturation" type="range" min="0" max="1" value="0.5" step="0.01"/>
-      </html:div>
+      </vbox>
     </panel>
   </popupset>
 

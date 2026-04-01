@@ -7,7 +7,6 @@
 #zen-boost-advanced-color-options-panel {
   color-scheme: light;
   -zen-window-transform-origin: 50% 0%;
-  padding: 8px 8px;
 
   & p {
     color: #3a3a3b;
@@ -24,14 +23,10 @@
     margin-top: 10px;
   }
 
-  & separator {
-    height: 24px !important;
-  }
-
-  @media (-moz-platform: macos) {
-    &[animate="open"] {
-      animation: 0.4 zen-color-options-panel-animation-macos cubic-bezier(0.14, 1.43, 0.56, 1.01) forwards !important;
-    }
+  &::part(content) {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
   }
 }
 
@@ -47,6 +42,3 @@
   background-color: #cbcad0;
 }
 
-#zen-boost-advanced-color-options-container {
-  flex-direction: column;
-}

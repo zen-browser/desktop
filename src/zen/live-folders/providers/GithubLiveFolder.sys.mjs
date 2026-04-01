@@ -39,6 +39,12 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         return this.#fetchItemsViaApi(token);
       }
 
+      // GHE instances require a PAT — HTML scraping won't work without cookies
+      const isGHE = new URL(this.state.host).hostname !== "github.com";
+      if (isGHE) {
+        return "zen-live-folder-github-no-auth";
+      }
+
       const hasAnyFilterEnabled =
         (this.state.options.authorMe ?? false) ||
         (this.state.options.assignedMe ?? true) ||
@@ -162,10 +168,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
 
       this.state.repos = combinedActiveRepos;
 
-      if (combinedItems.size === 0) {
-        return "zen-live-folder-github-no-auth";
-      }
-
+      // API authenticated successfully — empty results just means no matching PRs/issues
       return Array.from(combinedItems.values());
     } catch (error) {
       console.error("Error fetching GitHub API:", error);
@@ -448,9 +451,9 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
           this.state.type === "pull-requests" ? "/pulls" : "/issues/assigned";
         this.state.url = new URL(path, host).href;
 
-        // For non-github.com hosts, guide user to create a PAT
+        // For non-github.com hosts, open the PAT creation page
         if (new URL(host).hostname !== "github.com") {
-          await this.#promptForPat(host);
+          this.#openPatCreationPage(host);
         }
 
         this.refresh();
@@ -486,10 +489,17 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
 
     switch (errorId) {
       case "zen-live-folder-github-no-auth": {
-        const tab = this.manager.window.gBrowser.addTrustedTab(
-          new URL("/login", this.state.host).href
-        );
-        this.manager.window.gBrowser.selectedTab = tab;
+        const isGHE = new URL(this.state.host).hostname !== "github.com";
+        if (isGHE) {
+          // For GHE instances, open the PAT creation page
+          this.#openPatCreationPage(this.state.host);
+        } else {
+          // For github.com, open the login page
+          const tab = this.manager.window.gBrowser.addTrustedTab(
+            new URL("/login", this.state.host).href
+          );
+          this.manager.window.gBrowser.selectedTab = tab;
+        }
         break;
       }
       case "zen-live-folder-github-no-filter": {
@@ -497,35 +507,19 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         break;
       }
       case "zen-live-folder-github-token-expired": {
-        const success = await GithubTokenManager.promptForToken(
-          this.manager.window,
-          this.state.host
-        );
-        if (success) {
-          this.refresh();
-        }
+        this.#openPatCreationPage(this.state.host);
         break;
       }
     }
   }
 
-  async #promptForPat(host) {
-    // Open the PAT creation page with pre-selected scopes
+  #openPatCreationPage(host) {
     const tokenUrl = new URL("/settings/tokens/new", host);
     tokenUrl.searchParams.set("scopes", "repo");
     tokenUrl.searchParams.set("description", "Zen Browser Live Folders");
 
     const tab = this.manager.window.gBrowser.addTrustedTab(tokenUrl.href);
     this.manager.window.gBrowser.selectedTab = tab;
-
-    // Prompt for the token
-    const success = await GithubTokenManager.promptForToken(
-      this.manager.window,
-      host
-    );
-    if (success) {
-      this.state._hasToken = true;
-    }
   }
 
   static async promptForHost(window, initialUrl = "https://github.com") {

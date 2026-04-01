@@ -486,6 +486,11 @@
       margin-block: -1px !important;
     }
   }
+
+  & #identity-icon-box {
+    --urlbar-box-hover-bgcolor: transparent;
+    margin-inline: 2px 8px;
+  }
 }
 
 /* stylelint-disable-next-line media-query-no-invalid */

@@ -31,6 +31,18 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     this.state._hasToken = false;
   }
 
+  get #isGitHubEnterprise() {
+    return new URL(this.state.host).hostname !== "github.com";
+  }
+
+  get #hasAnyFilterEnabled() {
+    return (
+      (this.state.options.authorMe ?? false) ||
+      (this.state.options.assignedMe ?? true) ||
+      (this.state.options.reviewRequested ?? false)
+    );
+  }
+
   async fetchItems() {
     try {
       const token = await GithubTokenManager.getToken(this.state.host);
@@ -40,17 +52,11 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       }
 
       // GHE instances require a PAT — HTML scraping won't work without cookies
-      const isGHE = new URL(this.state.host).hostname !== "github.com";
-      if (isGHE) {
+      if (this.#isGitHubEnterprise) {
         return "zen-live-folder-github-no-auth";
       }
 
-      const hasAnyFilterEnabled =
-        (this.state.options.authorMe ?? false) ||
-        (this.state.options.assignedMe ?? true) ||
-        (this.state.options.reviewRequested ?? false);
-
-      if (!hasAnyFilterEnabled) {
+      if (!this.#hasAnyFilterEnabled) {
         return "zen-live-folder-github-no-filter";
       }
 
@@ -102,12 +108,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
 
   async #fetchItemsViaApi(token) {
     try {
-      const hasAnyFilterEnabled =
-        (this.state.options.authorMe ?? false) ||
-        (this.state.options.assignedMe ?? true) ||
-        (this.state.options.reviewRequested ?? false);
-
-      if (!hasAnyFilterEnabled) {
+      if (!this.#hasAnyFilterEnabled) {
         return "zen-live-folder-github-no-filter";
       }
 
@@ -117,7 +118,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       const combinedItems = new Map();
       const combinedActiveRepos = new Set();
 
-      const requests = await Promise.all(
+      const results = await Promise.allSettled(
         queries.map(async query => {
           const url = new URL(`${apiBase}/search/issues`);
           url.searchParams.set("q", query);
@@ -132,14 +133,21 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         })
       );
 
-      for (const { text, status } of requests) {
+      for (const result of results) {
+        if (result.status !== "fulfilled") {
+          continue;
+        }
+
+        const { text, status } = result.value;
+
         if (status === 401 || status === 403) {
           await GithubTokenManager.removeToken(this.state.host);
+          this.state._hasToken = false;
           return "zen-live-folder-github-token-expired";
         }
 
         if (status && (status < 200 || status >= 300)) {
-          return "zen-live-folder-github-no-auth";
+          continue;
         }
 
         try {
@@ -170,8 +178,6 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       }
 
       this.state.repos = combinedActiveRepos;
-
-      // API authenticated successfully — empty results just means no matching PRs/issues
       return Array.from(combinedItems.values());
     } catch (error) {
       console.error("Error fetching GitHub API:", error);
@@ -454,8 +460,8 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
           this.state.type === "pull-requests" ? "/pulls" : "/issues/assigned";
         this.state.url = new URL(path, host).href;
 
-        // For non-github.com hosts, open the PAT creation page
-        if (new URL(host).hostname !== "github.com") {
+        // For GHE hosts, open the PAT creation page
+        if (this.#isGitHubEnterprise) {
           this.#openPatCreationPage(host);
         }
 
@@ -492,8 +498,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
 
     switch (errorId) {
       case "zen-live-folder-github-no-auth": {
-        const isGHE = new URL(this.state.host).hostname !== "github.com";
-        if (isGHE) {
+        if (this.#isGitHubEnterprise) {
           // For GHE instances, open the PAT creation page
           this.#openPatCreationPage(this.state.host);
         } else {

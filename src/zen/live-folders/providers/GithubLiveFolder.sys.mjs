@@ -4,6 +4,13 @@
 
 import { nsZenLiveFolderProvider } from "resource:///modules/zen/ZenLiveFolder.sys.mjs";
 
+const lazy = {};
+ChromeUtils.defineLazyGetter(
+  lazy,
+  "l10n",
+  () => new Localization(["browser/zen-live-folders.ftl"])
+);
+
 export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
   static type = "github";
 
@@ -11,10 +18,10 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     super({ id, state, manager });
 
     this.state.type = state.type;
-    this.state.url =
-      this.state.type === "pull-requests"
-        ? "https://github.com/pulls"
-        : "https://github.com/issues/assigned";
+    this.state.host = state.host || "https://github.com";
+    const path =
+      this.state.type === "pull-requests" ? "/pulls" : "/issues/assigned";
+    this.state.url = new URL(path, this.state.host).href;
 
     this.state.options = state.options ?? {};
     this.state.repos = new Set(state.repos ?? []);
@@ -50,8 +57,8 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       const combinedActiveRepos = new Set();
 
       for (const { status, items, activeRepos } of requests) {
-        // Assume no auth
-        if (status === 404) {
+        // Any non-2xx status likely means not authenticated
+        if (status && (status < 200 || status >= 300)) {
           return "zen-live-folder-github-no-auth";
         }
 
@@ -65,6 +72,12 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       }
 
       this.state.repos = combinedActiveRepos;
+
+      // A 200 with no items likely means we got a login page instead of real content
+      if (combinedItems.size === 0) {
+        return "zen-live-folder-github-no-auth";
+      }
+
       return Array.from(combinedItems.values());
     } catch (error) {
       console.error("Error fetching or parsing GitHub issues:", error);
@@ -162,7 +175,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
             title,
             subtitle: author,
             icon: "chrome://browser/content/zen-images/favicons/github.svg",
-            url: "https://github.com" + issueUrl,
+            url: new URL(issueUrl, this.state.host).href,
             id: `${repo}#${number}`,
           });
         }
@@ -280,15 +293,37 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         // 1 repo + separator + note = 3 options, so if we have less than 4 options it means we don't have any repo to exclude
         disabled: repoOptions.length < 4,
       },
+      { type: "separator" },
+      {
+        l10nId: "zen-live-folder-github-option-instance",
+        l10nArgs: { host: new URL(this.state.host).hostname },
+        key: "githubInstance",
+      },
     ];
   }
 
-  onOptionTrigger(option) {
+  async onOptionTrigger(option) {
     super.onOptionTrigger(option);
 
     const key = option.getAttribute("option-key");
     const checked = option.hasAttribute("checked");
     if (!this.options.some(x => x.key === key)) {
+      return;
+    }
+
+    if (key === "githubInstance") {
+      const host = await nsGithubLiveFolderProvider.promptForHost(
+        this.manager.window,
+        this.state.host
+      );
+      if (host && host !== this.state.host) {
+        this.state.host = host;
+        const path =
+          this.state.type === "pull-requests" ? "/pulls" : "/issues/assigned";
+        this.state.url = new URL(path, host).href;
+        this.refresh();
+        this.requestSave();
+      }
       return;
     }
 
@@ -320,7 +355,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     switch (errorId) {
       case "zen-live-folder-github-no-auth": {
         const tab = this.manager.window.gBrowser.addTrustedTab(
-          "https://github.com/login"
+          new URL("/login", this.state.host).href
         );
         this.manager.window.gBrowser.selectedTab = tab;
         break;
@@ -330,6 +365,44 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         break;
       }
     }
+  }
+
+  static async promptForHost(window, initialUrl = "https://github.com") {
+    const input = { value: initialUrl };
+    const [prompt] = await lazy.l10n.formatValues([
+      "zen-live-folder-github-prompt-instance",
+    ]);
+    const promptOk = Services.prompt.prompt(
+      window,
+      prompt,
+      null,
+      input,
+      null,
+      { value: null }
+    );
+
+    if (!promptOk) {
+      return null;
+    }
+
+    try {
+      const raw = (input.value ?? "").trim();
+      const parsed = new URL(raw);
+      if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+        throw new Error();
+      }
+      return parsed.origin;
+    } catch {
+      window.gZenUIManager.showToast(
+        "zen-live-folder-github-invalid-url-title",
+        {
+          descriptionId: "zen-live-folder-github-invalid-url-description",
+          timeout: 6000,
+        }
+      );
+    }
+
+    return null;
   }
 
   serialize() {

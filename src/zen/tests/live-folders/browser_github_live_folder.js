@@ -26,6 +26,7 @@ function getGithubProviderForTest(sandbox, customOptions = {}) {
     maxItems: 10,
     lastFetched: 0,
     type: customOptions.type,
+    host: customOptions.host,
     options: defaultOptions,
   };
 
@@ -65,7 +66,10 @@ add_task(async function test_fetch_items_url_construction() {
   const fetchedUrl = new URL(instance.fetch.firstCall.args[0]);
   const searchParams = fetchedUrl.searchParams;
 
-  Assert.ok(fetchedUrl.href.startsWith("https://github.com/issues/assigned"));
+  Assert.ok(
+    fetchedUrl.href.startsWith("https://github.com/pulls"),
+    "PR type should use /pulls endpoint"
+  );
 
   const query = searchParams.get("q");
   Assert.ok(query.includes("state:open"), "Should include state:open");
@@ -172,6 +176,75 @@ add_task(async function test_fetch_network_error() {
     errorId,
     "zen-live-folder-failed-fetch",
     "Should return an error on failed fetch"
+  );
+
+  sandbox.restore();
+});
+
+add_task(async function test_custom_host_url_construction() {
+  info("should use custom GitHub Enterprise host for fetch URLs");
+
+  let sandbox = sinon.createSandbox();
+
+  let instance = getGithubProviderForTest(sandbox, {
+    authorMe: true,
+    assignedMe: false,
+    reviewRequested: false,
+    type: "pull-requests",
+    host: "https://github.corp.com",
+  });
+
+  instance.fetch.resolves({
+    status: 200,
+    text: "<html></html>",
+  });
+
+  await instance.fetchItems();
+
+  Assert.ok(instance.fetch.calledOnce, "Fetch should be called once");
+
+  const fetchedUrl = new URL(instance.fetch.firstCall.args[0]);
+  Assert.ok(
+    fetchedUrl.href.startsWith("https://github.corp.com/pulls"),
+    "Should use custom host for PR endpoint"
+  );
+
+  sandbox.restore();
+});
+
+add_task(async function test_custom_host_issue_parsing() {
+  info("should use custom host when parsing issue URLs");
+
+  let sandbox = sinon.createSandbox();
+  let instance = getGithubProviderForTest(sandbox, {
+    host: "https://github.corp.com",
+  });
+
+  const mockHtml = `
+    <html>
+      <body>
+        <div>
+           <div class="IssueItem-module__defaultRepoContainer"><span>org/repo</span><span>#42</span></div>
+           <a class="IssueItem-module__authorCreatedLink">TestUser</a>
+           <div class="Title-module__container">Test issue</div>
+           <a data-testid="issue-pr-title-link" href="/issues/42"></a>
+        </div>
+      </body>
+    </html>
+  `;
+
+  instance.fetch.resolves({
+    text: mockHtml,
+    status: 200,
+  });
+
+  const items = await instance.fetchItems();
+
+  Assert.equal(items.length, 1, "Should find 1 item");
+  Assert.equal(
+    items[0].url,
+    "https://github.corp.com/issues/42",
+    "Should use custom host in parsed issue URL"
   );
 
   sandbox.restore();

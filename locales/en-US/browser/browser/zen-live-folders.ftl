@@ -97,5 +97,13 @@ zen-live-folder-github-issues =
 zen-live-folder-github-option-repo-list-note =
     .label = This list is generated based on your currently active pull requests.
 
+zen-live-folder-github-prompt-instance = Enter the GitHub instance URL
+
+zen-live-folder-github-option-instance =
+    .label = Instance: { $host }
+
+zen-live-folder-github-invalid-url-title = Invalid GitHub URL
+zen-live-folder-github-invalid-url-description = The URL must be a valid HTTPS address for a GitHub instance.
+
 zen-live-folders-promotion-title = Live Folder Created!
 zen-live-folders-promotion-description = Latest content from your RSS feeds or GitHub pull requests will appear here automatically.

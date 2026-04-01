@@ -208,6 +208,7 @@ class nsZenLiveFoldersManager {
     }
 
     let url;
+    let host;
     let label;
     let icon;
 
@@ -225,11 +226,20 @@ class nsZenLiveFoldersManager {
         break;
       }
       case "github": {
+        host = await ProviderClass.promptForHost(this.window);
+        if (!host) {
+          return -1;
+        }
+
         const [message] = await lazy.l10n.formatMessages([
           { id: `zen-live-folder-github-${providerType}` },
         ]);
 
-        label = message.attributes[0].value;
+        const hostname = new URL(host).hostname;
+        label =
+          hostname === "github.com"
+            ? message.attributes[0].value
+            : `${message.attributes[0].value} (${hostname})`;
         icon = "chrome://browser/skin/zen-icons/selectable/logo-github.svg";
         break;
       }
@@ -250,6 +260,7 @@ class nsZenLiveFoldersManager {
     const config = {
       state: this.#applyDefaultStateValues({
         url,
+        host,
         type: providerType,
       }),
     };

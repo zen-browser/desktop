@@ -678,14 +678,15 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
           return tab;
         }
         let workspaceId;
+        if (
+          !tab.hasAttribute("zen-essential") &&
+          tab.getAttribute("zen-workspace-id") != gZenWorkspaces.activeWorkspace
+        ) {
+          workspaceId = gZenWorkspaces.activeWorkspace;
+        }
         if (tab.ownerGlobal !== window) {
           fromDifferentWindow = true;
-          if (
-            !tab.hasAttribute("zen-essential") &&
-            tab.getAttribute("zen-workspace-id") !=
-              gZenWorkspaces.activeWorkspace
-          ) {
-            workspaceId = gZenWorkspaces.activeWorkspace;
+          if (workspaceId) {
             tab.ownerGlobal.gBrowser.selectedTab =
               tab.ownerGlobal.gBrowser._findTabToBlurTo(tab, movingTabs);
             tab.ownerGlobal.gZenWorkspaces.moveTabToWorkspace(tab, workspaceId);
@@ -700,9 +701,9 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
           if (tab) {
             ++newIndex;
           }
-          if (workspaceId) {
-            tab.setAttribute("zen-workspace-id", workspaceId);
-          }
+        }
+        if (workspaceId) {
+          tab.setAttribute("zen-workspace-id", workspaceId);
         }
         return tab;
       });

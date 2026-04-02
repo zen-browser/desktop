@@ -4,11 +4,6 @@
 [
   {
     "type": "phabricator",
-    "id": "D279007",
-    "name": "Fix MacOS Crash on Shutdown Firefox 149"
-  },
-  {
-    "type": "phabricator",
     "id": "D284084",
     "name": "Native MacOS popovers",
     "replaces": {
@@ -40,5 +35,20 @@
       // the parameter's help description with the correct one.
       "application": "Application"
     }
+  },
+  {
+    "type": "phabricator",
+    "id": "D291099",
+    "name": "gh-12979 1 Add gfxCriticalNote to DCLayerCompositionSurface" 
+  },
+  {
+    "type": "phabricator",
+    "id": "D291123",
+    "name": "gh-12979 2 Compositor rendering performance fix"
+  },
+  {
+    "type": "phabricator",
+    "id": "D291714",
+    "name": "gh-12979 3 Clip dirty_rect to device_size"
   }
 ]

@@ -507,17 +507,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     this.#glances.get(this.#currentGlanceID).elementImageData =
       data.elementData;
 
-    gZenUIManager.motion.animate(
-      imageDataElement,
-      {
-        opacity: [1, 0],
-      },
-      {
-        duration: this.#GLANCE_ANIMATION_DURATION / 2,
-        easing: "easeInOut",
-      }
-    );
-
     return imageDataElement;
   }
 

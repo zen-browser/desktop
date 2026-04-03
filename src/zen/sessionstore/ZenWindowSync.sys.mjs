@@ -790,7 +790,10 @@ class nsZenWindowSync {
     // We *shouldn't* care about this scenario since the remoteness should be
     // the same anyways.
     if (!aOurTab.linkedBrowser || !aOtherTab.linkedBrowser) {
-      return true;
+      this.log(
+        `Cannot swap browsers between tabs ${aOurTab.id} and ${aOtherTab.id} because one of them doesn't have a linked browser`
+      );
+      return false;
     }
     // Can't swap between chrome and content processes.
     if (

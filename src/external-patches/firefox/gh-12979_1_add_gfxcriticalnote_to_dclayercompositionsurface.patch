@@ -1,0 +1,19 @@
+diff --git a/gfx/webrender_bindings/DCLayerTree.cpp b/gfx/webrender_bindings/DCLayerTree.cpp
+--- a/gfx/webrender_bindings/DCLayerTree.cpp
++++ b/gfx/webrender_bindings/DCLayerTree.cpp
+@@ -2097,10 +2097,14 @@
+   hr = mCompositionSurface->BeginDraw(&updateRect, __uuidof(ID3D11Texture2D),
+                                       (void**)getter_AddRefs(backBuffer),
+                                       &offset);
+ 
+   if (FAILED(hr)) {
++    LayoutDeviceIntRect rect = widget::WinUtils::ToIntRect(updateRect);
++
++    gfxCriticalNote << "DCLayerCompositionSurface::Bind failed: "
++                    << gfx::hexa(hr) << " " << rect;
+     RenderThread::Get()->HandleWebRenderError(WebRenderError::BEGIN_DRAW);
+     return;
+   }
+ 
+   const auto gl = mDCLayerTree->GetGLContext();
+

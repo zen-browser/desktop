@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index e4266a159a0d5c42cc294602d00b8f66131f35d5..88c321f05dabd948d06e155f6e0474669fc15c20 100644
+index e4266a159a0d5c42cc294602d00b8f66131f35d5..f3e362f062063ebe08bd26cc694f2d965ccffd84 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@
@@ -52,7 +52,7 @@ index e4266a159a0d5c42cc294602d00b8f66131f35d5..88c321f05dabd948d06e155f6e047466
          return;
        }
  
-@@ -225,11 +228,23 @@
+@@ -225,11 +228,25 @@
      }
  
      get visible() {
@@ -74,14 +74,16 @@ index e4266a159a0d5c42cc294602d00b8f66131f35d5..88c321f05dabd948d06e155f6e047466
 +        }
 +        currentParent = currentParent.group;
 +      }
-+      if (this.pinned && !this.hasAttribute("zen-essential") && gZenWorkspaces.activeWorkspaceElement?.hasCollapsedPinnedTabs) {
++      if (this.pinned && !this.hasAttribute("zen-essential") &&
++          gZenWorkspaces.activeWorkspaceElement?.hasCollapsedPinnedTabs &&
++          !gZenWorkspaces.activeWorkspaceElement.collapsiblePins.activeTabs?.includes(this)) {
 +        return false;
 +      }
 +      return true;
      }
  
      get hidden() {
-@@ -308,7 +323,7 @@
+@@ -308,7 +325,7 @@
          return false;
        }
  
@@ -90,7 +92,7 @@ index e4266a159a0d5c42cc294602d00b8f66131f35d5..88c321f05dabd948d06e155f6e047466
      }
  
      get lastAccessed() {
-@@ -393,7 +408,18 @@
+@@ -393,7 +410,18 @@
      }
  
      get group() {
@@ -110,7 +112,7 @@ index e4266a159a0d5c42cc294602d00b8f66131f35d5..88c321f05dabd948d06e155f6e047466
      }
  
      get splitview() {
-@@ -475,6 +501,10 @@
+@@ -475,6 +503,10 @@
          }
        }
  
@@ -121,7 +123,7 @@ index e4266a159a0d5c42cc294602d00b8f66131f35d5..88c321f05dabd948d06e155f6e047466
        // If the previous target wasn't part of this tab then this is a mouseenter event.
        if (!this.contains(event.relatedTarget)) {
          this._mouseenter();
-@@ -504,6 +534,7 @@
+@@ -504,6 +536,7 @@
        if (!this.contains(event.relatedTarget)) {
          this._mouseleave();
        }
@@ -129,7 +131,7 @@ index e4266a159a0d5c42cc294602d00b8f66131f35d5..88c321f05dabd948d06e155f6e047466
      }
  
      on_dragstart(event) {
-@@ -538,6 +569,8 @@
+@@ -538,6 +571,8 @@
          this.style.MozUserFocus = "ignore";
        } else if (
          event.target.classList.contains("tab-close-button") ||
@@ -138,7 +140,7 @@ index e4266a159a0d5c42cc294602d00b8f66131f35d5..88c321f05dabd948d06e155f6e047466
          event.target.classList.contains("tab-icon-overlay") ||
          event.target.classList.contains("tab-audio-button")
        ) {
-@@ -592,16 +625,21 @@
+@@ -592,16 +627,21 @@
        this.style.MozUserFocus = "";
      }
  
@@ -161,7 +163,7 @@ index e4266a159a0d5c42cc294602d00b8f66131f35d5..88c321f05dabd948d06e155f6e047466
          gBrowser.multiSelectedTabsCount > 0 &&
          !event.target.classList.contains("tab-close-button") &&
          !event.target.classList.contains("tab-icon-overlay") &&
-@@ -613,8 +651,9 @@
+@@ -613,8 +653,9 @@
        }
  
        if (
@@ -173,7 +175,7 @@ index e4266a159a0d5c42cc294602d00b8f66131f35d5..88c321f05dabd948d06e155f6e047466
        ) {
          if (this.activeMediaBlocked) {
            if (this.multiselected) {
-@@ -632,7 +671,7 @@
+@@ -632,7 +673,7 @@
          return;
        }
  
@@ -182,7 +184,7 @@ index e4266a159a0d5c42cc294602d00b8f66131f35d5..88c321f05dabd948d06e155f6e047466
          if (this.multiselected) {
            gBrowser.removeMultiSelectedTabs(
              lazy.TabMetrics.userTriggeredContext(
-@@ -652,6 +691,14 @@
+@@ -652,6 +693,14 @@
          // (see tabbrowser-tabs 'click' handler).
          gBrowser.tabContainer._blockDblClick = true;
        }
@@ -197,7 +199,7 @@ index e4266a159a0d5c42cc294602d00b8f66131f35d5..88c321f05dabd948d06e155f6e047466
      }
  
      on_dblclick(event) {
-@@ -675,6 +722,8 @@
+@@ -675,6 +724,8 @@
            animate: true,
            triggeringEvent: event,
          });

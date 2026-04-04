@@ -191,7 +191,7 @@ index d88bc0e5570c8fd428a84fdf5af0f6bab1e2a636..be4bedce98f404325e547dd8a4e73e89
        // In full screen mode, only bother making the location bar visible
        // if the tab is a blank one.
 -      if (gURLBar.getBrowserState(newBrowser).urlbarFocused) {
-+      if (gURLBar.getBrowserState(newBrowser).urlbarFocused && (!gZenVerticalTabsManager._hasSetSingleToolbar || isBlankPageURL(newBrowser.currentURI?.spec))) {
++      if (gURLBar.getBrowserState(newBrowser).urlbarFocused && !gZenVerticalTabsManager._hasSetSingleToolbar) {
          let selectURL = () => {
            if (this._asyncTabSwitching) {
              // Set _awaitingSetURI flag to suppress popup notification

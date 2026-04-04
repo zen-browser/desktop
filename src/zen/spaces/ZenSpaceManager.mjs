@@ -945,7 +945,10 @@ class nsZenWorkspaces {
       delete this._initialTab;
     }
 
-    const openOnStartup = Services.prefs.getBoolPref("zen.urlbar.open-on-startup", true);
+    const openOnStartup = Services.prefs.getBoolPref(
+      "zen.urlbar.open-on-startup",
+      true
+    );
     showed &&= openOnStartup;
     initialTabWasEmpty &&= openOnStartup;
 

@@ -28,7 +28,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   static CARD_HEIGHT = 220;
   static MAX_VISIBLE_CARDS = 5;
   static PANEL_PADDING = 16;
-  static THUMBNAIL_CANVAS_HEIGHT = 300;
 
   #isOpen = false;
   #currentIndex = 0;
@@ -206,9 +205,12 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     this.#actualVisibleCards = Math.min(this.#tabList.length, maxCards);
 
     const browserRect = gBrowser.tabbox.getBoundingClientRect();
-    const thumbnailHeight = nsZenCtrlTabPanel.THUMBNAIL_CANVAS_HEIGHT;
+    // Clamp width to 300 on narrow viewports and 700 on wide viewports 
     const thumbnailWidth = Math.round(
-      thumbnailHeight * (browserRect.width / browserRect.height)
+      Math.min(Math.max((browserRect.width / browserRect.height) * 500, 300), 700)
+    );
+    const thumbnailHeight = Math.round(
+      thumbnailWidth * (browserRect.height / browserRect.width)
     );
 
     await this.#cacheThumbnailsForVisible(thumbnailWidth, thumbnailHeight);

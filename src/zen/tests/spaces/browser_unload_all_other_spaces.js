@@ -20,7 +20,6 @@ add_task(async function test_UnloadAllOtherWorkspace_oneWorkspace() {
       true,
       { skipAnimation: true },
     );
-    tab.setAttribute("zen-workspace-id", workspaceId);
     tabs.push(tab);
   }
 

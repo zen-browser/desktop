@@ -32,8 +32,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   #firstPress = true;
 
   init() {
-    this.#setupPreferences();
-    this.#disableDefaultCtrlTab();
+    this.#managePreference();
     this.#setupEventListeners();
     this.#setupLazyGetters();
   }
@@ -47,17 +46,17 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     );
   }
 
-  #disableDefaultCtrlTab() {
-    const method = lazy.enabled ? "uninit" : "readPref";
-    window.ctrlTab?.[method]?.();
-  }
+  #managePreference() {
+    const toggleCtrlTabBehaviour = () => {
+      const method = lazy.enabled ? "uninit" : "readPref";
+      window.ctrlTab?.[method]?.();
+    };
 
-  #setupPreferences() {
-    const enabledObserver = () => this.#disableDefaultCtrlTab();
+    toggleCtrlTabBehaviour();
 
     Services.prefs.addObserver(
       "zen.tabs.ctrl-tab-panel.enabled",
-      enabledObserver
+      toggleCtrlTabBehaviour
     );
 
     window.addEventListener(
@@ -65,7 +64,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       () => {
         Services.prefs.removeObserver(
           "zen.tabs.ctrl-tab-panel.enabled",
-          enabledObserver
+          toggleCtrlTabBehaviour
         );
       },
       { once: true }
@@ -77,7 +76,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     const keyupListener = e => this.#handleKeyUp(e);
     const blurListener = () => this.#isOpen && this.close(false);
     const onTabClose = e => this.#thumbnailCache.delete(e.target.linkedPanel);
-    // Update cached thumbnail when a tab finishes loading a new page
+    // Update cached thumbnail when a tab finishes loading
     const onTabAttrModified = e => {
       if (e.detail.changed.includes("busy") && !e.target.hasAttribute("busy")) {
         this.#thumbnailCache.delete(e.target.linkedPanel);
@@ -185,16 +184,12 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     this.#isOpen = true;
 
     const browserRect = gBrowser.tabbox.getBoundingClientRect();
+    const tabBoxAspectRatio = browserRect.width / browserRect.height;
     // Set width to 300 on narrow viewports and 700 on wide viewports
     const thumbnailWidth = Math.round(
-      Math.min(
-        Math.max((browserRect.width / browserRect.height) * 500, 300),
-        700
-      )
+      Math.min(Math.max(tabBoxAspectRatio * 500, 300), 700)
     );
-    const thumbnailHeight = Math.round(
-      thumbnailWidth * (browserRect.height / browserRect.width)
-    );
+    const thumbnailHeight = Math.round(thumbnailWidth / tabBoxAspectRatio);
 
     await this.#cacheThumbnailsForVisible(thumbnailWidth, thumbnailHeight);
 

@@ -16,13 +16,6 @@ XPCOMUtils.defineLazyPreferenceGetter(
   true
 );
 
-XPCOMUtils.defineLazyPreferenceGetter(
-  lazy,
-  "matchTheme",
-  "zen.tabs.ctrl-tab-panel.accent-color",
-  false
-);
-
 class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   static CARD_WIDTH = 250;
   static CARD_HEIGHT = 220;
@@ -61,15 +54,10 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
   #setupPreferences() {
     const enabledObserver = () => this.#disableDefaultCtrlTab();
-    const themeObserver = () => this.#updateThemeMatching();
 
     Services.prefs.addObserver(
       "zen.tabs.ctrl-tab-panel.enabled",
       enabledObserver
-    );
-    Services.prefs.addObserver(
-      "zen.tabs.ctrl-tab-panel.accent-color",
-      themeObserver
     );
 
     window.addEventListener(
@@ -79,20 +67,9 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
           "zen.tabs.ctrl-tab-panel.enabled",
           enabledObserver
         );
-        Services.prefs.removeObserver(
-          "zen.tabs.ctrl-tab-panel.accent-color",
-          themeObserver
-        );
       },
       { once: true }
     );
-  }
-
-  #updateThemeMatching() {
-    if (!this.panel) {
-      return;
-    }
-    this.panel.toggleAttribute("zen-match-theme", lazy.matchTheme);
   }
 
   #setupEventListeners() {
@@ -222,7 +199,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     await this.#cacheThumbnailsForVisible(thumbnailWidth, thumbnailHeight);
 
     this.#createTabCards();
-    this.#updateThemeMatching();
 
     await new Promise(resolve => requestAnimationFrame(resolve));
 

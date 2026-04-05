@@ -55,6 +55,3 @@
 
 - name: zen.tabs.ctrl-tab-panel.enabled
   value: true
-
-- name: zen.tabs.ctrl-tab-panel.accent-color
-  value: false

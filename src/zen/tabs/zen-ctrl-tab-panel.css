@@ -88,10 +88,6 @@
   border-radius: var(--zen-ctrl-tab-panel-thumbnail-border-radius);
 }
 
-.zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected:is(.zen-ctrl-tab-panel-pending, .zen-ctrl-tab-panel-no-thumbnail) .zen-ctrl-tab-panel-thumbnail {
-  background: transparent;
-}
-
 .zen-ctrl-tab-panel-info {
   padding: 0 5px;
   display: flex;

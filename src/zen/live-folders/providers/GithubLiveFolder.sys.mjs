@@ -103,6 +103,10 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       },
     });
 
+    if (status !== 200) {
+      return { status };
+    }
+
     let parsedJson = null;
     try {
       parsedJson = JSON.parse(text);
@@ -183,6 +187,10 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
 
   async parseIssues(url) {
     const { text, status } = await this.fetch(url);
+
+    if (status !== 200) {
+      return { status };
+    }
 
     const document = new DOMParser().parseFromString(text, "text/html");
     const issues = document.querySelectorAll(

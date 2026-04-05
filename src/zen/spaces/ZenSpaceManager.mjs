@@ -1551,7 +1551,7 @@ class nsZenWorkspaces {
         !tab.hasAttribute("pending")
     );
 
-    await gBrowser.explicitUnloadTabs(tabsToUnload); // TODO: unit test this
+    await gBrowser.explicitUnloadTabs(tabsToUnload);
   }
 
   moveTabToWorkspace(tab, workspaceID) {

@@ -233,6 +233,7 @@ window.gZenCompactModeManager = {
           <menuitem id="zen-context-menu-compact-mode-hide-both" data-l10n-id="zen-toolbar-context-compact-mode-hide-both" type="radio" />
         </menupopup>
       </menu>
+      <menuseparator />
     `);
 
     const idToAction = {
@@ -247,7 +248,7 @@ window.gZenCompactModeManager = {
       }
     }
 
-    document.getElementById("toolbar-context-customize").before(fragment);
+    document.getElementById("toolbar-context-menu").prepend(fragment);
     this.updateContextMenu();
   },
 

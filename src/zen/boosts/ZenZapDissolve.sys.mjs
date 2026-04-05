@@ -156,6 +156,8 @@ void main() {
 
   #onComplete = null;
 
+  #onComplete = null;
+
   /**
    * @param {Document} document Webpage document
    */
@@ -486,10 +488,13 @@ void main() {
    * @param {Function} onComplete Callback for when the animation is complete
    */
   dissolve(element, onComplete) {
+  dissolve(element, onComplete) {
     if (!this.#initialized || this.#hasTriggered || !element) {
       return;
     }
     this.#hasTriggered = true;
+
+    this.#onComplete = onComplete;
 
     this.#onComplete = onComplete;
 

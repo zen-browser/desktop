@@ -280,7 +280,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     }
 
     // type: issues or pull requests json api
-    return [`${baseQuery.join(" ")} ${queries.join(" OR ")}`];
+    return [`${baseQuery.join(" ")} (${queries.join(" OR ")})`];
   }
 
   get options() {

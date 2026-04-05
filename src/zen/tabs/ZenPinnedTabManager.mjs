@@ -454,7 +454,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     // eslint-disable-next-line no-nested-ternary
     const tabs = tab
       ? // if it's already an array, dont make it [tab]
-        tab?.length
+      tab?.length
         ? tab
         : [tab]
       : TabContextMenu.contextTab.multiselected
@@ -550,6 +550,52 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     if (!this.enabled) {
       return;
     }
+
+    const quickActionsElements = window.MozXULElement.parseXULToFragment(`
+            <hbox id="context-navigation">
+              <menuitem id="context_zen-mute-tab"
+                        class="menuitem-iconic"
+                        data-l10n-id="tabbrowser-manager-mute-tab"
+                        image="${gZenEmojiPicker.getSVGURL("media-mute.svg")}"/>
+              <menuitem id="context_zen-copy-tab-url"
+                        class="menuitem-iconic"
+                        data-l10n-id="zen-urlbar-copy-url-button"
+                        image="${gZenEmojiPicker.getSVGURL("link.svg")}"/>
+              <menuitem id="context_zen-reload-tab"
+                        class="menuitem-iconic"
+                        data-l10n-id="tabbrowser-manager-reload-tab"
+                        image="${gZenEmojiPicker.getSVGURL("reload.svg")}"/>
+              <menuitem id="context_zen-duplicate-tab"
+                        class="menuitem-iconic"
+                        data-l10n-id="tabbrowser-manager-duplicate-tab"
+                        image="${gZenEmojiPicker.getSVGURL("copy.svg")}"/>
+            </hbox>
+            <menuseparator id="context_zen-quick-actions-separator"/>
+    `);
+
+    document.getElementById("tabContextMenu").prepend(quickActionsElements);
+
+    // Functionality of quick actions
+    document.getElementById('context_zen-mute-tab').addEventListener('command', event => {
+      TabContextMenu.contextTab.toggleMuteAudio();
+
+      const isMuted = TabContextMenu.contextTab?.muted;
+      event.target.setAttribute('image', gZenEmojiPicker.getSVGURL(isMuted ? "media-mute.svg" : "media-unmute.svg"));
+      event.target.setAttribute('data-l10n-id', isMuted ? "tabbrowser-manager-mute-tab" : "tabbrowser-manager-unmute-tab");
+    })
+
+    document.getElementById('context_zen-copy-tab-url').addEventListener('command', () => {
+      gZenCommonActions.copyTabURLToClipboard(TabContextMenu.contextTab)
+    })
+
+    document.getElementById('context_zen-reload-tab').addEventListener('command', () => {
+      gBrowser.reloadTab(TabContextMenu.contextTab)
+    })
+
+    document.getElementById('context_zen-duplicate-tab').addEventListener('command', () => {
+      gBrowser.duplicateTab(TabContextMenu.contextTab)
+    })
+
     const elements = window.MozXULElement.parseXULToFragment(`
             <menuseparator id="context_zen-pinned-tab-separator" hidden="true"/>
             <menuitem id="context_zen-replace-pinned-url-with-current"
@@ -561,6 +607,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
                       hidden="true"
                       command="cmd_zenPinnedTabResetNoTab"/>
         `);
+
     document.getElementById("tabContextMenu").appendChild(elements);
 
     const element = window.MozXULElement.parseXULToFragment(`
@@ -617,6 +664,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       return;
     }
     const isVisible = contextTab.pinned && !contextTab.multiselected;
+    const isMuted = contextTab.muted;
     const isEssential = contextTab.getAttribute("zen-essential");
     const zenAddEssential = document.getElementById(
       "context_zen-add-essential"
@@ -642,6 +690,10 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       .then(badgeText => {
         zenAddEssential.setAttribute("badge", badgeText);
       });
+    document.getElementById("context_zen-mute-tab")
+      .setAttribute("image", gZenEmojiPicker.getSVGURL(isMuted ? "media-mute.svg" : "media-unmute.svg"))
+    document.getElementById("context_zen-mute-tab")
+      .setAttribute("data-l10n-id", isMuted ? "tabbrowser-manager-unmute-tab" : "tabbrowser-manager-mute-tab");
     document
       .getElementById("cmd_contextZenAddToEssentials")
       .toggleAttribute("disabled", !this.canEssentialBeAdded(contextTab));
@@ -921,7 +973,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     return (
       !(
         (tab.getAttribute("usercontextid") || 0) !=
-          gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId &&
+        gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId &&
         gZenWorkspaces.containerSpecificEssentials
       ) && gBrowser._numZenEssentials < this.maxEssentialTabs
     );

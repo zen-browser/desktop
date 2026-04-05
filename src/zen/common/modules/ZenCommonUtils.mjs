@@ -16,7 +16,7 @@ window.gZenOperatingSystemCommonUtils = {
 };
 
 export class nsZenMultiWindowFeature {
-  constructor() {}
+  constructor() { }
 
   static get browsers() {
     return Services.wm.getEnumerator("navigator:browser");
@@ -121,6 +121,17 @@ window.gZenCommonActions = {
     const markdownLink = `[${tabTitle}](${currentUrl.displaySpec})`;
     ClipboardHelper.copyString(markdownLink);
     gZenUIManager.showToast("zen-copy-current-url-as-markdown-confirmation", {
+      timeout: 3000,
+    });
+  },
+
+  copyTabURLToClipboard(tab) {
+    const [_, ClipboardHelper] = gURLBar.zenStrippedURI;
+    const url = tab.linkedBrowser.currentURI.spec;
+
+    ClipboardHelper.copyString(url);
+
+    gZenUIManager.showToast("zen-copy-current-url-confirmation", {
       timeout: 3000,
     });
   },

@@ -565,10 +565,10 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
                         class="menuitem-iconic"
                         data-l10n-id="tabbrowser-manager-reload-tab"
                         image="${gZenEmojiPicker.getSVGURL("reload.svg")}"/>
-              <menuitem id="context_zen-duplicate-tab"
+              <menuitem id="context_zen-pin-tab"
                         class="menuitem-iconic"
-                        data-l10n-id="tabbrowser-manager-duplicate-tab"
-                        image="${gZenEmojiPicker.getSVGURL("copy.svg")}"/>
+                        data-l10n-id="tabbrowser-manager-pin-tab"
+                        image="${gZenEmojiPicker.getSVGURL("pin.svg")}"/>
             </hbox>
             <menuseparator id="context_zen-quick-actions-separator"/>
     `);
@@ -592,8 +592,17 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       gBrowser.reloadTab(TabContextMenu.contextTab)
     })
 
-    document.getElementById('context_zen-duplicate-tab').addEventListener('command', () => {
-      gBrowser.duplicateTab(TabContextMenu.contextTab)
+    document.getElementById('context_zen-pin-tab').addEventListener('command', event => {
+      const tab = TabContextMenu.contextTab;
+      if (tab.pinned) {
+        gBrowser.unpinTab(tab);
+      } else {
+        gBrowser.pinTab(tab);
+      }
+
+      const isPinned = tab.pinned;
+      event.target.setAttribute('image', gZenEmojiPicker.getSVGURL(isPinned ? "unpin.svg" : "pin.svg"));
+      event.target.setAttribute('data-l10n-id', isPinned ? "tabbrowser-manager-unpin-tab" : "tabbrowser-manager-pin-tab");
     })
 
     const elements = window.MozXULElement.parseXULToFragment(`
@@ -694,6 +703,11 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       .setAttribute("image", gZenEmojiPicker.getSVGURL(isMuted ? "media-mute.svg" : "media-unmute.svg"))
     document.getElementById("context_zen-mute-tab")
       .setAttribute("data-l10n-id", isMuted ? "tabbrowser-manager-unmute-tab" : "tabbrowser-manager-mute-tab");
+    const isPinned = contextTab.pinned;
+    document.getElementById("context_zen-pin-tab")
+      .setAttribute("image", gZenEmojiPicker.getSVGURL(isPinned ? "unpin.svg" : "pin.svg"));
+    document.getElementById("context_zen-pin-tab")
+      .setAttribute("data-l10n-id", isPinned ? "tabbrowser-manager-unpin-tab" : "tabbrowser-manager-pin-tab");
     document
       .getElementById("cmd_contextZenAddToEssentials")
       .toggleAttribute("disabled", !this.canEssentialBeAdded(contextTab));

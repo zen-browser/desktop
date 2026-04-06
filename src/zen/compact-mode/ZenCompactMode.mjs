@@ -177,6 +177,7 @@ window.gZenCompactModeManager = {
     const attributes = [
       "panelopen",
       "open",
+      "opening",
       "breakout-extend",
       "zen-floating-urlbar",
     ];
@@ -185,7 +186,8 @@ window.gZenCompactModeManager = {
       [
         {
           selector:
-            ":is([panelopen='true'], [open='true'], [breakout-extend='true']):not(#urlbar[zen-floating-urlbar='true']):not(tab):not(.zen-compact-mode-ignore)",
+            ":where([panelopen='true'], [open='true'], [showing='true'], [breakout-extend='true'])" +
+            ":not(#urlbar[zen-floating-urlbar='true']):not(tab):not(.zen-compact-mode-ignore)",
         },
       ],
       "zen-compact-mode-active",
@@ -196,7 +198,8 @@ window.gZenCompactModeManager = {
       [
         {
           selector:
-            ":is([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true']):not(.zen-compact-mode-ignore)",
+            ":where([panelopen='true'], [open='true'], [showing='true'], #urlbar:focus-within, [breakout-extend='true'])" +
+            ":not(.zen-compact-mode-ignore)",
         },
       ],
       "zen-compact-mode-active",

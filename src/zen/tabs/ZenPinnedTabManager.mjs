@@ -74,6 +74,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     this.observer = new ZenPinnedTabsObserver();
     this._initClosePinnedTabShortcut();
     this._insertItemsIntoTabContextMenu();
+    this._removeQuickActionDuplicatesFromContextMenu();
     this.observer.addPinnedTabListener(this._onPinnedTabEvent.bind(this));
 
     this._zenClickEventListener = this._onTabClick.bind(this);
@@ -667,9 +668,33 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       });
   }
 
+  _removeQuickActionDuplicatesFromContextMenu() {
+    this.log('Removing duplicates')
+
+    // These upstream Firefox tab context menu items are now replaced
+    // by the quick actions bar at the top of the menu.
+    const duplicatedItemIds = [
+      "context_toggleMuteTab",
+      "context_reloadTab",
+      "context_pinTab",
+      "context_unpinTab",
+      "context_pinSelectedTabs",
+      "context_unpinSelectedTabs",
+    ];
+
+    for (const id of duplicatedItemIds) {
+      const item = document.getElementById(id);
+      if (item) {
+        item.setAttribute('hidden', true)
+
+        // for some items (e.g. context_toggleMuteTab), hidden gets overridden by some other party
+        item.style.display = 'none'
+      }
+    }
+  }
+
   updatePinnedTabContextMenu(contextTab) {
     if (!this.enabled) {
-      document.getElementById("context_pinTab").hidden = true;
       return;
     }
     const isVisible = contextTab.pinned && !contextTab.multiselected;
@@ -715,11 +740,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       contextTab.hasAttribute("zen-essential");
     document.getElementById("context_zen-remove-essential").hidden =
       !isEssential;
-    document.getElementById("context_unpinTab").hidden =
-      document.getElementById("context_unpinTab").hidden || isEssential;
-    document.getElementById("context_unpinSelectedTabs").hidden =
-      document.getElementById("context_unpinSelectedTabs").hidden ||
-      isEssential;
     document.getElementById("context_zen-pinned-tab-separator").hidden =
       !isVisible;
     document.getElementById("context_zen-edit-tab-title").hidden =

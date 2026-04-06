@@ -127,4 +127,17 @@
   }
 }
 
+#tabContextMenu > menuitem:not(.menuitem-iconic),
+#tabContextMenu > menu:not(.menu-iconic) {
+  padding-inline-start: 32px !important;
+}
+
+#tabContextMenu :is(menuitem, menu):is(.menuitem-iconic, .menu-iconic) {
+  padding-inline-start: 8px !important;
+}
+
+#tabContextMenu :is(menuitem, menu):is(.menuitem-iconic, .menu-iconic) > :is(.menu-icon, .menu-iconic-icon) {
+  margin-inline-end: 8px !important;
+}
+
 %include zen-essentials-promo.css

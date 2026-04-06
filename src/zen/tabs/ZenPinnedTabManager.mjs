@@ -691,13 +691,63 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
+  #setIconForItem(id, icon, isSelector = false) {
+    const element = isSelector ? document.querySelector(id) : document.getElementById(id);
+    if (element) {
+      const isMenu = element.localName === "menu";
+      element.classList.add(isMenu ? "menu-iconic" : "menuitem-iconic");
+      element.setAttribute("image", gZenEmojiPicker.getSVGURL(icon));
+    }
+  }
+
+  _updateContextMenuIcons(contextTab) {
+    const isMuted = contextTab.muted;
+    const isPinned = contextTab.pinned;
+
+    const menuIconRelationship = [
+      { ids: ['context_zen-mute-tab', 'context_toggleMuteTab', 'context_toggleMuteSelectedTabs'], icon: isMuted ? 'media-mute.svg' : 'media-unmute.svg' },
+      { ids: ['context_zen-copy-tab-url'], icon: 'link.svg' },
+      { ids: ['context_zen-reload-tab', 'context_reloadTab', 'context_reloadSelectedTabs', 'context_zen-reset-pinned-tab'], icon: 'reload.svg' },
+      { ids: ['context_zen-pin-tab'], icon: isPinned ? 'unpin.svg' : 'pin.svg' },
+      { ids: ['context_pinTab', 'context_pinSelectedTabs'], icon: 'pin.svg' },
+      { ids: ['context_unpinTab', 'context_unpinSelectedTabs'], icon: 'unpin.svg' },
+
+      { ids: ['zen-context-menu-new-folder'], icon: 'folder.svg' },
+      { ids: ['context_zen-add-essential'], icon: 'essential-add.svg' },
+      { ids: ['context_zen-remove-essential'], icon: 'essential-remove.svg' },
+      { ids: ['context_bookmarkTab', 'context_bookmarkSelectedTabs'], icon: 'bookmark.svg' },
+      { ids: ['context_closeTab', 'context_closeDuplicateTabs', 'context_closeTabOptions', 'context_closeTabsToTheStart', 'context_closeTabsToTheEnd', 'context_closeOtherTabs'], icon: 'close.svg' },
+      { ids: ['context_undoCloseTab'], icon: 'history.svg' },
+      { ids: ['context_unloadTab'], icon: 'moon.svg' },
+      { ids: ['context_zen-replace-pinned-url-with-current'], icon: 'save.svg' },
+      { ids: ['context_duplicateTab', 'context_duplicateTabs'], icon: 'copy.svg' },
+      { ids: ['context_moveTab', 'context_moveTabOptions', 'context_moveTabToNewGroup', 'context_moveSplitViewToNewGroup', 'context_moveTabToGroup', 'context_moveToStart', 'context_moveToEnd', 'context_moveTabToSplitView'], icon: 'navigate.svg' },
+      { ids: ['context_openANewTab', 'context_reopenInContainer', 'context_openTabInWindow', 'context_moveTabToGroupNewGroup'], icon: 'new-tab.svg' },
+    ]
+
+    for (const { ids, icon } of menuIconRelationship) {
+      for (const id of ids) {
+        this.#setIconForItem(id, icon);
+      }
+    }
+  }
+
   updatePinnedTabContextMenu(contextTab) {
     if (!this.enabled) {
       return;
     }
+
+    this._updateContextMenuProperties(contextTab);
+    this._updateContextMenuIcons(contextTab);
+  }
+
+  // eslint-disable-next-line complexity
+  _updateContextMenuProperties(contextTab) {
     const isVisible = contextTab.pinned && !contextTab.multiselected;
-    const isMuted = contextTab.muted;
     const isEssential = contextTab.getAttribute("zen-essential");
+    const isMuted = contextTab.muted;
+    const isPinned = contextTab.pinned;
+
     const zenAddEssential = document.getElementById(
       "context_zen-add-essential"
     );
@@ -713,6 +763,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         document.l10n.setArgs(element, { isEssential });
       }
     });
+
     zenAddEssential.hidden = isEssential || !!contextTab.group;
     document.l10n
       .formatValue("tab-context-zen-add-essential-badge", {
@@ -722,15 +773,22 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       .then(badgeText => {
         zenAddEssential.setAttribute("badge", badgeText);
       });
-    document.getElementById("context_zen-mute-tab")
-      .setAttribute("image", gZenEmojiPicker.getSVGURL(isMuted ? "media-mute.svg" : "media-unmute.svg"))
-    document.getElementById("context_zen-mute-tab")
-      .setAttribute("data-l10n-id", isMuted ? "tabbrowser-manager-unmute-tab" : "tabbrowser-manager-mute-tab");
-    const isPinned = contextTab.pinned;
-    document.getElementById("context_zen-pin-tab")
-      .setAttribute("image", gZenEmojiPicker.getSVGURL(isPinned ? "unpin.svg" : "pin.svg"));
-    document.getElementById("context_zen-pin-tab")
-      .setAttribute("data-l10n-id", isPinned ? "tabbrowser-manager-unpin-tab" : "tabbrowser-manager-pin-tab");
+
+    document
+      .getElementById("context_zen-mute-tab")
+      .setAttribute(
+        "data-l10n-id",
+        isMuted ? "tabbrowser-manager-unmute-tab" : "tabbrowser-manager-mute-tab"
+      );
+    document
+      .getElementById("context_zen-pin-tab")
+      .setAttribute(
+        "data-l10n-id",
+        isPinned
+          ? "tabbrowser-manager-unpin-tab"
+          : "tabbrowser-manager-pin-tab"
+      );
+
     document
       .getElementById("cmd_contextZenAddToEssentials")
       .toggleAttribute("disabled", !this.canEssentialBeAdded(contextTab));

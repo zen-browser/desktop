@@ -67,10 +67,8 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     if (!this.enabled) {
       return;
     }
-    this._canLog = Services.prefs.getBoolPref(
-      "zen.pinned-tab-manager.debug",
-      false
-    );
+    this._canLog = true
+
     this.observer = new ZenPinnedTabsObserver();
     this._initClosePinnedTabShortcut();
     this._insertItemsIntoTabContextMenu();
@@ -564,7 +562,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
                         image="${gZenEmojiPicker.getSVGURL("link.svg")}"/>
               <menuitem id="context_zen-reload-tab"
                         class="menuitem-iconic"
-                        data-l10n-id="tabbrowser-manager-reload-tab"
+                        data-l10n-id="zen-reload-tab"
                         image="${gZenEmojiPicker.getSVGURL("reload.svg")}"/>
               <menuitem id="context_zen-pin-tab"
                         class="menuitem-iconic"

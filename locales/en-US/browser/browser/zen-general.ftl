@@ -121,6 +121,9 @@ zen-site-data-header-bookmark =
 zen-urlbar-copy-url-button =
   .tooltiptext = Copy URL
 
+zen-reload-tab =
+  .tooltiptext = Reload tab
+
 zen-site-data-setting-site-protection = Tracking Protection
 
 # Section: Feature callouts

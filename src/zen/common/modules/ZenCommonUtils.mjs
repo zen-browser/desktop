@@ -131,7 +131,7 @@ window.gZenCommonActions = {
 
     ClipboardHelper.copyString(url);
 
-    gZenUIManager.showToast("zen-copy-current-url-confirmation", {
+    gZenUIManager.showToast("zen-copy-tab-url-confirmation", {
       timeout: 3000,
     });
   },

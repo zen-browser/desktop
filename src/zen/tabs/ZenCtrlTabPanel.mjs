@@ -195,8 +195,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
     this.#createTabCards();
 
-    await new Promise(resolve => requestAnimationFrame(resolve));
-
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
 
@@ -208,12 +206,11 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     const centerX = Math.max(0, (windowWidth - panelWidth) / 2);
     const centerY = (windowHeight - nsZenCtrlTabPanel.PANEL_HEIGHT) / 2;
 
-    PanelMultiView.openPopup(this.panel, document.documentElement, {
-      position: "overlap",
-      triggerEvent: null,
-      x: centerX,
-      y: centerY,
-    });
+    this.panel.addEventListener(
+      "popupshowing",
+      () => this.#scrollToSelected(),
+      { once: true }
+    );
 
     this.panel.addEventListener(
       "popuphiding",
@@ -225,7 +222,12 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       { once: true }
     );
 
-    requestAnimationFrame(() => this.#scrollToSelected());
+    PanelMultiView.openPopup(this.panel, document.documentElement, {
+      position: "overlap",
+      triggerEvent: null,
+      x: centerX,
+      y: centerY,
+    });
 
     this.#tabList.forEach(tab =>
       this.#captureThumbnail(tab, thumbnailWidth, thumbnailHeight)

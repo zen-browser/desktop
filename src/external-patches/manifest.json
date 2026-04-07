@@ -38,17 +38,7 @@
   },
   {
     "type": "phabricator",
-    "id": "D291099",
-    "name": "gh-12979 1 Add gfxCriticalNote to DCLayerCompositionSurface" 
-  },
-  {
-    "type": "phabricator",
-    "id": "D291123",
-    "name": "gh-12979 2 Compositor rendering performance fix"
-  },
-  {
-    "type": "phabricator",
     "id": "D291714",
-    "name": "gh-12979 3 Clip dirty_rect to device_size"
+    "name": "gh-12979 Clip dirty_rect to device_size"
   }
 ]

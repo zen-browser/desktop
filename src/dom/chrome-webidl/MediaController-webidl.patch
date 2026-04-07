@@ -16,8 +16,8 @@ index 20f416d1c3b41798e0f90bbac5db40ed2a4ab000..1c5d893f9166a3aa7bc7802bb0d1207d
   * MediaController is used to control media playback for a tab, and each tab
   * would only have one media controller, which can be accessed from the
 @@ -32,10 +38,14 @@ interface MediaController : EventTarget {
-   readonly attribute boolean isAudible;
    readonly attribute boolean isPlaying;
+   readonly attribute boolean isAnyMediaBeingControlled;
    readonly attribute MediaSessionPlaybackState playbackState;
 +  readonly attribute boolean isBeingUsedInPIPModeOrFullscreen;
  

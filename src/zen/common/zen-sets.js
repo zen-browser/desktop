@@ -145,14 +145,9 @@ document.addEventListener(
           }
           case "cmd_zenDuplicateTab": {
             const selectedTabs = gBrowser.selectedTabs;
-            if (selectedTabs.length === 1)
-              duplicateTabIn(selectedTabs[0], "tab");
-            else {
-              // Multiple tabs are selected, so duplicate all of them
-              let insertAt = selectedTabs.at(-1)._tPos + 1;
-              for (const tab of selectedTabs)
-                gBrowser.duplicateTab(tab, true, { tabIndex: insertAt++ });              
-            }
+            let insertAt = selectedTabs.at(-1)._tPos + 1;
+            for (const tab of selectedTabs)
+              gBrowser.duplicateTab(tab, true, { tabIndex: insertAt++ });              
             break;
           }
           default:

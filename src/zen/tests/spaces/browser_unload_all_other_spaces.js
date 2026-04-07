@@ -18,7 +18,7 @@ add_task(async function test_UnloadAllOtherWorkspace_oneWorkspace() {
       window.gBrowser,
       `data:text/html,<title>Hi! I am regular tab ${i}</title>`,
       true,
-      { skipAnimation: true },
+      { skipAnimation: true }
     );
     tabs.push(tab);
   }
@@ -54,7 +54,7 @@ add_task(async function test_UnloadAllOtherWorkspace_multipleWorkspaces() {
       gBrowser,
       `data:text/html,<title>Regular Tab ${i} in Inactive</title>`,
       true,
-      { skipAnimation: true },
+      { skipAnimation: true }
     );
     tab.setAttribute("zen-workspace-id", inactiveWorkspaceId);
     inactiveWorkspaceTabs.push(tab);
@@ -66,7 +66,7 @@ add_task(async function test_UnloadAllOtherWorkspace_multipleWorkspaces() {
       gBrowser,
       `data:text/html,<title>Regular Tab ${i} in Active</title>`,
       true,
-      { skipAnimation: true },
+      { skipAnimation: true }
     );
     tab.setAttribute("zen-workspace-id", activeWorkspaceId);
     activeWorkspaceTabs.push(tab);
@@ -77,7 +77,7 @@ add_task(async function test_UnloadAllOtherWorkspace_multipleWorkspaces() {
   for (const tab of activeWorkspaceTabs) {
     ok(
       !tab.hasAttribute("pending"),
-      "Tab in active workspace should not be unloaded",
+      "Tab in active workspace should not be unloaded"
     );
     ok(tab.linkedPanel, "Tab in active workspace should have linked panel");
   }
@@ -85,11 +85,11 @@ add_task(async function test_UnloadAllOtherWorkspace_multipleWorkspaces() {
   for (const tab of inactiveWorkspaceTabs) {
     ok(
       tab.hasAttribute("pending"),
-      "Tab in inactive workspace should be unloaded",
+      "Tab in inactive workspace should be unloaded"
     );
     ok(
       !tab.linkedPanel,
-      "Tab in inactive workspace should not have linked panel",
+      "Tab in inactive workspace should not have linked panel"
     );
   }
   await gZenWorkspaces.removeWorkspace(inactiveWorkspaceId);
@@ -112,7 +112,7 @@ add_task(async function test_UnloadAllOtherWorkspace_essentials() {
       gBrowser,
       `data:text/html,<title>Essential Tab ${i} in Active</title>`,
       true,
-      { skipAnimation: true },
+      { skipAnimation: true }
     );
     tab.setAttribute("zen-workspace-id", activeWorkspaceId);
     tab.setAttribute("zen-essential", "true");
@@ -125,7 +125,7 @@ add_task(async function test_UnloadAllOtherWorkspace_essentials() {
       gBrowser,
       `data:text/html,<title>Essential Tab ${i} in Inactive</title>`,
       true,
-      { skipAnimation: true },
+      { skipAnimation: true }
     );
     tab.setAttribute("zen-workspace-id", inactiveWorkspaceId);
     tab.setAttribute("zen-essential", "true");
@@ -137,22 +137,22 @@ add_task(async function test_UnloadAllOtherWorkspace_essentials() {
   for (const tab of activeWorkspaceTabs) {
     ok(
       !tab.hasAttribute("pending"),
-      "Essential Tab in active workspace should not be unloaded",
+      "Essential Tab in active workspace should not be unloaded"
     );
     ok(
       tab.linkedPanel,
-      "Essential Tab in active workspace should have linked panel",
+      "Essential Tab in active workspace should have linked panel"
     );
   }
 
   for (const tab of inactiveWorkspaceTabs) {
     ok(
       !tab.hasAttribute("pending"),
-      "Essential Tab in inactive workspace should not be unloaded",
+      "Essential Tab in inactive workspace should not be unloaded"
     );
     ok(
       tab.linkedPanel,
-      "Essential Tab in inactive workspace should have linked panel",
+      "Essential Tab in inactive workspace should have linked panel"
     );
   }
   await gZenWorkspaces.removeWorkspace(inactiveWorkspaceId);

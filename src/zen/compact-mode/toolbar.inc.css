@@ -49,7 +49,7 @@
     }
   }
 
-  & #zen-appcontent-navbar-wrapper:where(
+  & #zen-appcontent-navbar-wrapper:is(
     [zen-has-hover],
     [has-popup-menu],
     [zen-compact-mode-active]

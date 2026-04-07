@@ -5,9 +5,11 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Split out tab
-            [1] Join Tab (multiple selected tabs needed)
-           *[other] Join { $tabCount } Tabs
+            [1] Rozdělit kartu (je třeba více vybraných karet)
+            [2] Rozdělit { $tabCount } karty
+            [3] Rozdělit { $tabCount } karty
+            [4] Rozdělit { $tabCount } karty
+           *[other] Rozdělit { $tabCount } karet
         }
     .accesskey = S
 zen-split-link = 

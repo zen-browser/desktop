@@ -84,7 +84,6 @@
   height: 100%;
   object-fit: cover;
   object-position: center top;
-  border-radius: var(--zen-ctrl-tab-panel-thumbnail-border-radius);
 }
 
 .zen-ctrl-tab-panel-info {

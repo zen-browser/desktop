@@ -29,7 +29,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   #tabList = [];
   #thumbnailCache = new Map();
   #actualVisibleCards = nsZenCtrlTabPanel.MAX_VISIBLE_CARDS;
-  #firstPress = true;
 
   init() {
     this.#managePreference();
@@ -195,6 +194,9 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
     this.#createTabCards();
 
+    const pageStartIndex = this.#getPageStartIndex(this.#currentIndex);
+    const scrollPosition = pageStartIndex * nsZenCtrlTabPanel.CARD_WIDTH;
+
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
 
@@ -208,7 +210,9 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
     this.panel.addEventListener(
       "popupshowing",
-      () => this.#scrollToSelected(),
+      () => {
+        this.tabsContainer.scrollLeft = scrollPosition;
+      },
       { once: true }
     );
 
@@ -256,7 +260,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     this.#isOpen = false;
     this.#currentIndex = 0;
     this.#tabList = [];
-    this.#firstPress = true;
     this.#actualVisibleCards = nsZenCtrlTabPanel.MAX_VISIBLE_CARDS;
     this.panel.hidePopup();
   }
@@ -314,7 +317,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       await lazy.PageThumbs.captureToCanvas(browser, canvas, {
         fullViewport: true,
       });
-      const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
 
       if (tab.closing) {
         return;
@@ -428,7 +431,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Updates visual selection state when switching cards.
+   * Updates visual selection state and scrolls to show the selected card.
    *
    * @param previousIndex - Index of the previously selected card to deselect.
    * @returns {void}
@@ -448,29 +451,13 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       newSelected.classList.add("zen-ctrl-tab-panel-selected");
     }
 
-    this.#scrollToSelected();
-  }
-
-  /**
-   * Scrolls card container to display selected card.
-   * First navigation uses instant scroll, subsequent navigations use smooth.
-   *
-   * @returns {void}
-   */
-  #scrollToSelected() {
-    if (!this.tabsContainer) {
-      return;
-    }
-
     const pageStartIndex = this.#getPageStartIndex(this.#currentIndex);
     const scrollPosition = pageStartIndex * nsZenCtrlTabPanel.CARD_WIDTH;
 
     this.tabsContainer.scrollTo({
       left: scrollPosition,
-      behavior: this.#firstPress ? "auto" : "smooth",
+      behavior: "smooth",
     });
-
-    this.#firstPress = false;
   }
 
   /**

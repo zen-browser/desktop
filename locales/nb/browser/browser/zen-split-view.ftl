@@ -5,9 +5,8 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Splitt fane
-            [1] Spleis fane (flere valgte faner kreves)
-           *[other] Spleis { $tabCount } faner
+            [1] Del fane (flere valgte faner trengs)
+           *[other] Del { $tabCount } faner
         }
     .accesskey = S
 zen-split-link = 

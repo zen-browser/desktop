@@ -150,11 +150,8 @@ document.addEventListener(
             } else {
               // Multiple tabs are selected, so duplicate all of them
               let insertAt = selectedTabs.at(-1)._tPos + 1;
-              for (const tab of selectedTabs) {
-                gBrowser.moveTabTo(SessionStore.duplicateTab(window, tab), {
-                  tabIndex: insertAt++,
-                });
-              }
+              for (const tab of selectedTabs)
+                gBrowser.duplicateTab(tab, true, { tabIndex: insertAt++ });              
             }
             break;
           }

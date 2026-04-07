@@ -5,9 +5,8 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Split out tab
-            [1] Join Tab (multiple selected tabs needed)
-           *[other] Join { $tabCount } Tabs
+            [1] Tab Hollt (angen sawl tab wedi'u dewis)
+           *[other] Hollti { $tabCount } Tab
         }
     .accesskey = H
 zen-split-link = 

@@ -6,9 +6,9 @@ zen-panel-ui-current-profile-text = الملف الشخصي الحالي
 unified-extensions-description = تستخدم الإضافات لجلب المزيد من الوظائف الإضافية إلى { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label =
-        {$isEssential ->
-            [true]  إعادة تعيين علامة التبويب الأساسية 
-           *[false]  إعادة تعيين التبويب المثبت
+        { $isEssential ->
+            [true] إعادة تعيين علامة التبويب الأساسية
+           *[false] إعادة تعيين التبويب المثبت
         }
     .accesskey = ر
 tab-context-zen-add-essential = 
@@ -20,10 +20,11 @@ tab-context-zen-remove-essential =
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
     .label =
-        {$isEssential ->
+        { $isEssential ->
             [true] استبدل الرابط الأساسي بـ
-           *[false] استبدل الرابط المثبت بـ
-         الحالي
+           *[false]
+                استبدل الرابط المثبت بـ
+                الحالي
         }
     .accesskey = C
 tab-context-zen-edit-title = 

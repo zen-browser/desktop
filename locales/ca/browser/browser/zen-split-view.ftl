@@ -5,9 +5,8 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Pestanya dividida
-            [1] Uneix pestanyes (calen diverses pestanyes seleccionades)
-           *[other] Uneix { $tabCount } pestanyes
+            [1] Pestanya dividida (calen diverses pestanyes seleccionades)
+           *[other] Divideix { $tabCount } pestanyes
         }
     .accesskey = S
 zen-split-link = 

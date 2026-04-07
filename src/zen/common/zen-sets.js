@@ -143,6 +143,21 @@ document.addEventListener(
             ZenLiveFoldersManager.handleEvent(event);
             break;
           }
+          case "cmd_zenDuplicateTab": {
+            const selectedTabs = gBrowser.selectedTabs;
+            if (selectedTabs.length === 1) {
+              duplicateTabIn(gBrowser.selectedTab, "tab");
+            } else {
+              // Multiple tabs are selected, so duplicate all of them
+              let insertAt = selectedTabs.at(-1)._tPos + 1;
+              for (const tab of selectedTabs) {
+                gBrowser.moveTabTo(SessionStore.duplicateTab(window, tab), {
+                  tabIndex: insertAt++,
+                });
+              }
+            }
+            break;
+          }
           default:
             gZenGlanceManager.handleMainCommandSet(event);
             if (event.target.id.startsWith("cmd_zenWorkspaceSwitch")) {

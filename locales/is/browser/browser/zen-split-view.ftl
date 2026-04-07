@@ -5,9 +5,8 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Skipta upp flipa
-            [1] Sameina flipa (verður að velja marga flipa)
-           *[other] Sameina { $tabCount } flipa
+            [1] Skipta tengli (margir valdir flipar nauðsynlegir)
+           *[other] Skipta { $tabCount } flipum
         }
     .accesskey = S
 zen-split-link = 

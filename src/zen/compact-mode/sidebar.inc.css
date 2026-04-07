@@ -144,7 +144,7 @@
     }
   }
 
-  #navigator-toolbox:where(
+  #navigator-toolbox:is(
     [zen-has-hover], [zen-user-show],
     [zen-has-empty-tab], [flash-popup],
     [has-popup-menu], [movingtab],

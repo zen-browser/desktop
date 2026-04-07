@@ -1195,7 +1195,7 @@ class nsZenKeyboardShortcutsVersioner {
         }
       }
     }
-    
+
     if (version < 17) {
       // Migrate from version 16 to 17.
       // Add shortcut to Duplicate Tab

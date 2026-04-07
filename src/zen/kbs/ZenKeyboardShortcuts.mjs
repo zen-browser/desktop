@@ -1204,7 +1204,7 @@ class nsZenKeyboardShortcutsVersioner {
           "zen-duplicate-tab",
           "",
           "",
-          ZEN_OTHER_SHORTCUTS_GROUP,
+          "windowAndTabManagement",
           nsKeyShortcutModifiers.fromObject({}),
           "cmd_zenDuplicateTab",
           "zen-duplicate-tab-shortcut"

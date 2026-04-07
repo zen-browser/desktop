@@ -16,6 +16,13 @@ XPCOMUtils.defineLazyPreferenceGetter(
   true
 );
 
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "sortByRecentlyUsed",
+  "zen.tabs.ctrl-tab-panel.sort-by-recent",
+  false
+);
+
 class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   static CARD_WIDTH = 250;
   static CARD_HEIGHT = 220;
@@ -156,9 +163,19 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       return;
     }
 
-    this.#tabList = gBrowser.tabs.filter(tab => {
-      return !tab.closing && !tab.hasAttribute("zen-empty-tab") && tab.visible;
+    this.#tabList = Array.from(gBrowser.tabs).filter(tab => {
+      if (tab.closing || tab.hasAttribute("zen-empty-tab") || !tab.visible) {
+        return false;
+      }
+      if (lazy.sortByRecentlyUsed && tab.hasAttribute("pending")) {
+        return false;
+      }
+      return true;
     });
+
+    if (lazy.sortByRecentlyUsed) {
+      this.#tabList.sort((a, b) => b.lastAccessed - a.lastAccessed);
+    }
 
     if (this.#tabList.length <= 1) {
       return;

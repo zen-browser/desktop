@@ -55,3 +55,6 @@
 
 - name: zen.tabs.ctrl-tab-panel.enabled
   value: true
+
+- name: zen.tabs.ctrl-tab-panel.sort-by-recent
+  value: false

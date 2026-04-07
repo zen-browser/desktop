@@ -4,7 +4,7 @@
 
 zen-menubar-toggle-pinned-tabs = 
     .label =
-        {$pinnedAreCollapsed ->
+        { $pinnedAreCollapsed ->
             [true] توسيع علامات التبويب المثبتة
            *[false] طي علامات التبويب المثبتة
         }

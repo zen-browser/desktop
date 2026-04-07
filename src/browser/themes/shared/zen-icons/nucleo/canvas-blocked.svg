@@ -2,8 +2,4 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" fill="currentColor" fill-opacity="context-fill-opacity">
-  <defs><clipPath id="a"><path d="M2.1 0 16 13.9V0zM0 .7V16h15.3z"/></clipPath></defs>
-  <path clip-path="url(#a)" d="M4 1a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V4a3 3 0 0 0-3-3H4zm0 1h8a2 2 0 0 1 2 2v8c0 .373-.102.72-.28 1.02L9.05 8.432a1.5 1.5 0 0 0-2.101 0l-4.67 4.588a1.988 1.988 0 0 1-.28-1.02V4a2 2 0 0 1 2-2zm6.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm0 1a.5.5 0 1 1 0 1 .5.5 0 0 1 0-1zM8 9.002c.127 0 .252.047.35.143l4.662 4.582A1.99 1.99 0 0 1 12 14H4c-.37 0-.715-.099-1.012-.273L7.65 9.145A.496.496 0 0 1 8 9.002z"/>
-  <path d="M.5 0a.5.5 0 0 0-.354.146.5.5 0 0 0 0 .707l15 15a.5.5 0 0 0 .707 0 .5.5 0 0 0 0-.707l-15-15A.5.5 0 0 0 .499 0z"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="context-fill" fill-opacity="context-fill-opacity" viewBox="0 0 18 18"><path d="M6.25 6a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5"/><path d="M15.47 1.47a.75.75 0 1 1 1.06 1.06l-14 14a.75.75 0 0 1-1.06-1.06l.879-.88a2.74 2.74 0 0 1-.35-1.34v-8.5A2.75 2.75 0 0 1 4.75 2h8.5c.487 0 .944.127 1.34.349zM4.75 3.5c-.69 0-1.25.56-1.25 1.25v8.5q0 .09.013.176l9.913-9.913a1 1 0 0 0-.176-.013zM15.25 6.25A.75.75 0 0 1 16 7v6.25A2.75 2.75 0 0 1 13.25 16H7a.75.75 0 0 1 0-1.5h6.25c.69 0 1.25-.56 1.25-1.25v-1.44l-2.366-2.366a.75.75 0 1 1 1.06-1.06L14.5 9.689V7a.75.75 0 0 1 .75-.75"/></svg>

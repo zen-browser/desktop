@@ -6,7 +6,10 @@
         role="group"
         type="arrow"
         hidepopovertail="true"
-        noautofocus="true">
+        noautofocus="true"
+        consumeoutsideclicks="true"
+        animate="false"
+        nonnativepopover="true">
   <panelmultiview id="zen-ctrl-tab-panel-multiview"
                   mainViewId="zen-ctrl-tab-panel-view">
     <panelview id="zen-ctrl-tab-panel-view"

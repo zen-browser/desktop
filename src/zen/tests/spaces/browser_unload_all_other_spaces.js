@@ -127,8 +127,7 @@ add_task(async function test_UnloadAllOtherWorkspace_essentials() {
       true,
       { skipAnimation: true }
     );
-    tab.setAttribute("zen-workspace-id", inactiveWorkspaceId);
-    tab.setAttribute("zen-essential", "true");
+    gZenPinnedTabManager.addToEssentials(tab);
     inactiveWorkspaceTabs.push(tab);
   }
 
@@ -154,6 +153,13 @@ add_task(async function test_UnloadAllOtherWorkspace_essentials() {
       tab.linkedPanel,
       "Essential Tab in inactive workspace should have linked panel"
     );
+  }
+  for (const tab of inactiveWorkspaceTabs) {
+    gZenPinnedTabManager.removeEssentials(tab);
+
+  }
+  for (const tab of activeWorkspaceTabs) {
+    gZenPinnedTabManager.removeEssentials(tab);
   }
   await gZenWorkspaces.removeWorkspace(inactiveWorkspaceId);
   await gZenWorkspaces.removeWorkspace(activeWorkspaceId);

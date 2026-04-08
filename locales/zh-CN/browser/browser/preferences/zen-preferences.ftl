@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = 切换 DOM
 zen-devtools-toggle-accessibility-shortcut = 切换无障碍环境
 zen-close-all-unpinned-tabs-shortcut = 关闭所有未固定的标签页
 zen-new-unsynced-window-shortcut = 新建空白窗口
+zen-duplicate-tab-shortcut = 克隆标签页

@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = Alternar DOM
 zen-devtools-toggle-accessibility-shortcut = Alternar Acessibilidade
 zen-close-all-unpinned-tabs-shortcut = Fechar Todos os Separadores Não Fixados
 zen-new-unsynced-window-shortcut = Nova janela sem sincronização
+zen-duplicate-tab-shortcut = Duplicate Tab

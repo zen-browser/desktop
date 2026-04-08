@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = Veksle DOM
 zen-devtools-toggle-accessibility-shortcut = Veksle Tilgjengelighet
 zen-close-all-unpinned-tabs-shortcut = Lukk alle ufestede faner
 zen-new-unsynced-window-shortcut = Nytt usynkronisert vindu
+zen-duplicate-tab-shortcut = Duplicate Tab

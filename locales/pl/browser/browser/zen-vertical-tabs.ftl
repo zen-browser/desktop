@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-toolbar-context-tabs-right = 
-    .label = Zakładki po prawej
+    .label = Karty po prawej
     .accesskey = R
 zen-toolbar-context-compact-mode = 
     .label = Tryb kompaktowy

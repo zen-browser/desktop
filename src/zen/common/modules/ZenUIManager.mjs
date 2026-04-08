@@ -432,6 +432,9 @@ window.gZenUIManager = {
   },
 
   onUrlbarSearchModeChanged(event) {
+    if (gReduceMotion) {
+      return;
+    }
     const { searchMode } = event.detail;
     const input = gURLBar;
     if (gURLBar.hasAttribute("breakout-extend") && !this._animatingSearchMode) {

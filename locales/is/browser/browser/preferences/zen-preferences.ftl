@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = Víxla DOM af/á
 zen-devtools-toggle-accessibility-shortcut = Víxla auðvelduðu aðgengi af/á
 zen-close-all-unpinned-tabs-shortcut = Loka öllum ófestum flipum
 zen-new-unsynced-window-shortcut = Nýr auður gluggi
+zen-duplicate-tab-shortcut = Tvítaka flipa

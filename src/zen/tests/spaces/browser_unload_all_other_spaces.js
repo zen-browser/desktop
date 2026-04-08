@@ -155,11 +155,7 @@ add_task(async function test_UnloadAllOtherWorkspace_essentials() {
     );
   }
   for (const tab of inactiveWorkspaceTabs) {
-    gZenPinnedTabManager.removeEssentials(tab);
-
-  }
-  for (const tab of activeWorkspaceTabs) {
-    gZenPinnedTabManager.removeEssentials(tab);
+    gBrowser.removeTab(tab);
   }
   await gZenWorkspaces.removeWorkspace(inactiveWorkspaceId);
   await gZenWorkspaces.removeWorkspace(activeWorkspaceId);

@@ -49,8 +49,8 @@ zen-tabs-renamed = 已成功重新命名分頁！
 zen-background-tab-opened-toast = 已在背景開啟新分頁！
 zen-workspace-renamed-toast = 已成功重新命名工作區！
 zen-toggle-compact-mode-button = 
-    .label = 簡潔模式
-    .tooltiptext = 切換簡潔模式
+    .label = 緊湊模式
+    .tooltiptext = 切換緊湊模式
 
 # note: Do not translate the "<br/>" tags in the following string
 

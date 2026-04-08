@@ -2,7 +2,7 @@ diff --git a/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs b/tool
 index 098742100858b266aebc8f764f918c85815f3c5f..71b8f8d71d48229fc96d6c84c635d09012a82250 100644
 --- a/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs
 +++ b/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs
-@@ -122,6 +122,9 @@ export class PictureInPictureToggleParent extends JSWindowActorParent {
+@@ -122,6 +122,9 @@
          if (browser.ownerGlobal.gBrowser.selectedBrowser == browser) {
            break;
          }
@@ -12,12 +12,108 @@ index 098742100858b266aebc8f764f918c85815f3c5f..71b8f8d71d48229fc96d6c84c635d090
          let actor = browsingContext.currentWindowGlobal.getActor(
            "PictureInPictureLauncher"
          );
-@@ -493,7 +496,7 @@ export var PictureInPicture = {
+@@ -319,7 +322,24 @@
+         break;
+     }
+   },
++
++  getPipTabForBrowser(browser) {
++    let gBrowser = browser?.getTabBrowser?.();
++    let tab = gBrowser?.getTabForBrowser(browser);
+ 
++    if (
++      !tab ||
++      tab.closing ||
++      tab.linkedBrowser !== browser ||
++      !tab.ownerGlobal ||
++      tab.ownerGlobal.closed
++    ) {
++      return null;
++    }
++
++    return tab;
++  },
++
+   /**
+    * Increase the count of PiP windows for a given browser
+    *
+@@ -368,6 +388,10 @@
+    * @param browser The browser to decrease PiP count in browserWeakMap
+    */
+   removePiPBrowserFromWeakMap(browser) {
++    if (!browser || !this.browserWeakMap.has(browser)) {
++      return;
++    }
++
+     let count = this.browserWeakMap.get(browser);
+     if (count <= 1) {
+       this.browserWeakMap.delete(browser);
+@@ -484,16 +508,25 @@
+   async focusTabAndClosePip(window, pipActor) {
+     let browser = this.weakWinToBrowser.get(window);
+     if (!browser) {
++      await this.closeSinglePipWindow({ reason: "Unpip", actorRef: pipActor });
+       return;
+     }
+ 
+     let gBrowser = browser.getTabBrowser();
+-    let tab = gBrowser.getTabForBrowser(browser);
++    let tab = this.getPipTabForBrowser(browser);
++    if (!tab) {
++      await this.closeSinglePipWindow({ reason: "Unpip", actorRef: pipActor });
++      return;
++    }
+ 
      // focus the tab's window
      tab.ownerGlobal.focus();
  
 -    gBrowser.selectedTab = tab;
-+    browser?.ownerGlobal?.gZenWorkspaces.switchIfNeeded(browser);
++    if (tab.ownerGlobal.gZenWorkspaces) {
++      await tab.ownerGlobal.gZenWorkspaces.switchIfNeeded(browser);
++    } else {
++      gBrowser.selectedTab = tab;
++    }
      await this.closeSinglePipWindow({ reason: "Unpip", actorRef: pipActor });
    },
  
+@@ -871,6 +904,23 @@
+    *   the player component inside it has finished loading.
+    */
+   async handlePictureInPictureRequest(wgp, videoData) {
++    let browser = wgp.browsingContext.top.embedderElement;
++    let tab = this.getPipTabForBrowser(browser);
++    if (!tab) {
++      return;
++    }
++
++    let parentWin = tab.ownerGlobal;
++    let win = await this.openPipWindow(parentWin, videoData);
++
++    tab = this.getPipTabForBrowser(browser);
++    if (!tab) {
++      await this.closePipWindow(win);
++      return;
++    }
++
++    parentWin = tab.ownerGlobal;
++
+     this.currentPlayerCount += 1;
+     this.maxConcurrentPlayerCount = Math.max(
+       this.maxConcurrentPlayerCount,
+@@ -879,16 +929,11 @@
+     Glean.pictureinpicture.mostConcurrentPlayers.set(
+       this.maxConcurrentPlayerCount
+     );
+-
+-    let browser = wgp.browsingContext.top.embedderElement;
+-    let parentWin = browser.ownerGlobal;
+ 
+-    let win = await this.openPipWindow(parentWin, videoData);
+     win.setIsPlayingState(videoData.playing);
+     win.setIsMutedState(videoData.isMuted);
+ 
+     // set attribute which shows pip icon in tab
+-    let tab = parentWin.gBrowser.getTabForBrowser(browser);
+     tab.setAttribute("pictureinpicture", true);
+ 
+     this.setUrlbarPipIconActive(parentWin);

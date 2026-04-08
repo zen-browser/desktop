@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = Ativar/Desativar DOM
 zen-devtools-toggle-accessibility-shortcut = Ativar/Desativar Acessibilidade
 zen-close-all-unpinned-tabs-shortcut = Fechar Todas as Abas Não Fixadas
 zen-new-unsynced-window-shortcut = Nova Janela Dessincronizada
+zen-duplicate-tab-shortcut = Duplicar Aba

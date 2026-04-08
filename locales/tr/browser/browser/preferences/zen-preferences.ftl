@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = DOM'u aç/kapat
 zen-devtools-toggle-accessibility-shortcut = Erişilebilirliği aç/kapat
 zen-close-all-unpinned-tabs-shortcut = Sabitlenmemiş tüm sekmeleri kapat
 zen-new-unsynced-window-shortcut = Yeni boş pencere
+zen-duplicate-tab-shortcut = Sekmeyi çoğalt

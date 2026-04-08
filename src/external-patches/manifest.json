@@ -40,5 +40,20 @@
     "type": "phabricator",
     "id": "D291714",
     "name": "gh-12979 Clip dirty_rect to device_size"
+  },
+  {
+    "type": "phabricator",
+    "id": "D256645",
+    "name": "FF150 1 PGO patch for bug-1962418"
+  },
+  {
+    "type": "phabricator",
+    "id": "D279829",
+    "name": "FF150 2 PGO patch for bug-2011620"
+  },
+  {
+    "type": "phabricator",
+    "id": "D281762",
+    "name": "FF150 3 PGO patch for bug-2014422"
   }
 ]

@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = Εναλλαγή DOM
 zen-devtools-toggle-accessibility-shortcut = Εναλλαγή Προσβασιμότητας
 zen-close-all-unpinned-tabs-shortcut = Κλείσιμο όλων των μη καρφιτσωμένων καρτελών
 zen-new-unsynced-window-shortcut = New Unsynced Window
+zen-duplicate-tab-shortcut = Duplicate Tab

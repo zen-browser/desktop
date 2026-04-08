@@ -5,8 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] Splits tabblad (meerdere geselecteerde tabbladen vereist)
-           *[other] Splits { $tabCount } tabbladen
+            [-1] Splits tabblad op
+            [1] Voeg tabblad samen (meerdere geselecteerde tabbladen vereist)
+           *[other] Voeg { $tabCount } tabbladen samen
         }
     .accesskey = S
 zen-split-link = 

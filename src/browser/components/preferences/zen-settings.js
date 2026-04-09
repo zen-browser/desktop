@@ -651,7 +651,6 @@ var gZenLooksAndFeel = {
       return;
     }
     this.__hasInitialized = true;
-    gZenMarketplaceManager.init();
     for (const pref of [kZenExtendedSidebar, kZenSingleToolbar]) {
       Services.prefs.addObserver(pref, this);
     }

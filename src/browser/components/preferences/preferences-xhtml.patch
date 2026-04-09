@@ -60,17 +60,6 @@ index b006d5e5e64c418fbf930c010401e4ea3a3647a3..27886c04258e40f7c6ec444320a9a2a1
 +          <label class="category-name" flex="1" data-l10n-id="pane-zen-CKS-title"></label>
 +        </richlistitem>
 +
-+        <richlistitem id="category-zen-marketplace"
-+                      class="category"
-+                      value="paneZenMarketplace"
-+                      helpTopic="prefs-main"
-+                      data-l10n-id="category-zen-marketplace"
-+                      data-l10n-attrs="tooltiptext"
-+                      align="center">
-+          <image class="category-icon"/>
-+          <label class="category-name" flex="1" data-l10n-id="pane-zen-marketplace-title"></label>
-+        </richlistitem>
-+
          <richlistitem id="category-home"
                        class="category"
                        value="paneHome"
@@ -93,7 +82,6 @@ index b006d5e5e64c418fbf930c010401e4ea3a3647a3..27886c04258e40f7c6ec444320a9a2a1
 +#include zenLooksAndFeel.inc.xhtml
 +#include zenKeyboardShortcuts.inc.xhtml
 +#include zenTabsManagement.inc.xhtml
-+#include zenMarketplace.inc.xhtml
          </vbox>
        </vbox>
      </vbox>

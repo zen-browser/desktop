@@ -341,3 +341,31 @@
 }
 
 %include zen-buttons.css
+
+/* Low bandwidth mode (performance-only) */
+/* stylelint-disable-next-line media-query-no-invalid */
+@media (-moz-pref("zen.performance.low-bandwidth-mode.enabled")) {
+  :root {
+    /* Prefer zero-duration transitions via existing vars when possible */
+    --zen-hidden-toolbar-transition-duration: 0s;
+    --zen-hidden-toolbar-transition: 0s;
+    --zen-tabbox-element-indent-transition: margin-inline-start 0s;
+  }
+
+  /* Disable animations/transitions globally (layout unchanged) */
+  #main-window,
+  #main-window * {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Disable acrylic / blur effects */
+  #main-window,
+  #main-window * {
+    backdrop-filter: none !important;
+    -moz-backdrop-filter: none !important;
+  }
+}

@@ -45,3 +45,6 @@
 # Set to a positive value to override with a custom radius
 - name: zen.theme.border-radius
   value: -1
+
+- name: zen.performance.low-bandwidth-mode.enabled
+  value: false

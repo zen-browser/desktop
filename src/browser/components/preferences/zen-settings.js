@@ -660,6 +660,7 @@ var gZenLooksAndFeel = {
       }
     });
     this.applySidebarLayout();
+    gZenPrivacyPresets.init();
   },
 
   observe() {
@@ -706,6 +707,64 @@ var gZenLooksAndFeel = {
         Services.prefs.setBoolPref(kZenSingleToolbar, layout.getAttribute("layout") == "single");
       });
     }
+  },
+};
+
+var gZenPrivacyPresets = {
+  __hasInitialized: false,
+  _pref: "zen.privacy.preset",
+
+  init() {
+    if (this.__hasInitialized) {
+      return;
+    }
+    this.__hasInitialized = true;
+    Services.prefs.addObserver(this._pref, this);
+    window.addEventListener("unload", () => {
+      Services.prefs.removeObserver(this._pref, this);
+      this.__hasInitialized = false;
+    });
+    this.apply();
+  },
+
+  observe() {
+    this.apply();
+  },
+
+  apply() {
+    const preset = Services.prefs.getStringPref(this._pref, "balanced");
+    switch (preset) {
+      case "strict":
+        this._applyStrict();
+        break;
+      case "maximum":
+        this._applyMaximum();
+        break;
+      case "balanced":
+      default:
+        this._applyBalanced();
+        break;
+    }
+  },
+
+  _applyBalanced() {
+    Services.prefs.setBoolPref("privacy.trackingprotection.enabled", true);
+    Services.prefs.setBoolPref("privacy.trackingprotection.pbmode.enabled", true);
+    Services.prefs.setBoolPref("privacy.trackingprotection.cryptomining.enabled", true);
+    Services.prefs.setBoolPref("privacy.trackingprotection.fingerprinting.enabled", false);
+    Services.prefs.setBoolPref("privacy.trackingprotection.socialtracking.enabled", false);
+  },
+
+  _applyStrict() {
+    Services.prefs.setBoolPref("privacy.trackingprotection.enabled", true);
+    Services.prefs.setBoolPref("privacy.trackingprotection.pbmode.enabled", true);
+    Services.prefs.setBoolPref("privacy.trackingprotection.cryptomining.enabled", true);
+    Services.prefs.setBoolPref("privacy.trackingprotection.fingerprinting.enabled", true);
+    Services.prefs.setBoolPref("privacy.trackingprotection.socialtracking.enabled", true);
+  },
+
+  _applyMaximum() {
+    this._applyStrict();
   },
 };
 
@@ -1228,6 +1287,16 @@ Preferences.addAll([
     id: "zen.tabs.select-recently-used-on-close",
     type: "bool",
     default: true,
+  },
+  {
+    id: "zen.performance.low-bandwidth-mode.enabled",
+    type: "bool",
+    default: false,
+  },
+  {
+    id: "zen.privacy.preset",
+    type: "string",
+    default: "balanced",
   },
   {
     id: "zen.window-sync.sync-only-pinned-tabs",

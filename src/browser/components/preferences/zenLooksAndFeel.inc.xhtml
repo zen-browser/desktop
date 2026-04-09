@@ -61,6 +61,29 @@
                       data-l10n-id="zen-look-and-feel-compact-toolbar-flash-popup"
                       preference="zen.view.compact.toolbar-flash-popup"/>
       </vbox>
+
+      <label><html:h2 data-l10n-id="zen-low-bandwidth-mode-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-low-bandwidth-mode-description" />
+      <vbox class="indent">
+            <checkbox id="zenLowBandwidthModeEnabled"
+                      data-l10n-id="zen-low-bandwidth-mode-enabled"
+                      preference="zen.performance.low-bandwidth-mode.enabled"/>
+      </vbox>
+
+      <label><html:h2 data-l10n-id="zen-privacy-presets-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-privacy-presets-description" />
+      <vbox class="indent">
+            <hbox align="center">
+                  <label data-l10n-id="zen-privacy-presets-label"/>
+                  <menulist id="zenPrivacyPreset" preference="zen.privacy.preset">
+                        <menupopup>
+                              <menuitem data-l10n-id="zen-privacy-presets-balanced" value="balanced"/>
+                              <menuitem data-l10n-id="zen-privacy-presets-strict" value="strict"/>
+                              <menuitem data-l10n-id="zen-privacy-presets-maximum" value="maximum"/>
+                        </menupopup>
+                  </menulist>
+            </hbox>
+      </vbox>
 </groupbox>
 
 <hbox id="zenGlanceCategory"

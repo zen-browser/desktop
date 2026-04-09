@@ -48,6 +48,21 @@ zen-look-and-feel-compact-view-top-toolbar =
 zen-look-and-feel-compact-toolbar-flash-popup =
     .label = Briefly make the toolbar popup when switching or opening new tabs in compact mode
 
+zen-low-bandwidth-mode-header = Low Bandwidth Mode
+zen-low-bandwidth-mode-description = Reduces animations and visual effects to improve responsiveness on slower connections or lower-end devices.
+zen-low-bandwidth-mode-enabled =
+    .label = Enable Low Bandwidth Mode
+
+zen-privacy-presets-header = Privacy Presets
+zen-privacy-presets-description = Choose a simple privacy level. You can still customize advanced privacy settings separately.
+zen-privacy-presets-label = Preset
+zen-privacy-presets-balanced =
+    .label = Balanced (Default)
+zen-privacy-presets-strict =
+    .label = Strict
+zen-privacy-presets-maximum =
+    .label = Maximum
+
 pane-zen-tabs-title = Tab Management
 category-zen-workspaces =
     .tooltiptext = { pane-zen-tabs-title }

@@ -71,3 +71,48 @@
 # Popup to move tabs to a synced workspace.
 # This would be automatically populated with the list of available synced workspaces.
 </menupopup>
+
+<panel
+  type="arrow"
+  orient="vertical"
+  id="PanelUI-zen-india-services"
+  position="bottomright topright"
+  side="bottom">
+  <vbox id="PanelUI-zen-india-services-container">
+    <label id="PanelUI-zen-india-services-title" value="India Services 🇮🇳" />
+    <vbox id="PanelUI-zen-india-services-list">
+      <toolbarbutton
+        class="toolbarbutton-1 zen-india-services-item"
+        label="IRCTC — Train booking"
+        oncommand="openTrustedLinkIn('https://www.irctc.co.in','tab');" />
+      <toolbarbutton
+        class="toolbarbutton-1 zen-india-services-item"
+        label="DigiLocker — Documents"
+        oncommand="openTrustedLinkIn('https://www.digilocker.gov.in','tab');" />
+      <toolbarbutton
+        class="toolbarbutton-1 zen-india-services-item"
+        label="BHIM UPI — Payments"
+        oncommand="openTrustedLinkIn('https://www.bhimupi.org.in','tab');" />
+      <toolbarbutton
+        class="toolbarbutton-1 zen-india-services-item"
+        label="UMANG — Government services"
+        oncommand="openTrustedLinkIn('https://web.umang.gov.in','tab');" />
+      <toolbarbutton
+        class="toolbarbutton-1 zen-india-services-item"
+        label="Income Tax"
+        oncommand="openTrustedLinkIn('https://www.incometax.gov.in','tab');" />
+      <toolbarbutton
+        class="toolbarbutton-1 zen-india-services-item"
+        label="Aadhaar"
+        oncommand="openTrustedLinkIn('https://myaadhaar.uidai.gov.in','tab');" />
+      <toolbarbutton
+        class="toolbarbutton-1 zen-india-services-item"
+        label="Passport Seva"
+        oncommand="openTrustedLinkIn('https://passportindia.gov.in','tab');" />
+      <toolbarbutton
+        class="toolbarbutton-1 zen-india-services-item"
+        label="EPFO"
+        oncommand="openTrustedLinkIn('https://www.epfindia.gov.in','tab');" />
+    </vbox>
+  </vbox>
+</panel>

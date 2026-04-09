@@ -29,6 +29,55 @@ const globalActionsTemplate = [
     icon: "chrome://browser/skin/zen-icons/edit-theme.svg",
   },
   {
+    label: "India Services 🇮🇳",
+    command: window => window.gZenIndiaServices?.open?.(null, window),
+    icon: "chrome://browser/skin/zen-icons/globe.svg",
+  },
+  {
+    label: "Open IRCTC",
+    command: window => window.openTrustedLinkIn("https://www.irctc.co.in", "tab"),
+    icon: "chrome://browser/skin/zen-icons/navigate.svg",
+  },
+  {
+    label: "Open DigiLocker",
+    command: window =>
+      window.openTrustedLinkIn("https://www.digilocker.gov.in", "tab"),
+    icon: "chrome://browser/skin/zen-icons/folder.svg",
+  },
+  {
+    label: "Open BHIM UPI",
+    command: window => window.openTrustedLinkIn("https://www.bhimupi.org.in", "tab"),
+    icon: "chrome://browser/skin/zen-icons/wallet.svg",
+  },
+  {
+    label: "Open UMANG",
+    command: window => window.openTrustedLinkIn("https://web.umang.gov.in", "tab"),
+    icon: "chrome://browser/skin/zen-icons/grid-2x2.svg",
+  },
+  {
+    label: "Open Income Tax",
+    command: window =>
+      window.openTrustedLinkIn("https://www.incometax.gov.in", "tab"),
+    icon: "chrome://browser/skin/zen-icons/stats-chart.svg",
+  },
+  {
+    label: "Open Aadhaar",
+    command: window =>
+      window.openTrustedLinkIn("https://myaadhaar.uidai.gov.in", "tab"),
+    icon: "chrome://browser/skin/zen-icons/navigate.svg",
+  },
+  {
+    label: "Open Passport Seva",
+    command: window =>
+      window.openTrustedLinkIn("https://passportindia.gov.in", "tab"),
+    icon: "chrome://browser/skin/zen-icons/briefcase.svg",
+  },
+  {
+    label: "Open EPFO",
+    command: window => window.openTrustedLinkIn("https://www.epfindia.gov.in", "tab"),
+    icon: "chrome://browser/skin/zen-icons/people.svg",
+  },
+  {
     label: "New Split View",
     command: "cmd_zenNewEmptySplit",
     icon: "chrome://browser/skin/zen-icons/split.svg",

@@ -5,6 +5,32 @@
 document.addEventListener(
   "MozBeforeInitialXULLayout",
   () => {
+    const openIndiaServicesPanel = (event, win = window) => {
+      const panel = win.document.getElementById("PanelUI-zen-india-services");
+      if (!panel) {
+        console.error("India services panel not found");
+        return;
+      }
+      const isUsableAnchor = node => {
+        if (!node || !node.isConnected || typeof node.getBoundingClientRect !== "function") {
+          return false;
+        }
+        const rect = node.getBoundingClientRect();
+        return rect.width > 0 || rect.height > 0;
+      };
+      const eventAnchor = event?.sourceEvent?.target;
+      const anchor =
+        (isUsableAnchor(eventAnchor) && eventAnchor) ||
+        win.document.getElementById("urlbar-input-container") ||
+        win.document.getElementById("urlbar") ||
+        win.document.getElementById("nav-bar") ||
+        win.document.getElementById("browser");
+      panel.openPopup(anchor, "after_start", 0, 0, false, false);
+    };
+    window.gZenIndiaServices = {
+      open: openIndiaServicesPanel,
+    };
+
     // <commandset id="mainCommandSet"> defined in browser-sets.inc
     document
       .getElementById("zenCommandSet")
@@ -151,6 +177,9 @@ document.addEventListener(
             }
             break;
           }
+          case "cmd_zenOpenIndiaServices":
+            openIndiaServicesPanel(event);
+            break;
           default:
             gZenGlanceManager.handleMainCommandSet(event);
             if (event.target.id.startsWith("cmd_zenWorkspaceSwitch")) {

@@ -182,6 +182,44 @@
   }
 }
 
+/* India services panel */
+
+#PanelUI-zen-india-services {
+  --panel-padding: 10px;
+  --panel-width: 280px;
+}
+
+#PanelUI-zen-india-services-container {
+  padding: var(--panel-padding);
+  width: var(--panel-width);
+  gap: 8px;
+}
+
+#PanelUI-zen-india-services-title {
+  font-weight: 700;
+  font-size: 13px;
+  margin: 0 0 4px 0;
+}
+
+#PanelUI-zen-india-services-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.zen-india-services-item {
+  appearance: none;
+  justify-content: flex-start;
+  padding: 8px 10px !important;
+  border-radius: 8px;
+  background-color: color-mix(in srgb, currentColor 6%, transparent);
+  font-weight: 600;
+}
+
+.zen-india-services-item:hover {
+  background-color: color-mix(in srgb, currentColor 10%, transparent);
+}
+
 .toolbarbutton-1:not(#tabs-newtab-button),
 .urlbar-page-action,
 .identity-box-button {

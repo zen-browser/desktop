@@ -832,7 +832,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 17;
+  static LATEST_KBS_VERSION = 18;
 
   constructor() {}
 
@@ -1208,6 +1208,22 @@ class nsZenKeyboardShortcutsVersioner {
           nsKeyShortcutModifiers.fromObject({}),
           "cmd_zenDuplicateTab",
           "zen-duplicate-tab-shortcut"
+        )
+      );
+    }
+
+    if (version < 18) {
+      // Migrate from version 17 to 18.
+      // Add shortcut to open India services panel: Default Ctrl+Alt+I
+      data.push(
+        new KeyShortcut(
+          "zen-open-india-services",
+          "I",
+          "",
+          ZEN_OTHER_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({ accel: true, alt: true }),
+          "cmd_zenOpenIndiaServices",
+          "zen-open-india-services-shortcut"
         )
       );
     }

@@ -554,38 +554,63 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   }
 
   createFolder(tabs = [], options = {}) {
+    const allowUnpinned = Services.prefs.getBoolPref(
+      "zen.folders.allow-unpinned",
+      false
+    );
+    const firstRealTab = tabs.find(t => !t.hasAttribute("zen-essential"));
+    const makeUnpinned =
+      allowUnpinned && firstRealTab && !firstRealTab.pinned;
+
     const filteredTabs = tabs
       .filter(tab => !tab.hasAttribute("zen-essential"))
       .map(tab => {
-        gBrowser.pinTab(tab);
+        if (!makeUnpinned) {
+          gBrowser.pinTab(tab);
+        }
         if (tab?.group?.hasAttribute("split-view-group")) {
           tab = tab.group;
         }
         return tab;
       });
 
-    const workspacePinned = gZenWorkspaces.workspaceElement(
-      options.workspaceId
-    )?.pinnedTabsContainer;
-    const pinnedContainer =
-      options.workspaceId && workspacePinned
-        ? workspacePinned
-        : gZenWorkspaces.pinnedTabsContainer;
-    const insertBefore =
-      options.insertBefore ||
-      pinnedContainer.querySelector(".pinned-tabs-container-separator");
+    let insertBefore;
+    if (makeUnpinned) {
+      const workspaceUnpinned = gZenWorkspaces.workspaceElement(
+        options.workspaceId
+      )?.tabsContainer;
+      const unpinnedContainer =
+        options.workspaceId && workspaceUnpinned
+          ? workspaceUnpinned
+          : gZenWorkspaces.activeWorkspaceStrip;
+      insertBefore = options.insertBefore || unpinnedContainer.firstChild;
+    } else {
+      const workspacePinned = gZenWorkspaces.workspaceElement(
+        options.workspaceId
+      )?.pinnedTabsContainer;
+      const pinnedContainer =
+        options.workspaceId && workspacePinned
+          ? workspacePinned
+          : gZenWorkspaces.pinnedTabsContainer;
+      insertBefore =
+        options.insertBefore ||
+        pinnedContainer.querySelector(".pinned-tabs-container-separator");
+    }
+
     const emptyTab = gBrowser.addTab("about:blank", {
       skipAnimation: true,
-      pinned: true,
+      pinned: !makeUnpinned,
       triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
       _forZenEmptyTab: true,
       createLazyBrowser: true,
     });
 
-    gBrowser.pinTab(emptyTab);
+    if (!makeUnpinned) {
+      gBrowser.pinTab(emptyTab);
+    }
     tabs = [emptyTab, ...filteredTabs];
 
-    const folder = this._createFolderNode(options);
+    const folder = this._createFolderNode({ ...options, pinned: !makeUnpinned });
 
     if (options.insertAfter) {
       options.insertAfter.after(folder);
@@ -620,6 +645,9 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     const folder = document.createXULElement("zen-folder", {
       is: "zen-folder",
     });
+    if (options.pinned === false) {
+      folder.setAttribute("zen-unpinned-folder", "true");
+    }
     let id = options.id;
     if (!id) {
       // Note: If this changes, make sure to also update the

@@ -296,7 +296,7 @@ export class nsZenSessionManager {
     }
     if (
       Services.prefs.getBoolPref("zen.session-store.log-tab-entries", false)
-    ) {z
+    ) {
       for (const tab of this.#sidebar.tabs || []) {
         this.log("Tab entry in session file:", tab);
       }

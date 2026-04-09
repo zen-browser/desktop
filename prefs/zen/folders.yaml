@@ -13,3 +13,13 @@
 
 - name: zen.folders.owned-tabs-in-folder
   value: false
+
+- name: zen.folders.allow-unpinned
+  value: false
+  # Allow creating folders that contain unpinned tabs in the regular
+  # tab area. When false (default), folders may only be created in the
+  # pinned area and any tab added to a folder is force-pinned. When
+  # true, right-clicking an unpinned tab creates a folder in the
+  # regular tab area whose members stay unpinned. This pref only
+  # governs creation — toggling it off does not retroactively pin
+  # existing unpinned folders.

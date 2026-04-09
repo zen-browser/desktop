@@ -788,6 +788,23 @@ class nsZenWorkspaces {
     this._workspaceCache = spacesFromStore.length
       ? [...spacesFromStore]
       : [this.#createWorkspaceData("Space", undefined)];
+
+    const workspaces = this._workspaceCache;
+
+    if (
+      !lazy.ZenSessionStore._lastSyncedWorkspaceHash ||
+      lazy.ZenSessionStore._lastSyncedWorkspaceHash !== JSON.stringify(workspaces)
+    ) {
+      lazy.ZenSessionStore._lastSyncedWorkspaceHash = JSON.stringify(workspaces);
+
+      console.debug(
+        "Zen: syncing workspaces to Places DB",
+        workspaces.length
+      );
+
+      void lazy.ZenSessionStore.syncWorkspacesToPlaces(workspaces);
+    }
+
     this.activeWorkspace =
       aWinData.activeZenSpace || this._workspaceCache[0].uuid;
     let promise = this.#initializeWorkspaces();
@@ -1346,6 +1363,21 @@ class nsZenWorkspaces {
     window.gZenWindowSync.propagateWorkspacesToAllWindows(
       aSpaceData ?? this._workspaceCache
     );
+    const workspaces = aSpaceData ?? this._workspaceCache;
+
+    if (
+      !lazy.ZenSessionStore._lastSyncedWorkspaceHash ||
+      lazy.ZenSessionStore._lastSyncedWorkspaceHash !== JSON.stringify(workspaces)
+    ) {
+      lazy.ZenSessionStore._lastSyncedWorkspaceHash = JSON.stringify(workspaces);
+
+      console.debug(
+        "Zen: syncing workspaces to Places DB",
+        workspaces.length
+      );
+
+      void lazy.ZenSessionStore.syncWorkspacesToPlaces(workspaces);
+    }
   }
 
   propagateWorkspaces(aWorkspaces) {

@@ -16,6 +16,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   gWindowSyncEnabled: "resource:///modules/zen/ZenWindowSync.sys.mjs",
   gSyncOnlyPinnedTabs: "resource:///modules/zen/ZenWindowSync.sys.mjs",
   DeferredTask: "resource://gre/modules/DeferredTask.sys.mjs",
+  PlacesUtils: "resource://gre/modules/PlacesUtils.sys.mjs",
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -295,12 +296,112 @@ export class nsZenSessionManager {
     }
     if (
       Services.prefs.getBoolPref("zen.session-store.log-tab-entries", false)
-    ) {
+    ) {z
       for (const tab of this.#sidebar.tabs || []) {
         this.log("Tab entry in session file:", tab);
       }
     }
     delete this._dataFromFile;
+  }
+
+/**
+   * Mirror the current session-store workspaces into Places so legacy
+   * bookmark/workspace associations can continue to resolve.
+   *
+   * @param {Array<object>} workspaces
+   */
+  async syncWorkspacesToPlaces(workspaces = []) {
+    if (!Array.isArray(workspaces) || workspaces.length === 0) {
+      return;
+    }
+
+    await this.#file?.load?.().catch(() => {});
+
+    await lazy.PlacesUtils.withConnectionWrapper(
+      "ZenSessionStore.syncWorkspacesToPlaces",
+      async db => {
+        await db.executeTransaction(async () => {
+          const now = Date.now();
+          const uuids = workspaces.map(ws => ws.uuid);
+
+          for (let i = 0; i < workspaces.length; i) {
+            const ws = workspaces[i];
+            const theme = ws.theme ?? null;
+
+            await db.execute(
+              `
+              INSERT INTO zen_workspaces (
+                uuid,
+                name,
+                icon,
+                is_default,
+                container_id,
+                position,
+                created_at,
+                updated_at,
+                theme_type,
+                theme_colors,
+                theme_opacity,
+                theme_rotation,
+                theme_texture
+              ) VALUES (
+                :uuid,
+                :name,
+                :icon,
+                :is_default,
+                :container_id,
+                :position,
+                :created_at,
+                :updated_at,
+                :theme_type,
+                :theme_colors,
+                :theme_opacity,
+                :theme_rotation,
+                :theme_texture
+              )
+              ON CONFLICT(uuid) DO UPDATE SET
+                name = excluded.name,
+                icon = excluded.icon,
+                is_default = excluded.is_default,
+                container_id = excluded.container_id,
+                position = excluded.position,
+                updated_at = excluded.updated_at,
+                theme_type = excluded.theme_type,
+                theme_colors = excluded.theme_colors,
+                theme_opacity = excluded.theme_opacity,
+                theme_rotation = excluded.theme_rotation,
+                theme_texture = excluded.theme_texture
+              `,
+              {
+                uuid: ws.uuid,
+                name: ws.name ?? "Space",
+                icon: ws.icon ?? null,
+                is_default: ws.is_default ? 1 : i === 0 ? 1 : 0,
+                container_id: ws.containerTabId ?? 0,
+                position: ws.position ?? i,
+                created_at: ws.created_at ?? now,
+                updated_at: now,
+                theme_type: theme?.type ?? null,
+                theme_colors: theme?.gradientColors
+                  ? JSON.stringify(theme.gradientColors)
+                  : null,
+                theme_opacity: theme?.opacity ?? null,
+                theme_rotation: theme?.rotation ?? null,
+                theme_texture: theme?.texture ?? null,
+              }
+            );
+          }
+
+          if (uuids.length) {
+            const placeholders = uuids.map(() => "?").join(",");
+            await db.execute(
+              `DELETE FROM zen_workspaces WHERE uuid NOT IN (${placeholders})`,
+              uuids
+            );
+          }
+        });
+      }
+    );
   }
 
   get #shouldRestoreOnlyPinned() {

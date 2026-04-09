@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "lint-staged": {
-    "**/*": ""
+    "*": "prettier --check --cache"
   },
   "type": "module",
   "scripts": {

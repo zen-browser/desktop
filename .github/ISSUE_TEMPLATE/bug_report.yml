@@ -5,13 +5,13 @@ body:
     attributes:
       value: |
         <p align="center">
-          <a href="https://zen-browser.app">
+          <a href="https://astra-browser.app">
             <picture>
-              <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/zen-browser/desktop/dev/docs/assets/zen-light.svg">
-              <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/zen-browser/desktop/dev/docs/assets/zen-dark.svg">
-              <img src="https://raw.githubusercontent.com/zen-browser/desktop/dev/docs/assets/zen-light.svg" alt="Zen Logo" width="64" height="64">
+              <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Hrishikeshmind/desktop/dev/docs/assets/zen-light.svg">
+              <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Hrishikeshmind/desktop/dev/docs/assets/zen-dark.svg">
+              <img src="https://raw.githubusercontent.com/Hrishikeshmind/desktop/dev/docs/assets/zen-light.svg" alt="Astra Logo" width="64" height="64">
             </picture>
-            <img src="https://raw.githubusercontent.com/zen-browser/desktop/dev/docs/assets/zen-browser.svg" alt="Zen Browser Text" width="156" height="64">
+            <img src="https://raw.githubusercontent.com/Hrishikeshmind/desktop/dev/docs/assets/zen-browser.svg" alt="Astra Browser Text" width="156" height="64">
           </a>
         </p>
 
@@ -78,7 +78,7 @@ body:
     id: version
     attributes:
       label: Version
-      description: What version of our software are you running? Please do not use "latest" or "newest" as version numbers. Go to `Help -> About Zen` to find the version number.
+      description: What version of our software are you running? Please do not use "latest" or "newest" as version numbers. Go to `Help -> About Astra` to find the version number.
       placeholder: 1.0.0b
     validations:
       required: true

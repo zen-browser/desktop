@@ -26,7 +26,7 @@ fi
     echo "> [!NOTE]"
     echo "> You're currently in Astra Nova (beta) mode, this means you're downloading the latest experimental features and updates."
     echo ">"
-    echo "> If you encounter any issues, please report them on the [issues page](https://github.com/zen-browser/desktop/issues)."
+    echo "> If you encounter any issues, please report them on the [issues page](https://github.com/Hrishikeshmind/astradesktop/issues)."
   fi
 
   if [ "$RELEASE_TYPE" = "Stable" ]; then
@@ -47,7 +47,7 @@ fi
     if echo "$LATEST_RELEASE" | jq -e '(.fixes // []) | length > 0' > /dev/null; then
       echo
       echo "## Fixes"
-      echo "$LATEST_RELEASE" | jq -r '.fixes[] | if type=="object" then "- " + .description + " ([#" + (.issue|tostring) + "](" + "https://github.com/zen-browser/desktop/issues/" + (.issue|tostring) + "))" else "- " + . end'
+      echo "$LATEST_RELEASE" | jq -r '.fixes[] | if type=="object" then "- " + .description + " ([#" + (.issue|tostring) + "](" + "https://github.com/Hrishikeshmind/astradesktop/issues/" + (.issue|tostring) + "))" else "- " + . end'
     fi
 
     if echo "$LATEST_RELEASE" | jq -e '(.breakingChanges // []) | length > 0' > /dev/null; then

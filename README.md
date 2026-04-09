@@ -4,12 +4,11 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/.
    -->
 <!-- TODO: Get a job -->
-<img src="./docs/assets/zen-dark.svg" width="100px" align="left">
+<img src="./docs/assets/astra-dark.svg" width="100px" align="left">
 
 ### `Astra Browser`
 
 [![Downloads](https://img.shields.io/github/downloads/Hrishikeshmind/astradesktop/total.svg)](https://github.com/Hrishikeshmind/astradesktop/releases)
-[![Crowdin](https://badges.crowdin.net/zen-browser/localized.svg)](https://crowdin.com/project/zen-browser)
 [![Astra Release builds](https://github.com/Hrishikeshmind/astradesktop/actions/workflows/build.yml/badge.svg?branch=stable)](https://github.com/Hrishikeshmind/astradesktop/actions/workflows/build.yml)
 
 Astra is a firefox-based browser with the aim of pushing your productivity to a new level!

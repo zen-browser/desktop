@@ -63,6 +63,9 @@
   locked: true
   value: false
 
+- name: zen.keyboard.shortcuts.reserved
+  value: ""
+
 - name: browser.tabs.closeWindowWithLastTab
   value: false
 

@@ -452,8 +452,8 @@ class KeyShortcut {
     if (this.#disabled) {
       key.setAttribute("disabled", this.#disabled);
     }
-    if (this.#reserved) {
-      key.setAttribute("reserved", this.#reserved);
+    if (this.#reserved || this.#isReservedByPref()) {
+      key.setAttribute("reserved", "true");
     }
     if (this.#internal) {
       key.setAttribute("internal", this.#internal);
@@ -521,6 +521,14 @@ class KeyShortcut {
 
   isReserved() {
     return this.#reserved;
+  }
+
+  #isReservedByPref() {
+    const reserved = Services.prefs.getStringPref("zen.keyboard.shortcuts.reserved", "");
+    if (!reserved) {
+      return false;
+    }
+    return reserved.split(",").map(s => s.trim()).includes(this.#id);
   }
 
   isInternal() {

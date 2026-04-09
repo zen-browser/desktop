@@ -33,9 +33,9 @@ jobs:
       matrix:
         arch: [x86_64, aarch64]
     env:
-      SCCACHE_GHA_ENABLED: ${{ inputs.use-sccache && 'true' || 'false' }}
+      SCCACHE_GHA_ENABLED: ${{ inputs['use-sccache'] && 'true' || 'false' }}
       CARGO_TERM_COLOR: always
-      RUSTC_WRAPPER: ${{ inputs.use-sccache && 'sccache' || '' }}
+      RUSTC_WRAPPER: ${{ inputs['use-sccache'] && 'sccache' || '' }}
       CARGO_INCREMENTAL: 0
     steps:
       - name: Checkout repository
@@ -51,7 +51,7 @@ jobs:
 
       - name: Run sccache-cache
         uses: mozilla-actions/sccache-action@main
-        if: ${{ inputs.use-sccache }}
+        if: ${{ inputs['use-sccache'] }}
         with:
           disable_annotations: true
 
@@ -110,7 +110,7 @@ jobs:
           npm ci
 
       - name: Load surfer CI setup
-        run: npm run surfer -- ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
+        run: npm run surfer -- ci --brand ${{ inputs['release-branch'] }} --display-version ${{ inputs['build-version'] }}
 
       - name: Download Firefox source and dependencies
         run: npm run download
@@ -137,10 +137,10 @@ jobs:
           mkdir -p ~/.zen-keys
           echo "${{ secrets.ZEN_SAFEBROWSING_API_KEY }}" > ~/.zen-keys/safebrowsing.dat
 
-      - name: Build Zen
+      - name: Build Astra
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
-          ZEN_RELEASE_BRANCH: ${{ inputs.release-branch }}
+          ZEN_RELEASE_BRANCH: ${{ inputs['release-branch'] }}
         run: |
           export SURFER_PLATFORM="darwin"
           if [[ -n ${{ inputs.MOZ_BUILD_DATE }} ]];then

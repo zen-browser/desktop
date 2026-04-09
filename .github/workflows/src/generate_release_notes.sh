@@ -19,12 +19,12 @@ else
 fi
 
 {
-  echo "# Zen ${RELEASE_TYPE} Release"
+  echo "# Astra ${RELEASE_TYPE} Release"
 
   if [ "$RELEASE_TYPE" = "Twilight" ]; then
     echo
     echo "> [!NOTE]"
-    echo "> You're currently in Twilight mode, this means you're downloading the latest experimental features and updates."
+    echo "> You're currently in Astra Nova (beta) mode, this means you're downloading the latest experimental features and updates."
     echo ">"
     echo "> If you encounter any issues, please report them on the [issues page](https://github.com/zen-browser/desktop/issues)."
   fi

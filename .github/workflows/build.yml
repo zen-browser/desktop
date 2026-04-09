@@ -1,4 +1,4 @@
-name: Zen Release builds
+name: Astra Release builds
 
 on:
   workflow_dispatch:
@@ -72,7 +72,7 @@ jobs:
         run: |
           echo "create_release: ${{ inputs.create_release }}"
           echo "update_version: ${{ inputs.update_version }}"
-          echo "use sccache: ${{ inputs.use-sccache }}"
+          echo "use sccache: ${{ inputs['use-sccache'] }}"
           echo "update_branch: ${{ inputs.update_branch }}"
           echo "GITHUB_REPOSITORY: ${{ github.repository }}"
           echo "GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}"
@@ -181,7 +181,7 @@ jobs:
         if: ${{ inputs.update_version }}
         with:
           commit_message: 🔖 Update version to ${{ steps.data.outputs.version }}
-          commit_user_name: Zen Browser Robot
+          commit_user_name: Astra Browser Robot
           commit_user_email: zen-browser-auto@users.noreply.github.com
 
   check-release:
@@ -285,7 +285,7 @@ jobs:
       contents: write
     secrets: inherit
     with:
-      use-sccache: ${{ inputs.use-sccache }}
+      use-sccache: ${{ inputs['use-sccache'] }}
       build-version: ${{ needs.build-data.outputs.version }}
       generate-gpo: true
       profile-data-path-archive: zen-windows-profile-data-and-jarlog.zip
@@ -316,7 +316,7 @@ jobs:
       generate-gpo: false
       release-branch: ${{ inputs.update_branch }}
       MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
-      use-sccache: ${{ inputs.use-sccache }}
+      use-sccache: ${{ inputs['use-sccache'] }}
 
   linux:
     name: Linux build
@@ -329,7 +329,7 @@ jobs:
       build-version: ${{ needs.build-data.outputs.version }}
       release-branch: ${{ inputs.update_branch }}
       MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
-      use-sccache: ${{ inputs.use-sccache }}
+      use-sccache: ${{ inputs['use-sccache'] }}
 
   mac:
     name: macOS build
@@ -342,7 +342,7 @@ jobs:
       build-version: ${{ needs.build-data.outputs.version }}
       release-branch: ${{ inputs.update_branch }}
       MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
-      use-sccache: ${{ inputs.use-sccache }}
+      use-sccache: ${{ inputs['use-sccache'] }}
 
   mac-uni:
     name: macOS build (Universal)
@@ -397,7 +397,7 @@ jobs:
           cp configs/branding/${{ inputs.update_branch }}/logo128.png build/AppDir/zen.png && ln -s zen.png build/AppDir/.DirIcon
 
           if [ "${{ inputs.update_branch }}" = "twilight" ]; then
-            sed -i -e 's/Name=Zen Browser/Name=Zen Twilight/g' build/AppDir/zen.desktop
+            sed -i -e 's/Name=Astra Browser/Name=Astra Nova/g' build/AppDir/zen.desktop
             sed -i -e 's/StartupWMClass=zen/StartupWMClass=zen-twilight/g' build/AppDir/zen.desktop
           fi
 
@@ -528,7 +528,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: 🚀 Update update manifests
-          commit_user_name: Zen Browser Robot
+          commit_user_name: Astra Browser Robot
           commit_user_email: zen-browser-auto@users.noreply.github.com
           repository: ./updates-server
 
@@ -630,7 +630,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: 🚀 Update releases for Flatpak
-          commit_user_name: Zen Browser Robot
+          commit_user_name: Astra Browser Robot
           commit_user_email: zen-browser-auto@users.noreply.github.com
 
       - name: Checkout Flatpak repository
@@ -653,7 +653,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "[release]: Update Flatpak manifest"
-          commit_user_name: Zen Browser Robot
+          commit_user_name: Astra Browser Robot
           commit_user_email: zen-browser-auto@users.noreply.github.com
           repository: ./flatpak
 
@@ -738,7 +738,7 @@ jobs:
           commit-message: Update to version `${{ needs.build-data.outputs.version }}`
           title: Update to version `${{ needs.build-data.outputs.version }}`
           body: |
-            This PR updates the Zen Browser Flatpak package to version ${{ needs.build-data.outputs.version }}.
+            This PR updates the Astra Browser Flatpak package to version ${{ needs.build-data.outputs.version }}.
 
             @${{ github.actor }} please review and merge this PR.
           branch: update-to-${{ needs.build-data.outputs.version }}

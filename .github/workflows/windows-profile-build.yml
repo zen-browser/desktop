@@ -28,7 +28,7 @@ jobs:
       matrix:
         arch: [x86_64, aarch64]
 
-    runs-on: ${{ inputs.release-branch == 'release' && 'windows-latest' || 'windows-latest' }}
+    runs-on: ${{ inputs['release-branch'] == 'release' && 'windows-latest' || 'windows-latest' }}
 
     steps:
       - name: Checkout repository
@@ -48,7 +48,7 @@ jobs:
         run: npm i -g @zen-browser/surfer
 
       - name: Load Surfer CI setup
-        run: npm run surfer -- ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
+        run: npm run surfer -- ci --brand ${{ inputs['release-branch'] }} --display-version ${{ inputs['build-version'] }}
 
       - name: Download artifact
         if: ${{ matrix.arch == 'x86_64' }}
@@ -62,7 +62,7 @@ jobs:
         run: |
           cd C:\artifact
           ls
-          Expand-Archive -Path .\${{ inputs.profile-data-path-archive }} -DestinationPath C:\artifact
+          Expand-Archive -Path .\${{ inputs['profile-data-path-archive'] }} -DestinationPath C:\artifact
           ls
 
       - name: Setup

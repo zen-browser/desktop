@@ -17,9 +17,6 @@ jobs:
     name: Unify macOS (Universal)
     runs-on: "macos-26"
 
-    strategy:
-      fail-fast: false
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -73,7 +70,7 @@ jobs:
           npm ci
 
       - name: Load surfer CI setup
-        run: npm run surfer -- ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
+        run: npm run surfer -- ci --brand ${{ inputs['release-branch'] }} --display-version ${{ inputs['build-version'] }}
 
       - name: Download Firefox source and dependencies
         run: npm run download
@@ -133,7 +130,7 @@ jobs:
       - name: Find first .app folder name
         run: |
           cd engine/obj-x86_64-apple-darwin/dist
-          export APP_NAME=${{ inputs.release-branch == 'twilight' && 'Twilight' || 'Zen' }}
+          export APP_NAME=${{ inputs['release-branch'] == 'twilight' && 'Astra Nova' || 'Astra' }}
           echo "APP_NAME=$APP_NAME" >> $GITHUB_ENV
           echo "APP_NAME=$APP_NAME"
 
@@ -190,9 +187,9 @@ jobs:
           cd engine
           ./mach python -m mozbuild.action.make_dmg \
             --volume-name "${{ env.APP_NAME }}" \
-            --background ./browser/branding/${{ inputs.release-branch }}/background.png \
-            --icon ./browser/branding/${{ inputs.release-branch }}/firefox.icns \
-            --dsstore ./browser/branding/${{ inputs.release-branch }}/dsstore \
+            --background ./browser/branding/${{ inputs['release-branch'] }}/background.png \
+            --icon ./browser/branding/${{ inputs['release-branch'] }}/firefox.icns \
+            --dsstore ./browser/branding/${{ inputs['release-branch'] }}/dsstore \
             ./obj-x86_64-apple-darwin/dist/ ../zen-macOS-universal-temp.dmg
 
       - name: Remove sensitive information

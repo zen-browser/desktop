@@ -1,6 +1,6 @@
 {
-  "name": "Zen Browser",
-  "vendor": "Zen OSS Team",
+  "name": "Astra Browser",
+  "vendor": "Astra OSS Team",
   "appId": "zen",
   "binaryName": "zen",
   "version": {
@@ -16,13 +16,13 @@
   "brands": {
     "release": {
       "backgroundColor": "#282A33",
-      "brandShorterName": "Zen",
-      "brandShortName": "Zen",
-      "brandFullName": "Zen Browser",
+      "brandShorterName": "Astra",
+      "brandShortName": "Astra",
+      "brandFullName": "Astra Browser",
       "release": {
         "displayVersion": "1.19.7b",
         "github": {
-          "repo": "zen-browser/desktop"
+          "repo": "Hrishikeshmind/astradesktop"
         },
         "archives": {
           "windows": "windows.mar",
@@ -36,13 +36,13 @@
     },
     "twilight": {
       "backgroundColor": "#282A33",
-      "brandShorterName": "Zen",
+      "brandShorterName": "Astra Nova",
       "brandShortName": "Twilight",
-      "brandFullName": "Zen Twilight",
+      "brandFullName": "Astra Nova",
       "release": {
         "displayVersion": "1.20t",
         "github": {
-          "repo": "zen-browser/desktop"
+          "repo": "Hrishikeshmind/astradesktop"
         }
       }
     }
@@ -53,5 +53,5 @@
     ],
     "licenseType": "MPL-2.0"
   },
-  "updateHostname": "updates.zen-browser.app"
+  "updateHostname": "updates.astra-browser.app"
 }

@@ -18,7 +18,7 @@ index c64980810570fcea84e33fdc2d66ac42a79f4e46..aa629ebb38a9aa74048fe3fc759f716f
              <description class="text-blurb" id="warningDesc" data-l10n-id="warningDesc-version"></description>
              <description class="text-blurb" id="communityExperimentalDesc" data-l10n-id="community-exp">
 -              <label is="text-link" href="https://www.mozilla.org/?utm_source=firefox-browser&#38;utm_medium=firefox-desktop&#38;utm_campaign=about-dialog" data-l10n-name="community-exp-mozillaLink"/>
-+              <label is="text-link" href="https://zen-browser.app/about" data-l10n-name="community-exp-mozillaLink"/>
++              <label is="text-link" href="https://astra-browser.app/about" data-l10n-name="community-exp-mozillaLink"/>
                <label is="text-link" useoriginprincipal="true" href="about:credits" data-l10n-name="community-exp-creditsLink"/>
              </description>
            </vbox>
@@ -40,7 +40,7 @@ index c64980810570fcea84e33fdc2d66ac42a79f4e46..aa629ebb38a9aa74048fe3fc759f716f
 -        <label is="text-link" class="bottom-link" href="https://www.mozilla.org/about/legal/terms/firefox/" data-l10n-id="bottom-links-terms"/>
 -        <label is="text-link" class="bottom-link" href="https://www.mozilla.org/privacy/firefox/?utm_source=firefox-browser&#38;utm_medium=firefox-desktop&#38;utm_campaign=about-dialog" data-l10n-id="bottom-links-privacy"/>
 +        <label is="text-link" class="bottom-link" href="about:rights" data-l10n-id="bottomLinks-rights"/>
-+        <label is="text-link" class="bottom-link" href="https://www.zen-browser.app/privacy-policy/" data-l10n-id="bottomLinks-privacy"/>
++        <label is="text-link" class="bottom-link" href="https://www.astra-browser.app/privacy-policy/" data-l10n-id="bottomLinks-privacy"/>
        </hbox>
        <description id="trademark" data-l10n-id="trademarkInfo"></description>
      </vbox>

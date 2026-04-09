@@ -1309,6 +1309,7 @@
       if (
         isTabGroupLabel(draggedTab) &&
         draggedTab.group?.isZenFolder &&
+        draggedTab.group?.pinned &&
         (((isTab(dropElement) ||
           dropElement.hasAttribute("split-view-group")) &&
           (!dropElement.pinned || dropElement.hasAttribute("zen-essential"))) ||

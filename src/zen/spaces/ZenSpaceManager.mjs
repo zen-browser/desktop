@@ -2469,8 +2469,14 @@ class nsZenWorkspaces {
       }
     }
 
-    // Reset bookmarks
-    this.#invalidateBookmarkContainers();
+    // Avoid forcing a startup toolbar rebuild when there are no
+    // workspace-specific bookmark assignments to apply.
+    const hasWorkspaceBookmarks = !!Object.keys(
+      this._workspaceBookmarksCache?.bookmarks || {}
+    ).length;
+    if (!onInit || hasWorkspaceBookmarks) {
+      this.#invalidateBookmarkContainers();
+    }
 
     // Update workspace indicator
     await this.updateWorkspaceIndicator(workspace, this.workspaceIndicator);

@@ -68,7 +68,8 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
 
   connectedCallback() {
     super.connectedCallback();
-    this.labelElement.pinned = true;
+    this._isUnpinnedFolder = this.hasAttribute("zen-unpinned-folder");
+    this.labelElement.pinned = !this._isUnpinnedFolder;
     if (this.#initialized) {
       return;
     }
@@ -205,7 +206,7 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
   }
 
   get pinned() {
-    return this.isZenFolder;
+    return this.isZenFolder && !this._isUnpinnedFolder;
   }
 
   /**
@@ -215,7 +216,17 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
    * This no-op setter ensures compatibility with interfaces expecting a pinned property,
    * while preserving the invariant that ZenFolders cannot have their pinned state changed externally.
    */
-  set pinned(value) {}
+  set pinned(value) {
+    if (!Services.prefs.getBoolPref("zen.folders.allow-unpinned", false)) {
+      return; // legacy no-op behavior when pref is off
+    }
+    this._isUnpinnedFolder = !value;
+    if (value) {
+      this.removeAttribute("zen-unpinned-folder");
+    } else {
+      this.setAttribute("zen-unpinned-folder", "true");
+    }
+  }
 
   get iconURL() {
     return this.icon.querySelector("image")?.getAttribute("href") || "";

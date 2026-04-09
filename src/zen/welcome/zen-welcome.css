@@ -19,6 +19,14 @@
   min-width: 875px;
   min-height: 560px;
 
+  --zen-branding-bg: linear-gradient(
+    180deg,
+    #ff9933 0%,
+    #ffffff 45%,
+    #ffffff 55%,
+    #138808 100%
+  );
+
   #zen-sidebar-splitter {
     display: none;
   }
@@ -28,7 +36,7 @@
   flex-direction: column;
   -moz-window-dragging: drag;
 
-  --zen-primary-color: light-dark(black, white);
+  --zen-primary-color: #ff9933;
 
   #zen-welcome-start-button {
     opacity: 0;
@@ -37,6 +45,14 @@
     bottom: 10%;
     padding: 1em !important;
     min-width: 100px;
+    background: #ff9933;
+    border-color: #ff9933;
+    color: #000;
+
+    &:hover {
+      background: #e6801c;
+      border-color: #e6801c;
+    }
   }
 
   #zen-welcome-title {

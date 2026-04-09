@@ -279,7 +279,7 @@
       }
       gZenFolders.createFolder(tabsToGroup, {
         renameFolder: false,
-        label: "zen basics",
+        label: "astra basics",
       });
     }
 

@@ -330,7 +330,14 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   on_TabOpen(event) {
     const tab = event.target;
     const group = tab.group;
-    if (!group?.isZenFolder || tab.pinned) {
+    if (!group?.isZenFolder) {
+      return;
+    }
+    // Unpinned folders accept unpinned tabs as-is. No force-pin.
+    if (group._isUnpinnedFolder) {
+      return;
+    }
+    if (tab.pinned) {
       return;
     }
     // Edge case: In occations where we add a tab with an ownerTab

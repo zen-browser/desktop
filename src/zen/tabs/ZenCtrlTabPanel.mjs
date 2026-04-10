@@ -111,7 +111,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   #handleKeyDown(event) {
     if (event.key === "Escape" && this.#isOpen) {
       event.preventDefault();
-      event.stopPropagation();
       event.stopImmediatePropagation();
       this.close(false);
       return;
@@ -119,13 +118,12 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
     if (lazy.enabled && event.ctrlKey && event.key === "Tab") {
       event.preventDefault();
-      event.stopPropagation();
       event.stopImmediatePropagation();
 
       if (!this.#isOpen) {
         this.open(event.shiftKey);
       } else {
-        event.shiftKey ? this.#navigateBackward() : this.#navigateForward();
+        event.shiftKey ? this.navigateBackward() : this.navigateForward();
       }
     }
   }
@@ -136,6 +134,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     }
   }
 
+  // Ensure panel fits on narrow or vertical screens.
   #getMaxCards() {
     const screenWidth = screen.width;
 
@@ -164,7 +163,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     }
 
     this.#tabList = Array.from(gBrowser.tabs).filter(tab => {
-      if (tab.closing || tab.hasAttribute("zen-empty-tab") || !tab.visible) {
+      if (tab.closing || !tab.visible) {
         return false;
       }
       if (lazy.sortByRecentlyUsed && tab.hasAttribute("pending")) {
@@ -174,7 +173,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     });
 
     if (lazy.sortByRecentlyUsed) {
-      this.#tabList.sort((a, b) => b.lastAccessed - a.lastAccessed);
+      this.#tabList.sort((tab1, tab2) => tab2.lastAccessed - tab1.lastAccessed);
     }
 
     if (this.#tabList.length <= 1) {
@@ -208,6 +207,10 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     const thumbnailHeight = Math.round(thumbnailWidth / tabBoxAspectRatio);
 
     await this.#cacheThumbnailsForVisible(thumbnailWidth, thumbnailHeight);
+
+    if (!this.#isOpen) {
+      return;
+    }
 
     this.#createTabCards();
 
@@ -506,7 +509,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
    *
    * @returns {void}
    */
-  #navigateForward() {
+  navigateForward() {
     const previousIndex = this.#currentIndex;
     this.#currentIndex = (this.#currentIndex + 1) % this.#tabList.length;
     this.#updateSelection(previousIndex);
@@ -517,7 +520,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
    *
    * @returns {void}
    */
-  #navigateBackward() {
+  navigateBackward() {
     const previousIndex = this.#currentIndex;
     this.#currentIndex =
       (this.#currentIndex - 1 + this.#tabList.length) % this.#tabList.length;

@@ -108,20 +108,20 @@ jobs:
           Invoke-WebRequest -Uri "https://ftp.mozilla.org/pub/mozilla/libraries/win32/MozillaBuildSetup-Latest.exe" -OutFile "MozillaBuildSetup.exe"
           Start-Process -FilePath "MozillaBuildSetup.exe" -ArgumentList "/S" -Wait
           $env:MOZILLABUILD = "C:\mozilla-build"
-          echo "MOZILLABUILD=C:\mozilla-build" >> $env:GITHUB_ENV
+          Add-Content -Path $env:GITHUB_ENV -Value "MOZILLABUILD=C:\mozilla-build"
 
       - name: Setup for Windows
         if: steps.cache-win-cross.outputs.cache-hit != 'true' && !(inputs['generate-gpo'] && matrix.arch == 'aarch64')
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path "$HOME/win-cross" | Out-Null
+          New-Item -ItemType Directory -Force -Path "$env:USERPROFILE/win-cross" | Out-Null
           Set-Location engine
-          echo Setup wine
+          Write-Output "Setup wine"
           Invoke-WebRequest "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-1.toolchains.v3.linux64-wine.latest/artifacts/public%2Fbuild%2Fwine.tar.zst" -OutFile "wine.tar.zst"
-          tar -xf "wine.tar.zst" -C "$HOME/win-cross"
+          tar -xf "wine.tar.zst" -C "$env:USERPROFILE/win-cross"
           Remove-Item "wine.tar.zst" -Force
-          echo Setup Visual Studio
-          python mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2026.yaml "$HOME/win-cross/vs2026"
+          Write-Output "Setup Visual Studio"
+          python mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2026.yaml "$env:USERPROFILE/win-cross/vs2026"
 
       - name: Import
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
@@ -134,6 +134,7 @@ jobs:
 
       - name: Bootstrap
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
+        shell: bash
         run: |
           set -x
           cd engine/
@@ -155,7 +156,7 @@ jobs:
           $toolchain = (Get-Content .rust-toolchain -Raw).Trim()
           Invoke-WebRequest "https://win.rustup.rs/x86_64" -OutFile "rustup-init.exe"
           .\rustup-init.exe -y --default-toolchain $toolchain
-          $env:Path = "$HOME\.cargo\bin;$env:Path"
+          $env:Path = "$env:USERPROFILE\.cargo\bin;$env:Path"
           if ("${{ matrix.arch }}" -eq "aarch64") {
             rustup target add aarch64-pc-windows-msvc
           } else {
@@ -172,7 +173,8 @@ jobs:
 
       - name: Build language packs
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
-        run: sh scripts/download-language-packs.sh
+        shell: bash
+        run: bash scripts/download-language-packs.sh
 
       - name: Download artifact (if use profdata)
         uses: actions/download-artifact@v4
@@ -183,6 +185,7 @@ jobs:
 
       - name: Show artifact info
         if: ${{ !inputs['generate-gpo'] && matrix.arch == 'x86_64' }}
+        shell: bash
         run: |
           ls ~/artifact
           ls ~/artifact/en-US.log
@@ -193,10 +196,10 @@ jobs:
       - name: Insert API Keys
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path "$HOME/.zen-keys" | Out-Null
+          New-Item -ItemType Directory -Force -Path "$env:USERPROFILE/.zen-keys" | Out-Null
           $key = "${{ secrets.ZEN_SAFEBROWSING_API_KEY }}"
           if ([string]::IsNullOrWhiteSpace($key)) { $key = "placeholder" }
-          Set-Content -Path "$HOME/.zen-keys/safebrowsing.dat" -Value $key
+          Set-Content -Path "$env:USERPROFILE/.zen-keys/safebrowsing.dat" -Value $key
 
       - name: Build
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
@@ -220,6 +223,7 @@ jobs:
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
           ZEN_GA_DISABLE_PGO: true
+        shell: bash
         run: |
           set -x
           export SURFER_PLATFORM="win32"
@@ -231,17 +235,20 @@ jobs:
           ls .
 
       - name: Remove API Keys
+        shell: pwsh
         run: |
           Remove-Item -Recurse -Force "$env:USERPROFILE\.zen-keys" -ErrorAction SilentlyContinue
 
       - name: Move package for PGO upload
         if: ${{ inputs['generate-gpo'] && matrix.arch == 'x86_64' }}
+        shell: bash
         run: |
           set -x
           mv ./zen.win64.zip ./zen.win64-pgo-stage-1.zip
 
       - name: Rename artifacts
         if: ${{ !inputs['generate-gpo'] }}
+        shell: bash
         run: |
           mv ./zen.win64.zip zen.win-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}.zip
           mv ./dist/output.mar windows${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.mar
@@ -257,18 +264,19 @@ jobs:
 
       - name: Remove unnecessary files from obj
         if: ${{ !inputs['generate-gpo'] }}
+        shell: bash
         run: |
           set -x
-          mkdir obj-${{ matrix.arch }}-pc-windows-msvc/
+          mkdir -p "obj-${{ matrix.arch }}-pc-windows-msvc"
 
-          Remove-Item -Recurse -Force "engine/obj-${{ matrix.arch }}-pc-windows-msvc/_tests" -ErrorAction SilentlyContinue
-          Remove-Item -Recurse -Force "engine/obj-${{ matrix.arch }}-pc-windows-msvc/config/autoconf.mk" -ErrorAction SilentlyContinue
-          Remove-Item -Recurse -Force "engine/obj-${{ matrix.arch }}-pc-windows-msvc/config.statusd/substs/" -ErrorAction SilentlyContinue
-          Remove-Item -Recurse -Force "engine/obj-${{ matrix.arch }}-pc-windows-msvc/dist/install" -ErrorAction SilentlyContinue
+          rm -rf "engine/obj-${{ matrix.arch }}-pc-windows-msvc/_tests" 2>/dev/null || true
+          rm -f "engine/obj-${{ matrix.arch }}-pc-windows-msvc/config/autoconf.mk" 2>/dev/null || true
+          rm -rf "engine/obj-${{ matrix.arch }}-pc-windows-msvc/config.statusd/substs/" 2>/dev/null || true
+          rm -rf "engine/obj-${{ matrix.arch }}-pc-windows-msvc/dist/install" 2>/dev/null || true
 
-          find engine/obj-${{ matrix.arch }}-pc-windows-msvc/dist -maxdepth 1 -type f -name "*.zip" -delete
+          find "engine/obj-${{ matrix.arch }}-pc-windows-msvc/dist" -maxdepth 1 -type f -name "*.zip" -delete
 
-          cp -r --no-dereference engine/obj-${{ matrix.arch }}-pc-windows-msvc/* obj-${{ matrix.arch }}-pc-windows-msvc/ || true
+          cp -r --no-dereference "engine/obj-${{ matrix.arch }}-pc-windows-msvc/"* "obj-${{ matrix.arch }}-pc-windows-msvc/" || true
 
       - name: Upload dist object
         if: ${{ !inputs['generate-gpo'] }}

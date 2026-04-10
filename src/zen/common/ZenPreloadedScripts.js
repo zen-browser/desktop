@@ -11,6 +11,7 @@
   ChromeUtils.importESModule("resource:///modules/zen/ZenSpaceManager.mjs", { global: "current" });
   ChromeUtils.importESModule("chrome://browser/content/zen-components/ZenCompactMode.mjs", { global: "current" });
   ChromeUtils.importESModule("chrome://browser/content/ZenUIManager.mjs", { global: "current" });
+  ChromeUtils.importESModule("chrome://browser/content/ZenDevUrlDetector.mjs", { global: "current" });
   ChromeUtils.importESModule("chrome://browser/content/zen-components/ZenMods.mjs", { global: "current" });
   ChromeUtils.importESModule("chrome://browser/content/zen-components/ZenKeyboardShortcuts.mjs", { global: "current" });
   ChromeUtils.importESModule("chrome://browser/content/zen-components/ZenSessionStore.mjs", { global: "current" });

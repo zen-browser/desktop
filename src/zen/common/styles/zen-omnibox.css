@@ -719,3 +719,21 @@
     display: none !important;
   }
 }
+
+/* DEV URL mode — active when gZenDevUrlDetector detects a local/dev URL */
+:root[zen-dev-url] {
+  --zen-dev-url-color: #ff6b35;
+
+  & #urlbar-background {
+    outline: 1.5px solid var(--zen-dev-url-color) !important;
+    outline-offset: -1.5px;
+  }
+
+  & #urlbar:not([breakout-extend="true"]) #urlbar-background {
+    background-color: color-mix(
+      in srgb,
+      var(--zen-dev-url-color) 8%,
+      var(--toolbar-bgcolor)
+    );
+  }
+}

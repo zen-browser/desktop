@@ -84,6 +84,7 @@ class ZenStartup {
       await SessionStore.promiseAllWindowsRestored;
       delete gZenUIManager.promiseInitialized;
       gZenCompactModeManager.init();
+      gZenDevUrlDetector.init();
       // Fix for https://github.com/zen-browser/desktop/issues/7605, specially in compact mode
       if (gURLBar.hasAttribute("breakout-extend")) {
         gURLBar.focus();

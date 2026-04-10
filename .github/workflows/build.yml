@@ -518,7 +518,7 @@ jobs:
       - name: Download artifact (Windows installers)
         uses: actions/download-artifact@v4
         with:
-          pattern: "zen.installer-*.exe"
+          pattern: "zen.installer*.exe"
 
       - name: Checkout updates repository
         uses: actions/checkout@v4

@@ -60,7 +60,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-          token: ${{ secrets.DEPLOY_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - id: get
         shell: bash -xe {0}
@@ -137,7 +137,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-          token: ${{ secrets.DEPLOY_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: useblacksmith/setup-node@v5
@@ -192,7 +192,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-          token: ${{ secrets.DEPLOY_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: useblacksmith/setup-node@v5
@@ -234,7 +234,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-          token: ${{ secrets.DEPLOY_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: useblacksmith/setup-node@v5
@@ -369,7 +369,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-          token: ${{ secrets.DEPLOY_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: useblacksmith/setup-node@v5
@@ -488,7 +488,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-          token: ${{ secrets.DEPLOY_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download artifact
         uses: actions/download-artifact@v4
@@ -498,7 +498,7 @@ jobs:
         with:
           repository: zen-browser/updates-server
           path: updates-server
-          token: ${{ secrets.DEPLOY_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download object files
         if: ${{ inputs.update_branch == 'release' }}
@@ -566,7 +566,7 @@ jobs:
           draft: false
           generate_release_notes: false
           prerelease: true
-          token: ${{ secrets.DEPLOY_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           fail_on_unmatched_files: false
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
@@ -575,7 +575,7 @@ jobs:
         uses: softprops/action-gh-release@v2.2.2
         if: ${{ inputs.update_branch == 'release' }}
         with:
-          token: ${{ secrets.DEPLOY_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ needs.build-data.outputs.version }}
           prerelease: false
           fail_on_unmatched_files: false
@@ -613,7 +613,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: zen-browser/release-utils
-          token: ${{ secrets.DEPLOY_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
         run: |
@@ -637,7 +637,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: zen-browser/flatpak
-          token: ${{ secrets.DEPLOY_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           path: flatpak
 
       - name: Move releases.xml
@@ -672,7 +672,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: flathub/app.zen_browser.zen
-          token: ${{ secrets.DEPLOY_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download Linux x86_64 build
         uses: actions/download-artifact@v4
@@ -688,7 +688,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: zen-browser
-          token: ${{ secrets.DEPLOY_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download Flatpak archive
         run: |
@@ -734,7 +734,7 @@ jobs:
           GIT_TRACE: 1
           GIT_CURL_VERBOSE: 1
         with:
-          token: ${{ secrets.DEPLOY_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: Update to version `${{ needs.build-data.outputs.version }}`
           title: Update to version `${{ needs.build-data.outputs.version }}`
           body: |

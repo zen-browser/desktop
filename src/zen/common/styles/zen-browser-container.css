@@ -22,6 +22,16 @@
       }
     }
 
+    /* When full transparency is enabled via zen.theme.transparent-content,
+     * remove the semi-transparent overlay from transparent browser containers
+     * so the desktop wallpaper or background shows through cleanly. */
+    /* stylelint-disable-next-line media-query-no-invalid */
+    @media -moz-pref("zen.theme.transparent-content") {
+      & browser[type="content"][transparent="true"] {
+        background: none !important;
+      }
+    }
+
     /* stylelint-disable-next-line media-query-no-invalid */
     @media not -moz-pref("layout.css.prefers-color-scheme.content-override", 2) {
       & browser[type="content"] {

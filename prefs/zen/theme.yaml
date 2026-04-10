@@ -39,6 +39,14 @@
 - name: zen.theme.hide-unified-extensions-button
   value: true
 
+# ==== Mark: transparency ====
+
+# Enables full transparency for web content areas, removing
+# the semi-transparent background overlay so the desktop or
+# wallpaper shows through transparent web pages cleanly.
+- name: zen.theme.transparent-content
+  value: false
+
 # ==== Mark: border radius ====
 
 # -1 will use platform-native values

@@ -28,7 +28,7 @@ jobs:
       matrix:
         arch: [x86_64, aarch64]
 
-    runs-on: ${{ inputs['release-branch'] == 'release' && 'windows-latest' || 'windows-latest' }}
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repository

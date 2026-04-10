@@ -48,7 +48,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-          token: ${{ secrets.DEPLOY_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v5
@@ -127,7 +127,6 @@ jobs:
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
           ZEN_RELEASE_BRANCH: ${{ inputs['release-branch'] }}
-        continue-on-error: true
         run: |
           export SURFER_PLATFORM="linux"
           if [[ -n ${{ inputs.MOZ_BUILD_DATE }} ]];then

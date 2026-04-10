@@ -35,7 +35,7 @@ jobs:
   windows-build:
     name: Build Windows - ${{ matrix.arch }}
     # aarch64 does not need full 16x, and we also dont use full LTO when generating GPO
-    runs-on: ${{ (inputs['release-branch'] == 'release' && !inputs['generate-gpo'] && matrix.arch == 'x86_64') && 'self-hosted' || 'ubuntu-latest' }}
+    runs-on: windows-latest
     env:
       SCCACHE_GHA_ENABLED: ${{ inputs['use-sccache'] && 'true' || 'false' }}
       CARGO_TERM_COLOR: always
@@ -57,7 +57,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-          token: ${{ secrets.DEPLOY_KEY }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v5

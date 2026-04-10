@@ -82,6 +82,14 @@
     return data;
   }
 
+  function setRequestedLocale(localeList) {
+    try {
+      Services.prefs.setStringPref("intl.locale.requested", localeList);
+    } catch (e) {
+      console.error("Failed to set requested locale", e);
+    }
+  }
+
   class nsZenWelcomePages {
     constructor(pages) {
       this._currentPage = -1;
@@ -102,8 +110,9 @@
     }
 
     async fadeInTitles(page) {
-      const [title1, description1, description2] =
-        await document.l10n.formatValues(page.text);
+      const [title1, description1, description2] = page.text
+        ? await document.l10n.formatValues(page.text)
+        : page.rawText ?? [];
       const titleElement = document.getElementById(
         "zen-welcome-page-sidebar-content"
       );
@@ -130,7 +139,11 @@
       const insertedButtons = [];
       for (const button of page.buttons) {
         const buttonElement = document.createXULElement("button");
-        document.l10n.setAttributes(buttonElement, button.l10n);
+        if (button.l10n) {
+          document.l10n.setAttributes(buttonElement, button.l10n);
+        } else if (button.label) {
+          buttonElement.textContent = button.label;
+        }
         if (i++ === 0) {
           buttonElement.classList.add("primary");
         }
@@ -364,6 +377,37 @@
 
   function getWelcomePages() {
     return [
+      {
+        rawText: [
+          "Choose your language",
+          "भाषा चुनें",
+          "You can change this later in Settings.",
+        ],
+        buttons: [
+          {
+            label: "English",
+            onclick: async () => {
+              setRequestedLocale("en-US");
+              return true;
+            },
+          },
+          {
+            label: "हिंदी",
+            onclick: async () => {
+              setRequestedLocale("hi-IN,en-US");
+              return true;
+            },
+          },
+          {
+            label: "Skip",
+            onclick: async () => {
+              return true;
+            },
+          },
+        ],
+        fadeIn() {},
+        fadeOut() {},
+      },
       {
         text: [
           {

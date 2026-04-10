@@ -154,15 +154,72 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
    * @param {UrlbarQueryContext} queryContext The query context object
    */
   async isActive(queryContext) {
+    const rawQuery = queryContext.searchString?.trim() || "";
     return (
       queryContext.searchMode?.source ==
         UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS ||
       (lazy.enabledPref &&
-        queryContext.searchString &&
-        queryContext.searchString.length < UrlbarUtils.MAX_TEXT_LENGTH &&
-        queryContext.searchString.length > 2 &&
-        !lazy.UrlUtils.REGEXP_LIKE_PROTOCOL.test(queryContext.searchString))
+        rawQuery &&
+        rawQuery.length < UrlbarUtils.MAX_TEXT_LENGTH &&
+        (rawQuery.length > 2 || rawQuery === "₹") &&
+        !lazy.UrlUtils.REGEXP_LIKE_PROTOCOL.test(rawQuery))
     );
+  }
+
+  #formatRupeeNumber(value) {
+    if (Number.isInteger(value)) {
+      return value.toString();
+    }
+    return value.toFixed(2).replace(/\.?0+$/, "");
+  }
+
+  #getUtilityActions(rawQuery) {
+    const actions = [];
+
+    const gstMatch = rawQuery.match(
+      /^gst\s+([0-9]+(?:\.[0-9]+)?)\s+([0-9]+(?:\.[0-9]+)?)$/i
+    );
+    if (gstMatch) {
+      const base = Number.parseFloat(gstMatch[1]);
+      const rate = Number.parseFloat(gstMatch[2]);
+      if (Number.isFinite(base) && Number.isFinite(rate)) {
+        const gstAmount = (base * rate) / 100;
+        const total = base + gstAmount;
+        const output = `Base: ₹${this.#formatRupeeNumber(base)} | GST: ₹${this.#formatRupeeNumber(gstAmount)} | Total: ₹${this.#formatRupeeNumber(total)}`;
+        actions.push({
+          label: "GST Calculator",
+          command: () => Services.clipboardHelper.copyString(output),
+          commandId: "zen:gst-calculator-result",
+          icon: "chrome://browser/skin/zen-icons/stats-chart.svg",
+          extraPayload: {
+            prettyName: output,
+          },
+        });
+      }
+    }
+
+    const panMatch = rawQuery.match(/^pan\s+(.+)$/i);
+    if (panMatch) {
+      const panInput = panMatch[1].trim().toUpperCase();
+      if (panInput) {
+        const isValidPan = /^[A-Z]{5}[0-9]{4}[A-Z]$/.test(panInput);
+        const status = isValidPan
+          ? "Valid PAN format ✅"
+          : "Invalid PAN format ❌";
+        const output = `${panInput} — ${status}`;
+        actions.push({
+          label: "PAN Validator",
+          command: () => Services.clipboardHelper.copyString(output),
+          commandId: "zen:pan-validator-result",
+          icon: "chrome://browser/skin/zen-icons/checkbox.svg",
+          extraPayload: {
+            prettyName: status,
+          },
+        });
+      }
+    }
+
+    return actions;
   }
 
   #getWorkspaceActions(window) {
@@ -246,6 +303,13 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
     const window = lazy.BrowserWindowTracker.getTopWindow();
     const actions = await this.#getAvailableActions(window);
     let results = [];
+    if (query === "₹") {
+      for (const action of actions) {
+        if (action.label?.includes("₹")) {
+          results.push({ action, score: 1000 });
+        }
+      }
+    }
     for (let action of actions) {
       if (isPrefixed && query.length < 1) {
         results.push({ action, score: 100 });
@@ -341,20 +405,34 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
 
   async startQuery(queryContext, addCallback) {
     const query = queryContext.trimmedLowerCaseSearchString;
+    const rawQuery = (queryContext.searchString || "").trim();
     const isPrefixed =
       queryContext.searchMode?.source == UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS;
     if (!query && !isPrefixed) {
       return;
     }
 
-    const actionsResults = await this.#findMatchingActions(query, isPrefixed);
-    if (!actionsResults.length) {
+    const utilityActions = this.#getUtilityActions(rawQuery);
+    const actionsResults = utilityActions.concat(
+      await this.#findMatchingActions(query, isPrefixed)
+    );
+    const uniqueActions = [];
+    const seenActionIds = new Set();
+    for (const action of actionsResults) {
+      const id = action.commandId || action.label;
+      if (seenActionIds.has(id)) {
+        continue;
+      }
+      seenActionIds.add(id);
+      uniqueActions.push(action);
+    }
+    if (!uniqueActions.length) {
       return;
     }
 
     const ownerGlobal = lazy.BrowserWindowTracker.getTopWindow();
     let finalResults = [];
-    for (const action of actionsResults) {
+    for (const action of uniqueActions) {
       const { payload, payloadHighlights } = payloadAndSimpleHighlights([], {
         suggestion: action.label,
         title: action.label,

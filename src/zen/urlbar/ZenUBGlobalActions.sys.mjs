@@ -93,6 +93,11 @@ const globalActionsTemplate = [
     icon: "chrome://browser/skin/zen-icons/link.svg",
   },
   {
+    label: "Rupee: Copy ₹ Symbol",
+    command: () => Services.clipboardHelper.copyString("₹"),
+    icon: "chrome://browser/skin/zen-icons/wallet.svg",
+  },
+  {
     label: "Settings",
     command: window => window.openPreferences(),
     icon: "chrome://browser/skin/zen-icons/settings.svg",

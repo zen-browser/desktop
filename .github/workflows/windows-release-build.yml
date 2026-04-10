@@ -49,7 +49,7 @@ jobs:
     steps:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
-        if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
+        if: ${{ runner.os == 'Linux' && !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
         with:
           tool-cache: false
 

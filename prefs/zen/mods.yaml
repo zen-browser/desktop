@@ -2,6 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# ZenMods.mjs: when true, no mods are loaded (same as marketplace "disable all mods").
+# There is no zen.mods.enabled; zen.themes.disable-all is the controlling pref.
+- name: zen.themes.disable-all
+  value: true
+
 - name: zen.mods.updated-value-observer
   value: false
 

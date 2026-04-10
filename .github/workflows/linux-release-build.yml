@@ -25,8 +25,7 @@ jobs:
   build-linux:
     permissions:
       contents: write
-    # aarch64 does not need full 16x
-    runs-on: ${{ (inputs['release-branch'] == 'release' && matrix.arch == 'x86_64') && 'self-hosted' || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:

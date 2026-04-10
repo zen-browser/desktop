@@ -221,7 +221,7 @@ jobs:
 
       - name: Remove API Keys
         run: |
-          rm -rf ~/.zen-keys
+          Remove-Item -Recurse -Force "$env:USERPROFILE\.zen-keys" -ErrorAction SilentlyContinue
 
       - name: Move package for PGO upload
         if: ${{ inputs['generate-gpo'] && matrix.arch == 'x86_64' }}
@@ -250,10 +250,10 @@ jobs:
           set -x
           mkdir obj-${{ matrix.arch }}-pc-windows-msvc/
 
-          rm -rf engine/obj-${{ matrix.arch }}-pc-windows-msvc/_tests
-          rm -rf engine/obj-${{ matrix.arch }}-pc-windows-msvc/config/autoconf.mk
-          rm -rf engine/obj-${{ matrix.arch }}-pc-windows-msvc/config.statusd/substs/
-          rm -rf engine/obj-${{ matrix.arch }}-pc-windows-msvc/dist/install
+          Remove-Item -Recurse -Force "engine/obj-${{ matrix.arch }}-pc-windows-msvc/_tests" -ErrorAction SilentlyContinue
+          Remove-Item -Recurse -Force "engine/obj-${{ matrix.arch }}-pc-windows-msvc/config/autoconf.mk" -ErrorAction SilentlyContinue
+          Remove-Item -Recurse -Force "engine/obj-${{ matrix.arch }}-pc-windows-msvc/config.statusd/substs/" -ErrorAction SilentlyContinue
+          Remove-Item -Recurse -Force "engine/obj-${{ matrix.arch }}-pc-windows-msvc/dist/install" -ErrorAction SilentlyContinue
 
           find engine/obj-${{ matrix.arch }}-pc-windows-msvc/dist -maxdepth 1 -type f -name "*.zip" -delete
 

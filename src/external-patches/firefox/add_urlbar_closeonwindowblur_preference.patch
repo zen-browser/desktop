@@ -55,7 +55,7 @@ diff --git a/browser/components/urlbar/UrlbarView.sys.mjs b/browser/components/u
 diff --git a/browser/components/urlbar/content/UrlbarInput.mjs b/browser/components/urlbar/content/UrlbarInput.mjs
 --- a/browser/components/urlbar/content/UrlbarInput.mjs
 +++ b/browser/components/urlbar/content/UrlbarInput.mjs
-@@ -4783,10 +4783,16 @@
+@@ -4783,11 +4783,17 @@
      }
    }
  

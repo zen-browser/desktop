@@ -742,5 +742,5 @@ jobs:
             @${{ github.actor }} please review and merge this PR.
           branch: update-to-${{ needs.build-data.outputs.version }}
           base: master
-          git-token: ${{ secrets.DEPLOY_KEY }}
+          git-token: ${{ secrets.GITHUB_TOKEN }}
           delete-branch: true

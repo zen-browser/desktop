@@ -10,7 +10,7 @@ index 3c60cc9f199ba5836ea1233fbbeb74a6dd63b0c0..252966bca1c8c915885b6c6391360fb6
        ],
        resizeCallback: async ({ title, frame }) => {
          // Search within main document and highlight matched keyword.
-@@ -359,6 +360,10 @@ function init_all() {
+@@ -359,6 +360,9 @@ function init_all() {
    register_module("paneSearch", gSearchPane);
    register_module("panePrivacy", gPrivacyPane);
    register_module("paneContainers", gContainersPane);

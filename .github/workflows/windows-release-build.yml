@@ -85,8 +85,6 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          sudo apt-get update
-          sudo apt-get install -y python3 python3-pip dos2unix yasm nasm build-essential libgtk2.0-dev libpython3-dev m4 uuid libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdrm-dev libdbus-glib-1-dev libgtk-3-dev libpulse-dev libx11-xcb-dev libxt-dev xvfb lld llvm --fix-missing
 
       - name: Load Surfer CI setup
         run: npm run surfer -- ci --brand ${{ inputs['release-branch'] }} --display-version ${{ inputs['build-version'] }}
@@ -106,60 +104,16 @@ jobs:
 
       - name: Setup for Windows
         if: steps.cache-win-cross.outputs.cache-hit != 'true' && !(inputs['generate-gpo'] && matrix.arch == 'aarch64')
+        shell: pwsh
         run: |
-          set -x
-          mkdir -p ~/win-cross
-          cd engine/
-          sudo apt-get install python3-launchpadlib
-          sudo add-apt-repository ppa:savoury1/backports
-          sudo apt-get update
-          sudo apt-get install -y python3-pip autoconf \
-            autoconf2.13 \
-            automake \
-            bison \
-            build-essential \
-            cabextract \
-            curl \
-            cmake \
-            flex \
-            gawk \
-            gcc-multilib \
-            git \
-            gnupg \
-            jq \
-            libbz2-dev \
-            libexpat1-dev \
-            libffi-dev \
-            libncursesw5-dev \
-            libsqlite3-dev \
-            libssl-dev \
-            libtool \
-            libucl-dev \
-            libxml2-dev \
-            msitools \
-            ninja-build \
-            openssh-client \
-            p7zip-full \
-            pkg-config \
-            procps \
-            python3-requests \
-            python3-toml \
-            scons \
-            subversion \
-            tar \
-            unzip \
-            uuid \
-            uuid-dev \
-            wget \
-            zip \
-            zlib1g-dev \
-            aria2
+          New-Item -ItemType Directory -Force -Path "$HOME/win-cross" | Out-Null
+          Set-Location engine
           echo Setup wine
-          aria2c "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-1.toolchains.v3.linux64-wine.latest/artifacts/public%2Fbuild%2Fwine.tar.zst" -o wine.tar.zst
-          tar --zstd -xf wine.tar.zst -C ~/win-cross
-          rm wine.tar.zst
+          Invoke-WebRequest "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-1.toolchains.v3.linux64-wine.latest/artifacts/public%2Fbuild%2Fwine.tar.zst" -OutFile "wine.tar.zst"
+          tar -xf "wine.tar.zst" -C "$HOME/win-cross"
+          Remove-Item "wine.tar.zst" -Force
           echo Setup Visual Studio
-          ./mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2026.yaml ~/win-cross/vs2026
+          python mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2026.yaml "$HOME/win-cross/vs2026"
 
       - name: Import
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
@@ -182,29 +136,30 @@ jobs:
           ls ~/.mozbuild/clang/lib/clang/
           echo "export LIB=\"$(cd ~/.mozbuild/clang/lib/clang/* && cd lib/windows && pwd)\"" >> ../configs/common/mozconfig
           cat ../configs/common/mozconfig
-          sudo apt-get update
-          sudo apt-get install dos2unix
           ls ~/win-cross/wine || true
           ls ~/win-cross/vs2026 || true
 
       - name: Setup Rust
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
+        shell: pwsh
         run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain $(cat .rust-toolchain)
-          source $HOME/.cargo/env
-          if test "${{ matrix.arch }}" = "aarch64"; then
+          $toolchain = (Get-Content .rust-toolchain -Raw).Trim()
+          Invoke-WebRequest "https://win.rustup.rs/x86_64" -OutFile "rustup-init.exe"
+          .\rustup-init.exe -y --default-toolchain $toolchain
+          $env:Path = "$HOME\.cargo\bin;$env:Path"
+          if ("${{ matrix.arch }}" -eq "aarch64") {
             rustup target add aarch64-pc-windows-msvc
-          else
+          } else {
             rustup target add x86_64-pc-windows-msvc
-          fi
+          }
           # Stored in build/windows/.windows-rs-version
-          WINDOWS_RS_VERSION=$(cat build/windows/.windows-rs-version)
-          cd engine/
+          $WINDOWS_RS_VERSION = (Get-Content build/windows/.windows-rs-version -Raw).Trim()
+          Set-Location engine
           cargo install cargo-download --locked
           cargo download -x windows=$WINDOWS_RS_VERSION
-          export CARGO_INCREMENTAL=0
-          echo "" >> ../configs/common/mozconfig
-          echo "export MOZ_WINDOWS_RS_DIR=$(pwd)/windows-$WINDOWS_RS_VERSION" >> ../configs/common/mozconfig
+          $env:CARGO_INCREMENTAL = "0"
+          Add-Content ..\configs\common\mozconfig ""
+          Add-Content ..\configs\common\mozconfig "export MOZ_WINDOWS_RS_DIR=$(Get-Location)/windows-$WINDOWS_RS_VERSION"
 
       - name: Build language packs
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
@@ -227,26 +182,26 @@ jobs:
           chmod +x ~/artifact/merged.profdata
 
       - name: Insert API Keys
+        shell: pwsh
         run: |
-          mkdir -p ~/.zen-keys
-          echo "${{ secrets.ZEN_SAFEBROWSING_API_KEY }}" > ~/.zen-keys/safebrowsing.dat
+          New-Item -ItemType Directory -Force -Path "$HOME/.zen-keys" | Out-Null
+          Set-Content -Path "$HOME/.zen-keys/safebrowsing.dat" -Value "${{ secrets.ZEN_SAFEBROWSING_API_KEY }}"
 
       - name: Build
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
           ZEN_RELEASE_BRANCH: ${{ inputs['release-branch'] }}
+        shell: pwsh
         run: |
-          set -x
-          dos2unix configs/windows/mozconfig
-          export SURFER_PLATFORM="win32"
-          export ZEN_CROSS_COMPILING=1
-          if test ${{ inputs['generate-gpo'] }} = true; then
-            export ZEN_GA_GENERATE_PROFILE=1
-          fi
-          if [[ -n ${{ inputs.MOZ_BUILD_DATE }} ]];then
-            export MOZ_BUILD_DATE=${{ inputs.MOZ_BUILD_DATE }}
-          fi
+          $env:SURFER_PLATFORM = "win32"
+          $env:ZEN_CROSS_COMPILING = "1"
+          if ("${{ inputs['generate-gpo'] }}" -eq "true") {
+            $env:ZEN_GA_GENERATE_PROFILE = "1"
+          }
+          if ("${{ inputs.MOZ_BUILD_DATE }}" -ne "") {
+            $env:MOZ_BUILD_DATE = "${{ inputs.MOZ_BUILD_DATE }}"
+          }
           bash .github/workflows/src/release-build.sh
 
       - name: Package

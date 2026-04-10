@@ -192,13 +192,21 @@ export class ZapOverlay {
         counter++;
 
         this.#getNextDissolveEffect().then(dissolve => {
-          dissolve.dissolve(element);
+          dissolve.dissolve(element, () => {
+            this.zenBoostsChild.addZapSelector(cssPath);
+            this.onZapUpdate();
+
+            this.window.requestAnimationFrame(() => {
+              element.style.visibility = 'initial';
+            });
+          });
+          element.style.visibility = 'hidden';
         });
       });
+    } else {
+      this.zenBoostsChild.addZapSelector(cssPath);
+      this.onZapUpdate();
     }
-
-    this.zenBoostsChild.addZapSelector(cssPath);
-    this.onZapUpdate();
   }
 
   /**

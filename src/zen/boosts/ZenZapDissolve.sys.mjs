@@ -154,6 +154,8 @@ void main() {
   #hasTriggered = false;
   #rafId = null;
 
+  #onComplete = null;
+
   /**
    * @param {Document} document Webpage document
    */
@@ -482,11 +484,13 @@ void main() {
    *
    * @param {Element} element The element to dissolve
    */
-  dissolve(element) {
+  dissolve(element, onComplete) {
     if (!this.#initialized || this.#hasTriggered || !element) {
       return;
     }
     this.#hasTriggered = true;
+
+    this.#onComplete = onComplete;
 
     const rect = element.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) {
@@ -580,6 +584,11 @@ void main() {
     if (this.#rafId) {
       this.window.cancelAnimationFrame(this.#rafId);
       this.#rafId = null;
+    }
+
+    if(this.#onComplete){
+      this.#onComplete();
+      this.#onComplete = null;
     }
   }
 

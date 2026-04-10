@@ -127,8 +127,9 @@ jobs:
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
+        shell: pwsh
         run: |
-          . "$HOME/.cargo/env"
+          $env:PATH = "$env:USERPROFILE\.cargo\bin;$env:PATH"
           npm run import -- --verbose
 
       - name: Bootstrap
@@ -193,7 +194,9 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path "$HOME/.zen-keys" | Out-Null
-          Set-Content -Path "$HOME/.zen-keys/safebrowsing.dat" -Value "${{ secrets.ZEN_SAFEBROWSING_API_KEY }}"
+          $key = "${{ secrets.ZEN_SAFEBROWSING_API_KEY }}"
+          if ([string]::IsNullOrWhiteSpace($key)) { $key = "placeholder" }
+          Set-Content -Path "$HOME/.zen-keys/safebrowsing.dat" -Value $key
 
       - name: Build
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}

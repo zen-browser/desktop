@@ -120,7 +120,7 @@ jobs:
       - name: Insert API Keys
         run: |
           mkdir -p ~/.zen-keys
-          echo "${{ secrets.ZEN_SAFEBROWSING_API_KEY }}" > ~/.zen-keys/safebrowsing.dat
+          echo "placeholder" > ~/.zen-keys/safebrowsing.dat
 
       - name: Build
         env:

@@ -102,6 +102,14 @@ jobs:
           path: ${HOME}/win-cross
           key: win-cross
 
+      - name: Install MozillaBuild
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://ftp.mozilla.org/pub/mozilla/libraries/win32/MozillaBuildSetup-Latest.exe" -OutFile "MozillaBuildSetup.exe"
+          Start-Process -FilePath "MozillaBuildSetup.exe" -ArgumentList "/S" -Wait
+          $env:MOZILLABUILD = "C:\mozilla-build"
+          echo "MOZILLABUILD=C:\mozilla-build" >> $env:GITHUB_ENV
+
       - name: Setup for Windows
         if: steps.cache-win-cross.outputs.cache-hit != 'true' && !(inputs['generate-gpo'] && matrix.arch == 'aarch64')
         shell: pwsh

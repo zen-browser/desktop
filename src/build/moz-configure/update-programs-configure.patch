@@ -1,0 +1,13 @@
+diff --git a/build/moz.configure/update-programs.configure b/build/moz.configure/update-programs.configure
+index d87fd6dd35b1211a7ef8f64c2e2af18b91dc1f43..e6691d50e6b2ee05828a25b2dc3cb71895ff6bd7 100644
+--- a/build/moz.configure/update-programs.configure
++++ b/build/moz.configure/update-programs.configure
+@@ -73,7 +73,7 @@ def mac_prod_requirements_string(identifier):
+         f'identifier "{identifier}" and anchor apple generic and '
+         "certificate 1[field.1.2.840.113635.100.6.2.6] and "
+         "certificate leaf[field.1.2.840.113635.100.6.1.13] and "
+-        'certificate leaf[subject.OU] = "43AQ936H96"'
++        'certificate leaf[subject.OU] = "9V5K9TP787"'
+     )
+ 
+ 

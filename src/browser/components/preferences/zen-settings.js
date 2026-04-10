@@ -14,6 +14,9 @@ const { nsKeyShortcutModifiers } = ChromeUtils.importESModule(
     global: "current",
   }
 );
+const { AddonManager } = ChromeUtils.importESModule(
+  "resource://gre/modules/AddonManager.sys.mjs"
+);
 
 var gZenMarketplaceManager = {
   async init() {
@@ -661,6 +664,7 @@ var gZenLooksAndFeel = {
     });
     this.applySidebarLayout();
     gZenPrivacyPresets.init();
+    gZenRecommendedExtensions.init();
   },
 
   observe() {
@@ -707,6 +711,183 @@ var gZenLooksAndFeel = {
         Services.prefs.setBoolPref(kZenSingleToolbar, layout.getAttribute("layout") == "single");
       });
     }
+  },
+};
+
+const ZEN_RECOMMENDED_EXTENSIONS = [
+  {
+    key: "ublock-origin",
+    addonId: "uBlock0@raymondhill.net",
+    amoUrl: "https://addons.mozilla.org/firefox/addon/ublock-origin/",
+    searchHints: ["ublock", "u block", "raymond hill"],
+  },
+  {
+    key: "bitwarden",
+    addonId: "{446900e4-71c2-419f-a6a7-df9c091e268b}",
+    amoUrl: "https://addons.mozilla.org/firefox/addon/bitwarden-password-manager/",
+    searchHints: ["bitwarden"],
+  },
+  {
+    key: "dark-reader",
+    addonId: "addon@darkreader.org",
+    amoUrl: "https://addons.mozilla.org/firefox/addon/darkreader/",
+    searchHints: ["dark reader", "darkreader"],
+  },
+  {
+    key: "proton-vpn",
+    addonId: null,
+    amoUrl: "https://addons.mozilla.org/firefox/addon/proton-vpn-gluon/",
+    searchHints: ["proton vpn", "protonvpn", "proton"],
+  },
+  {
+    key: "privacy-badger",
+    addonId: "jid1-MnnxcxisBPnSXQ@jetpack",
+    amoUrl: "https://addons.mozilla.org/firefox/addon/privacy-badger17/",
+    searchHints: ["privacy badger", "eff"],
+  },
+];
+
+var gZenRecommendedExtensions = {
+  _isInitialized: false,
+  _knownAddons: new Map(),
+
+  async init() {
+    const list = document.getElementById("zenRecommendedExtensionsList");
+    if (!list) {
+      return;
+    }
+
+    if (!this._isInitialized) {
+      this._isInitialized = true;
+      list.addEventListener("click", event => this._onListClick(event));
+      window.addEventListener("unload", () => {
+        this._isInitialized = false;
+        this._knownAddons.clear();
+      });
+    }
+
+    await this.refreshStates();
+  },
+
+  async refreshStates() {
+    for (const extension of ZEN_RECOMMENDED_EXTENSIONS) {
+      // eslint-disable-next-line no-await-in-loop
+      const addon = await this._findInstalledAddon(extension);
+      this._knownAddons.set(extension.key, addon || null);
+      this._renderState(extension, addon);
+    }
+  },
+
+  async _findInstalledAddon(extension) {
+    if (extension.addonId) {
+      const addon = await AddonManager.getAddonByID(extension.addonId);
+      if (addon) {
+        return addon;
+      }
+    }
+
+    const allExtensions = await AddonManager.getAddonsByTypes(["extension"]);
+    const hints = extension.searchHints.map(hint => hint.toLowerCase());
+    return (
+      allExtensions.find(addon => {
+        const searchable = [
+          addon.id,
+          addon.name,
+          addon.homepageURL,
+          addon.optionsURL,
+          addon.creator?.name,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        return hints.some(hint => searchable.includes(hint));
+      }) || null
+    );
+  },
+
+  _renderState(extension, addon) {
+    const stateNode = document.getElementById(
+      `zenRecommendedExtensionState-${extension.key}`
+    );
+    const toggleButton = document.querySelector(
+      `.zenRecommendedExtensionToggleButton[data-extension-key="${extension.key}"]`
+    );
+    if (!stateNode || !toggleButton) {
+      return;
+    }
+
+    if (!addon) {
+      document.l10n.setAttributes(
+        stateNode,
+        "zen-recommended-extension-state-not-installed"
+      );
+      document.l10n.setAttributes(
+        toggleButton,
+        "zen-recommended-extension-enable-button"
+      );
+      toggleButton.setAttribute("disabled", "true");
+      return;
+    }
+
+    if (addon.userDisabled) {
+      document.l10n.setAttributes(
+        stateNode,
+        "zen-recommended-extension-state-disabled"
+      );
+      document.l10n.setAttributes(
+        toggleButton,
+        "zen-recommended-extension-enable-button"
+      );
+    } else {
+      document.l10n.setAttributes(
+        stateNode,
+        "zen-recommended-extension-state-enabled"
+      );
+      document.l10n.setAttributes(
+        toggleButton,
+        "zen-recommended-extension-disable-button"
+      );
+    }
+    toggleButton.removeAttribute("disabled");
+  },
+
+  async _onListClick(event) {
+    const button = event.target.closest("button[data-extension-key]");
+    if (!button) {
+      return;
+    }
+    const extensionKey = button.getAttribute("data-extension-key");
+    const extension = ZEN_RECOMMENDED_EXTENSIONS.find(
+      item => item.key === extensionKey
+    );
+    if (!extension) {
+      return;
+    }
+
+    if (button.classList.contains("zenRecommendedExtensionInstallButton")) {
+      openTrustedLinkIn(extension.amoUrl, "tab");
+      return;
+    }
+
+    if (!button.classList.contains("zenRecommendedExtensionToggleButton")) {
+      return;
+    }
+
+    const addon = this._knownAddons.get(extension.key);
+    if (!addon) {
+      return;
+    }
+    button.setAttribute("disabled", "true");
+    try {
+      // This only toggles installed add-ons; installation remains AMO-driven.
+      addon.userDisabled = !addon.userDisabled;
+    } catch (error) {
+      console.error("[ZenSettings:RecommendedExtensions] Toggle failed:", error);
+    }
+
+    const refreshedAddon = await this._findInstalledAddon(extension);
+    this._knownAddons.set(extension.key, refreshedAddon || null);
+    this._renderState(extension, refreshedAddon);
   },
 };
 

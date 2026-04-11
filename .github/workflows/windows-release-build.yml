@@ -216,6 +216,9 @@ jobs:
           if ("${{ inputs.MOZ_BUILD_DATE }}" -ne "") {
             $env:MOZ_BUILD_DATE = "${{ inputs.MOZ_BUILD_DATE }}"
           }
+          $env:PATH = "$env:USERPROFILE\.cargo\bin;$env:PATH"
+          $env:CARGO_HOME = "$env:USERPROFILE\.cargo"
+          New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.cargo" | Out-Null
           bash .github/workflows/src/release-build.sh
 
       - name: Package

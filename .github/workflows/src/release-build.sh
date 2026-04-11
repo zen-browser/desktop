@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -xe
+set -x
 
 if command -v apt-get &> /dev/null; then
   sudo apt-get install python3-launchpadlib
@@ -12,7 +12,7 @@ if [ -f "$HOME/.cargo/env" ]; then
   . "$HOME/.cargo/env"
 fi
 
-ulimit -n 4096
+ulimit -n 4096 || true
 
 if command -v Xvfb &> /dev/null; then
   if ! test "$ZEN_CROSS_COMPILING"; then

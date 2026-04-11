@@ -145,6 +145,9 @@ jobs:
           cd engine/
           ls ~/.mozbuild/clang/lib/clang/
           CLANG_DIR=$(ls -d ~/.mozbuild/clang/lib/clang/*/  2>/dev/null | head -1)
+          if [ -z "$CLANG_DIR" ]; then
+            CLANG_DIR=$(find ~/.mozbuild/clang/lib/clang -maxdepth 1 -type d | tail -1)/
+          fi
           if [ -n "$CLANG_DIR" ]; then
             echo "export LIB=\"${CLANG_DIR}lib/windows\"" >> ../configs/common/mozconfig
           fi
@@ -171,8 +174,9 @@ jobs:
           cargo install cargo-download --locked
           cargo download -x windows=$WINDOWS_RS_VERSION
           $env:CARGO_INCREMENTAL = "0"
+          $MOZ_RS_PATH = (Get-Location).Path -replace '\\', '/'
           Add-Content ..\configs\common\mozconfig ""
-          Add-Content ..\configs\common\mozconfig "export MOZ_WINDOWS_RS_DIR=$(Get-Location)/windows-$WINDOWS_RS_VERSION"
+          Add-Content ..\configs\common\mozconfig "export MOZ_WINDOWS_RS_DIR=$MOZ_RS_PATH/windows-$WINDOWS_RS_VERSION"
 
       - name: Build language packs
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
@@ -221,6 +225,7 @@ jobs:
           $env:PATH = "$env:USERPROFILE\.cargo\bin;$env:PATH"
           $env:CARGO_HOME = "$env:USERPROFILE\.cargo"
           New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.cargo" | Out-Null
+          $env:WIN32_REDIST_DIR = "$env:USERPROFILE\win-cross\vs2026\VC\Redist\MSVC\14.50.35710\x64\Microsoft.VC145.CRT"
           bash .github/workflows/src/release-build.sh
 
       - name: Package
@@ -234,7 +239,7 @@ jobs:
           export SURFER_PLATFORM="win32"
           export ZEN_RELEASE=1
           npm run package
-          ZEN_ZIP=$(ls ./dist/*.win64.zip 2>/dev/null | head -1)
+          ZEN_ZIP=$(ls ./dist/*.win64.zip ./dist/*.win64-aarch64.zip 2>/dev/null | head -1)
           if [ -n "$ZEN_ZIP" ]; then
             mv "$ZEN_ZIP" ./zen.win64.zip
           fi

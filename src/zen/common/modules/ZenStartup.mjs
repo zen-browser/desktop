@@ -46,14 +46,13 @@ class ZenStartup {
         }
         newContainer.appendChild(node);
       }
-
       // Fix notification deck
-      const deckTemplate = document.getElementById(
-        "tab-notification-deck-template"
-      );
-      if (deckTemplate) {
-        document.getElementById("zen-appcontent-wrapper").prepend(deckTemplate);
-      }
+      const deckTemplate =
+        document.getElementById("tab-notification-deck-template") ||
+        document.getElementById("tab-notification-deck");
+
+      // overlap and interaction issues with vertical tabs
+      document.getElementById("browser").prepend(deckTemplate);
 
       gZenWorkspaces.init();
       setTimeout(() => {
@@ -159,8 +158,13 @@ class ZenStartup {
   }
 
   #checkForWelcomePage() {
-    if (!Services.prefs.getBoolPref("zen.welcome-screen.seen", false)) {
-      Services.prefs.setBoolPref("zen.welcome-screen.seen", true);
+    const kWelcomeScreenSeenPref = "zen.welcome-screen.seen";
+    if (Services.env.get("MOZ_HEADLESS")) {
+      Services.prefs.setBoolPref(kWelcomeScreenSeenPref, true);
+      return;
+    }
+    if (!Services.prefs.getBoolPref(kWelcomeScreenSeenPref, false)) {
+      Services.prefs.setBoolPref(kWelcomeScreenSeenPref, true);
       Services.prefs.setStringPref(
         "zen.updates.last-build-id",
         Services.appinfo.appBuildID

@@ -483,6 +483,7 @@ void main() {
    * Displays a dissolve effect for the element
    *
    * @param {Element} element The element to dissolve
+   * @param {Function} onComplete Callback for when the animation is complete
    */
   dissolve(element, onComplete) {
     if (!this.#initialized || this.#hasTriggered || !element) {
@@ -586,7 +587,7 @@ void main() {
       this.#rafId = null;
     }
 
-    if(this.#onComplete){
+    if (this.#onComplete) {
       this.#onComplete();
       this.#onComplete = null;
     }

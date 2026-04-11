@@ -19,6 +19,12 @@
 
 #define COLOR_CHANNEL_MIDPOINT 128
 
+#if defined(__clang__) || defined(__GNUC__)
+#  define ZEN_HOT_FUNCTION __attribute__((hot))
+#else
+#  define ZEN_HOT_FUNCTION
+#endif
+
 // It's a bit of a hacky solution, but instead of using alpha as what it is
 // (opacity), we use it to store contrast information for now.
 // We do this primarily to avoid having to deal with WebIDL structs and
@@ -133,8 +139,9 @@ static inline float fastCbrt(float x) {
  * @return A struct containing the precomputed Oklab values and contrast factor
  * for the accent color.
  */
+ZEN_HOT_FUNCTION
 inline static auto zenPrecomputeAccent(nscolor aAccentColor) {
-  const float inv255 = 1.0f / 255.0f;
+  constexpr float inv255 = 1.0f / 255.0f;
 
   const float r = NS_GET_R(aAccentColor) * inv255;
   const float g = NS_GET_G(aAccentColor) * inv255;
@@ -170,9 +177,8 @@ inline static auto zenPrecomputeAccent(nscolor aAccentColor) {
  * contrast value).
  * @return The filtered color with transformations applied.
  */
-[[nodiscard]]
-static inline nscolor zenFilterColorChannel(nscolor aOriginalColor,
-                                            const nsZenAccentOklab& aAccent) {
+[[nodiscard]] ZEN_HOT_FUNCTION static inline nscolor zenFilterColorChannel(
+    nscolor aOriginalColor, const nsZenAccentOklab& aAccent) {
   const uint8_t oL = NS_GET_A(aOriginalColor);
   if (oL == 0) {
     return aOriginalColor;
@@ -180,7 +186,6 @@ static inline nscolor zenFilterColorChannel(nscolor aOriginalColor,
 
   const float inv255 = 1.0f / 255.0f;
   const float blendFactor = oL * inv255;
-  const float preserveFactor = 1.0f - aAccent.contrastFactor;
 
   // sRGB -> linear
   const float lr = srgbToLinear(NS_GET_R(aOriginalColor) * inv255);
@@ -206,10 +211,11 @@ static inline nscolor zenFilterColorChannel(nscolor aOriginalColor,
   const float fA = origA + (aAccent.accA - origA) * blendFactor;
   const float fB = origB + (aAccent.accB - origB) * blendFactor;
 
-  // Luminance: preserve spread at low contrast, flatten at high
-  const float deltaL = origL - aAccent.accL;
-  const float baseL = origL + (aAccent.accL - origL) * blendFactor;
-  const float fL = std::clamp(baseL + deltaL * preserveFactor, 0.0f, 1.0f);
+  // Luminance: at low contrast stay near the original, the higher the contrast,
+  // the more we shift toward the accent luminance, but we never go fully to
+  // the accent luminance to preserve some of the original color's character.
+  const float fL = origL + (aAccent.accL - origL) *
+                               (blendFactor * aAccent.contrastFactor * 0.5f);
 
   // Oklab -> LMS
   const float fl_ = fL + 0.3963377774f * fA + 0.2158037573f * fB;
@@ -245,6 +251,7 @@ static inline nscolor zenFilterColorChannel(nscolor aOriginalColor,
  * @param aColor The color to invert.
  * @return The inverted color with luminance preservation.
  */
+ZEN_HOT_FUNCTION
 inline static nscolor zenInvertColorChannel(nscolor aColor) {
   const auto r = NS_GET_R(aColor);
   const auto g = NS_GET_G(aColor);
@@ -274,6 +281,7 @@ inline static nscolor zenInvertColorChannel(nscolor aColor) {
 /**
  * @brief Retrieves the current boost data from the browsing context.
  */
+ZEN_HOT_FUNCTION
 inline static void GetZenBoostsDataFromBrowsingContext(
     ZenBoostData* aData, bool* aIsInverted,
     nsPresContext* aPresContext = nullptr) {
@@ -323,8 +331,9 @@ auto nsZenBoostsBackend::onPresShellEntered(mozilla::dom::Document* aDocument)
   mCurrentBrowsingContext = browsingContext;
 }
 
-auto nsZenBoostsBackend::FilterColorFromPresContext(nscolor aColor,
-                                                    nsPresContext* aPresContext)
+[[nodiscard]] ZEN_HOT_FUNCTION auto
+nsZenBoostsBackend::FilterColorFromPresContext(nscolor aColor,
+                                               nsPresContext* aPresContext)
     -> nscolor {
   if (!XRE_IsContentProcess()) {
     // Zen boosts are only supported in content, so if we somehow end up here
@@ -353,8 +362,8 @@ auto nsZenBoostsBackend::FilterColorFromPresContext(nscolor aColor,
   return aColor;
 }
 
-auto nsZenBoostsBackend::ResolveStyleColor(mozilla::StyleAbsoluteColor aColor)
-    -> mozilla::StyleAbsoluteColor {
+[[nodiscard]] ZEN_HOT_FUNCTION auto nsZenBoostsBackend::ResolveStyleColor(
+    mozilla::StyleAbsoluteColor aColor) -> mozilla::StyleAbsoluteColor {
   if (aColor.alpha == 0) {
     // Skip processing fully transparent colors since they won't be visible and
     // we want to avoid unnecessary computations. This also prevents issues with

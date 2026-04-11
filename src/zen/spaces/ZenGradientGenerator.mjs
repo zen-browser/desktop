@@ -1753,6 +1753,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
           "--toolbox-textcolor",
           `rgba(${textColor[0]}, ${textColor[1]}, ${textColor[2]}, ${textColor[3]})`
         );
+        docElement.style.setProperty(
+          "--toolbar-color-scheme",
+          isDarkMode ? "dark" : "light"
+        );
       }
 
       if (!skipUpdate) {
@@ -1762,7 +1766,13 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     });
 
     // Notify observers that gradient updated
-    Services.obs.notifyObservers(null, "zen-space-gradient-update");
+    // note: We just notify if we are not skipping the update,
+    //   because otherwise, it can get pretty laggy if we notify on every change
+    //   when the user is dragging a dot.
+    // TODO(cheff): We should probably find a better way to handle this
+    if (!skipUpdate) {
+      Services.obs.notifyObservers(null, "zen-space-gradient-update");
+    }
   }
 
   fixTheme(theme) {

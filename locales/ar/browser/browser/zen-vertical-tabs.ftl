@@ -26,19 +26,19 @@ sidebar-zen-create-new =
     .label = إنشاء جديد...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
-        {$tabCount ->
+        { $tabCount ->
             [one] تفريغ والتبديل إلى علامة التبويب
            *[other] تفريغ { $tabCount } علامات التبويب والتبديل إلى الأولى
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
-        {$tabCount ->
+        { $tabCount ->
             [one] إعادة تعيين علامة التبويب وتثبيتها
-           *[other] إعادة تعيين وتثبيت { $tabCount}
+           *[other] إعادة تعيين وتثبيت { $tabCount }
         }
 zen-tab-sublabel =
-    {$tabSubtitle ->
+    { $tabSubtitle ->
         [zen-default-pinned] العودة إلى الرابط المثبت
         [zen-default-pinned-cmd] فصل عن علامة التبويب المثبتة
-       *[other] { $tabSubtitle}
+       *[other] { $tabSubtitle }
     }

@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/main.js b/browser/components/preferences/main.js
-index e77dfebdf3a15033182eeae6eccd44a63aae3740..4e25b3e1abaeeaec3e83e0e1b53bf578eba5587b 100644
+index a5f2e4258942010ee61ed7a86497f51793366fcd..f01524a09512ec6cd1972a9fdb173ff427a0d753 100644
 --- a/browser/components/preferences/main.js
 +++ b/browser/components/preferences/main.js
 @@ -2652,6 +2652,11 @@ SettingGroupManager.registerGroups({

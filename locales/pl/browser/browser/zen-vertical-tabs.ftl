@@ -27,14 +27,16 @@ sidebar-zen-create-new =
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Dezaktywuj i przełącz na kartę
-           *[other] Dezaktywuj { $tabCount } karty i przełącz na pierwszą
+            [one] Wyładuj i przełącz na kartę
+            [few] Wyładuj { $tabCount } karty i przełącz na pierwszą
+           *[other] Wyładuj { $tabCount } kart i przełącz na pierwszą
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
             [one] Zresetuj i przypnij kartę
-           *[other] Zresetuj i przypnij karty w liczbie: { $tabCount }
+            [few] Zresetuj i przypnij { $tabCount } karty
+           *[other] Zresetuj i przypnij { $tabCount } kart
         }
 zen-tab-sublabel =
     { $tabSubtitle ->

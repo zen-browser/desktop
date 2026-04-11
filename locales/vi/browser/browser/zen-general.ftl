@@ -7,8 +7,8 @@ unified-extensions-description = Các tiện ích mở rộng được sử dụ
 tab-context-zen-reset-pinned-tab = 
     .label =
         { $isEssential ->
-          [true] Đặt lại thẻ chính
-         *[false] Đặt lại thẻ đã ghim
+            [true] Đặt lại thẻ chính
+           *[false] Đặt lại thẻ đã ghim
         }
     .accesskey = R
 tab-context-zen-add-essential = 

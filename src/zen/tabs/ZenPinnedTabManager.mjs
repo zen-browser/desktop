@@ -427,6 +427,11 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     state.image = tab.zenStaticIcon || initialState.image;
     state.index = 0;
 
+    // See gh-13024, we need to remove the scroll position from the state,
+    // otherwise when we reset the pinned tab, it will scroll to the previous position
+    // which can be confusing for the user, especially if they have a long page.
+    delete state.scroll;
+
     SessionStore.setTabState(tab, state);
     this.resetPinChangedUrl(tab);
   }
@@ -673,14 +678,15 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
           return tab;
         }
         let workspaceId;
+        if (
+          !tab.hasAttribute("zen-essential") &&
+          tab.getAttribute("zen-workspace-id") != gZenWorkspaces.activeWorkspace
+        ) {
+          workspaceId = gZenWorkspaces.activeWorkspace;
+        }
         if (tab.ownerGlobal !== window) {
           fromDifferentWindow = true;
-          if (
-            !tab.hasAttribute("zen-essential") &&
-            tab.getAttribute("zen-workspace-id") !=
-              gZenWorkspaces.activeWorkspace
-          ) {
-            workspaceId = gZenWorkspaces.activeWorkspace;
+          if (workspaceId) {
             tab.ownerGlobal.gBrowser.selectedTab =
               tab.ownerGlobal.gBrowser._findTabToBlurTo(tab, movingTabs);
             tab.ownerGlobal.gZenWorkspaces.moveTabToWorkspace(tab, workspaceId);
@@ -695,9 +701,9 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
           if (tab) {
             ++newIndex;
           }
-          if (workspaceId) {
-            tab.setAttribute("zen-workspace-id", workspaceId);
-          }
+        }
+        if (workspaceId) {
+          tab.setAttribute("zen-workspace-id", workspaceId);
         }
         return tab;
       });

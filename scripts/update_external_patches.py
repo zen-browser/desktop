@@ -55,7 +55,7 @@ def main():
       name = patch.get("name")
       if not phab_id or not name:
         die(f"Patch entry missing 'id' or 'name': {patch}")
-      name = name.replace(" ", "_").lower()
+      name = name.replace(" ", "_").replace(".", "_").lower()
       output_file = os.path.join(OUTPUT_DIR, "firefox", f"{name}.patch")
       print(f"Processing Phabricator patch: {phab_id} -> {output_file}")
       download_phab_patch(phab_id, output_file)

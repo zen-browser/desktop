@@ -5,6 +5,7 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
+            [-1] Aufteilung aufheben
             [1] Tab aufteilen (wähle mehrere Tabs aus)
            *[other] { $tabCount } Tabs aufteilen
         }

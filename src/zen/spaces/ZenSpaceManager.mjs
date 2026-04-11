@@ -44,6 +44,10 @@ class nsZenWorkspaces {
   _workspaceCache = [];
 
   #lastScrollTime = 0;
+  #currentSpaceSwitchContext = {
+    promise: null,
+    animations: [],
+  };
 
   bookmarkMenus = [
     "PlacesToolbar",
@@ -777,7 +781,7 @@ class nsZenWorkspaces {
     if (
       !this.privateWindowOrDisabled &&
       spacesFromStore.length === 0 &&
-      lazy.ZenSessionStore._migrationData
+      lazy.ZenSessionStore._migrationData?.spaces
     ) {
       spacesFromStore.push(...lazy.ZenSessionStore._migrationData.spaces);
     }
@@ -871,10 +875,12 @@ class nsZenWorkspaces {
     };
 
     let removedEmptyTab = false;
+    let initialTabWasEmpty = false;
     if (
       this._initialTab &&
       !(this._initialTab._shouldRemove && this._initialTab._veryPossiblyEmpty)
     ) {
+      initialTabWasEmpty = !!this._initialTab._veryPossiblyEmpty;
       gBrowser.selectedTab = this._initialTab;
       this.moveTabToWorkspace(this._initialTab, this.activeWorkspace);
       gBrowser.moveTabTo(this._initialTab, {
@@ -939,7 +945,12 @@ class nsZenWorkspaces {
       delete this._initialTab;
     }
 
-    showed &&= Services.prefs.getBoolPref("zen.urlbar.open-on-startup", true);
+    const openOnStartup = Services.prefs.getBoolPref(
+      "zen.urlbar.open-on-startup",
+      true
+    );
+    showed &&= openOnStartup;
+    initialTabWasEmpty &&= openOnStartup;
 
     // Wait for the next event loop to ensure that the startup focus logic by
     // firefox has finished doing it's thing.
@@ -947,7 +958,9 @@ class nsZenWorkspaces {
       setTimeout(() => {
         if (gZenVerticalTabsManager._canReplaceNewTab && showed) {
           BrowserCommands.openTab();
-        } else if (!showed) {
+        } else if (showed || initialTabWasEmpty) {
+          openLocation();
+        } else {
           gBrowser.selectedBrowser.focus();
         }
       });
@@ -1062,6 +1075,7 @@ class nsZenWorkspaces {
   }
 
   handleTabBeforeClose(tab, closeWindowWithLastTab) {
+    delete this._isClosingWindow;
     if (
       !this.workspaceEnabled ||
       this.__contextIsDelete ||
@@ -1096,10 +1110,6 @@ class nsZenWorkspaces {
           // This call actually closes the window, unless the user
           // cancels the operation.  We are finished here in both cases.
           this._isClosingWindow = true;
-          // Inside a setTimeout to avoid reentrancy issues.
-          setTimeout(() => {
-            document.getElementById("cmd_closeWindow").doCommand();
-          }, 100);
         }
         return null;
       }
@@ -1108,6 +1118,19 @@ class nsZenWorkspaces {
     }
 
     return null;
+  }
+
+  handleTabBeforeRemove() {
+    // We run this AFTER the beforeunload event check, so we can
+    // be sure that if we get here, the tab is actually going to be removed,
+    // and beforeunload won't be called again. See gh-12922 for an example.
+    if (!this.workspaceEnabled || !this._isClosingWindow) {
+      return;
+    }
+    // Inside a setTimeout to avoid reentrancy issues.
+    setTimeout(() => {
+      document.getElementById("cmd_closeWindow").doCommand();
+    }, 100);
   }
 
   addPopupListeners() {
@@ -1528,7 +1551,7 @@ class nsZenWorkspaces {
         !tab.hasAttribute("pending")
     );
 
-    await gBrowser.explicitUnloadTabs(tabsToUnload); // TODO: unit test this
+    await gBrowser.explicitUnloadTabs(tabsToUnload);
   }
 
   moveTabToWorkspace(tab, workspaceID) {
@@ -1621,9 +1644,18 @@ class nsZenWorkspaces {
   }
 
   async changeWorkspace(workspace, ...args) {
-    if (!this.workspaceEnabled || this.#inChangingWorkspace) {
+    if (!this.workspaceEnabled) {
       return;
     }
+    this.#currentSpaceSwitchContext.animations.forEach(animation => {
+      animation.complete();
+    });
+    await this.#currentSpaceSwitchContext.promise;
+    let { resolve, promise } = Promise.withResolvers();
+    this.#currentSpaceSwitchContext = {
+      promise,
+      animations: [],
+    };
     this.#inChangingWorkspace = true;
     try {
       this.log("Changing workspace to", workspace?.uuid);
@@ -1632,10 +1664,11 @@ class nsZenWorkspaces {
       console.error("gZenWorkspaces: Error changing workspace", e);
     }
     this.#inChangingWorkspace = false;
+    resolve();
   }
 
   _cancelSwipeAnimation() {
-    this._animateTabs(this.getActiveWorkspaceFromCache(), true);
+    this.#animateTabs(this.getActiveWorkspaceFromCache(), true);
   }
 
   async #performWorkspaceChange(
@@ -1913,7 +1946,7 @@ class nsZenWorkspaces {
   }
 
   /* eslint-disable complexity */
-  async _animateTabs(
+  async #animateTabs(
     newWorkspace,
     shouldAnimate,
     tabToSelect = null,
@@ -2243,12 +2276,14 @@ class nsZenWorkspaces {
     let promiseTimeout = new Promise(resolve =>
       setTimeout(resolve, kGlobalAnimationDuration * 1000 + 50)
     );
+    this.#currentSpaceSwitchContext.animations = animations;
     // See issue https://github.com/zen-browser/desktop/issues/9334, we need to add
     // some sort of timeout to the animation promise, just in case it gets stuck.
     // We are doing a race between the timeout and the animations finishing.
     await Promise.race([Promise.all(animations), promiseTimeout]).catch(
       console.error
     );
+    this.#currentSpaceSwitchContext.animations = [];
     document.documentElement.removeAttribute("animating-background");
     if (shouldAnimate) {
       for (const cloned of clonedEssentials) {
@@ -2410,7 +2445,7 @@ class nsZenWorkspaces {
 
     gZenUIManager.tabsWrapper.scrollbarWidth = "none";
     this.workspaceIcons.activeIndex = workspace.uuid;
-    await this._animateTabs(
+    await this.#animateTabs(
       workspace,
       !onInit && !this._animatingChange,
       tabToSelect,
@@ -2434,8 +2469,14 @@ class nsZenWorkspaces {
       }
     }
 
-    // Reset bookmarks
-    this.#invalidateBookmarkContainers();
+    // Avoid forcing a startup toolbar rebuild when there are no
+    // workspace-specific bookmark assignments to apply.
+    const hasWorkspaceBookmarks = !!Object.keys(
+      this._workspaceBookmarksCache?.bookmarks || {}
+    ).length;
+    if (!onInit || hasWorkspaceBookmarks) {
+      this.#invalidateBookmarkContainers();
+    }
 
     // Update workspace indicator
     await this.updateWorkspaceIndicator(workspace, this.workspaceIndicator);

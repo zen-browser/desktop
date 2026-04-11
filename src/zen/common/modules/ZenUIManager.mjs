@@ -338,7 +338,12 @@ window.gZenUIManager = {
   // handle the constraint, enabling proper overflow scrolling.
   // See gh-12782
   _constrainNativePopoverHeight(panel) {
-    if (panel.id !== "appMenu-popup") {
+    const panelIds = [
+      "appMenu-popup",
+      "customizationui-widget-panel",
+      "widget-overflow",
+    ];
+    if (!panelIds.includes(panel.id)) {
       return;
     }
     // NSPopover adds 13px of chrome on all sides (26px vertical total),
@@ -346,7 +351,8 @@ window.gZenUIManager = {
     // Previous macOS versions have similar or smaller values, so this is a
     // conservative upper bound.
     const popoverChrome = 26;
-    panel.style.maxHeight = `${window.screen.availHeight - popoverChrome}px`;
+    const maxHeight = window.screen.availHeight - popoverChrome;
+    panel.style.maxHeight = `${maxHeight}px`;
   },
 
   onPopupShowing(showEvent) {
@@ -426,6 +432,9 @@ window.gZenUIManager = {
   },
 
   onUrlbarSearchModeChanged(event) {
+    if (gReduceMotion) {
+      return;
+    }
     const { searchMode } = event.detail;
     const input = gURLBar;
     if (gURLBar.hasAttribute("breakout-extend") && !this._animatingSearchMode) {
@@ -993,7 +1002,7 @@ window.gZenVerticalTabsManager = {
                 command="cmd_zenToggleTabsOnRight"
         />
     `);
-    document.getElementById("viewToolbarsMenuSeparator").before(fragment);
+    document.getElementById("toolbar-context-customize").before(fragment);
   },
 
   get _topButtonsSeparatorElement() {
@@ -1008,6 +1017,7 @@ window.gZenVerticalTabsManager = {
 
   animateItemOpen(aItem) {
     if (
+      gReduceMotion ||
       !gZenUIManager.motion ||
       !aItem ||
       !gZenUIManager._hasLoadedDOM ||
@@ -1027,7 +1037,8 @@ window.gZenVerticalTabsManager = {
     };
 
     try {
-      const itemSize = aItem.getBoundingClientRect().height;
+      const itemSize =
+        window.windowUtils.getBoundsWithoutFlushing(aItem).height;
       const transform = `-${itemSize}px`;
       gZenUIManager.motion
         .animate(
@@ -1038,7 +1049,7 @@ window.gZenVerticalTabsManager = {
             marginBottom: isLastItem() ? ["0px", "0px"] : [transform, "0px"],
           },
           {
-            duration: 0.1,
+            duration: 0.12,
             easing: "easeOut",
           }
         )
@@ -1061,7 +1072,7 @@ window.gZenVerticalTabsManager = {
             filter: ["blur(1px)", "blur(0px)"],
           },
           {
-            duration: 0.075,
+            duration: 0.1,
             easing: "easeOut",
           }
         )
@@ -1086,7 +1097,7 @@ window.gZenVerticalTabsManager = {
     ) {
       return Promise.resolve();
     }
-    const height = aItem.getBoundingClientRect().height;
+    const height = window.windowUtils.getBoundsWithoutFlushing(aItem).height;
     const visibleItems = gBrowser.tabContainer.ariaFocusableItems;
     const isLastItem = visibleItems[visibleItems.length - 1] === aItem;
     return gZenUIManager.motion.animate(
@@ -1101,7 +1112,7 @@ window.gZenVerticalTabsManager = {
             }),
       },
       {
-        duration: 0.075,
+        duration: 0.1,
         easing: "easeOut",
       }
     );

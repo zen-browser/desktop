@@ -151,10 +151,11 @@ export class nsZenSessionManager {
       );
       const db = await PlacesUtils.promiseDBConnection();
       let data = {};
-      let rows = await db.execute(
-        "SELECT * FROM zen_workspaces ORDER BY created_at ASC"
-      );
+      let rows = [];
       try {
+        rows = await db.execute(
+          "SELECT * FROM zen_workspaces ORDER BY created_at ASC"
+        );
         data.spaces = rows.map(row => ({
           uuid: row.getResultByName("uuid"),
           name: row.getResultByName("name"),

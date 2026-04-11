@@ -84,7 +84,7 @@ create_nss_config_dir() {
   openssl pkcs12 -export \
       -inkey "$CERT_PATH_DIR/private_key.pem" \
       -in    "$CERT_PATH_DIR/cert.pem" \
-      -name  "private_key" \
+      -name  "mar_cert" \
       -passout pass:"$ZEN_MAR_SIGNING_PASSWORD" \
       -out   "$CERT_PATH_DIR/private_key.p12"
 
@@ -130,9 +130,9 @@ sign_mar() {
   echo ""
   echo "Signing $mar_file..."
   # mar [-C workingDir] -d NSSConfigDir -n certname -s archive.mar out_signed_archive.mar
-  "$SIGNMAR" -d "$NSS_CONFIG_DIR" -n "private_key" -s "$mar_file" "$mar_file".signed
+  "$SIGNMAR" -d "$NSS_CONFIG_DIR" -n "mar_cert" -s "$mar_file" "$mar_file".signed
   echo "Signed $mar_file. Verifying signature..."
-  "$SIGNMAR" -d "$NSS_CONFIG_DIR" -n "private_key" -v "$mar_file".signed
+  "$SIGNMAR" -d "$NSS_CONFIG_DIR" -n "mar_cert" -v "$mar_file".signed
   mv "$mar_file".signed "$mar_file"
   echo "Successfully signed $mar_file"
 

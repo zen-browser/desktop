@@ -145,9 +145,6 @@ jobs:
           cd engine/
           ls ~/.mozbuild/clang/lib/clang/
           echo "export LIB=\"$(cd ~/.mozbuild/clang/lib/clang/* && cd lib/windows && pwd)\"" >> ../configs/common/mozconfig
-          if [ -d ~/win-cross/wine ]; then
-            echo 'export WINE="$(echo ~)/win-cross/wine/bin/wine"' >> ../configs/common/mozconfig
-          fi
           cat ../configs/common/mozconfig
           ls ~/win-cross/wine || true
           ls ~/win-cross/vs2026 || true
@@ -212,7 +209,6 @@ jobs:
         shell: pwsh
         run: |
           $env:SURFER_PLATFORM = "win32"
-          $env:ZEN_CROSS_COMPILING = "1"
           if ("${{ inputs['generate-gpo'] }}" -eq "true") {
             $env:ZEN_GA_GENERATE_PROFILE = "1"
           }
@@ -233,7 +229,6 @@ jobs:
         run: |
           set -x
           export SURFER_PLATFORM="win32"
-          export ZEN_CROSS_COMPILING=1
           export ZEN_RELEASE=1
           npm run package
           mv ./dist/zen-$(npm run --silent surfer -- get version | xargs).en-US.win64${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.zip zen.win64.zip

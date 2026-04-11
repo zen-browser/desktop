@@ -2,28 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-if test "$ZEN_CROSS_COMPILING"; then
-
-  export WINSYSROOT="$(echo ~)/win-cross/vs2026"
-
-  if test -x "$(echo ~)/win-cross/wine/bin/wine"; then
-    export WINE="$(echo ~)/win-cross/wine/bin/wine"
-    export WINEDEBUG=-all
-  fi
-
-  export MOZ_STUB_INSTALLER=1
-  export MOZ_PKG_FORMAT=TAR
-
-  export CROSS_BUILD=1
-  CROSS_COMPILE=1
-
-  if test "$SURFER_COMPAT" = "aarch64"; then
-    export WIN32_REDIST_DIR="$(echo ~)/win-cross/vs2026/VC/Redist/MSVC/14.50.35710/arm64/Microsoft.VC145.CRT"
-  else
-    export WIN32_REDIST_DIR="$(echo ~)/win-cross/vs2026/VC/Redist/MSVC/14.50.35710/x64/Microsoft.VC145.CRT"
-  fi
-fi
-
 # We wrongly detect ccache on windows, which leads to build failures.
 # This line should be removed once the detection is fixed.
 ac_add_options --without-ccache
@@ -38,23 +16,7 @@ elif test "$SURFER_COMPAT" = "aarch64"; then
   ac_add_options --target=aarch64-pc-windows-msvc
   ac_add_options --enable-eme=widevine
 
-  # override LTO settings
-  export MOZ_LTO=cross,thin
-  ac_add_options --enable-lto=cross,thin
-fi
-
-if test "$ZEN_CROSS_COMPILING"; then
-  if test "$ZEN_GA_GENERATE_PROFILE"; then
-    mk_add_options "export MOZ_AUTOMATION_PACKAGE_GENERATED_SOURCES=0"
-    ac_add_options --enable-profile-generate=cross
-  elif test "$SURFER_COMPAT" = "x86_64"; then
-    # Dont use PGO on aarch64 builds and the ZEN_GA_DISABLE_PGO flag is not set
-    if test "$ZEN_GA_DISABLE_PGO"; then
-      export ZEN_DUMMY=1
-    else
-      ac_add_options --enable-profile-use=cross
-      ac_add_options --with-pgo-profile-path=$(echo ~)/artifact/merged.profdata
-      ac_add_options --with-pgo-jarlog=$(echo ~)/artifact/en-US.log
-    fi
-  fi
+  # Native Windows / MSVC: avoid LTO flavor meant for cross-toolchain builds.
+  export MOZ_LTO=thin
+  ac_add_options --enable-lto=thin
 fi

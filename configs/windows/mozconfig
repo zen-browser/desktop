@@ -6,8 +6,10 @@ if test "$ZEN_CROSS_COMPILING"; then
 
   export WINSYSROOT="$(echo ~)/win-cross/vs2026"
 
-  export WINE="$(echo ~)/win-cross/wine/bin/wine"
-  export WINEDEBUG=-all
+  if test -x "$(echo ~)/win-cross/wine/bin/wine"; then
+    export WINE="$(echo ~)/win-cross/wine/bin/wine"
+    export WINEDEBUG=-all
+  fi
 
   export MOZ_STUB_INSTALLER=1
   export MOZ_PKG_FORMAT=TAR

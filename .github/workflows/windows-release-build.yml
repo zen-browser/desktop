@@ -145,6 +145,9 @@ jobs:
           cd engine/
           ls ~/.mozbuild/clang/lib/clang/
           echo "export LIB=\"$(cd ~/.mozbuild/clang/lib/clang/* && cd lib/windows && pwd)\"" >> ../configs/common/mozconfig
+          if [ -d ~/win-cross/wine ]; then
+            echo 'export WINE="$(echo ~)/win-cross/wine/bin/wine"' >> ../configs/common/mozconfig
+          fi
           cat ../configs/common/mozconfig
           ls ~/win-cross/wine || true
           ls ~/win-cross/vs2026 || true

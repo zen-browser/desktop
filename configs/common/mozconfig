@@ -35,10 +35,7 @@ if ! test "$SCCACHE_GHA_ENABLED" = "false"; then
   fi
 fi
 
-# add safe browsing key if it exists on a file
-if test -f "$HOME/.zen-keys/safebrowsing.dat"; then
-  ac_add_options --with-google-safebrowsing-api-keyfile="$HOME/.zen-keys/safebrowsing.dat"
-fi
+ac_add_options --without-google-safebrowsing-api-keyfile
 
 if test "$ZEN_RELEASE"; then
 

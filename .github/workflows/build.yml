@@ -565,8 +565,6 @@ jobs:
             ./zen-x86_64.AppImage.zsync/*
             ./zen-aarch64.AppImage/*
             ./zen-aarch64.AppImage.zsync/*
-            ./zen.win-x86_64.zip/*
-            ./zen.win-arm64.zip/*
             ./linux.mar/*
             ./linux-aarch64.mar/*
             ./windows.mar/*
@@ -604,8 +602,6 @@ jobs:
             ./zen-x86_64.AppImage.zsync/*
             ./zen-aarch64.AppImage/*
             ./zen-aarch64.AppImage.zsync/*
-            ./.github/workflows/object/windows-x64-signed-x86_64/zen.win-x86_64.zip
-            ./.github/workflows/object/windows-x64-signed-arm64/zen.win-arm64.zip
             ./linux.mar/*
             ./linux-aarch64.mar/*
             ./.github/workflows/object/windows-x64-signed-x86_64/windows.mar

@@ -126,7 +126,7 @@ jobs:
     permissions:
       contents: write
     name: Generate build data
-    runs-on: blacksmith-2vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     needs: buildid
     outputs:
       build_date: ${{ steps.data.outputs.builddate }}
@@ -359,7 +359,7 @@ jobs:
     name: AppImage build - Linux ${{ matrix.arch }}
     permissions:
       contents: write
-    runs-on: blacksmith-2vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         arch: [x86_64, aarch64]
@@ -439,7 +439,7 @@ jobs:
           path: ./dist/zen-${{ matrix.arch }}.AppImage.zsync
 
   stop-self-hosted:
-    runs-on: blacksmith-2vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     needs: [windows-step-3, linux]
     if: always()
     steps:
@@ -611,7 +611,7 @@ jobs:
     permissions: write-all
     name: Prepare Flatpak
     needs: [release, linux, build-data]
-    runs-on: blacksmith-2vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Flatpak repository
@@ -670,7 +670,7 @@ jobs:
     permissions: write-all
     name: Release Flatpak
     needs: [prepare-flatpak, build-data]
-    runs-on: blacksmith-2vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Flatpak repository

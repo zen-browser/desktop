@@ -7,8 +7,8 @@ unified-extensions-description = Οι επεκτάσεις χρησιμοποι�
 tab-context-zen-reset-pinned-tab = 
     .label =
         { $isEssential ->
-            [true] Reset Essential Tab
-           *[false] Reset Pinned Tab
+            [true]  Επαναφορά Απαραίτητης Καρτέλας
+           *[false] Επαναφορά Καρφιτσωμένης Καρτέλας
         }
     .accesskey = R
 tab-context-zen-add-essential = 
@@ -21,8 +21,8 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] Replace Essential URL with Current
-           *[false] Replace Pinned URL with Current
+            [true]  Αντικατάσταση Απαραίτητης διεύθυνσής με την τωρινή
+           *[false] Αντικατάσταση Καρφιτσωμένης διεύθυνσής με την τωρινή
         }
     .accesskey = C
 tab-context-zen-edit-title = 
@@ -41,7 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Ελαχιστοποίηση
 zen-panel-ui-gradient-generator-custom-color = Προσαρμοσμένο Χρώμα
 zen-copy-current-url-confirmation = Αντιγράφηκε το τρέχον URL!
-zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
+zen-copy-current-url-as-markdown-confirmation = Η τωρινή διεύθυνσή αντιγράφηκε ως Markdown!
 zen-general-cancel-label = 
     .label = Ακύρωση
 zen-general-confirm = 
@@ -123,4 +123,4 @@ zen-window-sync-migration-dialog-message = Το Zen άρα στην ίδια σ�
 zen-window-sync-migration-dialog-learn-more = Περισσότερα
 zen-window-sync-migration-dialog-accept = Κατάλαβα
 zen-appmenu-new-blank-window = 
-    .label = New blank window
+    .label = Νέο κενό παράθυρο

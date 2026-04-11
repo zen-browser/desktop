@@ -24,3 +24,13 @@ target/
 locales/firefox-l10n/
 
 !src/toolkit/themes/shared/design-system/dist/
+.DS_Store
+
+mozconfig
+
+build/signing/env/
+build/signing/nss_config/
+build/signing/cert.pem
+build/signing/private_key.pem
+build/signing/private_key.p12
+

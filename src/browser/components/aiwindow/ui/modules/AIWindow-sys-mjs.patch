@@ -1,0 +1,12 @@
+diff --git a/browser/components/aiwindow/ui/modules/AIWindow.sys.mjs b/browser/components/aiwindow/ui/modules/AIWindow.sys.mjs
+index 7338737a25c2b75f28c48f573a58b72ec326ad3b..7cf3aa1164d38bc9daaa010f27c567e0d9792bc6 100644
+--- a/browser/components/aiwindow/ui/modules/AIWindow.sys.mjs
++++ b/browser/components/aiwindow/ui/modules/AIWindow.sys.mjs
+@@ -200,6 +200,7 @@ export const AIWindow = {
+   },
+ 
+   _updateWindowSwitcherPosition(win) {
++    return;
+     const modeSwitcherButton = win.document.getElementById("ai-window-toggle");
+ 
+     const targetToolbar = win.document.getElementById(

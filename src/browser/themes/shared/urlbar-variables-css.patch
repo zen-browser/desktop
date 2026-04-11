@@ -1,0 +1,13 @@
+diff --git a/browser/themes/shared/urlbar-variables.css b/browser/themes/shared/urlbar-variables.css
+index 0710bcc11e8040750ff826e3d3551454fdad61c6..2be2fa3e386ad9d4296d73ee8814e09750382a0d 100644
+--- a/browser/themes/shared/urlbar-variables.css
++++ b/browser/themes/shared/urlbar-variables.css
+@@ -9,7 +9,7 @@
+ :root {
+   --identity-box-margin-inline: 4px;
+   --urlbar-min-height: max(32px, 1.4em);
+-  --urlbar-icon-padding: calc((var(--urlbar-min-height) - 2px /* border */ - 2px /* padding */ - 16px /* icon */) / 2);
++  --urlbar-icon-padding: calc((var(--urlbar-min-height) - 2px /* border */ - 14px /* icon */) / 2);
+ 
+   /* This should be used for icons and chiclets inside the input field, as well
+      as result rows. It makes the gap around them more uniform when they are

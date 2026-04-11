@@ -33,7 +33,12 @@ tabbrowser-unload-tab-button =
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] タブをリセットして固定する
-           *[other] タブをリセットして{ $tabCount }つタブを固定する
+            [one] タブをリセットしてピン留め
+           *[other] タブをリセットして{ $tabCount }つのタブをピン留め
         }
-tab-reset-pin-label = 固定したURLに戻る
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] ピン止めされた URL に戻る
+        [zen-default-pinned-cmd] ピン止めされたタブから切り離す
+       *[other] { $tabSubtitle }
+    }

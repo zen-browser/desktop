@@ -1,5 +1,5 @@
 diff --git a/widget/cocoa/nsDragService.mm b/widget/cocoa/nsDragService.mm
-index fb01c7e5ec5ce0f10a3f5c4c842d8a272665190d..b59cc2f5fd07c24b741cce63515c3fd0288152b4 100644
+index d5db98bff66a4daace6454af16406822d79fe912..522262b8d7ccba1f333755c48b0327cd098a5248 100644
 --- a/widget/cocoa/nsDragService.mm
 +++ b/widget/cocoa/nsDragService.mm
 @@ -23,6 +23,7 @@
@@ -10,7 +10,7 @@ index fb01c7e5ec5ce0f10a3f5c4c842d8a272665190d..b59cc2f5fd07c24b741cce63515c3fd0
  #include "nsIContent.h"
  #include "nsCocoaUtils.h"
  #include "mozilla/gfx/2D.h"
-@@ -144,6 +145,10 @@
+@@ -147,6 +148,10 @@
                                              bitsPerPixel:32];
  
    uint8_t* dest = [imageRep bitmapData];
@@ -21,7 +21,7 @@ index fb01c7e5ec5ce0f10a3f5c4c842d8a272665190d..b59cc2f5fd07c24b741cce63515c3fd0
    for (uint32_t i = 0; i < height; ++i) {
      uint8_t* src = map.mData + i * map.mStride;
      for (uint32_t j = 0; j < width; ++j) {
-@@ -151,15 +156,15 @@
+@@ -154,15 +159,15 @@
        // is premultipled here. Also, Quartz likes RGBA, so do that translation
        // as well.
  #ifdef IS_BIG_ENDIAN

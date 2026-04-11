@@ -10,7 +10,11 @@ add_task(async function test_SimpleLabelChange() {
     await runSyncAction(
       () => {
         gBrowser._setTabLabel(newTab, newLabel);
-        Assert.equal(newTab.label, newLabel, "The original tab label should be changed");
+        Assert.equal(
+          newTab.label,
+          newLabel,
+          "The original tab label should be changed"
+        );
       },
       async () => {
         Assert.equal(

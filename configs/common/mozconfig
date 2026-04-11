@@ -89,8 +89,6 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --enable-replace-malloc
 fi
 
-ac_add_options --enable-unverified-updates
-
 ac_add_options --enable-jxl
 
 ac_add_options --with-unsigned-addon-scopes=app,system

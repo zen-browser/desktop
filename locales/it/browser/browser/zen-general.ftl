@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = profilo in uso
 unified-extensions-description = Le estensioni sono usate per portare più funzionalità in { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Reimposta scheda fissata
+    .label =
+        { $isEssential ->
+            [true] Reset Essential Tab
+           *[false] Reset Pinned Tab
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Aggiungi agli Essenziali
@@ -15,12 +19,16 @@ tab-context-zen-remove-essential =
     .label = Rimuovi dagli Essenziali
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Sostituisci URL fissato con quello corrente
+    .label =
+        { $isEssential ->
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
-    .label = Change Label...
+    .label = Cambia Etichetta...
 tab-context-zen-edit-icon = 
-    .label = Change Icon...
+    .label = Cambia icona...
 zen-themes-corrupted = Il tuo file { -brand-short-name } mods è danneggiato. Sono stati reimpostati al tema predefinito.
 zen-shortcuts-corrupted = Il file delle scorciatoie per { -brand-short-name } è corrotto. Le scorciatoie sono state riportate alle impostazioni predefinite.
 # note: Do not translate the "<br/>" tags in the following string
@@ -31,6 +39,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimizza
 zen-panel-ui-gradient-generator-custom-color = Colore personalizzato
 zen-copy-current-url-confirmation = L'URL corrente è stato copiato!
+zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
 zen-general-cancel-label = 
     .label = Annulla
 zen-general-confirm = 
@@ -58,8 +67,8 @@ zen-site-data-settings = Impostazioni
 zen-generic-manage = Gestisci
 zen-generic-more = Altro
 zen-generic-next = Successivo
-zen-essentials-promo-label = Add to Essentials
-zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
+zen-essentials-promo-label = Aggiungi agli Essenziali
+zen-essentials-promo-sublabel = Mantieni le tue schede preferite a un clic di distanza
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Consentito
 zen-site-data-setting-block = Bloccato
@@ -107,7 +116,9 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = Si è rotto qualcosa?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Riavvia in Modalità Provvisoria
-zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
-zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
-zen-window-sync-migration-dialog-learn-more = Learn More
-zen-window-sync-migration-dialog-accept = Got It
+zen-window-sync-migration-dialog-title = Mantieni le tue Finestre sincronizzate
+zen-window-sync-migration-dialog-message = Zen ora sincronizza le finestre sullo stesso dispositivo, quindi le modifiche in una finestra si riflettono istantaneamente sulle altre.
+zen-window-sync-migration-dialog-learn-more = Scopri di più
+zen-window-sync-migration-dialog-accept = Ho capito
+zen-appmenu-new-blank-window = 
+    .label = New blank window

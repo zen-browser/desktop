@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = Dein aktuelles Profil
 unified-extensions-description = Mit Erweiterungen kannst du { -brand-short-name } um zusätzliche Funktionen erweitern.
 tab-context-zen-reset-pinned-tab = 
-    .label = Angehefteten Tab zurücksetzen
+    .label =
+        { $isEssential ->
+            [true] Essential-Tab zurücksetzen
+           *[false] Angehefteten Tab zurücksetzen
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Zu Essentials hinzufügen
@@ -15,13 +19,17 @@ tab-context-zen-remove-essential =
     .label = Aus Essentials entfernen
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Angeheftete URL durch aktuelle ersetzen
+    .label =
+        { $isEssential ->
+            [true] Essential-URL durch aktuelle ersetzen
+           *[false] Angeheftete URL durch aktuelle ersetzen
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = Titel ändern...
 tab-context-zen-edit-icon = 
     .label = Symbol ändern...
-zen-themes-corrupted = Deine { -brand-short-name }-Mods-Datei ist beschädigt. Wir haben sie auf das Standard-Design zurückgesetzt.
+zen-themes-corrupted = Deine { -brand-short-name }-Mods-Datei ist beschädigt. Sie wurde auf das Standard-Design zurückgesetzt.
 zen-shortcuts-corrupted = Deine { -brand-short-name }-Tastenkombinationsdatei ist beschädigt. Sie wurde auf die Standard-Tastenkombinationen zurückgesetzt.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
@@ -33,6 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimieren
 zen-panel-ui-gradient-generator-custom-color = Eigene Farbe
 zen-copy-current-url-confirmation = URL kopiert!
+zen-copy-current-url-as-markdown-confirmation = URL als Markdown kopiert!
 zen-general-cancel-label = 
     .label = Abbrechen
 zen-general-confirm = 
@@ -60,8 +69,8 @@ zen-site-data-settings = Einstellungen
 zen-generic-manage = Verwalten
 zen-generic-more = Mehr
 zen-generic-next = Weiter
-zen-essentials-promo-label = Hinzufügen zu Essentials
-zen-essentials-promo-sublabel = Behalte deine Lieblings-Tabs nur einen Klick entfernt
+zen-essentials-promo-label = Zu Essentials hinzufügen
+zen-essentials-promo-sublabel = Deine Lieblings-Tabs, immer nur einen Klick entfernt
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Erlaubt
 zen-site-data-setting-block = Blockiert
@@ -97,7 +106,7 @@ zen-site-data-setting-site-protection = Tracking-Schutz
 zen-site-data-panel-feature-callout-title = Hier findest du Add-ons, Berechtigungen und mehr
 zen-site-data-panel-feature-callout-subtitle = Klicke auf das Symbol, um Website-Einstellungen anzupassen, Sicherheitsinfos anzuzeigen, auf Erweiterungen zuzugreifen und häufige Aktionen auszuführen.
 zen-open-link-in-glance = 
-    .label = Link in Glance öffnen
+    .label = Link in Schnellansicht öffnen
     .accesskey = G
 zen-sidebar-notification-updated-heading = Update abgeschlossen!
 
@@ -109,7 +118,9 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = Funktioniert etwas nicht?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Im abgesicherten Modus neu starten
-zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
-zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
-zen-window-sync-migration-dialog-learn-more = Learn More
-zen-window-sync-migration-dialog-accept = Got It
+zen-window-sync-migration-dialog-title = Halte deine Fenster synchron
+zen-window-sync-migration-dialog-message = Zen synchronisiert jetzt Fenster auf demselben Gerät, sodass Änderungen in einem Fenster sofort in den anderen übernommen werden.
+zen-window-sync-migration-dialog-learn-more = Mehr erfahren
+zen-window-sync-migration-dialog-accept = Verstanden
+zen-appmenu-new-blank-window = 
+    .label = Neues leeres Fenster

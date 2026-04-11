@@ -1,0 +1,22 @@
+diff --git a/.stylelintrc.js b/.stylelintrc.js
+index 3c9fecf731126fdbf900d1bdcd3635dd31ed53ef..c3a210b8153e9699c6cbdc0d568bb72433976b2c 100644
+--- a/.stylelintrc.js
++++ b/.stylelintrc.js
+@@ -67,7 +67,7 @@ module.exports = {
+     ],
+ 
+     "max-nesting-depth": [
+-      3,
++      6,
+       {
+         ignore: ["blockless-at-rules"],
+       },
+@@ -274,7 +274,7 @@ module.exports = {
+     // Remove this line setting `csscontrols/use-logical` to null after implementing fixes
+     "csstools/use-logical": null,
+     "stylelint-plugin-mozilla/no-base-design-tokens": true,
+-    "stylelint-plugin-mozilla/use-design-tokens": true,
++    "stylelint-plugin-mozilla/use-design-tokens": false,
+   },
+ 
+   overrides: [

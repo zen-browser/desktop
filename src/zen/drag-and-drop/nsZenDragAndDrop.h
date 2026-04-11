@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef mozilla_ZenDragAndDrop_h__
-#define mozilla_ZenDragAndDrop_h__
+#ifndef mozilla_ZenDragAndDrop_h_
+#define mozilla_ZenDragAndDrop_h_
 
 #include "nsIZenDragAndDrop.h"
 #include "nsCOMPtr.h"
@@ -28,10 +28,11 @@ class nsZenDragAndDrop final : public nsIZenDragAndDrop {
   auto GetDragImageOpacity() const { return mDragImageOpacity; }
 
   /**
-   * @brief Get the singleton instance of nsZenDragAndDrop. There may be occasions
-   * where it won't be available (e.g. on the content process), so this may return
-   * nullptr.
-   * @return nsZenDragAndDrop* The singleton instance, or nullptr if not available
+   * @brief Get the singleton instance of nsZenDragAndDrop. There may be
+   * occasions where it won't be available (e.g. on the content process), so
+   * this may return nullptr.
+   * @return nsZenDragAndDrop* The singleton instance, or nullptr if not
+   * available
    */
   static auto GetZenDragAndDropInstance() -> nsCOMPtr<nsZenDragAndDrop>;
 
@@ -40,6 +41,6 @@ class nsZenDragAndDrop final : public nsIZenDragAndDrop {
   float mDragImageOpacity{};
 };
 
-} // namespace zen
+}  // namespace zen
 
 #endif

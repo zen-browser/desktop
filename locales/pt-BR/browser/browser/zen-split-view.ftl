@@ -5,8 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] Dividir aba (é necessário várias abas selecionadas)
-           *[other] Dividir { $tabCount } Abas
+            [-1] Dividir aba
+            [1] Juntar Aba (necessário várias abas selecionadas)
+           *[other] Juntar { $tabCount } Abas
         }
     .accesskey = S.O.
 zen-split-link = 
@@ -15,6 +16,3 @@ zen-split-link =
 zen-split-view-modifier-header = Visão dividida
 zen-split-view-modifier-activate-reallocation = 
     .label = Ativar realocação
-zen-split-view-modifier-enabled-toast = Reorganizar a visualização dividida está ATIVADO.
-zen-split-view-modifier-enabled-toast-description = Arraste e solte a vista para rearranjar. Pressione Esc para sair.
-zen-split-view-modifier-disabled-toast = Reorganizar a visão dividida está DESLIGADA.

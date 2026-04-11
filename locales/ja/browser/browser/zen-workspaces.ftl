@@ -2,13 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-workspaces-text = スペース
+zen-panel-ui-workspaces-text = ワークスペース
 zen-panel-ui-spaces-label = 
     .label = スペース
 zen-panel-ui-workspaces-create = 
     .label = スペースを作成
 zen-panel-ui-folder-create = 
     .label = フォルダーを作成
+zen-panel-ui-live-folder-create = 
+    .label = ライブフォルダー
 zen-panel-ui-new-empty-split = 
     .label = 新しい分割表示
 zen-workspaces-panel-context-delete = 
@@ -22,6 +24,8 @@ zen-workspaces-panel-context-default-profile =
     .label = プロファイルを設定する
 zen-workspaces-panel-unload = 
     .label = スペースをアンロードする
+zen-workspaces-panel-unload-others = 
+    .label = 他のスペースをアンロードする
 zen-workspaces-how-to-reorder-title = 並べ替える方法
 zen-workspaces-how-to-reorder-desc = サイドバーの下部にあるスペースアイコンをドラッグして並べ替えます
 zen-workspaces-change-theme = 
@@ -64,7 +68,7 @@ zen-workspaces-delete-workspace-body = { $name }を削除してもよろしい�
 zen-workspaces-close-all-unpinned-tabs-toast = タブを閉じました！元に戻すには、 <span>{ $shortcut }</span>を使用してください。
 zen-workspaces-close-all-unpinned-tabs-title = 
     .label = 削除する
-    .tooltiptext = すべての固定しなかったタブを閉じる
+    .tooltiptext = すべてのピン留めされていないタブを閉じる
 zen-panel-ui-workspaces-change-forward = 
     .label = 次のスペースに移動
 zen-panel-ui-workspaces-change-back = 

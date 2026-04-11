@@ -1,8 +1,8 @@
 diff --git a/toolkit/themes/shared/in-content/common-shared.css b/toolkit/themes/shared/in-content/common-shared.css
-index 6d2bfbfed592d91b383cd2e307b635393932329f..25ddc2660f4c43129d783769b9eee4e208512c3a 100644
+index 814075aef59969a7e8656974b4f46022f8e88783..53c5d857c15f0a9ec553a2bcfec66c2d2db121fa 100644
 --- a/toolkit/themes/shared/in-content/common-shared.css
 +++ b/toolkit/themes/shared/in-content/common-shared.css
-@@ -58,7 +58,7 @@
+@@ -54,7 +54,7 @@
     * this in forced colors mode, as we should be using system colours then.
     */
    :root[dialogroot] {
@@ -11,7 +11,7 @@ index 6d2bfbfed592d91b383cd2e307b635393932329f..25ddc2660f4c43129d783769b9eee4e2
    }
  }
  
-@@ -169,7 +169,7 @@ xul|menulist {
+@@ -160,7 +160,7 @@ xul|menulist {
    border-radius: var(--button-border-radius);
    background-color: var(--button-background-color);
    font-weight: normal;
@@ -20,21 +20,3 @@ index 6d2bfbfed592d91b383cd2e307b635393932329f..25ddc2660f4c43129d783769b9eee4e2
    text-decoration: none;
    margin: 4px 8px;
    /* Ensure font-size isn't overridden by widget styling (e.g. in forms.css) */
-@@ -688,7 +688,7 @@ html|*#categories[last-input-type="mouse"] > html|button.category:focus-visible
-   fill-opacity: 1;
- }
- 
--@media (max-width: 830px) {
-+@media (max-width: 130px) {
-   :root {
-     --in-content-sidebar-width: 118px;
-   }
-@@ -1070,7 +1070,7 @@ xul|*.sidebar-footer-link {
-   user-select: none;
- }
- 
--@media (max-width: 830px) {
-+@media (max-width: 130px) {
-   .sidebar-footer-list {
-     margin-inline-start: 40px;
-     align-items: flex-start;

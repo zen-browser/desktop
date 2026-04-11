@@ -10,6 +10,8 @@ fi
 
 . $HOME/.cargo/env
 
+bash ./scripts/mar_sign.sh -i
+
 ulimit -n 4096
 
 if command -v Xvfb &> /dev/null; then

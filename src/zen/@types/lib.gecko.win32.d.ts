@@ -56,14 +56,18 @@ declare global {
   }
 
   interface nsIWindowsAlertNotification
-    extends nsIAlertNotification,
+    extends
+      nsIAlertNotification,
       Enums<typeof nsIWindowsAlertNotification_ImagePlacement> {
     imagePlacement: nsIWindowsAlertNotification.ImagePlacement;
   }
 
   interface nsIWindowsAlertsService extends nsIAlertsService {
     handleWindowsTag(aWindowsTag: string): Promise<any>;
-    getXmlStringForWindowsAlert(aAlert: nsIAlertNotification, aWindowsTag?: string): string;
+    getXmlStringForWindowsAlert(
+      aAlert: nsIAlertNotification,
+      aWindowsTag?: string
+    ): string;
     removeAllNotificationsForInstall(): void;
   }
 
@@ -86,9 +90,18 @@ declare global {
       aNotificationAction: string,
       daysSinceLastAppLaunch: u32
     ): void;
-    setDefaultBrowserUserChoice(aAumid: string, aExtraFileExtensions: string[]): void;
-    setDefaultBrowserUserChoiceAsync(aAumid: string, aExtraFileExtensions: string[]): Promise<any>;
-    setDefaultExtensionHandlersUserChoice(aAumid: string, aFileExtensions: string[]): void;
+    setDefaultBrowserUserChoice(
+      aAumid: string,
+      aExtraFileExtensions: string[]
+    ): void;
+    setDefaultBrowserUserChoiceAsync(
+      aAumid: string,
+      aExtraFileExtensions: string[]
+    ): Promise<any>;
+    setDefaultExtensionHandlersUserChoice(
+      aAumid: string,
+      aFileExtensions: string[]
+    ): void;
     agentDisabled(): boolean;
   }
 
@@ -124,11 +137,13 @@ declare enum nsIWindowsShellService_LaunchOnLoginEnabledEnumerator {
 
 declare global {
   namespace nsIWindowsShellService {
-    type LaunchOnLoginEnabledEnumerator = nsIWindowsShellService_LaunchOnLoginEnabledEnumerator;
+    type LaunchOnLoginEnabledEnumerator =
+      nsIWindowsShellService_LaunchOnLoginEnabledEnumerator;
   }
 
   interface nsIWindowsShellService
-    extends nsIShellService,
+    extends
+      nsIShellService,
       Enums<typeof nsIWindowsShellService_LaunchOnLoginEnabledEnumerator> {
     createShortcut(
       aBinary: nsIFile,
@@ -149,13 +164,19 @@ declare global {
     pinCurrentAppToTaskbarAsync(aPrivateBrowsing: boolean): Promise<any>;
     checkPinCurrentAppToTaskbarAsync(aPrivateBrowsing: boolean): Promise<any>;
     isCurrentAppPinnedToTaskbarAsync(aumid: string): Promise<any>;
-    pinShortcutToTaskbar(aAppUserModelId: string, aShortcutPath: string): Promise<any>;
+    pinShortcutToTaskbar(
+      aAppUserModelId: string,
+      aShortcutPath: string
+    ): Promise<any>;
     createWindowsIcon(aFile: nsIFile, aContainer: imgIContainer): Promise<any>;
     unpinShortcutFromTaskbar(aShortcutPath: string): void;
     getTaskbarTabShortcutPath(aShortcutName: string): string;
     getTaskbarTabPins(): string[];
     classifyShortcut(aPath: string): string;
-    hasPinnableShortcut(aAUMID: string, aPrivateBrowsing: boolean): Promise<any>;
+    hasPinnableShortcut(
+      aAUMID: string,
+      aPrivateBrowsing: boolean
+    ): Promise<any>;
     canSetDefaultBrowserUserChoice(): boolean;
     checkAllProgIDsExist(): boolean;
     checkBrowserUserChoiceHashes(): boolean;
@@ -241,7 +262,11 @@ declare global {
     readonly height: u32;
     readonly thumbnailAspectRatio: float;
     requestPreview(aCallback: nsITaskbarPreviewCallback): void;
-    requestThumbnail(aCallback: nsITaskbarPreviewCallback, width: u32, height: u32): void;
+    requestThumbnail(
+      aCallback: nsITaskbarPreviewCallback,
+      width: u32,
+      height: u32
+    ): void;
     onClose(): void;
     onActivate(): boolean;
     onClick(button: nsITaskbarPreviewButton): void;
@@ -256,7 +281,11 @@ declare global {
     readonly STATE_ERROR?: 3;
     readonly STATE_PAUSED?: 4;
 
-    setProgressState(state: nsTaskbarProgressState, currentValue?: u64, maxValue?: u64): void;
+    setProgressState(
+      state: nsTaskbarProgressState,
+      currentValue?: u64,
+      maxValue?: u64
+    ): void;
   }
 
   // https://searchfox.org/mozilla-central/source/widget/nsITaskbarTabPreview.idl
@@ -288,7 +317,9 @@ declare global {
     ): nsITaskbarTabPreview;
     getTaskbarWindowPreview(shell: nsIDocShell): nsITaskbarWindowPreview;
     getTaskbarProgress(shell: nsIDocShell): nsITaskbarProgress;
-    getOverlayIconController(shell: nsIDocShell): nsITaskbarOverlayIconController;
+    getOverlayIconController(
+      shell: nsIDocShell
+    ): nsITaskbarOverlayIconController;
     createJumpListBuilder(aPrivateBrowsing: boolean): nsIJumpListBuilder;
     getGroupIdForWindow(aParent: mozIDOMWindow): string;
     setGroupIdForWindow(aParent: mozIDOMWindow, aIdentifier: string): void;
@@ -304,7 +335,11 @@ declare global {
       aSmallIcon: imgIContainer,
       aLargeIcon: imgIContainer
     ): void;
-    setWindowIconFromExe(aWindow: mozIDOMWindowProxy, aExe: string, aIndex: u16): void;
+    setWindowIconFromExe(
+      aWindow: mozIDOMWindowProxy,
+      aExe: string,
+      aIndex: u16
+    ): void;
     setWindowIconNoData(aWindow: mozIDOMWindowProxy): void;
     readonly inWin10TabletMode: boolean;
     readonly inWin11TabletMode: boolean;

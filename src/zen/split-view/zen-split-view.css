@@ -1,0 +1,266 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+/** Zen Decks - ONLY USED FOR SPLIT VIEWS, DO NOT USE THIS CLASS FOR ANY OTHER PURPOSE **/
+
+%include zen-split-group.inc.css
+
+#tabbrowser-tabpanels[zen-split-view="true"] {
+  display: flex;
+  flex-direction: row;
+  margin-top: calc(var(--zen-split-column-gap) * -1);
+}
+
+#tabbrowser-tabpanels[zen-split-view="true"] > *:not([zen-split="true"]) {
+  flex: 0;
+  margin: 0;
+}
+
+#zen-splitview-dropzone {
+  border-radius: var(--zen-native-inner-radius);
+  transition: inset ease-out 0.08s;
+  display: none;
+  background-color: color-mix(in srgb, var(--zen-colors-secondary) 30%, transparent 70%);
+}
+#zen-splitview-dropzone[enabled="true"] {
+  display: initial;
+}
+
+#tabbrowser-tabpanels[zen-split-view="true"] > [zen-split="true"],
+#zen-splitview-dropzone {
+  flex: 1;
+  overflow: hidden;
+
+  & .dialogStack {
+    /* Fix for issue https://github.com/zen-browser/desktop/issues/7564 */
+    position: absolute;
+  }
+
+  :root[inDOMFullscreen="true"] & {
+    &:not(.deck-selected) {
+      -moz-subtree-hidden-only-visually: 1 !important;
+    }
+
+    &.deck-selected {
+      inset: 0 !important;
+    }
+  }
+}
+
+.browserSidebarContainer[is-zen-split="true"],
+#zen-splitview-dropzone {
+  position: absolute !important;
+
+  margin: var(--zen-split-column-gap) var(--zen-split-row-gap);
+  margin-bottom: 0;
+  margin-left: 0;
+
+  &.browserSidebarContainer:not([zen-split="true"]) {
+    margin-top: 0;
+    visibility: hidden;
+  }
+}
+
+#zen-splitview-dropzone {
+  margin-top: 0 !important;
+}
+
+#tabbrowser-tabpanels[zen-split-view="true"]:not(.zen-split-view-no-transition):not([zen-split-resizing]) > [zen-split="true"] {
+  --zen-active-split-outline-color: light-dark(hsl(from var(--zen-primary-color) h s calc(l - 20)), var(--button-background-color-primary));
+
+  transition: inset 0.09s ease-out !important;
+  & browser {
+    transition: opacity 0.2s ease-out !important;
+  }
+}
+
+:root:not([inDOMFullscreen="true"]) #tabbrowser-tabpanels[zen-split-view="true"] .browserSidebarContainer.deck-selected {
+  &:not(.zen-glance-overlay) {
+    outline: 2px solid var(--zen-active-split-outline-color) !important;
+  }
+
+  &.zen-glance-overlay {
+    flex: 1;
+    margin-top: calc(var(--zen-element-separation) / 2);
+    z-index: 1;
+  }
+}
+
+#tabbrowser-tabbox {
+  --zen-split-row-gap: var(--zen-element-separation);
+  --zen-split-column-gap: calc(var(--zen-element-separation) + 1px);
+}
+
+#tabbrowser-tabbox[zen-split-view="true"] {
+  :root[zen-no-padding="true"] & {
+    --zen-element-separation: 8px;
+  }
+  margin-right: calc(-1 * var(--zen-split-column-gap));
+}
+
+:root:not([customizing]) #zen-splitview-overlay {
+  margin-top: calc(var(--zen-split-column-gap) * -1);
+}
+
+#tabbrowser-tabpanels[zen-split-view] {
+  .zen-split-view-splitter {
+    display: inherit;
+  }
+}
+
+#zen-splitview-overlay-wrapper {
+  position: absolute;
+  pointer-events: none;
+  padding: inherit;
+  inset: 0;
+}
+
+#zen-splitview-overlay {
+  position: relative;
+  flex: 1;
+  z-index: 2;
+}
+
+.zen-split-view-splitter {
+  visibility: inherit;
+  -moz-subtree-hidden-only-visually: 0;
+  position: absolute;
+  pointer-events: all;
+}
+
+.zen-split-view-splitter[orient="horizontal"] {
+  height: var(--zen-split-column-gap);
+  cursor: ns-resize;
+}
+
+.zen-view-splitter-header-container {
+  position: absolute;
+  top: calc(var(--zen-split-column-gap) / -2);
+  left: 50%;
+  opacity: 0;
+  transition: opacity 0.1s;
+  z-index: 100;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.zen-view-splitter-header {
+  display: flex;
+  align-items: center;
+  position: fixed;
+  padding: 0.4rem 0.6rem 0.2rem 0.6rem;
+  border-radius: 6px;
+  background-color: var(--zen-active-split-outline-color);
+  box-shadow: 0 0 0 1px var(--button-primary-border-color);
+  gap: 0.8rem;
+  transform: translateX(-50%);
+  box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.1);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+:root:not([inDOMFullscreen="true"]) .browserSidebarContainer:hover .zen-view-splitter-header-container,
+.zen-view-splitter-header-container:hover {
+  pointer-events: all;
+  opacity: 1;
+  transition-delay: 0.1s;
+}
+
+.zen-view-splitter-header-container toolbarbutton {
+  display: flex;
+  -moz-context-properties: fill, fill-opacity;
+  border-radius: var(--tab-border-radius);
+  color: contrast-color(var(--zen-active-split-outline-color));
+  opacity: 0.8;
+  fill: currentColor;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  appearance: none;
+  outline: none;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+
+  & image {
+    width: 14px;
+    height: 14px;
+  }
+
+  &.zen-tab-unsplit-button image {
+    height: 10px;
+    width: 10px;
+  }
+
+  &.zen-tab-rearrange-button {
+    cursor: move;
+
+    & image {
+      transform: rotate(90deg);
+    }
+  }
+}
+
+#zen-split-view-fake-browser {
+  position: absolute;
+  height: 100%;
+  border: 2px solid var(--zen-primary-color);
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--zen-native-inner-radius);
+  box-shadow: var(--zen-big-shadow);
+  overflow: hidden;
+
+  &[side="top"],
+  &[side="bottom"] {
+    width: 100%;
+
+    &[has-split-view="true"] {
+      width: calc(100% - var(--zen-element-separation));
+    }
+  }
+
+  &[side="right"] {
+    right: 0;
+
+    &[has-split-view="true"] {
+      right: var(--zen-element-separation);
+    }
+  }
+
+  &[side="bottom"] {
+    bottom: 0;
+  }
+}
+
+#zen-split-view-drag-image {
+  width: 200px;
+  height: 250px;
+  border-radius: 16px;
+  background: black;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  gap: 20px;
+  position: relative;
+
+  & image {
+    width: 24px;
+    height: 24px;
+  }
+
+  & label {
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+  }
+}
+
+zen-split-fake-tab {
+  border-radius: var(--border-radius-medium);
+  background-color: color-mix(in srgb, var(--button-background-color-primary), transparent 40%);
+  margin: var(--tab-block-margin);
+  flex: 1;
+}

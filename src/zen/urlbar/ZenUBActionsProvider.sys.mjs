@@ -80,7 +80,12 @@ function payloadAndSimpleHighlights(tokens, payloadInfo) {
       payload[name] = valueOrValues;
     }
   }
-  if (!payload.title && !payload.fallbackTitle && payload.url && typeof payload.url == "string") {
+  if (
+    !payload.title &&
+    !payload.fallbackTitle &&
+    payload.url &&
+    typeof payload.url == "string"
+  ) {
     // If there's no title, show the domain as the title. Not all valid URLs
     // have a domain.
     highlightTypes.title = UrlbarUtils.HIGHLIGHT.TYPED;
@@ -107,7 +112,9 @@ function payloadAndSimpleHighlights(tokens, payloadInfo) {
     for (let [name, highlightType] of Object.entries(highlightTypes)) {
       let value = payload[name];
       let highlights = Array.isArray(value)
-        ? value.map((subval) => UrlbarUtils.getTokenMatches(tokens, subval, highlightType))
+        ? value.map(subval =>
+            UrlbarUtils.getTokenMatches(tokens, subval, highlightType)
+          )
         : UrlbarUtils.getTokenMatches(tokens, value || "", highlightType);
       if (highlights.length) {
         payloadHighlights[name] = highlights;
@@ -148,7 +155,8 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
    */
   async isActive(queryContext) {
     return (
-      queryContext.searchMode?.source == UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS ||
+      queryContext.searchMode?.source ==
+        UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS ||
       (lazy.enabledPref &&
         queryContext.searchString &&
         queryContext.searchString.length < UrlbarUtils.MAX_TEXT_LENGTH &&
@@ -196,12 +204,14 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
     }
     return addons
       .filter(
-        (addon) =>
+        addon =>
           addon.isActive &&
           !addon.isSystem &&
-          window.gUnifiedExtensions.browserActionFor(window.WebExtensionPolicy.getByID(addon.id))
+          window.gUnifiedExtensions.browserActionFor(
+            window.WebExtensionPolicy.getByID(addon.id)
+          )
       )
-      .map((addon) => {
+      .map(addon => {
         return {
           icon: "chrome://browser/skin/zen-icons/extension.svg",
           label: "Extension",
@@ -221,7 +231,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
    */
   async #getAvailableActions(window) {
     return globalActions
-      .filter((a) => a.isAvailable(window))
+      .filter(a => a.isAvailable(window))
       .concat(this.#getWorkspaceActions(window))
       .concat(await this.#getExtensionActions(window));
   }
@@ -243,7 +253,10 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       }
       const label = action.extraPayload?.prettyName || action.label;
       const score = this.#calculateFuzzyScore(label, query);
-      if (score > (isPrefixed ? MINIMUM_PREFIXED_QUERY_SCORE : MINIMUM_QUERY_SCORE)) {
+      if (
+        score >
+        (isPrefixed ? MINIMUM_PREFIXED_QUERY_SCORE : MINIMUM_QUERY_SCORE)
+      ) {
         results.push({
           score,
           action,
@@ -253,9 +266,9 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
     results.sort((a, b) => b.score - a.score);
     // We must show all we can when prefixed, to avoid showing no results.
     if (isPrefixed) {
-      return results.map((r) => r.action);
+      return results.map(r => r.action);
     }
-    return results.slice(0, MAX_RECENT_ACTIONS).map((r) => r.action);
+    return results.slice(0, MAX_RECENT_ACTIONS).map(r => r.action);
   }
 
   /**
@@ -294,10 +307,16 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
     let lastMatchIndex = -1;
     let consecutiveMatches = 0;
     for (let targetIndex = 0; targetIndex < targetLen; targetIndex++) {
-      if (queryIndex < queryLen && targetLower[targetIndex] === queryLower[queryIndex]) {
+      if (
+        queryIndex < queryLen &&
+        targetLower[targetIndex] === queryLower[queryIndex]
+      ) {
         let bonus = 10;
         // Bonus for matching at the beginning of a word
-        if (targetIndex === 0 || [" ", "-", "_"].includes(targetLower[targetIndex - 1])) {
+        if (
+          targetIndex === 0 ||
+          [" ", "-", "_"].includes(targetLower[targetIndex - 1])
+        ) {
           bonus += 15;
         }
         // Bonus for consecutive matches
@@ -322,7 +341,8 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
 
   async startQuery(queryContext, addCallback) {
     const query = queryContext.trimmedLowerCaseSearchString;
-    const isPrefixed = queryContext.searchMode?.source == UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS;
+    const isPrefixed =
+      queryContext.searchMode?.source == UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS;
     if (!query && !isPrefixed) {
       return;
     }
@@ -341,17 +361,21 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         zenCommand: action.command,
         dynamicType: DYNAMIC_TYPE_NAME,
         zenAction: true,
-        query: isPrefixed ? action.label.trimStart() : queryContext.searchString,
+        query: isPrefixed
+          ? action.label.trimStart()
+          : queryContext.searchString,
         icon: action.icon,
-        shortcutContent: ownerGlobal.gZenKeyboardShortcutsManager.getShortcutDisplayFromCommand(
-          action.command
-        ),
+        shortcutContent:
+          ownerGlobal.gZenKeyboardShortcutsManager.getShortcutDisplayFromCommand(
+            action.command
+          ),
         keywords: action.label.split(" "),
         ...action.extraPayload,
       });
 
       const shouldBePrioritized =
-        zenUrlbarResultsLearner.shouldPrioritize(action.commandId) && !isPrefixed;
+        zenUrlbarResultsLearner.shouldPrioritize(action.commandId) &&
+        !isPrefixed;
       let result = new lazy.UrlbarResult({
         type: UrlbarUtils.RESULT_TYPE.DYNAMIC,
         source: UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS,
@@ -371,14 +395,16 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       finalResults.push(result);
     }
     let i = 0;
-    zenUrlbarResultsLearner.sortCommandsByPriority(finalResults).forEach((result) => {
-      if (isPrefixed && i === 0 && query.length > 1) {
-        result.heuristic = true;
-        delete result.suggestedIndex;
-      }
-      addCallback(this, result);
-      i++;
-    });
+    zenUrlbarResultsLearner
+      .sortCommandsByPriority(finalResults)
+      .forEach(result => {
+        if (isPrefixed && i === 0 && query.length > 1) {
+          result.heuristic = true;
+          delete result.suggestedIndex;
+        }
+        addCallback(this, result);
+        i++;
+      });
   }
 
   /**
@@ -401,7 +427,8 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
   getViewUpdate(result) {
     const prettyIconIsSvg =
       result.payload.prettyIcon &&
-      (result.payload.prettyIcon.endsWith(".svg") || result.payload.prettyIcon.endsWith(".png"));
+      (result.payload.prettyIcon.endsWith(".svg") ||
+        result.payload.prettyIcon.endsWith(".png"));
     return {
       icon: {
         attributes: {
@@ -495,7 +522,9 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       if (details?.provider === this.name) {
         usedCommand = details.result?.commandId;
       }
-      zenUrlbarResultsLearner.recordExecution(usedCommand, [...this.#seenCommands]);
+      zenUrlbarResultsLearner.recordExecution(usedCommand, [
+        ...this.#seenCommands,
+      ]);
     }
     this.#seenCommands = new Set();
   }

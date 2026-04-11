@@ -5,18 +5,18 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Expand Pinned Tabs
-           *[false] Collapse Pinned Tabs
+            [true] Επέκτασή των καρφιτσωμένων καρτελών
+           *[false] Συρρίκνωσή των καρφιτσωμένων καρτελών
         }
 zen-menubar-appearance = 
-    .label = Appearance
+    .label = Εμφάνιση
 zen-menubar-appearance-description = 
-    .label = Websites will use:
+    .label = Οι ιστότοποι θα χρησιμοποιούν:
 zen-menubar-appearance-auto = 
-    .label = Automatic
+    .label = Αυτόματο
 zen-menubar-appearance-light = 
-    .label = Light
+    .label = Φωτεινό
 zen-menubar-appearance-dark = 
-    .label = Dark
-zen-menubar-new-unsynced-window = 
+    .label = Σκοτεινό
+zen-menubar-new-blank-window = 
     .label = New Blank Window

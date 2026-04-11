@@ -21,8 +21,8 @@
 }
 
 #zenEditBookmarkPanelFavicon {
-  width: 20px;
-  height: 20px;
+  width: var(--icon-size-medium);
+  height: var(--icon-size-medium);
 }
 
 #editBookmarkPanel .panel-header {

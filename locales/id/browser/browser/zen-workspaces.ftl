@@ -9,6 +9,8 @@ zen-panel-ui-workspaces-create =
     .label = Buat Ruang
 zen-panel-ui-folder-create = 
     .label = Buat Folder
+zen-panel-ui-live-folder-create = 
+    .label = Live Folder
 zen-panel-ui-new-empty-split = 
     .label = Split Baru
 zen-workspaces-panel-context-delete = 
@@ -22,6 +24,8 @@ zen-workspaces-panel-context-default-profile =
     .label = Atur Profil
 zen-workspaces-panel-unload = 
     .label = Lepaskan Ruang
+zen-workspaces-panel-unload-others = 
+    .label = Lepaskan Ruang Lainnya
 zen-workspaces-how-to-reorder-title = Cara Mengurutkan Ulang Ruang
 zen-workspaces-how-to-reorder-desc = Seret ikon ruang di bagian bawah bilah sisi untuk menyusun ulang urutannya
 zen-workspaces-change-theme = 
@@ -57,7 +61,7 @@ zen-workspace-creation-profile = Profil
     .tooltiptext = Profil (Kontainer) digunakan untuk memisahkan cookie dan data situs antar Ruang.
 zen-workspace-creation-header = Buat sebuah Ruang
 zen-workspace-creation-label = Ruang digunakan untuk mengorganisasikan tab dan sesi Anda.
-zen-workspaces-delete-workspace-title = Delete Workspace?
+zen-workspaces-delete-workspace-title = Hapus Ruang?
 zen-workspaces-delete-workspace-body = Apakah Anda yakin ingin menghapus { $name }? Tindakan ini tidak bisa dibatalkan.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.

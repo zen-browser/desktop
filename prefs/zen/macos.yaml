@@ -27,3 +27,7 @@
 - name: widget.macos.native-popovers
   value: true
   condition: "defined(XP_MACOSX)"
+
+- name: zen.widget.macos.override-system-swipe-gestures
+  value: true
+  condition: "defined(XP_MACOSX)"

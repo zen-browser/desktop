@@ -15,6 +15,3 @@ zen-split-link =
 zen-split-view-modifier-header = Розділений перегляд
 zen-split-view-modifier-activate-reallocation = 
     .label = Увімкнути перегрупування
-zen-split-view-modifier-enabled-toast = Перегрупування роздільного перегляду ВВІМКНЕНО.
-zen-split-view-modifier-enabled-toast-description = Перетягніть перегляд, щоб змінити його порядок. Натисніть «Esc», щоб вийти.
-zen-split-view-modifier-disabled-toast = Перегрупування роздільного перегляду ВИМКНЕНО.

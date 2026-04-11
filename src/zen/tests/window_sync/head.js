@@ -11,7 +11,7 @@ async function withNewSyncedWindow(action) {
 }
 
 async function runSyncAction(action, callback, type) {
-  await new Promise((resolve) => {
+  await new Promise(resolve => {
     window.gZenWindowSync.addSyncHandler(async function handler(aEvent) {
       if (aEvent.type === type) {
         window.gZenWindowSync.removeSyncHandler(handler);
@@ -29,12 +29,14 @@ function getTabState(tab) {
 
 async function withNewTabAndWindow(action) {
   let newTab = null;
-  await withNewSyncedWindow(async (win) => {
+  await withNewSyncedWindow(async win => {
     await runSyncAction(
       () => {
-        newTab = gBrowser.addTrustedTab("https://example.com/", { inBackground: true });
+        newTab = gBrowser.addTrustedTab("https://example.com/", {
+          inBackground: true,
+        });
       },
-      async (aEvent) => {
+      async aEvent => {
         Assert.equal(aEvent.type, "TabOpen", "Event type should be TabOpen");
         await action(newTab, win);
       },

@@ -15,11 +15,11 @@
 #include "mozilla/GlobalStyleSheetCache.h"
 #include "mozilla/RefPtr.h"
 
-#define GET_MODS_FILE(chromeFile, err) \
+#define GET_MODS_FILE(chromeFile, err)                                        \
   NS_GetSpecialDirectory(NS_APP_USER_CHROME_DIR, getter_AddRefs(chromeFile)); \
-  if (!chromeFile) { \
-    return err; \
-  } \
+  if (!chromeFile) {                                                          \
+    return err;                                                               \
+  }                                                                           \
   chromeFile->Append(ZEN_MODS_FILENAME);
 
 namespace zen {
@@ -50,7 +50,7 @@ auto ZenStyleSheetCache::GetModsSheet() -> StyleSheet* {
 }
 
 auto ZenStyleSheetCache::LoadSheetFile(nsIFile* aFile,
-                                        css::SheetParsingMode aParsingMode)
+                                       css::SheetParsingMode aParsingMode)
     -> void {
   nsCOMPtr<nsIURI> uri;
   NS_NewFileURI(getter_AddRefs(uri), aFile);
@@ -66,7 +66,7 @@ auto ZenStyleSheetCache::LoadSheetFile(nsIFile* aFile,
   }
   mModsSheet = result.unwrapOr(nullptr);
 }
-  
+
 /* static */
 auto ZenStyleSheetCache::Singleton() -> ZenStyleSheetCache* {
   MOZ_ASSERT(NS_IsMainThread());
@@ -76,8 +76,9 @@ auto ZenStyleSheetCache::Singleton() -> ZenStyleSheetCache* {
   return gZenModsCache;
 }
 
-nsresult ZenStyleSheetCache::RebuildModsStylesheets(const nsACString& aContents) {
-  // Re-parse the mods stylesheet. By doing so, we read 
+nsresult ZenStyleSheetCache::RebuildModsStylesheets(
+    const nsACString& aContents) {
+  // Re-parse the mods stylesheet. By doing so, we read
   // Once we have the data as a nsACString, we call ReparseSheet from the
   // StyleSheet class to re-parse the stylesheet.
   auto sheet = GetModsSheet();
@@ -92,7 +93,6 @@ nsresult ZenStyleSheetCache::RebuildModsStylesheets(const nsACString& aContents)
   return aRv.StealNSResult();
 }
 
+mozilla::StaticRefPtr<ZenStyleSheetCache> ZenStyleSheetCache::gZenModsCache;
 
-mozilla::StaticRefPtr<ZenStyleSheetCache> ZenStyleSheetCache::gZenModsCache; 
-
-} // namespace: zen
+}  // namespace zen

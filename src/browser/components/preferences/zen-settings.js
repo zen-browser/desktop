@@ -1020,8 +1020,24 @@ var gZenCKSSettings = {
     let shortcut;
     if (event.code && event.code.startsWith("Key")) {
       shortcut = event.code.slice(3);
+    } else if (event.code && event.code.startsWith("Digit")) {
+      shortcut = event.code.slice(5);
     } else {
-      shortcut = event.key;
+      // Use physical key mapping for common symbols
+      const CODE_TO_KEY_MAP = {
+        Comma: ",",
+        Period: ".",
+        Slash: "/",
+        Semicolon: ";",
+        Quote: "'",
+        BracketLeft: "[",
+        BracketRight: "]",
+        Backslash: "\\",
+        Backquote: "`",
+        Minus: "-",
+        Equal: "=",
+      };
+      shortcut = CODE_TO_KEY_MAP[event.code] || event.key;
     }
 
     shortcut = shortcut.replace(/Ctrl|Control|Shift|Alt|Option|Cmd|Meta/, ""); // Remove all modifiers
@@ -1051,7 +1067,7 @@ var gZenCKSSettings = {
             zenMissingKeyboardShortcutL10n[conflictShortcut.getID()] ??
             conflictShortcut.getL10NID();
 
-          const [group] = await document.l10n.formatValues([
+          const [group, conflictName] = await document.l10n.formatValues([
             { id: `${ZEN_CKS_GROUP_PREFIX}-${conflictShortcut.getGroup()}` },
             { id: shortcutL10nKey },
           ]);
@@ -1066,7 +1082,7 @@ var gZenCKSSettings = {
 
           document.l10n.setAttributes(input.nextElementSibling, "zen-key-conflict", {
             group: group ?? "",
-            shortcut: shortcut ?? "",
+            shortcut: conflictName ?? shortcut ?? "",
           });
         }
       } else {

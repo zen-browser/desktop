@@ -86,7 +86,9 @@ class nsZenDownloadAnimationElement extends HTMLElement {
       );
       this.shadowRoot.appendChild(link);
     } catch (error) {
-      console.error(`[${nsZenDownloadAnimationElement.name}] Error loading arc styles: ${error}`);
+      console.error(
+        `[${nsZenDownloadAnimationElement.name}] Error loading arc styles: ${error}`
+      );
     }
   }
 
@@ -99,7 +101,8 @@ class nsZenDownloadAnimationElement extends HTMLElement {
     }
 
     // Determine animation target position
-    const { endPosition, isDownloadButtonVisible } = this.#determineEndPosition();
+    const { endPosition, isDownloadButtonVisible } =
+      this.#determineEndPosition();
     const areTabsPositionedRight = this.#areTabsOnRightSide();
 
     // Create and prepare the arc animation element
@@ -131,7 +134,10 @@ class nsZenDownloadAnimationElement extends HTMLElement {
   }
 
   #areTabsOnRightSide() {
-    const position = Services.prefs.getIntPref("zen.downloads.icon-popup-position", 0);
+    const position = Services.prefs.getIntPref(
+      "zen.downloads.icon-popup-position",
+      0
+    );
     if (position === 1) {
       return false;
     }
@@ -143,7 +149,8 @@ class nsZenDownloadAnimationElement extends HTMLElement {
 
   #determineEndPosition() {
     const downloadsButton = document.getElementById("downloads-button");
-    const isDownloadButtonVisible = downloadsButton && this.#isElementVisible(downloadsButton);
+    const isDownloadButtonVisible =
+      downloadsButton && this.#isElementVisible(downloadsButton);
 
     let endPosition = { clientX: 0, clientY: 0 };
 
@@ -161,7 +168,9 @@ class nsZenDownloadAnimationElement extends HTMLElement {
       const wrapperRect = wrapper.getBoundingClientRect();
 
       endPosition = {
-        clientX: areTabsPositionedRight ? wrapperRect.right - 42 : wrapperRect.left + 42,
+        clientX: areTabsPositionedRight
+          ? wrapperRect.right - 42
+          : wrapperRect.left + 42,
         clientY: wrapperRect.bottom - 40,
       };
     }
@@ -179,7 +188,9 @@ class nsZenDownloadAnimationElement extends HTMLElement {
           `;
 
     const fragment = window.MozXULElement.parseXULToFragment(arcAnimationHTML);
-    const animationElement = fragment.querySelector(".zen-download-arc-animation");
+    const animationElement = fragment.querySelector(
+      ".zen-download-arc-animation"
+    );
 
     Object.assign(animationElement.style, {
       left: `${startPosition.clientX}px`,
@@ -194,7 +205,10 @@ class nsZenDownloadAnimationElement extends HTMLElement {
 
   #calculateOptimalArc(startPosition, endPosition, distance) {
     // Calculate available space for the arc
-    const availableTopSpace = Math.min(startPosition.clientY, endPosition.clientY);
+    const availableTopSpace = Math.min(
+      startPosition.clientY,
+      endPosition.clientY
+    );
     const viewportHeight = window.innerHeight;
     const availableBottomSpace =
       viewportHeight - Math.max(startPosition.clientY, endPosition.clientY);
@@ -203,7 +217,9 @@ class nsZenDownloadAnimationElement extends HTMLElement {
     const shouldArcDownward = availableBottomSpace > availableTopSpace;
 
     // Use the space in the direction we're arcing
-    const availableSpace = shouldArcDownward ? availableBottomSpace : availableTopSpace;
+    const availableSpace = shouldArcDownward
+      ? availableBottomSpace
+      : availableTopSpace;
 
     // Limit arc height to a percentage of the available space
     const arcHeight = Math.min(
@@ -233,19 +249,30 @@ class nsZenDownloadAnimationElement extends HTMLElement {
       }
 
       await gZenUIManager.motion.animate(arcAnimationElement, sequence, {
-        duration: Services.prefs.getIntPref("zen.downloads.download-animation-duration") / 1000,
+        duration:
+          Services.prefs.getIntPref(
+            "zen.downloads.download-animation-duration"
+          ) / 1000,
         easing: "cubic-bezier(0.37, 0, 0.63, 1)",
         fill: "forwards",
       });
 
       this.#cleanArcAnimation(arcAnimationElement);
     } catch (error) {
-      console.error("[nsZenDownloadAnimationElement] Error in animation sequence:", error);
+      console.error(
+        "[nsZenDownloadAnimationElement] Error in animation sequence:",
+        error
+      );
       this.#cleanArcAnimation(arcAnimationElement);
     }
   }
 
-  #createArcAnimationSequence(distanceX, distanceY, arcHeight, shouldArcDownward) {
+  #createArcAnimationSequence(
+    distanceX,
+    distanceY,
+    arcHeight,
+    shouldArcDownward
+  ) {
     const sequence = { offset: [], opacity: [], transform: [] };
 
     const arcDirection = shouldArcDownward ? 1 : -1;
@@ -284,7 +311,9 @@ class nsZenDownloadAnimationElement extends HTMLElement {
 
       // Position on arc
       const x = distanceX * eased;
-      const y = distanceY * eased + arcDirection * arcHeight * (1 - (2 * eased - 1) ** 2);
+      const y =
+        distanceY * eased +
+        arcDirection * arcHeight * (1 - (2 * eased - 1) ** 2);
 
       // Calculate rotation to point in the direction of movement
       let rotation = previousRotation;
@@ -293,10 +322,12 @@ class nsZenDownloadAnimationElement extends HTMLElement {
 
         const prevX = distanceX * prevEased;
         const prevAdjustedProgress = prevEased * 2 - 1;
-        const prevVerticalOffset = arcDirection * arcHeight * (1 - prevAdjustedProgress * 2);
+        const prevVerticalOffset =
+          arcDirection * arcHeight * (1 - prevAdjustedProgress * 2);
         const prevY = distanceY * prevEased + prevVerticalOffset;
 
-        const targetRotation = Math.atan2(y - prevY, x - prevX) * (180 / Math.PI);
+        const targetRotation =
+          Math.atan2(y - prevY, x - prevX) * (180 / Math.PI);
 
         rotation += (targetRotation - previousRotation) * 0.01;
         previousRotation = rotation;
@@ -353,8 +384,11 @@ class nsZenDownloadAnimationElement extends HTMLElement {
 
       const sideProp = areTabsPositionedRight ? "right" : "left";
 
-      const fragment = window.MozXULElement.parseXULToFragment(boxAnimationHTML);
-      this.#boxAnimationElement = fragment.querySelector(".zen-download-box-animation");
+      const fragment =
+        window.MozXULElement.parseXULToFragment(boxAnimationHTML);
+      this.#boxAnimationElement = fragment.querySelector(
+        ".zen-download-box-animation"
+      );
 
       Object.assign(this.#boxAnimationElement.style, {
         bottom: "24px",
@@ -405,7 +439,10 @@ class nsZenDownloadAnimationElement extends HTMLElement {
   }
 
   #getBoxAnimationDurationMs() {
-    return Services.prefs.getIntPref("zen.downloads.download-animation-duration") + 200;
+    return (
+      Services.prefs.getIntPref("zen.downloads.download-animation-duration") +
+      200
+    );
   }
 
   async #finishBoxAnimation(areTabsPositionedRight) {

@@ -3,7 +3,11 @@
 
 "use strict";
 
-async function addTabTo(targetBrowser, url = "http://mochi.test:8888/", params = {}) {
+async function addTabTo(
+  targetBrowser,
+  url = "http://mochi.test:8888/",
+  params = {}
+) {
   params.skipAnimation = true;
   const tab = BrowserTestUtils.addTab(targetBrowser, url, params);
   const browser = targetBrowser.getBrowserForTab(tab);
@@ -22,7 +26,7 @@ async function createSplitView(tabs, type = "grid") {
   );
   gZenViewSplitter.splitTabs(tabs, type);
   await waitForActivationPromise;
-  await new Promise((resolve) => {
+  await new Promise(resolve => {
     setTimeout(async () => {
       resolve();
     }, 100);

@@ -4,17 +4,9 @@
 [
   {
     "type": "phabricator",
-    "id": "D279007",
-    "name": "Fix MacOS Crash on Shutdown Firefox 149"
-  },
-  {
-    "type": "phabricator",
     "id": "D284084",
     "name": "Native MacOS popovers",
     "replaces": {
-      // The patch we sent was for firefox 149, but we are currently in 148, so theres
-      // a conflict in the patch. See https://bugzilla.mozilla.org/show_bug.cgi?id=2015354
-      "overridden": "overriden",
       // Specifically trying to target FeatureCallout.sys.mjs's change.
       // IMPORTANT: Make sure Feature callouts STILL use native popopvers when
       //    syncing from upstream, as this is a critical part of the patch.
@@ -25,7 +17,10 @@
   {
     "type": "phabricator",
     "id": "D284404",
-    "name": "Add urlbar closeOnWindowBlur preference"
+    "name": "Add urlbar closeOnWindowBlur preference",
+    "replaces": {
+      "\n\n": "\n     // may want to figure out a more robust way to detect abandonment."
+    }
   },
   {
     "type": "local",
@@ -40,5 +35,25 @@
       // the parameter's help description with the correct one.
       "application": "Application"
     }
+  },
+  {
+    "type": "phabricator",
+    "id": "D291714",
+    "name": "gh-12979 Clip dirty_rect to device_size"
+  },
+  {
+    "type": "phabricator",
+    "id": "D256645",
+    "name": "FF150 1 PGO patch for bug-1962418"
+  },
+  {
+    "type": "phabricator",
+    "id": "D279829",
+    "name": "FF150 2 PGO patch for bug-2011620"
+  },
+  {
+    "type": "phabricator",
+    "id": "D281762",
+    "name": "FF150 3 PGO patch for bug-2014422"
   }
 ]

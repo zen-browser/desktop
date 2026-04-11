@@ -19,16 +19,29 @@ ChromeUtils.defineESModuleGetters(lazy, {
   RunState: "resource:///modules/sessionstore/RunState.sys.mjs",
 });
 
-XPCOMUtils.defineLazyPreferenceGetter(lazy, "gWindowSyncEnabled", "zen.window-sync.enabled", true);
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "gWindowSyncEnabled",
+  "zen.window-sync.enabled",
+  true
+);
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
   "gSyncOnlyPinnedTabs",
   "zen.window-sync.sync-only-pinned-tabs",
   true
 );
-XPCOMUtils.defineLazyPreferenceGetter(lazy, "gShouldLog", "zen.window-sync.log", true);
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "gShouldLog",
+  "zen.window-sync.log",
+  true
+);
 
-const OBSERVING = ["browser-window-before-show", "sessionstore-windows-restored"];
+const OBSERVING = [
+  "browser-window-before-show",
+  "sessionstore-windows-restored",
+];
 const INSTANT_EVENTS = ["SSWindowClosing", "TabSelect", "focus"];
 const UNSYNCED_WINDOW_EVENTS = ["TabOpen"];
 const EVENTS = [
@@ -131,7 +144,11 @@ class nsZenWindowSync {
   #browserWindows = {
     *[Symbol.iterator]() {
       for (let window of lazy.BrowserWindowTracker.orderedWindows) {
-        if (window.__SSi && !window.closed && !window.gZenWorkspaces?.privateWindowOrDisabled) {
+        if (
+          window.__SSi &&
+          !window.closed &&
+          !window.gZenWorkspaces?.privateWindowOrDisabled
+        ) {
           yield window;
         }
       }
@@ -223,8 +240,13 @@ class nsZenWindowSync {
           aWindow.arguments.length > 1 &&
           !!this.#browserWindowsList.length))
     ) {
-      this.log("Not syncing new window due to unsynced argument or existing synced windows");
-      aWindow.document.documentElement.setAttribute("zen-unsynced-window", "true");
+      this.log(
+        "Not syncing new window due to unsynced argument or existing synced windows"
+      );
+      aWindow.document.documentElement.setAttribute(
+        "zen-unsynced-window",
+        "true"
+      );
       for (let eventName of UNSYNCED_WINDOW_EVENTS) {
         aWindow.addEventListener(eventName, this, true);
       }
@@ -234,6 +256,26 @@ class nsZenWindowSync {
     for (let eventName of EVENTS) {
       aWindow.addEventListener(eventName, this, true);
     }
+    this.#maybeTriggerInitialTabSync(aWindow);
+  }
+
+  /**
+   * Determines if the initial tab should be synced for the given window
+   * and triggers the sync if necessary. See gh-12258 for more details.
+   *
+   * @param {Window} aWindow - The browser window to check and potentially sync.
+   */
+  #maybeTriggerInitialTabSync(aWindow) {
+    let initialTab = aWindow.gBrowser?.selectedTab;
+    aWindow.gZenStartup.promiseInitialized.then(() => {
+      if (initialTab && !initialTab.closing) {
+        // If the initial tab is still open after startup, we trigger a fake TabSelect event
+        // to ensure the tab gets synced properly. This is needed in cases where the window
+        // is opened with a URL and the TabSelect event happens before the window sync is fully initialized.
+        this.log("Triggering initial tab sync for window", initialTab);
+        this.on_TabOpen({ target: initialTab }, { ignoreExistingId: true });
+      }
+    });
   }
 
   /**
@@ -244,7 +286,7 @@ class nsZenWindowSync {
     // assign one and sync it to other windows.
     // This should only happen really when updating from an older version
     // that didn't have this feature.
-    await this.#runOnAllWindowsAsync(null, async (aWindow) => {
+    await this.#runOnAllWindowsAsync(null, async aWindow => {
       const { gZenWorkspaces } = aWindow;
       this.#onWindowBeforeShow(aWindow);
       await gZenWorkspaces.promiseInitialized;
@@ -255,7 +297,10 @@ class nsZenWindowSync {
         if (tab.pinned && !tab._zenPinnedInitialState) {
           await this.setPinnedTabState(tab);
         }
-        if (!lazy.gWindowSyncEnabled || (lazy.gSyncOnlyPinnedTabs && !tab.pinned)) {
+        if (
+          !lazy.gWindowSyncEnabled ||
+          (lazy.gSyncOnlyPinnedTabs && !tab.pinned)
+        ) {
           tab._zenContentsVisible = true;
         }
       }
@@ -331,14 +376,20 @@ class nsZenWindowSync {
     ) {
       return;
     }
-    if (!lazy.gWindowSyncEnabled && !UNSYNCED_WINDOW_EVENTS.includes(aEvent.type)) {
+    if (
+      !lazy.gWindowSyncEnabled &&
+      !UNSYNCED_WINDOW_EVENTS.includes(aEvent.type)
+    ) {
       return;
     }
     if (INSTANT_EVENTS.includes(aEvent.type)) {
       this.#handleNextEventInternal(aEvent);
       return;
     }
-    if (this.#eventHandlingContext.window && this.#eventHandlingContext.window !== window) {
+    if (
+      this.#eventHandlingContext.window &&
+      this.#eventHandlingContext.window !== window
+    ) {
       // We're already handling an event for another window.
       // To avoid re-entrancy issues, we skip this event.
       return;
@@ -347,7 +398,7 @@ class nsZenWindowSync {
     this.#eventHandlingContext.eventCount++;
     this.#eventHandlingContext.window = window;
     let resolveNewPromise;
-    this.#eventHandlingContext.lastHandlerPromise = new Promise((resolve) => {
+    this.#eventHandlingContext.lastHandlerPromise = new Promise(resolve => {
       resolveNewPromise = resolve;
     });
     // Wait for the last handler to finish before processing the next event.
@@ -433,7 +484,10 @@ class nsZenWindowSync {
    */
   #maybeSyncAttributeChange(aOriginalItem, aTargetItem, aAttributeName) {
     if (aOriginalItem.hasAttribute(aAttributeName)) {
-      aTargetItem.setAttribute(aAttributeName, aOriginalItem.getAttribute(aAttributeName));
+      aTargetItem.setAttribute(
+        aAttributeName,
+        aOriginalItem.getAttribute(aAttributeName)
+      );
     } else {
       aTargetItem.removeAttribute(aAttributeName);
     }
@@ -475,12 +529,24 @@ class nsZenWindowSync {
       }
     }
     if (flags & SYNC_FLAG_MOVE && !aTargetItem.hasAttribute("zen-empty-tab")) {
-      this.#maybeSyncAttributeChange(aOriginalItem, aTargetItem, "zen-workspace-id");
+      this.#maybeSyncAttributeChange(
+        aOriginalItem,
+        aTargetItem,
+        "zen-workspace-id"
+      );
       this.#syncItemPosition(aOriginalItem, aTargetItem, aWindow);
     }
     if (aOriginalItem.hasAttribute("zen-live-folder-item-id")) {
-      this.#maybeSyncAttributeChange(aOriginalItem, aTargetItem, "zen-live-folder-item-id");
-      this.#maybeSyncAttributeChange(aOriginalItem, aTargetItem, "zen-show-sublabel");
+      this.#maybeSyncAttributeChange(
+        aOriginalItem,
+        aTargetItem,
+        "zen-live-folder-item-id"
+      );
+      this.#maybeSyncAttributeChange(
+        aOriginalItem,
+        aTargetItem,
+        "zen-show-sublabel"
+      );
       this.#syncTabSubtitle(aWindow, aOriginalItem, aTargetItem);
     } else if (aTargetItem.hasAttribute("zen-live-folder-item-id")) {
       aTargetItem.removeAttribute("zen-live-folder-item-id");
@@ -527,7 +593,10 @@ class nsZenWindowSync {
         if (originalIsEssential) {
           gZenPinnedTabManager.addToEssentials(aTargetItem);
         } else {
-          gZenPinnedTabManager.removeEssentials(aTargetItem, /* unpin= */ !targetIsPinned);
+          gZenPinnedTabManager.removeEssentials(
+            aTargetItem,
+            /* unpin= */ !targetIsPinned
+          );
         }
       } else if (originalIsPinned !== targetIsPinned) {
         if (originalIsPinned) {
@@ -556,7 +625,12 @@ class nsZenWindowSync {
    * @param {boolean} options.isEssential - Indicates if the item is essential.
    * @param {boolean} options.isPinned - Indicates if the item is pinned.
    */
-  #moveItemToMatchOriginal(aOriginalItem, aTargetItem, aWindow, { isEssential, isPinned }) {
+  #moveItemToMatchOriginal(
+    aOriginalItem,
+    aTargetItem,
+    aWindow,
+    { isEssential, isPinned }
+  ) {
     const { gBrowser, gZenWorkspaces } = aWindow;
     let originalSibling = aOriginalItem.previousElementSibling;
     if (originalSibling?.classList.contains("space-fake-collapsible-start")) {
@@ -564,9 +638,13 @@ class nsZenWindowSync {
       originalSibling = originalSibling.previousElementSibling;
     }
     let isFirstTab = true;
-    if (gBrowser.isTabGroup(originalSibling) || gBrowser.isTab(originalSibling)) {
+    if (
+      gBrowser.isTabGroup(originalSibling) ||
+      gBrowser.isTab(originalSibling)
+    ) {
       isFirstTab =
-        !originalSibling.hasAttribute("id") || originalSibling.hasAttribute("zen-empty-tab");
+        !originalSibling.hasAttribute("id") ||
+        originalSibling.hasAttribute("zen-empty-tab");
     }
 
     gBrowser.zenHandleTabMove(aTargetItem, () => {
@@ -574,7 +652,10 @@ class nsZenWindowSync {
         let container;
         const parentGroup = aOriginalItem.group;
         if (parentGroup?.hasAttribute("id")) {
-          container = this.getItemFromWindow(aWindow, parentGroup.getAttribute("id"));
+          container = this.getItemFromWindow(
+            aWindow,
+            parentGroup.getAttribute("id")
+          );
           if (container) {
             if (container?.tabs?.length) {
               // First tab in folders is the empty tab placeholder.
@@ -622,8 +703,13 @@ class nsZenWindowSync {
    */
   #syncItemForAllWindows(aItem, flags = 0) {
     const window = aItem.ownerGlobal;
-    this.#runOnAllWindows(window, (win) => {
-      this.#syncItemWithOriginal(aItem, this.getItemFromWindow(win, aItem.id), win, flags);
+    this.#runOnAllWindows(window, win => {
+      this.#syncItemWithOriginal(
+        aItem,
+        this.getItemFromWindow(win, aItem.id),
+        win,
+        flags
+      );
     });
   }
 
@@ -678,7 +764,12 @@ class nsZenWindowSync {
 
     // Restore the listeners for the swapped in tab.
     if (!onClose && filter) {
-      tabListener = new otherTabBrowser.zenTabProgressListener(aTab, otherBrowser, true, false);
+      tabListener = new otherTabBrowser.zenTabProgressListener(
+        aTab,
+        otherBrowser,
+        true,
+        false
+      );
       otherTabBrowser._tabListeners.set(aTab, tabListener);
 
       const notifyAll = Ci.nsIWebProgress.NOTIFY_ALL;
@@ -699,10 +790,16 @@ class nsZenWindowSync {
     // We *shouldn't* care about this scenario since the remoteness should be
     // the same anyways.
     if (!aOurTab.linkedBrowser || !aOtherTab.linkedBrowser) {
-      return true;
+      this.log(
+        `Cannot swap browsers between tabs ${aOurTab.id} and ${aOtherTab.id} because one of them doesn't have a linked browser`
+      );
+      return false;
     }
     // Can't swap between chrome and content processes.
-    if (aOurTab.linkedBrowser.isRemoteBrowser != aOtherTab.linkedBrowser.isRemoteBrowser) {
+    if (
+      aOurTab.linkedBrowser.isRemoteBrowser !=
+      aOtherTab.linkedBrowser.isRemoteBrowser
+    ) {
       return false;
     }
     return true;
@@ -716,15 +813,18 @@ class nsZenWindowSync {
    * @param {object} options - Options object.
    * @param {boolean} options.focus - Indicates if the tab should be focused after the swap.
    * @param {boolean} options.onClose - Indicates if the swap is done during a tab close operation.
-   * @returns {Promise|null} A promise that resolves when the tab state is flushed, or null if the swap cannot be performed.
    */
-  #swapBrowserDocShellsInner(aOurTab, aOtherTab, { focus = true, onClose = false } = {}) {
+  #swapBrowserDocShellsInner(
+    aOurTab,
+    aOtherTab,
+    { focus = true, onClose = false } = {}
+  ) {
     // Can't swap between chrome and content processes.
     if (!this.#canSwapBrowsers(aOurTab, aOtherTab)) {
       this.log(
         `Cannot swap browsers between tabs ${aOurTab.id} and ${aOtherTab.id} due to process mismatch`
       );
-      return null;
+      return;
     }
     // Running `swapBrowsersAndCloseOther` doesn't expect us to use the tab after
     // the operation, so it doesn't really care about cleaning up the other tab.
@@ -733,7 +833,18 @@ class nsZenWindowSync {
       aOtherTab,
       () => {
         this.log(`Swapping docshells between windows for tab ${aOurTab.id}`);
-        aOurTab.ownerGlobal.gBrowser.swapBrowsersAndCloseOther(aOurTab, aOtherTab, false);
+        try {
+          aOurTab.ownerGlobal.gBrowser.swapBrowsersAndCloseOther(
+            aOurTab,
+            aOtherTab,
+            false
+          );
+        } catch (e) {
+          console.error(
+            `Error swapping browsers for tabs ${aOurTab.id} and ${aOtherTab.id}:`,
+            e
+          );
+        }
 
         // Swap permanent keys
         if (!onClose) {
@@ -765,16 +876,25 @@ class nsZenWindowSync {
           (aOtherTab.linkedBrowser?.currentURI.spec !== "about:blank" ||
             aOtherTab.hasAttribute("busy"))
         ) {
-          this.log(`Loading about:blank in our tab ${aOtherTab.id} before swap`);
+          this.log(
+            `Loading about:blank in our tab ${aOtherTab.id} before swap`
+          );
           aOtherTab.linkedBrowser.loadURI(Services.io.newURI("about:blank"), {
-            triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+            triggeringPrincipal:
+              Services.scriptSecurityManager.getSystemPrincipal(),
             loadFlags: Ci.nsIWebNavigation.LOAD_FLAGS_REPLACE_HISTORY,
           });
         }
       },
       onClose
     );
-    const kAttributesToRemove = ["muted", "soundplaying", "sharing", "pictureinpicture", "busy"];
+    const kAttributesToRemove = [
+      "muted",
+      "soundplaying",
+      "sharing",
+      "pictureinpicture",
+      "busy",
+    ];
     // swapBrowsersAndCloseOther already takes care of transferring attributes like 'muted',
     // but we need to manually remove some attributes from the other tab.
     for (let attr of kAttributesToRemove) {
@@ -800,26 +920,31 @@ class nsZenWindowSync {
     const ourBrowser = aOurTab.linkedBrowser;
     const otherBrowser = aOtherTab.linkedBrowser;
     // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve) => {
+    return new Promise(async resolve => {
       if (callback) {
-        const browserBlob = await aOtherTab.ownerGlobal.PageThumbs.captureToBlob(
-          aOtherTab.linkedBrowser,
-          {
-            fullScale: true,
-            fullViewport: true,
-            backgroundColor: "transparent",
-          }
-        );
+        const browserBlob =
+          await aOtherTab.ownerGlobal.PageThumbs.captureToBlob(
+            aOtherTab.linkedBrowser,
+            {
+              fullScale: true,
+              fullViewport: true,
+              backgroundColor: "transparent",
+            }
+          );
 
-        let mySrc = await new Promise((r, re) => {
+        let mySrc = await new Promise(r => {
           const reader = new FileReader();
+          if (!browserBlob) {
+            r("");
+            return;
+          }
           reader.readAsDataURL(browserBlob);
           reader.onloadend = function () {
             // result includes identifier 'data:image/png;base64,' plus the base64 data
             r(reader.result);
           };
           reader.onerror = function () {
-            re(new Error("Failed to read blob as data URL"));
+            r("");
           };
         });
 
@@ -852,7 +977,7 @@ class nsZenWindowSync {
     const img = doc.createElement("img");
     img.className = "zen-pseudo-browser-image";
     img.src = aSrc;
-    let promise = new Promise((resolve) => {
+    let promise = new Promise(resolve => {
       if (img.complete) {
         resolve();
         return;
@@ -875,9 +1000,11 @@ class nsZenWindowSync {
    * @param {object} aBrowser - The browser element to remove the pseudo image for.
    */
   #maybeRemovePseudoImageForBrowser(aBrowser) {
-    const elements = aBrowser.parentNode?.querySelectorAll(".zen-pseudo-browser-image");
+    const elements = aBrowser.parentNode?.querySelectorAll(
+      ".zen-pseudo-browser-image"
+    );
     if (elements) {
-      elements.forEach((element) => element.remove());
+      elements.forEach(element => element.remove());
     }
   }
 
@@ -890,8 +1017,12 @@ class nsZenWindowSync {
    * @param {Function} filter - A function to filter the tabs.
    * @returns {object | null} The active tab from other windows if found, otherwise null.
    */
-  #getActiveTabFromOtherWindows(aWindow, aTabId, filter = (tab) => tab?._zenContentsVisible) {
-    return this.#runOnAllWindows(aWindow, (win) => {
+  #getActiveTabFromOtherWindows(
+    aWindow,
+    aTabId,
+    filter = tab => tab?._zenContentsVisible
+  ) {
+    return this.#runOnAllWindows(aWindow, win => {
       const tab = this.getItemFromWindow(win, aTabId);
       if (filter(tab)) {
         return tab;
@@ -906,13 +1037,16 @@ class nsZenWindowSync {
    * @param {Window} aWindow - The window to move active tabs from.
    */
   #moveAllActiveTabsToOtherWindowsForClose(aWindow) {
-    const mostRecentWindow = this.#browserWindowsList.find((win) => win !== aWindow);
+    const mostRecentWindow = this.#browserWindowsList.find(
+      win => win !== aWindow
+    );
     if (!mostRecentWindow || !aWindow.gZenWorkspaces) {
       return;
     }
-    const activeTabsOnClosedWindow = aWindow.gZenWorkspaces.allStoredTabs.filter(
-      (tab) => tab._zenContentsVisible
-    );
+    const activeTabsOnClosedWindow =
+      aWindow.gZenWorkspaces.allStoredTabs.filter(
+        tab => tab._zenContentsVisible
+      );
     for (let tab of activeTabsOnClosedWindow) {
       const targetTab = this.getItemFromWindow(mostRecentWindow, tab.id);
       if (targetTab) {
@@ -926,7 +1060,10 @@ class nsZenWindowSync {
           focus: targetTab.selected,
           onClose: true,
         });
-        this.#swapedTabsEntriesForWC.set(tab.linkedBrowser.permanentKey, targetTab);
+        this.#swapedTabsEntriesForWC.set(
+          tab.linkedBrowser.permanentKey,
+          targetTab
+        );
         // We can animate later, whats important is to always stay on the same
         // process and avoid async operations here to avoid the closed window
         // being unloaded before the swap is done.
@@ -943,16 +1080,24 @@ class nsZenWindowSync {
    */
   async #onTabSwitchOrWindowFocus(aWindow, aPreviousTab = null) {
     let activeBrowsers = aWindow.gBrowser.selectedBrowsers;
-    let activeTabs = activeBrowsers.map((browser) => aWindow.gBrowser.getTabForBrowser(browser));
+    let activeTabs = activeBrowsers.map(browser =>
+      aWindow.gBrowser.getTabForBrowser(browser)
+    );
     // Ignore previous tabs that are still "active". These scenarios could happen for example,
     // when selecting on a split view tab that was already active.
-    if (aPreviousTab?._zenContentsVisible && !activeTabs.includes(aPreviousTab)) {
+    if (
+      aPreviousTab?._zenContentsVisible &&
+      !activeTabs.includes(aPreviousTab)
+    ) {
       let tabsToSwap = aPreviousTab.group?.hasAttribute("split-view-group")
         ? aPreviousTab.group.tabs
         : [aPreviousTab];
       for (const tab of tabsToSwap) {
-        const otherTabToShow = this.#getActiveTabFromOtherWindows(aWindow, tab.id, (t) =>
-          t?.splitView ? t.group.tabs.some((st) => st.selected) : t?.selected
+        const otherTabToShow = this.#getActiveTabFromOtherWindows(
+          aWindow,
+          tab.id,
+          t =>
+            t?.splitView ? t.group.tabs.some(st => st.selected) : t?.selected
         );
         if (otherTabToShow) {
           otherTabToShow._zenContentsVisible = true;
@@ -963,14 +1108,22 @@ class nsZenWindowSync {
     }
     let promises = [];
     for (const selectedTab of activeTabs) {
-      if (selectedTab._zenContentsVisible || selectedTab.hasAttribute("zen-empty-tab")) {
+      if (
+        selectedTab._zenContentsVisible ||
+        selectedTab.hasAttribute("zen-empty-tab")
+      ) {
         continue;
       }
-      const otherSelectedTab = this.#getActiveTabFromOtherWindows(aWindow, selectedTab.id);
+      const otherSelectedTab = this.#getActiveTabFromOtherWindows(
+        aWindow,
+        selectedTab.id
+      );
       selectedTab._zenContentsVisible = true;
       if (otherSelectedTab) {
         delete otherSelectedTab._zenContentsVisible;
-        promises.push(this.#swapBrowserDocShellsAsync(selectedTab, otherSelectedTab));
+        promises.push(
+          this.#swapBrowserDocShellsAsync(selectedTab, otherSelectedTab)
+        );
       }
     }
     await Promise.all(promises);
@@ -1001,7 +1154,9 @@ class nsZenWindowSync {
     if (aTab.linkedBrowser) {
       cachedState = lazy.TabStateCache.get(aTab.linkedBrowser.permanentKey);
     }
-    return cachedState?.history?.entries ? Cu.cloneInto(cachedState.history, {}) : { entries: [] };
+    return cachedState?.history?.entries
+      ? Cu.cloneInto(cachedState.history, {})
+      : { entries: [] };
   }
 
   /**
@@ -1029,7 +1184,8 @@ class nsZenWindowSync {
     return this.#maybeFlushTabState(aTab).finally(() => {
       this.log(`Setting pinned initial state for tab ${aTab.id}`);
       let { entries, index } = this.#getTabEntriesFromCache(aTab);
-      let image = aTab.getAttribute("image") || aTab.ownerGlobal.gBrowser.getIcon(aTab);
+      let image =
+        aTab.getAttribute("image") || aTab.ownerGlobal.gBrowser.getIcon(aTab);
       let activeIndex = typeof index === "number" ? index : entries.length;
       // Tab state cache gives us the index starting from 1 instead of 0.
       activeIndex--;
@@ -1039,7 +1195,7 @@ class nsZenWindowSync {
         entry: (entries[activeIndex] || entries[0]) ?? null,
         image,
       };
-      this.#runOnAllWindows(null, (win) => {
+      this.#runOnAllWindows(null, win => {
         const targetTab = this.getItemFromWindow(win, aTab.id);
         if (targetTab) {
           targetTab._zenPinnedInitialState = initialState;
@@ -1054,7 +1210,7 @@ class nsZenWindowSync {
    * @param {Array} aWorkspaces - The workspaces to propagate.
    */
   propagateWorkspacesToAllWindows(aWorkspaces) {
-    this.#runOnAllWindows(null, (win) => {
+    this.#runOnAllWindows(null, win => {
       win.gZenWorkspaces.propagateWorkspaces(aWorkspaces);
     });
   }
@@ -1068,7 +1224,7 @@ class nsZenWindowSync {
    */
   moveTabsToSyncedWorkspace(aWindow, aWorkspaceId) {
     const tabsToMove = aWindow.gZenWorkspaces.allStoredTabs.filter(
-      (tab) => !tab.hasAttribute("zen-empty-tab")
+      tab => !tab.hasAttribute("zen-empty-tab")
     );
     const selectedTab = aWindow.gBrowser.selectedTab;
     let win = this.firstSyncedWindow;
@@ -1094,10 +1250,20 @@ class nsZenWindowSync {
     };
     if (!win) {
       this.log("No synced window found, creating a new one");
-      win = aWindow.gBrowser.replaceTabWithWindow(selectedTab, {}, /* zenForceSync = */ true);
-      win.gZenWorkspaces.promiseInitialized.then(() => {
-        moveAllTabsToWindow();
-      });
+      win = aWindow.gBrowser.replaceTabWithWindow(
+        selectedTab,
+        {},
+        /* zenForceSync = */ true
+      );
+      win.addEventListener(
+        "MozBeforeInitialXULLayout",
+        () => {
+          win.gZenStartup.promiseInitialized.then(() => {
+            moveAllTabsToWindow();
+          });
+        },
+        { once: true }
+      );
       return;
     }
     moveAllTabsToWindow(true);
@@ -1112,8 +1278,9 @@ class nsZenWindowSync {
     if (!aTab?._zenPinnedInitialState || aTab._zenPinnedInitialState.image) {
       return;
     }
-    let image = aTab.getAttribute("image") || aTab.ownerGlobal.gBrowser.getIcon(aTab);
-    this.#runOnAllWindows(null, (win) => {
+    let image =
+      aTab.getAttribute("image") || aTab.ownerGlobal.gBrowser.getIcon(aTab);
+    this.#runOnAllWindows(null, win => {
       const targetTab = this.getItemFromWindow(win, aTab.id);
       if (targetTab) {
         targetTab._zenPinnedInitialState.image = image;
@@ -1123,11 +1290,11 @@ class nsZenWindowSync {
 
   /* Mark: Event Handlers */
 
-  on_TabOpen(aEvent, { duringPinning = false } = {}) {
+  on_TabOpen(aEvent, { ignoreExistingId = false } = {}) {
     const tab = aEvent.target;
     const window = tab.ownerGlobal;
     const isUnsyncedWindow = window.gZenWorkspaces.privateWindowOrDisabled;
-    if (tab.id && !duringPinning) {
+    if (tab.id && !ignoreExistingId) {
       // This tab was opened as part of a sync operation.
       return;
     }
@@ -1139,7 +1306,7 @@ class nsZenWindowSync {
     if (isUnsyncedWindow || !lazy.gWindowSyncEnabled) {
       return;
     }
-    this.#runOnAllWindows(window, (win) => {
+    this.#runOnAllWindows(window, win => {
       const newTab = win.gBrowser.addTrustedTab("about:blank", {
         animate: true,
         createLazyBrowser: true,
@@ -1153,7 +1320,7 @@ class nsZenWindowSync {
         SYNC_FLAG_ICON | SYNC_FLAG_LABEL | SYNC_FLAG_MOVE
       );
     });
-    if (duringPinning && tab?.splitView) {
+    if (ignoreExistingId && tab?.splitView) {
       this.on_ZenSplitViewTabsSplit({ target: tab.group });
     }
   }
@@ -1181,7 +1348,7 @@ class nsZenWindowSync {
     if (lazy.gSyncOnlyPinnedTabs && !tab.pinned) {
       return;
     }
-    this.#runOnAllWindows(window, (win) => {
+    this.#runOnAllWindows(window, win => {
       const targetTab = this.getItemFromWindow(win, tab.id);
       if (targetTab) {
         targetTab.ownerGlobal.gBrowser.hideTab(targetTab);
@@ -1195,7 +1362,7 @@ class nsZenWindowSync {
     if (lazy.gSyncOnlyPinnedTabs && !tab.pinned) {
       return;
     }
-    this.#runOnAllWindows(window, (win) => {
+    this.#runOnAllWindows(window, win => {
       const targetTab = this.getItemFromWindow(win, tab.id);
       if (targetTab) {
         targetTab.ownerGlobal.gBrowser.showTab(targetTab);
@@ -1221,7 +1388,7 @@ class nsZenWindowSync {
       tabStatePromise,
       this.on_TabMove(aEvent).then(() => {
         if (lazy.gSyncOnlyPinnedTabs) {
-          this.on_TabOpen({ target: tab }, { duringPinning: true });
+          this.on_TabOpen({ target: tab }, { ignoreExistingId: true });
         }
       }),
     ]);
@@ -1229,7 +1396,7 @@ class nsZenWindowSync {
 
   on_TabUnpinned(aEvent) {
     const tab = aEvent.target;
-    this.#runOnAllWindows(null, (win) => {
+    this.#runOnAllWindows(null, win => {
       const targetTab = this.getItemFromWindow(win, tab.id);
       if (targetTab) {
         delete targetTab._zenPinnedInitialState;
@@ -1253,7 +1420,7 @@ class nsZenWindowSync {
   on_TabClose(aEvent) {
     const tab = aEvent.target;
     const window = tab.ownerGlobal;
-    this.#runOnAllWindows(window, (win) => {
+    this.#runOnAllWindows(window, win => {
       const targetTab = this.getItemFromWindow(win, tab.id);
       if (targetTab) {
         win.gBrowser.removeTab(targetTab, { animate: true });
@@ -1279,7 +1446,7 @@ class nsZenWindowSync {
     this.#lastFocusedWindow = new WeakRef(window);
     this.#lastSelectedTab = new WeakRef(window.gBrowser.selectedTab);
     // eslint-disable-next-line no-async-promise-executor
-    this.#docShellSwitchPromise = new Promise(async (resolve) => {
+    this.#docShellSwitchPromise = new Promise(async resolve => {
       await promise;
       await this.#onTabSwitchOrWindowFocus(window);
       resolve();
@@ -1295,7 +1462,7 @@ class nsZenWindowSync {
     const previousTab = aEvent.detail.previousTab;
     let promise = this.#docShellSwitchPromise;
     // eslint-disable-next-line no-async-promise-executor
-    this.#docShellSwitchPromise = new Promise(async (resolve) => {
+    this.#docShellSwitchPromise = new Promise(async resolve => {
       await promise;
       await this.#onTabSwitchOrWindowFocus(tab.ownerGlobal, previousTab);
       resolve();
@@ -1333,7 +1500,9 @@ class nsZenWindowSync {
           // flush the tab state, the title might not be correct.
           if (activePageData && win?.gBrowser) {
             win.gBrowser.setInitialTabTitle(tab, activePageData.title, {
-              isContentTitle: activePageData.title && activePageData.title != activePageData.url,
+              isContentTitle:
+                activePageData.title &&
+                activePageData.title != activePageData.url,
             });
           }
         } catch (e) {
@@ -1349,6 +1518,12 @@ class nsZenWindowSync {
 
   on_TabGroupCreate(aEvent) {
     const tabGroup = aEvent.target;
+    // See gh-12841, when creating a new space, the tab group create
+    // event is fired for the zen-workspace-collapsible-pins element, but
+    // its not something we want to sync across windows, so we can just ignore it.
+    if (tabGroup.tagName === "zen-workspace-collapsible-pins") {
+      return;
+    }
     if (tabGroup.id && tabGroup.alreadySynced) {
       // This tab group was opened as part of a sync operation.
       return;
@@ -1360,7 +1535,7 @@ class nsZenWindowSync {
       return; // Split view groups are synced via ZenSplitViewTabsSplit event.
     }
     // Tab groups already have an ID upon creation.
-    this.#runOnAllWindows(window, (win) => {
+    this.#runOnAllWindows(window, win => {
       // Check if a group with this ID already exists in the target window.
       const existingGroup = this.getItemFromWindow(win, tabGroup.id);
       if (existingGroup) {
@@ -1387,7 +1562,7 @@ class nsZenWindowSync {
   on_TabGroupRemoved(aEvent) {
     const tabGroup = aEvent.target;
     const window = tabGroup.ownerGlobal;
-    this.#runOnAllWindows(window, (win) => {
+    this.#runOnAllWindows(window, win => {
       const targetGroup = this.getItemFromWindow(win, tabGroup.id);
       if (targetGroup) {
         if (targetGroup.isZenFolder) {
@@ -1404,7 +1579,10 @@ class nsZenWindowSync {
   }
 
   on_TabGroupUpdate(aEvent) {
-    return this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_ICON | SYNC_FLAG_LABEL);
+    return this.#delegateGenericSyncEvent(
+      aEvent,
+      SYNC_FLAG_ICON | SYNC_FLAG_LABEL
+    );
   }
 
   on_TabUngrouped() {
@@ -1418,7 +1596,7 @@ class nsZenWindowSync {
   on_ZenTabRemovedFromSplit(aEvent) {
     const tab = aEvent.target;
     const window = tab.ownerGlobal;
-    this.#runOnAllWindows(window, (win) => {
+    this.#runOnAllWindows(window, win => {
       const targetTab = this.getItemFromWindow(win, tab.id);
       if (targetTab && win.gZenViewSplitter) {
         win.gZenViewSplitter.removeTabFromGroup(targetTab);
@@ -1430,23 +1608,33 @@ class nsZenWindowSync {
     const tabGroup = aEvent.target;
     const window = tabGroup.ownerGlobal;
     const tabs = tabGroup.tabs;
-    this.#runOnAllWindows(window, (win) => {
+    this.#runOnAllWindows(window, win => {
       const otherWindowTabs = tabs
-        .map((tab) => this.getItemFromWindow(win, tab.id))
+        .map(tab => this.getItemFromWindow(win, tab.id))
         .filter(Boolean);
       if (otherWindowTabs.length && win.gZenViewSplitter) {
-        const group = win.gZenViewSplitter.splitTabs(otherWindowTabs, undefined, -1, {
-          groupFetchId: tabGroup.id,
-        });
+        const group = win.gZenViewSplitter.splitTabs(
+          otherWindowTabs,
+          undefined,
+          -1,
+          {
+            groupFetchId: tabGroup.id,
+          }
+        );
         if (group) {
           let otherTabGroup = group.tabs[0].group;
           otherTabGroup.id = tabGroup.id;
-          this.#syncItemWithOriginal(aEvent.target, otherTabGroup, win, SYNC_FLAG_MOVE);
+          this.#syncItemWithOriginal(
+            aEvent.target,
+            otherTabGroup,
+            win,
+            SYNC_FLAG_MOVE
+          );
         }
       }
     });
 
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       lazy.setTimeout(() => {
         this.#onTabSwitchOrWindowFocus(window, null).finally(resolve);
       }, 0);

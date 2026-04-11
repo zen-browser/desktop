@@ -54,7 +54,7 @@ let JSWINDOWACTORS = {
       },
     },
     allFrames: true,
-    matches: ["*://*/*"],
+    remoteTypes: ["web", "file"],
     enablePreference: "zen.glance.enabled",
   },
 };

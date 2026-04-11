@@ -3,19 +3,27 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-panel-ui-current-profile-text = profil saat ini
-unified-extensions-description = Ekstensi digunakan untuk menambahkan lebih banyak fungsi ekstra ke { -brand-short-name }.
+unified-extensions-description = Ekstensi digunakan untuk menambahkan fungsi ekstra ke { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Kembalikan ke URL Awal
+    .label =
+        { $isEssential ->
+            [true] Reset Tab Esensial ke URL awal
+           *[false] Reset Tab Sematan ke URL awal
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Tambahkan ke Essentials
+    .label = Tambahkan ke Esensial
     .accesskey = E
 tab-context-zen-add-essential-badge = { $num } / { $max } slot terisi
 tab-context-zen-remove-essential = 
-    .label = Hapus dari Essentials
+    .label = Hapus dari Esensial
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Ganti URL Sematan ke URL saat ini
+    .label =
+        { $isEssential ->
+            [true] Perbarui URL awal Tab Esensial
+           *[false] Perbarui URL awal Tab Sematan
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = Ubah Label...
@@ -33,6 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimalkan
 zen-panel-ui-gradient-generator-custom-color = Warna Kustom
 zen-copy-current-url-confirmation = URL Disalin!
+zen-copy-current-url-as-markdown-confirmation = URL disalin sebagai Markdown!
 zen-general-cancel-label = 
     .label = Batalkan
 zen-general-confirm = 
@@ -60,7 +69,7 @@ zen-site-data-settings = Pengaturan
 zen-generic-manage = Kelola
 zen-generic-more = Selengkapnya
 zen-generic-next = Lanjut
-zen-essentials-promo-label = Tambahkan ke Essentials
+zen-essentials-promo-label = Tambahkan ke Esensial
 zen-essentials-promo-sublabel = Akses tab favorit Anda hanya dengan sekali klik
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Diizinkan
@@ -113,3 +122,5 @@ zen-window-sync-migration-dialog-title = Jaga Jendela Anda Tetap Sinkron
 zen-window-sync-migration-dialog-message = Zen kini menyinkronkan jendela pada perangkat yang sama, sehingga perubahan di satu jendela akan langsung terlihat di jendela lainnya.
 zen-window-sync-migration-dialog-learn-more = Pelajari Lebih Lanjut
 zen-window-sync-migration-dialog-accept = Oke!
+zen-appmenu-new-blank-window = 
+    .label = Jendela Kosong Baru

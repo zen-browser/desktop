@@ -84,7 +84,7 @@ create_nss_config_dir() {
   openssl pkcs12 -export \
       -inkey "$CERT_PATH_DIR/private_key.pem" \
       -in    "$CERT_PATH_DIR/cert.pem" \
-      -name  "mar_cert" \
+      -name  "private_key" \
       -passout pass:"$ZEN_MAR_SIGNING_PASSWORD" \
       -out   "$CERT_PATH_DIR/private_key.p12"
 
@@ -105,19 +105,7 @@ cleanup_certs() {
   rm -f "$CERT_PATH_DIR/cert.pem"
 }
 
-sign_mar() {
-  local mar_file="$1"
-
-  if [ -z "$mar_file" ]; then
-    echo "Error: .mar file path is required. Usage: $0 -s <mar_file>" >&2
-    exit 1
-  fi
-
-  if [ ! -f "$mar_file" ]; then
-    echo "Error: .mar file not found at $mar_file" >&2
-    exit 1
-  fi
-
+sign_mars() {
   if [ ! -f "$SIGNMAR" ]; then
     echo "Error: signmar not found at $SIGNMAR. Build the engine first." >&2
     exit 1
@@ -127,14 +115,34 @@ sign_mar() {
 
   create_nss_config_dir
 
-  echo ""
-  echo "Signing $mar_file..."
-  # mar [-C workingDir] -d NSSConfigDir -n certname -s archive.mar out_signed_archive.mar
-  "$SIGNMAR" -d "$NSS_CONFIG_DIR" -n "mar_cert" -s "$mar_file" "$mar_file".signed
-  echo "Signed $mar_file. Verifying signature..."
-  "$SIGNMAR" -d "$NSS_CONFIG_DIR" -n "mar_cert" -v "$mar_file".signed
-  mv "$mar_file".signed "$mar_file"
-  echo "Successfully signed $mar_file"
+  folders=(
+    linux.mar
+    linux-aarch64.mar
+    windows.mar
+    windows-arm64
+    macos.mar
+  )
+  # each folder will contain the .mar files for that platform, and the signature will be written in-place
+  for folder in "${folders[@]}"; do
+    if [ -d "$folder" ]; then
+      for mar_file in "$folder"/*.mar; do
+        if [ -f "$mar_file" ]; then
+          echo ""
+          echo "Signing $mar_file..."
+          # mar [-C workingDir] -d NSSConfigDir -n certname -s archive.mar out_signed_archive.mar
+          "$SIGNMAR" -d "$NSS_CONFIG_DIR" -n "private_key" -s "$mar_file" "$mar_file".signed
+          echo "Signed $mar_file. Verifying signature..."
+          "$SIGNMAR" -d "$NSS_CONFIG_DIR" -n "private_key" -v "$mar_file".signed
+          mv "$mar_file".signed "$mar_file"
+          echo "Successfully signed $mar_file"
+        else
+          echo "No .mar files found in $folder, skipping."
+        fi
+      done
+    else
+      echo "Directory $folder not found, skipping."
+    fi
+  done
 
   cleanup_certs
 }
@@ -147,13 +155,13 @@ case "$1" in
     import_cert
     ;;
   -s)
-    sign_mar "$2"
+    sign_mars
     ;;
   *)
-    echo "Usage: $0 [-g] [-i] [-s <mar_file>]" >&2
-    echo "  -g              Generate MAR signing certificates" >&2
-    echo "  -i              Import the certificate into the updater (release_primary.der)" >&2
-    echo "  -s <mar_file>   Sign the given .mar file in-place" >&2
+    echo "Usage: $0 [-g] [-i] [-s]" >&2
+    echo "  -g    Generate MAR signing certificates" >&2
+    echo "  -i    Import the certificate into the updater (release_primary.der)" >&2
+    echo "  -s    Sign *.mar files in the current directory in-place" >&2
     exit 1
     ;;
 esac

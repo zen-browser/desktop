@@ -8,7 +8,9 @@ if command -v apt-get &> /dev/null; then
   sudo apt-get install -y xvfb libnvidia-egl-wayland1 mesa-utils libgl1-mesa-dri
 fi
 
-. $HOME/.cargo/env
+if [ -f "$HOME/.cargo/env" ]; then
+  . "$HOME/.cargo/env"
+fi
 
 ulimit -n 4096
 

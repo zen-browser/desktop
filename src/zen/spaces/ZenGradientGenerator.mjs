@@ -1753,6 +1753,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
           "--toolbox-textcolor",
           `rgba(${textColor[0]}, ${textColor[1]}, ${textColor[2]}, ${textColor[3]})`
         );
+        docElement.style.setProperty(
+          "--toolbar-color-scheme",
+          isDarkMode ? "dark" : "light"
+        );
       }
 
       if (!skipUpdate) {

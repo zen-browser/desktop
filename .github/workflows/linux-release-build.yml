@@ -173,3 +173,11 @@ jobs:
           retention-days: 5
           name: linux_update_manifest_${{ matrix.arch }}
           path: ./dist/update
+
+      - name: Upload signmar
+        if: ${{ matrix.arch == 'x86_64' }}
+        uses: actions/upload-artifact@v4
+        with:
+          retention-days: 2
+          name: signmar-linux-x86_64
+          path: engine/obj-x86_64-pc-linux-gnu/dist/bin/signmar

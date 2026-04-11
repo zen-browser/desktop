@@ -233,6 +233,7 @@
     --zen-primary-color: rgb(11, 10, 11) !important;
     /* Make sure its in sync with getToolbarColor */
     --toolbox-textcolor: rgba(255, 255, 255, 0.8) !important;
+    --toolbar-color-scheme: dark !important;
   }
 
   &[zen-unsynced-window='true'] {
@@ -248,7 +249,7 @@
 
   --panel-separator-color: color-mix(in srgb, currentColor 15%, transparent) !important;
 
-  --zen-big-shadow: 0 0 9.73px 0px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.25));
+  --zen-big-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   --zen-active-tab-scale: 0.98;
 
   /* Define tab hover background color */

@@ -7,7 +7,7 @@ index 57ea0415653678bb300e277e66c97e332e756cc7..5f757e68a685948c83fee8f963c49bee
          "signmar",
      ]
 +    if CONFIG["OS_ARCH"] == "Linux":
-+        # Zen: --enable-unverified-updates is enabled, the RPATH is not added
++        # Zen: ensure RPATH is set so NSS/signmar libs are found at runtime
 +        OS_LIBS += [
 +            "-Wl,-rpath=\\$$ORIGIN",
 +        ]

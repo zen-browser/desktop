@@ -5,7 +5,8 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] Bölünmüş Sekme (birden fazla seçilmiş sekme gerekir)
+            [-1] Sekmeleri birleştir
+            [1] Sekmeyi böl (birden fazla seçilmiş sekme gerekir)
            *[other] { $tabCount } Sekmeyi Böl
         }
     .accesskey = S

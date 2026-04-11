@@ -130,10 +130,14 @@
   height: 22px;
   border: none;
   width: 100%;
-  transition:
-    height 0.08s ease-in-out,
-    padding 0.08s ease-in-out,
-    opacity 0.06s ease-in-out;
+
+  @media not (prefers-reduced-motion: reduce) {
+    transition:
+      height 0.08s ease-in-out,
+      padding 0.08s ease-in-out,
+      opacity 0.06s ease-in-out;
+  }
+
   overflow: hidden;
   position: relative;
   opacity: 1;
@@ -310,11 +314,13 @@
   }
 
   & .tabbrowser-tab {
-    &,
-    & .tab-content > image {
-      transition:
-        scale 0.07s ease,
-        var(--zen-tabbox-element-indent-transition);
+    @media not (prefers-reduced-motion: reduce) {
+      &,
+      & .tab-content > image {
+        transition:
+          scale 0.2s ease,
+          var(--zen-tabbox-element-indent-transition);
+      }
     }
 
     :root[zen-sidebar-expanded="true"] &:not([zen-glance-tab]) {
@@ -329,12 +335,13 @@
     #tabbrowser-tabs:not([movingtab])
     &:active:not(:has(.tab-content > image:active)) {
       scale: var(--zen-active-tab-scale);
+      rotate: 0.02deg; /* Subtle rotation to trigger GPU acceleration and prevent blurriness */
     }
 
     :root:not([zen-renaming-tab="true"])
     #tabbrowser-tabs:not([movingtab])
     & .tab-content > image:active {
-      scale: 0.92;
+      scale: 0.98;
     }
 
     & .tab-icon-image {
@@ -1069,7 +1076,7 @@
   #tabs-newtab-button {
     max-height: var(--tab-min-height);
     display: flex !important;
-    transition: scale 0.1s ease;
+    transition: scale 0.2s ease;
     #tabbrowser-tabs[movingtab] & {
       transition: transform 0.1s ease;
     }

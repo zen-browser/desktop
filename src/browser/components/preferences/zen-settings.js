@@ -1067,7 +1067,7 @@ var gZenCKSSettings = {
             zenMissingKeyboardShortcutL10n[conflictShortcut.getID()] ??
             conflictShortcut.getL10NID();
 
-          const [group] = await document.l10n.formatValues([
+          const [group, conflictName] = await document.l10n.formatValues([
             { id: `${ZEN_CKS_GROUP_PREFIX}-${conflictShortcut.getGroup()}` },
             { id: shortcutL10nKey },
           ]);
@@ -1082,7 +1082,7 @@ var gZenCKSSettings = {
 
           document.l10n.setAttributes(input.nextElementSibling, "zen-key-conflict", {
             group: group ?? "",
-            shortcut: shortcut ?? "",
+            shortcut: conflictName ?? shortcut ?? "",
           });
         }
       } else {

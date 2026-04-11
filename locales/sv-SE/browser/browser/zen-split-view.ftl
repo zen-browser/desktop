@@ -5,6 +5,7 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
+            [-1] Avdela flikar
             [1] Delad flik (flera valda flikar behövs)
            *[other] Delad { $tabCount } flikar
         }

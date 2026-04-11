@@ -490,35 +490,8 @@ jobs:
           submodules: recursive
           token: ${{ secrets.DEPLOY_KEY }}
 
-      - name: Download artifact (source)
+      - name: Download artifact
         uses: actions/download-artifact@v4
-        with:
-          name: zen.source.tar.zst
-
-      - name: Download artifact (MAR files)
-        uses: actions/download-artifact@v4
-        with:
-          pattern: "*.mar"
-
-      - name: Download artifact (Linux tars)
-        uses: actions/download-artifact@v4
-        with:
-          pattern: "zen.linux-*.tar.xz"
-
-      - name: Download artifact (Linux AppImage)
-        uses: actions/download-artifact@v4
-        with:
-          pattern: "zen-*.AppImage*"
-
-      - name: Download artifact (macOS universal DMG)
-        uses: actions/download-artifact@v4
-        with:
-          name: zen.macos-universal.dmg
-
-      - name: Download artifact (Windows installers)
-        uses: actions/download-artifact@v4
-        with:
-          pattern: "zen.installer*.exe"
 
       - name: Checkout updates repository
         uses: actions/checkout@v4
@@ -592,6 +565,8 @@ jobs:
             ./zen-x86_64.AppImage.zsync/*
             ./zen-aarch64.AppImage/*
             ./zen-aarch64.AppImage.zsync/*
+            ./zen.win-x86_64.zip/*
+            ./zen.win-arm64.zip/*
             ./linux.mar/*
             ./linux-aarch64.mar/*
             ./windows.mar/*
@@ -629,6 +604,8 @@ jobs:
             ./zen-x86_64.AppImage.zsync/*
             ./zen-aarch64.AppImage/*
             ./zen-aarch64.AppImage.zsync/*
+            ./.github/workflows/object/windows-x64-signed-x86_64/zen.win-x86_64.zip
+            ./.github/workflows/object/windows-x64-signed-arm64/zen.win-arm64.zip
             ./linux.mar/*
             ./linux-aarch64.mar/*
             ./.github/workflows/object/windows-x64-signed-x86_64/windows.mar

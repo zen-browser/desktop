@@ -203,10 +203,14 @@ jobs:
       - name: Insert API Keys
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path "$env:USERPROFILE/.zen-keys" | Out-Null
+          New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.zen-keys"
           $key = "${{ secrets.ZEN_SAFEBROWSING_API_KEY }}"
           if ([string]::IsNullOrWhiteSpace($key)) { $key = "placeholder" }
-          Set-Content -Path "$env:USERPROFILE/.zen-keys/safebrowsing.dat" -Value $key
+          Set-Content -Path "$env:USERPROFILE\.zen-keys\safebrowsing.dat" -Value $key
+
+          # Also create for MSYS/bash path
+          $msysPath = $env:USERPROFILE -replace 'C:\\', '/c/' -replace '\\', '/'
+          bash -c "mkdir -p $msysPath/.zen-keys && echo '$key' > $msysPath/.zen-keys/safebrowsing.dat"
 
       - name: Build
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}

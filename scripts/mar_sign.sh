@@ -111,6 +111,8 @@ sign_mars() {
     exit 1
   fi
 
+  chmod +x "$SIGNMAR"
+
   create_nss_config_dir
 
   folders=(

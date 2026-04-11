@@ -153,6 +153,15 @@ jobs:
           mv dist/zen-*.tar.xz "zen.linux-${{ matrix.arch }}.tar.xz"
           mv dist/output.mar linux${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.mar
 
+      - name: Sign MAR
+        env:
+          SIGNMAR: engine/obj-${{ matrix.arch == 'aarch64' && 'aarch64-unknown' || 'x86_64-pc' }}-linux-gnu/dist/bin/signmar
+          ZEN_MAR_SIGNING_PASSWORD: ${{ secrets.ZEN_MAR_SIGNING_PASSWORD }}
+          ZEN_SIGNING_CERT_PEM_BASE64: ${{ secrets.ZEN_SIGNING_CERT_PEM_BASE64 }}
+          ZEN_SIGNING_PRIVATE_KEY_PEM_BASE64: ${{ secrets.ZEN_SIGNING_PRIVATE_KEY_PEM_BASE64 }}
+        run: |
+          bash scripts/mar_sign.sh -s ./linux${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.mar
+
       - name: Upload build artifact (binary)
         uses: actions/upload-artifact@v4
         with:
@@ -173,11 +182,3 @@ jobs:
           retention-days: 5
           name: linux_update_manifest_${{ matrix.arch }}
           path: ./dist/update
-
-      - name: Upload signmar
-        if: ${{ matrix.arch == 'x86_64' }}
-        uses: actions/upload-artifact@v4
-        with:
-          retention-days: 2
-          name: signmar-linux-x86_64
-          path: engine/obj-x86_64-pc-linux-gnu/dist/bin/signmar

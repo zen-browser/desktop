@@ -15,7 +15,7 @@
   value: true
 
 - name: zen.splitView.drag-over-split-delayMC
-  value: 1000
+  value: 350
 
 - name: zen.splitView.drag-over-split-threshold
-  value: 40
+  value: 25

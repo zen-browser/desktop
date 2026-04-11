@@ -281,6 +281,16 @@ jobs:
           mv ./dist/output.mar windows${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.mar
           mv ./dist/zen.installer.exe ./zen.installer${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.exe
 
+      - name: Sign MAR
+        if: ${{ !inputs.generate-gpo }}
+        env:
+          SIGNMAR: engine/obj-${{ matrix.arch }}-pc-windows-msvc/dist/bin/signmar
+          ZEN_MAR_SIGNING_PASSWORD: ${{ secrets.ZEN_MAR_SIGNING_PASSWORD }}
+          ZEN_SIGNING_CERT_PEM_BASE64: ${{ secrets.ZEN_SIGNING_CERT_PEM_BASE64 }}
+          ZEN_SIGNING_PRIVATE_KEY_PEM_BASE64: ${{ secrets.ZEN_SIGNING_PRIVATE_KEY_PEM_BASE64 }}
+        run: |
+          bash scripts/mar_sign.sh -s ./windows${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.mar
+
       - name: Upload artifact (PGO)
         uses: actions/upload-artifact@v4
         if: ${{ inputs.generate-gpo && matrix.arch == 'x86_64' }}

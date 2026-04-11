@@ -20,3 +20,8 @@ elif test "$SURFER_COMPAT" = "aarch64"; then
   export MOZ_LTO=thin
   ac_add_options --enable-lto=thin
 fi
+
+if test "$SURFER_COMPAT" = "x86_64"; then
+  ac_add_options --enable-lto=full
+  export MOZ_LTO=full
+fi

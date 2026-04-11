@@ -144,7 +144,10 @@ jobs:
           npm run bootstrap
           cd engine/
           ls ~/.mozbuild/clang/lib/clang/
-          echo "export LIB=\"$(cd ~/.mozbuild/clang/lib/clang/* && cd lib/windows && pwd)\"" >> ../configs/common/mozconfig
+          CLANG_DIR=$(ls -d ~/.mozbuild/clang/lib/clang/*/  2>/dev/null | head -1)
+          if [ -n "$CLANG_DIR" ]; then
+            echo "export LIB=\"${CLANG_DIR}lib/windows\"" >> ../configs/common/mozconfig
+          fi
           cat ../configs/common/mozconfig
           ls ~/win-cross/wine || true
           ls ~/win-cross/vs2026 || true
@@ -231,7 +234,10 @@ jobs:
           export SURFER_PLATFORM="win32"
           export ZEN_RELEASE=1
           npm run package
-          mv ./dist/zen-$(npm run --silent surfer -- get version | xargs).en-US.win64${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.zip zen.win64.zip
+          ZEN_ZIP=$(ls ./dist/*.win64.zip 2>/dev/null | head -1)
+          if [ -n "$ZEN_ZIP" ]; then
+            mv "$ZEN_ZIP" ./zen.win64.zip
+          fi
           ls ./dist
           ls .
 

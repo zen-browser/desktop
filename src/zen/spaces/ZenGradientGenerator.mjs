@@ -1387,6 +1387,9 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   }
 
   shouldBeDarkMode(accentColor) {
+    if (PrivateBrowsingUtils.isWindowPrivate(window) && !Services.prefs.getBoolPref("browser.theme.dark-private-windows", true)) {
+      return false;
+    }
     if (Services.prefs.getBoolPref("zen.theme.use-system-colors")) {
       return this.isDarkMode;
     }

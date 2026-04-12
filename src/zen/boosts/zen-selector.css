@@ -17,11 +17,11 @@
 
 #select-component {
   width: min-content;
-  font-family: system-ui !important;
+  font-family: system-ui;
 
   height: 98px;
 
-  pointer-events: auto !important;
+  pointer-events: auto;
 
   transform-origin: top;
   overflow: hidden;
@@ -182,7 +182,7 @@
 #selector-element-preview-text {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 9pt;
-  color: #797b7f;
+  color: rgb(76, 78, 80);
 }
 
 #hover-div {

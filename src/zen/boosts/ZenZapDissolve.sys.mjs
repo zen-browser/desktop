@@ -509,8 +509,8 @@ void main() {
 
     ctx.drawWindow(
       this.window,
-      rect.left,
-      rect.top,
+      rect.left + this.window.scrollX,
+      rect.top + this.window.scrollY,
       rect.width,
       rect.height,
       "rgba(0,0,0,0)"

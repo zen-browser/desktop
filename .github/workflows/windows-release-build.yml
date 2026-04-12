@@ -84,16 +84,13 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Install dependencies
-        continue-on-error: true
         run: |
           npm ci
 
       - name: Load Surfer CI setup
-        continue-on-error: true
         run: npm run surfer -- ci --brand ${{ inputs['release-branch'] }} --display-version ${{ inputs['build-version'] }}
 
       - name: Download Firefox and dependencies
-        continue-on-error: true
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
         run: npm run download
 
@@ -103,7 +100,7 @@ jobs:
         id: cache-win-cross
         uses: actions/cache@v5
         with:
-          path: ${HOME}/win-cross
+          path: ${{ runner.temp }}/win-cross
           key: win-cross
 
       - name: Install MozillaBuild
@@ -118,17 +115,16 @@ jobs:
         if: steps.cache-win-cross.outputs.cache-hit != 'true' && !(inputs['generate-gpo'] && matrix.arch == 'aarch64')
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path "$env:USERPROFILE/win-cross" | Out-Null
+          New-Item -ItemType Directory -Force -Path "${{ runner.temp }}/win-cross" | Out-Null
           Set-Location engine
           Write-Output "Setup wine"
           Invoke-WebRequest "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-1.toolchains.v3.linux64-wine.latest/artifacts/public%2Fbuild%2Fwine.tar.zst" -OutFile "wine.tar.zst"
-          tar -xf "wine.tar.zst" -C "$env:USERPROFILE/win-cross"
+          tar -xf "wine.tar.zst" -C "${{ runner.temp }}/win-cross"
           Remove-Item "wine.tar.zst" -Force
           Write-Output "Setup Visual Studio"
-          python mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2026.yaml "$env:USERPROFILE/win-cross/vs2026"
+          python mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2026.yaml "${{ runner.temp }}/win-cross/vs2026"
 
       - name: Import
-        continue-on-error: true
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
@@ -138,13 +134,12 @@ jobs:
           npm run import -- --verbose
 
       - name: Bootstrap
-        continue-on-error: true
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
         shell: bash
         run: |
           set -x
           cd engine/
-          chmod -R +x "$(echo ~)/win-cross/vs2026" || true
+          chmod -R +x "${{ runner.temp }}/win-cross/vs2026" || true
           cd ..
           export SURFER_PLATFORM="win32"
           npm run bootstrap
@@ -158,11 +153,10 @@ jobs:
             echo "export LIB=\"${CLANG_DIR}lib/windows\"" >> ../configs/common/mozconfig
           fi
           cat ../configs/common/mozconfig
-          ls ~/win-cross/wine || true
-          ls ~/win-cross/vs2026 || true
+          ls "${{ runner.temp }}/win-cross/wine" || true
+          ls "${{ runner.temp }}/win-cross/vs2026" || true
 
       - name: Setup Rust
-        continue-on-error: true
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
         shell: pwsh
         run: |
@@ -223,7 +217,6 @@ jobs:
           bash -c "mkdir -p $msysPath/.zen-keys && echo '$key' > $msysPath/.zen-keys/safebrowsing.dat"
 
       - name: Build
-        continue-on-error: true
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
@@ -240,7 +233,7 @@ jobs:
           $env:PATH = "$env:USERPROFILE\.cargo\bin;$env:PATH"
           $env:CARGO_HOME = "$env:USERPROFILE\.cargo"
           New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.cargo" | Out-Null
-          $env:WIN32_REDIST_DIR = "$env:USERPROFILE\win-cross\vs2026\VC\Redist\MSVC\14.50.35710\x64\Microsoft.VC145.CRT"
+          $env:WIN32_REDIST_DIR = "${{ runner.temp }}\win-cross\vs2026\VC\Redist\MSVC\14.50.35710\x64\Microsoft.VC145.CRT"
           bash .github/workflows/src/release-build.sh
 
       - name: Package
@@ -258,6 +251,14 @@ jobs:
           $env:MAR_CHANNEL_ID = "firefox-mozilla-central"
           npm run package
           Write-Host "Package step completed"
+          bash -c 'ls ./dist/ || true; echo "Installer check:"; ls ./dist/zen.installer.exe || echo "No installer found"'
+          if (Test-Path "./dist/zen.installer.exe") {
+            Write-Host "SUCCESS: Installer found!"
+          } else {
+            Write-Host "WARNING: Installer not at dist/zen.installer.exe"
+            Write-Host "Rename step will search all paths"
+            Get-ChildItem ./dist/ -ErrorAction SilentlyContinue
+          }
           exit 0
 
       - name: Remove API Keys
@@ -285,10 +286,37 @@ jobs:
           echo "=== engine/obj dist ==="
           ls engine/obj-x86_64-pc-windows-msvc/dist/ 2>/dev/null || true
 
+      - name: Copy installer to root
+        shell: bash
+        run: |
+          set -x
+          # Find installer anywhere
+          INSTALLER=$(find engine/obj-x86_64-pc-windows-msvc \
+            -name "*.exe" -not -name "*.pdb" \
+            2>/dev/null | head -1)
+
+          if [ -n "$INSTALLER" ]; then
+            cp "$INSTALLER" ./dist/zen.installer.exe
+            echo "Copied: $INSTALLER"
+          fi
+
+          # Also find zip
+          ZIP=$(find engine/obj-x86_64-pc-windows-msvc/dist \
+            -name "*.win64.zip" 2>/dev/null | head -1)
+
+          if [ -n "$ZIP" ]; then
+            cp "$ZIP" ./dist/ 2>/dev/null || true
+            echo "Zip: $ZIP"
+          fi
+
       - name: Rename artifacts
         if: ${{ !inputs['generate-gpo'] }}
         shell: bash
         run: |
+          echo "=== Files in dist ==="
+          ls ./dist/ 2>/dev/null || echo "dist empty"
+          echo "=== Files in root ==="
+          ls . 2>/dev/null
           set -x
           ls ./dist/ || true
           ls . || true
@@ -303,8 +331,18 @@ jobs:
             mv ./astra.win64.zip astra.win-${ARCH}.zip
           fi
 
-          if [ -f ./dist/zen.installer.exe ]; then
-            mv ./dist/zen.installer.exe ./astra.installer.exe
+          INSTALLER=$(find . \( \
+            -name "zen.installer.exe" \
+            -o -name "setup.exe" \
+            -o -name "*.installer.exe" \
+            \) 2>/dev/null | head -1)
+
+          if [ -n "$INSTALLER" ]; then
+            cp "$INSTALLER" ./astra.installer.exe
+            echo "Installer found at: $INSTALLER"
+          else
+            echo "WARNING: No installer found!"
+            find . -name "*.exe" 2>/dev/null || true
           fi
 
           if [ -f ./dist/output.mar ]; then
@@ -350,7 +388,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Upload artifact (if Twilight branch, binary)
-        if: ${{ inputs['release-branch'] == 'twilight' && !inputs['generate-gpo'] }}
+        if: ${{ !inputs['generate-gpo'] }}
         uses: actions/upload-artifact@v4
         with:
           retention-days: 5
@@ -359,7 +397,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Upload artifact (if Twilight branch, installer)
-        if: ${{ inputs['release-branch'] == 'twilight' && !inputs['generate-gpo'] }}
+        if: ${{ !inputs['generate-gpo'] }}
         uses: actions/upload-artifact@v4
         with:
           retention-days: 5

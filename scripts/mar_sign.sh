@@ -141,12 +141,14 @@ update_manifests() {
   hashValue=$(sha512sum "$1" | awk '{print $1}')
   # Update the manifest with the new values. We can use sed to do this.
   # We need to find the line that contains the URL of the mar file, and update the hashValue and size attributes in the same <patch> element.
-  old_hashValue=$(echo "$manifest_files" | awk -v mar="$mar_file" 'FNR==NR { if ($0 ~ mar) { for (i=1; i<=NF; i++) { if ($i ~ /hashValue=/) { split($i, a, "\""); print a[2] } } } }' "$manifest_files")
-  old_size=$(echo "$manifest_files" | awk -v mar="$mar_file" 'FNR==NR { if ($0 ~ mar) { for (i=1; i<=NF; i++) { if ($i ~ /size=/) { split($i, a, "\""); print a[2] } } } }' "$manifest_files")
+  old_hashValue=$(grep -oP 'hashValue="\K[^"]+' "$manifest_files")
+  old_size=$(grep -oP 'size="\K[^"]+' "$manifest_files")
   if [ -z "$old_hashValue" ] || [ -z "$old_size" ]; then
     echo "Could not find old hashValue or size in manifest. Skipping manifest update." >&2
     exit 1
   fi
+  echo "Old hashValue: $old_hashValue, Old size: $old_size"
+  echo "New hashValue: $hashValue, New size: $size"
   sed -i.bak "s/hashValue=\"$old_hashValue\"/hashValue=\"$hashValue\"/g; s/size=\"$old_size\"/size=\"$size\"/g" "$manifest_files"
   rm "$manifest_files.bak"
   echo "Manifest updated with new hashValue and size for $mar_file"

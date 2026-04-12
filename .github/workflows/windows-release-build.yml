@@ -246,7 +246,7 @@ jobs:
           npm run package
           ZEN_ZIP=$(ls ./dist/*.win64.zip ./dist/*.win64-aarch64.zip 2>/dev/null | head -1)
           if [ -n "$ZEN_ZIP" ]; then
-            mv "$ZEN_ZIP" ./zen.win64.zip
+            mv "$ZEN_ZIP" ./astra.win64.zip
           fi
           ls ./dist
           ls .
@@ -261,15 +261,15 @@ jobs:
         shell: bash
         run: |
           set -x
-          mv ./zen.win64.zip ./zen.win64-pgo-stage-1.zip
+          mv ./astra.win64.zip ./zen.win64-pgo-stage-1.zip
 
       - name: Rename artifacts
         if: ${{ !inputs['generate-gpo'] }}
         shell: bash
         run: |
-          mv ./zen.win64.zip zen.win-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}.zip
+          mv ./astra.win64.zip astra.win-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}.zip
           mv ./dist/output.mar windows${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.mar
-          mv ./dist/zen.installer.exe ./zen.installer${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.exe
+          mv ./dist/zen.installer.exe ./astra.installer${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.exe
 
       - name: Upload artifact (PGO)
         uses: actions/upload-artifact@v4
@@ -308,16 +308,16 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           retention-days: 5
-          name: zen.win-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}.zip
-          path: ./zen.win-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}.zip
+          name: astra.win-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}.zip
+          path: ./astra.win-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}.zip
 
       - name: Upload artifact (if Twilight branch, installer)
         if: ${{ inputs['release-branch'] == 'twilight' && !inputs['generate-gpo'] }}
         uses: actions/upload-artifact@v4
         with:
           retention-days: 5
-          name: zen.installer${{ matrix.arch == 'aarch64' && '-arm64' ||  '' }}.exe
-          path: ./zen.installer${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.exe
+          name: astra.installer${{ matrix.arch == 'aarch64' && '-arm64' ||  '' }}.exe
+          path: ./astra.installer${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.exe
 
       - name: Upload artifact (if Twilight branch, .mar)
         if: ${{ inputs['release-branch'] == 'twilight' && !inputs['generate-gpo'] }}

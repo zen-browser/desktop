@@ -148,15 +148,22 @@ jobs:
 
       - name: Rename artifacts
         run: |
-          mv dist/zen-*.tar.xz "zen.linux-${{ matrix.arch }}.tar.xz"
+          set -eu
+          mv dist/zen-*.tar.xz "astra.linux-${{ matrix.arch }}.tar.xz"
           mv dist/output.mar linux${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.mar
+          if [ -f "dist/zen-${{ matrix.arch }}.AppImage" ]; then
+            mv "dist/zen-${{ matrix.arch }}.AppImage" "dist/astra-${{ matrix.arch }}.AppImage"
+          fi
+          if [ -f "dist/zen-${{ matrix.arch }}.AppImage.zsync" ]; then
+            mv "dist/zen-${{ matrix.arch }}.AppImage.zsync" "dist/astra-${{ matrix.arch }}.AppImage.zsync"
+          fi
 
       - name: Upload build artifact (binary)
         uses: actions/upload-artifact@v4
         with:
           retention-days: 5
-          name: zen.linux-${{ matrix.arch }}.tar.xz
-          path: ./zen.linux-${{ matrix.arch }}.tar.xz
+          name: astra.linux-${{ matrix.arch }}.tar.xz
+          path: ./astra.linux-${{ matrix.arch }}.tar.xz
 
       - name: Upload build artifact (.mar)
         uses: actions/upload-artifact@v4

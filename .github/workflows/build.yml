@@ -384,13 +384,13 @@ jobs:
       - name: Download Linux build
         uses: actions/download-artifact@v4
         with:
-          name: zen.linux-${{ matrix.arch }}.tar.xz
+          name: astra.linux-${{ matrix.arch }}.tar.xz
 
       - name: Execute AppImage build
         run: |
           set -eux
           export ARCH=${{ matrix.arch }}
-          UPINFO="gh-releases-zsync|$GITHUB_REPOSITORY_OWNER|desktop|latest|zen-$ARCH.AppImage.zsync"
+          UPINFO="gh-releases-zsync|$GITHUB_REPOSITORY_OWNER|desktop|latest|astra-$ARCH.AppImage.zsync"
           rm build/AppDir/.DirIcon || true
           cp configs/branding/${{ inputs.update_branch }}/logo128.png build/AppDir/usr/share/icons/hicolor/128x128/apps/zen.png
           cp configs/branding/${{ inputs.update_branch }}/logo128.png build/AppDir/zen.png && ln -s zen.png build/AppDir/.DirIcon
@@ -418,24 +418,24 @@ jobs:
           ls -al
           find .
           ls -al "$APPDIR"
-          ./appimagetool-x86_64.AppImage -u "$UPINFO" "$APPDIR" zen-"$ARCH".AppImage --runtime-file ./uruntime-appimage-squashfs-lite-"$ARCH"
+          ./appimagetool-x86_64.AppImage -u "$UPINFO" "$APPDIR" astra-"$ARCH".AppImage --runtime-file ./uruntime-appimage-squashfs-lite-"$ARCH"
           mkdir dist
-          mv zen*AppImage* dist/.
+          mv astra*AppImage* dist/.
           unset ARCH
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           retention-days: 5
-          name: zen-${{ matrix.arch }}.AppImage
-          path: ./dist/zen-${{ matrix.arch }}.AppImage
+          name: astra-${{ matrix.arch }}.AppImage
+          path: ./dist/astra-${{ matrix.arch }}.AppImage
 
       - name: Upload artifact (ZSync)
         uses: actions/upload-artifact@v4
         with:
           retention-days: 5
-          name: zen-${{ matrix.arch }}.AppImage.zsync
-          path: ./dist/zen-${{ matrix.arch }}.AppImage.zsync
+          name: astra-${{ matrix.arch }}.AppImage.zsync
+          path: ./dist/astra-${{ matrix.arch }}.AppImage.zsync
 
   stop-self-hosted:
     runs-on: ubuntu-latest
@@ -544,21 +544,21 @@ jobs:
           body_path: release_notes.md
           files: |
             ./zen.source.tar.zst/*
-            ./zen.linux-x86_64.tar.xz/*
-            ./zen.linux-aarch64.tar.xz/*
-            ./zen-x86_64.AppImage/*
-            ./zen-x86_64.AppImage.zsync/*
-            ./zen-aarch64.AppImage/*
-            ./zen-aarch64.AppImage.zsync/*
-            ./zen.win-x86_64.zip/*
-            ./zen.win-arm64.zip/*
+            ./astra.linux-x86_64.tar.xz/*
+            ./astra.linux-aarch64.tar.xz/*
+            ./astra-x86_64.AppImage/*
+            ./astra-x86_64.AppImage.zsync/*
+            ./astra-aarch64.AppImage/*
+            ./astra-aarch64.AppImage.zsync/*
+            ./astra.win-x86_64.zip/*
+            ./astra.win-arm64.zip/*
             ./linux.mar/*
             ./linux-aarch64.mar/*
             ./windows.mar/*
             ./windows-arm64.mar/*
             ./macos.mar/*
-            ./zen.installer.exe/*
-            ./zen.installer-arm64.exe/*
+            ./astra.installer.exe/*
+            ./astra.installer-arm64.exe/*
             ./zen.macos-universal.dmg/*
           tag_name: "twilight-1"
           name: "Twilight build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }} at ${{ needs.build-data.outputs.build_time }})"
@@ -583,12 +583,12 @@ jobs:
           body_path: release_notes.md
           files: |
             ./zen.source.tar.zst/*
-            ./zen.linux-x86_64.tar.xz/*
-            ./zen.linux-aarch64.tar.xz/*
-            ./zen-x86_64.AppImage/*
-            ./zen-x86_64.AppImage.zsync/*
-            ./zen-aarch64.AppImage/*
-            ./zen-aarch64.AppImage.zsync/*
+            ./astra.linux-x86_64.tar.xz/*
+            ./astra.linux-aarch64.tar.xz/*
+            ./astra-x86_64.AppImage/*
+            ./astra-x86_64.AppImage.zsync/*
+            ./astra-aarch64.AppImage/*
+            ./astra-aarch64.AppImage.zsync/*
             ./.github/workflows/object/windows-x64-signed-x86_64/zen.win-x86_64.zip
             ./.github/workflows/object/windows-x64-signed-arm64/zen.win-arm64.zip
             ./linux.mar/*
@@ -676,12 +676,12 @@ jobs:
       - name: Download Linux x86_64 build
         uses: actions/download-artifact@v4
         with:
-          name: zen.linux-x86_64.tar.xz
+          name: astra.linux-x86_64.tar.xz
 
       - name: Download Linux aarch64 build
         uses: actions/download-artifact@v4
         with:
-          name: zen.linux-aarch64.tar.xz
+          name: astra.linux-aarch64.tar.xz
 
       - name: Update repository
         uses: actions/checkout@v4
@@ -703,8 +703,8 @@ jobs:
           python3 ./zen-browser/scripts/prepare-flatpak-release.py \
             --flatpak-archive archive.tar \
             --version ${{ needs.build-data.outputs.version }} \
-            --linux-archive zen.linux-x86_64.tar.xz \
-            --linux-aarch64-archive zen.linux-aarch64.tar.xz \
+            --linux-archive astra.linux-x86_64.tar.xz \
+            --linux-aarch64-archive astra.linux-aarch64.tar.xz \
             --output app.zen_browser.zen.yml \
             --template-root ./zen-browser/build/flatpak
 
@@ -717,8 +717,8 @@ jobs:
         run: |
           rm -rf zen-browser
           rm -rf archive.tar
-          rm -rf zen.linux-x86_64.tar.xz
-          rm -rf zen.linux-aarch64.tar.xz
+          rm -rf astra.linux-x86_64.tar.xz
+          rm -rf astra.linux-aarch64.tar.xz
 
       - name: Upload Flatpak manifest
         uses: actions/upload-artifact@v4

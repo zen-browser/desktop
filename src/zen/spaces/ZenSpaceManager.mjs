@@ -2475,14 +2475,14 @@ class nsZenWorkspaces {
       this._workspaceBookmarksCache?.bookmarks || {}
     ).length;
     if (!onInit || hasWorkspaceBookmarks) {
-      this.#invalidateBookmarkContainers();
+      this._invalidateBookmarkContainers();
     }
 
     // Update workspace indicator
     await this.updateWorkspaceIndicator(workspace, this.workspaceIndicator);
 
     // Fix ctrl+tab behavior. Note, we dont call it with "await" because we dont want to wait for it
-    this._fixCtrlTabBehavior();
+    this.#fixCtrlTabBehavior();
 
     // Bug: When updating from previous versions, we used to hide the tabs not used in the new workspace
     //  we now need to show them again.
@@ -2512,12 +2512,13 @@ class nsZenWorkspaces {
     );
   }
 
-  async _fixCtrlTabBehavior() {
+  // Intentionally keep it as async!
+  async #fixCtrlTabBehavior() {
     ctrlTab.uninit();
     ctrlTab.readPref();
   }
 
-  #invalidateBookmarkContainers() {
+  _invalidateBookmarkContainers() {
     for (let i = 0, len = this.bookmarkMenus.length; i < len; i++) {
       const element = document.getElementById(this.bookmarkMenus[i]);
       if (element && element._placesView) {

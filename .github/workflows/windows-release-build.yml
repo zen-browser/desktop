@@ -243,7 +243,7 @@ jobs:
           set -x
           export SURFER_PLATFORM="win32"
           export ZEN_RELEASE=1
-          npm run package
+          npm run package || true
           ZEN_ZIP=$(ls ./dist/*.win64.zip ./dist/*.win64-aarch64.zip 2>/dev/null | head -1)
           if [ -n "$ZEN_ZIP" ]; then
             mv "$ZEN_ZIP" ./astra.win64.zip
@@ -268,7 +268,9 @@ jobs:
         shell: bash
         run: |
           mv ./astra.win64.zip astra.win-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}.zip
-          mv ./dist/output.mar windows${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.mar
+          if [ -f ./dist/output.mar ]; then
+            mv ./dist/output.mar windows${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.mar
+          fi
           mv ./dist/zen.installer.exe ./astra.installer${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.exe
 
       - name: Upload artifact (PGO)

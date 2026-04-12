@@ -53,10 +53,10 @@
 }
 
 #zap-controls-container {
-  font-family: system-ui !important;
+  font-family: system-ui;
 
   display: flex;
-  pointer-events: auto !important;
+  pointer-events: auto;
   z-index: 999999;
 
   bottom: 8px;
@@ -92,7 +92,7 @@
     }
 
     border: none;
-    background: linear-gradient(0deg, #afafaf 0%, #e5e5e5 100%) !important;
+    background: linear-gradient(0deg, #afafaf 0%, #e5e5e5 100%);
 
     color: #1d1b1b;
     font-weight: bold;
@@ -148,11 +148,11 @@
 }
 
 #zen-zap-dissolve-canvas {
-  position: fixed !important;
-  width: 100% !important;
-  height: 100% !important;
-  left: 0 !important;
-  top: 0 !important;
-  pointer-events: none !important;
-  z-index: 2147483647 !important;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  z-index: 2147483647;
 }

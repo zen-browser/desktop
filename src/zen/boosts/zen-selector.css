@@ -17,11 +17,11 @@
 
 #select-component {
   width: min-content;
-  font-family: system-ui !important;
+  font-family: system-ui;
 
   height: 98px;
 
-  pointer-events: auto !important;
+  pointer-events: auto;
 
   transform-origin: top;
   overflow: hidden;

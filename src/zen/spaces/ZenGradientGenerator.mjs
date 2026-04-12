@@ -928,9 +928,9 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
             {
               left: existingDot.element.style.left
                 ? [
-                  existingDot.element.style.left,
-                  `${dotPosition.position.x}px`,
-                ]
+                    existingDot.element.style.left,
+                    `${dotPosition.position.x}px`,
+                  ]
                 : `${dotPosition.position.x}px`,
               top: existingDot.element.style.top
                 ? [existingDot.element.style.top, `${dotPosition.position.y}px`]
@@ -1269,8 +1269,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       const blendedAlpha = Math.min(
         1,
         opacity +
-        lazy.MIN_OPACITY +
-        colorToBlendOpacity * (1 - (opacity + lazy.MIN_OPACITY))
+          lazy.MIN_OPACITY +
+          colorToBlendOpacity * (1 - (opacity + lazy.MIN_OPACITY))
       );
       baseColor = this.blendColors(baseColor, colorToBlend, blendedAlpha * 100);
       if (!this.canBeTransparent) {

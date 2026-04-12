@@ -518,6 +518,9 @@ jobs:
         env:
           RELEASE_BRANCH: ${{ inputs.update_branch }}
         run: |
+          # IMPORTANT: If changing any of these names,
+          # make sure to also update the paths in the mar_sign.sh script
+
           cd updates-server
           mkdir -p updates
           cp -a ../linux_update_manifest_x86_64/.  updates/

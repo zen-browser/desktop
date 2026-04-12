@@ -105,6 +105,53 @@ cleanup_certs() {
   rm -f "$CERT_PATH_DIR/cert.pem"
 }
 
+update_manifests() {
+  mar_file=$(basename "$1")
+  if [[ "$mar_file" == linux* ]]; then
+    manifest="linux_update_manifest_x86_64"
+  elif [[ "$mar_file" == windows* && "$mar_file" == *x86_64* ]]; then
+    manifest=".github/workflows/object/windows-x64-signed-x86_64/update_manifest"
+    if [ ! -f "$manifest" ]; then
+      manifest="windows_update_manifest_x86_64"
+    fi
+  elif [[ "$mar_file" == windows* && "$mar_file" == *arm64* ]]; then
+    manifest=".github/workflows/object/windows-x64-signed-arm64/update_manifest"
+    if [ ! -f "$manifest" ]; then
+      manifest="windows_update_manifest_arm64"
+    fi
+  elif [[ "$mar_file" == macos* && "$mar_file" == *x86_64* ]]; then
+    manifest="macos_update_manifest_x86_64"
+  elif [[ "$mar_file" == macos* && "$mar_file" == *arm64* ]]; then
+    manifest="macos_update_manifest_arm64"
+  else
+    echo "Unknown MAR file name format: $mar_file. Skipping manifest update." >&2
+    exit 1
+  fi
+  # There can be any update.xml file, lets just recursively search for the one
+  manifest_files=$(find "$manifest" -type f -name "update.xml")
+  # Example manifest:
+  #  <update type="minor" displayVersion="..." appVersion="..." platformVersion="..." buildID="...">
+  #      <patch type="complete" URL="..." hashFunction="sha512" hashValue="..." size="..."/>
+  #    </update>
+  #  </updates>
+  # When signing the mar, hashValue and size will change, so we need to update the manifest with 
+  # the new values. We can get the new values by running "mar -i signed_mar_file.mar"
+  echo "Updating manifest $manifest_files with new hash and size for $mar_file"
+  size=$(wc -c < "$1" | tr -d ' ')
+  hashValue=$(sha512sum "$1" | awk '{print $1}')
+  # Update the manifest with the new values. We can use sed to do this.
+  # We need to find the line that contains the URL of the mar file, and update the hashValue and size attributes in the same <patch> element.
+  old_hashValue=$(echo "$manifest_files" | awk -v mar="$mar_file" 'FNR==NR { if ($0 ~ mar) { for (i=1; i<=NF; i++) { if ($i ~ /hashValue=/) { split($i, a, "\""); print a[2] } } } }' "$manifest_files")
+  old_size=$(echo "$manifest_files" | awk -v mar="$mar_file" 'FNR==NR { if ($0 ~ mar) { for (i=1; i<=NF; i++) { if ($i ~ /size=/) { split($i, a, "\""); print a[2] } } } }' "$manifest_files")
+  if [ -z "$old_hashValue" ] || [ -z "$old_size" ]; then
+    echo "Could not find old hashValue or size in manifest. Skipping manifest update." >&2
+    exit 1
+  fi
+  sed -i.bak "s/hashValue=\"$old_hashValue\"/hashValue=\"$hashValue\"/g; s/size=\"$old_size\"/size=\"$size\"/g" "$manifest_files"
+  rm "$manifest_files.bak"
+  echo "Manifest updated with new hashValue and size for $mar_file"
+}
+
 sign_mars() {
   if [ ! -f "$SIGNMAR" ]; then
     echo "Error: signmar not found at $SIGNMAR. Build the engine first." >&2
@@ -119,7 +166,7 @@ sign_mars() {
     linux.mar
     linux-aarch64.mar
     windows.mar
-    windows-arm64
+    windows-arm64.mar
     macos.mar
   )
   # each folder will contain the .mar files for that platform, and the signature will be written in-place
@@ -135,12 +182,15 @@ sign_mars() {
           "$SIGNMAR" -d "$NSS_CONFIG_DIR" -n "mar_sig" -v "$mar_file".signed
           mv "$mar_file".signed "$mar_file"
           echo "Successfully signed $mar_file"
+          update_manifests "$mar_file"
         else
           echo "No .mar files found in $folder, skipping."
+          exit 1
         fi
       done
     else
       echo "Directory $folder not found, skipping."
+      exit 1
     fi
   done
 

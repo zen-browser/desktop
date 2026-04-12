@@ -461,9 +461,12 @@ ${cssSelector} {
     const actor =
       linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
     const zapButton = this.doc.getElementById("zen-boost-zap");
+    
     const zapEnabled = await actor.sendQuery("ZenBoost:ZapModeEnabled");
+    // Checks if there are any zaps
+    const zapAny = await actor.sendQuery("ZenBoost:ZapModeAny");
 
-    zapButton.setAttribute("enabled", zapEnabled ? "true" : "false");
+    zapButton.setAttribute("enabled", (zapEnabled || zapAny) ? "true" : "false");
   }
 
   async onUpdatePickerButtonVisual() {
@@ -1295,6 +1298,7 @@ ${cssSelector} {
     this.updateDot();
     this.updateCircleRadius();
     this.onUpdateZapValue();
+    this.onUpdateZapButtonVisual();
   }
 
   /**

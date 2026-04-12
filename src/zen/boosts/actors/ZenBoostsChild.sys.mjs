@@ -262,6 +262,9 @@ export class ZenBoostsChild extends JSWindowActorChild {
         break;
       case "ZenBoost:ZapModeEnabled":
         return this.#currentState === ZenBoostsChild.STATES.ZAP;
+      case "ZenBoost:ZapModeAny":
+        const { boostData } = (await this.getWebsiteBoost()).boostEntry;
+        return boostData.zapSelectors.length > 0;
       case "ZenBoost:SelectorPickerModeEnabled":
         return this.#currentState === ZenBoostsChild.STATES.PICKER;
       case "ZenBoost:OpenInspector":

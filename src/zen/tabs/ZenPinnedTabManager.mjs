@@ -604,7 +604,8 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
             }
             gBrowser.setIcon(tab, icon);
             lazy.TabStateCache.update(tab.permanentKey, {
-              image: null,
+              zenStaticIconURL: icon || undefined,
+              zenHasStaticIcon: !!icon,
             });
           },
         });

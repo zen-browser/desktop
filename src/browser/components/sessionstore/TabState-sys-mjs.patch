@@ -15,6 +15,7 @@ index eb24c3ffdd2cfb33379aca993af5171fdb91ac2c..15d3fbff397df23f112355e22ca5dba5
 +    tabData.zenIsEmpty = tab.hasAttribute("zen-empty-tab");
 +    tabData.zenStaticLabel = tab.zenStaticLabel;
 +    tabData.zenHasStaticIcon = !!tab.zenStaticIcon;
++    tabData.zenStaticIconURL = tab.zenStaticIcon || undefined;
 +    tabData.zenGlanceId = tab.getAttribute("glance-id");
 +    tabData.zenIsGlance = tab.hasAttribute("zen-glance-tab");
 +    tabData._zenPinnedInitialState = tab._zenPinnedInitialState;

@@ -310,8 +310,9 @@ index 3bebeb70e1a88aefb3ef4bc2114bd85b0d8d1e51..5414adeca242f00bff98c5e41de74f33
 +    if (typeof tabData.zenStaticLabel === "string") {
 +      tab.zenStaticLabel = tabData.zenStaticLabel;
 +    }
-+    if (tabData.zenHasStaticIcon && tabData.image) {
-+      tab.zenStaticIcon = tabData.image;
++    const restoredIcon = tabData.zenStaticIconURL || (tabData.zenHasStaticIcon && tabData.image);
++    if (restoredIcon) {
++      tab.zenStaticIcon = restoredIcon;
 +    }
 +    if (tabData.zenDefaultUserContextId) {
 +      tab.setAttribute("zenDefaultUserContextId", true);

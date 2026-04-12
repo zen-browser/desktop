@@ -181,7 +181,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   get isDarkMode() {
     if (PrivateBrowsingUtils.isWindowPrivate(window)) {
-      return true;
+      return Services.prefs.getBoolPref("browser.theme.dark-private-windows", true);
     }
     switch (this.windowSchemeType) {
       case 0:

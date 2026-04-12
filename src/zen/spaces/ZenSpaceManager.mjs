@@ -142,6 +142,7 @@ class nsZenWorkspaces {
 
     if (this.isPrivateWindow) {
       document.documentElement.setAttribute("zen-private-window", "true");
+      this.#initPrivateWindowTheme();
     }
 
     this.popupOpenHandler = this._popupOpenHandler.bind(this);
@@ -3408,6 +3409,26 @@ class nsZenWorkspaces {
     if (Services.prefs.getBoolPref("zen.tabs.close-window-with-empty")) {
       document.getElementById("cmd_closeWindow").doCommand();
     }
+  }
+
+  #initPrivateWindowTheme() {
+    const kDarkPrivateWindowsPref = "browser.theme.dark-private-windows";
+    const updateTheme = () => {
+      const isDark = Services.prefs.getBoolPref(kDarkPrivateWindowsPref, true);
+      document.documentElement.setAttribute(
+        "zen-dark-private-windows",
+        isDark ? "true" : "false"
+      );
+    };
+    Services.prefs.addObserver(kDarkPrivateWindowsPref, updateTheme);
+    updateTheme();
+    window.addEventListener(
+      "unload",
+      () => {
+        Services.prefs.removeObserver(kDarkPrivateWindowsPref, updateTheme);
+      },
+      { once: true }
+    );
   }
 }
 

@@ -363,7 +363,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
           primaryGradientColor = this.#hslToRgb(
             primaryGradientColor[0] / 360,
             primaryGradientColor[1] * (1 - boostData.saturation),
-            0.1 + primaryGradientColor[2] * 0.6 * boostData.brightness
+            0.1 + primaryGradientColor[2] * 0.9 * boostData.brightness
           );
 
           const rgbColor = primaryGradientColor;
@@ -377,8 +377,8 @@ export class ZenBoostsChild extends JSWindowActorChild {
             boostData.dotAngleDeg / 360,
             /* already is [0, 1] */
             boostData.dotDistance * (1 - boostData.saturation),
-            /* lightness range from [0.1, 0.7] */
-            0.1 + boostData.dotDistance * 0.6 * boostData.brightness
+            /* lightness range from [0.1, 0.9] */
+            0.1 + boostData.dotDistance * 0.8 * boostData.brightness
           );
 
           const rgbColor = colorWheelColor;

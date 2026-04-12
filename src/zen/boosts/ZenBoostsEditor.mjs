@@ -308,6 +308,10 @@ export class nsZenBoostEditor {
       fontButton.addEventListener("click", this.onFontButtonClick.bind(this));
 
       fontButtonGroup.appendChild(fontButton);
+
+      if (i === 0) {
+        fontButtonGroup.appendChild(this.doc.createElement("br"));
+      }
     }
 
     // Add default value
@@ -427,6 +431,7 @@ export class nsZenBoostEditor {
     const actor =
       linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
     actor.sendQuery("ZenBoost:TogglePickerMode");
+    this.openerWindow.focus();
   }
 
   onPickerPickedCallback(cssSelector) {

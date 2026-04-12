@@ -10,6 +10,7 @@
     color-scheme: light;
   }
   appearance: none;
+  border: none;
 }
 
 .source-editor-frame {
@@ -151,7 +152,6 @@ body {
 #zen-boost-head-wrapper {
   -moz-window-dragging: drag; /* Allow dragging the window with the custom titlebar */
 
-  margin-bottom: -10px;
   height: 40px;
   min-height: 40px;
   max-height: 40px;
@@ -231,7 +231,6 @@ body {
 #zen-boost-filter-wrapper {
   padding: 20px;
   gap: 14px;
-  margin-top: 10px;
   padding-top: 10px;
 
   background-color: #fcfcfe;

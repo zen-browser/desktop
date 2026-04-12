@@ -6,7 +6,7 @@
 
 #zen-boost-advanced-color-options-panel {
   color-scheme: light;
-  -zen-window-transform-origin: 50% 0%;
+  --panel-padding: 15px;
 
   & p {
     color: #3a3a3b;

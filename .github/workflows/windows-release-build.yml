@@ -38,6 +38,7 @@ jobs:
     runs-on: windows-latest
     env:
       SCCACHE_GHA_ENABLED: ${{ inputs['use-sccache'] && 'true' || 'false' }}
+      SCCACHE_IDLE_TIMEOUT: "0"
       CARGO_TERM_COLOR: always
       RUSTC_WRAPPER: ${{ inputs['use-sccache'] && 'sccache' || '' }}
       CARGO_INCREMENTAL: 0

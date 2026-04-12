@@ -926,9 +926,9 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
             {
               left: existingDot.element.style.left
                 ? [
-                    existingDot.element.style.left,
-                    `${dotPosition.position.x}px`,
-                  ]
+                  existingDot.element.style.left,
+                  `${dotPosition.position.x}px`,
+                ]
                 : `${dotPosition.position.x}px`,
               top: existingDot.element.style.top
                 ? [existingDot.element.style.top, `${dotPosition.position.y}px`]
@@ -1267,8 +1267,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       const blendedAlpha = Math.min(
         1,
         opacity +
-          lazy.MIN_OPACITY +
-          colorToBlendOpacity * (1 - (opacity + lazy.MIN_OPACITY))
+        lazy.MIN_OPACITY +
+        colorToBlendOpacity * (1 - (opacity + lazy.MIN_OPACITY))
       );
       baseColor = this.blendColors(baseColor, colorToBlend, blendedAlpha * 100);
       if (!this.canBeTransparent) {
@@ -1387,8 +1387,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   }
 
   shouldBeDarkMode(accentColor) {
-    if (PrivateBrowsingUtils.isWindowPrivate(window) && !Services.prefs.getBoolPref("browser.theme.dark-private-windows", true)) {
-      return false;
+    if (PrivateBrowsingUtils.isWindowPrivate(window)) {
+      if (Services.prefs.getBoolPref("browser.theme.dark-private-windows", true)) {
+        return true;
+      }
     }
     if (Services.prefs.getBoolPref("zen.theme.use-system-colors")) {
       return this.isDarkMode;

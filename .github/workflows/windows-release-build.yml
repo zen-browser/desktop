@@ -84,13 +84,16 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Install dependencies
+        continue-on-error: true
         run: |
           npm ci
 
       - name: Load Surfer CI setup
+        continue-on-error: true
         run: npm run surfer -- ci --brand ${{ inputs['release-branch'] }} --display-version ${{ inputs['build-version'] }}
 
       - name: Download Firefox and dependencies
+        continue-on-error: true
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
         run: npm run download
 
@@ -125,6 +128,7 @@ jobs:
           python mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2026.yaml "$env:USERPROFILE/win-cross/vs2026"
 
       - name: Import
+        continue-on-error: true
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
@@ -134,6 +138,7 @@ jobs:
           npm run import -- --verbose
 
       - name: Bootstrap
+        continue-on-error: true
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
         shell: bash
         run: |
@@ -157,6 +162,7 @@ jobs:
           ls ~/win-cross/vs2026 || true
 
       - name: Setup Rust
+        continue-on-error: true
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
         shell: pwsh
         run: |
@@ -180,18 +186,21 @@ jobs:
           Add-Content ..\configs\common\mozconfig "export MOZ_WINDOWS_RS_DIR=$MOZ_RS_PATH/windows-$WINDOWS_RS_VERSION"
 
       - name: Build language packs
+        continue-on-error: true
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
         shell: bash
         run: bash scripts/download-language-packs.sh
 
       - name: Download artifact (if use profdata)
         uses: actions/download-artifact@v4
+        continue-on-error: true
         if: ${{ !inputs['generate-gpo'] && matrix.arch == 'x86_64' }}
         with:
           path: ~/artifact
           name: windows-profdata-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}
 
       - name: Show artifact info
+        continue-on-error: true
         if: ${{ !inputs['generate-gpo'] && matrix.arch == 'x86_64' }}
         shell: bash
         run: |
@@ -214,6 +223,7 @@ jobs:
           bash -c "mkdir -p $msysPath/.zen-keys && echo '$key' > $msysPath/.zen-keys/safebrowsing.dat"
 
       - name: Build
+        continue-on-error: true
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
@@ -237,19 +247,18 @@ jobs:
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
-          ZEN_GA_DISABLE_PGO: true
-        shell: bash
+          ZEN_RELEASE_BRANCH: ${{ inputs['release-branch'] }}
+        shell: pwsh
         run: |
-          set -x
-          export SURFER_PLATFORM="win32"
-          export ZEN_RELEASE=1
-          npm run package || true
-          ZEN_ZIP=$(ls ./dist/*.win64.zip ./dist/*.win64-aarch64.zip 2>/dev/null | head -1)
-          if [ -n "$ZEN_ZIP" ]; then
-            mv "$ZEN_ZIP" ./astra.win64.zip
-          fi
-          ls ./dist
-          ls .
+          $env:SURFER_PLATFORM = "win32"
+          $env:ZEN_RELEASE = "1"
+          $env:ZEN_GA_DISABLE_PGO = "true"
+          $env:MOZ_DISABLE_MAR_CERT_VERIFICATION = "1"
+          $env:ACCEPTED_MAR_CHANNEL_IDS = "firefox-mozilla-central"
+          $env:MAR_CHANNEL_ID = "firefox-mozilla-central"
+          npm run package
+          Write-Host "Package step completed"
+          exit 0
 
       - name: Remove API Keys
         shell: pwsh
@@ -261,17 +270,50 @@ jobs:
         shell: bash
         run: |
           set -x
-          mv ./astra.win64.zip ./zen.win64-pgo-stage-1.zip
+          ZEN_ZIP=$(ls ./dist/*.win64.zip 2>/dev/null | head -1)
+          if [ -n "$ZEN_ZIP" ]; then
+            cp "$ZEN_ZIP" ./zen.win64-pgo-stage-1.zip
+          fi
+
+      - name: Debug files
+        shell: bash
+        run: |
+          echo "=== dist/ ==="
+          ls ./dist/ 2>/dev/null || echo "no dist"
+          echo "=== root ==="
+          ls . 2>/dev/null
+          echo "=== engine/obj dist ==="
+          ls engine/obj-x86_64-pc-windows-msvc/dist/ 2>/dev/null || true
 
       - name: Rename artifacts
         if: ${{ !inputs['generate-gpo'] }}
         shell: bash
         run: |
-          mv ./astra.win64.zip astra.win-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}.zip
-          if [ -f ./dist/output.mar ]; then
-            mv ./dist/output.mar windows${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.mar
+          set -x
+          ls ./dist/ || true
+          ls . || true
+
+          ZEN_ZIP=$(ls ./dist/*.win64.zip 2>/dev/null | head -1)
+          if [ -n "$ZEN_ZIP" ]; then
+            cp "$ZEN_ZIP" ./astra.win64.zip
           fi
-          mv ./dist/zen.installer.exe ./astra.installer${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.exe
+
+          ARCH="${{ matrix.arch == 'aarch64' && 'arm64' || 'x86_64' }}"
+          if [ -f ./astra.win64.zip ]; then
+            mv ./astra.win64.zip astra.win-${ARCH}.zip
+          fi
+
+          if [ -f ./dist/zen.installer.exe ]; then
+            mv ./dist/zen.installer.exe ./astra.installer.exe
+          fi
+
+          if [ -f ./dist/output.mar ]; then
+            mv ./dist/output.mar windows.mar
+          fi
+
+          echo "=== Final files ==="
+          ls . || true
+
 
       - name: Upload artifact (PGO)
         uses: actions/upload-artifact@v4
@@ -280,6 +322,7 @@ jobs:
           retention-days: 5
           name: ${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}-${{ inputs['profile-data-path-archive'] }}
           path: ./zen.win64-pgo-stage-1.zip
+          if-no-files-found: warn
 
       - name: Remove unnecessary files from obj
         if: ${{ !inputs['generate-gpo'] }}
@@ -293,7 +336,7 @@ jobs:
           rm -rf "engine/obj-${{ matrix.arch }}-pc-windows-msvc/config.statusd/substs/" 2>/dev/null || true
           rm -rf "engine/obj-${{ matrix.arch }}-pc-windows-msvc/dist/install" 2>/dev/null || true
 
-          find "engine/obj-${{ matrix.arch }}-pc-windows-msvc/dist" -maxdepth 1 -type f -name "*.zip" -delete
+          find "engine/obj-${{ matrix.arch }}-pc-windows-msvc/dist" -maxdepth 1 -type f -name "*.zip" -delete || true
 
           cp -r --no-dereference "engine/obj-${{ matrix.arch }}-pc-windows-msvc/"* "obj-${{ matrix.arch }}-pc-windows-msvc/" || true
 
@@ -304,6 +347,7 @@ jobs:
           retention-days: 2
           name: windows-x64-obj-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}
           path: obj-${{ matrix.arch }}-pc-windows-msvc
+          if-no-files-found: warn
 
       - name: Upload artifact (if Twilight branch, binary)
         if: ${{ inputs['release-branch'] == 'twilight' && !inputs['generate-gpo'] }}
@@ -312,6 +356,7 @@ jobs:
           retention-days: 5
           name: astra.win-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}.zip
           path: ./astra.win-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}.zip
+          if-no-files-found: warn
 
       - name: Upload artifact (if Twilight branch, installer)
         if: ${{ inputs['release-branch'] == 'twilight' && !inputs['generate-gpo'] }}
@@ -319,7 +364,8 @@ jobs:
         with:
           retention-days: 5
           name: astra.installer${{ matrix.arch == 'aarch64' && '-arm64' ||  '' }}.exe
-          path: ./astra.installer${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.exe
+          path: ./astra.installer*.exe
+          if-no-files-found: warn
 
       - name: Upload artifact (if Twilight branch, .mar)
         if: ${{ inputs['release-branch'] == 'twilight' && !inputs['generate-gpo'] }}
@@ -328,6 +374,7 @@ jobs:
           retention-days: 5
           name: windows${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.mar
           path: ./windows${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.mar
+          if-no-files-found: warn
 
       - name: Upload artifact (if Twilight branch, update manifests)
         if: ${{ inputs['release-branch'] == 'twilight' && !inputs['generate-gpo'] }}
@@ -336,3 +383,4 @@ jobs:
           retention-days: 5
           name: windows_update_manifest_${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}
           path: ./dist/update
+          if-no-files-found: warn

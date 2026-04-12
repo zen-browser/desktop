@@ -534,11 +534,11 @@ body {
 }
 
 .zen-boost-font-button-active {
-  background-color: #5b5b5c22 !important;
+  background-color: #5454572f !important;
 }
 
 .zen-boost-font-button-active:hover {
-  background-color: #5b5b5c32 !important;
+  background-color: #5b5b5c28 !important;
 }
 
 @property --mod-button-c1 {

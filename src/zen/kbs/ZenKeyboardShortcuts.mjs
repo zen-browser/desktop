@@ -1214,11 +1214,11 @@ class nsZenKeyboardShortcutsVersioner {
 
     if (version < 18) {
       // Migrate from version 17 to 18.
-      // Add shortcut to open India services panel: Default Ctrl+Alt+I
+      // Add shortcut to open India services panel: Default Ctrl+Alt+Y
       data.push(
         new KeyShortcut(
           "zen-open-india-services",
-          "I",
+          "Y",
           "",
           ZEN_OTHER_SHORTCUTS_GROUP,
           nsKeyShortcutModifiers.fromObject({ accel: true, alt: true }),

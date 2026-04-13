@@ -1,1 +1,6 @@
-<svg width="320" height="130" xmlns="http://www.w3.org/2000/svg"><rect width="300" height="100" x="10" y="10" style="fill:rgb(0,0,255);stroke-width:3;stroke:red" />Sorry, your browser does not support inline SVG.</svg> 
+<svg width="320" height="130" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="100" x="10" y="10" fill="#ffffff" stroke="#0a0a0a" stroke-width="2"/>
+  <rect width="300" height="33.33" x="10" y="10" fill="#ff9933"/>
+  <rect width="300" height="33.33" x="10" y="76.67" fill="#138808"/>
+  <text x="160" y="66" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#000000">Astra Browser</text>
+</svg>

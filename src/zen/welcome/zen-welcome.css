@@ -56,12 +56,17 @@
   }
 
   #zen-welcome-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
+    color: #1a1a1a;
     font-size: 5rem;
     line-height: 1.1;
     max-width: 50%;
     font-weight: 500;
-    white-space: nowrap;
+    margin-inline: auto;
+    white-space: normal;
 
     & > span {
       display: block;
@@ -135,6 +140,7 @@
 
   #zen-welcome-page-sidebar-content {
     & h1 {
+      color: #1a1a1a;
       font-size: xx-large;
       font-weight: 600;
       margin-bottom: 1rem;
@@ -142,7 +148,7 @@
 
     & p {
       margin: 0 0 1.1rem 0;
-      color: light-dark(rgba(0, 0, 0, 0.6), rgba(255, 255, 255, 0.6));
+      color: #333333;
     }
 
     & > * {

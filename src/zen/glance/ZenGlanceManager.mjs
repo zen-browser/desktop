@@ -171,19 +171,20 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   /**
    * Create a new browser element for a glance
    *
-   * @param {string} url - The URL to load
+   * @param {object} data - Glance data including URL and dimensions
    * @param {Tab} currentTab - The current tab
-   * @param {Tab} existingTab - Optional existing tab to reuse
+   * @param {Tab|null} existingTab - Optional existing tab to reuse
    * @returns {Browser} The created browser element
    */
-  #createBrowserElement(url, currentTab, existingTab = null) {
-    const newTabOptions = this.#createTabOptions(currentTab);
+  #createBrowserElement(data, currentTab, existingTab = null) {
+    const url = data.url;
+    const newTabOptions = this.#createTabOptions(currentTab, data);
     const newUUID = gZenUIManager.generateUuidv4();
 
     currentTab._selected = true;
     const newTab =
       existingTab ??
-      gBrowser.addTrustedTab(Services.io.newURI(url).spec, newTabOptions);
+      gBrowser.addTab(Services.io.newURI(url).spec, newTabOptions);
 
     this.#configureNewTab(newTab, currentTab, newUUID);
     this.#registerGlance(newTab, currentTab, newUUID);
@@ -196,14 +197,18 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * Create tab options for a new glance tab
    *
    * @param {Tab} currentTab - The current tab
+   * @param {object} data - Glance data for the new tab
    * @returns {object} Tab options
    */
-  #createTabOptions(currentTab) {
+  #createTabOptions(currentTab, data) {
     return {
       userContextId: currentTab.getAttribute("usercontextid") || "",
       skipBackgroundNotify: true,
       insertTab: true,
       skipLoad: false,
+      skipAnimation: true,
+      ownerTab: currentTab,
+      triggeringPrincipal: data.triggeringPrincipal,
     };
   }
 
@@ -364,7 +369,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     this.#setAnimationState(true);
     const currentTab = ownerTab ?? gBrowser.selectedTab;
     const browserElement = this.#createBrowserElement(
-      data.url,
+      data,
       currentTab,
       existingTab
     );
@@ -1704,6 +1709,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       clientY: top,
       width: rect.width,
       height: rect.height,
+      triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
     };
   }
 
@@ -1883,6 +1889,8 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
         ...clickPosition,
         width: 0,
         height: 0,
+        triggeringPrincipal:
+          Services.scriptSecurityManager.getSystemPrincipal(),
       },
       currentTab,
       parentTab

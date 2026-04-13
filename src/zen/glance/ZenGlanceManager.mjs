@@ -995,6 +995,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     const ctx = canvas.getContext("2d");
     ctx.drawImage(imageBitmap, 0, 0);
     const blob = await canvas.convertToBlob({ type: "image/png" });
+    imageBitmap.close();
     return URL.createObjectURL(blob);
   }
 

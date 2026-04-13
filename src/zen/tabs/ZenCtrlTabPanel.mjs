@@ -152,7 +152,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
   /**
    * Opens tab switcher panel with thumbnail previews.
-   * Captures visible thumbnails before showing panel, then remaining thumbnails in background.
    *
    * @param {boolean} shiftKey - Navigate backward (true) or forward (false).
    * @returns {Promise<void>} Resolves when panel is displayed.
@@ -206,7 +205,11 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     );
     const thumbnailHeight = Math.round(thumbnailWidth / tabBoxAspectRatio);
 
-    await this.#cacheThumbnailsForVisible(thumbnailWidth, thumbnailHeight);
+    await Promise.all(
+      this.#tabList.map(tab =>
+        this.#captureThumbnail(tab, thumbnailWidth, thumbnailHeight)
+      )
+    );
 
     if (!this.#isOpen) {
       return;
@@ -252,10 +255,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       x: centerX,
       y: centerY,
     });
-
-    this.#tabList.forEach(tab =>
-      this.#captureThumbnail(tab, thumbnailWidth, thumbnailHeight)
-    );
   }
 
   close(switchTab = true) {
@@ -282,27 +281,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     this.#tabList = [];
     this.#actualVisibleCards = nsZenCtrlTabPanel.MAX_VISIBLE_CARDS;
     this.panel.hidePopup();
-  }
-
-  /**
-   * Captures screenshots only for the tabs that are initially visible.
-   *
-   * @param {number} thumbnailWidth
-   * @param {number} thumbnailHeight
-   * @returns {Promise<void>} Resolves when all visible thumbnails are captured.
-   */
-  async #cacheThumbnailsForVisible(thumbnailWidth, thumbnailHeight) {
-    const pageStartIndex = this.#getPageStartIndex(this.#currentIndex);
-    const endIndex = Math.min(
-      this.#tabList.length,
-      pageStartIndex + this.#actualVisibleCards
-    );
-    const tabsToCache = this.#tabList.slice(pageStartIndex, endIndex);
-    await Promise.all(
-      tabsToCache.map(tab =>
-        this.#captureThumbnail(tab, thumbnailWidth, thumbnailHeight)
-      )
-    );
   }
 
   /**
@@ -344,23 +322,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       }
 
       this.#thumbnailCache.set(tabId, dataUrl);
-
-      if (this.#isOpen) {
-        const tabIndex = this.#tabList.indexOf(tab);
-        const card =
-          tabIndex !== -1 ? this.tabsContainer?.children[tabIndex] : null;
-        const thumbnailContainer = card?.querySelector(
-          ".zen-ctrl-tab-panel-thumbnail"
-        );
-
-        if (thumbnailContainer) {
-          card.classList.remove("zen-ctrl-tab-panel-no-thumbnail");
-
-          const img = document.createXULElement("image");
-          img.setAttribute("src", dataUrl);
-          thumbnailContainer.replaceChildren(img);
-        }
-      }
     } catch (e) {
       console.warn("ZenCtrlTabPanel: Failed to cache thumbnail:", e);
     }

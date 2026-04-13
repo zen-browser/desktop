@@ -24,7 +24,7 @@ index c64980810570fcea84e33fdc2d66ac42a79f4e46..aa629ebb38a9aa74048fe3fc759f716f
            </vbox>
            <description class="text-blurb" id="communityDesc" data-l10n-id="community-2">
 -            <label is="text-link" href="https://www.mozilla.org/?utm_source=firefox-browser&#38;utm_medium=firefox-desktop&#38;utm_campaign=about-dialog" data-l10n-name="community-mozillaLink"/>
-+            <label is="text-link" href="https://github.com/zen-browser/desktop" data-l10n-name="community-mozillaLink"/>
++            <label is="text-link" href="https://github.com/Hrishikeshmind/astradesktop" data-l10n-name="community-mozillaLink"/>
              <label is="text-link" useoriginprincipal="true" href="about:credits" data-l10n-name="community-creditsLink"/>
            </description>
 -          <description class="text-blurb" id="contributeDesc" data-l10n-id="helpus">

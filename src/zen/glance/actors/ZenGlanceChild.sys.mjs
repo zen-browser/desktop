@@ -42,18 +42,13 @@ export class ZenGlanceChild extends JSWindowActorChild {
   }
 
   #openGlance(href, principal) {
-    let url = href;
-    // Add domain to relative URLs
-    if (!url.match(/^(?:[a-z]+:)?\/\//i)) {
-      url = this.contentWindow.location.origin + url;
-    }
     this.sendAsyncMessage("ZenGlance:OpenGlance", {
-      url,
+      url: href,
       triggeringPrincipal: principal,
     });
   }
 
-  #sendClickDataToParent(node) {
+  #sendClickDataToParent(node, originalTarget) {
     if (!node) {
       return;
     }
@@ -61,6 +56,13 @@ export class ZenGlanceChild extends JSWindowActorChild {
     // is a parent of the original target, use the anchor element,
     // otherwise use the original target.
     let rect = node.getBoundingClientRect();
+    const originalTargetRect = originalTarget.getBoundingClientRect();
+    if (
+      originalTargetRect.width * originalTargetRect.height >
+      rect.width * rect.height
+    ) {
+      rect = originalTargetRect;
+    }
     this.sendAsyncMessage("ZenGlance:RecordLinkClickData", {
       clientX: rect.left,
       clientY: rect.top,
@@ -113,7 +115,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
     // when clicking on a link with a different domain where glance would open.
     // The problem is that at that stage we don't know the rect or even what
     // element has been clicked, so we send the data here.
-    this.#sendClickDataToParent(node);
+    this.#sendClickDataToParent(node, event.target);
   }
 
   on_click(event) {

@@ -78,7 +78,11 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     menuitem.setAttribute("data-l10n-id", "zen-open-link-in-glance");
 
     menuitem.addEventListener("command", () =>
-      this.openGlance({ url: gContextMenu.linkURL })
+      this.openGlance({
+        url: gContextMenu.linkURL,
+        triggeringPrincipal:
+          Services.scriptSecurityManager.getSystemPrincipal(),
+      })
     );
 
     document
@@ -520,8 +524,8 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   #executeGlanceAnimation(data, browserElement, resolve) {
     const imageDataElement = this.#handleElementPreview(data);
 
-    // Create curved animation sequence (also sets transformOrigin on the
-    // wrapper so scale() anchors correctly).
+    // Create the curved animation sequence. The transform origin is handled
+    // separately (for example via CSS on the wrapper).
     const arcSequence = this.#createGlanceArcSequence(
       data,
       "opening",
@@ -1523,6 +1527,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     this.openGlance(
       {
         url: undefined,
+        // No need for triggeringPrincipal here
       },
       tab,
       tab.owner

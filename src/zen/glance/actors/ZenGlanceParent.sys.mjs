@@ -22,13 +22,15 @@ export class ZenGlanceParent extends JSWindowActorParent {
         break;
       }
       case "ZenGlance:CloseGlance": {
-        const params = {
+        // Explicitly allowlist fields from content; never forward
+        // skipPermitUnload or other privileged flags.
+        const { noAnimation, setNewID, hasFocused } = message.data ?? {};
+        this.browsingContext.topChromeWindow.gZenGlanceManager.closeGlance({
           onTabClose: true,
-          ...message.data,
-        };
-        this.browsingContext.topChromeWindow.gZenGlanceManager.closeGlance(
-          params
-        );
+          noAnimation: !!noAnimation,
+          setNewID: typeof setNewID === "string" ? setNewID : null,
+          hasFocused: !!hasFocused,
+        });
         break;
       }
       case "ZenGlance:RecordLinkClickData": {

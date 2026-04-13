@@ -318,7 +318,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       data.width,
       data.height
     );
-    return await this.#imageBitmapToBase64(
+    return await this.#imageBitmapToObjectURL(
       await window.browsingContext.currentWindowGlobal.drawSnapshot(
         rect,
         1,
@@ -785,7 +785,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
     // Batch all style/attribute writes together to avoid interleaved
     // read/write layout thrashing.
-    this.browserWrapper.style.transformOrigin = "";
     this.browserWrapper.style.height = "100%";
     this.browserWrapper.style.width = "80%";
     this.browserWrapper.removeAttribute("animate");
@@ -987,14 +986,28 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     }
   }
 
-  async #imageBitmapToBase64(imageBitmap) {
-    // Use OffscreenCanvas + blob URL to avoid blocking the main thread
-    // with synchronous base64 encoding from toDataURL().
+  async #imageBitmapToObjectURL(imageBitmap) {
+    // OffscreenCanvas + convertToBlob avoids the synchronous PNG re-encode
+    // and base64 string copy that toDataURL performs on the main thread.
+    // Callers must release the URL via #deleteGlance when the glance entry
+    // is removed so the blob can be freed.
     const canvas = new OffscreenCanvas(imageBitmap.width, imageBitmap.height);
     const ctx = canvas.getContext("2d");
     ctx.drawImage(imageBitmap, 0, 0);
     const blob = await canvas.convertToBlob({ type: "image/png" });
     return URL.createObjectURL(blob);
+  }
+
+  #deleteGlance(glanceID) {
+    const entry = this.#glances.get(glanceID);
+    if (!entry) {
+      return;
+    }
+    this.#glances.delete(glanceID);
+    const url = entry.elementData ?? entry.elementImageData;
+    if (typeof url === "string") {
+      URL.revokeObjectURL(url);
+    }
   }
 
   /**
@@ -1196,7 +1209,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    */
   #resetGlanceState(setNewID) {
     this.#currentParentTab.removeAttribute("glance-id");
-    this.#glances.delete(this.#currentGlanceID);
+    this.#deleteGlance(this.#currentGlanceID);
     this.#currentGlanceID = setNewID;
     this.#duringOpening = false;
   }
@@ -1545,7 +1558,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     this.animatingFullOpen = false;
     const glanceID = this.#currentGlanceID;
     this.closeGlance({ noAnimation: true, skipPermitUnload: true });
-    this.#glances.delete(glanceID);
+    this.#deleteGlance(glanceID);
   }
 
   /**

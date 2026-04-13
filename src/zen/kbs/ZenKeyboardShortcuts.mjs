@@ -832,7 +832,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 18;
+  static LATEST_KBS_VERSION = 19;
 
   constructor() {}
 
@@ -1226,6 +1226,19 @@ class nsZenKeyboardShortcutsVersioner {
           "zen-open-india-services-shortcut"
         )
       );
+    }
+    if (version < 19) {
+      // Update India services shortcut to Ctrl+Alt+Y
+      const indiaShortcut = data.find(s => s.getID?.() === "zen-open-india-services");
+      if (indiaShortcut) {
+        indiaShortcut.setNewBinding("Y");
+        indiaShortcut.setModifiers(
+          nsKeyShortcutModifiers.fromObject({
+            accel: true,
+            alt: true,
+          })
+        );
+      }
     }
 
     return data;

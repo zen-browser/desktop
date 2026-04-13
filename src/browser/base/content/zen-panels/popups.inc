@@ -113,6 +113,22 @@
         class="toolbarbutton-1 zen-india-services-item"
         label="EPFO"
         oncommand="openTrustedLinkIn('https://www.epfindia.gov.in','tab');" />
+      <toolbarbutton
+        class="toolbarbutton-1 zen-india-services-item"
+        label="GST Portal — Tax filing"
+        oncommand="openTrustedLinkIn('https://www.gst.gov.in','tab');" />
+      <toolbarbutton
+        class="toolbarbutton-1 zen-india-services-item"
+        label="NPCI — Payments"
+        oncommand="openTrustedLinkIn('https://www.npci.org.in','tab');" />
+      <toolbarbutton
+        class="toolbarbutton-1 zen-india-services-item"
+        label="Scholarships — NSP"
+        oncommand="openTrustedLinkIn('https://scholarships.gov.in','tab');" />
+      <toolbarbutton
+        class="toolbarbutton-1 zen-india-services-item"
+        label="PM-KISAN — Farmers"
+        oncommand="openTrustedLinkIn('https://pmkisan.gov.in','tab');" />
     </vbox>
   </vbox>
 </panel>

@@ -78,6 +78,26 @@ const globalActionsTemplate = [
     icon: "chrome://browser/skin/zen-icons/people.svg",
   },
   {
+    label: "Open GST Portal",
+    command: window => window.openTrustedLinkIn("https://www.gst.gov.in", "tab"),
+    icon: "chrome://browser/skin/zen-icons/stats-chart.svg",
+  },
+  {
+    label: "Open NPCI",
+    command: window => window.openTrustedLinkIn("https://www.npci.org.in", "tab"),
+    icon: "chrome://browser/skin/zen-icons/wallet.svg",
+  },
+  {
+    label: "Open Scholarships NSP",
+    command: window => window.openTrustedLinkIn("https://scholarships.gov.in", "tab"),
+    icon: "chrome://browser/skin/zen-icons/navigate.svg",
+  },
+  {
+    label: "Open PM-KISAN",
+    command: window => window.openTrustedLinkIn("https://pmkisan.gov.in", "tab"),
+    icon: "chrome://browser/skin/zen-icons/people.svg",
+  },
+  {
     label: "New Split View",
     command: "cmd_zenNewEmptySplit",
     icon: "chrome://browser/skin/zen-icons/split.svg",

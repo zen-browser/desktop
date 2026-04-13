@@ -25,6 +25,7 @@ struct nsZenAccentOklab {
 class nsZenBoostsBackend final {
  public:
   explicit nsZenBoostsBackend() = default;
+  ~nsZenBoostsBackend() = default;
 
   /**
    * Indicates whether the current frame being rendered is for anonymous
@@ -64,8 +65,6 @@ class nsZenBoostsBackend final {
   }
 
  private:
-  ~nsZenBoostsBackend() = default;
-
   /**
    * The presshell of the current document being rendered.
    */

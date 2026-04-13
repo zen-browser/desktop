@@ -16,6 +16,16 @@ export class ZenBoostsParent extends JSWindowActorParent {
     "zen-boosts-disable-picker",
   ];
 
+  // Topics the content child is allowed to forward to the observer service.
+  // Anything outside this set is rejected to prevent content-triggered
+  // notifications on unrelated chrome observers.
+  static ALLOWED_NOTIFY_TOPICS = new Set([
+    "zap-state-update",
+    "zap-list-update",
+    "selector-picker-state-update",
+    "selector-picker-picked",
+  ]);
+
   /**
    * Creates a new ZenBoostsParent actor instance and sets up an observer
    * for boost update notifications.
@@ -91,11 +101,14 @@ export class ZenBoostsParent extends JSWindowActorParent {
         break;
       }
       case "ZenBoost:Notify": {
-        Services.obs.notifyObservers(
-          null,
-          message.data.topic,
-          message.data.msg
-        );
+        const { topic, msg } = message.data ?? {};
+        if (!ZenBoostsParent.ALLOWED_NOTIFY_TOPICS.has(topic)) {
+          console.warn(
+            `[ZenBoostsParent]: Rejected notify for disallowed topic: ${topic}`
+          );
+          break;
+        }
+        Services.obs.notifyObservers(null, topic, msg);
         break;
       }
       case "ZenBoost:ZapSelector": {

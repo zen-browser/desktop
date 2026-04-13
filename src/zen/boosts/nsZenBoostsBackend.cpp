@@ -7,6 +7,7 @@
 #include "nsIXULRuntime.h"
 #include "nsPresContext.h"
 
+#include "mozilla/ClearOnShutdown.h"
 #include "mozilla/StaticPtr.h"
 
 #include "mozilla/ServoStyleConsts.h"
@@ -266,17 +267,19 @@ inline static void GetZenBoostsDataFromBrowsingContext(
 
 }  // namespace
 
+static mozilla::StaticAutoPtr<nsZenBoostsBackend> sZenBoostsBackend;
+
 auto nsZenBoostsBackend::GetInstance() -> nsZenBoostsBackend* {
-  static nsZenBoostsBackend* zenBoosts;
   if (!XRE_IsContentProcess()) {
     // Zen boosts are only supported in content, so if we're in the parent
     // process, just return null.
     return nullptr;
   }
-  if (!zenBoosts) {
-    zenBoosts = new nsZenBoostsBackend();
+  if (!sZenBoostsBackend) {
+    sZenBoostsBackend = new nsZenBoostsBackend();
+    mozilla::ClearOnShutdown(&sZenBoostsBackend);
   }
-  return zenBoosts;
+  return sZenBoostsBackend.get();
 }
 
 auto nsZenBoostsBackend::onPresShellEntered(mozilla::dom::Document* aDocument)
@@ -284,12 +287,8 @@ auto nsZenBoostsBackend::onPresShellEntered(mozilla::dom::Document* aDocument)
   // Note that aDocument can be null when entering anonymous content frames.
   // We explicitly do this to prevent applying boosts to anonymous content, such
   // as devtools or screenshots.
-  mozilla::dom::BrowsingContext* browsingContext =
+  mCurrentBrowsingContext =
       aDocument ? aDocument->GetBrowsingContext() : nullptr;
-  if (!browsingContext) {
-    return;
-  }
-  mCurrentBrowsingContext = browsingContext;
 }
 
 [[nodiscard]] ZEN_HOT_FUNCTION auto

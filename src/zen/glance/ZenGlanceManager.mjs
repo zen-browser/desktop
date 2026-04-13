@@ -34,7 +34,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
   // Arc animation configuration
   #ARC_CONFIG = Object.freeze({
-    ARC_STEPS: 400, // Increased for smoother bounce
+    ARC_STEPS: 80, // Browser interpolates between keyframes natively
     MAX_ARC_HEIGHT: 25,
     ARC_HEIGHT_RATIO: 0.2, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
   });
@@ -774,16 +774,16 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       imageDataElement.remove();
     }
 
+    // Batch all style/attribute writes together to avoid interleaved
+    // read/write layout thrashing.
     this.browserWrapper.style.transformOrigin = "";
-
     this.browserWrapper.style.height = "100%";
     this.browserWrapper.style.width = "80%";
-
-    gBrowser.tabContainer._invalidateCachedTabs();
-    this.overlay.style.removeProperty("overflow");
     this.browserWrapper.removeAttribute("animate");
     this.browserWrapper.setAttribute("has-finished-animation", true);
+    this.overlay.style.removeProperty("overflow");
 
+    gBrowser.tabContainer._invalidateCachedTabs();
     this.#setAnimationState(false);
     this.#currentTab.dispatchEvent(new Event("GlanceOpen", { bubbles: true }));
     resolve(this.#currentTab);
@@ -978,19 +978,14 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     }
   }
 
-  #imageBitmapToBase64(imageBitmap) {
-    // 1. Create a canvas with the same size as the ImageBitmap
-    const canvas = document.createElement("canvas");
-    canvas.width = imageBitmap.width;
-    canvas.height = imageBitmap.height;
-
-    // 2. Draw the ImageBitmap onto the canvas
+  async #imageBitmapToBase64(imageBitmap) {
+    // Use OffscreenCanvas + blob URL to avoid blocking the main thread
+    // with synchronous base64 encoding from toDataURL().
+    const canvas = new OffscreenCanvas(imageBitmap.width, imageBitmap.height);
     const ctx = canvas.getContext("2d");
     ctx.drawImage(imageBitmap, 0, 0);
-
-    // 3. Convert the canvas content to a Base64 string (PNG by default)
-    const base64String = canvas.toDataURL("image/png");
-    return base64String;
+    const blob = await canvas.convertToBlob({ type: "image/png" });
+    return URL.createObjectURL(blob);
   }
 
   /**
@@ -1046,6 +1041,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
         imageDataElement
       );
 
+      // Batch style writes before starting animation to avoid layout thrashing
       this.browserWrapper.style.width = "";
       this.browserWrapper.style.height = "";
 

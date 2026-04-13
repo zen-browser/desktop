@@ -48,3 +48,15 @@
 
 - name: zen.performance.low-bandwidth-mode.enabled
   value: false
+
+- name: zen.performance.low-bandwidth-mode.block-images
+  value: false
+
+- name: zen.performance.low-bandwidth-mode.block-autoplay
+  value: true
+
+- name: zen.performance.low-bandwidth-mode.block-fonts
+  value: true
+
+- name: zen.performance.low-bandwidth-mode.lazy-loading
+  value: true

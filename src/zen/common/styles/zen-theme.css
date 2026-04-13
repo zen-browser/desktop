@@ -368,4 +368,11 @@
     backdrop-filter: none !important;
     -moz-backdrop-filter: none !important;
   }
+
+  /* Block web fonts */
+  @media (-moz-pref("zen.performance.low-bandwidth-mode.block-fonts")) {
+    * {
+      font-family: system-ui !important;
+    }
+  }
 }

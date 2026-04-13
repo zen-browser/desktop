@@ -151,7 +151,7 @@ diff --git a/modules/libpref/init/StaticPrefList.yaml b/modules/libpref/init/Sta
  #ifdef XP_MACOSX
  
 +# If true, use native NSPopover for arrow panel popups (type="arrow") on macOS
-+# Someone like Zen browser will use this pref by default, so
++# Someone like Astra Browser will use this pref by default, so
 +# please take this into account when you change the behavior of
 +# native popover. Note: Only panels with type="arrow" will use NSPopover.
 +- name: widget.macos.native-popovers

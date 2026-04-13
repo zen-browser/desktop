@@ -1475,6 +1475,21 @@ Preferences.addAll([
     default: false,
   },
   {
+    id: "zen.performance.low-bandwidth-mode.block-autoplay",
+    type: "bool",
+    default: true,
+  },
+  {
+    id: "zen.performance.low-bandwidth-mode.block-fonts",
+    type: "bool",
+    default: true,
+  },
+  {
+    id: "zen.performance.low-bandwidth-mode.lazy-loading",
+    type: "bool",
+    default: true,
+  },
+  {
     id: "zen.privacy.preset",
     type: "string",
     default: "balanced",

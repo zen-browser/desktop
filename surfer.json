@@ -1,8 +1,8 @@
 {
   "name": "Astra Browser",
   "vendor": "Astra OSS Team",
-  "appId": "zen",
-  "binaryName": "zen",
+  "appId": "astra",
+  "binaryName": "astra",
   "version": {
     "product": "firefox",
     "version": "149.0.2",

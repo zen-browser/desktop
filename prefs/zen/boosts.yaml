@@ -7,3 +7,9 @@
 
 - name: zen.boosts.dissolve-on-zap
   value: true
+
+- name: zen.boosts.invert-channel-floor
+  value: 15
+  cpptype: uint32_t
+  mirror: once
+  type: static

@@ -308,10 +308,6 @@ export class nsZenBoostEditor {
       fontButton.addEventListener("click", this.onFontButtonClick.bind(this));
 
       fontButtonGroup.appendChild(fontButton);
-
-      if (i === 0) {
-        fontButtonGroup.appendChild(this.doc.createElement("br"));
-      }
     }
 
     // Add default value
@@ -319,6 +315,7 @@ export class nsZenBoostEditor {
     defaultOption.value = ""; // Use default font of site
     defaultOption.label = "Default";
     fontList.appendChild(defaultOption);
+    fontList.appendChild(this.doc.createElement("hr"));
 
     for (let j = 0; j < fonts.length; j++) {
       const font = fonts[j];
@@ -466,12 +463,12 @@ ${cssSelector} {
     const actor =
       linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
     const zapButton = this.doc.getElementById("zen-boost-zap");
-    
+
     const zapEnabled = await actor.sendQuery("ZenBoost:ZapModeEnabled");
     // Checks if there are any zaps
     const zapAny = await actor.sendQuery("ZenBoost:ZapModeAny");
 
-    zapButton.setAttribute("enabled", (zapEnabled || zapAny) ? "true" : "false");
+    zapButton.setAttribute("enabled", zapEnabled || zapAny ? "true" : "false");
   }
 
   async onUpdatePickerButtonVisual() {

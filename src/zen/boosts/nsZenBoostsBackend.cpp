@@ -17,7 +17,12 @@
 #include "mozilla/dom/DocumentInlines.h"
 #include "mozilla/dom/BrowsingContext.h"
 
-#define COLOR_CHANNEL_MIDPOINT 128
+#include "mozilla/StaticPrefs_zen.h"
+
+// Lower bound applied to inverted channels so that pure white doesn't invert
+// all the way to pure black, which makes inverted pages feel too dark.
+#define INVERT_CHANNEL_FLOOR() \
+  (mozilla::StaticPrefs::zen_boosts_invert_channel_floor_AtStartup())
 
 #if defined(__clang__) || defined(__GNUC__)
 #  define ZEN_HOT_FUNCTION __attribute__((hot))
@@ -30,59 +35,6 @@
 // We do this primarily to avoid having to deal with WebIDL structs and
 // serialization/deserialization between parent and content processes.
 #define NS_GET_CONTRAST(_c) NS_GET_A(_c)
-
-#define MARK_MEDIA_FEATURE_CHANGED(_pc)                                \
-  (_pc)->MediaFeatureValuesChanged(                                    \
-      {mozilla::RestyleHint::RecascadeSubtree(), NS_STYLE_HINT_VISUAL, \
-       mozilla::MediaFeatureChangeReason::PreferenceChange},           \
-      mozilla::MediaFeatureChangePropagation::All);
-
-#define TRIGGER_PRES_CONTEXT_RESTYLE() \
-  WalkPresContexts(                    \
-      [&](nsPresContext* aPc) { MARK_MEDIA_FEATURE_CHANGED(aPc); });
-
-using BrowsingContext = mozilla::dom::BrowsingContext;
-
-template <typename Callback>
-void BrowsingContext::WalkPresContexts(Callback&& aCallback) {
-  PreOrderWalk([&](BrowsingContext* aContext) {
-    if (nsIDocShell* shell = aContext->GetDocShell()) {
-      if (RefPtr pc = shell->GetPresContext()) {
-        aCallback(pc.get());
-      }
-    }
-  });
-}
-
-/**
- * @brief Called when the ZenBoostsData field is set on a browsing context.
- * Triggers a restyle if the boost data has changed.
- * @param aOldValue The previous value of the boost data.
- */
-void BrowsingContext::DidSet(FieldIndex<IDX_ZenBoostsData>,
-                             ZenBoostData aOldValue) {
-  MOZ_ASSERT(IsTop());
-  if (ZenBoostsData() == aOldValue) {
-    return;
-  }
-  PresContextAffectingFieldChanged();
-  TRIGGER_PRES_CONTEXT_RESTYLE();
-}
-
-/**
- * @brief Called when the IsZenBoostsInverted field is set on a browsing
- * context. Triggers a restyle if the value has changed.
- * @param aOldValue The previous value of the IsZenBoostsInverted flag.
- */
-void BrowsingContext::DidSet(FieldIndex<IDX_IsZenBoostsInverted>,
-                             bool aOldValue) {
-  MOZ_ASSERT(IsTop());
-  if (IsZenBoostsInverted() == aOldValue) {
-    return;
-  }
-  PresContextAffectingFieldChanged();
-  TRIGGER_PRES_CONTEXT_RESTYLE();
-}
 
 namespace zen {
 
@@ -275,7 +227,16 @@ inline static nscolor zenInvertColorChannel(nscolor aColor) {
   const auto gShifted = sum - gInv;
   const auto bShifted = sum - bInv;
 
-  return NS_RGBA(rShifted, gShifted, bShifted, a);
+  // Compress the channel range into [FLOOR, 255] so dark inversions are
+  // lifted while light inversions are left untouched. This preserves hue
+  // since all three channels are scaled by the same factor.
+  const auto channelFloor = INVERT_CHANNEL_FLOOR();
+  const uint32_t range = 255 - channelFloor;
+  const auto lift = [channelFloor, range](uint8_t c) -> uint8_t {
+    return static_cast<uint8_t>(channelFloor + (c * range) / 255);
+  };
+
+  return NS_RGBA(lift(rShifted), lift(gShifted), lift(bShifted), a);
 }
 
 /**

@@ -21,6 +21,7 @@ EXPORTS.mozilla += [
 ]
 
 SOURCES += [
+    "nsZenBCOverrides.cpp",
     "nsZenBoostsBackend.cpp",
 ]
 

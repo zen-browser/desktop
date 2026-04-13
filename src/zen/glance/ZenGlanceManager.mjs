@@ -393,7 +393,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * @returns {Promise<Tab>} Promise that resolves to the glance tab
    */
   #animateGlanceOpening(data, browserElement) {
-    this.#prepareGlanceAnimation(data, browserElement);
+    this.#prepareGlanceAnimation(data);
     // FIXME(cheffy): We *must* have the call back async (at least,
     // until a better solution is found). If we do it inside the requestAnimationFrame,
     // we see flashing and if we do it directly, the animation does not play at all.
@@ -417,15 +417,13 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * Prepare the glance for animation
    *
    * @param {object} data - Glance data
-   * @param {Browser} browserElement - The browser element
    */
-  #prepareGlanceAnimation(data, browserElement) {
+  #prepareGlanceAnimation(data) {
     this.quickOpenGlance();
     const newButtons = this.#createNewOverlayButtons();
     this.browserWrapper.appendChild(newButtons);
 
     this.#setupGlancePositioning(data);
-    this.#configureBrowserElement(browserElement);
   }
 
   /**
@@ -463,9 +461,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
     this.overlay.removeAttribute("fade-out");
     this.browserWrapper.setAttribute("animate", true);
-    this.browserWrapper.style.transform = `translate(${left - width / 2}px, ${top - height / 2}px)`;
-    this.browserWrapper.style.width = `${width}px`;
-    this.browserWrapper.style.height = `${height}px`;
 
     this.#storeOriginalPosition({ top, left, width, height });
     this.overlay.style.overflow = "visible";
@@ -511,33 +506,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Configure browser element for animation
-   *
-   * @param {Browser} browserElement - The browser element
-   */
-  #configureBrowserElement(browserElement) {
-    const rect = window.windowUtils.getBoundsWithoutFlushing(
-      this.browserWrapper.parentElement
-    );
-    const minWidth = rect.width * 0.8;
-    const minHeight = rect.height * 0.8;
-
-    browserElement.style.minWidth = `${minWidth}px`;
-    browserElement.style.minHeight = `${minHeight}px`;
-  }
-
-  /**
-   * Get the transform origin for the animation
-   *
-   * @param {object} data - Glance data with position and dimensions
-   * @returns {string} The transform origin CSS value
-   */
-  #getTransformOrigin(data) {
-    const { clientX, clientY } = data;
-    return `${clientX}px ${clientY}px`;
-  }
-
-  /**
    * Execute the main glance animation
    *
    * @param {object} data - Glance data
@@ -547,11 +515,13 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   #executeGlanceAnimation(data, browserElement, resolve) {
     const imageDataElement = this.#handleElementPreview(data);
 
-    // Create curved animation sequence
-    const arcSequence = this.#createGlanceArcSequence(data, "opening");
-    const transformOrigin = this.#getTransformOrigin(data);
-
-    this.browserWrapper.style.transformOrigin = transformOrigin;
+    // Create curved animation sequence (also sets transformOrigin on the
+    // wrapper so scale() anchors correctly).
+    const arcSequence = this.#createGlanceArcSequence(
+      data,
+      "opening",
+      imageDataElement
+    );
 
     // Only animate if there is element data, so we can apply a
     // nice fade-in effect to the content. But if it doesn't exist,
@@ -601,10 +571,41 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    *
    * @param {object} data - Glance data with position and dimensions
    * @param {string} direction - 'opening' or 'closing'
+   * @param {Element|null} imageDataElement - The image data element for preview (optional)
    * @returns {object} Animation sequence object
    */
-  #createGlanceArcSequence(data, direction) {
-    const { clientX, clientY, width, height } = data;
+  #createGlanceArcSequence(data, direction, imageDataElement = null) {
+    let { clientX, clientY, width, height } = data;
+    if (imageDataElement?.parentElement) {
+      // Since we are animating scale transforms on the wrapper, we need to
+      // adjust the width/height to match the scaled size of the element preview,
+      // so the image preview properly matches the size of the animating browser
+      // during the animation.
+      // For example:
+      // +-- wrapper --------------------------+
+      // |                                     |
+      // | +--- element preview -------------+ |
+      // | |                                 | |
+      // | +---------------------------------+ |
+      // |                                     |
+      // +-------------------------------------+
+      // We are scaling the wrapper while having only the element preview size
+      // in mind, so we need to adjust the width/height to match the size of the element preview
+      const rect = imageDataElement.getBoundingClientRect();
+      const imageRect =
+        imageDataElement.firstElementChild.getBoundingClientRect();
+      const widthRatio = rect.width / imageRect.width;
+      // Since the image hasn't loaded at this point, so the image's height is 0
+      // we need to calculate the height ratio based on the original aspect ratio of the image
+      const aspectRatio = width / height;
+      const heightRatio = rect.height / (rect.width / aspectRatio);
+      const originalWidth = width;
+      const originalHeight = height;
+      width *= widthRatio;
+      height *= heightRatio;
+      clientX -= (width - originalWidth) / 2;
+      clientY -= (height - originalHeight) / 2;
+    }
 
     // Calculate start and end positions based on direction
     let startPosition, endPosition;
@@ -643,6 +644,12 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       };
     }
 
+    // Reference size used as the scale(1, 1) baseline — this matches the
+    // wrapper's natural CSS size (80% x 100% of the tab panels) so the
+    // animation can run entirely on the compositor via transform.
+    const refWidth = tabPanelsRect.width * widthPercent;
+    const refHeight = tabPanelsRect.height;
+
     // Calculate distance and arc parameters
     const distance = this.#calculateDistance(startPosition, endPosition);
     const { arcHeight, shouldArcDownward } = this.#calculateOptimalArc(
@@ -652,9 +659,10 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     );
 
     const sequence = {
-      transform: [],
-      width: [],
-      height: [],
+      x: [],
+      y: [],
+      scaleY: [],
+      scaleX: [],
     };
 
     const steps = this.#ARC_CONFIG.ARC_STEPS;
@@ -684,6 +692,8 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       const currentHeight =
         startPosition.height +
         (endPosition.height - startPosition.height) * eased;
+      const scaleX = currentWidth / refWidth;
+      const scaleY = currentHeight / refHeight;
 
       // Calculate position on arc
       const distanceX = endPosition.x - startPosition.x;
@@ -695,11 +705,12 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
         distanceY * eased +
         arcDirection * arcHeight * (1 - (2 * eased - 1) ** 2);
 
-      sequence.transform.push(
-        `translate(${x - currentWidth / 2}px, ${y - currentHeight / 2}px)`
-      );
-      sequence.width.push(`${currentWidth}px`);
-      sequence.height.push(`${currentHeight}px`);
+      let translateX = x - currentWidth / 2;
+      let translateY = y - currentHeight / 2;
+      sequence.x.push(translateX);
+      sequence.y.push(translateY);
+      sequence.scaleX.push(scaleX);
+      sequence.scaleY.push(scaleY);
     }
 
     return sequence;
@@ -764,9 +775,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     }
 
     this.browserWrapper.style.transformOrigin = "";
-
-    browserElement.style.minWidth = "";
-    browserElement.style.minHeight = "";
 
     this.browserWrapper.style.height = "100%";
     this.browserWrapper.style.width = "80%";
@@ -1027,12 +1035,19 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
         this.#currentGlanceID
       ).elementImageData;
 
-      this.#addElementPreview(elementImageData);
+      const imageDataElement = this.#addElementPreview(elementImageData);
 
       // Create curved closing animation sequence
       const closingData =
         this.#createClosingDataFromOriginalPosition(originalPosition);
-      const arcSequence = this.#createGlanceArcSequence(closingData, "closing");
+      const arcSequence = this.#createGlanceArcSequence(
+        closingData,
+        "closing",
+        imageDataElement
+      );
+
+      this.browserWrapper.style.width = "";
+      this.browserWrapper.style.height = "";
 
       gZenUIManager.motion
         .animate(this.browserWrapper, arcSequence, {
@@ -1084,6 +1099,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       const imageDataElement =
         this.#createGlancePreviewElement(elementImageData);
       this.browserWrapper.prepend(imageDataElement);
+      return imageDataElement;
     }
   }
 

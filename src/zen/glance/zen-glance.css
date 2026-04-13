@@ -120,14 +120,14 @@
   }
 
   & .browserContainer {
-    transform: translate(-50%, -50%);
     position: fixed;
     flex: unset !important;
     width: 80%;
     height: 100%;
 
     &:not([has-finished-animation="true"]) {
-      will-change: width, height, transform;
+      will-change: transform;
+      transform-origin: 0 0;
 
       #statuspanel {
         display: none;
@@ -178,7 +178,6 @@
   top: 50%;
   left: 50%;
   translate: -50% -50%;
-  background: rgba(255, 255, 255, 0.1);
 
   display: flex;
   align-items: center;

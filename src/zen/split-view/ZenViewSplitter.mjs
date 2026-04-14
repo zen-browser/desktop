@@ -2052,8 +2052,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
   }
 
-  
-  
   /**
    * @description moves the tab to the split view if dragged on a browser
    * @param {Event} event - The event
@@ -2066,7 +2064,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     this._canDrop = false;
 
     if (!canDrop && !this.fakeBrowser) {
-      const replaced = this._tryReplaceTabInSplit(event, draggedTab);
+      const replaced = this.#tryReplaceTabInSplit(event, draggedTab);
       if (replaced) return true;
     }
     
@@ -2304,46 +2302,48 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
  * @param {Tab} draggedTab  – the tab being dragged (must not be in split view)
  * @returns {boolean}  true if a replacement was performed
  */
-_tryReplaceTabInSplit(event, draggedTab) {
-  if (draggedTab.splitView) return false;
-
-  const dropTarget = document.elementFromPoint(event.clientX, event.clientY);
-  const browser =
-    dropTarget?.closest("browser") ??
-    dropTarget?.closest(".browserSidebarContainer")?.querySelector("browser");
-  if (!browser) return false;
-
-  const targetTab = gBrowser.getTabForBrowser(browser);
-  if (!targetTab?.splitView || targetTab === draggedTab) return false;
-
-  const groupIndex = this._data.findIndex(g => g.tabs.includes(targetTab));
-  if (groupIndex < 0) return false;
-
-  const group = this._data[groupIndex];
-  const node = this.getSplitNodeFromTab(targetTab);
-  if (!node) return false;
-
-  // 1. Swap tab reference in the group array (in-place → layout preserved)
-  group.tabs.splice(group.tabs.indexOf(targetTab), 1, draggedTab);
-
-  // 2. Move draggedTab into the same browser tab-group as the rest of the split
-  const splitGroup = targetTab.group;
-  if (splitGroup) {
-    this._moveTabsToContainer([draggedTab], targetTab);
-    gBrowser.moveTabToExistingGroup(draggedTab, splitGroup);
-  }
-
-  // 3. Evict the old tab cleanly (ungroupTab is handled inside resetTabState path)
-  this.resetTabState(targetTab, /* forUnsplit */ true);
-  if (targetTab.group?.hasAttribute("split-view-group")) {
-    gBrowser.ungroupTab(targetTab);
-  }
-
-  // 4. Rewire the leaf node and re-apply layout (applyGridLayout rebuilds _tabToSplitNode)
-  node.tab = draggedTab;
-  this.activateSplitView(group, /* reset */ true);
-  gBrowser.selectedTab = draggedTab;
-  return true;
+#tryReplaceTabInSplit(event, draggedTab) {
+  this.withoutSplitViewTransition(() => {
+    if (draggedTab.splitView) return false;
+  
+    const dropTarget = document.elementFromPoint(event.clientX, event.clientY);
+    const browser =
+      dropTarget?.closest("browser") ??
+      dropTarget?.closest(".browserSidebarContainer")?.querySelector("browser");
+    if (!browser) return false;
+  
+    const targetTab = gBrowser.getTabForBrowser(browser);
+    if (!targetTab?.splitView || targetTab === draggedTab) return false;
+  
+    const groupIndex = this._data.findIndex(g => g.tabs.includes(targetTab));
+    if (groupIndex < 0) return false;
+  
+    const group = this._data[groupIndex];
+    const node = this.getSplitNodeFromTab(targetTab);
+    if (!node) return false;
+  
+    // 1. Swap tab reference in the group array (in-place → layout preserved)
+    group.tabs.splice(group.tabs.indexOf(targetTab), 1, draggedTab);
+  
+    // 2. Move draggedTab into the same browser tab-group as the rest of the split
+    const splitGroup = targetTab.group;
+    if (splitGroup) {
+      this._moveTabsToContainer([draggedTab], targetTab);
+      gBrowser.moveTabToExistingGroup(draggedTab, splitGroup);
+    }
+  
+    // 3. Evict the old tab cleanly (ungroupTab is handled inside resetTabState path)
+    this.resetTabState(targetTab, /* forUnsplit */ true);
+    if (targetTab.group?.hasAttribute("split-view-group")) {
+      gBrowser.ungroupTab(targetTab);
+    }
+  
+    // 4. Rewire the leaf node and re-apply layout (applyGridLayout rebuilds _tabToSplitNode)
+    node.tab = draggedTab;
+    this.activateSplitView(group, /* reset */ true);
+    gBrowser.selectedTab = draggedTab;
+    return true;
+  });
 }
   
   /**

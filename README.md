@@ -43,6 +43,19 @@ If you'd like to report a bug, please do so on our [GitHub Issues page](https://
 
 Zen is an open-source project, and we welcome contributions from the community! Please take a look at the [contribution guidelines](./docs/contribute.md) before getting started!
 
+### Linux (Ubuntu) install quality
+
+If you're using the unpacked Linux archive and want proper launcher/taskbar support:
+
+1. Extract the Zen archive so you have a folder containing the `zen` executable.
+2. Run:
+
+  `bash scripts/install-linux-desktop-entry.sh --zen-dir /path/to/zen`
+
+This installs a user-level desktop entry and icon so Zen shows correctly in launchers and can be pinned to the dock/taskbar.
+
+For release automation, this repository now also builds Debian packages (`.deb`) for `x86_64` and `aarch64` in CI and publishes them as release artifacts.
+
 #### Partners
 
 Thanks to all the partners of Zen for their support and contributions:

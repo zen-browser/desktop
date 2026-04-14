@@ -2,10 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-const { ZenDataSaver } = ChromeUtils.importESModule(
-  "resource:///modules/ZenDataSaver.sys.mjs"
-);
-
 document.addEventListener(
   "MozBeforeInitialXULLayout",
   () => {
@@ -34,8 +30,6 @@ document.addEventListener(
     window.gZenIndiaServices = {
       open: openIndiaServicesPanel,
     };
-    ZenDataSaver.init();
-
     // <commandset id="mainCommandSet"> defined in browser-sets.inc
     document
       .getElementById("zenCommandSet")

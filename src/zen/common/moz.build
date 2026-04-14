@@ -6,5 +6,4 @@ EXTRA_JS_MODULES += [
     "sys/ZenActorsManager.sys.mjs",
     "sys/ZenCustomizableUI.sys.mjs",
     "sys/ZenUIMigration.sys.mjs",
-    "ZenDataSaver.sys.mjs",
 ]

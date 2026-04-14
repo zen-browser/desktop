@@ -56,6 +56,9 @@ document.addEventListener(
           case "cmd_zenToggleSidebar":
             gZenVerticalTabsManager.toggleExpand();
             break;
+          case "cmd_zenOpenSpaceOverview":
+            gZenWorkspaces.openSpaceOverview();
+            break;
           case "cmd_zenOpenZenThemePicker":
             gZenThemePicker.openThemePicker(event);
             break;

@@ -98,3 +98,24 @@ zen-panel-ui-workspaces-change-forward =
 
 zen-panel-ui-workspaces-change-back =
     .label = Previous Space
+
+zen-space-overview-title = Space Overview
+zen-space-overview-search =
+    .placeholder = Search tabs\u2026
+zen-space-overview-tab-count =
+    { $count ->
+        [one] { $count } tab
+       *[other] { $count } tabs
+    }
+zen-space-overview-bookmarks = Bookmarks
+zen-space-overview-empty = No tabs in this space
+zen-space-overview-new-space = + New Space
+zen-space-overview-more-tabs = and { $count } more\u2026
+zen-space-overview-error = Open this page from within Zen Browser
+zen-space-overview-create-space = Create Space
+zen-space-overview-delete-space =
+    .title = Delete Space
+zen-space-overview-close-tab =
+    .title = Close tab
+zen-space-overview-rename-placeholder =
+    .placeholder = Space name

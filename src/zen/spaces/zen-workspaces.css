@@ -443,3 +443,16 @@ zen-workspace {
     transform: rotate(0deg);
   }
 }
+
+/* Hide the URL bar content when the Space Overview tab is active */
+:root[zen-overview-active] {
+  & #urlbar-input-container {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  & #zen-overview-button {
+    opacity: 1 !important;
+    filter: none !important;
+  }
+}

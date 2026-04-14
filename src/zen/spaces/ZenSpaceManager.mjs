@@ -1463,6 +1463,45 @@ class nsZenWorkspaces {
     createForm.finishSetup();
   }
 
+  static OVERVIEW_URL =
+    "chrome://browser/content/zen-components/zen-space-overview.html";
+
+  openSpaceOverview() {
+    // Avoid a full Array.from allocation — break early once found.
+    for (const t of gBrowser.tabs) {
+      if (t.hasAttribute("zen-overview-tab")) {
+        gBrowser.selectedTab = t;
+        return;
+      }
+    }
+
+    // addTrustedTab returns the new tab synchronously, which avoids a race
+    // where gBrowser.selectedTab could point to a different tab if the user
+    // preference opens tabs in the background or a focus change races us.
+    const tab = gBrowser.addTrustedTab(nsZenWorkspaces.OVERVIEW_URL, {
+      triggeringPrincipal:
+        Services.scriptSecurityManager.getSystemPrincipal(),
+    });
+    gBrowser.selectedTab = tab;
+    tab.setAttribute("zen-overview-tab", "true");
+
+    // Place the tab in the essentials section so it is always visible in the
+    // pinned bar regardless of which space is active.
+    tab.setAttribute("zen-essential", "true");
+    tab.removeAttribute("zen-workspace-id");
+    if (!tab.pinned) {
+      gBrowser.pinTab(tab);
+    }
+    this.getEssentialsSection(tab).appendChild(tab);
+
+    document.documentElement.setAttribute("zen-overview-active", "true");
+  }
+
+  _updateOverviewTabActive() {
+    const isOverview = gBrowser.selectedTab?.hasAttribute("zen-overview-tab");
+    document.documentElement.toggleAttribute("zen-overview-active", isOverview);
+  }
+
   #unpinnedTabsInWorkspace(workspaceID) {
     return Array.from(this.allStoredTabs).filter(
       tab =>
@@ -2325,6 +2364,10 @@ class nsZenWorkspaces {
       return true; // Always show glance tabs
     }
 
+    if (tab.hasAttribute("zen-overview-tab")) {
+      return true; // Overview tab is always visible across all spaces
+    }
+
     // See https://github.com/zen-browser/desktop/issues/10666, we should never
     // show closing tabs and consider them as not part of any workspace. This will
     // invalidate the `lastSelectedTab[previousWorkspaceId]` logic in `_handleTabSelection`
@@ -2804,6 +2847,10 @@ class nsZenWorkspaces {
       return;
     }
 
+    if (tab.hasAttribute("zen-overview-tab")) {
+      return; // Overview tab workspace placement is managed by openSpaceOverview
+    }
+
     if (workspaceID) {
       if (
         tab.hasAttribute("change-workspace") &&
@@ -2845,6 +2892,7 @@ class nsZenWorkspaces {
   async onLocationChange(event) {
     let tab = event.target;
     this.#changeToEmptyTab();
+    this._updateOverviewTabActive();
     if (
       !this.workspaceEnabled ||
       this.#inChangingWorkspace ||
@@ -2862,6 +2910,21 @@ class nsZenWorkspaces {
     const isEssential = tab.getAttribute("zen-essential") === "true";
     if (tab.hasAttribute("zen-empty-tab")) {
       return;
+    }
+
+    if (tab.hasAttribute("zen-overview-tab")) {
+      // If the user navigated away from the overview page, clear the attribute
+      // so the URL bar is restored and workspace routing resumes normally.
+      const uri = tab.linkedBrowser?.currentURI?.spec;
+      if (uri && uri !== nsZenWorkspaces.OVERVIEW_URL) {
+        tab.removeAttribute("zen-overview-tab");
+        // zen-essential was set solely to keep the tab visible across spaces;
+        // reclaim normal workspace routing now that the URL has changed.
+        tab.removeAttribute("zen-essential");
+        document.documentElement.removeAttribute("zen-overview-active");
+      } else {
+        return; // Still on the overview page — no workspace switch needed
+      }
     }
 
     if (!isEssential) {

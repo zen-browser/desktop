@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src chrome:; img-src chrome: moz-icon: data:; style-src chrome: 'unsafe-inline'; script-src chrome:; object-src 'none';"
+    />
+    <link rel="localization" href="browser/zen-workspaces.ftl" />
+    <link
+      rel="stylesheet"
+      href="chrome://browser/content/zen-components/zen-space-overview.css"
+    />
+    <title data-l10n-id="zen-space-overview-title"></title>
+  </head>
+  <body>
+    <header id="overview-header">
+      <div id="header-left">
+        <h1 id="overview-title" data-l10n-id="zen-space-overview-title"></h1>
+        <p id="overview-subtitle">Space dashboard</p>
+      </div>
+      <div id="header-actions">
+        <button
+          id="create-space-btn"
+          type="button"
+          data-l10n-id="zen-space-overview-create-space"
+        >Create Space</button>
+        <div id="search-wrapper">
+          <input
+            id="search"
+            type="search"
+            data-l10n-id="zen-space-overview-search"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+        <button id="refresh-btn" type="button" aria-label="Refresh">↻</button>
+      </div>
+    </header>
+    <div id="grid"></div>
+    <script src="chrome://browser/content/zen-components/zen-space-overview.js"></script>
+  </body>
+</html>

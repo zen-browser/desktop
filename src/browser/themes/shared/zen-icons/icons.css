@@ -411,6 +411,10 @@
   list-style-image: url("expand-sidebar.svg") !important;
 }
 
+#zen-overview-button {
+  list-style-image: url("selectable/grid-2x2.svg") !important;
+}
+
 .panel-header > .subviewbutton-back,
 #PanelUI-zen-gradient-generator-color-page-left {
   list-style-image: url("arrow-left.svg") !important;

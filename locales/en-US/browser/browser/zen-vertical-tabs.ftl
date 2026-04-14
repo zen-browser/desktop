@@ -26,6 +26,10 @@ zen-toolbar-context-new-folder =
 sidebar-zen-expand =
   .label = Expand Sidebar
 
+zen-overview-button =
+  .label = Space Overview
+  .tooltiptext = Space Overview
+
 sidebar-zen-create-new =
   .label = Create New...
 

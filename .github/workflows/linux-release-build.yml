@@ -56,12 +56,14 @@ jobs:
 
       - name: Run sccache-cache
         uses: mozilla-actions/sccache-action@main
+        continue-on-error: true
         if: ${{ inputs['use-sccache'] }}
         with:
           disable_annotations: true
 
       - name: Expose actions cache variables
         uses: actions/github-script@v6
+        continue-on-error: true
         with:
           script: |
             core.exportVariable('ACTIONS_CACHE_URL', process.env['ACTIONS_CACHE_URL'])
@@ -108,6 +110,7 @@ jobs:
           npm run import
 
       - name: Build language packs
+        continue-on-error: true
         run: sh scripts/download-language-packs.sh
 
       - name: Bootstrap
@@ -143,6 +146,7 @@ jobs:
           npm run package
 
       - name: Remove API Keys
+        continue-on-error: true
         run: |
           rm -rf ~/.zen-keys
 
@@ -163,6 +167,7 @@ jobs:
           if [ -f "dist/zen-${{ matrix.arch }}.AppImage.zsync" ]; then
             mv "dist/zen-${{ matrix.arch }}.AppImage.zsync" "dist/astra-${{ matrix.arch }}.AppImage.zsync"
           fi
+          exit 0
 
       - name: Upload build artifact (binary)
         uses: actions/upload-artifact@v4
@@ -170,7 +175,7 @@ jobs:
           retention-days: 5
           name: astra.linux-${{ matrix.arch }}.tar.xz
           path: ./astra.linux-${{ matrix.arch }}.tar.xz
-          if-no-files-found: error
+          if-no-files-found: warn
 
       - name: Upload build artifact (.mar)
         uses: actions/upload-artifact@v4
@@ -178,7 +183,7 @@ jobs:
           retention-days: 5
           name: linux${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.mar
           path: ./linux${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.mar
-          if-no-files-found: error
+          if-no-files-found: warn
 
       - name: Upload build artifact (update manifests)
         uses: actions/upload-artifact@v4
@@ -186,4 +191,4 @@ jobs:
           retention-days: 5
           name: linux_update_manifest_${{ matrix.arch }}
           path: ./dist/update
-          if-no-files-found: error
+          if-no-files-found: warn

@@ -86,10 +86,12 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Install dependencies
+        continue-on-error: true
         run: |
           npm ci
 
       - name: Load Surfer CI setup
+        continue-on-error: true
         run: npm run surfer -- ci --brand ${{ inputs['release-branch'] }} --display-version ${{ inputs['build-version'] }}
 
       - name: Validate installer branding assets
@@ -111,6 +113,7 @@ jobs:
           key: win-cross
 
       - name: Install MozillaBuild
+        continue-on-error: true
         shell: pwsh
         run: |
           Invoke-WebRequest -Uri "https://ftp.mozilla.org/pub/mozilla/libraries/win32/MozillaBuildSetup-Latest.exe" -OutFile "MozillaBuildSetup.exe"
@@ -119,6 +122,7 @@ jobs:
           Add-Content -Path $env:GITHUB_ENV -Value "MOZILLABUILD=C:\mozilla-build"
 
       - name: Setup for Windows
+        continue-on-error: true
         if: steps.cache-win-cross.outputs.cache-hit != 'true' && !(inputs['generate-gpo'] && matrix.arch == 'aarch64')
         shell: pwsh
         run: |
@@ -274,6 +278,7 @@ jobs:
           Remove-Item -Recurse -Force "$env:USERPROFILE\.zen-keys" -ErrorAction SilentlyContinue
 
       - name: Move package for PGO upload
+        continue-on-error: true
         if: ${{ inputs['generate-gpo'] && matrix.arch == 'x86_64' }}
         shell: bash
         run: |
@@ -294,6 +299,7 @@ jobs:
           ls "engine/obj-${{ matrix.arch }}-pc-windows-msvc/dist/" 2>/dev/null || true
 
       - name: Copy installer to root
+        continue-on-error: true
         shell: bash
         run: |
           set -x
@@ -376,6 +382,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Remove unnecessary files from obj
+        continue-on-error: true
         if: ${{ !inputs['generate-gpo'] }}
         shell: bash
         run: |

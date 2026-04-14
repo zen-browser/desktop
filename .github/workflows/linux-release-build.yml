@@ -144,6 +144,7 @@ jobs:
           export SURFER_PLATFORM="linux"
           export ZEN_RELEASE=1
           npm run package
+          exit 0
 
       - name: Remove API Keys
         continue-on-error: true

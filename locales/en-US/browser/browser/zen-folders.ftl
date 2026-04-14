@@ -30,3 +30,9 @@ zen-folders-unload-folder =
     .label = Unload All Tabs
 
 zen-folders-search-no-results = No tabs matching that search 🤔
+zen-folders-open-all-tabs =
+    .label = Open All Tabs
+zen-folders-duplicate-folder =
+    .label = Duplicate Folder
+zen-folders-copy-links =
+    .label = Copy Folder Links

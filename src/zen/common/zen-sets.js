@@ -142,6 +142,16 @@ document.addEventListener(
               renameFolder: true,
             });
             break;
+          case "cmd_zenCreateFolderFromTemplate": {
+            const templateId =
+              event.sourceEvent?.target?.getAttribute("zen-folder-template") ||
+              event.target?.getAttribute("zen-folder-template");
+            gZenFolders.createFolderFromTemplate(templateId);
+            break;
+          }
+          case "cmd_zenFolderQuickSearch":
+            gZenFolders.openSearchForActiveFolder();
+            break;
           case "cmd_zenTogglePinTab": {
             const currentTab = gBrowser.selectedTab;
             if (currentTab && !currentTab.hasAttribute("zen-empty-tab")) {
@@ -185,6 +195,26 @@ document.addEventListener(
           case "cmd_zenOpenIndiaServices":
             openIndiaServicesPanel(event);
             break;
+          case "cmd_zenSmartGuardDetails": {
+            const status = window.gZenSmartGuard?.getPanelStatus?.();
+            if (!status || !window.gZenSmartGuard?.enabled) {
+              gZenUIManager.showToast("zen-smart-status-safe", {
+                timeout: 3500,
+              });
+              break;
+            }
+            gZenUIManager.showToast(
+              status.level === "high"
+                ? "zen-smart-download-warning"
+                : status.level === "medium"
+                  ? "zen-smart-screen-warning"
+                  : status.level === "low"
+                    ? "zen-smart-clipboard-warning"
+                    : "zen-smart-status-safe",
+              { timeout: 3500 }
+            );
+            break;
+          }
           default:
             gZenGlanceManager.handleMainCommandSet(event);
             if (event.target.id.startsWith("cmd_zenWorkspaceSwitch")) {

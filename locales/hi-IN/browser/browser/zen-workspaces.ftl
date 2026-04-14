@@ -13,6 +13,15 @@ zen-panel-ui-workspaces-create =
 zen-panel-ui-folder-create =
     .label = फ़ोल्डर बनाएँ
 
+zen-panel-ui-folder-templates =
+    .label = फ़ोल्डर टेम्पलेट्स
+zen-folder-template-workday =
+    .label = वर्कडे
+zen-folder-template-research =
+    .label = रिसर्च
+zen-folder-template-shopping =
+    .label = शॉपिंग
+
 zen-panel-ui-live-folder-create =
     .label = लाइव फ़ोल्डर
 
@@ -67,6 +76,24 @@ zen-panel-ui-gradient-generator-algo-triadic =
 zen-panel-ui-gradient-generator-algo-floating =
     .label = फ़्लोटिंग (Floating)
 zen-panel-ui-gradient-click-to-add = रंग जोड़ने के लिए क्लिक करें
+zen-panel-ui-gradient-pack-all =
+    .label = सभी
+zen-panel-ui-gradient-pack-minimal =
+    .label = इंडिया मिनिमल
+zen-panel-ui-gradient-pack-festive =
+    .label = इंडिया फेस्टिव
+zen-panel-ui-gradient-pack-heritage =
+    .label = इंडिया हेरिटेज
+zen-panel-ui-gradient-action-preview =
+    .label = लाइव प्रीव्यू
+zen-panel-ui-gradient-action-apply =
+    .label = लागू करें
+zen-panel-ui-gradient-action-reset =
+    .label = रीसेट
+zen-panel-ui-gradient-action-favorite =
+    .label = पसंदीदा
+zen-panel-ui-gradient-favorites-title = पसंदीदा
+zen-panel-ui-gradient-recent-title = हाल ही में उपयोग किए गए
 
 zen-workspace-creation-name =
     .placeholder = स्पेस का नाम

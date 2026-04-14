@@ -35,6 +35,7 @@ export default [
   "gZenMediaController",
   "gZenGlanceManager",
   "gZenLiveFoldersUI",
+  "gZenSmartGuard",
 
   "gZenThemePicker",
 

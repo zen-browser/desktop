@@ -104,6 +104,32 @@
     width: 100%;
   }
 
+  #PanelUI-zen-emojis-picker-category-selector {
+    padding: 0 10px 8px;
+    gap: 4px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    & toolbarbutton {
+      appearance: none;
+      margin: 0;
+      min-height: 24px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      justify-content: center;
+      background-color: color-mix(in srgb, currentColor 6%, transparent);
+
+      &:hover {
+        background-color: color-mix(in srgb, currentColor 10%, transparent);
+      }
+
+      &.selected {
+        background-color: color-mix(in srgb, currentColor 14%, transparent);
+      }
+    }
+  }
+
   #PanelUI-zen-picker-header {
     padding: 6px 16px;
     justify-content: space-between;
@@ -530,6 +556,44 @@
   & toolbarbutton {
     margin: 0;
   }
+}
+
+#zen-site-data-smartguard {
+  margin: 0 8px 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: color-mix(in srgb, currentColor 4%, transparent);
+  gap: 2px;
+}
+
+#zen-site-data-smartguard-header {
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+#zen-site-data-smartguard-title {
+  margin: 0;
+  font-weight: 600;
+}
+
+#zen-site-data-smartguard-state {
+  margin: 0;
+  font-weight: 700;
+}
+
+#zen-site-data-smartguard-reason {
+  margin: 0;
+  font-size: smaller;
+  opacity: 0.74;
+}
+
+#zen-site-data-smartguard[smart-level="high"] {
+  background: color-mix(in srgb, #ff4b4b 14%, transparent);
+}
+
+#zen-site-data-smartguard[smart-level="medium"] {
+  background: color-mix(in srgb, #ffb347 14%, transparent);
 }
 
 /* stylelint-disable-next-line media-query-no-invalid */

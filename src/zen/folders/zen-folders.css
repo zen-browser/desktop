@@ -168,6 +168,25 @@ zen-folder {
       display: none;
     }
 
+    &[data-zen-folder-tabs-count]::after {
+      content: attr(data-zen-folder-tabs-count);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      padding-inline: 4px;
+      margin-inline-start: auto;
+      font-size: 9px;
+      font-weight: 700;
+      color: light-dark(#1a1a1a, #f5f5f5);
+      background: color-mix(in srgb, currentColor 18%, transparent);
+      opacity: 0.85;
+      position: absolute;
+      inset-inline-end: 28px;
+    }
+
     & > label,
     & > #tab-label-input {
       padding: 0 0 0 32px !important;

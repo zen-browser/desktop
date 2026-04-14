@@ -67,6 +67,12 @@ ChromeUtils.defineLazyGetter(lazy, "toolbarBackgroundElement", () => {
 
 const EXPLICIT_LIGHTNESS_TYPE = "explicit-lightness";
 const EXPLICIT_BLACKWHITE_TYPE = "explicit-black-white";
+const PREF_THEME_PICKER_PREVIEW = "zen.theme.picker.preview";
+const PREF_THEME_PICKER_FAVORITES = "zen.theme.picker.favorites";
+const PREF_THEME_PICKER_RECENTS = "zen.theme.picker.recents";
+const PREF_THEME_PICKER_MAX_RECENTS = "zen.theme.picker.max-recents";
+const PREF_INDIA_PACKS_STAGE = "zen.theme.india-packs.stage";
+const PRESET_HISTORY_LIMIT = 10;
 
 /**
  * A class that manages the theme picker for Zen Workspaces.
@@ -74,11 +80,19 @@ const EXPLICIT_BLACKWHITE_TYPE = "explicit-black-white";
  */
 export class nsZenThemePicker extends nsZenMultiWindowFeature {
   static MAX_DOTS = 3;
+  static MAX_STORED_PRESETS = 16;
 
   currentOpacity = 0.5;
   dots = [];
   useAlgo = "";
   #currentLightness = 50;
+  #colorPages = [];
+  #visibleColorPages = [];
+  #selectedPack = "all";
+  #previewEnabled = true;
+  #updatedWithoutPreview = false;
+  #didExplicitApply = false;
+  #initialWorkspaceTheme = null;
 
   #allowTransparencyOnSidebar = Services.prefs.getBoolPref(
     "zen.theme.acrylic-elements",
@@ -121,6 +135,15 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     ChromeUtils.defineLazyGetter(this, "customColorList", () =>
       document.getElementById("PanelUI-zen-gradient-generator-custom-list")
     );
+    ChromeUtils.defineLazyGetter(this, "favoritesList", () =>
+      document.getElementById("PanelUI-zen-gradient-generator-favorites-list")
+    );
+    ChromeUtils.defineLazyGetter(this, "recentsList", () =>
+      document.getElementById("PanelUI-zen-gradient-generator-recents-list")
+    );
+    ChromeUtils.defineLazyGetter(this, "themeActions", () =>
+      document.getElementById("PanelUI-zen-gradient-generator-theme-actions")
+    );
 
     ChromeUtils.defineLazyGetter(this, "sliderWavePath", () =>
       document
@@ -152,7 +175,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     this.initCustomColorInput();
     this.initTextureInput();
     this.initSchemeButtons();
+    this.initPackSelector();
     this.initColorPages();
+    this.initThemeActions();
+    this.loadPresetLibraries();
 
     const darkModeChange = this.handleDarkModeChange.bind(this);
     window
@@ -237,47 +263,84 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     document
       .getElementById("PanelUI-zen-gradient-generator-color-pages")
       .addEventListener("click", async event => {
-        const target = event.target;
-        const rawPosition = target.getAttribute("data-position");
-        if (!rawPosition) {
+        const target = event.target.closest("box[data-position]");
+        if (!target) {
           return;
         }
-        const algo = target.getAttribute("data-algo");
-        const lightness = target.getAttribute("data-lightness");
-        const numDots = parseInt(target.getAttribute("data-num-dots"));
-        if (numDots < this.dots.length) {
-          for (let i = numDots; i < this.dots.length; i++) {
-            this.dots[i].element.remove();
-          }
-          this.dots = this.dots.slice(0, numDots);
-        }
-        const type =
-          target.getAttribute("data-type") || EXPLICIT_LIGHTNESS_TYPE;
-        // Generate new gradient from the single color given
-        const [x, y] = rawPosition.split(",").map(pos => parseInt(pos));
-        let dots = [
-          {
-            ID: 0,
-            position: { x, y },
-            isPrimary: true,
-            type,
-          },
-        ];
-        for (let i = 1; i < numDots; i++) {
-          dots.push({
-            ID: i,
-            position: { x: 0, y: 0 },
-            type,
-          });
-        }
-        this.useAlgo = algo;
-        if (lightness !== null) {
-          this.#currentLightness = lightness;
-        }
-        dots = this.calculateCompliments(dots, "update", this.useAlgo);
-        this.handleColorPositions(dots, true);
-        this.updateCurrentWorkspace();
+        this.applySwatchPreset(target, { saveInRecents: true });
       });
+  }
+
+  initPackSelector() {
+    const selector = document.getElementById(
+      "PanelUI-zen-gradient-generator-pack-selector"
+    );
+    if (!selector) {
+      return;
+    }
+    selector.addEventListener("click", event => {
+      const button = event.target.closest("button[data-pack]");
+      if (!button || button.disabled) {
+        return;
+      }
+      this.#selectedPack = button.dataset.pack || "all";
+      this.refreshVisibleColorPages();
+    });
+  }
+
+  initThemeActions() {
+    this.#previewEnabled = Services.prefs.getBoolPref(
+      PREF_THEME_PICKER_PREVIEW,
+      true
+    );
+    this.themeActions?.addEventListener("click", event => {
+      const button = event.target.closest("button");
+      if (!button || button.disabled) {
+        return;
+      }
+      switch (button.id) {
+        case "PanelUI-zen-gradient-generator-action-preview":
+          this.#previewEnabled = !this.#previewEnabled;
+          Services.prefs.setBoolPref(
+            PREF_THEME_PICKER_PREVIEW,
+            this.#previewEnabled
+          );
+          if (this.#previewEnabled && this.#updatedWithoutPreview) {
+            this.updateCurrentWorkspace(true, true);
+          }
+          this.syncThemeActionButtons();
+          break;
+        case "PanelUI-zen-gradient-generator-action-apply":
+          this.applyPendingTheme();
+          break;
+        case "PanelUI-zen-gradient-generator-action-reset":
+          this.resetThemeChanges();
+          break;
+        case "PanelUI-zen-gradient-generator-action-favorite":
+          this.saveCurrentThemeAsFavorite();
+          break;
+      }
+    });
+    this.syncThemeActionButtons();
+  }
+
+  getStageAllowedPacks() {
+    const stage = Services.prefs.getStringPref(PREF_INDIA_PACKS_STAGE, "all");
+    if (stage === "minimal") {
+      return new Set(["all", "minimal"]);
+    }
+    if (stage === "festive") {
+      return new Set(["all", "minimal", "festive"]);
+    }
+    if (stage === "heritage") {
+      return new Set(["all", "minimal", "festive", "heritage"]);
+    }
+    return new Set(["all", "minimal", "festive", "heritage"]);
+  }
+
+  loadPresetLibraries() {
+    this.renderPresetLibrary("favorites");
+    this.renderPresetLibrary("recents");
   }
 
   initColorPages() {
@@ -290,27 +353,101 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     const pagesWrapper = document.getElementById(
       "PanelUI-zen-gradient-generator-color-pages"
     );
-    const pages = pagesWrapper.children;
+    this.#colorPages = Array.from(pagesWrapper.children);
     pagesWrapper.addEventListener("wheel", event => {
       event.preventDefault();
       event.stopPropagation();
     });
     leftButton.addEventListener("command", () => {
-      this.#colorPage = (this.#colorPage - 1 + pages.length) % pages.length;
-      // Scroll to the next page, by using scrollLeft
-      pagesWrapper.scrollLeft =
-        (this.#colorPage * pagesWrapper.scrollWidth) / pages.length;
-      rightButton.disabled = false;
-      leftButton.disabled = this.#colorPage === 0;
+      if (!this.#visibleColorPages.length) {
+        return;
+      }
+      this.#colorPage = Math.max(this.#colorPage - 1, 0);
+      this.scrollToCurrentColorPage();
+      this.updatePageNavButtons();
     });
     rightButton.addEventListener("command", () => {
-      this.#colorPage = (this.#colorPage + 1) % pages.length;
-      // Scroll to the next page, by using scrollLeft
-      pagesWrapper.scrollLeft =
-        (this.#colorPage * pagesWrapper.scrollWidth) / pages.length;
-      leftButton.disabled = false;
-      rightButton.disabled = this.#colorPage === pages.length - 1;
+      if (!this.#visibleColorPages.length) {
+        return;
+      }
+      this.#colorPage = Math.min(
+        this.#colorPage + 1,
+        this.#visibleColorPages.length - 1
+      );
+      this.scrollToCurrentColorPage();
+      this.updatePageNavButtons();
     });
+    this.refreshVisibleColorPages();
+  }
+
+  refreshVisibleColorPages() {
+    const pagesWrapper = document.getElementById(
+      "PanelUI-zen-gradient-generator-color-pages"
+    );
+    const stageAllowedPacks = this.getStageAllowedPacks();
+    if (!stageAllowedPacks.has(this.#selectedPack)) {
+      this.#selectedPack = "all";
+    }
+    this.#visibleColorPages = this.#colorPages.filter(page => {
+      const pack = page.getAttribute("data-pack") || "all";
+      const visible =
+        this.#selectedPack === "all"
+          ? true
+          : pack === this.#selectedPack || pack === "all";
+      page.hidden = !visible;
+      page.toggleAttribute("data-active-pack", visible);
+      return visible;
+    });
+    if (!this.#visibleColorPages.length) {
+      this.#visibleColorPages = this.#colorPages.filter(page => !page.hidden);
+    }
+    this.#colorPage = 0;
+    this.updatePackSelectorState(stageAllowedPacks);
+    this.scrollToCurrentColorPage();
+    this.updatePageNavButtons();
+    this.panel.setAttribute("zen-theme-pack", this.#selectedPack);
+  }
+
+  updatePackSelectorState(stageAllowedPacks = this.getStageAllowedPacks()) {
+    const selector = document.getElementById(
+      "PanelUI-zen-gradient-generator-pack-selector"
+    );
+    if (!selector) {
+      return;
+    }
+    for (const button of selector.querySelectorAll("button[data-pack]")) {
+      const pack = button.dataset.pack || "all";
+      const enabled = stageAllowedPacks.has(pack);
+      button.disabled = !enabled;
+      button.toggleAttribute("selected", pack === this.#selectedPack);
+    }
+  }
+
+  scrollToCurrentColorPage() {
+    const pagesWrapper = document.getElementById(
+      "PanelUI-zen-gradient-generator-color-pages"
+    );
+    const page = this.#visibleColorPages[this.#colorPage];
+    if (!pagesWrapper || !page) {
+      return;
+    }
+    pagesWrapper.scrollLeft = page.offsetLeft;
+  }
+
+  updatePageNavButtons() {
+    const leftButton = document.getElementById(
+      "PanelUI-zen-gradient-generator-color-page-left"
+    );
+    const rightButton = document.getElementById(
+      "PanelUI-zen-gradient-generator-color-page-right"
+    );
+    if (!leftButton || !rightButton) {
+      return;
+    }
+    const hasPages = this.#visibleColorPages.length > 0;
+    leftButton.disabled = !hasPages || this.#colorPage <= 0;
+    rightButton.disabled =
+      !hasPages || this.#colorPage >= this.#visibleColorPages.length - 1;
   }
 
   initSchemeButtons() {
@@ -341,6 +478,231 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       }
       Services.prefs.setIntPref("zen.view.window.scheme", themeInt);
     });
+  }
+
+  applySwatchPreset(target, { saveInRecents = false } = {}) {
+    const rawPosition = target.getAttribute("data-position");
+    if (!rawPosition) {
+      return;
+    }
+    const presetPack = target.getAttribute("data-pack");
+    if (presetPack && presetPack !== "all") {
+      this.#selectedPack = presetPack;
+      this.refreshVisibleColorPages();
+    }
+    const algo = target.getAttribute("data-algo");
+    const lightness = target.getAttribute("data-lightness");
+    const numDots = parseInt(target.getAttribute("data-num-dots"), 10);
+    if (!Number.isFinite(numDots)) {
+      return;
+    }
+    if (numDots < this.dots.length) {
+      for (let i = numDots; i < this.dots.length; i++) {
+        this.dots[i].element.remove();
+      }
+      this.dots = this.dots.slice(0, numDots);
+    }
+    const type = target.getAttribute("data-type") || EXPLICIT_LIGHTNESS_TYPE;
+    const [x, y] = rawPosition.split(",").map(pos => parseFloat(pos));
+    let dots = [
+      {
+        ID: 0,
+        position: { x, y },
+        isPrimary: true,
+        type,
+      },
+    ];
+    for (let i = 1; i < numDots; i++) {
+      dots.push({
+        ID: i,
+        position: { x: 0, y: 0 },
+        type,
+      });
+    }
+    this.useAlgo = algo;
+    if (lightness !== null) {
+      this.#currentLightness = parseFloat(lightness);
+    }
+    dots = this.calculateCompliments(dots, "update", this.useAlgo);
+    this.handleColorPositions(dots, true);
+    this.updateCurrentWorkspace(true);
+    if (saveInRecents) {
+      this.rememberPreset(target, "recents");
+    }
+  }
+
+  buildPresetFromElement(target) {
+    const presetName =
+      target.getAttribute("data-preset-name") ||
+      `Preset ${Date.now().toString(36)}`;
+    return {
+      id: `${presetName.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}`,
+      name: presetName,
+      pack: target.getAttribute("data-pack") || this.#selectedPack || "all",
+      dataPosition: target.getAttribute("data-position"),
+      dataAlgo: target.getAttribute("data-algo"),
+      dataNumDots: target.getAttribute("data-num-dots"),
+      dataLightness: target.getAttribute("data-lightness"),
+      dataType: target.getAttribute("data-type") || EXPLICIT_LIGHTNESS_TYPE,
+      opacity: this.currentOpacity,
+      texture: this.currentTexture || 0,
+    };
+  }
+
+  getPresetStorage(type) {
+    if (type === "favorites") {
+      return {
+        pref: PREF_THEME_PICKER_FAVORITES,
+        limit: nsZenThemePicker.MAX_STORED_PRESETS,
+      };
+    }
+    const maxRecents = Services.prefs.getIntPref(
+      PREF_THEME_PICKER_MAX_RECENTS,
+      PRESET_HISTORY_LIMIT
+    );
+    return {
+      pref: PREF_THEME_PICKER_RECENTS,
+      limit: Math.max(1, maxRecents),
+    };
+  }
+
+  readPresetLibrary(type) {
+    const { pref } = this.getPresetStorage(type);
+    try {
+      const raw = Services.prefs.getStringPref(pref, "[]");
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) {
+        return [];
+      }
+      return parsed.filter(item => item && item.dataPosition && item.dataAlgo);
+    } catch {
+      return [];
+    }
+  }
+
+  writePresetLibrary(type, items) {
+    const { pref, limit } = this.getPresetStorage(type);
+    const cleaned = items.filter(Boolean).slice(0, limit);
+    Services.prefs.setStringPref(pref, JSON.stringify(cleaned));
+    this.renderPresetLibrary(type);
+  }
+
+  rememberPreset(target, type = "recents") {
+    const preset = this.buildPresetFromElement(target);
+    const existing = this.readPresetLibrary(type).filter(
+      item =>
+        item.dataPosition !== preset.dataPosition || item.dataAlgo !== preset.dataAlgo
+    );
+    existing.unshift(preset);
+    this.writePresetLibrary(type, existing);
+  }
+
+  renderPresetLibrary(type) {
+    const list = type === "favorites" ? this.favoritesList : this.recentsList;
+    if (!list) {
+      return;
+    }
+    list.textContent = "";
+    const items = this.readPresetLibrary(type);
+    for (const preset of items) {
+      const button = document.createElement("button");
+      button.className = "subviewbutton zen-theme-picker-library-item";
+      button.setAttribute("data-position", preset.dataPosition);
+      button.setAttribute("data-algo", preset.dataAlgo);
+      button.setAttribute("data-num-dots", preset.dataNumDots);
+      button.setAttribute("data-lightness", preset.dataLightness);
+      button.setAttribute("data-pack", preset.pack || "all");
+      button.setAttribute("data-type", preset.dataType || EXPLICIT_LIGHTNESS_TYPE);
+      button.setAttribute("label", preset.name);
+      button.textContent = preset.name;
+      button.addEventListener("command", () => {
+        const presetOpacity = Number.parseFloat(preset.opacity);
+        const presetTexture = Number.parseFloat(preset.texture);
+        if (Number.isFinite(presetOpacity)) {
+          this.currentOpacity = presetOpacity;
+        }
+        if (Number.isFinite(presetTexture)) {
+          this.currentTexture = presetTexture;
+        }
+        this.applySwatchPreset(button, { saveInRecents: type !== "recents" });
+      });
+      list.appendChild(button);
+    }
+    list.parentElement.toggleAttribute("hidden", !items.length);
+  }
+
+  syncThemeActionButtons() {
+    const previewButton = document.getElementById(
+      "PanelUI-zen-gradient-generator-action-preview"
+    );
+    const applyButton = document.getElementById(
+      "PanelUI-zen-gradient-generator-action-apply"
+    );
+    if (previewButton) {
+      previewButton.toggleAttribute("selected", this.#previewEnabled);
+      previewButton.setAttribute(
+        "data-preview-enabled",
+        this.#previewEnabled ? "true" : "false"
+      );
+    }
+    if (applyButton) {
+      applyButton.disabled = !this.#updatedWithoutPreview;
+    }
+  }
+
+  cloneTheme(theme) {
+    return JSON.parse(JSON.stringify(theme || nsZenThemePicker.getTheme()));
+  }
+
+  saveCurrentThemeAsFavorite() {
+    const primaryDot = [...this.dots].sort((a, b) => a.ID - b.ID)[0];
+    if (!primaryDot) {
+      return;
+    }
+    const favorites = this.readPresetLibrary("favorites");
+    const preset = {
+      id: `favorite-${Date.now()}`,
+      name: `Favorite ${favorites.length + 1}`,
+      pack: this.#selectedPack,
+      dataPosition: `${Math.round(primaryDot.position.x)},${Math.round(primaryDot.position.y)}`,
+      dataAlgo: this.useAlgo || "float",
+      dataNumDots: String(this.dots.length),
+      dataLightness: String(this.#currentLightness),
+      dataType: primaryDot.type || EXPLICIT_LIGHTNESS_TYPE,
+      opacity: this.currentOpacity,
+      texture: this.currentTexture || 0,
+    };
+    const deduped = favorites.filter(
+      item =>
+        item.dataPosition !== preset.dataPosition ||
+        item.dataAlgo !== preset.dataAlgo ||
+        item.dataNumDots !== preset.dataNumDots
+    );
+    deduped.unshift(preset);
+    this.writePresetLibrary("favorites", deduped);
+  }
+
+  applyPendingTheme() {
+    this.updateCurrentWorkspace(false, true);
+    this.#didExplicitApply = true;
+    this.#updatedWithoutPreview = false;
+    this.syncThemeActionButtons();
+  }
+
+  resetThemeChanges() {
+    if (!this.#initialWorkspaceTheme) {
+      return;
+    }
+    const currentWorkspace = gZenWorkspaces.getActiveWorkspace();
+    const originalTheme = this.cloneTheme(this.#initialWorkspaceTheme);
+    currentWorkspace.theme = originalTheme;
+    this.currentOpacity = originalTheme.opacity ?? this.currentOpacity;
+    this.currentTexture = originalTheme.texture ?? this.currentTexture;
+    gZenWorkspaces.saveWorkspace(currentWorkspace);
+    this.onWorkspaceChange(currentWorkspace, false, originalTheme);
+    this.#updatedWithoutPreview = false;
+    this.#didExplicitApply = true;
+    this.syncThemeActionButtons();
   }
 
   initTextureInput() {
@@ -1840,8 +2202,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     }
   }
 
-  updateCurrentWorkspace(skipSave = true) {
-    this.updated = skipSave;
+  collectCurrentThemeFromDots() {
     const dots = this.panel.querySelectorAll(".zen-theme-picker-dot");
     const colors = Array.from(dots)
       .sort(
@@ -1873,16 +2234,27 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         };
       })
       .filter(color => Boolean(color)); // remove nulls
-    const gradient = nsZenThemePicker.getTheme(
+    return nsZenThemePicker.getTheme(
       colors,
       this.currentOpacity,
       this.currentTexture
     );
+  }
+
+  updateCurrentWorkspace(skipSave = true, forcePreview = false) {
+    this.updated = skipSave;
+    const gradient = this.collectCurrentThemeFromDots();
+    if (skipSave && !this.#previewEnabled && !forcePreview) {
+      this.#updatedWithoutPreview = true;
+      this.syncThemeActionButtons();
+      return;
+    }
     let currentWorkspace = gZenWorkspaces.getActiveWorkspace();
 
     if (!skipSave) {
       currentWorkspace.theme = gradient;
       gZenWorkspaces.saveWorkspace(currentWorkspace);
+      this.#updatedWithoutPreview = false;
     }
 
     this.onWorkspaceChange(
@@ -1890,19 +2262,39 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       skipSave,
       skipSave ? gradient : null
     );
+    this.syncThemeActionButtons();
   }
 
   handlePanelClose() {
-    if (this.updated) {
-      this.updateCurrentWorkspace(false);
+    if (this.updated && this.#previewEnabled) {
+      this.updateCurrentWorkspace(false, true);
+    } else if (this.#updatedWithoutPreview && !this.#didExplicitApply) {
+      const currentWorkspace = gZenWorkspaces.getActiveWorkspace();
+      this.onWorkspaceChange(
+        currentWorkspace,
+        false,
+        this.cloneTheme(this.#initialWorkspaceTheme)
+      );
     }
+    this.#updatedWithoutPreview = false;
+    this.#didExplicitApply = false;
     this.uninitThemePicker();
   }
 
   handlePanelOpen() {
+    const currentWorkspace = gZenWorkspaces.getActiveWorkspace();
+    this.#initialWorkspaceTheme = this.cloneTheme(currentWorkspace?.theme);
+    this.#previewEnabled = Services.prefs.getBoolPref(
+      PREF_THEME_PICKER_PREVIEW,
+      true
+    );
+    this.#updatedWithoutPreview = false;
+    this.syncThemeActionButtons();
+    this.loadPresetLibraries();
+    this.refreshVisibleColorPages();
     this.initThemePicker();
     setTimeout(() => {
-      this.updateCurrentWorkspace();
+      this.updateCurrentWorkspace(true, true);
     }, 200);
   }
 

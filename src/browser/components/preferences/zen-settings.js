@@ -1480,6 +1480,11 @@ Preferences.addAll([
     default: true,
   },
   {
+    id: "zen.performance.low-bandwidth-mode.block-images",
+    type: "bool",
+    default: false,
+  },
+  {
     id: "zen.performance.low-bandwidth-mode.block-fonts",
     type: "bool",
     default: true,
@@ -1496,6 +1501,11 @@ Preferences.addAll([
   },
   {
     id: "zen.window-sync.sync-only-pinned-tabs",
+    type: "bool",
+    default: false,
+  },
+  {
+    id: "zen.tab-unloader.auto-unload-inactive",
     type: "bool",
     default: false,
   },

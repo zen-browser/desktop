@@ -184,6 +184,7 @@ export class nsZenSiteDataPanel {
     this.#setSiteSecurityInfo();
     this.#setSiteHeader();
     this.#setAddonsOverflow();
+    this.#setSmartGuardState();
   }
 
   #setAddonsOverflow() {
@@ -193,6 +194,35 @@ export class nsZenSiteDataPanel {
     } else {
       addons.removeAttribute("overflowing");
     }
+  }
+
+  #setSmartGuardState() {
+    const root = this.document.getElementById("zen-site-data-smartguard");
+    const stateLabel = this.document.getElementById("zen-site-data-smartguard-state");
+    const reasonLabel = this.document.getElementById(
+      "zen-site-data-smartguard-reason"
+    );
+    if (!root || !stateLabel || !reasonLabel) {
+      return;
+    }
+
+    const guard = this.window.gZenSmartGuard;
+    if (!guard?.enabled) {
+      root.hidden = true;
+      return;
+    }
+
+    guard.refreshScreenAssessment?.();
+    const status = guard.getPanelStatus?.();
+    if (!status) {
+      root.hidden = true;
+      return;
+    }
+
+    root.hidden = false;
+    root.setAttribute("smart-level", status.level);
+    this.document.l10n.setAttributes(stateLabel, status.labelId);
+    reasonLabel.textContent = status.reason;
   }
 
   get #currentPageIsBookmarked() {

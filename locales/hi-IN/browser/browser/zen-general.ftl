@@ -73,9 +73,21 @@ zen-singletoolbar-urlbar-placeholder-with-name =
   .placeholder = खोजें...
 
 zen-icons-picker-emoji =
-  .label = इमोजी
+  .label = भारत इमोजी
 zen-icons-picker-svg =
-  .label = आइकन
+  .label = भारत आइकन
+zen-icons-picker-search-placeholder =
+  .placeholder = भारत से जुड़े आइकन और इमोजी खोजें
+zen-icons-picker-category-all =
+  .label = सभी
+zen-icons-picker-category-essentials =
+  .label = जरूरी
+zen-icons-picker-category-productivity =
+  .label = उत्पादक
+zen-icons-picker-category-festivals =
+  .label = त्योहार
+zen-icons-picker-category-fun =
+  .label = मजेदार
 
 urlbar-search-mode-zen_actions = Actions
 zen-site-data-settings = सेटिंग्स
@@ -121,6 +133,16 @@ zen-urlbar-copy-url-button =
   .tooltiptext = URL कॉपी करें
 
 zen-site-data-setting-site-protection = ट्रैकिंग सुरक्षा
+zen-smart-site-data-title = SMART Guard
+zen-smart-status-safe = सुरक्षित
+zen-smart-status-low = निगरानी
+zen-smart-status-medium = चेतावनी
+zen-smart-status-high = जोखिम
+zen-smart-open-details =
+    .label = SMART Guard विवरण
+zen-smart-download-warning = SMART Guard: संदिग्ध डाउनलोड सिग्नल मिला।
+zen-smart-screen-warning = SMART Guard: स्क्रीन शेयरिंग जोखिम सिग्नल मिला।
+zen-smart-clipboard-warning = SMART Guard: संवेदनशील क्लिपबोर्ड सिग्नल मिला।
 
 # Section: Feature callouts
 

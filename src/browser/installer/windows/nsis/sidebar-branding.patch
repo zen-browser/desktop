@@ -1,6 +1,6 @@
-diff --git a/engine/browser/installer/windows/nsis/installer.nsi b/engine/browser/installer/windows/nsis/installer.nsi
---- a/engine/browser/installer/windows/nsis/installer.nsi
-+++ b/engine/browser/installer/windows/nsis/installer.nsi
+diff --git a/browser/installer/windows/nsis/installer.nsi b/browser/installer/windows/nsis/installer.nsi
+--- a/browser/installer/windows/nsis/installer.nsi
++++ b/browser/installer/windows/nsis/installer.nsi
 @@
 -  "zen browser"
 +  "Astra Browser"

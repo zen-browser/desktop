@@ -50,3 +50,9 @@
 
 - name: zen.pinned-tab-manager.close-shortcut-behavior
   value: reset-unload-switch
+
+- name: zen.tab-unloader.auto-unload-inactive
+  value: false
+
+- name: zen.performance.measure-workspaces
+  value: false

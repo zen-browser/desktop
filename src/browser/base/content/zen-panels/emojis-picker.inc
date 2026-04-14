@@ -14,7 +14,25 @@
   <hbox id="PanelUI-zen-emojis-picker-pages">
     <vbox emojis="true">
       <hbox id="PanelUI-zen-emojis-picker-header">
-        <html:input type="search" id="PanelUI-zen-emojis-picker-search" placeholder="Search emojis" />
+        <html:input type="search" id="PanelUI-zen-emojis-picker-search" data-l10n-id="zen-icons-picker-search-placeholder" />
+      </hbox>
+      <hbox id="PanelUI-zen-emojis-picker-category-selector">
+        <toolbarbutton id="PanelUI-zen-emojis-picker-category-all"
+                       class="selected"
+                       data-zen-category="all"
+                       data-l10n-id="zen-icons-picker-category-all" />
+        <toolbarbutton id="PanelUI-zen-emojis-picker-category-essentials"
+                       data-zen-category="essentials"
+                       data-l10n-id="zen-icons-picker-category-essentials" />
+        <toolbarbutton id="PanelUI-zen-emojis-picker-category-productivity"
+                       data-zen-category="productivity"
+                       data-l10n-id="zen-icons-picker-category-productivity" />
+        <toolbarbutton id="PanelUI-zen-emojis-picker-category-festivals"
+                       data-zen-category="festivals"
+                       data-l10n-id="zen-icons-picker-category-festivals" />
+        <toolbarbutton id="PanelUI-zen-emojis-picker-category-fun"
+                       data-zen-category="fun"
+                       data-l10n-id="zen-icons-picker-category-fun" />
       </hbox>
       <hbox id="PanelUI-zen-emojis-picker-list" />
     </vbox>

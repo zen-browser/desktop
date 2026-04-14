@@ -90,6 +90,9 @@ jobs:
       - name: Load Surfer CI setup
         run: npm run surfer -- ci --brand ${{ inputs['release-branch'] }} --display-version ${{ inputs['build-version'] }}
 
+      - name: Validate installer branding assets
+        run: python scripts/check_installer_branding.py
+
       - name: Download Firefox and dependencies
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
         run: npm run download
@@ -284,25 +287,33 @@ jobs:
           echo "=== root ==="
           ls . 2>/dev/null
           echo "=== engine/obj dist ==="
-          ls engine/obj-x86_64-pc-windows-msvc/dist/ 2>/dev/null || true
+          ls "engine/obj-${{ matrix.arch }}-pc-windows-msvc/dist/" 2>/dev/null || true
 
       - name: Copy installer to root
         shell: bash
         run: |
           set -x
-          # Find installer anywhere
-          INSTALLER=$(find engine/obj-x86_64-pc-windows-msvc \
-            -name "*.exe" -not -name "*.pdb" \
-            2>/dev/null | head -1)
+          OBJ_DIR="engine/obj-${{ matrix.arch }}-pc-windows-msvc"
+          DIST_DIR="$OBJ_DIR/dist"
+
+          # Prefer known installer filenames from dist, fallback to broader obj search
+          INSTALLER=$(find "$DIST_DIR" -type f \( \
+            -name "zen.installer.exe" \
+            -o -name "zen.installer-arm64.exe" \
+            -o -name "setup.exe" \
+            -o -name "*.installer.exe" \
+            \) 2>/dev/null | head -1)
+          if [ -z "$INSTALLER" ]; then
+            INSTALLER=$(find "$OBJ_DIR" -type f -name "*.exe" -not -name "*.pdb" 2>/dev/null | head -1)
+          fi
 
           if [ -n "$INSTALLER" ]; then
             cp "$INSTALLER" ./dist/zen.installer.exe
             echo "Copied: $INSTALLER"
           fi
 
-          # Also find zip
-          ZIP=$(find engine/obj-x86_64-pc-windows-msvc/dist \
-            -name "*.win64.zip" 2>/dev/null | head -1)
+          # Also find zip in obj dist output
+          ZIP=$(find "$DIST_DIR" -type f -name "*.win*.zip" 2>/dev/null | head -1)
 
           if [ -n "$ZIP" ]; then
             cp "$ZIP" ./dist/ 2>/dev/null || true
@@ -321,9 +332,13 @@ jobs:
           ls ./dist/ || true
           ls . || true
 
-          ZEN_ZIP=$(ls ./dist/*.win64.zip 2>/dev/null | head -1)
+          ZEN_ZIP=$(find ./dist -maxdepth 1 -type f -name "*.win*.zip" 2>/dev/null | head -1)
           if [ -n "$ZEN_ZIP" ]; then
             cp "$ZEN_ZIP" ./astra.win64.zip
+          elif [ "${{ matrix.arch }}" = "x86_64" ]; then
+            echo "ERROR: No Windows zip artifact found for x86_64"
+            ls -la ./dist || true
+            exit 1
           fi
 
           ARCH="${{ matrix.arch == 'aarch64' && 'arm64' || 'x86_64' }}"
@@ -343,6 +358,10 @@ jobs:
           else
             echo "WARNING: No installer found!"
             find . -name "*.exe" 2>/dev/null || true
+            if [ "${{ matrix.arch }}" = "x86_64" ]; then
+              echo "ERROR: Missing installer for x86_64 build"
+              exit 1
+            fi
           fi
 
           if [ -f ./dist/output.mar ]; then
@@ -394,7 +413,7 @@ jobs:
           retention-days: 5
           name: astra.win-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}.zip
           path: ./astra.win-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}.zip
-          if-no-files-found: warn
+          if-no-files-found: error
 
       - name: Upload artifact (if Twilight branch, installer)
         if: ${{ !inputs['generate-gpo'] }}
@@ -403,7 +422,7 @@ jobs:
           retention-days: 5
           name: astra.installer${{ matrix.arch == 'aarch64' && '-arm64' ||  '' }}.exe
           path: ./astra.installer*.exe
-          if-no-files-found: warn
+          if-no-files-found: error
 
       - name: Upload artifact (if Twilight branch, .mar)
         if: ${{ inputs['release-branch'] == 'twilight' && !inputs['generate-gpo'] }}

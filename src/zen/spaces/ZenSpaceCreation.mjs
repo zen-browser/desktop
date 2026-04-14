@@ -226,7 +226,10 @@ class nsZenWorkspaceCreation extends MozXULElement {
   async onCreateButtonCommand() {
     const workspace = gZenWorkspaces.getActiveWorkspace();
     workspace.name = this.inputName.value.trim();
-    workspace.icon = this.inputIcon.image || this.inputIcon.label || undefined;
+    workspace.icon =
+      gZenEmojiPicker.sanitizeWorkspaceIcon(
+        this.inputIcon.image || this.inputIcon.label
+      ) || undefined;
     workspace.containerTabId = this.currentProfile;
     await gZenWorkspaces.saveWorkspace(workspace);
 
@@ -246,14 +249,15 @@ class nsZenWorkspaceCreation extends MozXULElement {
     gZenEmojiPicker.open(event.target, {
       closeOnSelect: false,
       onSelect: async icon => {
-        const isSvg = icon && icon.endsWith(".svg");
+        const sanitized = gZenEmojiPicker.sanitizeWorkspaceIcon(icon);
+        const isSvg = sanitized && sanitized.endsWith(".svg");
         if (isSvg) {
           this.inputIcon.label = "";
-          this.inputIcon.image = icon;
+          this.inputIcon.image = sanitized;
           this.inputIcon.setAttribute("has-svg-icon", "true");
         } else {
           this.inputIcon.image = "";
-          this.inputIcon.label = icon || "";
+          this.inputIcon.label = sanitized || "";
           this.inputIcon.removeAttribute("has-svg-icon");
         }
       },

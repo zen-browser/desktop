@@ -32,4 +32,6 @@ support-files = [
 
 ["browser_folder_subfolder.js"]
 
+["browser_folder_super_features.js"]
+
 ["browser_folder_visible_tabs.js"]

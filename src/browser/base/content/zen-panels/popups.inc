@@ -5,6 +5,25 @@
 <menupopup id="zenCreateNewPopup">
   <menuitem data-l10n-id="zen-panel-ui-workspaces-create" command="cmd_zenOpenWorkspaceCreation" image="chrome://browser/skin/zen-icons/duplicate-tab.svg" />
   <menuitem data-l10n-id="zen-panel-ui-folder-create" command="cmd_zenOpenFolderCreation" image="chrome://browser/skin/zen-icons/folder.svg" />
+  <menu id="zen-panel-ui-folder-templates" data-l10n-id="zen-panel-ui-folder-templates" hidden="true">
+    <menupopup>
+      <menuitem
+        id="zen-folder-template-workday"
+        data-l10n-id="zen-folder-template-workday"
+        command="cmd_zenCreateFolderFromTemplate"
+        zen-folder-template="workday" />
+      <menuitem
+        id="zen-folder-template-research"
+        data-l10n-id="zen-folder-template-research"
+        command="cmd_zenCreateFolderFromTemplate"
+        zen-folder-template="research" />
+      <menuitem
+        id="zen-folder-template-shopping"
+        data-l10n-id="zen-folder-template-shopping"
+        command="cmd_zenCreateFolderFromTemplate"
+        zen-folder-template="shopping" />
+    </menupopup>
+  </menu>
   <menuseparator/>
   <menuitem data-l10n-id="zen-panel-ui-new-empty-split" command="cmd_zenNewEmptySplit" image="chrome://browser/skin/zen-icons/split.svg" />
   <menuitem data-l10n-id="tabs-toolbar-new-tab" command="cmd_newNavigatorTab" image="chrome://browser/skin/zen-icons/plus.svg" />
@@ -47,6 +66,9 @@
   <menuseparator />
   <menuitem id="context_zenFolderUnloadAll" data-l10n-id="zen-folders-unload-folder"/>
   <menuitem id="context_zenFolderNewSubfolder" data-l10n-id="zen-folders-new-subfolder"/>
+  <menuitem id="context_zenFolderOpenAll" data-l10n-id="zen-folders-open-all-tabs" hidden="true"/>
+  <menuitem id="context_zenFolderDuplicate" data-l10n-id="zen-folders-duplicate-folder" hidden="true"/>
+  <menuitem id="context_zenFolderCopyLinks" data-l10n-id="zen-folders-copy-links" hidden="true"/>
   <menuseparator />
   <menu id="context_zenChangeFolderSpace"
     data-l10n-id="zen-folders-panel-change-folder-space">
@@ -63,6 +85,8 @@
   <menuseparator />
   <menuitem command="Tools:Addons" data-l10n-id="zen-site-data-manage-addons"/>
   <menuitem id="context_zenOpenGetAddons" data-l10n-id="zen-site-data-get-addons"/>
+  <menuseparator />
+  <menuitem command="cmd_zenSmartGuardDetails" data-l10n-id="zen-smart-open-details"/>
   <menuseparator />
   <menuitem id="context_zenOpenSiteSettings" data-l10n-id="zen-site-data-site-settings"/>
 </menupopup>

@@ -14,6 +14,8 @@ from PIL import Image
 
 
 SIZES: list[int] = [16, 22, 24, 32, 48, 64, 128, 256, 512, 1024]
+NSIS_WATERMARK_SIZE: tuple[int, int] = (164, 314)
+NSIS_HEADER_SIZE: tuple[int, int] = (150, 57)
 
 
 @dataclass(frozen=True)
@@ -130,6 +132,37 @@ def write_icons(src_logo_path: Path, out_dir: Path) -> None:
     for s in SIZES:
         resized = squared.resize((s, s), resample=Image.Resampling.LANCZOS)
         resized.save(out_dir / f"logo{s}.png", format="PNG", optimize=True)
+
+    write_nsis_bitmaps(squared, out_dir)
+
+
+def write_nsis_bitmaps(square_logo: Image.Image, out_dir: Path) -> None:
+    """
+    Generate NSIS wizard assets so setup pages never fallback to upstream branding.
+    """
+    wm_w, wm_h = NSIS_WATERMARK_SIZE
+    header_w, header_h = NSIS_HEADER_SIZE
+
+    watermark = Image.new("RGB", (wm_w, wm_h), (24, 26, 34))
+    watermark_logo = square_logo.resize((112, 112), resample=Image.Resampling.LANCZOS)
+    wm_x = (wm_w - watermark_logo.width) // 2
+    wm_y = (wm_h - watermark_logo.height) // 2 - 12
+    watermark.paste(watermark_logo, (wm_x, wm_y), watermark_logo)
+    watermark.save(out_dir / "wizWatermark.bmp", format="BMP")
+
+    header = Image.new("RGB", (header_w, header_h), (255, 255, 255))
+    header_logo = square_logo.resize((38, 38), resample=Image.Resampling.LANCZOS)
+    header_x = header_w - header_logo.width - 10
+    header_y = (header_h - header_logo.height) // 2
+    header.paste(header_logo, (header_x, header_y), header_logo)
+    header.save(out_dir / "wizHeader.bmp", format="BMP")
+
+    header_rtl = Image.new("RGB", (header_w, header_h), (255, 255, 255))
+    header_rtl_logo = square_logo.resize((38, 38), resample=Image.Resampling.LANCZOS)
+    header_rtl_x = 10
+    header_rtl_y = (header_h - header_rtl_logo.height) // 2
+    header_rtl.paste(header_rtl_logo, (header_rtl_x, header_rtl_y), header_rtl_logo)
+    header_rtl.save(out_dir / "wizHeaderRTL.bmp", format="BMP")
 
 
 def main() -> None:

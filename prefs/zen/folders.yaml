@@ -13,3 +13,34 @@
 
 - name: zen.folders.owned-tabs-in-folder
   value: false
+
+# Super folders feature bundle: keep disabled by default for safe rollout.
+- name: zen.folders.super.enabled
+  value: false
+
+- name: zen.folders.templates.enabled
+  value: false
+
+- name: zen.folders.quick-actions.enabled
+  value: false
+
+- name: zen.folders.dashboard.enabled
+  value: false
+
+- name: zen.folders.autofolders.enabled
+  value: false
+
+# JSON array of auto-folder rules.
+# Example:
+# [{"match":["github.com"],"folderName":"Dev Inbox"}]
+- name: zen.folders.autofolders.rules
+  value: "[]"
+
+- name: zen.folders.autofolders.create-if-missing
+  value: false
+
+- name: zen.folders.autofolders.collapse-target
+  value: true
+
+- name: zen.folders.keyboard-search.enabled
+  value: false

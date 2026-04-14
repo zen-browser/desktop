@@ -18,10 +18,16 @@ support-files = [
 
 ["browser_issue_9900.js"]
 
+["browser_low_bandwidth_mode.js"]
+
 ["browser_overflow_scrollbox.js"]
 
 ["browser_private_mode.js"]
 
 ["browser_private_mode_startup.js"]
+
+["browser_theme_picker_india.js"]
+
+["browser_workspace_icon_picker_india.js"]
 
 ["browser_workspace_bookmarks.js"]

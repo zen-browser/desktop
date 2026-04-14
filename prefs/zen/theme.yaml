@@ -14,6 +14,21 @@
 - name: zen.theme.gradient.show-custom-colors
   value: false
 
+- name: zen.theme.india-packs.stage
+  value: "all"
+
+- name: zen.theme.picker.preview
+  value: true
+
+- name: zen.theme.picker.favorites
+  value: "[]"
+
+- name: zen.theme.picker.recents
+  value: "[]"
+
+- name: zen.theme.picker.max-recents
+  value: 8
+
 - name: zen.theme.essentials-favicon-bg
   value: true
 

@@ -48,6 +48,8 @@ class nsZenWorkspaces {
     promise: null,
     animations: [],
   };
+  #scheduledTabContainerUpdate = null;
+  #autoUnloadTimer = null;
 
   bookmarkMenus = [
     "PlacesToolbar",
@@ -123,6 +125,24 @@ class nsZenWorkspaces {
       this,
       "shouldOpenNewTabIfLastUnpinnedTabIsClosed",
       "zen.workspaces.open-new-tab-if-last-unpinned-tab-is-closed",
+      false
+    );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "shouldAutoUnloadInactiveTabs",
+      "zen.tab-unloader.auto-unload-inactive",
+      false
+    );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "autoUnloadTimeoutMinutes",
+      "zen.tab-unloader.timeout-minutes",
+      10
+    );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "shouldMeasureWorkspacePerformance",
+      "zen.performance.measure-workspaces",
       false
     );
     this.containerSpecificEssentials = Services.prefs.getBoolPref(
@@ -838,7 +858,7 @@ class nsZenWorkspaces {
       this.#clearAnyZombieTabs(); // Dont call with await
       delete this._resolveInitialized;
 
-      const tabUpdateListener = this.updateTabsContainers.bind(this);
+      const tabUpdateListener = () => this.scheduleTabsContainerUpdate();
       window.addEventListener("TabOpen", tabUpdateListener);
       window.addEventListener("TabClose", tabUpdateListener);
       window.addEventListener("TabAddedToEssentials", tabUpdateListener);
@@ -853,6 +873,21 @@ class nsZenWorkspaces {
       );
 
       this.updateWorkspacesChangeContextMenu();
+
+      window.addEventListener(
+        "unload",
+        () => {
+          if (this.#scheduledTabContainerUpdate) {
+            cancelAnimationFrame(this.#scheduledTabContainerUpdate);
+            this.#scheduledTabContainerUpdate = null;
+          }
+          if (this.#autoUnloadTimer) {
+            clearTimeout(this.#autoUnloadTimer);
+            this.#autoUnloadTimer = null;
+          }
+        },
+        { once: true }
+      );
     })();
   }
 
@@ -1036,7 +1071,7 @@ class nsZenWorkspaces {
           console.warn("No active workspace found to change icon");
           return;
         }
-        workspace.icon = icon;
+        workspace.icon = gZenEmojiPicker.sanitizeWorkspaceIcon(icon) || "";
         await this.saveWorkspace(workspace);
       },
     });
@@ -1675,6 +1710,7 @@ class nsZenWorkspaces {
     workspace,
     { onInit = false, alwaysChange = false, whileScrolling = false } = {}
   ) {
+    const changeStart = this.#getPerfStart();
     const previousWorkspace = this.getActiveWorkspace();
     alwaysChange = alwaysChange || onInit;
     this.activeWorkspace = workspace.uuid;
@@ -1727,6 +1763,11 @@ class nsZenWorkspaces {
       previousWorkspaceIndex,
       previousWorkspace,
     });
+    this.#logPerfDuration(
+      "workspace-change-ms",
+      changeStart,
+      workspace?.uuid || "unknown"
+    );
   }
 
   makeSureEmptyTabIsFirst() {
@@ -2653,6 +2694,7 @@ class nsZenWorkspaces {
   }
 
   updateTabsContainers(target = undefined, forAnimation = false) {
+    const start = this.#getPerfStart();
     this.makeSureEmptyTabIsFirst();
     if (target && !target.target?.parentNode) {
       target = null;
@@ -2669,6 +2711,35 @@ class nsZenWorkspaces {
       ],
       forAnimation
     );
+    this.#logPerfDuration("tabs-container-update-ms", start);
+  }
+
+  scheduleTabsContainerUpdate(target = undefined, forAnimation = false) {
+    if (this.#scheduledTabContainerUpdate) {
+      return;
+    }
+    this.#scheduledTabContainerUpdate = requestAnimationFrame(() => {
+      this.#scheduledTabContainerUpdate = null;
+      this.updateTabsContainers(target, forAnimation);
+    });
+  }
+
+  #getPerfStart() {
+    if (!this.shouldMeasureWorkspacePerformance) {
+      return 0;
+    }
+    return performance.now();
+  }
+
+  #logPerfDuration(metricName, start, context = "") {
+    if (!this.shouldMeasureWorkspacePerformance || !start) {
+      return;
+    }
+    const duration = Math.max(0, performance.now() - start);
+    this.log(`[perf] ${metricName}`, {
+      durationMs: Number(duration.toFixed(2)),
+      context,
+    });
   }
 
   updateShouldHideSeparator(
@@ -2882,6 +2953,67 @@ class nsZenWorkspaces {
         await this.changeWorkspace(workspaceToChange);
       }
     }
+
+    this.#scheduleAutoUnloadInactiveTabs();
+  }
+
+  #scheduleAutoUnloadInactiveTabs() {
+    if (!this.shouldAutoUnloadInactiveTabs) {
+      return;
+    }
+    if (this.#autoUnloadTimer) {
+      clearTimeout(this.#autoUnloadTimer);
+    }
+    this.#autoUnloadTimer = setTimeout(() => {
+      this.#autoUnloadTimer = null;
+      this.#autoUnloadInactiveTabs().catch(error => {
+        console.error("gZenWorkspaces: failed to auto-unload inactive tabs", error);
+      });
+    }, 2000);
+  }
+
+  async #autoUnloadInactiveTabs() {
+    if (!this.shouldAutoUnloadInactiveTabs || this.#inChangingWorkspace) {
+      return;
+    }
+    const timeoutMinutes = Math.max(1, this.autoUnloadTimeoutMinutes || 10);
+    const cutoff = Date.now() - timeoutMinutes * 60 * 1000;
+    const activeWorkspaceId = this.activeWorkspace;
+    const selectedTab = gBrowser.selectedTab;
+
+    const tabsToUnload = this.allStoredTabs.filter(tab => {
+      if (!tab || tab === selectedTab || tab.closing) {
+        return false;
+      }
+      if (
+        tab.hasAttribute("zen-empty-tab") ||
+        tab.hasAttribute("zen-essential") ||
+        tab.hasAttribute("pending") ||
+        tab.pinned
+      ) {
+        return false;
+      }
+      if (tab.hasAttribute("pictureinpicture") || tab.hasAttribute("soundplaying")) {
+        return false;
+      }
+      if (tab.getAttribute("zen-workspace-id") === activeWorkspaceId) {
+        return false;
+      }
+      const browser = tab.linkedBrowser;
+      if (
+        window.webrtcUI.browserHasStreams(browser) ||
+        browser?.browsingContext?.currentWindowGlobal?.hasActivePeerConnections()
+      ) {
+        return false;
+      }
+      return (tab.lastAccessed || 0) <= cutoff;
+    });
+
+    if (!tabsToUnload.length) {
+      return;
+    }
+    // Keep this conservative to avoid visible churn in large tab sets.
+    await gBrowser.explicitUnloadTabs(tabsToUnload.slice(0, 20));
   }
 
   // Context menu management

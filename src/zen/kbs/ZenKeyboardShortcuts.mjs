@@ -832,7 +832,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 19;
+  static LATEST_KBS_VERSION = 20;
 
   constructor() {}
 
@@ -1239,6 +1239,20 @@ class nsZenKeyboardShortcutsVersioner {
           })
         );
       }
+    }
+    if (version < 20) {
+      // Add shortcut for folder quick search.
+      data.push(
+        new KeyShortcut(
+          "zen-folder-quick-search",
+          "F",
+          "",
+          ZEN_OTHER_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({ accel: true, alt: true }),
+          "cmd_zenFolderQuickSearch",
+          "zen-folder-quick-search-shortcut"
+        )
+      );
     }
 
     return data;

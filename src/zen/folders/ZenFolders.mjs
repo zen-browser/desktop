@@ -35,6 +35,18 @@ function groupIsCollapsiblePins(group) {
   return group?.tagName.toLowerCase() === "zen-workspace-collapsible-pins";
 }
 
+const FOLDER_TEMPLATES = {
+  workday: {
+    label: "Workday",
+  },
+  research: {
+    label: "Research",
+  },
+  shopping: {
+    label: "Shopping",
+  },
+};
+
 class nsZenFolders extends nsZenDOMOperatedFeature {
   #ZEN_MAX_SUBFOLDERS = Services.prefs.getIntPref(
     "zen.folders.max-subfolders",
@@ -62,9 +74,104 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     this.#initContextMenu();
     this.#initTabsPopup();
     this.#initEventListeners();
+    this.#syncFeatureVisibility();
+  }
+
+  get templatesEnabled() {
+    return (
+      Services.prefs.getBoolPref("zen.folders.super.enabled", false) &&
+      Services.prefs.getBoolPref("zen.folders.templates.enabled", false)
+    );
+  }
+
+  get quickActionsEnabled() {
+    return (
+      Services.prefs.getBoolPref("zen.folders.super.enabled", false) &&
+      Services.prefs.getBoolPref("zen.folders.quick-actions.enabled", false)
+    );
+  }
+
+  get dashboardEnabled() {
+    return (
+      Services.prefs.getBoolPref("zen.folders.super.enabled", false) &&
+      Services.prefs.getBoolPref("zen.folders.dashboard.enabled", false)
+    );
+  }
+
+  get autoFoldersEnabled() {
+    return (
+      Services.prefs.getBoolPref("zen.folders.super.enabled", false) &&
+      Services.prefs.getBoolPref("zen.folders.autofolders.enabled", false)
+    );
+  }
+
+  get autoFoldersCreateIfMissing() {
+    return Services.prefs.getBoolPref(
+      "zen.folders.autofolders.create-if-missing",
+      false
+    );
+  }
+
+  get autoFoldersCollapseTarget() {
+    return Services.prefs.getBoolPref(
+      "zen.folders.autofolders.collapse-target",
+      true
+    );
+  }
+
+  get keyboardSearchEnabled() {
+    return (
+      Services.prefs.getBoolPref("zen.folders.super.enabled", false) &&
+      Services.prefs.getBoolPref("zen.folders.keyboard-search.enabled", false)
+    );
+  }
+
+  get autoFolderRules() {
+    const fallback = [];
+    const raw = Services.prefs.getStringPref("zen.folders.autofolders.rules", "[]");
+    try {
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) {
+        return fallback;
+      }
+      return parsed
+        .filter(rule => rule?.folderName && Array.isArray(rule.match))
+        .map(rule => ({
+          folderName: String(rule.folderName),
+          match: rule.match.map(token => String(token).toLowerCase()),
+        }));
+    } catch {
+      return fallback;
+    }
+  }
+
+  #syncFeatureVisibility() {
+    const templatesMenu = document.getElementById("zen-panel-ui-folder-templates");
+    if (templatesMenu) {
+      templatesMenu.hidden = !this.templatesEnabled;
+    }
+
+    for (const id of [
+      "context_zenFolderOpenAll",
+      "context_zenFolderDuplicate",
+      "context_zenFolderCopyLinks",
+    ]) {
+      const node = document.getElementById(id);
+      if (node) {
+        node.hidden = !this.quickActionsEnabled;
+      }
+    }
+    if (this.dashboardEnabled) {
+      for (const folder of gBrowser.tabContainer.querySelectorAll("zen-folder")) {
+        this.updateFolderDashboard(folder);
+      }
+    }
   }
 
   #initContextMenu() {
+    document
+      .getElementById("zenCreateNewPopup")
+      ?.addEventListener("popupshowing", () => this.#syncFeatureVisibility());
     const contextMenuItems = window.MozXULElement.parseXULToFragment(
       `<menuitem id="zen-context-menu-new-folder" data-l10n-id="zen-toolbar-context-new-folder"/>`
     );
@@ -94,6 +201,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
     const folderActionsMenu = document.getElementById("zenFolderActions");
     folderActionsMenu.addEventListener("popupshowing", event => {
+      this.#syncFeatureVisibility();
       const target = event.explicitOriginalTarget;
       let folder;
       if (gBrowser.isTabGroupLabel(target)) {
@@ -121,6 +229,17 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         "disabled",
         folder.level >= this.#ZEN_MAX_SUBFOLDERS - 1
       );
+      if (this.quickActionsEnabled) {
+        const hasVisibleTabs = folder.tabs.some(
+          tab => !tab.hasAttribute("zen-empty-tab")
+        );
+        document
+          .getElementById("context_zenFolderOpenAll")
+          ?.toggleAttribute("disabled", !hasVisibleTabs);
+        document
+          .getElementById("context_zenFolderCopyLinks")
+          ?.toggleAttribute("disabled", !hasVisibleTabs);
+      }
 
       const changeFolderSpace = document
         .getElementById("context_zenChangeFolderSpace")
@@ -176,6 +295,15 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
           break;
         case "context_zenFolderChangeIcon":
           this.changeFolderUserIcon(this.#lastFolderContextMenu);
+          break;
+        case "context_zenFolderOpenAll":
+          this.openAllTabsInFolder(this.#lastFolderContextMenu);
+          break;
+        case "context_zenFolderDuplicate":
+          this.duplicateFolder(this.#lastFolderContextMenu);
+          break;
+        case "context_zenFolderCopyLinks":
+          this.copyFolderLinks(this.#lastFolderContextMenu);
           break;
       }
     });
@@ -275,6 +403,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     if (group.collapsed && !this._sessionRestoring && !group.isLiveFolder) {
       group.collapsed = group.hasAttribute("has-active");
     }
+    this.updateFolderDashboard(group);
   }
 
   on_FolderGrouped(event) {
@@ -325,21 +454,26 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     collapsedRoot.setAttribute("has-active", "true");
     await this.animateSelect(collapsedRoot);
     gBrowser.tabContainer._invalidateCachedTabs();
+    this.updateFolderDashboard(group);
   }
 
   on_TabOpen(event) {
     const tab = event.target;
     const group = tab.group;
-    if (!group?.isZenFolder || tab.pinned) {
+    if (group?.isZenFolder && !tab.pinned) {
+      // Edge case: In occations where we add a tab with an ownerTab
+      // inside a folder, the tab gets added into the folder in an
+      // unpinned state. We need to pin it and re-add it into the folder.
+      if (Services.prefs.getBoolPref("zen.folders.owned-tabs-in-folder")) {
+        gBrowser.pinTab(tab);
+        group.addTabs([tab]);
+      }
+      this.updateFolderDashboard(group);
+    }
+    if (tab.pinned) {
       return;
     }
-    // Edge case: In occations where we add a tab with an ownerTab
-    // inside a folder, the tab gets added into the folder in an
-    // unpinned state. We need to pin it and re-add it into the folder.
-    if (Services.prefs.getBoolPref("zen.folders.owned-tabs-in-folder")) {
-      gBrowser.pinTab(tab);
-      group.addTabs([tab]);
-    }
+    this.#maybeAutoFolderTab(tab);
   }
 
   async on_TabUngrouped(event) {
@@ -354,6 +488,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     await this.animateUnload(group, tab, true);
+    this.updateFolderDashboard(group);
   }
 
   on_TabGroupCreate(event) {
@@ -403,6 +538,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     await this.animateCollapse(group);
+    this.updateFolderDashboard(group);
   }
 
   async on_TabGroupExpand(event) {
@@ -412,6 +548,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     await this.animateExpand(group);
+    this.updateFolderDashboard(group);
   }
 
   #onNewFolder(event) {
@@ -553,6 +690,191 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     return !(isZenFolder && level >= this.#ZEN_MAX_SUBFOLDERS);
   }
 
+  createFolderFromTemplate(templateId) {
+    if (!this.templatesEnabled) {
+      return null;
+    }
+    const template = FOLDER_TEMPLATES[templateId] || FOLDER_TEMPLATES.workday;
+    const folder = this.createFolder([], {
+      renameFolder: false,
+      label: template.label,
+    });
+    this.updateFolderDashboard(folder);
+    return folder;
+  }
+
+  getFolderForActiveTab(tab = gBrowser.selectedTab) {
+    if (!tab) {
+      return null;
+    }
+    let group = tab.group;
+    if (group?.hasAttribute("split-view-group")) {
+      group = group.group;
+    }
+    return group?.isZenFolder ? group : null;
+  }
+
+  openSearchForActiveFolder() {
+    if (!this.keyboardSearchEnabled) {
+      return false;
+    }
+    const folder = this.getFolderForActiveTab();
+    if (!folder?.collapsed) {
+      return false;
+    }
+    const labelContainer = folder.labelElement?.parentElement;
+    if (!labelContainer) {
+      return false;
+    }
+    this.openTabsPopup({
+      stopPropagation() {},
+      target: labelContainer,
+    });
+    return true;
+  }
+
+  openAllTabsInFolder(folder) {
+    if (!folder?.isZenFolder) {
+      return;
+    }
+    folder.collapsed = false;
+    const tabs = folder.tabs.filter(tab => !tab.hasAttribute("zen-empty-tab"));
+    if (tabs.length) {
+      gBrowser.selectedTab = tabs[0];
+    }
+    this.updateFolderDashboard(folder);
+  }
+
+  duplicateFolder(folder) {
+    if (!folder?.isZenFolder) {
+      return null;
+    }
+    const clone = this.createFolder([], {
+      renameFolder: false,
+      label: `${folder.label} Copy`,
+    });
+    const tabUrls = folder.tabs
+      .filter(tab => !tab.hasAttribute("zen-empty-tab"))
+      .map(tab => tab.linkedBrowser?.currentURI?.spec)
+      .filter(url => Boolean(url) && url !== "about:blank");
+    for (const url of tabUrls) {
+      const tab = gBrowser.addTab(url, {
+        skipAnimation: true,
+        pinned: true,
+        triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+      });
+      gBrowser.pinTab(tab);
+      clone.addTabs([tab]);
+    }
+    this.updateFolderDashboard(clone);
+    return clone;
+  }
+
+  copyFolderLinks(folder) {
+    if (!folder?.isZenFolder) {
+      return;
+    }
+    const links = folder.tabs
+      .filter(tab => !tab.hasAttribute("zen-empty-tab"))
+      .map(tab => tab.linkedBrowser?.currentURI?.spec)
+      .filter(url => Boolean(url) && !url.startsWith("about:"));
+    if (!links.length) {
+      return;
+    }
+    if (window.gZenCommonActions?.copyToClipboardWithSmartGuard) {
+      window.gZenCommonActions.copyToClipboardWithSmartGuard(
+        links.join("\n"),
+        "folder-links"
+      );
+      return;
+    }
+    Services.clipboardHelper.copyString(links.join("\n"));
+  }
+
+  updateFolderDashboard(folder) {
+    if (!this.dashboardEnabled || !folder?.isZenFolder) {
+      return;
+    }
+    const contentTabs = folder.tabs.filter(tab => !tab.hasAttribute("zen-empty-tab"));
+    const pendingTabs = contentTabs.filter(tab => tab.hasAttribute("pending"));
+    const count = contentTabs.length;
+    const pendingCount = pendingTabs.length;
+    const labelContainer = folder.labelElement?.parentElement;
+    if (!labelContainer) {
+      return;
+    }
+    labelContainer.setAttribute("data-zen-folder-tabs-count", String(count));
+    labelContainer.setAttribute(
+      "data-zen-folder-pending-count",
+      String(pendingCount)
+    );
+    const lastActiveTab = contentTabs
+      .slice()
+      .sort((a, b) => (b.lastAccessed || 0) - (a.lastAccessed || 0))[0];
+    const lastActive = lastActiveTab?.lastAccessed
+      ? formatRelativeTime(lastActiveTab.lastAccessed)
+      : "No active tabs";
+    folder.labelElement.setAttribute(
+      "tooltiptext",
+      `${count} tabs • ${pendingCount} sleeping • ${lastActive}`
+    );
+  }
+
+  findFolderByLabel(label, workspaceId = gZenWorkspaces.activeWorkspace) {
+    if (!label) {
+      return null;
+    }
+    const normalized = label.trim().toLowerCase();
+    return Array.from(gBrowser.tabContainer.querySelectorAll("zen-folder")).find(
+      folder =>
+        folder.getAttribute("zen-workspace-id") === workspaceId &&
+        folder.label?.trim().toLowerCase() === normalized
+    );
+  }
+
+  #getAutoRuleForUrl(url) {
+    const normalizedUrl = String(url || "").toLowerCase();
+    if (!normalizedUrl || normalizedUrl.startsWith("about:")) {
+      return null;
+    }
+    return this.autoFolderRules.find(rule =>
+      rule.match.some(token => normalizedUrl.includes(token))
+    );
+  }
+
+  #maybeAutoFolderTab(tab) {
+    if (!this.autoFoldersEnabled || !tab || tab.closing) {
+      return;
+    }
+    // Wait a moment so the final URL is available after opening.
+    setTimeout(() => {
+      if (tab.closing || tab.group || tab.hasAttribute("zen-essential")) {
+        return;
+      }
+      const url = tab.linkedBrowser?.currentURI?.spec;
+      const rule = this.#getAutoRuleForUrl(url);
+      if (!rule) {
+        return;
+      }
+      let targetFolder = this.findFolderByLabel(rule.folderName);
+      if (!targetFolder && this.autoFoldersCreateIfMissing) {
+        targetFolder = this.createFolder([], {
+          renameFolder: false,
+          label: rule.folderName,
+        });
+      }
+      if (!targetFolder) {
+        return;
+      }
+      gBrowser.pinTab(tab);
+      targetFolder.addTabs([tab]);
+      if (this.autoFoldersCollapseTarget) {
+        targetFolder.collapsed = true;
+      }
+      this.updateFolderDashboard(targetFolder);
+    }, 1200);
+  }
+
   createFolder(tabs = [], options = {}) {
     const filteredTabs = tabs
       .filter(tab => !tab.hasAttribute("zen-essential"))
@@ -613,6 +935,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     this.#groupInit(folder);
+    this.updateFolderDashboard(folder);
     return folder;
   }
 
@@ -1063,6 +1386,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         this.#popup.hidePopup(true);
       }, 200);
     });
+    this.updateFolderDashboard(group);
   }
 
   storeDataForSessionStore() {

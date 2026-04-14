@@ -51,6 +51,22 @@
   list-style-image: url("unpin.svg") !important;
 }
 
+#PanelUI-zen-gradient-generator-action-reset {
+  list-style-image: url("reload.svg") !important;
+}
+
+#PanelUI-zen-gradient-generator-action-apply {
+  list-style-image: url("save.svg") !important;
+}
+
+#PanelUI-zen-gradient-generator-action-preview {
+  list-style-image: url("reader-mode.svg") !important;
+}
+
+#PanelUI-zen-gradient-generator-action-favorite {
+  list-style-image: url("bookmark-hollow.svg") !important;
+}
+
 .tab-reset-button {
   list-style-image: url("unpin.svg");
 

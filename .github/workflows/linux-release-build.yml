@@ -128,7 +128,7 @@ jobs:
           ZEN_RELEASE_BRANCH: ${{ inputs['release-branch'] }}
         run: |
           export SURFER_PLATFORM="linux"
-          if [[ -n ${{ inputs.MOZ_BUILD_DATE }} ]];then
+          if [[ -n "${{ inputs.MOZ_BUILD_DATE }}" ]]; then
             export MOZ_BUILD_DATE=${{ inputs.MOZ_BUILD_DATE }}
           fi
           bash .github/workflows/src/release-build.sh
@@ -149,7 +149,13 @@ jobs:
       - name: Rename artifacts
         run: |
           set -eu
-          mv dist/zen-*.tar.xz "astra.linux-${{ matrix.arch }}.tar.xz"
+          LINUX_TAR=$(find dist -maxdepth 1 -type f -name "*.tar.xz" 2>/dev/null | head -1)
+          if [ -z "$LINUX_TAR" ]; then
+            echo "No Linux archive (*.tar.xz) found in dist/"
+            ls -la dist || true
+            exit 1
+          fi
+          mv "$LINUX_TAR" "astra.linux-${{ matrix.arch }}.tar.xz"
           mv dist/output.mar linux${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.mar
           if [ -f "dist/zen-${{ matrix.arch }}.AppImage" ]; then
             mv "dist/zen-${{ matrix.arch }}.AppImage" "dist/astra-${{ matrix.arch }}.AppImage"
@@ -164,6 +170,7 @@ jobs:
           retention-days: 5
           name: astra.linux-${{ matrix.arch }}.tar.xz
           path: ./astra.linux-${{ matrix.arch }}.tar.xz
+          if-no-files-found: error
 
       - name: Upload build artifact (.mar)
         uses: actions/upload-artifact@v4
@@ -171,6 +178,7 @@ jobs:
           retention-days: 5
           name: linux${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.mar
           path: ./linux${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.mar
+          if-no-files-found: error
 
       - name: Upload build artifact (update manifests)
         uses: actions/upload-artifact@v4
@@ -178,3 +186,4 @@ jobs:
           retention-days: 5
           name: linux_update_manifest_${{ matrix.arch }}
           path: ./dist/update
+          if-no-files-found: error

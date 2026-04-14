@@ -142,6 +142,69 @@
   }
 }
 
+#PanelUI-zen-gradient-generator-pack-selector {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  padding: 2px var(--panel-padding) 0;
+
+  & > button {
+    min-height: 26px;
+    margin: 0 !important;
+    padding: 2px 6px !important;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, currentColor 15%, transparent) !important;
+    background: color-mix(in srgb, currentColor 4%, transparent) !important;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+
+    &[selected] {
+      border-color: color-mix(in srgb, var(--zen-primary-color) 70%, transparent) !important;
+      background: color-mix(in srgb, var(--zen-primary-color) 22%, transparent) !important;
+      color: light-dark(#2d2d2d, #fff);
+    }
+  }
+}
+
+#PanelUI-zen-gradient-generator[zen-theme-pack="minimal"] .zen-theme-picker-gradient {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #ff9933 35%, transparent);
+}
+
+#PanelUI-zen-gradient-generator[zen-theme-pack="festive"] .zen-theme-picker-gradient {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #d354ff 35%, transparent);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 20% 10%, color-mix(in srgb, #ff9933 20%, transparent) 0 16%, transparent 22%),
+      radial-gradient(circle at 82% 14%, color-mix(in srgb, #138808 24%, transparent) 0 12%, transparent 20%),
+      radial-gradient(circle at 52% 86%, color-mix(in srgb, #1b3fa7 18%, transparent) 0 14%, transparent 24%);
+    opacity: 0.7;
+  }
+}
+
+#PanelUI-zen-gradient-generator[zen-theme-pack="heritage"] .zen-theme-picker-gradient {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #b87b3e 35%, transparent);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        color-mix(in srgb, #9c6b39 20%, transparent) 0 8px,
+        transparent 8px 16px
+      );
+  }
+}
+
 #PanelUI-zen-gradient-generator-custom-list {
   margin-top: 15px;
 
@@ -183,6 +246,73 @@
       opacity: 1;
     }
   }
+}
+
+#PanelUI-zen-gradient-generator-theme-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  padding: 0 var(--panel-padding);
+
+  & > button {
+    min-height: 28px;
+    margin: 0 !important;
+    padding: 4px 6px !important;
+    border-radius: 8px;
+    border: 1px solid color-mix(in srgb, currentColor 12%, transparent) !important;
+    background: color-mix(in srgb, currentColor 3%, transparent) !important;
+    font-size: 11px;
+    font-weight: 600;
+    justify-content: center;
+
+    &[selected] {
+      background: color-mix(in srgb, var(--zen-primary-color) 20%, transparent) !important;
+      border-color: color-mix(in srgb, var(--zen-primary-color) 70%, transparent) !important;
+    }
+  }
+}
+
+#PanelUI-zen-gradient-generator-presets-state {
+  gap: 8px;
+  padding: 0 var(--panel-padding);
+}
+
+#PanelUI-zen-gradient-generator-favorites-section,
+#PanelUI-zen-gradient-generator-recents-section {
+  gap: 4px;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.zen-theme-picker-section-title {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  opacity: 0.9;
+}
+
+#PanelUI-zen-gradient-generator-favorites-list,
+#PanelUI-zen-gradient-generator-recents-list {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: 2px;
+}
+
+.zen-theme-picker-library-item {
+  margin: 0 !important;
+  min-height: 24px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, currentColor 16%, transparent) !important;
+  background: color-mix(in srgb, currentColor 4%, transparent) !important;
+  font-size: 11px;
+  font-weight: 600;
+  padding-inline: 10px !important;
+  white-space: nowrap;
 }
 
 #PanelUI-zen-gradient-slider-wave {

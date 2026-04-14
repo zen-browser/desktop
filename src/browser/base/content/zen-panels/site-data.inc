@@ -92,6 +92,14 @@
                        closemenu="none"
                        context="zenSiteDataActions" />
       </hbox>
+      <vbox id="zen-site-data-smartguard" hidden="true">
+        <hbox id="zen-site-data-smartguard-header">
+          <label id="zen-site-data-smartguard-title"
+                 data-l10n-id="zen-smart-site-data-title" />
+          <label id="zen-site-data-smartguard-state" />
+        </hbox>
+        <label id="zen-site-data-smartguard-reason" crop="end" />
+      </vbox>
 # Messages will be inserted here.
 # Dont write anything directly here, even comments, as this may break the layout
       <html:div id="unified-extensions-messages-container"></html:div>

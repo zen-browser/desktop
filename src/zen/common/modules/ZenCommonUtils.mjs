@@ -85,10 +85,22 @@ export class nsZenPreloadedFeature {
 }
 
 window.gZenCommonActions = {
+  copyToClipboardWithSmartGuard(text, source = "generic") {
+    if (window.gZenSmartGuard?.guardedCopyToClipboard) {
+      window.gZenSmartGuard.guardedCopyToClipboard(text, source);
+      return;
+    }
+    Services.clipboardHelper.copyString(text);
+  },
+
   copyCurrentURLToClipboard() {
     const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
     const displaySpec = currentUrl.displaySpec;
-    ClipboardHelper.copyString(displaySpec);
+    if (window.gZenSmartGuard?.guardedCopyToClipboard) {
+      window.gZenSmartGuard.guardedCopyToClipboard(displaySpec, "current-url");
+    } else {
+      ClipboardHelper.copyString(displaySpec);
+    }
     let button;
     /* eslint-disable mozilla/valid-services */
     if (Services.zen.canShare() && displaySpec.startsWith("http")) {
@@ -119,7 +131,14 @@ window.gZenCommonActions = {
     const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
     const tabTitle = gBrowser.selectedTab.label;
     const markdownLink = `[${tabTitle}](${currentUrl.displaySpec})`;
-    ClipboardHelper.copyString(markdownLink);
+    if (window.gZenSmartGuard?.guardedCopyToClipboard) {
+      window.gZenSmartGuard.guardedCopyToClipboard(
+        markdownLink,
+        "current-url-markdown"
+      );
+    } else {
+      ClipboardHelper.copyString(markdownLink);
+    }
     gZenUIManager.showToast("zen-copy-current-url-as-markdown-confirmation", {
       timeout: 3000,
     });

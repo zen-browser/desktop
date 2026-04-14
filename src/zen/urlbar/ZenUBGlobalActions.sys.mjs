@@ -114,13 +114,22 @@ const globalActionsTemplate = [
   },
   {
     label: "Rupee: Copy ₹ Symbol",
-    command: () => Services.clipboardHelper.copyString("₹"),
+    command: window =>
+      window.gZenCommonActions.copyToClipboardWithSmartGuard(
+        "₹",
+        "rupee-symbol"
+      ),
     icon: "chrome://browser/skin/zen-icons/wallet.svg",
   },
   {
     label: "Settings",
     command: window => window.openPreferences(),
     icon: "chrome://browser/skin/zen-icons/settings.svg",
+  },
+  {
+    label: "SMART Guard Details",
+    command: "cmd_zenSmartGuardDetails",
+    icon: "chrome://browser/skin/zen-icons/shield.svg",
   },
   {
     label: "Open Private Window",

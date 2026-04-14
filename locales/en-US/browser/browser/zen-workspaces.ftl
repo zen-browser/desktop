@@ -13,6 +13,15 @@ zen-panel-ui-workspaces-create =
 zen-panel-ui-folder-create =
     .label = Create Folder
 
+zen-panel-ui-folder-templates =
+    .label = Folder Templates
+zen-folder-template-workday =
+    .label = Workday
+zen-folder-template-research =
+    .label = Research
+zen-folder-template-shopping =
+    .label = Shopping
+
 zen-panel-ui-live-folder-create =
     .label = Live Folder
 
@@ -67,6 +76,24 @@ zen-panel-ui-gradient-generator-algo-triadic =
 zen-panel-ui-gradient-generator-algo-floating =
     .label = Floating
 zen-panel-ui-gradient-click-to-add = Click to add a color
+zen-panel-ui-gradient-pack-all =
+    .label = All
+zen-panel-ui-gradient-pack-minimal =
+    .label = India Minimal
+zen-panel-ui-gradient-pack-festive =
+    .label = India Festive
+zen-panel-ui-gradient-pack-heritage =
+    .label = India Heritage
+zen-panel-ui-gradient-action-preview =
+    .label = Live Preview
+zen-panel-ui-gradient-action-apply =
+    .label = Apply
+zen-panel-ui-gradient-action-reset =
+    .label = Reset
+zen-panel-ui-gradient-action-favorite =
+    .label = Favorite
+zen-panel-ui-gradient-favorites-title = Favorites
+zen-panel-ui-gradient-recent-title = Recently Used
 
 zen-workspace-creation-name =
     .placeholder = Space Name

@@ -13,3 +13,18 @@
   # 1: Left side always
   # 2: Right side always
   value: 0
+
+- name: zen.smart.enabled
+  value: false
+
+- name: zen.smart.notify.enabled
+  value: false
+
+- name: zen.smart.downloads.enabled
+  value: false
+
+- name: zen.smart.screen.enabled
+  value: false
+
+- name: zen.smart.clipboard.enabled
+  value: false

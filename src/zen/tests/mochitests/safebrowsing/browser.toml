@@ -13,4 +13,6 @@ skip-if = [
 
 ["browser_mixedcontent_aboutblocked.js"]
 
+["browser_smart_guard.js"]
+
 ["browser_whitelisted.js"]

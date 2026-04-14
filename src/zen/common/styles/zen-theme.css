@@ -274,25 +274,23 @@
 
   /** Other theme-related styles */
   @media (-moz-platform: macos) {
-    font-family: var(
-      --zen-ui-font-family,
-      SF Pro,
+    font-family:
+      var(--zen-ui-font-family, SF Pro),
       ui-sans-serif,
       system-ui,
       sans-serif,
       Apple Color Emoji,
       Segoe UI Emoji,
       Segoe UI Symbol,
-      Noto Color Emoji
-    );
+      Noto Color Emoji;
   }
 
   @media (-moz-platform: windows) {
-    font-family: var(--zen-ui-font-family, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
+    font-family: var(--zen-ui-font-family, 'Segoe UI'), Tahoma, Geneva, Verdana, sans-serif;
   }
 
   @media (-moz-platform: linux) {
-    font-family: var(--zen-ui-font-family, system-ui, sans-serif);
+    font-family: var(--zen-ui-font-family, system-ui), sans-serif;
   }
 }
 

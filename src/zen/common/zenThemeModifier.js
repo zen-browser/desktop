@@ -167,17 +167,47 @@
     },
 
     /**
+     * Normalize a user-provided font-family value into a valid CSS value.
+     * If the value is a single family name containing whitespace and is not
+     * already quoted or a comma-separated list, quote it so CSS treats it as
+     * one family name rather than multiple unrelated identifiers.
+     */
+    normalizeFontFamily(fontFamily) {
+      const normalized = fontFamily.trim();
+      if (!normalized) {
+        return "";
+      }
+      if (
+        normalized.includes(",") ||
+        normalized.includes('"') ||
+        normalized.includes("'")
+      ) {
+        return normalized;
+      }
+      if (/\s/.test(normalized)) {
+        return `"${normalized.replace(/\\/g, "\\\\").replace(/"/g, '\\"')}"`;
+      }
+      return normalized;
+    },
+
+    /**
      * Update the UI font family.
-     * When zen.ui.font.family is set to a non-empty string, apply it as an inline
-     * font-family on the root element so it overrides all author stylesheets.
+     * When zen.ui.font.family is set to a non-empty string, expose it via the
+     * --zen-ui-font-family custom property and let CSS compute the final
+     * platform-appropriate font-family stack.
      * An empty value removes the override and lets the platform default take effect.
      */
     updateFontFamily() {
-      const fontFamily = Services.prefs.getStringPref("zen.ui.font.family", "");
+      const fontFamily = this.normalizeFontFamily(
+        Services.prefs.getStringPref("zen.ui.font.family", "")
+      );
       if (fontFamily) {
-        document.documentElement.style.setProperty("font-family", fontFamily);
+        document.documentElement.style.setProperty(
+          "--zen-ui-font-family",
+          fontFamily
+        );
       } else {
-        document.documentElement.style.removeProperty("font-family");
+        document.documentElement.style.removeProperty("--zen-ui-font-family");
       }
     },
 

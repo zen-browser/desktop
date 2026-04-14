@@ -86,12 +86,10 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Install dependencies
-        continue-on-error: true
         run: |
           npm ci
 
       - name: Load Surfer CI setup
-        continue-on-error: true
         run: npm run surfer -- ci --brand ${{ inputs['release-branch'] }} --display-version ${{ inputs['build-version'] }}
 
       - name: Validate installer branding assets
@@ -113,7 +111,6 @@ jobs:
           key: win-cross
 
       - name: Install MozillaBuild
-        continue-on-error: true
         shell: pwsh
         run: |
           Invoke-WebRequest -Uri "https://ftp.mozilla.org/pub/mozilla/libraries/win32/MozillaBuildSetup-Latest.exe" -OutFile "MozillaBuildSetup.exe"
@@ -122,7 +119,6 @@ jobs:
           Add-Content -Path $env:GITHUB_ENV -Value "MOZILLABUILD=C:\mozilla-build"
 
       - name: Setup for Windows
-        continue-on-error: true
         if: steps.cache-win-cross.outputs.cache-hit != 'true' && !(inputs['generate-gpo'] && matrix.arch == 'aarch64')
         shell: pwsh
         run: |

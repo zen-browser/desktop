@@ -59,7 +59,7 @@
     color-mix(in srgb, var(--zen-primary-color) 1%, var(--zen-branding-bg) 99%)
   );
 
-  --zen-dialog-background: light-dark(#FAFBFF, #161C31);
+  --zen-dialog-background: light-dark(#fafbff, #1c1c1c);
   --zen-urlbar-background: light-dark(
     color-mix(in srgb, var(--zen-primary-color) 3%, #f4f4f4 97%),
     color-mix(in srgb, var(--zen-primary-color) 4%, rgb(24, 24, 24) 96%)
@@ -113,7 +113,7 @@
   --button-border-color: var(--in-content-primary-button-border-color) !important;
   --button-font-weight: 500 !important;
 
-  --button-border-radius: 6px;
+  --button-border-radius: 8px;
   --button-text-color-primary: var(--in-content-primary-button-text-color) !important;
 
   --button-background-color: var(--in-content-button-background) !important;

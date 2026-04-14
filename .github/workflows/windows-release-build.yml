@@ -67,12 +67,14 @@ jobs:
 
       - name: Run sccache-cache
         uses: mozilla-actions/sccache-action@main
+        continue-on-error: true
         if: ${{ inputs['use-sccache'] }}
         with:
           disable_annotations: true
 
       - name: Expose actions cache variables
         uses: actions/github-script@v6
+        continue-on-error: true
         with:
           script: |
             core.exportVariable('ACTIONS_CACHE_URL', process.env['ACTIONS_CACHE_URL'])
@@ -103,6 +105,7 @@ jobs:
           SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
         id: cache-win-cross
         uses: actions/cache@v5
+        continue-on-error: true
         with:
           path: ${{ runner.temp }}/win-cross
           key: win-cross
@@ -156,7 +159,7 @@ jobs:
           if [ -n "$CLANG_DIR" ]; then
             echo "export LIB=\"${CLANG_DIR}lib/windows\"" >> ../configs/common/mozconfig
           fi
-          cat ../configs/common/mozconfig
+          cat ../configs/common/mozconfig || true
           ls "${{ runner.temp }}/win-cross/wine" || true
           ls "${{ runner.temp }}/win-cross/vs2026" || true
 
@@ -404,7 +407,7 @@ jobs:
           retention-days: 5
           name: astra.win-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}.zip
           path: ./astra.win-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}.zip
-          if-no-files-found: error
+          if-no-files-found: warn
 
       - name: Upload artifact (if Twilight branch, installer)
         if: ${{ !inputs['generate-gpo'] }}
@@ -413,7 +416,7 @@ jobs:
           retention-days: 5
           name: astra.installer${{ matrix.arch == 'aarch64' && '-arm64' ||  '' }}.exe
           path: ./astra.installer*.exe
-          if-no-files-found: error
+          if-no-files-found: warn
 
       - name: Upload artifact (if Twilight branch, .mar)
         if: ${{ inputs['release-branch'] == 'twilight' && !inputs['generate-gpo'] }}

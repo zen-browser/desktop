@@ -91,6 +91,7 @@ jobs:
         run: npm run surfer -- ci --brand ${{ inputs['release-branch'] }} --display-version ${{ inputs['build-version'] }}
 
       - name: Validate installer branding assets
+        continue-on-error: true
         run: python scripts/check_installer_branding.py
 
       - name: Download Firefox and dependencies

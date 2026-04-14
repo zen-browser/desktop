@@ -3,8 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 EXTRA_JS_MODULES += [
-  "ZenDataSaver.sys.mjs",
-  "sys/ZenActorsManager.sys.mjs",
-  "sys/ZenCustomizableUI.sys.mjs",
-  "sys/ZenUIMigration.sys.mjs",
+    "sys/ZenActorsManager.sys.mjs",
+    "sys/ZenCustomizableUI.sys.mjs",
+    "sys/ZenUIMigration.sys.mjs",
+    "ZenDataSaver.sys.mjs",
 ]

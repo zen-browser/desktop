@@ -45,3 +45,11 @@
 # Set to a positive value to override with a custom radius
 - name: zen.theme.border-radius
   value: -1
+
+# ==== Mark: UI font ====
+
+# Empty string means use the platform default font.
+# Set to a font family name (e.g. "Inter", "Ubuntu", "Noto Sans") to override the UI font.
+# This is useful on the generic Linux tarball where the system font may not be detected.
+- name: zen.ui.font.family
+  value: ""

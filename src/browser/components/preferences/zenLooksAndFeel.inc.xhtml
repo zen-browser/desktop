@@ -115,4 +115,22 @@
         </hbox>
 </groupbox>
 
+<hbox id="zenFontCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenLooks">
+<html:h1 data-l10n-id="zen-font-title"/>
+</hbox>
+
+<groupbox id="zenFontGroup" data-category="paneZenLooks" hidden="true" class="highlighting-group">
+  <label><html:h2 data-l10n-id="zen-font-header"/></label>
+  <description class="description-deemphasized" data-l10n-id="zen-font-description" />
+  <hbox align="center">
+    <label data-l10n-id="zen-font-family-label" control="zenUiFontFamilyInput"/>
+    <html:input id="zenUiFontFamilyInput"
+                type="text"
+                data-l10n-id="zen-font-family-input"/>
+  </hbox>
+</groupbox>
+
 </html:template>

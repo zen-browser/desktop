@@ -177,6 +177,13 @@ zen-compact-mode-styles-left = Hide Tab bar
 zen-compact-mode-styles-top = Hide Top bar
 zen-compact-mode-styles-both = Hide Both
 
+zen-font-title = Interface Font
+zen-font-header = Interface font family
+zen-font-description = Set a custom font for the browser interface. Useful on Linux when the system font is not detected automatically. Leave empty to use the platform default.
+zen-font-family-label = Font family
+zen-font-family-input =
+    .placeholder = Leave empty for platform default (e.g. Ubuntu, Inter, Noto Sans)
+
 zen-urlbar-title = Zen URL Bar
 zen-urlbar-header = General settings for the URL bar
 zen-urlbar-description = Customize the URL bar to your liking

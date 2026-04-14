@@ -661,6 +661,18 @@ var gZenLooksAndFeel = {
       }
     });
     this.applySidebarLayout();
+    this._initFontFamily();
+  },
+
+  _initFontFamily() {
+    const input = document.getElementById("zenUiFontFamilyInput");
+    if (!input) {
+      return;
+    }
+    input.value = Services.prefs.getStringPref("zen.ui.font.family", "");
+    input.addEventListener("change", () => {
+      Services.prefs.setStringPref("zen.ui.font.family", input.value.trim());
+    });
   },
 
   observe() {

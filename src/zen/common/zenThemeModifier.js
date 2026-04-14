@@ -18,6 +18,7 @@
     "zen.theme.accent-color",
     "zen.theme.border-radius",
     "zen.theme.content-element-separation",
+    "zen.ui.font.family",
   ];
   const kZenMaxElementSeparation = 12;
 
@@ -89,6 +90,7 @@
       this.updateAccentColor();
       this.updateBorderRadius();
       this.updateElementSeparation();
+      this.updateFontFamily();
     },
 
     updateBorderRadius() {
@@ -162,6 +164,21 @@
         Services.prefs.getIntPref("zen.theme.content-element-separation"),
         kZenMaxElementSeparation
       );
+    },
+
+    /**
+     * Update the UI font family.
+     * When zen.ui.font.family is set to a non-empty string, apply it as an inline
+     * font-family on the root element so it overrides all author stylesheets.
+     * An empty value removes the override and lets the platform default take effect.
+     */
+    updateFontFamily() {
+      const fontFamily = Services.prefs.getStringPref("zen.ui.font.family", "");
+      if (fontFamily) {
+        document.documentElement.style.setProperty("font-family", fontFamily);
+      } else {
+        document.documentElement.style.removeProperty("font-family");
+      }
     },
 
     /**

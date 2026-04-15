@@ -7,4 +7,10 @@ support-files = [
   "head.js",
 ]
 
+["browser_media_metadata.js"]
+
+["browser_media_mute.js"]
+
+["browser_media_next_track.js"]
+
 ["browser_media_shows_on_tab_switch.js"]

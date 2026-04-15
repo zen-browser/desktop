@@ -18,9 +18,16 @@
 // chain (event wiring, the 500ms tab-switch debounce, the hidden attribute
 // flip) surfaces as a bar that either never shows or never hides.
 
+// note: We keep setting timeouts because media player takes a bit to
+// get removed (after the animation, more specifically)
+
 add_task(async function test_media_bar_shows_when_switching_off_playing_tab() {
-  // Start from a known state: plain blank tab, no prior media controller.
-  debugger;
+  gZenMediaController.onControllerClose();
+  await BrowserTestUtils.waitForCondition(
+    () => !isMediaBarVisible(),
+    "media bar hides again once the playing tab regains focus"
+  );
+
   const originalTab = gBrowser.selectedTab;
   const mediaTab = await addMediaTab();
   await BrowserTestUtils.switchTab(gBrowser, mediaTab);
@@ -31,9 +38,8 @@ add_task(async function test_media_bar_shows_when_switching_off_playing_tab() {
   );
 
   try {
-    await playAudioIn(mediaTab);
+    await playVideoIn(mediaTab);
 
-    // Audio is playing but we're still on the playing tab — bar stays hidden.
     ok(
       !isMediaBarVisible(),
       "media bar remains hidden while focused on the playing tab"
@@ -48,23 +54,21 @@ add_task(async function test_media_bar_shows_when_switching_off_playing_tab() {
       "media bar becomes visible after switching off the playing tab"
     );
 
-    // The bar should be bound to the media tab's browser, not the now-selected
-    // original tab — otherwise the focus/pause buttons target the wrong page.
     Assert.equal(
       gZenMediaController._currentBrowser?.browserId,
       mediaTab.linkedBrowser.browserId,
       "media controller is bound to the media tab's browser, not the selected tab"
     );
 
-    // Switch back — bar hides again.
     await BrowserTestUtils.switchTab(gBrowser, mediaTab);
+    await new Promise(r => setTimeout(r, 1000));
     await BrowserTestUtils.waitForCondition(
       () => !isMediaBarVisible(),
       "media bar hides again once the playing tab regains focus"
     );
   } finally {
-    await pauseAudioIn(mediaTab);
+    await pauseVideoIn(mediaTab);
     BrowserTestUtils.removeTab(mediaTab);
-    await BrowserTestUtils.switchTab(gBrowser, originalTab);
+    gBrowser.selectedTab = originalTab;
   }
 });

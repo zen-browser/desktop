@@ -683,3 +683,47 @@
     }
   }
 }
+
+/* Loading progress bar */
+#zen-loading-progress-bar {
+  position: fixed;
+  top: max(calc(var(--zen-element-separation) / -2), -4px);
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background: light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.7));
+  height: .4rem;
+  width: 5rem;
+  z-index: 9;
+  border-radius: 100px;
+  transition: opacity .3s ease-in-out,
+              background-color .3s ease-in-out,
+              transform .3s ease-in-out;
+  overflow: clip;
+  pointer-events: none;
+  animation: zen-progress-bar-pulse 1.5s linear infinite forwards;
+  transform-origin: 0 0;
+
+  &[long-load="true"] {
+    opacity: 1;
+    animation: zen-progress-bar-settle .3s ease-out forwards;
+    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 75%;
+      opacity: 0;
+      animation: zen-progress-bar-long-load 1s ease-in-out infinite;
+      animation-delay: 0.3s;
+      background: light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.7));
+      border-radius: inherit;
+    }
+  }
+
+  /* stylelint-disable-next-line media-query-no-invalid */
+  @media not -moz-pref("zen.view.enable-loading-indicator") {
+    display: none;
+  }
+}

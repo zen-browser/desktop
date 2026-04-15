@@ -486,11 +486,12 @@
       margin-block: -1px !important;
     }
   }
+}
 
-  & #identity-icon-box {
-    --urlbar-box-hover-bgcolor: transparent;
-    margin-inline: 2px 8px;
-  }
+#urlbar[open][zen-floating-urlbar="true"] #identity-icon-box,
+:root[zen-single-toolbar="true"] #urlbar[breakout-extend="true"] #identity-icon-box {
+  --urlbar-box-hover-bgcolor: transparent;
+  margin-inline: 2px 8px;
 }
 
 /* stylelint-disable-next-line media-query-no-invalid */

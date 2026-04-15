@@ -96,12 +96,6 @@
 
 .browserSidebarContainer.zen-glance-background {
   box-shadow: var(--zen-big-shadow);
-
-  & .browserContainer {
-    /* For rounding the corners of the content to work while
-     * applying a transformation to the container. */
-    will-change: transform;
-  }
 }
 
 .browserSidebarContainer.zen-glance-background,

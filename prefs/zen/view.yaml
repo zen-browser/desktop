@@ -57,3 +57,6 @@
 
 - name: zen.view.overflow-webext-toolbar
   value: "@IS_TWILIGHT@"
+
+- name: zen.view.enable-loading-indicator
+  value: true

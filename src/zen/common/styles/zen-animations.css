@@ -56,3 +56,38 @@
     background-position: -400% 50%;
   }
 }
+
+@keyframes zen-progress-bar-pulse {
+  0% {
+    transform: scale(0.8) translate(-50%, -50%);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(0.95) translate(-50%, -50%);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.8) translate(-50%, -50%);
+    opacity: 0.6;
+  }
+}
+
+@keyframes zen-progress-bar-long-load {
+  0% {
+    left: -100%;
+    opacity: 1;
+  }
+
+  100% {
+    left: 100%;
+    opacity: 1;
+  }
+}
+
+@keyframes zen-progress-bar-settle {
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    width: 10rem;
+  }
+}

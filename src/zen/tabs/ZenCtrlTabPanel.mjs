@@ -82,7 +82,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     const keyupListener = e => this.#handleKeyUp(e);
     const blurListener = () => this.#isOpen && this.close(false);
     const onTabClose = e => this.#thumbnailCache.delete(e.target.linkedPanel);
-    // Update cached thumbnail when a tab finishes loading
+    // Delete outdated cached thumbnail when a tab finishes loading
     const onTabAttrModified = e => {
       if (e.detail.changed.includes("busy") && !e.target.hasAttribute("busy")) {
         this.#thumbnailCache.delete(e.target.linkedPanel);
@@ -151,7 +151,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Opens tab switcher panel with thumbnail previews.
+   * Constructs tab list, determines initial selection, captures thumbnails, and opens panel.
    *
    * @param {boolean} shiftKey - Navigate backward (true) or forward (false).
    * @returns {Promise<void>} Resolves when panel is displayed.
@@ -179,7 +179,8 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       return;
     }
 
-    // Recapture the current tab to show updated scroll position or page
+    /* Delete current tab's cached thumbnail so it gets recaptured below,
+     * this ensures thumbnails show the most up-to-date page content. */
     this.#thumbnailCache.delete(gBrowser.selectedTab.linkedPanel);
     const currentTabIndex = this.#tabList.indexOf(gBrowser.selectedTab);
 
@@ -199,7 +200,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
     const browserRect = gBrowser.tabbox.getBoundingClientRect();
     const tabBoxAspectRatio = browserRect.width / browserRect.height;
-    // Set width to 300 on narrow viewports and 700 on wide viewports
+    // Clamp width to 300 on narrow viewports and 700 on wide viewports
     const thumbnailWidth = Math.round(
       Math.min(Math.max(tabBoxAspectRatio * 500, 300), 700)
     );
@@ -272,10 +273,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       gBrowser.selectedTab = selectedTab;
     }
 
-    this.#resetState();
-  }
-
-  #resetState() {
+    // Reset state
     this.#isOpen = false;
     this.#currentIndex = 0;
     this.#tabList = [];
@@ -284,7 +282,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Captures tab screenshot and caches it.
+   * Captures tab thumbnail and caches it.
    *
    * @param {object} tab
    * @param {number} thumbnailWidth
@@ -315,20 +313,20 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       await lazy.PageThumbs.captureToCanvas(browser, canvas, {
         fullViewport: true,
       });
-      const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+      const tabThumbnail = canvas.toDataURL("image/jpeg", 0.9);
 
       if (tab.closing) {
         return;
       }
 
-      this.#thumbnailCache.set(tabId, dataUrl);
+      this.#thumbnailCache.set(tabId, tabThumbnail);
     } catch (e) {
       console.warn("ZenCtrlTabPanel: Failed to cache thumbnail:", e);
     }
   }
 
   /**
-   * Builds tab card UI from current tab list.
+   * Creates card UI for each tab in the current tab list and appends to card container.
    *
    * @returns {void}
    */
@@ -340,7 +338,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     this.tabsContainer.replaceChildren();
     this.tabsContainer.style.width = `${nsZenCtrlTabPanel.CARD_WIDTH * this.#actualVisibleCards}px`;
 
-    const fragment = document.createDocumentFragment();
     const defaultFavicon = PlacesUtils.favicons.defaultFavicon.spec;
     const newTabFavicon = "chrome://browser/skin/zen-icons/new-tab-image.svg";
 
@@ -405,20 +402,18 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
         }
       });
 
-      fragment.appendChild(card);
+      this.tabsContainer.appendChild(card);
     });
-
-    this.tabsContainer.appendChild(fragment);
   }
 
   /**
-   * Updates visual selection state and scrolls to show the selected card.
+   * Updates visual selection state and scrolls smoothly to show the selected card.
    *
    * @param previousIndex - Index of the previously selected card to deselect.
    * @returns {void}
    */
   #updateSelection(previousIndex) {
-    if (!this.tabsContainer) {
+    if (!this.tabsContainer?.children.length) {
       return;
     }
 
@@ -444,10 +439,10 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   /**
    * Calculates which card should be at the left edge for pagination.
    *
-   * @param {number} cardIndex - Visible card index.
-   * @returns {number} Index of the first card to display (left edge).
+   * @param {number} currentCardIndex - Index of the selected card.
+   * @returns {number} Index of the first card on the current page.
    */
-  #getPageStartIndex(cardIndex) {
+  #getPageStartIndex(currentCardIndex) {
     const totalTabs = this.#tabList.length;
     const maxVisible = this.#actualVisibleCards;
 
@@ -455,7 +450,8 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       return 0;
     }
 
-    const pageStartIndex = Math.floor(cardIndex / maxVisible) * maxVisible;
+    const pageStartIndex =
+      Math.floor(currentCardIndex / maxVisible) * maxVisible;
 
     // Adjust for last page to always show full page of cards
     if (pageStartIndex + maxVisible > totalTabs) {

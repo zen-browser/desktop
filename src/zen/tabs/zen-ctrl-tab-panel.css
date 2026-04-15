@@ -18,11 +18,6 @@
   --panel-padding: var(--zen-ctrl-tab-panel-padding);
   width: fit-content;
   height: fit-content;
-
-  @media (-moz-platform: linux) {
-    animation: none;
-    transition: none;
-  }
 }
 
 #zen-ctrl-tab-panel .panel-viewcontainer,

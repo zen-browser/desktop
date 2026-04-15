@@ -55,5 +55,14 @@
     "type": "phabricator",
     "id": "D281762",
     "name": "FF150 3 PGO patch for bug-2014422"
+  },
+  {
+    "type": "phabricator",
+    "ids": [
+      "D247145",
+      "D247215",
+      "D247217"
+    ],
+    "name": "Session store use size hint"
   }
 ]

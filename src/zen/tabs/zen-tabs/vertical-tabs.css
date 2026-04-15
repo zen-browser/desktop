@@ -130,10 +130,14 @@
   height: 22px;
   border: none;
   width: 100%;
-  transition:
-    height 0.08s ease-in-out,
-    padding 0.08s ease-in-out,
-    opacity 0.06s ease-in-out;
+
+  @media not (prefers-reduced-motion: reduce) {
+    transition:
+      height 0.08s ease-in-out,
+      padding 0.08s ease-in-out,
+      opacity 0.06s ease-in-out;
+  }
+
   overflow: hidden;
   position: relative;
   opacity: 1;

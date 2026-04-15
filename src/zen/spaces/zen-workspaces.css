@@ -309,12 +309,15 @@
 /* mark: workspace element */
 zen-workspace {
   flex-direction: column;
-  transition: padding-top 0.1s;
   width: calc(100% + var(--zen-toolbox-padding) * 2);
   position: absolute;
   height: 100%;
   overflow: hidden;
   color: var(--toolbox-textcolor);
+
+  @media not (prefers-reduced-motion: reduce) {
+    transition: padding-top 0.1s;
+  }
 
   :root:not([zen-sidebar-expanded='true']) & {
     width: 100%;

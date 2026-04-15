@@ -117,16 +117,16 @@
   & #zen-media-focus-button::after {
     content: "";
     position: absolute;
-    width: 110%;
-    height: 110%;
     background: url("chrome://browser/content/zen-images/note-indicator.svg") no-repeat;
     top: -70%;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 0;
     pointer-events: none;
     transition: opacity 0.8s ease;
     opacity: 1;
+    will-change: opacity;
   }
 
   &:is(:not(.playing:not([muted])), :hover) #zen-media-focus-button::after {

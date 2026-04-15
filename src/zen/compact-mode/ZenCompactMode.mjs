@@ -185,7 +185,8 @@ window.gZenCompactModeManager = {
       [
         {
           selector:
-            ":is([panelopen='true'], [open='true'], [breakout-extend='true']):not(#urlbar[zen-floating-urlbar='true']):not(tab):not(.zen-compact-mode-ignore)",
+            ":where([panelopen='true'], [open='true'], [breakout-extend='true'])" +
+            ":not(#urlbar[zen-floating-urlbar='true']):not(tab):not(.zen-compact-mode-ignore)",
         },
       ],
       "zen-compact-mode-active",
@@ -196,7 +197,8 @@ window.gZenCompactModeManager = {
       [
         {
           selector:
-            ":is([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true']):not(.zen-compact-mode-ignore)",
+            ":where([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true'])" +
+            ":not(.zen-compact-mode-ignore)",
         },
       ],
       "zen-compact-mode-active",
@@ -233,6 +235,7 @@ window.gZenCompactModeManager = {
           <menuitem id="zen-context-menu-compact-mode-hide-both" data-l10n-id="zen-toolbar-context-compact-mode-hide-both" type="radio" />
         </menupopup>
       </menu>
+      <menuseparator />
     `);
 
     const idToAction = {
@@ -247,7 +250,7 @@ window.gZenCompactModeManager = {
       }
     }
 
-    document.getElementById("toolbar-context-customize").before(fragment);
+    document.getElementById("toolbar-context-menu").prepend(fragment);
     this.updateContextMenu();
   },
 

@@ -1,0 +1,868 @@
+diff --git a/build/pgo/index.html b/build/pgo/index.html
+--- a/build/pgo/index.html
++++ b/build/pgo/index.html
+@@ -49,10 +49,11 @@
+     "blueprint/forms.html",
+     "blueprint/grid.html",
+     "blueprint/sample.html",
+     "js-input/3d-thingy.html",
+     "js-input/crypto-otp.html",
++    "js-input/collator_bench.html",
+     "js-input/normalizer_bench.html",
+     "js-input/sunspider/3d-cube.html",
+     "js-input/sunspider/3d-morph.html",
+     "js-input/sunspider/3d-raytrace.html",
+     "js-input/sunspider/access-binary-trees.html",
+diff --git a/build/pgo/js-input/collator_bench.html b/build/pgo/js-input/collator_bench.html
+new file mode 100644
+--- /dev/null
++++ b/build/pgo/js-input/collator_bench.html
+@@ -0,0 +1,817 @@
++<!DOCTYPE html>
++<html>
++<meta charset="utf-8">
++<!--
++The test content comes from
++https://github.com/unicode-org/icu4x/tree/main/components/collator/benches/data
++which came under the following license:
++
++UNICODE LICENSE V3
++
++COPYRIGHT AND PERMISSION NOTICE
++
++Copyright © 2020-2024 Unicode, Inc.
++
++NOTICE TO USER: Carefully read the following legal agreement. BY
++DOWNLOADING, INSTALLING, COPYING OR OTHERWISE USING DATA FILES, AND/OR
++SOFTWARE, YOU UNEQUIVOCALLY ACCEPT, AND AGREE TO BE BOUND BY, ALL OF THE
++TERMS AND CONDITIONS OF THIS AGREEMENT. IF YOU DO NOT AGREE, DO NOT
++DOWNLOAD, INSTALL, COPY, DISTRIBUTE OR USE THE DATA FILES OR SOFTWARE.
++
++Permission is hereby granted, free of charge, to any person obtaining a
++copy of data files and any associated documentation (the "Data Files") or
++software and any associated documentation (the "Software") to deal in the
++Data Files or Software without restriction, including without limitation
++the rights to use, copy, modify, merge, publish, distribute, and/or sell
++copies of the Data Files or Software, and to permit persons to whom the
++Data Files or Software are furnished to do so, provided that either (a)
++this copyright and permission notice appear with all copies of the Data
++Files or Software, or (b) this copyright and permission notice appear in
++associated Documentation.
++
++THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
++KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF
++THIRD PARTY RIGHTS.
++
++IN NO EVENT SHALL THE COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE
++BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES,
++OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
++WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
++ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THE DATA
++FILES OR SOFTWARE.
++
++Except as contained in this notice, the name of a copyright holder shall
++not be used in advertising or otherwise to promote the sale, use or other
++dealings in these Data Files or Software without prior written
++authorization of the copyright holder.
++
++SPDX-License-Identifier: Unicode-3.0
++
++—
++
++Portions of ICU4X may have been adapted from ICU4C and/or ICU4J.
++ICU 1.8.1 to ICU 57.1 © 1995-2016 International Business Machines Corporation and others.
++
++
++(End Unicode-3.0 with IBM trailer)
++
++
++The following applies to parts of this file other that the test language content:
++
++Any copyright is dedicated to the Public Domain.
++http://creativecommons.org/publicdomain/zero/1.0/
++
++-->
++<title>Collator bench</title>
++<body>
++<h1>Collator Bench</h1>
++
++<p>Bench not started.</p>
++
++<table>
++<thead><tr><th>Workload</th><th>Time</th></tr></thead>
++<tbody><tr><td colspan="2">Bench not run.</td></tr></tbody>
++</table>
++
++<script>
++let zh = [
++    "林賢得",
++    "趙士齊",
++    "曾正耀",
++    "柯敏盛",
++    "王彩霞",
++    "張致蒨",
++    "黃議德",
++    "洪禮君",
++    "李美瑩",
++    "張雅雯",
++    "劉鳳興",
++    "方映芬",
++    "謝于櫻",
++    "歐陽有慧",
++    "林啟人",
++    "張綵芳",
++    "劉淑華",
++    "侯嘉珍",
++    "吳晏平",
++    "李麗枝",
++    "陳辰揚",
++    "劉大榮",
++    "陳孟伶",
++    "許筱萍",
++    "莊培鑫",
++    "詹浚昇",
++    "趙修霖",
++    "劉逸竹",
++    "黃小娟",
++    "張英琦",
++    "郭嘉偉",
++    "姚方潔",
++    "李澤育",
++    "黃加欣",
++    "章瓊方",
++    "葉佩真",
++    "李勝雄",
++    "董姿利",
++    "陳懿映",
++    "鄭宜芳",
++    "李忠和",
++    "楊宏祥",
++    "王道仁",
++    "鄭慶哲",
++    "蔡娟娟",
++    "施健鴻",
++    "藍子桓",
++    "汪孟涵",
++    "邱奕明",
++    "林政緯",
++];
++
++let sv = [
++    "Söderholm, Carl",
++    "Pettersson, Robert",
++    "Håg, Petter",
++    "Erikson, Daniel",
++    "Ericsson, Marie",
++    "Sjöman, Olle",
++    "Åberg, Carita",
++    "Ericson, Lars",
++    "Ericsson, Mona",
++    "Hägglund, Frida",
++    "Eriksson, John",
++    "Palmén, Thomas",
++    "Johansson, Åke",
++    "Hagelstam, Stina",
++    "Sjöberg, Cecilia",
++    "Johansson, Andreas",
++    "Johansson, André",
++    "Palme, Anders",
++    "Erixon, Ida",
++    "Ahlström, Olof",
++    "Lind, Axel",
++    "Johansson, Annika",
++    "Sohlberg, Jonas",
++    "Johansson, Anna",
++];
++
++let en = [
++    "Lowry, Keith",
++    "Lowry, Adam",
++    "Long, Amelia",
++    "Long, Bob",
++    "Torrigiano, Pietro",
++    "Torrigiano, Giovanni",
++    "Glyde, Henry George",
++    "Glyde, Anne",
++    "Barnard, Rev. William Henry",
++    "Barnard, John",
++    "Béraud, Jean",
++    "Pacher, Michael",
++    "Waldo, Samuel Lovett",
++    "Eun-ho, Kim",
++    "Hook, James Clarke",
++    "Rible, Dave",
++    "Bowling, Frank",
++    "Kettle, Tilly",
++    "Wilson, George Washington",
++    "Herrera Barnuevo, Sebastian de",
++    "Laurence, Samuel",
++    "Oost the Elder, Jacob van",
++    "Nourse, Elizabeth",
++    "Pietersz the Younger, Pieter",
++    "Vorsterman the Elder, Lucas",
++    "Cézanne, Paul",
++    "Cézanne, Marie",
++    "Tischbein, Johann Heinrich Wilhelm",
++    "Bossche, Aert van den",
++    "Dawson, David",
++    "Siberechts, Jan",
++    "Flipart, Charles",
++    "Bastien-Lepage, Jules",
++    "Carpenter, Ed",
++    "Lorenzetti, Ugolino",
++    "Halswelle, Keeley",
++    "Jefferys, James",
++    "Cowles, Russell",
++    "Stuempfig, Walter",
++    "Foote, Will Howe",
++    "Maltwood, Katherine Emma",
++    "Traylor, Bill",
++    "Krieghoff, Cornelius",
++    "Campigli, Massimo",
++    "Yun Ge",
++    "Sallee, Charles",
++    "Gardner, Todd",
++    "Dixon, Ken",
++    "Forsyth, William",
++    "Godfrey, DeWitt",
++    "Oliveira, Nathan",
++    "Stott, Edward",
++    "Tiepolo, Giovanni Battista",
++    "Winter, Friedrich",
++    "Gaywood, Richard",
++    "Apt the Elder, Ulrich",
++];
++
++let kana_kanji = [
++    "蔡賢皇",
++    "タバタ,ミワコ",
++    "せき,ゆきお",
++    "アキヤマ,キヨシ",
++    "邱信益",
++    "劉柏麟",
++    "アオキ,ヨシミ",
++    "かさま,のりまさ",
++    "まつうら,えりこ",
++    "洪永昌",
++    "むろぞの,ひろあき",
++    "カドタ,アキヒロ",
++    "李維楨",
++    "劉芳蘭",
++    "ヨシダ,カズヨシ",
++    "キタガワ,ヨシテル",
++    "のじま,のりお",
++    "カトウ,タカシ",
++    "鄭淑米",
++    "ヤマモト,マサトシ",
++    "たまき,なおこ",
++    "カワイ,トシオ",
++    "李曉菁",
++    "郭添新",
++    "林雅君",
++    "かとう,としや",
++    "陳明楷",
++    "セキネ,カズアキ",
++    "オジ,ヤスヒロ",
++    "かじもと,たくや",
++    "かどた,あきひろ",
++    "マツモト,タケシ",
++    "はっとり,たかゆき",
++    "蔡秉昆",
++    "ニシオカ,シンイチ",
++    "オガワ,ヨシオ",
++    "アラキ,カツジ",
++    "郭佳鑫",
++    "イシモト,ケンジ",
++    "アマノ,トオル",
++    "ひびの,ひろし",
++    "ムラカミ,ヒロキ",
++    "鍾淑萍",
++    "吳敏真",
++    "オオヤ,ヒデホ",
++    "吳振成",
++    "タケヨシ,セイノスケ",
++    "許郁敏",
++    "杜宛諭",
++    "オシマ,ナスオ",
++];
++
++let pl = [
++    "Kowalska",
++    "Piotrowska",
++    "Jasiński",
++    "Wróblewski",
++    "Szymański",
++    "Kowalski",
++    "Zieliński",
++    "Górska",
++    "Michalski",
++    "Olszewska",
++    "Pawłowski",
++    "Pietrzak",
++    "Wróblewski",
++    "Kwiatkowski",
++    "Nowicki",
++    "Stępień",
++    "Olszewski",
++    "Zalewski",
++    "Małecki",
++    "Zalewska",
++    "Nowacki",
++    "Błaszczyk",
++    "Tomaszewska",
++    "Marciniak",
++    "Jakubowska",
++    "Kozłowska",
++    "Malinowska",
++    "Król",
++    "Rutkowska",
++    "Cieślak",
++    "Kamiński",
++    "Zajączkowski",
++    "Wieczorek",
++    "Sokołowska",
++    "Ostrowska",
++    "Walczak",
++    "Dudek",
++    "Kozłowski",
++    "Baran",
++    "Ostrowski",
++    "Małecka",
++    "Witkowski",
++    "Wiśniewski",
++    "Lewandowski",
++    "Wójcik",
++    "Dąbrowski",
++    "Grabowska",
++    "Tomaszewski",
++    "Stępniak",
++    "Rutkowski",
++    "Piotrowski",
++    "Krawiec",
++    "Witkowska",
++    "Wojciechowska",
++    "Michalska",
++    "Pawłowska",
++    "Woźniak",
++    "Lewandowska",
++    "Sikora",
++    "Kwiatkowska",
++    "Wójcicki",
++    "Wójtowicz",
++    "Grabowski",
++    "Duda",
++    "Zielińska",
++    "Jasińska",
++    "Jankowska",
++    "Sokołowski",
++    "Górski",
++    "Wróbel",
++    "Wiśniewska",
++    "Nowak",
++    "Woźny",
++    "Jankowski",
++    "Michalak",
++    "Malinowski",
++    "Wojciechowski",
++    "Nowicka",
++    "Dąbrowska",
++    "Kamińska",
++    "Szymańska",
++    "Królak",
++    "Krawczyk",
++    "Adamczyk",
++    "Jakubowski",
++    "Szewczyk",
++];
++
++let ko = [
++    "이진동",
++    "한종태",
++    "박범근",
++    "노운동",
++    "이대규",
++    "서성출",
++    "이재훈",
++    "이영우",
++    "최강기",
++    "정장조",
++    "박동식",
++    "한경애",
++    "박선식",
++    "박정자",
++    "박태규",
++    "이성춘",
++    "김병강",
++    "류복호",
++    "정수보",
++    "전정근",
++    "윤근수",
++    "최해섭",
++    "허성필",
++    "이만상",
++    "이정동",
++    "김영학",
++    "최남영",
++    "정순수",
++    "차성순",
++    "심영숙",
++    "이태일",
++    "오재옥",
++    "전병주",
++    "윤삼호",
++    "서준욱",
++    "박계술",
++    "허병권",
++    "이동기",
++    "송식수",
++    "양태만",
++    "박갑수",
++    "김수광",
++    "최돈수",
++    "한낙완",
++    "박재학",
++    "배근호",
++    "김용술",
++    "빈석석",
++    "시수수",
++    "김상덕",
++];
++
++let th = [
++    "วรรณะ คณาญาติ",
++    "ชุติมา อัญญณรงค์กุล",
++    "สันติ เลิศสกุลพันธ์",
++    "จินตนา อาภานันท์",
++    "ประทุม เจริญชอบ",
++    "บุญส่ง เปี่ยมพลาย",
++    "ซิมค้วง แซ่เตง",
++    "นันทวัน เจียรอุดมทรัพย์",
++    "นลพร ภิญโญบริสุทธิ์",
++    "วุฒิ มีสุข",
++    "ณรงศักดิ์ ตั้งเจริญสุขจีระ",
++    "วัดช่องนนทรี วัดช่องนนทรี",
++    "ไพศาล จ๋วงพานิช",
++    "พัชรี เกตุหอม",
++    "สมพงษ์ ศรีสากล",
++    "จิโรจน์ ไพฑูรย์",
++    "ณรงค์ โพธิพุกกะนะ",
++    "พิมพรรณ เปรมธาดา",
++    "สายหยุด จันทร",
++    "สมาน ค้าคล่อง",
++    "ชูชาติ เอี่ยมสุทธา",
++    "วีระเกียรติ ตั้งอมรรัตน์",
++    "พีระ กอสุวรรณสกุล",
++    "บุญเชิด เลิศนิมิตร",
++    "พัชรินทร์ โต๊ะวนิชรักษา",
++    "จินตนา เกตุสัมพันธ์",
++    "วันเพ็ญ กิ่งใบสมบูรณ์",
++    "สงวน แกล้วกล้า",
++    "จงกล ลานเจริญ",
++    "ทัศนา แซ่เล้า",
++    "ทัศนีย์ เสรีพกกะณะ",
++    "ขจรศักดิ์ โพธินามทอง",
++    "ธนิตร เนาวศักดิ์",
++    "อารี นาคะสิงห์",
++    "ไพโรจน์ หาญพงษ์ธรรม",
++    "บุญฤทธิ์ นุ้ยขาว",
++    "ณรงค์ ไทยสุริยะ",
++    "สมชาย ศรบรรจง",
++    "ทัศนีย์ ชัยกุล",
++    "จินดาพร ศรีสุขสันต์",
++    "รพีวรรณ สัมปชัญญะ",
++    "สุรินทร์ แสงรัตน์",
++    "วรรณรักษ์ วัฒนวุฒิพงศ์",
++    "เรียมรัตน์ เกตุกาญจน์",
++    "สัตยา ศรีอ่อน",
++    "วิมล มาลัยทอง",
++    "บักจุ้ย แซ่เฮ้ง",
++    "ฮายูรซิงห์ กัมบีร์",
++    "ผาสิต หิรัญญชาติธาดา",
++    "พรพิศ อาภรณ์ศิริพงษ์",
++];
++
++let filenames = [
++    "2005-07-06_15-43-20.jpg",
++    "2005-07-06_16-17-35.jpg",
++    "2005-07-08_17-54-43.jpg",
++    "2005-07-08_14-52-26.jpg",
++    "2005-07-08_15-39-27.jpg",
++    "2005-07-05_16-21-40.jpg",
++    "2005-07-06_17-53-21.jpg",
++    "2005-07-04_09-42-55.jpg",
++    "2005-07-08_17-55-18.jpg",
++    "2005-07-08_15-38-43.jpg",
++    "2005-07-05_22-54-56.jpg",
++    "2005-07-05_13-40-25.jpg",
++    "2005-07-04_16-47-37.jpg",
++    "2005-07-04_22-47-53.jpg",
++    "2005-07-08_17-05-43.jpg",
++    "2005-07-05_15-48-20.jpg",
++    "2005-07-06_16-33-59.jpg",
++    "2005-07-08_11-46-56.jpg",
++    "2005-07-06_16-28-24.jpg",
++    "2005-07-06_11-13-43.jpg",
++    "2005-07-08_15-16-39.jpg",
++    "2005-07-05_22-52-45.jpg",
++    "2005-07-06_11-46-46.jpg",
++    "2005-07-06_17-11-37.jpg",
++    "2005-07-08_14-48-43.jpg",
++    "2005-07-08_18-01-44.jpg",
++    "2005-07-09_17-13-13.jpg",
++    "2005-07-05_13-45-12.jpg",
++    "2005-07-05_14-16-55.jpg",
++    "2005-07-06_18-05-15.jpg",
++    "2005-07-08_16-13-50.jpg",
++    "2005-07-05_15-32-51.jpg",
++    "2005-07-05_14-15-11.jpg",
++    "2005-07-04_19-12-45.jpg",
++    "2005-07-06_10-53-00.jpg",
++    "2005-07-09_17-27-52.jpg",
++    "2005-07-07_17-45-36.jpg",
++    "2005-07-07_16-33-57.jpg",
++    "2005-07-05_20-49-29.jpg",
++    "2005-07-05_16-38-57.jpg",
++    "2005-07-05_14-17-19.jpg",
++    "2005-07-08_18-23-52.jpg",
++    "2005-07-05_17-42-41.jpg",
++    "2005-07-06_10-57-46.jpg",
++    "2005-07-06_15-32-40.jpg",
++    "2005-07-06_10-52-05.jpg",
++    "2005-07-04_20-21-50.jpg",
++    "2005-07-06_14-33-47.jpg",
++    "2005-07-08_17-07-00.jpg",
++    "2005-07-07_16-59-07.jpg",
++    "2005-07-09_15-37-06.jpg",
++    "2005-07-05_13-46-57.jpg",
++    "2005-07-08_13-38-43.jpg",
++    "2005-07-08_13-33-13.jpg",
++    "2005-07-07_17-38-03.jpg",
++    "2005-07-08_15-31-34.jpg",
++    "2005-07-06_16-19-59.jpg",
++    "2005-07-05_17-47-56.jpg",
++    "2005-07-06_17-59-31.jpg",
++    "2005-07-04_22-51-31.jpg",
++    "2005-07-08_13-33-54.jpg",
++    "2005-07-04_09-46-15.jpg",
++    "2005-07-07_17-33-40.jpg",
++    "2005-07-05_12-37-31.jpg",
++    "2005-07-08_15-42-53.jpg",
++    "2005-07-08_18-41-35.jpg",
++    "2005-07-05_15-47-57.jpg",
++    "2005-07-08_12-01-39.jpg",
++    "2005-07-04_22-51-06.jpg",
++    "2005-07-04_21-37-42.jpg",
++    "2005-07-09_17-13-09.jpg",
++    "2005-07-07_11-14-14.jpg",
++    "2005-07-05_13-43-26.jpg",
++    "2005-07-05_13-36-55.jpg",
++    "2005-07-05_18-32-09.jpg",
++    "2005-07-06_11-53-07.jpg",
++    "2005-07-05_12-32-10.jpg",
++    "2005-07-06_10-46-22.jpg",
++    "2005-07-08_11-50-26.jpg",
++    "2005-07-05_21-02-28.jpg",
++    "2005-07-04_22-47-21.jpg",
++    "2005-07-04_10-55-57.jpg",
++    "2005-07-09_15-38-52.jpg",
++    "2005-07-08_17-10-59.jpg",
++    "2005-07-08_14-50-40.jpg",
++    "2005-07-08_18-00-22.jpg",
++    "2005-07-07_18-19-18.jpg",
++    "2005-07-09_15-12-18.jpg",
++    "2005-07-08_14-49-53.jpg",
++    "2005-07-05_13-46-33.jpg",
++    "2005-07-06_17-25-07.jpg",
++    "2005-07-09_15-44-05.jpg",
++    "2005-07-05_17-26-36.jpg",
++    "2005-07-08_15-44-03.jpg",
++    "2005-07-05_13-33-39.jpg",
++    "2005-07-06_21-29-25.jpg",
++    "2005-07-08_11-51-44.jpg",
++    "2005-07-08_15-12-48.jpg",
++    "2005-07-06_16-25-39.jpg",
++    "2005-07-08_18-21-32.jpg",
++    "2005-07-05_12-32-21.jpg",
++    "2005-07-05_13-38-14.jpg",
++    "2005-07-08_15-43-51.jpg",
++    "2005-07-05_12-41-56.jpg",
++    "2005-07-08_15-25-53.jpg",
++    "2005-07-04_10-56-04.jpg",
++    "2005-07-06_11-18-37.jpg",
++    "2005-07-05_18-43-06.jpg",
++    "2005-07-06_16-09-17.jpg",
++    "2005-07-04_10-59-20.jpg",
++    "2005-07-06_16-22-39.jpg",
++    "2005-07-06_16-33-04.jpg",
++    "2005-07-06_16-44-58.jpg",
++    "2005-07-08_13-33-08.jpg",
++    "2005-07-08_11-12-54.jpg",
++    "2005-07-08_12-06-15.jpg",
++    "2005-07-04_09-46-43.jpg",
++    "2005-07-08_11-04-34.jpg",
++    "2005-07-08_16-48-35.jpg",
++    "2005-07-05_21-03-24.jpg",
++    "2005-07-08_11-48-22.jpg",
++    "2005-07-04_10-56-33.jpg",
++    "2005-07-05_12-11-03.jpg",
++    "2005-07-06_11-51-57.jpg",
++    "2005-07-05_17-19-16.jpg",
++    "2005-07-05_22-42-16.jpg",
++    "2005-07-05_18-08-29.jpg",
++    "2005-07-09_15-38-39.jpg",
++    "2005-07-08_11-46-06.jpg",
++    "2005-07-06_12-01-09.jpg",
++    "2005-07-06_19-46-20.jpg",
++    "2005-07-08_15-43-40.jpg",
++    "2005-07-08_17-03-43.jpg",
++    "2005-07-08_15-42-33.jpg",
++    "2005-07-07_17-31-19.jpg",
++    "2005-07-06_11-00-25.jpg",
++    "2005-07-06_14-59-14.jpg",
++    "2005-07-08_14-50-54.jpg",
++    "2005-07-04_22-30-53.jpg",
++    "2005-07-05_22-30-33.jpg",
++    "2005-07-06_21-03-50.jpg",
++    "2005-07-09_17-10-49.jpg",
++    "2005-07-07_17-01-31.jpg",
++    "2005-07-05_18-51-01.jpg",
++    "2005-07-07_15-47-10.jpg",
++    "2005-07-08_15-18-06.jpg",
++    "2005-07-09_17-18-52.jpg",
++    "2005-07-05_17-49-27.jpg",
++    "2005-07-06_16-27-05.jpg",
++    "2005-07-09_15-39-08.jpg",
++    "2005-07-09_17-27-41.jpg",
++    "2005-07-06_18-05-05.jpg",
++    "2005-07-04_09-46-05.jpg",
++    "2005-07-07_20-32-22.jpg",
++    "2005-07-08_12-36-22.jpg",
++    "2005-07-04_09-34-17.jpg",
++    "2005-07-05_17-04-38.jpg",
++    "2005-07-05_16-48-19.jpg",
++    "2005-07-05_22-38-05.jpg",
++    "2005-07-06_21-28-54.jpg",
++    "2005-07-05_17-39-17.jpg",
++    "2005-07-05_20-53-24.jpg",
++    "2005-07-05_14-13-48.jpg",
++    "2005-07-05_15-40-10.jpg",
++    "2005-07-05_14-10-06.jpg",
++    "2005-07-04_09-41-26.jpg",
++    "2005-07-06_18-36-09.jpg",
++    "2005-07-05_20-58-48.jpg",
++    "2005-07-05_14-09-25.jpg",
++    "2005-07-05_21-10-03.jpg",
++    "2005-07-05_15-23-57.jpg",
++    "2005-07-04_09-43-23.jpg",
++    "2005-07-08_11-48-10.jpg",
++    "2005-07-08_15-40-33.jpg",
++    "2005-07-07_16-59-54.jpg",
++    "2005-07-08_17-44-46.jpg",
++    "2005-07-08_14-50-50.jpg",
++    "2005-07-04_22-24-58.jpg",
++    "2005-07-08_17-06-13.jpg",
++    "2005-07-09_16-43-05.jpg",
++    "2005-07-07_17-02-23.jpg",
++    "2005-07-09_15-36-49.jpg",
++    "2005-07-05_13-50-04.jpg",
++    "2005-07-09_15-40-07.jpg",
++    "2005-07-09_17-40-47.jpg",
++    "2005-07-04_16-22-19.jpg",
++    "2005-07-05_14-16-07.jpg",
++    "2005-07-07_17-19-58.jpg",
++    "2005-07-05_13-43-50.jpg",
++    "2005-07-05_15-35-30.jpg",
++    "2005-07-06_16-05-30.jpg",
++    "2005-07-06_15-14-38.jpg",
++    "2005-07-06_15-28-12.jpg",
++    "2005-07-08_15-23-38.jpg",
++    "2005-07-07_16-41-58.jpg",
++    "2005-07-04_11-00-06.jpg",
++    "2005-07-08_17-50-13.jpg",
++    "2005-07-08_11-46-44.jpg",
++    "2005-07-09_17-02-15.jpg",
++    "2005-07-05_14-09-50.jpg",
++    "2005-07-05_17-54-23.jpg",
++    "2005-07-07_18-35-47.jpg",
++    "2005-07-05_22-27-52.jpg",
++    "2005-07-06_14-59-23.jpg",
++    "2005-07-04_22-55-16.jpg",
++    "2005-07-04_22-23-01.jpg",
++];
++
++function toUTF16(str) {
++    // Normalize to force flattening of rope.
++    return (str + "\u2014").normalize();
++}
++
++let data = [
++    {
++        name: "Dates as file names, root collation",
++        coll: "en",
++        arr: filenames,
++    },
++    {
++        name: "Dates as file names, root collation, numeric",
++        coll: "en-u-kn-true",
++        arr: filenames,
++    },
++    {
++        name: "Dates as file names, tailoring",
++        coll: "sv",
++        arr: filenames,
++    },
++    {
++        name: "Dates as file names, tailoring, numeric",
++        coll: "sv-u-kn-true",
++        arr: filenames,
++    },
++    // Root collation
++    {
++        name: "English Latin1",
++        coll: "en",
++        arr: en,
++    },
++    {
++        name: "English UTF-16",
++        coll: "en",
++        arr: en.map(toUTF16),
++    },
++    // Swedish stands in for code paths of interest
++    // to pretty much all tailored Latin except Vietnamese
++    // and German phonebook.
++    {
++        name: "Swedish Latin1",
++        coll: "sv",
++        arr: sv,
++    },
++    {
++        name: "Swedish UTF-16",
++        coll: "sv",
++        arr: sv.map(toUTF16),
++    },
++    // For Latin1 to UTF-16 comparisons.
++    {
++        name: "Polish Latin1/UTF-16 mix",
++        coll: "pl",
++        arr: pl,
++    },
++    // Algorithmically simple tailoring case
++    // with large data structure size.
++    {
++        name: "Chinese (Pinyin order)",
++        coll: "zh-u-co-pinyin",
++        arr: zh,
++    },
++    // Bench/PGO value-add of another order unclear.
++    {
++        name: "Chinese (stroke order)",
++        coll: "zh-u-co-stroke",
++        arr: zh,
++    },
++    // Bench/PGO value-add unclear if Greek is added.
++    {
++        name: "Japanese",
++        coll: "ja",
++        arr: kana_kanji,
++    },
++    // Algorithmic special case.
++    {
++        name: "Korean",
++        coll: "ko",
++        arr: ko,
++    },
++    // Unverified if this workload actually exercises the interesting code paths.
++    {
++        name: "Thai",
++        coll: "th",
++        arr: th,
++    },
++    // TODO: Add Greek, Vietnamese, Bengali
++];
++
++// Global variable for hopefully fooling side effect analysis.
++let escapesScope = "";
++
++function benchEntry(entry, iterations) {
++    let tr = document.createElement("tr");
++    let label = document.createElement("td");
++    label.textContent = entry.name;
++    tr.appendChild(label);
++
++    let c = new Intl.Collator(entry.coll);
++    let t = Date.now();
++    for (let i = 0; i < iterations; ++i) {
++        // Make a shallow copy and then sort it in place
++        // instead of calling `toSorted()` on the unvalidated
++        // assumption that in-place sorting is more common on
++        // the Web.
++        escapesScope = entry.arr.slice();
++        escapesScope.sort(c.compare);
++    }
++    let d = Date.now() - t;
++    let td = document.createElement("td");
++    td.textContent = d;
++    tr.appendChild(td);
++
++    tbody.appendChild(tr);
++}
++
++let tbody = document.getElementsByTagName("tbody")[0];
++tbody.removeChild(tbody.firstChild);
++let p = document.getElementsByTagName("p")[0];
++p.textContent = "Bench running.";
++
++function pgo() {
++    for (entry of data) {
++        benchEntry(entry, 10);
++    }
++    p.textContent = "Lower is better. Benching done.";
++}
++
++function bench() {
++    if (!data.length) {
++        p.textContent = "Lower is better. Benching done.";
++        return;
++    }
++    let entry = data.shift();
++    benchEntry(entry, 5_000);
++    setTimeout(bench);
++}
++
++// bench() or pgo()
++pgo();
++</script>
++</body>
++</html>
+diff --git a/testing/mozharness/scripts/android_emulator_pgo.py b/testing/mozharness/scripts/android_emulator_pgo.py
+--- a/testing/mozharness/scripts/android_emulator_pgo.py
++++ b/testing/mozharness/scripts/android_emulator_pgo.py
+@@ -29,10 +29,11 @@
+     "blueprint/forms.html",
+     "blueprint/grid.html",
+     "blueprint/elements.html",
+     "js-input/3d-thingy.html",
+     "js-input/crypto-otp.html",
++    "js-input/collator_bench.html",
+     "js-input/normalizer_bench.html",
+     "js-input/sunspider/3d-cube.html",
+     "js-input/sunspider/3d-morph.html",
+     "js-input/sunspider/3d-raytrace.html",
+     "js-input/sunspider/access-binary-trees.html",
+diff --git a/toolkit/content/license.html b/toolkit/content/license.html
+--- a/toolkit/content/license.html
++++ b/toolkit/content/license.html
+@@ -5788,10 +5788,11 @@
+               <li><code>third_party/rust/zerofrom</code></li>
+               <li><code>third_party/rust/zerofrom-derive</code></li>
+               <li><code>third_party/rust/zerovec</code></li>
+               <li><code>third_party/rust/zerovec-derive</code></li>
+               <li><code>build/pgo/js-input/normalizer_bench.html</code></li>
++              <li><code>build/pgo/js-input/collator_bench.html</code></li>
+             </ul>
+           </td>
+           <td>
+             <pre>
+             UNICODE LICENSE V3
+

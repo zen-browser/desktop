@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index d88bc0e5570c8fd428a84fdf5af0f6bab1e2a636..be4bedce98f404325e547dd8a4e73e895b6025b0 100644
+index d88bc0e5570c8fd428a84fdf5af0f6bab1e2a636..aed843d26eaf56d66883f95c373d40106d93dc08 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -413,6 +413,7 @@
@@ -191,7 +191,7 @@ index d88bc0e5570c8fd428a84fdf5af0f6bab1e2a636..be4bedce98f404325e547dd8a4e73e89
        // In full screen mode, only bother making the location bar visible
        // if the tab is a blank one.
 -      if (gURLBar.getBrowserState(newBrowser).urlbarFocused) {
-+      if (gURLBar.getBrowserState(newBrowser).urlbarFocused && !gZenVerticalTabsManager._hasSetSingleToolbar) {
++      if (gURLBar.getBrowserState(newBrowser).urlbarFocused && (!gZenVerticalTabsManager._hasSetSingleToolbar || isBlankPageURL(newBrowser.currentURI?.spec))) {
          let selectURL = () => {
            if (this._asyncTabSwitching) {
              // Set _awaitingSetURI flag to suppress popup notification

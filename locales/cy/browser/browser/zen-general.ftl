@@ -22,7 +22,7 @@ tab-context-zen-replace-pinned-url-with-current =
     .label =
         { $isEssential ->
             [true] Amnewid URL Hanfodol gyda'r Cyfredol
-          *[false] Amnewid URL wedi'i binio gyda'r Cyfredol
+           *[false] Amnewid URL wedi'i binio gyda'r Cyfredol
         }
     .accesskey = P
 tab-context-zen-edit-title = 

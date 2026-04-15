@@ -23,7 +23,6 @@
     "sync:l10n": "python3 scripts/update_ff.py --just-l10n",
     "lint": "cd engine && ./mach lint zen",
     "lint:fix": "npm run lint -- --fix",
-    "prepare": "husky",
     "reset-ff": "surfer reset",
     "surfer": "surfer",
     "test": "python3 scripts/run_tests.py",
@@ -37,9 +36,6 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zen-browser/desktop.git"
-  },
-  "hooks": {
-    "pre-commit": "npm run prepare"
   },
   "keywords": [],
   "author": "",

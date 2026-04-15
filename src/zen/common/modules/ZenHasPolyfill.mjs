@@ -26,6 +26,12 @@ class nsHasPolyfill {
         if (selected?.tagName?.toLowerCase() === "menu") {
           return null;
         }
+        if (selected) {
+          gZenCompactModeManager.log(
+            `Selector "${selector}" exists for: `,
+            element
+          );
+        }
         return selected;
       });
       const { exists: shouldExist = true } = descendantSelectors;

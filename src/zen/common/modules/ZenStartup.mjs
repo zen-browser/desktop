@@ -98,6 +98,10 @@ class ZenStartup {
       this.isReady = true;
       this.promiseInitializedResolve();
       delete this.promiseInitializedResolve;
+
+      setTimeout(() => {
+        gZenWorkspaces._invalidateBookmarkContainers();
+      });
     });
   }
 

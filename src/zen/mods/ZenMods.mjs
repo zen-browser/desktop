@@ -7,6 +7,10 @@ import {
   nsZenMultiWindowFeature,
 } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
+const DOT_RE = /\./g;
+const WHITESPACE_RE = /\s/g;
+const NON_NAME_RE = /[^A-Za-z_-]+/g;
+
 /**
  * Zen Mods Manager, handles downloading, updating and applying Zen Mods.
  *
@@ -171,47 +175,57 @@ class nsZenMods extends nsZenPreloadedFeature {
   }
 
   #writeToDom(modsWithPreferences) {
-    for (const browser of nsZenMultiWindowFeature.browsers) {
+    // Precompute per-mod data once; values are global prefs and sanitized
+    // names don't vary per browser window, so this hoists O(windows) work.
+    const prepared = modsWithPreferences.map(
       // eslint-disable-next-line no-shadow
-      for (const { enabled, preferences, name } of modsWithPreferences) {
-        const sanitizedName = this.sanitizeModName(name);
+      ({ enabled, preferences, name }) => ({
+        enabled,
+        sanitizedName: this.sanitizeModName(name),
+        prefs: preferences.map(({ property, type }) => ({
+          property,
+          type,
+          sanitizedProperty: property?.replaceAll(DOT_RE, "-"),
+          value:
+            enabled === undefined || enabled
+              ? Services.prefs.getStringPref(property, "")
+              : "",
+        })),
+      })
+    );
 
+    for (const browser of nsZenMultiWindowFeature.browsers) {
+      const doc = browser.document;
+      const root = doc.documentElement;
+
+      for (const { enabled, sanitizedName, prefs } of prepared) {
         if (enabled !== undefined && !enabled) {
-          const element = browser.document.getElementById(sanitizedName);
-
+          const element = doc.getElementById(sanitizedName);
           if (element) {
             element.remove();
           }
 
-          for (const { property } of preferences.filter(
-            ({ type }) => type !== "checkbox"
-          )) {
-            const sanitizedProperty = property?.replaceAll(/\./g, "-");
-
-            browser.document
-              .querySelector(":root")
-              .style.removeProperty(`--${sanitizedProperty}`);
+          for (const { type, sanitizedProperty } of prefs) {
+            if (type === "checkbox") {
+              continue;
+            }
+            root.style.removeProperty(`--${sanitizedProperty}`);
           }
 
           continue;
         }
 
-        for (const { property, type } of preferences) {
-          const value = Services.prefs.getStringPref(property, "");
-          const sanitizedProperty = property?.replaceAll(/\./g, "-");
-
+        for (const { type, sanitizedProperty, value } of prefs) {
           switch (type) {
             case "dropdown": {
               if (value !== "") {
-                let element = browser.document.getElementById(sanitizedName);
+                let element = doc.getElementById(sanitizedName);
 
                 if (!element) {
-                  element = browser.document.createElement("div");
-
+                  element = doc.createElement("div");
                   element.style.display = "none";
                   element.setAttribute("id", sanitizedName);
-
-                  browser.document.body.appendChild(element);
+                  doc.body.appendChild(element);
                 }
 
                 element.setAttribute(sanitizedProperty, value);
@@ -221,13 +235,9 @@ class nsZenMods extends nsZenPreloadedFeature {
 
             case "string": {
               if (value === "") {
-                browser.document
-                  .querySelector(":root")
-                  .style.removeProperty(`--${sanitizedProperty}`);
+                root.style.removeProperty(`--${sanitizedProperty}`);
               } else {
-                browser.document
-                  .querySelector(":root")
-                  .style.setProperty(`--${sanitizedProperty}`, value);
+                root.style.setProperty(`--${sanitizedProperty}`, value);
               }
               break;
             }
@@ -308,6 +318,19 @@ class nsZenMods extends nsZenPreloadedFeature {
   }
 
   async #downloadUrlToFile(url, path, maxRetries = 3, retryDelayMs = 500) {
+    // Mod assets must come over HTTPS. Without a signing/hash scheme this
+    // is the minimum guard against MITM or a store-hosted HTTP redirect
+    // serving attacker-controlled CSS/JSON into the chrome profile.
+    let parsed;
+    try {
+      parsed = new URL(url);
+    } catch {
+      throw new Error(`[ZenMods]: Invalid mod asset URL: ${url}`);
+    }
+    if (parsed.protocol !== "https:") {
+      throw new Error(`[ZenMods]: Refusing non-HTTPS mod asset URL: ${url}`);
+    }
+
     let attempt = 0;
 
     while (attempt < maxRetries) {
@@ -377,8 +400,7 @@ class nsZenMods extends nsZenPreloadedFeature {
 
   sanitizeModName(aName) {
     // Do not change to "mod-" for backwards compatibility
-    // eslint-disable-next-line no-shadow
-    return `theme-${aName?.replaceAll(/\s/g, "-")?.replaceAll(/[^A-Za-z_-]+/g, "")}`;
+    return `theme-${aName?.replaceAll(WHITESPACE_RE, "-")?.replaceAll(NON_NAME_RE, "")}`;
   }
 
   get updatePref() {

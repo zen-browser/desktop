@@ -875,10 +875,12 @@ class nsZenWorkspaces {
     };
 
     let removedEmptyTab = false;
+    let initialTabWasEmpty = false;
     if (
       this._initialTab &&
       !(this._initialTab._shouldRemove && this._initialTab._veryPossiblyEmpty)
     ) {
+      initialTabWasEmpty = !!this._initialTab._veryPossiblyEmpty;
       gBrowser.selectedTab = this._initialTab;
       this.moveTabToWorkspace(this._initialTab, this.activeWorkspace);
       gBrowser.moveTabTo(this._initialTab, {
@@ -943,7 +945,12 @@ class nsZenWorkspaces {
       delete this._initialTab;
     }
 
-    showed &&= Services.prefs.getBoolPref("zen.urlbar.open-on-startup", true);
+    const openOnStartup = Services.prefs.getBoolPref(
+      "zen.urlbar.open-on-startup",
+      true
+    );
+    showed &&= openOnStartup;
+    initialTabWasEmpty &&= openOnStartup;
 
     // Wait for the next event loop to ensure that the startup focus logic by
     // firefox has finished doing it's thing.
@@ -951,7 +958,9 @@ class nsZenWorkspaces {
       setTimeout(() => {
         if (gZenVerticalTabsManager._canReplaceNewTab && showed) {
           BrowserCommands.openTab();
-        } else if (!showed) {
+        } else if (showed || initialTabWasEmpty) {
+          openLocation();
+        } else {
           gBrowser.selectedBrowser.focus();
         }
       });
@@ -1542,7 +1551,7 @@ class nsZenWorkspaces {
         !tab.hasAttribute("pending")
     );
 
-    await gBrowser.explicitUnloadTabs(tabsToUnload); // TODO: unit test this
+    await gBrowser.explicitUnloadTabs(tabsToUnload);
   }
 
   moveTabToWorkspace(tab, workspaceID) {
@@ -2460,14 +2469,20 @@ class nsZenWorkspaces {
       }
     }
 
-    // Reset bookmarks
-    this.#invalidateBookmarkContainers();
+    // Avoid forcing a startup toolbar rebuild when there are no
+    // workspace-specific bookmark assignments to apply.
+    const hasWorkspaceBookmarks = !!Object.keys(
+      this._workspaceBookmarksCache?.bookmarks || {}
+    ).length;
+    if (!onInit || hasWorkspaceBookmarks) {
+      this._invalidateBookmarkContainers();
+    }
 
     // Update workspace indicator
     await this.updateWorkspaceIndicator(workspace, this.workspaceIndicator);
 
     // Fix ctrl+tab behavior. Note, we dont call it with "await" because we dont want to wait for it
-    this._fixCtrlTabBehavior();
+    this.#fixCtrlTabBehavior();
 
     // Bug: When updating from previous versions, we used to hide the tabs not used in the new workspace
     //  we now need to show them again.
@@ -2497,12 +2512,13 @@ class nsZenWorkspaces {
     );
   }
 
-  async _fixCtrlTabBehavior() {
+  // Intentionally keep it as async!
+  async #fixCtrlTabBehavior() {
     ctrlTab.uninit();
     ctrlTab.readPref();
   }
 
-  #invalidateBookmarkContainers() {
+  _invalidateBookmarkContainers() {
     for (let i = 0, len = this.bookmarkMenus.length; i < len; i++) {
       const element = document.getElementById(this.bookmarkMenus[i]);
       if (element && element._placesView) {

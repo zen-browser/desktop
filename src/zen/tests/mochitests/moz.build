@@ -11,6 +11,7 @@ BROWSER_CHROME_MANIFESTS += [
 	"safebrowsing/browser.toml",
 	"sandbox/browser.toml",
 	"shell/browser.toml",
+	"tabMediaIndicator/browser.toml",
 	"tooltiptext/browser.toml",
 ]
 XPCSHELL_TESTS_MANIFESTS += [

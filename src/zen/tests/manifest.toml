@@ -25,5 +25,9 @@ disable = [
   "browser_setDesktopBackgroundPreview.js",
 ]
 
+[tabMediaIndicator]
+source = "browser/components/tabbrowser/test/browser/tabMediaIndicator"
+is_direct_path = true
+
 [tooltiptext]
 source = "toolkit/components/tooltiptext"

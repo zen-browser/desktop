@@ -38,6 +38,10 @@ dialog[defaultButton="accept"]::part(dialog-button) {
       padding-inline-end: 4em;
     }
 
+    @media (-moz-platform: linux) {
+      padding-inline-end: 3.1em;
+    }
+
     &::after {
       border-radius: 4px;
       font-weight: 600;

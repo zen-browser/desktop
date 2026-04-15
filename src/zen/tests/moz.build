@@ -8,6 +8,7 @@ BROWSER_CHROME_MANIFESTS += [
     "folders/browser.toml",
     "glance/browser.toml",
     "live-folders/browser.toml",
+    "media/browser.toml",
     "pinned/browser.toml",
     "popover/browser.toml",
     "spaces/browser.toml",

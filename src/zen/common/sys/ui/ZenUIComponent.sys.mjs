@@ -19,7 +19,7 @@ export class ZenUIComponent {
         this.uninit();
       }
       for (const { type, options } of this.#eventListeners) {
-        this.#window.removeEventListener(type, options);
+        this.#window.removeEventListener(type, this, options);
       }
       this.#eventListeners.clear();
     });

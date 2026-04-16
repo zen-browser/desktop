@@ -1708,4 +1708,175 @@ window.gZenVerticalTabsManager = {
 
     this._tabEdited = null;
   },
+
+  MAX_TABS_FROM_PASTE: 20,
+  MAX_MULTI_URL_INPUT_LENGTH: 100000,
+  ALLOWED_URL_SCHEMES: ["http", "https"],
+  _SEPARATOR_TOKEN: Symbol("separator"),
+
+  _normalizeMultiUrlToken(token) {
+    if (!token || typeof token !== "string") {
+      return null;
+    }
+
+    let value = token
+      .trim()
+      .replace(/^[<\[{"'`]+/, "")
+      .replace(/[>.,;:!?\]}{"'`]+$/, "");
+
+    if (value.startsWith("(")) {
+      value = value.replace(/^\(+/, "");
+    }
+    if (value.endsWith(")")) {
+      const openCount = (value.match(/\(/g) || []).length;
+      const closeCount = (value.match(/\)/g) || []).length;
+      if (closeCount > openCount) {
+        value = value.replace(/\)+$/, "");
+      }
+    }
+
+    if (!value) {
+      return null;
+    }
+
+    if (
+      /^(?:\d+|[a-zA-Z]{1,4})(?:[.)])?$/.test(value) ||
+      value === "-" ||
+      value === "*"
+    ) {
+      return this._SEPARATOR_TOKEN;
+    }
+
+    if (/^https?:\/\//i.test(value)) {
+      return value;
+    }
+
+    if (value.includes("@")) {
+      return null;
+    }
+
+    if (
+      /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}(?:[/?#][^\s<>"']*)?$/.test(
+        value
+      )
+    ) {
+      return `https://${value}`;
+    }
+
+    return null;
+  },
+
+  _getMultiUrlTokens(input) {
+    if (!input || typeof input !== "string") {
+      return [];
+    }
+
+    if (input.length > this.MAX_MULTI_URL_INPUT_LENGTH) {
+      input = input.substring(0, this.MAX_MULTI_URL_INPUT_LENGTH);
+    }
+
+    return input.split(/[\s,;]+/).filter((token) => token.length > 0);
+  },
+
+  isLikelyMultiUrlInput(input) {
+    const tokens = this._getMultiUrlTokens(input);
+    if (tokens.length < 2) {
+      return false;
+    }
+
+    let validUrlCount = 0;
+    for (const token of tokens) {
+      const normalized = this._normalizeMultiUrlToken(token);
+      if (normalized === this._SEPARATOR_TOKEN) {
+        continue;
+      }
+      if (!normalized || !this.isUrlSafeToOpen(normalized)) {
+        return false;
+      }
+      validUrlCount++;
+    }
+
+    return validUrlCount >= 2;
+  },
+
+  extractMultipleUrls(input) {
+    const tokens = this._getMultiUrlTokens(input);
+    const urls = [];
+    const seen = new Set();
+
+    for (const token of tokens) {
+      const normalized = this._normalizeMultiUrlToken(token);
+      if (
+        !normalized ||
+        normalized === this._SEPARATOR_TOKEN ||
+        !this.isUrlSafeToOpen(normalized) ||
+        seen.has(normalized)
+      ) {
+        continue;
+      }
+      seen.add(normalized);
+      urls.push(normalized);
+    }
+
+    return urls;
+  },
+
+  isUrlSafeToOpen(url) {
+    try {
+      const uri = Services.io.newURI(url);
+      return this.ALLOWED_URL_SCHEMES.includes(uri.scheme.toLowerCase());
+    } catch {
+      return false;
+    }
+  },
+
+  maybeOpenMultipleUrls(input) {
+    if (!this.isLikelyMultiUrlInput(input)) {
+      return false;
+    }
+
+    const urls = this.extractMultipleUrls(input);
+    if (urls.length < 2) {
+      return false;
+    }
+    const urlsToOpen = urls.slice(0, this.MAX_TABS_FROM_PASTE);
+    if (
+      typeof OpenInTabsUtils !== "undefined" &&
+      !OpenInTabsUtils.confirmOpenInTabs(urlsToOpen.length, window)
+    ) {
+      return true;
+    }
+
+    const originalTab = gBrowser.selectedTab;
+    const wasEmptyTab = originalTab.hasAttribute("zen-empty-tab");
+    let didOpenAny = false;
+
+    try {
+      gBrowser.loadTabs(urlsToOpen, {
+        inBackground: false,
+        replace: false,
+      });
+      didOpenAny = true;
+    } catch (e) {
+      console.error("[Zen] Failed to open multiple URLs with loadTabs, falling back", e);
+      for (const url of urlsToOpen) {
+        try {
+          gBrowser.addTrustedTab(url);
+          didOpenAny = true;
+        } catch (innerError) {
+          console.error(`[Zen] Failed to open URL: ${url}`, innerError);
+        }
+      }
+    }
+
+    if (!didOpenAny) {
+      return false;
+    }
+
+    gURLBar.handleRevert();
+    if (wasEmptyTab) {
+      gBrowser.removeTab(originalTab);
+    }
+    return true;
+  },
 };

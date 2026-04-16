@@ -1,0 +1,8 @@
+- name: browser.ml.enable
+  value: true
+- name: browser.ml.modelHub.rootUrl
+  value: "https://model-hub.mozilla.org"
+- name: browser.genai.summarize.enabled
+  value: true
+- name: browser.genai.chat.enabled
+  value: true

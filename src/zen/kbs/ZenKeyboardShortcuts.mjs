@@ -832,7 +832,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 20;
+  static LATEST_KBS_VERSION = 25;
 
   constructor() {}
 
@@ -1227,7 +1227,7 @@ class nsZenKeyboardShortcutsVersioner {
         )
       );
     }
-    if (version < 19) {
+    if (version < 25) {
       // Update India services shortcut to Ctrl+Alt+Y
       const indiaShortcut = data.find(s => s.getID?.() === "zen-open-india-services");
       if (indiaShortcut) {

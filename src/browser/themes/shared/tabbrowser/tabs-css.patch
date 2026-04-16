@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
-index fc1e0870696fb5866663cdab0fc96faff0d5a3f8..2430d7afd4761c66cd5ad05a7f26200143299425 100644
+index 203b546933842f4b0134188fda020c4db4dcd0d2..011bcfb023d0cabd55dfa7e49d3409383217e2ca 100644
 --- a/browser/themes/shared/tabbrowser/tabs.css
 +++ b/browser/themes/shared/tabbrowser/tabs.css
 @@ -24,7 +24,7 @@
@@ -79,7 +79,7 @@ index fc1e0870696fb5866663cdab0fc96faff0d5a3f8..2430d7afd4761c66cd5ad05a7f262001
      &[soundplaying] {
        list-style-image: url("chrome://browser/skin/tabbrowser/tab-audio-playing-small.svg");
      }
-@@ -668,7 +660,7 @@ tab-split-view-wrapper[dragtarget] {
+@@ -666,7 +658,7 @@ tab-split-view-wrapper[dragtarget] {
      }
    }
  
@@ -88,7 +88,7 @@ index fc1e0870696fb5866663cdab0fc96faff0d5a3f8..2430d7afd4761c66cd5ad05a7f262001
    &[crashed] {
      display: revert;
    }
-@@ -835,7 +827,7 @@ tab-split-view-wrapper[dragtarget] {
+@@ -832,7 +824,7 @@ tab-split-view-wrapper[dragtarget] {
        has not been added to root. There are certain scenarios when that attribute is temporarily
        removed from root such as when toggling the sidebar to expand with the toolbar button. */
      #tabbrowser-tabs[orient="horizontal"] &:not([pinned]):not([crashed]),
@@ -97,16 +97,16 @@ index fc1e0870696fb5866663cdab0fc96faff0d5a3f8..2430d7afd4761c66cd5ad05a7f262001
        &:is([soundplaying], [muted], [activemedia-blocked]) {
          display: flex;
        }
-@@ -1562,7 +1554,7 @@ tab-group {
+@@ -1614,7 +1606,7 @@ tab-group {
  }
  
  #tabbrowser-tabs[orient="vertical"][expanded] {
 -  tab-group > :is(.tab-group-label-container, .tabbrowser-tab),
 +  tab-group > :is(.tab-group-label-container, .tab-group-container, .tabbrowser-tab),
-   &[movingtab][movingtab-addToGroup]:not([movingtab-group], [movingtab-ungroup]) .tabbrowser-tab:is(:active, [multiselected]) {
+   &[movingtab][movingtab-addToGroup]:not([movingtab-group], [movingtab-ungroup]) tab-group > .tabbrowser-tab:is(:active, [multiselected]) {
      margin-inline-start: var(--space-medium);
    }
-@@ -2057,7 +2049,7 @@ tab-group {
+@@ -2089,7 +2081,7 @@ tab-group {
    }
  }
  
@@ -115,7 +115,7 @@ index fc1e0870696fb5866663cdab0fc96faff0d5a3f8..2430d7afd4761c66cd5ad05a7f262001
  #vertical-tabs-newtab-button {
    appearance: none;
    min-height: var(--tab-min-height);
-@@ -2068,7 +2060,7 @@ tab-group {
+@@ -2100,7 +2092,7 @@ tab-group {
    margin-inline: var(--tab-inner-inline-margin);
  
    #tabbrowser-tabs[orient="vertical"]:not([expanded]) & > .toolbarbutton-text {
@@ -124,7 +124,7 @@ index fc1e0870696fb5866663cdab0fc96faff0d5a3f8..2430d7afd4761c66cd5ad05a7f262001
    }
  
    &:hover {
-@@ -2092,7 +2084,7 @@ tab-group {
+@@ -2124,7 +2116,7 @@ tab-group {
   * flex container. #tabs-newtab-button is a child of the arrowscrollbox where
   * we don't want a gap (between tabs), so we have to add some margin.
   */
@@ -133,7 +133,7 @@ index fc1e0870696fb5866663cdab0fc96faff0d5a3f8..2430d7afd4761c66cd5ad05a7f262001
    margin-block: var(--tab-block-margin);
  }
  
-@@ -2280,7 +2272,6 @@ tab-group {
+@@ -2312,7 +2304,6 @@ tab-group {
  
    &:not([expanded]) {
      .tabbrowser-tab[pinned] {
@@ -141,7 +141,7 @@ index fc1e0870696fb5866663cdab0fc96faff0d5a3f8..2430d7afd4761c66cd5ad05a7f262001
      }
  
      .tab-background {
-@@ -2320,8 +2311,8 @@ tab-group {
+@@ -2352,8 +2343,8 @@ tab-group {
        display: block;
        position: absolute;
        inset: auto;
@@ -152,7 +152,7 @@ index fc1e0870696fb5866663cdab0fc96faff0d5a3f8..2430d7afd4761c66cd5ad05a7f262001
  
        &:-moz-window-inactive {
          background-image:
-@@ -2406,9 +2397,6 @@ tab-group {
+@@ -2438,9 +2429,6 @@ tab-group {
  
  :root:not([privatebrowsingmode]) :is(toolbarbutton, toolbarpaletteitem) ~ #tabbrowser-tabs,
  :root[privatebrowsingmode] :is(toolbarbutton:not(#firefox-view-button), toolbarpaletteitem:not(#wrapper-firefox-view-button)) ~ #tabbrowser-tabs {
@@ -162,7 +162,7 @@ index fc1e0870696fb5866663cdab0fc96faff0d5a3f8..2430d7afd4761c66cd5ad05a7f262001
  }
  
  :root[privatebrowsingmode] :is(#firefox-view-button, #menu_openFirefoxView) {
-@@ -2440,7 +2428,6 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
+@@ -2472,7 +2460,6 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
    list-style-image: url(chrome://global/skin/icons/plus.svg);
  }
  

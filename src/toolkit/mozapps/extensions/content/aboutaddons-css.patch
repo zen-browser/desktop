@@ -1,5 +1,5 @@
 diff --git a/toolkit/mozapps/extensions/content/aboutaddons.css b/toolkit/mozapps/extensions/content/aboutaddons.css
-index af6f7f42da3eb14c18058a9cc0516620a20a461b..fe049902b3c0606c038ad1bf076175593f1a1d76 100644
+index 619ae975710359fe879f197c689969ed726de7c0..542adaf0aa4f9d7336d969754228c1a93640b6af 100644
 --- a/toolkit/mozapps/extensions/content/aboutaddons.css
 +++ b/toolkit/mozapps/extensions/content/aboutaddons.css
 @@ -105,6 +105,13 @@ h2 {

@@ -603,17 +603,15 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       const rect = imageDataElement.getBoundingClientRect();
       const imageRect =
         imageDataElement.firstElementChild.getBoundingClientRect();
-      const widthRatio = rect.width / imageRect.width;
       // Since the image hasn't loaded at this point, so the image's height is 0
       // we need to calculate the height ratio based on the original aspect ratio of the image
       const aspectRatio = width / height;
       const heightRatio = rect.height / (rect.width / aspectRatio);
-      const originalWidth = width;
       const originalHeight = height;
-      width *= widthRatio;
-      height *= heightRatio;
-      clientX -= (width - originalWidth) / 2;
-      clientY -= (height - originalHeight) / 2;
+      if (heightRatio > 1) {
+        height *= heightRatio;
+        clientY -= (height - originalHeight) / 2;
+      }
     }
 
     // Calculate start and end positions based on direction

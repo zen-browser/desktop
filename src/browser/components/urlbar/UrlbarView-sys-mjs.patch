@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/UrlbarView.sys.mjs b/browser/components/urlbar/UrlbarView.sys.mjs
-index cba492223601a8aa4656d9dc60a09faeda9f2313..a40bd5d46912389ef7208c4c7b481027444400fd 100644
+index b665adb1a1ce8bbae8df4cbea6c3248c3e4fb431..7a73907957d38caba5b650749abf80a01b51559d 100644
 --- a/browser/components/urlbar/UrlbarView.sys.mjs
 +++ b/browser/components/urlbar/UrlbarView.sys.mjs
-@@ -618,7 +618,7 @@ export class UrlbarView {
+@@ -640,7 +640,7 @@ export class UrlbarView {
        !this.input.value ||
        this.input.getAttribute("pageproxystate") == "valid"
      ) {
@@ -11,7 +11,7 @@ index cba492223601a8aa4656d9dc60a09faeda9f2313..a40bd5d46912389ef7208c4c7b481027
          // Try to reuse the cached top-sites context. If it's not cached, then
          // there will be a gap of time between when the input is focused and
          // when the view opens that can be perceived as flicker.
-@@ -2871,6 +2871,8 @@ export class UrlbarView {
+@@ -2988,6 +2988,8 @@ export class UrlbarView {
        if (row?.hasAttribute("row-selectable")) {
          row?.toggleAttribute("selected", true);
        }
@@ -20,7 +20,7 @@ index cba492223601a8aa4656d9dc60a09faeda9f2313..a40bd5d46912389ef7208c4c7b481027
        if (element != row) {
          row?.toggleAttribute("descendant-selected", true);
        }
-@@ -3359,7 +3361,7 @@ export class UrlbarView {
+@@ -3477,7 +3479,7 @@ export class UrlbarView {
    }
  
    #enableOrDisableRowWrap() {

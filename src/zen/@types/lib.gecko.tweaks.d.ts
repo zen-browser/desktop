@@ -28,8 +28,24 @@ interface ChromeWindow extends Window {
   isChromeWindow: true;
 }
 
+interface XULElementTagNameMap {
+  browser: MozBrowser;
+  iframe: XULFrameElement;
+  label: XULTextElement;
+  menu: XULMenuElement;
+  menupopup: XULPopupElement;
+  tree: XULTreeElement;
+}
+
 interface Document {
-  createXULElement(name: "browser"): MozBrowser;
+  createXULElement<K extends keyof XULElementTagNameMap>(
+    localName: K,
+    options?: string | ElementCreationOptions
+  ): XULElementTagNameMap[K];
+  createXULElement(
+    localName: string,
+    options?: string | ElementCreationOptions
+  ): XULElement;
 }
 
 type nsIGleanPingNoReason = {

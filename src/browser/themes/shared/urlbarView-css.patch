@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/urlbarView.css b/browser/themes/shared/urlbarView.css
-index 212f3dc956df418b838e568d0b0fed5c1e848914..0dea37660e44ed5f000638eddf2770ebce049a43 100644
+index 2d6a63328642969e23da0a41ca6c7bb23eb96e8e..3060ba3f52ae7ab2f8fc36ff546d358724909b3e 100644
 --- a/browser/themes/shared/urlbarView.css
 +++ b/browser/themes/shared/urlbarView.css
 @@ -21,7 +21,7 @@

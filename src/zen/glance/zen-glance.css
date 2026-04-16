@@ -96,12 +96,6 @@
 
 .browserSidebarContainer.zen-glance-background {
   box-shadow: var(--zen-big-shadow);
-
-  & .browserContainer {
-    /* For rounding the corners of the content to work while
-     * applying a transformation to the container. */
-    will-change: transform;
-  }
 }
 
 .browserSidebarContainer.zen-glance-background,
@@ -120,14 +114,14 @@
   }
 
   & .browserContainer {
-    transform: translate(-50%, -50%);
     position: fixed;
     flex: unset !important;
     width: 80%;
     height: 100%;
 
     &:not([has-finished-animation="true"]) {
-      will-change: width, height, transform;
+      will-change: transform;
+      transform-origin: 0 0;
 
       #statuspanel {
         display: none;
@@ -178,7 +172,6 @@
   top: 50%;
   left: 50%;
   translate: -50% -50%;
-  background: rgba(255, 255, 255, 0.1);
 
   display: flex;
   align-items: center;

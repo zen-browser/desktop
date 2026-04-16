@@ -57,6 +57,7 @@ class ZenStartup {
       gZenWorkspaces.init();
       setTimeout(() => {
         gZenUIManager.init();
+        this.#initUIComponents();
         this.#checkForWelcomePage();
       }, 0);
     } catch (e) {
@@ -98,6 +99,10 @@ class ZenStartup {
       this.isReady = true;
       this.promiseInitializedResolve();
       delete this.promiseInitializedResolve;
+
+      setTimeout(() => {
+        gZenWorkspaces._invalidateBookmarkContainers();
+      });
     });
   }
 
@@ -154,6 +159,16 @@ class ZenStartup {
       if (elem) {
         sidebarPanelWrapper.prepend(elem);
       }
+    }
+  }
+
+  #initUIComponents() {
+    const kUIComponents = ["ZenProgressBar"];
+    for (let component of kUIComponents) {
+      const module = ChromeUtils.importESModule(
+        "resource:///modules/zen/ui/" + component + ".sys.mjs"
+      );
+      new module[component](window);
     }
   }
 

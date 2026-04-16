@@ -79,8 +79,9 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     this._zenClickEventListener = this._onTabClick.bind(this);
 
     gZenWorkspaces._resolvePinnedInitialized();
-    if (lazy.zenPinnedTabRestorePinnedTabsToPinnedUrl) {
-      gZenWorkspaces.promiseInitialized.then(() => {
+    gZenWorkspaces.promiseInitialized.then(() => {
+      gBrowser.addTabsProgressListener(this);
+      if (lazy.zenPinnedTabRestorePinnedTabsToPinnedUrl) {
         for (const tab of gZenWorkspaces.allStoredTabs) {
           try {
             this.resetPinnedTab(tab);
@@ -88,8 +89,8 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
             console.error("Error restoring pinned tab:", ex);
           }
         }
-      });
-    }
+      }
+    });
   }
 
   log(message) {
@@ -833,11 +834,13 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
-  onLocationChange(aBrowser, aLocation) {
+  onLocationChange(aBrowser, aWebProgress, aRequest, aLocationURI) {
+    // eslint-disable-next-line no-shadow
+    let location = aLocationURI ? aLocationURI.spec : "";
     if (
-      (aLocation == "about:blank" &&
+      (location == "about:blank" &&
         BrowserUIUtils.checkEmptyPageOrigin(aBrowser)) ||
-      aLocation == ""
+      location == ""
     ) {
       return;
     }
@@ -852,7 +855,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
     // Remove # and ? from the URL
     const pinUrl = tab._zenPinnedInitialState.entry.url.split("#")[0];
-    const currentUrl = aLocation.split("#")[0];
+    const currentUrl = location.split("#")[0];
     // Add an indicator that the pin has been changed
     if (pinUrl === currentUrl) {
       this.resetPinChangedUrl(tab);

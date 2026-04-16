@@ -64,6 +64,10 @@ class nsZenSidebarObject {
     return Cu.cloneInto(this.#sidebar, {});
   }
 
+  get dataWithoutCloning() {
+    return this.#sidebar;
+  }
+
   set data(data) {
     if (typeof data !== "object") {
       throw new Error("Sidebar data must be an object");
@@ -100,6 +104,10 @@ export class nsZenSessionManager {
       path: this.#storeFilePath,
       compression: "lz4",
       backupTo,
+      useSizeHints: Services.prefs.getBoolPref(
+        "zen.session-store.use-size-hints",
+        true
+      ),
     });
     this.log("Session file path:", this.#file.path);
     this.#deferredBackupTask = new lazy.DeferredTask(async () => {
@@ -412,10 +420,10 @@ export class nsZenSessionManager {
     if (
       this.#shouldRestoreOnlyPinned &&
       !this.#shouldRestoreFromCrash &&
-      this.#sidebar?.tabs
+      this.#sidebarWithoutCloning?.tabs
     ) {
       this.log("Restoring only pinned tabs into windows");
-      const sidebar = this.#sidebar;
+      const sidebar = this.#sidebarWithoutCloning;
       sidebar.tabs = (sidebar.tabs || []).filter(tab => tab.pinned);
       this.#sidebar = sidebar;
     }
@@ -447,6 +455,10 @@ export class nsZenSessionManager {
 
   get #sidebar() {
     return this.#sidebarObject.data;
+  }
+
+  get #sidebarWithoutCloning() {
+    return this.#sidebarObject.dataWithoutCloning;
   }
 
   set #sidebar(data) {
@@ -590,7 +602,7 @@ export class nsZenSessionManager {
     );
     this.#collectWindowData(windows);
     // This would save the data to disk asynchronously or when quitting the app.
-    let sidebar = this.#sidebar;
+    let sidebar = this.#sidebarWithoutCloning;
     this.#file.data = sidebar;
     if (soon) {
       this.#file.saveSoon();
@@ -897,7 +909,7 @@ export class nsZenSessionManager {
   onNewEmptySession(aWindow) {
     this.log("Restoring empty session with Zen session data");
     aWindow.gZenWorkspaces.restoreWorkspacesFromSessionStore({
-      spaces: this.#sidebar.spaces || [],
+      spaces: this.#sidebarWithoutCloning.spaces || [],
     });
   }
 
@@ -909,7 +921,7 @@ export class nsZenSessionManager {
    * @returns {Array} The cloned spaces data.
    */
   getClonedSpaces() {
-    const sidebar = this.#sidebar;
+    const sidebar = this.#sidebarWithoutCloning;
     if (!sidebar || !sidebar.spaces) {
       return [];
     }

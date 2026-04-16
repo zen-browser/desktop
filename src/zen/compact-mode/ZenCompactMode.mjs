@@ -107,6 +107,17 @@ window.gZenCompactModeManager = {
         }
         this._setElementExpandAttribute(buttons, false);
       });
+
+      // Issue #10594: on a notched Mac in compact borderless fullscreen,
+      // entering DOM fullscreen (e.g. YouTube) leaves the content `<browser>`
+      // sized against stale viewport geometry, so the bottom ~notch-height of
+      // the video (progress bar / controls) sits below the visible screen.
+      // Force a layout flush + resize on the content area once the transition
+      // has started so the frame loader re-queries the safe viewport.
+      window.addEventListener(
+        "MozDOMFullscreen:Entered",
+        this._onMacDOMFullscreenEnter.bind(this)
+      );
     }
 
     SessionStore.promiseAllWindowsRestored.then(() => {
@@ -206,6 +217,38 @@ window.gZenCompactModeManager = {
     );
     // Always connect this observer, we need it even if compact mode is disabled
     ZenHasPolyfill.connectObserver(this.toolbarObserverId);
+  },
+
+  _onMacDOMFullscreenEnter() {
+    // Only the compact + native-fullscreen + borderless combination is affected.
+    if (
+      !this.preference ||
+      !document.documentElement.hasAttribute("inFullscreen") ||
+      !Services.prefs.getBoolPref("zen.view.borderless-fullscreen", true)
+    ) {
+      return;
+    }
+    // Wait two animation frames: one for the transition to start, one for the
+    // chrome to finish collapsing, then force a reflow + notify the content
+    // process so it re-measures against the real (post-notch) viewport.
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        const browser = gBrowser?.selectedBrowser;
+        if (!browser || !document.documentElement.hasAttribute("inDOMFullscreen")) {
+          return;
+        }
+        // Forces a synchronous layout flush on chrome.
+        void document.documentElement.getBoundingClientRect();
+        void browser.getBoundingClientRect();
+        // Nudge the frame loader so the content process resyncs its viewport.
+        try {
+          window.windowUtils.updateLayerTree();
+        } catch (e) {
+          // updateLayerTree is best-effort; swallow if unavailable.
+        }
+        window.dispatchEvent(new Event("resize"));
+      });
+    });
   },
 
   flashSidebarIfNecessary(aInstant = false) {

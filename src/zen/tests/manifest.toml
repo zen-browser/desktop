@@ -41,3 +41,6 @@ is_direct_path = true
 
 [tooltiptext]
 source = "toolkit/components/tooltiptext"
+disable = [
+  "browser_input_file_tooltips.js",
+]

@@ -8,6 +8,7 @@ add_task(async function test_Issue_10455() {
   await SpecialPowers.pushPrefEnv({
     set: [["browser.tabs.closeWindowWithLastTab", true]],
   });
+  debugger;
 
   let newWindow = await BrowserTestUtils.openNewBrowserWindow();
   await newWindow.gZenWorkspaces.promiseInitialized;

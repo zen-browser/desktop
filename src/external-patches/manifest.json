@@ -51,6 +51,6 @@
   },
   {
     "type": "local",
-    "files": "firefox/bug_2013682_allow_stacking_contexts_to_be_promoted.patch"
+    "path": "firefox/bug_2013682_allow_stacking_contexts_to_be_promoted.patch"
   }
 ]

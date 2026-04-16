@@ -4,6 +4,7 @@
 "use strict";
 
 ChromeUtils.defineESModuleGetters(this, {
+  AppConstants: "resource://gre/modules/AppConstants.sys.mjs",
   FileTestUtils: "resource://testing-common/FileTestUtils.sys.mjs",
   ShellService: "moz-src:///browser/components/shell/ShellService.sys.mjs",
   XPCOMUtils: "resource://gre/modules/XPCOMUtils.sys.mjs",
@@ -36,20 +37,36 @@ add_setup(async function loadImages() {
   gSvgImage = await ChromeUtils.fetchDecodedImage(svgUri, svgChannel);
 });
 
+add_task(async function test_shortcutIconType() {
+  let type = ShellService.shortcutIconType;
+
+  if (AppConstants.platform === "win") {
+    Assert.deepEqual(type, {
+      extension: "ico",
+      mimeType: "image/vnd.microsoft.icon",
+    });
+  } else if (AppConstants.platform === "linux") {
+    Assert.deepEqual(type, {
+      extension: "png",
+      mimeType: "image/png",
+    });
+  }
+});
+
 /**
  * Ensures that the file is an ICO file with the correct dimensions.
  *
  * Currently, this doesn't actually check the file's image data, since that's
  * (a) difficult to do from JavaScript for raster files (especially given the
  * scaling) and (b) not easy in general for vector files without just rewriting
- * createWindowsIcon inline.
+ * writeShortcutIcon inline.
  *
  * @param {nsIFile} file - The file containing the image.
  */
 async function verifyOutput(file) {
   let image = imgTools.decodeImageFromArrayBuffer(
     (await IOUtils.read(file.path)).buffer,
-    "image/vnd.microsoft.icon"
+    ShellService.shortcutIconType.mimeType
   );
 
   ok(image, "Image decoded successfully from its native format");
@@ -59,14 +76,14 @@ async function verifyOutput(file) {
 
 add_task(async function test_iconDimensions_raster() {
   let tempFile = FileTestUtils.getTempFile();
-  await ShellService.createWindowsIcon(tempFile, gPngImage);
+  await ShellService.writeShortcutIcon(tempFile, gPngImage);
   await verifyOutput(tempFile);
   await IOUtils.remove(tempFile.path);
 });
 
 add_task(async function test_iconDimensions_vector() {
   let tempFile = FileTestUtils.getTempFile();
-  await ShellService.createWindowsIcon(tempFile, gSvgImage);
+  await ShellService.writeShortcutIcon(tempFile, gSvgImage);
   await verifyOutput(tempFile);
   await IOUtils.remove(tempFile.path);
 });

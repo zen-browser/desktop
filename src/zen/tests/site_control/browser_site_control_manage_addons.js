@@ -45,6 +45,10 @@ add_task(async function test_manage_addons_opens_addons_manager() {
 });
 
 add_task(async function test_get_addons_button_opens_amo() {
+  await SpecialPowers.pushPrefEnv({
+    set: [["extensions.getAddons.link.url", "https://example.com/"]],
+  });
+
   const tab = BrowserTestUtils.addTab(gBrowser, HTTPS_PAGE, {
     skipAnimation: true,
   });
@@ -84,5 +88,6 @@ add_task(async function test_get_addons_button_opens_amo() {
       BrowserTestUtils.removeTab(amoTab);
     }
     BrowserTestUtils.removeTab(tab);
+    await SpecialPowers.popPrefEnv();
   }
 });

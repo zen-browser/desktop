@@ -601,10 +601,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       // We are scaling the wrapper while having only the element preview size
       // in mind, so we need to adjust the width/height to match the size of the element preview
       const rect = imageDataElement.getBoundingClientRect();
-      const imageRect =
-        imageDataElement.firstElementChild.getBoundingClientRect();
-      // Since the image hasn't loaded at this point, so the image's height is 0
-      // we need to calculate the height ratio based on the original aspect ratio of the image
       const aspectRatio = width / height;
       const heightRatio = rect.height / (rect.width / aspectRatio);
       const originalHeight = height;

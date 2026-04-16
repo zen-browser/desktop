@@ -4,9 +4,9 @@
 
 import createSidebarNotification from "chrome://browser/content/zen-components/ZenSidebarNotification.mjs";
 
-const ZEN_UPDATE_PREF = "zen.updates.last-version";
-const ZEN_BUILD_ID_PREF = "zen.updates.last-build-id";
-const ZEN_UPDATE_SHOW = "zen.updates.show-update-notification";
+const ZEN_UPDATE_PREF = "astra.updates.last-version";
+const ZEN_BUILD_ID_PREF = "astra.updates.last-build-id";
+const ZEN_UPDATE_SHOW = "astra.updates.show-update-notification";
 
 export default function checkForZenUpdates() {
   const version = Services.appinfo.version;

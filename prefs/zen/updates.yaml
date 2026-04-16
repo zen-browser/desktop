@@ -4,3 +4,9 @@
 
 - name: zen.updates.show-update-notification
   value: true
+
+- name: app.releaseNotesURL.prompt
+  value: "https://github.com/Hrishikeshmind/astradesktop/releases/tag/%VERSION%"
+
+- name: app.update.url
+  value: "https://github.com/Hrishikeshmind/astradesktop/releases/latest"

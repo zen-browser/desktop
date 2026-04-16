@@ -287,8 +287,13 @@ auto nsZenBoostsBackend::onPresShellEntered(mozilla::dom::Document* aDocument)
   // Note that aDocument can be null when entering anonymous content frames.
   // We explicitly do this to prevent applying boosts to anonymous content, such
   // as devtools or screenshots.
+  mozilla::dom::BrowsingContext* browsingContext =
   mCurrentBrowsingContext =
       aDocument ? aDocument->GetBrowsingContext() : nullptr;
+  if (!browsingContext) {
+    return;
+  }
+  mCurrentBrowsingContext = browsingContext;
 }
 
 [[nodiscard]] ZEN_HOT_FUNCTION auto

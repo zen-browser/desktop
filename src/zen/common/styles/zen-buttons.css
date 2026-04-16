@@ -30,43 +30,37 @@ dialog::part(dialog-button) {
   border-radius: 10px;
 }
 
-dialog[defaultButton="accept"]::part(dialog-button) {
-  &:is([dlgtype="accept"], [dlgtype="cancel"]) {
-    padding-inline-end: 3.7em;
+@media (-moz-platform: macos) {
+  dialog[defaultButton="accept"]::part(dialog-button) {
+    &:is([dlgtype="accept"], [dlgtype="cancel"]) {
+      padding-inline-end: 3.7em;
 
-    @media (-moz-platform: windows) {
-      padding-inline-end: 4em;
-    }
+      &::after {
+        border-radius: 4px;
+        font-weight: 600;
+        position: absolute;
+        padding: 3px 0;
+        top: 50%;
+        transform: translateY(-50%);
+        text-align: center;
+      }
 
-    @media (-moz-platform: linux) {
-      padding-inline-end: 3.1em;
-    }
+      &[dlgtype="accept"]::after {
+        content: "⏎";
+        right: 0.6em;
+        font-size: 12px;
+        width: 36px;
+        color: light-dark(rgba(255, 255, 255, 0.80), rgba(0, 0, 0, 0.60));
+      }
 
-    &::after {
-      border-radius: 4px;
-      font-weight: 600;
-      position: absolute;
-      padding: 3px 0;
-      top: 50%;
-      transform: translateY(-50%);
-      text-align: center;
-    }
-
-    &[dlgtype="accept"]::after {
-      content: "⏎";
-      right: 0.6em;
-      font-size: 12px;
-      width: 36px;
-      color: light-dark(rgba(255, 255, 255, 0.80), rgba(0, 0, 0, 0.60));
-    }
-
-    &[dlgtype="cancel"]::after {
-      content: "ESC";
-      right: 1em;
-      font-size: 8px;
-      width: 30px;
-      color: light-dark(rgba(28, 28, 28, 0.7), rgba(255, 255, 255, 0.6)) !important;
-      outline: 1px solid light-dark(rgba(28, 28, 28, 0.1), rgba(255, 255, 255, 0.1)) !important;
+      &[dlgtype="cancel"]::after {
+        content: "ESC";
+        right: 1em;
+        font-size: 8px;
+        width: 30px;
+        color: light-dark(rgba(28, 28, 28, 0.7), rgba(255, 255, 255, 0.6)) !important;
+        outline: 1px solid light-dark(rgba(28, 28, 28, 0.1), rgba(255, 255, 255, 0.1)) !important;
+      }
     }
   }
 }

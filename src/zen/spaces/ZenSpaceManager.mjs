@@ -861,7 +861,7 @@ class nsZenWorkspaces {
       return;
     }
     await this.promiseInitialized;
-    let showed = false;
+    let shownEmptyTab = false;
     let resolveSelectPromise;
     let selectPromise = new Promise(resolve => {
       resolveSelectPromise = resolve;
@@ -871,6 +871,7 @@ class nsZenWorkspaces {
       delete this._tabToSelect;
       delete this._tabToRemoveForEmpty;
       delete this._shouldOverrideTabs;
+      delete this._keepSelectedTab;
       resolveSelectPromise();
     };
 
@@ -919,8 +920,10 @@ class nsZenWorkspaces {
           cleanup();
         }, 0);
       } else {
-        this.selectEmptyTab();
-        showed = true;
+        if (!this._keepSelectedTab) {
+          this.selectEmptyTab();
+          shownEmptyTab = true;
+        }
         setTimeout(() => {
           this._removedByStartupPage = true;
           gBrowser.removeTab(this._tabToRemoveForEmpty, {
@@ -949,16 +952,16 @@ class nsZenWorkspaces {
       "zen.urlbar.open-on-startup",
       true
     );
-    showed &&= openOnStartup;
+    shownEmptyTab &&= openOnStartup;
     initialTabWasEmpty &&= openOnStartup;
 
     // Wait for the next event loop to ensure that the startup focus logic by
     // firefox has finished doing it's thing.
     setTimeout(() => {
       setTimeout(() => {
-        if (gZenVerticalTabsManager._canReplaceNewTab && showed) {
+        if (gZenVerticalTabsManager._canReplaceNewTab && shownEmptyTab) {
           BrowserCommands.openTab();
-        } else if (showed || initialTabWasEmpty) {
+        } else if (shownEmptyTab || initialTabWasEmpty) {
           openLocation();
         } else {
           gBrowser.selectedBrowser.focus();

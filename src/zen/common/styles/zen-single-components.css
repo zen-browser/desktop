@@ -686,11 +686,18 @@
 
 /* Loading progress bar */
 #zen-loading-progress-bar {
+  --zen-loading-progress-bar-color: color-mix(in srgb, var(--zen-primary-color), light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.7)) 70%);
+
   position: fixed;
-  top: max(calc(var(--zen-element-separation) / -2), -4px);
+
+  /* Minimum -2px, but if its larger, elemenet separation / -2 will be used as top offset, to avoid overlapping with the notification stack */
+  top: calc(var(--zen-element-separation) / -2);
+  :root:is([zen-no-padding="true"], [inDOMFullscreen="true"]) & {
+    top: 4px;
+  }
   left: 50%;
   transform: translate(-50%, -50%) scale(0);
-  background: light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.7));
+  background: var(--zen-loading-progress-bar-color);
   height: .4rem;
   width: 5rem;
   z-index: 9;
@@ -717,7 +724,7 @@
       opacity: 0;
       animation: zen-progress-bar-long-load 1s ease-in-out infinite;
       animation-delay: 0.3s;
-      background: light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.7));
+      background: var(--zen-loading-progress-bar-color);
       border-radius: inherit;
     }
   }

@@ -181,7 +181,7 @@ jobs:
         with:
           commit_message: 🔖 Update version to ${{ steps.data.outputs.version }}
           commit_user_name: Astra Browser Robot
-          commit_user_email: zen-browser-auto@users.noreply.github.com
+          commit_user_email: astra-browser-auto@users.noreply.github.com
 
   check-release:
     runs-on: ubuntu-latest
@@ -497,7 +497,7 @@ jobs:
       - name: Checkout updates repository
         uses: actions/checkout@v4
         with:
-          repository: zen-browser/updates-server
+          repository: Hrishikeshmind/astra-updates
           path: updates-server
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -530,7 +530,7 @@ jobs:
         with:
           commit_message: 🚀 Update update manifests
           commit_user_name: Astra Browser Robot
-          commit_user_email: zen-browser-auto@users.noreply.github.com
+          commit_user_email: astra-browser-auto@users.noreply.github.com
           repository: ./updates-server
 
       - name: Generate Release Notes
@@ -632,7 +632,7 @@ jobs:
         with:
           commit_message: 🚀 Update releases for Flatpak
           commit_user_name: Astra Browser Robot
-          commit_user_email: zen-browser-auto@users.noreply.github.com
+          commit_user_email: astra-browser-auto@users.noreply.github.com
 
       - name: Checkout Flatpak repository
         uses: actions/checkout@v4
@@ -655,7 +655,7 @@ jobs:
         with:
           commit_message: "[release]: Update Flatpak manifest"
           commit_user_name: Astra Browser Robot
-          commit_user_email: zen-browser-auto@users.noreply.github.com
+          commit_user_email: astra-browser-auto@users.noreply.github.com
           repository: ./flatpak
 
       - name: Wait 2 minutes for the Flatpak repo to update

@@ -10,10 +10,6 @@
   --in-content-box-background: var(--zen-colors-tertiary) !important;
 }
 
-.main-content {
-  padding-top: 60px !important;
-}
-
 .pane-container {
   margin: auto;
 }
@@ -36,10 +32,6 @@ description {
 
 html|dialog {
   animation: dialogPopin 0.2s ease-out;
-}
-
-.sticky-inner-container {
-  display: none !important;
 }
 
 .subcategory {

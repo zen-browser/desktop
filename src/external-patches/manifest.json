@@ -48,5 +48,9 @@
       "D247217"
     ],
     "name": "Session store use size hint"
+  },
+  {
+    "type": "local",
+    "files": "firefox/bug_2013682_allow_stacking_contexts_to_be_promoted.patch"
   }
 ]

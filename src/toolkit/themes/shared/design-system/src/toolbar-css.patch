@@ -1,0 +1,12 @@
+diff --git a/toolkit/themes/shared/design-system/src/toolbar.css b/toolkit/themes/shared/design-system/src/toolbar.css
+index 61667b3f778a66b74aa7b169cd646a8437a5dd42..d1a9e5ad121a44f182e7061a21f4bbe9540cae8c 100644
+--- a/toolkit/themes/shared/design-system/src/toolbar.css
++++ b/toolkit/themes/shared/design-system/src/toolbar.css
+@@ -61,7 +61,6 @@
+     --toolbar-field-color: inherit;
+ 
+     @media (prefers-color-scheme: light) {
+-      --toolbar-bgcolor: var(--color-white);
+     }
+   }
+ 

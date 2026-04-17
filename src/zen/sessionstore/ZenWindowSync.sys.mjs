@@ -795,6 +795,16 @@ class nsZenWindowSync {
       );
       return false;
     }
+    // Theoretical case where we are trying to swap two tabs in the same window.
+    // There has been some reports of this happening in the wild, and while it shouldn't
+    // cause any critical issues, it can cause some weird states and we should avoid it.
+    // For example, see gh-13149
+    if (aOtherTab.ownerGlobal === aOurTab.ownerGlobal) {
+      this.log(
+        `Cannot swap browsers between tabs ${aOurTab.id} and ${aOtherTab.id} because they are in the same window`
+      );
+      return false;
+    }
     // Can't swap between chrome and content processes.
     if (
       aOurTab.linkedBrowser.isRemoteBrowser !=

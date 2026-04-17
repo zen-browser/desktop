@@ -47,10 +47,22 @@ import_cert() {
     echo "Error: public_key.der not found. Run with -g first." >&2
     exit 1
   fi
-  echo "Importing certificate into $UPDATER_CERT_DIR/release_primary.der"
-  cp "$CERT_PATH_DIR/public_key.der" "$UPDATER_CERT_DIR/release_primary.der"
-  echo "Importing certificate into $UPDATER_CERT_DIR/release_secondary.der"
-  cp "$CERT_PATH_DIR/public_key.der" "$UPDATER_CERT_DIR/release_secondary.der"
+  files=(
+    "$UPDATER_CERT_DIR/release_primary.der"
+    "$UPDATER_CERT_DIR/release_secondary.der"
+    "$UPDATER_CERT_DIR/dep1.der"
+    "$UPDATER_CERT_DIR/dep2.der"
+    "$UPDATER_CERT_DIR/xpcshellCertificate.der"
+  )
+  for file in "${files[@]}"; do
+    if [ ! -f "$file" ]; then
+      echo "Error: $file not found. Make sure the updater certificates exist." >&2
+      exit 1
+    fi
+    rm -f "$file"
+    echo "Copying $CERT_PATH_DIR/public_key.der to $file"
+    cp "$CERT_PATH_DIR/public_key.der" "$file"
+  done
   echo "Done. Rebuild the updater to embed the new certificate."
 }
 

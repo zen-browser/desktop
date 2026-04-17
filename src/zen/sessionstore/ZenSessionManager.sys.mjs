@@ -712,10 +712,7 @@ export class nsZenSessionManager {
     // We only want to collect the sidebar data once from
     // a single window, as all windows share the same
     // sidebar data.
-    let sidebarData = this.#sidebar;
-    if (!sidebarData) {
-      sidebarData = {};
-    }
+    let sidebarData = {};
 
     sidebarData.lastCollected = Date.now();
     this.#collectTabsData(sidebarData, aStateWindows);

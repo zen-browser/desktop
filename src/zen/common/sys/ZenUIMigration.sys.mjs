@@ -143,7 +143,7 @@ class nsZenUIMigration {
         // User has clicked on "Learn More"
         if (buttonPressed === 0) {
           win.openTrustedLinkIn(
-            "https://docs.zen-browser.app/user-manual/window-sync",
+            "https://github.com/Hrishikeshmind/astradesktop",
             "tab"
           );
         }

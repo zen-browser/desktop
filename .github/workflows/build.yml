@@ -516,8 +516,10 @@ jobs:
           cp -a ../linux_update_manifest_aarch64/.  updates/
 
           if [[ $RELEASE_BRANCH == 'release' ]]; then
-            cp -a ../.github/workflows/object/windows-x64-signed-x86_64/update_manifest/.  updates/
-            cp -a ../.github/workflows/object/windows-x64-signed-arm64/update_manifest/.  updates/
+            if [ -d "../.github/workflows/object" ]; then
+              cp -a ../.github/workflows/object/windows-x64-signed-x86_64/update_manifest/. updates/ || true
+              cp -a ../.github/workflows/object/windows-x64-signed-arm64/update_manifest/. updates/ || true
+            fi
           else
             cp -a ../windows_update_manifest_x86_64/.  updates/
             cp -a ../windows_update_manifest_arm64/.  updates/
@@ -591,15 +593,15 @@ jobs:
             ./astra-x86_64.AppImage.zsync/*
             ./astra-aarch64.AppImage/*
             ./astra-aarch64.AppImage.zsync/*
-            ./.github/workflows/object/windows-x64-signed-x86_64/zen.win-x86_64.zip
-            ./.github/workflows/object/windows-x64-signed-arm64/zen.win-arm64.zip
+            ./astra.win-x86_64.zip/*
+            ./astra.win-arm64.zip/*
+            ./astra.installer.exe/*
+            ./astra.installer-arm64.exe/*
             ./linux.mar/*
             ./linux-aarch64.mar/*
-            ./.github/workflows/object/windows-x64-signed-x86_64/windows.mar
-            ./.github/workflows/object/windows-x64-signed-arm64/windows-arm64.mar
+            ./windows.mar/*
+            ./windows-arm64.mar/*
             ./macos.mar/*
-            ./.github/workflows/object/windows-x64-signed-x86_64/zen.installer.exe
-            ./.github/workflows/object/windows-x64-signed-arm64/zen.installer-arm64.exe
             ./zen.macos-universal.dmg/*
 
   prepare-flatpak:

@@ -23,7 +23,7 @@
 # === Mark: Site Injection ===
 
 - name: zen.injections.match-urls
-  value: "https://zen-browser.app/*"
+  value: "https://github.com/Hrishikeshmind/astradesktop/*"
   locked: true
   condition: "defined(MOZILLA_OFFICIAL)"
 

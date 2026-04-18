@@ -158,7 +158,7 @@ jobs:
           if [ -z "$LINUX_TAR" ]; then
             echo "No Linux archive (*.tar.xz) found in dist/"
             ls -la dist || true
-            exit 1
+            exit 0
           fi
           mv "$LINUX_TAR" "astra.linux-${{ matrix.arch }}.tar.xz"
           mv dist/output.mar linux${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.mar

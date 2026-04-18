@@ -431,6 +431,7 @@ jobs:
           retention-days: 5
           name: astra-${{ matrix.arch }}.AppImage
           path: ./dist/astra-${{ matrix.arch }}.AppImage
+          if-no-files-found: warn
 
       - name: Upload artifact (ZSync)
         uses: actions/upload-artifact@v4
@@ -438,6 +439,7 @@ jobs:
           retention-days: 5
           name: astra-${{ matrix.arch }}.AppImage.zsync
           path: ./dist/astra-${{ matrix.arch }}.AppImage.zsync
+          if-no-files-found: warn
 
   stop-self-hosted:
     runs-on: ubuntu-latest

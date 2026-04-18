@@ -161,7 +161,7 @@ jobs:
             exit 0
           fi
           mv "$LINUX_TAR" "astra.linux-${{ matrix.arch }}.tar.xz"
-          mv dist/output.mar linux${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.mar
+          mv dist/output.mar linux${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.mar || true
           if [ -f "dist/zen-${{ matrix.arch }}.AppImage" ]; then
             mv "dist/zen-${{ matrix.arch }}.AppImage" "dist/astra-${{ matrix.arch }}.AppImage"
           fi

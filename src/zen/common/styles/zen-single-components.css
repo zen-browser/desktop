@@ -695,6 +695,7 @@
   :root:is([zen-no-padding="true"], [inDOMFullscreen="true"]) & {
     top: 4px;
   }
+
   left: 50%;
   transform: translate(-50%, -50%) scale(0);
   background: var(--zen-loading-progress-bar-color);
@@ -707,8 +708,10 @@
               transform .3s ease-in-out;
   overflow: clip;
   pointer-events: none;
-  animation: zen-progress-bar-pulse 1.5s linear infinite forwards;
+  animation: zen-progress-bar-pulse 1s ease-in-out infinite forwards;
+  animation-direction: alternate;
   transform-origin: 0 0;
+  contain: content;
 
   &[long-load="true"] {
     opacity: 1;

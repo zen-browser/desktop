@@ -787,44 +787,61 @@
 }
 
 #PanelUI-zen-app-launcher {
-  min-width: 280px;
-  max-width: 320px;
-  max-height: 70vh;
+  min-width: 340px;
+  max-width: 380px;
+  max-height: 75vh;
   overflow-y: auto;
-  padding: 8px;
+  padding: 12px;
+  scrollbar-width: thin;
 }
 #PanelUI-zen-app-launcher-title {
   font-size: 14px;
   font-weight: 600;
-  padding: 4px 4px 8px;
+  padding: 0 0 8px 0;
   border-bottom: 1px solid var(--panel-separator-color);
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 .zen-app-launcher-section-title {
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 700;
   color: var(--text-color-deemphasized);
-  padding: 8px 2px 4px;
+  padding: 10px 0 6px 0;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
+  display: block;
 }
 .zen-app-launcher-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-bottom: 4px;
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 4px !important;
 }
 .zen-app-launcher-item {
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 6px 8px;
-  border-radius: 6px;
-  font-size: 11px;
-  min-width: 60px;
-  max-width: 80px;
-  cursor: pointer;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 8px 4px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  min-height: 56px !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  border: none !important;
+  background: transparent !important;
 }
 .zen-app-launcher-item:hover {
-  background: var(--button-hover-bgcolor);
+  background: var(--button-hover-bgcolor) !important;
+}
+.zen-app-launcher-item-icon {
+  width: 24px !important;
+  height: 24px !important;
+  margin-bottom: 4px !important;
+}
+.zen-app-launcher-item-label {
+  font-size: 10px !important;
+  text-align: center !important;
+  max-width: 70px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
 }

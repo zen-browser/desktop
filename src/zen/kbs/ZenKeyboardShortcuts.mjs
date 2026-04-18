@@ -795,6 +795,18 @@ class nsZenKeyboardShortcutsLoader {
       )
     );
 
+    newShortcutList.push(
+      new KeyShortcut(
+        "zen-open-app-launcher",
+        "B",
+        "",
+        ZEN_OTHER_SHORTCUTS_GROUP,
+        nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
+        "cmd_zenOpenAppLauncher",
+        ""
+      )
+    );
+
     return newShortcutList;
   }
 
@@ -832,7 +844,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 25;
+  static LATEST_KBS_VERSION = 26;
 
   constructor() {}
 
@@ -1239,6 +1251,9 @@ class nsZenKeyboardShortcutsVersioner {
           })
         );
       }
+    }
+    if (version < 26) {
+      // App launcher: Ctrl+Shift+B (default added via fillDefaultIfNotPresent)
     }
     if (version < 20) {
       // Add shortcut for folder quick search.

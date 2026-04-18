@@ -111,6 +111,7 @@ jobs:
           key: win-cross
 
       - name: Install MozillaBuild
+        continue-on-error: true
         shell: pwsh
         run: |
           Invoke-WebRequest -Uri "https://ftp.mozilla.org/pub/mozilla/libraries/win32/MozillaBuildSetup-Latest.exe" -OutFile "MozillaBuildSetup.exe"

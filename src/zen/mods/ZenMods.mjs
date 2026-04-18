@@ -304,7 +304,7 @@ class nsZenMods extends nsZenPreloadedFeature {
 
   #composeModApiUrl(modId) {
     // keeping theme here as it would require changes to CI to change the name
-    return `https://github.com/Hrishikeshmind/astradesktop/releases/latest`;
+    return null;
   }
 
   async #downloadUrlToFile(url, path, maxRetries = 3, retryDelayMs = 500) {

@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
-index 71921cec2b6aa0f103856c31254fd6c4affefccb..fbb44402e3201a00eb37765d60829828d40e70ea 100644
+index 71921cec2b6aa0f103856c31254fd6c4affefccb..d39f2bd587e9aa320d69f94a2bd30be909c3e608 100644
 --- a/browser/components/sessionstore/SessionStore.sys.mjs
 +++ b/browser/components/sessionstore/SessionStore.sys.mjs
 @@ -129,6 +129,9 @@ const TAB_EVENTS = [
@@ -350,3 +350,11 @@ index 71921cec2b6aa0f103856c31254fd6c4affefccb..fbb44402e3201a00eb37765d60829828
            // Convert any open groups into saved groups.
            let groupStateToSave = window.groups.find(
              groupState => groupState.id == window.tabs[tIndex].groupId
+@@ -8076,7 +8139,6 @@ var SessionStoreInternal = {
+     timer.initWithCallback(
+       function () {
+         if (beats <= 0) {
+-          this._log.debug(`looseTimer of ${delay} timed out`);
+           Glean.sessionRestore.shutdownFlushAllOutcomes.timed_out.add(1);
+           deferred.resolve();
+         }

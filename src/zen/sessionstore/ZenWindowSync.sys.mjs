@@ -731,7 +731,14 @@ class nsZenWindowSync {
       return;
     }
     await this.#styleSwapedBrowsers(aOurTab, aOtherTab, () => {
-      this.#swapBrowserDocShellsInner(aOurTab, aOtherTab);
+      try {
+        this.#swapBrowserDocShellsInner(aOurTab, aOtherTab);
+      } catch (e) {
+        console.error(
+          `Error swapping browsers for tabs ${aOurTab.id} and ${aOtherTab.id}:`,
+          e
+        );
+      }
     });
   }
 
@@ -1066,10 +1073,17 @@ class nsZenWindowSync {
           continue;
         }
         delete tab._zenContentsVisible;
-        this.#swapBrowserDocShellsInner(targetTab, tab, {
-          focus: targetTab.selected,
-          onClose: true,
-        });
+        try {
+          this.#swapBrowserDocShellsInner(targetTab, tab, {
+            focus: targetTab.selected,
+            onClose: true,
+          });
+        } catch (e) {
+          console.error(
+            `Error swapping browsers for tabs ${tab.id} and ${targetTab.id} during close:`,
+            e
+          );
+        }
         this.#swapedTabsEntriesForWC.set(
           tab.linkedBrowser.permanentKey,
           targetTab

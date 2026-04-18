@@ -744,8 +744,14 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
     const onKeyDown = event => {
       // Arrow down and up to navigate through the list
-      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      if (
+        event.key === "ArrowDown" ||
+        event.key === "ArrowUp" ||
+        event.key === "Tab"
+      ) {
         event.preventDefault();
+        let isUp =
+          event.key === "ArrowUp" || (event.key === "Tab" && event.shiftKey);
         const items = Array.from(tabsList.children).filter(
           item => !item.hidden
         );
@@ -755,9 +761,9 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         let index = items.indexOf(
           tabsList.querySelector(".folders-tabs-list-item[selected]")
         );
-        if (event.key === "ArrowDown") {
+        if (!isUp) {
           index = (index + 1) % items.length;
-        } else if (event.key === "ArrowUp") {
+        } else {
           index = (index - 1 + items.length) % items.length;
         }
         items.forEach(item => item.removeAttribute("selected"));

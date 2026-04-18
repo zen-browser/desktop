@@ -119,6 +119,10 @@
     init() {
       super.init();
       this.handle_windowDragEnter = this.handle_windowDragEnter.bind(this);
+      gZenWorkspaces.workspaceIcons.addEventListener(
+        "dragover",
+        this.handle_spaceIconDragOver.bind(this)
+      );
       window.addEventListener(
         "dragleave",
         this.handle_windowDragLeave.bind(this),
@@ -676,6 +680,31 @@
       }
     }
 
+    #onSpaceChanged(spaceChanged, dt) {
+      if (AppConstants.platform !== "macosx") {
+        // See the hack in #createDragImageForTabs for more details which
+        // explains why we need to do this on non-macOS platforms.
+        return;
+      }
+      let tabs = this.originalDragImageArgs[0].children;
+      const { isDarkMode, isExplicitMode } =
+        gZenThemePicker.getGradientForWorkspace(spaceChanged, {
+          getGradient: false,
+        });
+      for (let tab of tabs) {
+        if (isExplicitMode) {
+          tab.style.colorScheme = isDarkMode ? "dark" : "light";
+        } else {
+          tab.style.colorScheme = "";
+        }
+      }
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          dt.updateDragImage(...this.originalDragImageArgs);
+        });
+      });
+    }
+
     #handle_sidebarDragOver(event) {
       const dt = event.dataTransfer;
       const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
@@ -696,28 +725,7 @@
                 /* Disable wrapping */ true
               )
               .then(spaceChanged => {
-                if (AppConstants.platform !== "macosx") {
-                  // See the hack in #createDragImageForTabs for more details which
-                  // explains why we need to do this on non-macOS platforms.
-                  return;
-                }
-                let tabs = this.originalDragImageArgs[0].children;
-                const { isDarkMode, isExplicitMode } =
-                  gZenThemePicker.getGradientForWorkspace(spaceChanged, {
-                    getGradient: false,
-                  });
-                for (let tab of tabs) {
-                  if (isExplicitMode) {
-                    tab.style.colorScheme = isDarkMode ? "dark" : "light";
-                  } else {
-                    tab.style.colorScheme = "";
-                  }
-                }
-                requestAnimationFrame(() => {
-                  requestAnimationFrame(() => {
-                    dt.updateDragImage(...this.originalDragImageArgs);
-                  });
-                });
+                this.#onSpaceChanged(spaceChanged, dt);
               });
             this.#changeSpaceTimer = null;
           }, this._dndSwitchSpaceDelay);
@@ -725,6 +733,27 @@
       } else if (this.#changeSpaceTimer) {
         this.clearSpaceSwitchTimer();
       }
+    }
+
+    handle_spaceIconDragOver(event) {
+      const dt = event.dataTransfer;
+      const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
+      if (draggedTab.hasAttribute("zen-essential")) {
+        return;
+      }
+      const target = event.target;
+      const spaceId = target.getAttribute("zen-workspace-id");
+      if (!spaceId) {
+        return;
+      }
+      this.clearDragOverVisuals();
+      const currentSpaceId = gZenWorkspaces.activeWorkspace;
+      if (spaceId === currentSpaceId || gZenWorkspaces._animatingChange) {
+        return;
+      }
+      gZenWorkspaces.changeWorkspaceWithID(spaceId).then(spaceChanged => {
+        this.#onSpaceChanged(spaceChanged, dt);
+      });
     }
 
     #handle_tabDragOverToSplit(event) {
@@ -1238,18 +1267,24 @@
         ) {
           let lastTab = gBrowser.tabs.at(-1);
           let pinnedTabsCount = gBrowser._numVisiblePinTabsWithoutCollapsed;
+          let isHoveringSeparator =
+            event.target.parentElement.classList.contains(
+              "zen-workspace-pinned-tabs-section"
+            );
 
           // Only if there are no normal tabs to drop after
           showIndicatorUnderNewTabButton =
             lastTab.hasAttribute("zen-empty-tab");
-          let useLastPinnd =
-            (hoveringPeriphery ||
-              (showIndicatorUnderNewTabButton &&
-                !(pinnedTabsCount - gBrowser._numZenEssentials))) &&
-            Services.prefs.getBoolPref("zen.view.show-newtab-button-top");
+          let useLastPinned =
+            (showIndicatorUnderNewTabButton &&
+              !(pinnedTabsCount - gBrowser._numZenEssentials) &&
+              Services.prefs.getBoolPref("zen.view.show-newtab-button-top")) ||
+            isHoveringSeparator;
           dropElement =
-            (useLastPinnd
-              ? this._tabbrowserTabs.ariaFocusableItems.at(pinnedTabsCount)
+            (useLastPinned
+              ? this._tabbrowserTabs.ariaFocusableItems.at(
+                  pinnedTabsCount ? pinnedTabsCount - 1 : 0
+                )
               : this._tabbrowserTabs.ariaFocusableItems.at(-1)) || lastTab;
         }
       }

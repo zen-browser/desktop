@@ -1602,7 +1602,6 @@ class nsZenWorkspaces {
   }
 
   #prepareNewWorkspace(space) {
-    document.documentElement.setAttribute("zen-workspace-id", space.uuid);
     let tabCount = 0;
     for (let tab of gBrowser.tabs) {
       const isEssential = tab.getAttribute("zen-essential") === "true";
@@ -1643,12 +1642,12 @@ class nsZenWorkspaces {
 
   async changeWorkspaceWithID(workspaceID, ...args) {
     const workspace = this.getWorkspaceFromId(workspaceID);
-    await this.changeWorkspace(workspace, ...args);
+    return await this.changeWorkspace(workspace, ...args);
   }
 
   async changeWorkspace(workspace, ...args) {
     if (!this.workspaceEnabled) {
-      return;
+      return workspace;
     }
     this.#currentSpaceSwitchContext.animations.forEach(animation => {
       animation.complete();
@@ -1668,6 +1667,7 @@ class nsZenWorkspaces {
     }
     this.#inChangingWorkspace = false;
     resolve();
+    return workspace;
   }
 
   _cancelSwipeAnimation() {
@@ -2429,9 +2429,6 @@ class nsZenWorkspaces {
     tabToSelect,
     { previousWorkspaceIndex, previousWorkspace } = {}
   ) {
-    // Update document state
-    document.documentElement.setAttribute("zen-workspace-id", workspace.uuid);
-
     // Recalculate new tab observers
     gBrowser.tabContainer.observe(
       null,
@@ -2975,8 +2972,7 @@ class nsZenWorkspaces {
     }
 
     let nextWorkspace = workspaces[targetIndex];
-    await this.changeWorkspace(nextWorkspace, { whileScrolling });
-    return nextWorkspace;
+    return await this.changeWorkspace(nextWorkspace, { whileScrolling });
   }
 
   #initializeWorkspaceTabContextMenus() {
@@ -3000,9 +2996,8 @@ class nsZenWorkspaces {
       ? gBrowser.selectedTabs
       : [TabContextMenu.contextTab];
     document.getElementById("tabContextMenu").hidePopup();
-    const previousWorkspaceID =
-      document.documentElement.getAttribute("zen-workspace-id");
     for (let tab of tabs) {
+      const previousWorkspaceID = tab.getAttribute("zen-workspace-id");
       this.moveTabToWorkspace(tab, workspaceID);
       if (this.lastSelectedWorkspaceTabs[previousWorkspaceID] === tab) {
         // This tab is no longer the last selected tab in the previous workspace because it's being moved to

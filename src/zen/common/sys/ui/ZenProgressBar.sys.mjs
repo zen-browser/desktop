@@ -50,7 +50,7 @@ export class ZenProgressBar extends ZenUIComponent {
       this.window.gZenUIManager.elementAnimate(
         this.#element,
         {
-          opacity: [0, 0.6],
+          opacity: [0, 0.8],
         },
         {
           duration: 400,

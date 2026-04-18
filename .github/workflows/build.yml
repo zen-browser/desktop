@@ -605,7 +605,7 @@ jobs:
             ./zen.macos-universal.dmg/*
 
   prepare-flatpak:
-    if: ${{ inputs.create_release && inputs.update_branch == 'release' }}
+    if: ${{ false }}
     permissions: write-all
     name: Prepare Flatpak
     needs: [release, linux, build-data]
@@ -664,7 +664,7 @@ jobs:
         run: sleep 120
 
   release-flatpak:
-    if: ${{ inputs.create_release && inputs.update_branch == 'release' }}
+    if: ${{ false }}
     permissions: write-all
     name: Release Flatpak
     needs: [prepare-flatpak, build-data]

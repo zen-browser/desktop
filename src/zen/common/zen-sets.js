@@ -30,6 +30,32 @@ document.addEventListener(
     window.gZenIndiaServices = {
       open: openIndiaServicesPanel,
     };
+
+    const openAppLauncherPanel = (event, win = window) => {
+      const panel = win.document.getElementById("PanelUI-zen-app-launcher");
+      if (!panel) {
+        console.error("App launcher panel not found");
+        return;
+      }
+      const isUsableAnchor = node => {
+        if (!node || !node.isConnected || typeof node.getBoundingClientRect !== "function") {
+          return false;
+        }
+        const rect = node.getBoundingClientRect();
+        return rect.width > 0 || rect.height > 0;
+      };
+      const eventAnchor = event?.sourceEvent?.target;
+      const anchor =
+        (isUsableAnchor(eventAnchor) && eventAnchor) ||
+        win.document.getElementById("zen-app-launcher-button") ||
+        win.document.getElementById("nav-bar") ||
+        win.document.getElementById("browser");
+      panel.openPopup(anchor, "after_start", 0, 0, false, false);
+    };
+    window.gZenAppLauncher = {
+      open: openAppLauncherPanel,
+    };
+
     // <commandset id="mainCommandSet"> defined in browser-sets.inc
     document
       .getElementById("zenCommandSet")
@@ -188,6 +214,9 @@ document.addEventListener(
           }
           case "cmd_zenOpenIndiaServices":
             openIndiaServicesPanel(event);
+            break;
+          case "cmd_zenOpenAppLauncher":
+            openAppLauncherPanel(event);
             break;
           case "cmd_zenSmartGuardDetails": {
             const status = window.gZenSmartGuard?.getPanelStatus?.();

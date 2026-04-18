@@ -89,6 +89,11 @@
   }
 }
 
+#zen-app-launcher-button .toolbarbutton-icon,
+#zen-app-launcher-button > toolbarbutton > .toolbarbutton-icon {
+  list-style-image: url("chrome://browser/skin/zen-icons/selectable/grid-3x3.svg");
+}
+
 #downloads-button,
 #downloads-indicator-anchor,
 #appMenu-downloads-button,

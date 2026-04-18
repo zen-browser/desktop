@@ -34,6 +34,11 @@ const globalActionsTemplate = [
     icon: "chrome://browser/skin/zen-icons/globe.svg",
   },
   {
+    label: "Bharat Apps",
+    command: window => window.gZenAppLauncher?.open?.(null, window),
+    icon: "chrome://browser/skin/zen-icons/selectable/grid-3x3.svg",
+  },
+  {
     label: "Open IRCTC",
     command: window => window.openTrustedLinkIn("https://www.irctc.co.in", "tab"),
     icon: "chrome://browser/skin/zen-icons/navigate.svg",

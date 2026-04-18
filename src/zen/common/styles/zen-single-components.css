@@ -785,3 +785,46 @@
     }
   }
 }
+
+#PanelUI-zen-app-launcher {
+  min-width: 280px;
+  max-width: 320px;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 8px;
+}
+#PanelUI-zen-app-launcher-title {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 4px 4px 8px;
+  border-bottom: 1px solid var(--panel-separator-color);
+  margin-bottom: 4px;
+}
+.zen-app-launcher-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-color-deemphasized);
+  padding: 8px 2px 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.zen-app-launcher-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+.zen-app-launcher-item {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  min-width: 60px;
+  max-width: 80px;
+  cursor: pointer;
+}
+.zen-app-launcher-item:hover {
+  background: var(--button-hover-bgcolor);
+}

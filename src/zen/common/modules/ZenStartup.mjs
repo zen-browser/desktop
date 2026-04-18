@@ -166,11 +166,11 @@ class ZenStartup {
     if (!Services.prefs.getBoolPref(kWelcomeScreenSeenPref, false)) {
       Services.prefs.setBoolPref(kWelcomeScreenSeenPref, true);
       Services.prefs.setStringPref(
-        "zen.updates.last-build-id",
+        "astra.updates.last-build-id",
         Services.appinfo.appBuildID
       );
       Services.prefs.setStringPref(
-        "zen.updates.last-version",
+        "astra.updates.last-version",
         Services.appinfo.version
       );
       Services.scriptloader.loadSubScript(

@@ -803,7 +803,7 @@ class nsZenKeyboardShortcutsLoader {
         ZEN_OTHER_SHORTCUTS_GROUP,
         nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
         "cmd_zenOpenAppLauncher",
-        ""
+        "zen-open-app-launcher-shortcut"
       )
     );
 

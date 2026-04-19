@@ -1,5 +1,5 @@
 diff --git a/widget/cocoa/VibrancyManager.mm b/widget/cocoa/VibrancyManager.mm
-index 5df70a63afb235d2db11712276bb63f756222a0f..8ba0bf1b046f58d9776981e0872a78144bed5139 100644
+index 5df70a63afb235d2db11712276bb63f756222a0f..a2865aa2748433cbfd956ae46d197200fbbcfadd 100644
 --- a/widget/cocoa/VibrancyManager.mm
 +++ b/widget/cocoa/VibrancyManager.mm
 @@ -11,6 +11,7 @@
@@ -10,7 +10,17 @@ index 5df70a63afb235d2db11712276bb63f756222a0f..8ba0bf1b046f58d9776981e0872a7814
  
  using namespace mozilla;
  
-@@ -36,7 +37,23 @@ static NSVisualEffectMaterial VisualEffectMaterialForVibrancyType(
+@@ -29,6 +30,9 @@ static NSVisualEffectState VisualEffectStateForVibrancyType(
+     case VibrancyType::Sidebar:
+       break;
+   }
++  if (!StaticPrefs::zen_view_grey_out_inactive_windows()) {
++    return NSVisualEffectStateActive;
++  }
+   return NSVisualEffectStateFollowsWindowActiveState;
+ }
+ 
+@@ -36,7 +40,23 @@ static NSVisualEffectMaterial VisualEffectMaterialForVibrancyType(
      VibrancyType aType) {
    switch (aType) {
      case VibrancyType::Sidebar:
@@ -35,7 +45,7 @@ index 5df70a63afb235d2db11712276bb63f756222a0f..8ba0bf1b046f58d9776981e0872a7814
      case VibrancyType::Titlebar:
        return NSVisualEffectMaterialTitlebar;
    }
-@@ -76,6 +93,7 @@ static NSVisualEffectBlendingMode VisualEffectBlendingModeForVibrancyType(
+@@ -76,6 +96,7 @@ - (NSView*)hitTest:(NSPoint)aPoint {
  
  - (void)prefChanged {
    self.blendingMode = VisualEffectBlendingModeForVibrancyType(mType);
@@ -43,7 +53,7 @@ index 5df70a63afb235d2db11712276bb63f756222a0f..8ba0bf1b046f58d9776981e0872a7814
  }
  @end
  
-@@ -86,6 +104,7 @@ static void PrefChanged(const char* aPref, void* aClosure) {
+@@ -86,6 +107,7 @@ static void PrefChanged(const char* aPref, void* aClosure) {
  static constexpr nsLiteralCString kObservedPrefs[] = {
      "widget.macos.sidebar-blend-mode.behind-window"_ns,
      "widget.macos.titlebar-blend-mode.behind-window"_ns,

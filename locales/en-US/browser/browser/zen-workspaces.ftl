@@ -125,3 +125,6 @@ zen-panel-ui-workspaces-change-forward =
 
 zen-panel-ui-workspaces-change-back =
     .label = Previous Space
+
+zen-workspace-background-set-toast = Background image updated! 🖼️
+zen-workspace-background-removed-toast = Background image removed!

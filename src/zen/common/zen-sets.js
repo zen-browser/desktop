@@ -110,6 +110,12 @@ document.addEventListener(
           case "cmd_zenOpenZenThemePicker":
             gZenThemePicker.openThemePicker(event);
             break;
+          case "cmd_zenSetWorkspaceBg":
+            gZenWorkspaces.openBackgroundImagePicker();
+            break;
+          case "cmd_zenRemoveWorkspaceBg":
+            gZenWorkspaces.removeWorkspaceBackground();
+            break;
           case "cmd_zenChangeWorkspaceTab":
             gZenWorkspaces.changeTabWorkspace(
               event.sourceEvent.target.getAttribute("zen-workspace-id")

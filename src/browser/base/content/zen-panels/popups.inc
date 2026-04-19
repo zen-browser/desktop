@@ -36,6 +36,13 @@
           id="context_zenChangeWorkspaceTheme"
           data-l10n-id="zen-workspaces-change-theme"
           command="cmd_zenOpenZenThemePicker"/>
+  <menuseparator/>
+  <menuitem id="context_zenSetWorkspaceBg"
+            label="Set Background Image 🖼️"
+            command="cmd_zenSetWorkspaceBg"/>
+  <menuitem id="context_zenRemoveWorkspaceBg"
+            label="Remove Background Image"
+            command="cmd_zenRemoveWorkspaceBg"/>
   <menu id="context_zenWorkspacesOpenInContainerTab"
     data-l10n-id="zen-workspaces-panel-context-default-profile"
     selection-type="single"

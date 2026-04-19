@@ -6,6 +6,7 @@
 
 import { nsZenThemePicker } from "resource:///modules/zen/ZenGradientGenerator.mjs";
 import { ZenSpacesSwipe } from "resource:///modules/zen/ZenSpacesSwipe.mjs";
+import { nsZenMultiWindowFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
 const lazy = {};
 
@@ -841,6 +842,7 @@ class nsZenWorkspaces {
       if (activeWorkspace) {
         window.gZenThemePicker = new nsZenThemePicker();
         gZenThemePicker.onWorkspaceChange(activeWorkspace);
+        this._applyWorkspaceBackground(activeWorkspace);
       }
     } catch (e) {
       console.error("gZenWorkspaces: Error initializing theme picker", e);
@@ -1300,6 +1302,131 @@ class nsZenWorkspaces {
       excludeUserContextId: containerTabId,
       showDefaultTab: true,
     });
+  }
+
+  async openBackgroundImagePicker() {
+    try {
+      const fp = Cc["@mozilla.org/filepicker;1"].createInstance(
+        Ci.nsIFilePicker
+      );
+      fp.init(
+        window.browsingContext,
+        "Choose Background Image",
+        Ci.nsIFilePicker.modeOpen
+      );
+      fp.appendFilters(Ci.nsIFilePicker.filterImages);
+      const result = await new Promise(resolve => fp.open(resolve));
+      if (result !== Ci.nsIFilePicker.returnOK) {
+        return;
+      }
+      const srcPath = fp.file.path;
+      const workspace = this.getActiveWorkspace();
+      if (!workspace?.uuid) {
+        return;
+      }
+      if (this.privateWindowOrDisabled) {
+        return;
+      }
+      const profileDir = PathUtils.join(
+        PathUtils.profileDir,
+        "astra-workspace-backgrounds"
+      );
+      await IOUtils.makeDirectory(profileDir, { ignoreExisting: true });
+      const extMatch = srcPath.match(/\.([^.]+)$/);
+      const ext = extMatch ? extMatch[1].toLowerCase() : "jpg";
+      const destFileName = `bg-${workspace.uuid}.${ext}`;
+      const destPath = PathUtils.join(profileDir, destFileName);
+      await IOUtils.copy(srcPath, destPath, { noOverwrite: false });
+      if (!workspace.theme) {
+        workspace.theme = {
+          type: "gradient",
+          gradientColors: [],
+          opacity: 0.5,
+          texture: 0,
+        };
+      }
+      const oldFile = workspace.theme.backgroundImageFile;
+      if (oldFile && oldFile !== destFileName) {
+        const oldPath = PathUtils.join(profileDir, oldFile);
+        await IOUtils.remove(oldPath, { ignoreAbsent: true });
+      }
+      workspace.theme.backgroundImageFile = destFileName;
+      this.saveWorkspace(workspace);
+      await this._applyWorkspaceBackground(workspace);
+      gZenUIManager.showToast("zen-workspace-background-set-toast");
+    } catch (e) {
+      console.error("Astra: Error setting workspace background:", e);
+    }
+  }
+
+  async removeWorkspaceBackground() {
+    try {
+      const workspace = this.getActiveWorkspace();
+      if (!workspace?.theme?.backgroundImageFile) {
+        return;
+      }
+      if (this.privateWindowOrDisabled) {
+        return;
+      }
+      const profileDir = PathUtils.join(
+        PathUtils.profileDir,
+        "astra-workspace-backgrounds"
+      );
+      const filePath = PathUtils.join(
+        profileDir,
+        workspace.theme.backgroundImageFile
+      );
+      await IOUtils.remove(filePath, { ignoreAbsent: true });
+      delete workspace.theme.backgroundImageFile;
+      this.saveWorkspace(workspace);
+      await this._applyWorkspaceBackground(workspace);
+    } catch (e) {
+      console.error("Astra: Error removing workspace background:", e);
+    }
+  }
+
+  async _applyWorkspaceBackground(workspace) {
+    try {
+      const fileName = workspace?.theme?.backgroundImageFile;
+      let fileURI = null;
+      if (fileName) {
+        const profileDir = PathUtils.join(
+          PathUtils.profileDir,
+          "astra-workspace-backgrounds"
+        );
+        const filePath = PathUtils.join(profileDir, fileName);
+        const exists = await IOUtils.exists(filePath);
+        if (exists) {
+          fileURI = PathUtils.toFileURI(filePath);
+        }
+      }
+      for (const browser of nsZenMultiWindowFeature.browsers) {
+        try {
+          const bg = browser.document.getElementById("zen-appcontent-wrapper");
+          if (!bg) {
+            continue;
+          }
+          const activeWs = browser.gZenWorkspaces?.getActiveWorkspace?.();
+          if (activeWs?.uuid !== workspace.uuid) {
+            continue;
+          }
+          if (fileURI) {
+            bg.style.setProperty(
+              "--zen-workspace-bg-image",
+              `url("${fileURI}")`
+            );
+            bg.setAttribute("has-custom-bg", "true");
+          } else {
+            bg.style.removeProperty("--zen-workspace-bg-image");
+            bg.removeAttribute("has-custom-bg");
+          }
+        } catch (winErr) {
+          console.error("Astra: Error applying bg to window:", winErr);
+        }
+      }
+    } catch (e) {
+      console.error("Astra: Error in _applyWorkspaceBackground:", e);
+    }
   }
 
   saveWorkspace(workspaceData) {
@@ -2482,6 +2609,7 @@ class nsZenWorkspaces {
     // Update workspace UI
     requestAnimationFrame(() => {
       gZenThemePicker.onWorkspaceChange(workspace);
+      this._applyWorkspaceBackground(workspace);
     });
 
     gZenUIManager.tabsWrapper.scrollbarWidth = "none";

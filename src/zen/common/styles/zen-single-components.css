@@ -845,3 +845,11 @@
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
 }
+
+/* Astra - Custom workspace background image */
+#zen-appcontent-wrapper[has-custom-bg] {
+  background-image: var(--zen-workspace-bg-image) !important;
+  background-size: cover !important;
+  background-position: center center !important;
+  background-repeat: no-repeat !important;
+}

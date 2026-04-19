@@ -11,7 +11,12 @@ index c6bb41695d70d17e5691e0d1856b79f7111d5026..8a9393a79a60aca23f80fc989fe2ae33
  
  # ARCH is used when it is necessary to differentiate the x64 registry keys from
  # the x86 registry keys (e.g. the uninstall registry key).
-@@ -152,7 +152,7 @@ VIAddVersionKey "ProductVersion"  "${AppVersion}"
+@@ -151,8 +151,12 @@ VIAddVersionKey "ProductVersion"  "${AppVersion}"
+ VIAddVersionKey "ProductVersion"  "${AppVersion}"
++VIAddVersionKey "SupportLink" "https://github.com/Hrishikeshmind/astradesktop"
++VIAddVersionKey "URLUpdateInfo" "https://github.com/Hrishikeshmind/astradesktop/releases"
++VIAddVersionKey "URLInfoAbout" "https://github.com/Hrishikeshmind/astradesktop"
++VIAddVersionKey "Comments" "Astra Browser - Made in India"
  !define APPROXIMATE_REQUIRED_SPACE_MB "145"
  
  # Constants for parts of the telemetry submission URL

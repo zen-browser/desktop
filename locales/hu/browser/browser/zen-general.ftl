@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = A rögzített lap URL címe helyébe az aktuális URL 
 zen-tabs-renamed = A lap sikeresen át lett nevezve!
 zen-background-tab-opened-toast = Új lap megnyitva!
 zen-workspace-renamed-toast = A munkakörnyezet sikeresen át lett nevezve!
+zen-split-view-limit-toast = Can't add more panels to the split view!
 zen-toggle-compact-mode-button = 
     .label = Kompakt mód
     .tooltiptext = Kompakt mód ki-/bekapcsolása

@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = Tá URL an chluaisín phinnáilte curtha in ionad an U
 zen-tabs-renamed = Athainmníodh an cluaisín go rathúil!
 zen-background-tab-opened-toast = Tá cluaisín cúlra nua oscailte!
 zen-workspace-renamed-toast = Athainmníodh an spás oibre go rathúil!
+zen-split-view-limit-toast = Can't add more panels to the split view!
 zen-toggle-compact-mode-button = 
     .label = Mód Dlúth
     .tooltiptext = Mód Dlúth a Athrú

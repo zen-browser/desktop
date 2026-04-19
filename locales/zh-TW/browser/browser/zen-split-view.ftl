@@ -5,8 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] 分割畫面頁籤 (需要選擇多個分頁)
-           *[other] 分割 { $tabCount } 個分頁
+            [-1] Split out tab
+            [1] Add split view...
+           *[other] Join { $tabCount } Tabs
         }
     .accesskey = S
 zen-split-link = 

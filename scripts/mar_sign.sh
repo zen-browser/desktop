@@ -17,13 +17,16 @@ generate_certs() {
   openssl genrsa -out private_key.pem 4096
 
   # 2. Generate self-signed certificate (required for PKCS#12 bundling)
+  # RFC 5280 "no well-defined expiration" sentinel: 99991231235959Z
   openssl req -new -x509 \
       -key private_key.pem \
       -out cert.pem \
-      -subj "/CN=MAR Signing"
+      -subj "/CN=MAR Signing" \
+      -not_before 20000101000000Z \
+      -not_after  99991231235959Z
 
-  # 3. Export public key as SPKI DER (for embedding in updater)
-  openssl rsa -in private_key.pem -pubout -outform DER -out public_key.der
+  # 3. Export certificate as DER (for embedding in updater)
+  openssl x509 -in cert.pem -outform DER -out public_key.der
 
   cd ..
   mkdir -p "$CERT_PATH_DIR"
@@ -35,9 +38,10 @@ generate_certs() {
   base64 -w 0 "$CERT_PATH_DIR"/cert.pem > "$CERT_PATH_DIR"/env/ZEN_SIGNING_CERT_PEM_BASE64
   base64 -w 0 "$CERT_PATH_DIR"/private_key.pem > "$CERT_PATH_DIR"/env/ZEN_SIGNING_PRIVATE_KEY_PEM_BASE64
 
-  # Verify public key
-  openssl rsa -in "$CERT_PATH_DIR"/public_key.der \
-      -pubin -inform DER -text -noout
+  # Make sure no private keys or certs are left
+  # in the public_key.der file, which is the only one that 
+  # should be distributed and embedded in the updater
+  openssl x509 -in "$CERT_PATH_DIR"/public_key.der -inform DER -noout -text > /dev/null
 
   rm -rf temp
 }
@@ -196,6 +200,15 @@ sign_mars() {
           "$SIGNMAR" -d "$NSS_CONFIG_DIR" -n "mar_sig" -s "$mar_file" "$mar_file".signed
           echo "Signed $mar_file. Verifying signature..."
           "$SIGNMAR" -d "$NSS_CONFIG_DIR" -n "mar_sig" -v "$mar_file".signed
+          if [ $? -ne 0 ]; then
+            echo "Signature verification failed for $mar_file.signed" >&2
+            exit 1
+          fi
+          "$SIGNMAR" -D "build/signing/public_key.der" -v "$mar_file".signed
+          if [ $? -ne 0 ]; then
+            echo "Public key verification failed for $mar_file.signed" >&2
+            exit 1
+          fi
           mv "$mar_file".signed "$mar_file"
           echo "Successfully signed $mar_file"
           update_manifests "$mar_file"

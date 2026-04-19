@@ -357,6 +357,11 @@ export class nsZenSessionManager {
     if (this._shouldRunMigration) {
       initialState = this.#runStateMigration(initialState);
     }
+    // Clear the memory of the groups saved in the session file,
+    // as we don't really need them anyways.
+    if (initialState?.savedGroups) {
+      initialState.savedGroups = [];
+    }
     if (!lazy.gWindowSyncEnabled) {
       if (initialState?.windows?.length && this.#shouldRestoreOnlyPinned) {
         this.log("Window sync disabled, restoring only pinned tabs");

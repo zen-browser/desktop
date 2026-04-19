@@ -65,9 +65,14 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   }
 
   #initContextMenu() {
-    const contextMenuItems = window.MozXULElement.parseXULToFragment(
-      `<menuitem id="zen-context-menu-new-folder" data-l10n-id="zen-toolbar-context-new-folder"/>`
-    );
+    const contextMenuItems = window.MozXULElement.parseXULToFragment(`
+      <menu data-l10n-id="zen-toolbar-context-move-to-folder" id="context_zenMoveToFolder">
+        <menupopup>
+          <menuseparator />
+          <menuitem id="zen-context-menu-new-folder" data-l10n-id="zen-toolbar-context-new-folder"/>
+        </menupopup>
+      </menu>
+    `);
     document.getElementById("context_moveTabToGroup").before(contextMenuItems);
     const contextMenuItemsToolbar = window.MozXULElement.parseXULToFragment(
       `<menuitem id="zen-context-menu-new-folder-toolbar" data-l10n-id="zen-toolbar-context-new-folder"/>
@@ -227,11 +232,73 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     document
       .getElementById("zen-context-menu-new-folder-toolbar")
       .addEventListener("command", onNewFolder);
+    this.#initMoveTabToFolder();
     SessionStore.promiseInitialized.then(() => {
       gBrowser.tabContainer.addEventListener(
         "dragstart",
         this.cancelPopupTimer.bind(this)
       );
+    });
+  }
+
+  #initMoveTabToFolder() {
+    const moveTabToFolderMenu = document.getElementById(
+      "context_zenMoveToFolder"
+    );
+    moveTabToFolderMenu.addEventListener("popupshowing", () => {
+      const separator = moveTabToFolderMenu.querySelector("menuseparator");
+      let tabs = TabContextMenu.contextTab?.multiselected
+        ? gBrowser.selectedTabs
+        : [TabContextMenu.contextTab];
+      let groups = gBrowser.tabGroups.filter(group => {
+        const isZenFolder = group?.isZenFolder;
+        const isLiveFolder = group?.isLiveFolder;
+        const spaceId = group?.getAttribute("zen-workspace-id");
+        if (
+          !isZenFolder ||
+          isLiveFolder ||
+          spaceId !== gZenWorkspaces.activeWorkspace
+        ) {
+          return false;
+        }
+        return !tabs.some(tab => tab.group === group);
+      });
+      separator.hidden = groups.length === 0;
+      for (const group of groups) {
+        const icon = group.iconURL;
+        const menuItem = document.createXULElement("menuitem");
+        menuItem.setAttribute("label", group.label);
+        menuItem.classList.add("context-zen-move-to-folder-item");
+        if (icon) {
+          menuItem.setAttribute("image", icon);
+        }
+        menuItem._group = group;
+        separator.before(menuItem);
+      }
+    });
+
+    moveTabToFolderMenu.addEventListener("popuphidden", () => {
+      const items = moveTabToFolderMenu.querySelectorAll(
+        ".context-zen-move-to-folder-item"
+      );
+      for (const item of items) {
+        delete item._group;
+        item.remove();
+      }
+    });
+
+    moveTabToFolderMenu.addEventListener("command", event => {
+      if (!event.target.classList.contains("context-zen-move-to-folder-item")) {
+        return;
+      }
+      const group = event.target._group;
+      if (!group) {
+        return;
+      }
+      let tabs = TabContextMenu.contextTab?.multiselected
+        ? gBrowser.selectedTabs
+        : [TabContextMenu.contextTab];
+      group.addTabs(tabs);
     });
   }
 

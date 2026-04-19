@@ -897,6 +897,7 @@ export class nsZenSessionManager {
     const newState = { windows: [newWindow] };
     this.log(`Cloning window with ${newWindow.tabs.length} tabs`);
 
+    aWindow.__isNewZenWindow = true;
     SessionStoreInternal._deferredInitialState = newState;
     SessionStoreInternal.initializeWindow(aWindow, newState);
   }

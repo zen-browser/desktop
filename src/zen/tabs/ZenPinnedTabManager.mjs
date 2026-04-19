@@ -371,6 +371,12 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
             for (const tab of pinnedTabs) {
               tab.removeAttribute("discarded");
             }
+          } else if (pinnedTabs.some(tab => tab.selected)) {
+            const selectedTabs = pinnedTabs.filter(tab => tab.selected);
+            gBrowser.selectedTab = gBrowser._findTabToBlurTo(
+              selectedTabs[0],
+              selectedTabs
+            );
           }
           if (behavior.includes("reset")) {
             for (const tab of pinnedTabs) {

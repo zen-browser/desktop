@@ -80,8 +80,6 @@ jobs:
         if: ${{ matrix.arch == 'x86_64' }}
         env:
           SURFER_NO_BRANDING_PATCH: true
-          SURFER_CERT_PATCH_ISSUER: ${{ secrets.SURFER_CERT_PATCH_ISSUER }}
-          SURFER_CERT_PATCH_NAME: ${{ secrets.SURFER_CERT_PATCH_NAME }}
         run: npm run import
 
       - name: Generate

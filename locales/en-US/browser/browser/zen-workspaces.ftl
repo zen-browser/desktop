@@ -128,3 +128,6 @@ zen-panel-ui-workspaces-change-back =
 
 zen-workspace-background-set-toast = Background image updated! 🖼️
 zen-workspace-background-removed-toast = Background image removed!
+
+zen-tab-note-saved-toast = Note saved! 📝
+zen-tab-note-cleared-toast = Note cleared!

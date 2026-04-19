@@ -481,3 +481,31 @@
     </vbox>
   </vbox>
 </panel>
+
+<panel
+  type="arrow"
+  orient="vertical"
+  id="PanelUI-zen-tab-notes"
+  position="bottomright topright"
+  side="bottom"
+  noautofocus="false">
+  <vbox id="PanelUI-zen-tab-notes-container">
+    <hbox class="zen-tab-notes-header">
+      <label id="zen-tab-notes-title" value="📝 Tab Note" />
+    </hbox>
+    <html:textarea
+      id="zen-tab-notes-textarea"
+      class="zen-tab-notes-textarea"
+      rows="8"
+      cols="30"
+      placeholder="Write your note here..." />
+    <hbox class="zen-tab-notes-buttons">
+      <button class="zen-tab-notes-save footer-button primary"
+              label="Save Note"
+              oncommand="gZenTabNotes.saveNote();" />
+      <button class="zen-tab-notes-clear footer-button"
+              label="Clear"
+              oncommand="gZenTabNotes.clearNote();" />
+    </hbox>
+  </vbox>
+</panel>

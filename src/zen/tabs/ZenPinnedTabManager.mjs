@@ -580,6 +580,10 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
             <menuitem id="context_zen-edit-tab-icon"
                       data-lazy-l10n-id="tab-context-zen-edit-icon"/>
             <menuseparator/>
+            <menuseparator/>
+            <menuitem id="context_zen-tab-note"
+                      label="📝 Tab Note"
+                      hidden="false"/>
         `);
 
     document.getElementById("context_pinTab")?.before(element);
@@ -608,6 +612,12 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
             });
           },
         });
+      });
+    document
+      .getElementById("context_zen-tab-note")
+      .addEventListener("command", () => {
+        const tab = TabContextMenu.contextTab;
+        gZenTabNotes.openNotePanel(tab);
       });
   }
 

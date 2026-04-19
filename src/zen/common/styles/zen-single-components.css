@@ -853,3 +853,48 @@
   background-position: center center !important;
   background-repeat: no-repeat !important;
 }
+
+/* Astra - Tab Notes */
+#PanelUI-zen-tab-notes {
+  min-width: 300px;
+  max-width: 350px;
+  padding: 12px;
+}
+.zen-tab-notes-header {
+  align-items: center;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--panel-separator-color);
+}
+#zen-tab-notes-title {
+  font-size: 13px;
+  font-weight: 600;
+  flex: 1;
+}
+.zen-tab-notes-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid var(--panel-separator-color);
+  background: var(--arrowpanel-background);
+  color: var(--arrowpanel-color);
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+  margin-bottom: 8px;
+}
+.zen-tab-notes-textarea:focus {
+  border-color: var(--focus-outline-color);
+  outline: none;
+}
+.zen-tab-notes-buttons {
+  gap: 6px;
+  justify-content: flex-end;
+}
+.zen-tab-notes-save {
+  padding: 6px 12px;
+}
+.zen-tab-notes-clear {
+  padding: 6px 12px;
+}

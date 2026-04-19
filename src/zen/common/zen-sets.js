@@ -52,6 +52,76 @@ document.addEventListener(
         win.document.getElementById("browser");
       panel.openPopup(anchor, "after_start", 0, 0, false, false);
     };
+
+    const lazy = {};
+    ChromeUtils.defineESModuleGetters(lazy, {
+      TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
+    });
+
+    window.gZenTabNotes = {
+      _currentTab: null,
+
+      openNotePanel(tab) {
+        try {
+          this._currentTab = tab;
+          const panel = document.getElementById("PanelUI-zen-tab-notes");
+          if (!panel) return;
+          const textarea = document.getElementById("zen-tab-notes-textarea");
+          if (textarea) {
+            textarea.value = tab.zenNote || "";
+          }
+          const tabLabel = tab.zenStaticLabel || tab.label || "";
+          const title = document.getElementById("zen-tab-notes-title");
+          if (title) {
+            title.value = `📝 ${tabLabel}`;
+          }
+          const anchor = tab.querySelector(".tab-icon-image")
+            || document.getElementById("zen-app-launcher-button")
+            || document.getElementById("nav-bar");
+          panel.openPopup(anchor, "after_start", 0, 0, false, false);
+        } catch(e) {
+          console.error("Astra: Tab notes error:", e);
+        }
+      },
+
+      saveNote() {
+        try {
+          const tab = this._currentTab;
+          if (!tab) return;
+          const textarea = document.getElementById("zen-tab-notes-textarea");
+          if (!textarea) return;
+          const note = textarea.value.trim();
+          if (note) {
+            tab.zenNote = note;
+          } else {
+            delete tab.zenNote;
+          }
+          lazy.TabStateCache?.update?.(tab.permanentKey, {});
+          const panel = document.getElementById("PanelUI-zen-tab-notes");
+          panel?.hidePopup();
+          gZenUIManager.showToast("zen-tab-note-saved-toast");
+        } catch(e) {
+          console.error("Astra: Save note error:", e);
+        }
+      },
+
+      clearNote() {
+        try {
+          const tab = this._currentTab;
+          if (!tab) return;
+          delete tab.zenNote;
+          lazy.TabStateCache?.update?.(tab.permanentKey, {});
+          const textarea = document.getElementById("zen-tab-notes-textarea");
+          if (textarea) textarea.value = "";
+          const panel = document.getElementById("PanelUI-zen-tab-notes");
+          panel?.hidePopup();
+          gZenUIManager.showToast("zen-tab-note-cleared-toast");
+        } catch(e) {
+          console.error("Astra: Clear note error:", e);
+        }
+      },
+    };
+
     window.gZenAppLauncher = {
       open: openAppLauncherPanel,
     };

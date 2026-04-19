@@ -262,6 +262,21 @@
     }
   }
 
+  .zen-workspace-container-badge {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--zen-container-badge-color, transparent);
+    display: inline-block;
+    flex-shrink: 0;
+    margin-inline-start: 2px;
+    order: 4;
+    transition: opacity 0.15s;
+  }
+  .zen-workspace-container-badge[hidden] {
+    display: none !important;
+  }
+
   .zen-workspaces-actions {
     margin-left: auto !important;
     transition: opacity 0.1s;

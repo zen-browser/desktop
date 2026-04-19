@@ -2102,6 +2102,49 @@ class nsZenWorkspaces {
       indicatorIcon.textContent = icon;
     }
     indicatorName.textContent = currentWorkspace.name;
+    const badge = workspaceIndicator.querySelector(
+      ".zen-workspace-container-badge"
+    );
+    if (badge) {
+      const containerTabId = currentWorkspace.containerTabId;
+      if (containerTabId && containerTabId !== 0 &&
+          this.shouldShowContainers) {
+        const CONTAINER_COLORS = {
+          blue: "#37adff",
+          turquoise: "#00c79a",
+          green: "#51cd00",
+          yellow: "#ffcb00",
+          orange: "#ff9f00",
+          red: "#ff613d",
+          pink: "#ff4bda",
+          purple: "#af51f5",
+          toolbar: "#7c7c7d",
+        };
+        try {
+          const identities = ContextualIdentityService
+            .getPublicIdentities();
+          const identity = identities.find(
+            id => id.userContextId === containerTabId
+          );
+          if (identity) {
+            const color = CONTAINER_COLORS[identity.color]
+              || "#7c7c7d";
+            badge.style.setProperty(
+              "--zen-container-badge-color", color
+            );
+            badge.setAttribute("title", identity.name);
+            badge.removeAttribute("hidden");
+          } else {
+            badge.setAttribute("hidden", "true");
+          }
+        } catch(e) {
+          badge.setAttribute("hidden", "true");
+          console.error("Astra: container badge error:", e);
+        }
+      } else {
+        badge.setAttribute("hidden", "true");
+      }
+    }
   }
 
   _fixIndicatorsNames(workspaces) {

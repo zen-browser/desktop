@@ -798,7 +798,7 @@ class nsZenKeyboardShortcutsLoader {
     newShortcutList.push(
       new KeyShortcut(
         "zen-open-app-launcher",
-        "B",
+        "U",
         "",
         ZEN_OTHER_SHORTCUTS_GROUP,
         nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
@@ -844,7 +844,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 26;
+  static LATEST_KBS_VERSION = 28;
 
   constructor() {}
 
@@ -1254,6 +1254,39 @@ class nsZenKeyboardShortcutsVersioner {
     }
     if (version < 26) {
       // App launcher: Ctrl+Shift+B (default added via fillDefaultIfNotPresent)
+    }
+    if (version < 27) {
+      // App launcher default: Ctrl+Shift+B → Ctrl+Shift+A
+      const appLauncher = data.find(s => s.getID?.() === "zen-open-app-launcher");
+      if (appLauncher) {
+        const oldDefaultMods = nsKeyShortcutModifiers.fromObject({
+          accel: true,
+          shift: true,
+        });
+        if (
+          appLauncher.getKeyName() === "b" &&
+          appLauncher.getModifiers().equals(oldDefaultMods)
+        ) {
+          appLauncher.setNewBinding("A");
+        }
+      }
+    }
+    if (version < 28) {
+      // App launcher default: Ctrl+Shift+A/B → Ctrl+Shift+U (A/B conflict with Firefox Add-ons / Bookmarks toolbar)
+      const appLauncher = data.find(s => s.getID?.() === "zen-open-app-launcher");
+      if (appLauncher) {
+        const shiftAccel = nsKeyShortcutModifiers.fromObject({
+          accel: true,
+          shift: true,
+        });
+        const k = appLauncher.getKeyName();
+        if (
+          (k === "a" || k === "b") &&
+          appLauncher.getModifiers().equals(shiftAccel)
+        ) {
+          appLauncher.setNewBinding("U");
+        }
+      }
     }
     if (version < 20) {
       // Add shortcut for folder quick search.

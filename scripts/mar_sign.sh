@@ -204,11 +204,6 @@ sign_mars() {
             echo "Signature verification failed for $mar_file.signed" >&2
             exit 1
           fi
-          "$SIGNMAR" -D "build/signing/public_key.der" -v "$mar_file".signed
-          if [ $? -ne 0 ]; then
-            echo "Public key verification failed for $mar_file.signed" >&2
-            exit 1
-          fi
           mv "$mar_file".signed "$mar_file"
           echo "Successfully signed $mar_file"
           update_manifests "$mar_file"

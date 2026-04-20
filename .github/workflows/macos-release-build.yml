@@ -157,12 +157,11 @@ jobs:
           export JARLOG_FILE=en-US.log
           mkdir -p "$HOME/artifact"
           cd engine
-          BINARY=$(find "obj-${SURFER_COMPAT}-apple-darwin/dist" -name zen -type f -perm -u+x | head -n1)
-          echo "Using binary: $BINARY"
-          ./mach python build/pgo/profileserver.py --binary "$(pwd)/$BINARY"
+          ./mach python ../scripts/download_pgo_extended_corpus.py
+          ./mach package
+          ./mach python build/pgo/profileserver.py --extended-corpus ./pgo-extended-corpus
           mv merged.profdata "$HOME/artifact/merged.profdata"
           mv en-US.log "$HOME/artifact/en-US.log"
-          ./mach clobber
 
       - name: Build Zen
         env:

@@ -145,10 +145,11 @@ jobs:
           export JARLOG_FILE=en-US.log
           mkdir -p "$HOME/artifact"
           cd engine
-          ./mach python build/pgo/profileserver.py --binary "$(pwd)/obj-x86_64-pc-linux-gnu/dist/bin/zen"
+          ./mach python ../scripts/download_pgo_extended_corpus.py
+          ./mach package
+          ./mach python build/pgo/profileserver.py --extended-corpus ./pgo-extended-corpus
           mv merged.profdata "$HOME/artifact/merged.profdata"
           mv en-US.log "$HOME/artifact/en-US.log"
-          ./mach clobber
 
       - name: Build
         env:

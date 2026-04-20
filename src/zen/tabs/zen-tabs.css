@@ -128,3 +128,61 @@
 }
 
 %include zen-essentials-promo.css
+
+/* Astra - Tab Loading Progress Bar */
+.tabbrowser-tab[busy] {
+  position: relative;
+}
+
+.tabbrowser-tab[busy]::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--zen-primary-color, #FF9933) 0%,
+    transparent 100%
+  );
+  animation: zen-tab-loading 1.5s ease-in-out infinite;
+  border-radius: 1px;
+  z-index: 999;
+}
+
+@keyframes zen-tab-loading {
+  0% {
+    left: -100%;
+    width: 50%;
+  }
+  50% {
+    left: 25%;
+    width: 75%;
+  }
+  100% {
+    left: 100%;
+    width: 50%;
+  }
+}
+
+/* Pill shaped top indicator */
+#zen-appcontent-wrapper[tab-loading]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 3px;
+  background: var(--zen-primary-color, #FF9933);
+  border-radius: 0 0 4px 4px;
+  z-index: 9999;
+  animation: zen-pill-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes zen-pill-loading {
+  0% { opacity: 0.4; width: 60px; }
+  50% { opacity: 1; width: 120px; }
+  100% { opacity: 0.4; width: 60px; }
+}

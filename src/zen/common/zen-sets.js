@@ -58,6 +58,38 @@ document.addEventListener(
       TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
     });
 
+    /* Astra - Tab Loading Pill Indicator */
+    window.addEventListener("TabAttrModified", (event) => {
+      try {
+        const tab = event.target;
+        const wrapper = document.getElementById("zen-appcontent-wrapper");
+        if (!wrapper) return;
+        const selectedTab = gBrowser.selectedTab;
+        if (selectedTab && selectedTab.hasAttribute("busy")) {
+          wrapper.setAttribute("tab-loading", "true");
+        } else {
+          wrapper.removeAttribute("tab-loading");
+        }
+      } catch(e) {
+        // ignore
+      }
+    });
+
+    window.addEventListener("TabSelect", () => {
+      try {
+        const wrapper = document.getElementById("zen-appcontent-wrapper");
+        if (!wrapper) return;
+        const selectedTab = gBrowser.selectedTab;
+        if (selectedTab && selectedTab.hasAttribute("busy")) {
+          wrapper.setAttribute("tab-loading", "true");
+        } else {
+          wrapper.removeAttribute("tab-loading");
+        }
+      } catch(e) {
+        // ignore
+      }
+    });
+
     window.gZenTabNotes = {
       _currentTab: null,
 

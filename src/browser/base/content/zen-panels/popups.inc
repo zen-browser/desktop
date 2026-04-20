@@ -172,7 +172,7 @@
   side="bottom"
   noautofocus="true">
   <vbox id="PanelUI-zen-app-launcher-container">
-    <label id="PanelUI-zen-app-launcher-title" value="Bharat Apps 🇮🇳" />
+    <label id="PanelUI-zen-app-launcher-title" value="App Hub 🚀" />
     <vbox id="PanelUI-zen-app-launcher-list">
 
       <label class="zen-app-launcher-section-title" value="📧 Mail"/>

@@ -39,7 +39,6 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: ${{ inputs.use-sccache && 'true' || 'false' }}
       CARGO_TERM_COLOR: always
-      RUSTC_WRAPPER: ${{ inputs.use-sccache && 'sccache' || '' }}
       CARGO_INCREMENTAL: 0
     strategy:
       fail-fast: false

@@ -33,6 +33,9 @@ if ! test "$SCCACHE_GHA_ENABLED" = "false"; then
   elif test -f "$HOME/.mozbuild/sccache/sccache"; then
     ac_add_options --with-ccache="$HOME"/.mozbuild/sccache/sccache
   fi
+
+  mk_add_options 'export RUSTC_WRAPPER=sccache'
+  mk_add_options 'export CCACHE_CPP2=yes'
 fi
 
 # add API keys if it exists on a file

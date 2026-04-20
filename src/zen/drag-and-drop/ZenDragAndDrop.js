@@ -1267,24 +1267,18 @@
         ) {
           let lastTab = gBrowser.tabs.at(-1);
           let pinnedTabsCount = gBrowser._numVisiblePinTabsWithoutCollapsed;
-          let isHoveringSeparator =
-            event.target.parentElement.classList.contains(
-              "zen-workspace-pinned-tabs-section"
-            );
 
           // Only if there are no normal tabs to drop after
           showIndicatorUnderNewTabButton =
             lastTab.hasAttribute("zen-empty-tab");
           let useLastPinned =
-            (showIndicatorUnderNewTabButton &&
-              !(pinnedTabsCount - gBrowser._numZenEssentials) &&
-              Services.prefs.getBoolPref("zen.view.show-newtab-button-top")) ||
-            isHoveringSeparator;
+            (hoveringPeriphery ||
+              (showIndicatorUnderNewTabButton &&
+                !(pinnedTabsCount - gBrowser._numZenEssentials))) &&
+            Services.prefs.getBoolPref("zen.view.show-newtab-button-top");
           dropElement =
             (useLastPinned
-              ? this._tabbrowserTabs.ariaFocusableItems.at(
-                  pinnedTabsCount ? pinnedTabsCount - 1 : 0
-                )
+              ? this._tabbrowserTabs.ariaFocusableItems.at(pinnedTabsCount)
               : this._tabbrowserTabs.ariaFocusableItems.at(-1)) || lastTab;
         }
       }

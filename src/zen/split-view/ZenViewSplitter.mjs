@@ -220,14 +220,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
     const group = this._data[groupIndex];
     const tabIndex = group.tabs.indexOf(tab);
-    group.tabs.splice(tabIndex, 1);
 
-    this.resetTabState(tab, forUnsplit);
-    if (tab.group && tab.group.hasAttribute("split-view-group")) {
-      gBrowser.ungroupTab(tab);
-      this.#dispatchItemEvent("ZenTabRemovedFromSplit", tab);
-    }
-    if (group.tabs.length < 2) {
+    if (group.tabs.length < 3) {
       // We need to remove all remaining tabs from the group when unsplitting
       let remainingTabs = [...group.tabs]; // Copy array since we'll modify it
       if (!dontRebuildGrid) {
@@ -243,6 +237,14 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           .removeAttribute("disabled");
       }
     } else {
+      group.tabs.splice(tabIndex, 1);
+
+      this.resetTabState(tab, forUnsplit);
+      if (tab.group && tab.group.hasAttribute("split-view-group")) {
+        gBrowser.ungroupTab(tab);
+        this.#dispatchItemEvent("ZenTabRemovedFromSplit", tab);
+      }
+
       const node = this.getSplitNodeFromTab(tab);
       const toUpdate = this.removeNode(node);
       this.applyGridLayout(toUpdate);

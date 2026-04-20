@@ -1166,7 +1166,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   insetUpdateContextMenuItems() {
     const contentAreaContextMenu = document.getElementById("tabContextMenu");
     contentAreaContextMenu.addEventListener("popupshowing", () => {
-      let contextTab = TabContextMenu.contextTab;
+      let contextTab = TabContextMenu.contextTab || gBrowser.selectedTab;
       let selectedTabs = contextTab.multiselected
         ? gBrowser.selectedTabs
         : [contextTab];

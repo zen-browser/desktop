@@ -1258,10 +1258,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     let colorToBlendOpacity;
     if (this.isMica) {
       colorToBlend = this.isDarkMode ? [0, 0, 0] : [255, 255, 255];
-      colorToBlendOpacity = 0.25;
+      colorToBlendOpacity = 0.12;
     } else if (AppConstants.platform === "macosx") {
       colorToBlend = [255, 255, 255];
-      colorToBlendOpacity = 0.35;
+      colorToBlendOpacity = 0.18;
     }
     if (colorToBlend) {
       const blendedAlpha = Math.min(
@@ -1473,7 +1473,15 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
    * @returns {string} The primary color in hex format.
    */
   getAccentColorForUI(accentColor) {
-    return `rgb(${accentColor[0]}, ${accentColor[1]}, ${accentColor[2]})`;
+    const [h, s, l] = this.rgbToHsl(...accentColor);
+    if (s < 0.1) {
+      return `rgb(${accentColor[0]}, ${accentColor[1]}, ${accentColor[2]})`;
+    }
+    const saturation = Math.min(1, s + 0.3);
+    const targetLightness = this.isDarkMode ? 0.62 : 0.42;
+    const lightness = l * 0.4 + targetLightness * 0.6;
+    const [r, g, b] = this.hslToRgb(h / 360, saturation, lightness);
+    return `rgb(${r}, ${g}, ${b})`;
   }
 
   getMostDominantColor(allColors) {
@@ -1756,6 +1764,20 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         docElement.style.setProperty(
           "--toolbar-color-scheme",
           isDarkMode ? "dark" : "light"
+        );
+        // Tint toolbar elements with an accent-hued color toned against the
+        // current mode — dark mode gets a light tint, light mode a dark tint.
+        const tintTarget = isDarkMode ? [255, 255, 255] : [0, 0, 0];
+        const [tr, tg, tb] = this.blendColors(dominantColor, tintTarget, 25);
+        const elementBgAlpha = isDarkMode ? 0.18 : 0.1;
+        const elementHoverAlpha = isDarkMode ? 0.28 : 0.16;
+        docElement.style.setProperty(
+          "--zen-toolbar-element-bg",
+          `rgba(${tr}, ${tg}, ${tb}, ${elementBgAlpha})`
+        );
+        docElement.style.setProperty(
+          "--zen-toolbar-element-bg-hover",
+          `rgba(${tr}, ${tg}, ${tb}, ${elementHoverAlpha})`
         );
       }
 

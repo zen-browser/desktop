@@ -10,6 +10,7 @@ export class ZenProgressBar extends ZenUIComponent {
   #element = null;
   #loadingTab = null;
   #longLoadTimer = null;
+  #promise = null;
 
   init() {
     this.listenBrowserTabsProgress();
@@ -60,7 +61,8 @@ export class ZenProgressBar extends ZenUIComponent {
     return this.#element;
   }
 
-  #checkBrowserProgress(webProgress) {
+  async #checkBrowserProgress(webProgress) {
+    await this.#promise;
     const window = this.window;
     const gBrowser = window.gBrowser;
     const tab = gBrowser.getTabForBrowser(webProgress);
@@ -74,7 +76,7 @@ export class ZenProgressBar extends ZenUIComponent {
     }
   }
 
-  #hideProgressBar() {
+  #hideProgressBar(aInstant = false) {
     const progressBar = this.#element;
     const window = this.window;
     if (this.#longLoadTimer) {
@@ -86,12 +88,15 @@ export class ZenProgressBar extends ZenUIComponent {
     if (!progressBar) {
       return;
     }
+    let { promise, resolve } = Promise.withResolvers();
+    this.#promise = promise;
     const callback = () => {
       delete progressBar._loadingTab;
       progressBar.remove();
       this.#element = null;
+      resolve();
     };
-    if (this.window.gReduceMotion) {
+    if (this.window.gReduceMotion || aInstant) {
       callback();
       return;
     }
@@ -113,6 +118,11 @@ export class ZenProgressBar extends ZenUIComponent {
     if (this.#loadingTab === aTab) {
       return;
     }
+    if (this.#element) {
+      return;
+    }
+    let { promise, resolve } = Promise.withResolvers();
+    this.#promise = promise;
     this.#loadingTab = aTab;
     const progressBar = this.#progressBar;
     progressBar.removeAttribute("fade-out");
@@ -123,5 +133,6 @@ export class ZenProgressBar extends ZenUIComponent {
       }
       this.#longLoadTimer = null;
     }, WAIT_BEFORE_SHOWING_LONG_LOAD);
+    resolve();
   }
 }

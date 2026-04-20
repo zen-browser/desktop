@@ -47,6 +47,9 @@ zen-workspaces-panel-unload =
 zen-workspaces-panel-unload-others =
     .label = Unload All Other Spaces
 
+zen-workspaces-panel-smart-suspend =
+    .label = Smart Suspend Inactive Tabs
+
 zen-workspaces-how-to-reorder-title = How to reorder spaces
 zen-workspaces-how-to-reorder-desc = Drag the space icons at the bottom of the sidebar to reorder them
 

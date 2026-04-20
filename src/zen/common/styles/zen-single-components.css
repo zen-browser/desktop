@@ -860,6 +860,23 @@
 }
 
 /* Astra - Tab Notes */
+#PanelUI-zen-crash-recovery {
+  min-width: 320px;
+  max-width: 380px;
+  padding: 12px;
+}
+
+#PanelUI-zen-crash-recovery-description {
+  margin-top: 6px;
+  margin-bottom: 10px;
+  color: var(--panel-description-color);
+}
+
+.zen-crash-recovery-buttons {
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 #PanelUI-zen-tab-notes {
   min-width: 300px;
   max-width: 350px;

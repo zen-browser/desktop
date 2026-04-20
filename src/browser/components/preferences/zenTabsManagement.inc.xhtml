@@ -44,6 +44,38 @@
             preference="zen.tabs.select-recently-used-on-close"/>
       <checkbox data-l10n-id="zen-tab-unloader-auto-unload-inactive"
             preference="zen.tab-unloader.auto-unload-inactive"/>
+      <hbox align="center">
+            <label id="zenTabUnloaderAggressivenessLabel" data-l10n-id="zen-tab-unloader-aggressiveness-label"/>
+            <menulist id="zenTabUnloaderAggressiveness" preference="zen.tab-unloader.aggressiveness">
+                  <menupopup>
+                        <menuitem data-l10n-id="zen-tab-unloader-aggressiveness-conservative" value="conservative"/>
+                        <menuitem data-l10n-id="zen-tab-unloader-aggressiveness-balanced" value="balanced"/>
+                        <menuitem data-l10n-id="zen-tab-unloader-aggressiveness-aggressive" value="aggressive"/>
+                  </menupopup>
+            </menulist>
+      </hbox>
+      <hbox align="center">
+            <label id="zenTabUnloaderTimeoutLabel" data-l10n-id="zen-tab-unloader-timeout-label"/>
+            <menulist id="zenTabUnloaderTimeout" preference="zen.tab-unloader.timeout-minutes">
+                  <menupopup>
+                        <menuitem label="5 min" value="5"/>
+                        <menuitem label="10 min" value="10"/>
+                        <menuitem label="20 min" value="20"/>
+                        <menuitem label="30 min" value="30"/>
+                  </menupopup>
+            </menulist>
+      </hbox>
+      <hbox align="center">
+            <label id="zenTabUnloaderHighThresholdLabel" data-l10n-id="zen-tab-unloader-high-threshold-label"/>
+            <menulist id="zenTabUnloaderHighThreshold" preference="zen.tab-unloader.high-tab-threshold">
+                  <menupopup>
+                        <menuitem label="Disabled" value="0"/>
+                        <menuitem label="60 tabs" value="60"/>
+                        <menuitem label="80 tabs" value="80"/>
+                        <menuitem label="120 tabs" value="120"/>
+                  </menupopup>
+            </menulist>
+      </hbox>
 </groupbox>
 
 <hbox id="zenPinnedTabsManagerCategory"

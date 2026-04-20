@@ -143,6 +143,15 @@ zen-smart-open-details =
 zen-smart-download-warning = SMART Guard: Suspicious download signal detected.
 zen-smart-screen-warning = SMART Guard: Screen sharing risk signal detected.
 zen-smart-clipboard-warning = SMART Guard: Sensitive clipboard signal detected.
+zen-smart-suspend-complete = Smart Suspend unloaded { $count } background tab(s).
+zen-crash-recovery-title = Crash Recovery
+zen-crash-recovery-description = Astra detected an unexpected shutdown. Choose what to recover first.
+zen-crash-recovery-restore-session =
+    .label = Restore Session
+zen-crash-recovery-restore-workspace =
+    .label = Restore Current Workspace
+zen-crash-recovery-session-restore-started = Session restore started.
+zen-crash-recovery-workspace-restore-started = Workspace recovery started in synced window.
 
 # Section: Feature callouts
 

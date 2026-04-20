@@ -54,5 +54,17 @@
 - name: zen.tab-unloader.auto-unload-inactive
   value: false
 
+- name: zen.tab-unloader.timeout-minutes
+  value: 10
+
+- name: zen.tab-unloader.aggressiveness
+  value: balanced
+
+- name: zen.tab-unloader.high-tab-threshold
+  value: 80
+
+- name: zen.tab-unloader.max-batch
+  value: 20
+
 - name: zen.performance.measure-workspaces
   value: false

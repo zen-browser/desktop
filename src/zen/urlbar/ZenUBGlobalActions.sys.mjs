@@ -44,6 +44,16 @@ const globalActionsTemplate = [
     icon: "chrome://browser/skin/zen-icons/shield.svg",
   },
   {
+    label: "Optimize Memory (Smart Suspend)",
+    command: "cmd_zenSmartSuspendNow",
+    icon: "chrome://browser/skin/zen-icons/stopwatch.svg",
+  },
+  {
+    label: "Crash Recovery",
+    command: "cmd_zenOpenCrashRecovery",
+    icon: "chrome://browser/skin/zen-icons/alert-triangle.svg",
+  },
+  {
     label: "Open IRCTC",
     command: window => window.openTrustedLinkIn("https://www.irctc.co.in", "tab"),
     icon: "chrome://browser/skin/zen-icons/navigate.svg",

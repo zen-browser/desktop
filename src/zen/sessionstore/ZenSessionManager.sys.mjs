@@ -404,6 +404,13 @@ export class nsZenSessionManager {
    *        The initial session state read from the session file, possibly modified by onFileRead.
    */
   onCrashCheckpoints(initialState) {
+    if (this.#shouldRestoreFromCrash) {
+      Services.prefs.setBoolPref("zen.crash-recovery.pending", true);
+      Services.prefs.setIntPref(
+        "zen.crash-recovery.last-timestamp",
+        Math.floor(Date.now() / 1000)
+      );
+    }
     if (!lazy.gWindowSyncEnabled) {
       return;
     }

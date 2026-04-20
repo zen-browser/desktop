@@ -142,6 +142,24 @@ class nsZenWorkspaces {
     );
     XPCOMUtils.defineLazyPreferenceGetter(
       this,
+      "autoUnloadAggressiveness",
+      "zen.tab-unloader.aggressiveness",
+      "balanced"
+    );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "autoUnloadHighTabThreshold",
+      "zen.tab-unloader.high-tab-threshold",
+      80
+    );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "autoUnloadBatchLimit",
+      "zen.tab-unloader.max-batch",
+      20
+    );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
       "shouldMeasureWorkspacePerformance",
       "zen.performance.measure-workspaces",
       false
@@ -1716,6 +1734,10 @@ class nsZenWorkspaces {
     await gBrowser.explicitUnloadTabs(tabsToUnload); // TODO: unit test this
   }
 
+  async runSmartTabSuspension({ force = false } = {}) {
+    return this.#autoUnloadInactiveTabs({ force });
+  }
+
   moveTabToWorkspace(tab, workspaceID) {
     return this.moveTabsToWorkspace([tab], workspaceID);
   }
@@ -3143,16 +3165,29 @@ class nsZenWorkspaces {
     }, 2000);
   }
 
-  async #autoUnloadInactiveTabs() {
-    if (!this.shouldAutoUnloadInactiveTabs || this.#inChangingWorkspace) {
-      return;
+  async #autoUnloadInactiveTabs({ force = false } = {}) {
+    if ((!this.shouldAutoUnloadInactiveTabs && !force) || this.#inChangingWorkspace) {
+      return 0;
     }
     const timeoutMinutes = Math.max(1, this.autoUnloadTimeoutMinutes || 10);
-    const cutoff = Date.now() - timeoutMinutes * 60 * 1000;
+    const tabThreshold = Math.max(0, this.autoUnloadHighTabThreshold || 0);
+    const totalTabCount = this.allStoredTabs.length;
+    const isHighPressure = tabThreshold > 0 && totalTabCount >= tabThreshold;
+    const aggressiveness = this.autoUnloadAggressiveness || "balanced";
+    let effectiveTimeoutMinutes = timeoutMinutes;
+    if (aggressiveness === "conservative" && !force) {
+      effectiveTimeoutMinutes = Math.max(timeoutMinutes, timeoutMinutes * 2);
+    } else if (
+      (aggressiveness === "aggressive" || isHighPressure) &&
+      !force
+    ) {
+      effectiveTimeoutMinutes = Math.max(2, Math.floor(timeoutMinutes / 2));
+    }
+    const cutoff = Date.now() - effectiveTimeoutMinutes * 60 * 1000;
     const activeWorkspaceId = this.activeWorkspace;
     const selectedTab = gBrowser.selectedTab;
 
-    const tabsToUnload = this.allStoredTabs.filter(tab => {
+    const eligibleTabs = this.allStoredTabs.filter(tab => {
       if (!tab || tab === selectedTab || tab.closing) {
         return false;
       }
@@ -3177,14 +3212,38 @@ class nsZenWorkspaces {
       ) {
         return false;
       }
+      return true;
+    });
+
+    let tabsToUnload = eligibleTabs.filter(tab => {
+      if (force) {
+        return true;
+      }
       return (tab.lastAccessed || 0) <= cutoff;
     });
 
-    if (!tabsToUnload.length) {
-      return;
+    if (!tabsToUnload.length && isHighPressure && !force) {
+      const urgentCutoff = Date.now() - 2 * 60 * 1000;
+      tabsToUnload = eligibleTabs.filter(tab => (tab.lastAccessed || 0) <= urgentCutoff);
     }
-    // Keep this conservative to avoid visible churn in large tab sets.
-    await gBrowser.explicitUnloadTabs(tabsToUnload.slice(0, 20));
+
+    if (!tabsToUnload.length) {
+      return 0;
+    }
+    tabsToUnload.sort((a, b) => (a.lastAccessed || 0) - (b.lastAccessed || 0));
+
+    let batchLimit = Math.max(1, this.autoUnloadBatchLimit || 20);
+    if (aggressiveness === "conservative") {
+      batchLimit = Math.min(batchLimit, 12);
+    } else if ((aggressiveness === "aggressive" || isHighPressure) && !force) {
+      batchLimit = Math.max(batchLimit, 30);
+    } else {
+      batchLimit = Math.min(batchLimit, 20);
+    }
+    batchLimit = Math.min(80, batchLimit);
+    const batch = tabsToUnload.slice(0, batchLimit);
+    await gBrowser.explicitUnloadTabs(batch);
+    return batch.length;
   }
 
   // Context menu management

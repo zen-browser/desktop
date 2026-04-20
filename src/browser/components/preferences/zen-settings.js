@@ -1385,6 +1385,21 @@ Preferences.addAll([
     default: 10,
   },
   {
+    id: "zen.tab-unloader.aggressiveness",
+    type: "string",
+    default: "balanced",
+  },
+  {
+    id: "zen.tab-unloader.high-tab-threshold",
+    type: "int",
+    default: 80,
+  },
+  {
+    id: "zen.tab-unloader.max-batch",
+    type: "int",
+    default: 20,
+  },
+  {
     id: "zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url",
     type: "bool",
     default: true,

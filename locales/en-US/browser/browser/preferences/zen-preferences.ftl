@@ -62,6 +62,15 @@ zen-low-bandwidth-mode-lazy-loading =
     .label = Prefer lazy-loading for page images
 zen-tab-unloader-auto-unload-inactive =
     .label = Auto-unload inactive background tabs (memory saver)
+zen-tab-unloader-aggressiveness-label = Smart suspension mode
+zen-tab-unloader-aggressiveness-conservative =
+    .label = Conservative
+zen-tab-unloader-aggressiveness-balanced =
+    .label = Balanced
+zen-tab-unloader-aggressiveness-aggressive =
+    .label = Aggressive
+zen-tab-unloader-timeout-label = Suspend tabs after inactivity
+zen-tab-unloader-high-threshold-label = High-pressure trigger
 
 zen-privacy-presets-header = Privacy Presets
 zen-privacy-presets-description = Choose a simple privacy level. You can still customize advanced privacy settings separately.

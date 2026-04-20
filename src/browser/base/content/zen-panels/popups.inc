@@ -56,6 +56,7 @@
   <menuitem id="context_zenReorderWorkspaces" data-l10n-id="zen-workspaces-panel-context-reorder" command="cmd_zenReorderWorkspaces"/>
   <menuitem id="context_zenUnloadWorkspace" data-l10n-id="zen-workspaces-panel-unload" command="cmd_zenUnloadWorkspace"/>
   <menuitem id="context_zenUnloadAllOtherWorkspace" data-l10n-id="zen-workspaces-panel-unload-others" command="cmd_zenUnloadAllOtherWorkspace"/>
+  <menuitem id="context_zenSmartSuspendNow" data-l10n-id="zen-workspaces-panel-smart-suspend" command="cmd_zenSmartSuspendNow"/>
   <menuseparator/>
   <menuitem data-l10n-id="zen-panel-ui-workspaces-create" command="cmd_zenOpenWorkspaceCreation"/>
   <menuitem id="context_zenDeleteWorkspace" data-l10n-id="zen-workspaces-panel-context-delete" command="cmd_zenCtxDeleteWorkspace"/>
@@ -480,6 +481,27 @@
       </hbox>
 
     </vbox>
+  </vbox>
+</panel>
+
+<panel
+  type="arrow"
+  orient="vertical"
+  id="PanelUI-zen-crash-recovery"
+  position="bottomright topright"
+  side="bottom"
+  noautofocus="true">
+  <vbox id="PanelUI-zen-crash-recovery-container">
+    <label id="PanelUI-zen-crash-recovery-title" data-l10n-id="zen-crash-recovery-title" />
+    <description id="PanelUI-zen-crash-recovery-description" data-l10n-id="zen-crash-recovery-description" />
+    <hbox class="zen-crash-recovery-buttons">
+      <button class="footer-button primary"
+              command="cmd_zenCrashRestoreSession"
+              data-l10n-id="zen-crash-recovery-restore-session" />
+      <button class="footer-button"
+              command="cmd_zenCrashRestoreWorkspace"
+              data-l10n-id="zen-crash-recovery-restore-workspace" />
+    </hbox>
   </vbox>
 </panel>
 

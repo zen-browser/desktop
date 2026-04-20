@@ -53,6 +53,28 @@ document.addEventListener(
       panel.openPopup(anchor, "after_start", 0, 0, false, false);
     };
 
+    const openCrashRecoveryPanel = (event, win = window) => {
+      const panel = win.document.getElementById("PanelUI-zen-crash-recovery");
+      if (!panel) {
+        return;
+      }
+      const isUsableAnchor = node => {
+        if (!node || !node.isConnected || typeof node.getBoundingClientRect !== "function") {
+          return false;
+        }
+        const rect = node.getBoundingClientRect();
+        return rect.width > 0 || rect.height > 0;
+      };
+      const eventAnchor = event?.sourceEvent?.target;
+      const anchor =
+        (isUsableAnchor(eventAnchor) && eventAnchor) ||
+        win.document.getElementById("zen-site-data-icon-button") ||
+        win.document.getElementById("urlbar-input-container") ||
+        win.document.getElementById("nav-bar") ||
+        win.document.getElementById("browser");
+      panel.openPopup(anchor, "after_start", 0, 0, false, false);
+    };
+
     const lazy = {};
     ChromeUtils.defineESModuleGetters(lazy, {
       TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
@@ -166,6 +188,22 @@ document.addEventListener(
         }
       },
     };
+
+    window.gZenCrashRecovery = {
+      open: openCrashRecoveryPanel,
+    };
+
+    window.gZenStartup?.promiseInitialized?.then(() => {
+      if (
+        Services.prefs.getBoolPref("zen.crash-recovery.pending", false) &&
+        !window.gZenWorkspaces?.privateWindowOrDisabled
+      ) {
+        Services.prefs.setBoolPref("zen.crash-recovery.pending", false);
+        setTimeout(() => {
+          openCrashRecoveryPanel();
+        }, 350);
+      }
+    });
 
     // <commandset id="mainCommandSet"> defined in browser-sets.inc
     document
@@ -356,6 +394,42 @@ document.addEventListener(
               timeout: 4200,
               descriptionId: "zen-smart-open-details",
             });
+            break;
+          }
+          case "cmd_zenSmartSuspendNow": {
+            void gZenWorkspaces.runSmartTabSuspension({ force: true }).then(unloaded => {
+              gZenUIManager.showToast("zen-smart-suspend-complete", {
+                l10nArgs: { count: unloaded || 0 },
+                timeout: 3500,
+              });
+            });
+            break;
+          }
+          case "cmd_zenOpenCrashRecovery":
+            openCrashRecoveryPanel(event);
+            break;
+          case "cmd_zenCrashRestoreSession": {
+            document.getElementById("PanelUI-zen-crash-recovery")?.hidePopup();
+            document
+              .getElementById("History:RestoreLastClosedTabOrWindowOrSession")
+              ?.doCommand();
+            gZenUIManager.showToast("zen-crash-recovery-session-restore-started", {
+              timeout: 3500,
+            });
+            break;
+          }
+          case "cmd_zenCrashRestoreWorkspace": {
+            document.getElementById("PanelUI-zen-crash-recovery")?.hidePopup();
+            const { ZenWindowSync } = ChromeUtils.importESModule(
+              "resource:///modules/zen/ZenWindowSync.sys.mjs"
+            );
+            const workspaceId = gZenWorkspaces.activeWorkspace;
+            if (workspaceId) {
+              ZenWindowSync.moveTabsToSyncedWorkspace(window, workspaceId);
+              gZenUIManager.showToast("zen-crash-recovery-workspace-restore-started", {
+                timeout: 3500,
+              });
+            }
             break;
           }
           default:

@@ -53,8 +53,7 @@ fi
 
 if test "$ZEN_RELEASE"; then
 
-  # TODO: Make this successful in builds
-  # ac_add_options --enable-clang-plugin
+  ac_add_options --enable-clang-plugin
   ac_add_options --enable-bootstrap=-sccache
 
   ac_add_options --enable-optimize

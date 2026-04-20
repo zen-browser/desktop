@@ -686,7 +686,7 @@
 
 /* Loading progress bar */
 #zen-loading-progress-bar {
-  --zen-loading-progress-bar-color: color-mix(in srgb, var(--zen-primary-color), light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.7)) 70%);
+  --zen-loading-progress-bar-color: color-mix(in srgb, var(--zen-primary-color), light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.5)) 70%);
 
   position: fixed;
 

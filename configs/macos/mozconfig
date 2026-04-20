@@ -30,7 +30,6 @@ if test "$SURFER_COMPAT" = "x86_64"; then
     ac_add_options --enable-wasm-avx
   fi
 else
-  ac_add_options --enable-clang-plugin
   ac_add_options --target=aarch64-apple-darwin
 
   if test "$ZEN_RELEASE"; then

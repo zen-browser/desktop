@@ -169,7 +169,8 @@
   orient="vertical"
   id="PanelUI-zen-app-launcher"
   position="bottomright topright"
-  side="bottom">
+  side="bottom"
+  noautofocus="true">
   <vbox id="PanelUI-zen-app-launcher-container">
     <label id="PanelUI-zen-app-launcher-title" value="Bharat Apps" />
     <vbox id="PanelUI-zen-app-launcher-list">
@@ -177,31 +178,31 @@
       <label class="zen-app-launcher-section-title" value="📧 Mail"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://gmail.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://gmail.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=gmail.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Gmail"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://outlook.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://outlook.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=outlook.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Outlook"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://mail.zoho.in','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://mail.zoho.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=mail.zoho.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Zoho Mail"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://mail.yahoo.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://mail.yahoo.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=mail.yahoo.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Yahoo Mail"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://proton.me','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://proton.me');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=proton.me&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="ProtonMail"/>
@@ -211,25 +212,25 @@
       <label class="zen-app-launcher-section-title" value="📹 Meetings"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://meet.google.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://meet.google.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=meet.google.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Google Meet"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://zoom.us','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://zoom.us');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=zoom.us&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Zoom"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://teams.microsoft.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://teams.microsoft.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=teams.microsoft.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="MS Teams"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://webex.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://webex.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=webex.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Webex"/>
@@ -239,25 +240,25 @@
       <label class="zen-app-launcher-section-title" value="💾 Storage"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://drive.google.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://drive.google.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=drive.google.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Google Drive"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://onedrive.live.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://onedrive.live.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=onedrive.live.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="OneDrive"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://dropbox.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://dropbox.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=dropbox.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Dropbox"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://workdrive.zoho.in','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://workdrive.zoho.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=workdrive.zoho.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Zoho Drive"/>
@@ -267,31 +268,31 @@
       <label class="zen-app-launcher-section-title" value="📝 Productivity"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://docs.google.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://docs.google.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=docs.google.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Google Docs"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://microsoft365.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://microsoft365.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=microsoft365.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Microsoft 365"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://notion.so','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://notion.so');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=notion.so&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Notion"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://canva.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://canva.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=canva.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Canva"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://sheet.zoho.in','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://sheet.zoho.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=sheet.zoho.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Zoho Docs"/>
@@ -301,25 +302,25 @@
       <label class="zen-app-launcher-section-title" value="🎓 Education"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://classroom.google.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://classroom.google.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=classroom.google.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Classroom"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://teams.microsoft.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://teams.microsoft.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=teams.microsoft.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Teams EDU"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://zoom.us/education','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://zoom.us/education');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=zoom.us&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Zoom EDU"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://swayam.gov.in','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://swayam.gov.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=swayam.gov.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="SWAYAM"/>
@@ -329,31 +330,31 @@
       <label class="zen-app-launcher-section-title" value="🎵 Entertainment"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://youtube.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://youtube.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=youtube.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="YouTube"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://spotify.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://spotify.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=spotify.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Spotify"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://jiosaavn.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://jiosaavn.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=jiosaavn.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="JioSaavn"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://jiohotstar.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://jiohotstar.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=jiohotstar.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="JioHotstar"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://netflix.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://netflix.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=netflix.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Netflix"/>
@@ -363,25 +364,25 @@
       <label class="zen-app-launcher-section-title" value="🛒 Shopping"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://amazon.in','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://amazon.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=amazon.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Amazon"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://flipkart.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://flipkart.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=flipkart.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Flipkart"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://meesho.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://meesho.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=meesho.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Meesho"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://myntra.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://myntra.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=myntra.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Myntra"/>
@@ -391,31 +392,31 @@
       <label class="zen-app-launcher-section-title" value="🇮🇳 Government"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://irctc.co.in','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://irctc.co.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=irctc.co.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="IRCTC"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://incometax.gov.in','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://incometax.gov.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=incometax.gov.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Income Tax"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://digilocker.gov.in','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://digilocker.gov.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=digilocker.gov.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="DigiLocker"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://gst.gov.in','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://gst.gov.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=gst.gov.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="GST Portal"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://epfindia.gov.in','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://epfindia.gov.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=epfindia.gov.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="EPFO"/>
@@ -425,25 +426,25 @@
       <label class="zen-app-launcher-section-title" value="📰 News"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://inshorts.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://inshorts.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=inshorts.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Inshorts"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://ndtv.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://ndtv.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=ndtv.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="NDTV"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://timesofindia.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://timesofindia.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=timesofindia.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="TOI"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://news.google.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://news.google.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=news.google.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Google News"/>
@@ -453,25 +454,25 @@
       <label class="zen-app-launcher-section-title" value="💼 Business"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://linkedin.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://linkedin.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=linkedin.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="LinkedIn"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://slack.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://slack.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=slack.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Slack"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://freshdesk.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://freshdesk.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=freshdesk.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Freshdesk"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="openTrustedLinkIn('https://trello.com','tab'); document.getElementById('PanelUI-zen-app-launcher').hidePopup();"
+          oncommand="gZenAppLauncher.openApp('https://trello.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=trello.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Trello"/>

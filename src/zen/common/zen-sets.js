@@ -124,6 +124,15 @@ document.addEventListener(
 
     window.gZenAppLauncher = {
       open: openAppLauncherPanel,
+      openApp(url) {
+        try {
+          const panel = document.getElementById("PanelUI-zen-app-launcher");
+          panel?.hidePopup();
+          openTrustedLinkIn(url, "tab");
+        } catch(e) {
+          console.error("Astra: App launcher open error:", e);
+        }
+      },
     };
 
     // <commandset id="mainCommandSet"> defined in browser-sets.inc

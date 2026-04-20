@@ -337,22 +337,25 @@ document.addEventListener(
             break;
           case "cmd_zenSmartGuardDetails": {
             const status = window.gZenSmartGuard?.getPanelStatus?.();
-            if (!status || !window.gZenSmartGuard?.enabled) {
+            if (!window.gZenSmartGuard?.enabled) {
               gZenUIManager.showToast("zen-smart-status-safe", {
-                timeout: 3500,
+                timeout: 4200,
+                descriptionId: "zen-smart-open-details",
               });
               break;
             }
-            gZenUIManager.showToast(
-              status.level === "high"
+            const toastId =
+              status?.level === "high"
                 ? "zen-smart-download-warning"
-                : status.level === "medium"
+                : status?.level === "medium"
                   ? "zen-smart-screen-warning"
-                  : status.level === "low"
+                  : status?.level === "low"
                     ? "zen-smart-clipboard-warning"
-                    : "zen-smart-status-safe",
-              { timeout: 3500 }
-            );
+                    : "zen-smart-status-safe";
+            gZenUIManager.showToast(toastId, {
+              timeout: 4200,
+              descriptionId: "zen-smart-open-details",
+            });
             break;
           }
           default:

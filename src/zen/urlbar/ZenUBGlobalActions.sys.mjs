@@ -34,9 +34,14 @@ const globalActionsTemplate = [
     icon: "chrome://browser/skin/zen-icons/globe.svg",
   },
   {
-    label: "App Hub",
+    label: "Astra App Hub",
     command: window => window.gZenAppLauncher?.open?.(null, window),
     icon: "chrome://browser/skin/zen-icons/selectable/grid-3x3.svg",
+  },
+  {
+    label: "SMART Guard Safety Check",
+    command: "cmd_zenSmartGuardDetails",
+    icon: "chrome://browser/skin/zen-icons/shield.svg",
   },
   {
     label: "Open IRCTC",
@@ -130,11 +135,6 @@ const globalActionsTemplate = [
     label: "Settings",
     command: window => window.openPreferences(),
     icon: "chrome://browser/skin/zen-icons/settings.svg",
-  },
-  {
-    label: "SMART Guard Details",
-    command: "cmd_zenSmartGuardDetails",
-    icon: "chrome://browser/skin/zen-icons/shield.svg",
   },
   {
     label: "Open Private Window",

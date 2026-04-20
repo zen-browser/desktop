@@ -409,6 +409,23 @@
         fadeOut() {},
       },
       {
+        rawText: [
+          "Browse safer with Astra",
+          "Smart Guard warns about suspicious downloads, screenshots, and clipboard activity.",
+          "Review site permissions often and only install trusted extensions.",
+        ],
+        buttons: [
+          {
+            label: "Continue",
+            onclick: async () => {
+              return true;
+            },
+          },
+        ],
+        fadeIn() {},
+        fadeOut() {},
+      },
+      {
         text: [
           {
             id: "zen-welcome-import-title",

@@ -90,3 +90,28 @@
 # See gh-12985 for details on the following preferences
 - name: browser.search.widget.new
   value: true
+
+# Astra: user-visible privacy and anti-scam defaults
+- name: browser.contentblocking.category
+  value: "strict"
+
+- name: privacy.trackingprotection.enabled
+  value: true
+
+- name: privacy.trackingprotection.socialtracking.enabled
+  value: true
+
+- name: browser.safebrowsing.phishing.enabled
+  value: true
+
+- name: browser.safebrowsing.malware.enabled
+  value: true
+
+- name: browser.safebrowsing.downloads.enabled
+  value: true
+
+- name: browser.safebrowsing.downloads.remote.enabled
+  value: true
+
+- name: dom.security.https_only_mode
+  value: true

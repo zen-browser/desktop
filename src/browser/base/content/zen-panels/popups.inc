@@ -172,7 +172,7 @@
   side="bottom"
   noautofocus="true">
   <vbox id="PanelUI-zen-app-launcher-container">
-    <label id="PanelUI-zen-app-launcher-title" value="App Hub 🚀" />
+    <label id="PanelUI-zen-app-launcher-title" value="Astra App Hub 🚀" />
     <vbox id="PanelUI-zen-app-launcher-list">
 
       <label class="zen-app-launcher-section-title" value="📧 Mail"/>

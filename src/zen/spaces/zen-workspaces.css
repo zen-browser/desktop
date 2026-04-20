@@ -401,6 +401,40 @@ zen-workspace {
       -moz-window-dragging: drag;
     }
   }
+
+  .zen-workspace-empty-state {
+    display: none;
+    margin: 18px 10px 8px;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid color-mix(in srgb, var(--toolbarbutton-icon-fill) 14%, transparent);
+    background: color-mix(in srgb, var(--toolbar-bgcolor) 88%, transparent);
+    gap: 6px;
+  }
+
+  .zen-workspace-empty-title {
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .zen-workspace-empty-description {
+    margin: 0;
+    text-align: center;
+    color: color-mix(in srgb, var(--toolbarbutton-icon-fill) 70%, transparent);
+  }
+
+  .zen-workspace-empty-actions {
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .zen-workspace-empty-action {
+    min-width: 120px;
+  }
+
+  &[active][zen-empty-state] .zen-workspace-empty-state {
+    display: flex;
+  }
 }
 
 /** Customizable UI, this is an auto generated ID */

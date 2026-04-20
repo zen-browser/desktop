@@ -432,6 +432,28 @@ document.addEventListener(
             }
             break;
           }
+          case "cmd_zenQuickAddCurrentTabToFolder": {
+            const currentTab = gBrowser.selectedTab;
+            if (
+              currentTab &&
+              !currentTab.hasAttribute("zen-empty-tab") &&
+              !currentTab.hasAttribute("zen-essential")
+            ) {
+              gZenFolders.createFolder([currentTab], { renameFolder: true });
+              gZenUIManager.showToast("zen-folder-quick-add-started");
+            }
+            break;
+          }
+          case "cmd_zenUndoLastWorkspaceMove": {
+            const didUndo = gZenWorkspaces.undoLastWorkspaceMove();
+            gZenUIManager.showToast(
+              didUndo
+                ? "zen-workspace-undo-move-success"
+                : "zen-workspace-undo-move-none",
+              { timeout: 3200 }
+            );
+            break;
+          }
           default:
             gZenGlanceManager.handleMainCommandSet(event);
             if (event.target.id.startsWith("cmd_zenWorkspaceSwitch")) {

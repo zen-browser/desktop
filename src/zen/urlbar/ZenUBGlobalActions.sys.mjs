@@ -54,6 +54,20 @@ const globalActionsTemplate = [
     icon: "chrome://browser/skin/zen-icons/alert-triangle.svg",
   },
   {
+    label: "Quick Add Current Tab to Folder",
+    command: "cmd_zenQuickAddCurrentTabToFolder",
+    icon: "chrome://browser/skin/zen-icons/folder.svg",
+    isAvailable: window => {
+      const tab = window.gBrowser.selectedTab;
+      return !tab.hasAttribute("zen-empty-tab") && !tab.hasAttribute("zen-essential");
+    },
+  },
+  {
+    label: "Undo Last Workspace Move",
+    command: "cmd_zenUndoLastWorkspaceMove",
+    icon: "chrome://browser/skin/zen-icons/undo.svg",
+  },
+  {
     label: "Open IRCTC",
     command: window => window.openTrustedLinkIn("https://www.irctc.co.in", "tab"),
     icon: "chrome://browser/skin/zen-icons/navigate.svg",

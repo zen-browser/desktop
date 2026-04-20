@@ -45,6 +45,7 @@ class nsZenWorkspaces {
   _workspaceCache = [];
 
   #lastScrollTime = 0;
+  #lastWorkspaceMove = null;
   #currentSpaceSwitchContext = {
     promise: null,
     animations: [],
@@ -1738,12 +1739,14 @@ class nsZenWorkspaces {
     return this.#autoUnloadInactiveTabs({ force });
   }
 
-  moveTabToWorkspace(tab, workspaceID) {
-    return this.moveTabsToWorkspace([tab], workspaceID);
+  moveTabToWorkspace(tab, workspaceID, options = {}) {
+    return this.moveTabsToWorkspace([tab], workspaceID, options);
   }
 
-  moveTabsToWorkspace(tabs, workspaceID) {
+  moveTabsToWorkspace(tabs, workspaceID, options = {}) {
+    const { trackUndo = true } = options;
     for (let tab of tabs) {
+      const previousWorkspaceId = tab.getAttribute("zen-workspace-id");
       const workspaceContainer = this.workspaceElement(workspaceID);
       const container = tab.pinned
         ? workspaceContainer?.pinnedTabsContainer
@@ -1771,6 +1774,20 @@ class nsZenWorkspaces {
           tab.setAttribute("zen-workspace-id", workspaceID);
           container.insertBefore(tab, container.lastChild);
         });
+        if (
+          trackUndo &&
+          tabs.length === 1 &&
+          previousWorkspaceId &&
+          previousWorkspaceId !== workspaceID &&
+          !tab.hasAttribute("zen-empty-tab")
+        ) {
+          this.#lastWorkspaceMove = {
+            tabId: tab.id,
+            fromWorkspaceId: previousWorkspaceId,
+            toWorkspaceId: workspaceID,
+            movedAt: Date.now(),
+          };
+        }
       }
       // also change glance tab if it's the same tab
       const glanceTab = tab.querySelector(".tabbrowser-tab[zen-glance-tab]");
@@ -1779,6 +1796,21 @@ class nsZenWorkspaces {
       }
     }
     gBrowser.tabContainer._invalidateCachedTabs();
+    return true;
+  }
+
+  undoLastWorkspaceMove() {
+    const lastMove = this.#lastWorkspaceMove;
+    if (!lastMove?.tabId || !lastMove?.fromWorkspaceId) {
+      return false;
+    }
+    const tab = this.allStoredTabs.find(candidate => candidate.id === lastMove.tabId);
+    if (!tab || tab.closing) {
+      this.#lastWorkspaceMove = null;
+      return false;
+    }
+    this.moveTabToWorkspace(tab, lastMove.fromWorkspaceId, { trackUndo: false });
+    this.#lastWorkspaceMove = null;
     return true;
   }
 
@@ -2962,6 +2994,8 @@ class nsZenWorkspaces {
     const shouldHideSeparator = fromTabSelection
       ? pinnedContainer.hasAttribute("hide-separator")
       : !visibleTabsFound();
+    const workspaceElement = pinnedContainer.closest("zen-workspace");
+    workspaceElement?.toggleAttribute("zen-empty-state", shouldHideSeparator);
     if (shouldHideSeparator) {
       pinnedContainer.setAttribute("hide-separator", "true");
     } else {

@@ -57,6 +57,7 @@
   <menuitem id="context_zenUnloadWorkspace" data-l10n-id="zen-workspaces-panel-unload" command="cmd_zenUnloadWorkspace"/>
   <menuitem id="context_zenUnloadAllOtherWorkspace" data-l10n-id="zen-workspaces-panel-unload-others" command="cmd_zenUnloadAllOtherWorkspace"/>
   <menuitem id="context_zenSmartSuspendNow" data-l10n-id="zen-workspaces-panel-smart-suspend" command="cmd_zenSmartSuspendNow"/>
+  <menuitem id="context_zenUndoWorkspaceMove" data-l10n-id="zen-workspaces-panel-undo-last-move" command="cmd_zenUndoLastWorkspaceMove"/>
   <menuseparator/>
   <menuitem data-l10n-id="zen-panel-ui-workspaces-create" command="cmd_zenOpenWorkspaceCreation"/>
   <menuitem id="context_zenDeleteWorkspace" data-l10n-id="zen-workspaces-panel-context-delete" command="cmd_zenCtxDeleteWorkspace"/>

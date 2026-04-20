@@ -85,7 +85,22 @@ export class nsZenWorkspace extends MozXULElement {
             </hbox>
           </vbox>
         </arrowscrollbox>
-        <vbox class="zen-workspace-empty-space" flex="1" />
+        <vbox class="zen-workspace-empty-space" flex="1">
+          <vbox class="zen-workspace-empty-state" align="center">
+            <label class="zen-workspace-empty-title"
+                   data-l10n-id="zen-workspace-empty-title" />
+            <description class="zen-workspace-empty-description"
+                         data-l10n-id="zen-workspace-empty-description" />
+            <hbox class="zen-workspace-empty-actions" align="center">
+              <button class="zen-workspace-empty-action primary"
+                      command="cmd_newNavigatorTab"
+                      data-l10n-id="zen-workspace-empty-action-new-tab" />
+              <button class="zen-workspace-empty-action"
+                      command="cmd_zenOpenFolderCreation"
+                      data-l10n-id="zen-workspace-empty-action-new-folder" />
+            </hbox>
+          </vbox>
+        </vbox>
       `;
   }
 

@@ -49,6 +49,15 @@ zen-workspaces-panel-unload-others =
 
 zen-workspaces-panel-smart-suspend =
     .label = Smart Suspend Inactive Tabs
+zen-workspaces-panel-undo-last-move =
+    .label = Undo Last Tab Move
+
+zen-workspace-empty-title = Start this space
+zen-workspace-empty-description = Create a tab or folder to organize this workspace quickly.
+zen-workspace-empty-action-new-tab =
+    .label = New Tab
+zen-workspace-empty-action-new-folder =
+    .label = New Folder
 
 zen-workspaces-how-to-reorder-title = How to reorder spaces
 zen-workspaces-how-to-reorder-desc = Drag the space icons at the bottom of the sidebar to reorder them

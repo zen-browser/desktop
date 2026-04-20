@@ -15,11 +15,15 @@ if test "$ZEN_RELEASE"; then
 fi
 
 if test "$ZEN_RELEASE"; then
-  if test "$ZEN_GA_DISABLE_PGO"; then
-    export ZEN_DUMMY=1
-  else
-    export MOZ_PGO=1
-    ac_add_options MOZ_PGO=1
+  if ! test "$ZEN_GA_DISABLE_PGO"; then
+    if test "$ZEN_GA_GENERATE_PROFILE"; then
+      mk_add_options "export MOZ_AUTOMATION_PACKAGE_GENERATED_SOURCES=0"
+      ac_add_options --enable-profile-generate=cross
+    else
+      ac_add_options --enable-profile-use=cross
+      ac_add_options --with-pgo-profile-path="$(echo ~)/artifact/merged.profdata"
+      ac_add_options --with-pgo-jarlog="$(echo ~)/artifact/en-US.log"
+    fi
   fi
 fi
 

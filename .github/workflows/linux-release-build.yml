@@ -119,6 +119,37 @@ jobs:
           ./mach --no-interactive bootstrap --application-choice browser
           cd ..
 
+      - name: Build (PGO stage 1 - generate)
+        if: ${{ matrix.arch == 'x86_64' }}
+        env:
+          SURFER_COMPAT: ${{ matrix.arch }}
+          ZEN_RELEASE_BRANCH: ${{ inputs.release-branch }}
+          ZEN_GA_GENERATE_PROFILE: 1
+          ZEN_SAFEBROWSING_API_KEY: ${{ secrets.ZEN_SAFEBROWSING_API_KEY }}
+          ZEN_MOZILLA_API_KEY: ${{ secrets.ZEN_MOZILLA_API_KEY }}
+          ZEN_GOOGLE_LOCATION_SERVICE_API_KEY: ${{ secrets.ZEN_GOOGLE_LOCATION_SERVICE_API_KEY }}
+        continue-on-error: true
+        run: |
+          export SURFER_PLATFORM="linux"
+          if [[ -n ${{ inputs.MOZ_BUILD_DATE }} ]];then
+            export MOZ_BUILD_DATE=${{ inputs.MOZ_BUILD_DATE }}
+          fi
+          bash .github/workflows/src/release-build.sh
+
+      - name: Generate PGO profile data
+        if: ${{ matrix.arch == 'x86_64' }}
+        run: |
+          set -x
+          export DISPLAY=:2
+          export LLVM_PROFDATA="$HOME/.mozbuild/clang/bin/llvm-profdata"
+          export JARLOG_FILE=en-US.log
+          mkdir -p "$HOME/artifact"
+          cd engine
+          ./mach python build/pgo/profileserver.py --binary "$(pwd)/obj-x86_64-pc-linux-gnu/dist/bin/zen"
+          mv merged.profdata "$HOME/artifact/merged.profdata"
+          mv en-US.log "$HOME/artifact/en-US.log"
+          ./mach clobber
+
       - name: Build
         env:
           SURFER_COMPAT: ${{ matrix.arch }}

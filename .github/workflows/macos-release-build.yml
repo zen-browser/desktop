@@ -133,6 +133,37 @@ jobs:
       - name: Build language packs
         run: sh scripts/download-language-packs.sh
 
+      - name: Build Zen (PGO stage 1 - generate)
+        env:
+          SURFER_COMPAT: ${{ matrix.arch }}
+          ZEN_RELEASE_BRANCH: ${{ inputs.release-branch }}
+          ZEN_GA_GENERATE_PROFILE: 1
+          ZEN_SAFEBROWSING_API_KEY: ${{ secrets.ZEN_SAFEBROWSING_API_KEY }}
+          ZEN_MOZILLA_API_KEY: ${{ secrets.ZEN_MOZILLA_API_KEY }}
+          ZEN_GOOGLE_LOCATION_SERVICE_API_KEY: ${{ secrets.ZEN_GOOGLE_LOCATION_SERVICE_API_KEY }}
+        run: |
+          export SURFER_PLATFORM="darwin"
+          if [[ -n ${{ inputs.MOZ_BUILD_DATE }} ]];then
+            export MOZ_BUILD_DATE=${{ inputs.MOZ_BUILD_DATE }}
+          fi
+          bash .github/workflows/src/release-build.sh
+
+      - name: Generate PGO profile data
+        env:
+          SURFER_COMPAT: ${{ matrix.arch }}
+        run: |
+          set -x
+          export LLVM_PROFDATA="$HOME/.mozbuild/clang/bin/llvm-profdata"
+          export JARLOG_FILE=en-US.log
+          mkdir -p "$HOME/artifact"
+          cd engine
+          BINARY=$(find "obj-${SURFER_COMPAT}-apple-darwin/dist" -name zen -type f -perm -u+x | head -n1)
+          echo "Using binary: $BINARY"
+          ./mach python build/pgo/profileserver.py --binary "$(pwd)/$BINARY"
+          mv merged.profdata "$HOME/artifact/merged.profdata"
+          mv en-US.log "$HOME/artifact/en-US.log"
+          ./mach clobber
+
       - name: Build Zen
         env:
           SURFER_COMPAT: ${{ matrix.arch }}

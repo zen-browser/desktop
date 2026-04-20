@@ -34,7 +34,7 @@ const globalActionsTemplate = [
     icon: "chrome://browser/skin/zen-icons/globe.svg",
   },
   {
-    label: "Bharat Apps",
+    label: "App Hub",
     command: window => window.gZenAppLauncher?.open?.(null, window),
     icon: "chrome://browser/skin/zen-icons/selectable/grid-3x3.svg",
   },

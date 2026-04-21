@@ -9,9 +9,15 @@
   value: true
 
 - name: browser.tabs.hoverPreview.enabled
-  value: false
+  value: true
+
+- name: browser.tabs.hoverPreview.showThumbnails
+  value: true
 
 - name: browser.tabs.unloadTabInContextMenu
+  value: true
+
+- name: browser.tabs.unloadOnLowMemory
   value: true
 
 - name: browser.tabs.fadeOutExplicitlyUnloadedTabs
@@ -54,14 +60,17 @@
   value: false
 
 - name: browser.tabs.groups.enabled
-  value: false
+  value: true
 
 - name: browser.urlbar.scotchBonnet.enableOverride
   value: false
 
 - name: browser.tabs.groups.hoverPreview.enabled
   locked: true
-  value: false
+  value: true
+
+- name: browser.ml.linkPreview.enabled
+  value: true
 
 - name: browser.tabs.closeWindowWithLastTab
   value: false

@@ -2972,6 +2972,7 @@ class nsZenWorkspaces {
     pinnedContainer,
     fromTabSelection = false
   ) {
+    return; // Astra: disabled
     const visibleTabsFound = () => {
       let count = 0;
       for (const child of arrowScrollbox.children) {

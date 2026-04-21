@@ -170,7 +170,7 @@
   type="arrow"
   orient="vertical"
   id="PanelUI-zen-app-launcher"
-  position="bottomright topright"
+  position="after_start"
   side="bottom"
   noautofocus="true">
   <vbox id="PanelUI-zen-app-launcher-container">

@@ -31,26 +31,14 @@ document.addEventListener(
       open: openIndiaServicesPanel,
     };
 
-    const openAppLauncherPanel = (event, win = window) => {
+    const openAppLauncherPanel = (event) => {
+      const win = window;
       const panel = win.document.getElementById("PanelUI-zen-app-launcher");
-      if (!panel) {
-        console.error("App launcher panel not found");
-        return;
-      }
-      const isUsableAnchor = node => {
-        if (!node || !node.isConnected || typeof node.getBoundingClientRect !== "function") {
-          return false;
-        }
-        const rect = node.getBoundingClientRect();
-        return rect.width > 0 || rect.height > 0;
-      };
-      const eventAnchor = event?.sourceEvent?.target;
-      const anchor =
-        (isUsableAnchor(eventAnchor) && eventAnchor) ||
+      if (!panel) return;
+      const anchor = event?.target ||
         win.document.getElementById("zen-app-launcher-button") ||
-        win.document.getElementById("nav-bar") ||
-        win.document.getElementById("browser");
-      panel.openPopup(anchor, "after_start", 0, 0, false, false);
+        win.document.getElementById("nav-bar");
+      panel.openPopup(anchor, "after_start", 0, 4, false, false);
     };
 
     const openCrashRecoveryPanel = (event, win = window) => {

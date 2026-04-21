@@ -34,11 +34,44 @@ document.addEventListener(
     const openAppLauncherPanel = (event) => {
       const win = window;
       const panel = win.document.getElementById("PanelUI-zen-app-launcher");
-      if (!panel) return;
-      const anchor = event?.target ||
-        win.document.getElementById("zen-app-launcher-button") ||
-        win.document.getElementById("nav-bar");
-      panel.openPopup(anchor, "after_start", 0, 4, false, false);
+      if (!panel) {
+        console.error("Astra: App Hub panel not found!");
+        return;
+      }
+      
+      // Try multiple anchor points
+      let anchor = null;
+      
+      // Try event target first
+      if (event?.target && event.target.id) {
+        anchor = event.target;
+      }
+      
+      // Try event source
+      if (!anchor && event?.sourceEvent?.target) {
+        anchor = event.sourceEvent.target;
+      }
+      
+      // Try button directly
+      if (!anchor) {
+        anchor = win.document.getElementById("zen-app-launcher-button");
+      }
+      
+      // Try toolbar button inside
+      if (!anchor) {
+        const btn = win.document.querySelector(
+          "#zen-app-launcher-button toolbarbutton"
+        );
+        if (btn) anchor = btn;
+      }
+      
+      // Final fallback
+      if (!anchor) {
+        anchor = win.document.getElementById("zen-sidebar-top-buttons") ||
+                 win.document.getElementById("nav-bar");
+      }
+      
+      panel.openPopup(anchor, "after_end", 0, 0, false, false);
     };
 
     const openCrashRecoveryPanel = (event, win = window) => {

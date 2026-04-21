@@ -185,10 +185,17 @@ sign_mars() {
   folders=(
     linux.mar
     linux-aarch64.mar
-    windows.mar
-    windows-arm64.mar
     macos.mar
   )
+
+  if [ -d ".github/workflows/object/windows-x64-signed-x86_64" ]; then
+    folders+=(".github/workflows/object/windows-x64-signed-x86_64")
+    folders+=(".github/workflows/object/windows-x64-signed-arm64")
+  else
+    folders+=("windows.mar")
+    folders+=("windows-arm64.mar")
+  fi
+      
   # each folder will contain the .mar files for that platform, and the signature will be written in-place
   for folder in "${folders[@]}"; do
     if [ -d "$folder" ]; then

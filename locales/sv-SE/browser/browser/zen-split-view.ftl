@@ -5,9 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Avdela flikar
-            [1] Delad flik (flera valda flikar behövs)
-           *[other] Delad { $tabCount } flikar
+            [-1] Dela upp flik
+            [1] Lägg till delad vy...
+           *[other] Gå med i { $tabCount } flikar
         }
     .accesskey = S
 zen-split-link = 

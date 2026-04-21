@@ -428,10 +428,22 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 +    return false;
 +  }
 +  nsMenuPopupFrame* popupFrame = GetPopupFrame();
-+  return [mWindow isKindOfClass:[PopupWindow class]] &&
-+         [(PopupWindow*)mWindow usePopover] && popupFrame &&
-+         popupFrame->ShouldFollowAnchor() &&
-+         !popupFrame->PopupElement().GetBoolAttr(nsGkAtoms::nonnativepopover);
++  if (![mWindow isKindOfClass:[PopupWindow class]] ||
++      ![(PopupWindow*)mWindow usePopover] || !popupFrame ||
++      !popupFrame->ShouldFollowAnchor() ||
++      popupFrame->PopupElement().GetBoolAttr(nsGkAtoms::nonnativepopover)) {
++    return false;
++  }
++
++  // Additional validation: ensure the anchor rect is valid and non-empty
++  // This prevents detached popups (like Shopify theme editor) from being
++  // converted to NSPopover when they shouldn't be
++  nsRect anchorRectAppUnits = popupFrame->GetUntransformedAnchorRect();
++  if (anchorRectAppUnits.IsEmpty()) {
++    return false;
++  }
++
++  return true;
 +}
 +
  TransparencyMode nsCocoaWindow::GetTransparencyMode() {

@@ -4,22 +4,22 @@
 
 # Machine learning and chat feature preferences
 - name: browser.ml.chat.enabled
-  value: false
+  value: true
 
 - name: browser.ml.chat.shortcuts
-  value: false
+  value: true
 
 - name: browser.ml.chat.shortcuts.custom
   value: false
 
 - name: browser.ml.chat.sidebar
-  value: false
+  value: true
 
 - name: browser.ml.enable
-  value: false
+  value: true
 
 - name: browser.ml.chat.menu
-  value: false
+  value: true
 
 - name: browser.ml.linkPreview.enabled
-  value: false
+  value: true

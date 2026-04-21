@@ -30,12 +30,12 @@
   value: false
 
 - name: sidebar.revamp
-  value: false
-  locked: true
+  value: true
+  locked: false
 
 - name: sidebar.verticalTabs
   value: false
-  locked: true
+  locked: false
 
 - name: browser.preferences.experimental
   value: true

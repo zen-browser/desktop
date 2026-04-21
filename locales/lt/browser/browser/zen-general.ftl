@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = Prisegtos kortelės URL pakeistas dabartiniu URL.
 zen-tabs-renamed = Kortelė sėkmingai pervadinta.
 zen-background-tab-opened-toast = Nauja fonos kortelė atverta.
 zen-workspace-renamed-toast = Darbo sritis sėkmingai pervadintas.
+zen-split-view-limit-toast = Can't add more panels to the split view!
 zen-toggle-compact-mode-button = 
     .label = Kompaktinis režimas
     .tooltiptext = Perjungti kompaktinį režimą

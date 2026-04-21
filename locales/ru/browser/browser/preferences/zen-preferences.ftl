@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = Переключить DOM
 zen-devtools-toggle-accessibility-shortcut = Включить/выключить специальные возможности
 zen-close-all-unpinned-tabs-shortcut = Закрыть все не закреплённые вкладки
 zen-new-unsynced-window-shortcut = Новое пустое окно
+zen-duplicate-tab-shortcut = Дублировать вкладку

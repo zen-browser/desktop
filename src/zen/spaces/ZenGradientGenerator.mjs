@@ -1493,9 +1493,13 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return color;
   }
 
-  getToolbarColor(isDarkMode = false) {
+  getToolbarColor(isDarkMode = false, accentColor = null) {
     const opacity = 0.8;
-    return isDarkMode ? [255, 255, 255, opacity] : [0, 0, 0, opacity]; // Default toolbar
+    let baseColor = isDarkMode ? [255, 255, 255, opacity] : [0, 0, 0, opacity]; // Default toolbar
+    if (accentColor) {
+      return this.blendColors(baseColor.slice(0, 3), accentColor, 75).concat(1);
+    }
+    return baseColor;
   }
 
   get browserBackgroundElement() {
@@ -1756,7 +1760,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
           }
         }
         // Set `--toolbox-textcolor` to have a contrast with the primary color
-        const textColor = this.getToolbarColor(isDarkMode);
+        let textColor = this.getToolbarColor(isDarkMode, dominantColor);
         docElement.style.setProperty(
           "--toolbox-textcolor",
           `rgba(${textColor[0]}, ${textColor[1]}, ${textColor[2]}, ${textColor[3]})`
@@ -1764,20 +1768,6 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         docElement.style.setProperty(
           "--toolbar-color-scheme",
           isDarkMode ? "dark" : "light"
-        );
-        // Tint toolbar elements with an accent-hued color toned against the
-        // current mode — dark mode gets a light tint, light mode a dark tint.
-        const tintTarget = isDarkMode ? [255, 255, 255] : [0, 0, 0];
-        const [tr, tg, tb] = this.blendColors(dominantColor, tintTarget, 25);
-        const elementBgAlpha = isDarkMode ? 0.18 : 0.1;
-        const elementHoverAlpha = isDarkMode ? 0.28 : 0.16;
-        docElement.style.setProperty(
-          "--zen-toolbar-element-bg",
-          `rgba(${tr}, ${tg}, ${tb}, ${elementBgAlpha})`
-        );
-        docElement.style.setProperty(
-          "--zen-toolbar-element-bg-hover",
-          `rgba(${tr}, ${tg}, ${tb}, ${elementHoverAlpha})`
         );
       }
 
@@ -2007,7 +1997,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       grain: theme.texture ?? 0,
       isDarkMode,
       isExplicitMode,
-      toolbarColor: this.getToolbarColor(isDarkMode),
+      toolbarColor: this.getToolbarColor(isDarkMode, dominantColor),
       primaryColor: this.getAccentColorForUI(dominantColor),
     };
     this.currentOpacity = previousOpacity;

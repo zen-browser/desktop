@@ -584,6 +584,7 @@
     position: relative;
     scale: 0.93;
     transform-origin: right;
+    opacity: 0.7;
 
     &::after {
       content: "";

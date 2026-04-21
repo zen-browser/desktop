@@ -27,7 +27,7 @@
   locked: true
 
 - name: browser.search.suggest.enabled
-  value: false
+  value: true
 
 - name: browser.search.suggest.enabled.private
   value: false

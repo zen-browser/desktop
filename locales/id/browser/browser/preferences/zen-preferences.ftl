@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = Ubah DOM
 zen-devtools-toggle-accessibility-shortcut = Ubah Aksesibilitas
 zen-close-all-unpinned-tabs-shortcut = Tutup Semua Tab yang Tidak Disematkan
 zen-new-unsynced-window-shortcut = Jendela Kosong Baru
+zen-duplicate-tab-shortcut = Duplicate Tab

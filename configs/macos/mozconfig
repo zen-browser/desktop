@@ -8,13 +8,6 @@ ac_add_options --disable-dmd
 ac_add_options --enable-eme=widevine
 
 if test "$ZEN_RELEASE"; then
-  # override LTO settings
-  # TODO: Dont use LTO for now, it's causing a lot of issues
-  export MOZ_LTO=cross,thin
-  ac_add_options --enable-lto=cross,thin
-fi
-
-if test "$ZEN_RELEASE"; then
   if ! test "$ZEN_GA_DISABLE_PGO"; then
     if test "$ZEN_GA_GENERATE_PROFILE"; then
       mk_add_options "export MOZ_AUTOMATION_PACKAGE_GENERATED_SOURCES=0"
@@ -32,6 +25,10 @@ if test "$SURFER_COMPAT" = "x86_64"; then
 
   if test "$ZEN_RELEASE"; then
     ac_add_options --enable-wasm-avx
+
+    # override LTO settings
+    export MOZ_LTO=cross,thin
+    ac_add_options --enable-lto=cross,thin
   fi
 else
   ac_add_options --target=aarch64-apple-darwin

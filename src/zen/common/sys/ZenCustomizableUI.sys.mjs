@@ -21,6 +21,7 @@ export const ZenCustomizableUI = new (class {
         type: this.TYPE_TOOLBAR,
         defaultPlacements: [
           "zen-toggle-compact-mode",
+          "zen-app-launcher-button",
         ],
         defaultCollapsed: null,
         overflowable: true,
@@ -81,6 +82,13 @@ export const ZenCustomizableUI = new (class {
               class="toolbarbutton-1"
               command="cmd_toggleCompactModeIgnoreHover"
               data-l10n-id="zen-toggle-compact-mode-button"
+              flex="1" />
+          </toolbaritem>
+          <toolbaritem id="zen-app-launcher-button" removable="true">
+            <toolbarbutton
+              class="toolbarbutton-1"
+              command="cmd_zenOpenAppLauncher"
+              tooltiptext="Bharat Apps 🇮🇳"
               flex="1" />
           </toolbaritem>
           <html:div id="zen-sidebar-top-buttons-separator" skipintoolbarset="true" overflows="false"></html:div>

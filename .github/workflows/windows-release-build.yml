@@ -345,19 +345,10 @@ jobs:
             cp "$ZIP" ./astra.win-x86_64.zip
           fi
 
-          INSTALLER=$(find . \( \
-            -name "zen.installer.exe" \
-            -o -name "setup.exe" \
-            -o -name "*.installer.exe" \
-            -o -name "astra.installer.exe" \
-            \) 2>/dev/null | head -1)
-
-          if [ -n "$INSTALLER" ]; then
-            cp "$INSTALLER" ./astra.installer.exe
-            echo "Installer found at: $INSTALLER"
+          if [[ "${{ matrix.arch }}" == "aarch64" ]]; then
+            find . -name "*.installer*.exe" | head -1 | xargs -I{} mv {} ./astra.installer-arm64.exe || true
           else
-            echo "WARNING: No installer found!"
-            find . -name "*.exe" 2>/dev/null || true
+            find . -name "*.installer*.exe" | head -1 | xargs -I{} mv {} ./astra.installer.exe || true
           fi
 
           if [ -f ./dist/output.mar ]; then

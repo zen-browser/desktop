@@ -5,8 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] タブを分割する（２つ以上のタブを選択してください）
-           *[other] 選択したタブを{ $tabCount }つに分割する
+            [-1] 分割タブ
+            [1] 分割ビューを追加...
+           *[other] { $tabCount } 個のタブを結合するs
         }
     .accesskey = S
 zen-split-link = 

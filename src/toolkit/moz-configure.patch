@@ -6,7 +6,7 @@ index 226d0c5a93a9a2404e1974001da4e34b7b670067..b73277448f7d2706d316df2505e17d23
  
  project_flag(
      env="MOZ_APP_VENDOR",
-+    default="Zen Team",
++    default="Astra OSS Team",
      nargs=1,
      help='Used for application.ini\'s "Vendor" field, which also impacts profile location and user-visible fields',
  )
@@ -14,7 +14,7 @@ index 226d0c5a93a9a2404e1974001da4e34b7b670067..b73277448f7d2706d316df2505e17d23
  
  project_flag(
      "MOZ_APP_PROFILE",
-+    default="zen",
++    default="Astra",
      nargs=1,
      help='Used for application.ini\'s "Profile" field, which controls profile location',
  )
@@ -60,7 +60,7 @@ index 226d0c5a93a9a2404e1974001da4e34b7b670067..b73277448f7d2706d316df2505e17d23
          elif target.os == "Android":
              return ".mozilla"
 -        return "mozilla"
-+        return "zen"
++        return "Astra"
  
      option(
          "--with-user-appdir",

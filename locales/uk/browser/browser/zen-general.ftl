@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = URL-адресу закріпленої вкладки
 zen-tabs-renamed = Вкладку успішно перейменовано!
 zen-background-tab-opened-toast = Відкрито нову фонову вкладку!
 zen-workspace-renamed-toast = Робочий простір успішно перейменовано!
+zen-split-view-limit-toast = Неможливо додати більше панелей до розділеного перегляду!
 zen-toggle-compact-mode-button = 
     .label = Компактний режим
     .tooltiptext = Увімк. / Вимк. компактний режим

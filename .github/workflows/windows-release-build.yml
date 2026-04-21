@@ -98,7 +98,6 @@ jobs:
 
       - name: Download Firefox and dependencies
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
-        continue-on-error: true
         run: npm run download
 
       - name: win-cross Cache

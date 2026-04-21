@@ -435,12 +435,15 @@ document.addEventListener(
           case "cmd_zenQuickAddCurrentTabToFolder": {
             const currentTab = gBrowser.selectedTab;
             if (
+              window.gZenFolders?.createFolder &&
               currentTab &&
               !currentTab.hasAttribute("zen-empty-tab") &&
               !currentTab.hasAttribute("zen-essential")
             ) {
               gZenFolders.createFolder([currentTab], { renameFolder: true });
               gZenUIManager.showToast("zen-folder-quick-add-started");
+            } else {
+              gZenUIManager.showToast("zen-folder-quick-add-unavailable");
             }
             break;
           }

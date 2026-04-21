@@ -46,12 +46,12 @@ const globalActionsTemplate = [
   {
     label: "Optimize Memory (Smart Suspend)",
     command: "cmd_zenSmartSuspendNow",
-    icon: "chrome://browser/skin/zen-icons/stopwatch.svg",
+    icon: "chrome://browser/skin/zen-icons/selectable/time.svg",
   },
   {
     label: "Crash Recovery",
     command: "cmd_zenOpenCrashRecovery",
-    icon: "chrome://browser/skin/zen-icons/alert-triangle.svg",
+    icon: "chrome://browser/skin/zen-icons/security-warning.svg",
   },
   {
     label: "Quick Add Current Tab to Folder",
@@ -65,7 +65,7 @@ const globalActionsTemplate = [
   {
     label: "Undo Last Workspace Move",
     command: "cmd_zenUndoLastWorkspaceMove",
-    icon: "chrome://browser/skin/zen-icons/undo.svg",
+    icon: "chrome://browser/skin/zen-icons/history.svg",
   },
   {
     label: "Open IRCTC",

@@ -153,6 +153,7 @@ zen-crash-recovery-restore-workspace =
 zen-crash-recovery-session-restore-started = Session restore started.
 zen-crash-recovery-workspace-restore-started = Workspace recovery started in synced window.
 zen-folder-quick-add-started = Creating folder from current tab...
+zen-folder-quick-add-unavailable = Quick Add is not available in this window.
 zen-workspace-undo-move-success = Moved tab back to the previous space.
 zen-workspace-undo-move-none = No recent tab move to undo.
 

@@ -297,6 +297,18 @@ class nsZenWindowSync {
         if (tab.pinned && !tab._zenPinnedInitialState) {
           await this.setPinnedTabState(tab);
         }
+        // Lets clear extra values to save some memory, we only really
+        // care about the URL and title for the initial state, and we want
+        // to avoid keeping the whole session history around.
+        if (tab._zenPinnedInitialState) {
+          tab._zenPinnedInitialState = {
+            ...tab._zenPinnedInitialState,
+            entry: {
+              url: tab._zenPinnedInitialState.entry.url,
+              title: tab._zenPinnedInitialState.entry.title,
+            },
+          };
+        }
         if (
           !lazy.gWindowSyncEnabled ||
           (lazy.gSyncOnlyPinnedTabs && !tab.pinned)
@@ -1215,8 +1227,12 @@ class nsZenWindowSync {
       activeIndex--;
       activeIndex = Math.min(activeIndex, entries.length - 1);
       activeIndex = Math.max(activeIndex, 0);
+      let entryToUse = (entries[activeIndex] || entries[0]) ?? null;
       const initialState = {
-        entry: (entries[activeIndex] || entries[0]) ?? null,
+        entry: {
+          url: entryToUse?.url,
+          title: entryToUse?.title,
+        },
         image,
       };
       this.#runOnAllWindows(null, win => {

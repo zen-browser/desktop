@@ -264,7 +264,7 @@ window.gZenUIManager = {
     );
     gURLBar.style.setProperty(
       "--zen-urlbar-width",
-      `${Math.min(window.innerWidth / 2, 750)}px`
+      `${Math.min(window.innerWidth / 1.5, 750)}px`
     );
     gZenVerticalTabsManager.actualWindowButtons.removeAttribute(
       "zen-has-hover"

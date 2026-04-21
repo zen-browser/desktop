@@ -26,7 +26,6 @@ XPCOMUtils.defineLazyPreferenceGetter(
 class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   static CARD_WIDTH = 250;
   static CARD_HEIGHT = 220;
-  static MAX_VISIBLE_CARDS = 5;
   static PANEL_PADDING = 16;
   static PANEL_HEIGHT =
     nsZenCtrlTabPanel.CARD_HEIGHT + nsZenCtrlTabPanel.PANEL_PADDING * 2;
@@ -35,7 +34,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   #currentIndex = 0;
   #tabList = [];
   #thumbnailCache = new Map();
-  #actualVisibleCards = nsZenCtrlTabPanel.MAX_VISIBLE_CARDS;
+  #actualVisibleCards = undefined;
 
   init() {
     this.#managePreference();
@@ -80,29 +79,18 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   #setupEventListeners() {
     const keydownListener = e => this.#handleKeyDown(e);
     const keyupListener = e => this.#handleKeyUp(e);
-    const blurListener = () => this.#isOpen && this.close(false);
     const onTabClose = e => this.#thumbnailCache.delete(e.target.linkedPanel);
-    // Delete outdated cached thumbnail when a tab finishes loading
-    const onTabAttrModified = e => {
-      if (e.detail.changed.includes("busy") && !e.target.hasAttribute("busy")) {
-        this.#thumbnailCache.delete(e.target.linkedPanel);
-      }
-    };
 
     window.addEventListener("keydown", keydownListener, true);
     window.addEventListener("keyup", keyupListener, true);
-    window.addEventListener("blur", blurListener);
     window.addEventListener("TabClose", onTabClose);
-    window.addEventListener("TabAttrModified", onTabAttrModified);
 
     window.addEventListener(
       "unload",
       () => {
         window.removeEventListener("keydown", keydownListener, true);
         window.removeEventListener("keyup", keyupListener, true);
-        window.removeEventListener("blur", blurListener);
         window.removeEventListener("TabClose", onTabClose);
-        window.removeEventListener("TabAttrModified", onTabAttrModified);
       },
       { once: true }
     );
@@ -162,7 +150,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     }
 
     this.#tabList = Array.from(gBrowser.tabs).filter(tab => {
-      if (tab.closing || !tab.visible) {
+      if (tab.closing || !tab.visible || tab.hasAttribute("busy")) {
         return false;
       }
       if (lazy.sortByRecentlyUsed && tab.hasAttribute("pending")) {
@@ -182,7 +170,9 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     /* Delete current tab's cached thumbnail so it gets recaptured below,
      * this ensures thumbnails show the most up-to-date page content. */
     this.#thumbnailCache.delete(gBrowser.selectedTab.linkedPanel);
-    const currentTabIndex = this.#tabList.indexOf(gBrowser.selectedTab);
+    const currentTabIndex = lazy.sortByRecentlyUsed
+      ? 0
+      : this.#tabList.indexOf(gBrowser.selectedTab);
 
     if (shiftKey) {
       this.#currentIndex =
@@ -277,7 +267,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     this.#isOpen = false;
     this.#currentIndex = 0;
     this.#tabList = [];
-    this.#actualVisibleCards = nsZenCtrlTabPanel.MAX_VISIBLE_CARDS;
+    this.#actualVisibleCards = undefined;
     this.panel.hidePopup();
   }
 

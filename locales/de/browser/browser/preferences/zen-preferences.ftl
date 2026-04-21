@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = DOM umschalten
 zen-devtools-toggle-accessibility-shortcut = Barrierefreiheit umschalten
 zen-close-all-unpinned-tabs-shortcut = Alle nicht angehefteten Tabs schließen
 zen-new-unsynced-window-shortcut = Neues leeres Fenster
+zen-duplicate-tab-shortcut = Tab duplizieren

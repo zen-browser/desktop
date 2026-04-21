@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = Sabitlenmiş sekmenin URL’si, mevcut URL ile değiş
 zen-tabs-renamed = Sekme başarıyla yeniden adlandırıldı!
 zen-background-tab-opened-toast = Yeni arka plan sekmesi açıldı!
 zen-workspace-renamed-toast = Çalışma alanı başarıyla yeniden adlandırıldı!
+zen-split-view-limit-toast = Bölünmüş görünüme daha fazla panel eklenemiyor!
 zen-toggle-compact-mode-button = 
     .label = Kompakt mod
     .tooltiptext = Kompakt modu aç/kapat

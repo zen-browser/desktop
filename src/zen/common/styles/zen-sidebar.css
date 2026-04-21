@@ -32,3 +32,17 @@
 #toolbar-menubar {
   display: none !important;
 }
+
+/* Astra: Move AI panel to opposite side of Zen sidebar */
+
+/* Default: Zen sidebar LEFT, AI panel RIGHT (no change needed) */
+
+/* When Zen sidebar is on RIGHT side,
+   move AI panel elements to LEFT side */
+:root[zen-right-side="true"] #zen-tabbox-wrapper {
+  flex-direction: row-reverse;
+}
+
+:root[zen-right-side="true"] #ai-window-splitter {
+  order: -1;
+}

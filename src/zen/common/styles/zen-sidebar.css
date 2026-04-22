@@ -46,3 +46,16 @@
 :root[zen-right-side="true"] #ai-window-splitter {
   order: -1;
 }
+
+/* Astra - Compact mode + AI sidebar coexistence */
+:root[zen-compact-mode="true"] #sidebar-main {
+  z-index: 5;
+}
+
+:root[zen-compact-mode="true"] #zen-appcontent-wrapper {
+  z-index: 1;
+}
+
+:root[zen-compact-mode="true"] #ai-window-splitter {
+  z-index: 5;
+}

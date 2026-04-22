@@ -62,7 +62,7 @@
 
     &:not([animate='true']) {
       position: fixed;
-      z-index: 10;
+      z-index: 3;
       transition:
         left 0.15s ease,
         right 0.15s ease,
@@ -259,6 +259,7 @@
       transition:
         left var(--zen-compact-mode-time) var(--zen-compact-mode-func),
         right var(--zen-compact-mode-time) var(--zen-compact-mode-func);
+      z-index: 15;
 
       :root:not([supress-primary-adjustment='true']) & {
         & #titlebar {

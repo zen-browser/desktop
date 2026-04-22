@@ -119,10 +119,12 @@
     init() {
       super.init();
       this.handle_windowDragEnter = this.handle_windowDragEnter.bind(this);
-      gZenWorkspaces.workspaceIcons.addEventListener(
-        "dragover",
-        this.handle_spaceIconDragOver.bind(this)
-      );
+      if (gZenWorkspaces.workspaceEnabled) {
+        gZenWorkspaces.workspaceIcons.addEventListener(
+          "dragover",
+          this.handle_spaceIconDragOver.bind(this)
+        );
+      }
       window.addEventListener(
         "dragleave",
         this.handle_windowDragLeave.bind(this),

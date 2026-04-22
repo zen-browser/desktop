@@ -586,6 +586,10 @@
     transform-origin: right;
     opacity: 0.7;
 
+    .urlbarView-row[selected] & {
+      opacity: 1;
+    }
+
     &::after {
       content: "";
       display: inline-block;
@@ -636,7 +640,7 @@
   }
 
   &[selected] {
-    --zen-selected-bg: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.2)));
+    --zen-selected-bg: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.1)));
     --zen-selected-color: color-mix(in srgb, var(--zen-selected-bg), black 30%);
     background-color: var(--zen-selected-bg) !important;
 
@@ -654,7 +658,7 @@
       color: var(--zen-selected-color) !important;
     }
 
-    &:where([type="switchtab"], [type="dynamic"], [type^="history"], [type^="autofill_"], [type="top_site"]) .urlbarView-favicon,
+    &:where([type="switchtab"], [type="dynamic"], [type^="history"], [type^="autofill_"], [type="top_site"], [type="bookmark"]) .urlbarView-favicon,
     & .urlbarView-shortcutContent {
       fill: var(--zen-selected-color) !important;
       background-color: rgba(255, 255, 255, 0.9) !important;

@@ -214,7 +214,7 @@
   --urlbar-margin-inline: 1px !important;
 
   --tab-icon-overlay-stroke: light-dark(white, black) !important;
-  --tab-close-button-padding: 5px !important;
+  --tab-close-button-padding: 4px !important;
 
   --input-border-color: var(--zen-input-border-color) !important;
   --zen-themed-toolbar-bg-transparent: light-dark(var(--zen-branding-bg), #171717);
@@ -263,7 +263,7 @@
   );
   --zen-sidebar-notification-shadow: 0 0 6px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
 
-  --zen-sidebar-themed-icon-fill: color-mix(in srgb, var(--zen-primary-color) 40%, light-dark(black, white));
+  --zen-sidebar-themed-icon-fill: light-dark(color-mix(in srgb, var(--zen-primary-color) 50%, black), color-mix(in srgb, var(--zen-colors-primary) 15%, #ebebeb));
 
   --zen-native-inner-radius: var(
     --zen-webview-border-radius,

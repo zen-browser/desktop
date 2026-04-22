@@ -75,6 +75,7 @@
 
     &[active='true'] .zen-workspace-icon {
       fill: var(--zen-sidebar-themed-icon-fill);
+      fill-opacity: 1;
     }
 
     &[active='true'],
@@ -216,7 +217,7 @@
     height: 16px;
     justify-content: center;
     align-items: center;
-    fill-opacity: 0.6;
+    fill-opacity: 1;
     -moz-context-properties: fill-opacity, fill;
     fill: var(--zen-sidebar-themed-icon-fill);
     font-size: 16px;

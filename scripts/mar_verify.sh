@@ -119,8 +119,8 @@ verify_signature_count() {
   local mar="$1"
   local info count
   info=$(mar_info "$mar")
-  # signmar -T prints one "Signature <n>:" line per signature block.
-  count=$(echo "$info" | grep -cE '^[[:space:]]*Signature[[:space:]]+[0-9]+:' || true)
+  # signmar -T prints one "Signature block found with 1 signature" line per signature block.
+  count=$(echo "$info" | grep -cE '^[[:space:]]*Signature block found with [0-9]+ signature' || true)
   if [ "$count" != "1" ]; then
     fail "$mar has $count signatures, expected exactly 1"
   else

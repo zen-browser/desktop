@@ -317,4 +317,4 @@ zen-devtools-toggle-dom-shortcut = Perjungti DOM
 zen-devtools-toggle-accessibility-shortcut = Perjungti prieinamumą
 zen-close-all-unpinned-tabs-shortcut = Užverti visas neprisegtas korteles
 zen-new-unsynced-window-shortcut = Naujas tuščias langas
-zen-duplicate-tab-shortcut = Duplicate Tab
+zen-duplicate-tab-shortcut = Dubliuoti kortelę

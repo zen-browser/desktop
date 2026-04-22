@@ -170,7 +170,7 @@
   type="arrow"
   orient="vertical"
   id="PanelUI-zen-app-launcher"
-  position="after_start"
+  position="end_before"
   side="bottom"
   noautofocus="true">
   <vbox id="PanelUI-zen-app-launcher-container">
@@ -220,7 +220,7 @@
           <label class="zen-app-launcher-item-label" value="Google Meet"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://zoom.us');"
+          oncommand="gZenAppLauncher.openApp('https://zoom.us/join');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=zoom.us&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Zoom"/>
@@ -481,6 +481,89 @@
         </toolbarbutton>
       </hbox>
 
+    </vbox>
+  </vbox>
+</panel>
+
+<panel
+  type="arrow"
+  orient="vertical"
+  id="PanelUI-zen-india-gov"
+  position="after_start"
+  side="bottom"
+  noautofocus="true">
+  <vbox id="PanelUI-zen-india-gov-container">
+    <label id="PanelUI-zen-india-gov-title" value="🇮🇳 India Services" />
+    <vbox id="PanelUI-zen-india-gov-list">
+      <label class="zen-app-launcher-section-title" value="🚂 Travel"/>
+      <hbox class="zen-app-launcher-grid">
+        <toolbarbutton class="zen-app-launcher-item"
+          oncommand="gZenIndiaGov.openApp('https://www.irctc.co.in');"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=irctc.co.in&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="IRCTC"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          oncommand="gZenIndiaGov.openApp('https://www.makemytrip.com');"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=makemytrip.com&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="MakeMyTrip"/>
+        </toolbarbutton>
+      </hbox>
+      <label class="zen-app-launcher-section-title" value="🏛️ Government"/>
+      <hbox class="zen-app-launcher-grid">
+        <toolbarbutton class="zen-app-launcher-item"
+          oncommand="gZenIndiaGov.openApp('https://www.digilocker.gov.in');"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=digilocker.gov.in&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="DigiLocker"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          oncommand="gZenIndiaGov.openApp('https://www.incometax.gov.in');"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=incometax.gov.in&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Income Tax"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          oncommand="gZenIndiaGov.openApp('https://www.gst.gov.in');"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=gst.gov.in&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="GST Portal"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          oncommand="gZenIndiaGov.openApp('https://epfindia.gov.in');"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=epfindia.gov.in&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="EPFO"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          oncommand="gZenIndiaGov.openApp('https://uidai.gov.in');"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=uidai.gov.in&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Aadhaar"/>
+        </toolbarbutton>
+      </hbox>
+      <label class="zen-app-launcher-section-title" value="💰 Payments"/>
+      <hbox class="zen-app-launcher-grid">
+        <toolbarbutton class="zen-app-launcher-item"
+          oncommand="gZenIndiaGov.openApp('https://www.phonepe.com');"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=phonepe.com&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="PhonePe"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          oncommand="gZenIndiaGov.openApp('https://paytm.com');"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=paytm.com&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Paytm"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          oncommand="gZenIndiaGov.openApp('https://www.bhimupi.org.in');"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=bhimupi.org.in&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="BHIM UPI"/>
+        </toolbarbutton>
+      </hbox>
     </vbox>
   </vbox>
 </panel>

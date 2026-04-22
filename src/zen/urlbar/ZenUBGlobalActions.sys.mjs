@@ -39,6 +39,11 @@ const globalActionsTemplate = [
     icon: "chrome://browser/skin/zen-icons/selectable/grid-3x3.svg",
   },
   {
+    label: "India Services",
+    command: window => window.gZenIndiaGov?.open?.(null, window),
+    icon: "chrome://browser/skin/zen-icons/selectable/flag.svg",
+  },
+  {
     label: "SMART Guard Safety Check",
     command: "cmd_zenSmartGuardDetails",
     icon: "chrome://browser/skin/zen-icons/shield.svg",

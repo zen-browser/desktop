@@ -31,47 +31,28 @@ document.addEventListener(
       open: openIndiaServicesPanel,
     };
 
-    const openAppLauncherPanel = (event) => {
-      const win = window;
+    const openAppLauncherPanel = (event, win = window) => {
       const panel = win.document.getElementById("PanelUI-zen-app-launcher");
       if (!panel) {
         console.error("Astra: App Hub panel not found!");
         return;
       }
-      
-      // Try multiple anchor points
-      let anchor = null;
-      
-      // Try event target first
-      if (event?.target && event.target.id) {
-        anchor = event.target;
-      }
-      
-      // Try event source
-      if (!anchor && event?.sourceEvent?.target) {
-        anchor = event.sourceEvent.target;
-      }
-      
-      // Try button directly
-      if (!anchor) {
-        anchor = win.document.getElementById("zen-app-launcher-button");
-      }
-      
-      // Try toolbar button inside
-      if (!anchor) {
-        const btn = win.document.querySelector(
-          "#zen-app-launcher-button toolbarbutton"
-        );
-        if (btn) anchor = btn;
-      }
-      
-      // Final fallback
-      if (!anchor) {
-        anchor = win.document.getElementById("zen-sidebar-top-buttons") ||
-                 win.document.getElementById("nav-bar");
-      }
-      
-      panel.openPopup(anchor, "after_end", 0, 0, false, false);
+      const isUsableAnchor = node => {
+        if (!node || !node.isConnected || 
+            typeof node.getBoundingClientRect !== "function") {
+          return false;
+        }
+        const rect = node.getBoundingClientRect();
+        return rect.width > 0 || rect.height > 0;
+      };
+      const eventAnchor = event?.sourceEvent?.target;
+      const anchor =
+        (isUsableAnchor(eventAnchor) && eventAnchor) ||
+        win.document.getElementById("zen-sidebar-top-buttons-separator") ||
+        win.document.getElementById("zen-sidebar-top-buttons") ||
+        win.document.getElementById("nav-bar") ||
+        win.document.getElementById("browser");
+      panel.openPopup(anchor, "after_start", 0, 0, false, false);
     };
 
     const openCrashRecoveryPanel = (event, win = window) => {
@@ -193,6 +174,40 @@ document.addEventListener(
           gZenUIManager.showToast("zen-tab-note-cleared-toast");
         } catch(e) {
           console.error("Astra: Clear note error:", e);
+        }
+      },
+    };
+
+    window.gZenIndiaGov = {
+      openApp(url) {
+        try {
+          const panel = document.getElementById("PanelUI-zen-india-gov");
+          panel?.hidePopup();
+          openTrustedLinkIn(url, "tab");
+        } catch(e) {
+          console.error("Astra: India Gov open error:", e);
+        }
+      },
+      open(event, win = window) {
+        try {
+          const panel = win.document.getElementById("PanelUI-zen-india-gov");
+          if (!panel) return;
+          const isUsableAnchor = node => {
+            if (!node || !node.isConnected ||
+                typeof node.getBoundingClientRect !== "function") {
+              return false;
+            }
+            const rect = node.getBoundingClientRect();
+            return rect.width > 0 || rect.height > 0;
+          };
+          const eventAnchor = event?.sourceEvent?.target;
+          const anchor =
+            (isUsableAnchor(eventAnchor) && eventAnchor) ||
+            win.document.getElementById("zen-sidebar-top-buttons") ||
+            win.document.getElementById("nav-bar");
+          panel.openPopup(anchor, "after_start", 0, 0, false, false);
+        } catch(e) {
+          console.error("Astra: India Gov panel error:", e);
         }
       },
     };
@@ -393,6 +408,9 @@ document.addEventListener(
             break;
           case "cmd_zenOpenAppLauncher":
             openAppLauncherPanel(event);
+            break;
+          case "cmd_zenOpenIndiaGov":
+            gZenIndiaGov.open(event);
             break;
           case "cmd_zenSmartGuardDetails": {
             const status = window.gZenSmartGuard?.getPanelStatus?.();

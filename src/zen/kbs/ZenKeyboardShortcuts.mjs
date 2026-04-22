@@ -806,6 +806,17 @@ class nsZenKeyboardShortcutsLoader {
         "zen-open-app-launcher-shortcut"
       )
     );
+    newShortcutList.push(
+      new KeyShortcut(
+        "zen-open-india-gov",
+        "G",
+        "",
+        ZEN_OTHER_SHORTCUTS_GROUP,
+        nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
+        "cmd_zenOpenIndiaGov",
+        "zen-open-india-gov-shortcut"
+      )
+    );
 
     return newShortcutList;
   }
@@ -844,7 +855,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 28;
+  static LATEST_KBS_VERSION = 29;
 
   constructor() {}
 
@@ -1287,6 +1298,19 @@ class nsZenKeyboardShortcutsVersioner {
           appLauncher.setNewBinding("U");
         }
       }
+    }
+    if (version < 29) {
+      data.push(
+        new KeyShortcut(
+          "zen-open-india-gov",
+          "G",
+          "",
+          ZEN_OTHER_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
+          "cmd_zenOpenIndiaGov",
+          "zen-open-india-gov-shortcut"
+        )
+      );
     }
     if (version < 20) {
       // Add shortcut for folder quick search.

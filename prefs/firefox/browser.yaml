@@ -36,12 +36,16 @@
   value: false
 
 - name: sidebar.revamp
-  value: true
-  locked: false
+  value: false
+  locked: true
 
 - name: sidebar.verticalTabs
   value: false
-  locked: false
+  locked: true
+
+- name: sidebar.main.tools
+  value: ""
+  locked: true
 
 - name: browser.preferences.experimental
   value: true

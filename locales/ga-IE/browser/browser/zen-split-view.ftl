@@ -5,9 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Split out tab
-            [1] Add split view...
-           *[other] Join { $tabCount } Tabs
+            [-1] Cluaisín scoilte
+            [1] Amharc scoilte a chur leis...
+           *[other] Ceangail le { $tabCount } Cluaisíní
         }
     .accesskey = S
 zen-split-link = 

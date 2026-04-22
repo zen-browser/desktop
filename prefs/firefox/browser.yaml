@@ -43,10 +43,6 @@
   value: false
   locked: true
 
-- name: sidebar.main.tools
-  value: ""
-  locked: true
-
 - name: browser.preferences.experimental
   value: true
 

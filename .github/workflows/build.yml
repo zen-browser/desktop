@@ -503,6 +503,7 @@ jobs:
           ref: updates
           path: updates-server
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Download object files
         if: ${{ false }}
@@ -513,6 +514,11 @@ jobs:
         env:
           RELEASE_BRANCH: ${{ inputs.update_branch }}
         run: |
+          mkdir -p updates-server || true
+          cd updates-server
+          git init || true
+          git checkout -b updates 2>/dev/null || git checkout updates 2>/dev/null || true
+          cd ..
           cd updates-server
           mkdir -p updates
           cp -a ../linux_update_manifest_x86_64/.  updates/

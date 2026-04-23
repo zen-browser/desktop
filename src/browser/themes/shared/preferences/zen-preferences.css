@@ -498,7 +498,7 @@ groupbox h2 {
 #category-ai-features,
 #setting-control-supportFirefox,
 .mission-message,
-html|setting-group[data-subcategory="layout"] {
+html|setting-group:is([data-subcategory="layout"], [groupid="support"]) {
   display: none !important;
 }
 

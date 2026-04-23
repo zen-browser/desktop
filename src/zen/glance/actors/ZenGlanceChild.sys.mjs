@@ -50,6 +50,9 @@ export class ZenGlanceChild extends JSWindowActorChild {
 
   #sendClickDataToParent(node, originalTarget) {
     if (!node) {
+      node = originalTarget;
+    }
+    if (!node?.getBoundingClientRect) {
       return;
     }
     // Get the largest element we can get. If the `A` element

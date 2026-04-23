@@ -22,6 +22,7 @@
     "chrome://browser/content/zen-components/ZenFolders.mjs",
     "chrome://browser/content/zen-components/ZenEmojiPicker.mjs",
     "chrome://browser/content/zen-components/ZenLiveFoldersUI.mjs",
+    "chrome://browser/content/zen-components/ZenDownloadAnimation.mjs",
   ];
 
   for (let script of scripts) {
@@ -30,7 +31,6 @@
 
   let customZenElements = [
     ["zen-folder", "chrome://browser/content/zen-components/ZenFolder.mjs"],
-    ["zen-download-animation", "chrome://browser/content/zen-components/ZenDownloadAnimation.mjs"],
     ["zen-workspace-creation", "resource:///modules/zen/ZenSpaceCreation.mjs"],
     ["zen-workspace", "resource:///modules/zen/ZenSpace.mjs"],
     ["zen-workspace-icons", "resource:///modules/zen/ZenSpaceIcons.mjs"]
@@ -43,12 +43,12 @@
       // used before DOMContentLoaded it will be imported and upgraded when
       // registering the customElements.setElementCreationCallback().
       for (let [tag, script] of customZenElements) {
-          customElements.setElementCreationCallback(
-            tag,
-            function customElementCreationCallback() {
-                ChromeUtils.importESModule(script, { global: "current" });
-            }
-          );
+        customElements.setElementCreationCallback(
+          tag,
+          function customElementCreationCallback() {
+            ChromeUtils.importESModule(script, { global: "current" });
+          }
+        );
       }
     },
     { once: true }

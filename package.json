@@ -47,7 +47,7 @@
   "devDependencies": {
     "@babel/preset-typescript": "^7.27.0",
     "@zen-browser/prettier": "^3.9.3",
-    "@zen-browser/surfer": "^1.14.5",
+    "@zen-browser/surfer": "^1.14.6",
     "formal-git": "^1.2.9",
     "globals": "^16.3.0",
     "husky": "^9.1.7",

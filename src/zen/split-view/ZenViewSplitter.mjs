@@ -1166,7 +1166,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   insetUpdateContextMenuItems() {
     const contentAreaContextMenu = document.getElementById("tabContextMenu");
     contentAreaContextMenu.addEventListener("popupshowing", () => {
-      let contextTab = TabContextMenu.contextTab || gBrowser.selectedTab;
+      let contextTab = TabContextMenu.contextTab;
+      if (!contextTab) {
+        return;
+      }
       let selectedTabs = contextTab.multiselected
         ? gBrowser.selectedTabs
         : [contextTab];
@@ -1249,6 +1252,11 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     let currentTab = TabContextMenu.contextTab || gBrowser.selectedTab;
     if (currentTab.multiselected) {
       tabs = gBrowser.selectedTabs;
+    } else if (!currentTab.selected) {
+      tabs = [
+        currentTab,
+        ...gBrowser.selectedTabs.filter(t => t !== currentTab),
+      ];
     } else {
       tabs = [currentTab];
     }

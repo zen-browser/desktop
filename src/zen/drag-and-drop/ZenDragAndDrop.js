@@ -1139,6 +1139,12 @@
       const dt = event.dataTransfer;
       const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
       let ownerGlobal = draggedTab?.ownerGlobal;
+      // Release the compact-mode drag latch up front so the sidebar can
+      // collapse on mouseleave again even if any step below throws (e.g.
+      // super.handle_dragend hitting a stale tab after an upstream drop
+      // failure). Otherwise _isTabBeingDragged stays true until restart and
+      // the sidebar pins open. See gh-8643.
+      delete ownerGlobal?.gZenCompactModeManager?._isTabBeingDragged;
       draggedTab.style.visibility = "";
       let thisFromGlobal = ownerGlobal?.gBrowser.tabContainer.tabDragAndDrop;
       let currentEssenialContainer =
@@ -1172,7 +1178,6 @@
         thisFromGlobal._tempDragImageParent.remove();
         delete thisFromGlobal._tempDragImageParent;
       }
-      delete ownerGlobal.gZenCompactModeManager._isTabBeingDragged;
       if (dt.dropEffect !== "move") {
         ownerGlobal.gZenCompactModeManager._clearAllHoverStates();
       }

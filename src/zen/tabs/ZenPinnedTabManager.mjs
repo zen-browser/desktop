@@ -586,7 +586,14 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
                       hidden="false"/>
         `);
 
-    document.getElementById("context_pinTab")?.before(element);
+    const pinTabItem = document.getElementById("context_pinTab")
+      || document.getElementById("context_reloadTab")
+      || document.getElementById("tabContextMenu");
+    if (pinTabItem && pinTabItem.id === "tabContextMenu") {
+      pinTabItem.appendChild(element);
+    } else if (pinTabItem) {
+      pinTabItem.before(element);
+    }
     document
       .getElementById("context_zen-edit-tab-title")
       .addEventListener("command", event => {

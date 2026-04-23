@@ -68,6 +68,7 @@
     #maxTabsPerRow = 0;
     #changeSpaceTimer = null;
     #isAnimatingTabMove = false;
+    #firstHapticFeedbackPlayed = false;
 
     #dragOverSplit = {};
 
@@ -1150,12 +1151,17 @@
       // outside of a valid drop target.
       ownerGlobal.gZenFolders.highlightGroupOnDragOver(null);
       this.ZenDragAndDropService.onDragEnd();
-      super.handle_dragend(event);
+      try {
+        super.handle_dragend(event);
+      } catch (e) {
+        console.error(e);
+      }
       thisFromGlobal.clearDragOverVisuals();
       ownerGlobal.gZenPinnedTabManager.removeTabContainersDragoverClass();
       thisFromGlobal._clearDragOverSplit();
       this.#maybeClearVerticalPinnedGridDragOver();
       thisFromGlobal.originalDragImageArgs = [];
+      this.#firstHapticFeedbackPlayed = false;
       window.removeEventListener(
         "dragenter",
         thisFromGlobal.handle_windowDragEnter,
@@ -1409,6 +1415,12 @@
             ) || dropElement;
           dropBefore = true;
         }
+      }
+      if (shouldPlayHapticFeedback && !this.#firstHapticFeedbackPlayed) {
+        // The first haptic feedback can often be too annoying,
+        // so we skip it, but play for subsequent dragovers.
+        this.#firstHapticFeedbackPlayed = true;
+        shouldPlayHapticFeedback = false;
       }
       if (shouldPlayHapticFeedback) {
         // eslint-disable-next-line mozilla/valid-services

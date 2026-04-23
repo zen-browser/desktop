@@ -197,10 +197,10 @@ export class ZapOverlay {
             this.onZapUpdate();
 
             this.window.requestAnimationFrame(() => {
-              element.style.visibility = "initial";
+              element.style.removeProperty("opacity");
             });
           });
-          element.style.visibility = "hidden";
+          element.style.setProperty("opacity", "0", "!important");
         });
       });
     } else {

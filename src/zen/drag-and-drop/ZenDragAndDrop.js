@@ -1008,6 +1008,12 @@
     }
 
     handle_drop_transition(dropElement, draggedTab, movingTabs, dropBefore) {
+      if (
+        dropElement?.hasAttribute("zen-empty-tab") &&
+        dropElement.group?.isZenFolder
+      ) {
+        dropElement = dropElement.group;
+      }
       if (isTabGroupLabel(dropElement)) {
         dropElement = dropElement.group;
       }

@@ -43,4 +43,4 @@
   locked: true
 
 - name: browser.taskbarTabs.enabled
-  value: false
+  value: true

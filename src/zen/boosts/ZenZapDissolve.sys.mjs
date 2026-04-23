@@ -156,8 +156,6 @@ void main() {
 
   #onComplete = null;
 
-  #onComplete = null;
-
   /**
    * @param {Document} document Webpage document
    */
@@ -487,7 +485,6 @@ void main() {
    * @param {Element} element The element to dissolve
    * @param {Function} onComplete Callback for when the animation is complete
    */
-  dissolve(element, onComplete) {
   dissolve(element, onComplete) {
     if (!this.#initialized || this.#hasTriggered || !element) {
       return;

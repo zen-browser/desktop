@@ -499,7 +499,8 @@ jobs:
       - name: Checkout updates repository
         uses: actions/checkout@v4
         with:
-          repository: Hrishikeshmind/astra-updates
+          repository: Hrishikeshmind/astradesktop
+          ref: updates
           path: updates-server
           token: ${{ secrets.GITHUB_TOKEN }}
 

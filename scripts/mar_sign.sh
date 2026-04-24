@@ -129,12 +129,12 @@ update_manifests() {
     manifest="linux_update_manifest_aarch64"
   elif [[ "$mar_file" == "windows.mar" ]]; then
     manifest=".github/workflows/object/windows-x64-signed-x86_64/update_manifest"
-    if [ ! -f "$manifest" ]; then
+    if [ ! -d "$manifest" ]; then
       manifest="windows_update_manifest_x86_64"
     fi
   elif [[ "$mar_file" == "windows-arm64.mar" ]]; then
     manifest=".github/workflows/object/windows-x64-signed-arm64/update_manifest"
-    if [ ! -f "$manifest" ]; then
+    if [ ! -d "$manifest" ]; then
       manifest="windows_update_manifest_arm64"
     fi
   elif [[ "$mar_file" == "macos.mar" ]]; then

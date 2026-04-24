@@ -6,7 +6,7 @@ tab-zen-split-tabs =
     .label =
         { $tabCount ->
             [-1] Oddziel kartę
-            [1] Złącz kartę (wymagane jest zaznaczenie wielu kart)
+            [1] Utwórz widok podzielony
             [few] Złącz { $tabCount } karty
            *[other] Złącz { $tabCount } kart
         }

@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = DOMの切り替え
 zen-devtools-toggle-accessibility-shortcut = アクセシビリティの切り替え
 zen-close-all-unpinned-tabs-shortcut = ピン留めされていないすべてのタブを閉じる
 zen-new-unsynced-window-shortcut = New Unsynced Window
+zen-duplicate-tab-shortcut = タブを複製

@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = 固定したタブのURLが現在のURLに置き換え
 zen-tabs-renamed = タブの名前は無事に変更されました！
 zen-background-tab-opened-toast = 新しい背景タブが開きました！
 zen-workspace-renamed-toast = ワークスペースの名前が変更されました！
+zen-split-view-limit-toast = 分割ビューにこれ以上パネルを追加できません！
 zen-toggle-compact-mode-button = 
     .label = コンパクトモード
     .tooltiptext = コンパクトモードの切り替え

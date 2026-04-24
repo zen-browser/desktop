@@ -736,7 +736,7 @@
 
 /* Loading progress bar */
 #zen-loading-progress-bar {
-  --zen-loading-progress-bar-color: color-mix(in srgb, var(--zen-primary-color), light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.7)) 70%);
+  --zen-loading-progress-bar-color: color-mix(in srgb, var(--zen-primary-color), light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.5)) 70%);
 
   position: fixed;
 
@@ -745,6 +745,7 @@
   :root:is([zen-no-padding="true"], [inDOMFullscreen="true"]) & {
     top: 4px;
   }
+
   left: 50%;
   transform: translate(-50%, -50%) scale(0);
   background: var(--zen-loading-progress-bar-color);
@@ -757,8 +758,10 @@
               transform .3s ease-in-out;
   overflow: clip;
   pointer-events: none;
-  animation: zen-progress-bar-pulse 1.5s linear infinite forwards;
+  animation: zen-progress-bar-pulse 1s ease-in-out infinite forwards;
+  animation-direction: alternate;
   transform-origin: 0 0;
+  contain: content;
 
   &[long-load="true"] {
     opacity: 1;

@@ -1258,10 +1258,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     let colorToBlendOpacity;
     if (this.isMica) {
       colorToBlend = this.isDarkMode ? [0, 0, 0] : [255, 255, 255];
-      colorToBlendOpacity = 0.25;
+      colorToBlendOpacity = 0.12;
     } else if (AppConstants.platform === "macosx") {
       colorToBlend = [255, 255, 255];
-      colorToBlendOpacity = 0.35;
+      colorToBlendOpacity = 0.18;
     }
     if (colorToBlend) {
       const blendedAlpha = Math.min(
@@ -1473,7 +1473,15 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
    * @returns {string} The primary color in hex format.
    */
   getAccentColorForUI(accentColor) {
-    return `rgb(${accentColor[0]}, ${accentColor[1]}, ${accentColor[2]})`;
+    const [h, s, l] = this.rgbToHsl(...accentColor);
+    if (s < 0.1) {
+      return `rgb(${accentColor[0]}, ${accentColor[1]}, ${accentColor[2]})`;
+    }
+    const saturation = Math.min(1, s + 0.3);
+    const targetLightness = this.isDarkMode ? 0.62 : 0.42;
+    const lightness = l * 0.4 + targetLightness * 0.6;
+    const [r, g, b] = this.hslToRgb(h / 360, saturation, lightness);
+    return `rgb(${r}, ${g}, ${b})`;
   }
 
   getMostDominantColor(allColors) {
@@ -1485,9 +1493,13 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return color;
   }
 
-  getToolbarColor(isDarkMode = false) {
+  getToolbarColor(isDarkMode = false, accentColor = null) {
     const opacity = 0.8;
-    return isDarkMode ? [255, 255, 255, opacity] : [0, 0, 0, opacity]; // Default toolbar
+    let baseColor = isDarkMode ? [255, 255, 255, opacity] : [0, 0, 0, opacity]; // Default toolbar
+    if (accentColor) {
+      return this.blendColors(baseColor.slice(0, 3), accentColor, 75).concat(1);
+    }
+    return baseColor;
   }
 
   get browserBackgroundElement() {
@@ -1748,7 +1760,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
           }
         }
         // Set `--toolbox-textcolor` to have a contrast with the primary color
-        const textColor = this.getToolbarColor(isDarkMode);
+        let textColor = this.getToolbarColor(isDarkMode, dominantColor);
         docElement.style.setProperty(
           "--toolbox-textcolor",
           `rgba(${textColor[0]}, ${textColor[1]}, ${textColor[2]}, ${textColor[3]})`
@@ -1994,7 +2006,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       grain: theme.texture ?? 0,
       isDarkMode,
       isExplicitMode,
-      toolbarColor: this.getToolbarColor(isDarkMode),
+      toolbarColor: this.getToolbarColor(isDarkMode, dominantColor),
       primaryColor: this.getAccentColorForUI(dominantColor),
     };
     this.currentOpacity = previousOpacity;

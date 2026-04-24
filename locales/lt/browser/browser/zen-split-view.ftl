@@ -5,11 +5,12 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] Skaidyti kortelę (reikia kelių pasirinktų kortelių)
-            [one] Skaidyti { $tabCount } kortelę
-            [few] Skaidyti { $tabCount } korteles
-            [many] Skaidyti { $tabCount } kortelės
-           *[other] Skaidyti { $tabCount } kortelių
+            [-1] Išskaidyti kortelę
+            [1] Įtraukti skaidymo rodinį
+            [one] Sujungti { $tabCount } kortelę
+            [few] Sujungti { $tabCount } korteles
+            [many] Sujungti { $tabCount } kortelės
+           *[other] Sujungti { $tabCount } kortelių
         }
     .accesskey = S
 zen-split-link = 

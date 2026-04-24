@@ -290,10 +290,13 @@ export class nsZenSessionManager {
       console.error("ZenSessionManager: Failed to read session file", e);
     }
     this.#sidebar = this._dataFromFile || {};
-    if (!this.#sidebar.spaces?.length && !this._shouldRunMigration) {
+    if (
+      !this.#sidebarWithoutCloning.spaces?.length &&
+      !this._shouldRunMigration
+    ) {
       this.log(
         "No spaces data found in session file, running migration",
-        this.#sidebar
+        this.#sidebarWithoutCloning
       );
       // If we have no spaces data, we should run migration
       // to restore them from the database. Note we also do a
@@ -304,7 +307,7 @@ export class nsZenSessionManager {
     if (
       Services.prefs.getBoolPref("zen.session-store.log-tab-entries", false)
     ) {
-      for (const tab of this.#sidebar.tabs || []) {
+      for (const tab of this.#sidebarWithoutCloning.tabs || []) {
         this.log("Tab entry in session file:", tab);
       }
     }
@@ -356,6 +359,11 @@ export class nsZenSessionManager {
     // gotten the opportunity to save the session yet.
     if (this._shouldRunMigration) {
       initialState = this.#runStateMigration(initialState);
+    }
+    // Clear the memory of the groups saved in the session file,
+    // as we don't really need them anyways.
+    if (initialState?.savedGroups) {
+      initialState.savedGroups = [];
     }
     if (!lazy.gWindowSyncEnabled) {
       if (initialState?.windows?.length && this.#shouldRestoreOnlyPinned) {
@@ -487,7 +495,7 @@ export class nsZenSessionManager {
     delete this._migrationData?.recoveryData;
     // Restore spaces into the sidebar object if we don't
     // have any yet.
-    if (!this.#sidebar.spaces?.length) {
+    if (!this.#sidebarWithoutCloning.spaces?.length) {
       this.#sidebar = {
         ...this.#sidebar,
         spaces: this._migrationData?.spaces || [],
@@ -712,10 +720,7 @@ export class nsZenSessionManager {
     // We only want to collect the sidebar data once from
     // a single window, as all windows share the same
     // sidebar data.
-    let sidebarData = this.#sidebar;
-    if (!sidebarData) {
-      sidebarData = {};
-    }
+    let sidebarData = {};
 
     sidebarData.lastCollected = Date.now();
     this.#collectTabsData(sidebarData, aStateWindows);
@@ -895,6 +900,7 @@ export class nsZenSessionManager {
     const newState = { windows: [newWindow] };
     this.log(`Cloning window with ${newWindow.tabs.length} tabs`);
 
+    aWindow.__isNewZenWindow = true;
     SessionStoreInternal._deferredInitialState = newState;
     SessionStoreInternal.initializeWindow(aWindow, newState);
   }

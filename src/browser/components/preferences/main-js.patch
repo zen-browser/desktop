@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/main.js b/browser/components/preferences/main.js
-index 8f8da3c4cabb4a05b50431b1feeff8f1f1abcf6e..97c651cb3728353b9a0d09d1aaa9ba87f8c05b57 100644
+index 8f8da3c4cabb4a05b50431b1feeff8f1f1abcf6e..e57102247eb739ed431bd838a3004b353342defb 100644
 --- a/browser/components/preferences/main.js
 +++ b/browser/components/preferences/main.js
 @@ -2658,6 +2658,11 @@ function createStartupConfig(hidden = false) {
@@ -14,6 +14,15 @@ index 8f8da3c4cabb4a05b50431b1feeff8f1f1abcf6e..97c651cb3728353b9a0d09d1aaa9ba87
        {
          id: "windowsLaunchOnLogin",
          l10nId: "windows-launch-on-login",
+@@ -2755,7 +2760,7 @@ SettingGroupManager.registerGroups({
+   },
+   defaultBrowser: createDefaultBrowserConfig(),
+   startup: createStartupConfig(
+-    Services.prefs.getBoolPref("browser.settings-redesign.enabled", false)
++    false
+   ),
+   importBrowserData: {
+     l10nId: "preferences-data-migration-group",
 @@ -5174,7 +5179,7 @@ function getBundleForLocales(newLocales) {
      ])
    );

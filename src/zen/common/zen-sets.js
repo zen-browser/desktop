@@ -218,7 +218,16 @@ document.addEventListener(
         try {
           const panel = document.getElementById("PanelUI-zen-app-launcher");
           panel?.hidePopup();
-          window.openTrustedLinkIn(url, "tab");
+          setTimeout(() => {
+            try {
+              openTrustedLinkIn(url, "tab");
+            } catch(e) {
+              gBrowser.addTab(url, {
+                triggeringPrincipal: Services.scriptSecurityManager
+                  .getSystemPrincipal(),
+              });
+            }
+          }, 50);
         } catch(e) {
           console.error("Astra: App launcher open error:", e);
         }

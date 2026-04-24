@@ -32,7 +32,10 @@
   value: false
 
 - name: zen.view.grey-out-inactive-windows
+  cpptype: bool
   value: true
+  mirror: always
+  type: static
 
 - name: zen.view.show-newtab-button-top
   value: true

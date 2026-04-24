@@ -101,10 +101,12 @@ window.gZenUIManager = {
     ) {
       const yValues = rawKeyframes.y || [];
       const xValues = rawKeyframes.x || [];
-      const scaleValues = rawKeyframes.scale || [];
+      const scaleYValues = rawKeyframes.scaleY || [];
+      const scaleXValues = rawKeyframes.scaleX || [];
       delete rawKeyframes.y;
       delete rawKeyframes.x;
-      delete rawKeyframes.scale;
+      delete rawKeyframes.scaleY;
+      delete rawKeyframes.scaleX;
       rawKeyframes.transform = [];
       if (
         yValues.length !== 0 &&
@@ -116,14 +118,17 @@ window.gZenUIManager = {
       const keyframeLength = Math.max(
         yValues.length,
         xValues.length,
-        scaleValues.length
+        scaleYValues.length,
+        scaleXValues.length
       );
       for (let i = 0; i < keyframeLength; i++) {
         const y = yValues[i] !== undefined ? `translateY(${yValues[i]}px)` : "";
         const x = xValues[i] !== undefined ? `translateX(${xValues[i]}px)` : "";
-        const scale =
-          scaleValues[i] !== undefined ? `scale(${scaleValues[i]})` : "";
-        rawKeyframes.transform.push(`${x} ${y} ${scale}`.trim());
+        const scaleY =
+          scaleYValues[i] !== undefined ? `scaleY(${scaleYValues[i]})` : "";
+        const scaleX =
+          scaleXValues[i] !== undefined ? `scaleX(${scaleXValues[i]})` : "";
+        rawKeyframes.transform.push(`${x} ${y} ${scaleX} ${scaleY}`.trim());
       }
     }
     let keyframes = [];
@@ -259,7 +264,7 @@ window.gZenUIManager = {
     );
     gURLBar.style.setProperty(
       "--zen-urlbar-width",
-      `${Math.min(window.innerWidth / 2, 750)}px`
+      `${Math.min(window.innerWidth / 1.5, 750)}px`
     );
     gZenVerticalTabsManager.actualWindowButtons.removeAttribute(
       "zen-has-hover"

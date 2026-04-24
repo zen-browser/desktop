@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = La URL de la pestaña fijada se ha reemplazado por la 
 zen-tabs-renamed = ¡La pestaña se ha renombrado con éxito!
 zen-background-tab-opened-toast = ¡Nueva pestaña abierta en segundo plano!
 zen-workspace-renamed-toast = ¡El espacio de trabajo ha sido renombrado con éxito!
+zen-split-view-limit-toast = ¡No se pueden añadir más paneles a la vista dividida!
 zen-toggle-compact-mode-button = 
     .label = Modo compacto
     .tooltiptext = Alternar modo compacto

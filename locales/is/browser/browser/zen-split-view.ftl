@@ -5,13 +5,14 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] Skipta tengli (margir valdir flipar nauðsynlegir)
-           *[other] Skipta { $tabCount } flipum
+            [-1] Kljúfa út flipa
+            [1] Bæta við klofnu yfirliti...
+           *[other] Sameina { $tabCount } flipa
         }
     .accesskey = S
 zen-split-link = 
     .label = Kljúfa tengil í nýjan flipa
     .accesskey = S
-zen-split-view-modifier-header = Klofningarsýn
+zen-split-view-modifier-header = Klofið yfirlit
 zen-split-view-modifier-activate-reallocation = 
     .label = Virkja umröðun

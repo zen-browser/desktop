@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = DOM togglen
 zen-devtools-toggle-accessibility-shortcut = Toegankelijkheid togglen
 zen-close-all-unpinned-tabs-shortcut = Alle niet-vastgezette tabbladen sluiten
 zen-new-unsynced-window-shortcut = Nieuw leeg venster
+zen-duplicate-tab-shortcut = Tabblad dupliceren

@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL.
 zen-tabs-renamed = Kaart on edukalt ümber nimetatud!
 zen-background-tab-opened-toast = Taustal avati uus kaart!
 zen-workspace-renamed-toast = Tööruum on edukalt ümber nimetatud!
+zen-split-view-limit-toast = Can't add more panels to the split view!
 zen-toggle-compact-mode-button = 
     .label = Compact Mode
     .tooltiptext = Lülita kompaktne režiim sisse/välja

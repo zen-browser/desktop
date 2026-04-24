@@ -9,6 +9,9 @@
   display: flex;
   z-index: 999;
 
+  will-change: transform, opacity;
+  contain: content;
+
   top: 15px;
   padding: 12px;
   gap: 12px;
@@ -121,6 +124,7 @@
 
     &:not([has-finished-animation="true"]) {
       will-change: transform;
+      contain: layout size;
       transform-origin: 0 0;
 
       #statuspanel {

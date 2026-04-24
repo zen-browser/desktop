@@ -285,8 +285,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         return;
       }
 
-      const selectedTabs = pinnedTabs.filter(tab => tab.selected);
-
       event.stopPropagation();
       event.preventDefault();
 
@@ -366,13 +364,19 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
                 return;
               }
             }
-            await gBrowser.explicitUnloadTabs(pinnedTabs);
+            let successful = await gBrowser.explicitUnloadTabs(pinnedTabs);
+            if (!successful) {
+              return;
+            }
             for (const tab of pinnedTabs) {
               tab.removeAttribute("discarded");
             }
-          }
-          if (selectedTabs.length) {
-            this._handleTabSwitch(selectedTabs[0]);
+          } else if (pinnedTabs.some(tab => tab.selected)) {
+            const selectedTabs = pinnedTabs.filter(tab => tab.selected);
+            gBrowser.selectedTab = gBrowser._findTabToBlurTo(
+              selectedTabs[0],
+              selectedTabs
+            );
           }
           if (behavior.includes("reset")) {
             for (const tab of pinnedTabs) {
@@ -389,28 +393,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       }
     } catch (ex) {
       console.error("Error handling close tab shortcut for pinned tab:", ex);
-    }
-  }
-
-  _handleTabSwitch(selectedTab) {
-    if (selectedTab !== gBrowser.selectedTab) {
-      return;
-    }
-    const findNextTab = direction =>
-      gBrowser.tabContainer.findNextTab(selectedTab, {
-        direction,
-        filter: tab => !tab.hidden && !tab.pinned,
-      });
-
-    let nextTab = findNextTab(1) || findNextTab(-1);
-
-    if (!nextTab) {
-      gZenWorkspaces.selectEmptyTab();
-      return;
-    }
-
-    if (nextTab) {
-      gBrowser.selectedTab = nextTab;
     }
   }
 
@@ -857,7 +839,9 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     const pinUrl = tab._zenPinnedInitialState.entry.url.split("#")[0];
     const currentUrl = location.split("#")[0];
     // Add an indicator that the pin has been changed
-    if (pinUrl === currentUrl) {
+    if (
+      Services.io.newURI(currentUrl).spec === Services.io.newURI(pinUrl).spec
+    ) {
       this.resetPinChangedUrl(tab);
       return;
     }

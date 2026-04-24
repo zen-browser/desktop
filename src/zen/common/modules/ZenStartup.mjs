@@ -17,7 +17,6 @@ class ZenStartup {
 
   init() {
     this.openWatermark();
-    this.#changeSidebarLocation();
     this.#zenInitBrowserLayout();
   }
 
@@ -145,21 +144,6 @@ class ZenStartup {
     window.requestAnimationFrame(() => {
       window.dispatchEvent(new window.Event("resize")); // To recalculate the layout
     });
-  }
-
-  #changeSidebarLocation() {
-    const kElementsToAppend = ["sidebar-splitter", "sidebar-box"];
-
-    const browser = document.getElementById("browser");
-    browser.prepend(gNavToolbox);
-
-    const sidebarPanelWrapper = document.getElementById("tabbrowser-tabbox");
-    for (let id of kElementsToAppend) {
-      const elem = document.getElementById(id);
-      if (elem) {
-        sidebarPanelWrapper.prepend(elem);
-      }
-    }
   }
 
   #initUIComponents() {

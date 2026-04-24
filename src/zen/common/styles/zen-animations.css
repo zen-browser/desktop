@@ -58,17 +58,14 @@
 }
 
 @keyframes zen-progress-bar-pulse {
-  0% {
-    transform: scale(0.8) translate(-50%, -50%);
+  from {
+    transform: scale(0.85) translate(-50%, -50%);
     opacity: 0.6;
   }
-  50% {
+
+  to {
     transform: scale(0.95) translate(-50%, -50%);
     opacity: 1;
-  }
-  100% {
-    transform: scale(0.8) translate(-50%, -50%);
-    opacity: 0.6;
   }
 }
 

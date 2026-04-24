@@ -17,13 +17,16 @@ generate_certs() {
   openssl genrsa -out private_key.pem 4096
 
   # 2. Generate self-signed certificate (required for PKCS#12 bundling)
+  # RFC 5280 "no well-defined expiration" sentinel: 99991231235959Z
   openssl req -new -x509 \
       -key private_key.pem \
       -out cert.pem \
-      -subj "/CN=MAR Signing"
+      -subj "/CN=MAR Signing" \
+      -not_before 20000101000000Z \
+      -not_after  99991231235959Z
 
-  # 3. Export public key as SPKI DER (for embedding in updater)
-  openssl rsa -in private_key.pem -pubout -outform DER -out public_key.der
+  # 3. Export certificate as DER (for embedding in updater)
+  openssl x509 -in cert.pem -outform DER -out public_key.der
 
   cd ..
   mkdir -p "$CERT_PATH_DIR"
@@ -35,9 +38,10 @@ generate_certs() {
   base64 -w 0 "$CERT_PATH_DIR"/cert.pem > "$CERT_PATH_DIR"/env/ZEN_SIGNING_CERT_PEM_BASE64
   base64 -w 0 "$CERT_PATH_DIR"/private_key.pem > "$CERT_PATH_DIR"/env/ZEN_SIGNING_PRIVATE_KEY_PEM_BASE64
 
-  # Verify public key
-  openssl rsa -in "$CERT_PATH_DIR"/public_key.der \
-      -pubin -inform DER -text -noout
+  # Make sure no private keys or certs are left
+  # in the public_key.der file, which is the only one that 
+  # should be distributed and embedded in the updater
+  openssl x509 -in "$CERT_PATH_DIR"/public_key.der -inform DER -noout -text > /dev/null
 
   rm -rf temp
 }
@@ -47,10 +51,22 @@ import_cert() {
     echo "Error: public_key.der not found. Run with -g first." >&2
     exit 1
   fi
-  echo "Importing certificate into $UPDATER_CERT_DIR/release_primary.der"
-  cp "$CERT_PATH_DIR/public_key.der" "$UPDATER_CERT_DIR/release_primary.der"
-  echo "Importing certificate into $UPDATER_CERT_DIR/release_secondary.der"
-  cp "$CERT_PATH_DIR/public_key.der" "$UPDATER_CERT_DIR/release_secondary.der"
+  files=(
+    "$UPDATER_CERT_DIR/release_primary.der"
+    "$UPDATER_CERT_DIR/release_secondary.der"
+    "$UPDATER_CERT_DIR/dep1.der"
+    "$UPDATER_CERT_DIR/dep2.der"
+    "$UPDATER_CERT_DIR/xpcshellCertificate.der"
+  )
+  for file in "${files[@]}"; do
+    if [ ! -f "$file" ]; then
+      echo "Error: $file not found. Make sure the updater certificates exist." >&2
+      exit 1
+    fi
+    rm -f "$file"
+    echo "Copying $CERT_PATH_DIR/public_key.der to $file"
+    cp "$CERT_PATH_DIR/public_key.der" "$file"
+  done
   echo "Done. Rebuild the updater to embed the new certificate."
 }
 
@@ -113,12 +129,12 @@ update_manifests() {
     manifest="linux_update_manifest_aarch64"
   elif [[ "$mar_file" == "windows.mar" ]]; then
     manifest=".github/workflows/object/windows-x64-signed-x86_64/update_manifest"
-    if [ ! -f "$manifest" ]; then
+    if [ ! -d "$manifest" ]; then
       manifest="windows_update_manifest_x86_64"
     fi
   elif [[ "$mar_file" == "windows-arm64.mar" ]]; then
     manifest=".github/workflows/object/windows-x64-signed-arm64/update_manifest"
-    if [ ! -f "$manifest" ]; then
+    if [ ! -d "$manifest" ]; then
       manifest="windows_update_manifest_arm64"
     fi
   elif [[ "$mar_file" == "macos.mar" ]]; then
@@ -169,10 +185,17 @@ sign_mars() {
   folders=(
     linux.mar
     linux-aarch64.mar
-    windows.mar
-    windows-arm64.mar
     macos.mar
   )
+
+  if [ -d ".github/workflows/object/windows-x64-signed-x86_64" ]; then
+    folders+=(".github/workflows/object/windows-x64-signed-x86_64")
+    folders+=(".github/workflows/object/windows-x64-signed-arm64")
+  else
+    folders+=("windows.mar")
+    folders+=("windows-arm64.mar")
+  fi
+      
   # each folder will contain the .mar files for that platform, and the signature will be written in-place
   for folder in "${folders[@]}"; do
     if [ -d "$folder" ]; then

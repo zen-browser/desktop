@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index 2e02bad1a7c89b4c3b5aee1e14c13bb953a64eb6..439766a40df5632ad790ab54a0c6af78a831e8ee 100644
+index 2e02bad1a7c89b4c3b5aee1e14c13bb953a64eb6..3ac8d2facb224ae39d2199f2c5ec08b77e0c1dfd 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@
@@ -151,7 +151,18 @@ index 2e02bad1a7c89b4c3b5aee1e14c13bb953a64eb6..439766a40df5632ad790ab54a0c6af78
      on_click(event) {
        if (event.button != 0) {
          return;
-@@ -620,11 +659,12 @@
+@@ -617,14 +656,23 @@
+             trigger: "alt_click",
+           });
+         }
++        if (
++          !event.target.classList.contains("tab-close-button") &&
++          !event.target.classList.contains("tab-icon-overlay") &&
++          !event.target.classList.contains("tab-audio-button") &&
++          !this.splitView
++        ) {
++          gZenViewSplitter.contextSplitTabs(this);
++        }
          return;
        }
  
@@ -165,7 +176,7 @@ index 2e02bad1a7c89b4c3b5aee1e14c13bb953a64eb6..439766a40df5632ad790ab54a0c6af78
          gBrowser.multiSelectedTabsCount > 0 &&
          !event.target.classList.contains("tab-close-button") &&
          !event.target.classList.contains("tab-icon-overlay") &&
-@@ -636,8 +676,9 @@
+@@ -636,8 +684,9 @@
        }
  
        if (
@@ -177,7 +188,7 @@ index 2e02bad1a7c89b4c3b5aee1e14c13bb953a64eb6..439766a40df5632ad790ab54a0c6af78
        ) {
          if (this.activeMediaBlocked) {
            if (this.multiselected) {
-@@ -655,7 +696,7 @@
+@@ -655,7 +704,7 @@
          return;
        }
  
@@ -186,7 +197,7 @@ index 2e02bad1a7c89b4c3b5aee1e14c13bb953a64eb6..439766a40df5632ad790ab54a0c6af78
          if (this.multiselected) {
            gBrowser.removeMultiSelectedTabs(
              lazy.TabMetrics.userTriggeredContext(
-@@ -675,6 +716,14 @@
+@@ -675,6 +724,14 @@
          // (see tabbrowser-tabs 'click' handler).
          gBrowser.tabContainer._blockDblClick = true;
        }
@@ -201,7 +212,7 @@ index 2e02bad1a7c89b4c3b5aee1e14c13bb953a64eb6..439766a40df5632ad790ab54a0c6af78
      }
  
      on_dblclick(event) {
-@@ -698,6 +747,8 @@
+@@ -698,6 +755,8 @@
            animate: true,
            triggeringEvent: event,
          });

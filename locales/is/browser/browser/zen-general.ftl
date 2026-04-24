@@ -48,6 +48,7 @@ zen-pinned-tab-replaced = URL-slóð festa flipans hefur verið skipt út með f
 zen-tabs-renamed = Tókst að endurnefna flipann!
 zen-background-tab-opened-toast = Nýr bakgrunnsflipi opnaður!
 zen-workspace-renamed-toast = Tókst að endurnefna vinnusvæðið!
+zen-split-view-limit-toast = Get ekki bætt fleiri spjöldum á klofið yfirlit!
 zen-toggle-compact-mode-button = 
     .label = Þjappað viðmót
     .tooltiptext = Víxla þjöppuðu viðmóti

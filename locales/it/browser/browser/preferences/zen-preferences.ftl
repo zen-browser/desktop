@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = Attiva/Disattiva DOM
 zen-devtools-toggle-accessibility-shortcut = Attiva/Disattiva Accessibilità
 zen-close-all-unpinned-tabs-shortcut = Chiudi Tutte Le Schede Non Bloccate
 zen-new-unsynced-window-shortcut = New Unsynced Window
+zen-duplicate-tab-shortcut = Duplicate Tab

@@ -104,7 +104,8 @@ tab-group[split-view-group] {
       }
     }
 
-    tab-group[split-view-group]:where([hasactivetab]) & {
+    tab-group[split-view-group]:where([hasactivetab]) &,
+    &:has(> tab:is([multiselected])) {
       background-color: var(--tab-selected-bgcolor);
       box-shadow: var(--tab-selected-shadow);
 

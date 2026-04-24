@@ -44,6 +44,11 @@ class nsZenBoostsBackend final {
       -> mozilla::StyleAbsoluteColor;
 
   /**
+   * @see ResolveStyleColor for reference.
+   */
+  static auto ResolveStyleColor(nscolor aColor) -> nscolor;
+
+  /**
    * @brief Filter a color based on the current Zen boost settings.
    * @param aColor The color to filter.
    * @param aPresContext The presentation context to use for filtering.

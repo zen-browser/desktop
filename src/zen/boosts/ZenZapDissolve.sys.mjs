@@ -493,8 +493,6 @@ void main() {
 
     this.#onComplete = onComplete;
 
-    this.#onComplete = onComplete;
-
     const rect = element.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) {
       console.warn("[ZapDissolve]: element has zero size. Skipping dissolve");

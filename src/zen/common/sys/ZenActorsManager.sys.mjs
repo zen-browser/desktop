@@ -72,7 +72,7 @@ if (!Services.appinfo.inSafeMode) {
       },
     },
     allFrames: true,
-    matches: ["*://*/*"],
+    remoteTypes: ["web", "file"],
     enablePreference: "zen.boosts.enabled",
   };
 }

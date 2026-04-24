@@ -1,8 +1,8 @@
 diff --git a/layout/painting/nsDisplayList.cpp b/layout/painting/nsDisplayList.cpp
-index 3f9aea06257f162ded7d7cf8b32fc6597383cf27..099e825c251d4edf99b41f59160e276f5325217d 100644
+index c045de789d924d0fd652b81f4fef37cb0bc19112..ac3d3904626132257a1ffce4a8d7bd6b8c12728e 100644
 --- a/layout/painting/nsDisplayList.cpp
 +++ b/layout/painting/nsDisplayList.cpp
-@@ -82,6 +82,7 @@
+@@ -81,6 +81,7 @@
  #include "mozilla/layers/WebRenderLayerManager.h"
  #include "mozilla/layers/WebRenderMessages.h"
  #include "mozilla/layers/WebRenderScrollData.h"
@@ -10,7 +10,7 @@ index 3f9aea06257f162ded7d7cf8b32fc6597383cf27..099e825c251d4edf99b41f59160e276f
  #include "nsCSSProps.h"
  #include "nsCSSRendering.h"
  #include "nsCSSRenderingGradients.h"
-@@ -1212,6 +1213,10 @@ void nsDisplayListBuilder::EnterPresShell(const nsIFrame* aReferenceFrame,
+@@ -1252,6 +1253,10 @@ void nsDisplayListBuilder::EnterPresShell(const nsIFrame* aReferenceFrame,
      docShell->GetWindowDraggingAllowed(&mWindowDraggingAllowed);
    }
  

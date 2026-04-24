@@ -284,11 +284,14 @@ auto nsZenBoostsBackend::GetInstance() -> nsZenBoostsBackend* {
 
 auto nsZenBoostsBackend::onPresShellEntered(mozilla::dom::Document* aDocument)
     -> void {
+  if (auto displayDoc = aDocument->GetDisplayDocument()) {
+    onPresShellEntered(displayDoc);
+    return;
+  }
   // Note that aDocument can be null when entering anonymous content frames.
   // We explicitly do this to prevent applying boosts to anonymous content, such
   // as devtools or screenshots.
   mozilla::dom::BrowsingContext* browsingContext =
-  mCurrentBrowsingContext =
       aDocument ? aDocument->GetBrowsingContext() : nullptr;
   if (!browsingContext) {
     return;
@@ -300,12 +303,6 @@ auto nsZenBoostsBackend::onPresShellEntered(mozilla::dom::Document* aDocument)
 nsZenBoostsBackend::FilterColorFromPresContext(nscolor aColor,
                                                nsPresContext* aPresContext)
     -> nscolor {
-  if (!XRE_IsContentProcess()) {
-    // Zen boosts are only supported in content, so if we somehow end up here
-    // without a prescontext or in the parent process, just return the original
-    // color.
-    return aColor;
-  }
   ZenBoostData accentNS = 0;
   bool invertColors = false;
   GetZenBoostsDataFromBrowsingContext(&accentNS, &invertColors, aPresContext);
@@ -329,14 +326,19 @@ nsZenBoostsBackend::FilterColorFromPresContext(nscolor aColor,
 
 [[nodiscard]] ZEN_HOT_FUNCTION auto nsZenBoostsBackend::ResolveStyleColor(
     mozilla::StyleAbsoluteColor aColor) -> mozilla::StyleAbsoluteColor {
-  if (aColor.alpha == 0) {
+  const auto resultColor = FilterColorFromPresContext(aColor.ToColor());
+  return mozilla::StyleAbsoluteColor::FromColor(resultColor);
+}
+
+[[nodiscard]] ZEN_HOT_FUNCTION auto nsZenBoostsBackend::ResolveStyleColor(
+    nscolor aColor) -> nscolor {
+  if (NS_GET_A(aColor) == 0) {
     // Skip processing fully transparent colors since they won't be visible and
     // we want to avoid unnecessary computations. This also prevents issues with
     // using the alpha channel for contrast information in the accent color.
     return aColor;
   }
-  const auto resultColor = FilterColorFromPresContext(aColor.ToColor());
-  return mozilla::StyleAbsoluteColor::FromColor(resultColor);
+  return FilterColorFromPresContext(aColor);
 }
 
 }  // namespace zen

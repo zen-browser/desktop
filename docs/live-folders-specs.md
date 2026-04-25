@@ -52,6 +52,18 @@ interface LiveFolderProvider {
 - **Configuration**:
   - `username`: GitHub username.
 
+#### `GitlabLiveFolderProvider`
+
+- **Description**: Updates live folder contents from a GitLab user's Merge Requests or Issues.
+- **Hosts**: Works with `gitlab.com` and self-hosted instances. The host is auto-detected from the active tab when the folder is created (falls back to `gitlab.com`).
+- **Authentication**:
+  - **Cookie-first**: relies on the user's existing GitLab session cookies, just like `GithubLiveFolderProvider`. No prompt and no setup for the common case.
+  - **Personal Access Token (fallback)**: when cookies are not enough (typical for some self-hosted instances behind SSO), the user can set a PAT via the folder's context menu. The token must have at least the `read_api` scope. It is stored in the Firefox Login Manager (encrypted by the platform), keyed by host, and never written to `zen-live-folders.jsonlz4`.
+- **Endpoints used** (REST v4, `GET`):
+  - `https://{host}/api/v4/merge_requests?scope=assigned_to_me|created_by_me&state=opened`
+  - `https://{host}/api/v4/merge_requests?reviewer_username=__me__&state=opened` (for "Review Requests")
+  - `https://{host}/api/v4/issues?scope=assigned_to_me|created_by_me&state=opened`
+
 #### `RestAPILiveFolderProvider`
 
 - **Description**: Updates live folder contents from a REST API endpoint.

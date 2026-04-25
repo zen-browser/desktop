@@ -97,5 +97,48 @@ zen-live-folder-github-issues =
 zen-live-folder-github-option-repo-list-note =
     .label = This list is generated based on your currently active pull requests.
 
+zen-live-folder-gitlab-merge-requests =
+    .label = GitLab Merge Requests
+
+zen-live-folder-gitlab-issues =
+    .label = GitLab Issues
+
+zen-live-folder-gitlab-option-author-self =
+    .label = Created by Me
+
+zen-live-folder-gitlab-option-assigned-self =
+    .label = Assigned to Me
+
+zen-live-folder-gitlab-option-review-requested =
+    .label = Review Requests
+
+zen-live-folder-gitlab-option-instance =
+    .label = Instance: { $host }
+
+zen-live-folder-gitlab-option-project-filter =
+    .label = Projects
+
+zen-live-folder-gitlab-option-project =
+    .label = { $project }
+
+zen-live-folder-gitlab-option-project-list-note =
+    .label = This list is generated based on your currently active items.
+
+zen-live-folder-gitlab-option-set-token =
+    .label = Set Access Token…
+
+zen-live-folder-gitlab-option-remove-token =
+    .label = Remove Access Token
+
+zen-live-folder-gitlab-no-auth =
+    .label = Not signed in to GitLab
+    .tooltiptext = Sign in to GitLab or set a personal access token.
+
+zen-live-folder-gitlab-no-filter =
+    .label = Filter is not set
+    .tooltiptext = No filter set, nothing will be fetched.
+
+zen-live-folder-gitlab-prompt-pat = Personal access token for { $host } (read_api scope minimum)
+
 zen-live-folders-promotion-title = Live Folder Created!
-zen-live-folders-promotion-description = Latest content from your RSS feeds or GitHub pull requests will appear here automatically.
+zen-live-folders-promotion-description = Latest content from your RSS feeds, GitHub or GitLab will appear here automatically.

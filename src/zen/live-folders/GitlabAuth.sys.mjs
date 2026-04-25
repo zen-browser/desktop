@@ -10,9 +10,11 @@ function originForHost(host) {
 }
 
 function buildLoginInfo(host, token) {
-  return Cc["@mozilla.org/login-manager/loginInfo;1"]
-    .createInstance(Ci.nsILoginInfo)
-    .init(originForHost(host), null, HTTP_REALM, USERNAME, token, "", "");
+  const login = Cc["@mozilla.org/login-manager/loginInfo;1"].createInstance(
+    Ci.nsILoginInfo
+  );
+  login.init(originForHost(host), null, HTTP_REALM, USERNAME, token, "", "");
+  return login;
 }
 
 export const GitlabAuth = {

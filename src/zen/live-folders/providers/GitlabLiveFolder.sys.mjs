@@ -313,17 +313,15 @@ export class nsGitlabLiveFolderProvider extends nsZenLiveFolderProvider {
   async #promptForToken() {
     const window = this.manager.window;
     const [promptText] = await lazy.l10n.formatValues([
-      { id: "zen-live-folder-gitlab-prompt-pat", args: { host: this.state.host } },
+      {
+        id: "zen-live-folder-gitlab-prompt-pat",
+        args: { host: this.state.host },
+      },
     ]);
     const input = { value: "" };
-    const ok = Services.prompt.prompt(
-      window,
-      promptText,
-      null,
-      input,
-      null,
-      { value: null }
-    );
+    const ok = Services.prompt.prompt(window, promptText, null, input, null, {
+      value: null,
+    });
     if (!ok) {
       return;
     }

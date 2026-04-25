@@ -11,7 +11,11 @@ ChromeUtils.defineESModuleGetters(this, {
 });
 
 function getGitlabProviderForTest(sandbox, customOptions = {}) {
-  const { type = "merge-requests", host = "gitlab.com", ...rest } = customOptions;
+  const {
+    type = "merge-requests",
+    host = "gitlab.com",
+    ...rest
+  } = customOptions;
   const defaultOptions = {
     authorMe: false,
     assignedMe: true,
@@ -185,7 +189,10 @@ add_task(async function test_json_parsing_into_items() {
   instance.fetch.resolves({ status: 200, text: payload });
   const items = await instance.fetchItems();
 
-  Assert.ok(Array.isArray(items), "fetchItems should return an array on success");
+  Assert.ok(
+    Array.isArray(items),
+    "fetchItems should return an array on success"
+  );
   Assert.equal(items.length, 2);
   Assert.equal(items[0].id, "group/project!42");
   Assert.equal(items[0].title, "Improve cache eviction");

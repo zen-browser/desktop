@@ -357,16 +357,23 @@ export class nsGitlabLiveFolderProvider extends nsZenLiveFolderProvider {
 
   async #promptForToken() {
     const window = this.manager.window;
-    const [promptText] = await lazy.l10n.formatValues([
+    const [title, promptText] = await lazy.l10n.formatValues([
+      "zen-live-folder-gitlab-prompt-pat-title",
       {
         id: "zen-live-folder-gitlab-prompt-pat",
         args: { host: this.state.host },
       },
     ]);
     const input = { value: "" };
-    const ok = Services.prompt.prompt(window, "", promptText, input, null, {
-      value: null,
-    });
+    // Use promptPassword so the PAT is masked while typing — it's a secret.
+    const ok = Services.prompt.promptPassword(
+      window,
+      title,
+      promptText,
+      input,
+      null,
+      { value: null }
+    );
     if (!ok) {
       return;
     }
@@ -380,11 +387,12 @@ export class nsGitlabLiveFolderProvider extends nsZenLiveFolderProvider {
 
   async #promptForInstance() {
     const window = this.manager.window;
-    const [promptText] = await lazy.l10n.formatValues([
+    const [title, promptText] = await lazy.l10n.formatValues([
+      "zen-live-folder-gitlab-prompt-instance-title",
       "zen-live-folder-gitlab-prompt-instance",
     ]);
     const input = { value: this.state.host };
-    const ok = Services.prompt.prompt(window, "", promptText, input, null, {
+    const ok = Services.prompt.prompt(window, title, promptText, input, null, {
       value: null,
     });
     if (!ok) {

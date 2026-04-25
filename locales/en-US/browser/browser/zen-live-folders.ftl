@@ -120,6 +120,10 @@ zen-live-folder-gitlab-option-change-instance =
 
 zen-live-folder-gitlab-prompt-instance = GitLab instance host (e.g. gitlab.com or forge.example.org)
 
+zen-live-folder-gitlab-prompt-pat-title = GitLab access token
+
+zen-live-folder-gitlab-prompt-instance-title = GitLab instance
+
 zen-live-folder-gitlab-option-project-filter =
     .label = Projects
 

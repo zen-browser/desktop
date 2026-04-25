@@ -1116,9 +1116,9 @@ class nsZenWindowSync {
    */
   async #onTabSwitchOrWindowFocus(aWindow, aPreviousTab = null) {
     let activeBrowsers = aWindow.gBrowser.selectedBrowsers;
-    let activeTabs = activeBrowsers.map(browser =>
-      aWindow.gBrowser.getTabForBrowser(browser)
-    );
+    let activeTabs = activeBrowsers
+      .map(browser => aWindow.gBrowser.getTabForBrowser(browser))
+      .filter(tab => tab);
     // Ignore previous tabs that are still "active". These scenarios could happen for example,
     // when selecting on a split view tab that was already active.
     if (

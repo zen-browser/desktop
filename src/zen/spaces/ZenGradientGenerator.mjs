@@ -1470,11 +1470,12 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
    * Get the primary color from a list of colors.
    *
    * @param {Array<number>} accentColor The accent color as an array of RGB values.
+   * @param {boolean} isDarkMode Whether the current theme is in dark mode.
    * @returns {string} The primary color in hex format.
    */
-  getAccentColorForUI(accentColor) {
+  getAccentColorForUI(accentColor, isDarkMode) {
     const [h, s, l] = this.rgbToHsl(...accentColor);
-    if (s < 0.1) {
+    if (isDarkMode) {
       return `rgb(${accentColor[0]}, ${accentColor[1]}, ${accentColor[2]})`;
     }
     const saturation = Math.min(1, s + 0.3);
@@ -1735,9 +1736,6 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         docElement.removeAttribute("zen-default-theme");
       }
       if (dominantColor) {
-        const primaryColor = this.getAccentColorForUI(dominantColor);
-        docElement.style.setProperty("--zen-primary-color", primaryColor);
-
         // Should be set to `this.isLegacyVersion` but for some reason it is set to undefined if we open a private window,
         // so instead get the pref value directly.
         browser.gZenThemePicker.isLegacyVersion =
@@ -1759,6 +1757,13 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
             );
           }
         }
+
+        const primaryColor = this.getAccentColorForUI(
+          dominantColor,
+          isDarkMode
+        );
+        docElement.style.setProperty("--zen-primary-color", primaryColor);
+
         // Set `--toolbox-textcolor` to have a contrast with the primary color
         let textColor = this.getToolbarColor(isDarkMode, dominantColor);
         docElement.style.setProperty(
@@ -1998,7 +2003,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       isDarkMode,
       isExplicitMode,
       toolbarColor: this.getToolbarColor(isDarkMode, dominantColor),
-      primaryColor: this.getAccentColorForUI(dominantColor),
+      primaryColor: this.getAccentColorForUI(dominantColor, isDarkMode),
     };
     this.currentOpacity = previousOpacity;
     this.#currentLightness = previousLightness;

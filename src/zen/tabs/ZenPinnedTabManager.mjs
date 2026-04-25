@@ -405,7 +405,17 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
 
     // Remove everything except the entry we want to keep
-    state.entries = [initialState.entry];
+    state.entries = [
+      {
+        ...initialState.entry,
+        triggeringPrincipal_base64: E10SUtils.serializePrincipal(
+          Services.scriptSecurityManager.createContentPrincipal(
+            Services.io.newURI(initialState.entry.url),
+            {}
+          )
+        ),
+      },
+    ];
 
     state.image = tab.zenStaticIcon || initialState.image;
     state.index = 0;

@@ -227,6 +227,10 @@ export class nsGitlabLiveFolderProvider extends nsZenLiveFolderProvider {
         l10nArgs: { host: this.state.host },
         disabled: true,
       },
+      {
+        l10nId: "zen-live-folder-gitlab-option-change-instance",
+        key: "changeInstance",
+      },
       { type: "separator" },
       {
         l10nId: "zen-live-folder-gitlab-option-author-self",
@@ -296,6 +300,13 @@ export class nsGitlabLiveFolderProvider extends nsZenLiveFolderProvider {
         await lazy.GitlabAuth.removeToken(this.state.host);
         break;
       }
+      case "changeInstance": {
+        const changed = await this.#promptForInstance();
+        if (!changed) {
+          return;
+        }
+        break;
+      }
       case "authorMe":
       case "assignedMe":
       case "reviewRequested": {
@@ -331,6 +342,32 @@ export class nsGitlabLiveFolderProvider extends nsZenLiveFolderProvider {
     } else {
       await lazy.GitlabAuth.removeToken(this.state.host);
     }
+  }
+
+  async #promptForInstance() {
+    const window = this.manager.window;
+    const [promptText] = await lazy.l10n.formatValues([
+      "zen-live-folder-gitlab-prompt-instance",
+    ]);
+    const input = { value: this.state.host };
+    const ok = Services.prompt.prompt(window, promptText, null, input, null, {
+      value: null,
+    });
+    if (!ok) {
+      return false;
+    }
+    const host = (input.value ?? "")
+      .trim()
+      .replace(/^https?:\/\//, "")
+      .replace(/\/.*$/, "");
+    if (!host || host === this.state.host) {
+      return false;
+    }
+    this.state.host = host;
+    // Switching instances invalidates the per-host project list.
+    this.state.projects = new Set();
+    this.state.options.projectExcludes = new Set();
+    return true;
   }
 
   async onActionButtonClick(errorId) {

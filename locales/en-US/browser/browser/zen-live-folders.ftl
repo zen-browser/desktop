@@ -115,6 +115,11 @@ zen-live-folder-gitlab-option-review-requested =
 zen-live-folder-gitlab-option-instance =
     .label = Instance: { $host }
 
+zen-live-folder-gitlab-option-change-instance =
+    .label = Change Instance…
+
+zen-live-folder-gitlab-prompt-instance = GitLab instance host (e.g. gitlab.com or forge.example.org)
+
 zen-live-folder-gitlab-option-project-filter =
     .label = Projects
 

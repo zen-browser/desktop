@@ -71,7 +71,7 @@ export class nsGitlabLiveFolderProvider extends nsZenLiveFolderProvider {
     return headers;
   }
 
-  #buildScopeUrls() {
+  #buildScopeUrls(userId) {
     const isMergeRequest = this.state.type === "merge-requests";
     const scopes = [];
 
@@ -81,12 +81,20 @@ export class nsGitlabLiveFolderProvider extends nsZenLiveFolderProvider {
     if (this.state.options.authorMe ?? false) {
       scopes.push({ scope: "created_by_me" });
     }
-    if (isMergeRequest && (this.state.options.reviewRequested ?? false)) {
-      // GitLab uses reviewer_username=__me__ rather than scope= for review-requested.
-      scopes.push({ scope: null, reviewer: true });
+    if (
+      isMergeRequest &&
+      (this.state.options.reviewRequested ?? false) &&
+      userId
+    ) {
+      // The /merge_requests endpoint defaults to scope=created_by_me on the
+      // server, so a reviewer filter without scope=all silently intersects to
+      // empty whenever the MR was opened by someone else (the common case for
+      // reviewers). Older GitLab versions also do not resolve __me__, so we
+      // pass the resolved numeric id instead.
+      scopes.push({ scope: "all", reviewerId: userId });
     }
 
-    return scopes.map(({ scope, reviewer }) => {
+    return scopes.map(({ scope, reviewerId }) => {
       const url = new URL(`${this.#apiBase}/${this.#resourcePath}`);
       url.searchParams.set("state", "opened");
       url.searchParams.set("per_page", "50");
@@ -95,11 +103,33 @@ export class nsGitlabLiveFolderProvider extends nsZenLiveFolderProvider {
       if (scope) {
         url.searchParams.set("scope", scope);
       }
-      if (reviewer) {
-        url.searchParams.set("reviewer_username", "__me__");
+      if (reviewerId) {
+        url.searchParams.set("reviewer_id", String(reviewerId));
       }
       return url.href;
     });
+  }
+
+  async #fetchUserId() {
+    if (this.state.userId) {
+      return this.state.userId;
+    }
+    try {
+      const headers = await this.#buildHeaders();
+      const { text, status } = await this.fetch(`${this.#apiBase}/user`, {
+        headers,
+      });
+      if (status !== 200) {
+        return null;
+      }
+      const user = JSON.parse(text);
+      if (typeof user?.id === "number") {
+        this.state.userId = user.id;
+        this.requestSave();
+        return user.id;
+      }
+    } catch {}
+    return null;
   }
 
   async fetchItems() {
@@ -114,7 +144,11 @@ export class nsGitlabLiveFolderProvider extends nsZenLiveFolderProvider {
       }
 
       const headers = await this.#buildHeaders();
-      const urls = this.#buildScopeUrls();
+      const reviewRequested =
+        this.state.type === "merge-requests" &&
+        (this.state.options.reviewRequested ?? false);
+      const userId = reviewRequested ? await this.#fetchUserId() : null;
+      const urls = this.#buildScopeUrls(userId);
 
       const responses = await Promise.all(
         urls.map(url => this.#fetchScope(url, headers))
@@ -330,7 +364,7 @@ export class nsGitlabLiveFolderProvider extends nsZenLiveFolderProvider {
       },
     ]);
     const input = { value: "" };
-    const ok = Services.prompt.prompt(window, promptText, null, input, null, {
+    const ok = Services.prompt.prompt(window, "", promptText, input, null, {
       value: null,
     });
     if (!ok) {
@@ -350,7 +384,7 @@ export class nsGitlabLiveFolderProvider extends nsZenLiveFolderProvider {
       "zen-live-folder-gitlab-prompt-instance",
     ]);
     const input = { value: this.state.host };
-    const ok = Services.prompt.prompt(window, promptText, null, input, null, {
+    const ok = Services.prompt.prompt(window, "", promptText, input, null, {
       value: null,
     });
     if (!ok) {
@@ -364,9 +398,11 @@ export class nsGitlabLiveFolderProvider extends nsZenLiveFolderProvider {
       return false;
     }
     this.state.host = host;
-    // Switching instances invalidates the per-host project list.
+    // Switching instances invalidates the per-host project list and the
+    // cached numeric user id (it belongs to the previous host).
     this.state.projects = new Set();
     this.state.options.projectExcludes = new Set();
+    delete this.state.userId;
     return true;
   }
 

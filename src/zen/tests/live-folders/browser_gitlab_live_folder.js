@@ -70,7 +70,7 @@ add_task(async function test_fetch_url_assigned_to_me_default() {
 
 add_task(async function test_fetch_url_review_requested() {
   info(
-    "should issue a reviewer_username=__me__ query when reviewRequested is enabled"
+    "should resolve the user id and issue a reviewer_id+scope=all query when reviewRequested is enabled"
   );
 
   const sandbox = sinon.createSandbox();
@@ -79,13 +79,26 @@ add_task(async function test_fetch_url_review_requested() {
     reviewRequested: true,
   });
 
-  instance.fetch.resolves({ status: 200, text: "[]" });
+  instance.fetch.onFirstCall().resolves({
+    status: 200,
+    text: JSON.stringify({ id: 4242, username: "alice" }),
+  });
+  instance.fetch.onSecondCall().resolves({ status: 200, text: "[]" });
+
   await instance.fetchItems();
 
-  Assert.equal(instance.fetch.callCount, 1);
-  const url = new URL(instance.fetch.firstCall.args[0]);
-  Assert.equal(url.searchParams.get("reviewer_username"), "__me__");
-  Assert.equal(url.searchParams.get("scope"), null, "scope should not be set");
+  Assert.equal(
+    instance.fetch.callCount,
+    2,
+    "Should resolve the user then query MRs"
+  );
+  const userUrl = new URL(instance.fetch.firstCall.args[0]);
+  Assert.equal(userUrl.pathname, "/api/v4/user");
+
+  const url = new URL(instance.fetch.secondCall.args[0]);
+  Assert.equal(url.searchParams.get("reviewer_id"), "4242");
+  Assert.equal(url.searchParams.get("scope"), "all");
+  Assert.equal(url.searchParams.get("reviewer_username"), null);
 
   sandbox.restore();
 });

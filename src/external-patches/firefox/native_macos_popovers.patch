@@ -193,7 +193,7 @@ diff --git a/toolkit/themes/shared/global-shared.css b/toolkit/themes/shared/glo
 diff --git a/widget/cocoa/nsCocoaWindow.h b/widget/cocoa/nsCocoaWindow.h
 --- a/widget/cocoa/nsCocoaWindow.h
 +++ b/widget/cocoa/nsCocoaWindow.h
-@@ -132,23 +132,38 @@
+@@ -132,23 +132,39 @@
  // to create its "frame view".
  + (Class)frameViewClassForStyleMask:(NSUInteger)styleMask;
  
@@ -227,6 +227,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.h b/widget/cocoa/nsCocoaWindow.h
 +                     hiddenAnchor:(BOOL)hiddenAnchor;
 +- (void)closePopover;
 +- (void)updatePopoverContent;
++- (NSPopover*)popover;
 +
  @end
  
@@ -281,7 +282,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
      // the active space. Does not work with multiple displays. See
      // NeedsRecreateToReshow() for multi-display with multi-space workaround.
      mWindow.collectionBehavior = mWindow.collectionBehavior |
-@@ -5178,10 +5186,57 @@
+@@ -5178,10 +5186,60 @@
    NS_OBJC_END_TRY_IGNORE_BLOCK;
  }
  
@@ -327,6 +328,9 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 +      nsCocoaUtils::CocoaRectToGeckoRectDevPix(windowFrame, backingScale);
 +
 +  nsPresContext* presContext = aPopupFrame->PresContext();
++  if (!presContext) {
++    return;
++  }
 +  mozilla::CSSIntPoint cssPos =
 +      presContext->DevPixelsToIntCSSPixels(devPixRect.TopLeft());
 +
@@ -339,7 +343,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
    NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
  
    if (!mWindow) {
-@@ -5242,10 +5297,54 @@
+@@ -5242,10 +5297,67 @@
        mWindow.contentView.needsDisplay = YES;
        if (!nativeParentWindow || mPopupLevel != PopupLevel::Parent) {
          [mWindow orderFront:nil];
@@ -347,7 +351,20 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
        NS_OBJC_END_TRY_IGNORE_BLOCK;
 +      if (ShouldShowAsNSPopover()) {
 +        nsMenuPopupFrame* popupFrame = GetPopupFrame();
-+        if (nativeParentWindow) {
++        // Re-fetch the parent window pointer.  The value captured at the
++        // top of Show() can become stale when the parent widget is torn
++        // down during macOS activation-notification dispatch (see
++        // gh-13194, gh-13294).
++        NSWindow* popoverParent = mParent
++            ? (NSWindow*)mParent->GetNativeData(NS_NATIVE_WINDOW)
++            : nil;
++        NSView* parentView =
++            popoverParent ? [popoverParent contentView] : nil;
++        bool popoverShown = false;
++        if (popoverParent && parentView && popupFrame &&
++            popupFrame->PresContext() &&
++            popupFrame->PresContext()->DeviceContext()) {
++          NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
 +          NSRectEdge preferredEdge =
 +              AlignmentPositionToNSRectEdge(popupFrame->GetAlignmentPosition());
 +          nsRect anchorRectAppUnits = popupFrame->GetUntransformedAnchorRect();
@@ -360,20 +377,10 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 +                  mozilla::LayoutDeviceRect::FromAppUnits(anchorRectAppUnits,
 +                                                          appUnitsPerDevPixel) /
 +                  desktopToLayoutScale);
-+          // Taking the now correctly scaled anchor rect and turning it into a
-+          // gecko rect this accounts for the y-axis inversion that cocoa needs,
-+          // as the origin is in the bottom left. This rect is in screen space
 +          NSRect cocoaScreenRect =
 +              nsCocoaUtils::GeckoRectToCocoaRect(popupAnchorRectScaled);
-+          // We take the screen space rect and convert it to window space
-+          // coordinates, as NSPopover requires the coordinates to be in view
-+          // space and inside the view. If the coordinates are outside our view,
-+          // the popover will fail silently
 +          NSRect windowRect =
-+              [nativeParentWindow convertRectFromScreen:cocoaScreenRect];
-+          NSView* parentView = [nativeParentWindow contentView];
-+          // We take the window space rect and convert it to view space for the
-+          // specific parent view
++              [popoverParent convertRectFromScreen:cocoaScreenRect];
 +          NSRect positioningRect = [parentView convertRect:windowRect
 +                                                  fromView:nil];
 +          BOOL shouldHideAnchor = NO;
@@ -386,8 +393,18 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 +                                             preferredEdge:preferredEdge
 +                                              hiddenAnchor:shouldHideAnchor];
 +          SyncPopoverBounds([(PopupWindow*)mWindow popover], popupFrame);
++          popoverShown = [(PopupWindow*)mWindow popover].shown;
++          NS_OBJC_END_TRY_IGNORE_BLOCK;
 +        }
-+        return;
++        if (popoverShown) {
++          return;
++        }
++        // Parent is gone or partially torn down — close any lingering
++        // popover and fall through to normal popup display logic.
++        if ([mWindow isKindOfClass:[PopupWindow class]] &&
++            [(PopupWindow*)mWindow usePopover]) {
++          [(PopupWindow*)mWindow closePopover];
++        }
 +      }
        // If our popup window is a non-native context menu, tell the OS (and
        // other programs) that a menu has opened.  This is how the OS knows to
@@ -439,17 +456,16 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
  
    return mWindow.isOpaque ? TransparencyMode::Opaque
                            : TransparencyMode::Transparent;
-@@ -6328,10 +6450,20 @@
+@@ -6328,10 +6450,19 @@
    // We ignore aRepaint -- we have to call display:YES, otherwise the
    // title bar doesn't immediately get repainted and is displayed in
    // the wrong place, leading to a visual jump.
    [mWindow setFrame:newFrame display:YES];
  
-+  if (ShouldUseNSPopover() && [(PopupWindow*)mWindow usePopover]) {
++  if (ShouldUseNSPopover() &&
++      [mWindow isKindOfClass:[PopupWindow class]] &&
++      [(PopupWindow*)mWindow usePopover]) {
 +    [(PopupWindow*)mWindow updatePopoverContent];
-+    // A popover won't resize by setting the frame
-+    // as it's size is calculated based on the content size
-+    // Therefor the content size has to be changed as well
 +    NSSize contentSize = NSMakeSize(aWidth, aHeight);
 +    [[(PopupWindow*)mWindow popover] setContentSize:contentSize];
 +    SyncPopoverBounds([(PopupWindow*)mWindow popover], GetPopupFrame());
@@ -487,7 +503,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
  // Return 0 in order to match what the system does for sheet windows and
  // _NSPopoverWindows.
  - (CGFloat)_backdropBleedAmount {
-@@ -8378,10 +8519,122 @@
+@@ -8378,10 +8519,124 @@
  
  - (void)setIsContextMenu:(BOOL)flag {
    mIsContextMenu = flag;
@@ -535,7 +551,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 +                    preferredEdge:(NSRectEdge)preferredEdge
 +                     hiddenAnchor:(BOOL)hiddenAnchor {
 +  NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
-+  if (!mPopover) {
++  if (!mPopover || !positioningView || !positioningView.window) {
 +    return;
 +  }
 +
@@ -560,7 +576,9 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 +  }
 +
 +  NSWindow* popoverWindow = mPopover.contentViewController.view.window;
-+  [popoverWindow setAcceptsMouseMovedEvents:YES];
++  if (popoverWindow) {
++    [popoverWindow setAcceptsMouseMovedEvents:YES];
++  }
 +
 +  NS_OBJC_END_TRY_IGNORE_BLOCK;
 +}

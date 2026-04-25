@@ -3,7 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 EXTRA_JS_MODULES.zen += [
+    "GitlabAuth.sys.mjs",
     "providers/GithubLiveFolder.sys.mjs",
+    "providers/GitlabLiveFolder.sys.mjs",
     "providers/RssLiveFolder.sys.mjs",
     "ZenLiveFolder.sys.mjs",
     "ZenLiveFoldersManager.sys.mjs",

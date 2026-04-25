@@ -87,6 +87,14 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
              command="cmd_zenNewLiveFolder"
              image="chrome://browser/skin/zen-icons/selectable/logo-github.svg" />
            <menuitem
+             data-l10n-id="zen-live-folder-gitlab-merge-requests"
+             command="cmd_zenNewLiveFolder"
+             image="chrome://browser/skin/zen-icons/selectable/logo-gitlab.svg" />
+           <menuitem
+             data-l10n-id="zen-live-folder-gitlab-issues"
+             command="cmd_zenNewLiveFolder"
+             image="chrome://browser/skin/zen-icons/selectable/logo-gitlab.svg" />
+           <menuitem
              data-l10n-id="zen-live-folder-type-rss"
              command="cmd_zenNewLiveFolder"
              image="chrome://browser/skin/zen-icons/selectable/logo-rss.svg"/>

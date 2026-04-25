@@ -148,6 +148,14 @@ class nsZenLiveFoldersManager {
             this.createFolder("github:issues");
             break;
           }
+          case "zen-live-folder-gitlab-merge-requests": {
+            this.createFolder("gitlab:merge-requests");
+            break;
+          }
+          case "zen-live-folder-gitlab-issues": {
+            this.createFolder("gitlab:issues");
+            break;
+          }
           case "zen-live-folder-type-rss": {
             this.createFolder("rss");
             break;
@@ -237,6 +245,15 @@ class nsZenLiveFoldersManager {
         icon = "chrome://browser/skin/zen-icons/selectable/logo-github.svg";
         break;
       }
+      case "gitlab": {
+        const [message] = await lazy.l10n.formatMessages([
+          { id: `zen-live-folder-gitlab-${providerType}` },
+        ]);
+
+        label = message.attributes[0].value;
+        icon = "chrome://browser/skin/zen-icons/selectable/logo-gitlab.svg";
+        break;
+      }
     }
 
     const folder = this.window.gZenFolders.createFolder([], {
@@ -251,11 +268,16 @@ class nsZenLiveFoldersManager {
       this.window.gZenFolders.setFolderUserIcon(folder, icon);
     }
 
+    const initialState = {
+      url,
+      type: providerType,
+    };
+    if (typeof ProviderClass.getDefaultHost === "function") {
+      initialState.host = ProviderClass.getDefaultHost(this.window);
+    }
+
     const config = {
-      state: this.#applyDefaultStateValues({
-        url,
-        type: providerType,
-      }),
+      state: this.#applyDefaultStateValues(initialState),
     };
 
     let liveFolder = new ProviderClass({

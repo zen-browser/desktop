@@ -52,5 +52,19 @@
   {
     "type": "local",
     "path": "firefox/bug_2013682_allow_stacking_contexts_to_be_promoted.patch"
+  },
+  {
+    "type": "phabricator",
+    "ids": [
+      "D293605",
+      "D293607",
+      "D293608",
+      "D293609",
+      "D293610",
+      "D293606",
+      "D293611",
+      "D295658"
+    ],
+    "name": "MFCDM clearkey playback support"
   }
 ]

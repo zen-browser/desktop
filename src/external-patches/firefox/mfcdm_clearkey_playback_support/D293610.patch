@@ -1,0 +1,71 @@
+diff --git a/gfx/thebes/DeviceManagerDx.cpp b/gfx/thebes/DeviceManagerDx.cpp
+--- a/gfx/thebes/DeviceManagerDx.cpp
++++ b/gfx/thebes/DeviceManagerDx.cpp
+@@ -1118,29 +1118,53 @@
+                                      strlen(debugString), debugString);
+ }
+ 
+ RefPtr<ID3D11Device> DeviceManagerDx::CreateMediaEngineDevice() {
+   MutexAutoLock lock(mDeviceLock);
+-  if (!LoadD3D11()) {
+-    return nullptr;
++  // LoadD3D11() asserts D3D11_COMPOSITING is enabled, which may not hold in
++  // the utility process (headless mode). Load the DLL directly if needed.
++  if (!sD3D11CreateDeviceFn) {
++    nsModuleHandle module(LoadLibrarySystem32(L"d3d11.dll"));
++    if (!module) {
++      return nullptr;
++    }
++    sD3D11CreateDeviceFn = (decltype(D3D11CreateDevice)*)GetProcAddress(
++        module, "D3D11CreateDevice");
++    if (!sD3D11CreateDeviceFn) {
++      return nullptr;
++    }
++    mD3D11Module.steal(module);
+   }
+ 
+   HRESULT hr;
+   RefPtr<ID3D11Device> device;
+-  UINT flags = D3D11_CREATE_DEVICE_BGRA_SUPPORT |
+-               D3D11_CREATE_DEVICE_PREVENT_INTERNAL_THREADING_OPTIMIZATIONS;
+-  RefPtr<IDXGIAdapter1> adapter = GetDXGIAdapterLocked();
+-  if (!adapter) {
+-    return nullptr;
+-  }
+-  if (!CreateDevice(adapter, D3D_DRIVER_TYPE_UNKNOWN, flags, hr, device)) {
+-    return nullptr;
++  UINT baseFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT |
++                   D3D11_CREATE_DEVICE_PREVENT_INTERNAL_THREADING_OPTIMIZATIONS;
++  UINT flags = D3D11_CREATE_DEVICE_VIDEO_SUPPORT | baseFlags;
++  // When hardware video decoding is unavailable, DXGI swap chains used by
++  // the MF Media Engine may fail. Fall back to WARP so the engine can
++  // create its swap chain with a software adapter.
++  bool useWarp = !gfxVars::CanUseHardwareVideoDecoding();
++  if (!useWarp) {
++    if (!CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, flags, hr, device) ||
++        FAILED(hr) || !device || !D3D11Checks::DoesDeviceWork()) {
++      useWarp = true;
++    }
+   }
+-  if (FAILED(hr) || !device || !D3D11Checks::DoesDeviceWork()) {
+-    return nullptr;
++  if (useWarp) {
++    gfxWarning()
++        << "MFMediaEngine: hardware D3D11 device unavailable, using WARP";
++    device = nullptr;
++    // WARP does not support D3D11_CREATE_DEVICE_VIDEO_SUPPORT; use baseFlags
++    // only.
++    if (!CreateDevice(nullptr, D3D_DRIVER_TYPE_WARP, baseFlags, hr, device) ||
++        FAILED(hr) || !device) {
++      return nullptr;
++    }
+   }
+-  (void)SetDebugName(device.get(), "MFMediaEngineDevice");
++  (void)SetDebugName(device.get(), useWarp ? "MFMediaEngineDevice(WARP)"
++                                           : "MFMediaEngineDevice");
+ 
+   RefPtr<ID3D10Multithread> multi;
+   device->QueryInterface(__uuidof(ID3D10Multithread), getter_AddRefs(multi));
+   if (multi) {
+     multi->SetMultithreadProtected(TRUE);
+

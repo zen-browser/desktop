@@ -1,0 +1,688 @@
+diff --git a/media/wmf-clearkey/WMFClearKeyCDM.cpp b/media/wmf-clearkey/WMFClearKeyCDM.cpp
+--- a/media/wmf-clearkey/WMFClearKeyCDM.cpp
++++ b/media/wmf-clearkey/WMFClearKeyCDM.cpp
+@@ -12,10 +12,11 @@
+ 
+ #include "WMFClearKeyTrustedInput.h"
+ #include "WMFClearKeySession.h"
+ #include "WMFDecryptedBlock.h"
+ #include "WMFPMPServer.h"
++#include "nss.h"
+ 
+ using Microsoft::WRL::ComPtr;
+ using Microsoft::WRL::MakeAndInitialize;
+ 
+ static HRESULT AddPropertyToSet(
+@@ -100,10 +101,15 @@
+   RETURN_IF_FAILED((MakeAndInitialize<
+                     WMFPMPServer,
+                     ABI::Windows::Media::Protection::IMediaProtectionPMPServer>(
+       &mPMPServer, propertyPmp.Get())));
+ 
++  if (NSS_NoDB_Init(nullptr) != SECSuccess) {
++    ENTRY_LOG_ARGS("NSS_NoDB_Init failed");
++    return E_FAIL;
++  }
++
+   mSessionManager = new SessionManagerWrapper(this);
+   return S_OK;
+ }
+ 
+ WMFClearKeyCDM::~WMFClearKeyCDM() { ENTRY_LOG(); }
+diff --git a/media/wmf-clearkey/WMFClearKeyDecryptor.h b/media/wmf-clearkey/WMFClearKeyDecryptor.h
+new file mode 100644
+--- /dev/null
++++ b/media/wmf-clearkey/WMFClearKeyDecryptor.h
+@@ -0,0 +1,92 @@
++/* This Source Code Form is subject to the terms of the Mozilla Public
++ * License, v. 2.0. If a copy of the MPL was not distributed with this
++ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
++
++#ifndef DOM_MEDIA_PLATFORM_WMF_CLEARKEY_WMFCLEARKEYDECRYPTOR_H
++#define DOM_MEDIA_PLATFORM_WMF_CLEARKEY_WMFCLEARKEYDECRYPTOR_H
++
++#include <mfidl.h>
++#include <mutex>
++#include <windows.h>
++#include <wrl.h>
++
++#include "WMFClearKeyUtils.h"
++
++namespace mozilla {
++
++class SessionManagerWrapper;
++
++// IMFTransform that decrypts CENC-encrypted samples using the keys held by
++// a SessionManagerWrapper. One instance is created per stream (audio or video)
++// and is returned from WMFClearKeyInputTrustAuthority::GetDecrypter.
++class WMFClearKeyDecryptor final
++    : public Microsoft::WRL::RuntimeClass<
++          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
++          IMFTransform, Microsoft::WRL::FtmBase> {
++ public:
++  WMFClearKeyDecryptor() = default;
++  ~WMFClearKeyDecryptor();
++  WMFClearKeyDecryptor(const WMFClearKeyDecryptor&) = delete;
++  WMFClearKeyDecryptor& operator=(const WMFClearKeyDecryptor&) = delete;
++
++  HRESULT RuntimeClassInitialize(SessionManagerWrapper* aSessionManager);
++
++  // IMFTransform
++  STDMETHODIMP GetStreamLimits(DWORD* aInputMin, DWORD* aInputMax,
++                               DWORD* aOutputMin, DWORD* aOutputMax) override;
++  STDMETHODIMP GetStreamCount(DWORD* aInputStreams,
++                              DWORD* aOutputStreams) override;
++  STDMETHODIMP GetStreamIDs(DWORD aInputSize, DWORD* aInputIDs,
++                            DWORD aOutputSize, DWORD* aOutputIDs) override;
++  STDMETHODIMP GetInputStreamInfo(DWORD aInputStreamID,
++                                  MFT_INPUT_STREAM_INFO* aStreamInfo) override;
++  STDMETHODIMP GetOutputStreamInfo(
++      DWORD aOutputStreamID, MFT_OUTPUT_STREAM_INFO* aStreamInfo) override;
++  STDMETHODIMP GetAttributes(IMFAttributes** aAttributes) override;
++  STDMETHODIMP GetInputStreamAttributes(DWORD aInputStreamID,
++                                        IMFAttributes** aAttributes) override;
++  STDMETHODIMP GetOutputStreamAttributes(DWORD aOutputStreamID,
++                                         IMFAttributes** aAttributes) override;
++  STDMETHODIMP DeleteInputStream(DWORD aStreamID) override;
++  STDMETHODIMP AddInputStreams(DWORD aStreams, DWORD* aStreamIDs) override;
++  STDMETHODIMP GetInputAvailableType(DWORD aInputStreamID, DWORD aTypeIndex,
++                                     IMFMediaType** aType) override;
++  STDMETHODIMP GetOutputAvailableType(DWORD aOutputStreamID, DWORD aTypeIndex,
++                                      IMFMediaType** aType) override;
++  STDMETHODIMP SetInputType(DWORD aInputStreamID, IMFMediaType* aType,
++                            DWORD aFlags) override;
++  STDMETHODIMP SetOutputType(DWORD aOutputStreamID, IMFMediaType* aType,
++                             DWORD aFlags) override;
++  STDMETHODIMP GetInputCurrentType(DWORD aInputStreamID,
++                                   IMFMediaType** aType) override;
++  STDMETHODIMP GetOutputCurrentType(DWORD aOutputStreamID,
++                                    IMFMediaType** aType) override;
++  STDMETHODIMP GetInputStatus(DWORD aInputStreamID, DWORD* aFlags) override;
++  STDMETHODIMP GetOutputStatus(DWORD* aFlags) override;
++  STDMETHODIMP SetOutputBounds(LONGLONG aLowerBound,
++                               LONGLONG aUpperBound) override;
++  STDMETHODIMP ProcessEvent(DWORD aInputStreamID,
++                            IMFMediaEvent* aEvent) override;
++  STDMETHODIMP ProcessMessage(MFT_MESSAGE_TYPE aMessage,
++                              ULONG_PTR aParam) override;
++  STDMETHODIMP ProcessInput(DWORD aInputStreamID, IMFSample* aSample,
++                            DWORD aFlags) override;
++  STDMETHODIMP ProcessOutput(DWORD aFlags, DWORD aOutputBufferCount,
++                             MFT_OUTPUT_DATA_BUFFER* aOutputSamples,
++                             DWORD* aStatus) override;
++
++ private:
++  HRESULT DecryptSample(IMFSample* aEncryptedSample,
++                        IMFSample** aDecryptedSample);
++
++  SessionManagerWrapper* mSessionManager = nullptr;
++
++  std::mutex mMutex;
++  Microsoft::WRL::ComPtr<IMFSample> mInputSample;
++  Microsoft::WRL::ComPtr<IMFMediaType> mInputType;
++  Microsoft::WRL::ComPtr<IMFMediaType> mOutputType;
++};
++
++}  // namespace mozilla
++
++#endif  // DOM_MEDIA_PLATFORM_WMF_CLEARKEY_WMFCLEARKEYDECRYPTOR_H
+diff --git a/media/wmf-clearkey/WMFClearKeyDecryptor.cpp b/media/wmf-clearkey/WMFClearKeyDecryptor.cpp
+new file mode 100644
+--- /dev/null
++++ b/media/wmf-clearkey/WMFClearKeyDecryptor.cpp
+@@ -0,0 +1,418 @@
++/* This Source Code Form is subject to the terms of the Mozilla Public
++ * License, v. 2.0. If a copy of the MPL was not distributed with this
++ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
++
++#include "WMFClearKeyDecryptor.h"
++
++#include <mfapi.h>
++#include <mferror.h>
++#include <vector>
++
++#include "WMFClearKeyCDM.h"
++#include "WMFDecryptedBlock.h"
++#include "content_decryption_module.h"
++
++namespace mozilla {
++
++using Microsoft::WRL::ComPtr;
++
++WMFClearKeyDecryptor::~WMFClearKeyDecryptor() {
++  ENTRY_LOG();
++  if (mSessionManager) {
++    mSessionManager->Release();
++    mSessionManager = nullptr;
++  }
++}
++
++HRESULT WMFClearKeyDecryptor::RuntimeClassInitialize(
++    SessionManagerWrapper* aSessionManager) {
++  ENTRY_LOG();
++  MOZ_ASSERT(aSessionManager);
++  mSessionManager = aSessionManager;
++  mSessionManager->AddRef();
++  return S_OK;
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::GetStreamLimits(DWORD* aInputMin,
++                                                   DWORD* aInputMax,
++                                                   DWORD* aOutputMin,
++                                                   DWORD* aOutputMax) {
++  *aInputMin = *aInputMax = *aOutputMin = *aOutputMax = 1;
++  return S_OK;
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::GetStreamCount(DWORD* aInputStreams,
++                                                  DWORD* aOutputStreams) {
++  *aInputStreams = *aOutputStreams = 1;
++  return S_OK;
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::GetStreamIDs(DWORD aInputSize,
++                                                DWORD* aInputIDs,
++                                                DWORD aOutputSize,
++                                                DWORD* aOutputIDs) {
++  return E_NOTIMPL;
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::GetInputStreamInfo(
++    DWORD aInputStreamID, MFT_INPUT_STREAM_INFO* aStreamInfo) {
++  if (aInputStreamID != 0) {
++    return MF_E_INVALIDSTREAMNUMBER;
++  }
++  aStreamInfo->hnsMaxLatency = 0;
++  aStreamInfo->dwFlags = 0;
++  aStreamInfo->cbSize = 0;
++  aStreamInfo->cbMaxLookahead = 0;
++  aStreamInfo->cbAlignment = 0;
++  return S_OK;
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::GetOutputStreamInfo(
++    DWORD aOutputStreamID, MFT_OUTPUT_STREAM_INFO* aStreamInfo) {
++  if (aOutputStreamID != 0) {
++    return MF_E_INVALIDSTREAMNUMBER;
++  }
++  aStreamInfo->dwFlags = MFT_OUTPUT_STREAM_PROVIDES_SAMPLES;
++  aStreamInfo->cbSize = 0;
++  aStreamInfo->cbAlignment = 0;
++  return S_OK;
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::GetAttributes(IMFAttributes** aAttributes) {
++  return E_NOTIMPL;
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::GetInputStreamAttributes(
++    DWORD aInputStreamID, IMFAttributes** aAttributes) {
++  return E_NOTIMPL;
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::GetOutputStreamAttributes(
++    DWORD aOutputStreamID, IMFAttributes** aAttributes) {
++  return E_NOTIMPL;
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::DeleteInputStream(DWORD aStreamID) {
++  return E_NOTIMPL;
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::AddInputStreams(DWORD aStreams,
++                                                   DWORD* aStreamIDs) {
++  return E_NOTIMPL;
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::GetInputAvailableType(DWORD aInputStreamID,
++                                                         DWORD aTypeIndex,
++                                                         IMFMediaType** aType) {
++  std::lock_guard<std::mutex> lock(mMutex);
++  if (aInputStreamID != 0) {
++    return MF_E_INVALIDSTREAMNUMBER;
++  }
++  if (aTypeIndex != 0 || !mInputType) {
++    return MF_E_NO_MORE_TYPES;
++  }
++  return mInputType.CopyTo(aType);
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::GetOutputAvailableType(
++    DWORD aOutputStreamID, DWORD aTypeIndex, IMFMediaType** aType) {
++  std::lock_guard<std::mutex> lock(mMutex);
++  if (aOutputStreamID != 0) {
++    return MF_E_INVALIDSTREAMNUMBER;
++  }
++  if (aTypeIndex != 0 || !mOutputType) {
++    return MF_E_NO_MORE_TYPES;
++  }
++  return mOutputType.CopyTo(aType);
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::SetInputType(DWORD aInputStreamID,
++                                                IMFMediaType* aType,
++                                                DWORD aFlags) {
++  if (aInputStreamID != 0) {
++    return MF_E_INVALIDSTREAMNUMBER;
++  }
++  std::lock_guard<std::mutex> lock(mMutex);
++  if (aFlags & MFT_SET_TYPE_TEST_ONLY) {
++    return S_OK;
++  }
++  // Unwrap the protected media type to get the real underlying media type.
++  ComPtr<IMFMediaType> unwrapped;
++  if (aType && SUCCEEDED(MFUnwrapMediaType(aType, &unwrapped))) {
++    mInputType = unwrapped;
++  } else {
++    mInputType = aType;
++  }
++  if (!mOutputType && mInputType) {
++    // Mirror input type as output type.
++    RETURN_IF_FAILED(MFCreateMediaType(&mOutputType));
++    RETURN_IF_FAILED(mInputType->CopyAllItems(mOutputType.Get()));
++  }
++  return S_OK;
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::SetOutputType(DWORD aOutputStreamID,
++                                                 IMFMediaType* aType,
++                                                 DWORD aFlags) {
++  if (aOutputStreamID != 0) {
++    return MF_E_INVALIDSTREAMNUMBER;
++  }
++  std::lock_guard<std::mutex> lock(mMutex);
++  if (aFlags & MFT_SET_TYPE_TEST_ONLY) {
++    return S_OK;
++  }
++  mOutputType = aType;
++  return S_OK;
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::GetInputCurrentType(DWORD aInputStreamID,
++                                                       IMFMediaType** aType) {
++  std::lock_guard<std::mutex> lock(mMutex);
++  if (aInputStreamID != 0) {
++    return MF_E_INVALIDSTREAMNUMBER;
++  }
++  if (!mInputType) {
++    return MF_E_TRANSFORM_TYPE_NOT_SET;
++  }
++  return mInputType.CopyTo(aType);
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::GetOutputCurrentType(DWORD aOutputStreamID,
++                                                        IMFMediaType** aType) {
++  std::lock_guard<std::mutex> lock(mMutex);
++  if (aOutputStreamID != 0) {
++    return MF_E_INVALIDSTREAMNUMBER;
++  }
++  if (!mOutputType) {
++    return MF_E_TRANSFORM_TYPE_NOT_SET;
++  }
++  return mOutputType.CopyTo(aType);
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::GetInputStatus(DWORD aInputStreamID,
++                                                  DWORD* aFlags) {
++  std::lock_guard<std::mutex> lock(mMutex);
++  if (aInputStreamID != 0) {
++    return MF_E_INVALIDSTREAMNUMBER;
++  }
++  *aFlags = mInputSample ? 0 : MFT_INPUT_STATUS_ACCEPT_DATA;
++  return S_OK;
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::GetOutputStatus(DWORD* aFlags) {
++  std::lock_guard<std::mutex> lock(mMutex);
++  *aFlags = mInputSample ? MFT_OUTPUT_STATUS_SAMPLE_READY : 0;
++  return S_OK;
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::SetOutputBounds(LONGLONG aLowerBound,
++                                                   LONGLONG aUpperBound) {
++  return E_NOTIMPL;
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::ProcessEvent(DWORD aInputStreamID,
++                                                IMFMediaEvent* aEvent) {
++  return S_OK;
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::ProcessMessage(MFT_MESSAGE_TYPE aMessage,
++                                                  ULONG_PTR aParam) {
++  return S_OK;
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::ProcessInput(DWORD aInputStreamID,
++                                                IMFSample* aSample,
++                                                DWORD aFlags) {
++  ENTRY_LOG();
++  if (aInputStreamID != 0) {
++    return MF_E_INVALIDSTREAMNUMBER;
++  }
++  if (!aSample) {
++    return E_INVALIDARG;
++  }
++  std::lock_guard<std::mutex> lock(mMutex);
++  if (mInputSample) {
++    return MF_E_NOTACCEPTING;
++  }
++  mInputSample = aSample;
++  return S_OK;
++}
++
++HRESULT WMFClearKeyDecryptor::DecryptSample(IMFSample* aEncryptedSample,
++                                            IMFSample** aDecryptedSample) {
++  ENTRY_LOG();
++  // Extract IV (stored as the SampleID blob, 16 bytes).
++  BYTE* ivData = nullptr;
++  UINT32 ivSize = 0;
++  HRESULT hr = aEncryptedSample->GetAllocatedBlob(
++      MFSampleExtension_Encryption_SampleID, &ivData, &ivSize);
++  const bool isEncrypted = SUCCEEDED(hr) && ivSize > 0;
++  LOG("isEncrypted=%d, ivSize=%u", isEncrypted, ivSize);
++
++  // Copy all buffer data from the sample.
++  DWORD totalLen = 0;
++  RETURN_IF_FAILED(aEncryptedSample->GetTotalLength(&totalLen));
++
++  std::vector<uint8_t> sampleData(totalLen);
++  {
++    ComPtr<IMFMediaBuffer> contiguousBuffer;
++    RETURN_IF_FAILED(
++        aEncryptedSample->ConvertToContiguousBuffer(&contiguousBuffer));
++    BYTE* bufferData = nullptr;
++    DWORD currentLen = 0;
++    RETURN_IF_FAILED(contiguousBuffer->Lock(&bufferData, nullptr, &currentLen));
++    if (currentLen > 0) {
++      memcpy(sampleData.data(), bufferData, currentLen);
++    }
++    contiguousBuffer->Unlock();
++  }
++
++  WMFDecryptedBlock decryptedBlock;
++
++  if (isEncrypted) {
++    // Extract key ID (stored as a GUID).
++    GUID keyIdGuid = GUID_NULL;
++    RETURN_IF_FAILED(
++        aEncryptedSample->GetGUID(MFSampleExtension_Content_KeyID, &keyIdGuid));
++    uint8_t keyId[16];
++    GuidToKeyId(keyIdGuid, keyId);
++
++    // Extract subsample mapping if present.
++    BYTE* subsampleData = nullptr;
++    UINT32 subsampleDataSize = 0;
++    std::vector<cdm::SubsampleEntry> subsamples;
++    if (SUCCEEDED(aEncryptedSample->GetAllocatedBlob(
++            MFSampleExtension_Encryption_SubSample_Mapping, &subsampleData,
++            &subsampleDataSize)) &&
++        subsampleDataSize >= 8) {
++      // Each entry is {DWORD clearBytes, DWORD cipherBytes} = 8 bytes.
++      const DWORD numEntries = subsampleDataSize / 8;
++      subsamples.resize(numEntries);
++      for (DWORD i = 0; i < numEntries; i++) {
++        DWORD clearBytes = 0, cipherBytes = 0;
++        memcpy(&clearBytes, subsampleData + i * 8, sizeof(DWORD));
++        memcpy(&cipherBytes, subsampleData + i * 8 + sizeof(DWORD),
++               sizeof(DWORD));
++        subsamples[i].clear_bytes = clearBytes;
++        subsamples[i].cipher_bytes = cipherBytes;
++      }
++      CoTaskMemFree(subsampleData);
++    } else {
++      if (subsampleData) {
++        CoTaskMemFree(subsampleData);
++      }
++      // No subsample info: treat the whole buffer as cipher bytes.
++      cdm::SubsampleEntry entry;
++      entry.clear_bytes = 0;
++      entry.cipher_bytes = totalLen;
++      subsamples.push_back(entry);
++    }
++
++    LONGLONG sampleTime = 0;
++    aEncryptedSample->GetSampleTime(&sampleTime);
++
++    cdm::InputBuffer_2 inputBuffer = {};
++    inputBuffer.data = sampleData.data();
++    inputBuffer.data_size = static_cast<uint32_t>(sampleData.size());
++    inputBuffer.encryption_scheme = cdm::EncryptionScheme::kCenc;
++    inputBuffer.key_id = keyId;
++    inputBuffer.key_id_size = 16;
++    inputBuffer.iv = ivData;
++    inputBuffer.iv_size = ivSize;
++    inputBuffer.subsamples = subsamples.data();
++    inputBuffer.num_subsamples = static_cast<uint32_t>(subsamples.size());
++    inputBuffer.timestamp = sampleTime;
++
++    HRESULT decryptHr = mSessionManager->Decrypt(inputBuffer, &decryptedBlock);
++    LOG("Decrypt hr=%lx", static_cast<long>(decryptHr));
++    CoTaskMemFree(ivData);
++    RETURN_IF_FAILED(decryptHr);
++  } else {
++    if (ivData) {
++      CoTaskMemFree(ivData);
++    }
++    LOG("Clear sample passthrough, size=%lu", totalLen);
++    WMFDecryptedBuffer* buffer =
++        new WMFDecryptedBuffer(static_cast<uint32_t>(sampleData.size()));
++    memcpy(buffer->Data(), sampleData.data(), sampleData.size());
++    decryptedBlock.SetDecryptedBuffer(buffer);
++  }
++
++  cdm::Buffer* decryptedBuffer = decryptedBlock.DecryptedBuffer();
++  if (!decryptedBuffer || !decryptedBuffer->Data()) {
++    LOG("Decrypt produced null or empty buffer");
++    return E_FAIL;
++  }
++
++  // Wrap decrypted data in a new IMFSample.
++  ComPtr<IMFSample> outputSample;
++  RETURN_IF_FAILED(MFCreateSample(&outputSample));
++
++  ComPtr<IMFMediaBuffer> outputBuffer;
++  RETURN_IF_FAILED(MFCreateMemoryBuffer(
++      static_cast<DWORD>(decryptedBuffer->Size()), &outputBuffer));
++
++  BYTE* outputData = nullptr;
++  RETURN_IF_FAILED(outputBuffer->Lock(&outputData, nullptr, nullptr));
++  memcpy(outputData, decryptedBuffer->Data(), decryptedBuffer->Size());
++  outputBuffer->Unlock();
++  RETURN_IF_FAILED(outputBuffer->SetCurrentLength(
++      static_cast<DWORD>(decryptedBuffer->Size())));
++
++  RETURN_IF_FAILED(outputSample->AddBuffer(outputBuffer.Get()));
++
++  LONGLONG sampleTime = 0;
++  LONGLONG sampleDuration = 0;
++  if (SUCCEEDED(aEncryptedSample->GetSampleTime(&sampleTime))) {
++    outputSample->SetSampleTime(sampleTime);
++  }
++  if (SUCCEEDED(aEncryptedSample->GetSampleDuration(&sampleDuration))) {
++    outputSample->SetSampleDuration(sampleDuration);
++  }
++
++  // Propagate the keyframe flag so the downstream H264 decoder knows which
++  // samples are IDR frames.
++  UINT32 isCleanPoint = 0;
++  if (SUCCEEDED(aEncryptedSample->GetUINT32(MFSampleExtension_CleanPoint,
++                                            &isCleanPoint)) &&
++      isCleanPoint) {
++    outputSample->SetUINT32(MFSampleExtension_CleanPoint, 1);
++  }
++
++  *aDecryptedSample = outputSample.Detach();
++  return S_OK;
++}
++
++STDMETHODIMP WMFClearKeyDecryptor::ProcessOutput(
++    DWORD aFlags, DWORD aOutputBufferCount,
++    MFT_OUTPUT_DATA_BUFFER* aOutputSamples, DWORD* aStatus) {
++  ENTRY_LOG();
++  *aStatus = 0;
++
++  if (aOutputBufferCount != 1) {
++    LOG("Invalid output buffer count: %lu", aOutputBufferCount);
++    return E_INVALIDARG;
++  }
++
++  ComPtr<IMFSample> encryptedSample;
++  {
++    std::lock_guard<std::mutex> lock(mMutex);
++    if (!mInputSample) {
++      LOG("No input sample available");
++      return MF_E_TRANSFORM_NEED_MORE_INPUT;
++    }
++    encryptedSample = mInputSample;
++    mInputSample = nullptr;
++  }
++
++  // The MFT allocates output samples (MFT_OUTPUT_STREAM_PROVIDES_SAMPLES).
++  MOZ_ASSERT(!aOutputSamples[0].pSample);
++
++  ComPtr<IMFSample> decryptedSample;
++  RETURN_IF_FAILED(DecryptSample(encryptedSample.Get(), &decryptedSample));
++
++  aOutputSamples[0].pSample = decryptedSample.Detach();
++  return S_OK;
++}
++
++}  // namespace mozilla
+diff --git a/media/wmf-clearkey/WMFClearKeyInputTrustAuthority.cpp b/media/wmf-clearkey/WMFClearKeyInputTrustAuthority.cpp
+--- a/media/wmf-clearkey/WMFClearKeyInputTrustAuthority.cpp
++++ b/media/wmf-clearkey/WMFClearKeyInputTrustAuthority.cpp
+@@ -7,11 +7,11 @@
+ #include <mfapi.h>
+ #include <mferror.h>
+ 
+ #include "WMFClearKeyActivate.h"
+ #include "WMFClearKeyCDM.h"
+-// #include "WMFClearKeyDecryptor.h"
++#include "WMFClearKeyDecryptor.h"
+ #include "WMFClearKeyUtils.h"
+ #include "WMFClearKeyOutputPolicy.h"
+ 
+ namespace mozilla {
+ 
+@@ -27,15 +27,12 @@
+ 
+ STDMETHODIMP WMFClearKeyInputTrustAuthority::GetDecrypter(REFIID aRiid,
+                                                           void** aPpv) {
+   ENTRY_LOG();
+   ComPtr<IMFTransform> decryptor;
+-  // TODO : As currently we are still not able to make decryption working in the
+-  // media foundation pipeline, we will finish the implementation for
+-  // WMFClearKeyDecryptor later.
+-  // RETURN_IF_FAILED((MakeAndInitialize<WMFClearKeyDecryptor, IMFTransform>(
+-  //     &decryptor, mSessionManager)));
++  RETURN_IF_FAILED((MakeAndInitialize<WMFClearKeyDecryptor, IMFTransform>(
++      &decryptor, mSessionManager)));
+   RETURN_IF_FAILED(decryptor.CopyTo(aRiid, aPpv));
+   return S_OK;
+ }
+ 
+ STDMETHODIMP WMFClearKeyInputTrustAuthority::RequestAccess(
+diff --git a/media/wmf-clearkey/WMFClearKeyUtils.h b/media/wmf-clearkey/WMFClearKeyUtils.h
+--- a/media/wmf-clearkey/WMFClearKeyUtils.h
++++ b/media/wmf-clearkey/WMFClearKeyUtils.h
+@@ -14,10 +14,11 @@
+ #include <sstream>
+ #include <stdio.h>
+ 
+ #include "MFCDMExtra.h"
+ #include "mozilla/Assertions.h"
++#include "mozilla/EndianUtils.h"
+ 
+ namespace mozilla {
+ 
+ inline constexpr WCHAR kCLEARKEY_SYSTEM_NAME[] = L"org.w3.clearkey";
+ 
+@@ -72,10 +73,22 @@
+       LOG("%s [%p]: " fmt, PRETTY_FUNC, this, ##__VA_ARGS__); \
+       (void)(0, ##__VA_ARGS__);                               \
+     } while (0)
+ #endif
+ 
++// Convert a GUID (little-endian GUID byte order) to a 16-byte big-endian key
++// ID. In Media Foundation, key IDs are GUIDs but the actual key ID bytes are
++// big-endian. Data1/2/3 are stored little-endian in a GUID, so we swap them.
++inline void GuidToKeyId(const GUID& aGuid, uint8_t aKeyId[16]) {
++  GUID swapped = aGuid;
++  swapped.Data1 = NativeEndian::swapToBigEndian(aGuid.Data1);
++  swapped.Data2 = NativeEndian::swapToBigEndian(aGuid.Data2);
++  swapped.Data3 = NativeEndian::swapToBigEndian(aGuid.Data3);
++  // Data4 is already a byte array (big-endian), no swap needed.
++  memcpy(aKeyId, &swapped, 16);
++}
++
+ // TODO : should we use Microsoft's definition or Chromium's defintion?
+ 
+ // This is defined in Microsoft's sample code
+ // https://github.com/microsoft/media-foundation/blob/dc81175a3e893c7c58fcbf1a943ac342e39f172c/samples/storecdm/clearkeyStoreCDM/clearkeydll/guids.h#L17-L18C14
+ // DEFINE_GUID(CLEARKEY_GUID_CLEARKEY_PROTECTION_SYSTEM_ID, 0x9b0ff3ca, 0x1378,
+diff --git a/media/wmf-clearkey/moz.build b/media/wmf-clearkey/moz.build
+--- a/media/wmf-clearkey/moz.build
++++ b/media/wmf-clearkey/moz.build
+@@ -2,19 +2,22 @@
+ # License, v. 2.0. If a copy of the MPL was not distributed with this
+ # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ 
+ DEFINES["CDM_IMPLEMENTATION"] = True
+ 
++LOCAL_INCLUDES += [
++    "/security/nss/lib/nss",
++]
++
+ SOURCES += [
+     "dllmain.cpp",
+     "WMFClearKeyActivate.cpp",
+     "WMFClearKeyCDM.cpp",
+     "WMFClearKeyCDMAccess.cpp",
+     "WMFClearKeyCDMFactory.cpp",
+     "WMFClearKeyContentEnabler.cpp",
+-    # TODO : enable decryptor in bug 1870722.
+-    # "WMFClearKeyDecryptor.cpp",
++    "WMFClearKeyDecryptor.cpp",
+     "WMFClearKeyInputTrustAuthority.cpp",
+     "WMFClearKeyOutputPolicy.cpp",
+     "WMFClearKeySession.cpp",
+     "WMFClearKeyTrustedInput.cpp",
+     "WMFPMPServer.cpp",
+diff --git a/security/sandbox/win/src/sandboxbroker/sandboxBroker.cpp b/security/sandbox/win/src/sandboxbroker/sandboxBroker.cpp
+--- a/security/sandbox/win/src/sandboxbroker/sandboxBroker.cpp
++++ b/security/sandbox/win/src/sandboxbroker/sandboxBroker.cpp
+@@ -1858,12 +1858,30 @@
+     case mozilla::ipc::SandboxingKind::GENERIC_UTILITY:
+       return BuildUtilitySandbox(config, GenericUtilitySandboxProps());
+     case mozilla::ipc::SandboxingKind::UTILITY_AUDIO_DECODING_WMF:
+       return BuildUtilitySandbox(config, UtilityAudioDecodingWmfSandboxProps());
+ #ifdef MOZ_WMF_MEDIA_ENGINE
+-    case mozilla::ipc::SandboxingKind::MF_MEDIA_ENGINE_CDM:
+-      return BuildUtilitySandbox(config, UtilityMfMediaEngineCdmSandboxProps());
++    case mozilla::ipc::SandboxingKind::MF_MEDIA_ENGINE_CDM: {
++      if (!BuildUtilitySandbox(config, UtilityMfMediaEngineCdmSandboxProps())) {
++        return false;
++      }
++      // Allow MFTEnumEx to enumerate registered MFT decoders/encoders.
++      auto result = config->AllowRegistryRead(
++          L"HKEY_LOCAL_MACHINE\\Software\\Classes\\MediaFoundation\\*");
++      if (sandbox::SBOX_ALL_OK != result) {
++        NS_WARNING("Failed to add MediaFoundation registry rule for MFCDM.");
++      }
++      // MFTEnumEx reads CLSID subkeys to enumerate registered Media Foundation
++      // Transforms. The exact CLSIDs vary per system and are not known at build
++      // time, so a wildcard covering the full CLSID hive is required.
++      result = config->AllowRegistryRead(
++          L"HKEY_LOCAL_MACHINE\\Software\\Classes\\CLSID\\*");
++      if (sandbox::SBOX_ALL_OK != result) {
++        NS_WARNING("Failed to add CLSID registry rule for MFCDM.");
++      }
++      return true;
++    }
+ #endif
+     case mozilla::ipc::SandboxingKind::WINDOWS_UTILS:
+       return BuildUtilitySandbox(config, WindowsUtilitySandboxProps());
+     default:
+       MOZ_ASSERT_UNREACHABLE("Unknown sandboxing value");
+

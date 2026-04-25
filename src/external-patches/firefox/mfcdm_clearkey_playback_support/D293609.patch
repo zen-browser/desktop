@@ -1,0 +1,95 @@
+diff --git a/dom/media/MediaDecoder.h b/dom/media/MediaDecoder.h
+--- a/dom/media/MediaDecoder.h
++++ b/dom/media/MediaDecoder.h
+@@ -382,10 +382,17 @@
+ 
+   void SetIsBackgroundVideoDecodingAllowed(bool aAllowed);
+ 
+   bool IsVideoDecodingSuspended() const;
+ 
++#  ifdef MOZ_WMF_CDM
++  // [TEST-ONLY] Returns true if WMFClearKey CDM is active. The media engine
++  // renders frames internally via OnVideoStreamTick() in this mode, so no
++  // decoded frames appear in the image container.
++  bool IsUsingWMFClearKey() const;
++#  endif
++
+   // The MediaDecoderOwner of this decoder wants to resist fingerprinting.
+   bool ShouldResistFingerprinting() const {
+     return mShouldResistFingerprinting;
+   }
+ 
+@@ -694,10 +701,14 @@
+   MediaEventListener mOnSecondaryVideoContainerInstalled;
+ 
+   // True if we have suspended video decoding.
+   bool mIsVideoDecodingSuspended = false;
+ 
++#  ifdef MOZ_WMF_CDM
++  bool mIsFrameServerMode = false;
++#  endif
++
+  protected:
+   // PlaybackRate and pitch preservation status we should start at.
+   double mPlaybackRate;
+ 
+   // True if the decoder is seeking.
+diff --git a/dom/media/MediaDecoder.cpp b/dom/media/MediaDecoder.cpp
+--- a/dom/media/MediaDecoder.cpp
++++ b/dom/media/MediaDecoder.cpp
+@@ -356,21 +356,27 @@
+       GetOwner()->QueueEvent(u"mozvideoonlyseekbegin"_ns);
+       break;
+     case MediaPlaybackEvent::VideoOnlySeekCompleted:
+       GetOwner()->QueueEvent(u"mozvideoonlyseekcompleted"_ns);
+       break;
+-    case MediaPlaybackEvent::PlaybackRateFallback:
+-      nsContentUtils::ReportToConsoleNonLocalized(
+-          u"Failed to initialize the audio time stretcher. Audio will play at "
+-          u"normal speed."_ns,
+-          nsIScriptError::warningFlag, "Media"_ns, GetOwner()->GetDocument());
++#ifdef MOZ_WMF_CDM
++    case MediaPlaybackEvent::FrameServerMode:
++      mIsFrameServerMode = true;
++      UpdateReadyState();
+       break;
++#endif
+     default:
+       break;
+   }
+ }
+ 
++#ifdef MOZ_WMF_CDM
++bool MediaDecoder::IsUsingWMFClearKey() const {
++  return mIsFrameServerMode && StaticPrefs::media_eme_wmf_clearkey_enabled();
++}
++#endif
++
+ bool MediaDecoder::IsVideoDecodingSuspended() const {
+   return mIsVideoDecodingSuspended;
+ }
+ 
+ void MediaDecoder::OnPlaybackErrorEvent(const MediaResult& aError) {
+diff --git a/dom/media/mediaelement/HTMLMediaElement.cpp b/dom/media/mediaelement/HTMLMediaElement.cpp
+--- a/dom/media/mediaelement/HTMLMediaElement.cpp
++++ b/dom/media/mediaelement/HTMLMediaElement.cpp
+@@ -6533,11 +6533,17 @@
+     return;
+   }
+ 
+   if (IsVideo() && VideoTracks() && !VideoTracks()->IsEmpty() &&
+       !IsPlaybackEnded() && GetImageContainer() &&
+-      !GetImageContainer()->HasCurrentImage()) {
++      !GetImageContainer()->HasCurrentImage()
++#ifdef MOZ_WMF_CDM
++      // WMFClearKey frame-server mode renders video internally without exposing
++      // frames through the image container.
++      && !(mDecoder && mDecoder->IsUsingWMFClearKey())
++#endif
++  ) {
+     // Don't advance if we are playing video, but don't have a video frame.
+     // Also, if video became available after advancing to HAVE_CURRENT_DATA
+     // while we are still playing, we need to revert to HAVE_METADATA until
+     // a video frame is available.
+     LOG(LogLevel::Debug,
+

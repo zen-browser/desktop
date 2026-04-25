@@ -1,0 +1,17 @@
+diff --git a/widget/windows/nsWindow.cpp b/widget/windows/nsWindow.cpp
+--- a/widget/windows/nsWindow.cpp
++++ b/widget/windows/nsWindow.cpp
+@@ -649,11 +649,11 @@
+     mMessages[5] = ::RegisterWindowMessage(L"CaretTrackingUpdateIPHidden");
+     mMessages[6] = ::RegisterWindowMessage(L"CaretTrackingUpdateIPInfo");
+ 
+     mHook = ::SetWindowsHookEx(WH_GETMESSAGE, &TIPHook, nullptr,
+                                ::GetCurrentThreadId());
+-    MOZ_ASSERT(mHook);
++    NS_WARNING_ASSERTION(mHook, "SetWindowsHookEx(WH_GETMESSAGE) failed");
+ 
+     if (!sSendMessageTimeoutWStub) {
+       sUser32Intercept.Init("user32.dll");
+       DebugOnly<bool> hooked = sSendMessageTimeoutWStub.Set(
+           sUser32Intercept, "SendMessageTimeoutW", &SendMessageTimeoutWHook);
+

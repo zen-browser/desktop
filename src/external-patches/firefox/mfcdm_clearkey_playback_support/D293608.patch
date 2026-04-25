@@ -1,0 +1,575 @@
+diff --git a/dom/media/ExternalEngineStateMachine.h b/dom/media/ExternalEngineStateMachine.h
+--- a/dom/media/ExternalEngineStateMachine.h
++++ b/dom/media/ExternalEngineStateMachine.h
+@@ -109,10 +109,18 @@
+     // On the engine manager thread.
+     (void)OwnerThread()->Dispatch(NS_NewRunnableFunction(
+         "ExternalEngineStateMachine::NotifyWaitingForKey",
+         [self = RefPtr{this}] { self->NotifyWaitingForKeyInternal(); }));
+   }
++  // Frame server mode is used only for WMFClearKey (test-only CDM) — it
++  // bypasses DComp surface delivery and drives rendering via OnVideoStreamTick.
++  void NotifyFrameServerMode() {
++    // On the engine manager thread.
++    (void)OwnerThread()->Dispatch(NS_NewRunnableFunction(
++        "ExternalEngineStateMachine::NotifyFrameServerMode",
++        [self = RefPtr{this}] { self->NotifyFrameServerModeInternal(); }));
++  }
+ #endif
+ 
+   const char* GetStateStr() const;
+ 
+   RefPtr<SetCDMPromise> SetCDMProxy(CDMProxy* aProxy) override;
+@@ -315,10 +323,11 @@
+   // alive, so reinitialize the engine only.
+   void RecoverFromCDMProcessCrashIfNeeded();
+   void RecoverFromHardwareReset();
+ #ifdef MOZ_WMF_CDM
+   void NotifyWaitingForKeyInternal();
++  void NotifyFrameServerModeInternal();
+ #endif
+ 
+   void ReportTelemetry(const MediaResult& aError);
+ 
+   void DecodeError(const MediaResult& aError) override;
+@@ -329,10 +338,19 @@
+ 
+   bool mHasEnoughAudio = false;
+   bool mHasEnoughVideo = false;
+   bool mSentPlaybackEndedEvent = false;
+   bool mHasReceivedFirstDecodedVideoFrame = false;
++#ifdef MOZ_WMF_CDM
++  bool mIsFrameServerMode = false;
++  // True once we have sent the video EOS notification to the WMF engine.
++  // The WMF engine in frame server mode continues to fire TIMEUPDATE events
++  // after EOS via OnVideoStreamTick; without this guard RunningEngineUpdate
++  // would re-request video data after the stream has ended, causing spurious
++  // decode failures.
++  bool mVideoEOSSentToEngine = false;
++#endif
+ 
+   // Only used if setting CDM happens before the engine finishes initialization.
+   MozPromiseHolder<SetCDMPromise> mSetCDMProxyPromise;
+   MozPromiseRequestHolder<SetCDMPromise> mSetCDMProxyRequest;
+ 
+diff --git a/dom/media/ExternalEngineStateMachine.cpp b/dom/media/ExternalEngineStateMachine.cpp
+--- a/dom/media/ExternalEngineStateMachine.cpp
++++ b/dom/media/ExternalEngineStateMachine.cpp
+@@ -8,10 +8,13 @@
+ #ifdef MOZ_WMF_MEDIA_ENGINE
+ #  include "MFMediaEngineDecoderModule.h"
+ #  include "mozilla/MFMediaEngineChild.h"
+ #  include "mozilla/StaticPrefs_media.h"
+ #endif
++#ifdef MOZ_WMF_CDM
++#  include "mozilla/EMEUtils.h"
++#endif
+ #include "VideoUtils.h"
+ #include "mozilla/AppShutdown.h"
+ #include "mozilla/Atomics.h"
+ #include "mozilla/ClearOnShutdown.h"
+ #include "mozilla/ProfilerLabels.h"
+@@ -542,10 +545,13 @@
+     mHasEnoughAudio = false;
+     OnRequestAudio();
+   }
+   if (HasVideo()) {
+     mHasEnoughVideo = false;
++#ifdef MOZ_WMF_CDM
++    mVideoEOSSentToEngine = false;
++#endif
+     OnRequestVideo();
+   }
+   CheckIfSeekCompleted();
+ }
+ 
+@@ -812,10 +818,15 @@
+     if (aType == MediaData::Type::AUDIO_DATA) {
+       return TrackInfo::TrackType::kAudioTrack;
+     }
+     return TrackInfo::TrackType::kUndefinedTrack;
+   };
++#ifdef MOZ_WMF_CDM
++  if (aType == MediaData::Type::VIDEO_DATA) {
++    mVideoEOSSentToEngine = true;
++  }
++#endif
+   mEngine->NotifyEndOfStream(DataTypeToTrackType(aType));
+ }
+ 
+ void ExternalEngineStateMachine::WaitForData(MediaData::Type aType) {
+   AssertOnTaskQueue();
+@@ -925,11 +936,15 @@
+   AssertOnTaskQueue();
+   MOZ_ASSERT(mState.IsRunningEngine() || mState.IsSeekingData());
+   if (aType == MediaData::Type::AUDIO_DATA && !mHasEnoughAudio) {
+     OnRequestAudio();
+   }
+-  if (aType == MediaData::Type::VIDEO_DATA && !mHasEnoughVideo) {
++  if (aType == MediaData::Type::VIDEO_DATA && !mHasEnoughVideo
++#ifdef MOZ_WMF_CDM
++      && !mVideoEOSSentToEngine
++#endif
++  ) {
+     OnRequestVideo();
+   }
+ }
+ 
+ void ExternalEngineStateMachine::OnRequestAudio() {
+@@ -1026,10 +1041,17 @@
+             if (!mHasReceivedFirstDecodedVideoFrame) {
+               mHasReceivedFirstDecodedVideoFrame = true;
+               OnLoadedFirstFrame();
+             }
+             RunningEngineUpdate(MediaData::Type::VIDEO_DATA);
++#ifdef MOZ_WMF_CDM
++            // In frame server mode the engine drives rendering via
++            // OnVideoStreamTick; there is no DComp image to display here.
++            if (mIsFrameServerMode) {
++              return;
++            }
++#endif
+             // Send image to PIP window.
+             if (mSecondaryVideoContainer.Ref()) {
+               mSecondaryVideoContainer.Ref()->SetCurrentFrame(
+                   mVideoDisplay, aVideo->mImage, TimeStamp::Now(),
+                   media::TimeUnit::Invalid(), aVideo->mTime);
+@@ -1070,11 +1092,18 @@
+ }
+ 
+ void ExternalEngineStateMachine::OnLoadedFirstFrame() {
+   AssertOnTaskQueue();
+   // We will wait until receive the first video frame.
+-  if (mInfo->HasVideo() && !mHasReceivedFirstDecodedVideoFrame) {
++  if (mInfo->HasVideo() &&
++      !mHasReceivedFirstDecodedVideoFrame
++#ifdef MOZ_WMF_CDM
++      // In frame server mode no decoded frame is ever delivered to us, so we
++      // must not gate the first-frame-loaded event on receiving one.
++      && !mIsFrameServerMode
++#endif
++  ) {
+     LOG("Hasn't received first decoded video frame");
+     return;
+   }
+   LOG("OnLoadedFirstFrame");
+   MediaDecoderEventVisibility visibility =
+@@ -1316,10 +1345,25 @@
+                          msg);
+   }
+   mVideoDisplay = gfx::IntSize{aWidth, aHeight};
+ }
+ 
++#ifdef MOZ_WMF_CDM
++void ExternalEngineStateMachine::NotifyFrameServerModeInternal() {
++  AssertOnTaskQueue();
++  LOG("NotifyFrameServerModeInternal: engine is in frame server mode");
++  MOZ_ASSERT(IsWMFClearKeySystemAndSupported(NS_ConvertUTF8toUTF16(mKeySystem)),
++             "Frame server mode is only for WMFClearKey");
++  mIsFrameServerMode = true;
++  mOnPlaybackEvent.Notify(MediaPlaybackEvent::FrameServerMode);
++  mHasReceivedFirstDecodedVideoFrame = true;
++  if (!mSentFirstFrameLoadedEvent) {
++    OnLoadedFirstFrame();
++  }
++}
++#endif
++
+ void ExternalEngineStateMachine::RecoverFromCDMProcessCrashIfNeeded() {
+   AssertOnTaskQueue();
+   if (mState.IsRecoverEngine()) {
+     LOG("In the recover state already");
+     return;
+@@ -1424,10 +1468,21 @@
+   AssertOnTaskQueue();
+   if (mState.IsShutdownEngine()) {
+     return SetCDMPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
+   }
+ 
++  if (!aProxy) {
++    // A null proxy means the CDM is being cleared. The EESM-specific path
++    // below requires a valid WMFCDMProxy to obtain its ID and register with
++    // the engine, so it cannot handle null. Delegate to the base class, which
++    // clears the CDM state on the reader via mReader->SetCDMProxy(null).
++    // For WMFClearKey, failing to clear the CDM state would leave the reader
++    // holding a stale reference to the old proxy, causing use-after-free or
++    // silent decryption failures on subsequent playback.
++    return MediaDecoderStateMachineBase::SetCDMProxy(aProxy);
++  }
++
+   if (!mEngine || !mEngine->IsInited()) {
+     LOG("SetCDMProxy is called before init");
+     mReader->SetEncryptedCustomIdent();
+     mPendingTasks.AppendElement(NS_NewRunnableFunction(
+         "ExternalEngineStateMachine::SetCDMProxy",
+diff --git a/dom/media/MediaDecoderStateMachineBase.h b/dom/media/MediaDecoderStateMachineBase.h
+--- a/dom/media/MediaDecoderStateMachineBase.h
++++ b/dom/media/MediaDecoderStateMachineBase.h
+@@ -41,10 +41,15 @@
+     StartVideoSuspendTimer,
+     CancelVideoSuspendTimer,
+     VideoOnlySeekBegin,
+     VideoOnlySeekCompleted,
+     PlaybackRateFallback,
++#ifdef MOZ_WMF_CDM
++    // [TEST-ONLY] The media engine renders video internally and delivers frames
++    // via OnVideoStreamTick() callbacks; used when a WMFClearKey CDM is active.
++    FrameServerMode,
++#endif
+   } mType;
+ 
+   using DataType = Variant<Nothing, int64_t>;
+   DataType mData;
+ 
+diff --git a/dom/media/ipc/MFCDMParent.h b/dom/media/ipc/MFCDMParent.h
+--- a/dom/media/ipc/MFCDMParent.h
++++ b/dom/media/ipc/MFCDMParent.h
+@@ -50,10 +50,11 @@
+   static MFCDMParent* GetCDMById(uint64_t aId) {
+     MOZ_ASSERT(sRegisteredCDMs.Contains(aId));
+     return sRegisteredCDMs.Get(aId);
+   }
+   uint64_t Id() const { return mId; }
++  const nsString& GetKeySystem() const { return mKeySystem; }
+ 
+   mozilla::ipc::IPCResult RecvGetCapabilities(
+       const MFCDMCapabilitiesRequest& aRequest,
+       GetCapabilitiesResolver&& aResolver);
+ 
+diff --git a/dom/media/ipc/MFMediaEngineChild.h b/dom/media/ipc/MFMediaEngineChild.h
+--- a/dom/media/ipc/MFMediaEngineChild.h
++++ b/dom/media/ipc/MFMediaEngineChild.h
+@@ -45,10 +45,11 @@
+   mozilla::ipc::IPCResult RecvNotifyError(const MediaResult& aError);
+   mozilla::ipc::IPCResult RecvNotifyHardwareReset();
+   mozilla::ipc::IPCResult RecvNotifyWaitingForKey();
+   mozilla::ipc::IPCResult RecvUpdateStatisticData(const StatisticData& aData);
+   mozilla::ipc::IPCResult RecvNotifyResizing(uint32_t aWidth, uint32_t aHeight);
++  mozilla::ipc::IPCResult RecvNotifyFrameServerMode();
+ 
+   nsISerialEventTarget* ManagerThread() const { return mManagerThread; }
+   void AssertOnManagerThread() const {
+     MOZ_ASSERT(mManagerThread->IsOnCurrentThread());
+   }
+@@ -129,10 +130,13 @@
+   void UpdateCurrentTime(double aCurrentTimeInSecond);
+   void NotifyEvent(ExternalEngineEvent aEvent);
+   void NotifyError(const MediaResult& aError);
+   void NotifyHardwareReset();
+   void NotifyWaitingForKey();
++#ifdef MOZ_WMF_CDM
++  void NotifyFrameServerMode();
++#endif
+ 
+   const RefPtr<MFMediaEngineChild> mEngine;
+ 
+   // The current time which we receive from the MediaEngine or set by the state
+   // machine when seeking.
+diff --git a/dom/media/ipc/MFMediaEngineChild.cpp b/dom/media/ipc/MFMediaEngineChild.cpp
+--- a/dom/media/ipc/MFMediaEngineChild.cpp
++++ b/dom/media/ipc/MFMediaEngineChild.cpp
+@@ -242,10 +242,21 @@
+   }
+   mOwner->NotifyResizing(aWidth, aHeight);
+   return IPC_OK();
+ }
+ 
++mozilla::ipc::IPCResult MFMediaEngineChild::RecvNotifyFrameServerMode() {
++  AssertOnManagerThread();
++  if (mShutdown) {
++    return IPC_OK();
++  }
++#ifdef MOZ_WMF_CDM
++  mOwner->NotifyFrameServerMode();
++#endif
++  return IPC_OK();
++}
++
+ uint64_t MFMediaEngineChild::GetUpdatedRenderedFrames(
+     const StatisticData& aData) {
+   return mAccumulatedPresentedFramesFromPrevEngine
+              ? (aData.renderedFrames() +
+                 *mAccumulatedPresentedFramesFromPrevEngine)
+@@ -440,10 +451,18 @@
+   AssertOnManagerThread();
+   WLOG("Video resizing, new size [%u,%u]", aWidth, aHeight);
+   mOwner->NotifyResizing(aWidth, aHeight);
+ }
+ 
++#ifdef MOZ_WMF_CDM
++void MFMediaEngineWrapper::NotifyFrameServerMode() {
++  AssertOnManagerThread();
++  WLOG("Engine switched to frame server mode");
++  mOwner->NotifyFrameServerMode();
++}
++#endif
++
+ #undef CLOG
+ #undef WLOG
+ #undef WLOGV
+ 
+ }  // namespace mozilla
+diff --git a/dom/media/ipc/MFMediaEngineParent.h b/dom/media/ipc/MFMediaEngineParent.h
+--- a/dom/media/ipc/MFMediaEngineParent.h
++++ b/dom/media/ipc/MFMediaEngineParent.h
+@@ -122,10 +122,16 @@
+ #endif
+ 
+   MediaEventListener mMediaEngineEventListener;
+   MediaEventListener mRequestSampleListener;
+   bool mIsCreatedMediaEngine = false;
++  // Set to true when EnableWindowlessSwapchainMode succeeds during media source
++  // setup. Guards DComp surface handle creation in EnsureDcompSurfaceHandle:
++  // if false (e.g. when a CDM incompatible with windowless swap chain is
++  // active), DComp setup is skipped and we fall back to frame-server mode.
++  bool mDCompModeEnabled = false;
++  bool mIsFrameServerMode = false;
+ 
+   Microsoft::WRL::ComPtr<IMFDXGIDeviceManager> mDXGIDeviceManager;
+ 
+   // These will be always zero for audio playback.
+   DWORD mDisplayWidth = 0;
+diff --git a/dom/media/ipc/MFMediaEngineParent.cpp b/dom/media/ipc/MFMediaEngineParent.cpp
+--- a/dom/media/ipc/MFMediaEngineParent.cpp
++++ b/dom/media/ipc/MFMediaEngineParent.cpp
+@@ -10,10 +10,11 @@
+ #include <mfapi.h>
+ 
+ #ifdef MOZ_WMF_CDM
+ #  include "MFCDMParent.h"
+ #  include "MFContentProtectionManager.h"
++#  include "mozilla/EMEUtils.h"
+ #endif
+ 
+ #include "MFMediaEngineExtension.h"
+ #include "MFMediaEngineStream.h"
+ #include "MFMediaEngineUtils.h"
+@@ -248,11 +249,11 @@
+         NotifyVideoResizing();
+       }
+       break;
+     }
+     case MF_MEDIA_ENGINE_EVENT_FIRSTFRAMEREADY: {
+-      if (mMediaEngine->HasVideo()) {
++      if (mMediaEngine->HasVideo() && !mIsFrameServerMode) {
+         EnsureDcompSurfaceHandle();
+       }
+       [[fallthrough]];
+     }
+     case MF_MEDIA_ENGINE_EVENT_LOADEDDATA:
+@@ -276,10 +277,16 @@
+     }
+     case MF_MEDIA_ENGINE_EVENT_TIMEUPDATE: {
+       auto currentTimeInSeconds = mMediaEngine->GetCurrentTime();
+       (void)SendUpdateCurrentTime(currentTimeInSeconds);
+       UpdateStatisticsData();
++      if (mIsFrameServerMode && mMediaEngine->HasVideo()) {
++        LONGLONG pts = 0;
++        HRESULT hr = mMediaEngine->OnVideoStreamTick(&pts);
++        LOG("FrameServer pump: OnVideoStreamTick hr=%lx pts=%" PRId64, (long)hr,
++            (int64_t)pts);
++      }
+       break;
+     }
+     default:
+       LOG("Unhandled event=%s", MediaEngineEventToStr(aEvent.mEvent));
+       break;
+@@ -501,15 +508,37 @@
+ 
+   // Enable windowless swapchain mode before setting the source. For encrypted
+   // content, this must be called after SetContentProtectionManager (which
+   // resets the swapchain mode), and before SetSource.
+   if (mMediaSource->GetVideoStream()) {
+-    ComPtr<IMFMediaEngineEx> mediaEngineEx;
+-    RETURN_VOID_IF_FAILED(mMediaEngine.As(&mediaEngineEx));
+-    RETURN_VOID_IF_FAILED(mediaEngineEx->EnableWindowlessSwapchainMode(true));
+-    LOG("Enabled dcomp swap chain mode");
+-    ENGINE_MARKER("MFMediaEngineParent,EnabledSwapChain");
++    if (mIsFrameServerMode) {
++      LOG("Frame server mode: skipping DComp");
++      ENGINE_MARKER("MFMediaEngineParent,FrameServerMode");
++      mMediaSource->GetVideoStream()->AsVideoStream()->SetFrameServerMode();
++      (void)SendNotifyFrameServerMode();
++    } else {
++      ComPtr<IMFMediaEngineEx> mediaEngineEx;
++      RETURN_VOID_IF_FAILED(mMediaEngine.As(&mediaEngineEx));
++      HRESULT swapChainHr = mediaEngineEx->EnableWindowlessSwapchainMode(true);
++      if (SUCCEEDED(swapChainHr)) {
++        mDCompModeEnabled = true;
++        LOG("Enabled dcomp swap chain mode");
++        ENGINE_MARKER("MFMediaEngineParent,EnabledSwapChain");
++      } else {
++        LOG("EnableWindowlessSwapchainMode failed: hr=%lx", (long)swapChainHr);
++        // This branch is reached in non-WMFClearKey playback (e.g. unencrypted
++        // or Widevine/PlayReady EME) when the underlying graphics driver does
++        // not support windowless swap chains (e.g. running in a remote desktop
++        // or software-rendering environment). mDCompModeEnabled stays false, so
++        // EnsureDcompSurfaceHandle() will early-return on FIRSTFRAMEREADY, and
++        // the engine falls back to its own internal rendering while still
++        // firing LOADEDDATA/ENDED/etc. normally. Do NOT enter frame-server mode
++        // here: that path is only for WMFClearKey, which is handled by the
++        // mIsFrameServerMode fast path above (set in RecvSetCDMProxyId before
++        // SetMediaSourceOnEngine runs).
++      }
++    }
+   }
+ 
+   mMediaEngineExtension->SetMediaSource(mMediaSource.Get());
+ 
+   // We use the source scheme in order to let the media engine to load our
+@@ -581,10 +610,14 @@
+ #ifdef MOZ_WMF_CDM
+   LOG("SetCDMProxy, Id=%" PRIu64, aProxyId);
+   mProxyId = Some(aProxyId);
+   MFCDMParent* cdmParent = MFCDMParent::GetCDMById(aProxyId);
+   MOZ_DIAGNOSTIC_ASSERT(cdmParent);
++  if (IsWMFClearKeySystemAndSupported(cdmParent->GetKeySystem())) {
++    LOG("WMFClearKey CDM detected, enabling frame server mode");
++    mIsFrameServerMode = true;
++  }
+   HRESULT rv =
+       MakeAndInitialize<MFContentProtectionManager>(&mContentProtectionManager);
+   CDM_SETUP_IPC_RETURN_IF_FAILED(rv,
+                                  "Failed to create content protection manager");
+ 
+@@ -723,10 +756,14 @@
+ void MFMediaEngineParent::EnsureDcompSurfaceHandle() {
+   AssertOnManagerThread();
+   MOZ_ASSERT(mMediaEngine);
+   MOZ_ASSERT(mMediaEngine->HasVideo());
+ 
++  if (!mDCompModeEnabled) {
++    LOG("Skip EnsureDcompSurfaceHandle: DComp mode not enabled");
++    return;
++  }
+   ComPtr<IMFMediaEngineEx> mediaEngineEx;
+   RETURN_VOID_IF_FAILED(mMediaEngine.As(&mediaEngineEx));
+ 
+   // Ensure that the width and height is already up-to-date.
+   gfx::IntSize size{mDisplayWidth, mDisplayHeight};
+diff --git a/dom/media/ipc/PMFMediaEngine.ipdl b/dom/media/ipc/PMFMediaEngine.ipdl
+--- a/dom/media/ipc/PMFMediaEngine.ipdl
++++ b/dom/media/ipc/PMFMediaEngine.ipdl
+@@ -59,8 +59,9 @@
+   async NotifyWaitingForKey();
+   async UpdateCurrentTime(double currentTimeInSecond);
+   async RequestSample(TrackType type, bool isEnough);
+   async UpdateStatisticData(StatisticData data);
+   async NotifyResizing(uint32_t width, uint32_t height);
++  async NotifyFrameServerMode();
+ };
+ 
+ } // namespace mozilla
+diff --git a/dom/media/platforms/wmf/MFMediaEngineVideoStream.h b/dom/media/platforms/wmf/MFMediaEngineVideoStream.h
+--- a/dom/media/platforms/wmf/MFMediaEngineVideoStream.h
++++ b/dom/media/platforms/wmf/MFMediaEngineVideoStream.h
+@@ -40,10 +40,15 @@
+ 
+   void SetKnowsCompositor(layers::KnowsCompositor* aKnowsCompositor);
+ 
+   void SetDCompSurfaceHandle(HANDLE aDCompSurfaceHandle, gfx::IntSize aDisplay);
+ 
++  // Called when the engine operates in frame server mode (without a DComp
++  // surface). Bypasses the DComp-readiness gate in OutputData/Drain so that
++  // video decode promises resolve immediately with empty outputs.
++  void SetFrameServerMode();
++
+   MFMediaEngineVideoStream* AsVideoStream() override { return this; }
+ 
+   MediaDataDecoder::ConversionRequired NeedsConversion() const override;
+ 
+   // Called by MFMediaEngineParent when we are creating a video decoder for
+@@ -134,10 +139,15 @@
+   bool mHasClearLead = false;
+ 
+   // True once the first encrypted config has been seen on a ClearLead stream.
+   // We want the engine to request an ITA only after the encrypted part starts.
+   bool mSwitchedClearToEncrypted = false;
++
++  // Set when the engine operates in frame server mode (without a DComp
++  // surface). Bypasses the DComp-readiness gate so decode promises resolve
++  // without a real image.
++  bool mFrameServerMode = false;
+ };
+ 
+ }  // namespace mozilla
+ 
+ #endif  // DOM_MEDIA_PLATFORM_WMF_MFMEDIAENGINEVIDEOSTREAM_H
+diff --git a/dom/media/platforms/wmf/MFMediaEngineVideoStream.cpp b/dom/media/platforms/wmf/MFMediaEngineVideoStream.cpp
+--- a/dom/media/platforms/wmf/MFMediaEngineVideoStream.cpp
++++ b/dom/media/platforms/wmf/MFMediaEngineVideoStream.cpp
+@@ -54,10 +54,19 @@
+         LOG("Set SetKnowsCompositor=%p", mKnowsCompositor.get());
+         ResolvePendingPromisesIfNeeded();
+       }));
+ }
+ 
++void MFMediaEngineVideoStream::SetFrameServerMode() {
++  ComPtr<MFMediaEngineVideoStream> self = this;
++  (void)mTaskQueue->Dispatch(NS_NewRunnableFunction(
++      "MFMediaEngineVideoStream::SetFrameServerMode", [self, this]() {
++        mFrameServerMode = true;
++        LOG("Set frame server mode");
++      }));
++}
++
+ void MFMediaEngineVideoStream::SetDCompSurfaceHandle(HANDLE aDCompSurfaceHandle,
+                                                      gfx::IntSize aDisplay) {
+   ComPtr<MFMediaEngineVideoStream> self = this;
+   (void)mTaskQueue->Dispatch(NS_NewRunnableFunction(
+       "MFMediaEngineStream::SetDCompSurfaceHandle",
+@@ -272,11 +281,19 @@
+                                                            __func__);
+ }
+ 
+ already_AddRefed<MediaData> MFMediaEngineVideoStream::OutputDataInternal() {
+   AssertOnTaskQueue();
+-  if (mRawDataQueueForGeneratingOutput.GetSize() == 0 || !IsDCompImageReady()) {
++  if (mRawDataQueueForGeneratingOutput.GetSize() == 0) {
++    return nullptr;
++  }
++  if (mFrameServerMode) {
++    RefPtr<MediaRawData> discarded =
++        mRawDataQueueForGeneratingOutput.PopFront();
++    return nullptr;
++  }
++  if (!IsDCompImageReady()) {
+     return nullptr;
+   }
+   RefPtr<MediaRawData> sample = mRawDataQueueForGeneratingOutput.PopFront();
+   RefPtr<VideoData> output;
+   {
+@@ -289,10 +306,19 @@
+ }
+ 
+ RefPtr<MediaDataDecoder::DecodePromise> MFMediaEngineVideoStream::Drain() {
+   AssertOnTaskQueue();
+   MediaDataDecoder::DecodedData outputs;
++  if (mFrameServerMode) {
++    mRawDataQueueForGeneratingOutput.Reset();
++    if (!mSampleRequestTokens.empty() &&
++        mRawDataQueueForFeedingEngine.GetSize() == 0) {
++      NotifyEndEvent();
++    }
++    return MediaDataDecoder::DecodePromise::CreateAndResolve(std::move(outputs),
++                                                             __func__);
++  }
+   if (!IsDCompImageReady()) {
+     LOGV("Waiting for dcomp image for draining");
+     // A workaround for a special case where we have sent all input data to the
+     // media engine, and waiting for an output. Sometime media engine would
+     // never return the first frame to us, unless we notify it the end event,
+@@ -438,11 +464,11 @@
+   }
+   return mIsEncrypted || mIsEncryptedCustomInit;
+ }
+ 
+ bool MFMediaEngineVideoStream::ShouldDelayVideoDecodeBeforeDcompReady() {
+-  return HasEnoughRawData() && !IsDCompImageReady();
++  return !mFrameServerMode && HasEnoughRawData() && !IsDCompImageReady();
+ }
+ 
+ nsCString MFMediaEngineVideoStream::GetCodecName() const {
+   switch (mStreamType) {
+     case WMFStreamType::H264:
+

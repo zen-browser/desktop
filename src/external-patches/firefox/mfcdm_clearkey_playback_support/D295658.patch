@@ -1,0 +1,146 @@
+diff --git a/dom/media/test/mochitest_media_engine.toml b/dom/media/test/mochitest_media_engine.toml
+--- a/dom/media/test/mochitest_media_engine.toml
++++ b/dom/media/test/mochitest_media_engine.toml
+@@ -17,8 +17,10 @@
+ 
+ ["test_eme_mfcdm_generate_request_from_new_session.html"]
+ 
+ ["test_eme_mfcdm_getstatusforpolicy.html"]
+ 
++["test_eme_mfcdm_update_error.html"]
++
+ ["test_eme_wideinve_l1_installation.html"]
+ 
+ ["test_eme_wmfclearkey_playback.html"]
+diff --git a/dom/media/test/test_eme_mfcdm_update_error.html b/dom/media/test/test_eme_mfcdm_update_error.html
+new file mode 100644
+--- /dev/null
++++ b/dom/media/test/test_eme_mfcdm_update_error.html
+@@ -0,0 +1,126 @@
++<!DOCTYPE HTML>
++<html>
++<head>
++  <title>Media Engine only test : test EME session.update() error paths for MFCDM</title>
++  <script src="/tests/SimpleTest/SimpleTest.js"></script>
++  <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css" />
++  <script type="text/javascript" src="manifest.js"></script>
++</head>
++<body>
++<script class="testbody" type="text/javascript">
++
++add_task(async function setupTestingPrefs() {
++  await SpecialPowers.pushPrefEnv({
++    set: [
++      ["media.wmf.media-engine.enabled", 2],
++      ["media.eme.playready.enabled", true],
++      ["media.eme.wmf.clearkey.enabled", true],
++      ["media.eme.wmf.use-mock-cdm-for-external-cdms", true],
++    ],
++  });
++});
++
++const kKeySystems = [
++  "com.microsoft.playready.recommendation",
++  "com.microsoft.playready.recommendation.3000",
++  "com.microsoft.playready.recommendation.3000.clearlead",
++  "org.w3.clearkey",
++];
++
++async function createSessionWithRequest(keySystem) {
++  const fakeKID = new Uint8Array([0xa1, 0x23, 0x45, 0x67, 0x89]);
++  const fakeKIDBase64 = btoa(String.fromCharCode.apply(null, fakeKID))
++    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
++
++  const configs = [{
++    initDataTypes: ['keyids'],
++    videoCapabilities: [{ contentType: `video/mp4;codecs="avc1.640028"` }],
++    sessionTypes: ['temporary'],
++  }];
++
++  const access = await navigator.requestMediaKeySystemAccess(keySystem, configs)
++    .catch(() => { ok(false, `failed to create key system access for ${keySystem}`); return null; });
++  if (!access) { return null; }
++
++  const mediaKeys = await access.createMediaKeys()
++    .catch(() => { ok(false, `failed to create media keys for ${keySystem}`); return null; });
++  if (!mediaKeys) { return null; }
++
++  const session = mediaKeys.createSession('temporary');
++
++  const initData = { kids: [fakeKIDBase64], type: 'temporary' };
++  const messagePromise = new Promise(resolve => {
++    session.addEventListener('message', resolve, { once: true });
++  });
++
++  await session.generateRequest('keyids', new TextEncoder().encode(JSON.stringify(initData)))
++    .catch(() => ok(false, `failed to generateRequest for ${keySystem}`));
++
++  await messagePromise;
++  return session;
++}
++
++add_task(async function testMalformedJSON() {
++  for (const keySystem of kKeySystems) {
++    const session = await createSessionWithRequest(keySystem);
++    if (!session) { continue; }
++
++    const garbage = new TextEncoder().encode("not valid json {{{{");
++    let rejected = false;
++    await session.update(garbage).catch(() => { rejected = true; });
++    ok(rejected, `${keySystem}: update() with malformed JSON should reject`);
++  }
++});
++
++add_task(async function testInvalidJWKStructure() {
++  for (const keySystem of kKeySystems) {
++    const session = await createSessionWithRequest(keySystem);
++    if (!session) { continue; }
++
++    // Valid JSON but missing required JWK fields (kty, k, kid)
++    const badJWK = { keys: [{ foo: "bar" }], type: "temporary" };
++    const encoded = new TextEncoder().encode(JSON.stringify(badJWK));
++    let rejected = false;
++    await session.update(encoded).catch(() => { rejected = true; });
++    ok(rejected, `${keySystem}: update() with invalid JWK structure should reject`);
++  }
++});
++
++add_task(async function testWrongTypeField() {
++  for (const keySystem of kKeySystems) {
++    const session = await createSessionWithRequest(keySystem);
++    if (!session) { continue; }
++
++    // Session is temporary but license response claims persistent-license
++    const mismatch = {
++      keys: [{
++        kty: "oct",
++        kid: "AAAAAAAAAAAAAAAAAAAAAA",
++        k: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=",
++      }],
++      type: "persistent-license",
++    };
++    const encoded = new TextEncoder().encode(JSON.stringify(mismatch));
++    let rejected = false;
++    await session.update(encoded).catch(() => { rejected = true; });
++    ok(rejected, `${keySystem}: update() with wrong type field should reject`);
++  }
++});
++
++add_task(async function testEmptyResponse() {
++  for (const keySystem of kKeySystems) {
++    const session = await createSessionWithRequest(keySystem);
++    if (!session) { continue; }
++
++    // Empty Uint8Array — MediaKeySession::Update() guards this at the JS layer
++    // with a TypeError before reaching the CDM.
++    const empty = new Uint8Array(0);
++    let caughtType = null;
++    await session.update(empty).catch(e => { caughtType = e.constructor.name; });
++    ok(caughtType !== null, `${keySystem}: update() with empty response should reject`);
++  }
++});
++
++</script>
++</body>
++</html>
+

@@ -1,0 +1,114 @@
+diff --git a/dom/media/test/mochitest_media_engine.toml b/dom/media/test/mochitest_media_engine.toml
+--- a/dom/media/test/mochitest_media_engine.toml
++++ b/dom/media/test/mochitest_media_engine.toml
+@@ -5,14 +5,20 @@
+   "!wmfme",
+ ]
+ 
+ support-files = [
+   "tearsofsteel_1frame_encrypted.mp4",
++  "bipbop-clearkey-video-av1.mp4",
++  "bipbop-clearkey-video-av1.mp4^headers^",
++  "opus-sample-cenc.mp4",
++  "opus-sample-cenc.mp4^headers^",
+ ]
+ 
+ ["test_eme_mfcdm_generate_request.html"]
+ 
+ ["test_eme_mfcdm_generate_request_from_new_session.html"]
+ 
+ ["test_eme_mfcdm_getstatusforpolicy.html"]
+ 
+ ["test_eme_wideinve_l1_installation.html"]
++
++["test_eme_wmfclearkey_playback.html"]
+diff --git a/dom/media/test/test_eme_wmfclearkey_playback.html b/dom/media/test/test_eme_wmfclearkey_playback.html
+new file mode 100644
+--- /dev/null
++++ b/dom/media/test/test_eme_wmfclearkey_playback.html
+@@ -0,0 +1,84 @@
++<!DOCTYPE HTML>
++<html>
++<head>
++  <title>Media Engine only test : WMFClearKey encrypted media playback</title>
++  <script src="/tests/SimpleTest/SimpleTest.js"></script>
++  <link rel="stylesheet" type="text/css" href="/tests/SimpleTest/test.css" />
++  <script type="text/javascript" src="manifest.js"></script>
++  <script type="text/javascript" src="https://example.com:443/tests/dom/media/test/eme.js"></script>
++</head>
++<body>
++<pre id="test">
++<script class="testbody" type="text/javascript">
++/* import-globals-from eme.js */
++
++// WMFClearKey EME playback involves CDM initialization, key provisioning via
++// session.update(), and full AV decode — allow extra time for slower CI machines.
++SimpleTest.requestLongerTimeout(2);
++
++add_task(async function setupTestingPrefs() {
++  await SpecialPowers.pushPrefEnv({
++    set: [
++      ["media.wmf.media-engine.enabled", 2],
++      ["media.wmf.media-engine.channel-decoder.enabled", true],
++      ["media.eme.wmf.clearkey.enabled", true],
++      ["media.wmf.media-engine.bypass-gfx-blocklist", true],
++      ["media.eme.mfcdm.origin-filter.enabled", false],
++      // Disable WindowsAppSDK to prevent it from interfering with the WMF
++      // media engine's DComp/frame-server rendering path in test environments.
++      ["widget.windows.windowsappsdk.enabled", false],
++    ],
++  });
++});
++
++// Short (~4 s) AV1+Opus CENC clip encrypted with two separate key IDs.
++const kTest = {
++  name: "AV1+Opus clearkey",
++  tracks: [
++    {
++      name: "audio",
++      type: 'audio/mp4; codecs="opus"',
++      fragments: ["opus-sample-cenc.mp4"],
++    },
++    {
++      name: "video",
++      type: 'video/mp4; codecs="av1"',
++      fragments: ["bipbop-clearkey-video-av1.mp4"],
++    },
++  ],
++  keys: {
++    "7e571d047e571d047e571d047e571d21": "7e5744447e5744447e5744447e574421",
++    "8b5df745ad84145b5617c33116e35a67": "bddfd35dd9be033ee73bc18bc1885056",
++  },
++  sessionType: "temporary",
++  sessionCount: 2,
++};
++
++add_task(async function testWMFClearKeyPlayback() {
++  const video = document.createElement("video");
++  document.body.appendChild(video);
++
++  try {
++    await SetupEME(video, kTest, "wmfclearkey-playback");
++    ok(true, "EME setup completed: keys provisioned");
++
++    video.addEventListener("error", function(e) {
++      ok(false, "video error: " + (video.error ? video.error.message : e));
++    }, { once: true });
++
++    ok(await video.play().then(_ => true, _ => false), "video started playing");
++    await new Promise(resolve => video.addEventListener("ended", resolve, { once: true }));
++
++    ok(video.ended, "Video played to the end");
++  } finally {
++    video.setMediaKeys(null);
++    video.remove();
++    video.removeAttribute("src");
++    video.load();
++  }
++});
++
++</script>
++</pre>
++</body>
++</html>
+

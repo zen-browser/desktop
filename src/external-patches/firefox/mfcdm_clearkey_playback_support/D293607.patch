@@ -1,0 +1,40 @@
+diff --git a/dom/media/ipc/MFMediaEngineParent.cpp b/dom/media/ipc/MFMediaEngineParent.cpp
+--- a/dom/media/ipc/MFMediaEngineParent.cpp
++++ b/dom/media/ipc/MFMediaEngineParent.cpp
+@@ -459,13 +459,10 @@
+   LOG("%s", message.get());
+ 
+   if (aInfo.videoInfo()) {
+     ComPtr<IMFMediaEngineEx> mediaEngineEx;
+     RETURN_IF_FAILED(mMediaEngine.As(&mediaEngineEx));
+-    RETURN_IF_FAILED(mediaEngineEx->EnableWindowlessSwapchainMode(true));
+-    LOG("Enabled dcomp swap chain mode");
+-    ENGINE_MARKER("MFMediaEngineParent,EnabledSwapChain");
+     if (isEncrypted) {
+       // Microsoft recommends to disable low latency with DRM.
+       RETURN_IF_FAILED(mediaEngineEx->SetRealTimeMode(false));
+       LOG("Turned off the real time mode for encrypted playback");
+     }
+@@ -500,10 +497,21 @@
+     MediaResult error(NS_ERROR_DOM_MEDIA_FATAL_ERR,
+                       "Failed to set media source");
+     DestroyEngineIfExists(Some(error));
+   });
+ 
++  // Enable windowless swapchain mode before setting the source. For encrypted
++  // content, this must be called after SetContentProtectionManager (which
++  // resets the swapchain mode), and before SetSource.
++  if (mMediaSource->GetVideoStream()) {
++    ComPtr<IMFMediaEngineEx> mediaEngineEx;
++    RETURN_VOID_IF_FAILED(mMediaEngine.As(&mediaEngineEx));
++    RETURN_VOID_IF_FAILED(mediaEngineEx->EnableWindowlessSwapchainMode(true));
++    LOG("Enabled dcomp swap chain mode");
++    ENGINE_MARKER("MFMediaEngineParent,EnabledSwapChain");
++  }
++
+   mMediaEngineExtension->SetMediaSource(mMediaSource.Get());
+ 
+   // We use the source scheme in order to let the media engine to load our
+   // custom source.
+   RETURN_VOID_IF_FAILED(
+

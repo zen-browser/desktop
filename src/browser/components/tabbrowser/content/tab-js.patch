@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index 2e02bad1a7c89b4c3b5aee1e14c13bb953a64eb6..3ac8d2facb224ae39d2199f2c5ec08b77e0c1dfd 100644
+index 2e02bad1a7c89b4c3b5aee1e14c13bb953a64eb6..139fa9be7919928e5a57fda6c7fabe4bc5acf982 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@
@@ -151,17 +151,24 @@ index 2e02bad1a7c89b4c3b5aee1e14c13bb953a64eb6..3ac8d2facb224ae39d2199f2c5ec08b7
      on_click(event) {
        if (event.button != 0) {
          return;
-@@ -617,14 +656,23 @@
+@@ -617,14 +656,30 @@
              trigger: "alt_click",
            });
          }
 +        if (
 +          !event.target.classList.contains("tab-close-button") &&
 +          !event.target.classList.contains("tab-icon-overlay") &&
-+          !event.target.classList.contains("tab-audio-button") &&
-+          !this.splitView
++          !event.target.classList.contains("tab-audio-button")
 +        ) {
-+          gZenViewSplitter.contextSplitTabs(this);
++          if (!this.splitView) {
++            gZenViewSplitter.contextSplitTabs(this);
++          } else {
++            gBrowser.selectedTab = this;
++            gZenViewSplitter.removeTabFromGroup(this, undefined, {
++              forUnsplit: true,
++              changeTab: false
++            });
++          }
 +        }
          return;
        }
@@ -176,7 +183,7 @@ index 2e02bad1a7c89b4c3b5aee1e14c13bb953a64eb6..3ac8d2facb224ae39d2199f2c5ec08b7
          gBrowser.multiSelectedTabsCount > 0 &&
          !event.target.classList.contains("tab-close-button") &&
          !event.target.classList.contains("tab-icon-overlay") &&
-@@ -636,8 +684,9 @@
+@@ -636,8 +691,9 @@
        }
  
        if (
@@ -188,7 +195,7 @@ index 2e02bad1a7c89b4c3b5aee1e14c13bb953a64eb6..3ac8d2facb224ae39d2199f2c5ec08b7
        ) {
          if (this.activeMediaBlocked) {
            if (this.multiselected) {
-@@ -655,7 +704,7 @@
+@@ -655,7 +711,7 @@
          return;
        }
  
@@ -197,7 +204,7 @@ index 2e02bad1a7c89b4c3b5aee1e14c13bb953a64eb6..3ac8d2facb224ae39d2199f2c5ec08b7
          if (this.multiselected) {
            gBrowser.removeMultiSelectedTabs(
              lazy.TabMetrics.userTriggeredContext(
-@@ -675,6 +724,14 @@
+@@ -675,6 +731,14 @@
          // (see tabbrowser-tabs 'click' handler).
          gBrowser.tabContainer._blockDblClick = true;
        }
@@ -212,7 +219,7 @@ index 2e02bad1a7c89b4c3b5aee1e14c13bb953a64eb6..3ac8d2facb224ae39d2199f2c5ec08b7
      }
  
      on_dblclick(event) {
-@@ -698,6 +755,8 @@
+@@ -698,6 +762,8 @@
            animate: true,
            triggeringEvent: event,
          });

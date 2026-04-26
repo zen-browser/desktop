@@ -181,7 +181,9 @@ document.addEventListener(
     window.gZenIndiaGov = {
       openApp(url) {
         try {
-          const panel = document.getElementById("PanelUI-zen-india-gov");
+          const panel = document.getElementById(
+            "PanelUI-zen-india-gov"
+          );
           panel?.hidePopup();
           window.openTrustedLinkIn(url, "tab");
         } catch(e) {
@@ -216,18 +218,11 @@ document.addEventListener(
       open: openAppLauncherPanel,
       openApp(url) {
         try {
-          const panel = document.getElementById("PanelUI-zen-app-launcher");
+          const panel = document.getElementById(
+            "PanelUI-zen-app-launcher"
+          );
           panel?.hidePopup();
-          setTimeout(() => {
-            try {
-              openTrustedLinkIn(url, "tab");
-            } catch(e) {
-              gBrowser.addTab(url, {
-                triggeringPrincipal: Services.scriptSecurityManager
-                  .getSystemPrincipal(),
-              });
-            }
-          }, 50);
+          window.openTrustedLinkIn(url, "tab");
         } catch(e) {
           console.error("Astra: App launcher open error:", e);
         }

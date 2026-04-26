@@ -489,7 +489,7 @@
   type="arrow"
   orient="vertical"
   id="PanelUI-zen-india-gov"
-  position="after_start"
+  position="bottomright topright"
   side="bottom"
   noautofocus="true">
   <vbox id="PanelUI-zen-india-gov-container">

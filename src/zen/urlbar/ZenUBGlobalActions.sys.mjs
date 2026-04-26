@@ -29,11 +29,6 @@ const globalActionsTemplate = [
     icon: "chrome://browser/skin/zen-icons/edit-theme.svg",
   },
   {
-    label: "India Services 🇮🇳",
-    command: window => window.gZenIndiaServices?.open?.(null, window),
-    icon: "chrome://browser/skin/zen-icons/globe.svg",
-  },
-  {
     label: "Astra App Hub",
     command: window => window.gZenAppLauncher?.open?.(null, window),
     icon: "chrome://browser/skin/zen-icons/selectable/grid-3x3.svg",

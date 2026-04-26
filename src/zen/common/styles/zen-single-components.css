@@ -920,3 +920,26 @@
 .zen-tab-notes-clear {
   padding: 6px 12px;
 }
+
+/* Astra - India Gov Panel */
+#PanelUI-zen-india-gov {
+  min-width: 340px;
+  max-width: 380px;
+  padding: 12px;
+}
+
+#PanelUI-zen-india-gov-list {
+  max-height: 70vh;
+  overflow-y: auto !important;
+  scrollbar-width: thin;
+  display: flex;
+  flex-direction: column;
+}
+
+#PanelUI-zen-india-gov-title {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0 0 8px 0;
+  border-bottom: 1px solid var(--panel-separator-color);
+  margin-bottom: 6px;
+}

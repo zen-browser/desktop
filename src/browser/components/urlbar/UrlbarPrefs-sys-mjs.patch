@@ -1,12 +1,19 @@
 diff --git a/browser/components/urlbar/UrlbarPrefs.sys.mjs b/browser/components/urlbar/UrlbarPrefs.sys.mjs
-index 2d21248256c6c2bfb8dac958133c10e3251ef564..6645211ef09518b41cb737e3186fbd0162ecf700 100644
+index 92eb44a2084bd75c49c7b275836ded9aff575723..9f6a4cad7e554113c730f6d0d3ac9b8645df22f6 100644
 --- a/browser/components/urlbar/UrlbarPrefs.sys.mjs
 +++ b/browser/components/urlbar/UrlbarPrefs.sys.mjs
-@@ -799,6 +799,7 @@ function makeDefaultResultGroups({ showSearchSuggestionsFirst }) {
-    */
+@@ -717,6 +717,7 @@ const PREF_OTHER_DEFAULTS = /** @type {PreferenceDefinition[]} */ ([
+   ["keyword.enabled", true],
+   ["security.insecure_connection_text.enabled", true],
+   [TelemetryReportingPolicy.TOU_ACCEPTED_DATE_PREF, 0],
+   ["ui.popup.disable_autohide", false],
++  ["zen.urlbar.suggestions.workspaces", true],
+ ]);
+@@ -803,6 +804,7 @@ function makeDefaultResultGroups({ showSearchSuggestionsFirst }) {
    let rootGroup = {
      children: [
-+      { children: [{ group: lazy.UrlbarUtils.RESULT_GROUP.ZEN_ACTION }] },
+       { children: [{ group: lazy.UrlbarUtils.RESULT_GROUP.ZEN_ACTION }] },
++      { children: [{ group: lazy.UrlbarUtils.RESULT_GROUP.ZEN_WORKSPACE }] },
        // heuristic
        {
          maxResultCount: 1,

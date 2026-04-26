@@ -689,11 +689,15 @@
   --zen-loading-progress-bar-color: color-mix(in srgb, var(--zen-primary-color), light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.5)) 70%);
 
   position: fixed;
+  top: calc(-2px - env(hairline));
 
   /* Minimum -2px, but if its larger, elemenet separation / -2 will be used as top offset, to avoid overlapping with the notification stack */
-  top: calc(var(--zen-element-separation) / -2);
   :root:is([zen-no-padding="true"], [inDOMFullscreen="true"]) & {
     top: 4px;
+  }
+
+  :root[zen-single-toolbar="true"] & {
+    top: calc(var(--zen-element-separation) / -2);
   }
 
   left: 50%;

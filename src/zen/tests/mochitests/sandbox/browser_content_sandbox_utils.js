@@ -59,7 +59,7 @@ function isXdgEnabled() {
 // Creates file at |path| and returns a promise that resolves with an object
 // with .ok boolean to indicate true if the file was successfully created,
 // otherwise false. Include imports so this can be safely serialized and run
-// remotely by ContentTask.spawn.
+// remotely by SpecialPowers.spawn.
 //
 // Report the exception's error code in .code as well.
 function createFile(path) {
@@ -99,7 +99,7 @@ function createFile(path) {
 // Creates a symlink at |path| and returns a promise that resolves with an
 // object with .ok boolean to indicate true if the symlink was successfully
 // created, otherwise false. Include imports so this can be safely serialized
-// and run remotely by ContentTask.spawn.
+// and run remotely by SpecialPowers.spawn.
 //
 // Report the exception's error code in .code as well.
 // Report errno in .code if syscall returns -1.
@@ -139,7 +139,7 @@ function createSymlink(path) {
 // Deletes file at |path| and returns a promise that resolves with an object
 // with .ok boolean to indicate true if the file was successfully deleted,
 // otherwise false. Include imports so this can be safely serialized and run
-// remotely by ContentTask.spawn.
+// remotely by SpecialPowers.spawn.
 //
 // Report the exception's error code in .code as well.
 function deleteFile(path) {
@@ -472,9 +472,9 @@ async function runTestsList(tests) {
       ok(test.file.exists(), `${test.file.path} exists`);
     }
 
-    let result = await ContentTask.spawn(
+    let result = await SpecialPowers.spawn(
       test.browser,
-      test.file.path,
+      [test.file.path],
       test.func
     );
 

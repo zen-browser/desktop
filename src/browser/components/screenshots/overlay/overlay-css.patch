@@ -1,5 +1,5 @@
 diff --git a/browser/components/screenshots/overlay/overlay.css b/browser/components/screenshots/overlay/overlay.css
-index 94d87522bfaaf59b9138ec5ca960be0a0ea31339..ab3fa41cefdfc1d93edeb8a2d626bd9b1e07344b 100644
+index a2cd691cfcfa7f54f275fcafbb3c6d1a5ef78f0d..bee7703d32404ce3b882e02aa4e60bdad6d43c7f 100644
 --- a/browser/components/screenshots/overlay/overlay.css
 +++ b/browser/components/screenshots/overlay/overlay.css
 @@ -200,6 +200,9 @@

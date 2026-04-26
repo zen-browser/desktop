@@ -514,6 +514,13 @@ jobs:
         run: |
           bash scripts/mar_sign.sh -s
 
+      - name: Verify MARs and update manifests
+        env:
+          SIGNMAR: ${{ github.workspace }}/linux-bin-x86_64/signmar
+          RELEASE_BRANCH: ${{ inputs.update_branch }}
+        run: |
+          bash scripts/mar_verify.sh
+
       - name: Copy update manifests
         env:
           RELEASE_BRANCH: ${{ inputs.update_branch }}

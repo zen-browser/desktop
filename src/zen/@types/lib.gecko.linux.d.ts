@@ -13,6 +13,8 @@ declare global {
   interface nsIGNOMEShellService extends nsIShellService {
     readonly canSetDesktopBackground: boolean;
     isDefaultForScheme(aScheme: string): boolean;
+    getGSettingsString(aScheme: string, aKey: string): string;
+    setGSettingsString(aScheme: string, aKey: string, aValue: string): void;
   }
 
   // https://searchfox.org/mozilla-central/source/browser/components/shell/nsIOpenTabsProvider.idl
@@ -69,7 +71,11 @@ declare global {
 } // global
 
 // Typedefs from xpidl.
+type CSPDirective = nsIContentSecurityPolicy.CSPDirective;
 type PRTime = i64;
+type RequireTrustedTypesForDirectiveState =
+  nsIContentSecurityPolicy.RequireTrustedTypesForDirectiveState;
+type nsContentPolicyType = nsIContentPolicy.nsContentPolicyType;
 type nsHandlerInfoAction = i32;
 type nsTaskbarProgressState = i32;
 

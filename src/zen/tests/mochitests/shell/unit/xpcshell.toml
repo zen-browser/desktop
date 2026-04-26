@@ -5,14 +5,25 @@ run-if = [
 firefox-appdir = "browser"
 tags = "os_integration"
 
+["test_linuxDesktopEntry.js"]
+run-if = [
+  "os == 'linux'",
+]
+
 ["test_macOS_showSecurityPreferences.js"]
 run-if = [
   "os == 'mac'",
 ]
 
+["test_secondaryTileJs.js"]
+run-if = [
+  "os == 'win'"
+]
+
 ["test_writeShortcutIcon.js"]
 run-if = [
   "os == 'win'",
+  "os == 'linux'",
 ]
 support-files = [
   "../../../places/tests/browser/favicon-normal16.png",

@@ -48,6 +48,7 @@ zen-pinned-tab-replaced = A URL da guia fixada foi substituída pela URL atual!
 zen-tabs-renamed = A guia foi renomeada com sucesso!
 zen-background-tab-opened-toast = Nova guia em segundo plano aberta!
 zen-workspace-renamed-toast = A área de trabalho foi renomeada com sucesso!
+zen-split-view-limit-toast = Não é possível adicionar mais painéis à visualização dividida!
 zen-toggle-compact-mode-button = 
     .label = Modo Compacto
     .tooltiptext = Alternar Modo Compacto

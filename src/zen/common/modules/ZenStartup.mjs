@@ -17,7 +17,6 @@ class ZenStartup {
 
   init() {
     this.openWatermark();
-    this.#changeSidebarLocation();
     this.#zenInitBrowserLayout();
   }
 
@@ -57,6 +56,7 @@ class ZenStartup {
       gZenWorkspaces.init();
       setTimeout(() => {
         gZenUIManager.init();
+        this.#initUIComponents();
         this.#checkForWelcomePage();
       }, 0);
     } catch (e) {
@@ -146,18 +146,13 @@ class ZenStartup {
     });
   }
 
-  #changeSidebarLocation() {
-    const kElementsToAppend = ["sidebar-splitter", "sidebar-box"];
-
-    const browser = document.getElementById("browser");
-    browser.prepend(gNavToolbox);
-
-    const sidebarPanelWrapper = document.getElementById("tabbrowser-tabbox");
-    for (let id of kElementsToAppend) {
-      const elem = document.getElementById(id);
-      if (elem) {
-        sidebarPanelWrapper.prepend(elem);
-      }
+  #initUIComponents() {
+    const kUIComponents = ["ZenProgressBar"];
+    for (let component of kUIComponents) {
+      const module = ChromeUtils.importESModule(
+        "resource:///modules/zen/ui/" + component + ".sys.mjs"
+      );
+      new module[component](window);
     }
   }
 

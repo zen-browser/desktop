@@ -39,8 +39,9 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     ARC_HEIGHT_RATIO: 0.2, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
   });
 
-  #GLANCE_ANIMATION_DURATION =
-    Services.prefs.getIntPref("zen.glance.animation-duration") / 1000;
+  #GLANCE_ANIMATION_DURATION = Services.prefs.getIntPref(
+    "zen.glance.animation-duration"
+  );
 
   init() {
     this.#setupEventListeners();
@@ -294,7 +295,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       {
         duration: 0.2,
         type: "spring",
-        delay: this.#GLANCE_ANIMATION_DURATION - 0.2,
+        delay: this.#GLANCE_ANIMATION_DURATION / 1000 - 0.2,
         bounce: 0,
       }
     );
@@ -450,7 +451,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
         opacity: [1, 0.3],
       },
       {
-        duration: this.#GLANCE_ANIMATION_DURATION,
+        duration: this.#GLANCE_ANIMATION_DURATION / 1000,
         type: "spring",
         bounce: 0.2,
       }
@@ -536,13 +537,13 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     // nice fade-in effect to the content. But if it doesn't exist,
     // we just fall back to always showing the browser directly.
     if (data.elementData) {
-      gZenUIManager.motion
-        .animate(
+      gZenUIManager
+        .elementAnimate(
           this.contentWrapper,
           { opacity: [0, 1] },
           {
             duration: this.#GLANCE_ANIMATION_DURATION / 4,
-            easing: "easeInOut",
+            easing: "ease-in-out",
           }
         )
         .then(() => {
@@ -559,12 +560,12 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       browserElement.zenModeActive = false;
       browserElement.docShellIsActive = false;
     }
-    gZenUIManager.motion
-      .animate(this.browserWrapper, arcSequence, {
+    gZenUIManager
+      .elementAnimate(this.browserWrapper, arcSequence, {
         duration: gZenUIManager.testingEnabled
           ? 0
           : this.#GLANCE_ANIMATION_DURATION,
-        ease: "easeInOut",
+        easing: "ease-in-out",
       })
       .then(() => {
         if (shouldDeactivateDocShell) {
@@ -601,19 +602,13 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       // We are scaling the wrapper while having only the element preview size
       // in mind, so we need to adjust the width/height to match the size of the element preview
       const rect = imageDataElement.getBoundingClientRect();
-      const imageRect =
-        imageDataElement.firstElementChild.getBoundingClientRect();
-      const widthRatio = rect.width / imageRect.width;
-      // Since the image hasn't loaded at this point, so the image's height is 0
-      // we need to calculate the height ratio based on the original aspect ratio of the image
       const aspectRatio = width / height;
       const heightRatio = rect.height / (rect.width / aspectRatio);
-      const originalWidth = width;
       const originalHeight = height;
-      width *= widthRatio;
-      height *= heightRatio;
-      clientX -= (width - originalWidth) / 2;
-      clientY -= (height - originalHeight) / 2;
+      if (heightRatio > 1) {
+        height *= heightRatio;
+        clientY -= (height - originalHeight) / 2;
+      }
     }
 
     // Calculate start and end positions based on direction
@@ -977,7 +972,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
           {
             duration: 0.2,
             type: "spring",
-            bounce: this.#GLANCE_ANIMATION_DURATION - 0.1,
+            bounce: this.#GLANCE_ANIMATION_DURATION / 1000 - 0.1,
           }
         )
         .then(() => {
@@ -1025,7 +1020,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
           opacity: [0.3, 1],
         },
         {
-          duration: this.#GLANCE_ANIMATION_DURATION / 1.5,
+          duration: this.#GLANCE_ANIMATION_DURATION / 1000 / 1.5,
           type: "spring",
           bounce: 0,
         }
@@ -1068,10 +1063,10 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       this.browserWrapper.style.width = "";
       this.browserWrapper.style.height = "";
 
-      gZenUIManager.motion
-        .animate(this.browserWrapper, arcSequence, {
+      gZenUIManager
+        .elementAnimate(this.browserWrapper, arcSequence, {
           duration: this.#GLANCE_ANIMATION_DURATION,
-          ease: "easeOut",
+          easing: "ease-out",
         })
         .then(() => {
           // Remove element preview after closing animation
@@ -1579,9 +1574,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     this.#handleZenFolderPinning();
     gBrowser.moveTabAfter(this.#currentTab, this.#currentParentTab);
 
-    const browserRect = window.windowUtils.getBoundsWithoutFlushing(
-      this.browserWrapper
-    );
     this.#prepareTabForFullOpen();
 
     const sidebarButtons = this.browserWrapper.querySelector(
@@ -1602,7 +1594,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       return;
     }
 
-    await this.#animateFullOpen(browserRect);
+    await this.#animateFullOpen();
     this.finishOpeningGlance();
   }
 
@@ -1638,31 +1630,27 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
   /**
    * Animate the full opening process
-   *
-   * @param {object} browserRect - The browser rectangle
    */
-  async #animateFullOpen(browserRect) {
+  async #animateFullOpen() {
     // Write styles early to avoid flickering
-    this.browserWrapper.style.opacity = 1;
-    this.browserWrapper.style.width = `${browserRect.width}px`;
-    this.browserWrapper.style.height = `${browserRect.height}px`;
+    this.browserWrapper.style.width = "100%";
+    this.browserWrapper.style.height = "100%";
 
-    await gZenUIManager.motion.animate(
-      this.browserWrapper,
+    await gZenUIManager.elementAnimate(
+      this.browserWrapper.parentElement,
       {
-        width: ["80%", "100%"],
-        height: ["100%", "100%"],
+        scale: [1, 1.005, 1],
       },
       {
-        duration: this.#GLANCE_ANIMATION_DURATION,
-        type: "spring",
-        bounce: 0,
+        duration: 250,
+        easing: "ease-in-out",
       }
     );
 
+    this.browserWrapper.style.scale = "";
+    this.browserWrapper.style.opacity = "";
     this.browserWrapper.style.width = "";
     this.browserWrapper.style.height = "";
-    this.browserWrapper.style.opacity = "";
     gZenViewSplitter.deactivateCurrentSplitView({ removeDeckSelected: true });
   }
 

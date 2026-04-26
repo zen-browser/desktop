@@ -297,6 +297,18 @@ class nsZenWindowSync {
         if (tab.pinned && !tab._zenPinnedInitialState) {
           await this.setPinnedTabState(tab);
         }
+        // Lets clear extra values to save some memory, we only really
+        // care about the URL and title for the initial state, and we want
+        // to avoid keeping the whole session history around.
+        if (tab._zenPinnedInitialState) {
+          tab._zenPinnedInitialState = {
+            ...tab._zenPinnedInitialState,
+            entry: {
+              url: tab._zenPinnedInitialState.entry.url,
+              title: tab._zenPinnedInitialState.entry.title,
+            },
+          };
+        }
         if (
           !lazy.gWindowSyncEnabled ||
           (lazy.gSyncOnlyPinnedTabs && !tab.pinned)
@@ -731,7 +743,14 @@ class nsZenWindowSync {
       return;
     }
     await this.#styleSwapedBrowsers(aOurTab, aOtherTab, () => {
-      this.#swapBrowserDocShellsInner(aOurTab, aOtherTab);
+      try {
+        this.#swapBrowserDocShellsInner(aOurTab, aOtherTab);
+      } catch (e) {
+        console.error(
+          `Error swapping browsers for tabs ${aOurTab.id} and ${aOtherTab.id}:`,
+          e
+        );
+      }
     });
   }
 
@@ -792,6 +811,16 @@ class nsZenWindowSync {
     if (!aOurTab.linkedBrowser || !aOtherTab.linkedBrowser) {
       this.log(
         `Cannot swap browsers between tabs ${aOurTab.id} and ${aOtherTab.id} because one of them doesn't have a linked browser`
+      );
+      return false;
+    }
+    // Theoretical case where we are trying to swap two tabs in the same window.
+    // There has been some reports of this happening in the wild, and while it shouldn't
+    // cause any critical issues, it can cause some weird states and we should avoid it.
+    // For example, see gh-13149
+    if (aOtherTab.ownerGlobal === aOurTab.ownerGlobal) {
+      this.log(
+        `Cannot swap browsers between tabs ${aOurTab.id} and ${aOtherTab.id} because they are in the same window`
       );
       return false;
     }
@@ -1056,10 +1085,17 @@ class nsZenWindowSync {
           continue;
         }
         delete tab._zenContentsVisible;
-        this.#swapBrowserDocShellsInner(targetTab, tab, {
-          focus: targetTab.selected,
-          onClose: true,
-        });
+        try {
+          this.#swapBrowserDocShellsInner(targetTab, tab, {
+            focus: targetTab.selected,
+            onClose: true,
+          });
+        } catch (e) {
+          console.error(
+            `Error swapping browsers for tabs ${tab.id} and ${targetTab.id} during close:`,
+            e
+          );
+        }
         this.#swapedTabsEntriesForWC.set(
           tab.linkedBrowser.permanentKey,
           targetTab
@@ -1080,9 +1116,9 @@ class nsZenWindowSync {
    */
   async #onTabSwitchOrWindowFocus(aWindow, aPreviousTab = null) {
     let activeBrowsers = aWindow.gBrowser.selectedBrowsers;
-    let activeTabs = activeBrowsers.map(browser =>
-      aWindow.gBrowser.getTabForBrowser(browser)
-    );
+    let activeTabs = activeBrowsers
+      .map(browser => aWindow.gBrowser.getTabForBrowser(browser))
+      .filter(tab => tab);
     // Ignore previous tabs that are still "active". These scenarios could happen for example,
     // when selecting on a split view tab that was already active.
     if (
@@ -1191,8 +1227,12 @@ class nsZenWindowSync {
       activeIndex--;
       activeIndex = Math.min(activeIndex, entries.length - 1);
       activeIndex = Math.max(activeIndex, 0);
+      let entryToUse = (entries[activeIndex] || entries[0]) ?? null;
       const initialState = {
-        entry: (entries[activeIndex] || entries[0]) ?? null,
+        entry: {
+          url: entryToUse?.url,
+          title: entryToUse?.title,
+        },
         image,
       };
       this.#runOnAllWindows(null, win => {

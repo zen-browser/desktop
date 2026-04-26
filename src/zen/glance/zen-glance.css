@@ -9,6 +9,9 @@
   display: flex;
   z-index: 999;
 
+  will-change: transform, opacity;
+  contain: layout style;
+
   top: 15px;
   padding: 12px;
   gap: 12px;
@@ -96,12 +99,6 @@
 
 .browserSidebarContainer.zen-glance-background {
   box-shadow: var(--zen-big-shadow);
-
-  & .browserContainer {
-    /* For rounding the corners of the content to work while
-     * applying a transformation to the container. */
-    will-change: transform;
-  }
 }
 
 .browserSidebarContainer.zen-glance-background,
@@ -127,6 +124,7 @@
 
     &:not([has-finished-animation="true"]) {
       will-change: transform;
+      contain: layout size;
       transform-origin: 0 0;
 
       #statuspanel {

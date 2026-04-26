@@ -1,8 +1,8 @@
 diff --git a/build/moz.configure/update-programs.configure b/build/moz.configure/update-programs.configure
-index d87fd6dd35b1211a7ef8f64c2e2af18b91dc1f43..e6691d50e6b2ee05828a25b2dc3cb71895ff6bd7 100644
+index 4edcccf4c49749e6d80ee75c1e43cfa32a555933..9c7c69c97740e5c02766f913d40bd4f059940d3a 100644
 --- a/build/moz.configure/update-programs.configure
 +++ b/build/moz.configure/update-programs.configure
-@@ -73,7 +73,7 @@ def mac_prod_requirements_string(identifier):
+@@ -71,7 +71,7 @@ def mac_prod_requirements_string(identifier):
          f'identifier "{identifier}" and anchor apple generic and '
          "certificate 1[field.1.2.840.113635.100.6.2.6] and "
          "certificate leaf[field.1.2.840.113635.100.6.1.13] and "

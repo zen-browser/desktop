@@ -7,3 +7,8 @@ EXTRA_JS_MODULES += [
   "sys/ZenCustomizableUI.sys.mjs",
   "sys/ZenUIMigration.sys.mjs",
 ]
+
+EXTRA_JS_MODULES.zen.ui += [
+  "sys/ui/ZenProgressBar.sys.mjs",
+  "sys/ui/ZenUIComponent.sys.mjs",
+]

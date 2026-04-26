@@ -5,8 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] Jaota kaart (mitu kaarti peab olema valitud)
-           *[other] Jaota { $tabCount } kaarti
+            [-1] Split out tab
+            [1] Add split view...
+           *[other] Join { $tabCount } Tabs
         }
     .accesskey = J
 zen-split-link = 

@@ -107,7 +107,7 @@ zen-site-data-setting-site-protection = Stebėjimo apsauga
 zen-site-data-panel-feature-callout-title = Nauji namai priedams, leidimams ir daugiau
 zen-site-data-panel-feature-callout-subtitle = Spustelėkite piktogramą, kad tvarkytumėte svetainės nustatymus, peržiūrėtumėte saugumo informaciją, pasiektumėte plėtinius ir atliktumėte įprastus veiksmus.
 zen-open-link-in-glance = 
-    .label = Atverti nuorodą spartiuojame pažiūrėjime
+    .label = Atverti nuorodą rodinyje „Glance“
     .accesskey = G
 zen-sidebar-notification-updated-heading = Naujinimas baigtas.
 
@@ -116,7 +116,7 @@ zen-sidebar-notification-updated-heading = Naujinimas baigtas.
 zen-sidebar-notification-updated-label = Kas naujo naršyklėje „{ -brand-short-name }“
 zen-sidebar-notification-updated-tooltip = 
     .title = Peržiūrėti leidimo pastabas
-zen-sidebar-notification-restart-safe-mode-label = Kažkas sugedo?
+zen-sidebar-notification-restart-safe-mode-label = Kažkas neveikia?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Paleisti iš naujo saugioje režime
 zen-window-sync-migration-dialog-title = Išlaikykite savo langus sinchronizuotus

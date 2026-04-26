@@ -74,7 +74,9 @@
             Services.prefs.removeObserver(pref, handleEvent);
           }
           for (let eventName of eventsForSeparation) {
-            window.removeEventListener(eventName, separationHandler);
+            window.removeEventListener(eventName, separationHandler, {
+              capture: true,
+            });
           }
         },
         { once: true }

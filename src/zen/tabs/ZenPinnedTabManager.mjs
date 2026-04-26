@@ -819,11 +819,10 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
           }
         }
       }
-      return moved;
     } catch (ex) {
       console.error("Error moving tabs:", ex);
-      return false;
     }
+    return [draggedTab, movingTabs];
   }
 
   onLocationChange(aBrowser, aWebProgress, aRequest, aLocationURI) {

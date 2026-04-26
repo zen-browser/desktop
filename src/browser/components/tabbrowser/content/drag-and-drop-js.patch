@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/drag-and-drop.js b/browser/components/tabbrowser/content/drag-and-drop.js
-index b93a8fcc8b76ed888524959cbe7d6865fe830f2f..fa192837d06e28bb847acbbd462ad3229ebdc2d2 100644
+index b93a8fcc8b76ed888524959cbe7d6865fe830f2f..9f39316e33daa8a272e48c84d9e07ad9df197586 100644
 --- a/browser/components/tabbrowser/content/drag-and-drop.js
 +++ b/browser/components/tabbrowser/content/drag-and-drop.js
 @@ -35,6 +35,9 @@
@@ -47,7 +47,7 @@ index b93a8fcc8b76ed888524959cbe7d6865fe830f2f..fa192837d06e28bb847acbbd462ad322
        event.stopPropagation();
 +      if (draggedTab && dropEffect == "move") {
 +        this.handle_drop_transition?.(draggedTab._dragData.dropElement, draggedTab, movingTabs, draggedTab._dragData.dropBefore);
-+        gZenPinnedTabManager.moveToAnotherTabContainerIfNecessary(event, draggedTab, movingTabs, this._getDropIndex(event));
++        [draggedTab, movingTabs] = gZenPinnedTabManager.moveToAnotherTabContainerIfNecessary(event, draggedTab, movingTabs, this._getDropIndex(event));
 +      }
        if (draggedTab && dropEffect == "copy") {
          let duplicatedDraggedTab;

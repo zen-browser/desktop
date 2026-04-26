@@ -135,15 +135,19 @@
       }
     },
 
-    updateElementSeparation(event) {
+    /**
+     * @param {Event|undefined} event - The event that triggered the update, if any.
+     *  If the event is a fullscreen change event, the element separation will be updated accordingly.
+     */
+    updateElementSeparation(event = undefined) {
       const kMinElementSeparation = 0.1; // in px
       let separation = this.elementSeparation;
       let domFullscreen =
-        event.type === "MozDOMFullscreen:Entered" ||
+        event?.type === "MozDOMFullscreen:Entered" ||
         document.documentElement.hasAttribute("inDOMFullscreen");
       if (
         document.documentElement.hasAttribute("inFullscreen") &&
-        (!domFullscreen || event.type === "MozDOMFullscreen:Exited") &&
+        (!domFullscreen || event?.type === "MozDOMFullscreen:Exited") &&
         window.gZenCompactModeManager?.preference &&
         !document
           .getElementById("tabbrowser-tabbox")

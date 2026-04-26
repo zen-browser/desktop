@@ -1258,10 +1258,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     let colorToBlendOpacity;
     if (this.isMica) {
       colorToBlend = this.isDarkMode ? [0, 0, 0] : [255, 255, 255];
-      colorToBlendOpacity = 0.25;
+      colorToBlendOpacity = 0.12;
     } else if (AppConstants.platform === "macosx") {
       colorToBlend = [255, 255, 255];
-      colorToBlendOpacity = 0.35;
+      colorToBlendOpacity = 0.18;
     }
     if (colorToBlend) {
       const blendedAlpha = Math.min(
@@ -1278,7 +1278,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return `rgba(${baseColor[0]}, ${baseColor[1]}, ${baseColor[2]}, ${opacity})`;
   }
 
-  getSingleRGBColor(color, forToolbar = false) {
+  #getSingleRGBColor(color, forToolbar = false) {
     if (color.isCustom) {
       return color.c;
     }
@@ -1345,13 +1345,13 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       };
       return forToolbar ? this.getToolbarModifiedBase() : getBrowserBg();
     } else if (themedColors.length === 1) {
-      return this.getSingleRGBColor(themedColors[0], forToolbar);
+      return this.#getSingleRGBColor(themedColors[0], forToolbar);
     }
     // If there are custom colors, we just return a linear gradient with all colors
     if (themedColors.find(color => color.isCustom)) {
       // Just return a linear gradient with all colors
       const gradientColors = themedColors.map(color =>
-        this.getSingleRGBColor(color, forToolbar)
+        this.#getSingleRGBColor(color, forToolbar)
       );
       // Divide all colors evenly in the gradient
       const colorStops = gradientColors
@@ -1365,17 +1365,17 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     if (themedColors.length === 2) {
       if (!forToolbar) {
         return [
-          `linear-gradient(${rotation}deg, ${this.getSingleRGBColor(themedColors[1], forToolbar)} 0%, transparent 100%)`,
-          `linear-gradient(${rotation + 180}deg, ${this.getSingleRGBColor(themedColors[0], forToolbar)} 0%, transparent 100%)`,
+          `linear-gradient(${rotation}deg, ${this.#getSingleRGBColor(themedColors[1], forToolbar)} 0%, transparent 100%)`,
+          `linear-gradient(${rotation + 180}deg, ${this.#getSingleRGBColor(themedColors[0], forToolbar)} 0%, transparent 100%)`,
         ]
           .reverse()
           .join(", ");
       }
-      return `linear-gradient(${rotation}deg, ${this.getSingleRGBColor(themedColors[1], forToolbar)} 0%, ${this.getSingleRGBColor(themedColors[0], forToolbar)} 100%)`;
+      return `linear-gradient(${rotation}deg, ${this.#getSingleRGBColor(themedColors[1], forToolbar)} 0%, ${this.#getSingleRGBColor(themedColors[0], forToolbar)} 100%)`;
     } else if (themedColors.length === 3) {
-      let color1 = this.getSingleRGBColor(themedColors[2], forToolbar);
-      let color2 = this.getSingleRGBColor(themedColors[0], forToolbar);
-      let color3 = this.getSingleRGBColor(themedColors[1], forToolbar);
+      let color1 = this.#getSingleRGBColor(themedColors[2], forToolbar);
+      let color2 = this.#getSingleRGBColor(themedColors[0], forToolbar);
+      let color3 = this.#getSingleRGBColor(themedColors[1], forToolbar);
       return [
         `linear-gradient(-5deg, ${color1} 10%, transparent 80%)`,
         `radial-gradient(circle at 95% 0%, ${color3} 0%, transparent 75%)`,
@@ -1470,10 +1470,19 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
    * Get the primary color from a list of colors.
    *
    * @param {Array<number>} accentColor The accent color as an array of RGB values.
+   * @param {boolean} isDarkMode Whether the current theme is in dark mode.
    * @returns {string} The primary color in hex format.
    */
-  getAccentColorForUI(accentColor) {
-    return `rgb(${accentColor[0]}, ${accentColor[1]}, ${accentColor[2]})`;
+  getAccentColorForUI(accentColor, isDarkMode) {
+    const [h, s, l] = this.rgbToHsl(...accentColor);
+    if (isDarkMode) {
+      return `rgb(${accentColor[0]}, ${accentColor[1]}, ${accentColor[2]})`;
+    }
+    const saturation = Math.min(1, s + 0.3);
+    const targetLightness = this.isDarkMode ? 0.62 : 0.42;
+    const lightness = l * 0.4 + targetLightness * 0.6;
+    const [r, g, b] = this.hslToRgb(h / 360, saturation, lightness);
+    return `rgb(${r}, ${g}, ${b})`;
   }
 
   getMostDominantColor(allColors) {
@@ -1485,9 +1494,13 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return color;
   }
 
-  getToolbarColor(isDarkMode = false) {
+  getToolbarColor(isDarkMode = false, accentColor = null) {
     const opacity = 0.8;
-    return isDarkMode ? [255, 255, 255, opacity] : [0, 0, 0, opacity]; // Default toolbar
+    let baseColor = isDarkMode ? [255, 255, 255, opacity] : [0, 0, 0, opacity]; // Default toolbar
+    if (accentColor) {
+      return this.blendColors(baseColor.slice(0, 3), accentColor, 75).concat(1);
+    }
+    return baseColor;
   }
 
   get browserBackgroundElement() {
@@ -1723,9 +1736,6 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         docElement.removeAttribute("zen-default-theme");
       }
       if (dominantColor) {
-        const primaryColor = this.getAccentColorForUI(dominantColor);
-        docElement.style.setProperty("--zen-primary-color", primaryColor);
-
         // Should be set to `this.isLegacyVersion` but for some reason it is set to undefined if we open a private window,
         // so instead get the pref value directly.
         browser.gZenThemePicker.isLegacyVersion =
@@ -1747,11 +1757,22 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
             );
           }
         }
+
+        const primaryColor = this.getAccentColorForUI(
+          dominantColor,
+          isDarkMode
+        );
+        docElement.style.setProperty("--zen-primary-color", primaryColor);
+
         // Set `--toolbox-textcolor` to have a contrast with the primary color
-        const textColor = this.getToolbarColor(isDarkMode);
+        let textColor = this.getToolbarColor(isDarkMode, dominantColor);
         docElement.style.setProperty(
           "--toolbox-textcolor",
           `rgba(${textColor[0]}, ${textColor[1]}, ${textColor[2]}, ${textColor[3]})`
+        );
+        docElement.style.setProperty(
+          "--toolbar-color-scheme",
+          isDarkMode ? "dark" : "light"
         );
       }
 
@@ -1981,8 +2002,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       grain: theme.texture ?? 0,
       isDarkMode,
       isExplicitMode,
-      toolbarColor: this.getToolbarColor(isDarkMode),
-      primaryColor: this.getAccentColorForUI(dominantColor),
+      toolbarColor: this.getToolbarColor(isDarkMode, dominantColor),
+      primaryColor: this.getAccentColorForUI(dominantColor, isDarkMode),
     };
     this.currentOpacity = previousOpacity;
     this.#currentLightness = previousLightness;

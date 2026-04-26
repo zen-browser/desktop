@@ -15,7 +15,7 @@ tab-context-zen-reset-pinned-tab =
 tab-context-zen-add-essential =
     .label = Add to Essentials
     .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
+tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential =
     .label = Remove from Essentials
     .accesskey = R
@@ -58,6 +58,7 @@ zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL!
 zen-tabs-renamed = Tab has been successfully renamed!
 zen-background-tab-opened-toast = New background tab opened!
 zen-workspace-renamed-toast = Workspace has been successfully renamed!
+zen-split-view-limit-toast = Can't add more panels to the split view!
 
 zen-toggle-compact-mode-button =
     .label = Compact Mode

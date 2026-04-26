@@ -39,7 +39,6 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: ${{ inputs.use-sccache && 'true' || 'false' }}
       CARGO_TERM_COLOR: always
-      RUSTC_WRAPPER: ${{ inputs.use-sccache && 'sccache' || '' }}
       CARGO_INCREMENTAL: 0
     strategy:
       fail-fast: false
@@ -165,6 +164,8 @@ jobs:
         if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
+          SURFER_CERT_PATCH_ISSUER: ${{ secrets.SURFER_CERT_PATCH_ISSUER }}
+          SURFER_CERT_PATCH_NAME: ${{ secrets.SURFER_CERT_PATCH_NAME }}
         run: |
           . "$HOME/.cargo/env"
           npm run import -- --verbose
@@ -226,16 +227,14 @@ jobs:
           chmod +x ~/artifact/en-US.log
           chmod +x ~/artifact/merged.profdata
 
-      - name: Insert API Keys
-        run: |
-          mkdir -p ~/.zen-keys
-          echo "${{ secrets.ZEN_SAFEBROWSING_API_KEY }}" > ~/.zen-keys/safebrowsing.dat
-
       - name: Build
         if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
           ZEN_RELEASE_BRANCH: ${{ inputs.release-branch }}
+          ZEN_SAFEBROWSING_API_KEY: ${{ secrets.ZEN_SAFEBROWSING_API_KEY }}
+          ZEN_MOZILLA_API_KEY: ${{ secrets.ZEN_MOZILLA_API_KEY }}
+          ZEN_GOOGLE_LOCATION_SERVICE_API_KEY: ${{ secrets.ZEN_GOOGLE_LOCATION_SERVICE_API_KEY }}
         run: |
           set -x
           dos2unix configs/windows/mozconfig
@@ -264,10 +263,6 @@ jobs:
           ls ./dist
           ls .
 
-      - name: Remove API Keys
-        run: |
-          rm -rf ~/.zen-keys
-
       - name: Move package for PGO upload
         if: ${{ inputs.generate-gpo && matrix.arch == 'x86_64' }}
         run: |
@@ -285,7 +280,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ inputs.generate-gpo && matrix.arch == 'x86_64' }}
         with:
-          retention-days: 5
+          retention-days: 2
           name: ${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}-${{ inputs.profile-data-path-archive }}
           path: ./zen.win64-pgo-stage-1.zip
 
@@ -311,14 +306,6 @@ jobs:
           retention-days: 2
           name: windows-x64-obj-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}
           path: obj-${{ matrix.arch }}-pc-windows-msvc
-
-      - name: Upload artifact (if Twilight branch, binary)
-        if: ${{ inputs.release-branch == 'twilight' && !inputs.generate-gpo }}
-        uses: actions/upload-artifact@v4
-        with:
-          retention-days: 5
-          name: zen.win-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}.zip
-          path: ./zen.win-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}.zip
 
       - name: Upload artifact (if Twilight branch, installer)
         if: ${{ inputs.release-branch == 'twilight' && !inputs.generate-gpo }}

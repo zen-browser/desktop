@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = הפעל/כבה DOM
 zen-devtools-toggle-accessibility-shortcut = הפעל/כבה נגישות
 zen-close-all-unpinned-tabs-shortcut = סגירת כל הלשוניות שאינן מוצמדות
 zen-new-unsynced-window-shortcut = חלון לא מסונכרן חדש
+zen-duplicate-tab-shortcut = Duplicate Tab

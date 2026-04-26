@@ -7,22 +7,22 @@ unified-extensions-description = Uzantılar { -brand-short-name }'e daha fazla e
 tab-context-zen-reset-pinned-tab = 
     .label =
         { $isEssential ->
-        [true] Temel sekmeyi sıfırla
-        *[false] Sabitlenmiş sekmeyi sıfırla
+            [true] Temel sekmeyi sıfırla
+           *[false] Sabitlenmiş sekmeyi sıfırla
         }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Temel sekmelere ekle
     .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max } yuva dolu
+tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential = 
     .label = Temel sekmelerden kaldır
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-        [true] Temel sekmenin URL’sini geçerli olanla değiştir
-        *[false] Sabitlenmiş sekme URL’sini geçerli olanla değiştir
+            [true] Temel sekmenin URL’sini geçerli olanla değiştir
+           *[false] Sabitlenmiş sekme URL’sini geçerli olanla değiştir
         }
     .accesskey = C
 tab-context-zen-edit-title = 
@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = Sabitlenmiş sekmenin URL’si, mevcut URL ile değiş
 zen-tabs-renamed = Sekme başarıyla yeniden adlandırıldı!
 zen-background-tab-opened-toast = Yeni arka plan sekmesi açıldı!
 zen-workspace-renamed-toast = Çalışma alanı başarıyla yeniden adlandırıldı!
+zen-split-view-limit-toast = Bölünmüş görünüme daha fazla panel eklenemiyor!
 zen-toggle-compact-mode-button = 
     .label = Kompakt mod
     .tooltiptext = Kompakt modu aç/kapat
@@ -88,7 +89,7 @@ zen-site-data-manage-addons =
 zen-site-data-get-addons = 
     .label = Uzantı ekle
 zen-site-data-site-settings = 
-    .label = Tüm Site Ayarları
+    .label = Tüm site ayarları
 zen-site-data-header-share = 
     .tooltiptext = Bu sayfayı paylaş
 zen-site-data-header-reader-mode = 

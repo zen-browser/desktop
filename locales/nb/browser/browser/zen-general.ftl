@@ -2,26 +2,26 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-current-profile-text = nåværende profil
-unified-extensions-description = Utvidelser er brukt for å bringe mer ekstra funksjonalitet til { -brand-short-name }.
+zen-panel-ui-current-profile-text = gjeldende profil
+unified-extensions-description = Utvidelser brukes for å bringe ekstra funksjonalitet til { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label =
         { $isEssential ->
-            [true] Nullstill essensiell fane
+            [true] Nullstill Essential fane
            *[false] Nullstill festet fane
         }
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Legg til i essensielle
+    .label = Legg til i Essentials
     .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max } felt utfylt
+tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential = 
-    .label = Fjern fra essensielle
+    .label = Fjern fra Essentials
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] Erstatt essensiell nettadresse med gjeldende
+            [true] Erstatt Essential nettadresse med gjeldende
            *[false] Erstatt festet nettadresse med gjeldende
         }
     .accesskey = C
@@ -30,7 +30,7 @@ tab-context-zen-edit-title =
 tab-context-zen-edit-icon = 
     .label = Endre ikon...
 zen-themes-corrupted = Din { -brand-short-name }-mods fil er skadet. De har blitt tilbakestilt til standardtemaet.
-zen-shortcuts-corrupted = { -brand-short-name } snarvei-filen din er skadet. De har blitt tilbakestilt til standard snarveier.
+zen-shortcuts-corrupted = { -brand-short-name } snarvei-filen din er skadet. De har blitt tilbakestilt til standard-snarveiene.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
     Det nye nettadressefeltet har blitt aktivert, som tar vekk behovet for nye fanesider.<br/><br/>
@@ -46,13 +46,14 @@ zen-general-cancel-label =
     .label = Avbryt
 zen-general-confirm = 
     .label = Bekreft
-zen-pinned-tab-replaced = Nettadressen til den festede fanen har blitt erstattet med gjeldende nettadresse!
+zen-pinned-tab-replaced = Festet fanes nettadresse har blit erstattet med gjeldende nettadresse!
 zen-tabs-renamed = Fanen har fått nytt navn!
 zen-background-tab-opened-toast = Ny bakgrunnsfane åpnet!
 zen-workspace-renamed-toast = Arbeidsområdet har fått nytt navn!
+zen-split-view-limit-toast = Kan ikke legge til flere paneler i delt visning!
 zen-toggle-compact-mode-button = 
-    .label = Kompaktmodus
-    .tooltiptext = Veksle kompaktmodus
+    .label = Kompakt modus
+    .tooltiptext = Veksle kompakt modus
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -69,7 +70,7 @@ zen-site-data-settings = Innstillinger
 zen-generic-manage = Behandle
 zen-generic-more = Mer
 zen-generic-next = Neste
-zen-essentials-promo-label = Legg til i essensielle
+zen-essentials-promo-label = Legg til i Essentials
 zen-essentials-promo-sublabel = Hold favorittfanene dine bare et klikk unna
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Tillat

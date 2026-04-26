@@ -1,4 +1,4 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
+﻿/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -185,7 +185,8 @@ window.gZenCompactModeManager = {
       [
         {
           selector:
-            ":is([panelopen='true'], [open='true'], [breakout-extend='true']):not(#urlbar[zen-floating-urlbar='true']):not(tab):not(.zen-compact-mode-ignore)",
+            ":where([panelopen='true'], [open='true'], [breakout-extend='true'])" +
+            ":not(#urlbar[zen-floating-urlbar='true']):not(tab):not(.zen-compact-mode-ignore)",
         },
       ],
       "zen-compact-mode-active",
@@ -196,7 +197,8 @@ window.gZenCompactModeManager = {
       [
         {
           selector:
-            ":is([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true']):not(.zen-compact-mode-ignore)",
+            ":where([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true'])" +
+            ":not(.zen-compact-mode-ignore)",
         },
       ],
       "zen-compact-mode-active",
@@ -233,6 +235,7 @@ window.gZenCompactModeManager = {
           <menuitem id="zen-context-menu-compact-mode-hide-both" data-l10n-id="zen-toolbar-context-compact-mode-hide-both" type="radio" />
         </menupopup>
       </menu>
+      <menuseparator />
     `);
 
     const idToAction = {
@@ -247,7 +250,7 @@ window.gZenCompactModeManager = {
       }
     }
 
-    document.getElementById("viewToolbarsMenuSeparator").before(fragment);
+    document.getElementById("toolbar-context-menu").prepend(fragment);
     this.updateContextMenu();
   },
 
@@ -349,6 +352,7 @@ window.gZenCompactModeManager = {
     // IF we are animating IN, call the callbacks first so we can calculate the width
     // once the window buttons are shown
     this.updateContextMenu();
+    gZenWorkspaces._processingResize = true;
     if (!this.preference) {
       this.callAllEventListeners();
       await this.animateCompactMode();
@@ -356,6 +360,7 @@ window.gZenCompactModeManager = {
       await this.animateCompactMode();
       this.callAllEventListeners();
     }
+    gZenWorkspaces._processingResize = false;
     if (isUrlbarFocused) {
       gURLBar.focus();
     }
@@ -392,7 +397,9 @@ window.gZenCompactModeManager = {
         "--actual-zen-sidebar-width",
         `${sidebarWidth}px`
       );
-      window.dispatchEvent(new window.Event("resize")); // To recalculate the layout
+      if (!gZenWorkspaces._processingResize) {
+        window.dispatchEvent(new window.Event("resize")); // To recalculate the layout
+      }
       if (
         event &&
         shouldRecalculate &&
@@ -586,7 +593,7 @@ window.gZenCompactModeManager = {
     if (!toggle) {
       return;
     }
-    toggle.setAttribute("checked", this.preference);
+    toggle.toggleAttribute("checked", this.preference);
 
     const hideTabBar = this.canHideSidebar;
     const hideToolbar = this.canHideToolbar;
@@ -596,9 +603,9 @@ window.gZenCompactModeManager = {
     const sidebarItem = document.getElementById(idName + "sidebar");
     const toolbarItem = document.getElementById(idName + "toolbar");
     const bothItem = document.getElementById(idName + "both");
-    sidebarItem.setAttribute("checked", !hideBoth && hideTabBar);
-    toolbarItem.setAttribute("checked", !hideBoth && hideToolbar);
-    bothItem.setAttribute("checked", hideBoth);
+    sidebarItem.toggleAttribute("checked", !hideBoth && hideTabBar);
+    toolbarItem.toggleAttribute("checked", !hideBoth && hideToolbar);
+    bothItem.toggleAttribute("checked", hideBoth);
   },
 
   _removeOpenStateOnUnifiedExtensions() {

@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = Commuta el DOM
 zen-devtools-toggle-accessibility-shortcut = Commuta l'accessibilitat
 zen-close-all-unpinned-tabs-shortcut = Tanca totes les pestanyes no fixades
 zen-new-unsynced-window-shortcut = Nova finestra en blanc
+zen-duplicate-tab-shortcut = Duplica la pestanya

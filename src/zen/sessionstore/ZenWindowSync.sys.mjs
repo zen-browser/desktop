@@ -256,6 +256,26 @@ class nsZenWindowSync {
     for (let eventName of EVENTS) {
       aWindow.addEventListener(eventName, this, true);
     }
+    this.#maybeTriggerInitialTabSync(aWindow);
+  }
+
+  /**
+   * Determines if the initial tab should be synced for the given window
+   * and triggers the sync if necessary. See gh-12258 for more details.
+   *
+   * @param {Window} aWindow - The browser window to check and potentially sync.
+   */
+  #maybeTriggerInitialTabSync(aWindow) {
+    let initialTab = aWindow.gBrowser?.selectedTab;
+    aWindow.gZenStartup.promiseInitialized.then(() => {
+      if (initialTab && !initialTab.closing) {
+        // If the initial tab is still open after startup, we trigger a fake TabSelect event
+        // to ensure the tab gets synced properly. This is needed in cases where the window
+        // is opened with a URL and the TabSelect event happens before the window sync is fully initialized.
+        this.log("Triggering initial tab sync for window", initialTab);
+        this.on_TabOpen({ target: initialTab }, { ignoreExistingId: true });
+      }
+    });
   }
 
   /**
@@ -276,6 +296,18 @@ class nsZenWindowSync {
         }
         if (tab.pinned && !tab._zenPinnedInitialState) {
           await this.setPinnedTabState(tab);
+        }
+        // Lets clear extra values to save some memory, we only really
+        // care about the URL and title for the initial state, and we want
+        // to avoid keeping the whole session history around.
+        if (tab._zenPinnedInitialState) {
+          tab._zenPinnedInitialState = {
+            ...tab._zenPinnedInitialState,
+            entry: {
+              url: tab._zenPinnedInitialState.entry.url,
+              title: tab._zenPinnedInitialState.entry.title,
+            },
+          };
         }
         if (
           !lazy.gWindowSyncEnabled ||
@@ -711,7 +743,14 @@ class nsZenWindowSync {
       return;
     }
     await this.#styleSwapedBrowsers(aOurTab, aOtherTab, () => {
-      this.#swapBrowserDocShellsInner(aOurTab, aOtherTab);
+      try {
+        this.#swapBrowserDocShellsInner(aOurTab, aOtherTab);
+      } catch (e) {
+        console.error(
+          `Error swapping browsers for tabs ${aOurTab.id} and ${aOtherTab.id}:`,
+          e
+        );
+      }
     });
   }
 
@@ -770,7 +809,20 @@ class nsZenWindowSync {
     // We *shouldn't* care about this scenario since the remoteness should be
     // the same anyways.
     if (!aOurTab.linkedBrowser || !aOtherTab.linkedBrowser) {
-      return true;
+      this.log(
+        `Cannot swap browsers between tabs ${aOurTab.id} and ${aOtherTab.id} because one of them doesn't have a linked browser`
+      );
+      return false;
+    }
+    // Theoretical case where we are trying to swap two tabs in the same window.
+    // There has been some reports of this happening in the wild, and while it shouldn't
+    // cause any critical issues, it can cause some weird states and we should avoid it.
+    // For example, see gh-13149
+    if (aOtherTab.ownerGlobal === aOurTab.ownerGlobal) {
+      this.log(
+        `Cannot swap browsers between tabs ${aOurTab.id} and ${aOtherTab.id} because they are in the same window`
+      );
+      return false;
     }
     // Can't swap between chrome and content processes.
     if (
@@ -1033,10 +1085,17 @@ class nsZenWindowSync {
           continue;
         }
         delete tab._zenContentsVisible;
-        this.#swapBrowserDocShellsInner(targetTab, tab, {
-          focus: targetTab.selected,
-          onClose: true,
-        });
+        try {
+          this.#swapBrowserDocShellsInner(targetTab, tab, {
+            focus: targetTab.selected,
+            onClose: true,
+          });
+        } catch (e) {
+          console.error(
+            `Error swapping browsers for tabs ${tab.id} and ${targetTab.id} during close:`,
+            e
+          );
+        }
         this.#swapedTabsEntriesForWC.set(
           tab.linkedBrowser.permanentKey,
           targetTab
@@ -1057,9 +1116,9 @@ class nsZenWindowSync {
    */
   async #onTabSwitchOrWindowFocus(aWindow, aPreviousTab = null) {
     let activeBrowsers = aWindow.gBrowser.selectedBrowsers;
-    let activeTabs = activeBrowsers.map(browser =>
-      aWindow.gBrowser.getTabForBrowser(browser)
-    );
+    let activeTabs = activeBrowsers
+      .map(browser => aWindow.gBrowser.getTabForBrowser(browser))
+      .filter(tab => tab);
     // Ignore previous tabs that are still "active". These scenarios could happen for example,
     // when selecting on a split view tab that was already active.
     if (
@@ -1168,8 +1227,12 @@ class nsZenWindowSync {
       activeIndex--;
       activeIndex = Math.min(activeIndex, entries.length - 1);
       activeIndex = Math.max(activeIndex, 0);
+      let entryToUse = (entries[activeIndex] || entries[0]) ?? null;
       const initialState = {
-        entry: (entries[activeIndex] || entries[0]) ?? null,
+        entry: {
+          url: entryToUse?.url,
+          title: entryToUse?.title,
+        },
         image,
       };
       this.#runOnAllWindows(null, win => {
@@ -1267,11 +1330,11 @@ class nsZenWindowSync {
 
   /* Mark: Event Handlers */
 
-  on_TabOpen(aEvent, { duringPinning = false } = {}) {
+  on_TabOpen(aEvent, { ignoreExistingId = false } = {}) {
     const tab = aEvent.target;
     const window = tab.ownerGlobal;
     const isUnsyncedWindow = window.gZenWorkspaces.privateWindowOrDisabled;
-    if (tab.id && !duringPinning) {
+    if (tab.id && !ignoreExistingId) {
       // This tab was opened as part of a sync operation.
       return;
     }
@@ -1297,7 +1360,7 @@ class nsZenWindowSync {
         SYNC_FLAG_ICON | SYNC_FLAG_LABEL | SYNC_FLAG_MOVE
       );
     });
-    if (duringPinning && tab?.splitView) {
+    if (ignoreExistingId && tab?.splitView) {
       this.on_ZenSplitViewTabsSplit({ target: tab.group });
     }
   }
@@ -1365,7 +1428,7 @@ class nsZenWindowSync {
       tabStatePromise,
       this.on_TabMove(aEvent).then(() => {
         if (lazy.gSyncOnlyPinnedTabs) {
-          this.on_TabOpen({ target: tab }, { duringPinning: true });
+          this.on_TabOpen({ target: tab }, { ignoreExistingId: true });
         }
       }),
     ]);

@@ -22,13 +22,6 @@ if test "$ZEN_CROSS_COMPILING"; then
   fi
 fi
 
-# We wrongly detect ccache on windows, which leads to build failures.
-# This line should be removed once the detection is fixed.
-ac_add_options --without-ccache
-
-ac_add_options --disable-maintenance-service
-ac_add_options --disable-bits-download
-
 if test "$SURFER_COMPAT" = "x86_64"; then
   ac_add_options --target=x86_64-pc-windows-msvc
   ac_add_options --enable-eme=widevine,wmfcdm

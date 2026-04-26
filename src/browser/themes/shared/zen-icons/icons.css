@@ -84,7 +84,9 @@
   max-height: 16px;
 }
 
-#appMenu-translate-button {
+#appMenu-translate-button,
+#translations-button-icon {
+  --urlbar-icon-fill-opacity: 0.6;
   list-style-image: url("translations.svg") !important;
 }
 

@@ -6,7 +6,7 @@ zen-toolbar-context-tabs-right =
     .label = Sekmeler sağda olsun
     .accesskey = R
 zen-toolbar-context-compact-mode = 
-    .label = Kompakt Mod
+    .label = Kompakt mod
 zen-toolbar-context-compact-mode-enable = 
     .label = Kompakt modu aktifleştir
     .accesskey = D
@@ -17,6 +17,9 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = İkisini de gizle
     .accesskey = H
+zen-toolbar-context-move-to-folder = 
+    .label = Klasöre taşı...
+    .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Yeni klasör
     .accesskey = N
@@ -27,18 +30,18 @@ sidebar-zen-create-new =
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [bir] Kapatın ve sekmeye geçin
+            [one] Kapatın ve sekmeye geçin
            *[other] { $tabCount } sekmesini kaldır ve ilkine geç
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-            [bir] Sıfırlayın ve sabitleyin
+            [one] Sıfırlayın ve sabitleyin
            *[other] { $tabCount } Sekmeyi sıfırla ve sabitle
         }
 zen-tab-sublabel =
     { $tabSubtitle ->
-    [zen-default-pinned] Sabitlenmiş URL’ye geri dön
-    [zen-default-pinned-cmd] Sabitlenmiş sekmeden ayır
-    *[other] { $tabSubtitle }
+        [zen-default-pinned] Sabitlenmiş URL’ye geri dön
+        [zen-default-pinned-cmd] Sabitlenmiş sekmeden ayır
+       *[other] { $tabSubtitle }
     }

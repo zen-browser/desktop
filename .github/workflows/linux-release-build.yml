@@ -34,7 +34,6 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: ${{ inputs.use-sccache && 'true' || 'false' }}
       CARGO_TERM_COLOR: always
-      RUSTC_WRAPPER: ${{ inputs.use-sccache && 'sccache' || '' }}
       CARGO_INCREMENTAL: 0
     name: Build Linux - ${{ matrix.arch }}
 
@@ -104,6 +103,8 @@ jobs:
       - name: Import
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
+          SURFER_CERT_PATCH_ISSUER: ${{ secrets.SURFER_CERT_PATCH_ISSUER }}
+          SURFER_CERT_PATCH_NAME: ${{ secrets.SURFER_CERT_PATCH_NAME }}
         run: |
           . "$HOME/.cargo/env"
           npm run import
@@ -118,15 +119,45 @@ jobs:
           ./mach --no-interactive bootstrap --application-choice browser
           cd ..
 
-      - name: Insert API Keys
+      - name: Build (PGO stage 1 - generate)
+        if: ${{ matrix.arch == 'x86_64' }}
+        env:
+          SURFER_COMPAT: ${{ matrix.arch }}
+          ZEN_RELEASE_BRANCH: ${{ inputs.release-branch }}
+          ZEN_GA_GENERATE_PROFILE: 1
+          ZEN_SAFEBROWSING_API_KEY: ${{ secrets.ZEN_SAFEBROWSING_API_KEY }}
+          ZEN_MOZILLA_API_KEY: ${{ secrets.ZEN_MOZILLA_API_KEY }}
+          ZEN_GOOGLE_LOCATION_SERVICE_API_KEY: ${{ secrets.ZEN_GOOGLE_LOCATION_SERVICE_API_KEY }}
+        continue-on-error: true
         run: |
-          mkdir -p ~/.zen-keys
-          echo "${{ secrets.ZEN_SAFEBROWSING_API_KEY }}" > ~/.zen-keys/safebrowsing.dat
+          export SURFER_PLATFORM="linux"
+          if [[ -n ${{ inputs.MOZ_BUILD_DATE }} ]];then
+            export MOZ_BUILD_DATE=${{ inputs.MOZ_BUILD_DATE }}
+          fi
+          bash .github/workflows/src/release-build.sh
+
+      - name: Generate PGO profile data
+        if: ${{ matrix.arch == 'x86_64' }}
+        run: |
+          set -x
+          export DISPLAY=:2
+          export LLVM_PROFDATA="$HOME/.mozbuild/clang/bin/llvm-profdata"
+          export JARLOG_FILE=en-US.log
+          mkdir -p "$HOME/artifact"
+          cd engine
+          ./mach python ../scripts/download_pgo_extended_corpus.py
+          ./mach package
+          ./mach python build/pgo/profileserver.py --extended-corpus ./pgo-extended-corpus
+          mv merged.profdata "$HOME/artifact/merged.profdata"
+          mv en-US.log "$HOME/artifact/en-US.log"
 
       - name: Build
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
           ZEN_RELEASE_BRANCH: ${{ inputs.release-branch }}
+          ZEN_SAFEBROWSING_API_KEY: ${{ secrets.ZEN_SAFEBROWSING_API_KEY }}
+          ZEN_MOZILLA_API_KEY: ${{ secrets.ZEN_MOZILLA_API_KEY }}
+          ZEN_GOOGLE_LOCATION_SERVICE_API_KEY: ${{ secrets.ZEN_GOOGLE_LOCATION_SERVICE_API_KEY }}
         continue-on-error: true
         run: |
           export SURFER_PLATFORM="linux"
@@ -143,10 +174,6 @@ jobs:
           export SURFER_PLATFORM="linux"
           export ZEN_RELEASE=1
           npm run package
-
-      - name: Remove API Keys
-        run: |
-          rm -rf ~/.zen-keys
 
       - name: Rename artifacts
         run: |
@@ -173,3 +200,11 @@ jobs:
           retention-days: 5
           name: linux_update_manifest_${{ matrix.arch }}
           path: ./dist/update
+
+      - name: Upload linux bin
+        if: ${{ matrix.arch == 'x86_64' }}
+        uses: actions/upload-artifact@v4
+        with:
+          retention-days: 2
+          name: linux-bin-x86_64
+          path: engine/obj-x86_64-pc-linux-gnu/dist/bin/

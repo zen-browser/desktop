@@ -79,8 +79,9 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     this._zenClickEventListener = this._onTabClick.bind(this);
 
     gZenWorkspaces._resolvePinnedInitialized();
-    if (lazy.zenPinnedTabRestorePinnedTabsToPinnedUrl) {
-      gZenWorkspaces.promiseInitialized.then(() => {
+    gZenWorkspaces.promiseInitialized.then(() => {
+      gBrowser.addTabsProgressListener(this);
+      if (lazy.zenPinnedTabRestorePinnedTabsToPinnedUrl) {
         for (const tab of gZenWorkspaces.allStoredTabs) {
           try {
             this.resetPinnedTab(tab);
@@ -88,8 +89,8 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
             console.error("Error restoring pinned tab:", ex);
           }
         }
-      });
-    }
+      }
+    });
   }
 
   log(message) {
@@ -284,8 +285,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         return;
       }
 
-      const selectedTabs = pinnedTabs.filter(tab => tab.selected);
-
       event.stopPropagation();
       event.preventDefault();
 
@@ -365,13 +364,19 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
                 return;
               }
             }
-            await gBrowser.explicitUnloadTabs(pinnedTabs);
+            let successful = await gBrowser.explicitUnloadTabs(pinnedTabs);
+            if (!successful) {
+              return;
+            }
             for (const tab of pinnedTabs) {
               tab.removeAttribute("discarded");
             }
-          }
-          if (selectedTabs.length) {
-            this._handleTabSwitch(selectedTabs[0]);
+          } else if (pinnedTabs.some(tab => tab.selected)) {
+            const selectedTabs = pinnedTabs.filter(tab => tab.selected);
+            gBrowser.selectedTab = gBrowser._findTabToBlurTo(
+              selectedTabs[0],
+              selectedTabs
+            );
           }
           if (behavior.includes("reset")) {
             for (const tab of pinnedTabs) {
@@ -391,28 +396,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
-  _handleTabSwitch(selectedTab) {
-    if (selectedTab !== gBrowser.selectedTab) {
-      return;
-    }
-    const findNextTab = direction =>
-      gBrowser.tabContainer.findNextTab(selectedTab, {
-        direction,
-        filter: tab => !tab.hidden && !tab.pinned,
-      });
-
-    let nextTab = findNextTab(1) || findNextTab(-1);
-
-    if (!nextTab) {
-      gZenWorkspaces.selectEmptyTab();
-      return;
-    }
-
-    if (nextTab) {
-      gBrowser.selectedTab = nextTab;
-    }
-  }
-
   #resetTabToStoredState(tab) {
     const state = this.#getTabState(tab);
 
@@ -422,10 +405,25 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
 
     // Remove everything except the entry we want to keep
-    state.entries = [initialState.entry];
+    state.entries = [
+      {
+        ...initialState.entry,
+        triggeringPrincipal_base64: E10SUtils.serializePrincipal(
+          Services.scriptSecurityManager.createContentPrincipal(
+            Services.io.newURI(initialState.entry.url),
+            {}
+          )
+        ),
+      },
+    ];
 
     state.image = tab.zenStaticIcon || initialState.image;
     state.index = 0;
+
+    // See gh-13024, we need to remove the scroll position from the state,
+    // otherwise when we reset the pinned tab, it will scroll to the previous position
+    // which can be confusing for the user, especially if they have a long page.
+    delete state.scroll;
 
     SessionStore.setTabState(tab, state);
     this.resetPinChangedUrl(tab);
@@ -673,14 +671,15 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
           return tab;
         }
         let workspaceId;
+        if (
+          !tab.hasAttribute("zen-essential") &&
+          tab.getAttribute("zen-workspace-id") != gZenWorkspaces.activeWorkspace
+        ) {
+          workspaceId = gZenWorkspaces.activeWorkspace;
+        }
         if (tab.ownerGlobal !== window) {
           fromDifferentWindow = true;
-          if (
-            !tab.hasAttribute("zen-essential") &&
-            tab.getAttribute("zen-workspace-id") !=
-              gZenWorkspaces.activeWorkspace
-          ) {
-            workspaceId = gZenWorkspaces.activeWorkspace;
+          if (workspaceId) {
             tab.ownerGlobal.gBrowser.selectedTab =
               tab.ownerGlobal.gBrowser._findTabToBlurTo(tab, movingTabs);
             tab.ownerGlobal.gZenWorkspaces.moveTabToWorkspace(tab, workspaceId);
@@ -695,9 +694,9 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
           if (tab) {
             ++newIndex;
           }
-          if (workspaceId) {
-            tab.setAttribute("zen-workspace-id", workspaceId);
-          }
+        }
+        if (workspaceId) {
+          tab.setAttribute("zen-workspace-id", workspaceId);
         }
         return tab;
       });
@@ -827,11 +826,13 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
-  onLocationChange(aBrowser, aLocation) {
+  onLocationChange(aBrowser, aWebProgress, aRequest, aLocationURI) {
+    // eslint-disable-next-line no-shadow
+    let location = aLocationURI ? aLocationURI.spec : "";
     if (
-      (aLocation == "about:blank" &&
+      (location == "about:blank" &&
         BrowserUIUtils.checkEmptyPageOrigin(aBrowser)) ||
-      aLocation == ""
+      location == ""
     ) {
       return;
     }
@@ -846,9 +847,11 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
     // Remove # and ? from the URL
     const pinUrl = tab._zenPinnedInitialState.entry.url.split("#")[0];
-    const currentUrl = aLocation.split("#")[0];
+    const currentUrl = location.split("#")[0];
     // Add an indicator that the pin has been changed
-    if (pinUrl === currentUrl) {
+    if (
+      Services.io.newURI(currentUrl).spec === Services.io.newURI(pinUrl).spec
+    ) {
       this.resetPinChangedUrl(tab);
       return;
     }

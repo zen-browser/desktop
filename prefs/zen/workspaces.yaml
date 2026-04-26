@@ -33,7 +33,7 @@
   value: true
 
 - name: zen.workspaces.dnd-switch-padding
-  value: 5
+  value: 20
 
 - name: zen.workspaces.debug
   value: "@cond"

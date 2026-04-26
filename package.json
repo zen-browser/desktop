@@ -23,7 +23,6 @@
     "sync:l10n": "python3 scripts/update_ff.py --just-l10n",
     "lint": "cd engine && ./mach lint zen",
     "lint:fix": "npm run lint -- --fix",
-    "prepare": "husky",
     "reset-ff": "surfer reset",
     "surfer": "surfer",
     "test": "python3 scripts/run_tests.py",
@@ -38,9 +37,6 @@
     "type": "git",
     "url": "git+https://github.com/zen-browser/desktop.git"
   },
-  "hooks": {
-    "pre-commit": "npm run prepare"
-  },
   "keywords": [],
   "author": "",
   "license": "MPL-2.0",
@@ -51,7 +47,7 @@
   "devDependencies": {
     "@babel/preset-typescript": "^7.27.0",
     "@zen-browser/prettier": "^3.9.3",
-    "@zen-browser/surfer": "^1.13.4",
+    "@zen-browser/surfer": "^1.14.6",
     "formal-git": "^1.2.9",
     "globals": "^16.3.0",
     "husky": "^9.1.7",

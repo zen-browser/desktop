@@ -6,9 +6,9 @@ zen-panel-ui-current-profile-text = الملف الشخصي الحالي
 unified-extensions-description = تستخدم الإضافات لجلب المزيد من الوظائف الإضافية إلى { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label =
-        {$isEssential ->
-            [true]  إعادة تعيين علامة التبويب الأساسية 
-           *[false]  إعادة تعيين التبويب المثبت
+        { $isEssential ->
+            [true] إعادة تعيين علامة التبويب الأساسية
+           *[false] إعادة تعيين التبويب المثبت
         }
     .accesskey = ر
 tab-context-zen-add-essential = 
@@ -20,10 +20,11 @@ tab-context-zen-remove-essential =
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
     .label =
-        {$isEssential ->
+        { $isEssential ->
             [true] استبدل الرابط الأساسي بـ
-           *[false] استبدل الرابط المثبت بـ
-         الحالي
+           *[false]
+                استبدل الرابط المثبت بـ
+                الحالي
         }
     .accesskey = C
 tab-context-zen-edit-title = 
@@ -51,6 +52,7 @@ zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL.
 zen-tabs-renamed = تم تغيير اسم التبويب بنجاح!
 zen-background-tab-opened-toast = تم فتح علامة تبويب خلفية جديدة!
 zen-workspace-renamed-toast = تم تغيير اسم مساحة العمل بنجاح!
+zen-split-view-limit-toast = Can't add more panels to the split view!
 zen-toggle-compact-mode-button = 
     .label = الوضع المدمج
     .tooltiptext = تبديل الوضع المدمج

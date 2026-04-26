@@ -1,8 +1,8 @@
 diff --git a/modules/libpref/moz.build b/modules/libpref/moz.build
-index 46034d8d99ba227f85824d472933ec556f54ba81..42f7f68aba60ca9c8f85f5fe13ffb56fa542e344 100644
+index 29140c6f29c1784ea594ccd84a005a9ec27eaaf5..62837e73bfee87b8bf708df912a6d07d06eea8b1 100644
 --- a/modules/libpref/moz.build
 +++ b/modules/libpref/moz.build
-@@ -93,6 +93,7 @@ pref_groups = [
+@@ -91,6 +91,7 @@ pref_groups = [
      "view_source",
      "webgl",
      "widget",

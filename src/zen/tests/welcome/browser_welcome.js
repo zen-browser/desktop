@@ -3,6 +3,12 @@
 
 "use strict";
 
+let lazy = {};
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  SearchService: "moz-src:///toolkit/components/search/SearchService.sys.mjs",
+});
+
 /* eslint-disable mozilla/no-arbitrary-setTimeout */
 
 add_task(async function test_Welcome_Steps() {
@@ -58,7 +64,7 @@ add_task(async function test_Welcome_Steps() {
 
   await new Promise(resolve => {
     setTimeout(async () => {
-      let engineName = await Services.search.getDefault();
+      let engineName = await lazy.SearchService.getDefault();
       const selectedLabel = welcomeContent.children[1];
       ok(
         selectedLabel.querySelector("input").checked,

@@ -300,7 +300,7 @@
 
 :root[zen-single-toolbar="true"] {
   --urlbar-icon-border-radius: 8px !important;
-  --urlbar-inner-border-radius: var(--toolbarbutton-border-radius) !important;
+  --urlbar-inner-border-radius: 6px !important;
 
   #identity-permission-box > *:not(#zen-site-data-icon-button) {
     visibility: collapse;
@@ -404,32 +404,6 @@
   min-width: 26px;
 }
 
-/* Notification Stack */
-
-.notificationbox-stack {
-  background: transparent;
-
-  &[notificationside="top"] {
-    position: fixed;
-    bottom: calc(var(--zen-element-separation) * 1.5);
-    right: calc(var(--zen-element-separation) * 1.5);
-    width: fit-content;
-    max-width: 30rem !important;
-    z-index: 9999;
-
-    & notification-message {
-      background: color-mix(in srgb, var(--zen-colors-tertiary) 70%, transparent 30%);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--arrowpanel-border-color);
-      border-radius: var(--zen-border-radius);
-
-      &::before {
-        display: none;
-      }
-    }
-  }
-}
-
 #nav-bar,
 #zen-sidebar-top-buttons {
   min-height: var(--zen-toolbar-height) !important;
@@ -514,6 +488,13 @@
   }
 }
 
+#urlbar[open][zen-floating-urlbar="true"] #identity-icon-box,
+:root[zen-single-toolbar="true"] #urlbar[breakout-extend="true"] #identity-icon-box {
+  --urlbar-box-hover-bgcolor: transparent;
+  margin-inline: 2px 8px;
+  transition: none;
+}
+
 /* stylelint-disable-next-line media-query-no-invalid */
 @media not -moz-pref("zen.urlbar.show-protections-icon") {
   #tracking-protection-icon-container {
@@ -537,7 +518,7 @@
   margin-left: 0 !important;
   margin-right: 12px !important;
   padding: 6px !important;
-  border-radius: 4px !important;
+  border-radius: 3px !important;
 }
 
 .urlbarView-userContext {
@@ -604,6 +585,11 @@
     position: relative;
     scale: 0.93;
     transform-origin: right;
+    opacity: 0.7;
+
+    .urlbarView-row[selected] & {
+      opacity: 1;
+    }
 
     &::after {
       content: "";
@@ -655,7 +641,7 @@
   }
 
   &[selected] {
-    --zen-selected-bg: color-mix(in srgb, var(--zen-primary-color) 55%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%);
+    --zen-selected-bg: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.1)));
     --zen-selected-color: color-mix(in srgb, var(--zen-selected-bg), black 30%);
     background-color: var(--zen-selected-bg) !important;
 
@@ -673,7 +659,7 @@
       color: var(--zen-selected-color) !important;
     }
 
-    &:where([type="switchtab"], [type="dynamic"], [type^="history"], [type^="autofill_"], [type="top_site"]) .urlbarView-favicon,
+    &:where([type="switchtab"], [type="dynamic"], [type^="history"], [type^="autofill_"], [type="top_site"], [type="bookmark"]) .urlbarView-favicon,
     & .urlbarView-shortcutContent {
       fill: var(--zen-selected-color) !important;
       background-color: rgba(255, 255, 255, 0.9) !important;
@@ -708,7 +694,8 @@
   }
 
   #identity-box {
-    margin-inline-end: 0;
+    margin-inline-end: 3px !important;
+    margin-inline-start: 2px !important;
   }
 }
 

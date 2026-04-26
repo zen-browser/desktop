@@ -101,10 +101,12 @@ window.gZenUIManager = {
     ) {
       const yValues = rawKeyframes.y || [];
       const xValues = rawKeyframes.x || [];
-      const scaleValues = rawKeyframes.scale || [];
+      const scaleYValues = rawKeyframes.scaleY || [];
+      const scaleXValues = rawKeyframes.scaleX || [];
       delete rawKeyframes.y;
       delete rawKeyframes.x;
-      delete rawKeyframes.scale;
+      delete rawKeyframes.scaleY;
+      delete rawKeyframes.scaleX;
       rawKeyframes.transform = [];
       if (
         yValues.length !== 0 &&
@@ -116,14 +118,17 @@ window.gZenUIManager = {
       const keyframeLength = Math.max(
         yValues.length,
         xValues.length,
-        scaleValues.length
+        scaleYValues.length,
+        scaleXValues.length
       );
       for (let i = 0; i < keyframeLength; i++) {
         const y = yValues[i] !== undefined ? `translateY(${yValues[i]}px)` : "";
         const x = xValues[i] !== undefined ? `translateX(${xValues[i]}px)` : "";
-        const scale =
-          scaleValues[i] !== undefined ? `scale(${scaleValues[i]})` : "";
-        rawKeyframes.transform.push(`${x} ${y} ${scale}`.trim());
+        const scaleY =
+          scaleYValues[i] !== undefined ? `scaleY(${scaleYValues[i]})` : "";
+        const scaleX =
+          scaleXValues[i] !== undefined ? `scaleX(${scaleXValues[i]})` : "";
+        rawKeyframes.transform.push(`${x} ${y} ${scaleX} ${scaleY}`.trim());
       }
     }
     let keyframes = [];
@@ -259,7 +264,7 @@ window.gZenUIManager = {
     );
     gURLBar.style.setProperty(
       "--zen-urlbar-width",
-      `${Math.min(window.innerWidth / 2, 750)}px`
+      `${Math.min(window.innerWidth / 1.5, 750)}px`
     );
     gZenVerticalTabsManager.actualWindowButtons.removeAttribute(
       "zen-has-hover"
@@ -331,7 +336,37 @@ window.gZenUIManager = {
     this._popupTrackingElements.remove(element);
   },
 
+  // On macOS, the app menu panel is displayed as a native NSPopover which
+  // silently clips content beyond the screen without informing Firefox's
+  // layout engine. This makes bottom menu items unreachable by scrolling.
+  // Setting max-height based on available screen space lets Firefox's layout
+  // handle the constraint, enabling proper overflow scrolling.
+  // See gh-12782
+  _constrainNativePopoverHeight(panel) {
+    const panelIds = [
+      "appMenu-popup",
+      "customizationui-widget-panel",
+      "widget-overflow",
+    ];
+    if (!panelIds.includes(panel.id)) {
+      return;
+    }
+    // NSPopover adds 13px of chrome on all sides (26px vertical total),
+    // measured via Accessibility Inspector on macOS 26 (Tahoe).
+    // Previous macOS versions have similar or smaller values, so this is a
+    // conservative upper bound.
+    const popoverChrome = 26;
+    const maxHeight = window.screen.availHeight - popoverChrome;
+    panel.style.maxHeight = `${maxHeight}px`;
+  },
+
   onPopupShowing(showEvent) {
+    if (
+      AppConstants.platform === "macosx" &&
+      Services.prefs.getBoolPref("widget.macos.native-context-menus", false)
+    ) {
+      this._constrainNativePopoverHeight(showEvent.target);
+    }
     for (const el of this._popupTrackingElements) {
       // target may be inside a shadow root, not directly under the element
       // we also ignore menus inside panels
@@ -402,6 +437,9 @@ window.gZenUIManager = {
   },
 
   onUrlbarSearchModeChanged(event) {
+    if (gReduceMotion) {
+      return;
+    }
     const { searchMode } = event.detail;
     const input = gURLBar;
     if (gURLBar.hasAttribute("breakout-extend") && !this._animatingSearchMode) {
@@ -969,7 +1007,7 @@ window.gZenVerticalTabsManager = {
                 command="cmd_zenToggleTabsOnRight"
         />
     `);
-    document.getElementById("viewToolbarsMenuSeparator").before(fragment);
+    document.getElementById("toolbar-context-customize").before(fragment);
   },
 
   get _topButtonsSeparatorElement() {
@@ -984,6 +1022,7 @@ window.gZenVerticalTabsManager = {
 
   animateItemOpen(aItem) {
     if (
+      gReduceMotion ||
       !gZenUIManager.motion ||
       !aItem ||
       !gZenUIManager._hasLoadedDOM ||
@@ -1003,7 +1042,8 @@ window.gZenVerticalTabsManager = {
     };
 
     try {
-      const itemSize = aItem.getBoundingClientRect().height;
+      const itemSize =
+        window.windowUtils.getBoundsWithoutFlushing(aItem).height;
       const transform = `-${itemSize}px`;
       gZenUIManager.motion
         .animate(
@@ -1014,7 +1054,7 @@ window.gZenVerticalTabsManager = {
             marginBottom: isLastItem() ? ["0px", "0px"] : [transform, "0px"],
           },
           {
-            duration: 0.075,
+            duration: 0.12,
             easing: "easeOut",
           }
         )
@@ -1037,7 +1077,7 @@ window.gZenVerticalTabsManager = {
             filter: ["blur(1px)", "blur(0px)"],
           },
           {
-            duration: 0.075,
+            duration: 0.1,
             easing: "easeOut",
           }
         )
@@ -1062,7 +1102,7 @@ window.gZenVerticalTabsManager = {
     ) {
       return Promise.resolve();
     }
-    const height = aItem.getBoundingClientRect().height;
+    const height = window.windowUtils.getBoundsWithoutFlushing(aItem).height;
     const visibleItems = gBrowser.tabContainer.ariaFocusableItems;
     const isLastItem = visibleItems[visibleItems.length - 1] === aItem;
     return gZenUIManager.motion.animate(
@@ -1077,7 +1117,7 @@ window.gZenVerticalTabsManager = {
             }),
       },
       {
-        duration: 0.075,
+        duration: 0.1,
         easing: "easeOut",
       }
     );
@@ -1181,6 +1221,9 @@ window.gZenVerticalTabsManager = {
   },
 
   recalculateURLBarHeight(updateFormat = false) {
+    if (gZenWorkspaces._processingResize) {
+      return;
+    }
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         gURLBar.removeAttribute("--urlbar-height");

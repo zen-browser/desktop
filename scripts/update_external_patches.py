@@ -24,6 +24,9 @@ def download_phab_patch(phab_id, output_file):
     print(f"Downloading patch from {patch_url}")
     response = requests.get(patch_url)
     response.raise_for_status()  # Raise an error for bad responses
+    folder = os.path.dirname(output_file)
+    if not os.path.exists(folder):
+      os.makedirs(folder)
     with open(output_file, 'wb') as f:
       f.write(response.content)
     print(f"Patch saved to {output_file}")
@@ -51,24 +54,27 @@ def main():
   expected_files = set()
   for patch in manifest:
     if patch.get("type") == "phabricator":
-      phab_id = patch.get("id")
+      phab_ids = [patch.get("id")] if patch.get("id") else patch.get("ids", [])
       name = patch.get("name")
-      if not phab_id or not name:
+      if not phab_ids or not name:
         die(f"Patch entry missing 'id' or 'name': {patch}")
-      name = name.replace(" ", "_").lower()
-      output_file = os.path.join(OUTPUT_DIR, "firefox", f"{name}.patch")
-      print(f"Processing Phabricator patch: {phab_id} -> {output_file}")
-      download_phab_patch(phab_id, output_file)
-      replaces = patch.get("replaces", {})
-      for replace in replaces.keys():
-        value = replaces[replace]
-        with open(output_file, 'r') as f:
-          content = f.read()
-        if replace not in content:
-          die(f"Replace string '{replace}' not found in {output_file}")
-        with open(output_file, 'w') as f:
-          f.write(content.replace(replace, value))
-      expected_files.add(output_file)
+      name = name.replace(" ", "_").replace(".", "_").lower()
+      for phab_id in phab_ids:
+        output_file = (
+          os.path.join(OUTPUT_DIR, "firefox", f"{name}.patch")
+            if len(phab_ids) == 1 else
+          os.path.join(OUTPUT_DIR, "firefox", name, f"{phab_id}.patch")
+        )
+        print(f"Processing Phabricator patch: {phab_id} -> {output_file}")
+        download_phab_patch(phab_id, output_file)
+        replaces = patch.get("replaces", {})
+        for replace in replaces.keys():
+          value = replaces[replace]
+          with open(output_file, 'r') as f:
+            content = f.read()
+          with open(output_file, 'w') as f:
+            f.write(content.replace(replace, value))
+        expected_files.add(output_file)
     elif patch.get("type") == "local":
       print(f"Local patch: {patch.get('path')}")
       expected_files.add(os.path.join(OUTPUT_DIR, patch.get("path")))

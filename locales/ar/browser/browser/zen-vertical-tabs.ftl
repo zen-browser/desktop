@@ -17,6 +17,9 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = إخفاء كليهما
     .accesskey = خ
+zen-toolbar-context-move-to-folder = 
+    .label = Move to Folder...
+    .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = مجلّد جديد
     .accesskey = ن
@@ -26,19 +29,19 @@ sidebar-zen-create-new =
     .label = إنشاء جديد...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
-        {$tabCount ->
+        { $tabCount ->
             [one] تفريغ والتبديل إلى علامة التبويب
            *[other] تفريغ { $tabCount } علامات التبويب والتبديل إلى الأولى
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
-        {$tabCount ->
+        { $tabCount ->
             [one] إعادة تعيين علامة التبويب وتثبيتها
-           *[other] إعادة تعيين وتثبيت { $tabCount}
+           *[other] إعادة تعيين وتثبيت { $tabCount }
         }
 zen-tab-sublabel =
-    {$tabSubtitle ->
+    { $tabSubtitle ->
         [zen-default-pinned] العودة إلى الرابط المثبت
         [zen-default-pinned-cmd] فصل عن علامة التبويب المثبتة
-       *[other] { $tabSubtitle}
+       *[other] { $tabSubtitle }
     }

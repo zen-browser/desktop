@@ -57,10 +57,14 @@
         "ZenViewSplitter:SplitViewActivated",
         "fullscreen",
         "ZenCompactMode:Toggled",
+        "MozDOMFullscreen:Entered",
+        "MozDOMFullscreen:Exited",
       ];
       const separationHandler = this.updateElementSeparation.bind(this);
       for (let eventName of eventsForSeparation) {
-        window.addEventListener(eventName, separationHandler);
+        window.addEventListener(eventName, separationHandler, {
+          capture: true,
+        });
       }
 
       window.addEventListener(
@@ -131,11 +135,15 @@
       }
     },
 
-    updateElementSeparation() {
+    updateElementSeparation(event) {
       const kMinElementSeparation = 0.1; // in px
       let separation = this.elementSeparation;
+      let domFullscreen =
+        event.type === "MozDOMFullscreen:Entered" ||
+        document.documentElement.hasAttribute("inDOMFullscreen");
       if (
         document.documentElement.hasAttribute("inFullscreen") &&
+        (!domFullscreen || event.type === "MozDOMFullscreen:Exited") &&
         window.gZenCompactModeManager?.preference &&
         !document
           .getElementById("tabbrowser-tabbox")
@@ -154,6 +162,9 @@
         document.documentElement.setAttribute("zen-no-padding", true);
       } else {
         document.documentElement.removeAttribute("zen-no-padding");
+        if (domFullscreen) {
+          window.windowUtils.flushLayoutWithoutThrottledAnimations();
+        }
       }
     },
 

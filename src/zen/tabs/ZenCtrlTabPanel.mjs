@@ -41,23 +41,25 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       document.getElementById("zen-ctrl-tab-panel-tabs")
     );
 
-    const keydownListener = e => this.#handleKeyDown(e);
-    const keyupListener = e => this.#handleKeyUp(e);
     const onTabClose = e => {
       const tabId = e.target.linkedPanel;
       URL.revokeObjectURL(this.#thumbnailCache.get(tabId));
       this.#thumbnailCache.delete(tabId);
     };
 
-    window.addEventListener("keydown", keydownListener, true);
-    window.addEventListener("keyup", keyupListener, true);
+    window.addEventListener("keydown", e => this.#handleKeyDown(e), true);
+    window.addEventListener("keyup", e => this.#handleKeyUp(e), true);
     window.addEventListener("TabClose", onTabClose);
 
     window.addEventListener(
       "unload",
       () => {
-        window.removeEventListener("keydown", keydownListener, true);
-        window.removeEventListener("keyup", keyupListener, true);
+        window.removeEventListener(
+          "keydown",
+          e => this.#handleKeyDown(e),
+          true
+        );
+        window.removeEventListener("keyup", e => this.#handleKeyUp(e), true);
         window.removeEventListener("TabClose", onTabClose);
       },
       { once: true }
@@ -74,12 +76,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
         event.shiftKey ? this.navigateBackward() : this.navigateForward();
       }
     }
-
-    if (event.key === "Escape" && this.#isOpen) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      this.close(false);
-    }
   }
 
   #handleKeyUp(event) {
@@ -88,7 +84,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     }
   }
 
-  // Ensure panel fits on narrow or vertical monitors.
+  // Ensure panel fits on narrow or vertical displays.
   #getMaxCards() {
     const screenWidth = screen.width;
 
@@ -202,11 +198,9 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     );
 
     this.panel.addEventListener(
-      "popuphiding",
+      "popuphidden",
       () => {
-        if (this.#isOpen) {
-          this.close(false);
-        }
+        this.close(false);
       },
       { once: true }
     );
@@ -278,7 +272,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Creates card UI for each tab in the current tab list and appends to card container.
+   * Creates card UI for each tab in the current tab list.
    *
    * @returns {void}
    */
@@ -287,17 +281,17 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       return;
     }
 
-    this.tabsContainer.replaceChildren();
-    this.tabsContainer.style.width = `${nsZenCtrlTabPanel.CARD_WIDTH * this.#actualVisibleCards}px`;
-
     const defaultFavicon = PlacesUtils.favicons.defaultFavicon.spec;
     const newTabFavicon = "chrome://browser/skin/zen-icons/new-tab-image.svg";
 
+    this.tabsContainer.replaceChildren();
+    this.tabsContainer.style.width = `${nsZenCtrlTabPanel.CARD_WIDTH * this.#actualVisibleCards}px`;
+
     this.#tabList.forEach((tab, index) => {
-      const card = document.createXULElement("vbox");
+      const card = document.createElement("div");
       card.className = "zen-ctrl-tab-panel-card";
 
-      const thumbnailContainer = document.createXULElement("box");
+      const thumbnailContainer = document.createElement("div");
       thumbnailContainer.className = "zen-ctrl-tab-panel-thumbnail";
 
       const thumbnail = tab.hasAttribute("pending")
@@ -305,8 +299,8 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
         : this.#thumbnailCache.get(tab.linkedPanel);
 
       if (thumbnail) {
-        const img = document.createXULElement("image");
-        img.setAttribute("src", thumbnail);
+        const img = document.createElement("img");
+        img.src = thumbnail;
         thumbnailContainer.appendChild(img);
       } else {
         card.classList.add("zen-ctrl-tab-panel-no-thumbnail");
@@ -314,25 +308,25 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
       card.appendChild(thumbnailContainer);
 
-      const infoContainer = document.createXULElement("hbox");
+      const infoContainer = document.createElement("div");
       infoContainer.className = "zen-ctrl-tab-panel-info";
 
-      const favicon = document.createXULElement("image");
+      const favicon = document.createElement("img");
       favicon.className = "zen-ctrl-tab-panel-favicon";
 
       let iconSrc = gBrowser.getIcon(tab) || defaultFavicon;
-
       if (iconSrc.startsWith("chrome://branding/content/")) {
         iconSrc = newTabFavicon;
       }
 
-      favicon.setAttribute("src", iconSrc);
+      favicon.src = iconSrc;
       infoContainer.appendChild(favicon);
 
       const title = document.createXULElement("label");
       title.className = "zen-ctrl-tab-panel-title";
-      title.setAttribute("value", tab.label || "");
+      title.setAttribute("value", tab.label);
       title.setAttribute("crop", "end");
+
       infoContainer.appendChild(title);
       card.appendChild(infoContainer);
 
@@ -358,7 +352,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   /**
    * Updates visual selection state and smoothly scrolls to the selected card.
    *
-   * @param previousIndex - Index of the previously selected card to deselect.
+   * @param {number} previousIndex - Index of the previously selected card to deselect.
    * @returns {void}
    */
   #updateSelection(previousIndex) {

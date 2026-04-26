@@ -39,15 +39,15 @@
 
 .zen-ctrl-tab-panel-card {
   flex-shrink: 0;
-  width: var(--zen-ctrl-tab-panel-card-width);
-  height: var(--zen-ctrl-tab-panel-card-height);
-  border-radius: var(--zen-ctrl-tab-panel-card-border-radius);
-  padding: var(--zen-ctrl-tab-panel-card-inner-padding);
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: var(--zen-ctrl-tab-panel-card-gap);
   box-sizing: border-box;
+  gap: var(--zen-ctrl-tab-panel-card-gap);
+  width: var(--zen-ctrl-tab-panel-card-width);
+  height: var(--zen-ctrl-tab-panel-card-height);
+  padding: var(--zen-ctrl-tab-panel-card-inner-padding);
+  border-radius: var(--zen-ctrl-tab-panel-card-border-radius);
 }
 
 .zen-ctrl-tab-panel-card:hover {
@@ -59,12 +59,12 @@
 }
 
 .zen-ctrl-tab-panel-thumbnail {
-  width: 100%;
-  height: var(--zen-ctrl-tab-panel-thumbnail-height);
   overflow: hidden;
   position: relative;
-  border-radius: var(--zen-ctrl-tab-panel-thumbnail-border-radius);
   box-sizing: border-box;
+  width: 100%;
+  height: var(--zen-ctrl-tab-panel-thumbnail-height);
+  border-radius: var(--zen-ctrl-tab-panel-thumbnail-border-radius);
 }
 
 .zen-ctrl-tab-panel-no-thumbnail .zen-ctrl-tab-panel-thumbnail {
@@ -72,7 +72,7 @@
   outline-offset: -1px;
 }
 
-.zen-ctrl-tab-panel-thumbnail image {
+.zen-ctrl-tab-panel-thumbnail img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -103,7 +103,4 @@
   flex: 1;
   font-size: 16px;
   font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }

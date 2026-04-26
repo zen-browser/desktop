@@ -3,15 +3,6 @@
 
 "use strict";
 
-add_setup(function () {
-  registerCleanupFunction(() => {
-    gZenCtrlTabPanel.close(false);
-    while (gBrowser.tabs.length > 1) {
-      BrowserTestUtils.removeTab(gBrowser.tabs[gBrowser.tabs.length - 1]);
-    }
-  });
-});
-
 add_task(async function test_Tab_Navigation() {
   await SpecialPowers.pushPrefEnv({
     set: [

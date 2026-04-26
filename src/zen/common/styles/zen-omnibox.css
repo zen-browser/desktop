@@ -492,6 +492,7 @@
 :root[zen-single-toolbar="true"] #urlbar[breakout-extend="true"] #identity-icon-box {
   --urlbar-box-hover-bgcolor: transparent;
   margin-inline: 2px 8px;
+  transition: none;
 }
 
 /* stylelint-disable-next-line media-query-no-invalid */

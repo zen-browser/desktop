@@ -15,7 +15,7 @@
     <panelview id="zen-ctrl-tab-panel-view"
                 class="cui-widget-panelview"
                 mainview-with-header="true">
-      <hbox id="zen-ctrl-tab-panel-tabs" class="zen-ctrl-tab-panel-tabs">
+      <hbox id="zen-ctrl-tab-panel-cards" class="zen-ctrl-tab-panel-cards">
       </hbox>
     </panelview>
   </panelmultiview>

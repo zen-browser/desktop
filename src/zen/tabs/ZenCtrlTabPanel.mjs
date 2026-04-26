@@ -37,8 +37,8 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     ChromeUtils.defineLazyGetter(this, "panel", () =>
       document.getElementById("zen-ctrl-tab-panel")
     );
-    ChromeUtils.defineLazyGetter(this, "tabsContainer", () =>
-      document.getElementById("zen-ctrl-tab-panel-tabs")
+    ChromeUtils.defineLazyGetter(this, "cardsContainer", () =>
+      document.getElementById("zen-ctrl-tab-panel-cards")
     );
 
     const onTabClose = e => {
@@ -192,7 +192,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     this.panel.addEventListener(
       "popupshowing",
       () => {
-        this.tabsContainer.scrollLeft = scrollPosition;
+        this.cardsContainer.scrollLeft = scrollPosition;
       },
       { once: true }
     );
@@ -277,15 +277,15 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
    * @returns {void}
    */
   #createTabCards() {
-    if (!this.tabsContainer) {
+    if (!this.cardsContainer) {
       return;
     }
 
     const defaultFavicon = PlacesUtils.favicons.defaultFavicon.spec;
     const newTabFavicon = "chrome://browser/skin/zen-icons/new-tab-image.svg";
 
-    this.tabsContainer.replaceChildren();
-    this.tabsContainer.style.width = `${nsZenCtrlTabPanel.CARD_WIDTH * this.#actualVisibleCards}px`;
+    this.cardsContainer.replaceChildren();
+    this.cardsContainer.style.width = `${nsZenCtrlTabPanel.CARD_WIDTH * this.#actualVisibleCards}px`;
 
     this.#tabList.forEach((tab, index) => {
       const card = document.createElement("div");
@@ -345,7 +345,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
         }
       });
 
-      this.tabsContainer.appendChild(card);
+      this.cardsContainer.appendChild(card);
     });
   }
 
@@ -356,21 +356,21 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
    * @returns {void}
    */
   #updateSelection(previousIndex) {
-    if (!this.tabsContainer?.children.length) {
+    if (!this.cardsContainer?.children.length) {
       return;
     }
 
-    const prevSelected = this.tabsContainer.children[previousIndex];
+    const prevSelected = this.cardsContainer.children[previousIndex];
     prevSelected.classList.remove("zen-ctrl-tab-panel-selected");
 
-    const newSelected = this.tabsContainer.children[this.#currentIndex];
+    const newSelected = this.cardsContainer.children[this.#currentIndex];
     newSelected.classList.add("zen-ctrl-tab-panel-selected");
 
     const scrollPosition =
       this.#getPageStartIndex(this.#currentIndex) *
       nsZenCtrlTabPanel.CARD_WIDTH;
 
-    this.tabsContainer.scrollTo({
+    this.cardsContainer.scrollTo({
       left: scrollPosition,
       behavior: "smooth",
     });

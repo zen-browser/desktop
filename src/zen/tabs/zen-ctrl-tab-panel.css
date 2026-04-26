@@ -27,7 +27,7 @@
   width: 100%;
 }
 
-#zen-ctrl-tab-panel-tabs {
+#zen-ctrl-tab-panel-cards {
   display: flex;
   flex-direction: row;
   overflow: hidden;
@@ -103,4 +103,5 @@
   flex: 1;
   font-size: 16px;
   font-weight: 600;
+  cursor: pointer;
 }

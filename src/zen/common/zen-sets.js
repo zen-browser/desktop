@@ -185,15 +185,9 @@ document.addEventListener(
             "PanelUI-zen-india-gov"
           );
           if (panel) {
-            panel.addEventListener(
-              "popuphidden",
-              () => window.openTrustedLinkIn(url, "tab"),
-              { once: true }
-            );
             panel.hidePopup();
-          } else {
-            window.openTrustedLinkIn(url, "tab");
           }
+          window.openTrustedLinkIn(url, "tab");
         } catch(e) {
           console.error("Astra: India Gov open error:", e);
         }
@@ -230,15 +224,9 @@ document.addEventListener(
             "PanelUI-zen-app-launcher"
           );
           if (panel) {
-            panel.addEventListener(
-              "popuphidden",
-              () => window.openTrustedLinkIn(url, "tab"),
-              { once: true }
-            );
             panel.hidePopup();
-          } else {
-            window.openTrustedLinkIn(url, "tab");
           }
+          window.openTrustedLinkIn(url, "tab");
         } catch(e) {
           console.error("Astra: App launcher open error:", e);
         }

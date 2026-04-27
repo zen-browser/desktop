@@ -809,7 +809,7 @@ class nsZenKeyboardShortcutsLoader {
     newShortcutList.push(
       new KeyShortcut(
         "zen-open-india-gov",
-        "G",
+        "I",
         "",
         ZEN_OTHER_SHORTCUTS_GROUP,
         nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
@@ -855,7 +855,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 29;
+  static LATEST_KBS_VERSION = 30;
 
   constructor() {}
 
@@ -1311,6 +1311,12 @@ class nsZenKeyboardShortcutsVersioner {
           "zen-open-india-gov-shortcut"
         )
       );
+    }
+    if (version < 30) {
+      const launcher = data.find(s => s.id === "zen-open-india-gov");
+      if (launcher && launcher.key === "G") {
+        launcher.key = "I";
+      }
     }
     if (version < 20) {
       // Add shortcut for folder quick search.

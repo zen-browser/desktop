@@ -39,6 +39,14 @@
         will-change: transform;
       }
     }
+
+    @media -moz-pref('zen.theme.acrylic-elements') {
+      #navigator-toolbox {
+        background: transparent !important;
+        backdrop-filter: blur(42px) saturate(110%)
+          brightness(0.25) contrast(100%) !important;
+      }
+    }
   }
 
   /* stylelint-disable-next-line media-query-no-invalid */

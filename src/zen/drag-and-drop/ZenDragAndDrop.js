@@ -944,6 +944,15 @@
     }
 
     handle_drop(event) {
+      const ownerGlobal = event.dataTransfer.mozGetDataAt(
+        TAB_DROP_TYPE,
+        0
+      )?.ownerGlobal;
+      if (ownerGlobal?.gZenCompactModeManager) {
+        // Sometimes, dragend doesn't always get called when dragging
+        // to different windows, see gh-8643.
+        delete ownerGlobal.gZenCompactModeManager._isTabBeingDragged;
+      }
       this.clearSpaceSwitchTimer();
       gZenFolders.highlightGroupOnDragOver(null);
       super.handle_drop(event);

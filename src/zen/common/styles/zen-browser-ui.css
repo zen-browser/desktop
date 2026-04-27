@@ -345,3 +345,8 @@
 :root[zen-right-side="true"] #zen-appcontent-navbar-wrapper #PanelUI-button {
   order: 2;
 }
+
+/* Astra - Hide Create New button */
+#zen-create-new-button {
+  display: none;
+}

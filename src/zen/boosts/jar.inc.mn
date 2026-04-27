@@ -1,0 +1,14 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+        content/browser/zen-styles/zen-boosts.css                               (../../zen/boosts/zen-boosts.css)
+        content/browser/zen-styles/content/zen-zap.css                          (../../zen/boosts/zen-zap.css)
+        content/browser/zen-styles/content/zen-selector.css                     (../../zen/boosts/zen-selector.css)
+        content/browser/zen-styles/zen-advanced-color-options.css               (../../zen/boosts/zen-advanced-color-options.css)
+
+        # Windows
+*       content/browser/zen-components/windows/zen-boost-editor.xhtml           (../../zen/boosts/zen-boost-editor.inc.xhtml)
+
+        # Images
+        content/browser/zen-images/boost-indicator.svg                          (../../zen/images/boost-indicator.svg)

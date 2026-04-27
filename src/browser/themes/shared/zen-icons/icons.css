@@ -8,7 +8,8 @@
 #zen-welcome-start-button,
 .zen-toast button,
 .zen-current-workspace-indicator-chevron,
-.pinned-tabs-container-separator toolbarbutton {
+.pinned-tabs-container-separator toolbarbutton,
+.zen-permission-popup-boost-editor-button {
   -moz-context-properties: fill, fill-opacity !important;
   fill: currentColor !important;
 }
@@ -39,8 +40,19 @@
 .close-icon,
 .zen-glance-sidebar-close,
 .zen-theme-picker-custom-list-item-remove,
-#appMenu-quit-button2 {
+#appMenu-quit-button2,
+#zen-boost-delete {
   list-style-image: url("close.svg") !important;
+}
+
+#PanelUI-zen-emojis-picker-none,
+#zen-emojis-picker-none {
+  list-style-image: url("trash.svg");
+}
+
+#PanelUI-zen-gradient-generator-color-remove,
+#zen-gradient-generator-color-remove {
+  list-style-image: url("unpin.svg") !important;
 }
 
 #PanelUI-zen-emojis-picker-none {
@@ -117,7 +129,8 @@
 }
 
 .zen-current-workspace-indicator-chevron,
-#PanelUI-zen-gradient-generator-color-page-right {
+#PanelUI-zen-gradient-generator-color-page-right,
+.zen-permission-popup-boost-editor-button {
   list-style-image: url("arrow-right.svg");
 }
 
@@ -412,7 +425,8 @@
 }
 
 .panel-header > .subviewbutton-back,
-#PanelUI-zen-gradient-generator-color-page-left {
+#PanelUI-zen-gradient-generator-color-page-left,
+#zen-boost-back {
   list-style-image: url("arrow-left.svg") !important;
 }
 
@@ -503,6 +517,30 @@
 
   &:where([starred]) image {
     list-style-image: url("permissions-fill.svg");
+  }
+  &[boosting] image {
+    color: var(--color-accent-primary);
+    list-style-image: url("permissions-fill.svg");
+  }
+
+  position: relative;
+
+  & .zen-site-data-boost-animation {
+    display: none;
+  }
+}
+
+@media not (prefers-reduced-motion: reduce) {
+  #zen-site-data-icon-button[boosting] .zen-site-data-boost-animation {
+    position: absolute;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    color: var(--color-accent-primary);
+    list-style-image: url("chrome://browser/content/zen-images/boost-indicator.svg");
+    transform: translateX(-20%);
+    z-index: 0;
+    pointer-events: none;
   }
 }
 
@@ -878,6 +916,34 @@
   fill: currentColor;
 }
 
+#zen-site-data-boost {
+  border-radius: 6px;
+  appearance: none;
+  padding: 6px 10px 6px 10px;
+
+  position: relative;
+
+  list-style-image: url("paintbrush.svg");
+
+  & .toolbarbutton-text {
+    display: none;
+  }
+
+  @media -moz-pref("zen.boosts.enabled", false) {
+    display: none;
+  }
+
+  & image {
+    -moz-context-properties: fill, fill-opacity;
+    fill: currentColor;
+  }
+}
+
+.boost-brush {
+  list-style-image: url("boost.svg") !important;
+  padding: 10px;
+}
+
 #zen-site-data-security-info {
   -moz-context-properties: fill, fill-opacity;
   fill: currentColor;
@@ -936,4 +1002,80 @@
 #zen-copy-url-button image {
   list-style-image: url("link.svg");
   fill-opacity: 0.65;
+}
+
+#zen-boost-text-case-toggle {
+  list-style-image: url("text-title-case.svg");
+}
+
+#zen-boost-text-case-toggle[case-mode="uppercase"] {
+  list-style-image: url("text-uppercase.svg");
+}
+
+#zen-boost-text-case-toggle[case-mode="lowercase"] {
+  list-style-image: url("text-lowercase.svg");
+}
+
+#zen-boost-code {
+  list-style-image: url("brackets-curly.svg");
+}
+
+#zen-boost-zap {
+  list-style-image: url("bolt.svg");
+}
+
+#zen-boost-controls {
+  list-style-image: url("sliders.svg");
+}
+
+#zen-boost-invert {
+  list-style-image: url("lightbulb.svg");
+}
+
+#zen-boost-disable {
+  list-style-image: url("block.svg");
+}
+
+#zen-boost-close {
+  list-style-image: url("close.svg");
+
+  @media (-moz-platform: macos) {
+    list-style-image: url("close-filled-round.svg");
+  }
+
+  @media (-moz-platform: windows) {
+    list-style-image: none;
+    list-style: none;
+    display: inline-flex;
+
+    &::before {
+      font-family: "Segoe Fluent Icons", "Segoe MDL2 Assets";
+      content: "\e8bb";
+      font-size: 12px;
+    }
+  }
+}
+
+#zen-boost-magic-theme {
+  list-style-image: url("sparkles.svg");
+}
+
+#zen-boost-shuffle {
+  list-style-image: url("arrow-rotate-anticlockwise.svg");
+}
+
+#zen-boost-css-picker {
+  list-style-image: url("eyedropper.svg");
+}
+
+#zen-boost-css-inspector {
+  list-style-image: url("hammer.svg");
+}
+
+#zen-boost-save {
+  list-style-image: url("downloads.svg");
+}
+
+#zen-boost-load {
+  list-style-image: url("open.svg");
 }

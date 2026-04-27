@@ -1,0 +1,28 @@
+#filter dumbComments emptyLines substitution
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 14.7 16.72"
+   version="1.1"
+   id="svg3"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs3" />
+  <g
+     stroke-linecap="round"
+     stroke-width="1.5"
+     fill="none"
+     stroke="context-fill"
+     stroke-opacity="context-fill-opacity"
+     stroke-linejoin="round"
+     class="nc-icon-wrapper"
+     id="g3">
+    <path
+       id="circle3"
+       class="cls-1"
+       d="M 3.4,14.17 A 0.86000001,0.86000001 0 0 1 2.54,15.03 0.86000001,0.86000001 0 0 1 1.6799999,14.17 0.86000001,0.86000001 0 0 1 2.54,13.31 0.86000001,0.86000001 0 0 1 3.4,14.17 Z M 10.53,11.6 C 11.76,10.89 13.88,8.39 14.12,7.61 14.46,6.52 13.63,5.97 12.86,5.52 12.22,5.13 10.95,6.95 10.25,7.72 m -0.01,0 C 10.79,7.17 11.75,5.7 11.75,5.18 11.75,2.67 6.38,-0.99 6.8,1.16 7.09,2.63 5.72,5.24 5.17,6.11 M 5.08,6.35 C 4.76,6.03 4.24,6.02 3.91,6.33 L 3.22,6.98 C 2.88,7.3 2.87,7.85 3.2,8.18 l 1.69,1.69 -3.54,2.65 c -1.02,0.73 -1.15,2.2 -0.27,3.09 v 0 c 0.87,0.88 2.31,0.79 3.06,-0.18 l 2.71,-3.63 1.6,1.6 c 0.33,0.33 0.85,0.33 1.18,0 l 0.64,-0.63 c 0.33,-0.33 0.33,-0.86 0,-1.19 L 5.06,6.33 Z" />
+  </g>
+</svg>

@@ -1781,6 +1781,15 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         browser.gZenThemePicker.recalculateDots(workspaceTheme.gradientColors);
       }
     });
+
+    // Notify observers that gradient updated
+    // note: We just notify if we are not skipping the update,
+    //   because otherwise, it can get pretty laggy if we notify on every change
+    //   when the user is dragging a dot.
+    // TODO(cheff): We should probably find a better way to handle this
+    if (!skipUpdate) {
+      Services.obs.notifyObservers(null, "zen-space-gradient-update");
+    }
   }
 
   fixTheme(theme) {
@@ -1897,8 +1906,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     );
     let currentWorkspace = gZenWorkspaces.getActiveWorkspace();
 
+    currentWorkspace.theme = gradient;
     if (!skipSave) {
-      currentWorkspace.theme = gradient;
       gZenWorkspaces.saveWorkspace(currentWorkspace);
     }
 

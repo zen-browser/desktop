@@ -1,0 +1,90 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#ifndef mozilla_ZenBoostsBackend_h_
+#define mozilla_ZenBoostsBackend_h_
+
+#include "nsColor.h"
+#include "nsPresContext.h"
+
+#include "mozilla/RefPtr.h"
+
+#define ZEN_BOOSTS_BACKEND_CONTRACTID "@mozilla.org/zen/boosts-backend;1"
+
+using ZenBoostData = nscolor;  // For now, Zen boosts data is just a color.
+
+namespace zen {
+
+struct nsZenAccentOklab {
+  nscolor accentNS;
+  float accL, accA, accB;
+  float contrastFactor;
+};
+
+class nsZenBoostsBackend final {
+ public:
+  explicit nsZenBoostsBackend() = default;
+  ~nsZenBoostsBackend() = default;
+
+  /**
+   * Indicates whether the current frame being rendered is for anonymous
+   * content.
+   */
+  bool mCurrentFrameIsAnonymousContent = false;
+
+  /**
+   * @brief Resolve a StyleAbsoluteColor to take into account Zen boosts.
+   * @param aColor The color to resolve.
+   * @return The resolved color with Zen boost filters applied, or the original
+   * color if no boost is active.
+   * @see StyleColor::ResolveColor for reference.
+   */
+  static auto ResolveStyleColor(mozilla::StyleAbsoluteColor aColor)
+      -> mozilla::StyleAbsoluteColor;
+
+  /**
+   * @see ResolveStyleColor for reference.
+   */
+  static auto ResolveStyleColor(nscolor aColor) -> nscolor;
+
+  /**
+   * @brief Filter a color based on the current Zen boost settings.
+   * @param aColor The color to filter.
+   * @param aPresContext The presentation context to use for filtering.
+   * @return The filtered color.
+   */
+  static auto FilterColorFromPresContext(nscolor aColor,
+                                         nsPresContext* aPresContext = nullptr)
+      -> nscolor;
+
+  /**
+   * @brief Called when a presshell is entered during rendering.
+   * @param aDocument The document associated with the presshell being entered.
+   */
+  auto onPresShellEntered(mozilla::dom::Document* aDocument) -> void;
+
+  [[nodiscard]]
+  inline auto GetCurrentBrowsingContext() const {
+    return mCurrentBrowsingContext;
+  }
+
+ private:
+  /**
+   * The presshell of the current document being rendered.
+   */
+  RefPtr<mozilla::dom::BrowsingContext> mCurrentBrowsingContext;
+
+  static nsZenAccentOklab mCachedAccent;
+
+ public:
+  /**
+   * @brief Get the singleton instance of the ZenBoostsBackend.
+   * @return The singleton instance.
+   */
+  static auto GetInstance() -> nsZenBoostsBackend*;
+};
+
+}  // namespace zen
+
+#endif

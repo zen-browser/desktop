@@ -408,17 +408,59 @@
   display: none;
 }
 
-.permission-popup-permission-item {
+.zen-permission-popup-boost-editor-button {
+  transition:
+    0.2s opacity ease,
+    0.2s background-color ease,
+    0.2s transform ease;
+  opacity: 0;
+
+  width: 30px;
+  height: 26px;
+  min-width: 30px;
+  appearance: none;
+  background: transparent;
+  border: none;
+
+  border-radius: 8px;
+  transform: scale(1);
+
+  -moz-context-properties: fill;
+  fill: white;
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  & image {
+    opacity: 0.6;
+    height: 14px;
+    width: calc(100% - 2px);
+  }
+}
+
+.permission-popup-boost-item:hover .zen-permission-popup-boost-editor-button {
+  opacity: 1;
+
+  &.zen-permission-popup-boost-editor-button:hover {
+    background-color: var(--button-background-color-ghost-hover);
+  }
+}
+
+.permission-popup-permission-item,
+.permission-popup-boost-item {
   gap: 8px;
   overflow: hidden;
   align-items: center;
 }
 
-.permission-popup-permission-label-container {
+.permission-popup-permission-label-container,
+.permission-popup-boost-label-container {
   min-width: 1px;
 }
 
-.permission-popup-permission-label {
+.permission-popup-permission-label,
+.permission-popup-boost-label {
   margin: 0;
   font-weight: 500;
   white-space: nowrap;
@@ -427,7 +469,8 @@
   max-width: 100%;
 }
 
-.permission-popup-permission-icon {
+.permission-popup-permission-icon,
+.permission-popup-boost-icon {
   fill: var(--button-primary-color);
   padding: 8px;
   width: 34px;
@@ -459,20 +502,24 @@
       opacity 0.12s ease-in-out;
   }
 
-  .permission-popup-permission-item:hover &::before {
+  .permission-popup-permission-item:hover &::before,
+  .permission-popup-boost-item:hover:not(:has(.zen-permission-popup-boost-editor-button:hover)) &::before {
     transform: scale(1.05);
   }
 
-  .permission-popup-permission-item:active:hover &::before {
+  .permission-popup-permission-item:active:hover &::before,
+  .permission-popup-boost-item:active:hover:not(:has(.zen-permission-popup-boost-editor-button:hover)) &::before {
     transform: scale(0.95);
   }
 
-  .permission-popup-permission-item[state="allow"] &::before {
+  .permission-popup-permission-item[state="allow"] &::before,
+  .permission-popup-boost-item[state="enabled"] &::before {
     opacity: 1;
   }
 }
 
-.zen-permission-popup-permission-state-label {
+.zen-permission-popup-permission-state-label,
+.zen-permission-popup-boost-state-label {
   opacity: 0.6;
   font-size: smaller;
   font-weight: 400;
@@ -488,6 +535,8 @@
   border-top: 1px solid color-mix(in srgb, currentColor 6%, transparent);
   padding-top: 8px;
   margin: 2px 8px 8px 8px;
+
+  gap: 8px;
 
   & toolbarbutton {
     margin: 0;
@@ -586,7 +635,8 @@
   }
 }
 
-#zen-site-data-settings-list toolbarseparator {
+#zen-site-data-settings-list toolbarseparator,
+#zen-site-data-boost-list toolbarseparator {
   margin: 6px 0;
 }
 

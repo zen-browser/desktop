@@ -8,7 +8,7 @@
 #include "nsIZenDragAndDrop.h"
 #include "nsCOMPtr.h"
 
-#define ZEN_BOOSTS_BACKEND_CONTRACTID "@mozilla.org/zen/drag-and-drop;1"
+#define ZEN_DND_MANAGER_CONTRACTID "@mozilla.org/zen/drag-and-drop;1"
 
 namespace zen {
 

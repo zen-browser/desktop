@@ -221,6 +221,7 @@ panel {
 }
 
 .permission-popup-permission-item,
+.permission-popup-boost-item,
 #permission-popup-storage-access-permission-list-header {
   padding-block: 4px;
   margin-block: 0;

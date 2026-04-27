@@ -25,6 +25,9 @@
 #define INVERT_CHANNEL_FLOOR() \
   (mozilla::StaticPrefs::zen_boosts_invert_channel_floor_AtStartup())
 
+#define SHOULD_APPLY_BOOSTS_TO_ANONYMOUS_CONTENT() \
+  (!mozilla::StaticPrefs::zen_boosts_disable_on_anonymous_content_AtStartup())
+
 #if defined(__clang__) || defined(__GNUC__)
 #  define ZEN_HOT_FUNCTION __attribute__((hot))
 #else
@@ -133,12 +136,13 @@ inline static auto zenPrecomputeAccent(nscolor aAccentColor) {
 [[nodiscard]] ZEN_HOT_FUNCTION static inline nscolor zenFilterColorChannel(
     nscolor aOriginalColor, const nsZenAccentOklab& aAccent) {
   const uint8_t oL = NS_GET_A(aOriginalColor);
+  const uint8_t contrast = NS_GET_CONTRAST(aAccent.accentNS);
   if (oL == 0) {
     return aOriginalColor;
   }
 
   const float inv255 = 1.0f / 255.0f;
-  const float blendFactor = oL * inv255;
+  const float blendFactor = contrast * inv255;
 
   // sRGB -> linear
   const float lr = srgbToLinear(NS_GET_R(aOriginalColor) * inv255);
@@ -161,14 +165,26 @@ inline static auto zenPrecomputeAccent(nscolor aAccentColor) {
       0.0259040371f * l_ + 0.7827717662f * m_ - 0.8086757660f * s_;
 
   // Blend chroma toward accent
-  const float fA = origA + (aAccent.accA - origA) * blendFactor;
-  const float fB = origB + (aAccent.accB - origB) * blendFactor;
+  const float bA = origA + (aAccent.accA - origA) * blendFactor;
+  const float bB = origB + (aAccent.accB - origB) * blendFactor;
 
   // Luminance: at low contrast stay near the original, the higher the contrast,
   // the more we shift toward the accent luminance, but we never go fully to
   // the accent luminance to preserve some of the original color's character.
-  const float fL = origL + (aAccent.accL - origL) *
-                               (blendFactor * aAccent.contrastFactor * 0.5f);
+  const float lumDelta = aAccent.accL - origL;
+  const float fL =
+      origL + lumDelta * (blendFactor * aAccent.contrastFactor * 0.5f);
+
+  // Rotate hue in the Oklab a/b plane. Direction follows the luminance shift:
+  // pushing darker rotates clockwise ("right"), pushing lighter rotates the
+  // other way. Magnitude scales with blend strength so subtle accents stay
+  // subtle.
+  const float rotAngle = (lumDelta > 0.0f ? -1.0f : 1.0f) * blendFactor *
+                         aAccent.contrastFactor * 0.25f;
+  const float cosR = std::cos(rotAngle);
+  const float sinR = std::sin(rotAngle);
+  const float fA = bA * cosR - bB * sinR;
+  const float fB = bA * sinR + bB * cosR;
 
   // Oklab -> LMS
   const float fl_ = fL + 0.3963377774f * fA + 0.2158037573f * fB;
@@ -248,7 +264,8 @@ inline static void GetZenBoostsDataFromBrowsingContext(
     ZenBoostData* aData, bool* aIsInverted,
     nsPresContext* aPresContext = nullptr) {
   auto zenBoosts = nsZenBoostsBackend::GetInstance();
-  if (!zenBoosts || (zenBoosts->mCurrentFrameIsAnonymousContent)) {
+  if (!zenBoosts || (zenBoosts->mCurrentFrameIsAnonymousContent &&
+                     !SHOULD_APPLY_BOOSTS_TO_ANONYMOUS_CONTENT())) {
     return;
   }
   auto browsingContext = zenBoosts->GetCurrentBrowsingContext();

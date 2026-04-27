@@ -200,7 +200,7 @@ export class ZapOverlay {
               element.style.removeProperty("opacity");
             });
           });
-          element.style.setProperty("opacity", "0", "!important");
+          element.style.setProperty("opacity", "0", "important");
         });
       });
     } else {

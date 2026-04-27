@@ -8,7 +8,6 @@
 
     <style type="text/css"><![CDATA[
     .sparkle {
-      stroke: currentColor;
       stroke-width: 1;
       stroke-linecap: round;
       
@@ -34,17 +33,16 @@
         transform: scale(0) rotate(180deg);
       }
     }
-    }*/
   ]]></style>
 
   <g class="sparkle-group">
-    <path class="sparkle" style="animation-delay: 0.5s;" d="M10 2v2"/>
-    <path class="sparkle" style="animation-delay: 0.5s;" d="M11 3H9"/>
+    <path class="sparkle" stroke="context-fill" style="animation-delay: 0.5s;" d="M10 2v2"/>
+    <path class="sparkle" stroke="context-fill" style="animation-delay: 0.5s;" d="M11 3H9"/>
     
-    <path class="sparkle" d="M5 6v4"/>
-    <path class="sparkle" d="M7 8H3"/>
+    <path class="sparkle" stroke="context-fill" d="M5 6v4"/>
+    <path class="sparkle" stroke="context-fill" d="M7 8H3"/>
 
-    <path class="sparkle" style="animation-delay: 1.8s;" d="M21 20h-4"/>
-    <path class="sparkle" style="animation-delay: 1.8s;" d="M19 18v4"/>
+    <path class="sparkle" stroke="context-fill" style="animation-delay: 1.8s;" d="M21 20h-4"/>
+    <path class="sparkle" stroke="context-fill" style="animation-delay: 1.8s;" d="M19 18v4"/>
   </g>
 </svg>

@@ -152,21 +152,20 @@ export class ZenBoostsParent extends JSWindowActorParent {
           break;
         }
 
-        const topWindowIsDarkMode =
-          embedder.ownerGlobal.getComputedStyle(embedder).colorScheme ===
-          "dark";
-
         const boost = lazy.gZenBoostsManager.loadActiveBoostFromStore(domain);
-        const currentWorkspace =
-          await this.browsingContext.topChromeWindow.gZenWorkspaces.getActiveWorkspace();
+        let workspaceGradient = [];
+        if (boost.boostEntry.boostData.autoTheme) {
+          const currentWorkspace =
+            await this.browsingContext.topChromeWindow.gZenWorkspaces.getActiveWorkspace();
+          workspaceGradient = currentWorkspace.theme.gradientColors;
+        }
 
         const styleData =
           await lazy.gZenBoostsManager.getStyleSheetForBoost(domain);
 
         return {
           ...boost,
-          topWindowIsDarkMode,
-          workspaceGradient: currentWorkspace.theme.gradientColors,
+          workspaceGradient,
           styleSheet: styleData
             ? {
                 uuid: styleData.uuid,

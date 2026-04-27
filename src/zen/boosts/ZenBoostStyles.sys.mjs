@@ -32,7 +32,7 @@ export class nsZenBoostStyles {
     }
 
     const rawStyle = this.#generateStyleString(boostData);
-    if (!rawStyle) {
+    if (!rawStyle || rawStyle.trim() === "") {
       return null;
     }
 
@@ -63,7 +63,10 @@ export class nsZenBoostStyles {
       boostData.fontFamily != ""
         ? `font-family: ${boostData.fontFamily} !important;`
         : ``;
-    const fontCase = `text-transform: ${boostData.textCaseOverride} !important;`;
+    const fontCase =
+      boostData.textCaseOverride != "none"
+        ? `text-transform: ${boostData.textCaseOverride} !important;`
+        : ``;
 
     let zapBlocks = "";
     if (boostData.zapSelectors) {
@@ -85,7 +88,7 @@ export class nsZenBoostStyles {
       style += `}\n`;
     }
 
-    if (boostData.customCSS != "") {
+    if (boostData.customCSS.trim() != "") {
       style += `/* USER CSS */\n`;
       style += `${boostData.customCSS || ""}\n`;
     }

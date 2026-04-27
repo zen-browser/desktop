@@ -355,6 +355,11 @@ body {
   }
 }
 
+#zen-boost-text-case-toggle:not([case-mode="none"]) {
+  background-color: #ebebed;
+  font-weight: 600 !important;
+}
+
 #zen-boost-code-top-bar .mod-button {
   height: auto !important;
 }
@@ -452,7 +457,7 @@ body {
   width: 95px;
   height: 20px !important;
 
-  transition: 0.4s opacity cubic-bezier(0.075, 0.82, 0.165, 1) !important;
+  transition: 0.2s opacity ease-in-out;
 
   color: #727272;
   background: none;
@@ -469,6 +474,11 @@ body {
 
   &:hover {
     opacity: 1;
+  }
+
+  &[has-selection="true"] {
+    opacity: 1;
+    background-color: #ebebed;
   }
 }
 
@@ -490,7 +500,7 @@ body {
 }
 
 #zen-boost-font-wrapper {
-  box-shadow: 0 2px 8px #00000010;
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
   background-color: #ffffff;
 
   border-radius: 6px;
@@ -522,22 +532,21 @@ body {
     filter: none;
     color: rgba(0, 0, 0, 0.6);
     border-radius: 50px;
-    transition: 0.1s background-color ease-in-out !important;
+    transition: 0.1s transform ease;
     font-size: 12px;
     padding: 2px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    height: 26px;
+    width: 26px;
+    transform-origin: center center;
 
     &:hover {
       background-color: #9a9a9a30;
+      transform: scale(1.1);
     }
   }
-}
-
-.zen-boost-font-button-active {
-  background-color: #5454572f;
-}
-
-.zen-boost-font-button-active:hover {
-  background-color: #5b5b5c28;
 }
 
 @property --mod-button-c1 {
@@ -723,6 +732,15 @@ body {
   & .zen-boost-color-picker-circle {
     opacity: 0.4;
   }
+}
+
+
+.zen-boost-font-button-active {
+  background-color: #5454572f !important;
+}
+
+.zen-boost-font-button-active:hover {
+  background-color: #5b5b5c28 !important;
 }
 
 /** Import animation */

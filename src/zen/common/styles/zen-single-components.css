@@ -443,7 +443,7 @@
   opacity: 1;
 
   &.zen-permission-popup-boost-editor-button:hover {
-    background-color: #aaaaaa22;
+    background-color: var(--button-background-color-ghost-hover);
   }
 }
 

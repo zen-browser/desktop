@@ -603,8 +603,6 @@ ${cssSelector} {
     if (this.currentBoostData.textCaseOverride == "lowercase") {
       this.currentBoostData.textCaseOverride = "uppercase";
     } else if (this.currentBoostData.textCaseOverride == "uppercase") {
-      this.currentBoostData.textCaseOverride = "capitalize";
-    } else if (this.currentBoostData.textCaseOverride == "capitalize") {
       this.currentBoostData.textCaseOverride = "none";
     } else {
       this.currentBoostData.textCaseOverride = "lowercase";
@@ -943,12 +941,14 @@ ${cssSelector} {
    */
   updateFontButtonVisuals() {
     const fontButtonGroup = this.doc.getElementById("zen-boost-font-grid");
+    let foundActive = false;
     for (let i = 0; i < fontButtonGroup.children.length; i++) {
       const fontButton = fontButtonGroup.children[i];
       if (
         fontButton.getAttribute("font-data") == this.currentBoostData.fontFamily
       ) {
         fontButton.classList.add("zen-boost-font-button-active");
+        foundActive = true;
       } else {
         fontButton.classList.remove("zen-boost-font-button-active");
       }
@@ -961,6 +961,11 @@ ${cssSelector} {
         fontSelect.value = option.value;
         break;
       }
+    }
+    if (this.currentBoostData.fontFamily !== "" && !foundActive) {
+      fontSelect.setAttribute("has-selection", "true");
+    } else {
+      fontSelect.removeAttribute("has-selection");
     }
   }
 

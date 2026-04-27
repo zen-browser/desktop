@@ -104,8 +104,7 @@
 
 #appMenu-zoom-controls,
 #PanelUI-zen-gradient-generator-color-add,
-#zen-site-data-new-addon-button,
-.zen-create-new-boost {
+#zen-site-data-new-addon-button {
   list-style-image: url("plus.svg") !important;
 }
 
@@ -525,17 +524,20 @@
   }
 
   position: relative;
+
+  & .zen-site-data-boost-animation {
+    display: none;
+  }
 }
 
 @media not (prefers-reduced-motion: reduce) {
-  #zen-site-data-icon-button[boosting]::after {
-    content: "";
+  #zen-site-data-icon-button[boosting] .zen-site-data-boost-animation {
     position: absolute;
+    display: flex;
     width: 100%;
     height: 100%;
-    opacity: 1;
     color: var(--color-accent-primary);
-    background: url("chrome://browser/content/zen-images/boost-indicator.svg") no-repeat;
+    list-style-image: url("chrome://browser/content/zen-images/boost-indicator.svg");
     transform: translateX(-20%);
     z-index: 0;
     pointer-events: none;
@@ -915,8 +917,6 @@
 }
 
 #zen-site-data-boost {
-  -moz-context-properties: fill, fill-opacity;
-  fill: currentColor;
   border-radius: 6px;
   appearance: none;
   padding: 6px 10px 6px 10px;
@@ -932,11 +932,16 @@
   @media -moz-pref("zen.boosts.enabled", false) {
     display: none;
   }
+
+  & image {
+    -moz-context-properties: fill, fill-opacity;
+    fill: currentColor;
+  }
 }
 
-#zen-site-data-boost[boosting],
 .boost-brush {
-  list-style-image: url("paintbrush-fill.svg");
+  list-style-image: url("boost.svg") !important;
+  padding: 10px;
 }
 
 #zen-site-data-security-info {

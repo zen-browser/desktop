@@ -50,6 +50,7 @@ export class nsZenSiteDataPanel {
     const button = this.window.MozXULElement.parseXULToFragment(`
       <box id="zen-site-data-icon-button" role="button" align="center" class="identity-box-button" delegatesanchor="true">
         <image />
+        <image class="zen-site-data-boost-animation" />
       </box>
     `);
     this.anchor = button.querySelector("#zen-site-data-icon-button");
@@ -140,6 +141,8 @@ export class nsZenSiteDataPanel {
     } else {
       this.anchor.removeAttribute("boosting");
     }
+    // Force a reflow to ensure the attribute change is applied before any potential animation.
+    this.anchor.getBoundingClientRect();
   }
 
   #initCopyUrlButton() {

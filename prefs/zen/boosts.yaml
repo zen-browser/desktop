@@ -13,3 +13,10 @@
   cpptype: uint32_t
   mirror: once
   type: static
+
+- name: zen.boosts.disable-on-anonymous-content
+  value: true
+  cpptype: bool
+  mirror: once
+  type: static
+

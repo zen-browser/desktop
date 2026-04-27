@@ -26,7 +26,7 @@ void main() {
   `;
 
   VERT = `
-  precision highp float;
+precision highp float;
 
 uniform float u_AnimationDuration;
 uniform float u_ParticleSize;
@@ -147,7 +147,7 @@ void main() {
   #program;
   #animationStartTime = -1;
   #particlesCount = 0;
-  #duration = 1600;
+  #duration = 1400;
   #texture = null;
   #buffer = null;
 

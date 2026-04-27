@@ -317,4 +317,4 @@ zen-devtools-toggle-dom-shortcut = Toglo DOM
 zen-devtools-toggle-accessibility-shortcut = Toglo Hygyrchedd
 zen-close-all-unpinned-tabs-shortcut = Cau Pob Tab Heb ei Binio
 zen-new-unsynced-window-shortcut = Ffenestr Wag Newydd
-zen-duplicate-tab-shortcut = Duplicate Tab
+zen-duplicate-tab-shortcut = Tab Dyblyg

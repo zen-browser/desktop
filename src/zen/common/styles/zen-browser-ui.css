@@ -355,3 +355,9 @@
 [command="cmd_zenOpenFolderCreation"] {
   display: none;
 }
+
+.zen-folder-button,
+[data-zen-folder-icon],
+#zen-folders-list {
+  display: none;
+}

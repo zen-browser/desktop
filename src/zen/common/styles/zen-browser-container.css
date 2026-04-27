@@ -41,10 +41,11 @@
     }
 
     @media -moz-pref('zen.theme.acrylic-elements') {
-      #navigator-toolbox {
-        background: transparent !important;
-        backdrop-filter: blur(42px) saturate(110%)
-          brightness(0.25) contrast(100%) !important;
+      #navigator-toolbox,
+      #navigator-toolbox > *,
+      .zen-toolbar-background {
+        background: color-mix(in srgb, transparent 100%, transparent) !important;
+        backdrop-filter: blur(20px) saturate(180%) !important;
       }
     }
   }

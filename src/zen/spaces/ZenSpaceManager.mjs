@@ -824,7 +824,6 @@ class nsZenWorkspaces {
       delete this._tabToSelect;
       delete this._tabToRemoveForEmpty;
       delete this._shouldOverrideTabs;
-      delete this._keepSelectedTab;
       resolveSelectPromise();
     };
 
@@ -871,10 +870,14 @@ class nsZenWorkspaces {
         });
         cleanup();
       } else {
-        if (!this._keepSelectedTab) {
+        if (gBrowser.selectedTab === this._tabToRemoveForEmpty) {
+          this.log(
+            "Selecting empty tab because startup page didnt select a valid tab"
+          );
           this.selectEmptyTab();
           shownEmptyTab = true;
         }
+        this.log("Removing empty tab added by startup page");
         this._removedByStartupPage = true;
         gBrowser.removeTab(this._tabToRemoveForEmpty, {
           skipSessionStore: true,
@@ -905,15 +908,13 @@ class nsZenWorkspaces {
     // Wait for the next event loop to ensure that the startup focus logic by
     // firefox has finished doing it's thing.
     setTimeout(() => {
-      setTimeout(() => {
-        if (gZenVerticalTabsManager._canReplaceNewTab && shownEmptyTab) {
-          BrowserCommands.openTab();
-        } else if (shownEmptyTab || initialTabWasEmpty) {
-          openLocation();
-        } else {
-          gBrowser.selectedBrowser.focus();
-        }
-      });
+      if (gZenVerticalTabsManager._canReplaceNewTab && shownEmptyTab) {
+        BrowserCommands.openTab();
+      } else if (shownEmptyTab || initialTabWasEmpty) {
+        openLocation();
+      } else {
+        gBrowser.selectedBrowser.focus();
+      }
     });
 
     if (

@@ -346,7 +346,12 @@
   order: 2;
 }
 
-/* Astra - Hide Create New button */
+/* Astra - Hide Create Space and Folder from menu */
 #zen-create-new-button {
+  display: none;
+}
+
+[command="cmd_zenOpenWorkspaceCreation"],
+[command="cmd_zenOpenFolderCreation"] {
   display: none;
 }

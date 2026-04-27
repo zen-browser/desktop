@@ -942,7 +942,9 @@ window.gZenVerticalTabsManager = {
           ?.includes("toolbar") ||
         document.documentElement
           .getAttribute("chromehidden")
-          ?.includes("menubar")
+          ?.includes("menubar") ||
+        document.documentElement.hasAttribute("zen-little-window") ||
+        window._zenStartupLittleWindow
       );
     });
 
@@ -1261,7 +1263,8 @@ window.gZenVerticalTabsManager = {
 
       const topButtons = document.getElementById("zen-sidebar-top-buttons");
       const isCompactMode =
-        gZenCompactModeManager.preference && !forCustomizableMode;
+        (gZenCompactModeManager.preference && !forCustomizableMode) ||
+        this.hidesTabsToolbar;
       const isVerticalTabs = this._prefsVerticalTabs || forCustomizableMode;
       const isSidebarExpanded = this._prefsSidebarExpanded || !isVerticalTabs;
       const isRightSide = this._prefsRightSide && isVerticalTabs;

@@ -212,6 +212,13 @@ class nsZenWindowSync {
     ) {
       return;
     }
+    if (aWindow._zenStartupLittleWindow) {
+      aWindow.document.documentElement.setAttribute(
+        "zen-little-window",
+        "true"
+      );
+      delete aWindow._zenStartupLittleWindow;
+    }
     this.log("Setting up window sync for window", aWindow);
     // There are 2 possibilities to know if we are trying to open
     // a new *unsynced* window:

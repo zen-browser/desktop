@@ -126,6 +126,9 @@ window.gZenCompactModeManager = {
   },
 
   get shouldBeCompact() {
+    if (document.documentElement.hasAttribute("zen-little-window")) {
+      return false;
+    }
     return !document.documentElement
       .getAttribute("chromehidden")
       ?.includes("toolbar");

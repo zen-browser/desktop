@@ -1,22 +1,37 @@
 diff --git a/browser/modules/BrowserWindowTracker.sys.mjs b/browser/modules/BrowserWindowTracker.sys.mjs
-index 9aecab66d8f23fac9f16cea2120a5fe903ae1122..692f2bfe3899a58925789503a6bb2a547cdbf7f3 100644
+index 9aecab66d8f23fac9f16cea2120a5fe903ae1122..e023c27bcb027d29ba9b3469eca5957d42040c46 100644
 --- a/browser/modules/BrowserWindowTracker.sys.mjs
 +++ b/browser/modules/BrowserWindowTracker.sys.mjs
-@@ -330,6 +330,7 @@ export const BrowserWindowTracker = {
+@@ -210,7 +210,8 @@ export const BrowserWindowTracker = {
+         !win.closed &&
+         (options.allowPopups || win.toolbar.visible) &&
+         (options.allowTaskbarTabs ||
+-          !win.document.documentElement.hasAttribute("taskbartab")) &&
++          (!win.document.documentElement.hasAttribute("taskbartab") &&
++            !win.document.documentElement.hasAttribute("zen-little-window"))) &&
+         (!("private" in options) ||
+           lazy.PrivateBrowsingUtils.permanentPrivateBrowsing ||
+           lazy.PrivateBrowsingUtils.isWindowPrivate(win) == options.private)
+@@ -330,6 +331,8 @@ export const BrowserWindowTracker = {
        args = null,
        remote = undefined,
        fission = undefined,
 +    zenSyncedWindow = true,
++    zenLittleWindow = false,
      } = options;
  
      args = lazy.AIWindow.handleAIWindowOptions(options);
-@@ -386,6 +387,12 @@ export const BrowserWindowTracker = {
+@@ -386,6 +389,16 @@ export const BrowserWindowTracker = {
        windowFeatures,
        args
      );
 +    win._zenStartupSyncFlag = Services.prefs.getBoolPref("zen.window-sync.prefer-unsynced-windows")
 +      ? (zenSyncedWindow ? 'unsynced' : 'synced')
 +      : (zenSyncedWindow ? 'synced' : 'unsynced');
++    if (zenLittleWindow) {
++      win._zenStartupLittleWindow = true;
++      win._zenStartupSyncFlag = 'unsynced';
++    }
 +    if (win._zenStartupSyncFlag === 'unsynced' && openerWindow) {
 +      win._zenStartupUnsyncedUserContextId = openerWindow.gZenWorkspaces.getCurrentSpaceContainerId();
 +    }

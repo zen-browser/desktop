@@ -293,7 +293,7 @@
 }
 
 #main-window[windowtype="navigator:browser"]:not([chromehidden~='toolbar']) {
-  min-height: 495px !important;
+  min-height: var(--zen-minimum-window-height, 495px) !important;
 
   @media (-moz-windows-mica) or (-moz-platform: macos) or ((-moz-platform: linux) and
         -moz-pref('zen.widget.linux.transparency')) {

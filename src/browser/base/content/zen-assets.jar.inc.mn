@@ -9,7 +9,6 @@
 #include ../../../zen/mods/jar.inc.mn
 #include ../../../zen/spaces/jar.inc.mn
 #include ../../../zen/tabs/jar.inc.mn
-#include ../../../zen/kbs/jar.inc.mn
 #include ../../../zen/glance/jar.inc.mn
 #include ../../../zen/folders/jar.inc.mn
 #include ../../../zen/welcome/jar.inc.mn
@@ -19,3 +18,4 @@
 #include ../../../zen/vendor/jar.inc.mn
 #include ../../../zen/fonts/jar.inc.mn
 #include ../../../zen/live-folders/jar.inc.mn
+#include ../../../zen/little-window/jar.inc.mn

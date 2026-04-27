@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/content/UrlbarInput.mjs b/browser/components/urlbar/content/UrlbarInput.mjs
-index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f5c811a82 100644
+index b23244f9d3278918b016bb3fcab19687bc2e292a..0bcb63f7abaf406077b52469eb913fcb75ba13f8 100644
 --- a/browser/components/urlbar/content/UrlbarInput.mjs
 +++ b/browser/components/urlbar/content/UrlbarInput.mjs
 @@ -90,6 +90,13 @@ const lazy = XPCOMUtils.declareLazy({
@@ -75,7 +75,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
      }
  
      if (isCanonized) {
-@@ -2696,6 +2728,42 @@ export class UrlbarInput extends HTMLElement {
+@@ -2696,6 +2728,45 @@ export class UrlbarInput extends HTMLElement {
      await this.#updateLayoutBreakoutDimensions();
    }
  
@@ -84,7 +84,10 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
 +  }
 +
 +  get zenUrlbarBehavior() {
-+    if (this.document.documentElement.hasAttribute("inDOMFullscreen")) {
++    if (
++      this.document.documentElement.hasAttribute("inDOMFullscreen") ||
++      this.document.documentElement.hasAttribute("zen-little-window")
++    ) {
 +      return "float";
 +    }
 +    return lazy.ZEN_URLBAR_BEHAVIOR;
@@ -118,7 +121,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
    startLayoutExtend() {
      if (!this.#allowBreakout || this.hasAttribute("breakout-extend")) {
        // Do not expand if the Urlbar does not support being expanded or it is
-@@ -2710,6 +2778,13 @@ export class UrlbarInput extends HTMLElement {
+@@ -2710,6 +2781,13 @@ export class UrlbarInput extends HTMLElement {
  
      this.setAttribute("breakout-extend", "true");
  
@@ -132,7 +135,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
      // Enable the animation only after the first extend call to ensure it
      // doesn't run when opening a new window.
      if (!this.hasAttribute("breakout-extend-animate")) {
-@@ -2729,6 +2804,27 @@ export class UrlbarInput extends HTMLElement {
+@@ -2729,6 +2807,27 @@ export class UrlbarInput extends HTMLElement {
        return;
      }
  
@@ -160,7 +163,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
      this.removeAttribute("breakout-extend");
      this.#updateTextboxPosition();
    }
-@@ -2759,7 +2855,7 @@ export class UrlbarInput extends HTMLElement {
+@@ -2759,7 +2858,7 @@ export class UrlbarInput extends HTMLElement {
      forceUnifiedSearchButtonAvailable = false
    ) {
      let prevState = this.getAttribute("pageproxystate");
@@ -169,7 +172,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
      this.setAttribute("pageproxystate", state);
      this._inputContainer.setAttribute("pageproxystate", state);
      this._identityBox?.setAttribute("pageproxystate", state);
-@@ -3031,10 +3127,12 @@ export class UrlbarInput extends HTMLElement {
+@@ -3031,10 +3130,12 @@ export class UrlbarInput extends HTMLElement {
        return;
      }
      this.style.top = px(
@@ -182,7 +185,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
      );
    }
  
-@@ -3093,9 +3191,10 @@ export class UrlbarInput extends HTMLElement {
+@@ -3093,9 +3194,10 @@ export class UrlbarInput extends HTMLElement {
            return;
          }
  
@@ -194,7 +197,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
          );
          this.style.setProperty(
            "--urlbar-height",
-@@ -3597,6 +3696,7 @@ export class UrlbarInput extends HTMLElement {
+@@ -3597,6 +3699,7 @@ export class UrlbarInput extends HTMLElement {
    }
  
    _toggleActionOverride(event) {
@@ -202,7 +205,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
      if (
        event.keyCode == KeyEvent.DOM_VK_SHIFT ||
        event.keyCode == KeyEvent.DOM_VK_ALT ||
-@@ -3709,8 +3809,8 @@ export class UrlbarInput extends HTMLElement {
+@@ -3709,8 +3812,8 @@ export class UrlbarInput extends HTMLElement {
      if (!this.#isAddressbar) {
        return val;
      }
@@ -213,7 +216,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
        : val;
      // Only trim value if the directionality doesn't change to RTL and we're not
      // showing a strikeout https protocol.
-@@ -4006,6 +4106,7 @@ export class UrlbarInput extends HTMLElement {
+@@ -4006,6 +4109,7 @@ export class UrlbarInput extends HTMLElement {
      resultDetails = null,
      browser = this.window.gBrowser.selectedBrowser
    ) {
@@ -221,7 +224,19 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
      if (this.#isAddressbar) {
        this.#prepareAddressbarLoad(
          url,
-@@ -4117,6 +4218,10 @@ export class UrlbarInput extends HTMLElement {
+@@ -4088,6 +4192,11 @@ export class UrlbarInput extends HTMLElement {
+    * @returns {"current" | "tabshifted" | "tab" | "save" | "window"}
+    */
+   _whereToOpen(event) {
++    if (this.document.documentElement.hasAttribute("zen-little-window")) {
++      // Little windows are single-tab popups -- never spawn extra tabs
++      // or new windows from the urlbar.
++      return "current";
++    }
+     let isKeyboardEvent = KeyboardEvent.isInstance(event);
+     let reuseEmpty = isKeyboardEvent;
+     let where = undefined;
+@@ -4117,6 +4226,10 @@ export class UrlbarInput extends HTMLElement {
        }
        reuseEmpty = true;
      }
@@ -232,7 +247,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
      if (
        where == "tab" &&
        reuseEmpty &&
-@@ -4124,6 +4229,9 @@ export class UrlbarInput extends HTMLElement {
+@@ -4124,6 +4237,9 @@ export class UrlbarInput extends HTMLElement {
      ) {
        where = "current";
      }
@@ -242,7 +257,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
      return where;
    }
  
-@@ -4378,6 +4486,7 @@ export class UrlbarInput extends HTMLElement {
+@@ -4378,6 +4494,7 @@ export class UrlbarInput extends HTMLElement {
        this.setResultForCurrentValue(null);
        this.handleCommand();
        this.controller.clearLastQueryContextCache();
@@ -250,7 +265,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
  
        this._suppressStartQuery = false;
      });
-@@ -4385,7 +4494,6 @@ export class UrlbarInput extends HTMLElement {
+@@ -4385,7 +4502,6 @@ export class UrlbarInput extends HTMLElement {
      contextMenu.addEventListener("popupshowing", () => {
        // Close the results pane when the input field contextual menu is open,
        // because paste and go doesn't want a result selection.
@@ -258,7 +273,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
  
        let controller =
          this.document.commandDispatcher.getControllerForCommand("cmd_paste");
-@@ -4541,7 +4649,11 @@ export class UrlbarInput extends HTMLElement {
+@@ -4541,7 +4657,11 @@ export class UrlbarInput extends HTMLElement {
      if (!engineName && !source && !this.hasAttribute("searchmode")) {
        return;
      }
@@ -271,7 +286,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
      if (this._searchModeIndicatorTitle) {
        this._searchModeIndicatorTitle.textContent = "";
        this._searchModeIndicatorTitle.removeAttribute("data-l10n-id");
-@@ -4851,6 +4963,7 @@ export class UrlbarInput extends HTMLElement {
+@@ -4851,6 +4971,7 @@ export class UrlbarInput extends HTMLElement {
  
      this.document.l10n.setAttributes(
        this.inputField,
@@ -279,7 +294,20 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
        l10nId,
        l10nId == "urlbar-placeholder-with-name"
          ? { name: engineName }
-@@ -4964,6 +5077,11 @@ export class UrlbarInput extends HTMLElement {
+@@ -4891,6 +5012,12 @@ export class UrlbarInput extends HTMLElement {
+ 
+   _on_blur(event) {
+     lazy.logger.debug("Blur Event");
++    if (
++      this.document.commandDispatcher.focusedElement == this.inputField &&
++      !lazy.UrlbarPrefs.get("closeOnWindowBlur")
++    ) {
++      return;
++    }
+     // We cannot count every blur events after a missed engagement as abandoment
+     // because the user may have clicked on some view element that executes
+     // a command causing a focus change. For example opening preferences from
+@@ -4964,6 +5091,11 @@ export class UrlbarInput extends HTMLElement {
    }
  
    _on_click(event) {
@@ -291,7 +319,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
      switch (event.target) {
        case this.inputField:
        case this._inputContainer:
-@@ -5042,7 +5160,7 @@ export class UrlbarInput extends HTMLElement {
+@@ -5042,7 +5174,7 @@ export class UrlbarInput extends HTMLElement {
        }
      }
  
@@ -300,7 +328,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
        this.view.autoOpen({ event });
      } else {
        if (this._untrimOnFocusAfterKeydown) {
-@@ -5082,9 +5200,16 @@ export class UrlbarInput extends HTMLElement {
+@@ -5082,9 +5214,16 @@ export class UrlbarInput extends HTMLElement {
    }
  
    _on_mousedown(event) {
@@ -318,7 +346,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
          if (
            event.composedTarget != this.inputField &&
            event.composedTarget != this._inputContainer
-@@ -5094,6 +5219,10 @@ export class UrlbarInput extends HTMLElement {
+@@ -5094,6 +5233,10 @@ export class UrlbarInput extends HTMLElement {
  
          this.focusedViaMousedown = !this.focused;
          this._preventClickSelectsAll = this.focused;
@@ -329,7 +357,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
  
          // Keep the focus status, since the attribute may be changed
          // upon calling this.focus().
-@@ -5129,7 +5258,7 @@ export class UrlbarInput extends HTMLElement {
+@@ -5129,7 +5272,7 @@ export class UrlbarInput extends HTMLElement {
          }
          // Don't close the view when clicking on a tab; we may want to keep the
          // view open on tab switch, and the TabSelect event arrived earlier.
@@ -338,7 +366,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..ade1f031bbb68202a37e6c9d3071a73f
            break;
          }
  
-@@ -5411,7 +5540,7 @@ export class UrlbarInput extends HTMLElement {
+@@ -5411,7 +5554,7 @@ export class UrlbarInput extends HTMLElement {
      // When we are in actions search mode we can show more results so
      // increase the limit.
      let maxResults =

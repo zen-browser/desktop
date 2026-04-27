@@ -1,0 +1,52 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/*
+ * Little-window chrome: the URL bar fills the entire window. The vertical
+ * tab strip, sidebar buttons, bookmarks toolbar, and any other chrome are
+ * suppressed so the window acts as a quick search/launch box.
+ */
+
+:root[zen-little-window="true"] {
+  /*
+   * The navigator toolbox (sidebar + tab strip) and its splitter are
+   * never visible in a little window. We use visibility: hidden rather
+   * than display: none so layout stays stable and the urlbar floats
+   * cleanly over its slot.
+   */
+  #navigator-toolbox,
+  #zen-sidebar-splitter {
+    visibility: collapse !important;
+  }
+
+  &[zen-has-empty-tab="true"] {
+    /* Keep in sync with URLBAR_HEIGHT in ZenLittleWindow.sys.mjs */
+    --zen-minimum-window-height: 340px;
+    min-width: unset !important;
+
+    #zen-appcontent-wrapper {
+      visibility: hidden;
+    }
+
+    #urlbar[breakout-extend] {
+      min-width: 100% !important;
+      left: 50% !important;
+      top: 0 !important;
+      transform: translate(10px, 0) !important;
+      visibility: visible;
+
+      & .urlbar-background {
+        outline: none !important;
+      }
+
+      & .urlbar-input-container {
+        -moz-window-dragging: drag;
+      }
+
+      & .urlbar-input-box {
+        -moz-window-dragging: no-drag;
+      }
+    }
+  }
+}

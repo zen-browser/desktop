@@ -1,0 +1,49 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "nsISupports.idl"
+
+/**
+ * @brief OS-level global keyboard shortcut registration for Zen.
+ *
+ * Registers shortcuts with the operating system so that pressing the
+ * key combination triggers a callback even when no Zen window is
+ * focused (or the application is in the background). When a shortcut
+ * fires, a trusted DOM event is dispatched on the most recently
+ * focused browser window. The event type is
+ * "zen-global-shortcut-<id>", where <id> is the identifier passed at
+ * registration time.
+ */
+[scriptable, uuid(b8e9f3a2-7c1d-4a5b-9e6f-3d8c2a1b5e74)]
+interface nsIZenGlobalShortcuts : nsISupports {
+  const unsigned long MODIFIER_NONE  = 0;
+  const unsigned long MODIFIER_SHIFT = 1;
+  const unsigned long MODIFIER_CTRL  = 2;
+  const unsigned long MODIFIER_ALT   = 4;
+  const unsigned long MODIFIER_META  = 8;
+
+  /**
+   * @brief Register a global keyboard shortcut.
+   * @param aId Caller-chosen identifier; the dispatched event name will be
+   *   "zen-global-shortcut-" + aId. Must be unique across active
+   *   registrations.
+   * @param aKey Key name. Supported: "A".."Z", "0".."9", "F1".."F12",
+   *   "Space".
+   * @param aModifiers Bitmask of MODIFIER_* constants. On macOS, META
+   *   is Command; on Windows, META is the Windows key.
+   * @return true if the OS accepted the registration.
+   */
+  boolean registerShortcut(in ACString aId, in ACString aKey,
+                           in unsigned long aModifiers);
+
+  /**
+   * @brief Unregister a previously registered shortcut by id.
+   */
+  void unregisterShortcut(in ACString aId);
+
+  /**
+   * @brief Unregister all shortcuts registered through this service.
+   */
+  void unregisterAll();
+};

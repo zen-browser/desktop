@@ -136,6 +136,13 @@ document.addEventListener(
           case "cmd_zenNewNavigatorUnsynced":
             OpenBrowserWindow({ zenSyncedWindow: false });
             break;
+          case "cmd_zenNewLittleWindow": {
+            const { ZenLittleWindow } = ChromeUtils.importESModule(
+              "resource:///modules/zen/ZenLittleWindow.sys.mjs"
+            );
+            ZenLittleWindow.openLittleWindow(window);
+            break;
+          }
           case "cmd_zenNewLiveFolder": {
             const { ZenLiveFoldersManager } = ChromeUtils.importESModule(
               "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs"

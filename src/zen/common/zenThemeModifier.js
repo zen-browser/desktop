@@ -158,6 +158,14 @@
       ) {
         separation = 0;
       }
+      // Little windows are visually a single floating bar; we never want
+      // chrome padding around them.
+      if (
+        document.documentElement.hasAttribute("zen-little-window") ||
+        window._zenStartupLittleWindow
+      ) {
+        separation = 0;
+      }
       // In order to still use it on fullscreen, even if it's 0px, add .1px (almost invisible)
       separation = Math.max(kMinElementSeparation, separation);
       document.documentElement.style.setProperty(

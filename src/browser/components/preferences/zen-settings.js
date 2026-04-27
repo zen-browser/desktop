@@ -8,12 +8,15 @@ const { nsZenMultiWindowFeature } = ChromeUtils.importESModule(
   { global: "current" }
 );
 
-const { nsKeyShortcutModifiers } = ChromeUtils.importESModule(
-  "chrome://browser/content/zen-components/ZenKeyboardShortcuts.mjs",
-  {
-    global: "current",
-  }
+const {
+  nsKeyShortcutModifiers,
+  ZenKeyboardShortcuts,
+  VALID_SHORTCUT_GROUPS,
+} = ChromeUtils.importESModule(
+  "resource:///modules/zen/ZenKeyboardShortcuts.sys.mjs"
 );
+
+const gZenKeyboardShortcutsManager = ZenKeyboardShortcuts.manager;
 
 var gZenMarketplaceManager = {
   async init() {

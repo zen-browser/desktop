@@ -88,7 +88,7 @@ export class nsZenBoostStyles {
       style += `}\n`;
     }
 
-    if (boostData.customCSS.trim() != "") {
+    if ((boostData.customCSS || "").trim() != "") {
       style += `/* USER CSS */\n`;
       style += `${boostData.customCSS || ""}\n`;
     }

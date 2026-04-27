@@ -122,3 +122,9 @@
 
 - name: dom.security.https_only_mode
   value: true
+
+- name: browser.newtabpage.activity-stream.logowordmark.alwaysVisible
+  value: false
+
+- name: browser.newtabpage.pinned
+  value: "[]"

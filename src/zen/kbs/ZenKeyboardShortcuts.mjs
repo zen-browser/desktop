@@ -4,6 +4,23 @@
 
 import { nsZenMultiWindowFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
+const lazy = {};
+
+XPCOMUtils.defineLazyServiceGetter(
+  lazy,
+  "ZenGlobalShortcuts",
+  "@mozilla.org/zen/global-shortcuts;1",
+  "nsIZenGlobalShortcuts"
+);
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "GLOBAL_SHORTCUTS_ENABLED",
+  "zen.keyboard.shortcuts.global.enabled",
+  true,
+  () => window.gZenKeyboardShortcutsManager?.triggerShortcutRebuild()
+);
+
 const KEYCODE_MAP = {
   F1: "VK_F1",
   F2: "VK_F2",
@@ -312,6 +329,7 @@ class KeyShortcut {
   #disabled = false;
   #reserved = false;
   #internal = false;
+  #zenGlobal = false;
 
   constructor(
     id,
@@ -323,7 +341,8 @@ class KeyShortcut {
     l10nId,
     disabled = false,
     reserved = false,
-    internal = false
+    internal = false,
+    zenGlobal = false
   ) {
     this.#id = id;
     this.#key = key?.toLowerCase();
@@ -340,6 +359,7 @@ class KeyShortcut {
     this.#disabled = disabled;
     this.#reserved = reserved;
     this.#internal = internal;
+    this.#zenGlobal = zenGlobal;
   }
 
   isEmpty() {
@@ -378,7 +398,8 @@ class KeyShortcut {
       json.l10nId,
       json.disabled,
       json.reserved,
-      json.internal
+      json.internal,
+      json.zenGlobal
     );
   }
 
@@ -399,7 +420,8 @@ class KeyShortcut {
       key.getAttribute("data-l10n-id"),
       key.getAttribute("disabled") == "true",
       key.getAttribute("reserved") == "true",
-      key.getAttribute("internal") == "true"
+      key.getAttribute("internal") == "true",
+      key.getAttribute("zenGlobal") == "true"
     );
   }
 
@@ -458,6 +480,9 @@ class KeyShortcut {
     if (this.#internal) {
       key.setAttribute("internal", this.#internal);
     }
+    if (this.#zenGlobal) {
+      key.setAttribute("zenGlobal", this.#zenGlobal);
+    }
     key.setAttribute("zen-keybind", "true");
 
     return key;
@@ -485,6 +510,11 @@ class KeyShortcut {
   // Only used for migration!
   _setAction(action) {
     this.#action = action;
+  }
+
+  // Only used for migration!
+  _setZenGlobal(value) {
+    this.#zenGlobal = !!value;
   }
 
   getL10NID() {
@@ -527,6 +557,10 @@ class KeyShortcut {
     return this.#internal;
   }
 
+  isZenGlobal() {
+    return this.#zenGlobal;
+  }
+
   isInvalid() {
     return this.#key == "" && this.#keycode == "" && this.#l10nId == null;
   }
@@ -550,6 +584,7 @@ class KeyShortcut {
       disabled: this.#disabled,
       reserved: this.#reserved,
       internal: this.#internal,
+      zenGlobal: this.#zenGlobal,
     };
   }
 
@@ -832,7 +867,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 17;
+  static LATEST_KBS_VERSION = 19;
 
   constructor() {}
 
@@ -1212,6 +1247,38 @@ class nsZenKeyboardShortcutsVersioner {
       );
     }
 
+    if (version < 18) {
+      // Migrate from version 17 to 18.
+      // Add shortcuts to add little zen windows
+      data.push(
+        new KeyShortcut(
+          "zen-new-little-window",
+          "N",
+          "",
+          ZEN_OTHER_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({ accel: true }),
+          "cmd_zenNewLittleWindow",
+          "zen-new-little-window-shortcut",
+          /*disabled=*/ false,
+          /*reserved=*/ true,
+          /*internal=*/ false,
+          /*zenGlobal=*/ true
+        )
+      );
+    }
+
+    if (version < 19) {
+      // Migrate from version 18 to 19.
+      // Mark zen-new-little-window as a system-wide shortcut so it can
+      // be picked up by the OS-level global shortcut service.
+      for (let shortcut of data) {
+        if (shortcut.getID() == "zen-new-little-window") {
+          shortcut._setZenGlobal(true);
+          break;
+        }
+      }
+    }
+
     return data;
   }
 }
@@ -1383,6 +1450,113 @@ window.gZenKeyboardShortcutsManager = {
 
       this._applyDevtoolsShortcuts(browser);
       mainKeyset.after(keyset);
+    }
+
+    this._applyZenGlobalShortcuts();
+  },
+
+  _zenGlobalKeyName(shortcut) {
+    const name = shortcut.getKeyName();
+    if (name && name.length === 1) {
+      return name.toUpperCase();
+    }
+    const code = shortcut.getKeyCode();
+    if (!code) {
+      return null;
+    }
+    if (code === "VK_SPACE") {
+      return "Space";
+    }
+    const fMatch = /^VK_F(\d{1,2})$/.exec(code);
+    if (fMatch) {
+      const n = Number(fMatch[1]);
+      if (n >= 1 && n <= 12) {
+        return `F${n}`;
+      }
+    }
+    return null;
+  },
+
+  _zenGlobalModifierBits(modifiers) {
+    const iface = Ci.nsIZenGlobalShortcuts;
+    let bits = 0;
+    if (modifiers.shift) {
+      bits |= iface.MODIFIER_SHIFT;
+    }
+    if (modifiers.alt) {
+      bits |= iface.MODIFIER_ALT;
+    }
+    if (modifiers.meta) {
+      bits |= iface.MODIFIER_META;
+    }
+    if (modifiers.control) {
+      bits |= iface.MODIFIER_CTRL;
+    }
+    if (modifiers.accel) {
+      bits |=
+        AppConstants.platform == "macosx"
+          ? iface.MODIFIER_META
+          : iface.MODIFIER_CTRL;
+    }
+    return bits;
+  },
+
+  _applyZenGlobalShortcuts() {
+    lazy.ZenGlobalShortcuts.unregisterAll();
+
+    for (const browser of nsZenMultiWindowFeature.browsers) {
+      const map = browser._zenGlobalListenerMap;
+      if (map) {
+        for (const [name, listener] of map) {
+          browser.removeEventListener(name, listener);
+        }
+        map.clear();
+      } else {
+        browser._zenGlobalListenerMap = new Map();
+      }
+    }
+
+    if (!lazy.GLOBAL_SHORTCUTS_ENABLED) {
+      return;
+    }
+
+    for (const shortcut of this._currentShortcutList) {
+      if (!shortcut.isZenGlobal() || shortcut.isDisabled()) {
+        continue;
+      }
+      const key = this._zenGlobalKeyName(shortcut);
+      if (!key) {
+        continue;
+      }
+      const id = shortcut.getID();
+      const mods = this._zenGlobalModifierBits(shortcut.getModifiers());
+      try {
+        lazy.ZenGlobalShortcuts.registerShortcut(id, key, mods);
+      } catch (e) {
+        console.warn(`Zen CKS: failed to register global shortcut "${id}"`, e);
+        continue;
+      }
+
+      const command = shortcut.getAction();
+      const eventName = `zen-global-shortcut-${id}`;
+      for (const browser of nsZenMultiWindowFeature.browsers) {
+        const listener = () => {
+          console.log(`Zen global shortcut fired: ${id}`);
+          if (!command) {
+            return;
+          }
+          const cmdEl = browser.document.getElementById(command);
+          if (cmdEl) {
+            cmdEl.doCommand();
+          } else {
+            console.warn(
+              `Zen CKS: no command element for "${command}" (shortcut "${id}")`
+            );
+          }
+        };
+        browser.addEventListener(eventName, listener);
+        browser._zenGlobalListenerMap.set(eventName, listener);
+      }
     }
   },
 

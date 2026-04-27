@@ -7,3 +7,6 @@
 
 - name: zen.keyboard.shortcuts.disable-mainkeyset-clear
   value: false # for debugging
+
+- name: zen.keyboard.shortcuts.global.enabled
+  value: true

@@ -1,0 +1,31 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+XPIDL_SOURCES += [
+    "nsIZenGlobalShortcuts.idl",
+]
+
+EXPORTS.mozilla += [
+    "ZenGlobalShortcuts.h",
+]
+
+SOURCES += [
+    "ZenGlobalShortcuts.cpp",
+]
+
+XPCOM_MANIFESTS += [
+    "components.conf",
+]
+
+if CONFIG["MOZ_WIDGET_TOOLKIT"] == "cocoa":
+    DIRS += ["cocoa"]
+elif CONFIG["MOZ_WIDGET_TOOLKIT"] == "windows":
+    DIRS += ["windows"]
+elif CONFIG["MOZ_WIDGET_TOOLKIT"] == "gtk" and CONFIG["MOZ_X11"]:
+    DIRS += ["linux"]
+else:
+    SOURCES += ["ZenGlobalShortcutsStub.cpp"]
+
+FINAL_LIBRARY = "xul"
+XPIDL_MODULE = "zen_global_shortcuts"

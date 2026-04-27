@@ -814,7 +814,6 @@ class nsZenWorkspaces {
       return;
     }
     await this.promiseInitialized;
-    let shownEmptyTab = false;
     let resolveSelectPromise;
     let selectPromise = new Promise(resolve => {
       resolveSelectPromise = resolve;
@@ -875,7 +874,6 @@ class nsZenWorkspaces {
             "Selecting empty tab because startup page didnt select a valid tab"
           );
           this.selectEmptyTab();
-          shownEmptyTab = true;
         }
         this.log("Removing empty tab added by startup page");
         this._removedByStartupPage = true;
@@ -902,7 +900,8 @@ class nsZenWorkspaces {
       "zen.urlbar.open-on-startup",
       true
     );
-    shownEmptyTab &&= openOnStartup;
+    let shownEmptyTab =
+      gBrowser.selectedTab.hasAttribute("zen-empty-tab") && openOnStartup;
     initialTabWasEmpty &&= openOnStartup;
 
     // Wait for the next event loop to ensure that the startup focus logic by

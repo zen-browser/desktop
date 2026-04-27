@@ -281,7 +281,6 @@ export class nsZenSiteDataPanel {
           this.#createBoostPanelItem(
             "boost-brush",
             boostData.boostName,
-            enabled ? "Enabled" : "Disabled",
             "zen-site-data-toggle-boost",
             boost,
             enabled
@@ -302,7 +301,6 @@ export class nsZenSiteDataPanel {
   #createBoostPanelItem(
     iconClass,
     title,
-    description,
     actionId,
     boost = null,
     enabled = false
@@ -341,7 +339,12 @@ export class nsZenSiteDataPanel {
 
     const stateLabel = this.document.createXULElement("label");
     stateLabel.setAttribute("class", "zen-permission-popup-boost-state-label");
-    stateLabel.textContent = description || "";
+    const stateLabelId = enabled
+      ? "zen-site-data-protections-enabled"
+      : "zen-site-data-protections-disabled";
+    this.document.l10n.formatMessages([stateLabelId]).then(([labelContent]) => {
+      stateLabel.textContent = labelContent.value;
+    });
     labelContainer.appendChild(stateLabel);
 
     container.appendChild(img);

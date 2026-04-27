@@ -186,7 +186,7 @@ export class ZapOverlay {
 
       let counter = 0;
       elements.forEach(async element => {
-        if (counter > this.#dissolvePoolSize) {
+        if (counter >= this.#dissolvePoolSize) {
           return;
         }
         counter++;

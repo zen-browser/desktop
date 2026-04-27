@@ -263,8 +263,8 @@ export class ZenBoostsChild extends JSWindowActorChild {
       case "ZenBoost:ZapModeEnabled":
         return this.#currentState === ZenBoostsChild.STATES.ZAP;
       case "ZenBoost:ZapModeAny": {
-        const { boostData } = (await this.getWebsiteBoost()).boostEntry;
-        return !!boostData.zapSelectors.length;
+        const { boostData } = (await this.getWebsiteBoost())?.boostEntry || {};
+        return !!boostData?.zapSelectors?.length;
       }
       case "ZenBoost:SelectorPickerModeEnabled":
         return this.#currentState === ZenBoostsChild.STATES.PICKER;
@@ -391,6 +391,8 @@ export class ZenBoostsChild extends JSWindowActorChild {
         }
         return;
       }
+    } else {
+      browsingContext.isZenBoostsInverted = false;
     }
     browsingContext.zenBoostsData = 0;
   }

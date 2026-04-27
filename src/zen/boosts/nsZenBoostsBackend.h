@@ -60,7 +60,7 @@ class nsZenBoostsBackend final {
 
   /**
    * @brief Called when a presshell is entered during rendering.
-   * @param aPresContext The presentation context that was entered.
+   * @param aDocument The document associated with the presshell being entered.
    */
   auto onPresShellEntered(mozilla::dom::Document* aDocument) -> void;
 

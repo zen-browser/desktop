@@ -78,10 +78,6 @@
       <vbox class="zen-site-data-section">
         <hbox class="zen-site-data-section-header">
           <label data-l10n-id="zen-site-data-boosts" flex="1" />
-#if 0
-          <!-- This can later be used to open Zen Library on the Boosts tab to display a list of all boosts -->
-          <label data-l10n-id="zen-generic-more" id="zen-site-data-boosts-more" hidden="true" />
-#endif
         </hbox>
         <vbox id="zen-site-data-boost-list">
           <!-- settings will be inserted here -->

@@ -29,7 +29,7 @@ index 226d0c5a93a9a2404e1974001da4e34b7b670067..b73277448f7d2706d316df2505e17d23
      "--with-distribution-id",
      nargs=1,
 -    default="org.mozilla",
-+    default="app.zen-browser",
++    default="app.astra-browser",
      help="Set distribution-specific id",
  )
  set_config("MOZ_DISTRIBUTION_ID", depends("--with-distribution-id")(lambda v: v[0]))

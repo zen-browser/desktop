@@ -3,55 +3,55 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-boost-edit-rename = 
-    .label = Rename Boost
+    .label = Athainmnigh an Treisiú
 zen-boost-edit-shuffle = 
-    .label = Shuffle Vibes
+    .label = Vibes Measctha
 zen-boost-edit-reset = 
-    .label = Reset All Edits
+    .label = Athshocraigh Gach Eagarthóireacht
 zen-boost-edit-delete = 
-    .label = Delete Boost
-zen-boost-size = Size
-zen-boost-zap = Zap
-zen-boost-code = Code
-zen-boost-back = Back
+    .label = Scrios an Treisiú
+zen-boost-size = Méid
+zen-boost-zap = Zapáil
+zen-boost-code = Cód
+zen-boost-back = Ar ais
 zen-boost-shuffle = 
-    .tooltiptext = Shuffle Boost Settings
+    .tooltiptext = Socruithe Treisithe Measctha
 zen-boost-invert = 
-    .tooltiptext = Smart Invert Colors
+    .tooltiptext = Dathanna Inbhéartaithe Cliste
 zen-boost-controls = 
-    .tooltiptext = Advanced Color Controls
+    .tooltiptext = Rialuithe Dath Ardleibhéil
 zen-boost-disable = 
-    .tooltiptext = Disable Color Adjustments
+    .tooltiptext = Díchumasaigh Coigeartuithe Datha
 zen-boost-text-case-toggle = 
-    .tooltiptext = Toggle Text Case
+    .tooltiptext = Cás Téacs a Athrú
 zen-boost-css-picker = 
-    .tooltiptext = Pick Selector
+    .tooltiptext = Roghnóir Roghnaigh
 zen-boost-css-inspector = 
-    .tooltiptext = Open Inspector
-zen-bootst-color-contrast = Contrast
-zen-bootst-color-brightness = Brightness
-zen-bootst-color-original-saturation = Original Saturation
-zen-add-zap-helper = Click elements on the page to <b>Zap</b> them
-zen-remove-zap-helper = ← Click to Unzap
-zen-select-this = Insert selector for this
-zen-select-related = Insert selector for related
-zen-select-cancel = Cancel
-zen-zap-this = Zap this
-zen-zap-related = Zap all related elements
-zen-zap-cancel = Cancel
-zen-zap-done = Done
+    .tooltiptext = Oscail an Cigire
+zen-bootst-color-contrast = Codarsnacht
+zen-bootst-color-brightness = Gile
+zen-bootst-color-original-saturation = Sáithiú Bunaidh
+zen-add-zap-helper = Cliceáil ar eilimintí ar an leathanach chun iad a <b>Zapáil</b>
+zen-remove-zap-helper = ← Cliceáil chun Dízipáil
+zen-select-this = Cuir roghnóir isteach don seo
+zen-select-related = Cuir isteach roghnóir le haghaidh gaolmhar
+zen-select-cancel = Cealaigh
+zen-zap-this = Zapáil seo
+zen-zap-related = Zapáil gach eilimint ghaolmhar
+zen-zap-cancel = Cealaigh
+zen-zap-done = Déanta
 zen-unzap-tooltip =
     { $elementCount ->
-        [0] No elements zapped
-        [1] { $elementCount } element zapped
-       *[other] { $elementCount } elements zapped
+        [0] Gan aon eilimintí Zapáilte
+        [1] { $elementCount } eilimint Zapáilte
+       *[other] { $elementCount } eilimintí Zapáilte
     }
 zen-boost-save = 
-    .tooltiptext = Export Boost
+    .tooltiptext = Borradh Easpórtála
 zen-boost-load = 
-    .tooltiptext = Import Boost
-zen-panel-ui-boosts-exported-message = Boost exported!
-zen-site-data-boosts = Boosts
+    .tooltiptext = Borradh Iompórtála
+zen-panel-ui-boosts-exported-message = Borradh easpórtáilte!
+zen-site-data-boosts = Borradh
 zen-site-data-create-boost = 
-    .tooltiptext = Create new boost
-zen-boost-rename-boost-prompt = Rename Boost?
+    .tooltiptext = Cruthaigh borradh nua
+zen-boost-rename-boost-prompt = Athainmnigh Borradh?

@@ -3,55 +3,56 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-boost-edit-rename = 
-    .label = Rename Boost
+    .label = Zmień nazwę Boosta
 zen-boost-edit-shuffle = 
-    .label = Shuffle Vibes
+    .label = Losuj styl
 zen-boost-edit-reset = 
-    .label = Reset All Edits
+    .label = Zresetuj wszystkie zmiany
 zen-boost-edit-delete = 
-    .label = Delete Boost
-zen-boost-size = Size
-zen-boost-zap = Zap
-zen-boost-code = Code
-zen-boost-back = Back
+    .label = Usuń Boost
+zen-boost-size = Rozmiar
+zen-boost-zap = Ukryj
+zen-boost-code = Kod
+zen-boost-back = Cofnij
 zen-boost-shuffle = 
-    .tooltiptext = Shuffle Boost Settings
+    .tooltiptext = Losuj ustawienia Boosta
 zen-boost-invert = 
-    .tooltiptext = Smart Invert Colors
+    .tooltiptext = Inteligentne odwrócenie kolorów
 zen-boost-controls = 
-    .tooltiptext = Advanced Color Controls
+    .tooltiptext = Zaawansowane ustawienia kolorów
 zen-boost-disable = 
-    .tooltiptext = Disable Color Adjustments
+    .tooltiptext = Wyłącz dostosowanie kolorów
 zen-boost-text-case-toggle = 
-    .tooltiptext = Toggle Text Case
+    .tooltiptext = Przełącz wielkość liter
 zen-boost-css-picker = 
-    .tooltiptext = Pick Selector
+    .tooltiptext = Wybierz selektor
 zen-boost-css-inspector = 
-    .tooltiptext = Open Inspector
-zen-bootst-color-contrast = Contrast
-zen-bootst-color-brightness = Brightness
-zen-bootst-color-original-saturation = Original Saturation
-zen-add-zap-helper = Click elements on the page to <b>Zap</b> them
-zen-remove-zap-helper = ← Click to Unzap
-zen-select-this = Insert selector for this
-zen-select-related = Insert selector for related
-zen-select-cancel = Cancel
-zen-zap-this = Zap this
-zen-zap-related = Zap all related elements
-zen-zap-cancel = Cancel
-zen-zap-done = Done
+    .tooltiptext = Otwórz Inspektor
+zen-bootst-color-contrast = Kontrast
+zen-bootst-color-brightness = Jasność
+zen-bootst-color-original-saturation = Oryginalne nasycenie
+zen-add-zap-helper = Kliknij elementy na stronie, aby je <b>ukryć</b>
+zen-remove-zap-helper = ← Kliknij, aby cofnąć ukrycie
+zen-select-this = Wstaw selektor dla tego elementu
+zen-select-related = Wstaw selektor dla powiązanych elementów
+zen-select-cancel = Anuluj
+zen-zap-this = Ukryj to
+zen-zap-related = Ukryj wszystkie powiązane elementy
+zen-zap-cancel = Anuluj
+zen-zap-done = Gotowe
 zen-unzap-tooltip =
     { $elementCount ->
-        [0] No elements zapped
-        [1] { $elementCount } element zapped
-       *[other] { $elementCount } elements zapped
+        [0] Nie ukryto żadnych elementów
+        [1] Ukryto {$elementCount} element
+        [few] Ukryto {$elementCount} elementy
+       *[other] Ukryto {$elementCount} elementów
     }
 zen-boost-save = 
-    .tooltiptext = Export Boost
+    .tooltiptext = Eksportuj Boost
 zen-boost-load = 
-    .tooltiptext = Import Boost
-zen-panel-ui-boosts-exported-message = Boost exported!
-zen-site-data-boosts = Boosts
+    .tooltiptext = Importuj Boost
+zen-panel-ui-boosts-exported-message = Boost został wyeksportowany!
+zen-site-data-boosts = Boosty
 zen-site-data-create-boost = 
-    .tooltiptext = Create new boost
-zen-boost-rename-boost-prompt = Rename Boost?
+    .tooltiptext = Utwórz nowy Boost
+zen-boost-rename-boost-prompt = Zmienić nazwę Boosta?

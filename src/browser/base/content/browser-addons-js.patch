@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-addons.js b/browser/base/content/browser-addons.js
-index 737ccf0feff4910426f7f75a20ac20ec480461dc..177ab12f9478e1ce664b7b2c66b0e2c8bca63573 100644
+index 098cf2408bc462f61fb547716754a3af832ffa1e..d062d03f7d258b66740d785cc30abe7932eaea41 100644
 --- a/browser/base/content/browser-addons.js
 +++ b/browser/base/content/browser-addons.js
 @@ -1061,7 +1061,7 @@ var gXPInstallObserver = {

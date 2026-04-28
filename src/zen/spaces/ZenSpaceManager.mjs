@@ -76,13 +76,6 @@ class nsZenWorkspaces {
   }
 
   async init() {
-    // Initialize tab selection state
-    this._tabSelectionState = {
-      inProgress: false,
-      lastSelectionTime: 0,
-      debounceTime: 100, // ms to wait between tab selections
-    };
-
     // Initialize workspace change mutex
     this._workspaceChangeInProgress = false;
 
@@ -218,42 +211,7 @@ class nsZenWorkspaces {
     return true;
   }
 
-  // Safely select a tab with debouncing to prevent race conditions
-  async _safelySelectTab(tab) {
-    if (!tab || tab.closing || !tab.ownerGlobal || tab.ownerGlobal.closed) {
-      return false;
-    }
-
-    // Check if we need to debounce
-    const now = Date.now();
-    const timeSinceLastSelection =
-      now - this._tabSelectionState.lastSelectionTime;
-
-    if (timeSinceLastSelection < this._tabSelectionState.debounceTime) {
-      await new Promise(resolve =>
-        setTimeout(
-          resolve,
-          this._tabSelectionState.debounceTime - timeSinceLastSelection
-        )
-      );
-    }
-
-    // Mark selection as in progress
-    this._tabSelectionState.inProgress = true;
-
-    try {
-      gBrowser.selectedTab = tab;
-      this._tabSelectionState.lastSelectionTime = Date.now();
-      return true;
-    } catch (e) {
-      console.error("Error selecting tab:", e);
-      return false;
-    } finally {
-      this._tabSelectionState.inProgress = false;
-    }
-  }
-
-  async selectEmptyTab(newTabTarget = null) {
+  selectEmptyTab(newTabTarget = null) {
     // Validate browser state first
     if (!this._validateBrowserState()) {
       console.warn("Browser state invalid for empty tab selection");
@@ -273,12 +231,7 @@ class nsZenWorkspaces {
         !this._emptyTab.ownerGlobal.closed &&
         gZenVerticalTabsManager._canReplaceNewTab
       ) {
-        // Safely switch to the empty tab using our debounced method
-        const success = await this._safelySelectTab(this._emptyTab);
-        if (!success) {
-          throw new Error("Failed to select empty tab");
-        }
-
+        gBrowser.selectedTab = this._emptyTab;
         return this._emptyTab;
       }
 
@@ -861,7 +814,6 @@ class nsZenWorkspaces {
       return;
     }
     await this.promiseInitialized;
-    let showed = false;
     let resolveSelectPromise;
     let selectPromise = new Promise(resolve => {
       resolveSelectPromise = resolve;
@@ -875,10 +827,12 @@ class nsZenWorkspaces {
     };
 
     let removedEmptyTab = false;
+    let initialTabWasEmpty = false;
     if (
       this._initialTab &&
       !(this._initialTab._shouldRemove && this._initialTab._veryPossiblyEmpty)
     ) {
+      initialTabWasEmpty = !!this._initialTab._veryPossiblyEmpty;
       gBrowser.selectedTab = this._initialTab;
       this.moveTabToWorkspace(this._initialTab, this.activeWorkspace);
       gBrowser.moveTabTo(this._initialTab, {
@@ -905,33 +859,32 @@ class nsZenWorkspaces {
         tabs[this._tabToSelect] !== this._tabToRemoveForEmpty
       ) {
         this.log(`Found tab to select: ${this._tabToSelect}, ${tabs.length}`);
-        setTimeout(() => {
-          let tabToUse = gZenGlanceManager.getTabOrGlanceParent(
-            tabs[this._tabToSelect + 1] || this._emptyTab
-          );
-          gBrowser.selectedTab = tabToUse;
-          this._removedByStartupPage = true;
-          gBrowser.removeTab(this._tabToRemoveForEmpty, {
-            skipSessionStore: true,
-          });
-          cleanup();
-        }, 0);
+        let tabToUse = gZenGlanceManager.getTabOrGlanceParent(
+          tabs[this._tabToSelect + 1] || this._emptyTab
+        );
+        gBrowser.selectedTab = tabToUse;
+        this._removedByStartupPage = true;
+        gBrowser.removeTab(this._tabToRemoveForEmpty, {
+          skipSessionStore: true,
+        });
+        cleanup();
       } else {
-        this.selectEmptyTab();
-        showed = true;
-        setTimeout(() => {
-          this._removedByStartupPage = true;
-          gBrowser.removeTab(this._tabToRemoveForEmpty, {
-            skipSessionStore: true,
-            animate: false,
-          });
-          cleanup();
-        }, 0);
+        if (gBrowser.selectedTab === this._tabToRemoveForEmpty) {
+          this.log(
+            "Selecting empty tab because startup page didnt select a valid tab"
+          );
+          this.selectEmptyTab();
+        }
+        this.log("Removing empty tab added by startup page");
+        this._removedByStartupPage = true;
+        gBrowser.removeTab(this._tabToRemoveForEmpty, {
+          skipSessionStore: true,
+          animate: false,
+        });
+        cleanup();
       }
     } else {
-      setTimeout(() => {
-        cleanup();
-      }, 0);
+      cleanup();
     }
 
     await selectPromise;
@@ -943,18 +896,24 @@ class nsZenWorkspaces {
       delete this._initialTab;
     }
 
-    showed &&= Services.prefs.getBoolPref("zen.urlbar.open-on-startup", true);
+    const openOnStartup = Services.prefs.getBoolPref(
+      "zen.urlbar.open-on-startup",
+      true
+    );
+    let shownEmptyTab =
+      gBrowser.selectedTab.hasAttribute("zen-empty-tab") && openOnStartup;
+    initialTabWasEmpty &&= openOnStartup;
 
     // Wait for the next event loop to ensure that the startup focus logic by
     // firefox has finished doing it's thing.
     setTimeout(() => {
-      setTimeout(() => {
-        if (gZenVerticalTabsManager._canReplaceNewTab && showed) {
-          BrowserCommands.openTab();
-        } else if (!showed) {
-          gBrowser.selectedBrowser.focus();
-        }
-      });
+      if (gZenVerticalTabsManager._canReplaceNewTab && shownEmptyTab) {
+        BrowserCommands.openTab();
+      } else if (shownEmptyTab || initialTabWasEmpty) {
+        openLocation();
+      } else {
+        gBrowser.selectedBrowser.focus();
+      }
     });
 
     if (
@@ -1542,7 +1501,7 @@ class nsZenWorkspaces {
         !tab.hasAttribute("pending")
     );
 
-    await gBrowser.explicitUnloadTabs(tabsToUnload); // TODO: unit test this
+    await gBrowser.explicitUnloadTabs(tabsToUnload);
   }
 
   moveTabToWorkspace(tab, workspaceID) {
@@ -1590,7 +1549,6 @@ class nsZenWorkspaces {
   }
 
   #prepareNewWorkspace(space) {
-    document.documentElement.setAttribute("zen-workspace-id", space.uuid);
     let tabCount = 0;
     for (let tab of gBrowser.tabs) {
       const isEssential = tab.getAttribute("zen-essential") === "true";
@@ -1631,12 +1589,12 @@ class nsZenWorkspaces {
 
   async changeWorkspaceWithID(workspaceID, ...args) {
     const workspace = this.getWorkspaceFromId(workspaceID);
-    await this.changeWorkspace(workspace, ...args);
+    return await this.changeWorkspace(workspace, ...args);
   }
 
   async changeWorkspace(workspace, ...args) {
     if (!this.workspaceEnabled) {
-      return;
+      return workspace;
     }
     this.#currentSpaceSwitchContext.animations.forEach(animation => {
       animation.complete();
@@ -1656,6 +1614,7 @@ class nsZenWorkspaces {
     }
     this.#inChangingWorkspace = false;
     resolve();
+    return workspace;
   }
 
   _cancelSwipeAnimation() {
@@ -2417,9 +2376,6 @@ class nsZenWorkspaces {
     tabToSelect,
     { previousWorkspaceIndex, previousWorkspace } = {}
   ) {
-    // Update document state
-    document.documentElement.setAttribute("zen-workspace-id", workspace.uuid);
-
     // Recalculate new tab observers
     gBrowser.tabContainer.observe(
       null,
@@ -2460,14 +2416,20 @@ class nsZenWorkspaces {
       }
     }
 
-    // Reset bookmarks
-    this.#invalidateBookmarkContainers();
+    // Avoid forcing a startup toolbar rebuild when there are no
+    // workspace-specific bookmark assignments to apply.
+    const hasWorkspaceBookmarks = !!Object.keys(
+      this._workspaceBookmarksCache?.bookmarks || {}
+    ).length;
+    if (!onInit || hasWorkspaceBookmarks) {
+      this._invalidateBookmarkContainers();
+    }
 
     // Update workspace indicator
     await this.updateWorkspaceIndicator(workspace, this.workspaceIndicator);
 
     // Fix ctrl+tab behavior. Note, we dont call it with "await" because we dont want to wait for it
-    this._fixCtrlTabBehavior();
+    this.#fixCtrlTabBehavior();
 
     // Bug: When updating from previous versions, we used to hide the tabs not used in the new workspace
     //  we now need to show them again.
@@ -2497,12 +2459,13 @@ class nsZenWorkspaces {
     );
   }
 
-  async _fixCtrlTabBehavior() {
+  // Intentionally keep it as async!
+  async #fixCtrlTabBehavior() {
     ctrlTab.uninit();
     ctrlTab.readPref();
   }
 
-  #invalidateBookmarkContainers() {
+  _invalidateBookmarkContainers() {
     for (let i = 0, len = this.bookmarkMenus.length; i < len; i++) {
       const element = document.getElementById(this.bookmarkMenus[i]);
       if (element && element._placesView) {
@@ -2956,8 +2919,7 @@ class nsZenWorkspaces {
     }
 
     let nextWorkspace = workspaces[targetIndex];
-    await this.changeWorkspace(nextWorkspace, { whileScrolling });
-    return nextWorkspace;
+    return await this.changeWorkspace(nextWorkspace, { whileScrolling });
   }
 
   #initializeWorkspaceTabContextMenus() {
@@ -2981,9 +2943,8 @@ class nsZenWorkspaces {
       ? gBrowser.selectedTabs
       : [TabContextMenu.contextTab];
     document.getElementById("tabContextMenu").hidePopup();
-    const previousWorkspaceID =
-      document.documentElement.getAttribute("zen-workspace-id");
     for (let tab of tabs) {
+      const previousWorkspaceID = tab.getAttribute("zen-workspace-id");
       this.moveTabToWorkspace(tab, workspaceID);
       if (this.lastSelectedWorkspaceTabs[previousWorkspaceID] === tab) {
         // This tab is no longer the last selected tab in the previous workspace because it's being moved to
@@ -3273,7 +3234,7 @@ class nsZenWorkspaces {
         }
         if (!workspaceToSwitch) {
           console.error("No workspace found for tab, cannot switch");
-          await this._safelySelectTab(tab);
+          gBrowser.selectedTab = tab;
           return;
         }
 
@@ -3288,7 +3249,7 @@ class nsZenWorkspaces {
       }
 
       // Safely switch to the tab using our debounced method
-      await this._safelySelectTab(tab);
+      gBrowser.selectedTab = tab;
     } catch (e) {
       console.error("Error in switchTabIfNeeded:", e);
     }

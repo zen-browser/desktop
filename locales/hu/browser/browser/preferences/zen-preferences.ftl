@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = DOM kapcsolása
 zen-devtools-toggle-accessibility-shortcut = Hozzáférhetőség kapcsolása
 zen-close-all-unpinned-tabs-shortcut = Összes rögzítetlen lap bezárása
 zen-new-unsynced-window-shortcut = Új szinkronizálatlan ablak
+zen-duplicate-tab-shortcut = Lap duplikálása

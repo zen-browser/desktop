@@ -1,5 +1,5 @@
 diff --git a/toolkit/components/prompts/content/commonDialog.css b/toolkit/components/prompts/content/commonDialog.css
-index d811fb62d502cf6fc0bf8163f11e1d264dee9e82..9aa4dc90c73e2f1e2fdcb6bdc26a505402a5c28f 100644
+index d811fb62d502cf6fc0bf8163f11e1d264dee9e82..79e44af5d6d37bdb756bc1737d279e8769abb50e 100644
 --- a/toolkit/components/prompts/content/commonDialog.css
 +++ b/toolkit/components/prompts/content/commonDialog.css
 @@ -3,7 +3,8 @@
@@ -12,12 +12,26 @@ index d811fb62d502cf6fc0bf8163f11e1d264dee9e82..9aa4dc90c73e2f1e2fdcb6bdc26a5054
  }
  
  dialog[insecureauth] {
-@@ -91,7 +92,7 @@ dialog[insecureauth] {
+@@ -49,7 +50,6 @@ dialog[insecureauth] {
+ .sizeDetermined #infoRow,
+ .sizeDetermined #infoContainer {
+   /* Allow stuff to shrink */
+-  min-height: 0;
+ }
+ 
+ .sizeDetermined #infoRow {
+@@ -91,11 +91,12 @@ dialog[insecureauth] {
      --grid-padding: 16px;
      /* All the inner items should have 4px inline margin, leading to 1.16em spacing
       * between the dialog and its contents, and 8px horizontal spacing between items. */
 -    padding: var(--grid-padding) calc(var(--grid-padding) - 4px);
-+    padding: 26px 22px;
++    padding: 30px 26px;
++    gap: 6px;
  
      &::part(dialog-button) {
        /* Adjust vertical margins for buttons in subdialogs. */
+-      margin: 0 4px;
++      margin: 4px 6px 0 6px;
+       min-width: auto;
+     }
+   }

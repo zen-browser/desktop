@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = Växla DOM
 zen-devtools-toggle-accessibility-shortcut = Växla tillgänglighetsinställningar
 zen-close-all-unpinned-tabs-shortcut = Stäng alla flikar som inte är fästa
 zen-new-unsynced-window-shortcut = Nytt tomt fönster
+zen-duplicate-tab-shortcut = Duplicera flik

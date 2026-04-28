@@ -12,10 +12,6 @@ add_task(async function test_Private_Mode() {
     private: true,
   });
   await privateWindow.gZenWorkspaces.promiseInitialized;
-  ok(
-    privateWindow.document.documentElement.hasAttribute("zen-workspace-id"),
-    "Private window should have a zen-workspace-id attribute"
-  );
 
   await BrowserTestUtils.closeWindow(privateWindow);
   await SpecialPowers.popPrefEnv();

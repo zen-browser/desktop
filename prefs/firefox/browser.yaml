@@ -86,3 +86,7 @@
 - name: browser.tabs.splitView.enabled
   value: false
   locked: true
+
+# See gh-12985 for details on the following preferences
+- name: browser.search.widget.new
+  value: true

@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = Oraingo estekak ordezkatu du ainguratutako fitxarena!
 zen-tabs-renamed = Fitxaren izena ongi aldatu da!
 zen-background-tab-opened-toast = Fitxa berri bat zabaldu da bigarren planoan!
 zen-workspace-renamed-toast = Lan-eremuaren izena ongi aldatu da!
+zen-split-view-limit-toast = Can't add more panels to the split view!
 zen-toggle-compact-mode-button = 
     .label = Modu Trinkoa
     .tooltiptext = Modu Trinkoa Aktibatu/Desaktibatu

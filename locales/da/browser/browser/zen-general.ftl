@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = Den fastgjorte fane-URL blev erstattet med den aktuell
 zen-tabs-renamed = Fanen blev omdøbt!
 zen-background-tab-opened-toast = Ny baggrundsfane åbnet!
 zen-workspace-renamed-toast = Arbejdsområde blev omdøbt!
+zen-split-view-limit-toast = Can't add more panels to the split view!
 zen-toggle-compact-mode-button = 
     .label = Kompakt tilstand
     .tooltiptext = Kompakt tilstand til/fra

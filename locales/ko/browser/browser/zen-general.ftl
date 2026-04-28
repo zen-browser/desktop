@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = 고정 URL이 현재 URL로 변경되었습니다!
 zen-tabs-renamed = 탭의 이름이 성공적으로 변경되었습니다!
 zen-background-tab-opened-toast = 새 백그라운드 탭이 열렸습니다!
 zen-workspace-renamed-toast = 워크스페이스 이름이 변경되었습니다!
+zen-split-view-limit-toast = 패널을 더 추가할 수 없습니다!
 zen-toggle-compact-mode-button = 
     .label = 사이드바 축소 모드
     .tooltiptext = 사이드바 축소 토글

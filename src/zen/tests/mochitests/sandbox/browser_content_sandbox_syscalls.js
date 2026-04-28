@@ -24,7 +24,7 @@ ChromeUtils.defineLazyGetter(lazy, "LIBC", () =>
  */
 
 // Calls the native execv library function. Include imports so this can be
-// safely serialized and run remotely by ContentTask.spawn.
+// safely serialized and run remotely by SpecialPowers.spawn.
 function callExec(args) {
   const { ctypes } = ChromeUtils.importESModule(
     "resource://gre/modules/ctypes.sys.mjs"

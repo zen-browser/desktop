@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = قلب DOM
 zen-devtools-toggle-accessibility-shortcut = قلب إمكانية الوصول
 zen-close-all-unpinned-tabs-shortcut = إغلاق جميع علامات التبويب الغير مثبتة
 zen-new-unsynced-window-shortcut = New Unsynced Window
+zen-duplicate-tab-shortcut = Duplicate Tab

@@ -48,6 +48,7 @@ zen-pinned-tab-replaced = כתובת הלשונית המוצמדת הוחלפה 
 zen-tabs-renamed = שם הלשונית השתנה בהצלחה!
 zen-background-tab-opened-toast = לשונית נפתחה ברקע!
 zen-workspace-renamed-toast = שם מרחב העבודה השתנה בהצלחה!
+zen-split-view-limit-toast = Can't add more panels to the split view!
 zen-toggle-compact-mode-button = 
     .label = מצב חסכוני
     .tooltiptext = הפעלת/כיבוי מצב חסכוני

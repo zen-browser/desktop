@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = DOM 탭 전환
 zen-devtools-toggle-accessibility-shortcut = 접근성 탭 전환
 zen-close-all-unpinned-tabs-shortcut = 모든 고정되지 않은 탭 닫기
 zen-new-unsynced-window-shortcut = 새 비동기화 창
+zen-duplicate-tab-shortcut = 탭 복제

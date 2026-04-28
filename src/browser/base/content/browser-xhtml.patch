@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.xhtml b/browser/base/content/browser.xhtml
-index a95ce8f0b28d98632c06f605b510b5ae3e98c4ed..275b3f5f30046a5e08d9ebceff0d2b91c865eb1b 100644
+index b42287485c2baeabe831b0d54c6f09330b0caabd..e404c2e028e24eb4fa9b97f143ba476c1b1461fd 100644
 --- a/browser/base/content/browser.xhtml
 +++ b/browser/base/content/browser.xhtml
 @@ -19,6 +19,7 @@
@@ -10,7 +10,7 @@ index a95ce8f0b28d98632c06f605b510b5ae3e98c4ed..275b3f5f30046a5e08d9ebceff0d2b91
          persist="screenX screenY width height sizemode"
          data-l10n-sync="true">
  <head>
-@@ -100,8 +101,10 @@
+@@ -101,8 +102,10 @@
  
    <title data-l10n-id="browser-main-window-default-title"></title>
  
@@ -21,12 +21,12 @@ index a95ce8f0b28d98632c06f605b510b5ae3e98c4ed..275b3f5f30046a5e08d9ebceff0d2b91
  </head>
  <html:body xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
  # All sets except for popupsets (commands, keys, and stringbundles)
-@@ -134,9 +137,11 @@
+@@ -135,9 +138,10 @@
      </vbox>
    </html:template>
  
+-#include navigator-toolbox.inc.xhtml
 +<hbox id="zen-main-app-wrapper" flex="1" class="browser-toolbox-background">
- #include navigator-toolbox.inc.xhtml
  
  #include browser-box.inc.xhtml
 +</hbox>

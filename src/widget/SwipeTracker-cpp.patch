@@ -1,8 +1,8 @@
 diff --git a/widget/SwipeTracker.cpp b/widget/SwipeTracker.cpp
-index b09252fd60beb10d5865d226c39ee0c8a9c22d87..91f68161209c6ca3f3bac22997d4e2066f1fafec 100644
+index 887d06d3bd9cdaa934880e0ae7a11ec8b737fb61..e2bf27c0130701f1d50990b60a5ef76e93c5a6bf 100644
 --- a/widget/SwipeTracker.cpp
 +++ b/widget/SwipeTracker.cpp
-@@ -5,6 +5,7 @@
+@@ -3,6 +3,7 @@
   * You can obtain one at http://mozilla.org/MPL/2.0/. */
  
  #include "SwipeTracker.h"

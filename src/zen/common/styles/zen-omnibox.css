@@ -17,12 +17,12 @@
 }
 
 .urlbar {
-  --urlbarView-separator-color: light-dark(hsl(0, 0%, 92%), hsl(0, 0%, 20%));
+  --urlbarView-separator-color: light-dark(hsl(0, 0%, 80%), hsl(0, 0%, 20%));
   --urlbarView-hover-background: var(--toolbarbutton-hover-background);
   --urlbarView-highlight-background: var(--toolbarbutton-hover-background);
   border-radius: calc(var(--toolbarbutton-border-radius) - 2px);
   height: var(--urlbar-height);
-  --urlbarView-results-padding: 8px !important;
+  --urlbarView-results-padding: 10px !important;
   --urlbar-container-height: 48px !important;
 
   --urlbar-margin-inline: 5px;
@@ -263,12 +263,15 @@
     --zen-urlbar-background-base: light-dark(#fbfbfb, color-mix(in srgb, hsl(0, 0%, 6.7%), var(--zen-colors-primary) 30%));
     /* stylelint-disable-next-line media-query-no-invalid */
     @media -moz-pref("zen.theme.acrylic-elements") {
-      --zen-urlbar-background-transparent: color-mix(in srgb, var(--zen-urlbar-background-base) 70%, transparent 30%);
+      --zen-urlbar-background-transparent: light-dark(
+        color-mix(in srgb, var(--zen-urlbar-background-base) 90%, transparent),
+        color-mix(in srgb, var(--zen-urlbar-background-base) 65%, transparent)
+      );
     }
     background-color: var(--zen-urlbar-background-transparent, var(--zen-urlbar-background-base)) !important;
     box-shadow: 0 30px 140px -15px light-dark(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6)) !important;
     backdrop-filter: none !important;
-    outline: 0.5px solid light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.2)) !important;
+    outline: 0.5px solid light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.2)) !important;
     outline-offset: var(--zen-urlbar-outline-offset) !important;
 
     /* stylelint-disable-next-line media-query-no-invalid */
@@ -300,7 +303,7 @@
 
 :root[zen-single-toolbar="true"] {
   --urlbar-icon-border-radius: 8px !important;
-  --urlbar-inner-border-radius: var(--toolbarbutton-border-radius) !important;
+  --urlbar-inner-border-radius: 6px !important;
 
   #identity-permission-box > *:not(#zen-site-data-icon-button) {
     visibility: collapse;
@@ -486,11 +489,13 @@
       margin-block: -1px !important;
     }
   }
+}
 
-  & #identity-icon-box {
-    --urlbar-box-hover-bgcolor: transparent;
-    margin-inline: 2px 8px;
-  }
+#urlbar[open][zen-floating-urlbar="true"] #identity-icon-box,
+:root[zen-single-toolbar="true"] #urlbar[breakout-extend="true"] #identity-icon-box {
+  --urlbar-box-hover-bgcolor: transparent;
+  margin-inline: 2px 8px;
+  transition: none;
 }
 
 /* stylelint-disable-next-line media-query-no-invalid */
@@ -516,7 +521,7 @@
   margin-left: 0 !important;
   margin-right: 12px !important;
   padding: 6px !important;
-  border-radius: 4px !important;
+  border-radius: 3px !important;
 }
 
 .urlbarView-userContext {
@@ -583,6 +588,11 @@
     position: relative;
     scale: 0.93;
     transform-origin: right;
+    opacity: 0.7;
+
+    .urlbarView-row[selected] & {
+      opacity: 1;
+    }
 
     &::after {
       content: "";
@@ -634,7 +644,7 @@
   }
 
   &[selected] {
-    --zen-selected-bg: color-mix(in srgb, var(--zen-primary-color) 55%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%);
+    --zen-selected-bg: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.1)));
     --zen-selected-color: color-mix(in srgb, var(--zen-selected-bg), black 30%);
     background-color: var(--zen-selected-bg) !important;
 
@@ -652,7 +662,7 @@
       color: var(--zen-selected-color) !important;
     }
 
-    &:where([type="switchtab"], [type="dynamic"], [type^="history"], [type^="autofill_"], [type="top_site"]) .urlbarView-favicon,
+    &:where([type="switchtab"], [type="dynamic"], [type^="history"], [type^="autofill_"], [type="top_site"], [type="bookmark"]) .urlbarView-favicon,
     & .urlbarView-shortcutContent {
       fill: var(--zen-selected-color) !important;
       background-color: rgba(255, 255, 255, 0.9) !important;

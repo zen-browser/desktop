@@ -1,0 +1,158 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+@keyframes select-controls-container-in {
+  0% {
+    bottom: -54px;
+  }
+
+  100% {
+    bottom: 8px;
+  }
+}
+
+@keyframes zap-border-in {
+  0% {
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+  }
+
+  100% {
+    left: 2px;
+    top: 2px;
+    bottom: 2px;
+    right: 2px;
+  }
+}
+
+#zap-border {
+  z-index: 9999;
+  content: "";
+  position: fixed;
+
+  left: 2px;
+  top: 2px;
+  bottom: 2px;
+  right: 2px;
+
+  pointer-events: none;
+  background-color: transparent;
+
+  outline: 4px solid #dfd43a;
+  animation: 0.15s zap-border-in ease-out;
+
+  border-radius: 4px;
+  @media (-moz-platform: macos) {
+    border-radius: 8px;
+  }
+}
+
+#zap-controls-container {
+  font-family: system-ui;
+
+  display: flex;
+  pointer-events: auto;
+  z-index: 999999;
+
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+
+  margin: 0;
+  padding: 0 10px 0 10px;
+  height: 54px;
+  position: fixed;
+
+  border-radius: 6px;
+  @media (-moz-platform: macos) {
+    border-radius: 12px;
+  }
+
+  align-items: center;
+  gap: 8px;
+
+  color: #d6d6d6;
+  background-color: #1d1b1b;
+  border: 1px solid #2f2b2b;
+
+  animation: 0.15s select-controls-container-in cubic-bezier(0.07, 1.32, 0.41, 1);
+
+  & input {
+    width: min-content;
+    height: 36px;
+
+    border-radius: 4px;
+    @media (-moz-platform: macos) {
+      border-radius: 8px;
+    }
+
+    border: none;
+    background: linear-gradient(0deg, #afafaf 0%, #e5e5e5 100%);
+
+    color: #1d1b1b;
+    font-weight: bold;
+
+    transition:
+      0.1s filter ease-in-out,
+      scale 0.35s cubic-bezier(0.11, 1.6, 0.63, 1);
+
+    &:hover {
+      filter: brightness(0.9);
+    }
+    &:active {
+      filter: brightness(0.8);
+      scale: 0.95;
+    }
+  }
+
+  & #zap-list {
+    display: flex;
+
+    flex: 1 1 auto;
+    min-width: 0;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+
+    align-items: center;
+    vertical-align: middle;
+    gap: 8px;
+
+    & input {
+      width: 36px;
+      flex: 0 0 auto;
+    }
+
+    & p {
+      padding-left: 12px;
+      font-size: 10pt;
+      user-select: none;
+    }
+
+    & .pcenter {
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+  & #zap-done {
+    flex: 0 0 auto;
+    padding: 0 12px 0 12px;
+  }
+}
+
+#zen-zap-dissolve-canvas {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  z-index: 2147483647;
+}

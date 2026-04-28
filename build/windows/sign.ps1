@@ -4,6 +4,7 @@
 
 param(
     [string][Parameter(Mandatory=$true)]$SignIdentity,
+    [string][Parameter(Mandatory=$true)]$SignIdentityIssuer,
     [string][Parameter(Mandatory=$true)]$GithubRunId
 )
 
@@ -25,6 +26,9 @@ mkdir windsign-temp -ErrorAction SilentlyContinue
 
 $env:SURFER_MOZCONFIG_ONLY="1"
 $env:SURFER_SIGNING_MODE=""
+
+$env:SURFER_CERT_PATCH_ISSUER=$SignIdentityIssuer
+$env:SURFER_CERT_PATCH_NAME=$SignIdentity
 
 Start-Job -Name "DownloadGitl10n" -ScriptBlock {
     param($PWD)

@@ -1,0 +1,200 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+@keyframes select-component-in {
+  0% {
+    scale: 0;
+    opacity: 0;
+  }
+  100% {
+    scale: 1;
+    opacity: 1;
+  }
+}
+
+#select-component {
+  width: min-content;
+  font-family: system-ui;
+
+  height: 98px;
+
+  pointer-events: auto;
+
+  transform-origin: top;
+  overflow: hidden;
+
+  position: fixed;
+  z-index: 9999;
+
+  background-color: #f5f7fb;
+  margin: 4px;
+
+  border-radius: 12px;
+  @media (-moz-platform: macos) {
+    border-radius: 24px;
+  }
+
+  box-shadow: 0 0 20px#00000050;
+
+  scale: 1;
+  opacity: 1;
+
+  @media not (-moz-platform: windows) {
+    &[is-appearing="true"] {
+      scale: 0;
+      opacity: 0;
+
+      animation: 0.4s select-component-in cubic-bezier(0.14, 1.43, 0.56, 1.01) forwards;
+    }
+  }
+
+  & input {
+    width: fit-content;
+    min-width: 75px;
+
+    height: 40px;
+
+    border-radius: 6px;
+    @media (-moz-platform: macos) {
+      border-radius: 12px;
+    }
+
+    padding-left: 10px;
+    padding-right: 10px;
+
+    font-size: 11pt;
+    transition:
+      0.15s filter ease,
+      0.1s box-shadow ease-out,
+      scale 0.35s cubic-bezier(0.11, 1.6, 0.63, 1);
+
+    &:hover {
+      filter: brightness(1.3);
+    }
+
+    &:active {
+      scale: 0.95;
+    }
+  }
+}
+
+#highlight-shadow {
+  z-index: 999;
+
+  position: fixed;
+  width: 100%;
+  height: 100%;
+
+  content: "";
+  background-color: #00000044;
+}
+
+#highlight-container {
+  z-index: 1000;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  content: "";
+
+  & .highlight {
+    position: fixed;
+
+    border: 1px solid #e9dd38;
+    background-color: #c2b72046;
+    border-radius: 6px;
+    content: "";
+  }
+}
+
+#select-controls {
+  display: flex;
+
+  gap: 10px;
+  padding: 10px;
+  @media not (-moz-platform: windows) {
+    gap: 12px;
+    padding: 12px;
+  }
+}
+
+#select-related {
+  appearance: none;
+  text-align: left;
+
+  width: 250px !important;
+  --related-elements-value: 100%;
+  background: linear-gradient(to top, rgb(247, 66, 0), rgb(245, 134, 86));
+
+  border: none;
+  color: #dadada;
+  box-shadow: 0 0 15px #00000052;
+
+  &:hover {
+    box-shadow: 0 0 14px #00000066;
+    background:
+      linear-gradient(to right, transparent var(--related-elements-value), gray var(--related-elements-value)),
+      linear-gradient(to top, rgb(247, 66, 0), rgb(245, 134, 86));
+
+    @media not (-moz-platform: windows) {
+      box-shadow: 0 0 20px #00000077;
+    }
+  }
+}
+
+#select-this {
+  appearance: none;
+
+  background: linear-gradient(0deg, rgba(246, 27, 25, 1) 0%, rgba(254, 67, 59, 1) 100%);
+  border: none;
+  color: #dadada;
+
+  box-shadow: 0 0 15px #00000052;
+}
+
+#select-cancel {
+  appearance: none;
+
+  background: rgb(90, 94, 100);
+  @media (-moz-platform: macos) {
+    background: linear-gradient(0deg, rgba(81, 83, 85, 1) 0%, rgba(108, 110, 112, 1) 100%);
+  }
+
+  border: none;
+  color: #dadada;
+
+  box-shadow: 0 0 15px #00000052;
+}
+
+#selector-preview {
+  background-color: #e0e2e63d;
+  outline: 1px solid #e0e2e6ae;
+  width: 100%;
+  height: 34px;
+  text-indent: 18px;
+
+  display: flex;
+  align-items: center;
+}
+
+#selector-element-preview-text {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 9pt;
+  color: rgb(76, 78, 80);
+}
+
+#hover-div {
+  position: fixed;
+  z-index: 9999;
+
+  content: "";
+  outline: 1px solid #e9dd38;
+  border-radius: 6px;
+
+  background-color: #c2b72046;
+
+  transition: 0.1s all ease-out;
+  will-change: left, top, width, height;
+}

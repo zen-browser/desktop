@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = Den fästa flikens URL har ersatts med den aktuella UR
 zen-tabs-renamed = Fliken har fått nytt namn!
 zen-background-tab-opened-toast = Ny bakgrundsflik öppnad!
 zen-workspace-renamed-toast = Arbetsytan har fått ett nytt namn!
+zen-split-view-limit-toast = Kan inte lägga till fler paneler till delad vy!
 zen-toggle-compact-mode-button = 
     .label = Kompakt läge
     .tooltiptext = Växla kompakt läge

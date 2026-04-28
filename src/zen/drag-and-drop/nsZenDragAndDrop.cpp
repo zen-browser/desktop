@@ -29,7 +29,7 @@ nsZenDragAndDrop::nsZenDragAndDrop() { (void)this->OnDragEnd(); }
 
 auto nsZenDragAndDrop::GetZenDragAndDropInstance()
     -> nsCOMPtr<nsZenDragAndDrop> {
-  return do_GetService(ZEN_BOOSTS_BACKEND_CONTRACTID);
+  return do_GetService(ZEN_DND_MANAGER_CONTRACTID);
 }
 
 NS_IMETHODIMP

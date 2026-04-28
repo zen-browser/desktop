@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = Prepnúť DOM
 zen-devtools-toggle-accessibility-shortcut = Prepnúť prístupnosť
 zen-close-all-unpinned-tabs-shortcut = Zatvoriť všetky nepripnuté karty
 zen-new-unsynced-window-shortcut = New Unsynced Window
+zen-duplicate-tab-shortcut = Duplicate Tab

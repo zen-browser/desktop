@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/urlbar-searchbar.css b/browser/themes/shared/urlbar-searchbar.css
-index cbbf55f31ae5e456401172f79ddbbe41256025a4..dc471dfe30dedf7c4917322a5b2257a9ec9c4f90 100644
+index 0ee35cfe67c9bce37a844d4b7d9715d4fb50f709..5cdb8037e49a68ea4126af349690af8a16b5e59b 100644
 --- a/browser/themes/shared/urlbar-searchbar.css
 +++ b/browser/themes/shared/urlbar-searchbar.css
 @@ -10,7 +10,7 @@

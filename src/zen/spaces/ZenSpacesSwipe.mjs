@@ -131,15 +131,14 @@ export class ZenSpacesSwipe {
     event.preventDefault();
     event.stopPropagation();
 
-    const delta = event.delta * 300;
     const stripWidth =
       window.windowUtils.getBoundsWithoutFlushing(
         document.getElementById("navigator-toolbox")
       ).width +
       window.windowUtils.getBoundsWithoutFlushing(
         document.getElementById("zen-sidebar-splitter")
-      ).width *
-        2;
+      ).width;
+    const delta = event.delta * stripWidth;
     let translateX = this._swipeState.lastDelta + delta;
     // Add a force multiplier as we are translating the strip depending on how close to the edge we are
     let forceMultiplier = Math.min(

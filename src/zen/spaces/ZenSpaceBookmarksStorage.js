@@ -49,7 +49,7 @@ window.ZenWorkspaceBookmarksStorage = {
           timestamp INTEGER NOT NULL,
           UNIQUE(bookmark_guid),
           FOREIGN KEY(bookmark_guid) REFERENCES moz_bookmarks(guid) ON DELETE CASCADE
-          )
+        )
       `);
 
         // Create index for changes tracking

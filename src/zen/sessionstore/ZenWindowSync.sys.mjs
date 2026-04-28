@@ -1144,6 +1144,9 @@ class nsZenWindowSync {
         _forZenEmptyTab: tab.hasAttribute("zen-empty-tab"),
       });
       newTab.id = tab.id;
+      if (!tab.hasAttribute("pending")) {
+        newTab.removeAttribute("pending");
+      }
       this.#syncItemWithOriginal(
         tab,
         newTab,

@@ -192,22 +192,28 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       cmdClose.addEventListener("command", this.onCloseTabShortcut.bind(this));
     }
 
-    gBrowser.addEventListener(
-      "DOMWindowClose",
-      (event) => {
-        let browser = event.target;
-        if (!browser.isRemoteBrowser) {
-          browser = event.target.docShell?.chromeEventHandler ?? browser;
-        }
-        const tab = gBrowser.getTabForBrowser(browser);
-        if (!tab?.pinned) {
-          return;
-        }
-        event.stopImmediatePropagation();
-        event.preventDefault();
-        this.onCloseTabShortcut(event, tab);
+    window.addEventListener(
+      "load",
+      () => {
+        gBrowser.addEventListener(
+          "DOMWindowClose",
+          (event) => {
+            let browser = event.target;
+            if (!browser.isRemoteBrowser) {
+              browser = event.target.docShell?.chromeEventHandler ?? browser;
+            }
+            const tab = gBrowser.getTabForBrowser(browser);
+            if (!tab?.pinned) {
+              return;
+            }
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            this.onCloseTabShortcut(event, tab);
+          },
+          true
+        );
       },
-      true
+      { once: true }
     );
   }
 

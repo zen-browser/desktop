@@ -427,3 +427,7 @@ menuseparator {
 #window-modal-dialog {
   inset: 0;
 }
+
+#tab-preview-panel {
+  color: CanvasText;
+}

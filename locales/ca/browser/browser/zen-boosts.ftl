@@ -3,55 +3,55 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-boost-edit-rename = 
-    .label = Rename Boost
+    .label = Reanomena la millora
 zen-boost-edit-shuffle = 
-    .label = Shuffle Vibes
+    .label = Barreja les vibracions
 zen-boost-edit-reset = 
-    .label = Reset All Edits
+    .label = Restableix totes les edicions
 zen-boost-edit-delete = 
-    .label = Delete Boost
-zen-boost-size = Size
-zen-boost-zap = Zap
-zen-boost-code = Code
-zen-boost-back = Back
+    .label = Suprimeix la millora
+zen-boost-size = Mida
+zen-boost-zap = Amaga
+zen-boost-code = Codi
+zen-boost-back = Enrere
 zen-boost-shuffle = 
-    .tooltiptext = Shuffle Boost Settings
+    .tooltiptext = Barreja les configuracions de millora
 zen-boost-invert = 
-    .tooltiptext = Smart Invert Colors
+    .tooltiptext = Inversió intel·ligent dels colors
 zen-boost-controls = 
-    .tooltiptext = Advanced Color Controls
+    .tooltiptext = Controls de color avançats
 zen-boost-disable = 
-    .tooltiptext = Disable Color Adjustments
+    .tooltiptext = Desactiva els ajustos de color
 zen-boost-text-case-toggle = 
-    .tooltiptext = Toggle Text Case
+    .tooltiptext = Commuta majúscules/minúscules
 zen-boost-css-picker = 
-    .tooltiptext = Pick Selector
+    .tooltiptext = Trieu el selector
 zen-boost-css-inspector = 
-    .tooltiptext = Open Inspector
+    .tooltiptext = Obre l'inspector
 zen-bootst-color-contrast = Contrast
-zen-bootst-color-brightness = Brightness
-zen-bootst-color-original-saturation = Original Saturation
-zen-add-zap-helper = Click elements on the page to <b>Zap</b> them
-zen-remove-zap-helper = ← Click to Unzap
-zen-select-this = Insert selector for this
-zen-select-related = Insert selector for related
-zen-select-cancel = Cancel
-zen-zap-this = Zap this
-zen-zap-related = Zap all related elements
-zen-zap-cancel = Cancel
-zen-zap-done = Done
+zen-bootst-color-brightness = Brillantor
+zen-bootst-color-original-saturation = Saturació original
+zen-add-zap-helper = Feu clic als elements de la pàgina per <b>amagar-los</b>
+zen-remove-zap-helper = ← Feu clic per mostrar
+zen-select-this = Insereix un selector per a això
+zen-select-related = Insereix un selector per a elements relacionats
+zen-select-cancel = Cancel·la
+zen-zap-this = Amaga això
+zen-zap-related = Amaga tots els elements relacionats
+zen-zap-cancel = Cancel·la
+zen-zap-done = Fet
 zen-unzap-tooltip =
     { $elementCount ->
-        [0] No elements zapped
-        [1] { $elementCount } element zapped
-       *[other] { $elementCount } elements zapped
+        [0] No hi ha elements amagats
+        [1] { $elementCount } element amagat
+       *[other] { $elementCount } elements amagats
     }
 zen-boost-save = 
-    .tooltiptext = Export Boost
+    .tooltiptext = Exporta la millora
 zen-boost-load = 
-    .tooltiptext = Import Boost
-zen-panel-ui-boosts-exported-message = Boost exported!
-zen-site-data-boosts = Boosts
+    .tooltiptext = Importa la millora
+zen-panel-ui-boosts-exported-message = S'ha exportat la millora!
+zen-site-data-boosts = Millores
 zen-site-data-create-boost = 
-    .tooltiptext = Create new boost
-zen-boost-rename-boost-prompt = Rename Boost?
+    .tooltiptext = Creu una nova millora
+zen-boost-rename-boost-prompt = Voleu reanomenar la millora?

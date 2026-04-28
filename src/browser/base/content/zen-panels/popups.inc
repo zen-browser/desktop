@@ -117,51 +117,51 @@
       <toolbarbutton
         class="toolbarbutton-1 zen-india-services-item"
         label="IRCTC — Train booking"
-        oncommand="gZenIndiaGov.openApp('https://www.irctc.co.in');" />
+        oncommand="window.gZenIndiaGov.openApp('https://www.irctc.co.in');" />
       <toolbarbutton
         class="toolbarbutton-1 zen-india-services-item"
         label="DigiLocker — Documents"
-        oncommand="gZenIndiaGov.openApp('https://www.digilocker.gov.in');" />
+        oncommand="window.gZenIndiaGov.openApp('https://www.digilocker.gov.in');" />
       <toolbarbutton
         class="toolbarbutton-1 zen-india-services-item"
         label="BHIM UPI — Payments"
-        oncommand="gZenIndiaGov.openApp('https://www.bhimupi.org.in');" />
+        oncommand="window.gZenIndiaGov.openApp('https://www.bhimupi.org.in');" />
       <toolbarbutton
         class="toolbarbutton-1 zen-india-services-item"
         label="UMANG — Government services"
-        oncommand="gZenIndiaGov.openApp('https://web.umang.gov.in');" />
+        oncommand="window.gZenIndiaGov.openApp('https://web.umang.gov.in');" />
       <toolbarbutton
         class="toolbarbutton-1 zen-india-services-item"
         label="Income Tax"
-        oncommand="gZenIndiaGov.openApp('https://www.incometax.gov.in');" />
+        oncommand="window.gZenIndiaGov.openApp('https://www.incometax.gov.in');" />
       <toolbarbutton
         class="toolbarbutton-1 zen-india-services-item"
         label="Aadhaar"
-        oncommand="gZenIndiaGov.openApp('https://myaadhaar.uidai.gov.in');" />
+        oncommand="window.gZenIndiaGov.openApp('https://myaadhaar.uidai.gov.in');" />
       <toolbarbutton
         class="toolbarbutton-1 zen-india-services-item"
         label="Passport Seva"
-        oncommand="gZenIndiaGov.openApp('https://passportindia.gov.in');" />
+        oncommand="window.gZenIndiaGov.openApp('https://passportindia.gov.in');" />
       <toolbarbutton
         class="toolbarbutton-1 zen-india-services-item"
         label="EPFO"
-        oncommand="gZenIndiaGov.openApp('https://www.epfindia.gov.in');" />
+        oncommand="window.gZenIndiaGov.openApp('https://www.epfindia.gov.in');" />
       <toolbarbutton
         class="toolbarbutton-1 zen-india-services-item"
         label="GST Portal — Tax filing"
-        oncommand="gZenIndiaGov.openApp('https://www.gst.gov.in');" />
+        oncommand="window.gZenIndiaGov.openApp('https://www.gst.gov.in');" />
       <toolbarbutton
         class="toolbarbutton-1 zen-india-services-item"
         label="NPCI — Payments"
-        oncommand="gZenIndiaGov.openApp('https://www.npci.org.in');" />
+        oncommand="window.gZenIndiaGov.openApp('https://www.npci.org.in');" />
       <toolbarbutton
         class="toolbarbutton-1 zen-india-services-item"
         label="Scholarships — NSP"
-        oncommand="gZenIndiaGov.openApp('https://scholarships.gov.in');" />
+        oncommand="window.gZenIndiaGov.openApp('https://scholarships.gov.in');" />
       <toolbarbutton
         class="toolbarbutton-1 zen-india-services-item"
         label="PM-KISAN — Farmers"
-        oncommand="gZenIndiaGov.openApp('https://pmkisan.gov.in');" />
+        oncommand="window.gZenIndiaGov.openApp('https://pmkisan.gov.in');" />
     </vbox>
   </vbox>
 </panel>
@@ -180,31 +180,31 @@
       <label class="zen-app-launcher-section-title" value="📧 Mail"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://gmail.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://gmail.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=gmail.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Gmail"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://outlook.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://outlook.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=outlook.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Outlook"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://mail.zoho.in');"
+          oncommand="window.gZenAppLauncher.openApp('https://mail.zoho.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=mail.zoho.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Zoho Mail"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://mail.yahoo.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://mail.yahoo.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=mail.yahoo.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Yahoo Mail"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://proton.me');"
+          oncommand="window.gZenAppLauncher.openApp('https://proton.me');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=proton.me&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="ProtonMail"/>
@@ -214,25 +214,25 @@
       <label class="zen-app-launcher-section-title" value="📹 Meetings"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://meet.google.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://meet.google.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=meet.google.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Google Meet"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://zoom.us/join');"
+          oncommand="window.gZenAppLauncher.openApp('https://zoom.us/join');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=zoom.us&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Zoom"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://teams.microsoft.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://teams.microsoft.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=teams.microsoft.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="MS Teams"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://webex.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://webex.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=webex.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Webex"/>
@@ -242,25 +242,25 @@
       <label class="zen-app-launcher-section-title" value="💾 Storage"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://drive.google.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://drive.google.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=drive.google.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Google Drive"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://onedrive.live.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://onedrive.live.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=onedrive.live.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="OneDrive"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://dropbox.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://dropbox.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=dropbox.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Dropbox"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://workdrive.zoho.in');"
+          oncommand="window.gZenAppLauncher.openApp('https://workdrive.zoho.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=workdrive.zoho.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Zoho Drive"/>
@@ -270,31 +270,31 @@
       <label class="zen-app-launcher-section-title" value="📝 Productivity"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://docs.google.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://docs.google.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=docs.google.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Google Docs"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://microsoft365.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://microsoft365.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=microsoft365.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Microsoft 365"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://notion.so');"
+          oncommand="window.gZenAppLauncher.openApp('https://notion.so');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=notion.so&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Notion"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://canva.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://canva.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=canva.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Canva"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://sheet.zoho.in');"
+          oncommand="window.gZenAppLauncher.openApp('https://sheet.zoho.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=sheet.zoho.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Zoho Docs"/>
@@ -304,25 +304,25 @@
       <label class="zen-app-launcher-section-title" value="🎓 Education"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://classroom.google.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://classroom.google.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=classroom.google.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Classroom"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://teams.microsoft.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://teams.microsoft.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=teams.microsoft.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Teams EDU"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://zoom.us/education');"
+          oncommand="window.gZenAppLauncher.openApp('https://zoom.us/education');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=zoom.us&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Zoom EDU"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://swayam.gov.in');"
+          oncommand="window.gZenAppLauncher.openApp('https://swayam.gov.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=swayam.gov.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="SWAYAM"/>
@@ -332,31 +332,31 @@
       <label class="zen-app-launcher-section-title" value="🎵 Entertainment"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://youtube.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://youtube.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=youtube.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="YouTube"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://spotify.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://spotify.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=spotify.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Spotify"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://jiosaavn.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://jiosaavn.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=jiosaavn.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="JioSaavn"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://jiohotstar.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://jiohotstar.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=jiohotstar.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="JioHotstar"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://netflix.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://netflix.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=netflix.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Netflix"/>
@@ -366,25 +366,25 @@
       <label class="zen-app-launcher-section-title" value="🛒 Shopping"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://amazon.in');"
+          oncommand="window.gZenAppLauncher.openApp('https://amazon.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=amazon.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Amazon"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://flipkart.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://flipkart.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=flipkart.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Flipkart"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://meesho.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://meesho.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=meesho.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Meesho"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://myntra.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://myntra.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=myntra.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Myntra"/>
@@ -394,31 +394,31 @@
       <label class="zen-app-launcher-section-title" value="🇮🇳 Government"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://irctc.co.in');"
+          oncommand="window.gZenAppLauncher.openApp('https://irctc.co.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=irctc.co.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="IRCTC"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://incometax.gov.in');"
+          oncommand="window.gZenAppLauncher.openApp('https://incometax.gov.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=incometax.gov.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Income Tax"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://digilocker.gov.in');"
+          oncommand="window.gZenAppLauncher.openApp('https://digilocker.gov.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=digilocker.gov.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="DigiLocker"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://gst.gov.in');"
+          oncommand="window.gZenAppLauncher.openApp('https://gst.gov.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=gst.gov.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="GST Portal"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://epfindia.gov.in');"
+          oncommand="window.gZenAppLauncher.openApp('https://epfindia.gov.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=epfindia.gov.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="EPFO"/>
@@ -428,25 +428,25 @@
       <label class="zen-app-launcher-section-title" value="📰 News"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://inshorts.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://inshorts.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=inshorts.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Inshorts"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://ndtv.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://ndtv.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=ndtv.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="NDTV"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://timesofindia.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://timesofindia.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=timesofindia.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="TOI"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://news.google.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://news.google.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=news.google.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Google News"/>
@@ -456,25 +456,25 @@
       <label class="zen-app-launcher-section-title" value="💼 Business"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://linkedin.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://linkedin.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=linkedin.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="LinkedIn"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://slack.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://slack.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=slack.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Slack"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://freshdesk.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://freshdesk.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=freshdesk.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Freshdesk"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenAppLauncher.openApp('https://trello.com');"
+          oncommand="window.gZenAppLauncher.openApp('https://trello.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=trello.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Trello"/>
@@ -498,13 +498,13 @@
       <label class="zen-app-launcher-section-title" value="🚂 Travel"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenIndiaGov.openApp('https://www.irctc.co.in');"
+          oncommand="window.gZenIndiaGov.openApp('https://www.irctc.co.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=irctc.co.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="IRCTC"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenIndiaGov.openApp('https://www.makemytrip.com');"
+          oncommand="window.gZenIndiaGov.openApp('https://www.makemytrip.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=makemytrip.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="MakeMyTrip"/>
@@ -513,31 +513,31 @@
       <label class="zen-app-launcher-section-title" value="🏛️ Government"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenIndiaGov.openApp('https://www.digilocker.gov.in');"
+          oncommand="window.gZenIndiaGov.openApp('https://www.digilocker.gov.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=digilocker.gov.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="DigiLocker"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenIndiaGov.openApp('https://www.incometax.gov.in');"
+          oncommand="window.gZenIndiaGov.openApp('https://www.incometax.gov.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=incometax.gov.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Income Tax"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenIndiaGov.openApp('https://www.gst.gov.in');"
+          oncommand="window.gZenIndiaGov.openApp('https://www.gst.gov.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=gst.gov.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="GST Portal"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenIndiaGov.openApp('https://epfindia.gov.in');"
+          oncommand="window.gZenIndiaGov.openApp('https://epfindia.gov.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=epfindia.gov.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="EPFO"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenIndiaGov.openApp('https://uidai.gov.in');"
+          oncommand="window.gZenIndiaGov.openApp('https://uidai.gov.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=uidai.gov.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Aadhaar"/>
@@ -546,19 +546,19 @@
       <label class="zen-app-launcher-section-title" value="💰 Payments"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenIndiaGov.openApp('https://www.phonepe.com');"
+          oncommand="window.gZenIndiaGov.openApp('https://www.phonepe.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=phonepe.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="PhonePe"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenIndiaGov.openApp('https://paytm.com');"
+          oncommand="window.gZenIndiaGov.openApp('https://paytm.com');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=paytm.com&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Paytm"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          oncommand="gZenIndiaGov.openApp('https://www.bhimupi.org.in');"
+          oncommand="window.gZenIndiaGov.openApp('https://www.bhimupi.org.in');"
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=bhimupi.org.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="BHIM UPI"/>

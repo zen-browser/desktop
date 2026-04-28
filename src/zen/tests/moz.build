@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 BROWSER_CHROME_MANIFESTS += [
+    "boosts/browser.toml",
     "compact_mode/browser.toml",
     "container_essentials/browser.toml",
     "folders/browser.toml",

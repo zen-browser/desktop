@@ -59,6 +59,24 @@ let JSWINDOWACTORS = {
   },
 };
 
+if (!Services.appinfo.inSafeMode) {
+  JSWINDOWACTORS.ZenBoosts = {
+    parent: {
+      esModuleURI: "resource:///actors/ZenBoostsParent.sys.mjs",
+    },
+    child: {
+      esModuleURI: "resource:///actors/ZenBoostsChild.sys.mjs",
+      events: {
+        DOMDocElementInserted: { capture: true },
+        unload: {},
+      },
+    },
+    allFrames: true,
+    remoteTypes: ["web", "file"],
+    enablePreference: "zen.boosts.enabled",
+  };
+}
+
 export let gZenActorsManager = {
   init() {
     ActorManagerParent.addJSProcessActors(JSPROCESSACTORS);

@@ -711,15 +711,16 @@ window.gZenCompactModeManager = {
       }
       element.setAttribute(attr, "true");
       if (element === this.sidebar) {
-        element.addEventListener(
-          "transitionend",
-          () => {
-            if (typeof UpdatePopupNotificationsVisibility === "function") {
-              UpdatePopupNotificationsVisibility();
-            }
-          },
-          { once: true }
-        );
+        const onSidebarTransitionEnd = event => {
+          if (event.target !== element) {
+            return;
+          }
+          element.removeEventListener("transitionend", onSidebarTransitionEnd);
+          if (typeof UpdatePopupNotificationsVisibility === "function") {
+            UpdatePopupNotificationsVisibility();
+          }
+        };
+        element.addEventListener("transitionend", onSidebarTransitionEnd);
       }
       if (
         isToolbar &&

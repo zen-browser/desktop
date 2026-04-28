@@ -389,15 +389,16 @@ window.gZenUIManager = {
       );
       this.__currentPopup = showEvent.target;
       this.__currentPopupTrackElement = el;
-      el.addEventListener(
-        "transitionend",
-        () => {
-          if (typeof UpdatePopupNotificationsVisibility === "function") {
-            UpdatePopupNotificationsVisibility();
-          }
-        },
-        { once: true }
-      );
+      const onTransitionEnd = event => {
+        if (event.target !== el) {
+          return;
+        }
+        el.removeEventListener("transitionend", onTransitionEnd);
+        if (typeof UpdatePopupNotificationsVisibility === "function") {
+          UpdatePopupNotificationsVisibility();
+        }
+      };
+      el.addEventListener("transitionend", onTransitionEnd);
       break;
     }
   },

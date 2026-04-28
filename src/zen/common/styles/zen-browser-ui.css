@@ -358,7 +358,8 @@
 
 .zen-folder-button,
 [data-zen-folder-icon],
-#zen-folders-list {
+#zen-folders-list,
+zen-folder {
   display: none;
 }
 
@@ -369,10 +370,8 @@
       brightness(0.8) !important;
   }
   
-  .zen-toolbar-background {
-    display: block !important;
+  #zen-appcontent-wrapper,
+  #navigator-toolbox {
     background: transparent !important;
-    backdrop-filter: blur(42px) saturate(110%) 
-      brightness(0.25) contrast(100%) !important;
   }
 }

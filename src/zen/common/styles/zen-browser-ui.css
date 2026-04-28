@@ -365,13 +365,20 @@ zen-folder {
 
 @media -moz-pref('zen.theme.acrylic-elements') {
   #navigator-toolbox {
+    --zen-navigator-toolbox-background: transparent !important;
     background: transparent !important;
-    backdrop-filter: blur(42px) saturate(110%) 
-      brightness(0.8) !important;
+    backdrop-filter: blur(42px) saturate(110%) brightness(0.8) !important;
   }
   
-  #zen-appcontent-wrapper,
-  #navigator-toolbox {
+  .zen-toolbar-background {
+    display: block !important;
+    position: fixed !important;
+    inset: 0 !important;
+    width: var(--zen-toolbox-max-width, 74px) !important;
+    height: 100vh !important;
+    z-index: -1 !important;
     background: transparent !important;
+    backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
+    pointer-events: none !important;
   }
 }

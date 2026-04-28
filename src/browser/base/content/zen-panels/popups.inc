@@ -609,10 +609,10 @@
     <hbox class="zen-tab-notes-buttons">
       <button class="zen-tab-notes-save footer-button primary"
               label="Save Note"
-              oncommand="gZenTabNotes.saveNote();" />
+              oncommand="window.gZenTabNotes.saveNote();" />
       <button class="zen-tab-notes-clear footer-button"
               label="Clear"
-              oncommand="gZenTabNotes.clearNote();" />
+              oncommand="window.gZenTabNotes.clearNote();" />
     </hbox>
   </vbox>
 </panel>

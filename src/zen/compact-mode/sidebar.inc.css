@@ -47,6 +47,15 @@
     margin-left: calc(var(--zen-element-separation) - 3px) !important;
   }
 
+  &[zen-single-toolbar='true']:not([zen-has-bookmarks]) {
+    #zen-appcontent-navbar-wrapper:not([should-hide='true']):not([zen-has-hover]):not([has-popup-menu]):not([zen-compact-mode-active]):not([flash-popup]) {
+      height: 0;
+      min-height: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+  }
+
   #navigator-toolbox {
     --zen-toolbox-max-width: 74px !important;
     --zen-compact-float: var(--zen-element-separation);

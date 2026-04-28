@@ -389,6 +389,15 @@ window.gZenUIManager = {
       );
       this.__currentPopup = showEvent.target;
       this.__currentPopupTrackElement = el;
+      el.addEventListener(
+        "transitionend",
+        () => {
+          if (typeof UpdatePopupNotificationsVisibility === "function") {
+            UpdatePopupNotificationsVisibility();
+          }
+        },
+        { once: true }
+      );
       break;
     }
   },

@@ -46,7 +46,7 @@ add_task(async function test_Workspace_Search_OneOff_Pref() {
     await UrlbarTestUtils.promisePopupClose(window);
 
     await SpecialPowers.pushPrefEnv({
-      set: [["zen.urlbar.suggestions.workspaces", false]],
+      set: [["browser.urlbar.shortcuts.workspaces", false]],
     });
 
     try {

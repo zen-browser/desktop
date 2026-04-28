@@ -358,7 +358,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
     const actionsResults = await this.#findMatchingActions(
       query,
       isPrefixed,
-      isWorkspaceSearch,
+      isWorkspaceSearch
     );
     if (!actionsResults.length) {
       return;
@@ -373,6 +373,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         zenCommand: action.command,
         dynamicType: DYNAMIC_TYPE_NAME,
         zenAction: true,
+        // eslint-disable-next-line no-nested-ternary
         query: isWorkspaceSearch
           ? action.extraPayload.prettyName
           : isPrefixed

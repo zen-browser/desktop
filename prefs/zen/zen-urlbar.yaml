@@ -40,5 +40,5 @@
 - name: zen.urlbar.suggestions.quick-actions
   value: true
 
-- name: zen.urlbar.suggestions.workspaces
+- name: browser.urlbar.shortcuts.workspaces
   value: true

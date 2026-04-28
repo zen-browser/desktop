@@ -3,55 +3,55 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-boost-edit-rename = 
-    .label = Rename Boost
+    .label = 重新命名
 zen-boost-edit-shuffle = 
-    .label = Shuffle Vibes
+    .label = 換個感覺
 zen-boost-edit-reset = 
-    .label = Reset All Edits
+    .label = 回復原狀
 zen-boost-edit-delete = 
-    .label = Delete Boost
-zen-boost-size = Size
+    .label = 刪除樣式
+zen-boost-size = 大小
 zen-boost-zap = Zap
-zen-boost-code = Code
-zen-boost-back = Back
+zen-boost-code = 樣式表
+zen-boost-back = 返回
 zen-boost-shuffle = 
-    .tooltiptext = Shuffle Boost Settings
+    .tooltiptext = 重骰設定
 zen-boost-invert = 
-    .tooltiptext = Smart Invert Colors
+    .tooltiptext = 反轉色調
 zen-boost-controls = 
-    .tooltiptext = Advanced Color Controls
+    .tooltiptext = 色調進階調整
 zen-boost-disable = 
-    .tooltiptext = Disable Color Adjustments
+    .tooltiptext = 禁用色調變動
 zen-boost-text-case-toggle = 
-    .tooltiptext = Toggle Text Case
+    .tooltiptext = 文字大小寫
 zen-boost-css-picker = 
-    .tooltiptext = Pick Selector
+    .tooltiptext = 挑選選擇器
 zen-boost-css-inspector = 
-    .tooltiptext = Open Inspector
-zen-bootst-color-contrast = Contrast
-zen-bootst-color-brightness = Brightness
-zen-bootst-color-original-saturation = Original Saturation
-zen-add-zap-helper = Click elements on the page to <b>Zap</b> them
-zen-remove-zap-helper = ← Click to Unzap
-zen-select-this = Insert selector for this
-zen-select-related = Insert selector for related
-zen-select-cancel = Cancel
-zen-zap-this = Zap this
-zen-zap-related = Zap all related elements
-zen-zap-cancel = Cancel
-zen-zap-done = Done
+    .tooltiptext = 開啟檢測器
+zen-bootst-color-contrast = 對比
+zen-bootst-color-brightness = 亮度
+zen-bootst-color-original-saturation = 飽和度
+zen-add-zap-helper = 選擇要 <b>Zap</b>的元素
+zen-remove-zap-helper = ← 按此取消zap
+zen-select-this = 加入此元素的選擇器
+zen-select-related = 加入關連元素的選擇器
+zen-select-cancel = 取消
+zen-zap-this = Zap
+zen-zap-related = Zap相關元素
+zen-zap-cancel = 取消
+zen-zap-done = 完成
 zen-unzap-tooltip =
     { $elementCount ->
-        [0] No elements zapped
-        [1] { $elementCount } element zapped
-       *[other] { $elementCount } elements zapped
+        [0] 無已Zap元素
+        [1] { $elementCount } 個元素已Zap
+       *[other] { $elementCount } 個元素已Zap
     }
 zen-boost-save = 
-    .tooltiptext = Export Boost
+    .tooltiptext = 匯出Boost
 zen-boost-load = 
-    .tooltiptext = Import Boost
-zen-panel-ui-boosts-exported-message = Boost exported!
-zen-site-data-boosts = Boosts
+    .tooltiptext = 匯入Boost
+zen-panel-ui-boosts-exported-message = Boost已匯出！
+zen-site-data-boosts = Boost
 zen-site-data-create-boost = 
-    .tooltiptext = Create new boost
-zen-boost-rename-boost-prompt = Rename Boost?
+    .tooltiptext = 建立新Boost
+zen-boost-rename-boost-prompt = 重新命名為？

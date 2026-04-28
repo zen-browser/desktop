@@ -362,11 +362,13 @@
     scroll-behavior: auto !important;
   }
 
-  /* Disable acrylic / blur effects */
-  #main-window,
-  #main-window * {
-    backdrop-filter: none !important;
-    -moz-backdrop-filter: none !important;
+  /* Astra - Allow acrylic blur effects when enabled */
+  @media not -moz-pref('zen.theme.acrylic-elements') {
+    #main-window,
+    #main-window * {
+      backdrop-filter: none !important;
+      -moz-backdrop-filter: none !important;
+    }
   }
 
   /* Block web fonts */

@@ -51,11 +51,6 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         return this.#fetchItemsViaApi(token);
       }
 
-      // GHE instances require a PAT — HTML scraping won't work without cookies
-      if (this.#isGitHubEnterprise) {
-        return "zen-live-folder-github-no-auth";
-      }
-
       if (!this.#hasAnyFilterEnabled) {
         return "zen-live-folder-github-no-filter";
       }

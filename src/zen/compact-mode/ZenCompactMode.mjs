@@ -710,6 +710,17 @@ window.gZenCompactModeManager = {
         }
       }
       element.setAttribute(attr, "true");
+      if (element === this.sidebar) {
+        element.addEventListener(
+          "transitionend",
+          () => {
+            if (typeof UpdatePopupNotificationsVisibility === "function") {
+              UpdatePopupNotificationsVisibility();
+            }
+          },
+          { once: true }
+        );
+      }
       if (
         isToolbar &&
         ((gZenVerticalTabsManager._hasSetSingleToolbar &&

@@ -13,10 +13,12 @@ add_task(async function test_Tab_Navigation() {
 
   let tabs = await addTabs(3);
 
-  let visible = Array.from(gBrowser.tabs).filter(t => !t.closing && t.visible);
-  is(visible.length, 4, "Should have 4 visible tabs");
+  let validTabs = Array.from(gBrowser.tabs).filter(
+    tab => !tab.closing && tab.visible && !tab.hasAttribute("busy")
+  );
+  is(validTabs.length, 4, "Should have 4 visible tabs");
 
-  gBrowser.selectedTab = visible[2];
+  gBrowser.selectedTab = validTabs[2];
 
   // Forward: 2 → 3
   await openCtrlTabPanel();
@@ -24,14 +26,14 @@ add_task(async function test_Tab_Navigation() {
   is(getCardCount(), 4, "Card count should match tab count");
   await closeCtrlTabPanel();
   is(getPanel().state, "closed", "Panel should be closed");
-  is(gBrowser.selectedTab, visible[3], "Forward should move to next tab");
+  is(gBrowser.selectedTab, validTabs[3], "Forward should move to next tab");
 
   // Forward wrap: 3 → 0
   await openCtrlTabPanel();
   await closeCtrlTabPanel();
   is(
     gBrowser.selectedTab,
-    visible[0],
+    validTabs[0],
     "Forward from last should wrap to first"
   );
 
@@ -40,19 +42,19 @@ add_task(async function test_Tab_Navigation() {
   await closeCtrlTabPanel();
   is(
     gBrowser.selectedTab,
-    visible[3],
+    validTabs[3],
     "Backward from first should wrap to last"
   );
 
   // Backward: 3 → 2
   await openCtrlTabPanel(true);
   await closeCtrlTabPanel();
-  is(gBrowser.selectedTab, visible[2], "Shift should go backward");
+  is(gBrowser.selectedTab, validTabs[2], "Shift should go backward");
 
   // Forward without switch: stays at 2
   await openCtrlTabPanel();
   await closeCtrlTabPanel(false);
-  is(gBrowser.selectedTab, visible[2], "close(false) should not switch");
+  is(gBrowser.selectedTab, validTabs[2], "close(false) should not switch");
 
   for (let tab of tabs) {
     BrowserTestUtils.removeTab(tab);
@@ -70,21 +72,23 @@ add_task(async function test_Multi_Navigate_While_Open() {
 
   let tabs = await addTabs(3);
 
-  let visible = Array.from(gBrowser.tabs).filter(t => !t.closing && t.visible);
-  gBrowser.selectedTab = visible[0];
+  let validTabs = Array.from(gBrowser.tabs).filter(
+    t => !t.closing && t.visible && !t.hasAttribute("busy")
+  );
+  gBrowser.selectedTab = validTabs[0];
 
   // Open, navigate forward twice, then close
   await openCtrlTabPanel();
   gZenCtrlTabPanel.navigateForward();
   gZenCtrlTabPanel.navigateForward();
   await closeCtrlTabPanel();
-  is(gBrowser.selectedTab, visible[3], "Two forwards should land 3 ahead");
+  is(gBrowser.selectedTab, validTabs[3], "Two forwards should land 3 ahead");
 
   // Open with shift, navigate backward, then close
   await openCtrlTabPanel(true);
   gZenCtrlTabPanel.navigateBackward();
   await closeCtrlTabPanel();
-  is(gBrowser.selectedTab, visible[1], "One backward should land 2 behind");
+  is(gBrowser.selectedTab, validTabs[1], "One backward should land 2 behind");
 
   for (let tab of tabs) {
     BrowserTestUtils.removeTab(tab);

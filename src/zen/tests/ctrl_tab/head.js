@@ -31,5 +31,7 @@ async function addTabs(n) {
 }
 
 function getCardCount() {
-  return document.getElementById("zen-ctrl-tab-panel-tabs")?.children.length ?? 0;
+  return (
+    document.getElementById("zen-ctrl-tab-panel-cards")?.children.length ?? 0
+  );
 }

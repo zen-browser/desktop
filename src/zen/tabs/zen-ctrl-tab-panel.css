@@ -85,7 +85,7 @@
   padding: 0 5px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 12px;
   height: var(--zen-ctrl-tab-panel-info-height);
   color: var(--zen-branding-bg-reverse);
   -moz-text-fill-color: var(--zen-branding-bg-reverse);
@@ -94,14 +94,15 @@
 .zen-ctrl-tab-panel-favicon {
   width: 20px;
   height: 20px;
-  flex-shrink: 0;
   -moz-context-properties: fill;
   fill: currentColor;
 }
 
 .zen-ctrl-tab-panel-title {
-  flex: 1;
   font-size: 16px;
   font-weight: 600;
-  cursor: pointer;
+  padding-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

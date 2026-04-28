@@ -41,25 +41,23 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       document.getElementById("zen-ctrl-tab-panel-cards")
     );
 
+    const onKeyDown = e => this.#handleKeyDown(e);
+    const onKeyUp = e => this.#handleKeyUp(e);
     const onTabClose = e => {
       const tabId = e.target.linkedPanel;
       URL.revokeObjectURL(this.#thumbnailCache.get(tabId));
       this.#thumbnailCache.delete(tabId);
     };
 
-    window.addEventListener("keydown", e => this.#handleKeyDown(e), true);
-    window.addEventListener("keyup", e => this.#handleKeyUp(e), true);
+    window.addEventListener("keydown", onKeyDown, true);
+    window.addEventListener("keyup", onKeyUp, true);
     window.addEventListener("TabClose", onTabClose);
 
     window.addEventListener(
       "unload",
       () => {
-        window.removeEventListener(
-          "keydown",
-          e => this.#handleKeyDown(e),
-          true
-        );
-        window.removeEventListener("keyup", e => this.#handleKeyUp(e), true);
+        window.removeEventListener("keydown", onKeyDown, true);
+        window.removeEventListener("keyup", onKeyUp, true);
         window.removeEventListener("TabClose", onTabClose);
       },
       { once: true }
@@ -135,18 +133,15 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     URL.revokeObjectURL(this.#thumbnailCache.get(currentId));
     this.#thumbnailCache.delete(currentId);
 
-    const currentTabIndex = lazy.sortByRecentlyUsed
+    const initialCardIndex = lazy.sortByRecentlyUsed
       ? 0
       : this.#tabList.indexOf(gBrowser.selectedTab);
 
     if (shiftKey) {
       this.#currentIndex =
-        currentTabIndex >= 0
-          ? (currentTabIndex - 1 + this.#tabList.length) % this.#tabList.length
-          : this.#tabList.length - 1;
+        (initialCardIndex - 1 + this.#tabList.length) % this.#tabList.length;
     } else {
-      this.#currentIndex =
-        currentTabIndex >= 0 ? (currentTabIndex + 1) % this.#tabList.length : 0;
+      this.#currentIndex = (initialCardIndex + 1) % this.#tabList.length;
     }
 
     this.#actualVisibleCards = Math.min(
@@ -322,10 +317,9 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       favicon.src = iconSrc;
       infoContainer.appendChild(favicon);
 
-      const title = document.createXULElement("label");
+      const title = document.createElement("div");
       title.className = "zen-ctrl-tab-panel-title";
-      title.setAttribute("value", tab.label);
-      title.setAttribute("crop", "end");
+      title.textContent = tab.label;
 
       infoContainer.appendChild(title);
       card.appendChild(infoContainer);
@@ -338,11 +332,9 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
         card.classList.add("zen-ctrl-tab-panel-selected");
       }
 
-      card.addEventListener("click", event => {
-        if (event.ctrlKey || event.metaKey) {
-          this.#currentIndex = index;
-          this.close();
-        }
+      card.addEventListener("click", () => {
+        this.#currentIndex = index;
+        this.close();
       });
 
       this.cardsContainer.appendChild(card);

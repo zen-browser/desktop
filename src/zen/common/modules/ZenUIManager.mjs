@@ -305,6 +305,15 @@ window.gZenUIManager = {
       gZenCompactModeManager._setElementExpandAttribute(el, true, "has-popup-menu");
       this.__currentPopup = showEvent.target;
       this.__currentPopupTrackElement = el;
+      el.addEventListener(
+        "transitionend",
+        () => {
+          if (typeof UpdatePopupNotificationsVisibility === "function") {
+            UpdatePopupNotificationsVisibility();
+          }
+        },
+        { once: true }
+      );
       break;
     }
   },

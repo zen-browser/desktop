@@ -187,10 +187,13 @@ document.addEventListener(
           if (panel) {
             panel.hidePopup();
           }
-          gBrowser.loadOneTab(url, {
-            inBackground: false,
-            triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
-          });
+          const tabbrowser = window.gBrowser;
+          if (tabbrowser) {
+            tabbrowser.selectedTab = tabbrowser.addTrustedTab(url, {
+              triggeringPrincipal: Services.scriptSecurityManager
+                .getSystemPrincipal(),
+            });
+          }
         } catch(e) {
           console.error("Astra: India Gov open error:", e);
         }
@@ -229,10 +232,13 @@ document.addEventListener(
           if (panel) {
             panel.hidePopup();
           }
-          gBrowser.loadOneTab(url, {
-            inBackground: false,
-            triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
-          });
+          const tabbrowser = window.gBrowser;
+          if (tabbrowser) {
+            tabbrowser.selectedTab = tabbrowser.addTrustedTab(url, {
+              triggeringPrincipal: Services.scriptSecurityManager
+                .getSystemPrincipal(),
+            });
+          }
         } catch(e) {
           console.error("Astra: App launcher open error:", e);
         }

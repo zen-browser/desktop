@@ -80,11 +80,3 @@ browser[zen-pseudo-hidden="true"] {
   -moz-subtree-hidden-only-visually: 1 !important;
 }
 
-@media -moz-pref('zen.theme.acrylic-elements') {
-  #navigator-toolbox,
-  #navigator-toolbox > *,
-  .zen-toolbar-background {
-    background: color-mix(in srgb, transparent 100%, transparent) !important;
-    backdrop-filter: blur(20px) saturate(180%) !important;
-  }
-}

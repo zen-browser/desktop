@@ -346,39 +346,5 @@
   order: 2;
 }
 
-/* Astra - Hide Create Space and Folder from menu */
-#zen-create-new-button {
-  display: none;
-}
 
-[command="cmd_zenOpenWorkspaceCreation"],
-[command="cmd_zenOpenFolderCreation"] {
-  display: none;
-}
 
-.zen-folder-button,
-[data-zen-folder-icon],
-#zen-folders-list,
-zen-folder {
-  display: none;
-}
-
-@media -moz-pref('zen.theme.acrylic-elements') {
-  #navigator-toolbox {
-    --zen-navigator-toolbox-background: transparent !important;
-    background: transparent !important;
-    backdrop-filter: blur(42px) saturate(110%) brightness(0.8) !important;
-  }
-  
-  .zen-toolbar-background {
-    display: block !important;
-    position: fixed !important;
-    inset: 0 !important;
-    width: var(--zen-toolbox-max-width, 74px) !important;
-    height: 100vh !important;
-    z-index: -1 !important;
-    background: transparent !important;
-    backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
-    pointer-events: none !important;
-  }
-}

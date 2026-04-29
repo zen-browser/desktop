@@ -117,7 +117,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     );
     window.addEventListener("TabSelect", this.onTabSelect.bind(this));
     this.initializeContextMenu();
-    this.insertIntoContextMenu();
 
     window.addEventListener(
       "AfterWorkspacesSessionRestore",
@@ -1163,33 +1162,27 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   /**
    * context menu item display update
    */
-  insetUpdateContextMenuItems() {
-    const contentAreaContextMenu = document.getElementById("tabContextMenu");
-    contentAreaContextMenu.addEventListener("popupshowing", () => {
-      let contextTab = TabContextMenu.contextTab;
-      if (!contextTab) {
-        return;
-      }
-      let selectedTabs = contextTab.multiselected
-        ? gBrowser.selectedTabs
-        : [contextTab];
-      let isExistingSplitView = selectedTabs.every(tab =>
-        tab.group?.hasAttribute("split-view-group")
-      );
-      const splitTabCommand = document.getElementById("context_zenSplitTabs");
-      document.l10n.setAttributes(splitTabCommand, "tab-zen-split-tabs", {
-        tabCount: isExistingSplitView ? -1 : selectedTabs.length,
-      });
-      if (isExistingSplitView) {
-        splitTabCommand.removeAttribute("hidden");
-        return;
-      }
-      if (!this.contextCanSplitTabs()) {
-        splitTabCommand.setAttribute("hidden", "true");
-      } else {
-        splitTabCommand.removeAttribute("hidden");
-      }
+  updateContextMenuItems() {
+    let contextTab = TabContextMenu.contextTab;
+    let selectedTabs = contextTab.multiselected
+      ? gBrowser.selectedTabs
+      : [contextTab];
+    let isExistingSplitView = selectedTabs.every(tab =>
+      tab.group?.hasAttribute("split-view-group")
+    );
+    const splitTabCommand = document.getElementById("context_zenSplitTabs");
+    document.l10n.setAttributes(splitTabCommand, "tab-zen-split-tabs", {
+      tabCount: isExistingSplitView ? -1 : selectedTabs.length,
     });
+    if (isExistingSplitView) {
+      splitTabCommand.removeAttribute("hidden");
+      return;
+    }
+    if (!this.contextCanSplitTabs()) {
+      splitTabCommand.setAttribute("hidden", "true");
+    } else {
+      splitTabCommand.removeAttribute("hidden");
+    }
   }
 
   /**
@@ -1210,7 +1203,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    */
   initializeContextMenu() {
     this.insertSplitViewTabContextMenu();
-    this.insetUpdateContextMenuItems();
+    this.insertIntoContextMenu();
   }
 
   /**
@@ -1252,7 +1245,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     let currentTab = TabContextMenu.contextTab || gBrowser.selectedTab;
     if (currentTab.multiselected) {
       tabs = gBrowser.selectedTabs;
-    } else if (!currentTab.selected) {
+    } else if (!currentTab.selected && !currentTab.splitView) {
       tabs = [
         currentTab,
         ...gBrowser.selectedTabs.filter(t => t !== currentTab),
@@ -1263,11 +1256,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     if (otherTabHint && !tabs.includes(otherTabHint)) {
       tabs.push(otherTabHint);
     }
-    if (tabs.length < 2) {
-      gBrowser.selectedTab = tabs[0];
-      this.createEmptySplit();
-      return;
-    }
     // If all are already in a split view, we unsplit them first.
     if (tabs.every(tab => tab.splitView)) {
       for (const tab of tabs) {
@@ -1275,6 +1263,11 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           this.removeTabFromGroup(tab);
         }
       }
+      return;
+    }
+    if (tabs.length < 2) {
+      gBrowser.selectedTab = tabs[0];
+      this.createEmptySplit();
       return;
     }
     this.splitTabs(tabs);

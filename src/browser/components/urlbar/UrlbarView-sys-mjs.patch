@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarView.sys.mjs b/browser/components/urlbar/UrlbarView.sys.mjs
-index b665adb1a1ce8bbae8df4cbea6c3248c3e4fb431..7a73907957d38caba5b650749abf80a01b51559d 100644
+index b665adb1a1ce8bbae8df4cbea6c3248c3e4fb431..1de7f9461b8ccbd4680b917e6dd5ba3c02f69a94 100644
 --- a/browser/components/urlbar/UrlbarView.sys.mjs
 +++ b/browser/components/urlbar/UrlbarView.sys.mjs
 @@ -640,7 +640,7 @@ export class UrlbarView {
@@ -11,7 +11,18 @@ index b665adb1a1ce8bbae8df4cbea6c3248c3e4fb431..7a73907957d38caba5b650749abf80a0
          // Try to reuse the cached top-sites context. If it's not cached, then
          // there will be a gap of time between when the input is focused and
          // when the view opens that can be perceived as flicker.
-@@ -2988,6 +2988,8 @@ export class UrlbarView {
+@@ -777,10 +777,6 @@ export class UrlbarView {
+     }
+ 
+     // If search mode isn't active, close the view.
+-    if (!this.input.searchMode) {
+-      this.close();
+-      return;
+-    }
+ 
+     // Search mode is active.  If the one-offs should be shown, make sure they
+     // are enabled and show the view.
+@@ -2988,6 +2984,8 @@ export class UrlbarView {
        if (row?.hasAttribute("row-selectable")) {
          row?.toggleAttribute("selected", true);
        }
@@ -20,7 +31,7 @@ index b665adb1a1ce8bbae8df4cbea6c3248c3e4fb431..7a73907957d38caba5b650749abf80a0
        if (element != row) {
          row?.toggleAttribute("descendant-selected", true);
        }
-@@ -3477,7 +3479,7 @@ export class UrlbarView {
+@@ -3477,7 +3475,7 @@ export class UrlbarView {
    }
  
    #enableOrDisableRowWrap() {

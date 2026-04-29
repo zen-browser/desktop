@@ -10,7 +10,7 @@
   z-index: 999;
 
   will-change: transform, opacity;
-  contain: content;
+  contain: layout style;
 
   top: 15px;
   padding: 12px;

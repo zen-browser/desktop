@@ -76,13 +76,6 @@ class nsZenWorkspaces {
   }
 
   async init() {
-    // Initialize tab selection state
-    this._tabSelectionState = {
-      inProgress: false,
-      lastSelectionTime: 0,
-      debounceTime: 100, // ms to wait between tab selections
-    };
-
     // Initialize workspace change mutex
     this._workspaceChangeInProgress = false;
 
@@ -218,42 +211,7 @@ class nsZenWorkspaces {
     return true;
   }
 
-  // Safely select a tab with debouncing to prevent race conditions
-  async _safelySelectTab(tab) {
-    if (!tab || tab.closing || !tab.ownerGlobal || tab.ownerGlobal.closed) {
-      return false;
-    }
-
-    // Check if we need to debounce
-    const now = Date.now();
-    const timeSinceLastSelection =
-      now - this._tabSelectionState.lastSelectionTime;
-
-    if (timeSinceLastSelection < this._tabSelectionState.debounceTime) {
-      await new Promise(resolve =>
-        setTimeout(
-          resolve,
-          this._tabSelectionState.debounceTime - timeSinceLastSelection
-        )
-      );
-    }
-
-    // Mark selection as in progress
-    this._tabSelectionState.inProgress = true;
-
-    try {
-      gBrowser.selectedTab = tab;
-      this._tabSelectionState.lastSelectionTime = Date.now();
-      return true;
-    } catch (e) {
-      console.error("Error selecting tab:", e);
-      return false;
-    } finally {
-      this._tabSelectionState.inProgress = false;
-    }
-  }
-
-  async selectEmptyTab(newTabTarget = null) {
+  selectEmptyTab(newTabTarget = null) {
     // Validate browser state first
     if (!this._validateBrowserState()) {
       console.warn("Browser state invalid for empty tab selection");
@@ -273,12 +231,7 @@ class nsZenWorkspaces {
         !this._emptyTab.ownerGlobal.closed &&
         gZenVerticalTabsManager._canReplaceNewTab
       ) {
-        // Safely switch to the empty tab using our debounced method
-        const success = await this._safelySelectTab(this._emptyTab);
-        if (!success) {
-          throw new Error("Failed to select empty tab");
-        }
-
+        gBrowser.selectedTab = this._emptyTab;
         return this._emptyTab;
       }
 
@@ -861,7 +814,6 @@ class nsZenWorkspaces {
       return;
     }
     await this.promiseInitialized;
-    let shownEmptyTab = false;
     let resolveSelectPromise;
     let selectPromise = new Promise(resolve => {
       resolveSelectPromise = resolve;
@@ -871,7 +823,6 @@ class nsZenWorkspaces {
       delete this._tabToSelect;
       delete this._tabToRemoveForEmpty;
       delete this._shouldOverrideTabs;
-      delete this._keepSelectedTab;
       resolveSelectPromise();
     };
 
@@ -908,35 +859,32 @@ class nsZenWorkspaces {
         tabs[this._tabToSelect] !== this._tabToRemoveForEmpty
       ) {
         this.log(`Found tab to select: ${this._tabToSelect}, ${tabs.length}`);
-        setTimeout(() => {
-          let tabToUse = gZenGlanceManager.getTabOrGlanceParent(
-            tabs[this._tabToSelect + 1] || this._emptyTab
-          );
-          gBrowser.selectedTab = tabToUse;
-          this._removedByStartupPage = true;
-          gBrowser.removeTab(this._tabToRemoveForEmpty, {
-            skipSessionStore: true,
-          });
-          cleanup();
-        }, 0);
+        let tabToUse = gZenGlanceManager.getTabOrGlanceParent(
+          tabs[this._tabToSelect + 1] || this._emptyTab
+        );
+        gBrowser.selectedTab = tabToUse;
+        this._removedByStartupPage = true;
+        gBrowser.removeTab(this._tabToRemoveForEmpty, {
+          skipSessionStore: true,
+        });
+        cleanup();
       } else {
-        if (!this._keepSelectedTab) {
+        if (gBrowser.selectedTab === this._tabToRemoveForEmpty) {
+          this.log(
+            "Selecting empty tab because startup page didnt select a valid tab"
+          );
           this.selectEmptyTab();
-          shownEmptyTab = true;
         }
-        setTimeout(() => {
-          this._removedByStartupPage = true;
-          gBrowser.removeTab(this._tabToRemoveForEmpty, {
-            skipSessionStore: true,
-            animate: false,
-          });
-          cleanup();
-        }, 0);
+        this.log("Removing empty tab added by startup page");
+        this._removedByStartupPage = true;
+        gBrowser.removeTab(this._tabToRemoveForEmpty, {
+          skipSessionStore: true,
+          animate: false,
+        });
+        cleanup();
       }
     } else {
-      setTimeout(() => {
-        cleanup();
-      }, 0);
+      cleanup();
     }
 
     await selectPromise;
@@ -952,21 +900,20 @@ class nsZenWorkspaces {
       "zen.urlbar.open-on-startup",
       true
     );
-    shownEmptyTab &&= openOnStartup;
+    let shownEmptyTab =
+      gBrowser.selectedTab.hasAttribute("zen-empty-tab") && openOnStartup;
     initialTabWasEmpty &&= openOnStartup;
 
     // Wait for the next event loop to ensure that the startup focus logic by
     // firefox has finished doing it's thing.
     setTimeout(() => {
-      setTimeout(() => {
-        if (gZenVerticalTabsManager._canReplaceNewTab && shownEmptyTab) {
-          BrowserCommands.openTab();
-        } else if (shownEmptyTab || initialTabWasEmpty) {
-          openLocation();
-        } else {
-          gBrowser.selectedBrowser.focus();
-        }
-      });
+      if (gZenVerticalTabsManager._canReplaceNewTab && shownEmptyTab) {
+        BrowserCommands.openTab();
+      } else if (shownEmptyTab || initialTabWasEmpty) {
+        openLocation();
+      } else {
+        gBrowser.selectedBrowser.focus();
+      }
     });
 
     if (
@@ -3287,7 +3234,7 @@ class nsZenWorkspaces {
         }
         if (!workspaceToSwitch) {
           console.error("No workspace found for tab, cannot switch");
-          await this._safelySelectTab(tab);
+          gBrowser.selectedTab = tab;
           return;
         }
 
@@ -3302,7 +3249,7 @@ class nsZenWorkspaces {
       }
 
       // Safely switch to the tab using our debounced method
-      await this._safelySelectTab(tab);
+      gBrowser.selectedTab = tab;
     } catch (e) {
       console.error("Error in switchTabIfNeeded:", e);
     }

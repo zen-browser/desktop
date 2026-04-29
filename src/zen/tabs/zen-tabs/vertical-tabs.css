@@ -1089,7 +1089,7 @@
 
     &:active,
     &[open] {
-      scale: 0.99;
+      scale: 0.985;
     }
 
     &[in-urlbar] {

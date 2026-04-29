@@ -8,7 +8,7 @@
 /**
  * @brief Common utility functions for Zen.
  */
-[scriptable, uuid(d034642a-43b1-4814-be1c-8ad75e337c84)]
+[scriptable, uuid(0670dd29-db27-4cb5-ba6d-eff88cc469b0)]
 interface nsIZenCommonUtils : nsISupports {
   /*
    * @brief Share using the native share dialog.
@@ -32,4 +32,9 @@ interface nsIZenCommonUtils : nsISupports {
    * @brief Play a single haptic feedback note if supported.
    */
   void playHapticFeedback();
+  /*
+   * @brief Set the macOS app icon from a bundled asset catalog image.
+   *        Passing empty strings restores the bundled default icon.
+   */
+  void setMacOSAppIcon(in AString iconBundlePath, in AString iconName);
 };

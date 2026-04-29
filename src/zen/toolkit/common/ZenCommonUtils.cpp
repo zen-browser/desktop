@@ -70,6 +70,12 @@ ZenCommonUtils::PlayHapticFeedback() {
 }
 
 NS_IMETHODIMP
+ZenCommonUtils::SetMacOSAppIcon(const nsAString& aIconBundlePath,
+                                const nsAString& aIconName) {
+  return SetMacOSAppIconInternal(aIconBundlePath, aIconName);
+}
+
+NS_IMETHODIMP
 ZenCommonUtils::CanShare(bool* canShare) {
   auto aWindow = GetMostRecentWindow();
   if (!aWindow) {

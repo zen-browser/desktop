@@ -61,6 +61,31 @@
                       data-l10n-id="zen-look-and-feel-compact-toolbar-flash-popup"
                       preference="zen.view.compact.toolbar-flash-popup"/>
       </vbox>
+
+#ifdef XP_MACOSX
+      <label><html:h2 data-l10n-id="zen-look-and-feel-app-icon-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-look-and-feel-app-icon-description" />
+
+      <hbox id="zenMacOSAppIconSetting" align="center">
+            <html:div class="zenAppIconPreviewFrame">
+                  <html:img id="zenLooksAndFeelMacOSAppIconPreview"
+                            src="chrome://branding/content/icon48.png" />
+            </html:div>
+
+            <vbox flex="1">
+                  <label data-l10n-id="zen-look-and-feel-app-icon-label"/>
+                  <menulist id="zenLooksAndFeelMacOSAppIconVariant"
+                            preference="zen.widget.macos.app-icon-variant">
+                        <menupopup>
+                              <menuitem data-l10n-id="zen-look-and-feel-app-icon-default"
+                                        value="default"/>
+                              <menuitem data-l10n-id="zen-look-and-feel-app-icon-alternate"
+                                        value="alternate"/>
+                        </menupopup>
+                  </menulist>
+            </vbox>
+      </hbox>
+#endif
 </groupbox>
 
 <hbox id="zenGlanceCategory"

@@ -97,6 +97,30 @@ groupbox h2 {
   margin-top: 15px;
 }
 
+#zenMacOSAppIconSetting {
+  gap: 16px;
+  margin-block: 10px 14px;
+
+  & .zenAppIconPreviewFrame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    min-width: 80px;
+    height: 80px;
+    border: 1px solid var(--zen-colors-border);
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--zen-colors-tertiary) 70%, transparent);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+
+  & #zenLooksAndFeelMacOSAppIconPreview {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+  }
+}
+
 .zen-compact-mode-styles-browser-wrapper {
   width: 55%;
   height: 60px;

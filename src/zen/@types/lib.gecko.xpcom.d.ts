@@ -19519,6 +19519,7 @@ declare global {
     ): void;
     canShare(): boolean;
     playHapticFeedback(): void;
+    setMacOSAppIcon(iconBundlePath: string, iconName: string): void;
   }
 
   // https://searchfox.org/mozilla-central/source/zen/drag-and-drop/nsIZenDragAndDrop.idl

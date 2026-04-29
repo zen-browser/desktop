@@ -644,6 +644,11 @@ var gZenMarketplaceManager = {
 
 const kZenExtendedSidebar = "zen.view.sidebar-expanded";
 const kZenSingleToolbar = "zen.view.use-single-toolbar";
+const kZenMacOSAppIconVariant = "zen.widget.macos.app-icon-variant";
+const kZenMacOSAppIconPreviewSrcByVariant = {
+  default: "chrome://branding/content/icon48.png",
+  alternate: "chrome://browser/content/zen-images/app-icons/alternate-preview.png",
+};
 
 var gZenLooksAndFeel = {
   init() {
@@ -652,18 +657,24 @@ var gZenLooksAndFeel = {
     }
     this.__hasInitialized = true;
     gZenMarketplaceManager.init();
-    for (const pref of [kZenExtendedSidebar, kZenSingleToolbar]) {
+    for (const pref of [kZenExtendedSidebar, kZenSingleToolbar, kZenMacOSAppIconVariant]) {
       Services.prefs.addObserver(pref, this);
     }
     window.addEventListener("unload", () => {
-      for (const pref of [kZenExtendedSidebar, kZenSingleToolbar]) {
+      for (const pref of [kZenExtendedSidebar, kZenSingleToolbar, kZenMacOSAppIconVariant]) {
         Services.prefs.removeObserver(pref, this);
       }
     });
     this.applySidebarLayout();
+    this.applyMacOSAppIconPreview();
   },
 
-  observe() {
+  observe(_subject, _topic, data) {
+    if (data == kZenMacOSAppIconVariant) {
+      this.applyMacOSAppIconPreview();
+      return;
+    }
+
     this.applySidebarLayout();
   },
 
@@ -707,6 +718,19 @@ var gZenLooksAndFeel = {
         Services.prefs.setBoolPref(kZenSingleToolbar, layout.getAttribute("layout") == "single");
       });
     }
+  },
+
+  applyMacOSAppIconPreview() {
+    const preview = document.getElementById("zenLooksAndFeelMacOSAppIconPreview");
+    if (!preview) {
+      return;
+    }
+
+    const variant = Services.prefs.getStringPref(kZenMacOSAppIconVariant, "default");
+    const variantPreviewSrc = kZenMacOSAppIconPreviewSrcByVariant[variant];
+    const defaultPreviewSrc = kZenMacOSAppIconPreviewSrcByVariant.default;
+    const previewSrc = variantPreviewSrc ?? defaultPreviewSrc;
+    preview.setAttribute("src", previewSrc);
   },
 };
 
@@ -1134,6 +1158,11 @@ Preferences.addAll([
     id: "zen.view.compact.toolbar-flash-popup",
     type: "bool",
     default: true,
+  },
+  {
+    id: "zen.widget.macos.app-icon-variant",
+    type: "string",
+    default: "default",
   },
   {
     id: "zen.workspaces.hide-default-container-indicator",

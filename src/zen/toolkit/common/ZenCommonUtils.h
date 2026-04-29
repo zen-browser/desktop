@@ -51,8 +51,15 @@ class ZenCommonUtils final : public nsIZenCommonUtils {
     // No-op on non-macOS platforms
     return NS_OK;
   }
+  static auto SetMacOSAppIconInternal(const nsAString& aIconBundlePath,
+                                      const nsAString& aIconName) -> nsresult {
+    // No-op on non-macOS platforms
+    return NS_OK;
+  }
 #else
   static auto PlayHapticFeedbackInternal() -> nsresult;
+  static auto SetMacOSAppIconInternal(const nsAString& aIconBundlePath,
+                                      const nsAString& aIconName) -> nsresult;
 #endif
 };
 

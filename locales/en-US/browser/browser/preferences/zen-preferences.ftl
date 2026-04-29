@@ -48,6 +48,14 @@ zen-look-and-feel-compact-view-top-toolbar =
 zen-look-and-feel-compact-toolbar-flash-popup =
     .label = Briefly make the toolbar popup when switching or opening new tabs in compact mode
 
+zen-look-and-feel-app-icon-header = App Icon
+zen-look-and-feel-app-icon-description = Change the icon used by the running app on macOS
+zen-look-and-feel-app-icon-label = Variant
+zen-look-and-feel-app-icon-default =
+    .label = Default
+zen-look-and-feel-app-icon-alternate =
+    .label = Alternative
+
 pane-zen-tabs-title = Tab Management
 category-zen-workspaces =
     .tooltiptext = { pane-zen-tabs-title }

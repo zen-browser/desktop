@@ -3,3 +3,5 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 category browser-before-ui-startup resource:///modules/ZenActorsManager.sys.mjs gZenActorsManager.init
+category browser-before-ui-startup resource:///modules/ZenAppIcon.sys.mjs ZenAppIcon.init
+category browser-quit-application-granted resource:///modules/ZenAppIcon.sys.mjs ZenAppIcon.uninit

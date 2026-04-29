@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/content/UrlbarInput.mjs b/browser/components/urlbar/content/UrlbarInput.mjs
-index b23244f9d3278918b016bb3fcab19687bc2e292a..0bcb63f7abaf406077b52469eb913fcb75ba13f8 100644
+index b23244f9d3278918b016bb3fcab19687bc2e292a..e5de81b3060a1ee76b1a6aff2e4ae1ca50f2caa9 100644
 --- a/browser/components/urlbar/content/UrlbarInput.mjs
 +++ b/browser/components/urlbar/content/UrlbarInput.mjs
 @@ -90,6 +90,13 @@ const lazy = XPCOMUtils.declareLazy({
@@ -294,20 +294,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..0bcb63f7abaf406077b52469eb913fcb
        l10nId,
        l10nId == "urlbar-placeholder-with-name"
          ? { name: engineName }
-@@ -4891,6 +5012,12 @@ export class UrlbarInput extends HTMLElement {
- 
-   _on_blur(event) {
-     lazy.logger.debug("Blur Event");
-+    if (
-+      this.document.commandDispatcher.focusedElement == this.inputField &&
-+      !lazy.UrlbarPrefs.get("closeOnWindowBlur")
-+    ) {
-+      return;
-+    }
-     // We cannot count every blur events after a missed engagement as abandoment
-     // because the user may have clicked on some view element that executes
-     // a command causing a focus change. For example opening preferences from
-@@ -4964,6 +5091,11 @@ export class UrlbarInput extends HTMLElement {
+@@ -4964,6 +5085,11 @@ export class UrlbarInput extends HTMLElement {
    }
  
    _on_click(event) {
@@ -319,7 +306,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..0bcb63f7abaf406077b52469eb913fcb
      switch (event.target) {
        case this.inputField:
        case this._inputContainer:
-@@ -5042,7 +5174,7 @@ export class UrlbarInput extends HTMLElement {
+@@ -5042,7 +5168,7 @@ export class UrlbarInput extends HTMLElement {
        }
      }
  
@@ -328,7 +315,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..0bcb63f7abaf406077b52469eb913fcb
        this.view.autoOpen({ event });
      } else {
        if (this._untrimOnFocusAfterKeydown) {
-@@ -5082,9 +5214,16 @@ export class UrlbarInput extends HTMLElement {
+@@ -5082,9 +5208,16 @@ export class UrlbarInput extends HTMLElement {
    }
  
    _on_mousedown(event) {
@@ -346,7 +333,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..0bcb63f7abaf406077b52469eb913fcb
          if (
            event.composedTarget != this.inputField &&
            event.composedTarget != this._inputContainer
-@@ -5094,6 +5233,10 @@ export class UrlbarInput extends HTMLElement {
+@@ -5094,6 +5227,10 @@ export class UrlbarInput extends HTMLElement {
  
          this.focusedViaMousedown = !this.focused;
          this._preventClickSelectsAll = this.focused;
@@ -357,7 +344,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..0bcb63f7abaf406077b52469eb913fcb
  
          // Keep the focus status, since the attribute may be changed
          // upon calling this.focus().
-@@ -5129,7 +5272,7 @@ export class UrlbarInput extends HTMLElement {
+@@ -5129,7 +5266,7 @@ export class UrlbarInput extends HTMLElement {
          }
          // Don't close the view when clicking on a tab; we may want to keep the
          // view open on tab switch, and the TabSelect event arrived earlier.
@@ -366,7 +353,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..0bcb63f7abaf406077b52469eb913fcb
            break;
          }
  
-@@ -5411,7 +5554,7 @@ export class UrlbarInput extends HTMLElement {
+@@ -5411,7 +5548,7 @@ export class UrlbarInput extends HTMLElement {
      // When we are in actions search mode we can show more results so
      // increase the limit.
      let maxResults =

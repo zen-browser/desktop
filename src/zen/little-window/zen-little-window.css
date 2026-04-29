@@ -22,7 +22,7 @@
 
   &[zen-has-empty-tab="true"] {
     /* Keep in sync with URLBAR_HEIGHT in ZenLittleWindow.sys.mjs */
-    --zen-minimum-window-height: 340px;
+    --zen-minimum-window-height: 40px;
     min-width: unset !important;
 
     #zen-appcontent-wrapper {

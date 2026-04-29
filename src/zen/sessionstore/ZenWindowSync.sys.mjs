@@ -206,18 +206,18 @@ class nsZenWindowSync {
    * @param {Window} aWindow - The browser window that is about to be shown.
    */
   #onWindowBeforeShow(aWindow) {
-    if (
-      aWindow.gZenWindowSync ||
-      aWindow.document.documentElement.hasAttribute("zen-unsynced-window")
-    ) {
-      return;
-    }
     if (aWindow._zenStartupLittleWindow) {
       aWindow.document.documentElement.setAttribute(
         "zen-little-window",
         "true"
       );
       delete aWindow._zenStartupLittleWindow;
+    }
+    if (
+      aWindow.gZenWindowSync ||
+      aWindow.document.documentElement.hasAttribute("zen-unsynced-window")
+    ) {
+      return;
     }
     this.log("Setting up window sync for window", aWindow);
     // There are 2 possibilities to know if we are trying to open

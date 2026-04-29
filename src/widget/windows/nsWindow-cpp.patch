@@ -1,0 +1,59 @@
+diff --git a/widget/windows/nsWindow.cpp b/widget/windows/nsWindow.cpp
+index baed7d09e31291b26a1d0a1ddfd63b57f0ce67d0..9daa1140e9538427d002c6f8ff99cd68265249cc 100644
+--- a/widget/windows/nsWindow.cpp
++++ b/widget/windows/nsWindow.cpp
+@@ -1761,28 +1761,33 @@ void nsWindow::Show(bool aState) {
+         // cursor.
+         SetCursor(Cursor{eCursor_standard});
+ 
+-        switch (mFrameState->GetSizeMode()) {
+-          case nsSizeMode_Fullscreen:
+-            ::ShowWindow(mWnd, SW_SHOW);
+-            break;
+-          case nsSizeMode_Maximized:
+-            ::ShowWindow(mWnd, SW_SHOWMAXIMIZED);
+-            break;
+-          case nsSizeMode_Minimized:
+-            ::ShowWindow(mWnd, SW_SHOWMINIMIZED);
+-            break;
+-          default:
+-            if (CanTakeFocus() &&
+-                (!mAlwaysOnTop || mPiPType == PiPType::DocumentPiP)) {
+-              ::ShowWindow(mWnd, SW_SHOWNORMAL);
+-            } else {
+-              ::ShowWindow(mWnd, SW_SHOWNOACTIVATE);
+-              // Don't flicker the window if we're restoring session
+-              if (!sIsRestoringSession) {
+-                (void)GetAttention(2);
++        // Zen: skip the actual ShowWindow() call when window-control
++        // has the widget locked-hidden; mIsVisible is already set above
++        // so Mozilla's bookkeeping treats the widget as shown.
++        if (!mZenShowLocked) {
++          switch (mFrameState->GetSizeMode()) {
++            case nsSizeMode_Fullscreen:
++              ::ShowWindow(mWnd, SW_SHOW);
++              break;
++            case nsSizeMode_Maximized:
++              ::ShowWindow(mWnd, SW_SHOWMAXIMIZED);
++              break;
++            case nsSizeMode_Minimized:
++              ::ShowWindow(mWnd, SW_SHOWMINIMIZED);
++              break;
++            default:
++              if (CanTakeFocus() &&
++                  (!mAlwaysOnTop || mPiPType == PiPType::DocumentPiP)) {
++                ::ShowWindow(mWnd, SW_SHOWNORMAL);
++              } else {
++                ::ShowWindow(mWnd, SW_SHOWNOACTIVATE);
++                // Don't flicker the window if we're restoring session
++                if (!sIsRestoringSession) {
++                  (void)GetAttention(2);
++                }
+               }
+-            }
+-            break;
++              break;
++          }
+         }
+ 
+         if (!mHasBeenShown) {

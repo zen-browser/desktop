@@ -1,0 +1,18 @@
+diff --git a/widget/gtk/nsWindow.cpp b/widget/gtk/nsWindow.cpp
+index 89950bd72c77ed961e59faa2fadb8f21a78fd23a..8c74bfa08af3c16cc05e11ea34902cbcdde3c64a 100644
+--- a/widget/gtk/nsWindow.cpp
++++ b/widget/gtk/nsWindow.cpp
+@@ -1076,7 +1076,12 @@ void nsWindow::Show(bool aState) {
+   }
+ #endif
+ 
+-  NativeShow(aState);
++  // Zen: skip the actual GTK show when window-control has the widget
++  // locked-hidden; mIsShown is already set above so Mozilla's
++  // bookkeeping treats the widget as shown.
++  if (!(aState && mZenShowLocked)) {
++    NativeShow(aState);
++  }
+   RefreshWindowClass();
+ }
+ 

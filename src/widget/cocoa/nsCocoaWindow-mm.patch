@@ -1,0 +1,27 @@
+diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
+index 515177a3a97094142593a98fb1b3023acf1ccb87..fb6f932547f9523a240f95915b7440dcdfa16975 100644
+--- a/widget/cocoa/nsCocoaWindow.mm
++++ b/widget/cocoa/nsCocoaWindow.mm
+@@ -5240,7 +5240,7 @@ static unsigned int WindowMaskForBorderStyle(BorderStyle aBorderStyle) {
+       // calls to ...orderFront: in TRY blocks.  See bmo bug 470864.
+       NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
+       mWindow.contentView.needsDisplay = YES;
+-      if (!nativeParentWindow || mPopupLevel != PopupLevel::Parent) {
++      if (!mZenShowLocked && (!nativeParentWindow || mPopupLevel != PopupLevel::Parent)) {
+         [mWindow orderFront:nil];
+       }
+       NS_OBJC_END_TRY_IGNORE_BLOCK;
+@@ -5287,7 +5287,12 @@ static unsigned int WindowMaskForBorderStyle(BorderStyle aBorderStyle) {
+       // We don't want most alwaysontop / alert windows to pull focus when
+       // they're opened, as these tend to be for peripheral indicators and
+       // displays.
+-      if ((mAlwaysOnTop && mPiPType != PiPType::DocumentPiP) || mIsAlert) {
++      if (mZenShowLocked) {
++        // Zen: window-control service has this widget locked-hidden;
++        // skip the native order-front but let the rest of Show()'s
++        // bookkeeping run normally.
++      } else if ((mAlwaysOnTop && mPiPType != PiPType::DocumentPiP) ||
++                 mIsAlert) {
+         [mWindow orderFront:nil];
+       } else {
+         [mWindow makeKeyAndOrderFront:nil];

@@ -2,6 +2,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
+import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
+
+const lazy = {};
+
+XPCOMUtils.defineLazyServiceGetter(
+  lazy,
+  "ZenWindowControl",
+  "@mozilla.org/zen/window-control;1",
+  Ci.nsIZenWindowControl
+);
+
 const URLBAR_HEIGHT = 340;
 const URLBAR_WIDTH = 640;
 
@@ -10,34 +22,8 @@ const FEATURES =
   `resizable,minimizable,scrollbars,width=${URLBAR_WIDTH},height=${URLBAR_HEIGHT},centerscreen`;
 
 class nsZenLittleWindow {
-  #initialized = false;
-
-  init() {
-    if (this.#initialized) {
-      return;
-    }
-    this.#initialized = true;
-    Services.obs.addObserver(this, "browser-window-before-show");
-  }
-
-  uninit() {
-    if (!this.#initialized) {
-      return;
-    }
-    this.#initialized = false;
-    try {
-      Services.obs.removeObserver(this, "browser-window-before-show");
-    } catch (e) {}
-  }
-
-  observe(subject, topic) {
-    if (
-      topic === "browser-window-before-show" &&
-      this.#isLittleWindow(subject)
-    ) {
-      this.#attachAutoclose(subject);
-    }
-  }
+  init() {}
+  uninit() {}
 
   /**
    * Open a fresh little window, or focus an existing empty one if there
@@ -53,15 +39,15 @@ class nsZenLittleWindow {
         return win;
       }
     }
-    if (typeof opener?.OpenBrowserWindow !== "function") {
-      return null;
-    }
     let win = opener.OpenBrowserWindow({
       zenLittleWindow: true,
       all: false,
       features: FEATURES,
     });
-    win.focus();
+    win.windowUtils.suppressAnimation(true);
+      // Hide the OS-level window until the floating urlbar is ready, so the
+      // user never sees a half-laid-out chrome flash on top.
+      lazy.ZenWindowControl.hide(win);
     return win;
   }
 
@@ -87,23 +73,66 @@ class nsZenLittleWindow {
     }
   }
 
-  #attachAutoclose(win) {
-    const onClosed = event => {
-      if (event.detail?.onElementPicked && event.type === "ZenURLBarClosed") {
+  onLittleWindow(win) {
+    if (!this.#isLittleWindow(win)) {
+      return;
+    }
+    const observer = new win.ResizeObserver(entries => {
+      if (win.closed) {
         return;
       }
-      if (!win.closed && this.#isOnEmptyTab(win)) {
+      for (const entry of entries) {
+        if (entry.target.id === "urlbar") {
+          const { width, height } = entry.target.getBoundingClientRect();
+          win.resizeTo(width, height);
+        }
+      }
+    });
+    const onClosed = event => {
+      observer.disconnect();
+      if (!win.closed && !event.detail?.onElementPicked) {
+        lazy.ZenWindowControl.hide(win);
         win.close();
       } else {
-        // Resize window back to normal size
-        win.resizeTo(1240, 840);
+        const [width, height] = [1000, 600];
+        win.setResizable(true);
+        win.resizeTo(1000, 600);
+win.docShell.treeOwner
+        .QueryInterface(Ci.nsIInterfaceRequestor)
+        .getInterface(Ci.nsIAppWindow)
+        .center(null, true, true)
       }
     };
-    win.document.documentElement.setAttribute("zen-little-window", "true");
-    win.resizeTo(URLBAR_WIDTH, URLBAR_HEIGHT);
-    win.focus();
+    const urlbar = win.gURLBar;
+    observer.observe(urlbar);
+    // TODO: Handle window blur event
+    win.setResizable(false);
+    win.addEventListener(
+      "ZenFloatingURLBarOpened",
+      () => {
+win.docShell.treeOwner
+        .QueryInterface(Ci.nsIInterfaceRequestor)
+        .getInterface(Ci.nsIAppWindow)
+        .center(null, true, true)
+        if (AppConstants.platform == "macosx" && !Services.focus.activeWindow) {
+          Cc["@mozilla.org/widget/macdocksupport;1"]
+            .getService(Ci.nsIMacDockSupport)
+            .activateApplication(true);
+        }
+        win.focus();
+        urlbar.focus();
+      },
+      { once: true }
+    );
     win.addEventListener("ZenURLBarClosed", onClosed, { once: true });
-    win.addEventListener("blur", onClosed, { once: true });
+    win.addEventListener("unload", () => observer.disconnect(), { once: true });
+    // Hacky, but used to prevent flashing and still being able to render
+    lazy.ZenWindowControl.show(win);
+    lazy.ZenWindowControl.hide(win);
+    win.gZenWorkspaces.promiseInitialized.then(() => {
+      win.windowUtils.suppressAnimation(false);
+      lazy.ZenWindowControl.show(win);
+    });
   }
 }
 

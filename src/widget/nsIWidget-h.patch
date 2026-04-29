@@ -1,0 +1,28 @@
+diff --git a/widget/nsIWidget.h b/widget/nsIWidget.h
+index c22e055b9254ed1c8943c232a8339c574563dffc..0a0cb7cad4e878f93c03078564dac051dde1d014 100644
+--- a/widget/nsIWidget.h
++++ b/widget/nsIWidget.h
+@@ -698,6 +698,14 @@ class nsIWidget : public nsSupportsWeakReference {
+    */
+   virtual void Show(bool aState) = 0;
+ 
++  /**
++   * Zen: when set to true, Show(true) calls on this widget become
++   * no-ops until SetZenShowLocked(false) is called. Used to keep a
++   * window invisible while it's being set up.
++   */
++  void SetZenShowLocked(bool aLocked) { mZenShowLocked = aLocked; }
++  bool IsZenShowLocked() const { return mZenShowLocked; }
++
+   /**
+    * Whether or not a widget must be recreated after being hidden to show
+    * again properly.
+@@ -2419,6 +2427,8 @@ class nsIWidget : public nsSupportsWeakReference {
+   mozilla::Maybe<FullscreenSavedState> mSavedBounds;
+ 
+   bool mUpdateCursor;
++  // Zen: when true, Show(true) is a no-op. See SetZenShowLocked().
++  bool mZenShowLocked = false;
+   bool mIMEHasFocus;
+   bool mIMEHasQuit;
+   // if the window is fully occluded (rendering may be paused in response)

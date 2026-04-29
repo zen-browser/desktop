@@ -1,0 +1,34 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "nsISupports.idl"
+
+interface mozIDOMWindowProxy;
+
+/**
+ * @brief Toggle the OS-level visibility of a chrome window without
+ * destroying it. Used by little-window flow to keep a window off-screen
+ * while the urlbar is wired up.
+ *
+ * Hide() locks the widget at the component level; once locked, the
+ * widget remains hidden until Show() is called. Calling Show() on a
+ * widget that is not currently locked is a no-op so external paths
+ * can't accidentally un-hide a widget that wasn't hidden through this
+ * service.
+ */
+[scriptable, uuid(c1d2e3f4-9abc-4def-8123-456789abcdef)]
+interface nsIZenWindowControl : nsISupports {
+  /**
+   * Hide the window at the widget level
+   * (NSWindow.orderOut / ShowWindow(SW_HIDE) / gtk_widget_hide) and
+   * mark its widget as locked-hidden. Idempotent.
+   */
+  void hide(in mozIDOMWindowProxy aWindow);
+
+  /**
+   * If the window's widget is currently locked-hidden by this service,
+   * un-hide it and clear the lock. Otherwise no-op.
+   */
+  void show(in mozIDOMWindowProxy aWindow);
+};

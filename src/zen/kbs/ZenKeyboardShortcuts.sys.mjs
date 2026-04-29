@@ -1266,6 +1266,9 @@ const KbsManager = {
       const mainKeyset = browser.document.getElementById(
         ZEN_DEVTOOLS_KEYSET_ID
       );
+      if (!mainKeyset) {
+        return null;
+      }
       mainKeyset.before(browser._zenDevtoolsKeyset);
     }
     return browser._zenDevtoolsKeyset;
@@ -1480,7 +1483,13 @@ const KbsManager = {
     const originalDevKeyset = browser.document.getElementById(
       ZEN_DEVTOOLS_KEYSET_ID
     );
-    originalDevKeyset.after(devtoolsKeyset);
+    if (originalDevKeyset) {
+      originalDevKeyset.after(devtoolsKeyset);
+    } else {
+      console.warn(
+        "Zen CKS: DevTools keyset not found, devTools shortcuts won't be applied"
+      );
+    }
   },
 
   async resetAllShortcuts() {

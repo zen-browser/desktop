@@ -4,4 +4,5 @@
 
 DIRS += [
   "common",
+  "window-control",
 ]

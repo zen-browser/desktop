@@ -3,6 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
+import { ZenLittleWindow } from "resource:///modules/zen/ZenLittleWindow.sys.mjs";
 
 export const ZenCustomizableUI = new (class {
   constructor() {}
@@ -38,8 +39,13 @@ export const ZenCustomizableUI = new (class {
 
   // We do not have access to the window object here
   init(window) {
+    this.#initLittleWindow(window);
     this.#addSidebarButtons(window);
     this.#modifyToolbarButtons(window);
+  }
+
+  #initLittleWindow(window) {
+    ZenLittleWindow.onLittleWindow(window);
   }
 
   #addSidebarButtons(window) {

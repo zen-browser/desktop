@@ -295,6 +295,7 @@ window.gZenUIManager = {
   onFloatingURLBarOpen() {
     requestAnimationFrame(() => {
       this.updateTabsToolbar();
+      window.dispatchEvent(new CustomEvent("ZenFloatingURLBarOpened"));
     });
   },
 
@@ -606,6 +607,12 @@ window.gZenUIManager = {
     if (gURLBar._zenHandleUrlbarClose) {
       gURLBar._zenHandleUrlbarClose = null;
     }
+
+    window.dispatchEvent(
+      new CustomEvent("ZenURLBarClosedEarly", {
+        detail: { onSwitch, onElementPicked },
+      })
+    );
 
     const isFocusedBefore = gURLBar.focused;
     setTimeout(() => {
@@ -952,7 +959,18 @@ window.gZenVerticalTabsManager = {
       this,
       "_canReplaceNewTab",
       "zen.urlbar.replace-newtab",
-      true
+      true,
+      null,
+      val => {
+        // On little windows, we always want to replace new tabs
+        if (
+          window._zenStartupLittleWindow ||
+          document.documentElement.hasAttribute("zen-little-window")
+        ) {
+          return true;
+        }
+        return val;
+      }
     );
     var updateEvent = this._updateEvent.bind(this);
     var onPrefChange = this._onPrefChange.bind(this);

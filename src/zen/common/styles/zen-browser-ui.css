@@ -20,9 +20,13 @@ body,
   position: inherit;
 }
 
-:root:is([inDOMFullscreen="true"], [chromehidden~="location"], [chromehidden~="toolbar"]) {
+:root:is(
+  [inDOMFullscreen="true"], [chromehidden~="location"], 
+  [chromehidden~="toolbar"], [zen-little-window="true"]
+) {
   #navigator-toolbox,
-  #zen-sidebar-splitter {
+  #zen-sidebar-splitter,
+  #zen-sidebar-top-buttons {
     visibility: collapse;
   }
 }

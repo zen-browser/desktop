@@ -9,15 +9,9 @@
  */
 
 :root[zen-little-window="true"] {
-  /*
-   * The navigator toolbox (sidebar + tab strip) and its splitter are
-   * never visible in a little window. We use visibility: hidden rather
-   * than display: none so layout stays stable and the urlbar floats
-   * cleanly over its slot.
-   */
-  #navigator-toolbox,
-  #zen-sidebar-splitter {
-    visibility: collapse !important;
+
+  #urlbar {
+    width: 100%;
   }
 
   &[zen-has-empty-tab="true"] {
@@ -47,10 +41,6 @@
       & .urlbar-input-box {
         -moz-window-dragging: no-drag;
       }
-    }
-
-    #zen-sidebar-top-buttons {
-      visibility: collapse;
     }
   }
 }

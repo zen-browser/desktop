@@ -61,7 +61,8 @@
 .urlbar-background {
   background: var(--zen-toolbar-element-bg) !important;
   border-radius: var(--border-radius-medium);
-  outline: none !important;
+  /*outline: none !important;*/
+  outline: 1.5px solid color-mix(in srgb, var(--zen-primary-color), transparent 75%);
 
   #urlbar:not([breakout-extend="true"]) & {
     margin: 1px;
@@ -198,9 +199,9 @@
 
 /* stylelint-disable-next-line media-query-no-invalid */
 @media not -moz-pref("zen.urlbar.show-pip-button") {
-  #picture-in-picture-button {
-    display: none !important;
-  }
+#picture-in-picture-button {
+  display: none !important;
+}
 }
 
 .urlbar-page-action,
@@ -496,9 +497,9 @@
 
 /* stylelint-disable-next-line media-query-no-invalid */
 @media not -moz-pref("zen.urlbar.show-protections-icon") {
-  #tracking-protection-icon-container {
-    display: none !important;
-  }
+#tracking-protection-icon-container {
+  display: none !important;
+}
 }
 
 .urlbarView-title {

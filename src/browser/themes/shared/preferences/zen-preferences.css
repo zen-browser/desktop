@@ -34,6 +34,11 @@ html|dialog {
   animation: dialogPopin 0.2s ease-out;
 }
 
+.sticky-container{
+  background-color: color-mix(in srgb, var(--background-color-canvas), transparent 25%) !important;
+  padding-inline: 1vw !important;
+}
+
 .subcategory {
   border-top: none !important;
 }
@@ -59,7 +64,8 @@ groupbox h2 {
 }
 
 #categories {
-  margin: 0 !important;
+  margin: 0px !important;
+  width: 100% !important;
 }
 
 #categories > .category {
@@ -67,6 +73,8 @@ groupbox h2 {
   min-height: 40px !important;
   position: relative;
   padding-inline: 20px !important;
+  justify-content: center;
+  margin-inline-end: 0 !important;
 }
 
 .textbox-search-sign {
@@ -74,7 +82,8 @@ groupbox h2 {
 }
 
 .sidebar-footer-list {
-  margin-left: 0 !important;
+  /*margin-left: 0 !important;*/
+  margin-inline: 0 0 !important;
 }
 
 .category-icon {
@@ -481,6 +490,26 @@ groupbox h2 {
   #zenLayoutList {
     flex-wrap: wrap;
   }
+  /*.navigation {*/
+  /*  padding: 0;*/
+  /*  !*width: 14% !important;*!*/
+  /*  !*margin-right: 91px !important;*!*/
+  /*}*/
+  .sidebar-footer-list{
+    width: 100% !important;
+  }
+  .sidebar-footer-link{
+    width: 100% !important;
+    justify-content: center;
+  }
+}
+
+.navigation {
+  padding: 20px;
+}
+
+#searchInput{
+  width: 100% !important;
 }
 
 /* Disable mozilla's settings */

@@ -111,30 +111,6 @@ document.addEventListener(
       open: openIndiaServicesPanel,
     };
 
-    const openAppLauncherPanel = (event, win = window) => {
-      const panel = win.document.getElementById("PanelUI-zen-app-launcher");
-      if (!panel) {
-        console.error("Astra: App Hub panel not found!");
-        return;
-      }
-      const isUsableAnchor = node => {
-        if (!node || !node.isConnected || 
-            typeof node.getBoundingClientRect !== "function") {
-          return false;
-        }
-        const rect = node.getBoundingClientRect();
-        return rect.width > 0 || rect.height > 0;
-      };
-      const eventAnchor = event?.sourceEvent?.target;
-      const anchor =
-        (isUsableAnchor(eventAnchor) && eventAnchor) ||
-        win.document.getElementById("zen-sidebar-top-buttons-separator") ||
-        win.document.getElementById("zen-sidebar-top-buttons") ||
-        win.document.getElementById("nav-bar") ||
-        win.document.getElementById("browser");
-      panel.openPopup(anchor, "after_start", 0, 0, false, false);
-    };
-
     const openCrashRecoveryPanel = (event, win = window) => {
       const panel = win.document.getElementById("PanelUI-zen-crash-recovery");
       if (!panel) {
@@ -440,7 +416,7 @@ document.addEventListener(
             openIndiaServicesPanel(event);
             break;
           case "cmd_zenOpenAppLauncher":
-            openAppLauncherPanel(event);
+            gZenAppLauncher.open(event);
             break;
           case "cmd_zenOpenIndiaGov":
             gZenIndiaGov.open(event);

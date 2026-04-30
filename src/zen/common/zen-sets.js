@@ -2,6 +2,86 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+console.log("Astra: zen-sets.js loaded");
+
+window.gZenAppLauncher = {
+  open(event, win = window) {
+    try {
+      const doc = win.document || document;
+      const panel = doc.getElementById("PanelUI-zen-app-launcher");
+      if (!panel) return;
+      const isUsableAnchor = node => {
+        if (!node || !node.isConnected ||
+            typeof node.getBoundingClientRect !== "function") return false;
+        const rect = node.getBoundingClientRect();
+        return rect.width > 0 || rect.height > 0;
+      };
+      const eventAnchor = event?.sourceEvent?.target;
+      const anchor =
+        (isUsableAnchor(eventAnchor) && eventAnchor) ||
+        doc.getElementById("zen-sidebar-top-buttons-separator") ||
+        doc.getElementById("zen-sidebar-top-buttons") ||
+        doc.getElementById("nav-bar") ||
+        doc.getElementById("browser");
+      panel.openPopup(anchor, "after_start", 0, 0, false, false);
+    } catch(e) {
+      console.error("Astra: App Hub open error:", e);
+    }
+  },
+  openApp(url) {
+    try {
+      const panel = document.getElementById("PanelUI-zen-app-launcher");
+      if (panel) panel.hidePopup();
+      const win = Services.wm.getMostRecentWindow("navigator:browser");
+      if (win && win.gBrowser) {
+        win.gBrowser.selectedTab = win.gBrowser.addTrustedTab(url, {
+          triggeringPrincipal: Services.scriptSecurityManager
+            .getSystemPrincipal(),
+          inBackground: false,
+        });
+        win.focus();
+      }
+    } catch(e) {
+      console.error("Astra: App Hub openApp error:", e);
+    }
+  },
+};
+
+window.gZenIndiaGov = {
+  open(event, win = window) {
+    try {
+      const doc = win.document || document;
+      const panel = doc.getElementById("PanelUI-zen-india-gov");
+      if (!panel) return;
+      const anchor =
+        doc.getElementById("zen-sidebar-top-buttons-separator") ||
+        doc.getElementById("zen-sidebar-top-buttons") ||
+        doc.getElementById("nav-bar") ||
+        doc.getElementById("browser");
+      panel.openPopup(anchor, "after_start", 0, 0, false, false);
+    } catch(e) {
+      console.error("Astra: India Gov open error:", e);
+    }
+  },
+  openApp(url) {
+    try {
+      const panel = document.getElementById("PanelUI-zen-india-gov");
+      if (panel) panel.hidePopup();
+      const win = Services.wm.getMostRecentWindow("navigator:browser");
+      if (win && win.gBrowser) {
+        win.gBrowser.selectedTab = win.gBrowser.addTrustedTab(url, {
+          triggeringPrincipal: Services.scriptSecurityManager
+            .getSystemPrincipal(),
+          inBackground: false,
+        });
+        win.focus();
+      }
+    } catch(e) {
+      console.error("Astra: India Gov openApp error:", e);
+    }
+  },
+};
+
 document.addEventListener(
   "MozBeforeInitialXULLayout",
   () => {
@@ -174,73 +254,6 @@ document.addEventListener(
           gZenUIManager.showToast("zen-tab-note-cleared-toast");
         } catch(e) {
           console.error("Astra: Clear note error:", e);
-        }
-      },
-    };
-
-    window.gZenIndiaGov = {
-      openApp(url) {
-        try {
-          const panel = document.getElementById(
-            "PanelUI-zen-india-gov"
-          );
-          if (panel) {
-            panel.hidePopup();
-          }
-          const tabbrowser = window.gBrowser;
-          if (tabbrowser) {
-            tabbrowser.selectedTab = tabbrowser.addTrustedTab(url, {
-              triggeringPrincipal: Services.scriptSecurityManager
-                .getSystemPrincipal(),
-            });
-          }
-        } catch(e) {
-          console.error("Astra: India Gov open error:", e);
-        }
-      },
-      open(event, win = window) {
-        try {
-          const panel = win.document.getElementById("PanelUI-zen-india-gov");
-          if (!panel) return;
-          const isUsableAnchor = node => {
-            if (!node || !node.isConnected ||
-                typeof node.getBoundingClientRect !== "function") {
-              return false;
-            }
-            const rect = node.getBoundingClientRect();
-            return rect.width > 0 || rect.height > 0;
-          };
-          const eventAnchor = event?.sourceEvent?.target;
-          const anchor =
-            (isUsableAnchor(eventAnchor) && eventAnchor) ||
-            win.document.getElementById("zen-sidebar-top-buttons") ||
-            win.document.getElementById("nav-bar");
-          panel.openPopup(anchor, "after_start", 0, 0, false, false);
-        } catch(e) {
-          console.error("Astra: India Gov panel error:", e);
-        }
-      },
-    };
-
-    window.gZenAppLauncher = {
-      open: openAppLauncherPanel,
-      openApp(url) {
-        try {
-          const panel = document.getElementById(
-            "PanelUI-zen-app-launcher"
-          );
-          if (panel) {
-            panel.hidePopup();
-          }
-          const tabbrowser = window.gBrowser;
-          if (tabbrowser) {
-            tabbrowser.selectedTab = tabbrowser.addTrustedTab(url, {
-              triggeringPrincipal: Services.scriptSecurityManager
-                .getSystemPrincipal(),
-            });
-          }
-        } catch(e) {
-          console.error("Astra: App launcher open error:", e);
         }
       },
     };

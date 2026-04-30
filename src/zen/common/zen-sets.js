@@ -82,6 +82,63 @@ window.gZenIndiaGov = {
   },
 };
 
+// CSP-safe event delegation (handles both early and late load)
+function attachAstraPanelDelegation() {
+  // App Launcher click delegation
+  const appLauncherPanel = document.getElementById("PanelUI-zen-app-launcher");
+  if (appLauncherPanel && !appLauncherPanel.hasAttribute("data-astra-bound")) {
+    appLauncherPanel.setAttribute("data-astra-bound", "true");
+    appLauncherPanel.addEventListener("command", (e) => {
+      const url = e.target.getAttribute("data-url");
+      if (url && window.gZenAppLauncher) {
+        window.gZenAppLauncher.openApp(url);
+      }
+    });
+    console.log("Astra: App Launcher delegation attached");
+  }
+
+  // India Gov click delegation
+  const indiaGovPanel = document.getElementById("PanelUI-zen-india-gov");
+  if (indiaGovPanel && !indiaGovPanel.hasAttribute("data-astra-bound")) {
+    indiaGovPanel.setAttribute("data-astra-bound", "true");
+    indiaGovPanel.addEventListener("command", (e) => {
+      const url = e.target.getAttribute("data-url");
+      if (url && window.gZenIndiaGov) {
+        window.gZenIndiaGov.openApp(url);
+      }
+    });
+    console.log("Astra: India Gov delegation attached");
+  }
+
+  // Tab Notes delegation
+  const tabNotesPanel = document.getElementById("PanelUI-zen-tab-notes");
+  if (tabNotesPanel && !tabNotesPanel.hasAttribute("data-astra-bound")) {
+    tabNotesPanel.setAttribute("data-astra-bound", "true");
+    tabNotesPanel.addEventListener("command", (e) => {
+      const action = e.target.getAttribute("data-action");
+      if (action === "saveNote") window.gZenTabNotes?.saveNote();
+      if (action === "clearNote") window.gZenTabNotes?.clearNote();
+    });
+    console.log("Astra: Tab Notes delegation attached");
+  }
+}
+
+// Try multiple attachment strategies for maximum reliability
+if (document.readyState === "loading") {
+  // DOM not ready yet - wait for it
+  document.addEventListener("DOMContentLoaded", attachAstraPanelDelegation);
+} else {
+  // DOM already loaded - attach immediately
+  attachAstraPanelDelegation();
+}
+
+// Also try on MozBeforeInitialXULLayout (Firefox-specific, runs after panels load)
+document.addEventListener("MozBeforeInitialXULLayout", attachAstraPanelDelegation, { once: true });
+
+// Backup: try after a short delay (in case panels load after DOMContentLoaded)
+setTimeout(attachAstraPanelDelegation, 1000);
+setTimeout(attachAstraPanelDelegation, 3000);
+
 document.addEventListener(
   "MozBeforeInitialXULLayout",
   () => {

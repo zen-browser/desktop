@@ -7,6 +7,10 @@ function getPanel() {
   return document.getElementById("zen-ctrl-tab-panel");
 }
 
+function getCards() {
+  return document.getElementById("zen-ctrl-tab-panel-cards");
+}
+
 async function openCtrlTabPanel(shiftKey = false) {
   let popupShown = BrowserTestUtils.waitForEvent(getPanel(), "popupshown");
   await gZenCtrlTabPanel.open(shiftKey);
@@ -31,7 +35,19 @@ async function addTabs(n) {
 }
 
 function getCardCount() {
-  return (
-    document.getElementById("zen-ctrl-tab-panel-cards")?.children.length ?? 0
+  return getCards().children.length;
+}
+
+function getVisibleTabs() {
+  let visibleTabs = Array.from(gBrowser.tabs).filter(
+    (tab) => !tab.closing && tab.visible,
   );
+  return visibleTabs;
+}
+
+function simulateClick(n) {
+  let target = getCards().children[n];
+  let promise = BrowserTestUtils.waitForEvent(target, "click");
+  EventUtils.synthesizeMouseAtCenter(target, {});
+  return promise;
 }

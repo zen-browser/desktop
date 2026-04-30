@@ -12,13 +12,8 @@ add_task(async function test_Tab_Navigation() {
   });
 
   let tabs = await addTabs(3);
-
-  let validTabs = Array.from(gBrowser.tabs).filter(
-    tab => !tab.closing && tab.visible && !tab.hasAttribute("busy")
-  );
-  is(validTabs.length, 4, "Should have 4 visible tabs");
-
-  gBrowser.selectedTab = validTabs[2];
+  is(getVisibleTabs().length, 4, "Should have 4 visible tabs");
+  gBrowser.selectedTab = getVisibleTabs()[2];
 
   // Forward: 2 → 3
   await openCtrlTabPanel();
@@ -26,15 +21,19 @@ add_task(async function test_Tab_Navigation() {
   is(getCardCount(), 4, "Card count should match tab count");
   await closeCtrlTabPanel();
   is(getPanel().state, "closed", "Panel should be closed");
-  is(gBrowser.selectedTab, validTabs[3], "Forward should move to next tab");
+  is(
+    gBrowser.selectedTab,
+    getVisibleTabs()[3],
+    "Forward should move to next tab",
+  );
 
   // Forward wrap: 3 → 0
   await openCtrlTabPanel();
   await closeCtrlTabPanel();
   is(
     gBrowser.selectedTab,
-    validTabs[0],
-    "Forward from last should wrap to first"
+    getVisibleTabs()[0],
+    "Forward from last should wrap to first",
   );
 
   // Backward wrap: 0 → 3
@@ -42,19 +41,44 @@ add_task(async function test_Tab_Navigation() {
   await closeCtrlTabPanel();
   is(
     gBrowser.selectedTab,
-    validTabs[3],
-    "Backward from first should wrap to last"
+    getVisibleTabs()[3],
+    "Backward from first should wrap to last",
   );
 
   // Backward: 3 → 2
   await openCtrlTabPanel(true);
   await closeCtrlTabPanel();
-  is(gBrowser.selectedTab, validTabs[2], "Shift should go backward");
+  is(gBrowser.selectedTab, getVisibleTabs()[2], "Shift should go backward");
 
   // Forward without switch: stays at 2
   await openCtrlTabPanel();
   await closeCtrlTabPanel(false);
-  is(gBrowser.selectedTab, validTabs[2], "close(false) should not switch");
+  is(
+    gBrowser.selectedTab,
+    getVisibleTabs()[2],
+    "close(false) should not switch",
+  );
+
+  // Close a tab
+  gBrowser.removeTab(getVisibleTabs()[0]);
+  is(getVisibleTabs().length, 3, "Should have 3 visible tabs");
+  await openCtrlTabPanel();
+  is(getCardCount(), 3, "Card count should match tab count");
+  await closeCtrlTabPanel();
+
+  // Click on second card
+  await openCtrlTabPanel();
+  await simulateClick(2);
+  isnot(
+    getPanel().state,
+    "open",
+    "Panel should not be opened after clicking on a card",
+  );
+  is(
+    gBrowser.selectedTab,
+    getVisibleTabs()[2],
+    "Clicking on card should switch to correct tab",
+  );
 
   for (let tab of tabs) {
     BrowserTestUtils.removeTab(tab);
@@ -72,23 +96,28 @@ add_task(async function test_Multi_Navigate_While_Open() {
 
   let tabs = await addTabs(3);
 
-  let validTabs = Array.from(gBrowser.tabs).filter(
-    t => !t.closing && t.visible && !t.hasAttribute("busy")
-  );
-  gBrowser.selectedTab = validTabs[0];
+  gBrowser.selectedTab = getVisibleTabs()[0];
 
   // Open, navigate forward twice, then close
   await openCtrlTabPanel();
   gZenCtrlTabPanel.navigateForward();
   gZenCtrlTabPanel.navigateForward();
   await closeCtrlTabPanel();
-  is(gBrowser.selectedTab, validTabs[3], "Two forwards should land 3 ahead");
+  is(
+    gBrowser.selectedTab,
+    getVisibleTabs()[3],
+    "Opening and 2 forwards should land 3 ahead",
+  );
 
   // Open with shift, navigate backward, then close
   await openCtrlTabPanel(true);
   gZenCtrlTabPanel.navigateBackward();
   await closeCtrlTabPanel();
-  is(gBrowser.selectedTab, validTabs[1], "One backward should land 2 behind");
+  is(
+    gBrowser.selectedTab,
+    getVisibleTabs()[1],
+    "Opening with shift and 1 backward should land 2 behind",
+  );
 
   for (let tab of tabs) {
     BrowserTestUtils.removeTab(tab);
@@ -107,11 +136,10 @@ add_task(async function test_Disabled_Pref() {
   let tabs = await addTabs(2);
   EventUtils.synthesizeKey("VK_TAB", { ctrlKey: true });
 
-  await new Promise(r => setTimeout(r, 200));
   isnot(
     getPanel().state,
     "open",
-    "Panel should not open when pref is disabled"
+    "Panel should not open when pref is disabled",
   );
 
   if (getPanel().state === "open") {
@@ -129,11 +157,13 @@ add_task(async function test_Less_Than_Two_Tabs() {
     set: [["zen.tabs.ctrl-tab-panel.enabled", true]],
   });
 
+  is(getVisibleTabs().length, 1, "Should have a single tab");
+
   await gZenCtrlTabPanel.open();
   isnot(
     getPanel().state,
     "open",
-    "Panel should not open with less than two tabs"
+    "Panel should not open with less than two tabs",
   );
 
   if (getPanel().state === "open") {
@@ -159,12 +189,11 @@ add_task(async function test_Recent_Sort_Order() {
     ],
   });
 
-  let tabs = await addTabs(3);
+  let tabs = await addTabs(4);
 
+  gBrowser.selectedTab = tabs[3];
   gBrowser.selectedTab = tabs[0];
-  await new Promise(r => setTimeout(r, 50));
   gBrowser.selectedTab = tabs[1];
-  await new Promise(r => setTimeout(r, 50));
   gBrowser.selectedTab = tabs[2];
 
   await openCtrlTabPanel();
@@ -173,7 +202,17 @@ add_task(async function test_Recent_Sort_Order() {
   is(
     gBrowser.selectedTab,
     tabs[1],
-    "Should switch to the second most recently used tab"
+    "Should switch to the second most recently used tab",
+  );
+
+  gBrowser.removeTab(tabs[1]);
+  await openCtrlTabPanel();
+  gZenCtrlTabPanel.navigateForward();
+  await closeCtrlTabPanel();
+  is(
+    gBrowser.selectedTab,
+    tabs[3],
+    "Closing tab, opening and navigation should switch to correct tab",
   );
 
   for (let tab of tabs) {

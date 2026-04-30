@@ -1,8 +1,8 @@
 diff --git a/dom/media/mediaelement/HTMLMediaElement.cpp b/dom/media/mediaelement/HTMLMediaElement.cpp
-index 935c9783ceb66ad8c6c8748ca3113664f5b114d3..a9f256a83b68940c829b24a19c67c56f11a01765 100644
+index df8c9441463e8c08e3f3d21a194df850bd418b67..3fd83aff3a7cc2ff6b9c889c5126befa99a91436 100644
 --- a/dom/media/mediaelement/HTMLMediaElement.cpp
 +++ b/dom/media/mediaelement/HTMLMediaElement.cpp
-@@ -451,6 +451,7 @@ class HTMLMediaElement::MediaControlKeyListener final
+@@ -449,6 +449,7 @@ class HTMLMediaElement::MediaControlKeyListener final
      // audible state. Therefore, in that case we would noitfy the audible state
      // when media starts playing.
      if (mState == MediaPlaybackState::ePlayed) {
@@ -10,7 +10,7 @@ index 935c9783ceb66ad8c6c8748ca3113664f5b114d3..a9f256a83b68940c829b24a19c67c56f
        NotifyAudibleStateChanged(mIsOwnerAudible
                                      ? MediaAudibleState::eAudible
                                      : MediaAudibleState::eInaudible);
-@@ -7247,6 +7248,9 @@ void HTMLMediaElement::FireTimeUpdate(TimeupdateType aType) {
+@@ -7444,6 +7445,9 @@ void HTMLMediaElement::FireTimeUpdate(TimeupdateType aType) {
      QueueTask(std::move(runner));
      mQueueTimeUpdateRunnerTime = TimeStamp::Now();
      mLastCurrentTime = CurrentTime();

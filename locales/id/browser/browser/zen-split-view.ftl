@@ -5,8 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] Belah Tab (pilih beberapa tab dulu)
-           *[other] Belah { $tabCount } Tab
+            [-1] Split out tab
+            [1] Add split view...
+           *[other] Join { $tabCount } Tabs
         }
     .accesskey = S
 zen-split-link = 
@@ -15,6 +16,3 @@ zen-split-link =
 zen-split-view-modifier-header = Tampilan Belah
 zen-split-view-modifier-activate-reallocation = 
     .label = Aktifkan realokasi
-zen-split-view-modifier-enabled-toast = Penyesuaian tampilan belah AKTIF.
-zen-split-view-modifier-enabled-toast-description = Seret dan lepas tampilan untuk menyesuaikan. Tekan Esc untuk keluar.
-zen-split-view-modifier-disabled-toast = Penyesuaian tampilan belah MATI.

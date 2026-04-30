@@ -4,6 +4,7 @@
 
 param(
     [string][Parameter(Mandatory=$true)]$SignIdentity,
+    [string][Parameter(Mandatory=$true)]$SignIdentityIssuer,
     [string][Parameter(Mandatory=$true)]$GithubRunId
 )
 
@@ -25,6 +26,9 @@ mkdir windsign-temp -ErrorAction SilentlyContinue
 
 $env:SURFER_MOZCONFIG_ONLY="1"
 $env:SURFER_SIGNING_MODE=""
+
+$env:SURFER_CERT_PATCH_ISSUER=$SignIdentityIssuer
+$env:SURFER_CERT_PATCH_NAME=$SignIdentity
 
 Start-Job -Name "DownloadGitl10n" -ScriptBlock {
     param($PWD)
@@ -142,9 +146,9 @@ function SignAndPackage($name) {
     $env:ZEN_SETUP_EXE_PATH="$PWD\windsign-temp\windows-x64-obj-$name\browser\installer\windows\instgen\setup.exe"
 
     if ($name -eq "arm64") {
-        $env:WIN32_REDIST_DIR="$PWD\win-cross\vs2022\VC\Redist\MSVC\14.38.33135\arm64\Microsoft.VC143.CRT"
+        $env:WIN32_REDIST_DIR="$PWD\win-cross\vs2026\VC\Redist\MSVC\14.50.35710\arm64\Microsoft.VC145.CRT"
     } else {
-        $env:WIN32_REDIST_DIR="$PWD\win-cross\vs2022\VC\Redist\MSVC\14.38.33135\x64\Microsoft.VC143.CRT"
+        $env:WIN32_REDIST_DIR="$PWD\win-cross\vs2026\VC\Redist\MSVC\14.50.35710\x64\Microsoft.VC145.CRT"
     }
 
     $env:MAR="..\\build\\windows\\mar.exe"

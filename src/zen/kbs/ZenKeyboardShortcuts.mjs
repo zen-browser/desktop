@@ -832,7 +832,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 16;
+  static LATEST_KBS_VERSION = 17;
 
   constructor() {}
 
@@ -1194,6 +1194,22 @@ class nsZenKeyboardShortcutsVersioner {
           break;
         }
       }
+    }
+
+    if (version < 17) {
+      // Migrate from version 16 to 17.
+      // Add shortcut to Duplicate Tab
+      data.push(
+        new KeyShortcut(
+          "zen-duplicate-tab",
+          "",
+          "",
+          "windowAndTabManagement",
+          nsKeyShortcutModifiers.fromObject({}),
+          "cmd_zenDuplicateTab",
+          "zen-duplicate-tab-shortcut"
+        )
+      );
     }
 
     return data;

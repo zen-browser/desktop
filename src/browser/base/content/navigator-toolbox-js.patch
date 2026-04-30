@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/navigator-toolbox.js b/browser/base/content/navigator-toolbox.js
-index 15469e9d9b91c1eaef2578c9e43b6999edac3392..95ae5036b57baeb5237603c0921f1e9252af6919 100644
+index 362a85c20d8f0633fa78f85578e4cf015fdd0e44..ef7d6ff9e0e9876bc1918e365fd0addcd177cecb 100644
 --- a/browser/base/content/navigator-toolbox.js
 +++ b/browser/base/content/navigator-toolbox.js
-@@ -6,7 +6,7 @@
+@@ -11,7 +11,7 @@ ChromeUtils.defineESModuleGetters(this, {
  document.addEventListener(
    "DOMContentLoaded",
    () => {
@@ -11,7 +11,7 @@ index 15469e9d9b91c1eaef2578c9e43b6999edac3392..95ae5036b57baeb5237603c0921f1e92
      const widgetOverflow = document.getElementById("widget-overflow");
  
      function onPopupShowing(event) {
-@@ -184,6 +184,7 @@ document.addEventListener(
+@@ -189,6 +189,7 @@ document.addEventListener(
          #forward-button,
          #reload-button ,
          #reader-mode-button,
@@ -19,7 +19,7 @@ index 15469e9d9b91c1eaef2578c9e43b6999edac3392..95ae5036b57baeb5237603c0921f1e92
          #picture-in-picture-button,
          #urlbar-zoom-button,
          #star-button-box,
-@@ -209,6 +210,17 @@ document.addEventListener(
+@@ -215,6 +216,17 @@ document.addEventListener(
            gBrowser.handleNewTabMiddleClick(element, event);
            break;
  
@@ -37,15 +37,15 @@ index 15469e9d9b91c1eaef2578c9e43b6999edac3392..95ae5036b57baeb5237603c0921f1e92
          case "back-button":
          case "forward-button":
          case "reload-button":
-@@ -318,6 +330,7 @@ document.addEventListener(
+@@ -330,6 +342,7 @@ document.addEventListener(
          #downloads-button,
          #fxa-toolbar-menu-button,
          #unified-extensions-button,
 +        #zen-site-data-icon-button,
          #library-button,
-         #split-view-button
-       `);
-@@ -401,6 +414,16 @@ document.addEventListener(
+         #split-view-button,
+         #smartwindow-ask-button
+@@ -414,6 +427,16 @@ document.addEventListener(
            gUnifiedExtensions.togglePanel(event);
            break;
  

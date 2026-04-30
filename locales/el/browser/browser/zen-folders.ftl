@@ -3,21 +3,21 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-folders-search-placeholder = 
-    .placeholder = Search { $folder-name }...
+    .placeholder = Αναζήτηση { $folder-name }...
 zen-folders-panel-rename-folder = 
-    .label = Rename Folder
+    .label = Μετονομασία Φακέλου
 zen-folders-panel-unpack-folder = 
-    .label = Unpack Folder
+    .label = Αποσυμπίεση Φακέλου
 zen-folders-new-subfolder = 
-    .label = New Subfolder
+    .label = Δημιουργία Υποφακέλου
 zen-folders-panel-delete-folder = 
-    .label = Delete Folder
+    .label = Διαγραφή Φακέλου
 zen-folders-panel-convert-folder-to-space = 
-    .label = Convert folder to Space
+    .label = Μετατροπή Φακέλου σε Χώρο Εργασίας
 zen-folders-panel-change-folder-space = 
-    .label = Change Space...
+    .label = Αλλαγή Χώρου Εργασίας...
 zen-folders-unload-all-tooltip = 
-    .tooltiptext = Unload active in this folder
+    .tooltiptext = Εκφόρτωσή των ενεργών καρτελών σε αυτόν τον φάκελο
 zen-folders-unload-folder = 
-    .label = Unload All Tabs
-zen-folders-search-no-results = No tabs matching that search 🤔
+    .label = Εκφόρτωση όλων των καρτελών
+zen-folders-search-no-results = Δεν υπάρχουν καρτέλες που να ταιριάζουν με την αναζήτηση 🤔

@@ -1,0 +1,14 @@
+diff --git a/widget/cocoa/nsCocoaUtils.mm b/widget/cocoa/nsCocoaUtils.mm
+index d83639ff2aab890d9c89c162ec5a3dfda52bc017..92ac99a3afb5931216486473490b004404110ce7 100644
+--- a/widget/cocoa/nsCocoaUtils.mm
++++ b/widget/cocoa/nsCocoaUtils.mm
+@@ -1631,7 +1631,8 @@ bool static ShouldConsiderStartingSwipeFromEvent(NSEvent* anEvent) {
+   return [anEvent type] == NSEventTypeScrollWheel &&
+          eventPhase == NSEventPhaseBegan &&
+          [anEvent hasPreciseScrollingDeltas] &&
+-         [NSEvent isSwipeTrackingFromScrollEventsEnabled];
++         ([NSEvent isSwipeTrackingFromScrollEventsEnabled] ||
++              Preferences::GetBool("zen.widget.macos.override-system-swipe-gestures"));
+ }
+ 
+ PanGestureInput nsCocoaUtils::CreatePanGestureEvent(

@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = perfil atual
 unified-extensions-description = As extensões são usadas para trazer funcionalidades adicionais para o { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Repor o Separador Fixado
+    .label =
+        { $isEssential ->
+            [true] Repor Separador Essencial
+           *[false] Repor Separador Fixado
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Adicionar aos Essenciais
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = Remover dos Essenciais
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Substituir o URL Fixado pelo URL Atual
+    .label =
+        { $isEssential ->
+            [true] Substituir URL Essencial com o Atual
+           *[false] Substituir URL Fixado com o Atual
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = Alterar etiqueta...
@@ -33,6 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimizar
 zen-panel-ui-gradient-generator-custom-color = Cor personalizada
 zen-copy-current-url-confirmation = URL atual copiado!
+zen-copy-current-url-as-markdown-confirmation = URL atual copiado em Markdown!
 zen-general-cancel-label = 
     .label = Cancelar
 zen-general-confirm = 
@@ -41,6 +50,7 @@ zen-pinned-tab-replaced = O URL do separador fixado foi substituído pelo URL at
 zen-tabs-renamed = Nome do separador alterado com sucesso!
 zen-background-tab-opened-toast = Novo separador aberto em segundo plano!
 zen-workspace-renamed-toast = Nome do espaço de trabalho alterado com sucesso!
+zen-split-view-limit-toast = Não é possível adicionar mais painéis à vista dividida!
 zen-toggle-compact-mode-button = 
     .label = Modo Compacto
     .tooltiptext = Alternar Modo Compacto
@@ -111,5 +121,7 @@ zen-sidebar-notification-restart-safe-mode-tooltip =
     .title = Reiniciar em Modo de Segurança
 zen-window-sync-migration-dialog-title = Mantenha As Suas Janelas Sincronizadas
 zen-window-sync-migration-dialog-message = Agora, o Zen sincroniza as janelas no dispositivo, pelo que alterações numa janela são refletidas instantaneamente nas outras.
-zen-window-sync-migration-dialog-learn-more = Learn More
+zen-window-sync-migration-dialog-learn-more = Saber Mais
 zen-window-sync-migration-dialog-accept = Entendido
+zen-appmenu-new-blank-window = 
+    .label = Nova janela sem sincronização

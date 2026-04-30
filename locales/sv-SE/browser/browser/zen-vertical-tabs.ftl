@@ -17,6 +17,9 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = Dölj båda
     .accesskey = H
+zen-toolbar-context-move-to-folder = 
+    .label = Flytta till mapp...
+    .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Ny mapp
     .accesskey = N
@@ -36,4 +39,9 @@ tabbrowser-reset-pin-button =
             [one] Återställ och fäst flik
            *[other] Återställ och fäst { $tabCount } flikar
         }
-tab-reset-pin-label = Tillbaka till fäst url
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Tillbaka till den fästa webbadressen
+        [zen-default-pinned-cmd] Separera från den fästa fliken
+       *[other] { $tabSubtitle }
+    }

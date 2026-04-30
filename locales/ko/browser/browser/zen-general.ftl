@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = 현재 프로필
 unified-extensions-description = 확장 프로그램은 { -brand-short-name }에 더 많은 추가 기능을 제공하는 데 사용됩니다.
 tab-context-zen-reset-pinned-tab = 
-    .label = 고정된 탭 초기화
+    .label =
+        { $isEssential ->
+            [true] 에센셜 탭 초기화
+           *[false] 고정된 탭 초기화
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = 에센셜에 추가
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = 에센셜에서 제거하기
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = 고정된 URL을 현재 URL로 변경
+    .label =
+        { $isEssential ->
+            [true] 에센셜 탭을 현재 URL로 초기화
+           *[false] 고정된 탭을 현재 URL로 초기화
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = 라벨 편집...
@@ -33,6 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = 최소화
 zen-panel-ui-gradient-generator-custom-color = 커스텀 색상
 zen-copy-current-url-confirmation = 현재 URL을 복사했습니다!
+zen-copy-current-url-as-markdown-confirmation = 현재 URL을 마크다운으로 복사했습니다!
 zen-general-cancel-label = 
     .label = 취소
 zen-general-confirm = 
@@ -41,6 +50,7 @@ zen-pinned-tab-replaced = 고정 URL이 현재 URL로 변경되었습니다!
 zen-tabs-renamed = 탭의 이름이 성공적으로 변경되었습니다!
 zen-background-tab-opened-toast = 새 백그라운드 탭이 열렸습니다!
 zen-workspace-renamed-toast = 워크스페이스 이름이 변경되었습니다!
+zen-split-view-limit-toast = 패널을 더 추가할 수 없습니다!
 zen-toggle-compact-mode-button = 
     .label = 사이드바 축소 모드
     .tooltiptext = 사이드바 축소 토글
@@ -113,3 +123,5 @@ zen-window-sync-migration-dialog-title = 창을 동기화 상태로 유지
 zen-window-sync-migration-dialog-message = Zen이 이제 같은 기기에서 창을 동기화합니다. 한 창에서의 변경이 다른 창에서도 즉시 적용됩니다.
 zen-window-sync-migration-dialog-learn-more = 더 알아보기
 zen-window-sync-migration-dialog-accept = 알겠습니다
+zen-appmenu-new-blank-window = 
+    .label = 새 빈 창

@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = nykyinen profiili
 unified-extensions-description = Laajennuksia käytetään tuomaan enemmän ylimääräisiä toimintoja { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Nollaa Kiinnitetty Välilehti
+    .label =
+        { $isEssential ->
+            [true] Reset Essential Tab
+           *[false] Reset Pinned Tab
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Lisää olennaisiin
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = Poista olennaisista
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Korvaa kiinnitetty URL-osoite nykyisellä
+    .label =
+        { $isEssential ->
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = Change Label...
@@ -33,6 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimoi
 zen-panel-ui-gradient-generator-custom-color = Muokattu Väri
 zen-copy-current-url-confirmation = Nykyinen URL-osoite kopioitu!
+zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
 zen-general-cancel-label = 
     .label = Peruuta
 zen-general-confirm = 
@@ -41,6 +50,7 @@ zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL.
 zen-tabs-renamed = Välilehti on nimetty uudelleen!
 zen-background-tab-opened-toast = Uusi taustavälilehti avattu!
 zen-workspace-renamed-toast = Työtila on nimetty uudelleen!
+zen-split-view-limit-toast = Can't add more panels to the split view!
 zen-toggle-compact-mode-button = 
     .label = Kompakti Tila
     .tooltiptext = Ota käyttöön Kompakti tila
@@ -113,3 +123,5 @@ zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
 zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
 zen-window-sync-migration-dialog-learn-more = Learn More
 zen-window-sync-migration-dialog-accept = Got It
+zen-appmenu-new-blank-window = 
+    .label = New blank window

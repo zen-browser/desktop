@@ -17,7 +17,7 @@ zen-welcome-workspace-colors-title = Deine Arbeitsbereiche, deine Farben
 zen-welcome-workspace-colors-description = Personalisiere deinen Browser, indem du jedem Arbeitsbereich eine eigene Farbidentität gibst.
 zen-welcome-start-browsing-title =
     Alles bereit?<br/>
-    Los geht’s!
+    Los geht's!
 zen-welcome-start-browsing-description-1 = Du bist startklar! Klicke auf den Button unten, um mit { -brand-short-name } loszulegen.
 zen-welcome-start-browsing = Los geht's!
 zen-welcome-default-search-title = Deine Standard-Suchmaschine

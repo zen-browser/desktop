@@ -17,6 +17,9 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = Sembunyikan keduanya
     .accesskey = H
+zen-toolbar-context-move-to-folder = 
+    .label = Move to Folder...
+    .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Folder Baru
     .accesskey = N
@@ -36,4 +39,9 @@ tabbrowser-reset-pin-button =
             [one] Reset dan sematkan tab
            *[other] Reset dan sematkan { $tabCount } tab
         }
-tab-reset-pin-label = Kembali ke URL awal
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Kembali ke URL Awal
+        [zen-default-pinned-cmd] Pisahkan dari tab tersemat
+       *[other] { $tabSubtitle }
+    }

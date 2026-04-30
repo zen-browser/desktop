@@ -5,8 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] פיצול לשונית (נדרש מספר לשוניות מסומנות)
-           *[other] פיצול { $tabCount } לשוניות
+            [-1] Split out tab
+            [1] Add split view...
+           *[other] Join { $tabCount } Tabs
         }
     .accesskey = ד
 zen-split-link = 
@@ -15,6 +16,3 @@ zen-split-link =
 zen-split-view-modifier-header = תצוגה מפוצלת
 zen-split-view-modifier-activate-reallocation = 
     .label = הזזה בפעולה
-zen-split-view-modifier-enabled-toast = הזזת תצוגה מפוצלת פעילה.
-zen-split-view-modifier-enabled-toast-description = גרירה ושחרור כדי להזיז. Esc ליציאה.
-zen-split-view-modifier-disabled-toast = הזזת תצוגה מפוצלת כבויה.

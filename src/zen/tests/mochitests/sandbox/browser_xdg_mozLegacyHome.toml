@@ -3,7 +3,6 @@
 [DEFAULT]
 skip-if = [
   "ccov",
-  "os == 'linux' && os_version == '22.04' && arch == 'x86_64' && display == 'wayland' && asan", # bug 1784517
   "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11' && asan", # bug 1784517
   "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11' && tsan", # bug 1784517
 ]
@@ -25,4 +24,6 @@ environment = [
 profile-path = "/tmp/.xdg_mozLegacyHome_test/.mozilla/firefox/xdg_mozLegacyHome_profile"
 
 ["browser_content_sandbox_fs_xdg_mozLegacyHome.js"]
-run-if = ["os == 'linux'"]
+run-if = [
+ "os == 'linux'"
+]

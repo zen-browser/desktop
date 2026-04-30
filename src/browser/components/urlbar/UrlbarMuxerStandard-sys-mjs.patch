@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs b/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs
-index 000a00f3e56c2f1d3bf4eec8c4924228de1cb418..f91f8cf38f0ba9c403bc284a7cdaaee17435b258 100644
+index 136c66310f37bda3229b82eef32a4a22a716a0b0..4ca15850002cefda0484179839280e58eaf42cfa 100644
 --- a/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs
 +++ b/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs
-@@ -839,11 +839,16 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
+@@ -837,11 +837,16 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
        result.providerName == "UrlbarProviderHeuristicFallback" &&
        state.context.heuristicResult?.providerName !=
          "UrlbarProviderHeuristicFallback"

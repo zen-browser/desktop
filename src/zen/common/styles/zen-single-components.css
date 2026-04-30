@@ -304,6 +304,7 @@
   flex-wrap: wrap;
   gap: 8px;
   overflow: visible;
+  flex-direction: row;
 
   unified-extensions-item-messagebar-wrapper,
   .unified-extensions-item-contents {
@@ -407,17 +408,59 @@
   display: none;
 }
 
-.permission-popup-permission-item {
+.zen-permission-popup-boost-editor-button {
+  transition:
+    0.2s opacity ease,
+    0.2s background-color ease,
+    0.2s transform ease;
+  opacity: 0;
+
+  width: 30px;
+  height: 26px;
+  min-width: 30px;
+  appearance: none;
+  background: transparent;
+  border: none;
+
+  border-radius: 8px;
+  transform: scale(1);
+
+  -moz-context-properties: fill;
+  fill: white;
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  & image {
+    opacity: 0.6;
+    height: 14px;
+    width: calc(100% - 2px);
+  }
+}
+
+.permission-popup-boost-item:hover .zen-permission-popup-boost-editor-button {
+  opacity: 1;
+
+  &.zen-permission-popup-boost-editor-button:hover {
+    background-color: var(--button-background-color-ghost-hover);
+  }
+}
+
+.permission-popup-permission-item,
+.permission-popup-boost-item {
   gap: 8px;
   overflow: hidden;
   align-items: center;
 }
 
-.permission-popup-permission-label-container {
+.permission-popup-permission-label-container,
+.permission-popup-boost-label-container {
   min-width: 1px;
 }
 
-.permission-popup-permission-label {
+.permission-popup-permission-label,
+.permission-popup-boost-label {
   margin: 0;
   font-weight: 500;
   white-space: nowrap;
@@ -426,7 +469,8 @@
   max-width: 100%;
 }
 
-.permission-popup-permission-icon {
+.permission-popup-permission-icon,
+.permission-popup-boost-icon {
   fill: var(--button-primary-color);
   padding: 8px;
   width: 34px;
@@ -458,20 +502,24 @@
       opacity 0.12s ease-in-out;
   }
 
-  .permission-popup-permission-item:hover &::before {
+  .permission-popup-permission-item:hover &::before,
+  .permission-popup-boost-item:hover:not(:has(.zen-permission-popup-boost-editor-button:hover)) &::before {
     transform: scale(1.05);
   }
 
-  .permission-popup-permission-item:active:hover &::before {
+  .permission-popup-permission-item:active:hover &::before,
+  .permission-popup-boost-item:active:hover:not(:has(.zen-permission-popup-boost-editor-button:hover)) &::before {
     transform: scale(0.95);
   }
 
-  .permission-popup-permission-item[state="allow"] &::before {
+  .permission-popup-permission-item[state="allow"] &::before,
+  .permission-popup-boost-item[state="enabled"] &::before {
     opacity: 1;
   }
 }
 
-.zen-permission-popup-permission-state-label {
+.zen-permission-popup-permission-state-label,
+.zen-permission-popup-boost-state-label {
   opacity: 0.6;
   font-size: smaller;
   font-weight: 400;
@@ -480,13 +528,15 @@
 
 #identity-box,
 #page-action-buttons {
-  opacity: 0.6;
+  fill-opacity: 0.6;
 }
 
 #zen-site-data-footer {
   border-top: 1px solid color-mix(in srgb, currentColor 6%, transparent);
   padding-top: 8px;
   margin: 2px 8px 8px 8px;
+
+  gap: 8px;
 
   & toolbarbutton {
     margin: 0;
@@ -565,7 +615,6 @@
 
       transition: transform 0.12s ease-in-out;
       box-sizing: border-box;
-      will-change: transform;
     }
 
     &.active {
@@ -586,7 +635,8 @@
   }
 }
 
-#zen-site-data-settings-list toolbarseparator {
+#zen-site-data-settings-list toolbarseparator,
+#zen-site-data-boost-list toolbarseparator {
   margin: 6px 0;
 }
 
@@ -648,5 +698,96 @@
 
   #multi-stage-message-welcome-text {
     gap: 4px;
+  }
+}
+
+
+/* Notification Stack */
+
+.notificationbox-stack {
+  background: transparent;
+
+  &[notificationside="top"] {
+    position: fixed;
+    bottom: calc(var(--zen-element-separation) * 1.5);
+    right: calc(var(--zen-element-separation) * 1.5);
+
+    :root[zen-right-side="true"] & {
+      right: auto;
+      left: calc(var(--zen-element-separation) * 1.5);
+    }
+
+    width: fit-content;
+    max-width: 30rem !important;
+    z-index: 9999;
+
+    & notification-message {
+      background: color-mix(in srgb, var(--zen-colors-tertiary) 70%, transparent 30%);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--arrowpanel-border-color);
+      border-radius: var(--zen-border-radius);
+
+      &::before {
+        display: none;
+      }
+    }
+  }
+}
+
+/* Loading progress bar */
+#zen-loading-progress-bar {
+  --zen-loading-progress-bar-color: color-mix(in srgb, var(--zen-primary-color), light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.5)) 70%);
+
+  position: fixed;
+  top: calc(-2px - env(hairline));
+
+  /* Minimum -2px, but if its larger, elemenet separation / -2 will be used as top offset, to avoid overlapping with the notification stack */
+  :root:is([zen-no-padding="true"], [inDOMFullscreen="true"]) & {
+    top: 4px;
+  }
+
+  :root[zen-single-toolbar="true"] & {
+    top: calc(var(--zen-element-separation) / -2);
+  }
+
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background: var(--zen-loading-progress-bar-color);
+  height: .4rem;
+  width: 5rem;
+  z-index: 9;
+  border-radius: 100px;
+  transition: opacity .3s ease-in-out,
+              background-color .3s ease-in-out,
+              transform .3s ease-in-out;
+  overflow: clip;
+  pointer-events: none;
+  animation: zen-progress-bar-pulse 1s ease-in-out infinite forwards;
+  animation-direction: alternate;
+  transform-origin: 0 0;
+  contain: content;
+
+  &[long-load="true"] {
+    opacity: 1;
+    animation: zen-progress-bar-settle .3s ease-out forwards;
+    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 75%;
+      opacity: 0;
+      animation: zen-progress-bar-long-load 1s ease-in-out infinite;
+      animation-delay: 0.3s;
+      background: var(--zen-loading-progress-bar-color);
+      border-radius: inherit;
+    }
+  }
+
+  /* stylelint-disable-next-line media-query-no-invalid */
+  @media not -moz-pref("zen.view.enable-loading-indicator") {
+    display: none;
   }
 }

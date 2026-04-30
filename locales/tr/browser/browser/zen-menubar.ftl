@@ -5,8 +5,8 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Sabitlenmiş Sekmeleri Genişlet
-           *[false] Sabitlenmiş Sekmeleri Daralt
+            [true] Sabitlenmiş sekmeleri genişlet
+           *[false] Sabitlenmiş sekmeleri daralt
         }
 zen-menubar-appearance = 
     .label = Görünüm
@@ -18,5 +18,5 @@ zen-menubar-appearance-light =
     .label = Açık
 zen-menubar-appearance-dark = 
     .label = Koyu
-zen-menubar-new-unsynced-window = 
-    .label = Yeni Boş Pencere
+zen-menubar-new-blank-window = 
+    .label = Yeni boş pencere

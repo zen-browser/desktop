@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = jelenlegi profil
 unified-extensions-description = A bővítmények a { -brand-short-name }-t új funkciókkal látják el.
 tab-context-zen-reset-pinned-tab = 
-    .label = Kitűzött lap visszaállítása
+    .label =
+        { $isEssential ->
+            [true] Alapvető lap visszaállítása
+           *[false] Rögzített lap visszaállítása
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Felvétel az alapvetőkbe
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = Eltávolítás az alapvetőkből
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Kitűzött lap cseréje a jelenlegi URL-el
+    .label =
+        { $isEssential ->
+            [true] Alapvető lap cseréje az aktuális URL-el
+           *[false] Rögzített lap cseréje az aktuális URL-el
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = Címke módosítása...
@@ -33,6 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimalizálás
 zen-panel-ui-gradient-generator-custom-color = Egyedi szín
 zen-copy-current-url-confirmation = Jelenlegi URL másolva!
+zen-copy-current-url-as-markdown-confirmation = Jelenlegi URL másolva Markdownként!
 zen-general-cancel-label = 
     .label = Mégsem
 zen-general-confirm = 
@@ -41,6 +50,7 @@ zen-pinned-tab-replaced = A rögzített lap URL címe helyébe az aktuális URL 
 zen-tabs-renamed = A lap sikeresen át lett nevezve!
 zen-background-tab-opened-toast = Új lap megnyitva!
 zen-workspace-renamed-toast = A munkakörnyezet sikeresen át lett nevezve!
+zen-split-view-limit-toast = Nem lehet további paneleket hozzáadni az osztott nézethez!
 zen-toggle-compact-mode-button = 
     .label = Kompakt mód
     .tooltiptext = Kompakt mód ki-/bekapcsolása
@@ -113,3 +123,5 @@ zen-window-sync-migration-dialog-title = Tartsad szinkronban az ablakaid
 zen-window-sync-migration-dialog-message = A Zen mostantól szinkronizálja az ugyanazon eszközön található ablakokat, így az egyik ablakban végzett módosítások azonnal megjelennek a többiben is.
 zen-window-sync-migration-dialog-learn-more = Tudj meg többet
 zen-window-sync-migration-dialog-accept = Értettem
+zen-appmenu-new-blank-window = 
+    .label = Új üres ablak

@@ -5,8 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] Opdel fane (flere faner skal vælges)
-           *[other] Opdel { $tabCount } faner
+            [-1] Split out tab
+            [1] Add split view...
+           *[other] Join { $tabCount } Tabs
         }
     .accesskey = S
 zen-split-link = 
@@ -15,6 +16,3 @@ zen-split-link =
 zen-split-view-modifier-header = Opdelt visning
 zen-split-view-modifier-activate-reallocation = 
     .label = Aktiver gentildeling
-zen-split-view-modifier-enabled-toast = Omarrangering af delt visning er TIL.
-zen-split-view-modifier-enabled-toast-description = Træk og slip visningen for at omarrangere. Tryk på Esc for at afslutte.
-zen-split-view-modifier-disabled-toast = Omarrangering af delt visning er FRA.

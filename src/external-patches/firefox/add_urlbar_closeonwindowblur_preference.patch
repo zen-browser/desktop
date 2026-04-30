@@ -72,4 +72,4 @@ diff --git a/browser/components/urlbar/content/UrlbarInput.mjs b/browser/compone
      // a command causing a focus change. For example opening preferences from
      // the oneoff settings button.
      // For now we detect that case by discarding the event on command, but we
-
+     // may want to figure out a more robust way to detect abandonment.

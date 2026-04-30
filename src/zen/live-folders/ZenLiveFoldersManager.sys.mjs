@@ -34,7 +34,9 @@ class nsZenLiveFoldersManager {
   #saveFilename = "zen-live-folders.jsonlz4";
   #file = null;
 
+  #boundHandleEvent = null;
   stateRestored = Promise.withResolvers();
+
   constructor() {
     this.liveFolders = new Map();
     this.registry = new Map();
@@ -63,10 +65,48 @@ class nsZenLiveFoldersManager {
     this.#isInitialized = true;
   }
 
+  uninit() {
+    if (!this.#isInitialized) {
+      return;
+    }
+
+    Services.obs.removeObserver(this, "wake_notification");
+    if (this.#boundHandleEvent) {
+      lazy.ZenWindowSync.removeSyncHandler(this.#boundHandleEvent);
+      this.#boundHandleEvent = null;
+    }
+
+    for (const liveFolder of this.liveFolders.values()) {
+      liveFolder.stop();
+    }
+
+    this.registry.clear();
+    this.liveFolders.clear();
+    this.dismissedItems.clear();
+
+    this.#isInitialized = false;
+  }
+
   // Event Handling
   // --------------
   #initEventListeners() {
-    lazy.ZenWindowSync.addSyncHandler(this.handleEvent.bind(this));
+    Services.obs.addObserver(this, "wake_notification");
+
+    this.#boundHandleEvent = this.handleEvent.bind(this);
+    lazy.ZenWindowSync.addSyncHandler(this.#boundHandleEvent);
+  }
+
+  observe(_subject, topic, _data) {
+    switch (topic) {
+      case "wake_notification": {
+        // Woke from sleep, re-schedule all fetch
+        for (const liveFolder of this.liveFolders.values()) {
+          liveFolder.stop();
+          liveFolder.start();
+        }
+        break;
+      }
+    }
   }
 
   handleEvent(aEvent) {
@@ -384,13 +424,18 @@ class nsZenLiveFoldersManager {
       animate: !folder.collapsed,
     });
 
-    // Remove the dismissed items that are no longer in the given list
-    for (const dismissedItemId of this.dismissedItems) {
-      if (
-        dismissedItemId.startsWith(`${liveFolder.id}:`) &&
-        !itemIds.has(dismissedItemId)
-      ) {
-        this.dismissedItems.delete(dismissedItemId);
+    // Remove the dismissed items that are no longer in the given list.
+    // Only do this when the fetch returned results — an empty list may
+    // indicate a transient failure (e.g. auth expired, HTML changed)
+    // and we must not wipe all dismissals in that case.
+    if (itemIds.size > 0) {
+      for (const dismissedItemId of this.dismissedItems) {
+        if (
+          dismissedItemId.startsWith(`${liveFolder.id}:`) &&
+          !itemIds.has(dismissedItemId)
+        ) {
+          this.dismissedItems.delete(dismissedItemId);
+        }
       }
     }
 

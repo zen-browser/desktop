@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = perfil actual
 unified-extensions-description = Las extensiones se utilizan para agregar más funcionalidades a { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Restablecer pestaña fijada
+    .label =
+        { $isEssential ->
+            [true] Restablecer pestaña esencial
+           *[false] Restablecer pestaña fijada
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Añadir a esenciales
@@ -15,7 +19,11 @@ tab-context-zen-remove-essential =
     .label = Quitar de esenciales
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Reemplazar la URL fijada con la actual
+    .label =
+        { $isEssential ->
+            [true] Reemplazar URL esencial con la actual
+           *[false] Reemplazar URL fijada con la actual
+        }
     .accesskey = C
 tab-context-zen-edit-title = 
     .label = Cambiar etiqueta...
@@ -33,6 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimizar
 zen-panel-ui-gradient-generator-custom-color = Color personalizado
 zen-copy-current-url-confirmation = ¡URL actual copiada!
+zen-copy-current-url-as-markdown-confirmation = ¡La URL actual se copió como Markdown!
 zen-general-cancel-label = 
     .label = Cancelar
 zen-general-confirm = 
@@ -41,6 +50,7 @@ zen-pinned-tab-replaced = La URL de la pestaña fijada se ha reemplazado por la 
 zen-tabs-renamed = ¡La pestaña se ha renombrado con éxito!
 zen-background-tab-opened-toast = ¡Nueva pestaña abierta en segundo plano!
 zen-workspace-renamed-toast = ¡El espacio de trabajo ha sido renombrado con éxito!
+zen-split-view-limit-toast = ¡No se pueden añadir más paneles a la vista dividida!
 zen-toggle-compact-mode-button = 
     .label = Modo compacto
     .tooltiptext = Alternar modo compacto
@@ -113,3 +123,5 @@ zen-window-sync-migration-dialog-title = Mantenga sus ventanas sincronizadas
 zen-window-sync-migration-dialog-message = Ahora Zen sincroniza las ventanas en el mismo dispositivo, por lo que los cambios en una ventana se reflejan en las demás instantáneamente.
 zen-window-sync-migration-dialog-learn-more = Más información
 zen-window-sync-migration-dialog-accept = Entendido
+zen-appmenu-new-blank-window = 
+    .label = Nueva ventana en blanco

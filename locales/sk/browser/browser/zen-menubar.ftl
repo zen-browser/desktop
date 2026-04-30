@@ -5,18 +5,18 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Expand Pinned Tabs
-           *[false] Collapse Pinned Tabs
+            [true] Rozbaliť Pripnuté Karty
+           *[false] Zbaliť Pripnuté Karty
         }
 zen-menubar-appearance = 
-    .label = Appearance
+    .label = Vzhľad
 zen-menubar-appearance-description = 
-    .label = Websites will use:
+    .label = Webové stránky budú používať:
 zen-menubar-appearance-auto = 
-    .label = Automatic
+    .label = Automaticky
 zen-menubar-appearance-light = 
-    .label = Light
+    .label = Svetlý
 zen-menubar-appearance-dark = 
-    .label = Dark
-zen-menubar-new-unsynced-window = 
+    .label = Tmavý
+zen-menubar-new-blank-window = 
     .label = New Blank Window

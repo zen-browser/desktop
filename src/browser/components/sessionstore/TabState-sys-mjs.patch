@@ -1,9 +1,9 @@
 diff --git a/browser/components/sessionstore/TabState.sys.mjs b/browser/components/sessionstore/TabState.sys.mjs
-index 82721356d191055bec0d4b0ca49e481221988801..e01904a6ea73e068c236adecbac6a97adedb2bd3 100644
+index eb24c3ffdd2cfb33379aca993af5171fdb91ac2c..15d3fbff397df23f112355e22ca5dba5bf29528f 100644
 --- a/browser/components/sessionstore/TabState.sys.mjs
 +++ b/browser/components/sessionstore/TabState.sys.mjs
-@@ -85,7 +85,25 @@ class _TabState {
-       tabData.groupId = tab.group.id;
+@@ -99,7 +99,25 @@ class _TabState {
+       }
      }
  
 +    tabData.zenWorkspace = tab.getAttribute("zen-workspace-id");

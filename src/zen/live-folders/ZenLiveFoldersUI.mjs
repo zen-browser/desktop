@@ -78,8 +78,10 @@ class nsZenLiveFoldersUI {
     menuItem.setAttribute("data-l10n-id", option.l10nId);
 
     if (option.checked !== undefined) {
-      menuItem.setAttribute("checked", option.checked);
       menuItem.setAttribute("type", option.type ?? "checkbox");
+      if (option.checked === true) {
+        menuItem.setAttribute("checked", "true");
+      }
     }
 
     if (option.l10nArgs) {

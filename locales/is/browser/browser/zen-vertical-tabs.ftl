@@ -17,6 +17,9 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = Fela bæði
     .accesskey = H
+zen-toolbar-context-move-to-folder = 
+    .label = Færa í möppu...
+    .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Ný mappa
     .accesskey = N
@@ -36,4 +39,9 @@ tabbrowser-reset-pin-button =
             [one] Endurstilla og festa flipa
            *[other] Endurstilla og festa { $tabCount } flipa
         }
-tab-reset-pin-label = Til baka á festa slóð
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Til baka á festa slóð
+        [zen-default-pinned-cmd] Aðskilja frá festum flipa
+       *[other] { $tabSubtitle }
+    }

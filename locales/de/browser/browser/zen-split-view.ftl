@@ -5,8 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] Tab aufteilen (wähle mehrere Tabs aus)
-           *[other] { $tabCount } Tabs aufteilen
+            [-1] Tab abtrennen
+            [1] Split View hinzufügen...
+           *[other] { $tabCount } Tabs zusammenführen
         }
     .accesskey = S
 zen-split-link = 
@@ -15,6 +16,3 @@ zen-split-link =
 zen-split-view-modifier-header = Geteilte Ansicht
 zen-split-view-modifier-activate-reallocation = 
     .label = Anordnung ändern
-zen-split-view-modifier-enabled-toast = Anordnung der geteilten Ansicht aktiv.
-zen-split-view-modifier-enabled-toast-description = Ziehe die Ansicht per Drag & Drop, um sie neu anzuordnen. Drücke Esc zum Beenden.
-zen-split-view-modifier-disabled-toast = Anordnung der geteilten Ansicht deaktiviert.

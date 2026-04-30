@@ -17,6 +17,9 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = Skrýt obojí
     .accesskey = H
+zen-toolbar-context-move-to-folder = 
+    .label = Přesunout do složky...
+    .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Nová složka
     .accesskey = N
@@ -38,4 +41,9 @@ tabbrowser-reset-pin-button =
             [few] Resetovat a připnout { $tabCount } panely
            *[other] Resetovat a připnout { $tabCount } panelů
         }
-tab-reset-pin-label = Zpět na původní adresu
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+       *[other] { $tabSubtitle }
+    }

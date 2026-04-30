@@ -18,5 +18,5 @@ zen-menubar-appearance-light =
     .label = Clair
 zen-menubar-appearance-dark = 
     .label = Sombre
-zen-menubar-new-unsynced-window = 
-    .label = Nouvelle fenêtre non synchronisée
+zen-menubar-new-blank-window = 
+    .label = Nouvelle fenêtre vide

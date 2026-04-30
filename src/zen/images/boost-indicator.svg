@@ -1,0 +1,48 @@
+<!--
+   - This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+   -->
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="none"/>
+
+    <style type="text/css"><![CDATA[
+    .sparkle {
+      stroke-width: 1;
+      stroke-linecap: round;
+      
+      opacity: 0;
+
+      transform-box: fill-box;
+      transform-origin: center;
+      
+      animation: sparkle 3s ease-in-out infinite;
+    }
+
+    @keyframes sparkle {
+      0% {
+        opacity: 0;
+        transform: scale(0) rotate(0deg);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1) rotate(90deg);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0) rotate(180deg);
+      }
+    }
+  ]]></style>
+
+  <g class="sparkle-group">
+    <path class="sparkle" stroke="context-fill" style="animation-delay: 0.5s;" d="M10 2v2"/>
+    <path class="sparkle" stroke="context-fill" style="animation-delay: 0.5s;" d="M11 3H9"/>
+    
+    <path class="sparkle" stroke="context-fill" d="M5 6v4"/>
+    <path class="sparkle" stroke="context-fill" d="M7 8H3"/>
+
+    <path class="sparkle" stroke="context-fill" style="animation-delay: 1.8s;" d="M21 20h-4"/>
+    <path class="sparkle" stroke="context-fill" style="animation-delay: 1.8s;" d="M19 18v4"/>
+  </g>
+</svg>

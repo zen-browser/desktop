@@ -68,6 +68,7 @@
     #maxTabsPerRow = 0;
     #changeSpaceTimer = null;
     #isAnimatingTabMove = false;
+    #firstHapticFeedbackPlayed = false;
 
     #dragOverSplit = {};
 
@@ -119,6 +120,12 @@
     init() {
       super.init();
       this.handle_windowDragEnter = this.handle_windowDragEnter.bind(this);
+      if (gZenWorkspaces.workspaceEnabled) {
+        gZenWorkspaces.workspaceIcons.addEventListener(
+          "dragover",
+          this.handle_spaceIconDragOver.bind(this)
+        );
+      }
       window.addEventListener(
         "dragleave",
         this.handle_windowDragLeave.bind(this),
@@ -305,7 +312,7 @@
       let lastMovingTabScreen = endEdge(lastMovingTab);
       let firstMovingTabScreen = firstMovingTab[screenAxis];
       let shiftSize = lastMovingTabScreen - firstMovingTabScreen;
-      let translate = screen - dragData[screenAxis];
+      let translate = screen - draggedTab[screenAxis] - tabSize / 2;
 
       // Constrain the range over which the moving tabs can move between the edge of the tabstrip and periphery.
       // Add 1 to periphery so we don't overlap it.
@@ -320,19 +327,6 @@
       startBound = firstTab[screenAxis] - firstMovingTabScreen;
       endBound = endEdge(lastTab) - lastMovingTabScreen;
       translate = Math.min(Math.max(translate, startBound), endBound);
-
-      // Center the tab under the cursor if the tab is not under the cursor while dragging
-      let draggedTabScreenAxis = draggedTab[screenAxis] + translate;
-      if (
-        (screen < draggedTabScreenAxis ||
-          screen > draggedTabScreenAxis + tabSize) &&
-        draggedTabScreenAxis + tabSize < endBound &&
-        draggedTabScreenAxis > startBound
-      ) {
-        translate = screen - draggedTab[screenAxis] - tabSize / 2;
-        // Ensure, after the above calculation, we are still within bounds
-        translate = Math.min(Math.max(translate, startBound), endBound);
-      }
 
       dragData.translatePos = translate;
 
@@ -689,6 +683,31 @@
       }
     }
 
+    #onSpaceChanged(spaceChanged, dt) {
+      if (AppConstants.platform !== "macosx") {
+        // See the hack in #createDragImageForTabs for more details which
+        // explains why we need to do this on non-macOS platforms.
+        return;
+      }
+      let tabs = this.originalDragImageArgs[0].children;
+      const { isDarkMode, isExplicitMode } =
+        gZenThemePicker.getGradientForWorkspace(spaceChanged, {
+          getGradient: false,
+        });
+      for (let tab of tabs) {
+        if (isExplicitMode) {
+          tab.style.colorScheme = isDarkMode ? "dark" : "light";
+        } else {
+          tab.style.colorScheme = "";
+        }
+      }
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          dt.updateDragImage(...this.originalDragImageArgs);
+        });
+      });
+    }
+
     #handle_sidebarDragOver(event) {
       const dt = event.dataTransfer;
       const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
@@ -709,28 +728,7 @@
                 /* Disable wrapping */ true
               )
               .then(spaceChanged => {
-                if (AppConstants.platform !== "macosx") {
-                  // See the hack in #createDragImageForTabs for more details which
-                  // explains why we need to do this on non-macOS platforms.
-                  return;
-                }
-                let tabs = this.originalDragImageArgs[0].children;
-                const { isDarkMode, isExplicitMode } =
-                  gZenThemePicker.getGradientForWorkspace(spaceChanged, {
-                    getGradient: false,
-                  });
-                for (let tab of tabs) {
-                  if (isExplicitMode) {
-                    tab.style.colorScheme = isDarkMode ? "dark" : "light";
-                  } else {
-                    tab.style.colorScheme = "";
-                  }
-                }
-                requestAnimationFrame(() => {
-                  requestAnimationFrame(() => {
-                    dt.updateDragImage(...this.originalDragImageArgs);
-                  });
-                });
+                this.#onSpaceChanged(spaceChanged, dt);
               });
             this.#changeSpaceTimer = null;
           }, this._dndSwitchSpaceDelay);
@@ -738,6 +736,27 @@
       } else if (this.#changeSpaceTimer) {
         this.clearSpaceSwitchTimer();
       }
+    }
+
+    handle_spaceIconDragOver(event) {
+      const dt = event.dataTransfer;
+      const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
+      if (draggedTab.hasAttribute("zen-essential")) {
+        return;
+      }
+      const target = event.target;
+      const spaceId = target.getAttribute("zen-workspace-id");
+      if (!spaceId) {
+        return;
+      }
+      this.clearDragOverVisuals();
+      const currentSpaceId = gZenWorkspaces.activeWorkspace;
+      if (spaceId === currentSpaceId || gZenWorkspaces._animatingChange) {
+        return;
+      }
+      gZenWorkspaces.changeWorkspaceWithID(spaceId).then(spaceChanged => {
+        this.#onSpaceChanged(spaceChanged, dt);
+      });
     }
 
     #handle_tabDragOverToSplit(event) {
@@ -925,6 +944,16 @@
     }
 
     handle_drop(event) {
+      const ownerGlobal = event.dataTransfer.mozGetDataAt(
+        TAB_DROP_TYPE,
+        0
+      )?.ownerGlobal;
+      if (ownerGlobal?.gZenCompactModeManager) {
+        // Sometimes, dragend doesn't always get called when dragging
+        // to different windows, see gh-8643.
+        delete ownerGlobal.gZenCompactModeManager._isTabBeingDragged;
+        ownerGlobal.gZenCompactModeManager._clearAllHoverStates();
+      }
       this.clearSpaceSwitchTimer();
       gZenFolders.highlightGroupOnDragOver(null);
       super.handle_drop(event);
@@ -989,6 +1018,12 @@
     }
 
     handle_drop_transition(dropElement, draggedTab, movingTabs, dropBefore) {
+      if (
+        dropElement?.hasAttribute("zen-empty-tab") &&
+        dropElement.group?.isZenFolder
+      ) {
+        dropElement = dropElement.group;
+      }
       if (isTabGroupLabel(dropElement)) {
         dropElement = dropElement.group;
       }
@@ -1073,7 +1108,10 @@
         );
         for (let i = startIndex; i <= endIndex; i++) {
           let item = items[i];
-          if (!movingTabs.includes(item)) {
+          if (
+            !movingTabs.includes(item) &&
+            !(isTabGroupLabel(item) && i == startIndex)
+          ) {
             tabsInBetween.push(item);
           }
         }
@@ -1132,12 +1170,17 @@
       // outside of a valid drop target.
       ownerGlobal.gZenFolders.highlightGroupOnDragOver(null);
       this.ZenDragAndDropService.onDragEnd();
-      super.handle_dragend(event);
+      try {
+        super.handle_dragend(event);
+      } catch (e) {
+        console.error(e);
+      }
       thisFromGlobal.clearDragOverVisuals();
       ownerGlobal.gZenPinnedTabManager.removeTabContainersDragoverClass();
       thisFromGlobal._clearDragOverSplit();
       this.#maybeClearVerticalPinnedGridDragOver();
       thisFromGlobal.originalDragImageArgs = [];
+      this.#firstHapticFeedbackPlayed = false;
       window.removeEventListener(
         "dragenter",
         thisFromGlobal.handle_windowDragEnter,
@@ -1255,13 +1298,13 @@
           // Only if there are no normal tabs to drop after
           showIndicatorUnderNewTabButton =
             lastTab.hasAttribute("zen-empty-tab");
-          let useLastPinnd =
+          let useLastPinned =
             (hoveringPeriphery ||
               (showIndicatorUnderNewTabButton &&
                 !(pinnedTabsCount - gBrowser._numZenEssentials))) &&
             Services.prefs.getBoolPref("zen.view.show-newtab-button-top");
           dropElement =
-            (useLastPinnd
+            (useLastPinned
               ? this._tabbrowserTabs.ariaFocusableItems.at(pinnedTabsCount)
               : this._tabbrowserTabs.ariaFocusableItems.at(-1)) || lastTab;
         }
@@ -1391,6 +1434,12 @@
             ) || dropElement;
           dropBefore = true;
         }
+      }
+      if (shouldPlayHapticFeedback && !this.#firstHapticFeedbackPlayed) {
+        // The first haptic feedback can often be too annoying,
+        // so we skip it, but play for subsequent dragovers.
+        this.#firstHapticFeedbackPlayed = true;
+        shouldPlayHapticFeedback = false;
       }
       if (shouldPlayHapticFeedback) {
         // eslint-disable-next-line mozilla/valid-services

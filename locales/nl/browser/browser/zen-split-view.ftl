@@ -5,8 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] Splits tabblad (meerdere geselecteerde tabbladen vereist)
-           *[other] Splits { $tabCount } tabbladen
+            [-1] Splits tabbladen op
+            [1] Voeg gesplitste weergave toe...
+           *[other] Voeg { $tabCount } tabbladen samen
         }
     .accesskey = S
 zen-split-link = 
@@ -15,6 +16,3 @@ zen-split-link =
 zen-split-view-modifier-header = Gesplitste weergave
 zen-split-view-modifier-activate-reallocation = 
     .label = Herverdeling activeren
-zen-split-view-modifier-enabled-toast = Gesplitste weergave herschikken staat AAN.
-zen-split-view-modifier-enabled-toast-description = Sleep de tabbladen om de weergave te herschikken. Druk op Esc om af te sluiten.
-zen-split-view-modifier-disabled-toast = Geplitste weergave herschikken staat UIT.

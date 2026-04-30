@@ -17,6 +17,9 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = Cuddio'r ddau
     .accesskey = C
+zen-toolbar-context-move-to-folder = 
+    .label = Move to Folder...
+    .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Ffolder Newydd
     .accesskey = N
@@ -36,4 +39,9 @@ tabbrowser-reset-pin-button =
             [un] Ailosod a phinio tab
            *[arall] Ailosod a phinio { $tabCount } tab
         }
-tab-reset-pin-label = Nôl i'r url wedi'i binio
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Nôl i'r url wedi'i binio
+        [zen-default-pinned-cmd] Gwahanu rhag y tab wedi'i binio
+       *[other] { $tabSubtitle }
+    }

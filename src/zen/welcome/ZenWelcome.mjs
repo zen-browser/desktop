@@ -4,6 +4,11 @@
 
 {
   let _tabsToPinEssentials = [];
+  let lazy = {};
+
+  ChromeUtils.defineESModuleGetters(lazy, {
+    SearchService: "moz-src:///toolkit/components/search/SearchService.sys.mjs",
+  });
 
   const kZenElementsToIgnore = [
     "zen-browser-background",
@@ -77,9 +82,6 @@
     return data;
   }
 
-  /**
-   *
-   */
   class nsZenWelcomePages {
     constructor(pages) {
       this._currentPage = -1;
@@ -300,16 +302,13 @@
     }
   }
 
-  /**
-   *
-   */
   class ZenSearchEngineStore {
     constructor() {
       this._engines = [];
     }
 
     async init() {
-      const visibleEngines = await Services.search.getVisibleEngines();
+      const visibleEngines = await lazy.SearchService.getVisibleEngines();
       this.initSpecificEngine(visibleEngines);
     }
 
@@ -351,12 +350,12 @@
     }
 
     async getDefaultEngine() {
-      let engineName = await Services.search.getDefault();
+      let engineName = await lazy.SearchService.getDefault();
       return this.getEngineByName(engineName._name);
     }
 
     async setDefaultEngine(engine) {
-      await Services.search.setDefault(
+      await lazy.SearchService.setDefault(
         engine.originalEngine,
         Ci.nsISearchService.CHANGE_REASON_USER
       );
@@ -460,7 +459,7 @@
 
           content.setAttribute("select-engine", "true");
 
-          const defaultEngine = await Services.search.getDefault();
+          const defaultEngine = await lazy.SearchService.getDefault();
           const promises = [];
           engineStore.getEngines().forEach(engine => {
             const label = document.createElement("label");

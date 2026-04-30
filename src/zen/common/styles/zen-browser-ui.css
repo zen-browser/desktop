@@ -4,6 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+body,
 #tabbrowser-tabpanels {
   background: transparent !important;
 }
@@ -105,6 +106,8 @@
 }
 
 #zen-browser-background {
+  contain: paint;
+
   /* This is conceptually a background, but putting this on a pseudo-element
     * avoids it from suppressing the chrome-content separator border, etc.
     *

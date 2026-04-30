@@ -61,3 +61,6 @@
 # We've submitted a patch to Firefox at https://bugzilla.mozilla.org/show_bug.cgi?id=2018499
 - name: browser.urlbar.closeOnWindowBlur
   value: false
+
+- name: browser.urlbar.trustPanel.featureGate
+  value: false

@@ -5,8 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] Jaota kaart (mitu kaarti peab olema valitud)
-           *[other] Jaota { $tabCount } kaarti
+            [-1] Split out tab
+            [1] Add split view...
+           *[other] Join { $tabCount } Tabs
         }
     .accesskey = J
 zen-split-link = 
@@ -15,6 +16,3 @@ zen-split-link =
 zen-split-view-modifier-header = Jaotatud vaade
 zen-split-view-modifier-activate-reallocation = 
     .label = Aktiveeri ümberkorraldamine
-zen-split-view-modifier-enabled-toast = Jaotatud vaate ümberkorraldamine on SISSE LÜLITATUD.
-zen-split-view-modifier-enabled-toast-description = Lohista vaatel, et see ümber tõsta. Režiimist väljumiseks vajuta klahvile Esc.
-zen-split-view-modifier-disabled-toast = Jaotatud vaate ümberkorraldamine on VÄLJA LÜLITATUD.

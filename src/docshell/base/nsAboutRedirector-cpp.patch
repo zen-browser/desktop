@@ -1,8 +1,8 @@
 diff --git a/docshell/base/nsAboutRedirector.cpp b/docshell/base/nsAboutRedirector.cpp
-index d6720d69cb123ab7cdc53671e49d27a8970d9607..b83748e2f6b5bb4623db709a6ac8803644c6d56a 100644
+index 76f707e5f1e8e20a6acec9a445781377c052ba59..4f8f14deace21ff56157b77c15bcb93e1792e354 100644
 --- a/docshell/base/nsAboutRedirector.cpp
 +++ b/docshell/base/nsAboutRedirector.cpp
-@@ -117,7 +117,7 @@ static const RedirEntry kRedirMap[] = {
+@@ -115,7 +115,7 @@ static const RedirEntry kRedirMap[] = {
      {"crashes", "chrome://global/content/crashes.html",
       nsIAboutModule::IS_SECURE_CHROME_UI},
  #endif

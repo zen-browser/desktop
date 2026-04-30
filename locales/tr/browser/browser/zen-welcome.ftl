@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-welcome-title-line1 = Zen'e Hoş Geldiniz
-zen-welcome-title-line2 = daha sakin bir internet
+zen-welcome-title-line2 = Daha Sakin Bir İnternet
 zen-welcome-import-title = Yeni Bir Başlangıç, Aynı Yer İmleri
 zen-welcome-import-description-1 = Yer imleriniz, geçmişiniz ve parolalarınız internetteki ekmek kırıntıları gibidir; onları geride bırakmayın!
 zen-welcome-import-description-2 = Onları başka bir tarayıcıdan kolayca aktarın ve tam bıraktığınız yerden devam edin.
@@ -16,8 +16,8 @@ zen-welcome-initial-essentials-description-2 = Bulunduğunuz çalışma alanı n
 zen-welcome-workspace-colors-title = Senin Çalışma Alanın, Senin Renklerin
 zen-welcome-workspace-colors-description = Her çalışma alanında ayrı renkler kullanarak tarayıcını kişiselleştir.
 zen-welcome-start-browsing-title =
-    Her şey hazır mı?<br/>
-    Hadi başlayalım!
+    Hazır mısın?<br/>
+    Hadi Başlayalım!
 zen-welcome-start-browsing-description-1 = Tamamen hazırsın. Aşağıdaki butona tıklayarak { -brand-short-name } ile aramaya başla.
 zen-welcome-start-browsing = Keşfetmeye başla!
 zen-welcome-default-search-title = Varsayılan Arama Motorun

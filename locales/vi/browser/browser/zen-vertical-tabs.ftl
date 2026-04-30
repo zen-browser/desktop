@@ -17,6 +17,9 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = Ẩn cả hai
     .accesskey = H
+zen-toolbar-context-move-to-folder = 
+    .label = Move to Folder...
+    .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Thư mục mới
     .accesskey = N
@@ -36,4 +39,9 @@ tabbrowser-reset-pin-button =
             [one] Tải lại và ghim thẻ
            *[other] Tải lại và ghim { $tabCount } thẻ
         }
-tab-reset-pin-label = Quay lại địa chỉ đã ghim
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Quay lại URL đã ghim
+        [zen-default-pinned-cmd] Tách khỏi thẻ đã ghim
+       *[other] { $tabSubtitle }
+    }

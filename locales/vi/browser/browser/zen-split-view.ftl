@@ -5,8 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] Chia tab (cần nhiều tab được chọn)
-           *[other] Chia { $tabCount } tab
+            [-1] Split out tab
+            [1] Add split view...
+           *[other] Join { $tabCount } Tabs
         }
     .accesskey = S
 zen-split-link = 
@@ -15,6 +16,3 @@ zen-split-link =
 zen-split-view-modifier-header = Chế độ chia khung
 zen-split-view-modifier-activate-reallocation = 
     .label = Cho phép phân bổ lại
-zen-split-view-modifier-enabled-toast = Sắp xếp chế độ chia khung đã BẬT.
-zen-split-view-modifier-enabled-toast-description = Kéo và thả từng khung hình để sắp xếp lại. Nhấn nút Esc để thoát.
-zen-split-view-modifier-disabled-toast = Sắp xếp chế độ chia khung đã TẮT.

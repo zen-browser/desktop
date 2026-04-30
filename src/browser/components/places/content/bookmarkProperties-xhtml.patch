@@ -1,5 +1,5 @@
 diff --git a/browser/components/places/content/bookmarkProperties.xhtml b/browser/components/places/content/bookmarkProperties.xhtml
-index 4aad4e4fb4139aa3d81e00eefa82e26b697df973..831e42a4a55e277b5b8e81e4317a2007c5306996 100644
+index 4aad4e4fb4139aa3d81e00eefa82e26b697df973..eb4055341964edaaff53163da8fc3723b93e72f6 100644
 --- a/browser/components/places/content/bookmarkProperties.xhtml
 +++ b/browser/components/places/content/bookmarkProperties.xhtml
 @@ -38,6 +38,8 @@

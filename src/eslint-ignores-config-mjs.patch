@@ -1,11 +1,11 @@
 diff --git a/eslint-ignores.config.mjs b/eslint-ignores.config.mjs
-index 0cfd7e02ad58c331f48f1ba8e1588777e1ce2595..888674b5ed2b68dbe77eb177ba0947f94ed57c80 100644
+index bfb30a0a35af081a2496a05fd78d9efea15ee37f..04fee66309192b3e38986ae09e77ec7a4e1ad83b 100644
 --- a/eslint-ignores.config.mjs
 +++ b/eslint-ignores.config.mjs
-@@ -312,4 +312,8 @@ export default [
-   // Test files for circular import in modules.
-   "dom/base/test/jsmodules/import_circular.mjs",
+@@ -314,4 +314,8 @@ export default [
    "dom/base/test/jsmodules/import_circular_1.mjs",
+   "dom/base/test/jsmodules/importmaps/multiple/import_circular.mjs",
+   "dom/base/test/jsmodules/importmaps/multiple/import_circular_1.mjs",
 +
 +  "zen/common/emojis/ZenEmojisData.min.mjs",
 +  "zen/tests/**",

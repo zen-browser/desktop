@@ -61,6 +61,8 @@ export function createZenEssentialsPromo(container = undefined) {
   const element = document.createXULElement(TAG_NAME);
   section.appendChild(element);
   section.essentialsPromo = element;
+  // Trigger re-calculation of pinned height to avoid any flickering
+  void section.offsetHeight;
   updatePinnedHeight();
   return "created";
 }

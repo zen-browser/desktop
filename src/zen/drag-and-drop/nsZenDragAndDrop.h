@@ -2,13 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef mozilla_ZenDragAndDrop_h__
-#define mozilla_ZenDragAndDrop_h__
+#ifndef mozilla_ZenDragAndDrop_h_
+#define mozilla_ZenDragAndDrop_h_
 
 #include "nsIZenDragAndDrop.h"
 #include "nsCOMPtr.h"
 
-#define ZEN_BOOSTS_BACKEND_CONTRACTID "@mozilla.org/zen/drag-and-drop;1"
+#define ZEN_DND_MANAGER_CONTRACTID "@mozilla.org/zen/drag-and-drop;1"
 
 namespace zen {
 

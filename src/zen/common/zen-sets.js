@@ -4,6 +4,66 @@
 
 console.log("Astra: zen-sets.js loaded");
 
+function isAstraSafeUrl(url) {
+  try {
+    const parsed = Services.io.newURI(url);
+    const scheme = parsed?.scheme?.toLowerCase();
+    return scheme === "http" || scheme === "https";
+  } catch (error) {
+    console.error("Astra: invalid URL provided:", url, error);
+    return false;
+  }
+}
+
+function reportAstraActionError(message, error) {
+  console.error(message, error);
+  try {
+    window.gZenUIManager?.showToast?.("zen-general-error");
+  } catch (_ignored) {
+    // Keep console error as the guaranteed fallback.
+  }
+}
+
+function openAstraTrustedUrl(url, panelId, contextLabel) {
+  try {
+    if (!isAstraSafeUrl(url)) {
+      reportAstraActionError(`Astra: ${contextLabel} blocked invalid URL: ${url}`);
+      return;
+    }
+
+    const panel = document.getElementById(panelId);
+    panel?.hidePopup();
+
+    const win = Services.wm.getMostRecentWindow("navigator:browser");
+    if (!win) {
+      reportAstraActionError(`Astra: ${contextLabel} no browser window found`);
+      return;
+    }
+
+    if (typeof win.openTrustedLinkIn === "function") {
+      win.openTrustedLinkIn(url, "tab", {
+        triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+        inBackground: false,
+      });
+      win.focus();
+      return;
+    }
+
+    if (win.gBrowser) {
+      win.gBrowser.selectedTab = win.gBrowser.addTrustedTab(url, {
+        triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+        inBackground: false,
+      });
+      win.focus();
+      return;
+    }
+
+    reportAstraActionError(`Astra: ${contextLabel} could not open URL (no gBrowser/openTrustedLinkIn)`);
+  } catch (error) {
+    reportAstraActionError(`Astra: ${contextLabel} open failed`, error);
+  }
+}
+
 window.gZenAppLauncher = {
   open(event, win = window) {
     try {
@@ -29,21 +89,7 @@ window.gZenAppLauncher = {
     }
   },
   openApp(url) {
-    try {
-      const panel = document.getElementById("PanelUI-zen-app-launcher");
-      if (panel) panel.hidePopup();
-      const win = Services.wm.getMostRecentWindow("navigator:browser");
-      if (win && win.gBrowser) {
-        win.gBrowser.selectedTab = win.gBrowser.addTrustedTab(url, {
-          triggeringPrincipal: Services.scriptSecurityManager
-            .getSystemPrincipal(),
-          inBackground: false,
-        });
-        win.focus();
-      }
-    } catch(e) {
-      console.error("Astra: App Hub openApp error:", e);
-    }
+    openAstraTrustedUrl(url, "PanelUI-zen-app-launcher", "App Hub");
   },
 };
 
@@ -64,21 +110,7 @@ window.gZenIndiaGov = {
     }
   },
   openApp(url) {
-    try {
-      const panel = document.getElementById("PanelUI-zen-india-gov");
-      if (panel) panel.hidePopup();
-      const win = Services.wm.getMostRecentWindow("navigator:browser");
-      if (win && win.gBrowser) {
-        win.gBrowser.selectedTab = win.gBrowser.addTrustedTab(url, {
-          triggeringPrincipal: Services.scriptSecurityManager
-            .getSystemPrincipal(),
-          inBackground: false,
-        });
-        win.focus();
-      }
-    } catch(e) {
-      console.error("Astra: India Gov openApp error:", e);
-    }
+    openAstraTrustedUrl(url, "PanelUI-zen-india-gov", "India Gov");
   },
 };
 
@@ -86,6 +118,7 @@ window.gZenIndiaGov = {
 const gAstraDelegationState = {
   commandHandlers: new WeakMap(),
   popupHandlers: new WeakMap(),
+  hiddenHandlers: new WeakMap(),
 };
 
 function bindAstraCommandHandler(panel, panelName, resolver) {
@@ -205,6 +238,24 @@ function bindAstraPopupShowingHook(panelId, panelName) {
     panel.addEventListener("popupshowing", popupHandler);
     gAstraDelegationState.popupHandlers.set(panel, popupHandler);
     console.log(`Astra: ${panelName} popupshowing hook attached`);
+
+    const oldHiddenHandler = gAstraDelegationState.hiddenHandlers.get(panel);
+    if (oldHiddenHandler) {
+      panel.removeEventListener("popuphidden", oldHiddenHandler);
+      console.log(`Astra: removed old ${panelName} popuphidden hook`);
+    }
+
+    const hiddenHandler = () => {
+      const commandHandler = gAstraDelegationState.commandHandlers.get(panel);
+      if (commandHandler) {
+        panel.removeEventListener("command", commandHandler);
+        gAstraDelegationState.commandHandlers.delete(panel);
+        console.log(`Astra: ${panelName} command handler cleaned on popuphidden`);
+      }
+    };
+    panel.addEventListener("popuphidden", hiddenHandler);
+    gAstraDelegationState.hiddenHandlers.set(panel, hiddenHandler);
+    console.log(`Astra: ${panelName} popuphidden hook attached`);
   } catch (error) {
     console.error(`Astra: failed popupshowing hook for ${panelName}:`, error);
   }

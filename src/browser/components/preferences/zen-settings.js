@@ -650,6 +650,11 @@ const kZenMacOSAppIconPreviewSrcByVariant = {
   alternate: "chrome://browser/content/zen-images/app-icons/alternate-preview.png",
 };
 
+function getZenMacOSAppIconVariant() {
+  const variant = Services.prefs.getStringPref(kZenMacOSAppIconVariant, "default");
+  return kZenMacOSAppIconPreviewSrcByVariant[variant] ? variant : "default";
+}
+
 var gZenLooksAndFeel = {
   init() {
     if (this.__hasInitialized) {
@@ -666,6 +671,7 @@ var gZenLooksAndFeel = {
       }
     });
     this.applySidebarLayout();
+    this.initMacOSAppIconVariantControl();
     this.applyMacOSAppIconPreview();
   },
 
@@ -726,11 +732,19 @@ var gZenLooksAndFeel = {
       return;
     }
 
-    const variant = Services.prefs.getStringPref(kZenMacOSAppIconVariant, "default");
-    const variantPreviewSrc = kZenMacOSAppIconPreviewSrcByVariant[variant];
-    const defaultPreviewSrc = kZenMacOSAppIconPreviewSrcByVariant.default;
-    const previewSrc = variantPreviewSrc ?? defaultPreviewSrc;
-    preview.setAttribute("src", previewSrc);
+    preview.setAttribute(
+      "src",
+      kZenMacOSAppIconPreviewSrcByVariant[getZenMacOSAppIconVariant()]
+    );
+  },
+
+  initMacOSAppIconVariantControl() {
+    const variantControl = document.getElementById("zenLooksAndFeelMacOSAppIconVariant");
+    if (!variantControl) {
+      return;
+    }
+
+    Preferences.addSyncFromPrefListener(variantControl, getZenMacOSAppIconVariant);
   },
 };
 

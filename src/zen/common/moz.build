@@ -19,5 +19,6 @@ FINAL_TARGET_FILES["zen-app-icons"]["alternate.bundle"]["Contents"] += [
 ]
 
 FINAL_TARGET_FILES["zen-app-icons"]["alternate.bundle"]["Contents"]["Resources"] += [
+  "../images/app-icons/alternate-preview.png",
   "../images/app-icons/alternate.bundle/Contents/Resources/Assets.car",
 ]

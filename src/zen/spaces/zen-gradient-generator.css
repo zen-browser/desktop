@@ -149,6 +149,7 @@
   padding: 2px var(--panel-padding) 0;
 
   & > button {
+    position: relative;
     min-height: 26px;
     margin: 0 !important;
     padding: 2px 6px !important;
@@ -159,6 +160,61 @@
     font-weight: 600;
     white-space: nowrap;
 
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: 3px;
+      left: 10%;
+      right: 10%;
+      height: 2px;
+      border-radius: 99px;
+      pointer-events: none;
+      opacity: 0.65;
+    }
+
+    &[data-pack="all"]::after {
+      background: color-mix(in srgb, currentColor 28%, transparent);
+    }
+
+    &[data-pack="minimal"]::after {
+      background: linear-gradient(
+        90deg,
+        color-mix(in srgb, #ff9933 85%, transparent),
+        color-mix(in srgb, #ffffff 70%, transparent),
+        color-mix(in srgb, #138808 85%, transparent)
+      );
+      opacity: 0.55;
+    }
+
+    &[data-pack="festive"]::after {
+      background: linear-gradient(
+        90deg,
+        color-mix(in srgb, #ff6b9d 80%, transparent),
+        color-mix(in srgb, #ffd54a 80%, transparent),
+        color-mix(in srgb, #7c4dff 75%, transparent)
+      );
+      opacity: 0.65;
+    }
+
+    &[data-pack="heritage"]::after {
+      background: linear-gradient(
+        90deg,
+        color-mix(in srgb, #8d5524 85%, transparent),
+        color-mix(in srgb, #c9a06b 80%, transparent),
+        color-mix(in srgb, #2f4f6e 75%, transparent)
+      );
+      opacity: 0.6;
+    }
+
+    &[disabled]::after {
+      opacity: 0.22;
+    }
+
+    &[selected]::after {
+      opacity: 0.95;
+      height: 2.5px;
+    }
+
     &[selected] {
       border-color: color-mix(in srgb, var(--zen-primary-color) 70%, transparent) !important;
       background: color-mix(in srgb, var(--zen-primary-color) 22%, transparent) !important;
@@ -168,11 +224,37 @@
 }
 
 #PanelUI-zen-gradient-generator[zen-theme-pack="minimal"] .zen-theme-picker-gradient {
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, #ff9933 35%, transparent);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, #ff9933 38%, transparent),
+    inset 0 0 24px color-mix(in srgb, #ff9933 6%, transparent);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.45;
+    background:
+      linear-gradient(
+        105deg,
+        color-mix(in srgb, #ff9933 12%, transparent) 0%,
+        transparent 34%,
+        color-mix(in srgb, #ffffff 10%, transparent) 50%,
+        transparent 66%,
+        color-mix(in srgb, #138808 11%, transparent) 100%
+      ),
+      repeating-linear-gradient(
+        -18deg,
+        transparent 0 12px,
+        color-mix(in srgb, #ff9933 4%, transparent) 12px 13px
+      );
+  }
 }
 
 #PanelUI-zen-gradient-generator[zen-theme-pack="festive"] .zen-theme-picker-gradient {
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, #d354ff 35%, transparent);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, #d354ff 38%, transparent),
+    inset 0 0 28px color-mix(in srgb, #d354ff 8%, transparent);
 
   &::before {
     content: "";
@@ -180,28 +262,46 @@
     inset: 0;
     pointer-events: none;
     background:
-      radial-gradient(circle at 20% 10%, color-mix(in srgb, #ff9933 20%, transparent) 0 16%, transparent 22%),
-      radial-gradient(circle at 82% 14%, color-mix(in srgb, #138808 24%, transparent) 0 12%, transparent 20%),
-      radial-gradient(circle at 52% 86%, color-mix(in srgb, #1b3fa7 18%, transparent) 0 14%, transparent 24%);
-    opacity: 0.7;
+      radial-gradient(circle at 18% 12%, color-mix(in srgb, #ff9933 22%, transparent) 0 18%, transparent 26%),
+      radial-gradient(circle at 84% 16%, color-mix(in srgb, #138808 26%, transparent) 0 14%, transparent 22%),
+      radial-gradient(circle at 48% 88%, color-mix(in srgb, #1b3fa7 20%, transparent) 0 16%, transparent 26%),
+      radial-gradient(circle at 72% 48%, color-mix(in srgb, #ff4d94 14%, transparent) 0 10%, transparent 18%);
+    opacity: 0.72;
   }
 }
 
 #PanelUI-zen-gradient-generator[zen-theme-pack="heritage"] .zen-theme-picker-gradient {
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, #b87b3e 35%, transparent);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, #b87b3e 38%, transparent),
+    inset 0 0 20px color-mix(in srgb, #6b4423 7%, transparent);
 
   &::before {
     content: "";
     position: absolute;
     inset: 0;
     pointer-events: none;
-    opacity: 0.35;
+    opacity: 0.38;
     background:
       repeating-linear-gradient(
         45deg,
-        color-mix(in srgb, #9c6b39 20%, transparent) 0 8px,
+        color-mix(in srgb, #9c6b39 18%, transparent) 0 8px,
         transparent 8px 16px
+      ),
+      repeating-linear-gradient(
+        -32deg,
+        transparent 0 14px,
+        color-mix(in srgb, #5c4a3a 6%, transparent) 14px 15px
       );
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zen-theme-picker-gradient .zen-theme-picker-dot:first-of-type {
+    transition: none !important;
+  }
+
+  #PanelUI-zen-gradient-generator-color-pages > hbox > box {
+    transition: none !important;
   }
 }
 

@@ -24,7 +24,7 @@ add_task(async function test_Tab_Navigation() {
   is(
     gBrowser.selectedTab,
     getVisibleTabs()[3],
-    "Forward should move to next tab",
+    "Forward should move to next tab"
   );
 
   // Forward wrap: 3 → 0
@@ -33,7 +33,7 @@ add_task(async function test_Tab_Navigation() {
   is(
     gBrowser.selectedTab,
     getVisibleTabs()[0],
-    "Forward from last should wrap to first",
+    "Forward from last should wrap to first"
   );
 
   // Backward wrap: 0 → 3
@@ -42,7 +42,7 @@ add_task(async function test_Tab_Navigation() {
   is(
     gBrowser.selectedTab,
     getVisibleTabs()[3],
-    "Backward from first should wrap to last",
+    "Backward from first should wrap to last"
   );
 
   // Backward: 3 → 2
@@ -56,7 +56,7 @@ add_task(async function test_Tab_Navigation() {
   is(
     gBrowser.selectedTab,
     getVisibleTabs()[2],
-    "close(false) should not switch",
+    "close(false) should not switch"
   );
 
   // Close a tab
@@ -72,12 +72,12 @@ add_task(async function test_Tab_Navigation() {
   isnot(
     getPanel().state,
     "open",
-    "Panel should not be opened after clicking on a card",
+    "Panel should not be opened after clicking on a card"
   );
   is(
     gBrowser.selectedTab,
     getVisibleTabs()[2],
-    "Clicking on card should switch to correct tab",
+    "Clicking on card should switch to correct tab"
   );
 
   for (let tab of tabs) {
@@ -106,7 +106,7 @@ add_task(async function test_Multi_Navigate_While_Open() {
   is(
     gBrowser.selectedTab,
     getVisibleTabs()[3],
-    "Opening and 2 forwards should land 3 ahead",
+    "Opening and 2 forwards should land 3 ahead"
   );
 
   // Open with shift, navigate backward, then close
@@ -116,7 +116,7 @@ add_task(async function test_Multi_Navigate_While_Open() {
   is(
     gBrowser.selectedTab,
     getVisibleTabs()[1],
-    "Opening with shift and 1 backward should land 2 behind",
+    "Opening with shift and 1 backward should land 2 behind"
   );
 
   for (let tab of tabs) {
@@ -139,7 +139,7 @@ add_task(async function test_Disabled_Pref() {
   isnot(
     getPanel().state,
     "open",
-    "Panel should not open when pref is disabled",
+    "Panel should not open when pref is disabled"
   );
 
   if (getPanel().state === "open") {
@@ -163,7 +163,7 @@ add_task(async function test_Less_Than_Two_Tabs() {
   isnot(
     getPanel().state,
     "open",
-    "Panel should not open with less than two tabs",
+    "Panel should not open with less than two tabs"
   );
 
   if (getPanel().state === "open") {
@@ -202,7 +202,7 @@ add_task(async function test_Recent_Sort_Order() {
   is(
     gBrowser.selectedTab,
     tabs[1],
-    "Should switch to the second most recently used tab",
+    "Should switch to the second most recently used tab"
   );
 
   gBrowser.removeTab(tabs[1]);
@@ -212,7 +212,15 @@ add_task(async function test_Recent_Sort_Order() {
   is(
     gBrowser.selectedTab,
     tabs[3],
-    "Closing tab, opening and navigation should switch to correct tab",
+    "Closing tab, opening and navigation should switch to correct tab"
+  );
+
+  await openCtrlTabPanel();
+  await simulateClick(2);
+  is(
+    gBrowser.selectedTab,
+    tabs[0],
+    "Clicking on card should switch to correct tab"
   );
 
   for (let tab of tabs) {

@@ -44,9 +44,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     const onKeyDown = e => this.#handleKeyDown(e);
     const onKeyUp = e => this.#handleKeyUp(e);
     const onTabClose = e => {
-      const tabId = e.target.linkedPanel;
-      URL.revokeObjectURL(this.#thumbnailCache.get(tabId));
-      this.#thumbnailCache.delete(tabId);
+      this.#removeThumbnail(e.target.linkedPanel);
     };
 
     window.addEventListener("keydown", onKeyDown, true);
@@ -129,9 +127,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
     /* Delete current tab's cached thumbnail so it gets recaptured below,
      * this ensures thumbnails show the most up-to-date page content. */
-    const currentId = gBrowser.selectedTab.linkedPanel;
-    URL.revokeObjectURL(this.#thumbnailCache.get(currentId));
-    this.#thumbnailCache.delete(currentId);
+    this.#removeThumbnail(gBrowser.selectedTab.linkedPanel);
 
     const initialCardIndex = lazy.sortByRecentlyUsed
       ? 0
@@ -263,7 +259,25 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       canvas.toBlob(resolve, "image/png")
     );
 
+    if (!blob) {
+      return;
+    }
+
     this.#thumbnailCache.set(tabId, URL.createObjectURL(blob));
+  }
+
+  /**
+   * Revokes blob URL and removes thumbnail from cache.
+   *
+   * @param {string} tabId
+   * @returns {void}
+   */
+  #removeThumbnail(tabId) {
+    const url = this.#thumbnailCache.get(tabId);
+    if (url) {
+      URL.revokeObjectURL(url);
+    }
+    this.#thumbnailCache.delete(tabId);
   }
 
   /**

@@ -4,4 +4,5 @@
 
 EXTRA_JS_MODULES.zen += [
     "ZenLittleWindow.sys.mjs",
+    "ZenSpacesSearch.sys.mjs",
 ]

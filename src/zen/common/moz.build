@@ -5,6 +5,7 @@
 EXTRA_JS_MODULES += [
   "sys/ZenActorsManager.sys.mjs",
   "sys/ZenCustomizableUI.sys.mjs",
+  "sys/ZenSearchPopup.sys.mjs",
   "sys/ZenUIMigration.sys.mjs",
 ]
 

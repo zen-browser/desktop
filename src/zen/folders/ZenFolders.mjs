@@ -3,6 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
+import { ZenSearchPopup } from "resource:///modules/ZenSearchPopup.sys.mjs";
 
 function formatRelativeTime(timestamp) {
   const now = Date.now();
@@ -42,6 +43,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   );
 
   #popup = null;
+  #searchPopup = null;
   #popupTimer = null;
   #mouseTimer = null;
   #lastHighlightedGroup = null;
@@ -188,15 +190,12 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
   #initTabsPopup() {
     this.#popup = document.getElementById("zen-folder-tabs-popup");
-
-    const search = this.#popup.querySelector("#zen-folder-tabs-list-search");
-    const tabsList = this.#popup.querySelector("#zen-folder-tabs-list");
-
-    search.addEventListener("input", () => {
-      const query = search.value.toLowerCase();
-      for (const item of tabsList.children) {
-        item.hidden = !item.getAttribute("data-label").includes(query);
-      }
+    this.#searchPopup = new ZenSearchPopup({
+      panel: this.#popup,
+      searchInput: this.#popup.querySelector("#zen-folder-tabs-list-search"),
+      list: this.#popup.querySelector("#zen-folder-tabs-list"),
+      noResults: document.getElementById("zen-folder-tabs-search-no-results"),
+      itemSelector: ".folders-tabs-list-item",
     });
 
     this.#popup.addEventListener("mouseover", () => {
@@ -788,93 +787,18 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     document.getElementById("zen-folder-tabs-search-no-results").hidden = true;
     this.#populateTabsList(activeGroup);
 
-    const search = this.#popup.querySelector("#zen-folder-tabs-list-search");
-    document.l10n.setArgs(search, {
-      "folder-name": activeGroup.name,
-    });
-    const tabsList = this.#popup.querySelector("#zen-folder-tabs-list");
-
-    const onSearchInput = () => {
-      const query = search.value.toLowerCase();
-      let foundTabs = 0;
-      for (const item of tabsList.children) {
-        const found = item.getAttribute("data-label").includes(query);
-        item.hidden = !found;
-        if (found) {
-          foundTabs++;
-        }
-      }
-      document.getElementById("zen-folder-tabs-search-no-results").hidden =
-        foundTabs > 0;
-    };
-    search.addEventListener("input", onSearchInput);
-
-    const onKeyDown = event => {
-      // Arrow down and up to navigate through the list
-      if (
-        event.key === "ArrowDown" ||
-        event.key === "ArrowUp" ||
-        event.key === "Tab"
-      ) {
-        event.preventDefault();
-        let isUp =
-          event.key === "ArrowUp" || (event.key === "Tab" && event.shiftKey);
-        const items = Array.from(tabsList.children).filter(
-          item => !item.hidden
-        );
-        if (items.length === 0) {
-          return;
-        }
-        let index = items.indexOf(
-          tabsList.querySelector(".folders-tabs-list-item[selected]")
-        );
-        if (!isUp) {
-          index = (index + 1) % items.length;
-        } else {
-          index = (index - 1 + items.length) % items.length;
-        }
-        items.forEach(item => item.removeAttribute("selected"));
-        const targetItem = items[index];
-        targetItem.setAttribute("selected", "true");
-        targetItem.scrollIntoView({ block: "start", behavior: "smooth" });
-      } else if (event.key === "Enter") {
-        // Enter to select the currently highlighted item
-        const highlightedItem = tabsList.querySelector(
-          ".folders-tabs-list-item[selected]"
-        );
-        if (highlightedItem) {
-          highlightedItem.click();
-        }
-      }
-    };
-    document.addEventListener("keydown", onKeyDown);
+    document.l10n.setArgs(
+      this.#popup.querySelector("#zen-folder-tabs-list-search"),
+      { "folder-name": activeGroup.name }
+    );
 
     const target = event.target;
     target.setAttribute("open", true);
 
-    const handlePopupHidden = event => {
-      if (event.target !== this.#popup) {
-        return;
-      }
-      search.value = "";
-      target.removeAttribute("open");
-      search.removeEventListener("input", onSearchInput);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-
-    this.#popup.addEventListener(
-      "popupshown",
-      () => {
-        search.focus();
-        search.select();
-      },
-      { once: true }
-    );
-
-    this.#popup.addEventListener("popuphidden", handlePopupHidden, {
-      once: true,
+    this.#searchPopup.open(target, {
+      position: this.#searchPopupOptions,
+      onHidden: () => target.removeAttribute("open"),
     });
-    this.#popup.openPopup(target, this.#searchPopupOptions);
   }
 
   get #searchPopupOptions() {

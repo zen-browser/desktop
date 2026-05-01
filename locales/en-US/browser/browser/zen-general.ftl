@@ -151,3 +151,5 @@ zen-window-sync-migration-dialog-accept = Got It
 zen-appmenu-new-blank-window =
     .label = New blank window
 
+zen-spaces-search-placeholder =
+    .placeholder = Search your spaces...

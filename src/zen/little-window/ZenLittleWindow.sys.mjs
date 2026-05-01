@@ -4,6 +4,7 @@
 
 import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
 import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
+import { ZenSpacesSearch } from "resource:///modules/zen/ZenSpacesSearch.sys.mjs";
 
 const lazy = {};
 
@@ -77,6 +78,7 @@ class nsZenLittleWindow {
     if (!this.#isLittleWindow(win)) {
       return;
     }
+    ZenSpacesSearch.init(win);
     const observer = new win.ResizeObserver(entries => {
       if (win.closed) {
         return;

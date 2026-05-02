@@ -11,16 +11,14 @@ add_task(async function test_Tab_Navigation() {
     ],
   });
 
-  let tabs = await addTabs(3);
+  const tabs = await addTabs(3);
   is(getVisibleTabs().length, 4, "Should have 4 visible tabs");
   gBrowser.selectedTab = getVisibleTabs()[2];
 
   // Forward: 2 → 3
   await openCtrlTabPanel();
-  is(getPanel().state, "open", "Panel should be open");
   is(getCardCount(), 4, "Card count should match tab count");
   await closeCtrlTabPanel();
-  is(getPanel().state, "closed", "Panel should be closed");
   is(
     gBrowser.selectedTab,
     getVisibleTabs()[3],
@@ -50,13 +48,12 @@ add_task(async function test_Tab_Navigation() {
   await closeCtrlTabPanel();
   is(gBrowser.selectedTab, getVisibleTabs()[2], "Shift should go backward");
 
-  // Forward without switch: stays at 2
   await openCtrlTabPanel();
-  await closeCtrlTabPanel(false);
+  await clickOutsidePanel();
   is(
     gBrowser.selectedTab,
     getVisibleTabs()[2],
-    "close(false) should not switch"
+    "Clicking outside panel should not switch tab"
   );
 
   // Close a tab
@@ -81,7 +78,7 @@ add_task(async function test_Tab_Navigation() {
   );
 
   for (let tab of tabs) {
-    BrowserTestUtils.removeTab(tab);
+    await BrowserTestUtils.removeTab(tab);
   }
   await SpecialPowers.popPrefEnv();
 });
@@ -94,7 +91,7 @@ add_task(async function test_Multi_Navigate_While_Open() {
     ],
   });
 
-  let tabs = await addTabs(3);
+  const tabs = await addTabs(3);
 
   gBrowser.selectedTab = getVisibleTabs()[0];
 
@@ -120,7 +117,7 @@ add_task(async function test_Multi_Navigate_While_Open() {
   );
 
   for (let tab of tabs) {
-    BrowserTestUtils.removeTab(tab);
+    await BrowserTestUtils.removeTab(tab);
   }
   await SpecialPowers.popPrefEnv();
 });
@@ -133,8 +130,9 @@ add_task(async function test_Disabled_Pref() {
     ],
   });
 
-  let tabs = await addTabs(2);
-  EventUtils.synthesizeKey("VK_TAB", { ctrlKey: true });
+  const tabs = await addTabs(2);
+  EventUtils.synthesizeKey("VK_CONTROL", { type: "keydown" });
+  EventUtils.synthesizeKey("VK_TAB", { ctrlKey: true, type: "keydown" });
 
   isnot(
     getPanel().state,
@@ -142,12 +140,10 @@ add_task(async function test_Disabled_Pref() {
     "Panel should not open when pref is disabled"
   );
 
-  if (getPanel().state === "open") {
-    await closeCtrlTabPanel();
-  }
+  EventUtils.synthesizeKey("VK_CONTROL", { type: "keyup" });
 
   for (let tab of tabs) {
-    BrowserTestUtils.removeTab(tab);
+    await BrowserTestUtils.removeTab(tab);
   }
   await SpecialPowers.popPrefEnv();
 });
@@ -166,17 +162,12 @@ add_task(async function test_Less_Than_Two_Tabs() {
     "Panel should not open with less than two tabs"
   );
 
-  if (getPanel().state === "open") {
-    await closeCtrlTabPanel();
-  }
-
-  let tabs = await addTabs(1);
+  const tabs = await addTabs(1);
   await openCtrlTabPanel();
-  is(getPanel().state, "open", "Panel should open with two tabs");
   await closeCtrlTabPanel();
 
   for (let tab of tabs) {
-    BrowserTestUtils.removeTab(tab);
+    await BrowserTestUtils.removeTab(tab);
   }
   await SpecialPowers.popPrefEnv();
 });
@@ -189,7 +180,7 @@ add_task(async function test_Recent_Sort_Order() {
     ],
   });
 
-  let tabs = await addTabs(4);
+  const tabs = await addTabs(4);
 
   gBrowser.selectedTab = tabs[3];
   gBrowser.selectedTab = tabs[0];
@@ -224,7 +215,7 @@ add_task(async function test_Recent_Sort_Order() {
   );
 
   for (let tab of tabs) {
-    BrowserTestUtils.removeTab(tab);
+    await BrowserTestUtils.removeTab(tab);
   }
   await SpecialPowers.popPrefEnv();
 });

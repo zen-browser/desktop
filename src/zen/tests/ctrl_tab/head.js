@@ -12,19 +12,30 @@ function getCards() {
 }
 
 async function openCtrlTabPanel(shiftKey = false) {
-  let popupShown = BrowserTestUtils.waitForEvent(getPanel(), "popupshown");
-  await gZenCtrlTabPanel.open(shiftKey);
+  const popupShown = BrowserTestUtils.waitForEvent(getPanel(), "popupshown");
+  EventUtils.synthesizeKey("VK_CONTROL", { type: "keydown" });
+  EventUtils.synthesizeKey("VK_TAB", {
+    ctrlKey: true,
+    shiftKey,
+    type: "keydown",
+  });
   await popupShown;
 }
 
-async function closeCtrlTabPanel(switchTab = true) {
-  let popupHidden = BrowserTestUtils.waitForEvent(getPanel(), "popuphidden");
-  gZenCtrlTabPanel.close(switchTab);
+async function closeCtrlTabPanel() {
+  const popupHidden = BrowserTestUtils.waitForEvent(getPanel(), "popuphidden");
+  EventUtils.synthesizeKey("VK_CONTROL", { type: "keyup" });
+  await popupHidden;
+}
+
+async function clickOutsidePanel() {
+  const popupHidden = BrowserTestUtils.waitForEvent(getPanel(), "popuphidden");
+  EventUtils.synthesizeMouseAtCenter(document.getElementById("nav-bar"), {});
   await popupHidden;
 }
 
 async function addTabs(n) {
-  let tabs = [];
+  const tabs = [];
   for (let i = 0; i < n; i++) {
     let tab = BrowserTestUtils.addTab(gBrowser, "about:blank", {
       skipAnimation: true,
@@ -39,15 +50,12 @@ function getCardCount() {
 }
 
 function getVisibleTabs() {
-  let visibleTabs = Array.from(gBrowser.tabs).filter(
-    (tab) => !tab.closing && tab.visible,
-  );
-  return visibleTabs;
+  return Array.from(gBrowser.tabs).filter(tab => !tab.closing && tab.visible);
 }
 
 function simulateClick(n) {
-  let target = getCards().children[n];
-  let promise = BrowserTestUtils.waitForEvent(target, "click");
+  const target = getCards().children[n];
+  const promise = BrowserTestUtils.waitForEvent(target, "click");
   EventUtils.synthesizeMouseAtCenter(target, {});
   return promise;
 }

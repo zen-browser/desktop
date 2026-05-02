@@ -31,7 +31,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
   #currentIndex = 0;
   #tabList = [];
   #thumbnailCache = new Map();
-  #actualVisibleCards = undefined;
+  #visibleCards = undefined;
 
   init() {
     ChromeUtils.defineLazyGetter(this, "panel", () =>
@@ -140,7 +140,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       this.#currentIndex = (initialCardIndex + 1) % this.#tabList.length;
     }
 
-    this.#actualVisibleCards = Math.min(
+    this.#visibleCards = Math.min(
       this.#tabList.length,
       this.#getMaxCards()
     );
@@ -173,7 +173,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     const windowHeight = window.innerHeight;
 
     const panelWidth =
-      nsZenCtrlTabPanel.CARD_WIDTH * this.#actualVisibleCards +
+      nsZenCtrlTabPanel.CARD_WIDTH * this.#visibleCards +
       nsZenCtrlTabPanel.PANEL_PADDING * 2;
 
     // Math.max(0, ...) prevents panel from being cut off by screen edge on narrow browser windows.
@@ -222,7 +222,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     this.#isOpen = false;
     this.#currentIndex = 0;
     this.#tabList = [];
-    this.#actualVisibleCards = undefined;
+    this.#visibleCards = undefined;
     this.panel.hidePopup();
   }
 
@@ -294,7 +294,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     const newTabFavicon = "chrome://browser/skin/zen-icons/new-tab-image.svg";
 
     this.cardsContainer.replaceChildren();
-    this.cardsContainer.style.width = `${nsZenCtrlTabPanel.CARD_WIDTH * this.#actualVisibleCards}px`;
+    this.cardsContainer.style.width = `${nsZenCtrlTabPanel.CARD_WIDTH * this.#visibleCards}px`;
 
     this.#tabList.forEach((tab, index) => {
       const card = document.createElement("div");
@@ -390,7 +390,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
    */
   #getPageStartIndex(currentCardIndex) {
     const totalTabs = this.#tabList.length;
-    const maxVisible = this.#actualVisibleCards;
+    const maxVisible = this.#visibleCards;
 
     if (totalTabs <= maxVisible) {
       return 0;

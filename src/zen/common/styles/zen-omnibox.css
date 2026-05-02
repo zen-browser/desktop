@@ -139,10 +139,12 @@
   }
 
   .identity-box-button,
-  .urlbar-page-action {
+  .urlbar-page-action,
+  .unified-extensions-item {
     opacity: 0;
     height: 100%; /* To still be able to open popups */
     visibility: collapse;
+    margin: 0 !important;
 
     :root:not([supress-primary-adjustment="true"]) & {
       transition:
@@ -187,6 +189,10 @@
   #zen-copy-url-button[disabled] {
     display: none !important;
   }
+}
+
+:root[zen-single-toolbar="true"] #urlbar[breakout-extend="true"] .unified-extensions-item {
+  display: none !important;
 }
 
 /* stylelint-disable-next-line media-query-no-invalid */

@@ -1355,7 +1355,7 @@ window.gZenVerticalTabsManager = {
           buttonsTarget.append(this._topButtonsSeparatorElement);
         }
         for (const button of elements) {
-          this._topButtonsSeparatorElement.after(button);
+          this.appendCustomizableItem(this._topButtonsSeparatorElement, button);
         }
         buttonsTarget.prepend(
           document.getElementById("unified-extensions-button")
@@ -1558,16 +1558,36 @@ window.gZenVerticalTabsManager = {
     Services.prefs.setBoolPref("zen.tabs.vertical.right-side", newVal);
   },
 
-  appendCustomizableItem(target, child, placements) {
+  appendCustomizableItem(target, child, placements = []) {
     if (
-      target.id === "zen-sidebar-top-buttons-customization-target" &&
       this._hasSetSingleToolbar &&
-      placements.includes(child.id)
+      (target.id === "zen-sidebar-top-buttons-customization-target" ||
+        target === this._topButtonsSeparatorElement)
     ) {
-      this._topButtonsSeparatorElement.before(child);
-      return;
+      if (placements.includes(child.id)) {
+        this._topButtonsSeparatorElement.before(child);
+        return;
+      } else if (
+        child.hasAttribute("data-extensionid") &&
+        Services.prefs.getBoolPref("zen.view.overflow-webext-toolbar", true)
+      ) {
+        if (gURLBar._isOverflowingItems) {
+          const overflowElements = document.getElementById(
+            "zen-overflow-extensions-list"
+          );
+          overflowElements.appendChild(child);
+        } else {
+          const element = document.getElementById("page-action-buttons");
+          element.before(child);
+        }
+        return;
+      }
     }
-    target.appendChild(child);
+    if (target === this._topButtonsSeparatorElement) {
+      this._topButtonsSeparatorElement.after(child);
+    } else {
+      target.appendChild(child);
+    }
   },
 
   async renameTabKeydown(event) {

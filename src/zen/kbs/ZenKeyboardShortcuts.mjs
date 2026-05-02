@@ -855,7 +855,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 30;
+  static LATEST_KBS_VERSION = 31;
 
   constructor() {}
 
@@ -1235,34 +1235,6 @@ class nsZenKeyboardShortcutsVersioner {
       );
     }
 
-    if (version < 18) {
-      // Migrate from version 17 to 18.
-      // Add shortcut to open India services panel: Default Ctrl+Alt+Y
-      data.push(
-        new KeyShortcut(
-          "zen-open-india-services",
-          "Y",
-          "",
-          ZEN_OTHER_SHORTCUTS_GROUP,
-          nsKeyShortcutModifiers.fromObject({ accel: true, alt: true }),
-          "cmd_zenOpenIndiaServices",
-          "zen-open-india-services-shortcut"
-        )
-      );
-    }
-    if (version < 25) {
-      // Update India services shortcut to Ctrl+Alt+Y
-      const indiaShortcut = data.find(s => s.getID?.() === "zen-open-india-services");
-      if (indiaShortcut) {
-        indiaShortcut.setNewBinding("Y");
-        indiaShortcut.setModifiers(
-          nsKeyShortcutModifiers.fromObject({
-            accel: true,
-            alt: true,
-          })
-        );
-      }
-    }
     if (version < 26) {
       // App launcher: Ctrl+Shift+B (default added via fillDefaultIfNotPresent)
     }
@@ -1317,6 +1289,10 @@ class nsZenKeyboardShortcutsVersioner {
       if (launcher && launcher.key === "G") {
         launcher.key = "I";
       }
+    }
+    if (version < 31) {
+      const idx = data.findIndex(s => s.id === "zen-open-india-services");
+      if (idx !== -1) data.splice(idx, 1);
     }
     if (version < 20) {
       // Add shortcut for folder quick search.

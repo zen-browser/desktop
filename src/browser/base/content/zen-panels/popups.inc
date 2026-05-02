@@ -108,67 +108,6 @@
 <panel
   type="arrow"
   orient="vertical"
-  id="PanelUI-zen-india-services"
-  position="bottomright topright"
-  side="bottom">
-  <vbox id="PanelUI-zen-india-services-container">
-    <label id="PanelUI-zen-india-services-title" value="India Services 🇮🇳" />
-    <vbox id="PanelUI-zen-india-services-list">
-      <toolbarbutton
-        class="toolbarbutton-1 zen-india-services-item"
-        label="IRCTC — Train booking"
-        data-url="https://www.irctc.co.in" />
-      <toolbarbutton
-        class="toolbarbutton-1 zen-india-services-item"
-        label="DigiLocker — Documents"
-        data-url="https://www.digilocker.gov.in" />
-      <toolbarbutton
-        class="toolbarbutton-1 zen-india-services-item"
-        label="BHIM UPI — Payments"
-        data-url="https://www.bhimupi.org.in" />
-      <toolbarbutton
-        class="toolbarbutton-1 zen-india-services-item"
-        label="UMANG — Government services"
-        data-url="https://web.umang.gov.in" />
-      <toolbarbutton
-        class="toolbarbutton-1 zen-india-services-item"
-        label="Income Tax"
-        data-url="https://www.incometax.gov.in" />
-      <toolbarbutton
-        class="toolbarbutton-1 zen-india-services-item"
-        label="Aadhaar"
-        data-url="https://myaadhaar.uidai.gov.in" />
-      <toolbarbutton
-        class="toolbarbutton-1 zen-india-services-item"
-        label="Passport Seva"
-        data-url="https://passportindia.gov.in" />
-      <toolbarbutton
-        class="toolbarbutton-1 zen-india-services-item"
-        label="EPFO"
-        data-url="https://www.epfindia.gov.in" />
-      <toolbarbutton
-        class="toolbarbutton-1 zen-india-services-item"
-        label="GST Portal — Tax filing"
-        data-url="https://www.gst.gov.in" />
-      <toolbarbutton
-        class="toolbarbutton-1 zen-india-services-item"
-        label="NPCI — Payments"
-        data-url="https://www.npci.org.in" />
-      <toolbarbutton
-        class="toolbarbutton-1 zen-india-services-item"
-        label="Scholarships — NSP"
-        data-url="https://scholarships.gov.in" />
-      <toolbarbutton
-        class="toolbarbutton-1 zen-india-services-item"
-        label="PM-KISAN — Farmers"
-        data-url="https://pmkisan.gov.in" />
-    </vbox>
-  </vbox>
-</panel>
-
-<panel
-  type="arrow"
-  orient="vertical"
   id="PanelUI-zen-app-launcher"
   position="bottomright topright"
   side="bottom"

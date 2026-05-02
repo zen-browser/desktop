@@ -38,16 +38,6 @@ window.gAstraTransparent = {
 
   toggle(val) {
     Services.prefs.setBoolPref(this.PREF, val);
-    // Restart required for window transparency
-    const brandBundle = Services.strings.createBundle(
-      "chrome://branding/locale/brand.properties"
-    );
-    const appName = brandBundle.GetStringFromName("brandShortName");
-    Services.prompt.alert(
-      null,
-      "Restart Required",
-      `Please restart ${appName} to apply the Transparent Mode change.`
-    );
   },
 };
 

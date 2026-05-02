@@ -379,14 +379,16 @@
   }
 }
 
-/* Astra - Transparent Mode sidebar styling */
+/* Astra Transparent Mode - matches astra-transparent/chrome.css */
 :root[astra-transparent="true"] #navigator-toolbox {
   background: transparent !important;
+  backdrop-filter: blur(42px) saturate(180%) brightness(0.8) !important;
 }
 
 :root[astra-transparent="true"] .zen-toolbar-background {
   display: block !important;
   background: transparent !important;
+  backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
 }
 
 :root[astra-transparent="true"] #browser {

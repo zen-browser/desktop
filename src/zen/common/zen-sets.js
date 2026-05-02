@@ -7,7 +7,6 @@ window.gAstraTransparent = {
   PREFS_TO_SET: [
     ["browser.tabs.allow_transparent_browser", true],
     ["widget.transparent-windows", true],
-    ["widget.windows.mica", true],
   ],
 
   init() {

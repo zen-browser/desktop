@@ -1,21 +1,17 @@
 /* Astra - Transparent/Acrylic Mode */
-/* Activated by astra.transparent.enabled pref */
+/* Uses ZenMods system - no attribute dependency */
 
-:root[astra-transparent="true"] #navigator-toolbox {
+#navigator-toolbox {
   background: transparent !important;
   backdrop-filter: blur(42px) saturate(180%) brightness(0.8) !important;
 }
 
-:root[astra-transparent="true"] .zen-toolbar-background {
+.zen-toolbar-background {
   display: block !important;
   background: transparent !important;
   backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
 }
 
-:root[astra-transparent="true"] #browser {
-  background: transparent !important;
-}
-
-:root[astra-transparent="true"] toolbox {
+#browser {
   background: transparent !important;
 }

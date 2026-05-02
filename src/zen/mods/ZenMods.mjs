@@ -489,6 +489,19 @@ class nsZenMods extends nsZenPreloadedFeature {
       }
       if (needsUpdate) {
         await this.updateMods(currentMods);
+        // Astra: Install default mods that were just registered
+        for (const [id, mod] of Object.entries(ASTRA_DEFAULT_MODS)) {
+          try {
+            const modPath = PathUtils.join(this.modsRootPath, id);
+            const cssPath = PathUtils.join(modPath, "chrome.css");
+            const exists = await IOUtils.exists(cssPath);
+            if (!exists) {
+              await this.installMod(mod);
+            }
+          } catch(e) {
+            console.error("[ZenMods]: Error installing Astra default mod", id, e);
+          }
+        }
       }
       const mods = await this.#getEnabledMods();
 

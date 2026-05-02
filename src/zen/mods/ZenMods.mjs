@@ -658,6 +658,9 @@ class nsZenMods extends nsZenPreloadedFeature {
     mod.enabled = true;
 
     await IOUtils.writeJSON(this.modsDataFile, mods);
+    await this.updateMods(mods);
+    this.#writeToDom(mods);
+    this.#insertStylesheet(mod);
   }
 
   async disableMod(modId) {

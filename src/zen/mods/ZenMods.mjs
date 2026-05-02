@@ -474,7 +474,7 @@ class nsZenMods extends nsZenPreloadedFeature {
           description: "Transparent sidebar with acrylic blur effect",
           author: "Astra Team",
           version: "1.0.0",
-          enabled: false,
+          enabled: true,
           style: "https://raw.githubusercontent.com/Hrishikeshmind/astradesktop/dev/mods/astra-transparent/chrome.css",
           readme: "https://raw.githubusercontent.com/Hrishikeshmind/astradesktop/dev/mods/astra-transparent/readme.md"
         }

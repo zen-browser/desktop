@@ -31,13 +31,25 @@ window.gAstraTransparent = {
     }
     if (enabled) {
       document.documentElement.setAttribute("astra-transparent", "true");
+      // CSS is handled by ZenMods - attribute triggers existing loaded CSS
+      // No additional action needed here
     } else {
       document.documentElement.removeAttribute("astra-transparent");
     }
   },
 
-  toggle(val) {
+  async toggle(val) {
     Services.prefs.setBoolPref(this.PREF, val);
+    try {
+      if (val) {
+        await window.gZenMods?.enableMod?.("astra-transparent");
+      } else {
+        await window.gZenMods?.disableMod?.("astra-transparent");
+      }
+      window.gZenMods?.triggerModsUpdate?.();
+    } catch(e) {
+      console.error("Astra transparent sync error:", e);
+    }
   },
 };
 

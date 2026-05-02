@@ -661,12 +661,10 @@ class nsZenMods extends nsZenPreloadedFeature {
   async disableMod(modId) {
     const mods = await this.getMods();
     const mod = mods[modId];
-
     console.warn(`[ZenMods]: Disabling mod ${mod.name}`);
-
     mod.enabled = false;
-
     await IOUtils.writeJSON(this.modsDataFile, mods);
+    await this.#rebuildModsStylesheet();
   }
 
   async updateMods(mods = undefined) {

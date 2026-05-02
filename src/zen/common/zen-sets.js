@@ -2,6 +2,56 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+window.gAstraTransparent = {
+  PREF: "astra.transparent.enabled",
+  CSS_ID: "astra-transparent-css",
+
+  init() {
+    try {
+      Services.prefs.addObserver(this.PREF, this);
+      this.apply();
+    } catch (e) {}
+  },
+
+  observe() {
+    this.apply();
+  },
+
+  apply() {
+    const enabled = Services.prefs.getBoolPref(this.PREF, false);
+    const existing = document.getElementById(this.CSS_ID);
+    if (enabled) {
+      if (!existing) {
+        const style = document.createElement("style");
+        style.id = this.CSS_ID;
+        style.textContent = `
+          #navigator-toolbox {
+            background: transparent !important;
+            backdrop-filter: blur(42px) saturate(180%) brightness(0.85) !important;
+          }
+          .zen-toolbar-background {
+            display: block !important;
+            background: transparent !important;
+            backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
+          }
+        `;
+        document.head.appendChild(style);
+      }
+    } else {
+      existing?.remove();
+    }
+  },
+
+  toggle(val) {
+    Services.prefs.setBoolPref(this.PREF, val);
+  },
+};
+
+// Initialize it
+document.addEventListener("MozBeforeInitialXULLayout", () => {
+  window.gAstraTransparent?.init();
+}, { once: true });
+
 console.log("Astra: zen-sets.js loaded");
 
 function isAstraSafeUrl(url) {

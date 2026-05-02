@@ -51,6 +51,18 @@
         </hbox>
       </vbox>
 
+      <groupbox id="astra-quick-mods" data-category="paneZenMarketplace">
+        <label class="zen-theme-picker-section-title" value="⚡ Astra Quick Settings"/>
+        <hbox align="center" style="padding: 8px 0;">
+          <vbox flex="1">
+            <label value="🪟 Transparent Sidebar"/>
+            <description class="description-deemphasized" value="Acrylic blur effect on sidebar (Windows transparency must be ON)"/>
+          </vbox>
+          <moz-toggle id="astraTransparentToggle"
+            oncommand="window.gAstraTransparent?.toggle(this.pressed)"/>
+        </hbox>
+      </groupbox>
+
       <vbox id="zenThemeMarketplaceList"></vbox>
 </groupbox>
 

@@ -4,13 +4,19 @@
 
 window.gAstraTransparent = {
   PREF: "astra.transparent.enabled",
-  CSS_ID: "astra-transparent-css",
+  PREFS_TO_SET: [
+    ["browser.tabs.allow_transparent_browser", true],
+    ["widget.transparent-windows", true],
+    ["widget.windows.mica", true],
+  ],
 
   init() {
     try {
       Services.prefs.addObserver(this.PREF, this);
       this.apply();
-    } catch (e) {}
+    } catch(e) {
+      console.error("Astra Transparent init error:", e);
+    }
   },
 
   observe() {
@@ -19,35 +25,33 @@ window.gAstraTransparent = {
 
   apply() {
     const enabled = Services.prefs.getBoolPref(this.PREF, false);
-    const existing = document.getElementById(this.CSS_ID);
+    for (const [pref, val] of this.PREFS_TO_SET) {
+      try {
+        Services.prefs.setBoolPref(pref, enabled ? val : false);
+      } catch(e) {}
+    }
     if (enabled) {
-      if (!existing) {
-        const style = document.createElement("style");
-        style.id = this.CSS_ID;
-        style.textContent = `
-          #navigator-toolbox {
-            background: transparent !important;
-            backdrop-filter: blur(42px) saturate(180%) brightness(0.85) !important;
-          }
-          .zen-toolbar-background {
-            display: block !important;
-            background: transparent !important;
-            backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
-          }
-        `;
-        document.head.appendChild(style);
-      }
+      document.documentElement.setAttribute("astra-transparent", "true");
     } else {
-      existing?.remove();
+      document.documentElement.removeAttribute("astra-transparent");
     }
   },
 
   toggle(val) {
     Services.prefs.setBoolPref(this.PREF, val);
+    // Restart required for window transparency
+    const brandBundle = Services.strings.createBundle(
+      "chrome://branding/locale/brand.properties"
+    );
+    const appName = brandBundle.GetStringFromName("brandShortName");
+    Services.prompt.alert(
+      null,
+      "Restart Required",
+      `Please restart ${appName} to apply the Transparent Mode change.`
+    );
   },
 };
 
-// Initialize it
 document.addEventListener("MozBeforeInitialXULLayout", () => {
   window.gAstraTransparent?.init();
 }, { once: true });

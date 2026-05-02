@@ -378,3 +378,17 @@
     }
   }
 }
+
+/* Astra - Transparent Mode sidebar styling */
+:root[astra-transparent="true"] #navigator-toolbox {
+  background: transparent !important;
+}
+
+:root[astra-transparent="true"] .zen-toolbar-background {
+  display: block !important;
+  background: transparent !important;
+}
+
+:root[astra-transparent="true"] #browser {
+  background: transparent !important;
+}

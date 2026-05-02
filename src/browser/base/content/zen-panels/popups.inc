@@ -132,7 +132,7 @@
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://mail.zoho.in"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=mail.zoho.in&amp;sz=32')">
+          style="list-style-image: url('https://www.zoho.com/favicon.ico')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Zoho Mail"/>
         </toolbarbutton>
@@ -200,7 +200,7 @@
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://workdrive.zoho.in"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=workdrive.zoho.in&amp;sz=32')">
+          style="list-style-image: url('https://www.zoho.com/favicon.ico')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Zoho Drive"/>
         </toolbarbutton>
@@ -234,7 +234,7 @@
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://sheet.zoho.in"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=sheet.zoho.in&amp;sz=32')">
+          style="list-style-image: url('https://www.zoho.com/favicon.ico')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Zoho Docs"/>
         </toolbarbutton>

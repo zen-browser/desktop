@@ -37,6 +37,28 @@
       <description class="description-deemphasized" data-l10n-id="zen-theme-marketplace-export-success" hidden="true" id="zenThemeMarketplaceExportSuccess" />
       <description class="description-deemphasized" data-l10n-id="zen-theme-marketplace-export-failure" hidden="true" id="zenThemeMarketplaceExportFailure" />
 
+      <vbox id="zen-astra-featured-mods">
+        <label class="zen-theme-picker-section-title" value="⭐ Astra Featured Mods"/>
+        <hbox class="zen-featured-mod-item">
+          <vbox flex="1">
+            <label value="🪟 Astra Transparent Mode"/>
+            <description class="description-deemphasized">
+              Make sidebar transparent with beautiful blur effect
+            </description>
+          </vbox>
+          <button label="Install"
+            oncommand="ZenInstallMod({
+              id: 'astra-transparent',
+              name: 'Astra Transparent Mode',
+              description: 'Transparent sidebar with acrylic blur',
+              author: 'Astra Team',
+              version: '1.0.0',
+              style: 'https://raw.githubusercontent.com/Hrishikeshmind/astradesktop/dev/mods/astra-transparent/chrome.css',
+              readme: 'https://raw.githubusercontent.com/Hrishikeshmind/astradesktop/dev/mods/astra-transparent/readme.md'
+            });"/>
+        </hbox>
+      </vbox>
+
       <vbox id="zenThemeMarketplaceList"></vbox>
 </groupbox>
 

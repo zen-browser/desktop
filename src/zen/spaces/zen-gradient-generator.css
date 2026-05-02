@@ -8,6 +8,8 @@
   --panel-width: 380px;
   --panel-padding: 10px;
   min-width: var(--panel-width);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
 }
 
 #PanelUI-zen-gradient-generator .panel-viewcontainer,

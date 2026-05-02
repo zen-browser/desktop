@@ -116,7 +116,7 @@
           <hbox data-pack="minimal">
             <box data-pack="minimal" data-preset-name="Saffron Mist" data-l10n-id="zen-theme-preset-saffron-mist" data-lightness="88" data-algo="float" data-num-dots="1" data-position="246,196" style="background: #ffd8a3;"></box>
             <box data-pack="minimal" data-preset-name="Tricolor Calm" data-l10n-id="zen-theme-preset-tricolor-calm" data-lightness="80" data-algo="analogous" data-num-dots="3" data-position="210,208"
-                style="--c1: rgb(255, 153, 51); --c2: rgb(255, 255, 255); --c3: rgb(19, 136, 8);" />
+                style="--c1: rgb(220, 120, 30); --c2: rgb(240, 240, 240); --c3: rgb(15, 110, 6);" />
             <box data-pack="minimal" data-preset-name="Ashoka Indigo" data-l10n-id="zen-theme-preset-ashoka-indigo" data-lightness="60" data-algo="float" data-num-dots="1" data-position="72,130" style="background: #4a5faa;"></box>
             <box data-pack="minimal" data-preset-name="Lotus Dawn" data-l10n-id="zen-theme-preset-lotus-dawn" data-lightness="84" data-algo="analogous" data-num-dots="3" data-position="232,164"
                 style="--c1: rgb(255, 178, 132); --c2: rgb(248, 230, 194); --c3: rgb(140, 177, 139);" />

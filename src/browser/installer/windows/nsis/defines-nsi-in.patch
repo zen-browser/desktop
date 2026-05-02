@@ -15,7 +15,7 @@ index c6bb41695d70d17e5691e0d1856b79f7111d5026..8a9393a79a60aca23f80fc989fe2ae33
 +VIAddVersionKey "SupportLink" "https://github.com/Hrishikeshmind/astradesktop"
 +VIAddVersionKey "URLUpdateInfo" "https://github.com/Hrishikeshmind/astradesktop/releases"
 +VIAddVersionKey "URLInfoAbout" "https://github.com/Hrishikeshmind/astradesktop"
-+VIAddVersionKey "Comments" "Astra Browser - Made in India"
++VIAddVersionKey "Comments" "Astra Browser - Made for India"
  !define APPROXIMATE_REQUIRED_SPACE_MB "145"
  
  # Constants for parts of the telemetry submission URL

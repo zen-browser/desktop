@@ -85,6 +85,11 @@
   function setRequestedLocale(localeList) {
     try {
       Services.prefs.setStringPref("intl.locale.requested", localeList);
+      Services.locale.requestedLocales = localeList.split(",");
+      const win = Services.wm.getMostRecentWindow("navigator:browser");
+      if (win) {
+        win.location.reload();
+      }
     } catch (e) {
       console.error("Failed to set requested locale", e);
     }

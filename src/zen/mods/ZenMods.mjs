@@ -466,7 +466,30 @@ class nsZenMods extends nsZenPreloadedFeature {
         return;
       }
 
-      await this.getMods(); // Check for any errors in the themes data file
+      // Astra: Load mods and pre-register default Astra mods
+      const ASTRA_DEFAULT_MODS = {
+        "astra-transparent": {
+          id: "astra-transparent",
+          name: "Astra Transparent Mode",
+          description: "Transparent sidebar with acrylic blur effect",
+          author: "Astra Team",
+          version: "1.0.0",
+          enabled: false,
+          style: "https://raw.githubusercontent.com/Hrishikeshmind/astradesktop/dev/mods/astra-transparent/chrome.css",
+          readme: "https://raw.githubusercontent.com/Hrishikeshmind/astradesktop/dev/mods/astra-transparent/readme.md"
+        }
+      };
+      let currentMods = await this.getMods();
+      let needsUpdate = false;
+      for (const [id, mod] of Object.entries(ASTRA_DEFAULT_MODS)) {
+        if (!currentMods[id]) {
+          currentMods[id] = mod;
+          needsUpdate = true;
+        }
+      }
+      if (needsUpdate) {
+        await this.updateMods(currentMods);
+      }
       const mods = await this.#getEnabledMods();
 
       const modsWithPreferences = await Promise.all(

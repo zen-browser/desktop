@@ -179,26 +179,6 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     this.initColorPages();
     this.initThemeActions();
 
-    // Astra: Sync transparent button state on panel open
-    const transparentBtn = document.getElementById(
-      "zen-theme-picker-transparent-btn"
-    );
-    if (transparentBtn) {
-      const panel = document.getElementById(
-        "PanelUI-zen-gradient-generator"
-      );
-      if (panel) {
-        panel.addEventListener("popupshowing", () => {
-          try {
-            const enabled = Services.prefs.getBoolPref(
-              "astra.transparent.enabled", false
-            );
-            transparentBtn.label = enabled ? "ON ✅" : "OFF";
-          } catch(e) {}
-        });
-      }
-    }
-
     this.loadPresetLibraries();
 
     const darkModeChange = this.handleDarkModeChange.bind(this);

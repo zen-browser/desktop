@@ -43,17 +43,6 @@ var gZenMarketplaceManager = {
 
     await this._buildModsList();
 
-    // Astra: Sync transparent toggle state on settings open
-    const transparentToggle = document.getElementById("astraTransparentToggle");
-    if (transparentToggle) {
-      try {
-        const isEnabled = Services.prefs.getBoolPref(
-          "astra.transparent.enabled", false
-        );
-        transparentToggle.pressed = isEnabled;
-      } catch(e) {}
-    }
-
     Services.prefs.addObserver(gZenMods.updatePref, this);
 
     const checkForUpdateClick = (event) => {

@@ -128,9 +128,3 @@
 
 - name: browser.newtabpage.pinned
   value: "[]"
-
-- name: browser.tabs.allow_transparent_browser
-  value: false
-
-- name: widget.transparent-windows
-  value: false

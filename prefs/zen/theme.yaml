@@ -75,6 +75,3 @@
 
 - name: zen.performance.low-bandwidth-mode.lazy-loading
   value: true
-
-- name: astra.transparent.enabled
-  value: false

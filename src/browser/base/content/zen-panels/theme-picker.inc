@@ -268,20 +268,24 @@
         </vbox>
       </vbox>
       <vbox id="zen-theme-picker-astra-options">
-        <label class="zen-theme-picker-section-title" 
+        <label class="zen-theme-picker-section-title"
                value="⚡ Astra Options"/>
         <hbox align="center" style="padding: 4px 8px;">
           <label flex="1" value="🪟 Transparent Mode"/>
           <button id="zen-theme-picker-transparent-btn"
                   class="subviewbutton"
-                  label="OFF"
-                  oncommand="window.gAstraTransparent?.toggle(
-                    !Services.prefs.getBoolPref(
-                      'astra.transparent.enabled', false
-                    )
-                  ); this.label = Services.prefs.getBoolPref(
-                      'astra.transparent.enabled', false
-                  ) ? 'ON' : 'OFF';"/>
+                  label="Toggle"
+                  oncommand="(async () => {
+                    const mods = await window.gZenMods?.getMods?.();
+                    const isEnabled = mods?.['astra-transparent']?.enabled === true;
+                    if (isEnabled) {
+                      await window.gZenMods?.disableMod?.('astra-transparent');
+                    } else {
+                      await window.gZenMods?.enableMod?.('astra-transparent');
+                    }
+                    window.gZenMods?.triggerModsUpdate?.();
+                    this.label = isEnabled ? 'OFF' : 'ON ✅';
+                  })()"/>
         </hbox>
       </vbox>
     </panelview>

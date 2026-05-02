@@ -2,61 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-window.gAstraTransparent = {
-  PREF: "astra.transparent.enabled",
-  PREFS_TO_SET: [
-    ["browser.tabs.allow_transparent_browser", true],
-    ["widget.transparent-windows", true],
-  ],
-
-  init() {
-    try {
-      Services.prefs.addObserver(this.PREF, this);
-      this.apply();
-    } catch(e) {
-      console.error("Astra Transparent init error:", e);
-    }
-  },
-
-  observe() {
-    this.apply();
-  },
-
-  apply() {
-    const enabled = Services.prefs.getBoolPref(this.PREF, false);
-    for (const [pref, val] of this.PREFS_TO_SET) {
-      try {
-        Services.prefs.setBoolPref(pref, enabled ? val : false);
-      } catch(e) {}
-    }
-    if (enabled) {
-      document.documentElement.setAttribute("astra-transparent", "true");
-      // CSS is handled by ZenMods - attribute triggers existing loaded CSS
-      // No additional action needed here
-    } else {
-      document.documentElement.removeAttribute("astra-transparent");
-    }
-  },
-
-  async toggle(val) {
-    Services.prefs.setBoolPref(this.PREF, val);
-    try {
-      if (val) {
-        await window.gZenMods?.enableMod?.("astra-transparent");
-      } else {
-        await window.gZenMods?.disableMod?.("astra-transparent");
-      }
-      window.gZenMods?.triggerModsUpdate?.();
-    } catch(e) {
-      console.error("Astra transparent sync error:", e);
-    }
-  },
-};
-
-document.addEventListener("MozBeforeInitialXULLayout", () => {
-  window.gAstraTransparent?.init();
-}, { once: true });
-
 console.log("Astra: zen-sets.js loaded");
 
 function isAstraSafeUrl(url) {

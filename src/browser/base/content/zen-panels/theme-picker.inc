@@ -267,6 +267,23 @@
         <vbox id="PanelUI-zen-gradient-generator-custom-list">
         </vbox>
       </vbox>
+      <vbox id="zen-theme-picker-astra-options">
+        <label class="zen-theme-picker-section-title" 
+               value="⚡ Astra Options"/>
+        <hbox align="center" style="padding: 4px 8px;">
+          <label flex="1" value="🪟 Transparent Mode"/>
+          <button id="zen-theme-picker-transparent-btn"
+                  class="subviewbutton"
+                  label="OFF"
+                  oncommand="window.gAstraTransparent?.toggle(
+                    !Services.prefs.getBoolPref(
+                      'astra.transparent.enabled', false
+                    )
+                  ); this.label = Services.prefs.getBoolPref(
+                      'astra.transparent.enabled', false
+                  ) ? 'ON' : 'OFF';"/>
+        </hbox>
+      </vbox>
     </panelview>
   </panelmultiview>
 </panel>

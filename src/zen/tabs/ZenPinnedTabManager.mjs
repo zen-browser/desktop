@@ -65,6 +65,7 @@ class ZenPinnedTabsObserver {
 class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   init() {
     if (!this.enabled) {
+      this._insertTabNoteIntoContextMenu();
       return;
     }
     this._canLog = Services.prefs.getBoolPref(
@@ -74,6 +75,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     this.observer = new ZenPinnedTabsObserver();
     this._initClosePinnedTabShortcut();
     this._insertItemsIntoTabContextMenu();
+    this._insertTabNoteIntoContextMenu();
     this.observer.addPinnedTabListener(this._onPinnedTabEvent.bind(this));
 
     this._zenClickEventListener = this._onTabClick.bind(this);
@@ -546,6 +548,39 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     gZenUIManager.updateTabsToolbar();
   }
 
+  _insertTabNoteIntoContextMenu() {
+    if (document.getElementById("context_zen-tab-note")) {
+      return;
+    }
+    const tabNoteFragment = window.MozXULElement.parseXULToFragment(`
+            <menuseparator/>
+            <menuseparator/>
+            <menuitem id="context_zen-tab-note"
+                      label="📝 Tab Note"
+                      hidden="false"/>
+        `);
+    const editIconAnchor = document.getElementById("context_zen-edit-tab-icon");
+    if (editIconAnchor) {
+      editIconAnchor.after(tabNoteFragment);
+    } else {
+      const pinTabItem =
+        document.getElementById("context_pinTab") ||
+        document.getElementById("context_reloadTab") ||
+        document.getElementById("tabContextMenu");
+      if (pinTabItem && pinTabItem.id === "tabContextMenu") {
+        pinTabItem.appendChild(tabNoteFragment);
+      } else if (pinTabItem) {
+        pinTabItem.before(tabNoteFragment);
+      }
+    }
+    document
+      .getElementById("context_zen-tab-note")
+      ?.addEventListener("command", () => {
+        const tab = TabContextMenu.contextTab;
+        gZenTabNotes.openNotePanel(tab);
+      });
+  }
+
   _insertItemsIntoTabContextMenu() {
     if (!this.enabled) {
       return;
@@ -579,11 +614,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
                       hidden="true"/>
             <menuitem id="context_zen-edit-tab-icon"
                       data-lazy-l10n-id="tab-context-zen-edit-icon"/>
-            <menuseparator/>
-            <menuseparator/>
-            <menuitem id="context_zen-tab-note"
-                      label="📝 Tab Note"
-                      hidden="false"/>
         `);
 
     const pinTabItem = document.getElementById("context_pinTab")
@@ -619,12 +649,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
             });
           },
         });
-      });
-    document
-      .getElementById("context_zen-tab-note")
-      .addEventListener("command", () => {
-        const tab = TabContextMenu.contextTab;
-        gZenTabNotes.openNotePanel(tab);
       });
   }
 

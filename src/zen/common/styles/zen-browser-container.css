@@ -59,6 +59,7 @@
           --margin-top-fix: calc(-1 * var(--zen-toolbar-height-with-bookmarks) + var(--zen-element-separation));
         }
 
+        /* stylelint-disable-next-line media-query-no-invalid */
         @media -moz-pref("zen.view.experimental-no-window-controls") or (not -moz-pref("zen.view.hide-window-controls")) or (not -moz-pref("browser.tabs.inTitlebar")) {
           :root:not([zen-has-bookmarks="true"])[zen-single-toolbar="true"] & {
             --margin-top-fix: 0px;

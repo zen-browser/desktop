@@ -809,7 +809,7 @@ class nsZenKeyboardShortcutsLoader {
     newShortcutList.push(
       new KeyShortcut(
         "zen-open-india-gov",
-        "I",
+        "Y",
         "",
         ZEN_OTHER_SHORTCUTS_GROUP,
         nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
@@ -855,7 +855,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 31;
+  static LATEST_KBS_VERSION = 32;
 
   constructor() {}
 
@@ -1286,8 +1286,14 @@ class nsZenKeyboardShortcutsVersioner {
     }
     if (version < 30) {
       const launcher = data.find(s => s.id === "zen-open-india-gov");
-      if (launcher && launcher.key === "G") {
-        launcher.key = "I";
+      if (launcher && (launcher.key === "G" || launcher.key === "I")) {
+        launcher.key = "Y";
+      }
+    }
+    if (version < 32) {
+      const indiaGov = data.find(s => s.id === "zen-open-india-gov");
+      if (indiaGov && (indiaGov.key === "I" || indiaGov.key === "G")) {
+        indiaGov.key = "Y";
       }
     }
     if (version < 31) {

@@ -12,7 +12,7 @@
   value: true
 
 - name: zen.tabs.essentials.max
-  value: 12
+  value: 20
 
 - name: zen.tabs.show-newtab-vertical
   value: true

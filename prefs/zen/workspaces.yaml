@@ -27,7 +27,7 @@
   value: ctrl
 
 - name: services.sync.engine.workspaces
-  value: false
+  value: true
 
 - name: zen.workspaces.separate-essentials
   value: true

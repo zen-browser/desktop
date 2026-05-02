@@ -19,16 +19,16 @@
   value: false
 
 - name: zen.folders.templates.enabled
-  value: false
+  value: true
 
 - name: zen.folders.quick-actions.enabled
-  value: false
+  value: true
 
 - name: zen.folders.dashboard.enabled
   value: false
 
 - name: zen.folders.autofolders.enabled
-  value: false
+  value: true
 
 # JSON array of auto-folder rules.
 # Example:
@@ -37,10 +37,10 @@
   value: "[]"
 
 - name: zen.folders.autofolders.create-if-missing
-  value: false
+  value: true
 
 - name: zen.folders.autofolders.collapse-target
   value: true
 
 - name: zen.folders.keyboard-search.enabled
-  value: false
+  value: true

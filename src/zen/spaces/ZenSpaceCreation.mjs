@@ -158,6 +158,18 @@ class nsZenWorkspaceCreation extends MozXULElement {
       }
     });
 
+    // Bound on the root so Esc works regardless of which child has focus
+    // (name input, icon picker trigger, profile button, primary button).
+    // Open popups consume Esc before it reaches us, so the emoji/profile
+    // pickers still close as expected.
+    this.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        this.cancelButton.doCommand();
+      }
+    });
+
     this.inputIcon.addEventListener("command", this.onIconCommand.bind(this));
 
     this.profilesPopup = this.querySelector(

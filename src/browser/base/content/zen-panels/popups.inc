@@ -442,6 +442,18 @@
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="IRCTC"/>
         </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://www.redbus.in"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=redbus.in&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="RedBus"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://www.indianrail.gov.in"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=indianrail.gov.in&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Indian Rail"/>
+        </toolbarbutton>
       </hbox>
       <label class="zen-app-launcher-section-title" value="🏛️ Government"/>
       <hbox class="zen-app-launcher-grid">
@@ -474,6 +486,87 @@
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=uidai.gov.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Aadhaar"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://parivahan.gov.in"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=parivahan.gov.in&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Parivahan/RTO"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://www.pan.utiitsl.com"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=pan.utiitsl.com&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="PAN Card"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://www.passportindia.gov.in"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=passportindia.gov.in&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Passport"/>
+        </toolbarbutton>
+      </hbox>
+      <label class="zen-app-launcher-section-title" value="🎓 Education"/>
+      <hbox class="zen-app-launcher-grid">
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://www.nta.ac.in"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=nta.ac.in&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="NTA"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://www.cbse.gov.in"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=cbse.gov.in&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="CBSE"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://www.upsc.gov.in"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=upsc.gov.in&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="UPSC"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://ssc.gov.in"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=ssc.gov.in&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="SSC"/>
+        </toolbarbutton>
+      </hbox>
+      <label class="zen-app-launcher-section-title" value="💼 Jobs"/>
+      <hbox class="zen-app-launcher-grid">
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://www.ncs.gov.in"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=ncs.gov.in&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="NCS Portal"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://unifiedportal-mem.epfindia.gov.in"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=epfindia.gov.in&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="EPFO UAN"/>
+        </toolbarbutton>
+      </hbox>
+      <label class="zen-app-launcher-section-title" value="🏥 Health"/>
+      <hbox class="zen-app-launcher-grid">
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://pmjay.gov.in"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=pmjay.gov.in&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Ayushman Bharat"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://janaushadhi.gov.in"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=janaushadhi.gov.in&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Jan Aushadhi"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://www.cowin.gov.in"
+          style="list-style-image: url('https://www.google.com/s2/favicons?domain=cowin.gov.in&amp;sz=32')">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="CoWIN"/>
         </toolbarbutton>
       </hbox>
     </vbox>

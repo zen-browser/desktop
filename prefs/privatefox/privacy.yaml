@@ -120,3 +120,33 @@
 
 - name: privacy.userContext.ui.enabled
   value: true
+
+# Astra: Enhanced fingerprinting protection
+- name: privacy.resistFingerprinting
+  value: false
+
+# Astra: WebRTC leak protection
+- name: media.peerconnection.ice.no_host
+  value: true
+- name: media.peerconnection.ice.proxy_only_if_behind_proxy
+  value: true
+
+# Astra: Disable geolocation
+- name: geo.enabled
+  value: false
+
+# Astra: Disable battery API (fingerprinting)
+- name: dom.battery.enabled
+  value: false
+
+# Astra: Disable beacon API
+- name: beacon.enabled
+  value: false
+
+# Astra: Disable WebGL fingerprinting
+- name: webgl.disabled
+  value: false
+
+# Astra: Enable HTTPS-only in private browsing
+- name: dom.security.https_only_mode_pbm
+  value: true

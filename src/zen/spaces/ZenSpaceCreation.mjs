@@ -148,6 +148,16 @@ class nsZenWorkspaceCreation extends MozXULElement {
       this.createButton.disabled = !this.inputName.value.trim();
     });
 
+    this.inputName.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!this.createButton.disabled) {
+          this.createButton.doCommand();
+        }
+      }
+    });
+
     this.inputIcon.addEventListener("command", this.onIconCommand.bind(this));
 
     this.profilesPopup = this.querySelector(

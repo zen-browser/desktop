@@ -75,7 +75,7 @@ index b006d5e5e64c418fbf930c010401e4ea3a3647a3..27886c04258e40f7c6ec444320a9a2a1
            </hbox>
          </hbox>
          <vbox id="mainPrefPane">
-@@ -266,6 +312,9 @@
+@@ -266,6 +312,10 @@
  #include sync.inc.xhtml
  #include experimental.inc.xhtml
  #include moreFromMozilla.inc.xhtml

@@ -168,9 +168,9 @@ diff --git a/toolkit/themes/shared/global-shared.css b/toolkit/themes/shared/glo
 --- a/toolkit/themes/shared/global-shared.css
 +++ b/toolkit/themes/shared/global-shared.css
 @@ -72,10 +72,22 @@
-   --menuitem-border-radius: var(--panel-menuitem-border-radius);
-   --menuitem-padding: var(--panel-menuitem-padding);
-   --menuitem-margin: var(--panel-menuitem-margin);
+   --menuitem-border-radius: var(--arrowpanel-menuitem-border-radius);
+   --menuitem-padding: var(--arrowpanel-menuitem-padding);
+   --menuitem-margin: var(--arrowpanel-menuitem-margin);
  }
  
 +/* stylelint-disable-next-line media-query-no-invalid */
@@ -252,10 +252,10 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 --- a/widget/cocoa/nsCocoaWindow.mm
 +++ b/widget/cocoa/nsCocoaWindow.mm
 @@ -4,10 +4,13 @@
+  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
  
  #include "nsCocoaWindow.h"
  
- #include "nsISupportsPrimitives.h"
  #include "nsArrayUtils.h"
 +#include "nsMenuPopupFrame.h"
 +#include "nsDeviceContext.h"
@@ -661,9 +661,9 @@ diff --git a/xpcom/ds/StaticAtoms.py b/xpcom/ds/StaticAtoms.py
      Atom("nonce", "nonce"),
      Atom("none", "none"),
 +    Atom("nonnativepopover", "nonnativepopover"),
-     Atom("nonnative", "nonnative"),
      Atom("noresize", "noresize"),
      Atom("normal", "normal"),
      Atom("normalizeSpace", "normalize-space"),
      Atom("noscript", "noscript"),
+     Atom("noshade", "noshade"),
 

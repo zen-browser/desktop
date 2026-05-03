@@ -15,7 +15,7 @@ XPCOMUtils.defineLazyPreferenceGetter(
 
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
-  "sortByRecentlyUsed",
+  "sortByRecent",
   "zen.tabs.ctrl-tab-panel.sort-by-recent",
   false
 );
@@ -111,13 +111,13 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       if (tab.closing || !tab.visible || tab.hasAttribute("busy")) {
         return false;
       }
-      if (lazy.sortByRecentlyUsed && tab.hasAttribute("pending")) {
+      if (lazy.sortByRecent && tab.hasAttribute("pending")) {
         return false;
       }
       return true;
     });
 
-    if (lazy.sortByRecentlyUsed) {
+    if (lazy.sortByRecent) {
       this.#tabList.sort((tab1, tab2) => tab2.lastAccessed - tab1.lastAccessed);
     }
 
@@ -129,7 +129,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
      * this ensures thumbnails show the most up-to-date page content. */
     this.#removeThumbnail(gBrowser.selectedTab.linkedPanel);
 
-    const initialCardIndex = lazy.sortByRecentlyUsed
+    const initialCardIndex = lazy.sortByRecent
       ? 0
       : this.#tabList.indexOf(gBrowser.selectedTab);
 
@@ -140,10 +140,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       this.#currentIndex = (initialCardIndex + 1) % this.#tabList.length;
     }
 
-    this.#visibleCards = Math.min(
-      this.#tabList.length,
-      this.#getMaxCards()
-    );
+    this.#visibleCards = Math.min(this.#tabList.length, this.#getMaxCards());
     this.#isOpen = true;
 
     const tabboxRect = gBrowser.tabbox.getBoundingClientRect();

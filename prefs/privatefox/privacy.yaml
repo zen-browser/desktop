@@ -122,9 +122,9 @@
 - name: geo.enabled
   value: false
 
-# Astra: Disable battery API (fingerprinting)
+# Astra: Battery API enabled for Energy Saver feature
 - name: dom.battery.enabled
-  value: false
+  value: true
 
 # Astra: Disable beacon API
 - name: beacon.enabled

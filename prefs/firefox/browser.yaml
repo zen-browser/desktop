@@ -128,3 +128,35 @@
 
 - name: browser.newtabpage.pinned
   value: "[]"
+
+# Astra: Cryptomining protection
+- name: privacy.trackingprotection.cryptomining.enabled
+  value: true
+- name: privacy.trackingprotection.fingerprinting.enabled
+  value: true
+
+# Astra: Block dangerous downloads
+- name: browser.safebrowsing.downloads.remote.block_dangerous
+  value: true
+- name: browser.safebrowsing.downloads.remote.block_dangerous_host
+  value: true
+- name: browser.safebrowsing.downloads.remote.block_potentially_unwanted
+  value: true
+- name: browser.safebrowsing.downloads.remote.block_uncommon
+  value: true
+
+# Astra: Block popup notifications spam
+- name: permissions.default.desktop-notification
+  value: 2
+- name: dom.webnotifications.enabled
+  value: true
+
+# Astra: Block unwanted popups
+- name: dom.disable_open_during_load
+  value: true
+
+# Astra: AI/ML phishing protection
+- name: browser.safebrowsing.provider.google4.updateURL
+  value: "https://safebrowsing.googleapis.com/v4/threatListUpdates:fetch?$ct=application/x-protobuf&key=%GOOGLE_SAFEBROWSING_API_KEY%&pver=2.2"
+- name: browser.safebrowsing.provider.google4.gethashURL
+  value: "https://safebrowsing.googleapis.com/v4/fullHashes:find?$ct=application/x-protobuf&key=%GOOGLE_SAFEBROWSING_API_KEY%&pver=2.2"

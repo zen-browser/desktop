@@ -138,13 +138,13 @@
 - name: dom.security.https_only_mode_pbm
   value: true
 
-# Astra: First Party Isolation (like Tor Browser)
+# Astra: First Party Isolation (disabled - breaks Google login)
 - name: privacy.firstparty.isolate
-  value: true
+  value: false
 
-# Astra: Resist fingerprinting (Tor level)
+# Astra: Resist fingerprinting (user can enable in settings)
 - name: privacy.resistFingerprinting
-  value: true
+  value: false
 
 # Astra: Letterboxing (hides screen size)
 - name: privacy.resistFingerprinting.letterboxing

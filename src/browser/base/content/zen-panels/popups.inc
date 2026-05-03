@@ -442,18 +442,6 @@
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="IRCTC"/>
         </toolbarbutton>
-        <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://www.redbus.in"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=redbus.in&amp;sz=32')">
-          <image class="zen-app-launcher-item-icon"/>
-          <label class="zen-app-launcher-item-label" value="RedBus"/>
-        </toolbarbutton>
-        <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://www.indianrail.gov.in"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=indianrail.gov.in&amp;sz=32')">
-          <image class="zen-app-launcher-item-icon"/>
-          <label class="zen-app-launcher-item-label" value="Indian Rail"/>
-        </toolbarbutton>
       </hbox>
       <label class="zen-app-launcher-section-title" value="🏛️ Government"/>
       <hbox class="zen-app-launcher-grid">

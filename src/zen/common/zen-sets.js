@@ -4,6 +4,10 @@
 
 console.log("Astra: zen-sets.js loaded");
 
+const { gZenEnergySaver } = ChromeUtils.importESModule(
+  "chrome://browser/content/ZenEnergySaver.mjs"
+);
+
 function isAstraSafeUrl(url) {
   try {
     const parsed = Services.io.newURI(url);
@@ -422,6 +426,10 @@ document.addEventListener(
           openCrashRecoveryPanel();
         }, 350);
       }
+    });
+
+    window.gZenStartup?.promiseInitialized?.then(() => {
+      void gZenEnergySaver.init().catch(console.warn);
     });
 
     // <commandset id="mainCommandSet"> defined in browser-sets.inc

@@ -185,3 +185,6 @@ zen-window-sync-migration-dialog-accept = Got It
 zen-appmenu-new-blank-window =
     .label = New blank window
 
+astra-energy-saver-enabled = ⚡ Energy Saver ON - Battery low
+astra-energy-saver-disabled = 🔋 Energy Saver OFF - Battery charging
+

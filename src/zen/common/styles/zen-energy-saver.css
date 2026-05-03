@@ -1,0 +1,10 @@
+/* Astra Energy Saver Mode */
+:root[astra-energy-saver="true"] * {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+:root[astra-energy-saver="true"] .zen-toolbar-background {
+  backdrop-filter: none !important;
+}

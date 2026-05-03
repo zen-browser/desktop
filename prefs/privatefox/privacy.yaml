@@ -111,24 +111,11 @@
 - name: browser.uitour.enabled
   value: false
 
-- name: privacy.globalprivacycontrol.enabled
-  value: true
-
 # Contextual Identities
 - name: privacy.userContext.enabled
   value: true
 
 - name: privacy.userContext.ui.enabled
-  value: true
-
-# Astra: Enhanced fingerprinting protection
-- name: privacy.resistFingerprinting
-  value: false
-
-# Astra: WebRTC leak protection
-- name: media.peerconnection.ice.no_host
-  value: true
-- name: media.peerconnection.ice.proxy_only_if_behind_proxy
   value: true
 
 # Astra: Disable geolocation
@@ -150,3 +137,57 @@
 # Astra: Enable HTTPS-only in private browsing
 - name: dom.security.https_only_mode_pbm
   value: true
+
+# Astra: First Party Isolation (like Tor Browser)
+- name: privacy.firstparty.isolate
+  value: true
+
+# Astra: Resist fingerprinting (Tor level)
+- name: privacy.resistFingerprinting
+  value: true
+
+# Astra: Letterboxing (hides screen size)
+- name: privacy.resistFingerprinting.letterboxing
+  value: true
+
+# Astra: Block canvas fingerprinting
+- name: privacy.resistFingerprinting.block_mozAddonManager
+  value: true
+
+# Astra: WebRTC leak protection (keep enabled for video calls)
+- name: media.peerconnection.ice.no_host
+  value: true
+- name: media.peerconnection.ice.proxy_only_if_behind_proxy
+  value: true
+
+# Astra: Spoof timezone (anti-fingerprint)
+- name: privacy.resistFingerprinting.reduceTimerPrecision
+  value: true
+
+# Astra: Block third party cookies completely
+- name: network.cookie.cookieBehavior
+  value: 5
+
+# Astra: Enable Global Privacy Control
+- name: privacy.globalprivacycontrol.enabled
+  value: true
+- name: privacy.globalprivacycontrol.functionality.enabled
+  value: true
+
+# Astra: Disable HTTP3/QUIC (leaks info)
+- name: network.http.http3.enable
+  value: false
+
+# Astra: Disable DNS prefetching
+- name: network.dns.disablePrefetch
+  value: true
+- name: network.dns.disablePrefetchFromHTTPS
+  value: true
+
+# Astra: Disable link prefetching
+- name: network.prefetch-next
+  value: false
+
+# Astra: Disable speculative connections
+- name: network.http.speculative-parallel-limit
+  value: 0

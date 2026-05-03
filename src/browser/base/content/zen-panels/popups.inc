@@ -442,12 +442,6 @@
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="IRCTC"/>
         </toolbarbutton>
-        <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://www.makemytrip.com"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=makemytrip.com&amp;sz=32')">
-          <image class="zen-app-launcher-item-icon"/>
-          <label class="zen-app-launcher-item-label" value="MakeMyTrip"/>
-        </toolbarbutton>
       </hbox>
       <label class="zen-app-launcher-section-title" value="🏛️ Government"/>
       <hbox class="zen-app-launcher-grid">
@@ -480,27 +474,6 @@
           style="list-style-image: url('https://www.google.com/s2/favicons?domain=uidai.gov.in&amp;sz=32')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Aadhaar"/>
-        </toolbarbutton>
-      </hbox>
-      <label class="zen-app-launcher-section-title" value="💰 Payments"/>
-      <hbox class="zen-app-launcher-grid">
-        <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://www.phonepe.com"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=phonepe.com&amp;sz=32')">
-          <image class="zen-app-launcher-item-icon"/>
-          <label class="zen-app-launcher-item-label" value="PhonePe"/>
-        </toolbarbutton>
-        <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://paytm.com"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=paytm.com&amp;sz=32')">
-          <image class="zen-app-launcher-item-icon"/>
-          <label class="zen-app-launcher-item-label" value="Paytm"/>
-        </toolbarbutton>
-        <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://www.bhimupi.org.in"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=bhimupi.org.in&amp;sz=32')">
-          <image class="zen-app-launcher-item-icon"/>
-          <label class="zen-app-launcher-item-label" value="BHIM UPI"/>
         </toolbarbutton>
       </hbox>
     </vbox>

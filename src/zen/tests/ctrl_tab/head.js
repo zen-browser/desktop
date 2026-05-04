@@ -53,6 +53,22 @@ function getVisibleTabs() {
   return Array.from(gBrowser.tabs).filter(tab => !tab.closing && tab.visible);
 }
 
+function pressTab(n = 1) {
+  for (let i = 0; i < n; i++) {
+    EventUtils.synthesizeKey("VK_TAB", { ctrlKey: true, type: "keydown" });
+  }
+}
+
+function pressShiftTab(n = 1) {
+  for (let i = 0; i < n; i++) {
+    EventUtils.synthesizeKey("VK_TAB", {
+      ctrlKey: true,
+      shiftKey: true,
+      type: "keydown",
+    });
+  }
+}
+
 function simulateClick(n) {
   const target = getCards().children[n];
   const promise = BrowserTestUtils.waitForEvent(target, "click");

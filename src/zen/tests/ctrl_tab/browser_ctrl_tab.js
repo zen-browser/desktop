@@ -97,8 +97,7 @@ add_task(async function test_Multi_Navigate_While_Open() {
 
   // Open, navigate forward twice, then close
   await openCtrlTabPanel();
-  gZenCtrlTabPanel.navigateForward();
-  gZenCtrlTabPanel.navigateForward();
+  pressTab(2);
   await closeCtrlTabPanel();
   is(
     gBrowser.selectedTab,
@@ -108,7 +107,7 @@ add_task(async function test_Multi_Navigate_While_Open() {
 
   // Open with shift, navigate backward, then close
   await openCtrlTabPanel(true);
-  gZenCtrlTabPanel.navigateBackward();
+  pressShiftTab();
   await closeCtrlTabPanel();
   is(
     gBrowser.selectedTab,
@@ -155,15 +154,22 @@ add_task(async function test_Less_Than_Two_Tabs() {
 
   is(getVisibleTabs().length, 1, "Should have a single tab");
 
-  await gZenCtrlTabPanel.open();
+  EventUtils.synthesizeKey("VK_CONTROL", { type: "keydown" });
+  EventUtils.synthesizeKey("VK_TAB", { ctrlKey: true, type: "keydown" });
   isnot(
     getPanel().state,
     "open",
     "Panel should not open with less than two tabs"
   );
+  EventUtils.synthesizeKey("VK_CONTROL", { type: "keyup" });
 
   const tabs = await addTabs(1);
   await openCtrlTabPanel();
+  is(
+    getPanel().state,
+    "open",
+    "Panel should now open with two tabs"
+  );
   await closeCtrlTabPanel();
 
   for (let tab of tabs) {
@@ -198,7 +204,7 @@ add_task(async function test_Recent_Sort_Order() {
 
   gBrowser.removeTab(tabs[1]);
   await openCtrlTabPanel();
-  gZenCtrlTabPanel.navigateForward();
+  pressTab();
   await closeCtrlTabPanel();
   is(
     gBrowser.selectedTab,

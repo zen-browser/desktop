@@ -67,16 +67,16 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       if (!this.#isOpen) {
         event.preventDefault();
         event.stopImmediatePropagation();
-        this.open(event.shiftKey);
+        this.#open(event.shiftKey);
       } else {
-        event.shiftKey ? this.navigateBackward() : this.navigateForward();
+        event.shiftKey ? this.#navigateBackward() : this.#navigateForward();
       }
     }
   }
 
   #handleKeyUp(event) {
     if (this.#isOpen && event.key === "Control") {
-      this.close();
+      this.#close();
     }
   }
 
@@ -102,7 +102,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
    * @param {boolean} shiftKey - Navigate backward (true) or forward (false).
    * @returns {Promise<void>} Resolves when panel is displayed.
    */
-  async open(shiftKey = false) {
+  async #open(shiftKey = false) {
     if (this.#isOpen) {
       return;
     }
@@ -188,7 +188,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     this.panel.addEventListener(
       "popuphidden",
       () => {
-        this.close(false);
+        this.#close(false);
       },
       { once: true }
     );
@@ -201,7 +201,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
     });
   }
 
-  close(switchTab = true) {
+  #close(switchTab = true) {
     if (!this.#isOpen) {
       return;
     }
@@ -345,7 +345,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
       card.addEventListener("click", () => {
         this.#currentIndex = index;
-        this.close();
+        this.#close();
       });
 
       this.cardsContainer.appendChild(card);
@@ -409,7 +409,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
    *
    * @returns {void}
    */
-  navigateForward() {
+  #navigateForward() {
     const previousIndex = this.#currentIndex;
     this.#currentIndex = (this.#currentIndex + 1) % this.#tabList.length;
     this.#updateSelection(previousIndex);
@@ -420,7 +420,7 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
    *
    * @returns {void}
    */
-  navigateBackward() {
+  #navigateBackward() {
     const previousIndex = this.#currentIndex;
     this.#currentIndex =
       (this.#currentIndex - 1 + this.#tabList.length) % this.#tabList.length;

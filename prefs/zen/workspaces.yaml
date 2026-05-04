@@ -52,10 +52,10 @@
   value: reset-unload-switch
 
 - name: zen.tab-unloader.auto-unload-inactive
-  value: false
+  value: true
 
 - name: zen.tab-unloader.timeout-minutes
-  value: 10
+  value: 20
 
 - name: zen.tab-unloader.aggressiveness
   value: balanced

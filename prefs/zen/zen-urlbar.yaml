@@ -30,7 +30,7 @@
   value: true
 
 - name: zen.urlbar.show-pip-button
-  value: false
+  value: true
 
 - name: zen.urlbar.open-on-startup
   value: true

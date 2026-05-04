@@ -832,7 +832,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 17;
+  static LATEST_KBS_VERSION = 18;
 
   constructor() {}
 
@@ -1208,6 +1208,22 @@ class nsZenKeyboardShortcutsVersioner {
           nsKeyShortcutModifiers.fromObject({}),
           "cmd_zenDuplicateTab",
           "zen-duplicate-tab-shortcut"
+        )
+      );
+    }
+
+    if (version < 18) {
+      // Migrate from version 17 to 18.
+      // Add shortcut to Create New Workspace (unbound by default)
+      data.push(
+        new KeyShortcut(
+          "zen-workspace-create",
+          "",
+          "",
+          ZEN_WORKSPACE_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({}),
+          "cmd_zenOpenWorkspaceCreation",
+          "zen-workspace-shortcut-create"
         )
       );
     }

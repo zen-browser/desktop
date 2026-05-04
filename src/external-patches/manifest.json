@@ -34,6 +34,12 @@
     }
   },
   {
+    "type": "file",
+    // TODO: Convert into https://phabricator.services.mozilla.com/D298079
+    //    once it gets accepted.
+    "path": "firefox/allow_backdrop_to_work_on_transparency.patch"
+  },
+  {
     "type": "local",
     "path": "firefox/no_liquid_glass_icon.patch"
   },

@@ -174,7 +174,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
         }
         this.#removeEventListeners();
         break;
-      case "DOMDocElementInserted":
+      case "DOMWindowCreated":
         this.#applyBoostForPageIfAvailable();
         break;
       default:

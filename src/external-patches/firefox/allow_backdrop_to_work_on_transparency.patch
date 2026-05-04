@@ -38,11 +38,11 @@ diff --git a/gfx/webrender_bindings/src/bindings.rs b/gfx/webrender_bindings/src
          max_shared_surface_size,
          enable_dithering,
 +        opaque_backdrop_fallback,
+         precise_linear_gradients,
          ..Default::default()
      };
  
      let window_size = DeviceIntSize::new(window_width, window_height);
-     let notifier = Box::new(CppNotifier { window_id });
 diff --git a/gfx/wr/webrender/src/device/gl.rs b/gfx/wr/webrender/src/device/gl.rs
 --- a/gfx/wr/webrender/src/device/gl.rs
 +++ b/gfx/wr/webrender/src/device/gl.rs
@@ -72,11 +72,11 @@ diff --git a/gfx/wr/webrender/src/renderer/init.rs b/gfx/wr/webrender/src/render
      pub enable_debugger: bool,
 +    /// See explanation of `gfx.webrender.opaque-backdrop-fallback`.
 +    pub opaque_backdrop_fallback: bool,
+ 
+     /// Use a more precise method for sampling gradients.
+     pub precise_linear_gradients: bool,
  }
  
- impl WebRenderOptions {
-     /// Number of batches to look back in history for adding the current
-     /// transparent instance into.
 @@ -277,10 +279,11 @@
              enable_instancing: true,
              reject_software_rasterizer: false,
@@ -84,11 +84,11 @@ diff --git a/gfx/wr/webrender/src/renderer/init.rs b/gfx/wr/webrender/src/render
              max_shared_surface_size: 2048,
              enable_debugger: true,
 +            opaque_backdrop_fallback: false,
+             precise_linear_gradients: false,
          }
      }
  }
  
- /// Initializes WebRender and creates a `Renderer` and `RenderApiSender`.
 @@ -802,10 +805,11 @@
          allocated_native_surfaces: FastHashSet::default(),
          debug_overlay_state: DebugOverlayState::new(),

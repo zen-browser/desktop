@@ -334,13 +334,13 @@
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://irctc.co.in"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=irctc.co.in&amp;sz=32')">
+          style="list-style-image: url('https://www.irctc.co.in/favicon.ico')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="IRCTC"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://incometax.gov.in"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=incometax.gov.in&amp;sz=32')">
+          style="list-style-image: url('https://www.incometax.gov.in/favicon.ico')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Income Tax"/>
         </toolbarbutton>
@@ -352,7 +352,7 @@
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://gst.gov.in"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=gst.gov.in&amp;sz=32')">
+          style="list-style-image: url('https://www.gst.gov.in/favicon.ico')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="GST Portal"/>
         </toolbarbutton>
@@ -438,7 +438,7 @@
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://www.irctc.co.in"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=irctc.co.in&amp;sz=32')">
+          style="list-style-image: url('https://www.irctc.co.in/favicon.ico')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="IRCTC"/>
         </toolbarbutton>
@@ -453,13 +453,13 @@
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://www.incometax.gov.in"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=incometax.gov.in&amp;sz=32')">
+          style="list-style-image: url('https://www.incometax.gov.in/favicon.ico')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Income Tax"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://www.gst.gov.in"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=gst.gov.in&amp;sz=32')">
+          style="list-style-image: url('https://www.gst.gov.in/favicon.ico')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="GST Portal"/>
         </toolbarbutton>
@@ -471,19 +471,19 @@
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://uidai.gov.in"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=uidai.gov.in&amp;sz=32')">
+          style="list-style-image: url('https://uidai.gov.in/images/logo/uidai_logo_english.svg')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Aadhaar"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://parivahan.gov.in"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=parivahan.gov.in&amp;sz=32')">
+          style="list-style-image: url('https://parivahan.gov.in/favicon.ico')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Parivahan/RTO"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://www.pan.utiitsl.com"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=pan.utiitsl.com&amp;sz=32')">
+          style="list-style-image: url('https://www.onlineservices.nsdl.com/favicon.ico')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="PAN Card"/>
         </toolbarbutton>
@@ -504,7 +504,7 @@
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://www.cbse.gov.in"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=cbse.gov.in&amp;sz=32')">
+          style="list-style-image: url('https://www.cbse.gov.in/favicon.ico')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="CBSE"/>
         </toolbarbutton>
@@ -516,7 +516,7 @@
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://ssc.gov.in"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=ssc.gov.in&amp;sz=32')">
+          style="list-style-image: url('https://ssc.nic.in/favicon.ico')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="SSC"/>
         </toolbarbutton>
@@ -531,7 +531,7 @@
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://unifiedportal-mem.epfindia.gov.in"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=epfindia.gov.in&amp;sz=32')">
+          style="list-style-image: url('https://unifiedportal-mem.epfindia.gov.in/favicon.ico')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="EPFO UAN"/>
         </toolbarbutton>
@@ -540,7 +540,7 @@
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://pmjay.gov.in"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=pmjay.gov.in&amp;sz=32')">
+          style="list-style-image: url('https://pmjay.gov.in/favicon.ico')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="Ayushman Bharat"/>
         </toolbarbutton>
@@ -552,7 +552,7 @@
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://www.cowin.gov.in"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=cowin.gov.in&amp;sz=32')">
+          style="list-style-image: url('https://www.cowin.gov.in/favicon.ico')">
           <image class="zen-app-launcher-item-icon"/>
           <label class="zen-app-launcher-item-label" value="CoWIN"/>
         </toolbarbutton>

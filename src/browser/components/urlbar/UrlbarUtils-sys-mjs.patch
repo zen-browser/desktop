@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarUtils.sys.mjs b/browser/components/urlbar/UrlbarUtils.sys.mjs
-index 64afd613f454edd7786fcc1e2f307a582e4d5f51..50e2dd129d4f2e8f0b07e29639d660cd08ee7318 100644
+index 64afd613f454edd7786fcc1e2f307a582e4d5f51..92f91379f43785cf5417c96b178884c860db6bd3 100644
 --- a/browser/components/urlbar/UrlbarUtils.sys.mjs
 +++ b/browser/components/urlbar/UrlbarUtils.sys.mjs
 @@ -85,6 +85,8 @@ export var UrlbarUtils = {
@@ -30,7 +30,7 @@ index 64afd613f454edd7786fcc1e2f307a582e4d5f51..50e2dd129d4f2e8f0b07e29639d660cd
 +        icon: "chrome://browser/skin/zen-icons/selectable/layers.svg",
 +        pref: "shortcuts.workspaces",
 +        telemetryLabel: "workspaces",
-+        uiLabel: "urlbar-searchmode-workspaces",
++        uiLabel: "urlbar-search-mode-workspaces",
 +      },
      ]);
    },

@@ -318,7 +318,7 @@
       &,
       & .tab-content > image {
         transition:
-          scale 0.2s ease,
+          scale 0.1s ease,
           var(--zen-tabbox-element-indent-transition);
       }
     }
@@ -1077,7 +1077,7 @@
   #tabs-newtab-button {
     max-height: var(--tab-min-height);
     display: flex !important;
-    transition: scale 0.2s ease;
+    transition: scale 0.1s ease;
     #tabbrowser-tabs[movingtab] & {
       transition: transform 0.1s ease;
     }

@@ -10,7 +10,8 @@
   gap: 8px;
   padding: 8px 2px;
   padding-bottom: 0;
-  grid-template-columns: calc(var(--border-radius-medium) - 4px);
+  border-radius: calc(var(--border-radius-medium) - 4px);
+  grid-template-columns: repeat(auto-fit, minmax(32px, 1fr));
 
   & .unified-extensions-item {
     flex: 1;

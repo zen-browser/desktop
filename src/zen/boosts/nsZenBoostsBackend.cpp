@@ -145,7 +145,7 @@ inline static auto zenPrecomputeAccent(nscolor aAccentColor) {
     return aOriginalColor;
   }
 
-  const float inv255 = 1.0f / 255.0f;
+  constexpr float inv255 = 1.0f / 255.0f;
   const float blendFactor = contrast * inv255;
 
   // sRGB -> linear
@@ -261,7 +261,9 @@ inline static nscolor zenInvertColorChannel(nscolor aColor) {
 }
 
 /**
- * @brief Retrieves the current boost data from the browsing context.
+ * @brief Retrieves the current boost data from the browsing context. When
+ * called without aPresContext, reads the precomputed cache populated on
+ * presshell entry; otherwise resolves from the supplied PresContext.
  */
 ZEN_HOT_FUNCTION
 inline static void GetZenBoostsDataFromBrowsingContext(
@@ -272,11 +274,14 @@ inline static void GetZenBoostsDataFromBrowsingContext(
                      !SHOULD_APPLY_BOOSTS_TO_ANONYMOUS_CONTENT())) {
     return;
   }
-  auto browsingContext = zenBoosts->GetCurrentBrowsingContext();
-  if (aPresContext) {
-    if (auto document = aPresContext->Document()) {
-      browsingContext = document->GetBrowsingContext();
-    }
+  if (!aPresContext) {
+    *aData = zenBoosts->mCachedCurrentAccent;
+    *aIsInverted = zenBoosts->mCachedCurrentInverted;
+    return;
+  }
+  mozilla::dom::BrowsingContext* browsingContext = nullptr;
+  if (auto document = aPresContext->Document()) {
+    browsingContext = document->GetBrowsingContext();
   }
   if (!browsingContext) {
     return;
@@ -318,6 +323,18 @@ auto nsZenBoostsBackend::onPresShellEntered(mozilla::dom::Document* aDocument)
     return;
   }
   mCurrentBrowsingContext = browsingContext;
+  RefreshCachedBoostState();
+}
+
+auto nsZenBoostsBackend::RefreshCachedBoostState() -> void {
+  if (!mCurrentBrowsingContext) {
+    mCachedCurrentAccent = 0;
+    mCachedCurrentInverted = false;
+    return;
+  }
+  auto top = mCurrentBrowsingContext->Top();
+  mCachedCurrentAccent = top->ZenBoostsData();
+  mCachedCurrentInverted = top->IsZenBoostsInverted();
 }
 
 [[nodiscard]] ZEN_HOT_FUNCTION auto

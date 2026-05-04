@@ -2,11 +2,5 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-[DEFAULT]
-prefs = ["zen.live-folders.github.skip-new-pr-ui-check=true"]
-
-["browser_github_live_folder.js"]
-
-["browser_live_folder.js"]
-
-["browser_rss_live_folder.js"]
+- name: zen.live-folders.github.skip-new-pr-ui-check
+  value: false

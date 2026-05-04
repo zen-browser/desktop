@@ -10,8 +10,14 @@
   box-shadow: 0 10px 8px rgba(0, 0 , 0, 0.15) !important;
   outline-offset: -1.5px;
 
-  &:not([sizeto="available"]) {
+  @media not (prefers-reduced-motion: reduce) {
     animation: zen-dialog-fade-in 0.3s ease-out;
+  }
+
+  .content-prompt-dialog & {
+    @media not (prefers-reduced-motion: reduce) {
+      animation: zen-dialog-fade-in-shifted 0.3s ease-out;
+    }
     transform: translateY(-10%);
   }
 }

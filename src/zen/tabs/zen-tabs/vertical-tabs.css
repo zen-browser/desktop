@@ -1345,7 +1345,7 @@
   }
 
   &:not(.zen-current-workspace-indicator):not(.zen-essentials-container) {
-    padding: 0 var(--zen-toolbox-padding);
+    padding: 0;
     width: 100%;
   }
 }

@@ -1,15 +1,12 @@
 /* Astra - Transparent/Acrylic Mode */
 /* Makes sidebar transparent with blur effect */
-
-@media -moz-pref('zen.theme.acrylic-elements') {
-  #navigator-toolbox {
-    background: transparent !important;
-    backdrop-filter: blur(42px) saturate(180%) brightness(0.8) !important;
-  }
-  .zen-toolbar-background {
-    display: block !important;
-    background: transparent !important;
-    backdrop-filter: blur(42px) saturate(110%) 
-      brightness(0.25) contrast(100%) !important;
-  }
+#navigator-toolbox {
+  background: transparent !important;
+  backdrop-filter: blur(42px) saturate(180%) brightness(0.8) !important;
+}
+.zen-toolbar-background {
+  display: block !important;
+  background: transparent !important;
+  backdrop-filter: blur(42px) saturate(110%) 
+    brightness(0.25) contrast(100%) !important;
 }

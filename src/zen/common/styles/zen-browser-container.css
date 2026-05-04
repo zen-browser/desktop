@@ -43,7 +43,7 @@
   }
 
   /* stylelint-disable-next-line media-query-no-invalid */
-  @media (not -moz-pref("zen.view.shift-down-site-on-hover")) {
+  @media (not -moz-pref("zen.view.shift-down-site-on-hover")) and -moz-pref("zen.view.hide-window-controls") {
     .browserSidebarContainer:is(.deck-selected, [zen-split="true"]) .browserContainer {
       transition: margin var(--zen-hidden-toolbar-transition);
 
@@ -60,7 +60,7 @@
         }
 
         /* stylelint-disable-next-line media-query-no-invalid */
-        @media -moz-pref("zen.view.experimental-no-window-controls") or (not -moz-pref("zen.view.hide-window-controls")) or (not -moz-pref("browser.tabs.inTitlebar")) {
+        @media -moz-pref("zen.view.experimental-no-window-controls") or (not -moz-pref("browser.tabs.inTitlebar")) {
           :root:not([zen-has-bookmarks="true"])[zen-single-toolbar="true"] & {
             --margin-top-fix: 0px;
           }

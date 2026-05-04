@@ -61,5 +61,8 @@
 - name: zen.view.overflow-webext-toolbar
   value: "@IS_TWILIGHT@"
 
+- name: zen.view.overflow-webext-toolbar-threshold
+  value: 60
+
 - name: zen.view.enable-loading-indicator
   value: true

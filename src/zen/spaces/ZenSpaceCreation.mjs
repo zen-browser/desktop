@@ -148,7 +148,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
       this.createButton.disabled = !this.inputName.value.trim();
     });
 
-    this.inputName.addEventListener("keydown", (event) => {
+    this.inputName.addEventListener("keydown", event => {
       if (event.key === "Enter") {
         event.preventDefault();
         event.stopPropagation();
@@ -162,7 +162,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
     // (name input, icon picker trigger, profile button, primary button).
     // Open popups consume Esc before it reaches us, so the emoji/profile
     // pickers still close as expected.
-    this.addEventListener("keydown", (event) => {
+    this.addEventListener("keydown", event => {
       if (event.key === "Escape") {
         event.preventDefault();
         event.stopPropagation();

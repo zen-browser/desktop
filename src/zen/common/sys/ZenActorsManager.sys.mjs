@@ -57,6 +57,22 @@ let JSWINDOWACTORS = {
     remoteTypes: ["web", "file"],
     enablePreference: "zen.glance.enabled",
   },
+  ZenSplitView: {
+    parent: {
+      esModuleURI: "resource:///actors/ZenSplitViewParent.sys.mjs",
+    },
+    child: {
+      esModuleURI: "resource:///actors/ZenSplitViewChild.sys.mjs",
+      events: {
+        DOMContentLoaded: {},
+        click: {
+          capture: true,
+        },
+      },
+    },
+    allFrames: true,
+    remoteTypes: ["web", "file"],
+  },
 };
 
 if (!Services.appinfo.inSafeMode) {

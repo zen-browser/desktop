@@ -1228,6 +1228,15 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       window.gContextMenu.mediaURL ||
       window.gContextMenu.contentData.docLocation ||
       window.gContextMenu.target.ownerDocument.location.href;
+    this.splitLinkFromURL(url);
+  }
+
+  /**
+   * Opens a URL in a new tab and splits it with the current tab.
+   *
+   * @param {string} url - The URL to open in split view.
+   */
+  splitLinkFromURL(url) {
     const currentTab = gZenGlanceManager.getTabOrGlanceParent(
       window.gBrowser.selectedTab
     );

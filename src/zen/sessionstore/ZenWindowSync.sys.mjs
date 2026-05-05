@@ -97,7 +97,7 @@ class nsZenWindowSync {
   };
 
   /**
-   * Promise that resolves when the current docshell swap operation is finished.
+   * Promise|null that resolves when the current docshell swap operation is finished.
    * Used to avoid multiple simultaneous swap operations that could interfere with each other.
    * For example, when focusing a window AND selecting a tab at the same time.
    */
@@ -1489,7 +1489,7 @@ class nsZenWindowSync {
       return;
     }
     const onTabSelect = event => {
-      if (event.detail?.previousTab == event.target) {
+      if (event.detail?.previousTab === event.target) {
         return;
       }
       this.#lastSelectedTab = null;

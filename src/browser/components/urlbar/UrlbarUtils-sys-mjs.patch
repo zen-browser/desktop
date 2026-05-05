@@ -1,29 +1,50 @@
 diff --git a/browser/components/urlbar/UrlbarUtils.sys.mjs b/browser/components/urlbar/UrlbarUtils.sys.mjs
-index 64afd613f454edd7786fcc1e2f307a582e4d5f51..b4af9cc2fbddba2c5229e8ffee7b9c0c06c3e1d0 100644
+index 64afd613f454edd7786fcc1e2f307a582e4d5f51..92f91379f43785cf5417c96b178884c860db6bd3 100644
 --- a/browser/components/urlbar/UrlbarUtils.sys.mjs
 +++ b/browser/components/urlbar/UrlbarUtils.sys.mjs
-@@ -85,6 +85,7 @@ export var UrlbarUtils = {
+@@ -85,6 +85,8 @@ export var UrlbarUtils = {
      RESTRICT_SEARCH_KEYWORD: "restrictSearchKeyword",
      SUGGESTED_INDEX: "suggestedIndex",
      TAIL_SUGGESTION: "tailSuggestion",
 +    ZEN_ACTION: "zenAction",
++    ZEN_WORKSPACE: "zenWorkspace",
    }),
  
    // Defines provider types.
-@@ -146,6 +147,7 @@ export var UrlbarUtils = {
+@@ -146,6 +148,8 @@ export var UrlbarUtils = {
      OTHER_NETWORK: 6,
      ADDON: 7,
      ACTIONS: 8,
 +    ZEN_ACTIONS: 9,
++    WORKSPACES: 10,
    }),
  
    // Per-result exposure telemetry.
-@@ -587,6 +589,8 @@ export var UrlbarUtils = {
+@@ -295,6 +299,14 @@ export var UrlbarUtils = {
+         telemetryLabel: "actions",
+         uiLabel: "urlbar-searchmode-actions",
+       },
++      {
++        source: this.RESULT_SOURCE.WORKSPACES,
++        restrict: lazy.UrlbarTokenizer.RESTRICT.WORKSPACE,
++        icon: "chrome://browser/skin/zen-icons/selectable/layers.svg",
++        pref: "shortcuts.workspaces",
++        telemetryLabel: "workspaces",
++        uiLabel: "urlbar-search-mode-workspaces",
++      },
+     ]);
+   },
+ 
+@@ -587,6 +599,12 @@ export var UrlbarUtils = {
            return this.RESULT_GROUP.HEURISTIC_FALLBACK;
          case "UrlbarProviderHistoryUrlHeuristic":
            return this.RESULT_GROUP.HEURISTIC_HISTORY_URL;
 +        case "ZenUrlbarProviderGlobalActions":
-+          return this.RESULT_GROUP.ZEN_ACTION;
++          if (result.source == this.RESULT_SOURCE.WORKSPACES) {
++            return this.RESULT_GROUP.ZEN_WORKSPACE;
++          } else {
++            return this.RESULT_GROUP.ZEN_ACTION;
++          }
          case "UrlbarProviderOmnibox":
            return this.RESULT_GROUP.HEURISTIC_OMNIBOX;
          case "UrlbarProviderRestrictKeywordsAutofill":

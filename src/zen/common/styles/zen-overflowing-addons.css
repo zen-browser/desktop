@@ -6,10 +6,12 @@
 
 #zen-overflow-extensions-list:not(:empty) {
   --uei-icon-size: 14px;
-  display: flex;
+  display: grid;
   gap: 8px;
   padding: 8px 2px;
   padding-bottom: 0;
+  border-radius: calc(var(--border-radius-medium) - 4px);
+  grid-template-columns: repeat(auto-fit, minmax(32px, 1fr));
 
   & .unified-extensions-item {
     flex: 1;
@@ -26,6 +28,7 @@
   }
 
   & .unified-extensions-item-action-button {
+    appearance: none;
     background-color: var(--zen-toolbar-element-bg);
     height: 30px;
     margin: 0;

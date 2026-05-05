@@ -162,9 +162,9 @@ add_task(async function test_max_items_limit() {
   const rssXml = `
     <rss version="2.0">
       <channel>
-        <item><title>1</title><link>1</link><pubDate>${date}</pubDate></item>
-        <item><title>2</title><link>2</link><pubDate>${date}</pubDate></item>
-        <item><title>3</title><link>3</link><pubDate>${date}</pubDate></item>
+        <item><title>1</title><link>https://example.com/1</link><pubDate>${date}</pubDate></item>
+        <item><title>2</title><link>https://example.com/2</link><pubDate>${date}</pubDate></item>
+        <item><title>3</title><link>https://example.com/3</link><pubDate>${date}</pubDate></item>
       </channel>
     </rss>
   `;
@@ -215,6 +215,113 @@ add_task(async function test_invalid_dates() {
     0,
     "Items with invalid/missing dates should be filtered"
   );
+  sandbox.restore();
+});
+
+add_task(async function test_item_url_scheme_filtering() {
+  info("should drop items whose link uses a non-http(s) scheme");
+
+  let sandbox = sinon.createSandbox();
+  let instance = getRssProviderForTest(sandbox, { timeRange: 0 });
+
+  const date = new Date().toUTCString();
+  const rssXml = `
+    <rss version="2.0">
+      <channel>
+        <item>
+          <title>JavaScript scheme</title>
+          <link>javascript:alert(1)</link>
+          <pubDate>${date}</pubDate>
+        </item>
+        <item>
+          <title>Data scheme</title>
+          <link>data:text/html,&lt;script&gt;alert(1)&lt;/script&gt;</link>
+          <pubDate>${date}</pubDate>
+        </item>
+        <item>
+          <title>File scheme</title>
+          <link>file:///etc/passwd</link>
+          <pubDate>${date}</pubDate>
+        </item>
+        <item>
+          <title>about: scheme</title>
+          <link>about:config</link>
+          <pubDate>${date}</pubDate>
+        </item>
+        <item>
+          <title>chrome: scheme</title>
+          <link>chrome://browser/content/browser.xhtml</link>
+          <pubDate>${date}</pubDate>
+        </item>
+        <item>
+          <title>Invalid URL</title>
+          <link>not a url</link>
+          <pubDate>${date}</pubDate>
+        </item>
+        <item>
+          <title>Good https</title>
+          <link>https://example.com/good</link>
+          <pubDate>${date}</pubDate>
+        </item>
+        <item>
+          <title>Good http</title>
+          <link>http://example.com/good</link>
+          <pubDate>${date}</pubDate>
+        </item>
+      </channel>
+    </rss>
+  `;
+
+  instance.fetch.resolves({ text: rssXml });
+
+  const items = await instance.fetchItems();
+
+  Assert.equal(
+    items.length,
+    2,
+    "Only http(s) items should survive scheme filtering"
+  );
+  Assert.deepEqual(
+    items.map(i => i.url).sort(),
+    ["http://example.com/good", "https://example.com/good"],
+    "Surviving items should be the http and https links"
+  );
+
+  sandbox.restore();
+});
+
+add_task(async function test_atom_item_url_scheme_filtering() {
+  info("should drop Atom entries whose link href uses a non-http(s) scheme");
+
+  let sandbox = sinon.createSandbox();
+  let instance = getRssProviderForTest(sandbox, { timeRange: 0 });
+
+  const updated = new Date().toISOString();
+  const atomXml = `
+    <feed xmlns="http://www.w3.org/2005/Atom">
+      <title>Atom Feed</title>
+      <entry>
+        <title>Bad scheme</title>
+        <link href="javascript:alert(1)" />
+        <id>urn:uuid:bad</id>
+        <updated>${updated}</updated>
+      </entry>
+      <entry>
+        <title>Good scheme</title>
+        <link href="https://example.com/atom-good" />
+        <id>urn:uuid:good</id>
+        <updated>${updated}</updated>
+      </entry>
+    </feed>
+  `;
+
+  instance.fetch.resolves({ text: atomXml });
+
+  const items = await instance.fetchItems();
+
+  Assert.equal(items.length, 1, "Only the https Atom entry should remain");
+  Assert.equal(items[0].url, "https://example.com/atom-good");
+
   sandbox.restore();
 });
 

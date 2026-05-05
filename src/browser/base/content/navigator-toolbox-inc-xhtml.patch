@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index edeb473e46b3aa4b12eb4b59ce62e5ae48edd2a1..d2c6c8c150e732b77d65420520ca4905a9d3ea4d 100644
+index edeb473e46b3aa4b12eb4b59ce62e5ae48edd2a1..99210f8bb5633d50d2cba24f1e13ca866c5b6959 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
 @@ -2,7 +2,7 @@
@@ -11,7 +11,7 @@ index edeb473e46b3aa4b12eb4b59ce62e5ae48edd2a1..d2c6c8c150e732b77d65420520ca4905
    <script src="chrome://browser/content/navigator-toolbox.js" />
  
    <!-- Menu -->
-@@ -18,9 +18,12 @@
+@@ -18,9 +18,13 @@
  #include browser-menubar.inc
      </toolbaritem>
      <spacer flex="1" skipintoolbarset="true" style="order: 1000;"/>
@@ -22,14 +22,14 @@ index edeb473e46b3aa4b12eb4b59ce62e5ae48edd2a1..d2c6c8c150e732b77d65420520ca4905
 +  <html:div id="zen-toolbar-background" class="zen-toolbar-background zen-browser-generic-background">
 +    <html:div class="zen-browser-grain" />
 +  </html:div>
++  <box id="zen-overflow-extensions-list" skipintoolbarset="true" contextmenu="toolbar-context-menu" />
    <toolbar id="TabsToolbar"
             class="browser-toolbar browser-titlebar"
             fullscreentoolbar="true"
-@@ -62,6 +65,9 @@
+@@ -62,6 +66,8 @@
            <html:sidebar-pins-promo id="drag-to-pin-promo-card"></html:sidebar-pins-promo>
            <arrowscrollbox id="pinned-tabs-container" orient="horizontal" clicktoscroll=""></arrowscrollbox>
            <splitter orient="vertical" id="vertical-pinned-tabs-splitter" resizebefore="sibling" resizeafter="none" hidden="true"/>
-+<html:div id="zen-overflow-extensions-list" skipintoolbarset="true"></html:div>
 +<html:div id="zen-essentials" skipintoolbarset="true"></html:div>
 +<html:div id="zen-tabs-wrapper">
            <hbox class="tab-drop-indicator" hidden="true"/>

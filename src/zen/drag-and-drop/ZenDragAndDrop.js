@@ -952,6 +952,7 @@
         // Sometimes, dragend doesn't always get called when dragging
         // to different windows, see gh-8643.
         delete ownerGlobal.gZenCompactModeManager._isTabBeingDragged;
+        ownerGlobal.gZenCompactModeManager._clearAllHoverStates();
       }
       this.clearSpaceSwitchTimer();
       gZenFolders.highlightGroupOnDragOver(null);
@@ -1107,7 +1108,10 @@
         );
         for (let i = startIndex; i <= endIndex; i++) {
           let item = items[i];
-          if (!movingTabs.includes(item)) {
+          if (
+            !movingTabs.includes(item) &&
+            !(isTabGroupLabel(item) && i == startIndex)
+          ) {
             tabsInBetween.push(item);
           }
         }

@@ -664,7 +664,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   ) {
     let newIndex = dropIndex;
     let fromDifferentWindow = false;
-    movingTabs = Array.from(movingTabs || draggedTab)
+    let ownedTabs = Array.from(movingTabs || draggedTab)
       .reverse()
       .map(tab => {
         if (!gBrowser.isTab(tab)) {
@@ -700,6 +700,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         }
         return tab;
       });
+    movingTabs = [...ownedTabs];
     if (fromDifferentWindow) {
       gBrowser.addRangeToMultiSelectedTabs(
         gBrowser.tabContainer.dragAndDropElements[dropIndex],
@@ -822,7 +823,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     } catch (ex) {
       console.error("Error moving tabs:", ex);
     }
-    return [draggedTab, movingTabs];
+    return [draggedTab, ownedTabs];
   }
 
   onLocationChange(aBrowser, aWebProgress, aRequest, aLocationURI) {

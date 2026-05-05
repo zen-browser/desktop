@@ -39,6 +39,18 @@
 @keyframes zen-dialog-fade-in {
   from {
     opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes zen-dialog-fade-in-shifted {
+  from {
+    opacity: 0;
     transform: translateY(calc(-10% - 10px));
   }
 

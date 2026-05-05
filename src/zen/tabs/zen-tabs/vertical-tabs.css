@@ -632,7 +632,7 @@
       }
 
       & .tab-background {
-        margin-inline: var(--tab-block-margin);
+        margin-inline: 0;
         width: -moz-available;
       }
 

@@ -14,9 +14,10 @@ export class ZenSplitViewParent extends JSWindowActorParent {
         this.browsingContext.topChromeWindow.gZenViewSplitter?.splitLinkFromURL(
           message.data.url
         );
-        break;
+        return null;
       default:
         console.warn(`[split-view]: Unknown message: ${message.name}`);
+        return null;
     }
   }
 }

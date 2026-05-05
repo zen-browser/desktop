@@ -1488,28 +1488,39 @@ class nsZenWindowSync {
     if (this.#docShellSwitchPromise) {
       return;
     }
+    const onTabSelect = event => {
+      if (event.detail?.previousTab == event.target) {
+        return;
+      }
+      this.#lastSelectedTab = null;
+      this.on_TabSelect(event, { ignorePromise: true });
+    };
     this.#lastFocusedWindow = new WeakRef(window);
     this.#lastSelectedTab = new WeakRef(window.gBrowser.selectedTab);
+    window.addEventListener("TabSelect", onTabSelect, { once: true });
     // eslint-disable-next-line no-async-promise-executor
     this.#docShellSwitchPromise = new Promise(async resolve => {
       await this.#onTabSwitchOrWindowFocus(window);
+      window.removeEventListener("TabSelect", onTabSelect);
       resolve();
       this.#docShellSwitchPromise = null;
     });
   }
 
-  on_TabSelect(aEvent) {
+  on_TabSelect(aEvent, { ignorePromise = false } = {}) {
     const tab = aEvent.target;
     if (this.#lastSelectedTab?.deref() === tab) {
       return;
     }
     this.#lastSelectedTab = new WeakRef(tab);
     const previousTab = aEvent.detail.previousTab;
-    if (this.#docShellSwitchPromise) {
+    let promise = this.#docShellSwitchPromise;
+    if (promise && !ignorePromise) {
       return;
     }
     // eslint-disable-next-line no-async-promise-executor
     this.#docShellSwitchPromise = new Promise(async resolve => {
+      await promise;
       await this.#onTabSwitchOrWindowFocus(tab.ownerGlobal, previousTab);
       resolve();
       this.#docShellSwitchPromise = null;

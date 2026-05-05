@@ -85,7 +85,7 @@
   function setRequestedLocale(localeList) {
     try {
       Services.prefs.setStringPref("intl.locale.requested", localeList);
-      Services.locale.requestedLocales = localeList.split(",");
+      Services.locale.requestedLocales = localeList.split(",").map(l => l.trim());
       const win = Services.wm.getMostRecentWindow("navigator:browser");
       if (win) {
         win.location.reload();

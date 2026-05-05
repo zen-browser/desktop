@@ -1285,19 +1285,19 @@ class nsZenKeyboardShortcutsVersioner {
       );
     }
     if (version < 30) {
-      const launcher = data.find(s => s.id === "zen-open-india-gov");
-      if (launcher && (launcher.key === "G" || launcher.key === "I")) {
+      const launcher = data.find(s => s.getID?.() === "zen-open-india-gov");
+      if (launcher && (launcher.getKeyName?.() === "G" || launcher.getKeyName?.() === "I")) {
         launcher.key = "Y";
       }
     }
     if (version < 32) {
-      const indiaGov = data.find(s => s.id === "zen-open-india-gov");
-      if (indiaGov && (indiaGov.key === "I" || indiaGov.key === "G")) {
+      const indiaGov = data.find(s => s.getID?.() === "zen-open-india-gov");
+      if (indiaGov && (indiaGov.getKeyName?.() === "I" || indiaGov.getKeyName?.() === "G")) {
         indiaGov.key = "Y";
       }
     }
     if (version < 31) {
-      const idx = data.findIndex(s => s.id === "zen-open-india-services");
+      const idx = data.findIndex(s => s.getID?.() === "zen-open-india-services");
       if (idx !== -1) data.splice(idx, 1);
     }
     if (version < 20) {

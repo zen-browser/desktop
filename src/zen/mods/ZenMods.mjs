@@ -652,6 +652,10 @@ class nsZenMods extends nsZenPreloadedFeature {
   async enableMod(modId) {
     const mods = await this.getMods();
     const mod = mods[modId];
+    if (!mod) {
+      console.error(`[ZenMods]: Mod ${modId} not found!`);
+      return;
+    }
     console.warn(`[ZenMods]: Enabling mod ${mod.name}`);
     mod.enabled = true;
     await IOUtils.writeJSON(this.modsDataFile, mods);
@@ -661,6 +665,10 @@ class nsZenMods extends nsZenPreloadedFeature {
   async disableMod(modId) {
     const mods = await this.getMods();
     const mod = mods[modId];
+    if (!mod) {
+      console.error(`[ZenMods]: Mod ${modId} not found!`);
+      return;
+    }
     console.warn(`[ZenMods]: Disabling mod ${mod.name}`);
     mod.enabled = false;
     await IOUtils.writeJSON(this.modsDataFile, mods);

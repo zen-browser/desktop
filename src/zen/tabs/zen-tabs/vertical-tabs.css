@@ -1335,7 +1335,7 @@
     display: flex;
 
     :root[zen-sidebar-expanded="true"] & {
-      min-width: calc(100% - var(--zen-toolbox-padding) * 2);
+      min-width: 100%;
     }
 
     :root:not([zen-sidebar-expanded="true"]) & {

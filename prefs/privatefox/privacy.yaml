@@ -130,7 +130,7 @@
 - name: beacon.enabled
   value: false
 
-# Astra: Disable WebGL fingerprinting
+# Astra: WebGL enabled (disable manually for max privacy)
 - name: webgl.disabled
   value: false
 

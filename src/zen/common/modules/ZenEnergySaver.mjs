@@ -7,6 +7,7 @@ export class ZenEnergySaver {
   #threshold = 20; // percent
 
   async init() {
+    if (this.#battery) return; // Already initialized
     try {
       // Re-enable battery API for internal use only
       if (!navigator.getBattery) return;

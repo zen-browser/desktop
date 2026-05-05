@@ -659,6 +659,12 @@ class nsZenMods extends nsZenPreloadedFeature {
     console.warn(`[ZenMods]: Enabling mod ${mod.name}`);
     mod.enabled = true;
     await IOUtils.writeJSON(this.modsDataFile, mods);
+    // Astra: Always re-download CSS on enable to get latest version
+    try {
+      await this.installMod(mod);
+    } catch(e) {
+      console.warn(`[ZenMods]: Could not refresh mod CSS`, e);
+    }
     await this.#rebuildModsStylesheet();
   }
 

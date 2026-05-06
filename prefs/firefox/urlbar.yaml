@@ -5,7 +5,7 @@
 # URL bar and search-related preferences
 
 - name: browser.urlbar.trending.featureGate
-  value: false
+  value: true
 
 - name: browser.urlbar.weather.featureGate
   value: false
@@ -56,6 +56,33 @@
 - name: browser.urlbar.suggest.topsites
   value: true
   locked: true
+
+# Astra: Better search suggestions
+- name: browser.urlbar.maxRichResults
+  value: 10
+
+- name: browser.urlbar.suggest.history
+  value: true
+
+- name: browser.urlbar.suggest.bookmark
+  value: true
+
+- name: browser.urlbar.suggest.openpage
+  value: true
+
+- name: browser.urlbar.suggest.searches
+  value: true
+
+- name: browser.urlbar.suggest.engines
+  value: true
+
+# Astra: Trending searches
+- name: browser.urlbar.suggest.trending
+  value: true
+
+# Astra: Show more results
+- name: browser.urlbar.richSuggestions.tail
+  value: true
 
 # See https://github.com/zen-browser/desktop/issues/7248
 # We've submitted a patch to Firefox at https://bugzilla.mozilla.org/show_bug.cgi?id=2018499

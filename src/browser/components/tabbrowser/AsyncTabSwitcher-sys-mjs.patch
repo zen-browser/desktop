@@ -2,11 +2,28 @@ diff --git a/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs b/browser/co
 index 9c5e92fbd555d328ce09c0cf0ff8078584f68478..2af7a428bc830d8c12b3d3c0af375c97e6942994 100644
 --- a/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs
 +++ b/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs
-@@ -939,6 +939,7 @@ export class AsyncTabSwitcher {
+@@ -512,8 +512,14 @@ export class AsyncTabSwitcher {
+     if (this.spinnerTab && !this.spinnerTab.linkedBrowser) {
+       this.noteSpinnerHidden();
+       this.spinnerTab = null;
+     }
+     if (this.loadingTab && !this.loadingTab.linkedBrowser) {
+       this.maybeClearLoadTimer("preActions");
+     }
++    if (this.requestedTab && !this.requestedTab.linkedBrowser) {
++      // requestedTab's linkedBrowser was destroyed (e.g. the tab was closed)
++      // before AsyncTabSwitcher could process the selection change. Fall back
++      // to the currently selected tab to prevent null-dereference errors in
++      // updateDisplay() and noteSpinnerDisplayed(). Fixes #13241.
++      this.requestedTab = this.tabbrowser.selectedTab;
++    }
+   }
+
+@@ -939,6 +945,7 @@ export class AsyncTabSwitcher {
        this.tabbrowser._printPreviewBrowsers.has(browser) ||
        this.tabbrowser.splitViewBrowsers.includes(browser) ||
        lazy.PictureInPicture.isOriginatingBrowser(browser)
 +      || browser?.zenModeActive
      );
    }
- 
+

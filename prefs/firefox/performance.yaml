@@ -17,3 +17,43 @@
   condition: "defined(XP_WIN) || defined(XP_DARWIN)"
   value: "@cond"
   mirror: once
+
+# Astra: Hardware acceleration
+- name: gfx.canvas.accelerated
+  value: true
+- name: layers.gpu-process.enabled
+  value: true
+- name: media.hardware-video-decoding.enabled
+  value: true
+
+# Astra: JavaScript JIT engine optimization
+- name: javascript.options.ion
+  value: true
+- name: javascript.options.baselinejit
+  value: true
+- name: javascript.options.asmjs
+  value: true
+
+# Astra: Memory cache optimization
+- name: browser.cache.memory.enable
+  value: true
+- name: browser.cache.memory.capacity
+  value: 524288
+
+# Astra: Faster page rendering
+- name: content.notify.interval
+  value: 100000
+- name: image.mem.decode_bytes_at_a_time
+  value: 65536
+
+# Astra: Network buffer optimization
+- name: network.buffer.cache.size
+  value: 65536
+- name: network.http.max-connections
+  value: 900
+- name: network.http.max-persistent-connections-per-server
+  value: 10
+
+# Astra: Session save less frequently (faster UI)
+- name: browser.sessionstore.interval
+  value: 15000

@@ -57,3 +57,25 @@
 # Astra: Session save less frequently (faster UI)
 - name: browser.sessionstore.interval
   value: 15000
+
+# Astra: DNS over HTTPS - faster + secure connectivity
+- name: network.trr.mode
+  value: 2
+- name: network.trr.uri
+  value: "https://mozilla.cloudflare-dns.com/dns-query"
+- name: network.trr.bootstrapAddr
+  value: "1.1.1.1"
+
+# Astra: Better connection handling
+- name: network.http.connection-retry-timeout
+  value: 0
+- name: network.http.connection-timeout
+  value: 90
+- name: network.http.response.timeout
+  value: 300
+- name: network.http.fast-fallback-to-IPv4
+  value: true
+
+# Astra: TCP Fast Open - faster connections
+- name: network.tcp.tcp_fastopen_enable
+  value: true

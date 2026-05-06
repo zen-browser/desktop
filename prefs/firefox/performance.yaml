@@ -38,7 +38,9 @@
 - name: browser.cache.memory.enable
   value: true
 - name: browser.cache.memory.capacity
-  value: 524288
+  value: 131072
+- name: browser.cache.memory.max_entry_size
+  value: 10240
 
 # Astra: Faster page rendering
 - name: content.notify.interval

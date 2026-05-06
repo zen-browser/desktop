@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "lint-staged": {
-    "!(*.xpi)": ""
+    "!(*.xpi)": "node -e \"process.exit(0)\""
   },
   "type": "module",
   "scripts": {

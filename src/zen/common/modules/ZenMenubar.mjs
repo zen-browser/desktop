@@ -92,7 +92,7 @@ export class nsZenMenuBar {
             key="zen-workspace-forward"/>
           <menuitem
             data-l10n-id="zen-panel-ui-workspaces-change-back"
-            command="cmd_zenWorkspaceBack"
+            command="cmd_zenWorkspaceBackward"
             key="zen-workspace-backward"/>
         </menupopup>
       </menu>`);

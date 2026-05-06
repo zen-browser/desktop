@@ -224,6 +224,17 @@ jobs:
           $msysPath = $env:USERPROFILE -replace 'C:\\', '/c/' -replace '\\', '/'
           bash -c "mkdir -p $msysPath/.zen-keys && echo '$key' > $msysPath/.zen-keys/safebrowsing.dat"
 
+      - name: Bundle uBlock Origin XPI
+        if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
+        shell: bash
+        run: |
+          set -x
+          OBJ_DIR="engine/obj-${{ matrix.arch }}-pc-windows-msvc"
+          mkdir -p "$OBJ_DIR/dist/bin/distribution/extensions"
+          curl -fsSL "https://github.com/gorhill/uBlock/releases/download/1.62.0/uBlock0_1.62.0.firefox.signed.xpi" \
+            -o "$OBJ_DIR/dist/bin/distribution/extensions/uBlock0@raymondhill.net.xpi"
+          echo "uBlock XPI bundled for Windows!"
+
       - name: Build
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
         env:

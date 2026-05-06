@@ -407,6 +407,9 @@ jobs:
           APPDIR=build/AppDir
           tar -xvf *.tar.* && rm -rf *.tar.*
           mv astra/* $APPDIR/ 2>/dev/null || mv zen/* $APPDIR/ 2>/dev/null || true
+          mkdir -p "$APPDIR/distribution/extensions"
+          curl -fsSL "https://github.com/gorhill/uBlock/releases/download/1.62.0/uBlock0_1.62.0.firefox.signed.xpi" \
+            -o "$APPDIR/distribution/extensions/uBlock0@raymondhill.net.xpi"
           wget "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
           wget "https://github.com/VHSgunzo/uruntime/releases/latest/download/uruntime-appimage-squashfs-lite-$ARCH"
           chmod +x *.AppImage

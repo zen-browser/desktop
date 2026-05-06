@@ -3,6 +3,12 @@
     "DisableAppUpdate": true,
     "AppAutoUpdate": false,
     "ManualAppUpdateOnly": true,
-    "BackgroundAppUpdate": false
+    "BackgroundAppUpdate": false,
+    "Extensions": {
+      "Install": [
+        "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi"
+      ],
+      "Locked": ["uBlock0@raymondhill.net"]
+    }
   }
 }

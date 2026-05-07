@@ -357,6 +357,7 @@ class nsZenWorkspaces {
         return;
       }
     }
+    if (gBrowser.tabs.length > 0) return;
     this._emptyTab = gBrowser.addTrustedTab("about:blank", {
       inBackground: true,
       userContextId: 0,

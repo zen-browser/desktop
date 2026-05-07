@@ -521,8 +521,8 @@
   }
 
   & .tab-audio-button {
-    margin-inline-start: -4px;
-    margin-inline-end: 2px;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
     margin-top: -1px;
   }
 

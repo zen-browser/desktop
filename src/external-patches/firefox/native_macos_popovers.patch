@@ -7,7 +7,7 @@ diff --git a/browser/base/content/main-popupset.inc.xhtml b/browser/base/content
           id="selection-shortcut-action-panel"
           noautofocus="true"
           consumeoutsideclicks="never"
-+         nonnativepopover="true"
++         nonnative=""
           type="arrow">
      <hbox class="panel-subview-body">
        <html:moz-button id="ai-action-button"/>
@@ -19,7 +19,7 @@ diff --git a/browser/base/content/main-popupset.inc.xhtml b/browser/base/content
    <panel class="panel-no-padding"
           id="chat-shortcuts-options-panel"
           noautofocus="true"
-+         nonnativepopover="true"
++         nonnative=""
           type="arrow">
      <vbox class="panel-subview-body"/>
    </panel>
@@ -31,7 +31,7 @@ diff --git a/browser/base/content/main-popupset.inc.xhtml b/browser/base/content
           noautofocus="true"
           norolluponanchor="true"
           consumeoutsideclicks="false"
-+         nonnativepopover="true"
++         nonnative=""
           role="tooltip">
      <html:div class="tab-preview-content-interactive"></html:div>
      <html:div class="tab-preview-content-main">
@@ -46,7 +46,7 @@ diff --git a/browser/components/asrouter/modules/FeatureCallout.sys.mjs b/browse
              type="arrow"
              consumeoutsideclicks="never"
              norolluponanchor="true"
-+ 
++            nonnative=""
              position="${panel_position.panel_position_string}"
              ${hide_arrow ? "" : 'show-arrow=""'}
              ${autohide ? "" : 'noautohide="true"'}
@@ -61,7 +61,7 @@ diff --git a/browser/components/customizableui/content/panelUI.inc.xhtml b/brows
         hidden="true"
         flip="slide"
         position="bottomright topright"
-+       hidepopovertail="true"
++       hidepopovertail=""
         noautofocus="true">
    <panelmultiview id="appMenu-multiView" mainViewId="appMenu-mainView"
                    viewCacheId="appMenu-viewCache">
@@ -70,31 +70,25 @@ diff --git a/browser/components/customizableui/content/panelUI.inc.xhtml b/brows
 diff --git a/dom/xul/XULPopupElement.cpp b/dom/xul/XULPopupElement.cpp
 --- a/dom/xul/XULPopupElement.cpp
 +++ b/dom/xul/XULPopupElement.cpp
-@@ -80,10 +80,14 @@
+@@ -80,10 +80,11 @@
  }
  
  void XULPopupElement::OpenPopupAtScreen(int32_t aXPos, int32_t aYPos,
                                          bool aIsContextMenu,
                                          Event* aTriggerEvent) {
-+  // TODO(cheff): At nsCocoaWindow::Show but we check for ShouldShowAsNSPopover
-+  //   to determine whether to use a native popover or not. This should sort of
-+  //   "replicate" that logic here, but it's a bit of a hacky way.
-+  SetAttr(kNameSpaceID_None, nsGkAtoms::nonnativepopover, u"true"_ns, true);
++  SetAttr(kNameSpaceID_None, nsGkAtoms::nonnative, u"true"_ns, true);
    nsXULPopupManager* pm = nsXULPopupManager::GetInstance();
    if (pm) {
      pm->ShowPopupAtScreen(this, aXPos, aYPos, aIsContextMenu, aTriggerEvent);
    }
  }
-@@ -93,10 +97,14 @@
+@@ -93,10 +94,11 @@
                                              int32_t aWidth, int32_t aHeight,
                                              bool aIsContextMenu,
                                              bool aAttributesOverride,
                                              Event* aTriggerEvent) {
    nsXULPopupManager* pm = nsXULPopupManager::GetInstance();
-+  // TODO: See OpenPopupAtScreen. We should remove this and use the other
-+  // implementation because this is a bit of a hacky way to determine whether to
-+  // use a native popover or not.
-+  SetAttr(kNameSpaceID_None, nsGkAtoms::nonnativepopover, u"true"_ns, true);
++  SetAttr(kNameSpaceID_None, nsGkAtoms::nonnative, u"true"_ns, true);
    if (pm) {
      pm->ShowPopupAtScreenRect(
          this, aPosition, nsIntRect(aXPos, aYPos, aWidth, aHeight),
@@ -175,7 +169,7 @@ diff --git a/toolkit/themes/shared/global-shared.css b/toolkit/themes/shared/glo
  
 +/* stylelint-disable-next-line media-query-no-invalid */
 +@media -moz-pref("widget.macos.native-popovers") and (-moz-platform: macos) {
-+  panel:not(:where([nonnativepopover="true"])) {
++  panel:not(:where([nonnative="true"])) {
 +    background-color: transparent;
 +    --panel-background: transparent;
 +    --panel-shadow: none;
@@ -339,7 +333,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
    NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
  
    if (!mWindow) {
-@@ -5300,10 +5355,58 @@
+@@ -5300,10 +5355,55 @@
        mWindow.contentView.needsDisplay = YES;
        if (!nativeParentWindow || mPopupLevel != PopupLevel::Parent) {
          [mWindow orderFront:nil];
@@ -375,11 +369,8 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 +        // specific parent view
 +        NSRect positioningRect = [parentView convertRect:windowRect
 +                                                fromView:nil];
-+        BOOL shouldHideAnchor = NO;
-+        auto& element = popupFrame->PopupElement();
-+        if (element.GetBoolAttr(nsGkAtoms::hidepopovertail)) {
-+          shouldHideAnchor = YES;
-+        }
++        bool shouldHideAnchor =
++            popupFrame->PopupElement().GetBoolAttr(nsGkAtoms::hidepopovertail);
 +        [(PopupWindow*)mWindow showPopoverRelativeToRect:positioningRect
 +                                                  ofView:parentView
 +                                           preferredEdge:preferredEdge
@@ -398,7 +389,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
        // close other programs' context menus when ours open.
        if ([mWindow isKindOfClass:[PopupWindow class]] &&
            [(PopupWindow*)mWindow isContextMenu]) {
-@@ -5373,11 +5476,15 @@
+@@ -5373,11 +5473,15 @@
      // unhook it here before ordering it out. When you order out the child
      // of a window it hides the parent window.
      if (mWindowType == WindowType::Popup && nativeParentWindow) {
@@ -415,7 +406,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
      // other programs) that a menu has closed.
      if ([mWindow isKindOfClass:[PopupWindow class]] &&
          [(PopupWindow*)mWindow isContextMenu]) {
-@@ -5424,10 +5531,28 @@
+@@ -5424,10 +5528,28 @@
      return false;
    }
    return nsIWidget::ShouldUseOffMainThreadCompositing();
@@ -436,7 +427,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 +  return [mWindow isKindOfClass:[PopupWindow class]] &&
 +         [(PopupWindow*)mWindow usePopover] && popupFrame &&
 +         popupFrame->ShouldFollowAnchor() &&
-+         !popupFrame->PopupElement().GetBoolAttr(nsGkAtoms::nonnativepopover);
++         !popupFrame->PopupElement().GetBoolAttr(nsGkAtoms::nonnative);
 +}
 +
  TransparencyMode nsCocoaWindow::GetTransparencyMode() {
@@ -444,7 +435,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
  
    return mWindow.isOpaque ? TransparencyMode::Opaque
                            : TransparencyMode::Transparent;
-@@ -6378,10 +6503,19 @@
+@@ -6378,10 +6500,19 @@
  
    // We ignore aRepaint -- we have to call display:YES, otherwise the
    // title bar doesn't immediately get repainted and is displayed in
@@ -464,7 +455,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
  }
  
  void nsCocoaWindow::Resize(const DesktopRect& aRect, bool aRepaint) {
-@@ -8393,18 +8527,31 @@
+@@ -8393,18 +8524,31 @@
                              backing:bufferingType
                                defer:deferCreation];
    if (!self) {
@@ -497,7 +488,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
  // Return 0 in order to match what the system does for sheet windows and
  // _NSPopoverWindows.
  - (CGFloat)_backdropBleedAmount {
-@@ -8460,10 +8607,122 @@
+@@ -8460,10 +8604,122 @@
  
  - (void)setIsContextMenu:(BOOL)flag {
    mIsContextMenu = flag;
@@ -654,16 +645,4 @@ diff --git a/xpcom/ds/StaticAtoms.py b/xpcom/ds/StaticAtoms.py
      Atom("highest", "highest"),
      Atom("horizontal", "horizontal"),
      Atom("hover", "hover"),
-@@ -759,10 +760,11 @@
-     Atom("nohref", "nohref"),
-     Atom("noinitialselection", "noinitialselection"),
-     Atom("nomodule", "nomodule"),
-     Atom("nonce", "nonce"),
-     Atom("none", "none"),
-+    Atom("nonnativepopover", "nonnativepopover"),
-     Atom("noresize", "noresize"),
-     Atom("normal", "normal"),
-     Atom("normalizeSpace", "normalize-space"),
-     Atom("noscript", "noscript"),
-     Atom("noshade", "noshade"),
 

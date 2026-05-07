@@ -16,7 +16,4 @@
   ChromeUtils.importESModule("chrome://browser/content/zen-components/ZenSessionStore.mjs", { global: "current" });
 
   Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenDragAndDrop.js", this);
-  Services.scriptloader.loadSubScript(
-    "chrome://browser/content/zen-styles/astra-newtab.js", this
-  );
 }

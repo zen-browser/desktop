@@ -131,9 +131,14 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
 
     if (shiftKey) {
       this.#currentIndex =
-        (initialCardIndex - 1 + this.#tabList.length) % this.#tabList.length;
+        initialCardIndex >= 0
+          ? (initialCardIndex - 1 + this.#tabList.length) % this.#tabList.length
+          : this.#tabList.length - 1;
     } else {
-      this.#currentIndex = (initialCardIndex + 1) % this.#tabList.length;
+      this.#currentIndex =
+        initialCardIndex >= 0
+          ? (initialCardIndex + 1) % this.#tabList.length
+          : 0;
     }
 
     this.#visibleCards = Math.min(this.#tabList.length, this.#getMaxCards());

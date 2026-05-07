@@ -35,6 +35,9 @@
 - name: zen.theme.acrylic-elements
   value: true
 
+- name: browser.tabs.allow_transparent_browser
+  value: true
+
 - name: zen.theme.disable-lightweight
   value: true
 

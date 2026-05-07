@@ -1,4 +1,8 @@
 /* Astra - Transparent/Acrylic Mode */
+/* Requires browser.tabs.allow_transparent_browser = true */
+:root {
+  --zen-main-browser-background: #00000000 !important;
+}
 #navigator-toolbox {
   background: transparent !important;
   backdrop-filter: blur(42px) saturate(180%) brightness(0.8) !important;
@@ -6,7 +10,7 @@
 .zen-toolbar-background {
   display: block !important;
   background: transparent !important;
-  backdrop-filter: blur(42px) saturate(110%) 
+  backdrop-filter: blur(42px) saturate(110%)
     brightness(0.25) contrast(100%) !important;
 }
 #browser {

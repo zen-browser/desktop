@@ -48,9 +48,6 @@
   value: true
 
 - name: zen.theme.styled-status-panel
-  value: "@IS_TWILIGHT@"
-
-- name: zen.theme.styled-status-panel
   value: true
   condition: "defined(XP_MACOSX)"
 

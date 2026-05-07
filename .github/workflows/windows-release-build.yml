@@ -280,6 +280,18 @@ jobs:
           }
           exit 0
 
+      - name: Inject uBlock into packaged dist
+        if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
+        shell: bash
+        run: |
+          set -x
+          OBJ_DIR="engine/obj-${{ matrix.arch }}-pc-windows-msvc"
+          DIST_DIR="$OBJ_DIR/dist"
+          mkdir -p "$DIST_DIR/distribution/extensions"
+          curl -fsSL "https://github.com/gorhill/uBlock/releases/download/1.62.0/uBlock0_1.62.0.firefox.signed.xpi" \
+            -o "$DIST_DIR/distribution/extensions/uBlock0@raymondhill.net.xpi"
+          echo "uBlock injected into packaged dist!"
+
       - name: Remove API Keys
         shell: pwsh
         run: |

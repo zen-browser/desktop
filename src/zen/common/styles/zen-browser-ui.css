@@ -173,16 +173,16 @@
 
 :root:not([inDOMFullscreen="true"]):not([chromehidden~="location"]):not([chromehidden~="toolbar"]) {
   & #zen-tabbox-wrapper {
-    margin: var(--zen-element-separation);
-    margin-top: 0;
+    margin: 0 !important;
+    margin-top: 0 !important;
   }
 
   &:not([zen-right-side="true"]) #zen-tabbox-wrapper {
-    margin-left: 0;
+    margin-left: 0 !important;
   }
 
   &[zen-right-side="true"] #zen-tabbox-wrapper {
-    margin-right: 0;
+    margin-right: 0 !important;
   }
 }
 

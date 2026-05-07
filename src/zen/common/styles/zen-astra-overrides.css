@@ -1,0 +1,31 @@
+/* Astra Browser - Core UI Overrides */
+/* Single source of truth for all Astra CSS fixes */
+/* This file loads LAST - wins all conflicts */
+
+/* Tab stripe permanent fix */
+#zen-tabbox-wrapper {
+  margin: 0 !important;
+  margin-top: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Navigator toolbox padding permanent fix */
+#navigator-toolbox {
+  padding: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Tab workspace section */
+.zen-workspace-tabs-section {
+  padding: 0 !important;
+  min-width: 100% !important;
+}
+
+/* Tab background margin fix */
+.tab-background {
+  margin-inline: 0 !important;
+}

@@ -1,46 +1,16 @@
-# See https://github.com/zen-browser/desktop/issues/13518
-#
-# Browser-action extension popups (which use ViewPopup with fixedWidth=false)
-# rely on `viewNode.customRectGetter` to tell panelmultiview how tall the
-# subview should be:
-#
-#     this.viewNode.customRectGetter = () => {
-#       return { height: this.lastCalculatedInViewHeight || this.viewHeight };
-#     };
-#
-# `viewHeight` is captured once during `attach()` from
-# `viewNode.getBoundingClientRect().height`. On Wayland compositors with
-# fractional scaling (e.g. Hyprland), and in Zen's single-toolbar layouts where
-# the panelview is reparented into a freshly created `customizationui-widget-
-# panel`, that one-shot measurement can land on an inflated value before the
-# popup HTML reports its real intrinsic size. After that, the popup browser
-# itself is resized correctly via `resizeBrowser`, but the surrounding panel
-# never shrinks because `customRectGetter` keeps returning the stale
-# `viewHeight`. The result is a small popup floating in a tall, mostly-empty
-# panel, with the bottom of the popup unclickable.
-#
-# `resizeBrowser` already updates `lastCalculatedInViewHeight` for the
-# `fixedWidth=true` branch but forgets to do it for the `fixedWidth=false`
-# branch (which is the default for `browser_action` popups). Mirror that same
-# update so `customRectGetter` always reports the up-to-date popup height and
-# panelmultiview lets the panel shrink to fit.
-#
-# This is a temporary external patch. Once it lands upstream in Firefox the
-# corresponding section of this patch will start failing to apply and the
-# patch should be removed (per src/external-patches/firefox/README.md).
+# https://github.com/zen-browser/desktop/issues/13518
+# Update `lastCalculatedInViewHeight` in the fixedWidth=false branch of
+# `resizeBrowser` so the panel shrinks to the actual popup height.
 diff --git a/browser/components/extensions/ExtensionPopups.sys.mjs b/browser/components/extensions/ExtensionPopups.sys.mjs
 --- a/browser/components/extensions/ExtensionPopups.sys.mjs
 +++ b/browser/components/extensions/ExtensionPopups.sys.mjs
-@@ -416,10 +416,15 @@
+@@ -416,10 +416,12 @@
      } else {
        this.browser.style.width = `${width}px`;
        this.browser.style.minWidth = `${width}px`;
        this.browser.style.height = `${height}px`;
        this.browser.style.minHeight = `${height}px`;
 +
-+      // Mirror the fixedWidth branch so `customRectGetter` reports the
-+      // up-to-date popup height instead of the stale `viewHeight` that was
-+      // captured once during `attach()`. See gh-13518.
 +      this.lastCalculatedInViewHeight = height;
      }
  

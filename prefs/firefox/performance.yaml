@@ -46,14 +46,6 @@
 - name: image.mem.decode_bytes_at_a_time
   value: 65536
 
-# Astra: Network buffer optimization
-- name: network.buffer.cache.size
-  value: 65536
-- name: network.http.max-connections
-  value: 900
-- name: network.http.max-persistent-connections-per-server
-  value: 10
-
 # Astra: Session save less frequently (faster UI)
 - name: browser.sessionstore.interval
   value: 15000

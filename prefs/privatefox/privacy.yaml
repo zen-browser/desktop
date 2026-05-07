@@ -142,9 +142,9 @@
 - name: privacy.firstparty.isolate
   value: false
 
-# Astra: Resist fingerprinting (user can enable in settings)
+# Astra: Resist fingerprinting
 - name: privacy.resistFingerprinting
-  value: false
+  value: true
 
 # Astra: Letterboxing (hides screen size)
 - name: privacy.resistFingerprinting.letterboxing
@@ -154,10 +154,12 @@
 - name: privacy.resistFingerprinting.block_mozAddonManager
   value: true
 
-# Astra: WebRTC leak protection (keep enabled for video calls)
+# Astra: WebRTC leak protection
 - name: media.peerconnection.ice.no_host
   value: true
 - name: media.peerconnection.ice.proxy_only_if_behind_proxy
+  value: true
+- name: media.peerconnection.ice.default_address_only
   value: true
 
 # Astra: Spoof timezone (anti-fingerprint)
@@ -170,6 +172,13 @@
 
 # Astra: Enable Global Privacy Control
 - name: privacy.globalprivacycontrol.enabled
+  value: true
+# Astra: Network state partitioning (anti-tracking)
+- name: privacy.partition.network_state
+  value: true
+- name: privacy.partition.serviceWorkers
+  value: true
+- name: privacy.partition.network_state.ocsp_cache
   value: true
 - name: privacy.globalprivacycontrol.functionality.enabled
   value: true

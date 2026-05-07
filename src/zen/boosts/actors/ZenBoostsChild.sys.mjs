@@ -76,7 +76,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
    *  > #define NS_RGBA(_r, _g, _b, _a) \
    *  >  ((nscolor)(((_a) << 24) | ((_b) << 16) | ((_g) << 8) | (_r)))
    *
-   * Converts [r, g, b] array to NSColor
+   * Converts [r, g, b] array to (uint32_t) NSColor
    * Make a color out of r,g,b,a values. This assumes that the r,g,b,a
    * values are properly constrained to 0-255.
    *
@@ -92,7 +92,8 @@ export class ZenBoostsChild extends JSWindowActorChild {
     // be fully opaque and we need an extra byte to store the contrast value. This allows
     // us to still use an nscolor as parameter instead of having to deal with WebIDL structs
     // shenanigans.
-    return (contrast << 24) | (b << 16) | (g << 8) | r;
+    // Take into account that its an unsigned int
+    return ((contrast << 24) | (b << 16) | (g << 8) | r) >>> 0;
   }
 
   /**
@@ -173,7 +174,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
         }
         this.#removeEventListeners();
         break;
-      case "DOMDocElementInserted":
+      case "DOMWindowCreated":
         this.#applyBoostForPageIfAvailable();
         break;
       default:

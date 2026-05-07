@@ -796,7 +796,8 @@
   --fp-enabled: 1;
 }
 
-#alltabs-button {
+#alltabs-button,
+#urlbar-engine-one-off-item-workspaces {
   list-style-image: url("chrome://browser/skin/tabs.svg") !important;
 }
 

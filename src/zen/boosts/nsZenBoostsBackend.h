@@ -64,10 +64,26 @@ class nsZenBoostsBackend final {
    */
   auto onPresShellEntered(mozilla::dom::Document* aDocument) -> void;
 
+  /**
+   * @brief Refresh the cached boost state from the current top BrowsingContext.
+   * Called from onPresShellEntered and from BrowsingContext::DidSet hooks when
+   * the underlying boost fields change.
+   */
+  auto RefreshCachedBoostState() -> void;
+
   [[nodiscard]]
   inline auto GetCurrentBrowsingContext() const {
     return mCurrentBrowsingContext;
   }
+
+  /**
+   * Cached boost data for the current top BrowsingContext, refreshed on
+   * presshell entry and on DidSet hooks. Read by the per-color hot path so
+   * that boost-off pages don't pay for a BrowsingContext walk on every color
+   * resolve.
+   */
+  ZenBoostData mCachedCurrentAccent = 0;
+  bool mCachedCurrentInverted = false;
 
  private:
   /**

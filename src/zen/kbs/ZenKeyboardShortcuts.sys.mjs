@@ -820,7 +820,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 19;
+  static LATEST_KBS_VERSION = 20;
 
   constructor() {}
 
@@ -1131,6 +1131,21 @@ class nsZenKeyboardShortcutsVersioner {
       );
     }
     if (version < 18) {
+      // Migrate from version 17 to 18.
+      // Add shortcut to Create New Workspace (unbound by default)
+      data.push(
+        new KeyShortcut(
+          "zen-workspace-create",
+          "",
+          "",
+          ZEN_WORKSPACE_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({}),
+          "cmd_zenOpenWorkspaceCreation",
+          "zen-workspace-shortcut-create"
+        )
+      );
+    }
+    if (version < 19) {
       data.push(
         new KeyShortcut(
           "zen-new-little-window",
@@ -1147,12 +1162,28 @@ class nsZenKeyboardShortcutsVersioner {
         )
       );
     }
-    if (version < 19) {
+    if (version < 20) {
+      let hasWorkspaceCreate = false;
       for (let shortcut of data) {
         if (shortcut.getID() == "zen-new-little-window") {
           shortcut._setZenGlobal(true);
-          break;
         }
+        if (shortcut.getID() == "zen-workspace-create") {
+          hasWorkspaceCreate = true;
+        }
+      }
+      if (!hasWorkspaceCreate) {
+        data.push(
+          new KeyShortcut(
+            "zen-workspace-create",
+            "",
+            "",
+            ZEN_WORKSPACE_SHORTCUTS_GROUP,
+            nsKeyShortcutModifiers.fromObject({}),
+            "cmd_zenOpenWorkspaceCreation",
+            "zen-workspace-shortcut-create"
+          )
+        );
       }
     }
     return data;

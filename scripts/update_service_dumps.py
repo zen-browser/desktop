@@ -60,4 +60,7 @@ def main():
 
 
 if __name__ == "__main__":
+  import sys
+  if len(sys.argv) == 3:
+    _, DUMPS_FOLDER, ENGINE_DUMPS_FOLDER = sys.argv
   main()

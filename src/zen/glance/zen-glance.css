@@ -83,6 +83,7 @@
       & label {
         max-width: 4rem;
         margin-left: 8px;
+        color: white;
       }
 
       & image {

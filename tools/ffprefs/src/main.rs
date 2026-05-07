@@ -107,9 +107,9 @@ use std::env;
 use std::fs;
 use std::path::PathBuf;
 
-const STATIC_PREFS: &str = "../engine/modules/libpref/init/zen-static-prefs.inc";
-const FIREFOX_PREFS: &str = "../engine/browser/app/profile/firefox.js";
-const DYNAMIC_PREFS: &str = "../engine/browser/app/profile/zen.js";
+const STATIC_PREFS: &str = "modules/libpref/init/zen-static-prefs.inc";
+const FIREFOX_PREFS: &str = "browser/app/profile/firefox.js";
+const DYNAMIC_PREFS: &str = "browser/app/profile/zen.js";
 
 #[derive(Serialize, Deserialize, PartialEq, Debug)]
 struct Preference {
@@ -122,12 +122,6 @@ struct Preference {
     mirror: Option<String>,
     locked: Option<bool>,
     sticky: Option<bool>,
-}
-
-fn get_config_path() -> PathBuf {
-    let mut path = env::current_dir().expect("Failed to get current directory");
-    path.push("prefs");
-    path
 }
 
 fn ordered_prefs(mut prefs: Vec<Preference>) -> Vec<Preference> {
@@ -153,11 +147,10 @@ fn get_prefs_files_recursively(dir: &PathBuf, files: &mut Vec<PathBuf>) {
     }
 }
 
-fn load_preferences() -> Vec<Preference> {
+fn load_preferences(prefs_path: &PathBuf) -> Vec<Preference> {
     let mut prefs = Vec::new();
-    let config_path = get_config_path();
     let mut pref_files = Vec::new();
-    get_prefs_files_recursively(&config_path, &mut pref_files);
+    get_prefs_files_recursively(&prefs_path, &mut pref_files);
     for file_path in pref_files {
         let content = fs::read_to_string(&file_path).expect("Failed to read file");
         let mut parsed_prefs: Vec<Preference> =
@@ -263,14 +256,9 @@ fn get_value(pref: &Preference) -> String {
     }
 }
 
-fn write_preferences(prefs: &[Preference]) {
-    let config_path = get_config_path();
-    if !config_path.exists() {
-        fs::create_dir_all(&config_path).expect("Failed to create prefs directory");
-    }
-
-    let static_prefs_path = config_path.join(STATIC_PREFS);
-    let dynamic_prefs_path = config_path.join(DYNAMIC_PREFS);
+fn write_preferences(engine_path: &PathBuf, prefs: &[Preference]) {
+    let static_prefs_path = engine_path.join(STATIC_PREFS);
+    let dynamic_prefs_path = engine_path.join(DYNAMIC_PREFS);
     println!(
         "Writing preferences to:\n  Static: {}\n  Dynamic: {}",
         static_prefs_path.display(),
@@ -300,10 +288,10 @@ fn write_preferences(prefs: &[Preference]) {
     fs::write(&dynamic_prefs_path, dynamic_content).expect("Failed to write dynamic prefs");
 }
 
-fn prepare_zen_prefs() {
+fn prepare_zen_prefs(engine_path: &PathBuf) {
     // Add `#include zen.js` to the bottom of the firefox.js file if it doesn't exist
     let line = "#include zen.js";
-    let firefox_prefs_path = get_config_path().join(FIREFOX_PREFS);
+    let firefox_prefs_path = engine_path.join(FIREFOX_PREFS);
     if let Ok(mut content) = fs::read_to_string(&firefox_prefs_path) {
         if !content.contains(line) {
             content.push_str(format!("\n{}\n", line).as_str());
@@ -351,15 +339,19 @@ fn expand_pref_values(prefs: &mut [Preference]) {
 
 fn main() {
     let args: Vec<String> = env::args().collect();
-    let root_path = if args.len() > 1 {
+    let prefs_path = if args.len() > 1 {
         PathBuf::from(&args[1])
     } else {
-        env::current_dir().expect("Failed to get current directory")
+        PathBuf::from("prefs")
     };
-    env::set_current_dir(&root_path).expect("Failed to change directory");
+    let engine_path = if args.len() > 2 {
+        PathBuf::from(&args[2])
+    } else {
+        PathBuf::from("engine")
+    };
 
-    prepare_zen_prefs();
-    let mut preferences = load_preferences();
+    prepare_zen_prefs(&engine_path);
+    let mut preferences = load_preferences(&prefs_path);
     expand_pref_values(&mut preferences);
-    write_preferences(&preferences);
+    write_preferences(&engine_path, &preferences);
 }

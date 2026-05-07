@@ -31,7 +31,7 @@ z-index: 1;
 %include ../../compact-mode/windows-captions-fix-default.inc.css
   }
 
-  @media -moz-pref('zen.view.experimental-no-window-controls') {
+  @media -moz-pref('zen.view.experimental-no-window-controls') or (not -moz-pref("browser.tabs.inTitlebar")) {
     :root:not([zen-has-bookmarks]) & {
       max-height: 0 !important;
       overflow: hidden;

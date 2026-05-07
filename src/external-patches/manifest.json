@@ -10,7 +10,19 @@
       // Specifically trying to target FeatureCallout.sys.mjs's change.
       // IMPORTANT: Make sure Feature callouts STILL use native popopvers when
       //    syncing from upstream, as this is a critical part of the patch.
-      "+            nonnativepopover=\"true\"": "+ "
+      "+            nonnativepopover=\"true\"": "+ ",
+
+      // Fix conflicts with upstream changes.
+      "--menuitem-border-radius: var(--panel-menuitem-border-radius)": "--menuitem-border-radius: var(--arrowpanel-menuitem-border-radius)",
+      "--menuitem-padding: var(--panel-menuitem-padding)": "--menuitem-padding: var(--arrowpanel-menuitem-padding)",
+      "--menuitem-margin: var(--panel-menuitem-margin)": "--menuitem-margin: var(--arrowpanel-menuitem-margin)",
+
+      " \n #include \"nsCocoaWindow.h\"\n \n #include \"nsISupportsPrimitives.h\"\n #include \"nsArrayUtils.h\"":
+        "  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */\n \n #include \"nsCocoaWindow.h\"\n \n #include \"nsISupportsPrimitives.h\"\n #include \"nsArrayUtils.h\"",
+      " #include \"nsISupportsPrimitives.h\"\n": "",
+
+      "     Atom(\"nonnative\", \"nonnative\"),\n": "",
+      "Atom(\"noscript\", \"noscript\"),": "Atom(\"noscript\", \"noscript\"),\n     Atom(\"noshade\", \"noshade\"),"
     }
   },
   {
@@ -20,6 +32,12 @@
     "replaces": {
       "\n\n": "\n     // may want to figure out a more robust way to detect abandonment."
     }
+  },
+  {
+    "type": "local",
+    // TODO: Convert into https://phabricator.services.mozilla.com/D298079
+    //    once it gets accepted.
+    "path": "firefox/allow_backdrop_to_work_on_transparency.patch"
   },
   {
     "type": "local",
@@ -44,8 +62,7 @@
     "type": "phabricator",
     "ids": [
       "D247145",
-      "D247215",
-      "D247217"
+      "D298708"
     ],
     "name": "Session store use size hint"
   },

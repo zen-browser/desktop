@@ -10,5 +10,5 @@
   condition: "defined(MOZ_WIDGET_GTK)"
 
 - name: zen.widget.linux.transparency
-  value: false
+  value: true
   condition: "defined(MOZ_WIDGET_GTK)"

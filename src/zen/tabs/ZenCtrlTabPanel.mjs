@@ -117,10 +117,6 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       return true;
     });
 
-    if (lazy.sortByRecent) {
-      this.#tabList.sort((tab1, tab2) => tab2.lastAccessed - tab1.lastAccessed);
-    }
-
     if (this.#tabList.length <= 1) {
       return;
     }
@@ -161,6 +157,10 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       return;
     }
 
+    if (lazy.sortByRecent) {
+      this.#tabList.sort((tab1, tab2) => tab2.lastAccessed - tab1.lastAccessed);
+    }
+
     this.#createTabCards();
 
     const scrollPosition =
@@ -193,11 +193,18 @@ class nsZenCtrlTabPanel extends nsZenDOMOperatedFeature {
       { once: true }
     );
 
-    PanelMultiView.openPopup(this.panel, document.documentElement, {
-      position: "overlap",
-      triggerEvent: null,
-      x: centerX,
-      y: centerY,
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (!this.#isOpen) {
+          return;
+        }
+        PanelMultiView.openPopup(this.panel, document.documentElement, {
+          position: "overlap",
+          triggerEvent: null,
+          x: centerX,
+          y: centerY,
+        });
+      });
     });
   }
 

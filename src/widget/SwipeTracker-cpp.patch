@@ -1,5 +1,5 @@
 diff --git a/widget/SwipeTracker.cpp b/widget/SwipeTracker.cpp
-index 887d06d3bd9cdaa934880e0ae7a11ec8b737fb61..e2bf27c0130701f1d50990b60a5ef76e93c5a6bf 100644
+index 887d06d3bd9cdaa934880e0ae7a11ec8b737fb61..7225d4264c9ec71ef1e5e717a1a62c4ef0aff0b7 100644
 --- a/widget/SwipeTracker.cpp
 +++ b/widget/SwipeTracker.cpp
 @@ -3,6 +3,7 @@
@@ -10,7 +10,17 @@ index 887d06d3bd9cdaa934880e0ae7a11ec8b737fb61..e2bf27c0130701f1d50990b60a5ef76e
  
  #include "InputData.h"
  #include "mozilla/FlushType.h"
-@@ -90,7 +91,7 @@ bool SwipeTracker::ComputeSwipeSuccess() const {
+@@ -67,6 +68,9 @@ double SwipeTracker::SwipeSuccessTargetValue() const {
+ }
+ 
+ double SwipeTracker::ClampToAllowedRange(double aGestureAmount) const {
++  if (StaticPrefs::zen_swipe_is_fast_swipe()) {
++    return aGestureAmount;
++  }
+   // gestureAmount needs to stay between -1 and 0 when swiping right and
+   // between 0 and 1 when swiping left.
+   double min =
+@@ -90,7 +94,7 @@ bool SwipeTracker::ComputeSwipeSuccess() const {
  
    return (mGestureAmount * targetValue +
            mCurrentVelocity * targetValue *
@@ -19,3 +29,13 @@ index 887d06d3bd9cdaa934880e0ae7a11ec8b737fb61..e2bf27c0130701f1d50990b60a5ef76e
           kSwipeSuccessThreshold;
  }
  
+@@ -141,7 +145,8 @@ nsEventStatus SwipeTracker::ProcessEvent(
+   // display the UI as if we were at the success threshold as that would
+   // give a false indication that navigation would happen.
+   if (!computedSwipeSuccess && (eventAmount >= kSwipeSuccessThreshold ||
+-                                eventAmount <= -kSwipeSuccessThreshold)) {
++                                eventAmount <= -kSwipeSuccessThreshold)
++                              && !StaticPrefs::zen_swipe_is_fast_swipe()) {
+     eventAmount = 0.999 * kSwipeSuccessThreshold;
+     if (mGestureAmount < 0.f) {
+       eventAmount = -eventAmount;

@@ -137,8 +137,6 @@ class nsZenWorkspaces {
       document.documentElement.setAttribute("zen-private-window", "true");
     }
 
-    this.popupOpenHandler = this._popupOpenHandler.bind(this);
-
     window.addEventListener("resize", this.onWindowResize.bind(this));
     this.addPopupListeners();
 
@@ -597,16 +595,6 @@ class nsZenWorkspaces {
       },
       { passive: true, capture: true }
     );
-  }
-
-  _popupOpenHandler() {
-    // If a popup is opened, we should stop the swipe gesture
-    if (this._swipeManager?.isGestureActive) {
-      document.documentElement.removeAttribute("swipe-gesture");
-      gZenUIManager.tabsWrapper.style.removeProperty("scrollbar-width");
-      this.updateTabsContainers();
-      this._cancelSwipeAnimation();
-    }
   }
 
   get activeWorkspace() {
@@ -1907,7 +1895,9 @@ class nsZenWorkspaces {
     } = {}
   ) {
     gZenUIManager.tabsWrapper.style.scrollbarWidth = "none";
-    const kGlobalAnimationDuration = 0.2;
+    const kGlobalAnimationDuration =
+      Services.prefs.getIntPref("zen.workspaces.switch-animation-duration") /
+      1000;
     this._animatingChange = true;
     const animations = [];
     const workspaces = this.getWorkspaces();

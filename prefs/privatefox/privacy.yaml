@@ -144,11 +144,11 @@
 
 # Astra: Resist fingerprinting
 - name: privacy.resistFingerprinting
-  value: true
+  value: false
 
 # Astra: Letterboxing (hides screen size)
 - name: privacy.resistFingerprinting.letterboxing
-  value: true
+  value: false
 
 # Astra: Block canvas fingerprinting
 - name: privacy.resistFingerprinting.block_mozAddonManager
@@ -160,7 +160,7 @@
 - name: media.peerconnection.ice.proxy_only_if_behind_proxy
   value: true
 - name: media.peerconnection.ice.default_address_only
-  value: true
+  value: false
 
 # Astra: Spoof timezone (anti-fingerprint)
 - name: privacy.resistFingerprinting.reduceTimerPrecision

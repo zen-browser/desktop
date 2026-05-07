@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Astra New Tab</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0c0f14;
+      --panel: #151a23;
+      --text: #ffffff;
+      --muted: #9aa4b2;
+      --accent: #3b82f6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: radial-gradient(circle at 20% 20%, #171d29 0%, var(--bg) 55%);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .wrap {
+      width: min(920px, 100%);
+      text-align: center;
+    }
+    h1 {
+      margin: 0 0 20px;
+      font-size: clamp(44px, 9vw, 86px);
+      letter-spacing: 0.2em;
+      font-weight: 800;
+      color: #fff;
+    }
+    .search {
+      width: min(680px, 100%);
+      margin: 0 auto 26px;
+      display: flex;
+      align-items: center;
+      background: var(--panel);
+      border: 1px solid #273142;
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+    .search input {
+      width: 100%;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+      font-size: 18px;
+    }
+    .tiles {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(130px, 1fr));
+      gap: 12px;
+      width: min(700px, 100%);
+      margin: 0 auto;
+    }
+    .tile {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: var(--text);
+      background: #121722;
+      border: 1px solid #243041;
+      border-radius: 12px;
+      min-height: 52px;
+      padding: 10px;
+      font-weight: 600;
+      transition: transform .12s ease, border-color .12s ease;
+    }
+    .tile:hover {
+      transform: translateY(-1px);
+      border-color: var(--accent);
+    }
+    .footer {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 14px;
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: .04em;
+    }
+    .clock {
+      position: fixed;
+      right: 14px;
+      bottom: 12px;
+      color: #c9d2de;
+      font: 600 13px/1.4 "Consolas", "Courier New", monospace;
+      text-align: right;
+      white-space: pre;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>ASTRA</h1>
+    <form class="search" id="searchForm" action="https://www.google.com/search" method="get">
+      <input id="q" name="q" type="text" autocomplete="off" placeholder="Search Google..." aria-label="Search">
+    </form>
+    <section class="tiles">
+      <a class="tile" href="https://www.google.com">Google</a>
+      <a class="tile" href="https://www.youtube.com">YouTube</a>
+      <a class="tile" href="https://mail.google.com">Gmail</a>
+      <a class="tile" href="https://web.whatsapp.com">WhatsApp</a>
+      <a class="tile" href="https://www.digilocker.gov.in">DigiLocker</a>
+      <a class="tile" href="https://www.irctc.co.in">IRCTC</a>
+    </section>
+  </main>
+  <div class="footer">Astra Browser — India First</div>
+  <div class="clock" id="clock"></div>
+  <script>
+    (function () {
+      var clock = document.getElementById("clock");
+      function tick() {
+        var now = new Date();
+        var date = new Intl.DateTimeFormat("en-IN", {
+          timeZone: "Asia/Kolkata",
+          dateStyle: "medium"
+        }).format(now);
+        var time = new Intl.DateTimeFormat("en-IN", {
+          timeZone: "Asia/Kolkata",
+          timeStyle: "medium",
+          hour12: true
+        }).format(now);
+        clock.textContent = "IST\n" + date + "\n" + time;
+      }
+      tick();
+      setInterval(tick, 1000);
+      document.getElementById("q").focus();
+    })();
+  </script>
+</body>
+</html>

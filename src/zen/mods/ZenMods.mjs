@@ -503,6 +503,11 @@ class nsZenMods extends nsZenPreloadedFeature {
           }
         }
       }
+      if (globalThis.ZenMods?.isModEnabled?.("astra-transparent")) {
+        document.documentElement.classList.add("astra-transparent-enabled");
+      } else if (currentMods["astra-transparent"]?.enabled) {
+        document.documentElement.classList.add("astra-transparent-enabled");
+      }
       const mods = await this.#getEnabledMods();
 
       const modsWithPreferences = await Promise.all(
@@ -666,6 +671,9 @@ class nsZenMods extends nsZenPreloadedFeature {
       console.warn(`[ZenMods]: Could not refresh mod CSS`, e);
     }
     await this.#rebuildModsStylesheet();
+    if (modId === "astra-transparent") {
+      document.documentElement.classList.add("astra-transparent-enabled");
+    }
   }
 
   async disableMod(modId) {
@@ -679,6 +687,9 @@ class nsZenMods extends nsZenPreloadedFeature {
     mod.enabled = false;
     await IOUtils.writeJSON(this.modsDataFile, mods);
     await this.#rebuildModsStylesheet();
+    if (modId === "astra-transparent") {
+      document.documentElement.classList.remove("astra-transparent-enabled");
+    }
   }
 
   async updateMods(mods = undefined) {

@@ -896,9 +896,32 @@ class nsZenKeyboardShortcutsVersioner {
     return data;
   }
 
+  removeDuplicateShortcuts(data) {
+    const seen = new Set();
+    return data.filter(shortcut => {
+      const id = shortcut.getID();
+      if (!id) {
+        return true;
+      }
+      if (seen.has(id)) {
+        return false;
+      }
+      seen.add(id);
+      return true;
+    });
+  }
+
+  addShortcutIfMissing(data, shortcut) {
+    if (!data.find(s => s.getID() == shortcut.getID())) {
+      data.push(shortcut);
+    }
+  }
+
   fixedKeyboardShortcuts(data) {
     // Apply migrations and ensure defaults exist
-    let out = this.fillDefaultIfNotPresent(this.migrateIfNeeded(data));
+    let out = this.removeDuplicateShortcuts(
+      this.fillDefaultIfNotPresent(this.migrateIfNeeded(data))
+    );
 
     return out;
   }
@@ -1150,7 +1173,8 @@ class nsZenKeyboardShortcutsVersioner {
     if (version < 15) {
       // Migrate from version 13 to 14
       // Add shortcut to open a new unsynced window: Default accelt+shift+N
-      data.push(
+      this.addShortcutIfMissing(
+        data,
         new KeyShortcut(
           "zen-new-unsynced-window",
           "N",

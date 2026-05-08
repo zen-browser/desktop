@@ -20,9 +20,9 @@
     const { AboutNewTab } = ChromeUtils.importESModule(
       "resource:///modules/AboutNewTab.sys.mjs"
     );
-    AboutNewTab.newTabURL =
-      "chrome://browser/content/zen-styles/astra-newtab.html";
-  } catch (e) {
-    console.error("[Astra] NTP override failed:", e);
-  }
+    if (AboutNewTab.newTabURL === AboutNewTab.originalNewTabURL) {
+      AboutNewTab.newTabURL =
+        "chrome://browser/content/zen-styles/astra-newtab.html";
+    }
+  } catch (e) {}
 }

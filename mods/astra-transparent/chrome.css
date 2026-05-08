@@ -1,65 +1,18 @@
 /* Astra - Transparent/Acrylic Mode */
-/* Cross-platform: Windows + macOS + Linux */
-
-/* Base: all platforms */
 :root {
-  --zen-main-browser-background: #00000000 !important;
+  --zen-main-browser-background: transparent !important;
 }
 
 #browser {
   background: transparent !important;
 }
 
-/* Sidebar + toolbar blur */
-#navigator-toolbox {
-  background: transparent !important;
-}
-
 .zen-toolbar-background {
   display: block !important;
+  background: rgba(20, 20, 30, 0.45) !important;
+  backdrop-filter: blur(32px) saturate(180%) brightness(0.85) !important;
+}
+
+#navigator-toolbox {
   background: transparent !important;
-  backdrop-filter: blur(42px) saturate(110%)
-    brightness(0.25) contrast(100%) !important;
-}
-
-/* Windows 11 - Mica/Acrylic */
-@media (-moz-platform: windows) {
-  :root {
-    --zen-main-browser-background: #00000000 !important;
-  }
-  #navigator-toolbox {
-    background: transparent !important;
-    backdrop-filter: blur(20px) saturate(180%) brightness(0.9) !important;
-  }
-}
-
-/* macOS - native transparency */
-@media (-moz-platform: macos) {
-  :root {
-    --zen-main-browser-background: #00000005 !important;
-  }
-  #navigator-toolbox {
-    background: transparent !important;
-    backdrop-filter: blur(42px) saturate(180%) brightness(0.8) !important;
-  }
-}
-
-/* Linux - GTK transparency */
-@media (-moz-platform: linux) {
-  :root {
-    --zen-main-browser-background: #00000000 !important;
-  }
-  #navigator-toolbox {
-    background: transparent !important;
-    backdrop-filter: blur(32px) saturate(150%) brightness(0.85) !important;
-  }
-}
-
-/* Web content area transparent */
-:root:not([inDOMFullscreen="true"]) {
-  #tabbrowser-tabbox #tabbrowser-tabpanels
-  .browserSidebarContainer
-  browser[transparent="true"] {
-    background: none !important;
-  }
 }

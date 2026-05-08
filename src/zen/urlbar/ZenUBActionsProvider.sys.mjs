@@ -27,6 +27,10 @@ ChromeUtils.defineESModuleGetters(lazy, {
   UrlUtils: "resource://gre/modules/UrlUtils.sys.mjs",
 });
 
+ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
+  return new Localization(["browser/zen-general.ftl"]);
+});
+
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
   "enabledPref",
@@ -183,6 +187,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
           ?.style.getPropertyValue("--zen-primary-color");
         actions.push({
           label: "Focus on",
+          l10nId: "zen-urlbar-action-focus-on",
           extraPayload: {
             workspaceId: workspace.uuid,
             prettyName: workspace.name,
@@ -216,6 +221,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         return {
           icon: "chrome://browser/skin/zen-icons/extension.svg",
           label: "Extension",
+          l10nId: "zen-urlbar-action-extension",
           commandId: `zen:extension-${addon.id}`,
           extraPayload: {
             extensionId: addon.id,
@@ -237,6 +243,20 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       .concat(await this.#getExtensionActions(window));
   }
 
+  async #localizeActions(actions) {
+    const actionsWithL10n = actions.filter(action => action.l10nId);
+    const messages = await lazy.l10n.formatValues(
+      actionsWithL10n.map(action => ({ id: action.l10nId }))
+    );
+    const labels = new Map(
+      actionsWithL10n.map((action, index) => [action, messages[index]])
+    );
+    return actions.map(action => ({
+      ...action,
+      label: labels.get(action) || action.label,
+    }));
+  }
+
   /**
    * Starts a search query amongst the available global actions.
    *
@@ -249,8 +269,9 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
     const actions = isWorkspaceSearch
       ? this.#getWorkspaceActions(window)
       : await this.#getAvailableActions(window);
+    const localizedActions = await this.#localizeActions(actions);
     let results = [];
-    for (let action of actions) {
+    for (let action of localizedActions) {
       if (isPrefixed && query.length < 1) {
         results.push({ action, score: 100 });
         continue;

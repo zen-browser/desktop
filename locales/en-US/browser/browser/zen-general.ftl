@@ -77,8 +77,40 @@ zen-icons-picker-emoji =
   .label = Emojis
 zen-icons-picker-svg =
   .label = Icons
+zen-icons-picker-search =
+  .placeholder = Search emojis
 
 urlbar-search-mode-zen_actions = Actions
+zen-urlbar-action-toggle-compact-mode = Toggle Compact Mode
+zen-urlbar-action-open-theme-picker = Open Theme Picker
+zen-urlbar-action-new-split-view = New Split View
+zen-urlbar-action-new-folder = New Folder
+zen-urlbar-action-copy-current-url = Copy Current URL
+zen-urlbar-action-settings = Settings
+zen-urlbar-action-open-private-window = Open Private Window
+zen-urlbar-action-open-new-window = Open New Window
+zen-urlbar-action-new-blank-window = New Blank Window
+zen-urlbar-action-pin-tab = Pin Tab
+zen-urlbar-action-unpin-tab = Unpin Tab
+zen-urlbar-action-next-space = Next Space
+zen-urlbar-action-previous-space = Previous Space
+zen-urlbar-action-close-tab = Close Tab
+zen-urlbar-action-reload-tab = Reload Tab
+zen-urlbar-action-reload-tab-without-cache = Reload Tab Without Cache
+zen-urlbar-action-next-tab = Next Tab
+zen-urlbar-action-previous-tab = Previous Tab
+zen-urlbar-action-capture-screenshot = Capture Screenshot
+zen-urlbar-action-toggle-tabs-on-right = Toggle Tabs on right
+zen-urlbar-action-add-to-essentials = Add to Essentials
+zen-urlbar-action-remove-from-essentials = Remove from Essentials
+zen-urlbar-action-find-in-page = Find in Page
+zen-urlbar-action-manage-extensions = Manage Extensions
+zen-urlbar-action-switch-to-automatic-appearance = Switch to Automatic Appearance
+zen-urlbar-action-switch-to-light-mode = Switch to Light Mode
+zen-urlbar-action-switch-to-dark-mode = Switch to Dark Mode
+zen-urlbar-action-print = Print
+zen-urlbar-action-focus-on = Focus on
+zen-urlbar-action-extension = Extension
 zen-site-data-settings = Settings
 
 zen-generic-manage = Manage
@@ -150,4 +182,3 @@ zen-window-sync-migration-dialog-accept = Got It
 
 zen-appmenu-new-blank-window =
     .label = New blank window
-

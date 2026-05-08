@@ -832,7 +832,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 18;
+  static LATEST_KBS_VERSION = 19;
 
   constructor() {}
 
@@ -1226,6 +1226,24 @@ class nsZenKeyboardShortcutsVersioner {
           "zen-workspace-shortcut-create"
         )
       );
+    }
+
+    if (version < 19) {
+      // Migrate from version 18 to 19.
+      // Restore the pin/unpin tab shortcut if older data missed the v10 migration.
+      if (!data.find(s => s.getID() == "zen-toggle-pin-tab")) {
+        data.push(
+          new KeyShortcut(
+            "zen-toggle-pin-tab",
+            "D",
+            "",
+            ZEN_OTHER_SHORTCUTS_GROUP,
+            nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
+            "cmd_zenTogglePinTab",
+            "zen-toggle-pin-tab-shortcut"
+          )
+        );
+      }
     }
 
     return data;

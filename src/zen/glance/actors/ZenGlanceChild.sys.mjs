@@ -66,11 +66,13 @@ export class ZenGlanceChild extends JSWindowActorChild {
     ) {
       rect = originalTargetRect;
     }
+    // Change the rect to make sure we take into account zoom.
+    const zoom = this.browsingContext.fullZoom;
     this.sendAsyncMessage("ZenGlance:RecordLinkClickData", {
-      clientX: rect.left,
-      clientY: rect.top,
-      width: rect.width,
-      height: rect.height,
+      clientX: rect.left * zoom,
+      clientY: rect.top * zoom,
+      width: rect.width * zoom,
+      height: rect.height * zoom,
     });
   }
 

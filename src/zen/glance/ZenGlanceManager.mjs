@@ -313,16 +313,18 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     // content process since it does not take into account scroll. This way, we can
     // be sure that the coordinates are correct.
     const tabPanelsRect = gBrowser.tabpanels.getBoundingClientRect();
+    const zoomLevel =
+      this.#currentParentTab?.linkedBrowser.browsingContext.fullZoom || 1;
     const rect = new DOMRect(
-      data.clientX + tabPanelsRect.left,
-      data.clientY + tabPanelsRect.top,
-      data.width,
-      data.height
+      data.clientX / zoomLevel + tabPanelsRect.left,
+      data.clientY / zoomLevel + tabPanelsRect.top,
+      data.width / zoomLevel,
+      data.height / zoomLevel
     );
     return await this.#imageBitmapToObjectURL(
       await window.browsingContext.currentWindowGlobal.drawSnapshot(
         rect,
-        1,
+        zoomLevel,
         "transparent",
         undefined
       )

@@ -97,11 +97,11 @@ class nsZenWindowSync {
   };
 
   /**
-   * Promise that resolves when the current docshell swap operation is finished.
+   * Promise|null that resolves when the current docshell swap operation is finished.
    * Used to avoid multiple simultaneous swap operations that could interfere with each other.
    * For example, when focusing a window AND selecting a tab at the same time.
    */
-  #docShellSwitchPromise = Promise.resolve();
+  #docShellSwitchPromise = null;
 
   /**
    * Map of sync handlers for different event types.
@@ -1485,18 +1485,29 @@ class nsZenWindowSync {
     ) {
       return;
     }
-    let promise = this.#docShellSwitchPromise;
+    if (this.#docShellSwitchPromise) {
+      return;
+    }
+    const onTabSelect = event => {
+      if (event.detail?.previousTab === event.target) {
+        return;
+      }
+      this.#lastSelectedTab = null;
+      this.on_TabSelect(event, { ignorePromise: true });
+    };
     this.#lastFocusedWindow = new WeakRef(window);
     this.#lastSelectedTab = new WeakRef(window.gBrowser.selectedTab);
+    window.addEventListener("TabSelect", onTabSelect, { once: true });
     // eslint-disable-next-line no-async-promise-executor
     this.#docShellSwitchPromise = new Promise(async resolve => {
-      await promise;
       await this.#onTabSwitchOrWindowFocus(window);
+      window.removeEventListener("TabSelect", onTabSelect);
       resolve();
+      this.#docShellSwitchPromise = null;
     });
   }
 
-  on_TabSelect(aEvent) {
+  on_TabSelect(aEvent, { ignorePromise = false } = {}) {
     const tab = aEvent.target;
     if (this.#lastSelectedTab?.deref() === tab) {
       return;
@@ -1504,11 +1515,15 @@ class nsZenWindowSync {
     this.#lastSelectedTab = new WeakRef(tab);
     const previousTab = aEvent.detail.previousTab;
     let promise = this.#docShellSwitchPromise;
+    if (promise && !ignorePromise) {
+      return;
+    }
     // eslint-disable-next-line no-async-promise-executor
     this.#docShellSwitchPromise = new Promise(async resolve => {
       await promise;
       await this.#onTabSwitchOrWindowFocus(tab.ownerGlobal, previousTab);
       resolve();
+      this.#docShellSwitchPromise = null;
     });
   }
 

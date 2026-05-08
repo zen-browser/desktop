@@ -17,6 +17,12 @@
 - name: zen.workspaces.swipe-actions
   value: true
 
+- name: zen.workspaces.swipe-actions.delta-multiplier
+  value: 90
+
+- name: zen.workspaces.switch-animation-duration
+  value: 200
+
 - name: zen.workspaces.wrap-around-navigation
   value: true
 

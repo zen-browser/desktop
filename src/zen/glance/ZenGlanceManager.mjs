@@ -935,7 +935,11 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     this.closingGlance = true;
     this._animating = true;
 
-    gBrowser.moveTabAfter(this.#currentTab, this.#currentParentTab);
+    if (Services.prefs.getBoolPref("zen.view.show-newtab-button-top", true)) {
+      gBrowser.moveTabBefore(this.#currentTab, this.#currentParentTab);
+    } else {
+      gBrowser.moveTabAfter(this.#currentTab, this.#currentParentTab);
+    }
 
     if (onTabClose && gBrowser.tabs.length === 1) {
       BrowserCommands.openTab();
@@ -1574,7 +1578,11 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     this.#currentTab.setAttribute("zen-dont-split-glance", true);
 
     this.#handleZenFolderPinning();
-    gBrowser.moveTabAfter(this.#currentTab, this.#currentParentTab);
+    if (Services.prefs.getBoolPref("zen.view.show-newtab-button-top", true)) {
+      gBrowser.moveTabBefore(this.#currentTab, this.#currentParentTab);
+    } else {
+      gBrowser.moveTabAfter(this.#currentTab, this.#currentParentTab);
+    }
 
     this.#prepareTabForFullOpen();
 

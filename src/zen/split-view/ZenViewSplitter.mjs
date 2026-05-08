@@ -968,20 +968,15 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     this._dragState = null;
   };
 
+  const OPPOSITE_SIDES = {
+    top: "bottom",
+    bottom: "top",
+    left: "right",
+    right: "left",
+  };
+
   _oppositeSide(side) {
-    if (side === "top") {
-      return "bottom";
-    }
-    if (side === "bottom") {
-      return "top";
-    }
-    if (side === "left") {
-      return "right";
-    }
-    if (side === "right") {
-      return "left";
-    }
-    return undefined;
+    return OPPOSITE_SIDES[side];
   }
 
   calculateHoverSide(x, y, elementRect) {

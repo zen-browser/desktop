@@ -1,18 +1,7 @@
-/* Astra - Transparent/Acrylic Mode */
+/* Astra Transparent Mode */
+/* Zen handles transparency natively — no overrides needed */
+/* This mod just enables the Zen transparent effect */
+
 :root {
   --zen-main-browser-background: transparent !important;
-}
-
-#browser {
-  background: transparent !important;
-}
-
-.zen-toolbar-background {
-  display: block !important;
-  background: rgba(20, 20, 30, 0.45) !important;
-  backdrop-filter: blur(32px) saturate(180%) brightness(0.85) !important;
-}
-
-#navigator-toolbox {
-  background: transparent !important;
 }

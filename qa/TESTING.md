@@ -27,4 +27,3 @@
 - Open settings
 - Create workspace
 - Close/reopen browser
-

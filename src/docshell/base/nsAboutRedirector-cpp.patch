@@ -7,7 +7,7 @@ index 76f707e5f1e8e20a6acec9a445781377c052ba59..4f8f14deace21ff56157b77c15bcb93e
       nsIAboutModule::IS_SECURE_CHROME_UI},
  #endif
 -    {"credits", "https://www.mozilla.org/credits/",
-+    {"credits", "https://zen-browser.app/about/",
++    {"credits", "https://nevai.app/about/",
       nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT |
           nsIAboutModule::URI_MUST_LOAD_IN_CHILD},
      {"fingerprintingprotection",

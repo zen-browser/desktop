@@ -1,52 +1,41 @@
 <!--
    - This Source Code Form is subject to the terms of the Mozilla Public
    - License, v. 2.0. If a copy of the MPL was not distributed with this
-   - file, You can obtain one at http://mozilla.org/MPL/2.0/.
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/.
    -->
-<!-- TODO: Get a job -->
-<img src="./docs/assets/zen-dark.svg" width="100px" align="left">
 
-### `Zen Browser`
+# Nevai Browser Desktop
 
-[![Downloads](https://img.shields.io/github/downloads/zen-browser/desktop/total.svg)](https://github.com/zen-browser/desktop/releases)
-[![Crowdin](https://badges.crowdin.net/zen-browser/localized.svg)](https://crowdin.com/project/zen-browser)
-[![Zen Release builds](https://github.com/zen-browser/desktop/actions/workflows/build.yml/badge.svg?branch=stable)](https://github.com/zen-browser/desktop/actions/workflows/build.yml)
+Nevai Browser Desktop is the desktop client of the Nevai cross-platform browser project.
 
-Zen is a firefox-based browser with the aim of pushing your productivity to a new level!
+This repository is based on Zen Browser / Firefox desktop code and is part of the larger Nevai infrastructure:
 
-<div flex="true">
-  <a href="https://zen-browser.app/download">
-    Download
-  </a>
-  •
-  <a href="https://zen-browser.app">
-    Website
-  </a>
-  •
-  <a href="https://docs.zen-browser.app">
-    Documentation
-  </a>
-  •
-  <a href="https://zen-browser.app/release-notes/latest">
-    Release Notes
-  </a>
-</div>
+- Nevai Desktop: Windows, macOS, Linux
+- Nevai Android: planned Android client
+- Nevai iOS: planned iOS client
+- Nevai Core: shared brand, settings, privacy, release, and update infrastructure
 
-### Firefox Versions
+## Current Status
 
-- [`Release`](https://zen-browser.app/download) - Is currently built using Firefox version `150.0.2`! 🚀
-- [`Twilight`](https://zen-browser.app/download?twilight) - Is currently built using Firefox version `RC 150.0.2`!
+This project is in early development.
 
-### Contributing
+Current focus:
 
-If you'd like to report a bug, please do so on our [GitHub Issues page](https://github.com/zen-browser/desktop/issues/) and for feature requests, you can use [Github Discussions](https://github.com/zen-browser/desktop/discussions).
+- desktop build stability
+- visible branding cleanup
+- app identity cleanup
+- icon replacement
+- release packaging preparation
 
-Zen is an open-source project, and we welcome contributions from the community! Please take a look at the [contribution guidelines](./docs/contribute.md) before getting started!
+## Links
 
-#### Partners
+- Website: https://nevai.app
+- Documentation: https://docs.nevai.app
+- Downloads: https://nevai.app/download
+- Release notes: https://nevai.app/release-notes/latest
 
-Thanks to all the partners of Zen for their support and contributions:
+## Legal
 
-<a href="https://blacksmith.sh">
-  <img src="./docs/assets/blacksmith-yellow.png" width="350px"/>
-</a>
+Nevai Browser Desktop is a modified browser project based on upstream open-source browser code.
+
+Required license notices and source availability obligations must be preserved before any public release.

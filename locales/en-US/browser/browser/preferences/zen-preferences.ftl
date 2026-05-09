@@ -125,12 +125,12 @@ zen-vertical-tabs-expand-tabs-on-hover = Expand Tabs on Hover (Won't work on com
 zen-vertical-tabs-expand-tabs-header = How to expand tabs
 zen-vertical-tabs-expand-tabs-description = Choose how to expand tabs in the sidebar
 
-zen-theme-marketplace-header = Zen Mods
+zen-theme-marketplace-header = Nevai Mods
 zen-theme-disable-all-enabled =
     .title = Disable all mods
 zen-theme-disable-all-disabled =
     .title = Enable all mods
-zen-theme-marketplace-description = Find and install mods from the store.
+zen-theme-marketplace-description = Find and install mods from the Nevai store.
 zen-theme-marketplace-remove-button =
     .label = Remove mod
 zen-theme-marketplace-check-for-updates-button =
@@ -157,7 +157,7 @@ zen-theme-marketplace-dropdown-default-label =
     .label = None
 zen-theme-marketplace-input-default-placeholder =
     .placeholder = Type something...
-pane-zen-marketplace-title = Zen Mods
+pane-zen-marketplace-title = Nevai Mods
 zen-themes-auto-update =
    .label = Automatically update installed mods on startup
 
@@ -195,7 +195,7 @@ category-zen-CKS =
 pane-settings-CKS-title = { -brand-short-name } Keyboard Shortcuts
 
 category-zen-marketplace =
-    .tooltiptext = Zen Mods
+    .tooltiptext = Nevai Mods
 
 zen-settings-CKS-header = Customize your keyboard shortcuts
 zen-settings-CKS-description = Change the default keyboard shortcuts to your liking and improve your browsing experience

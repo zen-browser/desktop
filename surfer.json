@@ -1,6 +1,6 @@
 {
-  "name": "Zen Browser",
-  "vendor": "Zen OSS Team",
+  "name": "Nevai Browser",
+  "vendor": "Nevai",
   "appId": "zen",
   "binaryName": "zen",
   "version": {
@@ -16,9 +16,9 @@
   "brands": {
     "release": {
       "backgroundColor": "#282A33",
-      "brandShorterName": "Zen",
-      "brandShortName": "Zen",
-      "brandFullName": "Zen Browser",
+      "brandShorterName": "Nevai",
+      "brandShortName": "Nevai",
+      "brandFullName": "Nevai Browser",
       "release": {
         "displayVersion": "1.19.12b",
         "github": {
@@ -36,9 +36,9 @@
     },
     "twilight": {
       "backgroundColor": "#282A33",
-      "brandShorterName": "Zen",
+      "brandShorterName": "Nevai",
       "brandShortName": "Twilight",
-      "brandFullName": "Zen Twilight",
+      "brandFullName": "Nevai Twilight",
       "release": {
         "displayVersion": "1.20t",
         "github": {

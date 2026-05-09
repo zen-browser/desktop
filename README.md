@@ -8,7 +8,7 @@
 
 Nevai Browser Desktop is the desktop client of the Nevai cross-platform browser project.
 
-This repository is based on Zen Browser / Firefox desktop code and is part of the larger Nevai infrastructure:
+This repository is a modified desktop browser codebase derived from upstream Zen Browser and Mozilla Firefox open-source projects, and is part of the larger Nevai infrastructure:
 
 - Nevai Desktop: Windows, macOS, Linux
 - Nevai Android: planned Android client

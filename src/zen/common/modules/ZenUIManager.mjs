@@ -698,10 +698,16 @@ window.gZenUIManager = {
       this.urlbarShowDomainOnly
     ) {
       let url = BrowserUIUtils.removeSingleTrailingSlashFromURL(aURL);
-      requestIdleCallback(() => {
+      requestAnimationFrame(() => {
+        const hoverAttr = "zen-has-implicit-hover";
+        const hasHover = gNavToolbox.hasAttribute(hoverAttr);
+        gNavToolbox.removeAttribute(hoverAttr);
         // Scroll the urlbar all the way to the right so that
         // the domain is always visible when the url is too long.
         gURLBar.inputField.scrollLeft = gURLBar.inputField.scrollWidth;
+        if (hasHover) {
+          gNavToolbox.setAttribute(hoverAttr, true);
+        }
       });
       let stripped = url.startsWith("https://") ? url.split("/")[2] : url;
       if (stripped.startsWith("www.")) {

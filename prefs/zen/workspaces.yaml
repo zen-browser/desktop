@@ -18,7 +18,7 @@
   value: true
 
 - name: zen.workspaces.swipe-actions.delta-multiplier
-  value: 90
+  value: 100
 
 - name: zen.workspaces.switch-animation-duration
   value: 200

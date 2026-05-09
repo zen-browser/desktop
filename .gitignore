@@ -34,3 +34,6 @@ build/signing/cert.pem
 build/signing/private_key.pem
 build/signing/private_key.p12
 
+
+# Generated Nevai branding assets
+product/brand/assets/generated/

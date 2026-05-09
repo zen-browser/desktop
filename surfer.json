@@ -1,8 +1,8 @@
 {
   "name": "Nevai Browser",
   "vendor": "Nevai",
-  "appId": "zen",
-  "binaryName": "zen",
+  "appId": "nevai",
+  "binaryName": "nevai",
   "version": {
     "product": "firefox",
     "version": "150.0.2",

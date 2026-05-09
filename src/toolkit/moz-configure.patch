@@ -14,7 +14,7 @@ index 226d0c5a93a9a2404e1974001da4e34b7b670067..b73277448f7d2706d316df2505e17d23
  
  project_flag(
      "MOZ_APP_PROFILE",
-+    default="zen",
++    default="nevai",
      nargs=1,
      help='Used for application.ini\'s "Profile" field, which controls profile location',
  )
@@ -29,7 +29,7 @@ index 226d0c5a93a9a2404e1974001da4e34b7b670067..b73277448f7d2706d316df2505e17d23
      "--with-distribution-id",
      nargs=1,
 -    default="org.mozilla",
-+    default="app.zen-browser",
++    default="app.nevai.browser",
      help="Set distribution-specific id",
  )
  set_config("MOZ_DISTRIBUTION_ID", depends("--with-distribution-id")(lambda v: v[0]))
@@ -60,7 +60,7 @@ index 226d0c5a93a9a2404e1974001da4e34b7b670067..b73277448f7d2706d316df2505e17d23
          elif target.os == "Android":
              return ".mozilla"
 -        return "mozilla"
-+        return "zen"
++        return "nevai"
  
      option(
          "--with-user-appdir",

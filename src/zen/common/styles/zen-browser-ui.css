@@ -45,6 +45,7 @@ body,
   overflow: clip;
 
   isolation: isolate;
+  contain: content;
 
   &::after,
   &::before {
@@ -53,6 +54,7 @@ body,
     inset: 0;
     z-index: 0;
     pointer-events: none;
+    will-change: background-color;
   }
 
   &::after {
@@ -106,8 +108,6 @@ body,
 }
 
 #zen-browser-background {
-  contain: paint;
-
   /* This is conceptually a background, but putting this on a pseudo-element
     * avoids it from suppressing the chrome-content separator border, etc.
     *

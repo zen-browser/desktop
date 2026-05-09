@@ -1983,26 +1983,41 @@ class nsZenWorkspaces {
       );
       const offset = -(newWorkspaceIndex - elementWorkspaceIndex) * 100;
       const newTransform = `translateX(${offset}%)`;
+      // Only animate the workspace that is coming in, to avoid having multiple workspaces
+      // animating off-screen at the same time which can cause performance issues. With an off
+      // set of 1 or -1, so we animate the current workspace and the next one.
+      const goingLeft = newWorkspaceIndex < previousWorkspaceIndex;
+      const willBeVisible =
+        (goingLeft &&
+          elementWorkspaceIndex >= newWorkspaceIndex &&
+          elementWorkspaceIndex <= previousWorkspaceIndex) ||
+        (!goingLeft &&
+          elementWorkspaceIndex <= newWorkspaceIndex &&
+          elementWorkspaceIndex >= previousWorkspaceIndex);
       if (shouldAnimate) {
-        const existingPaddingTop = element.style.paddingTop;
-        animations.push(
-          gZenUIManager.motion.animate(
-            element,
-            {
-              transform: existingTransform
-                ? [existingTransform, newTransform]
-                : newTransform,
-              paddingTop: existingTransform
-                ? [existingPaddingTop, existingPaddingTop]
-                : existingPaddingTop,
-            },
-            {
-              type: "spring",
-              bounce: 0,
-              duration: kGlobalAnimationDuration,
-            }
-          )
-        );
+        if (!willBeVisible) {
+          element.style.transform = newTransform;
+        } else {
+          const existingPaddingTop = element.style.paddingTop;
+          animations.push(
+            gZenUIManager.motion.animate(
+              element,
+              {
+                transform: existingTransform
+                  ? [existingTransform, newTransform]
+                  : newTransform,
+                paddingTop: existingTransform
+                  ? [existingPaddingTop, existingPaddingTop]
+                  : existingPaddingTop,
+              },
+              {
+                type: "spring",
+                bounce: 0,
+                duration: kGlobalAnimationDuration,
+              }
+            )
+          );
+        }
       }
       element.active = offset === 0;
       if (offset === 0) {

@@ -385,12 +385,12 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 +                                           preferredEdge:preferredEdge
 +                                            hiddenAnchor:shouldHideAnchor];
 +        SyncPopoverBounds([(PopupWindow*)mWindow popover], popupFrame);
-+        if (mPopupLevel == PopupLevel::Parent) {
-+          [nativeParentWindow addChildWindow:mWindow ordered:NSWindowAbove];
-+        }
++
++
++
 +
 +        // Exit early here since the popover is now shown.
-+        mWindow.isBeingShown = NO;
++
 +        return;
 +      }
        // If our popup window is a non-native context menu, tell the OS (and

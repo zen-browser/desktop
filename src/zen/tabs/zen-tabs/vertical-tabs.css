@@ -335,7 +335,7 @@
     #tabbrowser-tabs:not([movingtab])
     &:active:not(:has(.tab-content > image:active)) {
       scale: var(--zen-active-tab-scale);
-      rotate: 0.02deg; /* Subtle rotation to trigger GPU acceleration and prevent blurriness */
+      rotate: 0.01deg; /* Subtle rotation to trigger GPU acceleration and prevent blurriness */
     }
 
     :root:not([zen-renaming-tab="true"])

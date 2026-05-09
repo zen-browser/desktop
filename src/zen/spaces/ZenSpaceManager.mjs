@@ -816,14 +816,12 @@ class nsZenWorkspaces {
 
     let removedEmptyTab = false;
     let initialTabWasEmpty = false;
-    if (
-      this._initialTab &&
-      !(this._initialTab._shouldRemove && this._initialTab._veryPossiblyEmpty)
-    ) {
-      initialTabWasEmpty = !!this._initialTab._veryPossiblyEmpty;
-      gBrowser.selectedTab = this._initialTab;
-      this.moveTabToWorkspace(this._initialTab, this.activeWorkspace);
-      gBrowser.moveTabTo(this._initialTab, {
+    if (this._shouldOverrideTabs) {
+      let initialTab = this._initialTab || gBrowser.selectedTab;
+      initialTabWasEmpty = !!initialTab._veryPossiblyEmpty;
+      gBrowser.selectedTab = initialTab;
+      this.moveTabToWorkspace(initialTab, this.activeWorkspace);
+      gBrowser.moveTabTo(initialTab, {
         forceUngrouped: true,
         tabIndex: 0,
       });

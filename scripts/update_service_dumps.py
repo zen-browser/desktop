@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
+import sys
 import json
 from json_with_comments import JSONWithCommentsDecoder
 
@@ -60,4 +61,6 @@ def main():
 
 
 if __name__ == "__main__":
+  if len(sys.argv) == 3:
+    _, DUMPS_FOLDER, ENGINE_DUMPS_FOLDER = sys.argv
   main()

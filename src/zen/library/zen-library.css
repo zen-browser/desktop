@@ -114,7 +114,6 @@
   gap: 4px;
   margin: 8px 6px;
   padding: 0;
-  box-sizing: border-box;
 
   @media (-moz-platform: macos) {
     font-size: 1rem; /* Slightly larger font on macOS */
@@ -131,7 +130,6 @@
   margin-inline: 2px;
   background: transparent;
   border-radius: var(--border-radius-medium);
-  box-sizing: border-box;
 }
 
 .search-urlbar-background {
@@ -155,7 +153,6 @@
   gap: 0;
   padding-inline: var(--urlbar-icon-padding, 9px);
   padding-block: var(--urlbar-padding-block, 4px);
-  box-sizing: border-box;
   overflow: hidden;
 
   & .search-icon {
@@ -243,7 +240,12 @@
   fill-opacity: 0.5;
   -moz-context-properties: fill, fill-opacity;
 
-  &:hover {
+  & label {
+    opacity: .8;
+  }
+
+  &:hover,
+  &[open] {
     background: var(--zen-toolbar-element-bg-hover);
   }
 
@@ -264,6 +266,7 @@
   overflow-y: auto;
   scrollbar-width: auto;
   scrollbar-color: color-mix(in srgb, currentColor 35%, transparent 65%) transparent;
+  -moz-window-dragging: drag;
 
   @media (-moz-platform: macos) {
     font-size: 1.25rem; /* Slightly larger font on macOS */
@@ -308,6 +311,7 @@
   border-radius: 0;
   color: inherit;
   color-scheme: unset;
+  cursor: pointer;
   overflow: clip;
 }
 
@@ -315,6 +319,7 @@
   display: grid;
   position: relative;
   width: 100%;
+  -moz-window-dragging: no-drag;
 }
 
 .library-item-background {
@@ -338,8 +343,9 @@
   position: relative;
   align-items: center;
   min-width: 0;
-  padding: 12px 10px;
+  padding: 0 10px;
   overflow: clip;
+  height: 56px;
 }
 
 .library-item-icon-stack {
@@ -389,23 +395,76 @@
   overflow: hidden;
 }
 
-/* unfinished */
-.library-item-time {
+.library-item-side {
+  display: flex;
+  flex-direction: column;
   flex-shrink: 0;
-  margin-inline-start: calc(var(--toolbarbutton-inner-padding) - 0.5em); /* idk why this calc makes sense to me
-  but it is inconsistant so please fix it if you have an idea */
-  padding-inline-end: calc(var(--toolbarbutton-inner-padding) / 3);
-  font-size: x-small;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  margin-inline-start: 8px;
+  padding-inline-end: 4px;
+  text-align: end;
   white-space: nowrap;
   opacity: 0.65;
-  display: none;
+  pointer-events: none;
+}
 
-  .library-item-content:hover & {
-    display: flex;
+.library-item-side-top {
+  font-size: 0.85em;
+}
+
+.library-item-side-bottom {
+  font-size: x-small;
+  opacity: 0.85;
+}
+
+.library-item-actions {
+  display: none;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+  margin-inline-start: 8px;
+}
+
+.library-item:hover .library-item-actions,
+.library-item:focus-within .library-item-actions {
+  display: flex;
+}
+
+.library-item-action-button {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-radius: calc(var(--border-radius-medium) - 6px);
+  color: inherit;
+  cursor: pointer;
+  fill: currentColor;
+  -moz-context-properties: fill, fill-opacity;
+
+  & img {
+    width: 18px;
+    height: 18px;
+    opacity: 0.75;
+    pointer-events: none;
+  }
+
+  &:hover {
+    background: color-mix(in srgb, currentColor 12%, transparent);
+  }
+
+  &:hover img {
+    opacity: 1;
   }
 }
 
-/* unfinished */
 .empty-state {
   display: flex;
   flex: 1;

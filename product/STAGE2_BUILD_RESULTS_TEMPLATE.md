@@ -31,6 +31,7 @@ npm run surfer -- build --skip-patch-check
 
 ## Result
 
+- GitHub Stage 2 smoke workflow passed: yes/no
 - Passed source smoke: yes/no
 - Passed npm install: yes/no
 - Passed download: yes/no

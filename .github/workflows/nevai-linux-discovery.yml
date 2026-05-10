@@ -126,6 +126,13 @@ jobs:
           set -euxo pipefail
           npm run surfer -- import
 
+      - name: Install cbindgen
+        run: |
+          set -euxo pipefail
+          cargo install --force cbindgen
+          which cbindgen
+          cbindgen --version
+
       - name: Inspect tree before Linux build
         if: always()
         run: |
@@ -134,6 +141,11 @@ jobs:
           echo
           echo "== Engine obj dirs before build =="
           find engine -maxdepth 2 -type d -name 'obj-*' -print || true
+          echo
+          echo "== Tool versions =="
+          rustc --version
+          cargo --version
+          cbindgen --version
           echo
           echo "== Disk before build =="
           df -h

@@ -2,7 +2,7 @@ diff --git a/toolkit/moz.configure b/toolkit/moz.configure
 index 99cdcfe73d38dd55efe2c1c41e35acbd60851383..804b7af94f2e834d7d5a8315c3fe7de805dfa6b0 100644
 --- a/toolkit/moz.configure
 +++ b/toolkit/moz.configure
-@@ -22,6 +22,7 @@ def check_moz_app_id(moz_app_id, build_project):
+@@ -22,7 +22,8 @@ def check_moz_app_id(moz_app_id, build_project):
  
  project_flag(
      env="MOZ_APP_VENDOR",
@@ -11,7 +11,7 @@ index 99cdcfe73d38dd55efe2c1c41e35acbd60851383..804b7af94f2e834d7d5a8315c3fe7de8
      help='Used for application.ini\'s "Vendor" field, which also impacts profile location and user-visible fields',
  )
  
-@@ -35,6 +36,7 @@ project_flag(
+@@ -35,5 +36,6 @@ project_flag(
  project_flag(
      "MOZ_APP_PROFILE",
 +    default="nevai",

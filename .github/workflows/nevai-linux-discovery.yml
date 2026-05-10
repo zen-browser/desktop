@@ -151,6 +151,51 @@ jobs:
           which cbindgen
           cbindgen --version
 
+      - name: Create Linux discovery mozconfig
+        run: |
+          set -euxo pipefail
+
+          MOZCONFIG_FILE="$PWD/engine/mozconfig-nevai-linux-discovery"
+
+          cat > "$MOZCONFIG_FILE" <<EOF
+          # Nevai Linux discovery mozconfig.
+          # This is CI discovery-only, not final release hardening.
+
+          ac_add_options --with-app-name=nevai
+          ac_add_options --with-app-basename=Nevai
+          ac_add_options --with-l10n-base=\${topsrcdir}/browser/locales
+          ac_add_options --with-distribution-id=app.nevai.browser
+          ac_add_options --enable-application=browser
+          ac_add_options --disable-updater
+          ac_add_options --enable-jxl
+          ac_add_options --with-unsigned-addon-scopes=app,system
+          ac_add_options --disable-debug
+          ac_add_options --with-branding=browser/branding/unofficial
+          ac_add_options --enable-update-channel=unofficial
+
+          # Discovery-only bypass for GitHub hosted Ubuntu missing WASI sysroot.
+          # The configure error itself recommends this flag.
+          ac_add_options --without-wasm-sandboxed-libraries
+
+          export MOZ_APP_BASENAME=Nevai
+          export MOZ_APP_VENDOR=Nevai
+          export MOZ_BRANDING_DIRECTORY=browser/branding/unofficial
+          export MOZ_OFFICIAL_BRANDING_DIRECTORY=browser/branding/unofficial
+          export MOZ_SOURCE_REPO=https://github.com/zen-browser/desktop
+          export MOZ_SOURCE_CHANGESET=${GITHUB_SHA}
+          export MOZ_INCLUDE_SOURCE_INFO=1
+          export MOZ_APPUPDATE_HOST=updates.invalid
+          export ZEN_FIREFOX_VERSION=150.0.2
+
+          export MOZ_DATA_REPORTING=
+          export MOZ_SERVICES_HEALTHREPORT=
+          export MOZ_TELEMETRY_REPORTING=
+          export MOZ_REQUIRE_SIGNING=
+          EOF
+
+          echo "== Linux discovery mozconfig =="
+          cat "$MOZCONFIG_FILE"
+
       - name: Inspect tree before Linux build
         if: ${{ always() }}
         run: |
@@ -178,23 +223,24 @@ jobs:
           echo "== Disk before build =="
           df -h
 
-      - name: Build Linux with full log capture
+      - name: Build Linux with direct mozconfig and full log capture
         run: |
           set -uxo pipefail
 
           mkdir -p "$NEVAI_LINUX_LOG_DIR"
           rm -f "$NEVAI_LINUX_BUILD_LOG"
 
-          echo "== Starting Linux discovery build =="
+          MOZCONFIG_FILE="$PWD/engine/mozconfig-nevai-linux-discovery"
+
+          echo "== Starting direct Linux discovery build =="
+          echo "Using MOZCONFIG:"
+          echo "$MOZCONFIG_FILE"
+          echo
           echo "Full build log will be written to:"
           echo "$NEVAI_LINUX_BUILD_LOG"
 
-          echo
-          echo "== Discovery-only build note =="
-          echo "Passing --without-wasm-sandboxed-libraries to bypass missing WASI sysroot on GitHub hosted Ubuntu."
-          echo "This is acceptable for Linux build discovery, not final release hardening."
-
-          npm run surfer -- build --skip-patch-check -- --without-wasm-sandboxed-libraries 2>&1 | tee "$NEVAI_LINUX_BUILD_LOG"
+          cd engine
+          MOZCONFIG="$MOZCONFIG_FILE" ./mach build 2>&1 | tee "$NEVAI_LINUX_BUILD_LOG"
           status=${PIPESTATUS[0]}
 
           echo
@@ -272,7 +318,7 @@ jobs:
 
           echo
           echo "== Collected log files =="
-          find "$NEVAI_LINUX_LOG_DIR" -type f -maxdepth 10 -print | sort || true
+          find "$NEVAI_LINUX_LOG_DIR" -maxdepth 10 -type f -print | sort || true
 
       - name: Upload Linux discovery logs
         if: ${{ always() }}

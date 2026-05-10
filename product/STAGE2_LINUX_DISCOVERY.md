@@ -31,6 +31,22 @@ npm run surfer -- build --skip-patch-check
 
 If `npm run import` fails because the engine checkout already contains a conscious local diff, stop and paste the output before using `--skip-patch-check` in a new place.
 
+The GitHub Actions discovery workflow currently runs the build through a generated Linux mozconfig and a direct `./mach build` after surfer import. It intentionally has no internal build timeout and no quiet-output stall killer, because Firefox/Rust link phases can be quiet for a long time. The only outer cap is the GitHub Actions job timeout.
+
+If CI produces a successful `dist/bin`, it immediately runs:
+
+```bash
+./scripts/package-nevai-linux-alpha.sh
+```
+
+That package script runs Linux QA first, then creates:
+
+```text
+Nevai-linux-alpha-dev.tar.gz
+Nevai-linux-alpha-dev.SHA256.txt
+README-alpha.txt
+```
+
 ## What To Capture
 
 Paste back:
@@ -60,6 +76,12 @@ One of these is enough:
 
 - Linux build succeeds.
 - Linux build fails and the first real blocker is documented clearly enough to fix.
+
+Linux artifact success requires more than a completed compile:
+
+- Linux QA passes.
+- `Nevai-linux-alpha-dev.tar.gz` is uploaded by CI.
+- SHA-256 and README-alpha are uploaded with the artifact.
 
 ## Do Not Do Yet
 

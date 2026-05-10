@@ -293,6 +293,36 @@ jobs:
           echo "$status" > "$NEVAI_LINUX_BUILD_STATUS_FILE"
           echo "Recorded build status in $NEVAI_LINUX_BUILD_STATUS_FILE"
 
+      - name: Package Linux alpha if build succeeded
+        run: |
+          set -euxo pipefail
+
+          if [ ! -f "$NEVAI_LINUX_BUILD_STATUS_FILE" ]; then
+            echo "Build status file missing; skipping Linux package step."
+            exit 0
+          fi
+
+          status="$(cat "$NEVAI_LINUX_BUILD_STATUS_FILE")"
+          if [ "$status" != "0" ]; then
+            echo "Linux build status is $status; skipping Linux package step."
+            exit 0
+          fi
+
+          ./scripts/package-nevai-linux-alpha.sh
+
+      - name: Upload Linux alpha artifact
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: nevai-linux-alpha-dev
+          path: |
+            ../builds-local/linux/Nevai-linux-alpha-dev.tar.gz
+            ../builds-local/linux/Nevai-linux-alpha-dev.SHA256.txt
+            ../builds-local/linux/README-alpha.txt
+          if-no-files-found: warn
+          retention-days: 7
+          compression-level: 0
+
       - name: Collect Linux discovery logs
         if: ${{ always() }}
         run: |

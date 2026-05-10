@@ -27,18 +27,22 @@ Completed:
 - Stage 2 smoke passes on the Linux discovery branch.
 - Linux setup, dependency install, source download, bootstrap, prefs, service dumps, and surfer import have passed in CI.
 - Linux build starts and compiles real Firefox/Zen components.
-- Latest blocker is Linux build completion on GitHub-hosted runner, with prior runs ending from termination or stall behavior during the build.
+- Prior Linux discovery failures were workflow-imposed stops, not confirmed source failures:
+  - A 45 minute build timeout stopped the first long run.
+  - A 15 minute quiet/stall guard stopped the next run during a quiet Rust/link-heavy phase.
+- The current Linux discovery workflow has no internal build timeout and no stall-kill guard. GitHub Actions `timeout-minutes: 360` remains the outer job limit.
 
 ## Current Workflow Strategy
 
-- Keep Linux discovery bounded with a timeout and stall guard.
-- Upload logs and partial output inspection before failing the job.
-- Do not claim Linux artifact completion until `dist/bin` output is produced and QA passes.
+- Let the Linux build run until it succeeds, fails with a real build error, or hits the GitHub job limit.
+- Keep heartbeat output and log upload so failures are diagnosable.
+- If the Linux build succeeds, run Linux QA and package `Nevai-linux-alpha-dev.tar.gz` automatically.
+- Do not claim Linux artifact completion until the artifact is uploaded and QA passes.
 
 ## Next Decision
 
 After the next Linux discovery run:
 
 - If build fails with a source error, fix that specific error.
-- If build times out or stalls again, tune runner resources or build parallelism.
-- If build succeeds and `dist/bin` exists, run Linux QA and then package `Nevai-linux-alpha-dev.tar.gz`.
+- If build hits the 6 hour GitHub job limit, decide between caching, lower-cost build options, a larger runner, or a self-hosted runner.
+- If build succeeds and `dist/bin` exists, use the uploaded Linux artifact and record the QA result.

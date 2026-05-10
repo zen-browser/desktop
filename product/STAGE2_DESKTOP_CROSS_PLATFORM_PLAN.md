@@ -160,6 +160,11 @@ Success:
 - Linux build succeeds, or
 - Linux build fails with a documented first blocker and next fix.
 
+Current CI rule:
+
+- Do not kill quiet Linux build phases from workflow logic. Let the build finish, fail naturally, or hit the GitHub job limit.
+- If the build succeeds, run Linux QA and package/upload the portable artifact in the same workflow run.
+
 ## Phase 2.3 - Linux Portable Artifact
 
 Goal:

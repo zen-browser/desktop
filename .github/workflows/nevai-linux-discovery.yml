@@ -2,6 +2,8 @@ name: Nevai Linux Discovery
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  NEVAI_LINUX_BUILD_LOG: /tmp/nevai-linux-build.log
+  NEVAI_LINUX_LOG_DIR: /tmp/nevai-linux-discovery-logs
 
 on:
   workflow_dispatch:
@@ -25,17 +27,23 @@ jobs:
 
       - name: Show runner resources
         run: |
+          set -euxo pipefail
+
           echo "== System =="
           uname -a
+
           echo
           echo "== Disk =="
           df -h
+
           echo
           echo "== Memory =="
           free -h
+
           echo
           echo "== CPU =="
           nproc
+
           echo
           echo "== Workspace =="
           pwd
@@ -43,6 +51,8 @@ jobs:
 
       - name: Install basic system packages
         run: |
+          set -euxo pipefail
+
           sudo apt-get update
           sudo apt-get install -y \
             build-essential \
@@ -104,19 +114,25 @@ jobs:
           python3 scripts/update_service_dumps.py
 
       - name: Inspect tree before surfer import
-        if: always()
+        if: ${{ always() }}
         run: |
+          set -euxo pipefail
+
           echo "== Root files =="
           ls -la
+
           echo
           echo "== Engine top-level =="
           ls -la engine || true
+
           echo
           echo "== Source patch dirs =="
           find src -maxdepth 3 -type f | head -n 120 || true
+
           echo
           echo "== Generated service dump candidates =="
           find engine -maxdepth 5 -type f \( -name '*dump*' -o -name '*services*' \) | head -n 120 || true
+
           echo
           echo "== Disk =="
           df -h
@@ -129,46 +145,164 @@ jobs:
       - name: Install cbindgen
         run: |
           set -euxo pipefail
+
           cargo install --force cbindgen
+
           which cbindgen
           cbindgen --version
 
       - name: Inspect tree before Linux build
-        if: always()
+        if: ${{ always() }}
         run: |
+          set -euxo pipefail
+
           echo "== Root files =="
           ls -la
+
           echo
           echo "== Engine obj dirs before build =="
           find engine -maxdepth 2 -type d -name 'obj-*' -print || true
+
           echo
           echo "== Tool versions =="
           rustc --version
           cargo --version
           cbindgen --version
+          clang --version || true
+          clang++ --version || true
+          python3 --version
+          node --version
+          npm --version
+
           echo
           echo "== Disk before build =="
           df -h
 
-      - name: Build Linux
+      - name: Build Linux with full log capture
+        run: |
+          set -uxo pipefail
+
+          mkdir -p "$NEVAI_LINUX_LOG_DIR"
+          rm -f "$NEVAI_LINUX_BUILD_LOG"
+
+          echo "== Starting Linux build =="
+          echo "Full build log will be written to:"
+          echo "$NEVAI_LINUX_BUILD_LOG"
+
+          npm run surfer -- build --skip-patch-check 2>&1 | tee "$NEVAI_LINUX_BUILD_LOG"
+          status=${PIPESTATUS[0]}
+
+          echo
+          echo "== Build exit code: $status =="
+          exit "$status"
+
+      - name: Print final build log tail
+        if: ${{ always() }}
         run: |
           set -euxo pipefail
-          npm run surfer -- build --skip-patch-check
+
+          echo "== Build log path =="
+          echo "$NEVAI_LINUX_BUILD_LOG"
+
+          if [ -f "$NEVAI_LINUX_BUILD_LOG" ]; then
+            echo
+            echo "== Last 250 lines of build log =="
+            tail -n 250 "$NEVAI_LINUX_BUILD_LOG"
+          else
+            echo "No build log found at $NEVAI_LINUX_BUILD_LOG"
+          fi
+
+      - name: Collect Linux discovery logs
+        if: ${{ always() }}
+        run: |
+          set -euxo pipefail
+
+          mkdir -p "$NEVAI_LINUX_LOG_DIR"
+
+          if [ -f "$NEVAI_LINUX_BUILD_LOG" ]; then
+            cp "$NEVAI_LINUX_BUILD_LOG" "$NEVAI_LINUX_LOG_DIR/nevai-linux-build.log"
+          fi
+
+          echo "== Collecting mozbuild logs =="
+          find "$HOME/.mozbuild" -type f \( \
+            -name '*.log' -o \
+            -name '*.txt' -o \
+            -name '*.json' \
+          \) -print -exec cp --parents {} "$NEVAI_LINUX_LOG_DIR" \; 2>/dev/null || true
+
+          echo "== Collecting engine obj logs =="
+          find engine -type f \( \
+            -name 'config.log' -o \
+            -name 'configure.log' -o \
+            -name '*.log' -o \
+            -name 'warnings_*.json' \
+          \) -print -exec cp --parents {} "$NEVAI_LINUX_LOG_DIR" \; 2>/dev/null || true
+
+          echo "== Build output candidates =="
+          {
+            echo "== Engine obj dirs =="
+            find engine -maxdepth 2 -type d -name 'obj-*' -print || true
+
+            echo
+            echo "== Possible dist/bin =="
+            find engine -path '*/dist/bin' -type d -print || true
+
+            echo
+            echo "== Possible app files =="
+            find engine \
+              -path '*/dist/bin/application.ini' -o \
+              -path '*/dist/bin/nevai' -o \
+              -path '*/dist/bin/firefox' -o \
+              -path '*/dist/bin/zen' \
+              2>/dev/null || true
+
+            echo
+            echo "== Disk =="
+            df -h
+
+            echo
+            echo "== Largest directories =="
+            du -h -d 2 . 2>/dev/null | sort -hr | head -n 80 || true
+          } | tee "$NEVAI_LINUX_LOG_DIR/build-output-candidates.txt"
+
+          echo
+          echo "== Collected log files =="
+          find "$NEVAI_LINUX_LOG_DIR" -type f -maxdepth 10 -print | sort || true
+
+      - name: Upload Linux discovery logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: nevai-linux-discovery-logs
+          path: /tmp/nevai-linux-discovery-logs
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Inspect build outputs
-        if: always()
+        if: ${{ always() }}
         run: |
+          set -euxo pipefail
+
           echo "== Top-level =="
           ls -la
+
           echo
           echo "== Engine obj dirs =="
           find engine -maxdepth 2 -type d -name 'obj-*' -print || true
+
           echo
           echo "== Possible dist/bin =="
           find engine -path '*/dist/bin' -type d -print || true
+
           echo
           echo "== Possible application files =="
-          find engine -path '*/dist/bin/application.ini' -o -path '*/dist/bin/nevai' -o -path '*/dist/bin/firefox' -o -path '*/dist/bin/zen' 2>/dev/null || true
+          find engine \
+            -path '*/dist/bin/application.ini' -o \
+            -path '*/dist/bin/nevai' -o \
+            -path '*/dist/bin/firefox' -o \
+            -path '*/dist/bin/zen' \
+            2>/dev/null || true
+
           echo
           echo "== Disk after build =="
           df -h

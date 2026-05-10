@@ -4,6 +4,8 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   NEVAI_LINUX_BUILD_LOG: /tmp/nevai-linux-build.log
   NEVAI_LINUX_LOG_DIR: /tmp/nevai-linux-discovery-logs
+  NEVAI_LINUX_BUILD_TIMEOUT: 45m
+  NEVAI_LINUX_STALL_TIMEOUT_SECONDS: 900
 
 on:
   workflow_dispatch:
@@ -152,6 +154,9 @@ jobs:
           # Discovery-only bypass for GitHub hosted Ubuntu missing WASI sysroot.
           ac_add_options --without-wasm-sandboxed-libraries
 
+          # Keep GitHub-hosted runner resource use predictable during discovery.
+          mk_add_options MOZ_MAKE_FLAGS="-j2"
+
           export MOZ_APP_BASENAME=Nevai
           export MOZ_APP_VENDOR=Nevai
           export MOZ_BRANDING_DIRECTORY=browser/branding/unofficial
@@ -203,12 +208,18 @@ jobs:
 
           cd engine
 
-          MOZCONFIG="$MOZCONFIG_FILE" ./mach build > "$NEVAI_LINUX_BUILD_LOG" 2>&1 &
+          timeout "$NEVAI_LINUX_BUILD_TIMEOUT" env MOZCONFIG="$MOZCONFIG_FILE" ./mach build > "$NEVAI_LINUX_BUILD_LOG" 2>&1 &
           build_pid=$!
           started_at=$(date +%s)
           last_tail_at=$started_at
+          last_progress_at=$started_at
+          last_line_count=0
+          status=0
+          timed_out_or_stalled=0
 
           echo "Build PID: $build_pid"
+          echo "Build timeout: $NEVAI_LINUX_BUILD_TIMEOUT"
+          echo "Stall timeout seconds: $NEVAI_LINUX_STALL_TIMEOUT_SECONDS"
 
           while kill -0 "$build_pid" 2>/dev/null; do
             now=$(date +%s)
@@ -220,8 +231,29 @@ jobs:
 
             if [ -f "$NEVAI_LINUX_BUILD_LOG" ]; then
               echo "Build log size:"
-              wc -l "$NEVAI_LINUX_BUILD_LOG" || true
+              line_count=$(wc -l < "$NEVAI_LINUX_BUILD_LOG" || echo 0)
+              echo "$line_count $NEVAI_LINUX_BUILD_LOG"
               du -h "$NEVAI_LINUX_BUILD_LOG" || true
+
+              if [ "$line_count" -gt "$last_line_count" ]; then
+                last_line_count=$line_count
+                last_progress_at=$now
+              fi
+
+              idle_seconds=$((now - last_progress_at))
+              echo "Seconds since build log progress: $idle_seconds"
+
+              if [ "$idle_seconds" -ge "$NEVAI_LINUX_STALL_TIMEOUT_SECONDS" ]; then
+                echo
+                echo "== Linux build appears stalled =="
+                echo "No build log growth for ${idle_seconds}s; terminating build process."
+                kill "$build_pid" 2>/dev/null || true
+                sleep 10
+                kill -9 "$build_pid" 2>/dev/null || true
+                status=124
+                timed_out_or_stalled=1
+                break
+              fi
 
               if [ $((now - last_tail_at)) -ge 300 ]; then
                 echo
@@ -236,11 +268,18 @@ jobs:
             sleep 60
           done
 
-          wait "$build_pid"
-          status=$?
+          if [ "$timed_out_or_stalled" -eq 0 ]; then
+            wait "$build_pid"
+            status=$?
+          else
+            wait "$build_pid" 2>/dev/null || true
+          fi
 
           echo
           echo "== Build exit code: $status =="
+          if [ "$status" -eq 124 ]; then
+            echo "Build hit timeout or stall guard."
+          fi
 
           echo
           echo "== Last 120 lines =="

@@ -28,6 +28,10 @@ require_file product/STAGE2_DESKTOP_CROSS_PLATFORM_PLAN.md
 require_file product/STAGE2_LINUX_DISCOVERY.md
 require_file product/STAGE2_WINDOWS_DISCOVERY.md
 require_file product/STAGE2_BUILD_RESULTS_TEMPLATE.md
+require_file product/STAGE2_STATUS.md
+require_file .github/workflows/nevai-stage2-smoke.yml
+require_file .github/workflows/nevai-linux-discovery.yml
+require_file .github/workflows/nevai-windows-discovery.yml
 
 echo "== Required Stage 1 macOS alpha scripts =="
 require_executable scripts/apply-nevai-about-dialog-branding.sh
@@ -39,6 +43,8 @@ require_executable scripts/fix-nevai-macos-actor-symlinks.sh
 
 echo "== Required Stage 2 check script =="
 require_executable scripts/check-nevai-stage2-source.sh
+require_executable scripts/qa-nevai-linux-alpha.sh
+require_executable scripts/package-nevai-linux-alpha.sh
 
 echo "== Shell syntax =="
 for script in \
@@ -48,10 +54,31 @@ for script in \
   scripts/package-nevai-macos-alpha.sh \
   scripts/patch-nevai-disable-updater-preferences-ui.sh \
   scripts/fix-nevai-macos-actor-symlinks.sh \
-  scripts/check-nevai-stage2-source.sh
+  scripts/check-nevai-stage2-source.sh \
+  scripts/qa-nevai-linux-alpha.sh \
+  scripts/package-nevai-linux-alpha.sh
 do
   bash -n "$script"
   echo "OK syntax: $script"
+done
+
+echo "== Cross-platform branding assets =="
+for asset in \
+  product/brand/assets/source/nevai-logo.svg \
+  product/brand/assets/generated/logo.png \
+  product/brand/assets/generated/logo16.png \
+  product/brand/assets/generated/logo32.png \
+  product/brand/assets/generated/logo48.png \
+  product/brand/assets/generated/logo64.png \
+  product/brand/assets/generated/logo128.png \
+  product/brand/assets/generated/logo256.png \
+  product/brand/assets/generated/logo512.png \
+  product/brand/assets/generated/firefox.ico \
+  product/brand/assets/generated/VisualElements_70.png \
+  product/brand/assets/generated/VisualElements_150.png
+do
+  require_file "$asset"
+  echo "OK asset: $asset"
 done
 
 echo "== JSON validation =="

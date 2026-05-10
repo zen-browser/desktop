@@ -1,0 +1,69 @@
+name: Nevai Windows Discovery
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - nevai/stage2-windows-discovery
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nevai-windows-discovery-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows-source-discovery:
+    name: Windows source discovery
+    runs-on: windows-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Show runner resources
+        shell: pwsh
+        run: |
+          $PSVersionTable
+          systeminfo
+          Get-PSDrive -PSProvider FileSystem
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Source smoke check
+        shell: bash
+        run: ./scripts/check-nevai-stage2-source.sh
+
+      - name: Install npm dependencies without lifecycle scripts
+        shell: pwsh
+        run: npm ci --ignore-scripts --no-audit --fund=false
+
+      - name: Record Windows discovery summary
+        shell: pwsh
+        run: |
+          @"
+          # Nevai Windows Discovery Result
+
+          This workflow intentionally stops before a full Firefox/Zen build.
+
+          Completed:
+
+          - Checkout
+          - Node setup
+          - Stage 2 source smoke
+          - npm dependency lock install
+
+          Next Windows phase:
+
+          - Add MozillaBuild setup
+          - Attempt `npm run download`
+          - Attempt `npm run bootstrap`
+          - Attempt `npm run import`
+          - Only then attempt full Windows build discovery
+          "@ >> $env:GITHUB_STEP_SUMMARY

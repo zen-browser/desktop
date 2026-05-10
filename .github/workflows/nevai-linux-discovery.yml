@@ -4,6 +4,7 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   NEVAI_LINUX_BUILD_LOG: /tmp/nevai-linux-build.log
   NEVAI_LINUX_LOG_DIR: /tmp/nevai-linux-discovery-logs
+  NEVAI_LINUX_BUILD_STATUS_FILE: /tmp/nevai-linux-discovery-logs/build-status.txt
   NEVAI_LINUX_BUILD_TIMEOUT: 45m
   NEVAI_LINUX_STALL_TIMEOUT_SECONDS: 900
 
@@ -199,6 +200,7 @@ jobs:
 
           mkdir -p "$NEVAI_LINUX_LOG_DIR"
           rm -f "$NEVAI_LINUX_BUILD_LOG"
+          rm -f "$NEVAI_LINUX_BUILD_STATUS_FILE"
 
           MOZCONFIG_FILE="$PWD/engine/mozconfig-nevai-linux-discovery"
 
@@ -311,7 +313,8 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-          exit "$status"
+          echo "$status" > "$NEVAI_LINUX_BUILD_STATUS_FILE"
+          echo "Recorded build status in $NEVAI_LINUX_BUILD_STATUS_FILE"
 
       - name: Collect Linux discovery logs
         if: ${{ always() }}
@@ -394,3 +397,20 @@ jobs:
           echo
           echo "== Disk after build =="
           df -h
+
+      - name: Fail Linux discovery if build failed
+        if: ${{ always() }}
+        run: |
+          set -euxo pipefail
+
+          if [ ! -f "$NEVAI_LINUX_BUILD_STATUS_FILE" ]; then
+            echo "Missing build status file: $NEVAI_LINUX_BUILD_STATUS_FILE"
+            exit 1
+          fi
+
+          status="$(cat "$NEVAI_LINUX_BUILD_STATUS_FILE")"
+          echo "Linux discovery build status: $status"
+
+          if [ "$status" != "0" ]; then
+            exit "$status"
+          fi

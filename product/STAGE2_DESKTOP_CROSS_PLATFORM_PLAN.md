@@ -312,3 +312,11 @@ Repo-side Phase 2.1 files:
 - `product/STAGE2_LINUX_DISCOVERY.md`
 - `product/STAGE2_WINDOWS_DISCOVERY.md`
 - `product/STAGE2_BUILD_RESULTS_TEMPLATE.md`
+
+Linux and Windows discovery prep files:
+
+- `.github/workflows/nevai-linux-discovery.yml`
+- `.github/workflows/nevai-windows-discovery.yml`
+- `scripts/qa-nevai-linux-alpha.sh`
+- `scripts/package-nevai-linux-alpha.sh`
+- `product/STAGE2_STATUS.md`

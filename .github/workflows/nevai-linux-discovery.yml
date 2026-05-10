@@ -113,30 +113,6 @@ jobs:
           set -euxo pipefail
           python3 scripts/update_service_dumps.py
 
-      - name: Inspect tree before surfer import
-        if: ${{ always() }}
-        run: |
-          set -euxo pipefail
-
-          echo "== Root files =="
-          ls -la
-
-          echo
-          echo "== Engine top-level =="
-          ls -la engine || true
-
-          echo
-          echo "== Source patch dirs =="
-          find src -maxdepth 3 -type f | head -n 120 || true
-
-          echo
-          echo "== Generated service dump candidates =="
-          find engine -maxdepth 5 -type f \( -name '*dump*' -o -name '*services*' \) | head -n 120 || true
-
-          echo
-          echo "== Disk =="
-          df -h
-
       - name: Surfer import
         run: |
           set -euxo pipefail
@@ -174,7 +150,6 @@ jobs:
           ac_add_options --enable-update-channel=unofficial
 
           # Discovery-only bypass for GitHub hosted Ubuntu missing WASI sysroot.
-          # The configure error itself recommends this flag.
           ac_add_options --without-wasm-sandboxed-libraries
 
           export MOZ_APP_BASENAME=Nevai
@@ -191,15 +166,10 @@ jobs:
           echo "== Linux discovery mozconfig =="
           cat "$MOZCONFIG_FILE"
 
-      - name: Inspect tree before Linux build
-        if: ${{ always() }}
+      - name: Inspect before Linux build
         run: |
           set -euxo pipefail
 
-          echo "== Root files =="
-          ls -la
-
-          echo
           echo "== Engine obj dirs before build =="
           find engine -maxdepth 2 -type d -name 'obj-*' -print || true
 
@@ -218,7 +188,7 @@ jobs:
           echo "== Disk before build =="
           df -h
 
-      - name: Build Linux with direct mozconfig and full log capture
+      - name: Build Linux with summarized failure output
         run: |
           set -uxo pipefail
 
@@ -228,35 +198,50 @@ jobs:
           MOZCONFIG_FILE="$PWD/engine/mozconfig-nevai-linux-discovery"
 
           echo "== Starting direct Linux discovery build =="
-          echo "Using MOZCONFIG:"
-          echo "$MOZCONFIG_FILE"
-          echo
-          echo "Full build log will be written to:"
-          echo "$NEVAI_LINUX_BUILD_LOG"
+          echo "Using MOZCONFIG: $MOZCONFIG_FILE"
+          echo "Full build log: $NEVAI_LINUX_BUILD_LOG"
 
           cd engine
-          MOZCONFIG="$MOZCONFIG_FILE" ./mach build 2>&1 | tee "$NEVAI_LINUX_BUILD_LOG"
-          status=${PIPESTATUS[0]}
+
+          set +e
+          MOZCONFIG="$MOZCONFIG_FILE" ./mach build > "$NEVAI_LINUX_BUILD_LOG" 2>&1
+          status=$?
+          set -e
 
           echo
           echo "== Build exit code: $status =="
-          exit "$status"
 
-      - name: Print final build log tail
-        if: ${{ always() }}
-        run: |
-          set -euxo pipefail
+          echo
+          echo "== Last 120 lines =="
+          tail -n 120 "$NEVAI_LINUX_BUILD_LOG" || true
 
-          echo "== Build log path =="
-          echo "$NEVAI_LINUX_BUILD_LOG"
+          echo
+          echo "== Strong error candidates =="
+          rg -n -C 4 "fatal error:|undefined reference|ld\\.lld: error|collect2: error|gmake(\\[[0-9]+\\])?: \\*\\*\\*|make(\\[[0-9]+\\])?: \\*\\*\\*|FAILED:|error: could not compile|error\\[E[0-9]+\\]|internal compiler error|Killed|signal: 9|No space left on device|recipe for target" "$NEVAI_LINUX_BUILD_LOG" \
+            | tail -n 220 || true
 
-          if [ -f "$NEVAI_LINUX_BUILD_LOG" ]; then
+          cd "$GITHUB_WORKSPACE"
+
+          {
+            echo "# Nevai Linux Discovery Result"
             echo
-            echo "== Last 250 lines of build log =="
-            tail -n 250 "$NEVAI_LINUX_BUILD_LOG"
-          else
-            echo "No build log found at $NEVAI_LINUX_BUILD_LOG"
-          fi
+            echo "**Build exit code:** \`$status\`"
+            echo
+            echo "## Last 120 lines"
+            echo
+            echo '```text'
+            tail -n 120 "$NEVAI_LINUX_BUILD_LOG" || true
+            echo '```'
+            echo
+            echo "## Strong error candidates"
+            echo
+            echo '```text'
+            rg -n -C 4 "fatal error:|undefined reference|ld\\.lld: error|collect2: error|gmake(\\[[0-9]+\\])?: \\*\\*\\*|make(\\[[0-9]+\\])?: \\*\\*\\*|FAILED:|error: could not compile|error\\[E[0-9]+\\]|internal compiler error|Killed|signal: 9|No space left on device|recipe for target" "$NEVAI_LINUX_BUILD_LOG" \
+              | tail -n 220 || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          exit "$status"
 
       - name: Collect Linux discovery logs
         if: ${{ always() }}
@@ -267,22 +252,12 @@ jobs:
 
           if [ -f "$NEVAI_LINUX_BUILD_LOG" ]; then
             cp "$NEVAI_LINUX_BUILD_LOG" "$NEVAI_LINUX_LOG_DIR/nevai-linux-build.log"
+
+            rg -n -C 8 "fatal error:|undefined reference|ld\\.lld: error|collect2: error|gmake(\\[[0-9]+\\])?: \\*\\*\\*|make(\\[[0-9]+\\])?: \\*\\*\\*|FAILED:|error: could not compile|error\\[E[0-9]+\\]|internal compiler error|Killed|signal: 9|No space left on device|recipe for target" "$NEVAI_LINUX_BUILD_LOG" \
+              > "$NEVAI_LINUX_LOG_DIR/error-candidates.txt" || true
+
+            tail -n 500 "$NEVAI_LINUX_BUILD_LOG" > "$NEVAI_LINUX_LOG_DIR/build-log-tail.txt" || true
           fi
-
-          echo "== Collecting mozbuild logs =="
-          find "$HOME/.mozbuild" -type f \( \
-            -name '*.log' -o \
-            -name '*.txt' -o \
-            -name '*.json' \
-          \) -print -exec cp --parents {} "$NEVAI_LINUX_LOG_DIR" \; 2>/dev/null || true
-
-          echo "== Collecting engine obj logs =="
-          find engine -type f \( \
-            -name 'config.log' -o \
-            -name 'configure.log' -o \
-            -name '*.log' -o \
-            -name 'warnings_*.json' \
-          \) -print -exec cp --parents {} "$NEVAI_LINUX_LOG_DIR" \; 2>/dev/null || true
 
           echo "== Build output candidates =="
           {
@@ -323,16 +298,13 @@ jobs:
           path: /tmp/nevai-linux-discovery-logs
           if-no-files-found: warn
           retention-days: 7
+          compression-level: 0
 
       - name: Inspect build outputs
         if: ${{ always() }}
         run: |
           set -euxo pipefail
 
-          echo "== Top-level =="
-          ls -la
-
-          echo
           echo "== Engine obj dirs =="
           find engine -maxdepth 2 -type d -name 'obj-*' -print || true
 

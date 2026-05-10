@@ -188,7 +188,7 @@ jobs:
           echo "== Disk before build =="
           df -h
 
-      - name: Build Linux with summarized failure output
+      - name: Build Linux with heartbeat and summarized failure output
         run: |
           set -uxo pipefail
 
@@ -203,10 +203,41 @@ jobs:
 
           cd engine
 
-          set +e
-          MOZCONFIG="$MOZCONFIG_FILE" ./mach build > "$NEVAI_LINUX_BUILD_LOG" 2>&1
+          MOZCONFIG="$MOZCONFIG_FILE" ./mach build > "$NEVAI_LINUX_BUILD_LOG" 2>&1 &
+          build_pid=$!
+          started_at=$(date +%s)
+          last_tail_at=$started_at
+
+          echo "Build PID: $build_pid"
+
+          while kill -0 "$build_pid" 2>/dev/null; do
+            now=$(date +%s)
+            elapsed=$((now - started_at))
+
+            echo
+            echo "== Linux build heartbeat: ${elapsed}s elapsed =="
+            df -h "$GITHUB_WORKSPACE" || true
+
+            if [ -f "$NEVAI_LINUX_BUILD_LOG" ]; then
+              echo "Build log size:"
+              wc -l "$NEVAI_LINUX_BUILD_LOG" || true
+              du -h "$NEVAI_LINUX_BUILD_LOG" || true
+
+              if [ $((now - last_tail_at)) -ge 300 ]; then
+                echo
+                echo "== Recent build log tail =="
+                tail -n 80 "$NEVAI_LINUX_BUILD_LOG" || true
+                last_tail_at=$now
+              fi
+            else
+              echo "Build log has not been created yet."
+            fi
+
+            sleep 60
+          done
+
+          wait "$build_pid"
           status=$?
-          set -e
 
           echo
           echo "== Build exit code: $status =="

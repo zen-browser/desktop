@@ -1,0 +1,97 @@
+name: Nevai Linux Discovery
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - nevai/stage2-linux-discovery
+
+jobs:
+  linux-discovery:
+    name: Linux build discovery
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Show runner resources
+        run: |
+          echo "== System =="
+          uname -a
+          echo
+          echo "== Disk =="
+          df -h
+          echo
+          echo "== Memory =="
+          free -h
+          echo
+          echo "== CPU =="
+          nproc
+
+      - name: Install basic system packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            curl \
+            git \
+            python3 \
+            python3-pip \
+            python3-venv \
+            unzip \
+            zip \
+            tar \
+            xz-utils \
+            ripgrep \
+            ccache \
+            libgtk-3-dev \
+            libdbus-glib-1-dev \
+            libxt-dev \
+            libx11-xcb-dev \
+            libasound2-dev \
+            libpulse-dev \
+            yasm \
+            nasm \
+            xvfb
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Source smoke check
+        run: |
+          ./scripts/check-nevai-stage2-source.sh
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Download Firefox source
+        run: npm run download
+
+      - name: Bootstrap
+        run: npm run bootstrap
+
+      - name: Import patches/resources
+        run: npm run import
+
+      - name: Build Linux
+        run: npm run surfer -- build --skip-patch-check
+
+      - name: Inspect build outputs
+        if: always()
+        run: |
+          echo "== Top-level =="
+          ls -la
+          echo
+          echo "== Engine obj dirs =="
+          find engine -maxdepth 2 -type d -name 'obj-*' -print || true
+          echo
+          echo "== Possible dist/bin =="
+          find engine -path '*/dist/bin' -type d -print || true
+          echo
+          echo "== Disk after build =="
+          df -h

@@ -1,10 +1,17 @@
 name: Nevai Linux Discovery
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   workflow_dispatch:
   push:
     branches:
       - nevai/stage2-linux-discovery
+
+concurrency:
+  group: nevai-linux-discovery-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   linux-discovery:
@@ -29,6 +36,10 @@ jobs:
           echo
           echo "== CPU =="
           nproc
+          echo
+          echo "== Workspace =="
+          pwd
+          ls -la
 
       - name: Install basic system packages
         run: |
@@ -57,29 +68,80 @@ jobs:
             xvfb
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
 
       - name: Source smoke check
         run: |
+          set -euxo pipefail
           ./scripts/check-nevai-stage2-source.sh
 
       - name: Install npm dependencies
-        run: npm ci
+        run: |
+          set -euxo pipefail
+          npm ci
 
       - name: Download Firefox source
-        run: npm run download
+        run: |
+          set -euxo pipefail
+          npm run download
 
       - name: Bootstrap
-        run: npm run bootstrap
+        run: |
+          set -euxo pipefail
+          npm run bootstrap
 
-      - name: Import patches/resources
-        run: npm run import
+      - name: Generate Firefox prefs
+        run: |
+          set -euxo pipefail
+          npm run ffprefs
+
+      - name: Update service dumps
+        run: |
+          set -euxo pipefail
+          python3 scripts/update_service_dumps.py
+
+      - name: Inspect tree before surfer import
+        if: always()
+        run: |
+          echo "== Root files =="
+          ls -la
+          echo
+          echo "== Engine top-level =="
+          ls -la engine || true
+          echo
+          echo "== Source patch dirs =="
+          find src -maxdepth 3 -type f | head -n 120 || true
+          echo
+          echo "== Generated service dump candidates =="
+          find engine -maxdepth 5 -type f \( -name '*dump*' -o -name '*services*' \) | head -n 120 || true
+          echo
+          echo "== Disk =="
+          df -h
+
+      - name: Surfer import
+        run: |
+          set -euxo pipefail
+          npm run surfer -- import
+
+      - name: Inspect tree before Linux build
+        if: always()
+        run: |
+          echo "== Root files =="
+          ls -la
+          echo
+          echo "== Engine obj dirs before build =="
+          find engine -maxdepth 2 -type d -name 'obj-*' -print || true
+          echo
+          echo "== Disk before build =="
+          df -h
 
       - name: Build Linux
-        run: npm run surfer -- build --skip-patch-check
+        run: |
+          set -euxo pipefail
+          npm run surfer -- build --skip-patch-check
 
       - name: Inspect build outputs
         if: always()
@@ -92,6 +154,9 @@ jobs:
           echo
           echo "== Possible dist/bin =="
           find engine -path '*/dist/bin' -type d -print || true
+          echo
+          echo "== Possible application files =="
+          find engine -path '*/dist/bin/application.ini' -o -path '*/dist/bin/nevai' -o -path '*/dist/bin/firefox' -o -path '*/dist/bin/zen' 2>/dev/null || true
           echo
           echo "== Disk after build =="
           df -h

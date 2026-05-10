@@ -7,8 +7,8 @@ unified-extensions-description = Các tiện ích mở rộng được sử dụ
 tab-context-zen-reset-pinned-tab = 
     .label =
         { $isEssential ->
-          [true] Đặt lại thẻ chính
-         *[false] Đặt lại thẻ đã ghim
+            [true] Đặt lại thẻ chính
+           *[false] Đặt lại thẻ đã ghim
         }
     .accesskey = R
 tab-context-zen-add-essential = 
@@ -48,6 +48,7 @@ zen-pinned-tab-replaced = URL của thẻ đã ghim đã được thay thế b�
 zen-tabs-renamed = Thẻ đã được đổi tên!
 zen-background-tab-opened-toast = Một thẻ mới đã được mở dưới nền!
 zen-workspace-renamed-toast = Không gian làm việc đã được đổi tên!
+zen-split-view-limit-toast = Can't add more panels to the split view!
 zen-toggle-compact-mode-button = 
     .label = Chế độ thu gọn
     .tooltiptext = Bật Chế độ thu gọn

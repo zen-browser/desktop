@@ -18,7 +18,7 @@
   value: true
 
 - name: zen.theme.acrylic-elements
-  value: false
+  value: "@IS_TWILIGHT@"
 
 - name: zen.theme.disable-lightweight
   value: true

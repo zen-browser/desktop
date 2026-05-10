@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-workspaces-text = Gofodau Gwaith
+zen-panel-ui-workspaces-text = Gofodau
 zen-panel-ui-spaces-label = 
     .label = Gofodau
 zen-panel-ui-workspaces-create = 
@@ -10,7 +10,7 @@ zen-panel-ui-workspaces-create =
 zen-panel-ui-folder-create = 
     .label = Creu Ffolder
 zen-panel-ui-live-folder-create = 
-    .label = Live Folder
+    .label = Ffolder Byw
 zen-panel-ui-new-empty-split = 
     .label = Hollt Newydd
 zen-workspaces-panel-context-delete = 
@@ -25,7 +25,7 @@ zen-workspaces-panel-context-default-profile =
 zen-workspaces-panel-unload = 
     .label = Dadlwytho Gofod
 zen-workspaces-panel-unload-others = 
-    .label = Unload All Other Spaces
+    .label = Dadlwytho Pob Gofod Arall
 zen-workspaces-how-to-reorder-title = Sut i aildrefnu gofodau
 zen-workspaces-how-to-reorder-desc = Llusgwch yr eiconau gofod ar waelod y bar ochr i'w haildrefnu
 zen-workspaces-change-theme = 

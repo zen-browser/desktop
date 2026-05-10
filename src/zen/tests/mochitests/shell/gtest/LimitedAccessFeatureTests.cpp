@@ -5,36 +5,65 @@
 
 #include "gtest/gtest.h"
 
-#include "Windows11LimitedAccessFeatures.h"
-#include "WinUtils.h"
+#include "nsComponentManagerUtils.h"
+#include "nsILimitedAccessFeature.h"
+#include "nsIWindowsRegKey.h"
+#include "nsServiceManagerUtils.h"
+#include "nsString.h"
 
-TEST(LimitedAccessFeature, VerifyGeneratedInfo)
+TEST(LimitedAccessFeature, UnlockAllRegistryFeatures)
 {
-  // If running on MSIX we have no guarantee that the
-  // generated LAF info will match the known values.
-  if (mozilla::widget::WinUtils::HasPackageIdentity()) {
-    return;
+  nsCOMPtr<nsIWindowsRegKey> rootKey =
+      do_CreateInstance("@mozilla.org/windows-registry-key;1");
+  ASSERT_TRUE(rootKey);
+
+  nsresult rv = rootKey->Open(
+      nsIWindowsRegKey::ROOT_KEY_LOCAL_MACHINE,
+      u"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AppModel\\LimitedAccessFeatures"_ns,
+      nsIWindowsRegKey::ACCESS_READ);
+  if (NS_FAILED(rv)) {
+    GTEST_SKIP();
   }
 
-  LimitedAccessFeatureInfo knownLafInfo = {
-      // Win11LimitedAccessFeatureType::Taskbar
-      "Win11LimitedAccessFeatureType::Taskbar"_ns,      // debugName
-      u"com.microsoft.windows.taskbar.pin"_ns,          // feature
-      u"kRFiWpEK5uS6PMJZKmR7MQ=="_ns,                   // token
-      u"pcsmm0jrprpb2 has registered their use of "_ns  // attestation
-      u"com.microsoft.windows.taskbar.pin with Microsoft and agrees to the "_ns
-      u"terms "_ns
-      u"of use."_ns};
+  uint32_t childCount = 0;
+  rv = rootKey->GetChildCount(&childCount);
+  ASSERT_TRUE(NS_SUCCEEDED(rv));
 
-  auto generatedLafInfoResult = GenerateLimitedAccessFeatureInfo(
-      "Win11LimitedAccessFeatureType::Taskbar"_ns,
-      u"com.microsoft.windows.taskbar.pin"_ns);
-  ASSERT_TRUE(generatedLafInfoResult.isOk());
-  LimitedAccessFeatureInfo generatedLafInfo = generatedLafInfoResult.unwrap();
+  nsCOMPtr<nsILimitedAccessFeatureService> lafService =
+      do_GetService("@mozilla.org/limited-access-feature-service;1");
+  ASSERT_TRUE(lafService);
 
-  // Check for equality between generated values and known good values
-  ASSERT_TRUE(knownLafInfo.debugName.Equals(generatedLafInfo.debugName));
-  ASSERT_TRUE(knownLafInfo.feature.Equals(generatedLafInfo.feature));
-  ASSERT_TRUE(knownLafInfo.token.Equals(generatedLafInfo.token));
-  ASSERT_TRUE(knownLafInfo.attestation.Equals(generatedLafInfo.attestation));
+  for (uint32_t i = 0; i < childCount; i++) {
+    nsAutoString featureName;
+    rv = rootKey->GetChildName(i, featureName);
+    ASSERT_TRUE(NS_SUCCEEDED(rv));
+
+    std::cout << "Testing Feature: " << featureName << "\n";
+
+    nsCOMPtr<nsIWindowsRegKey> featureKey;
+    rv = rootKey->OpenChild(featureName, nsIWindowsRegKey::ACCESS_QUERY_VALUE,
+                            getter_AddRefs(featureKey));
+    ASSERT_TRUE(NS_SUCCEEDED(rv));
+
+    nsAutoString featureKeyValue;
+    rv = featureKey->ReadStringValue(u""_ns, featureKeyValue);
+    if (NS_FAILED(rv) || featureKeyValue.IsEmpty()) {
+      // Key may exist with the feature key's data empty when unlocking the
+      // feature is no longer required to use the related API.
+      std::cout << "Feature key's data is empty, skipping...\n";
+      continue;
+    }
+
+    NS_ConvertUTF16toUTF8 featureId(featureName);
+
+    nsCOMPtr<nsILimitedAccessFeature> feature;
+    rv = lafService->GenerateLimitedAccessFeature(featureId,
+                                                  getter_AddRefs(feature));
+    ASSERT_TRUE(NS_SUCCEEDED(rv));
+
+    bool unlocked = false;
+    rv = feature->Unlock(&unlocked);
+    ASSERT_TRUE(NS_SUCCEEDED(rv));
+    EXPECT_TRUE(unlocked);
+  }
 }

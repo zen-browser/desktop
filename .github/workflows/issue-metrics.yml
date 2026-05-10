@@ -42,7 +42,7 @@ jobs:
           echo "last_month_year=$previous_year" >> "$GITHUB_ENV"
 
       - name: Run issue-metrics tool
-        uses: github/issue-metrics@v2
+        uses: github-community-projects/issue-metrics@v2
         env:
           GH_TOKEN: ${{ secrets.DEPLOY_KEY }}
           HIDE_AUTHOR: true

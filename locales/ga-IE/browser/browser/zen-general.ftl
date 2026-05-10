@@ -7,8 +7,8 @@ unified-extensions-description = Úsáidtear síntí chun níos mó feidhmiúlac
 tab-context-zen-reset-pinned-tab = 
     .label =
         { $isEssential ->
-        [true] Athshocraigh an Cluaisín Riachtanach
-        *[false] Athshocraigh an Cluaisín Priontáilte
+            [true] Athshocraigh an Cluaisín Riachtanach
+           *[false] Athshocraigh an Cluaisín Priontáilte
         }
     .accesskey = R
 tab-context-zen-add-essential = 
@@ -21,8 +21,8 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-        [true] Cuir an URL Riachtanach in ionad an URL Reatha
-        *[false] Cuir an URL Priontáilte in ionad an URL Reatha
+            [true] Cuir an URL Riachtanach in ionad an URL Reatha
+           *[false] Cuir an URL Priontáilte in ionad an URL Reatha
         }
     .accesskey = C
 tab-context-zen-edit-title = 
@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = Tá URL an chluaisín phinnáilte curtha in ionad an U
 zen-tabs-renamed = Athainmníodh an cluaisín go rathúil!
 zen-background-tab-opened-toast = Tá cluaisín cúlra nua oscailte!
 zen-workspace-renamed-toast = Athainmníodh an spás oibre go rathúil!
+zen-split-view-limit-toast = Ní féidir níos mó painéil a chur leis an radharc scoilte!
 zen-toggle-compact-mode-button = 
     .label = Mód Dlúth
     .tooltiptext = Mód Dlúth a Athrú

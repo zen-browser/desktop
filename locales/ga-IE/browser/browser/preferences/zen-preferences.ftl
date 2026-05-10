@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = Scoránaigh DOM
 zen-devtools-toggle-accessibility-shortcut = Scoránaigh Inrochtaineacht
 zen-close-all-unpinned-tabs-shortcut = Dún Gach Cluaisín Gan Phionáil
 zen-new-unsynced-window-shortcut = Fuinneog Nua Neamhshioncrónaithe
+zen-duplicate-tab-shortcut = Cluaisín Dúblach

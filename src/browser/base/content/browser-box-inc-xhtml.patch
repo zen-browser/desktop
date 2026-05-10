@@ -1,32 +1,40 @@
 diff --git a/browser/base/content/browser-box.inc.xhtml b/browser/base/content/browser-box.inc.xhtml
-index 2faed30e09511c381051bc40910a883d1d7bc10d..959fa83f647a8919641c5b852a4cb8814fca9ab5 100644
+index d58fcdf99843d110b708f3fbf9fb317787fadfcf..cfc2aad902641609c3804e615c4cb66ce65299b7 100644
 --- a/browser/base/content/browser-box.inc.xhtml
 +++ b/browser/base/content/browser-box.inc.xhtml
-@@ -3,6 +3,9 @@
+@@ -3,12 +3,22 @@
  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
  
  <hbox flex="1" id="browser">
++#include navigator-toolbox.inc.xhtml
 +  <html:div id="zen-browser-background" class="zen-browser-generic-background">
 +    <html:div class="zen-browser-grain" />
 +  </html:div>
    <box context="sidebar-context-menu" id="sidebar-main" hidden="true">
      <html:sidebar-main flex="1">
        <box id="vertical-tabs" slot="tabstrip" customizable="true" contextmenu="toolbar-context-menu"></box>
-@@ -25,7 +28,13 @@
-     </stack>
-   </vbox>
-   <splitter id="sidebar-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="sibling" resizeafter="none" hidden="true"/>
+     </html:sidebar-main>
+   </box>
+   <splitter id="sidebar-launcher-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="sibling" resizeafter="none" hidden="true"/>
 +<vbox flex="1" id="zen-appcontent-wrapper">
 +  <html:div id="zen-appcontent-navbar-wrapper" class="chromeclass-location">
 +    <html:div id="zen-appcontent-navbar-container"></html:div>
 +  </html:div>
-+  <hbox id="zen-tabbox-wrapper" flex="1">
-   <tabbox id="tabbrowser-tabbox" flex="1" tabcontainer="tabbrowser-tabs">
++<hbox id="zen-tabbox-wrapper" flex="1">
++  <tabbox id="tabbrowser-tabbox" flex="1" tabcontainer="tabbrowser-tabs">
+   <vbox id="sidebar-box" hidden="true" class="chromeclass-extrachrome">
+     <box id="sidebar-header" align="center">
+       <toolbarbutton id="sidebar-switcher-target" class="tabbable" aria-expanded="false">
+@@ -25,7 +35,7 @@
+     </stack>
+   </vbox>
+   <splitter id="sidebar-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="sibling" resizeafter="none" hidden="true"/>
+-  <tabbox id="tabbrowser-tabbox" flex="1" tabcontainer="tabbrowser-tabs">
 +#include zen-tabbrowser-elements.inc.xhtml
      <tabpanels id="tabbrowser-tabpanels" flex="1" selectedIndex="0"/>
    </tabbox>
-   <splitter id="ai-window-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="none" resizeafter="sibling" hidden="true"/>
-@@ -34,3 +43,5 @@
+   <splitter id="ai-window-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="none" resizeafter="sibling" collapsed="true"/>
+@@ -34,3 +44,5 @@
      </stack>
    </vbox>
  </hbox>

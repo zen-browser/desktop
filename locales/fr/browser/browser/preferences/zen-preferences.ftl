@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = Afficher l’onglet DOM
 zen-devtools-toggle-accessibility-shortcut = Afficher l’onglet Accessibilité
 zen-close-all-unpinned-tabs-shortcut = Fermer tous les onglets non épinglés
 zen-new-unsynced-window-shortcut = Nouvelle fenêtre vierge
+zen-duplicate-tab-shortcut = Dupliquer l'onglet

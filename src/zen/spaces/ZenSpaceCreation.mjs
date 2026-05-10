@@ -148,6 +148,28 @@ class nsZenWorkspaceCreation extends MozXULElement {
       this.createButton.disabled = !this.inputName.value.trim();
     });
 
+    this.inputName.addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!this.createButton.disabled) {
+          this.createButton.doCommand();
+        }
+      }
+    });
+
+    // Bound on the root so Esc works regardless of which child has focus
+    // (name input, icon picker trigger, profile button, primary button).
+    // Open popups consume Esc before it reaches us, so the emoji/profile
+    // pickers still close as expected.
+    this.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        this.cancelButton.doCommand();
+      }
+    });
+
     this.inputIcon.addEventListener("command", this.onIconCommand.bind(this));
 
     this.profilesPopup = this.querySelector(
@@ -199,25 +221,27 @@ class nsZenWorkspaceCreation extends MozXULElement {
         this.style.visibility = "visible";
         gZenCompactModeManager.getAndApplySidebarWidth();
         this.resolveInitialized();
-        gZenUIManager.motion
-          .animate(
-            this.elementsToAnimate,
-            {
-              y: [20, 0],
-              opacity: [0, 1],
-              filter: ["blur(2px)", "blur(0)"],
-            },
-            {
-              duration: 0.6,
-              type: "spring",
-              bounce: 0,
-              delay: gZenUIManager.motion.stagger(0.05, { startDelay: 0.2 }),
-            }
-          )
-          .then(() => {
-            this.inputName.focus();
-            gZenWorkspaces.workspaceElement(this.workspaceId).hidden = false;
-          });
+        let animation = gZenUIManager.motion.animate(
+          this.elementsToAnimate,
+          {
+            y: [20, 0],
+            opacity: [0, 1],
+            filter: ["blur(2px)", "blur(0)"],
+          },
+          {
+            duration: 0.6,
+            type: "spring",
+            bounce: 0,
+            delay: gZenUIManager.motion.stagger(0.05, { startDelay: 0.2 }),
+          }
+        );
+        if (gReduceMotion) {
+          animation.complete();
+        }
+        animation.then(() => {
+          this.inputName.focus();
+          gZenWorkspaces.workspaceElement(this.workspaceId).hidden = false;
+        });
       });
   }
 
@@ -303,20 +327,22 @@ class nsZenWorkspaceCreation extends MozXULElement {
   }
 
   async #cleanup() {
-    await gZenUIManager.motion.animate(
-      this.elementsToAnimate.reverse(),
-      {
-        y: [0, 20],
-        opacity: [1, 0],
-        filter: ["blur(0)", "blur(2px)"],
-      },
-      {
-        duration: 0.4,
-        type: "spring",
-        bounce: 0,
-        delay: gZenUIManager.motion.stagger(0.05),
-      }
-    );
+    if (!gReduceMotion) {
+      await gZenUIManager.motion.animate(
+        this.elementsToAnimate.reverse(),
+        {
+          y: [0, 20],
+          opacity: [1, 0],
+          filter: ["blur(0)", "blur(2px)"],
+        },
+        {
+          duration: 0.4,
+          type: "spring",
+          bounce: 0,
+          delay: gZenUIManager.motion.stagger(0.05),
+        }
+      );
+    }
 
     document.getElementById("zen-sidebar-splitter").style.pointerEvents = "";
 

@@ -4,6 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+body,
 #tabbrowser-tabpanels {
   background: transparent !important;
 }
@@ -48,6 +49,7 @@
   overflow: clip;
 
   isolation: isolate;
+  contain: content;
 
   &::after,
   &::before {
@@ -56,6 +58,7 @@
     inset: 0;
     z-index: 0;
     pointer-events: none;
+    will-change: background-color;
   }
 
   &::after {

@@ -17,7 +17,6 @@ class ZenStartup {
 
   init() {
     this.openWatermark();
-    this.#changeSidebarLocation();
     this.#zenInitBrowserLayout();
   }
 
@@ -46,18 +45,18 @@ class ZenStartup {
         }
         newContainer.appendChild(node);
       }
-
       // Fix notification deck
-      const deckTemplate = document.getElementById(
-        "tab-notification-deck-template"
-      );
-      if (deckTemplate) {
-        document.getElementById("zen-appcontent-wrapper").prepend(deckTemplate);
-      }
+      const deckTemplate =
+        document.getElementById("tab-notification-deck-template") ||
+        document.getElementById("tab-notification-deck");
+
+      // overlap and interaction issues with vertical tabs
+      document.getElementById("browser").prepend(deckTemplate);
 
       gZenWorkspaces.init();
       setTimeout(() => {
         gZenUIManager.init();
+        this.#initUIComponents();
         this.#checkForWelcomePage();
       }, 0);
     } catch (e) {
@@ -99,6 +98,10 @@ class ZenStartup {
       this.isReady = true;
       this.promiseInitializedResolve();
       delete this.promiseInitializedResolve;
+
+      setTimeout(() => {
+        gZenWorkspaces._invalidateBookmarkContainers();
+      });
     });
   }
 
@@ -143,18 +146,13 @@ class ZenStartup {
     });
   }
 
-  #changeSidebarLocation() {
-    const kElementsToAppend = ["sidebar-splitter", "sidebar-box"];
-
-    const browser = document.getElementById("browser");
-    browser.prepend(gNavToolbox);
-
-    const sidebarPanelWrapper = document.getElementById("tabbrowser-tabbox");
-    for (let id of kElementsToAppend) {
-      const elem = document.getElementById(id);
-      if (elem) {
-        sidebarPanelWrapper.prepend(elem);
-      }
+  #initUIComponents() {
+    const kUIComponents = ["ZenProgressBar"];
+    for (let component of kUIComponents) {
+      const module = ChromeUtils.importESModule(
+        "resource:///modules/zen/ui/" + component + ".sys.mjs"
+      );
+      new module[component](window);
     }
   }
 

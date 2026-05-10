@@ -20,24 +20,22 @@ export class ZenSpacesSwipe {
   };
 
   constructor() {
-    const elements = [
-      gNavToolbox,
-      // Event handlers do not work on elements inside shadow DOM
-      // so we need to attach them directly.
-      document
-        .getElementById("tabbrowser-arrowscrollbox")
-        ?.shadowRoot?.querySelector("scrollbox"),
-    ];
-
-    for (const element of elements) {
-      if (!element) {
-        continue;
-      }
-      this._attachWorkspaceSwipeGestures(element);
-    }
+    this.#attachWorkspaceSwipeGestures(gNavToolbox);
+    this._popupOpenHandler = this._popupOpenHandler.bind(this);
   }
 
-  _attachWorkspaceSwipeGestures(element) {
+  get #stripWidth() {
+    return (
+      window.windowUtils.getBoundsWithoutFlushing(
+        document.getElementById("navigator-toolbox")
+      ).width +
+      window.windowUtils.getBoundsWithoutFlushing(
+        document.getElementById("zen-sidebar-splitter")
+      ).width
+    );
+  }
+
+  #attachWorkspaceSwipeGestures(element) {
     element.addEventListener(
       "MozSwipeGestureMayStart",
       this._handleSwipeMayStart.bind(this),
@@ -107,7 +105,7 @@ export class ZenSpacesSwipe {
     gZenFolders.cancelPopupTimer();
 
     document.documentElement.setAttribute("swipe-gesture", "true");
-    document.addEventListener("popupshown", ws.popupOpenHandler, {
+    document.addEventListener("popupshown", this._popupOpenHandler, {
       once: true,
     });
 
@@ -128,18 +126,16 @@ export class ZenSpacesSwipe {
       return;
     }
 
+    const stripWidth = this.#stripWidth;
+
     event.preventDefault();
     event.stopPropagation();
 
-    const delta = event.delta * 300;
-    const stripWidth =
-      window.windowUtils.getBoundsWithoutFlushing(
-        document.getElementById("navigator-toolbox")
-      ).width +
-      window.windowUtils.getBoundsWithoutFlushing(
-        document.getElementById("zen-sidebar-splitter")
-      ).width *
-        2;
+    const delta =
+      event.delta *
+      Services.prefs.getIntPref(
+        "zen.workspaces.swipe-actions.delta-multiplier"
+      );
     let translateX = this._swipeState.lastDelta + delta;
     // Add a force multiplier as we are translating the strip depending on how close to the edge we are
     let forceMultiplier = Math.min(
@@ -153,7 +149,8 @@ export class ZenSpacesSwipe {
       translateX = this._swipeState.lastDelta;
     }
 
-    if (Math.abs(delta) > 0.8) {
+    if (Math.abs(delta) > 0.9) {
+      delete ws._hasAnimatedBackgrounds;
       this._swipeState.direction = delta > 0 ? "left" : "right";
     }
 
@@ -177,6 +174,10 @@ export class ZenSpacesSwipe {
     const rawDirection = moveForward ? 1 : -1;
     const direction = ws.naturalScroll ? -1 : 1;
     await ws.changeWorkspaceShortcut(rawDirection * direction, true);
+  }
+
+  onSwipeGestureAnimationEnd() {
+    const ws = gZenWorkspaces;
 
     // Reset swipe state
     this._swipeState = {
@@ -184,10 +185,6 @@ export class ZenSpacesSwipe {
       lastDelta: 0,
       direction: null,
     };
-  }
-
-  onSwipeGestureAnimationEnd() {
-    const ws = gZenWorkspaces;
 
     Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", false);
     document.documentElement.removeAttribute("swipe-gesture");
@@ -199,9 +196,13 @@ export class ZenSpacesSwipe {
     );
     delete ws._hasAnimatedBackgrounds;
     ws.updateTabsContainers();
-    document.removeEventListener("popupshown", ws.popupOpenHandler, {
+    document.removeEventListener("popupshown", this._popupOpenHandler, {
       once: true,
     });
+  }
+
+  _popupOpenHandler() {
+    this.onSwipeGestureAnimationEnd();
   }
 
   get isGestureActive() {

@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-toolbar-context-tabs-right = 
-    .label = Zakładki po prawej
+    .label = Karty po prawej
     .accesskey = R
 zen-toolbar-context-compact-mode = 
     .label = Tryb kompaktowy
@@ -17,6 +17,9 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = Ukryj oba
     .accesskey = H
+zen-toolbar-context-move-to-folder = 
+    .label = Przenieś do folderu...
+    .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Nowy folder
     .accesskey = N
@@ -27,14 +30,16 @@ sidebar-zen-create-new =
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Dezaktywuj i przełącz na kartę
-           *[other] Dezaktywuj { $tabCount } karty i przełącz na pierwszą
+            [one] Wyładuj i przełącz na kartę
+            [few] Wyładuj { $tabCount } karty i przełącz na pierwszą
+           *[other] Wyładuj { $tabCount } kart i przełącz na pierwszą
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
             [one] Zresetuj i przypnij kartę
-           *[other] Zresetuj i przypnij karty w liczbie: { $tabCount }
+            [few] Zresetuj i przypnij { $tabCount } karty
+           *[other] Zresetuj i przypnij { $tabCount } kart
         }
 zen-tab-sublabel =
     { $tabSubtitle ->

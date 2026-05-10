@@ -93,7 +93,8 @@ jobs:
           echo "cd $workspace_dir" '' >> mozilla-build-run.sh
           echo 'export PATH=/c/mozilla-build/msys2/usr/bin:$PATH' '' >> mozilla-build-run.sh
           echo './mach --no-interactive bootstrap --application-choice browser' '' >> mozilla-build-run.sh
-          echo 'LLVM_PROFDATA=/c/Users/runneradmin/.mozbuild/clang/bin/llvm-profdata.exe JARLOG_FILE=en-US.log ./mach python build/pgo/profileserver.py --binary /c/artifact/zen/zen.exe' '' >> mozilla-build-run.sh
+          echo './mach python ../scripts/download_pgo_extended_corpus.py' '' >> mozilla-build-run.sh
+          echo 'LLVM_PROFDATA=/c/Users/runneradmin/.mozbuild/clang/bin/llvm-profdata.exe JARLOG_FILE=en-US.log ./mach python build/pgo/profileserver.py --binary /c/artifact/zen/zen.exe --extended-corpus ./pgo-extended-corpus --' '' >> mozilla-build-run.sh
           C:\mozilla-build\start-shell.bat $workspace_dir_current\mozilla-build-run.sh
 
       - name: Move profile data

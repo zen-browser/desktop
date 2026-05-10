@@ -48,6 +48,7 @@ zen-pinned-tab-replaced = URL pripnutej karty bola nahradená aktuálnou URL!
 zen-tabs-renamed = Karta bola úspešne premenovaná!
 zen-background-tab-opened-toast = Nová karta otvorená na pozadí!
 zen-workspace-renamed-toast = Pracovný priestor bol úspešne premenovaný!
+zen-split-view-limit-toast = Can't add more panels to the split view!
 zen-toggle-compact-mode-button = 
     .label = Kompaktný Režim
     .tooltiptext = Prepnúť Kompaktný Režim

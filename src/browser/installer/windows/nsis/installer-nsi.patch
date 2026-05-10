@@ -1,5 +1,5 @@
 diff --git a/browser/installer/windows/nsis/installer.nsi b/browser/installer/windows/nsis/installer.nsi
-index f752555d18b0c6c7325cc99e73a85819fc015f5c..2416d2a79ca358ab901103d9546bc3d0454333eb 100755
+index b3459f8233b2509744e27bfe33884c6a92164e36..76b71e0882381f8f6becaf88bc4e3cc56f8d8ad4 100755
 --- a/browser/installer/windows/nsis/installer.nsi
 +++ b/browser/installer/windows/nsis/installer.nsi
 @@ -842,7 +842,7 @@ Section "-InstallEndCleanup"
@@ -11,7 +11,7 @@ index f752555d18b0c6c7325cc99e73a85819fc015f5c..2416d2a79ca358ab901103d9546bc3d0
    ${EndIf}
  SectionEnd
  
-@@ -1984,5 +1984,5 @@ FunctionEnd
+@@ -1978,5 +1978,5 @@ FunctionEnd
  
  Function .onGUIEnd
    ${OnEndCommon}

@@ -368,9 +368,6 @@ interface nsIXPCComponents_Results {
   /** The connection was refused */
   NS_ERROR_CONNECTION_REFUSED: 0x804b000d;
 
-  /** User refused navigation to potentially unsafe URL with embedded credentials/superfluos authentication */
-  NS_ERROR_SUPERFLUOS_AUTH: 0x804b005b;
-
   /** User attempted basic HTTP authentication when it is disabled */
   NS_ERROR_BASIC_HTTP_AUTH_DISABLED: 0x804b005c;
 
@@ -673,6 +670,9 @@ interface nsIXPCComponents_Results {
 
   /** The URI is email tracking */
   NS_ERROR_EMAILTRACKING_URI: 0x805d002c;
+
+  /** The URI is not available for add-ons */
+  NS_ERROR_HARMFULADDON_URI: 0x805d002e;
 
   // Profile manager error codes
 

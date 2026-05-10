@@ -1,8 +1,8 @@
 diff --git a/widget/cocoa/nsDragService.mm b/widget/cocoa/nsDragService.mm
-index d5db98bff66a4daace6454af16406822d79fe912..522262b8d7ccba1f333755c48b0327cd098a5248 100644
+index 3b61c3a0d500e14e78d9009c821b47e70926cc97..b4cbc6e0dc0d43a55f074d4908dd414b859e16ed 100644
 --- a/widget/cocoa/nsDragService.mm
 +++ b/widget/cocoa/nsDragService.mm
-@@ -23,6 +23,7 @@
+@@ -22,6 +22,7 @@
  #include "mozilla/PresShell.h"
  #include "mozilla/dom/Document.h"
  #include "mozilla/dom/DocumentInlines.h"
@@ -10,7 +10,7 @@ index d5db98bff66a4daace6454af16406822d79fe912..522262b8d7ccba1f333755c48b0327cd
  #include "nsIContent.h"
  #include "nsCocoaUtils.h"
  #include "mozilla/gfx/2D.h"
-@@ -147,6 +148,10 @@
+@@ -146,6 +147,10 @@ NSImage* nsDragSession::ConstructDragImage(nsINode* aDOMNode,
                                              bitsPerPixel:32];
  
    uint8_t* dest = [imageRep bitmapData];
@@ -21,7 +21,7 @@ index d5db98bff66a4daace6454af16406822d79fe912..522262b8d7ccba1f333755c48b0327cd
    for (uint32_t i = 0; i < height; ++i) {
      uint8_t* src = map.mData + i * map.mStride;
      for (uint32_t j = 0; j < width; ++j) {
-@@ -154,15 +159,15 @@
+@@ -153,15 +158,15 @@ NSImage* nsDragSession::ConstructDragImage(nsINode* aDOMNode,
        // is premultipled here. Also, Quartz likes RGBA, so do that translation
        // as well.
  #ifdef IS_BIG_ENDIAN

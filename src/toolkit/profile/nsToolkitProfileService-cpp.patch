@@ -1,5 +1,5 @@
 diff --git a/toolkit/profile/nsToolkitProfileService.cpp b/toolkit/profile/nsToolkitProfileService.cpp
-index 33c9621d60cedd32f5ac7c65cf9f94f4ecc40c3d..5973e1f3eb4f5003ec171e6ca511ee99efd76cad 100644
+index 1970f776703549287f6b8ae04c93efaec638bc26..d242f5efd76b66a86fb2de024455d72b786fad42 100644
 --- a/toolkit/profile/nsToolkitProfileService.cpp
 +++ b/toolkit/profile/nsToolkitProfileService.cpp
 @@ -96,6 +96,8 @@ using namespace mozilla;

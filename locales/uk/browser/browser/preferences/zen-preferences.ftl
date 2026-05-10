@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = Увімк. / Вимк. DOM
 zen-devtools-toggle-accessibility-shortcut = Увімк. / Вимк. доступ
 zen-close-all-unpinned-tabs-shortcut = Закрити всі відкріплені вкладки
 zen-new-unsynced-window-shortcut = Нове несинхронізоване вікно
+zen-duplicate-tab-shortcut = Дублювати вкладку

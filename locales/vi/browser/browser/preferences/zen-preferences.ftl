@@ -317,3 +317,4 @@ zen-devtools-toggle-dom-shortcut = Bật/Tắt DOM
 zen-devtools-toggle-accessibility-shortcut = Bật/Tắt trợ năng
 zen-close-all-unpinned-tabs-shortcut = Đóng tất cả thẻ chưa ghim
 zen-new-unsynced-window-shortcut = Cửa sổ trống mới
+zen-duplicate-tab-shortcut = Duplicate Tab

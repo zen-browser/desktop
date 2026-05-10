@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+fail() {
+  echo "ERROR: $*" >&2
+  exit 1
+}
+
+require_file() {
+  local path="$1"
+  [ -f "$path" ] || fail "Missing required file: $path"
+}
+
+require_executable() {
+  local path="$1"
+  require_file "$path"
+  [ -x "$path" ] || fail "Required script is not executable: $path"
+}
+
+echo "== Nevai Stage 2 source smoke =="
+
+echo "== Required product docs =="
+require_file product/STAGE1_MACOS_ALPHA.md
+require_file product/STAGE2_DESKTOP_CROSS_PLATFORM_PLAN.md
+require_file product/STAGE2_LINUX_DISCOVERY.md
+require_file product/STAGE2_WINDOWS_DISCOVERY.md
+require_file product/STAGE2_BUILD_RESULTS_TEMPLATE.md
+
+echo "== Required Stage 1 macOS alpha scripts =="
+require_executable scripts/apply-nevai-about-dialog-branding.sh
+require_executable scripts/build-nevai-macos-alpha.sh
+require_executable scripts/qa-nevai-macos-alpha.sh
+require_executable scripts/package-nevai-macos-alpha.sh
+require_executable scripts/patch-nevai-disable-updater-preferences-ui.sh
+require_executable scripts/fix-nevai-macos-actor-symlinks.sh
+
+echo "== Required Stage 2 check script =="
+require_executable scripts/check-nevai-stage2-source.sh
+
+echo "== Shell syntax =="
+for script in \
+  scripts/apply-nevai-about-dialog-branding.sh \
+  scripts/build-nevai-macos-alpha.sh \
+  scripts/qa-nevai-macos-alpha.sh \
+  scripts/package-nevai-macos-alpha.sh \
+  scripts/patch-nevai-disable-updater-preferences-ui.sh \
+  scripts/fix-nevai-macos-actor-symlinks.sh \
+  scripts/check-nevai-stage2-source.sh
+do
+  bash -n "$script"
+  echo "OK syntax: $script"
+done
+
+echo "== JSON validation =="
+command -v node >/dev/null 2>&1 || fail "node is required for JSON validation"
+node -e "JSON.parse(require('fs').readFileSync('surfer.json', 'utf8')); console.log('OK JSON: surfer.json')"
+node -e "JSON.parse(require('fs').readFileSync('package.json', 'utf8')); console.log('OK JSON: package.json')"
+node -e "JSON.parse(require('fs').readFileSync('package-lock.json', 'utf8')); console.log('OK JSON: package-lock.json')"
+
+echo "== Alpha updater policy =="
+node - <<'NODE'
+const fs = require("fs");
+const surfer = JSON.parse(fs.readFileSync("surfer.json", "utf8"));
+if (surfer.updateHostname !== "updates.invalid") {
+  throw new Error(`surfer.json updateHostname must be updates.invalid, got ${surfer.updateHostname}`);
+}
+console.log("OK updater host: updates.invalid");
+NODE
+
+if grep -R "updates\.zen-browser\.app" \
+  surfer.json configs src/build src/browser/branding src/browser/moz-configure.patch src/toolkit \
+  >/dev/null 2>&1
+then
+  fail "Found active Zen update host in Stage 2 source scope"
+fi
+echo "OK no active Zen update host in Stage 2 source scope"
+
+echo "== Stage 1 tag visibility =="
+if git rev-parse --verify --quiet stage1-macos-alpha-v0.1 >/dev/null; then
+  echo "OK tag exists: stage1-macos-alpha-v0.1"
+else
+  echo "WARN: stage1-macos-alpha-v0.1 tag not present in this checkout"
+fi
+
+echo "== Tracked artifact guard =="
+tracked_artifacts="$(
+  git ls-files | grep -E '(^engine/obj-|^builds-local/|\.app/|\.dmg$|\.zip$|\.tar\.gz$|\.SHA256\.txt$)' || true
+)"
+if [ -n "$tracked_artifacts" ]; then
+  echo "$tracked_artifacts"
+  fail "Generated app/build artifacts must not be committed"
+fi
+echo "OK no generated app/build artifacts tracked"
+
+echo "== Stage 2 source smoke passed =="

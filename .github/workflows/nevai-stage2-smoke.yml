@@ -1,0 +1,72 @@
+name: Nevai Stage 2 Smoke
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "nevai/stage2-*"
+      - "nevai/linux-*"
+      - "nevai/windows-*"
+  pull_request:
+    branches:
+      - "nevai/stage2-planning"
+      - "nevai/stage2-ci-smoke"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-smoke:
+    name: Source smoke (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Print tool versions
+        shell: bash
+        run: |
+          node --version
+          npm --version
+          git --version
+          bash --version | head -n 1
+
+      - name: Run Stage 2 source smoke
+        shell: bash
+        run: ./scripts/check-nevai-stage2-source.sh
+
+  dependency-lock-smoke:
+    name: Dependency lock smoke
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: npm
+
+      - name: Install npm dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --fund=false

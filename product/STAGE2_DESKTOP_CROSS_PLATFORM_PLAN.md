@@ -304,3 +304,11 @@ Start Phase 2.1 only:
 - Add a lightweight GitHub Actions smoke workflow.
 - Do not add full builds yet.
 - Do not add Linux or Windows packaging scripts until discovery proves the build shape.
+
+Repo-side Phase 2.1 files:
+
+- `.github/workflows/nevai-stage2-smoke.yml`
+- `scripts/check-nevai-stage2-source.sh`
+- `product/STAGE2_LINUX_DISCOVERY.md`
+- `product/STAGE2_WINDOWS_DISCOVERY.md`
+- `product/STAGE2_BUILD_RESULTS_TEMPLATE.md`

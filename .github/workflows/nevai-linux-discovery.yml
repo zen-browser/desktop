@@ -5,7 +5,6 @@ env:
   NEVAI_LINUX_BUILD_LOG: /tmp/nevai-linux-build.log
   NEVAI_LINUX_LOG_DIR: /tmp/nevai-linux-discovery-logs
   NEVAI_LINUX_BUILD_STATUS_FILE: /tmp/nevai-linux-discovery-logs/build-status.txt
-  NEVAI_LINUX_BUILD_TIMEOUT: 45m
   NEVAI_LINUX_STALL_TIMEOUT_SECONDS: 900
 
 on:
@@ -210,7 +209,7 @@ jobs:
 
           cd engine
 
-          timeout "$NEVAI_LINUX_BUILD_TIMEOUT" env MOZCONFIG="$MOZCONFIG_FILE" ./mach build > "$NEVAI_LINUX_BUILD_LOG" 2>&1 &
+          env MOZCONFIG="$MOZCONFIG_FILE" ./mach build > "$NEVAI_LINUX_BUILD_LOG" 2>&1 &
           build_pid=$!
           started_at=$(date +%s)
           last_tail_at=$started_at
@@ -220,7 +219,7 @@ jobs:
           timed_out_or_stalled=0
 
           echo "Build PID: $build_pid"
-          echo "Build timeout: $NEVAI_LINUX_BUILD_TIMEOUT"
+          echo "Build timeout: none; GitHub job timeout-minutes remains the outer limit."
           echo "Stall timeout seconds: $NEVAI_LINUX_STALL_TIMEOUT_SECONDS"
 
           while kill -0 "$build_pid" 2>/dev/null; do
@@ -271,8 +270,7 @@ jobs:
           done
 
           if [ "$timed_out_or_stalled" -eq 0 ]; then
-            wait "$build_pid"
-            status=$?
+            wait "$build_pid" || status=$?
           else
             wait "$build_pid" 2>/dev/null || true
           fi
@@ -280,7 +278,7 @@ jobs:
           echo
           echo "== Build exit code: $status =="
           if [ "$status" -eq 124 ]; then
-            echo "Build hit timeout or stall guard."
+            echo "Build hit the stall guard."
           fi
 
           echo

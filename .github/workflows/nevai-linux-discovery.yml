@@ -185,11 +185,16 @@ jobs:
           mkdir -p "$NEVAI_LINUX_LOG_DIR"
           rm -f "$NEVAI_LINUX_BUILD_LOG"
 
-          echo "== Starting Linux build =="
+          echo "== Starting Linux discovery build =="
           echo "Full build log will be written to:"
           echo "$NEVAI_LINUX_BUILD_LOG"
 
-          npm run surfer -- build --skip-patch-check 2>&1 | tee "$NEVAI_LINUX_BUILD_LOG"
+          echo
+          echo "== Discovery-only build note =="
+          echo "Passing --without-wasm-sandboxed-libraries to bypass missing WASI sysroot on GitHub hosted Ubuntu."
+          echo "This is acceptable for Linux build discovery, not final release hardening."
+
+          npm run surfer -- build --skip-patch-check -- --without-wasm-sandboxed-libraries 2>&1 | tee "$NEVAI_LINUX_BUILD_LOG"
           status=${PIPESTATUS[0]}
 
           echo

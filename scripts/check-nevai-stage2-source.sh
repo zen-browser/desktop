@@ -25,10 +25,14 @@ echo "== Nevai Stage 2 source smoke =="
 echo "== Required product docs =="
 require_file product/STAGE1_MACOS_ALPHA.md
 require_file product/STAGE2_DESKTOP_CROSS_PLATFORM_PLAN.md
+require_file product/STAGE2_DESKTOP_QA_CHECKLIST.md
+require_file product/STAGE2_ARTIFACT_REVIEW.md
 require_file product/STAGE2_LINUX_DISCOVERY.md
 require_file product/STAGE2_WINDOWS_DISCOVERY.md
 require_file product/STAGE2_BUILD_RESULTS_TEMPLATE.md
 require_file product/STAGE2_STATUS.md
+require_file product/STAGE2_KNOWN_ISSUES.md
+require_file product/STAGE3_DESKTOP_PACKAGING_PLAN.md
 require_file .github/workflows/nevai-stage2-smoke.yml
 require_file .github/workflows/nevai-linux-discovery.yml
 require_file .github/workflows/nevai-windows-discovery.yml

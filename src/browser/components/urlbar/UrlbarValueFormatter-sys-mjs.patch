@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarValueFormatter.sys.mjs b/browser/components/urlbar/UrlbarValueFormatter.sys.mjs
-index f28d277764158566bc9406ce0e6160d92d346a63..54e73728bdd6a653fac004f804637f9164aeda0e 100644
+index f28d277764158566bc9406ce0e6160d92d346a63..aee17083999f99670c2de7b47cb917e400da86a6 100644
 --- a/browser/components/urlbar/UrlbarValueFormatter.sys.mjs
 +++ b/browser/components/urlbar/UrlbarValueFormatter.sys.mjs
 @@ -77,7 +77,7 @@ export class UrlbarValueFormatter {
@@ -11,7 +11,7 @@ index f28d277764158566bc9406ce0e6160d92d346a63..54e73728bdd6a653fac004f804637f91
      });
    }
  
-@@ -105,6 +105,41 @@ export class UrlbarValueFormatter {
+@@ -105,6 +105,22 @@ export class UrlbarValueFormatter {
    }
  
    #ensureFormattedHostVisible(urlMetaData) {
@@ -29,44 +29,12 @@ index f28d277764158566bc9406ce0e6160d92d346a63..54e73728bdd6a653fac004f804637f91
 +      if (hasHover) {
 +        this.#window.gNavToolbox.setAttribute(hoverAttr, true);
 +      }
-+      return
-+    }
-+
-+    urlMetaData = urlMetaData || this.#getUrlMetaData();
-+    if (!urlMetaData) {
-+      this.#urlbarInput.removeAttribute("domaindir");
 +      return;
-+    }
-+    let { url, preDomain, domain } = urlMetaData;
-+
-+    if (
-+      this.#window.gZenVerticalTabsManager?._hasSetSingleToolbar
-+      && !Services.prefs.getBoolPref("zen.urlbar.show-domain-only-in-sidebar")
-+    ) {
-+      // Make sure the domain is visible for users without zen.urlbar.show-domain-only-in-sidebar pref.
-+      // Firefox's way of always keeping to the left will be vulnerable to long subdomains,
-+      // and keeping to the right will be vulnerable to long paths and query strings.
-+
-+      this.#inputField.setSelectionRange(domain.length, domain.length);
-+      return
 +    }
      // Make sure the host is always visible. Since it is aligned on
      // the first strong directional character, we set scrollLeft
      // appropriately to ensure the domain stays visible in case of an
-@@ -112,12 +147,6 @@ export class UrlbarValueFormatter {
-     // In the future, for example in bug 525831, we may add a forceRTL
-     // char just after the domain, and in such a case we should not
-     // scroll to the left.
--    urlMetaData = urlMetaData || this.#getUrlMetaData();
--    if (!urlMetaData) {
--      this.#urlbarInput.removeAttribute("domaindir");
--      return;
--    }
--    let { url, preDomain, domain } = urlMetaData;
-     let directionality = this.#window.windowUtils.getDirectionFromText(domain);
-     if (
-       directionality == this.#window.windowUtils.DIRECTION_RTL &&
-@@ -371,7 +400,7 @@ export class UrlbarValueFormatter {
+@@ -371,7 +387,7 @@ export class UrlbarValueFormatter {
     * @returns {boolean}
     *   True if formatting was applied and false if not.
     */
@@ -75,7 +43,7 @@ index f28d277764158566bc9406ce0e6160d92d346a63..54e73728bdd6a653fac004f804637f91
      let urlMetaData = this.#getUrlMetaData();
      if (!urlMetaData) {
        return false;
-@@ -640,6 +669,7 @@ export class UrlbarValueFormatter {
+@@ -640,6 +656,7 @@ export class UrlbarValueFormatter {
        this.#window.requestAnimationFrame(() => {
          if (instance == this.#resizeInstance) {
            this.#ensureFormattedHostVisible();

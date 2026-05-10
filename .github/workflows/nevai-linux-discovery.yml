@@ -186,11 +186,6 @@ jobs:
           export MOZ_INCLUDE_SOURCE_INFO=1
           export MOZ_APPUPDATE_HOST=updates.invalid
           export ZEN_FIREFOX_VERSION=150.0.2
-
-          export MOZ_DATA_REPORTING=
-          export MOZ_SERVICES_HEALTHREPORT=
-          export MOZ_TELEMETRY_REPORTING=
-          export MOZ_REQUIRE_SIGNING=
           EOF
 
           echo "== Linux discovery mozconfig =="

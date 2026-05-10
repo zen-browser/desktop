@@ -5,7 +5,6 @@ env:
   NEVAI_LINUX_BUILD_LOG: /tmp/nevai-linux-build.log
   NEVAI_LINUX_LOG_DIR: /tmp/nevai-linux-discovery-logs
   NEVAI_LINUX_BUILD_STATUS_FILE: /tmp/nevai-linux-discovery-logs/build-status.txt
-  NEVAI_LINUX_STALL_TIMEOUT_SECONDS: 900
 
 on:
   workflow_dispatch:
@@ -216,11 +215,10 @@ jobs:
           last_progress_at=$started_at
           last_line_count=0
           status=0
-          timed_out_or_stalled=0
 
           echo "Build PID: $build_pid"
           echo "Build timeout: none; GitHub job timeout-minutes remains the outer limit."
-          echo "Stall timeout seconds: $NEVAI_LINUX_STALL_TIMEOUT_SECONDS"
+          echo "Stall timeout: none; quiet Rust/link phases are allowed to finish."
 
           while kill -0 "$build_pid" 2>/dev/null; do
             now=$(date +%s)
@@ -244,18 +242,6 @@ jobs:
               idle_seconds=$((now - last_progress_at))
               echo "Seconds since build log progress: $idle_seconds"
 
-              if [ "$idle_seconds" -ge "$NEVAI_LINUX_STALL_TIMEOUT_SECONDS" ]; then
-                echo
-                echo "== Linux build appears stalled =="
-                echo "No build log growth for ${idle_seconds}s; terminating build process."
-                kill "$build_pid" 2>/dev/null || true
-                sleep 10
-                kill -9 "$build_pid" 2>/dev/null || true
-                status=124
-                timed_out_or_stalled=1
-                break
-              fi
-
               if [ $((now - last_tail_at)) -ge 300 ]; then
                 echo
                 echo "== Recent build log tail =="
@@ -269,17 +255,10 @@ jobs:
             sleep 60
           done
 
-          if [ "$timed_out_or_stalled" -eq 0 ]; then
-            wait "$build_pid" || status=$?
-          else
-            wait "$build_pid" 2>/dev/null || true
-          fi
+          wait "$build_pid" || status=$?
 
           echo
           echo "== Build exit code: $status =="
-          if [ "$status" -eq 124 ]; then
-            echo "Build hit the stall guard."
-          fi
 
           echo
           echo "== Last 120 lines =="

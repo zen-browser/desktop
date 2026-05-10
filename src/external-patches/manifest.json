@@ -25,7 +25,9 @@
       " #include \"nsISupportsPrimitives.h\"\n": "",
 
       "     Atom(\"nonnative\", \"nonnative\"),\n": "",
-      "Atom(\"noscript\", \"noscript\"),": "Atom(\"noscript\", \"noscript\"),\n     Atom(\"noshade\", \"noshade\"),"
+      "Atom(\"noscript\", \"noscript\"),": "Atom(\"noscript\", \"noscript\"),\n     Atom(\"noshade\", \"noshade\"),",
+
+      "GetBoolAttr(nsGkAtoms::nonnative)": "GetBoolAttr(nsGkAtoms::nonnativepopover)"
     }
   },
   {

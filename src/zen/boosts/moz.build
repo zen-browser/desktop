@@ -11,7 +11,7 @@ EXTRA_JS_MODULES.zen.boosts += [
   "ZenZapOverlayChild.sys.mjs",
 ]
 
-FINAL_TARGET_FILES.actors += [
+EXTRA_JS_MODULES.zen.boosts.actors += [
     "actors/ZenBoostsChild.sys.mjs",
     "actors/ZenBoostsParent.sys.mjs",
 ]

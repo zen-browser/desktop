@@ -76,7 +76,7 @@ if command -v pwsh >/dev/null 2>&1; then
     scripts/qa-nevai-windows-alpha.ps1 \
     scripts/package-nevai-windows-alpha.ps1
   do
-    pwsh -NoProfile -Command '$errors = $null; [System.Management.Automation.Language.Parser]::ParseFile($args[0], [ref]$null, [ref]$errors) | Out-Null; if ($errors.Count -gt 0) { $errors | ForEach-Object { Write-Error $_ }; exit 1 }; Write-Host "OK PowerShell syntax: $($args[0])"' "$script"
+    pwsh -NoProfile -Command "\$path = '$script'; \$errors = \$null; [System.Management.Automation.Language.Parser]::ParseFile(\$path, [ref]\$null, [ref]\$errors) | Out-Null; if (\$errors.Count -gt 0) { \$errors | ForEach-Object { Write-Error \$_ }; exit 1 }; Write-Host \"OK PowerShell syntax: \$path\""
   done
 else
   echo "WARN: pwsh not available; skipped PowerShell syntax checks"

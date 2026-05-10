@@ -27,9 +27,6 @@ jobs:
 
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-      NEVAI_WINDOWS_LOG_DIR: ${{ runner.temp }}\nevai-windows-discovery-logs
-      NEVAI_WINDOWS_BUILD_LOG: ${{ runner.temp }}\nevai-windows-build.log
-      NEVAI_WINDOWS_BUILD_STATUS_FILE: ${{ runner.temp }}\nevai-windows-discovery-logs\build-status.txt
 
     steps:
       - name: Checkout
@@ -54,6 +51,13 @@ jobs:
           "== Workspace =="
           Get-Location
           Get-ChildItem
+
+      - name: Configure discovery paths
+        shell: pwsh
+        run: |
+          "NEVAI_WINDOWS_LOG_DIR=$env:RUNNER_TEMP\nevai-windows-discovery-logs" >> $env:GITHUB_ENV
+          "NEVAI_WINDOWS_BUILD_LOG=$env:RUNNER_TEMP\nevai-windows-build.log" >> $env:GITHUB_ENV
+          "NEVAI_WINDOWS_BUILD_STATUS_FILE=$env:RUNNER_TEMP\nevai-windows-discovery-logs\build-status.txt" >> $env:GITHUB_ENV
 
       - name: Setup Node
         uses: actions/setup-node@v6

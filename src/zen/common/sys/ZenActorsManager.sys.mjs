@@ -37,11 +37,11 @@ let JSWINDOWACTORS = {
   ZenGlance: {
     parent: {
       esModuleURI:
-        "resource:///modules/zen/glance/actors/ZenGlanceParent.sys.mjs",
+        "resource:///actors/ZenGlanceParent.sys.mjs",
     },
     child: {
       esModuleURI:
-        "resource:///modules/zen/glance/actors/ZenGlanceChild.sys.mjs",
+        "resource:///actors/ZenGlanceChild.sys.mjs",
       events: {
         DOMContentLoaded: {},
         mousedown: {
@@ -65,11 +65,11 @@ if (!Services.appinfo.inSafeMode) {
   JSWINDOWACTORS.ZenBoosts = {
     parent: {
       esModuleURI:
-        "resource:///modules/zen/boosts/actors/ZenBoostsParent.sys.mjs",
+        "resource:///actors/ZenBoostsParent.sys.mjs",
     },
     child: {
       esModuleURI:
-        "resource:///modules/zen/boosts/actors/ZenBoostsChild.sys.mjs",
+        "resource:///actors/ZenBoostsChild.sys.mjs",
       events: {
         DOMWindowCreated: {},
         unload: {},

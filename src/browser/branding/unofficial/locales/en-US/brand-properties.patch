@@ -1,0 +1,14 @@
+diff --git a/browser/branding/unofficial/locales/en-US/brand.properties b/browser/branding/unofficial/locales/en-US/brand.properties
+index 346c3bdb509bf70237d4a1a4a6cd613f33fbf830..d84edbf71ed0fe8cdfa952aa01c5db069b2d64c7 100644
+--- a/browser/branding/unofficial/locales/en-US/brand.properties
++++ b/browser/branding/unofficial/locales/en-US/brand.properties
+@@ -2,6 +2,6 @@
+ # License, v. 2.0. If a copy of the MPL was not distributed with this
+ # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ 
+-brandShorterName=Nightly
+-brandShortName=Nightly
+-brandFullName=Nightly
++brandShorterName=Nevai
++brandShortName=Nevai
++brandFullName=Nevai Browser

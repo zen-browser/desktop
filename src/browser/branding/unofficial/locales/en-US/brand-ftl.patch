@@ -1,0 +1,19 @@
+diff --git a/browser/branding/unofficial/locales/en-US/brand.ftl b/browser/branding/unofficial/locales/en-US/brand.ftl
+index 5eaea9a7c4e874640464aff1c123ae3058d98302..403b1d0fd7caca8acba38fadef981ddcfbe3c985 100644
+--- a/browser/branding/unofficial/locales/en-US/brand.ftl
++++ b/browser/branding/unofficial/locales/en-US/brand.ftl
+@@ -16,10 +16,10 @@
+ ## For further details, consult:
+ ## https://mozilla-l10n.github.io/styleguides/mozilla_general/#brands-copyright-and-trademark
+ 
+--brand-shorter-name = Nightly
+--brand-short-name = Nightly
+--brand-shortcut-name = Nightly
+--brand-full-name = Nightly
++-brand-shorter-name = Nevai
++-brand-short-name = Nevai
++-brand-shortcut-name = Nevai
++-brand-full-name = Nevai Browser
+ # This brand name can be used in messages where the product name needs to
+ # remain unchanged across different versions (Nightly, Beta, etc.).
+ -brand-product-name = Firefox

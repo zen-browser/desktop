@@ -1,0 +1,10 @@
+diff --git a/browser/branding/unofficial/configure.sh b/browser/branding/unofficial/configure.sh
+index edd3bd3e86e50aade832687ffaf58db76189ff2b..40fe187f292dcd7f9e7676fdb99cd73fdd60d04f 100644
+--- a/browser/branding/unofficial/configure.sh
++++ b/browser/branding/unofficial/configure.sh
+@@ -2,4 +2,4 @@
+ # License, v. 2.0. If a copy of the MPL was not distributed with this
+ # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ 
+-MOZ_APP_DISPLAYNAME=Nightly
++MOZ_APP_DISPLAYNAME=Nevai

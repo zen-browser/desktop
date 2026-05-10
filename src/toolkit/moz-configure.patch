@@ -1,17 +1,17 @@
 diff --git a/toolkit/moz.configure b/toolkit/moz.configure
-index 226d0c5a93a9a2404e1974001da4e34b7b670067..b73277448f7d2706d316df2505e17d232f392d47 100644
+index 99cdcfe73d38dd55efe2c1c41e35acbd60851383..804b7af94f2e834d7d5a8315c3fe7de805dfa6b0 100644
 --- a/toolkit/moz.configure
 +++ b/toolkit/moz.configure
 @@ -22,6 +22,7 @@ def check_moz_app_id(moz_app_id, build_project):
  
  project_flag(
      env="MOZ_APP_VENDOR",
-+    default="Zen Team",
++    default="Nevai",
      nargs=1,
      help='Used for application.ini\'s "Vendor" field, which also impacts profile location and user-visible fields',
  )
-@@ -35,6 +36,7 @@ project_flag(
  
+@@ -35,6 +36,7 @@ project_flag(
  project_flag(
      "MOZ_APP_PROFILE",
 +    default="nevai",
@@ -33,7 +33,7 @@ index 226d0c5a93a9a2404e1974001da4e34b7b670067..b73277448f7d2706d316df2505e17d23
      help="Set distribution-specific id",
  )
  set_config("MOZ_DISTRIBUTION_ID", depends("--with-distribution-id")(lambda v: v[0]))
-@@ -931,9 +936,9 @@ set_config("MOZ_SYSTEM_AV1", True, when="--with-system-av1")
+@@ -876,9 +881,9 @@ set_config("MOZ_SYSTEM_AV1", True, when="--with-system-av1")
  option("--disable-jxl", help="Disable jxl image support")
  
  
@@ -46,7 +46,7 @@ index 226d0c5a93a9a2404e1974001da4e34b7b670067..b73277448f7d2706d316df2505e17d23
          return True
  
  
-@@ -2070,7 +2075,7 @@ set_define("A11Y_LOG", True, when=a11y_log)
+@@ -2030,7 +2035,7 @@ set_define("A11Y_LOG", True, when=a11y_log)
  # ==============================================================
  @depends(milestone)
  def require_signing(milestone):
@@ -55,7 +55,7 @@ index 226d0c5a93a9a2404e1974001da4e34b7b670067..b73277448f7d2706d316df2505e17d23
  
  
  option(
-@@ -3903,7 +3908,7 @@ with only_when(compile_environment):
+@@ -3914,7 +3919,7 @@ with only_when(compile_environment):
              return "Mozilla"
          elif target.os == "Android":
              return ".mozilla"

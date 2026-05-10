@@ -1,0 +1,14 @@
+diff --git a/browser/moz.configure b/browser/moz.configure
+index e0946a23cd1b4cb672f73d3e249a9d84ec519f6e..213bd80590bc20cc2a11a8c074c2d4a8db628c94 100644
+--- a/browser/moz.configure
++++ b/browser/moz.configure
+@@ -13,7 +13,8 @@ imply_option("MOZ_NORMANDY", True)
+ imply_option("MOZ_PROFILE_MIGRATOR", True)
+ 
+ 
+-imply_option("MOZ_APP_VENDOR", "Mozilla")
++imply_option("MOZ_APP_VENDOR", "Nevai")
++imply_option("MOZ_APP_PROFILE", "nevai")
+ imply_option("MOZ_APP_ID", "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}")
+ # Include the DevTools client, not just the server (which is the default)
+ imply_option("MOZ_DEVTOOLS", "all")

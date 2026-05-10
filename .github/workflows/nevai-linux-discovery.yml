@@ -1,7 +1,13 @@
 name: Nevai Linux Discovery
 
+permissions:
+  contents: read
+  actions: write
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  SCCACHE_GHA_ENABLED: "true"
+  CARGO_INCREMENTAL: "0"
   NEVAI_LINUX_BUILD_LOG: /tmp/nevai-linux-build.log
   NEVAI_LINUX_LOG_DIR: /tmp/nevai-linux-discovery-logs
   NEVAI_LINUX_BUILD_STATUS_FILE: /tmp/nevai-linux-discovery-logs/build-status.txt
@@ -14,7 +20,7 @@ on:
 
 concurrency:
   group: nevai-linux-discovery-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   linux-discovery:
@@ -50,6 +56,22 @@ jobs:
           pwd
           ls -la
 
+      - name: Free runner disk space
+        run: |
+          set -euxo pipefail
+
+          echo "== Disk before cleanup =="
+          df -h
+
+          sudo rm -rf /usr/local/lib/android || true
+          sudo rm -rf /usr/share/dotnet || true
+          sudo rm -rf /opt/ghc || true
+          sudo rm -rf /usr/local/.ghcup || true
+          sudo rm -rf /opt/hostedtoolcache/CodeQL || true
+
+          echo "== Disk after cleanup =="
+          df -h
+
       - name: Install basic system packages
         run: |
           set -euxo pipefail
@@ -83,6 +105,18 @@ jobs:
         with:
           node-version: 24
           cache: npm
+
+      - name: Setup sccache
+        uses: mozilla-actions/sccache-action@main
+        with:
+          disable_annotations: true
+
+      - name: Expose Actions cache variables for sccache
+        uses: actions/github-script@v6
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env['ACTIONS_CACHE_URL'])
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
 
       - name: Source smoke check
         run: |
@@ -149,12 +183,15 @@ jobs:
           ac_add_options --disable-debug
           ac_add_options --with-branding=browser/branding/unofficial
           ac_add_options --enable-update-channel=unofficial
+          ac_add_options --with-ccache=sccache
 
           # Discovery-only bypass for GitHub hosted Ubuntu missing WASI sysroot.
           ac_add_options --without-wasm-sandboxed-libraries
 
           # Keep GitHub-hosted runner resource use predictable during discovery.
-          mk_add_options MOZ_MAKE_FLAGS="-j2"
+          mk_add_options MOZ_MAKE_FLAGS="-j3"
+          mk_add_options 'export RUSTC_WRAPPER=sccache'
+          mk_add_options 'export SCCACHE_GHA_ENABLED=true'
 
           export MOZ_APP_BASENAME=Nevai
           export MOZ_APP_VENDOR=Nevai
@@ -182,6 +219,7 @@ jobs:
           rustc --version
           cargo --version
           cbindgen --version
+          sccache --version || true
           clang --version || true
           clang++ --version || true
           python3 --version
@@ -205,6 +243,8 @@ jobs:
           echo "== Starting direct Linux discovery build =="
           echo "Using MOZCONFIG: $MOZCONFIG_FILE"
           echo "Full build log: $NEVAI_LINUX_BUILD_LOG"
+          sccache --start-server || true
+          sccache --show-stats || true
 
           cd engine
 
@@ -259,6 +299,7 @@ jobs:
 
           echo
           echo "== Build exit code: $status =="
+          sccache --show-stats || true
 
           echo
           echo "== Last 120 lines =="

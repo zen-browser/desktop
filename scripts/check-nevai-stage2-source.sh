@@ -65,17 +65,21 @@ done
 echo "== Cross-platform branding assets =="
 for asset in \
   product/brand/assets/source/nevai-logo.svg \
-  product/brand/assets/generated/logo.png \
-  product/brand/assets/generated/logo16.png \
-  product/brand/assets/generated/logo32.png \
-  product/brand/assets/generated/logo48.png \
-  product/brand/assets/generated/logo64.png \
-  product/brand/assets/generated/logo128.png \
-  product/brand/assets/generated/logo256.png \
-  product/brand/assets/generated/logo512.png \
-  product/brand/assets/generated/firefox.ico \
-  product/brand/assets/generated/VisualElements_70.png \
-  product/brand/assets/generated/VisualElements_150.png
+  configs/branding/release/logo.png \
+  configs/branding/release/logo16.png \
+  configs/branding/release/logo32.png \
+  configs/branding/release/logo48.png \
+  configs/branding/release/logo64.png \
+  configs/branding/release/logo128.png \
+  configs/branding/release/logo256.png \
+  configs/branding/release/logo512.png \
+  configs/branding/release/firefox.ico \
+  configs/branding/release/VisualElements_70.png \
+  configs/branding/release/VisualElements_150.png \
+  configs/branding/twilight/logo.png \
+  configs/branding/twilight/firefox.ico \
+  configs/branding/twilight/VisualElements_70.png \
+  configs/branding/twilight/VisualElements_150.png
 do
   require_file "$asset"
   echo "OK asset: $asset"

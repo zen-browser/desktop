@@ -1,0 +1,208 @@
+name: Nevai Windows Real Build Discovery
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: "How far to run Windows discovery"
+        required: true
+        default: through-import
+        type: choice
+        options:
+          - through-import
+          - full-build
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nevai-windows-real-build-discovery-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  windows-real-build-discovery:
+    name: Windows real build discovery
+    runs-on: windows-latest
+    timeout-minutes: 360
+
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      NEVAI_WINDOWS_LOG_DIR: ${{ runner.temp }}\nevai-windows-discovery-logs
+      NEVAI_WINDOWS_BUILD_LOG: ${{ runner.temp }}\nevai-windows-build.log
+      NEVAI_WINDOWS_BUILD_STATUS_FILE: ${{ runner.temp }}\nevai-windows-discovery-logs\build-status.txt
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Show runner resources
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          "== PowerShell =="
+          $PSVersionTable
+
+          "== System =="
+          systeminfo
+
+          "== Disk =="
+          Get-PSDrive -PSProvider FileSystem
+
+          "== Workspace =="
+          Get-Location
+          Get-ChildItem
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Source smoke check
+        shell: bash
+        run: ./scripts/check-nevai-stage2-source.sh
+
+      - name: Install npm dependencies
+        shell: pwsh
+        run: npm ci
+
+      - name: Download Firefox source
+        shell: pwsh
+        run: npm run download
+
+      - name: Generate prefs and service dumps
+        shell: pwsh
+        run: |
+          npm run ffprefs
+          python scripts/update_service_dumps.py
+
+      - name: Surfer import
+        shell: pwsh
+        run: npm run surfer -- import
+
+      - name: Install MozillaBuild
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          $Installer = Join-Path $env:RUNNER_TEMP "MozillaBuildSetup-Latest.exe"
+          Invoke-WebRequest -Uri "https://ftp.mozilla.org/pub/mozilla/libraries/win32/MozillaBuildSetup-Latest.exe" -OutFile $Installer
+          Start-Process -FilePath $Installer -ArgumentList "/S" -Wait
+
+          if (!(Test-Path "C:\mozilla-build\start-shell.bat")) {
+            throw "MozillaBuild start-shell.bat was not installed"
+          }
+
+      - name: Bootstrap in MozillaBuild shell
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          $WorkspaceUnix = $env:GITHUB_WORKSPACE -replace "\\", "/"
+          $Drive = $WorkspaceUnix.Substring(0, 1).ToLowerInvariant()
+          $WorkspaceUnix = "/" + $Drive + $WorkspaceUnix.Substring(2)
+          $Script = Join-Path $env:RUNNER_TEMP "nevai-windows-bootstrap.sh"
+
+          @"
+          set -euxo pipefail
+          cd "$WorkspaceUnix/engine"
+          export PATH=/c/mozilla-build/msys2/usr/bin:`$PATH
+          ./mach --no-interactive bootstrap --application-choice browser
+          "@ | Set-Content -LiteralPath $Script -Encoding ASCII
+
+          C:\mozilla-build\start-shell.bat $Script
+
+      - name: Optional full Windows build discovery
+        if: ${{ inputs.scope == 'full-build' }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+
+          New-Item -ItemType Directory -Path $env:NEVAI_WINDOWS_LOG_DIR -Force | Out-Null
+          Remove-Item -LiteralPath $env:NEVAI_WINDOWS_BUILD_LOG, $env:NEVAI_WINDOWS_BUILD_STATUS_FILE -Force -ErrorAction SilentlyContinue
+
+          "== Starting Windows full build discovery =="
+          "Full build log: $env:NEVAI_WINDOWS_BUILD_LOG"
+
+          npm run surfer -- build --skip-patch-check *> $env:NEVAI_WINDOWS_BUILD_LOG
+          $Status = $LASTEXITCODE
+
+          "== Build exit code: $Status =="
+          Get-Content -LiteralPath $env:NEVAI_WINDOWS_BUILD_LOG -Tail 120 -ErrorAction SilentlyContinue
+
+          "$Status" | Set-Content -LiteralPath $env:NEVAI_WINDOWS_BUILD_STATUS_FILE -Encoding ASCII
+
+          if ($Status -ne 0) {
+            exit $Status
+          }
+
+      - name: Package Windows alpha if full build succeeded
+        if: ${{ inputs.scope == 'full-build' }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          if (!(Test-Path -LiteralPath $env:NEVAI_WINDOWS_BUILD_STATUS_FILE)) {
+            "Build status file missing; skipping Windows package step."
+            exit 0
+          }
+
+          $Status = (Get-Content -LiteralPath $env:NEVAI_WINDOWS_BUILD_STATUS_FILE -Raw).Trim()
+          if ($Status -ne "0") {
+            "Windows build status is $Status; skipping Windows package step."
+            exit 0
+          }
+
+          .\scripts\package-nevai-windows-alpha.ps1
+
+      - name: Upload Windows alpha artifact
+        if: ${{ always() && inputs.scope == 'full-build' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: nevai-windows-alpha-dev
+          path: |
+            ../builds-local/windows/Nevai-windows-alpha-dev.zip
+            ../builds-local/windows/Nevai-windows-alpha-dev.SHA256.txt
+            ../builds-local/windows/README-alpha.txt
+          if-no-files-found: warn
+          retention-days: 7
+          compression-level: 0
+
+      - name: Collect Windows discovery logs
+        if: ${{ always() }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Continue"
+
+          New-Item -ItemType Directory -Path $env:NEVAI_WINDOWS_LOG_DIR -Force | Out-Null
+
+          if (Test-Path -LiteralPath $env:NEVAI_WINDOWS_BUILD_LOG) {
+            Copy-Item -LiteralPath $env:NEVAI_WINDOWS_BUILD_LOG -Destination (Join-Path $env:NEVAI_WINDOWS_LOG_DIR "nevai-windows-build.log") -Force
+            Get-Content -LiteralPath $env:NEVAI_WINDOWS_BUILD_LOG -Tail 500 | Set-Content -LiteralPath (Join-Path $env:NEVAI_WINDOWS_LOG_DIR "build-log-tail.txt") -Encoding UTF8
+          }
+
+          @"
+          == Engine obj dirs ==
+          $((Get-ChildItem -Path engine -Directory -Filter "obj-*" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName) -join "`n")
+
+          == Possible dist/bin ==
+          $((Get-ChildItem -Path engine -Directory -Recurse -Filter bin -ErrorAction SilentlyContinue | Where-Object { $_.FullName -match "\\dist\\bin$" } | Select-Object -ExpandProperty FullName) -join "`n")
+
+          == Disk ==
+          $(Get-PSDrive -PSProvider FileSystem | Out-String)
+          "@ | Set-Content -LiteralPath (Join-Path $env:NEVAI_WINDOWS_LOG_DIR "build-output-candidates.txt") -Encoding UTF8
+
+          Get-ChildItem -LiteralPath $env:NEVAI_WINDOWS_LOG_DIR -Recurse -File | Sort-Object FullName
+
+      - name: Upload Windows discovery logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: nevai-windows-discovery-logs
+          path: ${{ runner.temp }}\nevai-windows-discovery-logs
+          if-no-files-found: warn
+          retention-days: 7
+          compression-level: 0

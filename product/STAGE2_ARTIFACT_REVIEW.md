@@ -55,6 +55,7 @@ Use PowerShell:
 Get-FileHash .\Nevai-windows-alpha-dev.zip -Algorithm SHA256
 Expand-Archive .\Nevai-windows-alpha-dev.zip .\test-windows
 Get-ChildItem .\test-windows -Recurse -Filter application.ini
+.\scripts\qa-nevai-windows-alpha.ps1 -DistBin .\test-windows\bin
 ```
 
 ## Blockers
@@ -66,4 +67,3 @@ Get-ChildItem .\test-windows -Recurse -Filter application.ini
 - active updater points at Zen infrastructure
 - actor load errors for `ZenBoostsChild` or `ZenGlanceChild`
 - missing README-alpha
-

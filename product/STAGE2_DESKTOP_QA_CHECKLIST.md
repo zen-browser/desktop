@@ -68,6 +68,12 @@ Windows expected:
 - `nevai.exe` exists, or the accepted Windows executable name is documented
 - updater is disabled in `application.ini`
 
+Windows scripted check:
+
+```powershell
+.\scripts\qa-nevai-windows-alpha.ps1
+```
+
 ## Runtime Checks
 
 For each platform:
@@ -111,4 +117,3 @@ An artifact passes Stage 2 QA when:
 - updater is disabled
 - blocker grep is clean
 - basic browsing works
-

@@ -13,6 +13,7 @@ Completed:
 - Stage 1 macOS local unsigned alpha
 - Stage 2.0 planning and baseline protection
 - Stage 2.1 source smoke CI
+- Windows source discovery
 
 ## Branches
 
@@ -43,6 +44,7 @@ Completed:
 - Do not claim Linux artifact completion until the artifact is uploaded and QA passes.
 - Do not auto-cancel in-progress Linux discovery runs on push; avoid stacking pushes while a long run is active.
 - Run `mach build` in the foreground and use a sidecar heartbeat, so the build process itself is not hidden behind a background shell wrapper.
+- Prepare Windows real build discovery without running it automatically.
 
 ## Next Decision
 
@@ -51,3 +53,4 @@ After the next Linux discovery run:
 - If build fails with a source error, fix that specific error.
 - If build hits the 6 hour GitHub job limit, decide between caching, lower-cost build options, a larger runner, or a self-hosted runner.
 - If build succeeds and `dist/bin` exists, use the uploaded Linux artifact and record the QA result.
+- For Windows, run real build discovery manually after Linux result or when runner capacity is available.

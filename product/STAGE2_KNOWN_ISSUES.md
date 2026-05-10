@@ -24,7 +24,7 @@ After Linux artifact upload, run Stage 2 artifact review and Linux QA.
 
 Status: not started
 
-Windows source discovery passes. The next Windows step is real build discovery using MozillaBuild or the repo's existing Linux-hosted Windows cross-build pattern.
+Windows source discovery passes. Windows QA/package scripts and a real-build discovery runbook exist. The next Windows step is real build discovery using MozillaBuild or the repo's existing Linux-hosted Windows cross-build pattern.
 
 ### Windows Artifact Pending
 
@@ -54,4 +54,3 @@ Protected by:
 Status: closed
 
 Windows checkout, Node setup, Stage 2 source smoke, and `npm ci --ignore-scripts` passed on GitHub Actions.
-

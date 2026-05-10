@@ -29,6 +29,7 @@ require_file product/STAGE2_DESKTOP_QA_CHECKLIST.md
 require_file product/STAGE2_ARTIFACT_REVIEW.md
 require_file product/STAGE2_LINUX_DISCOVERY.md
 require_file product/STAGE2_WINDOWS_DISCOVERY.md
+require_file product/STAGE2_WINDOWS_REAL_BUILD_DISCOVERY.md
 require_file product/STAGE2_BUILD_RESULTS_TEMPLATE.md
 require_file product/STAGE2_STATUS.md
 require_file product/STAGE2_KNOWN_ISSUES.md
@@ -36,6 +37,7 @@ require_file product/STAGE3_DESKTOP_PACKAGING_PLAN.md
 require_file .github/workflows/nevai-stage2-smoke.yml
 require_file .github/workflows/nevai-linux-discovery.yml
 require_file .github/workflows/nevai-windows-discovery.yml
+require_file .github/workflows/nevai-windows-real-build-discovery.yml
 
 echo "== Required Stage 1 macOS alpha scripts =="
 require_executable scripts/apply-nevai-about-dialog-branding.sh
@@ -49,6 +51,8 @@ echo "== Required Stage 2 check script =="
 require_executable scripts/check-nevai-stage2-source.sh
 require_executable scripts/qa-nevai-linux-alpha.sh
 require_executable scripts/package-nevai-linux-alpha.sh
+require_file scripts/qa-nevai-windows-alpha.ps1
+require_file scripts/package-nevai-windows-alpha.ps1
 
 echo "== Shell syntax =="
 for script in \
@@ -65,6 +69,18 @@ do
   bash -n "$script"
   echo "OK syntax: $script"
 done
+
+echo "== PowerShell syntax =="
+if command -v pwsh >/dev/null 2>&1; then
+  for script in \
+    scripts/qa-nevai-windows-alpha.ps1 \
+    scripts/package-nevai-windows-alpha.ps1
+  do
+    pwsh -NoProfile -Command '$errors = $null; [System.Management.Automation.Language.Parser]::ParseFile($args[0], [ref]$null, [ref]$errors) | Out-Null; if ($errors.Count -gt 0) { $errors | ForEach-Object { Write-Error $_ }; exit 1 }; Write-Host "OK PowerShell syntax: $($args[0])"' "$script"
+  done
+else
+  echo "WARN: pwsh not available; skipped PowerShell syntax checks"
+fi
 
 echo "== Cross-platform branding assets =="
 for asset in \

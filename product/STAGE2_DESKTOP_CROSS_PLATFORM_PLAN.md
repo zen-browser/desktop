@@ -238,8 +238,8 @@ Target:
 Likely files after discovery:
 
 - `scripts/build-nevai-windows-alpha.ps1` or `.sh`
-- `scripts/qa-nevai-windows-alpha.ps1` or `.sh`
-- `scripts/package-nevai-windows-alpha.ps1` or `.sh`
+- `scripts/qa-nevai-windows-alpha.ps1`
+- `scripts/package-nevai-windows-alpha.ps1`
 
 Checks:
 
@@ -257,6 +257,12 @@ Checks:
 Success:
 
 - Windows portable artifact exists with checksum and README-alpha.
+
+Current prep:
+
+- Windows source discovery passes.
+- Windows real build discovery runbook exists.
+- Windows QA and package scripts are ready for the first successful `dist/bin` output.
 
 ## Phase 2.6 - Cross-Platform CI Matrix
 

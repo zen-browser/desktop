@@ -6,6 +6,12 @@ Find the first real Windows blocker or confirm that a Windows build can complete
 
 This phase is discovery. Do not package Windows yet unless the build succeeds and the output layout is understood.
 
+Current status:
+
+- Source discovery has passed on GitHub Actions.
+- Real build discovery is defined separately in `product/STAGE2_WINDOWS_REAL_BUILD_DISCOVERY.md`.
+- Windows QA and packaging scripts exist, but they are blocked until a Windows `dist/bin` output exists.
+
 ## Branch
 
 Use a dedicated branch after the smoke workflow is green:
@@ -37,6 +43,13 @@ npm run surfer -- build --skip-patch-check
 ```
 
 If the shell changes from PowerShell to MozillaBuild bash, record that explicitly.
+
+If a Windows `dist/bin` output is produced, run:
+
+```powershell
+.\scripts\qa-nevai-windows-alpha.ps1
+.\scripts\package-nevai-windows-alpha.ps1
+```
 
 ## What To Capture
 
@@ -72,6 +85,12 @@ One of these is enough:
 
 - Windows build succeeds.
 - Windows build fails and the first real blocker is documented clearly enough to fix.
+
+Windows artifact success additionally requires:
+
+- Windows QA passes.
+- `Nevai-windows-alpha-dev.zip` exists.
+- SHA-256 and README-alpha exist.
 
 ## Do Not Do Yet
 

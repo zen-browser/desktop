@@ -38,9 +38,9 @@ jobs:
           fetch-depth: 1
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version-file: ".nvmrc"
+          node-version: 24
 
       - name: Print tool versions
         shell: bash
@@ -63,9 +63,9 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version-file: ".nvmrc"
+          node-version: 24
           cache: npm
 
       - name: Install npm dependencies without lifecycle scripts

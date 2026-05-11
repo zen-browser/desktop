@@ -698,11 +698,6 @@ window.gZenUIManager = {
       this.urlbarShowDomainOnly
     ) {
       let url = BrowserUIUtils.removeSingleTrailingSlashFromURL(aURL);
-      requestIdleCallback(() => {
-        // Scroll the urlbar all the way to the right so that
-        // the domain is always visible when the url is too long.
-        gURLBar.inputField.scrollLeft = gURLBar.inputField.scrollWidth;
-      });
       let stripped = url.startsWith("https://") ? url.split("/")[2] : url;
       if (stripped.startsWith("www.")) {
         stripped = stripped.substring(4);

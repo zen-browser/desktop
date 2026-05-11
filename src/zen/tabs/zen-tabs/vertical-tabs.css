@@ -335,7 +335,7 @@
     #tabbrowser-tabs:not([movingtab])
     &:active:not(:has(.tab-content > image:active)) {
       scale: var(--zen-active-tab-scale);
-      rotate: 0.02deg; /* Subtle rotation to trigger GPU acceleration and prevent blurriness */
+      rotate: 0.01deg; /* Subtle rotation to trigger GPU acceleration and prevent blurriness */
     }
 
     :root:not([zen-renaming-tab="true"])
@@ -1131,6 +1131,7 @@
   transition:
     max-height 0.3s ease-out,
     grid-template-columns 0.3s ease-out;
+  will-change: transform;
   opacity: 1;
   --min-essentials-width-wrap: calc(var(--tab-min-height) + 4px);
   grid-template-columns: repeat(auto-fit, minmax(max(23.7%, var(--min-essentials-width-wrap)), 1fr));
@@ -1325,6 +1326,7 @@
   padding: 0;
   outline: none !important;
   border-radius: 0;
+  width: 100%;
 }
 
 /* ==========================================================================

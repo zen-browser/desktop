@@ -137,8 +137,6 @@ class nsZenWorkspaces {
       document.documentElement.setAttribute("zen-private-window", "true");
     }
 
-    this.popupOpenHandler = this._popupOpenHandler.bind(this);
-
     window.addEventListener("resize", this.onWindowResize.bind(this));
     this.addPopupListeners();
 
@@ -599,16 +597,6 @@ class nsZenWorkspaces {
     );
   }
 
-  _popupOpenHandler() {
-    // If a popup is opened, we should stop the swipe gesture
-    if (this._swipeManager?.isGestureActive) {
-      document.documentElement.removeAttribute("swipe-gesture");
-      gZenUIManager.tabsWrapper.style.removeProperty("scrollbar-width");
-      this.updateTabsContainers();
-      this._cancelSwipeAnimation();
-    }
-  }
-
   get activeWorkspace() {
     return this.#activeWorkspace;
   }
@@ -828,14 +816,12 @@ class nsZenWorkspaces {
 
     let removedEmptyTab = false;
     let initialTabWasEmpty = false;
-    if (
-      this._initialTab &&
-      !(this._initialTab._shouldRemove && this._initialTab._veryPossiblyEmpty)
-    ) {
-      initialTabWasEmpty = !!this._initialTab._veryPossiblyEmpty;
-      gBrowser.selectedTab = this._initialTab;
-      this.moveTabToWorkspace(this._initialTab, this.activeWorkspace);
-      gBrowser.moveTabTo(this._initialTab, {
+    if (this._shouldOverrideTabs) {
+      let initialTab = this._initialTab || gBrowser.selectedTab;
+      initialTabWasEmpty = !!initialTab._veryPossiblyEmpty;
+      gBrowser.selectedTab = initialTab;
+      this.moveTabToWorkspace(initialTab, this.activeWorkspace);
+      gBrowser.moveTabTo(initialTab, {
         forceUngrouped: true,
         tabIndex: 0,
       });
@@ -1907,7 +1893,9 @@ class nsZenWorkspaces {
     } = {}
   ) {
     gZenUIManager.tabsWrapper.style.scrollbarWidth = "none";
-    const kGlobalAnimationDuration = 0.2;
+    const kGlobalAnimationDuration =
+      Services.prefs.getIntPref("zen.workspaces.switch-animation-duration") /
+      1000;
     this._animatingChange = true;
     const animations = [];
     const workspaces = this.getWorkspaces();
@@ -1995,26 +1983,41 @@ class nsZenWorkspaces {
       );
       const offset = -(newWorkspaceIndex - elementWorkspaceIndex) * 100;
       const newTransform = `translateX(${offset}%)`;
+      // Only animate the workspace that is coming in, to avoid having multiple workspaces
+      // animating off-screen at the same time which can cause performance issues. With an off
+      // set of 1 or -1, so we animate the current workspace and the next one.
+      const goingLeft = newWorkspaceIndex < previousWorkspaceIndex;
+      const willBeVisible =
+        (goingLeft &&
+          elementWorkspaceIndex >= newWorkspaceIndex &&
+          elementWorkspaceIndex <= previousWorkspaceIndex) ||
+        (!goingLeft &&
+          elementWorkspaceIndex <= newWorkspaceIndex &&
+          elementWorkspaceIndex >= previousWorkspaceIndex);
       if (shouldAnimate) {
-        const existingPaddingTop = element.style.paddingTop;
-        animations.push(
-          gZenUIManager.motion.animate(
-            element,
-            {
-              transform: existingTransform
-                ? [existingTransform, newTransform]
-                : newTransform,
-              paddingTop: existingTransform
-                ? [existingPaddingTop, existingPaddingTop]
-                : existingPaddingTop,
-            },
-            {
-              type: "spring",
-              bounce: 0,
-              duration: kGlobalAnimationDuration,
-            }
-          )
-        );
+        if (!willBeVisible) {
+          element.style.transform = newTransform;
+        } else {
+          const existingPaddingTop = element.style.paddingTop;
+          animations.push(
+            gZenUIManager.motion.animate(
+              element,
+              {
+                transform: existingTransform
+                  ? [existingTransform, newTransform]
+                  : newTransform,
+                paddingTop: existingTransform
+                  ? [existingPaddingTop, existingPaddingTop]
+                  : existingPaddingTop,
+              },
+              {
+                type: "spring",
+                bounce: 0,
+                duration: kGlobalAnimationDuration,
+              }
+            )
+          );
+        }
       }
       element.active = offset === 0;
       if (offset === 0) {

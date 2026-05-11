@@ -1,0 +1,31 @@
+name: Nevai Alpha Release Gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: "Release gate scope"
+        required: true
+        default: docs
+        type: choice
+        options:
+          - docs
+          - macos
+          - desktop
+
+permissions:
+  contents: read
+
+jobs:
+  release-gate:
+    name: Alpha release gate (${{ inputs.scope }})
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Run release gate
+        run: ./scripts/check-nevai-alpha-release-gate.sh --scope=${{ inputs.scope }}

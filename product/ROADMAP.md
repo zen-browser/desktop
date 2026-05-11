@@ -111,3 +111,7 @@ Future work:
 - telemetry/privacy decision
 - account/sync strategy
 - update service
+
+Planning file:
+
+- `product/STAGE8_PRODUCT_ECOSYSTEM_PLAN.md`

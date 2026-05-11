@@ -1,0 +1,64 @@
+name: Alpha Test Report
+description: Report results from testing a Nevai Browser Desktop alpha artifact
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # Nevai Browser Desktop Alpha Test Report
+
+        Use this for alpha artifact test results, including successful tests and platform-specific failures.
+
+  - type: input
+    id: artifact
+    attributes:
+      label: Artifact
+      description: Exact artifact filename tested.
+      placeholder: Nevai-macos-alpha-dev.zip
+    validations:
+      required: true
+
+  - type: input
+    id: commit
+    attributes:
+      label: Source commit
+      description: Commit SHA or tag used for the artifact.
+      placeholder: stage1-macos-alpha-v0.1
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - macOS - aarch64
+        - macOS - Intel
+        - Linux - x64
+        - Windows - x64
+        - Windows - aarch64
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: smoke
+    attributes:
+      label: Smoke checks
+      options:
+        - label: App launches
+        - label: App icon is Nevai
+        - label: About dialog says Nevai
+        - label: Settings opens
+        - label: Private window opens
+        - label: A website opens
+        - label: Download works
+        - label: Updater is disabled
+        - label: No visible Nightly branding
+        - label: No Zen update server request observed
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: Add failures, warnings, logs, screenshots, or anything unusual.
+    validations:
+      required: true

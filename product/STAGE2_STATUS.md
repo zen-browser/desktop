@@ -6,7 +6,12 @@ Stage 2 - Desktop Cross-Platform Alpha
 
 Current active phase:
 
-- Phase 2.2 - Linux Build Discovery
+- Phase 2.2 - Linux Build Discovery, runner-dependent
+
+Parallel product work:
+
+- Later-stage planning and public-alpha preparation can continue.
+- Stage 2 must not be marked complete until Linux and Windows artifacts are proven.
 
 Completed:
 
@@ -22,6 +27,30 @@ Completed:
 - Stage 2 plan: `nevai/stage2-planning`
 - Stage 2 smoke: `nevai/stage2-ci-smoke`
 - Linux discovery: `nevai/stage2-linux-discovery`
+
+## Stage 2 Completion Status
+
+Stage 2 is not complete.
+
+Completed:
+
+- Source smoke CI across macOS, Linux, and Windows
+- macOS Stage 1 alpha baseline
+- Linux discovery workflow hardening
+- Windows source discovery
+- Windows real-build discovery workflow preparation
+
+Blocked or pending:
+
+- Linux full build result
+- Linux portable artifact
+- Windows import/bootstrap result
+- Windows full build result
+- Windows portable artifact
+
+Current manual Linux discovery run:
+
+- https://github.com/ali-ezz/nevai-browser-desktop/actions/runs/25644465303
 
 ## Current Findings
 

@@ -4,18 +4,9 @@ body:
   - type: markdown
     attributes:
       value: |
-        <p align="center">
-          <a href="https://zen-browser.app">
-            <picture>
-              <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/zen-browser/desktop/dev/docs/assets/zen-light.svg">
-              <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/zen-browser/desktop/dev/docs/assets/zen-dark.svg">
-              <img src="https://raw.githubusercontent.com/zen-browser/desktop/dev/docs/assets/zen-light.svg" alt="Zen Logo" width="64" height="64">
-            </picture>
-            <img src="https://raw.githubusercontent.com/zen-browser/desktop/dev/docs/assets/zen-browser.svg" alt="Zen Browser Text" width="156" height="64">
-          </a>
-        </p>
+        # Nevai Browser Desktop Bug Report
 
-        <p align="center"><em>Thank you for filing a bug report!</em></p>
+        Thank you for filing a bug report.
 
         > [!IMPORTANT]
         > - Please provide descriptive titles. Bad titles do more harm than good.
@@ -78,8 +69,8 @@ body:
     id: version
     attributes:
       label: Version
-      description: What version of our software are you running? Please do not use "latest" or "newest" as version numbers. Go to `Help -> About Zen` to find the version number.
-      placeholder: 1.0.0b
+      description: What version of Nevai Browser Desktop are you running? Please do not use "latest" or "newest" as version numbers. Go to `Help -> About Nevai` to find the version number.
+      placeholder: 0.1.0-alpha
     validations:
       required: true
   - type: dropdown

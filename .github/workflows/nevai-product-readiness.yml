@@ -1,0 +1,40 @@
+name: Nevai Product Readiness
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "nevai/stage2-*"
+      - "nevai/stage3-*"
+      - "nevai/product-*"
+      - "nevai/public-*"
+  pull_request:
+    branches:
+      - "nevai/stage2-*"
+      - "nevai/stage3-*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  readiness:
+    name: Product readiness smoke
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Setup ripgrep
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ripgrep
+
+      - name: Run product readiness smoke
+        run: ./scripts/check-nevai-product-readiness.sh

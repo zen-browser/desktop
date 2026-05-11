@@ -8,4 +8,6 @@
 
 ## Reporting a Vulnerability
 
-Please report security vulnerabilities [here](https://github.com/zen-browser/desktop/security/advisories/new)
+Please report security vulnerabilities through this repository's private advisory flow:
+
+https://github.com/ali-ezz/nevai-browser-desktop/security/advisories/new

@@ -14,6 +14,17 @@ require_file() {
   [ -f "$path" ] || fail "Missing required file: $path"
 }
 
+search_files() {
+  local pattern="$1"
+  shift
+
+  if command -v rg >/dev/null 2>&1; then
+    rg -n "$pattern" "$@"
+  else
+    grep -RInE "$pattern" "$@"
+  fi
+}
+
 echo "== Nevai product readiness smoke =="
 
 echo "== Roadmap and stage plans =="
@@ -48,7 +59,7 @@ require_file SECURITY.md
 require_file .github/ISSUE_TEMPLATE/bug_report.yml
 require_file .github/ISSUE_TEMPLATE/config.yml
 
-if rg -n "zen-browser/desktop|zen-browser\\.app|About Zen|Zen Browser Text|Zen Logo" \
+if search_files "zen-browser/desktop|zen-browser\\.app|About Zen|Zen Browser Text|Zen Logo" \
   SECURITY.md .github/ISSUE_TEMPLATE product/public-alpha product/ROADMAP.md \
   >/tmp/nevai-product-readiness-zen-hits.txt
 then
@@ -58,7 +69,7 @@ fi
 echo "OK no stale Zen public-support references"
 
 echo "== Public release honesty =="
-if rg -n "Stage 2 status: complete|Stage 2: complete|cross-platform alpha: ready|stable release: ready|public stable: ready" \
+if search_files "Stage 2 status: complete|Stage 2: complete|cross-platform alpha: ready|stable release: ready|public stable: ready" \
   product/ROADMAP.md product/STAGE2_STATUS.md product/STAGE2_PAUSE_NOTE.md product/STAGE6_PUBLIC_ALPHA_READINESS_PLAN.md \
   >/tmp/nevai-product-readiness-claim-hits.txt
 then

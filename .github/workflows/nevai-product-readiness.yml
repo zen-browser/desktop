@@ -31,10 +31,5 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Setup ripgrep
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ripgrep
-
       - name: Run product readiness smoke
         run: ./scripts/check-nevai-product-readiness.sh

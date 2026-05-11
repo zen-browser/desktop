@@ -33,7 +33,9 @@ If `npm run import` fails because the engine checkout already contains a conscio
 
 The GitHub Actions discovery workflow currently runs the build through a generated Linux mozconfig and a direct `./mach build` after surfer import. It intentionally has no internal build timeout and no quiet-output stall killer, because Firefox/Rust link phases can be quiet for a long time. The only outer cap is the GitHub Actions job timeout.
 
-The workflow also uses sccache and GitHub Actions cache variables. If the runner cancels before the first full build, repeat runs should have a better chance of reusing compiled work instead of starting completely cold.
+The workflow also uses the repo's stronger Linux release runner class, sccache, and GitHub Actions cache variables. If the runner cancels before the first full build, repeat runs should have a better chance of reusing compiled work instead of starting completely cold.
+
+The build runs in the foreground with a sidecar heartbeat. This avoids hiding `mach build` behind a background wrapper while still keeping regular CI output visible.
 
 Do not push repeatedly to the Linux discovery branch while a long run is active. The workflow is configured not to auto-cancel in-progress runs, but stacked full browser builds still waste runner time.
 

@@ -25,7 +25,7 @@ concurrency:
 jobs:
   linux-discovery:
     name: Linux build discovery
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-8vcpu-ubuntu-2404
     timeout-minutes: 360
 
     steps:
@@ -246,56 +246,41 @@ jobs:
           sccache --start-server || true
           sccache --show-stats || true
 
-          cd engine
+          heartbeat() {
+            while true; do
+              sleep 300
 
-          env MOZCONFIG="$MOZCONFIG_FILE" ./mach build > "$NEVAI_LINUX_BUILD_LOG" 2>&1 &
-          build_pid=$!
-          started_at=$(date +%s)
-          last_tail_at=$started_at
-          last_progress_at=$started_at
-          last_line_count=0
-          status=0
+              echo
+              echo "== Linux build heartbeat =="
+              df -h "$GITHUB_WORKSPACE" || true
 
-          echo "Build PID: $build_pid"
-          echo "Build timeout: none; GitHub job timeout-minutes remains the outer limit."
-          echo "Stall timeout: none; quiet Rust/link phases are allowed to finish."
+              if [ -f "$NEVAI_LINUX_BUILD_LOG" ]; then
+                echo "Build log size:"
+                wc -l "$NEVAI_LINUX_BUILD_LOG" || true
+                du -h "$NEVAI_LINUX_BUILD_LOG" || true
 
-          while kill -0 "$build_pid" 2>/dev/null; do
-            now=$(date +%s)
-            elapsed=$((now - started_at))
-
-            echo
-            echo "== Linux build heartbeat: ${elapsed}s elapsed =="
-            df -h "$GITHUB_WORKSPACE" || true
-
-            if [ -f "$NEVAI_LINUX_BUILD_LOG" ]; then
-              echo "Build log size:"
-              line_count=$(wc -l < "$NEVAI_LINUX_BUILD_LOG" || echo 0)
-              echo "$line_count $NEVAI_LINUX_BUILD_LOG"
-              du -h "$NEVAI_LINUX_BUILD_LOG" || true
-
-              if [ "$line_count" -gt "$last_line_count" ]; then
-                last_line_count=$line_count
-                last_progress_at=$now
-              fi
-
-              idle_seconds=$((now - last_progress_at))
-              echo "Seconds since build log progress: $idle_seconds"
-
-              if [ $((now - last_tail_at)) -ge 300 ]; then
                 echo
                 echo "== Recent build log tail =="
                 tail -n 80 "$NEVAI_LINUX_BUILD_LOG" || true
-                last_tail_at=$now
+              else
+                echo "Build log has not been created yet."
               fi
-            else
-              echo "Build log has not been created yet."
-            fi
+            done
+          }
 
-            sleep 60
-          done
+          heartbeat &
+          heartbeat_pid=$!
+          trap 'kill "$heartbeat_pid" 2>/dev/null || true' EXIT
 
-          wait "$build_pid" || status=$?
+          cd engine
+
+          set +e
+          stdbuf -oL -eL env MOZCONFIG="$MOZCONFIG_FILE" ./mach build 2>&1 | tee "$NEVAI_LINUX_BUILD_LOG"
+          status=${PIPESTATUS[0]}
+          set -e
+
+          echo "Build timeout: none; GitHub job timeout-minutes remains the outer limit."
+          echo "Stall timeout: none; quiet Rust/link phases are allowed to finish."
 
           echo
           echo "== Build exit code: $status =="

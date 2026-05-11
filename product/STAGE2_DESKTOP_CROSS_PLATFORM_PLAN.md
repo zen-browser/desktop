@@ -162,6 +162,7 @@ Success:
 
 Current CI rule:
 
+- Heavy Linux discovery runs are manual-only. Normal pushes should run source smoke, not a full browser build.
 - Do not kill quiet Linux build phases from workflow logic. Let the build finish, fail naturally, or hit the GitHub job limit.
 - If the build succeeds, run Linux QA and package/upload the portable artifact in the same workflow run.
 

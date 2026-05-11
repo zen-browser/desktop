@@ -14,9 +14,6 @@ env:
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - nevai/stage2-linux-discovery
 
 concurrency:
   group: nevai-linux-discovery-${{ github.ref }}

@@ -131,13 +131,76 @@ jobs:
           "== Starting Windows full build discovery =="
           "Full build log: $env:NEVAI_WINDOWS_BUILD_LOG"
 
-          npm run surfer -- build --skip-patch-check *> $env:NEVAI_WINDOWS_BUILD_LOG
-          $Status = $LASTEXITCODE
+          $StdoutLog = "$env:NEVAI_WINDOWS_BUILD_LOG.stdout"
+          $StderrLog = "$env:NEVAI_WINDOWS_BUILD_LOG.stderr"
+          Remove-Item -LiteralPath $StdoutLog, $StderrLog -Force -ErrorAction SilentlyContinue
+
+          $Process = Start-Process -FilePath "cmd.exe" `
+            -ArgumentList "/c", "npm run surfer -- build --skip-patch-check" `
+            -NoNewWindow `
+            -RedirectStandardOutput $StdoutLog `
+            -RedirectStandardError $StderrLog `
+            -PassThru
+
+          while (-not $Process.HasExited) {
+            Start-Sleep -Seconds 300
+
+            ""
+            "== Windows build heartbeat =="
+            Get-PSDrive -PSProvider FileSystem | Out-String
+
+            if (Test-Path -LiteralPath $StdoutLog) {
+              "stdout log:"
+              Get-Item -LiteralPath $StdoutLog | Select-Object FullName, Length, LastWriteTime | Format-List | Out-String
+              Get-Content -LiteralPath $StdoutLog -Tail 60 -ErrorAction SilentlyContinue
+            }
+
+            if (Test-Path -LiteralPath $StderrLog) {
+              "stderr log:"
+              Get-Item -LiteralPath $StderrLog | Select-Object FullName, Length, LastWriteTime | Format-List | Out-String
+              Get-Content -LiteralPath $StderrLog -Tail 60 -ErrorAction SilentlyContinue
+            }
+          }
+
+          $Process.WaitForExit()
+          $Status = $Process.ExitCode
+
+          "== stdout ==" | Set-Content -LiteralPath $env:NEVAI_WINDOWS_BUILD_LOG -Encoding UTF8
+          if (Test-Path -LiteralPath $StdoutLog) {
+            Get-Content -LiteralPath $StdoutLog -ErrorAction SilentlyContinue | Add-Content -LiteralPath $env:NEVAI_WINDOWS_BUILD_LOG -Encoding UTF8
+          }
+          "== stderr ==" | Add-Content -LiteralPath $env:NEVAI_WINDOWS_BUILD_LOG -Encoding UTF8
+          if (Test-Path -LiteralPath $StderrLog) {
+            Get-Content -LiteralPath $StderrLog -ErrorAction SilentlyContinue | Add-Content -LiteralPath $env:NEVAI_WINDOWS_BUILD_LOG -Encoding UTF8
+          }
 
           "== Build exit code: $Status =="
           Get-Content -LiteralPath $env:NEVAI_WINDOWS_BUILD_LOG -Tail 120 -ErrorAction SilentlyContinue
 
+          "== Strong error candidates =="
+          Select-String -Path $env:NEVAI_WINDOWS_BUILD_LOG -Pattern "fatal error:","undefined reference","LINK : fatal error","LNK[0-9]+","FAILED:","error: could not compile","error C[0-9]+","internal compiler error","Killed","No space left on device","The system cannot find the file specified" -Context 4 -ErrorAction SilentlyContinue |
+            Select-Object -Last 220 |
+            ForEach-Object { $_.ToString() }
+
           "$Status" | Set-Content -LiteralPath $env:NEVAI_WINDOWS_BUILD_STATUS_FILE -Encoding ASCII
+
+          @"
+          # Nevai Windows Real Build Discovery Result
+
+          **Build exit code:** ``$Status``
+
+          ## Last 120 lines
+
+          ``````text
+          $((Get-Content -LiteralPath $env:NEVAI_WINDOWS_BUILD_LOG -Tail 120 -ErrorAction SilentlyContinue) -join "`n")
+          ``````
+
+          ## Strong error candidates
+
+          ``````text
+          $((Select-String -Path $env:NEVAI_WINDOWS_BUILD_LOG -Pattern "fatal error:","undefined reference","LINK : fatal error","LNK[0-9]+","FAILED:","error: could not compile","error C[0-9]+","internal compiler error","Killed","No space left on device","The system cannot find the file specified" -Context 4 -ErrorAction SilentlyContinue | Select-Object -Last 220 | ForEach-Object { $_.ToString() }) -join "`n")
+          ``````
+          "@ >> $env:GITHUB_STEP_SUMMARY
 
           if ($Status -ne 0) {
             exit $Status
@@ -186,6 +249,10 @@ jobs:
           if (Test-Path -LiteralPath $env:NEVAI_WINDOWS_BUILD_LOG) {
             Copy-Item -LiteralPath $env:NEVAI_WINDOWS_BUILD_LOG -Destination (Join-Path $env:NEVAI_WINDOWS_LOG_DIR "nevai-windows-build.log") -Force
             Get-Content -LiteralPath $env:NEVAI_WINDOWS_BUILD_LOG -Tail 500 | Set-Content -LiteralPath (Join-Path $env:NEVAI_WINDOWS_LOG_DIR "build-log-tail.txt") -Encoding UTF8
+
+            Select-String -Path $env:NEVAI_WINDOWS_BUILD_LOG -Pattern "fatal error:","undefined reference","LINK : fatal error","LNK[0-9]+","FAILED:","error: could not compile","error C[0-9]+","internal compiler error","Killed","No space left on device","The system cannot find the file specified" -Context 8 -ErrorAction SilentlyContinue |
+              ForEach-Object { $_.ToString() } |
+              Set-Content -LiteralPath (Join-Path $env:NEVAI_WINDOWS_LOG_DIR "error-candidates.txt") -Encoding UTF8
           }
 
           @"

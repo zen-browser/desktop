@@ -32,7 +32,7 @@ Completed:
   - A 45 minute build timeout stopped the first long run.
   - A 15 minute quiet/stall guard stopped the next run during a quiet Rust/link-heavy phase.
 - A later run was cancelled externally by GitHub while still compiling normal Firefox modules; no source/compiler error was captured.
-- The current Linux discovery workflow has no internal build timeout and no stall-kill guard. GitHub Actions `timeout-minutes: 360` remains the outer job limit.
+- The current Linux discovery workflow is manual-only and has no internal build timeout or stall-kill guard. GitHub Actions `timeout-minutes: 360` remains the outer job limit.
 - Linux discovery now uses sccache and release-style cache variables to improve repeat attempts on GitHub-hosted runners.
 - Linux discovery now uses the same `blacksmith-8vcpu-ubuntu-2404` runner class used by the existing Linux release workflow instead of raw `ubuntu-latest`.
 
@@ -42,7 +42,7 @@ Completed:
 - Keep heartbeat output and log upload so failures are diagnosable.
 - If the Linux build succeeds, run Linux QA and package `Nevai-linux-alpha-dev.tar.gz` automatically.
 - Do not claim Linux artifact completion until the artifact is uploaded and QA passes.
-- Do not auto-cancel in-progress Linux discovery runs on push; avoid stacking pushes while a long run is active.
+- Do not auto-start heavy Linux discovery from normal pushes; manually start one long run at a time.
 - Run `mach build` in the foreground and use a sidecar heartbeat, so the build process itself is not hidden behind a background shell wrapper.
 - Prepare Windows real build discovery without running it automatically.
 

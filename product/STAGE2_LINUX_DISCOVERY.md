@@ -31,13 +31,15 @@ npm run surfer -- build --skip-patch-check
 
 If `npm run import` fails because the engine checkout already contains a conscious local diff, stop and paste the output before using `--skip-patch-check` in a new place.
 
-The GitHub Actions discovery workflow currently runs the build through a generated Linux mozconfig and a direct `./mach build` after surfer import. It intentionally has no internal build timeout and no quiet-output stall killer, because Firefox/Rust link phases can be quiet for a long time. The only outer cap is the GitHub Actions job timeout.
+The GitHub Actions discovery workflow is manual-only. It must be started with `workflow_dispatch`, not by pushing to the branch. Normal Stage 2 commits should run the lightweight smoke workflow only.
+
+The discovery workflow runs the build through a generated Linux mozconfig and a direct `./mach build` after surfer import. It intentionally has no internal build timeout and no quiet-output stall killer, because Firefox/Rust link phases can be quiet for a long time. The only outer cap is the GitHub Actions job timeout.
 
 The workflow also uses the repo's stronger Linux release runner class, sccache, and GitHub Actions cache variables. If the runner cancels before the first full build, repeat runs should have a better chance of reusing compiled work instead of starting completely cold.
 
 The build runs in the foreground with a sidecar heartbeat. This avoids hiding `mach build` behind a background wrapper while still keeping regular CI output visible.
 
-Do not push repeatedly to the Linux discovery branch while a long run is active. The workflow is configured not to auto-cancel in-progress runs, but stacked full browser builds still waste runner time.
+Do not manually start repeated Linux discovery runs while a long run is active. The workflow is configured not to auto-cancel in-progress runs, but stacked full browser builds still waste runner time.
 
 If CI produces a successful `dist/bin`, it immediately runs:
 

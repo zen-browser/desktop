@@ -967,7 +967,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     this._draggingTab = null;
     this._dragState = null;
   };
-  
+
   _oppositeSide(side) {
     const OPPOSITE_SIDES = {
       top: "bottom",
@@ -975,7 +975,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       left: "right",
       right: "left",
     };
-   
+
     return OPPOSITE_SIDES[side];
   }
 

@@ -26,6 +26,12 @@ document.addEventListener(
           case "cmd_zenWorkspaceBackward":
             gZenWorkspaces.changeWorkspaceShortcut(-1);
             break;
+          case "cmd_zenMoveTabForward":
+            gZenWorkspaces.moveActiveTabShortcut(1);
+            break;
+          case "cmd_zenMoveTabBackward":
+            gZenWorkspaces.moveActiveTabShortcut(-1);
+            break;
           case "cmd_zenSplitViewGrid":
             gZenViewSplitter.toggleShortcut("grid");
             break;
@@ -152,7 +158,6 @@ document.addEventListener(
             break;
           }
           default:
-            gZenGlanceManager.handleMainCommandSet(event);
             if (event.target.id.startsWith("cmd_zenWorkspaceSwitch")) {
               const index =
                 parseInt(
@@ -160,6 +165,17 @@ document.addEventListener(
                   10
                 ) - 1;
               gZenWorkspaces.shortcutSwitchTo(index);
+            } else if (
+              event.target.id.startsWith("cmd_zenMoveTabToWorkspace")
+            ) {
+              const index =
+                parseInt(
+                  event.target.id.replace("cmd_zenMoveTabToWorkspace", ""),
+                  10
+                ) - 1;
+              gZenWorkspaces.shortcutMoveTabTo(index);
+            } else {
+              gZenGlanceManager.handleMainCommandSet(event);
             }
             break;
         }

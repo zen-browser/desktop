@@ -93,6 +93,9 @@ zen-workspaces-close-all-unpinned-tabs-title =
     .label = Clear
     .tooltiptext = Close all unpinned tabs
 
+zen-workspaces-moved-tab-toast = Moved tab to <span>{ $name }</span>
+zen-workspaces-moved-tabs-toast = Moved { $count } tabs to <span>{ $name }</span>
+
 zen-panel-ui-workspaces-change-forward =
     .label = Next Space
 

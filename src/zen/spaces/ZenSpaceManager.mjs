@@ -3029,6 +3029,72 @@ class nsZenWorkspaces {
     await this.changeWorkspace(workspaceToSwitch);
   }
 
+  async moveActiveTabShortcut(offset = 1) {
+    const workspaces = this.getWorkspaces();
+    const activeWorkspace = this.getActiveWorkspace();
+    const workspaceIndex = workspaces.indexOf(activeWorkspace);
+    let targetIndex = workspaceIndex + offset;
+    if (this.shouldWrapAroundNavigation) {
+      targetIndex = (targetIndex + workspaces.length) % workspaces.length;
+    } else {
+      targetIndex = Math.max(0, Math.min(workspaces.length - 1, targetIndex));
+    }
+    if (targetIndex === workspaceIndex) {
+      return;
+    }
+    await this.shortcutMoveTabTo(targetIndex);
+  }
+
+  async shortcutMoveTabTo(index) {
+    const workspaces = this.getWorkspaces();
+    if (index >= workspaces.length || index < 0) {
+      return;
+    }
+    const targetWorkspace = workspaces[index];
+    const targetId = targetWorkspace.uuid;
+    if (targetId === this.activeWorkspace) {
+      return;
+    }
+    const sourceId = this.activeWorkspace;
+    const allSelected = gBrowser.selectedTab.multiselected
+      ? gBrowser.selectedTabs
+      : [gBrowser.selectedTab];
+    const tabs = allSelected.filter(t => !t.hasAttribute("zen-empty-tab"));
+    if (!tabs.length) {
+      return;
+    }
+    const movedTabs = new Set(tabs);
+
+    for (const tab of tabs) {
+      if (this.lastSelectedWorkspaceTabs[sourceId] === tab) {
+        delete this.lastSelectedWorkspaceTabs[sourceId];
+      }
+      this.moveTabToWorkspace(tab, targetId);
+    }
+
+    if (movedTabs.has(gBrowser.selectedTab)) {
+      const remaining = gBrowser.visibleTabs.find(
+        t => !movedTabs.has(t) && !t.pinned && !t.closing
+      );
+      if (remaining) {
+        gBrowser.selectedTab = remaining;
+      } else {
+        this.selectEmptyTab();
+      }
+    }
+
+    const tabCount = tabs.length;
+    const messageId = tabCount === 1
+      ? "zen-workspaces-moved-tab-toast"
+      : "zen-workspaces-moved-tabs-toast";
+    gZenUIManager.showToast(messageId, {
+      l10nArgs: {
+        name: targetWorkspace.name,
+        count: tabCount,
+      },
+    });
+  }
+
   isBookmarkInAnotherWorkspace(bookmark) {
     if (!this._workspaceBookmarksCache?.bookmarks) {
       return false;

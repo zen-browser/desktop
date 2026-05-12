@@ -628,6 +628,50 @@ class KeyShortcut {
   }
 }
 
+function createMoveTabShortcuts() {
+  const shortcuts = [];
+  for (let i = 10; i > 0; i--) {
+    shortcuts.push(
+      new KeyShortcut(
+        `zen-move-tab-to-workspace-${i}`,
+        AppConstants.platform == "macosx" ? `${i === 10 ? 0 : i}` : "",
+        "",
+        ZEN_WORKSPACE_SHORTCUTS_GROUP,
+        nsKeyShortcutModifiers.fromObject(
+          AppConstants.platform == "macosx"
+            ? { ctrl: true, shift: true }
+            : {}
+        ),
+        `cmd_zenMoveTabToWorkspace${i}`,
+        `zen-move-tab-shortcut-workspace-${i}`
+      )
+    );
+  }
+  shortcuts.push(
+    new KeyShortcut(
+      "zen-move-tab-forward",
+      "",
+      "",
+      ZEN_WORKSPACE_SHORTCUTS_GROUP,
+      nsKeyShortcutModifiers.fromObject({}),
+      "cmd_zenMoveTabForward",
+      "zen-move-tab-shortcut-forward"
+    )
+  );
+  shortcuts.push(
+    new KeyShortcut(
+      "zen-move-tab-backward",
+      "",
+      "",
+      ZEN_WORKSPACE_SHORTCUTS_GROUP,
+      nsKeyShortcutModifiers.fromObject({}),
+      "cmd_zenMoveTabBackward",
+      "zen-move-tab-shortcut-backward"
+    )
+  );
+  return shortcuts;
+}
+
 class nsZenKeyboardShortcutsLoader {
   constructor() {}
 
@@ -749,6 +793,8 @@ class nsZenKeyboardShortcutsLoader {
       )
     );
 
+    newShortcutList.push(...createMoveTabShortcuts());
+
     // Split view
     newShortcutList.push(
       new KeyShortcut(
@@ -832,7 +878,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 18;
+  static LATEST_KBS_VERSION = 19;
 
   constructor() {}
 
@@ -1226,6 +1272,12 @@ class nsZenKeyboardShortcutsVersioner {
           "zen-workspace-shortcut-create"
         )
       );
+    }
+
+    if (version < 19) {
+      // Migrate from version 18 to 19.
+      // Add shortcuts to move tab(s) to workspace 1-10 and forward/backward
+      data.push(...createMoveTabShortcuts());
     }
 
     return data;

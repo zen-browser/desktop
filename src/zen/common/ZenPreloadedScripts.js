@@ -16,13 +16,4 @@
   ChromeUtils.importESModule("chrome://browser/content/zen-components/ZenSessionStore.mjs", { global: "current" });
 
   Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenDragAndDrop.js", this);
-  try {
-    const { AboutNewTab } = ChromeUtils.importESModule(
-      "resource:///modules/AboutNewTab.sys.mjs"
-    );
-    if (AboutNewTab.newTabURL === AboutNewTab.originalNewTabURL) {
-      AboutNewTab.newTabURL =
-        "chrome://browser/content/zen-styles/astra-newtab.html";
-    }
-  } catch (e) {}
 }

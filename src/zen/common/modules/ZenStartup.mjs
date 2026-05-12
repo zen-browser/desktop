@@ -19,6 +19,15 @@ class ZenStartup {
     this.openWatermark();
     this.#changeSidebarLocation();
     this.#zenInitBrowserLayout();
+    try {
+      const aboutNewTabService = Cc[
+        "@mozilla.org/browser/aboutnewtab-service;1"
+      ].getService(Ci.nsIAboutNewTabService);
+      aboutNewTabService.newTabURL =
+        "chrome://browser/content/zen-styles/astra-newtab.html";
+    } catch (e) {
+      console.error("[Astra] NTP register failed:", e);
+    }
   }
 
   get #shouldUseWatermark() {

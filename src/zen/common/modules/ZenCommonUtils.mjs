@@ -86,16 +86,19 @@ export class nsZenPreloadedFeature {
 
 window.gZenCommonActions = {
   copyCurrentURLToClipboard() {
-    let [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
-    const displaySpec = currentUrl.displaySpec;
+    const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
+    let displaySpec = currentUrl.displaySpec;
 
-    // copy decoded URI if `browser.urlbar.decodeURLsOnCopy` is enabled
-    let decodeURLsOnCopy = Services.prefs.getBoolPref('browser.urlbar.decodeURLsOnCopy', false);
-    if (decodeURLsOnCopy) {
-      ClipboardHelper.copyString(decodeURI(displaySpec));
-    } else {
-      ClipboardHelper.copyString(displaySpec);
+    // decode URI if `browser.urlbar.decodeURLsOnCopy` is enabled
+    // and is not a data URI
+    if (
+      Services.prefs.getBoolPref('browser.urlbar.decodeURLsOnCopy', false) &&
+      !currentUrl.schemeIs("data")
+    ) {
+      displaySpec = decodeURI(displaySpec);
     }
+
+    ClipboardHelper.copyString(displaySpec);
 
     let button;
     /* eslint-disable mozilla/valid-services */
@@ -126,17 +129,20 @@ window.gZenCommonActions = {
   copyCurrentURLAsMarkdownToClipboard() {
     const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
     const tabTitle = gBrowser.selectedTab.label;
-    let markdownLink;
+    let displaySpec = currentUrl.displaySpec;
 
-    // copy decoded URI if `browser.urlbar.decodeURLsOnCopy` is enabled
-    let decodeURLsOnCopy = Services.prefs.getBoolPref('browser.urlbar.decodeURLsOnCopy', false);
-    if (decodeURLsOnCopy) {
-      markdownLink = `[${tabTitle}](${currentUrl.displaySpec})`;
-    } else {
-      markdownLink = `[${tabTitle}](${decodeURI(currentUrl.displaySpec)})`;
+    // decode URI if `browser.urlbar.decodeURLsOnCopy` is enabled
+    // and is not a data URI
+    if (
+      Services.prefs.getBoolPref('browser.urlbar.decodeURLsOnCopy', false) &&
+      !currentUrl.schemeIs("data")
+    ) {
+      displaySpec = decodeURI(displaySpec);
     }
 
+    const markdownLink = `[${tabTitle}](${displaySpec})`;
     ClipboardHelper.copyString(markdownLink);
+
     gZenUIManager.showToast("zen-copy-current-url-as-markdown-confirmation", {
       timeout: 3000,
     });

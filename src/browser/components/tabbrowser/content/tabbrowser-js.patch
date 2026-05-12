@@ -1038,9 +1038,18 @@ index 2643e1a2aa14ba5cb4a64a92e1c2dfa5f07d242f..3a21c40eb70621968b5fbfc4b9b6d841
 @@ -7447,6 +7695,8 @@
        }
        params.skipLoad = true;
-       let newTab = this.addWebTab("about:blank", params);
+        let newTab = this.addWebTab("about:blank", params);
 +      newTab._zenContentsVisible = true;
 +      newTab.zenStaticLabel = aTab.zenStaticLabel;
++      if (aTab.hasAttribute("zen-essential")) {
++        newTab.setAttribute("zen-essential", "true");
++      }
++      if (aTab._zenPinnedInitialState) {
++        newTab._zenPinnedInitialState = aTab._zenPinnedInitialState;
++      }
++      if (aTab.zenStaticIcon) {
++        newTab.zenStaticIcon = aTab.zenStaticIcon;
++      }
  
        aTab.container.tabDragAndDrop.finishAnimateTabMove();
  

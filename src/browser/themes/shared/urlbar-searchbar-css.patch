@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/urlbar-searchbar.css b/browser/themes/shared/urlbar-searchbar.css
-index 0ee35cfe67c9bce37a844d4b7d9715d4fb50f709..5cdb8037e49a68ea4126af349690af8a16b5e59b 100644
+index 0ee35cfe67c9bce37a844d4b7d9715d4fb50f709..034cf876c8cef5a2b4c0ca5f209d127dbfc90b20 100644
 --- a/browser/themes/shared/urlbar-searchbar.css
 +++ b/browser/themes/shared/urlbar-searchbar.css
 @@ -10,7 +10,7 @@
@@ -20,7 +20,18 @@ index 0ee35cfe67c9bce37a844d4b7d9715d4fb50f709..5cdb8037e49a68ea4126af349690af8a
  }
  
  /* Document Picture-in-Picture API window */
-@@ -333,10 +333,14 @@ toolbar[inactive="true"] .urlbar,
+@@ -200,6 +200,10 @@ toolbar[inactive="true"] .urlbar,
+   .urlbar:not([focused])[textoverflow="left"][domaindir="rtl"] > .urlbar-input-container > .urlbar-input-box > & {
+     mask-image: linear-gradient(to right, transparent var(--urlbar-scheme-size), black calc(var(--urlbar-scheme-size) + 3ch));
+   }
++
++  #navigator-toolbox[zen-has-implicit-hover="true"] .urlbar:not([focused])[textoverflow="left"] > .urlbar-input-container > .urlbar-input-box > & {
++    mask-image: linear-gradient(to right, transparent, black 3ch, black calc(100% - 3ch), transparent);
++  }
+ }
+ 
+ #urlbar-scheme {
+@@ -333,10 +337,14 @@ toolbar[inactive="true"] .urlbar,
  
  .urlbar[breakout][breakout-extend] {
    height: auto;

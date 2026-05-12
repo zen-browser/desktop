@@ -20,22 +20,7 @@ export class ZenSpacesSwipe {
   };
 
   constructor() {
-    const elements = [
-      gNavToolbox,
-      // Event handlers do not work on elements inside shadow DOM
-      // so we need to attach them directly.
-      document
-        .getElementById("tabbrowser-arrowscrollbox")
-        ?.shadowRoot?.querySelector("scrollbox"),
-    ];
-
-    for (const element of elements) {
-      if (!element) {
-        continue;
-      }
-      this._attachWorkspaceSwipeGestures(element);
-    }
-
+    this.#attachWorkspaceSwipeGestures(gNavToolbox);
     this._popupOpenHandler = this._popupOpenHandler.bind(this);
   }
 
@@ -50,7 +35,7 @@ export class ZenSpacesSwipe {
     );
   }
 
-  _attachWorkspaceSwipeGestures(element) {
+  #attachWorkspaceSwipeGestures(element) {
     element.addEventListener(
       "MozSwipeGestureMayStart",
       this._handleSwipeMayStart.bind(this),

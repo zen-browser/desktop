@@ -4,7 +4,10 @@
 [
   {
     "type": "phabricator",
-    "id": "D284084",
+    "ids": [
+      "D284084",
+      "D299584"
+    ],
     "name": "Native MacOS popovers",
     "replaces": {
       // Specifically trying to target FeatureCallout.sys.mjs's change.
@@ -22,7 +25,9 @@
       " #include \"nsISupportsPrimitives.h\"\n": "",
 
       "     Atom(\"nonnative\", \"nonnative\"),\n": "",
-      "Atom(\"noscript\", \"noscript\"),": "Atom(\"noscript\", \"noscript\"),\n     Atom(\"noshade\", \"noshade\"),"
+      "Atom(\"noscript\", \"noscript\"),": "Atom(\"noscript\", \"noscript\"),\n     Atom(\"noshade\", \"noshade\"),",
+
+      "GetBoolAttr(nsGkAtoms::nonnative)": "GetBoolAttr(nsGkAtoms::nonnativepopover)"
     }
   },
   {

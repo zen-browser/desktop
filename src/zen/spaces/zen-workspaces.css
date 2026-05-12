@@ -11,7 +11,6 @@
   align-items: center;
   display: flex;
   font-size: x-small;
-  margin: 0 3px;
   padding: 0;
 
   position: relative;
@@ -347,8 +346,12 @@ zen-workspace {
       overflow-y: auto;
     }
 
-    :root[swipe-gesture] &::part(scrollbox) {
-      scrollbar-width: none;
+    :root[swipe-gesture] &{
+      pointer-events: none;
+
+      &::part(scrollbox) {
+        scrollbar-width: none;
+      }
     }
 
     &[overflowing] {

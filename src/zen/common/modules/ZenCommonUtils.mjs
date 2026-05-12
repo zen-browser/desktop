@@ -89,12 +89,14 @@ window.gZenCommonActions = {
     const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
     let displaySpec = currentUrl.displaySpec;
 
-    if (
-      Services.prefs.getBoolPref('browser.urlbar.decodeURLsOnCopy', false) &&
-      !currentUrl.schemeIs("data")
-    ) {
-      displaySpec = decodeURI(displaySpec);
-    }
+    try {
+      if (
+        Services.prefs.getBoolPref('browser.urlbar.decodeURLsOnCopy', false) &&
+        !currentUrl.schemeIs("data")
+      ) {
+        displaySpec = decodeURI(displaySpec);
+      }
+    } catch(e) {}
 
     ClipboardHelper.copyString(displaySpec);
 
@@ -129,12 +131,14 @@ window.gZenCommonActions = {
     const tabTitle = gBrowser.selectedTab.label;
     let displaySpec = currentUrl.displaySpec;
 
-    if (
-      Services.prefs.getBoolPref('browser.urlbar.decodeURLsOnCopy', false) &&
-      !currentUrl.schemeIs("data")
-    ) {
-      displaySpec = decodeURI(displaySpec);
-    }
+    try {
+      if (
+        Services.prefs.getBoolPref('browser.urlbar.decodeURLsOnCopy', false) &&
+        !currentUrl.schemeIs("data")
+      ) {
+        displaySpec = decodeURI(displaySpec);
+      }
+    } catch(e) {}
 
     const markdownLink = `[${tabTitle}](${displaySpec})`;
     ClipboardHelper.copyString(markdownLink);

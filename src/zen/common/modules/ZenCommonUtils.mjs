@@ -89,8 +89,6 @@ window.gZenCommonActions = {
     const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
     let displaySpec = currentUrl.displaySpec;
 
-    // decode URI if `browser.urlbar.decodeURLsOnCopy` is enabled
-    // and is not a data URI
     if (
       Services.prefs.getBoolPref('browser.urlbar.decodeURLsOnCopy', false) &&
       !currentUrl.schemeIs("data")
@@ -131,8 +129,6 @@ window.gZenCommonActions = {
     const tabTitle = gBrowser.selectedTab.label;
     let displaySpec = currentUrl.displaySpec;
 
-    // decode URI if `browser.urlbar.decodeURLsOnCopy` is enabled
-    // and is not a data URI
     if (
       Services.prefs.getBoolPref('browser.urlbar.decodeURLsOnCopy', false) &&
       !currentUrl.schemeIs("data")

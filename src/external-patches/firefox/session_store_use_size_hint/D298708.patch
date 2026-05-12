@@ -214,7 +214,7 @@ diff --git a/dom/chrome-webidl/IOUtils.webidl b/dom/chrome-webidl/IOUtils.webidl
 +   *         bytes (UTF-8), otherwise rejects with a DOMException.
     */
    [NewObject]
-   Promise<WriteJSONResult> writeJSON(DOMString path, any value, optional WriteJSONOptions options = {});
+   Promise<unsigned long long> writeJSON(DOMString path, any value, optional WriteOptions options = {});
    /**
     * Moves the file from |sourcePath| to |destPath|, creating necessary parents.
 @@ -564,10 +564,16 @@
@@ -232,23 +232,49 @@ diff --git a/dom/chrome-webidl/IOUtils.webidl b/dom/chrome-webidl/IOUtils.webidl
  };
  
  /**
-  * Options to be passed to the |IOUtils.writeJSON| method.
+  * Options to be passed to the |IOUtils.move| method.
   */
 diff --git a/xpcom/ioutils/IOUtils.cpp b/xpcom/ioutils/IOUtils.cpp
 --- a/xpcom/ioutils/IOUtils.cpp
 +++ b/xpcom/ioutils/IOUtils.cpp
-@@ -629,10 +629,13 @@
+@@ -622,13 +622,22 @@
+           return;
          }
  
          JSContext* cx = aGlobal.Context();
-         JS::Rooted<JS::Value> value(cx, aValue);
+         JS::Rooted<JS::Value> rootedValue(cx, aValue);
++        size_t lengthHint = aOptions.mJsonLengthHint;
          nsString string;
-+        if (opts.mLengthHint) {
-+          string.SetCapacity(opts.mLengthHint);
+-        if (!nsContentUtils::StringifyJSON(cx, aValue, string,
+-                                           UndefinedIsNullStringLiteral)) {
++        if (lengthHint) {
++          string.SetCapacity(lengthHint);
 +        }
-         if (!JS_StringifyWithLengthHint(cx, &value, nullptr,
-                                         JS::NullHandleValue, AppendJSON,
-                                         &string, opts.mLengthHint)) {
++        if (!JS_StringifyWithLengthHint(
++                cx, &rootedValue, nullptr, JS::NullHandleValue,
++                [](const char16_t* aBuf, uint32_t aLen, void* aData) -> bool {
++                  return static_cast<nsAString*>(aData)->Append(aBuf, aLen,
++                                                                fallible);
++                },
++                &string, lengthHint)) {
            JS::Rooted<JS::Value> exn(cx, JS::UndefinedValue());
            if (JS_GetPendingException(cx, &exn)) {
+             JS_ClearPendingException(cx);
+             promise->MaybeReject(exn);
+           } else {
+@@ -648,11 +657,13 @@
+                 return Err(IOError(
+                     NS_ERROR_OUT_OF_MEMORY,
+                     "Failed to write to `%s': could not allocate buffer",
+                     file->HumanReadablePath().get()));
+               }
+-              return WriteSync(file, AsBytes(Span(utf8Str)), opts);
++              uint32_t uncompressedSize = utf8Str.Length();
++              MOZ_TRY(WriteSync(file, AsBytes(Span(utf8Str)), opts));
++              return uncompressedSize;
+             });
+       });
+ }
+ 
+ /* static */
 

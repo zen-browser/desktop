@@ -129,7 +129,7 @@ jobs:
           token: ${{ secrets.DEPLOY_KEY }}
           commit-message: "chore: Sync upstream to `Firefox ${{ steps.build-data.outputs.version }}`"
           branch: "chore/upstream-sync"
-          title: "Sync upstream Firefox to version ${{ steps.build-data.outputs.version }}"
+          title: "no-bug: Sync upstream Firefox to version ${{ steps.build-data.outputs.version }}"
           body: |
             This PR syncs the upstream Firefox to version ${{ steps.build-data.outputs.version }}.
 

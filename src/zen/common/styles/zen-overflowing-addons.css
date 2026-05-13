@@ -37,11 +37,15 @@
       justify-content: center;
       align-items: center;
       border-radius: calc(var(--border-radius-medium) - 2px);
-      overflow: clip;
+      overflow: visible;
       padding: 0;
 
       &:hover {
         background-color: var(--zen-toolbar-element-bg-hover);
+      }
+
+      & .toolbarbutton-badge {
+        transform: translate(4px, 2px);
       }
     }
 

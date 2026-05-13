@@ -91,12 +91,12 @@ window.gZenCommonActions = {
 
     try {
       if (
-        Services.prefs.getBoolPref('browser.urlbar.decodeURLsOnCopy', false) &&
+        Services.prefs.getBoolPref("browser.urlbar.decodeURLsOnCopy", false) &&
         !currentUrl.schemeIs("data")
       ) {
         displaySpec = decodeURI(displaySpec);
       }
-    } catch(e) {}
+    } catch (e) {}
 
     ClipboardHelper.copyString(displaySpec);
 
@@ -133,12 +133,12 @@ window.gZenCommonActions = {
 
     try {
       if (
-        Services.prefs.getBoolPref('browser.urlbar.decodeURLsOnCopy', false) &&
+        Services.prefs.getBoolPref("browser.urlbar.decodeURLsOnCopy", false) &&
         !currentUrl.schemeIs("data")
       ) {
         displaySpec = decodeURI(displaySpec);
       }
-    } catch(e) {}
+    } catch (e) {}
 
     const markdownLink = `[${tabTitle}](${displaySpec})`;
     ClipboardHelper.copyString(markdownLink);

@@ -875,6 +875,7 @@ class nsZenWorkspaces {
 
     await selectPromise;
     if (this._initialTab) {
+      this.selectEmptyTab();
       this._removedByStartupPage = true;
       gBrowser.removeTab(this._initialTab, {
         skipSessionStore: true,

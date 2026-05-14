@@ -397,6 +397,18 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   on_TabOpen(event) {
     const tab = event.target;
     const group = tab.group;
+    if (
+      Services.prefs.getBoolPref("zen.folders.new-tabs-in-folder")
+      && !group?.isZenFolder
+      && !tab.owner
+    ) {
+      const activeFolder = gBrowser.selectedTab?.group;
+      if (activeFolder?.isZenFolder) {
+        gBrowser.pinTab(tab);
+        activeFolder.addTabs([tab]);
+        return;
+      }
+    }
     if (!group?.isZenFolder || tab.pinned) {
       return;
     }

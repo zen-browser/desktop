@@ -1036,6 +1036,7 @@ var gZenCKSSettings = {
         Backquote: "`",
         Minus: "-",
         Equal: "=",
+        Space: "Space",
       };
       shortcut = CODE_TO_KEY_MAP[event.code] || event.key;
     }

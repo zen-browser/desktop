@@ -1,12 +1,8 @@
-# https://github.com/zen-browser/desktop/issues/13518
-# Update `lastCalculatedInViewHeight` in the fixedWidth=false branch of
-# `resizeBrowser` so the panel shrinks to the actual popup height.
 diff --git a/browser/components/extensions/ExtensionPopups.sys.mjs b/browser/components/extensions/ExtensionPopups.sys.mjs
+index 1cd35175507bd442aae6857e65015cfed00058e3..376377629e9732b292085ba94309e47cc53ee2ef 100644
 --- a/browser/components/extensions/ExtensionPopups.sys.mjs
 +++ b/browser/components/extensions/ExtensionPopups.sys.mjs
-@@ -416,10 +416,12 @@
-     } else {
-       this.browser.style.width = `${width}px`;
+@@ -418,6 +418,8 @@ export class BasePopup {
        this.browser.style.minWidth = `${width}px`;
        this.browser.style.height = `${height}px`;
        this.browser.style.minHeight = `${height}px`;
@@ -15,5 +11,3 @@ diff --git a/browser/components/extensions/ExtensionPopups.sys.mjs b/browser/com
      }
  
      let event = new this.window.CustomEvent("WebExtPopupResized", { detail });
-     this.browser.dispatchEvent(event);
-   }

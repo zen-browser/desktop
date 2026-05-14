@@ -817,7 +817,7 @@ class nsZenWorkspaces {
 
     let removedEmptyTab = false;
     let initialTabWasEmpty = false;
-    if (this._shouldOverrideTabs) {
+    if (this._initialTab || this._shouldOverrideTabs) {
       let initialTab = this._initialTab || gBrowser.selectedTab;
       initialTabWasEmpty = !!initialTab._veryPossiblyEmpty;
       gBrowser.selectedTab = initialTab;

@@ -1,24 +1,8 @@
 diff --git a/browser/base/content/main-popupset.inc.xhtml b/browser/base/content/main-popupset.inc.xhtml
-index 4a8ad3060e7ecffb15d3dded16ecbc6afbcfa37f..7b9133e9cbf0e4aa7d691851dfd7b126b957c099 100644
+index 81b3d0a744b9f40358219696e0e52a8114c53e83..71eb93e50f19af1d8f44fb425970cc87416c84a3 100644
 --- a/browser/base/content/main-popupset.inc.xhtml
 +++ b/browser/base/content/main-popupset.inc.xhtml
-@@ -195,6 +195,7 @@
-          id="selection-shortcut-action-panel"
-          noautofocus="true"
-          consumeoutsideclicks="never"
-+         nonnativepopover="true"
-          type="arrow">
-     <hbox class="panel-subview-body">
-       <html:moz-button id="ai-action-button"/>
-@@ -206,6 +207,7 @@
-   <panel class="panel-no-padding"
-          id="chat-shortcuts-options-panel"
-          noautofocus="true"
-+         nonnativepopover="true"
-          type="arrow">
-     <vbox class="panel-subview-body"/>
-   </panel>
-@@ -232,6 +234,10 @@
+@@ -235,6 +235,10 @@
             hidden="true"
             tabspecific="true"
             aria-labelledby="editBookmarkPanelTitle">
@@ -29,7 +13,7 @@ index 4a8ad3060e7ecffb15d3dded16ecbc6afbcfa37f..7b9133e9cbf0e4aa7d691851dfd7b126
        <box class="panel-header">
          <html:h1>
            <html:span id="editBookmarkPanelTitle"/>
-@@ -257,6 +263,7 @@
+@@ -260,6 +264,7 @@
                    class="footer-button"/>
          </html:moz-button-group>
        </vbox>
@@ -37,15 +21,7 @@ index 4a8ad3060e7ecffb15d3dded16ecbc6afbcfa37f..7b9133e9cbf0e4aa7d691851dfd7b126
      </panel>
    </html:template>
  
-@@ -613,6 +620,7 @@
-          noautofocus="true"
-          norolluponanchor="true"
-          consumeoutsideclicks="false"
-+         nonnativepopover="true"
-          role="tooltip">
-     <html:div class="tab-preview-content-interactive"></html:div>
-     <html:div class="tab-preview-content-main">
-@@ -752,6 +760,8 @@
+@@ -699,6 +704,8 @@
  
  #include popup-notifications.inc.xhtml
  

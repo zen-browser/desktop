@@ -1,5 +1,5 @@
 diff --git a/browser/modules/URILoadingHelper.sys.mjs b/browser/modules/URILoadingHelper.sys.mjs
-index a005dbdf84609622ef8054f73f78c0c290e76125..d5bf6fb51c9af5e60f69a73612ee91598080730a 100644
+index ed6b9fda700b2b4b35836a77a4da953377a72f4b..22acedcf1006f994ec8b6bf8991b4202e12a6f39 100644
 --- a/browser/modules/URILoadingHelper.sys.mjs
 +++ b/browser/modules/URILoadingHelper.sys.mjs
 @@ -224,6 +224,7 @@ function openInWindow(url, params, sourceWindow) {
@@ -28,8 +28,8 @@ index a005dbdf84609622ef8054f73f78c0c290e76125..d5bf6fb51c9af5e60f69a73612ee9159
        for (let i = 0; i < browsers.length; i++) {
          let browser = browsers[i];
          let browserCompare = cleanURL(
-@@ -1030,7 +1031,7 @@ export const URILoadingHelper = {
-               );
+@@ -1026,7 +1027,7 @@ export const URILoadingHelper = {
+               aSplitView.replaceTab(tabToReplace, tabToMove);
                aSplitView.ownerGlobal.focus();
              } else {
 -              aWindow.gBrowser.tabContainer.selectedIndex = i;

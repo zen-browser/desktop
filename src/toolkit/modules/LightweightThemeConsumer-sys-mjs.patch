@@ -1,5 +1,5 @@
 diff --git a/toolkit/modules/LightweightThemeConsumer.sys.mjs b/toolkit/modules/LightweightThemeConsumer.sys.mjs
-index 6e7f48f012b4508847bda1791a958ccd57be105c..32a83934a99ec68763fb5b8a7e305e9e9cfbde37 100644
+index f26f2ad7a4010f4aac77626da3a47c4ebe87f910..1456f5d7d20b40cd4b3cc9f89563cfd7c880c63c 100644
 --- a/toolkit/modules/LightweightThemeConsumer.sys.mjs
 +++ b/toolkit/modules/LightweightThemeConsumer.sys.mjs
 @@ -34,7 +34,7 @@ const toolkitVariableMap = [
@@ -11,7 +11,7 @@ index 6e7f48f012b4508847bda1791a958ccd57be105c..32a83934a99ec68763fb5b8a7e305e9e
          }
          // Remove the alpha channel
          const { r, g, b } = rgbaChannels;
-@@ -362,7 +362,7 @@ LightweightThemeConsumer.prototype = {
+@@ -366,7 +366,7 @@ LightweightThemeConsumer.prototype = {
      let forcedColorsThemeOverride =
        this.FORCED_COLORS_OVERRIDE_ENABLED &&
        this.forcedColorsMediaQuery?.matches;

@@ -1,8 +1,38 @@
 diff --git a/modules/libpref/init/StaticPrefList.yaml b/modules/libpref/init/StaticPrefList.yaml
-index f36788f33221aa6d3709bcc09c05a90ff83e7c48..7f794117d155cea5772568115710e67c947d79e3 100644
+index 990f1dc23e1f90d2bdd49856bea6e357cea94b59..db5d4466e4cac4742120e6506578807cb3f1a2cc 100644
 --- a/modules/libpref/init/StaticPrefList.yaml
 +++ b/modules/libpref/init/StaticPrefList.yaml
-@@ -20238,6 +20238,7 @@
+@@ -8425,6 +8425,13 @@
+ #endif
+   mirror: once
+ 
++# Make backdrop-filter treat its captured backdrop as if it had been
++# composited over an opaque-black background. (See bug 2036640)
++- name: gfx.webrender.opaque-backdrop-fallback
++  type: bool
++  value: true
++  mirror: once
++
+ # Disable wait of GPU execution completion
+ - name: gfx.webrender.wait-gpu-finished.disabled
+   type: bool
+@@ -19626,6 +19633,15 @@
+ 
+ #ifdef XP_MACOSX
+ 
++# If true, use native NSPopover for arrow panel popups (type="arrow") on macOS
++# Someone like Zen browser will use this pref by default, so
++# please take this into account when you change the behavior of
++# native popover. Note: Only panels with type="arrow" will use NSPopover.
++- name: widget.macos.native-popovers
++  type: RelaxedAtomicBool
++  value: false
++  mirror: always
++
+ # Whether to shift by the menubar height on fullscreen mode.
+ # 0: never
+ # 1: always
+@@ -20285,6 +20301,7 @@
    mirror: always
  #endif
  

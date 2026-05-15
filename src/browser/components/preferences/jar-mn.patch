@@ -1,8 +1,8 @@
 diff --git a/browser/components/preferences/jar.mn b/browser/components/preferences/jar.mn
-index b2d65603ec714b49249789d0e48b0b677c9eaea6..6cea34be90e2f181fd3e5770f7e2fd99c483b8d8 100644
+index 78e38f98c1f69df31459fd4b6a119c93f6509c02..33abd46566146272da9f561e11ffa290d7000111 100644
 --- a/browser/components/preferences/jar.mn
 +++ b/browser/components/preferences/jar.mn
-@@ -51,3 +51,5 @@ browser.jar:
+@@ -54,3 +54,5 @@ browser.jar:
     content/browser/preferences/widgets/sync-device-name.mjs          (widgets/sync-device-name/sync-device-name.mjs)
     content/browser/preferences/widgets/sync-engines-list.mjs          (widgets/sync-engine-list/sync-engines-list.mjs)
     content/browser/preferences/widgets/sync-engines-list.css          (widgets/sync-engine-list/sync-engines-list.css)

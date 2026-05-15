@@ -55,7 +55,7 @@
 /* Consolidated focus visuals */
 #searchbar:focus-within {
   border-color: transparent !important;
-  background: var(--urlbar-box-bgcolor);
+  background: var(--urlbar-box-background-color);
 }
 
 .urlbar-background {

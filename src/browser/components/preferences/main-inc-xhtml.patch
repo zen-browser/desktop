@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/main.inc.xhtml b/browser/components/preferences/main.inc.xhtml
-index 7d6bbc54d21bf149dd1b99a38ca803654e6908eb..4da0e5fc921bb0ee24ace443c0c119fdd2707fc9 100644
+index 6b96ff01e43087f8c609df17204441616b7013f3..df85ec789c54146b3a702169f33adf36c11b85da 100644
 --- a/browser/components/preferences/main.inc.xhtml
 +++ b/browser/components/preferences/main.inc.xhtml
 @@ -96,6 +96,7 @@

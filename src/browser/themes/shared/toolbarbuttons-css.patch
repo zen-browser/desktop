@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/toolbarbuttons.css b/browser/themes/shared/toolbarbuttons.css
-index 8c02df47ca003fa5094de0e7802cd8c10ef1bf2a..a16e8d7d3a00af8df648946950b7bb1c3f30efbb 100644
+index 829501008d7b6fd6bddf899f3cf599a68ff216a0..cbdc770d56c4053d0b9afc13322f072c3376eb30 100644
 --- a/browser/themes/shared/toolbarbuttons.css
 +++ b/browser/themes/shared/toolbarbuttons.css
 @@ -13,20 +13,6 @@
@@ -23,7 +23,7 @@ index 8c02df47ca003fa5094de0e7802cd8c10ef1bf2a..a16e8d7d3a00af8df648946950b7bb1c
    &:where([uidensity="compact"]) {
      --toolbarbutton-inner-padding: var(--toolbarbutton-inner-padding-compact);
      --bookmark-block-padding: 1px;
-@@ -65,9 +51,7 @@
+@@ -123,9 +109,7 @@
  #TabsToolbar {
    /* Override the inner padding to ensure the dimensions match the tabs, but also making sure
       different types of buttons (combined-buttons-dropmarker or text) still look correct. */
@@ -33,7 +33,7 @@ index 8c02df47ca003fa5094de0e7802cd8c10ef1bf2a..a16e8d7d3a00af8df648946950b7bb1c
  }
  
  /* Primary toolbar buttons */
-@@ -146,8 +130,8 @@ toolbar .toolbarbutton-1 {
+@@ -204,8 +188,8 @@ toolbar .toolbarbutton-1 {
  
    > .toolbarbutton-icon {
      /* horizontal padding + actual icon width */
@@ -44,7 +44,7 @@ index 8c02df47ca003fa5094de0e7802cd8c10ef1bf2a..a16e8d7d3a00af8df648946950b7bb1c
    }
  
    > .toolbarbutton-text {
-@@ -157,7 +141,7 @@ toolbar .toolbarbutton-1 {
+@@ -215,7 +199,7 @@ toolbar .toolbarbutton-1 {
       * height as the button icons and the same vertical padding, but as a minimum,
       * because otherwise an increase in text sizes would break things.
       */
@@ -53,7 +53,7 @@ index 8c02df47ca003fa5094de0e7802cd8c10ef1bf2a..a16e8d7d3a00af8df648946950b7bb1c
  
      @media (-moz-platform: macos) {
        padding-top: calc(var(--toolbarbutton-inner-padding) + 1px);
-@@ -277,7 +261,7 @@ toolbar .toolbaritem-combined-buttons {
+@@ -325,7 +309,7 @@ toolbar .toolbaritem-combined-buttons {
  #nav-bar-overflow-button {
    list-style-image: url("chrome://global/skin/icons/chevron.svg");
  
@@ -62,7 +62,7 @@ index 8c02df47ca003fa5094de0e7802cd8c10ef1bf2a..a16e8d7d3a00af8df648946950b7bb1c
      display: none;
    }
  
-@@ -487,7 +471,7 @@ toolbarbutton.bookmark-item:not(.subviewbutton) {
+@@ -535,7 +519,7 @@ toolbarbutton.bookmark-item:not(.subviewbutton) {
       */
      align-items: stretch;
      > .toolbarbutton-icon {

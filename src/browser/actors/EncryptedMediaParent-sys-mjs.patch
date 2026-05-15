@@ -1,8 +1,8 @@
 diff --git a/browser/actors/EncryptedMediaParent.sys.mjs b/browser/actors/EncryptedMediaParent.sys.mjs
-index 9d3d3db9761cf5b2fde1f70992e82b1733241863..3dc64dc395d5237bf2c290cb8588cf467fb8729a 100644
+index 492dce93d3cc7c6ec16db047c9e47b175ef3a0fe..757e5543e0e6900c414db6d7a96d511608c1e50a 100644
 --- a/browser/actors/EncryptedMediaParent.sys.mjs
 +++ b/browser/actors/EncryptedMediaParent.sys.mjs
-@@ -200,6 +200,7 @@ export class EncryptedMediaParent extends JSWindowActorParent {
+@@ -199,6 +199,7 @@ export class EncryptedMediaParent extends JSWindowActorParent {
          "drmContentPlaying",
          aBrowser
        )

@@ -1,5 +1,5 @@
 diff --git a/browser/components/places/content/browserPlacesViews.js b/browser/components/places/content/browserPlacesViews.js
-index 384d599c58cefbf80f5a50489fc401df0c8de8a5..aa85972946c3ff7866fbea86b0372432fb02cd6f 100644
+index 463913926c58e6c622e0fcc60534921f02814829..0143c48c48e132464226db810f4ea4d2720c3c49 100644
 --- a/browser/components/places/content/browserPlacesViews.js
 +++ b/browser/components/places/content/browserPlacesViews.js
 @@ -328,12 +328,23 @@ class PlacesViewBase {
@@ -37,7 +37,7 @@ index 384d599c58cefbf80f5a50489fc401df0c8de8a5..aa85972946c3ff7866fbea86b0372432
        } else if (PlacesUtils.containerTypes.includes(type)) {
          element = document.createXULElement("menu");
          element.setAttribute("container", "true");
-@@ -1015,25 +1027,33 @@ class PlacesToolbar extends PlacesViewBase {
+@@ -1058,25 +1070,33 @@ class PlacesToolbar extends PlacesViewBase {
        this._rootElt.firstChild.remove();
      }
  
@@ -82,7 +82,7 @@ index 384d599c58cefbf80f5a50489fc401df0c8de8a5..aa85972946c3ff7866fbea86b0372432
            );
            ++startIndex;
            if (elt.localName != "toolbarseparator") {
-@@ -1041,15 +1061,12 @@ class PlacesToolbar extends PlacesViewBase {
+@@ -1084,15 +1104,12 @@ class PlacesToolbar extends PlacesViewBase {
            }
          }
          if (!elt) {
@@ -101,7 +101,7 @@ index 384d599c58cefbf80f5a50489fc401df0c8de8a5..aa85972946c3ff7866fbea86b0372432
          });
        });
  
-@@ -1059,7 +1076,7 @@ class PlacesToolbar extends PlacesViewBase {
+@@ -1102,7 +1119,7 @@ class PlacesToolbar extends PlacesViewBase {
  
        let fragment = document.createDocumentFragment();
        for (let i = startIndex; i < limit; ++i) {
@@ -110,7 +110,7 @@ index 384d599c58cefbf80f5a50489fc401df0c8de8a5..aa85972946c3ff7866fbea86b0372432
        }
        await new Promise(resolve => window.requestAnimationFrame(resolve));
        if (!this._isAlive) {
-@@ -1122,6 +1139,8 @@ class PlacesToolbar extends PlacesViewBase {
+@@ -1165,6 +1182,8 @@ class PlacesToolbar extends PlacesViewBase {
            "scheme",
            PlacesUIUtils.guessUrlSchemeForUI(aChild.uri)
          );
@@ -119,7 +119,7 @@ index 384d599c58cefbf80f5a50489fc401df0c8de8a5..aa85972946c3ff7866fbea86b0372432
        }
      }
  
-@@ -2314,7 +2333,7 @@ this.PlacesPanelview = class PlacesPanelview extends PlacesViewBase {
+@@ -2359,7 +2378,7 @@ this.PlacesPanelview = class PlacesPanelview extends PlacesViewBase {
          PlacesUIUtils.guessUrlSchemeForUI(placesNode.uri)
        );
        element.setAttribute("label", PlacesUIUtils.getBestTitle(placesNode));

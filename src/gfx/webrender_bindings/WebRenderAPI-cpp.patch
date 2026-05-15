@@ -1,0 +1,15 @@
+diff --git a/gfx/webrender_bindings/WebRenderAPI.cpp b/gfx/webrender_bindings/WebRenderAPI.cpp
+index 06b67639502337891ced0a5a510a5047cecb444b..9a90e3bb2f8ac9c25f1214d04b92c09b79bc2770 100644
+--- a/gfx/webrender_bindings/WebRenderAPI.cpp
++++ b/gfx/webrender_bindings/WebRenderAPI.cpp
+@@ -300,7 +300,9 @@ RefPtr<WebRenderAPI::CreatePromise> WebRenderAPI::Create(
+                 StaticPrefs::gfx_webrender_low_quality_pinch_zoom_AtStartup(),
+                 StaticPrefs::gfx_webrender_max_shared_surface_size_AtStartup(),
+                 StaticPrefs::gfx_webrender_enable_subpixel_aa_AtStartup(),
+-                compositor->ShouldUseLayerCompositor())) {
++                compositor->ShouldUseLayerCompositor(),
++                StaticPrefs::
++                    gfx_webrender_opaque_backdrop_fallback_AtStartup())) {
+           // wr_window_new puts a message into gfxCriticalNote if it returns
+           // false
+           MOZ_ASSERT(errorMessage);

@@ -1,0 +1,49 @@
+diff --git a/widget/cocoa/nsCocoaWindow.h b/widget/cocoa/nsCocoaWindow.h
+index 99433008bc240fad992942321ad6ae6e6c63dd12..e0071ccab737b2f2a794b2facddac2df82ef70b3 100644
+--- a/widget/cocoa/nsCocoaWindow.h
++++ b/widget/cocoa/nsCocoaWindow.h
+@@ -134,9 +134,15 @@ class TextInputHandler;
+ 
+ @end
+ 
+-@interface PopupWindow : BaseWindow {
++@interface PopupWindow : BaseWindow <NSPopoverDelegate> {
+  @private
+   BOOL mIsContextMenu;
++
++  // NSPopover support for native appearance
++  NSPopover* mPopover;
++  NSViewController* mPopoverViewController;
++  BOOL mUsePopover;
++  NSRect mLastPopoverRect;
+ }
+ 
+ - (id)initWithContentRect:(NSRect)contentRect
+@@ -147,6 +153,16 @@ class TextInputHandler;
+ - (void)setIsContextMenu:(BOOL)flag;
+ - (BOOL)canBecomeMainWindow;
+ 
++// NSPopover support
++- (void)setAllowPopover;
++- (BOOL)usePopover;
++- (void)showPopoverRelativeToRect:(NSRect)positioningRect
++                           ofView:(NSView*)positioningView
++                    preferredEdge:(NSRectEdge)preferredEdge
++                     hiddenAnchor:(BOOL)hiddenAnchor;
++- (void)closePopover;
++- (void)updatePopoverContent;
++
+ @end
+ 
+ @interface BorderlessWindow : BaseWindow {
+@@ -202,6 +218,10 @@ class nsCocoaWindow final : public nsIWidget {
+  public:
+   nsCocoaWindow();
+ 
++  // Check if this window should use NSPopover for popup/menu display
++  bool ShouldUseNSPopover() const;
++  bool ShouldShowAsNSPopover() const override;
++
+   [[nodiscard]] nsresult Create(nsIWidget* aParent, const DesktopIntRect& aRect,
+                                 const InitData&) override;
+ 

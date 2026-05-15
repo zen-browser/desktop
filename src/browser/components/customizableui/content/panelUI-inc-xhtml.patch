@@ -1,5 +1,5 @@
 diff --git a/browser/components/customizableui/content/panelUI.inc.xhtml b/browser/components/customizableui/content/panelUI.inc.xhtml
-index 6cb22be6526b17d952a90fd414c49a31e9afde7a..84f8156e88027a79a40f14c77c83d6a2d19c8a72 100644
+index 6cb22be6526b17d952a90fd414c49a31e9afde7a..d224686db275f79b712479b32762a1b836e3cb29 100644
 --- a/browser/components/customizableui/content/panelUI.inc.xhtml
 +++ b/browser/components/customizableui/content/panelUI.inc.xhtml
 @@ -139,7 +139,7 @@
@@ -11,3 +11,11 @@ index 6cb22be6526b17d952a90fd414c49a31e9afde7a..84f8156e88027a79a40f14c77c83d6a2
           flip="slide"
           orient="vertical"
           noautofocus="true"
+@@ -278,6 +278,7 @@
+        hidden="true"
+        flip="slide"
+        position="bottomright topright"
++       hidepopovertail="true"
+        noautofocus="true">
+   <panelmultiview id="appMenu-multiView" mainViewId="appMenu-mainView"
+                   viewCacheId="appMenu-viewCache">

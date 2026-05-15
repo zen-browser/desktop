@@ -1,8 +1,8 @@
 diff --git a/layout/base/PresShell.cpp b/layout/base/PresShell.cpp
-index dd4df91b14137c2aa1ffd978faf1f4c91e234f8a..99976e9416d8a5b814bbb3a5421899f450ceeee5 100644
+index b5930f71e362eb78f74888e1b33b2a6f9dbb4ea4..dc1ba0b462402f62e47fcb32e2d7cd1a671a7fd8 100644
 --- a/layout/base/PresShell.cpp
 +++ b/layout/base/PresShell.cpp
-@@ -136,6 +136,7 @@
+@@ -135,6 +135,7 @@
  #include "mozilla/layers/WebRenderLayerManager.h"
  #include "mozilla/layers/WebRenderUserData.h"
  #include "mozilla/layout/ScrollAnchorContainer.h"
@@ -10,7 +10,7 @@ index dd4df91b14137c2aa1ffd978faf1f4c91e234f8a..99976e9416d8a5b814bbb3a5421899f4
  #include "nsAnimationManager.h"
  #include "nsAutoLayoutPhase.h"
  #include "nsCOMArray.h"
-@@ -5546,7 +5547,7 @@ nscolor PresShell::GetDefaultBackgroundColorToDraw() const {
+@@ -5572,7 +5573,7 @@ nscolor PresShell::GetDefaultBackgroundColorToDraw() const {
    if (!mPresContext) {
      return NS_RGB(255, 255, 255);
    }

@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/tabbrowser/content-area.css b/browser/themes/shared/tabbrowser/content-area.css
-index 13403bf438be18b5bcc9f3d497c94636b5fb5f6f..0505582a7efa212813cf39835c12d34d4d38eb4e 100644
+index 05c1261f0085794e5e81dc8c1ef24fe1a9c5ec82..d0a1938b629338184bc462b4da1e10e1a4d6a4e7 100644
 --- a/browser/themes/shared/tabbrowser/content-area.css
 +++ b/browser/themes/shared/tabbrowser/content-area.css
 @@ -85,7 +85,6 @@
@@ -10,7 +10,7 @@ index 13403bf438be18b5bcc9f3d497c94636b5fb5f6f..0505582a7efa212813cf39835c12d34d
  
    /* stylelint-disable-next-line media-query-no-invalid */
    @media -moz-pref("sidebar.revamp") {
-@@ -141,7 +140,6 @@
+@@ -146,7 +145,6 @@
    }
  
    browser:is([blank], [pendingpaint]) {
@@ -18,7 +18,7 @@ index 13403bf438be18b5bcc9f3d497c94636b5fb5f6f..0505582a7efa212813cf39835c12d34d
    }
  
    /* Exclude browsers with smartwindow-content attribute which inherit
-@@ -427,7 +425,7 @@ split-view-footer {
+@@ -440,7 +438,7 @@ split-view-footer {
  
  .dialogStack {
    z-index: var(--browser-stack-z-index-dialog-stack);
@@ -27,7 +27,7 @@ index 13403bf438be18b5bcc9f3d497c94636b5fb5f6f..0505582a7efa212813cf39835c12d34d
    inset: 0;
    /* --browser-with-dialog set on browser[tabDialogShowing], we want to position the overlay
       only on the top of the <browser> element so it doesn't overlap the DevTools toolbox */
-@@ -594,7 +592,7 @@ split-view-footer {
+@@ -607,7 +605,7 @@ split-view-footer {
  
  .dialogOverlay[topmost="true"],
  #window-modal-dialog::backdrop {

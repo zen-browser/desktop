@@ -1,5 +1,5 @@
 diff --git a/toolkit/themes/shared/design-system/dist/tokens-shared.css b/toolkit/themes/shared/design-system/dist/tokens-shared.css
-index 94c61190db0e9b0df19249eb4e49a24ba1a61792..ab5a0cb7028e10a5ecce1d4034b450d04984db8a 100644
+index 452f3731fbca42a3529ab14421ef1c2c453b6c01..66791a5b6b074bccb02905053f043cc054b6bd57 100644
 --- a/toolkit/themes/shared/design-system/dist/tokens-shared.css
 +++ b/toolkit/themes/shared/design-system/dist/tokens-shared.css
 @@ -7,6 +7,8 @@

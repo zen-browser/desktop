@@ -1,8 +1,8 @@
 diff --git a/dom/chrome-webidl/BrowsingContext.webidl b/dom/chrome-webidl/BrowsingContext.webidl
-index 3bb17157c1dba1ca75ad9cfee2c21fcafb2dd0ee..a43f8aa1e4c808418f1cc7ccc69ced12c9ebfef0 100644
+index 43f28a6aad9d0dd3e3c908e8472244fc6aa32a74..60bfd83a9da2923ab3811f363320db474323e636 100644
 --- a/dom/chrome-webidl/BrowsingContext.webidl
 +++ b/dom/chrome-webidl/BrowsingContext.webidl
-@@ -169,6 +169,9 @@ interface BrowsingContext {
+@@ -179,6 +179,9 @@ interface BrowsingContext {
  
    [SetterThrows] attribute float textZoom;
  

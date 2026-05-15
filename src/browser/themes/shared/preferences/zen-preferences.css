@@ -6,10 +6,6 @@
 
 @namespace html "http://www.w3.org/1999/xhtml";
 
-:root {
-  --in-content-box-background: var(--zen-colors-tertiary) !important;
-}
-
 .pane-container {
   margin: auto;
 }
@@ -56,10 +52,6 @@ groupbox menulist {
 groupbox h2 {
   opacity: 0.7;
   font-size: 15px;
-}
-
-#categories {
-  margin: 0 !important;
 }
 
 #categories > .category {

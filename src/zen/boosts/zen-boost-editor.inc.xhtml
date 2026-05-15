@@ -57,7 +57,8 @@
     <vbox flex="1" id="zen-boost-filter-wrapper">
       <hbox class="zen-boost-color-picker-gradient zen-boost-panel-disabled">
         <button data-l10n-id="zen-boost-magic-theme" id="zen-boost-magic-theme" class="subviewbutton mod-button"></button>
-        <html:div class="zen-boost-color-picker-dot"></html:div>
+        <html:div id="zen-boost-color-picker-dot-primary" class="zen-boost-color-picker-dot"></html:div>
+        <html:div id="zen-boost-color-picker-dot-secondary" class="zen-boost-color-picker-dot"></html:div>
         <html:div class="zen-boost-color-picker-circle"></html:div>
       </hbox>
 
@@ -76,9 +77,19 @@
           <html:select name="font" id="zen-boost-font-select" class="mod-button">
             <!-- Additional font options will be injected here -->
           </html:select>
-          <button data-l10n-id="zen-boost-text-case-toggle" id="zen-boost-text-case-toggle" class="subviewbutton mod-button"></button>
+          <!-- <button data-l10n-id="zen-boost-text-case-toggle" id="zen-boost-text-case-toggle" class="subviewbutton mod-button"></button> -->
         </hbox>
       </html:div>
+
+      <hbox flex="1" id="zen-boost-toolbar-wrapper">
+        <button id="zen-boost-size" class="subviewbutton mod-button big-button med">
+          <html:p data-l10n-id="zen-boost-size" id="zen-boost-size-text"></html:p>
+          <html:p id="zen-boost-size-value"></html:p>
+        </button>
+        <button id="zen-boost-case" class="subviewbutton mod-button big-button toggleable-button med">
+          <html:p data-l10n-id="zen-boost-case" id="zen-boost-case-text"></html:p>
+        </button>
+      </hbox>
 
       <button id="zen-boost-zap" class="subviewbutton mod-button big-button toggleable-button">
         <html:p data-l10n-id="zen-boost-zap" id="zen-boost-zap-text"></html:p>
@@ -89,11 +100,11 @@
         <html:p data-l10n-id="zen-boost-code" id="zen-boost-code-text"></html:p>
       </button>
 
-      <hbox flex="1" id="zen-boost-toolbar-wrapper">
+    </vbox>
+    <hbox flex="1" class="footer" id="zen-boost-toolbar-wrapper">
         <button data-l10n-id="zen-boost-save" id="zen-boost-save" class="subviewbutton mod-button med"></button>
         <button data-l10n-id="zen-boost-load" id="zen-boost-load" class="subviewbutton mod-button med"></button>
-      </hbox>
-    </vbox>
+    </hbox>
   </vbox>
   <vbox flex="1" id="zen-boost-code-editor-root">
     <hbox id="zen-boost-code-top-bar">

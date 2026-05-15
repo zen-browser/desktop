@@ -39,6 +39,7 @@ export class nsZenBoostEditor {
 
     this.isMouseDown = false;
     this.wasDragging = false;
+    this.dragTarget = "";
     this.mouseDownPosition = { x: 0, y: 0 };
     this.lastDotSetPos = { x: 0, y: 0 };
     this.currentBoostData = null;
@@ -79,8 +80,11 @@ export class nsZenBoostEditor {
       .addEventListener("input", this.onColorOptionChange.bind(this));
 
     this.doc
-      .getElementById("zen-boost-text-case-toggle")
+      .getElementById("zen-boost-case")
       .addEventListener("click", this.onBoostCasePressed.bind(this));
+    this.doc
+      .getElementById("zen-boost-size")
+      .addEventListener("click", this.onBoostSizePressed.bind(this));
     this.doc
       .getElementById("zen-boost-zap")
       .addEventListener("click", this.onZapButtonPressed.bind(this));
@@ -277,6 +281,11 @@ export class nsZenBoostEditor {
       "Impact",
       "Palatino Linotype",
       "Tahoma",
+      "Helvetica",
+      "Garamond",
+      "Century Gothic",
+      "Arial Black",
+      "Papyrus",
     ];
     return cFonts;
   }
@@ -291,7 +300,7 @@ export class nsZenBoostEditor {
 
     const fontButtonGroup = this.doc.getElementById("zen-boost-font-grid");
     const fontList = this.doc.getElementById("zen-boost-font-select");
-    const buttonCount = 10;
+    const buttonCount = 15;
 
     for (let i = 0; i < Math.min(commonFonts.length, buttonCount); i++) {
       let font = fonts[i]; // Fallback
@@ -561,7 +570,9 @@ ${cssSelector} {
       this.wasDragging = true;
       event.preventDefault();
 
-      if (event.target.id != "zen-boost-magic-theme") {
+      if (this.dragTarget == "zen-boost-color-picker-dot-secondary") {
+        this.setSecondaryDotPos(event.clientX, event.clientY);
+      } else if (event.target.id != "zen-boost-magic-theme") {
         this.setDotPos(event.clientX, event.clientY, false);
       }
     }
@@ -579,6 +590,7 @@ ${cssSelector} {
 
     this.mouseDownPosition = { x: event.clientX, y: event.clientY };
     this.isMouseDown = true;
+    this.dragTarget = event.target.id;
   }
 
   /**
@@ -600,15 +612,37 @@ ${cssSelector} {
    * (none, lower, upper) and updating the UI accordingly.
    */
   onBoostCasePressed() {
-    if (this.currentBoostData.textCaseOverride == "lowercase") {
-      this.currentBoostData.textCaseOverride = "uppercase";
-    } else if (this.currentBoostData.textCaseOverride == "uppercase") {
+    if (this.currentBoostData.textCaseOverride == "uppercase") {
+      this.currentBoostData.textCaseOverride = "lowercase";
+    } else if (this.currentBoostData.textCaseOverride == "lowercase") {
+      this.currentBoostData.textCaseOverride = "capitalize";
+    } else if (this.currentBoostData.textCaseOverride == "capitalize") {
       this.currentBoostData.textCaseOverride = "none";
     } else {
-      this.currentBoostData.textCaseOverride = "lowercase";
+      this.currentBoostData.textCaseOverride = "uppercase";
     }
 
     this.updateCaseButtonVisuals();
+    this.updateCurrentBoost();
+  }
+
+  /**
+   * Handles the size toggle button press, cycling through size override options
+   */
+  onBoostSizePressed() {
+    if (this.currentBoostData.sizeOverride == 1) {
+      this.currentBoostData.sizeOverride = 1.1;
+    } else if (this.currentBoostData.sizeOverride == 1.1) {
+      this.currentBoostData.sizeOverride = 1.25;
+    } else if (this.currentBoostData.sizeOverride == 1.25) {
+      this.currentBoostData.sizeOverride = 1.5;
+    } else if (this.currentBoostData.sizeOverride == 1.5) {
+      this.currentBoostData.sizeOverride = 0.9;
+    } else if (this.currentBoostData.sizeOverride == 0.9) {
+      this.currentBoostData.sizeOverride = 1;
+    }
+
+    this.updateSizeButtonVisuals();
     this.updateCurrentBoost();
   }
 
@@ -650,6 +684,13 @@ ${cssSelector} {
   }
 
   /**
+   * Resets the secondary color picker dot to the center position (default state).
+   */
+  resetSecondaryDotPosition() {
+    this.setSecondaryDotPos(null, null);
+  }
+
+  /**
    * Handles clicks on the theme picker gradient or magic theme button.
    * Updates the dot position or toggles auto-theme mode based on the click target.
    *
@@ -665,7 +706,7 @@ ${cssSelector} {
       this.currentBoostData.autoTheme = !this.currentBoostData.autoTheme;
       this.updateButtonToggleVisuals();
       this.updateCurrentBoost();
-    } else {
+    } else if (this.dragTarget != "zen-boost-color-picker-dot-secondary") {
       this.setDotPos(event.clientX, event.clientY, !this.wasDragging);
     }
     this.wasDragging = false;
@@ -681,7 +722,10 @@ ${cssSelector} {
    */
   setDotPos(pixelX, pixelY, animate = true) {
     const gradient = this.doc.querySelector(".zen-boost-color-picker-gradient");
-    const dot = this.doc.querySelector(".zen-boost-color-picker-dot");
+    const dot = this.doc.querySelector("#zen-boost-color-picker-dot-primary");
+    const dotSec = this.doc.querySelector(
+      "#zen-boost-color-picker-dot-secondary"
+    );
 
     const rect = gradient.getBoundingClientRect();
     const padding = 50;
@@ -689,6 +733,9 @@ ${cssSelector} {
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     const radius = (rect.width - padding) / 2;
+
+    let pixelXSec = pixelX;
+    let pixelYSec = pixelY;
 
     if (!animate) {
       let nDistance = Math.sqrt(
@@ -710,6 +757,8 @@ ${cssSelector} {
     if (pixelX == null || pixelY == null) {
       pixelX = centerX;
       pixelY = centerY;
+      pixelXSec = centerX;
+      pixelYSec = centerY;
 
       this.currentBoostData.dotAngleDeg = 0;
       this.currentBoostData.dotDistance = 0;
@@ -719,8 +768,9 @@ ${cssSelector} {
       );
       distance = Math.min(distance, radius); // Clamp distance
 
-      const angle = Math.atan2(pixelY - centerY, pixelX - centerX);
+      // Primary dot
 
+      const angle = Math.atan2(pixelY - centerY, pixelX - centerX);
       pixelX = centerX + Math.cos(angle) * distance;
       pixelY = centerY + Math.sin(angle) * distance;
 
@@ -736,6 +786,15 @@ ${cssSelector} {
       // Map to 0-1 range
       this.currentBoostData.dotDistance = distance / radius;
 
+      // Secondary dot
+
+      const angleSec =
+        (angle +
+          (this.currentBoostData.secondaryDotAngleDegDelta * Math.PI) / 180) %
+        (Math.PI * 2);
+      pixelXSec = centerX + Math.cos(angleSec) * distance;
+      pixelYSec = centerY + Math.sin(angleSec) * distance;
+
       // Enable color boosting again
       if (!this.currentBoostData.enableColorBoost) {
         this.onToggleDisable(false);
@@ -745,18 +804,25 @@ ${cssSelector} {
 
     const relativeX = pixelX - rect.left;
     const relativeY = pixelY - rect.top;
+    const relativeXSec = pixelXSec - rect.left;
+    const relativeYSec = pixelYSec - rect.top;
 
     // Capture normalized position of dot for restoring it correctly later
     this.currentBoostData.dotPos.x = relativeX / rect.width;
     this.currentBoostData.dotPos.y = relativeY / rect.height;
+    this.currentBoostData.secondaryDotPos.x = relativeXSec / rect.width;
+    this.currentBoostData.secondaryDotPos.y = relativeYSec / rect.height;
 
     dot.setAttribute("animated", animate ? "true" : "false");
     dot.style.left = `${relativeX}px`;
     dot.style.top = `${relativeY}px`;
+    dotSec.setAttribute("animated", animate ? "true" : "false");
+    dotSec.style.left = `${relativeXSec}px`;
+    dotSec.style.top = `${relativeYSec}px`;
 
     this.updateButtonToggleVisuals();
     this.updateDot();
-    this.updateCircleRadius(animate);
+    this.updateCircleRadius();
     this.updateCurrentBoost();
   }
 
@@ -765,29 +831,197 @@ ${cssSelector} {
    * based on the current boost data's angle and distance values.
    */
   updateDot() {
-    const dot = this.doc.querySelector(".zen-boost-color-picker-dot");
+    const dot = this.doc.querySelector("#zen-boost-color-picker-dot-primary");
+    const dotSec = this.doc.querySelector(
+      "#zen-boost-color-picker-dot-secondary"
+    );
     dot.style.setProperty(
       "--zen-theme-picker-dot-color",
       `hsl(${this.currentBoostData.dotAngleDeg}deg, ${this.currentBoostData.dotDistance * 100}%, 55%)`
     );
+    dotSec.style.setProperty(
+      "--zen-theme-picker-dot-color",
+      `hsl(${this.currentBoostData.dotAngleDeg + this.currentBoostData.secondaryDotAngleDegDelta}deg, ${this.currentBoostData.dotDistance * 100}%, 20%)`
+    );
+  }
+
+  /**
+   * Sets the position of the secondary color picker dot on the gradient and updates
+   * the boost data with the corresponding angle values.
+   *
+   * @param {number|null} pixelX - The X coordinate in pixels.
+   * @param {number|null} pixelY - The Y coordinate in pixels.
+   */
+  setSecondaryDotPos(pixelX, pixelY) {
+    const gradient = this.doc.querySelector(".zen-boost-color-picker-gradient");
+    const dotSec = this.doc.querySelector(
+      "#zen-boost-color-picker-dot-secondary"
+    );
+
+    const rect = gradient.getBoundingClientRect();
+    const padding = 50;
+
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const radius = (rect.width - padding) / 2;
+
+    let angle = null;
+    if (!pixelX || !pixelY) {
+      pixelX = centerX;
+      pixelY = centerY;
+      angle = 32; // Default angle
+    } else {
+      angle = Math.atan2(pixelY - centerY, pixelX - centerX);
+      pixelX =
+        centerX + Math.cos(angle) * this.currentBoostData.dotDistance * radius;
+      pixelY =
+        centerY + Math.sin(angle) * this.currentBoostData.dotDistance * radius;
+    }
+
+    // Rad to degree
+    this.currentBoostData.secondaryDotAngleDegDelta =
+      ((angle * 180) / Math.PI + 100 - this.currentBoostData.dotAngleDeg) % 360;
+    if (this.currentBoostData.secondaryDotAngleDegDelta < 0) {
+      this.currentBoostData.secondaryDotAngleDegDelta += 360;
+    }
+
+    const relativeX = pixelX - rect.left;
+    const relativeY = pixelY - rect.top;
+
+    // Capture normalized position of dot for restoring it correctly later
+    this.currentBoostData.secondaryDotPos.x = relativeX / rect.width;
+    this.currentBoostData.secondaryDotPos.y = relativeY / rect.height;
+
+    dotSec.setAttribute("animated", "false");
+    dotSec.style.left = `${relativeX}px`;
+    dotSec.style.top = `${relativeY}px`;
+
+    this.updateButtonToggleVisuals();
+    this.updateDot();
+    this.updateCircleRadius();
+    this.updateCurrentBoost();
   }
 
   /**
    * Updates the radius of the circle based on the dot's position.
-   *
-   * @param {boolean} animate - Whether to animate the radius change (default: true).
    */
-  updateCircleRadius(animate = true) {
+  updateCircleRadius() {
     const gradient = this.doc.querySelector(".zen-boost-color-picker-gradient");
     const rect = gradient.getBoundingClientRect();
     const padding = 50;
     const radius = (rect.width - padding) / 2;
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
 
     // Updating the circle size to match the distance of the point
     const circle = this.doc.querySelector(".zen-boost-color-picker-circle");
-    circle.setAttribute("animated", animate ? "true" : "false");
+    circle.setAttribute("animated", "false");
     circle.style.width = `${this.currentBoostData.dotDistance * radius * 2}px`;
     circle.style.height = `${this.currentBoostData.dotDistance * radius * 2}px`;
+
+    const dotColor = `hsl(${this.currentBoostData.dotAngleDeg}deg, ${this.currentBoostData.dotDistance * 100}%, 55%)`;
+    const dotColorSec = `hsl(${this.currentBoostData.dotAngleDeg + this.currentBoostData.secondaryDotAngleDegDelta}deg, ${this.currentBoostData.dotDistance * 100}%, 20%)`;
+
+    this.updateArcFill(cx, cy, radius, dotColor, dotColorSec);
+  }
+
+  updateArcFill(cx, cy, radius, color1, color2) {
+    const svg = this.doc.querySelector(".zen-boost-color-picker-arc-svg");
+
+    // Create SVG if it doesn't exist
+    if (!svg) {
+      this.initArcSVG();
+      this.updateArcFill(cx, cy, radius, color1, color2);
+      return;
+    }
+
+    const angle1 = this.currentBoostData.dotAngleDeg;
+    const angle2 =
+      this.currentBoostData.dotAngleDeg +
+      this.currentBoostData.secondaryDotAngleDegDelta;
+    const dist = this.currentBoostData.dotDistance;
+    const r = dist * radius;
+    const thickness = 2;
+
+    const toXY = (deg, ra) => {
+      const rad = ((deg - 90) * Math.PI) / 180;
+      return [cx + ra * Math.cos(rad), cy + ra * Math.sin(rad)];
+    };
+
+    const [x1, y1] = toXY(angle1, r);
+    const [x2, y2] = toXY(angle2, r);
+
+    // Gradient endpoints for matched dot positions
+    const grad = svg.querySelector("#arc-gradient");
+    grad.querySelector("#ag-stop1").setAttribute("stop-color", color1);
+    grad.querySelector("#ag-stop2").setAttribute("stop-color", color2);
+    grad.setAttribute("x1", x1);
+    grad.setAttribute("y1", y1);
+    grad.setAttribute("x2", x2);
+    grad.setAttribute("y2", y2);
+
+    // Ring sector path
+    const outerR = r + thickness / 2;
+    const innerR = Math.max(r - thickness / 2, 1);
+    const delta = (angle2 - angle1 + 360) % 360;
+    const large = delta > 180 ? 1 : 0;
+    const [ox1, oy1] = toXY(angle1, outerR);
+    const [ox2, oy2] = toXY(angle2, outerR);
+    const [ix2, iy2] = toXY(angle2, innerR);
+    const [ix1, iy1] = toXY(angle1, innerR);
+
+    const d = `M ${ox1} ${oy1} A ${outerR} ${outerR} 0 ${large} 1 ${ox2} ${oy2} L ${ix2} ${iy2} A ${innerR} ${innerR} 0 ${large} 0 ${ix1} ${iy1} Z`;
+    svg.querySelector(".arc-fill").setAttribute("d", d);
+  }
+
+  initArcSVG() {
+    const NS = "http://www.w3.org/2000/svg";
+    const container = this.doc.querySelector(
+      ".zen-boost-color-picker-gradient"
+    );
+
+    if (!container.clientWidth || !container.clientHeight) {
+      return;
+    }
+
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+
+    const svg = this.doc.createElementNS(NS, "svg");
+    svg.classList.add("zen-boost-color-picker-arc-svg");
+    svg.setAttribute("width", w);
+    svg.setAttribute("height", h);
+    svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+    svg.style.cssText =
+      "position:absolute; top:0; left:0; pointer-events:none; z-index:3;";
+
+    const defs = this.doc.createElementNS(NS, "defs");
+    const grad = this.doc.createElementNS(NS, "linearGradient");
+    grad.setAttribute("id", "arc-gradient");
+    grad.setAttribute("gradientUnits", "userSpaceOnUse");
+
+    const stop1 = this.doc.createElementNS(NS, "stop");
+    stop1.setAttribute("id", "ag-stop1");
+    stop1.setAttribute("offset", "0%");
+
+    const stop2 = this.doc.createElementNS(NS, "stop");
+    stop2.setAttribute("id", "ag-stop2");
+    stop2.setAttribute("offset", "100%");
+
+    grad.appendChild(stop1);
+    grad.appendChild(stop2);
+    defs.appendChild(grad);
+    svg.appendChild(defs);
+
+    // Arc fill path
+    const arcFill = this.doc.createElementNS(NS, "path");
+    arcFill.classList.add("arc-fill");
+    arcFill.setAttribute("fill", "url(#arc-gradient)");
+    arcFill.setAttribute("opacity", "0.65");
+    svg.appendChild(arcFill);
+
+    container.style.position = "relative";
+    container.appendChild(svg);
   }
 
   /**
@@ -829,8 +1063,72 @@ ${cssSelector} {
    * text case override value (none, upper, or lower).
    */
   updateCaseButtonVisuals() {
-    const sizeValue = this.doc.getElementById("zen-boost-text-case-toggle");
-    sizeValue.setAttribute("case-mode", this.currentBoostData.textCaseOverride);
+    const caseButton = this.doc.getElementById("zen-boost-case");
+    const caseText = this.doc.getElementById("zen-boost-case-text");
+    caseButton.setAttribute(
+      "case-mode",
+      this.currentBoostData.textCaseOverride
+    );
+
+    switch (this.currentBoostData.textCaseOverride) {
+      case "uppercase":
+        caseButton.setAttribute("mode", "orange");
+        caseText.style.display = "none";
+        break;
+      case "lowercase":
+        caseButton.setAttribute("mode", "orange-red");
+        caseText.style.display = "none";
+        break;
+      case "capitalize":
+        caseButton.setAttribute("mode", "red");
+        caseText.style.display = "none";
+        break;
+      default:
+        caseButton.setAttribute("mode", "none");
+        caseText.style.display = "initial";
+        break;
+    }
+  }
+
+  /**
+   * Updates the visual state of the text case toggle button based on the current
+   * text case override value (none, upper, or lower).
+   */
+  updateSizeButtonVisuals() {
+    const sizeButton = this.doc.getElementById("zen-boost-size");
+    const sizeText = this.doc.getElementById("zen-boost-size-text");
+    const sizeValue = this.doc.getElementById("zen-boost-size-value");
+
+    switch (this.currentBoostData.sizeOverride) {
+      case 1:
+        sizeButton.setAttribute("mode", "none");
+        sizeText.style.display = "initial";
+        sizeValue.style.display = "none";
+        break;
+      case 1.1:
+        sizeButton.setAttribute("mode", "orange");
+        sizeText.style.display = "none";
+        sizeValue.style.display = "initial";
+        break;
+      case 1.25:
+        sizeButton.setAttribute("mode", "orange-red");
+        sizeText.style.display = "none";
+        sizeValue.style.display = "initial";
+        break;
+      case 1.5:
+        sizeButton.setAttribute("mode", "red");
+        sizeText.style.display = "none";
+        sizeValue.style.display = "initial";
+        break;
+      case 0.9:
+        sizeButton.setAttribute("mode", "blue");
+        sizeText.style.display = "none";
+        sizeValue.style.display = "initial";
+        break;
+    }
+    sizeValue.setHTML(
+      `${Math.round(this.currentBoostData.sizeOverride * 100)}%`
+    );
   }
 
   /**
@@ -1199,7 +1497,7 @@ ${cssSelector} {
       Math.round(rect.top + Math.random() * rect.height),
       true
     );
-
+    this.currentBoostData.secondaryDotAngleDegDelta = Math.random() * 360;
     this.currentBoostData.changeWasMade = true;
 
     this.updateCurrentBoost();
@@ -1260,7 +1558,22 @@ ${cssSelector} {
   updateAllVisuals() {
     this.doc.getElementById("zen-boost-name-text").textContent =
       this.currentBoostData.boostName;
-    const dot = this.doc.querySelector(".zen-boost-color-picker-dot");
+    const dot = this.doc.querySelector("#zen-boost-color-picker-dot-primary");
+    const dotSec = this.doc.querySelector(
+      "#zen-boost-color-picker-dot-secondary"
+    );
+
+    if (!this.currentBoostData.sizeOverride) {
+      this.currentBoostData.sizeOverride = 1;
+    }
+
+    if (
+      !this.currentBoostData.secondaryDotPos ||
+      !this.currentBoostData.secondaryDotPos.x ||
+      !this.currentBoostData.secondaryDotPos.y
+    ) {
+      this.resetSecondaryDotPosition();
+    }
 
     if (
       this.currentBoostData.dotPos.x == null ||
@@ -1290,16 +1603,22 @@ ${cssSelector} {
       // Convert normalized position to relative position
       const xPos = this.currentBoostData.dotPos.x * rect.width;
       const yPos = this.currentBoostData.dotPos.y * rect.height;
+      const xPosSec = this.currentBoostData.secondaryDotPos.x * rect.width;
+      const yPosSec = this.currentBoostData.secondaryDotPos.y * rect.height;
 
       dot.setAttribute("animated", "true");
       dot.style.left = `${xPos}px`;
       dot.style.top = `${yPos}px`;
+      dotSec.setAttribute("animated", "true");
+      dotSec.style.left = `${xPosSec}px`;
+      dotSec.style.top = `${yPosSec}px`;
     }
 
     this.editorWindow._editor.setText(this.currentBoostData.customCSS || "");
 
     this.updateFontButtonVisuals();
     this.updateCaseButtonVisuals();
+    this.updateSizeButtonVisuals();
     this.updateColorControlSliderVisuals();
     this.updateButtonToggleVisuals();
     this.updateDot();

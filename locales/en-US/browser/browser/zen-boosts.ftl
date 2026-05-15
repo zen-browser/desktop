@@ -11,6 +11,7 @@ zen-boost-edit-reset =
 zen-boost-edit-delete = 
     .label = Delete Boost
 zen-boost-size = Size
+zen-boost-case = Case
 zen-boost-zap = Zap
 zen-boost-code = Code
 zen-boost-back = Back

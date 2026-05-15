@@ -118,6 +118,9 @@ class nsZenBoostsManager {
         dotPos: { x: null, y: null },
         dotDistance: 0,
 
+        secondaryDotAngleDegDelta: 32,
+        secondaryDotPos: { x: null, y: null },
+
         brightness: 0.5,
         saturation: 0.5,
         contrast: 0.75,
@@ -131,6 +134,7 @@ class nsZenBoostsManager {
         autoTheme: false,
 
         textCaseOverride: "none",
+        sizeOverride: 1,
 
         zapSelectors: [],
         customCSS: "",

@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
-index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..dce4167b9fd70ac55bb66e4e46964b73f9b0c842 100644
+index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..3c297614afd323e210ebf0018d4aca22c000e105 100644
 --- a/browser/themes/shared/tabbrowser/tabs.css
 +++ b/browser/themes/shared/tabbrowser/tabs.css
 @@ -25,7 +25,7 @@
@@ -49,6 +49,15 @@ index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..dce4167b9fd70ac55bb66e4e46964b73
        opacity: 0.5;
        /* Fade the favicon out */
        transition-property: filter, opacity;
+@@ -581,7 +573,7 @@ tab-split-view-wrapper[dragtarget] {
+   z-index: 1; /* Overlay tab title */
+ 
+   #tabbrowser-tabs[orient="vertical"] & {
+-    top: 7px;
++    top: -7px;
+   }
+ 
+   &[crashed] {
 @@ -589,7 +581,7 @@ tab-split-view-wrapper[dragtarget] {
    }
  
@@ -67,15 +76,6 @@ index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..dce4167b9fd70ac55bb66e4e46964b73
    &[crashed] {
      display: revert;
    }
-@@ -764,7 +756,7 @@ tab-split-view-wrapper[dragtarget] {
-   }
- 
-   #tabbrowser-tabs[orient="vertical"] & {
--    top: 7px;
-+    top: -7px;
-   }
- 
-   #tabbrowser-tabs[orient="vertical"]:not([expanded]) .tabbrowser-tab[tab-note]:not([crashed], [soundplaying], [muted], [activemedia-blocked]) &,
 @@ -810,7 +802,7 @@ tab-split-view-wrapper[dragtarget] {
        has not been added to root. There are certain scenarios when that attribute is temporarily
        removed from root such as when toggling the sidebar to expand with the toolbar button. */
@@ -148,7 +148,17 @@ index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..dce4167b9fd70ac55bb66e4e46964b73
  
        &:-moz-window-inactive {
          background-image:
-@@ -2515,7 +2505,6 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
+@@ -2480,9 +2470,6 @@ tab-group {
+   ~ #tabbrowser-tabs[orient="horizontal"]::before {
+     display: flex;
+     content: "";
+-    border-inline-start: var(--tabstrip-inner-border);
+-    padding-inline-start: 2px;
+-    margin-inline-start: 2px;
+   }
+ }
+ 
+@@ -2515,7 +2502,6 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
    list-style-image: url(chrome://global/skin/icons/plus.svg);
  }
  

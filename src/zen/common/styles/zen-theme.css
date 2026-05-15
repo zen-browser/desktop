@@ -290,6 +290,10 @@
   @media (-moz-platform: windows) {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
+
+  @media (-moz-platform: linux) {
+    font-family: system-ui, sans-serif;
+  }
 }
 
 #main-window[windowtype="navigator:browser"]:not([chromehidden~='toolbar']) {

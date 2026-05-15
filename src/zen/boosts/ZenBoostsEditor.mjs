@@ -925,6 +925,15 @@ ${cssSelector} {
     this.updateArcFill(cx, cy, radius, dotColor, dotColorSec);
   }
 
+  /**
+   * Updates the filled gradient arc between both color dots
+   *
+   * @param {number} cx - Half width of the gradient area
+   * @param {number} cy - Half height of the gradient area
+   * @param {number} radius - The target radius of the circle
+   * @param {string} color1 - Primary css color
+   * @param {string} color2 - Secondary css color
+   */
   updateArcFill(cx, cy, radius, color1, color2) {
     const svg = this.doc.querySelector(".zen-boost-color-picker-arc-svg");
 
@@ -974,6 +983,9 @@ ${cssSelector} {
     svg.querySelector(".arc-fill").setAttribute("d", d);
   }
 
+  /**
+   * Initializes the filled gradient arc between both color picker dots in form of a svg
+   */
   initArcSVG() {
     const NS = "http://www.w3.org/2000/svg";
     const container = this.doc.querySelector(

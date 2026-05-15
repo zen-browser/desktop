@@ -398,26 +398,27 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     const tab = event.target;
     const group = tab.group;
     if (
-      Services.prefs.getBoolPref("zen.folders.new-tabs-in-folder")
-      && !group?.isZenFolder
-      && !tab.owner
+      Services.prefs.getBoolPref("zen.folders.owned-tabs-in-folder") &&
+      group?.isZenFolder &&
+      !tab.pinned
     ) {
-      const activeFolder = gBrowser.selectedTab?.group;
-      if (activeFolder?.isZenFolder) {
-        gBrowser.pinTab(tab);
-        activeFolder.addTabs([tab]);
-        return;
-      }
-    }
-    if (!group?.isZenFolder || tab.pinned) {
-      return;
-    }
-    // Edge case: In occations where we add a tab with an ownerTab
-    // inside a folder, the tab gets added into the folder in an
-    // unpinned state. We need to pin it and re-add it into the folder.
-    if (Services.prefs.getBoolPref("zen.folders.owned-tabs-in-folder")) {
+      // Edge case: In occations where we add a tab with an ownerTab
+      // inside a folder, the tab gets added into the folder in an
+      // unpinned state. We need to pin it and re-add it into the folder.
       gBrowser.pinTab(tab);
       group.addTabs([tab]);
+      return;
+    }
+    const activeFolder = gBrowser.selectedTab?.group;
+    if (
+      Services.prefs.getBoolPref("zen.folders.new-tabs-in-folder") &&
+      !group?.isZenFolder &&
+      !tab.owner &&
+      activeFolder?.isZenFolder &&
+      !activeFolder?.isLiveFolder &&
+      !activeFolder?.hasAttribute("split-view-group")
+    ) {
+      activeFolder.addTabs([tab]);
     }
   }
 

@@ -8,7 +8,10 @@ import {
   Tracker,
 } from "resource://services-sync/engines.sys.mjs";
 import { CryptoWrapper } from "resource://services-sync/record.sys.mjs";
-import { SCORE_INCREMENT_XLARGE } from "resource://services-sync/constants.sys.mjs";
+import {
+  SCORE_INCREMENT_MEDIUM,
+  SCORE_INCREMENT_XLARGE,
+} from "resource://services-sync/constants.sys.mjs";
 
 const lazy = {};
 
@@ -411,7 +414,9 @@ class ZenWorkspacesTracker extends Tracker {
     if (data.type && data.id) {
       const id = createRecordId(data.type, data.id);
       this.#changedIDs[id] = Date.now() / 1000;
-      this.score += SCORE_INCREMENT_XLARGE;
+      this.score += data.type === "space" || data.type === "container"
+        ? SCORE_INCREMENT_XLARGE
+        : SCORE_INCREMENT_MEDIUM;
     }
   }
 

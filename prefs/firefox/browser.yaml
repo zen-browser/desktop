@@ -126,18 +126,18 @@
 - name: browser.newtabpage.activity-stream.logowordmark.alwaysVisible
   value: false
 
+# Astra: Disable Activity Stream so our custom NTP (astra-newtab.html) wins.
+# AboutNewTab.newTabURL override only takes effect when AS is off.
+- name: browser.newtabpage.activity-stream.enabled
+  value: false
 - name: browser.newtabpage.activity-stream.showSearch
-  value: true
-- name: browser.newtabpage.activity-stream.feeds.topsites
-  value: true
+  value: false
 - name: browser.newtabpage.activity-stream.feeds.snippets
   value: false
 - name: browser.newtabpage.activity-stream.showSponsored
   value: false
 - name: browser.newtabpage.activity-stream.showSponsoredTopSites
   value: false
-- name: browser.newtabpage.pinned
-  value: '[{"url":"https://google.com","label":"Google"},{"url":"https://youtube.com","label":"YouTube"},{"url":"https://mail.google.com","label":"Gmail"},{"url":"https://web.whatsapp.com","label":"WhatsApp"},{"url":"https://digilocker.gov.in","label":"DigiLocker"},{"url":"https://irctc.co.in","label":"IRCTC"}]'
 
 # Astra: Cryptomining protection
 - name: privacy.trackingprotection.cryptomining.enabled

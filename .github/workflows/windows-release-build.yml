@@ -258,6 +258,19 @@ jobs:
           test -s "$EXT_DIR/uBlock0@raymondhill.net.xpi"
           echo "uBlock XPI staged at $EXT_DIR (will be packaged into installer)"
 
+      - name: Copy policies.json to Windows dist
+        if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
+        shell: bash
+        run: |
+          set -eux
+          OBJ_DIR="engine/obj-${{ matrix.arch }}-pc-windows-msvc"
+          DIST_DIR="$OBJ_DIR/dist/bin/distribution"
+          mkdir -p "$DIST_DIR"
+          cp build/AppDir/distribution/policies.json "$DIST_DIR/policies.json"
+          test -s "$DIST_DIR/policies.json"
+          cat "$DIST_DIR/policies.json"
+          echo "policies.json staged for Windows installer"
+
       - name: Package
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
         env:
@@ -285,21 +298,35 @@ jobs:
 
       - name: Verify uBlock XPI is inside packaged installer
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
-        continue-on-error: true
         shell: bash
         run: |
           set -x
           OBJ_DIR="engine/obj-${{ matrix.arch }}-pc-windows-msvc"
           INSTALLER=$(find "$OBJ_DIR/dist" -type f -name "*.installer*.exe" 2>/dev/null | head -1)
           if [ -z "$INSTALLER" ]; then
-            echo "::warning::No installer .exe found under $OBJ_DIR/dist to verify"
-            exit 0
+            echo "::error::No installer .exe produced under $OBJ_DIR/dist - build broke before installer creation"
+            exit 1
           fi
           echo "Inspecting installer: $INSTALLER"
           if 7z l "$INSTALLER" 2>/dev/null | grep -i "uBlock0@raymondhill.net.xpi"; then
-            echo "uBlock XPI confirmed inside installer"
+            echo "uBlock XPI confirmed inside installer EXE"
           else
-            echo "::error::uBlock XPI NOT found inside $INSTALLER"
+            echo "::error::uBlock XPI MISSING from installer EXE: $INSTALLER"
+            exit 1
+          fi
+          if 7z l "$INSTALLER" 2>/dev/null | grep -i "policies.json"; then
+            echo "policies.json confirmed inside installer EXE"
+          else
+            echo "::error::policies.json MISSING from installer EXE: $INSTALLER"
+            exit 1
+          fi
+          ZIP=$(find "$OBJ_DIR/dist" -type f -name "*.win*.zip" 2>/dev/null | head -1)
+          if [ -n "$ZIP" ]; then
+            if 7z l "$ZIP" 2>/dev/null | grep -i "uBlock"; then
+              echo "uBlock XPI confirmed inside ZIP"
+            else
+              echo "::warning::uBlock XPI not found inside ZIP (non-fatal, installer is source of truth)"
+            fi
           fi
 
       - name: Remove API Keys

@@ -408,8 +408,23 @@ jobs:
           tar -xvf *.tar.* && rm -rf *.tar.*
           mv astra/* $APPDIR/ 2>/dev/null || mv zen/* $APPDIR/ 2>/dev/null || true
           mkdir -p "$APPDIR/distribution/extensions"
-          curl -fsSL "https://github.com/gorhill/uBlock/releases/download/1.62.0/uBlock0_1.62.0.firefox.signed.xpi" \
+          curl -fsSL --retry 3 "https://github.com/gorhill/uBlock/releases/download/1.62.0/uBlock0_1.62.0.firefox.signed.xpi" \
             -o "$APPDIR/distribution/extensions/uBlock0@raymondhill.net.xpi"
+          if [ -f "$APPDIR/distribution/extensions/uBlock0@raymondhill.net.xpi" ] && [ -s "$APPDIR/distribution/extensions/uBlock0@raymondhill.net.xpi" ]; then
+            echo "uBlock XPI confirmed in AppImage"
+            ls -la "$APPDIR/distribution/extensions/"
+          else
+            echo "::error::uBlock XPI MISSING from AppImage"
+            exit 1
+          fi
+          cp build/AppDir/distribution/policies.json "$APPDIR/distribution/policies.json" 2>/dev/null || true
+          if [ -f "$APPDIR/distribution/policies.json" ] && [ -s "$APPDIR/distribution/policies.json" ]; then
+            echo "policies.json confirmed in AppImage:"
+            cat "$APPDIR/distribution/policies.json"
+          else
+            echo "::error::policies.json MISSING from AppImage"
+            exit 1
+          fi
           wget "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
           wget "https://github.com/VHSgunzo/uruntime/releases/latest/download/uruntime-appimage-squashfs-lite-$ARCH"
           chmod +x *.AppImage

@@ -9,4 +9,7 @@ EXTRA_JS_MODULES.zen += [
   "ZenSpaceIcons.mjs",
   "ZenSpaceManager.mjs",
   "ZenSpacesSwipe.mjs",
+  "ZenWorkspaceStorage.sys.mjs",
+  "ZenWorkspaceHistoryStorage.sys.mjs",
+  "ZenWorkspaceMigration.sys.mjs",
 ]

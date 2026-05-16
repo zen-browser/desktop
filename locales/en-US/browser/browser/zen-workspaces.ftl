@@ -98,3 +98,6 @@ zen-panel-ui-workspaces-change-forward =
 
 zen-panel-ui-workspaces-change-back =
     .label = Previous Space
+
+zen-workspace-creation-isolation-label = Data Isolation
+zen-workspace-creation-isolation-description = Each space gets its own bookmarks, passwords, history, cookies, and extension data.

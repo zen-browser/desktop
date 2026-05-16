@@ -56,3 +56,24 @@
 
 - name: zen.pinned-tab-manager.close-shortcut-behavior
   value: reset-unload-switch
+
+- name: zen.workspaces.isolation.enabled
+  value: false
+
+- name: zen.workspaces.isolation.isolate-bookmarks
+  value: true
+
+- name: zen.workspaces.isolation.isolate-passwords
+  value: true
+
+- name: zen.workspaces.isolation.isolate-history
+  value: true
+
+- name: zen.workspaces.isolation.isolate-cookies
+  value: true
+
+- name: zen.workspaces.isolation.isolate-extensions
+  value: true
+
+- name: zen.workspaces.isolation.migration-version
+  value: 0

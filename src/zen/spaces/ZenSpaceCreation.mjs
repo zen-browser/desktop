@@ -44,6 +44,15 @@ class nsZenWorkspaceCreation extends MozXULElement {
                 <label class="zen-workspace-creation-profile-label" data-l10n-id="zen-workspace-creation-profile" />
                 <button class="zen-workspace-creation-profile" />
               </hbox>
+              <vbox class="zen-workspace-creation-isolation-wrapper">
+                <hbox class="zen-workspace-creation-isolation-header">
+                  <label data-l10n-id="zen-workspace-creation-isolation-label" />
+                  <html:input class="zen-workspace-creation-isolation-toggle"
+                              type="checkbox" />
+                </hbox>
+                <html:div class="zen-workspace-creation-isolation-description"
+                          data-l10n-id="zen-workspace-creation-isolation-description" />
+              </vbox>
               <button
                 class="zen-workspace-creation-edit-theme-button"
                 data-l10n-id="zen-workspaces-change-theme"
@@ -77,6 +86,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
       this.querySelector(".zen-workspace-creation-label").parentElement,
       this.querySelector(".zen-workspace-creation-name-wrapper"),
       this.querySelector(".zen-workspace-creation-profile-wrapper"),
+      this.querySelector(".zen-workspace-creation-isolation-wrapper"),
       this.querySelector(".zen-workspace-creation-edit-theme-button"),
       this.createButton.parentNode,
       this.cancelButton,
@@ -198,6 +208,21 @@ class nsZenWorkspaceCreation extends MozXULElement {
       this.inputProfile.parentNode.hidden = true;
     }
 
+    // Initialize isolation toggle
+    this._workspaceIsolation = Services.prefs.getBoolPref(
+      "zen.workspaces.isolation.enabled",
+      false
+    );
+    this.isolationToggle = this.querySelector(
+      ".zen-workspace-creation-isolation-toggle"
+    );
+    if (this.isolationToggle) {
+      this.isolationToggle.checked = this._workspaceIsolation;
+      this.isolationToggle.addEventListener("change", () => {
+        this._workspaceIsolation = this.isolationToggle.checked;
+      });
+    }
+
     document.getElementById("zen-sidebar-splitter").style.pointerEvents =
       "none";
 
@@ -250,6 +275,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
     workspace.name = this.inputName.value.trim();
     workspace.icon = this.inputIcon.image || this.inputIcon.label || undefined;
     workspace.containerTabId = this.currentProfile;
+    workspace.isolated = this._workspaceIsolation;
     await gZenWorkspaces.saveWorkspace(workspace);
 
     await this.#cleanup();

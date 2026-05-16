@@ -1,0 +1,108 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+@namespace html 'http://www.w3.org/1999/xhtml';
+@namespace xul 'http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul';
+
+/* Workspace isolation UI in creation form */
+.zen-workspace-creation-isolation-wrapper {
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px solid var(--zen-colors-border);
+  border-radius: 8px;
+  background: var(--zen-colors-tertiary);
+}
+
+.zen-workspace-creation-isolation-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.zen-workspace-creation-isolation-description {
+  font-size: 0.85em;
+  color: var(--zen-colors-secondary);
+  line-height: 1.4;
+  margin-top: 4px;
+}
+
+.zen-workspace-creation-isolation-toggle {
+  width: 40px;
+  height: 22px;
+  appearance: none;
+  background: var(--zen-colors-border);
+  border-radius: 11px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  border: none;
+  padding: 0;
+}
+
+.zen-workspace-creation-isolation-toggle:checked {
+  background: var(--zen-primary-color);
+}
+
+.zen-workspace-creation-isolation-toggle::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: white;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.2s ease;
+}
+
+.zen-workspace-creation-isolation-toggle:checked::after {
+  transform: translateX(18px);
+}
+
+/* Workspace indicator badge for isolated workspaces */
+.zen-workspace-indicator-isolated {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--zen-primary-color);
+  opacity: 0.7;
+}
+
+/* Settings panel isolation section */
+.zen-workspace-isolation-settings {
+  padding: 12px;
+  border: 1px solid var(--zen-colors-border);
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.zen-workspace-isolation-settings-header {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.zen-workspace-isolation-settings-description {
+  font-size: 0.85em;
+  color: var(--zen-colors-secondary);
+  line-height: 1.4;
+  margin-bottom: 12px;
+}
+
+.zen-workspace-isolation-type-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--zen-colors-border);
+}
+
+.zen-workspace-isolation-type-row:last-child {
+  border-bottom: none;
+}

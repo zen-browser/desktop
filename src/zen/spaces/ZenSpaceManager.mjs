@@ -11,6 +11,11 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
+  gZenWorkspaceStorage: "resource:///modules/zen/ZenWorkspaceStorage.sys.mjs",
+  gZenWorkspaceHistoryStorage:
+    "resource:///modules/zen/ZenWorkspaceHistoryStorage.sys.mjs",
+  gZenWorkspaceMigration:
+    "resource:///modules/zen/ZenWorkspaceMigration.sys.mjs",
 });
 
 ChromeUtils.defineLazyGetter(lazy, "browserBackgroundElement", () => {
@@ -122,6 +127,42 @@ class nsZenWorkspaces {
       "zen.workspaces.separate-essentials",
       false
     );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "workspaceIsolationEnabled",
+      "zen.workspaces.isolation.enabled",
+      false
+    );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "isolateBookmarks",
+      "zen.workspaces.isolation.isolate-bookmarks",
+      true
+    );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "isolatePasswords",
+      "zen.workspaces.isolation.isolate-passwords",
+      true
+    );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "isolateHistory",
+      "zen.workspaces.isolation.isolate-history",
+      true
+    );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "isolateCookies",
+      "zen.workspaces.isolation.isolate-cookies",
+      true
+    );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "isolateExtensions",
+      "zen.workspaces.isolation.isolate-extensions",
+      true
+    );
     ChromeUtils.defineLazyGetter(this, "tabContainer", () =>
       document.getElementById("tabbrowser-tabs")
     );
@@ -158,6 +199,10 @@ class nsZenWorkspaces {
           "workspace-bookmarks-updated"
         );
       });
+
+      // Initialize workspace storage isolation subsystem
+      lazy.gZenWorkspaceStorage.init();
+      lazy.gZenWorkspaceHistoryStorage.init();
     }
   }
 
@@ -186,6 +231,77 @@ class nsZenWorkspaces {
     ) {
       this._swipeManager = new ZenSpacesSwipe();
       this.initializeWorkspaceNavigation();
+    }
+
+    // Set up history tracking for workspace isolation
+    this.#setupHistoryTracking();
+  }
+
+  /**
+   * Returns whether a workspace has data isolation enabled.
+   *
+   * @param {string} workspaceUuid
+   * @returns {boolean}
+   */
+  isWorkspaceIsolated(workspaceUuid) {
+    const workspace = this.getWorkspaceFromId(workspaceUuid);
+    return !!(workspace?.isolated && this.workspaceIsolationEnabled);
+  }
+
+  /**
+   * Sets up a Places observer to tag new history visits with the current workspace.
+   */
+  #setupHistoryTracking() {
+    if (this.privateWindowOrDisabled || !this.isolateHistory) {
+      return;
+    }
+
+    try {
+      const { PlacesUtils } = ChromeUtils.importESModule(
+        "resource://gre/modules/PlacesUtils.sys.mjs"
+      );
+
+      const historyObserver = {
+        onVisit: (
+          uri,
+          visitId,
+          time,
+          sessionId,
+          referringId,
+          transitionType,
+          guid
+        ) => {
+          if (!this.activeWorkspace) {
+            return;
+          }
+
+          PlacesUtils.withConnectionWrapper(
+            "ZenWorkspaceHistoryStorage.onVisit",
+            async db => {
+              const rows = await db.execute(
+                `SELECT id FROM moz_places WHERE guid = :guid`,
+                { guid }
+              );
+              if (rows.length > 0) {
+                const placeId = rows[0].getResultByName("id");
+                await lazy.gZenWorkspaceHistoryStorage.assignHistoryToWorkspace(
+                  placeId,
+                  this.activeWorkspace
+                );
+              }
+            }
+          ).catch(console.error);
+        },
+        QueryInterface: ChromeUtils.generateQI(["nsINavHistoryObserver"]),
+      };
+
+      PlacesUtils.history.addObserver(historyObserver, false);
+
+      window.addEventListener("unload", () => {
+        PlacesUtils.history.removeObserver(historyObserver);
+      });
+    } catch (e) {
+      console.error("gZenWorkspaces: Failed to set up history tracking:", e);
     }
   }
 
@@ -731,6 +847,21 @@ class nsZenWorkspaces {
       : [this.#createWorkspaceData("Space", undefined)];
     this.activeWorkspace =
       aWinData.activeZenSpace || this._workspaceCache[0].uuid;
+
+    // Run workspace storage migration if needed
+    if (!this.privateWindowOrDisabled) {
+      lazy.gZenWorkspaceMigration.migrateIfNeeded(this._workspaceCache).then(
+        migrated => {
+          if (migrated) {
+            // After migration, switch to active workspace storage
+            lazy.gZenWorkspaceStorage.switchActiveWorkspace(this.activeWorkspace, {
+              isolated: this.workspaceIsolationEnabled,
+            });
+          }
+        }
+      );
+    }
+
     let promise = this.#initializeWorkspaces();
     for (const workspace of spacesFromStore) {
       const element = this.workspaceElement(workspace.uuid);
@@ -1215,6 +1346,14 @@ class nsZenWorkspaces {
   removeWorkspace(windowID) {
     let { promise, resolve } = Promise.withResolvers();
     this.#deleteWorkspaceOwnedTabs(windowID);
+
+    // Delete isolated storage for the workspace
+    if (this.workspaceIsolationEnabled) {
+      lazy.gZenWorkspaceStorage.deleteWorkspaceStorage(windowID).catch(e => {
+        console.error("gZenWorkspaces: Failed to delete workspace storage:", e);
+      });
+    }
+
     let workspacesData = this.getWorkspaces();
     // Remove the workspace from the cache
     workspacesData = workspacesData.filter(
@@ -1607,6 +1746,21 @@ class nsZenWorkspaces {
     const previousWorkspace = this.getActiveWorkspace();
     alwaysChange = alwaysChange || onInit;
     this.activeWorkspace = workspace.uuid;
+
+    // Switch storage backend to new workspace
+    if (!this.privateWindowOrDisabled && workspace.isolated) {
+      lazy.gZenWorkspaceStorage
+        .switchActiveWorkspace(workspace.uuid, {
+          isolated: this.workspaceIsolationEnabled,
+        })
+        .catch(e => {
+          console.error(
+            "gZenWorkspaces: Failed to switch workspace storage:",
+            e
+          );
+        });
+    }
+
     if (
       previousWorkspace &&
       previousWorkspace.uuid === workspace.uuid &&
@@ -2548,6 +2702,8 @@ class nsZenWorkspaces {
       name,
       theme: nsZenThemePicker.getTheme([]),
       containerTabId,
+      isolated: this.workspaceIsolationEnabled,
+      storagePath: null,
     };
     return workspace;
   }
@@ -2573,6 +2729,22 @@ class nsZenWorkspaces {
         !child.hasAttribute("zen-essential")
     );
     let workspaceData = this.#createWorkspaceData(name, icon, containerTabId);
+
+    // Create isolated storage directory for new workspace
+    if (this.workspaceIsolationEnabled) {
+      await lazy.gZenWorkspaceStorage.createWorkspaceStorage(
+        workspaceData.uuid,
+        {
+          isDefault: this._workspaceCache.length === 0,
+          isolated: true,
+        }
+      );
+      workspaceData.isolated = true;
+      workspaceData.storagePath = lazy.gZenWorkspaceStorage.workspacePath(
+        workspaceData.uuid
+      );
+    }
+
     if (!dontChange) {
       this.#prepareNewWorkspace(workspaceData);
       this.#createWorkspaceTabsSection(workspaceData, extraTabs);

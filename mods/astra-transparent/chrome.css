@@ -1,3 +1,12 @@
+/*
+  ASTRA TRANSPARENT MODE
+  Windows 11: Set widget.windows.mica=true in about:config
+              Set zen.widget.windows.acrylic=false in about:config
+              Both prefs are set by default in Astra.
+  macOS: Works automatically.
+  Linux: Requires compositor with transparency support.
+*/
+
 /* Astra Transparent Mode */
 /* Zen handles transparency natively — no overrides needed */
 /* This mod just enables the Zen transparent effect */

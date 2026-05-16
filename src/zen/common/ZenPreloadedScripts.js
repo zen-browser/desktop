@@ -16,4 +16,21 @@
   ChromeUtils.importESModule("chrome://browser/content/zen-components/ZenSessionStore.mjs", { global: "current" });
 
   Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenDragAndDrop.js", this);
+
+  try {
+    const { AboutNewTab } = ChromeUtils.importESModule(
+      "resource:///modules/AboutNewTab.sys.mjs"
+    );
+    if (AboutNewTab) {
+      AboutNewTab.newTabURL =
+        "chrome://browser/content/zen-styles/astra-newtab.html";
+      // Force override Zen's default NTP
+      Services.prefs.setStringPref(
+        "browser.startup.homepage",
+        "chrome://browser/content/zen-styles/astra-newtab.html"
+      );
+    }
+  } catch (e) {
+    console.error("[Astra] NTP override failed:", e);
+  }
 }

@@ -7,6 +7,10 @@
   value: true
   condition: "defined(XP_WIN)"
 
+- name: zen.widget.windows.acrylic
+  value: false
+  condition: "defined(XP_WIN)"
+
 - name: widget.windows.mica.popups
   value: true
   condition: "defined(XP_WIN)"

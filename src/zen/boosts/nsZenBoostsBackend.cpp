@@ -404,7 +404,8 @@ nsZenBoostsBackend::FilterColorFromPresContext(nscolor aColor,
     if (mCachedAccent.accentNS != accentNS) {
       mCachedAccent = zenPrecomputeAccent(accentNS);
       // Trigger a recompute of the complementary accent since
-      / it depends on the base accent.mCachedComplementary.accentNS = 0;
+      // it depends on the base accent.
+      mCachedComplementary.accentNS = 0;
     }
     // Derive the complementary accent by rotating the base accent's hue by the
     // boost's complementary rotation. Cached so the per-color hot path only

@@ -224,17 +224,6 @@ jobs:
           $msysPath = $env:USERPROFILE -replace 'C:\\', '/c/' -replace '\\', '/'
           bash -c "mkdir -p $msysPath/.zen-keys && echo '$key' > $msysPath/.zen-keys/safebrowsing.dat"
 
-      - name: Bundle uBlock Origin XPI
-        if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
-        shell: bash
-        run: |
-          set -x
-          OBJ_DIR="engine/obj-${{ matrix.arch }}-pc-windows-msvc"
-          mkdir -p "$OBJ_DIR/dist/bin/distribution/extensions"
-          curl -fsSL "https://github.com/gorhill/uBlock/releases/download/1.62.0/uBlock0_1.62.0.firefox.signed.xpi" \
-            -o "$OBJ_DIR/dist/bin/distribution/extensions/uBlock0@raymondhill.net.xpi"
-          echo "uBlock XPI bundled for Windows!"
-
       - name: Build
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
         env:
@@ -254,6 +243,20 @@ jobs:
           New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.cargo" | Out-Null
           $env:WIN32_REDIST_DIR = "${{ runner.temp }}\win-cross\vs2026\VC\Redist\MSVC\14.50.35710\x64\Microsoft.VC145.CRT"
           bash .github/workflows/src/release-build.sh
+
+      - name: Bundle uBlock Origin XPI into dist/bin (pre-package)
+        if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
+        shell: bash
+        run: |
+          set -eux
+          OBJ_DIR="engine/obj-${{ matrix.arch }}-pc-windows-msvc"
+          EXT_DIR="$OBJ_DIR/dist/bin/distribution/extensions"
+          mkdir -p "$EXT_DIR"
+          curl -fsSL --retry 3 "https://github.com/gorhill/uBlock/releases/download/1.62.0/uBlock0_1.62.0.firefox.signed.xpi" \
+            -o "$EXT_DIR/uBlock0@raymondhill.net.xpi"
+          ls -la "$EXT_DIR"
+          test -s "$EXT_DIR/uBlock0@raymondhill.net.xpi"
+          echo "uBlock XPI staged at $EXT_DIR (will be packaged into installer)"
 
       - name: Package
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
@@ -280,17 +283,24 @@ jobs:
           }
           exit 0
 
-      - name: Inject uBlock into packaged dist
+      - name: Verify uBlock XPI is inside packaged installer
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
+        continue-on-error: true
         shell: bash
         run: |
           set -x
           OBJ_DIR="engine/obj-${{ matrix.arch }}-pc-windows-msvc"
-          DIST_DIR="$OBJ_DIR/dist"
-          mkdir -p "$DIST_DIR/distribution/extensions"
-          curl -fsSL "https://github.com/gorhill/uBlock/releases/download/1.62.0/uBlock0_1.62.0.firefox.signed.xpi" \
-            -o "$DIST_DIR/distribution/extensions/uBlock0@raymondhill.net.xpi"
-          echo "uBlock injected into packaged dist!"
+          INSTALLER=$(find "$OBJ_DIR/dist" -type f -name "*.installer*.exe" 2>/dev/null | head -1)
+          if [ -z "$INSTALLER" ]; then
+            echo "::warning::No installer .exe found under $OBJ_DIR/dist to verify"
+            exit 0
+          fi
+          echo "Inspecting installer: $INSTALLER"
+          if 7z l "$INSTALLER" 2>/dev/null | grep -i "uBlock0@raymondhill.net.xpi"; then
+            echo "uBlock XPI confirmed inside installer"
+          else
+            echo "::error::uBlock XPI NOT found inside $INSTALLER"
+          fi
 
       - name: Remove API Keys
         shell: pwsh

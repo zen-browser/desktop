@@ -5,6 +5,7 @@
 import checkForZenUpdates, {
   createWindowUpdateAnimation,
 } from "chrome://browser/content/ZenUpdates.mjs";
+import { ZenAstraNTP } from "chrome://browser/content/zen-components/ZenAstraNTP.mjs";
 
 class ZenStartup {
   #watermarkIgnoreElements = ["zen-toast-container"];
@@ -79,6 +80,7 @@ class ZenStartup {
   }
 
   delayedStartupFinished() {
+    ZenAstraNTP.overrideNTP();
     gZenWorkspaces.promiseInitialized.then(async () => {
       await delayedStartupPromise;
       await SessionStore.promiseAllWindowsRestored;

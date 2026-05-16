@@ -16,11 +16,4 @@
   ChromeUtils.importESModule("chrome://browser/content/zen-components/ZenSessionStore.mjs", { global: "current" });
 
   Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenDragAndDrop.js", this);
-
-  ChromeUtils.importESModule(
-    "chrome://browser/content/zen-components/ZenAstraNTP.mjs",
-    { global: "current" }
-  ).then(({ ZenAstraNTP }) => {
-    ZenAstraNTP.init();
-  }).catch(e => console.error("[Astra] NTP module load failed:", e));
 }

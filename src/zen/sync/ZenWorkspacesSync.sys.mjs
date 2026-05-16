@@ -213,8 +213,8 @@ class ZenWorkspacesStore extends Store {
           record.deleted = true;
           return record;
         }
-        const { syncStatus: _s, ...rest } = folder;
-        record.cleartext = { ...rest, id, type: "folder" };
+        const { syncStatus: _s, id: folderId, ...rest } = folder;
+        record.cleartext = { id, type: "folder", folderId, ...rest };
         break;
       }
       default:
@@ -249,6 +249,8 @@ class ZenWorkspacesStore extends Store {
           pulled.tabs.push(clean);
           break;
         case "folder":
+          clean.id = clean.folderId;
+          delete clean.folderId;
           pulled.folders.push(clean);
           break;
       }
@@ -331,6 +333,8 @@ class ZenWorkspacesStore extends Store {
           pulled.tabs.push(clean);
           break;
         case "folder":
+          clean.id = clean.folderId;
+          delete clean.folderId;
           pulled.folders.push(clean);
           break;
       }

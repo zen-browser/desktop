@@ -587,6 +587,12 @@ export class nsZenSessionManager {
   }
 
   /**
+   * Whether to notify about changes after saving the session state.
+   * @type {boolean}
+   */
+  #notifyAboutChanges = false;
+
+  /**
    * Saves the current session state. Collects data and writes to disk.
    *
    * @param {object} state The current session state.
@@ -610,7 +616,14 @@ export class nsZenSessionManager {
       }
     );
     this.#collectWindowData(windows);
-    lazy.ZenSyncStore.notifyAboutChanges();
+    if (this.#notifyAboutChanges) {
+        lazy.ZenSyncStore.notifyAboutChanges();
+        this.#notifyAboutChanges = false;
+    } else {
+      // used to skip the first save cycle as the new changes are not yet present in the session file. i.e. trigger a sync every other save cycle.
+      // (works but might not be the best approach)
+      this.#notifyAboutChanges = true;
+    }
     // This would save the data to disk asynchronously or when quitting the app.
     let sidebar = this.#sidebarWithoutCloning;
     this.#file.data = sidebar;

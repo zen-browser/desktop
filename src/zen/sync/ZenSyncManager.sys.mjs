@@ -155,6 +155,57 @@ class ZenSyncManager {
       }
     }
   }
+
+  createSyncableTabData(
+    tabData,
+    { position, trimHistoryForUnpinned = false } = {},
+  ) {
+    if (
+      !tabData?.zenSyncId ||
+      tabData.zenIsEmpty ||
+      tabData.zenLiveFolderItemId
+    ) {
+      return null;
+    }
+
+    const pinned = !!tabData.pinned;
+    let entries = Array.isArray(tabData.entries) ? [...tabData.entries] : [];
+    let index = typeof tabData.index === "number" ? tabData.index : 1;
+
+    if (trimHistoryForUnpinned && !pinned && entries.length) {
+      const entryIndex = Math.max(0, index - 1);
+      const entry = entries[entryIndex] || entries[0];
+      entries = entry ? [entry] : [];
+      index = 1;
+    }
+
+    const isEssential = !!tabData.zenEssential;
+    const syncTabData = {
+      entries,
+      groupId: tabData.groupId || null,
+      image: typeof tabData.image === "string" ? tabData.image : "",
+      index,
+      pinned,
+      userContextId: parseInt(tabData.userContextId, 10) || 0,
+      zenDefaultUserContextId: !!tabData.zenDefaultUserContextId,
+      zenEssential: isEssential,
+      zenHasStaticIcon: !!tabData.zenHasStaticIcon,
+      zenSyncId: tabData.zenSyncId,
+      zenWorkspace: isEssential ? null : tabData.zenWorkspace || null,
+    };
+
+    if (typeof tabData.zenStaticLabel === "string") {
+      syncTabData.zenStaticLabel = tabData.zenStaticLabel;
+    }
+    if (tabData._zenPinnedInitialState) {
+      syncTabData._zenPinnedInitialState = tabData._zenPinnedInitialState;
+    }
+    if (typeof position === "number") {
+      syncTabData.position = position;
+    }
+
+    return syncTabData;
+  }
 }
 
 export const ZenSyncStore = new ZenSyncManager();

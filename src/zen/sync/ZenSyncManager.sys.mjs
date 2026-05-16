@@ -20,7 +20,26 @@ function normalizeUserContextId(value) {
 }
 
 class ZenSyncManager {
+
+  #lastRefreshTimestamp = 0;
+
+  /**
+   * Returns sidebar data, ensuring it reflects the current live DOM state.
+   *
+   * The session store's save cycle may lag behind actual DOM changes
+   * (e.g. a newly created tab won't appear in the sidebar until the
+   * next save cycle). This method forces a fresh collection via
+   * SessionStore.getCurrentState(true) before returning the data.
+   *
+   * A timestamp guard prevents redundant re-collections when the sync
+   * engine calls this multiple times within the same sync cycle.
+   */
   getSidebarData() {
+    const now = Date.now();
+    if (now - this.#lastRefreshTimestamp >= 500) {
+      lazy.ZenSessionStore.refreshSidebarData();
+      this.#lastRefreshTimestamp = now;
+    }
     return lazy.ZenSessionStore.getSidebarData();
   }
 

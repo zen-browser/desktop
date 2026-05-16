@@ -47,6 +47,8 @@
 namespace zen {
 
 nsZenAccentOklab nsZenBoostsBackend::mCachedAccent{0};
+nsZenAccentOklab nsZenBoostsBackend::mCachedComplementary{0};
+float nsZenBoostsBackend::mCachedComplementaryRotationDeg = 0.0f;
 
 namespace {
 
@@ -128,17 +130,48 @@ inline static auto zenPrecomputeAccent(nscolor aAccentColor) {
 }
 
 /**
- * @brief Applies a color filter to transform an original color toward an accent
- * color. Preserves the original color's perceived luminance while shifting
- * hue/chroma toward the accent. Uses the alpha channel of the accent color to
- * store contrast information.
+ * @brief Derives the complementary accent from the base accent by rotating its
+ * hue in the Oklab a/b plane by the given angle. Lightness, contrast and the
+ * source nscolor are kept; only the hue changes. A zero rotation returns the
+ * base accent unchanged so the duotone collapses to a single-accent tint.
+ * @param aBase The precomputed base accent.
+ * @param aRotationDeg The hue rotation to apply, in degrees.
+ * @return The complementary accent.
+ */
+ZEN_HOT_FUNCTION
+inline static nsZenAccentOklab zenRotateAccent(const nsZenAccentOklab& aBase,
+                                               float aRotationDeg) {
+  constexpr float kDegToRad = 3.14159265358979323846f / 180.0f;
+  const float angle = aRotationDeg * kDegToRad;
+  const float cosR = std::cos(angle);
+  const float sinR = std::sin(angle);
+  return nsZenAccentOklab{
+      .accentNS = aBase.accentNS,
+      .accL = aBase.accL,
+      .accA = aBase.accA * cosR - aBase.accB * sinR,
+      .accB = aBase.accA * sinR + aBase.accB * cosR,
+      .contrastFactor = aBase.contrastFactor,
+  };
+}
+
+/**
+ * @brief Applies a duotone color filter to transform an original color toward
+ * one of two accent colors. The original color's perceived lightness decides
+ * which accent it is tinted toward: dark colors are pulled to the base accent,
+ * light colors to the complementary accent, with a smooth crossfade between
+ * them. The contrast value (stored in the accent's alpha channel) controls both
+ * the overall tint strength and how hard that dark/light split is. The
+ * original color's perceived luminance is otherwise preserved.
  * @param aOriginalColor The original color to filter.
- * @param aAccentColor The accent color to filter toward (alpha channel contains
- * contrast value).
+ * @param aAccent The base accent, tinted toward by dark colors (alpha channel
+ * contains the contrast value).
+ * @param aComplementary The complementary accent, tinted toward by light
+ * colors.
  * @return The filtered color with transformations applied.
  */
 [[nodiscard]] ZEN_HOT_FUNCTION static inline nscolor zenFilterColorChannel(
-    nscolor aOriginalColor, const nsZenAccentOklab& aAccent) {
+    nscolor aOriginalColor, const nsZenAccentOklab& aAccent,
+    const nsZenAccentOklab& aComplementary) {
   const uint8_t oL = NS_GET_A(aOriginalColor);
   const uint8_t contrast = NS_GET_CONTRAST(aAccent.accentNS);
   if (oL == 0) {
@@ -168,23 +201,40 @@ inline static auto zenPrecomputeAccent(nscolor aAccentColor) {
   const float origB =
       0.0259040371f * l_ + 0.7827717662f * m_ - 0.8086757660f * s_;
 
-  // Blend chroma toward accent
-  const float bA = origA + (aAccent.accA - origA) * blendFactor;
-  const float bB = origB + (aAccent.accB - origB) * blendFactor;
+  // Duotone selection. origL is the original color's Oklab lightness (~0..1).
+  // A smoothstep around a fixed mid-lightness pivot crossfades from the base
+  // accent (dark colors, t=0) to the complementary accent (light colors, t=1).
+  // A stronger tint (higher blendFactor) narrows the crossfade band toward a
+  // hard two-tone split; a weaker one keeps it a gentle gradient.
+  constexpr float kPivot = 0.5f;
+  const float halfWidth = std::clamp(0.5f - blendFactor * 0.45f, 0.05f, 0.5f);
+  float t = std::clamp((origL - (kPivot - halfWidth)) / (2.0f * halfWidth),
+                       0.0f, 1.0f);
+  t = t * t * (3.0f - 2.0f * t);
+
+  const float selA = aAccent.accA + (aComplementary.accA - aAccent.accA) * t;
+  const float selB = aAccent.accB + (aComplementary.accB - aAccent.accB) * t;
+  const float selL = aAccent.accL + (aComplementary.accL - aAccent.accL) * t;
+  const float selContrastFactor =
+      aAccent.contrastFactor +
+      (aComplementary.contrastFactor - aAccent.contrastFactor) * t;
+
+  // Blend chroma toward the selected accent
+  const float bA = origA + (selA - origA) * blendFactor;
+  const float bB = origB + (selB - origB) * blendFactor;
 
   // Luminance: at low contrast stay near the original, the higher the contrast,
   // the more we shift toward the accent luminance, but we never go fully to
   // the accent luminance to preserve some of the original color's character.
-  const float lumDelta = aAccent.accL - origL;
-  const float fL =
-      origL + lumDelta * (blendFactor * aAccent.contrastFactor * 0.5f);
+  const float lumDelta = selL - origL;
+  const float fL = origL + lumDelta * (blendFactor * selContrastFactor * 0.5f);
 
   // Rotate hue in the Oklab a/b plane. Direction follows the luminance shift:
   // pushing darker rotates clockwise ("right"), pushing lighter rotates the
   // other way. Magnitude scales with blend strength so subtle accents stay
   // subtle.
   const float rotAngle = (lumDelta > 0.0f ? -1.0f : 1.0f) * blendFactor *
-                         aAccent.contrastFactor * 0.25f;
+                         selContrastFactor * 0.25f;
   const float cosR = std::cos(rotAngle);
   const float sinR = std::sin(rotAngle);
   const float fA = bA * cosR - bB * sinR;
@@ -267,7 +317,7 @@ inline static nscolor zenInvertColorChannel(nscolor aColor) {
  */
 ZEN_HOT_FUNCTION
 inline static void GetZenBoostsDataFromBrowsingContext(
-    ZenBoostData* aData, bool* aIsInverted,
+    ZenBoostData* aData, float* aComplementaryRotation, bool* aIsInverted,
     nsPresContext* aPresContext = nullptr) {
   auto zenBoosts = nsZenBoostsBackend::GetInstance();
   if (!zenBoosts || (zenBoosts->mCurrentFrameIsAnonymousContent &&
@@ -276,6 +326,7 @@ inline static void GetZenBoostsDataFromBrowsingContext(
   }
   if (!aPresContext) {
     *aData = zenBoosts->mCachedCurrentAccent;
+    *aComplementaryRotation = zenBoosts->mCachedCurrentComplementaryRotation;
     *aIsInverted = zenBoosts->mCachedCurrentInverted;
     return;
   }
@@ -288,6 +339,7 @@ inline static void GetZenBoostsDataFromBrowsingContext(
   }
   browsingContext = browsingContext->Top();
   *aData = browsingContext->ZenBoostsData();
+  *aComplementaryRotation = browsingContext->ZenBoostsComplementaryRotation();
   *aIsInverted = browsingContext->IsZenBoostsInverted();
 }
 
@@ -329,11 +381,13 @@ auto nsZenBoostsBackend::onPresShellEntered(mozilla::dom::Document* aDocument)
 auto nsZenBoostsBackend::RefreshCachedBoostState() -> void {
   if (!mCurrentBrowsingContext) {
     mCachedCurrentAccent = 0;
+    mCachedCurrentComplementaryRotation = 0.0f;
     mCachedCurrentInverted = false;
     return;
   }
   auto top = mCurrentBrowsingContext->Top();
   mCachedCurrentAccent = top->ZenBoostsData();
+  mCachedCurrentComplementaryRotation = top->ZenBoostsComplementaryRotation();
   mCachedCurrentInverted = top->IsZenBoostsInverted();
 }
 
@@ -342,19 +396,31 @@ nsZenBoostsBackend::FilterColorFromPresContext(nscolor aColor,
                                                nsPresContext* aPresContext)
     -> nscolor {
   ZenBoostData accentNS = 0;
+  float complementaryRotation = 0.0f;
   bool invertColors = false;
-  GetZenBoostsDataFromBrowsingContext(&accentNS, &invertColors, aPresContext);
+  GetZenBoostsDataFromBrowsingContext(&accentNS, &complementaryRotation,
+                                      &invertColors, aPresContext);
   if (accentNS) {
     if (mCachedAccent.accentNS != accentNS) {
       mCachedAccent = zenPrecomputeAccent(accentNS);
+      // Trigger a recompute of the complementary accent since
+      / it depends on the base accent.mCachedComplementary.accentNS = 0;
+    }
+    // Derive the complementary accent by rotating the base accent's hue by the
+    // boost's complementary rotation. Cached so the per-color hot path only
+    // recomputes it when the base accent or rotation changes.
+    if (mCachedComplementary.accentNS != accentNS ||
+        mCachedComplementaryRotationDeg != complementaryRotation) {
+      mCachedComplementary =
+          zenRotateAccent(mCachedAccent, complementaryRotation);
+      mCachedComplementaryRotationDeg = complementaryRotation;
     }
     // Apply a filter-like tint:
     // - Preserve the original color's perceived luminance
-    // - Map hue/chroma toward the accent by scaling the accent's RGB
-    //   to match the original luminance
+    // - Map hue/chroma toward the base or complementary accent depending on
+    //   the original color's lightness
     // - Keep the original alpha
-    // Convert both colors to nscolor to access channels
-    aColor = zenFilterColorChannel(aColor, mCachedAccent);
+    aColor = zenFilterColorChannel(aColor, mCachedAccent, mCachedComplementary);
   }
   if (invertColors) {
     aColor = zenInvertColorChannel(aColor);

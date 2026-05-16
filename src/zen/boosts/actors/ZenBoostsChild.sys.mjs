@@ -97,6 +97,25 @@ export class ZenBoostsChild extends JSWindowActorChild {
   }
 
   /**
+   * Builds the packed primary accent NSColor for a boost, with the boost
+   * contrast stored in the alpha byte. The complementary accent is not a
+   * separate color: the backend derives it by rotating this accent's hue by
+   * the boost's `secondaryDotAngleDegDelta`, which is sent separately.
+   *
+   * @param {number} hueDeg - Primary hue in degrees.
+   * @param {number} sat - Saturation in [0, 1].
+   * @param {number} light - Lightness in [0, 1].
+   * @param {object} boostData - The current boost data.
+   * @returns {number} The packed primary NSColor.
+   */
+  #buildBoostColor(hueDeg, sat, light, boostData) {
+    return this.#rgbToNSColor(
+      this.#hslToRgb(hueDeg / 360, sat, light),
+      (1 - boostData.contrast) * 255
+    );
+  }
+
+  /**
    * From ZenGradientGenerator.mjs
    * Converts an HSL color value to RGB. Conversion formula
    * adapted from https://en.wikipedia.org/wiki/HSL_color_space.
@@ -345,6 +364,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
       browsingContext.isZenBoostsInverted = boostData.smartInvert;
       if (boostData.enableColorBoost) {
+        let primaryColor;
         if (boostData.autoTheme) {
           // Workspace color is converted to the HSL color space
           let primaryGradientColor = boost.workspaceGradient[0]?.c ?? [
@@ -362,40 +382,34 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
           // Workspace color is converted back to rgb
           // using the same modifiers as the color above
-          primaryGradientColor = this.#hslToRgb(
-            primaryGradientColor[0] / 360,
+          primaryColor = this.#buildBoostColor(
+            primaryGradientColor[0],
             primaryGradientColor[1] * (1 - boostData.saturation),
-            0.1 + primaryGradientColor[2] * 0.9 * boostData.brightness
+            0.1 + primaryGradientColor[2] * 0.9 * boostData.brightness,
+            boostData
           );
-
-          const rgbColor = primaryGradientColor;
-          const nsColor = this.#rgbToNSColor(
-            rgbColor,
-            (1 - boostData.contrast) * 255
-          );
-          browsingContext.zenBoostsData = nsColor;
         } else {
-          let colorWheelColor = this.#hslToRgb(
-            boostData.dotAngleDeg / 360,
+          primaryColor = this.#buildBoostColor(
+            boostData.dotAngleDeg,
             /* already is [0, 1] */
             boostData.dotDistance * (1 - boostData.saturation),
             /* lightness range from [0.1, 0.9] */
-            0.1 + boostData.dotDistance * 0.8 * boostData.brightness
+            0.1 + boostData.dotDistance * 0.8 * boostData.brightness,
+            boostData
           );
-
-          const rgbColor = colorWheelColor;
-          const nsColor = this.#rgbToNSColor(
-            rgbColor,
-            (1 - boostData.contrast) * 255
-          );
-          browsingContext.zenBoostsData = nsColor;
         }
+        browsingContext.zenBoostsData = primaryColor;
+        // The complementary accent is derived in the backend by rotating the
+        // primary accent's hue by this delta (in degrees).
+        browsingContext.zenBoostsComplementaryRotation =
+          boostData.secondaryDotAngleDegDelta ?? 0;
         return;
       }
     } else {
       browsingContext.isZenBoostsInverted = false;
     }
     browsingContext.zenBoostsData = 0;
+    browsingContext.zenBoostsComplementaryRotation = 0;
   }
 
   /**

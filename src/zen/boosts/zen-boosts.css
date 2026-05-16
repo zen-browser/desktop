@@ -703,7 +703,7 @@ body {
   & .zen-boost-color-picker-dot {
     box-shadow: 0 2px 4px #00000022;
     position: absolute;
-    z-index: 4;
+    z-index: 5;
     width: 24px;
     height: 24px;
     border-radius: 50%;
@@ -722,7 +722,7 @@ body {
       height: 32px;
       border-width: 3px;
       transition: transform 0.2s;
-      z-index: 999;
+      z-index: 4;
       &:hover {
         transform: scale(1.05) translate(-50%, -50%);
       }

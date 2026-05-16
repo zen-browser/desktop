@@ -810,6 +810,7 @@ ${cssSelector} {
     // Capture normalized position of dot for restoring it correctly later
     this.currentBoostData.dotPos.x = relativeX / rect.width;
     this.currentBoostData.dotPos.y = relativeY / rect.height;
+    this.currentBoostData.secondaryDotPos ||= {};
     this.currentBoostData.secondaryDotPos.x = relativeXSec / rect.width;
     this.currentBoostData.secondaryDotPos.y = relativeYSec / rect.height;
 

@@ -19,3 +19,6 @@
 #include ../../../zen/vendor/jar.inc.mn
 #include ../../../zen/fonts/jar.inc.mn
 #include ../../../zen/live-folders/jar.inc.mn
+
+        content/browser/zen-components/ZenAstraNTP.mjs                        (../../../zen/new-tab/ZenAstraNTP.mjs)
+        content/browser/zen-styles/astra-newtab.html                          (../../../zen/new-tab/astra-newtab.html)

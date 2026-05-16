@@ -587,12 +587,6 @@ export class nsZenSessionManager {
   }
 
   /**
-   * Whether to notify about changes after saving the session state.
-   * @type {boolean}
-   */
-  #notifyAboutChanges = false;
-
-  /**
    * Saves the current session state. Collects data and writes to disk.
    *
    * @param {object} state The current session state.
@@ -616,14 +610,7 @@ export class nsZenSessionManager {
       }
     );
     this.#collectWindowData(windows);
-    if (this.#notifyAboutChanges) {
-        lazy.ZenSyncStore.notifyAboutChanges();
-        this.#notifyAboutChanges = false;
-    } else {
-      // used to skip the first save cycle as the new changes are not yet present in the session file. i.e. trigger a sync every other save cycle.
-      // (works but might not be the best approach)
-      this.#notifyAboutChanges = true;
-    }
+    lazy.ZenSyncStore.notifyAboutChanges();
     // This would save the data to disk asynchronously or when quitting the app.
     let sidebar = this.#sidebarWithoutCloning;
 
@@ -647,6 +634,26 @@ export class nsZenSessionManager {
    */
   getSidebarData() {
     return this.#sidebarWithoutCloning;
+  }
+
+  /**
+   * Forces a fresh collection of sidebar data from all open windows.
+   *
+   * The session store's save cycle receives a `state` object that was
+   * serialized by Firefox *before* the latest DOM changes (e.g. a newly
+   * created tab). This means `#sidebar` can be stale when the sync
+   * engine reads it via `getSidebarData()`.
+   *
+   * This method re-collects all window data synchronously from
+   * SessionStore, ensuring `#sidebar` reflects the current live state.
+   */
+  refreshSidebarData() {
+    const state = lazy.SessionStore.getCurrentState(true);
+    let windows = state?.windows || [];
+    windows = windows.filter(win => this.#isWindowSaveable(win));
+    if (windows.length) {
+      this.#collectWindowData(windows);
+    }
   }
 
   /**

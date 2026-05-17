@@ -260,7 +260,7 @@ class nsZenWorkspaces {
   /**
    * Creates or updates folders and tabs that arrived from Firefox Sync.
    *
-   * Called on ONE window by ZenSessionManager; ZenWindowSync propagates every
+   * Called on ONE window by ZenSyncManager, ZenWindowSync propagates every
    * new/updated item to all other open windows automatically.
    *
    * Ordering rules:
@@ -282,7 +282,7 @@ class nsZenWorkspaces {
     }
 
     const incomingFolders = pulled.folders || [];
-    // Filter out folder placeholder tabs — they should never be synced.
+    // Filter out folder placeholder tabs, they should never be synced.
     let incomingTabs = (pulled.tabs || []).filter(t => !t.zenIsEmpty);
 
     // When the pref is set, skip incoming unpinned tabs.
@@ -294,7 +294,7 @@ class nsZenWorkspaces {
       return;
     }
 
-    // Step 1 — create or update folders.
+    // Step 1: create or update folders.
     for (const folderData of incomingFolders) {
       if (!folderData.id) {
         continue;
@@ -341,7 +341,7 @@ class nsZenWorkspaces {
       }
     }
 
-    // Step 2 — create or update tabs (pinned AND unpinned).
+    // Step 2: create or update tabs (pinned AND unpinned).
     for (const tabData of incomingTabs) {
       if (!tabData.zenSyncId) {
         continue;
@@ -350,20 +350,21 @@ class nsZenWorkspaces {
       if (existingTab && gBrowser.isTab(existingTab)) {
         this.#applyIncomingTabContainer(existingTab, tabData);
 
-        if (
-          tabData.zenWorkspace &&
-          existingTab.getAttribute("zen-workspace-id") !== tabData.zenWorkspace
-        ) {
-          this.moveTabToWorkspace(existingTab, tabData.zenWorkspace);
-        }
-
-        // Essentials state changes.
         const isCurrentlyEssential = existingTab.hasAttribute("zen-essential");
         const shouldBeEssential = !!tabData.zenEssential;
         if (shouldBeEssential && !isCurrentlyEssential) {
           gZenPinnedTabManager.addToEssentials(existingTab);
         } else if (!shouldBeEssential && isCurrentlyEssential) {
           gZenPinnedTabManager.removeEssentials(existingTab, /* unpin */ false);
+        }
+
+        // Workspace changes: skip for essentials, they don't belong to a workspace.
+        if (
+          !shouldBeEssential &&
+          tabData.zenWorkspace &&
+          existingTab.getAttribute("zen-workspace-id") !== tabData.zenWorkspace
+        ) {
+          this.moveTabToWorkspace(existingTab, tabData.zenWorkspace);
         }
 
         // Pinned state changes (after essentials, since essentials implies pinned).
@@ -450,18 +451,11 @@ class nsZenWorkspaces {
         }
         const newTab = gBrowser.addTrustedTab("about:blank", pinnedOptions);
 
-        // Set the zenSyncId as the DOM id BEFORE pinning.  The guard we added
-        // to ZenWindowSync.on_TabOpen (!tab.id) will preserve this id through
-        // the duringPinning code-path so ZenWindowSync propagates the tab to
-        // other windows with the correct id.
+        // Set the zenSyncId as the DOM id BEFORE pinning.
         newTab.id = tabData.zenSyncId;
 
         if (tabData.zenEssential) {
-          // Set attributes manually but skip zen-essential — addToEssentials()
-          // must set it; if it is already present the method skips the tab.
-          if (tabData.zenWorkspace) {
-            newTab.setAttribute("zen-workspace-id", tabData.zenWorkspace);
-          }
+          // Set attributes manually but skip zen-essential, addToEssentials() must set it
           if (typeof tabData.zenStaticLabel === "string") {
             newTab.zenStaticLabel = tabData.zenStaticLabel;
           }
@@ -843,15 +837,6 @@ class nsZenWorkspaces {
 
     this.makeSureEmptyTabIsFirst();
     this.updateTabsContainers();
-  }
-
-  #syncIncomingTabDefaultUserContextIds(tabDataList) {
-    for (const tabData of tabDataList) {
-      const tab = document.getElementById(tabData?.zenSyncId);
-      if (tab && gBrowser.isTab(tab)) {
-        this.#applyIncomingTabDefaultUserContextId(tab, tabData);
-      }
-    }
   }
 
   #getSyncedTabContainer(tab) {

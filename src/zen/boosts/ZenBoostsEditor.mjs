@@ -1511,12 +1511,12 @@ ${cssSelector} {
 
     const gradient = this.doc.querySelector(".zen-boost-color-picker-gradient");
     const rect = gradient.getBoundingClientRect();
+    this.currentBoostData.secondaryDotAngleDegDelta = Math.random() * 360;
     this.setDotPos(
       Math.round(rect.left + Math.random() * rect.width),
       Math.round(rect.top + Math.random() * rect.height),
       true
     );
-    this.currentBoostData.secondaryDotAngleDegDelta = Math.random() * 360;
     this.currentBoostData.changeWasMade = true;
 
     this.updateCurrentBoost();

@@ -120,6 +120,9 @@
 
 #urlbar .urlbar-input {
   border-radius: 0 !important;
+}
+
+#urlbar:not([breakout-extend="true"]) .urlbar-input {
   color: color-mix(in srgb, var(--input-color, FieldText) 70%, transparent);
 }
 

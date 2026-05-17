@@ -50,8 +50,8 @@ export class nsZenMenuBar {
 
     const sibling = document.getElementById("viewSidebarMenuMenu");
     const togglePinnedItem = window.MozXULElement.parseXULToFragment(
-      '<menuitem data-l10n-id="zen-menubar-toggle-pinned-tabs"'
-        + ' data-l10n-args="{&quot;pinnedAreCollapsed&quot;:&quot;&quot;}" />'
+      '<menuitem data-l10n-id="zen-menubar-toggle-pinned-tabs"' +
+        ' data-l10n-args="{&quot;pinnedAreCollapsed&quot;:&quot;&quot;}" />'
     ).querySelector("menuitem");
     if (!gZenWorkspaces.privateWindowOrDisabled) {
       sibling.after(togglePinnedItem);

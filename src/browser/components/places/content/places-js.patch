@@ -1,0 +1,35 @@
+diff --git a/browser/components/places/content/places.js b/browser/components/places/content/places.js
+--- a/browser/components/places/content/places.js
++++ b/browser/components/places/content/places.js
+@@ -276,6 +276,21 @@ var PlacesOrganizer = {
+ 
+   QueryInterface: ChromeUtils.generateQI([]),
+ 
++  _handleZenPinnedTabCloseShortcut(event) {
++    const browser =
++      window.browsingContext?.embedderElement ??
++      window.docShell?.chromeEventHandler;
++    const browserWindow = browser?.ownerGlobal;
++    const tab = browserWindow?.gBrowser?.getTabForBrowser(browser);
++
++    if (!tab?.pinned || !browserWindow?.gZenPinnedTabManager?.enabled) {
++      return false;
++    }
++
++    browserWindow.gZenPinnedTabManager.onCloseTabShortcut(event, tab);
++    return true;
++  },
++
+   handleEvent: function PO_handleEvent(event) {
+     switch (event.type) {
+       case "load":
+@@ -318,6 +333,9 @@ var PlacesOrganizer = {
+             this.forward();
+             break;
+           case "OrganizerCommand:CloseWindow":
++            if (this._handleZenPinnedTabCloseShortcut(event)) {
++              break;
++            }
+             window.close();
+             break;
+         }

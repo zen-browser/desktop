@@ -1,6 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 
 const lazy = {};
 
@@ -10,6 +11,13 @@ ChromeUtils.defineESModuleGetters(lazy, {
     "resource://gre/modules/ContextualIdentityService.sys.mjs",
   ZenWindowSync: "resource:///modules/zen/ZenWindowSync.sys.mjs",
 });
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "gSyncOnlyPinnedTabs",
+  "zen.window-sync.sync-only-pinned-tabs",
+  true
+);
 
 function normalizeUserContextId(value) {
   const normalized = typeof value === "string" ? Number(value) : value;
@@ -82,7 +90,6 @@ class ZenSyncManager {
 
   async applyIncomingBatch(pulled, removals) {
     try {
-      this.#ignoreChanges = true;
       this.#applyIncomingContainers(
         pulled.containers || [],
         removals.containers || []
@@ -95,8 +102,6 @@ class ZenSyncManager {
     } catch (e) {
       console.error("ZenSyncManager: Failed to apply incoming sync data:", e);
       throw e;
-    } finally {
-      this.#ignoreChanges = false;
     }
   }
 
@@ -182,7 +187,8 @@ class ZenSyncManager {
     if (
       !tabData?.zenSyncId ||
       tabData.zenIsEmpty ||
-      tabData.zenLiveFolderItemId
+      tabData.zenLiveFolderItemId ||
+      (!tabData.pinned && lazy.gSyncOnlyPinnedTabs)
     ) {
       return null;
     }

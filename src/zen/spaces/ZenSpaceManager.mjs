@@ -6,12 +6,12 @@
 
 import { nsZenThemePicker } from "resource:///modules/zen/ZenGradientGenerator.mjs";
 import { ZenSpacesSwipe } from "resource:///modules/zen/ZenSpacesSwipe.mjs";
+import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
-  ZenSyncStore: "resource:///modules/zen/ZenSyncManager.sys.mjs",
 });
 
 ChromeUtils.defineLazyGetter(lazy, "browserBackgroundElement", () => {
@@ -22,6 +22,12 @@ ChromeUtils.defineLazyGetter(lazy, "toolbarBackgroundElement", () => {
   return document.getElementById("zen-toolbar-background");
 });
 
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "gSyncOnlyPinnedTabs",
+  "zen.window-sync.sync-only-pinned-tabs",
+  true
+);
 /**
  * Zen Spaces manager. This class is mainly responsible for the UI
  * and user interactions but it also contains some logic to manage
@@ -236,12 +242,16 @@ class nsZenWorkspaces {
     }
 
     // Remove tabs not already cleaned up by folder deletion.
+    const pinnedOnly = lazy.gSyncOnlyPinnedTabs;
     for (const tabData of removals.tabs || []) {
       if (!tabData.zenSyncId) {
         continue;
       }
       const tab = document.getElementById(tabData.zenSyncId);
       if (tab && gBrowser.isTab(tab)) {
+        if (pinnedOnly && !tab.pinned) {
+          continue;
+        }
         gBrowser.removeTab(tab, { animate: false });
       }
     }
@@ -273,7 +283,12 @@ class nsZenWorkspaces {
 
     const incomingFolders = pulled.folders || [];
     // Filter out folder placeholder tabs — they should never be synced.
-    const incomingTabs = (pulled.tabs || []).filter(t => !t.zenIsEmpty);
+    let incomingTabs = (pulled.tabs || []).filter(t => !t.zenIsEmpty);
+
+    // When the pref is set, skip incoming unpinned tabs.
+    if (lazy.gSyncOnlyPinnedTabs) {
+      incomingTabs = incomingTabs.filter(t => t.pinned);
+    }
 
     if (!incomingFolders.length && !incomingTabs.length) {
       return;
@@ -1966,6 +1981,10 @@ class nsZenWorkspaces {
     this.#deleteWorkspaceOwnedTabs(windowID);
 
     // mark item as changed for sync
+    Services.obs.notifyObservers(
+      { wrappedJSObject: { type: "space", id: windowID } },
+      "zen-workspace-item-changed",
+    );
     this.#markWorkspaceChanged(windowID);
 
     let workspacesData = this.getWorkspaces();

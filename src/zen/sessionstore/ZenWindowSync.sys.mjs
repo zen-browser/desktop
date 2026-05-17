@@ -13,7 +13,6 @@ ChromeUtils.defineESModuleGetters(lazy, {
   TabStateFlusher: "resource:///modules/sessionstore/TabStateFlusher.sys.mjs",
   // eslint-disable-next-line mozilla/valid-lazy
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
-  ZenSyncStore: "resource:///modules/zen/ZenSyncManager.sys.mjs",
   TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
   setTimeout: "resource://gre/modules/Timer.sys.mjs",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
@@ -1357,20 +1356,24 @@ class nsZenWindowSync {
       return;
     }
 
-
-
     if (item.isZenFolder && !item.isLiveFolder) {
-      // mark folder as changed
-      lazy.ZenSyncStore.markItemChanged({ type: "folder", id: item.id });
+      Services.obs.notifyObservers(
+        { wrappedJSObject: { type: "folder", id: item.id } },
+        "zen-workspace-item-changed",
+      );
+      return;
+    }
 
+    if (lazy.gSyncOnlyPinnedTabs && !item.pinned) {
       return;
     }
 
     if (!item.hasAttribute("zen-empty-tab")) {
-      // mark tab as changed
-      lazy.ZenSyncStore.markItemChanged({ type: "tab", id: item.id });
+      Services.obs.notifyObservers(
+        { wrappedJSObject: { type: "tab", id: item.id } },
+        "zen-workspace-item-changed",
+      );
     }
-
   }
 
   /* Mark: Event Handlers */

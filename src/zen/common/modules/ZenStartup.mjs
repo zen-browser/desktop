@@ -80,7 +80,11 @@ class ZenStartup {
   }
 
   delayedStartupFinished() {
-    ZenAstraNTP.overrideNTP();
+    try {
+      ZenAstraNTP.overrideNTP();
+    } catch (e) {
+      console.error("[Astra] NTP override failed in startup:", e);
+    }
     gZenWorkspaces.promiseInitialized.then(async () => {
       await delayedStartupPromise;
       await SessionStore.promiseAllWindowsRestored;

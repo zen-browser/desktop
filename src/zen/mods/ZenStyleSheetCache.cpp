@@ -11,6 +11,7 @@
 
 #include "nsStyleSheetService.h"
 
+#include "mozilla/ClearOnShutdown.h"
 #include "mozilla/css/SheetParsingMode.h"
 #include "mozilla/GlobalStyleSheetCache.h"
 #include "mozilla/RefPtr.h"
@@ -72,6 +73,7 @@ auto ZenStyleSheetCache::Singleton() -> ZenStyleSheetCache* {
   MOZ_ASSERT(NS_IsMainThread());
   if (!gZenModsCache) {
     gZenModsCache = new ZenStyleSheetCache;
+    ClearOnShutdown(&gZenModsCache);
   }
   return gZenModsCache;
 }

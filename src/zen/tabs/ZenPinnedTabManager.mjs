@@ -547,10 +547,12 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
             <menuseparator id="context_zen-pinned-tab-separator" hidden="true"/>
             <menuitem id="context_zen-replace-pinned-url-with-current"
                       data-lazy-l10n-id="tab-context-zen-replace-pinned-url-with-current"
+                      data-l10n-args="{&quot;isEssential&quot;:&quot;&quot;}"
                       hidden="true"
                       command="cmd_zenReplacePinnedUrlWithCurrent"/>
             <menuitem id="context_zen-reset-pinned-tab"
                       data-lazy-l10n-id="tab-context-zen-reset-pinned-tab"
+                      data-l10n-args="{&quot;isEssential&quot;:&quot;&quot;}"
                       hidden="true"
                       command="cmd_zenPinnedTabResetNoTab"/>
         `);

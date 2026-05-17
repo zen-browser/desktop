@@ -6,6 +6,7 @@
 #define mozilla_ZenBoostsBackend_h_
 
 #include "nsColor.h"
+#include "nsISupportsImpl.h"
 #include "nsPresContext.h"
 
 #include "mozilla/RefPtr.h"
@@ -22,10 +23,11 @@ struct nsZenAccentOklab {
   float contrastFactor;
 };
 
-class nsZenBoostsBackend final {
+class nsZenBoostsBackend final : public nsISupports {
  public:
+  NS_DECL_ISUPPORTS
+
   explicit nsZenBoostsBackend() = default;
-  ~nsZenBoostsBackend() = default;
 
   /**
    * Indicates whether the current frame being rendered is for anonymous
@@ -90,6 +92,8 @@ class nsZenBoostsBackend final {
   bool mCachedCurrentInverted = false;
 
  private:
+  ~nsZenBoostsBackend() = default;
+
   /**
    * The presshell of the current document being rendered.
    */

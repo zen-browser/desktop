@@ -17,9 +17,8 @@
 }
 
 .urlbar {
-  --urlbarView-separator-color: light-dark(hsl(0, 0%, 80%), hsl(0, 0%, 20%));
-  --urlbarView-hover-background: var(--toolbarbutton-hover-background);
-  --urlbarView-highlight-background: var(--toolbarbutton-hover-background);
+  --urlbarview-separator-color: light-dark(hsl(0, 0%, 80%), hsl(0, 0%, 20%));
+  --urlbarview-background-color-hover: var(--toolbarbutton-hover-background);
   border-radius: calc(var(--toolbarbutton-border-radius) - 2px);
   height: var(--urlbar-height);
   --urlbarView-results-padding: 10px !important;
@@ -682,7 +681,7 @@
 }
 
 #urlbar-results {
-  max-height: 260px;
+  max-height: 252px;
   overflow-y: auto;
   scrollbar-width: none;
   margin-block-start: calc(var(--urlbarView-results-padding) - 2px);

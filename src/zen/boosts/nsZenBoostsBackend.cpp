@@ -46,6 +46,8 @@
 
 namespace zen {
 
+NS_IMPL_ISUPPORTS0(nsZenBoostsBackend)
+
 nsZenAccentOklab nsZenBoostsBackend::mCachedAccent{0};
 nsZenAccentOklab nsZenBoostsBackend::mCachedComplementary{0};
 float nsZenBoostsBackend::mCachedComplementaryRotationDeg = 0.0f;
@@ -345,7 +347,7 @@ inline static void GetZenBoostsDataFromBrowsingContext(
 
 }  // namespace
 
-static mozilla::StaticAutoPtr<nsZenBoostsBackend> sZenBoostsBackend;
+static mozilla::StaticRefPtr<nsZenBoostsBackend> sZenBoostsBackend;
 
 auto nsZenBoostsBackend::GetInstance() -> nsZenBoostsBackend* {
   if (!XRE_IsContentProcess()) {

@@ -244,10 +244,11 @@ class nsZenWorkspaces {
     // Remove tabs not already cleaned up by folder deletion.
     const pinnedOnly = lazy.gSyncOnlyPinnedTabs;
     for (const tabData of removals.tabs || []) {
-      if (!tabData.zenSyncId) {
+      const syncId = this.#normalizeIncomingTabSyncId(tabData);
+      if (!syncId) {
         continue;
       }
-      const tab = document.getElementById(tabData.zenSyncId);
+      const tab = this.#findTabBySyncId(syncId);
       if (tab && gBrowser.isTab(tab)) {
         if (pinnedOnly && !tab.pinned) {
           continue;
@@ -343,10 +344,11 @@ class nsZenWorkspaces {
 
     // Step 2: create or update tabs (pinned AND unpinned).
     for (const tabData of incomingTabs) {
-      if (!tabData.zenSyncId) {
+      const syncId = this.#normalizeIncomingTabSyncId(tabData);
+      if (!syncId) {
         continue;
       }
-      const existingTab = document.getElementById(tabData.zenSyncId);
+      const existingTab = this.#findTabBySyncId(syncId);
       if (existingTab && gBrowser.isTab(existingTab)) {
         this.#applyIncomingTabContainer(existingTab, tabData);
 
@@ -452,7 +454,10 @@ class nsZenWorkspaces {
         const newTab = gBrowser.addTrustedTab("about:blank", pinnedOptions);
 
         // Set the zenSyncId as the DOM id BEFORE pinning.
-        newTab.id = tabData.zenSyncId;
+        if (!this.#setIncomingTabSyncId(newTab, syncId)) {
+          gBrowser.removeTab(newTab, { animate: false });
+          continue;
+        }
 
         if (tabData.zenEssential) {
           // Set attributes manually but skip zen-essential, addToEssentials() must set it
@@ -530,7 +535,10 @@ class nsZenWorkspaces {
           unpinnedOptions.userContextId = unpinnedUserContextId;
         }
         const newTab = gBrowser.addTrustedTab(url, unpinnedOptions);
-        newTab.id = tabData.zenSyncId;
+        if (!this.#setIncomingTabSyncId(newTab, syncId)) {
+          gBrowser.removeTab(newTab, { animate: false });
+          continue;
+        }
         if (tabData.zenWorkspace) {
           newTab.setAttribute("zen-workspace-id", tabData.zenWorkspace);
         }
@@ -564,6 +572,46 @@ class nsZenWorkspaces {
       return entries[entryIndex] ?? entries[0] ?? null;
     }
     return tabData._zenPinnedInitialState?.entry || null;
+  }
+
+  #normalizeIncomingTabSyncId(tabData) {
+    const rawSyncId = tabData?.zenSyncId || tabData?.zenPinnedId;
+    if (typeof rawSyncId !== "string") {
+      return null;
+    }
+
+    const syncId = rawSyncId.trim();
+    return syncId || null;
+  }
+
+  #findTabBySyncId(syncId) {
+    if (!syncId) {
+      return null;
+    }
+
+    const fromDocument = document.getElementById(syncId);
+    if (fromDocument && gBrowser.isTab(fromDocument)) {
+      return fromDocument;
+    }
+
+    return (
+      gBrowser.tabs.find(
+        tab => tab?.id === syncId || tab?.getAttribute("id") === syncId,
+      ) || null
+    );
+  }
+
+  #setIncomingTabSyncId(tab, syncId) {
+    if (!tab || !syncId) {
+      return false;
+    }
+
+    tab.id = syncId;
+    if (tab.id !== syncId) {
+      tab.setAttribute("id", syncId);
+    }
+
+    return tab.id === syncId;
   }
 
   #getSyncedTabState(tab) {
@@ -795,7 +843,11 @@ class nsZenWorkspaces {
     const movedItems = new Set();
 
     for (const tabData of orderedTabs) {
-      const tab = document.getElementById(tabData.zenSyncId);
+      const syncId = this.#normalizeIncomingTabSyncId(tabData);
+      if (!syncId) {
+        continue;
+      }
+      const tab = this.#findTabBySyncId(syncId);
       if (!tab || !gBrowser.isTab(tab) || tab.hasAttribute("zen-empty-tab")) {
         continue;
       }

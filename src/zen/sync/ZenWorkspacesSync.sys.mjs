@@ -55,9 +55,8 @@ export class ZenWorkspacesRecord extends CryptoWrapper {
 ZenWorkspacesRecord.prototype.type = "spaces";
 
 function parseRecordId(id) {
-  console.log("parseRecordId", id);
   const sep = id.indexOf("~");
-  if (sep === -1) {
+  if (sep <= 0 || sep === id.length - 1) {
     return null;
   }
   const prefix = id.slice(0, sep);
@@ -157,7 +156,6 @@ class ZenWorkspacesStore extends Store {
   }
 
   async createRecord(id, collection) {
-    console.log("createRecord", id);
     const record = new ZenWorkspacesRecord(collection, id);
     const parsed = parseRecordId(id);
     if (!parsed) {
@@ -201,12 +199,10 @@ class ZenWorkspacesStore extends Store {
         break;
       }
       case "tab": {
-        console.log("TAB", parsed.key);
         const tabs = sidebar.tabs || [];
         const idx = tabs.findIndex(t => t.zenSyncId === parsed.key);
         const tab = idx === -1 ? null : tabs[idx];
         if (!tab) {
-          console.log("TAB NOT FOUND", parsed.key);
           record.deleted = true;
           return record;
         }
@@ -214,7 +210,10 @@ class ZenWorkspacesStore extends Store {
           position: idx,
           trimHistoryForUnpinned: true,
         });
-        console.log("TABDATA",syncableTabData);
+        if (!syncableTabData?.zenSyncId) {
+          record.deleted = true;
+          return record;
+        }
         record.cleartext = { id, type: "tab", ...syncableTabData };
         break;
       }
@@ -240,7 +239,6 @@ class ZenWorkspacesStore extends Store {
   async applyIncomingBatch(records, _countTelemetry) {
     const pulled = { spaces: [], tabs: [], folders: [], containers: [] };
     const removals = { spaces: [], tabs: [], folders: [], containers: [] };
-    console.log("applyIncomingBatch", records);
     for (const record of records) {
       if (record.deleted) {
         this._collectRemoval(record.id, removals);
@@ -250,6 +248,7 @@ class ZenWorkspacesStore extends Store {
       if (!data?.type) {
         continue;
       }
+      const parsedRecordId = parseRecordId(record.id);
       const clean = stripSyncFields(data);
       switch (data.type) {
         case "space":
@@ -258,11 +257,27 @@ class ZenWorkspacesStore extends Store {
         case "container":
           pulled.containers.push(clean);
           break;
-        case "tab":
+        case "tab": {
+          const recordTabId =
+            parsedRecordId?.type === "tab" ? parsedRecordId.key : null;
+          const syncId =
+            typeof recordTabId === "string" && recordTabId
+              ? recordTabId
+              : clean.zenSyncId;
+          if (!syncId) {
+            break;
+          }
+          clean.zenSyncId = syncId;
           pulled.tabs.push(clean);
           break;
+        }
         case "folder":
-          clean.id = clean.folderId;
+          clean.id =
+            clean.folderId ||
+            (parsedRecordId?.type === "folder" ? parsedRecordId.key : null);
+          if (!clean.id) {
+            break;
+          }
           delete clean.folderId;
           pulled.folders.push(clean);
           break;
@@ -333,6 +348,7 @@ class ZenWorkspacesStore extends Store {
       if (!data?.type) {
         return;
       }
+      const parsedRecordId = parseRecordId(record.id);
       const clean = stripSyncFields(data);
       const pulled = { spaces: [], tabs: [], folders: [], containers: [] };
       switch (data.type) {
@@ -342,11 +358,27 @@ class ZenWorkspacesStore extends Store {
         case "container":
           pulled.containers.push(clean);
           break;
-        case "tab":
+        case "tab": {
+          const recordTabId =
+            parsedRecordId?.type === "tab" ? parsedRecordId.key : null;
+          const syncId =
+            typeof recordTabId === "string" && recordTabId
+              ? recordTabId
+              : clean.zenSyncId;
+          if (!syncId) {
+            break;
+          }
+          clean.zenSyncId = syncId;
           pulled.tabs.push(clean);
           break;
+        }
         case "folder":
-          clean.id = clean.folderId;
+          clean.id =
+            clean.folderId ||
+            (parsedRecordId?.type === "folder" ? parsedRecordId.key : null);
+          if (!clean.id) {
+            break;
+          }
           delete clean.folderId;
           pulled.folders.push(clean);
           break;

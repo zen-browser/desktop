@@ -256,6 +256,7 @@ class nsZenWindowSync {
     for (let eventName of EVENTS) {
       aWindow.addEventListener(eventName, this, true);
     }
+    aWindow.gBrowser?.addTabsProgressListener(this);
     this.#maybeTriggerInitialTabSync(aWindow);
   }
 
@@ -1595,12 +1596,38 @@ class nsZenWindowSync {
     });
   }
 
+  /**
+   * Fired by tabbrowser for top-level location changes in any tab.
+   * We use this to mark the tab as changed so Firefox Sync can persist
+   * URL/history updates even when no tab label/icon event fires.
+   */
+  onLocationChange(aBrowser, aWebProgress, _aRequest, _aLocation, _aFlags) {
+    if (!lazy.gWindowSyncEnabled || !aWebProgress?.isTopLevel) {
+      return;
+    }
+
+    const gBrowser = aBrowser?.getTabBrowser?.();
+    if (!gBrowser) {
+      return;
+    }
+
+    const tab = gBrowser.getTabForBrowser(aBrowser);
+    if (!tab || tab.closing) {
+      return;
+    }
+
+    console.log("onLocationChange", tab.id);
+
+    this.#notifySyncItemChanged(tab);
+  }
+
   on_SSWindowClosing(aEvent) {
     const window = aEvent.target.documentGlobal ?? aEvent.target;
     window._zenClosingWindow = true;
     for (let eventName of EVENTS) {
       window.removeEventListener(eventName, this);
     }
+    window.gBrowser?.removeTabsProgressListener(this);
     delete window.gZenWindowSync;
     const { promise, resolve } = Promise.withResolvers();
     this.#docShellSwitchPromise = promise;

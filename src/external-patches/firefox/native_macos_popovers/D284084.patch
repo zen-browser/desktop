@@ -181,7 +181,7 @@ diff --git a/toolkit/themes/shared/global-shared.css b/toolkit/themes/shared/glo
 +    --panel-shadow: none;
 +    --panel-border-color: transparent;
 +    --panel-shadow-margin: 0px;
-+    --panel-padding: 0px;
++ 
 +  }
 +}
 +

@@ -744,9 +744,6 @@ ${cssSelector} {
       );
 
       if (nDistance > 15) {
-        // Optional haptic feedback
-        // Services.zen.playHapticFeedback();
-
         this.lastDotSetPos = {
           x: pixelX,
           y: pixelY,

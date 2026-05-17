@@ -14,7 +14,8 @@ add_task(async function test_Ub_Actions_Search() {
       ok(true, `Skipping action: ${action.command}`);
       continue;
     }
-    const label = action.label;
+    ok(action.l10nId, `${action.command} should have a localized label`);
+    const label = await document.l10n.formatValue(action.l10nId);
     await UrlbarTestUtils.promiseAutocompleteResultPopup({
       window,
       waitForFocus,

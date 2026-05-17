@@ -34,6 +34,12 @@ XPCOMUtils.defineLazyPreferenceGetter(
   true
 );
 
+ChromeUtils.defineLazyGetter(
+  lazy,
+  "l10n",
+  () => new Localization(["browser/zen-general.ftl"], true)
+);
+
 /**
  * A convenience function that takes a payload annotated with
  * UrlbarUtils.HIGHLIGHT enums and returns the payload and the payload's
@@ -183,6 +189,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
           ?.style.getPropertyValue("--zen-primary-color");
         actions.push({
           label: "Focus on",
+          l10nId: "zen-urlbar-action-focus-on",
           extraPayload: {
             workspaceId: workspace.uuid,
             prettyName: workspace.name,
@@ -216,6 +223,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         return {
           icon: "chrome://browser/skin/zen-icons/extension.svg",
           label: "Extension",
+          l10nId: "zen-urlbar-action-extension",
           commandId: `zen:extension-${addon.id}`,
           extraPayload: {
             extensionId: addon.id,
@@ -231,10 +239,33 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
    * @returns {Array} All the available global actions.
    */
   async #getAvailableActions(window) {
-    return globalActions
+    const actions = globalActions
       .filter(a => a.isAvailable(window))
       .concat(this.#getWorkspaceActions(window))
       .concat(await this.#getExtensionActions(window));
+    return this.#localizeActions(actions);
+  }
+
+  async #localizeActions(actions) {
+    const localizedMessages = actions
+      .filter(action => action.l10nId)
+      .map(action => ({ id: action.l10nId }));
+
+    if (!localizedMessages.length) {
+      return actions;
+    }
+
+    const labels = await lazy.l10n.formatValues(localizedMessages);
+    let labelIndex = 0;
+    return actions.map(action => {
+      if (!action.l10nId) {
+        return action;
+      }
+      return {
+        ...action,
+        label: labels[labelIndex++] || action.label,
+      };
+    });
   }
 
   /**
@@ -247,7 +278,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
   async #findMatchingActions(query, isPrefixed, isWorkspaceSearch) {
     const window = lazy.BrowserWindowTracker.getTopWindow();
     const actions = isWorkspaceSearch
-      ? this.#getWorkspaceActions(window)
+      ? await this.#localizeActions(this.#getWorkspaceActions(window))
       : await this.#getAvailableActions(window);
     let results = [];
     for (let action of actions) {

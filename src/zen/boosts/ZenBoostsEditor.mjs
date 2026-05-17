@@ -105,12 +105,6 @@ export class nsZenBoostEditor {
       .getElementById("zen-boost-controls")
       .addEventListener("click", event => this.openAdvancedColorOptions(event));
     this.doc
-      .getElementById("zen-boost-save")
-      .addEventListener("click", this.onSaveBoostClick.bind(this));
-    this.doc
-      .getElementById("zen-boost-load")
-      .addEventListener("click", this.onLoadBoostClick.bind(this));
-    this.doc
       .getElementById("zen-boost-name-container")
       .addEventListener("click", this.onNameTextClick.bind(this));
     this.doc
@@ -1385,15 +1379,11 @@ ${cssSelector} {
    * Handles opening a save file dialog and exporting the boost data to a JSON file
    */
   async onSaveBoostClick() {
-    const loadButton = this.doc.getElementById("zen-boost-save");
-    loadButton.setAttribute("mode", "blue");
-
     const success = await gZenBoostsManager.exportBoost(
       this.editorWindow,
       this.currentBoostData
     );
 
-    loadButton.setAttribute("mode", "");
     if (success) {
       this.openerWindow.gZenUIManager.showToast(
         "zen-panel-ui-boosts-exported-message"
@@ -1405,12 +1395,7 @@ ${cssSelector} {
    * Handles opening a load file dialog and importing the boost data to a JSON file
    */
   async onLoadBoostClick() {
-    const loadButton = this.doc.getElementById("zen-boost-load");
-    loadButton.setAttribute("mode", "orange-red");
-
     const data = await gZenBoostsManager.importBoost(this.editorWindow);
-
-    loadButton.setAttribute("mode", "");
     if (data) {
       this.currentBoostData = data;
       this.updateAllVisuals();

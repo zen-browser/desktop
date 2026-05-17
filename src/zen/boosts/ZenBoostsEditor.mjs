@@ -40,7 +40,6 @@ export class nsZenBoostEditor {
     this.isMouseDown = false;
     this.wasDragging = false;
     this.dragTarget = "";
-    this.dragTarget = "";
     this.mouseDownPosition = { x: 0, y: 0 };
     this.lastDotSetPos = { x: 0, y: 0 };
     this.currentBoostData = null;
@@ -276,11 +275,6 @@ export class nsZenBoostEditor {
       "Impact",
       "Palatino Linotype",
       "Tahoma",
-      "Helvetica",
-      "Garamond",
-      "Century Gothic",
-      "Arial Black",
-      "Papyrus",
       "Helvetica",
       "Garamond",
       "Century Gothic",
@@ -1564,9 +1558,7 @@ ${cssSelector} {
     const dotSec = this.doc.querySelector(
       "#zen-boost-color-picker-dot-secondary"
     );
-    const gradient = this.doc.querySelector(
-      ".zen-boost-color-picker-gradient"
-    );
+    const gradient = this.doc.querySelector(".zen-boost-color-picker-gradient");
     const rect = gradient.getBoundingClientRect();
 
     if (!this.currentBoostData.sizeOverride) {

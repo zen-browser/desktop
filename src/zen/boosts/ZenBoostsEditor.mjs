@@ -701,7 +701,7 @@ ${cssSelector} {
     const centerY = rect.top + rect.height / 2;
     const radius = (rect.width - padding) / 2;
 
-    this.setSecondaryDotPos(centerX + radius / 1.25, centerY - radius / 1.25);
+    this.setSecondaryDotPos(centerX + radius / 1.25, centerY + radius / 1.25);
   }
 
   /**
@@ -1577,17 +1577,13 @@ ${cssSelector} {
     const dotSec = this.doc.querySelector(
       "#zen-boost-color-picker-dot-secondary"
     );
+    const gradient = this.doc.querySelector(
+      ".zen-boost-color-picker-gradient"
+    );
+    const rect = gradient.getBoundingClientRect();
 
     if (!this.currentBoostData.sizeOverride) {
       this.currentBoostData.sizeOverride = 1;
-    }
-
-    if (
-      !this.currentBoostData.secondaryDotPos ||
-      !this.currentBoostData.secondaryDotPos.x ||
-      !this.currentBoostData.secondaryDotPos.y
-    ) {
-      this.resetSecondaryDotPosition();
     }
 
     if (
@@ -1596,11 +1592,6 @@ ${cssSelector} {
     ) {
       this.resetDotPosition();
     } else {
-      const gradient = this.doc.querySelector(
-        ".zen-boost-color-picker-gradient"
-      );
-      const rect = gradient.getBoundingClientRect();
-
       // Test if the stored position is a non-normalized dot position
       if (
         this.currentBoostData.dotPos.x > 1 ||
@@ -1618,13 +1609,22 @@ ${cssSelector} {
       // Convert normalized position to relative position
       const xPos = this.currentBoostData.dotPos.x * rect.width;
       const yPos = this.currentBoostData.dotPos.y * rect.height;
+
+      // dot.setAttribute("animated", "true");
+      dot.style.left = `${xPos}px`;
+      dot.style.top = `${yPos}px`;
+    }
+
+    if (
+      this.currentBoostData.secondaryDotPos?.x == null ||
+      this.currentBoostData.secondaryDotPos?.y == null
+    ) {
+      this.resetSecondaryDotPosition();
+    } else {
       const xPosSec = this.currentBoostData.secondaryDotPos.x * rect.width;
       const yPosSec = this.currentBoostData.secondaryDotPos.y * rect.height;
 
-      dot.setAttribute("animated", "true");
-      dot.style.left = `${xPos}px`;
-      dot.style.top = `${yPos}px`;
-      dotSec.setAttribute("animated", "true");
+      // dotSec.setAttribute("animated", "true");
       dotSec.style.left = `${xPosSec}px`;
       dotSec.style.top = `${yPosSec}px`;
     }

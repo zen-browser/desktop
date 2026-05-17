@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser-fullScreenAndPointerLock.js b/browser/base/content/browser-fullScreenAndPointerLock.js
-index cd46701e9f4b672f392533c9ecc1c8570c3b2c5a..beb992702ea90e0b81f7bda4a6c0522932e84dfe 100644
+index 1eaf79a4f6788c518a4759bbce81175fd5fba220..6fde5e944ad4a847180ca83a9e6f4fde20aa7b42 100644
 --- a/browser/base/content/browser-fullScreenAndPointerLock.js
 +++ b/browser/base/content/browser-fullScreenAndPointerLock.js
-@@ -464,8 +464,6 @@ var FullScreen = {
+@@ -501,8 +501,6 @@ var FullScreen = {
      // don't need that kind of precision in our CSS.
      shiftSize = shiftSize.toFixed(2);
      let translate = shiftSize > 0 ? `0 ${shiftSize}px` : "";

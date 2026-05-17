@@ -67,6 +67,24 @@ void BrowsingContext::DidSet(FieldIndex<IDX_ZenBoostsData>,
 }
 
 /**
+ * @brief Called when the ZenBoostsComplementaryRotation field is set on a
+ * browsing context. This is the hue rotation (in degrees) applied to the base
+ * accent to derive the complementary accent that light page colors are tinted
+ * toward. Triggers a restyle if it has changed.
+ * @param aOldValue The previous rotation value.
+ */
+void BrowsingContext::DidSet(FieldIndex<IDX_ZenBoostsComplementaryRotation>,
+                             float aOldValue) {
+  MOZ_ASSERT(IsTop());
+  if (ZenBoostsComplementaryRotation() == aOldValue) {
+    return;
+  }
+  RefreshBoostCacheIfMatchesCurrent(this);
+  PresContextAffectingFieldChanged();
+  TRIGGER_PRES_CONTEXT_RESTYLE();
+}
+
+/**
  * @brief Called when the IsZenBoostsInverted field is set on a browsing
  * context. Triggers a restyle if the value has changed.
  * @param aOldValue The previous value of the IsZenBoostsInverted flag.

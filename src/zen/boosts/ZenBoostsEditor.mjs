@@ -40,6 +40,7 @@ export class nsZenBoostEditor {
     this.isMouseDown = false;
     this.wasDragging = false;
     this.dragTarget = "";
+    this.dragTarget = "";
     this.mouseDownPosition = { x: 0, y: 0 };
     this.lastDotSetPos = { x: 0, y: 0 };
     this.currentBoostData = null;
@@ -281,6 +282,11 @@ export class nsZenBoostEditor {
       "Impact",
       "Palatino Linotype",
       "Tahoma",
+      "Helvetica",
+      "Garamond",
+      "Century Gothic",
+      "Arial Black",
+      "Papyrus",
       "Helvetica",
       "Garamond",
       "Century Gothic",
@@ -810,8 +816,6 @@ ${cssSelector} {
     // Capture normalized position of dot for restoring it correctly later
     this.currentBoostData.dotPos.x = relativeX / rect.width;
     this.currentBoostData.dotPos.y = relativeY / rect.height;
-    this.currentBoostData.secondaryDotPos.x = relativeXSec / rect.width;
-    this.currentBoostData.secondaryDotPos.y = relativeYSec / rect.height;
 
     dot.setAttribute("animated", animate ? "true" : "false");
     dot.style.left = `${relativeX}px`;

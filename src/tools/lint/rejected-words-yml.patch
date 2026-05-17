@@ -1,5 +1,5 @@
 diff --git a/tools/lint/rejected-words.yml b/tools/lint/rejected-words.yml
-index d5ca2e05fb335fcd17d1559d5332ec4a43d7cd1d..1f34e8d5e05508fc541bc7aa6a779cd98206032a 100644
+index 3eb549d252c9f5f7b5cbcf72ca1480025794b481..1a065643971f1048e9598b3c389f51e199eba63d 100644
 --- a/tools/lint/rejected-words.yml
 +++ b/tools/lint/rejected-words.yml
 @@ -8,7 +8,6 @@ avoid-blacklist-and-whitelist:

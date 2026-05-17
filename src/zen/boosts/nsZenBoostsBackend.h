@@ -83,6 +83,10 @@ class nsZenBoostsBackend final {
    * resolve.
    */
   ZenBoostData mCachedCurrentAccent = 0;
+  // Hue rotation in degrees applied to the base accent to derive the
+  // complementary accent. Zero means the complementary accent equals the base
+  // accent (the duotone collapses to a single-accent tint).
+  float mCachedCurrentComplementaryRotation = 0.0f;
   bool mCachedCurrentInverted = false;
 
  private:
@@ -92,6 +96,10 @@ class nsZenBoostsBackend final {
   RefPtr<mozilla::dom::BrowsingContext> mCurrentBrowsingContext;
 
   static nsZenAccentOklab mCachedAccent;
+  // Base accent with its Oklab hue rotated by mCachedComplementaryRotationDeg,
+  // recomputed only when the base accent or rotation changes.
+  static nsZenAccentOklab mCachedComplementary;
+  static float mCachedComplementaryRotationDeg;
 
  public:
   /**

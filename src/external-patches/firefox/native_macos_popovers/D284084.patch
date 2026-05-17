@@ -168,9 +168,9 @@ diff --git a/toolkit/themes/shared/global-shared.css b/toolkit/themes/shared/glo
 --- a/toolkit/themes/shared/global-shared.css
 +++ b/toolkit/themes/shared/global-shared.css
 @@ -72,10 +72,22 @@
-   --menuitem-border-radius: var(--arrowpanel-menuitem-border-radius);
-   --menuitem-padding: var(--arrowpanel-menuitem-padding);
-   --menuitem-margin: var(--arrowpanel-menuitem-margin);
+   --menuitem-border-radius: var(--panel-menuitem-border-radius);
+   --menuitem-padding: var(--panel-menuitem-padding);
+   --menuitem-margin: var(--panel-menuitem-margin);
  }
  
 +/* stylelint-disable-next-line media-query-no-invalid */

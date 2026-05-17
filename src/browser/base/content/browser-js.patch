@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 942bb5688e98f66ad71560fb32e1ca26a8081edf..25ba741c35c49afbf4e6053df3a0a7296d3040d8 100644
+index d1ab42d59f05513ec60a7578b7acab44875c544c..8c3cd75704991b8572d3f13a936fddd2616b2946 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
-@@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(this, {
+@@ -34,6 +34,7 @@ ChromeUtils.defineESModuleGetters(this, {
      "resource://gre/modules/ContextualIdentityService.sys.mjs",
    CustomizableUI:
      "moz-src:///browser/components/customizableui/CustomizableUI.sys.mjs",
@@ -24,7 +24,7 @@ index 942bb5688e98f66ad71560fb32e1ca26a8081edf..25ba741c35c49afbf4e6053df3a0a729
      if (backDisabled) {
        backCommand.removeAttribute("disabled");
      } else {
-@@ -3830,7 +3836,7 @@ function warnAboutClosingWindow() {
+@@ -3715,7 +3721,7 @@ function warnAboutClosingWindow() {
  
    if (!isPBWindow && !toolbar.visible) {
      return gBrowser.warnAboutClosingTabs(
@@ -33,7 +33,7 @@ index 942bb5688e98f66ad71560fb32e1ca26a8081edf..25ba741c35c49afbf4e6053df3a0a729
        gBrowser.closingTabsEnum.ALL
      );
    }
-@@ -3870,7 +3876,7 @@ function warnAboutClosingWindow() {
+@@ -3755,7 +3761,7 @@ function warnAboutClosingWindow() {
      return (
        isPBWindow ||
        gBrowser.warnAboutClosingTabs(
@@ -42,7 +42,7 @@ index 942bb5688e98f66ad71560fb32e1ca26a8081edf..25ba741c35c49afbf4e6053df3a0a729
          gBrowser.closingTabsEnum.ALL
        )
      );
-@@ -3895,7 +3901,7 @@ function warnAboutClosingWindow() {
+@@ -3780,7 +3786,7 @@ function warnAboutClosingWindow() {
      AppConstants.platform != "macosx" ||
      isPBWindow ||
      gBrowser.warnAboutClosingTabs(
@@ -51,7 +51,7 @@ index 942bb5688e98f66ad71560fb32e1ca26a8081edf..25ba741c35c49afbf4e6053df3a0a729
        gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4835,6 +4841,9 @@ var ConfirmationHint = {
+@@ -4720,6 +4726,9 @@ var ConfirmationHint = {
      }
  
      document.l10n.setAttributes(this._message, messageId, options.l10nArgs);

@@ -1,8 +1,8 @@
 diff --git a/tools/lint/eslint/__init__.py b/tools/lint/eslint/__init__.py
-index 4e7082179c632ac8fd1c4687329c2fe243cd6991..dadd614f8e7246ee1d390c0057af1536366653d6 100644
+index c0799d3f2317c070a3c99cc91cf6e940de2c5a60..4835906279b1b48010feffb35f6c82bcc9fd1504 100644
 --- a/tools/lint/eslint/__init__.py
 +++ b/tools/lint/eslint/__init__.py
-@@ -112,7 +112,7 @@ def lint(paths, config, binary=None, fix=None, rules=[], setup=None, **lintargs)
+@@ -133,7 +133,7 @@ def lint(paths, config, binary=None, fix=None, rules=[], setup=None, **lintargs)
          [
              binary,
              os.path.join(

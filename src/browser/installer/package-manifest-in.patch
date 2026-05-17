@@ -2,7 +2,7 @@ diff --git a/browser/installer/package-manifest.in b/browser/installer/package-m
 index 36eafe35063f02fe3d4acaab24a08dc1b7b0ae24..951889b156498f66118d67d4245aca649e27a3a2 100644
 --- a/browser/installer/package-manifest.in
 +++ b/browser/installer/package-manifest.in
-@@ -378,19 +378,24 @@ bin/libfreebl_64int_3.so
+@@ -378,17 +378,17 @@ bin/libfreebl_64int_3.so
  ; [MaintenanceService]
  ;
  #ifdef MOZ_MAINTENANCE_SERVICE
@@ -24,10 +24,10 @@ index 36eafe35063f02fe3d4acaab24a08dc1b7b0ae24..951889b156498f66118d67d4245aca64
  #if defined(XP_WIN)
  @BINPATH@/@DLL_PREFIX@mozwer@DLL_SUFFIX@
  #endif
+@@ -450,5 +450,5 @@
  #endif
+ 
+-#if defined(BUILT_BY_MOZILLA)
++#if defined(BUILT_BY_MOZILLA) || defined(XP_WIN)
+ @RESPATH@/distribution/*
  #endif
-+
-+; Astra: bundle uBlock Origin XPI + policies.json (staged by Windows CI before mach package)
-+#ifdef XP_WIN
-+@BINPATH@/distribution/*
-+#endif

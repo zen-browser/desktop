@@ -118,7 +118,7 @@ class nsZenBoostsManager {
         dotPos: { x: null, y: null },
         dotDistance: 0,
 
-        secondaryDotAngleDegDelta: 32,
+        secondaryDotAngleDegDelta: 55,
         secondaryDotPos: { x: null, y: null },
 
         brightness: 0.5,

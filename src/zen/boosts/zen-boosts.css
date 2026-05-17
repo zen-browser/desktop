@@ -708,6 +708,11 @@ body {
     height: 24px;
     border-radius: 50%;
     background: var(--zen-theme-picker-dot-color);
+
+    /* Move away until initialized */
+    left: -100px;
+    top: -100px;
+
     @media (-prefers-color-scheme: dark) {
       box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
     }

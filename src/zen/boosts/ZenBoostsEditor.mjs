@@ -691,20 +691,6 @@ ${cssSelector} {
   }
 
   /**
-   * Resets the secondary color picker dot to the default position (default state).
-   */
-  resetSecondaryDotPosition() {
-    const gradient = this.doc.querySelector(".zen-boost-color-picker-gradient");
-    const rect = gradient.getBoundingClientRect();
-    const padding = 50;
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const radius = (rect.width - padding) / 2;
-
-    this.setSecondaryDotPos(centerX + radius / 1.25, centerY + radius / 1.25);
-  }
-
-  /**
    * Handles clicks on the theme picker gradient or magic theme button.
    * Updates the dot position or toggles auto-theme mode based on the click target.
    *
@@ -885,7 +871,7 @@ ${cssSelector} {
     if (!pixelX || !pixelY) {
       pixelX = centerX;
       pixelY = centerY;
-      angle = 32; // Default angle (when parameters null)
+      angle = this.currentBoostData.secondaryDotAngleDegDelta;
     } else {
       angle = Math.atan2(pixelY - centerY, pixelX - centerX);
       pixelX =
@@ -1614,21 +1600,17 @@ ${cssSelector} {
       const xPos = this.currentBoostData.dotPos.x * rect.width;
       const yPos = this.currentBoostData.dotPos.y * rect.height;
 
-      // dot.setAttribute("animated", "true");
       dot.style.left = `${xPos}px`;
       dot.style.top = `${yPos}px`;
     }
 
     if (
-      this.currentBoostData.secondaryDotPos?.x == null ||
-      this.currentBoostData.secondaryDotPos?.y == null
+      this.currentBoostData.secondaryDotPos?.x != null &&
+      this.currentBoostData.secondaryDotPos?.y != null
     ) {
-      this.resetSecondaryDotPosition();
-    } else {
       const xPosSec = this.currentBoostData.secondaryDotPos.x * rect.width;
       const yPosSec = this.currentBoostData.secondaryDotPos.y * rect.height;
 
-      // dotSec.setAttribute("animated", "true");
       dotSec.style.left = `${xPosSec}px`;
       dotSec.style.top = `${yPosSec}px`;
     }

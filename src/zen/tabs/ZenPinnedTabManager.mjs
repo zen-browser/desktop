@@ -829,6 +829,9 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   }
 
   onLocationChange(aBrowser, aWebProgress, aRequest, aLocationURI) {
+    if (!aWebProgress.isTopLevel) {
+      return;
+    }
     // eslint-disable-next-line no-shadow
     let location = aLocationURI ? aLocationURI.spec : "";
     if (

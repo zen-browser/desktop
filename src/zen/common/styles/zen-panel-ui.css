@@ -11,7 +11,10 @@ panel[type="arrow"]:not(#feature-callout) {
     -moz-default-appearance: menupopup;
     /* The blur behind doesn't blur all that much, add a semi-transparent
      * background to improve contrast */
-    --panel-background: light-dark(rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.5)) !important;
+    --panel-background: light-dark(
+      rgba(255, 255, 255, 0.5),
+      rgba(0, 0, 0, 0.5)
+    ) !important;
 
     /* The mica rendering already adds a shadow and a border, so we
      * remove the one we add via CSS */
@@ -53,6 +56,17 @@ panel[type="arrow"]:not(#feature-callout) {
     &::part(content) {
       /* This shoudn't really be needed, but just in case */
       background-color: transparent !important;
+    }
+
+    &:where(#tab-preview-panel) {
+      --panel-color: MenuText !important;
+      --text-color-deemphasized: color-mix(
+        in srgb,
+        MenuText 65%,
+        transparent
+      ) !important;
+
+      color: MenuText !important;
     }
   }
 }

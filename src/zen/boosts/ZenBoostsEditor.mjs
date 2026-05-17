@@ -825,6 +825,10 @@ ${cssSelector} {
     this.currentBoostData.dotPos.x = relativeX / rect.width;
     this.currentBoostData.dotPos.y = relativeY / rect.height;
 
+    // Make sure to update store to feature proper new secondary position
+    this.currentBoostData.secondaryDotPos.x = relativeXSec / rect.width;
+    this.currentBoostData.secondaryDotPos.y = relativeYSec / rect.height;
+
     dot.setAttribute("animated", animate ? "true" : "false");
     dot.style.left = `${relativeX}px`;
     dot.style.top = `${relativeY}px`;
@@ -881,7 +885,7 @@ ${cssSelector} {
     if (!pixelX || !pixelY) {
       pixelX = centerX;
       pixelY = centerY;
-      angle = 32; // Default angle
+      angle = 32; // Default angle (when parameters null)
     } else {
       angle = Math.atan2(pixelY - centerY, pixelX - centerX);
       pixelX =

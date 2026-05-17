@@ -677,17 +677,31 @@ ${cssSelector} {
   }
 
   /**
-   * Resets the color picker dot to the center position (default state).
+   * Resets the color picker dot to the default position (default state).
    */
   resetDotPosition() {
-    this.setDotPos(null, null);
+    const gradient = this.doc.querySelector(".zen-boost-color-picker-gradient");
+    const rect = gradient.getBoundingClientRect();
+    const padding = 50;
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const radius = (rect.width - padding) / 2;
+
+    this.setDotPos(centerX + radius / 1.25, centerY);
   }
 
   /**
-   * Resets the secondary color picker dot to the center position (default state).
+   * Resets the secondary color picker dot to the default position (default state).
    */
   resetSecondaryDotPosition() {
-    this.setSecondaryDotPos(null, null);
+    const gradient = this.doc.querySelector(".zen-boost-color-picker-gradient");
+    const rect = gradient.getBoundingClientRect();
+    const padding = 50;
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const radius = (rect.width - padding) / 2;
+
+    this.setSecondaryDotPos(centerX + radius / 1.25, centerY - radius / 1.25);
   }
 
   /**

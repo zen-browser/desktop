@@ -244,6 +244,28 @@ jobs:
           $env:WIN32_REDIST_DIR = "${{ runner.temp }}\win-cross\vs2026\VC\Redist\MSVC\14.50.35710\x64\Microsoft.VC145.CRT"
           bash .github/workflows/src/release-build.sh
 
+      - name: Stage uBlock + policies into dist/bin/distribution (pre-package)
+        if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
+        shell: bash
+        run: |
+          set -eux
+          OBJ_DIR="engine/obj-${{ matrix.arch }}-pc-windows-msvc"
+          DIST_DIR="$OBJ_DIR/dist/bin/distribution"
+          mkdir -p "$DIST_DIR/extensions"
+          # uBlock XPI - drop into distribution/extensions/ so Firefox enterprise
+          # extension loading picks it up at first run.
+          curl -fsSL --retry 3 \
+            "https://github.com/gorhill/uBlock/releases/download/1.62.0/uBlock0_1.62.0.firefox.signed.xpi" \
+            -o "$DIST_DIR/extensions/uBlock0@raymondhill.net.xpi"
+          test -s "$DIST_DIR/extensions/uBlock0@raymondhill.net.xpi"
+          # policies.json - enterprise policies for force_installed + Locked
+          cp build/AppDir/distribution/policies.json "$DIST_DIR/policies.json"
+          test -s "$DIST_DIR/policies.json"
+          echo "--- dist/bin/distribution tree staged before mach package ---"
+          find "$DIST_DIR" -type f -printf '%p (%s bytes)\n'
+          echo "package-manifest.in patch will include @BINPATH@/distribution/* on XP_WIN,"
+          echo "so stage-package + make installer will bundle these into the EXE."
+
       - name: Package
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
         env:
@@ -269,57 +291,19 @@ jobs:
           }
           exit 0
 
-      - name: Inject uBlock + policies into final installer
+      - name: Verify uBlock + policies inside packaged installer and zip
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
         shell: bash
         run: |
           set -eux
           OBJ_DIR="engine/obj-${{ matrix.arch }}-pc-windows-msvc"
 
-          # Find the produced installer EXE
-          INSTALLER=$(find "$OBJ_DIR/dist" -name "*.installer*.exe" 2>/dev/null | head -1)
+          INSTALLER=$(find "$OBJ_DIR/dist" -type f -name "*.installer*.exe" 2>/dev/null | head -1)
           if [ -z "$INSTALLER" ]; then
             echo "::error::No installer .exe produced under $OBJ_DIR/dist"
             exit 1
           fi
-          echo "Found installer: $INSTALLER"
-
-          # Stage files in the layout we want the installer to expose
-          STAGE="$(pwd)/.astra-installer-stage"
-          rm -rf "$STAGE"
-          mkdir -p "$STAGE/distribution/extensions"
-          curl -fsSL --retry 3 \
-            "https://github.com/gorhill/uBlock/releases/download/1.62.0/uBlock0_1.62.0.firefox.signed.xpi" \
-            -o "$STAGE/distribution/extensions/uBlock0@raymondhill.net.xpi"
-          cp build/AppDir/distribution/policies.json "$STAGE/distribution/policies.json"
-          test -s "$STAGE/distribution/extensions/uBlock0@raymondhill.net.xpi"
-          test -s "$STAGE/distribution/policies.json"
-
-          # Attempt to update the NSIS installer in place. 7-Zip's NSIS plugin
-          # is read-only for many builds, so we treat this as best-effort and
-          # fall through to a portable ZIP injection (which IS authoritatively
-          # used by the .zip artifact consumed by the AppImage / portable flow).
-          pushd "$STAGE" >/dev/null
-          7z a -mx0 "$INSTALLER" \
-            "./distribution/extensions/uBlock0@raymondhill.net.xpi" \
-            "./distribution/policies.json" || \
-            echo "::warning::7z a on NSIS installer is not supported in this 7zip build - relying on ZIP injection below"
-          popd >/dev/null
-
-          # Always inject into the produced ZIP - this is reliable and used
-          # by anyone who installs the portable build or extracts the installer.
-          ZIP=$(find "$OBJ_DIR/dist" -type f -name "*.win*.zip" 2>/dev/null | head -1)
-          if [ -n "$ZIP" ]; then
-            pushd "$STAGE" >/dev/null
-            7z a -mx0 "$ZIP" \
-              "./distribution/extensions/uBlock0@raymondhill.net.xpi" \
-              "./distribution/policies.json"
-            popd >/dev/null
-            echo "uBlock + policies injected into ZIP: $ZIP"
-          fi
-
-          # Verify presence inside the final installer (hard fail if NSIS
-          # injection was rejected and we cannot prove the files are inside).
+          echo "Inspecting installer: $INSTALLER"
           if 7z l "$INSTALLER" 2>/dev/null | grep -qi "uBlock0@raymondhill.net.xpi"; then
             echo "uBlock XPI confirmed inside installer EXE"
           else
@@ -331,6 +315,23 @@ jobs:
           else
             echo "::error::policies.json MISSING from installer EXE: $INSTALLER"
             exit 1
+          fi
+
+          ZIP=$(find "$OBJ_DIR/dist" -type f -name "*.win*.zip" 2>/dev/null | head -1)
+          if [ -n "$ZIP" ]; then
+            echo "Inspecting zip: $ZIP"
+            if 7z l "$ZIP" 2>/dev/null | grep -qi "uBlock0@raymondhill.net.xpi"; then
+              echo "uBlock XPI confirmed inside zip"
+            else
+              echo "::error::uBlock XPI MISSING from zip: $ZIP"
+              exit 1
+            fi
+            if 7z l "$ZIP" 2>/dev/null | grep -qi "policies.json"; then
+              echo "policies.json confirmed inside zip"
+            else
+              echo "::error::policies.json MISSING from zip: $ZIP"
+              exit 1
+            fi
           fi
 
       - name: Remove API Keys

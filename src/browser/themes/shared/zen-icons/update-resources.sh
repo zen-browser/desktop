@@ -53,12 +53,15 @@ do_common_icons() {
     echo "Working on $filename"
     echo "*  skin/classic/browser/zen-icons/$filename                      (../shared/zen-icons/common/$filename) " >> jar.inc.mn
   done
-  for filename in common/selectable/*.svg; do
-    # remove the os/ prefix
-    add_header_to_file $filename
-    filename=$(basename $filename)
-    echo "Working on $filename"
-    echo "*  skin/classic/browser/zen-icons/selectable/$filename          (../shared/zen-icons/common/selectable/$filename) " >> jar.inc.mn
+  # go through all subdirectories of common and do the same
+  for dir in common/*/; do
+    display_dir=$(basename $dir)
+    for filename in $dir/*.svg; do
+      add_header_to_file $filename
+      filename=$(basename $filename)
+      echo "Working on $filename"
+      echo "*  skin/classic/browser/zen-icons/$display_dir/$filename          (../shared/zen-icons/common/$display_dir/$filename) " >> jar.inc.mn
+    done
   done
 }
 

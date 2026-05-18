@@ -9,7 +9,7 @@ export const ZenCustomizableUI = new (class {
 
   TYPE_TOOLBAR = "toolbar";
   defaultSidebarIcons = [
-    "zen-library-button",
+    Services.prefs.getBoolPref("zen.library.enabled") ? "zen-library-button" : "downloads-button",
     "zen-workspaces-button",
     "zen-create-new-button",
   ];

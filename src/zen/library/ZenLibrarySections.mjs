@@ -17,6 +17,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
     "moz-src:///browser/components/downloads/DownloadsViewUI.sys.mjs",
   DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
   FileUtils: "resource://gre/modules/FileUtils.sys.mjs",
+  gZenBoostsManager: "resource:///modules/zen/boosts/ZenBoostsManager.sys.mjs",
   PlacesUtils: "resource://gre/modules/PlacesUtils.sys.mjs",
 });
 
@@ -81,6 +82,17 @@ class LibrarySection extends MozLitElement {
 
   _l10n(key) {
     return lazy.l10n.formatValueSync(key);
+  }
+
+  /**
+   * Returns the named attribute (e.g. "label") of a Fluent message, or "".
+   *
+   * @param {string} key
+   * @param {string} attrName
+   */
+  _l10nAttr(key, attrName) {
+    const [msg] = lazy.l10n.formatMessagesSync([{ id: key }]);
+    return msg?.attributes?.find(a => a.name === attrName)?.value ?? "";
   }
 }
 
@@ -147,15 +159,6 @@ class SearchSection extends LibrarySection {
     }, SEARCH_DEBOUNCE_MS);
   }
 
-  _onClearSearch() {
-    clearTimeout(this.#searchTimer);
-    this.#searchTimer = null;
-    this.searchTerm = "";
-    this.inputValue = "";
-    this.renderRoot.querySelector("#zen-library-search-input")?.focus();
-    this._onSearch("");
-  }
-
   _onSearch(_term) {}
 
   _dayLabel(date) {
@@ -195,7 +198,7 @@ class SearchSection extends LibrarySection {
   /**
    * Called when the user picks a filter; subclasses re-query or re-filter.
    *
-   * @param _id
+   * @param {string} _id
    */
   _onFilterChange(_id) {}
 
@@ -228,27 +231,39 @@ class SearchSection extends LibrarySection {
   _activeFilterLabel() {
     const filters = this._filters();
     const active = filters.find(f => f.id === this.activeFilter) ?? filters[0];
-    return active ? this._l10n(active.label) : "";
+    return active ? this._l10nAttr(active.label, "label") : "";
   }
 
   /**
    * Renders one item row. `sideTop`/`sideBottom` are the stacked right-side
    * info slots (e.g. domain over time for downloads, just time for history).
    *
-   * @param root0
-   * @param root0.key
-   * @param root0.iconSrc
-   * @param root0.label
-   * @param root0.sublabel
-   * @param root0.sideTop
-   * @param root0.sideBottom
-   * @param root0.payload
+   * @param {object} root0
+   * @param {string} root0.key
+   * @param {string} root0.iconSrc
+   * @param {object} root0.iconTemplate
+   * @param {string} root0.label
+   * @param {string} root0.sublabel
+   * @param {string} root0.sideTop
+   * @param {string} root0.sideBottom
+   * @param {object} root0.payload
    */
-  _renderItem({ key, iconSrc, label, sublabel, sideTop, sideBottom, payload }) {
+  _renderItem({
+    key,
+    iconSrc,
+    iconTemplate,
+    label,
+    sublabel,
+    sideTop,
+    sideBottom,
+    payload,
+    fileMissing = false,
+  }) {
     return html`
       <div
         class="library-item"
         data-key=${key ?? ""}
+        ?file-missing=${fileMissing}
         @click=${e => this._onItemClick(e, payload)}
         @auxclick=${e => this._onItemClick(e, payload)}
         @contextmenu=${e => this._onItemContextMenu(e, payload)}
@@ -257,12 +272,17 @@ class SearchSection extends LibrarySection {
           <div class="library-item-background"></div>
           <div class="library-item-content">
             <div class="library-item-icon-stack">
-              <img
-                class="library-item-icon-image"
-                src=${iconSrc || ""}
-                alt=""
-                role="presentation"
-              />
+              ${
+                iconTemplate ??
+                html`
+                  <img
+                    class="library-item-icon-image"
+                    src=${iconSrc || ""}
+                    alt=""
+                    role="presentation"
+                  />
+                `
+              }
             </div>
             <div class="library-item-label-container">
               <label class="library-item-label">${label}</label>
@@ -273,19 +293,19 @@ class SearchSection extends LibrarySection {
                 ? html`
                     <div class="library-item-side">
                       ${
-                      sideTop
-                        ? html`<label class="library-item-side-top"
-                            >${sideTop}</label
-                          >`
-                        : ""
-                    }
+                        sideTop
+                          ? html`<label class="library-item-side-top"
+                              >${sideTop}</label
+                            >`
+                          : ""
+                      }
                       ${
-                      sideBottom
-                        ? html`<label class="library-item-side-bottom"
-                            >${sideBottom}</label
-                          >`
-                        : ""
-                    }
+                        sideBottom
+                          ? html`<label class="library-item-side-bottom"
+                              >${sideBottom}</label
+                            >`
+                          : ""
+                      }
                     </div>
                   `
                 : ""
@@ -319,7 +339,7 @@ class SearchSection extends LibrarySection {
    * Subclasses override to provide trailing action buttons. Default is a single
    * "more options" button that opens the context menu.
    *
-   * @param payload
+   * @param {object} payload
    */
   _renderItemActions(payload) {
     return [
@@ -333,15 +353,15 @@ class SearchSection extends LibrarySection {
   /**
    * Subclasses override; default is a no-op.
    *
-   * @param _event
-   * @param _payload
+   * @param {Event} _event
+   * @param {object} _payload
    */
   _onItemClick(_event, _payload) {}
 
   /**
    * Subclasses override to build a menu; return null to skip the menu.
    *
-   * @param _payload
+   * @param {object} _payload
    */
   _buildContextMenu(_payload) {
     return null;
@@ -379,10 +399,10 @@ class SearchSection extends LibrarySection {
    * the requested location, and remove it on hide. We rebuild on every open
    * because the action set depends on the row's payload.
    *
-   * @param items
-   * @param opener
+   * @param {Array} items
+   * @param {object} anchor
    */
-  _openNativeContextMenu(items, opener) {
+  _openNativeContextMenu(items, anchor) {
     const popupSet = document.getElementById("mainPopupSet");
     const popup = document.createXULElement("menupopup");
 
@@ -426,17 +446,17 @@ class SearchSection extends LibrarySection {
 
     popupSet.appendChild(popup);
 
-    if (opener.type === "anchor") {
-      popup.openPopup(opener.el, "after_end", 0, 0, true, false);
+    if (anchor.type === "anchor") {
+      popup.openPopup(anchor.el, "after_end", 0, 0, true, false);
     } else {
-      popup.openPopupAtScreen(opener.x, opener.y, true);
+      popup.openPopupAtScreen(anchor.x, anchor.y, true);
     }
   }
 
   /**
    * True when the modifier configured for Glance activation is held.
    *
-   * @param event
+   * @param {Event} event
    */
   _isGlanceActivation(event) {
     if (!Services.prefs.getBoolPref("zen.glance.enabled", true)) {
@@ -457,8 +477,8 @@ class SearchSection extends LibrarySection {
   /**
    * Open `url` in a Glance overlay anchored to the clicked item.
    *
-   * @param event
-   * @param url
+   * @param {Event} event
+   * @param {string} url
    */
   _openInGlance(event, url) {
     const itemEl = event.currentTarget;
@@ -521,13 +541,6 @@ class SearchSection extends LibrarySection {
               @input=${this._onSearchInput}
               .value=${this.inputValue}
             />
-            <button
-              class="search-clear-button"
-              tabindex="-1"
-              @click=${this._onClearSearch}
-            >
-              <img src="chrome://browser/skin/zen-icons/close.svg" alt="" />
-            </button>
           </div>
         </div>
         ${
@@ -647,7 +660,7 @@ class ProgressiveSearchSection extends SearchSection {
   /**
    * Hook called from SearchSection's results scroll handler.
    *
-   * @param el
+   * @param {Element} el
    */
   _onScroll(el) {
     if (this.#renderedItemCount >= this._allItems.length) {
@@ -951,8 +964,8 @@ class ZenLibraryHistorySection extends ProgressiveSearchSection {
    * Ctrl (or any other modifier / middle-click) falls back to the standard
    * "where to open" routing.
    *
-   * @param event
-   * @param item
+   * @param {Event} event
+   * @param {object} item
    */
   _onItemClick(event, item) {
     if (event.button === 2) {
@@ -972,8 +985,9 @@ class ZenLibraryHistorySection extends ProgressiveSearchSection {
       !isMiddleClick &&
       Services.prefs.getBoolPref("zen.glance.enabled", true)
     ) {
+      // Glance overlays on top of the library; keep the library open so the
+      // user can fire another glance without re-opening it.
       this._openInGlance(event, item.url);
-      this._closeLibrary();
       return;
     }
 
@@ -1024,7 +1038,6 @@ class ZenLibraryHistorySection extends ProgressiveSearchSection {
           // the cursor and the original item element isn't tracked here.
           const fakeEvent = { currentTarget: this };
           this._openInGlance(fakeEvent, item.url);
-          this._closeLibrary();
         },
       },
       {
@@ -1200,13 +1213,79 @@ class ZenLibraryDownloadsSection extends ProgressiveSearchSection {
       this._formatTime(this.#downloadTime(dl)),
     ].filter(Boolean);
 
+    const state = lazy.DownloadsCommon.stateOfDownload(dl);
+    const isActive =
+      state === lazy.DownloadsCommon.DOWNLOAD_DOWNLOADING ||
+      state === lazy.DownloadsCommon.DOWNLOAD_PAUSED ||
+      state === lazy.DownloadsCommon.DOWNLOAD_NOTSTARTED;
+    const fileMissing =
+      dl.deleted ||
+      (dl.succeeded && dl.target?.exists === false);
+
     return this._renderItem({
       key: `${this.#downloadTime(dl)}|${dl.source.url}`,
       iconSrc: iconPath,
+      iconTemplate: isActive ? this.#renderDownloadProgress(dl) : null,
       label: nameStr,
       sublabel: sublabelParts.join(" · "),
       payload: dl,
+      fileMissing,
     });
+  }
+
+  /**
+   * SVG progress ring that replaces the file icon while a download is in
+   * flight. The ring fills clockwise to match `currentBytes / totalBytes`;
+   * downloads of unknown size spin instead. Hovering swaps the ring for an
+   * X — clicking it cancels and drops any partial data.
+   *
+   * @param {object} dl
+   */
+  #renderDownloadProgress(dl) {
+    const RADIUS = 8;
+    const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+    const hasProgress = dl.hasProgress && dl.totalBytes > 0;
+    const ratio = hasProgress
+      ? Math.max(0, Math.min(1, dl.currentBytes / dl.totalBytes))
+      : 0;
+    const dashOffset = CIRCUMFERENCE * (1 - ratio);
+
+    return html`
+      <button
+        class="library-download-progress"
+        data-progress=${hasProgress ? "determinate" : "indeterminate"}
+        title="Cancel download"
+        @click=${e => {
+          e.stopPropagation();
+          e.preventDefault();
+          dl.cancel().catch(() => {});
+          dl.removePartialData().catch(console.error);
+        }}
+        @auxclick=${e => e.stopPropagation()}
+      >
+        <svg
+          class="library-download-progress-ring"
+          viewBox="0 0 18 18"
+          width="20"
+          height="20"
+        >
+          <circle class="track" cx="9" cy="9" r=${RADIUS}></circle>
+          <circle
+            class="arc"
+            cx="9"
+            cy="9"
+            r=${RADIUS}
+            stroke-dasharray=${CIRCUMFERENCE}
+            stroke-dashoffset=${dashOffset}
+          ></circle>
+        </svg>
+        <img
+          class="library-download-progress-cancel"
+          src="chrome://browser/skin/zen-icons/close.svg"
+          alt=""
+        />
+      </button>
+    `;
   }
 
   #sourceDomain(dl) {
@@ -1236,7 +1315,6 @@ class ZenLibraryDownloadsSection extends ProgressiveSearchSection {
         dl.source.referrerInfo?.originalReferrer?.spec || dl.source.url;
       if (previewUrl) {
         this._openInGlance(event, previewUrl);
-        this._closeLibrary();
       }
       return;
     }
@@ -1258,56 +1336,84 @@ class ZenLibraryDownloadsSection extends ProgressiveSearchSection {
     }
   }
 
+  /**
+   * Mirrors Firefox's `downloadsContextMenu` so the labels stay in sync with
+   * the rest of the browser. Built dynamically because the relevant entries
+   * change per state (pause/resume, show, delete, etc.).
+   */
   _buildContextMenu(dl) {
     if (!dl) {
       return null;
     }
-    const state = lazy.DownloadsCommon.stateOfDownload(dl);
-    const isFinished = state === lazy.DownloadsCommon.DOWNLOAD_FINISHED;
+    const C = lazy.DownloadsCommon;
+    const state = C.stateOfDownload(dl);
+    const isFinished = state === C.DOWNLOAD_FINISHED;
+    const isActive =
+      state === C.DOWNLOAD_DOWNLOADING || state === C.DOWNLOAD_PAUSED;
     const fileExists = isFinished && dl.target.exists !== false && !dl.deleted;
     const sourceUrl = dl.source.originalUrl || dl.source.url;
 
     const items = [];
+
+    if (state === C.DOWNLOAD_DOWNLOADING) {
+      items.push({
+        l10nId: "downloads-cmd-pause",
+        onClick: () => dl.cancel().catch(() => {}),
+      });
+    } else if (state === C.DOWNLOAD_PAUSED) {
+      items.push({
+        l10nId: "downloads-cmd-resume",
+        onClick: () => dl.start?.().catch(() => {}),
+      });
+    }
+
     if (fileExists) {
       items.push({
-        l10nId: "library-item-context-open",
-        onClick: () => {
-          lazy.DownloadsCommon.openDownload(dl).catch(console.error);
-        },
-      });
-      items.push({
-        l10nId: "library-item-context-show-in-folder",
+        l10nId: "downloads-cmd-show-menuitem-2",
         onClick: () => {
           try {
             const file = new lazy.FileUtils.File(dl.target.path);
-            lazy.DownloadsCommon.showDownloadedFile(file);
+            C.showDownloadedFile(file);
           } catch (ex) {
             console.error(ex);
           }
         },
       });
-      items.push({ separator: true });
     }
+
     if (sourceUrl) {
       items.push({
-        l10nId: "library-item-context-open-source",
+        l10nId: "downloads-cmd-go-to-download-page",
         onClick: () => {
           window.openTrustedLinkIn(sourceUrl, "tab");
           this._closeLibrary();
         },
       });
       items.push({
-        l10nId: "library-item-context-copy-url",
+        l10nId: "downloads-cmd-copy-download-link",
         onClick: () => lazy.clipboardHelper.copyString(sourceUrl),
       });
-      items.push({ separator: true });
     }
-    items.push({
-      l10nId: "library-item-context-remove",
-      onClick: () => {
-        lazy.DownloadsCommon.deleteDownload(dl).catch(console.error);
-      },
-    });
+
+    items.push({ separator: true });
+
+    if (fileExists) {
+      items.push({
+        l10nId: "downloads-cmd-delete-file",
+        onClick: () => {
+          C.deleteDownloadFiles(
+            dl,
+            lazy.DownloadsViewUI.clearHistoryOnDelete
+          ).catch(console.error);
+        },
+      });
+    }
+    if (!isActive) {
+      items.push({
+        l10nId: "downloads-cmd-remove-from-history",
+        onClick: () => C.deleteDownload(dl).catch(console.error),
+      });
+    }
     return items;
   }
 
@@ -1454,6 +1560,216 @@ class ZenLibraryDownloadsSection extends ProgressiveSearchSection {
   }
 }
 
+/**
+ * Boosts section: lists every saved boost across all domains. Each row shows
+ * the boost's name + domain, a hover-revealed export button, and a toggle
+ * pill that reflects (and flips) the domain's active-boost state.
+ */
+class ZenLibraryBoostsSection extends SearchSection {
+  static id = "boosts";
+  static label = "library-boosts-section-title";
+
+  #observer = null;
+
+  get _searchPlaceholder() {
+    return "library-boosts-search-placeholder";
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.#observer = () => this.requestUpdate();
+    Services.obs.addObserver(this.#observer, "zen-boosts-update");
+    Services.obs.addObserver(this.#observer, "zen-boosts-active-change");
+  }
+
+  disconnectedCallback() {
+    if (this.#observer) {
+      Services.obs.removeObserver(this.#observer, "zen-boosts-update");
+      Services.obs.removeObserver(this.#observer, "zen-boosts-active-change");
+      this.#observer = null;
+    }
+    super.disconnectedCallback();
+  }
+
+  _onSearch(_term) {
+    this.requestUpdate();
+  }
+
+  /** Flat list of every boost across all domains, filtered by search term. */
+  #getBoosts() {
+    const manager = lazy.gZenBoostsManager;
+    if (!manager?.registeredDomains) {
+      return [];
+    }
+    const term = this.searchTerm?.trim().toLowerCase();
+    const items = [];
+    for (const [domain, entry] of manager.registeredDomains) {
+      for (const [id, boostEntry] of entry.boostEntries) {
+        const displayName = boostEntry.boostData?.boostName || "";
+        if (
+          term &&
+          !displayName.toLowerCase().includes(term) &&
+          !domain.toLowerCase().includes(term)
+        ) {
+          continue;
+        }
+        items.push({
+          id,
+          domain,
+          name: displayName,
+          isActive: entry.activeBoostId === id,
+        });
+      }
+    }
+    items.sort((a, b) =>
+      (a.name || a.domain).localeCompare(b.name || b.domain)
+    );
+    return items;
+  }
+
+  renderSearchResults() {
+    const boosts = this.#getBoosts();
+    if (boosts.length === 0) {
+      return html`
+        <div
+          class="empty-state"
+          data-l10n-id=${this.searchTerm ? "library-search-no-results" : "library-boosts-empty"}
+        ></div>
+      `;
+    }
+    return html`${boosts.map(b => this.#renderBoost(b))}`;
+  }
+
+  #renderBoost(boost) {
+    return html`
+      <div
+        class="library-item library-boost-item"
+        data-key=${`${boost.domain}|${boost.id}`}
+        ?active=${boost.isActive}
+        @click=${e => this.#openBoost(e, boost)}
+        @contextmenu=${e => this._onItemContextMenu(e, boost)}
+      >
+        <div class="library-item-stack">
+          <div class="library-item-background"></div>
+          <div class="library-item-content">
+            <div class="library-boost-icon" ?inactive=${!boost.isActive}>
+              <img
+                class="library-boost-icon-image"
+                src="page-icon:https://${boost.domain}/"
+                alt=""
+                role="presentation"
+              />
+            </div>
+            <div class="library-item-label-container">
+              <label class="library-item-label"
+                >${boost.name || boost.domain}</label
+              >
+              <label class="library-item-sublabel">${boost.domain}</label>
+            </div>
+            <button
+              class="library-boost-toggle"
+              data-l10n-id="library-boost-toggle"
+              role="switch"
+              aria-checked=${boost.isActive ? "true" : "false"}
+              ?checked=${boost.isActive}
+              tabindex="-1"
+              @click=${e => {
+                e.stopPropagation();
+                e.preventDefault();
+                this.#toggle(boost);
+              }}
+              @auxclick=${e => e.stopPropagation()}
+            >
+              <span class="library-boost-toggle-thumb"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Open the boost's domain in a Glance overlay and pop the boost editor
+   * window next to it so the user can tweak the boost while previewing.
+   *
+   * @param {Event} event
+   * @param {object} boost
+   */
+  #openBoost(event, boost) {
+    const url = `https://${boost.domain}/`;
+    this._openInGlance(event, url);
+    try {
+      const stored = lazy.gZenBoostsManager.loadBoostFromStore(
+        boost.domain,
+        boost.id
+      );
+      if (stored) {
+        const uri = Services.io.newURI(url);
+        lazy.gZenBoostsManager.openBoostWindow(window, stored, uri);
+      }
+    } catch (ex) {
+      console.error(ex);
+    }
+  }
+
+  #toggle(boost) {
+    lazy.gZenBoostsManager.toggleBoostActiveForDomain(boost.domain, boost.id);
+  }
+
+  #export(boost) {
+    const manager = lazy.gZenBoostsManager;
+    const stored = manager.loadBoostFromStore(boost.domain, boost.id);
+    if (!stored) {
+      return;
+    }
+    manager.exportBoost(window, {
+      domain: boost.domain,
+      id: boost.id,
+      boostEntry: stored.boostEntry,
+    });
+  }
+
+  _buildContextMenu(boost) {
+    if (!boost) {
+      return null;
+    }
+    return [
+      {
+        l10nId: "library-boost-context-edit",
+        onClick: () => {
+          const stored = lazy.gZenBoostsManager.loadBoostFromStore(
+            boost.domain,
+            boost.id
+          );
+          if (!stored) {
+            return;
+          }
+          try {
+            const uri = Services.io.newURI(`https://${boost.domain}/`);
+            lazy.gZenBoostsManager.openBoostWindow(window, stored, uri);
+          } catch (ex) {
+            console.error(ex);
+          }
+        },
+      },
+      {
+        l10nId: "library-boost-context-export",
+        onClick: () => this.#export(boost),
+      },
+      { separator: true },
+      {
+        l10nId: "library-boost-context-delete",
+        onClick: () => {
+          lazy.gZenBoostsManager.deleteBoost({
+            domain: boost.domain,
+            id: boost.id,
+          });
+        },
+      },
+    ];
+  }
+}
+
 /** Spaces section: Borgir man will do it :) */
 class ZenLibrarySpacesSection extends LibrarySection {
   static largeContent = true;
@@ -1464,6 +1780,7 @@ class ZenLibrarySpacesSection extends LibrarySection {
 export const ZenLibrarySections = {
   history: ZenLibraryHistorySection,
   downloads: ZenLibraryDownloadsSection,
+  boosts: ZenLibraryBoostsSection,
   spaces: ZenLibrarySpacesSection,
 };
 

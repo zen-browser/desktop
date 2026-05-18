@@ -13,10 +13,6 @@ body,
   /* see issue #426 */
   background: var(--zen-navigator-toolbox-background, transparent) !important;
   --inactive-titlebar-opacity: 0.8;
-
-  &[zen-library-open="true"] {
-    display: none;
-  }
 }
 
 #nav-bar,

@@ -5,6 +5,7 @@
 library-spaces-section-title = Spaces
 library-downloads-section-title = Downloads
 library-history-section-title = History
+library-boosts-section-title = Boosts
 
 library-search-placeholder =
   .placeholder = Search…
@@ -19,7 +20,20 @@ library-history-yesterday = Yesterday
 library-history-empty = No history found
 library-downloads-empty = No downloads found
 library-spaces-empty = No spaces available
+library-boosts-empty = No boosts yet
 library-search-no-results = No results
+
+library-boosts-search-placeholder =
+  .placeholder = Search Boosts…
+
+library-boost-toggle =
+  .tooltiptext = Toggle boost for this site
+library-boost-context-edit =
+  .label = Edit Boost
+library-boost-context-export =
+  .label = Export Boost
+library-boost-context-delete =
+  .label = Delete Boost
 
 library-filter-button = Filter
 
@@ -57,12 +71,12 @@ library-item-context-copy-url =
   .label = Copy URL
 library-item-context-delete-history =
   .label = Forget About This Page
-library-item-context-show-in-folder =
-  .label = Show in Folder
 library-item-context-open-source =
   .label = Open Source URL
 library-item-context-remove =
   .label = Remove from History
+library-item-context-delete-file =
+  .label = Delete File
 
 library-history-action-remove =
   .tooltiptext = Forget About This Page

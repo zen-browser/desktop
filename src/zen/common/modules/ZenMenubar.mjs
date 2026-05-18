@@ -122,14 +122,6 @@ export class nsZenMenuBar {
     PanelMultiView.getViewNode(document, "appMenu-new-window-button2").after(
       openUnsyncedWindowItem
     );
-    document.getElementById("menu_newNavigator").after(
-      window.MozXULElement.parseXULToFragment(`
-        <menuitem id="menu_new_zen_unsynced_window"
-                class="subviewbutton"
-                data-l10n-id="zen-menubar-new-blank-window"
-                key="zen-new-unsynced-window"
-                command="cmd_zenNewNavigatorUnsynced"/>`)
-    );
   }
 
   #hideWindowRestoreMenus() {

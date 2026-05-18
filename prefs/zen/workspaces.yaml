@@ -12,7 +12,7 @@
   value: false
 
 - name: zen.workspaces.open-new-tab-if-last-unpinned-tab-is-closed
-  value: false
+  value: true
 
 - name: zen.workspaces.swipe-actions
   value: true

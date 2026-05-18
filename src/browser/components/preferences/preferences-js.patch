@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/preferences.js b/browser/components/preferences/preferences.js
-index 2d6cba7fac0c7de6d7c4a819f2c7ad20ce10bb33..15434dac6b501cf6f7a6968c6363c59288043c3e 100644
+index 9d13733318e7a147adee1e44f96570c94f4948df..fb625d8da021dc0cebd7a14ca47446a0632e8e7a 100644
 --- a/browser/components/preferences/preferences.js
 +++ b/browser/components/preferences/preferences.js
 @@ -121,6 +121,7 @@ ChromeUtils.defineLazyGetter(this, "gSubDialog", function () {
@@ -10,7 +10,7 @@ index 2d6cba7fac0c7de6d7c4a819f2c7ad20ce10bb33..15434dac6b501cf6f7a6968c6363c592
        ],
        resizeCallback: async ({ title, frame }) => {
          // Search within main document and highlight matched keyword.
-@@ -324,6 +325,10 @@ function init_all() {
+@@ -398,6 +399,10 @@ function init_all() {
    register_module("paneSearch", gSearchPane);
    register_module("panePrivacy", gPrivacyPane);
    register_module("paneContainers", gContainersPane);
@@ -19,5 +19,5 @@ index 2d6cba7fac0c7de6d7c4a819f2c7ad20ce10bb33..15434dac6b501cf6f7a6968c6363c592
 +  register_module("paneZenCKS", gZenCKSSettings);
 +  register_module("paneZenMarketplace", gZenMarketplaceManager);
  
-   let redesignEnabled = Services.prefs.getBoolPref(
-     "browser.settings-redesign.enabled"
+   if (ExperimentAPI.labsEnabled) {
+     // Set hidden based on previous load's hidden value or if Nimbus is

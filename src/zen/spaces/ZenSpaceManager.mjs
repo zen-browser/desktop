@@ -811,12 +811,13 @@ class nsZenWorkspaces {
       delete this._tabToSelect;
       delete this._tabToRemoveForEmpty;
       delete this._shouldOverrideTabs;
+      delete this._initialTab;
       resolveSelectPromise();
     };
 
     let removedEmptyTab = false;
     let initialTabWasEmpty = false;
-    if (this._shouldOverrideTabs) {
+    if (this._initialTab || this._shouldOverrideTabs) {
       let initialTab = this._initialTab || gBrowser.selectedTab;
       initialTabWasEmpty = !!initialTab._veryPossiblyEmpty;
       gBrowser.selectedTab = initialTab;
@@ -874,15 +875,6 @@ class nsZenWorkspaces {
     }
 
     await selectPromise;
-    if (this._initialTab) {
-      this.selectEmptyTab();
-      this._removedByStartupPage = true;
-      gBrowser.removeTab(this._initialTab, {
-        skipSessionStore: true,
-      });
-      delete this._initialTab;
-    }
-
     const openOnStartup = Services.prefs.getBoolPref(
       "zen.urlbar.open-on-startup",
       true

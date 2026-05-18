@@ -357,7 +357,7 @@
     async setDefaultEngine(engine) {
       await lazy.SearchService.setDefault(
         engine.originalEngine,
-        Ci.nsISearchService.CHANGE_REASON_USER
+        lazy.SearchService.CHANGE_REASON.USER
       );
     }
   }

@@ -302,17 +302,6 @@ body {
   }
 }
 
-#zen-boost-size {
-  list-style-type: none;
-
-  & #zen-boost-size-value {
-    text-align: right;
-    right: 8px;
-    margin: auto;
-    position: relative;
-  }
-}
-
 .zen-boost-panel-disabled {
   filter: grayscale(1);
 }
@@ -348,16 +337,17 @@ body {
   }
 }
 
-#zen-boost-text-case-toggle[case-mode="none"] {
-  opacity: 0.5;
-  &:hover {
-    opacity: 0.6 !important;
-  }
-}
-
-#zen-boost-text-case-toggle:not([case-mode="none"]) {
+#zen-boost-case:not([case-mode="none"]) {
   background-color: #ebebed;
   font-weight: 600 !important;
+}
+
+#zen-boost-case[case-mode="uppercase"] {
+  text-transform: uppercase;
+}
+
+#zen-boost-case[case-mode="lowercase"] {
+  text-transform: lowercase;
 }
 
 #zen-boost-code-top-bar .mod-button {
@@ -434,6 +424,11 @@ body {
   }
 }
 
+.footer {
+  background-color: #F6F6F8;
+  padding: 20px;
+}
+
 #zen-boost-toolbar-wrapper,
 #zen-boost-toolbar-wrapper-colors {
   width: 100%;
@@ -450,11 +445,18 @@ body {
   & .med {
     margin: 0;
     flex: 1 1 50%;
+
+    & p {
+      text-align: center;
+      width: 100%;
+      text-indent: initial;
+      margin: auto;
+    }
   }
 }
 
 #zen-boost-font-select {
-  width: 95px;
+  width: 120px;
   height: 20px !important;
 
   transition: 0.2s opacity ease-in-out;
@@ -693,30 +695,39 @@ body {
     border-radius: 100%;
   }
 
+  & .zen-boost-color-picker-arc-svg {
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
   & .zen-boost-color-picker-dot {
     box-shadow: 0 2px 4px #00000022;
     position: absolute;
-    z-index: 4;
+    z-index: 5;
     width: 24px;
     height: 24px;
     border-radius: 50%;
     background: var(--zen-theme-picker-dot-color);
+
+    /* Move away until initialized */
+    left: -100px;
+    top: -100px;
+
     @media (-prefers-color-scheme: dark) {
       box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
     }
     cursor: pointer;
     border: 3px solid #ffffff;
     transform: translate(-50%, -50%);
-    pointer-events: none;
     transform-origin: top left;
+    pointer-events: all;
 
     &:first-of-type {
       width: 32px;
       height: 32px;
       border-width: 3px;
-      pointer-events: all;
       transition: transform 0.2s;
-      z-index: 999;
+      z-index: 4;
       &:hover {
         transform: scale(1.05) translate(-50%, -50%);
       }
@@ -729,11 +740,10 @@ body {
 }
 
 #zen-boost-editor-root:hover {
-  & .zen-boost-color-picker-circle {
+  & .zen-boost-color-picker-circle, .zen-boost-color-picker-arc-svg {
     opacity: 0.4;
   }
 }
-
 
 .zen-boost-font-button-active {
   background-color: #5454572f !important;

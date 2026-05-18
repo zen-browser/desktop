@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/content/UrlbarInput.mjs b/browser/components/urlbar/content/UrlbarInput.mjs
-index b23244f9d3278918b016bb3fcab19687bc2e292a..118c7fbc7147c84286692fd7188c870e89be05cb 100644
+index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e6463b45191 100644
 --- a/browser/components/urlbar/content/UrlbarInput.mjs
 +++ b/browser/components/urlbar/content/UrlbarInput.mjs
-@@ -90,6 +90,13 @@ const lazy = XPCOMUtils.declareLazy({
+@@ -98,6 +98,13 @@ const lazy = XPCOMUtils.declareLazy({
    logger: () => lazy.UrlbarUtils.getLogger({ prefix: "Input" }),
  });
  
@@ -16,7 +16,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..118c7fbc7147c84286692fd7188c870e
  const UNLIMITED_MAX_RESULTS = 99;
  
  let getBoundsWithoutFlushing = element =>
-@@ -708,7 +715,16 @@ export class UrlbarInput extends HTMLElement {
+@@ -743,7 +750,16 @@ ${
      // See _on_select().  HTMLInputElement.select() dispatches a "select"
      // event but does not set the primary selection.
      this._suppressPrimaryAdjustment = true;
@@ -33,7 +33,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..118c7fbc7147c84286692fd7188c870e
      this._suppressPrimaryAdjustment = false;
    }
  
-@@ -782,6 +798,10 @@ export class UrlbarInput extends HTMLElement {
+@@ -817,6 +833,10 @@ ${
      hideSearchTerms = false,
      isSameDocument = false,
    } = {}) {
@@ -44,7 +44,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..118c7fbc7147c84286692fd7188c870e
      if (!this.#isAddressbar) {
        throw new Error(
          "Cannot set URI for UrlbarInput that is not an address bar"
-@@ -1071,8 +1091,16 @@ export class UrlbarInput extends HTMLElement {
+@@ -1106,8 +1126,16 @@ ${
          return;
        }
      }
@@ -62,7 +62,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..118c7fbc7147c84286692fd7188c870e
    }
  
    /**
-@@ -1496,7 +1524,11 @@ export class UrlbarInput extends HTMLElement {
+@@ -1551,7 +1579,11 @@ ${
      }
  
      if (!this.#providesSearchMode(result)) {
@@ -75,7 +75,7 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..118c7fbc7147c84286692fd7188c870e
      }
  
      if (isCanonized) {
-@@ -2696,6 +2728,42 @@ export class UrlbarInput extends HTMLElement {
+@@ -2858,6 +2890,42 @@ ${
      await this.#updateLayoutBreakoutDimensions();
    }
  
@@ -329,10 +329,10 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..118c7fbc7147c84286692fd7188c870e
 @@ -5094,6 +5221,10 @@ export class UrlbarInput extends HTMLElement {
  
          this.focusedViaMousedown = !this.focused;
-         this._preventClickSelectsAll = this.focused;
+         this.#preventClickSelectsAll = this.focused;
 +        if (isProbablyFloating) {
 +          this.focusedViaMousedown = !this.hasAttribute("breakout-extend");
-+          this._preventClickSelectsAll = this.hasAttribute("breakout-extend");
++          this.#preventClickSelectsAll = this.hasAttribute("breakout-extend");
 +        }
  
          // Keep the focus status, since the attribute may be changed
@@ -341,8 +341,8 @@ index b23244f9d3278918b016bb3fcab19687bc2e292a..118c7fbc7147c84286692fd7188c870e
          }
          // Don't close the view when clicking on a tab; we may want to keep the
          // view open on tab switch, and the TabSelect event arrived earlier.
--        if (event.target.closest("tab")) {
-+        if (event.target.closest("tab") || event.target.closest("#tabs-newtab-button")) {
+-        if (event.target.closest?.("tab")) {
++        if (event.target.closest?.("tab") || event.target.closest?.("#tabs-newtab-button")) {
            break;
          }
  

@@ -8,6 +8,10 @@ ac_add_options --disable-dmd
 ac_add_options --enable-eme=widevine
 
 if test "$ZEN_RELEASE"; then
+  ac_add_options --with-macos-sdk=/Library/Developer/CommandLineTools/SDKs/MacOSX26.4.sdk
+fi
+
+if test "$ZEN_RELEASE"; then
   if ! test "$ZEN_GA_DISABLE_PGO"; then
     if test "$ZEN_GA_GENERATE_PROFILE"; then
       mk_add_options "export MOZ_AUTOMATION_PACKAGE_GENERATED_SOURCES=0"

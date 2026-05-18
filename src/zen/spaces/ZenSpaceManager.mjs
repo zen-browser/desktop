@@ -1741,13 +1741,26 @@ class nsZenWorkspaces {
     const otherContainersEssentials = document.querySelectorAll(
       `#zen-essentials .zen-workspace-tabs-section`
     );
+    let nextSpaceIdx;
+    const spaceLen = workspaces.length;
+    if (offsetPixels > 0) {
+      nextSpaceIdx = (workspaceIndex - 1 + spaceLen) % spaceLen;
+    } else if (offsetPixels < 0) {
+      nextSpaceIdx = (workspaceIndex + 1) % spaceLen;
+    } else {
+      nextSpaceIdx = workspaceIndex;
+    }
     const workspaceContextId = workspace.containerTabId;
-    const nextWorkspaceContextId =
-      workspaces[workspaceIndex + (offsetPixels > 0 ? -1 : 1)]?.containerTabId;
+    const nextWorkspaceContextId = workspaces[nextSpaceIdx]?.containerTabId;
     for (const otherWorkspace of workspaces) {
       const element = this.workspaceElement(otherWorkspace.uuid);
-      const newTransform =
-        -(workspaceIndex - workspaces.indexOf(otherWorkspace)) * 100;
+      let diff = workspaces.indexOf(otherWorkspace) - workspaceIndex;
+      if (diff > Math.floor(spaceLen / 2)) {
+        diff -= spaceLen;
+      } else if (diff < -Math.floor(spaceLen / 2)) {
+        diff += spaceLen;
+      }
+      const newTransform = diff * 100;
       element.style.transform = `translateX(${newTransform + offsetPixels / 2}%)`;
     }
     // Hide other essentials with different containerTabId
@@ -1781,8 +1794,7 @@ class nsZenWorkspaces {
     }
     if (offsetPixels) {
       // Find the next workspace we are scrolling to
-      const nextWorkspace =
-        workspaces[workspaceIndex + (offsetPixels > 0 ? -1 : 1)];
+      const nextWorkspace = workspaces[nextSpaceIdx];
       if (nextWorkspace) {
         const {
           gradient: nextGradient,
@@ -1892,10 +1904,17 @@ class nsZenWorkspaces {
     this._animatingChange = true;
     const animations = [];
     const workspaces = this.getWorkspaces();
+    const spaceLen = workspaces.length;
     const newWorkspaceIndex = workspaces.findIndex(
       w => w.uuid === newWorkspace.uuid
     );
-    const isGoingLeft = newWorkspaceIndex <= previousWorkspaceIndex;
+    let diff = newWorkspaceIndex - previousWorkspaceIndex;
+    if (diff > Math.floor(spaceLen / 2)) {
+      diff -= spaceLen;
+    } else if (diff < -Math.floor(spaceLen / 2)) {
+      diff += spaceLen;
+    }
+    const isGoingLeft = diff < 0;
     const clonedEssentials = [];
     if (shouldAnimate && this.shouldAnimateEssentials && previousWorkspace) {
       for (const workspace of workspaces) {
@@ -1974,19 +1993,23 @@ class nsZenWorkspaces {
       const elementWorkspaceIndex = workspaces.findIndex(
         w => w.uuid === elementWorkspaceId
       );
-      const offset = -(newWorkspaceIndex - elementWorkspaceIndex) * 100;
+      let offset = elementWorkspaceIndex - newWorkspaceIndex;
+      if (offset > Math.floor(spaceLen / 2)) {
+        offset -= spaceLen;
+      } else if (offset < -Math.floor(spaceLen / 2)) {
+        offset += spaceLen;
+      }
+      offset = offset * 100;
       const newTransform = `translateX(${offset}%)`;
       // Only animate the workspace that is coming in, to avoid having multiple workspaces
       // animating off-screen at the same time which can cause performance issues. With an off
       // set of 1 or -1, so we animate the current workspace and the next one.
-      const goingLeft = newWorkspaceIndex < previousWorkspaceIndex;
-      const willBeVisible =
-        (goingLeft &&
-          elementWorkspaceIndex >= newWorkspaceIndex &&
-          elementWorkspaceIndex <= previousWorkspaceIndex) ||
-        (!goingLeft &&
-          elementWorkspaceIndex <= newWorkspaceIndex &&
-          elementWorkspaceIndex >= previousWorkspaceIndex);
+      const totalDistance = Math.abs(diff);
+      const distanceToElement = isGoingLeft
+        ? (previousWorkspaceIndex - elementWorkspaceIndex + spaceLen) % spaceLen
+        : (elementWorkspaceIndex - previousWorkspaceIndex + spaceLen) %
+          spaceLen;
+      const willBeVisible = distanceToElement <= totalDistance;
       if (shouldAnimate) {
         if (!willBeVisible) {
           element.style.transform = newTransform;

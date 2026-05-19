@@ -248,14 +248,9 @@ class nsZenLiveFoldersManager {
     }
 
     const metadataLabel = label || url || "REST API";
-    let displayIcon = icon || "chrome://browser/skin/zen-icons/selectable/code.svg";
-    if (displayIcon === "favicon" && url) {
-      try {
-        displayIcon = `${new URL(url).origin}/favicon.ico`;
-      } catch {
-        displayIcon = "chrome://browser/skin/zen-icons/selectable/code.svg";
-      }
-    }
+    const paramsObj =
+      params && typeof params === "object" && !Array.isArray(params) ? params : {};
+    const displayIcon = await ProviderClass.resolveFolderIcon(icon, url, paramsObj);
 
     const folder = win.gZenFolders.createFolder([], {
       label: metadataLabel,
@@ -293,7 +288,7 @@ class nsZenLiveFoldersManager {
     return folder.id;
   }
 
-  updateFolderFromRestConfig(liveFolderId, config) {
+  async updateFolderFromRestConfig(liveFolderId, config) {
     const liveFolder = this.liveFolders.get(liveFolderId);
     if (!liveFolder || liveFolder.constructor.type !== "rest") {
       return false;
@@ -318,7 +313,7 @@ class nsZenLiveFoldersManager {
 
     const folder = this.getFolderForLiveFolder(liveFolder);
     if (folder) {
-      const metadata = liveFolder.getMetadata();
+      const metadata = await liveFolder.getMetadata();
       folder.label = metadata.label;
       if (metadata.icon) {
         this.window.gZenFolders.setFolderUserIcon(folder, metadata.icon);

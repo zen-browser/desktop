@@ -248,7 +248,7 @@ export async function openRestLiveFolderDialog(win, options = {}) {
 
       let success = false;
       if (isEditMode) {
-        success = lazy.ZenLiveFoldersManager.updateFolderFromRestConfig(
+        success = await lazy.ZenLiveFoldersManager.updateFolderFromRestConfig(
           liveFolder.id,
           createConfig
         );

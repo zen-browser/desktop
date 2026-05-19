@@ -4,8 +4,14 @@
 
 import { nsZenLiveFolderProvider } from "resource:///modules/zen/ZenLiveFolder.sys.mjs";
 
+const lazy = {};
+ChromeUtils.defineESModuleGetters(lazy, {
+  PlacesUtils: "resource://gre/modules/PlacesUtils.sys.mjs",
+});
+
 const MAX_RESPONSE_SIZE = 1024 * 1024; // 1 MB per spec
 const DEFAULT_MAX_ITEMS = 100;
+const DEFAULT_ICON = "chrome://browser/skin/zen-icons/selectable/code.svg";
 
 /**
  * Resolves a dot-notation path in an object (e.g. "data.posts" -> obj.data.posts).
@@ -68,6 +74,22 @@ function buildUrl(urlTemplate, params) {
   }
 
   return url;
+}
+
+/**
+ * URI used for favicon lookup. API subdomains (e.g. api.github.com) often have no
+ * favicon; use the registrable site (github.com) instead.
+ *
+ * @param {string} pageUrl - Resolved request URL.
+ * @returns {nsIURI}
+ */
+function faviconLookupUri(pageUrl) {
+  const uri = Services.io.newURI(pageUrl);
+  if (uri.host.startsWith("api.")) {
+    const siteHost = uri.host.slice(4);
+    return Services.io.newURI(`${uri.scheme}://${siteHost}/`);
+  }
+  return uri;
 }
 
 export class nsRestAPILiveFolderProvider extends nsZenLiveFolderProvider {
@@ -152,17 +174,50 @@ export class nsRestAPILiveFolderProvider extends nsZenLiveFolderProvider {
     }
   }
 
-  getMetadata() {
-    let icon = this.state.icon || "chrome://browser/skin/zen-icons/selectable/code.svg";
-    if (icon === "favicon" && this.state.url) {
-      try {
-        const url = buildUrl(this.state.url, this.state.params);
-        const origin = new URL(url).origin;
-        icon = `${origin}/favicon.ico`;
-      } catch {
-        icon = "chrome://browser/skin/zen-icons/selectable/code.svg";
-      }
+  /**
+   * Resolves the folder icon for display. When icon is "favicon", uses Places
+   * (same as RSS) so the SVG folder icon gets a data: URI, not a remote .ico URL.
+   *
+   * @param {string} [icon] - Config icon value.
+   * @param {string} [urlTemplate] - API URL template.
+   * @param {object} [params] - URL params.
+   * @returns {Promise<string>}
+   */
+  static async resolveFolderIcon(icon, urlTemplate, params = {}) {
+    if (icon && icon !== "favicon") {
+      return icon;
     }
+    if (!urlTemplate) {
+      return DEFAULT_ICON;
+    }
+
+    let pageUrl;
+    try {
+      pageUrl = buildUrl(urlTemplate, params);
+    } catch {
+      return DEFAULT_ICON;
+    }
+
+    try {
+      const favicon = await lazy.PlacesUtils.favicons.getFaviconForPage(
+        faviconLookupUri(pageUrl)
+      );
+      if (favicon?.dataURI?.spec) {
+        return favicon.dataURI.spec;
+      }
+    } catch (error) {
+      console.error("Failed to resolve favicon for REST live folder:", error);
+    }
+
+    return DEFAULT_ICON;
+  }
+
+  async getMetadata() {
+    const icon = await nsRestAPILiveFolderProvider.resolveFolderIcon(
+      this.state.icon,
+      this.state.url,
+      this.state.params
+    );
     return {
       label: this.state.label || this.state.url || "REST API",
       icon,
@@ -172,7 +227,7 @@ export class nsRestAPILiveFolderProvider extends nsZenLiveFolderProvider {
   get options() {
     return [
       {
-        l10nId: "zen-live-folder-rest-option-edit-config",
+        label: "Edit configuration...",
         key: "editConfig",
       },
     ];

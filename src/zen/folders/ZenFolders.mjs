@@ -102,7 +102,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       .after(contextMenuItemsToolbar);
 
     const folderActionsMenu = document.getElementById("zenFolderActions");
-    folderActionsMenu.addEventListener("popupshowing", event => {
+    folderActionsMenu.addEventListener("popupshowing", async event => {
       const target = event.explicitOriginalTarget;
       let folder;
       if (gBrowser.isTabGroupLabel(target)) {
@@ -121,7 +121,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         return;
       }
       this.#lastFolderContextMenu = folder;
-      gZenLiveFoldersUI.buildContextMenu(folder);
+      await gZenLiveFoldersUI.buildContextMenu(folder);
 
       const newSubfolderItem = document.getElementById(
         "context_zenFolderNewSubfolder"

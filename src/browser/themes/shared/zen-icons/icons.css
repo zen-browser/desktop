@@ -924,7 +924,7 @@
 
   position: relative;
 
-  list-style-image: url("paintbrush.svg");
+  list-style-image: url("boost.svg");
 
   & .toolbarbutton-text {
     display: none;
@@ -937,6 +937,8 @@
   & image {
     -moz-context-properties: fill, fill-opacity;
     fill: currentColor;
+    width: 14px;
+    fill-opacity: 0.7;
   }
 }
 
@@ -1066,7 +1068,7 @@
 }
 
 #zen-boost-shuffle {
-  list-style-image: url("arrow-rotate-anticlockwise.svg");
+  list-style-image: url("dice.svg");
 }
 
 #zen-boost-css-picker {

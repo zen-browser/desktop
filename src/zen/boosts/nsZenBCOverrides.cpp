@@ -43,7 +43,7 @@ static void RefreshBoostCacheIfMatchesCurrent(BrowsingContext* aChanged) {
   if (!backend) {
     return;
   }
-  auto current = backend->GetCurrentBrowsingContext();
+  RefPtr<BrowsingContext> current = backend->GetCurrentBrowsingContext();
   if (!current || current->Top() != aChanged) {
     return;
   }

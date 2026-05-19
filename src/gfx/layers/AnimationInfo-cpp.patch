@@ -1,5 +1,5 @@
 diff --git a/gfx/layers/AnimationInfo.cpp b/gfx/layers/AnimationInfo.cpp
-index 1d330056bd7a4e89aac5e5296a3c164fb42b5c42..ef112715580b6bb7238e8f37bbe3133e187685dc 100644
+index 1d330056bd7a4e89aac5e5296a3c164fb42b5c42..38bfbcfcaf0c791ee817aafbd24b1cad67974e62 100644
 --- a/gfx/layers/AnimationInfo.cpp
 +++ b/gfx/layers/AnimationInfo.cpp
 @@ -14,6 +14,7 @@
@@ -10,12 +10,22 @@ index 1d330056bd7a4e89aac5e5296a3c164fb42b5c42..ef112715580b6bb7238e8f37bbe3133e
  #include "nsIContent.h"
  #include "nsLayoutUtils.h"
  #include "nsRefreshDriver.h"
-@@ -343,7 +344,7 @@ static void SetAnimatable(NonCustomCSSPropertyId aProperty,
+@@ -343,7 +344,17 @@ static void SetAnimatable(NonCustomCSSPropertyId aProperty,
        // resolve currentColor at this moment.
        nscolor foreground =
            aFrame->Style()->GetVisitedDependentColor(&nsStyleText::mColor);
 -      aAnimatable = aAnimationValue.GetColor(foreground);
-+      aAnimatable = zen::nsZenBoostsBackend::FilterColorFromPresContext(aAnimationValue.GetColor(foreground), aFrame->PresContext());
++      nscolor resolved = aAnimationValue.GetColor(foreground);
++      // |foreground| is already boost-resolved through
++      // StyleAbsoluteColor::ToColor, so a currentColor keyframe is already
++      // filtered; only absolute keyframe colors still need the boost applied
++      // here, exactly once, so the composited transition endpoint matches the
++      // resting/static paint and doesn't snap when the transition ends.
++      aAnimatable =
++          aAnimationValue.IsCurrentColor()
++              ? resolved
++              : zen::nsZenBoostsBackend::FilterColorFromPresContext(
++                    resolved, aFrame->PresContext());
        break;
      }
      case eCSSProperty_opacity:

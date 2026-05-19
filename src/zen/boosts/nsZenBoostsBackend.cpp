@@ -509,8 +509,7 @@ nsZenBoostsBackend::FilterColorFromPresContext(nscolor aColor,
     // - Keep the original alpha
     const AccentCacheEntry& cached =
         GetCachedAccent(accentNS, complementaryRotation);
-    aColor =
-        zenFilterColorChannel(aColor, cached.accent, cached.complementary);
+    aColor = zenFilterColorChannel(aColor, cached.accent, cached.complementary);
   }
   if (invertColors) {
     aColor = zenInvertColorChannel(aColor);

@@ -27,7 +27,8 @@ const nscolor kColors[] = {
 
 // The accent stores the contrast/strength in its alpha byte
 // (NS_GET_CONTRAST == NS_GET_A). 0 means "no tint".
-zen::nsZenAccentOklab MakeAccent(uint8_t r, uint8_t g, uint8_t b, uint8_t contrast) {
+zen::nsZenAccentOklab MakeAccent(uint8_t r, uint8_t g, uint8_t b,
+                                 uint8_t contrast) {
   return PrecomputeAccent(NS_RGBA(r, g, b, contrast));
 }
 
@@ -43,8 +44,7 @@ TEST(ZenBoostsColorFilter, PreservesAlpha)
 
   for (nscolor c : kColors) {
     const nscolor out = FilterColorChannel(c, accent, complementary);
-    EXPECT_EQ(NS_GET_A(out), NS_GET_A(c))
-        << "alpha changed for input " << c;
+    EXPECT_EQ(NS_GET_A(out), NS_GET_A(c)) << "alpha changed for input " << c;
   }
 }
 

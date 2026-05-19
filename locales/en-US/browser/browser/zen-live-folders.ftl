@@ -109,8 +109,11 @@ zen-live-folder-rest-dialog-save = Save
 zen-live-folder-rest-dialog-config = Configuration (JSON)
 zen-live-folder-rest-dialog-hint = Include: url, params (optional, for {placeholder} substitution and query string), label, icon (optional, use "favicon"), headers, mapping
 zen-live-folder-rest-dialog-create = Create
-zen-live-folder-rest-option-headers = Edit headers
-zen-live-folder-rest-option-edit-config = Edit configuration…
+zen-live-folder-rest-option-headers =
+    .label = Edit headers
+
+zen-live-folder-rest-option-edit-config =
+    .label = Edit configuration…
 zen-live-folder-rest-prompt-headers = Enter HTTP headers as JSON (e.g. {"Authorization": "Bearer token"}):
 zen-live-folder-rest-dialog-cancel = Cancel
 zen-live-folder-rest-invalid-json = Invalid mapping JSON.

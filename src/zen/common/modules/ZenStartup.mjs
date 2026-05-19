@@ -5,7 +5,6 @@
 import checkForZenUpdates, {
   createWindowUpdateAnimation,
 } from "chrome://browser/content/ZenUpdates.mjs";
-import { ZenAstraNTP } from "chrome://browser/content/zen-components/ZenAstraNTP.mjs";
 
 class ZenStartup {
   #watermarkIgnoreElements = ["zen-toast-container"];
@@ -80,11 +79,6 @@ class ZenStartup {
   }
 
   delayedStartupFinished() {
-    try {
-      ZenAstraNTP.overrideNTP();
-    } catch (e) {
-      console.error("[Astra] NTP override failed in startup:", e);
-    }
     gZenWorkspaces.promiseInitialized.then(async () => {
       await delayedStartupPromise;
       await SessionStore.promiseAllWindowsRestored;

@@ -542,7 +542,7 @@ class nsZenBoostsManager {
     if (!css || css.trim() === "") {
       if (await IOUtils.exists(savePath)) {
         await IOUtils.remove(savePath);
-      } 
+      }
       return;
     }
     await IOUtils.makeDirectory(directoryPath, { createAncestors: true });

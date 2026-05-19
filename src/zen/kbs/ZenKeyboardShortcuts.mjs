@@ -553,16 +553,15 @@ class KeyShortcut {
     };
   }
 
-  toDisplayString() {
-    let str = this.#modifiers.toDisplayString();
-
-    if (this.#key) {
-      str += this.#key.toUpperCase();
-    } else if (this.#keycode) {
+  static keyToDisplayString(key, keycode) {
+    let str = "";
+    if (key) {
+      str += key.toUpperCase();
+    } else if (keycode) {
       // Get the key from the value
-      for (let [key, value] of Object.entries(KEYCODE_MAP)) {
-        if (value == this.#keycode) {
-          const normalizedKey = key.toLowerCase();
+      for (let [k, value] of Object.entries(KEYCODE_MAP)) {
+        if (value == keycode) {
+          const normalizedKey = k.toLowerCase();
           switch (normalizedKey) {
             case "arrowleft":
               str += "←";
@@ -591,9 +590,17 @@ class KeyShortcut {
           break;
         }
       }
-    } else {
+    }
+    return str;
+  }
+
+  toDisplayString() {
+    if (!this.#key && !this.#keycode) {
       return "";
     }
+
+    let str = this.#modifiers.toDisplayString();
+    str += KeyShortcut.keyToDisplayString(this.#key, this.#keycode);
     return str;
   }
 
@@ -1540,5 +1547,23 @@ window.gZenKeyboardShortcutsManager = {
       return shortcut.toDisplayString();
     }
     return null;
+  },
+
+  getKeyDisplay(shortcut) {
+    if (shortcut == "") {
+      return "";
+    }
+
+    let key = shortcut;
+    let keycode = "";
+    for (let kc of Object.keys(KEYCODE_MAP)) {
+      if (kc == shortcut.toUpperCase()) {
+        keycode = KEYCODE_MAP[kc];
+        key = "";
+        break;
+      }
+    }
+
+    return KeyShortcut.keyToDisplayString(key, keycode);
   },
 };

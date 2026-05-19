@@ -1124,7 +1124,7 @@ var gZenCKSSettings = {
     this._hasSafed = false;
     input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`);
     input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-not-set`);
-    input.value = modifiers.toDisplayString() + shortcut;
+    input.value = modifiers.toDisplayString() + gZenKeyboardShortcutsManager.getKeyDisplay(shortcut);
     this._latestValidKey = shortcut;
   },
 };

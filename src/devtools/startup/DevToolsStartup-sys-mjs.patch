@@ -1,5 +1,5 @@
 diff --git a/devtools/startup/DevToolsStartup.sys.mjs b/devtools/startup/DevToolsStartup.sys.mjs
-index d6428524107325bc6680947f45a890991936cad4..9dd68c54b72ee17ba2cc998634b38b6155b8b388 100644
+index d604d0e00c623026928d72b1bcb1ce82e6bb6d4a..e3341c9ffc6db9b4bf360445ea031fc558e6076b 100644
 --- a/devtools/startup/DevToolsStartup.sys.mjs
 +++ b/devtools/startup/DevToolsStartup.sys.mjs
 @@ -836,6 +836,9 @@ export class DevToolsStartup {

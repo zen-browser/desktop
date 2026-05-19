@@ -1005,15 +1005,19 @@
   fill-opacity: 0.65;
 }
 
-#zen-boost-text-case-toggle {
+#zen-boost-case[case-mode="none"] {
+  list-style-image: none;
+}
+
+#zen-boost-case[case-mode="capitalize"] {
   list-style-image: url("text-title-case.svg");
 }
 
-#zen-boost-text-case-toggle[case-mode="uppercase"] {
+#zen-boost-case[case-mode="uppercase"] {
   list-style-image: url("text-uppercase.svg");
 }
 
-#zen-boost-text-case-toggle[case-mode="lowercase"] {
+#zen-boost-case[case-mode="lowercase"] {
   list-style-image: url("text-lowercase.svg");
 }
 

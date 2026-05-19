@@ -107,6 +107,11 @@ body,
   }
 }
 
+:root[swipe-gesture] #tabbrowser-arrowscrollbox {
+  /* See gh-13703 for rationale. */
+  pointer-events: none;
+}
+
 #zen-browser-background {
   /* This is conceptually a background, but putting this on a pseudo-element
     * avoids it from suppressing the chrome-content separator border, etc.

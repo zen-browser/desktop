@@ -17,9 +17,8 @@
 }
 
 .urlbar {
-  --urlbarView-separator-color: light-dark(hsl(0, 0%, 80%), hsl(0, 0%, 20%));
-  --urlbarView-hover-background: var(--toolbarbutton-hover-background);
-  --urlbarView-highlight-background: var(--toolbarbutton-hover-background);
+  --urlbarview-separator-color: light-dark(hsl(0, 0%, 80%), hsl(0, 0%, 20%));
+  --urlbarview-background-color-hover: var(--toolbarbutton-hover-background);
   border-radius: calc(var(--toolbarbutton-border-radius) - 2px);
   height: var(--urlbar-height);
   --urlbarView-results-padding: 10px !important;
@@ -55,7 +54,7 @@
 /* Consolidated focus visuals */
 #searchbar:focus-within {
   border-color: transparent !important;
-  background: var(--urlbar-box-bgcolor);
+  background: var(--urlbar-box-background-color);
 }
 
 .urlbar-background {
@@ -120,6 +119,9 @@
 
 #urlbar .urlbar-input {
   border-radius: 0 !important;
+}
+
+#urlbar:not([breakout-extend="true"]) .urlbar-input {
   color: color-mix(in srgb, var(--input-color, FieldText) 70%, transparent);
 }
 
@@ -682,7 +684,7 @@
 }
 
 #urlbar-results {
-  max-height: 260px;
+  max-height: 252px;
   overflow-y: auto;
   scrollbar-width: none;
   margin-block-start: calc(var(--urlbarView-results-padding) - 2px);

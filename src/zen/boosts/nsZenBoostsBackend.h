@@ -6,6 +6,7 @@
 #define mozilla_ZenBoostsBackend_h_
 
 #include "nsColor.h"
+#include "nsISupportsImpl.h"
 #include "nsPresContext.h"
 
 #include "mozilla/RefPtr.h"
@@ -22,10 +23,11 @@ struct nsZenAccentOklab {
   float contrastFactor;
 };
 
-class nsZenBoostsBackend final {
+class nsZenBoostsBackend final : public nsISupports {
  public:
+  NS_DECL_ISUPPORTS
+
   explicit nsZenBoostsBackend() = default;
-  ~nsZenBoostsBackend() = default;
 
   /**
    * Indicates whether the current frame being rendered is for anonymous
@@ -83,15 +85,25 @@ class nsZenBoostsBackend final {
    * resolve.
    */
   ZenBoostData mCachedCurrentAccent = 0;
+  // Hue rotation in degrees applied to the base accent to derive the
+  // complementary accent. Zero means the complementary accent equals the base
+  // accent (the duotone collapses to a single-accent tint).
+  float mCachedCurrentComplementaryRotation = 0.0f;
   bool mCachedCurrentInverted = false;
 
  private:
+  ~nsZenBoostsBackend() = default;
+
   /**
    * The presshell of the current document being rendered.
    */
   RefPtr<mozilla::dom::BrowsingContext> mCurrentBrowsingContext;
 
   static nsZenAccentOklab mCachedAccent;
+  // Base accent with its Oklab hue rotated by mCachedComplementaryRotationDeg,
+  // recomputed only when the base accent or rotation changes.
+  static nsZenAccentOklab mCachedComplementary;
+  static float mCachedComplementaryRotationDeg;
 
  public:
   /**

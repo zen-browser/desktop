@@ -224,7 +224,7 @@ zen-folder[collapsed] > .tab-group-container {
 
 /* Tabs popup */
 #zen-folder-tabs-popup {
-  --arrowpanel-padding: 0;
+  --panel-padding: 0;
   width: 250px;
 
   & #zen-folder-tabs-search-no-results {

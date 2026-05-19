@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/content/enUS-searchFeatures.ftl b/browser/components/urlbar/content/enUS-searchFeatures.ftl
-index a1fb86058d1f6f015160163f75999b4a429bf1fd..83098291e21a8239513a4105a4604394a1dfabc0 100644
+index e405f0f8844eea7081e4302cc35ccd8d8124aa90..90baec46971c6bd3ec738a338834af0351872d14 100644
 --- a/browser/components/urlbar/content/enUS-searchFeatures.ftl
 +++ b/browser/components/urlbar/content/enUS-searchFeatures.ftl
 @@ -2,6 +2,9 @@

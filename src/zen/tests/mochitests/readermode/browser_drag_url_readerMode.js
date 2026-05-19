@@ -48,7 +48,7 @@ add_task(async function test_readerModeURLDrag() {
       // assistive technology and keyboards, therefore this test can be excluded
       // from the accessibility tests.
       AccessibilityUtils.setEnv({ mustHaveAccessibleRule: false });
-      urlBarContainer.click();
+      EventUtils.synthesizeMouseAtCenter(urlBarContainer, {});
       AccessibilityUtils.resetEnv();
       urlbar.dispatchEvent(urlEvent);
 

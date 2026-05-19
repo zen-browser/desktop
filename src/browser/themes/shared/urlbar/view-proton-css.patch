@@ -1,0 +1,21 @@
+diff --git a/browser/themes/shared/urlbar/view-proton.css b/browser/themes/shared/urlbar/view-proton.css
+index 9e041b67988f590bdbea48514937b1fa25c9785c..05507782b91858dff3e181843314af7956528ba9 100644
+--- a/browser/themes/shared/urlbar/view-proton.css
++++ b/browser/themes/shared/urlbar/view-proton.css
+@@ -14,7 +14,7 @@
+ 
+   --urlbarView-small-font-size: 0.85em;
+ 
+-  --urlbarView-results-padding: 7px;
++  --urlbarView-results-padding: 8px;
+   --urlbarView-row-gutter: var(--space-xxsmall);
+   --urlbarView-item-inline-padding: var(--urlbar-icon-padding);
+   --urlbarView-item-block-padding: 6px;
+@@ -168,7 +168,6 @@
+       min-height: 32px;
+     }
+     :root[uidensity="touch"] & {
+-      padding-block: 11px;
+     }
+   }
+ 

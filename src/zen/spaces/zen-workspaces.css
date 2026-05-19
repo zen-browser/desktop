@@ -314,6 +314,8 @@
 
 /* mark: workspace element */
 zen-workspace {
+  --toolbar-color: var(--toolbox-textcolor) !important;
+
   flex-direction: column;
   width: calc(100% + var(--zen-toolbox-padding) * 2);
   position: absolute;
@@ -346,12 +348,8 @@ zen-workspace {
       overflow-y: auto;
     }
 
-    :root[swipe-gesture] &{
-      pointer-events: none;
-
-      &::part(scrollbox) {
-        scrollbar-width: none;
-      }
+    :root[swipe-gesture] &::part(scrollbox) {
+      scrollbar-width: none;
     }
 
     &[overflowing] {

@@ -48,6 +48,8 @@
 
 namespace zen {
 
+NS_IMPL_ISUPPORTS0(nsZenBoostsBackend)
+
 namespace {
 
 /**
@@ -430,7 +432,7 @@ nscolor InvertColorChannel(nscolor aColor) {
 
 }  // namespace detail
 
-static mozilla::StaticAutoPtr<nsZenBoostsBackend> sZenBoostsBackend;
+static mozilla::StaticRefPtr<nsZenBoostsBackend> sZenBoostsBackend;
 
 auto nsZenBoostsBackend::GetInstance() -> nsZenBoostsBackend* {
   if (!XRE_IsContentProcess()) {

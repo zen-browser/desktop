@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarValueFormatter.sys.mjs b/browser/components/urlbar/UrlbarValueFormatter.sys.mjs
-index 344a9a5b969e679040a650dad311c7413f52bbbd..211918cd66b2ea9ce230c45607c4482806eb7b64 100644
+index 344a9a5b969e679040a650dad311c7413f52bbbd..24111cef5e476253f4e69c4d99f6f220bfd8cd7e 100644
 --- a/browser/components/urlbar/UrlbarValueFormatter.sys.mjs
 +++ b/browser/components/urlbar/UrlbarValueFormatter.sys.mjs
 @@ -77,7 +77,7 @@ export class UrlbarValueFormatter {
@@ -11,7 +11,7 @@ index 344a9a5b969e679040a650dad311c7413f52bbbd..211918cd66b2ea9ce230c45607c44828
      });
    }
  
-@@ -105,6 +105,22 @@ export class UrlbarValueFormatter {
+@@ -105,6 +105,18 @@ export class UrlbarValueFormatter {
    }
  
    #ensureFormattedHostVisible(urlMetaData) {
@@ -20,21 +20,17 @@ index 344a9a5b969e679040a650dad311c7413f52bbbd..211918cd66b2ea9ce230c45607c44828
 +      this.#window.gZenVerticalTabsManager?._hasSetSingleToolbar
 +      && Services.prefs.getBoolPref("zen.urlbar.show-domain-only-in-sidebar")
 +    ) {
-+      const hoverAttr = "zen-has-implicit-hover";
-+      const hasHover = this.#window.gNavToolbox.hasAttribute(hoverAttr);
-+      this.#window.gNavToolbox.removeAttribute(hoverAttr);
-+
-+      this.#inputField.scrollLeft = this.#inputField.scrollLeftMax;
-+
-+      if (hasHover) {
-+        this.#window.gNavToolbox.setAttribute(hoverAttr, true);
-+      }
++      // also compare the difference in width from this and the urlbar input, to avoid scrolling 
++      // when urlbar buttons are showing.
++      const urlbarInputWidth = this.#window.windowUtils.getBoundsWithoutFlushing(this.#window.gURLBar).width;
++      const inputFieldWidth = this.#window.windowUtils.getBoundsWithoutFlushing(this.#inputField).width;
++      this.#inputField.scrollLeft = (this.#inputField.scrollLeftMax - (urlbarInputWidth - inputFieldWidth) );
 +      return;
 +    }
      // Make sure the host is always visible. Since it is aligned on
      // the first strong directional character, we set scrollLeft
      // appropriately to ensure the domain stays visible in case of an
-@@ -371,7 +387,7 @@ export class UrlbarValueFormatter {
+@@ -371,7 +383,7 @@ export class UrlbarValueFormatter {
     * @returns {boolean}
     *   True if formatting was applied and false if not.
     */
@@ -43,7 +39,7 @@ index 344a9a5b969e679040a650dad311c7413f52bbbd..211918cd66b2ea9ce230c45607c44828
      let urlMetaData = this.#getUrlMetaData();
      if (!urlMetaData) {
        return false;
-@@ -640,6 +656,7 @@ export class UrlbarValueFormatter {
+@@ -640,6 +652,7 @@ export class UrlbarValueFormatter {
        this.#window.requestAnimationFrame(() => {
          if (instance == this.#resizeInstance) {
            this.#ensureFormattedHostVisible();

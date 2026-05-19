@@ -104,12 +104,6 @@ export class nsZenBoostEditor {
       .getElementById("zen-boost-controls")
       .addEventListener("click", event => this.openAdvancedColorOptions(event));
     this.doc
-      .getElementById("zen-boost-save")
-      .addEventListener("click", this.onSaveBoostClick.bind(this));
-    this.doc
-      .getElementById("zen-boost-load")
-      .addEventListener("click", this.onLoadBoostClick.bind(this));
-    this.doc
       .getElementById("zen-boost-name-container")
       .addEventListener("click", this.onNameTextClick.bind(this));
     this.doc
@@ -677,17 +671,17 @@ ${cssSelector} {
   }
 
   /**
-   * Resets the color picker dot to the center position (default state).
+   * Resets the color picker dot to the default position (default state).
    */
   resetDotPosition() {
-    this.setDotPos(null, null);
-  }
+    const gradient = this.doc.querySelector(".zen-boost-color-picker-gradient");
+    const rect = gradient.getBoundingClientRect();
+    const padding = 50;
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const radius = (rect.width - padding) / 2;
 
-  /**
-   * Resets the secondary color picker dot to the center position (default state).
-   */
-  resetSecondaryDotPosition() {
-    this.setSecondaryDotPos(null, null);
+    this.setDotPos(centerX + radius / 1.25, centerY);
   }
 
   /**
@@ -744,9 +738,6 @@ ${cssSelector} {
       );
 
       if (nDistance > 15) {
-        // Optional haptic feedback
-        // Services.zen.playHapticFeedback();
-
         this.lastDotSetPos = {
           x: pixelX,
           y: pixelY,
@@ -810,7 +801,8 @@ ${cssSelector} {
     // Capture normalized position of dot for restoring it correctly later
     this.currentBoostData.dotPos.x = relativeX / rect.width;
     this.currentBoostData.dotPos.y = relativeY / rect.height;
-    this.currentBoostData.secondaryDotPos ||= {};
+
+    // Make sure to update store to feature proper new secondary position
     this.currentBoostData.secondaryDotPos.x = relativeXSec / rect.width;
     this.currentBoostData.secondaryDotPos.y = relativeYSec / rect.height;
 
@@ -870,7 +862,7 @@ ${cssSelector} {
     if (!pixelX || !pixelY) {
       pixelX = centerX;
       pixelY = centerY;
-      angle = 32; // Default angle
+      angle = this.currentBoostData.secondaryDotAngleDegDelta;
     } else {
       angle = Math.atan2(pixelY - centerY, pixelX - centerX);
       pixelX =
@@ -1382,15 +1374,11 @@ ${cssSelector} {
    * Handles opening a save file dialog and exporting the boost data to a JSON file
    */
   async onSaveBoostClick() {
-    const loadButton = this.doc.getElementById("zen-boost-save");
-    loadButton.setAttribute("mode", "blue");
-
     const success = await gZenBoostsManager.exportBoost(
       this.editorWindow,
       this.currentBoostData
     );
 
-    loadButton.setAttribute("mode", "");
     if (success) {
       this.openerWindow.gZenUIManager.showToast(
         "zen-panel-ui-boosts-exported-message"
@@ -1402,12 +1390,7 @@ ${cssSelector} {
    * Handles opening a load file dialog and importing the boost data to a JSON file
    */
   async onLoadBoostClick() {
-    const loadButton = this.doc.getElementById("zen-boost-load");
-    loadButton.setAttribute("mode", "orange-red");
-
     const data = await gZenBoostsManager.importBoost(this.editorWindow);
-
-    loadButton.setAttribute("mode", "");
     if (data) {
       this.currentBoostData = data;
       this.updateAllVisuals();
@@ -1505,12 +1488,12 @@ ${cssSelector} {
 
     const gradient = this.doc.querySelector(".zen-boost-color-picker-gradient");
     const rect = gradient.getBoundingClientRect();
+    this.currentBoostData.secondaryDotAngleDegDelta = Math.random() * 360;
     this.setDotPos(
       Math.round(rect.left + Math.random() * rect.width),
       Math.round(rect.top + Math.random() * rect.height),
       true
     );
-    this.currentBoostData.secondaryDotAngleDegDelta = Math.random() * 360;
     this.currentBoostData.changeWasMade = true;
 
     this.updateCurrentBoost();
@@ -1575,17 +1558,11 @@ ${cssSelector} {
     const dotSec = this.doc.querySelector(
       "#zen-boost-color-picker-dot-secondary"
     );
+    const gradient = this.doc.querySelector(".zen-boost-color-picker-gradient");
+    const rect = gradient.getBoundingClientRect();
 
     if (!this.currentBoostData.sizeOverride) {
       this.currentBoostData.sizeOverride = 1;
-    }
-
-    if (
-      !this.currentBoostData.secondaryDotPos ||
-      !this.currentBoostData.secondaryDotPos.x ||
-      !this.currentBoostData.secondaryDotPos.y
-    ) {
-      this.resetSecondaryDotPosition();
     }
 
     if (
@@ -1594,11 +1571,6 @@ ${cssSelector} {
     ) {
       this.resetDotPosition();
     } else {
-      const gradient = this.doc.querySelector(
-        ".zen-boost-color-picker-gradient"
-      );
-      const rect = gradient.getBoundingClientRect();
-
       // Test if the stored position is a non-normalized dot position
       if (
         this.currentBoostData.dotPos.x > 1 ||
@@ -1616,13 +1588,18 @@ ${cssSelector} {
       // Convert normalized position to relative position
       const xPos = this.currentBoostData.dotPos.x * rect.width;
       const yPos = this.currentBoostData.dotPos.y * rect.height;
+
+      dot.style.left = `${xPos}px`;
+      dot.style.top = `${yPos}px`;
+    }
+
+    if (
+      this.currentBoostData.secondaryDotPos?.x != null &&
+      this.currentBoostData.secondaryDotPos?.y != null
+    ) {
       const xPosSec = this.currentBoostData.secondaryDotPos.x * rect.width;
       const yPosSec = this.currentBoostData.secondaryDotPos.y * rect.height;
 
-      dot.setAttribute("animated", "true");
-      dot.style.left = `${xPos}px`;
-      dot.style.top = `${yPos}px`;
-      dotSec.setAttribute("animated", "true");
       dotSec.style.left = `${xPosSec}px`;
       dotSec.style.top = `${yPosSec}px`;
     }

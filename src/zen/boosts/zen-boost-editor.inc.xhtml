@@ -100,10 +100,6 @@
       </button>
 
     </vbox>
-    <hbox flex="1" class="footer" id="zen-boost-toolbar-wrapper">
-        <button data-l10n-id="zen-boost-save" id="zen-boost-save" class="subviewbutton mod-button med"></button>
-        <button data-l10n-id="zen-boost-load" id="zen-boost-load" class="subviewbutton mod-button med"></button>
-    </hbox>
   </vbox>
   <vbox flex="1" id="zen-boost-code-editor-root">
     <hbox id="zen-boost-code-top-bar">
@@ -143,6 +139,9 @@
     <menuitem data-l10n-id="zen-boost-edit-shuffle" id="zen-boost-edit-shuffle" command="cmd_zenBoostShuffle" />
     <menuitem data-l10n-id="zen-boost-edit-reset" id="zen-boost-edit-reset" command="cmd_zenBoostReset" />
     <menuseparator/>
+    <menuitem data-l10n-id="zen-boost-load" id="zen-boost-load" command="cmd_zenBoostLoad" />
+    <menuitem data-l10n-id="zen-boost-save" id="zen-boost-save" command="cmd_zenBoostSave" />
+    <menuseparator/>
     <menuitem data-l10n-id="zen-boost-edit-delete" id="zen-boost-edit-delete" command="cmd_zenBoostDelete" />
   </menupopup>
 
@@ -155,6 +154,12 @@
 
     <command id="cmd_zenBoostReset"
             oncommand="window.boostEditor.resetBoost();" />
+
+    <command id="cmd_zenBoostLoad"
+      oncommand="window.boostEditor.onLoadBoostClick();" />
+
+    <command id="cmd_zenBoostSave"
+            oncommand="window.boostEditor.onSaveBoostClick();" />
 
     <command id="cmd_zenBoostDelete"
             oncommand="window.boostEditor.deleteBoost();" />

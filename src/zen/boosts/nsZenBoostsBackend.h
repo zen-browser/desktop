@@ -6,6 +6,7 @@
 #define mozilla_ZenBoostsBackend_h_
 
 #include "nsColor.h"
+#include "nsISupportsImpl.h"
 #include "nsPresContext.h"
 
 #include "mozilla/RefPtr.h"
@@ -41,10 +42,11 @@ nscolor FilterColorChannel(nscolor aOriginalColor,
 nscolor InvertColorChannel(nscolor aColor);
 }  // namespace detail
 
-class nsZenBoostsBackend final {
+class nsZenBoostsBackend final : public nsISupports {
  public:
+  NS_DECL_ISUPPORTS
+
   explicit nsZenBoostsBackend() = default;
-  ~nsZenBoostsBackend() = default;
 
   /**
    * Indicates whether the current frame being rendered is for anonymous
@@ -110,6 +112,8 @@ class nsZenBoostsBackend final {
   bool mCachedCurrentInverted = false;
 
  private:
+  ~nsZenBoostsBackend() = default;
+
   /**
    * Id of the top BrowsingContext of the current document being rendered.
    * Stored as an id rather than a strong RefPtr so the process-wide singleton

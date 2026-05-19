@@ -87,8 +87,19 @@ export class nsZenPreloadedFeature {
 window.gZenCommonActions = {
   copyCurrentURLToClipboard() {
     const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
-    const displaySpec = currentUrl.displaySpec;
+    let displaySpec = currentUrl.displaySpec;
+
+    try {
+      if (
+        Services.prefs.getBoolPref("browser.urlbar.decodeURLsOnCopy", false) &&
+        !currentUrl.schemeIs("data")
+      ) {
+        displaySpec = decodeURI(displaySpec);
+      }
+    } catch (e) {}
+
     ClipboardHelper.copyString(displaySpec);
+
     let button;
     /* eslint-disable mozilla/valid-services */
     if (Services.zen.canShare() && displaySpec.startsWith("http")) {
@@ -118,8 +129,20 @@ window.gZenCommonActions = {
   copyCurrentURLAsMarkdownToClipboard() {
     const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
     const tabTitle = gBrowser.selectedTab.label;
-    const markdownLink = `[${tabTitle}](${currentUrl.displaySpec})`;
+    let displaySpec = currentUrl.displaySpec;
+
+    try {
+      if (
+        Services.prefs.getBoolPref("browser.urlbar.decodeURLsOnCopy", false) &&
+        !currentUrl.schemeIs("data")
+      ) {
+        displaySpec = decodeURI(displaySpec);
+      }
+    } catch (e) {}
+
+    const markdownLink = `[${tabTitle}](${displaySpec})`;
     ClipboardHelper.copyString(markdownLink);
+
     gZenUIManager.showToast("zen-copy-current-url-as-markdown-confirmation", {
       timeout: 3000,
     });

@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 - name: zen.boosts.enabled
-  value: "@IS_TWILIGHT@"
+  value: true
 
 - name: zen.boosts.dissolve-on-zap
   value: true

@@ -2,12 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-[DEFAULT]
-support-files = [
-  "head.js",
+UNIFIED_SOURCES += [
+    "TestZenBoostsColorFilter.cpp",
 ]
 
-["browser_boost_selector_basic.js"]
-["browser_boost_selector_escaping.js"]
-["browser_boost_selector_invalid.js"]
-["browser_boost_selector_nthchild.js"]
+FINAL_LIBRARY = "xul-gtest"

@@ -322,13 +322,18 @@ export class ZenBoostsChild extends JSWindowActorChild {
     return p;
   }
 
+  get #hostWithoutPort() {
+    const host = this.browsingContext.topWindow?.location.host;
+    return host?.split(":")[0];
+  }
+
   /**
    * Aquires the boost data for this website
    *
    * @returns {object} Boost data for the current website
    */
   getWebsiteBoost() {
-    const domain = this.browsingContext.topWindow?.location?.host;
+    const domain = this.#hostWithoutPort;
     if (!domain) {
       return null;
     }
@@ -362,6 +367,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
         this.#loadStyleSheet(boost.styleSheet);
       }
 
+      browsingContext.fullZoom = boostData.sizeOverride;
       browsingContext.isZenBoostsInverted = boostData.smartInvert;
       if (boostData.enableColorBoost) {
         let primaryColor;
@@ -484,7 +490,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
   }
 
   addZapSelector(selector) {
-    const domain = this.browsingContext.topWindow?.location?.host;
+    const domain = this.#hostWithoutPort;
     this.sendQuery("ZenBoost:ZapSelector", {
       action: "add",
       selector,
@@ -493,7 +499,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
   }
 
   removeZapSelector(selector) {
-    const domain = this.browsingContext.topWindow?.location?.host;
+    const domain = this.#hostWithoutPort;
     this.sendQuery("ZenBoost:ZapSelector", {
       action: "remove",
       selector,

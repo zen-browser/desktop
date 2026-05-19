@@ -535,6 +535,9 @@ class nsZenBoostsManager {
    * @param {string} css - The user CSS
    */
   async #writeBoostCSS(id, css) {
+    if (!css || css.trim() === "") {
+      return;
+    }
     const fileName = `${id}.css`;
     const directoryPath = this.#cssPath;
     const savePath = PathUtils.join(directoryPath, fileName);

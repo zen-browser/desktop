@@ -357,7 +357,6 @@ class nsZenWorkspaces {
         return;
       }
     }
-    if (gBrowser.tabs.length > 0) return;
     this._emptyTab = gBrowser.addTrustedTab("about:blank", {
       inBackground: true,
       userContextId: 0,
@@ -1171,6 +1170,18 @@ class nsZenWorkspaces {
         return null;
       }
     } else if (tabsPinned.length === 1 && tabsPinned[0] === tab) {
+      // Workspace already has a hidden empty tab — let this tab close instead of
+      // selectEmptyTab(), which would re-open about:newtab in the same surface.
+      if (
+        this._emptyTab &&
+        this._emptyTab !== tab &&
+        !this._emptyTab.closing
+      ) {
+        return null;
+      }
+      if (tab.hasAttribute("zen-empty-tab")) {
+        return null;
+      }
       return this.selectEmptyTab();
     }
 

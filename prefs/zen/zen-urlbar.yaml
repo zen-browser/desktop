@@ -33,7 +33,7 @@
   value: true
 
 - name: zen.urlbar.open-on-startup
-  value: true
+  value: false
 
 # Mark: Zen suggestions controls
 

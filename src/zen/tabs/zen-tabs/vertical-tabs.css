@@ -8,6 +8,11 @@
    Initial Setup & Layout Changes for Vertical Tabs
    ========================================================================== */
 
+/* Empty placeholder tabs live in workspace strips too, not only #tabbrowser-tabs */
+.tabbrowser-tab[zen-empty-tab] {
+  display: none !important;
+}
+
 #tabbrowser-tabs,
 #TabsToolbar,
 #titlebar,

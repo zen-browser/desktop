@@ -1358,6 +1358,7 @@ window.gZenVerticalTabsManager = {
         if (!this._hasSetSingleToolbar) {
           buttonsTarget.append(this._topButtonsSeparatorElement);
         }
+        this._hasSetSingleToolbar = true;
         for (const button of elements) {
           this.appendCustomizableItem(this._topButtonsSeparatorElement, button);
         }
@@ -1381,7 +1382,6 @@ window.gZenVerticalTabsManager = {
           titlebar.parentNode.moveBefore(navBar, titlebar);
         }
         document.documentElement.setAttribute("zen-single-toolbar", true);
-        this._hasSetSingleToolbar = true;
       } else if (this._hasSetSingleToolbar) {
         this._hasSetSingleToolbar = false;
         // Do the opposite

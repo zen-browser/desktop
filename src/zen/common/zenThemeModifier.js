@@ -168,9 +168,6 @@
         document.documentElement.setAttribute("zen-no-padding", true);
       } else {
         document.documentElement.removeAttribute("zen-no-padding");
-        if (domFullscreen) {
-          window.windowUtils.flushLayoutWithoutThrottledAnimations();
-        }
       }
     },
 

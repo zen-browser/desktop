@@ -926,11 +926,7 @@ class nsZenWorkspaces {
     if (gZenUIManager.testingEnabled || !this.workspaceEnabled) {
       return;
     }
-    // note: We cant access `gZenVerticalTabsManager._canReplaceNewTab` this early
-    if (
-      isEmpty &&
-      Services.prefs.getBoolPref("zen.urlbar.replace-newtab", true)
-    ) {
+    if (isEmpty) {
       tab._markedForReplacement = true;
       this._tabToRemoveForEmpty = tab;
     } else {

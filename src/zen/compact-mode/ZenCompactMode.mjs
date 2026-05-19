@@ -724,6 +724,7 @@ window.gZenCompactModeManager = {
     } else {
       if (attr === "zen-has-hover") {
         element.removeAttribute("zen-has-implicit-hover");
+        gURLBar.updateTextOverflow();
       }
       element.removeAttribute(attr);
       // Only remove if none of the verified attributes are present

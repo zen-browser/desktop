@@ -535,13 +535,16 @@ class nsZenBoostsManager {
    * @param {string} css - The user CSS
    */
   async #writeBoostCSS(id, css) {
-    if (!css || css.trim() === "") {
-      return;
-    }
     const fileName = `${id}.css`;
     const directoryPath = this.#cssPath;
     const savePath = PathUtils.join(directoryPath, fileName);
 
+    if (!css || css.trim() === "") {
+      if (await IOUtils.exists(savePath)) {
+        await IOUtils.remove(savePath);
+      } 
+      return;
+    }
     await IOUtils.makeDirectory(directoryPath, { createAncestors: true });
     await IOUtils.writeUTF8(savePath, css);
   }

@@ -76,7 +76,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     document.getElementById("context_moveTabToGroup").before(contextMenuItems);
     const contextMenuItemsToolbar = window.MozXULElement.parseXULToFragment(
       `<menuitem id="zen-context-menu-new-folder-toolbar" data-l10n-id="zen-toolbar-context-new-folder"/>
-       <menu data-l10n-id="zen-panel-ui-live-folder-create" id="zen-panel-ui-live-folder-create">
+       <menu data-l10n-id="zen-panel-ui-live-folder-create" id="zen-toolbar-context-live-folder-create">
          <menupopup>
            <menuitem
              data-l10n-id="zen-live-folder-github-pull-requests"
@@ -90,6 +90,10 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
              data-l10n-id="zen-live-folder-type-rss"
              command="cmd_zenNewLiveFolder"
              image="chrome://browser/skin/zen-icons/selectable/logo-rss.svg"/>
+           <menuitem
+             data-l10n-id="zen-live-folder-rest-custom"
+             command="cmd_zenNewLiveFolder"
+             image="chrome://browser/skin/zen-icons/selectable/code.svg"/>
          </menupopup>
        </menu>`
     );

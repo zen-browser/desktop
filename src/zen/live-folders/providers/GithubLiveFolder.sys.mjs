@@ -10,11 +10,8 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
   constructor({ id, state, manager }) {
     super({ id, state, manager });
 
+    this.state.url = "https://github.com/issues/assigned";
     this.state.type = state.type;
-    this.state.url =
-      this.state.type === "pull-requests"
-        ? "https://github.com/pulls"
-        : "https://github.com/issues/assigned";
 
     this.state.options = state.options ?? {};
     this.state.repos = new Set(state.repos ?? []);
@@ -32,274 +29,129 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         return "zen-live-folder-github-no-filter";
       }
 
-      if (
-        this.state.type === "pull-requests" &&
-        typeof this.state.isJsonApi !== "boolean" &&
-        !Services.prefs.getBoolPref(
-          "zen.live-folders.github.skip-new-pr-ui-check",
-          false
-        )
-      ) {
-        const { text, status } = await this.fetch(this.state.url, {
-          headers: {
-            Accept: "application/json,text/html",
-          },
-        });
-        if (status === 404) {
-          return "zen-live-folder-github-no-auth";
-        }
-        try {
-          JSON.parse(text);
-          this.state.isJsonApi = true;
-        } catch {
-          this.state.isJsonApi = false;
-        }
+      const searchParams = this.#buildSearchOptions();
+      const url = `${this.state.url}?${searchParams}`;
+
+      const { text, status } = await this.fetch(url);
+
+      // Assume no auth
+      if (status === 404) {
+        return "zen-live-folder-github-no-auth";
       }
 
-      const queries = this.#buildSearchOptions();
-      const requests = await Promise.all(
-        queries.map(query => {
-          const url = new URL(this.state.url);
-          url.searchParams.set("q", query);
-
-          if (this.state.type === "pull-requests") {
-            return this.parsePullRequests(url.href);
-          }
-
-          return this.parseIssues(url.href);
-        })
+      const document = new DOMParser().parseFromString(text, "text/html");
+      const issues = document.querySelectorAll(
+        "div[class^=IssueItem-module__defaultRepoContainer]"
       );
+      const items = [];
+      const activeRepos = new Set();
 
-      const combinedItems = new Map();
-      const combinedActiveRepos = new Set();
+      if (issues.length) {
+        const authors = document.querySelectorAll("a[class^=IssueItem-module__authorCreatedLink]");
+        const titles = document.querySelectorAll("div[class^=Title-module__container]");
+        const links = document.querySelectorAll('[data-testid="issue-pr-title-link"]');
 
-      for (const { status, items, activeRepos } of requests) {
-        // Assume no auth
-        if (status === 404) {
-          return "zen-live-folder-github-no-auth";
-        }
+        for (let i = 0; i < issues.length; i++) {
+          const [rawRepo, rawNumber] = issues[i].childNodes;
+          const author = authors[i]?.textContent;
+          const title = titles[i]?.textContent;
+          const issueUrl = links[i]?.href;
 
-        if (items) {
-          for (const item of items) {
-            combinedItems.set(item.id, item);
+          const repo = rawRepo.textContent?.trim();
+          if (repo) {
+            activeRepos.add(repo);
           }
-        }
 
-        if (activeRepos) {
-          for (const repo of activeRepos) {
-            combinedActiveRepos.add(repo);
-          }
+          const numberMatch = rawNumber?.textContent?.match(/[0-9]+/);
+          const number = numberMatch?.[0] ?? "";
+
+          items.push({
+            title,
+            subtitle: author,
+            icon: "chrome://browser/content/zen-images/favicons/github.svg",
+            url: "https://github.com" + issueUrl,
+            id: `${repo}#${number}`,
+          });
         }
       }
 
-      this.state.repos = combinedActiveRepos;
-      return Array.from(combinedItems.values());
+      this.state.repos = activeRepos;
+
+      return items;
     } catch (error) {
       console.error("Error fetching or parsing GitHub issues:", error);
       return "zen-live-folder-failed-fetch";
     }
   }
 
-  async parsePullRequests(url) {
-    const { text, status } = await this.fetch(url, {
-      headers: {
-        Accept: "application/json,text/html",
-      },
-    });
-
-    if (status !== 200) {
-      return { status };
-    }
-
-    let parsedJson = null;
-    try {
-      parsedJson = JSON.parse(text);
-      this.state.isJsonApi = true;
-    } catch {
-      if (this.state.isJsonApi) {
-        this.state.isJsonApi = false;
-        // throw to indicate user to re-try (Url may contain invalid params for non-json /pulls)
-        throw new Error("Unexpected content type");
-      }
-    }
-
-    if (parsedJson) {
-      const results =
-        parsedJson.payload.pullsDashboardSurfaceContentRoute.results;
-
-      const items = [];
-      const activeRepos = new Set();
-
-      for (const pr of results) {
-        activeRepos.add(pr.repoNameWithOwner);
-        items.push({
-          id: `${pr.repoNameWithOwner}#${pr.number}`,
-          title: pr.title,
-          subtitle: pr.author.displayLogin,
-          icon: "chrome://browser/content/zen-images/favicons/github.svg",
-          url: pr.permalink,
-        });
-      }
-
-      return {
-        status,
-
-        items,
-        activeRepos,
-      };
-    }
-    const document = new DOMParser().parseFromString(text, "text/html");
-    const issues = document.querySelectorAll("div[id^=issue_]");
-
-    const items = [];
-    const activeRepos = new Set();
-
-    if (issues.length) {
-      const authors = document.querySelectorAll(".opened-by a");
-      const titles = document.querySelectorAll("a[id^=issue_]");
-
-      for (let i = 0; i < issues.length; i++) {
-        const author = authors[i].textContent;
-        const title = titles[i].textContent;
-
-        const repo = titles[i].previousElementSibling.textContent.trim();
-        if (repo) {
-          activeRepos.add(repo);
-        }
-
-        const idMatch = authors[i].parentElement.textContent
-          .match(/#[0-9]+/)
-          .shift();
-
-        items.push({
-          title,
-          subtitle: author,
-          icon: "chrome://browser/content/zen-images/favicons/github.svg",
-          url: new URL(titles[i].href, this.state.url),
-          id: `${repo}${idMatch}`,
-        });
-      }
-    }
-
-    return {
-      status,
-
-      items,
-      activeRepos,
-    };
-  }
-
-  async parseIssues(url) {
-    const { text, status } = await this.fetch(url);
-
-    if (status !== 200) {
-      return { status };
-    }
-
-    const document = new DOMParser().parseFromString(text, "text/html");
-    const issues = document.querySelectorAll(
-      "div[class^=IssueItem-module__defaultRepoContainer]"
-    );
-    const items = [];
-    const activeRepos = new Set();
-
-    if (issues.length) {
-      const authors = document.querySelectorAll(
-        "a[class^=IssueItem-module__authorCreatedLink]"
-      );
-      const titles = document.querySelectorAll(
-        "div[class^=Title-module__container]"
-      );
-      const links = document.querySelectorAll(
-        '[data-testid="issue-pr-title-link"]'
-      );
-
-      for (let i = 0; i < issues.length; i++) {
-        const [rawRepo, rawNumber] = issues[i].childNodes;
-        const author = authors[i]?.textContent;
-        const title = titles[i]?.textContent;
-        const issueUrl = links[i]?.href;
-
-        const repo = rawRepo.textContent?.trim();
-        if (repo) {
-          activeRepos.add(repo);
-        }
-
-        const numberMatch = rawNumber?.textContent?.match(/[0-9]+/);
-        const number = numberMatch?.[0] ?? "";
-
-        items.push({
-          title,
-          subtitle: author,
-          icon: "chrome://browser/content/zen-images/favicons/github.svg",
-          url: "https://github.com" + issueUrl,
-          id: `${repo}#${number}`,
-        });
-      }
-    }
-
-    return {
-      status,
-
-      items,
-      activeRepos,
-    };
-  }
-
   #buildSearchOptions() {
-    const baseQuery = [
-      this.state.type === "pull-requests" ? "is:pr" : "is:issue",
-      "is:open",
-      "sort:updated-desc",
-    ];
-
+    let searchParams = new URLSearchParams();
     const options = [
       {
-        value: "author:@me",
-        enabled: this.state.options.authorMe ?? false,
+        value: "state:open",
+        enabled: true,
       },
       {
-        value: "assignee:@me",
-        enabled: this.state.options.assignedMe ?? true,
+        value: "sort:updated-desc",
+        enabled: true,
       },
-      {
-        value: "review-requested:@me",
-        enabled: this.state.options.reviewRequested ?? false,
-      },
+      [
+        {
+          value: "is:pr",
+          enabled: this.state.type === "pull-requests",
+        },
+        {
+          value: "is:issue",
+          enabled: this.state.type === "issues",
+        },
+      ],
+      [
+        {
+          value: "author:@me",
+          enabled: this.state.options.authorMe ?? false,
+        },
+        {
+          value: "assignee:@me",
+          enabled: this.state.options.assignedMe ?? true,
+        },
+        {
+          value: "review-requested:@me",
+          enabled: this.state.options.reviewRequested ?? false,
+        },
+      ],
     ];
 
     const excluded = this.state.options.repoExcludes;
     for (const repo of excluded) {
       if (repo && repo.trim()) {
-        baseQuery.push(`-repo:${repo.trim()}`);
+        options.push({ value: `-repo:${repo.trim()}`, enabled: true });
       }
     }
 
-    const queries = [];
+    let outputString = "";
     for (const option of options) {
+      if (Array.isArray(option)) {
+        const enabledOptions = option.filter((x) => x.enabled).map((x) => x.value);
+        if (enabledOptions.length) {
+          outputString += ` (${enabledOptions.join(" OR ")}) `;
+        }
+        continue;
+      }
+
       if (option.enabled) {
-        queries.push(option.value);
+        outputString += ` ${option.value} `;
       }
     }
 
-    const searchParams = [];
-    if (this.state.type === "pull-requests" && !this.state.isJsonApi) {
-      for (const query of queries) {
-        searchParams.push(`${baseQuery.join(" ")} ${query}`);
-      }
-
-      return searchParams;
-    }
-
-    // type: issues or pull requests json api
-    return [`${baseQuery.join(" ")} (${queries.join(" OR ")})`];
+    searchParams.set("q", outputString.trim().replace(/ +(?= )/g, ""));
+    return searchParams.toString();
   }
 
   get options() {
     const excluded = this.state.options.repoExcludes;
     const repoOptions = Array.from(this.state.repos.union(excluded))
       .sort((a, b) => a.localeCompare(b))
-      .map(repo => ({
+      .map((repo) => ({
         l10nId: "zen-live-folder-github-option-repo",
         l10nArgs: { repo },
 
@@ -351,8 +203,8 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     super.onOptionTrigger(option);
 
     const key = option.getAttribute("option-key");
-    const checked = option.hasAttribute("checked");
-    if (!this.options.some(x => x.key === key)) {
+    const checked = option.getAttribute("checked") === "true";
+    if (!this.options.some((x) => x.key === key)) {
       return;
     }
 
@@ -383,9 +235,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
 
     switch (errorId) {
       case "zen-live-folder-github-no-auth": {
-        const tab = this.manager.window.gBrowser.addTrustedTab(
-          "https://github.com/login"
-        );
+        const tab = this.manager.window.gBrowser.addTrustedTab("https://github.com/login");
         this.manager.window.gBrowser.selectedTab = tab;
         break;
       }

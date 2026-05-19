@@ -4,8 +4,7 @@
 
 const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
-  ZenLiveFoldersManager:
-    "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
+  ZenLiveFoldersManager: "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
 });
 
 class nsZenLiveFoldersUI {
@@ -14,7 +13,7 @@ class nsZenLiveFoldersUI {
       .getElementById("context_zenLiveFolderOptions")
       .querySelector("menupopup");
 
-    popup.addEventListener("command", event => {
+    popup.addEventListener("command", (event) => {
       const option = event.target;
 
       const folderId = option.getAttribute("option-folder");
@@ -37,9 +36,7 @@ class nsZenLiveFoldersUI {
   }
 
   #restoreUIStateForLiveFolder(liveFolder) {
-    const folder = window.gZenWorkspaces.allTabGroups.find(
-      x => x.id === liveFolder.id
-    );
+    const folder = window.gZenWorkspaces.allTabGroups.find((x) => x.id === liveFolder.id);
     if (!folder) {
       return;
     }
@@ -50,9 +47,7 @@ class nsZenLiveFoldersUI {
     }
 
     for (const { itemId, label } of liveFolder.tabsState) {
-      const tab = folder.tabs.find(
-        t => t.getAttribute("zen-live-folder-item-id") === itemId
-      );
+      const tab = folder.tabs.find((t) => t.getAttribute("zen-live-folder-item-id") === itemId);
       if (tab && label) {
         const tabLabel = tab.querySelector(".zen-tab-sublabel");
         tab.setAttribute("zen-show-sublabel", label);
@@ -78,10 +73,8 @@ class nsZenLiveFoldersUI {
     menuItem.setAttribute("data-l10n-id", option.l10nId);
 
     if (option.checked !== undefined) {
+      menuItem.setAttribute("checked", option.checked);
       menuItem.setAttribute("type", option.type ?? "checkbox");
-      if (option.checked === true) {
-        menuItem.setAttribute("checked", "true");
-      }
     }
 
     if (option.l10nArgs) {
@@ -129,9 +122,7 @@ class nsZenLiveFoldersUI {
   }
 
   buildContextMenu(folder) {
-    const optionsElement = document.getElementById(
-      "context_zenLiveFolderOptions"
-    );
+    const optionsElement = document.getElementById("context_zenLiveFolderOptions");
 
     let hidden = true;
     if (folder.isLiveFolder) {
@@ -150,9 +141,8 @@ class nsZenLiveFoldersUI {
         intervals.push({ hours });
       }
 
-      intervals = intervals.map(entry => {
-        const ms =
-          "mins" in entry ? entry.mins * MINUTE_MS : entry.hours * HOUR_MS;
+      intervals = intervals.map((entry) => {
+        const ms = "mins" in entry ? entry.mins * MINUTE_MS : entry.hours * HOUR_MS;
 
         return {
           l10nId:
@@ -172,8 +162,7 @@ class nsZenLiveFoldersUI {
       const contextMenuItems = [
         {
           key: "lastFetched",
-          l10nId:
-            liveFolder.state.lastErrorId || "zen-live-folder-last-fetched",
+          l10nId: liveFolder.state.lastErrorId || "zen-live-folder-last-fetched",
           l10nArgs: { time: this.#timeAgo(liveFolder.state.lastFetched) },
           disabled: true,
         },
@@ -205,9 +194,7 @@ class nsZenLiveFoldersUI {
       return "-";
     }
 
-    const rtf = new Intl.RelativeTimeFormat(Services.locale.appLocaleAsBCP47, {
-      numeric: "auto",
-    });
+    const rtf = new Intl.RelativeTimeFormat(Services.locale.appLocaleAsBCP47, { numeric: "auto" });
     const secondsDiff = (date - Date.now()) / 1000;
     const absSeconds = Math.abs(secondsDiff);
 

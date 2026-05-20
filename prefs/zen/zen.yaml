@@ -65,8 +65,5 @@
 - name: zen.tabs.auto-close.skip-audible
   value: true
 
-- name: zen.tabs.auto-close.min-tabs-per-workspace
-  value: 1
-
 - name: zen.tabs.auto-close.check-interval-minutes
   value: 15

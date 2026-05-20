@@ -4,8 +4,9 @@
 
 # URL bar and search-related preferences
 
+# Astra: Trending / popular searches for keyword discovery
 - name: browser.urlbar.trending.featureGate
-  value: false
+  value: true
 
 - name: browser.urlbar.weather.featureGate
   value: false
@@ -30,7 +31,7 @@
   value: true
 
 - name: browser.search.suggest.enabled.private
-  value: false
+  value: true
 
 - name: browser.urlbar.quicksuggest.enabled
   value: false
@@ -45,7 +46,7 @@
   locked: true
 
 - name: browser.urlbar.groupLabels.enabled
-  value: false
+  value: true
 
 - name: browser.urlbar.keepPanelOpenDuringImeComposition
   value: true # IMPORTANT: Fixes closing the urlbar when on some languages
@@ -57,8 +58,14 @@
   value: true
   locked: true
 
-# Astra: Fast urlbar — fewer sources, less network, quicker dropdown
+# Astra: Rich search suggestions — multiple keyword completions (SEO-style)
+- name: browser.urlbar.showSearchSuggestionsFirst
+  value: true
+
 - name: browser.urlbar.maxRichResults
+  value: 10
+
+- name: browser.urlbar.maxHistoricalSearchSuggestions
   value: 6
 
 - name: browser.urlbar.suggest.history
@@ -74,13 +81,20 @@
   value: true
 
 - name: browser.urlbar.suggest.engines
-  value: false
+  value: true
 
 - name: browser.urlbar.suggest.trending
-  value: false
+  value: true
 
 - name: browser.urlbar.richSuggestions.tail
-  value: false
+  value: true
+
+- name: browser.urlbar.suggest.searchHistory
+  value: true
+
+# Astra: Preconnect when hovering a suggestion (faster navigation, no extra ads)
+- name: browser.urlbar.speculativeConnect.enabled
+  value: true
 
 # See https://github.com/zen-browser/desktop/issues/7248
 # We've submitted a patch to Firefox at https://bugzilla.mozilla.org/show_bug.cgi?id=2018499

@@ -160,7 +160,7 @@
 - name: media.peerconnection.ice.proxy_only_if_behind_proxy
   value: true
 - name: media.peerconnection.ice.default_address_only
-  value: false
+  value: true
 
 # Astra: Spoof timezone (anti-fingerprint)
 - name: privacy.resistFingerprinting.reduceTimerPrecision
@@ -183,9 +183,9 @@
 - name: privacy.globalprivacycontrol.functionality.enabled
   value: true
 
-# Astra: Disable HTTP3/QUIC (leaks info)
+# Astra: HTTP/3 (QUIC) — TLS 1.3, faster on modern CDNs; Chrome enables by default
 - name: network.http.http3.enable
-  value: false
+  value: true
 
 # Astra: Disable DNS prefetching
 - name: network.dns.disablePrefetch
@@ -197,6 +197,10 @@
 - name: network.prefetch-next
   value: false
 
-# Astra: Disable speculative connections
+# Astra: Limited speculative connects (Chrome uses ~6; 0 was hurting speed)
 - name: network.http.speculative-parallel-limit
-  value: 0
+  value: 4
+
+# Astra: Disable TLS 0-RTT early data (replay risk; tiny latency tradeoff)
+- name: security.tls.enable_0rtt_data
+  value: false

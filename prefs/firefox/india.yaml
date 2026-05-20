@@ -13,5 +13,6 @@
 - name: browser.search.suggest.enabled
   value: true
 
+# Astra: Search suggestions in private windows too (same keyword completions)
 - name: browser.search.suggest.enabled.private
-  value: false
+  value: true

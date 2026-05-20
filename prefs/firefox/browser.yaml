@@ -152,6 +152,22 @@
 - name: dom.disable_open_during_load
   value: true
 
+# Astra: Strip tracking params when copying/sharing links (no page-load cost)
+- name: privacy.query_stripping.enabled
+  value: true
+- name: privacy.query_stripping.strip_on_share.enabled
+  value: true
+
+# Astra: Block autoplay with sound by default (fewer drive-by annoyances)
+- name: media.autoplay.default
+  value: 5
+
+# Astra: Block downloads over HTTP; email tracker blocking (strict ETP)
+- name: dom.block_download_insecure
+  value: true
+- name: privacy.trackingprotection.emailtracking.enabled
+  value: true
+
 # Astra: AI/ML phishing protection
 - name: browser.safebrowsing.provider.google4.updateURL
   value: "https://safebrowsing.googleapis.com/v4/threatListUpdates:fetch?$ct=application/x-protobuf&key=%GOOGLE_SAFEBROWSING_API_KEY%&pver=2.2"

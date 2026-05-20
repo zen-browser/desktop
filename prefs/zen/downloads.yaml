@@ -14,17 +14,18 @@
   # 2: Right side always
   value: 0
 
+# Astra: SMART Guard — local heuristics (no network); scam/UPI protection
 - name: zen.smart.enabled
-  value: false
+  value: true
 
 - name: zen.smart.notify.enabled
-  value: false
+  value: true
 
 - name: zen.smart.downloads.enabled
-  value: false
+  value: true
 
 - name: zen.smart.screen.enabled
-  value: false
+  value: true
 
 - name: zen.smart.clipboard.enabled
-  value: false
+  value: true

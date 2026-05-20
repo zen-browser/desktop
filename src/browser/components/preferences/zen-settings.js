@@ -1235,6 +1235,21 @@ Preferences.addAll([
     type: "bool",
     default: false,
   },
+  {
+    id: "zen.tabs.auto-close.enabled",
+    type: "bool",
+    default: false,
+  },
+  {
+    id: "zen.tabs.auto-close.threshold-minutes",
+    type: "int",
+    default: 10080,
+  },
+  {
+    id: "zen.tabs.auto-close.skip-audible",
+    type: "bool",
+    default: true,
+  },
 ]);
 
 Preferences.addSetting({

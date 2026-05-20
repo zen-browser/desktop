@@ -36,7 +36,7 @@
   value: true
 
 - name: zen.haptic-feedback.enabled
-  value: true
+  value: false
 
 - name: zen.startup.smooth-scroll-in-tabs
   value: true

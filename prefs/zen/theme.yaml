@@ -62,7 +62,7 @@
   value: -1
 
 - name: zen.performance.low-bandwidth-mode.enabled
-  value: false
+  value: true
 
 - name: zen.performance.low-bandwidth-mode.block-images
   value: false

@@ -4,6 +4,12 @@
 
 # Smooth scrolling and mousewheel tuning preferences
 
+- name: general.smoothScroll
+  value: true
+
+- name: general.smoothScroll.pages
+  value: true
+
 - name: general.smoothScroll.msdPhysics.enabled
   condition: "!defined(XP_MACOSX)"
   value: true
@@ -22,7 +28,7 @@
 
 - name: general.smoothScroll.mouseWheel.durationMinMS
   condition: "!defined(XP_MACOSX)"
-  value: 80
+  value: 60
 
 - name: general.smoothScroll.msdPhysics.continuousMotionMaxDeltaMS
   condition: "!defined(XP_MACOSX)"

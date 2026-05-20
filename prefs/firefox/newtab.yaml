@@ -15,10 +15,10 @@
   value: false
 
 - name: browser.newtabpage.activity-stream.newtabWallpapers.enabled
-  value: true
+  value: false
 
 - name: browser.newtabpage.activity-stream.newtabWallpapers.v2.enabled
-  value: true
+  value: false
 
 - name: browser.translations.newSettingsUI.enable
   value: true

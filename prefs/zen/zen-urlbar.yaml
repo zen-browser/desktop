@@ -38,4 +38,4 @@
 # Mark: Zen suggestions controls
 
 - name: zen.urlbar.suggestions.quick-actions
-  value: true
+  value: false

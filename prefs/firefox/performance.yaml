@@ -7,7 +7,7 @@
   condition: "defined(XP_MACOSX)"
 
 - name: network.predictor.enable-hover-on-ssl
-  value: true
+  value: false
 
 # See https://github.com/zen-browser/desktop/issues/11599, this pref seems to
 # have disabled itself on macos for some unknown reason.
@@ -58,14 +58,24 @@
 - name: network.trr.bootstrapAddr
   value: "1.1.1.1"
 
-# Astra: Better connection handling
+# Astra: Better connection handling (fail faster on poor mobile/Wi‑Fi)
 - name: network.http.connection-retry-timeout
   value: 0
 - name: network.http.connection-timeout
-  value: 90
+  value: 45
 - name: network.http.response.timeout
-  value: 300
+  value: 120
 - name: network.http.fast-fallback-to-IPv4
+  value: true
+- name: network.http.max-persistent-connections-per-server
+  value: 8
+
+# Astra: Smoother scrolling / compositing
+- name: general.smoothScroll
+  value: true
+- name: general.smoothScroll.pages
+  value: true
+- name: layout.frame_rate.precise
   value: true
 
 # Astra: TCP Fast Open - faster connections

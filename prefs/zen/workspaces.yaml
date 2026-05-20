@@ -58,7 +58,7 @@
   value: 20
 
 - name: zen.tab-unloader.aggressiveness
-  value: balanced
+  value: conservative
 
 - name: zen.tab-unloader.high-tab-threshold
   value: 80

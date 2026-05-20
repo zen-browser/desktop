@@ -1,0 +1,17 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Astra: Defaults tuned for Indian users (locale, search region, light data use).
+
+- name: browser.search.region
+  value: IN
+
+- name: intl.accept_languages
+  value: "en-IN, en, hi-IN, hi"
+
+- name: browser.search.suggest.enabled
+  value: true
+
+- name: browser.search.suggest.enabled.private
+  value: false

@@ -173,6 +173,8 @@
   width: 100%;
   font-size: small;
   padding-right: 12px;
+  overflow: hidden;
+  box-sizing: border-box;
   -moz-window-dragging: no-drag;
 
   &::before {
@@ -248,6 +250,8 @@
     white-space: nowrap;
     font-weight: 600;
     margin: 0;
+    min-width: 0;
+    padding-inline-start: 2px;
 
     :root[zen-unsynced-window] & {
       pointer-events: none;

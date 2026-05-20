@@ -15,8 +15,7 @@ index 1b346ce2e62b6947e9f6b5f5f88ec16454847e09..301f896842a3f598b99eb3b9f617b361
      MOZ_TRY(aFile->AppendRelativeNativePath(profile));
    } else {
      nsAutoCString vendor;
-@@ -1354,8 +1358,10 @@ nsresult nsXREDirProvider::AppendFromAppData(nsIFile* aFile, bool aIsDotted) {
-     ToLowerCase(vendor);
+@@ -1354,7 +1356,8 @@ nsresult nsXREDirProvider::AppendFromAppData(nsIFile* aFile, bool aIsDotted) {
      ToLowerCase(appName);
  
 -    MOZ_TRY(aFile->AppendRelativeNativePath(aIsDotted ? ("."_ns + vendor)
@@ -27,7 +26,7 @@ index 1b346ce2e62b6947e9f6b5f5f88ec16454847e09..301f896842a3f598b99eb3b9f617b361
      MOZ_TRY(aFile->AppendRelativeNativePath(appName));
    }
  
-@@ -1523,13 +1523,8 @@ nsresult nsXREDirProvider::GetLegacyOrXDGHomePath(const char* aHomeDir,
+@@ -1523,13 +1526,8 @@ nsresult nsXREDirProvider::GetLegacyOrXDGHomePath(const char* aHomeDir,
  
      // If the build was made against a specific profile name, MOZ_APP_PROFILE=
      // then make sure we respect this and dont move to XDG directory

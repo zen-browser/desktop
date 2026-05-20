@@ -7,10 +7,13 @@ import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components
 const lazy = {};
 
 const PREF_ENABLED = "zen.tabs.auto-close.enabled";
-const PREF_THRESHOLD_MINUTES = "zen.tabs.auto-close.threshold-minutes";
+const PREF_THRESHOLD_VALUE = "zen.tabs.auto-close.threshold-value";
+const PREF_THRESHOLD_UNIT = "zen.tabs.auto-close.threshold-unit";
 const PREF_SKIP_AUDIBLE = "zen.tabs.auto-close.skip-audible";
 const PREF_MIN_PER_WORKSPACE = "zen.tabs.auto-close.min-tabs-per-workspace";
 const PREF_CHECK_INTERVAL_MIN = "zen.tabs.auto-close.check-interval-minutes";
+
+const UNIT_TO_MINUTES = { hours: 60, days: 1440 };
 
 class nsZenAutoCloseTabs extends nsZenDOMOperatedFeature {
   #timeoutId = null;
@@ -19,7 +22,8 @@ class nsZenAutoCloseTabs extends nsZenDOMOperatedFeature {
   init() {
     // eslint-disable-next-line mozilla/valid-lazy
     XPCOMUtils.defineLazyPreferenceGetter(lazy, "enabled", PREF_ENABLED, false);
-    XPCOMUtils.defineLazyPreferenceGetter(lazy, "thresholdMinutes", PREF_THRESHOLD_MINUTES, 10080);
+    XPCOMUtils.defineLazyPreferenceGetter(lazy, "thresholdValue", PREF_THRESHOLD_VALUE, 7);
+    XPCOMUtils.defineLazyPreferenceGetter(lazy, "thresholdUnit", PREF_THRESHOLD_UNIT, "days");
     XPCOMUtils.defineLazyPreferenceGetter(lazy, "skipAudible", PREF_SKIP_AUDIBLE, true);
     XPCOMUtils.defineLazyPreferenceGetter(lazy, "minPerWorkspace", PREF_MIN_PER_WORKSPACE, 1);
     XPCOMUtils.defineLazyPreferenceGetter(lazy, "checkIntervalMin", PREF_CHECK_INTERVAL_MIN, 15);
@@ -65,16 +69,17 @@ class nsZenAutoCloseTabs extends nsZenDOMOperatedFeature {
     if (tab.busy) return false;
     if (tab.hasAttribute("zen-empty-tab")) return false;
     if (tab.hasAttribute("zen-glance-tab")) return false;
-    // v1: skip any grouped tab (folders + split-view)
-    if (tab.group) return false;
-    if (lazy.skipAudible && tab.audible) return false;
+    // Skip split-view tabs (closing one half is disruptive); folder tabs are fair game.
+    if (tab.group?.hasAttribute("split-view-group")) return false;
+    if (lazy.skipAudible && tab.soundPlaying) return false;
     return true;
   }
 
   async #sweep() {
     if (!lazy.enabled || !window.gZenWorkspaces || !window.gBrowser) return;
 
-    const cutoff = Date.now() - lazy.thresholdMinutes * 60 * 1000;
+    const unitMinutes = UNIT_TO_MINUTES[lazy.thresholdUnit] ?? UNIT_TO_MINUTES.days;
+    const cutoff = Date.now() - Math.max(1, lazy.thresholdValue) * unitMinutes * 60 * 1000;
     const floor = Math.max(0, lazy.minPerWorkspace);
 
     // Group eligible tabs by workspace.

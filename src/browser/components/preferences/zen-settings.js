@@ -1241,9 +1241,14 @@ Preferences.addAll([
     default: false,
   },
   {
-    id: "zen.tabs.auto-close.threshold-minutes",
+    id: "zen.tabs.auto-close.threshold-value",
     type: "int",
-    default: 10080,
+    default: 7,
+  },
+  {
+    id: "zen.tabs.auto-close.threshold-unit",
+    type: "string",
+    default: "days",
   },
   {
     id: "zen.tabs.auto-close.skip-audible",

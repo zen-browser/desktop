@@ -61,15 +61,13 @@
 
       <hbox align="center">
             <label id="zenTabsAutoCloseThresholdLabel" data-l10n-id="zen-tabs-auto-close-threshold-label"/>
-            <menulist id="zenTabsAutoCloseThreshold" preference="zen.tabs.auto-close.threshold-minutes">
+            <html:input id="zenTabsAutoCloseThresholdValue"
+                        type="number" min="1" max="9999"
+                        preference="zen.tabs.auto-close.threshold-value"/>
+            <menulist id="zenTabsAutoCloseThresholdUnit" preference="zen.tabs.auto-close.threshold-unit">
                   <menupopup>
-                        <menuitem data-l10n-id="zen-tabs-auto-close-threshold-1h" value="60"/>
-                        <menuitem data-l10n-id="zen-tabs-auto-close-threshold-6h" value="360"/>
-                        <menuitem data-l10n-id="zen-tabs-auto-close-threshold-1d" value="1440"/>
-                        <menuitem data-l10n-id="zen-tabs-auto-close-threshold-3d" value="4320"/>
-                        <menuitem data-l10n-id="zen-tabs-auto-close-threshold-7d" value="10080"/>
-                        <menuitem data-l10n-id="zen-tabs-auto-close-threshold-14d" value="20160"/>
-                        <menuitem data-l10n-id="zen-tabs-auto-close-threshold-30d" value="43200"/>
+                        <menuitem data-l10n-id="zen-tabs-auto-close-threshold-unit-hours" value="hours"/>
+                        <menuitem data-l10n-id="zen-tabs-auto-close-threshold-unit-days" value="days"/>
                   </menupopup>
             </menulist>
       </hbox>

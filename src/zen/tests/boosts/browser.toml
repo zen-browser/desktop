@@ -8,5 +8,6 @@ support-files = [
 ]
 
 ["browser_boost_selector_basic.js"]
+["browser_boost_selector_escaping.js"]
 ["browser_boost_selector_invalid.js"]
 ["browser_boost_selector_nthchild.js"]

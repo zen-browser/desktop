@@ -57,7 +57,8 @@
     <vbox flex="1" id="zen-boost-filter-wrapper">
       <hbox class="zen-boost-color-picker-gradient zen-boost-panel-disabled">
         <button data-l10n-id="zen-boost-magic-theme" id="zen-boost-magic-theme" class="subviewbutton mod-button"></button>
-        <html:div class="zen-boost-color-picker-dot"></html:div>
+        <html:div id="zen-boost-color-picker-dot-primary" class="zen-boost-color-picker-dot"></html:div>
+        <html:div id="zen-boost-color-picker-dot-secondary" class="zen-boost-color-picker-dot"></html:div>
         <html:div class="zen-boost-color-picker-circle"></html:div>
       </hbox>
 
@@ -69,16 +70,25 @@
 
       <html:div id="zen-boost-font-wrapper">
         <vbox id="zen-boost-font-grid">
-          <!-- Font buttons will be injected here -->
+# Font buttons will be injected here
         </vbox>
         <html:div class="visible-separator"></html:div>
         <hbox flex="1" id="zen-boost-font-toolbar">
           <html:select name="font" id="zen-boost-font-select" class="mod-button">
-            <!-- Additional font options will be injected here -->
+# Additional font options will be injected here
           </html:select>
-          <button data-l10n-id="zen-boost-text-case-toggle" id="zen-boost-text-case-toggle" class="subviewbutton mod-button"></button>
         </hbox>
       </html:div>
+
+      <hbox flex="1" id="zen-boost-toolbar-wrapper">
+        <button id="zen-boost-size" class="subviewbutton mod-button big-button med">
+          <html:p data-l10n-id="zen-boost-size" id="zen-boost-size-text"></html:p>
+          <html:p id="zen-boost-size-value"></html:p>
+        </button>
+        <button id="zen-boost-case" class="subviewbutton mod-button big-button toggleable-button med">
+          <html:p data-l10n-id="zen-boost-case" id="zen-boost-case-text"></html:p>
+        </button>
+      </hbox>
 
       <button id="zen-boost-zap" class="subviewbutton mod-button big-button toggleable-button">
         <html:p data-l10n-id="zen-boost-zap" id="zen-boost-zap-text"></html:p>
@@ -89,10 +99,6 @@
         <html:p data-l10n-id="zen-boost-code" id="zen-boost-code-text"></html:p>
       </button>
 
-      <hbox flex="1" id="zen-boost-toolbar-wrapper">
-        <button data-l10n-id="zen-boost-save" id="zen-boost-save" class="subviewbutton mod-button med"></button>
-        <button data-l10n-id="zen-boost-load" id="zen-boost-load" class="subviewbutton mod-button med"></button>
-      </hbox>
     </vbox>
   </vbox>
   <vbox flex="1" id="zen-boost-code-editor-root">
@@ -133,6 +139,9 @@
     <menuitem data-l10n-id="zen-boost-edit-shuffle" id="zen-boost-edit-shuffle" command="cmd_zenBoostShuffle" />
     <menuitem data-l10n-id="zen-boost-edit-reset" id="zen-boost-edit-reset" command="cmd_zenBoostReset" />
     <menuseparator/>
+    <menuitem data-l10n-id="zen-boost-load" id="zen-boost-load" command="cmd_zenBoostLoad" />
+    <menuitem data-l10n-id="zen-boost-save" id="zen-boost-save" command="cmd_zenBoostSave" />
+    <menuseparator/>
     <menuitem data-l10n-id="zen-boost-edit-delete" id="zen-boost-edit-delete" command="cmd_zenBoostDelete" />
   </menupopup>
 
@@ -145,6 +154,12 @@
 
     <command id="cmd_zenBoostReset"
             oncommand="window.boostEditor.resetBoost();" />
+
+    <command id="cmd_zenBoostLoad"
+      oncommand="window.boostEditor.onLoadBoostClick();" />
+
+    <command id="cmd_zenBoostSave"
+            oncommand="window.boostEditor.onSaveBoostClick();" />
 
     <command id="cmd_zenBoostDelete"
             oncommand="window.boostEditor.deleteBoost();" />

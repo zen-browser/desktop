@@ -1,5 +1,5 @@
 diff --git a/testing/mochitest/browser-test.js b/testing/mochitest/browser-test.js
-index a0f777967e2b71ee7edd5cdaa26cb79744f8fbe0..f09ede2424bf4903d628ba79a7c23bf123b0e3ec 100644
+index 2377812af77563d6e80178e3da47a537aa0576e2..e9e5c4a2f3b2ebb503605595f552f35eea4f9814 100644
 --- a/testing/mochitest/browser-test.js
 +++ b/testing/mochitest/browser-test.js
 @@ -497,10 +497,10 @@ Tester.prototype = {
@@ -15,7 +15,7 @@ index a0f777967e2b71ee7edd5cdaa26cb79744f8fbe0..f09ede2424bf4903d628ba79a7c23bf1
            let lastTab = gBrowser.tabs[gBrowser.tabs.length - 1];
            if (!lastTab.closing) {
              // Report the stale tab as an error only when they're not closing.
-@@ -1244,12 +1244,6 @@ Tester.prototype = {
+@@ -1248,12 +1248,6 @@ Tester.prototype = {
      // test_end is logged, otherwise the new windows created by addTab will be
      // tracked by ShutdownLeaks as belonging to the test and cause false leak reports.
      if (window.gBrowser) {

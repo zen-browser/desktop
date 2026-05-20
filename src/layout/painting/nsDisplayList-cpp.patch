@@ -1,5 +1,5 @@
 diff --git a/layout/painting/nsDisplayList.cpp b/layout/painting/nsDisplayList.cpp
-index c045de789d924d0fd652b81f4fef37cb0bc19112..ac3d3904626132257a1ffce4a8d7bd6b8c12728e 100644
+index 4488dc2025da64fbad0e0ec998793a476de640ef..82990853e7279723666635ab8d9a929ede3f3aca 100644
 --- a/layout/painting/nsDisplayList.cpp
 +++ b/layout/painting/nsDisplayList.cpp
 @@ -81,6 +81,7 @@

@@ -118,6 +118,9 @@ class nsZenBoostsManager {
         dotPos: { x: null, y: null },
         dotDistance: 0,
 
+        secondaryDotAngleDegDelta: 55,
+        secondaryDotPos: { x: null, y: null },
+
         brightness: 0.5,
         saturation: 0.5,
         contrast: 0.75,
@@ -131,6 +134,7 @@ class nsZenBoostsManager {
         autoTheme: false,
 
         textCaseOverride: "none",
+        sizeOverride: 1,
 
         zapSelectors: [],
         customCSS: "",
@@ -535,6 +539,12 @@ class nsZenBoostsManager {
     const directoryPath = this.#cssPath;
     const savePath = PathUtils.join(directoryPath, fileName);
 
+    if (!css || css.trim() === "") {
+      if (await IOUtils.exists(savePath)) {
+        await IOUtils.remove(savePath);
+      }
+      return;
+    }
     await IOUtils.makeDirectory(directoryPath, { createAncestors: true });
     await IOUtils.writeUTF8(savePath, css);
   }

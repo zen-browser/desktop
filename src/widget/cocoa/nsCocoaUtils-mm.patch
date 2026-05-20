@@ -1,8 +1,8 @@
 diff --git a/widget/cocoa/nsCocoaUtils.mm b/widget/cocoa/nsCocoaUtils.mm
-index d83639ff2aab890d9c89c162ec5a3dfda52bc017..92ac99a3afb5931216486473490b004404110ce7 100644
+index 49cb2b2d6960cbb0b6a8a17c409cfc909072213d..2406d1b576d1bfd38add149522c64281b9a20889 100644
 --- a/widget/cocoa/nsCocoaUtils.mm
 +++ b/widget/cocoa/nsCocoaUtils.mm
-@@ -1631,7 +1631,8 @@ bool static ShouldConsiderStartingSwipeFromEvent(NSEvent* anEvent) {
+@@ -1630,7 +1630,8 @@ bool static ShouldConsiderStartingSwipeFromEvent(NSEvent* anEvent) {
    return [anEvent type] == NSEventTypeScrollWheel &&
           eventPhase == NSEventPhaseBegan &&
           [anEvent hasPreciseScrollingDeltas] &&

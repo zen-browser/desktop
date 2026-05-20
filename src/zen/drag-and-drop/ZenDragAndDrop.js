@@ -725,7 +725,7 @@
               .changeWorkspaceShortcut(
                 isNearLeftEdge ? -1 : 1,
                 false,
-                /* Disable wrapping */ true
+                /* Disable wrapping */ false
               )
               .then(spaceChanged => {
                 this.#onSpaceChanged(spaceChanged, dt);

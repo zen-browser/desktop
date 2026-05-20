@@ -257,7 +257,7 @@ window.gZenUIManager = {
   },
 
   updateTabsToolbar() {
-    const kUrlbarHeight = 335;
+    const kUrlbarHeight = 333;
     gURLBar.style.setProperty(
       "--zen-urlbar-top",
       `${window.innerHeight / 2 - Math.max(kUrlbarHeight, window.windowUtils.getBoundsWithoutFlushing(gURLBar).height) / 2}px`
@@ -1358,6 +1358,7 @@ window.gZenVerticalTabsManager = {
         if (!this._hasSetSingleToolbar) {
           buttonsTarget.append(this._topButtonsSeparatorElement);
         }
+        this._hasSetSingleToolbar = true;
         for (const button of elements) {
           this.appendCustomizableItem(this._topButtonsSeparatorElement, button);
         }
@@ -1381,7 +1382,6 @@ window.gZenVerticalTabsManager = {
           titlebar.parentNode.moveBefore(navBar, titlebar);
         }
         document.documentElement.setAttribute("zen-single-toolbar", true);
-        this._hasSetSingleToolbar = true;
       } else if (this._hasSetSingleToolbar) {
         this._hasSetSingleToolbar = false;
         // Do the opposite

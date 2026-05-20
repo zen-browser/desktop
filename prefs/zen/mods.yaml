@@ -12,9 +12,6 @@
   value: "@cond"
   condition: "defined(MOZILLA_OFFICIAL)"
 
-- name: zen.rice.share.notice.accepted
-  value: false
-
 # === Mark: Site Injection ===
 
 - name: zen.injections.match-urls

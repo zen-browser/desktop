@@ -26,3 +26,7 @@ SOURCES += [
 ]
 
 FINAL_LIBRARY = "xul"
+
+TEST_DIRS += [
+    "gtest",
+]

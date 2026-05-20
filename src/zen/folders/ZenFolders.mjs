@@ -413,6 +413,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     const tab = event.detail;
     const group = event.target;
     if (
+      tab.pinned &&
       group.hasAttribute("split-view-group") &&
       tab.hasAttribute("had-zen-pinned-changed")
     ) {

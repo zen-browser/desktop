@@ -6,9 +6,17 @@
 #define mozilla_ZenBoostsBackend_h_
 
 #include "nsColor.h"
+#include "nsISupportsImpl.h"
 #include "nsPresContext.h"
 
 #include "mozilla/RefPtr.h"
+#include "mozilla/AlreadyAddRefed.h"
+
+#include <cstdint>
+
+namespace mozilla::dom {
+class BrowsingContext;
+}
 
 #define ZEN_BOOSTS_BACKEND_CONTRACTID "@mozilla.org/zen/boosts-backend;1"
 
@@ -22,10 +30,24 @@ struct nsZenAccentOklab {
   float contrastFactor;
 };
 
-class nsZenBoostsBackend final {
+namespace detail {
+// Pure color-math primitives, exposed for unit testing. These have no
+// dependency on the singleton, the BrowsingContext, or the process type, so
+// they can be exercised directly from gtest.
+nsZenAccentOklab PrecomputeAccent(nscolor aAccentColor);
+nsZenAccentOklab RotateAccent(const nsZenAccentOklab& aBase,
+                              float aRotationDeg);
+nscolor FilterColorChannel(nscolor aOriginalColor,
+                           const nsZenAccentOklab& aAccent,
+                           const nsZenAccentOklab& aComplementary);
+nscolor InvertColorChannel(nscolor aColor);
+}  // namespace detail
+
+class nsZenBoostsBackend final : public nsISupports {
  public:
+  NS_DECL_ISUPPORTS
+
   explicit nsZenBoostsBackend() = default;
-  ~nsZenBoostsBackend() = default;
 
   /**
    * Indicates whether the current frame being rendered is for anonymous
@@ -34,17 +56,15 @@ class nsZenBoostsBackend final {
   bool mCurrentFrameIsAnonymousContent = false;
 
   /**
-   * @brief Resolve a StyleAbsoluteColor to take into account Zen boosts.
+   * @brief Resolve a color to take into account Zen boosts. This is the single
+   * place style colors are filtered; it is reached for every style color via
+   * StyleAbsoluteColor::ToColor. Do not add a second StyleColor::ResolveColor
+   * filter on top of this or colors get filtered multiple times (which also
+   * makes resting colors disagree with composited transition endpoints).
    * @param aColor The color to resolve.
    * @return The resolved color with Zen boost filters applied, or the original
    * color if no boost is active.
-   * @see StyleColor::ResolveColor for reference.
-   */
-  static auto ResolveStyleColor(mozilla::StyleAbsoluteColor aColor)
-      -> mozilla::StyleAbsoluteColor;
-
-  /**
-   * @see ResolveStyleColor for reference.
+   * @see StyleAbsoluteColor::ToColor for reference.
    */
   static auto ResolveStyleColor(nscolor aColor) -> nscolor;
 
@@ -71,10 +91,13 @@ class nsZenBoostsBackend final {
    */
   auto RefreshCachedBoostState() -> void;
 
-  [[nodiscard]]
-  inline auto GetCurrentBrowsingContext() const {
-    return mCurrentBrowsingContext;
-  }
+  /**
+   * Resolves the current top BrowsingContext from its stored id. May return
+   * null if it has since been discarded. Not on the per-color hot path; the
+   * hot path uses the mCachedCurrent* fields instead.
+   */
+  [[nodiscard]] already_AddRefed<mozilla::dom::BrowsingContext>
+  GetCurrentBrowsingContext() const;
 
   /**
    * Cached boost data for the current top BrowsingContext, refreshed on
@@ -83,15 +106,22 @@ class nsZenBoostsBackend final {
    * resolve.
    */
   ZenBoostData mCachedCurrentAccent = 0;
+  // Hue rotation in degrees applied to the base accent to derive the
+  // complementary accent. Zero means the complementary accent equals the base
+  // accent (the duotone collapses to a single-accent tint).
+  float mCachedCurrentComplementaryRotation = 0.0f;
   bool mCachedCurrentInverted = false;
 
  private:
-  /**
-   * The presshell of the current document being rendered.
-   */
-  RefPtr<mozilla::dom::BrowsingContext> mCurrentBrowsingContext;
+  ~nsZenBoostsBackend() = default;
 
-  static nsZenAccentOklab mCachedAccent;
+  /**
+   * Id of the top BrowsingContext of the current document being rendered.
+   * Stored as an id rather than a strong RefPtr so the process-wide singleton
+   * does not keep a navigated-away BrowsingContext (and its subtree) alive
+   * until the next presshell entry.
+   */
+  uint64_t mCurrentBrowsingContextId = 0;
 
  public:
   /**

@@ -1,8 +1,8 @@
 diff --git a/layout/generic/ViewportFrame.cpp b/layout/generic/ViewportFrame.cpp
-index ea018fff9f549cd8e07b20f4c8073391a6fdf40d..acb9428cf2276ed04064484600024d9e2c7e2bb7 100644
+index 9d1c25c3834da50fd7dfa3a9583144f5817ee231..08b69a63ea3a8067861984fa2fcd25435c921c0d 100644
 --- a/layout/generic/ViewportFrame.cpp
 +++ b/layout/generic/ViewportFrame.cpp
-@@ -24,6 +24,7 @@
+@@ -23,6 +23,7 @@
  #include "nsLayoutUtils.h"
  #include "nsPlaceholderFrame.h"
  #include "nsSubDocumentFrame.h"
@@ -10,7 +10,7 @@ index ea018fff9f549cd8e07b20f4c8073391a6fdf40d..acb9428cf2276ed04064484600024d9e
  
  using namespace mozilla;
  
-@@ -299,15 +300,20 @@ ViewportFrame::BuildDisplayListForViewTransitionsAndNACTopLayer(
+@@ -291,15 +292,20 @@ ViewportFrame::BuildDisplayListForViewTransitionsAndNACTopLayer(
      }
    }
  

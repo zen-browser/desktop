@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarResult.sys.mjs b/browser/components/urlbar/UrlbarResult.sys.mjs
-index 65b8fb67b51c8959fe1d47b98efbb2bca591eafc..c52c50a87b37ca1c885c55b36e5beccc8dd7c5fb 100644
+index 21f7938f76375e7230f9509e4932cafa4d0e57f2..ab96b160b6c65da3bf267d9fe2f1f35c7507466e 100644
 --- a/browser/components/urlbar/UrlbarResult.sys.mjs
 +++ b/browser/components/urlbar/UrlbarResult.sys.mjs
 @@ -181,6 +181,10 @@ export class UrlbarResult {

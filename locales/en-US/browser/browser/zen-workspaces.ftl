@@ -93,6 +93,14 @@ zen-workspaces-close-all-unpinned-tabs-title =
     .label = Clear
     .tooltiptext = Close all unpinned tabs
 
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-tabs-auto-close-toast =
+    { $count ->
+        [one] Closed 1 inactive tab. Use <span>{ $shortcut }</span> to undo.
+       *[other] Closed { $count } inactive tabs. Use <span>{ $shortcut }</span> to undo.
+    }
+
 zen-panel-ui-workspaces-change-forward =
     .label = Next Space
 

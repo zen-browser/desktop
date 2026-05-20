@@ -68,6 +68,29 @@ zen-tabs-cycle-ignore-pending-tabs =
   .label = Ignore Pending tabs when cycling with Ctrl+Tab
 zen-tabs-cycle-by-attribute-warning = Ctrl+Tab will cycle by recently used order, as it is enabled
 
+pane-zen-auto-close-tabs-title = Auto-close Inactive Tabs
+zen-tabs-auto-close-header = Automatically close inactive tabs
+zen-tabs-auto-close-description = Periodically close tabs you haven't used in a while. Pinned and Essential tabs are never closed.
+zen-tabs-auto-close-enabled =
+    .label = Close tabs that haven't been used in a while
+zen-tabs-auto-close-threshold-label = Close tabs inactive for:
+zen-tabs-auto-close-threshold-1h =
+    .label = 1 hour
+zen-tabs-auto-close-threshold-6h =
+    .label = 6 hours
+zen-tabs-auto-close-threshold-1d =
+    .label = 1 day
+zen-tabs-auto-close-threshold-3d =
+    .label = 3 days
+zen-tabs-auto-close-threshold-7d =
+    .label = 7 days
+zen-tabs-auto-close-threshold-14d =
+    .label = 14 days
+zen-tabs-auto-close-threshold-30d =
+    .label = 30 days
+zen-tabs-auto-close-skip-audible =
+    .label = Skip tabs playing audio
+
 zen-look-and-feel-compact-toolbar-themed =
     .label = Use themed background for compact toolbar
 

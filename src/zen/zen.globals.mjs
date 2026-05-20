@@ -28,6 +28,7 @@ export default [
   "ZEN_KEYSET_ID",
 
   "gZenPinnedTabManager",
+  "gZenAutoCloseTabs",
 
   "gZenEmojiPicker",
   "gZenSessionStore",

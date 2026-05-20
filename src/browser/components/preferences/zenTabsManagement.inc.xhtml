@@ -44,6 +44,41 @@
             preference="zen.tabs.select-recently-used-on-close"/>
 </groupbox>
 
+<hbox id="zenAutoCloseTabsCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenTabManagement">
+      <html:h1 data-l10n-id="pane-zen-auto-close-tabs-title"/>
+</hbox>
+
+<groupbox id="zenAutoCloseTabsGroup" data-category="paneZenTabManagement" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-tabs-auto-close-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-tabs-auto-close-description" />
+
+      <checkbox id="zenTabsAutoCloseEnabled"
+            data-l10n-id="zen-tabs-auto-close-enabled"
+            preference="zen.tabs.auto-close.enabled"/>
+
+      <hbox align="center">
+            <label id="zenTabsAutoCloseThresholdLabel" data-l10n-id="zen-tabs-auto-close-threshold-label"/>
+            <menulist id="zenTabsAutoCloseThreshold" preference="zen.tabs.auto-close.threshold-hours">
+                  <menupopup>
+                        <menuitem data-l10n-id="zen-tabs-auto-close-threshold-1h" value="1"/>
+                        <menuitem data-l10n-id="zen-tabs-auto-close-threshold-6h" value="6"/>
+                        <menuitem data-l10n-id="zen-tabs-auto-close-threshold-1d" value="24"/>
+                        <menuitem data-l10n-id="zen-tabs-auto-close-threshold-3d" value="72"/>
+                        <menuitem data-l10n-id="zen-tabs-auto-close-threshold-7d" value="168"/>
+                        <menuitem data-l10n-id="zen-tabs-auto-close-threshold-14d" value="336"/>
+                        <menuitem data-l10n-id="zen-tabs-auto-close-threshold-30d" value="720"/>
+                  </menupopup>
+            </menulist>
+      </hbox>
+
+      <checkbox id="zenTabsAutoCloseSkipAudible"
+            data-l10n-id="zen-tabs-auto-close-skip-audible"
+            preference="zen.tabs.auto-close.skip-audible"/>
+</groupbox>
+
 <hbox id="zenPinnedTabsManagerCategory"
       class="subcategory"
       hidden="true"

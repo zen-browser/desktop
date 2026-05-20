@@ -52,3 +52,18 @@
 
 - name: zen.tabs.ctrl-tab.ignore-pending-tabs
   value: false
+
+- name: zen.tabs.auto-close.enabled
+  value: false
+
+- name: zen.tabs.auto-close.threshold-hours
+  value: 168 # 7 days
+
+- name: zen.tabs.auto-close.skip-audible
+  value: true
+
+- name: zen.tabs.auto-close.min-tabs-per-workspace
+  value: 1
+
+- name: zen.tabs.auto-close.check-interval-minutes
+  value: 15

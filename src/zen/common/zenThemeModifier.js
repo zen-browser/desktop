@@ -168,6 +168,16 @@
         document.documentElement.setAttribute("zen-no-padding", true);
       } else {
         document.documentElement.removeAttribute("zen-no-padding");
+        if (domFullscreen) {
+          gBrowser.selectedBrowser.style.paddingRight = "env(hairline)";
+          window.addEventListener(
+            "MozAfterPaint",
+            () => {
+              gBrowser.selectedBrowser.style.paddingRight = "";
+            },
+            { once: true }
+          );
+        }
       }
     },
 

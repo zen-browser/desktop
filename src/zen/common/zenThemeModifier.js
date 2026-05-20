@@ -169,7 +169,15 @@
       } else {
         document.documentElement.removeAttribute("zen-no-padding");
         if (domFullscreen) {
-          window.windowUtils.flushLayoutWithoutThrottledAnimations();
+          const selectedBrowser = gBrowser.selectedBrowser;
+          selectedBrowser.style.paddingRight = "env(hairline)";
+          window.addEventListener(
+            "MozAfterPaint",
+            () => {
+              selectedBrowser.style.paddingRight = "";
+            },
+            { once: true }
+          );
         }
       }
     },

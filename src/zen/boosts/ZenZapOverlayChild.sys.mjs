@@ -26,6 +26,7 @@ export class ZapOverlay {
   #dissolvePoolSize = 5;
   #dissolveEffectPool = [];
   #currentDissolveIndex = 0;
+  #onZapDoneClick = null;
 
   /**
    * @param {*} document Webpage document
@@ -77,10 +78,8 @@ export class ZapOverlay {
    */
   #initializeElements() {
     this.zapDoneButton = this.getElementById("zap-done");
-    this.zapDoneButton.addEventListener(
-      "click",
-      this.#disableZapMode.bind(this)
-    );
+    this.#onZapDoneClick = this.#disableZapMode.bind(this);
+    this.zapDoneButton.addEventListener("click", this.#onZapDoneClick);
 
     this.#updateZappedList();
   }
@@ -354,6 +353,12 @@ export class ZapOverlay {
     this.#dissolveEffectPool.forEach(dissolve => {
       dissolve.tearDown();
     });
+
+    if (this.zapDoneButton && this.#onZapDoneClick) {
+      this.zapDoneButton.removeEventListener("click", this.#onZapDoneClick);
+    }
+    this.#onZapDoneClick = null;
+    this.zapDoneButton = null;
 
     if (this.#content) {
       try {

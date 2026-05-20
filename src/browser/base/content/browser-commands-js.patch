@@ -24,10 +24,18 @@ index 75ddd82c18979571f377dec94fe1883f1349cc16..129d78214db53fc8dbd17d23b4a5a042
      // A notification intended to be useful for modular peformance tracking
      // starting as close as is reasonably possible to the time when the user
      // expressed the intent to open a new tab.  Since there are a lot of
-@@ -399,6 +407,6 @@ var BrowserCommands = {
+@@ -399,6 +407,14 @@ var BrowserCommands = {
        return;
      }
  
++    if (gBrowser.selectedTab.hasAttribute("zen-empty-tab")) {
++      if (gBrowser.selectedTab.hasAttribute("split-view")) {
++        return;
++      }
++      gZenWorkspaces.handleTabCloseWindow();
++      return;
++    }
++
      // Keyboard shortcuts that would close a tab that is pinned select the first
      // unpinned tab instead.
      if (

@@ -4,9 +4,9 @@
 
 # URL bar and search-related preferences
 
-# Astra: Trending / popular searches for keyword discovery
+# Astra: Trending off — extra network/RAM while typing
 - name: browser.urlbar.trending.featureGate
-  value: true
+  value: false
 
 - name: browser.urlbar.weather.featureGate
   value: false
@@ -63,7 +63,7 @@
   value: true
 
 - name: browser.urlbar.maxRichResults
-  value: 10
+  value: 8
 
 - name: browser.urlbar.maxHistoricalSearchSuggestions
   value: 6
@@ -84,7 +84,7 @@
   value: true
 
 - name: browser.urlbar.suggest.trending
-  value: true
+  value: false
 
 - name: browser.urlbar.richSuggestions.tail
   value: true
@@ -92,9 +92,9 @@
 - name: browser.urlbar.suggest.searchHistory
   value: true
 
-# Astra: Preconnect when hovering a suggestion (faster navigation, no extra ads)
+# Astra: Off — saves RAM; HTTP/3 + disk cache handle load speed
 - name: browser.urlbar.speculativeConnect.enabled
-  value: true
+  value: false
 
 # See https://github.com/zen-browser/desktop/issues/7248
 # We've submitted a patch to Firefox at https://bugzilla.mozilla.org/show_bug.cgi?id=2018499

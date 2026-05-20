@@ -2,9 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# Astra: Aggressive low-RAM response (macOS + Windows)
 - name: browser.lowMemoryResponseMask
   value: 3
-  condition: "defined(XP_MACOSX)"
+  condition: "defined(XP_MACOSX) || defined(XP_WIN)"
 
 - name: network.predictor.enable-hover-on-ssl
   value: false
@@ -34,11 +35,27 @@
 - name: javascript.options.asmjs
   value: true
 
-# Astra: Memory cache optimization
+# Astra: Cap RAM cache (~48 MB) — -1 can grow too large vs Chrome/Brave
 - name: browser.cache.memory.enable
   value: true
 - name: browser.cache.memory.capacity
-  value: -1
+  value: 49152
+- name: browser.cache.disk.enable
+  value: true
+- name: browser.cache.disk.smart_size.enabled
+  value: true
+
+# Astra: Less RAM for back/forward cache and decoded media
+- name: browser.sessionhistory.max_total_viewers
+  value: 1
+- name: browser.sessionhistory.max_entries
+  value: 12
+- name: image.mem.max_decoded_image_kb
+  value: 98304
+- name: media.memory_cache_max_size
+  value: 32768
+- name: browser.sessionstore.max_tabs_undo
+  value: 6
 
 # Astra: Faster page rendering
 - name: content.notify.interval
@@ -70,13 +87,19 @@
 - name: network.http.max-persistent-connections-per-server
   value: 8
 
-# Astra: Smoother scrolling / compositing
+# Astra: Smooth scroll without extra compositor precision (saves CPU/RAM)
 - name: general.smoothScroll
   value: true
 - name: general.smoothScroll.pages
-  value: true
+  value: false
 - name: layout.frame_rate.precise
-  value: true
+  value: false
+
+# Astra: Fewer idle content processes (Firefox-style RAM savings)
+- name: dom.ipc.processCount.web
+  value: 4
+- name: dom.ipc.processCount.webLargeAllocation
+  value: 1
 
 # Astra: TCP Fast Open - faster connections
 - name: network.tcp.tcp_fastopen_enable

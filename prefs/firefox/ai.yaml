@@ -2,24 +2,24 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Machine learning and chat feature preferences
+# Astra: ML/chat off by default — lower RAM, faster startup (like lean Firefox)
 - name: browser.ml.chat.enabled
-  value: true
+  value: false
 
 - name: browser.ml.chat.shortcuts
-  value: true
+  value: false
 
 - name: browser.ml.chat.shortcuts.custom
   value: false
 
 - name: browser.ml.chat.sidebar
-  value: true
+  value: false
 
 - name: browser.ml.enable
-  value: true
+  value: false
 
 - name: browser.ml.chat.menu
-  value: true
+  value: false
 
 - name: browser.ml.linkPreview.enabled
-  value: true
+  value: false

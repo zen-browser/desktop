@@ -12,7 +12,7 @@
   value: true
 
 - name: zen.tabs.essentials.max
-  value: 20
+  value: 12
 
 - name: zen.tabs.show-newtab-vertical
   value: true
@@ -33,7 +33,7 @@
   value: false
 
 - name: zen.mediacontrols.enabled
-  value: true
+  value: false
 
 - name: zen.haptic-feedback.enabled
   value: false

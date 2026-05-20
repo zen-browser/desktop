@@ -55,16 +55,16 @@
   value: true
 
 - name: zen.tab-unloader.timeout-minutes
-  value: 20
+  value: 10
 
 - name: zen.tab-unloader.aggressiveness
-  value: conservative
+  value: balanced
 
 - name: zen.tab-unloader.high-tab-threshold
-  value: 80
+  value: 50
 
 - name: zen.tab-unloader.max-batch
-  value: 20
+  value: 12
 
 - name: zen.performance.measure-workspaces
   value: false

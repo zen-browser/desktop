@@ -16,3 +16,7 @@
 # Astra: Search suggestions in private windows too (same keyword completions)
 - name: browser.search.suggest.enabled.private
   value: true
+
+# Astra: Smaller history DB on low-RAM machines
+- name: places.history.expiration.max_pages
+  value: 2500

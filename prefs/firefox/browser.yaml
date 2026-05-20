@@ -8,11 +8,12 @@
 - name: browser.sessionstore.restore_pinned_tabs_on_demand
   value: true
 
+# Astra: Tab hover previews use extra RAM
 - name: browser.tabs.hoverPreview.enabled
-  value: true
+  value: false
 
 - name: browser.tabs.hoverPreview.showThumbnails
-  value: true
+  value: false
 
 - name: browser.tabs.unloadTabInContextMenu
   value: true
@@ -70,7 +71,7 @@
   value: true
 
 - name: browser.ml.linkPreview.enabled
-  value: true
+  value: false
 
 - name: browser.tabs.closeWindowWithLastTab
   value: false

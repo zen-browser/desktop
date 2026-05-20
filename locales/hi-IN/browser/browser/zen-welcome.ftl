@@ -17,6 +17,10 @@ zen-welcome-initial-essentials-title = आपके ज़रूरी टैब
 zen-welcome-initial-essentials-description-1 = अपने सबसे महत्वपूर्ण टैब आसानी से और हमेशा उपलब्ध रखें—चाहे आप कितने भी टैब खोलें।
 zen-welcome-initial-essentials-description-2 = ज़रूरी टैब हमेशा दिखते हैं, चाहे आप किसी भी स्पेस/वर्कस्पेस में हों।
 
+zen-welcome-spaces-setup-title = स्पेस से ज़िंदगी व्यवस्थित करें
+zen-welcome-spaces-setup-description = पढ़ाई, काम और निजी टैब अलग रखें — साइडबार के नीचे से बदलें। अभी पढ़ाई + काम स्पेस जोड़ें।
+zen-welcome-spaces-setup-button = पढ़ाई + काम स्पेस जोड़ें
+
 zen-welcome-workspace-colors-title = आपके वर्कस्पेस, आपके रंग
 zen-welcome-workspace-colors-description = हर वर्कस्पेस को अलग रंग देकर अपना ब्राउज़र अपनी पसंद के अनुसार बनाइए।
 

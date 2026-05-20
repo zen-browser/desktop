@@ -2,7 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+import {
+  ASTRA_SPACE_PRESETS,
+  themeFromSpacePreset,
+} from "resource:///modules/zen/ZenSpacePresets.mjs";
+
 class nsZenWorkspaceCreation extends MozXULElement {
+  #pendingPresetTheme = null;
   #wasInCollapsedMode = false;
 
   promiseInitialized = new Promise(resolve => {
@@ -31,6 +37,10 @@ class nsZenWorkspaceCreation extends MozXULElement {
               <html:div>
                 <label data-l10n-id="zen-workspace-creation-label" class="zen-workspace-creation-label" />
               </html:div>
+            </vbox>
+            <vbox class="zen-workspace-creation-presets" hidden="true">
+              <label class="zen-workspace-creation-presets-label" data-l10n-id="zen-spaces-presets-label" />
+              <hbox class="zen-workspace-creation-presets-row" />
             </vbox>
             <vbox class="zen-workspace-creation-form">
               <hbox class="zen-workspace-creation-name-wrapper">
@@ -102,6 +112,8 @@ class nsZenWorkspaceCreation extends MozXULElement {
     this.cancelButton = this.querySelector(
       ".zen-workspace-creation-cancel-button"
     );
+
+    this.#setupPresetPills();
 
     for (const element of this.elementsToAnimate) {
       element.style.opacity = 0;
@@ -223,6 +235,47 @@ class nsZenWorkspaceCreation extends MozXULElement {
       });
   }
 
+  #setupPresetPills() {
+    const container = this.querySelector(".zen-workspace-creation-presets");
+    const row = this.querySelector(".zen-workspace-creation-presets-row");
+    if (!container || !row) {
+      return;
+    }
+    container.hidden = false;
+    for (const preset of Object.values(ASTRA_SPACE_PRESETS)) {
+      const pill = document.createXULElement("button");
+      pill.classList.add("zen-workspace-preset-pill");
+      pill.setAttribute("type", "button");
+      pill.setAttribute("zen-space-preset", preset.id);
+      pill.textContent = `${preset.icon} ${preset.name}`;
+      pill.addEventListener("click", () => this.#applyPreset(preset.id));
+      row.appendChild(pill);
+    }
+    const presetId = this.getAttribute("zen-preset-id");
+    if (presetId) {
+      this.#applyPreset(presetId);
+    }
+  }
+
+  #applyPreset(presetId) {
+    const preset = ASTRA_SPACE_PRESETS[presetId];
+    if (!preset) {
+      return;
+    }
+    this.inputName.value = preset.name;
+    this.inputIcon.image = "";
+    this.inputIcon.label = preset.icon;
+    this.inputIcon.removeAttribute("has-svg-icon");
+    this.createButton.disabled = false;
+    this.#pendingPresetTheme = themeFromSpacePreset(preset);
+    for (const pill of this.querySelectorAll(".zen-workspace-preset-pill")) {
+      pill.toggleAttribute(
+        "selected",
+        pill.getAttribute("zen-space-preset") === presetId
+      );
+    }
+  }
+
   async onCreateButtonCommand() {
     const workspace = gZenWorkspaces.getActiveWorkspace();
     workspace.name = this.inputName.value.trim();
@@ -231,6 +284,9 @@ class nsZenWorkspaceCreation extends MozXULElement {
         this.inputIcon.image || this.inputIcon.label
       ) || undefined;
     workspace.containerTabId = this.currentProfile;
+    if (this.#pendingPresetTheme) {
+      workspace.theme = this.#pendingPresetTheme;
+    }
     await gZenWorkspaces.saveWorkspace(workspace);
 
     await this.#cleanup();

@@ -718,6 +718,29 @@
       },
       {
         text: [
+          { id: "zen-welcome-spaces-setup-title" },
+          { id: "zen-welcome-spaces-setup-description" },
+        ],
+        buttons: [
+          {
+            l10n: "zen-welcome-spaces-setup-button",
+            primary: true,
+            onclick: async () => {
+              if (typeof gZenWorkspaces !== "undefined") {
+                await gZenWorkspaces.createWorkspaceFromPreset("study");
+                await gZenWorkspaces.createWorkspaceFromPreset("work");
+              }
+              return true;
+            },
+          },
+          {
+            l10n: "zen-generic-next",
+            onclick: async () => true,
+          },
+        ],
+      },
+      {
+        text: [
           {
             id: "zen-welcome-workspace-colors-title",
           },

@@ -5,6 +5,10 @@
 /* eslint-disable no-shadow */
 
 import { nsZenThemePicker } from "resource:///modules/zen/ZenGradientGenerator.mjs";
+import {
+  getSpacePreset,
+  themeFromSpacePreset,
+} from "resource:///modules/zen/ZenSpacePresets.mjs";
 import { ZenSpacesSwipe } from "resource:///modules/zen/ZenSpacesSwipe.mjs";
 import { nsZenMultiWindowFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
@@ -827,7 +831,7 @@ class nsZenWorkspaces {
     }
     this._workspaceCache = spacesFromStore.length
       ? [...spacesFromStore]
-      : [this.#createWorkspaceData("Space", undefined)];
+      : [this.#createWorkspaceData("General", undefined)];
     this.activeWorkspace =
       aWinData.activeZenSpace || this._workspaceCache[0].uuid;
     let promise = this.#initializeWorkspaces();
@@ -1637,23 +1641,84 @@ class nsZenWorkspaces {
     }
   }
 
-  async openWorkspaceCreation() {
+  async openWorkspaceCreation({ presetId = null } = {}) {
     let createForm;
     const previousWorkspace = this.getActiveWorkspace();
+    const preset = presetId ? getSpacePreset(presetId) : null;
     document.documentElement.setAttribute("zen-creating-workspace", "true");
-    await this.createAndSaveWorkspace("Space", undefined, false, 0, {
-      beforeChangeCallback: async workspace => {
-        createForm = document.createXULElement("zen-workspace-creation");
-        createForm.setAttribute("workspace-id", workspace.uuid);
-        createForm.setAttribute(
-          "previous-workspace-id",
-          previousWorkspace?.uuid || ""
-        );
-        gBrowser.tabContainer.after(createForm);
-        await createForm.promiseInitialized;
-      },
-    });
+    await this.createAndSaveWorkspace(
+      preset?.name || "Space",
+      preset?.icon,
+      false,
+      0,
+      {
+        beforeChangeCallback: async workspace => {
+          if (preset) {
+            workspace.theme = themeFromSpacePreset(preset);
+            await this.saveWorkspace(workspace);
+          }
+          createForm = document.createXULElement("zen-workspace-creation");
+          createForm.setAttribute("workspace-id", workspace.uuid);
+          createForm.setAttribute(
+            "previous-workspace-id",
+            previousWorkspace?.uuid || ""
+          );
+          if (presetId) {
+            createForm.setAttribute("zen-preset-id", presetId);
+          }
+          gBrowser.tabContainer.after(createForm);
+          await createForm.promiseInitialized;
+        },
+      }
+    );
     createForm.finishSetup();
+  }
+
+  async createWorkspaceFromPreset(presetId) {
+    if (!this.workspaceEnabled || this.privateWindowOrDisabled) {
+      return null;
+    }
+    const preset = getSpacePreset(presetId);
+    if (!preset) {
+      return null;
+    }
+    const workspace = await this.createAndSaveWorkspace(
+      preset.name,
+      preset.icon,
+      false,
+      0
+    );
+    if (!workspace) {
+      return null;
+    }
+    workspace.theme = themeFromSpacePreset(preset);
+    await this.saveWorkspace(workspace);
+    try {
+      window.gZenThemePicker?.onWorkspaceChange(workspace);
+      this._applyWorkspaceBackground(workspace);
+    } catch (e) {
+      console.error("Astra: failed to apply space preset theme", e);
+    }
+    this.#maybeShowSpaceDiscoveryToasts(workspace.name);
+    return workspace;
+  }
+
+  #maybeShowSpaceDiscoveryToasts(spaceName = "") {
+    const count = this.getWorkspaces().length;
+    gZenUIManager.showToast("zen-spaces-preset-created-title", {
+      timeout: 5000,
+      l10nArgs: { spaceName },
+    });
+    if (
+      count === 2 &&
+      !Services.prefs.getBoolPref("zen.spaces.second-space-tip-seen", false)
+    ) {
+      Services.prefs.setBoolPref("zen.spaces.second-space-tip-seen", true);
+      gZenUIManager.showToast("zen-spaces-second-created-title", {
+        timeout: 9000,
+        descriptionId: "zen-spaces-second-created-desc",
+      });
+    }
   }
 
   #unpinnedTabsInWorkspace(workspaceID) {

@@ -30,6 +30,16 @@
   margin-inline: 0 !important;
 }
 
+/* Spaces: keep footer switcher visible with one Space + add chip */
+#zen-workspaces-button:not([dont-show]) {
+  min-height: 32px;
+  padding-block: 2px;
+}
+
+#zen-sidebar-foot-buttons #zen-create-new-button {
+  opacity: 1;
+}
+
 /* Windows: native caption buttons must not be collapsed by compact-mode rules */
 @media (-moz-platform: windows) {
   .titlebar-buttonbox-container {

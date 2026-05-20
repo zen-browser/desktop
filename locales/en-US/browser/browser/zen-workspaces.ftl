@@ -10,6 +10,34 @@ zen-panel-ui-spaces-label =
 zen-panel-ui-workspaces-create =
     .label = Create Space
 
+zen-panel-ui-workspaces-create-custom =
+    .label = Custom Space…
+
+zen-create-new-section-spaces =
+    .label = — Spaces —
+zen-create-new-section-tabs =
+    .label = — Tabs & folders —
+
+zen-spaces-add-chip =
+    .tooltiptext = Add a Space (Study, Work, Personal…)
+
+zen-spaces-presets-label = Quick Space presets
+
+zen-spaces-preset-study =
+    .label = 📚 Study Space
+zen-spaces-preset-work =
+    .label = 💼 Work Space
+zen-spaces-preset-personal =
+    .label = 🏠 Personal Space
+zen-spaces-preset-fun =
+    .label = 🎬 Fun Space
+zen-spaces-preset-banking =
+    .label = 🪙 Banking & UPI Space
+
+zen-spaces-preset-created-title = { $spaceName } Space is ready
+zen-spaces-second-created-title = You now have multiple Spaces
+zen-spaces-second-created-desc = Tap the icons at the bottom of the sidebar to switch. Drag them to reorder.
+
 zen-panel-ui-folder-create =
     .label = Create Folder
 
@@ -226,7 +254,7 @@ zen-workspaces-panel-context-reorder =
 zen-workspace-creation-profile = Profile
     .tooltiptext = Profiles are used to separate cookies and site data between spaces.
 zen-workspace-creation-header = Create a Space
-zen-workspace-creation-label = Spaces are used to organize your tabs and sessions.
+zen-workspace-creation-label = Separate study, work, and personal tabs — each Space keeps its own color and logins.
 
 zen-workspaces-delete-workspace-title = Delete Space?
 zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.

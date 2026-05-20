@@ -10,6 +10,34 @@ zen-panel-ui-spaces-label =
 zen-panel-ui-workspaces-create =
     .label = स्पेस बनाएँ
 
+zen-panel-ui-workspaces-create-custom =
+    .label = कस्टम स्पेस…
+
+zen-create-new-section-spaces =
+    .label = — स्पेस —
+zen-create-new-section-tabs =
+    .label = — टैब और फ़ोल्डर —
+
+zen-spaces-add-chip =
+    .tooltiptext = नया स्पेस (पढ़ाई, काम, निजी…)
+
+zen-spaces-presets-label = तुरंत स्पेस बनाएँ
+
+zen-spaces-preset-study =
+    .label = 📚 पढ़ाई
+zen-spaces-preset-work =
+    .label = 💼 काम
+zen-spaces-preset-personal =
+    .label = 🏠 निजी
+zen-spaces-preset-fun =
+    .label = 🎬 मनोरंजन
+zen-spaces-preset-banking =
+    .label = 🪙 बैंकिंग / UPI
+
+zen-spaces-preset-created-title = { $spaceName } स्पेस तैयार है
+zen-spaces-second-created-title = अब आपके पास कई स्पेस हैं
+zen-spaces-second-created-desc = नीचे आइकन से बदलें। क्रम बदलने के लिए खींचें।
+
 zen-panel-ui-folder-create =
     .label = फ़ोल्डर बनाएँ
 

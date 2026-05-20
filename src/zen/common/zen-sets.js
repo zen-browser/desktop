@@ -539,6 +539,15 @@ document.addEventListener(
           case "cmd_zenOpenWorkspaceCreation":
             gZenWorkspaces.openWorkspaceCreation(event);
             break;
+          case "cmd_zenCreateSpaceFromPreset": {
+            const presetId =
+              event.sourceEvent?.target?.getAttribute("zen-space-preset") ||
+              event.target?.getAttribute("zen-space-preset");
+            if (presetId) {
+              gZenWorkspaces.createWorkspaceFromPreset(presetId);
+            }
+            break;
+          }
           case "cmd_zenOpenFolderCreation":
             gZenFolders.createFolder([], {
               renameFolder: true,

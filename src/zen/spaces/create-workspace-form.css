@@ -36,6 +36,37 @@ zen-workspace-creation {
       margin-top: 0.6rem;
       height: 100%;
 
+      & .zen-workspace-creation-presets {
+        gap: 0.5rem;
+        width: 100%;
+
+        & .zen-workspace-creation-presets-label {
+          opacity: 0.65;
+          font-size: small;
+          text-align: center;
+        }
+
+        & .zen-workspace-creation-presets-row {
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 6px;
+        }
+
+        & .zen-workspace-preset-pill {
+          border-radius: 99px;
+          padding: 6px 12px;
+          font-size: 12px;
+          border: 1px solid var(--zen-colors-border);
+          background: var(--zen-toolbar-element-bg);
+          cursor: pointer;
+
+          &[selected="true"] {
+            outline: 2px solid var(--zen-primary-color);
+            font-weight: 600;
+          }
+        }
+      }
+
       & .zen-workspace-creation-form {
         gap: 0.6rem;
       }

@@ -2,8 +2,26 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-<menupopup id="zenCreateNewPopup">
+<menupopup id="zenSpaceQuickMenu">
+  <menuitem data-l10n-id="zen-spaces-preset-study" command="cmd_zenCreateSpaceFromPreset" zen-space-preset="study" />
+  <menuitem data-l10n-id="zen-spaces-preset-work" command="cmd_zenCreateSpaceFromPreset" zen-space-preset="work" />
+  <menuitem data-l10n-id="zen-spaces-preset-personal" command="cmd_zenCreateSpaceFromPreset" zen-space-preset="personal" />
+  <menuitem data-l10n-id="zen-spaces-preset-fun" command="cmd_zenCreateSpaceFromPreset" zen-space-preset="fun" />
+  <menuitem data-l10n-id="zen-spaces-preset-banking" command="cmd_zenCreateSpaceFromPreset" zen-space-preset="banking" />
+  <menuseparator/>
   <menuitem data-l10n-id="zen-panel-ui-workspaces-create" command="cmd_zenOpenWorkspaceCreation" image="chrome://browser/skin/zen-icons/duplicate-tab.svg" />
+</menupopup>
+
+<menupopup id="zenCreateNewPopup">
+  <menuitem disabled="true" data-l10n-id="zen-create-new-section-spaces" />
+  <menuitem data-l10n-id="zen-spaces-preset-study" command="cmd_zenCreateSpaceFromPreset" zen-space-preset="study" />
+  <menuitem data-l10n-id="zen-spaces-preset-work" command="cmd_zenCreateSpaceFromPreset" zen-space-preset="work" />
+  <menuitem data-l10n-id="zen-spaces-preset-personal" command="cmd_zenCreateSpaceFromPreset" zen-space-preset="personal" />
+  <menuitem data-l10n-id="zen-spaces-preset-fun" command="cmd_zenCreateSpaceFromPreset" zen-space-preset="fun" />
+  <menuitem data-l10n-id="zen-spaces-preset-banking" command="cmd_zenCreateSpaceFromPreset" zen-space-preset="banking" />
+  <menuitem data-l10n-id="zen-panel-ui-workspaces-create-custom" command="cmd_zenOpenWorkspaceCreation" image="chrome://browser/skin/zen-icons/duplicate-tab.svg" />
+  <menuseparator/>
+  <menuitem disabled="true" data-l10n-id="zen-create-new-section-tabs" />
   <menuitem data-l10n-id="zen-panel-ui-folder-create" command="cmd_zenOpenFolderCreation" image="chrome://browser/skin/zen-icons/folder.svg" />
   <menu id="zen-panel-ui-folder-templates" data-l10n-id="zen-panel-ui-folder-templates" hidden="true">
     <menupopup>

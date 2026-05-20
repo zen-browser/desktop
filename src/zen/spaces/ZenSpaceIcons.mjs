@@ -4,6 +4,7 @@
 
 class nsZenWorkspaceIcons extends MozXULElement {
   #hasConnected = false;
+  #addChip = null;
 
   connectedCallback() {
     if (this.delayConnectedCallback() || this.#hasConnected) {
@@ -52,7 +53,9 @@ class nsZenWorkspaceIcons extends MozXULElement {
         }
 
         if (this.isReorderMode) {
-          const tabs = [...this.children];
+          const tabs = [...this.children].filter(
+            el => el.hasAttribute("zen-workspace-id")
+          );
           const mouse = moveEvent[clientPos];
 
           for (const tab of tabs) {
@@ -91,7 +94,9 @@ class nsZenWorkspaceIcons extends MozXULElement {
 
         this.reorderWorkspaceToIndex(
           draggedTab,
-          Array.from(this.children).indexOf(draggedTab)
+          Array.from(this.querySelectorAll("[zen-workspace-id]")).indexOf(
+            draggedTab
+          )
         );
 
         draggedTab = null;
@@ -122,13 +127,36 @@ class nsZenWorkspaceIcons extends MozXULElement {
         icon.textContent = workspace.icon;
       }
     } else {
-      icon.setAttribute("no-icon", true);
+      icon.setAttribute("no-icon", "true");
     }
     if (!isSvgIcon) {
       button.appendChild(icon);
     }
     button.addEventListener("command", this);
     return button;
+  }
+
+  #ensureAddChip() {
+    if (this.#addChip?.isConnected) {
+      return this.#addChip;
+    }
+    const chip = document.createXULElement("toolbarbutton");
+    chip.classList.add(
+      "subviewbutton",
+      "toolbarbutton-1",
+      "zen-workspace-add-chip"
+    );
+    chip.setAttribute("context", "zenSpaceQuickMenu");
+    document.l10n.setAttributes(chip, "zen-spaces-add-chip");
+    chip.addEventListener("click", event => {
+      event.stopPropagation();
+      const popup = document.getElementById("zenSpaceQuickMenu");
+      if (popup) {
+        popup.openPopup(chip, "after_start");
+      }
+    });
+    this.#addChip = chip;
+    return chip;
   }
 
   async #updateIcons() {
@@ -138,11 +166,9 @@ class nsZenWorkspaceIcons extends MozXULElement {
       const button = this.#createWorkspaceIcon(workspace);
       this.appendChild(button);
     }
-    if (workspaces.length <= 1) {
-      this.setAttribute("dont-show", "true");
-    } else {
-      this.removeAttribute("dont-show");
-    }
+    this.appendChild(this.#ensureAddChip());
+    this.removeAttribute("dont-show");
+    this.toggleAttribute("astra-single-space", workspaces.length <= 1);
     gZenWorkspaces.onWindowResize();
   }
 
@@ -160,7 +186,7 @@ class nsZenWorkspaceIcons extends MozXULElement {
   }
 
   set activeIndex(uuid) {
-    const buttons = this.querySelectorAll("toolbarbutton");
+    const buttons = this.querySelectorAll("[zen-workspace-id]");
     if (!buttons.length) {
       return;
     }
@@ -177,14 +203,14 @@ class nsZenWorkspaceIcons extends MozXULElement {
     if (selected == -1) {
       return;
     }
-    buttons[selected].setAttribute("active", true);
+    buttons[selected].setAttribute("active", "true");
     this.scrollLeft = buttons[selected].offsetLeft - 10;
     this.setAttribute("selected", selected);
   }
 
   get activeIndex() {
     const selected = this.getAttribute("selected");
-    const buttons = this.querySelectorAll("toolbarbutton");
+    const buttons = this.querySelectorAll("[zen-workspace-id]");
     let i = 0;
     for (const button of buttons) {
       if (i == selected) {

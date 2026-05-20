@@ -21,6 +21,27 @@
     display: none !important;
   }
 
+  &[astra-single-space='true'] toolbarbutton[zen-workspace-id][active='true'] {
+    filter: grayscale(0);
+    opacity: 1;
+    outline: 2px solid color-mix(in srgb, var(--zen-primary-color) 55%, transparent);
+    outline-offset: 2px;
+  }
+
+  & .zen-workspace-add-chip {
+    min-width: 28px !important;
+    max-width: 32px !important;
+    border: 1px dashed color-mix(in srgb, var(--zen-primary-color) 50%, transparent);
+    border-radius: var(--button-border-radius) !important;
+    opacity: 0.95;
+    filter: none !important;
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--zen-primary-color) 18%, transparent) !important;
+      opacity: 1;
+    }
+  }
+
   border-radius: var(--button-border-radius) !important;
   background: transparent;
   appearance: unset !important;

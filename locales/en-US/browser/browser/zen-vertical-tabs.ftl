@@ -27,7 +27,7 @@ sidebar-zen-expand =
   .label = Expand Sidebar
 
 sidebar-zen-create-new =
-  .label = Create New...
+  .label = New Space or Tab…
 
 tabbrowser-unload-tab-button =
 .tooltiptext =

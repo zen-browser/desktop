@@ -59,7 +59,7 @@
   value: true
 
 - name: zen.view.overflow-webext-toolbar
-  value: "@IS_TWILIGHT@"
+  value: true
 
 - name: zen.view.overflow-webext-toolbar-threshold
   value: 55

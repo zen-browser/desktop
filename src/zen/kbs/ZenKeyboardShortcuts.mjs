@@ -554,10 +554,14 @@ class KeyShortcut {
 
   static keyToDisplayString(key, keycode) {
     let str = "";
-    if (key && key == " ") {
-      str += AppConstants.platform == "macosx" ? "␣" : "Space";
-    } else if (key) {
-      str += key.toUpperCase();
+    if (key) {
+      switch (key) {
+        case " ":
+          str += AppConstants.platform == "macosx" ? "␣" : "Space";
+          break;
+        default:
+          str += key.toUpperCase();
+      }
     } else if (keycode) {
       // Get the key from the value
       for (let [k, value] of Object.entries(KEYCODE_MAP)) {

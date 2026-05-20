@@ -56,8 +56,8 @@
 - name: zen.tabs.auto-close.enabled
   value: false
 
-- name: zen.tabs.auto-close.threshold-hours
-  value: 168 # 7 days
+- name: zen.tabs.auto-close.threshold-minutes
+  value: 10080 # 7 days
 
 - name: zen.tabs.auto-close.skip-audible
   value: true

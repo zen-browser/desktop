@@ -7,7 +7,7 @@ import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components
 const lazy = {};
 
 const PREF_ENABLED = "zen.tabs.auto-close.enabled";
-const PREF_THRESHOLD_HOURS = "zen.tabs.auto-close.threshold-hours";
+const PREF_THRESHOLD_MINUTES = "zen.tabs.auto-close.threshold-minutes";
 const PREF_SKIP_AUDIBLE = "zen.tabs.auto-close.skip-audible";
 const PREF_MIN_PER_WORKSPACE = "zen.tabs.auto-close.min-tabs-per-workspace";
 const PREF_CHECK_INTERVAL_MIN = "zen.tabs.auto-close.check-interval-minutes";
@@ -19,7 +19,7 @@ class nsZenAutoCloseTabs extends nsZenDOMOperatedFeature {
   init() {
     // eslint-disable-next-line mozilla/valid-lazy
     XPCOMUtils.defineLazyPreferenceGetter(lazy, "enabled", PREF_ENABLED, false);
-    XPCOMUtils.defineLazyPreferenceGetter(lazy, "thresholdHours", PREF_THRESHOLD_HOURS, 168);
+    XPCOMUtils.defineLazyPreferenceGetter(lazy, "thresholdMinutes", PREF_THRESHOLD_MINUTES, 10080);
     XPCOMUtils.defineLazyPreferenceGetter(lazy, "skipAudible", PREF_SKIP_AUDIBLE, true);
     XPCOMUtils.defineLazyPreferenceGetter(lazy, "minPerWorkspace", PREF_MIN_PER_WORKSPACE, 1);
     XPCOMUtils.defineLazyPreferenceGetter(lazy, "checkIntervalMin", PREF_CHECK_INTERVAL_MIN, 15);
@@ -74,7 +74,7 @@ class nsZenAutoCloseTabs extends nsZenDOMOperatedFeature {
   async #sweep() {
     if (!lazy.enabled || !window.gZenWorkspaces || !window.gBrowser) return;
 
-    const cutoff = Date.now() - lazy.thresholdHours * 60 * 60 * 1000;
+    const cutoff = Date.now() - lazy.thresholdMinutes * 60 * 1000;
     const floor = Math.max(0, lazy.minPerWorkspace);
 
     // Group eligible tabs by workspace.

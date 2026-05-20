@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #ifndef ZEN_TOOLKIT_PROFILE_OVERRIDE
-#define ZEN_TOOLKIT_PROFILE_OVERRIDE "Default Profile"
+#define ZEN_TOOLKIT_PROFILE_OVERRIDE "Default (Astra)"
 #endif
 
 #ifndef ZEN_DO_NOT_OVERRIDE_DEFAULT_PROFILE_NAME

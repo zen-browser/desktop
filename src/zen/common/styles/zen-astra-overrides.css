@@ -29,3 +29,21 @@
 .tab-background {
   margin-inline: 0 !important;
 }
+
+/* Windows: native caption buttons must not be collapsed by compact-mode rules */
+@media (-moz-platform: windows) {
+  .titlebar-buttonbox-container {
+    max-height: none !important;
+    min-height: 32px;
+    overflow: visible;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  .titlebar-button {
+    min-width: 46px;
+    min-height: 32px;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+}

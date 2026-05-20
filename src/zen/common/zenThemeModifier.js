@@ -169,11 +169,12 @@
       } else {
         document.documentElement.removeAttribute("zen-no-padding");
         if (domFullscreen) {
-          gBrowser.selectedBrowser.style.paddingRight = "env(hairline)";
+          const selectedBrowser = gBrowser.selectedBrowser;
+          selectedBrowser.style.paddingRight = "env(hairline)";
           window.addEventListener(
             "MozAfterPaint",
             () => {
-              gBrowser.selectedBrowser.style.paddingRight = "";
+              selectedBrowser.style.paddingRight = "";
             },
             { once: true }
           );

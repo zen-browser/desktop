@@ -106,9 +106,6 @@ body {
 
   & button {
     border-radius: 6px;
-    @media (-moz-platform: macos) {
-      border-radius: 10px;
-    }
 
     padding: 0 !important;
     min-width: fit-content !important;

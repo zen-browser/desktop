@@ -1306,10 +1306,23 @@ ${cssSelector} {
     const resetBoost = this.doc.getElementById("zen-boost-edit-reset");
 
     const popup = this.doc.getElementById("zenBoostContextMenu");
-    // Don't give the user following options if the boost
-    // is not going to save / not currently saved (unchanged)
-    let shouldDisable = !this.currentBoostData.changeWasMade;
-    renameBoost.disabled = deleteBoost.disabled = resetBoost.disabled = shouldDisable;
+    popup.addEventListener(
+      "popupshown",
+      () => {
+        // Don't give the user following options if the boost
+        // is not going to save / not currently saved (unchanged)
+        let shouldDisable = !this.currentBoostData.changeWasMade;
+        const items = [renameBoost, deleteBoost, resetBoost];
+        for (let item of items) {
+          if (shouldDisable) {
+            item.setAttribute("disabled", "");
+          } else {
+            item.removeAttribute("disabled");
+          }
+        }
+      },
+      { once: true }
+    );
     popup.openPopup(
       event.target,
       "bottomcenter topcenter",
@@ -1559,7 +1572,8 @@ ${cssSelector} {
       this.currentBoostData.sizeOverride = 1;
     }
 
-    if ( // Test if the stored position is a non-normalized dot position
+    if (
+      // Test if the stored position is a non-normalized dot position
       this.currentBoostData.dotPos.x > 1 ||
       this.currentBoostData.dotPos.x < 0 ||
       this.currentBoostData.dotPos.y > 1 ||

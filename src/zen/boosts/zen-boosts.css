@@ -16,12 +16,12 @@
   max-height: 582px;
 }
 
-#zenBoostWindow[mode="boost"] {
+#zenBoostWindow[editor="boost"] {
   width: 192px;
   max-width: 192px;
 }
 
-#zenBoostWindow[mode="editor"] {
+#zenBoostWindow[editor="code"] {
   width: 452px;
   max-width: 452px;
 }

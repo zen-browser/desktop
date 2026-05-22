@@ -401,9 +401,9 @@ export class ZenBoostsChild extends JSWindowActorChild {
           primaryColor = this.#buildBoostColor(
             boostData.dotAngleDeg,
             /* already is [0, 1] */
-            boostData.dotDistance * (1 - boostData.saturation),
+            1 - boostData.saturation,
             /* lightness range from [0.1, 0.9] */
-            0.1 + boostData.dotDistance * 0.8 * boostData.brightness,
+            0.1 + 0.8 * boostData.brightness,
             boostData
           );
         }

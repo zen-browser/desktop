@@ -1323,6 +1323,10 @@ ${cssSelector} {
     const resetBoost = this.doc.getElementById("zen-boost-edit-reset");
 
     const popup = this.doc.getElementById("zenBoostContextMenu");
+    // Don't give the user following options if the boost
+    // is not going to save / not currently saved (unchanged)
+    let shouldDisable = !this.currentBoostData.changeWasMade;
+    renameBoost.disabled = deleteBoost.disabled = resetBoost.disabled = shouldDisable;
     popup.openPopup(
       event.target,
       "bottomcenter topcenter",
@@ -1332,12 +1336,6 @@ ${cssSelector} {
       false /* attributesOverride */,
       event
     );
-
-    // Don't give the user following options if the boost
-    // is not going to save / not currently saved (unchanged)
-    renameBoost.disabled = !this.currentBoostData.changeWasMade;
-    deleteBoost.disabled = !this.currentBoostData.changeWasMade;
-    resetBoost.disabled = !this.currentBoostData.changeWasMade;
   }
 
   /**

@@ -12,6 +12,7 @@
   appearance: none;
   border: none;
 
+  min-height: 582px;
   max-height: 582px;
 }
 

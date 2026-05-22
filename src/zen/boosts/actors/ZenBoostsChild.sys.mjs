@@ -367,7 +367,10 @@ export class ZenBoostsChild extends JSWindowActorChild {
         this.#loadStyleSheet(boost.styleSheet);
       }
 
-      browsingContext.fullZoom = boostData.sizeOverride;
+      if (boostData.sizeOverride && isFinite(boostData.sizeOverride) && boostData.sizeOverride !== 1) {
+        browsingContext.fullZoom = boostData.sizeOverride;
+      }
+
       browsingContext.isZenBoostsInverted = boostData.smartInvert;
       if (boostData.enableColorBoost) {
         let primaryColor;

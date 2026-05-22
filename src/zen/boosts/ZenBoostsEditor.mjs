@@ -1578,8 +1578,8 @@ ${cssSelector} {
       this.currentBoostData.sizeOverride = 1;
     }
 
-    if (this.colorChangeWasMade == null) {
-      this.colorChangeWasMade = false;
+    if (this.currentBoostData.colorChangeWasMade == null) {
+      this.currentBoostData.colorChangeWasMade = false;
     }
 
     if (

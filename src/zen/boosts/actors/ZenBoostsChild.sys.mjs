@@ -397,8 +397,8 @@ export class ZenBoostsChild extends JSWindowActorChild {
           // using the same modifiers as the color above
           primaryColor = this.#buildBoostColor(
             primaryGradientColor[0],
-            primaryGradientColor[1] * (1 - boostData.saturation),
-            0.1 + primaryGradientColor[2] * 0.9 * boostData.brightness,
+            1 - boostData.saturation,
+            0.1 + 0.9 * boostData.brightness,
             boostData
           );
         } else {
@@ -407,7 +407,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
             /* already is [0, 1] */
             1 - boostData.saturation,
             /* lightness range from [0.1, 0.9] */
-            0.1 + 0.8 * boostData.brightness,
+            0.1 + 0.9 * boostData.brightness,
             boostData
           );
         }

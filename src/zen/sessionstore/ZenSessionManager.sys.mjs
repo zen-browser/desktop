@@ -626,6 +626,7 @@ export class nsZenSessionManager {
 
   /**
    * Returns the sidebar data object.
+   *
    * @returns {object}
    */
   getSidebarData() {

@@ -190,7 +190,7 @@ class nsZenWorkspaces {
       const localMap = new Map(
         this._workspaceCache
           .filter(w => !removedSpaceIds.has(w.uuid))
-          .map(w => [w.uuid, w]),
+          .map(w => [w.uuid, w])
       );
       for (const space of pulled.spaces || []) {
         if (!space?.uuid) {
@@ -200,7 +200,7 @@ class nsZenWorkspaces {
         localMap.set(space.uuid, existing ? { ...existing, ...space } : space);
       }
       await this.propagateWorkspaces(
-        this.#getOrderedWorkspacesByPosition(Array.from(localMap.values())),
+        this.#getOrderedWorkspacesByPosition(Array.from(localMap.values()))
       );
       this.#propagateWorkspaceData();
     }
@@ -222,7 +222,8 @@ class nsZenWorkspaces {
       })
       .map(({ workspace }) => {
         // strip the position property that comes from pulled workspaces
-        const { position, ...rest } = workspace;
+        const rest = { ...workspace };
+        delete rest.position;
         return rest;
       });
   }
@@ -779,6 +780,7 @@ class nsZenWorkspaces {
     ]);
 
     this._workspaceBookmarksCache = { bookmarks, lastChangeTimestamp };
+    return this._workspaceBookmarksCache;
   }
 
   restoreWorkspacesFromSessionStore(aWinData = {}) {
@@ -1286,7 +1288,10 @@ class nsZenWorkspaces {
       workspacesData.push(workspaceData);
     }
     // mark item as changed for sync
-    lazy.ZenSyncStore.markItemChanged({ type: "space", id: workspaceData.uuid });
+    lazy.ZenSyncStore.markItemChanged({
+      type: "space",
+      id: workspaceData.uuid,
+    });
 
     this.#propagateWorkspaceData();
   }
@@ -1433,10 +1438,7 @@ class nsZenWorkspaces {
     // Track previous positions so we only notify observers for workspaces whose
     // position changed during the reorder.
     const previousPositions = new Map(
-      this._workspaceCache.map((workspace, index) => [
-        workspace.uuid,
-        index,
-      ]),
+      this._workspaceCache.map((workspace, index) => [workspace.uuid, index])
     );
 
     const workspaces = [...this._workspaceCache];

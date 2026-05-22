@@ -68,11 +68,12 @@ function normalizeUserContextId(value) {
  * Strips the sync-envelope fields (`id` and `type`) from incoming record data
  * and restores the item's real identity key where needed
  *
- * @param data
+ * @param {object} data
  */
 function stripSyncFields(data) {
-  const { id: _recordId, type: _recordType, ...rest } = data;
-
+  const rest = { ...data };
+  delete rest.id;
+  delete rest.type;
   return rest;
 }
 
@@ -114,7 +115,7 @@ class ZenWorkspacesStore extends Store {
         return (sidebar.spaces || []).some(s => s.uuid === parsed.key);
       case "container":
         return lazy.ContextualIdentityService.getPublicIdentities().some(
-          c => String(c.userContextId) === parsed.key,
+          c => String(c.userContextId) === parsed.key
         );
       default:
         return false;
@@ -139,7 +140,8 @@ class ZenWorkspacesStore extends Store {
           record.deleted = true;
           return record;
         }
-        const { syncStatus: _sx, ...rest } = spaces[idx];
+        const rest = { ...spaces[idx] };
+        delete rest.syncStatus;
         record.cleartext = { id, type: "space", ...rest, position: idx };
         break;
       }
@@ -147,7 +149,7 @@ class ZenWorkspacesStore extends Store {
       case "container": {
         const container =
           lazy.ContextualIdentityService.getPublicIdentities().find(
-            c => String(c.userContextId) === parsed.key,
+            c => String(c.userContextId) === parsed.key
           );
         if (!container) {
           record.deleted = true;
@@ -171,7 +173,7 @@ class ZenWorkspacesStore extends Store {
     return record;
   }
 
-  async applyIncomingBatch(records, countTelemetry) {
+  async applyIncomingBatch(records, _countTelemetry) {
     const pulled = { spaces: [], containers: [] };
     const removals = { spaces: [], containers: [] };
 
@@ -220,7 +222,7 @@ class ZenWorkspacesStore extends Store {
         if (userContextId === null) {
           console.warn(
             "ZenWorkspacesStore: Ignoring container removal with invalid userContextId",
-            { id },
+            { id }
           );
           break;
         }
@@ -246,7 +248,8 @@ class ZenWorkspacesStore extends Store {
         this._collectRemoval(record.id, removals);
         await lazy.ZenSyncStore.applyIncomingBatch(
           { spaces: [], containers: [] },
-          removals);
+          removals
+        );
         return;
       }
       const data = record.cleartext;
@@ -263,9 +266,10 @@ class ZenWorkspacesStore extends Store {
           pulled.containers.push(clean);
           break;
       }
-      await lazy.ZenSyncStore.applyIncomingBatch(
-        pulled,
-        { spaces: [], containers: [] });
+      await lazy.ZenSyncStore.applyIncomingBatch(pulled, {
+        spaces: [],
+        containers: [],
+      });
     } finally {
       this.engine._tracker.ignoreAll = false;
     }
@@ -314,7 +318,7 @@ class ZenWorkspacesTracker extends Tracker {
     Services.obs.removeObserver(this, "contextual-identity-deleted");
   }
 
-  observe(subject, topic, data) {
+  observe(subject, topic, _data) {
     if (this.#ignoreAll) {
       return;
     }

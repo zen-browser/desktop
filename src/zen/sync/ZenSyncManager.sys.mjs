@@ -8,6 +8,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
   ContextualIdentityService:
     "resource://gre/modules/ContextualIdentityService.sys.mjs",
+  ZenWindowSync: "resource:///modules/zen/ZenWindowSync.sys.mjs",
 });
 
 function normalizeUserContextId(value) {
@@ -19,7 +20,6 @@ function normalizeUserContextId(value) {
 }
 
 class ZenSyncManager {
-
   getSidebarData() {
     return lazy.ZenSessionStore.getSidebarData();
   }
@@ -27,6 +27,7 @@ class ZenSyncManager {
   /**
    * Whether to ignore changes to items. This is used to prevent
    * infinite loops when applying incoming sync changes.
+   *
    * @type {boolean}
    */
   #ignoreChanges = false;
@@ -50,14 +51,13 @@ class ZenSyncManager {
     this.#changedItems.clear();
   }
 
-
   notifyAboutChanges() {
     const changedItems = this.#getChangedItems();
 
     for (const item of changedItems) {
       Services.obs.notifyObservers(
         { wrappedJSObject: item },
-        "zen-workspace-item-changed",
+        "zen-workspace-item-changed"
       );
     }
     this.#clearChangedItems();
@@ -67,10 +67,10 @@ class ZenSyncManager {
       this.#ignoreChanges = true;
       this.#applyIncomingContainers(
         pulled.containers || [],
-        removals.containers || [],
+        removals.containers || []
       );
 
-      const win = Services.wm.getMostRecentWindow("navigator:browser");
+      const win = lazy.ZenWindowSync.firstSyncedWindow;
       if (win?.gZenWorkspaces && !win.gZenWorkspaces.privateWindowOrDisabled) {
         await win.gZenWorkspaces._applySyncChanges(pulled, removals);
       }
@@ -84,9 +84,10 @@ class ZenSyncManager {
 
   #applyIncomingContainers(pulledContainers, removedContainers) {
     const localContainersById = new Map(
-      lazy.ContextualIdentityService
-        .getPublicIdentities()
-        .map(container => [container.userContextId, container]),
+      lazy.ContextualIdentityService.getPublicIdentities().map(container => [
+        container.userContextId,
+        container,
+      ])
     );
 
     for (const container of pulledContainers) {
@@ -98,7 +99,7 @@ class ZenSyncManager {
       if (userContextId === null) {
         console.warn(
           "ZenSyncManager: Ignoring incoming container with invalid userContextId",
-          { container },
+          { container }
         );
         continue;
       }
@@ -110,7 +111,7 @@ class ZenSyncManager {
           userContextId,
           container.name,
           container.icon,
-          container.color,
+          container.color
         );
         continue;
       }
@@ -119,15 +120,12 @@ class ZenSyncManager {
         container.name,
         container.icon,
         container.color,
-        userContextId,
+        userContextId
       );
       if (createdIdentity) {
         localContainersById.set(createdIdentity.userContextId, createdIdentity);
       }
-      if (
-        createdIdentity &&
-        createdIdentity.userContextId !== userContextId
-      ) {
+      if (createdIdentity && createdIdentity.userContextId !== userContextId) {
         console.warn("ZenSyncManager: Container sync created unexpected ID", {
           requestedId: userContextId,
           createdId: createdIdentity.userContextId,
@@ -141,7 +139,7 @@ class ZenSyncManager {
       if (userContextId === null) {
         console.warn(
           "ZenSyncManager: Ignoring container removal with invalid userContextId",
-          { container },
+          { container }
         );
         continue;
       }

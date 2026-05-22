@@ -140,6 +140,7 @@ class nsZenBoostsManager {
         customCSS: "",
 
         changeWasMade: false,
+        colorChangeWasMade: false,
       },
     };
   }

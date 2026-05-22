@@ -564,6 +564,10 @@ ${cssSelector} {
       this.wasDragging = true;
       event.preventDefault();
 
+      this.currentBoostData.changeWasMade = true;
+      this.currentBoostData.colorChangeWasMade = true;
+      this.updateButtonToggleVisuals();
+
       if (this.dragTarget == "zen-boost-color-picker-dot-secondary") {
         this.setSecondaryDotPos(event.clientX, event.clientY);
       } else if (event.target.id != "zen-boost-magic-theme") {
@@ -695,14 +699,17 @@ ${cssSelector} {
 
     this.currentBoostData.changeWasMade = true;
 
+    this.currentBoostData.colorChangeWasMade = true;
+    this.currentBoostData.enableColorBoost = true;
+    this.updateButtonToggleVisuals();
+
     if (event.target.id == "zen-boost-magic-theme") {
-      this.currentBoostData.enableColorBoost = true;
       this.currentBoostData.autoTheme = !this.currentBoostData.autoTheme;
-      this.updateButtonToggleVisuals();
       this.updateCurrentBoost();
     } else if (this.dragTarget != "zen-boost-color-picker-dot-secondary") {
       this.setDotPos(event.clientX, event.clientY, !this.wasDragging);
     }
+
     this.wasDragging = false;
   }
 
@@ -1164,7 +1171,7 @@ ${cssSelector} {
       invertButton.classList.remove("zen-boost-button-active");
     }
 
-    if (!this.currentBoostData.enableColorBoost) {
+    if (!this.currentBoostData.enableColorBoost && this.currentBoostData.colorChangeWasMade) {
       disableButton.classList.add("zen-boost-button-active-transparent");
     } else {
       disableButton.classList.remove("zen-boost-button-active-transparent");
@@ -1175,6 +1182,7 @@ ${cssSelector} {
     // or the theme is set automatically
     if (
       !this.currentBoostData.enableColorBoost ||
+      !this.currentBoostData.colorChangeWasMade ||
       this.currentBoostData.autoTheme
     ) {
       gradient.classList.add("zen-boost-panel-disabled");
@@ -1563,6 +1571,10 @@ ${cssSelector} {
 
     if (!this.currentBoostData.sizeOverride) {
       this.currentBoostData.sizeOverride = 1;
+    }
+
+    if (this.colorChangeWasMade == null) {
+      this.colorChangeWasMade = false;
     }
 
     if (

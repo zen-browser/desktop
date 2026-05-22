@@ -11,6 +11,18 @@
   }
   appearance: none;
   border: none;
+
+  max-height: 582px;
+}
+
+#zenBoostWindow[mode="boost"] {
+  width: 192px;
+  max-width: 192px;
+}
+
+#zenBoostWindow[mode="editor"] {
+  width: 452px;
+  max-width: 452px;
 }
 
 .source-editor-frame {
@@ -540,6 +552,7 @@ body {
     height: 26px;
     width: 26px;
     transform-origin: center center;
+    aspect-ratio: 1;
 
     &:hover {
       background-color: #9a9a9a30;

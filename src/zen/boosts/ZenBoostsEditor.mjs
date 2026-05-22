@@ -65,6 +65,7 @@ export class nsZenBoostEditor {
       once: true,
     });
 
+    this.doc.getElementById("zenBoostWindow").setAttribute("editor", "boost");
     this.doc.getElementById("zen-boost-editor-root").style.display = "flex";
     this.doc.getElementById("zen-boost-code-editor-root").style.display =
       "none";
@@ -366,20 +367,22 @@ export class nsZenBoostEditor {
     // being smaller than it should be
     this._boostEditorWidth = this.editorWindow.outerWidth;
 
-    this.editorWindow.resizeTo(
-      this._codeEditorWidth,
-      this.editorWindow.outerHeight
-    );
-    if (openRightAligned) {
-      this.editorWindow.moveTo(
-        this.editorWindow.screenX - offset,
-        this.editorWindow.screenY
+    this.editorWindow.requestAnimationFrame(() => {
+      this.editorWindow.resizeTo(
+        this._codeEditorWidth,
+        this.editorWindow.outerHeight
       );
-    }
+      if (openRightAligned) {
+        this.editorWindow.moveTo(
+          this.editorWindow.screenX - offset,
+          this.editorWindow.screenY
+        );
+      }
 
-    this.doc.getElementById("zen-boost-editor-root").style.display = "none";
-    this.doc.getElementById("zen-boost-code-editor-root").style.display =
-      "initial";
+      this.doc.getElementById("zen-boost-editor-root").style.display = "none";
+      this.doc.getElementById("zen-boost-code-editor-root").style.display =
+        "initial";
+    });
   }
 
   /**
@@ -397,20 +400,22 @@ export class nsZenBoostEditor {
     }
     windowElem.setAttribute("editor", "boost");
 
-    this.editorWindow.resizeTo(
-      this._boostEditorWidth,
-      this.editorWindow.outerHeight
-    );
-    if (openRightAligned) {
-      this.editorWindow.moveTo(
-        this.editorWindow.screenX + offset,
-        this.editorWindow.screenY
+    this.editorWindow.requestAnimationFrame(() => {
+      this.editorWindow.resizeTo(
+        this._boostEditorWidth,
+        this.editorWindow.outerHeight
       );
-    }
+      if (openRightAligned) {
+        this.editorWindow.moveTo(
+          this.editorWindow.screenX + offset,
+          this.editorWindow.screenY
+        );
+      }
 
-    this.doc.getElementById("zen-boost-editor-root").style.display = "flex";
-    this.doc.getElementById("zen-boost-code-editor-root").style.display =
-      "none";
+      this.doc.getElementById("zen-boost-editor-root").style.display = "flex";
+      this.doc.getElementById("zen-boost-code-editor-root").style.display =
+        "none";
+    });
 
     // Disable picker mode
     this.disableAllPickers();

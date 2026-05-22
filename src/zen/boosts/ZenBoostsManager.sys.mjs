@@ -115,11 +115,11 @@ class nsZenBoostsManager {
         boostName: "My Boost",
 
         dotAngleDeg: 0,
-        dotPos: { x: null, y: null },
+        dotPos: { x: 0.76, y: 0.66 },
         dotDistance: 0,
 
         secondaryDotAngleDegDelta: 55,
-        secondaryDotPos: { x: null, y: null },
+        secondaryDotPos: { x: 0.5, y: 0.81 },
 
         brightness: 0.5,
         saturation: 0.5,
@@ -140,7 +140,6 @@ class nsZenBoostsManager {
         customCSS: "",
 
         changeWasMade: false,
-        colorChangeWasMade: false,
       },
     };
   }

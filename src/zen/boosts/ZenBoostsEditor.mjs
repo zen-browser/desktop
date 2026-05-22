@@ -570,7 +570,6 @@ ${cssSelector} {
       event.preventDefault();
 
       this.currentBoostData.changeWasMade = true;
-      this.currentBoostData.colorChangeWasMade = true;
       this.updateButtonToggleVisuals();
 
       if (this.dragTarget == "zen-boost-color-picker-dot-secondary") {
@@ -680,20 +679,6 @@ ${cssSelector} {
   }
 
   /**
-   * Resets the color picker dot to the default position (default state).
-   */
-  resetDotPosition() {
-    const gradient = this.doc.querySelector(".zen-boost-color-picker-gradient");
-    const rect = gradient.getBoundingClientRect();
-    const padding = 50;
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const radius = (rect.width - padding) / 2;
-
-    this.setDotPos(centerX + radius / 1.25, centerY);
-  }
-
-  /**
    * Handles clicks on the theme picker gradient or magic theme button.
    * Updates the dot position or toggles auto-theme mode based on the click target.
    *
@@ -704,7 +689,6 @@ ${cssSelector} {
 
     this.currentBoostData.changeWasMade = true;
 
-    this.currentBoostData.colorChangeWasMade = true;
     this.currentBoostData.enableColorBoost = true;
     this.updateButtonToggleVisuals();
 
@@ -1176,7 +1160,7 @@ ${cssSelector} {
       invertButton.classList.remove("zen-boost-button-active");
     }
 
-    if (!this.currentBoostData.enableColorBoost && this.currentBoostData.colorChangeWasMade) {
+    if (!this.currentBoostData.enableColorBoost) {
       disableButton.classList.add("zen-boost-button-active-transparent");
     } else {
       disableButton.classList.remove("zen-boost-button-active-transparent");
@@ -1187,7 +1171,6 @@ ${cssSelector} {
     // or the theme is set automatically
     if (
       !this.currentBoostData.enableColorBoost ||
-      !this.currentBoostData.colorChangeWasMade ||
       this.currentBoostData.autoTheme
     ) {
       gradient.classList.add("zen-boost-panel-disabled");
@@ -1578,48 +1561,31 @@ ${cssSelector} {
       this.currentBoostData.sizeOverride = 1;
     }
 
-    if (this.currentBoostData.colorChangeWasMade == null) {
-      this.currentBoostData.colorChangeWasMade = false;
-    }
-
-    if (
-      this.currentBoostData.dotPos.x == null ||
-      this.currentBoostData.dotPos.y == null
+    if ( // Test if the stored position is a non-normalized dot position
+      this.currentBoostData.dotPos.x > 1 ||
+      this.currentBoostData.dotPos.x < 0 ||
+      this.currentBoostData.dotPos.y > 1 ||
+      this.currentBoostData.dotPos.y < 0
     ) {
-      this.resetDotPosition();
-    } else {
-      // Test if the stored position is a non-normalized dot position
-      if (
-        this.currentBoostData.dotPos.x > 1 ||
-        this.currentBoostData.dotPos.x < 0 ||
-        this.currentBoostData.dotPos.y > 1 ||
-        this.currentBoostData.dotPos.y < 0
-      ) {
-        // Normalize position
-        this.currentBoostData.dotPos.x =
-          this.currentBoostData.dotPos.x / rect.width;
-        this.currentBoostData.dotPos.y =
-          this.currentBoostData.dotPos.y / rect.height;
-      }
-
-      // Convert normalized position to relative position
-      const xPos = this.currentBoostData.dotPos.x * rect.width;
-      const yPos = this.currentBoostData.dotPos.y * rect.height;
-
-      dot.style.left = `${xPos}px`;
-      dot.style.top = `${yPos}px`;
+      // Normalize position
+      this.currentBoostData.dotPos.x =
+        this.currentBoostData.dotPos.x / rect.width;
+      this.currentBoostData.dotPos.y =
+        this.currentBoostData.dotPos.y / rect.height;
     }
 
-    if (
-      this.currentBoostData.secondaryDotPos?.x != null &&
-      this.currentBoostData.secondaryDotPos?.y != null
-    ) {
-      const xPosSec = this.currentBoostData.secondaryDotPos.x * rect.width;
-      const yPosSec = this.currentBoostData.secondaryDotPos.y * rect.height;
+    // Convert normalized position to relative position
+    const xPos = this.currentBoostData.dotPos.x * rect.width;
+    const yPos = this.currentBoostData.dotPos.y * rect.height;
 
-      dotSec.style.left = `${xPosSec}px`;
-      dotSec.style.top = `${yPosSec}px`;
-    }
+    dot.style.left = `${xPos}px`;
+    dot.style.top = `${yPos}px`;
+
+    const xPosSec = this.currentBoostData.secondaryDotPos.x * rect.width;
+    const yPosSec = this.currentBoostData.secondaryDotPos.y * rect.height;
+
+    dotSec.style.left = `${xPosSec}px`;
+    dotSec.style.top = `${yPosSec}px`;
 
     this.editorWindow._editor.setText(this.currentBoostData.customCSS || "");
 

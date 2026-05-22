@@ -667,7 +667,6 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     let newIndex = dropIndex;
     let fromDifferentWindow = false;
     let ownedTabs = Array.from(movingTabs || draggedTab)
-      .reverse()
       .map(tab => {
         if (!gBrowser.isTab(tab)) {
           return tab;

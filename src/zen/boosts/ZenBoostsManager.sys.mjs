@@ -559,7 +559,11 @@ class nsZenBoostsManager {
     const domainEntry = this.#getDomainEntry(domain);
 
     if (domainEntry) {
-      return domainEntry.boostEntries.has(domainEntry.activeBoostId);
+      const hasBoost = domainEntry.boostEntries.has(domainEntry.activeBoostId);
+      if (hasBoost) {
+        const boost = this.loadActiveBoostFromStore(domain);
+        return boost?.boostEntry.boostData.changeWasMade ?? false;
+      }
     }
 
     return false;

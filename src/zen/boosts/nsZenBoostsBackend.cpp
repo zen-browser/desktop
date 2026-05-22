@@ -359,15 +359,24 @@ inline static nscolor zenInvertColorChannel(nscolor aColor) {
   const auto gShifted = sum - gInv;
   const auto bShifted = sum - bInv;
 
-  // Compress the channel range into [FLOOR, 255] so dark inversions are
-  // lifted while light inversions are left untouched. This preserves hue
-  // since all three channels are scaled by the same factor.
+  // If the resulting color is light, leave it untouched: mixing in the floor
+  // would raise its lowest channel and wash the color out toward grey. Only
+  // dark results get the floor lift, which keeps them off pure black.
+  const auto luma = (rShifted * 54 + gShifted * 183 + bShifted * 19) >> 8;
+  if (luma > 127) {
+    return NS_RGBA(static_cast<uint8_t>(rShifted),
+                   static_cast<uint8_t>(gShifted),
+                   static_cast<uint8_t>(bShifted), a);
+  }
+
+  // Compress the dark channel range into [FLOOR, 255] so dark inversions are
+  // lifted off pure black. This preserves hue since all three channels are
+  // scaled by the same factor.
   const auto channelFloor = INVERT_CHANNEL_FLOOR();
   const uint32_t range = 255 - channelFloor;
   const auto lift = [channelFloor, range](uint8_t c) -> uint8_t {
     return static_cast<uint8_t>(channelFloor + (c * range) / 255);
   };
-
   return NS_RGBA(lift(rShifted), lift(gShifted), lift(bShifted), a);
 }
 

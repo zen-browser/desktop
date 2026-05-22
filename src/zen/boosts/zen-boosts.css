@@ -17,12 +17,12 @@
 }
 
 #zenBoostWindow[editor="boost"] {
-  width: 192px;
+  min-width: 192px;
   max-width: 192px;
 }
 
 #zenBoostWindow[editor="code"] {
-  width: 452px;
+  min-width: 452px;
   max-width: 452px;
 }
 

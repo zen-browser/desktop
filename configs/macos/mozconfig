@@ -8,7 +8,13 @@ ac_add_options --disable-dmd
 ac_add_options --enable-eme=widevine
 
 if test "$ZEN_RELEASE"; then
-  ac_add_options --with-macos-sdk=/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk
+  ALLOWED_SDKS="26.5 26.4"
+  for SDK in $ALLOWED_SDKS; do
+    if [ -d "/Library/Developer/CommandLineTools/SDKs/MacOSX${SDK}.sdk" ]; then
+      ac_add_options --with-macos-sdk=/Library/Developer/CommandLineTools/SDKs/MacOSX${SDK}.sdk
+      break
+    fi
+  done
 fi
 
 if test "$ZEN_RELEASE"; then

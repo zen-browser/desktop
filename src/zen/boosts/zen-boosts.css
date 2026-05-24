@@ -17,8 +17,8 @@
 }
 
 #zenBoostWindow[editor="boost"] {
-  min-width: 192px;
-  max-width: 192px;
+  min-width: 184px;
+  max-width: 184px;
 }
 
 #zenBoostWindow[editor="code"] {
@@ -239,9 +239,9 @@ body {
 }
 
 #zen-boost-filter-wrapper {
-  padding: 20px;
+  padding: 16px;
   gap: 14px;
-  padding-top: 10px;
+  padding-top: 6px;
 
   background-color: #fcfcfe;
 

@@ -690,7 +690,6 @@ ${cssSelector} {
     this.currentBoostData.changeWasMade = true;
 
     this.currentBoostData.enableColorBoost = true;
-    this.updateButtonToggleVisuals();
 
     if (event.target.id == "zen-boost-magic-theme") {
       this.currentBoostData.autoTheme = !this.currentBoostData.autoTheme;
@@ -699,6 +698,7 @@ ${cssSelector} {
       this.setDotPos(event.clientX, event.clientY, !this.wasDragging);
     }
 
+    this.updateButtonToggleVisuals();
     this.wasDragging = false;
   }
 

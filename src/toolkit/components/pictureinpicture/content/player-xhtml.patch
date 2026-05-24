@@ -8,7 +8,7 @@ index 09c9c5000de96fcd4a9d26328408996540c2cbda..b6d93850bbfe63a4e21756c97415a6c1
      <title data-l10n-id="pictureinpicture-player-title"></title>
 +    <link rel="localization" href="browser/zen-general.ftl"/>
    </head>
- 
+
    <body>
 @@ -53,13 +54,22 @@
        tabindex="10"

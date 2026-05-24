@@ -1,8 +1,56 @@
 diff --git a/toolkit/components/pictureinpicture/content/player.js b/toolkit/components/pictureinpicture/content/player.js
-index 34d92dcfba54de4752036d0e251243729b6c9626..20a0399e3bf6f9827f805ea6975b801ae269646d 100644
+index 34d92dcfba54de4752036d0e251243729b6c9626..8fb7bbb61894de2a5924c5d28f41b362413ed529 100644
 --- a/toolkit/components/pictureinpicture/content/player.js
 +++ b/toolkit/components/pictureinpicture/content/player.js
-@@ -764,6 +764,11 @@ let Player = {
+@@ -191,6 +191,7 @@ let Player = {
+    */
+   oldMouseUpWindowX: window.screenX,
+   oldMouseUpWindowY: window.screenY,
++  zenPipTouchAnchor: null,
+ 
+   /**
+    * Used to determine if hovering the mouse cursor over the pip window or not.
+@@ -262,6 +263,10 @@ let Player = {
+     for (let eventType of this.WINDOW_EVENTS) {
+       addEventListener(eventType, this);
+     }
++    addEventListener("wheel", this, { passive: false, capture: true });
++    addEventListener("touchstart", this, { passive: false, capture: true });
++    addEventListener("touchmove", this, { passive: false, capture: true });
++    addEventListener("touchend", this, { capture: true });
+ 
+     this.controls.addEventListener("mouseleave", () => {
+       this.onMouseLeave();
+@@ -553,6 +558,28 @@ let Player = {
+         this.toggleSubtitlesSettingsPanel({ forceHide: true });
+         break;
+       }
++
++      case "wheel": {
++        this.onZenWheel(event);
++        break;
++      }
++
++      case "touchstart": {
++        this.onZenTouchStart(event);
++        break;
++      }
++
++      case "touchmove": {
++        this.onZenTouchMove(event);
++        break;
++      }
++
++      case "touchend": {
++        if (!event.touches.length) {
++          this.zenPipTouchAnchor = null;
++        }
++        break;
++      }
+     }
+   },
+ 
+@@ -764,6 +791,11 @@ let Player = {
          document.getElementById("large").click();
          break;
        }
@@ -14,3 +62,121 @@ index 34d92dcfba54de4752036d0e251243729b6c9626..20a0399e3bf6f9827f805ea6975b801a
      }
      // If the click came from a element that is not inside the subtitles settings panel
      // then we want to hide the panel
+@@ -772,6 +804,117 @@ let Player = {
+     }
+   },
+ 
++  onZenWheel(event) {
++    event.preventDefault();
++    let s = window.screen;
++    if (event.ctrlKey) {
++      let factor = Math.pow(1.02, -event.deltaY);
++      let newW = Math.round(
++        Math.max(160, Math.min(s.availWidth, window.outerWidth * factor))
++      );
++      let ratio = window.outerHeight / window.outerWidth;
++      let newH = Math.round(newW * ratio);
++      let newX = Math.round(
++        Math.max(
++          s.availLeft,
++          Math.min(
++            s.availLeft + s.availWidth - newW,
++            window.screenX + (window.outerWidth - newW) / 2
++          )
++        )
++      );
++      let newY = Math.round(
++        Math.max(
++          s.availTop,
++          Math.min(
++            s.availTop + s.availHeight - newH,
++            window.screenY + (window.outerHeight - newH) / 2
++          )
++        )
++      );
++      window.moveTo(newX, newY);
++      window.resizeTo(newW, newH);
++    } else {
++      let s = window.screen;
++      window.moveTo(
++        Math.round(
++          Math.max(
++            s.availLeft,
++            Math.min(
++              s.availLeft + s.availWidth - window.outerWidth,
++              window.screenX - event.deltaX
++            )
++          )
++        ),
++        Math.round(
++          Math.max(
++            s.availTop,
++            Math.min(
++              s.availTop + s.availHeight - window.outerHeight,
++              window.screenY - event.deltaY
++            )
++          )
++        )
++      );
++    }
++  },
++
++  onZenTouchStart(event) {
++    if (event.touches.length === 2) {
++      this.zenPipTouchAnchor = {
++        midX: (event.touches[0].clientX + event.touches[1].clientX) / 2,
++        midY: (event.touches[0].clientY + event.touches[1].clientY) / 2,
++        dist: Math.hypot(
++          event.touches[1].clientX - event.touches[0].clientX,
++          event.touches[1].clientY - event.touches[0].clientY
++        ),
++        winX: window.screenX,
++        winY: window.screenY,
++        winW: window.outerWidth,
++        winH: window.outerHeight,
++      };
++      event.preventDefault();
++    } else {
++      this.zenPipTouchAnchor = null;
++    }
++  },
++
++  onZenTouchMove(event) {
++    if (event.touches.length !== 2 || !this.zenPipTouchAnchor) {
++      return;
++    }
++    event.preventDefault();
++    let anchor = this.zenPipTouchAnchor;
++    let dist = Math.hypot(
++      event.touches[1].clientX - event.touches[0].clientX,
++      event.touches[1].clientY - event.touches[0].clientY
++    );
++    let scale = dist / anchor.dist;
++    let s = window.screen;
++    let newW = Math.round(Math.max(160, Math.min(s.availWidth, anchor.winW * scale)));
++    let newH = Math.round(anchor.winH * scale);
++    let newX = Math.round(
++      Math.max(
++        s.availLeft,
++        Math.min(
++          s.availLeft + s.availWidth - newW,
++          anchor.winX + (anchor.winW - newW) / 2
++        )
++      )
++    );
++    let newY = Math.round(
++      Math.max(
++        s.availTop,
++        Math.min(
++          s.availTop + s.availHeight - newH,
++          anchor.winY + (anchor.winH - newH) / 2
++        )
++      )
++    );
++    window.moveTo(newX, newY);
++    window.resizeTo(newW, newH);
++  },
++
+   /**
+    * Function to toggle the visibility of the subtitles settings panel
+    *

@@ -7,8 +7,8 @@ tab-zen-split-tabs =
         { $tabCount ->
             [-1] Відокремити вкладку
             [1] Додати розділений перегляд...
-          [few] Об’єднати { $tabCount } вкладки
-        *[other] Об’єднати { $tabCount } вкладок
+            [few] Об’єднати { $tabCount } вкладки
+           *[other] Об’єднати { $tabCount } вкладок
         }
     .accesskey = S
 zen-split-link = 

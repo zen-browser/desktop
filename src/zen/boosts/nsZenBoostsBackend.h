@@ -9,7 +9,6 @@
 #include "nsISupportsImpl.h"
 #include "nsPresContext.h"
 
-#include "mozilla/RefPtr.h"
 #include "mozilla/AlreadyAddRefed.h"
 
 class nsIFrame;

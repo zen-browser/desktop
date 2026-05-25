@@ -433,10 +433,13 @@ class KeyShortcut {
     if (this.#keycode) {
       key.setAttribute("keycode", this.#keycode);
       key.removeAttribute("key");
-    } else {
+    } else if (this.#key) {
       // note to "mr. macos": Better use setAttribute, because without it, there's a
       //  risk of malforming the XUL element.
       key.setAttribute("key", this.#key);
+      key.removeAttribute("keycode");
+    } else {
+      key.removeAttribute("key");
       key.removeAttribute("keycode");
     }
     key.setAttribute("group", this.#group);
@@ -845,7 +848,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 18;
+  static LATEST_KBS_VERSION = 19;
 
   constructor() {}
 
@@ -1239,6 +1242,18 @@ class nsZenKeyboardShortcutsVersioner {
           "zen-workspace-shortcut-create"
         )
       );
+    }
+
+    if (version < 19) {
+      // Migrate from version 18 to 19.
+      // Disable "key_duplicateTab" since we already had "cmd_zenDuplicateTab" before Firefox 151.
+      for (let shortcut of data) {
+        if (shortcut.getID() == "key_duplicateTab") {
+          shortcut.shouldBeEmpty = true;
+          shortcut.setDisabled(true);
+          break;
+        }
+      }
     }
 
     return data;

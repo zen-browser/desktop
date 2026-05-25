@@ -793,6 +793,7 @@ const zenMissingKeyboardShortcutL10n = {
   key_selectTab7: "zen-key-select-tab-7",
   key_selectTab8: "zen-key-select-tab-8",
   key_selectLastTab: "zen-key-select-tab-last",
+  key_duplicateTab: "customkeys-file-duplicate-tab",
 
   key_showAllTabs: "zen-key-show-all-tabs",
   key_gotoHistory: "zen-key-goto-history",
@@ -801,6 +802,7 @@ const zenMissingKeyboardShortcutL10n = {
   key_redo: "zen-key-redo",
 
   key_inspectorMac: "zen-key-inspector-mac",
+  key_findSelection: "zen-key-find-selection",
 
   // Devtools
   key_toggleToolbox: "zen-devtools-toggle-shortcut",

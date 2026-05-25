@@ -26,4 +26,6 @@ support-files = [
 
 ["browser_unload_all_other_spaces.js"]
 
+["browser_move_tab_to_workspace.js"]
+
 ["browser_workspace_bookmarks.js"]

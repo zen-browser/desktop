@@ -630,7 +630,7 @@ export class nsZenSessionManager {
    * @returns {object}
    */
   getSidebarData() {
-    return this.#sidebar;
+    return this.#sidebarWithoutCloning;
   }
 
   /**

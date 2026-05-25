@@ -32,19 +32,17 @@ class ZenSyncManager {
    */
   #ignoreChanges = false;
 
-  #changedItems = new Set();
+  #changedItems = new Map();
 
   markItemChanged(item) {
     if (item.type && item.id && !this.#ignoreChanges) {
-      this.#changedItems.add(`${item.type}~${item.id}`);
+      const key = `${item.type}~${item.id}`;
+      this.#changedItems.set(key, { type: item.type, id: item.id });
     }
   }
 
   #getChangedItems() {
-    return Array.from(this.#changedItems.values()).map(item => {
-      const [type, id] = item.split("~");
-      return { type, id };
-    });
+    return Array.from(this.#changedItems.values());
   }
 
   #clearChangedItems() {

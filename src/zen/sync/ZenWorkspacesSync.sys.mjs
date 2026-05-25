@@ -330,7 +330,7 @@ class ZenWorkspacesTracker extends Tracker {
       }
     } else if (topic.startsWith("contextual-identity-")) {
       const id = subject?.wrappedJSObject?.userContextId;
-      if (id) {
+      if (id && normalizeUserContextId(id) !== null) {
         this._trackChange({ type: "container", id });
       }
     }
@@ -395,7 +395,7 @@ export class ZenWorkspacesEngine extends SyncEngine {
   }
 
   get syncPriority() {
-    return 6;
+    return 8;
   }
 
   get allowSkippedRecord() {

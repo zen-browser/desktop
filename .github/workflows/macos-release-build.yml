@@ -48,6 +48,12 @@ jobs:
         with:
           node-version-file: ".nvmrc"
 
+      - name: Log SDK versions
+        run: |
+          ls /Library/Developer/CommandLineTools/SDKs/
+          xcrun --show-sdk-version
+          xcrun --show-sdk-path
+
       - name: Run sccache-cache
         uses: mozilla-actions/sccache-action@main
         if: ${{ inputs.use-sccache }}

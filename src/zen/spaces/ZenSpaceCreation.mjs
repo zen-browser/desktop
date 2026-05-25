@@ -219,7 +219,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
           document.getElementById("nav-bar").style.visibility = "collapse";
         }
         this.style.visibility = "visible";
-        gZenCompactModeManager.getAndApplySidebarWidth();
+        gZenCompactModeManager.getAndApplySidebarWidth({});
         this.resolveInitialized();
         let animation = gZenUIManager.motion.animate(
           this.elementsToAnimate,

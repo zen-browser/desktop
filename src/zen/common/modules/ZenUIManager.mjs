@@ -1510,7 +1510,7 @@ window.gZenVerticalTabsManager = {
       this.navigatorToolbox.after(splitter);
       window.dispatchEvent(new Event("resize"));
       if (!isCompactMode) {
-        gZenCompactModeManager.getAndApplySidebarWidth();
+        gZenCompactModeManager.getAndApplySidebarWidth({});
       }
       gZenUIManager.updateTabsToolbar();
       this.rebuildURLBarMenus();

@@ -1657,7 +1657,9 @@ class nsZenWindowSync {
     this.#runOnAllWindows(window, win => {
       const targetTab = this.getItemFromWindow(win, tab.id);
       if (targetTab && win.gZenViewSplitter) {
-        win.gZenViewSplitter.removeTabFromGroup(targetTab);
+        win.gZenViewSplitter.removeTabFromGroup(targetTab, undefined, {
+          changeTab: false,
+        });
       }
     });
   }

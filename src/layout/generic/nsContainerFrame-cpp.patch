@@ -1,0 +1,47 @@
+diff --git a/layout/generic/nsContainerFrame.cpp b/layout/generic/nsContainerFrame.cpp
+index c27fec39f9e32e61f0e335e5880ce3e97074965b..7b4f7760dcf92ead74c9f89cfc7a067892af9e34 100644
+--- a/layout/generic/nsContainerFrame.cpp
++++ b/layout/generic/nsContainerFrame.cpp
+@@ -349,7 +349,8 @@ class nsDisplaySelectionOverlay final : public nsPaintedDisplayItem {
+       nsDisplayListBuilder* aDisplayListBuilder) override;
+   NS_DISPLAY_DECL_NAME("SelectionOverlay", TYPE_SELECTION_OVERLAY)
+ 
+-  static DeviceColor ComputeColorFromSelectionStyle(const ComputedStyle&);
++  static DeviceColor ComputeColorFromSelectionStyle(const ComputedStyle&,
++                                                    const nsIFrame*);
+   static DeviceColor ApplyTransparencyIfNecessary(nscolor);
+ 
+  private:
+@@ -371,9 +372,9 @@ DeviceColor nsDisplaySelectionOverlay::ApplyTransparencyIfNecessary(
+ }
+ 
+ DeviceColor nsDisplaySelectionOverlay::ComputeColorFromSelectionStyle(
+-    const ComputedStyle& aStyle) {
+-  return ApplyTransparencyIfNecessary(
+-      aStyle.GetVisitedDependentColor(&nsStyleBackground::mBackgroundColor));
++    const ComputedStyle& aStyle, const nsIFrame* aFrame) {
++  return ApplyTransparencyIfNecessary(aStyle.GetVisitedDependentColor(
++      &nsStyleBackground::mBackgroundColor, aFrame));
+ }
+ 
+ void nsDisplaySelectionOverlay::Paint(nsDisplayListBuilder* aBuilder,
+@@ -472,7 +473,8 @@ void nsContainerFrame::DisplaySelectionOverlay(nsDisplayListBuilder* aBuilder,
+             ComputeHighlightSelectionStyle(sd->mHighlightData.mHighlightName)) {
+       aList->AppendNewToTopWithIndex<nsDisplaySelectionOverlay>(
+           aBuilder, this, index++,
+-          nsDisplaySelectionOverlay::ComputeColorFromSelectionStyle(*style));
++          nsDisplaySelectionOverlay::ComputeColorFromSelectionStyle(*style,
++                                                                    this));
+     }
+   }
+ 
+@@ -480,7 +482,8 @@ void nsContainerFrame::DisplaySelectionOverlay(nsDisplayListBuilder* aBuilder,
+   if (normal) {
+     DeviceColor color;
+     if (RefPtr<ComputedStyle> style = ComputeSelectionStyle(selectionValue)) {
+-      color = nsDisplaySelectionOverlay::ComputeColorFromSelectionStyle(*style);
++      color = nsDisplaySelectionOverlay::ComputeColorFromSelectionStyle(*style,
++                                                                        this);
+     } else {
+       LookAndFeel::ColorID colorID;
+       if (selectionValue == nsISelectionController::SELECTION_ON) {

@@ -702,6 +702,10 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         }
         return tab;
       });
+    if (!fromDifferentWindow) {
+      // See gh-13796 and gh-12156
+      ownedTabs = ownedTabs.reverse();
+    }
     movingTabs = [...ownedTabs];
     if (fromDifferentWindow) {
       gBrowser.addRangeToMultiSelectedTabs(

@@ -11,6 +11,19 @@
   }
   appearance: none;
   border: none;
+
+  min-height: 582px;
+  max-height: 582px;
+}
+
+#zenBoostWindow[editor="boost"] {
+  min-width: 184px;
+  max-width: 184px;
+}
+
+#zenBoostWindow[editor="code"] {
+  min-width: 452px;
+  max-width: 452px;
 }
 
 .source-editor-frame {
@@ -106,9 +119,6 @@ body {
 
   & button {
     border-radius: 6px;
-    @media (-moz-platform: macos) {
-      border-radius: 10px;
-    }
 
     padding: 0 !important;
     min-width: fit-content !important;
@@ -229,9 +239,9 @@ body {
 }
 
 #zen-boost-filter-wrapper {
-  padding: 20px;
+  padding: 16px;
   gap: 14px;
-  padding-top: 10px;
+  padding-top: 6px;
 
   background-color: #fcfcfe;
 
@@ -543,6 +553,7 @@ body {
     height: 26px;
     width: 26px;
     transform-origin: center center;
+    aspect-ratio: 1;
 
     &:hover {
       background-color: #9a9a9a30;

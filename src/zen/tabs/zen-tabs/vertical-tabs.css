@@ -304,7 +304,7 @@
 
   --tab-block-margin: 2px;
   --tab-selected-bgcolor: light-dark(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.18));
-  --tab-selected-shadow: 0 1px 1px 0px light-dark(rgba(0, 0, 0, 0.09), rgba(0, 0, 0, 0.05)) !important;
+  --tab-selected-shadow: 0 0.8px 1.5px 0px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.05)) !important;
   grid-gap: 0 !important;
 
   &[overflow]::after,
@@ -318,7 +318,7 @@
       &,
       & .tab-content > image {
         transition:
-          scale 0.2s ease,
+          scale 0.1s ease,
           var(--zen-tabbox-element-indent-transition);
       }
     }
@@ -335,7 +335,7 @@
     #tabbrowser-tabs:not([movingtab])
     &:active:not(:has(.tab-content > image:active)) {
       scale: var(--zen-active-tab-scale);
-      rotate: 0.02deg; /* Subtle rotation to trigger GPU acceleration and prevent blurriness */
+      rotate: 0.01deg; /* Subtle rotation to trigger GPU acceleration and prevent blurriness */
     }
 
     :root:not([zen-renaming-tab="true"])
@@ -1077,7 +1077,7 @@
   #tabs-newtab-button {
     max-height: var(--tab-min-height);
     display: flex !important;
-    transition: scale 0.2s ease;
+    transition: scale 0.1s ease;
     #tabbrowser-tabs[movingtab] & {
       transition: transform 0.1s ease;
     }
@@ -1089,7 +1089,7 @@
 
     &:active,
     &[open] {
-      scale: 0.99;
+      scale: 0.985;
     }
 
     &[in-urlbar] {
@@ -1131,6 +1131,7 @@
   transition:
     max-height 0.3s ease-out,
     grid-template-columns 0.3s ease-out;
+  will-change: transform;
   opacity: 1;
   --min-essentials-width-wrap: calc(var(--tab-min-height) + 4px);
   grid-template-columns: repeat(auto-fit, minmax(max(23.7%, var(--min-essentials-width-wrap)), 1fr));
@@ -1325,6 +1326,7 @@
   padding: 0;
   outline: none !important;
   border-radius: 0;
+  width: 100%;
 }
 
 /* ==========================================================================

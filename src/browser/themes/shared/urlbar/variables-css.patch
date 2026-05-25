@@ -1,7 +1,7 @@
-diff --git a/browser/themes/shared/urlbar-variables.css b/browser/themes/shared/urlbar-variables.css
-index 0710bcc11e8040750ff826e3d3551454fdad61c6..2be2fa3e386ad9d4296d73ee8814e09750382a0d 100644
---- a/browser/themes/shared/urlbar-variables.css
-+++ b/browser/themes/shared/urlbar-variables.css
+diff --git a/browser/themes/shared/urlbar/variables.css b/browser/themes/shared/urlbar/variables.css
+index 34ab3df5ed433dafed00799c902afc276a722862..1e71860631f33839bdc7e1ec3a1e877bef744b55 100644
+--- a/browser/themes/shared/urlbar/variables.css
++++ b/browser/themes/shared/urlbar/variables.css
 @@ -9,7 +9,7 @@
  :root {
    --identity-box-margin-inline: 4px;

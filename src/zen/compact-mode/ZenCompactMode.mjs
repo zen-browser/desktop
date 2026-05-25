@@ -148,6 +148,7 @@ window.gZenCompactModeManager = {
       // We dont want the user to be able to spam the button
       return;
     }
+    delete this._isTabBeingDragged;
     this.sidebar.removeAttribute("zen-user-show");
     // We use this element in order to make it persis across restarts, by using the XULStore.
     // main-window can't store attributes other than window sizes, so we use this instead
@@ -723,6 +724,7 @@ window.gZenCompactModeManager = {
     } else {
       if (attr === "zen-has-hover") {
         element.removeAttribute("zen-has-implicit-hover");
+        gURLBar.updateTextOverflow();
       }
       element.removeAttribute(attr);
       // Only remove if none of the verified attributes are present

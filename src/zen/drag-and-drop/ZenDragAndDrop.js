@@ -725,7 +725,7 @@
               .changeWorkspaceShortcut(
                 isNearLeftEdge ? -1 : 1,
                 false,
-                /* Disable wrapping */ true
+                /* Disable wrapping */ false
               )
               .then(spaceChanged => {
                 this.#onSpaceChanged(spaceChanged, dt);
@@ -944,6 +944,16 @@
     }
 
     handle_drop(event) {
+      const ownerGlobal = event.dataTransfer.mozGetDataAt(
+        TAB_DROP_TYPE,
+        0
+      )?.ownerGlobal;
+      if (ownerGlobal?.gZenCompactModeManager) {
+        // Sometimes, dragend doesn't always get called when dragging
+        // to different windows, see gh-8643.
+        delete ownerGlobal.gZenCompactModeManager._isTabBeingDragged;
+        ownerGlobal.gZenCompactModeManager._clearAllHoverStates();
+      }
       this.clearSpaceSwitchTimer();
       gZenFolders.highlightGroupOnDragOver(null);
       super.handle_drop(event);
@@ -1098,7 +1108,10 @@
         );
         for (let i = startIndex; i <= endIndex; i++) {
           let item = items[i];
-          if (!movingTabs.includes(item)) {
+          if (
+            !movingTabs.includes(item) &&
+            !(isTabGroupLabel(item) && i == startIndex)
+          ) {
             tabsInBetween.push(item);
           }
         }

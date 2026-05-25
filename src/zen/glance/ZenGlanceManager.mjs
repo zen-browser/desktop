@@ -35,7 +35,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   // Arc animation configuration
   #ARC_CONFIG = Object.freeze({
     ARC_STEPS: 80, // Browser interpolates between keyframes natively
-    MAX_ARC_HEIGHT: 25,
+    MAX_ARC_HEIGHT: 20,
     ARC_HEIGHT_RATIO: 0.2, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
   });
 
@@ -313,16 +313,18 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     // content process since it does not take into account scroll. This way, we can
     // be sure that the coordinates are correct.
     const tabPanelsRect = gBrowser.tabpanels.getBoundingClientRect();
+    const zoomLevel =
+      this.#currentParentTab?.linkedBrowser.browsingContext.fullZoom || 1;
     const rect = new DOMRect(
-      data.clientX + tabPanelsRect.left,
-      data.clientY + tabPanelsRect.top,
-      data.width,
-      data.height
+      data.clientX / zoomLevel + tabPanelsRect.left,
+      data.clientY / zoomLevel + tabPanelsRect.top,
+      data.width / zoomLevel,
+      data.height / zoomLevel
     );
     return await this.#imageBitmapToObjectURL(
       await window.browsingContext.currentWindowGlobal.drawSnapshot(
         rect,
-        1,
+        zoomLevel,
         "transparent",
         undefined
       )

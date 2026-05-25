@@ -32,7 +32,6 @@ const KEYCODE_MAP = {
   TAB: "VK_TAB",
   ENTER: "VK_RETURN",
   ESCAPE: "VK_ESCAPE",
-  SPACE: "VK_SPACE",
   ARROWLEFT: "VK_LEFT",
   ARROWRIGHT: "VK_RIGHT",
   ARROWUP: "VK_UP",
@@ -43,6 +42,10 @@ const KEYCODE_MAP = {
   NUM_LOCK: "VK_NUMLOCK",
   SCROLL_LOCK: "VK_SCROLL",
 };
+
+const REVERSE_KEYCODE_MAP = Object.fromEntries(
+  Object.entries(KEYCODE_MAP).map(([k, v]) => [v, k])
+);
 
 const defaultKeyboardGroups = {
   windowAndTabManagement: [
@@ -553,16 +556,21 @@ class KeyShortcut {
     };
   }
 
-  toDisplayString() {
-    let str = this.#modifiers.toDisplayString();
-
-    if (this.#key) {
-      str += this.#key.toUpperCase();
-    } else if (this.#keycode) {
+  static keyToDisplayString(key, keycode) {
+    let str = "";
+    if (key) {
+      switch (key) {
+        case " ":
+          str += AppConstants.platform == "macosx" ? "␣" : "Space";
+          break;
+        default:
+          str += key.toUpperCase();
+      }
+    } else if (keycode) {
       // Get the key from the value
-      for (let [key, value] of Object.entries(KEYCODE_MAP)) {
-        if (value == this.#keycode) {
-          const normalizedKey = key.toLowerCase();
+      for (let [k, value] of Object.entries(KEYCODE_MAP)) {
+        if (value == keycode) {
+          const normalizedKey = k.toLowerCase();
           switch (normalizedKey) {
             case "arrowleft":
               str += "←";
@@ -582,18 +590,23 @@ class KeyShortcut {
             case "enter":
               str += AppConstants.platform == "macosx" ? "↩" : "Enter";
               break;
-            case "space":
-              str += AppConstants.platform == "macosx" ? "␣" : "Space";
-              break;
             default:
               str += normalizedKey;
           }
           break;
         }
       }
-    } else {
+    }
+    return str;
+  }
+
+  toDisplayString() {
+    if (!this.#key && !this.#keycode) {
       return "";
     }
+
+    let str = this.#modifiers.toDisplayString();
+    str += KeyShortcut.keyToDisplayString(this.#key, this.#keycode);
     return str;
   }
 
@@ -832,7 +845,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 17;
+  static LATEST_KBS_VERSION = 18;
 
   constructor() {}
 
@@ -1212,6 +1225,22 @@ class nsZenKeyboardShortcutsVersioner {
       );
     }
 
+    if (version < 18) {
+      // Migrate from version 17 to 18.
+      // Add shortcut to Create New Workspace (unbound by default)
+      data.push(
+        new KeyShortcut(
+          "zen-workspace-create",
+          "",
+          "",
+          ZEN_WORKSPACE_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({}),
+          "cmd_zenOpenWorkspaceCreation",
+          "zen-workspace-shortcut-create"
+        )
+      );
+    }
+
     return data;
   }
 }
@@ -1484,9 +1513,11 @@ window.gZenKeyboardShortcutsManager = {
         continue;
       }
 
+      const keyNameOrCode = targetShortcut.getKeyNameOrCode();
+      const key = REVERSE_KEYCODE_MAP[keyNameOrCode] ?? keyNameOrCode;
       if (
         targetShortcut.getModifiers().equals(modifiers) &&
-        targetShortcut.getKeyNameOrCode()?.toLowerCase() == realShortcut
+        key?.toLowerCase() == realShortcut
       ) {
         return {
           hasConflicts: true,
@@ -1524,5 +1555,23 @@ window.gZenKeyboardShortcutsManager = {
       return shortcut.toDisplayString();
     }
     return null;
+  },
+
+  getKeyDisplay(shortcut) {
+    if (shortcut == "") {
+      return "";
+    }
+
+    let key = shortcut;
+    let keycode = "";
+    for (let kc of Object.keys(KEYCODE_MAP)) {
+      if (kc == shortcut.toUpperCase()) {
+        keycode = KEYCODE_MAP[kc];
+        key = "";
+        break;
+      }
+    }
+
+    return KeyShortcut.keyToDisplayString(key, keycode);
   },
 };

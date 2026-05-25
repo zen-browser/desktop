@@ -11,7 +11,6 @@
   align-items: center;
   display: flex;
   font-size: x-small;
-  margin: 0 3px;
   padding: 0;
 
   position: relative;
@@ -315,12 +314,15 @@
 
 /* mark: workspace element */
 zen-workspace {
+  --toolbar-color: var(--toolbox-textcolor) !important;
+
   flex-direction: column;
   width: calc(100% + var(--zen-toolbox-padding) * 2);
   position: absolute;
   height: 100%;
   overflow: hidden;
   color: var(--toolbox-textcolor);
+  will-change: transform;
 
   @media not (prefers-reduced-motion: reduce) {
     transition: padding-top 0.1s;

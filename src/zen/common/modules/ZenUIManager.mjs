@@ -257,7 +257,7 @@ window.gZenUIManager = {
   },
 
   updateTabsToolbar() {
-    const kUrlbarHeight = 335;
+    const kUrlbarHeight = 333;
     gURLBar.style.setProperty(
       "--zen-urlbar-top",
       `${window.innerHeight / 2 - Math.max(kUrlbarHeight, window.windowUtils.getBoundsWithoutFlushing(gURLBar).height) / 2}px`
@@ -698,7 +698,11 @@ window.gZenUIManager = {
       this.urlbarShowDomainOnly
     ) {
       let url = BrowserUIUtils.removeSingleTrailingSlashFromURL(aURL);
-      return url.startsWith("https://") ? url.split("/")[2] : url;
+      let stripped = url.startsWith("https://") ? url.split("/")[2] : url;
+      if (stripped.startsWith("www.")) {
+        stripped = stripped.substring(4);
+      }
+      return stripped;
     }
     return BrowserUIUtils.trimURL(aURL);
   },
@@ -1354,8 +1358,9 @@ window.gZenVerticalTabsManager = {
         if (!this._hasSetSingleToolbar) {
           buttonsTarget.append(this._topButtonsSeparatorElement);
         }
+        this._hasSetSingleToolbar = true;
         for (const button of elements) {
-          this._topButtonsSeparatorElement.after(button);
+          this.appendCustomizableItem(this._topButtonsSeparatorElement, button);
         }
         buttonsTarget.prepend(
           document.getElementById("unified-extensions-button")
@@ -1377,7 +1382,6 @@ window.gZenVerticalTabsManager = {
           titlebar.parentNode.moveBefore(navBar, titlebar);
         }
         document.documentElement.setAttribute("zen-single-toolbar", true);
-        this._hasSetSingleToolbar = true;
       } else if (this._hasSetSingleToolbar) {
         this._hasSetSingleToolbar = false;
         // Do the opposite
@@ -1506,7 +1510,7 @@ window.gZenVerticalTabsManager = {
       this.navigatorToolbox.after(splitter);
       window.dispatchEvent(new Event("resize"));
       if (!isCompactMode) {
-        gZenCompactModeManager.getAndApplySidebarWidth();
+        gZenCompactModeManager.getAndApplySidebarWidth({});
       }
       gZenUIManager.updateTabsToolbar();
       this.rebuildURLBarMenus();
@@ -1558,16 +1562,36 @@ window.gZenVerticalTabsManager = {
     Services.prefs.setBoolPref("zen.tabs.vertical.right-side", newVal);
   },
 
-  appendCustomizableItem(target, child, placements) {
+  appendCustomizableItem(target, child, placements = []) {
     if (
-      target.id === "zen-sidebar-top-buttons-customization-target" &&
       this._hasSetSingleToolbar &&
-      placements.includes(child.id)
+      (target.id === "zen-sidebar-top-buttons-customization-target" ||
+        target === this._topButtonsSeparatorElement)
     ) {
-      this._topButtonsSeparatorElement.before(child);
-      return;
+      if (placements.includes(child.id)) {
+        this._topButtonsSeparatorElement.before(child);
+        return;
+      } else if (
+        child.hasAttribute("data-extensionid") &&
+        Services.prefs.getBoolPref("zen.view.overflow-webext-toolbar", true)
+      ) {
+        if (gURLBar._isOverflowingItems) {
+          const overflowElements = document.getElementById(
+            "zen-overflow-extensions-list"
+          );
+          overflowElements.appendChild(child);
+        } else {
+          const element = document.getElementById("page-action-buttons");
+          element.before(child);
+        }
+        return;
+      }
     }
-    target.appendChild(child);
+    if (target === this._topButtonsSeparatorElement) {
+      this._topButtonsSeparatorElement.after(child);
+    } else {
+      target.appendChild(child);
+    }
   },
 
   async renameTabKeydown(event) {

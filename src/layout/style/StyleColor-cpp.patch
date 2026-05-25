@@ -1,0 +1,26 @@
+diff --git a/layout/style/StyleColor.cpp b/layout/style/StyleColor.cpp
+index 95c7ae6abea5032bef0466e8d59d212374d7a4d0..3b2118e224141f5151a31ac663dfbe17864ef182 100644
+--- a/layout/style/StyleColor.cpp
++++ b/layout/style/StyleColor.cpp
+@@ -8,6 +8,7 @@
+ #include "mozilla/dom/BindingDeclarations.h"
+ #include "nsIFrame.h"
+ #include "nsStyleStruct.h"
++#include "mozilla/nsZenBoostsBackend.h"
+ 
+ namespace mozilla {
+ 
+@@ -68,10 +69,11 @@ nscolor StyleAbsoluteColor::ToColor() const {
+   auto green = std::clamp(srgb.components._1, 0.0f, 1.0f);
+   auto blue = std::clamp(srgb.components._2, 0.0f, 1.0f);
+ 
+-  return NS_RGBA(nsStyleUtil::FloatToColorComponent(red),
++  return zen::nsZenBoostsBackend::ResolveStyleColor(
++         NS_RGBA(nsStyleUtil::FloatToColorComponent(red),
+                  nsStyleUtil::FloatToColorComponent(green),
+                  nsStyleUtil::FloatToColorComponent(blue),
+-                 nsStyleUtil::FloatToColorComponent(srgb.alpha));
++                 nsStyleUtil::FloatToColorComponent(srgb.alpha)));
+ }
+ 
+ }  // namespace mozilla

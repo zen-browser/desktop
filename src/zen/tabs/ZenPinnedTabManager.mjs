@@ -547,10 +547,12 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
             <menuseparator id="context_zen-pinned-tab-separator" hidden="true"/>
             <menuitem id="context_zen-replace-pinned-url-with-current"
                       data-lazy-l10n-id="tab-context-zen-replace-pinned-url-with-current"
+                      data-l10n-args="{&quot;isEssential&quot;:&quot;&quot;}"
                       hidden="true"
                       command="cmd_zenReplacePinnedUrlWithCurrent"/>
             <menuitem id="context_zen-reset-pinned-tab"
                       data-lazy-l10n-id="tab-context-zen-reset-pinned-tab"
+                      data-l10n-args="{&quot;isEssential&quot;:&quot;&quot;}"
                       hidden="true"
                       command="cmd_zenPinnedTabResetNoTab"/>
         `);
@@ -664,7 +666,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   ) {
     let newIndex = dropIndex;
     let fromDifferentWindow = false;
-    movingTabs = Array.from(movingTabs || draggedTab)
+    let ownedTabs = Array.from(movingTabs || draggedTab)
       .reverse()
       .map(tab => {
         if (!gBrowser.isTab(tab)) {
@@ -700,6 +702,11 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         }
         return tab;
       });
+    if (!fromDifferentWindow) {
+      // See gh-13796 and gh-12156
+      ownedTabs = ownedTabs.reverse();
+    }
+    movingTabs = [...ownedTabs];
     if (fromDifferentWindow) {
       gBrowser.addRangeToMultiSelectedTabs(
         gBrowser.tabContainer.dragAndDropElements[dropIndex],
@@ -819,14 +826,16 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
           }
         }
       }
-      return moved;
     } catch (ex) {
       console.error("Error moving tabs:", ex);
-      return false;
     }
+    return [draggedTab, ownedTabs];
   }
 
   onLocationChange(aBrowser, aWebProgress, aRequest, aLocationURI) {
+    if (!aWebProgress.isTopLevel) {
+      return;
+    }
     // eslint-disable-next-line no-shadow
     let location = aLocationURI ? aLocationURI.spec : "";
     if (

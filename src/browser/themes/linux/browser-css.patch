@@ -1,12 +1,12 @@
 diff --git a/browser/themes/linux/browser.css b/browser/themes/linux/browser.css
-index b82fa7229ad637a08563c06fa2c2abdf99998d7c..b5ee3aa9679244222a0e9eed4be54a41ec6a11f9 100644
+index a99181fc249a7086e9886d86d85e8650595a0a0c..dd59739078080738d28bf59a1bb26fc0783bcac6 100644
 --- a/browser/themes/linux/browser.css
 +++ b/browser/themes/linux/browser.css
 @@ -14,7 +14,6 @@
      @media (-moz-gtk-theme-family) {
        --tabs-navbar-separator-style: none;
        @media (prefers-color-scheme: light) {
--        --urlbar-box-bgcolor: #fafafa;
+-        --urlbar-box-background-color: #fafafa;
        }
      }
    }

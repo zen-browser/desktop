@@ -1,10 +1,20 @@
 diff --git a/toolkit/content/widgets/panel.js b/toolkit/content/widgets/panel.js
-index dc3e34847f1b6dfd58f5e036fd7d714ef51c1380..8d8e370ca8549d8208669d4fb344fc8abb54fadd 100644
+index dc3e34847f1b6dfd58f5e036fd7d714ef51c1380..20f18fcb1a2f637d83366b8a517d43200270739f 100644
 --- a/toolkit/content/widgets/panel.js
 +++ b/toolkit/content/widgets/panel.js
-@@ -137,6 +137,9 @@
+@@ -136,7 +136,19 @@
+           let anchorRoot =
              this.anchorNode.closest("toolbarbutton, .anchor-root") ||
              this.anchorNode;
++          let toolbox = anchorRoot.closest("#navigator-toolbox");
++          if (toolbox && toolbox.ownerGlobal.gZenCompactModeManager?.preference) {
++            // Disable transitions for now, see gh-11667
++            toolbox.style.transition = "none";
++            toolbox.setAttribute("zen-compact-mode-active", "true");
++            anchorRoot.ownerGlobal.setTimeout(() => {
++              toolbox.style.transition = "";
++            }, 0);
++          }
            anchorRoot.setAttribute("open", "true");
 +          if (anchorRoot.closest("#urlbar") && window.gURLBar) {
 +            gURLBar.setAttribute("has-popup-open", "true");
@@ -12,7 +22,7 @@ index dc3e34847f1b6dfd58f5e036fd7d714ef51c1380..8d8e370ca8549d8208669d4fb344fc8a
          }
  
          if (this.getAttribute("animate") != "false") {
-@@ -183,6 +186,9 @@
+@@ -183,6 +195,9 @@
              this.anchorNode.closest("toolbarbutton, .anchor-root") ||
              this.anchorNode;
            anchorRoot.removeAttribute("open");

@@ -34,7 +34,11 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
 
       if (
         this.state.type === "pull-requests" &&
-        typeof this.state.isJsonApi !== "boolean"
+        typeof this.state.isJsonApi !== "boolean" &&
+        !Services.prefs.getBoolPref(
+          "zen.live-folders.github.skip-new-pr-ui-check",
+          false
+        )
       ) {
         const { text, status } = await this.fetch(this.state.url, {
           headers: {

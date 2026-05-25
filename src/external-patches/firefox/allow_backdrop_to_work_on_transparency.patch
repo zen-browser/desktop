@@ -1,0 +1,172 @@
+diff --git a/gfx/webrender_bindings/WebRenderAPI.cpp b/gfx/webrender_bindings/WebRenderAPI.cpp
+--- a/gfx/webrender_bindings/WebRenderAPI.cpp
++++ b/gfx/webrender_bindings/WebRenderAPI.cpp
+@@ -298,11 +298,13 @@
+                 panic_on_gl_error, picTileWidth, picTileHeight,
+                 gfx::gfxVars::WebRenderRequiresHardwareDriver(),
+                 StaticPrefs::gfx_webrender_low_quality_pinch_zoom_AtStartup(),
+                 StaticPrefs::gfx_webrender_max_shared_surface_size_AtStartup(),
+                 StaticPrefs::gfx_webrender_enable_subpixel_aa_AtStartup(),
+-                compositor->ShouldUseLayerCompositor())) {
++                compositor->ShouldUseLayerCompositor(),
++                StaticPrefs::
++                    gfx_webrender_opaque_backdrop_fallback_AtStartup())) {
+           // wr_window_new puts a message into gfxCriticalNote if it returns
+           // false
+           MOZ_ASSERT(errorMessage);
+           error.AssignASCII(errorMessage);
+           wr_api_free_error_msg(errorMessage);
+diff --git a/gfx/webrender_bindings/src/bindings.rs b/gfx/webrender_bindings/src/bindings.rs
+--- a/gfx/webrender_bindings/src/bindings.rs
++++ b/gfx/webrender_bindings/src/bindings.rs
+@@ -1998,10 +1998,11 @@
+     reject_software_rasterizer: bool,
+     low_quality_pinch_zoom: bool,
+     max_shared_surface_size: i32,
+     enable_subpixel_aa: bool,
+     use_layer_compositor: bool,
++    opaque_backdrop_fallback: bool,
+ ) -> bool {
+     assert!(unsafe { is_in_render_thread() });
+ 
+     // Ensure the WR profiler callbacks are hooked up to the Gecko profiler.
+     set_profiler_hooks(Some(&PROFILER_HOOKS));
+@@ -2164,10 +2165,11 @@
+         texture_cache_config,
+         reject_software_rasterizer,
+         low_quality_pinch_zoom,
+         max_shared_surface_size,
+         enable_dithering,
++        opaque_backdrop_fallback,
+         ..Default::default()
+     };
+ 
+     let window_size = DeviceIntSize::new(window_width, window_height);
+     let notifier = Box::new(CppNotifier { window_id });
+diff --git a/gfx/wr/webrender/src/device/gl.rs b/gfx/wr/webrender/src/device/gl.rs
+--- a/gfx/wr/webrender/src/device/gl.rs
++++ b/gfx/wr/webrender/src/device/gl.rs
+@@ -3982,10 +3982,14 @@
+ 
+     pub fn disable_color_write(&self) {
+         self.gl.color_mask(false, false, false, false);
+     }
+ 
++    pub fn set_color_mask(&self, r: bool, g: bool, b: bool, a: bool) {
++        self.gl.color_mask(r, g, b, a);
++    }
++
+     pub fn set_blend(&mut self, enable: bool) {
+         if enable {
+             self.gl.enable(gl::BLEND);
+         } else {
+             self.gl.disable(gl::BLEND);
+diff --git a/gfx/wr/webrender/src/renderer/init.rs b/gfx/wr/webrender/src/renderer/init.rs
+--- a/gfx/wr/webrender/src/renderer/init.rs
++++ b/gfx/wr/webrender/src/renderer/init.rs
+@@ -204,10 +204,12 @@
+     pub low_quality_pinch_zoom: bool,
+     pub max_shared_surface_size: i32,
+     /// If true, open a debug socket to listen for remote debugger.
+     /// Relies on `debugger` cargo feature being enabled.
+     pub enable_debugger: bool,
++    /// See explanation of `gfx.webrender.opaque-backdrop-fallback`.
++    pub opaque_backdrop_fallback: bool,
+ 
+     /// Use the new quad primitive path for box-shadow blur rendering.
+     pub use_quad_box_shadow: bool,
+ }
+ 
+@@ -277,10 +279,11 @@
+             enable_instancing: true,
+             reject_software_rasterizer: false,
+             low_quality_pinch_zoom: false,
+             max_shared_surface_size: 2048,
+             enable_debugger: true,
++            opaque_backdrop_fallback: false,
+             use_quad_box_shadow: true,
+         }
+     }
+ }
+ 
+@@ -802,10 +805,11 @@
+         allocated_native_surfaces: FastHashSet::default(),
+         debug_overlay_state: DebugOverlayState::new(),
+         buffer_damage_tracker: BufferDamageTracker::default(),
+         max_primitive_instance_count,
+         enable_instancing: options.enable_instancing,
++        opaque_backdrop_fallback: options.opaque_backdrop_fallback,
+         consecutive_oom_frames: 0,
+         target_frame_publish_id: None,
+         pending_result_msg: None,
+         layer_compositor_frame_state_in_prev_frame: None,
+         external_composite_debug_items: Vec::new(),
+diff --git a/gfx/wr/webrender/src/renderer/mod.rs b/gfx/wr/webrender/src/renderer/mod.rs
+--- a/gfx/wr/webrender/src/renderer/mod.rs
++++ b/gfx/wr/webrender/src/renderer/mod.rs
+@@ -867,10 +867,12 @@
+     buffer_damage_tracker: BufferDamageTracker,
+ 
+     max_primitive_instance_count: usize,
+     enable_instancing: bool,
+ 
++    opaque_backdrop_fallback: bool,
++
+     /// Count consecutive oom frames to detectif we are stuck unable to render
+     /// in a loop.
+     consecutive_oom_frames: u32,
+ 
+     /// update() defers processing of ResultMsg, if frame_publish_id of
+@@ -2787,18 +2789,29 @@
+                 let read_target = ReadTarget::from_texture(cache_texture);
+ 
+                 // Should always be drawing to picture cache tiles or off-screen surface!
+                 debug_assert!(!draw_target.is_default());
+                 let device_to_framebuffer = Scale::new(1i32);
++                let dest_fb_rect = dest * device_to_framebuffer;
+ 
+                 self.device.blit_render_target(
+                     read_target,
+                     src * device_to_framebuffer,
+                     draw_target,
+-                    dest * device_to_framebuffer,
++                    dest_fb_rect,
+                     TextureFilter::Linear,
+                 );
++
++                if self.opaque_backdrop_fallback {
++                    self.device.set_color_mask(false, false, false, true);
++                    self.device.clear_target(
++                        Some([0.0, 0.0, 0.0, 1.0]),
++                        None,
++                        Some(dest_fb_rect),
++                    );
++                    self.device.set_color_mask(true, true, true, true);
++                }
+             }
+         }
+     }
+ 
+     fn draw_picture_cache_target(
+diff --git a/modules/libpref/init/StaticPrefList.yaml b/modules/libpref/init/StaticPrefList.yaml
+--- a/modules/libpref/init/StaticPrefList.yaml
++++ b/modules/libpref/init/StaticPrefList.yaml
+@@ -8439,10 +8439,17 @@
+ #else
+   value: false
+ #endif
+   mirror: once
+ 
++# Make backdrop-filter treat its captured backdrop as if it had been
++# composited over an opaque-black background. (See bug 2036640)
++- name: gfx.webrender.opaque-backdrop-fallback
++  type: bool
++  value: true
++  mirror: once
++
+ # Disable wait of GPU execution completion
+ - name: gfx.webrender.wait-gpu-finished.disabled
+   type: bool
+   value: false
+   mirror: once
+

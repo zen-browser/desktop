@@ -1,0 +1,15 @@
+diff --git a/toolkit/themes/shared/design-system/src/panel.css b/toolkit/themes/shared/design-system/src/panel.css
+index 92a6b4b23aee7d880bee21a5e843653444e3fc32..2d0a73d338b4e4d5a0f98b8e3c00134a823c223c 100644
+--- a/toolkit/themes/shared/design-system/src/panel.css
++++ b/toolkit/themes/shared/design-system/src/panel.css
+@@ -10,8 +10,8 @@
+   --panel-color: FieldText;
+   --panel-padding-block: var(--dimension-4);
+   --panel-padding: var(--dimension-16);
+-  --panel-shadow-margin: var(--dimension-4);
+-  --panel-shadow: 0 0 var(--panel-shadow-margin) hsla(0, 0%, 0%, 0.2);
++  --panel-shadow-margin: 8px;
++  --panel-shadow: var(--zen-big-shadow);
+   --panel-width: initial;
+   --panel-dimmed: color-mix(in srgb, currentColor 17%, transparent);
+   --panel-dimmed-further: color-mix(in srgb, currentColor 30%, transparent);

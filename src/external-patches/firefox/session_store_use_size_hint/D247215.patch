@@ -1,7 +1,7 @@
 diff --git a/dom/chrome-webidl/IOUtils.webidl b/dom/chrome-webidl/IOUtils.webidl
 --- a/dom/chrome-webidl/IOUtils.webidl
 +++ b/dom/chrome-webidl/IOUtils.webidl
-@@ -94,23 +94,23 @@
+@@ -93,23 +93,23 @@
     *         otherwise rejects with a DOMException.
     */
    [NewObject]
@@ -29,7 +29,7 @@ diff --git a/dom/chrome-webidl/IOUtils.webidl b/dom/chrome-webidl/IOUtils.webidl
     * If |destPath| is a directory, then the source file will be moved into the
     * destination directory.
     *
-@@ -567,10 +567,39 @@
+@@ -566,10 +566,39 @@
     * If true, compress the data with LZ4-encoding before writing to the file.
     */
    boolean compress = false;
@@ -72,7 +72,7 @@ diff --git a/dom/chrome-webidl/IOUtils.webidl b/dom/chrome-webidl/IOUtils.webidl
 diff --git a/xpcom/ioutils/IOUtils.h b/xpcom/ioutils/IOUtils.h
 --- a/xpcom/ioutils/IOUtils.h
 +++ b/xpcom/ioutils/IOUtils.h
-@@ -94,11 +94,11 @@
+@@ -92,11 +92,11 @@
        const nsACString& aString, const dom::WriteOptions& aOptions,
        ErrorResult& aError);
  
@@ -85,7 +85,7 @@ diff --git a/xpcom/ioutils/IOUtils.h b/xpcom/ioutils/IOUtils.h
    static already_AddRefed<dom::Promise> Move(dom::GlobalObject& aGlobal,
                                               const nsAString& aSourcePath,
                                               const nsAString& aDestPath,
-@@ -736,13 +736,16 @@
+@@ -734,13 +734,16 @@
    RefPtr<nsIFile> mBackupFile;
    RefPtr<nsIFile> mTmpFile;
    dom::WriteMode mMode;
@@ -105,7 +105,7 @@ diff --git a/xpcom/ioutils/IOUtils.h b/xpcom/ioutils/IOUtils.h
 diff --git a/xpcom/ioutils/IOUtils.cpp b/xpcom/ioutils/IOUtils.cpp
 --- a/xpcom/ioutils/IOUtils.cpp
 +++ b/xpcom/ioutils/IOUtils.cpp
-@@ -589,15 +589,21 @@
+@@ -587,15 +587,21 @@
                return WriteSync(file, AsBytes(Span(str)), opts);
              });
        });
@@ -128,7 +128,7 @@ diff --git a/xpcom/ioutils/IOUtils.cpp b/xpcom/ioutils/IOUtils.cpp
        aGlobal, aError, [&](Promise* promise, auto& state) {
          nsCOMPtr<nsIFile> file = new nsLocalFile();
          REJECT_IF_INIT_PATH_FAILED(file, aPath, promise,
-@@ -623,14 +629,15 @@
+@@ -621,14 +627,15 @@
                                file->HumanReadablePath().get()));
            return;
          }
@@ -147,7 +147,7 @@ diff --git a/xpcom/ioutils/IOUtils.cpp b/xpcom/ioutils/IOUtils.cpp
              JS_ClearPendingException(cx);
              promise->MaybeReject(exn);
            } else {
-@@ -639,22 +646,29 @@
+@@ -637,22 +644,29 @@
                                      "Could not serialize object to JSON"_ns));
            }
            return;
@@ -180,7 +180,7 @@ diff --git a/xpcom/ioutils/IOUtils.cpp b/xpcom/ioutils/IOUtils.cpp
  }
  
  /* static */
-@@ -2840,10 +2854,20 @@
+@@ -2838,10 +2852,20 @@
  
    opts.mCompress = aOptions.mCompress;
    return opts;

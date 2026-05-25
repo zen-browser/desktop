@@ -4,3 +4,4 @@
 
 color-scheme: light;
 --zen-urlbar-outline-offset: 0px;
+--zen-urlbar-filter: blur(40px) saturate(110%) brightness(75%) contrast(100%);

@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarValueFormatter.sys.mjs b/browser/components/urlbar/UrlbarValueFormatter.sys.mjs
-index f28d277764158566bc9406ce0e6160d92d346a63..82dd5f8568ec1b12e87676e5c2b243824628b5af 100644
+index 344a9a5b969e679040a650dad311c7413f52bbbd..24111cef5e476253f4e69c4d99f6f220bfd8cd7e 100644
 --- a/browser/components/urlbar/UrlbarValueFormatter.sys.mjs
 +++ b/browser/components/urlbar/UrlbarValueFormatter.sys.mjs
 @@ -77,7 +77,7 @@ export class UrlbarValueFormatter {
@@ -11,7 +11,26 @@ index f28d277764158566bc9406ce0e6160d92d346a63..82dd5f8568ec1b12e87676e5c2b24382
      });
    }
  
-@@ -371,7 +371,7 @@ export class UrlbarValueFormatter {
+@@ -105,6 +105,18 @@ export class UrlbarValueFormatter {
+   }
+ 
+   #ensureFormattedHostVisible(urlMetaData) {
++    // Make sure the domain is visible even with long subdomains when the single sidebar is being used
++    if (
++      this.#window.gZenVerticalTabsManager?._hasSetSingleToolbar
++      && Services.prefs.getBoolPref("zen.urlbar.show-domain-only-in-sidebar")
++    ) {
++      // also compare the difference in width from this and the urlbar input, to avoid scrolling 
++      // when urlbar buttons are showing.
++      const urlbarInputWidth = this.#window.windowUtils.getBoundsWithoutFlushing(this.#window.gURLBar).width;
++      const inputFieldWidth = this.#window.windowUtils.getBoundsWithoutFlushing(this.#inputField).width;
++      this.#inputField.scrollLeft = (this.#inputField.scrollLeftMax - (urlbarInputWidth - inputFieldWidth) );
++      return;
++    }
+     // Make sure the host is always visible. Since it is aligned on
+     // the first strong directional character, we set scrollLeft
+     // appropriately to ensure the domain stays visible in case of an
+@@ -371,7 +383,7 @@ export class UrlbarValueFormatter {
     * @returns {boolean}
     *   True if formatting was applied and false if not.
     */
@@ -20,7 +39,7 @@ index f28d277764158566bc9406ce0e6160d92d346a63..82dd5f8568ec1b12e87676e5c2b24382
      let urlMetaData = this.#getUrlMetaData();
      if (!urlMetaData) {
        return false;
-@@ -640,6 +640,7 @@ export class UrlbarValueFormatter {
+@@ -640,6 +652,7 @@ export class UrlbarValueFormatter {
        this.#window.requestAnimationFrame(() => {
          if (instance == this.#resizeInstance) {
            this.#ensureFormattedHostVisible();

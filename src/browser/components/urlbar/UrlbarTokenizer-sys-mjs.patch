@@ -1,0 +1,28 @@
+diff --git a/browser/components/urlbar/UrlbarTokenizer.sys.mjs b/browser/components/urlbar/UrlbarTokenizer.sys.mjs
+index d4af0ee5138a69139b94d898fb07e2345172f025..f750aae3f9f0a849ca009784510575b2b7119e6d 100644
+--- a/browser/components/urlbar/UrlbarTokenizer.sys.mjs
++++ b/browser/components/urlbar/UrlbarTokenizer.sys.mjs
+@@ -66,6 +66,7 @@ export var UrlbarTokenizer = {
+     // `looksLikeOrigin()` returned `LOOKS_LIKE_ORIGIN.OTHER` for this token. It
+     // may or may not be an origin.
+     POSSIBLE_ORIGIN_BUT_SEARCH_ALLOWED: 12,
++    RESTRICT_WORKSPACE: 13,
+   }),
+ 
+   // The special characters below can be typed into the urlbar to restrict
+@@ -83,6 +84,7 @@ export var UrlbarTokenizer = {
+     TITLE: "#",
+     URL: "$",
+     ACTION: ">",
++    WORKSPACE: "`",
+   }),
+ 
+   // The keys of characters in RESTRICT that will enter search mode.
+@@ -97,6 +99,7 @@ export var UrlbarTokenizer = {
+     if (lazy.UrlbarPrefs.get("scotchBonnet.enableOverride")) {
+       keys.push(this.RESTRICT.ACTION);
+     }
++    keys.push(this.RESTRICT.WORKSPACE);
+     return new Set(keys);
+   },
+ 

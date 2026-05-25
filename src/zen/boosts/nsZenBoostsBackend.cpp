@@ -12,6 +12,8 @@
 
 #include "nsIXULRuntime.h"
 #include "nsPresContext.h"
+#include "nsIFrame.h"
+#include "nsIContent.h"
 
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/StaticPtr.h"
@@ -30,9 +32,6 @@
 // all the way to pure black, which makes inverted pages feel too dark.
 #define INVERT_CHANNEL_FLOOR() \
   (mozilla::StaticPrefs::zen_boosts_invert_channel_floor_AtStartup())
-
-#define SHOULD_APPLY_BOOSTS_TO_ANONYMOUS_CONTENT() \
-  (!mozilla::StaticPrefs::zen_boosts_disable_on_anonymous_content_AtStartup())
 
 #if defined(__clang__) || defined(__GNUC__)
 #  define ZEN_HOT_FUNCTION __attribute__((hot))
@@ -381,27 +380,36 @@ inline static nscolor zenInvertColorChannel(nscolor aColor) {
 }
 
 /**
- * @brief Retrieves the current boost data from the browsing context. When
- * called without aPresContext, reads the precomputed cache populated on
- * presshell entry; otherwise resolves from the supplied PresContext.
+ * @brief Whether the given frame belongs to anonymous content that boosts must
+ * not touch (devtools highlighters, screenshots, the boosts overlays
+ * themselves, and other native-anonymous UI such as scrollbars). A null frame
+ * gives no document to anchor the boost on, so it is treated the same way.
  */
 ZEN_HOT_FUNCTION
-inline static void GetZenBoostsDataFromBrowsingContext(
-    ZenBoostData* aData, float* aComplementaryRotation, bool* aIsInverted,
-    nsPresContext* aPresContext = nullptr) {
-  auto zenBoosts = nsZenBoostsBackend::GetInstance();
-  if (!zenBoosts || (zenBoosts->mCurrentFrameIsAnonymousContent &&
-                     !SHOULD_APPLY_BOOSTS_TO_ANONYMOUS_CONTENT())) {
+inline static bool IsBoostExemptFrame(const nsIFrame* aFrame) {
+  if (!aFrame) {
+    return true;
+  }
+  const nsIContent* content = aFrame->GetContent();
+  return content && content->IsInNativeAnonymousSubtree();
+}
+
+/**
+ * @brief Retrieves the boost data for the document the given frame belongs to.
+ * Resolves from the frame's PresContext -> Document -> top BrowsingContext,
+ * which carries the accent/inversion fields.
+ */
+ZEN_HOT_FUNCTION
+inline static void GetZenBoostsDataForFrame(const nsIFrame* aFrame,
+                                            ZenBoostData* aData,
+                                            float* aComplementaryRotation,
+                                            bool* aIsInverted) {
+  nsPresContext* presContext = aFrame->PresContext();
+  if (!presContext) {
     return;
   }
-  if (!aPresContext) {
-    *aData = zenBoosts->mCachedCurrentAccent;
-    *aComplementaryRotation = zenBoosts->mCachedCurrentComplementaryRotation;
-    *aIsInverted = zenBoosts->mCachedCurrentInverted;
-    return;
-  }
-  mozilla::dom::BrowsingContext* browsingContext = nullptr;
-  if (auto document = aPresContext->Document()) {
+  const mozilla::dom::BrowsingContext* browsingContext = nullptr;
+  if (auto document = presContext->Document()) {
     browsingContext = document->GetBrowsingContext();
   }
   if (!browsingContext) {
@@ -456,59 +464,24 @@ auto nsZenBoostsBackend::GetInstance() -> nsZenBoostsBackend* {
   return sZenBoostsBackend.get();
 }
 
-auto nsZenBoostsBackend::onPresShellEntered(mozilla::dom::Document* aDocument)
-    -> void {
-  if (auto displayDoc = aDocument->GetDisplayDocument()) {
-    onPresShellEntered(displayDoc);
-    return;
-  }
-  // Note that aDocument can be null when entering anonymous content frames.
-  // We explicitly do this to prevent applying boosts to anonymous content, such
-  // as devtools or screenshots.
-  mozilla::dom::BrowsingContext* browsingContext =
-      aDocument ? aDocument->GetBrowsingContext() : nullptr;
-  if (!browsingContext) {
-    return;
-  }
-  mCurrentBrowsingContextId = browsingContext->Id();
-  RefreshCachedBoostState();
-}
-
-already_AddRefed<mozilla::dom::BrowsingContext>
-nsZenBoostsBackend::GetCurrentBrowsingContext() const {
-  return mozilla::dom::BrowsingContext::Get(mCurrentBrowsingContextId);
-}
-
-auto nsZenBoostsBackend::RefreshCachedBoostState() -> void {
-  RefPtr<mozilla::dom::BrowsingContext> current =
-      mozilla::dom::BrowsingContext::Get(mCurrentBrowsingContextId);
-  if (!current) {
-    mCachedCurrentAccent = 0;
-    mCachedCurrentComplementaryRotation = 0.0f;
-    mCachedCurrentInverted = false;
-    return;
-  }
-  auto top = current->Top();
-  mCachedCurrentAccent = top->ZenBoostsData();
-  mCachedCurrentComplementaryRotation = top->ZenBoostsComplementaryRotation();
-  mCachedCurrentInverted = top->IsZenBoostsInverted();
-}
-
-[[nodiscard]] ZEN_HOT_FUNCTION auto
-nsZenBoostsBackend::FilterColorFromPresContext(nscolor aColor,
-                                               nsPresContext* aPresContext)
-    -> nscolor {
+[[nodiscard]] ZEN_HOT_FUNCTION auto nsZenBoostsBackend::ResolveStyleColor(
+    nscolor aColor, const nsIFrame* aFrame) -> nscolor {
   if (NS_GET_A(aColor) == 0) {
     // Skip processing fully transparent colors since they won't be visible and
     // we want to avoid unnecessary computations. This also prevents issues with
     // using the alpha channel for contrast information in the accent color.
     return aColor;
   }
+  // Boosts are only supported in content; GetInstance() is null in the parent
+  // process, which keeps the browser chrome from being tinted.
+  if (!GetInstance() || IsBoostExemptFrame(aFrame)) {
+    return aColor;
+  }
   ZenBoostData accentNS = 0;
   float complementaryRotation = 0.0f;
   bool invertColors = false;
-  GetZenBoostsDataFromBrowsingContext(&accentNS, &complementaryRotation,
-                                      &invertColors, aPresContext);
+  GetZenBoostsDataForFrame(aFrame, &accentNS, &complementaryRotation,
+                           &invertColors);
   if (accentNS) {
     // Resolve (and cache) the base + complementary accent for this accent and
     // complementary rotation. Apply a filter-like tint:
@@ -524,11 +497,6 @@ nsZenBoostsBackend::FilterColorFromPresContext(nscolor aColor,
     aColor = zenInvertColorChannel(aColor);
   }
   return aColor;
-}
-
-[[nodiscard]] ZEN_HOT_FUNCTION auto nsZenBoostsBackend::ResolveStyleColor(
-    nscolor aColor) -> nscolor {
-  return FilterColorFromPresContext(aColor);
 }
 
 }  // namespace zen

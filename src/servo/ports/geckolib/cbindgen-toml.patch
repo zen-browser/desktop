@@ -1,0 +1,30 @@
+diff --git a/servo/ports/geckolib/cbindgen.toml b/servo/ports/geckolib/cbindgen.toml
+index e9ae0149e80a241b2a32ce445deb923af2fac445..464f4e8b853d26bd2da327de8bf8bb50e5ab8599 100644
+--- a/servo/ports/geckolib/cbindgen.toml
++++ b/servo/ports/geckolib/cbindgen.toml
+@@ -679,9 +679,9 @@ renaming_overrides_prefixing = true
+   nscolor CalcColor(const nsIFrame*) const;
+   /**
+    * Compute the final color, taking into account the foreground color from the
+-   * style.
++   * style. The frame, when supplied, is used to resolve Zen boosts.
+    */
+-  nscolor CalcColor(const ComputedStyle&) const;
++  nscolor CalcColor(const ComputedStyle&, const nsIFrame* = nullptr) const;
+   /**
+    * Compute the final color, making the argument the foreground color.
+    */
+@@ -704,9 +704,11 @@ renaming_overrides_prefixing = true
+ 
+   /**
+    * Convert this color to an nscolor. The color will be converted to sRGB first
+-   * if required.
++   * if required. The frame, when supplied, is used to resolve Zen boosts; pass
++   * the frame the color is being resolved for so boosts can be derived from its
++   * document, or null to skip boost resolution.
+    */
+-  nscolor ToColor() const;
++  nscolor ToColor(const nsIFrame* = nullptr) const;
+ """
+ 
+ "OwnedSlice" = """

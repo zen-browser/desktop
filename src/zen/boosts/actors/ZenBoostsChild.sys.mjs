@@ -70,6 +70,17 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
   static PREVENTABLE_SET = new Set(ZenBoostsChild.PREVENTABLE_EVENTS);
 
+  actorCreated() {
+    this.#applyBoostForPageIfAvailable();
+  }
+
+  didDestroy() {
+    if (this.#currentState === ZenBoostsChild.STATES.ZAP) {
+      this.disableZapMode();
+    }
+    this.#removeEventListeners();
+  }
+
   /**
    * Inverse of https://searchfox.org/firefox-main/rev/1a8c62b86277005f907151bc5389cf5c5091e76f/gfx/src/nsColor.h#23-27
    *
@@ -177,28 +188,6 @@ export class ZenBoostsChild extends JSWindowActorChild {
     let l = (min + max) / 2;
     let s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
     return [h * 60, s, l];
-  }
-
-  /**
-   * Handles DOM events for the actor. Applies boost settings when a document
-   * element is inserted.
-   *
-   * @param {Event} event - The DOM event to handle.
-   */
-  handleEvent(event) {
-    switch (event.type) {
-      case "unload":
-        if (this.#currentState === ZenBoostsChild.STATES.ZAP) {
-          this.disableZapMode();
-        }
-        this.#removeEventListeners();
-        break;
-      case "DOMWindowCreated":
-        this.#applyBoostForPageIfAvailable();
-        break;
-      default:
-        break;
-    }
   }
 
   handleZapEvent(event) {

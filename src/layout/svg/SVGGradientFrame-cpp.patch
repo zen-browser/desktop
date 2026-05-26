@@ -1,0 +1,42 @@
+diff --git a/layout/svg/SVGGradientFrame.cpp b/layout/svg/SVGGradientFrame.cpp
+index 9c66d90fc0292abcab30c912968d3f84c0e181ff..aec0b2e48965729ccff19d632ac5e8fd04fd09eb 100644
+--- a/layout/svg/SVGGradientFrame.cpp
++++ b/layout/svg/SVGGradientFrame.cpp
+@@ -229,8 +229,9 @@ class MOZ_STACK_CLASS SVGColorStopInterpolator
+   SVGColorStopInterpolator(
+       gfxPattern* aGradient, const nsTArray<ColorStop>& aStops,
+       const StyleColorInterpolationMethod& aStyleColorInterpolationMethod,
+-      bool aExtend)
+-      : ColorStopInterpolator(aStops, aStyleColorInterpolationMethod, aExtend),
++      bool aExtend, const nsIFrame* aFrame)
++      : ColorStopInterpolator(aStops, aStyleColorInterpolationMethod, aExtend,
++                              aFrame),
+         mGradient(aGradient) {}
+ 
+   void CreateStop(float aPosition, DeviceColor aColor) {
+@@ -270,7 +271,8 @@ already_AddRefed<gfxPattern> SVGGradientFrame::GetPaintServerPattern(
+   if (nStops == 1 || GradientVectorLengthIsZero()) {
+     // The gradient paints a single colour, using the stop-color of the last
+     // gradient step if there are more than one.
+-    return do_AddRef(new gfxPattern(ToDeviceColor(stops.LastElement().mColor)));
++    return do_AddRef(
++        new gfxPattern(ToDeviceColor(stops.LastElement().mColor, aSource)));
+   }
+ 
+   // Get the transform list (if there is one). We do this after the returns
+@@ -313,12 +315,13 @@ already_AddRefed<gfxPattern> SVGGradientFrame::GetPaintServerPattern(
+     static constexpr auto interpolationMethod = StyleColorInterpolationMethod{
+         StyleColorSpace::SrgbLinear, StyleHueInterpolationMethod::Shorter};
+     SVGColorStopInterpolator interpolator(gradient, stops, interpolationMethod,
+-                                          false);
++                                          false, aSource);
+     interpolator.CreateStops();
+   } else {
+     // setup standard sRGB stops
+     for (const auto& stop : stops) {
+-      gradient->AddColorStop(stop.mPosition, ToDeviceColor(stop.mColor));
++      gradient->AddColorStop(stop.mPosition,
++                             ToDeviceColor(stop.mColor, aSource));
+     }
+   }
+ 

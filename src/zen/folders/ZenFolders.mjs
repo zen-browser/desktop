@@ -1972,7 +1972,6 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     const heightContainer = expand
       ? 0
       : this.#calculateHeightShift(tabsContainer, []);
-    tabsContainer.style.overflow = "clip";
 
     this.#createAnimation(
       groupStart,

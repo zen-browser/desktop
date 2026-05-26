@@ -666,3 +666,4 @@ diff --git a/xpcom/ds/StaticAtoms.py b/xpcom/ds/StaticAtoms.py
      Atom("normalizeSpace", "normalize-space"),
      Atom("noscript", "noscript"),
      Atom("noshade", "noshade"),
+ 

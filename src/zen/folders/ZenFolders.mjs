@@ -1566,7 +1566,6 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
     const tabsContainer = group.groupContainer;
     tabsContainer.removeAttribute("hidden");
-    tabsContainer.style.overflow = "hidden";
 
     const groupStart = group.groupStartElement;
     const itemsToShow = this.#normalizeGroupItems(group.childGroupsAndTabs);

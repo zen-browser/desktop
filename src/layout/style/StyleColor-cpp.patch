@@ -1,5 +1,5 @@
 diff --git a/layout/style/StyleColor.cpp b/layout/style/StyleColor.cpp
-index 95c7ae6abea5032bef0466e8d59d212374d7a4d0..234a5fc3d94c341d6f8aea8f619661054d2f6a49 100644
+index 95c7ae6abea5032bef0466e8d59d212374d7a4d0..85a48f27251756c72db8ed03a673a18e96cf76f9 100644
 --- a/layout/style/StyleColor.cpp
 +++ b/layout/style/StyleColor.cpp
 @@ -8,6 +8,7 @@
@@ -10,7 +10,19 @@ index 95c7ae6abea5032bef0466e8d59d212374d7a4d0..234a5fc3d94c341d6f8aea8f61966105
  
  namespace mozilla {
  
-@@ -44,13 +45,14 @@ nscolor StyleColor::CalcColor(
+@@ -34,23 +35,24 @@ StyleAbsoluteColor StyleColor::ResolveColor(
+ 
+ template <>
+ nscolor StyleColor::CalcColor(nscolor aColor) const {
+-  return ResolveColor(StyleAbsoluteColor::FromColor(aColor)).ToColor();
++  return ResolveColor(StyleAbsoluteColor::FromColor(aColor)).ToColor(nullptr);
+ }
+ 
+ template <>
+ nscolor StyleColor::CalcColor(
+     const StyleAbsoluteColor& aForegroundColor) const {
+-  return ResolveColor(aForegroundColor).ToColor();
++  return ResolveColor(aForegroundColor).ToColor(nullptr);
  }
  
  template <>

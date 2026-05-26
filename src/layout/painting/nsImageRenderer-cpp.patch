@@ -1,0 +1,40 @@
+diff --git a/layout/painting/nsImageRenderer.cpp b/layout/painting/nsImageRenderer.cpp
+index 4acb7670e971024f9c63e48ff711bbdd1dc02301..9ac1ae1b66eb6fb10195cd3709e0e29d8d53b574 100644
+--- a/layout/painting/nsImageRenderer.cpp
++++ b/layout/painting/nsImageRenderer.cpp
+@@ -90,7 +90,7 @@ static already_AddRefed<imgIContainer> GetSymbolicIconImage(nsAtom* aName,
+   if (NS_WARN_IF(!XRE_IsParentProcess())) {
+     return nullptr;
+   }
+-  const auto fg = aFrame->StyleText()->mColor.ToColor();
++  const auto fg = aFrame->StyleText()->mColor.ToColor(aFrame);
+   auto key = std::make_tuple(aName, aScale, fg);
+   auto* cache = aFrame->GetProperty(SymbolicImageCacheProp());
+   if (!cache) {
+@@ -567,7 +567,7 @@ ImgDrawResult nsImageRenderer::Draw(nsPresContext* aPresContext,
+     }
+     case StyleImage::Tag::Gradient: {
+       nsCSSGradientRenderer renderer = nsCSSGradientRenderer::Create(
+-          aPresContext, mForFrame->Style(), *mGradientData, mSize);
++          aPresContext, mForFrame->Style(), mForFrame, *mGradientData, mSize);
+ 
+       renderer.Paint(*ctx, aDest, aFill, aRepeatSize, aSrc, aDirtyRect,
+                      aOpacity);
+@@ -644,7 +644,7 @@ ImgDrawResult nsImageRenderer::BuildWebRenderDisplayItems(
+   switch (mType) {
+     case StyleImage::Tag::Gradient: {
+       nsCSSGradientRenderer renderer = nsCSSGradientRenderer::Create(
+-          aPresContext, mForFrame->Style(), *mGradientData, mSize);
++          aPresContext, mForFrame->Style(), mForFrame, *mGradientData, mSize);
+ 
+       renderer.BuildWebRenderDisplayItems(aBuilder, aSc, aDest, aFill,
+                                           aRepeatSize, aSrc,
+@@ -1076,7 +1076,7 @@ ImgDrawResult nsImageRenderer::DrawShapeImage(nsPresContext* aPresContext,
+ 
+   if (mImage->IsGradient()) {
+     nsCSSGradientRenderer renderer = nsCSSGradientRenderer::Create(
+-        aPresContext, mForFrame->Style(), *mGradientData, mSize);
++        aPresContext, mForFrame->Style(), mForFrame, *mGradientData, mSize);
+     nsRect dest(nsPoint(0, 0), mSize);
+     renderer.Paint(aRenderingContext, dest, dest, mSize,
+                    CSSIntRect::FromAppUnitsRounded(dest), dest, 1.0);

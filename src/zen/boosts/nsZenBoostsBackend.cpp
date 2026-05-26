@@ -25,6 +25,8 @@
 #include "mozilla/dom/Document.h"
 #include "mozilla/dom/DocumentInlines.h"
 #include "mozilla/dom/BrowsingContext.h"
+#include "mozilla/dom/Element.h"
+#include "mozilla/PseudoStyleType.h"
 
 #include "mozilla/StaticPrefs_zen.h"
 
@@ -384,6 +386,8 @@ inline static nscolor zenInvertColorChannel(nscolor aColor) {
  * not touch (devtools highlighters, screenshots, the boosts overlays
  * themselves, and other native-anonymous UI such as scrollbars). A null frame
  * gives no document to anchor the boost on, so it is treated the same way.
+ * CSS generated content (::before/::after/::marker/::backdrop) is
+ * native-anonymous too but is author content, so it is not exempt.
  */
 ZEN_HOT_FUNCTION
 inline static bool IsBoostExemptFrame(const nsIFrame* aFrame) {
@@ -391,7 +395,24 @@ inline static bool IsBoostExemptFrame(const nsIFrame* aFrame) {
     return true;
   }
   const nsIContent* content = aFrame->GetContent();
-  return content && content->IsInNativeAnonymousSubtree();
+  if (!content || !content->IsInNativeAnonymousSubtree()) {
+    return false;
+  }
+  if (const nsIContent* root =
+          content->GetClosestNativeAnonymousSubtreeRoot()) {
+    if (root->IsElement()) {
+      switch (root->AsElement()->GetPseudoElementType()) {
+        case mozilla::PseudoStyleType::Before:
+        case mozilla::PseudoStyleType::After:
+        case mozilla::PseudoStyleType::Marker:
+        case mozilla::PseudoStyleType::Backdrop:
+          return false;
+        default:
+          break;
+      }
+    }
+  }
+  return true;
 }
 
 /**

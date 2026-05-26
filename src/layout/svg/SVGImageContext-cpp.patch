@@ -1,0 +1,21 @@
+diff --git a/layout/svg/SVGImageContext.cpp b/layout/svg/SVGImageContext.cpp
+index ecbda963b75fb70b62885a0c8f7a517011a8d5dc..1200a51aee7db4ee1a014308581ada1002c0d05f 100644
+--- a/layout/svg/SVGImageContext.cpp
++++ b/layout/svg/SVGImageContext.cpp
+@@ -57,12 +57,14 @@ void SVGImageContext::MaybeStoreContextPaint(SVGImageContext& aContext,
+   if ((style->mMozContextProperties.bits & StyleContextPropertyBits::FILL) &&
+       style->mFill.kind.IsColor()) {
+     haveContextPaint = true;
+-    contextPaint->SetFill(style->mFill.kind.AsColor().CalcColor(aStyle));
++    contextPaint->SetFill(
++        style->mFill.kind.AsColor().CalcColor(aStyle, nullptr));
+   }
+   if ((style->mMozContextProperties.bits & StyleContextPropertyBits::STROKE) &&
+       style->mStroke.kind.IsColor()) {
+     haveContextPaint = true;
+-    contextPaint->SetStroke(style->mStroke.kind.AsColor().CalcColor(aStyle));
++    contextPaint->SetStroke(
++        style->mStroke.kind.AsColor().CalcColor(aStyle, nullptr));
+   }
+   if (style->mMozContextProperties.bits &
+       StyleContextPropertyBits::FILL_OPACITY) {

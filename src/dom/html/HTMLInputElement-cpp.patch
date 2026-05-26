@@ -1,0 +1,13 @@
+diff --git a/dom/html/HTMLInputElement.cpp b/dom/html/HTMLInputElement.cpp
+index 3374a88b9335de1659df548fe8c18610f675b336..540f22697e7b85bca2fd6d3fe952ed3944216e17 100644
+--- a/dom/html/HTMLInputElement.cpp
++++ b/dom/html/HTMLInputElement.cpp
+@@ -768,7 +768,7 @@ static void SerializeColorForHTMLCompatibility(const StyleAbsoluteColor& aColor,
+   // Raw StyleAbsoluteColor can have floats outside of 0-1 range e.g. when
+   // display-p3 color is converted to srgb, and ToColor guarantees to fit the
+   // values within the range.
+-  nscolor color = aColor.ToColor();
++  nscolor color = aColor.ToColor(nullptr);
+   aResult.Truncate();
+   aResult.AppendPrintf("#%02x%02x%02x", NS_GET_R(color), NS_GET_G(color),
+                        NS_GET_B(color));

@@ -1566,7 +1566,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
     const tabsContainer = group.groupContainer;
     tabsContainer.removeAttribute("hidden");
-    tabsContainer.style.overflow = "hidden";
+    tabsContainer.style.overflowY = "hidden";
 
     const groupStart = group.groupStartElement;
     const itemsToShow = this.#normalizeGroupItems(group.childGroupsAndTabs);
@@ -1615,7 +1615,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     const afterMarginTop = () => {
-      tabsContainer.style.overflow = "";
+      tabsContainer.style.overflowY = "";
       if (group.hasAttribute("has-active")) {
         const activeTabs = group.activeTabs;
         const folders = new Map();
@@ -1859,14 +1859,14 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
             const tabsContainer = currentGroup.groupContainer;
             const groupStart = currentGroup.groupStartElement;
-            tabsContainer.style.overflow = "clip";
+            tabsContainer.style.overflowY = "clip";
 
             if (tabsContainer.hasAttribute("hidden")) {
               tabsContainer.removeAttribute("hidden");
             }
 
             const afterMarginTop = () => {
-              tabsContainer.style.overflow = "";
+              tabsContainer.style.overflowY = "";
             };
 
             animations.push(
@@ -1972,7 +1972,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     const heightContainer = expand
       ? 0
       : this.#calculateHeightShift(tabsContainer, []);
-    tabsContainer.style.overflow = "clip";
+    tabsContainer.style.overflowY = "clip";
 
     this.#createAnimation(
       groupStart,

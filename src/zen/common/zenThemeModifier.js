@@ -170,7 +170,7 @@
         document.documentElement.removeAttribute("zen-no-padding");
         if (domFullscreen) {
           const selectedBrowser = gBrowser.selectedBrowser;
-          selectedBrowser.style.paddingRight = "env(hairline)";
+          selectedBrowser.style.paddingRight = "0.5px";
           window.addEventListener(
             "MozAfterPaint",
             () => {

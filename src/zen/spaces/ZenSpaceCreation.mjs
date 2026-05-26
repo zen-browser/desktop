@@ -261,6 +261,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
   }
 
   async onCancelButtonCommand() {
+    document.documentElement.removeAttribute("zen-creating-workspace");
     await gZenWorkspaces.changeWorkspaceWithID(this.previousWorkspaceId);
   }
 

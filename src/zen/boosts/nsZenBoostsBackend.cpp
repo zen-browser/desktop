@@ -399,9 +399,11 @@ inline static bool IsBoostExemptFrame(const nsIFrame* aFrame) {
   if (!content || !content->IsInNativeAnonymousSubtree()) {
     return false;
   }
-  // Form-control internals live in UA-widget shadow trees; the text typed into
-  // an input is author content and should be boosted.
-  if (content->HasBeenInUAWidget()) {
+  // Form-control internals (and media controls) live in UA-widget shadow
+  // trees; the text typed into an input is author content and should be
+  // boosted. Classic native-anonymous UI (scrollbars, devtools) has no
+  // containing shadow and falls through to the pseudo-element check below.
+  if (content->GetContainingShadow()) {
     return false;
   }
   const nsIContent* root = content->GetClosestNativeAnonymousSubtreeRoot();
@@ -422,6 +424,15 @@ inline static void GetZenBoostsDataForFrame(const nsIFrame* aFrame,
                                             bool* aIsInverted) {
   nsPresContext* presContext = aFrame->PresContext();
   if (!presContext) {
+    return;
+  }
+  // SVG images render in their own document with no BrowsingContext; the host
+  // propagates its boost onto the image document's PresContext instead.
+  if (presContext->HasZenBoostsOverride()) {
+    *aData = presContext->ZenBoostsOverrideAccent();
+    *aComplementaryRotation =
+        presContext->ZenBoostsOverrideComplementaryRotation();
+    *aIsInverted = presContext->ZenBoostsOverrideInverted();
     return;
   }
   const mozilla::dom::BrowsingContext* browsingContext = nullptr;

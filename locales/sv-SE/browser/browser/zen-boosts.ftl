@@ -11,7 +11,7 @@ zen-boost-edit-reset =
 zen-boost-edit-delete = 
     .label = Ta bort förändring
 zen-boost-size = Storlek
-zen-boost-case = Case
+zen-boost-case = Fall
 zen-boost-zap = Zappa
 zen-boost-code = Kod
 zen-boost-back = Tillbaka
@@ -48,9 +48,9 @@ zen-unzap-tooltip =
        *[other] { $elementCount } flera element zappade
     }
 zen-boost-save = 
-    .label = Export Boost
+    .label = Exportera förändring
 zen-boost-load = 
-    .label = Import Boost
+    .label = Importera förändring
 zen-panel-ui-boosts-exported-message = Förändring exporterad!
 zen-site-data-boosts = Förändringar
 zen-site-data-create-boost = 

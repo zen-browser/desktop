@@ -435,6 +435,7 @@
 }
 
 #zen-copy-current-url-button,
+#share-tab-button,
 #zen-site-data-header-share {
   list-style-image: url("share.svg");
 }

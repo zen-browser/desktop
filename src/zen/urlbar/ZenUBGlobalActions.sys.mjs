@@ -85,15 +85,42 @@ const globalActionsTemplate = [
     label: "New Boost",
     icon: "chrome://browser/skin/zen-icons/boost.svg",
     isAvailable: window => {
-      return isNotEmptyTab(window);
+      if (!isNotEmptyTab(window)) {
+        return false;
+      }
+
+      // Keep this action consistent with the rest of the Boosts UI.
+      if (!Services.prefs.getBoolPref("zen.boosts.enabled", false)) {
+        return false;
+      }
+
+      const uri = window.gBrowser.currentURI;
+      return !!uri?.schemeIs && (uri.schemeIs("http") || uri.schemeIs("https"));
     },
     command: window => {
+      const uri = window.gBrowser.currentURI;
+      if (!uri?.schemeIs || !(uri.schemeIs("http") || uri.schemeIs("https"))) {
+        return;
+      }
+
+      let domain = "";
+      try {
+        domain = uri.host;
+      } catch {
+        return;
+      }
+
+      if (!domain) {
+        return;
+      }
+
       const { gZenBoostsManager } = ChromeUtils.importESModule(
         "resource:///modules/zen/boosts/ZenBoostsManager.sys.mjs"
       );
-      const domain = window.gBrowser.selectedBrowser.currentURI.host;
-      const uri = window.gBrowser.currentURI;
       const boost = gZenBoostsManager.createNewBoost(domain);
+      if (!boost) {
+        return;
+      }
       gZenBoostsManager.openBoostWindow(window, boost, uri);
     },
   },

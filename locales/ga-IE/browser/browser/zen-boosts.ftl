@@ -11,7 +11,7 @@ zen-boost-edit-reset =
 zen-boost-edit-delete = 
     .label = Scrios an Treisiú
 zen-boost-size = Méid
-zen-boost-case = Case
+zen-boost-case = Cás
 zen-boost-zap = Zapáil
 zen-boost-code = Cód
 zen-boost-back = Ar ais
@@ -48,9 +48,9 @@ zen-unzap-tooltip =
        *[other] { $elementCount } eilimintí Zapáilte
     }
 zen-boost-save = 
-    .label = Export Boost
+    .label = Borradh Easpórtála
 zen-boost-load = 
-    .label = Import Boost
+    .label = Borradh Iompórtála
 zen-panel-ui-boosts-exported-message = Borradh easpórtáilte!
 zen-site-data-boosts = Borradh
 zen-site-data-create-boost = 

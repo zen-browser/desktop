@@ -11,7 +11,7 @@ zen-boost-edit-reset =
 zen-boost-edit-delete = 
     .label = Suprimeix la millora
 zen-boost-size = Mida
-zen-boost-case = Case
+zen-boost-case = Cas
 zen-boost-zap = Amaga
 zen-boost-code = Codi
 zen-boost-back = Enrere
@@ -48,9 +48,9 @@ zen-unzap-tooltip =
        *[other] { $elementCount } elements amagats
     }
 zen-boost-save = 
-    .label = Export Boost
+    .label = Exporta la millora
 zen-boost-load = 
-    .label = Import Boost
+    .label = Importa la millora
 zen-panel-ui-boosts-exported-message = S'ha exportat la millora!
 zen-site-data-boosts = Millores
 zen-site-data-create-boost = 

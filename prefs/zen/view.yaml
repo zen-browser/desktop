@@ -32,7 +32,7 @@
 
 - name: zen.view.hide-window-controls
   value: true
-  condition: "not defined(XP_WIN)"
+  condition: "!defined(XP_WIN)"
 
 - name: zen.view.experimental-no-window-controls
   value: false

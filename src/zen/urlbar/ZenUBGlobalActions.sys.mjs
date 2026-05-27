@@ -82,6 +82,22 @@ const globalActionsTemplate = [
     },
   },
   {
+    label: "New Boost",
+    icon: "chrome://browser/skin/zen-icons/boost.svg",
+    isAvailable: window => {
+      return isNotEmptyTab(window);
+    },
+    command: window => {
+      const { gZenBoostsManager } = ChromeUtils.importESModule(
+        "resource:///modules/zen/boosts/ZenBoostsManager.sys.mjs"
+      );
+      const domain = window.gBrowser.selectedBrowser.currentURI.host;
+      const uri = window.gBrowser.currentURI;
+      const boost = gZenBoostsManager.createNewBoost(domain);
+      gZenBoostsManager.openBoostWindow(window, boost, uri);
+    },
+  },
+  {
     label: "Next Space",
     command: "cmd_zenWorkspaceForward",
     icon: "chrome://browser/skin/zen-icons/forward.svg",

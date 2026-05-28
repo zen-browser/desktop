@@ -36,44 +36,23 @@
   padding-block: 2px;
 }
 
+.zen-workspace-icon,
+.zen-current-workspace-indicator-icon,
+toolbarbutton.zen-workspace-button > .toolbarbutton-icon,
+#zen-workspaces-button .zen-workspace-button {
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: flex !important;
+  min-width: 20px !important;
+  min-height: 20px !important;
+}
+
 #zen-sidebar-foot-buttons #zen-create-new-button,
 #zen-create-new-button {
   opacity: 1 !important;
   visibility: visible !important;
   display: flex !important;
   pointer-events: auto !important;
-}
-
-/* Windows: native caption buttons must not be collapsed by compact-mode rules */
-@media (-moz-platform: windows) {
-  .titlebar-buttonbox-container {
-    max-height: none !important;
-    min-height: 32px;
-    overflow: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    display: flex !important;
-    visibility: visible !important;
-  }
-
-  .titlebar-button {
-    min-width: 46px;
-    min-height: 32px;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    display: flex !important;
-    -moz-appearance: auto !important;
-  }
-
-  .titlebar-button > .toolbarbutton-icon {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    width: 12px !important;
-    height: 12px !important;
-  }
 }
 
 /* Bottom tab stripe gap fix */

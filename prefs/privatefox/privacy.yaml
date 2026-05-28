@@ -224,3 +224,35 @@
   value: true
 - name: privacy.clearOnShutdown.siteSettings
   value: false
+
+# Astra: Disable push notifications
+- name: dom.push.enabled
+  value: false
+- name: dom.push.connection.enabled
+  value: false
+
+# Astra: Disable ping tracking
+- name: browser.send_pings
+  value: false
+- name: browser.send_pings.require_same_host
+  value: false
+
+# Astra: Disable telemetry
+- name: toolkit.telemetry.enabled
+  value: false
+- name: toolkit.telemetry.unified
+  value: false
+- name: datareporting.healthreport.uploadEnabled
+  value: false
+- name: datareporting.policy.dataSubmissionEnabled
+  value: false
+
+# Astra: Disable battery/sensors API
+- name: dom.battery.enabled
+  value: false
+- name: device.sensors.enabled
+  value: false
+
+# Astra: Disable media autoplay completely
+- name: media.autoplay.blocking_policy
+  value: 2

@@ -25,11 +25,6 @@
 - name: zen.view.experimental-force-window-controls-left
   value: false
 
-# Astra: Keep native min/max/close visible on Windows (hide breaks caption buttons)
-- name: zen.view.hide-window-controls
-  value: false
-  condition: "defined(XP_WIN)"
-
 - name: zen.view.hide-window-controls
   value: true
   condition: "!defined(XP_WIN)"

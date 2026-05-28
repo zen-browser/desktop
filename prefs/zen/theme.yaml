@@ -75,3 +75,7 @@
 
 - name: zen.performance.low-bandwidth-mode.lazy-loading
   value: true
+
+- name: zen.view.hide-window-controls
+  value: true
+  condition: "defined(XP_WIN)"

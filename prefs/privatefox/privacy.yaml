@@ -204,3 +204,23 @@
 # Astra: Disable TLS 0-RTT early data (replay risk; tiny latency tradeoff)
 - name: security.tls.enable_0rtt_data
   value: false
+
+# Astra: Clear cookies and cache on exit
+- name: privacy.sanitize.sanitizeOnShutdown
+  value: true
+- name: privacy.clearOnShutdown.cookies
+  value: true
+- name: privacy.clearOnShutdown.cache
+  value: true
+- name: privacy.clearOnShutdown.sessions
+  value: false
+- name: privacy.clearOnShutdown.history
+  value: false
+- name: privacy.clearOnShutdown.downloads
+  value: false
+- name: privacy.clearOnShutdown.formdata
+  value: false
+- name: privacy.clearOnShutdown.offlineApps
+  value: true
+- name: privacy.clearOnShutdown.siteSettings
+  value: false

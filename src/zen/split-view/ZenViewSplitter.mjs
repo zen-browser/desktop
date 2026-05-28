@@ -2294,7 +2294,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       // Unsplit the tab and exit from the drag view
       this.dropZone?.removeAttribute("enabled");
       this.disableTabRearrangeView(event);
-      this.removeTabFromSplit(browserContainer);
+      this.removeTabFromSplit(event, browserContainer);
       return true;
     }
     return false;

@@ -35,7 +35,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   // Arc animation configuration
   #ARC_CONFIG = Object.freeze({
     ARC_STEPS: 80, // Browser interpolates between keyframes natively
-    MAX_ARC_HEIGHT: 25,
+    MAX_ARC_HEIGHT: 20,
     ARC_HEIGHT_RATIO: 0.2, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
   });
 

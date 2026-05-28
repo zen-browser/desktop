@@ -44,3 +44,10 @@
 
 - name: browser.taskbarTabs.enabled
   value: false
+
+- name: browser.contentblocking.report.hide_vpn_banner
+  value: true
+  locked: true
+
+- name: browser.vpn_promo.enabled
+  value: false

@@ -4,12 +4,16 @@
 
 #include <cmath>
 #include <algorithm>
+#include <array>
 #include <cstdint>
+#include <cstring>
 
 #include "nsZenBoostsBackend.h"
 
 #include "nsIXULRuntime.h"
 #include "nsPresContext.h"
+#include "nsIFrame.h"
+#include "nsIContent.h"
 
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/StaticPtr.h"
@@ -21,6 +25,8 @@
 #include "mozilla/dom/Document.h"
 #include "mozilla/dom/DocumentInlines.h"
 #include "mozilla/dom/BrowsingContext.h"
+#include "mozilla/dom/Element.h"
+#include "mozilla/PseudoStyleType.h"
 
 #include "mozilla/StaticPrefs_zen.h"
 
@@ -28,9 +34,6 @@
 // all the way to pure black, which makes inverted pages feel too dark.
 #define INVERT_CHANNEL_FLOOR() \
   (mozilla::StaticPrefs::zen_boosts_invert_channel_floor_AtStartup())
-
-#define SHOULD_APPLY_BOOSTS_TO_ANONYMOUS_CONTENT() \
-  (!mozilla::StaticPrefs::zen_boosts_disable_on_anonymous_content_AtStartup())
 
 #if defined(__clang__) || defined(__GNUC__)
 #  define ZEN_HOT_FUNCTION __attribute__((hot))
@@ -47,10 +50,6 @@
 namespace zen {
 
 NS_IMPL_ISUPPORTS0(nsZenBoostsBackend)
-
-nsZenAccentOklab nsZenBoostsBackend::mCachedAccent{0};
-nsZenAccentOklab nsZenBoostsBackend::mCachedComplementary{0};
-float nsZenBoostsBackend::mCachedComplementaryRotationDeg = 0.0f;
 
 namespace {
 
@@ -83,15 +82,41 @@ static inline float linearToSrgb(float c) {
 static inline float fastCbrt(float x) {
   if (x == 0.0f) return 0.0f;
   float a = std::abs(x);
-  union {
-    float f;
-    uint32_t i;
-  } u = {a};
-  u.i = u.i / 3 + 0x2a504a2e;
-  float y = u.f;
+  // Bit-level initial guess. Use memcpy rather than a union to avoid the
+  // undefined behaviour of type-punning through a union member in C++.
+  uint32_t i;
+  std::memcpy(&i, &a, sizeof(i));
+  i = i / 3 + 0x2a504a2e;
+  float y;
+  std::memcpy(&y, &i, sizeof(y));
   y = (2.0f * y + a / (y * y)) * (1.0f / 3.0f);
   y = (2.0f * y + a / (y * y)) * (1.0f / 3.0f);
   return x < 0.0f ? -y : y;
+}
+
+/**
+ * @brief sRGB(0..255) -> linear lookup table. The filter only ever feeds
+ * integer 8-bit channels through srgbToLinear, so the 256 possible results
+ * are precomputed once instead of calling std::pow three times per color on
+ * the per-color hot path. Built lazily on first use; the function-local
+ * static makes initialization thread-safe.
+ */
+static inline const std::array<float, 256>& SrgbLinearTable() {
+  static const std::array<float, 256> kTable = [] {
+    std::array<float, 256> table{};
+    for (int i = 0; i < 256; ++i) {
+      table[i] = srgbToLinear(i * (1.0f / 255.0f));
+    }
+    return table;
+  }();
+  return kTable;
+}
+
+/**
+ * @brief Linearizes an 8-bit sRGB channel via the precomputed table.
+ */
+static inline float srgbToLinear8(uint8_t aChannel) {
+  return SrgbLinearTable()[aChannel];
 }
 
 /**
@@ -107,13 +132,9 @@ ZEN_HOT_FUNCTION
 inline static auto zenPrecomputeAccent(nscolor aAccentColor) {
   constexpr float inv255 = 1.0f / 255.0f;
 
-  const float r = NS_GET_R(aAccentColor) * inv255;
-  const float g = NS_GET_G(aAccentColor) * inv255;
-  const float b = NS_GET_B(aAccentColor) * inv255;
-
-  const float lr = srgbToLinear(r);
-  const float lg = srgbToLinear(g);
-  const float lb = srgbToLinear(b);
+  const float lr = srgbToLinear8(NS_GET_R(aAccentColor));
+  const float lg = srgbToLinear8(NS_GET_G(aAccentColor));
+  const float lb = srgbToLinear8(NS_GET_B(aAccentColor));
 
   const float l_ =
       fastCbrt(0.4122214708f * lr + 0.5363325363f * lg + 0.0514459929f * lb);
@@ -157,6 +178,45 @@ inline static nsZenAccentOklab zenRotateAccent(const nsZenAccentOklab& aBase,
 }
 
 /**
+ * @brief Small round-robin cache of precomputed accents. Painting several
+ * boosted tabs with different accents interleaved would otherwise recompute
+ * the Oklab base accent (with cbrt) and the rotated complementary accent on
+ * every single color. Keyed by the accent nscolor and the complementary hue
+ * rotation. Main-thread only (same threading assumption as the per-color
+ * paint path it serves).
+ */
+struct AccentCacheEntry {
+  nscolor accentNS = 0;
+  float rotationDeg = 0.0f;
+  bool valid = false;
+  nsZenAccentOklab accent{};
+  nsZenAccentOklab complementary{};
+};
+
+static constexpr size_t kAccentCacheSize = 4;
+static AccentCacheEntry sAccentCache[kAccentCacheSize];
+static size_t sAccentCacheNext = 0;
+
+ZEN_HOT_FUNCTION
+static const AccentCacheEntry& GetCachedAccent(nscolor aAccentNS,
+                                               float aRotationDeg) {
+  for (const auto& entry : sAccentCache) {
+    if (entry.valid && entry.accentNS == aAccentNS &&
+        entry.rotationDeg == aRotationDeg) {
+      return entry;
+    }
+  }
+  AccentCacheEntry& slot = sAccentCache[sAccentCacheNext];
+  sAccentCacheNext = (sAccentCacheNext + 1) % kAccentCacheSize;
+  slot.accentNS = aAccentNS;
+  slot.rotationDeg = aRotationDeg;
+  slot.accent = zenPrecomputeAccent(aAccentNS);
+  slot.complementary = zenRotateAccent(slot.accent, aRotationDeg);
+  slot.valid = true;
+  return slot;
+}
+
+/**
  * @brief Applies a duotone color filter to transform an original color toward
  * one of two accent colors. The original color's perceived lightness decides
  * which accent it is tinted toward: dark colors are pulled to the base accent,
@@ -183,10 +243,10 @@ inline static nsZenAccentOklab zenRotateAccent(const nsZenAccentOklab& aBase,
   constexpr float inv255 = 1.0f / 255.0f;
   const float blendFactor = contrast * inv255;
 
-  // sRGB -> linear
-  const float lr = srgbToLinear(NS_GET_R(aOriginalColor) * inv255);
-  const float lg = srgbToLinear(NS_GET_G(aOriginalColor) * inv255);
-  const float lb = srgbToLinear(NS_GET_B(aOriginalColor) * inv255);
+  // sRGB -> linear (8-bit channels via the precomputed table)
+  const float lr = srgbToLinear8(NS_GET_R(aOriginalColor));
+  const float lg = srgbToLinear8(NS_GET_G(aOriginalColor));
+  const float lb = srgbToLinear8(NS_GET_B(aOriginalColor));
 
   // Linear RGB -> LMS -> cube root -> Oklab (fused)
   const float l_ =
@@ -300,40 +360,83 @@ inline static nscolor zenInvertColorChannel(nscolor aColor) {
   const auto gShifted = sum - gInv;
   const auto bShifted = sum - bInv;
 
-  // Compress the channel range into [FLOOR, 255] so dark inversions are
-  // lifted while light inversions are left untouched. This preserves hue
-  // since all three channels are scaled by the same factor.
+  // If the resulting color is light, leave it untouched: mixing in the floor
+  // would raise its lowest channel and wash the color out toward grey. Only
+  // dark results get the floor lift, which keeps them off pure black.
+  const auto luma = (rShifted * 54 + gShifted * 183 + bShifted * 19) >> 8;
+  if (luma > 127) {
+    return NS_RGBA(static_cast<uint8_t>(rShifted),
+                   static_cast<uint8_t>(gShifted),
+                   static_cast<uint8_t>(bShifted), a);
+  }
+
+  // Compress the dark channel range into [FLOOR, 255] so dark inversions are
+  // lifted off pure black. This preserves hue since all three channels are
+  // scaled by the same factor.
   const auto channelFloor = INVERT_CHANNEL_FLOOR();
   const uint32_t range = 255 - channelFloor;
   const auto lift = [channelFloor, range](uint8_t c) -> uint8_t {
     return static_cast<uint8_t>(channelFloor + (c * range) / 255);
   };
-
   return NS_RGBA(lift(rShifted), lift(gShifted), lift(bShifted), a);
 }
 
 /**
- * @brief Retrieves the current boost data from the browsing context. When
- * called without aPresContext, reads the precomputed cache populated on
- * presshell entry; otherwise resolves from the supplied PresContext.
+ * @brief Whether the given frame belongs to anonymous content that boosts must
+ * not touch (devtools highlighters, screenshots, the boosts overlays
+ * themselves, and other native-anonymous UI such as scrollbars). A null frame
+ * gives no document to anchor the boost on, so it is treated the same way.
+ * Author-facing content that happens to be native-anonymous is not exempt:
+ * UA-widget form-control internals (including the text the user types into an
+ * input), and pseudo-elements such as ::before/::after/::marker/::placeholder.
  */
 ZEN_HOT_FUNCTION
-inline static void GetZenBoostsDataFromBrowsingContext(
-    ZenBoostData* aData, float* aComplementaryRotation, bool* aIsInverted,
-    nsPresContext* aPresContext = nullptr) {
-  auto zenBoosts = nsZenBoostsBackend::GetInstance();
-  if (!zenBoosts || (zenBoosts->mCurrentFrameIsAnonymousContent &&
-                     !SHOULD_APPLY_BOOSTS_TO_ANONYMOUS_CONTENT())) {
+inline static bool IsBoostExemptFrame(const nsIFrame* aFrame) {
+  if (!aFrame) {
+    return true;
+  }
+  const nsIContent* content = aFrame->GetContent();
+  if (!content || !content->IsInNativeAnonymousSubtree()) {
+    return false;
+  }
+  // Form-control internals (and media controls) live in UA-widget shadow
+  // trees; the text typed into an input is author content and should be
+  // boosted. Classic native-anonymous UI (scrollbars, devtools) has no
+  // containing shadow and falls through to the pseudo-element check below.
+  if (content->GetContainingShadow()) {
+    return false;
+  }
+  const nsIContent* root = content->GetClosestNativeAnonymousSubtreeRoot();
+  return !root || !root->IsElement() ||
+         !mozilla::PseudoStyle::IsPseudoElement(
+             root->AsElement()->GetPseudoElementType());
+}
+
+/**
+ * @brief Retrieves the boost data for the document the given frame belongs to.
+ * Resolves from the frame's PresContext -> Document -> top BrowsingContext,
+ * which carries the accent/inversion fields.
+ */
+ZEN_HOT_FUNCTION
+inline static void GetZenBoostsDataForFrame(const nsIFrame* aFrame,
+                                            ZenBoostData* aData,
+                                            float* aComplementaryRotation,
+                                            bool* aIsInverted) {
+  nsPresContext* presContext = aFrame->PresContext();
+  if (!presContext) {
     return;
   }
-  if (!aPresContext) {
-    *aData = zenBoosts->mCachedCurrentAccent;
-    *aComplementaryRotation = zenBoosts->mCachedCurrentComplementaryRotation;
-    *aIsInverted = zenBoosts->mCachedCurrentInverted;
+  // SVG images render in their own document with no BrowsingContext; the host
+  // propagates its boost onto the image document's PresContext instead.
+  if (presContext->HasZenBoostsOverride()) {
+    *aData = presContext->ZenBoostsOverrideAccent();
+    *aComplementaryRotation =
+        presContext->ZenBoostsOverrideComplementaryRotation();
+    *aIsInverted = presContext->ZenBoostsOverrideInverted();
     return;
   }
-  mozilla::dom::BrowsingContext* browsingContext = nullptr;
-  if (auto document = aPresContext->Document()) {
+  const mozilla::dom::BrowsingContext* browsingContext = nullptr;
+  if (auto document = presContext->Document()) {
     browsingContext = document->GetBrowsingContext();
   }
   if (!browsingContext) {
@@ -346,6 +449,32 @@ inline static void GetZenBoostsDataFromBrowsingContext(
 }
 
 }  // namespace
+
+namespace detail {
+
+// Thin forwarders that give unit tests access to the pure color math without
+// pulling in the singleton / BrowsingContext. They are defined here, after the
+// anonymous namespace, so they can reach those file-local implementations.
+nsZenAccentOklab PrecomputeAccent(nscolor aAccentColor) {
+  return zenPrecomputeAccent(aAccentColor);
+}
+
+nsZenAccentOklab RotateAccent(const nsZenAccentOklab& aBase,
+                              float aRotationDeg) {
+  return zenRotateAccent(aBase, aRotationDeg);
+}
+
+nscolor FilterColorChannel(nscolor aOriginalColor,
+                           const nsZenAccentOklab& aAccent,
+                           const nsZenAccentOklab& aComplementary) {
+  return zenFilterColorChannel(aOriginalColor, aAccent, aComplementary);
+}
+
+nscolor InvertColorChannel(nscolor aColor) {
+  return zenInvertColorChannel(aColor);
+}
+
+}  // namespace detail
 
 static mozilla::StaticRefPtr<nsZenBoostsBackend> sZenBoostsBackend;
 
@@ -362,90 +491,39 @@ auto nsZenBoostsBackend::GetInstance() -> nsZenBoostsBackend* {
   return sZenBoostsBackend.get();
 }
 
-auto nsZenBoostsBackend::onPresShellEntered(mozilla::dom::Document* aDocument)
-    -> void {
-  if (auto displayDoc = aDocument->GetDisplayDocument()) {
-    onPresShellEntered(displayDoc);
-    return;
-  }
-  // Note that aDocument can be null when entering anonymous content frames.
-  // We explicitly do this to prevent applying boosts to anonymous content, such
-  // as devtools or screenshots.
-  mozilla::dom::BrowsingContext* browsingContext =
-      aDocument ? aDocument->GetBrowsingContext() : nullptr;
-  if (!browsingContext) {
-    return;
-  }
-  mCurrentBrowsingContext = browsingContext;
-  RefreshCachedBoostState();
-}
-
-auto nsZenBoostsBackend::RefreshCachedBoostState() -> void {
-  if (!mCurrentBrowsingContext) {
-    mCachedCurrentAccent = 0;
-    mCachedCurrentComplementaryRotation = 0.0f;
-    mCachedCurrentInverted = false;
-    return;
-  }
-  auto top = mCurrentBrowsingContext->Top();
-  mCachedCurrentAccent = top->ZenBoostsData();
-  mCachedCurrentComplementaryRotation = top->ZenBoostsComplementaryRotation();
-  mCachedCurrentInverted = top->IsZenBoostsInverted();
-}
-
-[[nodiscard]] ZEN_HOT_FUNCTION auto
-nsZenBoostsBackend::FilterColorFromPresContext(nscolor aColor,
-                                               nsPresContext* aPresContext)
-    -> nscolor {
-  ZenBoostData accentNS = 0;
-  float complementaryRotation = 0.0f;
-  bool invertColors = false;
-  GetZenBoostsDataFromBrowsingContext(&accentNS, &complementaryRotation,
-                                      &invertColors, aPresContext);
-  if (accentNS) {
-    if (mCachedAccent.accentNS != accentNS) {
-      mCachedAccent = zenPrecomputeAccent(accentNS);
-      // Trigger a recompute of the complementary accent since
-      // it depends on the base accent.
-      mCachedComplementary.accentNS = 0;
-    }
-    // Derive the complementary accent by rotating the base accent's hue by the
-    // boost's complementary rotation. Cached so the per-color hot path only
-    // recomputes it when the base accent or rotation changes.
-    if (mCachedComplementary.accentNS != accentNS ||
-        mCachedComplementaryRotationDeg != complementaryRotation) {
-      mCachedComplementary =
-          zenRotateAccent(mCachedAccent, complementaryRotation);
-      mCachedComplementaryRotationDeg = complementaryRotation;
-    }
-    // Apply a filter-like tint:
-    // - Preserve the original color's perceived luminance
-    // - Map hue/chroma toward the base or complementary accent depending on
-    //   the original color's lightness
-    // - Keep the original alpha
-    aColor = zenFilterColorChannel(aColor, mCachedAccent, mCachedComplementary);
-  }
-  if (invertColors) {
-    aColor = zenInvertColorChannel(aColor);
-  }
-  return aColor;
-}
-
 [[nodiscard]] ZEN_HOT_FUNCTION auto nsZenBoostsBackend::ResolveStyleColor(
-    mozilla::StyleAbsoluteColor aColor) -> mozilla::StyleAbsoluteColor {
-  const auto resultColor = FilterColorFromPresContext(aColor.ToColor());
-  return mozilla::StyleAbsoluteColor::FromColor(resultColor);
-}
-
-[[nodiscard]] ZEN_HOT_FUNCTION auto nsZenBoostsBackend::ResolveStyleColor(
-    nscolor aColor) -> nscolor {
+    nscolor aColor, const nsIFrame* aFrame) -> nscolor {
   if (NS_GET_A(aColor) == 0) {
     // Skip processing fully transparent colors since they won't be visible and
     // we want to avoid unnecessary computations. This also prevents issues with
     // using the alpha channel for contrast information in the accent color.
     return aColor;
   }
-  return FilterColorFromPresContext(aColor);
+  // Boosts are only supported in content; GetInstance() is null in the parent
+  // process, which keeps the browser chrome from being tinted.
+  if (!GetInstance() || IsBoostExemptFrame(aFrame)) {
+    return aColor;
+  }
+  ZenBoostData accentNS = 0;
+  float complementaryRotation = 0.0f;
+  bool invertColors = false;
+  GetZenBoostsDataForFrame(aFrame, &accentNS, &complementaryRotation,
+                           &invertColors);
+  if (accentNS) {
+    // Resolve (and cache) the base + complementary accent for this accent and
+    // complementary rotation. Apply a filter-like tint:
+    // - Preserve the original color's perceived luminance
+    // - Map hue/chroma toward the base or complementary accent depending on
+    //   the original color's lightness
+    // - Keep the original alpha
+    const AccentCacheEntry& cached =
+        GetCachedAccent(accentNS, complementaryRotation);
+    aColor = zenFilterColorChannel(aColor, cached.accent, cached.complementary);
+  }
+  if (invertColors) {
+    aColor = zenInvertColorChannel(aColor);
+  }
+  return aColor;
 }
 
 }  // namespace zen

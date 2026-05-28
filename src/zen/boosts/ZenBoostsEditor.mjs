@@ -65,6 +65,7 @@ export class nsZenBoostEditor {
       once: true,
     });
 
+    this.doc.getElementById("zenBoostWindow").setAttribute("editor", "boost");
     this.doc.getElementById("zen-boost-editor-root").style.display = "flex";
     this.doc.getElementById("zen-boost-code-editor-root").style.display =
       "none";
@@ -366,20 +367,22 @@ export class nsZenBoostEditor {
     // being smaller than it should be
     this._boostEditorWidth = this.editorWindow.outerWidth;
 
-    this.editorWindow.resizeTo(
-      this._codeEditorWidth,
-      this.editorWindow.outerHeight
-    );
-    if (openRightAligned) {
-      this.editorWindow.moveTo(
-        this.editorWindow.screenX - offset,
-        this.editorWindow.screenY
+    this.editorWindow.requestAnimationFrame(() => {
+      this.editorWindow.resizeTo(
+        this._codeEditorWidth,
+        this.editorWindow.outerHeight
       );
-    }
+      if (openRightAligned) {
+        this.editorWindow.moveTo(
+          this.editorWindow.screenX - offset,
+          this.editorWindow.screenY
+        );
+      }
 
-    this.doc.getElementById("zen-boost-editor-root").style.display = "none";
-    this.doc.getElementById("zen-boost-code-editor-root").style.display =
-      "initial";
+      this.doc.getElementById("zen-boost-editor-root").style.display = "none";
+      this.doc.getElementById("zen-boost-code-editor-root").style.display =
+        "initial";
+    });
   }
 
   /**
@@ -397,20 +400,22 @@ export class nsZenBoostEditor {
     }
     windowElem.setAttribute("editor", "boost");
 
-    this.editorWindow.resizeTo(
-      this._boostEditorWidth,
-      this.editorWindow.outerHeight
-    );
-    if (openRightAligned) {
-      this.editorWindow.moveTo(
-        this.editorWindow.screenX + offset,
-        this.editorWindow.screenY
+    this.editorWindow.requestAnimationFrame(() => {
+      this.editorWindow.resizeTo(
+        this._boostEditorWidth,
+        this.editorWindow.outerHeight
       );
-    }
+      if (openRightAligned) {
+        this.editorWindow.moveTo(
+          this.editorWindow.screenX + offset,
+          this.editorWindow.screenY
+        );
+      }
 
-    this.doc.getElementById("zen-boost-editor-root").style.display = "flex";
-    this.doc.getElementById("zen-boost-code-editor-root").style.display =
-      "none";
+      this.doc.getElementById("zen-boost-editor-root").style.display = "flex";
+      this.doc.getElementById("zen-boost-code-editor-root").style.display =
+        "none";
+    });
 
     // Disable picker mode
     this.disableAllPickers();
@@ -564,6 +569,9 @@ ${cssSelector} {
       this.wasDragging = true;
       event.preventDefault();
 
+      this.currentBoostData.changeWasMade = true;
+      this.updateButtonToggleVisuals();
+
       if (this.dragTarget == "zen-boost-color-picker-dot-secondary") {
         this.setSecondaryDotPos(event.clientX, event.clientY);
       } else if (event.target.id != "zen-boost-magic-theme") {
@@ -671,20 +679,6 @@ ${cssSelector} {
   }
 
   /**
-   * Resets the color picker dot to the default position (default state).
-   */
-  resetDotPosition() {
-    const gradient = this.doc.querySelector(".zen-boost-color-picker-gradient");
-    const rect = gradient.getBoundingClientRect();
-    const padding = 50;
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const radius = (rect.width - padding) / 2;
-
-    this.setDotPos(centerX + radius / 1.25, centerY);
-  }
-
-  /**
    * Handles clicks on the theme picker gradient or magic theme button.
    * Updates the dot position or toggles auto-theme mode based on the click target.
    *
@@ -695,14 +689,16 @@ ${cssSelector} {
 
     this.currentBoostData.changeWasMade = true;
 
+    this.currentBoostData.enableColorBoost = true;
+
     if (event.target.id == "zen-boost-magic-theme") {
-      this.currentBoostData.enableColorBoost = true;
       this.currentBoostData.autoTheme = !this.currentBoostData.autoTheme;
-      this.updateButtonToggleVisuals();
       this.updateCurrentBoost();
     } else if (this.dragTarget != "zen-boost-color-picker-dot-secondary") {
       this.setDotPos(event.clientX, event.clientY, !this.wasDragging);
     }
+
+    this.updateButtonToggleVisuals();
     this.wasDragging = false;
   }
 
@@ -1310,6 +1306,23 @@ ${cssSelector} {
     const resetBoost = this.doc.getElementById("zen-boost-edit-reset");
 
     const popup = this.doc.getElementById("zenBoostContextMenu");
+    popup.addEventListener(
+      "popupshown",
+      () => {
+        // Don't give the user following options if the boost
+        // is not going to save / not currently saved (unchanged)
+        let shouldDisable = !this.currentBoostData.changeWasMade;
+        const items = [renameBoost, deleteBoost, resetBoost];
+        for (let item of items) {
+          if (shouldDisable) {
+            item.setAttribute("disabled", "");
+          } else {
+            item.removeAttribute("disabled");
+          }
+        }
+      },
+      { once: true }
+    );
     popup.openPopup(
       event.target,
       "bottomcenter topcenter",
@@ -1319,12 +1332,6 @@ ${cssSelector} {
       false /* attributesOverride */,
       event
     );
-
-    // Don't give the user following options if the boost
-    // is not going to save / not currently saved (unchanged)
-    renameBoost.disabled = !this.currentBoostData.changeWasMade;
-    deleteBoost.disabled = !this.currentBoostData.changeWasMade;
-    resetBoost.disabled = !this.currentBoostData.changeWasMade;
   }
 
   /**
@@ -1566,43 +1573,31 @@ ${cssSelector} {
     }
 
     if (
-      this.currentBoostData.dotPos.x == null ||
-      this.currentBoostData.dotPos.y == null
-    ) {
-      this.resetDotPosition();
-    } else {
       // Test if the stored position is a non-normalized dot position
-      if (
-        this.currentBoostData.dotPos.x > 1 ||
-        this.currentBoostData.dotPos.x < 0 ||
-        this.currentBoostData.dotPos.y > 1 ||
-        this.currentBoostData.dotPos.y < 0
-      ) {
-        // Normalize position
-        this.currentBoostData.dotPos.x =
-          this.currentBoostData.dotPos.x / rect.width;
-        this.currentBoostData.dotPos.y =
-          this.currentBoostData.dotPos.y / rect.height;
-      }
-
-      // Convert normalized position to relative position
-      const xPos = this.currentBoostData.dotPos.x * rect.width;
-      const yPos = this.currentBoostData.dotPos.y * rect.height;
-
-      dot.style.left = `${xPos}px`;
-      dot.style.top = `${yPos}px`;
-    }
-
-    if (
-      this.currentBoostData.secondaryDotPos?.x != null &&
-      this.currentBoostData.secondaryDotPos?.y != null
+      this.currentBoostData.dotPos.x > 1 ||
+      this.currentBoostData.dotPos.x < 0 ||
+      this.currentBoostData.dotPos.y > 1 ||
+      this.currentBoostData.dotPos.y < 0
     ) {
-      const xPosSec = this.currentBoostData.secondaryDotPos.x * rect.width;
-      const yPosSec = this.currentBoostData.secondaryDotPos.y * rect.height;
-
-      dotSec.style.left = `${xPosSec}px`;
-      dotSec.style.top = `${yPosSec}px`;
+      // Normalize position
+      this.currentBoostData.dotPos.x =
+        this.currentBoostData.dotPos.x / rect.width;
+      this.currentBoostData.dotPos.y =
+        this.currentBoostData.dotPos.y / rect.height;
     }
+
+    // Convert normalized position to relative position
+    const xPos = this.currentBoostData.dotPos.x * rect.width;
+    const yPos = this.currentBoostData.dotPos.y * rect.height;
+
+    dot.style.left = `${xPos}px`;
+    dot.style.top = `${yPos}px`;
+
+    const xPosSec = this.currentBoostData.secondaryDotPos.x * rect.width;
+    const yPosSec = this.currentBoostData.secondaryDotPos.y * rect.height;
+
+    dotSec.style.left = `${xPosSec}px`;
+    dotSec.style.top = `${yPosSec}px`;
 
     this.editorWindow._editor.setText(this.currentBoostData.customCSS || "");
 

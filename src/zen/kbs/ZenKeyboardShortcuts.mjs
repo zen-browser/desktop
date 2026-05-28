@@ -1284,14 +1284,11 @@ class nsZenKeyboardShortcutsVersioner {
 
     if (version < 20) {
       // Migrate from version 19 to 20.
-      // Unbound shortcuts saved without a "key" field were applied as key="undefined"
-      // in the keyset, which Gecko mis-matched as bare "u" (see #13902).
+      // v19 clears key_duplicateTab, but other unbound shortcuts may still have
+      // been applied as key="undefined" (see #13902). Repair any that persisted
+      // the literal string before parse/apply normalization.
       for (let shortcut of data) {
         shortcut.repairMalformedUnboundKey();
-        if (shortcut.getID() == "key_duplicateTab") {
-          shortcut.shouldBeEmpty = true;
-          shortcut.setDisabled(true);
-        }
       }
     }
 

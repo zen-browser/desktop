@@ -18,7 +18,7 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = Nascondi entrambi
     .accesskey = H
 zen-toolbar-context-move-to-folder = 
-    .label = Move to Folder...
+    .label = Sposta nella cartella...
     .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Nuova cartella
@@ -41,7 +41,7 @@ tabbrowser-reset-pin-button =
         }
 zen-tab-sublabel =
     { $tabSubtitle ->
-        [zen-default-pinned] Back to pinned url
-        [zen-default-pinned-cmd] Separate from pinned tab
+        [zen-default-pinned] Torna all'url bloccato
+        [zen-default-pinned-cmd] Separa dalla scheda bloccata
        *[other] { $tabSubtitle }
     }

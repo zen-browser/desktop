@@ -238,8 +238,6 @@
   value: false
 
 # Astra: Disable telemetry
-- name: toolkit.telemetry.enabled
-  value: false
 - name: toolkit.telemetry.unified
   value: false
 - name: datareporting.healthreport.uploadEnabled

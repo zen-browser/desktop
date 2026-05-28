@@ -162,6 +162,8 @@
 # Astra: Block autoplay with sound by default (fewer drive-by annoyances)
 - name: media.autoplay.default
   value: 5
+- name: media.autoplay.block-webaudio
+  value: false
 
 # Astra: Block downloads over HTTP; email tracker blocking (strict ETP)
 - name: dom.block_download_insecure

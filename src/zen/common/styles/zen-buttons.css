@@ -76,3 +76,81 @@ xul|button:not(#zen-workspaces-button):active {
     scale: 0.98;
   }
 }
+
+@media (-moz-platform: windows) {
+  #zen-appcontent-navbar-wrapper:is([zen-has-hover='true'], [zen-compact-mode-active], [has-popup-menu]) .titlebar-buttonbox-container,
+  #zen-appcontent-navbar-wrapper:is([zen-has-hover='true'], [zen-compact-mode-active], [has-popup-menu]) .titlebar-buttonbox,
+  #zen-appcontent-navbar-wrapper:is([zen-has-hover='true'], [zen-compact-mode-active], [has-popup-menu]) .titlebar-button {
+    position: relative;
+    z-index: 2;
+    pointer-events: auto !important;
+  }
+
+  .titlebar-button {
+    appearance: none !important;
+    -moz-window-dragging: no-drag !important;
+    position: relative;
+    width: 46px;
+    height: 32px;
+    min-width: 46px;
+    min-height: 32px;
+    border: none !important;
+    border-radius: 8px;
+    background: transparent !important;
+    transition: background 0.15s ease;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    color: var(--toolbox-textcolor);
+  }
+
+  .titlebar-button:hover {
+    background: color-mix(in srgb, currentColor 10%, transparent) !important;
+  }
+
+  .titlebar-button > .toolbarbutton-icon {
+    display: none !important;
+  }
+
+  .titlebar-button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 10px;
+    height: 10px;
+    background-color: currentColor;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+  }
+
+  .titlebar-min::before {
+    mask-image: url("chrome://global/skin/icons/minimize.svg");
+  }
+
+  .titlebar-max::before {
+    mask-image: url("chrome://global/skin/icons/maximize.svg");
+  }
+
+  .titlebar-restore::before {
+    mask-image: url("chrome://global/skin/icons/restore.svg");
+  }
+
+  .titlebar-close::before {
+    mask-image: url("chrome://global/skin/icons/close.svg");
+  }
+
+  .titlebar-close:hover {
+    background-color: #e81123 !important;
+    color: white !important;
+  }
+
+  :root[sizemode="maximized"] .titlebar-max {
+    display: none !important;
+  }
+
+  :root:not([sizemode="maximized"]) .titlebar-restore {
+    display: none !important;
+  }
+}

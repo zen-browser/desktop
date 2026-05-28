@@ -316,6 +316,14 @@ class KeyShortcut {
   #reserved = false;
   #internal = false;
 
+  static #normalizeKey(key) {
+    return (key ?? "").toLowerCase();
+  }
+
+  static #normalizeKeycode(keycode) {
+    return keycode ?? "";
+  }
+
   constructor(
     id,
     key,
@@ -329,8 +337,8 @@ class KeyShortcut {
     internal = false
   ) {
     this.#id = id;
-    this.#key = key?.toLowerCase();
-    this.#keycode = keycode;
+    this.#key = KeyShortcut.#normalizeKey(key);
+    this.#keycode = KeyShortcut.#normalizeKeycode(keycode);
 
     if (!window.VALID_SHORTCUT_GROUPS.includes(group)) {
       throw new Error("Illegal group value: " + group);
@@ -373,8 +381,8 @@ class KeyShortcut {
   static #parseFromJSON(json) {
     return new KeyShortcut(
       json.id,
-      json.key,
-      json.keycode,
+      json.key ?? "",
+      json.keycode ?? "",
       json.group,
       nsKeyShortcutModifiers.parseFromJSON(json.modifiers),
       json.action,
@@ -547,8 +555,8 @@ class KeyShortcut {
   toJSONForm() {
     return {
       id: this.#id,
-      key: this.#key,
-      keycode: this.#keycode,
+      key: this.#key ?? "",
+      keycode: this.#keycode ?? "",
       group: this.#group,
       l10nId: this.#l10nId,
       modifiers: this.#modifiers.toJSONString(),
@@ -628,6 +636,16 @@ class KeyShortcut {
     this.#key = "";
     this.#keycode = "";
     this.#modifiers = new nsKeyShortcutModifiers(false, false, false, false);
+  }
+
+  /**
+   * Repair shortcuts whose unbound state was persisted without a "key" field and
+   * later applied as the literal string "undefined" in the keyset (#13902).
+   */
+  repairMalformedUnboundKey() {
+    if (this.#key === "undefined") {
+      this.clearKeybind();
+    }
   }
 
   setNewBinding(shortcut) {
@@ -848,7 +866,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 19;
+  static LATEST_KBS_VERSION = 20;
 
   constructor() {}
 
@@ -1226,6 +1244,14 @@ class nsZenKeyboardShortcutsVersioner {
           "zen-duplicate-tab-shortcut"
         )
       );
+      // Firefox's key_duplicateTab has no default binding; keep it unbound now
+      // that cmd_zenDuplicateTab is the Zen-managed duplicate-tab action.
+      for (let shortcut of data) {
+        if (shortcut.getID() == "key_duplicateTab") {
+          shortcut.shouldBeEmpty = true;
+          break;
+        }
+      }
     }
 
     if (version < 18) {
@@ -1252,6 +1278,19 @@ class nsZenKeyboardShortcutsVersioner {
           shortcut.shouldBeEmpty = true;
           shortcut.setDisabled(true);
           break;
+        }
+      }
+    }
+
+    if (version < 20) {
+      // Migrate from version 19 to 20.
+      // Unbound shortcuts saved without a "key" field were applied as key="undefined"
+      // in the keyset, which Gecko mis-matched as bare "u" (see #13902).
+      for (let shortcut of data) {
+        shortcut.repairMalformedUnboundKey();
+        if (shortcut.getID() == "key_duplicateTab") {
+          shortcut.shouldBeEmpty = true;
+          shortcut.setDisabled(true);
         }
       }
     }
@@ -1418,7 +1457,7 @@ window.gZenKeyboardShortcutsManager = {
       keyset.innerHTML = "";
 
       for (let key of this._currentShortcutList) {
-        if (key.isInternal()) {
+        if (key.isInternal() || key.isEmpty()) {
           continue;
         }
         let child = key.toXHTMLElement(browser);

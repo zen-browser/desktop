@@ -36,8 +36,12 @@
   padding-block: 2px;
 }
 
-#zen-sidebar-foot-buttons #zen-create-new-button {
-  opacity: 1;
+#zen-sidebar-foot-buttons #zen-create-new-button,
+#zen-create-new-button {
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: flex !important;
+  pointer-events: auto !important;
 }
 
 /* Windows: native caption buttons must not be collapsed by compact-mode rules */
@@ -45,9 +49,11 @@
   .titlebar-buttonbox-container {
     max-height: none !important;
     min-height: 32px;
-    overflow: visible;
+    overflow: visible !important;
     opacity: 1 !important;
     pointer-events: auto !important;
+    display: flex !important;
+    visibility: visible !important;
   }
 
   .titlebar-button {
@@ -55,5 +61,29 @@
     min-height: 32px;
     padding-top: 0 !important;
     padding-bottom: 0 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: flex !important;
+    -moz-appearance: auto !important;
   }
+
+  .titlebar-button > .toolbarbutton-icon {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    width: 12px !important;
+    height: 12px !important;
+  }
+}
+
+/* Bottom tab stripe gap fix */
+#zen-tabbox-wrapper,
+#tabbrowser-tabbox {
+  border: none !important;
+  outline: none !important;
+}
+
+.zen-workspace-tabs-section {
+  border-bottom: none !important;
+  margin-bottom: 0 !important;
 }

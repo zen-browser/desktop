@@ -247,9 +247,6 @@
 - name: datareporting.policy.dataSubmissionEnabled
   value: false
 
-# Astra: Disable battery/sensors API
-- name: dom.battery.enabled
-  value: false
 - name: device.sensors.enabled
   value: false
 

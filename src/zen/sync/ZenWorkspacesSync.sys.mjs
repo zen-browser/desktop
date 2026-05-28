@@ -56,6 +56,14 @@ function createRecordId(type, id) {
   return `${prefix}~${id}`;
 }
 
+function createChangedItemKey(id) {
+  return String(id);
+}
+
+function isKnownRecordType(type) {
+  return Object.prototype.hasOwnProperty.call(RECORD_ID_PREFIX_BY_TYPE, type);
+}
+
 function normalizeUserContextId(value) {
   const normalized = typeof value === "string" ? Number(value) : value;
   if (!Number.isSafeInteger(normalized) || normalized <= 0) {
@@ -290,10 +298,10 @@ class ZenWorkspacesStore extends Store {
 
 /**
  * Sync tracker that watches workspace and contextual identity observers and
- * marks the corresponding record IDs as changed.
+ * marks the corresponding workspace items as changed.
  */
 class ZenWorkspacesTracker extends Tracker {
-  #changedIDs = {};
+  #changedItems = new Map();
   #ignoreAll = false;
 
   get ignoreAll() {
@@ -337,31 +345,50 @@ class ZenWorkspacesTracker extends Tracker {
   }
 
   _trackChange(data) {
-    if (data.type && data.id) {
-      const id = createRecordId(data.type, data.id);
-      this.#changedIDs[id] = Date.now() / 1000;
-      this.score += SCORE_INCREMENT_XLARGE;
+    if (!data.type || !data.id || !isKnownRecordType(data.type)) {
+      return;
     }
+    const when = Date.now() / 1000;
+    const key = createChangedItemKey(data.id);
+    this.#changedItems.set(key, { type: data.type, id: data.id, when });
+    this.score += SCORE_INCREMENT_XLARGE;
   }
 
   async getChangedIDs() {
-    return { ...this.#changedIDs };
+    return Object.fromEntries(
+      Array.from(this.#changedItems.values(), item => [
+        createRecordId(item.type, item.id),
+        item.when,
+      ])
+    );
   }
 
   async addChangedID(id, when) {
-    this.#changedIDs[id] = when;
+    const parsed = parseRecordId(id);
+    if (!parsed || !isKnownRecordType(parsed.type)) {
+      return false;
+    }
+    this.#changedItems.set(createChangedItemKey(parsed.key), {
+      type: parsed.type,
+      id: parsed.key,
+      when: when,
+    });
     return true;
   }
 
   async removeChangedID(...ids) {
     for (const id of ids) {
-      delete this.#changedIDs[id];
+      const parsed = parseRecordId(id);
+      if (!parsed || !isKnownRecordType(parsed.type)) {
+        continue;
+      }
+      this.#changedItems.delete(createChangedItemKey(parsed.key));
     }
     return true;
   }
 
   clearChangedIDs() {
-    this.#changedIDs = {};
+    this.#changedItems.clear();
   }
 }
 

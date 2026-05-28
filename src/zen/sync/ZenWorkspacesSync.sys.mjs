@@ -371,7 +371,7 @@ class ZenWorkspacesTracker extends Tracker {
     this.#changedItems.set(createChangedItemKey(parsed.key), {
       type: parsed.type,
       id: parsed.key,
-      when: when,
+      when,
     });
     return true;
   }

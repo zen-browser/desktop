@@ -188,7 +188,7 @@ class nsZenWorkspaces {
     const removedSpaceIds = new Set((removals.spaces || []).map(s => s.uuid));
     if (removedSpaceIds.size || pulled.spaces?.length) {
       const localMap = new Map(
-        this._workspaceCache
+        this.getWorkspaces()
           .filter(w => !removedSpaceIds.has(w.uuid))
           .map(w => [w.uuid, w])
       );
@@ -767,11 +767,11 @@ class nsZenWorkspaces {
         bookmarks: [],
         lastChangeTimestamp: 0,
       };
-      return this._workspaceBookmarksCache;
+      return;
     }
 
     if (this._workspaceBookmarksCache) {
-      return this._workspaceBookmarksCache;
+      return;
     }
 
     const [bookmarks, lastChangeTimestamp] = await Promise.all([
@@ -780,7 +780,6 @@ class nsZenWorkspaces {
     ]);
 
     this._workspaceBookmarksCache = { bookmarks, lastChangeTimestamp };
-    return this._workspaceBookmarksCache;
   }
 
   restoreWorkspacesFromSessionStore(aWinData = {}) {
@@ -1434,14 +1433,13 @@ class nsZenWorkspaces {
     if (this.privateWindowOrDisabled) {
       return;
     }
-
+    const workspaces = this.getWorkspaces();
     // Track previous positions so we only notify observers for workspaces whose
     // position changed during the reorder.
     const previousPositions = new Map(
-      this._workspaceCache.map((workspace, index) => [workspace.uuid, index])
+      workspaces.map((workspace, index) => [workspace.uuid, index])
     );
 
-    const workspaces = [...this._workspaceCache];
     const workspace = workspaces.find(w => w.uuid === id);
     if (!workspace) {
       console.warn(`Workspace with ID ${id} not found for reordering.`);
@@ -1855,11 +1853,9 @@ class nsZenWorkspaces {
       workspaces[workspaceIndex + (offsetPixels > 0 ? -1 : 1)]?.containerTabId;
     for (const otherWorkspace of workspaces) {
       const element = this.workspaceElement(otherWorkspace.uuid);
-      if (element) {
-        const newTransform =
-          -(workspaceIndex - workspaces.indexOf(otherWorkspace)) * 100;
-        element.style.transform = `translateX(${newTransform + offsetPixels / 2}%)`;
-      }
+      const newTransform =
+        -(workspaceIndex - workspaces.indexOf(otherWorkspace)) * 100;
+      element.style.transform = `translateX(${newTransform + offsetPixels / 2}%)`;
     }
     // Hide other essentials with different containerTabId
     for (const container of otherContainersEssentials) {

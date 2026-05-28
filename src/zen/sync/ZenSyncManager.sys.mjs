@@ -60,6 +60,7 @@ class ZenSyncManager {
     }
     this.#clearChangedItems();
   }
+
   async applyIncomingBatch(pulled, removals) {
     try {
       this.#ignoreChanges = true;
@@ -69,7 +70,7 @@ class ZenSyncManager {
       );
 
       const win = lazy.ZenWindowSync.firstSyncedWindow;
-      if (win?.gZenWorkspaces && !win.gZenWorkspaces.privateWindowOrDisabled) {
+      if (win?.gZenWorkspaces) {
         await win.gZenWorkspaces._applySyncChanges(pulled, removals);
       }
     } catch (e) {

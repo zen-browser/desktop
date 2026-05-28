@@ -7,8 +7,8 @@ unified-extensions-description = Le estensioni sono usate per portare più funzi
 tab-context-zen-reset-pinned-tab = 
     .label =
         { $isEssential ->
-            [true] Reset Essential Tab
-           *[false] Reset Pinned Tab
+            [true] Resetta Scheda Essenziale
+           *[false] Resetta Scheda Bloccata
         }
     .accesskey = R
 tab-context-zen-add-essential = 
@@ -21,8 +21,8 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] Replace Essential URL with Current
-           *[false] Replace Pinned URL with Current
+            [true] Sostituire l'URL essenziale con l'attuale
+           *[false] Sostituire l'URL fissato con l'attuale
         }
     .accesskey = C
 tab-context-zen-edit-title = 
@@ -39,7 +39,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimizza
 zen-panel-ui-gradient-generator-custom-color = Colore personalizzato
 zen-copy-current-url-confirmation = L'URL corrente è stato copiato!
-zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
+zen-copy-current-url-as-markdown-confirmation = URL corrente copiato come Markdown!
 zen-general-cancel-label = 
     .label = Annulla
 zen-general-confirm = 
@@ -48,7 +48,7 @@ zen-pinned-tab-replaced = L'URL della scheda bloccata è stato sostituito con l'
 zen-tabs-renamed = La scheda è stata rinominata con successo!
 zen-background-tab-opened-toast = Nuova scheda aperta in background!
 zen-workspace-renamed-toast = Il Workspace è stato rinominato con successo!
-zen-split-view-limit-toast = Can't add more panels to the split view!
+zen-split-view-limit-toast = Impossibile aggiungere altri pannelli alla vista divisa!
 zen-toggle-compact-mode-button = 
     .label = Modalità compatta
     .tooltiptext = Attiva/disattiva Modalità compatta
@@ -122,4 +122,4 @@ zen-window-sync-migration-dialog-message = Zen ora sincronizza le finestre sullo
 zen-window-sync-migration-dialog-learn-more = Scopri di più
 zen-window-sync-migration-dialog-accept = Ho capito
 zen-appmenu-new-blank-window = 
-    .label = New blank window
+    .label = Nuova finestra vuota

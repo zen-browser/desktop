@@ -151,6 +151,18 @@ jobs:
         run: |
           rm -rf ~/.zen-keys
 
+      - name: Inject uBlock into Linux build
+        continue-on-error: true
+        run: |
+          set -x
+          LINUX_TAR=$(find dist -maxdepth 1 -type f -name "*.tar.xz" 2>/dev/null | head -1)
+          if [ -n "$LINUX_TAR" ]; then
+            mkdir -p dist/astra/distribution/extensions
+            curl -fsSL "https://github.com/gorhill/uBlock/releases/download/1.62.0/uBlock0_1.62.0.firefox.signed.xpi" \
+              -o dist/astra/distribution/extensions/uBlock0@raymondhill.net.xpi
+            echo "uBlock injected into Linux build"
+          fi
+
       - name: Rename artifacts
         run: |
           set -eu

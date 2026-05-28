@@ -48,9 +48,9 @@ zen-unzap-tooltip =
        *[other] { $elementCount } elements zapped
     }
 zen-boost-save = 
-    .label = Export Boost
+    .label = ブーストをエキスポ―とする
 zen-boost-load = 
-    .label = Import Boost
+    .label = ブーストをインポートする
 zen-panel-ui-boosts-exported-message = ブーストがエクスポートされました！
 zen-site-data-boosts = ブースト
 zen-site-data-create-boost = 

@@ -36,15 +36,17 @@
   padding-block: 2px;
 }
 
-.zen-workspace-icon,
-.zen-current-workspace-indicator-icon,
-toolbarbutton.zen-workspace-button > .toolbarbutton-icon,
-#zen-workspaces-button .zen-workspace-button {
+.zen-workspace-button[zen-workspace-id] {
   opacity: 1 !important;
   visibility: visible !important;
+}
+
+.zen-workspace-button[zen-workspace-id] > .toolbarbutton-icon {
   display: flex !important;
-  min-width: 20px !important;
-  min-height: 20px !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  min-width: 16px !important;
+  min-height: 16px !important;
 }
 
 #zen-sidebar-foot-buttons #zen-create-new-button,

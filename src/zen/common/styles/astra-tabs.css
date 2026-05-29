@@ -1,0 +1,18 @@
+/* Astra — Tab stripe geometry (compact-guarded) */
+:root:not([zen-compact-mode="true"]) #zen-tabbox-wrapper {
+  margin: 0;
+}
+.zen-workspace-tabs-section {
+  padding: 0;
+  min-width: 100%;
+  border-bottom: none;
+  margin-bottom: 0;
+}
+.tab-background {
+  margin-inline: 0 !important;
+}
+#zen-tabbox-wrapper,
+#tabbrowser-tabbox {
+  border: none;
+  outline: none;
+}

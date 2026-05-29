@@ -1,0 +1,4 @@
+/* Astra — Compact mode coexistence */
+:root:not([zen-compact-mode="true"]) #navigator-toolbox {
+  padding: 0;
+}

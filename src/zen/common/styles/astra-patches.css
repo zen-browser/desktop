@@ -1,0 +1,5 @@
+/* Astra — Temporary patches (review each release) */
+/* ASTRA-PATCH: Space footer min-height, remove if Zen fixes */
+#zen-workspaces-button:not([dont-show]) {
+  min-height: 32px;
+}

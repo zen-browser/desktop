@@ -12,8 +12,8 @@
     @keyframes zenHistoryLid {
       0% { transform: translate(63.977px, 37.148px) rotate(0deg) translate(-46.852px, -12.82px); animation-timing-function: cubic-bezier(0.21, 0, 0.56, 1); }
       31.43% { transform: translate(63.977px, 45.436px) rotate(0deg) translate(-46.852px, -12.82px); animation-timing-function: cubic-bezier(0.38, 0, 0.55, 1); }
-      62.86% { transform: translate(63.977px, 17.08px) rotate(-5.57deg) translate(-46.852px, -12.82px); animation-timing-function: cubic-bezier(0.43, 0.14, 0.38, 1); }
-      82.86% { transform: translate(63.977px, 23.397px) rotate(3deg) translate(-46.852px, -12.82px); animation-timing-function: cubic-bezier(0.41, 0, 0.49, 1); }
+      62.86% { transform: translate(63.977px, 17.08px) rotate(-6.93deg) translate(-46.852px, -12.82px); animation-timing-function: cubic-bezier(0.43, 0.14, 0.38, 1); }
+      82.86% { transform: translate(63.977px, 23.397px) rotate(4.2deg) translate(-46.852px, -12.82px); animation-timing-function: cubic-bezier(0.41, 0, 0.49, 1); }
       100% { transform: translate(63.977px, 37.148px) rotate(0deg) translate(-46.852px, -12.82px); }
     }
     @keyframes zenHistoryDashTranslate {

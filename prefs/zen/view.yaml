@@ -26,7 +26,7 @@
   value: false
 
 - name: zen.view.hide-window-controls
-  value: true
+  value: false
   condition: "!defined(XP_WIN)"
 
 - name: zen.view.experimental-no-window-controls
@@ -58,3 +58,8 @@
 
 - name: zen.view.overflow-webext-toolbar
   value: "@IS_TWILIGHT@"
+
+- name: zen.sidebar.enabled
+  value: true
+- name: zen.sidebar.extensions.enabled
+  value: true

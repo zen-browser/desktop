@@ -86,3 +86,24 @@
   background: var(--zen-primary-color) !important;
   opacity: 1 !important;
 }
+
+/* Windows caption buttons - force all 3 icons visible */
+@media (-moz-platform: windows) {
+  .titlebar-button.titlebar-min > .toolbarbutton-icon,
+  .titlebar-button.titlebar-max > .toolbarbutton-icon,
+  .titlebar-button.titlebar-restore > .toolbarbutton-icon,
+  .titlebar-button.titlebar-close > .toolbarbutton-icon {
+    display: -moz-box !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .titlebar-button.titlebar-min,
+  .titlebar-button.titlebar-max,
+  .titlebar-button.titlebar-restore,
+  .titlebar-button.titlebar-close {
+    visibility: visible !important;
+    opacity: 1 !important;
+    -moz-appearance: auto !important;
+  }
+}

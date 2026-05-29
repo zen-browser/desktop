@@ -490,8 +490,8 @@ class SearchSection extends LibrarySection {
       url,
       clientX: rect.left - tabPanelRect.left,
       clientY: rect.top - tabPanelRect.top,
-      width: rect.width,
-      height: rect.height,
+      width: 0,
+      height: 0,
       triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
     });
   }

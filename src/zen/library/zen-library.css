@@ -4,7 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-:host(zen-library) {
+zen-library {
 
   @media (-moz-platform: windows) {
     --border-radius-medium: 6px;
@@ -26,7 +26,7 @@
   z-index: 2;
 }
 
-:host(zen-library[open]) {
+zen-library[open] {
   transform: translateX(0);
   opacity: 1;
   z-index: 9;
@@ -114,12 +114,7 @@
     height: 28px;
     fill: rgba(255, 255, 255, 0.8);
     stroke: var(--zen-colors-primary);
-    fill-opacity: 0;
-    -moz-context-properties: fill, fill-opacity, stroke;
-  }
-
-  &[active] img {
-    fill-opacity: 1;
+    -moz-context-properties: fill, stroke;
   }
 }
 

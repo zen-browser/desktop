@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { html } from "chrome://global/content/vendor/lit.all.mjs";
+import { html, keyed } from "chrome://global/content/vendor/lit.all.mjs";
 import { MozLitElement } from "chrome://global/content/lit-utils.mjs";
 
 let lazy = {};
@@ -51,10 +51,16 @@ export class ZenLibrary extends MozLitElement {
   static queries = {
     _content: "#zen-library-content",
     _tabs: { all: "#zen-library-sidebar-tabs > .library-tab" },
+    _header: "#zen-library-sidebar-header",
   };
+
+  createRenderRoot() {
+    return this;
+  }
 
   constructor() {
     super();
+    this._iconKeys = {};
     this.activeTab = Services.prefs.getStringPref(PREVIOUS_TAB_PREF, "") || "history";
   }
 
@@ -62,6 +68,7 @@ export class ZenLibrary extends MozLitElement {
     if (this.activeTab === value) {
       return;
     }
+    this._iconKeys[value] = Date.now();
     this._activeTab = value;
     Services.prefs.setStringPref(PREVIOUS_TAB_PREF, value);
   }
@@ -106,6 +113,13 @@ export class ZenLibrary extends MozLitElement {
     this.#initialized = false;
   }
 
+  firstUpdated() {
+    super.firstUpdated?.();
+    this._header.appendChild(
+      gZenVerticalTabsManager.actualWindowButtons.cloneNode(true)
+    );
+  }
+
   render() {
     return html`
       <link
@@ -120,11 +134,25 @@ export class ZenLibrary extends MozLitElement {
               <vbox
                 class="zen-library-tab"
                 ?active=${this.activeTab === Section.id}
-                @click=${() => (this.activeTab = Section.id)}
+                @click=${() => {
+                  this._iconKeys[Section.id] = Date.now();
+                  if (this.activeTab !== Section.id) {
+                    this.activeTab = Section.id;
+                  } else {
+                    this.requestUpdate();
+                  }
+                }}
               >
-                <img
-                  src=${`chrome://browser/skin/zen-icons/library/library-${Section.id}.svg`}
-                />
+                ${this.activeTab === Section.id
+                  ? keyed(
+                      this._iconKeys[Section.id],
+                      html`<img
+                        src=${`chrome://browser/skin/zen-icons/library/library-${Section.id}-active.svg`}
+                      />`
+                    )
+                  : html`<img
+                      src=${`chrome://browser/skin/zen-icons/library/library-${Section.id}.svg`}
+                    />`}
                 <label>${lazy.l10n.formatValueSync(Section.label)}</label>
               </vbox>
             `
@@ -237,8 +265,7 @@ export class ZenLibrary extends MozLitElement {
    */
   #computeWrapperTargetPx() {
     const isRightSide = gZenVerticalTabsManager._prefsRightSide;
-    let translateX =
-      window.windowUtils.getBoundsWithoutFlushing(this)[
+    let translateX = this.getBoundingClientRect()[
         isRightSide ? "left" : "right"
       ];
     const contentPosition = window.windowUtils.getBoundsWithoutFlushing(

@@ -2,7 +2,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="12" cy="12" r="9" stroke="context-stroke" stroke-width="2" fill="context-fill" fill-opacity="context-fill-opacity"/>
-  <path d="M12 8V16M9 13L12 16L15 13" stroke="context-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<svg class="zen-downloads-icon" width="28" height="28" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="64" cy="64" r="47.5" fill="none" stroke="context-stroke" stroke-width="7.1"/>
+  <path d="M 64 45 L 64 83 M 50 69 L 64 83 L 78 69" stroke="context-stroke" stroke-width="7.1" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

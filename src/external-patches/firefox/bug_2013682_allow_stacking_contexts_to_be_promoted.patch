@@ -1,0 +1,104 @@
+diff --git a/gfx/wr/webrender/src/clip.rs b/gfx/wr/webrender/src/clip.rs
+--- a/gfx/wr/webrender/src/clip.rs
++++ b/gfx/wr/webrender/src/clip.rs
+@@ -97,11 +97,11 @@
+ use api::units::*;
+ use crate::image_tiling::{self, Repetition};
+ use crate::border::{ensure_no_corner_overlap, BorderRadiusAu};
+ use crate::box_shadow::{BLUR_SAMPLE_SCALE, BoxShadowClipSource, BoxShadowCacheKey};
+ use crate::renderer::GpuBufferBuilderF;
+-use crate::spatial_tree::{SpatialTree, SpatialNodeIndex};
++use crate::spatial_tree::{SceneSpatialTree, SpatialTree, SpatialNodeIndex};
+ use crate::ellipse::Ellipse;
+ use crate::gpu_types::{BoxShadowStretchMode};
+ use crate::intern;
+ use crate::internal_types::{FastHashMap, FastHashSet, LayoutPrimitiveInfo};
+ use crate::prim_store::{VisibleMaskImageTile};
+@@ -745,10 +745,56 @@
+     ) -> bool {
+         let clip_chain_index = self.clip_chain_map[&clip_chain_id];
+         self.has_complex_clips_impl(clip_chain_index, interners)
+     }
+ 
++    /// Check if all complex clips in a clip chain are fixed-position rounded
++    /// rectangles (in Clip mode). When true, the intermediate surface for a
++    /// root-level stacking context can be skipped because the clips will be
++    /// promoted to compositor clips on the tile cache slices.
++    pub fn clip_chain_complex_clips_are_promotable(
++        &self,
++        clip_chain_id: ClipChainId,
++        interners: &Interners,
++        spatial_tree: &SceneSpatialTree,
++    ) -> bool {
++        let clip_chain_index = self.clip_chain_map[&clip_chain_id];
++        self.complex_clips_are_promotable_impl(clip_chain_index, interners, spatial_tree)
++    }
++
++    fn complex_clips_are_promotable_impl(
++        &self,
++        clip_chain_index: usize,
++        interners: &Interners,
++        spatial_tree: &SceneSpatialTree,
++    ) -> bool {
++        let mut index = clip_chain_index;
++
++        loop {
++            let clip_chain = &self.clip_chains[index];
++
++            for clip_entry in &clip_chain.clips {
++                let clip_info = &interners.clip[clip_entry.handle];
++
++                match clip_info.key.kind {
++                    ClipItemKeyKind::Rectangle(_, ClipMode::Clip) => {}
++                    ClipItemKeyKind::RoundedRectangle(_, _, ClipMode::Clip) => {
++                        if !spatial_tree.is_root_coord_system(clip_entry.spatial_node_index) {
++                            return false;
++                        }
++                    }
++                    _ => return false,
++                }
++            }
++
++            match clip_chain.parent {
++                Some(parent) => index = parent,
++                None => return true,
++            }
++        }
++    }
++
+     /// Check if a clip-node has complex (non-rectangular) clips
+     pub fn clip_node_has_complex_clips(
+         &self,
+         clip_node_id: ClipNodeId,
+         interners: &Interners,
+diff --git a/gfx/wr/webrender/src/scene_building.rs b/gfx/wr/webrender/src/scene_building.rs
+--- a/gfx/wr/webrender/src/scene_building.rs
++++ b/gfx/wr/webrender/src/scene_building.rs
+@@ -2369,11 +2369,26 @@
+ 
+         // If this stacking context has any complex clips, we need to draw it
+         // to an off-screen surface.
+         if let Some(clip_chain_id) = clip_chain_id {
+             if self.clip_tree_builder.clip_chain_has_complex_clips(clip_chain_id, &self.interners) {
+-                blit_reason |= BlitReason::CLIP;
++                // At the root level, if all complex clips are fixed-position
++                // rounded rectangles, we can skip the intermediate surface.
++                // The clips will be promoted to compositor clips on the tile
++                // cache slices, which applies them once to the composited
++                // surface — equivalent to the intermediate surface approach.
++                // This allows tile cache barriers to fire normally, enabling
++                // proper picture caching with multiple slices.
++                if !self.sc_stack.is_empty() ||
++                   !self.clip_tree_builder.clip_chain_complex_clips_are_promotable(
++                       clip_chain_id,
++                       &self.interners,
++                       &self.spatial_tree,
++                   )
++                {
++                    blit_reason |= BlitReason::CLIP;
++                }
+             }
+         }
+ 
+         // Check if we know this stacking context is redundant (doesn't need a surface)
+         // The check for blend-container redundancy is more involved so it's handled below.

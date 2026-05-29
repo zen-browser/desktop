@@ -5,6 +5,9 @@
 - name: zen.splitView.enable-tab-drop
   value: true
 
+- name: zen.splitView.enable-tab-click-split
+  value: true
+
 - name: zen.splitView.min-resize-width
   value: 7
 
@@ -15,7 +18,7 @@
   value: true
 
 - name: zen.splitView.drag-over-split-delayMC
-  value: 1000
+  value: 500
 
 - name: zen.splitView.drag-over-split-threshold
   value: 40

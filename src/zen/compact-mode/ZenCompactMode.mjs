@@ -148,6 +148,7 @@ window.gZenCompactModeManager = {
       // We dont want the user to be able to spam the button
       return;
     }
+    delete this._isTabBeingDragged;
     this.sidebar.removeAttribute("zen-user-show");
     // We use this element in order to make it persis across restarts, by using the XULStore.
     // main-window can't store attributes other than window sizes, so we use this instead
@@ -185,7 +186,8 @@ window.gZenCompactModeManager = {
       [
         {
           selector:
-            ":is([panelopen='true'], [open='true'], [breakout-extend='true']):not(#urlbar[zen-floating-urlbar='true']):not(tab):not(.zen-compact-mode-ignore)",
+            ":where([panelopen='true'], [open='true'], [breakout-extend='true'])" +
+            ":not(#urlbar[zen-floating-urlbar='true']):not(tab):not(.zen-compact-mode-ignore)",
         },
       ],
       "zen-compact-mode-active",
@@ -196,7 +198,8 @@ window.gZenCompactModeManager = {
       [
         {
           selector:
-            ":is([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true']):not(.zen-compact-mode-ignore)",
+            ":where([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true'])" +
+            ":not(.zen-compact-mode-ignore)",
         },
       ],
       "zen-compact-mode-active",
@@ -233,6 +236,7 @@ window.gZenCompactModeManager = {
           <menuitem id="zen-context-menu-compact-mode-hide-both" data-l10n-id="zen-toolbar-context-compact-mode-hide-both" type="radio" />
         </menupopup>
       </menu>
+      <menuseparator />
     `);
 
     const idToAction = {
@@ -247,7 +251,7 @@ window.gZenCompactModeManager = {
       }
     }
 
-    document.getElementById("viewToolbarsMenuSeparator").before(fragment);
+    document.getElementById("toolbar-context-menu").prepend(fragment);
     this.updateContextMenu();
   },
 
@@ -590,7 +594,7 @@ window.gZenCompactModeManager = {
     if (!toggle) {
       return;
     }
-    toggle.setAttribute("checked", this.preference);
+    toggle.toggleAttribute("checked", this.preference);
 
     const hideTabBar = this.canHideSidebar;
     const hideToolbar = this.canHideToolbar;
@@ -600,9 +604,9 @@ window.gZenCompactModeManager = {
     const sidebarItem = document.getElementById(idName + "sidebar");
     const toolbarItem = document.getElementById(idName + "toolbar");
     const bothItem = document.getElementById(idName + "both");
-    sidebarItem.setAttribute("checked", !hideBoth && hideTabBar);
-    toolbarItem.setAttribute("checked", !hideBoth && hideToolbar);
-    bothItem.setAttribute("checked", hideBoth);
+    sidebarItem.toggleAttribute("checked", !hideBoth && hideTabBar);
+    toolbarItem.toggleAttribute("checked", !hideBoth && hideToolbar);
+    bothItem.toggleAttribute("checked", hideBoth);
   },
 
   _removeOpenStateOnUnifiedExtensions() {
@@ -720,6 +724,7 @@ window.gZenCompactModeManager = {
     } else {
       if (attr === "zen-has-hover") {
         element.removeAttribute("zen-has-implicit-hover");
+        gURLBar.updateTextOverflow();
       }
       element.removeAttribute(attr);
       // Only remove if none of the verified attributes are present

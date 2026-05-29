@@ -793,6 +793,7 @@ const zenMissingKeyboardShortcutL10n = {
   key_selectTab7: "zen-key-select-tab-7",
   key_selectTab8: "zen-key-select-tab-8",
   key_selectLastTab: "zen-key-select-tab-last",
+  key_duplicateTab: "customkeys-file-duplicate-tab",
 
   key_showAllTabs: "zen-key-show-all-tabs",
   key_gotoHistory: "zen-key-goto-history",
@@ -801,6 +802,7 @@ const zenMissingKeyboardShortcutL10n = {
   key_redo: "zen-key-redo",
 
   key_inspectorMac: "zen-key-inspector-mac",
+  key_findSelection: "zen-key-find-selection",
 
   // Devtools
   key_toggleToolbox: "zen-devtools-toggle-shortcut",
@@ -1067,7 +1069,7 @@ var gZenCKSSettings = {
             zenMissingKeyboardShortcutL10n[conflictShortcut.getID()] ??
             conflictShortcut.getL10NID();
 
-          const [group] = await document.l10n.formatValues([
+          const [group, conflictName] = await document.l10n.formatValues([
             { id: `${ZEN_CKS_GROUP_PREFIX}-${conflictShortcut.getGroup()}` },
             { id: shortcutL10nKey },
           ]);
@@ -1082,7 +1084,7 @@ var gZenCKSSettings = {
 
           document.l10n.setAttributes(input.nextElementSibling, "zen-key-conflict", {
             group: group ?? "",
-            shortcut: shortcut ?? "",
+            shortcut: conflictName ?? shortcut ?? "",
           });
         }
       } else {
@@ -1124,7 +1126,7 @@ var gZenCKSSettings = {
     this._hasSafed = false;
     input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`);
     input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-not-set`);
-    input.value = modifiers.toDisplayString() + shortcut;
+    input.value = modifiers.toDisplayString() + gZenKeyboardShortcutsManager.getKeyDisplay(shortcut);
     this._latestValidKey = shortcut;
   },
 };

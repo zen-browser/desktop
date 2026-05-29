@@ -1,8 +1,8 @@
 diff --git a/browser/components/customizableui/CustomizableUI.sys.mjs b/browser/components/customizableui/CustomizableUI.sys.mjs
-index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885c6bde16d 100644
+index 5905271a3343efa04b45f5d1a63bfca3de342755..37f57de0ad72271d4c6e188ab9841b23b95f08d0 100644
 --- a/browser/components/customizableui/CustomizableUI.sys.mjs
 +++ b/browser/components/customizableui/CustomizableUI.sys.mjs
-@@ -14,6 +14,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
+@@ -13,6 +13,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
    BrowserUsageTelemetry: "resource:///modules/BrowserUsageTelemetry.sys.mjs",
    CustomizableWidgets:
      "moz-src:///browser/components/customizableui/CustomizableWidgets.sys.mjs",
@@ -10,7 +10,7 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
    HomePage: "resource:///modules/HomePage.sys.mjs",
    PanelMultiView:
      "moz-src:///browser/components/customizableui/PanelMultiView.sys.mjs",
-@@ -348,7 +349,7 @@ var CustomizableUIInternal = {
+@@ -347,7 +348,7 @@ var CustomizableUIInternal = {
        {
          type: CustomizableUI.TYPE_PANEL,
          defaultPlacements: [],
@@ -19,7 +19,7 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
        },
        false
      );
-@@ -358,20 +359,15 @@ var CustomizableUIInternal = {
+@@ -357,20 +358,15 @@ var CustomizableUIInternal = {
        "back-button",
        "forward-button",
        "stop-reload-button",
@@ -41,7 +41,7 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
      this.registerArea(
        CustomizableUI.AREA_NAVBAR,
        {
-@@ -379,8 +375,6 @@ var CustomizableUIInternal = {
+@@ -378,8 +374,6 @@ var CustomizableUIInternal = {
          overflowable: true,
          defaultPlacements: navbarPlacements,
          verticalTabsDefaultPlacements: [
@@ -50,7 +50,7 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
          ],
          defaultCollapsed: false,
        },
-@@ -404,10 +398,7 @@ var CustomizableUIInternal = {
+@@ -403,10 +397,7 @@ var CustomizableUIInternal = {
        {
          type: CustomizableUI.TYPE_TOOLBAR,
          defaultPlacements: [
@@ -61,7 +61,7 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
          ],
          verticalTabsDefaultPlacements: [],
          defaultCollapsed: null,
-@@ -489,6 +480,7 @@ var CustomizableUIInternal = {
+@@ -486,6 +477,7 @@ var CustomizableUIInternal = {
        CustomizableUI.AREA_NAVBAR,
        CustomizableUI.AREA_BOOKMARKS,
        CustomizableUI.AREA_TABSTRIP,
@@ -69,7 +69,7 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
      ]);
      if (AppConstants.platform != "macosx") {
        toolbars.add(CustomizableUI.AREA_MENUBAR);
-@@ -1265,6 +1257,9 @@ var CustomizableUIInternal = {
+@@ -1262,6 +1254,9 @@ var CustomizableUIInternal = {
          placements = gPlacements.get(area);
        }
  
@@ -79,7 +79,7 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
        // For toolbars that need it, mark as dirty.
        let defaultPlacements = areaProperties.get("defaultPlacements");
        if (
-@@ -1772,7 +1767,6 @@ var CustomizableUIInternal = {
+@@ -1769,7 +1764,6 @@ var CustomizableUIInternal = {
          lazy.log.info(
            "Widget " + aWidgetId + " not found, unable to remove from " + aArea
          );
@@ -87,7 +87,7 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
        }
  
        this.notifyDOMChange(widgetNode, null, container, true, () => {
-@@ -1782,7 +1776,7 @@ var CustomizableUIInternal = {
+@@ -1779,7 +1773,7 @@ var CustomizableUIInternal = {
          // We also need to remove the panel context menu if it's there:
          this.ensureButtonContextMenu(widgetNode);
          if (gPalette.has(aWidgetId) || this.isSpecialWidget(aWidgetId)) {
@@ -96,7 +96,7 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
          } else {
            window.gNavToolbox.palette.appendChild(widgetNode);
          }
-@@ -1950,16 +1944,16 @@ var CustomizableUIInternal = {
+@@ -1947,16 +1941,16 @@ var CustomizableUIInternal = {
          elem.setAttribute("skipintoolbarset", "true");
        }
      }
@@ -116,7 +116,7 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
      // Handle initial state of vertical tabs.
      if (isVerticalTabs) {
        // Show the vertical tabs toolbar
-@@ -2201,6 +2195,10 @@ var CustomizableUIInternal = {
+@@ -2198,6 +2192,10 @@ var CustomizableUIInternal = {
     *   The identifier string of the area that aNode is being inserted into.
     */
    insertWidgetBefore(aNode, aNextNode, aContainer, aAreaId) {
@@ -127,7 +127,7 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
      this.notifyDOMChange(aNode, aNextNode, aContainer, false, () => {
        this.setLocationAttributes(aNode, aAreaId);
        aContainer.insertBefore(aNode, aNextNode);
-@@ -4554,7 +4552,7 @@ var CustomizableUIInternal = {
+@@ -4562,7 +4560,7 @@ var CustomizableUIInternal = {
     * For all registered areas, builds those areas to reflect the current
     * placement state of all widgets.
     */
@@ -136,7 +136,7 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
      for (let [areaId, areaNodes] of gBuildAreas) {
        let placements = gPlacements.get(areaId);
        let isFirstChangedToolbar = true;
-@@ -4565,7 +4563,7 @@ var CustomizableUIInternal = {
+@@ -4573,7 +4571,7 @@ var CustomizableUIInternal = {
          if (area.get("type") == CustomizableUI.TYPE_TOOLBAR) {
            let defaultCollapsed = area.get("defaultCollapsed");
            let win = areaNode.ownerGlobal;
@@ -145,7 +145,7 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
              win.setToolbarVisibility(
                areaNode,
                typeof defaultCollapsed == "string"
-@@ -5856,6 +5854,7 @@ export var CustomizableUI = {
+@@ -5864,6 +5862,7 @@ export var CustomizableUI = {
    unregisterArea(aName, aDestroyPlacements) {
      CustomizableUIInternal.unregisterArea(aName, aDestroyPlacements);
    },
@@ -153,7 +153,7 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
    /**
     * Add a widget to an area.
     * If the area to which you try to add is not known to CustomizableUI,
-@@ -7819,7 +7818,9 @@ class OverflowableToolbar {
+@@ -7827,7 +7826,9 @@ class OverflowableToolbar {
          );
  
          if (webExtList && CustomizableUI.isWebExtensionWidget(child.id)) {
@@ -163,7 +163,7 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
            webExtList.insertBefore(child, webExtList.firstElementChild);
          } else {
            child.setAttribute("cui-anchorid", this.#defaultListButton.id);
-@@ -7879,7 +7880,7 @@ class OverflowableToolbar {
+@@ -7887,7 +7888,7 @@ class OverflowableToolbar {
          ) {
            continue;
          }
@@ -172,7 +172,7 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
          if (child != aExceptChild) {
            sum += getInlineSize(child);
          }
-@@ -7903,11 +7904,11 @@ class OverflowableToolbar {
+@@ -7911,11 +7912,11 @@ class OverflowableToolbar {
          parseFloat(style.paddingLeft) -
          parseFloat(style.paddingRight) -
          toolbarChildrenWidth;
@@ -186,11 +186,34 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
      });
  
      lazy.log.debug(
-@@ -7922,7 +7923,14 @@ class OverflowableToolbar {
+@@ -7930,7 +7931,37 @@ class OverflowableToolbar {
        Math.max(targetWidth, targetChildrenWidth)
      );
      totalAvailWidth = Math.ceil(totalAvailWidth);
 -    let isOverflowing = targetContentWidth > totalAvailWidth;
++    if (this.#target.id == 'nav-bar-customization-target' && 
++        win.gZenVerticalTabsManager._hasSetSingleToolbar &&
++        Services.prefs.getBoolPref("zen.view.overflow-webext-toolbar", true) &&
++       !win.gURLBar.hasAttribute("breakout-extend")) {
++      const availSelectors = ":is(#page-action-buttons, #zen-copy-url-button, .unified-extensions-item, .urlbar-addon-page-action)";
++      const width = [
++        ...win.gURLBar._inputContainer.querySelectorAll(availSelectors),
++        ...win.document.getElementById("zen-overflow-extensions-list").querySelectorAll(availSelectors)
++      ].length * 26;
++      const urlbarWidth = win.document.getElementById("urlbar-container").getBoundingClientRect().width;
++      let overflowing = width > urlbarWidth * (Services.prefs.getIntPref("zen.view.overflow-webext-toolbar-threshold", 60) / 100);
++      let wasOverflowing = win.gURLBar._isOverflowingItems;
++      win.gURLBar._isOverflowingItems = overflowing;
++      if (wasOverflowing !== overflowing) {
++        const items = gPlacements.get("nav-bar");
++        for (let item of items) {
++          let [, node] = CustomizableUIInternal.getWidgetNode(item, win);
++          if (node?.hasAttribute("data-extensionid")) {
++            win.gZenVerticalTabsManager.appendCustomizableItem(win.document.getElementById("zen-sidebar-top-buttons-customization-target"), node);
++          }
++        }
++      }
++    }
 +    if (win.gZenVerticalTabsManager._hasSetSingleToolbar && this.#toolbar.id == 'nav-bar') return { isOverflowing: false, targetContentWidth, totalAvailWidth };
 +    let isOverflowing = targetContentWidth + (win.gZenVerticalTabsManager._hasSetSingleToolbar ? 0.1 : 0) > totalAvailWidth;
 +    if (win.gZenVerticalTabsManager._hasSetSingleToolbar &&
@@ -202,7 +225,7 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
      return { isOverflowing, targetContentWidth, totalAvailWidth };
    }
  
-@@ -7983,7 +7991,11 @@ class OverflowableToolbar {
+@@ -7991,7 +8022,11 @@ class OverflowableToolbar {
              return;
            }
          }
@@ -215,7 +238,7 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
            lazy.log.debug(
              `Need ${minSize} but width is ${totalAvailWidth} so bailing`
            );
-@@ -8016,7 +8028,7 @@ class OverflowableToolbar {
+@@ -8024,7 +8059,7 @@ class OverflowableToolbar {
          }
        }
        if (!inserted) {
@@ -224,7 +247,7 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
        }
        child.removeAttribute("cui-anchorid");
        child.removeAttribute("overflowedItem");
-@@ -8142,6 +8154,9 @@ class OverflowableToolbar {
+@@ -8150,6 +8185,9 @@ class OverflowableToolbar {
     *   if no such list exists.
     */
    get #webExtList() {
@@ -234,7 +257,7 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
      if (!this.#webExtListRef) {
        let targetID = this.#toolbar.getAttribute("addon-webext-overflowtarget");
        if (!targetID) {
-@@ -8153,6 +8168,9 @@ class OverflowableToolbar {
+@@ -8161,6 +8199,9 @@ class OverflowableToolbar {
        let win = this.#toolbar.ownerGlobal;
        let { panel } = win.gUnifiedExtensions;
        this.#webExtListRef = panel.querySelector(`#${targetID}`);
@@ -244,7 +267,7 @@ index 4aca0aa0c90603e09b58395debb62875c018a8cf..400ad196c846083001b36d27edec6885
      }
      return this.#webExtListRef;
    }
-@@ -8361,7 +8379,7 @@ class OverflowableToolbar {
+@@ -8369,7 +8410,7 @@ class OverflowableToolbar {
          break;
        }
        case "mousedown": {

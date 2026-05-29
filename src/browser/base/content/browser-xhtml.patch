@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser.xhtml b/browser/base/content/browser.xhtml
-index a95ce8f0b28d98632c06f605b510b5ae3e98c4ed..275b3f5f30046a5e08d9ebceff0d2b91c865eb1b 100644
+index d8ed09dca6c8ae99ed1a84cef22462a0d7b517fe..dcb65c4268913fdf32302c9b4ac723131187922e 100644
 --- a/browser/base/content/browser.xhtml
 +++ b/browser/base/content/browser.xhtml
-@@ -19,6 +19,7 @@
+@@ -18,6 +18,7 @@
          sizemode="normal"
          retargetdocumentfocus="urlbar-input"
          scrolling="false"
@@ -21,12 +21,12 @@ index a95ce8f0b28d98632c06f605b510b5ae3e98c4ed..275b3f5f30046a5e08d9ebceff0d2b91
  </head>
  <html:body xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
  # All sets except for popupsets (commands, keys, and stringbundles)
-@@ -134,9 +137,11 @@
+@@ -134,9 +137,10 @@
      </vbox>
    </html:template>
  
+-#include navigator-toolbox.inc.xhtml
 +<hbox id="zen-main-app-wrapper" flex="1" class="browser-toolbox-background">
- #include navigator-toolbox.inc.xhtml
  
  #include browser-box.inc.xhtml
 +</hbox>

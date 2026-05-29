@@ -17,12 +17,11 @@
 }
 
 .urlbar {
-  --urlbarView-separator-color: light-dark(hsl(0, 0%, 92%), hsl(0, 0%, 20%));
-  --urlbarView-hover-background: var(--toolbarbutton-hover-background);
-  --urlbarView-highlight-background: var(--toolbarbutton-hover-background);
+  --urlbarview-separator-color: light-dark(hsl(0, 0%, 80%), hsl(0, 0%, 20%));
+  --urlbarview-background-color-hover: var(--toolbarbutton-hover-background);
   border-radius: calc(var(--toolbarbutton-border-radius) - 2px);
   height: var(--urlbar-height);
-  --urlbarView-results-padding: 8px !important;
+  --urlbarView-results-padding: 10px !important;
   --urlbar-container-height: 48px !important;
 
   --urlbar-margin-inline: 5px;
@@ -55,7 +54,7 @@
 /* Consolidated focus visuals */
 #searchbar:focus-within {
   border-color: transparent !important;
-  background: var(--urlbar-box-bgcolor);
+  background: var(--urlbar-box-background-color);
 }
 
 .urlbar-background {
@@ -122,6 +121,10 @@
   border-radius: 0 !important;
 }
 
+#urlbar:not([breakout-extend="true"]) .urlbar-input {
+  color: color-mix(in srgb, var(--input-color, FieldText) 70%, transparent);
+}
+
 #urlbar .urlbar-input-box {
   font-weight: 500;
 }
@@ -139,10 +142,12 @@
   }
 
   .identity-box-button,
-  .urlbar-page-action {
+  .urlbar-page-action,
+  .unified-extensions-item {
     opacity: 0;
     height: 100%; /* To still be able to open popups */
     visibility: collapse;
+    margin: 0 !important;
 
     :root:not([supress-primary-adjustment="true"]) & {
       transition:
@@ -187,6 +192,10 @@
   #zen-copy-url-button[disabled] {
     display: none !important;
   }
+}
+
+:root[zen-single-toolbar="true"] #urlbar[breakout-extend="true"] .unified-extensions-item {
+  display: none !important;
 }
 
 /* stylelint-disable-next-line media-query-no-invalid */
@@ -262,8 +271,11 @@
   & .urlbar-background {
     --zen-urlbar-background-base: light-dark(#fbfbfb, color-mix(in srgb, hsl(0, 0%, 6.7%), var(--zen-colors-primary) 30%));
     /* stylelint-disable-next-line media-query-no-invalid */
-    @media -moz-pref("zen.theme.acrylic-elements") {
-      --zen-urlbar-background-transparent: color-mix(in srgb, var(--zen-urlbar-background-base) 70%, transparent 30%);
+    @media -moz-pref("zen.theme.acrylic-elements") and (not (prefers-reduced-transparency: reduce)) {
+      --zen-urlbar-background-transparent: light-dark(
+        color-mix(in srgb, white 80%, transparent),
+        color-mix(in srgb, var(--zen-urlbar-background-base) 65%, transparent)
+      );
     }
     background-color: var(--zen-urlbar-background-transparent, var(--zen-urlbar-background-base)) !important;
     box-shadow: 0 30px 140px -15px light-dark(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6)) !important;
@@ -273,7 +285,7 @@
 
     /* stylelint-disable-next-line media-query-no-invalid */
     @media -moz-pref("zen.theme.acrylic-elements") {
-      backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
+      backdrop-filter: var(--zen-urlbar-filter) !important;
     }
   }
 
@@ -300,7 +312,7 @@
 
 :root[zen-single-toolbar="true"] {
   --urlbar-icon-border-radius: 8px !important;
-  --urlbar-inner-border-radius: var(--toolbarbutton-border-radius) !important;
+  --urlbar-inner-border-radius: 6px !important;
 
   #identity-permission-box > *:not(#zen-site-data-icon-button) {
     visibility: collapse;
@@ -404,32 +416,6 @@
   min-width: 26px;
 }
 
-/* Notification Stack */
-
-.notificationbox-stack {
-  background: transparent;
-
-  &[notificationside="top"] {
-    position: fixed;
-    bottom: calc(var(--zen-element-separation) * 1.5);
-    right: calc(var(--zen-element-separation) * 1.5);
-    width: fit-content;
-    max-width: 30rem !important;
-    z-index: 9999;
-
-    & notification-message {
-      background: color-mix(in srgb, var(--zen-colors-tertiary) 70%, transparent 30%);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--arrowpanel-border-color);
-      border-radius: var(--zen-border-radius);
-
-      &::before {
-        display: none;
-      }
-    }
-  }
-}
-
 #nav-bar,
 #zen-sidebar-top-buttons {
   min-height: var(--zen-toolbar-height) !important;
@@ -514,6 +500,13 @@
   }
 }
 
+#urlbar[open][zen-floating-urlbar="true"] #identity-icon-box,
+:root[zen-single-toolbar="true"] #urlbar[breakout-extend="true"] #identity-icon-box {
+  --urlbar-box-hover-bgcolor: transparent;
+  margin-inline: 2px 8px;
+  transition: none;
+}
+
 /* stylelint-disable-next-line media-query-no-invalid */
 @media not -moz-pref("zen.urlbar.show-protections-icon") {
   #tracking-protection-icon-container {
@@ -537,7 +530,7 @@
   margin-left: 0 !important;
   margin-right: 12px !important;
   padding: 6px !important;
-  border-radius: 4px !important;
+  border-radius: 3px !important;
 }
 
 .urlbarView-userContext {
@@ -604,6 +597,11 @@
     position: relative;
     scale: 0.93;
     transform-origin: right;
+    opacity: 0.7;
+
+    .urlbarView-row[selected] & {
+      opacity: 1;
+    }
 
     &::after {
       content: "";
@@ -655,7 +653,7 @@
   }
 
   &[selected] {
-    --zen-selected-bg: color-mix(in srgb, var(--zen-primary-color) 55%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%);
+    --zen-selected-bg: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.1)));
     --zen-selected-color: color-mix(in srgb, var(--zen-selected-bg), black 30%);
     background-color: var(--zen-selected-bg) !important;
 
@@ -673,7 +671,7 @@
       color: var(--zen-selected-color) !important;
     }
 
-    &:where([type="switchtab"], [type="dynamic"], [type^="history"], [type^="autofill_"], [type="top_site"]) .urlbarView-favicon,
+    &:where([type="switchtab"], [type="dynamic"], [type^="history"], [type^="autofill_"], [type="top_site"], [type="bookmark"]) .urlbarView-favicon,
     & .urlbarView-shortcutContent {
       fill: var(--zen-selected-color) !important;
       background-color: rgba(255, 255, 255, 0.9) !important;
@@ -686,7 +684,7 @@
 }
 
 #urlbar-results {
-  max-height: 260px;
+  max-height: 252px;
   overflow-y: auto;
   scrollbar-width: none;
   margin-block-start: calc(var(--urlbarView-results-padding) - 2px);
@@ -708,7 +706,8 @@
   }
 
   #identity-box {
-    margin-inline-end: 0;
+    margin-inline-end: 3px !important;
+    margin-inline-start: 2px !important;
   }
 }
 

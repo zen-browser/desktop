@@ -1,8 +1,8 @@
 diff --git a/browser/base/jar.mn b/browser/base/jar.mn
-index 22550debb8bba2a06bcd34ba9a21737105be5d92..fb4832243078c78926a66693f4ebe447c692b393 100644
+index 7eaca95f7e876809552da5a3af3449b7e7b1a34d..00f1e3047c59565c8830a40da3a85f3b228f7c93 100644
 --- a/browser/base/jar.mn
 +++ b/browser/base/jar.mn
-@@ -108,3 +108,5 @@ browser.jar:
+@@ -110,3 +110,5 @@ browser.jar:
  
  # L10n resources and overrides.
  % override chrome://global/locale/appstrings.properties chrome://browser/locale/appstrings.properties

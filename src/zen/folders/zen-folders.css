@@ -177,7 +177,7 @@ zen-folder {
     & > label {
       width: 100% !important;
       border: none !important;
-      color: var(--sidebar-text-color) !important;
+      color: var(--toolbar-color) !important;
       margin: 0 !important;
       font-weight: 600;
       align-self: center !important;
@@ -224,7 +224,7 @@ zen-folder[collapsed] > .tab-group-container {
 
 /* Tabs popup */
 #zen-folder-tabs-popup {
-  --arrowpanel-padding: 0;
+  --panel-padding: 0;
   width: 250px;
 
   & #zen-folder-tabs-search-no-results {

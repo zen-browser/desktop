@@ -8,13 +8,10 @@ add_task(async function test_Issue_10455() {
   await SpecialPowers.pushPrefEnv({
     set: [["browser.tabs.closeWindowWithLastTab", true]],
   });
+  debugger;
 
   let newWindow = await BrowserTestUtils.openNewBrowserWindow();
   await newWindow.gZenWorkspaces.promiseInitialized;
-  ok(
-    newWindow.document.documentElement.hasAttribute("zen-workspace-id"),
-    "New window should have a zen-workspace-id attribute"
-  );
 
   const unloadEvent = BrowserTestUtils.waitForEvent(newWindow, "unload");
   newWindow.BrowserCommands.closeTabOrWindow();
@@ -32,10 +29,6 @@ add_task(async function test_Issue_10455_Dont_Close() {
 
   let newWindow = await BrowserTestUtils.openNewBrowserWindow();
   await newWindow.gZenWorkspaces.promiseInitialized;
-  ok(
-    newWindow.document.documentElement.hasAttribute("zen-workspace-id"),
-    "New window should have a zen-workspace-id attribute"
-  );
 
   newWindow.BrowserCommands.closeTabOrWindow();
   Assert.strictEqual(

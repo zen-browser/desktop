@@ -126,7 +126,7 @@ jobs:
     permissions:
       contents: write
     name: Generate build data
-    runs-on: blacksmith-2vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     needs: buildid
     outputs:
       build_date: ${{ steps.data.outputs.builddate }}
@@ -359,7 +359,7 @@ jobs:
     name: AppImage build - Linux ${{ matrix.arch }}
     permissions:
       contents: write
-    runs-on: blacksmith-2vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         arch: [x86_64, aarch64]
@@ -439,7 +439,7 @@ jobs:
           path: ./dist/zen-${{ matrix.arch }}.AppImage.zsync
 
   stop-self-hosted:
-    runs-on: blacksmith-2vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     needs: [windows-step-3, linux]
     if: always()
     steps:
@@ -505,10 +505,29 @@ jobs:
         run: |
           git clone https://github.com/zen-browser/windows-binaries.git .github/workflows/object --depth 1
 
+      - name: Sign MAR files
+        env:
+          SIGNMAR: ${{ github.workspace }}/linux-bin-x86_64/signmar
+          ZEN_MAR_SIGNING_PASSWORD: ${{ secrets.ZEN_MAR_SIGNING_PASSWORD }}
+          ZEN_SIGNING_CERT_PEM_BASE64: ${{ secrets.ZEN_SIGNING_CERT_PEM_BASE64 }}
+          ZEN_SIGNING_PRIVATE_KEY_PEM_BASE64: ${{ secrets.ZEN_SIGNING_PRIVATE_KEY_PEM_BASE64 }}
+        run: |
+          bash scripts/mar_sign.sh -s
+
+      - name: Verify MARs and update manifests
+        env:
+          SIGNMAR: ${{ github.workspace }}/linux-bin-x86_64/signmar
+          RELEASE_BRANCH: ${{ inputs.update_branch }}
+        run: |
+          bash scripts/mar_verify.sh
+
       - name: Copy update manifests
         env:
           RELEASE_BRANCH: ${{ inputs.update_branch }}
         run: |
+          # IMPORTANT: If changing any of these names,
+          # make sure to also update the paths in the mar_sign.sh script
+
           cd updates-server
           mkdir -p updates
           cp -a ../linux_update_manifest_x86_64/.  updates/
@@ -551,8 +570,6 @@ jobs:
             ./zen-x86_64.AppImage.zsync/*
             ./zen-aarch64.AppImage/*
             ./zen-aarch64.AppImage.zsync/*
-            ./zen.win-x86_64.zip/*
-            ./zen.win-arm64.zip/*
             ./linux.mar/*
             ./linux-aarch64.mar/*
             ./windows.mar/*
@@ -590,8 +607,6 @@ jobs:
             ./zen-x86_64.AppImage.zsync/*
             ./zen-aarch64.AppImage/*
             ./zen-aarch64.AppImage.zsync/*
-            ./.github/workflows/object/windows-x64-signed-x86_64/zen.win-x86_64.zip
-            ./.github/workflows/object/windows-x64-signed-arm64/zen.win-arm64.zip
             ./linux.mar/*
             ./linux-aarch64.mar/*
             ./.github/workflows/object/windows-x64-signed-x86_64/windows.mar
@@ -606,7 +621,7 @@ jobs:
     permissions: write-all
     name: Prepare Flatpak
     needs: [release, linux, build-data]
-    runs-on: blacksmith-2vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Flatpak repository
@@ -665,7 +680,7 @@ jobs:
     permissions: write-all
     name: Release Flatpak
     needs: [prepare-flatpak, build-data]
-    runs-on: blacksmith-2vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Flatpak repository

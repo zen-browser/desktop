@@ -6,14 +6,6 @@
 
 @namespace html "http://www.w3.org/1999/xhtml";
 
-:root {
-  --in-content-box-background: var(--zen-colors-tertiary) !important;
-}
-
-.main-content {
-  padding-top: 60px !important;
-}
-
 .pane-container {
   margin: auto;
 }
@@ -38,10 +30,6 @@ html|dialog {
   animation: dialogPopin 0.2s ease-out;
 }
 
-.sticky-inner-container {
-  display: none !important;
-}
-
 .subcategory {
   border-top: none !important;
 }
@@ -64,10 +52,6 @@ groupbox menulist {
 groupbox h2 {
   opacity: 0.7;
   font-size: 15px;
-}
-
-#categories {
-  margin: 0 !important;
 }
 
 #categories > .category {
@@ -504,8 +488,9 @@ groupbox h2 {
 #setting-control-sidebarChatbotFieldset,
 #aiControlsDescription,
 #category-ai-features,
+#setting-control-supportFirefox,
 .mission-message,
-html|setting-group[data-subcategory="layout"] {
+html|setting-group:is([data-subcategory="layout"], [groupid="support"]) {
   display: none !important;
 }
 

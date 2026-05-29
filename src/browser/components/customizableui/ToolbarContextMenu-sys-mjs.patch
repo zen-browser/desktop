@@ -1,7 +1,16 @@
 diff --git a/browser/components/customizableui/ToolbarContextMenu.sys.mjs b/browser/components/customizableui/ToolbarContextMenu.sys.mjs
-index d5fd707b98e4b163a624c97ff4a8f2574e0b0180..32360b11270d9dad4b83229428932e598f69e774 100644
+index d5fd707b98e4b163a624c97ff4a8f2574e0b0180..b5d7e84c3567e83b95a6493e8333d3036dc88f36 100644
 --- a/browser/components/customizableui/ToolbarContextMenu.sys.mjs
 +++ b/browser/components/customizableui/ToolbarContextMenu.sys.mjs
+@@ -183,7 +183,7 @@ export var ToolbarContextMenu = {
+ 
+     let showTabStripItems = toolbarItem?.id == "tabbrowser-tabs";
+     let isVerticalTabStripMenu =
+-      showTabStripItems && toolbarItem.parentElement.id == "vertical-tabs";
++      showTabStripItems && toolbarItem.parentElement.id == "TabsToolbar-customization-target";
+ 
+     if (aInsertPoint) {
+       aInsertPoint.hidden = isVerticalTabStripMenu;
 @@ -243,10 +243,7 @@ export var ToolbarContextMenu = {
      // Show/hide sidebar and vertical tabs menu items
      let sidebarRevampEnabled = Services.prefs.getBoolPref("sidebar.revamp");
@@ -14,3 +23,11 @@ index d5fd707b98e4b163a624c97ff4a8f2574e0b0180..32360b11270d9dad4b83229428932e59
  
      let toggleVerticalTabsItem = document.getElementById(
        "toolbar-context-toggle-vertical-tabs"
+@@ -267,6 +264,7 @@ export var ToolbarContextMenu = {
+     document.getElementById("sidebarRevampSeparator").hidden =
+       !showSidebarActions || isVerticalTabStripMenu;
+     document.getElementById("customizationMenuSeparator").hidden =
++        true ||
+       toolbarItem?.id == "tabbrowser-tabs" ||
+       (toolbarItem?.localName == "toolbarspring" &&
+         !CustomizationHandler.isCustomizing()) ||

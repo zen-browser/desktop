@@ -18,7 +18,7 @@
       }
 
       &[transparent="true"] {
-        background: light-dark(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
+        background: light-dark(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.1));
       }
     }
 
@@ -36,13 +36,14 @@
          * is a hacky solution, but it works for now. Note that this makes
          * zen REALLY slow, so lets not enable it by default until we have
          * a better solution. */
-        will-change: transform;
+        translate: 0;
+        backface-visibility: hidden;
       }
     }
   }
 
   /* stylelint-disable-next-line media-query-no-invalid */
-  @media (not -moz-pref("zen.view.shift-down-site-on-hover")) and (not ((-moz-pref("zen.view.experimental-no-window-controls") or (not -moz-pref("zen.view.hide-window-controls"))) and -moz-pref("zen.view.use-single-toolbar"))) {
+  @media (not -moz-pref("zen.view.shift-down-site-on-hover")) and -moz-pref("zen.view.hide-window-controls") {
     .browserSidebarContainer:is(.deck-selected, [zen-split="true"]) .browserContainer {
       transition: margin var(--zen-hidden-toolbar-transition);
 
@@ -56,6 +57,13 @@
 
         :root:not([zen-single-toolbar="true"]) & {
           --margin-top-fix: calc(-1 * var(--zen-toolbar-height-with-bookmarks) + var(--zen-element-separation));
+        }
+
+        /* stylelint-disable-next-line media-query-no-invalid */
+        @media -moz-pref("zen.view.experimental-no-window-controls") or (not -moz-pref("browser.tabs.inTitlebar")) {
+          :root:not([zen-has-bookmarks="true"])[zen-single-toolbar="true"] & {
+            --margin-top-fix: 0px;
+          }
         }
 
         margin-top: var(--margin-top-fix);

@@ -54,10 +54,29 @@ let JSWINDOWACTORS = {
       },
     },
     allFrames: true,
-    matches: ["*://*/*"],
+    remoteTypes: ["web", "file"],
     enablePreference: "zen.glance.enabled",
   },
 };
+
+if (!Services.appinfo.inSafeMode) {
+  JSWINDOWACTORS.ZenBoosts = {
+    parent: {
+      esModuleURI: "resource:///actors/ZenBoostsParent.sys.mjs",
+    },
+    child: {
+      esModuleURI: "resource:///actors/ZenBoostsChild.sys.mjs",
+      events: {
+        // Needed to let the actor be created, please don't remove
+        // without checking if boosts still work without it, thanks <3
+        DOMWindowCreated: {},
+      },
+    },
+    allFrames: true,
+    remoteTypes: ["web", "file"],
+    enablePreference: "zen.boosts.enabled",
+  };
+}
 
 export let gZenActorsManager = {
   init() {

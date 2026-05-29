@@ -58,17 +58,17 @@ add_task(async function test_3_Splits_Grid_Inset() {
       ok(viewsToCheck.length, "There should be split views present");
       Assert.equal(
         viewsToCheck[0].style.inset,
-        "0% 0% 50% 50%",
+        "0% 50% 50% 0%",
         "The first split view should have correct inset style"
       );
       Assert.equal(
         viewsToCheck[1].style.inset,
-        "50% 0% 0% 50%",
+        "50% 50% 0% 0%",
         "The second split view should have correct inset style"
       );
       Assert.equal(
         viewsToCheck[2].style.inset,
-        "0% 50% 0% 0%",
+        "0% 0% 0% 50%",
         "The third split view should have correct inset style"
       );
     },

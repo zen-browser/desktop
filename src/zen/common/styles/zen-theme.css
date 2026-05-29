@@ -59,7 +59,7 @@
     color-mix(in srgb, var(--zen-primary-color) 1%, var(--zen-branding-bg) 99%)
   );
 
-  --zen-dialog-background: light-dark(#FAFBFF, #161C31);
+  --zen-dialog-background: light-dark(#fafbff, #1c1c1c);
   --zen-urlbar-background: light-dark(
     color-mix(in srgb, var(--zen-primary-color) 3%, #f4f4f4 97%),
     color-mix(in srgb, var(--zen-primary-color) 4%, rgb(24, 24, 24) 96%)
@@ -70,18 +70,18 @@
 
   --in-content-primary-button-background: color-mix(
     in srgb,
-    var(--zen-primary-color) 30%,
-    var(--zen-branding-bg-reverse) 70%
+    var(--zen-primary-color) 40%,
+    var(--zen-branding-bg-reverse)
   ) !important;
   --in-content-primary-button-background-hover: color-mix(
     in srgb,
-    var(--zen-primary-color) 35%,
-    var(--zen-branding-bg-reverse) 65%
+    var(--zen-primary-color) 45%,
+    var(--zen-branding-bg-reverse)
   ) !important;
   --in-content-primary-button-background-active: color-mix(
     in srgb,
-    var(--zen-primary-color) 40%,
-    var(--zen-branding-bg-reverse) 60%
+    var(--zen-primary-color) 50%,
+    var(--zen-branding-bg-reverse)
   ) !important;
   --in-content-primary-button-text-color: var(--zen-branding-bg) !important;
   --in-content-primary-button-border-color: transparent !important;
@@ -113,7 +113,7 @@
   --button-border-color: var(--in-content-primary-button-border-color) !important;
   --button-font-weight: 500 !important;
 
-  --button-border-radius: 6px;
+  --button-border-radius: 8px;
   --button-text-color-primary: var(--in-content-primary-button-text-color) !important;
 
   --button-background-color: var(--in-content-button-background) !important;
@@ -167,7 +167,7 @@
   --toolbarbutton-hover-background: var(--zen-toolbar-element-bg-hover) !important;
   --zen-toolbar-button-size: 16px;
   @media (-moz-platform: macos) {
-    --zen-toolbar-button-size: 18px;
+    --zen-toolbar-button-size: 17px;
   }
 
   /* Using a semitransparent background preserves the tinting from the backdrop.
@@ -214,7 +214,7 @@
   --urlbar-margin-inline: 1px !important;
 
   --tab-icon-overlay-stroke: light-dark(white, black) !important;
-  --tab-close-button-padding: 5px !important;
+  --tab-close-button-padding: 4px !important;
 
   --input-border-color: var(--zen-input-border-color) !important;
   --zen-themed-toolbar-bg-transparent: light-dark(var(--zen-branding-bg), #171717);
@@ -233,6 +233,7 @@
     --zen-primary-color: rgb(11, 10, 11) !important;
     /* Make sure its in sync with getToolbarColor */
     --toolbox-textcolor: rgba(255, 255, 255, 0.8) !important;
+    --toolbar-color-scheme: dark !important;
   }
 
   &[zen-unsynced-window='true'] {
@@ -249,7 +250,7 @@
   --panel-separator-color: color-mix(in srgb, currentColor 15%, transparent) !important;
 
   --zen-big-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-  --zen-active-tab-scale: 0.98;
+  --zen-active-tab-scale: 0.985;
 
   /* Define tab hover background color */
   --tab-hover-background-color: var(--toolbarbutton-hover-background);
@@ -257,10 +258,12 @@
   /* Sidebar Notifications */
   --zen-sidebar-notification-bg: color-mix(
     in srgb,
-    var(--zen-primary-color) 15%,
+    var(--zen-primary-color) 5%,
     light-dark(white, black)
   );
   --zen-sidebar-notification-shadow: 0 0 6px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
+
+  --zen-sidebar-themed-icon-fill: light-dark(color-mix(in srgb, var(--zen-primary-color) 50%, black), color-mix(in srgb, var(--zen-colors-primary) 15%, #ebebeb));
 
   --zen-native-inner-radius: var(
     --zen-webview-border-radius,

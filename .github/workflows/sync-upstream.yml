@@ -103,6 +103,10 @@ jobs:
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
+      - name: Import external patches
+        if: steps.git-check.outputs.files_changed == 'true'
+        run: python3 scripts/update_external_patches.py || true
+
       - name: Check if patches got applied
         if: steps.git-check.outputs.files_changed == 'true'
         id: check-patches
@@ -115,10 +119,6 @@ jobs:
         if: steps.git-check.outputs.files_changed == 'true'
         run: python3 scripts/import_external_tests.py || true
 
-      - name: Import external patches
-        if: steps.git-check.outputs.files_changed == 'true'
-        run: python3 scripts/update_external_patches.py || true
-
       - name: Create pull request
         uses: peter-evans/create-pull-request@v7
         if: steps.git-check.outputs.files_changed == 'true'
@@ -129,7 +129,7 @@ jobs:
           token: ${{ secrets.DEPLOY_KEY }}
           commit-message: "chore: Sync upstream to `Firefox ${{ steps.build-data.outputs.version }}`"
           branch: "chore/upstream-sync"
-          title: "Sync upstream Firefox to version ${{ steps.build-data.outputs.version }}"
+          title: "no-bug: Sync upstream Firefox to version ${{ steps.build-data.outputs.version }}"
           body: |
             This PR syncs the upstream Firefox to version ${{ steps.build-data.outputs.version }}.
 

@@ -17,6 +17,12 @@
 - name: zen.workspaces.swipe-actions
   value: true
 
+- name: zen.workspaces.swipe-actions.delta-multiplier
+  value: 100
+
+- name: zen.workspaces.switch-animation-duration
+  value: 200
+
 - name: zen.workspaces.wrap-around-navigation
   value: true
 
@@ -33,7 +39,7 @@
   value: true
 
 - name: zen.workspaces.dnd-switch-padding
-  value: 5
+  value: 20
 
 - name: zen.workspaces.debug
   value: "@cond"

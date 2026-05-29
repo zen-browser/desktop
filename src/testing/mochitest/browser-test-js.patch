@@ -1,8 +1,8 @@
 diff --git a/testing/mochitest/browser-test.js b/testing/mochitest/browser-test.js
-index 82702aa28a04b87153efaab43a5510da88141bd5..e0a5f1b7a7b33bb8fe2117140aac06c12299c976 100644
+index 2377812af77563d6e80178e3da47a537aa0576e2..e9e5c4a2f3b2ebb503605595f552f35eea4f9814 100644
 --- a/testing/mochitest/browser-test.js
 +++ b/testing/mochitest/browser-test.js
-@@ -445,10 +445,10 @@ Tester.prototype = {
+@@ -497,10 +497,10 @@ Tester.prototype = {
      // But not the Thunderbird window, it doesn't have these things!
      if (AppConstants.MOZ_APP_NAME != "thunderbird") {
        // Remove stale tabs
@@ -15,7 +15,7 @@ index 82702aa28a04b87153efaab43a5510da88141bd5..e0a5f1b7a7b33bb8fe2117140aac06c1
            let lastTab = gBrowser.tabs[gBrowser.tabs.length - 1];
            if (!lastTab.closing) {
              // Report the stale tab as an error only when they're not closing.
-@@ -1156,12 +1156,6 @@ Tester.prototype = {
+@@ -1248,12 +1248,6 @@ Tester.prototype = {
      // test_end is logged, otherwise the new windows created by addTab will be
      // tracked by ShutdownLeaks as belonging to the test and cause false leak reports.
      if (window.gBrowser) {

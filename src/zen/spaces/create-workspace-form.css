@@ -138,6 +138,11 @@ zen-workspace-creation {
           margin-left: auto;
           min-width: unset !important;
           border-radius: 6px;
+
+          &:focus-visible {
+            outline: 2px solid var(--zen-colors-border-contrast);
+            outline-offset: 2px;
+          }
         }
       }
 
@@ -152,6 +157,11 @@ zen-workspace-creation {
 
         &:hover {
           background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+        }
+
+        &:focus-visible {
+          outline: 2px solid var(--zen-colors-border-contrast);
+          outline-offset: 2px;
         }
       }
 

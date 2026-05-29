@@ -3,26 +3,26 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-panel-ui-current-profile-text = profil saat ini
-unified-extensions-description = Ekstensi digunakan untuk menambahkan lebih banyak fungsi ekstra ke { -brand-short-name }.
+unified-extensions-description = Ekstensi digunakan untuk menambahkan fungsi ekstra ke { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label =
         { $isEssential ->
-            [true] Reset Essential Tab
-           *[false] Reset Pinned Tab
+            [true] Reset Tab Esensial ke URL awal
+           *[false] Reset Tab Sematan ke URL awal
         }
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Tambahkan ke Essentials
+    .label = Tambahkan ke Esensial
     .accesskey = E
 tab-context-zen-add-essential-badge = { $num } / { $max } slot terisi
 tab-context-zen-remove-essential = 
-    .label = Hapus dari Essentials
+    .label = Hapus dari Esensial
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] Replace Essential URL with Current
-           *[false] Replace Pinned URL with Current
+            [true] Perbarui URL awal Tab Esensial
+           *[false] Perbarui URL awal Tab Sematan
         }
     .accesskey = C
 tab-context-zen-edit-title = 
@@ -41,7 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimalkan
 zen-panel-ui-gradient-generator-custom-color = Warna Kustom
 zen-copy-current-url-confirmation = URL Disalin!
-zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
+zen-copy-current-url-as-markdown-confirmation = URL disalin sebagai Markdown!
 zen-general-cancel-label = 
     .label = Batalkan
 zen-general-confirm = 
@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = URL awal dari tab yang disematkan telah diganti dengan
 zen-tabs-renamed = Tab telah berhasil diubah namanya!
 zen-background-tab-opened-toast = Tab baru telah terbuka di latar belakang!
 zen-workspace-renamed-toast = Ruang Kerja telah berhasil diubah namanya!
+zen-split-view-limit-toast = Can't add more panels to the split view!
 zen-toggle-compact-mode-button = 
     .label = Mode Ringkas
     .tooltiptext = Aktifkan/Sembunyikan Mode Ringkas
@@ -69,7 +70,7 @@ zen-site-data-settings = Pengaturan
 zen-generic-manage = Kelola
 zen-generic-more = Selengkapnya
 zen-generic-next = Lanjut
-zen-essentials-promo-label = Tambahkan ke Essentials
+zen-essentials-promo-label = Tambahkan ke Esensial
 zen-essentials-promo-sublabel = Akses tab favorit Anda hanya dengan sekali klik
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Diizinkan

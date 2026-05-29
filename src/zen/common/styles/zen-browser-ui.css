@@ -4,6 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+body,
 #tabbrowser-tabpanels {
   background: transparent !important;
 }
@@ -12,10 +13,6 @@
   /* see issue #426 */
   background: var(--zen-navigator-toolbox-background, transparent) !important;
   --inactive-titlebar-opacity: 0.8;
-
-  &[zen-library-open="true"] {
-    display: none;
-  }
 }
 
 #nav-bar,
@@ -48,6 +45,7 @@
   overflow: clip;
 
   isolation: isolate;
+  contain: content;
 
   &::after,
   &::before {
@@ -56,6 +54,7 @@
     inset: 0;
     z-index: 0;
     pointer-events: none;
+    will-change: background-color;
   }
 
   &::after {
@@ -106,6 +105,11 @@
       transition: opacity 0.2s ease-in-out;
     }
   }
+}
+
+:root[swipe-gesture] #tabbrowser-arrowscrollbox {
+  /* See gh-13703 for rationale. */
+  pointer-events: none;
 }
 
 #zen-browser-background {

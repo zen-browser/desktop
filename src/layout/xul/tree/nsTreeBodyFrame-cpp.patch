@@ -1,0 +1,32 @@
+diff --git a/layout/xul/tree/nsTreeBodyFrame.cpp b/layout/xul/tree/nsTreeBodyFrame.cpp
+index b6aa10336e7994c830e0326298820c3a534f8094..7747c52e5c5d227894d8f7fb377c65861dc51c4c 100644
+--- a/layout/xul/tree/nsTreeBodyFrame.cpp
++++ b/layout/xul/tree/nsTreeBodyFrame.cpp
+@@ -2865,7 +2865,8 @@ ImgDrawResult nsTreeBodyFrame::PaintCell(
+ 
+       const nsStyleBorder* borderStyle = lineContext->StyleBorder();
+       // Resolve currentcolor values against the treeline context
+-      nscolor color = borderStyle->mBorderLeftColor.CalcColor(*lineContext);
++      nscolor color =
++          borderStyle->mBorderLeftColor.CalcColor(*lineContext, this);
+       ColorPattern colorPatt(ToDeviceColor(color));
+ 
+       StyleBorderStyle style = borderStyle->GetBorderStyle(eSideLeft);
+@@ -3300,7 +3301,7 @@ ImgDrawResult nsTreeBodyFrame::PaintText(
+   textRect.Deflate(bp);
+ 
+   // Set our color.
+-  ColorPattern color(ToDeviceColor(textContext->StyleText()->mColor));
++  ColorPattern color(ToDeviceColor(textContext->StyleText()->mColor, this));
+ 
+   // Draw decorations.
+   StyleTextDecorationLine decorations =
+@@ -3340,7 +3341,7 @@ ImgDrawResult nsTreeBodyFrame::PaintText(
+   }
+ 
+   aRenderingContext.SetColor(
+-      sRGBColor::FromABGR(textContext->StyleText()->mColor.ToColor()));
++      sRGBColor::FromABGR(textContext->StyleText()->mColor.ToColor(this)));
+   nsLayoutUtils::DrawString(
+       this, *fontMet, &aRenderingContext, text.get(), text.Length(),
+       textRect.TopLeft() + nsPoint(0, baseline), cellContext);

@@ -8,7 +8,6 @@
 @import url("chrome://browser/content/zen-styles/zen-panels/dialog.css");
 
 :root {
-  --panel-subview-body-padding: 2px 0;
   --arrowpanel-menuitem-border-radius: 5px;
   --arrowpanel-menuitem-margin: var(--uc-arrowpanel-menuitem-margin-block) var(--uc-arrowpanel-menuitem-margin-inline);
   --arrowpanel-menuitem-padding-block: 8px;
@@ -68,8 +67,7 @@ panel {
 }
 
 .widget-overflow-list .toolbarbutton-1:not(.toolbarbutton-combined) > .toolbarbutton-text,
-.subviewbutton:not(#appMenu-zoom-controls > .subviewbutton) > .toolbarbutton-icon + .toolbarbutton-text,
-#appMenu-fxa-label2 > vbox {
+.subviewbutton:not(#appMenu-zoom-controls > .subviewbutton) > .toolbarbutton-icon + .toolbarbutton-text {
   padding-inline-start: var(--uc-arrowpanel-menuicon-margin-inline);
 }
 
@@ -88,17 +86,6 @@ panel {
   white-space: nowrap;
 }
 
-/* Firefox profile avatar in appmenu */
-#appMenu-fxa-label2::before {
-  content: "";
-  display: -moz-box;
-  height: var(--size-item-small);
-  width: var(--size-item-small);
-  background: var(--avatar-image-url) 0/16px;
-  scale: 1.25;
-  border-radius: 99px;
-}
-
 /* disable proton account separator */
 #appMenu-fxa-separator {
   border-image: none;
@@ -106,10 +93,6 @@ panel {
 
 #appMenu-fxa-status2:not([fxastatus]) {
   padding-block: 0;
-}
-
-#appMenu-fxa-status2:not([fxastatus]) > #appMenu-fxa-label2 {
-  margin-inline-end: calc(var(--arrowpanel-menuitem-padding-inline) * -1);
 }
 
 /* zoom controls */
@@ -221,6 +204,7 @@ panel {
 }
 
 .permission-popup-permission-item,
+.permission-popup-boost-item,
 #permission-popup-storage-access-permission-list-header {
   padding-block: 4px;
   margin-block: 0;

@@ -86,3 +86,11 @@
 - name: browser.tabs.splitView.enabled
   value: false
   locked: true
+
+# See gh-13853 for details on why we should disable this preference
+- name: browser.privatebrowsing.resetPBM.enabled
+  value: false
+
+# See gh-12985 for details on the following preferences
+- name: browser.search.widget.new
+  value: true

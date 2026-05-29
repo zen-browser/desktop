@@ -233,7 +233,11 @@ declare global {
 } // global
 
 // Typedefs from xpidl.
+type CSPDirective = nsIContentSecurityPolicy.CSPDirective;
 type PRTime = i64;
+type RequireTrustedTypesForDirectiveState =
+  nsIContentSecurityPolicy.RequireTrustedTypesForDirectiveState;
+type nsContentPolicyType = nsIContentPolicy.nsContentPolicyType;
 type nsTaskbarProgressState = i32;
 
 // XPCOM internal utility types.

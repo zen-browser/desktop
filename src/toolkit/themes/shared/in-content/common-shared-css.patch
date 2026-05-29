@@ -1,8 +1,8 @@
 diff --git a/toolkit/themes/shared/in-content/common-shared.css b/toolkit/themes/shared/in-content/common-shared.css
-index 814075aef59969a7e8656974b4f46022f8e88783..53c5d857c15f0a9ec553a2bcfec66c2d2db121fa 100644
+index 37c30173e5670f4ed0a557c6118c8e8cab53026f..cb9deb4386fe7dda6672df5fd7d51277f2d638dc 100644
 --- a/toolkit/themes/shared/in-content/common-shared.css
 +++ b/toolkit/themes/shared/in-content/common-shared.css
-@@ -54,7 +54,7 @@
+@@ -57,7 +57,7 @@
     * this in forced colors mode, as we should be using system colours then.
     */
    :root[dialogroot] {
@@ -11,12 +11,12 @@ index 814075aef59969a7e8656974b4f46022f8e88783..53c5d857c15f0a9ec553a2bcfec66c2d
    }
  }
  
-@@ -160,7 +160,7 @@ xul|menulist {
+@@ -158,7 +158,7 @@ xul|menulist {
    border-radius: var(--button-border-radius);
    background-color: var(--button-background-color);
    font-weight: normal;
--  padding: 0.45em 1em;
+-  padding: var(--button-padding);
 +  padding: 0.7em 1em;
    text-decoration: none;
-   margin: 4px 8px;
+   margin: var(--space-xsmall) var(--space-small);
    /* Ensure font-size isn't overridden by widget styling (e.g. in forms.css) */

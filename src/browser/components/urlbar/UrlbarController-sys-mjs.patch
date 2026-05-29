@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/UrlbarController.sys.mjs b/browser/components/urlbar/UrlbarController.sys.mjs
-index 7751871815ac3aa4641a7752c21f625e03e34c82..418dbecd2739fb8a95ce44efb5d671ac97934f21 100644
+index bb0189fbfc91b3fc3b399b077a35f7b60a3f985f..c4dd60c6fb6d7eb2288a033708836f9983530e2c 100644
 --- a/browser/components/urlbar/UrlbarController.sys.mjs
 +++ b/browser/components/urlbar/UrlbarController.sys.mjs
-@@ -302,7 +302,6 @@ export class UrlbarController {
+@@ -305,7 +305,6 @@ export class UrlbarController {
      const isMac = AppConstants.platform == "macosx";
      // Handle readline/emacs-style navigation bindings on Mac.
      if (
@@ -10,7 +10,7 @@ index 7751871815ac3aa4641a7752c21f625e03e34c82..418dbecd2739fb8a95ce44efb5d671ac
        this.view.isOpen &&
        event.ctrlKey &&
        (event.key == "n" || event.key == "p")
-@@ -451,6 +450,8 @@ export class UrlbarController {
+@@ -456,6 +455,8 @@ export class UrlbarController {
              });
            }
            event.preventDefault();

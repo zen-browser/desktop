@@ -48,6 +48,7 @@ zen-pinned-tab-replaced = L'URL della scheda bloccata è stato sostituito con l'
 zen-tabs-renamed = La scheda è stata rinominata con successo!
 zen-background-tab-opened-toast = Nuova scheda aperta in background!
 zen-workspace-renamed-toast = Il Workspace è stato rinominato con successo!
+zen-split-view-limit-toast = Can't add more panels to the split view!
 zen-toggle-compact-mode-button = 
     .label = Modalità compatta
     .tooltiptext = Attiva/disattiva Modalità compatta

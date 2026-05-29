@@ -1,8 +1,8 @@
 diff --git a/browser/components/aboutwelcome/content/aboutwelcome.css b/browser/components/aboutwelcome/content/aboutwelcome.css
-index 6952ca1c306aa8815f662d8c557d4dd6b79fce0f..ce420f1b2f57e3f23ef18cac20938662f3ecf1ae 100644
+index 98497769b135efd3200607ee2cf50e82d06ed3fd..68e0778cfc4dc70935a3d48e79542b4133b293d2 100644
 --- a/browser/components/aboutwelcome/content/aboutwelcome.css
 +++ b/browser/components/aboutwelcome/content/aboutwelcome.css
-@@ -331,6 +331,11 @@ panel#feature-callout {
+@@ -330,6 +330,11 @@ panel#feature-callout {
    --panel-shadow-margin: 6px;
    --panel-arrow-space: calc(var(--panel-shadow-margin) + var(--arrow-visible-height) - 1.5px);
    --panel-margin-offset: calc(-1 * (var(--panel-shadow-margin) + var(--arrow-corner-distance) + (var(--arrow-width) / 2)));
@@ -27,7 +27,7 @@ index 6952ca1c306aa8815f662d8c557d4dd6b79fce0f..ce420f1b2f57e3f23ef18cac20938662
  }
  #feature-callout .screen[pos=callout] .section-main .main-content .main-content-inner {
    gap: 12px;
-@@ -830,6 +841,10 @@ panel#feature-callout::part(content) {
+@@ -933,6 +944,10 @@ panel#feature-callout::part(content) {
    overflow: visible;
    transform: rotate(45deg);
    transform-style: preserve-3d;

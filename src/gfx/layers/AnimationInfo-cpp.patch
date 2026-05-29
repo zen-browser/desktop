@@ -1,0 +1,29 @@
+diff --git a/gfx/layers/AnimationInfo.cpp b/gfx/layers/AnimationInfo.cpp
+index 1d330056bd7a4e89aac5e5296a3c164fb42b5c42..629fbdd748310c31aeb16b0a8d8e862a99314cc9 100644
+--- a/gfx/layers/AnimationInfo.cpp
++++ b/gfx/layers/AnimationInfo.cpp
+@@ -14,6 +14,7 @@
+ #include "mozilla/MotionPathUtils.h"
+ #include "mozilla/PresShell.h"
+ #include "mozilla/ScrollContainerFrame.h"
++#include "mozilla/nsZenBoostsBackend.h"
+ #include "nsIContent.h"
+ #include "nsLayoutUtils.h"
+ #include "nsRefreshDriver.h"
+@@ -341,9 +342,13 @@ static void SetAnimatable(NonCustomCSSPropertyId aProperty,
+     case eCSSProperty_background_color: {
+       // We don't support color animation on the compositor yet so that we can
+       // resolve currentColor at this moment.
+-      nscolor foreground =
+-          aFrame->Style()->GetVisitedDependentColor(&nsStyleText::mColor);
+-      aAnimatable = aAnimationValue.GetColor(foreground);
++      nscolor foreground = aFrame->Style()->GetVisitedDependentColor(
++          &nsStyleText::mColor, nullptr);
++      nscolor resolved = aAnimationValue.GetColor(foreground);
++      aAnimatable = aAnimationValue.IsCurrentColor()
++                        ? resolved
++                        : zen::nsZenBoostsBackend::ResolveStyleColor(resolved,
++                                                                     aFrame);
+       break;
+     }
+     case eCSSProperty_opacity:

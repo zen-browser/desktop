@@ -1,13 +1,13 @@
 diff --git a/browser/base/content/browser-fullScreenAndPointerLock.js b/browser/base/content/browser-fullScreenAndPointerLock.js
-index 38b4267c737ba247068e1001c12f1cb93cd248f7..f0d7002246645de48dd3ed24a84122d0bcc95b5a 100644
+index 1eaf79a4f6788c518a4759bbce81175fd5fba220..6fde5e944ad4a847180ca83a9e6f4fde20aa7b42 100644
 --- a/browser/base/content/browser-fullScreenAndPointerLock.js
 +++ b/browser/base/content/browser-fullScreenAndPointerLock.js
-@@ -461,8 +461,6 @@ var FullScreen = {
-     gNavToolbox.classList.toggle("fullscreen-with-menubar", shiftSize > 0);
- 
-     let transform = shiftSize > 0 ? `translateY(${shiftSize}px)` : "";
--    gNavToolbox.style.transform = transform;
--    gURLBar.style.transform = gURLBar.hasAttribute("breakout") ? transform : "";
+@@ -501,8 +501,6 @@ var FullScreen = {
+     // don't need that kind of precision in our CSS.
+     shiftSize = shiftSize.toFixed(2);
+     let translate = shiftSize > 0 ? `0 ${shiftSize}px` : "";
+-    document.body.style.translate = translate;
+-    gURLBar.style.translate = gURLBar.hasAttribute("breakout") ? translate : "";
      let searchbar = document.getElementById("searchbar-new");
      if (searchbar) {
-       searchbar.style.transform = searchbar.hasAttribute("breakout")
+       searchbar.style.translate = searchbar.hasAttribute("breakout")

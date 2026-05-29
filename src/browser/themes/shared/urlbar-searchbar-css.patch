@@ -1,17 +1,17 @@
 diff --git a/browser/themes/shared/urlbar-searchbar.css b/browser/themes/shared/urlbar-searchbar.css
-index cbbf55f31ae5e456401172f79ddbbe41256025a4..8cab0f2809a43c0aa4249453732eb0e006c2c676 100644
+index 3f46c918e125f9531a536a09358c980b2c923864..cba6f00318ce5dc7b6717b6c9afd2ee916715f8f 100644
 --- a/browser/themes/shared/urlbar-searchbar.css
 +++ b/browser/themes/shared/urlbar-searchbar.css
-@@ -10,7 +10,7 @@
+@@ -11,7 +11,7 @@
    /* Usually we wouldn't need snapping border widths manually, but we use this
     * for other layout calculations too */
    --urlbar-container-border-width: max(env(hairline), round(down, 1px, env(hairline)));
 -  --urlbar-container-padding: round(up, 1px, env(hairline));
 +  --urlbar-container-padding: 2px;
-   --urlbar-container-border-padding: calc(var(--urlbar-container-border-width) + var(--urlbar-container-padding));
-   --urlbar-margin-inline: 5px;
-   --urlbar-padding-block: 4px;
-@@ -55,7 +55,7 @@ toolbar[inactive="true"] .urlbar,
+   --urlbar-container-inset: calc(var(--urlbar-container-border-width) + var(--urlbar-container-padding));
+ 
+   @media (max-width: 770px) {
+@@ -54,7 +54,7 @@ toolbar[inactive="true"] .urlbar,
  .urlbar:not([usertyping]) > .urlbar-input-container > .urlbar-go-button,
  .urlbar:not(#searchbar-new, [focused]) > .urlbar-input-container > .urlbar-go-button,
  #urlbar-revert-button-container {
@@ -20,12 +20,23 @@ index cbbf55f31ae5e456401172f79ddbbe41256025a4..8cab0f2809a43c0aa4249453732eb0e0
  }
  
  /* Document Picture-in-Picture API window */
-@@ -333,10 +333,14 @@ toolbar[inactive="true"] .urlbar,
+@@ -201,6 +201,10 @@ toolbar[inactive="true"] .urlbar,
+     mask-image: linear-gradient(to right, transparent var(--urlbar-scheme-size), black calc(var(--urlbar-scheme-size) + 3ch));
+   }
+ 
++  #navigator-toolbox[zen-has-implicit-hover="true"] .urlbar:not([focused])[textoverflow="left"] > .urlbar-input-container > .urlbar-input-box > & {
++    mask-image: linear-gradient(to right, transparent, black 3ch, black calc(100% - 3ch), transparent);
++  }
++
+   /* stylelint-disable-next-line media-query-no-invalid */
+   @media -moz-pref("browser.nova.enabled") {
+     &::selection {
+@@ -343,10 +347,14 @@ toolbar[inactive="true"] .urlbar,
  
  .urlbar[breakout][breakout-extend] {
    height: auto;
 +  align-items: center;
-+  :root:not([zen-single-toolbar='true']) {
++  :root:not([zen-single-toolbar='true']) & {
    margin-left: calc(-1 * var(--urlbar-margin-inline));
 +  }
    width: calc(var(--urlbar-width) + 2 * var(--urlbar-margin-inline));

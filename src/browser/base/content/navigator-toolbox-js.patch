@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/navigator-toolbox.js b/browser/base/content/navigator-toolbox.js
-index 362a85c20d8f0633fa78f85578e4cf015fdd0e44..ef7d6ff9e0e9876bc1918e365fd0addcd177cecb 100644
+index 1982ebadbd2df5ea309db487a4f30288f1af43e5..926c681d4733c84768a23407d60ca05859408b6d 100644
 --- a/browser/base/content/navigator-toolbox.js
 +++ b/browser/base/content/navigator-toolbox.js
-@@ -11,7 +11,7 @@ ChromeUtils.defineESModuleGetters(this, {
+@@ -10,7 +10,7 @@ ChromeUtils.defineESModuleGetters(this, {
  document.addEventListener(
    "DOMContentLoaded",
    () => {
@@ -11,7 +11,7 @@ index 362a85c20d8f0633fa78f85578e4cf015fdd0e44..ef7d6ff9e0e9876bc1918e365fd0addc
      const widgetOverflow = document.getElementById("widget-overflow");
  
      function onPopupShowing(event) {
-@@ -189,6 +189,7 @@ document.addEventListener(
+@@ -188,6 +188,7 @@ document.addEventListener(
          #forward-button,
          #reload-button ,
          #reader-mode-button,
@@ -19,7 +19,7 @@ index 362a85c20d8f0633fa78f85578e4cf015fdd0e44..ef7d6ff9e0e9876bc1918e365fd0addc
          #picture-in-picture-button,
          #urlbar-zoom-button,
          #star-button-box,
-@@ -215,6 +216,17 @@ document.addEventListener(
+@@ -214,6 +215,17 @@ document.addEventListener(
            gBrowser.handleNewTabMiddleClick(element, event);
            break;
  
@@ -37,7 +37,7 @@ index 362a85c20d8f0633fa78f85578e4cf015fdd0e44..ef7d6ff9e0e9876bc1918e365fd0addc
          case "back-button":
          case "forward-button":
          case "reload-button":
-@@ -330,6 +342,7 @@ document.addEventListener(
+@@ -329,6 +341,7 @@ document.addEventListener(
          #downloads-button,
          #fxa-toolbar-menu-button,
          #unified-extensions-button,
@@ -45,7 +45,7 @@ index 362a85c20d8f0633fa78f85578e4cf015fdd0e44..ef7d6ff9e0e9876bc1918e365fd0addc
          #library-button,
          #split-view-button,
          #smartwindow-ask-button
-@@ -414,6 +427,16 @@ document.addEventListener(
+@@ -413,6 +426,16 @@ document.addEventListener(
            gUnifiedExtensions.togglePanel(event);
            break;
  

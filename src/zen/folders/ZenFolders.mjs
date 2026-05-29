@@ -65,12 +65,33 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   }
 
   #initContextMenu() {
-    const contextMenuItems = window.MozXULElement.parseXULToFragment(
-      `<menuitem id="zen-context-menu-new-folder" data-l10n-id="zen-toolbar-context-new-folder"/>`
-    );
+    const contextMenuItems = window.MozXULElement.parseXULToFragment(`
+      <menu data-l10n-id="zen-toolbar-context-move-to-folder" id="context_zenMoveToFolder">
+        <menupopup>
+          <menuseparator />
+          <menuitem id="zen-context-menu-new-folder" data-l10n-id="zen-toolbar-context-new-folder"/>
+        </menupopup>
+      </menu>
+    `);
     document.getElementById("context_moveTabToGroup").before(contextMenuItems);
     const contextMenuItemsToolbar = window.MozXULElement.parseXULToFragment(
-      `<menuitem id="zen-context-menu-new-folder-toolbar" data-l10n-id="zen-toolbar-context-new-folder"/>`
+      `<menuitem id="zen-context-menu-new-folder-toolbar" data-l10n-id="zen-toolbar-context-new-folder"/>
+       <menu data-l10n-id="zen-panel-ui-live-folder-create" id="zen-panel-ui-live-folder-create">
+         <menupopup>
+           <menuitem
+             data-l10n-id="zen-live-folder-github-pull-requests"
+             command="cmd_zenNewLiveFolder"
+             image="chrome://browser/skin/zen-icons/selectable/logo-github.svg" />
+           <menuitem
+             data-l10n-id="zen-live-folder-github-issues"
+             command="cmd_zenNewLiveFolder"
+             image="chrome://browser/skin/zen-icons/selectable/logo-github.svg" />
+           <menuitem
+             data-l10n-id="zen-live-folder-type-rss"
+             command="cmd_zenNewLiveFolder"
+             image="chrome://browser/skin/zen-icons/selectable/logo-rss.svg"/>
+         </menupopup>
+       </menu>`
     );
     document
       .getElementById("toolbar-context-openANewTab")
@@ -211,11 +232,73 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     document
       .getElementById("zen-context-menu-new-folder-toolbar")
       .addEventListener("command", onNewFolder);
+    this.#initMoveTabToFolder();
     SessionStore.promiseInitialized.then(() => {
       gBrowser.tabContainer.addEventListener(
         "dragstart",
         this.cancelPopupTimer.bind(this)
       );
+    });
+  }
+
+  #initMoveTabToFolder() {
+    const moveTabToFolderMenu = document.getElementById(
+      "context_zenMoveToFolder"
+    );
+    moveTabToFolderMenu.addEventListener("popupshowing", () => {
+      const separator = moveTabToFolderMenu.querySelector("menuseparator");
+      let tabs = TabContextMenu.contextTab?.multiselected
+        ? gBrowser.selectedTabs
+        : [TabContextMenu.contextTab];
+      let groups = gBrowser.tabGroups.filter(group => {
+        const isZenFolder = group?.isZenFolder;
+        const isLiveFolder = group?.isLiveFolder;
+        const spaceId = group?.getAttribute("zen-workspace-id");
+        if (
+          !isZenFolder ||
+          isLiveFolder ||
+          spaceId !== gZenWorkspaces.activeWorkspace
+        ) {
+          return false;
+        }
+        return !tabs.some(tab => tab.group === group);
+      });
+      separator.hidden = groups.length === 0;
+      for (const group of groups) {
+        const icon = group.iconURL;
+        const menuItem = document.createXULElement("menuitem");
+        menuItem.setAttribute("label", group.label);
+        menuItem.classList.add("context-zen-move-to-folder-item");
+        if (icon) {
+          menuItem.setAttribute("image", icon);
+        }
+        menuItem._group = group;
+        separator.before(menuItem);
+      }
+    });
+
+    moveTabToFolderMenu.addEventListener("popuphidden", () => {
+      const items = moveTabToFolderMenu.querySelectorAll(
+        ".context-zen-move-to-folder-item"
+      );
+      for (const item of items) {
+        delete item._group;
+        item.remove();
+      }
+    });
+
+    moveTabToFolderMenu.addEventListener("command", event => {
+      if (!event.target.classList.contains("context-zen-move-to-folder-item")) {
+        return;
+      }
+      const group = event.target._group;
+      if (!group) {
+        return;
+      }
+      let tabs = TabContextMenu.contextTab?.multiselected
+        ? gBrowser.selectedTabs
+        : [TabContextMenu.contextTab];
+      group.addTabs(tabs);
     });
   }
 
@@ -330,6 +413,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     const tab = event.detail;
     const group = event.target;
     if (
+      tab.pinned &&
       group.hasAttribute("split-view-group") &&
       tab.hasAttribute("had-zen-pinned-changed")
     ) {
@@ -728,8 +812,14 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
     const onKeyDown = event => {
       // Arrow down and up to navigate through the list
-      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      if (
+        event.key === "ArrowDown" ||
+        event.key === "ArrowUp" ||
+        event.key === "Tab"
+      ) {
         event.preventDefault();
+        let isUp =
+          event.key === "ArrowUp" || (event.key === "Tab" && event.shiftKey);
         const items = Array.from(tabsList.children).filter(
           item => !item.hidden
         );
@@ -739,9 +829,9 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         let index = items.indexOf(
           tabsList.querySelector(".folders-tabs-list-item[selected]")
         );
-        if (event.key === "ArrowDown") {
+        if (!isUp) {
           index = (index + 1) % items.length;
-        } else if (event.key === "ArrowUp") {
+        } else {
           index = (index - 1 + items.length) % items.length;
         }
         items.forEach(item => item.removeAttribute("selected"));
@@ -1476,7 +1566,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
     const tabsContainer = group.groupContainer;
     tabsContainer.removeAttribute("hidden");
-    tabsContainer.style.overflow = "hidden";
+    tabsContainer.style.overflowY = "hidden";
 
     const groupStart = group.groupStartElement;
     const itemsToShow = this.#normalizeGroupItems(group.childGroupsAndTabs);
@@ -1525,7 +1615,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     const afterMarginTop = () => {
-      tabsContainer.style.overflow = "";
+      tabsContainer.style.overflowY = "";
       if (group.hasAttribute("has-active")) {
         const activeTabs = group.activeTabs;
         const folders = new Map();
@@ -1769,14 +1859,14 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
             const tabsContainer = currentGroup.groupContainer;
             const groupStart = currentGroup.groupStartElement;
-            tabsContainer.style.overflow = "clip";
+            tabsContainer.style.overflowY = "clip";
 
             if (tabsContainer.hasAttribute("hidden")) {
               tabsContainer.removeAttribute("hidden");
             }
 
             const afterMarginTop = () => {
-              tabsContainer.style.overflow = "";
+              tabsContainer.style.overflowY = "";
             };
 
             animations.push(
@@ -1882,7 +1972,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     const heightContainer = expand
       ? 0
       : this.#calculateHeightShift(tabsContainer, []);
-    tabsContainer.style.overflow = "clip";
+    tabsContainer.style.overflowY = "clip";
 
     this.#createAnimation(
       groupStart,

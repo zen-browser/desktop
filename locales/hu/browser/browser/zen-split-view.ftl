@@ -5,8 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] Felosztott lapok (válassz ki több lapot)
-           *[other] { $tabCount } lap felosztása
+            [-1] Lap kivétele
+            [1] Osztott nézethez adás...
+           *[other] { $tabCount } lap összevonása
         }
     .accesskey = S
 zen-split-link = 

@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index 17a56b0e5a7f1fcdf04904586572c7f719e57904..778a4e49fad39a160d1000733a9e27b0c258d78c 100644
+index a2db42fba8d1f1d9df1dc295adb64be3f5885d50..2dd43fe4898badeaf9bc669502ead2c56982d1aa 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
 @@ -230,7 +230,7 @@
@@ -214,7 +214,7 @@ index 17a56b0e5a7f1fcdf04904586572c7f719e57904..778a4e49fad39a160d1000733a9e27b0
            const newTab2 = this.newTabButton;
            const newTabVertical = document.getElementById(
              "vertical-tabs-newtab-button"
-@@ -1382,8 +1413,10 @@
+@@ -1386,8 +1417,10 @@
       */
      _handleTabSelect(aInstant) {
        let selectedTab = this.selectedItem;
@@ -225,7 +225,7 @@ index 17a56b0e5a7f1fcdf04904586572c7f719e57904..778a4e49fad39a160d1000733a9e27b0
        selectedTab._notselectedsinceload = false;
      }
  
-@@ -1392,7 +1425,7 @@
+@@ -1396,7 +1429,7 @@
       * @param {boolean} [shouldScrollInstantly=false]
       */
      #ensureTabIsVisible(tab, shouldScrollInstantly = false) {
@@ -234,7 +234,7 @@ index 17a56b0e5a7f1fcdf04904586572c7f719e57904..778a4e49fad39a160d1000733a9e27b0
        if (arrowScrollbox?.overflowing) {
          arrowScrollbox.ensureElementIsVisible(tab, shouldScrollInstantly);
        }
-@@ -1519,7 +1552,7 @@
+@@ -1523,7 +1556,7 @@
      }
  
      _notifyBackgroundTab(aTab) {

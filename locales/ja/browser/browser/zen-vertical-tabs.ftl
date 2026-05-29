@@ -17,6 +17,9 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = サイドバーとツールバーを隠す
     .accesskey = H
+zen-toolbar-context-move-to-folder = 
+    .label = フォルダに移動する…
+    .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = 新しいフォルダ
     .accesskey = N
@@ -34,11 +37,11 @@ tabbrowser-reset-pin-button =
     .tooltiptext =
         { $tabCount ->
             [one] タブをリセットして固定する
-           *[other] タブをリセットして{ $tabCount }つタブを固定する
+           *[other] タブをリセットして{ $tabCount }つのタブを固定する
         }
 zen-tab-sublabel =
     { $tabSubtitle ->
-        [zen-default-pinned] Back to pinned url
-        [zen-default-pinned-cmd] Separate from pinned tab
+        [zen-default-pinned] 固定された URL に戻る
+        [zen-default-pinned-cmd] 固定されたタブから切り離す
        *[other] { $tabSubtitle }
     }

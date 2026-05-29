@@ -1,8 +1,8 @@
 diff --git a/dom/media/mediacontrol/MediaController.h b/dom/media/mediacontrol/MediaController.h
-index 327ea6201304b3d26a2b4f0267b1c926c73ee9e4..ad14bb2572c29df4897672e14afc185b9b517da4 100644
+index ea05df396bcaa8f5e236105585c0a177496c8bd9..e064f279383004bdbdb030ecb23289a893c11a8c 100644
 --- a/dom/media/mediacontrol/MediaController.h
 +++ b/dom/media/mediacontrol/MediaController.h
-@@ -90,6 +90,7 @@ class MediaController final : public DOMEventTargetHelper,
+@@ -91,6 +91,7 @@ class MediaController final : public DOMEventTargetHelper,
                         JS::Handle<JSObject*> aGivenProto) override;
    void GetSupportedKeys(nsTArray<MediaControlKey>& aRetVal) const;
    void GetMetadata(MediaMetadataInit& aMetadata, ErrorResult& aRv);

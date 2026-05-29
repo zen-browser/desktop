@@ -32,6 +32,30 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         return "zen-live-folder-github-no-filter";
       }
 
+      if (
+        this.state.type === "pull-requests" &&
+        typeof this.state.isJsonApi !== "boolean" &&
+        !Services.prefs.getBoolPref(
+          "zen.live-folders.github.skip-new-pr-ui-check",
+          false
+        )
+      ) {
+        const { text, status } = await this.fetch(this.state.url, {
+          headers: {
+            Accept: "application/json,text/html",
+          },
+        });
+        if (status === 404) {
+          return "zen-live-folder-github-no-auth";
+        }
+        try {
+          JSON.parse(text);
+          this.state.isJsonApi = true;
+        } catch {
+          this.state.isJsonApi = false;
+        }
+      }
+
       const queries = this.#buildSearchOptions();
       const requests = await Promise.all(
         queries.map(query => {
@@ -56,11 +80,15 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         }
 
         if (items) {
-          items.forEach(item => combinedItems.set(item.id, item));
+          for (const item of items) {
+            combinedItems.set(item.id, item);
+          }
         }
 
         if (activeRepos) {
-          activeRepos.forEach(repo => combinedActiveRepos.add(repo));
+          for (const repo of activeRepos) {
+            combinedActiveRepos.add(repo);
+          }
         }
       }
 
@@ -73,39 +101,44 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
   }
 
   async parsePullRequests(url) {
-    const { text, status } = await this.fetch(url);
+    const { text, status } = await this.fetch(url, {
+      headers: {
+        Accept: "application/json,text/html",
+      },
+    });
 
+    if (status !== 200) {
+      return { status };
+    }
+
+    let parsedJson = null;
     try {
-      const document = new DOMParser().parseFromString(text, "text/html");
-      const issues = document.querySelectorAll("div[id^=issue_]");
+      parsedJson = JSON.parse(text);
+      this.state.isJsonApi = true;
+    } catch {
+      if (this.state.isJsonApi) {
+        this.state.isJsonApi = false;
+        // throw to indicate user to re-try (Url may contain invalid params for non-json /pulls)
+        throw new Error("Unexpected content type");
+      }
+    }
+
+    if (parsedJson) {
+      const results =
+        parsedJson.payload.pullsDashboardSurfaceContentRoute.results;
+
       const items = [];
-      const activeRepos = [];
+      const activeRepos = new Set();
 
-      if (issues.length) {
-        const authors = document.querySelectorAll(".opened-by a");
-        const titles = document.querySelectorAll("a[id^=issue_]");
-
-        for (let i = 0; i < issues.length; i++) {
-          const author = authors[i].textContent;
-          const title = titles[i].textContent;
-
-          const repo = titles[i].previousElementSibling.textContent.trim();
-          if (repo) {
-            activeRepos.push(repo);
-          }
-
-          const idMatch = authors[i].parentElement.textContent
-            .match(/#[0-9]+/)
-            .shift();
-
-          items.push({
-            title,
-            subtitle: author,
-            icon: "chrome://browser/content/zen-images/favicons/github.svg",
-            url: new URL(titles[i].href, this.state.url),
-            id: `${repo}${idMatch}`,
-          });
-        }
+      for (const pr of results) {
+        activeRepos.add(pr.repoNameWithOwner);
+        items.push({
+          id: `${pr.repoNameWithOwner}#${pr.number}`,
+          title: pr.title,
+          subtitle: pr.author.displayLogin,
+          icon: "chrome://browser/content/zen-images/favicons/github.svg",
+          url: pr.permalink,
+        });
       }
 
       return {
@@ -114,78 +147,109 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         items,
         activeRepos,
       };
-    } catch (err) {
-      console.error("Failed to parse Github pull requests", err);
-      return {
-        status,
-      };
     }
+    const document = new DOMParser().parseFromString(text, "text/html");
+    const issues = document.querySelectorAll("div[id^=issue_]");
+
+    const items = [];
+    const activeRepos = new Set();
+
+    if (issues.length) {
+      const authors = document.querySelectorAll(".opened-by a");
+      const titles = document.querySelectorAll("a[id^=issue_]");
+
+      for (let i = 0; i < issues.length; i++) {
+        const author = authors[i].textContent;
+        const title = titles[i].textContent;
+
+        const repo = titles[i].previousElementSibling.textContent.trim();
+        if (repo) {
+          activeRepos.add(repo);
+        }
+
+        const idMatch = authors[i].parentElement.textContent
+          .match(/#[0-9]+/)
+          .shift();
+
+        items.push({
+          title,
+          subtitle: author,
+          icon: "chrome://browser/content/zen-images/favicons/github.svg",
+          url: new URL(titles[i].href, this.state.url),
+          id: `${repo}${idMatch}`,
+        });
+      }
+    }
+
+    return {
+      status,
+
+      items,
+      activeRepos,
+    };
   }
 
   async parseIssues(url) {
     const { text, status } = await this.fetch(url);
 
-    try {
-      const document = new DOMParser().parseFromString(text, "text/html");
-      const issues = document.querySelectorAll(
-        "div[class^=IssueItem-module__defaultRepoContainer]"
-      );
-      const items = [];
-      const activeRepos = [];
-
-      if (issues.length) {
-        const authors = document.querySelectorAll(
-          "a[class^=IssueItem-module__authorCreatedLink]"
-        );
-        const titles = document.querySelectorAll(
-          "div[class^=Title-module__container]"
-        );
-        const links = document.querySelectorAll(
-          '[data-testid="issue-pr-title-link"]'
-        );
-
-        for (let i = 0; i < issues.length; i++) {
-          const [rawRepo, rawNumber] = issues[i].childNodes;
-          const author = authors[i]?.textContent;
-          const title = titles[i]?.textContent;
-          const issueUrl = links[i]?.href;
-
-          const repo = rawRepo.textContent?.trim();
-          if (repo) {
-            activeRepos.push(repo);
-          }
-
-          const numberMatch = rawNumber?.textContent?.match(/[0-9]+/);
-          const number = numberMatch?.[0] ?? "";
-
-          items.push({
-            title,
-            subtitle: author,
-            icon: "chrome://browser/content/zen-images/favicons/github.svg",
-            url: "https://github.com" + issueUrl,
-            id: `${repo}#${number}`,
-          });
-        }
-      }
-
-      return {
-        status,
-
-        items,
-        activeRepos,
-      };
-    } catch (err) {
-      console.error("Failed to parse Github Issues", err);
-      return {
-        status,
-      };
+    if (status !== 200) {
+      return { status };
     }
+
+    const document = new DOMParser().parseFromString(text, "text/html");
+    const issues = document.querySelectorAll(
+      "div[class^=IssueItem-module__defaultRepoContainer]"
+    );
+    const items = [];
+    const activeRepos = new Set();
+
+    if (issues.length) {
+      const authors = document.querySelectorAll(
+        "a[class^=IssueItem-module__authorCreatedLink]"
+      );
+      const titles = document.querySelectorAll(
+        "div[class^=Title-module__container]"
+      );
+      const links = document.querySelectorAll(
+        '[data-testid="issue-pr-title-link"]'
+      );
+
+      for (let i = 0; i < issues.length; i++) {
+        const [rawRepo, rawNumber] = issues[i].childNodes;
+        const author = authors[i]?.textContent;
+        const title = titles[i]?.textContent;
+        const issueUrl = links[i]?.href;
+
+        const repo = rawRepo.textContent?.trim();
+        if (repo) {
+          activeRepos.add(repo);
+        }
+
+        const numberMatch = rawNumber?.textContent?.match(/[0-9]+/);
+        const number = numberMatch?.[0] ?? "";
+
+        items.push({
+          title,
+          subtitle: author,
+          icon: "chrome://browser/content/zen-images/favicons/github.svg",
+          url: "https://github.com" + issueUrl,
+          id: `${repo}#${number}`,
+        });
+      }
+    }
+
+    return {
+      status,
+
+      items,
+      activeRepos,
+    };
   }
 
   #buildSearchOptions() {
     const baseQuery = [
       this.state.type === "pull-requests" ? "is:pr" : "is:issue",
-      "state:open",
+      "is:open",
       "sort:updated-desc",
     ];
 
@@ -219,7 +283,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     }
 
     const searchParams = [];
-    if (this.state.type === "pull-requests") {
+    if (this.state.type === "pull-requests" && !this.state.isJsonApi) {
       for (const query of queries) {
         searchParams.push(`${baseQuery.join(" ")} ${query}`);
       }
@@ -227,8 +291,8 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       return searchParams;
     }
 
-    // type: issues
-    return [`${baseQuery.join(" ")} ${queries.join(" OR ")}`];
+    // type: issues or pull requests json api
+    return [`${baseQuery.join(" ")} (${queries.join(" OR ")})`];
   }
 
   get options() {

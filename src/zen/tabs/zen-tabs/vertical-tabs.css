@@ -130,10 +130,14 @@
   height: 22px;
   border: none;
   width: 100%;
-  transition:
-    height 0.08s ease-in-out,
-    padding 0.08s ease-in-out,
-    opacity 0.06s ease-in-out;
+
+  @media not (prefers-reduced-motion: reduce) {
+    transition:
+      height 0.08s ease-in-out,
+      padding 0.08s ease-in-out,
+      opacity 0.06s ease-in-out;
+  }
+
   overflow: hidden;
   position: relative;
   opacity: 1;
@@ -300,7 +304,7 @@
 
   --tab-block-margin: 2px;
   --tab-selected-bgcolor: light-dark(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.18));
-  --tab-selected-shadow: 0 1px 1px 0px light-dark(rgba(0, 0, 0, 0.09), rgba(0, 0, 0, 0.05)) !important;
+  --tab-selected-shadow: 0 0.8px 1.5px 0px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.05)) !important;
   grid-gap: 0 !important;
 
   &[overflow]::after,
@@ -310,11 +314,13 @@
   }
 
   & .tabbrowser-tab {
-    &,
-    & .tab-content > image {
-      transition:
-        scale 0.2s ease,
-        var(--zen-tabbox-element-indent-transition);
+    @media not (prefers-reduced-motion: reduce) {
+      &,
+      & .tab-content > image {
+        transition:
+          scale 0.1s ease,
+          var(--zen-tabbox-element-indent-transition);
+      }
     }
 
     :root[zen-sidebar-expanded="true"] &:not([zen-glance-tab]) {
@@ -329,13 +335,13 @@
     #tabbrowser-tabs:not([movingtab])
     &:active:not(:has(.tab-content > image:active)) {
       scale: var(--zen-active-tab-scale);
-      rotate: 0.02deg; /* Subtle rotation to trigger GPU acceleration and prevent blurriness */
+      rotate: 0.01deg; /* Subtle rotation to trigger GPU acceleration and prevent blurriness */
     }
 
     :root:not([zen-renaming-tab="true"])
     #tabbrowser-tabs:not([movingtab])
     & .tab-content > image:active {
-      scale: 0.98;
+      scale: 0.97;
     }
 
     & .tab-icon-image {
@@ -347,6 +353,7 @@
       &:-moz-broken {
         content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3C/svg%3E") !important;
         background: color-mix(in srgb, var(--zen-primary-color) 80%, light-dark(rgb(0, 0, 0), rgb(255, 255, 255)));
+        opacity: 0.5;
       }
     }
 
@@ -468,13 +475,13 @@
   overflow-y: auto;
   height: 100%;
 
-  :root[zen-workspace-id][zen-sidebar-expanded="true"] & {
+  :root[zen-sidebar-expanded="true"] & {
     margin-left: calc(-1 * var(--zen-toolbox-padding));
     width: calc(100% + var(--zen-toolbox-padding) * 2);
   }
 }
 
-:root[zen-workspace-id] #pinned-tabs-container {
+#pinned-tabs-container {
   display: none;
 }
 
@@ -1070,7 +1077,7 @@
   #tabs-newtab-button {
     max-height: var(--tab-min-height);
     display: flex !important;
-    transition: scale 0.2s ease;
+    transition: scale 0.1s ease;
     #tabbrowser-tabs[movingtab] & {
       transition: transform 0.1s ease;
     }
@@ -1082,7 +1089,7 @@
 
     &:active,
     &[open] {
-      scale: 0.98;
+      scale: 0.985;
     }
 
     &[in-urlbar] {
@@ -1124,6 +1131,7 @@
   transition:
     max-height 0.3s ease-out,
     grid-template-columns 0.3s ease-out;
+  will-change: transform;
   opacity: 1;
   --min-essentials-width-wrap: calc(var(--tab-min-height) + 4px);
   grid-template-columns: repeat(auto-fit, minmax(max(23.7%, var(--min-essentials-width-wrap)), 1fr));
@@ -1318,6 +1326,7 @@
   padding: 0;
   outline: none !important;
   border-radius: 0;
+  width: 100%;
 }
 
 /* ==========================================================================

@@ -1,5 +1,5 @@
 diff --git a/eslint-test-paths.config.mjs b/eslint-test-paths.config.mjs
-index 53d97521a676d04212abb0263cb166da06c889e0..fa8c261de7a8663a369fb41671476d314722c025 100644
+index 7a87fec812ea8ddea5c10dca53af560e7dc6385b..2b943b031ebd30e06e2aa1043aed13c11bd10db1 100644
 --- a/eslint-test-paths.config.mjs
 +++ b/eslint-test-paths.config.mjs
 @@ -218,6 +218,7 @@ const extraBrowserTestPaths = [

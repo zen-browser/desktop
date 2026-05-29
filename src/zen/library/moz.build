@@ -4,5 +4,6 @@
 
 MOZ_SRC_FILES += [
   "ZenLibrary.mjs",
+  "ZenLibraryButton.mjs",
   "ZenLibrarySections.mjs",
 ]

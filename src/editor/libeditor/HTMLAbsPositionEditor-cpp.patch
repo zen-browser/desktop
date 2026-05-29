@@ -1,0 +1,13 @@
+diff --git a/editor/libeditor/HTMLAbsPositionEditor.cpp b/editor/libeditor/HTMLAbsPositionEditor.cpp
+index 44bd8ba90e9828423742d768e64ad6204b3cf134..49d5c9512137ce28ac463223098515f6912452b1 100644
+--- a/editor/libeditor/HTMLAbsPositionEditor.cpp
++++ b/editor/libeditor/HTMLAbsPositionEditor.cpp
+@@ -1001,7 +1001,7 @@ nsresult HTMLEditor::GetTemporaryStyleForFocusedPositionedElement(
+ 
+   static const uint8_t kBlackBgTrigger = 0xd0;
+ 
+-  auto color = style->StyleText()->mColor.ToColor();
++  auto color = style->StyleText()->mColor.ToColor(aElement.GetPrimaryFrame());
+   if (NS_GET_R(color) >= kBlackBgTrigger &&
+       NS_GET_G(color) >= kBlackBgTrigger &&
+       NS_GET_B(color) >= kBlackBgTrigger) {

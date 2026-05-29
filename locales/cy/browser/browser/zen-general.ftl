@@ -22,7 +22,7 @@ tab-context-zen-replace-pinned-url-with-current =
     .label =
         { $isEssential ->
             [true] Amnewid URL Hanfodol gyda'r Cyfredol
-          *[false] Amnewid URL wedi'i binio gyda'r Cyfredol
+           *[false] Amnewid URL wedi'i binio gyda'r Cyfredol
         }
     .accesskey = P
 tab-context-zen-edit-title = 
@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = Mae URL y tab wedi'i binio wedi'i newid i'r URL gyfred
 zen-tabs-renamed = Mae'r tab wedi cael ei ailenwi'n llwyddiannus!
 zen-background-tab-opened-toast = Tab cefndir newydd wedi'i agor!
 zen-workspace-renamed-toast = Mae'r Man Gwaith wedi cael ei ailenwi'n llwyddiannus!
+zen-split-view-limit-toast = Methu ychwanegu mwy o baneli at y golwg hollt!
 zen-toggle-compact-mode-button = 
     .label = Modd Cryno
     .tooltiptext = Togglo Modd Cryno

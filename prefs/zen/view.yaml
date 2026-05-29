@@ -32,7 +32,10 @@
   value: false
 
 - name: zen.view.grey-out-inactive-windows
+  cpptype: bool
   value: true
+  mirror: always
+  type: static
 
 - name: zen.view.show-newtab-button-top
   value: true
@@ -56,4 +59,10 @@
   value: true
 
 - name: zen.view.overflow-webext-toolbar
-  value: "@IS_TWILIGHT@"
+  value: true
+
+- name: zen.view.overflow-webext-toolbar-threshold
+  value: 55
+
+- name: zen.view.enable-loading-indicator
+  value: true

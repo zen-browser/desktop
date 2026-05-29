@@ -11,7 +11,6 @@
   align-items: center;
   display: flex;
   font-size: x-small;
-  margin: 0 3px;
   padding: 0;
 
   position: relative;
@@ -40,6 +39,8 @@
     align-items: center;
     position: relative;
     fill-opacity: 0.6;
+    -moz-context-properties: fill-opacity, fill;
+    fill: currentColor;
 
     & .zen-workspace-icon {
       pointer-events: none;
@@ -70,6 +71,11 @@
       opacity 0.2s,
       width 0.1s,
       transform 0.2s;
+
+    &[active='true'] .zen-workspace-icon {
+      fill: var(--zen-sidebar-themed-icon-fill);
+      fill-opacity: 1;
+    }
 
     &[active='true'],
     &:hover,
@@ -210,9 +216,9 @@
     height: 16px;
     justify-content: center;
     align-items: center;
-    fill-opacity: 0.6;
+    fill-opacity: 1;
     -moz-context-properties: fill-opacity, fill;
-    fill: var(--toolbox-textcolor);
+    fill: var(--zen-sidebar-themed-icon-fill);
     font-size: 16px;
     padding-top: 2px;
     color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8));
@@ -308,13 +314,19 @@
 
 /* mark: workspace element */
 zen-workspace {
+  --toolbar-color: var(--toolbox-textcolor) !important;
+
   flex-direction: column;
-  transition: padding-top 0.1s;
   width: calc(100% + var(--zen-toolbox-padding) * 2);
   position: absolute;
   height: 100%;
   overflow: hidden;
   color: var(--toolbox-textcolor);
+  will-change: transform;
+
+  @media not (prefers-reduced-motion: reduce) {
+    transition: padding-top 0.1s;
+  }
 
   :root:not([zen-sidebar-expanded='true']) & {
     width: 100%;

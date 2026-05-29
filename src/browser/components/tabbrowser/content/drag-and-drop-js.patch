@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/drag-and-drop.js b/browser/components/tabbrowser/content/drag-and-drop.js
-index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184925e5610 100644
+index ea4f83fad1757f073ea1bbe5c93a4ebe5ecc0abe..904e604e28c96757fabf0dd3a749c85280e74993 100644
 --- a/browser/components/tabbrowser/content/drag-and-drop.js
 +++ b/browser/components/tabbrowser/content/drag-and-drop.js
 @@ -35,6 +35,9 @@
@@ -47,7 +47,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184
        event.stopPropagation();
 +      if (draggedTab && dropEffect == "move") {
 +        this.handle_drop_transition?.(draggedTab._dragData.dropElement, draggedTab, movingTabs, draggedTab._dragData.dropBefore);
-+        gZenPinnedTabManager.moveToAnotherTabContainerIfNecessary(event, draggedTab, movingTabs, this._getDropIndex(event));
++        [draggedTab, movingTabs] = gZenPinnedTabManager.moveToAnotherTabContainerIfNecessary(event, draggedTab, movingTabs, this._getDropIndex(event));
 +      }
        if (draggedTab && dropEffect == "copy") {
          let duplicatedDraggedTab;
@@ -73,7 +73,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184
  
          if (this._tabbrowserTabs.isContainerVerticalPinnedGrid(draggedTab)) {
            // Update both translate axis for pinned vertical expanded tabs
-@@ -390,11 +401,13 @@
+@@ -392,11 +403,13 @@
            this._dragToPinPromoCard,
          ];
          let shouldPin =
@@ -87,7 +87,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184
            isTab(draggedTab) &&
            draggedTab.pinned &&
            this._tabbrowserTabs.arrowScrollbox.contains(event.target);
-@@ -458,6 +471,7 @@
+@@ -466,6 +479,7 @@
            }
          }
  
@@ -95,7 +95,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184
          if (shouldTranslate) {
            let translationPromises = [];
            for (let item of movingTabs) {
-@@ -469,7 +483,7 @@
+@@ -477,7 +491,7 @@
                  item.removeAttribute("tabdrop-samewindow");
                  resolve();
                };
@@ -104,7 +104,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184
                  postTransitionCleanup();
                } else {
                  let onTransitionEnd = transitionendEvent => {
-@@ -544,7 +558,7 @@
+@@ -552,7 +566,7 @@
            if (tab.selected) {
              selectedTab = tab;
              indexForSelectedTab = newIndex;
@@ -113,7 +113,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184
              const droppedIntoPinnedArea = dropIndex < gBrowser.pinnedTabCount;
              const newSplitView = gBrowser.adoptSplitView(tab, {
                elementIndex: droppedIntoPinnedArea
-@@ -569,7 +583,7 @@
+@@ -577,7 +591,7 @@
              }
            }
          }
@@ -122,7 +122,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184
            const newTab = gBrowser.adoptTab(selectedTab, {
              elementIndex: indexForSelectedTab,
              selectTab: selectedTab == draggedTab,
-@@ -603,10 +617,6 @@
+@@ -611,10 +625,6 @@
                this._tabbrowserTabs.dragAndDropElements[
                  gBrowser.pinnedTabCount + unpinnedSplitViews.length - 1
                ];
@@ -133,7 +133,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184
            }
          }
        } else {
-@@ -655,6 +665,7 @@
+@@ -664,6 +674,7 @@
  
            let nextItem = this._tabbrowserTabs.dragAndDropElements[newIndex];
            let tabGroup = isTab(nextItem) && nextItem.group;
@@ -141,7 +141,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184
            gBrowser.loadTabs(urls, {
              inBackground,
              replace,
-@@ -696,7 +707,16 @@
+@@ -705,7 +716,16 @@
          this._expandGroupOnDrop(draggedTab);
        }
        this._resetTabsAfterDrop(draggedTab.ownerDocument);
@@ -159,7 +159,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184
        if (
          dt.mozUserCancelled ||
          dt.dropEffect != "none" ||
-@@ -909,11 +929,10 @@
+@@ -918,11 +938,10 @@
          return this.#getHorizontalScrollboxDragTarget(event, ignoreSides);
        }
        while (target) {
@@ -175,7 +175,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184
            break;
          }
          target = target.parentNode;
-@@ -943,6 +962,9 @@
+@@ -952,6 +971,9 @@
            return null;
          }
        }
@@ -185,7 +185,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184
        return target;
      }
  
-@@ -996,7 +1018,8 @@
+@@ -1011,7 +1033,8 @@
          isTabGroupLabel(draggedTab) &&
          draggedTab._dragData?.expandGroupOnDrop
        ) {
@@ -195,7 +195,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184
        }
      }
  
-@@ -1180,7 +1203,6 @@
+@@ -1195,7 +1218,6 @@
          // using updateDragImage. On Linux, we can use a panel.
          if (platform == "win" || platform == "macosx") {
            captureListener = function () {
@@ -203,7 +203,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184
            };
          } else {
            // Create a panel to use it in setDragImage
-@@ -1218,7 +1240,6 @@
+@@ -1233,7 +1255,6 @@
          );
          dragImageOffset = dragImageOffset * scale;
        }
@@ -211,7 +211,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184
  
        // _dragData.offsetX/Y give the coordinates that the mouse should be
        // positioned relative to the corner of the new window created upon
-@@ -1237,7 +1258,7 @@
+@@ -1252,7 +1273,7 @@
        let dropEffect = this.getDropEffectForTabDrag(event);
        let isMovingInTabStrip = !fromTabList && dropEffect == "move";
        let collapseTabGroupDuringDrag =
@@ -220,7 +220,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184
  
        tab._dragData = {
          offsetX: this._tabbrowserTabs.verticalMode
-@@ -1247,7 +1268,7 @@
+@@ -1262,7 +1283,7 @@
            ? event.screenY - window.screenY - tabOffset
            : event.screenY - window.screenY,
          scrollPos:
@@ -229,7 +229,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184
              ? this._tabbrowserTabs.pinnedTabsContainer.scrollPosition
              : this._tabbrowserTabs.arrowScrollbox.scrollPosition,
          screenX: event.screenX,
-@@ -1294,6 +1315,7 @@
+@@ -1309,6 +1330,7 @@
        if (tabStripItemElement.hasAttribute("dragtarget")) {
          return;
        }
@@ -237,7 +237,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184
        let isPinned = tab.pinned;
        let dragAndDropElements = this._tabbrowserTabs.dragAndDropElements;
        let isGrid = this._tabbrowserTabs.isContainerVerticalPinnedGrid(tab);
-@@ -1660,23 +1682,6 @@
+@@ -1675,23 +1697,6 @@
  
        // Slide the relevant tabs to their new position.
        // non-moving tabs adjust for RTL
@@ -261,7 +261,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184
        // moving tabs don't adjust for RTL
        for (let item of selectedElements) {
          if (
-@@ -1725,7 +1730,6 @@
+@@ -1740,7 +1745,6 @@
        for (let item of this._tabbrowserTabs.dragAndDropElements) {
          delete item._moveTogetherSelectedTabsData;
          item = elementToMove(item);
@@ -269,7 +269,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184
          item.removeAttribute("multiselected-move-together");
        }
      }
-@@ -2569,7 +2573,6 @@
+@@ -2587,7 +2591,6 @@
          tab.style.top = "";
          tab.style.maxWidth = "";
          tab.style.pointerEvents = "";
@@ -277,7 +277,7 @@ index ced2bfd88de2d16e2c028ca3f4d9d27516363575..69b45c7dad9d294e4290de4ce878d184
          tab.removeAttribute("small-stack");
          tab.removeAttribute("big-stack");
        }
-@@ -2578,11 +2581,9 @@
+@@ -2596,11 +2599,9 @@
        )) {
          label.style.width = "";
          label.style.maxWidth = "";

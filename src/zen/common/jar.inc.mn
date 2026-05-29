@@ -39,8 +39,8 @@
         content/browser/zen-styles/zen-panels/dialog.css                        (../../zen/common/styles/zen-panels/dialog.css)
 
         content/browser/zen-styles/zen-astra-overrides.css                      (../../zen/common/styles/zen-astra-overrides.css)
-        content/browser/zen-styles/astra-tabs.css                               (styles/astra-tabs.css)
-        content/browser/zen-styles/astra-sidebar.css                            (styles/astra-sidebar.css)
-        content/browser/zen-styles/astra-workspaces.css                         (styles/astra-workspaces.css)
-        content/browser/zen-styles/astra-compact.css                            (styles/astra-compact.css)
-        content/browser/zen-styles/astra-patches.css                            (styles/astra-patches.css)
+        content/browser/zen-styles/astra-tabs.css                               (../../zen/common/styles/astra-tabs.css)
+        content/browser/zen-styles/astra-sidebar.css                            (../../zen/common/styles/astra-sidebar.css)
+        content/browser/zen-styles/astra-workspaces.css                         (../../zen/common/styles/astra-workspaces.css)
+        content/browser/zen-styles/astra-compact.css                            (../../zen/common/styles/astra-compact.css)
+        content/browser/zen-styles/astra-patches.css                            (../../zen/common/styles/astra-patches.css)

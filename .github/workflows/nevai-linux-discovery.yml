@@ -12,6 +12,7 @@ env:
   NEVAI_LINUX_BUILD_LOG: /tmp/nevai-linux-build.log
   NEVAI_LINUX_LOG_DIR: /tmp/nevai-linux-discovery-logs
   NEVAI_LINUX_BUILD_STATUS_FILE: /tmp/nevai-linux-discovery-logs/build-status.txt
+  NEVAI_LINUX_ALPHA_OUT: ${{ github.workspace }}/builds-local/linux
 
 on:
   workflow_dispatch:
@@ -191,6 +192,11 @@ jobs:
           set -euxo pipefail
           npm run download
 
+      - name: Bootstrap before import
+        run: |
+          set -euxo pipefail
+          npm run bootstrap
+
       - name: Generate Firefox prefs
         run: |
           set -euxo pipefail
@@ -207,13 +213,6 @@ jobs:
         run: |
           set -euxo pipefail
           npm run surfer -- import
-
-      - name: Bootstrap after import
-        run: |
-          set -euxo pipefail
-          cd engine
-          export SURFER_PLATFORM=linux
-          ./mach --no-interactive bootstrap --application-choice browser
 
       - name: Install cbindgen if missing
         run: |
@@ -448,9 +447,9 @@ jobs:
         with:
           name: nevai-linux-alpha-dev
           path: |
-            ../builds-local/linux/Nevai-linux-alpha-dev.tar.gz
-            ../builds-local/linux/Nevai-linux-alpha-dev.SHA256.txt
-            ../builds-local/linux/README-alpha.txt
+            builds-local/linux/Nevai-linux-alpha-dev.tar.gz
+            builds-local/linux/Nevai-linux-alpha-dev.SHA256.txt
+            builds-local/linux/README-alpha.txt
           if-no-files-found: warn
           retention-days: 7
           compression-level: 0

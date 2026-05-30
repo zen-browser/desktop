@@ -38,7 +38,7 @@ fi
 
 "$ROOT/scripts/qa-nevai-linux-alpha.sh" "$DIST_BIN"
 
-OUT="$ROOT/../builds-local/linux"
+OUT="${NEVAI_LINUX_ALPHA_OUT:-$ROOT/../builds-local/linux}"
 ARCHIVE="$OUT/Nevai-linux-alpha-dev.tar.gz"
 SHA="$OUT/Nevai-linux-alpha-dev.SHA256.txt"
 README="$OUT/README-alpha.txt"

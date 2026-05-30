@@ -786,4 +786,8 @@
   @media not -moz-pref("zen.view.enable-loading-indicator") {
     display: none;
   }
+
+  :root[inDOMFullscreen="true"] & {
+    display: none;
+  }
 }

@@ -251,9 +251,6 @@ export class nsZenSiteDataPanel {
     if (!canBoostSite) {
       boostButton.removeAttribute("boosting");
       boostButton.setAttribute("disabled", "true");
-    }
-
-    if (!canBoostSite) {
       return;
     }
 

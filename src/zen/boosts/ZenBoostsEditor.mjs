@@ -869,7 +869,7 @@ ${cssSelector} {
         this.currentBoostData.dotPos.y * rect.height + rect.top
       );
 
-      // Small delay to make sure they dot doesn't jump
+      // Small delay to make sure the dot doesn't jump
       // to the center for a single frame
       this.editorWindow.requestAnimationFrame(
         () => this.setSecondaryDotPos(pixelX, pixelY));

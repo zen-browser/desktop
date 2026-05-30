@@ -82,7 +82,7 @@ export class nsZenBoostStyles {
 
     if (fontCase != "" || fontFamily != "") {
       style += `/* Text Format */\n`;
-      style += `body * {\n`;
+      style += `body *:not(span) {\n`;
       style += `${fontFamily}\n`;
       style += `${fontCase}\n`;
       style += `}\n`;

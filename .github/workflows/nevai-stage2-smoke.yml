@@ -40,7 +40,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version-file: ".nvmrc"
 
       - name: Print tool versions
         shell: bash
@@ -65,7 +65,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version-file: ".nvmrc"
           cache: npm
 
       - name: Install npm dependencies without lifecycle scripts

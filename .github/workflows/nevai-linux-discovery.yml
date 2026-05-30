@@ -8,12 +8,37 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   SCCACHE_GHA_ENABLED: "true"
   CARGO_INCREMENTAL: "0"
+  NEVAI_LINUX_CONFIGURE_LOG: /tmp/nevai-linux-configure.log
   NEVAI_LINUX_BUILD_LOG: /tmp/nevai-linux-build.log
   NEVAI_LINUX_LOG_DIR: /tmp/nevai-linux-discovery-logs
   NEVAI_LINUX_BUILD_STATUS_FILE: /tmp/nevai-linux-discovery-logs/build-status.txt
 
 on:
   workflow_dispatch:
+    inputs:
+      runner_label:
+        description: "Runner label. Use a larger GitHub/Blacksmith runner if available."
+        required: true
+        default: blacksmith-8vcpu-ubuntu-2404
+        type: string
+      build_mode:
+        description: "Build path to test"
+        required: true
+        default: direct-mach
+        type: choice
+        options:
+          - direct-mach
+          - surfer-build
+      build_timeout_minutes:
+        description: "Graceful build timeout so logs/artifacts upload before external cancellation"
+        required: true
+        default: "330"
+        type: string
+      make_jobs:
+        description: "Parallel build jobs for direct mach mode"
+        required: true
+        default: "6"
+        type: string
 
 concurrency:
   group: nevai-linux-discovery-${{ github.ref }}
@@ -21,8 +46,8 @@ concurrency:
 
 jobs:
   linux-discovery:
-    name: Linux build discovery
-    runs-on: blacksmith-8vcpu-ubuntu-2404
+    name: Linux build discovery (${{ inputs.build_mode }})
+    runs-on: ${{ inputs.runner_label }}
     timeout-minutes: 360
 
     steps:
@@ -49,9 +74,11 @@ jobs:
           nproc
 
           echo
-          echo "== Workspace =="
-          pwd
-          ls -la
+          echo "== Workflow inputs =="
+          echo "runner_label=${{ inputs.runner_label }}"
+          echo "build_mode=${{ inputs.build_mode }}"
+          echo "build_timeout_minutes=${{ inputs.build_timeout_minutes }}"
+          echo "make_jobs=${{ inputs.make_jobs }}"
 
       - name: Free runner disk space
         run: |
@@ -65,43 +92,71 @@ jobs:
           sudo rm -rf /opt/ghc || true
           sudo rm -rf /usr/local/.ghcup || true
           sudo rm -rf /opt/hostedtoolcache/CodeQL || true
+          sudo rm -rf /opt/hostedtoolcache/go || true
+          docker system prune -af || true
 
           echo "== Disk after cleanup =="
           df -h
 
-      - name: Install basic system packages
+      - name: Install Linux build packages
         run: |
           set -euxo pipefail
 
+          sudo apt-get update --fix-missing
           sudo apt-get update
-          sudo apt-get install -y \
+          sudo apt-get install -y --no-install-recommends \
             build-essential \
+            ccache \
             curl \
+            dos2unix \
             git \
+            libasound2-dev \
+            libcurl4-openssl-dev \
+            libdbus-1-dev \
+            libdbus-glib-1-dev \
+            libdrm-dev \
+            libgl1-mesa-dri \
+            libgtk-3-dev \
+            libgtk2.0-dev \
+            libnvidia-egl-wayland1 \
+            libpulse-dev \
+            libpython3-dev \
+            libx11-xcb-dev \
+            libxt-dev \
+            lld \
+            llvm \
+            m4 \
+            mesa-utils \
+            nasm \
             python3 \
+            python3-launchpadlib \
             python3-pip \
             python3-venv \
-            unzip \
-            zip \
-            tar \
-            xz-utils \
             ripgrep \
-            ccache \
-            libgtk-3-dev \
-            libdbus-glib-1-dev \
-            libxt-dev \
-            libx11-xcb-dev \
-            libasound2-dev \
-            libpulse-dev \
+            tar \
+            unzip \
+            uuid \
+            xvfb \
+            xz-utils \
             yasm \
-            nasm \
-            xvfb
+            zip
 
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
           cache: npm
+
+      - name: Cache Rust package data
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/cbindgen
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: nevai-linux-cargo-${{ runner.os }}-${{ hashFiles('.rust-toolchain', 'engine/Cargo.lock', 'engine/Cargo.toml') }}
+          restore-keys: |
+            nevai-linux-cargo-${{ runner.os }}-
 
       - name: Setup sccache
         uses: mozilla-actions/sccache-action@main
@@ -125,15 +180,16 @@ jobs:
           set -euxo pipefail
           npm ci
 
+      - name: Prepare surfer CI metadata
+        if: ${{ inputs.build_mode == 'surfer-build' }}
+        run: |
+          set -euxo pipefail
+          npm run surfer -- ci --brand release --display-version 1.19.12b
+
       - name: Download Firefox source
         run: |
           set -euxo pipefail
           npm run download
-
-      - name: Bootstrap
-        run: |
-          set -euxo pipefail
-          npm run bootstrap
 
       - name: Generate Firefox prefs
         run: |
@@ -146,20 +202,33 @@ jobs:
           python3 scripts/update_service_dumps.py
 
       - name: Surfer import
+        env:
+          SURFER_COMPAT: x86_64
         run: |
           set -euxo pipefail
           npm run surfer -- import
 
-      - name: Install cbindgen
+      - name: Bootstrap after import
+        run: |
+          set -euxo pipefail
+          cd engine
+          export SURFER_PLATFORM=linux
+          ./mach --no-interactive bootstrap --application-choice browser
+
+      - name: Install cbindgen if missing
         run: |
           set -euxo pipefail
 
-          cargo install --force cbindgen
+          if command -v cbindgen >/dev/null 2>&1; then
+            cbindgen --version
+            exit 0
+          fi
 
-          which cbindgen
+          cargo install --locked cbindgen
           cbindgen --version
 
-      - name: Create Linux discovery mozconfig
+      - name: Create direct mach Linux mozconfig
+        if: ${{ inputs.build_mode == 'direct-mach' }}
         run: |
           set -euxo pipefail
 
@@ -167,7 +236,7 @@ jobs:
 
           cat > "$MOZCONFIG_FILE" <<EOF
           # Nevai Linux discovery mozconfig.
-          # This is CI discovery-only, not final release hardening.
+          # CI discovery-only, optimized to expose Linux-specific blockers quickly.
 
           ac_add_options --with-app-name=nevai
           ac_add_options --with-app-basename=Nevai
@@ -175,20 +244,25 @@ jobs:
           ac_add_options --with-distribution-id=app.nevai.browser
           ac_add_options --enable-application=browser
           ac_add_options --disable-updater
-          ac_add_options --enable-jxl
           ac_add_options --with-unsigned-addon-scopes=app,system
           ac_add_options --disable-debug
+          ac_add_options --disable-debug-symbols
+          ac_add_options --disable-tests
+          ac_add_options --disable-crashreporter
+          ac_add_options --disable-geckodriver
+          ac_add_options --disable-rust-tests
           ac_add_options --with-branding=browser/branding/unofficial
           ac_add_options --enable-update-channel=unofficial
+          ac_add_options --enable-linker=lld
           ac_add_options --with-ccache=sccache
 
-          # Discovery-only bypass for GitHub hosted Ubuntu missing WASI sysroot.
+          # Discovery-only bypass for hosted Ubuntu missing WASI sysroot.
           ac_add_options --without-wasm-sandboxed-libraries
 
-          # Keep GitHub-hosted runner resource use predictable during discovery.
-          mk_add_options MOZ_MAKE_FLAGS="-j3"
+          mk_add_options MOZ_MAKE_FLAGS="-j${{ inputs.make_jobs }}"
           mk_add_options 'export RUSTC_WRAPPER=sccache'
           mk_add_options 'export SCCACHE_GHA_ENABLED=true'
+          mk_add_options AUTOCLOBBER=1
 
           export MOZ_APP_BASENAME=Nevai
           export MOZ_APP_VENDOR=Nevai
@@ -201,7 +275,7 @@ jobs:
           export ZEN_FIREFOX_VERSION=150.0.2
           EOF
 
-          echo "== Linux discovery mozconfig =="
+          echo "== Direct mach Linux mozconfig =="
           cat "$MOZCONFIG_FILE"
 
       - name: Inspect before Linux build
@@ -219,6 +293,7 @@ jobs:
           sccache --version || true
           clang --version || true
           clang++ --version || true
+          lld --version || true
           python3 --version
           node --version
           npm --version
@@ -227,7 +302,28 @@ jobs:
           echo "== Disk before build =="
           df -h
 
-      - name: Build Linux with heartbeat and summarized failure output
+      - name: Configure direct mach build
+        if: ${{ inputs.build_mode == 'direct-mach' }}
+        run: |
+          set -uxo pipefail
+
+          rm -f "$NEVAI_LINUX_CONFIGURE_LOG"
+          MOZCONFIG_FILE="$PWD/engine/mozconfig-nevai-linux-discovery"
+
+          cd engine
+          set +e
+          stdbuf -oL -eL env MOZCONFIG="$MOZCONFIG_FILE" ./mach configure 2>&1 | tee "$NEVAI_LINUX_CONFIGURE_LOG"
+          status=${PIPESTATUS[0]}
+          set -e
+
+          echo "== Configure exit code: $status =="
+          exit "$status"
+
+      - name: Build Linux and summarize result
+        env:
+          SURFER_PLATFORM: linux
+          SURFER_COMPAT: x86_64
+          ZEN_RELEASE_BRANCH: release
         run: |
           set -uxo pipefail
 
@@ -235,27 +331,27 @@ jobs:
           rm -f "$NEVAI_LINUX_BUILD_LOG"
           rm -f "$NEVAI_LINUX_BUILD_STATUS_FILE"
 
-          MOZCONFIG_FILE="$PWD/engine/mozconfig-nevai-linux-discovery"
-
-          echo "== Starting direct Linux discovery build =="
-          echo "Using MOZCONFIG: $MOZCONFIG_FILE"
+          echo "== Starting Linux discovery build =="
+          echo "Mode: ${{ inputs.build_mode }}"
+          echo "Graceful timeout: ${{ inputs.build_timeout_minutes }} minutes"
           echo "Full build log: $NEVAI_LINUX_BUILD_LOG"
+
           sccache --start-server || true
           sccache --show-stats || true
 
           heartbeat() {
             while true; do
               sleep 300
-
               echo
               echo "== Linux build heartbeat =="
+              date -u
               df -h "$GITHUB_WORKSPACE" || true
+              ps -eo pid,ppid,pcpu,pmem,etime,comm,args | sort -k3 -nr | head -n 25 || true
 
               if [ -f "$NEVAI_LINUX_BUILD_LOG" ]; then
                 echo "Build log size:"
                 wc -l "$NEVAI_LINUX_BUILD_LOG" || true
                 du -h "$NEVAI_LINUX_BUILD_LOG" || true
-
                 echo
                 echo "== Recent build log tail =="
                 tail -n 80 "$NEVAI_LINUX_BUILD_LOG" || true
@@ -269,52 +365,65 @@ jobs:
           heartbeat_pid=$!
           trap 'kill "$heartbeat_pid" 2>/dev/null || true' EXIT
 
-          cd engine
+          if [ "${{ inputs.build_mode }}" = "surfer-build" ]; then
+            build_cmd=(npm run surfer -- build --skip-patch-check)
+          else
+            MOZCONFIG_FILE="$PWD/engine/mozconfig-nevai-linux-discovery"
+            cd engine
+            build_cmd=(env MOZCONFIG="$MOZCONFIG_FILE" ./mach build)
+          fi
 
           set +e
-          stdbuf -oL -eL env MOZCONFIG="$MOZCONFIG_FILE" ./mach build 2>&1 | tee "$NEVAI_LINUX_BUILD_LOG"
+          timeout "${{ inputs.build_timeout_minutes }}m" stdbuf -oL -eL "${build_cmd[@]}" 2>&1 | tee "$NEVAI_LINUX_BUILD_LOG"
           status=${PIPESTATUS[0]}
           set -e
 
-          echo "Build timeout: none; GitHub job timeout-minutes remains the outer limit."
-          echo "Stall timeout: none; quiet Rust/link phases are allowed to finish."
-
           echo
           echo "== Build exit code: $status =="
+          echo "$status" > "$NEVAI_LINUX_BUILD_STATUS_FILE"
+
+          if [ "$status" = "124" ]; then
+            echo "Linux build hit the graceful workflow timeout before completion."
+            echo "This is a runner capacity/time-budget blocker, not a confirmed source error."
+          fi
+
           sccache --show-stats || true
 
           echo
-          echo "== Last 120 lines =="
-          tail -n 120 "$NEVAI_LINUX_BUILD_LOG" || true
+          echo "== Last 160 lines =="
+          tail -n 160 "$NEVAI_LINUX_BUILD_LOG" || true
 
           echo
           echo "== Strong error candidates =="
-          rg -n -C 4 "fatal error:|undefined reference|ld\\.lld: error|collect2: error|gmake(\\[[0-9]+\\])?: \\*\\*\\*|make(\\[[0-9]+\\])?: \\*\\*\\*|FAILED:|error: could not compile|error\\[E[0-9]+\\]|internal compiler error|Killed|signal: 9|No space left on device|recipe for target" "$NEVAI_LINUX_BUILD_LOG" \
-            | tail -n 220 || true
+          rg -n -C 6 "fatal error:|undefined reference|ld\.lld: error|collect2: error|gmake(\[[0-9]+\])?: \*\*\*|make(\[[0-9]+\])?: \*\*\*|FAILED:|error: could not compile|error\[E[0-9]+\]|internal compiler error|Killed|signal: 9|No space left on device|recipe for target|timed out" "$NEVAI_LINUX_BUILD_LOG" \
+            | tail -n 260 || true
 
           cd "$GITHUB_WORKSPACE"
 
           {
             echo "# Nevai Linux Discovery Result"
             echo
+            echo "**Mode:** \`${{ inputs.build_mode }}\`"
+            echo "**Runner:** \`${{ inputs.runner_label }}\`"
             echo "**Build exit code:** \`$status\`"
             echo
-            echo "## Last 120 lines"
+            if [ "$status" = "124" ]; then
+              echo "The Linux build reached the graceful timeout before completing. This identifies the current Linux blocker as runner capacity/time budget, not a compiler/source error."
+              echo
+            fi
+            echo "## Last 160 lines"
             echo
             echo '```text'
-            tail -n 120 "$NEVAI_LINUX_BUILD_LOG" || true
+            tail -n 160 "$NEVAI_LINUX_BUILD_LOG" || true
             echo '```'
             echo
             echo "## Strong error candidates"
             echo
             echo '```text'
-            rg -n -C 4 "fatal error:|undefined reference|ld\\.lld: error|collect2: error|gmake(\\[[0-9]+\\])?: \\*\\*\\*|make(\\[[0-9]+\\])?: \\*\\*\\*|FAILED:|error: could not compile|error\\[E[0-9]+\\]|internal compiler error|Killed|signal: 9|No space left on device|recipe for target" "$NEVAI_LINUX_BUILD_LOG" \
-              | tail -n 220 || true
+            rg -n -C 6 "fatal error:|undefined reference|ld\.lld: error|collect2: error|gmake(\[[0-9]+\])?: \*\*\*|make(\[[0-9]+\])?: \*\*\*|FAILED:|error: could not compile|error\[E[0-9]+\]|internal compiler error|Killed|signal: 9|No space left on device|recipe for target|timed out" "$NEVAI_LINUX_BUILD_LOG" \
+              | tail -n 260 || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-
-          echo "$status" > "$NEVAI_LINUX_BUILD_STATUS_FILE"
-          echo "Recorded build status in $NEVAI_LINUX_BUILD_STATUS_FILE"
 
       - name: Package Linux alpha if build succeeded
         run: |
@@ -353,14 +462,25 @@ jobs:
 
           mkdir -p "$NEVAI_LINUX_LOG_DIR"
 
+          if [ -f "$NEVAI_LINUX_CONFIGURE_LOG" ]; then
+            cp "$NEVAI_LINUX_CONFIGURE_LOG" "$NEVAI_LINUX_LOG_DIR/nevai-linux-configure.log"
+          fi
+
           if [ -f "$NEVAI_LINUX_BUILD_LOG" ]; then
             cp "$NEVAI_LINUX_BUILD_LOG" "$NEVAI_LINUX_LOG_DIR/nevai-linux-build.log"
 
-            rg -n -C 8 "fatal error:|undefined reference|ld\\.lld: error|collect2: error|gmake(\\[[0-9]+\\])?: \\*\\*\\*|make(\\[[0-9]+\\])?: \\*\\*\\*|FAILED:|error: could not compile|error\\[E[0-9]+\\]|internal compiler error|Killed|signal: 9|No space left on device|recipe for target" "$NEVAI_LINUX_BUILD_LOG" \
+            rg -n -C 8 "fatal error:|undefined reference|ld\.lld: error|collect2: error|gmake(\[[0-9]+\])?: \*\*\*|make(\[[0-9]+\])?: \*\*\*|FAILED:|error: could not compile|error\[E[0-9]+\]|internal compiler error|Killed|signal: 9|No space left on device|recipe for target|timed out" "$NEVAI_LINUX_BUILD_LOG" \
               > "$NEVAI_LINUX_LOG_DIR/error-candidates.txt" || true
 
-            tail -n 500 "$NEVAI_LINUX_BUILD_LOG" > "$NEVAI_LINUX_LOG_DIR/build-log-tail.txt" || true
+            tail -n 700 "$NEVAI_LINUX_BUILD_LOG" > "$NEVAI_LINUX_LOG_DIR/build-log-tail.txt" || true
           fi
+
+          echo "== Collecting mozbuild and configure logs =="
+          find "$HOME/.mozbuild" -type f \( -name '*.log' -o -name '*.txt' -o -name '*.json' \) \
+            -print -exec cp --parents {} "$NEVAI_LINUX_LOG_DIR" \; 2>/dev/null || true
+
+          find engine -type f \( -name 'config.log' -o -name 'configure.log' -o -name '*.log' -o -name 'warnings_*.json' \) \
+            -print -exec cp --parents {} "$NEVAI_LINUX_LOG_DIR" \; 2>/dev/null || true
 
           echo "== Build output candidates =="
           {
@@ -434,9 +554,8 @@ jobs:
           set -euxo pipefail
 
           if [ ! -f "$NEVAI_LINUX_BUILD_STATUS_FILE" ]; then
-            echo "No Linux build status file was written."
-            echo "The build step did not run or stopped before recording status; an earlier step should contain the real failure."
-            exit 0
+            echo "No Linux build status file was written. An earlier setup/configure step contains the real failure."
+            exit 1
           fi
 
           status="$(cat "$NEVAI_LINUX_BUILD_STATUS_FILE")"

@@ -250,11 +250,14 @@ export class nsZenSiteDataPanel {
     const boostButton = this.document.getElementById("zen-site-data-boost");
     if (!canBoostSite) {
       boostButton.removeAttribute("boosting");
+      boostButton.setAttribute("disabled", "true");
     }
 
     if (!canBoostSite) {
       return;
     }
+
+    boostButton.removeAttribute("disabled");
 
     if (lazy.gZenBoostsManager.registeredBoostForDomain(domain)) {
       boostButton.setAttribute("boosting", "true");

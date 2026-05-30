@@ -392,7 +392,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
           );
         } else {
           primaryColor = this.#buildBoostColor(
-            boostData.dotAngleDeg,
+            boostData.dotAngleDeg ?? 0,
             /* already is [0, 1] */
             1 - boostData.saturation,
             /* lightness range from [0.1, 0.9] */

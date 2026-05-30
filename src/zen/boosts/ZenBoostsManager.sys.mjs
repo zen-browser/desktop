@@ -114,9 +114,9 @@ class nsZenBoostsManager {
       boostData: {
         boostName: "My Boost",
 
-        dotAngleDeg: 0,
+        dotAngleDeg: null,
         dotPos: { x: 0.76, y: 0.66 },
-        dotDistance: 0,
+        dotDistance: null,
 
         secondaryDotAngleDegDelta: 55,
         secondaryDotPos: { x: 0.5, y: 0.81 },

@@ -827,7 +827,8 @@ ${cssSelector} {
 
     const dotDistance = this.currentBoostData.dotDistance;
     const dotAngleDeg = this.currentBoostData.dotAngleDeg;
-    const secondaryDotAngleDelta = this.currentBoostData.secondaryDotAngleDegDelta ?? 0;
+    const secondaryDotAngleDelta =
+      this.currentBoostData.secondaryDotAngleDegDelta ?? 0;
 
     dot.style.setProperty(
       "--zen-theme-picker-dot-color",
@@ -858,7 +859,7 @@ ${cssSelector} {
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
     const radius = (rect.width - padding) / 2;
-    
+
     const dotDistance = this.currentBoostData.dotDistance;
     const primaryDotAngleDeg = this.currentBoostData.dotAngleDeg;
 
@@ -869,10 +870,8 @@ ${cssSelector} {
       angle = this.currentBoostData.secondaryDotAngleDegDelta;
     } else {
       angle = Math.atan2(pixelY - centerY, pixelX - centerX);
-      pixelX =
-        centerX + Math.cos(angle) * dotDistance * radius;
-      pixelY =
-        centerY + Math.sin(angle) * dotDistance * radius;
+      pixelX = centerX + Math.cos(angle) * dotDistance * radius;
+      pixelY = centerY + Math.sin(angle) * dotDistance * radius;
     }
 
     // Rad to degree
@@ -912,7 +911,8 @@ ${cssSelector} {
 
     const dotDistance = this.currentBoostData.dotDistance;
     const dotAngleDeg = this.currentBoostData.dotAngleDeg;
-    const secondaryDotAngleDelta = this.currentBoostData.secondaryDotAngleDegDelta ?? 0;
+    const secondaryDotAngleDelta =
+      this.currentBoostData.secondaryDotAngleDegDelta ?? 0;
 
     // Updating the circle size to match the distance of the point
     const circle = this.doc.querySelector(".zen-boost-color-picker-circle");

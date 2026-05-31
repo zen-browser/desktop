@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/content/UrlbarInput.mjs b/browser/components/urlbar/content/UrlbarInput.mjs
-index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e6463b45191 100644
+index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..c166b7de23c35716bf8c51b6b9c72f771f0a75a8 100644
 --- a/browser/components/urlbar/content/UrlbarInput.mjs
 +++ b/browser/components/urlbar/content/UrlbarInput.mjs
 @@ -98,6 +98,13 @@ const lazy = XPCOMUtils.declareLazy({
@@ -132,7 +132,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
      // Enable the animation only after the first extend call to ensure it
      // doesn't run when opening a new window.
      if (!this.hasAttribute("breakout-extend-animate")) {
-@@ -2891,6 +2966,27 @@ ${
+@@ -2891,6 +2966,29 @@ ${
        return;
      }
  
@@ -140,7 +140,9 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
 +      this._zenHandleUrlbarClose();
 +    } else if (!this._untrimmedValue || this.searchMode) {
 +      // Restore the current page URL when the urlbar is empty on blur
-+      this.handleRevert();
++      this.window.setTimeout(() => {
++        this.handleRevert();
++      }, 0);
 +    }
 +
 +    // Arc like URLbar: Blur the input on exit
@@ -160,7 +162,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
      this.removeAttribute("breakout-extend");
      this.#updateTextboxPosition();
    }
-@@ -2921,7 +3017,7 @@ ${
+@@ -2921,7 +3019,7 @@ ${
      forceUnifiedSearchButtonAvailable = false
    ) {
      let prevState = this.getAttribute("pageproxystate");
@@ -169,7 +171,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
      this.setAttribute("pageproxystate", state);
      this._inputContainer.setAttribute("pageproxystate", state);
      this._identityBox?.setAttribute("pageproxystate", state);
-@@ -3198,10 +3294,12 @@ ${
+@@ -3198,10 +3296,12 @@ ${
        return;
      }
      this.style.top = px(
@@ -182,7 +184,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
      );
    }
  
-@@ -3260,9 +3358,10 @@ ${
+@@ -3260,9 +3360,10 @@ ${
            return;
          }
  
@@ -194,7 +196,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
          );
          this.style.setProperty(
            "--urlbar-height",
-@@ -3768,6 +3867,7 @@ ${
+@@ -3768,6 +3869,7 @@ ${
    }
  
    _toggleActionOverride(event) {
@@ -202,7 +204,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
      if (
        event.keyCode == KeyEvent.DOM_VK_SHIFT ||
        event.keyCode == KeyEvent.DOM_VK_ALT ||
-@@ -3880,8 +3980,8 @@ ${
+@@ -3880,8 +3982,8 @@ ${
      if (!this.#isAddressbar) {
        return val;
      }
@@ -213,7 +215,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
        : val;
      // Only trim value if the directionality doesn't change to RTL and we're not
      // showing a strikeout https protocol.
-@@ -4180,6 +4280,7 @@ ${
+@@ -4180,6 +4282,7 @@ ${
      resultDetails = null,
      browser = this.window.gBrowser.selectedBrowser
    ) {
@@ -221,7 +223,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
      if (this.#isAddressbar) {
        this.#prepareAddressbarLoad(
          url,
-@@ -4291,6 +4392,10 @@ ${
+@@ -4291,6 +4394,10 @@ ${
        }
        reuseEmpty = true;
      }
@@ -232,7 +234,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
      if (
        where == "tab" &&
        reuseEmpty &&
-@@ -4298,6 +4403,9 @@ ${
+@@ -4298,6 +4405,9 @@ ${
      ) {
        where = "current";
      }
@@ -242,7 +244,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
      return where;
    }
  
-@@ -4552,6 +4660,7 @@ ${
+@@ -4552,6 +4662,7 @@ ${
        this.setResultForCurrentValue(null);
        this.handleCommand();
        this.controller.clearLastQueryContextCache();
@@ -250,7 +252,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
  
        this._suppressStartQuery = false;
      });
-@@ -4559,7 +4668,6 @@ ${
+@@ -4559,7 +4670,6 @@ ${
      contextMenu.addEventListener("popupshowing", () => {
        // Close the results pane when the input field contextual menu is open,
        // because paste and go doesn't want a result selection.
@@ -258,7 +260,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
  
        let controller =
          this.document.commandDispatcher.getControllerForCommand("cmd_paste");
-@@ -4715,7 +4823,11 @@ ${
+@@ -4715,7 +4825,11 @@ ${
      if (!engineName && !source && !this.hasAttribute("searchmode")) {
        return;
      }
@@ -271,7 +273,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
      if (this._searchModeIndicatorTitle) {
        this._searchModeIndicatorTitle.textContent = "";
        this._searchModeIndicatorTitle.removeAttribute("data-l10n-id");
-@@ -5031,6 +5143,7 @@ ${
+@@ -5031,6 +5145,7 @@ ${
  
      this.document.l10n.setAttributes(
        this.inputField,
@@ -279,7 +281,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
        l10nId,
        l10nId == "urlbar-placeholder-with-name"
          ? { name: engineName }
-@@ -5156,6 +5269,11 @@ ${
+@@ -5156,6 +5271,11 @@ ${
    }
  
    _on_click(event) {
@@ -291,7 +293,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
      switch (event.target) {
        case this.inputField:
        case this._inputContainer:
-@@ -5242,7 +5360,7 @@ ${
+@@ -5242,7 +5362,7 @@ ${
        }
      }
  
@@ -300,7 +302,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
        this.view.autoOpen({ event });
      } else {
        if (this._untrimOnFocusAfterKeydown) {
-@@ -5282,9 +5400,16 @@ ${
+@@ -5282,9 +5402,16 @@ ${
    }
  
    _on_mousedown(event) {
@@ -318,7 +320,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
          if (
            event.composedTarget != this.inputField &&
            event.composedTarget != this._inputContainer
-@@ -5294,6 +5419,10 @@ ${
+@@ -5294,6 +5421,10 @@ ${
  
          this.focusedViaMousedown = !this.focused;
          this.#preventClickSelectsAll = this.focused;
@@ -329,7 +331,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
  
          // Keep the focus status, since the attribute may be changed
          // upon calling this.focus().
-@@ -5329,7 +5458,7 @@ ${
+@@ -5329,7 +5460,7 @@ ${
          }
          // Don't close the view when clicking on a tab; we may want to keep the
          // view open on tab switch, and the TabSelect event arrived earlier.
@@ -338,7 +340,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
            break;
          }
  
-@@ -5636,7 +5765,7 @@ ${
+@@ -5636,7 +5767,7 @@ ${
      // When we are in actions search mode we can show more results so
      // increase the limit.
      let maxResults =

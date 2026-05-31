@@ -7,6 +7,7 @@
 #zenBoostWindow {
   --zen-boosts-primary-background: light-dark(#fcfcfe, #100e10);
   --zen-boosts-secondary-background: light-dark(#f6f6f8, #1c1c1e);
+  --zen-boosts-mica-background: light-dark(#f6f6f8c0, #1c1c1ec0);
 
   --zen-boosts-primary-color: light-dark(#3a3a3b, #f3f3f3);
   --zen-boosts-secondary-color: light-dark(#727272, #b1b1b1);
@@ -62,7 +63,7 @@
   height: 40px;
   background-color: var(--zen-boosts-secondary-background);
   @media (-moz-windows-mica) {
-    background-color: #f6f6f8c0;
+    background-color: var(--zen-boosts-mica-background);
   }
 
   border: solid 0 var(--zen-boosts-primary-border-color);
@@ -104,7 +105,7 @@
   height: 60px;
   background-color: var(--zen-boosts-secondary-background);
   @media (-moz-windows-mica) {
-    background-color: #f6f6f8c0;
+    background-color: var(--zen-boosts-mica-background);
   }
 
   border: solid 0 var(--zen-boosts-primary-border-color);
@@ -193,7 +194,7 @@ body {
   border: solid 1px var(--zen-boosts-primary-border-color);
 
   @media (-moz-windows-mica) {
-    background-color: #f6f6f8c0;
+    background-color: var(--zen-boosts-mica-background);
     border: none;
   }
 

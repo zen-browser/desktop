@@ -26,6 +26,9 @@
 
   --zen-boosts-primary-border-color: light-dark(#ededef, #3a3a3a);
 
+  --zen-boosts-color-picker-background: light-dark(#fbfbfdea, #1c1c1eea);
+  --zen-boosts-color-picker-pattern-color: light-dark(#e3e9e4, #3a3a3a);
+
   /* For the mica effect we want a white tint */
   /* @media not (-moz-platform: linux) { */
   /*   color-scheme: light; */
@@ -665,17 +668,17 @@ body {
 
   z-index: 2;
 
-  background: #fbfbfdea;
+  background: var(--zen-boosts-color-picker-background);
 
   background-position: -23px -23px;
   backdrop-filter: saturate(2) blur(15px);
 
   background-size: 6px 6px;
-  background-image: radial-gradient(#e3e9e4, 1px, transparent 0);
+  background-image: radial-gradient(var(--zen-boosts-color-picker-pattern-color), 1px, transparent 0);
 
   @media (-moz-platform: macos) {
     background-size: 4px 4px;
-    background-image: radial-gradient(#e3e9e4 0.5px, transparent 0);
+    background-image: radial-gradient(var(--zen-boosts-color-picker-pattern-color) 0.5px, transparent 0);
   }
 }
 

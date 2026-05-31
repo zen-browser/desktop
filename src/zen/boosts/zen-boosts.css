@@ -5,7 +5,7 @@
  */
 
 #zenBoostWindow {
-  --zen-boosts-primary-background: light-dark(#fcfcfe, color-mix(in srgb, rgb(11, 10, 11) 90%, var(--zen-themed-toolbar-bg-transparent)));
+  --zen-boosts-primary-background: light-dark(#fcfcfe, #100e10);
   --zen-boosts-secondary-background: light-dark(#f6f6f8, #1c1c1e);
 
   --zen-boosts-primary-color: light-dark(#3a3a3b, #f3f3f3);
@@ -13,12 +13,14 @@
 
   --zen-boosts-button-background: light-dark(#ebebed, #262626);
 
-  --zen-boosts-active-button-background: light-dark(#3a3a3a, white);
-  --zen-boosts-active-button-hover-background: light-dark(#3a3a3a, #e3e3e6);
-  --zen-boosts-active-button-color: light-dark(#5b5b5c, #3a3a3b);
+  --zen-boosts-active-button-background: light-dark(#3a3a3a, #cccccc);
+  --zen-boosts-active-button-hover-background: light-dark(#5b5b5c, #c9c9c9);
+  --zen-boosts-active-button-color: light-dark(#fcfcfe, #1c1c1e);
   --zen-boosts-back-button-hover-background: light-dark(#e3e3e6, #3a3a3a);
 
   --zen-boosts-magic-theme-background: light-dark(white, #3a3a3a);
+  --zen-boosts-magic-theme-active-background: light-dark(#3a3a3a, white);
+
   --zen-boosts-font-wrapper-background: light-dark(white, #1c1c1e);
 
   --zen-boosts-primary-border-color: light-dark(#ededef, #3a3a3a);
@@ -421,6 +423,10 @@ body {
 .zen-boost-button-active {
   background-color: var(--zen-boosts-active-button-background);
   color: var(--zen-boosts-active-button-color);
+
+  &#zen-boost-magic-theme {
+    background-color: var(--zen-boosts-magic-theme-active-background);
+  }
 }
 
 .zen-boost-button-active:hover {

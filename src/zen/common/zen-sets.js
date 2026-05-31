@@ -133,6 +133,10 @@ document.addEventListener(
             gZenWorkspaces.unloadAllOtherWorkspaces();
             break;
           }
+          case "cmd_zenOpenAirTrafficControlSettings": {
+            console.log("OPEN AIR TRAFFIC CONTROL SETTINGS");
+            break;
+          }
           case "cmd_zenNewNavigatorUnsynced":
             OpenBrowserWindow({ zenSyncedWindow: false });
             break;

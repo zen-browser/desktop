@@ -825,8 +825,8 @@ ${cssSelector} {
       "#zen-boost-color-picker-dot-secondary"
     );
 
-    const dotDistance = this.currentBoostData.dotDistance ?? 0;
-    const dotAngleDeg = this.currentBoostData.dotAngleDeg ?? 0;
+    const dotDistance = this.currentBoostData.dotDistance;
+    const dotAngleDeg = this.currentBoostData.dotAngleDeg;
     const secondaryDotAngleDelta = this.currentBoostData.secondaryDotAngleDegDelta ?? 0;
 
     dot.style.setProperty(
@@ -862,22 +862,8 @@ ${cssSelector} {
     const dotDistance = this.currentBoostData.dotDistance;
     const primaryDotAngleDeg = this.currentBoostData.dotAngleDeg;
 
-    // Force update if one of them is not initialized yet
-    if (dotDistance == null || primaryDotAngleDeg == null) {
-      this.setDotPos(
-        this.currentBoostData.dotPos.x * rect.width  + rect.left,
-        this.currentBoostData.dotPos.y * rect.height + rect.top
-      );
-
-      // Small delay to make sure the dot doesn't jump
-      // to the center for a single frame
-      this.editorWindow.requestAnimationFrame(
-        () => this.setSecondaryDotPos(pixelX, pixelY));
-      return;
-    }
-
     let angle = null;
-    if (!pixelX || !pixelY) {
+    if (pixelX == null || pixelY == null) {
       pixelX = centerX;
       pixelY = centerY;
       angle = this.currentBoostData.secondaryDotAngleDegDelta;
@@ -924,8 +910,8 @@ ${cssSelector} {
     const cx = rect.width / 2;
     const cy = rect.height / 2;
 
-    const dotDistance = this.currentBoostData.dotDistance ?? 0;
-    const dotAngleDeg = this.currentBoostData.dotAngleDeg ?? 0;
+    const dotDistance = this.currentBoostData.dotDistance;
+    const dotAngleDeg = this.currentBoostData.dotAngleDeg;
     const secondaryDotAngleDelta = this.currentBoostData.secondaryDotAngleDegDelta ?? 0;
 
     // Updating the circle size to match the distance of the point

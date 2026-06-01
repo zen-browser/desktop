@@ -47,7 +47,6 @@
   max-width: var(--at-width);
   min-width: var(--at-width);
 
-  opacity: 0;
   /* animation: zen-dialog-fade-in 0.3s ease forwards; */
 }
 
@@ -240,7 +239,6 @@ button {
   border-radius: var(--at-border-radius);
   overflow: hidden;
   font-family: system-ui !important;
-  color: black;
 
   position: relative;
   display: flex;

@@ -3,4 +3,4 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-air-traffic-control-settings =
-    .label = Air Traffic Control
+    .label = Control Flow Settings

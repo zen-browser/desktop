@@ -82,7 +82,7 @@ const globalActionsTemplate = [
     },
   },
   {
-    label: "Air Traffic Control",
+    label: "Open Control Flow",
     command: "cmd_zenOpenAirTrafficControlSettings",
     icon: "chrome://browser/skin/zen-icons/selectable/airplane.svg",
   },

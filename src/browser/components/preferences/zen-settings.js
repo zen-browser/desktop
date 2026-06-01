@@ -825,6 +825,7 @@ var zenIgnoreKeyboardShortcutIDs = [
   "key_enterFullScreen_compat",
   "key_exitFullScreen_old",
   "key_exitFullScreen_compat",
+  "key_duplicateTab",
 ];
 
 var zenIgnoreKeyboardShortcutL10n = [

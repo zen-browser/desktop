@@ -1,5 +1,5 @@
 diff --git a/layout/painting/nsImageRenderer.cpp b/layout/painting/nsImageRenderer.cpp
-index 4acb7670e971024f9c63e48ff711bbdd1dc02301..9ac1ae1b66eb6fb10195cd3709e0e29d8d53b574 100644
+index 4acb7670e971024f9c63e48ff711bbdd1dc02301..518543f29f396d819a71edb984879de22f8434a8 100644
 --- a/layout/painting/nsImageRenderer.cpp
 +++ b/layout/painting/nsImageRenderer.cpp
 @@ -90,7 +90,7 @@ static already_AddRefed<imgIContainer> GetSymbolicIconImage(nsAtom* aName,
@@ -29,7 +29,16 @@ index 4acb7670e971024f9c63e48ff711bbdd1dc02301..9ac1ae1b66eb6fb10195cd3709e0e29d
  
        renderer.BuildWebRenderDisplayItems(aBuilder, aSc, aDest, aFill,
                                            aRepeatSize, aSrc,
-@@ -1076,7 +1076,7 @@ ImgDrawResult nsImageRenderer::DrawShapeImage(nsPresContext* aPresContext,
+@@ -670,6 +670,8 @@ ImgDrawResult nsImageRenderer::BuildWebRenderDisplayItems(
+           nsPresContext::AppUnitsToIntCSSPixels(aDest.height)};
+ 
+       SVGImageContext svgContext(Some(destCSSSize));
++      SVGImageContext::MaybeStoreZenBoosts(svgContext,
++                                           *mForFrame->PresContext());
+       Maybe<ImageIntRegion> region;
+ 
+       const int32_t appUnitsPerDevPixel =
+@@ -1076,7 +1078,7 @@ ImgDrawResult nsImageRenderer::DrawShapeImage(nsPresContext* aPresContext,
  
    if (mImage->IsGradient()) {
      nsCSSGradientRenderer renderer = nsCSSGradientRenderer::Create(

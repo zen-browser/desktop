@@ -2,24 +2,24 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-looks-title = Aparência e Comportamento
+pane-zen-looks-title = Aparência
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
-zen-warning-language = Alterar o idioma padrão pode facilitar o rastreamento por sites.
+zen-warning-language = Alterar o idioma padrão talvez facilite que os sites rastreiem você.
 zen-vertical-tabs-layout-header = Layout do Navegador
-zen-vertical-tabs-layout-description = Escolha o layout que melhor se adapta a você
-zen-layout-single-toolbar = Somente a barra lateral
+zen-vertical-tabs-layout-description = Escolha o layout que se encaixa melhor com você
+zen-layout-single-toolbar = Apenas a barra lateral
 zen-layout-multiple-toolbar = Barra lateral e barra de ferramentas superior
-zen-layout-collapsed-toolbar = Recolher Barra Lateral
+zen-layout-collapsed-toolbar = Barra lateral colapsada
 sync-currently-syncing-workspaces = Áreas de Trabalho
 sync-engine-workspaces = 
     .label = Áreas de Trabalho
     .tooltiptext = Sincronize suas áreas de trabalho entre dispositivos
     .accesskey = W
 zen-glance-title = Glance
-zen-glance-header = Configurações gerais do Glance
-zen-glance-description = Tenha uma visão geral rápida dos seus links sem abri-los em uma nova guia
-zen-glance-trigger-label = Método de acionamento
+zen-glance-header = Opções gerais do Glance
+zen-glance-description = Obtenha uma visão geral rápida dos seus links sem precisar abri-los em novas guias
+zen-glance-trigger-label = Modo de ativação
 zen-glance-enabled = 
     .label = Ativar Glance
 zen-glance-trigger-ctrl-click = 
@@ -31,11 +31,11 @@ zen-glance-trigger-shift-click =
 zen-glance-trigger-meta-click = 
     .label = Meta (Comando) + Clique
 zen-look-and-feel-compact-view-header = Exibir em modo compacto
-zen-look-and-feel-compact-view-description = Apenas mostre as barras de ferramentas que você usa!
+zen-look-and-feel-compact-view-description = Mostre apenas as barras de ferramentas que você usa!
 zen-look-and-feel-compact-view-enabled = 
-    .label = Ativar modo compacto de { -brand-short-name }s
+    .label = Ativar modo compacto de { -brand-short-name }
 zen-look-and-feel-compact-view-top-toolbar = 
-    .label = Ocultar também a barra de ferramentas superior no modo compacto
+    .label = Ocultar também a barra de ferramentas no modo compacto
 zen-look-and-feel-compact-toolbar-flash-popup = 
     .label = Exibir a barra de ferramentas brevemente ao alternar ou abrir novas guias no modo compacto
 pane-zen-tabs-title = Gerenciamento de Guias

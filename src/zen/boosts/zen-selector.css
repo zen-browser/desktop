@@ -16,6 +16,11 @@
 }
 
 #select-component {
+  --zen-boosts-selector-background: light-dark(#f5f7fb, #27272a);
+  --zen-boosts-selector-preview-background: light-dark(#e0e2e63d, #27272a3d);
+  --zen-boosts-selector-preview-color: light-dark(rgb(76, 78, 80), rgb(207, 200, 200));
+  --zen-boosts-selector-outline-color: light-dark(#e0e2e6ae, #474749);
+
   width: min-content;
   font-family: system-ui;
 
@@ -29,7 +34,7 @@
   position: fixed;
   z-index: 9999;
 
-  background-color: #f5f7fb;
+  background-color: var(--zen-boosts-selector-background);
   margin: 4px;
 
   border-radius: 12px;
@@ -169,8 +174,8 @@
 }
 
 #selector-preview {
-  background-color: #e0e2e63d;
-  outline: 1px solid #e0e2e6ae;
+  background-color: var(--zen-boosts-selector-preview-background);
+  outline: 1px solid var(--zen-boosts-selector-outline-color);
   width: 100%;
   height: 34px;
   text-indent: 18px;
@@ -182,7 +187,7 @@
 #selector-element-preview-text {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 9pt;
-  color: rgb(76, 78, 80);
+  color: var(--zen-boosts-selector-preview-color);
 }
 
 #hover-div {

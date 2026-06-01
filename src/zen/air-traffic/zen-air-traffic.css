@@ -32,7 +32,7 @@
   --rules-gap: 14px;
 }
 
-#zenAirTrafficDialog {
+#zen-air-traffic-dialog-container {
   background: transparent;
   border: none;
   padding: 0;
@@ -79,7 +79,7 @@
     fill-opacity: 0.65;
   }
 
-  & h2 {
+  & p {
     font-weight: bold;
     font-size: small;
 

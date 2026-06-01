@@ -19,37 +19,37 @@
   xmlns:html="http://www.w3.org/1999/xhtml"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   data-l10n-id="air-traffic-window"
-  data-l10n-attrs="style"
   customtitlebar="true"
   drawintitlebar="true"
   windowtype="Zen:ControlFlow"
   style="-moz-window-shadow: none"
+  id="zenAirTrafficDialog"
 >
-  <vbox id="zenAirTrafficDialog">
-    <linkset>
-      <link rel="localization" href="browser/zen-air-traffic.ftl" />
-    </linkset>
+  <linkset>
+    <html:link rel="localization" href="browser/zen-air-traffic.ftl" />
+  </linkset>
 
-    <!-- Loading in the window module -->
-    <script>
-      const { nsZenAirTrafficDialog } = ChromeUtils.importESModule(
-        "resource:///modules/zen/airtraffic/ZenAirTrafficDialog.mjs",
+  <!-- Loading in the window module -->
+  <script>
+    const { nsZenAirTrafficDialog } = ChromeUtils.importESModule(
+      "resource:///modules/zen/airtraffic/ZenAirTrafficDialog.mjs",
+    );
+    window.addEventListener("load", () => {
+      const args = window.arguments?.[0] || {};
+      window.airtrafficDialog = new nsZenAirTrafficDialog(
+        document,
+        window,
+        args.parentWindow,
       );
-      window.addEventListener("load", () => {
-        const args = window.arguments?.[0] || {};
-        window.airtrafficDialog = new nsZenAirTrafficDialog(
-          document,
-          window,
-          args.parentWindow,
-        );
-      });
-    </script>
+    });
+  </script>
 
+  <vbox id="zen-air-traffic-dialog-container">
     <vbox id="at-container">
       <hbox id="at-header">
-        <h3>Control Flow Settings</h3>
+        <h3 data-l10n-id="zen-air-traffic-dialog-title"></h3>
         <html:div id="at-left">
-          <button id="at-new-route">New Route</button>
+          <button id="at-new-route" data-l10n-id="zen-air-traffic-new-route"></button>
           <button class="close-icon" id="at-close"></button>
         </html:div>
       </hbox>
@@ -57,17 +57,13 @@
       <vbox id="at-content">
         <vbox id="at-empty-content">
           <image class="at-airplane"></image>
-          <h2>
-            Routes let you choose where specific sites open inside Zen. For
-            example, you can route YouTube links to always open inside your
-            Personal space.
-          </h2>
+          <p data-l10n-id="zen-air-traffic-rulepanel-placeholder"></p>
         </vbox>
         <!-- All rules will be injected here later -->
       </vbox>
       <html:hr class="hr"></html:hr>
       <hbox id="at-footer">
-        <h4>Default route for external links</h4>
+        <h4 data-l10n-id="zen-air-traffic-external-default"></h4>
         <html:div id="at-left">
           <menulist class="select" id="at-default-external-open-in">
             <menupopup id="at-default-external-open-in-popup">

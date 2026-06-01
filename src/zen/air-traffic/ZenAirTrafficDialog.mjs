@@ -52,8 +52,7 @@ export class nsZenAirTrafficDialog {
     const defaultRouteSelect = this.doc.getElementById(
       "at-default-external-open-in",
     );
-    this.createOpenInList(defaultRouteSelect);
-    defaultRouteSelect.value = ZenAirTrafficManager.getDefaultExternalRoute();
+    this.createOpenInList(defaultRouteSelect, ZenAirTrafficManager.getDefaultExternalRoute());
 
     defaultRouteSelect.addEventListener("command", (e) =>
       this.onRouteDefaultExternalChange(e.target.value),
@@ -134,19 +133,22 @@ export class nsZenAirTrafficDialog {
 
     // Match type
 
-    const matchTypeMenulist = this.doc.createElement("select");
+    const matchTypeMenulist = this.doc.createXULElement("menulist");
     matchTypeMenulist.className = "select";
     matchTypeMenulist.id = "match-type-select";
 
+    const matchTypePopup = this.doc.createXULElement("menupopup");
+    matchTypeMenulist.appendChild(matchTypePopup);
+
     [
-      ["Contains", "contains"],
-      ["Is equal to", "equal-to"],
-      ["RegEx", "regex"],
-    ].forEach((text) => {
-      const option = this.doc.createElement("option");
-      option.textContent = text[0];
-      option.value = text[1];
-      matchTypeMenulist.appendChild(option);
+      "contains",
+      "equal-to",
+      "regex",
+    ].forEach((id) => {
+      const menuItem = this.doc.createXULElement("menuitem");
+      menuItem.setAttribute("data-l10n-id", `zen-air-traffic-${id}`);
+      menuItem.setAttribute("value", id);
+      matchTypePopup.appendChild(menuItem);
     });
 
     matchTypeMenulist.value = route.matchType;
@@ -183,17 +185,16 @@ export class nsZenAirTrafficDialog {
 
     // Open in
 
-    const openInSelect = this.doc.createXULElement("menulist");
-    openInSelect.className = "select";
-    openInSelect.id = "open-in-select";
+    const openInMenulist = this.doc.createXULElement("menulist");
+    openInMenulist.className = "select";
+    openInMenulist.id = "open-in-select";
 
-    const openInMenuPopup = this.doc.createXULElement("menupopup");
-    openInSelect.appendChild(openInMenuPopup);
+    const openInMenupopup = this.doc.createXULElement("menupopup");
+    openInMenulist.appendChild(openInMenupopup);
 
-    this.createOpenInList(openInSelect);
-    openInSelect.value = route.openIn;
+    this.createOpenInList(openInMenulist, route.openIn);
 
-    bottomRow.append(bottomLabelContainer, openInSelect);
+    bottomRow.append(bottomLabelContainer, openInMenulist);
 
     root.append(topRow, bottomRow);
     container.appendChild(root);
@@ -205,10 +206,10 @@ export class nsZenAirTrafficDialog {
     input.addEventListener("input", (e) =>
       this.onRotueReferenceChange(e.target.value, route.id, input),
     );
-    matchTypeMenulist.addEventListener("change", (e) =>
+    matchTypeMenulist.addEventListener("command", (e) =>
       this.onRouteMatchTypeChange(e.target.value, route.id, input),
     );
-    openInSelect.addEventListener("command", (e) =>
+    openInMenulist.addEventListener("command", (e) =>
       this.onRouteOpenInChange(e.target.value, route.id),
     );
 
@@ -342,14 +343,21 @@ export class nsZenAirTrafficDialog {
    * Creates the options list selects
    *
    * @param {Element} selectElement - The menulist element
+   * @param {string} value - The initial value
    */
-  createOpenInList(selectElement) {
+  async createOpenInList(selectElement, value) {
     const popupElement =
       selectElement.querySelector("menupopup") || selectElement;
     popupElement.replaceChildren(); // Clear existing
 
+    const [openInSpace, mostRecentSpace, lilZen] = await this.doc.l10n.formatMessages([
+      "zen-air-traffic-open-in-space",
+      "zen-air-traffic-most-recent-space",
+      "zen-air-traffic-lil-zen",
+    ]);
+
     const sectionHeader = this.doc.createXULElement("menuitem");
-    sectionHeader.setAttribute("label", "Open in Space");
+    sectionHeader.setAttribute("label", openInSpace.value);
     sectionHeader.setAttribute("disabled", "true");
     sectionHeader.classList.add("menu-section-header");
     popupElement.appendChild(sectionHeader);
@@ -378,14 +386,16 @@ export class nsZenAirTrafficDialog {
 
     const workspaces = this.openerWindow.gZenWorkspaces.getWorkspaces();
 
-    createXulItem("Most Recent Space", "most-recent-space");
+    createXulItem(mostRecentSpace.value, "most-recent-space");
 
     workspaces.forEach((workspace) => {
       createXulItem(workspace.name, workspace.uuid, workspace.icon);
     });
 
     createXulItem("sep");
-    createXulItem("Lil Zen", "lil-zen");
+    createXulItem(lilZen.value, "lil-zen");
+
+    selectElement.value = value;
   }
 
   /**

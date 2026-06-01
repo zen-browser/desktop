@@ -25,6 +25,7 @@ dialog {
 
   --text-color: #dbdcdf;
   --text-color-secondary: #8b8e98;
+  --text-color-error: #d03535;
   --hr-color: #2c3244;
 
   --select-background-color: #272d40;
@@ -174,6 +175,16 @@ menulist {
   margin: 0;
 
   flex-grow: 1;
+}
+
+.invalid,
+.invalid * {
+  color: var(--text-color-error) !important;
+
+  text-decoration-line: underline;
+  text-decoration-style: wavy;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--text-color-error);
 }
 
 button {

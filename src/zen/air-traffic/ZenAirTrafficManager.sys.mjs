@@ -57,6 +57,19 @@ class nsZenAirTrafficManager {
       case "equal-to":
         if (this.#normalizeURL(uri) == reference) return true;
         break;
+      case "regex":
+        const unmodifiedReference = route.reference;
+        // Ignore empty
+        if (unmodifiedReference.trim() == "")
+          return;
+        try {
+          // Use unmodified parameters for the regex test
+          const regex = new RegExp(unmodifiedReference);
+          if (regex.test(uriString)) return true;
+        } catch(e) {
+          console.error("[ZenAirTraffic] Failed to resolve regular expression");
+        }
+        break;
     }
   }
 

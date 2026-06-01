@@ -139,6 +139,7 @@ export class nsZenAirTrafficDialog {
     [
       ["Contains", "contains"],
       ["Is equal to", "equal-to"],
+      ["RegEx", "regex"],
     ].forEach((text) => {
       const option = this.doc.createElement("option");
       option.textContent = text[0];
@@ -152,8 +153,8 @@ export class nsZenAirTrafficDialog {
 
     const input = this.doc.createElement("input");
     input.className = "input";
-    input.placeholder = "zen-browser.app";
     input.value = route.reference;
+    this.updateInputPlaceholder(route.matchType, input);
 
     const removeButton = this.doc.createXULElement("button");
     removeButton.className = "at-remove";
@@ -199,11 +200,11 @@ export class nsZenAirTrafficDialog {
       this.onRemoveRoutePressed(route.id, root);
     });
 
-    input.addEventListener("change", (e) =>
-      this.onRotueReferenceChange(e.target.value, route.id),
+    input.addEventListener("input", (e) =>
+      this.onRotueReferenceChange(e.target.value, route.id, input),
     );
     matchTypeMenulist.addEventListener("change", (e) =>
-      this.onRouteMatchTypeChange(e.target.value, route.id),
+      this.onRouteMatchTypeChange(e.target.value, route.id, input),
     );
     openInSelect.addEventListener("command", (e) =>
       this.onRouteOpenInChange(e.target.value, route.id),
@@ -234,9 +235,18 @@ export class nsZenAirTrafficDialog {
    * @param {string} value - The new value
    * @param {string} routeId - The ID of the affected route
    */
-  onRotueReferenceChange(value, routeId) {
+  onRotueReferenceChange(value, routeId, input) {
     const route = ZenAirTrafficManager.getRoute(routeId);
     route.reference = value;
+
+    this.updateInputPlaceholder(route.matchType, input);
+
+    // Don't update the route if the regex is invalid
+    if (route.matchType == "regex") {
+      if (!this.onCheckRegexValid(input))
+        return;
+    }
+
     ZenAirTrafficManager.updateRoute(route);
   }
 
@@ -257,11 +267,65 @@ export class nsZenAirTrafficDialog {
    *
    * @param {string} value - The new value
    * @param {string} routeId - The ID of the affected route
+   * @param {Element} input - The text input
    */
-  onRouteMatchTypeChange(value, routeId) {
+  onRouteMatchTypeChange(value, routeId, input) {
     const route = ZenAirTrafficManager.getRoute(routeId);
     route.matchType = value;
+
+    this.updateInputPlaceholder(route.matchType, input);
+
+    // Don't update the route if the regex is invalid
+    if (route.matchType == "regex") {
+      if (!this.onCheckRegexValid(input))
+        return;
+    }
+
     ZenAirTrafficManager.updateRoute(route);
+  }
+
+  /**
+   * Updates the input placeholder based on the
+   * current route match type
+   * 
+   * @param {string} matchType - The match type (e.g. "contains", "equal-to", "regex")
+   * @param {Element} input - The input element
+   */
+  updateInputPlaceholder(matchType, input) {
+    switch (matchType) {
+      case "regex":
+        input.placeholder = "zen-browser\\.app";
+        break;
+      default:
+        input.placeholder = "zen-browser.app";
+        break;
+    }
+  }
+
+  /**
+   * Will validate and return the validity of the
+   * regex. Applies a tint to the input if an error occurs.
+   * 
+   * @param {Element} input - The input element for the regex
+   * @returns {bool} True if regex is valid
+   */
+  onCheckRegexValid(input) {
+    const reference = input.value;
+
+    // Ignore empty
+    if (reference.trim() == "") {
+      input.classList.remove("invalid");
+      return true;
+    }
+
+    try {
+      new RegExp(reference);
+    } catch(e) {
+      input.classList.add("invalid");
+      return false;
+    }
+    input.classList.remove("invalid");
+    return true;
   }
 
   /**

@@ -90,6 +90,7 @@ class ZenSyncManager {
 
   async applyIncomingBatch(pulled, removals) {
     try {
+      this.#ignoreChanges = true;
       this.#applyIncomingContainers(
         pulled.containers || [],
         removals.containers || []
@@ -102,6 +103,8 @@ class ZenSyncManager {
     } catch (e) {
       console.error("ZenSyncManager: Failed to apply incoming sync data:", e);
       throw e;
+    } finally {
+      this.#ignoreChanges = false;
     }
   }
 

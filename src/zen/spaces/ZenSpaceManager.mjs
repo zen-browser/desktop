@@ -12,6 +12,7 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
+  ZenSyncStore: "resource:///modules/zen/ZenSyncManager.sys.mjs",
 });
 
 ChromeUtils.defineLazyGetter(lazy, "browserBackgroundElement", () => {
@@ -179,8 +180,8 @@ class nsZenWorkspaces {
    * Applies live sync changes: updates workspace cache, removes deleted items,
    * then creates/updates pulled items.
    *
-   * @param {{ spaces: Array, tabs: Array, folders: Array }} pulled  Reconcile-pulled items.
-   * @param {{ spaces: Array, tabs: Array, folders: Array }} removals  Items to remove.
+   * @param {{ spaces: Array, tabs: Array, folders: Array, splits: Array }} pulled  Reconcile-pulled items.
+   * @param {{ spaces: Array, tabs: Array, folders: Array, splits: Array }} removals  Items to remove.
    */
   async _applySyncChanges(pulled, removals = {}) {
     if (!this.shouldHaveWorkspaces || this.privateWindowOrDisabled) {
@@ -223,7 +224,7 @@ class nsZenWorkspaces {
    * Workspace removal is handled via propagateWorkspaces() in
    * _applySyncChanges.
    *
-   * @param {{ folders: Array, tabs: Array }} removals
+   * @param {{ folders: Array, tabs: Array, splits: Array }} removals
    */
   async _removeSyncedItems(removals) {
     if (!this.shouldHaveWorkspaces || this.privateWindowOrDisabled) {
@@ -238,6 +239,18 @@ class nsZenWorkspaces {
       const folder = document.getElementById(folderData.id);
       if (folder?.isZenFolder) {
         await folder.delete();
+      }
+    }
+
+    for (const splitData of removals.splits || []) {
+      if (!splitData.groupId || !window.gZenViewSplitter?._data) {
+        continue;
+      }
+      const groupIndex = window.gZenViewSplitter._data.findIndex(
+        group => group.groupId === splitData.groupId,
+      );
+      if (groupIndex >= 0) {
+        window.gZenViewSplitter.removeGroup(groupIndex);
       }
     }
 
@@ -275,7 +288,7 @@ class nsZenWorkspaces {
    *   4. Unpinned tabs — created with addTrustedTab and placed in the
    *      correct workspace/folder.
    *
-   * @param {{ tabs: Array, folders: Array }} pulled  Reconcile-pulled items.
+   * @param {{ tabs: Array, folders: Array, splits: Array }} pulled  Reconcile-pulled items.
    */
   async _applyPulledItems(pulled) {
     if (!this.shouldHaveWorkspaces || this.privateWindowOrDisabled) {
@@ -283,6 +296,7 @@ class nsZenWorkspaces {
     }
 
     const incomingFolders = pulled.folders || [];
+    const incomingSplits = pulled.splits || [];
     // Filter out folder placeholder tabs, they should never be synced.
     let incomingTabs = (pulled.tabs || []).filter(t => !t.zenIsEmpty);
 
@@ -291,7 +305,7 @@ class nsZenWorkspaces {
       incomingTabs = incomingTabs.filter(t => t.pinned);
     }
 
-    if (!incomingFolders.length && !incomingTabs.length) {
+    if (!incomingFolders.length && !incomingTabs.length && !incomingSplits.length) {
       return;
     }
 
@@ -562,6 +576,7 @@ class nsZenWorkspaces {
 
     this.#applyIncomingTabPositions(incomingTabs);
     this.#applyIncomingFolderStructure(incomingFolders);
+    this.#applyIncomingSplitViewData(incomingSplits);
   }
 
   #getSyncedTabActiveEntry(tabData) {
@@ -826,6 +841,62 @@ class nsZenWorkspaces {
       });
     }
 
+    this.makeSureEmptyTabIsFirst();
+    this.updateTabsContainers();
+  }
+
+  #applyIncomingSplitViewData(splitViewDataList) {
+    const splitter = window.gZenViewSplitter;
+    if (
+      !splitter?.restoreDataFromSessionStore ||
+      !splitter?.storeDataForSessionStore ||
+      !splitter?._data
+    ) {
+      return;
+    }
+
+    const localSplitGroupsById = new Map(
+      splitter.storeDataForSessionStore().map(group => [group.groupId, group]),
+    );
+
+    for (const splitData of splitViewDataList) {
+      if (
+        !splitData?.groupId ||
+        !Array.isArray(splitData.tabs) ||
+        splitData.tabs.length < 2
+      ) {
+        continue;
+      }
+
+      const existingGroup = localSplitGroupsById.get(splitData.groupId);
+      if (existingGroup && JSON.stringify(existingGroup) === JSON.stringify(splitData)) {
+        continue;
+      }
+
+      const incomingTabIds = new Set(
+        splitData.tabs.filter(tabId => typeof tabId === "string" && tabId),
+      );
+      const conflictingGroupIndexes = [];
+
+      for (let index = 0; index < splitter._data.length; index++) {
+        const group = splitter._data[index];
+        if (
+          group.groupId === splitData.groupId ||
+          group.tabs.some(tab => incomingTabIds.has(tab.id))
+        ) {
+          conflictingGroupIndexes.push(index);
+        }
+      }
+
+      for (const index of conflictingGroupIndexes.sort((a, b) => b - a)) {
+        splitter.removeGroup(index);
+      }
+
+      splitter.restoreDataFromSessionStore([splitData]);
+      localSplitGroupsById.set(splitData.groupId, splitData);
+    }
+
+    splitter.onAfterWorkspaceSessionRestore?.();
     this.makeSureEmptyTabIsFirst();
     this.updateTabsContainers();
   }
@@ -2018,10 +2089,6 @@ class nsZenWorkspaces {
     this.#deleteWorkspaceOwnedTabs(windowID);
 
     // mark item as changed for sync
-    Services.obs.notifyObservers(
-      { wrappedJSObject: { type: "space", id: windowID } },
-      "zen-workspace-item-changed",
-    );
     this.#markWorkspaceChanged(windowID);
 
     let workspacesData = this.getWorkspaces();

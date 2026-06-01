@@ -16,6 +16,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   gWindowSyncEnabled: "resource:///modules/zen/ZenWindowSync.sys.mjs",
   gSyncOnlyPinnedTabs: "resource:///modules/zen/ZenWindowSync.sys.mjs",
   DeferredTask: "resource://gre/modules/DeferredTask.sys.mjs",
+  ZenSyncStore: "resource:///modules/zen/ZenSyncManager.sys.mjs",
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -609,8 +610,12 @@ export class nsZenSessionManager {
       }
     );
     this.#collectWindowData(windows);
+    lazy.ZenSyncStore.notifyAboutChanges();
     // This would save the data to disk asynchronously or when quitting the app.
     let sidebar = this.#sidebarWithoutCloning;
+
+
+    console.log("Saving Zen session data",soon ? "soon" : "now", sidebar.tabs);
     this.#file.data = sidebar;
     if (soon) {
       this.#file.saveSoon();

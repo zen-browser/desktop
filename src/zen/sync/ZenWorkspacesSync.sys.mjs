@@ -12,8 +12,8 @@ import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 
 // Score increments for the sync tracker. Higher values trigger sync sooner.
 // MULTI_DEVICE_THRESHOLD (300) is the point at which sync fires immediately.
-const SCORE_INCREMENT_STRUCTURAL = 200; // spaces, containers — important but rare
-const SCORE_INCREMENT_ITEM = 20;        // tabs, folders — frequent, batches well
+const SCORE_INCREMENT_STRUCTURAL = 301; // spaces, containers — important but rare
+const SCORE_INCREMENT_ITEM = 101;        // tabs, folders — frequent, batches well
 
 const lazy = {};
 
@@ -34,14 +34,16 @@ const RECORD_ID_PREFIX_BY_TYPE = Object.freeze({
   space: "s",
   container: "c",
   tab: "t",
-  folder: "f"
+  folder: "f",
+  split: "sv",
 });
 
 const RECORD_TYPE_BY_PREFIX = Object.freeze({
   s: "space",
   c: "container",
   t: "tab",
-  f: "folder"
+  f: "folder",
+  sv: "split",
 });
 
 /**
@@ -129,6 +131,12 @@ class ZenWorkspacesStore extends Store {
       }
     }
 
+    for (const splitGroup of sidebar.splitViewData || []) {
+      if (splitGroup.groupId) {
+        ids[createRecordId("split", splitGroup.groupId)] = true;
+      }
+    }
+
     return ids;
   }
 
@@ -150,6 +158,10 @@ class ZenWorkspacesStore extends Store {
         return (sidebar.tabs || []).some(t => t.zenSyncId === parsed.key);
       case "folder":
         return (sidebar.folders || []).some(f => String(f.id) === parsed.key);
+      case "split":
+        return (sidebar.splitViewData || []).some(
+          splitGroup => splitGroup.groupId === parsed.key
+        );
       default:
         return false;
     }
@@ -229,6 +241,24 @@ class ZenWorkspacesStore extends Store {
         record.cleartext = { id, type: "folder", folderId, ...rest };
         break;
       }
+      case "split": {
+        const splitGroup = (sidebar.splitViewData || []).find(
+          group => group.groupId === parsed.key
+        );
+        if (!splitGroup) {
+          record.deleted = true;
+          return record;
+        }
+        record.cleartext = {
+          id,
+          type: "split",
+          groupId: splitGroup.groupId,
+          gridType: splitGroup.gridType,
+          layoutTree: splitGroup.layoutTree,
+          tabs: Array.isArray(splitGroup.tabs) ? [...splitGroup.tabs] : [],
+        };
+        break;
+      }
       default:
         record.deleted = true;
     }
@@ -237,8 +267,20 @@ class ZenWorkspacesStore extends Store {
   }
 
   async applyIncomingBatch(records, _countTelemetry) {
-    const pulled = { spaces: [], tabs: [], folders: [], containers: [] };
-    const removals = { spaces: [], tabs: [], folders: [], containers: [] };
+    const pulled = {
+      spaces: [],
+      tabs: [],
+      folders: [],
+      containers: [],
+      splits: [],
+    };
+    const removals = {
+      spaces: [],
+      tabs: [],
+      folders: [],
+      containers: [],
+      splits: [],
+    };
     for (const record of records) {
       if (record.deleted) {
         this._collectRemoval(record.id, removals);
@@ -281,6 +323,15 @@ class ZenWorkspacesStore extends Store {
           delete clean.folderId;
           pulled.folders.push(clean);
           break;
+        case "split":
+          clean.groupId =
+            clean.groupId ||
+            (parsedRecordId?.type === "split" ? parsedRecordId.key : null);
+          if (!clean.groupId) {
+            break;
+          }
+          pulled.splits.push(clean);
+          break;
       }
     }
 
@@ -322,6 +373,9 @@ class ZenWorkspacesStore extends Store {
       case "folder":
         removals.folders.push({ id: parsed.key });
         break;
+      case "split":
+        removals.splits.push({ groupId: parsed.key });
+        break;
     }
   }
 
@@ -337,10 +391,16 @@ class ZenWorkspacesStore extends Store {
     this.engine._tracker.ignoreAll = true;
     try {
       if (record.deleted) {
-        const removals = { spaces: [], tabs: [], folders: [], containers: [] };
+        const removals = {
+          spaces: [],
+          tabs: [],
+          folders: [],
+          containers: [],
+          splits: [],
+        };
         this._collectRemoval(record.id, removals);
         await lazy.ZenSyncStore.applyIncomingBatch(
-          { spaces: [], tabs: [], folders: [], containers: [] },
+          { spaces: [], tabs: [], folders: [], containers: [], splits: [] },
           removals);
         return;
       }
@@ -350,7 +410,13 @@ class ZenWorkspacesStore extends Store {
       }
       const parsedRecordId = parseRecordId(record.id);
       const clean = stripSyncFields(data);
-      const pulled = { spaces: [], tabs: [], folders: [], containers: [] };
+      const pulled = {
+        spaces: [],
+        tabs: [],
+        folders: [],
+        containers: [],
+        splits: [],
+      };
       switch (data.type) {
         case "space":
           pulled.spaces.push(clean);
@@ -382,10 +448,19 @@ class ZenWorkspacesStore extends Store {
           delete clean.folderId;
           pulled.folders.push(clean);
           break;
+        case "split":
+          clean.groupId =
+            clean.groupId ||
+            (parsedRecordId?.type === "split" ? parsedRecordId.key : null);
+          if (!clean.groupId) {
+            break;
+          }
+          pulled.splits.push(clean);
+          break;
       }
       await lazy.ZenSyncStore.applyIncomingBatch(
         pulled,
-        { spaces: [], tabs: [], folders: [], containers: [] });
+        { spaces: [], tabs: [], folders: [], containers: [], splits: [] });
     } finally {
       this.engine._tracker.ignoreAll = false;
     }
@@ -509,7 +584,7 @@ export class ZenWorkspacesEngine extends SyncEngine {
   }
 
   get version() {
-    return 3;
+    return 12;
   }
 
   get syncPriority() {

@@ -17,6 +17,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   setTimeout: "resource://gre/modules/Timer.sys.mjs",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
   RunState: "resource:///modules/sessionstore/RunState.sys.mjs",
+  ZenSyncStore: "resource:///modules/zen/ZenSyncManager.sys.mjs",
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -67,6 +68,7 @@ const EVENTS = [
 
   "ZenTabRemovedFromSplit",
   "ZenSplitViewTabsSplit",
+  "ZenSplitViewGroupUpdated",
 
   ...INSTANT_EVENTS,
   ...UNSYNCED_WINDOW_EVENTS,
@@ -998,6 +1000,13 @@ class nsZenWindowSync {
     });
   }
 
+  #markItemChanged(id, type) {
+    lazy.ZenSyncStore.markItemChanged({
+      type,
+      id,
+    });
+  }
+
   /**
    * Create and insert a new pseudo image for a browser element.
    *
@@ -1358,10 +1367,7 @@ class nsZenWindowSync {
     }
 
     if (item.isZenFolder && !item.isLiveFolder) {
-      Services.obs.notifyObservers(
-        { wrappedJSObject: { type: "folder", id: item.id } },
-        "zen-workspace-item-changed",
-      );
+      this.#markItemChanged(item.id, "folder");
       return;
     }
 
@@ -1370,10 +1376,7 @@ class nsZenWindowSync {
     }
 
     if (!item.hasAttribute("zen-empty-tab")) {
-      Services.obs.notifyObservers(
-        { wrappedJSObject: { type: "tab", id: item.id } },
-        "zen-workspace-item-changed",
-      );
+      this.#markItemChanged(item.id, "tab");
     }
   }
 
@@ -1760,6 +1763,11 @@ class nsZenWindowSync {
   on_ZenTabRemovedFromSplit(aEvent) {
     const tab = aEvent.target;
     const window = tab.documentGlobal;
+    const groupId = aEvent.detail?.groupId;
+    this.#notifySyncItemChanged(tab);
+    if (groupId) {
+      this.#markItemChanged(groupId, "split");
+    }
     this.#runOnAllWindows(window, win => {
       const targetTab = this.getItemFromWindow(win, tab.id);
       if (targetTab && win.gZenViewSplitter) {
@@ -1773,7 +1781,14 @@ class nsZenWindowSync {
   on_ZenSplitViewTabsSplit(aEvent) {
     const tabGroup = aEvent.target;
     const window = tabGroup.documentGlobal;
+    if (!tabGroup?.id) {
+      return;
+    }
     const tabs = tabGroup.tabs;
+    for (const tab of tabs) {
+      this.#notifySyncItemChanged(tab);
+    }
+    this.#markItemChanged(tabGroup.id, "split");
     this.#runOnAllWindows(window, win => {
       const otherWindowTabs = tabs
         .map(tab => this.getItemFromWindow(win, tab.id))
@@ -1805,6 +1820,15 @@ class nsZenWindowSync {
         this.#onTabSwitchOrWindowFocus(window, null).finally(resolve);
       }, 0);
     });
+  }
+
+  on_ZenSplitViewGroupUpdated(aEvent) {
+    const tabGroup = aEvent.target;
+    if (!tabGroup?.id) {
+      return;
+    }
+
+    this.#markItemChanged(tabGroup.id, "split");
   }
 }
 

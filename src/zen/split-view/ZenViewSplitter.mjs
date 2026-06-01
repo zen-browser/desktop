@@ -241,7 +241,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       this.resetTabState(tab, forUnsplit);
       if (tab.group && tab.group.hasAttribute("split-view-group")) {
         gBrowser.ungroupTab(tab);
-        this.#dispatchItemEvent("ZenTabRemovedFromSplit", tab);
+        this.#dispatchItemEvent("ZenTabRemovedFromSplit", tab, {
+          groupId: group.groupId,
+        });
       }
 
       const node = this.getSplitNodeFromTab(tab);
@@ -1026,11 +1028,21 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     if (hoverSide === "center") {
       this.swapNodes(droppedSplitNode, droppedOnSplitNode);
       this.applyGridLayout(this._data[this.currentView].layoutTree);
+      this.#dispatchItemEvent(
+        "ZenSplitViewGroupUpdated",
+        this._data[this.currentView].tabs[0].group,
+        { groupId: this._data[this.currentView].groupId },
+      );
       return;
     }
     this.removeNode(droppedSplitNode);
     this.splitIntoNode(droppedOnSplitNode, droppedSplitNode, hoverSide, 0.5);
     this.activateSplitView(this._data[this.currentView], true);
+    this.#dispatchItemEvent(
+      "ZenSplitViewGroupUpdated",
+      this._data[this.currentView].tabs[0].group,
+      { groupId: this._data[this.currentView].groupId },
+    );
   };
 
   /**
@@ -1123,9 +1135,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * @param {string} eventName - The name of the event to dispatch.
    * @param {HTMLElement} item - The item on which to dispatch the event.
    */
-  #dispatchItemEvent(eventName, item) {
+  #dispatchItemEvent(eventName, item, detail = {}) {
     const event = new CustomEvent(eventName, {
-      detail: { item },
+      detail: { item, ...detail },
       bubbles: true,
       cancelable: false,
     });
@@ -1142,7 +1154,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     for (const tab of group.tabs.reverse()) {
       if (tab.group?.hasAttribute("split-view-group")) {
         gBrowser.ungroupTab(tab);
-        this.#dispatchItemEvent("ZenTabRemovedFromSplit", tab);
+        this.#dispatchItemEvent("ZenTabRemovedFromSplit", tab, {
+          groupId: group.groupId,
+        });
       }
     }
     if (this.currentView === groupIndex) {
@@ -1443,7 +1457,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
             }
           }
         }
-        this.#dispatchItemEvent("ZenSplitViewTabsSplit", group.tabs[0].group);
+        this.#dispatchItemEvent("ZenSplitViewTabsSplit", group.tabs[0].group, {
+          groupId: group.groupId,
+        });
         if (!shouldActivateSplit) {
           return group;
         }
@@ -1483,7 +1499,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         }
       }
 
-      this.#dispatchItemEvent("ZenSplitViewTabsSplit", splitGroup);
+      this.#dispatchItemEvent("ZenSplitViewTabsSplit", splitGroup, {
+        groupId,
+      });
       // eslint-disable-next-line consistent-return
       return splitData;
     });
@@ -1890,6 +1908,12 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         document.removeEventListener("mousemove", dragFunc);
         window.setCursor("auto");
         this.tabBrowserPanel.removeAttribute("zen-split-resizing");
+        if (this.currentView >= 0) {
+          const group = this._data[this.currentView];
+          this.#dispatchItemEvent("ZenSplitViewGroupUpdated", group.tabs[0].group, {
+            groupId: group.groupId,
+          });
+        }
       },
       { once: true }
     );
@@ -2399,17 +2423,34 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
     for (const groupData of data) {
       try {
-        const group = document.getElementById(groupData.groupId);
-        if (!gBrowser.isTabGroup(group)) {
+        const tabs = (groupData.tabs || [])
+          .map(tabId => document.getElementById(tabId))
+          .filter(tab => gBrowser.isTab(tab));
+        if (tabs.length < 2) {
+          continue;
+        }
+
+        const splitData = this.splitTabs(tabs, groupData.gridType, -1, {
+          groupFetchId: groupData.groupId,
+        });
+        if (!splitData) {
+          const group = document.getElementById(groupData.groupId);
+          if (gBrowser.isTabGroup(group)) {
+            gBrowser.removeTabGroup(group);
+          }
           continue;
         }
 
         // Backwards compatibility
-        group.setAttribute("split-view-group", "true");
+        const group =
+          tabs.find(tab => tab.group?.id === groupData.groupId)?.group ||
+          document.getElementById(groupData.groupId);
+        if (gBrowser.isTabGroup(group)) {
+          group.setAttribute("split-view-group", "true");
+        }
+
         if (!groupData?.layoutTree) {
-          this.splitTabs(group.tabs, group.gridType);
-          delete this._sessionRestoring;
-          return;
+          continue;
         }
 
         const deserializeNode = nodeData => {
@@ -2439,11 +2480,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         };
 
         const layout = deserializeNode(groupData.layoutTree);
-        const splitData = this.splitTabs(group.tabs, groupData.gridType, -1);
-        if (splitData) {
+        if (layout) {
           splitData.layoutTree = layout;
-        } else {
-          gBrowser.removeTabGroup(group);
         }
       } catch (e) {
         console.error("Error restoring split view session data:", e);

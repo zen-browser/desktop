@@ -1,0 +1,234 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+:root,
+window,
+dialog {
+  background: transparent !important;
+  -moz-window-shadow: none;
+  appearance: none;
+
+  color-scheme: dark !important;
+
+  --at-background: #151c30;
+  --at-outline: #44495a;
+  --at-border-radius: 26px;
+
+  --at-width: 510px;
+  --at-height: 500px;
+
+  --content-padding: 26px;
+  --content-padding-vertical: 16px;
+
+  --text-color: #dbdcdf;
+  --text-color-secondary: #8b8e98;
+  --hr-color: #2c3244;
+
+  --select-background-color: #272d40;
+  --input-background-color: #272d40;
+
+  --rules-gap: 14px;
+}
+
+#zenAirTrafficDialog {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 24px;
+
+  height: var(--at-height);
+  max-height: var(--at-height);
+  min-height: var(--at-height);
+
+  width: var(--at-width);
+  max-width: var(--at-width);
+  min-width: var(--at-width);
+
+  opacity: 0;
+  animation: zen-dialog-fade-in 0.3s ease forwards;
+}
+
+.hr {
+  color: var(--hr-color);
+  padding: 0px;
+  margin: 0px;
+  margin-left: 32px;
+  margin-right: 32px;
+}
+
+h3 {
+  font-size: medium;
+  color: var(--text-color);
+  font-weight: bold;
+}
+
+h4 {
+  font-size: small;
+  color: var(--text-color-secondary);
+}
+
+p {
+  color: var(--text-color);
+}
+
+.select,
+.select * {
+  background-color: var(--select-background-color);
+  color: var(--text-color);
+  margin: 0;
+
+  width: 150px;
+
+  &#match-type-select {
+    width: 100px;
+  }
+  &#open-in-select {
+    width: 165px;
+  }
+}
+
+.at-rule-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.at-rule-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0 24px;
+
+  & p {
+    color: var(--text-color-secondary);
+  }
+}
+
+#at-rule-bottom {
+  margin-left: 90px;
+}
+
+.input,
+.input * {
+  background-color: var(--input-background-color);
+  color: var(--text-color);
+  margin: 0;
+
+  flex-grow: 1;
+}
+
+button {
+  user-select: none !important;
+
+  padding: 4px;
+  display: flex;
+  justify-content: center;
+
+  margin: 0;
+
+  & hbox {
+    display: none;
+  }
+}
+
+.at-remove {
+  & hbox {
+    display: initial;
+    padding: 0;
+    margin: 0;
+  }
+
+  opacity: 0.5;
+
+  &:hover {
+    opacity: 0.8;
+  }
+  
+  appearance: none !important;
+  background: none;
+  border: none !important;
+
+  aspect-ratio: 1;
+  height: 24px;
+  min-width: 0px !important;
+  padding: 2px;
+  color: var(--text-color-secondary);
+
+  -moz-context-properties: fill, fill-opacity;
+  fill: currentColor;
+}
+
+#at-container {
+  height: var(--at-height);
+  width: var(--at-width);
+
+  background-color: var(--at-background);
+  outline: 1px solid var(--at-outline);
+  border-radius: var(--at-border-radius);
+  overflow: hidden;
+  font-family: system-ui !important;
+  color: black;
+
+  position: relative;
+
+  filter: drop-shadow(0 4px 8px #24242740);
+
+  display: flex;
+}
+
+#at-header {
+  width: 100%;
+  padding: var(--content-padding);
+  align-items: center;
+
+  display: flex;
+  flex-direction: row;
+}
+
+#at-left {
+  margin-left: auto;
+}
+
+#at-footer {
+  width: 100%;
+  padding: var(--content-padding);
+  align-items: center;
+
+  display: flex;
+  flex-direction: row;
+}
+
+#at-content {
+  width: 100%;
+  overflow: scroll;
+  padding: var(--content-padding);
+  flex-grow: 1;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--rules-gap);
+}
+
+.at-label-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  color: var(--text-color-secondary);
+}
+
+.at-label {
+  margin: 0; 
+}
+
+.at-url-icon,
+.at-open-in-icon {
+  width: 16px;
+  height: 16px;
+  -moz-context-properties: fill, fill-opacity;
+  fill: currentColor;
+  fill-opacity: 0.65;
+}

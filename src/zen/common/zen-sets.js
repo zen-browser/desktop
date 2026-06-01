@@ -134,7 +134,10 @@ document.addEventListener(
             break;
           }
           case "cmd_zenOpenAirTrafficControlSettings": {
-            console.log("OPEN AIR TRAFFIC CONTROL SETTINGS");
+            const { ZenAirTrafficManager } = ChromeUtils.importESModule(
+              "resource:///modules/zen/airtraffic/ZenAirTrafficManager.sys.mjs"
+            );
+            ZenAirTrafficManager.openAirTrafficDialog(window);
             break;
           }
           case "cmd_zenNewNavigatorUnsynced":

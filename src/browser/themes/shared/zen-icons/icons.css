@@ -40,6 +40,7 @@
 .close-icon,
 .zen-glance-sidebar-close,
 .zen-theme-picker-custom-list-item-remove,
+.at-remove,
 #appMenu-quit-button2,
 #zen-boost-delete {
   list-style-image: url("close.svg") !important;
@@ -130,7 +131,8 @@
 
 .zen-current-workspace-indicator-chevron,
 #PanelUI-zen-gradient-generator-color-page-right,
-.zen-permission-popup-boost-editor-button {
+.zen-permission-popup-boost-editor-button,
+.at-open-in-icon {
   list-style-image: url("arrow-right.svg");
 }
 
@@ -1003,7 +1005,8 @@
   }
 }
 
-#zen-copy-url-button image {
+#zen-copy-url-button image,
+.at-url-icon {
   list-style-image: url("link.svg");
   fill-opacity: 0.65;
 }

@@ -1,0 +1,70 @@
+#filter substitution
+<?xml version="1.0"?>
+
+# -*- Mode: HTML -*-
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+<?xml-stylesheet href="chrome://browser/content/zen-styles/zen-theme.css" type="text/css"?>
+<?xml-stylesheet href="chrome://browser/content/zen-styles/zen-air-traffic.css" type="text/css"?>
+<?xml-stylesheet href="chrome://browser/skin/zen-icons/icons.css" type="text/css"?>
+<?xml-stylesheet href="chrome://browser/content/zen-styles/zen-animations.css" type="text/css"?>
+
+<!DOCTYPE window>
+
+<window
+  xmlns:html="http://www.w3.org/1999/xhtml"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  data-l10n-id="air-traffic-window"
+  data-l10n-attrs="style"
+  customtitlebar="true"
+  drawintitlebar="true"
+  windowtype="Zen:AirTraffic"
+  style="-moz-window-shadow: none;">
+<vbox id="zenAirTrafficDialog">
+
+<linkset>
+    <link rel="localization" href="browser/zen-air-traffic.ftl" />
+</linkset>
+
+ <!-- Loading in the window module -->
+    <script>
+      const { nsZenAirTrafficDialog } = ChromeUtils.importESModule(
+        "resource:///modules/zen/airtraffic/ZenAirTrafficDialog.mjs",
+      );
+      window.addEventListener("load", () => {
+        const args = window.arguments?.[0] || {};
+        window.airtrafficDialog = new nsZenAirTrafficDialog(
+          document,
+          window,
+          args.parentWindow,
+        );
+      });
+    </script>
+
+    <vbox id="at-container">
+      <hbox id="at-header">
+        <h3>Air Traffic Control</h3>
+        <html:div id="at-left">
+          <button id="at-new-route">New Route</button>
+        </html:div>
+      </hbox>
+      <html:hr class="hr"></html:hr>
+      <vbox id="at-content">
+        <!-- All rules will be injected here later -->
+      </vbox>
+      <html:hr class="hr"></html:hr>
+      <hbox id="at-footer">
+        <h4>Default route for external links</h4>
+        <html:div id="at-left">
+          <html:select class="select">
+            <html:option>Lil Zen</html:option>
+          </html:select>
+        </html:div>
+      </hbox>
+    </vbox>
+</vbox>
+</window>

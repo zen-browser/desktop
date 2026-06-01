@@ -12,8 +12,8 @@
   transition: max-height 0s;
   transition-delay: calc(var(--zen-hidden-toolbar-transition-duration) + 0.2s);
 
-  & .titlebar-button {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
+  :root & .titlebar-button {
+    padding-top: 0;
+    padding-bottom: 0;
   }
 }

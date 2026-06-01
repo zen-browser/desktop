@@ -17,20 +17,19 @@
     overflow: hidden;
   }
 
-  & #tabbrowser-tabbox[sidebar-positionend] {
-    & #sidebar-box {
-      order: 8 !important;
-    }
+}
 
-    & #sidebar-splitter {
-      order: 7 !important;
-    }
-  }
+:root #zen-tabbox-wrapper #tabbrowser-tabbox[sidebar-positionend] #sidebar-box {
+  order: 8;
+}
+
+:root #zen-tabbox-wrapper #tabbrowser-tabbox[sidebar-positionend] #sidebar-splitter {
+  order: 7;
 }
 
 /* Menubar */
-#toolbar-menubar {
-  display: none !important;
+:root #toolbar-menubar {
+  display: none;
 }
 
 /* Astra: Move AI panel to opposite side of Zen sidebar */

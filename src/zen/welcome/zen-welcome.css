@@ -32,6 +32,10 @@
   }
 }
 
+:root #zen-welcome-start #zen-welcome-start-button {
+  padding: 1em;
+}
+
 #zen-welcome-start {
   flex-direction: column;
   -moz-window-dragging: drag;
@@ -43,7 +47,6 @@
     list-style-image: url(chrome://browser/skin/zen-icons/forward.svg);
     position: absolute;
     bottom: 10%;
-    padding: 1em !important;
     min-width: 100px;
     background: #ff9933;
     border-color: #ff9933;
@@ -282,8 +285,8 @@
           }
 
           & .tabbrowser-tab {
-            --tab-min-height: 6rem !important;
-            min-width: 5rem !important;
+            --tab-min-height: 6rem;
+            min-width: 5rem;
             transition: transform 0.1s;
             position: relative;
 
@@ -308,10 +311,6 @@
               transform: scale(1.06);
             }
 
-            & .tab-background {
-              margin: 0 !important;
-            }
-
             & .tab-background::after {
               filter: blur(30px) brightness(1.2);
             }
@@ -320,4 +319,16 @@
       }
     }
   }
+}
+
+:root #zen-welcome-initial-essentials-browser-sidebar-essentials .tabbrowser-tab {
+  --tab-min-height: 6rem;
+  min-width: 5rem;
+}
+
+:root
+  #zen-welcome-initial-essentials-browser-sidebar-essentials
+  .tabbrowser-tab
+  .tab-background {
+  margin: 0;
 }

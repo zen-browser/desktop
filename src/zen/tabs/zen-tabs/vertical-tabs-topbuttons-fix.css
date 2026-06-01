@@ -6,8 +6,8 @@
 
 &:not([zen-compact-animating])
   #zen-sidebar-top-buttons:not(:has(#zen-sidebar-top-buttons-customization-target > *:not(#zen-sidebar-top-buttons-separator), .titlebar-buttonbox-container)) {
-  max-height: 0 !important;
-  min-height: 0 !important;
+  max-height: 0;
+  min-height: 0;
   opacity: 0;
   overflow: hidden;
   pointer-events: none;

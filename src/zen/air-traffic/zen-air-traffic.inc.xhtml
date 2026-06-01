@@ -14,16 +14,46 @@
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   data-l10n-id="air-traffic-window"
   windowtype="Zen:ControlFlow"
+  customtitlebar="true"
   id="zenAirTrafficDialog"
-  class="dialogBox"
+  dialogroot="true"
 >
   <linkset>
-    <html:link rel="stylesheet" href="chrome://global/skin/global.css" type="text/css" />
-    <html:link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-theme.css" type="text/css" />
-    <html:link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-air-traffic.css" type="text/css" />
-    <html:link rel="stylesheet" href="chrome://browser/skin/zen-icons/icons.css" type="text/css" />
-    <html:link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-animations.css" type="text/css" />
-    <html:link rel="stylesheet" type="text/css" href="chrome://browser/content/zen-styles/zen-popup.css" />
+    <html:link rel="stylesheet" href="chrome://global/skin/commonDialog.css" />
+    <html:link
+      rel="stylesheet"
+      href="chrome://global/content/commonDialog.css"
+    />
+    <html:link
+      rel="stylesheet"
+      href="chrome://global/skin/global.css"
+      type="text/css"
+    />
+    <html:link
+      rel="stylesheet"
+      href="chrome://browser/content/zen-styles/zen-theme.css"
+      type="text/css"
+    />
+    <html:link
+      rel="stylesheet"
+      href="chrome://browser/content/zen-styles/zen-air-traffic.css"
+      type="text/css"
+    />
+    <html:link
+      rel="stylesheet"
+      href="chrome://browser/skin/zen-icons/icons.css"
+      type="text/css"
+    />
+    <html:link
+      rel="stylesheet"
+      href="chrome://browser/content/zen-styles/zen-animations.css"
+      type="text/css"
+    />
+    <html:link
+      rel="stylesheet"
+      type="text/css"
+      href="chrome://browser/content/zen-styles/zen-popup.css"
+    />
     <html:link rel="localization" href="browser/zen-air-traffic.ftl" />
   </linkset>
 
@@ -42,12 +72,18 @@
     });
   </script>
 
-  <vbox id="zen-air-traffic-dialog-container">
+  <vbox
+    id="zen-air-traffic-dialog-container"
+    class="dialogBox"
+  >
     <vbox id="at-container">
       <hbox id="at-header">
         <h3 data-l10n-id="zen-air-traffic-dialog-title"></h3>
         <html:div id="at-left">
-          <button id="at-new-route" data-l10n-id="zen-air-traffic-new-route"></button>
+          <button
+            id="at-new-route"
+            data-l10n-id="zen-air-traffic-new-route"
+          ></button>
           <button class="close-icon" id="at-close"></button>
         </html:div>
       </hbox>

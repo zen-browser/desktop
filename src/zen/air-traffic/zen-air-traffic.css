@@ -5,14 +5,27 @@
  */
 
 :root {
-  /* background: transparent !important;
+  background: none;
   appearance: none;
-  border: none; */
+  border: none;
+  outline: none;
+
   color-scheme: dark;
 
   --at-background: #151c30;
   --at-outline: #44495a;
   --at-border-radius: 26px;
+
+  /* Blue colors */
+  --select-background-color: #272d40;
+  --input-background-color: #272d40;
+  --hr-color: #2c3244;
+  
+  /* Gray colors */
+  --at-background: #212223;
+  --select-background-color: #3e3f43;
+  --input-background-color: #2c2d31;
+  --hr-color: #313235;
 
   --at-width: 510px;
   --at-height: 500px;
@@ -23,19 +36,17 @@
   --text-color: #dbdcdf;
   --text-color-secondary: #8b8e98;
   --text-color-error: #d03535;
-  --hr-color: #2c3244;
-
-  --select-background-color: #272d40;
-  --input-background-color: #272d40;
 
   --rules-gap: 14px;
+}
 
-  border-radius: var(--at-border-radius);
+.dialog-button-box {
+  /* Remove default dialog buttons */
+  display: none !important;
 }
 
 #zen-air-traffic-dialog-container {
-  /* background: transparent; */
-  /* border: none; */
+  background-color: var(--at-background);
   padding: 0;
   margin: 24px;
 
@@ -46,8 +57,18 @@
   width: var(--at-width);
   max-width: var(--at-width);
   min-width: var(--at-width);
+}
 
-  /* animation: zen-dialog-fade-in 0.3s ease forwards; */
+#at-container {
+  height: var(--at-height);
+  width: var(--at-width);
+
+  border-radius: var(--at-border-radius);
+  overflow: hidden;
+  font-family: system-ui !important;
+
+  position: relative;
+  display: flex;
 }
 
 #at-empty-content {
@@ -113,6 +134,7 @@ p {
 .select {
   width: 150px;
   height: 26px;
+  padding: 4px;
 }
 
 .select,
@@ -163,7 +185,7 @@ menulist {
 }
 
 #at-rule-bottom {
-  margin-left: 90px;
+  margin-left: 85px;
 }
 
 .input,
@@ -188,7 +210,7 @@ menulist {
 button {
   user-select: none !important;
 
-  padding: 4px;
+  padding: 2px;
   display: flex;
   justify-content: center;
 
@@ -221,27 +243,14 @@ button {
 
   aspect-ratio: 1;
   height: 24px;
+  padding: 3px;
+  width: 24px;
+
   min-width: 0px !important;
-  padding: 2px;
   color: var(--text-color-secondary);
 
   -moz-context-properties: fill, fill-opacity;
   fill: currentColor;
-}
-
-#at-container {
-  height: var(--at-height);
-  width: var(--at-width);
-
-  /* background-color: var(--at-background); */
-  /* outline: 1px solid var(--at-outline); */
-  /* filter: drop-shadow(0 4px 8px #24242740); */
-  border-radius: var(--at-border-radius);
-  overflow: hidden;
-  font-family: system-ui !important;
-
-  position: relative;
-  display: flex;
 }
 
 #at-header {

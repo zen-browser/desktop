@@ -4,8 +4,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-.tab-group-line {
-  display: none !important;
+:root .tab-group-line {
+  display: none;
 }
 
 zen-folder {
@@ -38,7 +38,7 @@ zen-folder {
 
   :root:not([zen-sidebar-expanded]) & {
     width: var(--tab-min-width) !important;
-    margin: 0 !important;
+    margin: 0;
 
     & .tab-group-label {
       visibility: hidden !important;
@@ -68,8 +68,8 @@ zen-folder {
     top: 0 !important;
     --tab-group-color-pale: transparent !important;
     --tab-group-color: transparent !important;
-    padding-block-end: 0 !important;
-    margin: 0 !important;
+    padding-block-end: 0;
+    margin: 0;
     height: calc(var(--tab-block-margin) * 2 + var(--tab-min-height));
     padding-inline: var(--tab-group-label-padding);
 
@@ -197,7 +197,7 @@ zen-folder {
       width: 100% !important;
       border: none !important;
       color: var(--sidebar-text-color) !important;
-      margin: 0 !important;
+      margin: 0;
       font-weight: 600;
       align-self: center !important;
       text-align: start;
@@ -205,7 +205,7 @@ zen-folder {
       height: 100% !important;
 
       :root:not([zen-sidebar-expanded]) & {
-        padding: 0 !important;
+        padding: 0;
         max-width: 100% !important;
       }
 
@@ -362,12 +362,10 @@ zen-folder[collapsed] > .tab-group-container {
   }
 }
 
-.tab-group-overflow-count-container {
-  display: none !important;
+:root .tab-group-overflow-count-container {
+  display: none;
 }
 
-:root:not([zen-sidebar-expanded]) {
-  & #context_zenFolderRename {
-    display: none !important;
-  }
+:root:not([zen-sidebar-expanded]) #context_zenFolderRename {
+  display: none;
 }

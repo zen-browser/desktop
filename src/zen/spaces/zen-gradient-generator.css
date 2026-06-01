@@ -153,7 +153,7 @@
   & > button {
     position: relative;
     min-height: 26px;
-    margin: 0 !important;
+    margin: 0;
     padding: 2px 6px !important;
     border-radius: 999px;
     border: 1px solid color-mix(in srgb, currentColor 15%, transparent) !important;
@@ -338,7 +338,7 @@
 
     & .zen-theme-picker-custom-list-item-remove {
       padding: 2px 4px !important;
-      margin: 0 !important;
+      margin: 0;
       margin-left: auto !important;
       transition: opacity 0.1s;
       opacity: 0;
@@ -358,7 +358,7 @@
 
   & > button {
     min-height: 28px;
-    margin: 0 !important;
+    margin: 0;
     padding: 4px 6px !important;
     border-radius: 8px;
     border: 1px solid color-mix(in srgb, currentColor 12%, transparent) !important;
@@ -405,8 +405,8 @@
   padding-bottom: 2px;
 }
 
-.zen-theme-picker-library-item {
-  margin: 0 !important;
+:root .zen-theme-picker-library-item {
+  margin: 0;
   min-height: 24px;
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, currentColor 16%, transparent) !important;
@@ -450,8 +450,8 @@
   }
 }
 
-#PanelUI-zen-gradient-generator-opacity {
-  margin: 0 !important;
+:root #PanelUI-zen-gradient-generator-opacity {
+  margin: 0;
   background: transparent;
   z-index: 2;
   padding: 0 5px;
@@ -553,7 +553,7 @@
 
   & button {
     border: none !important;
-    padding: 0 !important;
+    padding: 0;
     transition: background 0.2s;
     appearance: none;
     max-height: 30px;
@@ -588,8 +588,8 @@
 
 /* stylelint-disable-next-line media-query-no-invalid */
 @media not -moz-pref("zen.theme.gradient.show-custom-colors") {
-  #PanelUI-zen-gradient-generator-custom-colors {
-    display: none !important;
+  :root #PanelUI-zen-gradient-generator-custom-colors {
+    display: none;
   }
 }
 
@@ -668,12 +668,12 @@
 #PanelUI-zen-gradient-generator-color-page-right {
   max-width: 28px;
   max-height: 28px;
-  margin: 0 !important;
+  margin: 0;
 }
 
 #PanelUI-zen-gradient-generator[invalidate-controls="true"] {
   #PanelUI-zen-gradient-generator-opacity {
-    display: none !important;
+    display: none;
   }
 
   #PanelUI-zen-gradient-slider-wave svg path {

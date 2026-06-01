@@ -20,25 +20,25 @@
   text-overflow: ellipsis;
 }
 
-#customization-footer #customization-toolbar-visibility-button {
-  display: none !important;
+:root #customization-footer #customization-toolbar-visibility-button {
+  display: none;
 }
 
 /* stylelint-disable-next-line media-query-no-invalid */
 @media -moz-pref("zen.theme.disable-lightweight") {
-  #customization-lwtheme-link {
-    display: none !important;
+  :root #customization-lwtheme-link {
+    display: none;
   }
 }
 
-.private-browsing-indicator-with-label {
-  display: none !important;
+:root .private-browsing-indicator-with-label {
+  display: none;
 }
 
 /* hide Mozilla services from the app menu */
-#PanelUI-fxa-menu-services,
-#PanelUI-fxa-cta-menu {
-  display: none !important;
+:root #PanelUI-fxa-menu-services,
+:root #PanelUI-fxa-cta-menu {
+  display: none;
 }
 
 /* Bookmarks */
@@ -47,9 +47,9 @@
 }
 
 /* Firefox View */
-#firefox-view-button,
-#wrapper-firefox-view-button {
-  display: none !important;
+:root #firefox-view-button,
+:root #wrapper-firefox-view-button {
+  display: none;
 }
 
 /* Emojis picker */
@@ -174,7 +174,7 @@
 
     .zen-emojis-picker-emoji {
       font-size: 14px;
-      padding: 0 !important;
+      padding: 0;
       & image {
         display: none;
       }
@@ -320,9 +320,9 @@
   --arrowpanel-menuitem-border-radius: 10px;
 }
 
-#unified-extensions-empty-state,
-#unified-extensions-discover-extensions {
-  display: none !important;
+:root #unified-extensions-empty-state,
+:root #unified-extensions-discover-extensions {
+  display: none;
 }
 
 #zen-site-data-addons {
@@ -334,7 +334,7 @@
 
   unified-extensions-item-messagebar-wrapper,
   .unified-extensions-item-contents {
-    display: none !important;
+    display: none;
   }
 
   &[overflowing="true"] {
@@ -560,8 +560,8 @@
 
 /* stylelint-disable-next-line media-query-no-invalid */
 @media -moz-pref("zen.theme.hide-unified-extensions-button") {
-  #unified-extensions-button:not([showing]) {
-    display: none !important;
+  :root #unified-extensions-button:not([showing]) {
+    display: none;
   }
 }
 

@@ -861,6 +861,7 @@ class nsZenWorkspaces {
             "Selecting empty tab because startup page didnt select a valid tab"
           );
           this.selectEmptyTab();
+          initialTabWasEmpty = true;
         }
         this.log("Removing empty tab added by startup page");
         this._removedByStartupPage = true;

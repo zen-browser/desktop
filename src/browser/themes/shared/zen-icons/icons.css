@@ -520,7 +520,8 @@
     list-style-image: url("permissions-fill.svg");
   }
   &[boosting] image {
-    color: var(--color-accent-primary);
+    fill-opacity: 1 !important;
+    color: var(--zen-sidebar-themed-icon-fill);
     list-style-image: url("permissions-fill.svg");
   }
 

@@ -34,14 +34,6 @@
   <link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-advanced-color-options.css" />
 
   <link rel="localization" href="browser/zen-boosts.ftl"/>
-
-  <!-- Loading in the window module -->
-  <script>
-    const { nsZenBoostEditor } = ChromeUtils.importESModule( "resource:///modules/zen/boosts/ZenBoostsEditor.mjs" );
-    window.addEventListener("load", () => {
-      window.boostEditor = new nsZenBoostEditor(document, window.domain, window, window.openerWindow);
-    });
-  </script>
 </head>
 <html:body xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <vbox flex="1" id="zen-boost-editor-root">
@@ -164,5 +156,10 @@
     <command id="cmd_zenBoostDelete"
             oncommand="window.boostEditor.deleteBoost();" />
   </commandset>
+
+  <script>
+    const { nsZenBoostEditor } = ChromeUtils.importESModule( "resource:///modules/zen/boosts/ZenBoostsEditor.mjs" );
+    window.boostEditor = new nsZenBoostEditor(document, window.domain, window, window.openerWindow);
+  </script>
 </html:body>
 </html>

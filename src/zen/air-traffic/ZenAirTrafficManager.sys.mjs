@@ -48,7 +48,10 @@ class nsZenAirTrafficManager {
    * @returns {boolean} True if the rule matches
    */
   isRouteMatching(uriString, route) {
-    const reference = route.reference.toLowerCase();
+    let reference = route.reference.toLowerCase();
+    if (reference.trim() == "")
+      reference = "zen-browser.app"; // Placeholder Reference
+
     const uri = uriString.toLowerCase();
     switch (route.matchType) {
       case "contains":
@@ -58,10 +61,9 @@ class nsZenAirTrafficManager {
         if (this.#normalizeURL(uri) == reference) return true;
         break;
       case "regex":
-        const unmodifiedReference = route.reference;
-        // Ignore empty
+        let unmodifiedReference = route.reference;
         if (unmodifiedReference.trim() == "")
-          return;
+          unmodifiedReference = "zen-browser\.app"; // Placeholder RegEx
         try {
           // Use unmodified parameters for the regex test
           const regex = new RegExp(unmodifiedReference);

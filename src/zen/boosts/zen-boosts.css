@@ -608,23 +608,23 @@ body {
 
 .mod-button[mode="orange"] {
   color: #e3e9e4;
-  --mod-button-c1: #ffbb5d;
-  --mod-button-c2: #ffa01d;
+  --mod-button-c1: light-dark(#ffbb5d, #c37a3f);
+  --mod-button-c2: light-dark(#ffa01d, #9f5a2a);
 }
 .mod-button[mode="orange-red"] {
   color: #e3e9e4;
-  --mod-button-c1: #ff8758;
-  --mod-button-c2: #ff5b1b;
+  --mod-button-c1: light-dark(#ff8758, #bd6048);
+  --mod-button-c2: light-dark(#ff5b1b, #9b422b);
 }
 .mod-button[mode="red"] {
   color: #e3e9e4;
-  --mod-button-c1: #ff595f;
-  --mod-button-c2: #ff121b;
+  --mod-button-c1: light-dark(#ff595f, #b94a50);
+  --mod-button-c2: light-dark(#ff121b, #95272e);
 }
 .mod-button[mode="blue"] {
   color: #e3e9e4;
-  --mod-button-c1: #6650fc;
-  --mod-button-c2: #4125ff;
+  --mod-button-c1: light-dark(#6650fc, #5d56ca);
+  --mod-button-c2: light-dark(#4125ff, #453aa9);
 }
 .mod-button[mode] {
   background: linear-gradient(180deg, var(--mod-button-c1) 0%, var(--mod-button-c2) 100%) border-box;

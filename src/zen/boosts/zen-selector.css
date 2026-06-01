@@ -131,7 +131,11 @@
 
   width: 250px !important;
   --related-elements-value: 100%;
-  background: linear-gradient(to top, rgb(247, 66, 0), rgb(245, 134, 86));
+  background: linear-gradient(
+    to top,
+    light-dark(#ff8758, #bd6048),
+    light-dark(#ff5b1b, #9b422b)
+  );
 
   border: none;
   color: #dadada;
@@ -140,8 +144,16 @@
   &:hover {
     box-shadow: 0 0 14px #00000066;
     background:
-      linear-gradient(to right, transparent var(--related-elements-value), gray var(--related-elements-value)),
-      linear-gradient(to top, rgb(247, 66, 0), rgb(245, 134, 86));
+      linear-gradient(
+        to right,
+        transparent var(--related-elements-value),
+        light-dark(gray, #4e4e4e) var(--related-elements-value)
+      ),
+      linear-gradient(
+        to top,
+        light-dark(#ff8758, #bd6048),
+        light-dark(#ff5b1b, #9b422b)
+      );
 
     @media not (-moz-platform: windows) {
       box-shadow: 0 0 20px #00000077;
@@ -152,7 +164,11 @@
 #select-this {
   appearance: none;
 
-  background: linear-gradient(0deg, rgba(246, 27, 25, 1) 0%, rgba(254, 67, 59, 1) 100%);
+  background: linear-gradient(
+    0deg,
+    light-dark(#ff595f, #b94a50),
+    light-dark(#ff121b, #95272e)
+  );
   border: none;
   color: #dadada;
 

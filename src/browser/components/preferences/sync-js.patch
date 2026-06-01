@@ -1,0 +1,20 @@
+diff --git a/browser/components/preferences/sync.js b/browser/components/preferences/sync.js
+index dc89a9c41a0dbd44054ede0025d333773f0ae908..7fd91bd704b3b187277e4c8b076f990cb56ea8dc 100644
+--- a/browser/components/preferences/sync.js
++++ b/browser/components/preferences/sync.js
+@@ -40,6 +40,7 @@ Preferences.addAll([
+   { id: "services.sync.engine.creditcards", type: "bool" },
+   { id: "services.sync.engine.addons", type: "bool" },
+   { id: "services.sync.engine.prefs", type: "bool" },
++  { id: "services.sync.engine.workspaces", type: "bool" },
+ ]);
+
+ /**
+@@ -512,6 +513,7 @@ const SYNC_ENGINE_SETTINGS = [
+   },
+   { id: "syncAddons", pref: "services.sync.engine.addons", type: "addons" },
+   { id: "syncSettings", pref: "services.sync.engine.prefs", type: "settings" },
++  { id: "syncWorkspaces", pref: "services.sync.engine.workspaces", type: "workspaces" },
+ ];
+
+ SYNC_ENGINE_SETTINGS.forEach(({ id, pref }) => {

@@ -1,0 +1,15 @@
+diff --git a/services/sync/modules/service.sys.mjs b/services/sync/modules/service.sys.mjs
+index c873293871ffaba305bc1bf41730d79c13546b85..0e0171cec13dfcbb296ec7bf03628370ce2fa93f 100644
+--- a/services/sync/modules/service.sys.mjs
++++ b/services/sync/modules/service.sys.mjs
+@@ -99,6 +99,10 @@ function getEngineModules() {
+     whenTrue: "ExtensionStorageEngineKinto",
+     whenFalse: "ExtensionStorageEngineBridge",
+   };
++  result.Workspaces = {
++    module: "resource:///modules/zen/ZenWorkspacesSync.sys.mjs",
++    symbol: "ZenWorkspacesEngine",
++  };
+   return result;
+ }
+

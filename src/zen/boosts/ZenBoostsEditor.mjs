@@ -44,6 +44,7 @@ export class nsZenBoostEditor {
     this.lastDotSetPos = { x: 0, y: 0 };
     this.currentBoostData = null;
     this.boostInfo = null;
+    this.isDarkMode = this.openerWindow.gZenThemePicker.isDarkMode;
 
     this.killOtherEditorInstances();
 
@@ -52,6 +53,7 @@ export class nsZenBoostEditor {
     });
 
     this.init();
+    this.initColorScheme();
     this.initColorPicker();
     this.initFonts();
     this.loadBoost(domain);
@@ -184,6 +186,14 @@ export class nsZenBoostEditor {
     }
   }
 
+  initColorScheme() {
+    if (this.isDarkMode) {
+      this.doc.documentElement.style.colorScheme = "dark";
+    } else {
+      this.doc.documentElement.style.colorScheme = "light";
+    }
+  }
+
   /**
    * Initializes the code editor for the css editor
    */
@@ -205,7 +215,7 @@ export class nsZenBoostEditor {
     const editor = new Editor({
       mode: Editor.modes.css,
       lineNumbers: true,
-      theme: "default", // default is light theme
+      theme: this.isDarkMode ? "mozilla" : "default",
       readOnly: false,
       gutters: ["CodeMirror-linenumbers"],
     });

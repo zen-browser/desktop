@@ -12,8 +12,8 @@ import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 
 // Score increments for the sync tracker. Higher values trigger sync sooner.
 // MULTI_DEVICE_THRESHOLD (300) is the point at which sync fires immediately.
-const SCORE_INCREMENT_STRUCTURAL = 301; // spaces, containers — important but rare
-const SCORE_INCREMENT_ITEM = 101;        // tabs, folders — frequent, batches well
+const SCORE_INCREMENT_STRUCTURAL = 301; // spaces, containers - important but rare
+const SCORE_INCREMENT_ITEM = 100;        // tabs, folders - frequent, batches well
 
 const lazy = {};
 
@@ -584,7 +584,7 @@ export class ZenWorkspacesEngine extends SyncEngine {
   }
 
   get version() {
-    return 12;
+    return 3;
   }
 
   get syncPriority() {

@@ -186,6 +186,9 @@ export class nsZenBoostEditor {
     }
   }
 
+  /**
+   * Initializes the color scheme of the editor window based on the current theme (dark or light mode)
+   */
   initColorScheme() {
     if (this.isDarkMode) {
       this.doc.documentElement.style.colorScheme = "dark";

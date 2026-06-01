@@ -1176,12 +1176,6 @@ ${cssSelector} {
       invertButton.classList.remove("zen-boost-button-active");
     }
 
-    if (this.currentBoostData.smartInvert) {
-      invertButton.classList.add("zen-boost-button-active");
-    } else {
-      invertButton.classList.remove("zen-boost-button-active");
-    }
-
     if (!this.currentBoostData.enableColorBoost) {
       disableButton.classList.add("zen-boost-button-active-transparent");
     } else {

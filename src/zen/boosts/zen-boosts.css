@@ -14,6 +14,9 @@
 
   --zen-boosts-button-background: light-dark(#ebebed, #262626);
 
+  --mod-button-c1: light-dark(#ebebed, #262626);
+  --mod-button-c2: light-dark(#ebebed, #262626);
+
   --zen-boosts-active-button-background: light-dark(#3a3a3a, #cccccc);
   --zen-boosts-active-button-hover-background: light-dark(#5b5b5c, #c9c9c9);
   --zen-boosts-active-button-color: light-dark(#fcfcfe, #1c1c1e);
@@ -597,14 +600,12 @@ body {
 
 @property --mod-button-c1 {
   syntax: "<color>";
-  inherits: false;
-  initial-value: light-dark(#ebebed, #262626);
+  inherits: true;
 }
 
 @property --mod-button-c2 {
   syntax: "<color>";
-  inherits: false;
-  initial-value: light-dark(#ebebed, #262626);
+  inherits: true;
 }
 
 .mod-button[mode="orange"] {

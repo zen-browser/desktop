@@ -8,8 +8,8 @@
   border-bottom: none;
   margin-bottom: 0;
 }
-.tab-background {
-  margin-inline: 0 !important;
+:root .tab-background {
+  margin-inline: 0;
 }
 #zen-tabbox-wrapper,
 #tabbrowser-tabbox {

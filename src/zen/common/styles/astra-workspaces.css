@@ -3,18 +3,18 @@
   min-height: 32px;
   padding-block: 2px;
 }
-#zen-workspaces-button toolbarbutton .zen-workspace-icon[no-icon='true'] {
-  width: 18px !important;
-  height: 18px !important;
+:root #zen-workspaces-button toolbarbutton .zen-workspace-icon[no-icon='true'] {
+  width: 18px;
+  height: 18px;
   background: light-dark(
     rgba(0, 0, 0, 0.35),
     rgba(255, 255, 255, 0.45)
-  ) !important;
-  border-radius: 50% !important;
-  opacity: 1 !important;
+  );
+  border-radius: 50%;
+  opacity: 1;
 }
-#zen-workspaces-button toolbarbutton[active='true']
+:root #zen-workspaces-button toolbarbutton[active='true']
   .zen-workspace-icon[no-icon='true'] {
-  background: var(--zen-primary-color) !important;
-  opacity: 1 !important;
+  background: var(--zen-primary-color);
+  opacity: 1;
 }

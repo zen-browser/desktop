@@ -105,7 +105,7 @@ class nsZenAirTrafficManager {
     const control = parentWindow.openDialog(
       "chrome://browser/content/zen-components/windows/zen-air-traffic.xhtml",
       "",
-      "centerscreen,modal,dependent,resizable=no,dialog=yes,chrome,titlebar=no",
+      "centerscreen,modal,dependent,resizable=no,chrome,titlebar=no",
       { parentWindow },
     );
 

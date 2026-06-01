@@ -5,10 +5,9 @@
  */
 
 :root {
-  background: transparent !important;
-  -moz-window-shadow: none;
+  /* background: transparent !important;
   appearance: none;
-
+  border: none; */
   color-scheme: dark;
 
   --at-background: #151c30;
@@ -30,11 +29,13 @@
   --input-background-color: #272d40;
 
   --rules-gap: 14px;
+
+  border-radius: var(--at-border-radius);
 }
 
 #zen-air-traffic-dialog-container {
-  background: transparent;
-  border: none;
+  /* background: transparent; */
+  /* border: none; */
   padding: 0;
   margin: 24px;
 
@@ -47,7 +48,7 @@
   min-width: var(--at-width);
 
   opacity: 0;
-  animation: zen-dialog-fade-in 0.3s ease forwards;
+  /* animation: zen-dialog-fade-in 0.3s ease forwards; */
 }
 
 #at-empty-content {
@@ -233,17 +234,15 @@ button {
   height: var(--at-height);
   width: var(--at-width);
 
-  background-color: var(--at-background);
-  outline: 1px solid var(--at-outline);
+  /* background-color: var(--at-background); */
+  /* outline: 1px solid var(--at-outline); */
+  /* filter: drop-shadow(0 4px 8px #24242740); */
   border-radius: var(--at-border-radius);
   overflow: hidden;
   font-family: system-ui !important;
   color: black;
 
   position: relative;
-
-  filter: drop-shadow(0 4px 8px #24242740);
-
   display: flex;
 }
 

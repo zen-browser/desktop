@@ -50,6 +50,7 @@
         <h3>Air Traffic Control</h3>
         <html:div id="at-left">
           <button id="at-new-route">New Route</button>
+          <button class="at-remove" id="at-close"></button>
         </html:div>
       </hbox>
       <html:hr class="hr"></html:hr>
@@ -60,9 +61,13 @@
       <hbox id="at-footer">
         <h4>Default route for external links</h4>
         <html:div id="at-left">
-          <html:select class="select">
-            <html:option>Lil Zen</html:option>
-          </html:select>
+          
+          <menulist class="select" id="at-default-external-open-in">
+            <menupopup id="at-default-external-open-in-popup">
+              <!-- Select open in types will be injected here -->
+            </menupopup>
+          </menulist>
+
         </html:div>
       </hbox>
     </vbox>

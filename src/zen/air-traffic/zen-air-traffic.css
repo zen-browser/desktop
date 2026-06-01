@@ -74,13 +74,16 @@ p {
   color: var(--text-color);
 }
 
+.select {
+  width: 150px;
+  height: 26px;
+}
+
 .select,
 .select * {
   background-color: var(--select-background-color);
   color: var(--text-color);
   margin: 0;
-
-  width: 150px;
 
   &#match-type-select {
     width: 100px;
@@ -88,6 +91,22 @@ p {
   &#open-in-select {
     width: 165px;
   }
+}
+
+menulist[image] .menulist-icon,
+menulist[image]::part(icon) {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  -moz-context-properties: fill, stroke;
+  fill: currentColor;
+  margin-inline-end: 0px;
+  padding-left: 2px;
+}
+
+menulist {
+  -moz-box-align: center;
 }
 
 .at-rule-row {
@@ -147,6 +166,8 @@ button {
     opacity: 0.8;
   }
   
+  transition: 0.2s opacity cubic-bezier(0.075, 0.82, 0.165, 1);
+
   appearance: none !important;
   background: none;
   border: none !important;
@@ -190,6 +211,20 @@ button {
 
 #at-left {
   margin-left: auto;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+
+  & button {
+    color: var(--text-color);
+    opacity: 1;
+
+    &:hover .at-remove {
+      opacity: 0.8;
+    }
+  }
 }
 
 #at-footer {

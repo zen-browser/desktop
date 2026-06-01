@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const { ZenAirTrafficManager } = ChromeUtils.importESModule(
-  "resource:///modules/zen/airtraffic/ZenAirTrafficManager.sys.mjs"
+  "resource:///modules/zen/airtraffic/ZenAirTrafficManager.sys.mjs",
 );
 
 export class nsZenAirTrafficDialog {
@@ -43,9 +43,20 @@ export class nsZenAirTrafficDialog {
     });
 
     this.doc
+      .getElementById("at-close")
+      .addEventListener("click", this.onClosePressed.bind(this));
+    this.doc
       .getElementById("at-new-route")
-      .addEventListener("click", this.onNewRouteClicked.bind(this));
-    
+      .addEventListener("click", this.onNewRoutePressed.bind(this));
+
+    const defaultRouteSelect = this.doc.getElementById("at-default-external-open-in");
+    this.createOpenInList(defaultRouteSelect);
+    defaultRouteSelect.value = ZenAirTrafficManager.getDefaultExternalRoute();
+
+    defaultRouteSelect.addEventListener("command", (e) =>
+      this.onRouteDefaultExternalChange(e.target.value),
+    );
+
     this.doc.addEventListener("keydown", (event) => {
       if (
         event.key === "Escape" ||
@@ -55,30 +66,48 @@ export class nsZenAirTrafficDialog {
       }
     });
 
+    this.initRouteList();
     this.initialized = true;
+  }
+
+  /**
+   * Initializes the routes list and loads all current routes from the disk
+   */
+  initRouteList() {
+    const allRoutes = ZenAirTrafficManager.getAllRoutes();
+    allRoutes.forEach((r) => this.createRouteElement(r));
   }
 
   /**
    * Will create a new route and update the route list
    */
-  onNewRouteClicked() {
-    this.createRouteElement("equal-to", "lil-zen", "florianbutz.de");
+  onNewRoutePressed() {
+    const newRoute = ZenAirTrafficManager.createNewRoute();
+    this.createRouteElement(newRoute);
+  }
+
+  /**
+   * Will remove a route and update the list
+   *
+   * @param {string} routeId - The unique ID of the affected route
+   * @param {string} containerElement - The container element of the route in the list
+   */
+  onRemoveRoutePressed(routeId, containerElement) {
+    ZenAirTrafficManager.removeRoute(routeId);
+    containerElement.remove();
   }
 
   /**
    * Will create the rule element content and inject it into the ui
-   * 
-   * @param {string} matchType - The match type (e.g. "contains", "equal-to") 
-   * @param {string} openIn - The open type (e.g. "most-recent-space", "lil-zen")
-   * @param {string} reference - The link that will be used for the operation
-   * @param {string} routeId - The unique identifier for the rule
-   * @returns 
+   *
+   * @param {object} route - The target route
+   * @returns
    */
-  createRouteElement(matchType, openIn, reference, routeId) {
+  createRouteElement(route) {
     const container = this.doc.getElementById("at-content");
 
     const root = this.doc.createElement("vbox");
-    root.setAttribute("routeId", routeId);
+    root.setAttribute("routeId", route.id);
     root.className = "at-rule-container";
 
     // ---- Top row
@@ -101,34 +130,33 @@ export class nsZenAirTrafficDialog {
 
     // Match type
 
-    const matchTypeSelect = this.doc.createElement("select");
-    matchTypeSelect.className = "select";
-    matchTypeSelect.id = "match-type-select";
+    const matchTypeMenulist = this.doc.createElement("select");
+    matchTypeMenulist.className = "select";
+    matchTypeMenulist.id = "match-type-select";
 
-    [["Contains", "contains"], ["Is equal to", "equal-to"]].forEach(text => {
-        const option = this.doc.createElement("option");
-        option.textContent = text[0];
-        option.value = text[1];
-        matchTypeSelect.appendChild(option);
+    [
+      ["Contains", "contains"],
+      ["Is equal to", "equal-to"],
+    ].forEach((text) => {
+      const option = this.doc.createElement("option");
+      option.textContent = text[0];
+      option.value = text[1];
+      matchTypeMenulist.appendChild(option);
     });
 
-    matchTypeSelect.value = matchType;
+    matchTypeMenulist.value = route.matchType;
 
     // Input domain
 
     const input = this.doc.createElement("input");
     input.className = "input";
     input.placeholder = "zen-browser.app";
+    input.value = route.reference;
 
     const removeButton = this.doc.createXULElement("button");
     removeButton.className = "at-remove";
 
-    topRow.append(
-        topLabelContainer,
-        matchTypeSelect,
-        input,
-        removeButton
-    );
+    topRow.append(topLabelContainer, matchTypeMenulist, input, removeButton);
 
     // ---- Bottom row
 
@@ -150,32 +178,133 @@ export class nsZenAirTrafficDialog {
 
     // Open in
 
-    const openInSelect = this.doc.createElement("select");
+    const openInSelect = this.doc.createXULElement("menulist");
     openInSelect.className = "select";
     openInSelect.id = "open-in-select";
 
-    [["Most Recent Space", "most-recent-space"], ["Lil Zen", "lil-zen"]].forEach(text => {
-        const option = this.doc.createElement("option");
-        option.textContent = text[0];
-        option.value = text[1];
-        openInSelect.appendChild(option);
-    });
+    const openInMenuPopup = this.doc.createXULElement("menupopup");
+    openInSelect.appendChild(openInMenuPopup);
+  
+    this.createOpenInList(openInSelect);
+    openInSelect.value = route.openIn;
 
-    openInSelect.value = openIn;
-
-    bottomRow.append(
-        bottomLabelContainer,
-        openInSelect
-    );
+    bottomRow.append(bottomLabelContainer, openInSelect);
 
     root.append(topRow, bottomRow);
     container.appendChild(root);
 
     removeButton.addEventListener("click", () => {
-      root.remove();
+      this.onRemoveRoutePressed(route.id, root);
     });
 
+    input.addEventListener("change", (e) =>
+      this.onRotueReferenceChange(e.target.value, route.id),
+    );
+    matchTypeMenulist.addEventListener("change", (e) =>
+      this.onRouteMatchTypeChange(e.target.value, route.id),
+    );
+    openInSelect.addEventListener("command", (e) =>
+      this.onRouteOpenInChange(e.target.value, route.id),
+    );
+
+    input.focus();
+
     return root;
+  }
+
+  /**
+   * Callback for when the reference text changes
+   *
+   * @param {string} value - The new value
+   * @param {string} routeId - The ID of the affected route
+   */
+  onRotueReferenceChange(value, routeId) {
+    const route = ZenAirTrafficManager.getRoute(routeId);
+    route.reference = value;
+    ZenAirTrafficManager.updateRoute(route);
+  }
+
+  /**
+   * Callback for when the open in attribute changes
+   *
+   * @param {string} value - The new value
+   * @param {string} routeId - The ID of the affected route
+   */
+  onRouteOpenInChange(value, routeId) {
+    const route = ZenAirTrafficManager.getRoute(routeId);
+    route.openIn = value;
+    ZenAirTrafficManager.updateRoute(route);
+  }
+
+  /**
+   * Callback for when the route match type changes
+   *
+   * @param {string} value - The new value
+   * @param {string} routeId - The ID of the affected route
+   */
+  onRouteMatchTypeChange(value, routeId) {
+    const route = ZenAirTrafficManager.getRoute(routeId);
+    route.matchType = value;
+    ZenAirTrafficManager.updateRoute(route);
+  }
+
+  /**
+   * Callback for when the default external route changes
+   *
+   * @param {string} value - The new value
+   */
+  onRouteDefaultExternalChange(value) {
+    ZenAirTrafficManager.setDefaultExternalRoute(value);
+  }
+
+  /**
+   * Creates the options list selects
+   *
+   * @param {Element} selectElement - The menulist element
+   */
+  createOpenInList(selectElement) {
+    const popupElement =
+      selectElement.querySelector("menupopup") || selectElement;
+    popupElement.replaceChildren(); // Clear existing
+
+    const sectionHeader = this.doc.createXULElement("menuitem");
+    sectionHeader.setAttribute("label", "Open in Space");
+    sectionHeader.setAttribute("disabled", "true");
+    sectionHeader.classList.add("menu-section-header");
+    popupElement.appendChild(sectionHeader);
+
+    let createXulItem = (text, id, iconPath = null) => {
+      if (text === "sep") {
+        popupElement.appendChild(this.doc.createXULElement("menuseparator"));
+        return;
+      }
+
+      const menuItem = this.doc.createXULElement("menuitem");
+      menuItem.setAttribute("label", text);
+      menuItem.setAttribute("value", id || text);
+
+      if (iconPath) {
+        if (iconPath.startsWith("chrome://")) {
+          menuItem.setAttribute("class", "menuitem-iconic");
+          menuItem.setAttribute("image", iconPath);
+        } else {
+          menuItem.setAttribute("label", `${iconPath} ${text}`);
+        }
+      }
+
+      popupElement.appendChild(menuItem);
+    };
+
+    const workspaces = this.openerWindow.gZenWorkspaces.getWorkspaces();
+
+    createXulItem("Most Recent Space", "most-recent-space");
+
+    workspaces.forEach((workspace) => {
+      createXulItem(workspace.name, workspace.uuid, workspace.icon);
+    });
+
+    createXulItem("sep");
+    createXulItem("Lil Zen", "lil-zen");
   }
 
   /**
@@ -219,5 +348,7 @@ export class nsZenAirTrafficDialog {
   /**
    * Handles the window close event
    */
-  handleClose() {}
+  handleClose() {
+    ZenAirTrafficManager.saveRoutes();
+  }
 }

@@ -597,11 +597,13 @@ body {
 @property --mod-button-c1 {
   syntax: "<color>";
   inherits: true;
+  initial-value: transparent;
 }
 
 @property --mod-button-c2 {
   syntax: "<color>";
   inherits: true;
+  initial-value: transparent;
 }
 
 .mod-button[mode="orange"] {

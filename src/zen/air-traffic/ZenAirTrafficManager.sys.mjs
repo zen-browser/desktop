@@ -13,6 +13,76 @@ class nsZenAirTrafficManager {
   }
 
   /**
+   * This will give the id of the workspace this uri will
+   * route to, or "most-recent-space" or "lil-zen"
+   *
+   * @param {string} uriString - The uri which will be routed
+   * @param {object} options - The tab creation options
+   * @returns {string} Route instructions
+   */
+  routeUri(uriString, options) {
+    const isExternal = options.fromExternal;
+
+    // Go over all routes and return the open type for the first match
+    const allRoutes = this.getAllRoutes();
+    for (const route of allRoutes) {
+      if (this.isRouteMatching(uriString, route)) {
+        return route.openIn;
+      }
+    }
+
+    // If nothing matches and it's an external link,
+    // use the default external route
+    if (isExternal)
+       return this.getDefaultExternalRoute();
+
+    // If nothing matches, open in most recent space
+    return "most-recent-space";
+  }
+
+  /**
+   * Checks if a given rule matches a uriString
+   *
+   * @param {string} uriString - The uri
+   * @param {object} route - The route
+   * @returns {boolean} True if the rule matches
+   */
+  isRouteMatching(uriString, route) {
+    const reference = route.reference.toLowerCase();
+    const uri = uriString.toLowerCase();
+    switch (route.matchType) {
+      case "contains":
+        if (uri.includes(reference)) return true;
+        break;
+      case "equal-to":
+        if (this.#normalizeURL(uri) == reference) return true;
+        break;
+    }
+  }
+
+  /**
+   * Will remove any protocol sequences to normalize the url
+   *
+   * @param {string} uriString - The url
+   * @returns {string} The normalized url
+   */
+  #normalizeURL(uriString) {
+    if (!uriString) return "";
+    let clean = uriString.trim();
+
+    // Remove protocol sequences with regex
+    clean = clean.replace(/^https?:\/\//i, "");
+    clean = clean.replace(/^www\./i, "");
+
+    // If there is a trailing slash, remove
+    if (clean.endsWith("/")) {
+      clean = clean.slice(0, -1);
+    }
+
+    return clean;
+  }
+
+  /**
    * Opens the air traffic control editor in a new popup window.
    *
    * @param {Window} parentWindow - The parent browser window
@@ -38,7 +108,7 @@ class nsZenAirTrafficManager {
       id: crypto.randomUUID(),
       reference: "",
       openIn: "most-recent-space",
-      matchType: "contains"
+      matchType: "contains",
     };
   }
 
@@ -51,28 +121,28 @@ class nsZenAirTrafficManager {
 
   /**
    * Returns a specific route
-   * 
+   *
    * @param {string} id - The ID of the given route
    * @returns {object} The route
    */
   getRoute(id) {
-    const idx = this.#file.data.routes.findIndex(r => r.id === id);
+    const idx = this.#file.data.routes.findIndex((r) => r.id === id);
     return structuredClone(this.#file.data.routes[idx]);
   }
 
   /**
    * Will update an existing route
-   * 
-   * @param {object} route - The updated route 
+   *
+   * @param {object} route - The updated route
    */
   updateRoute(route) {
-    const idx = this.#file.data.routes.findIndex(r => r.id === route.id);
+    const idx = this.#file.data.routes.findIndex((r) => r.id === route.id);
     this.#file.data.routes[idx] = structuredClone(route);
   }
 
   /**
    * Creates a new route and returns it
-   * 
+   *
    * @returns {object} Returns the empty route
    */
   createNewRoute() {
@@ -85,7 +155,7 @@ class nsZenAirTrafficManager {
 
   /**
    * Removes an existing route with the given id
-   * 
+   *
    * @param {string} id - The given id
    */
   removeRoute(id) {
@@ -116,7 +186,7 @@ class nsZenAirTrafficManager {
 
   /**
    * Writes the air traffic data back onto the disk.
-   * 
+   *
    * @private
    */
   #writeToDisk() {

@@ -120,6 +120,9 @@ jobs:
           SURFER_COMPAT: ${{ matrix.arch }}
         run: npm run import -- --verbose
 
+      - name: Validate jar manifest paths
+        run: python scripts/validate_jar_manifest.py
+
       - name: Bootstrap
         run: |
           cd engine

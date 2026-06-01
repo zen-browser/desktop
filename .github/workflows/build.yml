@@ -258,6 +258,9 @@ jobs:
       - name: Import
         run: npm run import -- --verbose
 
+      - name: Validate jar manifest paths
+        run: python scripts/validate_jar_manifest.py
+
       - name: Build language packs
         run: sh scripts/download-language-packs.sh
 

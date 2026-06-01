@@ -36,13 +36,11 @@ def ensure_assets() -> None:
                 fail(f"Missing required installer asset: {target}")
 
 
-def ensure_sidebar_patch() -> None:
-    rel = "src/browser/installer/windows/nsis/sidebar-branding.patch"
+def ensure_installer_branding_patch() -> None:
+    rel = "src/browser/installer/windows/nsis/defines-nsi-in.patch"
     content = read_text(rel)
-    if "diff --git a/browser/installer/windows/nsis/installer.nsi b/browser/installer/windows/nsis/installer.nsi" not in content:
-        fail(f"Unexpected patch target in {rel}")
-    if '+  "Astra Browser"' not in content:
-        fail(f'Astra branding line missing in {rel}')
+    if "Astra Browser - Made for India" not in content:
+        fail(f"Astra installer metadata missing in {rel}")
 
 
 def ensure_custom_properties_patch() -> None:
@@ -55,7 +53,6 @@ def ensure_custom_properties_patch() -> None:
 def ensure_no_legacy_keywords() -> None:
     # Check active (+) lines from installer patch files so we don't fail on removed (-) lines.
     files_to_check = (
-        "src/browser/installer/windows/nsis/sidebar-branding.patch",
         "src/browser/locales/en-US/installer/custom-properties.patch",
     )
     banned = (
@@ -80,7 +77,7 @@ def ensure_no_legacy_keywords() -> None:
 
 def main() -> None:
     ensure_assets()
-    ensure_sidebar_patch()
+    ensure_installer_branding_patch()
     ensure_custom_properties_patch()
     ensure_no_legacy_keywords()
     print("[installer-branding-check] OK")

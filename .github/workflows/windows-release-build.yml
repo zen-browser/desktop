@@ -92,8 +92,11 @@ jobs:
       - name: Load Surfer CI setup
         run: npm run surfer -- ci --brand ${{ inputs['release-branch'] }} --display-version ${{ inputs['build-version'] }}
 
+      - name: Validate jar manifest paths
+        if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
+        run: python scripts/validate_jar_manifest.py
+
       - name: Validate installer branding assets
-        continue-on-error: true
         run: python scripts/check_installer_branding.py
 
       - name: Download Firefox and dependencies

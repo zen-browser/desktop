@@ -109,6 +109,9 @@ jobs:
           . "$HOME/.cargo/env"
           npm run import
 
+      - name: Validate jar manifest paths
+        run: python scripts/validate_jar_manifest.py
+
       - name: Build language packs
         continue-on-error: true
         run: sh scripts/download-language-packs.sh

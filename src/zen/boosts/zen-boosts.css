@@ -25,17 +25,13 @@
   --zen-boosts-magic-theme-background: light-dark(white, #3a3a3a);
   --zen-boosts-magic-theme-active-background: light-dark(#3a3a3a, white);
 
-  --zen-boosts-font-wrapper-background: light-dark(white, #1c1c1e);
+  --zen-boosts-font-wrapper-background: light-dark(white, #262626);
 
   --zen-boosts-primary-border-color: light-dark(#ededef, #3a3a3a);
 
   --zen-boosts-color-picker-background: light-dark(#fbfbfdea, #1c1c1eea);
   --zen-boosts-color-picker-pattern-color: light-dark(#e3e9e4, #3a3a3a);
 
-  /* For the mica effect we want a white tint */
-  /* @media not (-moz-platform: linux) { */
-  /*   color-scheme: light; */
-  /* } */
   appearance: none;
   border: none;
 

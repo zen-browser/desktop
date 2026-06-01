@@ -82,6 +82,11 @@ const globalActionsTemplate = [
     },
   },
   {
+    label: "Air Traffic Control",
+    command: "cmd_zenOpenAirTrafficControlSettings",
+    icon: "chrome://browser/skin/zen-icons/selectable/airplane.svg",
+  },
+  {
     label: "New Boost",
     icon: "chrome://browser/skin/zen-icons/boost.svg",
     isAvailable: window => {

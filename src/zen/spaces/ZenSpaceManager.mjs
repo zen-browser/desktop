@@ -206,7 +206,7 @@ class nsZenWorkspaces {
     }
   }
 
-  #getOrderedWorkspacesByPosition(workspaces = []) {
+  #getOrderedWorkspacesByPosition(workspaces) {
     return [...workspaces]
       .map((workspace, index) => ({ workspace, index }))
       .sort((a, b) => {
@@ -865,6 +865,13 @@ class nsZenWorkspaces {
     })();
   }
 
+  #markWorkspaceChanged(workspaceId) {
+    lazy.ZenSyncStore.markItemChanged({
+      type: "space",
+      id: workspaceId,
+    });
+  }
+
   async selectStartPage() {
     if (!this.workspaceEnabled || gZenUIManager.testingEnabled) {
       return;
@@ -1287,10 +1294,7 @@ class nsZenWorkspaces {
       workspacesData.push(workspaceData);
     }
     // mark item as changed for sync
-    lazy.ZenSyncStore.markItemChanged({
-      type: "space",
-      id: workspaceData.uuid,
-    });
+    this.#markWorkspaceChanged(workspaceData.uuid);
 
     this.#propagateWorkspaceData();
   }
@@ -1300,7 +1304,7 @@ class nsZenWorkspaces {
     this.#deleteWorkspaceOwnedTabs(windowID);
 
     // mark item as changed for sync
-    lazy.ZenSyncStore.markItemChanged({ type: "space", id: windowID });
+    this.#markWorkspaceChanged(windowID);
 
     let workspacesData = this.getWorkspaces();
     // Remove the workspace from the cache
@@ -1473,7 +1477,7 @@ class nsZenWorkspaces {
           continue;
         }
         // mark item as changed for sync
-        lazy.ZenSyncStore.markItemChanged({ type: "space", id: ws.uuid });
+        this.#markWorkspaceChanged(ws.uuid);
       }
 
       this.#propagateWorkspaceData(workspaces);

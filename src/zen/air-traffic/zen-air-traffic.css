@@ -4,14 +4,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-:root,
-window,
-dialog {
+:root {
   background: transparent !important;
   -moz-window-shadow: none;
   appearance: none;
 
-  color-scheme: dark !important;
+  color-scheme: dark;
 
   --at-background: #151c30;
   --at-outline: #44495a;
@@ -201,7 +199,8 @@ button {
   }
 }
 
-.at-remove {
+.at-remove,
+.close-icon {
   & hbox {
     display: initial;
     padding: 0;
@@ -213,7 +212,7 @@ button {
   &:hover {
     opacity: 0.8;
   }
-  
+
   transition: 0.2s opacity cubic-bezier(0.075, 0.82, 0.165, 1);
 
   appearance: none !important;
@@ -304,7 +303,7 @@ button {
 }
 
 .at-label {
-  margin: 0; 
+  margin: 0;
 }
 
 .at-url-icon,

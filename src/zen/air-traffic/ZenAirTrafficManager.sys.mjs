@@ -33,8 +33,7 @@ class nsZenAirTrafficManager {
 
     // If nothing matches and it's an external link,
     // use the default external route
-    if (isExternal)
-       return this.getDefaultExternalRoute();
+    if (isExternal) return this.getDefaultExternalRoute();
 
     // If nothing matches, open in most recent space
     return "most-recent-space";
@@ -49,8 +48,7 @@ class nsZenAirTrafficManager {
    */
   isRouteMatching(uriString, route) {
     let reference = route.reference.toLowerCase();
-    if (reference.trim() == "")
-      reference = "zen-browser.app"; // Placeholder Reference
+    if (reference.trim() == "") reference = "zen-browser.app"; // Placeholder Reference
 
     const uri = uriString.toLowerCase();
     switch (route.matchType) {
@@ -68,7 +66,7 @@ class nsZenAirTrafficManager {
           // Use unmodified parameters for the regex test
           const regex = new RegExp(unmodifiedReference);
           if (regex.test(uriString)) return true;
-        } catch(e) {
+        } catch (e) {
           console.error("[ZenAirTraffic] Failed to resolve regular expression");
         }
         break;
@@ -164,7 +162,6 @@ class nsZenAirTrafficManager {
     const newRoute = this.getEmptyRoute();
     this.#file.data.routes.push(newRoute);
 
-    this.#writeToDisk();
     return structuredClone(newRoute);
   }
 

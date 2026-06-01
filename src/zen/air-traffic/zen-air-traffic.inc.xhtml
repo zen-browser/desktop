@@ -23,14 +23,14 @@
   customtitlebar="true"
   drawintitlebar="true"
   windowtype="Zen:ControlFlow"
-  style="-moz-window-shadow: none;">
-<vbox id="zenAirTrafficDialog">
+  style="-moz-window-shadow: none"
+>
+  <vbox id="zenAirTrafficDialog">
+    <linkset>
+      <link rel="localization" href="browser/zen-air-traffic.ftl" />
+    </linkset>
 
-<linkset>
-    <link rel="localization" href="browser/zen-air-traffic.ftl" />
-</linkset>
-
- <!-- Loading in the window module -->
+    <!-- Loading in the window module -->
     <script>
       const { nsZenAirTrafficDialog } = ChromeUtils.importESModule(
         "resource:///modules/zen/airtraffic/ZenAirTrafficDialog.mjs",
@@ -50,7 +50,7 @@
         <h3>Control Flow Settings</h3>
         <html:div id="at-left">
           <button id="at-new-route">New Route</button>
-          <button class="at-remove" id="at-close"></button>
+          <button class="close-icon" id="at-close"></button>
         </html:div>
       </hbox>
       <html:hr class="hr"></html:hr>
@@ -58,8 +58,9 @@
         <vbox id="at-empty-content">
           <image class="at-airplane"></image>
           <h2>
-            Routes let you choose where specific sites open inside Zen. 
-            For example, you can route YouTube links to always open inside your Personal space.
+            Routes let you choose where specific sites open inside Zen. For
+            example, you can route YouTube links to always open inside your
+            Personal space.
           </h2>
         </vbox>
         <!-- All rules will be injected here later -->
@@ -68,15 +69,13 @@
       <hbox id="at-footer">
         <h4>Default route for external links</h4>
         <html:div id="at-left">
-          
           <menulist class="select" id="at-default-external-open-in">
             <menupopup id="at-default-external-open-in-popup">
               <!-- Select open in types will be injected here -->
             </menupopup>
           </menulist>
-
         </html:div>
       </hbox>
     </vbox>
-</vbox>
+  </vbox>
 </window>

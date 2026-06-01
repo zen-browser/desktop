@@ -40,7 +40,6 @@
 .close-icon,
 .zen-glance-sidebar-close,
 .zen-theme-picker-custom-list-item-remove,
-.at-remove,
 #appMenu-quit-button2,
 #zen-boost-delete {
   list-style-image: url("close.svg") !important;
@@ -52,7 +51,8 @@
 }
 
 #PanelUI-zen-gradient-generator-color-remove,
-#zen-gradient-generator-color-remove {
+#zen-gradient-generator-color-remove,
+.at-remove {
   list-style-image: url("unpin.svg") !important;
 }
 

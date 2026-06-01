@@ -49,7 +49,9 @@ export class nsZenAirTrafficDialog {
       .getElementById("at-new-route")
       .addEventListener("click", this.onNewRoutePressed.bind(this));
 
-    const defaultRouteSelect = this.doc.getElementById("at-default-external-open-in");
+    const defaultRouteSelect = this.doc.getElementById(
+      "at-default-external-open-in",
+    );
     this.createOpenInList(defaultRouteSelect);
     defaultRouteSelect.value = ZenAirTrafficManager.getDefaultExternalRoute();
 
@@ -187,7 +189,7 @@ export class nsZenAirTrafficDialog {
 
     const openInMenuPopup = this.doc.createXULElement("menupopup");
     openInSelect.appendChild(openInMenuPopup);
-  
+
     this.createOpenInList(openInSelect);
     openInSelect.value = route.openIn;
 
@@ -223,10 +225,11 @@ export class nsZenAirTrafficDialog {
    */
   updateShowNoRouteText() {
     const container = this.doc.getElementById("at-content");
-    const noRoutesText = this.doc.getElementById('at-empty-content');
+    const noRoutesText = this.doc.getElementById("at-empty-content");
 
     // One because of the element itself
-    noRoutesText.style.display = container.children.length == 1 ? "flex" : "none";
+    noRoutesText.style.display =
+      container.children.length == 1 ? "flex" : "none";
   }
 
   /**
@@ -243,8 +246,7 @@ export class nsZenAirTrafficDialog {
 
     // Don't update the route if the regex is invalid
     if (route.matchType == "regex") {
-      if (!this.onCheckRegexValid(input))
-        return;
+      if (!this.onCheckRegexValid(input)) return;
     }
 
     ZenAirTrafficManager.updateRoute(route);
@@ -277,8 +279,7 @@ export class nsZenAirTrafficDialog {
 
     // Don't update the route if the regex is invalid
     if (route.matchType == "regex") {
-      if (!this.onCheckRegexValid(input))
-        return;
+      if (!this.onCheckRegexValid(input)) return;
     }
 
     ZenAirTrafficManager.updateRoute(route);
@@ -287,7 +288,7 @@ export class nsZenAirTrafficDialog {
   /**
    * Updates the input placeholder based on the
    * current route match type
-   * 
+   *
    * @param {string} matchType - The match type (e.g. "contains", "equal-to", "regex")
    * @param {Element} input - The input element
    */
@@ -305,7 +306,7 @@ export class nsZenAirTrafficDialog {
   /**
    * Will validate and return the validity of the
    * regex. Applies a tint to the input if an error occurs.
-   * 
+   *
    * @param {Element} input - The input element for the regex
    * @returns {bool} True if regex is valid
    */
@@ -320,7 +321,7 @@ export class nsZenAirTrafficDialog {
 
     try {
       new RegExp(reference);
-    } catch(e) {
+    } catch (e) {
       input.classList.add("invalid");
       return false;
     }

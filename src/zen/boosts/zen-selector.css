@@ -19,6 +19,7 @@
   --zen-boosts-selector-background: light-dark(#f5f7fb, #27272a);
   --zen-boosts-selector-preview-background: light-dark(#e0e2e63d, #27272a3d);
   --zen-boosts-selector-preview-color: light-dark(rgb(76, 78, 80), rgb(207, 200, 200));
+  --zen-boosts-selector-button-color: light-dark(#dadada, #f1f1f1);
   --zen-boosts-selector-outline-color: light-dark(#e0e2e6ae, #474749);
 
   width: min-content;
@@ -138,7 +139,7 @@
   );
 
   border: none;
-  color: #dadada;
+  color: var(--zen-boosts-selector-button-color);
   box-shadow: 0 0 15px #00000052;
 
   &:hover {
@@ -147,7 +148,7 @@
       linear-gradient(
         to right,
         transparent var(--related-elements-value),
-        light-dark(gray, #4e4e4e) var(--related-elements-value)
+        light-dark(gray, #363636) var(--related-elements-value)
       ),
       linear-gradient(
         to top,
@@ -170,21 +171,21 @@
     light-dark(#ff121b, #95272e)
   );
   border: none;
-  color: #dadada;
+  color: var(--zen-boosts-selector-button-color);
 
   box-shadow: 0 0 15px #00000052;
 }
 
 #select-cancel {
   appearance: none;
-
-  background: rgb(90, 94, 100);
-  @media (-moz-platform: macos) {
-    background: linear-gradient(0deg, rgba(81, 83, 85, 1) 0%, rgba(108, 110, 112, 1) 100%);
-  }
+  background: linear-gradient(
+    0deg, 
+    light-dark(#525355, #373739) 0%, 
+    light-dark(#6c6e70, #4b4c4e) 100%
+  );
 
   border: none;
-  color: #dadada;
+  color: var(--zen-boosts-selector-button-color);
 
   box-shadow: 0 0 15px #00000052;
 }

@@ -51,6 +51,43 @@ dialog {
   animation: zen-dialog-fade-in 0.3s ease forwards;
 }
 
+#at-empty-content {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  gap: 24px;
+
+  position: absolute;
+  left: 84px;
+  right: 84px;
+
+  bottom: 100px;
+  top: 100px;
+  justify-content: center;
+
+  & image {
+    aspect-ratio: 1;
+    height: 75px;
+
+    min-height: none;
+    max-height: none;
+    max-width: none;
+    min-width: none;
+
+    color: var(--text-color-secondary);
+    -moz-context-properties: fill, fill-opacity;
+    fill: currentColor;
+    fill-opacity: 0.65;
+  }
+
+  & h2 {
+    font-weight: bold;
+    font-size: small;
+
+    color: var(--text-color);
+  }
+}
+
 .hr {
   color: var(--hr-color);
   padding: 0px;

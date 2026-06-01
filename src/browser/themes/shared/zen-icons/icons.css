@@ -1093,3 +1093,7 @@
 #zen-boost-load {
   list-style-image: url("open.svg");
 }
+
+.at-airplane {
+  list-style-image: url("selectable/airplane.svg");
+}

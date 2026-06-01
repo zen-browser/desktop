@@ -95,6 +95,8 @@ export class nsZenAirTrafficDialog {
   onRemoveRoutePressed(routeId, containerElement) {
     ZenAirTrafficManager.removeRoute(routeId);
     containerElement.remove();
+
+    this.updateShowNoRouteText();
   }
 
   /**
@@ -209,7 +211,21 @@ export class nsZenAirTrafficDialog {
 
     input.focus();
 
+    this.updateShowNoRouteText();
+
     return root;
+  }
+
+  /**
+   * Checks if the text for when no routes are
+   * created should be displayed
+   */
+  updateShowNoRouteText() {
+    const container = this.doc.getElementById("at-content");
+    const noRoutesText = this.doc.getElementById('at-empty-content');
+
+    // One because of the element itself
+    noRoutesText.style.display = container.children.length == 1 ? "flex" : "none";
   }
 
   /**

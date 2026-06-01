@@ -20,6 +20,8 @@ class nsZenAirTrafficControlIntegration {
       console.log("[ZenAirTraffic] Initializing...");
       this.init(subject);
     }
+
+    Services.obs.removeObserver(this, "browser-delayed-startup-finished");
   }
 
   init(win) {
@@ -47,8 +49,6 @@ class nsZenAirTrafficControlIntegration {
   }
 
   _routeToWorkspace(uriString, newTab, options, win) {
-    console.log(uriString);
-
     // Initial timeout to wait for tab creation
     win.setTimeout(() => {
       try {
@@ -56,7 +56,6 @@ class nsZenAirTrafficControlIntegration {
         if (!newTab || !newTab.parentNode) return;
 
         const targetRoute = lazy.ZenAirTrafficManager.routeUri(uriString, options);
-        console.log(targetRoute);
         switch(targetRoute) {
           // Do nothing
           case "most-recent-space":
@@ -69,15 +68,23 @@ class nsZenAirTrafficControlIntegration {
 
           default: 
             const targetWorkspace = gZenWorkspaces.getWorkspaceFromId(targetRoute);
-          console.log(targetRoute, targetWorkspace);
             
             if (targetWorkspace) {             
               // Move tab and change workspace
               win.gZenWorkspaces.moveTabToWorkspace(newTab, targetWorkspace.uuid);
-              win.gZenWorkspaces.changeWorkspaceWithID(targetWorkspace.uuid);
 
-              // Select tab
-              window.gBrowser.selectedTab = newTab;
+              // Necessary due to Window Sync
+              const mostRecentWindow = Services.wm.getMostRecentWindow("navigator:browser");
+              const isOriginatingWindow = (win === mostRecentWindow);
+
+              // Only switch the workspace if the window is the current one
+              if (isOriginatingWindow) {
+                win.gZenWorkspaces.changeWorkspaceWithID(targetWorkspace.uuid);
+                
+                // Select the tab but wait a tick 
+                // so the workspace can properly switch first
+                win.setTimeout(() => win.gBrowser.selectedTab = newTab);
+              }
             }
             return newTab;
         }

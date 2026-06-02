@@ -13,6 +13,92 @@ class nsZenAirTrafficManager {
   }
 
   /**
+   * Callback that will be executed from tabbrowser.js
+   * This method can be used to stop the tab from being created.
+   * 
+   * @param {string} uriString - The URI as a string
+   * @param {object} options - The tab creation options
+   * @param {Window} win - The window which the tab will be added to
+   * @returns {boolean} True when the tab should be created, false means early exit
+   */
+  onBeforeAddTab(uriString, options, win) {
+    return true;
+  }
+
+  /**
+   * Callback that will be executed from tabbrowser.js
+   * 
+   * @param {string} uriString - The URI as a string
+   * @param {object} options - The tab creation options
+   * @param {Window} win - The window which the tab was added to
+   */
+  onAfterAddTab(uriString, newTab, options, win) {
+    
+    // addTab() is being called when the session restores.
+    // To avoid automatically routing these tabs, 
+    // a check if the restore is already complete is needed
+    if (!win.gZenStartup.isReady) {
+      console.log("[ZenControlFlow] Skipping restored tab...", uriString);
+      return;
+    }
+
+    this.#routeToWorkspace(uriString, newTab, options, win);
+  }
+
+  /**
+   * Will route the given tab to a space if a rule applies
+   * 
+   * @param {string} uriString - The URI as a string
+   * @param {Element} newTab - The tab element 
+   * @param {object} options - Tab creation args
+   * @param {Window} win - The window which the tab was added to
+   * @private
+   */
+  #routeToWorkspace(uriString, newTab, options, win) {
+    try {
+      // Check if tab still exists
+      if (!newTab || !newTab.parentNode) {
+        return;
+      }
+
+      const targetRoute = this.routeUri(
+        uriString,
+        options,
+      );
+      switch (targetRoute) {
+        // Do nothing
+        case "most-recent-space":
+          return newTab;
+
+        default:
+          const targetWorkspace =
+            win.gZenWorkspaces.getWorkspaceFromId(targetRoute);
+
+          if (targetWorkspace) {
+            // Move tab and change workspace
+            win.gZenWorkspaces.moveTabToWorkspace(newTab, targetWorkspace.uuid);
+
+            // Necessary due to Window Sync
+            const mostRecentWindow =
+              Services.wm.getMostRecentWindow("navigator:browser");
+            const isOriginatingWindow = win === mostRecentWindow;
+
+            // Only switch the workspace if the window is the current one
+            if (isOriginatingWindow) {
+              win.gZenWorkspaces.changeWorkspaceWithID(targetWorkspace.uuid);
+
+              // Select the tab but wait a tick
+              // so the workspace can properly switch first
+              win.setTimeout(() => (win.gBrowser.selectedTab = newTab));
+            }
+          }
+      }
+    } catch (err) {
+      console.error("[ZenControlFlow]: Error moving tab to workspace:", err);
+    }
+  }
+
+  /**
    * This will give the id of the workspace this uri will
    * route to, or "most-recent-space" or "lil-zen"
    *

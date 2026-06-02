@@ -1607,6 +1607,12 @@ class nsZenWindowSync {
    * Fired by tabbrowser for top-level location changes in any tab.
    * We use this to mark the tab as changed so Firefox Sync can persist
    * URL/history updates even when no tab label/icon event fires.
+   *
+   * @param aBrowser
+   * @param aWebProgress
+   * @param _aRequest
+   * @param _aLocation
+   * @param _aFlags
    */
   onLocationChange(aBrowser, aWebProgress, _aRequest, _aLocation, _aFlags) {
     if (!lazy.gWindowSyncEnabled || !aWebProgress?.isTopLevel) {

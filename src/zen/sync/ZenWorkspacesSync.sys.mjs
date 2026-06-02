@@ -13,7 +13,7 @@ import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 // Score increments for the sync tracker. Higher values trigger sync sooner.
 // MULTI_DEVICE_THRESHOLD (300) is the point at which sync fires immediately.
 const SCORE_INCREMENT_STRUCTURAL = 301; // spaces, containers - important but rare
-const SCORE_INCREMENT_ITEM = 100;        // tabs, folders - frequent, batches well
+const SCORE_INCREMENT_ITEM = 100; // tabs, folders - frequent, batches well
 
 const lazy = {};
 
@@ -401,7 +401,8 @@ class ZenWorkspacesStore extends Store {
         this._collectRemoval(record.id, removals);
         await lazy.ZenSyncStore.applyIncomingBatch(
           { spaces: [], tabs: [], folders: [], containers: [], splits: [] },
-          removals);
+          removals
+        );
         return;
       }
       const data = record.cleartext;
@@ -458,9 +459,13 @@ class ZenWorkspacesStore extends Store {
           pulled.splits.push(clean);
           break;
       }
-      await lazy.ZenSyncStore.applyIncomingBatch(
-        pulled,
-        { spaces: [], tabs: [], folders: [], containers: [], splits: [] });
+      await lazy.ZenSyncStore.applyIncomingBatch(pulled, {
+        spaces: [],
+        tabs: [],
+        folders: [],
+        containers: [],
+        splits: [],
+      });
     } finally {
       this.engine._tracker.ignoreAll = false;
     }
@@ -531,9 +536,10 @@ class ZenWorkspacesTracker extends Tracker {
     if (data.type && data.id) {
       const id = createRecordId(data.type, data.id);
       this.#changedIDs[id] = Date.now() / 1000;
-      this.score += data.type === "space" || data.type === "container"
-        ? SCORE_INCREMENT_STRUCTURAL
-        : SCORE_INCREMENT_ITEM;
+      this.score +=
+        data.type === "space" || data.type === "container"
+          ? SCORE_INCREMENT_STRUCTURAL
+          : SCORE_INCREMENT_ITEM;
     }
   }
 

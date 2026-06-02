@@ -247,7 +247,7 @@ class nsZenWorkspaces {
         continue;
       }
       const groupIndex = window.gZenViewSplitter._data.findIndex(
-        group => group.groupId === splitData.groupId,
+        group => group.groupId === splitData.groupId
       );
       if (groupIndex >= 0) {
         window.gZenViewSplitter.removeGroup(groupIndex);
@@ -305,7 +305,11 @@ class nsZenWorkspaces {
       incomingTabs = incomingTabs.filter(t => t.pinned);
     }
 
-    if (!incomingFolders.length && !incomingTabs.length && !incomingSplits.length) {
+    if (
+      !incomingFolders.length &&
+      !incomingTabs.length &&
+      !incomingSplits.length
+    ) {
       return;
     }
 
@@ -336,7 +340,7 @@ class nsZenWorkspaces {
           gZenFolders.setFolderUserIcon(existing, folderData.userIcon);
         }
         existing.dispatchEvent(
-          new CustomEvent("TabGroupUpdate", { bubbles: true }),
+          new CustomEvent("TabGroupUpdate", { bubbles: true })
         );
       } else {
         gZenFolders.createFolder([], {
@@ -611,7 +615,7 @@ class nsZenWorkspaces {
 
     return (
       gBrowser.tabs.find(
-        tab => tab?.id === syncId || tab?.getAttribute("id") === syncId,
+        tab => tab?.id === syncId || tab?.getAttribute("id") === syncId
       ) || null
     );
   }
@@ -795,7 +799,7 @@ class nsZenWorkspaces {
 
   #applyIncomingFolderStructure(folderDataList) {
     const orderedFolders = this.#getOrderedIncomingFolders(
-      folderDataList.filter(folderData => folderData?.id),
+      folderDataList.filter(folderData => folderData?.id)
     );
 
     for (const folderData of orderedFolders) {
@@ -825,7 +829,7 @@ class nsZenWorkspaces {
         if (placement.parentFolder) {
           const initialSibling =
             placement.parentFolder.tabs.find(tab =>
-              tab.hasAttribute("zen-empty-tab"),
+              tab.hasAttribute("zen-empty-tab")
             ) || null;
           if (
             initialSibling?.parentNode === container &&
@@ -856,7 +860,7 @@ class nsZenWorkspaces {
     }
 
     const localSplitGroupsById = new Map(
-      splitter.storeDataForSessionStore().map(group => [group.groupId, group]),
+      splitter.storeDataForSessionStore().map(group => [group.groupId, group])
     );
 
     for (const splitData of splitViewDataList) {
@@ -869,12 +873,15 @@ class nsZenWorkspaces {
       }
 
       const existingGroup = localSplitGroupsById.get(splitData.groupId);
-      if (existingGroup && JSON.stringify(existingGroup) === JSON.stringify(splitData)) {
+      if (
+        existingGroup &&
+        JSON.stringify(existingGroup) === JSON.stringify(splitData)
+      ) {
         continue;
       }
 
       const incomingTabIds = new Set(
-        splitData.tabs.filter(tabId => typeof tabId === "string" && tabId),
+        splitData.tabs.filter(tabId => typeof tabId === "string" && tabId)
       );
       const conflictingGroupIndexes = [];
 
@@ -976,7 +983,7 @@ class nsZenWorkspaces {
         container: tab.group.groupContainer,
         initialSibling:
           tab.group.tabs.find(groupTab =>
-            groupTab.hasAttribute("zen-empty-tab"),
+            groupTab.hasAttribute("zen-empty-tab")
           ) || null,
       };
     }

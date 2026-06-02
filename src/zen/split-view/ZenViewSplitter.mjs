@@ -1031,7 +1031,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       this.#dispatchItemEvent(
         "ZenSplitViewGroupUpdated",
         this._data[this.currentView].tabs[0].group,
-        { groupId: this._data[this.currentView].groupId },
+        { groupId: this._data[this.currentView].groupId }
       );
       return;
     }
@@ -1041,7 +1041,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     this.#dispatchItemEvent(
       "ZenSplitViewGroupUpdated",
       this._data[this.currentView].tabs[0].group,
-      { groupId: this._data[this.currentView].groupId },
+      { groupId: this._data[this.currentView].groupId }
     );
   };
 
@@ -1134,6 +1134,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    *
    * @param {string} eventName - The name of the event to dispatch.
    * @param {HTMLElement} item - The item on which to dispatch the event.
+   * @param detail
    */
   #dispatchItemEvent(eventName, item, detail = {}) {
     const event = new CustomEvent(eventName, {
@@ -1910,9 +1911,13 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         this.tabBrowserPanel.removeAttribute("zen-split-resizing");
         if (this.currentView >= 0) {
           const group = this._data[this.currentView];
-          this.#dispatchItemEvent("ZenSplitViewGroupUpdated", group.tabs[0].group, {
-            groupId: group.groupId,
-          });
+          this.#dispatchItemEvent(
+            "ZenSplitViewGroupUpdated",
+            group.tabs[0].group,
+            {
+              groupId: group.groupId,
+            }
+          );
         }
       },
       { once: true }

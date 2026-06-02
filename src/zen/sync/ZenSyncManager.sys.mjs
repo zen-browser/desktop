@@ -28,7 +28,6 @@ function normalizeUserContextId(value) {
 }
 
 class ZenSyncManager {
-
   getSidebarData() {
     return lazy.ZenSessionStore.getSidebarData();
   }
@@ -167,7 +166,7 @@ class ZenSyncManager {
 
   createSyncableTabData(
     tabData,
-    { position, trimHistoryForUnpinned = false } = {},
+    { position, trimHistoryForUnpinned = false } = {}
   ) {
     if (
       !tabData?.zenSyncId ||

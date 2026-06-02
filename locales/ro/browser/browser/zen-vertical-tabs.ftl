@@ -3,45 +3,45 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-toolbar-context-tabs-right = 
-    .label = Tabs on the right
+    .label = Tab-urile în dreapta
     .accesskey = R
 zen-toolbar-context-compact-mode = 
-    .label = Compact Mode
+    .label = Modul Compact
 zen-toolbar-context-compact-mode-enable = 
-    .label = Enable compact mode
+    .label = Activează modul compact
     .accesskey = D
 zen-toolbar-context-compact-mode-just-tabs = 
-    .label = Hide sidebar
+    .label = Ascunde bara laterală
 zen-toolbar-context-compact-mode-just-toolbar = 
-    .label = Hide toolbar
+    .label = Ascunde bara de unelte
 zen-toolbar-context-compact-mode-hide-both = 
-    .label = Hide both
+    .label = Ascunde ambele
     .accesskey = H
 zen-toolbar-context-move-to-folder = 
-    .label = Move to Folder...
+    .label = Mută în Folderul...
     .accesskey = M
 zen-toolbar-context-new-folder = 
-    .label = New Folder
+    .label = Folder Nou
     .accesskey = N
 sidebar-zen-expand = 
-    .label = Expand Sidebar
+    .label = Extinde bara laterală
 sidebar-zen-create-new = 
-    .label = Create New...
+    .label = Creează unul nou...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Unload and switch to tab
-           *[other] Unload { $tabCount } tabs and switch to the first
+            [one] Închide şi treci la tab
+           *[other] Închide { $tabCount } tab-uri şi treci la primul
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Reset and pin tab
-           *[other] Reset and pin { $tabCount } tabs
+            [one] Resetează și Fixează tab-ul
+           *[other] Resetează și Fixează { $tabCount } tab-uri
         }
 zen-tab-sublabel =
     { $tabSubtitle ->
-        [zen-default-pinned] Back to pinned url
-        [zen-default-pinned-cmd] Separate from pinned tab
+        [zen-default-pinned] Înapoi la url-ul fixat
+        [zen-default-pinned-cmd] Separat de tab-urile fixate
        *[other] { $tabSubtitle }
     }

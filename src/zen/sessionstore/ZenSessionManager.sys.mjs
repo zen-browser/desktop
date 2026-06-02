@@ -635,46 +635,6 @@ export class nsZenSessionManager {
   }
 
   /**
-   * Forces a fresh collection of sidebar data from all open windows.
-   *
-   * The session store's save cycle receives a `state` object that was
-   * serialized by Firefox *before* the latest DOM changes (e.g. a newly
-   * created tab). This means `#sidebar` can be stale when the sync
-   * engine reads it via `getSidebarData()`.
-   *
-   * This method re-collects all window data synchronously from
-   * SessionStore, ensuring `#sidebar` reflects the current live state.
-   */
-  refreshSidebarData() {
-    const state = lazy.SessionStore.getCurrentState(true);
-    let windows = state?.windows || [];
-    windows = windows.filter(win => this.#isWindowSaveable(win));
-    if (windows.length) {
-      this.#collectWindowData(windows);
-    }
-  }
-
-  /**
-   * Forces a fresh collection of sidebar data from all open windows.
-   *
-   * The session store's save cycle receives a `state` object that was
-   * serialized by Firefox *before* the latest DOM changes (e.g. a newly
-   * created tab). This means `#sidebar` can be stale when the sync
-   * engine reads it via `getSidebarData()`.
-   *
-   * This method re-collects all window data synchronously from
-   * SessionStore, ensuring `#sidebar` reflects the current live state.
-   */
-  refreshSidebarData() {
-    const state = lazy.SessionStore.getCurrentState(true);
-    let windows = state?.windows || [];
-    windows = windows.filter(win => this.#isWindowSaveable(win));
-    if (windows.length) {
-      this.#collectWindowData(windows);
-    }
-  }
-
-  /**
    * Called when the last known backup should be deleted and a new one
    * created. This uses the #deferredBackupTask to debounce clusters of
    * events that might cause such a regeneration to occur.

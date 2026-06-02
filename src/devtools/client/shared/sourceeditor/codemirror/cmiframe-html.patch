@@ -1,0 +1,12 @@
+diff --git a/devtools/client/shared/sourceeditor/codemirror/cmiframe.html b/devtools/client/shared/sourceeditor/codemirror/cmiframe.html
+index f5859f422009cb31663a4b44dce43b245f4c93d0..fd6f928c736ddfb0d9caad43bbefcb4220248899 100644
+--- a/devtools/client/shared/sourceeditor/codemirror/cmiframe.html
++++ b/devtools/client/shared/sourceeditor/codemirror/cmiframe.html
+@@ -23,6 +23,7 @@
+   <link rel='stylesheet' href="chrome://devtools/content/shared/sourceeditor/codemirror/lib/codemirror.css">
+   <link rel='stylesheet' href="chrome://devtools/content/shared/sourceeditor/codemirror/addon/dialog/dialog.css">
+   <link rel='stylesheet' href="chrome://devtools/content/shared/sourceeditor/codemirror/mozilla.css">
++  <link rel='stylesheet' href="chrome://devtools/content/shared/sourceeditor/codemirror/material-darker.css">
+   <script src="chrome://devtools/content/shared/theme-switching.js"></script>
+ </head>
+ <body class='theme-body devtools-monospace'></body>

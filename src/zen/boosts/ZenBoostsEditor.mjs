@@ -218,7 +218,8 @@ export class nsZenBoostEditor {
     const editor = new Editor({
       mode: Editor.modes.css,
       lineNumbers: true,
-      theme: this.isDarkMode ? "mozilla" : "default",
+      theme: this.isDarkMode ? "material-darker" : "default",
+      themeSwitching: false,
       readOnly: false,
       gutters: ["CodeMirror-linenumbers"],
     });

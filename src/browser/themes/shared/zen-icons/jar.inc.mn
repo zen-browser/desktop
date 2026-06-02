@@ -4,6 +4,7 @@
 
 #ifdef XP_WIN
 *  skin/classic/browser/zen-icons/algorithm.svg                      (../shared/zen-icons/nucleo/algorithm.svg) 
+*  skin/classic/browser/zen-icons/arrow-down-turn-right.svg                      (../shared/zen-icons/nucleo/arrow-down-turn-right.svg) 
 *  skin/classic/browser/zen-icons/arrow-down.svg                      (../shared/zen-icons/nucleo/arrow-down.svg) 
 *  skin/classic/browser/zen-icons/arrow-left.svg                      (../shared/zen-icons/nucleo/arrow-left.svg) 
 *  skin/classic/browser/zen-icons/arrow-right.svg                      (../shared/zen-icons/nucleo/arrow-right.svg) 

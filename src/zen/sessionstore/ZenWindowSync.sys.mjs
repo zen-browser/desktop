@@ -1375,10 +1375,12 @@ class nsZenWindowSync {
       return;
     }
 
+    if (item.hasAttribute("zen-empty-tab")) {
+      return;
+    }
+
     this.#maybeFlushTabState(item).finally(() => {
-      if (!item.hasAttribute("zen-empty-tab")) {
-        this.#markItemChanged(item.id, "tab");
-      }
+      this.#markItemChanged(item.id, "tab");
     });
   }
 

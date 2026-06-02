@@ -1,16 +1,8 @@
 diff --git a/browser/installer/windows/nsis/defines.nsi.in b/browser/installer/windows/nsis/defines.nsi.in
-index a9bf2d67ce522054442be664bda1434c63609ea1..54e2c97f79b1e526eca66f4ca611e26b9c3f89d4 100644
+index a9bf2d67ce522054442be664bda1434c63609ea1..16e03732d78207ce602066a4bccc0d2c2385ca91 100644
 --- a/browser/installer/windows/nsis/defines.nsi.in
 +++ b/browser/installer/windows/nsis/defines.nsi.in
-@@ -110,7 +110,6 @@
- #endif
- 
- #ifdef DESKTOP_LAUNCHER_ENABLED
--!define DESKTOP_LAUNCHER_ENABLED
- #endif
- 
- #ifdef MOZ_BITS_DOWNLOAD
-@@ -147,7 +146,7 @@ VIAddVersionKey "ProductVersion"  "${AppVersion}"
+@@ -147,7 +147,7 @@ VIAddVersionKey "ProductVersion"  "${AppVersion}"
  !define APPROXIMATE_REQUIRED_SPACE_MB "145"
  
  # Constants for parts of the telemetry submission URL

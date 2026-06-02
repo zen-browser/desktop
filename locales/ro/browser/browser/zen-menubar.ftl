@@ -5,8 +5,8 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Extinde Filele Fixate
-           *[false] Restrânge Filele Fixate
+            [true] Extinde Tab-urile Fixate
+           *[false] Restrânge Tab-urile Fixate
         }
 zen-menubar-appearance = 
     .label = Aspect

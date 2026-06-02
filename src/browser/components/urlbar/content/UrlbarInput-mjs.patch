@@ -140,9 +140,9 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..c166b7de23c35716bf8c51b6b9c72f77
 +      this._zenHandleUrlbarClose();
 +    } else if (!this._untrimmedValue || this.searchMode || this.window.gZenVerticalTabsManager._hasSetSingleToolbar) {
 +      // Restore the current page URL when the urlbar is empty on blur
-+      this.window.setTimeout(() => {
++      this.window.requestAnimationFrame(() => {
 +        this.handleRevert();
-+      }, 0);
++      });
 +    }
 +
 +    // Arc like URLbar: Blur the input on exit

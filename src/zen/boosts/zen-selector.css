@@ -134,8 +134,8 @@
   --related-elements-value: 100%;
   background: linear-gradient(
     to top,
-    light-dark(#ff8758, #bd6048),
-    light-dark(#ff5b1b, #9b422b)
+    light-dark(#ff5b1b, #9b422b),
+    light-dark(#ff8758, #bd6048)
   );
 
   border: none;
@@ -152,8 +152,8 @@
       ),
       linear-gradient(
         to top,
-        light-dark(#ff8758, #bd6048),
-        light-dark(#ff5b1b, #9b422b)
+        light-dark(#ff5b1b, #9b422b),
+        light-dark(#ff8758, #bd6048)
       );
 
     @media not (-moz-platform: windows) {
@@ -167,8 +167,8 @@
 
   background: linear-gradient(
     0deg,
-    light-dark(#ff595f, #b94a50),
-    light-dark(#ff121b, #95272e)
+    light-dark(#ff121b, #95272e),
+    light-dark(#ff595f, #b94a50)
   );
   border: none;
   color: var(--zen-boosts-selector-button-color);

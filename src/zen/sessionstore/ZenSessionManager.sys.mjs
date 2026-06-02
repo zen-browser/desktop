@@ -614,8 +614,6 @@ export class nsZenSessionManager {
     // This would save the data to disk asynchronously or when quitting the app.
     let sidebar = this.#sidebarWithoutCloning;
 
-
-    console.log("Saving Zen session data",soon ? "soon" : "now", sidebar.tabs);
     this.#file.data = sidebar;
     if (soon) {
       this.#file.saveSoon();

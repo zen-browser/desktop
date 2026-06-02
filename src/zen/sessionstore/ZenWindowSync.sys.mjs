@@ -1621,8 +1621,6 @@ class nsZenWindowSync {
       return;
     }
 
-    console.log("onLocationChange", tab.id);
-
     this.#notifySyncItemChanged(tab);
   }
 

@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const { ZenAirTrafficManager } = ChromeUtils.importESModule(
-  "resource:///modules/zen/airtraffic/ZenAirTrafficManager.sys.mjs",
+  "resource:///modules/zen/airtraffic/ZenAirTrafficManager.sys.mjs"
 );
 
 export class nsZenAirTrafficDialog {
@@ -27,7 +27,7 @@ export class nsZenAirTrafficDialog {
 
     this.killOtherShareInstances();
 
-    nsZenAirTrafficDialog.OBSERVERS.forEach((observe) => {
+    nsZenAirTrafficDialog.OBSERVERS.forEach(observe => {
       Services.obs.addObserver(this, observe);
     });
 
@@ -50,15 +50,18 @@ export class nsZenAirTrafficDialog {
       .addEventListener("click", this.onNewRoutePressed.bind(this));
 
     const defaultRouteSelect = this.doc.getElementById(
-      "at-default-external-open-in",
+      "at-default-external-open-in"
     );
-    this.createOpenInList(defaultRouteSelect, ZenAirTrafficManager.getDefaultExternalRoute());
-
-    defaultRouteSelect.addEventListener("command", (e) =>
-      this.onRouteDefaultExternalChange(e.target.value),
+    this.createOpenInList(
+      defaultRouteSelect,
+      ZenAirTrafficManager.getDefaultExternalRoute()
     );
 
-    this.doc.addEventListener("keydown", (event) => {
+    defaultRouteSelect.addEventListener("command", e =>
+      this.onRouteDefaultExternalChange(e.target.value)
+    );
+
+    this.doc.addEventListener("keydown", event => {
       if (
         event.key === "Escape" ||
         (event.key === "w" && (event.ctrlKey || event.metaKey))
@@ -76,7 +79,7 @@ export class nsZenAirTrafficDialog {
    */
   initRouteList() {
     const allRoutes = ZenAirTrafficManager.getAllRoutes();
-    allRoutes.forEach((r) => this.createRouteElement(r));
+    allRoutes.forEach(r => this.createRouteElement(r));
   }
 
   /**
@@ -140,11 +143,7 @@ export class nsZenAirTrafficDialog {
     const matchTypePopup = this.doc.createXULElement("menupopup");
     matchTypeMenulist.appendChild(matchTypePopup);
 
-    [
-      "contains",
-      "equal-to",
-      "regex",
-    ].forEach((id) => {
+    ["contains", "equal-to", "regex"].forEach(id => {
       const menuItem = this.doc.createXULElement("menuitem");
       menuItem.setAttribute("data-l10n-id", `zen-air-traffic-${id}`);
       menuItem.setAttribute("value", id);
@@ -203,14 +202,14 @@ export class nsZenAirTrafficDialog {
       this.onRemoveRoutePressed(route.id, root);
     });
 
-    input.addEventListener("input", (e) =>
-      this.onRotueReferenceChange(e.target.value, route.id, input),
+    input.addEventListener("input", e =>
+      this.onRotueReferenceChange(e.target.value, route.id, input)
     );
-    matchTypeMenulist.addEventListener("command", (e) =>
-      this.onRouteMatchTypeChange(e.target.value, route.id, input),
+    matchTypeMenulist.addEventListener("command", e =>
+      this.onRouteMatchTypeChange(e.target.value, route.id, input)
     );
-    openInMenulist.addEventListener("command", (e) =>
-      this.onRouteOpenInChange(e.target.value, route.id),
+    openInMenulist.addEventListener("command", e =>
+      this.onRouteOpenInChange(e.target.value, route.id)
     );
 
     input.focus();
@@ -238,6 +237,7 @@ export class nsZenAirTrafficDialog {
    *
    * @param {string} value - The new value
    * @param {string} routeId - The ID of the affected route
+   * @param input
    */
   onRotueReferenceChange(value, routeId, input) {
     const route = ZenAirTrafficManager.getRoute(routeId);
@@ -247,7 +247,9 @@ export class nsZenAirTrafficDialog {
 
     // Don't update the route if the regex is invalid
     if (route.matchType == "regex") {
-      if (!this.onCheckRegexValid(input)) return;
+      if (!this.onCheckRegexValid(input)) {
+        return;
+      }
     }
 
     ZenAirTrafficManager.updateRoute(route);
@@ -280,7 +282,9 @@ export class nsZenAirTrafficDialog {
 
     // Don't update the route if the regex is invalid
     if (route.matchType == "regex") {
-      if (!this.onCheckRegexValid(input)) return;
+      if (!this.onCheckRegexValid(input)) {
+        return;
+      }
     }
 
     ZenAirTrafficManager.updateRoute(route);
@@ -350,10 +354,9 @@ export class nsZenAirTrafficDialog {
       selectElement.querySelector("menupopup") || selectElement;
     popupElement.replaceChildren(); // Clear existing
 
-    const [openInSpace, mostRecentSpace, lilZen] = await this.doc.l10n.formatMessages([
+    const [openInSpace, mostRecentSpace] = await this.doc.l10n.formatMessages([
       "zen-air-traffic-open-in-space",
       "zen-air-traffic-most-recent-space",
-      "zen-air-traffic-lil-zen",
     ]);
 
     const sectionHeader = this.doc.createXULElement("menuitem");
@@ -387,13 +390,11 @@ export class nsZenAirTrafficDialog {
     const workspaces = this.openerWindow.gZenWorkspaces.getWorkspaces();
 
     createXulItem(mostRecentSpace.value, "most-recent-space");
+    createXulItem("sep");
 
-    workspaces.forEach((workspace) => {
+    workspaces.forEach(workspace => {
       createXulItem(workspace.name, workspace.uuid, workspace.icon);
     });
-
-    createXulItem("sep");
-    createXulItem(lilZen.value, "lil-zen");
 
     selectElement.value = value;
   }
@@ -402,7 +403,7 @@ export class nsZenAirTrafficDialog {
    * Uninitializes the boost editor by cleaning up event listeners and observers.
    */
   uninit() {
-    nsZenAirTrafficDialog.OBSERVERS.forEach((observe) => {
+    nsZenAirTrafficDialog.OBSERVERS.forEach(observe => {
       Services.obs.removeObserver(this, observe);
     });
   }

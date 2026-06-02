@@ -54,11 +54,13 @@ class nsZenAirTrafficControlIntegration {
     win.setTimeout(() => {
       try {
         // Check if tab still exists
-        if (!newTab || !newTab.parentNode) return;
+        if (!newTab || !newTab.parentNode) {
+          return;
+        }
 
         const targetRoute = lazy.ZenAirTrafficManager.routeUri(
           uriString,
-          options,
+          options
         );
         switch (targetRoute) {
           // Do nothing
@@ -78,7 +80,7 @@ class nsZenAirTrafficControlIntegration {
               // Move tab and change workspace
               win.gZenWorkspaces.moveTabToWorkspace(
                 newTab,
-                targetWorkspace.uuid,
+                targetWorkspace.uuid
               );
 
               // Necessary due to Window Sync

@@ -10,7 +10,6 @@ zen-air-traffic-external-default = Default route for external links
 zen-air-traffic-new-route = New Route
 zen-air-traffic-open-in-space = Open in Space
 zen-air-traffic-most-recent-space = Most recent Space
-zen-air-traffic-lil-zen = Lil' Zen
 
 zen-air-traffic-contains =
     .label = Contains

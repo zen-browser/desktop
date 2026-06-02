@@ -57,21 +57,6 @@
     <html:link rel="localization" href="browser/zen-air-traffic.ftl" />
   </linkset>
 
-  <!-- Loading in the window module -->
-  <script>
-    const { nsZenAirTrafficDialog } = ChromeUtils.importESModule(
-      "resource:///modules/zen/airtraffic/ZenAirTrafficDialog.mjs",
-    );
-    window.addEventListener("load", () => {
-      const args = window.arguments?.[0] || {};
-      window.airtrafficDialog = new nsZenAirTrafficDialog(
-        document,
-        window,
-        args.parentWindow,
-      );
-    });
-  </script>
-
   <vbox
     id="zen-air-traffic-dialog-container"
     class="dialogBox"
@@ -108,4 +93,16 @@
       </hbox>
     </vbox>
   </vbox>
+
+  <script>
+    const { nsZenAirTrafficDialog } = ChromeUtils.importESModule(
+      "resource:///modules/zen/airtraffic/ZenAirTrafficDialog.mjs",
+    );
+    const args = window.arguments?.[0] || {};
+    window.airtrafficDialog = new nsZenAirTrafficDialog(
+      document,
+      window,
+      args.parentWindow,
+    );
+  </script>
 </window>

@@ -110,8 +110,8 @@
 
 .hr {
   color: var(--hr-color);
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
   margin-left: 32px;
   margin-right: 32px;
 }
@@ -159,7 +159,7 @@ menulist[image]::part(icon) {
   min-height: 16px;
   -moz-context-properties: fill, stroke;
   fill: currentColor;
-  margin-inline-end: 0px;
+  margin-inline-end: 0;
   padding-left: 2px;
 }
 
@@ -246,7 +246,7 @@ button {
   padding: 3px;
   width: 24px;
 
-  min-width: 0px !important;
+  min-width: 0 !important;
   color: var(--text-color-secondary);
 
   -moz-context-properties: fill, fill-opacity;

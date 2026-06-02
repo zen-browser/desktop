@@ -33,7 +33,9 @@ class nsZenAirTrafficManager {
 
     // If nothing matches and it's an external link,
     // use the default external route
-    if (isExternal) return this.getDefaultExternalRoute();
+    if (isExternal) {
+      return this.getDefaultExternalRoute();
+    }
 
     // If nothing matches, open in most recent space
     return "most-recent-space";
@@ -48,24 +50,33 @@ class nsZenAirTrafficManager {
    */
   isRouteMatching(uriString, route) {
     let reference = route.reference.toLowerCase();
-    if (reference.trim() == "") reference = "zen-browser.app"; // Placeholder Reference
+    if (reference.trim() == "") {
+      reference = "zen-browser.app";
+    } // Placeholder Reference
 
     const uri = uriString.toLowerCase();
     switch (route.matchType) {
       case "contains":
-        if (uri.includes(reference)) return true;
+        if (uri.includes(reference)) {
+          return true;
+        }
         break;
       case "equal-to":
-        if (this.#normalizeURL(uri) == reference) return true;
+        if (this.#normalizeURL(uri) == reference) {
+          return true;
+        }
         break;
       case "regex":
         let unmodifiedReference = route.reference;
-        if (unmodifiedReference.trim() == "")
-          unmodifiedReference = "zen-browser\.app"; // Placeholder RegEx
+        if (unmodifiedReference.trim() == "") {
+          unmodifiedReference = "zen-browser\.app";
+        } // Placeholder RegEx
         try {
           // Use unmodified parameters for the regex test
           const regex = new RegExp(unmodifiedReference);
-          if (regex.test(uriString)) return true;
+          if (regex.test(uriString)) {
+            return true;
+          }
         } catch (e) {
           console.error("[ZenAirTraffic] Failed to resolve regular expression");
         }
@@ -80,7 +91,9 @@ class nsZenAirTrafficManager {
    * @returns {string} The normalized url
    */
   #normalizeURL(uriString) {
-    if (!uriString) return "";
+    if (!uriString) {
+      return "";
+    }
     let clean = uriString.trim();
 
     // Remove protocol sequences with regex
@@ -106,7 +119,7 @@ class nsZenAirTrafficManager {
       "chrome://browser/content/zen-components/windows/zen-air-traffic.xhtml",
       "",
       "centerscreen,modal,dependent,resizable=no,titlebar=no",
-      { parentWindow },
+      { parentWindow }
     );
 
     control.focus();
@@ -139,7 +152,7 @@ class nsZenAirTrafficManager {
    * @returns {object} The route
    */
   getRoute(id) {
-    const idx = this.#file.data.routes.findIndex((r) => r.id === id);
+    const idx = this.#file.data.routes.findIndex(r => r.id === id);
     return structuredClone(this.#file.data.routes[idx]);
   }
 
@@ -149,7 +162,7 @@ class nsZenAirTrafficManager {
    * @param {object} route - The updated route
    */
   updateRoute(route) {
-    const idx = this.#file.data.routes.findIndex((r) => r.id === route.id);
+    const idx = this.#file.data.routes.findIndex(r => r.id === route.id);
     this.#file.data.routes[idx] = structuredClone(route);
   }
 
@@ -171,7 +184,7 @@ class nsZenAirTrafficManager {
    * @param {string} id - The given id
    */
   removeRoute(id) {
-    const objWithIdIndex = this.#file.data.routes.findIndex((r) => r.id === id);
+    const objWithIdIndex = this.#file.data.routes.findIndex(r => r.id === id);
     this.#file.data.routes.splice(objWithIdIndex, 1);
   }
 

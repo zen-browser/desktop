@@ -179,8 +179,8 @@
 #select-cancel {
   appearance: none;
   background: linear-gradient(
-    0deg, 
-    light-dark(#525355, #373739) 0%, 
+    0deg,
+    light-dark(#525355, #373739) 0%,
     light-dark(#6c6e70, #4b4c4e) 100%
   );
 

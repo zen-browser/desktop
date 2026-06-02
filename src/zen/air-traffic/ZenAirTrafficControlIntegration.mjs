@@ -50,59 +50,53 @@ class nsZenAirTrafficControlIntegration {
   }
 
   #routeToWorkspace(uriString, newTab, options, win) {
-    // Initial timeout to wait for tab creation
-    win.setTimeout(() => {
-      try {
-        // Check if tab still exists
-        if (!newTab || !newTab.parentNode) {
-          return;
-        }
-
-        const targetRoute = lazy.ZenAirTrafficManager.routeUri(
-          uriString,
-          options,
-        );
-        switch (targetRoute) {
-          // Do nothing
-          case "most-recent-space":
-            return newTab;
-
-          // Open Lil Zen
-          case "lil-zen":
-            console.error("[ZenAirTraffic] Lil Zen does not exist yet.");
-            return newTab;
-
-          default:
-            const targetWorkspace =
-              gZenWorkspaces.getWorkspaceFromId(targetRoute);
-
-            if (targetWorkspace) {
-              // Move tab and change workspace
-              win.gZenWorkspaces.moveTabToWorkspace(
-                newTab,
-                targetWorkspace.uuid,
-              );
-
-              // Necessary due to Window Sync
-              const mostRecentWindow =
-                Services.wm.getMostRecentWindow("navigator:browser");
-              const isOriginatingWindow = win === mostRecentWindow;
-
-              // Only switch the workspace if the window is the current one
-              if (isOriginatingWindow) {
-                win.gZenWorkspaces.changeWorkspaceWithID(targetWorkspace.uuid);
-
-                // Select the tab but wait a tick
-                // so the workspace can properly switch first
-                win.setTimeout(() => (win.gBrowser.selectedTab = newTab));
-              }
-            }
-            return newTab;
-        }
-      } catch (err) {
-        console.error("[ZenAirTraffic]: Error moving tab to workspace:", err);
+    try {
+      // Check if tab still exists
+      if (!newTab || !newTab.parentNode) {
+        return;
       }
-    }, 0);
+
+      const targetRoute = lazy.ZenAirTrafficManager.routeUri(
+        uriString,
+        options,
+      );
+      switch (targetRoute) {
+        // Do nothing
+        case "most-recent-space":
+          return newTab;
+
+        // Open Lil Zen
+        case "lil-zen":
+          console.error("[ZenAirTraffic] Lil Zen does not exist yet.");
+          return newTab;
+
+        default:
+          const targetWorkspace =
+            gZenWorkspaces.getWorkspaceFromId(targetRoute);
+
+          if (targetWorkspace) {
+            // Move tab and change workspace
+            win.gZenWorkspaces.moveTabToWorkspace(newTab, targetWorkspace.uuid);
+
+            // Necessary due to Window Sync
+            const mostRecentWindow =
+              Services.wm.getMostRecentWindow("navigator:browser");
+            const isOriginatingWindow = win === mostRecentWindow;
+
+            // Only switch the workspace if the window is the current one
+            if (isOriginatingWindow) {
+              win.gZenWorkspaces.changeWorkspaceWithID(targetWorkspace.uuid);
+
+              // Select the tab but wait a tick
+              // so the workspace can properly switch first
+              win.setTimeout(() => (win.gBrowser.selectedTab = newTab));
+            }
+          }
+          return newTab;
+      }
+    } catch (err) {
+      console.error("[ZenAirTraffic]: Error moving tab to workspace:", err);
+    }
 
     return newTab;
   }

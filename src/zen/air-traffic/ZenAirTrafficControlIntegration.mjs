@@ -11,7 +11,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 
 class nsZenAirTrafficControlIntegration {
   constructor() {
-    this._originalFunc = null;
+    this.originalFunc = null;
 
     Services.obs.addObserver(this, "browser-delayed-startup-finished");
   }
@@ -27,29 +27,29 @@ class nsZenAirTrafficControlIntegration {
 
   init(win) {
     const gBrowser = win.gBrowser;
-    this._originalFunc = gBrowser.addTab.bind(gBrowser);
+    this.originalFunc = gBrowser.addTab.bind(gBrowser);
 
     gBrowser.addTab = (uriString, options = {}) => {
-      return this._hookedOpenURI(uriString, options, win);
+      return this.#hookedOpenURI(uriString, options, win);
     };
 
     console.log("[ZenAirTraffic] Hooked into addTab");
   }
 
-  _hookedOpenURI(uriString, options, win) {
+  #hookedOpenURI(uriString, options, win) {
     console.log(uriString);
-    const newTab = this._originalFunc(uriString, options);
+    const newTab = this.originalFunc(uriString, options);
 
     if (options.skipAnimation) {
       // Skipping restored tabs / initial tab creation
       return newTab;
     }
 
-    this._routeToWorkspace(uriString, newTab, options, win);
+    this.#routeToWorkspace(uriString, newTab, options, win);
     return newTab;
   }
 
-  _routeToWorkspace(uriString, newTab, options, win) {
+  #routeToWorkspace(uriString, newTab, options, win) {
     // Initial timeout to wait for tab creation
     win.setTimeout(() => {
       try {
@@ -60,7 +60,7 @@ class nsZenAirTrafficControlIntegration {
 
         const targetRoute = lazy.ZenAirTrafficManager.routeUri(
           uriString,
-          options
+          options,
         );
         switch (targetRoute) {
           // Do nothing
@@ -80,7 +80,7 @@ class nsZenAirTrafficControlIntegration {
               // Move tab and change workspace
               win.gZenWorkspaces.moveTabToWorkspace(
                 newTab,
-                targetWorkspace.uuid
+                targetWorkspace.uuid,
               );
 
               // Necessary due to Window Sync

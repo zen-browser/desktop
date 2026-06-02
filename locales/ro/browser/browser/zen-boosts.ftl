@@ -3,56 +3,56 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-boost-edit-rename = 
-    .label = Rename Boost
+    .label = Redenumește Personalizare
 zen-boost-edit-shuffle = 
-    .label = Shuffle Vibes
+    .label = Amestecă Stilurile
 zen-boost-edit-reset = 
-    .label = Reset All Edits
+    .label = Resetează Toate Modificările
 zen-boost-edit-delete = 
-    .label = Delete Boost
-zen-boost-size = Size
-zen-boost-case = Case
-zen-boost-zap = Zap
-zen-boost-code = Code
-zen-boost-back = Back
+    .label = Șterge Personalizare
+zen-boost-size = Mărime
+zen-boost-case = Capitalizare
+zen-boost-zap = Șterge
+zen-boost-code = Cod
+zen-boost-back = Înapoi
 zen-boost-shuffle = 
-    .tooltiptext = Shuffle Boost Settings
+    .tooltiptext = Amestecă Setările Personalizării
 zen-boost-invert = 
-    .tooltiptext = Smart Invert Colors
+    .tooltiptext = Culori Inversate Inteligent
 zen-boost-controls = 
-    .tooltiptext = Advanced Color Controls
+    .tooltiptext = Comenzi de Culoare Avansate
 zen-boost-disable = 
-    .tooltiptext = Disable Color Adjustments
+    .tooltiptext = Dezactivează Ajustările de Culoare
 zen-boost-text-case-toggle = 
-    .tooltiptext = Toggle Text Case
+    .tooltiptext = Schimbă Capitalizarea
 zen-boost-css-picker = 
-    .tooltiptext = Pick Selector
+    .tooltiptext = Alege Selectorul
 zen-boost-css-inspector = 
-    .tooltiptext = Open Inspector
+    .tooltiptext = Deschide Inspectorul
 zen-bootst-color-contrast = Contrast
-zen-bootst-color-brightness = Brightness
-zen-bootst-color-original-saturation = Original Saturation
-zen-add-zap-helper = Click elements on the page to <b>Zap</b> them
-zen-remove-zap-helper = ← Click to Unzap
-zen-select-this = Insert selector for this
-zen-select-related = Insert selector for related
-zen-select-cancel = Cancel
-zen-zap-this = Zap this
-zen-zap-related = Zap all related elements
-zen-zap-cancel = Cancel
-zen-zap-done = Done
+zen-bootst-color-brightness = Luminozitate
+zen-bootst-color-original-saturation = Saturație Originală
+zen-add-zap-helper = Apasă pe elemente din pagină pentru a le <b>Șterge</b>
+zen-remove-zap-helper = ← Anulează Ștergerea
+zen-select-this = Inserează selector pentru acesta
+zen-select-related = Inserează selector pentru elemente asociate
+zen-select-cancel = Anulează
+zen-zap-this = Șterge element
+zen-zap-related = Șterge toate elementele asociate
+zen-zap-cancel = Anulează
+zen-zap-done = Gata
 zen-unzap-tooltip =
     { $elementCount ->
-        [0] No elements zapped
-        [1] { $elementCount } element zapped
-       *[other] { $elementCount } elements zapped
+        [0] Niciun element șters
+        [1] Un element șters
+       *[other] { $elementCount } elemente șterse
     }
 zen-boost-save = 
-    .label = Export Boost
+    .label = Exportă Personalizare
 zen-boost-load = 
-    .label = Import Boost
-zen-panel-ui-boosts-exported-message = Boost exported!
-zen-site-data-boosts = Boosts
+    .label = Importă Personalizare
+zen-panel-ui-boosts-exported-message = Personalizare exportată!
+zen-site-data-boosts = Personalizări
 zen-site-data-create-boost = 
-    .tooltiptext = Create new boost
-zen-boost-rename-boost-prompt = Rename Boost?
+    .tooltiptext = Creează o personalizare nouă
+zen-boost-rename-boost-prompt = Redenumește Personalizare?

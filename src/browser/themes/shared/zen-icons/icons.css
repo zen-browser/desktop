@@ -135,7 +135,7 @@
   list-style-image: url("arrow-right.svg");
 }
 
-.at-open-in-icon {
+.sr-open-in-icon {
   list-style-image: url("arrow-corner-down-right.svg");
 }
 
@@ -1012,7 +1012,7 @@
 }
 
 #zen-copy-url-button image,
-.at-url-icon {
+.sr-url-icon {
   list-style-image: url("link.svg");
   fill-opacity: 0.65;
 }

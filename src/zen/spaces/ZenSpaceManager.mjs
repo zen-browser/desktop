@@ -2979,8 +2979,15 @@ class nsZenWorkspaces {
 
   // Tab browser utilities
 
-  getContextIdIfNeeded(userContextId, fromExternal) {
+  getContextIdIfNeeded(userContextId, fromExternal, triggeringPrincipal) {
     if (!this.workspaceEnabled) {
+      return [userContextId, false, undefined];
+    }
+
+    if (
+      triggeringPrincipal &&
+      triggeringPrincipal.isAddonOrExpandedAddonPrincipal
+    ) {
       return [userContextId, false, undefined];
     }
 

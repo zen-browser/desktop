@@ -33,7 +33,12 @@ class nsZenSmartRoutingManager {
    * @param {Window} win - The window which the tab was added to
    */
   onAfterAddTab(uriString, newTab, options, win) {
-    
+
+    // Do not process these tabs at all
+    if (options.skipRoute || options.pinned || options.tabGroup) {
+      return;
+    }
+
     // addTab() is being called when the session restores.
     // To avoid automatically routing these tabs, 
     // a check if the restore is already complete is needed

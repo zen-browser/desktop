@@ -221,9 +221,6 @@ class nsZenWorkspaces {
    * Removes folders and tabs that were previously synced but are absent
    * from the latest incoming sync payload.
    *
-   * Workspace removal is handled via propagateWorkspaces() in
-   * _applySyncChanges.
-   *
    * @param {{ folders: Array, tabs: Array, splits: Array }} removals
    */
   async _removeSyncedItems(removals) {
@@ -278,14 +275,13 @@ class nsZenWorkspaces {
    * new/updated item to all other open windows automatically.
    *
    * Ordering rules:
-   *   1. Folders first — tabs need the folder elements to exist so they can
+   *   1. Folders first: tabs need the folder elements to exist so they can
    *      be placed inside them immediately after being pinned.
-   *   2. Essential tabs — use addToEssentials() which handles pinning and
+   *   2. Essential tabs: use addToEssentials() which handles pinning and
    *      placement in the essentials container.
-   *   3. Regular pinned tabs — restoreInitialTabData → pinTab → addTabs into
-   *      their folder (if any).  The subsequent TabMove event causes
-   *      ZenWindowSync to mirror the folder placement to all other windows.
-   *   4. Unpinned tabs — created with addTrustedTab and placed in the
+   *   3. Regular pinned tabs: restoreInitialTabData → pinTab → addTabs into
+   *      their folder (if any).
+   *   4. Unpinned tabs: created with addTrustedTab and placed in the
    *      correct workspace/folder.
    *
    * @param {{ tabs: Array, folders: Array, splits: Array }} pulled  Reconcile-pulled items.
@@ -372,6 +368,11 @@ class nsZenWorkspaces {
 
         const isCurrentlyEssential = existingTab.hasAttribute("zen-essential");
         const shouldBeEssential = !!tabData.zenEssential;
+        const incomingPinnedInitialState =
+          this.#getSyncedPinnedInitialState(tabData);
+        if (incomingPinnedInitialState) {
+          existingTab._zenPinnedInitialState = incomingPinnedInitialState;
+        }
         if (shouldBeEssential && !isCurrentlyEssential) {
           gZenPinnedTabManager.addToEssentials(existingTab);
         } else if (!shouldBeEssential && isCurrentlyEssential) {
@@ -451,16 +452,9 @@ class nsZenWorkspaces {
         //      an empty about:blank entry) because tab._zenPinnedInitialState is set.
         //   2. We can derive the correct visual label and favicon below.
         //   3. resetPinnedTab can restore the tab's URL / history.
-        // Session index is 1-based; convert to 0-based.
-        let pinnedInitialState = tabData._zenPinnedInitialState;
-        if (!pinnedInitialState && tabData.entries?.length) {
-          const entryIndex =
-            typeof tabData.index === "number"
-              ? Math.max(0, tabData.index - 1)
-              : 0;
-          const entry = tabData.entries[entryIndex] ?? tabData.entries[0];
-          pinnedInitialState = { entry, image: tabData.image || "" };
-        }
+        // Session index is 1-based, convert to 0-based.
+        const pinnedInitialState = this.#getSyncedPinnedInitialState(tabData);
+        const activeEntry = this.#getSyncedTabActiveEntry(tabData);
 
         // Create the tab unpinned so ZenWindowSync does NOT mirror it yet
         // (with gSyncOnlyPinnedTabs=true it skips unpinned tabs in on_TabOpen).
@@ -492,7 +486,10 @@ class nsZenWorkspaces {
           // ZenWindowSync's on_TabOpen(duringPinning:true) mirrors this tab
           // it copies the correct label/icon to other windows.
           const label =
-            newTab.zenStaticLabel || pinnedInitialState?.entry?.title || "";
+            newTab.zenStaticLabel ||
+            activeEntry?.title ||
+            pinnedInitialState?.entry?.title ||
+            "";
           if (label) {
             gBrowser._setTabLabel(newTab, label);
           }
@@ -503,8 +500,7 @@ class nsZenWorkspaces {
           // addToEssentials pins the tab and moves it to the essentials section.
           // ZenWindowSync mirrors the pinned essential to other windows.
           gZenPinnedTabManager.addToEssentials(newTab);
-          // Restore the tab's session state (URL / history) from pinnedInitialState.
-          gZenPinnedTabManager.resetPinnedTab(newTab);
+          this.#applyIncomingTabNavigation(newTab, tabData);
           this.#applyIncomingTabDefaultUserContextId(newTab, tabData);
         } else {
           // restoreInitialTabData sets workspace-id, static label/icon, and
@@ -519,7 +515,10 @@ class nsZenWorkspaces {
           // ZenWindowSync's on_TabOpen(duringPinning:true) mirrors this tab
           // it copies the correct label/icon to other windows.
           const label =
-            newTab.zenStaticLabel || pinnedInitialState?.entry?.title || "";
+            newTab.zenStaticLabel ||
+            activeEntry?.title ||
+            pinnedInitialState?.entry?.title ||
+            "";
           if (label) {
             gBrowser._setTabLabel(newTab, label);
           }
@@ -530,11 +529,9 @@ class nsZenWorkspaces {
           // pinTab triggers ZenWindowSync to mirror the tab (with correct id)
           // to every other open window.
           gBrowser.pinTab(newTab);
-          // Restore the tab's session state (URL / history) from pinnedInitialState.
-          gZenPinnedTabManager.resetPinnedTab(newTab);
-          // If this tab belongs to a folder, move it in now.  The subsequent
-          // TabMove event causes ZenWindowSync to mirror the folder placement
-          // into the corresponding folder in every other window.
+          this.#applyIncomingTabNavigation(newTab, tabData);
+
+          // If this tab belongs to a folder, move it
           if (tabData.groupId) {
             const folder = document.getElementById(tabData.groupId);
             if (folder?.isZenFolder) {
@@ -591,6 +588,27 @@ class nsZenWorkspaces {
       return entries[entryIndex] ?? entries[0] ?? null;
     }
     return tabData._zenPinnedInitialState?.entry || null;
+  }
+
+  #getSyncedPinnedInitialState(tabData) {
+    const incomingPinnedInitialState = tabData?._zenPinnedInitialState;
+    if (incomingPinnedInitialState?.entry?.url) {
+      return {
+        ...incomingPinnedInitialState,
+        entry: { ...incomingPinnedInitialState.entry },
+        image: incomingPinnedInitialState.image || tabData.image || "",
+      };
+    }
+
+    const fallbackEntry = this.#getSyncedTabActiveEntry(tabData);
+    if (!fallbackEntry?.url) {
+      return null;
+    }
+
+    return {
+      entry: { ...fallbackEntry },
+      image: tabData.image || "",
+    };
   }
 
   #normalizeIncomingTabSyncId(tabData) {
@@ -696,28 +714,21 @@ class nsZenWorkspaces {
       currentState.entries?.[entryIndex] ?? currentState.entries?.[0] ?? null;
 
     if (currentEntry?.url === incomingEntry.url) {
-      if (tab.pinned) {
-        tab._zenPinnedInitialState = {
-          entry: incomingEntry,
-          image: tabData.image || tab._zenPinnedInitialState?.image || "",
-        };
-      }
       return;
     }
 
-    if (tab.pinned) {
-      tab._zenPinnedInitialState = {
-        entry: incomingEntry,
-        image: tabData.image || tab._zenPinnedInitialState?.image || "",
-      };
-      gZenPinnedTabManager.resetPinnedTab(tab);
-      return;
-    }
+    const incomingEntries = Array.isArray(tabData.entries)
+      ? tabData.entries.map(entry => ({ ...entry }))
+      : [{ ...incomingEntry }];
+    const incomingIndex = Math.min(
+      Math.max(typeof tabData.index === "number" ? tabData.index : 1, 1),
+      incomingEntries.length
+    );
 
     const newState = {
       ...currentState,
-      entries: [incomingEntry],
-      index: 1,
+      entries: incomingEntries,
+      index: incomingIndex,
     };
     if (tabData.image) {
       newState.image = tabData.image;

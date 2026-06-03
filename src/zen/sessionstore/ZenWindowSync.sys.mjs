@@ -1613,7 +1613,7 @@ class nsZenWindowSync {
    * @param _aFlags
    */
   onLocationChange(aBrowser, aWebProgress, _aRequest, _aLocation, _aFlags) {
-    if (!lazy.gWindowSyncEnabled || !aWebProgress?.isTopLevel) {
+    if (!aWebProgress?.isTopLevel) {
       return;
     }
 

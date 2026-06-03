@@ -19,10 +19,34 @@ class nsZenSmartRoutingManager {
    * @param {string} uriString - The URI as a string
    * @param {object} options - The tab creation options
    * @param {Window} win - The window which the tab will be added to
-   * @returns {boolean} True when the tab should be created, false means early exit
+   * @returns {object} Returns an object with { shouldEarlyExit, userContextId, isRouteFound }
    */
   onBeforeAddTab(uriString, options, win) {
-    return true;
+    let userContextId = null;
+    let isRouteFound = false;
+    
+    if (this.#shouldSkipProcessing(options, win) != null) {
+      return { shouldEarlyExit: false, userContextId, isRouteFound };
+    }
+
+    const targetRoute = this.routeUri(
+      uriString,
+      options,
+    );
+    switch (targetRoute) {
+      case "most-recent-space":
+        break;
+      default:
+        const targetWorkspace =
+          win.gZenWorkspaces.getWorkspaceFromId(targetRoute);
+
+        if (targetWorkspace) {
+          userContextId = targetWorkspace.containerTabId;
+          isRouteFound = true;
+        }
+    }
+
+    return { shouldEarlyExit: false, userContextId, isRouteFound };
   }
 
   /**
@@ -33,21 +57,36 @@ class nsZenSmartRoutingManager {
    * @param {Window} win - The window which the tab was added to
    */
   onAfterAddTab(uriString, newTab, options, win) {
+    // Skip processing if needed
+    if (this.#shouldSkipProcessing(options, win)) {
+      return;
+    }
 
+    this.#routeToWorkspace(uriString, newTab, options, win);
+  }
+
+  /**
+   * Checks if the tab should be processed or not
+   * 
+   * @param {object} options - The tab creation options
+   * @param {Window} win - The owning window
+   * @returns {string|null} The type of skip or null if not skipped 
+   */
+  #shouldSkipProcessing(options, win) {
     // Do not process these tabs at all
     if (options.skipRoute || options.pinned || options.tabGroup) {
-      return;
+      return "skippedTab";
     }
 
     // addTab() is being called when the session restores.
     // To avoid automatically routing these tabs, 
     // a check if the restore is already complete is needed
     if (!win.gZenStartup.isReady) {
-      console.log("[ZenSmartRouting] Skipping restored tab...", uriString);
-      return;
+      console.log("[ZenSmartRouting] Skipping restored tab...");
+      return "restoredTab";
     }
 
-    this.#routeToWorkspace(uriString, newTab, options, win);
+    return null;
   }
 
   /**

@@ -167,9 +167,9 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
           activeRepos.add(repo);
         }
 
-        const idMatch = authors[i].parentElement.textContent
-          .match(/#[0-9]+/)
-          .shift();
+        const numberMatch =
+          authors[i].parentElement.textContent.match(/#[0-9]+/);
+        const idMatch = numberMatch?.[0] ?? "";
 
         items.push({
           title,

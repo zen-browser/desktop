@@ -342,3 +342,87 @@ add_task(async function test_pull_requests_json_api_falls_back_to_html() {
 
   sandbox.restore();
 });
+
+add_task(async function test_legacy_html_pull_request_parsing() {
+  info("should parse the legacy HTML pull-request listing into items");
+
+  let sandbox = sinon.createSandbox();
+  let instance = getGithubProviderForTest(sandbox, {
+    type: "pull-requests",
+    authorMe: true,
+  });
+
+  const mockHtml = `
+    <html>
+      <body>
+        <div id="issue_201">
+          <div>
+            <span>octocat/hello</span>
+            <a id="issue_201_link" href="/octocat/hello/pull/201">Improve docs</a>
+          </div>
+          <span class="opened-by">#201 opened 2 days ago by <a href="/userA">userA</a></span>
+        </div>
+      </body>
+    </html>
+  `;
+
+  instance.fetch.resolves({ status: 200, text: mockHtml });
+
+  const items = await instance.fetchItems();
+
+  Assert.ok(Array.isArray(items), "Should return an items array");
+  Assert.equal(items.length, 1, "Should find 1 pull request");
+  Assert.equal(items[0].title, "Improve docs");
+  Assert.equal(items[0].subtitle, "userA");
+  Assert.equal(items[0].id, "octocat/hello#201");
+
+  sandbox.restore();
+});
+
+add_task(async function test_legacy_html_pull_request_missing_number() {
+  info(
+    "should not fail the whole folder when a legacy PR row has no #number"
+  );
+
+  let sandbox = sinon.createSandbox();
+  let instance = getGithubProviderForTest(sandbox, {
+    type: "pull-requests",
+    authorMe: true,
+  });
+
+  // The ".opened-by" text intentionally omits a "#<number>" token, which used
+  // to throw a TypeError (match(...).shift() on null) and surface as
+  // "zen-live-folder-failed-fetch" for the entire folder.
+  const mockHtml = `
+    <html>
+      <body>
+        <div id="issue_202">
+          <div>
+            <span>octocat/hello</span>
+            <a id="issue_202_link" href="/octocat/hello/pull/202">Add dark mode</a>
+          </div>
+          <span class="opened-by">opened recently by <a href="/userB">userB</a></span>
+        </div>
+      </body>
+    </html>
+  `;
+
+  instance.fetch.resolves({ status: 200, text: mockHtml });
+
+  const items = await instance.fetchItems();
+
+  Assert.ok(
+    Array.isArray(items),
+    "Should return items instead of failing the whole folder"
+  );
+  Assert.equal(items.length, 1, "Should still include the row");
+  Assert.equal(items[0].title, "Add dark mode");
+  Assert.equal(items[0].subtitle, "userB");
+  Assert.equal(
+    items[0].id,
+    "octocat/hello",
+    "Should fall back to the repo with an empty number suffix"
+  );
+
+  sandbox.restore();
+});

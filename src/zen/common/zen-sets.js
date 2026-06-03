@@ -134,9 +134,6 @@ document.addEventListener(
             break;
           }
           case "cmd_zenOpenSmartRoutingSettings": {
-            const { ZenSmartRoutingManager } = ChromeUtils.importESModule(
-              "resource:///modules/zen/smartrouting/ZenSmartRoutingManager.sys.mjs"
-            );
             ZenSmartRoutingManager.openSmartRoutingDialog(window);
             break;
           }

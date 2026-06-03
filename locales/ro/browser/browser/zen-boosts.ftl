@@ -3,20 +3,20 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-boost-edit-rename = 
-    .label = Redenumește Personalizare
+    .label = Redenumește Boost
 zen-boost-edit-shuffle = 
     .label = Amestecă Stilurile
 zen-boost-edit-reset = 
     .label = Resetează Toate Modificările
 zen-boost-edit-delete = 
-    .label = Șterge Personalizare
+    .label = Șterge Boost
 zen-boost-size = Mărime
 zen-boost-case = Capitalizare
 zen-boost-zap = Șterge
 zen-boost-code = Cod
 zen-boost-back = Înapoi
 zen-boost-shuffle = 
-    .tooltiptext = Amestecă Setările Personalizării
+    .tooltiptext = Amestecă Setările Boost-ului
 zen-boost-invert = 
     .tooltiptext = Culori Inversate Inteligent
 zen-boost-controls = 
@@ -29,9 +29,9 @@ zen-boost-css-picker =
     .tooltiptext = Alege Selectorul
 zen-boost-css-inspector = 
     .tooltiptext = Deschide Inspectorul
-zen-bootst-color-contrast = Contrast
-zen-bootst-color-brightness = Luminozitate
-zen-bootst-color-original-saturation = Saturație Originală
+zen-boost-color-contrast = Contrast
+zen-boost-color-brightness = Luminozitate
+zen-boost-color-original-saturation = Saturație Originală
 zen-add-zap-helper = Apasă pe elemente din pagină pentru a le <b>Șterge</b>
 zen-remove-zap-helper = ← Anulează Ștergerea
 zen-select-this = Inserează selector pentru acesta
@@ -48,11 +48,11 @@ zen-unzap-tooltip =
        *[other] { $elementCount } elemente șterse
     }
 zen-boost-save = 
-    .label = Exportă Personalizare
+    .label = Exportă Boost
 zen-boost-load = 
-    .label = Importă Personalizare
-zen-panel-ui-boosts-exported-message = Personalizare exportată!
-zen-site-data-boosts = Personalizări
+    .label = Importă Boost
+zen-panel-ui-boosts-exported-message = Boost exportat!
+zen-site-data-boosts = Boost-uri
 zen-site-data-create-boost = 
-    .tooltiptext = Creează o personalizare nouă
-zen-boost-rename-boost-prompt = Redenumește Personalizare?
+    .tooltiptext = Creează Boost nou
+zen-boost-rename-boost-prompt = Redenumește Boost?

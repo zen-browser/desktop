@@ -737,6 +737,54 @@ export class nsZenSessionManager {
     return tabData && !(tabData.zenIsEmpty && !tabData.groupId);
   }
 
+  /**
+   * Removes trailing "about:blank" entries from a tab's saved session history.
+   *
+   * When a tab's contents are swapped to another window, ZenWindowSync loads
+   * "about:blank" into the now-empty browser so Firefox isn't left with an
+   * unloaded-but-selected tab. That "about:blank" can get persisted as the
+   * tab's active session entry; when such state is later restored (most visibly
+   * into a newly opened window, which is cloned from saved state), the tab would
+   * open on the blank artifact and show an empty "New Tab" instead of the page
+   * it was actually displaying. This strips the trailing artifact so the tab
+   * restores onto its real last entry, as long as a real entry exists to fall
+   * back to. See gh-13027.
+   *
+   * @param {object} aTabData - The tab state object to sanitize.
+   * @returns {object} The original object when there is nothing to strip, or a
+   *   shallow copy with the trailing "about:blank" entries removed and the
+   *   index clamped onto a real entry.
+   */
+  #stripBlankSwapArtifact(aTabData) {
+    const entries = aTabData?.entries;
+    if (!Array.isArray(entries) || entries.length < 2) {
+      return aTabData;
+    }
+    const isBlank = entry => !entry?.url || entry.url === "about:blank";
+    // Leave genuinely blank tabs alone: there's no real entry to fall back to.
+    if (entries.every(isBlank)) {
+      return aTabData;
+    }
+    let lastReal = entries.length - 1;
+    while (lastReal > 0 && isBlank(entries[lastReal])) {
+      lastReal--;
+    }
+    if (lastReal === entries.length - 1) {
+      // No trailing "about:blank" artifact to remove.
+      return aTabData;
+    }
+    const newEntries = entries.slice(0, lastReal + 1);
+    // Session history indices are 1-based. Only trust an integer index (so a
+    // missing, NaN, or non-integer value falls back to the last entry), then
+    // clamp into [1, newEntries.length] so it can never point before the first
+    // entry or past the trimmed list.
+    let index = Number.isInteger(aTabData.index)
+      ? aTabData.index
+      : newEntries.length;
+    index = Math.min(Math.max(index, 1), newEntries.length);
+    return { ...aTabData, entries: newEntries, index };
+  }
+
   #collectUsedTabsFromWindows(aStateWindows) {
     const tabIdRelationMap = new Map();
     for (const window of aStateWindows) {
@@ -756,7 +804,12 @@ export class nsZenSessionManager {
         }
       }
     }
-    return Array.from(tabIdRelationMap.values());
+    // Strip the "about:blank" swap artifact so saved state (and any window
+    // cloned from it) restores onto the real page rather than a blank tab.
+    // See gh-13027.
+    return Array.from(tabIdRelationMap.values()).map(tabData =>
+      this.#stripBlankSwapArtifact(tabData)
+    );
   }
 
   /**
@@ -815,6 +868,13 @@ export class nsZenSessionManager {
       aWindowData.splitViewData = sidebar.splitViewData;
       aWindowData.groups = sidebar.groups;
     }
+
+    // Heal any tabs whose saved state was left parked on an "about:blank" swap
+    // artifact so they restore onto their real page instead of a blank "New
+    // Tab" (covers sessions saved before this fix). See gh-13027.
+    aWindowData.tabs = (aWindowData.tabs || []).map(tabData =>
+      this.#stripBlankSwapArtifact(tabData)
+    );
 
     // Folders are always pinned, so we dont need to check for the pinned state here.
     aWindowData.folders = sidebar.folders;

@@ -9,12 +9,6 @@ if test "$ZEN_CROSS_COMPILING"; then
   export WINE="$(echo ~)/win-cross/wine/bin/wine"
   export WINEDEBUG=-all
 
-  # Force Wine to load the genuine Microsoft d3dcompiler_47.dll that ships next
-  # to fxc.exe in the Windows SDK instead of its built-in vkd3d reimplementation,
-  # whose HLSL front-end mishandles #include directives (emits an #hlsl_full_path
-  # marker it then fails to re-parse, breaking shader compilation).
-  export WINEDLLOVERRIDES="d3dcompiler_47=n"
-
   export MOZ_STUB_INSTALLER=1
   export MOZ_PKG_FORMAT=TAR
 

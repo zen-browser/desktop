@@ -8,6 +8,12 @@ class nsZenSmartRoutingManager {
   #file = null;
   #saveFilename = "zen-smart-routing.jsonlz4";
 
+  static SKIP_TYPE = {
+    NONE: "none",
+    SKIPPED_TAB: "skipped_tab",
+    RESTORED_TAB: "restored_tab",
+  };
+
   constructor() {
     this.#readFromDisk();
   }
@@ -25,7 +31,7 @@ class nsZenSmartRoutingManager {
     let userContextId = null;
     let isRouteFound = false;
     
-    if (this.#shouldSkipProcessing(options, win) != null) {
+    if (this.#shouldSkipProcessing(options, win) != nsZenSmartRoutingManager.SKIP_TYPE.NONE) {
       return { shouldEarlyExit: false, userContextId, isRouteFound };
     }
 
@@ -58,7 +64,7 @@ class nsZenSmartRoutingManager {
    */
   onAfterAddTab(uriString, newTab, options, win) {
     // Skip processing if needed
-    if (this.#shouldSkipProcessing(options, win)) {
+    if (this.#shouldSkipProcessing(options, win) != nsZenSmartRoutingManager.SKIP_TYPE.NONE) {
       return;
     }
 
@@ -70,12 +76,12 @@ class nsZenSmartRoutingManager {
    * 
    * @param {object} options - The tab creation options
    * @param {Window} win - The owning window
-   * @returns {string|null} The type of skip or null if not skipped 
+   * @returns {SKIP_TYPE} The type of skip or null if not skipped 
    */
   #shouldSkipProcessing(options, win) {
     // Do not process these tabs at all
     if (options.skipRoute || options.pinned || options.tabGroup) {
-      return "skippedTab";
+      return nsZenSmartRoutingManager.SKIP_TYPE.SKIPPED_TAB;
     }
 
     // addTab() is being called when the session restores.
@@ -83,10 +89,10 @@ class nsZenSmartRoutingManager {
     // a check if the restore is already complete is needed
     if (!win.gZenStartup.isReady) {
       console.log("[ZenSmartRouting] Skipping restored tab...");
-      return "restoredTab";
+      return nsZenSmartRoutingManager.SKIP_TYPE.RESTORED_TAB;
     }
 
-    return null;
+    return nsZenSmartRoutingManager.SKIP_TYPE.NONE;
   }
 
   /**

@@ -1131,7 +1131,6 @@
   transition:
     max-height 0.3s ease-out,
     grid-template-columns 0.3s ease-out;
-  will-change: transform;
   opacity: 1;
   --min-essentials-width-wrap: calc(var(--tab-min-height) + 4px);
   grid-template-columns: repeat(auto-fit, minmax(max(23.7%, var(--min-essentials-width-wrap)), 1fr));

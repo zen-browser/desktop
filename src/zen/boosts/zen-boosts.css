@@ -139,6 +139,7 @@ body {
   user-select: none;
 
   width: 100%;
+  min-height: 582px;
   height: 100%;
   padding: 0;
   margin: 0;

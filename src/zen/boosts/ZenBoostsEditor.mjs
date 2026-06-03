@@ -374,12 +374,6 @@ export class nsZenBoostEditor {
     }
     windowElem.setAttribute("editor", "code");
 
-    // Store the old boost editor width.
-    // The window needs the outer width which includes
-    // window chrome. This results in the window
-    // being smaller than it should be
-    this._boostEditorWidth = this.editorWindow.outerWidth;
-
     this.editorWindow.requestAnimationFrame(() => {
       this.editorWindow.resizeTo(
         this._codeEditorWidth,
@@ -413,7 +407,11 @@ export class nsZenBoostEditor {
     }
     windowElem.setAttribute("editor", "boost");
 
-    this.editorWindow.requestAnimationFrame(() => {
+    this.doc.getElementById("zen-boost-editor-root").style.display = "flex";
+    this.doc.getElementById("zen-boost-code-editor-root").style.display =
+      "none";
+
+    this.editorWindow.promiseDocumentFlushed(() => {
       this.editorWindow.resizeTo(
         this._boostEditorWidth,
         this.editorWindow.outerHeight
@@ -424,10 +422,6 @@ export class nsZenBoostEditor {
           this.editorWindow.screenY
         );
       }
-
-      this.doc.getElementById("zen-boost-editor-root").style.display = "flex";
-      this.doc.getElementById("zen-boost-code-editor-root").style.display =
-        "none";
     });
 
     // Disable picker mode

@@ -4,9 +4,9 @@
 
 import { JSONFile } from "resource://gre/modules/JSONFile.sys.mjs";
 
-class nsZenAirTrafficManager {
+class nsZenSmartRoutingManager {
   #file = null;
-  #saveFilename = "zen-air-traffic.jsonlz4";
+  #saveFilename = "zen-smart-routing.jsonlz4";
 
   constructor() {
     this.#readFromDisk();
@@ -38,7 +38,7 @@ class nsZenAirTrafficManager {
     // To avoid automatically routing these tabs, 
     // a check if the restore is already complete is needed
     if (!win.gZenStartup.isReady) {
-      console.log("[ZenControlFlow] Skipping restored tab...", uriString);
+      console.log("[ZenSmartRouting] Skipping restored tab...", uriString);
       return;
     }
 
@@ -54,7 +54,7 @@ class nsZenAirTrafficManager {
    * @param {Window} win - The window which the tab was added to
    * @private
    */
-  #routeToWorkspace(uriString, newTab, options, win) {
+  async #routeToWorkspace(uriString, newTab, options, win) {
     try {
       // Check if tab still exists
       if (!newTab || !newTab.parentNode) {
@@ -85,16 +85,13 @@ class nsZenAirTrafficManager {
 
             // Only switch the workspace if the window is the current one
             if (isOriginatingWindow) {
-              win.gZenWorkspaces.changeWorkspaceWithID(targetWorkspace.uuid);
-
-              // Select the tab but wait a tick
-              // so the workspace can properly switch first
-              win.setTimeout(() => (win.gBrowser.selectedTab = newTab));
+              win.gZenWorkspaces.lastSelectedWorkspaceTabs[targetWorkspace.uuid] = newTab;
+              await win.gZenWorkspaces.changeWorkspace(targetWorkspace);
             }
           }
       }
     } catch (err) {
-      console.error("[ZenControlFlow]: Error moving tab to workspace:", err);
+      console.error("[ZenSmartRouting]: Error moving tab to workspace:", err);
     }
   }
 
@@ -164,7 +161,7 @@ class nsZenAirTrafficManager {
             return true;
           }
         } catch (e) {
-          console.error("[ZenAirTraffic] Failed to resolve regular expression");
+          console.error("[ZenSmartRouting] Failed to resolve regular expression");
         }
         break;
     }
@@ -195,14 +192,14 @@ class nsZenAirTrafficManager {
   }
 
   /**
-   * Opens the air traffic control editor in a new popup window.
+   * Opens the Smart Routing editor in a new popup window.
    *
    * @param {Window} parentWindow - The parent browser window
    * @returns {Window|null} The instanced editor window
    */
-  openAirTrafficDialog(parentWindow) {
+  openSmartRoutingDialog(parentWindow) {
     const control = parentWindow.openDialog(
-      "chrome://browser/content/zen-components/windows/zen-air-traffic.xhtml",
+      "chrome://browser/content/zen-components/windows/zen-smart-routing.xhtml",
       "",
       "centerscreen,modal,dependent,resizable=no,titlebar=no",
       { parentWindow }
@@ -213,7 +210,7 @@ class nsZenAirTrafficManager {
   }
 
   /**
-   * @returns {object} Returns a new empty air traffic route
+   * @returns {object} Returns a new empty Smart Routing route
    */
   getEmptyRoute() {
     return {
@@ -296,7 +293,7 @@ class nsZenAirTrafficManager {
   }
 
   /**
-   * Writes the air traffic data back onto the disk.
+   * Writes the Smart Routing data back onto the disk.
    *
    * @private
    */
@@ -305,9 +302,9 @@ class nsZenAirTrafficManager {
   }
 
   /**
-   * Reads air traffic data from disk and decompresses it.
+   * Reads Smart Routing data from disk and decompresses it.
    *
-   * @returns {Promise<Map>} A promise that resolves to an array of air traffic rules.
+   * @returns {Promise<Map>} A promise that resolves to an array of Smart Routing rules.
    * @private
    */
   async #readFromDisk() {
@@ -328,9 +325,9 @@ class nsZenAirTrafficManager {
   }
 
   /**
-   * Gets the file path where air traffic data is stored in the user's profile directory.
+   * Gets the file path where Smart Routing data is stored in the user's profile directory.
    *
-   * @returns {string} The full path to the air traffic storage file.
+   * @returns {string} The full path to the Smart Routing storage file.
    * @private
    */
   get #storePath() {
@@ -339,4 +336,4 @@ class nsZenAirTrafficManager {
   }
 }
 
-export const ZenAirTrafficManager = new nsZenAirTrafficManager();
+export const ZenSmartRoutingManager = new nsZenSmartRoutingManager();

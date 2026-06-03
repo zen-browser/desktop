@@ -133,11 +133,11 @@ document.addEventListener(
             gZenWorkspaces.unloadAllOtherWorkspaces();
             break;
           }
-          case "cmd_zenOpenAirTrafficControlSettings": {
-            const { ZenAirTrafficManager } = ChromeUtils.importESModule(
-              "resource:///modules/zen/airtraffic/ZenAirTrafficManager.sys.mjs"
+          case "cmd_zenOpenSmartRoutingSettings": {
+            const { ZenSmartRoutingManager } = ChromeUtils.importESModule(
+              "resource:///modules/zen/smartrouting/ZenSmartRoutingManager.sys.mjs"
             );
-            ZenAirTrafficManager.openAirTrafficDialog(window);
+            ZenSmartRoutingManager.openSmartRoutingDialog(window);
             break;
           }
           case "cmd_zenNewNavigatorUnsynced":

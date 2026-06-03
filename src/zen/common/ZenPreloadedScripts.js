@@ -5,6 +5,11 @@
 // prettier-ignore
 // eslint-disable-next-line no-lone-blocks
 {
+  ChromeUtils.defineESModuleGetters(this, {
+    ZenSmartRoutingManager:
+      "resource:///modules/zen/smartrouting/ZenSmartRoutingManager.sys.mjs",
+  });
+
   Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenSpaceBookmarksStorage.js", this);
 
   let scripts = [

@@ -82,8 +82,8 @@ const globalActionsTemplate = [
     },
   },
   {
-    label: "Open Control Flow",
-    command: "cmd_zenOpenAirTrafficControlSettings",
+    label: "Open Smart Routing",
+    command: "cmd_zenOpenSmartRoutingSettings",
     icon: "chrome://browser/skin/zen-icons/selectable/airplane.svg",
   },
   {

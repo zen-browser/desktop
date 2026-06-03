@@ -30,7 +30,7 @@
   <menuitem id="context_zenReorderWorkspaces" data-l10n-id="zen-workspaces-panel-context-reorder" command="cmd_zenReorderWorkspaces"/>
   <menuitem id="context_zenUnloadWorkspace" data-l10n-id="zen-workspaces-panel-unload" command="cmd_zenUnloadWorkspace"/>
   <menuitem id="context_zenUnloadAllOtherWorkspace" data-l10n-id="zen-workspaces-panel-unload-others" command="cmd_zenUnloadAllOtherWorkspace"/>
-  <menuitem id="context_zenAirTrafficControlSettings" data-l10n-id="zen-air-traffic-control-settings" command="cmd_zenOpenAirTrafficControlSettings"/>
+  <menuitem id="context_zenSmartRoutingSettings" data-l10n-id="zen-smart-routing-settings" command="cmd_zenOpenSmartRoutingSettings"/>
   <menuseparator/>
   <menuitem data-l10n-id="zen-panel-ui-workspaces-create" command="cmd_zenOpenWorkspaceCreation"/>
   <menuitem id="context_zenDeleteWorkspace" data-l10n-id="zen-workspaces-panel-context-delete" command="cmd_zenCtxDeleteWorkspace"/>

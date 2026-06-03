@@ -2,16 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const { ZenAirTrafficManager } = ChromeUtils.importESModule(
-  "resource:///modules/zen/airtraffic/ZenAirTrafficManager.sys.mjs"
+const { ZenSmartRoutingManager } = ChromeUtils.importESModule(
+  "resource:///modules/zen/smartrouting/ZenSmartRoutingManager.sys.mjs"
 );
 
-export class nsZenAirTrafficDialog {
+export class nsZenSmartRoutingDialog {
   doc = null;
   editorWindow = null;
   openerWindow = null;
 
-  static OBSERVERS = ["zen-air-traffic-kill"];
+  static OBSERVERS = ["zen-smart-routing-kill"];
 
   /**
    * Creates a new boost share instance for the specified domain.
@@ -27,7 +27,7 @@ export class nsZenAirTrafficDialog {
 
     this.killOtherShareInstances();
 
-    nsZenAirTrafficDialog.OBSERVERS.forEach(observe => {
+    nsZenSmartRoutingDialog.OBSERVERS.forEach(observe => {
       Services.obs.addObserver(this, observe);
     });
 
@@ -43,18 +43,18 @@ export class nsZenAirTrafficDialog {
     });
 
     this.doc
-      .getElementById("at-close")
+      .getElementById("sr-close")
       .addEventListener("click", this.onClosePressed.bind(this));
     this.doc
-      .getElementById("at-new-route")
+      .getElementById("sr-new-route")
       .addEventListener("click", this.onNewRoutePressed.bind(this));
 
     const defaultRouteSelect = this.doc.getElementById(
-      "at-default-external-open-in"
+      "sr-default-external-open-in"
     );
     this.createOpenInList(
       defaultRouteSelect,
-      ZenAirTrafficManager.getDefaultExternalRoute()
+      ZenSmartRoutingManager.getDefaultExternalRoute()
     );
 
     defaultRouteSelect.addEventListener("command", e =>
@@ -78,7 +78,7 @@ export class nsZenAirTrafficDialog {
    * Initializes the routes list and loads all current routes from the disk
    */
   initRouteList() {
-    const allRoutes = ZenAirTrafficManager.getAllRoutes();
+    const allRoutes = ZenSmartRoutingManager.getAllRoutes();
     allRoutes.forEach(r => this.createRouteElement(r));
   }
 
@@ -86,7 +86,7 @@ export class nsZenAirTrafficDialog {
    * Will create a new route and update the route list
    */
   onNewRoutePressed() {
-    const newRoute = ZenAirTrafficManager.createNewRoute();
+    const newRoute = ZenSmartRoutingManager.createNewRoute();
     this.createRouteElement(newRoute);
   }
 
@@ -97,7 +97,7 @@ export class nsZenAirTrafficDialog {
    * @param {string} containerElement - The container element of the route in the list
    */
   onRemoveRoutePressed(routeId, containerElement) {
-    ZenAirTrafficManager.removeRoute(routeId);
+    ZenSmartRoutingManager.removeRoute(routeId);
     containerElement.remove();
 
     this.updateShowNoRouteText();
@@ -110,26 +110,26 @@ export class nsZenAirTrafficDialog {
    * @returns
    */
   createRouteElement(route) {
-    const container = this.doc.getElementById("at-content");
+    const container = this.doc.getElementById("sr-content");
 
     const root = this.doc.createElement("vbox");
     root.setAttribute("routeId", route.id);
-    root.className = "at-rule-container";
+    root.className = "sr-rule-container";
 
     // ---- Top row
 
     const topRow = this.doc.createElement("hbox");
-    topRow.className = "at-rule-row";
-    topRow.id = "at-rule-top";
+    topRow.className = "sr-rule-row";
+    topRow.id = "sr-rule-top";
 
     const topLabelContainer = this.doc.createElement("hbox");
-    topLabelContainer.className = "at-label-container";
+    topLabelContainer.className = "sr-label-container";
 
     const urlIcon = this.doc.createXULElement("image");
-    urlIcon.className = "at-url-icon";
+    urlIcon.className = "sr-url-icon";
 
     const urlLabel = this.doc.createElement("p");
-    urlLabel.className = "at-label";
+    urlLabel.className = "sr-label";
     urlLabel.textContent = "URL";
 
     topLabelContainer.append(urlIcon, urlLabel);
@@ -145,7 +145,7 @@ export class nsZenAirTrafficDialog {
 
     ["contains", "equal-to", "regex"].forEach(id => {
       const menuItem = this.doc.createXULElement("menuitem");
-      menuItem.setAttribute("data-l10n-id", `zen-air-traffic-${id}`);
+      menuItem.setAttribute("data-l10n-id", `zen-smart-routing-${id}`);
       menuItem.setAttribute("value", id);
       matchTypePopup.appendChild(menuItem);
     });
@@ -160,24 +160,24 @@ export class nsZenAirTrafficDialog {
     this.updateInputPlaceholder(route.matchType, input);
 
     const removeButton = this.doc.createXULElement("button");
-    removeButton.className = "at-remove";
+    removeButton.className = "sr-remove";
 
     topRow.append(topLabelContainer, matchTypeMenulist, input, removeButton);
 
     // ---- Bottom row
 
     const bottomRow = this.doc.createElement("hbox");
-    bottomRow.className = "at-rule-row";
-    bottomRow.id = "at-rule-bottom";
+    bottomRow.className = "sr-rule-row";
+    bottomRow.id = "sr-rule-bottom";
 
     const bottomLabelContainer = this.doc.createElement("hbox");
-    bottomLabelContainer.className = "at-label-container";
+    bottomLabelContainer.className = "sr-label-container";
 
     const openInIcon = this.doc.createXULElement("image");
-    openInIcon.className = "at-open-in-icon";
+    openInIcon.className = "sr-open-in-icon";
 
     const openInLabel = this.doc.createElement("p");
-    openInLabel.className = "at-label";
+    openInLabel.className = "sr-label";
     openInLabel.textContent = "Open in";
 
     bottomLabelContainer.append(openInIcon, openInLabel);
@@ -224,8 +224,8 @@ export class nsZenAirTrafficDialog {
    * created should be displayed
    */
   updateShowNoRouteText() {
-    const container = this.doc.getElementById("at-content");
-    const noRoutesText = this.doc.getElementById("at-empty-content");
+    const container = this.doc.getElementById("sr-content");
+    const noRoutesText = this.doc.getElementById("sr-empty-content");
 
     // One because of the element itself
     noRoutesText.style.display =
@@ -240,7 +240,7 @@ export class nsZenAirTrafficDialog {
    * @param input
    */
   onRotueReferenceChange(value, routeId, input) {
-    const route = ZenAirTrafficManager.getRoute(routeId);
+    const route = ZenSmartRoutingManager.getRoute(routeId);
     route.reference = value;
 
     this.updateInputPlaceholder(route.matchType, input);
@@ -252,7 +252,7 @@ export class nsZenAirTrafficDialog {
       }
     }
 
-    ZenAirTrafficManager.updateRoute(route);
+    ZenSmartRoutingManager.updateRoute(route);
   }
 
   /**
@@ -262,9 +262,9 @@ export class nsZenAirTrafficDialog {
    * @param {string} routeId - The ID of the affected route
    */
   onRouteOpenInChange(value, routeId) {
-    const route = ZenAirTrafficManager.getRoute(routeId);
+    const route = ZenSmartRoutingManager.getRoute(routeId);
     route.openIn = value;
-    ZenAirTrafficManager.updateRoute(route);
+    ZenSmartRoutingManager.updateRoute(route);
   }
 
   /**
@@ -275,7 +275,7 @@ export class nsZenAirTrafficDialog {
    * @param {Element} input - The text input
    */
   onRouteMatchTypeChange(value, routeId, input) {
-    const route = ZenAirTrafficManager.getRoute(routeId);
+    const route = ZenSmartRoutingManager.getRoute(routeId);
     route.matchType = value;
 
     this.updateInputPlaceholder(route.matchType, input);
@@ -287,7 +287,7 @@ export class nsZenAirTrafficDialog {
       }
     }
 
-    ZenAirTrafficManager.updateRoute(route);
+    ZenSmartRoutingManager.updateRoute(route);
   }
 
   /**
@@ -340,7 +340,7 @@ export class nsZenAirTrafficDialog {
    * @param {string} value - The new value
    */
   onRouteDefaultExternalChange(value) {
-    ZenAirTrafficManager.setDefaultExternalRoute(value);
+    ZenSmartRoutingManager.setDefaultExternalRoute(value);
   }
 
   /**
@@ -355,8 +355,8 @@ export class nsZenAirTrafficDialog {
     popupElement.replaceChildren(); // Clear existing
 
     const [openInSpace, mostRecentSpace] = await this.doc.l10n.formatMessages([
-      "zen-air-traffic-open-in-space",
-      "zen-air-traffic-most-recent-space",
+      "zen-smart-routing-open-in-space",
+      "zen-smart-routing-most-recent-space",
     ]);
 
     const sectionHeader = this.doc.createXULElement("menuitem");
@@ -403,28 +403,28 @@ export class nsZenAirTrafficDialog {
    * Uninitializes the boost editor by cleaning up event listeners and observers.
    */
   uninit() {
-    nsZenAirTrafficDialog.OBSERVERS.forEach(observe => {
+    nsZenSmartRoutingDialog.OBSERVERS.forEach(observe => {
       Services.obs.removeObserver(this, observe);
     });
   }
 
   /**
-   * Kills all other air traffic control dialog instances
+   * Kills all other Smart Routing dialog instances
    */
   killOtherShareInstances() {
-    Services.obs.notifyObservers(null, "zen-air-traffic-kill");
+    Services.obs.notifyObservers(null, "zen-smart-routing-kill");
   }
 
   /**
    * Observer callback that handles notifications from the observer service.
-   * Closes the control window when a 'zen-air-traffic-kill' notification is received.
+   * Closes the control window when a 'zen-smart-routing-kill' notification is received.
    *
    * @param {object} subject - The subject of the notification.
    * @param {string} topic - The topic of the notification.
    */
   observe(subject, topic) {
     switch (topic) {
-      case "zen-air-traffic-kill":
+      case "zen-smart-routing-kill":
         this.editorWindow.close();
         break;
     }
@@ -441,6 +441,6 @@ export class nsZenAirTrafficDialog {
    * Handles the window close event
    */
   handleClose() {
-    ZenAirTrafficManager.saveRoutes();
+    ZenSmartRoutingManager.saveRoutes();
   }
 }

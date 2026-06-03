@@ -12,10 +12,10 @@
 <window
   xmlns:html="http://www.w3.org/1999/xhtml"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-  data-l10n-id="air-traffic-window"
-  windowtype="Zen:ControlFlow"
+  data-l10n-id="smart-routing-window"
+  windowtype="Zen:SmartRouting"
   customtitlebar="true"
-  id="zenAirTrafficDialog"
+  id="zenSmartRoutingDialog"
   dialogroot="true"
 >
   <linkset>
@@ -36,7 +36,7 @@
     />
     <html:link
       rel="stylesheet"
-      href="chrome://browser/content/zen-styles/zen-air-traffic.css"
+      href="chrome://browser/content/zen-styles/zen-smart-routing.css"
       type="text/css"
     />
     <html:link
@@ -54,39 +54,39 @@
       type="text/css"
       href="chrome://browser/content/zen-styles/zen-popup.css"
     />
-    <html:link rel="localization" href="browser/zen-air-traffic.ftl" />
+    <html:link rel="localization" href="browser/zen-smart-routing.ftl" />
   </linkset>
 
   <vbox
-    id="zen-air-traffic-dialog-container"
+    id="zen-smart-routing-dialog-container"
     class="dialogBox"
   >
-    <vbox id="at-container">
-      <hbox id="at-header">
-        <h3 data-l10n-id="zen-air-traffic-dialog-title"></h3>
-        <html:div id="at-left">
+    <vbox id="sr-container">
+      <hbox id="sr-header">
+        <h3 data-l10n-id="zen-smart-routing-dialog-title"></h3>
+        <html:div id="sr-left">
           <button
-            id="at-new-route"
-            data-l10n-id="zen-air-traffic-new-route"
+            id="sr-new-route"
+            data-l10n-id="zen-smart-routing-new-route"
           ></button>
-          <button class="close-icon" id="at-close"></button>
+          <button class="close-icon" id="sr-close"></button>
         </html:div>
       </hbox>
       <html:hr class="hr"></html:hr>
-      <vbox id="at-content">
-        <vbox id="at-empty-content">
-          <image class="at-airplane"></image>
-          <p data-l10n-id="zen-air-traffic-rulepanel-placeholder"></p>
+      <vbox id="sr-content">
+        <vbox id="sr-empty-content">
+          <image class="sr-airplane"></image>
+          <p data-l10n-id="zen-smart-routing-rulepanel-placeholder"></p>
         </vbox>
-        <!-- All rules will be injected here later -->
+# All rules will be injected here later
       </vbox>
       <html:hr class="hr"></html:hr>
-      <hbox id="at-footer">
-        <h4 data-l10n-id="zen-air-traffic-external-default"></h4>
-        <html:div id="at-left">
-          <menulist class="select" id="at-default-external-open-in">
-            <menupopup id="at-default-external-open-in-popup">
-              <!-- Select open in types will be injected here -->
+      <hbox id="sr-footer">
+        <h4 data-l10n-id="zen-smart-routing-external-default"></h4>
+        <html:div id="sr-left">
+          <menulist class="select" id="sr-default-external-open-in">
+            <menupopup id="sr-default-external-open-in-popup">
+# Select open in types will be injected here
             </menupopup>
           </menulist>
         </html:div>
@@ -95,11 +95,11 @@
   </vbox>
 
   <script>
-    const { nsZenAirTrafficDialog } = ChromeUtils.importESModule(
-      "resource:///modules/zen/airtraffic/ZenAirTrafficDialog.mjs",
+    const { nsZenSmartRoutingDialog } = ChromeUtils.importESModule(
+      "resource:///modules/zen/smartrouting/ZenSmartRoutingDialog.mjs",
     );
     const args = window.arguments?.[0] || {};
-    window.airtrafficDialog = new nsZenAirTrafficDialog(
+    window.smartroutingDialog = new nsZenSmartRoutingDialog(
       document,
       window,
       args.parentWindow,

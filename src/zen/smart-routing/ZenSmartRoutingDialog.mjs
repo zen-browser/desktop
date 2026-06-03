@@ -365,12 +365,15 @@ export class nsZenSmartRoutingDialog {
     sectionHeader.classList.add("menu-section-header");
     popupElement.appendChild(sectionHeader);
 
+    let availOptions = [];
+
     let createXulItem = (text, id, iconPath = null) => {
       if (text === "sep") {
         popupElement.appendChild(this.doc.createXULElement("menuseparator"));
         return;
       }
 
+      availOptions.push(id || text);
       const menuItem = this.doc.createXULElement("menuitem");
       menuItem.setAttribute("label", text);
       menuItem.setAttribute("value", id || text);
@@ -396,7 +399,11 @@ export class nsZenSmartRoutingDialog {
       createXulItem(workspace.name, workspace.uuid, workspace.icon);
     });
 
-    selectElement.value = value;
+    // Check if the workspace still exists, if not use default
+    if (availOptions.includes(value))
+      selectElement.value = value;
+    else 
+      selectElement.value = "most-recent-space";
   }
 
   /**

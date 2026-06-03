@@ -5,6 +5,16 @@
   {
     "type": "phabricator",
     "ids": [
+      "D296935",
+      "D303334",
+      "D297660",
+      "D304517"
+    ],
+    "name": "Corner shape support"
+  },
+  {
+    "type": "phabricator",
+    "ids": [
       "D284084",
       "D299584"
     ],

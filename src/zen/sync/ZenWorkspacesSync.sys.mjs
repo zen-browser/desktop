@@ -9,11 +9,7 @@ import {
 } from "resource://services-sync/engines.sys.mjs";
 import { CryptoWrapper } from "resource://services-sync/record.sys.mjs";
 import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
-
-// Score increments for the sync tracker. Higher values trigger sync sooner.
-// MULTI_DEVICE_THRESHOLD (300) is the point at which sync fires immediately.
-const SCORE_INCREMENT_STRUCTURAL = 301; // spaces, containers - important but rare
-const SCORE_INCREMENT_ITEM = 100; // tabs, folders - frequent, batches well
+import { SCORE_INCREMENT_XLARGE } from "resource://services-sync/constants.sys.mjs";
 
 const lazy = {};
 
@@ -536,10 +532,9 @@ class ZenWorkspacesTracker extends Tracker {
     if (data.type && data.id) {
       const id = createRecordId(data.type, data.id);
       this.#changedIDs[id] = Date.now() / 1000;
-      this.score +=
-        data.type === "space" || data.type === "container"
-          ? SCORE_INCREMENT_STRUCTURAL
-          : SCORE_INCREMENT_ITEM;
+      // increment score with SCORE_INCREMENT_XLARGE - this will cause and immediate sync
+      // if we want to do less often sync for tabs for example, we can change this to SCORE_INCREMENT_MEDIUM or other values
+      this.score += SCORE_INCREMENT_XLARGE;
     }
   }
 

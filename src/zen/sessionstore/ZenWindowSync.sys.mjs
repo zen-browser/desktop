@@ -200,6 +200,19 @@ class nsZenWindowSync {
   }
 
   /**
+   * Whether a tab currently displays live page content rather than the
+   * "about:blank" placeholder loaded into a browser whose contents were
+   * swapped out to another window.
+   *
+   * @param {MozTabbrowserTab} aTab - The tab to check.
+   * @returns {boolean} True unless the tab is blank or has no current URI.
+   */
+  #hasLiveContent(aTab) {
+    const spec = aTab?.linkedBrowser?.currentURI?.specIgnoringRef;
+    return !!(spec && spec !== "about:blank");
+  }
+
+  /**
    * Called when a browser window is about to be shown.
    * Adds event listeners for the specified events.
    *
@@ -1154,12 +1167,16 @@ class nsZenWindowSync {
         aWindow,
         selectedTab.id
       );
+      const selHasContent = this.#hasLiveContent(selectedTab);
+      const otherHasContent = this.#hasLiveContent(otherSelectedTab);
       selectedTab._zenContentsVisible = true;
       if (otherSelectedTab) {
         delete otherSelectedTab._zenContentsVisible;
-        promises.push(
-          this.#swapBrowserDocShellsAsync(selectedTab, otherSelectedTab)
-        );
+        if (!selHasContent && otherHasContent) {
+          promises.push(
+            this.#swapBrowserDocShellsAsync(selectedTab, otherSelectedTab)
+          );
+        }
       }
     }
     await Promise.all(promises);
@@ -1542,6 +1559,7 @@ class nsZenWindowSync {
       console.error(`Error moving active tabs to other windows on close:`, e);
     }
     resolve();
+    this.#docShellSwitchPromise = null;
   }
 
   on_WindowCloseAndBrowserFlushed(aBrowsers) {

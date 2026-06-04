@@ -34,6 +34,8 @@ support-files = [
 
 ["browser_tree_persist.js"]
 
+["browser_tree_split_node.js"]
+
 ["browser_middledrag_select.js"]
 
 ["browser_middledrag_actions.js"]

@@ -72,6 +72,7 @@
 
     #dragOverSplit = {};
     #dragOverNest = {};
+    #dragOverReorder = {};
 
     constructor(tabbrowserTabs) {
       super(tabbrowserTabs);
@@ -836,89 +837,152 @@
         !isTab(dropElement) ||
         dropElement.hasAttribute("zen-essential") ||
         dropElement.hasAttribute("zen-glance-tab") ||
-        dropElement?.group?.hasAttribute("split-view-group")
+        dropElement.hasAttribute("zen-live-folder-item-id") ||
+        draggedTab.hasAttribute("zen-live-folder-item-id")
       ) {
-        this._clearDragOverSplit();
-        this._clearDragOverNest();
+        this.#clearAllDragOverTree();
         return;
       }
 
+      const tree = window.gZenTabTree;
+      // With the tree on, a split group is a single node: target/drag its group
+      // element. With the tree off, keep the old behavior of ignoring splits.
       if (
-        movingTabsSet.has(dropElement) ||
-        !isTab(draggedTab) ||
-        draggedTab?.group?.hasAttribute("split-view-group") ||
-        draggedTab.hasAttribute("zen-live-folder-item-id") ||
-        dropElement.hasAttribute("zen-live-folder-item-id")
+        !tree?.enabled &&
+        (dropElement.group?.hasAttribute("split-view-group") ||
+          draggedTab.group?.hasAttribute("split-view-group"))
       ) {
-        this._clearDragOverSplit();
-        this._clearDragOverNest();
+        this.#clearAllDragOverTree();
+        return;
+      }
+      const nodeOf = t => (tree?.enabled ? tree.treeNodeFor(t) : t);
+      const targetNode = nodeOf(dropElement);
+      const draggedNodes = new Set([...movingTabsSet].map(nodeOf));
+      if (draggedNodes.has(targetNode)) {
+        this.#clearAllDragOverTree();
         return;
       }
 
-      const rect = window.windowUtils.getBoundsWithoutFlushing(dropElement);
+      const rect = window.windowUtils.getBoundsWithoutFlushing(targetNode);
       const { clientX, clientY } = event;
-      const targetX = rect.x;
-      const targetTop = rect.top;
-      const targetWidth = rect.width;
-      const targetHeight = rect.height;
+      const treeOk =
+        tree?.enabled && [...draggedNodes].every(n => tree.isTreeEligible(n));
 
+      // Vertical edges reorder (drop in the gap above/below), with a live indent
+      // preview whose level follows the cursor horizontally — drag left to
+      // outdent, all the way to root level 0.
       const edgeZoneThreshold = this._dndSplitThreshold / 100;
-
-      const overlapRatioY = (clientY - targetTop) / targetHeight;
+      const overlapRatioY = (clientY - rect.top) / rect.height;
       if (
         overlapRatioY < edgeZoneThreshold ||
         overlapRatioY > 1 - edgeZoneThreshold
       ) {
         this._clearDragOverSplit();
         this._clearDragOverNest();
+        if (treeOk) {
+          this.#updateReorderIndicator(
+            targetNode,
+            overlapRatioY < edgeZoneThreshold,
+            clientX,
+            draggedNodes
+          );
+        } else {
+          this._clearDragOverReorder();
+        }
         return;
       }
 
-      const isLeft = clientX < targetX + targetWidth / 2;
-      const dropSide = isLeft ? "left" : "right";
+      // Central band nests under the target. Only a normal tab's rightmost zone
+      // arms split (you can't split into an existing split), and only after a
+      // deliberate hold; everywhere else stays a tree action.
+      this._clearDragOverReorder();
+      const canNest = treeOk && tree.isTreeEligible(targetNode);
+      const splitZone =
+        Services.prefs.getIntPref("zen.tab-tree.drag-split-zone", 25) / 100;
+      const inSplitZone = clientX > rect.x + rect.width * (1 - splitZone);
+      const canSplit = movingTabsSet.size <= 1 && !tree?.isSplitGroup(targetNode);
 
-      // Central band reached: offer NEST immediately, escalate to SPLIT on hold.
-      const draggedTabs = [...movingTabsSet];
-      const canNest =
-        window.gZenTabTree?.enabled &&
-        window.gZenTabTree.isTreeEligible(dropElement) &&
-        draggedTabs.every(t => window.gZenTabTree.isTreeEligible(t)) &&
-        !movingTabsSet.has(dropElement);
-
-      // If the target/side changed, reset both machines.
-      if (
-        this.#dragOverSplit.data?.dropElement !== dropElement ||
-        this.#dragOverSplit.data?.dropSide !== dropSide
-      ) {
+      if (this.#dragOverSplit.data?.dropElement !== dropElement) {
         this._clearDragOverSplit();
+      }
+      const splitEscalated = !!this.#dragOverSplit.canDrop;
+
+      if (canNest && !splitEscalated) {
+        if (this.#dragOverNest.dropElement !== targetNode) {
+          this.#createNestIndicator(targetNode);
+        }
+      } else if (!canNest) {
         this._clearDragOverNest();
       }
 
-      if (canNest && this.#dragOverNest.dropElement !== dropElement) {
-        this.#createNestIndicator(dropElement);
-      }
-
-      // (Re)arm the escalation-to-split timer (split only supports one tab).
-      const canSplit = movingTabsSet.size <= 1;
-      if (
-        canSplit &&
-        (!this.#dragOverSplit.timer ||
-          this.#dragOverSplit.data?.dropElement !== dropElement ||
-          this.#dragOverSplit.data?.dropSide !== dropSide)
-      ) {
-        if (this.#dragOverSplit.timer) {
-          clearTimeout(this.#dragOverSplit.timer);
+      if (inSplitZone && canSplit) {
+        if (!this.#dragOverSplit.timer && !splitEscalated) {
+          this.#dragOverSplit.data = { dropElement, dropSide: "right" };
+          this.#dragOverSplit.timer = setTimeout(
+            () => {
+              this.#dragOverSplit.timer = null;
+              this._clearDragOverNest();
+              this.#createFakeTabSplit(dropElement, "right");
+            },
+            canNest ? this._dndNestToSplitDelay : this._dndSplitDelay
+          );
         }
-        this.#dragOverSplit.data = { dropElement, dropSide };
-        this.#dragOverSplit.timer = setTimeout(
-          () => {
-            // Escalate: drop the nest offer, show the split fake-tab.
-            this._clearDragOverNest();
-            this.#createFakeTabSplit(dropElement, dropSide);
-          },
-          canNest ? this._dndNestToSplitDelay : this._dndSplitDelay
-        );
+      } else if (!inSplitZone) {
+        // Left the split zone: cancel any pending/active split, restore nest.
+        this._clearDragOverSplit();
+        if (canNest && this.#dragOverNest.dropElement !== targetNode) {
+          this.#createNestIndicator(targetNode);
+        }
       }
+    }
+
+    #clearAllDragOverTree() {
+      this._clearDragOverSplit();
+      this._clearDragOverNest();
+      this._clearDragOverReorder();
+    }
+
+    // Show the reorder drop line in the gap above (`before`) or below the target
+    // node, indented to the level chosen by the cursor's horizontal position. The
+    // eligible node just above that gap bounds how deep the drop can nest.
+    #updateReorderIndicator(node, before, clientX, draggedNodes) {
+      const tree = window.gZenTabTree;
+      let prev = before ? node.previousElementSibling : node;
+      while (prev && (!tree.isTreeEligible(prev) || draggedNodes.has(prev))) {
+        prev = prev.previousElementSibling;
+      }
+      const indentStep = Services.prefs.getIntPref("zen.tab-tree.indent", 14);
+      const maxLevel = prev ? tree.getLevel(prev) + 1 : 0;
+      let level = 0;
+      if (prev) {
+        const prevRect = window.windowUtils.getBoundsWithoutFlushing(prev);
+        const baseX = prevRect.x - tree.getLevel(prev) * indentStep;
+        level = Math.round((clientX - baseX) / indentStep);
+      }
+      level = Math.max(0, Math.min(level, maxLevel));
+
+      this.#clearReorderIndicatorElement();
+      const indicator = document.createXULElement("zen-tree-nest-indicator");
+      indicator.style.marginInlineStart = `${level * indentStep}px`;
+      if (before) {
+        node.before(indicator);
+      } else {
+        node.after(indicator);
+      }
+      this.#dragOverReorder.indicator = indicator;
+      this.#dragOverReorder.level = level;
+      this.#dragOverReorder.canDrop = true;
+    }
+
+    #clearReorderIndicatorElement() {
+      this.#dragOverReorder.indicator?.remove();
+      this.#dragOverReorder.indicator = null;
+    }
+
+    _clearDragOverReorder() {
+      this.#clearReorderIndicatorElement();
+      this.#dragOverReorder.level = null;
+      this.#dragOverReorder.canDrop = null;
     }
 
     #createFakeTabSplit(dropElement, dropSide) {
@@ -954,21 +1018,23 @@
       this.#dragOverSplit.canDrop = null;
     }
 
-    #createNestIndicator(dropElement) {
+    #createNestIndicator(node) {
       this.#clearNestIndicatorElement();
       const indicator = document.createXULElement("zen-tree-nest-indicator");
-      const level = (window.gZenTabTree?.getLevel(dropElement) ?? 0) + 1;
+      const level = (window.gZenTabTree?.getLevel(node) ?? 0) + 1;
       const indentStep = Services.prefs.getIntPref("zen.tab-tree.indent", 14);
       indicator.style.marginInlineStart = `${level * indentStep}px`;
-      dropElement.after(indicator);
+      node.after(indicator);
+      node.toggleAttribute("zen-tree-nest-target", true);
       this.#dragOverNest.indicator = indicator;
-      this.#dragOverNest.dropElement = dropElement;
+      this.#dragOverNest.dropElement = node;
       this.#dragOverNest.canDrop = true;
     }
 
     #clearNestIndicatorElement() {
       this.#dragOverNest.indicator?.remove();
       this.#dragOverNest.indicator = null;
+      this.#dragOverNest.dropElement?.removeAttribute("zen-tree-nest-target");
     }
 
     _clearDragOverNest() {
@@ -1062,8 +1128,7 @@
       } else {
         this.#handle_dropReorder(event);
       }
-      this._clearDragOverSplit();
-      this._clearDragOverNest();
+      this.#clearAllDragOverTree();
     }
 
     #handle_dropSwitchSpace(event) {
@@ -1152,7 +1217,10 @@
       const draggedTabs = movingTabsSet?.size
         ? [...movingTabsSet]
         : [draggedTab];
-      window.gZenTabTree.handleReorderDrop(draggedTabs);
+      const level = this.#dragOverReorder.canDrop
+        ? this.#dragOverReorder.level
+        : null;
+      window.gZenTabTree.handleReorderDrop(draggedTabs, level);
     }
 
     handle_drop_transition(dropElement, draggedTab, movingTabs, dropBefore) {
@@ -1317,6 +1385,7 @@
       ownerGlobal.gZenPinnedTabManager.removeTabContainersDragoverClass();
       thisFromGlobal._clearDragOverSplit();
       thisFromGlobal._clearDragOverNest();
+      thisFromGlobal._clearDragOverReorder();
       const tree = ownerGlobal.gZenTabTree;
       if (tree?.enabled) {
         tree._dragActive = false;
@@ -1391,6 +1460,8 @@
       if (clearSplitDropIndicator) {
         this._clearDragOverSplit();
       }
+      this._clearDragOverNest();
+      this._clearDragOverReorder();
       gZenPinnedTabManager.removeTabContainersDragoverClass();
     }
 

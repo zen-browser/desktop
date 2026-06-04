@@ -4,8 +4,8 @@
 
 import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
-function domOrderOf(tabs) {
-  return [...tabs].sort((a, b) => {
+function domOrderOf(nodes) {
+  return [...nodes].sort((a, b) => {
     const pos = a.compareDocumentPosition(b);
     if (pos & Node.DOCUMENT_POSITION_FOLLOWING) {
       return -1;
@@ -17,6 +17,9 @@ function domOrderOf(tabs) {
   });
 }
 
+// A tree "node" is either a standalone tab or a split-view group element. The
+// split group is treated as one unit: it nests, indents, moves and collapses as
+// a single row, and its inner tabs never participate in the tree on their own.
 class nsZenTabTree extends nsZenDOMOperatedFeature {
   #enabled = false;
 
@@ -49,6 +52,8 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     window.addEventListener("TabClose", this);
     window.addEventListener("TabMove", this);
     window.addEventListener("TabPinned", this);
+    window.addEventListener("TabGrouped", this);
+    window.addEventListener("TabUngrouped", this);
     window.addEventListener("SSWindowStateReady", this);
   }
 
@@ -67,91 +72,152 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     return Services.prefs.getIntPref("zen.tab-tree.max-depth", 4);
   }
 
-  isTreeEligible(tab) {
+  #isSplitGroup(el) {
+    return !!el && gBrowser.isTabGroup(el) && el.hasAttribute("split-view-group");
+  }
+
+  // The node that owns a tab: its split group if it is in one, else the tab.
+  #nodeOf(tab) {
+    const group = tab?.group;
+    return group?.hasAttribute("split-view-group") ? group : tab;
+  }
+
+  // Every tree node (standalone tabs + split groups) in DOM order.
+  #nodes() {
+    const out = [];
+    const seen = new Set();
+    for (const tab of gBrowser.tabs) {
+      const node = this.#nodeOf(tab);
+      if (node && !seen.has(node)) {
+        seen.add(node);
+        out.push(node);
+      }
+    }
+    return out;
+  }
+
+  // A tab to activate when a node is selected (split group's active/first tab).
+  #representativeTab(node) {
+    if (this.#isSplitGroup(node)) {
+      return (
+        node.querySelector(".tabbrowser-tab[visuallyselected]") ||
+        node.querySelector(".tabbrowser-tab")
+      );
+    }
+    return node;
+  }
+
+  #workspaceIdOf(node) {
     return (
-      gBrowser.isTab(tab) &&
-      !tab.pinned &&
-      !tab.hasAttribute("zen-essential") &&
-      !tab.hasAttribute("zen-glance-tab") &&
-      !tab.hasAttribute("zen-empty-tab") &&
-      !tab.hasAttribute("zen-live-folder-item-id") &&
-      !tab.group?.hasAttribute("split-view-group")
+      node.getAttribute?.("zen-workspace-id") ||
+      this.#representativeTab(node)?.getAttribute("zen-workspace-id") ||
+      null
     );
   }
 
-  getParent(tab) {
-    const parent = tab?._zenTreeParent;
+  // The tree node that owns a tab (its split group, or the tab itself). Public
+  // so the drag handler can target split groups as single nodes.
+  treeNodeFor(tab) {
+    return this.#nodeOf(tab);
+  }
+
+  isSplitGroup(el) {
+    return this.#isSplitGroup(el);
+  }
+
+  isTreeEligible(node) {
+    if (this.#isSplitGroup(node)) {
+      return !node.pinned && !node.hasAttribute("zen-essential");
+    }
+    return (
+      gBrowser.isTab(node) &&
+      !node.group &&
+      !node.pinned &&
+      !node.hasAttribute("zen-essential") &&
+      !node.hasAttribute("zen-glance-tab") &&
+      !node.hasAttribute("zen-empty-tab") &&
+      !node.hasAttribute("zen-live-folder-item-id")
+    );
+  }
+
+  getParent(node) {
+    const parent = node?._zenTreeParent;
     return parent && parent.isConnected ? parent : null;
   }
 
-  getLevel(tab) {
+  getLevel(node) {
     let level = 0;
-    let node = this.getParent(tab);
-    while (node) {
+    let current = this.getParent(node);
+    while (current) {
       level++;
-      node = this.getParent(node);
+      current = this.getParent(current);
     }
     return level;
   }
 
-  getChildren(tab) {
-    return domOrderOf(gBrowser.tabs.filter(t => this.getParent(t) === tab));
+  getChildren(node) {
+    return domOrderOf(this.#nodes().filter(n => this.getParent(n) === node));
   }
 
-  getDescendants(tab) {
+  getDescendants(node) {
     const out = [];
-    for (const child of this.getChildren(tab)) {
+    for (const child of this.getChildren(node)) {
       out.push(child, ...this.getDescendants(child));
     }
     return out;
   }
 
+  // Nodes pointing at `node` by raw parent pointer (used during lifecycle fixup,
+  // before eligibility is settled).
+  #childrenByPointer(node) {
+    return this.#nodes().filter(n => n._zenTreeParent === node);
+  }
+
   reindex(root) {
-    const apply = (tab, level) => {
-      tab._zenTreeLevel = level;
-      this.#applyIndent(tab, level);
-      const parent = this.getParent(tab);
+    const apply = (node, level) => {
+      node._zenTreeLevel = level;
+      this.#applyIndent(node, level);
+      const parent = this.getParent(node);
       if (parent) {
-        tab.setAttribute("zen-tree-parent-id", parent.id || "");
+        node.setAttribute("zen-tree-parent-id", parent.id || "");
       } else {
-        tab.removeAttribute("zen-tree-parent-id");
+        node.removeAttribute("zen-tree-parent-id");
       }
-      this.#updateTwisty(tab);
-      for (const child of this.getChildren(tab)) {
+      this.#updateTwisty(node);
+      for (const child of this.getChildren(node)) {
         apply(child, level + 1);
       }
     };
     apply(root, this.getLevel(root));
   }
 
-  #applyIndent(tab, level) {
-    tab.style.setProperty(
+  #applyIndent(node, level) {
+    node.style.setProperty(
       "--zen-folder-indent",
       `${level * this.#indentStep}px`
     );
   }
 
-  nestTab(tab, parent, { position = "end" } = {}) {
+  nestTab(node, parent, { position = "end" } = {}) {
     if (
-      tab === parent ||
-      !this.isTreeEligible(tab) ||
+      node === parent ||
+      !this.isTreeEligible(node) ||
       !this.isTreeEligible(parent) ||
-      this.#isAncestor(tab, parent) || // prevent cycles
-      tab.getAttribute("zen-workspace-id") !==
-        parent.getAttribute("zen-workspace-id")
+      this.#isAncestor(node, parent) || // prevent cycles
+      this.#workspaceIdOf(node) !== this.#workspaceIdOf(parent)
     ) {
       return false;
     }
 
-    const previousParent = this.getParent(tab);
-    const subtree = [tab, ...this.getDescendants(tab)]; // already DFS order
-    tab._zenTreeParent = parent;
+    const previousParent = this.getParent(node);
+    const subtree = [node, ...this.getDescendants(node)]; // already DFS order
+    node._zenTreeParent = parent;
 
     let reference;
     if (position === "start") {
       reference = parent;
     } else {
-      const existing = this.getChildren(parent).filter(c => c !== tab);
+      const existing = this.getChildren(parent).filter(c => c !== node);
       const lastChild = existing[existing.length - 1];
       reference = lastChild ? this.#lastSubtreeNode(lastChild) : parent;
     }
@@ -163,35 +229,35 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     if (previousParent && previousParent !== parent) {
       this.reindex(this.#rootOf(previousParent));
     }
-    this.#onTreeChanged(tab);
+    this.#onTreeChanged(node);
     return true;
   }
 
-  promoteSubtree(tab) {
-    const grandparent = this.getParent(this.getParent(tab));
+  promoteSubtree(node) {
+    const grandparent = this.getParent(this.getParent(node));
     if (grandparent) {
-      this.nestTab(tab, grandparent, { position: "end" });
+      this.nestTab(node, grandparent, { position: "end" });
     } else {
-      this.detachTab(tab);
+      this.detachTab(node);
     }
   }
 
-  detachTab(tab) {
-    if (!this.getParent(tab)) {
+  detachTab(node) {
+    if (!this.getParent(node)) {
       return;
     }
-    tab._zenTreeParent = null;
-    this.reindex(tab);
-    this.#onTreeChanged(tab);
+    node._zenTreeParent = null;
+    this.reindex(node);
+    this.#onTreeChanged(node);
   }
 
-  nestTabsAsChildren(tabs, parent) {
-    const eligible = tabs.filter(
-      t =>
-        t !== parent && this.isTreeEligible(t) && !this.#isAncestor(t, parent)
+  nestTabsAsChildren(nodes, parent) {
+    const eligible = nodes.filter(
+      n =>
+        n !== parent && this.isTreeEligible(n) && !this.#isAncestor(n, parent)
     );
-    for (const t of eligible) {
-      this.nestTab(t, parent, { position: "end" });
+    for (const n of eligible) {
+      this.nestTab(n, parent, { position: "end" });
     }
   }
 
@@ -218,17 +284,26 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     }
   }
 
-  // The "roots" of a dragged set: dragged tabs whose parent is NOT also in the
+  // The "roots" of a dragged set: dragged nodes whose parent is NOT also in the
   // set. Their subtrees travel with them and keep their internal hierarchy.
   #draggedRoots(draggedTabs) {
-    const tabs = draggedTabs.filter(t => this.isTreeEligible(t));
-    const set = new Set(tabs);
-    return domOrderOf(tabs.filter(t => !set.has(this.getParent(t))));
+    const nodes = [];
+    const seen = new Set();
+    for (const tab of draggedTabs) {
+      const node = this.#nodeOf(tab);
+      if (this.isTreeEligible(node) && !seen.has(node)) {
+        seen.add(node);
+        nodes.push(node);
+      }
+    }
+    const set = new Set(nodes);
+    return domOrderOf(nodes.filter(n => !set.has(this.getParent(n))));
   }
 
   // NEST drop: a single dragged root nests under target keeping its hierarchy;
   // multiple roots each become a direct child of target (subtrees follow).
   handleNestDrop(draggedTabs, target) {
+    target = this.#nodeOf(target);
     if (!this.enabled || !this.isTreeEligible(target)) {
       return false;
     }
@@ -243,9 +318,11 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     return true;
   }
 
-  // REORDER drop: native move already placed the tabs; make each dragged root a
-  // sibling there (parent = the eligible tab just above the moved block).
-  handleReorderDrop(draggedTabs) {
+  // REORDER drop: native move already placed the nodes. The eligible node just
+  // above the moved block (`prev`) anchors the level: with no explicit level the
+  // dragged roots become its siblings; with one (set by the drag's horizontal
+  // position) they land at that indent, where level 0 unparents to the root.
+  handleReorderDrop(draggedTabs, targetLevel = null) {
     if (!this.enabled) {
       return;
     }
@@ -253,12 +330,19 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     if (!roots.length) {
       return;
     }
-    const set = new Set(draggedTabs);
+    const draggedNodes = new Set(
+      roots.flatMap(r => [r, ...this.getDescendants(r)])
+    );
     let prev = roots[0].previousElementSibling;
-    while (prev && (!this.isTreeEligible(prev) || set.has(prev))) {
+    while (prev && (!this.isTreeEligible(prev) || draggedNodes.has(prev))) {
       prev = prev.previousElementSibling;
     }
-    const newParent = prev ? this.getParent(prev) : null;
+    let newParent;
+    if (targetLevel == null) {
+      newParent = prev ? this.getParent(prev) : null;
+    } else {
+      newParent = this.#parentForLevel(prev, targetLevel);
+    }
     const affected = new Set();
     for (const root of roots) {
       if (
@@ -278,95 +362,122 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     this.#onTreeChanged(roots[0]);
   }
 
-  setCollapsed(tab, collapsed) {
-    if (!this.getChildren(tab).length) {
+  setCollapsed(node, collapsed) {
+    if (!this.getChildren(node).length) {
       return;
     }
-    tab._zenTreeCollapsed = collapsed;
-    tab.toggleAttribute("zen-tree-collapsed", collapsed);
+    node._zenTreeCollapsed = collapsed;
+    node.toggleAttribute("zen-tree-collapsed", collapsed);
 
-    const descendants = this.getDescendants(tab);
+    const descendants = this.getDescendants(node);
     for (const d of descendants) {
-      // A descendant is hidden if ANY ancestor up to `tab` is collapsed.
+      // A descendant is hidden if ANY ancestor up to `node` is collapsed.
       d.toggleAttribute("zen-tree-hidden", this.#isHiddenByCollapse(d));
     }
 
-    if (
-      collapsed &&
-      gBrowser.selectedTab &&
-      descendants.includes(gBrowser.selectedTab)
-    ) {
-      gBrowser.selectedTab = tab; // nearest visible ancestor
+    const selectedNode = this.#nodeOf(gBrowser.selectedTab);
+    if (collapsed && selectedNode && descendants.includes(selectedNode)) {
+      gBrowser.selectedTab = this.#representativeTab(node); // nearest visible
     }
 
-    this.#updateTwisty(tab);
-    this.#onTreeChanged(tab);
+    this.#updateTwisty(node);
+    this.#onTreeChanged(node);
   }
 
-  toggleCollapse(tab) {
-    this.setCollapsed(tab, !tab._zenTreeCollapsed);
+  toggleCollapse(node) {
+    this.setCollapsed(node, !node._zenTreeCollapsed);
   }
 
-  #isHiddenByCollapse(tab) {
-    let node = this.getParent(tab);
-    while (node) {
-      if (node._zenTreeCollapsed) {
+  #isHiddenByCollapse(node) {
+    let current = this.getParent(node);
+    while (current) {
+      if (current._zenTreeCollapsed) {
         return true;
       }
-      node = this.getParent(node);
+      current = this.getParent(current);
     }
     return false;
   }
 
-  // Ensure a clickable twisty exists on parent tabs (and not on leaves).
-  #updateTwisty(tab) {
-    const hasChildren = this.getChildren(tab).length > 0;
-    let twisty = tab.querySelector(".zen-tree-twisty");
+  // Keep a clickable twisty on parent nodes (and not on leaves). On a tab it
+  // overlays the favicon inside the icon stack; on a split group it floats over
+  // the group's inline-start edge.
+  #updateTwisty(node) {
+    const hasChildren = this.getChildren(node).length > 0;
+    const isGroup = this.#isSplitGroup(node);
+    let twisty = isGroup
+      ? node.querySelector(":scope > .zen-tree-twisty")
+      : node.querySelector(".tab-icon-stack > .zen-tree-twisty");
     if (hasChildren && !twisty) {
       twisty = document.createXULElement("image");
       twisty.className = "zen-tree-twisty";
       twisty.addEventListener("mousedown", e => {
         e.stopPropagation();
         e.preventDefault();
-        this.toggleCollapse(tab);
+        this.toggleCollapse(node);
       });
-      tab.insertBefore(twisty, tab.firstChild);
+      if (isGroup) {
+        twisty.classList.add("zen-tree-twisty-group");
+        // The group overrides appendChild to route children into its tab
+        // container (which feeds `.tabs`); bypass it so the twisty is a real
+        // direct child and isn't mistaken for a tab.
+        Node.prototype.appendChild.call(node, twisty);
+      } else {
+        const iconStack = node.querySelector(".tab-icon-stack");
+        const favicon = iconStack?.querySelector(".tab-icon-image");
+        if (favicon) {
+          favicon.after(twisty);
+        } else {
+          (iconStack || node).appendChild(twisty);
+        }
+      }
     } else if (!hasChildren && twisty) {
       twisty.remove();
     }
-    tab.toggleAttribute("zen-tree-parent", hasChildren);
+    node.toggleAttribute("zen-tree-parent", hasChildren);
   }
 
-  #isAncestor(maybeAncestor, tab) {
-    let node = this.getParent(tab);
-    while (node) {
-      if (node === maybeAncestor) {
+  #isAncestor(maybeAncestor, node) {
+    let current = this.getParent(node);
+    while (current) {
+      if (current === maybeAncestor) {
         return true;
       }
-      node = this.getParent(node);
+      current = this.getParent(current);
     }
     return false;
   }
 
-  #rootOf(tab) {
-    let node = tab;
-    while (this.getParent(node)) {
-      node = this.getParent(node);
+  #rootOf(node) {
+    let current = node;
+    while (this.getParent(current)) {
+      current = this.getParent(current);
     }
-    return node;
+    return current;
   }
 
-  #lastSubtreeNode(tab) {
-    const desc = this.getDescendants(tab);
-    return desc.length ? desc[desc.length - 1] : tab;
+  #lastSubtreeNode(node) {
+    const desc = this.getDescendants(node);
+    return desc.length ? desc[desc.length - 1] : node;
   }
 
-  #ancestorAtLevel(tab, level) {
-    let node = tab;
-    while (node && this.getLevel(node) > level) {
-      node = this.getParent(node);
+  #ancestorAtLevel(node, level) {
+    let current = node;
+    while (current && this.getLevel(current) > level) {
+      current = this.getParent(current);
     }
-    return node;
+    return current;
+  }
+
+  // Parent that puts a node at `level` when dropped just below `prev`: level 0 is
+  // the root, the deepest allowed (prev's level + 1) makes it prev's child, and
+  // values between climb prev's ancestor chain. Clamped to that valid range.
+  #parentForLevel(prev, level) {
+    if (!prev || level <= 0) {
+      return null;
+    }
+    const max = this.getLevel(prev) + 1;
+    return this.#ancestorAtLevel(prev, Math.min(level, max) - 1);
   }
 
   // Insert each subtree node, in order, immediately after `reference`,
@@ -384,32 +495,66 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     this._suppressMoveHandling = false;
   }
 
-  // After a plain reorder, set tab's parent to that of its previous visible
+  // After a plain reorder, set node's parent to that of its previous visible
   // sibling (or root at container start).
-  #reparentFromNeighbor(tab) {
-    if (!this.isTreeEligible(tab)) {
+  #reparentFromNeighbor(node) {
+    if (!this.isTreeEligible(node)) {
       return;
     }
-    let prev = tab.previousElementSibling;
+    let prev = node.previousElementSibling;
     while (prev && !this.isTreeEligible(prev)) {
       prev = prev.previousElementSibling;
     }
     const newParent = prev ? this.getParent(prev) : null;
-    if (newParent === tab || this.#isAncestor(tab, newParent)) {
+    if (newParent === node || this.#isAncestor(node, newParent)) {
       return; // never create a cycle
     }
-    if (this.getParent(tab) !== newParent) {
-      tab._zenTreeParent = newParent;
-      this.reindex(this.#rootOf(tab));
-      this.#onTreeChanged(tab);
+    if (this.getParent(node) !== newParent) {
+      node._zenTreeParent = newParent;
+      this.reindex(this.#rootOf(node));
+      this.#onTreeChanged(node);
     }
   }
 
   // Fire a change so window-sync can replicate the new tree state.
-  #onTreeChanged(tab) {
-    if (tab && tab.isConnected) {
-      tab.dispatchEvent(new CustomEvent("ZenTreeChanged", { bubbles: true }));
+  #onTreeChanged(node) {
+    if (node && node.isConnected) {
+      node.dispatchEvent(new CustomEvent("ZenTreeChanged", { bubbles: true }));
     }
+  }
+
+  // Drop a node out of the tree, promoting its children to its former parent and
+  // clearing its own tree state/attributes.
+  #clearNodeState(node) {
+    node._zenTreeParent = null;
+    node._zenTreeCollapsed = false;
+    node.removeAttribute?.("zen-tree-parent-id");
+    node.removeAttribute?.("zen-tree-collapsed");
+    node.removeAttribute?.("zen-tree-hidden");
+    node.style?.removeProperty("--zen-folder-indent");
+    this.#updateTwisty(node);
+  }
+
+  #evictFromTree(node) {
+    const children = this.getChildren(node);
+    const newParent = this.getParent(node);
+    for (const child of children) {
+      child._zenTreeParent = newParent;
+    }
+    this.#clearNodeState(node);
+
+    const roots = new Set();
+    if (newParent) {
+      roots.add(this.#rootOf(newParent));
+    } else {
+      for (const child of children) {
+        roots.add(child);
+      }
+    }
+    for (const root of roots) {
+      this.reindex(root);
+    }
+    this.#onTreeChanged(node);
   }
 
   on_TabOpen(event) {
@@ -422,13 +567,12 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     const tab = event.target;
     // `owner` is Firefox's opener-tab relationship for tabs opened from
     // another tab (link-in-new-tab, ctrl/middle click).
-    const opener = tab.owner;
+    const opener = tab.owner ? this.#nodeOf(tab.owner) : null;
     if (
       !opener ||
       !this.isTreeEligible(tab) ||
       !this.isTreeEligible(opener) ||
-      tab.getAttribute("zen-workspace-id") !==
-        opener.getAttribute("zen-workspace-id")
+      this.#workspaceIdOf(tab) !== this.#workspaceIdOf(opener)
     ) {
       return;
     }
@@ -439,8 +583,8 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     if (!this.enabled) {
       return;
     }
-    const tab = event.target;
-    const children = this.getChildren(tab);
+    const node = this.#nodeOf(event.target);
+    const children = this.getChildren(node);
     if (!children.length) {
       return;
     }
@@ -449,7 +593,9 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
       "promote"
     );
     if (behavior === "close-subtree") {
-      const subtree = this.getDescendants(tab);
+      const subtree = this.getDescendants(node).flatMap(n =>
+        this.#isSplitGroup(n) ? [...n.tabs] : [n]
+      );
       // Defer so the current close finishes first.
       window.setTimeout(() => {
         gBrowser.removeTabs(
@@ -459,7 +605,7 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
       }, 0);
       return;
     }
-    const newParent = this.getParent(tab);
+    const newParent = this.getParent(node);
     for (const child of children) {
       child._zenTreeParent = newParent;
     }
@@ -474,39 +620,71 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     for (const root of roots) {
       this.reindex(root);
     }
-    this.#onTreeChanged(tab);
+    this.#onTreeChanged(node);
   }
 
   on_TabPinned(event) {
-    if (!this.enabled) {
+    if (this.enabled) {
+      this.#evictFromTree(event.target);
+    }
+  }
+
+  // A tab joining a split view hands its tree role to the split group node: the
+  // group inherits the tab's parent, adopts its children, and the tab is cleared.
+  on_TabGrouped(event) {
+    const tab = event.detail;
+    const group = event.target;
+    if (!this.enabled || !this.#isSplitGroup(group)) {
       return;
     }
-    const tab = event.target;
-    const children = this.getChildren(tab);
-    const newParent = this.getParent(tab);
-    for (const child of children) {
-      child._zenTreeParent = newParent;
+    const tabParent = this.getParent(tab);
+    if (
+      tabParent &&
+      !this.getParent(group) &&
+      group !== tabParent &&
+      !this.#isAncestor(group, tabParent)
+    ) {
+      group._zenTreeParent = tabParent;
     }
-    tab._zenTreeParent = null;
-    tab._zenTreeCollapsed = false;
-    tab.removeAttribute("zen-tree-parent-id");
-    tab.removeAttribute("zen-tree-collapsed");
-    tab.removeAttribute("zen-tree-hidden");
-    tab.style.removeProperty("--zen-folder-indent");
-    this.#updateTwisty(tab);
-
-    const roots = new Set();
-    if (newParent) {
-      roots.add(this.#rootOf(newParent));
-    } else {
-      for (const child of children) {
-        roots.add(child);
+    for (const child of this.#childrenByPointer(tab)) {
+      if (child !== group && !this.#isAncestor(child, group)) {
+        child._zenTreeParent = group;
       }
     }
-    for (const root of roots) {
-      this.reindex(root);
+    this.#clearNodeState(tab);
+    this.reindex(this.#rootOf(group));
+    this.#onTreeChanged(group);
+  }
+
+  // A split shrinking below two tabs is no longer a node: promote its children
+  // to its parent and clear it. Deferred so the DOM settles first.
+  on_TabUngrouped(event) {
+    const group = event.target;
+    if (!this.enabled || !this.#isSplitGroup(group)) {
+      return;
     }
-    this.#onTreeChanged(tab);
+    window.setTimeout(() => this.#reconcileDissolvedSplit(group), 0);
+  }
+
+  #reconcileDissolvedSplit(group) {
+    const stillSplit =
+      group?.isConnected &&
+      this.#isSplitGroup(group) &&
+      (group.tabs || []).filter(t => t.isConnected).length >= 2;
+    if (stillSplit) {
+      return;
+    }
+    const groupParent = this.getParent(group);
+    const children = this.#childrenByPointer(group);
+    for (const child of children) {
+      child._zenTreeParent = groupParent;
+    }
+    this.#clearNodeState(group);
+    const root = groupParent ? this.#rootOf(groupParent) : children[0];
+    if (root) {
+      this.reindex(root);
+      this.#onTreeChanged(root);
+    }
   }
 
   on_TabMove(event) {
@@ -515,17 +693,17 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     if (!this.enabled || this._suppressMoveHandling || this._dragActive) {
       return;
     }
-    const tab = event.target;
-    if (!this.isTreeEligible(tab)) {
+    const node = this.#nodeOf(event.target);
+    if (!this.isTreeEligible(node)) {
       return;
     }
-    // A programmatic move relocates only this tab. If it has a subtree, bring
+    // A programmatic move relocates only this node. If it has a subtree, bring
     // the whole subtree along so it stays contiguous, then re-derive the parent.
-    const descendants = this.getDescendants(tab);
+    const descendants = this.getDescendants(node);
     if (descendants.length) {
-      this.#moveSubtreeAfter([tab, ...descendants], tab);
+      this.#moveSubtreeAfter([node, ...descendants], node);
     }
-    this.#reparentFromNeighbor(tab);
+    this.#reparentFromNeighbor(node);
   }
 
   on_SSWindowStateReady() {
@@ -538,26 +716,26 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
       return;
     }
     const byId = new Map();
-    for (const tab of gBrowser.tabs) {
-      if (tab.id) {
-        byId.set(tab.id, tab);
+    for (const node of this.#nodes()) {
+      if (node.id) {
+        byId.set(node.id, node);
       }
     }
-    for (const tab of gBrowser.tabs) {
-      const pid = tab.getAttribute("zen-tree-parent-id");
+    for (const node of this.#nodes()) {
+      const pid = node.getAttribute("zen-tree-parent-id");
       const parent = pid ? byId.get(pid) : null;
-      tab._zenTreeParent =
-        parent && parent !== tab && this.isTreeEligible(tab) ? parent : null;
-      tab._zenTreeCollapsed = tab.hasAttribute("zen-tree-collapsed");
+      node._zenTreeParent =
+        parent && parent !== node && this.isTreeEligible(node) ? parent : null;
+      node._zenTreeCollapsed = node.hasAttribute("zen-tree-collapsed");
     }
-    for (const tab of gBrowser.tabs) {
-      if (this.isTreeEligible(tab) && !this.getParent(tab)) {
-        this.reindex(tab);
+    for (const node of this.#nodes()) {
+      if (this.isTreeEligible(node) && !this.getParent(node)) {
+        this.reindex(node);
       }
     }
-    for (const tab of gBrowser.tabs) {
-      if (tab._zenTreeCollapsed) {
-        for (const d of this.getDescendants(tab)) {
+    for (const node of this.#nodes()) {
+      if (node._zenTreeCollapsed) {
+        for (const d of this.getDescendants(node)) {
           d.toggleAttribute("zen-tree-hidden", this.#isHiddenByCollapse(d));
         }
       }

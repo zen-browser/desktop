@@ -2,39 +2,74 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-.tabbrowser-tab[zen-tree-hidden] {
+.tabbrowser-tab[zen-tree-hidden],
+tab-group[split-view-group][zen-tree-hidden] {
   display: none !important;
 }
 
-.tabbrowser-tab .zen-tree-twisty {
-  width: 12px;
-  height: 12px;
-  margin-inline: 2px;
-  flex-shrink: 0;
+/* Shared twisty look. It's hidden until the parent row is hovered (or stays
+   visible while collapsed so the branch can be reopened). */
+.zen-tree-twisty {
+  width: 16px;
+  height: 16px;
   -moz-context-properties: fill;
   fill: currentColor;
-  opacity: 0.7;
   list-style-image: url("chrome://global/skin/icons/arrow-down.svg");
+  opacity: 0;
+  pointer-events: none;
+  cursor: pointer;
   transition:
     transform 0.15s ease,
     opacity 0.15s ease;
-  cursor: pointer;
 }
 
-.tabbrowser-tab .zen-tree-twisty:hover {
+/* On a tab the twisty is a favicon sibling inside the icon <stack>, so it
+   overlays the favicon with no layout width and the parent keeps its own indent.
+   The icon-stack margins keep it left-aligned over the favicon. */
+.tabbrowser-tab .zen-tree-twisty {
+  margin-inline-end: var(--toolbarbutton-inner-padding) !important;
+  margin-inline-start: calc(var(--toolbarbutton-inner-padding) / 3) !important;
+}
+
+/* On a split group it floats over the group's inline-start edge. */
+tab-group[split-view-group] > .zen-tree-twisty {
+  position: absolute;
+  inset-inline-start: 4px;
+  inset-block: 0;
+  margin-block: auto;
+  z-index: 3;
+}
+
+.tabbrowser-tab[zen-tree-parent]:hover .zen-tree-twisty,
+.tabbrowser-tab[zen-tree-collapsed] .zen-tree-twisty,
+tab-group[split-view-group][zen-tree-parent]:hover > .zen-tree-twisty,
+tab-group[split-view-group][zen-tree-collapsed] > .zen-tree-twisty {
+  opacity: 0.85;
+  pointer-events: auto;
+}
+
+.zen-tree-twisty:hover {
   opacity: 1;
 }
 
+/* Favicon steps aside while the twisty is shown over it. */
+.tabbrowser-tab[zen-tree-parent]:hover .tab-icon-image,
+.tabbrowser-tab[zen-tree-collapsed] .tab-icon-image {
+  opacity: 0;
+}
+
 /* Point right when collapsed, down when expanded. */
-.tabbrowser-tab[zen-tree-collapsed] .zen-tree-twisty {
+.tabbrowser-tab[zen-tree-collapsed] .zen-tree-twisty,
+tab-group[split-view-group][zen-tree-collapsed] > .zen-tree-twisty {
   transform: rotate(-90deg);
 }
 
-:root:not([zen-sidebar-expanded="true"]) .tabbrowser-tab .zen-tree-twisty {
+:root:not([zen-sidebar-expanded="true"]) .zen-tree-twisty {
   display: none;
 }
 
-/* Drop-as-child indicator shown under the target tab during a nest drag. */
+/* Drop indicator line: under the target at child indent for a nest, or in the
+   gap at the chosen indent for a reorder. A dot marks the indent anchor. */
 zen-tree-nest-indicator {
   display: block;
   height: 2px;
@@ -43,6 +78,25 @@ zen-tree-nest-indicator {
   border-radius: 1px;
   background-color: var(--zen-primary-color, AccentColor);
   pointer-events: none;
+}
+
+zen-tree-nest-indicator::before {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 6px;
+  margin-block: -2px;
+  margin-inline-start: -3px;
+  border-radius: 50%;
+  background-color: var(--zen-primary-color, AccentColor);
+}
+
+/* The node a quick-drop will nest under is outlined so the target is obvious. */
+.tabbrowser-tab[zen-tree-nest-target],
+tab-group[split-view-group][zen-tree-nest-target] {
+  outline: 2px solid var(--zen-primary-color, AccentColor);
+  outline-offset: -2px;
+  border-radius: var(--border-radius-medium, 8px);
 }
 
 /* Middle-mouse drag-select: hint that releasing will close these tabs. */

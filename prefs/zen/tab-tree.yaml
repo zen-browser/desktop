@@ -19,7 +19,10 @@
   value: 4 # maximum level; root = 0; 0 disables the cap
 
 - name: zen.tab-tree.drag-nest-to-split-delayMC
-  value: 300 # ms hold before nest escalates to split
+  value: 500 # ms hold in a tab's right edge zone before it escalates to split
+
+- name: zen.tab-tree.drag-split-zone
+  value: 25 # rightmost % of a tab that arms the split gesture
 
 - name: zen.tabs.middle-drag-select.enabled
   value: true

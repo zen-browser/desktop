@@ -200,19 +200,6 @@ class nsZenWindowSync {
   }
 
   /**
-   * Whether a tab currently displays live page content rather than the
-   * "about:blank" placeholder loaded into a browser whose contents were
-   * swapped out to another window.
-   *
-   * @param {MozTabbrowserTab} aTab - The tab to check.
-   * @returns {boolean} True unless the tab is blank or has no current URI.
-   */
-  #hasLiveContent(aTab) {
-    const spec = aTab?.linkedBrowser?.currentURI?.specIgnoringRef;
-    return !!(spec && spec !== "about:blank");
-  }
-
-  /**
    * Called when a browser window is about to be shown.
    * Adds event listeners for the specified events.
    *
@@ -534,10 +521,13 @@ class nsZenWindowSync {
     if (flags & SYNC_FLAG_ICON) {
       aTargetItem.zenStaticIcon = aOriginalItem.zenStaticIcon;
       if (gBrowser.isTab(aOriginalItem)) {
-        gBrowser.setIcon(
-          aTargetItem,
-          aOriginalItem.getAttribute("image") || gBrowser.getIcon(aOriginalItem)
-        );
+        try {
+          gBrowser.setIcon(
+            aTargetItem,
+            aOriginalItem.getAttribute("image") ||
+              gBrowser.getIcon(aOriginalItem)
+          );
+        } catch {}
       } else if (aOriginalItem.isZenFolder) {
         // Icons are a zen-only feature for tab groups.
         gZenFolders.setFolderUserIcon(aTargetItem, aOriginalItem.iconURL);
@@ -1167,16 +1157,12 @@ class nsZenWindowSync {
         aWindow,
         selectedTab.id
       );
-      const selHasContent = this.#hasLiveContent(selectedTab);
-      const otherHasContent = this.#hasLiveContent(otherSelectedTab);
       selectedTab._zenContentsVisible = true;
       if (otherSelectedTab) {
         delete otherSelectedTab._zenContentsVisible;
-        if (!selHasContent && otherHasContent) {
-          promises.push(
-            this.#swapBrowserDocShellsAsync(selectedTab, otherSelectedTab)
-          );
-        }
+        promises.push(
+          this.#swapBrowserDocShellsAsync(selectedTab, otherSelectedTab)
+        );
       }
     }
     await Promise.all(promises);

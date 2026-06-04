@@ -137,7 +137,7 @@ class nsZenBoostsManager {
         autoTheme: false,
 
         textCaseOverride: "none",
-        sizeOverride: 1,
+        sizeOverride: 0,
 
         zapSelectors: [],
         customCSS: "",

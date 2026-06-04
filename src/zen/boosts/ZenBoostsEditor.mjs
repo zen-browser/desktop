@@ -639,7 +639,7 @@ ${cssSelector} {
    * Handles the size toggle button press, cycling through size override options
    */
   onBoostSizePressed() {
-    if (this.currentBoostData.sizeOverride == 1) {
+    if (this.currentBoostData.sizeOverride == 0) {
       this.currentBoostData.sizeOverride = 1.1;
     } else if (this.currentBoostData.sizeOverride == 1.1) {
       this.currentBoostData.sizeOverride = 1.25;
@@ -649,6 +649,8 @@ ${cssSelector} {
       this.currentBoostData.sizeOverride = 0.9;
     } else if (this.currentBoostData.sizeOverride == 0.9) {
       this.currentBoostData.sizeOverride = 1;
+    } else if (this.currentBoostData.sizeOverride == 1) {
+      this.currentBoostData.sizeOverride = 0;
     }
 
     this.updateSizeButtonVisuals();
@@ -1120,7 +1122,7 @@ ${cssSelector} {
     const sizeValue = this.doc.getElementById("zen-boost-size-value");
 
     switch (this.currentBoostData.sizeOverride) {
-      case 1:
+      case 0:
         sizeButton.setAttribute("mode", "none");
         sizeText.style.display = "initial";
         sizeValue.style.display = "none";
@@ -1142,6 +1144,11 @@ ${cssSelector} {
         break;
       case 0.9:
         sizeButton.setAttribute("mode", "blue");
+        sizeText.style.display = "none";
+        sizeValue.style.display = "initial";
+        break;
+      case 1:
+        sizeButton.setAttribute("mode", "green");
         sizeText.style.display = "none";
         sizeValue.style.display = "initial";
         break;
@@ -1581,8 +1588,11 @@ ${cssSelector} {
     const gradient = this.doc.querySelector(".zen-boost-color-picker-gradient");
     const rect = gradient.getBoundingClientRect();
 
-    if (!this.currentBoostData.sizeOverride) {
-      this.currentBoostData.sizeOverride = 1;
+    if (
+      !this.currentBoostData.sizeOverride &&
+      this.currentBoostData.sizeOverride !== 0
+    ) {
+      this.currentBoostData.sizeOverride = 0;
     }
 
     if (

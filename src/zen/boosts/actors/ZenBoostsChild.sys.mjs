@@ -359,7 +359,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
       if (
         boostData.sizeOverride &&
         isFinite(boostData.sizeOverride) &&
-        boostData.sizeOverride !== 1
+        boostData.sizeOverride !== 0
       ) {
         browsingContext.fullZoom = boostData.sizeOverride;
       }

@@ -627,6 +627,11 @@ body {
   --mod-button-c1: light-dark(#6650fc, #5d56ca);
   --mod-button-c2: light-dark(#4125ff, #453aa9);
 }
+.mod-button[mode="green"] {
+  color: #e3e9e4;
+  --mod-button-c1: light-dark(#2dd75d, #187432);
+  --mod-button-c2: light-dark(#23a849, #0c3919);
+}
 .mod-button[mode] {
   background: linear-gradient(180deg, var(--mod-button-c1) 0%, var(--mod-button-c2) 100%) border-box;
   transition:

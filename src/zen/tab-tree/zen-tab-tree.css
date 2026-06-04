@@ -47,3 +47,9 @@ zen-tree-nest-indicator {
   background-color: var(--zen-primary-color, AccentColor);
   pointer-events: none;
 }
+
+/* Middle-mouse drag-select: hint that releasing will close these tabs. */
+.tabbrowser-tab[zen-pending-close] {
+  outline: 1px solid color-mix(in srgb, red 60%, transparent);
+  outline-offset: -1px;
+}

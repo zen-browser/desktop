@@ -5,6 +5,7 @@
 [DEFAULT]
 prefs = [
   "zen.tab-tree.enabled=true",
+  "zen.tabs.middle-drag-select.enabled=true",
   "widget.macos.native-context-menus=false",
 ]
 support-files = [
@@ -32,3 +33,7 @@ support-files = [
 ["browser_tree_reorder.js"]
 
 ["browser_tree_persist.js"]
+
+["browser_middledrag_select.js"]
+
+["browser_middledrag_actions.js"]

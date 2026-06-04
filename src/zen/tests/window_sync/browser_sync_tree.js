@@ -43,9 +43,9 @@ add_task(async function test_nest_syncs_to_other_window() {
     BrowserTestUtils.removeTab(parent);
   });
 
-  // Window-sync can mirror the synced window's initial blank tab into this
-  // window; drop anything that wasn't here before so the harness's
-  // end-of-test tab check stays clean.
+  // Clean up any tab window-sync mirrored into this window (done at the test
+  // level, not in the shared helper — doing it inside withNewSyncedWindow
+  // collides with withNewTabAndWindow's teardown and triggers a sync jam).
   for (const tab of [...gBrowser.tabs]) {
     if (!initialTabs.has(tab) && !tab.closing) {
       BrowserTestUtils.removeTab(tab);

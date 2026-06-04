@@ -65,7 +65,6 @@ class nsZenSmartRoutingManager {
    * @param {Window} win - The window which the tab was added to
    */
   onAfterAddTab(uriString, newTab, options, win) {
-    // Skip processing if needed
     if (
       this.#shouldSkipProcessing(options, win) !=
       nsZenSmartRoutingManager.SKIP_TYPE.NONE
@@ -84,7 +83,6 @@ class nsZenSmartRoutingManager {
    * @returns {SKIP_TYPE} The type of skip or null if not skipped
    */
   #shouldSkipProcessing(options, win) {
-    // Do not process these tabs at all
     if (options.skipRoute || options.pinned || options.tabGroup) {
       return nsZenSmartRoutingManager.SKIP_TYPE.SKIPPED_TAB;
     }
@@ -110,14 +108,12 @@ class nsZenSmartRoutingManager {
    */
   async #routeToWorkspace(uriString, newTab, options, win) {
     try {
-      // Check if tab still exists
       if (!newTab || !newTab.parentNode) {
         return;
       }
 
       const targetRoute = this.routeUri(uriString, options);
       switch (targetRoute) {
-        // Do nothing
         case "most-recent-space":
           break;
 
@@ -126,15 +122,10 @@ class nsZenSmartRoutingManager {
             win.gZenWorkspaces.getWorkspaceFromId(targetRoute);
 
           if (targetWorkspace) {
-            // Move tab and change workspace
             win.gZenWorkspaces.moveTabToWorkspace(newTab, targetWorkspace.uuid);
-
-            // Necessary due to Window Sync
             const mostRecentWindow =
               Services.wm.getMostRecentWindow("navigator:browser");
             const isOriginatingWindow = win === mostRecentWindow;
-
-            // Only switch the workspace if the window is the current one
             if (isOriginatingWindow) {
               win.gZenWorkspaces.lastSelectedWorkspaceTabs[
                 targetWorkspace.uuid

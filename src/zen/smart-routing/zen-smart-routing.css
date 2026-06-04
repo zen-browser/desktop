@@ -110,7 +110,7 @@
 h3 {
   font-size: medium;
   color: var(--text-color);
-  font-weight: bold;
+  font-weight: 600;
 }
 
 h4 {

@@ -23,6 +23,14 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
   // Guard so our own DOM moves don't re-enter on_TabMove.
   _suppressMoveHandling = false;
 
+  // True while a user drag is in flight; the drop handler owns tree fixup then,
+  // so the per-move neighbor heuristic is suppressed (it would flatten a branch
+  // moved as a group). Programmatic moves (no drag) still go through on_TabMove.
+  _dragActive = false;
+
+  // The root tab of an auto-selected branch drag, so dragend can restore it.
+  _branchDragRoot = null;
+
   init() {
     this.#enabled =
       Services.prefs.getBoolPref("zen.tab-tree.enabled", true) &&
@@ -224,22 +232,67 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     }
   }
 
-  // Entry point used by the drag-and-drop drop handler.
-  // `draggedTabs` is the set of tabs being dragged (1 = subtree move,
-  // >1 = multi-selection one-level nest). Returns true if it nested anything.
+  // The "roots" of a dragged set: dragged tabs whose parent is NOT also in the
+  // set. Their subtrees travel with them and keep their internal hierarchy.
+  #draggedRoots(draggedTabs) {
+    const tabs = draggedTabs.filter(t => this.isTreeEligible(t));
+    const set = new Set(tabs);
+    return domOrderOf(tabs.filter(t => !set.has(this.getParent(t))));
+  }
+
+  // Entry point used by the drag-and-drop drop handler for a NEST drop.
+  // A single dragged root nests under the target keeping its hierarchy;
+  // multiple roots each become a direct child of the target (subtrees follow).
   handleNestDrop(draggedTabs, target) {
     if (!this.enabled || !this.isTreeEligible(target)) {
       return false;
     }
-    const tabs = draggedTabs.filter(t => this.isTreeEligible(t));
-    if (!tabs.length) {
+    const roots = this.#draggedRoots(draggedTabs);
+    if (!roots.length) {
       return false;
     }
-    if (tabs.length === 1) {
-      return this.nestTab(tabs[0], target);
+    if (roots.length === 1) {
+      return this.nestTab(roots[0], target);
     }
-    this.nestTabsAsChildren(tabs, target);
+    this.nestTabsAsChildren(roots, target);
     return true;
+  }
+
+  // Entry point for a plain REORDER drop. The native move already placed the
+  // dragged tabs at the new spot; make each dragged root a sibling there
+  // (parent = the eligible tab just above the moved block), preserving each
+  // root's internal subtree. Used for both single-tab and multi-tab reorders.
+  handleReorderDrop(draggedTabs) {
+    if (!this.enabled) {
+      return;
+    }
+    const roots = this.#draggedRoots(draggedTabs);
+    if (!roots.length) {
+      return;
+    }
+    const set = new Set(draggedTabs);
+    let prev = roots[0].previousElementSibling;
+    while (prev && (!this.isTreeEligible(prev) || set.has(prev))) {
+      prev = prev.previousElementSibling;
+    }
+    const newParent = prev ? this.getParent(prev) : null;
+    const affected = new Set();
+    for (const root of roots) {
+      if (
+        newParent === root ||
+        this.#isAncestor(root, newParent) ||
+        this.getParent(root) === newParent
+      ) {
+        affected.add(this.#rootOf(root));
+        continue;
+      }
+      root._zenTreeParent = newParent;
+      affected.add(this.#rootOf(root));
+    }
+    for (const r of affected) {
+      this.reindex(r);
+    }
+    this.#onTreeChanged(roots[0]);
   }
 
   // --- collapse / expand ---
@@ -483,10 +536,22 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
   }
 
   on_TabMove(event) {
-    if (!this.enabled || this._suppressMoveHandling) {
+    // During a user drag the drop handler owns tree fixup (handleReorderDrop /
+    // handleNestDrop). Only handle programmatic moves (e.g. gBrowser.moveTabTo).
+    if (!this.enabled || this._suppressMoveHandling || this._dragActive) {
       return;
     }
-    this.#reparentFromNeighbor(event.target);
+    const tab = event.target;
+    if (!this.isTreeEligible(tab)) {
+      return;
+    }
+    // A programmatic move relocates only this tab. If it has a subtree, bring
+    // the whole subtree along so it stays contiguous, then re-derive the parent.
+    const descendants = this.getDescendants(tab);
+    if (descendants.length) {
+      this.#moveSubtreeAfter([tab, ...descendants], tab);
+    }
+    this.#reparentFromNeighbor(tab);
   }
 
   // --- persistence ---

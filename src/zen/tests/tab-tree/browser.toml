@@ -29,4 +29,6 @@ support-files = [
 
 ["browser_tree_pin_reorder.js"]
 
+["browser_tree_reorder.js"]
+
 ["browser_tree_persist.js"]

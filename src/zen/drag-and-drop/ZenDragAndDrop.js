@@ -146,6 +146,12 @@
       this.ZenDragAndDropService.onDragStart(1);
       this.#isOutOfWindow = false;
       gZenCompactModeManager._isTabBeingDragged = true;
+      // Dragging a tree parent grabs its whole branch (selected as a group so
+      // it moves together visually). Tree structure is retained on drop.
+      this.#maybeSelectTreeBranch(tab);
+      if (window.gZenTabTree?.enabled) {
+        window.gZenTabTree._dragActive = true;
+      }
       super.startTabDrag(event, tab, ...args);
       const dt = event.dataTransfer;
       if (isTabGroupLabel(tab)) {
@@ -163,6 +169,31 @@
       if (tab.hasAttribute("zen-essential")) {
         tab.style.visibility = "hidden";
       }
+    }
+
+    #maybeSelectTreeBranch(tab) {
+      const tree = window.gZenTabTree;
+      if (
+        !tree?.enabled ||
+        tab.multiselected ||
+        isTabGroupLabel(tab) ||
+        !tree.isTreeEligible(tab)
+      ) {
+        return;
+      }
+      const descendants = tree.getDescendants(tab);
+      if (!descendants.length) {
+        return;
+      }
+      // Select the whole branch so the move-together machinery drags it as one
+      // block. Remember the root so dragend can restore the selection.
+      tree._branchDragRoot = tab;
+      gBrowser.clearMultiSelectedTabs();
+      gBrowser.addToMultiSelectedTabs(tab);
+      for (const d of descendants) {
+        gBrowser.addToMultiSelectedTabs(d);
+      }
+      gBrowser.lastMultiSelectedTab = tab;
     }
 
     #createDragImageForTabs(movingTabs) {
@@ -1024,11 +1055,13 @@
       super.handle_drop(event);
       this.#maybeClearVerticalPinnedGridDragOver();
       this.#handle_dropSwitchSpace(event);
-      // Split wins if the hold escalated; otherwise try a nest.
+      // Split wins if the hold escalated; else nest; else a tree-aware reorder.
       if (this.#dragOverSplit.canDrop) {
         this.#handle_dropCreateSplit(event);
-      } else {
+      } else if (this.#dragOverNest.canDrop) {
         this.#handle_dropNest(event);
+      } else {
+        this.#handle_dropReorder(event);
       }
       this._clearDragOverSplit();
       this._clearDragOverNest();
@@ -1105,6 +1138,22 @@
       this._dontAnimateTabMove = true;
       this._clearDragOverNest();
       window.gZenTabTree.handleNestDrop(draggedTabs, target);
+    }
+
+    #handle_dropReorder(event) {
+      if (!window.gZenTabTree?.enabled) {
+        return;
+      }
+      const dt = event.dataTransfer;
+      const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
+      if (!draggedTab) {
+        return;
+      }
+      const movingTabsSet = draggedTab._dragData?.movingTabsSet;
+      const draggedTabs = movingTabsSet?.size
+        ? [...movingTabsSet]
+        : [draggedTab];
+      window.gZenTabTree.handleReorderDrop(draggedTabs);
     }
 
     handle_drop_transition(dropElement, draggedTab, movingTabs, dropBefore) {
@@ -1269,6 +1318,19 @@
       ownerGlobal.gZenPinnedTabManager.removeTabContainersDragoverClass();
       thisFromGlobal._clearDragOverSplit();
       thisFromGlobal._clearDragOverNest();
+      const tree = ownerGlobal.gZenTabTree;
+      if (tree?.enabled) {
+        tree._dragActive = false;
+        if (tree._branchDragRoot) {
+          const root = tree._branchDragRoot;
+          tree._branchDragRoot = null;
+          // Restore selection to just the branch root after a branch drag.
+          ownerGlobal.gBrowser.clearMultiSelectedTabs();
+          if (root.isConnected) {
+            ownerGlobal.gBrowser.lastMultiSelectedTab = root;
+          }
+        }
+      }
       this.#maybeClearVerticalPinnedGridDragOver();
       thisFromGlobal.originalDragImageArgs = [];
       this.#firstHapticFeedbackPlayed = false;

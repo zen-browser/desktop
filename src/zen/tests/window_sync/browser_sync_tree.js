@@ -4,6 +4,7 @@
 "use strict";
 
 add_task(async function test_nest_syncs_to_other_window() {
+  const initialTabs = new Set(gBrowser.tabs);
   await withNewSyncedWindow(async win => {
     // Create two synced tabs (open in this window, mirrored in `win`).
     const parent = gBrowser.addTrustedTab("https://example.com/", {
@@ -41,4 +42,13 @@ add_task(async function test_nest_syncs_to_other_window() {
     BrowserTestUtils.removeTab(child);
     BrowserTestUtils.removeTab(parent);
   });
+
+  // Window-sync can mirror the synced window's initial blank tab into this
+  // window; drop anything that wasn't here before so the harness's
+  // end-of-test tab check stays clean.
+  for (const tab of [...gBrowser.tabs]) {
+    if (!initialTabs.has(tab) && !tab.closing) {
+      BrowserTestUtils.removeTab(tab);
+    }
+  }
 });

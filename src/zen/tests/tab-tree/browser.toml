@@ -1,0 +1,32 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+[DEFAULT]
+prefs = [
+  "zen.tab-tree.enabled=true",
+  "widget.macos.native-context-menus=false",
+]
+support-files = [
+  "head.js",
+]
+
+["browser_tree_model.js"]
+
+["browser_tree_nest.js"]
+
+["browser_tree_detach_multi.js"]
+
+["browser_tree_depth.js"]
+
+["browser_tree_collapse.js"]
+
+["browser_tree_drag.js"]
+
+["browser_tree_opener.js"]
+
+["browser_tree_close.js"]
+
+["browser_tree_pin_reorder.js"]
+
+["browser_tree_persist.js"]

@@ -2,7 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-const { ZenSmartRoutingManager } = ChromeUtils.importESModule(
+// eslint-disable-next-line no-shadow
+const { gZenSmartRoutingManager } = ChromeUtils.importESModule(
   "resource:///modules/zen/smartrouting/ZenSmartRoutingManager.sys.mjs"
 );
 
@@ -54,7 +55,7 @@ export class nsZenSmartRoutingDialog {
     );
     this.createOpenInList(
       defaultRouteSelect,
-      ZenSmartRoutingManager.getDefaultExternalRoute()
+      gZenSmartRoutingManager.getDefaultExternalRoute()
     );
 
     defaultRouteSelect.addEventListener("command", e =>
@@ -78,7 +79,7 @@ export class nsZenSmartRoutingDialog {
    * Initializes the routes list and loads all current routes from the disk
    */
   initRouteList() {
-    const allRoutes = ZenSmartRoutingManager.getAllRoutes();
+    const allRoutes = gZenSmartRoutingManager.getAllRoutes();
     allRoutes.forEach(r => this.createRouteElement(r));
   }
 
@@ -86,7 +87,7 @@ export class nsZenSmartRoutingDialog {
    * Will create a new route and update the route list
    */
   onNewRoutePressed() {
-    const newRoute = ZenSmartRoutingManager.createNewRoute();
+    const newRoute = gZenSmartRoutingManager.createNewRoute();
     this.createRouteElement(newRoute);
   }
 
@@ -97,7 +98,7 @@ export class nsZenSmartRoutingDialog {
    * @param {string} containerElement - The container element of the route in the list
    */
   onRemoveRoutePressed(routeId, containerElement) {
-    ZenSmartRoutingManager.removeRoute(routeId);
+    gZenSmartRoutingManager.removeRoute(routeId);
     containerElement.remove();
 
     this.updateShowNoRouteText();
@@ -107,7 +108,7 @@ export class nsZenSmartRoutingDialog {
    * Will create the rule element content and inject it into the ui
    *
    * @param {object} route - The target route
-   * @returns
+   * @returns {Element} The created element for the route
    */
   createRouteElement(route) {
     const container = this.doc.getElementById("sr-content");
@@ -237,10 +238,10 @@ export class nsZenSmartRoutingDialog {
    *
    * @param {string} value - The new value
    * @param {string} routeId - The ID of the affected route
-   * @param input
+   * @param {Element} input - The input element
    */
   onRotueReferenceChange(value, routeId, input) {
-    const route = ZenSmartRoutingManager.getRoute(routeId);
+    const route = gZenSmartRoutingManager.getRoute(routeId);
     route.reference = value;
 
     this.updateInputPlaceholder(route.matchType, input);
@@ -252,7 +253,7 @@ export class nsZenSmartRoutingDialog {
       }
     }
 
-    ZenSmartRoutingManager.updateRoute(route);
+    gZenSmartRoutingManager.updateRoute(route);
   }
 
   /**
@@ -262,9 +263,9 @@ export class nsZenSmartRoutingDialog {
    * @param {string} routeId - The ID of the affected route
    */
   onRouteOpenInChange(value, routeId) {
-    const route = ZenSmartRoutingManager.getRoute(routeId);
+    const route = gZenSmartRoutingManager.getRoute(routeId);
     route.openIn = value;
-    ZenSmartRoutingManager.updateRoute(route);
+    gZenSmartRoutingManager.updateRoute(route);
   }
 
   /**
@@ -275,7 +276,7 @@ export class nsZenSmartRoutingDialog {
    * @param {Element} input - The text input
    */
   onRouteMatchTypeChange(value, routeId, input) {
-    const route = ZenSmartRoutingManager.getRoute(routeId);
+    const route = gZenSmartRoutingManager.getRoute(routeId);
     route.matchType = value;
 
     this.updateInputPlaceholder(route.matchType, input);
@@ -287,7 +288,7 @@ export class nsZenSmartRoutingDialog {
       }
     }
 
-    ZenSmartRoutingManager.updateRoute(route);
+    gZenSmartRoutingManager.updateRoute(route);
   }
 
   /**
@@ -340,7 +341,7 @@ export class nsZenSmartRoutingDialog {
    * @param {string} value - The new value
    */
   onRouteDefaultExternalChange(value) {
-    ZenSmartRoutingManager.setDefaultExternalRoute(value);
+    gZenSmartRoutingManager.setDefaultExternalRoute(value);
   }
 
   /**
@@ -400,10 +401,11 @@ export class nsZenSmartRoutingDialog {
     });
 
     // Check if the workspace still exists, if not use default
-    if (availOptions.includes(value))
+    if (availOptions.includes(value)) {
       selectElement.value = value;
-    else 
+    } else {
       selectElement.value = "most-recent-space";
+    }
   }
 
   /**
@@ -448,6 +450,6 @@ export class nsZenSmartRoutingDialog {
    * Handles the window close event
    */
   handleClose() {
-    ZenSmartRoutingManager.saveRoutes();
+    gZenSmartRoutingManager.saveRoutes();
   }
 }

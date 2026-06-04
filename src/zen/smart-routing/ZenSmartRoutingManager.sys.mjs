@@ -21,7 +21,7 @@ class nsZenSmartRoutingManager {
   /**
    * Callback that will be executed from tabbrowser.js
    * This method can be used to stop the tab from being created.
-   * 
+   *
    * @param {string} uriString - The URI as a string
    * @param {object} options - The tab creation options
    * @param {Window} win - The window which the tab will be added to
@@ -30,19 +30,19 @@ class nsZenSmartRoutingManager {
   onBeforeAddTab(uriString, options, win) {
     let userContextId = null;
     let isRouteFound = false;
-    
-    if (this.#shouldSkipProcessing(options, win) != nsZenSmartRoutingManager.SKIP_TYPE.NONE) {
+
+    if (
+      this.#shouldSkipProcessing(options, win) !=
+      nsZenSmartRoutingManager.SKIP_TYPE.NONE
+    ) {
       return { shouldEarlyExit: false, userContextId, isRouteFound };
     }
 
-    const targetRoute = this.routeUri(
-      uriString,
-      options,
-    );
+    const targetRoute = this.routeUri(uriString, options);
     switch (targetRoute) {
       case "most-recent-space":
         break;
-      default:
+      default: {
         const targetWorkspace =
           win.gZenWorkspaces.getWorkspaceFromId(targetRoute);
 
@@ -50,6 +50,7 @@ class nsZenSmartRoutingManager {
           userContextId = targetWorkspace.containerTabId;
           isRouteFound = true;
         }
+      }
     }
 
     return { shouldEarlyExit: false, userContextId, isRouteFound };
@@ -57,14 +58,18 @@ class nsZenSmartRoutingManager {
 
   /**
    * Callback that will be executed from tabbrowser.js
-   * 
+   *
    * @param {string} uriString - The URI as a string
+   * @param {Element} newTab - The tab element
    * @param {object} options - The tab creation options
    * @param {Window} win - The window which the tab was added to
    */
   onAfterAddTab(uriString, newTab, options, win) {
     // Skip processing if needed
-    if (this.#shouldSkipProcessing(options, win) != nsZenSmartRoutingManager.SKIP_TYPE.NONE) {
+    if (
+      this.#shouldSkipProcessing(options, win) !=
+      nsZenSmartRoutingManager.SKIP_TYPE.NONE
+    ) {
       return;
     }
 
@@ -73,10 +78,10 @@ class nsZenSmartRoutingManager {
 
   /**
    * Checks if the tab should be processed or not
-   * 
+   *
    * @param {object} options - The tab creation options
    * @param {Window} win - The owning window
-   * @returns {SKIP_TYPE} The type of skip or null if not skipped 
+   * @returns {SKIP_TYPE} The type of skip or null if not skipped
    */
   #shouldSkipProcessing(options, win) {
     // Do not process these tabs at all
@@ -85,10 +90,9 @@ class nsZenSmartRoutingManager {
     }
 
     // addTab() is being called when the session restores.
-    // To avoid automatically routing these tabs, 
+    // To avoid automatically routing these tabs,
     // a check if the restore is already complete is needed
     if (!win.gZenStartup.isReady) {
-      console.log("[ZenSmartRouting] Skipping restored tab...");
       return nsZenSmartRoutingManager.SKIP_TYPE.RESTORED_TAB;
     }
 
@@ -97,9 +101,9 @@ class nsZenSmartRoutingManager {
 
   /**
    * Will route the given tab to a space if a rule applies
-   * 
+   *
    * @param {string} uriString - The URI as a string
-   * @param {Element} newTab - The tab element 
+   * @param {Element} newTab - The tab element
    * @param {object} options - Tab creation args
    * @param {Window} win - The window which the tab was added to
    * @private
@@ -111,16 +115,13 @@ class nsZenSmartRoutingManager {
         return;
       }
 
-      const targetRoute = this.routeUri(
-        uriString,
-        options,
-      );
+      const targetRoute = this.routeUri(uriString, options);
       switch (targetRoute) {
         // Do nothing
         case "most-recent-space":
-          return newTab;
+          break;
 
-        default:
+        default: {
           const targetWorkspace =
             win.gZenWorkspaces.getWorkspaceFromId(targetRoute);
 
@@ -135,10 +136,13 @@ class nsZenSmartRoutingManager {
 
             // Only switch the workspace if the window is the current one
             if (isOriginatingWindow) {
-              win.gZenWorkspaces.lastSelectedWorkspaceTabs[targetWorkspace.uuid] = newTab;
+              win.gZenWorkspaces.lastSelectedWorkspaceTabs[
+                targetWorkspace.uuid
+              ] = newTab;
               await win.gZenWorkspaces.changeWorkspace(targetWorkspace);
             }
           }
+        }
       }
     } catch (err) {
       console.error("[ZenSmartRouting]: Error moving tab to workspace:", err);
@@ -184,8 +188,8 @@ class nsZenSmartRoutingManager {
   isRouteMatching(uriString, route) {
     let reference = route.reference.toLowerCase();
     if (reference.trim() == "") {
-      reference = "zen-browser.app";
-    } // Placeholder Reference
+      return false;
+    }
 
     const uri = uriString.toLowerCase();
     switch (route.matchType) {
@@ -199,11 +203,8 @@ class nsZenSmartRoutingManager {
           return true;
         }
         break;
-      case "regex":
+      case "regex": {
         let unmodifiedReference = route.reference;
-        if (unmodifiedReference.trim() == "") {
-          unmodifiedReference = "zen-browser\.app";
-        } // Placeholder RegEx
         try {
           // Use unmodified parameters for the regex test
           const regex = new RegExp(unmodifiedReference);
@@ -211,10 +212,14 @@ class nsZenSmartRoutingManager {
             return true;
           }
         } catch (e) {
-          console.error("[ZenSmartRouting] Failed to resolve regular expression");
+          console.error(
+            "[ZenSmartRouting] Failed to resolve regular expression"
+          );
         }
         break;
+      }
     }
+    return false;
   }
 
   /**
@@ -386,4 +391,4 @@ class nsZenSmartRoutingManager {
   }
 }
 
-export const ZenSmartRoutingManager = new nsZenSmartRoutingManager();
+export const gZenSmartRoutingManager = new nsZenSmartRoutingManager();

@@ -6,7 +6,7 @@
 // eslint-disable-next-line no-lone-blocks
 {
   ChromeUtils.defineESModuleGetters(this, {
-    ZenSmartRoutingManager:
+    gZenSmartRoutingManager:
       "resource:///modules/zen/smartrouting/ZenSmartRoutingManager.sys.mjs",
   });
 

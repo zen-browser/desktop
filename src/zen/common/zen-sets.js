@@ -134,7 +134,7 @@ document.addEventListener(
             break;
           }
           case "cmd_zenOpenSmartRoutingSettings": {
-            ZenSmartRoutingManager.openSmartRoutingDialog(window);
+            gZenSmartRoutingManager.openSmartRoutingDialog(window);
             break;
           }
           case "cmd_zenNewNavigatorUnsynced":

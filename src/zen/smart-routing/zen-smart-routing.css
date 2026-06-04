@@ -12,16 +12,9 @@
 
   color-scheme: dark;
 
-  --sr-background: #151c30;
   --sr-outline: #44495a;
   --sr-border-radius: 26px;
 
-  /* Blue colors */
-  --select-background-color: #272d40;
-  --input-background-color: #272d40;
-  --hr-color: #2c3244;
-  
-  /* Gray colors */
   --sr-background: #212223;
   --select-background-color: #3e3f43;
   --input-background-color: #2c2d31;

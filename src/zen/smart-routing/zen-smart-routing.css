@@ -9,16 +9,12 @@
   appearance: none;
   border: none;
   outline: none;
+  color-scheme: light dark;
 
-  color-scheme: dark;
-
-  --sr-outline: #44495a;
-  --sr-border-radius: 26px;
-
-  --sr-background: #212223;
-  --select-background-color: #3e3f43;
-  --input-background-color: #2c2d31;
-  --hr-color: #313235;
+  --sr-background: light-dark(#eaebed, #212223);
+  --select-background-color: light-dark(#dee1e6, #3e3f43);
+  --input-background-color: light-dark(#dee1e6, #2c2d31);
+  --hr-color: light-dark(#cdced4, #313235);
 
   --sr-width: 510px;
   --sr-height: 500px;
@@ -26,9 +22,9 @@
   --content-padding: 26px;
   --content-padding-vertical: 16px;
 
-  --text-color: #dbdcdf;
-  --text-color-secondary: #8b8e98;
-  --text-color-error: #d03535;
+  --text-color: light-dark(#262627, #dbdcdf);
+  --text-color-secondary: light-dark(#5c5e65, #8b8e98);
+  --text-color-error: light-dark(#9d2222, #d03535);
 
   --rules-gap: 14px;
 }
@@ -107,6 +103,8 @@
   margin: 0;
   margin-left: 32px;
   margin-right: 32px;
+  border-style: solid;
+  border-width: 0.5px;
 }
 
 h3 {

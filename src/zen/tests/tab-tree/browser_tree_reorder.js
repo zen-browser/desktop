@@ -9,9 +9,8 @@ add_task(async function test_nest_branch_retains_hierarchy() {
   const target = await addNormalTab();
   const root = await addNormalTab();
   const child = await addNormalTab();
-  gZenTabTree.nestTab(child, root); // root > child
+  gZenTabTree.nestTab(child, root);
 
-  // Simulate dropping the whole branch [root, child] onto target.
   gZenTabTree.handleNestDrop([root, child], target);
 
   Assert.equal(gZenTabTree.getParent(root), target, "root nested under target");
@@ -31,11 +30,11 @@ add_task(async function test_nest_branch_retains_hierarchy() {
 add_task(async function test_reorder_branch_retains_hierarchy() {
   const p = await addNormalTab();
   const pchild = await addNormalTab();
-  gZenTabTree.nestTab(pchild, p); // p > pchild  (order: p, pchild)
+  gZenTabTree.nestTab(pchild, p);
 
   const mover = await addNormalTab();
   const moverChild = await addNormalTab();
-  gZenTabTree.nestTab(moverChild, mover); // mover > moverChild
+  gZenTabTree.nestTab(moverChild, mover);
 
   // Physically relocate the mover block to sit right after pchild (as if a
   // native reorder dropped it there), then run the tree-aware reorder fixup.

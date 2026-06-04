@@ -4,12 +4,9 @@
 
 import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
-// Middle-mouse drag-select gesture on the vertical tab strip:
-//   middle-drag        -> select the contiguous range from anchor to cursor
-//   release            -> close the selected range
-//   right-click (held) -> abort the close, open the tab context menu on the
-//                         selection; the trailing release is then a no-op
-//   clean middle-click -> close just that tab (native behavior, replicated)
+// Middle-mouse drag-select gesture on the vertical tab strip: middle-drag
+// selects the range from anchor to cursor, release closes it, a held
+// right-click aborts to the tab context menu, a clean middle-click closes one.
 class nsZenTabMultiSelectDrag extends nsZenDOMOperatedFeature {
   #enabled = false;
   #strip = null;
@@ -80,7 +77,7 @@ class nsZenTabMultiSelectDrag extends nsZenDOMOperatedFeature {
 
   #onMouseDown(event) {
     if (event.button !== 1) {
-      return; // middle button only
+      return;
     }
     const tab = this.#tabFrom(event);
     if (!tab) {
@@ -183,7 +180,6 @@ class nsZenTabMultiSelectDrag extends nsZenDOMOperatedFeature {
       return;
     }
 
-    // Drag release: close the whole selection.
     const toClose = gBrowser.selectedTabs.filter(
       t => t.isConnected && !t.closing
     );

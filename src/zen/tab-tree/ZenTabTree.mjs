@@ -28,7 +28,6 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
   // moved as a group). Programmatic moves (no drag) still go through on_TabMove.
   _dragActive = false;
 
-  // The root tab of an auto-selected branch drag, so dragend can restore it.
   _branchDragRoot = null;
 
   init() {
@@ -68,8 +67,6 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     return Services.prefs.getIntPref("zen.tab-tree.max-depth", 4);
   }
 
-  // --- queries ---
-
   isTreeEligible(tab) {
     return (
       gBrowser.isTab(tab) &&
@@ -98,7 +95,6 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
   }
 
   getChildren(tab) {
-    // Children in DOM order. Tree relationships only span same-workspace tabs.
     return domOrderOf(gBrowser.tabs.filter(t => this.getParent(t) === tab));
   }
 
@@ -110,7 +106,6 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     return out;
   }
 
-  // Recompute cached level + indentation + twisty for `root` and descendants.
   reindex(root) {
     const apply = (tab, level) => {
       tab._zenTreeLevel = level;
@@ -136,9 +131,6 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     );
   }
 
-  // --- tree mutations ---
-
-  // Move `tab` (and its entire subtree) to become the last child of `parent`.
   nestTab(tab, parent, { position = "end" } = {}) {
     if (
       tab === parent ||
@@ -155,10 +147,9 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     const subtree = [tab, ...this.getDescendants(tab)]; // already DFS order
     tab._zenTreeParent = parent;
 
-    // Determine insertion reference within the strip.
     let reference;
     if (position === "start") {
-      reference = parent; // first child goes right after the parent
+      reference = parent;
     } else {
       const existing = this.getChildren(parent).filter(c => c !== tab);
       const lastChild = existing[existing.length - 1];
@@ -176,7 +167,6 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     return true;
   }
 
-  // Re-parent `tab` to its grandparent (or root). Subtree follows.
   promoteSubtree(tab) {
     const grandparent = this.getParent(this.getParent(tab));
     if (grandparent) {
@@ -186,7 +176,6 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     }
   }
 
-  // Make `tab` a root: clear its parent, leave its subtree intact beneath it.
   detachTab(tab) {
     if (!this.getParent(tab)) {
       return;
@@ -196,8 +185,6 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     this.#onTreeChanged(tab);
   }
 
-  // Make every tab in `tabs` a DIRECT child (one level) of `parent`.
-  // Each tab keeps its own subtree. Order follows `tabs` order.
   nestTabsAsChildren(tabs, parent) {
     const eligible = tabs.filter(
       t =>
@@ -208,13 +195,12 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     }
   }
 
-  // Flatten any descendants of `root` whose level exceeds max-depth.
-  // Deepest-first: a node beyond the cap is re-parented to the nearest
+  // Flatten overflow: a node beyond max-depth is re-parented to the nearest
   // ancestor at (max-depth - 1), collapsing overflow at the cap boundary.
   clampDepth(root) {
     const max = this.#maxDepth;
     if (max <= 0) {
-      return; // cap disabled
+      return;
     }
     let changed = false;
     // getDescendants() returns DFS order so parents precede their children.
@@ -240,9 +226,8 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     return domOrderOf(tabs.filter(t => !set.has(this.getParent(t))));
   }
 
-  // Entry point used by the drag-and-drop drop handler for a NEST drop.
-  // A single dragged root nests under the target keeping its hierarchy;
-  // multiple roots each become a direct child of the target (subtrees follow).
+  // NEST drop: a single dragged root nests under target keeping its hierarchy;
+  // multiple roots each become a direct child of target (subtrees follow).
   handleNestDrop(draggedTabs, target) {
     if (!this.enabled || !this.isTreeEligible(target)) {
       return false;
@@ -258,10 +243,8 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     return true;
   }
 
-  // Entry point for a plain REORDER drop. The native move already placed the
-  // dragged tabs at the new spot; make each dragged root a sibling there
-  // (parent = the eligible tab just above the moved block), preserving each
-  // root's internal subtree. Used for both single-tab and multi-tab reorders.
+  // REORDER drop: native move already placed the tabs; make each dragged root a
+  // sibling there (parent = the eligible tab just above the moved block).
   handleReorderDrop(draggedTabs) {
     if (!this.enabled) {
       return;
@@ -295,11 +278,9 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     this.#onTreeChanged(roots[0]);
   }
 
-  // --- collapse / expand ---
-
   setCollapsed(tab, collapsed) {
     if (!this.getChildren(tab).length) {
-      return; // nothing to collapse
+      return;
     }
     tab._zenTreeCollapsed = collapsed;
     tab.toggleAttribute("zen-tree-collapsed", collapsed);
@@ -356,8 +337,6 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     tab.toggleAttribute("zen-tree-parent", hasChildren);
   }
 
-  // --- internal helpers ---
-
   #isAncestor(maybeAncestor, tab) {
     let node = this.getParent(tab);
     while (node) {
@@ -377,7 +356,6 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     return node;
   }
 
-  // Last tab (deepest, last) in `tab`'s subtree, in DFS order.
   #lastSubtreeNode(tab) {
     const desc = this.getDescendants(tab);
     return desc.length ? desc[desc.length - 1] : tab;
@@ -434,8 +412,6 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     }
   }
 
-  // --- lifecycle event handlers ---
-
   on_TabOpen(event) {
     if (
       !this.enabled ||
@@ -483,7 +459,6 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
       }, 0);
       return;
     }
-    // promote: re-parent each direct child to the closing tab's parent.
     const newParent = this.getParent(tab);
     for (const child of children) {
       child._zenTreeParent = newParent;
@@ -509,7 +484,6 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     const tab = event.target;
     const children = this.getChildren(tab);
     const newParent = this.getParent(tab);
-    // Promote children to the tab's parent, then detach the tab itself.
     for (const child of children) {
       child._zenTreeParent = newParent;
     }
@@ -526,7 +500,7 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
       roots.add(this.#rootOf(newParent));
     } else {
       for (const child of children) {
-        roots.add(child); // each promoted to root
+        roots.add(child);
       }
     }
     for (const root of roots) {
@@ -554,14 +528,11 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     this.#reparentFromNeighbor(tab);
   }
 
-  // --- persistence ---
-
   on_SSWindowStateReady() {
     this.rebuildFromAttributes();
   }
 
-  // Reconnect _zenTreeParent pointers from persisted zen-tree-parent-id, then
-  // re-apply levels, indentation, collapse hiding, and twisties.
+  // Reconnect _zenTreeParent pointers from persisted zen-tree-parent-id.
   rebuildFromAttributes() {
     if (!this.enabled) {
       return;
@@ -579,7 +550,6 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
         parent && parent !== tab && this.isTreeEligible(tab) ? parent : null;
       tab._zenTreeCollapsed = tab.hasAttribute("zen-tree-collapsed");
     }
-    // Reindex all roots, then re-apply collapse hiding for collapsed nodes.
     for (const tab of gBrowser.tabs) {
       if (this.isTreeEligible(tab) && !this.getParent(tab)) {
         this.reindex(tab);

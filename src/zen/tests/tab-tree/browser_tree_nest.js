@@ -11,7 +11,6 @@ add_task(async function test_nest_single_tab() {
 
   Assert.equal(gZenTabTree.getParent(child), parent, "child re-parented");
   Assert.equal(gZenTabTree.getLevel(child), 1, "child is level 1");
-  // DFS order: child sits immediately after parent.
   Assert.equal(
     parent.nextElementSibling,
     child,
@@ -22,13 +21,13 @@ add_task(async function test_nest_single_tab() {
 });
 
 add_task(async function test_nest_moves_whole_subtree() {
-  const parent = await addNormalTab(); // future grandparent
+  const parent = await addNormalTab();
   const mid = await addNormalTab();
   const leaf = await addNormalTab();
-  gZenTabTree.nestTab(leaf, mid); // mid -> leaf
+  gZenTabTree.nestTab(leaf, mid);
 
   const target = await addNormalTab();
-  gZenTabTree.nestTab(mid, target); // target -> mid -> leaf
+  gZenTabTree.nestTab(mid, target);
 
   Assert.equal(gZenTabTree.getParent(mid), target, "mid re-parented to target");
   Assert.equal(gZenTabTree.getParent(leaf), mid, "leaf still child of mid");

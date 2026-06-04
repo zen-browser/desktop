@@ -9,9 +9,6 @@ const { PromiseTestUtils } = ChromeUtils.importESModule(
 const { TabStateFlusher } = ChromeUtils.importESModule(
   "resource:///modules/sessionstore/TabStateFlusher.sys.mjs"
 );
-// Closing tabs / pinning tears down the pre-existing ZenGlance actor while a
-// query is in flight; that benign rejection is unrelated to the tree feature.
-// Registered in a setup task so it lands in the harness's PromiseTestUtils.
 add_setup(function allowBenignEnvironmentRejections() {
   // Two pre-existing, environment-only rejections unrelated to the tree feature:
   //  - closing tabs tears down the ZenGlance actor mid-query ("destroyed before
@@ -32,7 +29,6 @@ async function addNormalTab(url = "about:blank") {
 }
 
 function domOrder(tabs) {
-  // Returns the subset `tabs` sorted by their position in the tab strip.
   return [...tabs].sort((a, b) => {
     const pos = a.compareDocumentPosition(b);
     if (pos & Node.DOCUMENT_POSITION_FOLLOWING) {

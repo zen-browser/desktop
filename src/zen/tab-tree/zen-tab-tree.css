@@ -2,12 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/* Hide collapsed descendants. */
 .tabbrowser-tab[zen-tree-hidden] {
   display: none !important;
 }
 
-/* Collapse twisty on parent tabs. */
 .tabbrowser-tab .zen-tree-twisty {
   width: 12px;
   height: 12px;
@@ -32,12 +30,11 @@
   transform: rotate(-90deg);
 }
 
-/* Only show the twisty on parent tabs when the sidebar is expanded. */
 :root:not([zen-sidebar-expanded="true"]) .tabbrowser-tab .zen-tree-twisty {
   display: none;
 }
 
-/* Drop-as-child indicator: a thin indented line under the target tab. */
+/* Drop-as-child indicator shown under the target tab during a nest drag. */
 zen-tree-nest-indicator {
   display: block;
   height: 2px;

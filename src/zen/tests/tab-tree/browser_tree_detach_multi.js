@@ -20,7 +20,7 @@ add_task(async function test_nest_multiselection_one_level() {
   const s1 = await addNormalTab();
   const s2 = await addNormalTab();
   const s2child = await addNormalTab();
-  gZenTabTree.nestTab(s2child, s2); // s2 has its own subtree
+  gZenTabTree.nestTab(s2child, s2);
 
   gZenTabTree.nestTabsAsChildren([s1, s2], target);
 

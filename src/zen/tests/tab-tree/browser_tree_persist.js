@@ -9,7 +9,6 @@ add_task(async function test_tree_state_in_tab_state() {
   gZenTabTree.nestTab(child, parent);
   gZenTabTree.setCollapsed(parent, true);
 
-  // Flush and read the persisted tab state for the child.
   await TabStateFlusher.flush(child.linkedBrowser);
   const state = JSON.parse(SessionStore.getTabState(child));
 

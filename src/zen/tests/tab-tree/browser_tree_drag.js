@@ -3,9 +3,8 @@
 
 "use strict";
 
-// The drop handler calls gZenTabTree.handleNestDrop with the dragged tabs.
-// Verify that contract holds for a quick "nest" drop, without synthesizing
-// native drag pixels.
+// Verify the handleNestDrop contract directly, without synthesizing native
+// drag pixels.
 add_task(async function test_drop_quick_nests_single() {
   const parent = await addNormalTab();
   const dragged = await addNormalTab();

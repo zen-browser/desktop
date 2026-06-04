@@ -894,7 +894,6 @@
         this._clearDragOverNest();
       }
 
-      // Show the nest indicator right away (no delay) when nesting is allowed.
       if (canNest && this.#dragOverNest.dropElement !== dropElement) {
         this.#createNestIndicator(dropElement);
       }

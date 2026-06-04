@@ -1,0 +1,25 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+- name: zen.tab-tree.enabled
+  value: true
+
+- name: zen.tab-tree.auto-nest-by-opener
+  value: true
+
+# "promote" (children move up) or "close-subtree" (close descendants too)
+- name: zen.tab-tree.close-parent-behavior
+  value: promote
+
+- name: zen.tab-tree.indent
+  value: 14 # px per nesting level
+
+- name: zen.tab-tree.max-depth
+  value: 4 # maximum level; root = 0; 0 disables the cap
+
+- name: zen.tab-tree.drag-nest-to-split-delayMC
+  value: 300 # ms hold before nest escalates to split
+
+- name: zen.tabs.middle-drag-select.enabled
+  value: true

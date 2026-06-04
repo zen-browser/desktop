@@ -49,6 +49,7 @@ const EVENTS = [
 
   "ZenTabIconChanged",
   "ZenTabLabelChanged",
+  "ZenTreeChanged",
 
   "TabMove",
   "TabPinned",
@@ -76,6 +77,7 @@ const EVENTS = [
 const SYNC_FLAG_LABEL = 1 << 0;
 const SYNC_FLAG_ICON = 1 << 1;
 const SYNC_FLAG_MOVE = 1 << 2;
+const SYNC_FLAG_TREE = 1 << 3;
 
 class nsZenWindowSync {
   #initialized = false;
@@ -550,6 +552,23 @@ class nsZenWindowSync {
         "zen-workspace-id"
       );
       this.#syncItemPosition(aOriginalItem, aTargetItem, aWindow);
+    }
+    if (aWindow.gZenTabTree?.enabled && gBrowser.isTab(aOriginalItem)) {
+      // Replicate the tree relationship + collapse state, then rebuild the
+      // target window's pointers/visual state from the mirrored attributes.
+      this.#maybeSyncAttributeChange(
+        aOriginalItem,
+        aTargetItem,
+        "zen-tree-parent-id"
+      );
+      this.#maybeSyncAttributeChange(
+        aOriginalItem,
+        aTargetItem,
+        "zen-tree-collapsed"
+      );
+      if (flags & (SYNC_FLAG_TREE | SYNC_FLAG_MOVE)) {
+        aWindow.gZenTabTree.rebuildFromAttributes();
+      }
     }
     if (aOriginalItem.hasAttribute("zen-live-folder-item-id")) {
       this.#maybeSyncAttributeChange(
@@ -1438,6 +1457,11 @@ class nsZenWindowSync {
 
   on_TabMove(aEvent) {
     this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_MOVE);
+    return Promise.resolve();
+  }
+
+  on_ZenTreeChanged(aEvent) {
+    this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_TREE);
     return Promise.resolve();
   }
 

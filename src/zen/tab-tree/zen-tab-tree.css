@@ -1,0 +1,49 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* Hide collapsed descendants. */
+.tabbrowser-tab[zen-tree-hidden] {
+  display: none !important;
+}
+
+/* Collapse twisty on parent tabs. */
+.tabbrowser-tab .zen-tree-twisty {
+  width: 12px;
+  height: 12px;
+  margin-inline: 2px;
+  flex-shrink: 0;
+  -moz-context-properties: fill;
+  fill: currentColor;
+  opacity: 0.7;
+  list-style-image: url("chrome://global/skin/icons/arrow-down.svg");
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
+  cursor: pointer;
+}
+
+.tabbrowser-tab .zen-tree-twisty:hover {
+  opacity: 1;
+}
+
+/* Point right when collapsed, down when expanded. */
+.tabbrowser-tab[zen-tree-collapsed] .zen-tree-twisty {
+  transform: rotate(-90deg);
+}
+
+/* Only show the twisty on parent tabs when the sidebar is expanded. */
+:root:not([zen-sidebar-expanded="true"]) .tabbrowser-tab .zen-tree-twisty {
+  display: none;
+}
+
+/* Drop-as-child indicator: a thin indented line under the target tab. */
+zen-tree-nest-indicator {
+  display: block;
+  height: 2px;
+  margin-block: 1px;
+  margin-inline-end: 8px;
+  border-radius: 1px;
+  background-color: var(--zen-primary-color, AccentColor);
+  pointer-events: none;
+}

@@ -71,6 +71,7 @@
     #firstHapticFeedbackPlayed = false;
 
     #dragOverSplit = {};
+    #dragOverNest = {};
 
     constructor(tabbrowserTabs) {
       super(tabbrowserTabs);
@@ -98,6 +99,12 @@
         this,
         "_dndSplitDelay",
         "zen.splitView.drag-over-split-delayMC",
+        300
+      );
+      XPCOMUtils.defineLazyPreferenceGetter(
+        this,
+        "_dndNestToSplitDelay",
+        "zen.tab-tree.drag-nest-to-split-delayMC",
         300
       );
       XPCOMUtils.defineLazyPreferenceGetter(
@@ -798,10 +805,10 @@
         !isTab(dropElement) ||
         dropElement.hasAttribute("zen-essential") ||
         dropElement.hasAttribute("zen-glance-tab") ||
-        dropElement?.group?.hasAttribute("split-view-group") ||
-        movingTabsSet.size > 1
+        dropElement?.group?.hasAttribute("split-view-group")
       ) {
         this._clearDragOverSplit();
+        this._clearDragOverNest();
         return;
       }
 
@@ -813,6 +820,7 @@
         dropElement.hasAttribute("zen-live-folder-item-id")
       ) {
         this._clearDragOverSplit();
+        this._clearDragOverNest();
         return;
       }
 
@@ -831,36 +839,56 @@
         overlapRatioY > 1 - edgeZoneThreshold
       ) {
         this._clearDragOverSplit();
+        this._clearDragOverNest();
         return;
       }
 
       const isLeft = clientX < targetX + targetWidth / 2;
       const dropSide = isLeft ? "left" : "right";
 
-      // If the drop side or element changes, clear dragOverSplit
+      // Central band reached: offer NEST immediately, escalate to SPLIT on hold.
+      const draggedTabs = [...movingTabsSet];
+      const canNest =
+        window.gZenTabTree?.enabled &&
+        window.gZenTabTree.isTreeEligible(dropElement) &&
+        draggedTabs.every(t => window.gZenTabTree.isTreeEligible(t)) &&
+        !movingTabsSet.has(dropElement);
+
+      // If the target/side changed, reset both machines.
       if (
         this.#dragOverSplit.data?.dropElement !== dropElement ||
         this.#dragOverSplit.data?.dropSide !== dropSide
       ) {
         this._clearDragOverSplit();
+        this._clearDragOverNest();
       }
 
+      // Show the nest indicator right away (no delay) when nesting is allowed.
+      if (canNest && this.#dragOverNest.dropElement !== dropElement) {
+        this.#createNestIndicator(dropElement);
+      }
+
+      // (Re)arm the escalation-to-split timer (split only supports one tab).
+      const canSplit = movingTabsSet.size <= 1;
       if (
-        this.#dragOverSplit.timer &&
-        this.#dragOverSplit.data?.dropElement === dropElement &&
-        this.#dragOverSplit.data?.dropSide === dropSide
+        canSplit &&
+        (!this.#dragOverSplit.timer ||
+          this.#dragOverSplit.data?.dropElement !== dropElement ||
+          this.#dragOverSplit.data?.dropSide !== dropSide)
       ) {
-        // Timer already running for the same target and side, do nothing
-        return;
+        if (this.#dragOverSplit.timer) {
+          clearTimeout(this.#dragOverSplit.timer);
+        }
+        this.#dragOverSplit.data = { dropElement, dropSide };
+        this.#dragOverSplit.timer = setTimeout(
+          () => {
+            // Escalate: drop the nest offer, show the split fake-tab.
+            this._clearDragOverNest();
+            this.#createFakeTabSplit(dropElement, dropSide);
+          },
+          canNest ? this._dndNestToSplitDelay : this._dndSplitDelay
+        );
       }
-
-      this.#dragOverSplit.data = {
-        dropElement,
-        dropSide,
-      };
-      this.#dragOverSplit.timer = setTimeout(() => {
-        this.#createFakeTabSplit(dropElement, dropSide);
-      }, this._dndSplitDelay);
     }
 
     #createFakeTabSplit(dropElement, dropSide) {
@@ -894,6 +922,29 @@
       this.#dragOverSplit.fakeTab = null;
       this.#dragOverSplit.data = null;
       this.#dragOverSplit.canDrop = null;
+    }
+
+    #createNestIndicator(dropElement) {
+      this.#clearNestIndicatorElement();
+      const indicator = document.createXULElement("zen-tree-nest-indicator");
+      const level = (window.gZenTabTree?.getLevel(dropElement) ?? 0) + 1;
+      const indentStep = Services.prefs.getIntPref("zen.tab-tree.indent", 14);
+      indicator.style.marginInlineStart = `${level * indentStep}px`;
+      dropElement.after(indicator);
+      this.#dragOverNest.indicator = indicator;
+      this.#dragOverNest.dropElement = dropElement;
+      this.#dragOverNest.canDrop = true;
+    }
+
+    #clearNestIndicatorElement() {
+      this.#dragOverNest.indicator?.remove();
+      this.#dragOverNest.indicator = null;
+    }
+
+    _clearDragOverNest() {
+      this.#clearNestIndicatorElement();
+      this.#dragOverNest.dropElement = null;
+      this.#dragOverNest.canDrop = null;
     }
 
     handle_windowDragEnter(event) {
@@ -973,8 +1024,14 @@
       super.handle_drop(event);
       this.#maybeClearVerticalPinnedGridDragOver();
       this.#handle_dropSwitchSpace(event);
-      this.#handle_dropCreateSplit(event);
+      // Split wins if the hold escalated; otherwise try a nest.
+      if (this.#dragOverSplit.canDrop) {
+        this.#handle_dropCreateSplit(event);
+      } else {
+        this.#handle_dropNest(event);
+      }
       this._clearDragOverSplit();
+      this._clearDragOverNest();
     }
 
     #handle_dropSwitchSpace(event) {
@@ -1029,6 +1086,25 @@
         "vsep",
         isLeft ? 0 : 1
       );
+    }
+
+    #handle_dropNest(event) {
+      if (!this.#dragOverNest.canDrop || !window.gZenTabTree?.enabled) {
+        return;
+      }
+      const dt = event.dataTransfer;
+      const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
+      const target = this.#dragOverNest.dropElement;
+      if (!draggedTab || !target) {
+        return;
+      }
+      const movingTabsSet = draggedTab._dragData?.movingTabsSet;
+      const draggedTabs = movingTabsSet?.size
+        ? [...movingTabsSet]
+        : [draggedTab];
+      this._dontAnimateTabMove = true;
+      this._clearDragOverNest();
+      window.gZenTabTree.handleNestDrop(draggedTabs, target);
     }
 
     handle_drop_transition(dropElement, draggedTab, movingTabs, dropBefore) {
@@ -1192,6 +1268,7 @@
       thisFromGlobal.clearDragOverVisuals();
       ownerGlobal.gZenPinnedTabManager.removeTabContainersDragoverClass();
       thisFromGlobal._clearDragOverSplit();
+      thisFromGlobal._clearDragOverNest();
       this.#maybeClearVerticalPinnedGridDragOver();
       thisFromGlobal.originalDragImageArgs = [];
       this.#firstHapticFeedbackPlayed = false;

@@ -32,6 +32,8 @@ export default [
   "gZenEmojiPicker",
   "gZenSessionStore",
   "gZenFolders",
+  "gZenTabTree",
+  "gZenTabMultiSelectDrag",
   "gZenMediaController",
   "gZenGlanceManager",
   "gZenLiveFoldersUI",

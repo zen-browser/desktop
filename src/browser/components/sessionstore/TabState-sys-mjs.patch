@@ -2,7 +2,7 @@ diff --git a/browser/components/sessionstore/TabState.sys.mjs b/browser/componen
 index 4ba4dda363b602cb6f4445ef056f2f9abb1b0e1e..6b4b407e05e26faca69d9d7ac6f31510620898fe 100644
 --- a/browser/components/sessionstore/TabState.sys.mjs
 +++ b/browser/components/sessionstore/TabState.sys.mjs
-@@ -99,10 +99,28 @@ class _TabState {
+@@ -99,10 +99,30 @@ class _TabState {
        }
      }
  
@@ -20,6 +20,8 @@ index 4ba4dda363b602cb6f4445ef056f2f9abb1b0e1e..6b4b407e05e26faca69d9d7ac6f31510
 +    tabData._zenPinnedInitialState = tab._zenPinnedInitialState;
 +    tabData._zenIsActiveTab = tab._zenContentsVisible;
 +    tabData.zenLiveFolderItemId = tab.getAttribute("zen-live-folder-item-id");
++    tabData.zenTreeParentId = tab.getAttribute("zen-tree-parent-id");
++    tabData.zenTreeCollapsed = tab.hasAttribute("zen-tree-collapsed");
 +
      tabData.searchMode = tab.documentGlobal.gURLBar.getSearchMode(
        browser,

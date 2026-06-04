@@ -20,6 +20,12 @@ class ZenSessionStore extends nsZenPreloadedFeature {
     if (tabData.zenLiveFolderItemId) {
       tab.setAttribute("zen-live-folder-item-id", tabData.zenLiveFolderItemId);
     }
+    if (tabData.zenTreeParentId) {
+      tab.setAttribute("zen-tree-parent-id", tabData.zenTreeParentId);
+    }
+    if (tabData.zenTreeCollapsed) {
+      tab.setAttribute("zen-tree-collapsed", "true");
+    }
     // Keep for now, for backward compatibility for window sync to work.
     if (tabData.zenSyncId || tabData.zenPinnedId) {
       tab.setAttribute("id", tabData.zenSyncId || tabData.zenPinnedId);

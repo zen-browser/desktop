@@ -12,6 +12,7 @@
 #include ../../../zen/kbs/jar.inc.mn
 #include ../../../zen/glance/jar.inc.mn
 #include ../../../zen/folders/jar.inc.mn
+#include ../../../zen/tab-tree/jar.inc.mn
 #include ../../../zen/welcome/jar.inc.mn
 #include ../../../zen/media/jar.inc.mn
 #include ../../../zen/downloads/jar.inc.mn

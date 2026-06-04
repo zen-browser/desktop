@@ -14,7 +14,6 @@ add_task(async function test_opener_autonest_on() {
     ownerTab: opener,
     triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
   });
-  await BrowserTestUtils.browserLoaded(gBrowser.getBrowserForTab(child));
 
   Assert.equal(
     gZenTabTree.getParent(child),
@@ -35,7 +34,6 @@ add_task(async function test_opener_autonest_off() {
     ownerTab: opener,
     triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
   });
-  await BrowserTestUtils.browserLoaded(gBrowser.getBrowserForTab(child));
 
   Assert.equal(gZenTabTree.getParent(child), null, "no auto-nest when pref off");
 

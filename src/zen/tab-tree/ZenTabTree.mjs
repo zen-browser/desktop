@@ -83,7 +83,7 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
   }
 
   getParent(tab) {
-    const parent = tab._zenTreeParent;
+    const parent = tab?._zenTreeParent;
     return parent && parent.isConnected ? parent : null;
   }
 

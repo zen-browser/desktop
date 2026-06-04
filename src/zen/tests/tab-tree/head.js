@@ -3,10 +3,32 @@
 
 "use strict";
 
+const { PromiseTestUtils } = ChromeUtils.importESModule(
+  "resource://testing-common/PromiseTestUtils.sys.mjs"
+);
+const { TabStateFlusher } = ChromeUtils.importESModule(
+  "resource:///modules/sessionstore/TabStateFlusher.sys.mjs"
+);
+// Closing tabs / pinning tears down the pre-existing ZenGlance actor while a
+// query is in flight; that benign rejection is unrelated to the tree feature.
+// Registered in a setup task so it lands in the harness's PromiseTestUtils.
+add_setup(function allowBenignEnvironmentRejections() {
+  // Two pre-existing, environment-only rejections unrelated to the tree feature:
+  //  - closing tabs tears down the ZenGlance actor mid-query ("destroyed before
+  //    query");
+  //  - opening the tab context menu in this unofficial/`faster` build hits
+  //    Fluent strings that aren't packaged ("Couldn't find a message: ...").
+  PromiseTestUtils.allowMatchingRejectionsGlobally(
+    /destroyed before query|Couldn't find a message/
+  );
+});
+
 async function addNormalTab(url = "about:blank") {
-  const tab = BrowserTestUtils.addTab(gBrowser, url, { skipAnimation: true });
-  await BrowserTestUtils.browserLoaded(gBrowser.getBrowserForTab(tab));
-  return tab;
+  // NB: don't await browserLoaded() for about:blank — its load event doesn't
+  // fire the way browserLoaded expects, so the wait hangs the whole test. The
+  // tree tests only need the tab to exist in the strip, which addTab provides
+  // synchronously (TabOpen fires before it returns).
+  return BrowserTestUtils.addTab(gBrowser, url, { skipAnimation: true });
 }
 
 function domOrder(tabs) {

@@ -15,11 +15,11 @@ export class nsZenSpaceRoutingDialog {
   static OBSERVERS = ["zen-space-routing-kill"];
 
   /**
-   * Creates a new boost share instance for the specified domain.
+   * Creates a new Space Routing dialog controller.
    *
-   * @param {Document} doc - The document object for the share window.
-   * @param {Window} editorWindow - The window object for the share instance.
-   * @param {Window} openerWindow - The window object which instanced this editor.
+   * @param {Document} doc - The document object for the dialog window.
+   * @param {Window} editorWindow - The Space Routing dialog window.
+   * @param {Window} openerWindow - The browser window that opened the dialog.
    */
   constructor(doc, editorWindow, openerWindow) {
     this.doc = doc;

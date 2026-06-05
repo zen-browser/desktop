@@ -107,9 +107,3 @@ tab-group[split-view-group][zen-tree-nest-target] {
   box-shadow: none !important;
   outline: none !important;
 }
-
-/* Middle-mouse drag-select: hint that releasing will close these tabs. */
-.tabbrowser-tab[zen-pending-close] {
-  outline: 1px solid color-mix(in srgb, red 60%, transparent);
-  outline-offset: -1px;
-}

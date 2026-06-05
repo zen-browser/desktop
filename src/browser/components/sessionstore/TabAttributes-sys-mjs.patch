@@ -1,0 +1,23 @@
+diff --git a/browser/components/sessionstore/TabAttributes.sys.mjs b/browser/components/sessionstore/TabAttributes.sys.mjs
+index ea53156d12..1cce173df3 100644
+--- a/browser/components/sessionstore/TabAttributes.sys.mjs
++++ b/browser/components/sessionstore/TabAttributes.sys.mjs
+@@ -3,7 +3,17 @@
+  * You can obtain one at http://mozilla.org/MPL/2.0/. */
+ 
+ // Tab attributes which are persisted & restored by SessionStore.
+-const PERSISTED_ATTRIBUTES = ["customizemode"];
++// The zen-tree-* attributes are restored on every path (including undo-close,
++// which doesn't run restoreInitialTabData) so the tree structure survives
++// Ctrl+Shift+T, not just full session restore. zen-tree-id carries the tab's
++// stable tree identity: window-sync reassigns the live `id` on restore, so the
++// tree matches parents by this persisted id instead.
++const PERSISTED_ATTRIBUTES = [
++  "customizemode",
++  "zen-tree-id",
++  "zen-tree-parent-id",
++  "zen-tree-collapsed",
++];
+ 
+ // A set of tab attributes to persist. We will read a given list of tab
+ // attributes when collecting tab data and will re-set those attributes when

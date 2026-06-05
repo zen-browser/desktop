@@ -131,22 +131,6 @@ class nsZenTabMultiSelectDrag extends nsZenDOMOperatedFeature {
     if (over !== s.anchor) {
       gBrowser.addRangeToMultiSelectedTabs(s.anchor, over);
     }
-    this.#markPendingClose();
-  }
-
-  #markPendingClose() {
-    for (const tab of gBrowser.tabs) {
-      tab.toggleAttribute(
-        "zen-pending-close",
-        !this.#state?.aborted && tab.multiselected
-      );
-    }
-  }
-
-  #clearPendingClose() {
-    for (const tab of gBrowser.tabs) {
-      tab.removeAttribute("zen-pending-close");
-    }
   }
 
   #onMouseUp(event) {
@@ -197,7 +181,6 @@ class nsZenTabMultiSelectDrag extends nsZenDOMOperatedFeature {
     // Abort the close and let the native tab context menu open on the current
     // multiselection. The trailing middle release becomes a no-op.
     s.aborted = true;
-    this.#clearPendingClose();
   }
 
   #removeClickSwallowers() {
@@ -206,7 +189,6 @@ class nsZenTabMultiSelectDrag extends nsZenDOMOperatedFeature {
   }
 
   #cancel() {
-    this.#clearPendingClose();
     window.removeEventListener("mousemove", this, true);
     window.removeEventListener("mouseup", this, true);
     window.removeEventListener("contextmenu", this, true);

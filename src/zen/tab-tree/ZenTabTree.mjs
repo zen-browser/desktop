@@ -33,6 +33,10 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
 
   _branchDragRoot = null;
 
+  // Coalesces the attribute-driven rebuild across a burst of tab restores
+  // (Ctrl+Shift+T can bring several closed tabs back in quick succession).
+  #rebuildScheduled = false;
+
   init() {
     this.#enabled =
       Services.prefs.getBoolPref("zen.tab-tree.enabled", true) &&
@@ -55,6 +59,7 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     window.addEventListener("TabGrouped", this);
     window.addEventListener("TabUngrouped", this);
     window.addEventListener("SSWindowStateReady", this);
+    window.addEventListener("SSTabRestored", this);
   }
 
   handleEvent(aEvent) {
@@ -193,9 +198,18 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
       // collapsed branch sheds a stale zen-tree-hidden), without waiting for the
       // next setCollapsed.
       node.toggleAttribute("zen-tree-hidden", hidden);
+      // Persist a stable tree identity. The live `id` is reassigned by
+      // window-sync when a tab is restored (undo-close), so children reference
+      // their parent by this id, which survives restore as a tab attribute.
+      if (node.id) {
+        node.setAttribute("zen-tree-id", node.id);
+      }
       const parent = this.getParent(node);
       if (parent) {
-        node.setAttribute("zen-tree-parent-id", parent.id || "");
+        node.setAttribute(
+          "zen-tree-parent-id",
+          parent.getAttribute("zen-tree-id") || parent.id || ""
+        );
       } else {
         node.removeAttribute("zen-tree-parent-id");
       }
@@ -698,15 +712,21 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
       }, 0);
       return;
     }
-    const newParent = this.getParent(node);
-    for (const child of children) {
-      child._zenTreeParent = newParent;
+    // Promote surviving children to the nearest ancestor that isn't also closing
+    // in this batch. Children that are themselves closing are left untouched, so
+    // their persisted zen-tree-parent-id keeps describing the original branch and
+    // a later undo-close (Ctrl+Shift+T) can rebuild the hierarchy instead of
+    // restoring the tabs flat.
+    const survivingParent = this.#nearestSurvivingParent(node);
+    const survivors = children.filter(child => !this.#isClosing(child));
+    for (const child of survivors) {
+      child._zenTreeParent = survivingParent;
     }
     const roots = new Set();
-    if (newParent) {
-      roots.add(this.#rootOf(newParent));
+    if (survivingParent) {
+      roots.add(this.#rootOf(survivingParent));
     } else {
-      for (const child of children) {
+      for (const child of survivors) {
         roots.add(child);
       }
     }
@@ -714,6 +734,21 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
       this.reindex(root);
     }
     this.#onTreeChanged(node);
+  }
+
+  // A tab is "closing" if it's mid-removal or was tagged as part of a
+  // multiselection close batch (set before any TabClose fires), so we can tell
+  // co-closing branch members from survivors during promotion.
+  #isClosing(node) {
+    return !!(node?.closing || node?._closedInMultiselection);
+  }
+
+  #nearestSurvivingParent(node) {
+    let parent = this.getParent(node);
+    while (parent && this.#isClosing(parent)) {
+      parent = this.getParent(parent);
+    }
+    return parent || null;
   }
 
   on_TabPinned(event) {
@@ -814,13 +849,36 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     this.rebuildFromAttributes();
   }
 
+  // A tab restored on its own (undo-close / Ctrl+Shift+T) gets its persisted
+  // zen-tree-parent-id reapplied as a tab attribute, but nothing has reconnected
+  // the live parent pointers yet. Rebuild from attributes so it lands back in its
+  // branch instead of flat. Coalesce so a multi-tab restore only rebuilds once,
+  // after the whole burst has settled.
+  on_SSTabRestored() {
+    if (!this.enabled || this.#rebuildScheduled) {
+      return;
+    }
+    this.#rebuildScheduled = true;
+    window.setTimeout(() => {
+      this.#rebuildScheduled = false;
+      this.rebuildFromAttributes();
+    }, 0);
+  }
+
   // Reconnect _zenTreeParent pointers from persisted zen-tree-parent-id.
   rebuildFromAttributes() {
     if (!this.enabled) {
       return;
     }
+    // Index by both the live id and the persisted stable tree id, so a parent
+    // still resolves after window-sync reassigned its live id on restore (the
+    // child's parent-id references the pre-restore id).
     const byId = new Map();
     for (const node of this.#nodes()) {
+      const treeId = node.getAttribute("zen-tree-id");
+      if (treeId) {
+        byId.set(treeId, node);
+      }
       if (node.id) {
         byId.set(node.id, node);
       }
@@ -833,8 +891,23 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
       node._zenTreeCollapsed = node.hasAttribute("zen-tree-collapsed");
     }
     for (const node of this.#nodes()) {
-      if (this.isTreeEligible(node) && !this.getParent(node)) {
-        this.reindex(node);
+      if (!this.isTreeEligible(node) || this.getParent(node)) {
+        continue;
+      }
+      // A node whose persisted parent-id points at a tab that isn't present yet
+      // (e.g. mid incremental restore) is left pending: don't reindex it, since
+      // reindex would strip its zen-tree-parent-id and a later rebuild — once the
+      // parent is finally back — could never reconnect it.
+      if (node.getAttribute("zen-tree-parent-id")) {
+        continue;
+      }
+      this.reindex(node);
+      // A restored/synced subtree can land out of depth-first order in the strip
+      // (undo-close reinserts a child at its old index, with unrelated tabs
+      // between it and its parent); re-assert contiguous DFS order so the branch
+      // isn't visually split by other tabs.
+      if (this.getChildren(node).length) {
+        this.#enforceDomOrder(node);
       }
     }
     for (const node of this.#nodes()) {

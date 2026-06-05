@@ -27,6 +27,8 @@
   --text-color-error: light-dark(#9d2222, #d03535);
 
   --rules-gap: 14px;
+
+  --sr-border-radius: 12px;
 }
 
 .dialog-button-box {
@@ -78,10 +80,10 @@
     aspect-ratio: 1;
     height: 75px;
 
-    min-height: none;
+    min-height: 0;
     max-height: none;
     max-width: none;
-    min-width: none;
+    min-width: 0;
 
     color: var(--text-color-secondary);
     -moz-context-properties: fill, fill-opacity;
@@ -134,10 +136,10 @@ p {
   color: var(--text-color);
   margin: 0;
 
-  &#match-type-select {
+  &.match-type-select {
     width: 100px;
   }
-  &#open-in-select {
+  &.open-in-select {
     width: 165px;
   }
 }
@@ -175,7 +177,7 @@ menulist {
   }
 }
 
-#sr-rule-bottom {
+.sr-rule-bottom {
   margin-left: 85px;
 }
 
@@ -253,7 +255,7 @@ button {
   flex-direction: row;
 }
 
-#sr-left {
+.sr-left {
   margin-left: auto;
 
   display: flex;

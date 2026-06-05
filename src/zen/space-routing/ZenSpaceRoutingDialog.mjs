@@ -33,7 +33,9 @@ export class nsZenSpaceRoutingDialog {
     });
 
     this.init();
-    window.addEventListener("unload", () => this.uninit(), { once: true });
+    this.editorWindow.addEventListener("unload", () => this.uninit(), {
+      once: true,
+    });
   }
 
   /**
@@ -121,8 +123,7 @@ export class nsZenSpaceRoutingDialog {
     // ---- Top row
 
     const topRow = this.doc.createXULElement("hbox");
-    topRow.className = "sr-rule-row";
-    topRow.id = "sr-rule-top";
+    topRow.className = "sr-rule-row sr-rule-top";
 
     const topLabelContainer = this.doc.createXULElement("hbox");
     topLabelContainer.className = "sr-label-container";
@@ -139,8 +140,7 @@ export class nsZenSpaceRoutingDialog {
     // Match type
 
     const matchTypeMenulist = this.doc.createXULElement("menulist");
-    matchTypeMenulist.className = "select";
-    matchTypeMenulist.id = "match-type-select";
+    matchTypeMenulist.className = "select match-type-select";
 
     const matchTypePopup = this.doc.createXULElement("menupopup");
     matchTypeMenulist.appendChild(matchTypePopup);
@@ -169,8 +169,7 @@ export class nsZenSpaceRoutingDialog {
     // ---- Bottom row
 
     const bottomRow = this.doc.createXULElement("hbox");
-    bottomRow.className = "sr-rule-row";
-    bottomRow.id = "sr-rule-bottom";
+    bottomRow.className = "sr-rule-row sr-rule-bottom";
 
     const bottomLabelContainer = this.doc.createXULElement("hbox");
     bottomLabelContainer.className = "sr-label-container";
@@ -187,8 +186,7 @@ export class nsZenSpaceRoutingDialog {
     // Open in
 
     const openInMenulist = this.doc.createXULElement("menulist");
-    openInMenulist.className = "select";
-    openInMenulist.id = "open-in-select";
+    openInMenulist.className = "select open-in-select";
 
     const openInMenupopup = this.doc.createXULElement("menupopup");
     openInMenulist.appendChild(openInMenupopup);

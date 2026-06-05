@@ -367,7 +367,7 @@ index 43fb79a3060e20f671ae6ffc26350c7abf497702..c1902e8650a53ad1679faa58ae153bb4
          this.selectedTab = t;
        }
 +
-+      window.gZenSpaceRoutingManager.onAfterAddTab(uriString, t, { skipRoute, fromExternal }, window);
++      window.gZenSpaceRoutingManager.onAfterAddTab(uriString, t, { skipRoute, fromExternal, pinned, tabGroup }, window);
 +
        return t;
      }

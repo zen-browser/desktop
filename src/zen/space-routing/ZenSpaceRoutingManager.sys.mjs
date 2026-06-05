@@ -177,6 +177,10 @@ class nsZenSpaceRoutingManager {
    * @returns {boolean} True if the rule matches
    */
   isRouteMatching(uriString, route) {
+    if (typeof uriString !== "string" || typeof route?.reference !== "string") {
+      return false;
+    }
+
     let reference = route.reference.toLowerCase();
     if (reference.trim() == "") {
       return false;
@@ -271,6 +275,9 @@ class nsZenSpaceRoutingManager {
    * @returns {Array<object>} A copy of the routes list
    */
   getAllRoutes() {
+    if (!this.#file?.data?.routes) {
+      return [];
+    }
     return structuredClone(this.#file.data.routes);
   }
 
@@ -278,10 +285,13 @@ class nsZenSpaceRoutingManager {
    * Returns a specific route
    *
    * @param {string} id - The ID of the given route
-   * @returns {object} The route
+   * @returns {object|null} The route, or null if no route has the given id
    */
   getRoute(id) {
     const idx = this.#file.data.routes.findIndex(r => r.id === id);
+    if (idx === -1) {
+      return null;
+    }
     return structuredClone(this.#file.data.routes[idx]);
   }
 
@@ -292,6 +302,9 @@ class nsZenSpaceRoutingManager {
    */
   updateRoute(route) {
     const idx = this.#file.data.routes.findIndex(r => r.id === route.id);
+    if (idx === -1) {
+      return;
+    }
     this.#file.data.routes[idx] = structuredClone(route);
   }
 
@@ -314,6 +327,9 @@ class nsZenSpaceRoutingManager {
    */
   removeRoute(id) {
     const objWithIdIndex = this.#file.data.routes.findIndex(r => r.id === id);
+    if (objWithIdIndex === -1) {
+      return;
+    }
     this.#file.data.routes.splice(objWithIdIndex, 1);
   }
 
@@ -321,7 +337,7 @@ class nsZenSpaceRoutingManager {
    * @returns {string} Returns the default route type for external links
    */
   getDefaultExternalRoute() {
-    return this.#file.data.defaultRouteExternal;
+    return this.#file?.data?.defaultRouteExternal ?? "most-recent-space";
   }
 
   /**
@@ -359,6 +375,9 @@ class nsZenSpaceRoutingManager {
       compression: "lz4",
 
       dataPostProcessor(data) {
+        if (!data || typeof data !== "object") {
+          data = {};
+        }
         if (!data.routes) {
           data.routes = [];
           data.defaultRouteExternal = "most-recent-space";

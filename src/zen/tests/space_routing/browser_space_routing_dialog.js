@@ -90,7 +90,7 @@ add_task(async function test_match_type_updates_placeholder_and_store() {
   const dlg = await openRoutingDialog();
   try {
     const doc = dlg.document;
-    const menulist = doc.querySelector(".sr-rule-container #match-type-select");
+    const menulist = doc.querySelector(".sr-rule-container .match-type-select");
     const input = doc.querySelector(".sr-rule-container .input");
 
     Assert.equal(

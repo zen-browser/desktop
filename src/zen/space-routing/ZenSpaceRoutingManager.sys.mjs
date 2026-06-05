@@ -44,7 +44,7 @@ class nsZenSpaceRoutingManager {
         break;
       default: {
         const targetWorkspace =
-          win.gZenWorkspaces.getWorkspaceFromId(targetRoute);
+          win?.gZenWorkspaces?.getWorkspaceFromId?.(targetRoute);
 
         if (targetWorkspace) {
           userContextId = targetWorkspace.containerTabId;
@@ -118,11 +118,11 @@ class nsZenSpaceRoutingManager {
           break;
 
         default: {
-          const targetWorkspace =
-            win.gZenWorkspaces.getWorkspaceFromId(targetRoute);
+          const workspaces = win?.gZenWorkspaces;
+          const targetWorkspace = workspaces?.getWorkspaceFromId?.(targetRoute);
 
           if (targetWorkspace) {
-            win.gZenWorkspaces.moveTabToWorkspace(newTab, targetWorkspace.uuid);
+            workspaces.moveTabToWorkspace(newTab, targetWorkspace.uuid);
             const mostRecentWindow =
               Services.wm.getMostRecentWindow("navigator:browser");
             const isOriginatingWindow = win === mostRecentWindow;

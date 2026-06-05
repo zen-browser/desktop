@@ -203,7 +203,7 @@ export class nsZenSpaceRoutingDialog {
     });
 
     input.addEventListener("input", e =>
-      this.onRotueReferenceChange(e.target.value, route.id, input)
+      this.onRouteReferenceChange(e.target.value, route.id, input)
     );
     matchTypeMenulist.addEventListener("command", e =>
       this.onRouteMatchTypeChange(e.target.value, route.id, input)
@@ -239,7 +239,7 @@ export class nsZenSpaceRoutingDialog {
    * @param {string} routeId - The ID of the affected route
    * @param {Element} input - The input element
    */
-  onRotueReferenceChange(value, routeId, input) {
+  onRouteReferenceChange(value, routeId, input) {
     const route = gZenSpaceRoutingManager.getRoute(routeId);
     route.reference = value;
 

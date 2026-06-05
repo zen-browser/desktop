@@ -823,13 +823,46 @@
 
       const dt = event.dataTransfer;
       const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
-      if (!isTab(draggedTab)) {
+      // A split group is dragged via its tab-group label element; resolve that to
+      // the group so it can be nested/reordered as one node.
+      const draggedNode = isTabGroupLabel(draggedTab)
+        ? draggedTab.group
+        : draggedTab;
+      if (
+        !isTab(draggedTab) &&
+        !window.gZenTabTree?.isSplitGroup(draggedNode)
+      ) {
         return;
       }
 
       const dragData = draggedTab._dragData;
       const movingTabsSet = dragData.movingTabsSet;
-      const dropElement = event.target.closest(".tabbrowser-tab");
+      const tree = window.gZenTabTree;
+      const nodeOf = t => (tree?.enabled ? tree.treeNodeFor(t) : t);
+      // A split/group drag leaves movingTabsSet empty, so fall back to the primary
+      // dragged node (matching the drop handlers); otherwise the tree path resolves
+      // to nothing for splits.
+      const draggedSource = movingTabsSet?.size
+        ? [...movingTabsSet]
+        : [draggedNode];
+      const draggedNodes = new Set(draggedSource.map(nodeOf));
+
+      let dropElement = event.target.closest(".tabbrowser-tab");
+      // Below the last non-dragged tab there's nothing to hit, so target its bottom
+      // edge — that's what lets you reorder/outdent at the very bottom even when the
+      // list ends in a nested branch (and works when dragging the last tab itself).
+      // Once the cursor is clearly below the list it's the root area, so snap to 0.
+      let belowList = false;
+      if (!dropElement && tree?.enabled) {
+        const lastTab = tree.lastDropTab(draggedNodes);
+        if (lastTab) {
+          const r = window.windowUtils.getBoundsWithoutFlushing(lastTab);
+          if (event.clientY >= r.bottom) {
+            dropElement = lastTab;
+            belowList = event.clientY >= r.bottom + 6;
+          }
+        }
+      }
 
       // TODO: After Cheff adds split view support for essentials, don't forget to remove the check
       if (
@@ -840,11 +873,14 @@
         dropElement.hasAttribute("zen-live-folder-item-id") ||
         draggedTab.hasAttribute("zen-live-folder-item-id")
       ) {
-        this.#clearAllDragOverTree();
+        this._clearDragOverSplit();
+        this._clearDragOverNest();
+        // Keep the last reorder level: when the cursor moves into the empty space
+        // past the last tab, the drop should still honor the level you dialed in
+        // (e.g. outdent to root), not snap back to nesting under the last tab.
         return;
       }
 
-      const tree = window.gZenTabTree;
       // With the tree on, a split group is a single node: target/drag its group
       // element. With the tree off, keep the old behavior of ignoring splits.
       if (
@@ -855,9 +891,7 @@
         this.#clearAllDragOverTree();
         return;
       }
-      const nodeOf = t => (tree?.enabled ? tree.treeNodeFor(t) : t);
       const targetNode = nodeOf(dropElement);
-      const draggedNodes = new Set([...movingTabsSet].map(nodeOf));
       if (draggedNodes.has(targetNode)) {
         this.#clearAllDragOverTree();
         return;
@@ -884,7 +918,8 @@
             targetNode,
             overlapRatioY < edgeZoneThreshold,
             clientX,
-            draggedNodes
+            draggedNodes,
+            belowList ? 0 : null
           );
         } else {
           this._clearDragOverReorder();
@@ -899,30 +934,42 @@
       const canNest = treeOk && tree.isTreeEligible(targetNode);
       const splitZone =
         Services.prefs.getIntPref("zen.tab-tree.drag-split-zone", 25) / 100;
-      const inSplitZone = clientX > rect.x + rect.width * (1 - splitZone);
-      const canSplit = movingTabsSet.size <= 1 && !tree?.isSplitGroup(targetNode);
+      // Either horizontal edge zone arms a split: left puts the dragged tab on
+      // the left, right on the right; the middle stays a nest.
+      const inLeftZone = clientX < rect.x + rect.width * splitZone;
+      const inRightZone = clientX > rect.x + rect.width * (1 - splitZone);
+      const inSplitZone = inLeftZone || inRightZone;
+      const dropSide = inLeftZone ? "left" : "right";
+      const draggedIsSplit = [...draggedNodes].some(n =>
+        tree?.isSplitGroup(n)
+      );
+      const canSplit =
+        draggedSource.length <= 1 &&
+        !draggedIsSplit &&
+        !tree?.isSplitGroup(targetNode);
 
-      if (this.#dragOverSplit.data?.dropElement !== dropElement) {
+      if (
+        this.#dragOverSplit.data?.dropElement !== dropElement ||
+        this.#dragOverSplit.data?.dropSide !== dropSide
+      ) {
         this._clearDragOverSplit();
       }
       const splitEscalated = !!this.#dragOverSplit.canDrop;
 
       if (canNest && !splitEscalated) {
-        if (this.#dragOverNest.dropElement !== targetNode) {
-          this.#createNestIndicator(targetNode);
-        }
+        this.#showNestIndicator(targetNode, rect);
       } else if (!canNest) {
         this._clearDragOverNest();
       }
 
       if (inSplitZone && canSplit) {
         if (!this.#dragOverSplit.timer && !splitEscalated) {
-          this.#dragOverSplit.data = { dropElement, dropSide: "right" };
+          this.#dragOverSplit.data = { dropElement, dropSide };
           this.#dragOverSplit.timer = setTimeout(
             () => {
               this.#dragOverSplit.timer = null;
               this._clearDragOverNest();
-              this.#createFakeTabSplit(dropElement, "right");
+              this.#createFakeTabSplit(dropElement, dropSide);
             },
             canNest ? this._dndNestToSplitDelay : this._dndSplitDelay
           );
@@ -930,8 +977,8 @@
       } else if (!inSplitZone) {
         // Left the split zone: cancel any pending/active split, restore nest.
         this._clearDragOverSplit();
-        if (canNest && this.#dragOverNest.dropElement !== targetNode) {
-          this.#createNestIndicator(targetNode);
+        if (canNest) {
+          this.#showNestIndicator(targetNode, rect);
         }
       }
     }
@@ -942,45 +989,58 @@
       this._clearDragOverReorder();
     }
 
-    // Show the reorder drop line in the gap above (`before`) or below the target
-    // node, indented to the level chosen by the cursor's horizontal position. The
-    // eligible node just above that gap bounds how deep the drop can nest.
-    #updateReorderIndicator(node, before, clientX, draggedNodes) {
+    // Re-indent the existing native drop indicator to the level the dragged node
+    // will land at, so there's a single accurate line rather than a second one.
+    #setNativeIndicatorIndent(level0Left, level, rightEdge) {
+      const indentStep = Services.prefs.getIntPref("zen.tab-tree.indent", 14);
+      const left = level0Left + level * indentStep;
+      const indicator = gZenPinnedTabManager.dragIndicator;
+      indicator.style.setProperty("--indicator-left", `${left}px`);
+      indicator.style.setProperty(
+        "--indicator-width",
+        `${Math.max(40, rightEdge - left)}px`
+      );
+    }
+
+    // Reorder: the native drag already placed its line in the gap; shift only its
+    // indent to the level chosen by the cursor's horizontal position. Default is
+    // a sibling of the node above the gap; drag right to nest under it, left to
+    // outdent toward root level 0.
+    #updateReorderIndicator(node, before, clientX, draggedNodes, forceLevel) {
       const tree = window.gZenTabTree;
       let prev = before ? node.previousElementSibling : node;
       while (prev && (!tree.isTreeEligible(prev) || draggedNodes.has(prev))) {
         prev = prev.previousElementSibling;
       }
+      // The eligible node just below the gap bounds how shallow the drop can go:
+      // dropping shallower than it would orphan it from its branch.
+      let next = before ? node : node.nextElementSibling;
+      while (next && (!tree.isTreeEligible(next) || draggedNodes.has(next))) {
+        next = next.nextElementSibling;
+      }
       const indentStep = Services.prefs.getIntPref("zen.tab-tree.indent", 14);
-      const maxLevel = prev ? tree.getLevel(prev) + 1 : 0;
-      let level = 0;
+      const prevLevel = prev ? tree.getLevel(prev) : 0;
+      const maxLevel = prev ? prevLevel + 1 : 0;
+      const minLevel = Math.min(next ? tree.getLevel(next) : 0, maxLevel);
+      let level = prevLevel;
       if (prev) {
         const prevRect = window.windowUtils.getBoundsWithoutFlushing(prev);
-        const baseX = prevRect.x - tree.getLevel(prev) * indentStep;
-        level = Math.round((clientX - baseX) / indentStep);
+        // forceLevel pins the level (e.g. root, when dragging below the list);
+        // otherwise anchor "sibling" at the tab-above's content so hovering its
+        // row keeps the sibling level, a clear drag right nests, left outdents.
+        const steps =
+          forceLevel != null
+            ? forceLevel - prevLevel
+            : Math.round((clientX - (prevRect.x + indentStep)) / indentStep);
+        level = Math.max(minLevel, Math.min(prevLevel + steps, maxLevel));
+        const level0Left = prevRect.left - prevLevel * indentStep;
+        this.#setNativeIndicatorIndent(level0Left, level, prevRect.right);
       }
-      level = Math.max(0, Math.min(level, maxLevel));
-
-      this.#clearReorderIndicatorElement();
-      const indicator = document.createXULElement("zen-tree-nest-indicator");
-      indicator.style.marginInlineStart = `${level * indentStep}px`;
-      if (before) {
-        node.before(indicator);
-      } else {
-        node.after(indicator);
-      }
-      this.#dragOverReorder.indicator = indicator;
       this.#dragOverReorder.level = level;
       this.#dragOverReorder.canDrop = true;
     }
 
-    #clearReorderIndicatorElement() {
-      this.#dragOverReorder.indicator?.remove();
-      this.#dragOverReorder.indicator = null;
-    }
-
     _clearDragOverReorder() {
-      this.#clearReorderIndicatorElement();
       this.#dragOverReorder.level = null;
       this.#dragOverReorder.canDrop = null;
     }
@@ -1018,27 +1078,30 @@
       this.#dragOverSplit.canDrop = null;
     }
 
-    #createNestIndicator(node) {
-      this.#clearNestIndicatorElement();
-      const indicator = document.createXULElement("zen-tree-nest-indicator");
-      const level = (window.gZenTabTree?.getLevel(node) ?? 0) + 1;
+    // Nest: outline the target row and move the native line just below it, at the
+    // child indent. Re-applied every dragover since the native pass resets it.
+    #showNestIndicator(node, rect) {
+      const tree = window.gZenTabTree;
       const indentStep = Services.prefs.getIntPref("zen.tab-tree.indent", 14);
-      indicator.style.marginInlineStart = `${level * indentStep}px`;
-      node.after(indicator);
-      node.toggleAttribute("zen-tree-nest-target", true);
-      this.#dragOverNest.indicator = indicator;
+      const level0Left = rect.left - tree.getLevel(node) * indentStep;
+      const indicator = gZenPinnedTabManager.dragIndicator;
+      indicator.setAttribute("orientation", "horizontal");
+      indicator.style.top = `${Math.round(rect.bottom)}px`;
+      this.#setNativeIndicatorIndent(
+        level0Left,
+        tree.getLevel(node) + 1,
+        rect.right
+      );
+      if (this.#dragOverNest.dropElement !== node) {
+        this.#dragOverNest.dropElement?.removeAttribute("zen-tree-nest-target");
+        node.toggleAttribute("zen-tree-nest-target", true);
+      }
       this.#dragOverNest.dropElement = node;
       this.#dragOverNest.canDrop = true;
     }
 
-    #clearNestIndicatorElement() {
-      this.#dragOverNest.indicator?.remove();
-      this.#dragOverNest.indicator = null;
-      this.#dragOverNest.dropElement?.removeAttribute("zen-tree-nest-target");
-    }
-
     _clearDragOverNest() {
-      this.#clearNestIndicatorElement();
+      this.#dragOverNest.dropElement?.removeAttribute("zen-tree-nest-target");
       this.#dragOverNest.dropElement = null;
       this.#dragOverNest.canDrop = null;
     }

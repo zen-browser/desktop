@@ -68,29 +68,6 @@ tab-group[split-view-group][zen-tree-collapsed] > .zen-tree-twisty {
   display: none;
 }
 
-/* Drop indicator line: under the target at child indent for a nest, or in the
-   gap at the chosen indent for a reorder. A dot marks the indent anchor. */
-zen-tree-nest-indicator {
-  display: block;
-  height: 2px;
-  margin-block: 1px;
-  margin-inline-end: 8px;
-  border-radius: 1px;
-  background-color: var(--zen-primary-color, AccentColor);
-  pointer-events: none;
-}
-
-zen-tree-nest-indicator::before {
-  content: "";
-  display: block;
-  width: 6px;
-  height: 6px;
-  margin-block: -2px;
-  margin-inline-start: -3px;
-  border-radius: 50%;
-  background-color: var(--zen-primary-color, AccentColor);
-}
-
 /* The node a quick-drop will nest under is outlined so the target is obvious. */
 .tabbrowser-tab[zen-tree-nest-target],
 tab-group[split-view-group][zen-tree-nest-target] {

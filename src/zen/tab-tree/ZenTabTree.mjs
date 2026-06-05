@@ -125,6 +125,17 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     return this.#isSplitGroup(el);
   }
 
+  // The representative tab of the last eligible node not being dragged, so a drag
+  // below the list (including a drag of the last tab itself) can target the bottom
+  // edge and reorder/outdent there.
+  lastDropTab(exclude) {
+    const nodes = this.#nodes().filter(
+      n => this.isTreeEligible(n) && !exclude?.has(n)
+    );
+    const last = nodes[nodes.length - 1];
+    return last ? this.#representativeTab(last) : null;
+  }
+
   isTreeEligible(node) {
     if (this.#isSplitGroup(node)) {
       return !node.pinned && !node.hasAttribute("zen-essential");
@@ -337,27 +348,40 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     while (prev && (!this.isTreeEligible(prev) || draggedNodes.has(prev))) {
       prev = prev.previousElementSibling;
     }
-    let newParent;
-    if (targetLevel == null) {
-      newParent = prev ? this.getParent(prev) : null;
-    } else {
-      newParent = this.#parentForLevel(prev, targetLevel);
+    // The eligible node just below the moved block floors how shallow the drop
+    // can land, so dropping between nested tabs can't bisect the branch at root.
+    let next = this.#lastSubtreeNode(roots[roots.length - 1]).nextElementSibling;
+    while (next && (!this.isTreeEligible(next) || draggedNodes.has(next))) {
+      next = next.nextElementSibling;
     }
+    const prevLevel = prev ? this.getLevel(prev) : 0;
+    const maxLevel = prev ? prevLevel + 1 : 0;
+    const minLevel = Math.min(next ? this.getLevel(next) : 0, maxLevel);
+    let level = targetLevel == null ? prevLevel : targetLevel;
+    level = Math.max(minLevel, Math.min(level, maxLevel));
+    const newParent = this.#parentForLevel(prev, level);
     const affected = new Set();
     for (const root of roots) {
+      const oldParent = this.getParent(root);
       if (
         newParent === root ||
         this.#isAncestor(root, newParent) ||
-        this.getParent(root) === newParent
+        oldParent === newParent
       ) {
         affected.add(this.#rootOf(root));
         continue;
       }
       root._zenTreeParent = newParent;
       affected.add(this.#rootOf(root));
+      // Refresh the former parent too, so it loses its twisty if this was its
+      // last child.
+      if (oldParent) {
+        affected.add(this.#rootOf(oldParent));
+      }
     }
     for (const r of affected) {
       this.reindex(r);
+      this.#enforceDomOrder(r);
     }
     this.#onTreeChanged(roots[0]);
   }
@@ -480,6 +504,28 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     return this.#ancestorAtLevel(prev, Math.min(level, max) - 1);
   }
 
+  // Re-assert DFS DOM order for a tree from its parent pointers, so a node the
+  // native drag misplaced (e.g. a split group inside a moved branch) sits right
+  // after its DFS predecessor instead of breaking the visual order.
+  #enforceDomOrder(root) {
+    const dfs = [];
+    const visit = node => {
+      dfs.push(node);
+      for (const child of this.getChildren(node)) {
+        visit(child);
+      }
+    };
+    visit(root);
+    this._suppressMoveHandling = true;
+    for (let i = 1; i < dfs.length; i++) {
+      if (dfs[i].previousElementSibling !== dfs[i - 1]) {
+        dfs[i - 1].after(dfs[i]);
+      }
+    }
+    gBrowser.tabContainer._invalidateCachedTabs();
+    this._suppressMoveHandling = false;
+  }
+
   // Insert each subtree node, in order, immediately after `reference`,
   // advancing the reference so the block stays contiguous.
   #moveSubtreeAfter(subtree, reference) {
@@ -509,12 +555,17 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     if (newParent === node || this.#isAncestor(node, newParent)) {
       return; // never create a cycle
     }
-    if (this.getParent(node) !== newParent) {
+    const oldParent = this.getParent(node);
+    if (oldParent !== newParent) {
       node._zenTreeParent = newParent;
       this.reindex(this.#rootOf(node));
+      if (oldParent) {
+        this.reindex(this.#rootOf(oldParent));
+      }
       this.#onTreeChanged(node);
     }
   }
+
 
   // Fire a change so window-sync can replicate the new tree state.
   #onTreeChanged(node) {
@@ -586,6 +637,16 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     const node = this.#nodeOf(event.target);
     const children = this.getChildren(node);
     if (!children.length) {
+      // A leaf is closing: once it's gone, refresh its parent so the parent
+      // drops its twisty if this was its last child.
+      const parent = this.getParent(node);
+      if (parent) {
+        window.setTimeout(() => {
+          if (parent.isConnected) {
+            this.reindex(this.#rootOf(parent));
+          }
+        }, 0);
+      }
       return;
     }
     const behavior = Services.prefs.getStringPref(
@@ -653,6 +714,16 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     }
     this.#clearNodeState(tab);
     this.reindex(this.#rootOf(group));
+    // The split element was just inserted at the original tab's spot; once the DOM
+    // settles, re-assert DFS order so adopted children sit below the group, not
+    // above it.
+    window.setTimeout(() => {
+      if (group.isConnected) {
+        this.reindex(this.#rootOf(group));
+        this.#enforceDomOrder(this.#rootOf(group));
+        this.#onTreeChanged(group);
+      }
+    }, 0);
     this.#onTreeChanged(group);
   }
 
@@ -683,6 +754,7 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     const root = groupParent ? this.#rootOf(groupParent) : children[0];
     if (root) {
       this.reindex(root);
+      this.#enforceDomOrder(root);
       this.#onTreeChanged(root);
     }
   }

@@ -133,8 +133,8 @@ document.addEventListener(
             gZenWorkspaces.unloadAllOtherWorkspaces();
             break;
           }
-          case "cmd_zenOpenSmartRoutingSettings": {
-            gZenSmartRoutingManager.openSmartRoutingDialog(window);
+          case "cmd_zenOpenSpaceRoutingSettings": {
+            gZenSpaceRoutingManager.openSpaceRoutingDialog(window);
             break;
           }
           case "cmd_zenNewNavigatorUnsynced":

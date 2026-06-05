@@ -11,9 +11,9 @@
   outline: none;
   color-scheme: light dark;
 
-  --sr-background: light-dark(#eaebed, #212223);
-  --select-background-color: light-dark(#dee1e6, #3e3f43);
-  --input-background-color: light-dark(#dee1e6, #2c2d31);
+  --sr-background: light-dark(white, #212223);
+  --select-background-color: light-dark(#eceef0, #3e3f43);
+  --input-background-color: light-dark(#f1f2f4, #2c2d31);
   --hr-color: light-dark(#cdced4, #313235);
 
   --sr-width: 510px;
@@ -22,7 +22,7 @@
   --content-padding: 26px;
   --content-padding-vertical: 16px;
 
-  --text-color: light-dark(#262627, #dbdcdf);
+  --text-color: light-dark(#4c4c4c, #dbdcdf);
   --text-color-secondary: light-dark(#5c5e65, #8b8e98);
   --text-color-error: light-dark(#9d2222, #d03535);
 
@@ -34,7 +34,7 @@
   display: none !important;
 }
 
-#zen-smart-routing-dialog-container {
+#zen-space-routing-dialog-container {
   background-color: var(--sr-background);
   padding: 0;
   margin: 24px;

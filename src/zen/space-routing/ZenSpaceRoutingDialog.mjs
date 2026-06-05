@@ -3,16 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // eslint-disable-next-line no-shadow
-const { gZenSmartRoutingManager } = ChromeUtils.importESModule(
-  "resource:///modules/zen/smartrouting/ZenSmartRoutingManager.sys.mjs"
+const { gZenSpaceRoutingManager } = ChromeUtils.importESModule(
+  "resource:///modules/zen/spacerouting/ZenSpaceRoutingManager.sys.mjs"
 );
 
-export class nsZenSmartRoutingDialog {
+export class nsZenSpaceRoutingDialog {
   doc = null;
   editorWindow = null;
   openerWindow = null;
 
-  static OBSERVERS = ["zen-smart-routing-kill"];
+  static OBSERVERS = ["zen-space-routing-kill"];
 
   /**
    * Creates a new boost share instance for the specified domain.
@@ -28,7 +28,7 @@ export class nsZenSmartRoutingDialog {
 
     this.killOtherShareInstances();
 
-    nsZenSmartRoutingDialog.OBSERVERS.forEach(observe => {
+    nsZenSpaceRoutingDialog.OBSERVERS.forEach(observe => {
       Services.obs.addObserver(this, observe);
     });
 
@@ -55,7 +55,7 @@ export class nsZenSmartRoutingDialog {
     );
     this.createOpenInList(
       defaultRouteSelect,
-      gZenSmartRoutingManager.getDefaultExternalRoute()
+      gZenSpaceRoutingManager.getDefaultExternalRoute()
     );
 
     defaultRouteSelect.addEventListener("command", e =>
@@ -79,7 +79,7 @@ export class nsZenSmartRoutingDialog {
    * Initializes the routes list and loads all current routes from the disk
    */
   initRouteList() {
-    const allRoutes = gZenSmartRoutingManager.getAllRoutes();
+    const allRoutes = gZenSpaceRoutingManager.getAllRoutes();
     allRoutes.forEach(r => this.createRouteElement(r));
   }
 
@@ -87,7 +87,7 @@ export class nsZenSmartRoutingDialog {
    * Will create a new route and update the route list
    */
   onNewRoutePressed() {
-    const newRoute = gZenSmartRoutingManager.createNewRoute();
+    const newRoute = gZenSpaceRoutingManager.createNewRoute();
     this.createRouteElement(newRoute);
   }
 
@@ -98,7 +98,7 @@ export class nsZenSmartRoutingDialog {
    * @param {string} containerElement - The container element of the route in the list
    */
   onRemoveRoutePressed(routeId, containerElement) {
-    gZenSmartRoutingManager.removeRoute(routeId);
+    gZenSpaceRoutingManager.removeRoute(routeId);
     containerElement.remove();
 
     this.updateShowNoRouteText();
@@ -146,7 +146,7 @@ export class nsZenSmartRoutingDialog {
 
     ["contains", "equal-to", "regex"].forEach(id => {
       const menuItem = this.doc.createXULElement("menuitem");
-      menuItem.setAttribute("data-l10n-id", `zen-smart-routing-${id}`);
+      menuItem.setAttribute("data-l10n-id", `zen-space-routing-${id}`);
       menuItem.setAttribute("value", id);
       matchTypePopup.appendChild(menuItem);
     });
@@ -241,7 +241,7 @@ export class nsZenSmartRoutingDialog {
    * @param {Element} input - The input element
    */
   onRotueReferenceChange(value, routeId, input) {
-    const route = gZenSmartRoutingManager.getRoute(routeId);
+    const route = gZenSpaceRoutingManager.getRoute(routeId);
     route.reference = value;
 
     this.updateInputPlaceholder(route.matchType, input);
@@ -253,7 +253,7 @@ export class nsZenSmartRoutingDialog {
       }
     }
 
-    gZenSmartRoutingManager.updateRoute(route);
+    gZenSpaceRoutingManager.updateRoute(route);
   }
 
   /**
@@ -263,9 +263,9 @@ export class nsZenSmartRoutingDialog {
    * @param {string} routeId - The ID of the affected route
    */
   onRouteOpenInChange(value, routeId) {
-    const route = gZenSmartRoutingManager.getRoute(routeId);
+    const route = gZenSpaceRoutingManager.getRoute(routeId);
     route.openIn = value;
-    gZenSmartRoutingManager.updateRoute(route);
+    gZenSpaceRoutingManager.updateRoute(route);
   }
 
   /**
@@ -276,7 +276,7 @@ export class nsZenSmartRoutingDialog {
    * @param {Element} input - The text input
    */
   onRouteMatchTypeChange(value, routeId, input) {
-    const route = gZenSmartRoutingManager.getRoute(routeId);
+    const route = gZenSpaceRoutingManager.getRoute(routeId);
     route.matchType = value;
 
     this.updateInputPlaceholder(route.matchType, input);
@@ -288,7 +288,7 @@ export class nsZenSmartRoutingDialog {
       }
     }
 
-    gZenSmartRoutingManager.updateRoute(route);
+    gZenSpaceRoutingManager.updateRoute(route);
   }
 
   /**
@@ -341,7 +341,7 @@ export class nsZenSmartRoutingDialog {
    * @param {string} value - The new value
    */
   onRouteDefaultExternalChange(value) {
-    gZenSmartRoutingManager.setDefaultExternalRoute(value);
+    gZenSpaceRoutingManager.setDefaultExternalRoute(value);
   }
 
   /**
@@ -356,8 +356,8 @@ export class nsZenSmartRoutingDialog {
     popupElement.replaceChildren(); // Clear existing
 
     const [openInSpace, mostRecentSpace] = await this.doc.l10n.formatMessages([
-      "zen-smart-routing-open-in-space",
-      "zen-smart-routing-most-recent-space",
+      "zen-space-routing-open-in-space",
+      "zen-space-routing-most-recent-space",
     ]);
 
     const sectionHeader = this.doc.createXULElement("menuitem");
@@ -412,28 +412,28 @@ export class nsZenSmartRoutingDialog {
    * Uninitializes the boost editor by cleaning up event listeners and observers.
    */
   uninit() {
-    nsZenSmartRoutingDialog.OBSERVERS.forEach(observe => {
+    nsZenSpaceRoutingDialog.OBSERVERS.forEach(observe => {
       Services.obs.removeObserver(this, observe);
     });
   }
 
   /**
-   * Kills all other Smart Routing dialog instances
+   * Kills all other Space Routing dialog instances
    */
   killOtherShareInstances() {
-    Services.obs.notifyObservers(null, "zen-smart-routing-kill");
+    Services.obs.notifyObservers(null, "zen-space-routing-kill");
   }
 
   /**
    * Observer callback that handles notifications from the observer service.
-   * Closes the control window when a 'zen-smart-routing-kill' notification is received.
+   * Closes the control window when a 'zen-space-routing-kill' notification is received.
    *
    * @param {object} subject - The subject of the notification.
    * @param {string} topic - The topic of the notification.
    */
   observe(subject, topic) {
     switch (topic) {
-      case "zen-smart-routing-kill":
+      case "zen-space-routing-kill":
         this.editorWindow.close();
         break;
     }
@@ -450,6 +450,6 @@ export class nsZenSmartRoutingDialog {
    * Handles the window close event
    */
   handleClose() {
-    gZenSmartRoutingManager.saveRoutes();
+    gZenSpaceRoutingManager.saveRoutes();
   }
 }

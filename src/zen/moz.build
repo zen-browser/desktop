@@ -19,5 +19,5 @@ DIRS += [
     "sessionstore",
     "share",
     "spaces",
-    "smart-routing",
+    "space-routing",
 ]

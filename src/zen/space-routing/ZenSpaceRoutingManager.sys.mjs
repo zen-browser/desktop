@@ -4,9 +4,9 @@
 
 import { JSONFile } from "resource://gre/modules/JSONFile.sys.mjs";
 
-class nsZenSmartRoutingManager {
+class nsZenSpaceRoutingManager {
   #file = null;
-  #saveFilename = "zen-smart-routing.jsonlz4";
+  #saveFilename = "zen-space-routing.jsonlz4";
 
   static SKIP_TYPE = {
     NONE: "none",
@@ -33,7 +33,7 @@ class nsZenSmartRoutingManager {
 
     if (
       this.#shouldSkipProcessing(options, win) !=
-      nsZenSmartRoutingManager.SKIP_TYPE.NONE
+      nsZenSpaceRoutingManager.SKIP_TYPE.NONE
     ) {
       return { shouldEarlyExit: false, userContextId, isRouteFound };
     }
@@ -67,7 +67,7 @@ class nsZenSmartRoutingManager {
   onAfterAddTab(uriString, newTab, options, win) {
     if (
       this.#shouldSkipProcessing(options, win) !=
-      nsZenSmartRoutingManager.SKIP_TYPE.NONE
+      nsZenSpaceRoutingManager.SKIP_TYPE.NONE
     ) {
       return;
     }
@@ -84,17 +84,17 @@ class nsZenSmartRoutingManager {
    */
   #shouldSkipProcessing(options, win) {
     if (options.skipRoute || options.pinned || options.tabGroup) {
-      return nsZenSmartRoutingManager.SKIP_TYPE.SKIPPED_TAB;
+      return nsZenSpaceRoutingManager.SKIP_TYPE.SKIPPED_TAB;
     }
 
     // addTab() is being called when the session restores.
     // To avoid automatically routing these tabs,
     // a check if the restore is already complete is needed
     if (!win.gZenStartup.isReady) {
-      return nsZenSmartRoutingManager.SKIP_TYPE.RESTORED_TAB;
+      return nsZenSpaceRoutingManager.SKIP_TYPE.RESTORED_TAB;
     }
 
-    return nsZenSmartRoutingManager.SKIP_TYPE.NONE;
+    return nsZenSpaceRoutingManager.SKIP_TYPE.NONE;
   }
 
   /**
@@ -136,7 +136,7 @@ class nsZenSmartRoutingManager {
         }
       }
     } catch (err) {
-      console.error("[ZenSmartRouting]: Error moving tab to workspace:", err);
+      console.error("[ZenSpaceRouting]: Error moving tab to workspace:", err);
     }
   }
 
@@ -204,7 +204,7 @@ class nsZenSmartRoutingManager {
           }
         } catch (e) {
           console.error(
-            "[ZenSmartRouting] Failed to resolve regular expression"
+            "[ZenSpaceRouting] Failed to resolve regular expression"
           );
         }
         break;
@@ -238,14 +238,14 @@ class nsZenSmartRoutingManager {
   }
 
   /**
-   * Opens the Smart Routing editor in a new popup window.
+   * Opens the Space Routing editor in a new popup window.
    *
    * @param {Window} parentWindow - The parent browser window
    * @returns {Window|null} The instanced editor window
    */
-  openSmartRoutingDialog(parentWindow) {
+  openSpaceRoutingDialog(parentWindow) {
     const control = parentWindow.openDialog(
-      "chrome://browser/content/zen-components/windows/zen-smart-routing.xhtml",
+      "chrome://browser/content/zen-components/windows/zen-space-routing.xhtml",
       "",
       "centerscreen,modal,dependent,resizable=no,titlebar=no",
       { parentWindow }
@@ -256,7 +256,7 @@ class nsZenSmartRoutingManager {
   }
 
   /**
-   * @returns {object} Returns a new empty Smart Routing route
+   * @returns {object} Returns a new empty Space Routing route
    */
   getEmptyRoute() {
     return {
@@ -339,7 +339,7 @@ class nsZenSmartRoutingManager {
   }
 
   /**
-   * Writes the Smart Routing data back onto the disk.
+   * Writes the Space Routing data back onto the disk.
    *
    * @private
    */
@@ -348,9 +348,9 @@ class nsZenSmartRoutingManager {
   }
 
   /**
-   * Reads Smart Routing data from disk and decompresses it.
+   * Reads Space Routing data from disk and decompresses it.
    *
-   * @returns {Promise<Map>} A promise that resolves to an array of Smart Routing rules.
+   * @returns {Promise<Map>} A promise that resolves to an array of Space Routing rules.
    * @private
    */
   async #readFromDisk() {
@@ -371,9 +371,9 @@ class nsZenSmartRoutingManager {
   }
 
   /**
-   * Gets the file path where Smart Routing data is stored in the user's profile directory.
+   * Gets the file path where Space Routing data is stored in the user's profile directory.
    *
-   * @returns {string} The full path to the Smart Routing storage file.
+   * @returns {string} The full path to the Space Routing storage file.
    * @private
    */
   get #storePath() {
@@ -382,4 +382,4 @@ class nsZenSmartRoutingManager {
   }
 }
 
-export const gZenSmartRoutingManager = new nsZenSmartRoutingManager();
+export const gZenSpaceRoutingManager = new nsZenSpaceRoutingManager();

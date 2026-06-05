@@ -6,8 +6,8 @@
 // eslint-disable-next-line no-lone-blocks
 {
   ChromeUtils.defineESModuleGetters(this, {
-    gZenSmartRoutingManager:
-      "resource:///modules/zen/smartrouting/ZenSmartRoutingManager.sys.mjs",
+    gZenSpaceRoutingManager:
+      "resource:///modules/zen/spacerouting/ZenSpaceRoutingManager.sys.mjs",
   });
 
   Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenSpaceBookmarksStorage.js", this);

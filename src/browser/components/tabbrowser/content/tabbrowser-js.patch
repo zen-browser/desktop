@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index 43fb79a3060e20f671ae6ffc26350c7abf497702..c1902e8650a53ad1679faa58ae153bb41e1f6d23 100644
+index 43fb79a3060e20f671ae6ffc26350c7abf497702..810644deebd3b63e93a6da8b4bb529cffb7eee55 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -502,6 +502,7 @@
@@ -279,10 +279,11 @@ index 43fb79a3060e20f671ae6ffc26350c7abf497702..c1902e8650a53ad1679faa58ae153bb4
          );
        }
  
-      const beforeRouteResult = window.gZenSpaceRoutingManager.onBeforeAddTab(uriString, { skipRoute, pinned, tabGroup, fromExternal }, window);
-      if (beforeRouteResult.shouldEarlyExit) {
-        return;
-      }
++      const beforeRouteResult = window.gZenSpaceRoutingManager.onBeforeAddTab(uriString, { skipRoute, pinned, tabGroup, fromExternal }, window);
++      if (beforeRouteResult.shouldEarlyExit) {
++        return;
++      }
++
 +      let hasZenDefaultUserContextId = false;
 +      if(beforeRouteResult.userContextId) {
 +        userContextId = beforeRouteResult.userContextId;

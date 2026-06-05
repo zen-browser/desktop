@@ -378,14 +378,17 @@ class nsZenSpaceRoutingManager {
         if (!data || typeof data !== "object") {
           data = {};
         }
-        if (!data.routes) {
+        if (!Array.isArray(data.routes)) {
           data.routes = [];
+        }
+        if (typeof data.defaultRouteExternal !== "string") {
           data.defaultRouteExternal = "most-recent-space";
         }
         return data;
       },
     });
 
+    this.#file.data ??= { routes: [], defaultRouteExternal: "most-recent-space" };
     await this.#file.load();
   }
 

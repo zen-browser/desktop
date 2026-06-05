@@ -279,11 +279,10 @@ index 43fb79a3060e20f671ae6ffc26350c7abf497702..c1902e8650a53ad1679faa58ae153bb4
          );
        }
  
-+      const beforeRouteResult = window.gZenSpaceRoutingManager.onBeforeAddTab(uriString, { skipRoute }, window);
-+      if (beforeRouteResult.shouldEarlyExit) {
-+        return;
-+      }
-+
+      const beforeRouteResult = window.gZenSpaceRoutingManager.onBeforeAddTab(uriString, { skipRoute, pinned, tabGroup, fromExternal }, window);
+      if (beforeRouteResult.shouldEarlyExit) {
+        return;
+      }
 +      let hasZenDefaultUserContextId = false;
 +      if(beforeRouteResult.userContextId) {
 +        userContextId = beforeRouteResult.userContextId;

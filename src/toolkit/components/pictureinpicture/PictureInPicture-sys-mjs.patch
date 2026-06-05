@@ -1,5 +1,5 @@
 diff --git a/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs b/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs
-index 5644bad94bd4741c4c807eaf5633ee18aacd633f..f59eb65928f74c8080a0b26394e17a6ef6cc1977 100644
+index 098742100858b266aebc8f764f918c85815f3c5f..71b8f8d71d48229fc96d6c84c635d09012a82250 100644
 --- a/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs
 +++ b/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs
 @@ -122,6 +122,9 @@ export class PictureInPictureToggleParent extends JSWindowActorParent {
@@ -12,7 +12,7 @@ index 5644bad94bd4741c4c807eaf5633ee18aacd633f..f59eb65928f74c8080a0b26394e17a6e
          let actor = browsingContext.currentWindowGlobal.getActor(
            "PictureInPictureLauncher"
          );
-@@ -490,7 +493,7 @@ export var PictureInPicture = {
+@@ -493,7 +496,7 @@ export var PictureInPicture = {
      // focus the tab's window
      tab.ownerGlobal.focus();
  

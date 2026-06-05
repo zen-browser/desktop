@@ -1,0 +1,32 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+EXTRA_JS_MODULES.zen.boosts += [
+  "ZenBoostsEditor.mjs",
+  "ZenBoostsManager.sys.mjs",
+  "ZenBoostStyles.sys.mjs",
+  "ZenSelectorComponent.sys.mjs",
+  "ZenZapDissolve.sys.mjs",
+  "ZenZapOverlayChild.sys.mjs",
+]
+
+FINAL_TARGET_FILES.actors += [
+    "actors/ZenBoostsChild.sys.mjs",
+    "actors/ZenBoostsParent.sys.mjs",
+]
+
+EXPORTS.mozilla += [
+    "nsZenBoostsBackend.h",
+]
+
+SOURCES += [
+    "nsZenBCOverrides.cpp",
+    "nsZenBoostsBackend.cpp",
+]
+
+FINAL_LIBRARY = "xul"
+
+TEST_DIRS += [
+    "gtest",
+]

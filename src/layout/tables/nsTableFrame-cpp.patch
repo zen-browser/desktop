@@ -1,0 +1,13 @@
+diff --git a/layout/tables/nsTableFrame.cpp b/layout/tables/nsTableFrame.cpp
+index 7c39ea94392dc158656621dfbee1be72bbcd46f8..e2fe47662b92ac6fb7fe2177d1d2cdab500bb969 100644
+--- a/layout/tables/nsTableFrame.cpp
++++ b/layout/tables/nsTableFrame.cpp
+@@ -4088,7 +4088,7 @@ static void GetColorAndStyle(const nsIFrame* aFrame, WritingMode aTableWM,
+     return;
+   }
+   *aColor = aFrame->Style()->GetVisitedDependentColor(
+-      nsStyleBorder::BorderColorFieldFor(physicalSide));
++      nsStyleBorder::BorderColorFieldFor(physicalSide), aFrame);
+ 
+   if (aWidth) {
+     *aWidth = styleData->GetComputedBorderWidth(physicalSide);

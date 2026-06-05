@@ -32,7 +32,7 @@
                         command="Browser:AddBookmarkAs"
                         flex="1" />
       </hbox>
-      <vbox class="zen-site-data-section">
+      <vbox id="zen-site-data-section-addons" class="zen-site-data-section">
         <hbox class="zen-site-data-section-header">
           <label data-l10n-id="unified-extensions-header-title" flex="1" />
           <label data-l10n-id="zen-generic-manage" id="zen-site-data-manage-addons" />
@@ -72,8 +72,16 @@
 # for this specific button / id
         <toolbarbutton id="unified-extensions-manage-extensions"
                         class="subviewbutton panel-subview-footer-button unified-extensions-manage-extensions"
-                        data-l10n-id="unified-extensions-manage-extensions" 
+                        data-l10n-id="unified-extensions-manage-extensions"
                         hidden="true" />
+      </vbox>
+      <vbox class="zen-site-data-section">
+        <hbox class="zen-site-data-section-header">
+          <label data-l10n-id="zen-site-data-boosts" flex="1" />
+        </hbox>
+        <vbox id="zen-site-data-boost-list">
+          <!-- settings will be inserted here -->
+        </vbox>
       </vbox>
       <vbox class="zen-site-data-section">
         <hbox class="zen-site-data-section-header">
@@ -85,7 +93,9 @@
         </vbox>
       </vbox>
       <hbox id="zen-site-data-footer">
-        <toolbarbutton id="zen-site-data-security-info" 
+        <toolbarbutton id="zen-site-data-security-info"
+                       class="subviewbutton zen-interactive-button" />
+        <toolbarbutton id="zen-site-data-boost" data-l10n-id="zen-site-data-create-boost"
                        class="subviewbutton zen-interactive-button" />
         <toolbarbutton id="zen-site-data-actions"
                        class="subviewbutton zen-interactive-button"

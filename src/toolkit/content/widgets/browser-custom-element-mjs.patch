@@ -1,8 +1,8 @@
 diff --git a/toolkit/content/widgets/browser-custom-element.mjs b/toolkit/content/widgets/browser-custom-element.mjs
-index b5eb24e15cc97b004f182c35901505cb740e8571..f2dd435ba072affff3b4fdada6c360a575c22910 100644
+index 22fcec0368d0356a24dd125373cb767836a6760d..7a78f5c1ddb06f3bc1b1e76f7489d57ee17a28e9 100644
 --- a/toolkit/content/widgets/browser-custom-element.mjs
 +++ b/toolkit/content/widgets/browser-custom-element.mjs
-@@ -483,11 +483,11 @@ class MozBrowser extends MozElements.MozElementMixin(XULFrameElement) {
+@@ -504,11 +504,11 @@ export class MozBrowser extends MozElements.MozElementMixin(XULFrameElement) {
      if (!this.browsingContext) {
        return;
      }

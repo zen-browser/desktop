@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/identity-block/identity-block.css b/browser/themes/shared/identity-block/identity-block.css
-index d542e962d42b17140888e299ed43a838047ee48c..806bc4f9d7b7557abf316a84858046e04c4f7ff5 100644
+index 72b6673094b80e9c109ae6f125cd25c3e00260ef..d116ab9671b02bbb05eddec8318e1f2835c29f32 100644
 --- a/browser/themes/shared/identity-block/identity-block.css
 +++ b/browser/themes/shared/identity-block/identity-block.css
 @@ -7,7 +7,7 @@
@@ -11,13 +11,13 @@ index d542e962d42b17140888e299ed43a838047ee48c..806bc4f9d7b7557abf316a84858046e0
      pointer-events: none;
      -moz-user-focus: ignore;
    }
-@@ -81,13 +81,6 @@
+@@ -85,13 +85,6 @@
    }
  }
  
 -#identity-box[pageproxystate="valid"]:is(.notSecureText, .chromeUI, .extensionPage) > .identity-box-button,
 -#urlbar-label-box {
--  background-color: var(--urlbar-box-bgcolor);
+-  background-color: var(--urlbar-box-background-color);
 -  color: var(--urlbar-box-text-color);
 -  padding-inline: 8px;
 -  border-radius: var(--urlbar-inner-border-radius);
@@ -25,7 +25,7 @@ index d542e962d42b17140888e299ed43a838047ee48c..806bc4f9d7b7557abf316a84858046e0
  
  #urlbar[focused] {
    #identity-box[pageproxystate="valid"]:is(.notSecureText, .chromeUI, .extensionPage) > .identity-box-button:not(:hover, [open]),
-@@ -178,16 +171,17 @@
+@@ -182,16 +175,17 @@
    }
  
    #identity-icon {

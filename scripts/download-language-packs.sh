@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -39,10 +40,20 @@ fi
 
 set -e
 
-update_language() {
+get_code_for_language() {
+  # Get the language code from locales/language-maps
   langId=$1
+  code=$(grep "^$langId:" ./locales/language-maps | cut -d':' -f2)
+  if [ -z "$code" ]; then
+    code=$langId
+  fi
+  echo $code
+}
+
+update_language() {
+  langId=$(get_code_for_language $1)
   cd ./locales
-  cd $langId
+  cd $1
 
   echo "Updating $langId"
   # move the contents from ../firefox-l10n/$langId to ./locales/$langId

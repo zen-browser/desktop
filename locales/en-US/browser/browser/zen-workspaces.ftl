@@ -4,11 +4,17 @@
 
 zen-panel-ui-workspaces-text = Spaces
 
+zen-panel-ui-spaces-label =
+    .label = Spaces
+
 zen-panel-ui-workspaces-create =
     .label = Create Space
 
 zen-panel-ui-folder-create =
     .label = Create Folder
+
+zen-panel-ui-live-folder-create =
+    .label = Live Folder
 
 zen-panel-ui-new-empty-split =
     .label = New Split
@@ -29,6 +35,9 @@ zen-workspaces-panel-context-default-profile =
 zen-workspaces-panel-unload =
     .label = Unload Space
 
+zen-workspaces-panel-unload-others =
+    .label = Unload All Other Spaces
+
 zen-workspaces-how-to-reorder-title = How to reorder spaces
 zen-workspaces-how-to-reorder-desc = Drag the space icons at the bottom of the sidebar to reorder them
 
@@ -43,12 +52,8 @@ zen-workspaces-panel-context-edit =
     .label = Edit Space
     .accesskey = E
 
-context-zen-change-workspace-tab =
-    .label = Change Tab(s) To Workspace
-    .accesskey = C
-
 zen-bookmark-edit-panel-workspace-selector =
-    .value = Workspaces
+    .value = Spaces
     .accesskey = W
 
 zen-panel-ui-gradient-generator-algo-complementary =
@@ -65,6 +70,10 @@ zen-panel-ui-gradient-click-to-add = Click to add a color
 
 zen-workspace-creation-name =
     .placeholder = Space Name
+
+zen-move-tab-to-workspace-button =
+    .label = Move To...
+    .tooltiptext = Move all tabs in this window to a Space
 
 zen-workspaces-panel-context-reorder =
     .label = Reorder Spaces
@@ -83,3 +92,9 @@ zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcu
 zen-workspaces-close-all-unpinned-tabs-title =
     .label = Clear
     .tooltiptext = Close all unpinned tabs
+
+zen-panel-ui-workspaces-change-forward =
+    .label = Next Space
+
+zen-panel-ui-workspaces-change-back =
+    .label = Previous Space

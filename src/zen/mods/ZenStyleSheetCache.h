@@ -2,15 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef mozilla_ZenStyleSheetCache_h__
-#define mozilla_ZenStyleSheetCache_h__
+#ifndef mozilla_ZenStyleSheetCache_h_
+#define mozilla_ZenStyleSheetCache_h_
 
 #include "mozilla/css/Loader.h"
-#include "mozilla/NotNull.h"
 #include "mozilla/StaticPtr.h"
 
 #ifndef ZEN_MODS_FILENAME
-  #define ZEN_MODS_FILENAME u"zen-themes.css"_ns
+#  define ZEN_MODS_FILENAME u"zen-themes.css"_ns
 #endif
 
 namespace zen {
@@ -38,6 +37,7 @@ class ZenStyleSheetCache final : public nsISupports {
   nsresult RebuildModsStylesheets(const nsACString& aContents);
 
   static auto Singleton() -> ZenStyleSheetCache*;
+
  private:
   ZenStyleSheetCache() = default;
   ~ZenStyleSheetCache() = default;
@@ -46,14 +46,14 @@ class ZenStyleSheetCache final : public nsISupports {
    * @brief Load the stylesheet from the given file.
    * @param aFile The file to load the stylesheet from.
    */
-  auto LoadSheetFile(nsIFile* aFile, mozilla::css::SheetParsingMode aParsingMode)
-      -> void;
+  auto LoadSheetFile(nsIFile* aFile,
+                     mozilla::css::SheetParsingMode aParsingMode) -> void;
 
   static mozilla::StaticRefPtr<ZenStyleSheetCache> gZenModsCache;
 
   RefPtr<StyleSheet> mModsSheet;
 };
 
-} // namespace zen
+}  // namespace zen
 
 #endif

@@ -17,6 +17,9 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = Ẩn cả hai
     .accesskey = H
+zen-toolbar-context-move-to-folder = 
+    .label = Chuyển vào thư mục...
+    .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Thư mục mới
     .accesskey = N
@@ -27,8 +30,8 @@ sidebar-zen-create-new =
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Tắt và chuyển sang thẻ
-           *[other] Tắt { $tabCount } thẻ và chuyển về thẻ đầu tiên
+            [one] Giải phóng và chuyển sang thẻ
+           *[other] Giải phóng { $tabCount } thẻ và chuyển về thẻ đầu tiên
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
@@ -36,4 +39,9 @@ tabbrowser-reset-pin-button =
             [one] Tải lại và ghim thẻ
            *[other] Tải lại và ghim { $tabCount } thẻ
         }
-tab-reset-pin-label = Quay trở lại đường dẫn đã ghim
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Quay lại URL đã ghim
+        [zen-default-pinned-cmd] Tách khỏi thẻ đã ghim
+       *[other] { $tabSubtitle }
+    }

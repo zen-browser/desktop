@@ -20,7 +20,7 @@ interface nsIZenCommonUtils : nsISupports {
    * @param y The y coordinate of the share dialog.
    * @returns A promise that resolves when the share is complete.
    */
-  void share(in nsIURI url, in ACString title, in ACString text, 
+  void share(in nsIURI url, in ACString title, in ACString text,
              in uint32_t x, in uint32_t y, in uint32_t width, in uint32_t height);
   /*
    * @brief Check if the current context can share data.
@@ -33,4 +33,3 @@ interface nsIZenCommonUtils : nsISupports {
    */
   void playHapticFeedback();
 };
-

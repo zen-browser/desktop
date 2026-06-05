@@ -8,6 +8,8 @@ files:
     translation: browser/browser/zen-general.ftl
   - source: en-US/browser/browser/zen-split-view.ftl
     translation: browser/browser/zen-split-view.ftl
+  - source: en-US/browser/browser/zen-menubar.ftl
+    translation: browser/browser/zen-menubar.ftl
   - source: en-US/browser/browser/zen-vertical-tabs.ftl
     translation: browser/browser/zen-vertical-tabs.ftl
   - source: en-US/browser/browser/zen-welcome.ftl
@@ -18,3 +20,5 @@ files:
     translation: browser/browser/preferences/zen-preferences.ftl
   - source: en-US/browser/browser/zen-folders.ftl
     translation: browser/browser/zen-folders.ftl
+  - source: en-US/browser/browser/zen-boosts.ftl
+    translation: browser/browser/zen-boosts.ftl

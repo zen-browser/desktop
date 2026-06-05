@@ -3,37 +3,45 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-toolbar-context-tabs-right = 
-    .label = Sağdaki sekmeler
+    .label = Sekmeler sağda olsun
     .accesskey = R
 zen-toolbar-context-compact-mode = 
     .label = Kompakt mod
 zen-toolbar-context-compact-mode-enable = 
-    .label = Komapkt modu aktifleştir
+    .label = Kompakt modu aktifleştir
     .accesskey = D
 zen-toolbar-context-compact-mode-just-tabs = 
     .label = Kenar çubuğunu gizle
 zen-toolbar-context-compact-mode-just-toolbar = 
-    .label = Araç barını gizle
+    .label = Araç çubuğunu gizle
 zen-toolbar-context-compact-mode-hide-both = 
-    .label = İkisini de Gizle
+    .label = İkisini de gizle
     .accesskey = H
+zen-toolbar-context-move-to-folder = 
+    .label = Klasöre taşı...
+    .accesskey = M
 zen-toolbar-context-new-folder = 
-    .label = New Folder
+    .label = Yeni klasör
     .accesskey = N
 sidebar-zen-expand = 
-    .label = Kenar Çubuğunu Genişlet
+    .label = Kenar çubuğunu genişlet
 sidebar-zen-create-new = 
-    .label = Create New...
+    .label = Yeni oluştur...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [bir] Kapatın ve sekmeye geçin
-           *[other] { $tabCount } sekmelerini kaldırın ve ilkine geçin
+            [one] Kapatın ve sekmeye geçin
+           *[other] { $tabCount } sekmesini kaldır ve ilkine geç
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-            [bir] Sıfırlayın ve sabitleyin
-           *[other] { $tabCount } sekmelerini sıfırlayın ve sabitleyin
+            [one] Sıfırlayın ve sabitleyin
+           *[other] { $tabCount } Sekmeyi sıfırla ve sabitle
         }
-tab-reset-pin-label = rlSabitlenen Url'ye dön
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Sabitlenmiş URL’ye geri dön
+        [zen-default-pinned-cmd] Sabitlenmiş sekmeden ayır
+       *[other] { $tabSubtitle }
+    }

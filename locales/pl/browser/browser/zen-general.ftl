@@ -2,46 +2,55 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-current-profile-text = Aktualny profil
-unified-extensions-description = Rozszerzenia są używane do dodatkowej funkcjonalności { -brand-short-name }.
+zen-panel-ui-current-profile-text = aktualny profil
+unified-extensions-description = Rozszerzenia są używane, aby zapewnić dodatkową funkcjonalność w { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Resetuj przypiętą kartę
+    .label =
+        { $isEssential ->
+            [true] Zresetuj niezbędną kartę
+           *[false] Zresetuj przypiętą kartę
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Add to Essentials
+    .label = Dodaj do niezbędnych
     .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
+tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential = 
-    .label = Usuń z Niezbędnych
+    .label = Usuń z niezbędnych
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Zastąp przypięty adres URL aktualnym
+    .label =
+        { $isEssential ->
+            [true] Zastąp adres URL niezbędnej karty bieżącym
+           *[false] Zastąp adres URL przypiętej karty bieżącym
+        }
     .accesskey = C
-zen-themes-corrupted = Twój plik modyfikacji { -brand-short-name } jest uszkodzony. Zostały one zresetowane do domyślnego stanu.
-zen-shortcuts-corrupted = Twój plik skrótów { -brand-short-name } jest popsuty. Skróty zostały zresetowane do domyślnych.
+tab-context-zen-edit-title = 
+    .label = Zmień nazwę...
+tab-context-zen-edit-icon = 
+    .label = Zmień ikonę...
+zen-themes-corrupted = Twój plik modyfikacji { -brand-short-name } jest uszkodzony. Został on zresetowany do domyślnego stanu.
+zen-shortcuts-corrupted = Twój plik skrótów { -brand-short-name } jest uszkodzony. Został on zresetowany do domyślnego stanu.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
-    Nowy pasek adresu został aktywowany, strona nowej karty nie jest już potrzebna.<br/><br/>
-    Wypróbuj nowy pasek URL otwierając nową kartę!
+    Włączono nowy pasek adresu URL, dzięki czemu nie ma już potrzeby korzystania ze strony nowej karty.<br/><br/>
+    Spróbuj otworzyć nową kartę, aby zobaczyć, jak działa nowy pasek adresu URL!
 zen-disable = Deaktywuj
 pictureinpicture-minimize-btn = 
     .aria-label = Zminimalizuj
     .tooltip = Zminimalizuj
 zen-panel-ui-gradient-generator-custom-color = Niestandardowy kolor
-zen-panel-ui-gradient-generator-saved-message = Pomyślnie zapisano gradient!
-zen-copy-current-url-confirmation = Skopiowano bieżący URL
+zen-copy-current-url-confirmation = Skopiowano bieżący URL!
+zen-copy-current-url-as-markdown-confirmation = Skopiowano bieżący adres URL jako Markdown!
 zen-general-cancel-label = 
     .label = Anuluj
 zen-general-confirm = 
     .label = Potwierdź
 zen-pinned-tab-replaced = URL przypiętej karty został zastąpiony bieżącym adresem!
-zen-tabs-renamed = Nazwa karty została z powodzeniem zmieniona!
+zen-tabs-renamed = Nazwa karty została pomyślnie zmieniona!
 zen-background-tab-opened-toast = Nowa karta została otworzona w tle!
-zen-workspace-renamed-toast = Zmieniono nazwę Przestrzeni roboczej!
-zen-library-sidebar-workspaces = 
-    .label = Przestrzenie
-zen-library-sidebar-mods = 
-    .label = Modyfikacje
+zen-workspace-renamed-toast = Zmieniono nazwę przestrzeni roboczej!
+zen-split-view-limit-toast = Nie można dodać kolejnych paneli do widoku podzielonego!
 zen-toggle-compact-mode-button = 
     .label = Tryb kompaktowy
     .tooltiptext = Przełącz tryb kompaktowy
@@ -61,18 +70,20 @@ zen-site-data-settings = Ustawienia
 zen-generic-manage = Zarządzaj
 zen-generic-more = Więcej
 zen-generic-next = Następne
+zen-essentials-promo-label = Dodaj do niezbędnych
+zen-essentials-promo-sublabel = Utrzymuj swoje ulubione karty w zasięgu myszki
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Dozwolone
 zen-site-data-setting-block = Zablokowane
 zen-site-data-protections-enabled = Włączone
 zen-site-data-protections-disabled = Wyłączone
-zen-site-data-setting-cross-site = Ciasteczka międzydomenowe
+zen-site-data-setting-cross-site = Pliki cookie między witrynami
 zen-site-data-security-info-extension = 
     .label = Rozszerzenie
 zen-site-data-security-info-secure = 
     .label = Zabezpieczone
 zen-site-data-security-info-not-secure = 
-    .label = Nie zabezpieczone
+    .label = Niezabezpieczone
 zen-site-data-manage-addons = 
     .label = Zarządzaj rozszerzeniami
 zen-site-data-get-addons = 
@@ -82,7 +93,7 @@ zen-site-data-site-settings =
 zen-site-data-header-share = 
     .tooltiptext = Udostępnij tę stronę
 zen-site-data-header-reader-mode = 
-    .tooltiptext = Wejdź do trybu czytnika
+    .tooltiptext = Przejdź do trybu czytania
 zen-site-data-header-screenshot = 
     .tooltiptext = Zrzut ekranu
 zen-site-data-header-bookmark = 
@@ -96,15 +107,21 @@ zen-site-data-setting-site-protection = Ochrona przed śledzeniem
 zen-site-data-panel-feature-callout-title = Nowy dom dla dodatków, uprawnień i więcej
 zen-site-data-panel-feature-callout-subtitle = Kliknij ikonę, aby zarządzać ustawieniami witryny, wyświetlić informacje o zabezpieczeniach, rozszerzeniach i wykonać akcje.
 zen-open-link-in-glance = 
-    .label = Open Link in Glance
+    .label = Otwórz link w szybkim podglądzie
     .accesskey = G
-zen-sidebar-notification-updated-heading = Update Complete!
+zen-sidebar-notification-updated-heading = Aktualizacja ukończona!
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-label = Co nowego w { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
-    .title = View Release Notes
-zen-sidebar-notification-restart-safe-mode-label = Something broke?
+    .title = Zobacz informacje o aktualizacji
+zen-sidebar-notification-restart-safe-mode-label = Coś się zepsuło?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = Restart in Safe Mode
+    .title = Zrestartuj w trybie bezpiecznym
+zen-window-sync-migration-dialog-title = Utrzymuj synchronizację okien
+zen-window-sync-migration-dialog-message = Zen synchronizuje teraz okna na tym samym urządzeniu, dzięki czemu zmiany wprowadzone w jednym oknie są natychmiast odzwierciedlane w pozostałych.
+zen-window-sync-migration-dialog-learn-more = Dowiedz się więcej
+zen-window-sync-migration-dialog-accept = Rozumiem
+zen-appmenu-new-blank-window = 
+    .label = Nowe puste okno

@@ -17,6 +17,12 @@
 - name: zen.workspaces.swipe-actions
   value: true
 
+- name: zen.workspaces.swipe-actions.delta-multiplier
+  value: 100
+
+- name: zen.workspaces.switch-animation-duration
+  value: 200
+
 - name: zen.workspaces.wrap-around-navigation
   value: true
 
@@ -32,9 +38,12 @@
 - name: zen.workspaces.separate-essentials
   value: true
 
+- name: zen.workspaces.dnd-switch-padding
+  value: 20
+
 - name: zen.workspaces.debug
-  value: '@cond'
-  condition: '!defined(MOZILLA_OFFICIAL)' # Section: Pinned tabs management
+  value: "@cond"
+  condition: "!defined(MOZILLA_OFFICIAL)" # Section: Pinned tabs management
 
 - name: zen.pinned-tab-manager.wheel-close-if-pending
   value: true

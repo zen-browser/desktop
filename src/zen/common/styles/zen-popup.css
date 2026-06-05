@@ -3,15 +3,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-@import url('chrome://browser/content/zen-styles/zen-panels/bookmarks.css');
-@import url('chrome://browser/content/zen-styles/zen-panels/print.css');
-@import url('chrome://browser/content/zen-styles/zen-panels/dialog.css');
+@import url("chrome://browser/content/zen-styles/zen-panels/bookmarks.css");
+@import url("chrome://browser/content/zen-styles/zen-panels/print.css");
+@import url("chrome://browser/content/zen-styles/zen-panels/dialog.css");
 
 :root {
-  --panel-subview-body-padding: 2px 0;
   --arrowpanel-menuitem-border-radius: 5px;
-  --arrowpanel-menuitem-margin: var(--uc-arrowpanel-menuitem-margin-block)
-    var(--uc-arrowpanel-menuitem-margin-inline);
+  --arrowpanel-menuitem-margin: var(--uc-arrowpanel-menuitem-margin-block) var(--uc-arrowpanel-menuitem-margin-inline);
   --arrowpanel-menuitem-padding-block: 8px;
   --arrowpanel-menuitem-padding-inline: 14px;
   --uc-arrowpanel-menuicon-margin-inline: 14px;
@@ -22,9 +20,7 @@
 
   --uc-panel-zoom-button-padding: 8px;
   --uc-panel-zoom-button-inline-padding: 9px;
-  --uc-panel-zoom-padding-block: calc(
-    var(--panel-separator-margin-vertical) + var(--uc-arrowpanel-menuitem-margin-block)
-  );
+  --uc-panel-zoom-padding-block: calc(var(--panel-separator-margin-vertical) + var(--uc-arrowpanel-menuitem-margin-block));
 
   --uc-autocomplete-panel-menuitem-margin: 4px;
   --uc-autocomplete-panel-menuicon-padding-inline: 14px;
@@ -39,7 +35,7 @@ menupopup,
 panel {
   --panel-background: var(--arrowpanel-background);
   --menuitem-padding: 6px !important;
-  --panel-shadow-margin: 10px;
+  --panel-shadow-margin: 8px;
 
   /* This should match GetMenuCornerRadius() on macOS, or be overridden below */
   @media (-moz-platform: macos) {
@@ -71,10 +67,7 @@ panel {
 }
 
 .widget-overflow-list .toolbarbutton-1:not(.toolbarbutton-combined) > .toolbarbutton-text,
-.subviewbutton:not(#appMenu-zoom-controls > .subviewbutton)
-  > .toolbarbutton-icon
-  + .toolbarbutton-text,
-#appMenu-fxa-label2 > vbox {
+.subviewbutton:not(#appMenu-zoom-controls > .subviewbutton) > .toolbarbutton-icon + .toolbarbutton-text {
   padding-inline-start: var(--uc-arrowpanel-menuicon-margin-inline);
 }
 
@@ -85,15 +78,12 @@ panel {
   padding-inline-start: calc(16px + var(--uc-arrowpanel-menuicon-margin-inline));
 }
 
-/* Firefox profile avatar in appmenu */
-#appMenu-fxa-label2::before {
-  content: '';
-  display: -moz-box;
-  height: 16px;
-  width: 16px;
-  background: var(--avatar-image-url) 0/16px;
-  scale: 1.25;
-  border-radius: 99px;
+/* Allow localized zoom labels to shrink so the fullscreen button stays visible. */
+#appMenu-zoom-controls > .toolbarbutton-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* disable proton account separator */
@@ -105,17 +95,10 @@ panel {
   padding-block: 0;
 }
 
-#appMenu-fxa-status2:not([fxastatus]) > #appMenu-fxa-label2 {
-  margin-inline-end: calc(var(--arrowpanel-menuitem-padding-inline) * -1);
-}
-
 /* zoom controls */
 #appMenu-zoom-controls {
   border-top: 1px solid var(--panel-separator-color);
-  padding-inline: calc(
-      var(--arrowpanel-menuitem-padding-inline) + var(--uc-arrowpanel-menuitem-margin-inline)
-    )
-    var(--uc-arrowpanel-menuitem-margin-inline);
+  padding-inline: calc(var(--arrowpanel-menuitem-padding-inline) + var(--uc-arrowpanel-menuitem-margin-inline)) var(--uc-arrowpanel-menuitem-margin-inline);
   padding-block: var(--uc-panel-zoom-padding-block);
   margin: var(--panel-separator-margin-vertical) 0 calc(var(--panel-separator-margin-vertical) * -1);
 }
@@ -131,29 +114,24 @@ panel {
 
 /* #appMenu-zoomReduce-button2, */
 #appMenu-zoom-controls > #appMenu-fullscreen-button2 {
-  margin-left: calc(
-    (var(--panel-separator-margin-vertical) + var(--uc-arrowpanel-menuitem-margin-block)) * 2 + 1px
-  );
+  margin-inline-start: calc((var(--panel-separator-margin-vertical) + var(--uc-arrowpanel-menuitem-margin-block)) * 2 + 1px);
 }
 
 #appMenu-zoom-controls > #appMenu-fullscreen-button2::before {
-  content: '';
+  content: "";
   border-inline-start: 1px solid var(--panel-separator-color);
   display: block;
   position: relative;
-  height: 32px;
+  height: var(--size-item-large);
   margin-block: calc(var(--uc-panel-zoom-button-padding) * -1);
   transform: translateX(
-    calc(
-      var(--uc-panel-zoom-button-inline-padding) * -1 -
-        (var(--panel-separator-margin-vertical) + var(--uc-arrowpanel-menuitem-margin-block)) - 1px
-    )
+    calc(var(--uc-panel-zoom-button-inline-padding) * -1 - (var(--panel-separator-margin-vertical) + var(--uc-arrowpanel-menuitem-margin-block)) - 1px)
   );
 }
 
 #appMenu-zoomReset-button2 {
-  height: calc(16px + var(--uc-panel-zoom-button-padding) * 2);
-  min-height: calc(16px + var(--uc-panel-zoom-button-padding) * 2);
+  height: calc(var(--size-item-small) + var(--uc-panel-zoom-button-padding) * 2);
+  min-height: calc(var(--size-item-small) + var(--uc-panel-zoom-button-padding) * 2);
 }
 
 #appMenu-zoomReduce-button2:not([disabled], [open], :active):is(:hover),
@@ -196,7 +174,7 @@ panel {
 #identity-popup-mainView-panel-header,
 #protections-popup-mainView-panel-header,
 .panel-header {
-  min-height: calc((var(--arrowpanel-menuitem-padding-block) + 4px) * 2 + 16px);
+  min-height: calc((var(--arrowpanel-menuitem-padding-block) + 4px) * 2 + var(--size-item-small));
 }
 
 /* URL bar popup */
@@ -226,9 +204,10 @@ panel {
 }
 
 .permission-popup-permission-item,
+.permission-popup-boost-item,
 #permission-popup-storage-access-permission-list-header {
   padding-block: 4px;
-  margin-block: 0px;
+  margin-block: 0;
 }
 
 #editBookmarkPanel > #editBookmarkHeaderSeparator,
@@ -319,7 +298,7 @@ menuseparator {
   cursor: pointer;
 }
 
-#editBMPanel_workspaceList input[type='checkbox'] {
+#editBMPanel_workspaceList input[type="checkbox"] {
   margin-right: 8px;
 }
 
@@ -333,16 +312,16 @@ menuseparator {
   display: flex;
   align-items: end;
 
-  :root:not([zen-right-side='true']) & {
+  :root:not([zen-right-side="true"]) & {
     right: var(--zen-toast-spacing);
   }
 
-  :root[zen-right-side='true'] & {
+  :root[zen-right-side="true"] & {
     left: var(--zen-toast-spacing);
   }
 
   & .zen-toast {
-    :root[zen-right-side='true'] & {
+    :root[zen-right-side="true"] & {
       translate: 100%;
     }
 
@@ -357,12 +336,8 @@ menuseparator {
     z-index: 1000;
     padding: var(--zen-toast-padding);
     border-radius: 10px;
-    background: linear-gradient(
-      to bottom,
-      var(--zen-primary-color) -40%,
-      color-mix(in srgb, var(--zen-primary-color), #0f0f0f 20%)
-    );
-    box-shadow: light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4)) 0px 0px 22px 2px;
+    background: linear-gradient(to bottom, var(--zen-primary-color) -40%, color-mix(in srgb, var(--zen-primary-color), #0f0f0f 20%));
+    box-shadow: light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4)) 0 0 22px 2px;
     border: none;
     display: flex;
     font-weight: 600;
@@ -395,10 +370,10 @@ menuseparator {
 
     & button {
       width: min-content;
-      padding: 0px 8px !important;
+      padding: 0 8px !important;
       min-width: unset !important;
       min-height: 28px;
-      margin: 0px !important;
+      margin: 0 !important;
       border-radius: 6px !important;
       border-top: 2px solid light-dark(transparent, rgba(255, 255, 255, 0.1));
       color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8)) !important;
@@ -408,7 +383,7 @@ menuseparator {
       outline: 0.5px solid light-dark(transparent, rgba(255, 255, 255, 0.02));
       outline-offset: -0.5px;
 
-      :root[zen-right-side='true'] & {
+      :root[zen-right-side="true"] & {
         order: -1;
       }
 

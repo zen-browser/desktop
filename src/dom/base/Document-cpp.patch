@@ -1,5 +1,5 @@
 diff --git a/dom/base/Document.cpp b/dom/base/Document.cpp
-index 55d24fe16311a286813f7668a227d2ef0cc7e5d7..1a7c2352daf1e04e38a8fb81f80a1f9a58ba2cb5 100644
+index f5dc958b940b806cc471760ce91a26b1111aafa5..d6841cbef64374d14bc2941651e33669c28e2958 100644
 --- a/dom/base/Document.cpp
 +++ b/dom/base/Document.cpp
 @@ -465,6 +465,7 @@
@@ -10,7 +10,7 @@ index 55d24fe16311a286813f7668a227d2ef0cc7e5d7..1a7c2352daf1e04e38a8fb81f80a1f9a
  
  // clang-format off
  #include "mozilla/Encoding.h"
-@@ -3442,6 +3443,10 @@ void Document::FillStyleSetUserAndUASheets() {
+@@ -3275,6 +3276,10 @@ void Document::FillStyleSetUserAndUASheets() {
    for (StyleSheet* sheet : *sheetService->UserStyleSheets()) {
      styleSet.AppendStyleSheet(*sheet);
    }

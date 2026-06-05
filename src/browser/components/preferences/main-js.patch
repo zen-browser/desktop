@@ -1,8 +1,8 @@
 diff --git a/browser/components/preferences/main.js b/browser/components/preferences/main.js
-index 46283d3eacfea0f419afa3bdfd2a51e411502a20..4fe229706eb0145a21042b8b3cca323682e89e76 100644
+index 6f4cb34d1639ac76a6d4ca40f0d33ae6fb6bf565..1f336a09d6f2e367effdf26e8baf58b5686d252d 100644
 --- a/browser/components/preferences/main.js
 +++ b/browser/components/preferences/main.js
-@@ -1117,6 +1117,11 @@ let SETTINGS_CONFIG = {
+@@ -2537,6 +2537,11 @@ function createStartupConfig(hidden = false) {
          id: "browserRestoreSession",
          l10nId: "startup-restore-windows-and-tabs",
        },
@@ -14,7 +14,16 @@ index 46283d3eacfea0f419afa3bdfd2a51e411502a20..4fe229706eb0145a21042b8b3cca3236
        {
          id: "windowsLaunchOnLogin",
          l10nId: "windows-launch-on-login",
-@@ -1611,7 +1616,7 @@ function getBundleForLocales(newLocales) {
+@@ -2578,7 +2583,7 @@ function createStartupConfig(hidden = false) {
+ SettingGroupManager.registerGroups({
+   defaultBrowser: createDefaultBrowserConfig(),
+   startup: createStartupConfig(
+-    Services.prefs.getBoolPref("browser.settings-redesign.enabled", false)
++    false
+   ),
+   zoom: {
+     l10nId: "preferences-zoom-header2",
+@@ -3393,7 +3398,7 @@ function getBundleForLocales(newLocales) {
      ])
    );
    return new Localization(

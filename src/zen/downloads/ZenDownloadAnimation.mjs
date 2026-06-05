@@ -2,11 +2,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { Downloads } from 'resource://gre/modules/Downloads.sys.mjs';
 import {
   nsZenDOMOperatedFeature,
   nsZenMultiWindowFeature,
-} from 'chrome://browser/content/zen-components/ZenCommonUtils.mjs';
+} from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
 const CONFIG = Object.freeze({
   ANIMATION: {
@@ -24,6 +23,7 @@ class nsZenDownloadAnimation extends nsZenDOMOperatedFeature {
 
   async #setupDownloadListeners() {
     try {
+      const Downloads = window.Downloads;
       const list = await Downloads.getList(Downloads.ALL);
       list.addView({
         onDownloadAdded: this.#handleNewDownload.bind(this),
@@ -37,7 +37,7 @@ class nsZenDownloadAnimation extends nsZenDOMOperatedFeature {
 
   #handleNewDownload() {
     if (
-      !Services.prefs.getBoolPref('zen.downloads.download-animation') ||
+      !Services.prefs.getBoolPref("zen.downloads.download-animation") ||
       !nsZenMultiWindowFeature.isActiveWindow
     ) {
       return;
@@ -54,10 +54,10 @@ class nsZenDownloadAnimation extends nsZenDOMOperatedFeature {
   }
 
   #animateDownload(startPosition) {
-    let animationElement = document.querySelector('zen-download-animation');
+    let animationElement = document.querySelector("zen-download-animation");
 
     if (!animationElement) {
-      animationElement = document.createElement('zen-download-animation');
+      animationElement = document.createElement("zen-download-animation");
       document.body.appendChild(animationElement);
     }
 
@@ -72,21 +72,23 @@ class nsZenDownloadAnimationElement extends HTMLElement {
 
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: "open" });
     this.#loadArcStyles();
   }
 
   #loadArcStyles() {
     try {
-      const link = document.createElement('link');
-      link.setAttribute('rel', 'stylesheet');
+      const link = document.createElement("link");
+      link.setAttribute("rel", "stylesheet");
       link.setAttribute(
-        'href',
-        'chrome://browser/content/zen-styles/zen-download-arc-animation.css'
+        "href",
+        "chrome://browser/content/zen-styles/zen-download-arc-animation.css"
       );
       this.shadowRoot.appendChild(link);
     } catch (error) {
-      console.error(`[${nsZenDownloadAnimationElement.name}] Error loading arc styles: ${error}`);
+      console.error(
+        `[${nsZenDownloadAnimationElement.name}] Error loading arc styles: ${error}`
+      );
     }
   }
 
@@ -99,7 +101,8 @@ class nsZenDownloadAnimationElement extends HTMLElement {
     }
 
     // Determine animation target position
-    const { endPosition, isDownloadButtonVisible } = this.#determineEndPosition();
+    const { endPosition, isDownloadButtonVisible } =
+      this.#determineEndPosition();
     const areTabsPositionedRight = this.#areTabsOnRightSide();
 
     // Create and prepare the arc animation element
@@ -131,12 +134,23 @@ class nsZenDownloadAnimationElement extends HTMLElement {
   }
 
   #areTabsOnRightSide() {
-    return Services.prefs.getBoolPref('zen.tabs.vertical.right-side');
+    const position = Services.prefs.getIntPref(
+      "zen.downloads.icon-popup-position",
+      0
+    );
+    if (position === 1) {
+      return false;
+    }
+    if (position === 2) {
+      return true;
+    }
+    return Services.prefs.getBoolPref("zen.tabs.vertical.right-side");
   }
 
   #determineEndPosition() {
-    const downloadsButton = document.getElementById('downloads-button');
-    const isDownloadButtonVisible = downloadsButton && this.#isElementVisible(downloadsButton);
+    const downloadsButton = document.getElementById("downloads-button");
+    const isDownloadButtonVisible =
+      downloadsButton && this.#isElementVisible(downloadsButton);
 
     let endPosition = { clientX: 0, clientY: 0 };
 
@@ -150,11 +164,13 @@ class nsZenDownloadAnimationElement extends HTMLElement {
     } else {
       // Use alternative position at bottom of wrapper
       const areTabsPositionedRight = this.#areTabsOnRightSide();
-      const wrapper = document.getElementById('zen-main-app-wrapper');
+      const wrapper = document.getElementById("zen-main-app-wrapper");
       const wrapperRect = wrapper.getBoundingClientRect();
 
       endPosition = {
-        clientX: areTabsPositionedRight ? wrapperRect.right - 42 : wrapperRect.left + 42,
+        clientX: areTabsPositionedRight
+          ? wrapperRect.right - 42
+          : wrapperRect.left + 42,
         clientY: wrapperRect.bottom - 40,
       };
     }
@@ -172,12 +188,14 @@ class nsZenDownloadAnimationElement extends HTMLElement {
           `;
 
     const fragment = window.MozXULElement.parseXULToFragment(arcAnimationHTML);
-    const animationElement = fragment.querySelector('.zen-download-arc-animation');
+    const animationElement = fragment.querySelector(
+      ".zen-download-arc-animation"
+    );
 
     Object.assign(animationElement.style, {
       left: `${startPosition.clientX}px`,
       top: `${startPosition.clientY}px`,
-      transform: 'translate(-50%, -50%)',
+      transform: "translate(-50%, -50%)",
     });
 
     this.shadowRoot.appendChild(animationElement);
@@ -187,7 +205,10 @@ class nsZenDownloadAnimationElement extends HTMLElement {
 
   #calculateOptimalArc(startPosition, endPosition, distance) {
     // Calculate available space for the arc
-    const availableTopSpace = Math.min(startPosition.clientY, endPosition.clientY);
+    const availableTopSpace = Math.min(
+      startPosition.clientY,
+      endPosition.clientY
+    );
     const viewportHeight = window.innerHeight;
     const availableBottomSpace =
       viewportHeight - Math.max(startPosition.clientY, endPosition.clientY);
@@ -196,7 +217,9 @@ class nsZenDownloadAnimationElement extends HTMLElement {
     const shouldArcDownward = availableBottomSpace > availableTopSpace;
 
     // Use the space in the direction we're arcing
-    const availableSpace = shouldArcDownward ? availableBottomSpace : availableTopSpace;
+    const availableSpace = shouldArcDownward
+      ? availableBottomSpace
+      : availableTopSpace;
 
     // Limit arc height to a percentage of the available space
     const arcHeight = Math.min(
@@ -226,19 +249,30 @@ class nsZenDownloadAnimationElement extends HTMLElement {
       }
 
       await gZenUIManager.motion.animate(arcAnimationElement, sequence, {
-        duration: Services.prefs.getIntPref('zen.downloads.download-animation-duration') / 1000,
-        easing: 'cubic-bezier(0.37, 0, 0.63, 1)',
-        fill: 'forwards',
+        duration:
+          Services.prefs.getIntPref(
+            "zen.downloads.download-animation-duration"
+          ) / 1000,
+        easing: "cubic-bezier(0.37, 0, 0.63, 1)",
+        fill: "forwards",
       });
 
       this.#cleanArcAnimation(arcAnimationElement);
     } catch (error) {
-      console.error('[nsZenDownloadAnimationElement] Error in animation sequence:', error);
+      console.error(
+        "[nsZenDownloadAnimationElement] Error in animation sequence:",
+        error
+      );
       this.#cleanArcAnimation(arcAnimationElement);
     }
   }
 
-  #createArcAnimationSequence(distanceX, distanceY, arcHeight, shouldArcDownward) {
+  #createArcAnimationSequence(
+    distanceX,
+    distanceY,
+    arcHeight,
+    shouldArcDownward
+  ) {
     const sequence = { offset: [], opacity: [], transform: [] };
 
     const arcDirection = shouldArcDownward ? 1 : -1;
@@ -277,7 +311,9 @@ class nsZenDownloadAnimationElement extends HTMLElement {
 
       // Position on arc
       const x = distanceX * eased;
-      const y = distanceY * eased + arcDirection * arcHeight * (1 - (2 * eased - 1) ** 2);
+      const y =
+        distanceY * eased +
+        arcDirection * arcHeight * (1 - (2 * eased - 1) ** 2);
 
       // Calculate rotation to point in the direction of movement
       let rotation = previousRotation;
@@ -286,10 +322,12 @@ class nsZenDownloadAnimationElement extends HTMLElement {
 
         const prevX = distanceX * prevEased;
         const prevAdjustedProgress = prevEased * 2 - 1;
-        const prevVerticalOffset = arcDirection * arcHeight * (1 - prevAdjustedProgress * 2);
+        const prevVerticalOffset =
+          arcDirection * arcHeight * (1 - prevAdjustedProgress * 2);
         const prevY = distanceY * prevEased + prevVerticalOffset;
 
-        const targetRotation = Math.atan2(y - prevY, x - prevX) * (180 / Math.PI);
+        const targetRotation =
+          Math.atan2(y - prevY, x - prevX) * (180 / Math.PI);
 
         rotation += (targetRotation - previousRotation) * 0.01;
         previousRotation = rotation;
@@ -327,7 +365,7 @@ class nsZenDownloadAnimationElement extends HTMLElement {
       return;
     }
 
-    const wrapper = document.getElementById('zen-main-app-wrapper');
+    const wrapper = document.getElementById("zen-main-app-wrapper");
     if (!wrapper) {
       console.warn(
         `[${nsZenDownloadAnimationElement.name}] Cannot start box animation, Wrapper element not found`
@@ -344,15 +382,18 @@ class nsZenDownloadAnimationElement extends HTMLElement {
             </box>
           `;
 
-      const sideProp = areTabsPositionedRight ? 'right' : 'left';
+      const sideProp = areTabsPositionedRight ? "right" : "left";
 
-      const fragment = window.MozXULElement.parseXULToFragment(boxAnimationHTML);
-      this.#boxAnimationElement = fragment.querySelector('.zen-download-box-animation');
+      const fragment =
+        window.MozXULElement.parseXULToFragment(boxAnimationHTML);
+      this.#boxAnimationElement = fragment.querySelector(
+        ".zen-download-box-animation"
+      );
 
       Object.assign(this.#boxAnimationElement.style, {
-        bottom: '24px',
-        transform: 'scale(0.8)',
-        [sideProp]: '-50px',
+        bottom: "24px",
+        transform: "scale(0.8)",
+        [sideProp]: "-50px",
       });
 
       wrapper.appendChild(this.#boxAnimationElement);
@@ -360,25 +401,25 @@ class nsZenDownloadAnimationElement extends HTMLElement {
       await gZenUIManager.motion.animate(
         this.#boxAnimationElement,
         {
-          [sideProp]: '34px',
+          [sideProp]: "34px",
           opacity: 1,
-          transform: 'scale(1.1)',
+          transform: "scale(1.1)",
         },
         {
           duration: 0.35,
-          easing: 'ease-out',
+          easing: "ease-out",
         }
       ).finished;
 
       await gZenUIManager.motion.animate(
         this.#boxAnimationElement,
         {
-          [sideProp]: '24px',
-          transform: 'scale(1)',
+          [sideProp]: "24px",
+          transform: "scale(1)",
         },
         {
           duration: 0.2,
-          easing: 'ease-in-out',
+          easing: "ease-in-out",
         }
       ).finished;
 
@@ -398,7 +439,10 @@ class nsZenDownloadAnimationElement extends HTMLElement {
   }
 
   #getBoxAnimationDurationMs() {
-    return Services.prefs.getIntPref('zen.downloads.download-animation-duration') + 200;
+    return (
+      Services.prefs.getIntPref("zen.downloads.download-animation-duration") +
+      200
+    );
   }
 
   async #finishBoxAnimation(areTabsPositionedRight) {
@@ -406,36 +450,38 @@ class nsZenDownloadAnimationElement extends HTMLElement {
     this.#boxAnimationTimeoutId = null;
 
     if (!this.#boxAnimationElement || this.#isBoxAnimationRunning) {
-      if (!this.#boxAnimationElement) this.#cleanBoxAnimationState();
+      if (!this.#boxAnimationElement) {
+        this.#cleanBoxAnimationState();
+      }
       return;
     }
 
     this.#isBoxAnimationRunning = true;
 
     try {
-      const sideProp = areTabsPositionedRight ? 'right' : 'left';
+      const sideProp = areTabsPositionedRight ? "right" : "left";
 
       await gZenUIManager.motion.animate(
         this.#boxAnimationElement,
         {
-          transform: 'scale(0.9)',
+          transform: "scale(0.9)",
         },
         {
           duration: 0.15,
-          easing: 'ease-in',
+          easing: "ease-in",
         }
       ).finished;
 
       await gZenUIManager.motion.animate(
         this.#boxAnimationElement,
         {
-          [sideProp]: '-50px',
+          [sideProp]: "-50px",
           opacity: 0,
-          transform: 'scale(0.8)',
+          transform: "scale(0.8)",
         },
         {
           duration: 0.3,
-          easing: 'cubic-bezier(0.5, 0, 0.75, 0)',
+          easing: "cubic-bezier(0.5, 0, 0.75, 0)",
         }
       ).finished;
     } catch (error) {
@@ -471,7 +517,9 @@ class nsZenDownloadAnimationElement extends HTMLElement {
   }
 
   #isElementVisible(element) {
-    if (!element) return false;
+    if (!element) {
+      return false;
+    }
 
     const rect = element.getBoundingClientRect();
 
@@ -492,6 +540,6 @@ class nsZenDownloadAnimationElement extends HTMLElement {
   }
 }
 
-customElements.define('zen-download-animation', nsZenDownloadAnimationElement);
+customElements.define("zen-download-animation", nsZenDownloadAnimationElement);
 
 new nsZenDownloadAnimation();

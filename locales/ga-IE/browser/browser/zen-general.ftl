@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = próifíl reatha
 unified-extensions-description = Úsáidtear síntí chun níos mó feidhmiúlachta breise a thabhairt isteach i { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Athshocraigh an Cluaisín Prionáilte
+    .label =
+        { $isEssential ->
+            [true] Athshocraigh an Cluaisín Riachtanach
+           *[false] Athshocraigh an Cluaisín Priontáilte
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Cuir leis na Bunriachtanais
@@ -15,8 +19,16 @@ tab-context-zen-remove-essential =
     .label = Bain de na Bunriachtanais
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Cuir URL Prionáilte in ionad an URL Reatha
+    .label =
+        { $isEssential ->
+            [true] Cuir an URL Riachtanach in ionad an URL Reatha
+           *[false] Cuir an URL Priontáilte in ionad an URL Reatha
+        }
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Athraigh Lipéad...
+tab-context-zen-edit-icon = 
+    .label = Athraigh Deilbhín...
 zen-themes-corrupted = Tá do chomhad mods { -brand-short-name } truaillithe. Tá siad athshocraithe chuig an téama réamhshocraithe.
 zen-shortcuts-corrupted = Tá do chomhad aicearraí { -brand-short-name } truaillithe. Tá siad athshocraithe chuig na haicearraí réamhshocraithe.
 # note: Do not translate the "<br/>" tags in the following string
@@ -28,8 +40,8 @@ pictureinpicture-minimize-btn =
     .aria-label = Íoslaghdaigh
     .tooltip = Íoslaghdaigh
 zen-panel-ui-gradient-generator-custom-color = Dath Saincheaptha
-zen-panel-ui-gradient-generator-saved-message = Sábháladh an grádán go rathúil!
 zen-copy-current-url-confirmation = Cóipeáladh an URL reatha!
+zen-copy-current-url-as-markdown-confirmation = Cóipeáladh an URL reatha mar Markdown!
 zen-general-cancel-label = 
     .label = Cealaigh
 zen-general-confirm = 
@@ -38,10 +50,7 @@ zen-pinned-tab-replaced = Tá URL an chluaisín phinnáilte curtha in ionad an U
 zen-tabs-renamed = Athainmníodh an cluaisín go rathúil!
 zen-background-tab-opened-toast = Tá cluaisín cúlra nua oscailte!
 zen-workspace-renamed-toast = Athainmníodh an spás oibre go rathúil!
-zen-library-sidebar-workspaces = 
-    .label = Spásanna
-zen-library-sidebar-mods = 
-    .label = Modanna
+zen-split-view-limit-toast = Ní féidir níos mó painéil a chur leis an radharc scoilte!
 zen-toggle-compact-mode-button = 
     .label = Mód Dlúth
     .tooltiptext = Mód Dlúth a Athrú
@@ -61,6 +70,8 @@ zen-site-data-settings = Socruithe
 zen-generic-manage = Bainistigh
 zen-generic-more = Tuilleadh
 zen-generic-next = Ar Aghaidh
+zen-essentials-promo-label = Cuir leis na Bunriachtanais
+zen-essentials-promo-sublabel = Coinnigh do chluaisíní is fearr leat cliceáil amháin uait
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Ceadaithe
 zen-site-data-setting-block = Blocáilte
@@ -108,3 +119,9 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = Bhris rud éigin?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Atosaigh i Mód Sábháilte
+zen-window-sync-migration-dialog-title = Coinnigh Do Windows Sioncrónaithe
+zen-window-sync-migration-dialog-message = Déanann Zen sioncrónú ar fhuinneoga ar an ngléas céanna anois, mar sin léirítear athruithe i bhfuinneog amháin sna fuinneoga eile láithreach.
+zen-window-sync-migration-dialog-learn-more = Foghlaim Tuilleadh
+zen-window-sync-migration-dialog-accept = Tuigim é
+zen-appmenu-new-blank-window = 
+    .label = Fuinneog bán nua

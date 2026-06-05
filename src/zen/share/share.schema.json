@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Share Schema",
+  "type": "object",
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "shared": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/shareable"
+      }
+    }
+  },
+  "required": ["shared"],
+  "additionalProperties": false,
+
+  "$defs": {
+    "shareable": {
+      "oneOf": [
+        { "$ref": "#/$defs/space" },
+        { "$ref": "#/$defs/folder" },
+        { "$ref": "#/$defs/splitView" },
+        { "$ref": "#/$defs/gradientPreset" }
+      ]
+    },
+
+    "gradientPreset": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "gradientPreset" },
+        "theme": { "$ref": "#/$defs/theme" }
+      },
+      "required": ["type", "theme"],
+      "additionalProperties": false
+    },
+
+    "space": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "space" },
+        "name": { "type": "string" },
+        "theme": { "$ref": "#/$defs/theme" },
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/spaceItem" }
+        }
+      },
+      "required": ["type", "name", "items"],
+      "additionalProperties": false
+    },
+
+    "theme": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["gradient"]
+        },
+        "gradientColors": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/gradientColor" }
+        }
+      },
+      "required": ["type", "gradientColors"],
+      "additionalProperties": false
+    },
+
+    "gradientColor": {
+      "type": "object",
+      "properties": {
+        "c": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "isCustom": { "type": "boolean" },
+        "algorithm": { "type": "string" },
+        "isPrimary": { "type": "boolean" },
+        "lightness": { "type": "string" },
+        "position": {
+          "type": "object",
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" }
+          },
+          "required": ["x", "y"],
+          "additionalProperties": false
+        },
+        "type": { "type": "string" }
+      },
+      "required": ["c", "type"],
+      "additionalProperties": false
+    },
+
+    "folder": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "folder" },
+        "name": { "type": "string" },
+        "icon": { "type": "string" },
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/folderItem" }
+        }
+      },
+      "required": ["type", "name", "items"],
+      "additionalProperties": false
+    },
+
+    "tab": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "tab" },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "label": { "type": "string" },
+        "image": { "type": "string" },
+        "isPinned": { "type": "boolean" }
+      },
+      "required": ["type", "url"],
+      "additionalProperties": false
+    },
+
+    "splitView": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "splitView" },
+        "tabs": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 4,
+          "items": { "$ref": "#/$defs/tab" }
+        }
+      },
+      "required": ["type", "tabs"],
+      "additionalProperties": false
+    },
+
+    "spaceItem": {
+      "oneOf": [{ "$ref": "#/$defs/tab" }, { "$ref": "#/$defs/folder" }]
+    },
+
+    "folderItem": {
+      "oneOf": [{ "$ref": "#/$defs/tab" }, { "$ref": "#/$defs/folder" }]
+    }
+  }
+}

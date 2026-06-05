@@ -1,0 +1,66 @@
+diff --git a/layout/style/StyleColor.cpp b/layout/style/StyleColor.cpp
+index 95c7ae6abea5032bef0466e8d59d212374d7a4d0..85a48f27251756c72db8ed03a673a18e96cf76f9 100644
+--- a/layout/style/StyleColor.cpp
++++ b/layout/style/StyleColor.cpp
+@@ -8,6 +8,7 @@
+ #include "mozilla/dom/BindingDeclarations.h"
+ #include "nsIFrame.h"
+ #include "nsStyleStruct.h"
++#include "mozilla/nsZenBoostsBackend.h"
+ 
+ namespace mozilla {
+ 
+@@ -34,23 +35,24 @@ StyleAbsoluteColor StyleColor::ResolveColor(
+ 
+ template <>
+ nscolor StyleColor::CalcColor(nscolor aColor) const {
+-  return ResolveColor(StyleAbsoluteColor::FromColor(aColor)).ToColor();
++  return ResolveColor(StyleAbsoluteColor::FromColor(aColor)).ToColor(nullptr);
+ }
+ 
+ template <>
+ nscolor StyleColor::CalcColor(
+     const StyleAbsoluteColor& aForegroundColor) const {
+-  return ResolveColor(aForegroundColor).ToColor();
++  return ResolveColor(aForegroundColor).ToColor(nullptr);
+ }
+ 
+ template <>
+-nscolor StyleColor::CalcColor(const ComputedStyle& aStyle) const {
+-  return ResolveColor(aStyle.StyleText()->mColor).ToColor();
++nscolor StyleColor::CalcColor(const ComputedStyle& aStyle,
++                              const nsIFrame* aFrame) const {
++  return ResolveColor(aStyle.StyleText()->mColor).ToColor(aFrame);
+ }
+ 
+ template <>
+ nscolor StyleColor::CalcColor(const nsIFrame* aFrame) const {
+-  return ResolveColor(aFrame->StyleText()->mColor).ToColor();
++  return ResolveColor(aFrame->StyleText()->mColor).ToColor(aFrame);
+ }
+ 
+ StyleAbsoluteColor StyleAbsoluteColor::ToColorSpace(
+@@ -58,7 +60,7 @@ StyleAbsoluteColor StyleAbsoluteColor::ToColorSpace(
+   return Servo_ConvertColorSpace(this, aColorSpace);
+ }
+ 
+-nscolor StyleAbsoluteColor::ToColor() const {
++nscolor StyleAbsoluteColor::ToColor(const nsIFrame* aFrame) const {
+   auto srgb = ToColorSpace(StyleColorSpace::Srgb);
+ 
+   // TODO(tlouw): Needs gamut mapping here. Right now we just hard clip the
+@@ -68,10 +70,12 @@ nscolor StyleAbsoluteColor::ToColor() const {
+   auto green = std::clamp(srgb.components._1, 0.0f, 1.0f);
+   auto blue = std::clamp(srgb.components._2, 0.0f, 1.0f);
+ 
+-  return NS_RGBA(nsStyleUtil::FloatToColorComponent(red),
++  return zen::nsZenBoostsBackend::ResolveStyleColor(
++         NS_RGBA(nsStyleUtil::FloatToColorComponent(red),
+                  nsStyleUtil::FloatToColorComponent(green),
+                  nsStyleUtil::FloatToColorComponent(blue),
+-                 nsStyleUtil::FloatToColorComponent(srgb.alpha));
++                 nsStyleUtil::FloatToColorComponent(srgb.alpha)),
++         aFrame);
+ }
+ 
+ }  // namespace mozilla

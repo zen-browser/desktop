@@ -1,16 +1,16 @@
 diff --git a/servo/components/style/queries/feature.rs b/servo/components/style/queries/feature.rs
-index 1414dd624e0761d269f7e3b1c64ed4bb6576a6e3..f0204c2ee3e8c3527750a26788b5fb7cdf8dfc67 100644
+index beb8656bc51044343c8ce42892d03178edd2dff1..d886bdecb37761badc534dc31e29cee43549c352 100644
 --- a/servo/components/style/queries/feature.rs
 +++ b/servo/components/style/queries/feature.rs
-@@ -6,6 +6,7 @@
- 
+@@ -7,6 +7,7 @@
+ use crate::derives::*;
  use crate::parser::ParserContext;
  use crate::values::computed::{self, CSSPixelLength, Ratio, Resolution};
 +use crate::values::AtomString;
  use crate::Atom;
  use cssparser::Parser;
  use selectors::kleene_value::KleeneValue;
-@@ -44,6 +45,7 @@ pub enum Evaluator {
+@@ -45,6 +46,7 @@ pub enum Evaluator {
      OptionalNumberRatio(QueryFeatureGetter<Option<Ratio>>),
      /// A resolution.
      Resolution(QueryFeatureGetter<Resolution>),

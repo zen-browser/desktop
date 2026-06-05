@@ -5,18 +5,30 @@
 zen-panel-ui-current-profile-text = perfil actual
 unified-extensions-description = Les extensions aporten funcionalitats addicionals a { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Restableix la pestanya fixada
+    .label =
+        { $isEssential ->
+            [true] Restableix la pestanya essencial
+           *[false] Restableix la pestanya fixada
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Afegeix als essencials
     .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max } espais ocupats
+tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential = 
     .label = Elimina dels essencials
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Substitueix l'URL fixat per l'actual
+    .label =
+        { $isEssential ->
+            [true] Substitueix l'URL essencial per l'actual
+           *[false] Substitueix l'URL fixat per l'actual
+        }
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Canvia l'etiqueta...
+tab-context-zen-edit-icon = 
+    .label = Canvia la icona...
 zen-themes-corrupted = El vostre fitxer de modificacions { -brand-short-name } està malmès. S'ha restablert al tema per defecte.
 zen-shortcuts-corrupted = El vostre fitxer de dreceres { -brand-short-name } està malmès. S'ha restablert a les dreceres per defecte.
 # note: Do not translate the "<br/>" tags in the following string
@@ -28,8 +40,8 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimitza
     .tooltip = Minimitza
 zen-panel-ui-gradient-generator-custom-color = Color personalitzat
-zen-panel-ui-gradient-generator-saved-message = El degradat s'ha desat correctament
 zen-copy-current-url-confirmation = L'URL actual s'ha copiat.
+zen-copy-current-url-as-markdown-confirmation = L'URL actual s'ha copiat com a Markdown!
 zen-general-cancel-label = 
     .label = Cancel·la
 zen-general-confirm = 
@@ -38,10 +50,7 @@ zen-pinned-tab-replaced = L'URL de la pestanya fixada s'ha substituït per l'URL
 zen-tabs-renamed = S'ha canviat el nom de la pestanya correctament
 zen-background-tab-opened-toast = S'ha obert una nova pestanya de fons
 zen-workspace-renamed-toast = S'ha canviat el nom de l'espai de treball correctament
-zen-library-sidebar-workspaces = 
-    .label = Espais
-zen-library-sidebar-mods = 
-    .label = Modificacions
+zen-split-view-limit-toast = No es poden afegir més panells a la vista dividida!
 zen-toggle-compact-mode-button = 
     .label = Mode compacte
     .tooltiptext = Commuta el mode compacte
@@ -61,6 +70,8 @@ zen-site-data-settings = Configuració
 zen-generic-manage = Gestiona
 zen-generic-more = Més
 zen-generic-next = Següent
+zen-essentials-promo-label = Afegeix als essencials
+zen-essentials-promo-sublabel = Mantingueu les vostres pestanyes preferides a només un clic de distància
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Permès
 zen-site-data-setting-block = Bloquejat
@@ -108,3 +119,9 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = Alguna cosa no funciona?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Reinici en mode segur
+zen-window-sync-migration-dialog-title = Mantingueu les finestres sincronitzades
+zen-window-sync-migration-dialog-message = El Zen ara sincronitza les finestres del mateix dispositiu, de manera que els canvis en una finestra es reflecteixen a les altres a l'instant.
+zen-window-sync-migration-dialog-learn-more = Més informació
+zen-window-sync-migration-dialog-accept = D'acord
+zen-appmenu-new-blank-window = 
+    .label = Nova finestra en blanc

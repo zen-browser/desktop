@@ -30,7 +30,7 @@
       display: flex;
     }
     transition: height var(--zen-hidden-toolbar-transition);
-    
+
     height: var(--zen-element-separation);
     overflow: clip;
 

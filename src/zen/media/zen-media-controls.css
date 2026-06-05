@@ -115,20 +115,18 @@
   }
 
   & #zen-media-focus-button::after {
-    content: '';
+    content: "";
     position: absolute;
-    width: 110%;
-    height: 110%;
-    background-repeat: no-repeat;
-    opacity: 1;
-    background: url('chrome://browser/content/zen-images/note-indicator.svg') no-repeat;
+    background: url("chrome://browser/content/zen-images/note-indicator.svg") no-repeat;
     top: -70%;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 0;
     pointer-events: none;
     transition: opacity 0.8s ease;
     opacity: 1;
+    will-change: opacity;
   }
 
   &:is(:not(.playing:not([muted])), :hover) #zen-media-focus-button::after {
@@ -152,7 +150,6 @@
 
   & > toolbaritem {
     flex-grow: 1;
-    padding: 0;
     transition: padding 0.3s ease-out;
     position: absolute;
     left: 0;
@@ -216,7 +213,7 @@
 }
 
 #zen-media-title {
-  height: 16px;
+  height: var(--size-item-small);
   font-size: math;
 }
 
@@ -238,7 +235,7 @@
   min-width: 1px;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     width: 0.6em;
     background: linear-gradient(to right, var(--zen-sidebar-notification-bg) 0%, transparent 100%);
@@ -250,7 +247,7 @@
   }
 
   & label {
-    min-height: 16px;
+    min-height: var(--size-item-small);
     margin-left: 0;
     font-weight: 500;
     position: relative; /* For the animation */
@@ -264,9 +261,9 @@
 
 #zen-media-progress-hbox {
   flex-grow: 1;
-  height: 2rem;
+  height: var(--size-item-large);
   align-items: center;
-  padding-top: 0px !important;
+  padding-top: 0 !important;
 
   #zen-media-controls-toolbar[media-position-hidden] & {
     display: none;
@@ -309,7 +306,7 @@
   }
 }
 
-:root:not([zen-sidebar-expanded='true']) {
+:root:not([zen-sidebar-expanded="true"]) {
   #zen-media-controls-toolbar {
     display: none;
   }

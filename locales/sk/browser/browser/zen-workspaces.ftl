@@ -1,0 +1,75 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-panel-ui-workspaces-text = Priestory
+zen-panel-ui-spaces-label = 
+    .label = Priestory
+zen-panel-ui-workspaces-create = 
+    .label = Vytvoriť priestor
+zen-panel-ui-folder-create = 
+    .label = Vytvoriť priečinok
+zen-panel-ui-live-folder-create = 
+    .label = Live Folder
+zen-panel-ui-new-empty-split = 
+    .label = Nové rozdelenie
+zen-workspaces-panel-context-delete = 
+    .label = Odstrániť priestor
+    .accesskey = D
+zen-workspaces-panel-change-name = 
+    .label = Zmeniť názov
+zen-workspaces-panel-change-icon = 
+    .label = Zmeniť ikonu
+zen-workspaces-panel-context-default-profile = 
+    .label = Nastaviť profil
+zen-workspaces-panel-unload = 
+    .label = Uvoľniť priestor z pamäte
+zen-workspaces-panel-unload-others = 
+    .label = Unload All Other Spaces
+zen-workspaces-how-to-reorder-title = Ako zmeniť poradie priestorov
+zen-workspaces-how-to-reorder-desc = Zmeňte poradie priestorov potiahnutím ich ikon v dolnej časti bočného panela
+zen-workspaces-change-theme = 
+    .label = Upraviť motív
+zen-workspaces-panel-context-open = 
+    .label = Otvoriť pracovnú plochu
+    .accesskey = O
+zen-workspaces-panel-context-edit = 
+    .label = Upraviť priestor
+    .accesskey = E
+zen-bookmark-edit-panel-workspace-selector = 
+    .value = Priestory
+    .accesskey = W
+zen-panel-ui-gradient-generator-algo-complementary = 
+    .label = Komplementárny
+zen-panel-ui-gradient-generator-algo-splitComplementary = 
+    .label = Rozdeliť
+zen-panel-ui-gradient-generator-algo-analogous = 
+    .label = Analógový
+zen-panel-ui-gradient-generator-algo-triadic = 
+    .label = Triadický
+zen-panel-ui-gradient-generator-algo-floating = 
+    .label = Plávajúci
+zen-panel-ui-gradient-click-to-add = Kliknutím pridajte farbu
+zen-workspace-creation-name = 
+    .placeholder = Názov priestoru
+zen-move-tab-to-workspace-button = 
+    .label = Presunúť do...
+    .tooltiptext = Presunúť všetky karty v tomto okne do priestoru
+zen-workspaces-panel-context-reorder = 
+    .label = Zmeniť poradie priestorov
+zen-workspace-creation-profile = Profil
+    .tooltiptext = Profily sa používajú na oddelenie súborov cookie a údajov stránok medzi priestormi.
+zen-workspace-creation-header = Vytvoriť priestor
+zen-workspace-creation-label = Priestory sa používajú na organizáciu vašich kariet a relácií.
+zen-workspaces-delete-workspace-title = Odstrániť priestor?
+zen-workspaces-delete-workspace-body = Naozaj chcete odstrániť priestor { $name }? Túto akciu nie je možné vrátiť späť.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Karty boli zatvorené! Použite <span>{ $shortcut }</span> na vrátenie späť.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Vyčistiť
+    .tooltiptext = Zatvoriť všetky nepripnuté karty
+zen-panel-ui-workspaces-change-forward = 
+    .label = Nasledujúci priestor
+zen-panel-ui-workspaces-change-back = 
+    .label = Predchádzajúci priestor

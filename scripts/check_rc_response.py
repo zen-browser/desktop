@@ -17,7 +17,7 @@ def get_current_version() -> Optional[str]:
   try:
     with open(METADATA_FILENAME) as f:
       metadata = json.load(f)
-      return metadata["version"]["candidate"]
+      return metadata["version"]["candidate"], metadata["version"]["candidateBuild"]
   except (FileNotFoundError, json.JSONDecodeError) as e:
     print(f"Error reading current version: {e}")
     return None
@@ -43,8 +43,10 @@ def get_rc_response() -> Optional[str]:
       tag = tag_dict["tag"]
       if (tag.startswith("FIREFOX") and tag.endswith("_BUILD1")
               and "ESR" not in tag and "b" not in tag and "ANDROID" not in tag):
-        return (tag.replace("FIREFOX_", "").replace("_BUILD1",
-                                                    "").replace("_", "."))
+        version = (tag.replace("FIREFOX_", "").replace("_BUILD1",
+                                                       "").replace("_", "."))
+        build = int(tag.split("_BUILD")[-1])
+        return version, build
   except (FileNotFoundError, json.JSONDecodeError) as e:
     print(f"Error reading RC response: {e}")
   return None
@@ -76,15 +78,15 @@ def send_webhook(rc: str) -> None:
     print("Webhook URL not set.")
 
 
-def rc_should_be_updated(rc_response: str, current_version: str) -> bool:
-  return rc_response and rc_response != current_version
+def rc_should_be_updated(rc_response: str, current_version: str, rc_build: int, current_build: int) -> bool:
+  return rc_response and (rc_response != current_version or rc_build != current_build)
 
 
 def main() -> int:
-  current_version = get_current_version()
-  rc_response = get_rc_response()
+  current_version, current_build = get_current_version()
+  rc_response, rc_build = get_rc_response()
 
-  if rc_should_be_updated(rc_response, current_version):
+  if rc_should_be_updated(rc_response, current_version, rc_build, current_build):
     send_webhook(rc_response)
     return 0
 

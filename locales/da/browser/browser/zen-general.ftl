@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = nuværende profil
 unified-extensions-description = Udvidelser bruges til at bringe ekstra funktionalitet ind i { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Nulstil fastgjort fane
+    .label =
+        { $isEssential ->
+            [true] Reset Essential Tab
+           *[false] Reset Pinned Tab
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Add to Essentials
@@ -15,8 +19,16 @@ tab-context-zen-remove-essential =
     .label = Fjern fra Essentielle
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Erstat fastgjort URL med nuværende
+    .label =
+        { $isEssential ->
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
+        }
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Change Label...
+tab-context-zen-edit-icon = 
+    .label = Change Icon...
 zen-themes-corrupted = Din { -brand-short-name } mods-fil er beskadiget. De er blevet nulstillet til standardtemaet.
 zen-shortcuts-corrupted = Din { -brand-short-name }-genvejsfil er beskadiget. De er blevet nulstillet til standardgenvejene.
 # note: Do not translate the "<br/>" tags in the following string
@@ -28,8 +40,8 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimer
     .tooltip = Minimer
 zen-panel-ui-gradient-generator-custom-color = Brugerdefineret Farve
-zen-panel-ui-gradient-generator-saved-message = Gradienten blev gemt!
 zen-copy-current-url-confirmation = Kopieret nuværende URL!
+zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
 zen-general-cancel-label = 
     .label = Annuller
 zen-general-confirm = 
@@ -38,10 +50,7 @@ zen-pinned-tab-replaced = Den fastgjorte fane-URL blev erstattet med den aktuell
 zen-tabs-renamed = Fanen blev omdøbt!
 zen-background-tab-opened-toast = Ny baggrundsfane åbnet!
 zen-workspace-renamed-toast = Arbejdsområde blev omdøbt!
-zen-library-sidebar-workspaces = 
-    .label = Rum
-zen-library-sidebar-mods = 
-    .label = Mods
+zen-split-view-limit-toast = Can't add more panels to the split view!
 zen-toggle-compact-mode-button = 
     .label = Kompakt tilstand
     .tooltiptext = Kompakt tilstand til/fra
@@ -61,6 +70,8 @@ zen-site-data-settings = Indstillinger
 zen-generic-manage = Administrer
 zen-generic-more = Mere
 zen-generic-next = Næste
+zen-essentials-promo-label = Add to Essentials
+zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Tilladt
 zen-site-data-setting-block = Blokeret
@@ -108,3 +119,9 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = Something broke?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Restart in Safe Mode
+zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
+zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
+zen-window-sync-migration-dialog-learn-more = Learn More
+zen-window-sync-migration-dialog-accept = Got It
+zen-appmenu-new-blank-window = 
+    .label = New blank window

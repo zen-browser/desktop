@@ -2,4 +2,4 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-<svg xmlns="http://www.w3.org/2000/svg" fill="context-fill" fill-opacity="context-fill-opacity" viewBox="0 0 512 512"><path d="M256 48C141.13 48 48 141.13 48 256s93.13 208 208 208 208-93.13 208-208S370.87 48 256 48zm96 240h-96a16 16 0 01-16-16V128a16 16 0 0132 0v128h80a16 16 0 010 32z"/></svg>
+<svg fill="context-fill" fill-opacity="context-fill-opacity" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"><path d="M 256,48 C 141.13,48 48,141.13 48,256 48,370.87 141.13,464 256,464 370.87,464 464,370.87 464,256 464,141.13 370.87,48 256,48 Z m 96,240 H 256 A 16,16 0 0 1 240,272 V 128 a 16,16 0 0 1 32,0 v 128 h 80 a 16,16 0 0 1 0,32 z"/></svg>

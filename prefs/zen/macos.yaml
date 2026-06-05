@@ -5,7 +5,7 @@
 # Enable transparent background for macos
 - name: widget.macos.sidebar-blend-mode.behind-window
   value: true
-  condition: 'defined(XP_MACOSX)'
+  condition: "defined(XP_MACOSX)"
 
 # 1. hudWindow
 # 2. fullScreenUI
@@ -16,7 +16,18 @@
 # 7. underlay
 - name: zen.widget.macos.window-material
   value: 1
-  condition: 'defined(XP_MACOSX)'
+  condition: "defined(XP_MACOSX)"
   cpptype: uint32_t
   mirror: always
   type: static
+
+# Enable native popovers on macOS, we've sent this patch to upstream
+# but we enable it by default anyways in case they decide to not use it,
+# or to disable it by default.
+- name: widget.macos.native-popovers
+  value: true
+  condition: "defined(XP_MACOSX)"
+
+- name: zen.widget.macos.override-system-swipe-gestures
+  value: true
+  condition: "defined(XP_MACOSX)"

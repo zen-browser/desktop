@@ -1,0 +1,84 @@
+[DEFAULT]
+support-files = ["head.js"]
+
+["browser_bug1124271_readerModePinnedTab.js"]
+support-files = ["readerModeArticle.html"]
+
+["browser_bug1453818_samesite_cookie.js"]
+support-files = [
+  "getCookies.sjs",
+  "linkToGetCookies.html",
+  "setSameSiteCookie.html",
+  "setSameSiteCookie.html^headers^",
+]
+
+["browser_bug1780350_readerModeSaveScroll.js"]
+support-files = ["readerModeArticleContainsLink.html"]
+
+["browser_drag_url_readerMode.js"]
+disabled="Disabled by import_external_tests.py"
+support-files = ["readerModeArticle.html"]
+
+["browser_localfile_readerMode.js"]
+disabled="Disabled by import_external_tests.py"
+support-files = ["readerModeArticle.html"]
+
+["browser_readerMode.js"]
+disabled="Disabled by import_external_tests.py"
+support-files = [
+  "readerModeNonArticle.html",
+  "readerModeArticle.html",
+  "readerModeArticleHiddenNodes.html",
+]
+
+["browser_readerMode_bc_reuse.js"]
+support-files = ["readerModeArticle.html"]
+
+["browser_readerMode_cached.js"]
+support-files = ["readerModeRandom.sjs"]
+
+["browser_readerMode_colorSchemePref.js"]
+disabled="Disabled by import_external_tests.py"
+support-files = ["readerModeArticle.html"]
+
+["browser_readerMode_customColorScheme.js"]
+support-files = ["readerModeArticle.html"]
+
+["browser_readerMode_hidden_nodes.js"]
+support-files = ["readerModeArticleHiddenNodes.html"]
+
+["browser_readerMode_menu.js"]
+support-files = ["readerModeArticleShort.html"]
+
+["browser_readerMode_readingTime.js"]
+support-files = [
+  "readerModeArticle.html",
+  "readerModeArticleShort.html",
+  "readerModeArticleMedium.html",
+  "readerModeArticleLong.html",
+  "readerModeArticleVeryLong.html",
+]
+
+["browser_readerMode_refresh.js"]
+support-files = [
+  "readerModeArticleShort.html",
+  "readerModeArticleTextPlain.txt",
+]
+
+["browser_readerMode_remoteType.js"]
+support-files = ["readerModeArticleShort.html"]
+
+["browser_readerMode_samesite_cookie_redirect.js"]
+support-files = [
+  "getCookies.sjs",
+  "setSameSiteCookie.html",
+  "setSameSiteCookie.html^headers^",
+]
+
+["browser_readerMode_tabnavigation.js"]
+
+["browser_readerMode_textLayoutPref.js"]
+support-files = ["readerModeArticle.html"]
+
+["browser_readerMode_with_anchor.js"]
+support-files = ["readerModeArticle.html"]

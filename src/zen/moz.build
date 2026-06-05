@@ -7,10 +7,16 @@ EXTRA_PP_COMPONENTS += [
 ]
 
 DIRS += [
+    "boosts",
     "common",
+    "drag-and-drop",
     "glance",
+    "live-folders",
     "mods",
     "tests",
     "urlbar",
     "toolkit",
+    "sessionstore",
+    "share",
+    "spaces",
 ]

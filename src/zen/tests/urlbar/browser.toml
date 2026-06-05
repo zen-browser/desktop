@@ -3,10 +3,12 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 [DEFAULT]
+prefs = ["browser.urlbar.closeOnWindowBlur=false"]
 support-files = [
   "head.js",
   "!/browser/components/urlbar/tests/browser/head.js",
 ]
 
 ["browser_floating_urlbar.js"]
+
 ["browser_issue_7385.js"]

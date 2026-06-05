@@ -2,11 +2,11 @@ name: Zen Twilight Scheduled Releases
 
 on:
   schedule:
-    - cron: '0 23 * * *'
+    - cron: "0 23 */2 * *"
   workflow_dispatch:
     inputs:
       create_release:
-        description: 'Whether to do a release'
+        description: "Whether to do a release"
         required: false
         type: boolean
         default: true
@@ -20,7 +20,7 @@ jobs:
     with:
       create_release: ${{ github.event_name != 'workflow_dispatch' && true || inputs.create_release }}
       update_branch: twilight
-      use-sccache: false
+      use-sccache: true
       update_version: false
 
   post-build:
@@ -34,4 +34,4 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
+          node-version-file: ".nvmrc"

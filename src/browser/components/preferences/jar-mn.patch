@@ -1,11 +1,10 @@
 diff --git a/browser/components/preferences/jar.mn b/browser/components/preferences/jar.mn
-index 65efb0666785cc79e58015e19ec55216bf4ec9c4..95941c52ffd4c9ee36f584413fb96d59721113db 100644
+index 78e38f98c1f69df31459fd4b6a119c93f6509c02..33abd46566146272da9f561e11ffa290d7000111 100644
 --- a/browser/components/preferences/jar.mn
 +++ b/browser/components/preferences/jar.mn
-@@ -33,3 +33,5 @@ browser.jar:
-    content/browser/preferences/widgets/setting-pane.mjs                 (widgets/setting-pane/setting-pane.mjs)
-    content/browser/preferences/widgets/security-privacy-card.mjs        (widgets/security-privacy/security-privacy-card/security-privacy-card.mjs)
-    content/browser/preferences/widgets/security-privacy-card.css        (widgets/security-privacy/security-privacy-card/security-privacy-card.css)
+@@ -54,3 +54,5 @@ browser.jar:
+    content/browser/preferences/widgets/sync-device-name.mjs          (widgets/sync-device-name/sync-device-name.mjs)
+    content/browser/preferences/widgets/sync-engines-list.mjs          (widgets/sync-engine-list/sync-engines-list.mjs)
+    content/browser/preferences/widgets/sync-engines-list.css          (widgets/sync-engine-list/sync-engines-list.css)
 +
 +   content/browser/preferences/zen-settings.js
-\ No newline at end of file

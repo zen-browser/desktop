@@ -1,0 +1,22 @@
+diff --git a/layout/base/PresShell.cpp b/layout/base/PresShell.cpp
+index b5930f71e362eb78f74888e1b33b2a6f9dbb4ea4..2105911a18b64e210d3125fec1bfa8058ca07d4e 100644
+--- a/layout/base/PresShell.cpp
++++ b/layout/base/PresShell.cpp
+@@ -135,6 +135,7 @@
+ #include "mozilla/layers/WebRenderLayerManager.h"
+ #include "mozilla/layers/WebRenderUserData.h"
+ #include "mozilla/layout/ScrollAnchorContainer.h"
++#include "mozilla/nsZenBoostsBackend.h"
+ #include "nsAnimationManager.h"
+ #include "nsAutoLayoutPhase.h"
+ #include "nsCOMArray.h"
+@@ -5572,7 +5573,8 @@ nscolor PresShell::GetDefaultBackgroundColorToDraw() const {
+   if (!mPresContext) {
+     return NS_RGB(255, 255, 255);
+   }
+-  return mPresContext->DefaultBackgroundColor();
++  return zen::nsZenBoostsBackend::ResolveStyleColor(
++      mPresContext->DefaultBackgroundColor(), GetRootFrame());
+ }
+ 
+ void PresShell::UpdateCanvasBackground() {

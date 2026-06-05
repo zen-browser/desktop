@@ -2,35 +2,42 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { nsZenPreloadedFeature } from 'chrome://browser/content/zen-components/ZenCommonUtils.mjs';
+import { nsZenPreloadedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
 class ZenSessionStore extends nsZenPreloadedFeature {
   init() {
     this.#waitAndCleanup();
   }
 
-  promiseInitialized = new Promise((resolve) => {
+  promiseInitialized = new Promise(resolve => {
     this._resolveInitialized = resolve;
   });
 
   restoreInitialTabData(tab, tabData) {
     if (tabData.zenWorkspace) {
-      tab.setAttribute('zen-workspace-id', tabData.zenWorkspace);
+      tab.setAttribute("zen-workspace-id", tabData.zenWorkspace);
     }
-    if (tabData.zenPinnedId) {
-      tab.setAttribute('zen-pin-id', tabData.zenPinnedId);
+    if (tabData.zenLiveFolderItemId) {
+      tab.setAttribute("zen-live-folder-item-id", tabData.zenLiveFolderItemId);
     }
-    if (tabData.zenHasStaticLabel) {
-      tab.setAttribute('zen-has-static-label', 'true');
+    // Keep for now, for backward compatibility for window sync to work.
+    if (tabData.zenSyncId || tabData.zenPinnedId) {
+      tab.setAttribute("id", tabData.zenSyncId || tabData.zenPinnedId);
+    }
+    if (typeof tabData.zenStaticLabel === "string") {
+      tab.zenStaticLabel = tabData.zenStaticLabel;
+    }
+    if (tabData.zenHasStaticIcon && tabData.image) {
+      tab.zenStaticIcon = tabData.image;
     }
     if (tabData.zenEssential) {
-      tab.setAttribute('zen-essential', 'true');
+      tab.setAttribute("zen-essential", "true");
     }
     if (tabData.zenDefaultUserContextId) {
-      tab.setAttribute('zenDefaultUserContextId', 'true');
+      tab.setAttribute("zenDefaultUserContextId", "true");
     }
-    if (tabData.zenPinnedEntry) {
-      tab.setAttribute('zen-pinned-entry', tabData.zenPinnedEntry);
+    if (tabData._zenPinnedInitialState) {
+      tab._zenPinnedInitialState = tabData._zenPinnedInitialState;
     }
   }
 

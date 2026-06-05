@@ -1,22 +1,13 @@
 diff --git a/layout/style/nsStyleStruct.cpp b/layout/style/nsStyleStruct.cpp
-index 9f86fdfe6a70394c5fcd9e07177e5f325c2e4951..f9b3bc2e366f0cee2fbc992c4babce068b954413 100644
+index 80ca0cc08bc675359fbb09100eca43c8e3b9d413..d3ea525f6d84568c4e997a142bbfef6435d21034 100644
 --- a/layout/style/nsStyleStruct.cpp
 +++ b/layout/style/nsStyleStruct.cpp
-@@ -3233,6 +3233,9 @@ nsStyleUIReset::nsStyleUIReset()
-       mWindowShadow(StyleWindowShadow::Auto),
-       mWindowOpacity(1.0),
-       mMozWindowInputRegionMargin(StyleLength::Zero()),
-+      mWindowTransformOrigin{LengthPercentage::FromPercentage(0.5),
-+                                   LengthPercentage::FromPercentage(0.5),
-+                                   {0.}},
-       mTransitions(
-           nsStyleAutoArray<StyleTransition>::WITH_SINGLE_INITIAL_ELEMENT),
-       mTransitionTimingFunctionCount(1),
-@@ -3277,6 +3280,7 @@ nsStyleUIReset::nsStyleUIReset(const nsStyleUIReset& aSource)
-       mWindowOpacity(aSource.mWindowOpacity),
-       mMozWindowInputRegionMargin(aSource.mMozWindowInputRegionMargin),
-       mMozWindowTransform(aSource.mMozWindowTransform),
-+      mWindowTransformOrigin(aSource.mWindowTransformOrigin),
-       mTransitions(aSource.mTransitions.Clone()),
-       mTransitionTimingFunctionCount(aSource.mTransitionTimingFunctionCount),
-       mTransitionDurationCount(aSource.mTransitionDurationCount),
+@@ -2208,7 +2208,7 @@ nscolor nsStyleBackground::BackgroundColor(const nsIFrame* aFrame) const {
+ }
+ 
+ nscolor nsStyleBackground::BackgroundColor(const ComputedStyle* aStyle) const {
+-  return mBackgroundColor.CalcColor(*aStyle);
++  return mBackgroundColor.CalcColor(*aStyle, nullptr);
+ }
+ 
+ bool nsStyleBackground::IsTransparent(const nsIFrame* aFrame) const {

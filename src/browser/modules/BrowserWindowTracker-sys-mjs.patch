@@ -1,0 +1,25 @@
+diff --git a/browser/modules/BrowserWindowTracker.sys.mjs b/browser/modules/BrowserWindowTracker.sys.mjs
+index 9aecab66d8f23fac9f16cea2120a5fe903ae1122..692f2bfe3899a58925789503a6bb2a547cdbf7f3 100644
+--- a/browser/modules/BrowserWindowTracker.sys.mjs
++++ b/browser/modules/BrowserWindowTracker.sys.mjs
+@@ -330,6 +330,7 @@ export const BrowserWindowTracker = {
+       args = null,
+       remote = undefined,
+       fission = undefined,
++    zenSyncedWindow = true,
+     } = options;
+ 
+     args = lazy.AIWindow.handleAIWindowOptions(options);
+@@ -386,6 +387,12 @@ export const BrowserWindowTracker = {
+       windowFeatures,
+       args
+     );
++    win._zenStartupSyncFlag = Services.prefs.getBoolPref("zen.window-sync.prefer-unsynced-windows")
++      ? (zenSyncedWindow ? 'unsynced' : 'synced')
++      : (zenSyncedWindow ? 'synced' : 'unsynced');
++    if (win._zenStartupSyncFlag === 'unsynced' && openerWindow) {
++      win._zenStartupUnsyncedUserContextId = openerWindow.gZenWorkspaces.getCurrentSpaceContainerId();
++    }
+     this.registerOpeningWindow(win, isPrivate);
+ 
+     win.addEventListener(

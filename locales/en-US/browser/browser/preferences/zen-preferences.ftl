@@ -53,11 +53,14 @@ category-zen-workspaces =
     .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = Workspaces
 
-zen-tabs-unloader-enabled =
-    .label = Enable Tab Unloader
+zen-tabs-select-recently-used-on-close =
+    .label = When closing a tab, switch to the most recently used tab instead of the next tab
 
 zen-tabs-close-on-back-with-no-history =
     .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
+
+zen-settings-workspaces-sync-unpinned-tabs =
+    .label = Sync only pinned tabs in workspaces
 
 zen-tabs-cycle-by-attribute =
   .label = Ctrl+Tab cycles within Essential or Workspace tabs only
@@ -191,6 +194,9 @@ category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = { -brand-short-name } Keyboard Shortcuts
 
+category-zen-marketplace =
+    .tooltiptext = Zen Mods
+
 zen-settings-CKS-header = Customize your keyboard shortcuts
 zen-settings-CKS-description = Change the default keyboard shortcuts to your liking and improve your browsing experience
 
@@ -315,6 +321,7 @@ zen-workspace-shortcut-switch-9 = Switch to Workspace 9
 zen-workspace-shortcut-switch-10 = Switch to Workspace 10
 zen-workspace-shortcut-forward = Forward Workspace
 zen-workspace-shortcut-backward = Backward Workspace
+zen-workspace-shortcut-create = Create New Workspace
 zen-sidebar-shortcut-toggle = Toggle Sidebar's Width
 zen-pinned-tab-shortcut-reset = Reset Pinned Tab to Pinned URL
 zen-split-view-shortcut-grid = Toggle Split View Grid
@@ -350,3 +357,6 @@ zen-devtools-toggle-storage-shortcut = Toggle Storage
 zen-devtools-toggle-dom-shortcut = Toggle DOM
 zen-devtools-toggle-accessibility-shortcut = Toggle Accessibility
 zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs
+zen-new-unsynced-window-shortcut = New Blank Window
+zen-duplicate-tab-shortcut = Duplicate Tab
+zen-key-find-selection = Find Selection

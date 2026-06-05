@@ -2,21 +2,33 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-current-profile-text = perfil atual
+zen-panel-ui-current-profile-text = Perfil atual
 unified-extensions-description = As extensões são usadas para trazer mais recursos adicionais para o { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Redefinir Guia Fixada
+    .label =
+        { $isEssential ->
+            [true] Reiniciar Aba Essencial
+           *[false] Reiniciar Aba Fixada
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Add to Essentials
+    .label = Adicionar aos Essenciais
     .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
+tab-context-zen-add-essential-badge = { $num } / { $max } Espaços preenchidos
 tab-context-zen-remove-essential = 
     .label = Remover dos Essenciais
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Substituir URL da Guia Fixada pela Atual
+    .label =
+        { $isEssential ->
+            [true] Substituir URL Essencial pela atual
+           *[false] Substituir URL Fixada pela atual
+        }
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Alterar Rótulo...
+tab-context-zen-edit-icon = 
+    .label = Alterar Ícone...
 zen-themes-corrupted = Seu arquivo de modificações { -brand-short-name } está corrompido. Eles foram redefinidos para o tema padrão.
 zen-shortcuts-corrupted = Seu arquivo de atalhos { -brand-short-name } está corrompido. Eles foram redefinidos para os atalhos padrão.
 # note: Do not translate the "<br/>" tags in the following string
@@ -26,8 +38,8 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimizar
     .tooltip = Minimizar
 zen-panel-ui-gradient-generator-custom-color = Cor Personalizada
-zen-panel-ui-gradient-generator-saved-message = O gradiente foi salvo com sucesso!
 zen-copy-current-url-confirmation = URL atual copiada!
+zen-copy-current-url-as-markdown-confirmation = URL atual copiada como Markdown!
 zen-general-cancel-label = 
     .label = Cancelar
 zen-general-confirm = 
@@ -36,10 +48,7 @@ zen-pinned-tab-replaced = A URL da guia fixada foi substituída pela URL atual!
 zen-tabs-renamed = A guia foi renomeada com sucesso!
 zen-background-tab-opened-toast = Nova guia em segundo plano aberta!
 zen-workspace-renamed-toast = A área de trabalho foi renomeada com sucesso!
-zen-library-sidebar-workspaces = 
-    .label = Espaços
-zen-library-sidebar-mods = 
-    .label = Mods
+zen-split-view-limit-toast = Não é possível adicionar mais painéis à visualização dividida!
 zen-toggle-compact-mode-button = 
     .label = Modo Compacto
     .tooltiptext = Alternar Modo Compacto
@@ -59,6 +68,8 @@ zen-site-data-settings = Configurações
 zen-generic-manage = Gerenciar
 zen-generic-more = Mais
 zen-generic-next = Próximo
+zen-essentials-promo-label = Adicionar aos Essenciais
+zen-essentials-promo-sublabel = Mantenha suas abas favoritas a um clique de distância
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Permitido
 zen-site-data-setting-block = Bloqueado
@@ -94,15 +105,21 @@ zen-site-data-setting-site-protection = Proteção contra Rastreamento
 zen-site-data-panel-feature-callout-title = Um novo lar para extensões, permissões e mais
 zen-site-data-panel-feature-callout-subtitle = Clique no ícone para gerenciar configurações do site, visualizar informações de segurança, acessar extensões e realizar ações comuns.
 zen-open-link-in-glance = 
-    .label = Open Link in Glance
+    .label = Abrir Link no Glance
     .accesskey = G
-zen-sidebar-notification-updated-heading = Update Complete!
+zen-sidebar-notification-updated-heading = Atualização Completa!
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-label = O que há de novo em { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
-    .title = View Release Notes
-zen-sidebar-notification-restart-safe-mode-label = Something broke?
+    .title = Ver Notas da Versão
+zen-sidebar-notification-restart-safe-mode-label = Algo quebrou?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = Restart in Safe Mode
+    .title = Reiniciar no Modo Seguro
+zen-window-sync-migration-dialog-title = Mantenha Suas Janelas em Sincronia
+zen-window-sync-migration-dialog-message = Zen agora sincroniza as janelas no mesmo dispositivo, assim as mudanças feitas em uma janela são refletidas para as outras instantaneamente.
+zen-window-sync-migration-dialog-learn-more = Saiba Mais
+zen-window-sync-migration-dialog-accept = Entendi
+zen-appmenu-new-blank-window = 
+    .label = Nova janela em branco

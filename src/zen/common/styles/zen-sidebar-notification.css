@@ -20,7 +20,7 @@
   min-width: 0;
   border-radius: var(--border-radius-medium);
   box-shadow: var(--zen-sidebar-notification-shadow);
-  font-size: var(--font-size-medium);
+  font-size: 12px;
 }
 
 .zen-sidebar-notification-header {
@@ -92,13 +92,7 @@
       opacity: 1;
       --special-color: color-mix(in srgb, var(--zen-primary-color), currentColor 50%);
       --specia-color-2: color-mix(in srgb, var(--zen-primary-color), currentColor 90%);
-      background: linear-gradient(
-        135deg,
-        var(--specia-color-2),
-        var(--special-color),
-        var(--specia-color-2),
-        var(--special-color)
-      );
+      background: linear-gradient(135deg, var(--specia-color-2), var(--special-color), var(--specia-color-2), var(--special-color));
       background-size: 400%;
       filter: saturate(3);
       background-clip: text;
@@ -113,8 +107,8 @@
 
     & .zen-sidebar-notification-link-icon {
       pointer-events: none;
-      width: 16px;
-      height: 16px;
+      width: var(--size-item-small);
+      height: var(--size-item-small);
       -moz-context-properties: fill, fill-opacity;
       fill: var(--special-color, currentColor);
     }

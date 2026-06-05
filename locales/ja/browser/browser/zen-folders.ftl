@@ -3,23 +3,21 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-folders-search-placeholder = 
-    .placeholder = Search { $folder-name }...
+    .placeholder = { $folder-name } を検索
 zen-folders-panel-rename-folder = 
-    .label = Rename Folder
+    .label = フォルダの名前を変更
 zen-folders-panel-unpack-folder = 
-    .label = Unpack Folder
+    .label = フォルダを解除
 zen-folders-new-subfolder = 
-    .label = New Subfolder
+    .label = 新規サブフォルダ
 zen-folders-panel-delete-folder = 
-    .label = Delete Folder
+    .label = フォルダを削除
 zen-folders-panel-convert-folder-to-space = 
-    .label = Convert folder to Space
+    .label = フォルダをスペースに変換
 zen-folders-panel-change-folder-space = 
-    .label = Change Space...
-zen-folders-panel-change-icon-folder = 
-    .label = Change Icon
+    .label = スペースを変更...
 zen-folders-unload-all-tooltip = 
-    .tooltiptext = Unload active in this folder
+    .tooltiptext = このフォルダでアクティブになっている状態をアンロードします
 zen-folders-unload-folder = 
-    .label = Unload All Tabs
-zen-folders-search-no-results = No tabs matching that search 🤔
+    .label = すべてのタブをアンロードする
+zen-folders-search-no-results = 検索条件に一致するタブはありません 🤔

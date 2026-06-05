@@ -6,6 +6,7 @@
 
 tab-group[split-view-group] {
   display: block;
+  position: relative;
 
   @media (prefers-reduced-motion: no-preference) {
     transition: var(--zen-tabbox-element-indent-transition);
@@ -103,7 +104,8 @@ tab-group[split-view-group] {
       }
     }
 
-    &:has(> tab:is([visuallyselected], [multiselected])) {
+    tab-group[split-view-group]:where([hasactivetab]) &,
+    &:has(> tab:is([multiselected])) {
       background-color: var(--tab-selected-bgcolor);
       box-shadow: var(--tab-selected-shadow);
 
@@ -119,7 +121,7 @@ tab-group[split-view-group] {
       }
     }
 
-    &:active {
+    &:active:not(:has(.tab-content > image:active)) {
       scale: var(--zen-active-tab-scale);
     }
 

@@ -19,6 +19,10 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = Hide both
     .accesskey = H
 
+zen-toolbar-context-move-to-folder =
+    .label = Move to Folder...
+    .accesskey = M
+
 zen-toolbar-context-new-folder =
     .label = New Folder
     .accesskey = N
@@ -42,4 +46,10 @@ tabbrowser-reset-pin-button =
         [one] Reset and pin tab
         *[other] Reset and pin { $tabCount } tabs
     }
-tab-reset-pin-label = Back to pinned url
+
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
+        *[other] { $tabSubtitle }
+    }

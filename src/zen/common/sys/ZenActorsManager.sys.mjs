@@ -3,7 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 // Utility to register JSWindowActors
 
-import { ActorManagerParent } from 'resource://gre/modules/ActorManagerParent.sys.mjs';
+import { ActorManagerParent } from "resource://gre/modules/ActorManagerParent.sys.mjs";
 
 /**
  * Fission-compatible JSProcess implementations.
@@ -21,43 +21,62 @@ let JSPROCESSACTORS = {};
 let JSWINDOWACTORS = {
   ZenModsMarketplace: {
     parent: {
-      esModuleURI: 'resource:///actors/ZenModsMarketplaceParent.sys.mjs',
+      esModuleURI: "resource:///actors/ZenModsMarketplaceParent.sys.mjs",
     },
     child: {
-      esModuleURI: 'resource:///actors/ZenModsMarketplaceChild.sys.mjs',
+      esModuleURI: "resource:///actors/ZenModsMarketplaceChild.sys.mjs",
       events: {
         DOMContentLoaded: {},
       },
     },
     matches: [
-      ...Services.prefs.getStringPref('zen.injections.match-urls').split(','),
-      'about:preferences',
+      ...Services.prefs.getStringPref("zen.injections.match-urls").split(","),
+      "about:preferences",
     ],
   },
   ZenGlance: {
     parent: {
-      esModuleURI: 'resource:///actors/ZenGlanceParent.sys.mjs',
+      esModuleURI: "resource:///actors/ZenGlanceParent.sys.mjs",
     },
     child: {
-      esModuleURI: 'resource:///actors/ZenGlanceChild.sys.mjs',
+      esModuleURI: "resource:///actors/ZenGlanceChild.sys.mjs",
       events: {
         DOMContentLoaded: {},
         mousedown: {
           capture: true,
         },
-        mouseup: {
+        keydown: {
           capture: true,
         },
-        keydown: {
+        click: {
           capture: true,
         },
       },
     },
     allFrames: true,
-    matches: ['*://*/*'],
-    enablePreference: 'zen.glance.enabled',
+    remoteTypes: ["web", "file"],
+    enablePreference: "zen.glance.enabled",
   },
 };
+
+if (!Services.appinfo.inSafeMode) {
+  JSWINDOWACTORS.ZenBoosts = {
+    parent: {
+      esModuleURI: "resource:///actors/ZenBoostsParent.sys.mjs",
+    },
+    child: {
+      esModuleURI: "resource:///actors/ZenBoostsChild.sys.mjs",
+      events: {
+        // Needed to let the actor be created, please don't remove
+        // without checking if boosts still work without it, thanks <3
+        DOMWindowCreated: {},
+      },
+    },
+    allFrames: true,
+    remoteTypes: ["web", "file"],
+    enablePreference: "zen.boosts.enabled",
+  };
+}
 
 export let gZenActorsManager = {
   init() {

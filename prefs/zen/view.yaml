@@ -10,11 +10,11 @@
 
 - name: zen.view.mac.show-three-dot-menu
   value: false
-  condition: 'defined(XP_MACOSX)'
+  condition: "defined(XP_MACOSX)"
 
 - name: zen.widget.mac.mono-window-controls
   value: true
-  condition: 'defined(XP_MACOSX)'
+  condition: "defined(XP_MACOSX)"
 
 - name: zen.view.use-single-toolbar
   value: true
@@ -32,7 +32,10 @@
   value: false
 
 - name: zen.view.grey-out-inactive-windows
+  cpptype: bool
   value: true
+  mirror: always
+  type: static
 
 - name: zen.view.show-newtab-button-top
   value: true
@@ -40,14 +43,8 @@
 - name: zen.view.window.scheme
   value: 2
 
-- name: zen.view.drag-and-drop.move-over-threshold
-  value: 70
-
-- name: zen.view.drag-and-drop.edge-zone-threshold
-  value: 25
-
 - name: zen.view.context-menu.refresh
-  value: false
+  value: "@IS_TWILIGHT@"
 
 - name: zen.view.borderless-fullscreen
   value: true
@@ -59,4 +56,13 @@
   value: true
 
 - name: zen.view.draggable-sidebar
+  value: true
+
+- name: zen.view.overflow-webext-toolbar
+  value: true
+
+- name: zen.view.overflow-webext-toolbar-threshold
+  value: 55
+
+- name: zen.view.enable-loading-indicator
   value: true

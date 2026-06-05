@@ -2,26 +2,46 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { AppConstants } from 'resource://gre/modules/AppConstants.sys.mjs';
+import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
+
+const ADDONS_BUTTONS_HIDDEN = Services.prefs.getBoolPref(
+  "zen.theme.hide-unified-extensions-button",
+  true
+);
 
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
-  FeatureCallout: 'resource:///modules/asrouter/FeatureCallout.sys.mjs',
+  FeatureCallout: "resource:///modules/asrouter/FeatureCallout.sys.mjs",
+  gZenBoostsManager: "resource:///modules/zen/boosts/ZenBoostsManager.sys.mjs",
 });
 
 export class nsZenSiteDataPanel {
   #iconMap = {
-    install: 'extension',
-    'site-protection': 'shield',
-    '3rdPartyStorage': 'cookie',
+    install: "extension",
+    "site-protection": "shield",
+    "3rdPartyStorage": "cookie",
   };
 
   constructor(window) {
     this.window = window;
     this.document = window.document;
 
-    this.panel = this.document.getElementById('zen-unified-site-data-panel');
+    this.unifiedPanel = this.#initUnifiedPanel();
+    this.unifiedPanelView = "unified-extensions-view";
+    this.extensionsPanelView = "original-unified-extensions-view";
+
+    if (ADDONS_BUTTONS_HIDDEN) {
+      this.window.gUnifiedExtensions._panel = this.unifiedPanel;
+
+      // Remove the old permissions dialog
+      this.document
+        .getElementById("unified-extensions-panel-template")
+        ?.remove();
+    } else {
+      this.extensionsPanel = this.#initExtensionsPanel();
+    }
+
     this.#init();
   }
 
@@ -30,48 +50,105 @@ export class nsZenSiteDataPanel {
     const button = this.window.MozXULElement.parseXULToFragment(`
       <box id="zen-site-data-icon-button" role="button" align="center" class="identity-box-button" delegatesanchor="true">
         <image />
+        <image class="zen-site-data-boost-animation" />
       </box>
     `);
-    this.anchor = button.querySelector('#zen-site-data-icon-button');
-    this.document.getElementById('identity-icon-box').before(button);
-    this.window.gUnifiedExtensions._button = this.anchor;
+    this.anchor = button.querySelector("#zen-site-data-icon-button");
+    this.document.getElementById("identity-icon-box").before(button);
+
+    this.extensionsPanelButton = this.document.getElementById(
+      "unified-extensions-button"
+    );
+    this.window.gUnifiedExtensions._button = ADDONS_BUTTONS_HIDDEN
+      ? this.anchor
+      : this.extensionsPanelButton;
 
     this.document
-      .getElementById('nav-bar')
-      .setAttribute('addon-webext-overflowbutton', 'zen-site-data-icon-button');
-
-    // Remove the old permissions dialog
-    this.document.getElementById('unified-extensions-panel-template').remove();
+      .getElementById("nav-bar")
+      .setAttribute("addon-webext-overflowbutton", "zen-site-data-icon-button");
 
     this.#initCopyUrlButton();
     this.#initEventListeners();
+    this.#initBrowserListeners();
+    this.#initUnifiedExtensionsManageHook();
     this.#maybeShowFeatureCallout();
   }
 
   #initEventListeners() {
-    this.panel.addEventListener('popupshowing', this);
-    this.document.getElementById('zen-site-data-manage-addons').addEventListener('click', this);
-    this.document.getElementById('zen-site-data-settings-more').addEventListener('click', this);
-    this.anchor.addEventListener('click', this);
+    this.unifiedPanel.addEventListener("popupshowing", this);
+    this.document
+      .getElementById("zen-site-data-manage-addons")
+      .addEventListener("click", this);
+    this.document
+      .getElementById("zen-site-data-settings-more")
+      .addEventListener("click", this);
+    this.anchor.addEventListener("click", this);
     const kCommandIDs = [
-      'zen-site-data-header-share',
-      'zen-site-data-header-bookmark',
-      'zen-site-data-security-info',
-      'zen-site-data-actions',
-      'zen-site-data-new-addon-button',
+      "zen-site-data-header-share",
+      "zen-site-data-header-bookmark",
+      "zen-site-data-security-info",
+      "zen-site-data-boost",
+      "zen-site-data-actions",
+      "zen-site-data-new-addon-button",
     ];
 
     for (let id of kCommandIDs) {
-      this.document.getElementById(id).addEventListener('command', this);
+      this.document.getElementById(id).addEventListener("command", this);
     }
 
     this.#initContextMenuEventListener();
   }
 
+  #initBrowserListeners() {
+    Services.obs.addObserver(this, "zen-boosts-update");
+    this.window.gBrowser.addProgressListener({
+      onLocationChange: aWebProgress => {
+        if (aWebProgress.isTopLevel) {
+          this.checkIfTabIsBoosted();
+        }
+      },
+    });
+    this.window.addEventListener(
+      "unload",
+      () => {
+        Services.obs.removeObserver(this, "zen-boosts-update");
+      },
+      { once: true }
+    );
+  }
+
+  observe(subject, topic) {
+    switch (topic) {
+      case "zen-boosts-update":
+        this.checkIfTabIsBoosted();
+        break;
+    }
+  }
+
+  #getCurrentDomain() {
+    try {
+      return this.window.gBrowser.currentURI.host;
+    } catch {
+      return "";
+    }
+  }
+
+  checkIfTabIsBoosted() {
+    const domain = this.#getCurrentDomain();
+    const isBoosted = lazy.gZenBoostsManager.registeredBoostForDomain(domain);
+    if (isBoosted) {
+      this.anchor.setAttribute("boosting", "true");
+    } else {
+      this.anchor.removeAttribute("boosting");
+    }
+    // Force a reflow to ensure the attribute change is applied before any potential animation.
+    this.anchor.getBoundingClientRect();
+  }
+
   #initCopyUrlButton() {
     // This function is a bit out of place, but it's related enough to the panel
     // that it's easier to do it here than in a separate module.
-    const container = this.document.getElementById('page-action-buttons');
+    const container = this.document.getElementById("page-action-buttons");
     const fragment = this.window.MozXULElement.parseXULToFragment(`
       <hbox id="zen-copy-url-button"
             class="urlbar-page-action"
@@ -83,12 +160,12 @@ export class nsZenSiteDataPanel {
     `);
     container.after(fragment);
 
-    const aElement = this.document.getElementById('zen-copy-url-button');
-    aElement.addEventListener('click', () => {
-      if (aElement.hasAttribute('disabled')) {
+    const aElement = this.document.getElementById("zen-copy-url-button");
+    aElement.addEventListener("click", () => {
+      if (aElement.hasAttribute("disabled")) {
         return;
       }
-      this.document.getElementById('cmd_zenCopyCurrentURL').doCommand();
+      this.document.getElementById("cmd_zenCopyCurrentURL").doCommand();
     });
 
     this.window.gBrowser.addProgressListener({
@@ -96,9 +173,9 @@ export class nsZenSiteDataPanel {
         if (aWebProgress.isTopLevel) {
           const disabled = !this.#canCopyUrl(aLocation);
           if (disabled) {
-            aElement.setAttribute('disabled', true);
+            aElement.setAttribute("disabled", true);
           } else {
-            aElement.removeAttribute('disabled');
+            aElement.removeAttribute("disabled");
           }
         }
       },
@@ -107,7 +184,7 @@ export class nsZenSiteDataPanel {
 
   #initContextMenuEventListener() {
     const kCommands = {
-      context_zenClearSiteData: (event) => {
+      context_zenClearSiteData: event => {
         this.window.gIdentityHandler.clearSiteData(event);
       },
       context_zenOpenGetAddons: () => {
@@ -115,74 +192,243 @@ export class nsZenSiteDataPanel {
       },
       context_zenOpenSiteSettings: () => {
         const { BrowserCommands } = this.window;
-        BrowserCommands.pageInfo(null, 'permTab');
+        BrowserCommands.pageInfo(null, "permTab");
       },
     };
 
     for (let [id, handler] of Object.entries(kCommands)) {
-      this.document.getElementById(id).addEventListener('command', handler);
+      this.document.getElementById(id).addEventListener("command", handler);
     }
   }
 
+  #initUnifiedExtensionsManageHook() {
+    const manageExtensionItem = this.document.getElementById(
+      "unified-extensions-context-menu-manage-extension"
+    );
+
+    manageExtensionItem.addEventListener("command", () => {
+      this.unifiedPanel.hidePopup();
+    });
+  }
+
+  #initExtensionsPanel() {
+    const panel = this.window.gUnifiedExtensions.panel;
+
+    const extensionsView = panel?.querySelector("#unified-extensions-view");
+    extensionsView.setAttribute("id", this.extensionsPanelView);
+
+    const panelMultiView = panel?.querySelector("panelmultiview");
+    panelMultiView.setAttribute("mainViewId", this.extensionsPanelView);
+
+    return panel;
+  }
+
+  #initUnifiedPanel() {
+    const panel = this.document.getElementById("zen-unified-site-data-panel");
+    this.window.gUnifiedExtensions.initializePanel(panel);
+    return panel;
+  }
+
   #preparePanel() {
+    this.#resetSiteOptionsList();
+    this.#setSiteBoost();
     this.#setSitePermissions();
     this.#setSiteSecurityInfo();
     this.#setSiteHeader();
     this.#setAddonsOverflow();
   }
 
-  #setAddonsOverflow() {
-    const addons = this.document.getElementById('zen-site-data-addons');
-    if (addons.getBoundingClientRect().height > 420) {
-      addons.setAttribute('overflowing', 'true');
+  #setSiteBoost() {
+    const domain = this.#getCurrentDomain();
+    const uri = this.window.gBrowser.currentURI;
+    const canBoostSite = lazy.gZenBoostsManager.canBoostSite(uri);
+
+    const list = this.document.getElementById("zen-site-data-boost-list");
+    const section = list.closest(".zen-site-data-section");
+    section.hidden = true;
+
+    const boostButton = this.document.getElementById("zen-site-data-boost");
+    if (!canBoostSite) {
+      boostButton.removeAttribute("boosting");
+      boostButton.setAttribute("disabled", "true");
+      return;
+    }
+
+    boostButton.removeAttribute("disabled");
+
+    if (lazy.gZenBoostsManager.registeredBoostForDomain(domain)) {
+      boostButton.setAttribute("boosting", "true");
     } else {
-      addons.removeAttribute('overflowing');
+      boostButton.removeAttribute("boosting");
+    }
+
+    /* Boosts panel */
+
+    const boosts = lazy.gZenBoostsManager.loadBoostsFromStore(domain);
+    let validBoostCount = 0;
+
+    if (boosts) {
+      const activeBoostId = lazy.gZenBoostsManager.getActiveBoostId(domain);
+      boosts.forEach(boost => {
+        const boostData = boost.boostEntry.boostData;
+        if (!boostData.changeWasMade) {
+          return;
+        }
+        validBoostCount++;
+
+        const enabled = boost.id === activeBoostId;
+        list.appendChild(
+          this.#createBoostPanelItem(
+            "boost-brush",
+            boostData.boostName,
+            "zen-site-data-toggle-boost",
+            boost,
+            enabled
+          )
+        );
+      });
+    }
+    section.hidden = validBoostCount === 0;
+  }
+
+  #updateSiteBoost() {
+    const boostList = this.document.getElementById("zen-site-data-boost-list");
+    boostList.innerHTML = "";
+
+    this.#setSiteBoost();
+  }
+
+  #createBoostPanelItem(
+    iconClass,
+    title,
+    actionId,
+    boost = null,
+    enabled = false
+  ) {
+    const container = this.document.createXULElement("hbox");
+    container.classList.add("permission-popup-boost-item");
+
+    container.setAttribute("align", "center");
+    container.setAttribute("role", "group");
+    container.setAttribute("data-action-id", actionId);
+    container.setAttribute("state", "enabled");
+
+    if (boost) {
+      container.setAttribute("data-boost-id", boost.id);
+      container.setAttribute("state", enabled ? "enabled" : "disabled");
+    }
+
+    const img = this.document.createXULElement("toolbarbutton");
+    img.classList.add(
+      "permission-popup-boost-icon",
+      "zen-site-data-boost-icon"
+    );
+    img.setAttribute("closemenu", "none");
+    img.classList.add(iconClass);
+
+    const labelContainer = this.document.createXULElement("vbox");
+    labelContainer.setAttribute("flex", "1");
+    labelContainer.setAttribute("align", "start");
+    labelContainer.classList.add("permission-popup-boost-label-container");
+
+    const nameLabel = this.document.createXULElement("label");
+    nameLabel.setAttribute("flex", "1");
+    nameLabel.setAttribute("class", "permission-popup-boost-label");
+    nameLabel.textContent = title || "";
+    labelContainer.appendChild(nameLabel);
+
+    const stateLabel = this.document.createXULElement("label");
+    stateLabel.setAttribute("class", "zen-permission-popup-boost-state-label");
+    const stateLabelId = enabled
+      ? "zen-site-data-protections-enabled"
+      : "zen-site-data-protections-disabled";
+    this.document.l10n.formatMessages([stateLabelId]).then(([labelContent]) => {
+      stateLabel.textContent = labelContent.value;
+    });
+    labelContainer.appendChild(stateLabel);
+
+    container.appendChild(img);
+    container.appendChild(labelContainer);
+
+    if (boost) {
+      const editorButton = this.document.createXULElement("toolbarbutton");
+      editorButton.setAttribute("data-action-id", "zen-site-data-edit-boost");
+      editorButton.setAttribute("data-boost-id", boost.id);
+      editorButton.classList.add("zen-permission-popup-boost-editor-button");
+      container.appendChild(editorButton);
+
+      editorButton.addEventListener("click", event => {
+        event.stopPropagation(); // Prevents the container event
+        this.#onBoostClick(event);
+      });
+    }
+
+    container.addEventListener("click", this.#onBoostClick.bind(this));
+
+    return container;
+  }
+
+  #setAddonsOverflow() {
+    const addons = this.document.getElementById("zen-site-data-addons");
+    if (addons.getBoundingClientRect().height > 420) {
+      addons.setAttribute("overflowing", "true");
+    } else {
+      addons.removeAttribute("overflowing");
     }
   }
 
   get #currentPageIsBookmarked() {
     // A hacky way to check if the current page is bookmarked, but
     // it works for our purposes.
-    return this.window.BookmarkingUI.star?.hasAttribute('starred');
+    return this.window.BookmarkingUI.star?.hasAttribute("starred");
   }
 
   #setSiteHeader() {
     {
-      const button = this.document.getElementById('zen-site-data-header-reader-mode');
-      const urlbarButton = this.window.document.getElementById('reader-mode-button');
-      const isActive = urlbarButton?.hasAttribute('readeractive');
+      const button = this.document.getElementById(
+        "zen-site-data-header-reader-mode"
+      );
+      const urlbarButton =
+        this.window.document.getElementById("reader-mode-button");
+      const isActive = urlbarButton?.hasAttribute("readeractive");
       const isVisible = !urlbarButton?.hidden || isActive;
 
       button.disabled = !isVisible;
       if (isActive) {
-        button.classList.add('active');
+        button.classList.add("active");
       } else {
-        button.classList.remove('active');
+        button.classList.remove("active");
       }
-      this.document.l10n.setAttributes(button, urlbarButton?.getAttribute('data-l10n-id'));
+      this.document.l10n.setAttributes(
+        button,
+        urlbarButton?.getAttribute("data-l10n-id")
+      );
     }
     {
-      const button = this.document.getElementById('zen-site-data-header-bookmark');
+      const button = this.document.getElementById(
+        "zen-site-data-header-bookmark"
+      );
       const isPageBookmarked = this.#currentPageIsBookmarked;
 
       if (isPageBookmarked) {
-        button.classList.add('active');
+        button.classList.add("active");
       } else {
-        button.classList.remove('active');
+        button.classList.remove("active");
       }
     }
     {
-      const button = this.document.getElementById('zen-site-data-header-share');
+      const button = this.document.getElementById("zen-site-data-header-share");
       if (this.#canCopyUrl(this.window.gBrowser.currentURI)) {
-        button.removeAttribute('disabled');
+        button.removeAttribute("disabled");
       } else {
-        button.setAttribute('disabled', 'true');
+        button.setAttribute("disabled", "true");
       }
     }
   }
 
-  /*
+  /**
    * Determines whether the copy URL button should be hidden for the given URI.
+   *
    * @param {nsIURI} uri - The URI to check.
    * @returns {boolean} True if the button should be hidden, false otherwise.
    */
@@ -191,12 +437,21 @@ export class nsZenSiteDataPanel {
       return false;
     }
 
-    return uri.scheme.startsWith('http');
+    return uri.scheme.startsWith("http");
+  }
+
+  #resetSiteOptionsList() {
+    const settingsList = this.document.getElementById(
+      "zen-site-data-settings-list"
+    );
+    settingsList.innerHTML = "";
+    const boostList = this.document.getElementById("zen-site-data-boost-list");
+    boostList.innerHTML = "";
   }
 
   #setSiteSecurityInfo() {
     const { gIdentityHandler } = this.window;
-    const button = this.document.getElementById('zen-site-data-security-info');
+    const button = this.document.getElementById("zen-site-data-security-info");
 
     if (gIdentityHandler._isSecureInternalUI) {
       button.parentNode.hidden = true;
@@ -205,35 +460,54 @@ export class nsZenSiteDataPanel {
 
     let identity;
     if (gIdentityHandler._pageExtensionPolicy) {
-      this.document.l10n.setAttributes(button, 'zen-site-data-security-info-extension');
-      identity = 'extension';
-    } else if (gIdentityHandler._uriHasHost && gIdentityHandler._isSecureConnection) {
-      this.document.l10n.setAttributes(button, 'zen-site-data-security-info-secure');
-      identity = 'secure';
+      this.document.l10n.setAttributes(
+        button,
+        "zen-site-data-security-info-extension"
+      );
+      identity = "extension";
+    } else if (
+      gIdentityHandler._uriHasHost &&
+      gIdentityHandler._isSecureConnection &&
+      !gIdentityHandler._isCertUserOverridden &&
+      !gIdentityHandler._isCertErrorPage &&
+      !gIdentityHandler._isAboutHttpsOnlyErrorPage
+    ) {
+      this.document.l10n.setAttributes(
+        button,
+        "zen-site-data-security-info-secure"
+      );
+      identity = "secure";
     } else {
-      this.document.l10n.setAttributes(button, 'zen-site-data-security-info-not-secure');
-      identity = 'not-secure';
+      this.document.l10n.setAttributes(
+        button,
+        "zen-site-data-security-info-not-secure"
+      );
+      identity = "not-secure";
     }
 
     button.parentNode.hidden = false;
-    button.setAttribute('identity', identity);
+    button.setAttribute("identity", identity);
   }
 
   #setSitePermissions() {
     const { gBrowser, SitePermissions } = this.window;
-    const list = this.document.getElementById('zen-site-data-settings-list');
-    const section = list.closest('.zen-site-data-section');
+    const list = this.document.getElementById("zen-site-data-settings-list");
+    const section = list.closest(".zen-site-data-section");
 
     // show permission icons
-    let permissions = SitePermissions.getAllPermissionDetailsForBrowser(gBrowser.selectedBrowser);
+    let permissions = SitePermissions.getAllPermissionDetailsForBrowser(
+      gBrowser.selectedBrowser
+    );
 
     // Don't display origin-keyed 3rdPartyStorage permissions that are covered by
     // site-keyed 3rdPartyFrameStorage permissions.
     let thirdPartyStorageSites = new Set(
       permissions
         .map(function (permission) {
-          let [id, key] = permission.id.split(SitePermissions.PERM_KEY_DELIMITER);
-          if (id == '3rdPartyFrameStorage' || id == '3rdPartyStorage') {
+          let [id, key] = permission.id.split(
+            SitePermissions.PERM_KEY_DELIMITER
+          );
+          if (id == "3rdPartyFrameStorage" || id == "3rdPartyStorage") {
             return key;
           }
           return null;
@@ -244,7 +518,7 @@ export class nsZenSiteDataPanel {
     );
     permissions = permissions.filter(function (permission) {
       let [id, key] = permission.id.split(SitePermissions.PERM_KEY_DELIMITER);
-      if (id != '3rdPartyStorage') {
+      if (id != "3rdPartyStorage") {
         return true;
       }
       try {
@@ -259,10 +533,10 @@ export class nsZenSiteDataPanel {
     this._sharingState = gBrowser.selectedTab._sharingState;
 
     if (this._sharingState?.geo) {
-      let geoPermission = permissions.find((perm) => perm.id === 'geo');
+      let geoPermission = permissions.find(perm => perm.id === "geo");
       if (!geoPermission) {
         permissions.push({
-          id: 'geo',
+          id: "geo",
           state: SitePermissions.ALLOW,
           scope: SitePermissions.SCOPE_REQUEST,
           sharingState: true,
@@ -271,10 +545,10 @@ export class nsZenSiteDataPanel {
     }
 
     if (this._sharingState?.xr) {
-      let xrPermission = permissions.find((perm) => perm.id === 'xr');
+      let xrPermission = permissions.find(perm => perm.id === "xr");
       if (!xrPermission) {
         permissions.push({
-          id: 'xr',
+          id: "xr",
           state: SitePermissions.ALLOW,
           scope: SitePermissions.SCOPE_REQUEST,
           sharingState: true,
@@ -286,11 +560,13 @@ export class nsZenSiteDataPanel {
       let webrtcState = this._sharingState.webRTC;
       // If WebRTC device or screen are in use, we need to find
       // the associated ALLOW permission item to set the sharingState field.
-      for (let id of ['camera', 'microphone', 'screen']) {
+      for (let id of ["camera", "microphone", "screen"]) {
         if (webrtcState[id]) {
           let found = false;
           for (let permission of permissions) {
-            let [permId] = permission.id.split(SitePermissions.PERM_KEY_DELIMITER);
+            let [permId] = permission.id.split(
+              SitePermissions.PERM_KEY_DELIMITER
+            );
             if (permId != id || permission.state != SitePermissions.ALLOW) {
               continue;
             }
@@ -314,26 +590,27 @@ export class nsZenSiteDataPanel {
     // Add site protection permissions if needed.
     const { gProtectionsHandler } = this.window;
     if (
-      gBrowser.currentURI.schemeIs('http') ||
-      gBrowser.currentURI.schemeIs('https') ||
-      gBrowser.currentURI.schemeIs('ftp')
+      gBrowser.currentURI.schemeIs("http") ||
+      gBrowser.currentURI.schemeIs("https") ||
+      gBrowser.currentURI.schemeIs("ftp")
     ) {
       permissions.push({
-        id: 'site-protection',
-        state: gProtectionsHandler.hasException ? SitePermissions.BLOCK : SitePermissions.ALLOW,
+        id: "site-protection",
+        state: gProtectionsHandler.hasException
+          ? SitePermissions.BLOCK
+          : SitePermissions.ALLOW,
         scope: SitePermissions.SCOPE_PERSISTENT,
       });
     }
 
-    const separator = this.document.createXULElement('toolbarseparator');
-    list.innerHTML = '';
+    const separator = this.document.createXULElement("toolbarseparator");
     list.appendChild(separator);
     const settingElements = [];
     const crossSiteCookieElements = [];
     for (let permission of permissions) {
       let [id, key] = permission.id.split(SitePermissions.PERM_KEY_DELIMITER);
 
-      if (id == 'storage-access') {
+      if (id == "storage-access") {
         // Ignore storage access permissions here, they are made visible inside
         // the Content Blocking UI.
         continue;
@@ -344,7 +621,11 @@ export class nsZenSiteDataPanel {
         continue;
       }
 
-      let [item, isCrossSiteCookie] = this.#createPermissionItem(id, key, permission);
+      let [item, isCrossSiteCookie] = this.#createPermissionItem(
+        id,
+        key,
+        permission
+      );
       if (item) {
         if (isCrossSiteCookie) {
           crossSiteCookieElements.push(item);
@@ -361,7 +642,8 @@ export class nsZenSiteDataPanel {
       separator.after(elem);
     }
 
-    separator.hidden = !settingElements.length || !crossSiteCookieElements.length;
+    separator.hidden =
+      !settingElements.length || !crossSiteCookieElements.length;
     section.hidden = list.childElementCount < 2; // only the separator
   }
 
@@ -370,16 +652,16 @@ export class nsZenSiteDataPanel {
     switch (permission.state) {
       // There should only be these types being displayed in the panel.
       case SitePermissions.ALLOW:
-        if (permission.id === 'site-protection') {
-          return 'zen-site-data-protections-enabled';
+        if (permission.id === "site-protection") {
+          return "zen-site-data-protections-enabled";
         }
-        return 'zen-site-data-setting-allow';
+        return "zen-site-data-setting-allow";
       case SitePermissions.BLOCK:
       case SitePermissions.AUTOPLAY_BLOCKED_ALL:
-        if (permission.id === 'site-protection') {
-          return 'zen-site-data-protections-disabled';
+        if (permission.id === "site-protection") {
+          return "zen-site-data-protections-disabled";
         }
-        return 'zen-site-data-setting-block';
+        return "zen-site-data-setting-block";
       default:
         return null;
     }
@@ -387,88 +669,115 @@ export class nsZenSiteDataPanel {
 
   #createPermissionItem(id, key, permission) {
     const { SitePermissions } = this.window;
-    const isCrossSiteCookie = id === '3rdPartyStorage';
+    const isCrossSiteCookie = id === "3rdPartyStorage";
 
     // Create a permission item for the site data panel.
-    let container = this.document.createXULElement('hbox');
+    let container = this.document.createXULElement("hbox");
     const idNoSuffix = permission.id;
     container.classList.add(
-      'permission-popup-permission-item',
+      "permission-popup-permission-item",
       `permission-popup-permission-item-${idNoSuffix}`
     );
-    container.setAttribute('align', 'center');
-    container.setAttribute('role', 'group');
+    container.setAttribute("align", "center");
+    container.setAttribute("role", "group");
 
-    container.setAttribute('state', permission.state == SitePermissions.ALLOW ? 'allow' : 'block');
+    container.setAttribute(
+      "state",
+      permission.state == SitePermissions.ALLOW ? "allow" : "block"
+    );
 
-    let img = this.document.createXULElement('toolbarbutton');
-    img.classList.add('permission-popup-permission-icon', 'zen-site-data-permission-icon');
-    img.setAttribute('closemenu', 'none');
+    let img = this.document.createXULElement("toolbarbutton");
+    img.classList.add(
+      "permission-popup-permission-icon",
+      "zen-site-data-permission-icon"
+    );
+    img.setAttribute("closemenu", "none");
     if (this.#iconMap[id]) {
       img.classList.add(`zen-permission-${this.#iconMap[id]}-icon`);
     }
 
-    let labelContainer = this.document.createXULElement('vbox');
-    labelContainer.setAttribute('flex', '1');
-    labelContainer.setAttribute('align', 'start');
-    labelContainer.classList.add('permission-popup-permission-label-container');
+    let labelContainer = this.document.createXULElement("vbox");
+    labelContainer.setAttribute("flex", "1");
+    labelContainer.setAttribute("align", "start");
+    labelContainer.classList.add("permission-popup-permission-label-container");
     labelContainer._permission = permission;
 
-    let nameLabel = this.document.createXULElement('label');
-    nameLabel.setAttribute('flex', '1');
-    nameLabel.setAttribute('class', 'permission-popup-permission-label');
+    let nameLabel = this.document.createXULElement("label");
+    nameLabel.setAttribute("flex", "1");
+    nameLabel.setAttribute("class", "permission-popup-permission-label");
     if (isCrossSiteCookie) {
-      this.document.l10n.setAttributes(nameLabel, 'zen-site-data-setting-cross-site');
+      this.document.l10n.setAttributes(
+        nameLabel,
+        "zen-site-data-setting-cross-site"
+      );
     } else {
       let label = SitePermissions.getPermissionLabel(permission.id);
       if (label) {
         nameLabel.textContent = label;
       } else {
-        this.document.l10n.setAttributes(nameLabel, 'zen-site-data-setting-' + idNoSuffix);
+        this.document.l10n.setAttributes(
+          nameLabel,
+          "zen-site-data-setting-" + idNoSuffix
+        );
       }
     }
     labelContainer.appendChild(nameLabel);
 
-    let stateLabel = this.document.createXULElement('label');
-    stateLabel.setAttribute('class', 'zen-permission-popup-permission-state-label');
+    let stateLabel = this.document.createXULElement("label");
+    stateLabel.setAttribute(
+      "class",
+      "zen-permission-popup-permission-state-label"
+    );
     if (isCrossSiteCookie) {
       // The key should be the site for cross-site cookies.
       stateLabel.textContent = key;
     } else {
-      stateLabel.setAttribute('data-l10n-id', this.#getPermissionStateLabelId(permission));
+      stateLabel.setAttribute(
+        "data-l10n-id",
+        this.#getPermissionStateLabelId(permission)
+      );
     }
     labelContainer.appendChild(stateLabel);
 
     container.appendChild(img);
     container.appendChild(labelContainer);
 
-    container.addEventListener('click', this);
+    container.addEventListener("click", this);
     return [container, isCrossSiteCookie];
   }
 
   #openGetAddons() {
     const { switchToTabHavingURI } = this.window;
-    let amoUrl = Services.urlFormatter.formatURLPref('extensions.getAddons.link.url');
+    let amoUrl = Services.urlFormatter.formatURLPref(
+      "extensions.getAddons.link.url"
+    );
     switchToTabHavingURI(amoUrl, true);
   }
 
   #onCommandEvent(event) {
     const id = event.target.id;
     switch (id) {
-      case 'zen-site-data-new-addon-button': {
+      case "zen-site-data-new-addon-button": {
         this.#openGetAddons();
         break;
       }
-      case 'zen-site-data-security-info': {
+      case "zen-site-data-security-info": {
         this.window.gIdentityHandler._openPopup(event);
         break;
       }
-      case 'zen-site-data-actions': {
-        const button = this.document.getElementById('zen-site-data-actions');
-        const popup = this.document.getElementById('zenSiteDataActions');
+      case "zen-site-data-boost": {
+        const domain = this.#getCurrentDomain();
+        const uri = this.window.gBrowser.currentURI;
+        const boost = lazy.gZenBoostsManager.createNewBoost(domain);
+        lazy.gZenBoostsManager.openBoostWindow(this.window, boost, uri);
+        break;
+      }
+      case "zen-site-data-actions": {
+        const button = this.document.getElementById("zen-site-data-actions");
+        const popup = this.document.getElementById("zenSiteDataActions");
         popup.openPopup(
           button,
-          'after_start',
+          "after_start",
           0,
           0,
           /* context menu */ true,
@@ -477,18 +786,20 @@ export class nsZenSiteDataPanel {
         );
         break;
       }
-      case 'zen-site-data-header-bookmark': {
+      case "zen-site-data-header-bookmark": {
         this.window.BookmarkingUI.onStarCommand(event);
         break;
       }
-      case 'zen-site-data-header-share': {
+      case "zen-site-data-header-share": {
+        /* eslint-disable mozilla/valid-services */
         if (Services.zen.canShare()) {
           const buttonRect = event.target.getBoundingClientRect();
           const currentUrl = this.window.gBrowser.currentURI;
+          /* eslint-disable mozilla/valid-services */
           Services.zen.share(
             currentUrl,
-            '',
-            '',
+            "",
+            "",
             buttonRect.left,
             this.window.innerHeight - buttonRect.bottom,
             buttonRect.width,
@@ -497,8 +808,8 @@ export class nsZenSiteDataPanel {
         } else {
           this.window.gZenCommonActions.copyCurrentURLToClipboard();
         }
-        if (AppConstants.platform !== 'macosx') {
-          this.panel.hidePopup();
+        if (AppConstants.platform !== "macosx") {
+          this.unifiedPanel.hidePopup();
         }
       }
     }
@@ -521,7 +832,7 @@ export class nsZenSiteDataPanel {
         return;
     }
 
-    if (permission.id === 'site-protection') {
+    if (permission.id === "site-protection") {
       const { gProtectionsHandler } = this.window;
       if (newState === SitePermissions.BLOCK) {
         gProtectionsHandler.disableForCurrentPage();
@@ -529,42 +840,92 @@ export class nsZenSiteDataPanel {
         gProtectionsHandler.enableForCurrentPage();
       }
     } else {
-      SitePermissions.setForPrincipal(gBrowser.contentPrincipal, permission.id, newState);
+      SitePermissions.setForPrincipal(
+        gBrowser.contentPrincipal,
+        permission.id,
+        newState
+      );
     }
 
-    const isCrossSiteCookie = permission.id.startsWith('3rdPartyStorage');
-    label.parentNode.setAttribute('state', newState == SitePermissions.ALLOW ? 'allow' : 'block');
+    const isCrossSiteCookie = permission.id.startsWith("3rdPartyStorage");
+    label.parentNode.setAttribute(
+      "state",
+      newState == SitePermissions.ALLOW ? "allow" : "block"
+    );
     label._permission.state = newState;
     if (!isCrossSiteCookie) {
       label
-        .querySelector('.zen-permission-popup-permission-state-label')
-        .setAttribute('data-l10n-id', this.#getPermissionStateLabelId(label._permission));
+        .querySelector(".zen-permission-popup-permission-state-label")
+        .setAttribute(
+          "data-l10n-id",
+          this.#getPermissionStateLabelId(label._permission)
+        );
+    }
+  }
+
+  #onBoostClick(event) {
+    const target = event.target.closest("[data-action-id]");
+    if (!target) {
+      return;
+    }
+
+    const actionId = target.getAttribute("data-action-id");
+    const domain = this.#getCurrentDomain();
+
+    switch (actionId) {
+      case "zen-site-data-toggle-boost": {
+        const boostId = target.getAttribute("data-boost-id");
+
+        lazy.gZenBoostsManager.toggleBoostActiveForDomain(domain, boostId);
+        this.#updateSiteBoost();
+        break;
+      }
+      case "zen-site-data-edit-boost": {
+        const boostId = target.getAttribute("data-boost-id");
+        const uri = this.window.gBrowser.currentURI;
+        const boost = lazy.gZenBoostsManager.loadBoostFromStore(
+          domain,
+          boostId
+        );
+        lazy.gZenBoostsManager.openBoostWindow(this.window, boost, uri);
+        this.unifiedPanel.hidePopup();
+        break;
+      }
     }
   }
 
   #onClickEvent(event) {
     const id = event.target.id;
     switch (id) {
-      case 'zen-site-data-manage-addons': {
+      case "zen-site-data-manage-addons": {
         const { BrowserAddonUI } = this.window;
-        BrowserAddonUI.openAddonsMgr('addons://list/extension');
+        BrowserAddonUI.openAddonsMgr("addons://list/extension");
+        this.unifiedPanel.hidePopup();
         break;
       }
-      case 'zen-site-data-settings-more': {
+      case "zen-site-data-settings-more": {
         const { BrowserCommands } = this.window;
-        BrowserCommands.pageInfo(null, 'permTab');
+        BrowserCommands.pageInfo(null, "permTab");
         break;
       }
-      case 'zen-site-data-icon-button': {
-        this.window.gUnifiedExtensions.togglePanel(event);
+      case "zen-site-data-icon-button": {
+        this.window.gUnifiedExtensions.togglePanel(
+          event,
+          null,
+          this.unifiedPanel,
+          this.unifiedPanelView,
+          this.anchor
+        );
         break;
       }
       default: {
-        const item = event.target.closest('.permission-popup-permission-item');
+        const item = event.target.closest(".permission-popup-permission-item");
         if (!item) {
           break;
         }
-        const label = item.querySelector('.permission-popup-permission-label-container');
+        const label = item.querySelector(
+          ".permission-popup-permission-label-container"
+        );
         if (label?._permission) {
           this.#onPermissionClick(label);
         }
@@ -576,81 +937,82 @@ export class nsZenSiteDataPanel {
   handleEvent(event) {
     const type = event.type;
     switch (type) {
-      case 'click':
+      case "click":
         this.#onClickEvent(event);
         break;
-      case 'command':
+      case "command":
         this.#onCommandEvent(event);
         break;
-      case 'popupshowing':
+      case "popupshowing":
         this.#preparePanel();
         break;
     }
   }
 
   async #maybeShowFeatureCallout() {
-    const kPref = 'zen.site-data-panel.show-callout';
+    const kPref = "zen.site-data-panel.show-callout";
     if (!Services.prefs.getBoolPref(kPref, false)) {
       return;
     }
     Services.prefs.setBoolPref(kPref, false);
-    const { FeatureCallout } = lazy;
     const { gBrowser, gZenWorkspaces } = this.window;
     await gZenWorkspaces.promiseInitialized;
-    await new Promise((resolve) => {
+    await new Promise(resolve => {
       const checkEmptyTab = () => {
-        if (!gBrowser.selectedTab.hasAttribute('zen-empty-tab')) {
+        if (!gBrowser.selectedTab.hasAttribute("zen-empty-tab")) {
           resolve();
           return;
         }
-        this.window.addEventListener('TabSelect', checkEmptyTab, { once: true });
+        this.window.addEventListener("TabSelect", checkEmptyTab, {
+          once: true,
+        });
       };
       checkEmptyTab();
     });
-    const callout = new FeatureCallout({
+    const callout = new lazy.FeatureCallout({
       win: this.window,
-      location: 'chrome',
-      context: 'chrome',
+      location: "chrome",
+      context: "chrome",
       browser: gBrowser.selectedBrowser,
-      theme: { preset: 'chrome' },
+      theme: { preset: "chrome" },
     });
     this.window.setTimeout(() => {
       callout.showFeatureCallout({
-        id: 'ZEN_EXTENSIONS_PANEL_MOVE_CALLOUT',
-        template: 'feature_callout',
-        groups: ['cfr'],
+        id: "ZEN_EXTENSIONS_PANEL_MOVE_CALLOUT",
+        template: "feature_callout",
+        groups: ["cfr"],
         content: {
-          id: 'ZEN_EXTENSIONS_PANEL_MOVE_CALLOUT',
-          template: 'multistage',
-          backdrop: 'transparent',
+          id: "ZEN_EXTENSIONS_PANEL_MOVE_CALLOUT",
+          template: "multistage",
+          backdrop: "transparent",
           transitions: true,
           screens: [
             {
-              id: 'ZEN_EXTENSIONS_PANEL_MOVE_CALLOUT',
+              id: "ZEN_EXTENSIONS_PANEL_MOVE_CALLOUT",
               anchors: [
                 {
-                  selector: '#zen-site-data-icon-button',
+                  selector: "#zen-site-data-icon-button",
                   panel_position: {
-                    anchor_attachment: 'bottomcenter',
-                    callout_attachment: 'topleft',
+                    anchor_attachment: "bottomcenter",
+                    callout_attachment: "topleft",
                   },
                 },
               ],
               content: {
-                position: 'callout',
-                width: '355px',
+                position: "callout",
+                width: "355px",
                 title: {
-                  string_id: 'zen-site-data-panel-feature-callout-title',
+                  string_id: "zen-site-data-panel-feature-callout-title",
                 },
                 subtitle: {
-                  string_id: 'zen-site-data-panel-feature-callout-subtitle',
+                  string_id: "zen-site-data-panel-feature-callout-subtitle",
                 },
                 dismiss_button: {
                   action: {
                     dismiss: true,
                   },
                   background: true,
-                  size: 'small',
+                  size: "small",
                 },
               },
             },

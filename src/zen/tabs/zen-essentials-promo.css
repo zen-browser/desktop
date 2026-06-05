@@ -1,0 +1,50 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+zen-essentials-promo {
+  background: color-mix(in srgb, var(--zen-primary-color) 40%, transparent);
+  border: 1px solid var(--zen-primary-color);
+  border-radius: var(--border-radius-medium);
+  justify-content: center;
+  align-items: center;
+  padding: 1.1rem 0;
+  flex-direction: column;
+  margin: 2px;
+  text-align: center;
+  box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.1);
+  transition: background 0.1s;
+
+  &:not([dragover="true"]) {
+    background: color-mix(in srgb, var(--zen-primary-color) 60%, transparent);
+    outline: 1px dashed currentColor;
+  }
+
+  :root:is(:not([zen-sidebar-expanded="true"]), [zen-unsynced-window="true"]) & {
+    display: none !important;
+  }
+
+  & image {
+    -moz-context-properties: fill;
+    fill: currentColor;
+    width: 18px;
+    margin-bottom: 4px;
+  }
+
+  & > * {
+    pointer-events: none;
+    max-width: 80%;
+  }
+
+  & .zen-essentials-promo-title {
+    font-weight: 600;
+  }
+
+  & .zen-essentials-promo-sublabel {
+    opacity: 0.8;
+    font-size: smaller;
+    margin: 0;
+  }
+}

@@ -4,20 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-@namespace html 'http://www.w3.org/1999/xhtml';
-
-:root {
-  --zen-settings-secondary-background: light-dark(
-    #f2f4f4,
-    color-mix(in srgb, var(--zen-colors-tertiary) 50%, #0f0f0f 50%)
-  );
-  --in-content-box-background: var(--zen-colors-tertiary) !important;
-}
-
-.main-content {
-  background: var(--zen-settings-secondary-background);
-  padding-top: 60px !important;
-}
+@namespace html "http://www.w3.org/1999/xhtml";
 
 .pane-container {
   margin: auto;
@@ -41,39 +28,6 @@ description {
 
 html|dialog {
   animation: dialogPopin 0.2s ease-out;
-}
-
-groupbox {
-  background: light-dark(white, color-mix(in srgb, var(--zen-primary-color) 2%, #1b1b1b 98%));
-  padding-inline: unset !important;
-  padding: 20px 30px !important;
-  margin-bottom: 0 !important;
-  position: relative;
-
-  /* add shadow just to the sides */
-  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.1);
-}
-
-.subcategory + groupbox,
-#noFxaAccount,
-#hasFxaAccount {
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  margin-top: 5px;
-}
-
-groupbox:has(+ script),
-groupbox:last-of-type,
-groupbox#pane-experimental-featureGates,
-groupbox:has(+ .subcategory) {
-  border-bottom-left-radius: 5px !important;
-  border-bottom-right-radius: 5px !important;
-  /* add shadow just to bottom */
-  box-shadow: 0 0 2px 0 rgba(0, 0, 0, 0.1);
-}
-
-.sticky-inner-container {
-  display: none !important;
 }
 
 .subcategory {
@@ -100,40 +54,11 @@ groupbox h2 {
   font-size: 15px;
 }
 
-#categories {
-  margin: 0 !important;
-}
-
 #categories > .category {
   margin-left: 0 !important;
   min-height: 40px !important;
   position: relative;
   padding-inline: 20px !important;
-}
-
-#categories > .category[selected]::before {
-  content: '';
-  display: block;
-  height: 70%;
-  width: 5px;
-  background-color: var(--zen-primary-color);
-  position: absolute;
-  left: -3px;
-  border-radius: 5px;
-}
-
-#languagesGroup::before {
-  content: '';
-  display: block;
-  height: 1px;
-  background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
-  margin: 10px 0;
-  transform: translateY(-50%);
-  position: absolute;
-  top: -5px;
-  width: calc(100% - 40px);
-  margin-left: 20px;
-  left: 0;
 }
 
 .textbox-search-sign {
@@ -157,7 +82,7 @@ groupbox h2 {
 }
 
 #category-zen-looks > .category-icon {
-  list-style-image: url('chrome://browser/skin/customize.svg');
+  list-style-image: url("chrome://browser/skin/customize.svg");
 }
 
 #zenLooksAndFeelGroup > html|div:last-of-type {
@@ -210,7 +135,7 @@ groupbox h2 {
 /* Workspace */
 
 #category-zen-tabs-management > .category-icon {
-  list-style-image: url('chrome://browser/skin/window.svg');
+  list-style-image: url("chrome://browser/skin/window.svg");
 }
 
 #zenTabsUnloadDelayContainer {
@@ -225,7 +150,7 @@ groupbox h2 {
 /* CKS */
 
 #category-zen-CKS > .category-icon {
-  list-style-image: url('chrome://browser/skin/quickactions.svg');
+  list-style-image: url("chrome://browser/skin/quickactions.svg");
 }
 
 .zenCKSOption-input {
@@ -359,7 +284,7 @@ groupbox h2 {
 /* THemes marketplace */
 
 #category-zen-marketplace > .category-icon {
-  list-style-image: url('chrome://mozapps/skin/extensions/category-themes.svg');
+  list-style-image: url("chrome://mozapps/skin/extensions/category-themes.svg");
 }
 
 .zenThemeMarketplaceItem {
@@ -381,14 +306,14 @@ groupbox h2 {
   cursor: pointer;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 18px;
     height: 18px;
-    background-image: url('chrome://browser/skin/home.svg');
+    background-image: url("chrome://browser/skin/home.svg");
     background-repeat: no-repeat;
     background-size: cover;
     fill: currentColor;
@@ -403,14 +328,14 @@ groupbox h2 {
   cursor: pointer;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 15px;
     height: 15px;
-    background-image: url('chrome://global/skin/icons/settings.svg');
+    background-image: url("chrome://global/skin/icons/settings.svg");
     background-repeat: no-repeat;
     background-size: cover;
   }
@@ -527,7 +452,7 @@ groupbox h2 {
     font-weight: 600;
     cursor: pointer;
 
-    &[disabled='true'] {
+    &[disabled="true"] {
       opacity: 0.7;
       cursor: not-allowed;
     }
@@ -559,22 +484,28 @@ groupbox h2 {
 #helpButton,
 #support-firefox,
 #tabGroupSuggestions,
-.mission-message {
+#web-appearance-manage-themes-link,
+#setting-control-sidebarChatbotFieldset,
+#aiControlsDescription,
+#category-ai-features,
+#setting-control-supportFirefox,
+.mission-message,
+html|setting-group:is([data-subcategory="layout"], [groupid="support"]) {
   display: none !important;
 }
 
 .sync-engine-workspaces .checkbox-icon,
 .sync-engine-workspaces.sync-engine-image {
-  list-style-image: url('chrome://devtools/skin/images/tool-storage.svg');
+  list-style-image: url("chrome://devtools/skin/images/tool-storage.svg");
 }
 
-@media -moz-pref('zen.theme.disable-lightweight') {
-  html|div[data-l10n-id='preferences-web-appearance-footer'] {
+@media -moz-pref("zen.theme.disable-lightweight") {
+  html|div[data-l10n-id="preferences-web-appearance-footer"] {
     display: none;
   }
 }
 
-@media -moz-pref('zen.urlbar.replace-newtab') {
+@media -moz-pref("zen.urlbar.replace-newtab") {
   #category-home {
     display: none !important;
   }

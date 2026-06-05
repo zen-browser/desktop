@@ -17,6 +17,9 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = 둘 다 숨기기
     .accesskey = H
+zen-toolbar-context-move-to-folder = 
+    .label = 폴더로 옮기기...
+    .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = 새 폴더
     .accesskey = N
@@ -36,4 +39,9 @@ tabbrowser-reset-pin-button =
             [one] 탭 초기화 후 고정
            *[other] { $tabCount }개 탭 초기화 후 고정
         }
-tab-reset-pin-label = 고정된 URL로 되돌리기
+zen-tab-sublabel =
+    { $tabSubtitle ->
+        [zen-default-pinned] 고정된 URL로 돌아가기
+        [zen-default-pinned-cmd] 고정된 탭에서 분리
+       *[other] { $tabSubtitle }
+    }

@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/UrlbarView.sys.mjs b/browser/components/urlbar/UrlbarView.sys.mjs
-index 38e4987dc906cf3c668995aab79fc15a02834677..de9d69a4faab3cfa249de41ef573ae2ef873b348 100644
+index b665adb1a1ce8bbae8df4cbea6c3248c3e4fb431..1de7f9461b8ccbd4680b917e6dd5ba3c02f69a94 100644
 --- a/browser/components/urlbar/UrlbarView.sys.mjs
 +++ b/browser/components/urlbar/UrlbarView.sys.mjs
-@@ -620,7 +620,7 @@ export class UrlbarView {
+@@ -640,7 +640,7 @@ export class UrlbarView {
        !this.input.value ||
        this.input.getAttribute("pageproxystate") == "valid"
      ) {
@@ -11,7 +11,18 @@ index 38e4987dc906cf3c668995aab79fc15a02834677..de9d69a4faab3cfa249de41ef573ae2e
          // Try to reuse the cached top-sites context. If it's not cached, then
          // there will be a gap of time between when the input is focused and
          // when the view opens that can be perceived as flicker.
-@@ -2751,6 +2751,8 @@ export class UrlbarView {
+@@ -777,10 +777,6 @@ export class UrlbarView {
+     }
+ 
+     // If search mode isn't active, close the view.
+-    if (!this.input.searchMode) {
+-      this.close();
+-      return;
+-    }
+ 
+     // Search mode is active.  If the one-offs should be shown, make sure they
+     // are enabled and show the view.
+@@ -2988,6 +2984,8 @@ export class UrlbarView {
        if (row?.hasAttribute("row-selectable")) {
          row?.toggleAttribute("selected", true);
        }
@@ -20,11 +31,11 @@ index 38e4987dc906cf3c668995aab79fc15a02834677..de9d69a4faab3cfa249de41ef573ae2e
        if (element != row) {
          row?.toggleAttribute("descendant-selected", true);
        }
-@@ -3232,7 +3234,7 @@ export class UrlbarView {
+@@ -3477,7 +3475,7 @@ export class UrlbarView {
    }
  
    #enableOrDisableRowWrap() {
--    let wrap = getBoundsWithoutFlushing(this.input.textbox).width < 650;
+-    let wrap = getBoundsWithoutFlushing(this.input).width < 650;
 +    let wrap = false;
      this.#rows.toggleAttribute("wrap", wrap);
      this.oneOffSearchButtons?.container.toggleAttribute("wrap", wrap);

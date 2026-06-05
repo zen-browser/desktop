@@ -5,7 +5,11 @@
 zen-panel-ui-current-profile-text = nykyinen profiili
 unified-extensions-description = Laajennuksia käytetään tuomaan enemmän ylimääräisiä toimintoja { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Nollaa Kiinnitetty Välilehti
+    .label =
+        { $isEssential ->
+            [true] Reset Essential Tab
+           *[false] Reset Pinned Tab
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
     .label = Lisää olennaisiin
@@ -15,8 +19,16 @@ tab-context-zen-remove-essential =
     .label = Poista olennaisista
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Korvaa kiinnitetty URL-osoite nykyisellä
+    .label =
+        { $isEssential ->
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
+        }
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Change Label...
+tab-context-zen-edit-icon = 
+    .label = Change Icon...
 zen-themes-corrupted = { -brand-short-name } modejasi tiedosto on vioittunut. Ne on palautettu oletusteemaan.
 zen-shortcuts-corrupted = { -brand-short-name } Oikotietä sisältävä tiedosto on korruptoitunut. Ne on palautettu oletus oikoteihin.
 # note: Do not translate the "<br/>" tags in the following string
@@ -28,8 +40,8 @@ pictureinpicture-minimize-btn =
     .aria-label = Minimoi
     .tooltip = Minimoi
 zen-panel-ui-gradient-generator-custom-color = Muokattu Väri
-zen-panel-ui-gradient-generator-saved-message = Kaltevuus tallennettu onnistuneesti!
 zen-copy-current-url-confirmation = Nykyinen URL-osoite kopioitu!
+zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
 zen-general-cancel-label = 
     .label = Peruuta
 zen-general-confirm = 
@@ -38,10 +50,7 @@ zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL.
 zen-tabs-renamed = Välilehti on nimetty uudelleen!
 zen-background-tab-opened-toast = Uusi taustavälilehti avattu!
 zen-workspace-renamed-toast = Työtila on nimetty uudelleen!
-zen-library-sidebar-workspaces = 
-    .label = Työtilat
-zen-library-sidebar-mods = 
-    .label = Modit
+zen-split-view-limit-toast = Can't add more panels to the split view!
 zen-toggle-compact-mode-button = 
     .label = Kompakti Tila
     .tooltiptext = Ota käyttöön Kompakti tila
@@ -61,6 +70,8 @@ zen-site-data-settings = Asetukset
 zen-generic-manage = Hallitse
 zen-generic-more = Lisää
 zen-generic-next = Seuraava
+zen-essentials-promo-label = Add to Essentials
+zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Sallittu
 zen-site-data-setting-block = Estetty
@@ -108,3 +119,9 @@ zen-sidebar-notification-updated-tooltip =
 zen-sidebar-notification-restart-safe-mode-label = Jotain rikki?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Käynnistä uudelleen vianmääritystilassa
+zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
+zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.
+zen-window-sync-migration-dialog-learn-more = Learn More
+zen-window-sync-migration-dialog-accept = Got It
+zen-appmenu-new-blank-window = 
+    .label = New blank window

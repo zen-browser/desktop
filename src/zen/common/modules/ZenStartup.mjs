@@ -4,80 +4,76 @@
 
 import checkForZenUpdates, {
   createWindowUpdateAnimation,
-} from 'chrome://browser/content/ZenUpdates.mjs';
+} from "chrome://browser/content/ZenUpdates.mjs";
 
 class ZenStartup {
-  #watermarkIgnoreElements = ['zen-toast-container'];
+  #watermarkIgnoreElements = ["zen-toast-container"];
   #hasInitializedLayout = false;
 
   isReady = false;
+  promiseInitialized = new Promise(resolve => {
+    this.promiseInitializedResolve = resolve;
+  });
 
-  async init() {
-    // important: We do this to ensure that some firefox components
-    // are initialized before we start our own initialization.
-    // please, do not remove this line and if you do, make sure to
-    // test the startup process.
-    await new Promise((resolve) => setTimeout(resolve, 0));
+  init() {
     this.openWatermark();
-    this.#initBrowserBackground();
-    this.#changeSidebarLocation();
     this.#zenInitBrowserLayout();
   }
 
-  #initBrowserBackground() {
-    const background = document.createXULElement('box');
-    background.id = 'zen-browser-background';
-    background.classList.add('zen-browser-generic-background');
-    const grain = document.createXULElement('box');
-    grain.classList.add('zen-browser-grain');
-    background.appendChild(grain);
-    document.getElementById('browser').prepend(background);
-    const toolbarBackground = background.cloneNode(true);
-    toolbarBackground.removeAttribute('id');
-    toolbarBackground.classList.add('zen-toolbar-background');
-    document.getElementById('titlebar').prepend(toolbarBackground);
+  get #shouldUseWatermark() {
+    return (
+      Services.prefs.getBoolPref("zen.watermark.enabled", false) &&
+      gZenWorkspaces.shouldHaveWorkspaces
+    );
   }
 
   #zenInitBrowserLayout() {
-    if (this.#hasInitializedLayout) return;
+    if (this.#hasInitializedLayout) {
+      return;
+    }
     this.#hasInitializedLayout = true;
+    gZenKeyboardShortcutsManager.beforeInit();
     try {
-      const kNavbarItems = ['nav-bar', 'PersonalToolbar'];
-      const kNewContainerId = 'zen-appcontent-navbar-container';
+      const kNavbarItems = ["nav-bar", "PersonalToolbar"];
+      const kNewContainerId = "zen-appcontent-navbar-container";
       let newContainer = document.getElementById(kNewContainerId);
       for (let id of kNavbarItems) {
         const node = document.getElementById(id);
-        console.assert(node, 'Could not find node with id: ' + id);
-        if (!node) continue;
+        if (!node) {
+          console.error("Could not find node with id: " + id);
+          continue;
+        }
         newContainer.appendChild(node);
       }
-
       // Fix notification deck
-      const deckTemplate = document.getElementById('tab-notification-deck-template');
-      if (deckTemplate) {
-        document.getElementById('zen-appcontent-wrapper').prepend(deckTemplate);
-      }
+      const deckTemplate =
+        document.getElementById("tab-notification-deck-template") ||
+        document.getElementById("tab-notification-deck");
+
+      // overlap and interaction issues with vertical tabs
+      document.getElementById("browser").prepend(deckTemplate);
 
       gZenWorkspaces.init();
       setTimeout(() => {
         gZenUIManager.init();
+        this.#initUIComponents();
         this.#checkForWelcomePage();
       }, 0);
     } catch (e) {
-      console.error('ZenThemeModifier: Error initializing browser layout', e);
+      console.error("ZenThemeModifier: Error initializing browser layout", e);
     }
     if (gBrowserInit.delayedStartupFinished) {
       this.delayedStartupFinished();
     } else {
-      Services.obs.addObserver(this, 'browser-delayed-startup-finished');
+      Services.obs.addObserver(this, "browser-delayed-startup-finished");
     }
   }
 
   observe(aSubject, aTopic) {
     // This nsIObserver method allows us to defer initialization until after
     // this window has finished painting and starting up.
-    if (aTopic == 'browser-delayed-startup-finished' && aSubject == window) {
-      Services.obs.removeObserver(this, 'browser-delayed-startup-finished');
+    if (aTopic == "browser-delayed-startup-finished" && aSubject == window) {
+      Services.obs.removeObserver(this, "browser-delayed-startup-finished");
       this.delayedStartupFinished();
     }
   }
@@ -87,37 +83,49 @@ class ZenStartup {
       await delayedStartupPromise;
       await SessionStore.promiseAllWindowsRestored;
       delete gZenUIManager.promiseInitialized;
-      this.#initSearchBar();
       gZenCompactModeManager.init();
       // Fix for https://github.com/zen-browser/desktop/issues/7605, specially in compact mode
-      if (gURLBar.hasAttribute('breakout-extend')) {
+      if (gURLBar.hasAttribute("breakout-extend")) {
         gURLBar.focus();
       }
       // A bit of a hack to make sure the tabs toolbar is updated.
       // Just in case we didn't get the right size.
       gZenUIManager.updateTabsToolbar();
       this.closeWatermark();
+      document
+        .getElementById("tabbrowser-arrowscrollbox")
+        .setAttribute("orient", "vertical");
       this.isReady = true;
+      this.promiseInitializedResolve();
+      delete this.promiseInitializedResolve;
+
+      setTimeout(() => {
+        gZenWorkspaces._invalidateBookmarkContainers();
+      });
     });
   }
 
   openWatermark() {
-    if (!Services.prefs.getBoolPref('zen.watermark.enabled', false)) {
-      document.documentElement.removeAttribute('zen-before-loaded');
+    if (!this.#shouldUseWatermark) {
+      document.documentElement.removeAttribute("zen-before-loaded");
       return;
     }
-    for (let elem of document.querySelectorAll('#browser > *, #urlbar')) {
+    for (let elem of document.querySelectorAll("#browser > *, #urlbar")) {
       elem.style.opacity = 0;
     }
   }
 
   closeWatermark() {
-    document.documentElement.removeAttribute('zen-before-loaded');
-    if (Services.prefs.getBoolPref('zen.watermark.enabled', false)) {
-      let elementsToIgnore = this.#watermarkIgnoreElements.map((id) => '#' + id).join(', ');
+    document.documentElement.removeAttribute("zen-before-loaded");
+    if (this.#shouldUseWatermark) {
+      let elementsToIgnore = this.#watermarkIgnoreElements
+        .map(id => "#" + id)
+        .join(", ");
       gZenUIManager.motion
         .animate(
-          '#browser > *:not(' + elementsToIgnore + '), #urlbar, #tabbrowser-tabbox > *',
+          "#browser > *:not(" +
+            elementsToIgnore +
+            "), #urlbar, #tabbrowser-tabbox > *",
           {
             opacity: [0, 1],
           },
@@ -127,44 +135,45 @@ class ZenStartup {
         )
         .then(() => {
           for (let elem of document.querySelectorAll(
-            '#browser > *, #urlbar, #tabbrowser-tabbox > *'
+            "#browser > *, #urlbar, #tabbrowser-tabbox > *"
           )) {
-            elem.style.removeProperty('opacity');
+            elem.style.removeProperty("opacity");
           }
         });
     }
     window.requestAnimationFrame(() => {
-      window.dispatchEvent(new window.Event('resize')); // To recalculate the layout
+      window.dispatchEvent(new window.Event("resize")); // To recalculate the layout
     });
   }
 
-  #changeSidebarLocation() {
-    const kElementsToAppend = ['sidebar-splitter', 'sidebar-box'];
-
-    const browser = document.getElementById('browser');
-    browser.prepend(gNavToolbox);
-
-    const sidebarPanelWrapper = document.getElementById('tabbrowser-tabbox');
-    for (let id of kElementsToAppend) {
-      const elem = document.getElementById(id);
-      if (elem) {
-        sidebarPanelWrapper.prepend(elem);
-      }
+  #initUIComponents() {
+    const kUIComponents = ["ZenProgressBar"];
+    for (let component of kUIComponents) {
+      const module = ChromeUtils.importESModule(
+        "resource:///modules/zen/ui/" + component + ".sys.mjs"
+      );
+      new module[component](window);
     }
   }
 
-  #initSearchBar() {
-    // Only focus the url bar
-    gURLBar.focus();
-  }
-
   #checkForWelcomePage() {
-    if (!Services.prefs.getBoolPref('zen.welcome-screen.seen', false)) {
-      Services.prefs.setBoolPref('zen.welcome-screen.seen', true);
-      Services.prefs.setStringPref('zen.updates.last-build-id', Services.appinfo.appBuildID);
-      Services.prefs.setStringPref('zen.updates.last-version', Services.appinfo.version);
+    const kWelcomeScreenSeenPref = "zen.welcome-screen.seen";
+    if (Services.env.get("MOZ_HEADLESS")) {
+      Services.prefs.setBoolPref(kWelcomeScreenSeenPref, true);
+      return;
+    }
+    if (!Services.prefs.getBoolPref(kWelcomeScreenSeenPref, false)) {
+      Services.prefs.setBoolPref(kWelcomeScreenSeenPref, true);
+      Services.prefs.setStringPref(
+        "zen.updates.last-build-id",
+        Services.appinfo.appBuildID
+      );
+      Services.prefs.setStringPref(
+        "zen.updates.last-version",
+        Services.appinfo.version
+      );
       Services.scriptloader.loadSubScript(
-        'chrome://browser/content/zen-components/ZenWelcome.mjs',
+        "chrome://browser/content/zen-components/ZenWelcome.mjs",
         window
       );
     } else {
@@ -181,7 +190,7 @@ class ZenStartup {
 window.gZenStartup = new ZenStartup();
 
 window.addEventListener(
-  'MozBeforeInitialXULLayout',
+  "MozBeforeInitialXULLayout",
   () => {
     gZenStartup.init();
   },

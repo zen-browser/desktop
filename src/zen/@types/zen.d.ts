@@ -18,8 +18,8 @@
 /// <reference types="../lib.gecko.tweaks.d.ts" />
 /// <reference types="../lib.gecko.nsresult.d.ts" />
 
-declare var window: Window;
-declare var Components: nsIXPCComponents;
+declare let window: Window;
+declare let Components: nsIXPCComponents;
 declare var Cu: nsIXPCComponents_Utils;
 declare var Ci: nsIXPCComponents_Interfaces;
 declare var Services: JSServices;
@@ -72,10 +72,10 @@ declare namespace MockedExports {
    * This interface teaches ChromeUtils.importESModule how to find modules.
    */
   interface KnownModules {
-    Services: typeof import('Services');
-    'resource://gre/modules/AppConstants.sys.mjs': typeof import('resource://gre/modules/AppConstants.sys.mjs');
-    'resource:///modules/CustomizableUI.sys.mjs': typeof import('resource:///modules/CustomizableUI.sys.mjs');
-    'resource:///modules/CustomizableWidgets.sys.mjs': typeof import('resource:///modules/CustomizableWidgets.sys.mjs');
+    Services: typeof import("Services");
+    "resource://gre/modules/AppConstants.sys.mjs": typeof import("resource://gre/modules/AppConstants.sys.mjs");
+    "resource:///modules/CustomizableUI.sys.mjs": typeof import("resource:///modules/CustomizableUI.sys.mjs");
+    "resource:///modules/CustomizableWidgets.sys.mjs": typeof import("resource:///modules/CustomizableWidgets.sys.mjs");
   }
 
   interface ChromeUtils {
@@ -88,7 +88,9 @@ declare namespace MockedExports {
      *
      * Then add the file path to the KnownModules above.
      */
-    importESModule: <S extends keyof KnownModules>(module: S) => KnownModules[S];
+    importESModule: <S extends keyof KnownModules>(
+      module: S
+    ) => KnownModules[S];
     defineESModuleGetters: (target: any, mappings: any) => void;
   }
 
@@ -160,13 +162,17 @@ declare namespace MockedExports {
     setIntPref: SetPref<number>;
     getBoolPref: GetPref<boolean>;
     setBoolPref: SetPref<boolean>;
-    addObserver: (aDomain: string, aObserver: PrefObserver, aHoldWeak?: boolean) => void;
+    addObserver: (
+      aDomain: string,
+      aObserver: PrefObserver,
+      aHoldWeak?: boolean
+    ) => void;
     removeObserver: (aDomain: string, aObserver: PrefObserver) => void;
   };
 
   type PrefObserverFunction = (
     aSubject: nsIPrefBranch,
-    aTopic: 'nsPref:changed',
+    aTopic: "nsPref:changed",
     aData: string
   ) => unknown;
   type PrefObserver = PrefObserverFunction | { observe: PrefObserverFunction };
@@ -299,7 +305,11 @@ declare namespace MockedExports {
   class nsIFilePicker {}
 
   interface FilePicker {
-    init: (browsingContext: BrowsingContext, title: string, mode: number) => void;
+    init: (
+      browsingContext: BrowsingContext,
+      title: string,
+      mode: number
+    ) => void;
     open: (callback: (rv: number) => unknown) => void;
     // The following are enum values.
     modeGetFolder: number;
@@ -310,7 +320,7 @@ declare namespace MockedExports {
   }
 
   interface Cc {
-    '@mozilla.org/filepicker;1': {
+    "@mozilla.org/filepicker;1": {
       createInstance(instance: nsIFilePicker): FilePicker;
     };
   }
@@ -330,7 +340,11 @@ declare namespace MockedExports {
      * This function sets the attributes data-l10n-id and possibly data-l10n-args
      * on the element.
      */
-    setAttributes(target: Element, id?: string, args?: Record<string, string>): void;
+    setAttributes(
+      target: Element,
+      id?: string,
+      args?: Record<string, string>
+    ): void;
   }
 }
 
@@ -339,17 +353,17 @@ interface PathUtilsInterface {
   isAbsolute: (path: string) => boolean;
 }
 
-declare module 'Services' {
+declare module "Services" {
   export = MockedExports.Services;
 }
 
-declare module 'ChromeUtils' {
+declare module "ChromeUtils" {
   export = ChromeUtils;
 }
 
-declare var ChromeUtils: MockedExports.ChromeUtils;
+declare let ChromeUtils: MockedExports.ChromeUtils;
 
-declare var PathUtils: PathUtilsInterface;
+declare let PathUtils: PathUtilsInterface;
 
 // These global objects can be used directly in JSM files only.
 declare var Cu: MockedExports.Cu;
@@ -365,7 +379,8 @@ declare interface ChromeDocument extends Document {
    * Create a XUL element of a specific type. Right now this function
    * only refines iframes, but more tags could be added.
    */
-  createXULElement: ((type: 'iframe') => XULIframeElement) & ((type: string) => XULElement);
+  createXULElement: ((type: "iframe") => XULIframeElement) &
+    ((type: string) => XULElement);
 
   /**
    * This is a fluent instance connected to this document.
@@ -400,24 +415,28 @@ declare interface Window {
   browsingContext: MockedExports.BrowsingContext;
   openWebLinkIn: (
     url: string,
-    where: 'current' | 'tab' | 'tabshifted' | 'window' | 'save',
+    where: "current" | "tab" | "tabshifted" | "window" | "save",
     options?: Partial<{
       // Not all possible options are present, please add more if/when needed.
       userContextId: number;
       forceNonPrivate: boolean;
       relatedToCurrent: boolean;
-      resolveOnContentBrowserCreated: (contentBrowser: MockedExports.ChromeBrowser) => unknown;
+      resolveOnContentBrowserCreated: (
+        contentBrowser: MockedExports.ChromeBrowser
+      ) => unknown;
     }>
   ) => void;
   openTrustedLinkIn: (
     url: string,
-    where: 'current' | 'tab' | 'tabshifted' | 'window' | 'save',
+    where: "current" | "tab" | "tabshifted" | "window" | "save",
     options?: Partial<{
       // Not all possible options are present, please add more if/when needed.
       userContextId: number;
       forceNonPrivate: boolean;
       relatedToCurrent: boolean;
-      resolveOnContentBrowserCreated: (contentBrowser: MockedExports.ChromeBrowser) => unknown;
+      resolveOnContentBrowserCreated: (
+        contentBrowser: MockedExports.ChromeBrowser
+      ) => unknown;
     }>
   ) => void;
 }
@@ -435,12 +454,12 @@ declare interface XULCommandEvent extends Event {
 
 declare interface XULElementWithCommandHandler {
   addEventListener: (
-    type: 'command',
+    type: "command",
     handler: (event: XULCommandEvent) => void,
     isCapture?: boolean
   ) => void;
   removeEventListener: (
-    type: 'command',
+    type: "command",
     handler: (event: XULCommandEvent) => void,
     isCapture?: boolean
   ) => void;

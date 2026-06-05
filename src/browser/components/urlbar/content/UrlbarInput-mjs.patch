@@ -1,0 +1,351 @@
+diff --git a/browser/components/urlbar/content/UrlbarInput.mjs b/browser/components/urlbar/content/UrlbarInput.mjs
+index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..c166b7de23c35716bf8c51b6b9c72f771f0a75a8 100644
+--- a/browser/components/urlbar/content/UrlbarInput.mjs
++++ b/browser/components/urlbar/content/UrlbarInput.mjs
+@@ -98,6 +98,13 @@ const lazy = XPCOMUtils.declareLazy({
+   logger: () => lazy.UrlbarUtils.getLogger({ prefix: "Input" }),
+ });
+ 
++XPCOMUtils.defineLazyPreferenceGetter(
++  lazy,
++  "ZEN_URLBAR_BEHAVIOR",
++  "zen.urlbar.behavior",
++  'default'
++);
++
+ const UNLIMITED_MAX_RESULTS = 99;
+ 
+ let getBoundsWithoutFlushing = element =>
+@@ -743,7 +750,16 @@ ${
+     // See _on_select().  HTMLInputElement.select() dispatches a "select"
+     // event but does not set the primary selection.
+     this._suppressPrimaryAdjustment = true;
++    const zenToolbox = this.document.getElementById("navigator-toolbox");
++    this.window.document.documentElement.setAttribute("supress-primary-adjustment", !(
++      zenToolbox.hasAttribute("zen-has-hover") ||
++      zenToolbox.hasAttribute("zen-has-empty-tab") ||
++      zenToolbox.hasAttribute("zen-user-show")
++    ));
+     this.inputField.select();
++    this.document.ownerGlobal.setTimeout(() => {
++      this.window.document.documentElement.removeAttribute("supress-primary-adjustment");
++    }, 0);
+     this._suppressPrimaryAdjustment = false;
+   }
+ 
+@@ -817,6 +833,10 @@ ${
+     hideSearchTerms = false,
+     isSameDocument = false,
+   } = {}) {
++    if (this.hasAttribute("zen-newtab")) {
++      return;
++    }
++
+     if (!this.#isAddressbar) {
+       throw new Error(
+         "Cannot set URI for UrlbarInput that is not an address bar"
+@@ -1106,8 +1126,16 @@ ${
+         return;
+       }
+     }
+-
++    const zenToolbox = this.document.getElementById("navigator-toolbox");
++    this.window.document.documentElement.setAttribute("supress-primary-adjustment", !(
++      zenToolbox.hasAttribute("zen-has-hover") ||
++      zenToolbox.hasAttribute("zen-has-empty-tab") ||
++      zenToolbox.hasAttribute("zen-user-show")
++    ));
+     this.handleNavigation({ event });
++    this.document.ownerGlobal.setTimeout(() => {
++      this.window.document.documentElement.removeAttribute("supress-primary-adjustment");
++    }, 100);
+   }
+ 
+   /**
+@@ -1551,7 +1579,11 @@ ${
+     }
+ 
+     if (!this.#providesSearchMode(result)) {
+-      this.view.close({ elementPicked: true });
++      if (this._zenHandleUrlbarClose) {
++        this._zenHandleUrlbarClose(true, true);
++      } else {
++        this.window.setTimeout(() => this.view.close({ elementPicked: true }), 0);
++      }
+     }
+ 
+     if (isCanonized) {
+@@ -2858,6 +2890,42 @@ ${
+     await this.#updateLayoutBreakoutDimensions();
+   }
+ 
++  zenFormatURLValue() {
++    return this.#lazy.valueFormatter._formatURL();
++  }
++
++  get zenUrlbarBehavior() {
++    if (this.document.documentElement.hasAttribute("inDOMFullscreen")) {
++      return "float";
++    }
++    return lazy.ZEN_URLBAR_BEHAVIOR;
++  }
++
++  get zenStrippedURI() {
++    let strippedURI = null;
++    let activeBrowser = this.window.gBrowser?.selectedBrowser;
++    let uriString = activeBrowser.userTypedValue ||
++                    (activeBrowser.currentURI ? activeBrowser.currentURI.spec : "");
++
++    let uri;
++    try {
++      uri = Services.io.newURI(uriString);
++    } catch (e) {
++      // Fallback if the provisional string isn't a valid URI yet
++      uri = activeBrowser.currentURI;
++    }
++
++    // Error check occurs during isClipboardURIValid
++    try {
++      strippedURI = lazy.QueryStringStripper.stripForCopyOrShare(uri);
++    } catch (e) {
++      console.warn(`stripForCopyOrShare: ${e.message}`);
++      return [uri, lazy.ClipboardHelper];
++    }
++
++    return [strippedURI ? this.makeURIReadable(strippedURI) : uri, lazy.ClipboardHelper];
++  }
++
+   startLayoutExtend() {
+     if (!this.#allowBreakout || this.hasAttribute("breakout-extend")) {
+       // Do not expand if the Urlbar does not support being expanded or it is
+@@ -2872,6 +2940,13 @@ ${
+ 
+     this.setAttribute("breakout-extend", "true");
+ 
++    this.window.gZenUIManager.onUrlbarOpen();
++    if (this.zenUrlbarBehavior == 'float' || (this.zenUrlbarBehavior == 'floating-on-type' && !this.focusedViaMousedown)) {
++      this.setAttribute("zen-floating-urlbar", "true");
++      this.window.gZenUIManager.onFloatingURLBarOpen();
++    } else {
++      this.removeAttribute("zen-floating-urlbar");
++    }
+     // Enable the animation only after the first extend call to ensure it
+     // doesn't run when opening a new window.
+     if (!this.hasAttribute("breakout-extend-animate")) {
+@@ -2891,6 +2966,29 @@ ${
+       return;
+     }
+ 
++    if (this._zenHandleUrlbarClose) {
++      this._zenHandleUrlbarClose();
++    } else if (!this._untrimmedValue || this.searchMode || this.window.gZenVerticalTabsManager._hasSetSingleToolbar) {
++      // Restore the current page URL when the urlbar is empty on blur
++      this.window.requestAnimationFrame(() => {
++        this.handleRevert();
++      });
++    }
++
++    // Arc like URLbar: Blur the input on exit
++    const zenToolbox = this.document.getElementById("navigator-toolbox");
++    this.window.document.documentElement.setAttribute("supress-primary-adjustment", !(
++      zenToolbox.hasAttribute("zen-has-hover") ||
++      zenToolbox.hasAttribute("zen-has-empty-tab") ||
++      zenToolbox.hasAttribute("zen-user-show")
++    ));
++    this.window.gBrowser.selectedBrowser.focus();
++    this.document.ownerGlobal.setTimeout(() => {
++      this.window.document.documentElement.removeAttribute("supress-primary-adjustment");
++    }, 100);
++    this.window.gZenUIManager.onUrlbarClose();
++    this.removeAttribute("zen-floating-urlbar");
++
+     this.removeAttribute("breakout-extend");
+     this.#updateTextboxPosition();
+   }
+@@ -2921,7 +3019,7 @@ ${
+     forceUnifiedSearchButtonAvailable = false
+   ) {
+     let prevState = this.getAttribute("pageproxystate");
+-
++    this.removeAttribute("had-proxystate");
+     this.setAttribute("pageproxystate", state);
+     this._inputContainer.setAttribute("pageproxystate", state);
+     this._identityBox?.setAttribute("pageproxystate", state);
+@@ -3198,10 +3296,12 @@ ${
+       return;
+     }
+     this.style.top = px(
++      this.window.gZenVerticalTabsManager._hasSetSingleToolbar ?
+       this.parentNode.getBoxQuads({
+         ignoreTransforms: true,
+         flush: false,
+       })[0].p1.y
++      : (AppConstants.platform == "macosx" ? -2 : -5)
+     );
+   }
+ 
+@@ -3260,9 +3360,10 @@ ${
+           return;
+         }
+ 
++        this.window.gZenVerticalTabsManager.recalculateURLBarHeight();
+         this.parentNode.style.setProperty(
+           "--urlbar-container-height",
+-          px(getBoundsWithoutFlushing(this.parentNode).height)
++          px(getBoundsWithoutFlushing(this.parentNode).height + 8)
+         );
+         this.style.setProperty(
+           "--urlbar-height",
+@@ -3768,6 +3869,7 @@ ${
+   }
+ 
+   _toggleActionOverride(event) {
++    if (!Services.prefs.getBoolPref("zen.urlbar.enable-overrides")) return;
+     if (
+       event.keyCode == KeyEvent.DOM_VK_SHIFT ||
+       event.keyCode == KeyEvent.DOM_VK_ALT ||
+@@ -3880,8 +3982,8 @@ ${
+     if (!this.#isAddressbar) {
+       return val;
+     }
+-    let trimmedValue = lazy.UrlbarPrefs.get("trimURLs")
+-      ? lazy.BrowserUIUtils.trimURL(val)
++    let trimmedValue = lazy.UrlbarPrefs.get("trimURLs") && this._zenTrimURL
++      ? this._zenTrimURL(val)
+       : val;
+     // Only trim value if the directionality doesn't change to RTL and we're not
+     // showing a strikeout https protocol.
+@@ -4180,6 +4282,7 @@ ${
+     resultDetails = null,
+     browser = this.window.gBrowser.selectedBrowser
+   ) {
++    openUILinkWhere = this.window.gZenUIManager.getOpenUILinkWhere(url, browser, openUILinkWhere);
+     if (this.#isAddressbar) {
+       this.#prepareAddressbarLoad(
+         url,
+@@ -4291,6 +4394,10 @@ ${
+       }
+       reuseEmpty = true;
+     }
++    if (this.hasAttribute("zen-newtab")) {
++      where = "tab";
++      reuseEmpty = true;
++    }
+     if (
+       where == "tab" &&
+       reuseEmpty &&
+@@ -4298,6 +4405,9 @@ ${
+     ) {
+       where = "current";
+     }
++    if (this.window.gBrowser.selectedTab.hasAttribute("zen-empty-tab")) {
++      return "tab"; // Always open in a new tab if the current tab is "our empty tab".
++    }
+     return where;
+   }
+ 
+@@ -4552,6 +4662,7 @@ ${
+       this.setResultForCurrentValue(null);
+       this.handleCommand();
+       this.controller.clearLastQueryContextCache();
++      this.view.close();
+ 
+       this._suppressStartQuery = false;
+     });
+@@ -4559,7 +4670,6 @@ ${
+     contextMenu.addEventListener("popupshowing", () => {
+       // Close the results pane when the input field contextual menu is open,
+       // because paste and go doesn't want a result selection.
+-      this.view.close();
+ 
+       let controller =
+         this.document.commandDispatcher.getControllerForCommand("cmd_paste");
+@@ -4715,7 +4825,11 @@ ${
+     if (!engineName && !source && !this.hasAttribute("searchmode")) {
+       return;
+     }
+-
++    this.window.dispatchEvent(
++      new CustomEvent("Zen:UrlbarSearchModeChanged", {
++        detail: { searchMode },
++      })
++    );
+     if (this._searchModeIndicatorTitle) {
+       this._searchModeIndicatorTitle.textContent = "";
+       this._searchModeIndicatorTitle.removeAttribute("data-l10n-id");
+@@ -5031,6 +5145,7 @@ ${
+ 
+     this.document.l10n.setAttributes(
+       this.inputField,
++      this.window.gZenVerticalTabsManager._hasSetSingleToolbar ? 'zen-singletoolbar-urlbar-placeholder-with-name' :
+       l10nId,
+       l10nId == "urlbar-placeholder-with-name"
+         ? { name: engineName }
+@@ -5156,6 +5271,11 @@ ${
+   }
+ 
+   _on_click(event) {
++    if (event.target == this.inputField) {
++      event.zenOriginalTarget = this;
++      this._on_mousedown(event);
++    }
++
+     switch (event.target) {
+       case this.inputField:
+       case this._inputContainer:
+@@ -5242,7 +5362,7 @@ ${
+       }
+     }
+ 
+-    if (this.focusedViaMousedown) {
++    if (this.focusedViaMousedown || this.hasAttribute("zen-newtab")) {
+       this.view.autoOpen({ event });
+     } else {
+       if (this._untrimOnFocusAfterKeydown) {
+@@ -5282,9 +5402,16 @@ ${
+   }
+ 
+   _on_mousedown(event) {
+-    switch (event.currentTarget) {
++    switch (event.zenOriginalTarget || event.currentTarget) {
+       case this: {
+         this._mousedownOnUrlbarDescendant = true;
++        const isProbablyFloating =
++          (this.zenUrlbarBehavior == "floating-on-type" &&
++          this.hasAttribute("breakout-extend") && !this.focusedViaMousedown) ||
++          (this.zenUrlbarBehavior == "float") || this.window.gZenVerticalTabsManager._hasSetSingleToolbar;
++        if (event.type != "click" && isProbablyFloating || event.type == "click" && !isProbablyFloating) {
++          return true;
++        }
+         if (
+           event.composedTarget != this.inputField &&
+           event.composedTarget != this._inputContainer
+@@ -5294,6 +5421,10 @@ ${
+ 
+         this.focusedViaMousedown = !this.focused;
+         this.#preventClickSelectsAll = this.focused;
++        if (isProbablyFloating) {
++          this.focusedViaMousedown = !this.hasAttribute("breakout-extend");
++          this.#preventClickSelectsAll = this.hasAttribute("breakout-extend");
++        }
+ 
+         // Keep the focus status, since the attribute may be changed
+         // upon calling this.focus().
+@@ -5329,7 +5460,7 @@ ${
+         }
+         // Don't close the view when clicking on a tab; we may want to keep the
+         // view open on tab switch, and the TabSelect event arrived earlier.
+-        if (event.target.closest?.("tab")) {
++        if (event.target.closest?.("tab") || event.target.closest?.("#tabs-newtab-button")) {
+           break;
+         }
+ 
+@@ -5636,7 +5767,7 @@ ${
+     // When we are in actions search mode we can show more results so
+     // increase the limit.
+     let maxResults =
+-      this.searchMode?.source != lazy.UrlbarUtils.RESULT_SOURCE.ACTIONS
++      this.searchMode?.source != lazy.UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS
+         ? lazy.UrlbarPrefs.get("maxRichResults")
+         : UNLIMITED_MAX_RESULTS;
+     let options = {

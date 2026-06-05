@@ -1,26 +1,86 @@
 diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
-index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..4eac2fed26d779908107ef60f1c2bd0eeba2381c 100644
+index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea30f7d70a 100644
 --- a/browser/components/sessionstore/SessionStore.sys.mjs
 +++ b/browser/components/sessionstore/SessionStore.sys.mjs
-@@ -127,6 +127,8 @@ const TAB_EVENTS = [
-   "TabGroupCollapse",
-   "TabGroupExpand",
+@@ -129,6 +129,9 @@ const TAB_EVENTS = [
    "TabSplitViewActivate",
+   "SplitViewRemoved",
+   "SplitViewCreated",
 +  "TabAddedToEssentials",
 +  "TabRemovedFromEssentials",
++  "ZenWorkspaceDataChanged",
  ];
  
  const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
-@@ -1911,6 +1913,8 @@ var SessionStoreInternal = {
+@@ -199,6 +202,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
+   TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
+   TabStateFlusher: "resource:///modules/sessionstore/TabStateFlusher.sys.mjs",
+   setTimeout: "resource://gre/modules/Timer.sys.mjs",
++  ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
++  ZenWindowSync: "resource:///modules/zen/ZenWindowSync.sys.mjs",
+ });
+ 
+ ChromeUtils.defineLazyGetter(lazy, "blankURI", () => {
+@@ -1291,10 +1296,7 @@ var SessionStoreInternal = {
+    */
+   get willAutoRestore() {
+     return (
+-      !PrivateBrowsingUtils.permanentPrivateBrowsing &&
+-      (Services.prefs.getBoolPref("browser.sessionstore.resume_session_once") ||
+-        Services.prefs.getIntPref("browser.startup.page") ==
+-          BROWSER_STARTUP_RESUME_SESSION)
++      true
+     );
+   },
+ 
+@@ -1970,6 +1972,9 @@ var SessionStoreInternal = {
        case "TabPinned":
        case "TabUnpinned":
        case "SwapDocShells":
 +      case "TabRemovedFromEssentials":
 +      case "TabAddedToEssentials":
++      case "ZenWorkspaceDataChanged":
          this.saveStateDelayed(win);
          break;
        case "TabGroupCreate":
-@@ -2151,7 +2155,6 @@ var SessionStoreInternal = {
+@@ -2083,6 +2088,10 @@ var SessionStoreInternal = {
+       this._windows[aWindow.__SSi].isTaskbarTab = true;
+     }
+ 
++    if (aWindow.document.documentElement.hasAttribute("zen-unsynced-window")) {
++      this._windows[aWindow.__SSi].isZenUnsynced = true;
++    }
++
+     if (lazy.AIWindow.isAIWindowActiveAndEnabled(aWindow)) {
+       this._windows[aWindow.__SSi].isAIWindow = true;
+     }
+@@ -2119,7 +2128,7 @@ var SessionStoreInternal = {
+     let isTaskbarTab = this._windows[aWindow.__SSi].isTaskbarTab;
+     // A regular window is not a private window, taskbar tab window, or popup window
+     let isRegularWindow =
+-      !isPrivateWindow && !isTaskbarTab && aWindow.toolbar.visible;
++      !isPrivateWindow && !isTaskbarTab && aWindow.toolbar.visible && !this._windows[aWindow.__SSi].isZenUnsynced;
+ 
+     // perform additional initialization when the first window is loading
+     if (lazy.RunState.isStopped) {
+@@ -2131,7 +2140,7 @@ var SessionStoreInternal = {
+         // to disk to NOW() to enforce a full interval before the next write.
+         lazy.SessionSaver.updateLastSaveTime();
+ 
+-        if (isPrivateWindow || isTaskbarTab) {
++        if (isPrivateWindow || isTaskbarTab || aWindow.document.documentElement.hasAttribute("zen-unsynced-window")) {
+           this._log.debug(
+             "initializeWindow, the window is private or a web app. Saving SessionStartup.state for possibly restoring later"
+           );
+@@ -2173,6 +2182,7 @@ var SessionStoreInternal = {
+           null,
+           "sessionstore-one-or-no-tab-restored"
+         );
++        lazy.ZenSessionStore.onNewEmptySession(aWindow);
+         this._deferredAllWindowsRestored.resolve();
+       }
+       // this window was opened by _openWindowWithState
+@@ -2222,7 +2232,6 @@ var SessionStoreInternal = {
        if (closedWindowState) {
          let newWindowState;
          if (
@@ -28,19 +88,89 @@ index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..4eac2fed26d779908107ef60f1c2bd0e
            !lazy.SessionStartup.willRestore()
          ) {
            // We want to split the window up into pinned tabs and unpinned tabs.
-@@ -2384,11 +2387,9 @@ var SessionStoreInternal = {
-           tabbrowser.selectedTab.label;
+@@ -2258,6 +2267,7 @@ var SessionStoreInternal = {
+         }
+ 
+         if (newWindowState) {
++          lazy.ZenSessionStore.onRestoringClosedWindow(newWindowState);
+           // Ensure that the window state isn't hidden
+           this._restoreCount = 1;
+           let state = { windows: [newWindowState] };
+@@ -2286,6 +2296,15 @@ var SessionStoreInternal = {
+       });
+       this._shouldRestoreLastSession = false;
+     }
++    else if (!aInitialState && isRegularWindow) {
++      let windowPromises = [];
++      for (let window of this._browserWindows) {
++        windowPromises.push(lazy.TabStateFlusher.flushWindow(window));
++      }
++      Promise.all(windowPromises).finally(() => {
++        lazy.ZenSessionStore.restoreNewWindow(aWindow, this);
++      });
++    }
+ 
+     if (this._restoreLastWindow && aWindow.toolbar.visible) {
+       // always reset (if not a popup window)
+@@ -2436,7 +2455,7 @@ var SessionStoreInternal = {
+ 
+     var tabbrowser = aWindow.gBrowser;
+ 
+-    let browsers = Array.from(tabbrowser.browsers);
++    let browsers = aWindow.gZenWorkspaces.allUsedBrowsers;
+ 
+     TAB_EVENTS.forEach(function (aEvent) {
+       tabbrowser.tabContainer.removeEventListener(aEvent, this, true);
+@@ -2487,7 +2506,7 @@ var SessionStoreInternal = {
+ 
+       let isLastRegularWindow =
+         Object.values(this._windows).filter(
+-          wData => !wData.isPrivate && !wData.isTaskbarTab
++          wData => !wData.isPrivate && !wData.isTaskbarTab && !wData.isZenUnsynced
+         ).length == 1;
+       this._log.debug(
+         `onClose, closing window isLastRegularWindow? ${isLastRegularWindow}`
+@@ -2544,8 +2563,8 @@ var SessionStoreInternal = {
+       // 2) Flush the window.
+       // 3) When the flush is complete, revisit our decision to store the window
+       //    in _closedWindows, and add/remove as necessary.
+-      if (!winData.isPrivate && !winData.isTaskbarTab) {
+-        this.maybeSaveClosedWindow(winData, isLastWindow);
++      if (!winData.isPrivate && !winData.isTaskbarTab && !winData.isZenUnsynced) {
++        this.maybeSaveClosedWindow(winData, isLastWindow, isLastRegularWindow);
        }
  
--      if (AppConstants.platform != "macosx") {
-         // Until we decide otherwise elsewhere, this window is part of a series
-         // of closing windows to quit.
-         winData._shouldRestore = true;
--      }
+       completionPromise = lazy.TabStateFlusher.flushWindow(aWindow).then(() => {
+@@ -2565,8 +2584,9 @@ var SessionStoreInternal = {
  
-       // Store the window's close date to figure out when each individual tab
-       // was closed. This timestamp should allow re-arranging data based on how
-@@ -3373,7 +3374,7 @@ var SessionStoreInternal = {
+         // Save non-private windows if they have at
+         // least one saveable tab or are the last window.
+-        if (!winData.isPrivate && !winData.isTaskbarTab) {
+-          this.maybeSaveClosedWindow(winData, isLastWindow);
++        lazy.ZenWindowSync.on_WindowCloseAndBrowserFlushed(browsers);
++        if (!winData.isPrivate && !winData.isTaskbarTab && !winData.isZenUnsynced) {
++          this.maybeSaveClosedWindow(winData, isLastWindow, isLastRegularWindow);
+ 
+           if (!isLastWindow && winData.closedId > -1) {
+             this._addClosedAction(
+@@ -2642,7 +2662,7 @@ var SessionStoreInternal = {
+    *        to call this method again asynchronously (for example, after
+    *        a window flush).
+    */
+-  maybeSaveClosedWindow(winData, isLastWindow) {
++  maybeSaveClosedWindow(winData, isLastWindow, isLastRegularWindow = false) {
+     // Make sure SessionStore is still running, and make sure that we
+     // haven't chosen to forget this window.
+     if (
+@@ -2659,6 +2679,7 @@ var SessionStoreInternal = {
+       // _closedWindows from a previous call to this function.
+       let winIndex = this._closedWindows.indexOf(winData);
+       let alreadyStored = winIndex != -1;
++      lazy.ZenSessionStore.maybeSaveClosedWindow(winData, isLastRegularWindow);
+       // If sidebar command is truthy, i.e. sidebar is open, store sidebar settings
+       let shouldStore = hasSaveableTabs || isLastWindow;
+ 
+@@ -3480,7 +3501,7 @@ var SessionStoreInternal = {
      if (!isPrivateWindow && tabState.isPrivate) {
        return;
      }
@@ -49,12 +179,12 @@ index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..4eac2fed26d779908107ef60f1c2bd0e
        return;
      }
  
-@@ -4089,6 +4090,12 @@ var SessionStoreInternal = {
+@@ -4220,6 +4241,12 @@ var SessionStoreInternal = {
          Math.min(tabState.index, tabState.entries.length)
        );
        tabState.pinned = false;
 +      tabState.zenEssential = false;
-+      tabState.zenPinnedId = null;
++      tabState.zenSyncId = null;
 +      tabState.zenIsGlance = false;
 +      tabState.zenGlanceId = null;
 +      tabState.zenHasStaticLabel = false;
@@ -62,15 +192,28 @@ index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..4eac2fed26d779908107ef60f1c2bd0e
  
        if (inBackground === false) {
          aWindow.gBrowser.selectedTab = newTab;
-@@ -4525,6 +4532,7 @@ var SessionStoreInternal = {
+@@ -4656,6 +4683,8 @@ var SessionStoreInternal = {
        // Append the tab if we're opening into a different window,
        tabIndex: aSource == aTargetWindow ? pos : Infinity,
        pinned: state.pinned,
 +      essential: state.zenEssential,
++      zenWorkspaceId: state.zenWorkspace,
        userContextId: state.userContextId,
        skipLoad: true,
        preferredRemoteType,
-@@ -5374,7 +5382,7 @@ var SessionStoreInternal = {
+@@ -5160,9 +5189,10 @@ var SessionStoreInternal = {
+       if (activePageData.title && activePageData.title != activePageData.url) {
+         win.gBrowser.setInitialTabTitle(tab, activePageData.title, {
+           isContentTitle: true,
++          _zenChangeLabelFlag: true,
+         });
+       } else {
+-        win.gBrowser.setInitialTabTitle(tab, activePageData.url);
++        win.gBrowser.setInitialTabTitle(tab, activePageData.url, { _zenChangeLabelFlag: true });
+       }
+     }
+ 
+@@ -5527,7 +5557,7 @@ var SessionStoreInternal = {
  
      for (let i = tabbrowser.pinnedTabCount; i < tabbrowser.tabs.length; i++) {
        let tab = tabbrowser.tabs[i];
@@ -79,16 +222,16 @@ index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..4eac2fed26d779908107ef60f1c2bd0e
          removableTabs.push(tab);
        }
      }
-@@ -5434,7 +5442,7 @@ var SessionStoreInternal = {
-     }
+@@ -5640,7 +5670,7 @@ var SessionStoreInternal = {
  
-     let workspaceID = aWindow.getWorkspaceID();
--    if (workspaceID) {
-+    if (workspaceID && !(this.isLastRestorableWindow() && AppConstants.platform == "macosx")) {
-       winData.workspaceID = workspaceID;
-     }
-   },
-@@ -5625,11 +5633,12 @@ var SessionStoreInternal = {
+     // collect the data for all windows
+     for (ix in this._windows) {
+-      if (this._windows[ix]._restoring || this._windows[ix].isTaskbarTab) {
++      if (this._windows[ix]._restoring || this._windows[ix].isTaskbarTab && !this._windows[ix].isZenUnsynced) {
+         // window data is still in _statesToRestore
+         continue;
+       }
+@@ -5784,11 +5814,12 @@ var SessionStoreInternal = {
      }
  
      let tabbrowser = aWindow.gBrowser;
@@ -102,15 +245,17 @@ index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..4eac2fed26d779908107ef60f1c2bd0e
      // update the internal state data for this window
      for (let tab of tabs) {
        if (tab == aWindow.FirefoxViewHandler.tab) {
-@@ -5640,6 +5649,7 @@ var SessionStoreInternal = {
+@@ -5799,6 +5830,9 @@ var SessionStoreInternal = {
        tabsData.push(tabData);
      }
  
 +    winData.folders = aWindow.gZenFolders?.storeDataForSessionStore() || [];
++    winData.activeZenSpace = aWindow.gZenWorkspaces?.activeWorkspace || null;
++    winData.spaces = aWindow.gZenWorkspaces?.getWorkspacesForSessionStore();
      // update tab group state for this window
      winData.groups = [];
      for (let tabGroup of aWindow.gBrowser.tabGroups) {
-@@ -5652,7 +5662,7 @@ var SessionStoreInternal = {
+@@ -5815,7 +5849,7 @@ var SessionStoreInternal = {
      // a window is closed, point to the first item in the tab strip instead (it will never be the Firefox View tab,
      // since it's only inserted into the tab strip after it's selected).
      if (aWindow.FirefoxViewHandler.tab?.selected) {
@@ -119,7 +264,7 @@ index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..4eac2fed26d779908107ef60f1c2bd0e
        winData.title = tabbrowser.tabs[0].label;
      }
      winData.selected = selectedIndex;
-@@ -5764,8 +5774,8 @@ var SessionStoreInternal = {
+@@ -6017,8 +6051,8 @@ var SessionStoreInternal = {
      // selectTab represents.
      let selectTab = 0;
      if (overwriteTabs) {
@@ -130,16 +275,28 @@ index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..4eac2fed26d779908107ef60f1c2bd0e
        selectTab = Math.min(selectTab, winData.tabs.length);
      }
  
-@@ -5808,6 +5818,8 @@ var SessionStoreInternal = {
-         winData.tabs,
-         winData.groups ?? []
+@@ -6040,6 +6074,7 @@ var SessionStoreInternal = {
+     if (overwriteTabs) {
+       for (let i = tabbrowser.browsers.length - 1; i >= 0; i--) {
+         if (!tabbrowser.tabs[i].selected) {
++          aWindow.gZenWorkspaces._shouldOverrideTabs = true;
+           tabbrowser.removeTab(tabbrowser.tabs[i]);
+         }
+       }
+@@ -6074,6 +6109,12 @@ var SessionStoreInternal = {
+         savedTabGroup => !openTabGroupIdsInWindow.has(savedTabGroup.id)
        );
-+      aWindow.gZenFolders?.restoreDataFromSessionStore(winData.folders);
-+      aWindow.gZenViewSplitter?.restoreDataFromSessionStore(winData.splitViewData);
-       this._log.debug(
-         `restoreWindow, createTabsForSessionRestore returned ${tabs.length} tabs`
-       );
-@@ -6371,6 +6383,25 @@ var SessionStoreInternal = {
+     }
++    if (winData.isZenUnsynced) {
++      aWindow.document.documentElement.setAttribute("zen-unsynced-window", "true");
++    }
++    aWindow.gZenFolders?.restoreDataFromSessionStore(winData.folders);
++    aWindow.gZenWorkspaces?.restoreWorkspacesFromSessionStore(winData);
++    aWindow.gZenViewSplitter?.restoreDataFromSessionStore(winData.splitViewData);
+ 
+     // Move the originally open tabs to the end.
+     if (initialTabs) {
+@@ -6640,6 +6681,25 @@ var SessionStoreInternal = {
  
      // Most of tabData has been restored, now continue with restoring
      // attributes that may trigger external events.
@@ -150,11 +307,11 @@ index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..4eac2fed26d779908107ef60f1c2bd0e
 +    if (tabData.zenIsEmpty) {
 +      tab.setAttribute("zen-empty-tab", "true");
 +    }
-+    if (tabData.zenHasStaticLabel) {
-+      tab.setAttribute("zen-has-static-label", "true");
++    if (typeof tabData.zenStaticLabel === "string") {
++      tab.zenStaticLabel = tabData.zenStaticLabel;
 +    }
-+    if (tabData.zenPinnedId) {
-+      tab.setAttribute("zen-pin-id", tabData.zenPinnedId);
++    if (tabData.zenHasStaticIcon && tabData.image) {
++      tab.zenStaticIcon = tabData.image;
 +    }
 +    if (tabData.zenDefaultUserContextId) {
 +      tab.setAttribute("zenDefaultUserContextId", true);
@@ -165,7 +322,17 @@ index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..4eac2fed26d779908107ef60f1c2bd0e
  
      if (tabData.pinned) {
        tabbrowser.pinTab(tab);
-@@ -7289,7 +7320,7 @@ var SessionStoreInternal = {
+@@ -6807,6 +6867,9 @@ var SessionStoreInternal = {
+         aWindow.gURLBar.readOnly = false;
+       }
+     }
++    if (aWinData.isZenUnsynced) {
++      this._windows[aWindow.__SSi].isZenUnsynced = true;
++    }
+ 
+     let promiseParts = Promise.withResolvers();
+     aWindow.setTimeout(() => {
+@@ -7602,7 +7665,7 @@ var SessionStoreInternal = {
  
        let groupsToSave = new Map();
        for (let tIndex = 0; tIndex < window.tabs.length; ) {
@@ -174,3 +341,28 @@ index 1cdbc0f41bf5b55dfbbd850cb618c6d870f7a261..4eac2fed26d779908107ef60f1c2bd0e
            // Adjust window.selected
            if (tIndex + 1 < window.selected) {
              window.selected -= 1;
+@@ -7617,7 +7680,7 @@ var SessionStoreInternal = {
+           );
+           // We don't want to increment tIndex here.
+           continue;
+-        } else if (window.tabs[tIndex].groupId) {
++        } else if (window.tabs[tIndex].groupId && false) {
+           // Convert any open groups into saved groups.
+           let groupStateToSave = window.groups.find(
+             groupState => groupState.id == window.tabs[tIndex].groupId
+@@ -8076,7 +8139,6 @@ var SessionStoreInternal = {
+     timer.initWithCallback(
+       function () {
+         if (beats <= 0) {
+-          this._log.debug(`looseTimer of ${delay} timed out`);
+           Glean.sessionRestore.shutdownFlushAllOutcomes.timed_out.add(1);
+           deferred.resolve();
+         }
+@@ -8554,6 +8616,7 @@ var SessionStoreInternal = {
+     if (
+       !savedTabGroupState.tabs.length ||
+       this.getSavedTabGroup(savedTabGroupState.id)
++      && false
+     ) {
+       return;
+     }

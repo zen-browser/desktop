@@ -3,7 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 async function goNextWelcomePage(l10nId) {
-  await new Promise(async (resolve) => {
+  /* eslint-disable-next-line no-async-promise-executor */
+  await new Promise(async resolve => {
     const button = document.querySelector(
       `#zen-welcome-page-sidebar-buttons button[data-l10n-id="${l10nId}"]`
     );
@@ -20,5 +21,5 @@ async function goNextWelcomePage(l10nId) {
 }
 
 async function waitForFocus(...args) {
-  await new Promise((resolve) => SimpleTest.waitForFocus(resolve, ...args));
+  await new Promise(resolve => SimpleTest.waitForFocus(resolve, ...args));
 }

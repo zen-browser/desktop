@@ -2,49 +2,56 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-current-profile-text = Hồ sơ hiện tại
+zen-panel-ui-current-profile-text = hồ sơ hiện tại
 unified-extensions-description = Các tiện ích mở rộng được sử dụng để mang thêm tính năng vào { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
-    .label = Đặt lại thẻ đã ghim
+    .label =
+        { $isEssential ->
+            [true] Đặt lại thẻ chính
+           *[false] Đặt lại thẻ đã ghim
+        }
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Add to Essentials
+    .label = Thêm vào thẻ chính
     .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
+tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential = 
-    .label = Loại ra khỏi thẻ thường trú
+    .label = Gỡ khỏi thẻ chính
     .accesskey = R
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Thay thế đường dường dẫn đã ghim với hiện tại
+    .label =
+        { $isEssential ->
+            [true] Thay thế URL của thẻ chính bằng URL hiện tại
+           *[false] Thay thế URL của thẻ đã ghim bằng URL hiện tại
+        }
     .accesskey = C
+tab-context-zen-edit-title = 
+    .label = Đổi tên...
+tab-context-zen-edit-icon = 
+    .label = Đổi biểu tượng...
 zen-themes-corrupted = Thư mục chủ đề { -brand-short-name } của bạn đã bị hư, chúng đã được trả về thiết kế gốc.
 zen-shortcuts-corrupted = Tệp phím tắt { -brand-short-name } của bạn đã bị hư. Chúng đã được trẻ về phím tắt gốc.
 # note: Do not translate the "<br/>" tags in the following string
-zen-new-urlbar-notification =
-    Thanh đường dẫn mới đã được kích hoạt, loại bỏ chức năng của trang "thẻ mới". <br/><br/>
-    Hãy thử tạo một thể để xem cái "mới" của thành đường dẫn!
+zen-new-urlbar-notification = Thanh địa chỉ mới đã được bật, giúp bạn không cần đến trang Thẻ mới nữa.<br/><br/>Hãy thử mở một thẻ mới để xem thanh địa chỉ hoạt động thế nào nhé!
 zen-disable = Vô hiệu hóa
 pictureinpicture-minimize-btn = 
     .aria-label = Thu nhỏ
     .tooltip = Thu nhỏ
 zen-panel-ui-gradient-generator-custom-color = Tùy chỉnh màu sắc
-zen-panel-ui-gradient-generator-saved-message = Lưu tùy chỉnh đổ màu thành công!
-zen-copy-current-url-confirmation = Copied current URL!
+zen-copy-current-url-confirmation = Đã sao chép URL hiện tại!
+zen-copy-current-url-as-markdown-confirmation = Đã sao chép URL hiện tại dưới dạng Markdown!
 zen-general-cancel-label = 
     .label = Hủy
 zen-general-confirm = 
     .label = Xác nhận
-zen-pinned-tab-replaced = Đường dẫn trên thẻ gim đã được thay thể bởi đường dẫn hiện tại!
+zen-pinned-tab-replaced = URL của thẻ đã ghim đã được thay thế bằng URL hiện tại!
 zen-tabs-renamed = Thẻ đã được đổi tên!
 zen-background-tab-opened-toast = Một thẻ mới đã được mở dưới nền!
 zen-workspace-renamed-toast = Không gian làm việc đã được đổi tên!
-zen-library-sidebar-workspaces = 
-    .label = Không gian làm việc
-zen-library-sidebar-mods = 
-    .label = Mods
+zen-split-view-limit-toast = Không thể chia thêm màn hình!
 zen-toggle-compact-mode-button = 
-    .label = Chế độ tối giản
-    .tooltiptext = Bật chế độ tối giản
+    .label = Chế độ thu gọn
+    .tooltiptext = Bật Chế độ thu gọn
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -61,11 +68,13 @@ zen-site-data-settings = Thiết lập
 zen-generic-manage = Quản lý
 zen-generic-more = Thêm
 zen-generic-next = Tiếp
+zen-essentials-promo-label = Thêm vào thẻ chính
+zen-essentials-promo-sublabel = Thẻ yêu thích luôn trong tầm tay
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Đã cho phép
 zen-site-data-setting-block = Đã chặn
-zen-site-data-protections-enabled = Đã tắt
-zen-site-data-protections-disabled = Đã bật
+zen-site-data-protections-enabled = Đã bật
+zen-site-data-protections-disabled = Đã tắt
 zen-site-data-setting-cross-site = Cookie liên trang web
 zen-site-data-security-info-extension = 
     .label = Tiện ích mở rộng (Extensions)
@@ -80,7 +89,7 @@ zen-site-data-get-addons =
 zen-site-data-site-settings = 
     .label = Cài đặt tổng quan của trang web
 zen-site-data-header-share = 
-    .tooltiptext = Chia sẻ trang
+    .tooltiptext = Chia sẻ trang này
 zen-site-data-header-reader-mode = 
     .tooltiptext = Bật chế độ đọc
 zen-site-data-header-screenshot = 
@@ -88,7 +97,7 @@ zen-site-data-header-screenshot =
 zen-site-data-header-bookmark = 
     .tooltiptext = Lưu (bookmark) trang này
 zen-urlbar-copy-url-button = 
-    .tooltiptext = Sao chép đường dẫn (URL)
+    .tooltiptext = Sao chép địa chỉ
 zen-site-data-setting-site-protection = Phòng chống theo dõi
 
 # Section: Feature callouts
@@ -96,15 +105,21 @@ zen-site-data-setting-site-protection = Phòng chống theo dõi
 zen-site-data-panel-feature-callout-title = Diện mạo mới cho add-ons, quyền truy cập và nhiều hơn nữa
 zen-site-data-panel-feature-callout-subtitle = Bấm vào biểu tượng để quản lý các thiết lập của trang web, kiểm tra thông tin bảo mật, quyền truy cập của các tiện ích và thực thiện các tác vụ cơ bản.
 zen-open-link-in-glance = 
-    .label = Open Link in Glance
+    .label = Mở liên kết trong xem nhanh
     .accesskey = G
-zen-sidebar-notification-updated-heading = Update Complete!
+zen-sidebar-notification-updated-heading = Cập nhật hoàn tất!
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-label = Có gì mới trong { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
-    .title = View Release Notes
-zen-sidebar-notification-restart-safe-mode-label = Something broke?
+    .title = Xem ghi chú phát hành
+zen-sidebar-notification-restart-safe-mode-label = Có lỗi xảy ra?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = Restart in Safe Mode
+    .title = Khởi động lại ở Chế độ an toàn
+zen-window-sync-migration-dialog-title = Luôn đồng bộ các cửa sổ
+zen-window-sync-migration-dialog-message = Zen hiện đã đồng bộ hóa các cửa sổ trên cùng một thiết bị, mọi thay đổi sẽ được cập nhật tức thì trên toàn bộ cửa sổ còn lại.
+zen-window-sync-migration-dialog-learn-more = Tìm hiểu thêm
+zen-window-sync-migration-dialog-accept = Đã hiểu
+zen-appmenu-new-blank-window = 
+    .label = Cửa sổ trống mới

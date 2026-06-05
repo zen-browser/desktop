@@ -1,5 +1,5 @@
 diff --git a/toolkit/modules/ShortcutUtils.sys.mjs b/toolkit/modules/ShortcutUtils.sys.mjs
-index e52e88a09a281e69ecf15e7b84b8b98736e1dbdd..f47fbe24e0860195e11fe5231ab27e52aad96d0b 100644
+index 0a2a5ac202fe7fbdd1540254db847d59c3fe2a88..fca3cd0719e51ffa745e8dac050dcefc7bc70f93 100644
 --- a/toolkit/modules/ShortcutUtils.sys.mjs
 +++ b/toolkit/modules/ShortcutUtils.sys.mjs
 @@ -414,13 +414,11 @@ export var ShortcutUtils = {

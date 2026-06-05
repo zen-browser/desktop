@@ -9,6 +9,7 @@
   position: absolute !important;
   top: 3%;
   right: 1.5%;
+  z-index: 2;
 }
 
 #zen-workspaces-button .zen-workspace-sidebar-name {
@@ -23,7 +24,8 @@
   display: none !important;
 }
 
-@media -moz-pref('zen.theme.disable-lightweight') {
+/* stylelint-disable-next-line media-query-no-invalid */
+@media -moz-pref("zen.theme.disable-lightweight") {
   #customization-lwtheme-link {
     display: none !important;
   }
@@ -37,10 +39,6 @@
 #PanelUI-fxa-menu-services,
 #PanelUI-fxa-cta-menu {
   display: none !important;
-}
-
-body > #confetti {
-  z-index: 1;
 }
 
 /* Bookmarks */
@@ -63,7 +61,7 @@ body > #confetti {
   #PanelUI-zen-emojis-picker-header {
     gap: 10px;
     align-items: center;
-    padding: 0px 10px;
+    padding: 0 10px;
     padding-bottom: 6px;
   }
 
@@ -76,7 +74,7 @@ body > #confetti {
     }
   }
 
-  &[only-svg-icons='true'] {
+  &[only-svg-icons="true"] {
     & #PanelUI-zen-emojis-picker-change-emojis {
       display: none;
     }
@@ -85,8 +83,15 @@ body > #confetti {
       pointer-events: none;
     }
 
-    & #PanelUI-zen-emojis-picker-pages > vbox[emojis='true'] {
+    & #PanelUI-zen-emojis-picker-pages > vbox[emojis="true"] {
       display: none;
+    }
+  }
+
+  &[hide-none-option="true"] {
+    & #PanelUI-zen-emojis-picker-none {
+      opacity: 0;
+      pointer-events: none;
     }
   }
 
@@ -143,7 +148,7 @@ body > #confetti {
 
     .zen-emojis-picker-emoji {
       font-size: 14px;
-      padding: 0px !important;
+      padding: 0 !important;
       & image {
         display: none;
       }
@@ -167,6 +172,7 @@ body > #confetti {
     width: 22px;
     height: 22px;
     appearance: none;
+    transition: opacity 0.08s ease-in-out;
 
     &:hover {
       background-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
@@ -176,24 +182,24 @@ body > #confetti {
   }
 }
 
-.toolbarbutton-1:not(#tabs-newtab-button) {
+.toolbarbutton-1:not(#tabs-newtab-button),
+.urlbar-page-action,
+.identity-box-button {
   --tab-border-radius: 6px;
   --toolbarbutton-border-radius: var(--tab-border-radius);
   --toolbarbutton-inner-padding: 6px;
-  @media (-moz-platform: macos) {
-    --toolbarbutton-inner-padding: 8px;
-  }
-  --toolbarbutton-outer-padding: 2px;
+  --toolbarbutton-outer-padding: 1px;
+  --toolbarbutton-icon-fill: color-mix(in srgb, currentColor 70%, transparent);
 
   transition:
     background-color 0.1s,
     transform 0.2s;
 
-  &[open='true'] {
+  &[open="true"] {
     transition: background-color 0.1s;
   }
 
-  &:not([open='true']):active:hover {
+  &:not([open="true"]):active:hover {
     transform: scale(0.95);
   }
 }
@@ -219,13 +225,7 @@ body > #confetti {
   position: fixed;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    rgba(255, 255, 255, 0.5) 40%,
-    rgba(255, 255, 255, 0.5) 60%,
-    transparent 100%
-  );
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.5) 40%, rgba(255, 255, 255, 0.5) 60%, transparent 100%);
   left: 0;
   z-index: 999;
   opacity: 0;
@@ -235,23 +235,19 @@ body > #confetti {
 
 #zen-update-animation-border {
   position: absolute;
-  border-radius: var(--zen-native-content-radius);
+  border-radius: var(--zen-border-radius);
   width: 100%;
   height: 100%;
 }
 
 #zen-update-animation-border::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
   padding: 2px; /* thickness of border */
 
-  background: radial-gradient(
-    ellipse 100% 50% at center var(--background-top),
-    rgba(255, 255, 255, 0.5) 80%,
-    transparent
-  );
+  background: radial-gradient(ellipse 100% 50% at center var(--background-top), rgba(255, 255, 255, 0.5) 80%, transparent);
 
   /* Punch out the inside once (not animated) */
   mask:
@@ -261,12 +257,14 @@ body > #confetti {
 }
 
 #TabsToolbar {
+  gap: var(--zen-toolbox-padding);
   -moz-window-dragging: unset;
 }
 
 /* Status panel */
 
-@media (-moz-pref('zen.theme.styled-status-panel')) {
+/* stylelint-disable-next-line media-query-no-invalid */
+@media (-moz-pref("zen.theme.styled-status-panel")) {
   #statuspanel {
     padding: 6px;
 
@@ -283,7 +281,7 @@ body > #confetti {
 
 /* Customizable modes */
 #customization-container {
-  --toolbar-bgcolor: var(--zen-dialog-background);
+  --toolbar-bgcolor: var(--arrowpanel-background);
 }
 
 /* Site Data popup */
@@ -306,13 +304,14 @@ body > #confetti {
   flex-wrap: wrap;
   gap: 8px;
   overflow: visible;
+  flex-direction: row;
 
   unified-extensions-item-messagebar-wrapper,
   .unified-extensions-item-contents {
     display: none !important;
   }
 
-  &[overflowing='true'] {
+  &[overflowing="true"] {
     overflow-x: auto;
     max-height: 420px;
     mask-image: linear-gradient(to top, transparent, black 5%);
@@ -338,8 +337,8 @@ body > #confetti {
 
     & > * {
       background-color: color-mix(in srgb, currentcolor 6%, transparent);
-      width: 48px;
-      height: 32px;
+      width: var(--size-item-xlarge);
+      height: var(--size-item-large);
       margin: 0;
       justify-content: center;
       align-items: center;
@@ -381,6 +380,7 @@ body > #confetti {
 
 .zen-site-data-section-header {
   font-weight: 600;
+  font-size: 12px;
 
   & label {
     margin: 0;
@@ -397,6 +397,7 @@ body > #confetti {
     &:hover {
       background-color: color-mix(in srgb, currentColor 10%, transparent);
     }
+
     .zen-site-data-section:hover & {
       opacity: 0.5;
     }
@@ -407,18 +408,60 @@ body > #confetti {
   display: none;
 }
 
-.permission-popup-permission-item {
+.zen-permission-popup-boost-editor-button {
+  transition:
+    0.2s opacity ease,
+    0.2s background-color ease,
+    0.2s transform ease;
+  opacity: 0;
+
+  width: 30px;
+  height: 26px;
+  min-width: 30px;
+  appearance: none;
+  background: transparent;
+  border: none;
+
+  border-radius: 8px;
+  transform: scale(1);
+
+  -moz-context-properties: fill;
+  fill: white;
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  & image {
+    opacity: 0.6;
+    height: 14px;
+    width: calc(100% - 2px);
+  }
+}
+
+.permission-popup-boost-item:hover .zen-permission-popup-boost-editor-button {
+  opacity: 1;
+
+  &.zen-permission-popup-boost-editor-button:hover {
+    background-color: var(--button-background-color-ghost-hover);
+  }
+}
+
+.permission-popup-permission-item,
+.permission-popup-boost-item {
   gap: 8px;
   overflow: hidden;
   align-items: center;
 }
 
-.permission-popup-permission-label-container {
+.permission-popup-permission-label-container,
+.permission-popup-boost-label-container {
   min-width: 1px;
 }
 
-.permission-popup-permission-label {
-  margin: 0px;
+.permission-popup-permission-label,
+.permission-popup-boost-label {
+  margin: 0;
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
@@ -426,7 +469,8 @@ body > #confetti {
   max-width: 100%;
 }
 
-.permission-popup-permission-icon {
+.permission-popup-permission-icon,
+.permission-popup-boost-icon {
   fill: var(--button-primary-color);
   padding: 8px;
   width: 34px;
@@ -445,33 +489,37 @@ body > #confetti {
   }
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 1px;
     border-radius: 99px;
-    width: 32px;
-    height: 32px;
-    background: var(--button-primary-bgcolor);
+    width: var(--size-item-large);
+    height: var(--size-item-large);
+    background: var(--zen-sidebar-themed-icon-fill);
     opacity: 0.6;
     transition:
       transform 0.12s ease-in-out,
       opacity 0.12s ease-in-out;
   }
 
-  .permission-popup-permission-item:hover &::before {
+  .permission-popup-permission-item:hover &::before,
+  .permission-popup-boost-item:hover:not(:has(.zen-permission-popup-boost-editor-button:hover)) &::before {
     transform: scale(1.05);
   }
 
-  .permission-popup-permission-item:active:hover &::before {
+  .permission-popup-permission-item:active:hover &::before,
+  .permission-popup-boost-item:active:hover:not(:has(.zen-permission-popup-boost-editor-button:hover)) &::before {
     transform: scale(0.95);
   }
 
-  .permission-popup-permission-item[state='allow'] &::before {
+  .permission-popup-permission-item[state="allow"] &::before,
+  .permission-popup-boost-item[state="enabled"] &::before {
     opacity: 1;
   }
 }
 
-.zen-permission-popup-permission-state-label {
+.zen-permission-popup-permission-state-label,
+.zen-permission-popup-boost-state-label {
   opacity: 0.6;
   font-size: smaller;
   font-weight: 400;
@@ -480,7 +528,7 @@ body > #confetti {
 
 #identity-box,
 #page-action-buttons {
-  opacity: 0.6;
+  fill-opacity: 0.6;
 }
 
 #zen-site-data-footer {
@@ -488,28 +536,38 @@ body > #confetti {
   padding-top: 8px;
   margin: 2px 8px 8px 8px;
 
+  gap: 8px;
+
   & toolbarbutton {
     margin: 0;
+
+    &[disabled] {
+      visibility: hidden;
+    }
   }
 }
 
-@media -moz-pref('zen.theme.hide-unified-extensions-button') {
-  #unified-extensions-button {
+/* stylelint-disable-next-line media-query-no-invalid */
+@media -moz-pref("zen.theme.hide-unified-extensions-button") {
+  #unified-extensions-button:not([showing]) {
     display: none !important;
   }
 }
 
-#unified-extensions-button:not([showing]) {
-  display: none !important;
+/* stylelint-disable-next-line media-query-no-invalid */
+@media not -moz-pref("zen.theme.hide-unified-extensions-button") {
+  #zen-site-data-section-addons {
+    display: none;
+  }
 }
 
 #zen-site-data-header {
   gap: 8px;
   align-items: center;
   padding: 10px 9px;
-  padding-bottom: 0;
+  padding-bottom: 8px;
 
-  :root[zen-single-toolbar='true']:not([zen-right-side='true']) & {
+  :root[zen-single-toolbar="true"]:not([zen-right-side="true"]) & {
     flex-direction: row-reverse;
   }
 
@@ -519,8 +577,8 @@ body > #confetti {
     -moz-context-properties: fill;
     fill: currentColor;
     color: light-dark(rgba(0, 0, 0, 0.8), rgba(255, 255, 255, 0.8));
-    max-width: 48px;
-    height: 32px;
+    width: var(--size-item-xlarge);
+    height: var(--size-item-large);
     position: relative;
 
     &[disabled] {
@@ -539,23 +597,19 @@ body > #confetti {
     }
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       width: 100%;
       height: 100%;
       @media (-moz-platform: macos) {
-        background: linear-gradient(
-          to bottom,
-          light-dark(rgb(255, 255, 255), rgb(34, 34, 34)),
-          light-dark(rgb(246, 246, 246), rgb(21, 21, 21))
-        );
+        background: linear-gradient(to bottom, light-dark(rgb(255, 255, 255), rgb(34, 34, 34)), light-dark(rgb(246, 246, 246), rgb(21, 21, 21)));
 
         box-shadow:
-          0px 2px 4px rgba(0, 0, 0, 0.1),
-          inset 0px 1px 0px light-dark(transparent, rgba(255, 255, 255, 0.15));
+          0 1px 2px rgba(0, 0, 0, 0.1),
+          inset 0 1px 0 light-dark(transparent, rgba(255, 255, 255, 0.15));
         border-radius: 6px;
-        --base-border-color: light-dark(rgba(0, 0, 0, 0.175), rgba(255, 255, 255, 0.1));
-        border: 1px solid light-dark(var(--base-border-color), rgb(21, 21, 21));
+        --base-border-color: light-dark(rgba(0, 0, 0, 0.3), rgba(255, 255, 255, 0.1));
+        border: 0.5px solid light-dark(var(--base-border-color), rgb(21, 21, 21));
       }
 
       @media not (-moz-platform: macos) {
@@ -565,14 +619,13 @@ body > #confetti {
 
       transition: transform 0.12s ease-in-out;
       box-sizing: border-box;
-      will-change: transform;
     }
 
     &.active {
       color: var(--button-primary-color);
 
       &::before {
-        background: var(--button-primary-bgcolor);
+        background: var(--zen-sidebar-themed-icon-fill);
       }
     }
 
@@ -586,7 +639,8 @@ body > #confetti {
   }
 }
 
-#zen-site-data-settings-list toolbarseparator {
+#zen-site-data-settings-list toolbarseparator,
+#zen-site-data-boost-list toolbarseparator {
   margin: 6px 0;
 }
 
@@ -624,6 +678,120 @@ body > #confetti {
 }
 
 /* Sidebar notification */
-:root:not([zen-sidebar-expanded='true']) zen-sidebar-notification {
+:root:not([zen-sidebar-expanded="true"]) zen-sidebar-notification {
   display: none;
+}
+
+/* Feature allouts */
+#feature-callout {
+  #mainContentHeader {
+    --special-color: color-mix(in srgb, light-dark(white, black), currentColor 50%);
+    --specia-color-2: color-mix(in srgb, light-dark(white, black), currentColor 90%);
+    background: linear-gradient(135deg, var(--specia-color-2), var(--special-color), var(--specia-color-2));
+    background-size: 400%;
+    background-clip: text;
+    /* Still works on firefox */
+    -webkit-text-fill-color: transparent;
+    animation: zen-text-gradient 5s linear infinite;
+    font-size: initial;
+  }
+
+  #mainContentSubheader {
+    text-wrap: balance;
+  }
+
+  #multi-stage-message-welcome-text {
+    gap: 4px;
+  }
+}
+
+
+/* Notification Stack */
+
+.notificationbox-stack {
+  background: transparent;
+
+  &[notificationside="top"] {
+    position: fixed;
+    bottom: calc(var(--zen-element-separation) * 1.5);
+    right: calc(var(--zen-element-separation) * 1.5);
+
+    :root[zen-right-side="true"] & {
+      right: auto;
+      left: calc(var(--zen-element-separation) * 1.5);
+    }
+
+    width: fit-content;
+    max-width: 30rem !important;
+    z-index: 9999;
+
+    & notification-message {
+      background: color-mix(in srgb, var(--zen-colors-tertiary) 70%, transparent 30%);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--arrowpanel-border-color);
+      border-radius: var(--zen-border-radius);
+
+      &::before {
+        display: none;
+      }
+    }
+  }
+}
+
+/* Loading progress bar */
+#zen-loading-progress-bar {
+  --zen-loading-progress-bar-color: color-mix(in srgb, var(--zen-primary-color), light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.5)) 70%);
+
+  position: fixed;
+  top: calc(var(--zen-element-separation) / -2);
+
+  /* Minimum -2px, but if its larger, elemenet separation / -2 will be used as top offset, to avoid overlapping with the notification stack */
+  :root:is([zen-no-padding="true"], [inDOMFullscreen="true"], :not([zen-single-toolbar="true"])) & {
+    top: 4px;
+  }
+
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background: var(--zen-loading-progress-bar-color);
+  height: .4rem;
+  width: 5rem;
+  z-index: 9;
+  border-radius: 100px;
+  transition: opacity .3s ease-in-out,
+              background-color .3s ease-in-out,
+              transform .3s ease-in-out;
+  overflow: clip;
+  pointer-events: none;
+  animation: zen-progress-bar-pulse 1s ease-in-out infinite forwards;
+  animation-direction: alternate;
+  transform-origin: 0 0;
+  contain: content;
+
+  &[long-load="true"] {
+    opacity: 1;
+    animation: zen-progress-bar-settle .3s ease-out forwards;
+    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 75%;
+      opacity: 0;
+      animation: zen-progress-bar-long-load 1s ease-in-out infinite;
+      animation-delay: 0.3s;
+      background: var(--zen-loading-progress-bar-color);
+      border-radius: inherit;
+    }
+  }
+
+  /* stylelint-disable-next-line media-query-no-invalid */
+  @media not -moz-pref("zen.view.enable-loading-indicator") {
+    display: none;
+  }
+
+  :root[inDOMFullscreen="true"] & {
+    display: none;
+  }
 }

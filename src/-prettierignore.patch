@@ -1,0 +1,17 @@
+diff --git a/.prettierignore b/.prettierignore
+index de2efe413e5696a3b8d0467a3a9e668dfadd8a1a..01c76d8e639d5630fca9cccb55d415fc4e903e91 100644
+--- a/.prettierignore
++++ b/.prettierignore
+@@ -1805,3 +1805,12 @@ tools/ts/test/baselines/
+ try_task_config.json
+ xpcom/idl-parser/xpidl/fixtures/xpctest.d.json
+ **/package-lock.json
++
++
++*.bundle.min.js
++*.min.js
++*.min.mjs
++*.inc
++*/mochitests/*
++*.svg
++

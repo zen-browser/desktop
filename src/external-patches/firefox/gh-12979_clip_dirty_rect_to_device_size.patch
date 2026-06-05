@@ -1,0 +1,21 @@
+diff --git a/gfx/wr/webrender/src/renderer/composite.rs b/gfx/wr/webrender/src/renderer/composite.rs
+--- a/gfx/wr/webrender/src/renderer/composite.rs
++++ b/gfx/wr/webrender/src/renderer/composite.rs
+@@ -974,12 +974,15 @@
+                     .iter()
+                     .chain(self.layer_compositor_frame_state_in_prev_frame.as_ref().unwrap().rects_without_id.iter())  {
+                     combined_dirty_rect = combined_dirty_rect.union(&rect);
+                 }
+ 
++                let device_rect = DeviceRect::from_size(device_size.to_f32());
++                let clipped_dirty_rect = combined_dirty_rect.intersection_unchecked(&device_rect);
++
+                 partial_present_mode = Some(PartialPresentMode::Single {
+-                    dirty_rect: combined_dirty_rect,
++                    dirty_rect: clipped_dirty_rect,
+                 });
+             } else {
+                 partial_present_mode = None;
+             }
+ 
+

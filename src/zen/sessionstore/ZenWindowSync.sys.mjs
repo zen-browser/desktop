@@ -521,10 +521,13 @@ class nsZenWindowSync {
     if (flags & SYNC_FLAG_ICON) {
       aTargetItem.zenStaticIcon = aOriginalItem.zenStaticIcon;
       if (gBrowser.isTab(aOriginalItem)) {
-        gBrowser.setIcon(
-          aTargetItem,
-          aOriginalItem.getAttribute("image") || gBrowser.getIcon(aOriginalItem)
-        );
+        try {
+          gBrowser.setIcon(
+            aTargetItem,
+            aOriginalItem.getAttribute("image") ||
+              gBrowser.getIcon(aOriginalItem)
+          );
+        } catch {}
       } else if (aOriginalItem.isZenFolder) {
         // Icons are a zen-only feature for tab groups.
         gZenFolders.setFolderUserIcon(aTargetItem, aOriginalItem.iconURL);
@@ -1542,6 +1545,7 @@ class nsZenWindowSync {
       console.error(`Error moving active tabs to other windows on close:`, e);
     }
     resolve();
+    this.#docShellSwitchPromise = null;
   }
 
   on_WindowCloseAndBrowserFlushed(aBrowsers) {

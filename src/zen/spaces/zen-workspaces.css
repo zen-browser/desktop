@@ -322,7 +322,6 @@ zen-workspace {
   height: 100%;
   overflow: hidden;
   color: var(--toolbox-textcolor);
-  will-change: transform;
 
   @media not (prefers-reduced-motion: reduce) {
     transition: padding-top 0.1s;

@@ -329,10 +329,29 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     return true;
   }
 
-  // REORDER drop: native move already placed the nodes. The eligible node just
-  // above the moved block (`prev`) anchors the level: with no explicit level the
-  // dragged roots become its siblings; with one (set by the drag's horizontal
-  // position) they land at that indent, where level 0 unparents to the root.
+  // The valid level range for inserting just below `prev` and above `next`: at
+  // most prev's child, and no shallower than next (else next is orphaned).
+  reorderLevelRange(prev, next) {
+    const prevLevel = prev ? this.getLevel(prev) : 0;
+    const maxLevel = prev ? prevLevel + 1 : 0;
+    const minLevel = Math.min(next ? this.getLevel(next) : 0, maxLevel);
+    return { minLevel, maxLevel, prevLevel };
+  }
+
+  // REORDER drop driven by the indicator: apply the exact anchor (`prev`) and
+  // level it resolved, so the drop always lands where the preview showed.
+  handleReorderDropAt(draggedTabs, prev, level) {
+    if (!this.enabled) {
+      return;
+    }
+    const roots = this.#draggedRoots(draggedTabs);
+    if (roots.length) {
+      this.#applyReorder(roots, this.#parentForLevel(prev, level ?? 0));
+    }
+  }
+
+  // REORDER drop with no indicator (e.g. programmatic): derive the anchor from
+  // the post-move neighbors and drop the roots as siblings of the node above.
   handleReorderDrop(draggedTabs, targetLevel = null) {
     if (!this.enabled) {
       return;
@@ -348,18 +367,17 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     while (prev && (!this.isTreeEligible(prev) || draggedNodes.has(prev))) {
       prev = prev.previousElementSibling;
     }
-    // The eligible node just below the moved block floors how shallow the drop
-    // can land, so dropping between nested tabs can't bisect the branch at root.
     let next = this.#lastSubtreeNode(roots[roots.length - 1]).nextElementSibling;
     while (next && (!this.isTreeEligible(next) || draggedNodes.has(next))) {
       next = next.nextElementSibling;
     }
-    const prevLevel = prev ? this.getLevel(prev) : 0;
-    const maxLevel = prev ? prevLevel + 1 : 0;
-    const minLevel = Math.min(next ? this.getLevel(next) : 0, maxLevel);
+    const { minLevel, maxLevel, prevLevel } = this.reorderLevelRange(prev, next);
     let level = targetLevel == null ? prevLevel : targetLevel;
     level = Math.max(minLevel, Math.min(level, maxLevel));
-    const newParent = this.#parentForLevel(prev, level);
+    this.#applyReorder(roots, this.#parentForLevel(prev, level));
+  }
+
+  #applyReorder(roots, newParent) {
     const affected = new Set();
     for (const root of roots) {
       const oldParent = this.getParent(root);

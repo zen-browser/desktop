@@ -24,5 +24,8 @@
 - name: zen.tab-tree.drag-split-zone
   value: 25 # rightmost % of a tab that arms the split gesture
 
+- name: zen.tab-tree.drag-reorder-edge
+  value: 15 # top/bottom % of a tab that reorders; the rest of the row nests
+
 - name: zen.tabs.middle-drag-select.enabled
   value: true

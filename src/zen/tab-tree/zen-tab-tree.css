@@ -52,9 +52,18 @@ tab-group[split-view-group][zen-tree-collapsed] > .zen-tree-twisty {
   opacity: 1;
 }
 
-/* Favicon steps aside while the twisty is shown over it. */
+/* Favicon steps aside while the twisty is shown over it. On a split group the
+   twisty sits over the leftmost tab's favicon, so hide that one. */
 .tabbrowser-tab[zen-tree-parent]:hover .tab-icon-image,
-.tabbrowser-tab[zen-tree-collapsed] .tab-icon-image {
+.tabbrowser-tab[zen-tree-collapsed] .tab-icon-image,
+tab-group[split-view-group][zen-tree-parent]:hover
+  .tab-group-container
+  > .tabbrowser-tab:first-child
+  .tab-icon-image,
+tab-group[split-view-group][zen-tree-collapsed]
+  .tab-group-container
+  > .tabbrowser-tab:first-child
+  .tab-icon-image {
   opacity: 0;
 }
 
@@ -74,6 +83,23 @@ tab-group[split-view-group][zen-tree-nest-target] {
   outline: 2px solid var(--zen-primary-color, AccentColor);
   outline-offset: -2px;
   border-radius: var(--border-radius-medium, 8px);
+}
+
+/* A dragged tree branch is auto-multiselected so it moves as one block, but it
+   shouldn't render as a manual multiselect highlight on the in-place tabs. */
+#tabbrowser-tabs[zen-branch-dragging]
+  .tabbrowser-tab[multiselected]:not([visuallyselected]),
+#tabbrowser-tabs[zen-branch-dragging]
+  tab-group[split-view-group]:has([multiselected]) {
+  --tab-selected-bgcolor: transparent;
+}
+
+#tabbrowser-tabs[zen-branch-dragging]
+  .tabbrowser-tab[multiselected]:not([visuallyselected])
+  .tab-background {
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 
 /* Middle-mouse drag-select: hint that releasing will close these tabs. */

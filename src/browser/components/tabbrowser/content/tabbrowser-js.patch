@@ -285,7 +285,7 @@ index 43fb79a3060e20f671ae6ffc26350c7abf497702..810644deebd3b63e93a6da8b4bb529cf
 +      }
 +
 +      let hasZenDefaultUserContextId = false;
-+      if(beforeRouteResult.userContextId) {
++      if (beforeRouteResult.userContextId) {
 +        userContextId = beforeRouteResult.userContextId;
 +        hasZenDefaultUserContextId = true;
 +      }

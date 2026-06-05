@@ -193,10 +193,9 @@
       if (!descendants.length) {
         return;
       }
-      // Select the whole branch so the move-together machinery drags it as one
-      // block. Remember the root so dragend can restore the selection. The
-      // container is marked so this auto-selection doesn't render as a manual
-      // multiselect highlight on the in-place tabs.
+      // Select the whole branch so move-together drags it as one block. Remember
+      // the root for dragend, and mark the container so this auto-selection isn't
+      // rendered as a manual multiselect highlight.
       tree._branchDragRoot = tab;
       gBrowser.clearMultiSelectedTabs();
       gBrowser.addToMultiSelectedTabs(tab);

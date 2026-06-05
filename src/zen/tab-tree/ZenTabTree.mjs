@@ -130,9 +130,8 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     return this.#isSplitGroup(el);
   }
 
-  // The representative tab of the last eligible node not being dragged, so a drag
-  // below the list (including a drag of the last tab itself) can target the bottom
-  // edge and reorder/outdent there.
+  // Representative tab of the last eligible non-dragged node, so a drag below the
+  // list can target its bottom edge to reorder/outdent there.
   lastDropTab(exclude) {
     const nodes = this.#nodes().filter(
       n => this.isTreeEligible(n) && !exclude?.has(n)
@@ -193,14 +192,11 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     const apply = (node, level, hidden) => {
       node._zenTreeLevel = level;
       this.#applyIndent(node, level);
-      // Keep collapse-visibility in sync here too, so a node nested/moved under
-      // an already-collapsed parent hides immediately (and a node moved out of a
-      // collapsed branch sheds a stale zen-tree-hidden), without waiting for the
-      // next setCollapsed.
+      // Hide a node nested under a collapsed parent immediately (and shed a stale
+      // flag when moved out), without waiting for the next setCollapsed.
       node.toggleAttribute("zen-tree-hidden", hidden);
-      // Persist a stable tree identity. The live `id` is reassigned by
-      // window-sync when a tab is restored (undo-close), so children reference
-      // their parent by this id, which survives restore as a tab attribute.
+      // Stable identity for parent references: window-sync reassigns the live
+      // `id` on restore, so children match their parent by this persisted id.
       if (node.id) {
         node.setAttribute("zen-tree-id", node.id);
       }
@@ -461,9 +457,8 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     return false;
   }
 
-  // Keep a clickable twisty on parent nodes (and not on leaves). On a tab it
-  // overlays the favicon inside the icon stack; on a split group it floats over
-  // the group's inline-start edge.
+  // Clickable twisty on parent nodes only. On a tab it overlays the favicon in
+  // the icon stack; on a split group it floats at the group's inline-start edge.
   #updateTwisty(node) {
     const hasChildren = this.getChildren(node).length > 0;
     const isGroup = this.#isSplitGroup(node);
@@ -542,9 +537,8 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     return this.#ancestorAtLevel(prev, Math.min(level, max) - 1);
   }
 
-  // Re-assert DFS DOM order for a tree from its parent pointers, so a node the
-  // native drag misplaced (e.g. a split group inside a moved branch) sits right
-  // after its DFS predecessor instead of breaking the visual order.
+  // Re-assert DFS DOM order from parent pointers, so a node the native drag
+  // misplaced sits right after its DFS predecessor.
   #enforceDomOrder(root) {
     const dfs = [];
     const visit = node => {
@@ -603,7 +597,6 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
       this.#onTreeChanged(node);
     }
   }
-
 
   // Fire a change so window-sync can replicate the new tree state.
   #onTreeChanged(node) {
@@ -673,10 +666,8 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
       return;
     }
     const tab = event.target;
-    // A tab inside a split view is just one member of the group node, not the
-    // node itself: closing it must not promote/close the group's tree-children
-    // while the group is still alive. The group only leaves the tree when it
-    // fully dissolves, which on_TabUngrouped -> #reconcileDissolvedSplit handles.
+    // A split-view member closing isn't the group node closing; leave its
+    // tree-children alone (on_TabUngrouped handles a fully dissolved split).
     if (tab.group?.hasAttribute("split-view-group")) {
       return;
     }
@@ -712,11 +703,9 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
       }, 0);
       return;
     }
-    // Promote surviving children to the nearest ancestor that isn't also closing
-    // in this batch. Children that are themselves closing are left untouched, so
-    // their persisted zen-tree-parent-id keeps describing the original branch and
-    // a later undo-close (Ctrl+Shift+T) can rebuild the hierarchy instead of
-    // restoring the tabs flat.
+    // Promote only surviving children, to the nearest non-closing ancestor.
+    // Co-closing members keep their parent-id so undo-close can rebuild the
+    // branch instead of restoring it flat.
     const survivingParent = this.#nearestSurvivingParent(node);
     const survivors = children.filter(child => !this.#isClosing(child));
     for (const child of survivors) {
@@ -736,9 +725,8 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     this.#onTreeChanged(node);
   }
 
-  // A tab is "closing" if it's mid-removal or was tagged as part of a
-  // multiselection close batch (set before any TabClose fires), so we can tell
-  // co-closing branch members from survivors during promotion.
+  // Mid-removal, or tagged for a multiselection close batch (before any
+  // TabClose fires) — lets us tell co-closing members from survivors.
   #isClosing(node) {
     return !!(node?.closing || node?._closedInMultiselection);
   }
@@ -849,11 +837,9 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     this.rebuildFromAttributes();
   }
 
-  // A tab restored on its own (undo-close / Ctrl+Shift+T) gets its persisted
-  // zen-tree-parent-id reapplied as a tab attribute, but nothing has reconnected
-  // the live parent pointers yet. Rebuild from attributes so it lands back in its
-  // branch instead of flat. Coalesce so a multi-tab restore only rebuilds once,
-  // after the whole burst has settled.
+  // Undo-close restores the persisted attributes but not the live pointers, so
+  // rebuild to put the tab back in its branch. Coalesced so a multi-tab restore
+  // only rebuilds once.
   on_SSTabRestored() {
     if (!this.enabled || this.#rebuildScheduled) {
       return;
@@ -870,9 +856,8 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     if (!this.enabled) {
       return;
     }
-    // Index by both the live id and the persisted stable tree id, so a parent
-    // still resolves after window-sync reassigned its live id on restore (the
-    // child's parent-id references the pre-restore id).
+    // Index by both the live id and the persisted zen-tree-id, so a parent
+    // resolves even after window-sync reassigned its id on restore.
     const byId = new Map();
     for (const node of this.#nodes()) {
       const treeId = node.getAttribute("zen-tree-id");
@@ -894,18 +879,14 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
       if (!this.isTreeEligible(node) || this.getParent(node)) {
         continue;
       }
-      // A node whose persisted parent-id points at a tab that isn't present yet
-      // (e.g. mid incremental restore) is left pending: don't reindex it, since
-      // reindex would strip its zen-tree-parent-id and a later rebuild — once the
-      // parent is finally back — could never reconnect it.
+      // Parent not present yet (mid incremental restore): leave it pending —
+      // reindexing here would strip the parent-id a later rebuild needs.
       if (node.getAttribute("zen-tree-parent-id")) {
         continue;
       }
       this.reindex(node);
-      // A restored/synced subtree can land out of depth-first order in the strip
-      // (undo-close reinserts a child at its old index, with unrelated tabs
-      // between it and its parent); re-assert contiguous DFS order so the branch
-      // isn't visually split by other tabs.
+      // A restored subtree can land out of order (a child reinserted at its old
+      // index); re-assert DFS order so the branch isn't split by other tabs.
       if (this.getChildren(node).length) {
         this.#enforceDomOrder(node);
       }

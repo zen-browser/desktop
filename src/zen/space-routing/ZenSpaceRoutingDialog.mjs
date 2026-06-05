@@ -33,6 +33,7 @@ export class nsZenSpaceRoutingDialog {
     });
 
     this.init();
+    window.addEventListener("unload", () => this.uninit(), { once: true });
   }
 
   /**
@@ -113,23 +114,23 @@ export class nsZenSpaceRoutingDialog {
   createRouteElement(route) {
     const container = this.doc.getElementById("sr-content");
 
-    const root = this.doc.createElement("vbox");
+    const root = this.doc.createXULElement("vbox");
     root.setAttribute("routeId", route.id);
     root.className = "sr-rule-container";
 
     // ---- Top row
 
-    const topRow = this.doc.createElement("hbox");
+    const topRow = this.doc.createXULElement("hbox");
     topRow.className = "sr-rule-row";
     topRow.id = "sr-rule-top";
 
-    const topLabelContainer = this.doc.createElement("hbox");
+    const topLabelContainer = this.doc.createXULElement("hbox");
     topLabelContainer.className = "sr-label-container";
 
     const urlIcon = this.doc.createXULElement("image");
     urlIcon.className = "sr-url-icon";
 
-    const urlLabel = this.doc.createElement("p");
+    const urlLabel = this.doc.createXULElement("label");
     urlLabel.className = "sr-label";
     urlLabel.textContent = "URL";
 
@@ -167,17 +168,17 @@ export class nsZenSpaceRoutingDialog {
 
     // ---- Bottom row
 
-    const bottomRow = this.doc.createElement("hbox");
+    const bottomRow = this.doc.createXULElement("hbox");
     bottomRow.className = "sr-rule-row";
     bottomRow.id = "sr-rule-bottom";
 
-    const bottomLabelContainer = this.doc.createElement("hbox");
+    const bottomLabelContainer = this.doc.createXULElement("hbox");
     bottomLabelContainer.className = "sr-label-container";
 
     const openInIcon = this.doc.createXULElement("image");
     openInIcon.className = "sr-open-in-icon";
 
-    const openInLabel = this.doc.createElement("p");
+    const openInLabel = this.doc.createXULElement("label");
     openInLabel.className = "sr-label";
     openInLabel.textContent = "Open in";
 

@@ -10,6 +10,8 @@ zen-space-routing-external-default = Default route for external links
 zen-space-routing-new-route = New Route
 zen-space-routing-open-in-space = Open in Space
 zen-space-routing-most-recent-space = Most recent Space
+zen-space-routing-close-button = 
+    .aria-label = Close
 
 zen-space-routing-contains =
     .label = Contains

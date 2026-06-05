@@ -25,11 +25,11 @@ tags = "os_integration"
 
 ["browser_content_sandbox_fs.js"]
 skip-if = [
-  "os == 'win' && os_version == '11.26100' && arch == 'x86' && debug", # bug 1379635
-  "os == 'win' && os_version == '11.26200' && arch == 'x86' && debug", # bug 1379635
-  "os == 'win' && os_version == '11.26100' && arch == 'x86_64' && debug", # bug 1379635
-  "os == 'win' && os_version == '11.26200' && arch == 'x86_64' && debug", # bug 1379635
   "os == 'mac' && os_version == '15.30' && arch == 'aarch64'", # Bug 2023967
+  "os == 'win' && os_version == '11.26100' && arch == 'x86' && debug", # bug 1379635
+  "os == 'win' && os_version == '11.26100' && arch == 'x86_64' && debug", # bug 1379635
+  "os == 'win' && os_version == '11.26200' && arch == 'x86' && debug", # bug 1379635
+  "os == 'win' && os_version == '11.26200' && arch == 'x86_64' && debug", # bug 1379635
 ]
 
 ["browser_content_sandbox_syscalls.js"]
@@ -38,7 +38,6 @@ skip-if = [
 skip-if = [
   "os == 'win' && os_version == '11.26200' && arch == 'x86' && debug", # bug 2028636
   "os == 'win' && os_version == '11.26200' && arch == 'x86_64' && debug", # bug 2028636
-  "os == 'linux' && debug && artifact", # bug 1945658
 ]
 run-if = [
   "debug",

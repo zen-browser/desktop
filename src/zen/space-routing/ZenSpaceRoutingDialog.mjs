@@ -133,7 +133,7 @@ export class nsZenSpaceRoutingDialog {
 
     const urlLabel = this.doc.createXULElement("label");
     urlLabel.className = "sr-label";
-    urlLabel.textContent = "URL";
+    urlLabel.setAttribute("data-l10n-id", "zen-space-routing-url")
 
     topLabelContainer.append(urlIcon, urlLabel);
 
@@ -179,7 +179,7 @@ export class nsZenSpaceRoutingDialog {
 
     const openInLabel = this.doc.createXULElement("label");
     openInLabel.className = "sr-label";
-    openInLabel.textContent = "Open in";
+    openInLabel.setAttribute("data-l10n-id", "zen-space-routing-open-in")
 
     bottomLabelContainer.append(openInIcon, openInLabel);
 

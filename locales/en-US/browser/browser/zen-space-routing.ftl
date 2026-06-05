@@ -17,3 +17,6 @@ zen-space-routing-equal-to =
     .label = Is Equal To
 zen-space-routing-regex =
     .label = RegEx
+
+zen-space-routing-open-in = Open In
+zen-space-routing-url = URL

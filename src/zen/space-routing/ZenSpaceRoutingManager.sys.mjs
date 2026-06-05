@@ -208,7 +208,9 @@ class nsZenSpaceRoutingManager {
           }
         } catch (e) {
           console.error(
-            "[ZenSpaceRouting] Failed to resolve regular expression"
+            "[ZenSpaceRouting] Failed to resolve regular expression:",
+            unmodifiedReference,
+            e
           );
         }
         break;

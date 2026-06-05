@@ -65,7 +65,7 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
   }
 
   get #indentStep() {
-    return Services.prefs.getIntPref("zen.tab-tree.indent", 14);
+    return Services.prefs.getIntPref("zen.tab-tree.indent", 20);
   }
 
   get #maxDepth() {
@@ -185,9 +185,14 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
   }
 
   reindex(root) {
-    const apply = (node, level) => {
+    const apply = (node, level, hidden) => {
       node._zenTreeLevel = level;
       this.#applyIndent(node, level);
+      // Keep collapse-visibility in sync here too, so a node nested/moved under
+      // an already-collapsed parent hides immediately (and a node moved out of a
+      // collapsed branch sheds a stale zen-tree-hidden), without waiting for the
+      // next setCollapsed.
+      node.toggleAttribute("zen-tree-hidden", hidden);
       const parent = this.getParent(node);
       if (parent) {
         node.setAttribute("zen-tree-parent-id", parent.id || "");
@@ -195,11 +200,12 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
         node.removeAttribute("zen-tree-parent-id");
       }
       this.#updateTwisty(node);
+      const childHidden = hidden || !!node._zenTreeCollapsed;
       for (const child of this.getChildren(node)) {
-        apply(child, level + 1);
+        apply(child, level + 1, childHidden);
       }
     };
-    apply(root, this.getLevel(root));
+    apply(root, this.getLevel(root), this.#isHiddenByCollapse(root));
   }
 
   #applyIndent(node, level) {
@@ -652,7 +658,15 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     if (!this.enabled) {
       return;
     }
-    const node = this.#nodeOf(event.target);
+    const tab = event.target;
+    // A tab inside a split view is just one member of the group node, not the
+    // node itself: closing it must not promote/close the group's tree-children
+    // while the group is still alive. The group only leaves the tree when it
+    // fully dissolves, which on_TabUngrouped -> #reconcileDissolvedSplit handles.
+    if (tab.group?.hasAttribute("split-view-group")) {
+      return;
+    }
+    const node = this.#nodeOf(tab);
     const children = this.getChildren(node);
     if (!children.length) {
       // A leaf is closing: once it's gone, refresh its parent so the parent

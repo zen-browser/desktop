@@ -39,16 +39,24 @@ add_task(async function test_nest_syncs_to_other_window() {
       return m?.hasAttribute("zen-tree-collapsed");
     }, "collapse syncs to mirror window");
 
+    // Await the closes so teardown can't race ahead while these synced tabs are
+    // still closing (which can leak tabs into later tests).
+    const childClosing = BrowserTestUtils.waitForTabClosing(child);
+    const parentClosing = BrowserTestUtils.waitForTabClosing(parent);
     BrowserTestUtils.removeTab(child);
     BrowserTestUtils.removeTab(parent);
+    await Promise.all([childClosing, parentClosing]);
   });
 
   // Clean up any tab window-sync mirrored into this window (done at the test
   // level, not in the shared helper — doing it inside withNewSyncedWindow
   // collides with withNewTabAndWindow's teardown and triggers a sync jam).
+  const closing = [];
   for (const tab of [...gBrowser.tabs]) {
     if (!initialTabs.has(tab) && !tab.closing) {
+      closing.push(BrowserTestUtils.waitForTabClosing(tab));
       BrowserTestUtils.removeTab(tab);
     }
   }
+  await Promise.all(closing);
 });

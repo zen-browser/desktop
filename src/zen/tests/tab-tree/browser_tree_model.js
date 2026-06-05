@@ -18,10 +18,13 @@ add_task(async function test_eligibility_and_level() {
   Assert.equal(gZenTabTree.getLevel(b), 1, "child tab is level 1");
   Assert.deepEqual(gZenTabTree.getChildren(a), [b], "a has child b");
   Assert.deepEqual(gZenTabTree.getDescendants(a), [b], "a has descendant b");
+  // Indent tracks the configurable step pref, so derive the expectation from it
+  // rather than hardcoding a value that can drift from the default.
+  const step = Services.prefs.getIntPref("zen.tab-tree.indent", 20);
   Assert.equal(
     b.style.getPropertyValue("--zen-folder-indent"),
-    "14px",
-    "child indent is one level (14px)"
+    `${step}px`,
+    `child indent is one level (${step}px)`
   );
 
   b._zenTreeParent = null;

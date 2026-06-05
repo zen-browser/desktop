@@ -1033,7 +1033,7 @@
     // Re-indent the existing native drop indicator to the level the dragged node
     // will land at, so there's a single accurate line rather than a second one.
     #setNativeIndicatorIndent(level0Left, level, rightEdge) {
-      const indentStep = Services.prefs.getIntPref("zen.tab-tree.indent", 14);
+      const indentStep = Services.prefs.getIntPref("zen.tab-tree.indent", 20);
       const left = level0Left + level * indentStep;
       const indicator = gZenPinnedTabManager.dragIndicator;
       indicator.style.setProperty("--indicator-left", `${left}px`);
@@ -1059,7 +1059,7 @@
       while (next && (!tree.isTreeEligible(next) || draggedNodes.has(next))) {
         next = next.nextElementSibling;
       }
-      const indentStep = Services.prefs.getIntPref("zen.tab-tree.indent", 14);
+      const indentStep = Services.prefs.getIntPref("zen.tab-tree.indent", 20);
       const { minLevel, maxLevel, prevLevel } = tree.reorderLevelRange(
         prev,
         next
@@ -1127,7 +1127,7 @@
     // child indent. Re-applied every dragover since the native pass resets it.
     #showNestIndicator(node, rect) {
       const tree = window.gZenTabTree;
-      const indentStep = Services.prefs.getIntPref("zen.tab-tree.indent", 14);
+      const indentStep = Services.prefs.getIntPref("zen.tab-tree.indent", 20);
       const level0Left = rect.left - tree.getLevel(node) * indentStep;
       const indicator = gZenPinnedTabManager.dragIndicator;
       indicator.setAttribute("orientation", "horizontal");

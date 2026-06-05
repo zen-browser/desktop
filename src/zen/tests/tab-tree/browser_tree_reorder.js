@@ -58,3 +58,28 @@ add_task(async function test_reorder_branch_retains_hierarchy() {
 
   await cleanupTabs(p, pchild, mover, moverChild);
 });
+
+// reorderLevelRange reports the valid drop-level window, and handleReorderDropAt
+// clamps the requested level into it: at most prev's child, no shallower than 0.
+add_task(async function test_reorder_level_clamping() {
+  const a = await addNormalTab();
+  const b = await addNormalTab();
+  gZenTabTree.nestTab(b, a); // a > b, b at level 1
+  const c = await addNormalTab();
+
+  const range = gZenTabTree.reorderLevelRange(b, null);
+  Assert.equal(range.maxLevel, 2, "max level is prev's level + 1");
+  Assert.equal(range.minLevel, 0, "min level is 0 when there is no next");
+
+  // Request a level far above max → clamps to prev's child (level 2).
+  gZenTabTree.handleReorderDropAt([c], b, 99);
+  Assert.equal(gZenTabTree.getParent(c), b, "over-deep level clamps to prev's child");
+  Assert.equal(gZenTabTree.getLevel(c), 2, "c lands at the clamped level 2");
+
+  // Level 0 drops at the root (un-nest), e.g. dragging below the whole list.
+  gZenTabTree.handleReorderDropAt([c], b, 0);
+  Assert.equal(gZenTabTree.getParent(c), null, "level 0 un-nests to the root");
+  Assert.equal(gZenTabTree.getLevel(c), 0, "c sits at root level");
+
+  await cleanupTabs(a, b, c);
+});

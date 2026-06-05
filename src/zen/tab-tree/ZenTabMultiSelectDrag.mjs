@@ -83,6 +83,9 @@ class nsZenTabMultiSelectDrag extends nsZenDOMOperatedFeature {
     if (!tab) {
       return; // let native "open tab on empty strip space" behavior run
     }
+    if (this.#state) {
+      this.#cancel(); // a prior gesture whose mouseup was missed (e.g. focus loss)
+    }
     // Own the middle button on tabs: suppress autoscroll + native handling.
     event.preventDefault();
     event.stopPropagation();
@@ -164,8 +167,10 @@ class nsZenTabMultiSelectDrag extends nsZenDOMOperatedFeature {
       return;
     }
 
-    const toClose = gBrowser.selectedTabs.filter(
-      t => t.isConnected && !t.closing
+    // Close exactly the gesture's selection. gBrowser.selectedTabs would also
+    // append the active tab when it's outside the dragged range.
+    const toClose = gBrowser.tabs.filter(
+      t => t.multiselected && t.isConnected && !t.closing
     );
     this.#cancel();
     if (toClose.length) {

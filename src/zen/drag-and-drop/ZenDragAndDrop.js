@@ -108,13 +108,32 @@
         this,
         "_dndNestToSplitDelay",
         "zen.tab-tree.drag-nest-to-split-delayMC",
-        300
+        500
       );
       XPCOMUtils.defineLazyPreferenceGetter(
         this,
         "_dndSwitchSpaceDelay",
         "zen.tabs.dnd-switch-space-delay",
         1000
+      );
+      // Read on every dragover/indicator update, so cache them.
+      XPCOMUtils.defineLazyPreferenceGetter(
+        this,
+        "_treeIndentStep",
+        "zen.tab-tree.indent",
+        20
+      );
+      XPCOMUtils.defineLazyPreferenceGetter(
+        this,
+        "_treeSplitZone",
+        "zen.tab-tree.drag-split-zone",
+        25
+      );
+      XPCOMUtils.defineLazyPreferenceGetter(
+        this,
+        "_treeReorderEdge",
+        "zen.tab-tree.drag-reorder-edge",
+        15
       );
 
       ChromeUtils.defineESModuleGetters(
@@ -928,7 +947,7 @@
       // preview whose level follows the cursor horizontally — drag left to
       // outdent, all the way to root level 0.
       const edgeZoneThreshold =
-        Services.prefs.getIntPref("zen.tab-tree.drag-reorder-edge", 15) / 100;
+        this._treeReorderEdge / 100;
       const overlapRatioY = (clientY - rect.top) / rect.height;
       if (
         overlapRatioY < edgeZoneThreshold ||
@@ -959,7 +978,7 @@
       // indicator no matter where in the row you release.
       const unNest = canNest && clientX < rect.x - 2;
       const splitZone =
-        Services.prefs.getIntPref("zen.tab-tree.drag-split-zone", 25) / 100;
+        this._treeSplitZone / 100;
       // Either horizontal edge zone arms a split: left puts the dragged tab on
       // the left, right on the right; the middle stays a nest.
       const inLeftZone = clientX < rect.x + rect.width * splitZone;
@@ -1032,7 +1051,7 @@
     // Re-indent the existing native drop indicator to the level the dragged node
     // will land at, so there's a single accurate line rather than a second one.
     #setNativeIndicatorIndent(level0Left, level, rightEdge) {
-      const indentStep = Services.prefs.getIntPref("zen.tab-tree.indent", 20);
+      const indentStep = this._treeIndentStep;
       const left = level0Left + level * indentStep;
       const indicator = gZenPinnedTabManager.dragIndicator;
       indicator.style.setProperty("--indicator-left", `${left}px`);
@@ -1058,7 +1077,7 @@
       while (next && (!tree.isTreeEligible(next) || draggedNodes.has(next))) {
         next = next.nextElementSibling;
       }
-      const indentStep = Services.prefs.getIntPref("zen.tab-tree.indent", 20);
+      const indentStep = this._treeIndentStep;
       const { minLevel, maxLevel, prevLevel } = tree.reorderLevelRange(
         prev,
         next
@@ -1126,7 +1145,7 @@
     // child indent. Re-applied every dragover since the native pass resets it.
     #showNestIndicator(node, rect) {
       const tree = window.gZenTabTree;
-      const indentStep = Services.prefs.getIntPref("zen.tab-tree.indent", 20);
+      const indentStep = this._treeIndentStep;
       const level0Left = rect.left - tree.getLevel(node) * indentStep;
       const indicator = gZenPinnedTabManager.dragIndicator;
       indicator.setAttribute("orientation", "horizontal");
@@ -1593,6 +1612,9 @@
       thisFromGlobal._clearDragOverSplit();
       thisFromGlobal._clearDragOverNest();
       thisFromGlobal._clearDragOverReorder();
+      // Drop the dragstart FLIP snapshot here too, so an aborted drag (never
+      // reaching handle_drop) doesn't hold it until the next drag.
+      thisFromGlobal.#flipStart = null;
       const tree = ownerGlobal.gZenTabTree;
       if (tree?.enabled) {
         tree._dragActive = false;

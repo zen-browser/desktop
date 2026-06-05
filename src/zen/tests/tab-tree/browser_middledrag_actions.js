@@ -57,3 +57,29 @@ add_task(async function test_clean_middleclick_closes_one() {
   await closing;
   ok(t1.closing || !t1.isConnected, "clean middle-click closes the single tab");
 });
+
+// A drag-close must close exactly the selected range — not the active tab when
+// it sits outside that range (gBrowser.selectedTabs would wrongly append it).
+add_task(async function test_drag_close_spares_active_tab_outside_range() {
+  const active = await addNormalTab();
+  const t1 = await addNormalTab();
+  const t2 = await addNormalTab();
+  gBrowser.selectedTab = active; // active tab is left of the t1..t2 range
+  gBrowser.clearMultiSelectedTabs();
+
+  EventUtils.synthesizeMouseAtCenter(t1, { type: "mousedown", button: 1 }, window);
+  EventUtils.synthesizeMouseAtCenter(t2, { type: "mousemove", button: 1 }, window);
+  const c1 = BrowserTestUtils.waitForTabClosing(t1);
+  const c2 = BrowserTestUtils.waitForTabClosing(t2);
+  EventUtils.synthesizeMouseAtCenter(t2, { type: "mouseup", button: 1 }, window);
+  await Promise.all([c1, c2]);
+
+  ok(t1.closing || !t1.isConnected, "t1 (in range) closed");
+  ok(t2.closing || !t2.isConnected, "t2 (in range) closed");
+  ok(
+    active.isConnected && !active.closing,
+    "the active tab outside the range is NOT closed"
+  );
+
+  await cleanupTabs(active);
+});

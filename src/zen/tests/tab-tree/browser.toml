@@ -20,6 +20,10 @@ support-files = [
 
 ["browser_tree_depth.js"]
 
+["browser_tree_eligibility.js"]
+
+["browser_tree_workspace.js"]
+
 ["browser_tree_collapse.js"]
 
 ["browser_tree_drag.js"]

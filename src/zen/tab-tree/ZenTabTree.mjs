@@ -260,15 +260,6 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     return true;
   }
 
-  promoteSubtree(node) {
-    const grandparent = this.getParent(this.getParent(node));
-    if (grandparent) {
-      this.nestTab(node, grandparent, { position: "end" });
-    } else {
-      this.detachTab(node);
-    }
-  }
-
   detachTab(node) {
     if (!this.getParent(node)) {
       return;
@@ -415,6 +406,7 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     }
     for (const r of affected) {
       this.reindex(r);
+      this.clampDepth(r);
       this.#enforceDomOrder(r);
     }
     this.#onTreeChanged(roots[0]);
@@ -681,6 +673,7 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
         window.setTimeout(() => {
           if (parent.isConnected) {
             this.reindex(this.#rootOf(parent));
+            this.#onTreeChanged(parent);
           }
         }, 0);
       }
@@ -822,6 +815,12 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     }
     const node = this.#nodeOf(event.target);
     if (!this.isTreeEligible(node)) {
+      return;
+    }
+    // A split group's tree position is owned by the group lifecycle (grouping,
+    // ungrouping, drag-drop), not derived from neighbors. Skip it so a move
+    // during split formation can't clobber the parent the handoff just set.
+    if (this.#isSplitGroup(node)) {
       return;
     }
     // A programmatic move relocates only this node. If it has a subtree, bring

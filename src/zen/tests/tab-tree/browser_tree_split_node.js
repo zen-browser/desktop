@@ -44,9 +44,10 @@ add_task(async function test_split_group_nests_and_indents_as_one_node() {
     "the split group is parented to the tab"
   );
   Assert.equal(gZenTabTree.getLevel(group), 1, "the split group is at level 1");
+  const step = Services.prefs.getIntPref("zen.tab-tree.indent", 20);
   Assert.equal(
     group.style.getPropertyValue("--zen-folder-indent"),
-    "14px",
+    `${step}px`,
     "the split group element is indented one step"
   );
 
@@ -116,5 +117,46 @@ add_task(async function test_unsplitting_promotes_children() {
   );
   Assert.equal(gZenTabTree.getParent(child), root, "child reparented to root");
 
+  // The unsplit tab and the former split children all land at the level the
+  // split node occupied (siblings under its parent), not flattened to the root.
+  Assert.equal(
+    gZenTabTree.getParent(a),
+    root,
+    "the surviving split member stays under the split's parent"
+  );
+  Assert.equal(
+    gZenTabTree.getLevel(a),
+    1,
+    "the surviving member sits at the split's former level"
+  );
+  Assert.equal(
+    gZenTabTree.getLevel(child),
+    1,
+    "the child rose to the split's former level"
+  );
+
   await cleanupTabs(a, child, root);
+});
+
+// When a nested tab becomes a split, the new group takes over its tree role:
+// it inherits the tab's parent and adopts the tab's children.
+add_task(async function test_split_inherits_parent_and_adopts_children() {
+  const root = await addNormalTab();
+  const tab = await addNormalTab();
+  const leaf = await addNormalTab();
+  const other = await addNormalTab();
+  gZenTabTree.nestTab(tab, root); // root > tab
+  gZenTabTree.nestTab(leaf, tab); // tab > leaf
+
+  const group = await makeSplit(tab, other);
+  await TestUtils.waitForCondition(
+    () =>
+      gZenTabTree.getParent(group) === root &&
+      gZenTabTree.getParent(leaf) === group,
+    "the split group inherits the parent and adopts the children"
+  );
+  Assert.equal(gZenTabTree.getParent(group), root, "group inherited tab's parent");
+  Assert.equal(gZenTabTree.getParent(leaf), group, "group adopted tab's child");
+
+  await cleanupTabs(tab, other, leaf, root);
 });

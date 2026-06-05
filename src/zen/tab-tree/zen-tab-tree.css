@@ -31,10 +31,12 @@ tab-group[split-view-group][zen-tree-hidden] {
   margin-inline-start: calc(var(--toolbarbutton-inner-padding) / 3) !important;
 }
 
-/* On a split group it floats over the group's inline-start edge. */
+/* On a split group it floats over the leftmost tab's favicon. That favicon sits
+   at the tab's inner padding from the edge, so match it (a bare few px reads as
+   left-of-center against the favicon). */
 tab-group[split-view-group] > .zen-tree-twisty {
   position: absolute;
-  inset-inline-start: 4px;
+  inset-inline-start: var(--toolbarbutton-inner-padding, 8px);
   inset-block: 0;
   margin-block: auto;
   z-index: 3;
@@ -53,16 +55,20 @@ tab-group[split-view-group][zen-tree-collapsed] > .zen-tree-twisty {
 }
 
 /* Favicon steps aside while the twisty is shown over it. On a split group the
-   twisty sits over the leftmost tab's favicon, so hide that one. */
+   twisty sits over the leftmost tab's favicon, so hide that one. The container's
+   first child is a .zen-tab-group-start spacer, so the leftmost tab is the one
+   right after it (not :first-child). */
 .tabbrowser-tab[zen-tree-parent]:hover .tab-icon-image,
 .tabbrowser-tab[zen-tree-collapsed] .tab-icon-image,
 tab-group[split-view-group][zen-tree-parent]:hover
   .tab-group-container
-  > .tabbrowser-tab:first-child
+  > .zen-tab-group-start
+  + .tabbrowser-tab
   .tab-icon-image,
 tab-group[split-view-group][zen-tree-collapsed]
   .tab-group-container
-  > .tabbrowser-tab:first-child
+  > .zen-tab-group-start
+  + .tabbrowser-tab
   .tab-icon-image {
   opacity: 0;
 }

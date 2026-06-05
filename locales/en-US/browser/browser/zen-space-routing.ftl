@@ -12,6 +12,7 @@ zen-space-routing-open-in-space = Open in Space
 zen-space-routing-most-recent-space = Most recent Space
 zen-space-routing-close-button = 
     .aria-label = Close
+    .tooltiptext = Close
 
 zen-space-routing-contains =
     .label = Contains

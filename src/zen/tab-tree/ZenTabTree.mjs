@@ -70,7 +70,7 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
   }
 
   get #indentStep() {
-    return Services.prefs.getIntPref("zen.tab-tree.indent", 20);
+    return Services.prefs.getIntPref("zen.tab-tree.indent", 14);
   }
 
   get #maxDepth() {

@@ -121,7 +121,7 @@
         this,
         "_treeIndentStep",
         "zen.tab-tree.indent",
-        20
+        14
       );
       XPCOMUtils.defineLazyPreferenceGetter(
         this,

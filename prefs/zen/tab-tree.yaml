@@ -13,7 +13,7 @@
   value: promote
 
 - name: zen.tab-tree.indent
-  value: 20 # px per nesting level
+  value: 14 # px per nesting level
 
 - name: zen.tab-tree.max-depth
   value: 4 # maximum level; root = 0; 0 disables the cap

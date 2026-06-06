@@ -1410,10 +1410,15 @@
       if (!draggedTab || !target) {
         return;
       }
+      // movingTabsSet isn't always populated for a manual multiselection drag,
+      // so fall back to the live selection when the dragged tab is multiselected
+      // — otherwise only the primary tab would nest.
       const movingTabsSet = draggedTab._dragData?.movingTabsSet;
       const draggedTabs = movingTabsSet?.size
         ? [...movingTabsSet]
-        : [draggedTab];
+        : draggedTab.multiselected
+          ? gBrowser.selectedTabs
+          : [draggedTab];
       this._dontAnimateTabMove = true;
       this._clearDragOverNest();
       window.gZenTabTree.handleNestDrop(draggedTabs, target);
@@ -1431,7 +1436,9 @@
       const movingTabsSet = draggedTab._dragData?.movingTabsSet;
       const draggedTabs = movingTabsSet?.size
         ? [...movingTabsSet]
-        : [draggedTab];
+        : draggedTab.multiselected
+          ? gBrowser.selectedTabs
+          : [draggedTab];
       const r = this.#dragOverReorder;
       if (r.canDrop) {
         // Apply the exact anchor + level the indicator resolved.

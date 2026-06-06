@@ -25,6 +25,30 @@ add_task(async function test_opener_autonest_on() {
   await SpecialPowers.popPrefEnv();
 });
 
+// Firefox clears `owner` on each successive related tab opened from one opener,
+// so only the first would keep it. The durable _zenOpenerTab capture lets the
+// later ones still auto-nest.
+add_task(async function test_opener_autonest_uses_durable_opener() {
+  await SpecialPowers.pushPrefEnv({
+    set: [["zen.tab-tree.auto-nest-by-opener", true]],
+  });
+  const opener = await addNormalTab();
+  const child = await addNormalTab();
+  // Mimic the post-clear state: owner is gone, but our durable capture remains.
+  child.owner = null;
+  child._zenOpenerTab = opener;
+  child.dispatchEvent(new CustomEvent("TabOpen", { bubbles: true, detail: child }));
+
+  Assert.equal(
+    gZenTabTree.getParent(child),
+    opener,
+    "auto-nest falls back to the durable opener after Firefox cleared owner"
+  );
+
+  await cleanupTabs(opener, child);
+  await SpecialPowers.popPrefEnv();
+});
+
 add_task(async function test_opener_autonest_off() {
   await SpecialPowers.pushPrefEnv({
     set: [["zen.tab-tree.auto-nest-by-opener", false]],

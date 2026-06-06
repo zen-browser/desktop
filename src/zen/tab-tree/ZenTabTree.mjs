@@ -639,9 +639,10 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
       return;
     }
     const tab = event.target;
-    // `owner` is Firefox's opener-tab relationship for tabs opened from
-    // another tab (link-in-new-tab, ctrl/middle click).
-    const opener = tab.owner ? this.#nodeOf(tab.owner) : null;
+    // The tab a new tab was opened from. `_zenOpenerTab` is our durable capture
+    // (Firefox clears `owner` on successive related tabs); fall back to `owner`.
+    const ownerTab = tab._zenOpenerTab || tab.owner;
+    const opener = ownerTab ? this.#nodeOf(ownerTab) : null;
     if (
       !opener ||
       !this.isTreeEligible(tab) ||

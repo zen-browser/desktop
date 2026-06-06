@@ -25,26 +25,32 @@ class nsZenSpaceRoutingManager {
    * @param {string} uriString - The URI as a string
    * @param {object} options - The tab creation options
    * @param {Window} win - The window which the tab will be added to
-   * @returns {object} Returns an object with { shouldEarlyExit, userContextId, isRouteFound }
+   * @returns {object} Returns an object with { shouldEarlyExit, userContextId, isRouteFound, targetRoute }
    */
   onBeforeAddTab(uriString, options, win) {
     let userContextId = null;
     let isRouteFound = false;
+    let targetRoute = null;
 
     if (
       this.#shouldSkipProcessing(options, win) !=
       nsZenSpaceRoutingManager.SKIP_TYPE.NONE
     ) {
-      return { shouldEarlyExit: false, userContextId, isRouteFound };
+      return {
+        shouldEarlyExit: false,
+        userContextId,
+        isRouteFound,
+        targetRoute,
+      };
     }
 
-    const targetRoute = this.routeUri(uriString, options);
+    targetRoute = this.routeUri(uriString, options);
     switch (targetRoute) {
       case "most-recent-space":
         break;
       default: {
         const targetWorkspace =
-          win?.gZenWorkspaces?.getWorkspaceFromId?.(targetRoute);
+          win?.gZenWorkspaces?.getWorkspaceFromId(targetRoute);
 
         if (targetWorkspace) {
           userContextId = targetWorkspace.containerTabId;
@@ -53,7 +59,7 @@ class nsZenSpaceRoutingManager {
       }
     }
 
-    return { shouldEarlyExit: false, userContextId, isRouteFound };
+    return { shouldEarlyExit: false, userContextId, isRouteFound, targetRoute };
   }
 
   /**
@@ -63,16 +69,17 @@ class nsZenSpaceRoutingManager {
    * @param {Element} newTab - The tab element
    * @param {object} options - The tab creation options
    * @param {Window} win - The window which the tab was added to
+   * @param {object} [beforeResult] - The result returned by onBeforeAddTab for
+   *   this tab. When present its precomputed targetRoute is reused instead of
+   *   running routeUri() a second time.
    */
-  onAfterAddTab(uriString, newTab, options, win) {
-    if (
-      this.#shouldSkipProcessing(options, win) !=
-      nsZenSpaceRoutingManager.SKIP_TYPE.NONE
-    ) {
+  onAfterAddTab(uriString, newTab, options, win, beforeResult) {
+    const targetRoute = beforeResult?.targetRoute;
+    if (!targetRoute) {
       return;
     }
 
-    this.#routeToWorkspace(uriString, newTab, options, win);
+    this.#routeToWorkspace(targetRoute, newTab, win);
   }
 
   /**
@@ -100,19 +107,17 @@ class nsZenSpaceRoutingManager {
   /**
    * Will route the given tab to a space if a rule applies
    *
-   * @param {string} uriString - The URI as a string
+   * @param {string} targetRoute - The precomputed route for the tab
    * @param {Element} newTab - The tab element
-   * @param {object} options - Tab creation args
    * @param {Window} win - The window which the tab was added to
    * @private
    */
-  async #routeToWorkspace(uriString, newTab, options, win) {
+  async #routeToWorkspace(targetRoute, newTab, win) {
     try {
       if (!newTab || !newTab.parentNode) {
         return;
       }
 
-      const targetRoute = this.routeUri(uriString, options);
       switch (targetRoute) {
         case "most-recent-space":
           break;

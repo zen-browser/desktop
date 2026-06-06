@@ -185,7 +185,7 @@
 .toolbarbutton-1:not(#tabs-newtab-button),
 .urlbar-page-action,
 .identity-box-button {
-  --tab-border-radius: 6px;
+  --tab-border-radius: 8px;
   --toolbarbutton-border-radius: var(--tab-border-radius);
   --toolbarbutton-inner-padding: 6px;
   --toolbarbutton-outer-padding: 1px;

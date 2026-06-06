@@ -235,7 +235,7 @@
   }
 
   @media (-moz-platform: macos) {
-    --border-radius-medium: 12px;
+    --border-radius-medium: 14px;
     --tab-border-radius: 8px;
   }
 
@@ -1241,6 +1241,8 @@
         background: var(--zen-essential-tab-selected-bg);
         margin: var(--zen-essential-bg-margin);
         border-radius: calc(var(--border-radius-medium) - var(--zen-essential-bg-margin));
+        /* stylelint-disable-next-line property-no-unknown */
+        corner-shape: var(--zen-squircle-value);
         position: absolute;
         inset: 0;
         z-index: 0;

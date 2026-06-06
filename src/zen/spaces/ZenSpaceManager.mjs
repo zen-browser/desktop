@@ -955,7 +955,7 @@ class nsZenWorkspaces {
     }
     gZenEmojiPicker.open(anchor, {
       closeOnSelect: false,
-      allowNone: hasNoIcon,
+      allowNone: !hasNoIcon,
       onSelect: async icon => {
         const workspace = this.getWorkspaceFromId(workspaceId);
         if (!workspace) {

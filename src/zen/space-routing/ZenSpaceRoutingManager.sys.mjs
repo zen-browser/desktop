@@ -254,16 +254,16 @@ class nsZenSpaceRoutingManager {
    * @param {Window} parentWindow - The parent browser window
    * @returns {Window|null} The instanced editor window
    */
-  openSpaceRoutingDialog(parentWindow) {
-    const control = parentWindow.openDialog(
+  async openSpaceRoutingDialog(parentWindow) {
+    await parentWindow.gDialogBox.open(
       "chrome://browser/content/zen-components/windows/zen-space-routing.xhtml",
-      "",
-      "centerscreen,modal,dependent,resizable=no,titlebar=no",
-      { parentWindow }
+      {
+        features: "resizable=no",
+        sizeTo: "available",
+        allowDuplicateDialogs: false,
+        parentWindow,
+      },
     );
-
-    control.focus();
-    return control;
   }
 
   /**

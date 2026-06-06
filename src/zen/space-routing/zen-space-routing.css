@@ -36,11 +36,7 @@
   display: none !important;
 }
 
-#zen-space-routing-dialog-container {
-  background-color: var(--sr-background);
-  padding: 0;
-  margin: 24px;
-
+window {
   height: var(--sr-height);
   max-height: var(--sr-height);
   min-height: var(--sr-height);
@@ -178,7 +174,7 @@ menulist {
 }
 
 .sr-rule-bottom {
-  margin-left: 85px;
+  margin-left: 87px;
 }
 
 .input,
@@ -217,27 +213,17 @@ button {
 .sr-remove,
 .close-icon {
   & hbox {
-    display: initial;
-    padding: 0;
-    margin: 0;
+    display: flex;
   }
 
   opacity: 0.5;
-
-  &:hover {
-    opacity: 0.8;
-  }
-
-  transition: 0.2s opacity cubic-bezier(0.075, 0.82, 0.165, 1);
-
   appearance: none !important;
   background: none;
   border: none !important;
 
-  aspect-ratio: 1;
-  height: 24px;
+  height: 32px;
+  width: 32px;
   padding: 3px;
-  width: 24px;
 
   min-width: 0 !important;
   color: var(--text-color-secondary);

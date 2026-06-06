@@ -390,7 +390,10 @@ class nsZenSpaceRoutingManager {
       },
     });
 
-    this.#file.data ??= { routes: [], defaultRouteExternal: "most-recent-space" };
+    this.#file.data ??= {
+      routes: [],
+      defaultRouteExternal: "most-recent-space",
+    };
     await this.#file.load();
   }
 

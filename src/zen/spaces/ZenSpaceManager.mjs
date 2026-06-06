@@ -1010,6 +1010,14 @@ class nsZenWorkspaces {
       return null;
     }
 
+    // Closing a glance tab tears down the overlay and restores selection
+    // to its parent tab. Don't run the last-tab handling here:
+    // in a pinned-only window the glance child is the only unpinned tab,
+    // so this would switch to an empty tab and clobber the restore-to-parent.
+    if (tab.hasAttribute("glance-id")) {
+      return null;
+    }
+
     let workspaceID = tab.getAttribute("zen-workspace-id");
     if (!workspaceID) {
       return null;

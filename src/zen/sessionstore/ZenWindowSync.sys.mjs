@@ -553,9 +553,17 @@ class nsZenWindowSync {
       );
       this.#syncItemPosition(aOriginalItem, aTargetItem, aWindow);
     }
-    if (aWindow.gZenTabTree?.enabled && gBrowser.isTab(aOriginalItem)) {
-      // Replicate the tree relationship + collapse state, then rebuild the
-      // target window's pointers/visual state from the mirrored attributes.
+    // Split-view groups are tree nodes too, so sync them as well as tabs.
+    const isTreeNode =
+      gBrowser.isTab(aOriginalItem) ||
+      (gBrowser.isTabGroup(aOriginalItem) &&
+        aOriginalItem.hasAttribute("split-view-group"));
+    if (aWindow.gZenTabTree?.enabled && isTreeNode) {
+      // Replicate the stable id + tree relationship + collapse state, then
+      // rebuild the target window's pointers/visual state from the mirrored
+      // attributes. zen-tree-id is mirrored so parent matching survives the
+      // target window reassigning ids on restore.
+      this.#maybeSyncAttributeChange(aOriginalItem, aTargetItem, "zen-tree-id");
       this.#maybeSyncAttributeChange(
         aOriginalItem,
         aTargetItem,

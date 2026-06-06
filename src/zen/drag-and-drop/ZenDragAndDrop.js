@@ -904,6 +904,7 @@
         !isTab(dropElement) ||
         dropElement.hasAttribute("zen-essential") ||
         dropElement.hasAttribute("zen-glance-tab") ||
+        dropElement.hasAttribute("zen-empty-tab") ||
         dropElement.hasAttribute("zen-live-folder-item-id") ||
         draggedTab.hasAttribute("zen-live-folder-item-id")
       ) {

@@ -196,3 +196,23 @@ add_task(async function test_restore_reasserts_dfs_order() {
 
   await cleanupTabs(a, b, x);
 });
+
+// zen-tree-id is the stable identity for parent matching, so it must NOT be
+// overwritten when window-sync reassigns the live id (e.g. on restore).
+add_task(async function test_tree_id_is_stable_across_id_reassignment() {
+  const a = await addNormalTab();
+  const b = await addNormalTab();
+  a.id = "zid-a";
+  gZenTabTree.nestTab(b, a);
+  Assert.equal(a.getAttribute("zen-tree-id"), "zid-a", "zen-tree-id captured");
+
+  a.id = "zid-a-reassigned";
+  gZenTabTree.reindex(a);
+  Assert.equal(
+    a.getAttribute("zen-tree-id"),
+    "zid-a",
+    "zen-tree-id stays stable when the live id is reassigned"
+  );
+
+  await cleanupTabs(a, b);
+});

@@ -195,9 +195,10 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
       // Hide a node nested under a collapsed parent immediately (and shed a stale
       // flag when moved out), without waiting for the next setCollapsed.
       node.toggleAttribute("zen-tree-hidden", hidden);
-      // Stable identity for parent references: window-sync reassigns the live
-      // `id` on restore, so children match their parent by this persisted id.
-      if (node.id) {
+      // Stable identity for parent references, set once: window-sync reassigns
+      // the live `id` on restore, so children match their parent by this
+      // persisted id — overwriting it from the new `id` would defeat that.
+      if (node.id && !node.hasAttribute("zen-tree-id")) {
         node.setAttribute("zen-tree-id", node.id);
       }
       const parent = this.getParent(node);
@@ -871,8 +872,17 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     for (const node of this.#nodes()) {
       const pid = node.getAttribute("zen-tree-parent-id");
       const parent = pid ? byId.get(pid) : null;
+      // Only reattach to a valid parent: an eligible node, in the same
+      // workspace, and not the node itself — same guards as nestTab, so restore
+      // and sync can't recreate a link under a pinned tab or across workspaces.
       node._zenTreeParent =
-        parent && parent !== node && this.isTreeEligible(node) ? parent : null;
+        parent &&
+        parent !== node &&
+        this.isTreeEligible(node) &&
+        this.isTreeEligible(parent) &&
+        this.#workspaceIdOf(node) === this.#workspaceIdOf(parent)
+          ? parent
+          : null;
       node._zenTreeCollapsed = node.hasAttribute("zen-tree-collapsed");
     }
     for (const node of this.#nodes()) {

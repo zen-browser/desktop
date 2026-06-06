@@ -31,3 +31,27 @@ add_task(async function test_nest_rejected_across_workspaces() {
   child._zenTreeParent = null;
   await cleanupTabs(parent, child);
 });
+
+// Rebuilding from persisted attributes (restore / window-sync) must apply the
+// same guards as nestTab: never link across workspaces, even if the attributes
+// say so.
+add_task(async function test_rebuild_rejects_cross_workspace_parent() {
+  const parent = await addNormalTab();
+  const child = await addNormalTab();
+  parent.id = "zws-parent";
+  parent.setAttribute("zen-tree-id", "zws-parent");
+  parent.setAttribute("zen-workspace-id", "ws-A");
+  child.setAttribute("zen-tree-parent-id", "zws-parent");
+  child.setAttribute("zen-workspace-id", "ws-B");
+  child._zenTreeParent = null;
+
+  gZenTabTree.rebuildFromAttributes();
+
+  Assert.equal(
+    gZenTabTree.getParent(child),
+    null,
+    "rebuild does not reattach a child across workspaces"
+  );
+
+  await cleanupTabs(parent, child);
+});

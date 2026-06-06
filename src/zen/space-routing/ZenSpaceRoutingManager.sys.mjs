@@ -142,7 +142,7 @@ class nsZenSpaceRoutingManager {
 
   /**
    * This will give the id of the workspace this uri will
-   * route to, or "most-recent-space" or "lil-zen"
+   * route to, or "most-recent-space"
    *
    * @param {string} uriString - The uri which will be routed
    * @param {object} options - The tab creation options
@@ -194,7 +194,7 @@ class nsZenSpaceRoutingManager {
         }
         break;
       case "equal-to":
-        if (this.#normalizeURL(uri) == reference) {
+        if (this.#normalizeURL(uri) == this.#normalizeURL(reference)) {
           return true;
         }
         break;

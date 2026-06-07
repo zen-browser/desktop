@@ -204,6 +204,7 @@ export class nsZenSpaceRoutingDialog {
     this.editorWindow.promiseDocumentFlushed(() =>
       this.editorWindow.requestAnimationFrame(() => {
         root.style.display = "";
+        input.focus();
       })
     );
 
@@ -220,8 +221,6 @@ export class nsZenSpaceRoutingDialog {
     openInMenulist.addEventListener("command", e =>
       this.onRouteOpenInChange(e.target.value, route.id)
     );
-
-    input.focus();
 
     this.updateShowNoRouteText();
 

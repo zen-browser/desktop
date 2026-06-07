@@ -1670,10 +1670,7 @@ class nsZenWorkspaces {
   }
 
   #markWorkspaceChanged(workspaceId) {
-    lazy.ZenSyncStore.markItemChanged({
-      type: "space",
-      id: workspaceId,
-    });
+    lazy.ZenSyncStore.markSpaceChanged(workspaceId);
   }
 
   async selectStartPage() {

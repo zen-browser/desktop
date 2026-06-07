@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
+import { RECORD_TYPES } from "resource:///modules/zen/ZenSyncConstants.sys.mjs";
 
 const lazy = {};
 
@@ -42,11 +43,27 @@ class ZenSyncManager {
 
   #changedItems = new Map();
 
-  markItemChanged(item) {
-    if (item.type && item.id && !this.#ignoreChanges) {
-      const key = `${item.type}~${item.id}`;
-      this.#changedItems.set(key, { type: item.type, id: item.id });
+  #registerChange(type, id) {
+    if (id && !this.#ignoreChanges) {
+      const key = `${type}~${id}`;
+      this.#changedItems.set(key, { type, id });
     }
+  }
+
+  markTabChanged(id) {
+    this.#registerChange(RECORD_TYPES.TAB, id);
+  }
+
+  markSpaceChanged(id) {
+    this.#registerChange(RECORD_TYPES.SPACE, id);
+  }
+
+  markSplitChanged(id) {
+    this.#registerChange(RECORD_TYPES.SPLIT, id);
+  }
+
+  markFolderChanged(id) {
+    this.#registerChange(RECORD_TYPES.FOLDER, id);
   }
 
   #getChangedItems() {

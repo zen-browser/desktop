@@ -5,4 +5,5 @@
 EXTRA_JS_MODULES.zen += [
   "ZenSyncManager.sys.mjs",
   "ZenWorkspacesSync.sys.mjs",
+  "ZenSyncConstants.sys.mjs",
 ]

@@ -1000,13 +1000,6 @@ class nsZenWindowSync {
     });
   }
 
-  #markItemChanged(id, type) {
-    lazy.ZenSyncStore.markItemChanged({
-      type,
-      id,
-    });
-  }
-
   /**
    * Create and insert a new pseudo image for a browser element.
    *
@@ -1367,7 +1360,7 @@ class nsZenWindowSync {
     }
 
     if (item.isZenFolder && !item.isLiveFolder) {
-      this.#markItemChanged(item.id, "folder");
+      lazy.ZenSyncStore.markFolderChanged(item.id);
       return;
     }
 
@@ -1377,7 +1370,7 @@ class nsZenWindowSync {
 
     this.#maybeFlushTabState(item).finally(() => {
       if (!item.hasAttribute("zen-empty-tab")) {
-        this.#markItemChanged(item.id, "tab");
+        lazy.ZenSyncStore.markTabChanged(item.id);
       }
     });
   }
@@ -1605,12 +1598,6 @@ class nsZenWindowSync {
    * Fired by tabbrowser for top-level location changes in any tab.
    * We use this to mark the tab as changed so Firefox Sync can persist
    * URL/history updates even when no tab label/icon event fires.
-   *
-   * @param aBrowser
-   * @param aWebProgress
-   * @param _aRequest
-   * @param _aLocation
-   * @param _aFlags
    */
   onLocationChange(aBrowser, aWebProgress, _aRequest, _aLocation, _aFlags) {
     if (!aWebProgress?.isTopLevel) {
@@ -1772,7 +1759,7 @@ class nsZenWindowSync {
     const groupId = aEvent.detail?.groupId;
     this.#notifySyncItemChanged(tab);
     if (groupId) {
-      this.#markItemChanged(groupId, "split");
+      lazy.ZenSyncStore.markSplitChanged(groupId);
     }
     this.#runOnAllWindows(window, win => {
       const targetTab = this.getItemFromWindow(win, tab.id);
@@ -1794,7 +1781,7 @@ class nsZenWindowSync {
     for (const tab of tabs) {
       this.#notifySyncItemChanged(tab);
     }
-    this.#markItemChanged(tabGroup.id, "split");
+    lazy.ZenSyncStore.markSplitChanged(tabGroup.id);
     this.#runOnAllWindows(window, win => {
       const otherWindowTabs = tabs
         .map(tab => this.getItemFromWindow(win, tab.id))
@@ -1834,7 +1821,7 @@ class nsZenWindowSync {
       return;
     }
 
-    this.#markItemChanged(tabGroup.id, "split");
+    lazy.ZenSyncStore.markSplitChanged(tabGroup.id);
   }
 }
 

@@ -10,6 +10,10 @@ import {
 import { CryptoWrapper } from "resource://services-sync/record.sys.mjs";
 import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 import { SCORE_INCREMENT_XLARGE } from "resource://services-sync/constants.sys.mjs";
+import {
+  RECORD_ID_PREFIX_BY_TYPE,
+  RECORD_TYPE_BY_PREFIX,
+} from "resource:///modules/zen/ZenSyncConstants.sys.mjs";
 
 const lazy = {};
 
@@ -25,22 +29,6 @@ XPCOMUtils.defineLazyPreferenceGetter(
   "zen.window-sync.sync-only-pinned-tabs",
   true
 );
-
-const RECORD_ID_PREFIX_BY_TYPE = Object.freeze({
-  space: "s",
-  container: "c",
-  tab: "t",
-  folder: "f",
-  split: "sv",
-});
-
-const RECORD_TYPE_BY_PREFIX = Object.freeze({
-  s: "space",
-  c: "container",
-  t: "tab",
-  f: "folder",
-  sv: "split",
-});
 
 /**
  * Sync record wrapper for workspace and container items stored in the

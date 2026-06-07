@@ -3,21 +3,21 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-space-routing-settings = 
-    .label = Space Routing Settings
-zen-space-routing-rulepanel-placeholder = Routes let you choose where specific sites open inside Zen. For example, you can route YouTube links to always open inside your Personal space.
-zen-space-routing-dialog-title = Space Routing Settings
-zen-space-routing-external-default = Default route for external links
-zen-space-routing-new-route = New Route
-zen-space-routing-open-in-space = Open in Space
-zen-space-routing-most-recent-space = Most recent Space
+    .label = Ajustes del enrutamiento del espacio
+zen-space-routing-rulepanel-placeholder = Las rutas le permiten elegir donde se abren sitios web específicos dentro de Zen. Por ejemplo, puede enrutar los enlaces de YouTube para que siempre se abran dentro de su espacio personal.
+zen-space-routing-dialog-title = Ajustes del enrutamiento del espacio
+zen-space-routing-external-default = Ruta por defecto para los enlaces externos
+zen-space-routing-new-route = Nueva ruta
+zen-space-routing-open-in-space = Abrir en espacio
+zen-space-routing-most-recent-space = Espacio más reciente
 zen-space-routing-close-button = 
-    .aria-label = Close
-    .tooltiptext = Close
+    .aria-label = Cerrar
+    .tooltiptext = Cerrar
 zen-space-routing-contains = 
-    .label = Contains
+    .label = Contiene
 zen-space-routing-equal-to = 
-    .label = Is Equal To
+    .label = Es igual a
 zen-space-routing-regex = 
     .label = RegEx
-zen-space-routing-open-in = Open In
+zen-space-routing-open-in = Abrir en
 zen-space-routing-url = URL

@@ -246,6 +246,54 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     gZenUIManager.showToast("zen-pinned-tab-replaced");
   }
 
+  async editPinnedUrl(tab = undefined) {
+    tab ??= TabContextMenu.contextTab;
+    if (!tab || !tab.pinned) {
+      return;
+    }
+
+    const currentUrl =
+      tab._zenPinnedInitialState?.entry?.url ||
+      tab.linkedBrowser?.currentURI?.spec ||
+      "";
+    const [title, label] = await document.l10n.formatValues([
+      { id: "zen-pinned-tab-edit-url-title" },
+      { id: "zen-pinned-tab-edit-url-label" },
+    ]);
+    const result = { value: currentUrl };
+    const confirmed = Services.prompt.prompt(
+      window,
+      title,
+      label,
+      result,
+      null,
+      { value: false }
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    let url = result.value.trim();
+    if (!url || url === currentUrl) {
+      return;
+    }
+
+    try {
+      url = Services.io.newURI(url).spec;
+    } catch (e) {
+      try {
+        url = Services.io.newURI(`https://${url}`).spec;
+      } catch (e2) {
+        gZenUIManager.showToast("zen-pinned-tab-url-invalid");
+        return;
+      }
+    }
+
+    window.gZenWindowSync.setPinnedUrl(tab, url);
+    this.resetPinnedTab(tab);
+    gZenUIManager.showToast("zen-pinned-tab-url-edited");
+  }
+
   _initClosePinnedTabShortcut() {
     let cmdClose = document.getElementById("cmd_close");
 
@@ -545,11 +593,20 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
     const elements = window.MozXULElement.parseXULToFragment(`
             <menuseparator id="context_zen-pinned-tab-separator" hidden="true"/>
-            <menuitem id="context_zen-replace-pinned-url-with-current"
-                      data-lazy-l10n-id="tab-context-zen-replace-pinned-url-with-current"
-                      data-l10n-args="{&quot;isEssential&quot;:&quot;&quot;}"
-                      hidden="true"
-                      command="cmd_zenReplacePinnedUrlWithCurrent"/>
+            <menu id="context_zen-edit-pinned-page"
+                  data-lazy-l10n-id="tab-context-zen-edit-pinned-page"
+                  data-l10n-args="{&quot;isEssential&quot;:&quot;&quot;}"
+                  hidden="true">
+              <menupopup>
+                <menuitem id="context_zen-replace-pinned-url-with-current"
+                          data-lazy-l10n-id="tab-context-zen-replace-pinned-url-with-current"
+                          data-l10n-args="{&quot;isEssential&quot;:&quot;&quot;}"
+                          command="cmd_zenReplacePinnedUrlWithCurrent"/>
+                <menuitem id="context_zen-edit-pinned-url"
+                          data-lazy-l10n-id="tab-context-zen-edit-pinned-url"
+                          command="cmd_zenEditPinnedUrl"/>
+              </menupopup>
+            </menu>
             <menuitem id="context_zen-reset-pinned-tab"
                       data-lazy-l10n-id="tab-context-zen-reset-pinned-tab"
                       data-l10n-args="{&quot;isEssential&quot;:&quot;&quot;}"
@@ -619,12 +676,19 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     const zenResetPinnedTab = document.getElementById(
       "context_zen-reset-pinned-tab"
     );
+    const zenEditPinnedPage = document.getElementById(
+      "context_zen-edit-pinned-page"
+    );
     const zenReplacePinnedUrl = document.getElementById(
       "context_zen-replace-pinned-url-with-current"
     );
-    [zenResetPinnedTab, zenReplacePinnedUrl].forEach(element => {
+    [zenResetPinnedTab, zenEditPinnedPage].forEach(element => {
       if (element) {
         element.hidden = !isVisible;
+      }
+    });
+    [zenResetPinnedTab, zenEditPinnedPage, zenReplacePinnedUrl].forEach(element => {
+      if (element) {
         document.l10n.setArgs(element, { isEssential });
       }
     });

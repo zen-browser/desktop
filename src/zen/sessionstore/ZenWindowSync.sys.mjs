@@ -1249,6 +1249,32 @@ class nsZenWindowSync {
   }
 
   /**
+   * Sets the canonical pinned URL for a tab across all windows, keeping the
+   * existing title/icon. Used to let the user edit a pinned tab's URL directly.
+   *
+   * @param {object} aTab - The tab to set the pinned URL for.
+   * @param {string} aUrl - The URL to store as the canonical pinned URL.
+   */
+  setPinnedUrl(aTab, aUrl) {
+    this.log(`Setting pinned url for tab ${aTab.id}`);
+    const image =
+      aTab.getAttribute("image") || aTab.ownerGlobal.gBrowser.getIcon(aTab);
+    const initialState = {
+      entry: {
+        url: aUrl,
+        title: aTab._zenPinnedInitialState?.entry?.title ?? aTab.label,
+      },
+      image,
+    };
+    this.#runOnAllWindows(null, win => {
+      const targetTab = this.getItemFromWindow(win, aTab.id);
+      if (targetTab) {
+        targetTab._zenPinnedInitialState = initialState;
+      }
+    });
+  }
+
+  /**
    * Propagates the workspaces to all windows.
    *
    * @param {Array} aWorkspaces - The workspaces to propagate.

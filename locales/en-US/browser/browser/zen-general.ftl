@@ -19,6 +19,13 @@ tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential =
     .label = Remove from Essentials
     .accesskey = R
+tab-context-zen-edit-pinned-page =
+    .label =
+        { $isEssential ->
+            [true] Edit Essential Page
+           *[false] Edit Pinned Page
+        }
+    .accesskey = P
 tab-context-zen-replace-pinned-url-with-current =
     .label =
         { $isEssential ->
@@ -26,6 +33,9 @@ tab-context-zen-replace-pinned-url-with-current =
            *[false] Replace Pinned URL with Current
         }
     .accesskey = C
+tab-context-zen-edit-pinned-url =
+    .label = Edit...
+    .accesskey = E
 tab-context-zen-edit-title =
     .label = Change Label...
 tab-context-zen-edit-icon =
@@ -55,6 +65,10 @@ zen-general-confirm =
     .label = Confirm
 
 zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL!
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Tab has been successfully renamed!
 zen-background-tab-opened-toast = New background tab opened!
 zen-workspace-renamed-toast = Workspace has been successfully renamed!

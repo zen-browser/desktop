@@ -1,0 +1,315 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+:root {
+  background: none;
+  appearance: none;
+  border: none;
+  outline: none;
+  color-scheme: light dark;
+
+  --sr-background: light-dark(white, #212223);
+  --select-background-color: light-dark(#eceef0, #3e3f43);
+  --input-background-color: light-dark(#f1f2f4, #2c2d31);
+  --hr-color: light-dark(#cdced4, #313235);
+
+  --sr-width: 510px;
+  --sr-height: 500px;
+
+  --content-padding: 26px;
+  --content-padding-vertical: 16px;
+
+  --text-color: light-dark(#4c4c4c, #dbdcdf);
+  --text-color-secondary: light-dark(#5c5e65, #8b8e98);
+  --text-color-error: light-dark(#9d2222, #d03535);
+
+  --rules-gap: 14px;
+
+  --sr-border-radius: 12px;
+}
+
+.dialog-button-box {
+  /* Remove default dialog buttons */
+  display: none !important;
+}
+
+#zen-space-routing-dialog-container {
+  background-color: var(--sr-background);
+  padding: 0;
+  margin: 24px;
+
+  height: var(--sr-height);
+  max-height: var(--sr-height);
+  min-height: var(--sr-height);
+
+  width: var(--sr-width);
+  max-width: var(--sr-width);
+  min-width: var(--sr-width);
+}
+
+#sr-container {
+  height: var(--sr-height);
+  width: var(--sr-width);
+
+  border-radius: var(--sr-border-radius);
+  overflow: hidden;
+  font-family: system-ui !important;
+
+  position: relative;
+  display: flex;
+}
+
+#sr-empty-content {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  gap: 24px;
+
+  position: absolute;
+  left: 84px;
+  right: 84px;
+
+  bottom: 100px;
+  top: 100px;
+  justify-content: center;
+
+  & image {
+    aspect-ratio: 1;
+    height: 75px;
+
+    min-height: 0;
+    max-height: none;
+    max-width: none;
+    min-width: 0;
+
+    color: var(--text-color-secondary);
+    -moz-context-properties: fill, fill-opacity;
+    fill: currentColor;
+    fill-opacity: 0.65;
+  }
+
+  & p {
+    font-weight: bold;
+    font-size: small;
+
+    color: var(--text-color);
+  }
+}
+
+.hr {
+  color: var(--hr-color);
+  padding: 0;
+  margin: 0;
+  margin-left: 32px;
+  margin-right: 32px;
+  border-style: solid;
+  border-width: 0.5px;
+}
+
+h3 {
+  font-size: medium;
+  color: var(--text-color);
+  font-weight: normal;
+}
+
+h4 {
+  font-size: small;
+  color: var(--text-color-secondary);
+}
+
+p {
+  color: var(--text-color);
+}
+
+.select {
+  width: 150px;
+  height: 26px;
+  padding: 4px;
+}
+
+.select,
+.select * {
+  background-color: var(--select-background-color);
+  color: var(--text-color);
+  margin: 0;
+
+  &.match-type-select {
+    width: 100px;
+  }
+  &.open-in-select {
+    width: 165px;
+  }
+}
+
+menulist[image] .menulist-icon,
+menulist[image]::part(icon) {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  -moz-context-properties: fill, stroke;
+  fill: currentColor;
+  margin-inline-end: 0;
+  padding-left: 2px;
+}
+
+menulist {
+  -moz-box-align: center;
+}
+
+.sr-rule-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sr-rule-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0 24px;
+
+  & p {
+    color: var(--text-color-secondary);
+  }
+}
+
+.sr-rule-bottom {
+  margin-left: 85px;
+}
+
+.input,
+.input * {
+  background-color: var(--input-background-color);
+  color: var(--text-color);
+  margin: 0;
+
+  flex-grow: 1;
+}
+
+.invalid,
+.invalid * {
+  color: var(--text-color-error) !important;
+
+  text-decoration-line: underline;
+  text-decoration-style: wavy;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--text-color-error);
+}
+
+button {
+  user-select: none !important;
+
+  padding: 2px;
+  display: flex;
+  justify-content: center;
+
+  margin: 0;
+
+  & hbox {
+    display: none;
+  }
+}
+
+.sr-remove,
+.close-icon {
+  & hbox {
+    display: initial;
+    padding: 0;
+    margin: 0;
+  }
+
+  opacity: 0.5;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  transition: 0.2s opacity cubic-bezier(0.075, 0.82, 0.165, 1);
+
+  appearance: none !important;
+  background: none;
+  border: none !important;
+
+  aspect-ratio: 1;
+  height: 24px;
+  padding: 3px;
+  width: 24px;
+
+  min-width: 0 !important;
+  color: var(--text-color-secondary);
+
+  -moz-context-properties: fill, fill-opacity;
+  fill: currentColor;
+}
+
+#sr-header {
+  width: 100%;
+  padding: var(--content-padding);
+  align-items: center;
+
+  display: flex;
+  flex-direction: row;
+}
+
+.sr-left {
+  margin-left: auto;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+
+  & button {
+    color: var(--text-color);
+    opacity: 1;
+
+    &:hover .sr-remove {
+      opacity: 0.8;
+    }
+  }
+}
+
+#sr-footer {
+  width: 100%;
+  padding: var(--content-padding);
+  align-items: center;
+
+  display: flex;
+  flex-direction: row;
+}
+
+#sr-content {
+  width: 100%;
+  overflow: scroll;
+  padding: var(--content-padding);
+  flex-grow: 1;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--rules-gap);
+}
+
+.sr-label-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  color: var(--text-color-secondary);
+}
+
+.sr-label {
+  margin: 0;
+}
+
+.sr-url-icon,
+.sr-open-in-icon {
+  width: 16px;
+  height: 16px;
+  -moz-context-properties: fill, fill-opacity;
+  fill: currentColor;
+  fill-opacity: 0.65;
+}

@@ -44,6 +44,7 @@ export class nsZenBoostEditor {
     this.lastDotSetPos = { x: 0, y: 0 };
     this.currentBoostData = null;
     this.boostInfo = null;
+    this.isDarkMode = this.openerWindow.gZenThemePicker.isDarkMode;
 
     this.killOtherEditorInstances();
 
@@ -52,6 +53,7 @@ export class nsZenBoostEditor {
     });
 
     this.init();
+    this.initColorScheme();
     this.initColorPicker();
     this.initFonts();
     this.loadBoost(domain);
@@ -185,6 +187,17 @@ export class nsZenBoostEditor {
   }
 
   /**
+   * Initializes the color scheme of the editor window based on the current theme (dark or light mode)
+   */
+  initColorScheme() {
+    if (this.isDarkMode) {
+      this.doc.documentElement.style.colorScheme = "dark";
+    } else {
+      this.doc.documentElement.style.colorScheme = "light";
+    }
+  }
+
+  /**
    * Initializes the code editor for the css editor
    */
   async initCodeEditor() {
@@ -205,7 +218,7 @@ export class nsZenBoostEditor {
     const editor = new Editor({
       mode: Editor.modes.css,
       lineNumbers: true,
-      theme: "default", // default is light theme
+      theme: "mozilla",
       readOnly: false,
       gutters: ["CodeMirror-linenumbers"],
     });
@@ -361,12 +374,6 @@ export class nsZenBoostEditor {
     }
     windowElem.setAttribute("editor", "code");
 
-    // Store the old boost editor width.
-    // The window needs the outer width which includes
-    // window chrome. This results in the window
-    // being smaller than it should be
-    this._boostEditorWidth = this.editorWindow.outerWidth;
-
     this.editorWindow.requestAnimationFrame(() => {
       this.editorWindow.resizeTo(
         this._codeEditorWidth,
@@ -400,7 +407,11 @@ export class nsZenBoostEditor {
     }
     windowElem.setAttribute("editor", "boost");
 
-    this.editorWindow.requestAnimationFrame(() => {
+    this.doc.getElementById("zen-boost-editor-root").style.display = "flex";
+    this.doc.getElementById("zen-boost-code-editor-root").style.display =
+      "none";
+
+    this.editorWindow.promiseDocumentFlushed(() => {
       this.editorWindow.resizeTo(
         this._boostEditorWidth,
         this.editorWindow.outerHeight
@@ -411,10 +422,6 @@ export class nsZenBoostEditor {
           this.editorWindow.screenY
         );
       }
-
-      this.doc.getElementById("zen-boost-editor-root").style.display = "flex";
-      this.doc.getElementById("zen-boost-code-editor-root").style.display =
-        "none";
     });
 
     // Disable picker mode
@@ -1158,12 +1165,6 @@ ${cssSelector} {
       autoThemeButton.classList.add("zen-boost-button-active");
     } else {
       autoThemeButton.classList.remove("zen-boost-button-active");
-    }
-
-    if (this.currentBoostData.smartInvert) {
-      invertButton.classList.add("zen-boost-button-active");
-    } else {
-      invertButton.classList.remove("zen-boost-button-active");
     }
 
     if (this.currentBoostData.smartInvert) {

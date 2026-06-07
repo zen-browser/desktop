@@ -133,6 +133,10 @@ document.addEventListener(
             gZenWorkspaces.unloadAllOtherWorkspaces();
             break;
           }
+          case "cmd_zenOpenSpaceRoutingSettings": {
+            gZenSpaceRoutingManager.openSpaceRoutingDialog(window);
+            break;
+          }
           case "cmd_zenNewNavigatorUnsynced":
             OpenBrowserWindow({ zenSyncedWindow: false });
             break;

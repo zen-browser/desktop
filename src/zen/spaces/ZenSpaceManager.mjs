@@ -955,7 +955,7 @@ class nsZenWorkspaces {
     }
     gZenEmojiPicker.open(anchor, {
       closeOnSelect: false,
-      allowNone: hasNoIcon,
+      allowNone: !hasNoIcon,
       onSelect: async icon => {
         const workspace = this.getWorkspaceFromId(workspaceId);
         if (!workspace) {
@@ -2979,8 +2979,15 @@ class nsZenWorkspaces {
 
   // Tab browser utilities
 
-  getContextIdIfNeeded(userContextId, fromExternal) {
+  getContextIdIfNeeded(userContextId, fromExternal, triggeringPrincipal) {
     if (!this.workspaceEnabled) {
+      return [userContextId, false, undefined];
+    }
+
+    if (
+      triggeringPrincipal &&
+      triggeringPrincipal.isAddonOrExpandedAddonPrincipal
+    ) {
       return [userContextId, false, undefined];
     }
 

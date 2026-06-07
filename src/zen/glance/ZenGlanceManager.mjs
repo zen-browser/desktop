@@ -214,6 +214,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       skipAnimation: true,
       ownerTab: currentTab,
       triggeringPrincipal: data.triggeringPrincipal,
+      skipRoute: true,
     };
   }
 

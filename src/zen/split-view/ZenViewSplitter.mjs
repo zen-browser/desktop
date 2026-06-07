@@ -1226,7 +1226,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const currentTab = gZenGlanceManager.getTabOrGlanceParent(
       window.gBrowser.selectedTab
     );
-    const newTab = this.openAndSwitchToTab(url, { inBackground: false });
+    const newTab = this.openAndSwitchToTab(url, {
+      skipRoute: true,
+      inBackground: false,
+    });
     this.splitTabs([currentTab, newTab], undefined, 1);
   }
 

@@ -3,21 +3,21 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-space-routing-settings = 
-    .label = Space Routing Settings
-zen-space-routing-rulepanel-placeholder = Routes let you choose where specific sites open inside Zen. For example, you can route YouTube links to always open inside your Personal space.
-zen-space-routing-dialog-title = Space Routing Settings
-zen-space-routing-external-default = Default route for external links
-zen-space-routing-new-route = New Route
-zen-space-routing-open-in-space = Open in Space
-zen-space-routing-most-recent-space = Most recent Space
+    .label = Erdvės nukreipimo nustatymai
+zen-space-routing-rulepanel-placeholder = Nukreipimai leidžia pasirinkti, kur konkrečios svetainės atveriamos naršyklėje „Zen“. Pavyzdžiui, galite nukreipti „YouTube“ nuorodas taip, kad jos visada būtų atveriamos jūsų asmeninėje erdvėje.
+zen-space-routing-dialog-title = Erdvės nukreipimo nustatymai
+zen-space-routing-external-default = Numatytasis nukreipimas išorės nuorodoms
+zen-space-routing-new-route = Naujas nukreipimas
+zen-space-routing-open-in-space = Atverti erdvėje
+zen-space-routing-most-recent-space = Naujausia erdvė
 zen-space-routing-close-button = 
-    .aria-label = Close
-    .tooltiptext = Close
+    .aria-label = Užverti
+    .tooltiptext = Užverti
 zen-space-routing-contains = 
-    .label = Contains
+    .label = Turi
 zen-space-routing-equal-to = 
-    .label = Is Equal To
+    .label = Yra lygus
 zen-space-routing-regex = 
-    .label = RegEx
-zen-space-routing-open-in = Open In
+    .label = Reguliarusis reiškinys
+zen-space-routing-open-in = Atverti per
 zen-space-routing-url = URL

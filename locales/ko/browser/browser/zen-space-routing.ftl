@@ -3,21 +3,21 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-space-routing-settings = 
-    .label = Space Routing Settings
-zen-space-routing-rulepanel-placeholder = Routes let you choose where specific sites open inside Zen. For example, you can route YouTube links to always open inside your Personal space.
-zen-space-routing-dialog-title = Space Routing Settings
-zen-space-routing-external-default = Default route for external links
-zen-space-routing-new-route = New Route
-zen-space-routing-open-in-space = Open in Space
-zen-space-routing-most-recent-space = Most recent Space
+    .label = 스페이스 경로 설정
+zen-space-routing-rulepanel-placeholder = 경로는 특정 사이트가 Zen의 어떤 곳으로 열릴지 설정할 수 있도록 합니다. 예를 들어, 유튜브 링크를 항상 "개인" 스페이스로 열리도록 할 수 있습니다.
+zen-space-routing-dialog-title = 스페이스 경로 설정
+zen-space-routing-external-default = 외부 링크의 기본 경로
+zen-space-routing-new-route = 새로운 경로
+zen-space-routing-open-in-space = 스페이스 안에서 열기
+zen-space-routing-most-recent-space = 가장 최근에 사용한 스페이스
 zen-space-routing-close-button = 
-    .aria-label = Close
-    .tooltiptext = Close
+    .aria-label = 닫기
+    .tooltiptext = 닫기
 zen-space-routing-contains = 
-    .label = Contains
+    .label = 포함
 zen-space-routing-equal-to = 
-    .label = Is Equal To
+    .label = 일치
 zen-space-routing-regex = 
-    .label = RegEx
-zen-space-routing-open-in = Open In
-zen-space-routing-url = URL
+    .label = 정규식
+zen-space-routing-open-in = ...에서 열기
+zen-space-routing-url = 주소

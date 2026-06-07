@@ -262,7 +262,7 @@ class nsZenSpaceRoutingManager {
         sizeTo: "available",
         allowDuplicateDialogs: false,
         parentWindow,
-      },
+      }
     );
   }
 

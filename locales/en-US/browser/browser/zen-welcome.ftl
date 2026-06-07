@@ -4,8 +4,62 @@
 
 zen-welcome-title-line1 = Welcome to Astra Browser
 zen-welcome-title-line2 = Made for India 🇮🇳
+zen-welcome-subtitle = India's fastest, most private browser
+zen-welcome-get-started = Get Started
 
-zen-welcome-import-title = A Fresh Start, Same Bookmarks
+zen-welcome-features-title = Everything you need
+zen-welcome-features-sub = Powerful features built for how Indians browse
+zen-feat-workspaces = Workspaces
+zen-feat-workspaces-sub = Separate tabs by context
+zen-feat-splitview = Split View
+zen-feat-splitview-sub = Two pages, one screen
+zen-feat-smartguard = Smart Guard
+zen-feat-smartguard-sub = Block trackers and ads
+zen-feat-compact = Compact Mode
+zen-feat-compact-sub = More space for content
+zen-feat-glance = Glance
+zen-feat-glance-sub = Preview links without leaving
+zen-feat-gestures = Gestures
+zen-feat-gestures-sub = Navigate with mouse gestures
+
+zen-welcome-privacy-title = Browse safer with Smart Guard
+zen-welcome-privacy-sub = Astra blocks trackers, ads, and fingerprinting automatically
+zen-privacy-trackers = Tracker blocking enabled
+zen-privacy-ads = Ad blocking enabled
+zen-privacy-fingerprint = Fingerprint protection on
+zen-privacy-telemetry = No telemetry sent to anyone
+zen-privacy-https = HTTPS-only mode
+zen-privacy-https-sub = Force secure connections always
+zen-privacy-safebrowsing = Safe browsing
+zen-privacy-safebrowsing-sub = Warn before visiting malicious sites
+
+zen-welcome-workspaces-title = Organise with Workspaces
+zen-welcome-workspaces-sub = Keep work, study, and personal browsing completely separate
+zen-workspace-work = Work
+zen-workspace-study = Study
+zen-workspace-personal = Personal
+zen-workspace-hint = You can add more workspaces any time from the sidebar
+
+zen-welcome-theme-title = Make it yours
+zen-welcome-theme-sub = Pick a theme. You can always change it later.
+zen-theme-dark = Dark
+zen-theme-light = Light
+zen-theme-system = System
+
+zen-welcome-search-title = Your Default Search Engine
+zen-welcome-search-sub = Choose your search engine. You can always change it later.
+
+zen-welcome-import-title = Bring your stuff over
+zen-welcome-import-sub = Import bookmarks, history, and passwords from your old browser
+zen-import-chrome = Import from Chrome
+zen-import-chrome-sub = Bookmarks, history, passwords
+zen-import-default = Set Astra as default browser
+zen-import-default-sub = Open all links in Astra
+
+zen-welcome-finish-title = Astra is ready!
+zen-welcome-finish-sub = Your private, powerful Indian browser is all set up
+zen-welcome-finish-btn = Start Browsing
+
 zen-welcome-import-description-1 = Your bookmarks, history, and passwords are like a trail of breadcrumbs through the internet—don’t leave them behind!
 zen-welcome-import-description-2 = Easily bring them over from another browser and pick up right where you left off.
 zen-welcome-import-button = Import now
@@ -33,5 +87,6 @@ zen-welcome-default-search-title = Your Default Search Engine
 zen-welcome-default-search-description = Choose your default search engine. You can always change it later!
 
 zen-welcome-skip-button = Skip
+zen-welcome-skip = Skip
 
 zen-welcome-finished = Your Astra Browser has been set up correctly!

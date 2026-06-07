@@ -31,3 +31,7 @@ tab-context-zen-add-domain-to-sr =
             [one] Add Route for Domain
             *[other] Add Route for Domains
         }
+
+# Heading for the read-only list of routes that come from a managed policy or a
+# declarative configuration (e.g. a dotfiles setup) rather than the dialog.
+zen-space-routing-managed-section = Managed by your configuration

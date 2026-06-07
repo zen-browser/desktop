@@ -84,6 +84,127 @@ export class nsZenSpaceRoutingDialog {
   initRouteList() {
     const allRoutes = gZenSpaceRoutingManager.getAllRoutes();
     allRoutes.forEach(r => this.createRouteElement(r));
+    this.renderManagedRoutes();
+  }
+
+  /**
+   * Renders the configuration-managed routes as a read-only section above the
+   * editable routes. These come from the zen.space-routing.managed-routes pref
+   * and can't be edited here, so they are shown for transparency — to explain
+   * routing the user didn't set up by hand — rather than as editable rows.
+   */
+  async renderManagedRoutes() {
+    const managedRoutes = gZenSpaceRoutingManager.getManagedRoutes();
+    if (!managedRoutes.length) {
+      return;
+    }
+
+    const [containsMsg, equalToMsg, regexMsg, mostRecentMsg] =
+      await this.doc.l10n.formatMessages([
+        "zen-space-routing-contains",
+        "zen-space-routing-equal-to",
+        "zen-space-routing-regex",
+        "zen-space-routing-most-recent-space",
+      ]);
+
+    const msgValue = (msg, attrName) =>
+      msg?.attributes?.find(a => a.name === attrName)?.value ?? msg?.value ?? "";
+
+    const matchTypeLabels = {
+      "contains": msgValue(containsMsg, "label"),
+      "equal-to": msgValue(equalToMsg, "label"),
+      "regex": msgValue(regexMsg, "label"),
+    };
+    const mostRecentLabel = msgValue(mostRecentMsg);
+    const workspaces = this.openerWindow.gZenWorkspaces.getWorkspaces();
+
+    const header = this.doc.createXULElement("label");
+    header.className = "sr-managed-header";
+    header.setAttribute("data-l10n-id", "zen-space-routing-managed-section");
+
+    const nodes = [header];
+    for (const route of managedRoutes) {
+      nodes.push(
+        this.createManagedRouteElement(
+          route,
+          matchTypeLabels,
+          mostRecentLabel,
+          workspaces
+        )
+      );
+    }
+
+    // Insert right after the empty-state placeholder so the managed section sits
+    // above the editable routes, regardless of when this async work resolves.
+    this.doc.getElementById("sr-empty-content").after(...nodes);
+    this.updateShowNoRouteText();
+  }
+
+  /**
+   * Builds a single read-only managed-route row.
+   *
+   * @param {object} route - The managed route
+   * @param {object} matchTypeLabels - Localized match-type labels keyed by id
+   * @param {string} mostRecentLabel - Localized "Most recent Space" label
+   * @param {Array<object>} workspaces - The opener window's Spaces
+   * @returns {Element} The row element
+   */
+  createManagedRouteElement(route, matchTypeLabels, mostRecentLabel, workspaces) {
+    const root = this.doc.createXULElement("vbox");
+    root.className = "sr-managed-container";
+    root.setAttribute("routeId", route.id);
+
+    const row = this.doc.createXULElement("hbox");
+    row.className = "sr-rule-row sr-managed-row";
+
+    const urlIcon = this.doc.createXULElement("image");
+    urlIcon.className = "sr-url-icon";
+
+    const reference = this.doc.createXULElement("label");
+    reference.className = "sr-managed-reference";
+    reference.setAttribute("crop", "end");
+    reference.setAttribute("value", route.reference);
+
+    const matchType = this.doc.createXULElement("label");
+    matchType.className = "sr-managed-meta";
+    matchType.setAttribute(
+      "value",
+      matchTypeLabels[route.matchType] ?? route.matchType
+    );
+
+    const arrow = this.doc.createXULElement("image");
+    arrow.className = "sr-open-in-icon sr-managed-arrow";
+
+    const target = this.doc.createXULElement("label");
+    target.className = "sr-managed-target";
+    target.setAttribute("crop", "end");
+    target.setAttribute(
+      "value",
+      this.managedTargetName(route, mostRecentLabel, workspaces)
+    );
+
+    row.append(urlIcon, reference, matchType, arrow, target);
+    root.append(row);
+    return root;
+  }
+
+  /**
+   * Resolves the user-visible target name shown for a managed route.
+   *
+   * @param {object} route - The managed route
+   * @param {string} mostRecentLabel - Localized "Most recent Space" label
+   * @param {Array<object>} workspaces - The opener window's Spaces
+   * @returns {string} The label to display for the route's target
+   */
+  managedTargetName(route, mostRecentLabel, workspaces) {
+    if (route.openInSpace) {
+      return route.openInSpace;
+    }
+    if (!route.openIn || route.openIn === "most-recent-space") {
+      return mostRecentLabel;
+    }
+    const match = workspaces.find(w => w.uuid === route.openIn);
+    return match?.name ?? mostRecentLabel;
   }
 
   /**
@@ -235,9 +356,12 @@ export class nsZenSpaceRoutingDialog {
     const container = this.doc.getElementById("sr-content");
     const noRoutesText = this.doc.getElementById("sr-empty-content");
 
-    // One because of the element itself
-    noRoutesText.style.display =
-      container.children.length == 1 ? "flex" : "none";
+    // The placeholder hides as soon as there is any route to show, whether it is
+    // an editable user route or a read-only managed one.
+    const hasAnyRoute = !!container.querySelector(
+      ".sr-rule-container, .sr-managed-container"
+    );
+    noRoutesText.style.display = hasAnyRoute ? "none" : "flex";
   }
 
   /**

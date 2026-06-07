@@ -1,0 +1,20 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# A JSON array of "managed" Space Routing rules, intended to be set by an
+# enterprise policy or a declarative configuration manager (e.g. a Nix /
+# home-manager dotfiles setup), the same way Containerise rules can be seeded.
+#
+# Managed routes are evaluated before — and take precedence over — the routes a
+# user creates in the Space Routing dialog, and they are never written back to
+# the on-disk store. Each entry looks like:
+#
+#   { "reference": "github.com", "matchType": "contains", "openInSpace": "Work" }
+#
+# `openInSpace` targets a Space by its name, which is resolved to the Space's id
+# at routing time. That indirection is what makes a declarative config
+# deterministic: Space ids are random per profile, but names are stable. Use
+# `openIn` instead to target a literal "most-recent-space" or a known Space id.
+- name: zen.space-routing.managed-routes
+  value: ""

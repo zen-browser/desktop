@@ -3,10 +3,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { JSONFile } from "resource://gre/modules/JSONFile.sys.mjs";
+import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
+
+const lazy = {};
+
+// Routes seeded from configuration (an enterprise policy, a declarative
+// dotfiles setup, …). The pref holds a JSON array of route definitions; see
+// getManagedRoutes() for the accepted shape. It is a live-updating getter so a
+// changed pref is picked up without a restart.
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "managedRoutesJSON",
+  "zen.space-routing.managed-routes",
+  ""
+);
+
+const VALID_MATCH_TYPES = ["contains", "equal-to", "regex"];
 
 class nsZenSpaceRoutingManager {
   #file = null;
   #saveFilename = "zen-space-routing.jsonlz4";
+  // Memoized parse of the managed-routes pref. Re-parsed only when the raw pref
+  // string changes, so routeUri() can consult it per tab without re-parsing.
+  #managedRoutesRaw = null;
+  #managedRoutes = [];
 
   static SKIP_TYPE = {
     NONE: "none",
@@ -98,7 +118,7 @@ class nsZenSpaceRoutingManager {
       };
     }
 
-    targetRoute = this.routeUri(uriString, options);
+    targetRoute = this.routeUri(uriString, options, win);
     switch (targetRoute) {
       case "most-recent-space":
         break;
@@ -271,10 +291,21 @@ class nsZenSpaceRoutingManager {
    *
    * @param {string} uriString - The uri which will be routed
    * @param {object} options - The tab creation options
+   * @param {Window} [win] - The window the tab is being added to, used to
+   *   resolve a managed route's target Space by name
    * @returns {string} Route instructions
    */
-  routeUri(uriString, options) {
+  routeUri(uriString, options, win) {
     const isExternal = options.fromExternal;
+
+    // Managed routes come from configuration (the zen.space-routing.managed-routes
+    // pref) and are the deterministic source of truth, so they are evaluated
+    // before — and win over — the routes a user created in the dialog.
+    for (const route of this.getManagedRoutes()) {
+      if (this.isRouteMatching(uriString, route)) {
+        return this.#resolveManagedTarget(route, win);
+      }
+    }
 
     // Go over all routes and return the open type for the first match
     const allRoutes = this.getAllRoutes();
@@ -292,6 +323,147 @@ class nsZenSpaceRoutingManager {
 
     // If nothing matches, open in most recent space
     return "most-recent-space";
+  }
+
+  /**
+   * Returns the configuration-managed routes, parsed from the
+   * `zen.space-routing.managed-routes` pref.
+   *
+   * The pref holds either a JSON array of route objects, or a JSON object with
+   * a `routes` array. Each route object accepts:
+   *
+   *   - reference   {string} the pattern to match (required, non-empty)
+   *   - matchType   {string} "contains" | "equal-to" | "regex" (default "contains")
+   *   - openInSpace {string} the NAME of the Space to route to. Resolved to the
+   *                          Space's id at routing time, which is what makes a
+   *                          declarative config deterministic — Space ids are
+   *                          random per profile, but names are stable.
+   *   - openIn      {string} a literal target ("most-recent-space" or a Space
+   *                          id). Used when `openInSpace` is absent.
+   *
+   * The result is memoized and only re-parsed when the pref changes. The
+   * returned array is owned by the manager and must be treated as read-only.
+   *
+   * @returns {Array<object>} The managed routes (possibly empty)
+   */
+  getManagedRoutes() {
+    const raw = lazy.managedRoutesJSON;
+    if (raw === this.#managedRoutesRaw) {
+      return this.#managedRoutes;
+    }
+    this.#managedRoutesRaw = raw;
+    this.#managedRoutes = this.#parseManagedRoutes(raw);
+    return this.#managedRoutes;
+  }
+
+  /**
+   * Parses and normalizes the managed-routes pref value.
+   *
+   * Invalid input never throws: a parse error or an unexpected shape simply
+   * yields an empty list (logged), so a malformed pref can't break tab opening.
+   *
+   * @param {string} raw - The raw pref value
+   * @returns {Array<object>} The normalized managed routes
+   * @private
+   */
+  #parseManagedRoutes(raw) {
+    if (typeof raw !== "string" || raw.trim() === "") {
+      return [];
+    }
+
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch (e) {
+      console.error(
+        "[ZenSpaceRouting] Could not parse zen.space-routing.managed-routes:",
+        e
+      );
+      return [];
+    }
+
+    // Accept a bare array, or an object with a `routes` array.
+    const list = Array.isArray(parsed) ? parsed : parsed?.routes;
+    if (!Array.isArray(list)) {
+      console.error(
+        "[ZenSpaceRouting] zen.space-routing.managed-routes must be a JSON " +
+          "array of routes, or an object with a `routes` array."
+      );
+      return [];
+    }
+
+    const routes = [];
+    for (let index = 0; index < list.length; index++) {
+      const entry = list[index];
+      if (
+        !entry ||
+        typeof entry.reference !== "string" ||
+        entry.reference.trim() === ""
+      ) {
+        continue;
+      }
+
+      const matchType = VALID_MATCH_TYPES.includes(entry.matchType)
+        ? entry.matchType
+        : "contains";
+
+      const route = {
+        id: `managed-${index}`,
+        reference: entry.reference,
+        matchType,
+        managed: true,
+        openIn:
+          typeof entry.openIn === "string" && entry.openIn.trim() !== ""
+            ? entry.openIn
+            : "most-recent-space",
+      };
+
+      if (
+        typeof entry.openInSpace === "string" &&
+        entry.openInSpace.trim() !== ""
+      ) {
+        route.openInSpace = entry.openInSpace;
+      }
+
+      routes.push(route);
+    }
+    return routes;
+  }
+
+  /**
+   * Resolves a managed route's target to a value routeUri() can return: either
+   * "most-recent-space" or a concrete Space id.
+   *
+   * @param {object} route - A managed route
+   * @param {Window} [win] - The window whose Spaces resolve a name reference
+   * @returns {string} The resolved target
+   * @private
+   */
+  #resolveManagedTarget(route, win) {
+    if (route.openInSpace) {
+      return (
+        this.#resolveSpaceNameToId(route.openInSpace, win) ?? "most-recent-space"
+      );
+    }
+    return route.openIn ?? "most-recent-space";
+  }
+
+  /**
+   * Looks up a Space id from its (user-visible) name.
+   *
+   * @param {string} name - The Space name
+   * @param {Window} [win] - The window whose Spaces are searched
+   * @returns {string|null} The matching Space id, or null if none/unavailable
+   * @private
+   */
+  #resolveSpaceNameToId(name, win) {
+    try {
+      const workspaces = win?.gZenWorkspaces?.getWorkspaces?.() ?? [];
+      const match = workspaces.find(workspace => workspace?.name === name);
+      return match?.uuid ?? null;
+    } catch {
+      return null;
+    }
   }
 
   /**

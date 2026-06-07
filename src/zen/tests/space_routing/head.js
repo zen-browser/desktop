@@ -41,6 +41,9 @@ function makeFakeWindow({
       moveCalls: [],
       changeCalls: [],
       lastSelectedWorkspaceTabs: {},
+      getWorkspaces() {
+        return workspaces;
+      },
       getWorkspaceFromId(id) {
         return workspaces.find(w => w.uuid === id) || null;
       },

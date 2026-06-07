@@ -286,3 +286,49 @@ button {
   fill: currentColor;
   fill-opacity: 0.65;
 }
+
+/* Read-only routes seeded from configuration (the managed-routes pref). */
+.sr-managed-header {
+  margin: 0 24px;
+
+  font-size: x-small;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+
+  color: var(--text-color-secondary);
+  opacity: 0.8;
+}
+
+.sr-managed-container {
+  display: flex;
+  flex-direction: column;
+  margin: 0 24px;
+}
+
+.sr-managed-row {
+  background-color: var(--input-background-color);
+  border-radius: 8px;
+  padding: 8px 10px;
+
+  & .sr-managed-reference {
+    color: var(--text-color);
+    font-weight: 600;
+    margin: 0;
+  }
+
+  & .sr-managed-meta {
+    color: var(--text-color-secondary);
+    margin: 0;
+  }
+
+  & .sr-managed-arrow {
+    margin-left: auto;
+  }
+
+  & .sr-managed-target {
+    color: var(--text-color);
+    margin: 0;
+    max-width: 180px;
+  }
+}

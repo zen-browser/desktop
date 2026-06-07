@@ -6,28 +6,28 @@ import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components
 
 // prettier-ignore
 const SVG_ICONS = [
-    "airplane.svg", "american-football.svg", "baseball.svg", "basket.svg", 
-    "bed.svg", "bell.svg", "bookmark.svg", "book.svg", 
-    "briefcase.svg", "brush.svg", "bug.svg", "build.svg", 
-    "cafe.svg", "call.svg", "card.svg", "chat.svg", 
-    "checkbox.svg", "circle.svg", "cloud.svg", "code.svg", 
-    "coins.svg", "construct.svg", "cutlery.svg", "egg.svg", 
-    "extension-puzzle.svg", "eye.svg", "fast-food.svg", "fish.svg", 
-    "flag.svg", "flame.svg", "flask.svg", "folder.svg", 
-    "game-controller.svg", "globe-1.svg", "globe.svg", "grid-2x2.svg", 
-    "grid-3x3.svg", "heart.svg", "ice-cream.svg", "image.svg", 
-    "inbox.svg", "key.svg", "layers.svg", "leaf.svg", 
-    "lightning.svg", "location.svg", "lock-closed.svg", "logo-rss.svg", 
-    "logo-usd.svg", "mail.svg", "map.svg", "megaphone.svg", 
-    "moon.svg", "music.svg", "navigate.svg", "nuclear.svg", 
-    "page.svg", "palette.svg", "paw.svg", "people.svg", 
-    "pizza.svg", "planet.svg", "present.svg", "rocket.svg", 
-    "school.svg", "shapes.svg", "shirt.svg", "skull.svg", 
-    "squares.svg", "square.svg", "star-1.svg", "star.svg", 
-    "stats-chart.svg", "sun.svg", "tada.svg", "terminal.svg", 
-    "ticket.svg", "time.svg", "trash.svg", "triangle.svg", 
-    "video.svg", "volume-high.svg", "wallet.svg", "warning.svg", 
-    "water.svg", "weight.svg", 
+    "airplane.svg", "american-football.svg", "baseball.svg", "basket.svg",
+    "bed.svg", "bell.svg", "bookmark.svg", "book.svg",
+    "briefcase.svg", "brush.svg", "bug.svg", "build.svg",
+    "cafe.svg", "call.svg", "card.svg", "chat.svg",
+    "checkbox.svg", "circle.svg", "cloud.svg", "code.svg",
+    "coins.svg", "construct.svg", "cutlery.svg", "egg.svg",
+    "extension-puzzle.svg", "eye.svg", "fast-food.svg", "fish.svg",
+    "flag.svg", "flame.svg", "flask.svg", "folder.svg",
+    "game-controller.svg", "globe-1.svg", "globe.svg", "grid-2x2.svg",
+    "grid-3x3.svg", "heart.svg", "ice-cream.svg", "image.svg",
+    "inbox.svg", "key.svg", "layers.svg", "leaf.svg",
+    "lightning.svg", "location.svg", "lock-closed.svg", "logo-rss.svg",
+    "logo-usd.svg", "mail.svg", "map.svg", "megaphone.svg",
+    "moon.svg", "music.svg", "navigate.svg", "nuclear.svg",
+    "page.svg", "palette.svg", "paw.svg", "people.svg",
+    "pizza.svg", "planet.svg", "present.svg", "rocket.svg",
+    "school.svg", "shapes.svg", "shirt.svg", "skull.svg",
+    "squares.svg", "square.svg", "star-1.svg", "star.svg",
+    "stats-chart.svg", "sun.svg", "tada.svg", "terminal.svg",
+    "ticket.svg", "time.svg", "trash.svg", "triangle.svg",
+    "video.svg", "volume-high.svg", "wallet.svg", "warning.svg",
+    "water.svg", "weight.svg",
   ];
 
 class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
@@ -47,6 +47,7 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
   init() {
     this.#panel = document.getElementById("PanelUI-zen-emojis-picker");
     this.#panel.addEventListener("popupshowing", this);
+    this.#panel.addEventListener("popupshown", this);
     this.#panel.addEventListener("popuphidden", this);
     this.#panel.addEventListener("command", this);
     this.searchInput.addEventListener("input", this);
@@ -56,6 +57,9 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     switch (event.type) {
       case "popupshowing":
         this.#onPopupShowing(event);
+        break;
+      case "popupshown":
+        this.#onPopupShown(event);
         break;
       case "popuphidden":
         this.#onPopupHidden(event);
@@ -103,17 +107,20 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     return document.getElementById("PanelUI-zen-emojis-picker-search");
   }
 
-  #changePage(toSvg = false) {
+  #changePage(toSvg = false, { animate = true } = {}) {
+    const pages = document.getElementById("PanelUI-zen-emojis-picker-pages");
     const itemToScroll = toSvg
       ? this.svgList
-      : document
-          .getElementById("PanelUI-zen-emojis-picker-pages")
-          .querySelector('[emojis="true"]');
-    itemToScroll.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "start",
-    });
+      : pages.querySelector('[emojis="true"]');
+    if (animate) {
+      itemToScroll.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "start",
+      });
+    } else {
+      pages.scrollLeft = toSvg ? itemToScroll.offsetLeft : 0;
+    }
     const button = document.getElementById(
       `PanelUI-zen-emojis-picker-change-${toSvg ? "svg" : "emojis"}`
     );
@@ -199,13 +206,18 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     }
   }
 
+  #onPopupShown(event) {
+    if (event.target !== this.#panel) {
+      return;
+    }
+    this.#changePage(false, { animate: false });
+  }
+
   #onPopupHidden(event) {
     if (event.target !== this.#panel) {
       return;
     }
     this.#clearEmojis();
-
-    this.#changePage(false);
 
     const emojiList = this.emojiList;
     emojiList.innerHTML = "";
@@ -283,6 +295,7 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
       this.#panel.removeAttribute("only-svg-icons");
     }
     this.#setAllowNone(allowNone);
+    this.#changePage(false, { animate: false });
     this.#panel.openPopup(anchor, "after_start", 0, 0, false, false);
     return this.#currentPromise;
   }

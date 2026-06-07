@@ -1223,28 +1223,43 @@ class nsZenWindowSync {
     return this.#maybeFlushTabState(aTab).finally(() => {
       this.log(`Setting pinned initial state for tab ${aTab.id}`);
       let { entries, index } = this.#getTabEntriesFromCache(aTab);
-      let image =
-        aTab.getAttribute("image") ||
-        aTab.documentGlobal.gBrowser.getIcon(aTab);
       let activeIndex = typeof index === "number" ? index : entries.length;
       // Tab state cache gives us the index starting from 1 instead of 0.
       activeIndex--;
       activeIndex = Math.min(activeIndex, entries.length - 1);
       activeIndex = Math.max(activeIndex, 0);
       let entryToUse = (entries[activeIndex] || entries[0]) ?? null;
-      const initialState = {
-        entry: {
-          url: entryToUse?.url,
-          title: entryToUse?.title,
-        },
-        image,
-      };
-      this.#runOnAllWindows(null, win => {
-        const targetTab = this.getItemFromWindow(win, aTab.id);
-        if (targetTab) {
-          targetTab._zenPinnedInitialState = initialState;
-        }
+      this.#setPinnedInitialState(aTab, {
+        url: entryToUse?.url,
+        title: entryToUse?.title,
       });
+    });
+  }
+
+  /**
+   * Sets the canonical pinned URL for a tab across all windows, keeping the
+   * existing title/icon. Used to let the user edit a pinned tab's URL directly.
+   *
+   * @param {object} aTab - The tab to set the pinned URL for.
+   * @param {string} aUrl - The URL to store as the canonical pinned URL.
+   */
+  setPinnedUrl(aTab, aUrl) {
+    this.log(`Setting pinned url for tab ${aTab.id}`);
+    this.#setPinnedInitialState(aTab, {
+      url: aUrl,
+      title: aTab._zenPinnedInitialState?.entry?.title ?? aTab.label,
+    });
+  }
+
+  #setPinnedInitialState(aTab, aEntry) {
+    const image =
+      aTab.getAttribute("image") || aTab.documentGlobal.gBrowser.getIcon(aTab);
+    const initialState = { entry: aEntry, image };
+    this.#runOnAllWindows(null, win => {
+      const targetTab = this.getItemFromWindow(win, aTab.id);
+      if (targetTab) {
+        targetTab._zenPinnedInitialState = initialState;
+      }
     });
   }
 

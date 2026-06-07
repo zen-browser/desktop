@@ -169,7 +169,7 @@ export class nsZenWorkspace extends MozXULElement {
           return;
         }
         event.stopPropagation();
-        gZenWorkspaces.changeWorkspaceIcon();
+        gZenWorkspaces.changeWorkspaceIcon(this.id);
       });
 
     this.indicator.addEventListener("click", event => {

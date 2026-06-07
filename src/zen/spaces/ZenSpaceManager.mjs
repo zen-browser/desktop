@@ -936,15 +936,22 @@ class nsZenWorkspaces {
     }
   }
 
-  changeWorkspaceIcon() {
-    let anchor = this.activeWorkspaceIndicator?.querySelector(
-      ".zen-current-workspace-indicator-icon"
-    );
-    if (this.#contextMenuData?.workspaceId) {
-      anchor = this.#contextMenuData.originalTarget;
-    }
+  changeWorkspaceIcon(targetWorkspaceId = null) {
     const workspaceId =
-      this.#contextMenuData?.workspaceId || this.activeWorkspace;
+      this.#contextMenuData?.workspaceId ||
+      targetWorkspaceId ||
+      this.activeWorkspace;
+    // Anchor the picker on whatever triggered it (the right-clicked space
+    // switcher/header), so it appears where the user clicked; fall back to the
+    // workspace's own indicator icon (e.g. double-click on the active header).
+    const anchor =
+      this.#contextMenuData?.originalTarget ||
+      this.workspaceElement(workspaceId)?.indicator?.querySelector(
+        ".zen-current-workspace-indicator-icon"
+      ) ||
+      this.activeWorkspaceIndicator?.querySelector(
+        ".zen-current-workspace-indicator-icon"
+      );
     if (!anchor) {
       return;
     }
@@ -1137,8 +1144,16 @@ class nsZenWorkspaces {
     } catch (e) {
       console.error("Error getting explicitOriginalTarget in context menu:", e);
     }
+    // The actions button itself doesn't carry zen-workspace-id (it's inherited
+    // onto the workspace indicator), so resolve the id from the nearest element
+    // that has it; otherwise actions target the active workspace instead of the
+    // right-clicked one.
+    const workspaceEl =
+      event.explicitOriginalTarget?.closest?.("[zen-workspace-id]");
     this.#contextMenuData = {
-      workspaceId: target?.getAttribute("zen-workspace-id"),
+      workspaceId:
+        workspaceEl?.getAttribute("zen-workspace-id") ||
+        target?.getAttribute("zen-workspace-id"),
       originalTarget: target,
     };
     const workspaceName = document.getElementById("context_zenEditWorkspace");

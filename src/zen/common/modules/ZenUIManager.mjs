@@ -1708,7 +1708,11 @@ window.gZenVerticalTabsManager = {
       this._tabEdited.after(input);
     }
     input.focus();
-    input.select();
+    // Select all, but keep the viewport anchored at the start (show the
+    // beginning of long labels, like the non-editing display) instead of the
+    // caret-at-end that input.select() leaves.
+    input.setSelectionRange(0, input.value.length, "backward");
+    input.scrollLeft = 0;
 
     input.addEventListener("blur", this._renameTabHalt);
   },

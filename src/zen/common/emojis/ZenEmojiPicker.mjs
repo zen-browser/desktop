@@ -47,6 +47,7 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
   init() {
     this.#panel = document.getElementById("PanelUI-zen-emojis-picker");
     this.#panel.addEventListener("popupshowing", this);
+    this.#panel.addEventListener("popupshown", this);
     this.#panel.addEventListener("popuphidden", this);
     this.#panel.addEventListener("command", this);
     this.searchInput.addEventListener("input", this);
@@ -56,6 +57,9 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     switch (event.type) {
       case "popupshowing":
         this.#onPopupShowing(event);
+        break;
+      case "popupshown":
+        this.#onPopupShown(event);
         break;
       case "popuphidden":
         this.#onPopupHidden(event);
@@ -103,17 +107,22 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     return document.getElementById("PanelUI-zen-emojis-picker-search");
   }
 
-  #changePage(toSvg = false) {
+  #changePage(toSvg = false, { animate = true } = {}) {
+    const pages = document.getElementById("PanelUI-zen-emojis-picker-pages");
     const itemToScroll = toSvg
       ? this.svgList
-      : document
-          .getElementById("PanelUI-zen-emojis-picker-pages")
-          .querySelector('[emojis="true"]');
-    itemToScroll.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "start",
-    });
+      : pages.querySelector('[emojis="true"]');
+    if (animate) {
+      itemToScroll.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "start",
+      });
+    } else {
+      // Reset instantly (no smooth-scroll), used before the popup is shown so
+      // it never animates the page switch after opening.
+      pages.scrollLeft = toSvg ? itemToScroll.offsetLeft : 0;
+    }
     const button = document.getElementById(
       `PanelUI-zen-emojis-picker-change-${toSvg ? "svg" : "emojis"}`
     );
@@ -199,13 +208,22 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     }
   }
 
+  // The page lists are only populated in popupshowing, so positioning the
+  // scroll before the popup is laid out has no effect. Position here, once the
+  // popup is shown and measured, so it always opens on the Emojis page without
+  // a visible scroll animation.
+  #onPopupShown(event) {
+    if (event.target !== this.#panel) {
+      return;
+    }
+    this.#changePage(false, { animate: false });
+  }
+
   #onPopupHidden(event) {
     if (event.target !== this.#panel) {
       return;
     }
     this.#clearEmojis();
-
-    this.#changePage(false);
 
     const emojiList = this.emojiList;
     emojiList.innerHTML = "";
@@ -283,6 +301,7 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
       this.#panel.removeAttribute("only-svg-icons");
     }
     this.#setAllowNone(allowNone);
+    this.#changePage(false, { animate: false });
     this.#panel.openPopup(anchor, "after_start", 0, 0, false, false);
     return this.#currentPromise;
   }

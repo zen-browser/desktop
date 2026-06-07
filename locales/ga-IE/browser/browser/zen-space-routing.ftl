@@ -3,21 +3,21 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-space-routing-settings = 
-    .label = Space Routing Settings
-zen-space-routing-rulepanel-placeholder = Routes let you choose where specific sites open inside Zen. For example, you can route YouTube links to always open inside your Personal space.
-zen-space-routing-dialog-title = Space Routing Settings
-zen-space-routing-external-default = Default route for external links
-zen-space-routing-new-route = New Route
-zen-space-routing-open-in-space = Open in Space
-zen-space-routing-most-recent-space = Most recent Space
+    .label = Socruithe Ródaithe Spáis
+zen-space-routing-rulepanel-placeholder = Le bealaí is féidir leat a roghnú cá n-osclaítear suíomhanna sonracha laistigh de Zen. Mar shampla, is féidir leat naisc YouTube a threorú chun go n-osclófar iad i gcónaí laistigh de do Spás Pearsanta.
+zen-space-routing-dialog-title = Socruithe Ródaithe Spáis
+zen-space-routing-external-default = Bealach réamhshocraithe le haghaidh naisc sheachtracha
+zen-space-routing-new-route = Bealach Nua
+zen-space-routing-open-in-space = Oscail sa Spás
+zen-space-routing-most-recent-space = Spás is déanaí
 zen-space-routing-close-button = 
-    .aria-label = Close
-    .tooltiptext = Close
+    .aria-label = Dún
+    .tooltiptext = Dún
 zen-space-routing-contains = 
-    .label = Contains
+    .label = Tá
 zen-space-routing-equal-to = 
-    .label = Is Equal To
+    .label = Is Cothrom le
 zen-space-routing-regex = 
     .label = RegEx
-zen-space-routing-open-in = Open In
+zen-space-routing-open-in = Oscail Isteach
 zen-space-routing-url = URL

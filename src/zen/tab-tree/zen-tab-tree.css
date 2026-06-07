@@ -7,6 +7,13 @@ tab-group[split-view-group][zen-tree-hidden] {
   display: none !important;
 }
 
+/* During a middle-mouse drag-select, hide per-tab close (X) buttons. The
+   gesture selects a range that's closed together on release, so a hover/
+   multiselected close affordance on individual tabs is misleading mid-drag. */
+#tabbrowser-tabs[zen-multi-drag-selecting] .tab-close-button {
+  display: none !important;
+}
+
 /* Shared twisty look. It's hidden until the parent row is hovered (or stays
    visible while collapsed so the branch can be reopened). */
 .zen-tree-twisty {

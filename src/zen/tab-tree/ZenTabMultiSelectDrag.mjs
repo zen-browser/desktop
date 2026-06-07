@@ -119,6 +119,10 @@ class nsZenTabMultiSelectDrag extends nsZenDOMOperatedFeature {
         return;
       }
       s.dragging = true;
+      // While drag-selecting, suppress per-tab close (X) buttons: the gesture
+      // selects a range (closed together on release), so a hover/selected close
+      // affordance on individual tabs is misleading mid-drag.
+      this.#strip?.setAttribute("zen-multi-drag-selecting", "true");
     }
     const over =
       event.target?.closest?.(".tabbrowser-tab") ||
@@ -198,6 +202,7 @@ class nsZenTabMultiSelectDrag extends nsZenDOMOperatedFeature {
     window.removeEventListener("mouseup", this, true);
     window.removeEventListener("contextmenu", this, true);
     window.removeEventListener("keydown", this, true);
+    this.#strip?.removeAttribute("zen-multi-drag-selecting");
     this.#state = null;
     // Keep the click swallowers until the trailing click fires (next tick).
     window.setTimeout(() => this.#removeClickSwallowers(), 0);

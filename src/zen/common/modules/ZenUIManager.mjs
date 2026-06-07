@@ -1612,7 +1612,11 @@ window.gZenVerticalTabsManager = {
         // it will reset to the original name anyway
         if (hasChanged || (this._tabEdited.zenStaticLabel && newName)) {
           this._tabEdited.zenStaticLabel = newName;
-          gBrowser._setTabLabel(this._tabEdited, newName);
+          // Force the live label refresh even for a non-visible/synced tab;
+          // otherwise the new name only appears after a restart (gh #18).
+          gBrowser._setTabLabel(this._tabEdited, newName, {
+            _zenChangeLabelFlag: true,
+          });
           gZenUIManager.showToast("zen-tabs-renamed");
         } else {
           delete this._tabEdited.zenStaticLabel;

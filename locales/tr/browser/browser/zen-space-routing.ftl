@@ -3,21 +3,21 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-space-routing-settings = 
-    .label = Space Routing Settings
-zen-space-routing-rulepanel-placeholder = Routes let you choose where specific sites open inside Zen. For example, you can route YouTube links to always open inside your Personal space.
-zen-space-routing-dialog-title = Space Routing Settings
-zen-space-routing-external-default = Default route for external links
-zen-space-routing-new-route = New Route
-zen-space-routing-open-in-space = Open in Space
-zen-space-routing-most-recent-space = Most recent Space
+    .label = Alan yönlendirme ayarları
+zen-space-routing-rulepanel-placeholder = Yönlendirmeler, belirli sitelerin Zen içinde nerede açılacağını seçmenizi sağlar. Örneğin, YouTube bağlantılarının her zaman Kişisel alanınızda açılmasını sağlayabilirsiniz.
+zen-space-routing-dialog-title = Alan Yönlendirme Ayarları
+zen-space-routing-external-default = Harici bağlantılar için varsayılan yönlendirme
+zen-space-routing-new-route = Yeni yönlendirme
+zen-space-routing-open-in-space = Alanda aç
+zen-space-routing-most-recent-space = En son kullanılan alan
 zen-space-routing-close-button = 
-    .aria-label = Close
-    .tooltiptext = Close
+    .aria-label = Kapat
+    .tooltiptext = Kapat
 zen-space-routing-contains = 
-    .label = Contains
+    .label = İçerir
 zen-space-routing-equal-to = 
-    .label = Is Equal To
+    .label = Şuna eşittir
 zen-space-routing-regex = 
     .label = RegEx
-zen-space-routing-open-in = Open In
+zen-space-routing-open-in = Şurada aç
 zen-space-routing-url = URL

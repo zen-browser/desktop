@@ -1,0 +1,99 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#zen-scroll-tab-switcher {
+  position: fixed;
+  z-index: 2147483647;
+  top: 8.5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(760px, calc(100vw - 96px));
+  max-height: min(360px, calc(100vh - 140px));
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 8px;
+  color: #f4f4f5;
+  background: rgba(14, 15, 18, 0.97);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  box-shadow: 0 18px 52px rgba(0, 0, 0, 0.34);
+  font: menu;
+  backdrop-filter: blur(24px);
+}
+
+#zen-scroll-tab-switcher .zen-scroll-tab-switcher-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 344px;
+  overflow: hidden;
+}
+
+#zen-scroll-tab-switcher .zen-scroll-tab-switcher-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 50px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  color: #d8d8df;
+  user-select: none;
+}
+
+#zen-scroll-tab-switcher .zen-scroll-tab-switcher-item.selected {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.105);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+#zen-scroll-tab-switcher .zen-scroll-tab-switcher-item.selected::before {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 0;
+  width: 3px;
+  border-radius: 999px;
+  background: #6ee7d8;
+  content: "";
+}
+
+#zen-scroll-tab-switcher .zen-scroll-tab-switcher-favicon {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+#zen-scroll-tab-switcher .zen-scroll-tab-switcher-copy {
+  min-width: 0;
+}
+
+#zen-scroll-tab-switcher .zen-scroll-tab-switcher-title,
+#zen-scroll-tab-switcher .zen-scroll-tab-switcher-url {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#zen-scroll-tab-switcher .zen-scroll-tab-switcher-title {
+  color: #f4f4f5;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+#zen-scroll-tab-switcher .zen-scroll-tab-switcher-url {
+  color: #a5a7b0;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+#zen-scroll-tab-switcher .zen-scroll-tab-switcher-active {
+  color: #6ee7d8;
+  font-size: 11px;
+  font-weight: 700;
+}

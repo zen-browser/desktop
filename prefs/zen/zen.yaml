@@ -52,3 +52,6 @@
 
 - name: zen.tabs.ctrl-tab.ignore-pending-tabs
   value: false
+
+- name: zen.tabs.scroll-switcher.enabled
+  value: false

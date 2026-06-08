@@ -9,11 +9,23 @@ add_task(async function test_release_closes_selected_range() {
   const t3 = await addNormalTab();
   gBrowser.clearMultiSelectedTabs();
 
-  EventUtils.synthesizeMouseAtCenter(t1, { type: "mousedown", button: 1 }, window);
-  EventUtils.synthesizeMouseAtCenter(t3, { type: "mousemove", button: 1 }, window);
+  EventUtils.synthesizeMouseAtCenter(
+    t1,
+    { type: "mousedown", button: 1 },
+    window
+  );
+  EventUtils.synthesizeMouseAtCenter(
+    t3,
+    { type: "mousemove", button: 1 },
+    window
+  );
   const c1 = BrowserTestUtils.waitForTabClosing(t1);
   const c3 = BrowserTestUtils.waitForTabClosing(t3);
-  EventUtils.synthesizeMouseAtCenter(t3, { type: "mouseup", button: 1 }, window);
+  EventUtils.synthesizeMouseAtCenter(
+    t3,
+    { type: "mouseup", button: 1 },
+    window
+  );
   await Promise.all([c1, c3]);
   ok(t1.closing || !t1.isConnected, "t1 closed on release");
   ok(t3.closing || !t3.isConnected, "t3 closed on release");
@@ -26,8 +38,16 @@ add_task(async function test_rightclick_aborts_and_opens_menu() {
   const t2 = await addNormalTab();
   gBrowser.clearMultiSelectedTabs();
 
-  EventUtils.synthesizeMouseAtCenter(t1, { type: "mousedown", button: 1 }, window);
-  EventUtils.synthesizeMouseAtCenter(t2, { type: "mousemove", button: 1 }, window);
+  EventUtils.synthesizeMouseAtCenter(
+    t1,
+    { type: "mousedown", button: 1 },
+    window
+  );
+  EventUtils.synthesizeMouseAtCenter(
+    t2,
+    { type: "mousemove", button: 1 },
+    window
+  );
 
   const menu = document.getElementById("tabContextMenu");
   const shown = BrowserTestUtils.waitForEvent(menu, "popupshown");
@@ -40,7 +60,11 @@ add_task(async function test_rightclick_aborts_and_opens_menu() {
   ok(true, "context menu opened on right-click during middle-drag");
 
   // After abort, releasing middle does nothing (tabs stay open).
-  EventUtils.synthesizeMouseAtCenter(t2, { type: "mouseup", button: 1 }, window);
+  EventUtils.synthesizeMouseAtCenter(
+    t2,
+    { type: "mouseup", button: 1 },
+    window
+  );
   ok(t1.isConnected && t2.isConnected, "tabs not closed after abort");
 
   menu.hidePopup();
@@ -52,8 +76,16 @@ add_task(async function test_clean_middleclick_closes_one() {
   const t1 = await addNormalTab();
   gBrowser.clearMultiSelectedTabs();
   const closing = BrowserTestUtils.waitForTabClosing(t1);
-  EventUtils.synthesizeMouseAtCenter(t1, { type: "mousedown", button: 1 }, window);
-  EventUtils.synthesizeMouseAtCenter(t1, { type: "mouseup", button: 1 }, window);
+  EventUtils.synthesizeMouseAtCenter(
+    t1,
+    { type: "mousedown", button: 1 },
+    window
+  );
+  EventUtils.synthesizeMouseAtCenter(
+    t1,
+    { type: "mouseup", button: 1 },
+    window
+  );
   await closing;
   ok(t1.closing || !t1.isConnected, "clean middle-click closes the single tab");
 });
@@ -67,11 +99,23 @@ add_task(async function test_drag_close_spares_active_tab_outside_range() {
   gBrowser.selectedTab = active; // active tab is left of the t1..t2 range
   gBrowser.clearMultiSelectedTabs();
 
-  EventUtils.synthesizeMouseAtCenter(t1, { type: "mousedown", button: 1 }, window);
-  EventUtils.synthesizeMouseAtCenter(t2, { type: "mousemove", button: 1 }, window);
+  EventUtils.synthesizeMouseAtCenter(
+    t1,
+    { type: "mousedown", button: 1 },
+    window
+  );
+  EventUtils.synthesizeMouseAtCenter(
+    t2,
+    { type: "mousemove", button: 1 },
+    window
+  );
   const c1 = BrowserTestUtils.waitForTabClosing(t1);
   const c2 = BrowserTestUtils.waitForTabClosing(t2);
-  EventUtils.synthesizeMouseAtCenter(t2, { type: "mouseup", button: 1 }, window);
+  EventUtils.synthesizeMouseAtCenter(
+    t2,
+    { type: "mouseup", button: 1 },
+    window
+  );
   await Promise.all([c1, c2]);
 
   ok(t1.closing || !t1.isConnected, "t1 (in range) closed");

@@ -15,11 +15,7 @@ add_task(async function test_nest_rejected_across_workspaces() {
     !gZenTabTree.nestTab(child, parent),
     "nestTab is rejected across workspaces"
   );
-  Assert.equal(
-    gZenTabTree.getParent(child),
-    null,
-    "the child stays un-nested"
-  );
+  Assert.equal(gZenTabTree.getParent(child), null, "the child stays un-nested");
 
   child.setAttribute("zen-workspace-id", "ws-A");
   Assert.ok(

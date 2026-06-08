@@ -12,34 +12,34 @@ support-files = [
   "head.js",
 ]
 
+["browser_middledrag_actions.js"]
+
+["browser_middledrag_select.js"]
+
+["browser_tree_close.js"]
+
+["browser_tree_collapse.js"]
+
+["browser_tree_depth.js"]
+
+["browser_tree_detach_multi.js"]
+
+["browser_tree_drag.js"]
+
+["browser_tree_eligibility.js"]
+
 ["browser_tree_model.js"]
 
 ["browser_tree_nest.js"]
 
-["browser_tree_detach_multi.js"]
-
-["browser_tree_depth.js"]
-
-["browser_tree_eligibility.js"]
-
-["browser_tree_workspace.js"]
-
-["browser_tree_collapse.js"]
-
-["browser_tree_drag.js"]
-
 ["browser_tree_opener.js"]
 
-["browser_tree_close.js"]
+["browser_tree_persist.js"]
 
 ["browser_tree_pin_reorder.js"]
 
 ["browser_tree_reorder.js"]
 
-["browser_tree_persist.js"]
-
 ["browser_tree_split_node.js"]
 
-["browser_middledrag_select.js"]
-
-["browser_middledrag_actions.js"]
+["browser_tree_workspace.js"]

@@ -31,7 +31,10 @@ add_task(async function test_split_group_nests_and_indents_as_one_node() {
     group,
     "a split tab resolves to its group node"
   );
-  Assert.ok(gZenTabTree.isTreeEligible(group), "the split group is a tree node");
+  Assert.ok(
+    gZenTabTree.isTreeEligible(group),
+    "the split group is a tree node"
+  );
   Assert.ok(
     !gZenTabTree.isTreeEligible(a),
     "an inner split tab is not an independent node"
@@ -155,7 +158,11 @@ add_task(async function test_split_inherits_parent_and_adopts_children() {
       gZenTabTree.getParent(leaf) === group,
     "the split group inherits the parent and adopts the children"
   );
-  Assert.equal(gZenTabTree.getParent(group), root, "group inherited tab's parent");
+  Assert.equal(
+    gZenTabTree.getParent(group),
+    root,
+    "group inherited tab's parent"
+  );
   Assert.equal(gZenTabTree.getParent(leaf), group, "group adopted tab's child");
 
   await cleanupTabs(tab, other, leaf, root);

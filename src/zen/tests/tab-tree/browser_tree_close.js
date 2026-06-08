@@ -55,8 +55,7 @@ add_task(async function test_close_subtree_closes_grandchildren() {
 
   BrowserTestUtils.removeTab(a);
   await TestUtils.waitForCondition(
-    () =>
-      (b.closing || !b.isConnected) && (c.closing || !c.isConnected),
+    () => (b.closing || !b.isConnected) && (c.closing || !c.isConnected),
     "both the child and grandchild close with the subtree"
   );
   ok(true, "grandchild closed with the subtree");

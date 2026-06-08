@@ -9,7 +9,11 @@ add_task(async function test_middle_drag_selects_range() {
   const t3 = await addNormalTab();
   gBrowser.clearMultiSelectedTabs();
 
-  EventUtils.synthesizeMouseAtCenter(t1, { type: "mousedown", button: 1 }, window);
+  EventUtils.synthesizeMouseAtCenter(
+    t1,
+    { type: "mousedown", button: 1 },
+    window
+  );
   // Move onto t3 to drag-select the t1..t3 range.
   EventUtils.synthesizeMouseAtCenter(
     t3,

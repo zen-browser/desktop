@@ -84,7 +84,11 @@ add_task(async function test_restore_rebuilds_tree_from_attributes() {
   for (const t of [a, b, c]) {
     t._zenTreeParent = null;
   }
-  Assert.equal(b.getAttribute("zen-tree-parent-id"), a.id, "b still has a's id");
+  Assert.equal(
+    b.getAttribute("zen-tree-parent-id"),
+    a.id,
+    "b still has a's id"
+  );
 
   a.dispatchEvent(new CustomEvent("SSTabRestored", { bubbles: true }));
   await TestUtils.waitForCondition(

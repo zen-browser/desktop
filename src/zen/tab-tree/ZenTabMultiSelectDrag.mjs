@@ -113,8 +113,7 @@ class nsZenTabMultiSelectDrag extends nsZenDOMOperatedFeature {
     }
     if (!s.dragging) {
       const moved =
-        Math.abs(event.screenX - s.startX) +
-        Math.abs(event.screenY - s.startY);
+        Math.abs(event.screenX - s.startX) + Math.abs(event.screenY - s.startY);
       if (moved < nsZenTabMultiSelectDrag.#THRESHOLD) {
         return;
       }
@@ -165,8 +164,7 @@ class nsZenTabMultiSelectDrag extends nsZenDOMOperatedFeature {
     // (a plain click, however shaky) closes only that tab; a release over a
     // different tab closes the whole anchor..release range.
     const over =
-      this.#tabFrom(event) ||
-      this.#tabUnderPoint(event.clientX, event.clientY);
+      this.#tabFrom(event) || this.#tabUnderPoint(event.clientX, event.clientY);
 
     if (!s.dragging || !over || over === s.anchor) {
       const tab = s.anchor;
@@ -206,7 +204,7 @@ class nsZenTabMultiSelectDrag extends nsZenDOMOperatedFeature {
     }
   }
 
-  #onContextMenu(event) {
+  #onContextMenu() {
     const s = this.#state;
     if (!s || !s.dragging) {
       return;

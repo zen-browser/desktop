@@ -4,6 +4,9 @@
 
 import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
+/* eslint-disable no-shadow -- the `parent`/`opener` locals in this file are tree
+   nodes, never the window.parent / window.opener globals. */
+
 function domOrderOf(nodes) {
   return [...nodes].sort((a, b) => {
     const pos = a.compareDocumentPosition(b);
@@ -78,7 +81,9 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
   }
 
   #isSplitGroup(el) {
-    return !!el && gBrowser.isTabGroup(el) && el.hasAttribute("split-view-group");
+    return (
+      !!el && gBrowser.isTabGroup(el) && el.hasAttribute("split-view-group")
+    );
   }
 
   // The node that owns a tab: its split group if it is in one, else the tab.
@@ -375,11 +380,16 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
     while (prev && (!this.isTreeEligible(prev) || draggedNodes.has(prev))) {
       prev = prev.previousElementSibling;
     }
-    let next = this.#lastSubtreeNode(roots[roots.length - 1]).nextElementSibling;
+    let next = this.#lastSubtreeNode(
+      roots[roots.length - 1]
+    ).nextElementSibling;
     while (next && (!this.isTreeEligible(next) || draggedNodes.has(next))) {
       next = next.nextElementSibling;
     }
-    const { minLevel, maxLevel, prevLevel } = this.reorderLevelRange(prev, next);
+    const { minLevel, maxLevel, prevLevel } = this.reorderLevelRange(
+      prev,
+      next
+    );
     let level = targetLevel == null ? prevLevel : targetLevel;
     level = Math.max(minLevel, Math.min(level, maxLevel));
     this.#applyReorder(roots, this.#parentForLevel(prev, level));
@@ -453,7 +463,7 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
   // Clickable twisty on parent nodes only. On a tab it overlays the favicon in
   // the icon stack; on a split group it floats at the group's inline-start edge.
   #updateTwisty(node) {
-    const hasChildren = this.getChildren(node).length > 0;
+    const hasChildren = !!this.getChildren(node).length;
     const isGroup = this.#isSplitGroup(node);
     let twisty = isGroup
       ? node.querySelector(":scope > .zen-tree-twisty")

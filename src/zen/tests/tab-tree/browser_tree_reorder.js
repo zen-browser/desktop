@@ -73,7 +73,11 @@ add_task(async function test_reorder_level_clamping() {
 
   // Request a level far above max → clamps to prev's child (level 2).
   gZenTabTree.handleReorderDropAt([c], b, 99);
-  Assert.equal(gZenTabTree.getParent(c), b, "over-deep level clamps to prev's child");
+  Assert.equal(
+    gZenTabTree.getParent(c),
+    b,
+    "over-deep level clamps to prev's child"
+  );
   Assert.equal(gZenTabTree.getLevel(c), 2, "c lands at the clamped level 2");
 
   // Level 0 drops at the root (un-nest), e.g. dragging below the whole list.

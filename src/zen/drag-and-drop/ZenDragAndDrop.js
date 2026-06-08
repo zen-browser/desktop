@@ -850,6 +850,7 @@
       });
     }
 
+    // eslint-disable-next-line complexity -- inherently branchy drag-over-split state machine
     #handle_tabDragOverToSplit(event) {
       if (!this._dndSplitEnabled) {
         return;
@@ -947,8 +948,7 @@
       // Vertical edges reorder (drop in the gap above/below), with a live indent
       // preview whose level follows the cursor horizontally — drag left to
       // outdent, all the way to root level 0.
-      const edgeZoneThreshold =
-        this._treeReorderEdge / 100;
+      const edgeZoneThreshold = this._treeReorderEdge / 100;
       const overlapRatioY = (clientY - rect.top) / rect.height;
       if (
         overlapRatioY < edgeZoneThreshold ||
@@ -978,17 +978,14 @@
       // reorder line instead of nesting under the target, so the drop matches the
       // indicator no matter where in the row you release.
       const unNest = canNest && clientX < rect.x - 2;
-      const splitZone =
-        this._treeSplitZone / 100;
+      const splitZone = this._treeSplitZone / 100;
       // Either horizontal edge zone arms a split: left puts the dragged tab on
       // the left, right on the right; the middle stays a nest.
       const inLeftZone = clientX < rect.x + rect.width * splitZone;
       const inRightZone = clientX > rect.x + rect.width * (1 - splitZone);
       const inSplitZone = inLeftZone || inRightZone;
       const dropSide = inLeftZone ? "left" : "right";
-      const draggedIsSplit = [...draggedNodes].some(n =>
-        tree?.isSplitGroup(n)
-      );
+      const draggedIsSplit = [...draggedNodes].some(n => tree?.isSplitGroup(n));
       const canSplit =
         draggedSource.length <= 1 &&
         !draggedIsSplit &&
@@ -1026,7 +1023,13 @@
         // Left the split zone: cancel any pending/active split, restore nest.
         this._clearDragOverSplit();
         if (canNest) {
-          this.#showNestOrUnnest(targetNode, rect, clientX, draggedNodes, unNest);
+          this.#showNestOrUnnest(
+            targetNode,
+            rect,
+            clientX,
+            draggedNodes,
+            unNest
+          );
         }
       }
     }
@@ -1238,7 +1241,8 @@
       const seen = new Set();
       for (const tab of gBrowser.tabs) {
         if (
-          tab.getAttribute("zen-workspace-id") != gZenWorkspaces.activeWorkspace ||
+          tab.getAttribute("zen-workspace-id") !=
+            gZenWorkspaces.activeWorkspace ||
           !tab.visible
         ) {
           continue;
@@ -1318,7 +1322,8 @@
         !gReduceMotion &&
         draggedTab?.ownerGlobal === window &&
         (isTab(draggedTab) || isTabGroupLabel(draggedTab)) &&
-        wsRef?.getAttribute("zen-workspace-id") == gZenWorkspaces.activeWorkspace;
+        wsRef?.getAttribute("zen-workspace-id") ==
+          gZenWorkspaces.activeWorkspace;
       if (doFlip) {
         this.#flipInProgress = true;
       }
@@ -1401,6 +1406,17 @@
       );
     }
 
+    // The tabs a drag actually moves: an explicit movingTabsSet, else the live
+    // multiselection (a manual multiselect drag doesn't always populate the set,
+    // so the primary tab alone would be wrong), else just the dragged tab.
+    #draggedTabsFrom(draggedTab) {
+      const movingTabsSet = draggedTab._dragData?.movingTabsSet;
+      if (movingTabsSet?.size) {
+        return [...movingTabsSet];
+      }
+      return draggedTab.multiselected ? gBrowser.selectedTabs : [draggedTab];
+    }
+
     #handle_dropNest(event) {
       if (!this.#dragOverNest.canDrop || !window.gZenTabTree?.enabled) {
         return;
@@ -1411,15 +1427,7 @@
       if (!draggedTab || !target) {
         return;
       }
-      // movingTabsSet isn't always populated for a manual multiselection drag,
-      // so fall back to the live selection when the dragged tab is multiselected
-      // — otherwise only the primary tab would nest.
-      const movingTabsSet = draggedTab._dragData?.movingTabsSet;
-      const draggedTabs = movingTabsSet?.size
-        ? [...movingTabsSet]
-        : draggedTab.multiselected
-          ? gBrowser.selectedTabs
-          : [draggedTab];
+      const draggedTabs = this.#draggedTabsFrom(draggedTab);
       this._dontAnimateTabMove = true;
       this._clearDragOverNest();
       window.gZenTabTree.handleNestDrop(draggedTabs, target);
@@ -1434,12 +1442,7 @@
       if (!draggedTab) {
         return;
       }
-      const movingTabsSet = draggedTab._dragData?.movingTabsSet;
-      const draggedTabs = movingTabsSet?.size
-        ? [...movingTabsSet]
-        : draggedTab.multiselected
-          ? gBrowser.selectedTabs
-          : [draggedTab];
+      const draggedTabs = this.#draggedTabsFrom(draggedTab);
       const r = this.#dragOverReorder;
       if (r.canDrop) {
         // Apply the exact anchor + level the indicator resolved.
@@ -1449,6 +1452,7 @@
       }
     }
 
+    // eslint-disable-next-line complexity -- linear element-shape settle reads clearer unsplit
     handle_drop_transition(dropElement, draggedTab, movingTabs, dropBefore) {
       // A tree drop owns its own FLIP animation; here just settle transforms so
       // it starts from clean positions (no native per-tab slide to fight with).

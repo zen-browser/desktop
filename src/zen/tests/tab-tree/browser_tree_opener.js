@@ -42,9 +42,7 @@ add_task(async function test_no_autonest_without_content_opener() {
   // current tab, but there is no in-content opener.
   tab.owner = opener;
   tab._zenOpenerTab = null;
-  tab.dispatchEvent(
-    new CustomEvent("TabOpen", { bubbles: true, detail: tab })
-  );
+  tab.dispatchEvent(new CustomEvent("TabOpen", { bubbles: true, detail: tab }));
 
   Assert.equal(
     gZenTabTree.getParent(tab),
@@ -68,7 +66,9 @@ add_task(async function test_opener_autonest_uses_durable_opener() {
   // Mimic the post-clear state: owner is gone, but our durable capture remains.
   child.owner = null;
   child._zenOpenerTab = opener;
-  child.dispatchEvent(new CustomEvent("TabOpen", { bubbles: true, detail: child }));
+  child.dispatchEvent(
+    new CustomEvent("TabOpen", { bubbles: true, detail: child })
+  );
 
   Assert.equal(
     gZenTabTree.getParent(child),
@@ -91,7 +91,11 @@ add_task(async function test_opener_autonest_off() {
     triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
   });
 
-  Assert.equal(gZenTabTree.getParent(child), null, "no auto-nest when pref off");
+  Assert.equal(
+    gZenTabTree.getParent(child),
+    null,
+    "no auto-nest when pref off"
+  );
 
   await cleanupTabs(opener, child);
   await SpecialPowers.popPrefEnv();

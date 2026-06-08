@@ -640,9 +640,14 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
       return;
     }
     const tab = event.target;
-    // The tab a new tab was opened from. `_zenOpenerTab` is our durable capture
-    // (Firefox clears `owner` on successive related tabs); fall back to `owner`.
-    const ownerTab = tab._zenOpenerTab || tab.owner;
+    // Only auto-nest under the tab a link was opened from IN CONTENT.
+    // `_zenOpenerTab` is our durable capture of Firefox's in-content opener
+    // (`openerBrowser`'s tab, or a same-referrer related tab); it's null when the
+    // tab has no in-content origin — a bookmark, the address bar, the new-tab
+    // button, or another app — and those must open at root. We deliberately do
+    // NOT fall back to `tab.owner`: Firefox sets that to the current tab for
+    // *any* foreground open, so it would wrongly nest bookmarks/external opens.
+    const ownerTab = tab._zenOpenerTab;
     const opener = ownerTab ? this.#nodeOf(ownerTab) : null;
     if (
       !opener ||

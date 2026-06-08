@@ -83,6 +83,40 @@ class nsZenSpaceRoutingManager {
   }
 
   /**
+   * Decides whether an in-place top-level navigation should be pulled out of
+   * the current tab and re-opened in a new tab, so that addTab()'s routing can
+   * move it into the space its rule points at.
+   *
+   * Only navigations whose rule targets a *different* space than the one the
+   * navigating tab already lives in are redirected. Staying put when the tab is
+   * already in the destination space keeps normal browsing in place and also
+   * prevents the freshly routed tab from being redirected again (infinite loop).
+   *
+   * @param {string} uriString - The destination URI
+   * @param {string|null} currentWorkspaceId - The zen-workspace-id of the navigating tab
+   * @param {Window} win - The owning browser window
+   * @returns {boolean} True when the navigation should open in a new routed tab
+   */
+  shouldRedirectNavigation(uriString, currentWorkspaceId, win) {
+    if (!win?.gZenWorkspaces?.workspaceEnabled) {
+      return false;
+    }
+
+    const targetRoute = this.routeUri(uriString, { fromExternal: false });
+
+    // No specific destination, or the tab is already where the rule points.
+    if (
+      targetRoute === "most-recent-space" ||
+      targetRoute === currentWorkspaceId
+    ) {
+      return false;
+    }
+
+    // Only redirect when the destination space actually exists.
+    return !!win.gZenWorkspaces.getWorkspaceFromId(targetRoute);
+  }
+
+  /**
    * Checks if the tab should be processed or not
    *
    * @param {object} options - The tab creation options

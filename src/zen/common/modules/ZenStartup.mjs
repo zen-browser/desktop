@@ -147,7 +147,7 @@ class ZenStartup {
   }
 
   #initUIComponents() {
-    const kUIComponents = ["ZenProgressBar"];
+    const kUIComponents = ["ZenProgressBar", "ZenSpaceRoutingNavigation"];
     for (let component of kUIComponents) {
       const module = ChromeUtils.importESModule(
         "resource:///modules/zen/ui/" + component + ".sys.mjs"

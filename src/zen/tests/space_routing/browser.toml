@@ -11,7 +11,11 @@ support-files = [
 
 ["browser_space_routing_dialog.js"]
 
+["browser_space_routing_fuzz.js"]
+
 ["browser_space_routing_on_add_tab.js"]
+
+["browser_space_routing_redirect_navigation.js"]
 
 ["browser_space_routing_route_matching.js"]
 

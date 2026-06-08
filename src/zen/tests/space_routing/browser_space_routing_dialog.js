@@ -199,7 +199,7 @@ add_task(async function test_routes_are_saved_on_close() {
   };
 
   try {
-    const closed = BrowserTestUtils.domWindowClosed(dlg);
+    const closed = promiseRoutingDialogClosed();
     dlg.close();
     await TestUtils.waitForCondition(
       () => saveCalls > 0,
@@ -241,11 +241,15 @@ add_task(async function test_open_broadcasts_kill_to_other_instances() {
 
 add_task(async function test_kill_notification_closes_dialog() {
   clearAllRoutes();
-  const dlg = await openRoutingDialog();
+  await openRoutingDialog();
 
-  const closed = BrowserTestUtils.domWindowClosed(dlg);
+  const closed = promiseRoutingDialogClosed();
   Services.obs.notifyObservers(null, "zen-space-routing-kill");
   await closed;
 
-  ok(dlg.closed, "A 'zen-space-routing-kill' notification closes the dialog");
+  const container = document.getElementById("window-modal-dialog");
+  ok(
+    !container.open && !container.hasChildNodes(),
+    "A 'zen-space-routing-kill' notification closes the dialog"
+  );
 });

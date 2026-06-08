@@ -2283,7 +2283,12 @@ class nsZenWorkspaces {
 
   onBeforeTabSelect(aTab) {
     const tabSpace = aTab?.getAttribute("zen-workspace-id");
-    if (tabSpace && tabSpace !== this.activeWorkspace) {
+    if (
+      tabSpace &&
+      tabSpace !== this.activeWorkspac &&
+      !aTab.hasAttribute("zen-empty-tab") &&
+      !aTab.hasAttribute("zen-essential")
+    ) {
       this.changeWorkspaceWithID(tabSpace);
     }
   }

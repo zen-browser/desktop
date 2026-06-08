@@ -640,21 +640,10 @@ class nsZenBoostsManager {
       }
     }
 
-    const editor = Services.ww.openWindow(
-      parentWindow,
+    const editor = parentWindow.openDialog(
       "chrome://browser/content/zen-components/windows/zen-boost-editor.xhtml",
-      null,
-      `left=${left},top=${top},chrome,alwaysontop,resizable=no,minimizable=no,dependent,dialog=yes`,
-      null
-    );
-
-    // Close the editor if the tab is switched
-    parentWindow.gBrowser.tabContainer.addEventListener(
-      "TabSelect",
-      editor.close.bind(editor),
-      {
-        once: true,
-      }
+      "",
+      `left=${left},top=${top},chrome,alwaysontop,resizable=no,minimizable=no,dependent,dialog=yes`
     );
 
     const progressListener = {
@@ -671,7 +660,6 @@ class nsZenBoostsManager {
     // Give the domain
     editor.domain = domain;
     editor.openerWindow = parentWindow;
-    editor.focus();
 
     // Make boost active
     this.makeBoostActiveForDomain(domain, boost.id);

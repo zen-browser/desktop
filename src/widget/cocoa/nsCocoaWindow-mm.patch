@@ -1,0 +1,14 @@
+diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
+index 3e58a40d747fb3e05bd67518b41b6467725cfe42..995419b6390e8abe663f71f8fb26281eae56aa84 100644
+--- a/widget/cocoa/nsCocoaWindow.mm
++++ b/widget/cocoa/nsCocoaWindow.mm
+@@ -5329,6 +5329,9 @@ static unsigned int WindowMaskForBorderStyle(BorderStyle aBorderStyle) {
+             case nsIWidget::eDocumentWindowAnimation:
+               behavior = NSWindowAnimationBehaviorDocumentWindow;
+               break;
++            case nsIWidget::eZenUtilityWindowAnimation:
++              behavior = NSWindowAnimationBehaviorUtilityWindow;
++              break;
+             default:
+               MOZ_FALLTHROUGH_ASSERT("unexpected mAnimationType value");
+             case nsIWidget::eGenericWindowAnimation:

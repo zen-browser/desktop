@@ -1,0 +1,12 @@
+diff --git a/widget/nsIWidget.h b/widget/nsIWidget.h
+index 4a5d933d865585ea772bafd233f7d4ebce3ac02b..3eae20d579330a71196c83eeb20d8fb2cd9f5fae 100644
+--- a/widget/nsIWidget.h
++++ b/widget/nsIWidget.h
+@@ -1118,6 +1118,7 @@ class nsIWidget : public nsSupportsWeakReference {
+   virtual void SetSupportsNativeFullscreen(bool aSupportsNativeFullscreen) {}
+ 
+   enum WindowAnimationType {
++    eZenUtilityWindowAnimation,
+     eGenericWindowAnimation,
+     eDocumentWindowAnimation
+   };

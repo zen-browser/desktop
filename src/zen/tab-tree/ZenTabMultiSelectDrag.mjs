@@ -157,11 +157,28 @@ class nsZenTabMultiSelectDrag extends nsZenDOMOperatedFeature {
       return;
     }
 
-    if (!s.dragging) {
-      // Clean middle-click: replicate the native single-tab close.
+    // Decide what to close by where the gesture is RELEASED, not by incidental
+    // mid-gesture motion. The live range built during mousemove is only a
+    // preview; a jittery middle-click can briefly flick onto a neighbour (e.g. a
+    // tree parent in the row above) and leave it multiselected. Re-resolving from
+    // the release point makes the outcome consistent: a release on the press tab
+    // (a plain click, however shaky) closes only that tab; a release over a
+    // different tab closes the whole anchor..release range.
+    const over =
+      this.#tabFrom(event) ||
+      this.#tabUnderPoint(event.clientX, event.clientY);
+
+    if (!s.dragging || !over || over === s.anchor) {
       const tab = s.anchor;
+      // A non-additive drag that ends back on the anchor only built a PREVIEW
+      // range (each move clears + rebuilds it), so collapse it to the anchor
+      // before closing — otherwise the flicked-over neighbour stays selected and
+      // would be closed too. A clean click keeps any pre-existing multiselection.
+      if (s.dragging && !s.additive) {
+        gBrowser.clearMultiSelectedTabs();
+      }
       this.#cancel();
-      if (tab?.isConnected) {
+      if (tab?.isConnected && !tab.closing) {
         if (tab.multiselected) {
           gBrowser.removeMultiSelectedTabs();
         } else {
@@ -171,8 +188,15 @@ class nsZenTabMultiSelectDrag extends nsZenDOMOperatedFeature {
       return;
     }
 
-    // Close exactly the gesture's selection. gBrowser.selectedTabs would also
-    // append the active tab when it's outside the dragged range.
+    // Released over another tab: close exactly anchor..release. Rebuild from the
+    // release point so a flick that wandered and came back can't widen it.
+    if (!s.additive) {
+      gBrowser.clearMultiSelectedTabs();
+    }
+    gBrowser.addToMultiSelectedTabs(s.anchor);
+    gBrowser.addRangeToMultiSelectedTabs(s.anchor, over);
+    // gBrowser.selectedTabs would also append the active tab when it's outside
+    // the dragged range, so close the multiselection explicitly.
     const toClose = gBrowser.tabs.filter(
       t => t.multiselected && t.isConnected && !t.closing
     );

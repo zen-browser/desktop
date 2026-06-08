@@ -83,3 +83,41 @@ add_task(async function test_drag_close_spares_active_tab_outside_range() {
 
   await cleanupTabs(active);
 });
+
+// Regression: a jittery middle-click that briefly flicks onto a neighbouring tab
+// (e.g. a tree parent in the row above) but is RELEASED back on the pressed tab
+// must close only the pressed tab — the close set follows the release point, not
+// the preview range the flick built.
+add_task(async function test_jittery_middleclick_spares_neighbour() {
+  const neighbour = await addNormalTab();
+  const target = await addNormalTab();
+  gBrowser.clearMultiSelectedTabs();
+
+  EventUtils.synthesizeMouseAtCenter(
+    target,
+    { type: "mousedown", button: 1 },
+    window
+  );
+  // flick onto the neighbour (builds a preview range incl. the neighbour) ...
+  EventUtils.synthesizeMouseAtCenter(
+    neighbour,
+    { type: "mousemove", button: 1 },
+    window
+  );
+  // ... then release back on the pressed tab.
+  const closing = BrowserTestUtils.waitForTabClosing(target);
+  EventUtils.synthesizeMouseAtCenter(
+    target,
+    { type: "mouseup", button: 1 },
+    window
+  );
+  await closing;
+
+  ok(target.closing || !target.isConnected, "the pressed tab closed");
+  ok(
+    neighbour.isConnected && !neighbour.closing,
+    "the flicked-over but released-off neighbour is NOT closed"
+  );
+
+  await cleanupTabs(neighbour);
+});

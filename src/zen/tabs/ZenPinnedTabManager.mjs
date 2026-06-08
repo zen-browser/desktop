@@ -274,7 +274,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
 
     let url = result.value.trim();
-    if (!url || url === currentUrl) {
+    if (!url) {
       return;
     }
 
@@ -287,6 +287,12 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         gZenUIManager.showToast("zen-pinned-tab-url-invalid");
         return;
       }
+    }
+
+    // Compare after normalization so re-entering the same URL without a scheme
+    // is correctly treated as a no-op.
+    if (url === currentUrl) {
+      return;
     }
 
     window.gZenWindowSync.setPinnedUrl(tab, url);

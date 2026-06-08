@@ -41,6 +41,7 @@
     fill-opacity: 0.6;
     -moz-context-properties: fill-opacity, fill;
     fill: currentColor;
+    scroll-margin: 0 20px;
 
     & .zen-workspace-icon {
       pointer-events: none;
@@ -105,7 +106,7 @@
 
   &[icons-overflow] {
     gap: 0 !important;
-    justify-content: center;
+    justify-content: safe center;
 
     & toolbarbutton {
       margin: 0;

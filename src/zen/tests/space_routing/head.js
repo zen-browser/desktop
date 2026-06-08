@@ -29,10 +29,15 @@ function addRoute({
   return route;
 }
 
-function makeFakeWindow({ ready = true, workspaces = [] } = {}) {
+function makeFakeWindow({
+  ready = true,
+  workspaces = [],
+  workspaceEnabled = true,
+} = {}) {
   return {
     gZenStartup: { isReady: ready },
     gZenWorkspaces: {
+      workspaceEnabled,
       moveCalls: [],
       changeCalls: [],
       lastSelectedWorkspaceTabs: {},
@@ -57,12 +62,17 @@ async function flushEventLoop() {
 }
 
 async function openRoutingDialog() {
-  const dialogPromise = BrowserTestUtils.domWindowOpenedAndLoaded(null, win =>
-    win.document?.documentURI?.includes("zen-space-routing.xhtml")
+  // openSpaceRoutingDialog() presents an in-window modal through gDialogBox, so
+  // the dialog is a subdialog rather than a separate top-level window.
+  const dialogPromise = BrowserTestUtils.promiseAlertDialogOpen(
+    null,
+    SR_DIALOG_URI,
+    { isSubDialog: true }
   );
+  // gDialogBox.open() only resolves once the dialog is dismissed, so kick it off
+  // without awaiting and wait on the open notification instead.
   executeSoon(() => gZenSpaceRoutingManager.openSpaceRoutingDialog(window));
   const dialogWin = await dialogPromise;
-  await SimpleTest.promiseFocus(dialogWin);
   await TestUtils.waitForCondition(
     () => dialogWin.spaceroutingDialog?.initialized,
     "Space Routing dialog finished initializing"
@@ -70,11 +80,23 @@ async function openRoutingDialog() {
   return dialogWin;
 }
 
-async function closeRoutingDialog(dialogWin) {
-  if (dialogWin.closed) {
-    return;
+// Resolves once the gDialogBox subdialog has fully torn down. Use this instead
+// of BrowserTestUtils.domWindowClosed(), which only fires for separate
+// top-level windows and so never resolves for an in-window subdialog.
+function promiseRoutingDialogClosed() {
+  const container = document.getElementById("window-modal-dialog");
+  if (!container?.open) {
+    return Promise.resolve();
   }
-  const closed = BrowserTestUtils.domWindowClosed(dialogWin);
+  return BrowserTestUtils.waitForMutationCondition(
+    container,
+    { childList: true, attributes: true },
+    () => !container.hasChildNodes() && !container.open
+  );
+}
+
+async function closeRoutingDialog(dialogWin) {
+  const closed = promiseRoutingDialogClosed();
   dialogWin.close();
   await closed;
 }

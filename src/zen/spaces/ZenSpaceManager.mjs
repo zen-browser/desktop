@@ -1193,11 +1193,11 @@ class nsZenWorkspaces {
     } else {
       workspace = this.getActiveWorkspaceFromCache();
     }
-    let containerTabId = workspace.containerTabId;
+    // Check the workspace's currently assigned container.
     return window.createUserContextMenu(event, {
       isContextMenu: true,
-      excludeUserContextId: containerTabId,
       showDefaultTab: true,
+      checkedUserContextId: workspace.containerTabId || 0,
     });
   }
 

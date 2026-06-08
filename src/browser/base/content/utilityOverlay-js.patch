@@ -1,0 +1,32 @@
+diff --git a/browser/base/content/utilityOverlay.js b/browser/base/content/utilityOverlay.js
+index e692f340a0fb20c785507e5728c8ee9d5a7e011d..33b4820f4593fa07228ea0ef5ae2cfad21bfb34e 100644
+--- a/browser/base/content/utilityOverlay.js
++++ b/browser/base/content/utilityOverlay.js
+@@ -182,6 +182,7 @@ function createUserContextMenu(
+     excludeUserContextId = 0,
+     showDefaultTab = false,
+     useAccessKeys = true,
++    checkedUserContextId = null,
+   } = {}
+ ) {
+   while (event.target.hasChildNodes()) {
+@@ -202,6 +203,9 @@ function createUserContextMenu(
+       menuitem.setAttribute("label", label);
+     }
+     menuitem.setAttribute("data-usercontextid", "0");
++    if (checkedUserContextId === 0) {
++      menuitem.setAttribute("checked", "true");
++    }
+     if (!isContextMenu) {
+       menuitem.setAttribute("command", "Browser:NewUserContextTab");
+     }
+@@ -219,6 +223,9 @@ function createUserContextMenu(
+ 
+     let menuitem = document.createXULElement("menuitem");
+     menuitem.setAttribute("data-usercontextid", identity.userContextId);
++    if (identity.userContextId == checkedUserContextId) {
++      menuitem.setAttribute("checked", "true");
++    }
+     if (identity.name) {
+       menuitem.setAttribute("label", identity.name);
+     } else if (useAccessKeys) {

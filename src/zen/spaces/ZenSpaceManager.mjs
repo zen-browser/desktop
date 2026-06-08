@@ -2285,7 +2285,7 @@ class nsZenWorkspaces {
     const tabSpace = aTab?.getAttribute("zen-workspace-id");
     if (
       tabSpace &&
-      tabSpace !== this.activeWorkspac &&
+      tabSpace !== this.activeWorkspace &&
       !aTab.hasAttribute("zen-empty-tab") &&
       !aTab.hasAttribute("zen-essential")
     ) {

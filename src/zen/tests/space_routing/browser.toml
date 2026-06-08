@@ -7,8 +7,6 @@ support-files = [
   "head.js",
 ]
 
-["browser_space_routing_benchmark.js"]
-
 ["browser_space_routing_crud.js"]
 
 ["browser_space_routing_dialog.js"]

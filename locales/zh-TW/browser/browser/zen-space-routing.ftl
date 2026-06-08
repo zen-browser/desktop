@@ -3,21 +3,21 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-space-routing-settings = 
-    .label = Space Routing Settings
-zen-space-routing-rulepanel-placeholder = Routes let you choose where specific sites open inside Zen. For example, you can route YouTube links to always open inside your Personal space.
-zen-space-routing-dialog-title = Space Routing Settings
-zen-space-routing-external-default = Default route for external links
-zen-space-routing-new-route = New Route
-zen-space-routing-open-in-space = Open in Space
-zen-space-routing-most-recent-space = Most recent Space
+    .label = 工作區路由設定
+zen-space-routing-rulepanel-placeholder = 路由讓你選擇特定網站在 Zen 的哪個工作區開啟。例如，你可以將 YouTube 連結設定為一律在你的個人工作區中開啟。
+zen-space-routing-dialog-title = 工作區路由設定
+zen-space-routing-external-default = 外部連結的預設路由
+zen-space-routing-new-route = 新路由
+zen-space-routing-open-in-space = 在工作區開啟
+zen-space-routing-most-recent-space = 最近使用的工作區
 zen-space-routing-close-button = 
-    .aria-label = Close
-    .tooltiptext = Close
+    .aria-label = 關閉
+    .tooltiptext = 關閉
 zen-space-routing-contains = 
-    .label = Contains
+    .label = 包含
 zen-space-routing-equal-to = 
-    .label = Is Equal To
+    .label = 等同於
 zen-space-routing-regex = 
-    .label = RegEx
-zen-space-routing-open-in = Open In
-zen-space-routing-url = URL
+    .label = 正規表達式
+zen-space-routing-open-in = 開啟在
+zen-space-routing-url = 網址

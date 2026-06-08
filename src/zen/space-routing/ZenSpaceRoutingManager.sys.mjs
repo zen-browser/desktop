@@ -93,7 +93,7 @@ class nsZenSpaceRoutingManager {
    * prevents the freshly routed tab from being redirected again (infinite loop).
    *
    * @param {string} uriString - The destination URI
-   * @param {string} currentWorkspaceId - The zen-workspace-id of the navigating tab
+   * @param {string|null} currentWorkspaceId - The zen-workspace-id of the navigating tab
    * @param {Window} win - The owning browser window
    * @returns {boolean} True when the navigation should open in a new routed tab
    */

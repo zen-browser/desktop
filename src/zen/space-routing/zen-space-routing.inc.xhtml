@@ -18,10 +18,10 @@
   dialogroot="true"
 >
   <linkset>
-    <html:link rel="stylesheet" href="chrome://global/skin/commonDialog.css" />
     <html:link
       rel="stylesheet"
-      href="chrome://global/content/commonDialog.css"
+      href="chrome://browser/content/zen-styles/zen-space-routing.css"
+      type="text/css"
     />
     <html:link
       rel="stylesheet"
@@ -35,17 +35,7 @@
     />
     <html:link
       rel="stylesheet"
-      href="chrome://browser/content/zen-styles/zen-space-routing.css"
-      type="text/css"
-    />
-    <html:link
-      rel="stylesheet"
       href="chrome://browser/skin/zen-icons/icons.css"
-      type="text/css"
-    />
-    <html:link
-      rel="stylesheet"
-      href="chrome://browser/content/zen-styles/zen-animations.css"
       type="text/css"
     />
     <html:link
@@ -56,42 +46,40 @@
     <html:link rel="localization" href="browser/zen-space-routing.ftl" />
   </linkset>
 
-  <vbox
-    id="zen-space-routing-dialog-container"
-    class="dialogBox"
-    role="dialog"
-  >
-    <vbox id="sr-container">
-      <hbox id="sr-header">
-        <h3 data-l10n-id="zen-space-routing-dialog-title"></h3>
-        <html:div class="sr-left">
-          <button
-            id="sr-new-route"
-            data-l10n-id="zen-space-routing-new-route"
-          ></button>
-          <button class="close-icon" data-l10n-id="zen-space-routing-close-button" id="sr-close"></button>
-        </html:div>
-      </hbox>
-      <html:hr class="hr"></html:hr>
-      <vbox id="sr-content">
-        <vbox id="sr-empty-content">
-          <image class="sr-airplane"></image>
-          <p data-l10n-id="zen-space-routing-rulepanel-placeholder"></p>
-        </vbox>
-# All rules will be injected here later
+  <vbox id="sr-container">
+    <hbox id="sr-header">
+      <h3 data-l10n-id="zen-space-routing-dialog-title"></h3>
+      <html:div class="sr-left">
+        <button
+          id="sr-new-route"
+          data-l10n-id="zen-space-routing-new-route"
+        ></button>
+        <button
+          class="close-icon"
+          data-l10n-id="zen-space-routing-close-button"
+          id="sr-close"
+        ></button>
+      </html:div>
+    </hbox>
+    <html:hr />
+    <vbox id="sr-content">
+      <vbox id="sr-empty-content">
+        <image class="sr-airplane"></image>
+        <p data-l10n-id="zen-space-routing-rulepanel-placeholder"></p>
       </vbox>
-      <html:hr class="hr"></html:hr>
-      <hbox id="sr-footer">
-        <h4 data-l10n-id="zen-space-routing-external-default"></h4>
-        <html:div class="sr-left">
-          <menulist class="select" id="sr-default-external-open-in">
-            <menupopup id="sr-default-external-open-in-popup">
-# Select open in types will be injected here
-            </menupopup>
-          </menulist>
-        </html:div>
-      </hbox>
+# All rules will be injected here later
     </vbox>
+    <html:hr />
+    <hbox id="sr-footer">
+      <h4 data-l10n-id="zen-space-routing-external-default"></h4>
+      <html:div class="sr-left">
+        <menulist class="select" id="sr-default-external-open-in">
+          <menupopup id="sr-default-external-open-in-popup">
+# Select open in types will be injected here
+          </menupopup>
+        </menulist>
+      </html:div>
+    </hbox>
   </vbox>
 
   <script>

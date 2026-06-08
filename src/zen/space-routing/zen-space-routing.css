@@ -1,17 +1,13 @@
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
+/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+@namespace html "http://www.w3.org/1999/xhtml";
+@namespace xul "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
 
 :root {
-  background: none;
-  appearance: none;
-  border: none;
-  outline: none;
-  color-scheme: light dark;
+  --background-color-canvas: light-dark(white, #212223) !important;
 
-  --sr-background: light-dark(white, #212223);
   --select-background-color: light-dark(#eceef0, #3e3f43);
   --input-background-color: light-dark(#f1f2f4, #2c2d31);
   --hr-color: light-dark(#cdced4, #313235);
@@ -36,11 +32,7 @@
   display: none !important;
 }
 
-#zen-space-routing-dialog-container {
-  background-color: var(--sr-background);
-  padding: 0;
-  margin: 24px;
-
+window {
   height: var(--sr-height);
   max-height: var(--sr-height);
   min-height: var(--sr-height);
@@ -92,20 +84,22 @@
   }
 
   & p {
-    font-weight: bold;
     font-size: small;
-
+    opacity: 0.8;
     color: var(--text-color);
   }
 }
 
-.hr {
-  color: var(--hr-color);
+#sr-new-route {
+  padding: 4px 6px !important;
+}
+
+html|hr {
+  border-color: var(--hr-color) !important;
   padding: 0;
   margin: 0;
-  margin-left: 32px;
-  margin-right: 32px;
-  border-style: solid;
+  margin-left: 22px;
+  margin-right: 22px;
   border-width: 0.5px;
 }
 
@@ -126,13 +120,14 @@ p {
 
 .select {
   width: 150px;
+  min-height: unset;
   height: 26px;
   padding: 4px;
 }
 
 .select,
 .select * {
-  background-color: var(--select-background-color);
+  background-color: var(--select-background-color) !important;
   color: var(--text-color);
   margin: 0;
 
@@ -178,7 +173,7 @@ menulist {
 }
 
 .sr-rule-bottom {
-  margin-left: 85px;
+  margin-left: 87px;
 }
 
 .input,
@@ -201,9 +196,10 @@ menulist {
 }
 
 button {
-  user-select: none !important;
+  background-color: var(--select-background-color) !important;
+  min-height: unset !important;
 
-  padding: 2px;
+  padding: 2px !important;
   display: flex;
   justify-content: center;
 
@@ -217,38 +213,31 @@ button {
 .sr-remove,
 .close-icon {
   & hbox {
-    display: initial;
-    padding: 0;
-    margin: 0;
+    display: flex;
   }
 
   opacity: 0.5;
-
-  &:hover {
-    opacity: 0.8;
-  }
-
-  transition: 0.2s opacity cubic-bezier(0.075, 0.82, 0.165, 1);
-
   appearance: none !important;
-  background: none;
   border: none !important;
 
-  aspect-ratio: 1;
-  height: 24px;
+  height: 32px;
+  width: 32px;
   padding: 3px;
-  width: 24px;
 
   min-width: 0 !important;
   color: var(--text-color-secondary);
 
   -moz-context-properties: fill, fill-opacity;
   fill: currentColor;
+
+  &:not(:hover) {
+    background: none !important;
+  }
 }
 
 #sr-header {
   width: 100%;
-  padding: var(--content-padding);
+  padding: var(--content-padding) 20px;
   align-items: center;
 
   display: flex;
@@ -285,7 +274,7 @@ button {
 #sr-content {
   width: 100%;
   overflow: scroll;
-  padding: var(--content-padding);
+  padding: 20px var(--content-padding);
   flex-grow: 1;
 
   display: flex;

@@ -1010,6 +1010,14 @@ class nsZenWorkspaces {
       return null;
     }
 
+    // Closing a glance tab tears down the overlay and restores selection
+    // to its parent tab. Don't run the last-tab handling here:
+    // in a pinned-only window the glance child is the only unpinned tab,
+    // so this would switch to an empty tab and clobber the restore-to-parent.
+    if (tab.hasAttribute("glance-id")) {
+      return null;
+    }
+
     let workspaceID = tab.getAttribute("zen-workspace-id");
     if (!workspaceID) {
       return null;
@@ -1498,7 +1506,6 @@ class nsZenWorkspaces {
         continue;
       }
 
-      tab.owner = null;
       if (container) {
         if (tab.group?.hasAttribute("split-view-group")) {
           gBrowser.zenHandleTabMove(tab.group, () => {
@@ -2280,6 +2287,18 @@ class nsZenWorkspaces {
       currentWorkspace.containerTabId,
       this.getWorkspaces()
     );
+  }
+
+  onBeforeTabSelect(aTab) {
+    const tabSpace = aTab?.getAttribute("zen-workspace-id");
+    if (
+      tabSpace &&
+      tabSpace !== this.activeWorkspace &&
+      !aTab.hasAttribute("zen-empty-tab") &&
+      !aTab.hasAttribute("zen-essential")
+    ) {
+      this.changeWorkspaceWithID(tabSpace);
+    }
   }
 
   _shouldShowTab(tab, workspaceUuid, containerId, workspaces) {

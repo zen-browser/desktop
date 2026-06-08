@@ -196,7 +196,17 @@ export class nsZenSpaceRoutingDialog {
     bottomRow.append(bottomLabelContainer, openInMenulist);
 
     root.append(topRow, bottomRow);
+
+    root.style.display = "none";
     container.appendChild(root);
+
+    // Wait for l10n to catch up and then show the element to avoid flickering.
+    this.editorWindow.promiseDocumentFlushed(() =>
+      this.editorWindow.requestAnimationFrame(() => {
+        root.style.display = "";
+        input.focus();
+      })
+    );
 
     removeButton.addEventListener("click", () => {
       this.onRemoveRoutePressed(route.id, root);
@@ -211,8 +221,6 @@ export class nsZenSpaceRoutingDialog {
     openInMenulist.addEventListener("command", e =>
       this.onRouteOpenInChange(e.target.value, route.id)
     );
-
-    input.focus();
 
     this.updateShowNoRouteText();
 

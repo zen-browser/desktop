@@ -2428,34 +2428,17 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
     for (const groupData of data) {
       try {
-        const tabs = (groupData.tabs || [])
-          .map(tabId => document.getElementById(tabId))
-          .filter(tab => gBrowser.isTab(tab));
-        if (tabs.length < 2) {
-          continue;
-        }
-
-        const splitData = this.splitTabs(tabs, groupData.gridType, -1, {
-          groupFetchId: groupData.groupId,
-        });
-        if (!splitData) {
-          const group = document.getElementById(groupData.groupId);
-          if (gBrowser.isTabGroup(group)) {
-            gBrowser.removeTabGroup(group);
-          }
+        const group = document.getElementById(groupData.groupId);
+        if (!gBrowser.isTabGroup(group)) {
           continue;
         }
 
         // Backwards compatibility
-        const group =
-          tabs.find(tab => tab.group?.id === groupData.groupId)?.group ||
-          document.getElementById(groupData.groupId);
-        if (gBrowser.isTabGroup(group)) {
-          group.setAttribute("split-view-group", "true");
-        }
-
+        group.setAttribute("split-view-group", "true");
         if (!groupData?.layoutTree) {
-          continue;
+          this.splitTabs(group.tabs, group.gridType);
+          delete this._sessionRestoring;
+          return;
         }
 
         const deserializeNode = nodeData => {
@@ -2485,8 +2468,11 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         };
 
         const layout = deserializeNode(groupData.layoutTree);
-        if (layout) {
+        const splitData = this.splitTabs(group.tabs, groupData.gridType, -1);
+        if (splitData) {
           splitData.layoutTree = layout;
+        } else {
+          gBrowser.removeTabGroup(group);
         }
       } catch (e) {
         console.error("Error restoring split view session data:", e);

@@ -67,7 +67,22 @@ add_task(async function test_rightclick_aborts_and_opens_menu() {
   );
   ok(t1.isConnected && t2.isConnected, "tabs not closed after abort");
 
+  // The trailing release must NOT reveal the per-tab close (X) buttons while the
+  // aborted context menu is still open on the selection — they stay suppressed
+  // until the menu is dismissed.
+  const strip = document.getElementById("tabbrowser-tabs");
+  ok(
+    strip.hasAttribute("zen-multi-drag-selecting"),
+    "close buttons stay hidden while the aborted context menu is open"
+  );
+  const hidden = BrowserTestUtils.waitForEvent(menu, "popuphidden");
   menu.hidePopup();
+  await hidden;
+  ok(
+    !strip.hasAttribute("zen-multi-drag-selecting"),
+    "close buttons restored once the menu closes"
+  );
+
   gBrowser.clearMultiSelectedTabs();
   await cleanupTabs(t1, t2);
 });

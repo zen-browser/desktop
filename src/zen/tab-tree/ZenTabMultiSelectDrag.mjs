@@ -212,6 +212,21 @@ class nsZenTabMultiSelectDrag extends nsZenDOMOperatedFeature {
     // Abort the close and let the native tab context menu open on the current
     // multiselection. The trailing middle release becomes a no-op.
     s.aborted = true;
+    // The selection is still "pending" under the open menu, so keep the per-tab
+    // close (X) buttons suppressed until that menu is dismissed — otherwise the
+    // trailing release reveals an X on a selected/active tab nobody is hovering.
+    // popuphidden bubbles up from submenus, so only act on the menu itself.
+    const menu = document.getElementById("tabContextMenu");
+    if (menu) {
+      const onHidden = e => {
+        if (e.target !== menu) {
+          return;
+        }
+        menu.removeEventListener("popuphidden", onHidden);
+        this.#strip?.removeAttribute("zen-multi-drag-selecting");
+      };
+      menu.addEventListener("popuphidden", onHidden);
+    }
   }
 
   #removeClickSwallowers() {
@@ -220,11 +235,16 @@ class nsZenTabMultiSelectDrag extends nsZenDOMOperatedFeature {
   }
 
   #cancel() {
+    const aborted = this.#state?.aborted;
     window.removeEventListener("mousemove", this, true);
     window.removeEventListener("mouseup", this, true);
     window.removeEventListener("contextmenu", this, true);
     window.removeEventListener("keydown", this, true);
-    this.#strip?.removeAttribute("zen-multi-drag-selecting");
+    // On abort the open context menu owns this (cleared on its popuphidden), so
+    // the close buttons stay hidden while the menu is up; otherwise clear now.
+    if (!aborted) {
+      this.#strip?.removeAttribute("zen-multi-drag-selecting");
+    }
     this.#state = null;
     // Keep the click swallowers until the trailing click fires (next tick).
     window.setTimeout(() => this.#removeClickSwallowers(), 0);

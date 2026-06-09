@@ -94,8 +94,8 @@ add_task(async function test_reconcile_creates_missing_space() {
         "exactly one Space created"
       );
 
-      // cleanup
-      gZenWorkspaces.removeWorkspace(space.uuid);
+      // cleanup (managed -> use the test escape hatch)
+      gZenManagedSpaces.forceRemoveForTest(space.uuid);
     }
   );
 });
@@ -147,7 +147,7 @@ add_task(async function test_reconcile_never_deletes() {
       gZenWorkspaces.getWorkspaces().some(w => w.name === "ZMS Kept"),
       "a Space absent from config is left in place (never deleted)"
     );
-    gZenWorkspaces.removeWorkspace(
+    gZenManagedSpaces.forceRemoveForTest(
       gZenWorkspaces.getWorkspaces().find(w => w.name === "ZMS Other").uuid
     );
   });
@@ -174,9 +174,46 @@ add_task(async function test_startup_reconcile_in_new_window() {
       .getWorkspaces()
       .find(w => w.name === "ZMS Startup");
     Assert.ok(space, "managed Space seeded during window init");
-    win.gZenWorkspaces.removeWorkspace(space.uuid);
+    gZenManagedSpaces.forceRemoveForTest(space.uuid);
   } finally {
     await BrowserTestUtils.closeWindow(win);
     await SpecialPowers.popPrefEnv();
   }
+});
+
+add_task(async function test_managed_space_is_read_only() {
+  await withManagedSpaces(
+    [{ name: "ZMS RO", icon: "lock-closed" }],
+    async () => {
+      gZenManagedSpaces.reconcile(window);
+      const space = gZenWorkspaces
+        .getWorkspaces()
+        .find(w => w.name === "ZMS RO");
+      Assert.ok(space, "managed Space exists");
+
+      const countBefore = gZenWorkspaces.getWorkspaces().length;
+      gZenWorkspaces.removeWorkspace(space.uuid);
+      Assert.equal(
+        gZenWorkspaces.getWorkspaces().length,
+        countBefore,
+        "removeWorkspace refuses to delete a managed Space"
+      );
+
+      // not managed -> still deletable
+      await gZenWorkspaces.createAndSaveWorkspace("Space", undefined, true);
+      const normal = gZenWorkspaces.getWorkspaces().at(-1);
+      normal.name = "ZMS Normal";
+      gZenWorkspaces.saveWorkspace(normal);
+      // removeWorkspace updates the cache on a microtask (after element
+      // teardown), so await it before asserting the Space is gone.
+      await gZenWorkspaces.removeWorkspace(normal.uuid);
+      Assert.ok(
+        !gZenWorkspaces.getWorkspaces().some(w => w.name === "ZMS Normal"),
+        "a non-managed Space deletes normally"
+      );
+
+      // cleanup the managed one for the test run only
+      gZenManagedSpaces.forceRemoveForTest(space.uuid);
+    }
+  );
 });

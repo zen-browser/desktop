@@ -134,6 +134,23 @@ class nsZenManagedSpaces {
   }
 
   /**
+   * Test-only: bypasses the read-only guard so tests can clean up Spaces they
+   * seeded. Drops the name from the managed set (so removeWorkspace's guard
+   * lets it through) and removes it. Never call from product code.
+   *
+   * @param {string} uuid
+   */
+  forceRemoveForTest(uuid) {
+    const win = Services.wm.getMostRecentBrowserWindow();
+    const ws = win?.gZenWorkspaces;
+    const space = ws?.getWorkspaces().find(w => w.uuid === uuid);
+    if (space) {
+      this.#managedNames.delete(space.name);
+      ws.removeWorkspace(uuid);
+    }
+  }
+
+  /**
    * A fresh "no gradient" default theme for a newly seeded Space. Mirrors
    * nsZenThemePicker.getTheme([]), inlined because nsZenThemePicker is a window
    * lexical global and isn't reachable as a property of `win` from this module.

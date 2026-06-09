@@ -1226,18 +1226,27 @@ class nsZenWorkspaces {
     const themePicker = document.getElementById(
       "context_zenChangeWorkspaceTheme"
     );
+    // Config-managed Spaces are read-only: hide rename + theme controls.
+    const ctxSpace = this.getWorkspaceFromId(
+      this.#contextMenuData.workspaceId || this.activeWorkspace
+    );
+    const isManagedSpace = !!(
+      ctxSpace && window.gZenManagedSpaces?.isManaged(ctxSpace.name)
+    );
     /* We can't show the rename input properly in collapsed state,
     so hide the workspace edit input */
     const isCollapsed = !Services.prefs.getBoolPref(
       "zen.view.sidebar-expanded"
     );
     workspaceName.hidden =
+      isManagedSpace ||
       isCollapsed ||
       (this.#contextMenuData.workspaceId &&
         this.#contextMenuData.workspaceId !== this.activeWorkspace);
     themePicker.hidden =
-      this.#contextMenuData.workspaceId &&
-      this.#contextMenuData.workspaceId !== this.activeWorkspace;
+      isManagedSpace ||
+      (this.#contextMenuData.workspaceId &&
+        this.#contextMenuData.workspaceId !== this.activeWorkspace);
     const separator = document.getElementById("context_zenWorkspacesSeparator");
     for (const item of event.target.querySelectorAll(
       ".zen-workspace-context-menu-item"
@@ -1310,6 +1319,14 @@ class nsZenWorkspaces {
   }
 
   removeWorkspace(windowID) {
+    // Config-managed Spaces are read-only: they're owned by the declarative
+    // config (zen.space-routing.managed-spaces), so block UI/programmatic
+    // deletion and tell the user why.
+    const target = this.getWorkspaceFromId(windowID);
+    if (target && window.gZenManagedSpaces?.isManaged(target.name)) {
+      gZenUIManager.showToast("zen-workspaces-managed-readonly-toast");
+      return Promise.resolve();
+    }
     let { promise, resolve } = Promise.withResolvers();
     this.#deleteWorkspaceOwnedTabs(windowID);
 

@@ -30,7 +30,7 @@ export class ZenSpaceRoutingNavigation extends ZenUIComponent {
       !aWebProgress?.isTopLevel ||
       !(aStateFlags & wpl.STATE_START) ||
       !(aStateFlags & wpl.STATE_IS_DOCUMENT) ||
-      (aStateFlags & wpl.STATE_RESTORING)
+      aStateFlags & wpl.STATE_RESTORING
     ) {
       return;
     }

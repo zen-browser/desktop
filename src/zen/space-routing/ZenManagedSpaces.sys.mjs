@@ -65,6 +65,33 @@ class nsZenManagedSpaces {
     return this.#managedNames.has(name);
   }
 
+  /**
+   * Resolves a container reference (its user-visible name, or a userContextId
+   * number) to a userContextId. An unknown name yields 0 (no container).
+   * Containers are never created here.
+   *
+   * @param {string|number|null} container
+   * @returns {number}
+   */
+  resolveContainerId(container) {
+    if (typeof container === "number" && Number.isInteger(container)) {
+      return container;
+    }
+    if (typeof container !== "string" || container.trim() === "") {
+      return 0;
+    }
+    const wanted = container.trim();
+    for (const identity of ContextualIdentityService.getPublicIdentities()) {
+      const label =
+        ContextualIdentityService.getUserContextLabel(identity.userContextId) ||
+        identity.name;
+      if (label === wanted) {
+        return identity.userContextId;
+      }
+    }
+    return 0;
+  }
+
   #parseManagedSpaces(raw) {
     if (typeof raw !== "string" || raw.trim() === "") {
       return [];

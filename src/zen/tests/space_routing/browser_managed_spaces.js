@@ -43,3 +43,31 @@ add_task(async function test_malformed_pref_is_noop() {
   );
   await SpecialPowers.popPrefEnv();
 });
+
+add_task(async function test_resolve_container_by_name() {
+  const created = ContextualIdentityService.create(
+    "ZMS Test Container",
+    "fingerprint",
+    "blue"
+  );
+  registerCleanupFunction(() =>
+    ContextualIdentityService.remove(created.userContextId)
+  );
+
+  Assert.equal(
+    gZenManagedSpaces.resolveContainerId("ZMS Test Container"),
+    created.userContextId,
+    "container name resolves to its userContextId"
+  );
+  Assert.equal(
+    gZenManagedSpaces.resolveContainerId("Does Not Exist"),
+    0,
+    "unknown container name resolves to 0 (no container)"
+  );
+  Assert.equal(
+    gZenManagedSpaces.resolveContainerId(created.userContextId),
+    created.userContextId,
+    "a numeric userContextId is accepted directly"
+  );
+  Assert.equal(gZenManagedSpaces.resolveContainerId(null), 0, "null -> 0");
+});

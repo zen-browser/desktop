@@ -3,6 +3,28 @@
 
 "use strict";
 
+let gZmsInitialTab;
+
+add_setup(function capture_initial_tab() {
+  gZmsInitialTab = gBrowser.selectedTab;
+});
+
+registerCleanupFunction(function restore_initial_tab_state() {
+  // Tearing down a managed Space leaves its empty about:blank tab orphaned
+  // (#deleteWorkspaceOwnedTabs intentionally keeps group-less zen-empty-tabs),
+  // and the startup test's extra window propagates one into this window too.
+  // Restore the original single-tab state so the harness's end-of-run tab
+  // check passes.
+  if (gZmsInitialTab?.isConnected && gBrowser.selectedTab !== gZmsInitialTab) {
+    gBrowser.selectedTab = gZmsInitialTab;
+  }
+  for (const tab of Array.from(gBrowser.tabs)) {
+    if (tab !== gZmsInitialTab) {
+      BrowserTestUtils.removeTab(tab);
+    }
+  }
+});
+
 add_task(async function test_parse_normalizes_entries() {
   await withManagedSpaces(
     [

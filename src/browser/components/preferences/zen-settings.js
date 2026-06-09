@@ -945,6 +945,7 @@ var gZenCKSSettings = {
       });
 
       input.addEventListener("blur", (event) => {
+        this._currentActionID = null;
         const target = event.target;
         target.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
         if (!this._hasSafed) {
@@ -1049,6 +1050,7 @@ var gZenCKSSettings = {
       input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-not-set`);
       input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
       this._latestValidKey = null;
+      this._currentActionID = null;
       return;
     } else if (shortcut == "Escape" && !modifiersActive) {
       const { hasConflicts, conflictShortcut } = gZenKeyboardShortcutsManager.checkForConflicts(

@@ -395,7 +395,7 @@ class nsZenSpaceRoutingManager {
    */
   saveRoutes() {
     this.#file.data.routes = this.#file.data.routes.filter(
-      (route) => route.reference.trim() !== "",
+      route => route.reference.trim() !== ""
     );
     this.#writeToDisk();
   }

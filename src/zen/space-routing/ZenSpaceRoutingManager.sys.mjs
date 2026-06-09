@@ -389,9 +389,14 @@ class nsZenSpaceRoutingManager {
   }
 
   /**
-   * Saves all routes
+   * Saves all routes. The list of
+   * routes is stripped of empty routes
+   * before being saved
    */
   saveRoutes() {
+    this.#file.data.routes = this.#file.data.routes.filter(
+      route => route.reference.trim() !== ""
+    );
     this.#writeToDisk();
   }
 

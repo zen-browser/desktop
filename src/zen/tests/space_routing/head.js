@@ -7,6 +7,25 @@ const { gZenSpaceRoutingManager } = ChromeUtils.importESModule(
   "resource:///modules/zen/spacerouting/ZenSpaceRoutingManager.sys.mjs"
 );
 
+const { gZenManagedSpaces } = ChromeUtils.importESModule(
+  "resource:///modules/zen/spacerouting/ZenManagedSpaces.sys.mjs"
+);
+
+const { ContextualIdentityService } = ChromeUtils.importESModule(
+  "resource://gre/modules/ContextualIdentityService.sys.mjs"
+);
+
+async function withManagedSpaces(json, fn) {
+  await SpecialPowers.pushPrefEnv({
+    set: [["zen.space-routing.managed-spaces", JSON.stringify(json)]],
+  });
+  try {
+    await fn();
+  } finally {
+    await SpecialPowers.popPrefEnv();
+  }
+}
+
 const SR_DIALOG_URI =
   "chrome://browser/content/zen-components/windows/zen-space-routing.xhtml";
 

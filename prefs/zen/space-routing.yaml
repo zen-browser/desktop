@@ -18,3 +18,14 @@
 # `openIn` instead to target a literal "most-recent-space" or a known Space id.
 - name: zen.space-routing.managed-routes
   value: ""
+
+# A JSON array of "managed" Spaces, seeded the same way as managed-routes so a
+# declarative config can define the Spaces themselves (not just route to them).
+# Each entry: { "name": "Work", "icon": "briefcase", "container": "Work",
+# "position": 0 }. `icon` is an emoji, a built-in icon name / *.svg (expanded to
+# a chrome:// selectable-icon URL), or a full URL. `container` is resolved by
+# label to a userContextId (unknown -> none; containers are never created).
+# Managed Spaces are created if missing, synced if present, never deleted, and
+# read-only in the UI.
+- name: zen.space-routing.managed-spaces
+  value: ""

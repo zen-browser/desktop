@@ -6,6 +6,8 @@
 // eslint-disable-next-line no-lone-blocks
 {
   ChromeUtils.defineESModuleGetters(this, {
+    gZenManagedSpaces:
+      "resource:///modules/zen/spacerouting/ZenManagedSpaces.sys.mjs",
     gZenSpaceRoutingManager:
       "resource:///modules/zen/spacerouting/ZenSpaceRoutingManager.sys.mjs",
   });

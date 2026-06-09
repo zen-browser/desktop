@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 EXTRA_JS_MODULES.zen.spacerouting += [
+    "ZenManagedSpaces.sys.mjs",
     "ZenSpaceRoutingDialog.mjs",
     "ZenSpaceRoutingManager.sys.mjs",
 ]

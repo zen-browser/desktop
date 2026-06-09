@@ -638,7 +638,7 @@ ${cssSelector} {
   /**
    * Handles the size toggle button press, cycling through size override options
    */
-  onBoostSizePressed() {
+  async onBoostSizePressed() {
     if (this.currentBoostData.sizeOverride == 1) {
       this.currentBoostData.sizeOverride = 1.1;
     } else if (this.currentBoostData.sizeOverride == 1.1) {
@@ -649,6 +649,12 @@ ${cssSelector} {
       this.currentBoostData.sizeOverride = 0.9;
     } else if (this.currentBoostData.sizeOverride == 0.9) {
       this.currentBoostData.sizeOverride = 1;
+
+      const linkedBrowser =
+        this.openerWindow.gBrowser.selectedTab.linkedBrowser;
+      const actor =
+        linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
+      await actor.sendQuery("ZenBoost:DisableSizeOverride");
     }
 
     this.updateSizeButtonVisuals();

@@ -109,7 +109,12 @@ class nsZenManagedSpaces {
       try {
         const existing = ws.getWorkspaces().find(w => w.name === entry.name);
         if (existing) {
-          continue; // update path added in Task 4
+          if (entry.icon !== undefined) {
+            existing.icon = entry.icon;
+          }
+          existing.containerTabId = this.resolveContainerId(entry.container);
+          ws.saveWorkspace(existing);
+          continue;
         }
         ws.saveWorkspace({
           uuid: win.gZenUIManager.generateUuidv4(),

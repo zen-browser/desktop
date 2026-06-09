@@ -99,3 +99,58 @@ add_task(async function test_reconcile_creates_missing_space() {
     }
   );
 });
+
+add_task(async function test_reconcile_updates_existing_not_duplicate() {
+  // A user-created Space with the managed name, wrong icon.
+  await gZenWorkspaces.createAndSaveWorkspace("Space", undefined, true);
+  const existing = gZenWorkspaces.getWorkspaces().at(-1);
+  existing.name = "ZMS Existing";
+  existing.icon = "❓";
+  gZenWorkspaces.saveWorkspace(existing);
+
+  const countBefore = gZenWorkspaces.getWorkspaces().length;
+  await withManagedSpaces(
+    [{ name: "ZMS Existing", icon: "flask" }],
+    async () => {
+      gZenManagedSpaces.reconcile(window);
+
+      const matches = gZenWorkspaces
+        .getWorkspaces()
+        .filter(w => w.name === "ZMS Existing");
+      Assert.equal(matches.length, 1, "no duplicate Space created");
+      Assert.equal(
+        matches[0].icon,
+        "chrome://browser/skin/zen-icons/selectable/flask.svg",
+        "existing Space's icon synced to config"
+      );
+      Assert.equal(
+        gZenWorkspaces.getWorkspaces().length,
+        countBefore,
+        "Space count unchanged"
+      );
+    }
+  );
+
+  gZenWorkspaces.removeWorkspace(existing.uuid);
+});
+
+add_task(async function test_reconcile_never_deletes() {
+  await gZenWorkspaces.createAndSaveWorkspace("Space", undefined, true);
+  const kept = gZenWorkspaces.getWorkspaces().at(-1);
+  kept.name = "ZMS Kept";
+  gZenWorkspaces.saveWorkspace(kept);
+
+  // Config does NOT mention "ZMS Kept".
+  await withManagedSpaces([{ name: "ZMS Other" }], async () => {
+    gZenManagedSpaces.reconcile(window);
+    Assert.ok(
+      gZenWorkspaces.getWorkspaces().some(w => w.name === "ZMS Kept"),
+      "a Space absent from config is left in place (never deleted)"
+    );
+    gZenWorkspaces.removeWorkspace(
+      gZenWorkspaces.getWorkspaces().find(w => w.name === "ZMS Other").uuid
+    );
+  });
+
+  gZenWorkspaces.removeWorkspace(kept.uuid);
+});

@@ -20,7 +20,6 @@
     display: none !important;
   }
 
-  border-radius: var(--button-border-radius) !important;
   background: transparent;
   appearance: unset !important;
   height: fit-content;

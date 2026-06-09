@@ -154,3 +154,29 @@ add_task(async function test_reconcile_never_deletes() {
 
   gZenWorkspaces.removeWorkspace(kept.uuid);
 });
+
+add_task(async function test_startup_reconcile_in_new_window() {
+  await SpecialPowers.pushPrefEnv({
+    set: [
+      [
+        "zen.space-routing.managed-spaces",
+        JSON.stringify([{ name: "ZMS Startup", icon: "globe" }]),
+      ],
+    ],
+  });
+  const win = await BrowserTestUtils.openNewBrowserWindow();
+  try {
+    await win.gZenWorkspaces.promiseInitialized;
+    await TestUtils.waitForCondition(() =>
+      win.gZenWorkspaces.getWorkspaces().some(w => w.name === "ZMS Startup")
+    );
+    const space = win.gZenWorkspaces
+      .getWorkspaces()
+      .find(w => w.name === "ZMS Startup");
+    Assert.ok(space, "managed Space seeded during window init");
+    win.gZenWorkspaces.removeWorkspace(space.uuid);
+  } finally {
+    await BrowserTestUtils.closeWindow(win);
+    await SpecialPowers.popPrefEnv();
+  }
+});

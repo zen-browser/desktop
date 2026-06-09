@@ -814,6 +814,14 @@ class nsZenWorkspaces {
     }
     promise.finally(() => {
       this.#hasInitialized = true;
+      // Seed/refresh config-declared Spaces now that workspaces are live and
+      // saveWorkspace() can materialize them. Runs before any routing resolves a
+      // Space by name. Guarded so it never blocks init.
+      try {
+        window.gZenManagedSpaces?.reconcile(window);
+      } catch (e) {
+        console.error("[ZenManagedSpaces] startup reconcile failed", e);
+      }
     });
     return promise;
   }

@@ -218,7 +218,7 @@ export class nsZenBoostEditor {
     const editor = new Editor({
       mode: Editor.modes.css,
       lineNumbers: true,
-      theme: this.isDarkMode ? "mozilla" : "default",
+      theme: "mozilla",
       readOnly: false,
       gutters: ["CodeMirror-linenumbers"],
     });
@@ -226,6 +226,10 @@ export class nsZenBoostEditor {
     await editor.appendTo(container);
     editor.refresh();
     editor.on("change", this.onCodeEditorChange.bind(this));
+
+    const editorEl =
+      container.querySelector("iframe").contentDocument.documentElement;
+    editorEl.className = "theme-" + this.isDarkMode ? "dark" : "light";
 
     this.editorWindow._editor = editor;
     this.codeEditorReady = true;

@@ -71,3 +71,31 @@ add_task(async function test_resolve_container_by_name() {
   );
   Assert.equal(gZenManagedSpaces.resolveContainerId(null), 0, "null -> 0");
 });
+
+add_task(async function test_reconcile_creates_missing_space() {
+  const before = gZenWorkspaces.getWorkspaces().length;
+  await withManagedSpaces(
+    [{ name: "ZMS Created", icon: "briefcase" }],
+    async () => {
+      gZenManagedSpaces.reconcile(window);
+
+      const space = gZenWorkspaces
+        .getWorkspaces()
+        .find(w => w.name === "ZMS Created");
+      Assert.ok(space, "a managed Space was created for the missing name");
+      Assert.equal(
+        space.icon,
+        "chrome://browser/skin/zen-icons/selectable/briefcase.svg",
+        "created Space uses the resolved icon URL"
+      );
+      Assert.equal(
+        gZenWorkspaces.getWorkspaces().length,
+        before + 1,
+        "exactly one Space created"
+      );
+
+      // cleanup
+      gZenWorkspaces.removeWorkspace(space.uuid);
+    }
+  );
+});

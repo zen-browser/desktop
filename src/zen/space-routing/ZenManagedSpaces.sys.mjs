@@ -92,6 +92,53 @@ class nsZenManagedSpaces {
     return 0;
   }
 
+  /**
+   * Reconciles managed Spaces into a window's workspaces: creates a Space for
+   * any managed name that doesn't exist yet. Idempotent. Never deletes. Must run
+   * after gZenWorkspaces has finished initializing (so saveWorkspace can
+   * materialize the UI).
+   *
+   * @param {Window} win
+   */
+  reconcile(win) {
+    const ws = win?.gZenWorkspaces;
+    if (!ws?.workspaceEnabled) {
+      return;
+    }
+    for (const entry of this.getManagedSpaces()) {
+      try {
+        const existing = ws.getWorkspaces().find(w => w.name === entry.name);
+        if (existing) {
+          continue; // update path added in Task 4
+        }
+        ws.saveWorkspace({
+          uuid: win.gZenUIManager.generateUuidv4(),
+          name: entry.name,
+          icon: entry.icon,
+          theme: this.#defaultSpaceTheme(),
+          containerTabId: this.resolveContainerId(entry.container),
+        });
+      } catch (e) {
+        console.error(
+          "[ZenManagedSpaces] reconcile failed for",
+          entry?.name,
+          e
+        );
+      }
+    }
+  }
+
+  /**
+   * A fresh "no gradient" default theme for a newly seeded Space. Mirrors
+   * nsZenThemePicker.getTheme([]), inlined because nsZenThemePicker is a window
+   * lexical global and isn't reachable as a property of `win` from this module.
+   *
+   * @returns {object}
+   */
+  #defaultSpaceTheme() {
+    return { type: "gradient", gradientColors: [], opacity: 0.5, texture: 0 };
+  }
+
   #parseManagedSpaces(raw) {
     if (typeof raw !== "string" || raw.trim() === "") {
       return [];

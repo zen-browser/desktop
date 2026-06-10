@@ -3005,7 +3005,8 @@ class nsZenWorkspaces {
 
     if (
       triggeringPrincipal &&
-      triggeringPrincipal.isAddonOrExpandedAddonPrincipal
+      triggeringPrincipal.isAddonOrExpandedAddonPrincipal &&
+      typeof userContextId === "undefined"
     ) {
       return [userContextId, false, undefined];
     }

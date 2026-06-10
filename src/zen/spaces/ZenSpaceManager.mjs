@@ -675,6 +675,25 @@ class nsZenWorkspaces {
     }
   }
 
+  resolveWorkspaceFromString(value) {
+    if (!value) {
+      return null;
+    }
+    try {
+      const workspaces = this.getWorkspaces();
+      return (
+        workspaces.find(workspace => workspace.uuid === value) ||
+        workspaces.find(
+          workspace =>
+            workspace.name?.toLowerCase() === value.toLowerCase()
+        ) ||
+        null
+      );
+    } catch {
+      return null;
+    }
+  }
+
   getWorkspaces(lieToMe = false) {
     if (lieToMe) {
       const { ZenSessionStore } = ChromeUtils.importESModule(
@@ -738,6 +757,23 @@ class nsZenWorkspaces {
       : [this.#createWorkspaceData("Space", undefined)];
     this.activeWorkspace =
       aWinData.activeZenSpace || this._workspaceCache[0].uuid;
+    const cmdLineWorkspace = this.privateWindowOrDisabled
+      ? ""
+      : Services.prefs.getStringPref(
+          "zen.workspaces.cmdline-initial-workspace",
+          ""
+        );
+    if (cmdLineWorkspace) {
+      // Set by the `--space` command line flag on a cold start,
+      // see BrowserContentHandler.sys.mjs. Consumed by the first syncing
+      // window that restores its workspaces; private and unsynced windows
+      // must not eat the pref.
+      Services.prefs.clearUserPref("zen.workspaces.cmdline-initial-workspace");
+      const initialWorkspace = this.resolveWorkspaceFromString(cmdLineWorkspace);
+      if (initialWorkspace) {
+        this.activeWorkspace = initialWorkspace.uuid;
+      }
+    }
     let promise = this.#initializeWorkspaces();
     for (const workspace of spacesFromStore) {
       const element = this.workspaceElement(workspace.uuid);
@@ -1615,6 +1651,20 @@ class nsZenWorkspaces {
   async changeWorkspaceWithID(workspaceID, ...args) {
     const workspace = this.getWorkspaceFromId(workspaceID);
     return await this.changeWorkspace(workspace, ...args);
+  }
+
+  /**
+   * Handles the `--space` command line flag for an already running
+   * browser: switches to the workspace matching the given name or UUID.
+   *
+   * @param {string} workspaceMatch - The workspace UUID or name to switch to
+   */
+  async changeWorkspaceFromCommandLine(workspaceMatch) {
+    await this.promiseInitialized;
+    const workspace = this.resolveWorkspaceFromString(workspaceMatch);
+    if (workspace && workspace.uuid !== this.activeWorkspace) {
+      await this.changeWorkspaceWithID(workspace.uuid);
+    }
   }
 
   async changeWorkspace(workspace, ...args) {

@@ -118,6 +118,28 @@ class nsZenSpaceRoutingManager {
       };
     }
 
+    // An explicit container choice (e.g. "Open in New Container Tab") is a
+    // deliberate override and wins over any routing rule: skip routing so the
+    // chosen container, and its own Space, are used instead of the route's.
+    // External links are exempt: they carry a container from the opening
+    // context rather than a deliberate choice, and must still be routed.
+    //
+    // Test for presence, not truthiness: "Open Link in New Tab" passes
+    // userContextId 0 for "No Container", which is as deliberate a choice as
+    // any other. It also has to agree with the caller-side gate in the
+    // tabbrowser patch (typeof userContextId === "undefined"), or a 0 would
+    // skip that gate while still resolving a route here, and the tab would be
+    // moved into the routed Space carrying the active Space's container.
+    if (typeof options.userContextId !== "undefined" && !options.fromExternal) {
+      return {
+        shouldEarlyExit: false,
+        userContextId,
+        isRouteFound,
+        targetRoute,
+        targetWorkspaceName,
+      };
+    }
+
     targetRoute = this.routeUri(uriString, options, win);
     switch (targetRoute) {
       case "most-recent-space":

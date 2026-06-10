@@ -78,3 +78,61 @@ add_task(async function test_no_container_route_not_hijacked() {
   await gZenWorkspaces.changeWorkspace(defaultWs);
   await gZenWorkspaces.removeWorkspace(workWs.uuid);
 });
+
+add_task(async function test_explicit_container_overrides_route() {
+  // Mirror production: a container maps to its Space (default-on pref).
+  await SpecialPowers.pushPrefEnv({
+    set: [["zen.workspaces.force-container-workspace", true]],
+  });
+  const defaultWs = gZenWorkspaces.getWorkspaces()[0];
+
+  // A Work-like Space bound to container 2 (distinct from any other test's
+  // container so the container->Space mapping is unique), created without
+  // switching to it, so the active Space stays the No-Container Default.
+  await gZenWorkspaces.createAndSaveWorkspace(
+    "Override Work",
+    undefined,
+    true,
+    2
+  );
+  const workWs = gZenWorkspaces.getWorkspaces().at(-1);
+  Assert.equal(
+    workWs.containerTabId,
+    2,
+    "work-like Space bound to container 2"
+  );
+  if (gZenWorkspaces.activeWorkspace !== defaultWs.uuid) {
+    await gZenWorkspaces.changeWorkspace(defaultWs);
+  }
+
+  // Route example.com -> the No-Container Default Space.
+  addRoute({
+    reference: "example.com",
+    matchType: "contains",
+    openIn: defaultWs.uuid,
+  });
+
+  // Explicitly open in container 2 ("Open in New Container Tab" passes
+  // userContextId straight through to addTab). The deliberate container choice
+  // must win over the No-Container route — both the container and its Space.
+  const tab = gBrowser.addTab("https://example.com/", {
+    inBackground: true,
+    userContextId: 2,
+    triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+  });
+
+  Assert.equal(
+    parseInt(tab.getAttribute("usercontextid") || "0", 10),
+    2,
+    "explicit container choice overrides the route's No-Container"
+  );
+  Assert.equal(
+    tab.getAttribute("zen-workspace-id"),
+    workWs.uuid,
+    "explicit container choice lands in its own Space, not the routed one"
+  );
+
+  await flushEventLoop();
+  BrowserTestUtils.removeTab(tab);
+  await gZenWorkspaces.removeWorkspace(workWs.uuid);
+});

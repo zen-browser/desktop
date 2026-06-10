@@ -301,7 +301,7 @@ index c42b1a1a8df6b38886c17f71ea88e5aaa7eebc80..c741404ed973ee3ac246fe246c0f645e
          );
        }
  
-+      const beforeRouteResult = window.gZenSpaceRoutingManager.onBeforeAddTab(uriString, { skipRoute, pinned, tabGroup, fromExternal }, window);
++      const beforeRouteResult = window.gZenSpaceRoutingManager.onBeforeAddTab(uriString, { skipRoute, pinned, tabGroup, fromExternal, userContextId }, window);
 +      if (beforeRouteResult.shouldEarlyExit) {
 +        return null;
 +      }

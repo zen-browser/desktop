@@ -241,8 +241,7 @@ export class nsZenBoostEditor {
 
     const editorEl =
       container.querySelector("iframe").contentDocument.documentElement;
-    editorEl.className = "theme-" + this.isDarkMode ? "dark" : "light";
-
+    editorEl.className = "theme-" + (this.isDarkMode ? "dark" : "light");
     this.editorWindow._editor = editor;
     this.codeEditorReady = true;
   }

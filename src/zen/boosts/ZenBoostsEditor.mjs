@@ -59,7 +59,12 @@ export class nsZenBoostEditor {
     this.loadBoost(domain);
   }
 
-  get zenBoostActor() {
+  /**
+   * Returns the ZenBoosts JSWindowActor child for the currently selected tab.
+   *
+   * @returns {ZenBoostsChild} zenBoostsChild Boost JSActor child
+   */
+  get zenBoostsChild() {
     const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
     const actor =
       linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
@@ -440,13 +445,13 @@ export class nsZenBoostEditor {
   }
 
   async onZapButtonPressed() {
-    this.zenBoostActor.sendQuery("ZenBoost:ToggleZapMode");
+    this.zenBoostsChild.sendQuery("ZenBoost:ToggleZapMode");
     // Focus the parent browser window
     this.openerWindow.focus();
   }
 
   async onPickerButtonPressed() {
-    this.zenBoostActor.sendQuery("ZenBoost:TogglePickerMode");
+    this.zenBoostsChild.sendQuery("ZenBoost:TogglePickerMode");
     this.openerWindow.focus();
   }
 
@@ -471,11 +476,11 @@ ${cssSelector} {
   }
 
   onInspectorButtonPressed() {
-    this.zenBoostActor.sendQuery("ZenBoost:OpenInspector");
+    this.zenBoostsChild.sendQuery("ZenBoost:OpenInspector");
   }
 
   async onUpdateZapButtonVisual() {
-    const actor = this.zenBoostActor;
+    const actor = this.zenBoostsChild;
     const zapButton = this.doc.getElementById("zen-boost-zap");
 
     const zapEnabled = await actor.sendQuery("ZenBoost:ZapModeEnabled");
@@ -487,7 +492,7 @@ ${cssSelector} {
 
   async onUpdatePickerButtonVisual() {
     const pickerButton = this.doc.getElementById("zen-boost-css-picker");
-    const selectEnabled = await this.zenBoostActor.sendQuery(
+    const selectEnabled = await this.zenBoostsChild.sendQuery(
       "ZenBoost:SelectorPickerModeEnabled"
     );
 
@@ -644,7 +649,7 @@ ${cssSelector} {
       this.currentBoostData.sizeOverride = 0.9;
     } else if (this.currentBoostData.sizeOverride == 0.9) {
       this.currentBoostData.sizeOverride = 1;
-      await this.zenBoostActor.sendQuery("ZenBoost:DisableSizeOverride");
+      await this.zenBoostsChild.sendQuery("ZenBoost:DisableSizeOverride");
     }
 
     this.updateSizeButtonVisuals();

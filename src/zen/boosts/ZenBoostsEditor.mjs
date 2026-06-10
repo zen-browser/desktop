@@ -59,6 +59,13 @@ export class nsZenBoostEditor {
     this.loadBoost(domain);
   }
 
+  get zenBoostActor() {
+    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
+    const actor =
+      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
+    return actor;
+  }
+
   /**
    * Initializes the boost editor by setting up event listeners for all UI controls.
    */
@@ -433,20 +440,13 @@ export class nsZenBoostEditor {
   }
 
   async onZapButtonPressed() {
-    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor =
-      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
-    actor.sendQuery("ZenBoost:ToggleZapMode");
-
+    this.zenBoostActor.sendQuery("ZenBoost:ToggleZapMode");
     // Focus the parent browser window
     this.openerWindow.focus();
   }
 
   async onPickerButtonPressed() {
-    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor =
-      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
-    actor.sendQuery("ZenBoost:TogglePickerMode");
+    this.zenBoostActor.sendQuery("ZenBoost:TogglePickerMode");
     this.openerWindow.focus();
   }
 
@@ -471,16 +471,11 @@ ${cssSelector} {
   }
 
   onInspectorButtonPressed() {
-    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor =
-      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
-    actor.sendQuery("ZenBoost:OpenInspector");
+    this.zenBoostActor.sendQuery("ZenBoost:OpenInspector");
   }
 
   async onUpdateZapButtonVisual() {
-    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor =
-      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
+    const actor = this.zenBoostActor;
     const zapButton = this.doc.getElementById("zen-boost-zap");
 
     const zapEnabled = await actor.sendQuery("ZenBoost:ZapModeEnabled");
@@ -491,12 +486,8 @@ ${cssSelector} {
   }
 
   async onUpdatePickerButtonVisual() {
-    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor =
-      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
-
     const pickerButton = this.doc.getElementById("zen-boost-css-picker");
-    const selectEnabled = await actor.sendQuery(
+    const selectEnabled = await this.zenBoostActor.sendQuery(
       "ZenBoost:SelectorPickerModeEnabled"
     );
 
@@ -653,12 +644,7 @@ ${cssSelector} {
       this.currentBoostData.sizeOverride = 0.9;
     } else if (this.currentBoostData.sizeOverride == 0.9) {
       this.currentBoostData.sizeOverride = 1;
-
-      const linkedBrowser =
-        this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-      const actor =
-        linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
-      await actor.sendQuery("ZenBoost:DisableSizeOverride");
+      await this.zenBoostActor.sendQuery("ZenBoost:DisableSizeOverride");
     }
 
     this.updateSizeButtonVisuals();

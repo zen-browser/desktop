@@ -3,21 +3,21 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-space-routing-settings = 
-    .label = Space Routing Settings
-zen-space-routing-rulepanel-placeholder = Routes let you choose where specific sites open inside Zen. For example, you can route YouTube links to always open inside your Personal space.
-zen-space-routing-dialog-title = Space Routing Settings
-zen-space-routing-external-default = Default route for external links
-zen-space-routing-new-route = New Route
-zen-space-routing-open-in-space = Open in Space
-zen-space-routing-most-recent-space = Most recent Space
+    .label = Налаштування маршрутизації в просторі
+zen-space-routing-rulepanel-placeholder = За допомогою маршрутів ви можете вибрати, де саме в Zen будуть відкриватися певні сайти. Наприклад, ви можете налаштувати, щоби посилання на YouTube завжди відкривалися у вашому особистому просторі.
+zen-space-routing-dialog-title = Налаштування маршрутизації в просторі
+zen-space-routing-external-default = Типовий маршрут для зовнішніх посилань
+zen-space-routing-new-route = Новий маршрут
+zen-space-routing-open-in-space = Відкрити в просторі
+zen-space-routing-most-recent-space = Останній простір
 zen-space-routing-close-button = 
-    .aria-label = Close
-    .tooltiptext = Close
+    .aria-label = Закрити
+    .tooltiptext = Закрити
 zen-space-routing-contains = 
-    .label = Contains
+    .label = Містить
 zen-space-routing-equal-to = 
-    .label = Is Equal To
+    .label = Це дорівнює
 zen-space-routing-regex = 
-    .label = RegEx
-zen-space-routing-open-in = Open In
-zen-space-routing-url = URL
+    .label = Регулярний вираз
+zen-space-routing-open-in = Відкрити в
+zen-space-routing-url = URL-адреса

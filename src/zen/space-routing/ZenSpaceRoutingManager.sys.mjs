@@ -442,7 +442,8 @@ class nsZenSpaceRoutingManager {
   #resolveManagedTarget(route, win) {
     if (route.openInSpace) {
       return (
-        this.#resolveSpaceNameToId(route.openInSpace, win) ?? "most-recent-space"
+        this.#resolveSpaceNameToId(route.openInSpace, win) ??
+        "most-recent-space"
       );
     }
     return route.openIn ?? "most-recent-space";

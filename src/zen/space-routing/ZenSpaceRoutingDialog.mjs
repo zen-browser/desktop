@@ -108,12 +108,14 @@ export class nsZenSpaceRoutingDialog {
       ]);
 
     const msgValue = (msg, attrName) =>
-      msg?.attributes?.find(a => a.name === attrName)?.value ?? msg?.value ?? "";
+      msg?.attributes?.find(a => a.name === attrName)?.value ??
+      msg?.value ??
+      "";
 
     const matchTypeLabels = {
-      "contains": msgValue(containsMsg, "label"),
+      contains: msgValue(containsMsg, "label"),
       "equal-to": msgValue(equalToMsg, "label"),
-      "regex": msgValue(regexMsg, "label"),
+      regex: msgValue(regexMsg, "label"),
     };
     const mostRecentLabel = msgValue(mostRecentMsg);
     const workspaces = this.openerWindow.gZenWorkspaces.getWorkspaces();
@@ -149,7 +151,12 @@ export class nsZenSpaceRoutingDialog {
    * @param {Array<object>} workspaces - The opener window's Spaces
    * @returns {Element} The row element
    */
-  createManagedRouteElement(route, matchTypeLabels, mostRecentLabel, workspaces) {
+  createManagedRouteElement(
+    route,
+    matchTypeLabels,
+    mostRecentLabel,
+    workspaces
+  ) {
     const root = this.doc.createXULElement("vbox");
     root.className = "sr-managed-container";
     root.setAttribute("routeId", route.id);

@@ -30,3 +30,7 @@ zen-folders-unload-folder =
     .label = Unload All Tabs
 
 zen-folders-search-no-results = No tabs matching that search 🤔
+
+# Prompt message shown when renaming a folder in collapsed sidebar mode
+# { $name } is the current folder name
+zen-folder-rename-prompt = Enter a new name for "{ $name }":

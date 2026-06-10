@@ -137,8 +137,25 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
 
   rename() {
     if (!document.documentElement.hasAttribute("zen-sidebar-expanded")) {
+      // Collapsed toolbar mode: no inline label input is visible, so use a prompt dialog.
+      const currentName = this.label || "";
+      const result = { value: currentName };
+      const confirmed = Services.prompt.prompt(
+        window,
+        null,                      // title (null = use default window title)
+        gBrowser.ownerDocument.l10n.getValueSync("zen-folder-rename-prompt", {
+          name: currentName,
+        }) ?? `Rename "${currentName}"`,
+        result,
+        null,                      // checkMsg (no checkbox)
+        {}                         // checkState
+      );
+      if (confirmed && result.value.trim()) {
+        this.labelElement.onRenameFinished(result.value);
+      }
       return;
     }
+    // Expanded sidebar: use the existing inline rename flow
     gZenVerticalTabsManager.renameTabStart({
       target: this.labelElement,
       explicit: true,

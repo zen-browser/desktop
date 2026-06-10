@@ -675,6 +675,25 @@ class nsZenWorkspaces {
     }
   }
 
+  resolveWorkspaceFromString(value) {
+    if (!value) {
+      return null;
+    }
+    try {
+      const workspaces = this.getWorkspaces();
+      return (
+        workspaces.find(workspace => workspace.uuid === value) ||
+        workspaces.find(
+          workspace =>
+            workspace.name?.toLowerCase() === value.toLowerCase()
+        ) ||
+        null
+      );
+    } catch {
+      return null;
+    }
+  }
+
   getWorkspaces(lieToMe = false) {
     if (lieToMe) {
       const { ZenSessionStore } = ChromeUtils.importESModule(
@@ -738,6 +757,17 @@ class nsZenWorkspaces {
       : [this.#createWorkspaceData("Space", undefined)];
     this.activeWorkspace =
       aWinData.activeZenSpace || this._workspaceCache[0].uuid;
+    if (window._zenInitialWorkspace) {
+      // Set by the `--zen-workspace` command line flag when the window
+      // was opened, see BrowserContentHandler.sys.mjs.
+      const initialWorkspace = this.resolveWorkspaceFromString(
+        window._zenInitialWorkspace
+      );
+      if (initialWorkspace) {
+        this.activeWorkspace = initialWorkspace.uuid;
+      }
+      delete window._zenInitialWorkspace;
+    }
     let promise = this.#initializeWorkspaces();
     for (const workspace of spacesFromStore) {
       const element = this.workspaceElement(workspace.uuid);
@@ -1615,6 +1645,32 @@ class nsZenWorkspaces {
   async changeWorkspaceWithID(workspaceID, ...args) {
     const workspace = this.getWorkspaceFromId(workspaceID);
     return await this.changeWorkspace(workspace, ...args);
+  }
+
+  /**
+   * Handles the `--zen-workspace` command line flag for an already running
+   * browser: switches to the given workspace (name or UUID) and optionally
+   * opens a URL inside of it.
+   *
+   * @param {string} workspaceMatch - The workspace UUID or name to switch to
+   * @param {string|null} url - The URL to open in the workspace, if any
+   */
+  async openLinkInWorkspaceFromCommandLine(workspaceMatch, url = null) {
+    await this.promiseInitialized;
+    const workspace = this.resolveWorkspaceFromString(workspaceMatch);
+    if (workspace && workspace.uuid !== this.activeWorkspace) {
+      await this.changeWorkspaceWithID(workspace.uuid);
+    }
+    if (!url) {
+      return;
+    }
+    const tab = gBrowser.addTrustedTab(url, {
+      inBackground: false,
+    });
+    if (workspace) {
+      this.moveTabToWorkspace(tab, workspace.uuid);
+    }
+    gBrowser.selectedTab = tab;
   }
 
   async changeWorkspace(workspace, ...args) {

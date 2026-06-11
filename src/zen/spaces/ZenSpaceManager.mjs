@@ -2297,8 +2297,14 @@ class nsZenWorkspaces {
       !aTab.hasAttribute("zen-empty-tab") &&
       !aTab.hasAttribute("zen-essential")
     ) {
-      this.changeWorkspaceWithID(tabSpace);
+      this.changeWorkspaceWithID(tabSpace)
+        .catch(console.error)
+        .then(() => {
+          gBrowser.selectedTab = aTab;
+        });
+      return true;
     }
+    return false;
   }
 
   _shouldShowTab(tab, workspaceUuid, containerId, workspaces) {

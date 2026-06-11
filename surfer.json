@@ -20,7 +20,7 @@
       "brandShortName": "Zen",
       "brandFullName": "Zen Browser",
       "release": {
-        "displayVersion": "1.21b",
+        "displayVersion": "1.21.1b",
         "github": {
           "repo": "zen-browser/desktop"
         },

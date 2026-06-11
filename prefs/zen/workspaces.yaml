@@ -54,5 +54,8 @@
 - name: zen.pinned-tab-manager.restore-pinned-tabs-to-pinned-url
   value: false
 
+- name: zen.pinned-tab-manager.detect-fragment-changes
+  value: false
+
 - name: zen.pinned-tab-manager.close-shortcut-behavior
   value: reset-unload-switch

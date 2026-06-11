@@ -21,6 +21,12 @@ class ZenPinnedTabsObserver {
     );
     XPCOMUtils.defineLazyPreferenceGetter(
       lazy,
+      "zenPinnedTabDetectFragmentChanges",
+      "zen.pinned-tab-manager.detect-fragment-changes",
+      false
+    );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      lazy,
       "zenPinnedTabCloseShortcutBehavior",
       "zen.pinned-tab-manager.close-shortcut-behavior",
       "switch"
@@ -854,9 +860,13 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     ) {
       return;
     }
-    // Remove # and ? from the URL
-    const pinUrl = tab._zenPinnedInitialState.entry.url.split("#")[0];
-    const currentUrl = location.split("#")[0];
+    // Remove the fragment from the URL before comparing, unless the user has
+    // opted in to treating fragment changes as a deviation from the pinned URL.
+    const stripFragment = !lazy.zenPinnedTabDetectFragmentChanges;
+    const pinUrl = stripFragment
+      ? tab._zenPinnedInitialState.entry.url.split("#")[0]
+      : tab._zenPinnedInitialState.entry.url;
+    const currentUrl = stripFragment ? location.split("#")[0] : location;
     // Add an indicator that the pin has been changed
     if (
       Services.io.newURI(currentUrl).spec === Services.io.newURI(pinUrl).spec

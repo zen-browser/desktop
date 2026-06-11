@@ -487,6 +487,61 @@ class nsZenWorkspaces {
       : 0;
   }
 
+  /**
+   * Refreshes the container marker for every tab in the active space. A tab
+   * shows the marker only when its container differs from the active space's
+   * default container; tabs that are in the space's default container hide it.
+   *
+   * This has to run dynamically (not just at tab creation) because the
+   * reference container changes whenever the active space changes, the space's
+   * default container is reconfigured, or a tab is moved between spaces.
+   */
+  updateTabContainerIndicators() {
+    const spaceContainerId = this.getCurrentSpaceContainerId();
+    const activeWorkspace = this.activeWorkspace;
+    for (const tab of this.allStoredTabs) {
+      if (tab.getAttribute("zen-workspace-id") !== activeWorkspace) {
+        continue;
+      }
+      this.#updateTabContainerIndicator(tab, spaceContainerId);
+    }
+  }
+
+  /**
+   * Updates a single tab's container marker relative to the given space
+   * container (defaults to the active space's container).
+   *
+   * @param {MozTabbrowserTab} tab - The tab to update.
+   * @param {number} [spaceContainerId] - The active space's default container.
+   */
+  #updateTabContainerIndicator(
+    tab,
+    spaceContainerId = this.getCurrentSpaceContainerId()
+  ) {
+    if (tab.hasAttribute("zen-essential") || tab.hasAttribute("zen-empty-tab")) {
+      // Essentials are grouped by container on their own, and the empty/new-tab
+      // placeholder shouldn't be marked relative to the space's default
+      // container.
+      return;
+    }
+    const tabContainerId = parseInt(tab.getAttribute("usercontextid"), 10) || 0;
+    const inSpaceDefaultContainer = tabContainerId === spaceContainerId;
+    if (inSpaceDefaultContainer) {
+      tab.setAttribute("zenDefaultUserContextId", "true");
+    } else {
+      tab.removeAttribute("zenDefaultUserContextId");
+    }
+    // Firefox only colours the marker when the tab has a userContextId, so a
+    // container-less tab that lives in a space which *does* have a default
+    // container would otherwise show nothing. Flag it so we can render a
+    // neutral (gray) marker instead.
+    if (!inSpaceDefaultContainer && tabContainerId === 0) {
+      tab.setAttribute("zen-neutral-container-marker", "true");
+    } else {
+      tab.removeAttribute("zen-neutral-container-marker");
+    }
+  }
+
   getCurrentEssentialsContainer() {
     return this.getEssentialsSection(this.getCurrentSpaceContainerId());
   }
@@ -1650,6 +1705,10 @@ class nsZenWorkspaces {
       if (glanceTab) {
         glanceTab.setAttribute("zen-workspace-id", workspaceID);
       }
+      // Refresh the container marker now that the tab belongs to this space.
+      if (workspaceID === this.activeWorkspace) {
+        this.#updateTabContainerIndicator(tab);
+      }
     }
     gBrowser.tabContainer._invalidateCachedTabs();
     return true;
@@ -1860,6 +1919,10 @@ class nsZenWorkspaces {
       previousWorkspaceIndex,
       previousWorkspace,
     });
+
+    // The active space's default container changed, so refresh which tabs show
+    // the container marker.
+    this.updateTabContainerIndicators();
   }
 
   makeSureEmptyTabIsFirst() {
@@ -2872,6 +2935,7 @@ class nsZenWorkspaces {
       await this.changeWorkspaceWithID(tabWorkspaceId);
     } else {
       tab.setAttribute("zen-workspace-id", activeWorkspace.uuid);
+      this.#updateTabContainerIndicator(tab);
     }
   }
 
@@ -2946,6 +3010,10 @@ class nsZenWorkspaces {
     );
     workspace.containerTabId = userContextId + 0; // +0 to convert to number
     this.saveWorkspace(workspace);
+    if (workspace.uuid === this.activeWorkspace) {
+      // The active space's default container changed; refresh tab markers.
+      this.updateTabContainerIndicators();
+    }
   }
 
   async closeAllUnpinnedTabs() {

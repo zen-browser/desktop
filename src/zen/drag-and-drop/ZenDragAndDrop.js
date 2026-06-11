@@ -1016,6 +1016,7 @@
         }
       }
       gZenWorkspaces.updateTabsContainers();
+      gZenWorkspaces.updateTabContainerIndicators();
     }
 
     #handle_dropCreateSplit(event) {

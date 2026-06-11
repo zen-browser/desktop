@@ -2291,7 +2291,7 @@ class nsZenWorkspaces {
 
   onBeforeTabSelect(aTab) {
     if (this.#inChangingWorkspace) {
-      // Just in case, Let's not do these checks while we are 
+      // Just in case, Let's not do these checks while we are
       // in the middle of changing workspace,
       return false;
     }
@@ -2302,11 +2302,9 @@ class nsZenWorkspaces {
       !aTab.hasAttribute("zen-empty-tab") &&
       !aTab.hasAttribute("zen-essential")
     ) {
-      this.changeWorkspaceWithID(tabSpace)
-        .catch(console.error)
-        .then(() => {
-          gBrowser.selectedTab = aTab;
-        });
+      this.lastSelectedWorkspaceTabs[tabSpace] =
+        gZenGlanceManager.getTabOrGlanceParent(aTab);
+      this.changeWorkspaceWithID(tabSpace);
       return true;
     }
     return false;

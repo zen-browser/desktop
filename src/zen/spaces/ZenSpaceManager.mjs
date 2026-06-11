@@ -518,7 +518,10 @@ class nsZenWorkspaces {
     tab,
     spaceContainerId = this.getCurrentSpaceContainerId()
   ) {
-    if (tab.hasAttribute("zen-essential") || tab.hasAttribute("zen-empty-tab")) {
+    if (
+      tab.hasAttribute("zen-essential") ||
+      tab.hasAttribute("zen-empty-tab")
+    ) {
       // Essentials are grouped by container on their own, and the empty/new-tab
       // placeholder shouldn't be marked relative to the space's default
       // container.
@@ -1783,6 +1786,12 @@ class nsZenWorkspaces {
     } catch (ex) {
       console.error("Failed to reopen tab in workspace container:", ex);
       if (newTab) {
+        // The reopen failed partway through; if we had already moved selection
+        // onto the new tab, put it back on the original before discarding it so
+        // the user isn't left on a removed/unintended tab.
+        if (tab.isConnected) {
+          gBrowser.selectedTab = tab;
+        }
         gBrowser.removeTab(newTab, { animate: false, skipSessionStore: true });
       }
       return tab;
@@ -1920,8 +1929,8 @@ class nsZenWorkspaces {
       previousWorkspace,
     });
 
-    // The active space's default container changed, so refresh which tabs show
-    // the container marker.
+    // Switching spaces changes the reference container (the new space's default
+    // container), so refresh which tabs show the container marker.
     this.updateTabContainerIndicators();
   }
 

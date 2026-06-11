@@ -1655,6 +1655,81 @@ class nsZenWorkspaces {
     return true;
   }
 
+  #getWorkspaceContainerId(workspaceID) {
+    const workspace = this.getWorkspaceFromId(workspaceID);
+    return typeof workspace?.containerTabId === "number"
+      ? workspace.containerTabId
+      : 0;
+  }
+
+  /**
+   * Reopens a tab inside the destination space's container (if one is set) so
+   * the tab actually lives in that container instead of staying in its previous
+   * space's container (or no container at all).
+   *
+   * Tabs whose DOM relationships can't be safely recreated by a plain reopen
+   * (glance tabs, split-view groups, essentials and empty tabs) are left
+   * untouched, as are tabs that are already in the right container or when the
+   * destination space has no container.
+   *
+   * @param {MozTabbrowserTab} tab - The tab being moved.
+   * @param {string} workspaceID - The destination workspace id.
+   * @returns {MozTabbrowserTab} The tab to keep working with: the newly reopened
+   *   tab when a reopen happened, otherwise the original tab.
+   */
+  reopenTabInWorkspaceContainerIfNeeded(tab, workspaceID) {
+    const userContextId = this.#getWorkspaceContainerId(workspaceID);
+    if (!userContextId) {
+      return tab;
+    }
+
+    if (
+      tab.hasAttribute("zen-essential") ||
+      tab.hasAttribute("zen-empty-tab") ||
+      tab.hasAttribute("zen-glance-tab") ||
+      tab.querySelector(".tabbrowser-tab[zen-glance-tab]") ||
+      tab.group?.hasAttribute("split-view-group")
+    ) {
+      return tab;
+    }
+
+    const currentContainerId =
+      parseInt(tab.getAttribute("usercontextid"), 10) || 0;
+    if (currentContainerId === userContextId) {
+      return tab;
+    }
+
+    let newTab = null;
+    try {
+      const wasSelected = gBrowser.selectedTab === tab;
+      const tabState = JSON.parse(SessionStore.getTabState(tab));
+      tabState.userContextId = userContextId;
+      tabState.zenWorkspace = workspaceID;
+
+      newTab = gBrowser.addTrustedTab("about:blank", {
+        userContextId,
+        pinned: tab.pinned,
+        index: tab._tPos + 1,
+        skipAnimation: true,
+        createLazyBrowser: !wasSelected,
+      });
+      newTab.setAttribute("zen-workspace-id", workspaceID);
+      SessionStore.setTabState(newTab, JSON.stringify(tabState));
+
+      if (wasSelected) {
+        gBrowser.selectedTab = newTab;
+      }
+      gBrowser.removeTab(tab, { animate: false, skipSessionStore: true });
+      return newTab;
+    } catch (ex) {
+      console.error("Failed to reopen tab in workspace container:", ex);
+      if (newTab) {
+        gBrowser.removeTab(newTab, { animate: false, skipSessionStore: true });
+      }
+      return tab;
+    }
+  }
+
   #prepareNewWorkspace(space) {
     let tabCount = 0;
     for (let tab of gBrowser.tabs) {
@@ -2963,10 +3038,29 @@ class nsZenWorkspaces {
       ? gBrowser.selectedTabs
       : [TabContextMenu.contextTab];
     document.getElementById("tabContextMenu").hidePopup();
-    this.moveTabsToWorkspace(tabs, workspaceID);
+    // Reopen each tab in the destination space's container (if it has one) so it
+    // doesn't stay in the previous space's container. Reopening replaces the
+    // tab, so drop any "last selected" entry still pointing at the original —
+    // moveTabsToWorkspace only clears that for tabs it moves as-is.
+    const movedTabs = tabs.map(tab => {
+      const previousWorkspaceID = tab.getAttribute("zen-workspace-id");
+      const wasLastSelected =
+        this.lastSelectedWorkspaceTabs[previousWorkspaceID] === tab;
+      const movedTab = this.reopenTabInWorkspaceContainerIfNeeded(
+        tab,
+        workspaceID
+      );
+      if (wasLastSelected && movedTab !== tab) {
+        delete this.lastSelectedWorkspaceTabs[previousWorkspaceID];
+      }
+      return movedTab;
+    });
+    // Read the last tab before moving: moveTabsToWorkspace may reverse in place.
+    const lastMovedTab = movedTabs[movedTabs.length - 1];
+    this.moveTabsToWorkspace(movedTabs, workspaceID);
     // Make sure we select the last tab in the new workspace
     this.lastSelectedWorkspaceTabs[workspaceID] =
-      gZenGlanceManager.getTabOrGlanceParent(tabs[tabs.length - 1]);
+      gZenGlanceManager.getTabOrGlanceParent(lastMovedTab);
     const workspaces = this.getWorkspaces();
     await this.changeWorkspace(
       workspaces.find(workspace => workspace.uuid === workspaceID)

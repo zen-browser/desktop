@@ -142,7 +142,9 @@ export class nsZenSiteDataPanel {
       this.anchor.removeAttribute("boosting");
     }
     // Force a reflow to ensure the attribute change is applied before any potential animation.
-    this.anchor.getBoundingClientRect();
+    if (this.unifiedPanel.state === "open") {
+      this.anchor.getBoundingClientRect();
+    }
   }
 
   #initCopyUrlButton() {

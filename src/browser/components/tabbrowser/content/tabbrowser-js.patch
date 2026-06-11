@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index 43fb79a3060e20f671ae6ffc26350c7abf497702..f4a5daa70374bbf7b3f42a6023b346dccad2a0be 100644
+index 43fb79a3060e20f671ae6ffc26350c7abf497702..68a037d5a0e3416f31ffcb163592f008ede72076 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -502,6 +502,7 @@
@@ -296,7 +296,7 @@ index 43fb79a3060e20f671ae6ffc26350c7abf497702..f4a5daa70374bbf7b3f42a6023b346dc
 +
 +      let hasZenDefaultUserContextId = false;
 +      let zenForcedWorkspaceId = undefined;
-+      if (beforeRouteResult.userContextId) {
++      if (beforeRouteResult.isRouteFound) {
 +        userContextId = beforeRouteResult.userContextId;
 +        hasZenDefaultUserContextId = true;
 +      } else if (typeof gZenWorkspaces !== "undefined" && !_forZenEmptyTab) {

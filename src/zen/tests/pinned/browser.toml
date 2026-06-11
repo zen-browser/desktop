@@ -7,6 +7,8 @@ prefs = ["zen.workspaces.separate-essentials=false"]
 
 ["browser_issue_8726.js"]
 
+["browser_essential_move_to_window.js"]
+
 ["browser_pinned_changed.js"]
 
 ["browser_pinned_close.js"]

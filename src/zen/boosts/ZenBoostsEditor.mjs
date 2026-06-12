@@ -630,6 +630,7 @@ ${cssSelector} {
       this.currentBoostData.textCaseOverride = "uppercase";
     }
 
+    this.currentBoostData.changeWasMade = true;
     this.updateCaseButtonVisuals();
     this.updateCurrentBoost();
   }
@@ -651,6 +652,7 @@ ${cssSelector} {
       await this.zenBoostsChild.sendQuery("ZenBoost:DisableSizeOverride");
     }
 
+    this.currentBoostData.changeWasMade = true;
     this.updateSizeButtonVisuals();
     this.updateCurrentBoost();
   }

@@ -44,11 +44,22 @@ const OBSERVING = [
 ];
 const INSTANT_EVENTS = ["SSWindowClosing", "TabSelect", "focus"];
 const UNSYNCED_WINDOW_EVENTS = ["TabOpen"];
+// Events that may be queued even while we're handling an event for another
+// window. These handlers are idempotent (they bail out when the target
+// already matches the original), so processing them late can't start a
+// sync loop, while dropping them would permanently lose the change (a
+// favicon is usually only set once per page load).
+const CROSS_WINDOW_QUEUED_EVENTS = [
+  "ZenTabIconChanged",
+  "ZenTabLabelChanged",
+  "TabAttrModified",
+];
 const EVENTS = [
   "TabClose",
 
   "ZenTabIconChanged",
   "ZenTabLabelChanged",
+  "TabAttrModified",
   "ZenTreeChanged",
 
   "TabMove",
@@ -396,21 +407,31 @@ class nsZenWindowSync {
     ) {
       return;
     }
+    if (
+      aEvent.type === "TabAttrModified" &&
+      !aEvent.detail?.changed?.includes("image")
+    ) {
+      // We only care about icon updates that don't go through setIcon
+      // (e.g. the progress listener removing a stale favicon).
+      return;
+    }
     if (INSTANT_EVENTS.includes(aEvent.type)) {
       this.#handleNextEventInternal(aEvent);
       return;
     }
-    if (
-      this.#eventHandlingContext.window &&
-      this.#eventHandlingContext.window !== window
-    ) {
+    const contextWindow = this.#eventHandlingContext.window;
+    if (contextWindow && contextWindow !== window) {
       // We're already handling an event for another window.
-      // To avoid re-entrancy issues, we skip this event.
-      return;
+      // To avoid re-entrancy issues, we skip this event, unless its
+      // handler is known to be idempotent and safe to run late.
+      if (!CROSS_WINDOW_QUEUED_EVENTS.includes(aEvent.type)) {
+        return;
+      }
+    } else {
+      this.#eventHandlingContext.window = window;
     }
     const lastHandlerPromise = this.#eventHandlingContext.lastHandlerPromise;
     this.#eventHandlingContext.eventCount++;
-    this.#eventHandlingContext.window = window;
     let resolveNewPromise;
     this.#eventHandlingContext.lastHandlerPromise = new Promise(resolve => {
       resolveNewPromise = resolve;
@@ -524,11 +545,23 @@ class nsZenWindowSync {
       aTargetItem.zenStaticIcon = aOriginalItem.zenStaticIcon;
       if (gBrowser.isTab(aOriginalItem)) {
         try {
-          gBrowser.setIcon(
-            aTargetItem,
+          // Prefer the canonical icon URL (browser.mIconURL, usually a data:
+          // URI) over the image attribute: the attribute may hold a derived
+          // URL (e.g. moz-remote-image:) that setIcon rejects as remote.
+          const icon =
+            aOriginalItem.ownerGlobal.gBrowser.getIcon(aOriginalItem) ||
             aOriginalItem.getAttribute("image") ||
-              gBrowser.getIcon(aOriginalItem)
-          );
+            "";
+          const targetIcon =
+            gBrowser.getIcon(aTargetItem) ||
+            aTargetItem.getAttribute("image") ||
+            "";
+          // Only call setIcon for actual changes. setIcon dispatches
+          // ZenTabIconChanged even for no-op calls, so this also guarantees
+          // icon sync chains between windows always terminate.
+          if (icon !== targetIcon) {
+            gBrowser.setIcon(aTargetItem, icon);
+          }
         } catch {}
       } else if (aOriginalItem.isZenFolder) {
         // Icons are a zen-only feature for tab groups.
@@ -537,10 +570,18 @@ class nsZenWindowSync {
     }
     if (flags & SYNC_FLAG_LABEL) {
       if (gBrowser.isTab(aOriginalItem)) {
-        aTargetItem._zenChangeLabelFlag = true;
-        aTargetItem.zenStaticLabel = aOriginalItem.zenStaticLabel;
-        gBrowser._setTabLabel(aTargetItem, aOriginalItem.label);
-        delete aTargetItem._zenChangeLabelFlag;
+        // Skip no-op label syncs; _setTabLabel dispatches ZenTabLabelChanged
+        // before its own equality check, so syncing an unchanged label would
+        // keep bouncing events between windows.
+        if (
+          aTargetItem.label !== aOriginalItem.label ||
+          aTargetItem.zenStaticLabel !== aOriginalItem.zenStaticLabel
+        ) {
+          aTargetItem._zenChangeLabelFlag = true;
+          aTargetItem.zenStaticLabel = aOriginalItem.zenStaticLabel;
+          gBrowser._setTabLabel(aTargetItem, aOriginalItem.label);
+          delete aTargetItem._zenChangeLabelFlag;
+        }
       } else if (gBrowser.isTabGroup(aOriginalItem)) {
         aTargetItem.label = aOriginalItem.label;
       }
@@ -1427,6 +1468,14 @@ class nsZenWindowSync {
     return this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_ICON);
   }
 
+  on_TabAttrModified(aEvent) {
+    // Only reached for "image" changes (filtered in handleEvent). Some icon
+    // updates don't go through setIcon and thus never fire ZenTabIconChanged,
+    // for example the tab progress listener removing a stale favicon when a
+    // page without one finishes loading.
+    return this.on_ZenTabIconChanged(aEvent);
+  }
+
   on_ZenTabLabelChanged(aEvent) {
     if (!aEvent.target?._zenContentsVisible) {
       // No need to sync label changes for tabs that aren't active in this window.
@@ -1521,7 +1570,18 @@ class nsZenWindowSync {
     this.#runOnAllWindows(window, win => {
       const targetTab = this.getItemFromWindow(win, tab.id);
       if (targetTab) {
+        // Mark the tab so the session store doesn't record this propagated
+        // close in its closed tabs list (and undo-close stack). Otherwise
+        // every synced close would record one closed tab per window, and
+        // undo close tab would restore the mirror copy (often blank or
+        // stale) instead of the tab the user actually closed.
+        targetTab._zenSyncClosing = true;
         win.gBrowser.removeTab(targetTab, { animate: true });
+        if (!targetTab.closing) {
+          // The close was vetoed (e.g. by glance); don't leave the marker
+          // around for a future user-initiated close.
+          delete targetTab._zenSyncClosing;
+        }
       }
     });
   }

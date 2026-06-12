@@ -268,7 +268,13 @@
 
         left: calc(var(--zen-compact-float) / -2);
         :root[zen-right-side='true'] & {
-          right: calc(var(--zen-compact-float) / -2);
+          /* Park the shown sidebar against the left edge of the page scrollbar.
+             --zen-page-scrollbar-width is set dynamically by JS (0 when idle,
+             scrollbar width when active). env(scrollbar-inline-size) is the
+             correct fallback for classic scrollbars (Windows/Linux); on macOS
+             overlay scrollbars it resolves to 0, which is fine because JS
+             handles that case. */
+          right: var(--zen-page-scrollbar-width, env(scrollbar-inline-size, 0px));
           left: auto;
         }
       }

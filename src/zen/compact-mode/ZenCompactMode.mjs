@@ -29,6 +29,13 @@ XPCOMUtils.defineLazyPreferenceGetter(
 
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
+  "OVERLAY_SCROLLBAR_WIDTH",
+  "zen.view.compact.overlay-scrollbar-width",
+  15 // macOS overlay scrollbar interactive (thick) width in px
+);
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
   "COMPACT_MODE_SHOW_SIDEBAR_AND_TOOLBAR_ON_HOVER",
   "zen.view.compact.show-sidebar-and-toolbar-on-hover",
   true
@@ -42,6 +49,8 @@ window.gZenCompactModeManager = {
   _flashTimeouts: {},
   _eventListeners: [],
   _removeHoverFrames: {},
+  _pageScrollbarWidth: 0,
+  _scrollbarFadeTimeout: null,
 
   // Delay to avoid flickering when hovering over the sidebar
   HOVER_HACK_DELAY: Services.prefs.getIntPref(
@@ -112,6 +121,8 @@ window.gZenCompactModeManager = {
     SessionStore.promiseAllWindowsRestored.then(() => {
       this.preference = this._wasInCompactMode;
     });
+
+    this._initScrollbarTracking();
   },
 
   log(...args) {
@@ -833,6 +844,22 @@ window.gZenCompactModeManager = {
             return;
           }
 
+          // When the sidebar is on the right and a page scrollbar is visible,
+          // the shown position leaves a gap equal to the scrollbar width. If
+          // the cursor is in that gap (i.e. on the scrollbar), treat it as
+          // still hovering the sidebar so the sidebar doesn't hide.
+          if (
+            this.hoverableElements[i].screenEdge === "right" &&
+            this._pageScrollbarWidth > 0
+          ) {
+            if (
+              event.clientX >=
+              document.documentElement.clientWidth - this._pageScrollbarWidth
+            ) {
+              return;
+            }
+          }
+
           if (this.hoverableElements[i].keepHoverDuration) {
             this.flashElement(
               target,
@@ -987,6 +1014,69 @@ window.gZenCompactModeManager = {
       });
     }
     delete this._nextTimeWillBeActive;
+  },
+
+  // ---------------------------------------------------------------------------
+  // Page scrollbar tracking — keeps --zen-page-scrollbar-width in sync so the
+  // compact sidebar's shown position parks against the scrollbar's left edge.
+  // ---------------------------------------------------------------------------
+
+  _initScrollbarTracking() {
+    if (!this.sidebarIsOnRight) return;
+
+    // Measure whether the platform uses classic (layout-consuming) scrollbars.
+    // Returns 0 on macOS with overlay scrollbars, ~17 px on Windows/Linux.
+    const classicWidth = this._getClassicScrollbarWidth();
+    if (classicWidth > 0) {
+      // Classic scrollbars are always present when the page is scrollable —
+      // set the variable once and leave it.
+      this._applyScrollbarWidth(classicWidth);
+      return;
+    }
+
+    // Overlay scrollbars (macOS default): they appear during scrolling and
+    // fade out ~1 s after the last scroll input. Wheel events bubble from
+    // content to chrome in Firefox, so no frame script is needed.
+    window.addEventListener("wheel", () => this._onContentWheel(), {
+      passive: true,
+      capture: true,
+    });
+
+    // When the user switches tabs the new page may not be scrolling, so
+    // drop the gap immediately to avoid a stale gap on an idle page.
+    window.addEventListener("TabSelect", () => {
+      clearTimeout(this._scrollbarFadeTimeout);
+      this._applyScrollbarWidth(0);
+    });
+  },
+
+  _onContentWheel() {
+    this._applyScrollbarWidth(lazy.OVERLAY_SCROLLBAR_WIDTH);
+    clearTimeout(this._scrollbarFadeTimeout);
+    // macOS fades the scrollbar out roughly 1 s after scrolling stops.
+    this._scrollbarFadeTimeout = setTimeout(
+      () => this._applyScrollbarWidth(0),
+      1500
+    );
+  },
+
+  _getClassicScrollbarWidth() {
+    const div = document.createElement("div");
+    div.style.cssText =
+      "overflow-y:scroll;height:100px;width:100px;position:fixed;top:-9999px;visibility:hidden;";
+    document.documentElement.appendChild(div);
+    const w = div.offsetWidth - div.clientWidth;
+    div.remove();
+    return w;
+  },
+
+  _applyScrollbarWidth(width) {
+    if (this._pageScrollbarWidth === width) return;
+    this._pageScrollbarWidth = width;
+    document.documentElement.style.setProperty(
+      "--zen-page-scrollbar-width",
+      `${width}px`
+    );
   },
 };
 

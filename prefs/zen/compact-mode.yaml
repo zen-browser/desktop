@@ -20,6 +20,9 @@
 - name: zen.view.compact.sidebar-keep-hover.duration
   value: 150
 
+- name: zen.view.compact.overlay-scrollbar-width
+  value: 15
+
 - name: zen.view.compact.animate-sidebar
   value: true
 

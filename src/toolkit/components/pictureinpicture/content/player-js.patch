@@ -1,8 +1,225 @@
 diff --git a/toolkit/components/pictureinpicture/content/player.js b/toolkit/components/pictureinpicture/content/player.js
-index 34d92dcfba54de4752036d0e251243729b6c9626..20a0399e3bf6f9827f805ea6975b801ae269646d 100644
+index 34d92dcfba54de4752036d0e251243729b6c9626..e8fd2b606c1e5603dc30e551661d5665c0aeb364 100644
 --- a/toolkit/components/pictureinpicture/content/player.js
 +++ b/toolkit/components/pictureinpicture/content/player.js
-@@ -764,6 +764,11 @@ let Player = {
+@@ -143,6 +143,10 @@ function setVolume(volume) {
+   Player.setVolume(volume);
+ }
+ 
++function setPlaybackRate(playbackRate) {
++  Player.setPlaybackRateState(playbackRate);
++}
++
+ function closeFromForeground() {
+   Player.closeFromForeground();
+ }
+@@ -298,6 +302,16 @@ let Player = {
+       });
+     }
+ 
++    this.playbackRateSlider.addEventListener("input", event => {
++      this.requestPlaybackRate(parseFloat(event.target.value));
++    });
++
++    for (let preset of document.querySelectorAll(".playback-rate-preset")) {
++      preset.addEventListener("click", () => {
++        this.requestPlaybackRate(parseFloat(preset.dataset.rate));
++      });
++    }
++
+     document
+       .querySelector("#subtitles-toggle")
+       .addEventListener("change", () => {
+@@ -335,6 +349,9 @@ let Player = {
+       this.scrubber.hidden = false;
+       this.timestamp.hidden = false;
+ 
++      this.playbackRateButton.hidden = false;
++      this.setPlaybackRateState(this._playbackRate);
++
+       const controlsBottomGradient = document.getElementById(
+         "controls-bottom-gradient"
+       );
+@@ -445,6 +462,15 @@ let Player = {
+             if (isSettingsPanelInFocus) {
+               document.getElementById("closed-caption").focus();
+             }
++          } else if (!this.playbackRatePanel.classList.contains("hide")) {
++            // If the playback rate panel is open, let the ESC key close it
++            let isPlaybackRatePanelInFocus = this.playbackRatePanel.contains(
++              document.activeElement
++            );
++            this.togglePlaybackRatePanel({ forceHide: true });
++            if (isPlaybackRatePanelInFocus) {
++              this.playbackRateButton.focus();
++            }
+           } else if (this.isFullscreen) {
+             // We handle the ESC key, in fullscreen modus as intent to leave only the fullscreen mode
+             document.exitFullscreen();
+@@ -452,6 +478,9 @@ let Player = {
+             // We handle the ESC key, as an intent to leave the picture-in-picture modus
+             this.onClose(this.isUnpipWithoutPauseShortcut(event));
+           }
++        } else if (event.key == "<" || event.key == ">") {
++          // Same playback speed shortcuts as the YouTube player.
++          this.cyclePlaybackRate(event.key == ">" ? 1 : -1);
+         } else if (
+           Services.prefs.getBoolPref(KEYBOARD_CONTROLS_ENABLED_PREF, false) &&
+           (event.keyCode != KeyEvent.DOM_VK_SPACE || !event.target.id)
+@@ -551,6 +580,7 @@ let Player = {
+ 
+       case "draggableregionleftmousedown": {
+         this.toggleSubtitlesSettingsPanel({ forceHide: true });
++        this.togglePlaybackRatePanel({ forceHide: true });
+         break;
+       }
+     }
+@@ -668,6 +698,127 @@ let Player = {
+     this.audioScrubber.value = volume;
+   },
+ 
++  PLAYBACK_RATES: [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
++
++  _playbackRate: 1,
++
++  /**
++   * Updates the playback rate state and the checked rate radio without
++   * affecting the originating video. Called when the originating video's
++   * rate changes.
++   *
++   * @param {number} playbackRate The new playback rate
++   */
++  setPlaybackRateState(playbackRate) {
++    if (!Number.isFinite(playbackRate) || playbackRate <= 0) {
++      return;
++    }
++    this._playbackRate = playbackRate;
++    let rounded = Math.round(playbackRate * 100) / 100;
++    this.playbackRateSlider.value = rounded;
++    document.getElementById("playback-rate-value").textContent = `${rounded}×`;
++    for (let preset of document.querySelectorAll(".playback-rate-preset")) {
++      preset.classList.toggle(
++        "selected",
++        Math.abs(parseFloat(preset.dataset.rate) - playbackRate) < 0.001
++      );
++    }
++  },
++
++  /**
++   * Applies a playback rate to the originating video and updates the UI.
++   *
++   * @param {number} playbackRate The playback rate to apply
++   */
++  requestPlaybackRate(playbackRate) {
++    this.setPlaybackRateState(playbackRate);
++    this.actor.sendAsyncMessage("PictureInPicture:SetPlaybackRate", {
++      playbackRate,
++    });
++  },
++
++  /**
++   * Steps the originating video's playback rate to the next or previous
++   * preset, wrapping around at either end.
++   *
++   * @param {number} direction 1 to speed up, -1 to slow down
++   */
++  cyclePlaybackRate(direction) {
++    const rates = this.PLAYBACK_RATES;
++    let index;
++    if (direction > 0) {
++      index = rates.findIndex(rate => rate > this._playbackRate + 0.001);
++      if (index == -1) {
++        index = 0;
++      }
++    } else {
++      index = rates.findLastIndex(rate => rate < this._playbackRate - 0.001);
++      if (index == -1) {
++        index = rates.length - 1;
++      }
++    }
++    this.requestPlaybackRate(rates[index]);
++  },
++
++  /**
++   * Places a panel's arrow under the center of the button that opens the
++   * panel. The buttons live in fr-sized grid cells, so a fixed offset only
++   * lines up at one window size.
++   *
++   * @param {Element} panel The panel containing the arrow
++   * @param {Element} button The button the arrow should point at
++   */
++  alignPanelArrow(panel, button) {
++    let arrow = panel.querySelector(".arrow");
++    let panelRect = panel.getBoundingClientRect();
++    let buttonRect = button.getBoundingClientRect();
++    let offset =
++      buttonRect.left +
++      buttonRect.width / 2 -
++      panelRect.left -
++      arrow.offsetWidth / 2;
++    arrow.style.insetInlineStart = `${Math.max(0, offset)}px`;
++  },
++
++  /**
++   * Function to toggle the visibility of the playback rate panel. Mirrors
++   * toggleSubtitlesSettingsPanel.
++   *
++   * @param {object} options [optional] Object containing options for the function
++   *   - forceHide: true to force hide the playback rate panel
++   *   - isKeyboard: true if the playback rate button was activated using the
++   *     keyboard to show or hide the playback rate panel
++   */
++  togglePlaybackRatePanel(options) {
++    let panelVisible = !this.playbackRatePanel.classList.contains("hide");
++    if (options?.forceHide || panelVisible) {
++      this.playbackRatePanel.classList.add("hide");
++      this.playbackRateButton.setAttribute("aria-expanded", false);
++      this.controls.removeAttribute(DONTHIDE_ATTRIBUTE);
++
++      if (
++        this.controls.hasAttribute(KEYING_ATTRIBUTE) ||
++        this.isCurrentHover ||
++        this.controls.hasAttribute(SHOWING_ATTRIBUTE)
++      ) {
++        return;
++      }
++
++      this.hideVideoControls();
++    } else {
++      this.toggleSubtitlesSettingsPanel({ forceHide: true });
++      this.playbackRatePanel.classList.remove("hide");
++      this.playbackRateButton.setAttribute("aria-expanded", true);
++      this.alignPanelArrow(this.playbackRatePanel, this.playbackRateButton);
++      this.controls.setAttribute(DONTHIDE_ATTRIBUTE, true);
++      this.showVideoControls();
++
++      if (options?.isKeyboard) {
++        this.playbackRateSlider.focus();
++      }
++    }
++  },
++
+   closePipWindow(closeData) {
+     // Set the subtitles font size prefs
+     Services.prefs.setBoolPref(
+@@ -727,6 +878,16 @@ let Player = {
+         break;
+       }
+ 
++      case "playbackRate": {
++        let options = {};
++        if (event.inputSource == MouseEvent.MOZ_SOURCE_KEYBOARD) {
++          options.isKeyboard = true;
++        }
++        this.togglePlaybackRatePanel(options);
++        // Early return to prevent hiding the panel below
++        return;
++      }
++
+       case "unpip": {
+         PictureInPicture.focusTabAndClosePip(window, this.actor);
+         break;
+@@ -764,12 +925,20 @@ let Player = {
          document.getElementById("large").click();
          break;
        }
@@ -14,3 +231,72 @@ index 34d92dcfba54de4752036d0e251243729b6c9626..20a0399e3bf6f9827f805ea6975b801a
      }
      // If the click came from a element that is not inside the subtitles settings panel
      // then we want to hide the panel
+     if (!this.settingsPanel.contains(event.target)) {
+       this.toggleSubtitlesSettingsPanel({ forceHide: true });
+     }
++    if (!this.playbackRatePanel.contains(event.target)) {
++      this.togglePlaybackRatePanel({ forceHide: true });
++    }
+   },
+ 
+   /**
+@@ -797,8 +966,10 @@ let Player = {
+ 
+       this.hideVideoControls();
+     } else {
++      this.togglePlaybackRatePanel({ forceHide: true });
+       this.settingsPanel.classList.remove("hide");
+       this.closedCaptionButton.setAttribute("aria-expanded", true);
++      this.alignPanelArrow(this.settingsPanel, this.closedCaptionButton);
+       this.controls.setAttribute(DONTHIDE_ATTRIBUTE, true);
+       this.showVideoControls();
+ 
+@@ -869,11 +1040,12 @@ let Player = {
+ 
+   onKeyDown(event) {
+     // We don't want to send a keydown event if the event target was one of the
+-    // font sizes in the settings panel
++    // font sizes in the settings panel or a control in the playback rate panel
+     if (
+       event.target.parentElement?.parentElement?.classList?.contains(
+         "font-size-selection"
+-      )
++      ) ||
++      this.playbackRatePanel.contains(event.target)
+     ) {
+       return;
+     }
+@@ -1205,6 +1377,7 @@ let Player = {
+    */
+   onResize() {
+     this.toggleSubtitlesSettingsPanel({ forceHide: true });
++    this.togglePlaybackRatePanel({ forceHide: true });
+     this.resizeDebouncer.disarm();
+     this.resizeDebouncer.arm();
+   },
+@@ -1260,6 +1433,25 @@ let Player = {
+       document.getElementById("closed-caption"));
+   },
+ 
++  get playbackRateButton() {
++    delete this.playbackRateButton;
++    return (this.playbackRateButton = document.getElementById("playbackRate"));
++  },
++
++  get playbackRatePanel() {
++    delete this.playbackRatePanel;
++    return (this.playbackRatePanel = document.getElementById(
++      "playbackRateSettings"
++    ));
++  },
++
++  get playbackRateSlider() {
++    delete this.playbackRateSlider;
++    return (this.playbackRateSlider = document.getElementById(
++      "playback-rate-slider"
++    ));
++  },
++
+   get settingsPanel() {
+     delete this.settingsPanel;
+     return (this.settingsPanel = document.getElementById("settings"));

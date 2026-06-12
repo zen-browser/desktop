@@ -1,8 +1,16 @@
 diff --git a/toolkit/actors/PictureInPictureChild.sys.mjs b/toolkit/actors/PictureInPictureChild.sys.mjs
-index 4b42c43958989e9f67289537076a5683bdd08d55..a33a544647562c79af33ec9705fd60e36ec33488 100644
+index 8d28d21a8c6491fe523c7448c575224ed76d22c5..9ea1b7c1575f2852fd88a58db34fa274bdc67aaf 100644
 --- a/toolkit/actors/PictureInPictureChild.sys.mjs
 +++ b/toolkit/actors/PictureInPictureChild.sys.mjs
-@@ -297,6 +297,7 @@ export class PictureInPictureLauncherChild extends JSWindowActorChild {
+@@ -236,6 +236,7 @@ export class PictureInPictureLauncherChild extends JSWindowActorChild {
+       scrubberPosition,
+       timestamp,
+       volume: PictureInPictureChild.videoWrapper.getVolume(video),
++      playbackRate: PictureInPictureChild.videoWrapper.getPlaybackRate(video),
+       autoFocus,
+     });
+ 
+@@ -297,6 +298,7 @@ export class PictureInPictureLauncherChild extends JSWindowActorChild {
        if (
          video &&
          PictureInPictureChild.videoIsPlaying(video) &&
@@ -10,3 +18,94 @@ index 4b42c43958989e9f67289537076a5683bdd08d55..a33a544647562c79af33ec9705fd60e3
          PictureInPictureChild.videoIsPiPEligible(video)
        ) {
          this.togglePictureInPicture({ video, reason: "AutoPip" }, false);
+@@ -2006,6 +2008,15 @@ export class PictureInPictureChild extends JSWindowActorChild {
+         });
+         break;
+       }
++      case "ratechange": {
++        let video = this.getWeakVideo();
++        if (video === event.target) {
++          this.sendAsyncMessage("PictureInPicture:PlaybackRateChange", {
++            playbackRate: this.videoWrapper.getPlaybackRate(video),
++          });
++        }
++        break;
++      }
+       case "resize": {
+         let video = event.target;
+         if (this.inPictureInPicture(video)) {
+@@ -2241,6 +2252,12 @@ export class PictureInPictureChild extends JSWindowActorChild {
+         this.videoWrapper.setVolume(video, volume);
+         break;
+       }
++      case "PictureInPicture:SetPlaybackRate": {
++        const { playbackRate } = message.data;
++        let video = this.getWeakVideo();
++        this.videoWrapper.setPlaybackRate(video, playbackRate);
++        break;
++      }
+     }
+   }
+ 
+@@ -2338,6 +2355,7 @@ export class PictureInPictureChild extends JSWindowActorChild {
+       originatingVideo.addEventListener("playing", this);
+       originatingVideo.addEventListener("pause", this);
+       originatingVideo.addEventListener("volumechange", this);
++      originatingVideo.addEventListener("ratechange", this);
+       originatingVideo.addEventListener("resize", this);
+       originatingVideo.addEventListener("emptied", this);
+       originatingVideo.addEventListener("timeupdate", this);
+@@ -2391,6 +2409,7 @@ export class PictureInPictureChild extends JSWindowActorChild {
+       originatingVideo.removeEventListener("playing", this);
+       originatingVideo.removeEventListener("pause", this);
+       originatingVideo.removeEventListener("volumechange", this);
++      originatingVideo.removeEventListener("ratechange", this);
+       originatingVideo.removeEventListener("resize", this);
+       originatingVideo.removeEventListener("emptied", this);
+       originatingVideo.removeEventListener("timeupdate", this);
+@@ -3207,6 +3226,45 @@ class PictureInPictureChildVideoWrapper {
+     });
+   }
+ 
++  /**
++   * OVERRIDABLE - calls the getPlaybackRate() method defined in the site wrapper script. Runs a fallback
++   * implementation if the method does not exist or if an error is thrown while calling it. This method is
++   * meant to get the playback rate of a video.
++   *
++   * @param {HTMLVideoElement} video
++   *  The originating video source element
++   * @returns {number} Playback rate of the video, where 1 is normal speed
++   */
++  getPlaybackRate(video) {
++    return this.#callWrapperMethod({
++      name: "getPlaybackRate",
++      args: [video],
++      fallback: () => video.playbackRate,
++      validateRetVal: retVal => this.#isNumber(retVal),
++    });
++  }
++
++  /**
++   * OVERRIDABLE - calls the setPlaybackRate() method defined in the site wrapper script. Runs a fallback
++   * implementation if the method does not exist or if an error is thrown while calling it. This method is
++   * meant to set the playback rate of a video.
++   *
++   * @param {HTMLVideoElement} video
++   *  The originating video source element
++   * @param {number} playbackRate
++   *  Playback rate of the video, where 1 is normal speed
++   */
++  setPlaybackRate(video, playbackRate) {
++    return this.#callWrapperMethod({
++      name: "setPlaybackRate",
++      args: [video, playbackRate],
++      fallback: () => {
++        video.playbackRate = playbackRate;
++      },
++      validateRetVal: retVal => retVal == null,
++    });
++  }
++
+   /**
+    * OVERRIDABLE - calls the isMuted() method defined in the site wrapper script. Runs a fallback implementation
+    * if the method does not exist or if an error is thrown while calling it. This method is meant to get the mute

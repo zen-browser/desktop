@@ -1,5 +1,5 @@
 diff --git a/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs b/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs
-index 098742100858b266aebc8f764f918c85815f3c5f..71b8f8d71d48229fc96d6c84c635d09012a82250 100644
+index 098742100858b266aebc8f764f918c85815f3c5f..2f3113bfd5b1b22f64ca21ab1f40689d4bd68f08 100644
 --- a/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs
 +++ b/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs
 @@ -122,6 +122,9 @@ export class PictureInPictureToggleParent extends JSWindowActorParent {
@@ -12,7 +12,22 @@ index 098742100858b266aebc8f764f918c85815f3c5f..71b8f8d71d48229fc96d6c84c635d090
          let actor = browsingContext.currentWindowGlobal.getActor(
            "PictureInPictureLauncher"
          );
-@@ -493,7 +496,7 @@ export var PictureInPicture = {
+@@ -223,6 +226,14 @@ export class PictureInPictureParent extends JSWindowActorParent {
+         player.setVolume(volume);
+         break;
+       }
++      case "PictureInPicture:PlaybackRateChange": {
++        let { playbackRate } = aMessage.data;
++        let player = PictureInPicture.getWeakPipPlayer(this);
++        if (player) {
++          player.setPlaybackRate(playbackRate);
++        }
++        break;
++      }
+     }
+   }
+ }
+@@ -493,7 +504,7 @@ export var PictureInPicture = {
      // focus the tab's window
      tab.ownerGlobal.focus();
  
@@ -20,4 +35,12 @@ index 098742100858b266aebc8f764f918c85815f3c5f..71b8f8d71d48229fc96d6c84c635d090
 +    browser?.ownerGlobal?.gZenWorkspaces.switchIfNeeded(browser);
      await this.closeSinglePipWindow({ reason: "Unpip", actorRef: pipActor });
    },
+ 
+@@ -906,6 +917,7 @@ export var PictureInPicture = {
+     win.setScrubberPosition(videoData.scrubberPosition);
+     win.setTimestamp(videoData.timestamp);
+     win.setVolume(videoData.volume);
++    win.setPlaybackRate(videoData.playbackRate);
+ 
+     Services.prefs.setBoolPref(TOGGLE_HAS_USED_PREF, true);
  

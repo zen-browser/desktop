@@ -1,8 +1,73 @@
 diff --git a/toolkit/themes/shared/pictureinpicture/player.css b/toolkit/themes/shared/pictureinpicture/player.css
-index 2e502fb075546bab4349f3da97069e764528d763..4ff7f2ee47085c2d2131f54a647468fab81c7d88 100644
+index 2e502fb075546bab4349f3da97069e764528d763..5f5073174e63e8759b7d1e80c65d9fe9d73a1326 100644
 --- a/toolkit/themes/shared/pictureinpicture/player.css
 +++ b/toolkit/themes/shared/pictureinpicture/player.css
-@@ -738,3 +738,17 @@ input:checked + .slider::before {
+@@ -137,8 +137,8 @@ browser {
+ 
+ .end-controls {
+   display: grid;
+-  grid-template-columns: 1fr 2fr 1fr 1fr;
+-  grid-template-areas: "audio audio-scrubber closedcaption fullscreen";
++  grid-template-columns: 1fr 2fr 1fr 1fr 1fr;
++  grid-template-areas: "audio audio-scrubber closedcaption playbackrate fullscreen";
+   justify-self: end;
+   gap: 8px;
+ }
+@@ -655,8 +655,8 @@ input:checked + .slider::before {
+   }
+ 
+   .end-controls {
+-    grid-template-columns: repeat(3, 1fr);
+-    grid-template-areas: "audio closedcaption fullscreen";
++    grid-template-columns: repeat(4, 1fr);
++    grid-template-areas: "audio closedcaption playbackrate fullscreen";
+   }
+ }
+ 
+@@ -666,8 +666,8 @@ input:checked + .slider::before {
+   }
+ 
+   .end-controls {
+-    grid-template-columns: repeat(2, 1fr);
+-    grid-template-areas: "audio fullscreen";
++    grid-template-columns: repeat(3, 1fr);
++    grid-template-areas: "audio playbackrate fullscreen";
+   }
+ }
+ 
+@@ -677,8 +677,8 @@ input:checked + .slider::before {
+   }
+ 
+   .end-controls {
+-    grid-template-columns: 1fr 2fr 1fr;
+-    grid-template-areas: "audio audio-scrubber fullscreen";
++    grid-template-columns: 1fr 2fr 1fr 1fr;
++    grid-template-areas: "audio audio-scrubber playbackrate fullscreen";
+   }
+ }
+ 
+@@ -689,8 +689,8 @@ input:checked + .slider::before {
+   }
+ 
+   .end-controls {
+-    grid-template-columns: repeat(2, 1fr);
+-    grid-template-areas: "audio fullscreen";
++    grid-template-columns: repeat(3, 1fr);
++    grid-template-areas: "audio playbackrate fullscreen";
+   }
+ }
+ 
+@@ -701,7 +701,8 @@ input:checked + .slider::before {
+ }
+ 
+ @media (width <= 350px) {
+-  #fullscreen {
++  #fullscreen,
++  #playbackRate {
+     display: none;
+   }
+ 
+@@ -738,3 +739,98 @@ input:checked + .slider::before {
      justify-self: center;
    }
  }
@@ -19,4 +84,85 @@ index 2e502fb075546bab4349f3da97069e764528d763..4ff7f2ee47085c2d2131f54a647468fa
 +#minimize[mac="true"] {
 +  right: auto;
 +  left: 50px;
++}
++
++#playbackRate {
++  grid-area: playbackrate;
++  background-image: url("chrome://browser/skin/zen-icons/speedometer.svg");
++}
++
++/* .panel-fieldset only resets the fieldset's default start padding, leaving
++ * the default end padding behind; zero it so both sides pad equally. */
++#playbackRateSettings .panel-fieldset {
++  padding-inline-end: 0;
++}
++
++.playback-rate-header {
++  display: flex;
++  justify-content: space-between;
++  align-items: center;
++  padding: 10px 8px 0;
++  font-family: sans-serif;
++  color: white;
++}
++
++#playback-rate-value {
++  font-variant-numeric: tabular-nums;
++  font-weight: var(--font-weight-semibold);
++  color: #00ddff;
++}
++
++#playback-rate-slider {
++  appearance: none;
++  background: transparent;
++  width: calc(100% - 16px);
++  margin: 12px 8px 4px;
++
++  &::-moz-range-track {
++    background-color: #55545f;
++    height: 4px;
++    border-radius: var(--border-radius-medium);
++  }
++
++  &::-moz-range-progress {
++    background-color: #00ddff;
++    height: 4px;
++    border-radius: var(--border-radius-medium);
++  }
++
++  &::-moz-range-thumb {
++    background-color: #ffffff;
++    border: none;
++    width: 12px;
++    height: 12px;
++    border-radius: var(--border-radius-circle);
++  }
++}
++
++.playback-rate-presets {
++  display: flex;
++  gap: 4px;
++  padding: 6px 8px 12px;
++}
++
++.playback-rate-preset {
++  flex: 1;
++  background-color: #55545f;
++  color: white;
++  border: none;
++  border-radius: var(--border-radius-small);
++  font-family: sans-serif;
++  font-size: 0.8em;
++  font-variant-numeric: tabular-nums;
++  padding: 4px 0;
++  cursor: pointer;
++}
++
++.playback-rate-preset:hover {
++  background-color: #6b6a78;
++}
++
++.playback-rate-preset.selected {
++  background-color: #00ddff;
++  color: #2b2a33;
 +}

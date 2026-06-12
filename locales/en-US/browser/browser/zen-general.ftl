@@ -44,6 +44,12 @@ pictureinpicture-minimize-btn =
   .aria-label = Minimize
   .tooltip = Minimize
 
+pictureinpicture-playback-rate-btn =
+  .aria-label = Playback speed
+  .tooltip = Playback speed
+
+pictureinpicture-playback-rate-label = Playback speed
+
 zen-panel-ui-gradient-generator-custom-color = Custom Color
 
 zen-copy-current-url-confirmation = Copied current URL!

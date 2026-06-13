@@ -889,8 +889,8 @@ export class nsZenSiteDataPanel {
           domain,
           boostId
         );
-        lazy.gZenBoostsManager.openBoostWindow(this.window, boost, uri);
         this.unifiedPanel.hidePopup();
+        lazy.gZenBoostsManager.openBoostWindow(this.window, boost, uri);
         break;
       }
     }

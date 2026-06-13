@@ -1719,7 +1719,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         if (splitNode.direction === "column") {
           splitter.style.inset = `${100 - childRootPosition.bottom}% ${childRootPosition.right}% 0% ${childRootPosition.left}%`;
         } else {
-          splitter.style.inset = `${childRootPosition.top}% 0% ${childRootPosition.bottom}% ${100 - childRootPosition.right}%`;
+          splitter.style.inset = `${childRootPosition.top}% ${childRootPosition.right}% ${childRootPosition.bottom}% calc(${100 - childRootPosition.right}% - var(--zen-split-row-gap))`;
         }
       }
     });
@@ -1737,7 +1737,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     splitter.className = "zen-split-view-splitter";
     splitter.setAttribute("orient", orient);
     splitter.setAttribute("gridIdx", idx);
-    this.overlay.insertAdjacentElement("afterbegin", splitter);
+    this.tabBrowserPanel.appendChild(splitter);
 
     splitter.addEventListener("mousedown", this.handleSplitterMouseDown);
     return splitter;
@@ -1773,8 +1773,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   }
 
   removeSplitters() {
-    [...this.overlay.children]
-      .filter(c => c.classList.contains("zen-split-view-splitter"))
+    this.tabBrowserPanel
+      .querySelectorAll(".zen-split-view-splitter")
       .forEach(s => s.remove());
     this._splitNodeToSplitters.clear();
   }

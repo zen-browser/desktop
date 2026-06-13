@@ -116,6 +116,8 @@
   pointer-events: none;
   padding: inherit;
   inset: 0;
+  -moz-subtree-hidden-only-visually: 0;
+  z-index: 2;
 }
 
 #zen-splitview-overlay {

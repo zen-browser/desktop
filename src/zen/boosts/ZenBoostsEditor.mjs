@@ -18,6 +18,7 @@ export class nsZenBoostEditor {
     "zap-state-update",
     "selector-picker-state-update",
     "zen-boosts-active-change",
+    "zen-theme-change",
   ];
 
   /**
@@ -44,7 +45,6 @@ export class nsZenBoostEditor {
     this.lastDotSetPos = { x: 0, y: 0 };
     this.currentBoostData = null;
     this.boostInfo = null;
-    this.isDarkMode = this.openerWindow.gZenThemePicker.isDarkMode;
 
     this.killOtherEditorInstances();
 
@@ -53,10 +53,14 @@ export class nsZenBoostEditor {
     });
 
     this.init();
-    this.initColorScheme();
     this.initColorPicker();
     this.initFonts();
     this.loadBoost(domain);
+    this.updateColorScheme();
+  }
+
+  get isDarkMode() {
+    return this.openerWindow.gZenThemePicker.isDarkMode;
   }
 
   /**
@@ -195,17 +199,24 @@ export class nsZenBoostEditor {
       case "zen-boosts-active-change":
         this.editorWindow.close();
         break;
+      case "zen-theme-change":
+        this.updateColorScheme();
+        break;
     }
   }
 
   /**
-   * Initializes the color scheme of the editor window based on the current theme (dark or light mode)
+   * Updates the color scheme of the editor window based on the current theme (dark or light mode)
    */
-  initColorScheme() {
-    if (this.isDarkMode) {
-      this.doc.documentElement.style.colorScheme = "dark";
-    } else {
-      this.doc.documentElement.style.colorScheme = "light";
+  updateColorScheme() {
+    const colorScheme = this.isDarkMode ? "dark" : "light";
+    this.doc.documentElement.style.colorScheme = colorScheme;
+
+    if (this.codeEditorReady) {
+      const container = this.doc.getElementById("zen-boost-code-editor");
+      const editorEl =
+        container.querySelector("iframe").contentDocument.documentElement;
+      editorEl.className = "theme-" + colorScheme;
     }
   }
 
@@ -239,11 +250,10 @@ export class nsZenBoostEditor {
     editor.refresh();
     editor.on("change", this.onCodeEditorChange.bind(this));
 
-    const editorEl =
-      container.querySelector("iframe").contentDocument.documentElement;
-    editorEl.className = "theme-" + (this.isDarkMode ? "dark" : "light");
     this.editorWindow._editor = editor;
     this.codeEditorReady = true;
+
+    this.updateColorScheme();
   }
 
   /**

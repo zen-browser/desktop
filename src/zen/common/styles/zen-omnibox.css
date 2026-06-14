@@ -442,7 +442,7 @@
    * available space as much as possible, see bug 1795260. */
   min-width: 0;
 
-  --toolbarbutton-inner-padding: var(--zen-toolbar-button-inner-padding);
+  --toolbarbutton-padding-inner: var(--zen-toolbar-button-inner-padding);
 
   /* Add space to beginning of toolbar and make that space click the first <toolbarbutton> */
   > :is(toolbarbutton, toolbaritem):first-child,

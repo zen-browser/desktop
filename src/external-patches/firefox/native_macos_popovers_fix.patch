@@ -38,7 +38,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
    return [mWindow isKindOfClass:[PopupWindow class]] &&
           [(PopupWindow*)mWindow usePopover] && popupFrame &&
 -         popupFrame->ShouldFollowAnchor() &&
-          !popupFrame->PopupElement().GetBoolAttr(nsGkAtoms::nonnativepopover);
+          !popupFrame->PopupElement().GetBoolAttr(nsGkAtoms::nonnative);
  }
  
  TransparencyMode nsCocoaWindow::GetTransparencyMode() {

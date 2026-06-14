@@ -1,8 +1,8 @@
 diff --git a/browser/components/preferences/preferences.js b/browser/components/preferences/preferences.js
-index 9d13733318e7a147adee1e44f96570c94f4948df..fb625d8da021dc0cebd7a14ca47446a0632e8e7a 100644
+index 57add34d876fb885275f1147209c6fbeee367a7c..d4c64b9ec8b6d1e6e0bd0b888c6e7351fbe299a4 100644
 --- a/browser/components/preferences/preferences.js
 +++ b/browser/components/preferences/preferences.js
-@@ -121,6 +121,7 @@ ChromeUtils.defineLazyGetter(this, "gSubDialog", function () {
+@@ -132,6 +132,7 @@ ChromeUtils.defineLazyGetter(this, "gSubDialog", function () {
        styleSheets: [
          "chrome://browser/skin/preferences/dialog.css",
          "chrome://browser/skin/preferences/preferences.css",
@@ -10,7 +10,7 @@ index 9d13733318e7a147adee1e44f96570c94f4948df..fb625d8da021dc0cebd7a14ca47446a0
        ],
        resizeCallback: async ({ title, frame }) => {
          // Search within main document and highlight matched keyword.
-@@ -398,6 +399,10 @@ function init_all() {
+@@ -522,6 +523,10 @@ function init_all() {
    register_module("paneSearch", gSearchPane);
    register_module("panePrivacy", gPrivacyPane);
    register_module("paneContainers", gContainersPane);
@@ -19,5 +19,5 @@ index 9d13733318e7a147adee1e44f96570c94f4948df..fb625d8da021dc0cebd7a14ca47446a0
 +  register_module("paneZenCKS", gZenCKSSettings);
 +  register_module("paneZenMarketplace", gZenMarketplaceManager);
  
-   if (ExperimentAPI.labsEnabled) {
-     // Set hidden based on previous load's hidden value or if Nimbus is
+   // Restore the cached Firefox Labs nav button visibility so it shows
+   // immediately when recipes are expected to be available, before

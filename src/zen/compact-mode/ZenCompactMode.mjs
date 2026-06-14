@@ -980,7 +980,7 @@ window.gZenCompactModeManager = {
         button: {
           id: "zen-open-background-tab-button",
           command: () => {
-            const targetWindow = window.ownerGlobal.parent || window;
+            const targetWindow = window.parent || window;
             targetWindow.gBrowser.selectedTab = tab;
           },
         },

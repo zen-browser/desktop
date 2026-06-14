@@ -326,7 +326,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       if (
         !gBrowser.isTab(draggedTab) ||
         gBrowser.selectedTab.hasAttribute("zen-empty-tab") ||
-        draggedTab.ownerGlobal !== window
+        draggedTab.documentGlobal !== window
       ) {
         return;
       }
@@ -1975,7 +1975,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * @returns {tab} The tab that was opened
    */
   openAndSwitchToTab(url, options) {
-    const parentWindow = window.ownerGlobal.parent;
+    const parentWindow = window.parent;
     const targetWindow = parentWindow || window;
     const tab = targetWindow.gBrowser.addTrustedTab(url, options);
     targetWindow.gBrowser.selectedTab = tab;

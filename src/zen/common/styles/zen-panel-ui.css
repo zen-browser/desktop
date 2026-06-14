@@ -15,7 +15,7 @@ panel[type="arrow"]:not(#feature-callout) {
 
     /* The mica rendering already adds a shadow and a border, so we
      * remove the one we add via CSS */
-    --panel-shadow-margin: 0px !important;
+    --panel-box-shadow-margin: 0px !important;
     --panel-border-color: transparent !important;
     border: none !important;
 
@@ -39,7 +39,7 @@ panel[type="arrow"]:not(#feature-callout) {
       background-color: Menu !important;
     }
 
-    --panel-shadow-margin: 0px !important;
+    --panel-box-shadow-margin: 0px !important;
     --panel-background: transparent !important;
     --panel-border-color: transparent;
 
@@ -48,7 +48,7 @@ panel[type="arrow"]:not(#feature-callout) {
      * on Tahoe, where we *don't* apply an image mask, meaning that
      * trying to render a shadow would end up in having weird borders
      * around the panel */
-    --panel-shadow: none;
+    --panel-box-shadow: none;
 
     &::part(content) {
       /* This shoudn't really be needed, but just in case */

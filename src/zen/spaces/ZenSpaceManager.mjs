@@ -225,8 +225,8 @@ class nsZenWorkspaces {
       if (
         this._emptyTab &&
         !this._emptyTab.closing &&
-        this._emptyTab.ownerGlobal &&
-        !this._emptyTab.ownerGlobal.closed &&
+        this._emptyTab.documentGlobal &&
+        !this._emptyTab.documentGlobal.closed &&
         gZenVerticalTabsManager._canReplaceNewTab
       ) {
         gBrowser.selectedTab = this._emptyTab;
@@ -3234,8 +3234,8 @@ class nsZenWorkspaces {
     // Validate tab state
     if (
       tab.closing ||
-      !tab.ownerGlobal ||
-      tab.ownerGlobal.closed ||
+      !tab.documentGlobal ||
+      tab.documentGlobal.closed ||
       !tab.linkedBrowser
     ) {
       console.warn("Tab is no longer valid, cannot select it");

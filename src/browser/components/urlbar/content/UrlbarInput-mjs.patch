@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/content/UrlbarInput.mjs b/browser/components/urlbar/content/UrlbarInput.mjs
-index 0fba59d62af9d3cd05bfee2cf84cd8b7cf9bfd6e..6af2ceed93a6c2799040512cbe646ddb7f629ab6 100644
+index 0fba59d62af9d3cd05bfee2cf84cd8b7cf9bfd6e..3997a5109267f378b59aa6510cbacd07ed57bd36 100644
 --- a/browser/components/urlbar/content/UrlbarInput.mjs
 +++ b/browser/components/urlbar/content/UrlbarInput.mjs
 @@ -98,6 +98,13 @@ const lazy = XPCOMUtils.declareLazy({
@@ -137,7 +137,7 @@ index 0fba59d62af9d3cd05bfee2cf84cd8b7cf9bfd6e..6af2ceed93a6c2799040512cbe646ddb
  
 +    if (this._zenHandleUrlbarClose) {
 +      this._zenHandleUrlbarClose();
-+    } else if (!this._untrimmedValue || this.searchMode || this.window.gZenVerticalTabsManager._hasSetSingleToolbar) {
++    } else if (!this._untrimmedValue || (this.#isAddressbar && (this.searchMode || this.window.gZenVerticalTabsManager._hasSetSingleToolbar))) {
 +      // Restore the current page URL when the urlbar is empty on blur
 +      this.window.requestAnimationFrame(() => {
 +        this.handleRevert();
@@ -280,20 +280,7 @@ index 0fba59d62af9d3cd05bfee2cf84cd8b7cf9bfd6e..6af2ceed93a6c2799040512cbe646ddb
        l10nId,
        l10nId == "urlbar-placeholder-with-name"
          ? { name: engineName }
-@@ -5187,6 +5303,12 @@ ${
- 
-   _on_blur(event) {
-     lazy.logger.debug("Blur Event");
-+    if (
-+      this.document.commandDispatcher.focusedElement == this.inputField &&
-+      !lazy.UrlbarPrefs.get("closeOnWindowBlur")
-+    ) {
-+      return;
-+    }
-     // We cannot count every blur events after a missed engagement as abandoment
-     // because the user may have clicked on some view element that executes
-     // a command causing a focus change. For example opening preferences from
-@@ -5264,6 +5386,11 @@ ${
+@@ -5264,6 +5380,11 @@ ${
    }
  
    _on_click(event) {
@@ -305,7 +292,7 @@ index 0fba59d62af9d3cd05bfee2cf84cd8b7cf9bfd6e..6af2ceed93a6c2799040512cbe646ddb
      switch (event.target) {
        case this.inputField:
        case this._inputContainer:
-@@ -5356,7 +5483,7 @@ ${
+@@ -5356,7 +5477,7 @@ ${
        }
      }
  
@@ -314,7 +301,7 @@ index 0fba59d62af9d3cd05bfee2cf84cd8b7cf9bfd6e..6af2ceed93a6c2799040512cbe646ddb
        this.view.autoOpen({ event });
      } else {
        if (this._untrimOnFocusAfterKeydown) {
-@@ -5396,9 +5523,16 @@ ${
+@@ -5396,9 +5517,16 @@ ${
    }
  
    _on_mousedown(event) {
@@ -332,7 +319,7 @@ index 0fba59d62af9d3cd05bfee2cf84cd8b7cf9bfd6e..6af2ceed93a6c2799040512cbe646ddb
          if (
            event.composedTarget != this.inputField &&
            event.composedTarget != this._inputContainer
-@@ -5408,6 +5542,10 @@ ${
+@@ -5408,6 +5536,10 @@ ${
  
          this.focusedViaMousedown = !this.focused;
          this.#preventClickSelectsAll = this.focused;
@@ -343,7 +330,7 @@ index 0fba59d62af9d3cd05bfee2cf84cd8b7cf9bfd6e..6af2ceed93a6c2799040512cbe646ddb
  
          // Keep the focus status, since the attribute may be changed
          // upon calling this.focus().
-@@ -5443,7 +5581,7 @@ ${
+@@ -5443,7 +5575,7 @@ ${
          }
          // Don't close the view when clicking on a tab; we may want to keep the
          // view open on tab switch, and the TabSelect event arrived earlier.
@@ -352,7 +339,7 @@ index 0fba59d62af9d3cd05bfee2cf84cd8b7cf9bfd6e..6af2ceed93a6c2799040512cbe646ddb
            break;
          }
  
-@@ -5732,7 +5870,7 @@ ${
+@@ -5732,7 +5864,7 @@ ${
      // When we are in actions search mode we can show more results so
      // increase the limit.
      let maxResults =

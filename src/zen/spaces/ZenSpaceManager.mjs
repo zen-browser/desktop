@@ -2290,6 +2290,11 @@ class nsZenWorkspaces {
   }
 
   onBeforeTabSelect(aTab) {
+    if (this.#inChangingWorkspace) {
+      // Just in case, Let's not do these checks while we are
+      // in the middle of changing workspace,
+      return false;
+    }
     const tabSpace = aTab?.getAttribute("zen-workspace-id");
     if (
       tabSpace &&
@@ -2297,8 +2302,12 @@ class nsZenWorkspaces {
       !aTab.hasAttribute("zen-empty-tab") &&
       !aTab.hasAttribute("zen-essential")
     ) {
+      this.lastSelectedWorkspaceTabs[tabSpace] =
+        gZenGlanceManager.getTabOrGlanceParent(aTab);
       this.changeWorkspaceWithID(tabSpace);
+      return true;
     }
+    return false;
   }
 
   _shouldShowTab(tab, workspaceUuid, containerId, workspaces) {

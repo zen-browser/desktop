@@ -1,22 +1,8 @@
 diff --git a/modules/libpref/init/StaticPrefList.yaml b/modules/libpref/init/StaticPrefList.yaml
-index b96e9d02beda72c92c295a2799c851b94945ada6..6cef45e1bdf97e2da6cea191f5237ca31749d0c6 100644
+index b96e9d02beda72c92c295a2799c851b94945ada6..db79081c6d1bbdf78a38a6cc13494476827bf0d1 100644
 --- a/modules/libpref/init/StaticPrefList.yaml
 +++ b/modules/libpref/init/StaticPrefList.yaml
-@@ -8475,6 +8475,13 @@
- #endif
-   mirror: once
- 
-+# Make backdrop-filter treat its captured backdrop as if it had been
-+# composited over an opaque-black background. (See bug 2036640)
-+- name: gfx.webrender.opaque-backdrop-fallback
-+  type: bool
-+  value: true
-+  mirror: once
-+
- # Disable wait of GPU execution completion
- - name: gfx.webrender.wait-gpu-finished.disabled
-   type: bool
-@@ -20580,6 +20587,7 @@
+@@ -20580,6 +20580,7 @@
    mirror: always
  #endif
  

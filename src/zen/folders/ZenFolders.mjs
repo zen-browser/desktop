@@ -53,6 +53,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   #animationCount = 0;
 
   init() {
+    this.#initLinkContextMenu();
     this.#foldersEnabled = !gZenWorkspaces.privateWindowOrDisabled;
 
     if (!this.#foldersEnabled) {
@@ -299,6 +300,79 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         ? gBrowser.selectedTabs
         : [TabContextMenu.contextTab];
       group.addTabs(tabs);
+    });
+  }
+
+  #initLinkContextMenu() {
+    const menu = window.MozXULElement.parseXULToFragment(`
+      <menu id="context-zenOpenLinkInFolder" data-l10n-id="zen-open-link-in-folder" hidden="true">
+        <menupopup>
+        </menupopup>
+      </menu>
+    `);
+    document.getElementById("context-sep-open").before(menu);
+
+    const linkFolderMenu = document.getElementById("context-zenOpenLinkInFolder");
+    const popup = linkFolderMenu.querySelector("menupopup");
+
+    popup.addEventListener("popupshowing", () => {
+      if (!this.#foldersEnabled) {
+        return;
+      }
+      const groups = gBrowser.tabGroups.filter(group => {
+        const isZenFolder = group?.isZenFolder;
+        const isLiveFolder = group?.isLiveFolder;
+        const spaceId = group?.getAttribute("zen-workspace-id");
+        if (
+          !isZenFolder ||
+          isLiveFolder ||
+          spaceId !== gZenWorkspaces.activeWorkspace
+        ) {
+          return false;
+        }
+        return true;
+      });
+      for (const group of groups) {
+        const icon = group.iconURL;
+        const menuItem = document.createXULElement("menuitem");
+        menuItem.setAttribute("label", group.label);
+        menuItem.classList.add("context-zen-link-open-in-folder-item");
+        if (icon) {
+          menuItem.setAttribute("image", icon);
+        }
+        menuItem._group = group;
+        popup.appendChild(menuItem);
+      }
+    });
+
+    popup.addEventListener("popuphidden", () => {
+      const items = popup.querySelectorAll(
+        ".context-zen-link-open-in-folder-item"
+      );
+      for (const item of items) {
+        delete item._group;
+        item.remove();
+      }
+    });
+
+    popup.addEventListener("command", event => {
+      if (
+        !event.target.classList.contains("context-zen-link-open-in-folder-item")
+      ) {
+        return;
+      }
+      const group = event.target._group;
+      if (!group) {
+        return;
+      }
+      const url = gContextMenu.linkURL;
+      if (!url) {
+        return;
+      }
+      const newTab = gBrowser.addTab(url, {
+        triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+      });
+      group.addTabs([newTab]);
     });
   }
 

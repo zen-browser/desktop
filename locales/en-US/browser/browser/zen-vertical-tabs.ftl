@@ -27,6 +27,10 @@ zen-toolbar-context-new-folder =
     .label = New Folder
     .accesskey = N
 
+zen-open-link-in-folder =
+    .label = Open Link in Folder...
+    .accesskey = F
+
 sidebar-zen-expand =
   .label = Expand Sidebar
 

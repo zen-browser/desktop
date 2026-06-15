@@ -300,10 +300,7 @@ window.gZenUIManager = {
 
   openAndChangeToTab(url, options) {
     if (window.parent) {
-      const tab = window.parent.gBrowser.addTrustedTab(
-        url,
-        options
-      );
+      const tab = window.parent.gBrowser.addTrustedTab(url, options);
       window.parent.gBrowser.selectedTab = tab;
       return tab;
     }

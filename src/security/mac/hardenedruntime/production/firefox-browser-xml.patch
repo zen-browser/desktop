@@ -1,5 +1,5 @@
 diff --git a/security/mac/hardenedruntime/production/firefox.browser.xml b/security/mac/hardenedruntime/production/firefox.browser.xml
-index b7b74dd2bdfee3c724c4361e98c8addaf6148465..ad1da805bc76df1ea7f8504305e0deccd9ed3f65 100644
+index eaee811d99d06ec53fbc78659aae495643f1deeb..cb0f8548a6622ba2f0847259f346c8301f44d8c3 100644
 --- a/security/mac/hardenedruntime/production/firefox.browser.xml
 +++ b/security/mac/hardenedruntime/production/firefox.browser.xml
 @@ -29,7 +29,7 @@

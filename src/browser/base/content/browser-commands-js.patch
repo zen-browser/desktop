@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-commands.js b/browser/base/content/browser-commands.js
-index 2d9f5591c9ffdd5948298555c461850521c0b45f..c46072ca4e96b419987f7e782e26b3de71d7c8e3 100644
+index 87148c353ee852248e887e3ae31d46bcbee1cd11..91b1d5a8e0e512dd50139f99ad3e3ba7bade80fb 100644
 --- a/browser/base/content/browser-commands.js
 +++ b/browser/base/content/browser-commands.js
 @@ -13,6 +13,10 @@ var BrowserCommands = {
@@ -13,7 +13,7 @@ index 2d9f5591c9ffdd5948298555c461850521c0b45f..c46072ca4e96b419987f7e782e26b3de
        try {
          gBrowser.goBack();
        } catch (ex) {}
-@@ -234,6 +238,10 @@ var BrowserCommands = {
+@@ -230,6 +234,10 @@ var BrowserCommands = {
        }
      }
  
@@ -24,7 +24,7 @@ index 2d9f5591c9ffdd5948298555c461850521c0b45f..c46072ca4e96b419987f7e782e26b3de
      // A notification intended to be useful for modular peformance tracking
      // starting as close as is reasonably possible to the time when the user
      // expressed the intent to open a new tab.  Since there are a lot of
-@@ -318,6 +326,14 @@ var BrowserCommands = {
+@@ -346,6 +354,14 @@ var BrowserCommands = {
        return;
      }
  
@@ -39,7 +39,7 @@ index 2d9f5591c9ffdd5948298555c461850521c0b45f..c46072ca4e96b419987f7e782e26b3de
      // Keyboard shortcuts that would close a tab that is pinned select the first
      // unpinned tab instead.
      if (
-@@ -325,8 +341,8 @@ var BrowserCommands = {
+@@ -353,8 +369,8 @@ var BrowserCommands = {
        (event.ctrlKey || event.metaKey || event.altKey) &&
        gBrowser.selectedTab.pinned
      ) {

@@ -380,7 +380,7 @@ class nsZenWindowSync {
   }
 
   handleEvent(aEvent) {
-    const window = aEvent.currentTarget.documentGlobal ?? aEvent.currentTarget;
+    const window = aEvent.currentTarget.documentGlobal;
     if (
       !window.gZenStartup.isReady ||
       !window.gZenWorkspaces?.shouldHaveWorkspaces ||
@@ -1224,7 +1224,8 @@ class nsZenWindowSync {
       this.log(`Setting pinned initial state for tab ${aTab.id}`);
       let { entries, index } = this.#getTabEntriesFromCache(aTab);
       let image =
-        aTab.getAttribute("image") || aTab.documentGlobal.gBrowser.getIcon(aTab);
+        aTab.getAttribute("image") ||
+        aTab.documentGlobal.gBrowser.getIcon(aTab);
       let activeIndex = typeof index === "number" ? index : entries.length;
       // Tab state cache gives us the index starting from 1 instead of 0.
       activeIndex--;

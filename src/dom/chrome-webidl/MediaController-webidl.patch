@@ -1,5 +1,5 @@
 diff --git a/dom/chrome-webidl/MediaController.webidl b/dom/chrome-webidl/MediaController.webidl
-index eea39e9f70b1ba216dc5131bc3aa8b6ef46ca5ea..fd24ad430aeb64c4d622b3765af359579a903c40 100644
+index 6063e86e747dac87aafc865af95800daef2a5b9d..7fc4e72ee73a16b9ec2c1b9d11d926246fb7f7b6 100644
 --- a/dom/chrome-webidl/MediaController.webidl
 +++ b/dom/chrome-webidl/MediaController.webidl
 @@ -23,6 +23,12 @@ enum MediaControlKey {

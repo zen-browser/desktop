@@ -684,7 +684,10 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
           if (workspaceId) {
             tab.documentGlobal.gBrowser.selectedTab =
               tab.documentGlobal.gBrowser._findTabToBlurTo(tab, movingTabs);
-            tab.documentGlobal.gZenWorkspaces.moveTabToWorkspace(tab, workspaceId);
+            tab.documentGlobal.gZenWorkspaces.moveTabToWorkspace(
+              tab,
+              workspaceId
+            );
           }
           // Move the tabs into this window. To avoid multiple tab-switches in
           // the original window, the selected tab should be adopted last.

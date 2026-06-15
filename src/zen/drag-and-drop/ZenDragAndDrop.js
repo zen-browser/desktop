@@ -188,7 +188,7 @@
           // for the tab to be more visible. This is a hacky workaround.
           // TODO: Make windows and linux DnD use nsZenDragAndDrop::mDragImageOpacity
           tabClone.style.colorScheme = "light";
-          tabClone.style.color = "black";
+          tabClone.querySelector("*").style.color = "black";
         }
         if (i > 0) {
           tabClone.style.transform = `translate(${i * 4}px, -${i * (tabRect.height - 4)}px)`;

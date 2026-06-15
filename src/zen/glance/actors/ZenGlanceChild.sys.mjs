@@ -139,7 +139,10 @@ export class ZenGlanceChild extends JSWindowActorChild {
       const deltaY = Math.abs(event.clientY - this.#mouseDownY);
       this.#mouseDownX = null;
       this.#mouseDownY = null;
-      if (deltaX > CLICK_DRAG_THRESHOLD_PX || deltaY > CLICK_DRAG_THRESHOLD_PX) {
+      if (
+        deltaX > CLICK_DRAG_THRESHOLD_PX ||
+        deltaY > CLICK_DRAG_THRESHOLD_PX
+      ) {
         return;
       }
     }

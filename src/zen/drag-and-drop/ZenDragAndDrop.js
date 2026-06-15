@@ -188,7 +188,7 @@
           // for the tab to be more visible. This is a hacky workaround.
           // TODO: Make windows and linux DnD use nsZenDragAndDrop::mDragImageOpacity
           tabClone.style.colorScheme = "light";
-          tabClone.querySelector("*").style.color = "black";
+          tabClone.style.setProperty("--tab-selected-textcolor", "black");
         }
         if (i > 0) {
           tabClone.style.transform = `translate(${i * 4}px, -${i * (tabRect.height - 4)}px)`;
@@ -697,8 +697,10 @@
       for (let tab of tabs) {
         if (isExplicitMode) {
           tab.style.colorScheme = isDarkMode ? "dark" : "light";
+          tabClone.style.setProperty("--tab-selected-textcolor", isDarkMode ? "white" : "black");
         } else {
           tab.style.colorScheme = "";
+          tabClone.style.removeProperty("--tab-selected-textcolor");
         }
       }
       requestAnimationFrame(() => {

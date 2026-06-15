@@ -1172,47 +1172,60 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   onDotMouseMove(event) {
     if (this.dragging) {
       event.preventDefault();
-      const rect = window.windowUtils.getBoundsWithoutFlushing(
-        this.panel.querySelector(".zen-theme-picker-gradient")
-      );
-      const padding = 0; // each side
-      // do NOT let the ball be draged outside of an imaginary circle. You can drag it anywhere inside the circle
-      // if the distance between the center of the circle and the dragged ball is bigger than the radius, then the ball
-      // should be placed on the edge of the circle. If it's inside the circle, then the ball just follows the mouse
 
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-      const radius = (rect.width - padding) / 2;
-      let pixelX = event.clientX;
-      let pixelY = event.clientY;
-      const distance = Math.sqrt(
-        (pixelX - centerX) ** 2 + (pixelY - centerY) ** 2
-      );
-      if (distance > radius) {
-        const angle = Math.atan2(pixelY - centerY, pixelX - centerX);
-        pixelX = centerX + Math.cos(angle) * radius;
-        pixelY = centerY + Math.sin(angle) * radius;
+      if (this._animationFrameRequested) {
+        return;
       }
+      this._animationFrameRequested = true;
 
-      // set the location of the dot in pixels
-      const relativeX = pixelX - rect.left;
-      const relativeY = pixelY - rect.top;
+      requestAnimationFrame(() => {
+        this._animationFrameRequested = false;
+        if (!this.dragging) {
+          return;
+        }
 
-      const draggedDot = this.dots.find(dot => dot.element === this.draggedDot);
-      draggedDot.element.style.left = `${relativeX}px`;
-      draggedDot.element.style.top = `${relativeY}px`;
-      draggedDot.position = {
-        x: relativeX,
-        y: relativeY,
-      };
-      let colorPositions = this.calculateCompliments(
-        this.dots,
-        "update",
-        this.useAlgo
-      );
-      this.handleColorPositions(colorPositions);
+        const rect = window.windowUtils.getBoundsWithoutFlushing(
+          this.panel.querySelector(".zen-theme-picker-gradient")
+        );
+        const padding = 0; // each side
+        // do NOT let the ball be draged outside of an imaginary circle. You can drag it anywhere inside the circle
+        // if the distance between the center of the circle and the dragged ball is bigger than the radius, then the ball
+        // should be placed on the edge of the circle. If it's inside the circle, then the ball just follows the mouse
 
-      this.updateCurrentWorkspace();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const radius = (rect.width - padding) / 2;
+        let pixelX = event.clientX;
+        let pixelY = event.clientY;
+        const distance = Math.sqrt(
+          (pixelX - centerX) ** 2 + (pixelY - centerY) ** 2
+        );
+        if (distance > radius) {
+          const angle = Math.atan2(pixelY - centerY, pixelX - centerX);
+          pixelX = centerX + Math.cos(angle) * radius;
+          pixelY = centerY + Math.sin(angle) * radius;
+        }
+
+        // set the location of the dot in pixels
+        const relativeX = pixelX - rect.left;
+        const relativeY = pixelY - rect.top;
+
+        const draggedDot = this.dots.find(dot => dot.element === this.draggedDot);
+        draggedDot.element.style.left = `${relativeX}px`;
+        draggedDot.element.style.top = `${relativeY}px`;
+        draggedDot.position = {
+          x: relativeX,
+          y: relativeY,
+        };
+        let colorPositions = this.calculateCompliments(
+          this.dots,
+          "update",
+          this.useAlgo
+        );
+        this.handleColorPositions(colorPositions);
+
+        this.updateCurrentWorkspace();
+      });
     }
   }
 

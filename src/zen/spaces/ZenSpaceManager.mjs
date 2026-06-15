@@ -137,7 +137,8 @@ class nsZenWorkspaces {
       document.documentElement.setAttribute("zen-private-window", "true");
     }
 
-    window.addEventListener("resize", this.onWindowResize.bind(this));
+    this._onWindowResizeBound = this.onWindowResize.bind(this);
+    window.addEventListener("resize", this._onWindowResizeBound);
     this.addPopupListeners();
 
     if (this.privateWindowOrDisabled) {
@@ -146,18 +147,51 @@ class nsZenWorkspaces {
     }
 
     if (!this.privateWindowOrDisabled) {
-      const observerFunction = async () => {
+      this._workspaceBookmarksObserver = async () => {
         delete this._workspaceBookmarksCache;
         await this.workspaceBookmarks();
         this._invalidateBookmarkContainers();
       };
-      Services.obs.addObserver(observerFunction, "workspace-bookmarks-updated");
+      Services.obs.addObserver(this._workspaceBookmarksObserver, "workspace-bookmarks-updated");
       window.addEventListener("unload", () => {
-        Services.obs.removeObserver(
-          observerFunction,
-          "workspace-bookmarks-updated"
-        );
-      });
+        this.uninit();
+      }, { once: true });
+    }
+  }
+
+  uninit() {
+    if (this._onWindowResizeBound) {
+      window.removeEventListener("resize", this._onWindowResizeBound);
+      this._onWindowResizeBound = null;
+    }
+    if (this._workspaceBookmarksObserver) {
+      Services.obs.removeObserver(
+        this._workspaceBookmarksObserver,
+        "workspace-bookmarks-updated"
+      );
+      this._workspaceBookmarksObserver = null;
+    }
+    if (this._tabUpdateListener) {
+      window.removeEventListener("TabOpen", this._tabUpdateListener);
+      window.removeEventListener("TabClose", this._tabUpdateListener);
+      window.removeEventListener("TabAddedToEssentials", this._tabUpdateListener);
+      window.removeEventListener("TabRemovedFromEssentials", this._tabUpdateListener);
+      window.removeEventListener("TabPinned", this._tabUpdateListener);
+      window.removeEventListener("TabUnpinned", this._tabUpdateListener);
+      window.removeEventListener("aftercustomization", this._tabUpdateListener);
+      this._tabUpdateListener = null;
+    }
+    if (this._onLocationChangeBound) {
+      window.removeEventListener("TabSelect", this._onLocationChangeBound);
+      this._onLocationChangeBound = null;
+    }
+    if (this._onTabBrowserInsertedBound) {
+      window.removeEventListener("TabBrowserInserted", this._onTabBrowserInsertedBound);
+      this._onTabBrowserInsertedBound = null;
+    }
+    if (this._swipeManager && this._swipeManager.uninit) {
+      this._swipeManager.uninit();
+      this._swipeManager = null;
     }
   }
 
@@ -779,18 +813,20 @@ class nsZenWorkspaces {
       this.#clearAnyZombieTabs(); // Dont call with await
       delete this._resolveInitialized;
 
-      const tabUpdateListener = this.updateTabsContainers.bind(this);
-      window.addEventListener("TabOpen", tabUpdateListener);
-      window.addEventListener("TabClose", tabUpdateListener);
-      window.addEventListener("TabAddedToEssentials", tabUpdateListener);
-      window.addEventListener("TabRemovedFromEssentials", tabUpdateListener);
-      window.addEventListener("TabPinned", tabUpdateListener);
-      window.addEventListener("TabUnpinned", tabUpdateListener);
-      window.addEventListener("aftercustomization", tabUpdateListener);
-      window.addEventListener("TabSelect", this.onLocationChange.bind(this));
+      this._tabUpdateListener = this.updateTabsContainers.bind(this);
+      window.addEventListener("TabOpen", this._tabUpdateListener);
+      window.addEventListener("TabClose", this._tabUpdateListener);
+      window.addEventListener("TabAddedToEssentials", this._tabUpdateListener);
+      window.addEventListener("TabRemovedFromEssentials", this._tabUpdateListener);
+      window.addEventListener("TabPinned", this._tabUpdateListener);
+      window.addEventListener("TabUnpinned", this._tabUpdateListener);
+      window.addEventListener("aftercustomization", this._tabUpdateListener);
+      this._onLocationChangeBound = this.onLocationChange.bind(this);
+      window.addEventListener("TabSelect", this._onLocationChangeBound);
+      this._onTabBrowserInsertedBound = this.onTabBrowserInserted.bind(this);
       window.addEventListener(
         "TabBrowserInserted",
-        this.onTabBrowserInserted.bind(this)
+        this._onTabBrowserInsertedBound
       );
 
       this.updateWorkspacesChangeContextMenu();
@@ -2229,7 +2265,7 @@ class nsZenWorkspaces {
               {
                 transform: [
                   existingTransform,
-                  new Array(stepsInBetween).fill(newTransform).join(","),
+                  ...new Array(stepsInBetween).fill(newTransform),
                 ],
               },
               {

@@ -120,7 +120,14 @@ export class ZenGlanceChild extends JSWindowActorChild {
   }
 
   on_mousedown(event) {
-    const { node } = this.#getTargetFromEvent(event);
+    const { node, href } = this.#getTargetFromEvent(event);
+    
+    // Memory/IPC God-Tier fix: Don't send 10 IPC messages a second to the Parent Process
+    // for every non-link click (e.g. playing a browser game or clicking empty space).
+    if (!href) {
+      return;
+    }
+    
     // We record the link data anyway, even if the glance may be invoked
     // or not. We have some cases where glance would open, for example,
     // when clicking on a link with a different domain where glance would open.

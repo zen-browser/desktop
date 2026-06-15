@@ -71,11 +71,17 @@ class ZenUrlbarResultsLearner {
           db[cmd] = -1;
         } else {
           const newIndex = Math.max(db[cmd] - 1, DEPRIORITIZE_MAX);
-          db[cmd] = newIndex;
-          if (newIndex === 0) {
-            // Save some space by deleting commands that are not used
-            // and have a neutral score.
+          if (newIndex <= DEPRIORITIZE_MAX) {
+            // Memory/Disk I/O God-Tier fix: Delete commands that are
+            // completely ignored by the user to prevent JSON bloat.
             delete db[cmd];
+          } else {
+            db[cmd] = newIndex;
+            if (newIndex === 0) {
+              // Save some space by deleting commands that are not used
+              // and have a neutral score.
+              delete db[cmd];
+            }
           }
         }
       }

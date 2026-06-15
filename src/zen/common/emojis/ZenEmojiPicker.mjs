@@ -139,26 +139,34 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
   #onSearchInput(event) {
     const input = event.target;
     const value = input.value.trim().toLowerCase();
-    // search for emojis.tags and order by emojis.order
-    const filteredEmojis = this.#emojis
-      .filter(emoji => {
-        return emoji.tags.some(tag => tag.toLowerCase().includes(value));
-      })
+    
+    // Create an O(1) lookup Map to prevent O(N^2) iteration over 3000 DOM nodes.
+    const filteredEmojiOrderMap = new Map();
+    const filtered = this.#emojis
+      .filter(emoji => emoji.tags.some(tag => tag.toLowerCase().includes(value)))
       .sort((a, b) => a.order - b.order);
+      
+    filtered.forEach((emoji, idx) => {
+      filteredEmojiOrderMap.set(emoji.emoji, idx);
+    });
+
+    // Hide container to prevent Layout Thrashing/Reflows during 3000 DOM mutations
+    this.emojiList.style.display = "none";
+
     for (const button of this.emojiList.children) {
       const buttonEmoji = button.getAttribute("label");
-      const emojiObject = filteredEmojis.find(
-        emoji => emoji.emoji === buttonEmoji
-      );
-      if (emojiObject) {
-        button.hidden = !emojiObject.tags.some(tag =>
-          tag.toLowerCase().includes(value)
-        );
-        button.style.order = emojiObject.order;
+      const order = filteredEmojiOrderMap.get(buttonEmoji);
+      
+      if (order !== undefined) {
+        button.hidden = false;
+        button.style.order = order;
       } else {
         button.hidden = true;
       }
     }
+    
+    // Restore layout
+    this.emojiList.style.display = "";
   }
 
   // note: It's async on purpose so we can render the popup before processing the emojis
@@ -170,16 +178,34 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     const allowEmojis = !this.#panel.hasAttribute("only-svg-icons");
     if (allowEmojis) {
       const emojiList = this.emojiList;
-      for (const emoji of this.#emojis) {
-        const item = document.createXULElement("toolbarbutton");
-        item.className = "toolbarbutton-1 zen-emojis-picker-emoji";
-        item.setAttribute("label", emoji.emoji);
-        item.setAttribute("tooltiptext", "");
-        item.addEventListener("command", () => {
-          this.#selectEmoji(emoji.emoji);
-        });
-        emojiList.appendChild(item);
-      }
+      const CHUNK_SIZE = 100;
+      let currentIndex = 0;
+
+      const renderChunk = () => {
+        if (!this.#anchor) return; // Stop if popup is closed
+
+        const fragment = document.createDocumentFragment();
+        const end = Math.min(currentIndex + CHUNK_SIZE, this.#emojis.length);
+        for (; currentIndex < end; currentIndex++) {
+          const emoji = this.#emojis[currentIndex];
+          const item = document.createXULElement("toolbarbutton");
+          item.className = "toolbarbutton-1 zen-emojis-picker-emoji";
+          item.setAttribute("label", emoji.emoji);
+          item.setAttribute("tooltiptext", "");
+          item.addEventListener("command", () => {
+            this.#selectEmoji(emoji.emoji);
+          });
+          fragment.appendChild(item);
+        }
+        emojiList.appendChild(fragment);
+
+        if (currentIndex < this.#emojis.length) {
+          requestAnimationFrame(renderChunk);
+        }
+      };
+
+      requestAnimationFrame(renderChunk);
+
       setTimeout(() => {
         this.searchInput.focus();
       }, 500);

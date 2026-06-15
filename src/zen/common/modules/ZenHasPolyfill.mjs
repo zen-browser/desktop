@@ -57,7 +57,9 @@ class nsHasPolyfill {
     this.observers.push({
       id: observerId,
       observer,
-      element,
+      // God-Tier Memory Fix: Use WeakRef so the array doesn't hold the DOM node hostage.
+      // The Garbage Collector can now freely clear orphaned nodes.
+      elementRef: new WeakRef(element),
       attributeFilter,
     });
     return observerId;
@@ -73,14 +75,20 @@ class nsHasPolyfill {
   connectObserver(observerId) {
     const observer = this.observers.find(o => o.id === observerId);
     if (observer) {
-      observer.observer.observe(observer.element, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: observer.attributeFilter.length
-          ? observer.attributeFilter
-          : undefined,
-      });
+      const element = observer.elementRef.deref();
+      if (element) {
+        observer.observer.observe(element, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: observer.attributeFilter.length
+            ? observer.attributeFilter
+            : undefined,
+        });
+      } else {
+        // Element was garbage collected! We can safely prune this dead observer.
+        this.observers = this.observers.filter(o => o.id !== observerId);
+      }
     }
   }
 

@@ -105,8 +105,14 @@ export class ZenSpacesSwipe {
     gZenFolders.cancelPopupTimer();
 
     document.documentElement.setAttribute("swipe-gesture", "true");
+    
+    if (this._popupAbortController) {
+      this._popupAbortController.abort();
+    }
+    this._popupAbortController = new AbortController();
     document.addEventListener("popupshown", this._popupOpenHandler, {
       once: true,
+      signal: this._popupAbortController.signal,
     });
 
     event.preventDefault();
@@ -115,8 +121,14 @@ export class ZenSpacesSwipe {
       isGestureActive: true,
       lastDelta: 0,
       direction: null,
+      cachedStripWidth: this.#stripWidth,
+      cachedDeltaMultiplier: Services.prefs.getIntPref(
+        "zen.workspaces.swipe-actions.delta-multiplier"
+      ),
     };
-    Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", true);
+    // God-Tier Disk I/O Fix: Replaced synchronous prefs.js disk writing during
+    // 60FPS Trackpad gesture with an in-memory DOM attribute to prevent Jitter/Stuttering.
+    document.documentElement.setAttribute("zen-is-fast-swipe", "true");
   }
 
   _handleSwipeUpdate(event) {
@@ -126,16 +138,12 @@ export class ZenSpacesSwipe {
       return;
     }
 
-    const stripWidth = this.#stripWidth;
+    const stripWidth = this._swipeState.cachedStripWidth;
 
     event.preventDefault();
     event.stopPropagation();
 
-    const delta =
-      event.delta *
-      Services.prefs.getIntPref(
-        "zen.workspaces.swipe-actions.delta-multiplier"
-      );
+    const delta = event.delta * this._swipeState.cachedDeltaMultiplier;
     let translateX = this._swipeState.lastDelta + delta;
     // Add a force multiplier as we are translating the strip depending on how close to the edge we are
     let forceMultiplier = Math.min(
@@ -154,9 +162,15 @@ export class ZenSpacesSwipe {
       this._swipeState.direction = delta > 0 ? "left" : "right";
     }
 
-    // Apply a translateX to the tab strip to give the user feedback on the swipe
-    const currentWorkspace = ws.getActiveWorkspaceFromCache();
-    ws._organizeWorkspaceStripLocations(currentWorkspace, true, translateX);
+    if (this._updateRafId) {
+      cancelAnimationFrame(this._updateRafId);
+    }
+
+    this._updateRafId = requestAnimationFrame(() => {
+      // Apply a translateX to the tab strip to give the user feedback on the swipe
+      const currentWorkspace = ws.getActiveWorkspaceFromCache();
+      ws._organizeWorkspaceStripLocations(currentWorkspace, true, translateX);
+    });
   }
 
   async _handleSwipeEnd(event) {
@@ -186,7 +200,8 @@ export class ZenSpacesSwipe {
       direction: null,
     };
 
-    Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", false);
+    // God-Tier Disk I/O Fix: Remove the fast-swipe DOM attribute safely without locking the disk.
+    document.documentElement.removeAttribute("zen-is-fast-swipe");
     document.documentElement.removeAttribute("swipe-gesture");
     gZenUIManager.tabsWrapper.style.removeProperty("scrollbar-width");
     [lazy.browserBackgroundElement, lazy.toolbarBackgroundElement].forEach(
@@ -196,9 +211,10 @@ export class ZenSpacesSwipe {
     );
     delete ws._hasAnimatedBackgrounds;
     ws.updateTabsContainers();
-    document.removeEventListener("popupshown", this._popupOpenHandler, {
-      once: true,
-    });
+    if (this._popupAbortController) {
+      this._popupAbortController.abort();
+      this._popupAbortController = null;
+    }
   }
 
   _popupOpenHandler() {

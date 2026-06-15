@@ -1,4 +1,4 @@
-﻿/* This Source Code Form is subject to the terms of the Mozilla Public
+/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -41,6 +41,8 @@ ChromeUtils.defineLazyGetter(lazy, "mainAppWrapper", () =>
 window.gZenCompactModeManager = {
   _flashTimeouts: {},
   _eventListeners: [],
+  _flashRafs: {},
+  _globalMouseMoveListeners: {},
   _removeHoverFrames: {},
 
   // Delay to avoid flickering when hovering over the sidebar
@@ -399,7 +401,12 @@ window.gZenCompactModeManager = {
         `${sidebarWidth}px`
       );
       if (!gZenWorkspaces._processingResize) {
-        window.dispatchEvent(new window.Event("resize")); // To recalculate the layout
+        // God-Tier Layout Thrashing Fix: Debounce global resize events to 1 per frame
+        // instead of firing synchronously inside ResizeObserver which causes O(N^M) Layout calculation stalls.
+        if (this._resizeDebounce) cancelAnimationFrame(this._resizeDebounce);
+        this._resizeDebounce = requestAnimationFrame(() => {
+          window.dispatchEvent(new window.Event("resize")); // To recalculate the layout
+        });
       }
       if (
         event &&
@@ -671,24 +678,28 @@ window.gZenCompactModeManager = {
   },
 
   flashElement(element, duration, id, attrName = "flash-popup") {
-    if (this._flashTimeouts[id]) {
-      clearTimeout(this._flashTimeouts[id]);
-    } else {
-      requestAnimationFrame(() =>
-        this._setElementExpandAttribute(element, true, attrName)
-      );
-    }
+    this.clearFlashTimeout(id);
+    this._flashRafs[id] = requestAnimationFrame(() =>
+      this._setElementExpandAttribute(element, true, attrName)
+    );
     this._flashTimeouts[id] = setTimeout(() => {
-      window.requestAnimationFrame(() => {
+      this._flashRafs[id] = window.requestAnimationFrame(() => {
         this._setElementExpandAttribute(element, false, attrName);
         this._flashTimeouts[id] = null;
+        this._flashRafs[id] = null;
       });
     }, duration);
   },
 
   clearFlashTimeout(id) {
-    clearTimeout(this._flashTimeouts[id]);
-    this._flashTimeouts[id] = null;
+    if (this._flashTimeouts[id]) {
+      clearTimeout(this._flashTimeouts[id]);
+      this._flashTimeouts[id] = null;
+    }
+    if (this._flashRafs && this._flashRafs[id]) {
+      cancelAnimationFrame(this._flashRafs[id]);
+      this._flashRafs[id] = null;
+    }
   },
 
   _setElementExpandAttribute(element, value, attr = "zen-has-hover") {
@@ -892,17 +903,19 @@ window.gZenCompactModeManager = {
             "has-hover" + target.id,
             "zen-has-hover"
           );
-          document.addEventListener(
-            "mousemove",
-            () => {
-              if (target.matches(":hover")) {
-                return;
-              }
-              this._setElementExpandAttribute(target, false);
-              this.clearFlashTimeout("has-hover" + target.id);
-            },
-            { once: true }
-          );
+          if (this._globalMouseMoveListeners[target.id]) {
+            document.removeEventListener("mousemove", this._globalMouseMoveListeners[target.id]);
+          }
+          this._globalMouseMoveListeners[target.id] = () => {
+            if (target.matches(":hover")) {
+              return;
+            }
+            this._setElementExpandAttribute(target, false);
+            this.clearFlashTimeout("has-hover" + target.id);
+            document.removeEventListener("mousemove", this._globalMouseMoveListeners[target.id]);
+            delete this._globalMouseMoveListeners[target.id];
+          };
+          document.addEventListener("mousemove", this._globalMouseMoveListeners[target.id]);
         }
       }, this.HOVER_HACK_DELAY);
     });

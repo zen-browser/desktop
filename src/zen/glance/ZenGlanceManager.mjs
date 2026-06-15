@@ -51,12 +51,16 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   }
 
   #setupEventListeners() {
-    window.addEventListener("TabClose", this.onTabClose.bind(this));
-    window.addEventListener("TabSelect", this.onLocationChange.bind(this));
+    this._onTabCloseBound = this.onTabClose.bind(this);
+    this._onLocationChangeBound = this.onLocationChange.bind(this);
+    this._onOverlayClickBound = this.onOverlayClick.bind(this);
+
+    window.addEventListener("TabClose", this._onTabCloseBound);
+    window.addEventListener("TabSelect", this._onLocationChangeBound);
 
     document
       .getElementById("tabbrowser-tabpanels")
-      .addEventListener("click", this.onOverlayClick.bind(this));
+      .addEventListener("click", this._onOverlayClickBound);
   }
 
   #setupPreferences() {
@@ -167,6 +171,25 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * Clean up all glances when the application is unloading
    */
   onUnload() {
+    if (this.#confirmationTimeout) {
+      clearTimeout(this.#confirmationTimeout);
+      this.#confirmationTimeout = null;
+    }
+    if (this._onTabCloseBound) {
+      window.removeEventListener("TabClose", this._onTabCloseBound);
+      this._onTabCloseBound = null;
+    }
+    if (this._onLocationChangeBound) {
+      window.removeEventListener("TabSelect", this._onLocationChangeBound);
+      this._onLocationChangeBound = null;
+    }
+    if (this._onOverlayClickBound) {
+      const tabpanels = document.getElementById("tabbrowser-tabpanels");
+      if (tabpanels) {
+        tabpanels.removeEventListener("click", this._onOverlayClickBound);
+      }
+      this._onOverlayClickBound = null;
+    }
     for (const [, glance] of this.#glances) {
       gBrowser.removeTab(glance.tab, { animate: false });
     }
@@ -844,6 +867,11 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       this.#handleConfirmationTimeout(onTabClose, hasFocused, sidebarButtons)
     ) {
       return;
+    }
+
+    if (this.#confirmationTimeout) {
+      clearTimeout(this.#confirmationTimeout);
+      this.#confirmationTimeout = null;
     }
 
     this.browserWrapper.removeAttribute("has-finished-animation");

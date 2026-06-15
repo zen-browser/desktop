@@ -117,7 +117,7 @@ class nsZenMediaController {
       this.onMediaSeekComplete.bind(this)
     );
 
-    window.addEventListener("TabSelect", event => {
+    this._onTabSelect = event => {
       if (this.isSharing) {
         return;
       }
@@ -143,14 +143,15 @@ class nsZenMediaController {
           }, 500);
         }
       }
-    });
+    };
+    window.addEventListener("TabSelect", this._onTabSelect);
 
-    const onTabDiscardedOrClosed = this.onTabDiscardedOrClosed.bind(this);
+    this._onTabDiscardedOrClosed = this.onTabDiscardedOrClosed.bind(this);
 
-    window.addEventListener("TabClose", onTabDiscardedOrClosed);
-    window.addEventListener("TabBrowserDiscarded", onTabDiscardedOrClosed);
+    window.addEventListener("TabClose", this._onTabDiscardedOrClosed);
+    window.addEventListener("TabBrowserDiscarded", this._onTabDiscardedOrClosed);
 
-    window.addEventListener("DOMAudioPlaybackStarted", event => {
+    this._onDOMAudioPlaybackStarted = event => {
       setTimeout(() => {
         if (
           this._currentMediaController?.isPlaying &&
@@ -168,11 +169,37 @@ class nsZenMediaController {
         event.target.browsingContext.mediaController,
         event.target
       );
-    });
+    };
+    window.addEventListener("DOMAudioPlaybackStarted", this._onDOMAudioPlaybackStarted);
 
-    window.addEventListener("DOMAudioPlaybackStopped", () =>
-      this.updateMuteState()
-    );
+    this._onDOMAudioPlaybackStopped = () => this.updateMuteState();
+    window.addEventListener("DOMAudioPlaybackStopped", this._onDOMAudioPlaybackStopped);
+
+    window.addEventListener("unload", () => this.uninit(), { once: true });
+  }
+
+  uninit() {
+    if (this._onTabSelect) {
+      window.removeEventListener("TabSelect", this._onTabSelect);
+      this._onTabSelect = null;
+    }
+    if (this._onTabDiscardedOrClosed) {
+      window.removeEventListener("TabClose", this._onTabDiscardedOrClosed);
+      window.removeEventListener("TabBrowserDiscarded", this._onTabDiscardedOrClosed);
+      this._onTabDiscardedOrClosed = null;
+    }
+    if (this._onDOMAudioPlaybackStarted) {
+      window.removeEventListener("DOMAudioPlaybackStarted", this._onDOMAudioPlaybackStarted);
+      this._onDOMAudioPlaybackStarted = null;
+    }
+    if (this._onDOMAudioPlaybackStopped) {
+      window.removeEventListener("DOMAudioPlaybackStopped", this._onDOMAudioPlaybackStopped);
+      this._onDOMAudioPlaybackStopped = null;
+    }
+    if (this._mediaUpdateInterval) {
+      clearInterval(this._mediaUpdateInterval);
+      this._mediaUpdateInterval = null;
+    }
   }
 
   onTabDiscardedOrClosed(event) {

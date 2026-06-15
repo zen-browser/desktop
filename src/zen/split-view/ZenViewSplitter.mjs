@@ -76,8 +76,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   _tabBrowserPanel = null;
   __hasSetMenuListener = false;
   overlay = null;
-  _splitNodeToSplitters = new Map();
-  _tabToSplitNode = new Map();
+  _splitNodeToSplitters = new WeakMap();
+  _tabToSplitNode = new WeakMap();
   dropZone;
   _edgeHoverSize;
   minResizeWidth;
@@ -1776,7 +1776,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     [...this.overlay.children]
       .filter(c => c.classList.contains("zen-split-view-splitter"))
       .forEach(s => s.remove());
-    this._splitNodeToSplitters.clear();
+    this._splitNodeToSplitters = new WeakMap();
   }
 
   /**
@@ -1834,6 +1834,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         (100 - splitNode.positionToRoot.bottom - splitNode.positionToRoot.top);
     }
     const originalSizes = splitNode.children.map(c => c.sizeInParent);
+    const panelDimensionSize = this.tabBrowserPanel.getBoundingClientRect()[dimension];
 
     const dragFunc = dEvent => {
       requestAnimationFrame(() => {
@@ -1843,7 +1844,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
         const movement = dEvent[clientAxis] - startPosition;
         let movementPercent =
-          (movement / this.tabBrowserPanel.getBoundingClientRect()[dimension]) *
+          (movement / panelDimensionSize) *
           rootToNodeSize *
           100;
 

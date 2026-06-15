@@ -2,8 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Setting the compiler based on the existence of clang bin directory
-if test -d "$HOME/.mozbuild/clang/bin"; then
+# Setting the compiler based on the environment or existence of the clang
+# bin directory
+if test "$CC" && test "$CXX"; then
+    true
+elif test -d "$HOME/.mozbuild/clang/bin"; then
     export CC="$HOME/.mozbuild/clang/bin/clang"
     export CXX="$HOME/.mozbuild/clang/bin/clang++"
 else

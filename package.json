@@ -29,7 +29,7 @@
     "test": "python3 scripts/run_tests.py",
     "test:dbg": "python3 scripts/run_tests.py --jsdebugger --debug-on-failure",
     "test:gtest": "cd engine && ./mach gtest Zen*",
-    "ffprefs": "cd tools/ffprefs && cargo run --bin ffprefs -- ../../",
+    "ffprefs": "python3 scripts/run_cargo.py run --manifest-path tools/ffprefs/Cargo.toml --bin ffprefs -- prefs engine",
     "lc": "surfer license-check",
     "lc:fix": "surfer license-check --fix",
     "use-moz-src": "cd engine && ./mach use-moz-src",

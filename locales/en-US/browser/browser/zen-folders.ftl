@@ -26,6 +26,9 @@ zen-folders-panel-change-folder-space =
 zen-folders-unload-all-tooltip =
     .tooltiptext = Unload active in this folder
 
+zen-folders-new-tab-tooltip =
+    .tooltiptext = New tab in this folder
+
 zen-folders-unload-folder =
     .label = Unload All Tabs
 

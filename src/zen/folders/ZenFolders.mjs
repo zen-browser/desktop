@@ -396,6 +396,10 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
   on_TabOpen(event) {
     const tab = event.target;
+    if (gZenUIManager.consumePendingNewTabFolder(tab)) {
+      return;
+    }
+
     const group = tab.group;
     if (!group?.isZenFolder || tab.pinned) {
       return;

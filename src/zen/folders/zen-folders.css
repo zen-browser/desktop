@@ -198,6 +198,33 @@ zen-folder {
       }
     }
 
+    .tab-group-new-tab-button {
+      display: none;
+      flex: 0 0 auto;
+      width: 22px;
+      height: 22px;
+      padding: 3px;
+      border-radius: var(--border-radius-small);
+      list-style-image: url("chrome://browser/skin/zen-icons/plus.svg");
+      -moz-context-properties: fill, fill-opacity;
+      fill: currentColor;
+      fill-opacity: 0.7;
+      opacity: 0;
+    }
+
+    .tab-group-new-tab-button:hover {
+      background-color: var(--toolbarbutton-hover-background);
+      fill-opacity: 1;
+    }
+
+    :root[zen-sidebar-expanded] & .tab-group-new-tab-button {
+      display: flex;
+    }
+
+    :root[zen-sidebar-expanded] &:hover .tab-group-new-tab-button {
+      opacity: 1;
+    }
+
     .tab-reset-button[live-folder-action] {
       list-style-image: url("chrome://browser/skin/zen-icons/security-broken.svg");
       display: flex;

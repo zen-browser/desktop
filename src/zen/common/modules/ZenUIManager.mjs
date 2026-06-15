@@ -491,6 +491,7 @@ window.gZenUIManager = {
   _lastSearch: "",
   _clearTimeout: null,
   _lastTab: null,
+  _pendingNewTabFolder: null,
 
   // Check if browser elements are in a valid state for tab operations
   _validateBrowserState() {
@@ -545,6 +546,8 @@ window.gZenUIManager = {
       return true;
     }
 
+    this._pendingNewTabFolder ??= this._getFolderForNewTab();
+
     // Clear any existing timeout
     if (this._clearTimeout) {
       clearTimeout(this._clearTimeout);
@@ -581,10 +584,59 @@ window.gZenUIManager = {
       document.getElementById("Browser:OpenLocation").doCommand();
     } catch (e) {
       console.error("Error opening location in new tab:", e);
+      this._pendingNewTabFolder = null;
       this.handleUrlbarClose(false);
       return false;
     }
     return true;
+  },
+
+  openNewTabInFolder(folder) {
+    if (!folder?.isZenFolder || folder.isLiveFolder) {
+      return false;
+    }
+
+    this._pendingNewTabFolder = folder;
+    const handled = this.handleNewTab(false, false, "tab", true);
+    if (!handled) {
+      this._pendingNewTabFolder = null;
+    }
+    return handled;
+  },
+
+  consumePendingNewTabFolder(tab) {
+    const folder = this._pendingNewTabFolder;
+    this._pendingNewTabFolder = null;
+
+    if (
+      !folder?.isConnected ||
+      !folder.isZenFolder ||
+      folder.isLiveFolder ||
+      tab.pinned
+    ) {
+      return false;
+    }
+
+    gBrowser.pinTab(tab);
+    folder.addTabs([tab]);
+    gBrowser.selectedTab = tab;
+    return true;
+  },
+
+  _getFolderForNewTab() {
+    let group = gBrowser.selectedTab?.group;
+    if (group?.hasAttribute("split-view-group")) {
+      group = group.group;
+    }
+
+    while (group) {
+      if (group.isZenFolder && !group.isLiveFolder) {
+        return group;
+      }
+      group = group.group;
+    }
+
+    return null;
   },
 
   clearUrlbarData() {
@@ -602,6 +654,17 @@ window.gZenUIManager = {
     // Reset URL bar state
     if (gURLBar._zenHandleUrlbarClose) {
       gURLBar._zenHandleUrlbarClose = null;
+    }
+
+    if (!onElementPicked) {
+      this._pendingNewTabFolder = null;
+    } else if (this._pendingNewTabFolder) {
+      const pendingFolder = this._pendingNewTabFolder;
+      setTimeout(() => {
+        if (this._pendingNewTabFolder === pendingFolder) {
+          this._pendingNewTabFolder = null;
+        }
+      }, 5000);
     }
 
     const isFocusedBefore = gURLBar.focused;

@@ -15,6 +15,7 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
       <hbox class="tab-group-label-container zen-drop-target" pack="center">
         <html:div class="tab-group-folder-icon"/>
         <label class="tab-group-label" role="button"/>
+        <image class="tab-group-new-tab-button" role="button" keyNav="false" data-l10n-id="zen-folders-new-tab-tooltip"/>
         <image class="tab-reset-button reset-icon" role="button" keyNav="false" data-l10n-id="zen-folders-unload-all-tooltip"/>
       </hbox>
       <html:div class="tab-group-container">
@@ -77,6 +78,7 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
     this.icon.appendChild(nsZenFolder.rawIcon.cloneNode(true));
 
     this.labelElement.parentElement.setAttribute("context", "zenFolderActions");
+    this.newTabButton?.toggleAttribute("hidden", !!this.isLiveFolder);
 
     this.labelElement.onRenameFinished = newLabel => {
       this.name = newLabel.trim() || "Folder";
@@ -258,6 +260,29 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
     );
   }
 
+  get newTabButton() {
+    return (
+      this.labelElement.parentElement?.querySelector(
+        ".tab-group-new-tab-button"
+      ) ?? null
+    );
+  }
+
+  openNewTab(event) {
+    event?.stopPropagation();
+    if (this.isLiveFolder) {
+      return;
+    }
+
+    let currentFolder = this;
+    do {
+      currentFolder.collapsed = false;
+      currentFolder = currentFolder.group;
+    } while (currentFolder);
+
+    gZenUIManager.openNewTabInFolder(this);
+  }
+
   unloadAllTabs(event) {
     this.#unloadAllActiveTabs(event, /* noClose */ true);
   }
@@ -273,6 +298,11 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
   }
 
   on_click(event) {
+    if (event.target === this.newTabButton) {
+      this.openNewTab(event);
+      return;
+    }
+
     if (event.target === this.resetButton) {
       event.stopPropagation();
 

@@ -17,3 +17,26 @@
   condition: "defined(XP_WIN) || defined(XP_DARWIN)"
   value: "@cond"
   mirror: once
+
+# NVIDIA RTX Video Super Resolution is officially supported on Windows 10/11.
+# Use Firefox/Gecko's existing DirectComposition video overlay path instead of
+# the RTX Video SDK, which NVIDIA currently documents for Windows 10/11 only.
+# Do not force-enable overlays; Firefox gfxInfo blocklists remain authoritative.
+# https://nvidia.custhelp.com/app/answers/detail/a_id/5448/~/rtx-video-faq
+# https://developer.nvidia.com/blog/enhancing-low-resolution-sdr-video-with-the-nvidia-rtx-video-sdk/
+# https://bugzilla.mozilla.org/show_bug.cgi?id=1823135
+- name: gfx.webrender.overlay-vp-super-resolution
+  condition: "defined(XP_WIN)"
+  value: true
+
+- name: gfx.webrender.dcomp-video-hw-overlay-win
+  condition: "defined(XP_WIN)"
+  value: true
+
+- name: gfx.webrender.dcomp-video-vp-scaling-win
+  condition: "defined(XP_WIN)"
+  value: true
+
+- name: gfx.webrender.dcomp-video-sw-overlay-win
+  condition: "defined(XP_WIN)"
+  value: true

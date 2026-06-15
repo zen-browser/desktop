@@ -11,7 +11,7 @@ panel[type="arrow"]:not(#feature-callout) {
     -moz-default-appearance: menupopup;
     /* The blur behind doesn't blur all that much, add a semi-transparent
      * background to improve contrast */
-    --panel-background: light-dark(rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.5)) !important;
+    --panel-background-color: light-dark(rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.5)) !important;
 
     /* The mica rendering already adds a shadow and a border, so we
      * remove the one we add via CSS */
@@ -40,7 +40,7 @@ panel[type="arrow"]:not(#feature-callout) {
     }
 
     --panel-box-shadow-margin: 0px !important;
-    --panel-background: transparent !important;
+    --panel-background-color: transparent !important;
     --panel-border-color: transparent;
 
     /* Remove the shadow for the native panels, as macos already

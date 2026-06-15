@@ -309,7 +309,7 @@
   & panel,
   & menupopup,
   & .zen-browser-generic-background,
-  & #urlbar[breakout-extend='true'],
+  & #urlbar[breakout-extend],
   & #tabbrowser-tabpanels browser[type='content'],
   &:not([zen-should-be-dark-mode]) #zen-toast-container {
     @media -moz-pref('zen.view.window.scheme', 0) {

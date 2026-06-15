@@ -33,7 +33,7 @@
 
 menupopup,
 panel {
-  --panel-background: var(--arrowpanel-background);
+  --panel-background-color: var(--arrowpanel-background);
   --menuitem-padding: 6px !important;
   --panel-box-shadow-margin: 8px;
 

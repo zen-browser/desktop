@@ -537,7 +537,7 @@
     padding-right: 0;
 
     :root[zen-single-toolbar="true"]:not([zen-has-empty-tab="true"]) & {
-      & #urlbar:not([breakout-extend="true"]) .urlbar-input-container {
+      & #urlbar:not([breakout-extend]) .urlbar-input-container {
         padding-left: 8px;
         padding-right: 4px;
       }
@@ -936,14 +936,7 @@
   padding: var(--tab-close-button-padding);
   width: var(--size-item-medium);
   height: var(--size-item-medium);
-  outline: var(--toolbarbutton-outline);
-
-  &:hover {
-    outline-color: var(--toolbarbutton-hover-outline-color);
-  }
-  &:hover:active {
-    outline-color: var(--toolbarbutton-active-outline-color);
-  }
+  outline: none !important;
 }
 
 .tab-reset-pin-button {

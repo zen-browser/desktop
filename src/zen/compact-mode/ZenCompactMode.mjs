@@ -186,7 +186,7 @@ window.gZenCompactModeManager = {
       [
         {
           selector:
-            ":where([panelopen='true'], [open='true'], [breakout-extend='true'])" +
+            ":where([panelopen], [open], [breakout-extend])" +
             ":not(#urlbar[zen-floating-urlbar='true']):not(tab):not(.zen-compact-mode-ignore)",
         },
       ],
@@ -198,7 +198,7 @@ window.gZenCompactModeManager = {
       [
         {
           selector:
-            ":where([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true'])" +
+            ":where([panelopen], [open], #urlbar:focus-within, [breakout-extend])" +
             ":not(.zen-compact-mode-ignore)",
         },
       ],

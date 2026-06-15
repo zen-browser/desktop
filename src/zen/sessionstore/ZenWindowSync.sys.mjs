@@ -380,7 +380,7 @@ class nsZenWindowSync {
   }
 
   handleEvent(aEvent) {
-    const window = aEvent.currentTarget.documentGlobal;
+    const window = aEvent.currentTarget.documentGlobal ?? aEvent.currentTarget;
     if (
       !window.gZenStartup.isReady ||
       !window.gZenWorkspaces?.shouldHaveWorkspaces ||

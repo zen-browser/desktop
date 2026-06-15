@@ -398,6 +398,10 @@ zen-workspace {
       -moz-window-dragging: drag;
     }
   }
+
+  :root:not(:is([animating-background], [swipe-gesture])) &:not([active]) {
+    display: none;
+  }
 }
 
 /** Customizable UI, this is an auto generated ID */

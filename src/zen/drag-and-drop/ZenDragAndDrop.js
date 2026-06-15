@@ -697,10 +697,13 @@
       for (let tab of tabs) {
         if (isExplicitMode) {
           tab.style.colorScheme = isDarkMode ? "dark" : "light";
-          tabClone.style.setProperty("--tab-selected-textcolor", isDarkMode ? "white" : "black");
+          tab.style.setProperty(
+            "--tab-selected-textcolor",
+            isDarkMode ? "white" : "black"
+          );
         } else {
           tab.style.colorScheme = "";
-          tabClone.style.removeProperty("--tab-selected-textcolor");
+          tab.style.removeProperty("--tab-selected-textcolor");
         }
       }
       requestAnimationFrame(() => {

@@ -8,19 +8,28 @@ if command -v apt-get &> /dev/null; then
   sudo apt-get install -y xvfb libnvidia-egl-wayland1 mesa-utils libgl1-mesa-dri
 fi
 
-LLVM_VERSION=$(cat .llvm-version)
-if test -d "$HOME/.mozbuild/clang-$LLVM_VERSION/bin"; then
-    export CC="$HOME/.mozbuild/clang-$LLVM_VERSION/bin/clang"
-    export CXX="$HOME/.mozbuild/clang-$LLVM_VERSION/bin/clang++"
-else
-    export CC=clang-$LLVM_VERSION
-    export CXX=clang-$LLVM_VERSION++
+if ! test "$ZEN_CROSS_COMPILING" && test "$(uname -s)" = "Linux"; then
+  if test -d "$HOME/.mozbuild/clang/bin"; then
+      export CC="$HOME/.mozbuild/clang/bin/clang"
+      export CXX="$HOME/.mozbuild/clang/bin/clang++"
+  else
+      export CC=clang
+      export CXX=clang++
+  fi
 fi
 
 mkdir -p ~/.zen-keys
-echo "$ZEN_SAFEBROWSING_API_KEY" > ~/.zen-keys/safebrowsing.dat
-echo "$ZEN_MOZILLA_API_KEY" > ~/.zen-keys/mozilla.dat
-echo "$ZEN_GOOGLE_LOCATION_SERVICE_API_KEY" > ~/.zen-keys/google_location_service.dat
+if test "$ZEN_SAFEBROWSING_API_KEY"; then
+  echo "$ZEN_SAFEBROWSING_API_KEY" > ~/.zen-keys/safebrowsing.dat
+fi
+
+if test "$ZEN_MOZILLA_API_KEY"; then
+  echo "$ZEN_MOZILLA_API_KEY" > ~/.zen-keys/mozilla.dat
+fi
+
+if test "$ZEN_GOOGLE_LOCATION_SERVICE_API_KEY"; then
+  echo "$ZEN_GOOGLE_LOCATION_SERVICE_API_KEY" > ~/.zen-keys/google_location_service.dat
+fi
 
 . $HOME/.cargo/env
 

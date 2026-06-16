@@ -8,6 +8,15 @@ if command -v apt-get &> /dev/null; then
   sudo apt-get install -y xvfb libnvidia-egl-wayland1 mesa-utils libgl1-mesa-dri
 fi
 
+LLVM_VERSION=$(cat .llvm-version)
+if test -d "$HOME/.mozbuild/clang-$LLVM_VERSION/bin"; then
+    export CC="$HOME/.mozbuild/clang-$LLVM_VERSION/bin/clang"
+    export CXX="$HOME/.mozbuild/clang-$LLVM_VERSION/bin/clang++"
+else
+    export CC=clang-$LLVM_VERSION
+    export CXX=clang-$LLVM_VERSION++
+fi
+
 mkdir -p ~/.zen-keys
 echo "$ZEN_SAFEBROWSING_API_KEY" > ~/.zen-keys/safebrowsing.dat
 echo "$ZEN_MOZILLA_API_KEY" > ~/.zen-keys/mozilla.dat

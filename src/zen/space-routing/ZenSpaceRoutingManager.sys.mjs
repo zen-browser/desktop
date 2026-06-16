@@ -79,7 +79,7 @@ class nsZenSpaceRoutingManager {
       return;
     }
 
-    this.#routeToWorkspace(targetRoute, newTab, win);
+    this.#routeToWorkspace(targetRoute, newTab, options.inBackground, win);
   }
 
   /**
@@ -143,10 +143,11 @@ class nsZenSpaceRoutingManager {
    *
    * @param {string} targetRoute - The precomputed route for the tab
    * @param {Element} newTab - The tab element
+   * @param {boolean} inBackground - True if tab opened in background
    * @param {Window} win - The window which the tab was added to
    * @private
    */
-  async #routeToWorkspace(targetRoute, newTab, win) {
+  async #routeToWorkspace(targetRoute, newTab, inBackground, win) {
     try {
       if (!newTab || !newTab.parentNode) {
         return;
@@ -162,6 +163,11 @@ class nsZenSpaceRoutingManager {
 
           if (targetWorkspace) {
             workspaces.moveTabToWorkspace(newTab, targetWorkspace.uuid);
+
+            if (inBackground) {
+              return;
+            }
+
             const mostRecentWindow =
               Services.wm.getMostRecentWindow("navigator:browser");
             const isOriginatingWindow = win === mostRecentWindow;

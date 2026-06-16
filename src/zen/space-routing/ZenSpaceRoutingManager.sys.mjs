@@ -25,12 +25,13 @@ class nsZenSpaceRoutingManager {
    * @param {string} uriString - The URI as a string
    * @param {object} options - The tab creation options
    * @param {Window} win - The window which the tab will be added to
-   * @returns {object} Returns an object with { shouldEarlyExit, userContextId, isRouteFound, targetRoute }
+   * @returns {object} Returns an object with { shouldEarlyExit, userContextId, isRouteFound, targetRoute, targetWorkspaceName }
    */
   onBeforeAddTab(uriString, options, win) {
     let userContextId = null;
     let isRouteFound = false;
     let targetRoute = null;
+    let targetWorkspaceName = null;
 
     if (
       this.#shouldSkipProcessing(options, win) !=
@@ -41,6 +42,7 @@ class nsZenSpaceRoutingManager {
         userContextId,
         isRouteFound,
         targetRoute,
+        targetWorkspaceName,
       };
     }
 
@@ -55,11 +57,18 @@ class nsZenSpaceRoutingManager {
         if (targetWorkspace) {
           userContextId = targetWorkspace.containerTabId;
           isRouteFound = true;
+          targetWorkspaceName = targetWorkspace.name;
         }
       }
     }
 
-    return { shouldEarlyExit: false, userContextId, isRouteFound, targetRoute };
+    return {
+      shouldEarlyExit: false,
+      userContextId,
+      isRouteFound,
+      targetRoute,
+      targetWorkspaceName,
+    };
   }
 
   /**

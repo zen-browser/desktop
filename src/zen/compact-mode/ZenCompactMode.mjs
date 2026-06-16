@@ -967,18 +967,18 @@ window.gZenCompactModeManager = {
     );
   },
 
-  async _onTabOpen(tab, { inBackground, beforeRouteResult }) {
-    const isSidebarInView = this.preference && !this.isSidebarPotentiallyOpen();
+  async _onTabOpen(tab, inBackground, beforeRouteResult = {}) {
+    const isSidebarHidden = this.preference && !this.isSidebarPotentiallyOpen();
 
     if (
       inBackground &&
-      (isSidebarInView || beforeRouteResult.isRouteFound) &&
+      (isSidebarHidden || beforeRouteResult.isRouteFound) &&
       this._canShowBackgroundTabToast &&
       !gZenGlanceManager._animating &&
       !this._nextTimeWillBeActive
     ) {
       let messageId = "zen-background-tab-opened-toast";
-      const toastOptions = {
+      let toastOptions = {
         button: {
           id: "zen-open-background-tab-button",
           command: () => {
@@ -989,11 +989,10 @@ window.gZenCompactModeManager = {
       };
 
       if (beforeRouteResult.isRouteFound) {
-        const targetWorkspace = window?.gZenWorkspaces?.getWorkspaceFromId(
-          beforeRouteResult.targetRoute
-        );
         messageId = "zen-space-routing-tab-routed-toast";
-        toastOptions.l10nArgs = { targetWorkspace: targetWorkspace.name };
+        toastOptions = {
+          l10nArgs: { targetWorkspace: beforeRouteResult.targetWorkspaceName },
+        };
       }
 
       gZenUIManager.showToast(messageId, toastOptions);

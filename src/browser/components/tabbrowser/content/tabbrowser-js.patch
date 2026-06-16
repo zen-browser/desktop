@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index 08b5b56e069d038d72c87355920c4ce8a55ed805..18eba202f3551b52a17dcf3ae3c1b16f14c1087f 100644
+index 08b5b56e069d038d72c87355920c4ce8a55ed805..fff7da6865c694b439ee12d05db06d642a5b0a04 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -511,6 +511,7 @@
@@ -367,7 +367,7 @@ index 08b5b56e069d038d72c87355920c4ce8a55ed805..18eba202f3551b52a17dcf3ae3c1b16f
 +        gZenVerticalTabsManager.animateItemOpen(t);
 +      }
 +      if (typeof window.gZenCompactModeManager !== "undefined" && !skipLoad && insertTab) {
-+        gZenCompactModeManager._onTabOpen(t, { inBackground, beforeRouteResult });
++        gZenCompactModeManager._onTabOpen(t, inBackground, beforeRouteResult);
 +      }
        // Additionally send pinned tab events
        if (pinned) {

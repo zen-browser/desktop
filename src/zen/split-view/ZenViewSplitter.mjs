@@ -6,6 +6,10 @@
 
 import { nsZenDOMOperatedFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 
+const kZenSplitCompanionEnabledPref = "zen.splitCompanion.enabled";
+const kZenSplitCompanionRightWebVisiblePref =
+  "zen.splitCompanion.rightWeb.visible";
+
 class nsSplitLeafNode {
   /**
    * The percentage of the size of the parent the node takes up, dependent on parent direction this is either
@@ -1375,6 +1379,394 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
   }
 
+  #canUseTabForRightSplit(tab) {
+    return (
+      tab &&
+      gBrowser.isTab(tab) &&
+      tab.ownerGlobal === window &&
+      !tab.hidden &&
+      !tab.pinned &&
+      !tab.hasAttribute("zen-empty-tab") &&
+      !tab.hasAttribute("zen-essential") &&
+      !tab.hasAttribute("zen-live-folder-item-id")
+    );
+  }
+
+  #canUseLocalTabForRightSplit(tab) {
+    return (
+      tab &&
+      gBrowser.isTab(tab) &&
+      tab.ownerGlobal === window &&
+      !tab.hidden &&
+      !tab.hasAttribute("zen-empty-tab")
+    );
+  }
+
+  #getSimpleTwoPaneRightLeaf(splitData) {
+    const root = splitData?.layoutTree;
+    if (
+      splitData?.tabs?.length === 2 &&
+      root?.direction === "row" &&
+      root.children?.length === 2 &&
+      root.children.every(child => child?.tab)
+    ) {
+      return root.children[1];
+    }
+    return null;
+  }
+
+  #getRightSplitWebContainerState(tab) {
+    const browser = tab?.linkedBrowser;
+    const container = browser?.closest(".browserSidebarContainer");
+    if (!browser || !container) {
+      return null;
+    }
+    return { browser, container };
+  }
+
+  #setRightSplitWebContainerVisible(tab, visible) {
+    const state = this.#getRightSplitWebContainerState(tab);
+    if (!state) {
+      return false;
+    }
+    const { browser, container } = state;
+
+    browser.zenModeActive = visible;
+    try {
+      browser.docShellIsActive = visible;
+    } catch (error) {
+      console.error(error);
+    }
+
+    if (visible) {
+      container.setAttribute("zen-split", "true");
+      container.addEventListener("dragstart", this.onBrowserDragStart);
+      container.addEventListener("dragend", this.onBrowserDragEnd);
+    } else {
+      container.removeAttribute("zen-split");
+      container.removeEventListener("dragstart", this.onBrowserDragStart);
+      container.removeEventListener("dragend", this.onBrowserDragEnd);
+    }
+
+    return true;
+  }
+
+  #getTargetRightWebVisibility(splitData) {
+    if (Services.prefs.getBoolPref(kZenSplitCompanionEnabledPref, false)) {
+      splitData.rightWebVisible = Services.prefs.getBoolPref(
+        kZenSplitCompanionRightWebVisiblePref,
+        true
+      );
+    }
+    return splitData.rightWebVisible !== false;
+  }
+
+  #applySimpleTwoPaneRightWebVisibility(splitData, visible) {
+    const rightNode = this.#getSimpleTwoPaneRightLeaf(splitData);
+    const leftNode = rightNode?.parent?.children?.[0];
+    if (!rightNode?.tab || !leftNode?.tab) {
+      return false;
+    }
+    if (!this.#getRightSplitWebContainerState(rightNode.tab)) {
+      return false;
+    }
+
+    if (visible) {
+      this.applyGridLayout(splitData.layoutTree);
+      return this.#setRightSplitWebContainerVisible(rightNode.tab, true);
+    }
+
+    leftNode.positionToRoot = { top: 0, bottom: 0, left: 0, right: 0 };
+    this.applyGridLayout(leftNode);
+    this.getSplitters(splitData.layoutTree, 0);
+    this.maybeDisableOpeningTabOnSplitView();
+    return this.#setRightSplitWebContainerVisible(rightNode.tab, false);
+  }
+
+  #replaceSimpleTwoPaneRightTab(splitData, rightNode, tab) {
+    const oldRightTab = rightNode.tab;
+    const leftTab = rightNode.parent?.children?.[0]?.tab;
+    if (!leftTab || !splitData.tabs.includes(leftTab)) {
+      return false;
+    }
+    if (!splitData.tabs.includes(oldRightTab)) {
+      return false;
+    }
+
+    const captureTabVisualState = targetTab => {
+      const container = targetTab.linkedBrowser?.closest(
+        ".browserSidebarContainer"
+      );
+      return {
+        container,
+        isZenSplit: container?.getAttribute("is-zen-split"),
+        zenSplit: container?.getAttribute("zen-split"),
+        style: container?.getAttribute("style"),
+        hasHeader: !!container?.querySelector(
+          ".zen-view-splitter-header-container"
+        ),
+        zenModeActive: targetTab.linkedBrowser.zenModeActive,
+        docShellIsActive: targetTab.linkedBrowser.docShellIsActive,
+      };
+    };
+    const restoreAttribute = (element, name, value) => {
+      if (value === null || value === undefined) {
+        element.removeAttribute(name);
+      } else {
+        element.setAttribute(name, value);
+      }
+    };
+    const restoreTabVisualState = (targetTab, visualState) => {
+      const container =
+        visualState.container ??
+        targetTab.linkedBrowser?.closest(".browserSidebarContainer");
+      if (!container) {
+        return;
+      }
+
+      restoreAttribute(container, "is-zen-split", visualState.isZenSplit);
+      restoreAttribute(container, "zen-split", visualState.zenSplit);
+      restoreAttribute(container, "style", visualState.style);
+      if (!visualState.hasHeader) {
+        this._removeHeader(container);
+      }
+      container.removeEventListener("mousedown", this.handleTabEvent);
+      container.removeEventListener("dragstart", this.onBrowserDragStart);
+      container.removeEventListener("dragend", this.onBrowserDragEnd);
+      targetTab.linkedBrowser.zenModeActive = visualState.zenModeActive;
+      try {
+        targetTab.linkedBrowser.docShellIsActive =
+          visualState.docShellIsActive;
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    const originalState = {
+      tabs: splitData.tabs,
+      rightNodeTab: rightNode.tab,
+      oldRightSplitNode: this._tabToSplitNode.get(oldRightTab),
+      incomingSplitNode: this._tabToSplitNode.get(tab),
+      oldRightGroup: oldRightTab.group,
+      incomingGroup: tab.group,
+      oldRightSplitView: oldRightTab.splitView,
+      oldRightSplitViewValue: oldRightTab.splitViewValue,
+      incomingSplitView: tab.splitView,
+      incomingSplitViewValue: tab.splitViewValue,
+      incomingVisualState: captureTabVisualState(tab),
+      selectedTab: gBrowser.selectedTab,
+    };
+    const restoreSplitValue = (targetTab, splitView, splitViewValue) => {
+      targetTab.splitView = splitView;
+      if (splitViewValue === undefined) {
+        delete targetTab.splitViewValue;
+      } else {
+        targetTab.splitViewValue = splitViewValue;
+      }
+    };
+    const restoreAfterFailure = () => {
+      try {
+        splitData.tabs = originalState.tabs;
+        rightNode.tab = originalState.rightNodeTab;
+
+        if (originalState.oldRightSplitNode) {
+          this._tabToSplitNode.set(
+            oldRightTab,
+            originalState.oldRightSplitNode
+          );
+        } else {
+          this._tabToSplitNode.delete(oldRightTab);
+        }
+        if (originalState.incomingSplitNode) {
+          this._tabToSplitNode.set(tab, originalState.incomingSplitNode);
+        } else {
+          this._tabToSplitNode.delete(tab);
+        }
+
+        if (tab.group !== originalState.incomingGroup) {
+          if (originalState.incomingGroup?.parentNode) {
+            gBrowser.moveTabToExistingGroup(tab, originalState.incomingGroup);
+          } else if (tab.group?.hasAttribute("split-view-group")) {
+            gBrowser.ungroupTab(tab);
+          }
+        }
+        if (
+          oldRightTab.group !== originalState.oldRightGroup &&
+          originalState.oldRightGroup?.parentNode
+        ) {
+          gBrowser.moveTabToExistingGroup(
+            oldRightTab,
+            originalState.oldRightGroup
+          );
+        }
+
+        restoreSplitValue(
+          oldRightTab,
+          originalState.oldRightSplitView,
+          originalState.oldRightSplitViewValue
+        );
+        restoreSplitValue(
+          tab,
+          originalState.incomingSplitView,
+          originalState.incomingSplitViewValue
+        );
+        if (originalState.selectedTab?.parentNode) {
+          gBrowser.selectedTab = originalState.selectedTab;
+        }
+        this.activateSplitView(splitData, true);
+        restoreTabVisualState(tab, originalState.incomingVisualState);
+        if (originalState.selectedTab?.parentNode) {
+          gBrowser.selectedTab = originalState.selectedTab;
+        }
+      } catch (restoreError) {
+        console.error(
+          "Failed to restore right split tab replacement state",
+          restoreError
+        );
+      }
+    };
+
+    try {
+      const splitGroup = oldRightTab.group?.hasAttribute("split-view-group")
+        ? oldRightTab.group
+        : splitData.tabs.find(t => t.group?.hasAttribute("split-view-group"))
+            ?.group;
+      if (!splitGroup) {
+        return false;
+      }
+      if (tab.group !== splitGroup) {
+        gBrowser.moveTabToExistingGroup(tab, splitGroup);
+      }
+
+      splitData.tabs = [leftTab, tab];
+      rightNode.tab = tab;
+      this._tabToSplitNode.delete(oldRightTab);
+      this._tabToSplitNode.set(tab, rightNode);
+
+      gBrowser.selectedTab = tab;
+      this.activateSplitView(splitData, true);
+
+      this.resetTabState(oldRightTab, false);
+      if (oldRightTab.group?.hasAttribute("split-view-group")) {
+        gBrowser.ungroupTab(oldRightTab);
+        this.#dispatchItemEvent("ZenTabRemovedFromSplit", oldRightTab);
+      }
+      this.#dispatchItemEvent("ZenSplitViewTabsSplit", splitGroup);
+      return true;
+    } catch (error) {
+      console.error("Failed to replace right split tab", error);
+      restoreAfterFailure();
+      return false;
+    }
+  }
+
+  /**
+   * Creates or activates a right-side split tab without exposing split internals.
+   *
+   * @param {Tab} tab - The tab to place or focus in the right split slot.
+   * @param {object} options - Additional options.
+   * @param {Tab} options.baseTab - The tab to keep on the left when creating a split.
+   * @returns {object} A result object describing the action taken or why it failed.
+   */
+  setRightSplitTab(tab, options = {}) {
+    const { baseTab = gBrowser.selectedTab } = options ?? {};
+
+    const activeGroup =
+      this.currentView >= 0 ? this._data[this.currentView] : null;
+    if (this.currentView >= 0 && !activeGroup) {
+      return { ok: false, reason: "missing-active-split" };
+    }
+
+    if (activeGroup) {
+      if (!this.#canUseLocalTabForRightSplit(tab)) {
+        return { ok: false, reason: "invalid-tab" };
+      }
+
+      const rightNode = this.#getSimpleTwoPaneRightLeaf(activeGroup);
+      if (!rightNode) {
+        return { ok: false, reason: "complex-layout" };
+      }
+
+      const rightTab = rightNode.tab;
+      if (tab !== rightTab) {
+        if (activeGroup.tabs.includes(tab)) {
+          return { ok: false, reason: "not-right-split-tab" };
+        }
+        if (!this.#canUseTabForRightSplit(rightTab)) {
+          return { ok: false, reason: "invalid-right-split-tab" };
+        }
+        if (!this.#canUseTabForRightSplit(tab) || tab.splitView) {
+          return { ok: false, reason: "invalid-tab" };
+        }
+        const didReplace = this.#replaceSimpleTwoPaneRightTab(
+          activeGroup,
+          rightNode,
+          tab
+        );
+        if (!didReplace) {
+          return { ok: false, reason: "replace-failed" };
+        }
+        return { ok: true, action: "replaced" };
+      }
+
+      gBrowser.selectedTab = rightTab;
+      this.activateSplitView(activeGroup, true);
+      return { ok: true, action: "activated" };
+    }
+
+    if (!this.#canUseTabForRightSplit(tab)) {
+      return { ok: false, reason: "invalid-tab" };
+    }
+
+    if (
+      !this.#canUseTabForRightSplit(baseTab) ||
+      baseTab === tab ||
+      baseTab.splitView ||
+      tab.splitView
+    ) {
+      return { ok: false, reason: "invalid-base-tab" };
+    }
+
+    const splitData = this.splitTabs([baseTab, tab], "vsep", 1);
+    if (!splitData) {
+      return { ok: false, reason: "split-failed" };
+    }
+    return { ok: true, action: "created" };
+  }
+
+  /**
+   * Shows or hides the current simple two-pane split's right web page.
+   *
+   * @param {boolean} visible - Whether the right web page should be visible.
+   * @returns {object} A result object describing the action taken or why it failed.
+   */
+  setRightSplitWebVisible(visible, _options = {}) {
+    const activeGroup =
+      this.currentView >= 0 ? this._data[this.currentView] : null;
+    if (!activeGroup) {
+      return { ok: false, reason: "missing-active-split" };
+    }
+
+    const rightNode = this.#getSimpleTwoPaneRightLeaf(activeGroup);
+    if (!rightNode) {
+      return { ok: false, reason: "complex-layout" };
+    }
+
+    const rightTab = rightNode.tab;
+    if (!rightTab) {
+      return { ok: false, reason: "missing-right-tab" };
+    }
+
+    const shouldShow = !!visible;
+    if (
+      !this.#applySimpleTwoPaneRightWebVisibility(activeGroup, shouldShow)
+    ) {
+      return { ok: false, reason: "missing-right-container" };
+    }
+
+    activeGroup.rightWebVisible = shouldShow;
+    return { ok: true, action: shouldShow ? "shown" : "hidden" };
+  }
+
   /**
    * Splits the given tabs.
    *
@@ -1570,6 +1962,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
     this.applyGridLayout(splitData.layoutTree);
     this.setTabsDocShellState(splitData.tabs, true);
+    if (!this.#getTargetRightWebVisibility(splitData)) {
+      this.#applySimpleTwoPaneRightWebVisibility(splitData, false);
+    }
     this.toggleWrapperDisplay(true);
     window.dispatchEvent(new CustomEvent("ZenViewSplitter:SplitViewActivated"));
   }
@@ -1749,7 +2144,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    */
   getSplitters(parentNode, splittersNeeded) {
     let currentSplitters = this._splitNodeToSplitters.get(parentNode) || [];
-    if (!splittersNeeded || currentSplitters.length === splittersNeeded) {
+    if (
+      splittersNeeded == null ||
+      currentSplitters.length === splittersNeeded
+    ) {
       return currentSplitters;
     }
     for (let i = currentSplitters?.length || 0; i < splittersNeeded; i++) {

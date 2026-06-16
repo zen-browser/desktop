@@ -22,3 +22,12 @@
 
 - name: zen.splitView.drag-over-split-threshold
   value: 40
+
+- name: zen.splitCompanion.enabled
+  value: false
+
+- name: zen.splitCompanion.pane.visible
+  value: false
+
+- name: zen.splitCompanion.rightWeb.visible
+  value: false

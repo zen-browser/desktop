@@ -39,6 +39,7 @@ export default [
   "gZenThemePicker",
 
   "gZenViewSplitter",
+  "gZenSplitCompanionPane",
 
   "gZenSpaceRoutingManager",
 

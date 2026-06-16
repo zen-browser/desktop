@@ -25,7 +25,7 @@ index d58fcdf99843d110b708f3fbf9fb317787fadfcf..cfc2aad902641609c3804e615c4cb66c
    <vbox id="sidebar-box" hidden="true" class="chromeclass-extrachrome">
      <box id="sidebar-header" align="center">
        <toolbarbutton id="sidebar-switcher-target" class="tabbable" aria-expanded="false">
-@@ -25,7 +35,7 @@
+@@ -25,7 +35,8 @@
      </stack>
    </vbox>
    <splitter id="sidebar-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="sibling" resizeafter="none" hidden="true"/>
@@ -33,6 +33,7 @@ index d58fcdf99843d110b708f3fbf9fb317787fadfcf..cfc2aad902641609c3804e615c4cb66c
 +#include zen-tabbrowser-elements.inc.xhtml
      <tabpanels id="tabbrowser-tabpanels" flex="1" selectedIndex="0"/>
    </tabbox>
++  <vbox id="zen-split-companion-pane" hidden="true"/>
    <splitter id="ai-window-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="none" resizeafter="sibling" collapsed="true"/>
 @@ -34,3 +44,5 @@
      </stack>

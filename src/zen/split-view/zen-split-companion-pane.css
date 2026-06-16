@@ -1,0 +1,254 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+#zen-split-companion-pane {
+  display: flex;
+  flex: 0 0 var(--zen-split-companion-pane-width, 220px);
+  min-width: 0;
+  max-width: min(320px, 35vw);
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+#zen-split-companion-pane[hidden] {
+  display: none;
+}
+
+.zen-split-companion-render {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: var(--tab-block-margin, 2px);
+  gap: var(--tab-block-margin, 2px);
+  color: inherit;
+  background: transparent;
+  overflow: hidden;
+}
+
+.zen-split-companion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 26px;
+  padding-inline: 8px 6px;
+  color: var(--toolbar-color);
+  opacity: 0.72;
+}
+
+.zen-split-companion-workspace-title,
+.zen-split-companion-tab-count,
+.zen-split-companion-tab-title,
+.zen-split-companion-tab-group-label {
+  min-width: 0;
+  margin: 0;
+}
+
+.zen-split-companion-workspace-title {
+  font-weight: 600;
+}
+
+.zen-split-companion-tab-count {
+  font-variant-numeric: tabular-nums;
+}
+
+.zen-split-companion-workspace-list {
+  display: flex;
+  flex: 0 0 auto;
+  max-height: 96px;
+  min-height: 0;
+  padding: 0 4px 2px;
+  overflow: hidden auto;
+}
+
+.zen-split-companion-workspace-row {
+  --zen-split-companion-workspace-bg: transparent;
+
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 24px;
+  margin: 1px 0;
+  padding-inline: 6px;
+  gap: 6px;
+  border-radius: var(--border-radius-small, 6px);
+  background: var(--zen-split-companion-workspace-bg);
+  color: inherit;
+  cursor: default;
+  user-select: none;
+}
+
+.zen-split-companion-workspace-row:hover {
+  --zen-split-companion-workspace-bg: var(
+    --tab-hover-background-color,
+    var(--zen-toolbar-element-bg)
+  );
+}
+
+.zen-split-companion-workspace-row[data-zen-workspace-active] {
+  --zen-split-companion-workspace-bg: var(
+    --tab-selected-bgcolor,
+    var(--zen-toolbar-element-bg)
+  );
+  font-weight: 600;
+}
+
+.zen-split-companion-workspace-row[data-zen-workspace-switch-failed] {
+  outline: 1px solid var(--warning-color, var(--zen-colors-border-contrast));
+  outline-offset: -1px;
+}
+
+.zen-split-companion-workspace-icon {
+  flex: 0 0 16px;
+  max-width: 16px;
+  text-align: center;
+}
+
+.zen-split-companion-workspace-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.zen-split-companion-tab-list {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden auto;
+}
+
+.zen-split-companion-tab-row {
+  --zen-split-companion-row-bg: transparent;
+
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: var(--tab-min-height, 36px);
+  margin: var(--tab-block-margin, 2px);
+  padding-inline: 8px 6px;
+  gap: 8px;
+  border-radius: var(--border-radius-medium, var(--tab-border-radius, 8px));
+  background: var(--zen-split-companion-row-bg);
+  color: inherit;
+  cursor: default;
+  opacity: 1;
+  user-select: none;
+}
+
+.zen-split-companion-tab-row:hover {
+  --zen-split-companion-row-bg: var(
+    --tab-hover-background-color,
+    var(--zen-toolbar-element-bg)
+  );
+}
+
+.zen-split-companion-tab-row[selected],
+.zen-split-companion-tab-row[active] {
+  --zen-split-companion-row-bg: var(
+    --tab-selected-bgcolor,
+    var(--zen-toolbar-element-bg)
+  );
+  box-shadow: var(--tab-selected-shadow, none);
+}
+
+.zen-split-companion-tab-row[data-zen-hidden],
+.zen-split-companion-tab-row[closing] {
+  opacity: 0.48;
+}
+
+.zen-split-companion-tab-row[split-view] {
+  outline: 1px solid var(--zen-colors-border-contrast);
+  outline-offset: -1px;
+}
+
+.zen-split-companion-tab-row[zen-essential] {
+  min-height: var(--zen-split-companion-essential-height, 32px);
+  background: var(--zen-toolbar-element-bg);
+}
+
+.zen-split-companion-tab-icon-stack {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  position: relative;
+}
+
+.zen-split-companion-tab-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  -moz-context-properties: fill, stroke, fill-opacity;
+  fill-opacity: 0.5;
+}
+
+.zen-split-companion-tab-icon-stack[icon-placeholder="true"]::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: color-mix(
+    in srgb,
+    var(--zen-primary-color) 72%,
+    light-dark(rgb(0, 0, 0), rgb(255, 255, 255))
+  );
+  opacity: 0.42;
+}
+
+.zen-split-companion-tab-labels {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.zen-split-companion-tab-title {
+  color: inherit;
+}
+
+.zen-split-companion-tab-group-label {
+  color: color-mix(in srgb, currentColor 68%, transparent);
+  font-size: 0.86em;
+}
+
+.zen-split-companion-tab-indicators {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  gap: 4px;
+}
+
+.zen-split-companion-tab-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 55%, transparent);
+}
+
+.zen-split-companion-tab-indicator[data-zen-indicator="busy"],
+.zen-split-companion-tab-indicator[data-zen-indicator="pending"] {
+  background: var(--zen-primary-color);
+}
+
+.zen-split-companion-tab-indicator[data-zen-indicator="soundplaying"] {
+  background: var(--success-color, var(--zen-primary-color));
+}
+
+.zen-split-companion-tab-indicator[data-zen-indicator="muted"],
+.zen-split-companion-tab-indicator[data-zen-indicator="activemedia-blocked"] {
+  background: var(--warning-color, var(--zen-primary-color));
+}
+
+.zen-split-companion-tab-indicator[data-zen-indicator="split-view"] {
+  width: 10px;
+  border-radius: 999px;
+  background: var(--zen-colors-border-contrast);
+}

@@ -24,6 +24,7 @@
     "chrome://browser/content/zen-components/ZenGlanceManager.mjs",
     "chrome://browser/content/zen-components/ZenPinnedTabManager.mjs",
     "chrome://browser/content/zen-components/ZenViewSplitter.mjs",
+    "chrome://browser/content/zen-components/ZenSplitCompanionPane.mjs",
     "chrome://browser/content/zen-components/ZenFolders.mjs",
     "chrome://browser/content/zen-components/ZenEmojiPicker.mjs",
     "chrome://browser/content/zen-components/ZenLiveFoldersUI.mjs",

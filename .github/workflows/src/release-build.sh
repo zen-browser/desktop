@@ -8,12 +8,14 @@ if command -v apt-get &> /dev/null; then
   sudo apt-get install -y xvfb libnvidia-egl-wayland1 mesa-utils libgl1-mesa-dri
 fi
 
-if test -d "$HOME/.mozbuild/clang/bin"; then
-    export CC="$HOME/.mozbuild/clang/bin/clang"
-    export CXX="$HOME/.mozbuild/clang/bin/clang++"
-else
-    export CC=clang
-    export CXX=clang++
+if ! test "$ZEN_CROSS_COMPILING" && test "$(uname -s)" = "Linux"; then
+  if test -d "$HOME/.mozbuild/clang/bin"; then
+      export CC="$HOME/.mozbuild/clang/bin/clang"
+      export CXX="$HOME/.mozbuild/clang/bin/clang++"
+  else
+      export CC=clang
+      export CXX=clang++
+  fi
 fi
 
 mkdir -p ~/.zen-keys

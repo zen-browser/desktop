@@ -24,4 +24,4 @@ zen-space-routing-regex =
 zen-space-routing-open-in = Open In
 zen-space-routing-url = URL
 
-zen-space-routing-tab-routed-toast = New tab opened in Space { $targetWorkspace }
+zen-space-routing-tab-routed-toast = New tab opened in { $targetWorkspace }

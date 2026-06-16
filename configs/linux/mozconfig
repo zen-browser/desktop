@@ -2,15 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Setting the compiler based on the existence of clang bin directory
-if test -d "$HOME/.mozbuild/clang/bin"; then
-    export CC="$HOME/.mozbuild/clang/bin/clang"
-    export CXX="$HOME/.mozbuild/clang/bin/clang++"
-else
-    export CC=clang
-    export CXX=clang++
-fi
-
 if test "$ZEN_RELEASE"; then
     if test "$SURFER_COMPAT" = "x86_64"; then
         ac_add_options --target=x86_64-pc-linux

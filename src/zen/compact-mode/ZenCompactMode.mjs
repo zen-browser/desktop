@@ -1,4 +1,4 @@
-﻿/* This Source Code Form is subject to the terms of the Mozilla Public
+/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -967,16 +967,18 @@ window.gZenCompactModeManager = {
     );
   },
 
-  async _onTabOpen(tab, inBackground) {
+  async _onTabOpen(tab, { inBackground, beforeRouteResult }) {
+    const isSidebarInView = this.preference && !this.isSidebarPotentiallyOpen();
+
     if (
       inBackground &&
-      this.preference &&
-      !this.isSidebarPotentiallyOpen() &&
+      (isSidebarInView || beforeRouteResult.isRouteFound) &&
       this._canShowBackgroundTabToast &&
       !gZenGlanceManager._animating &&
       !this._nextTimeWillBeActive
     ) {
-      gZenUIManager.showToast("zen-background-tab-opened-toast", {
+      let messageId = "zen-background-tab-opened-toast";
+      const toastOptions = {
         button: {
           id: "zen-open-background-tab-button",
           command: () => {
@@ -984,7 +986,17 @@ window.gZenCompactModeManager = {
             targetWindow.gBrowser.selectedTab = tab;
           },
         },
-      });
+      };
+
+      if (beforeRouteResult.isRouteFound) {
+        const targetWorkspace = window?.gZenWorkspaces?.getWorkspaceFromId(
+          beforeRouteResult.targetRoute
+        );
+        messageId = "zen-space-routing-tab-routed-toast";
+        toastOptions.l10nArgs = { targetWorkspace: targetWorkspace.name };
+      }
+
+      gZenUIManager.showToast(messageId, toastOptions);
     }
     delete this._nextTimeWillBeActive;
   },

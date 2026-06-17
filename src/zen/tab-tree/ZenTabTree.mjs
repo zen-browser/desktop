@@ -463,7 +463,13 @@ class nsZenTabTree extends nsZenDOMOperatedFeature {
   // Clickable twisty on parent nodes only. On a tab it overlays the favicon in
   // the icon stack; on a split group it floats at the group's inline-start edge.
   #updateTwisty(node) {
-    const hasChildren = !!this.getChildren(node).length;
+    // A tab that is mid-close still lives in `gBrowser.tabs` (and keeps its
+    // parent pointer) until its close animation finishes, so exclude closing
+    // children here — otherwise a parent keeps its twisty after its last child
+    // is gone, since no further reindex runs once the tab is finally removed.
+    const hasChildren = this.getChildren(node).some(
+      child => !this.#isClosing(child)
+    );
     const isGroup = this.#isSplitGroup(node);
     let twisty = isGroup
       ? node.querySelector(":scope > .zen-tree-twisty")

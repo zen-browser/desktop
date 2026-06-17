@@ -42,6 +42,39 @@ add_task(async function test_close_parent_closes_subtree() {
   await SpecialPowers.popPrefEnv();
 });
 
+// A parent must drop its twisty once its last child is fully gone. The closing
+// child lingers in gBrowser.tabs (keeping its parent pointer) during its close
+// animation, so the refresh has to ignore closing tabs — otherwise the twisty
+// stays visible after the child is removed and no further reindex runs.
+add_task(async function test_parent_drops_twisty_when_last_child_closes() {
+  await SpecialPowers.pushPrefEnv({
+    set: [["zen.tab-tree.close-parent-behavior", "promote"]],
+  });
+  const parent = await addNormalTab();
+  const child = await addNormalTab();
+  gZenTabTree.nestTab(child, parent);
+
+  Assert.ok(
+    parent.hasAttribute("zen-tree-parent"),
+    "parent shows the twisty while it has a child"
+  );
+
+  BrowserTestUtils.removeTab(child);
+  await TestUtils.waitForCondition(() => !child.isConnected);
+
+  await TestUtils.waitForCondition(
+    () => !parent.hasAttribute("zen-tree-parent"),
+    "parent drops the twisty once its last child is gone"
+  );
+  Assert.ok(
+    !parent.querySelector(".zen-tree-twisty"),
+    "the twisty element is removed from the parent"
+  );
+
+  await cleanupTabs(parent);
+  await SpecialPowers.popPrefEnv();
+});
+
 // close-subtree recurses the whole branch, not just direct children.
 add_task(async function test_close_subtree_closes_grandchildren() {
   await SpecialPowers.pushPrefEnv({

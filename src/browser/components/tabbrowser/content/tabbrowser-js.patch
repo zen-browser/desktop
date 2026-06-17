@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index 08b5b56e069d038d72c87355920c4ce8a55ed805..fff7da6865c694b439ee12d05db06d642a5b0a04 100644
+index 08b5b56e069d038d72c87355920c4ce8a55ed805..555ffd4772d9d4903491fdff9f3682852f8a52bd 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -511,6 +511,7 @@
@@ -14,9 +14,6 @@ index 08b5b56e069d038d72c87355920c4ce8a55ed805..fff7da6865c694b439ee12d05db06d64
        return this.tabContainer.visibleTabs;
      }
  
--    get pinnedTabCount() {
--      for (var i = 0; i < this.tabs.length; i++) {
--        if (!this.tabs[i].pinned) {
 +    zenHandleTabMove(...args) {
 +      return this.#handleTabMove(...args);
 +    }
@@ -31,15 +28,15 @@ index 08b5b56e069d038d72c87355920c4ce8a55ed805..fff7da6865c694b439ee12d05db06d64
 +          continue;
 +        }
 +        if (!item.pinned && !item.hasAttribute("zen-glance-tab")) {
-           break;
-         }
++          break;
++        }
 +        if (item.visible) {
 +          i += !item.hasAttribute("zen-glance-tab");
 +        }
-       }
-       return i;
-     }
- 
++      }
++      return i;
++    }
++
 +    ungroupTabsUntilNoActive(tab) {
 +      if (!tab || !tab.group) return;
 +      const activeGroups = tab.group.activeGroups;
@@ -62,17 +59,19 @@ index 08b5b56e069d038d72c87355920c4ce8a55ed805..fff7da6865c694b439ee12d05db06d64
 +      return i;
 +    }
 +
-+    get pinnedTabCount() {
+     get pinnedTabCount() {
+-      for (var i = 0; i < this.tabs.length; i++) {
+-        if (!this.tabs[i].pinned) {
 +      let i = 0;
 +      for (let tab of this.tabs) {
 +        if (!tab.pinned && !tab.hasAttribute("zen-glance-tab")) {
-+          break;
-+        }
+           break;
+         }
 +        i += !tab.hasAttribute("zen-glance-tab");
-+      }
-+      return i;
-+    }
-+
+       }
+       return i;
+     }
+ 
 +    get tabsWithoutGlance() {
 +      return this.tabs.filter(tab => !tab.hasAttribute("zen-glance-tab"));
 +    }
@@ -297,7 +296,7 @@ index 08b5b56e069d038d72c87355920c4ce8a55ed805..fff7da6865c694b439ee12d05db06d64
 +
 +      let hasZenDefaultUserContextId = false;
 +      let zenForcedWorkspaceId = undefined;
-+      if (beforeRouteResult.isRouteFound) {
++      if (beforeRouteResult.isRouteFound && typeof userContextId !== "undefined") {
 +        userContextId = beforeRouteResult.userContextId;
 +        hasZenDefaultUserContextId = true;
 +      } else if (typeof gZenWorkspaces !== "undefined" && !_forZenEmptyTab) {

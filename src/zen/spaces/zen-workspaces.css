@@ -399,8 +399,8 @@ zen-workspace {
     }
   }
 
-  :root:not(:is([animating-background], [swipe-gesture])) &:not([active]) {
-    display: none;
+  :root:not(:is([animating-background], [swipe-gesture])) #navigator-toolbox:not([movingtab]) &:not([active]) {
+    -moz-subtree-hidden-only-visually: 1;
   }
 }
 

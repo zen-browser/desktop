@@ -57,7 +57,7 @@ tab-group[split-view-group] {
     }
 
     & > .tabbrowser-tab {
-      --tab-selected-bgcolor: var(--zen-split-view-active-tab-bg);
+      --tab-background-color-selected: var(--zen-split-view-active-tab-bg);
       --tab-hover-background-color: transparent;
       --tab-selected-shadow: none;
       --border-radius-medium: var(--tab-border-radius);
@@ -106,7 +106,7 @@ tab-group[split-view-group] {
 
     tab-group[split-view-group]:where([hasactivetab]) &,
     &:has(> tab:is([multiselected])) {
-      background-color: var(--tab-selected-bgcolor);
+      background-color: var(--tab-background-color-selected);
       box-shadow: var(--tab-selected-shadow);
 
       & > .tabbrowser-tab {

@@ -1084,7 +1084,7 @@
     }
 
     &[in-urlbar] {
-      background: var(--tab-selected-bgcolor) !important;
+      background: var(--tab-background-color-selected) !important;
       box-shadow: var(--tab-selected-shadow);
     }
   }
@@ -1172,7 +1172,7 @@
     border-radius: var(--border-radius-medium) !important;
   }
 
-  --tab-selected-bgcolor: light-dark(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.2));
+  --tab-background-color-selected: light-dark(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.2));
 
   &:not([visuallyselected], [multiselected="true"]) .tab-background {
     background: var(--zen-toolbar-element-bg);
@@ -1195,7 +1195,7 @@
   }
 
   &:hover .tab-background {
-    background: light-dark(rgba(0, 0, 0, 0.1), var(--tab-selected-bgcolor));
+    background: light-dark(rgba(0, 0, 0, 0.1), var(--tab-background-color-selected));
   }
 
   /* stylelint-disable-next-line media-query-no-invalid */

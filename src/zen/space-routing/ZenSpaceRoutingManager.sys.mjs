@@ -19,6 +19,22 @@ class nsZenSpaceRoutingManager {
   }
 
   /**
+   * Auto invoked for every window on delayed startup
+   *
+   * @param {nsIDOMWindow} window - The browser window that just started up
+   */
+  onDelayedBrowserStartup(window) {
+    const element = window.MozXULElement.parseXULToFragment(`
+        <menuseparator/>
+        <menuitem id="context_zen-add-domain-to-routing"
+                  data-lazy-l10n-id="tab-context-zen-add-domain-to-sr"
+                  data-l10n-args='{"tabCount": 1}'
+                  command="cmd_contextZenAddDomainToRouting"/>
+      `);
+    window.document.getElementById("context_undoCloseTab")?.after(element);
+  }
+
+  /**
    * Callback that will be executed from tabbrowser.js
    * This method can be used to stop the tab from being created.
    *

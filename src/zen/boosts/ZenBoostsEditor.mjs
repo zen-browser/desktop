@@ -18,6 +18,7 @@ export class nsZenBoostEditor {
     "zap-state-update",
     "selector-picker-state-update",
     "zen-boosts-active-change",
+    "zen-theme-change",
   ];
 
   /**
@@ -55,6 +56,23 @@ export class nsZenBoostEditor {
     this.initColorPicker();
     this.initFonts();
     this.loadBoost(domain);
+    this.updateColorScheme();
+  }
+
+  get isDarkMode() {
+    return this.openerWindow.gZenThemePicker.isDarkMode;
+  }
+
+  /**
+   * Returns the ZenBoosts JSWindowActor child for the currently selected tab.
+   *
+   * @returns {ZenBoostsChild} zenBoostsChild Boost JSActor child
+   */
+  get zenBoostsChild() {
+    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
+    const actor =
+      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
+    return actor;
   }
 
   /**
@@ -65,6 +83,7 @@ export class nsZenBoostEditor {
       once: true,
     });
 
+    this.doc.getElementById("zenBoostWindow").setAttribute("editor", "boost");
     this.doc.getElementById("zen-boost-editor-root").style.display = "flex";
     this.doc.getElementById("zen-boost-code-editor-root").style.display =
       "none";
@@ -180,6 +199,24 @@ export class nsZenBoostEditor {
       case "zen-boosts-active-change":
         this.editorWindow.close();
         break;
+      case "zen-theme-change":
+        this.updateColorScheme();
+        break;
+    }
+  }
+
+  /**
+   * Updates the color scheme of the editor window based on the current theme (dark or light mode)
+   */
+  updateColorScheme() {
+    const colorScheme = this.isDarkMode ? "dark" : "light";
+    this.doc.documentElement.style.colorScheme = colorScheme;
+
+    if (this.codeEditorReady) {
+      const container = this.doc.getElementById("zen-boost-code-editor");
+      const editorEl =
+        container.querySelector("iframe").contentDocument.documentElement;
+      editorEl.className = "theme-" + colorScheme;
     }
   }
 
@@ -204,7 +241,7 @@ export class nsZenBoostEditor {
     const editor = new Editor({
       mode: Editor.modes.css,
       lineNumbers: true,
-      theme: "default", // default is light theme
+      theme: "mozilla",
       readOnly: false,
       gutters: ["CodeMirror-linenumbers"],
     });
@@ -215,6 +252,8 @@ export class nsZenBoostEditor {
 
     this.editorWindow._editor = editor;
     this.codeEditorReady = true;
+
+    this.updateColorScheme();
   }
 
   /**
@@ -360,26 +399,22 @@ export class nsZenBoostEditor {
     }
     windowElem.setAttribute("editor", "code");
 
-    // Store the old boost editor width.
-    // The window needs the outer width which includes
-    // window chrome. This results in the window
-    // being smaller than it should be
-    this._boostEditorWidth = this.editorWindow.outerWidth;
-
-    this.editorWindow.resizeTo(
-      this._codeEditorWidth,
-      this.editorWindow.outerHeight
-    );
-    if (openRightAligned) {
-      this.editorWindow.moveTo(
-        this.editorWindow.screenX - offset,
-        this.editorWindow.screenY
+    this.editorWindow.requestAnimationFrame(() => {
+      this.editorWindow.resizeTo(
+        this._codeEditorWidth,
+        this.editorWindow.outerHeight
       );
-    }
+      if (openRightAligned) {
+        this.editorWindow.moveTo(
+          this.editorWindow.screenX - offset,
+          this.editorWindow.screenY
+        );
+      }
 
-    this.doc.getElementById("zen-boost-editor-root").style.display = "none";
-    this.doc.getElementById("zen-boost-code-editor-root").style.display =
-      "initial";
+      this.doc.getElementById("zen-boost-editor-root").style.display = "none";
+      this.doc.getElementById("zen-boost-code-editor-root").style.display =
+        "initial";
+    });
   }
 
   /**
@@ -397,40 +432,35 @@ export class nsZenBoostEditor {
     }
     windowElem.setAttribute("editor", "boost");
 
-    this.editorWindow.resizeTo(
-      this._boostEditorWidth,
-      this.editorWindow.outerHeight
-    );
-    if (openRightAligned) {
-      this.editorWindow.moveTo(
-        this.editorWindow.screenX + offset,
-        this.editorWindow.screenY
-      );
-    }
-
     this.doc.getElementById("zen-boost-editor-root").style.display = "flex";
     this.doc.getElementById("zen-boost-code-editor-root").style.display =
       "none";
+
+    this.editorWindow.promiseDocumentFlushed(() => {
+      this.editorWindow.resizeTo(
+        this._boostEditorWidth,
+        this.editorWindow.outerHeight
+      );
+      if (openRightAligned) {
+        this.editorWindow.moveTo(
+          this.editorWindow.screenX + offset,
+          this.editorWindow.screenY
+        );
+      }
+    });
 
     // Disable picker mode
     this.disableAllPickers();
   }
 
   async onZapButtonPressed() {
-    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor =
-      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
-    actor.sendQuery("ZenBoost:ToggleZapMode");
-
+    this.zenBoostsChild.sendQuery("ZenBoost:ToggleZapMode");
     // Focus the parent browser window
     this.openerWindow.focus();
   }
 
   async onPickerButtonPressed() {
-    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor =
-      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
-    actor.sendQuery("ZenBoost:TogglePickerMode");
+    this.zenBoostsChild.sendQuery("ZenBoost:TogglePickerMode");
     this.openerWindow.focus();
   }
 
@@ -455,16 +485,11 @@ ${cssSelector} {
   }
 
   onInspectorButtonPressed() {
-    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor =
-      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
-    actor.sendQuery("ZenBoost:OpenInspector");
+    this.zenBoostsChild.sendQuery("ZenBoost:OpenInspector");
   }
 
   async onUpdateZapButtonVisual() {
-    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor =
-      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
+    const actor = this.zenBoostsChild;
     const zapButton = this.doc.getElementById("zen-boost-zap");
 
     const zapEnabled = await actor.sendQuery("ZenBoost:ZapModeEnabled");
@@ -475,12 +500,8 @@ ${cssSelector} {
   }
 
   async onUpdatePickerButtonVisual() {
-    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor =
-      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
-
     const pickerButton = this.doc.getElementById("zen-boost-css-picker");
-    const selectEnabled = await actor.sendQuery(
+    const selectEnabled = await this.zenBoostsChild.sendQuery(
       "ZenBoost:SelectorPickerModeEnabled"
     );
 
@@ -564,6 +585,9 @@ ${cssSelector} {
       this.wasDragging = true;
       event.preventDefault();
 
+      this.currentBoostData.changeWasMade = true;
+      this.updateButtonToggleVisuals();
+
       if (this.dragTarget == "zen-boost-color-picker-dot-secondary") {
         this.setSecondaryDotPos(event.clientX, event.clientY);
       } else if (event.target.id != "zen-boost-magic-theme") {
@@ -616,6 +640,7 @@ ${cssSelector} {
       this.currentBoostData.textCaseOverride = "uppercase";
     }
 
+    this.currentBoostData.changeWasMade = true;
     this.updateCaseButtonVisuals();
     this.updateCurrentBoost();
   }
@@ -623,7 +648,7 @@ ${cssSelector} {
   /**
    * Handles the size toggle button press, cycling through size override options
    */
-  onBoostSizePressed() {
+  async onBoostSizePressed() {
     if (this.currentBoostData.sizeOverride == 1) {
       this.currentBoostData.sizeOverride = 1.1;
     } else if (this.currentBoostData.sizeOverride == 1.1) {
@@ -634,8 +659,10 @@ ${cssSelector} {
       this.currentBoostData.sizeOverride = 0.9;
     } else if (this.currentBoostData.sizeOverride == 0.9) {
       this.currentBoostData.sizeOverride = 1;
+      await this.zenBoostsChild.sendQuery("ZenBoost:DisableSizeOverride");
     }
 
+    this.currentBoostData.changeWasMade = true;
     this.updateSizeButtonVisuals();
     this.updateCurrentBoost();
   }
@@ -671,20 +698,6 @@ ${cssSelector} {
   }
 
   /**
-   * Resets the color picker dot to the default position (default state).
-   */
-  resetDotPosition() {
-    const gradient = this.doc.querySelector(".zen-boost-color-picker-gradient");
-    const rect = gradient.getBoundingClientRect();
-    const padding = 50;
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const radius = (rect.width - padding) / 2;
-
-    this.setDotPos(centerX + radius / 1.25, centerY);
-  }
-
-  /**
    * Handles clicks on the theme picker gradient or magic theme button.
    * Updates the dot position or toggles auto-theme mode based on the click target.
    *
@@ -695,14 +708,16 @@ ${cssSelector} {
 
     this.currentBoostData.changeWasMade = true;
 
+    this.currentBoostData.enableColorBoost = true;
+
     if (event.target.id == "zen-boost-magic-theme") {
-      this.currentBoostData.enableColorBoost = true;
       this.currentBoostData.autoTheme = !this.currentBoostData.autoTheme;
-      this.updateButtonToggleVisuals();
       this.updateCurrentBoost();
     } else if (this.dragTarget != "zen-boost-color-picker-dot-secondary") {
       this.setDotPos(event.clientX, event.clientY, !this.wasDragging);
     }
+
+    this.updateButtonToggleVisuals();
     this.wasDragging = false;
   }
 
@@ -828,13 +843,19 @@ ${cssSelector} {
     const dotSec = this.doc.querySelector(
       "#zen-boost-color-picker-dot-secondary"
     );
+
+    const dotDistance = this.currentBoostData.dotDistance;
+    const dotAngleDeg = this.currentBoostData.dotAngleDeg;
+    const secondaryDotAngleDelta =
+      this.currentBoostData.secondaryDotAngleDegDelta ?? 0;
+
     dot.style.setProperty(
       "--zen-theme-picker-dot-color",
-      `hsl(${this.currentBoostData.dotAngleDeg}deg, ${this.currentBoostData.dotDistance * 100}%, 55%)`
+      `hsl(${dotAngleDeg}deg, ${dotDistance * 100}%, 55%)`
     );
     dotSec.style.setProperty(
       "--zen-theme-picker-dot-color",
-      `hsl(${this.currentBoostData.dotAngleDeg + this.currentBoostData.secondaryDotAngleDegDelta}deg, ${this.currentBoostData.dotDistance * 100}%, 20%)`
+      `hsl(${dotAngleDeg + secondaryDotAngleDelta}deg, ${dotDistance * 100}%, 20%)`
     );
   }
 
@@ -858,22 +879,23 @@ ${cssSelector} {
     const centerY = rect.top + rect.height / 2;
     const radius = (rect.width - padding) / 2;
 
+    const dotDistance = this.currentBoostData.dotDistance;
+    const primaryDotAngleDeg = this.currentBoostData.dotAngleDeg;
+
     let angle = null;
-    if (!pixelX || !pixelY) {
+    if (pixelX == null || pixelY == null) {
       pixelX = centerX;
       pixelY = centerY;
       angle = this.currentBoostData.secondaryDotAngleDegDelta;
     } else {
       angle = Math.atan2(pixelY - centerY, pixelX - centerX);
-      pixelX =
-        centerX + Math.cos(angle) * this.currentBoostData.dotDistance * radius;
-      pixelY =
-        centerY + Math.sin(angle) * this.currentBoostData.dotDistance * radius;
+      pixelX = centerX + Math.cos(angle) * dotDistance * radius;
+      pixelY = centerY + Math.sin(angle) * dotDistance * radius;
     }
 
     // Rad to degree
     this.currentBoostData.secondaryDotAngleDegDelta =
-      ((angle * 180) / Math.PI + 100 - this.currentBoostData.dotAngleDeg) % 360;
+      ((angle * 180) / Math.PI + 100 - primaryDotAngleDeg) % 360;
     if (this.currentBoostData.secondaryDotAngleDegDelta < 0) {
       this.currentBoostData.secondaryDotAngleDegDelta += 360;
     }
@@ -906,14 +928,19 @@ ${cssSelector} {
     const cx = rect.width / 2;
     const cy = rect.height / 2;
 
+    const dotDistance = this.currentBoostData.dotDistance;
+    const dotAngleDeg = this.currentBoostData.dotAngleDeg;
+    const secondaryDotAngleDelta =
+      this.currentBoostData.secondaryDotAngleDegDelta ?? 0;
+
     // Updating the circle size to match the distance of the point
     const circle = this.doc.querySelector(".zen-boost-color-picker-circle");
     circle.setAttribute("animated", "false");
-    circle.style.width = `${this.currentBoostData.dotDistance * radius * 2}px`;
-    circle.style.height = `${this.currentBoostData.dotDistance * radius * 2}px`;
+    circle.style.width = `${dotDistance * radius * 2}px`;
+    circle.style.height = `${dotDistance * radius * 2}px`;
 
-    const dotColor = `hsl(${this.currentBoostData.dotAngleDeg}deg, ${this.currentBoostData.dotDistance * 100}%, 55%)`;
-    const dotColorSec = `hsl(${this.currentBoostData.dotAngleDeg + this.currentBoostData.secondaryDotAngleDegDelta}deg, ${this.currentBoostData.dotDistance * 100}%, 20%)`;
+    const dotColor = `hsl(${dotAngleDeg}deg, ${dotDistance * 100}%, 55%)`;
+    const dotColorSec = `hsl(${dotAngleDeg + secondaryDotAngleDelta}deg, ${dotDistance * 100}%, 20%)`;
 
     this.updateArcFill(cx, cy, radius, dotColor, dotColorSec);
   }
@@ -1158,12 +1185,6 @@ ${cssSelector} {
       invertButton.classList.remove("zen-boost-button-active");
     }
 
-    if (this.currentBoostData.smartInvert) {
-      invertButton.classList.add("zen-boost-button-active");
-    } else {
-      invertButton.classList.remove("zen-boost-button-active");
-    }
-
     if (!this.currentBoostData.enableColorBoost) {
       disableButton.classList.add("zen-boost-button-active-transparent");
     } else {
@@ -1310,6 +1331,23 @@ ${cssSelector} {
     const resetBoost = this.doc.getElementById("zen-boost-edit-reset");
 
     const popup = this.doc.getElementById("zenBoostContextMenu");
+    popup.addEventListener(
+      "popupshown",
+      () => {
+        // Don't give the user following options if the boost
+        // is not going to save / not currently saved (unchanged)
+        let shouldDisable = !this.currentBoostData.changeWasMade;
+        const items = [renameBoost, deleteBoost, resetBoost];
+        for (let item of items) {
+          if (shouldDisable) {
+            item.setAttribute("disabled", "");
+          } else {
+            item.removeAttribute("disabled");
+          }
+        }
+      },
+      { once: true }
+    );
     popup.openPopup(
       event.target,
       "bottomcenter topcenter",
@@ -1319,12 +1357,6 @@ ${cssSelector} {
       false /* attributesOverride */,
       event
     );
-
-    // Don't give the user following options if the boost
-    // is not going to save / not currently saved (unchanged)
-    renameBoost.disabled = !this.currentBoostData.changeWasMade;
-    deleteBoost.disabled = !this.currentBoostData.changeWasMade;
-    resetBoost.disabled = !this.currentBoostData.changeWasMade;
   }
 
   /**
@@ -1566,43 +1598,31 @@ ${cssSelector} {
     }
 
     if (
-      this.currentBoostData.dotPos.x == null ||
-      this.currentBoostData.dotPos.y == null
-    ) {
-      this.resetDotPosition();
-    } else {
       // Test if the stored position is a non-normalized dot position
-      if (
-        this.currentBoostData.dotPos.x > 1 ||
-        this.currentBoostData.dotPos.x < 0 ||
-        this.currentBoostData.dotPos.y > 1 ||
-        this.currentBoostData.dotPos.y < 0
-      ) {
-        // Normalize position
-        this.currentBoostData.dotPos.x =
-          this.currentBoostData.dotPos.x / rect.width;
-        this.currentBoostData.dotPos.y =
-          this.currentBoostData.dotPos.y / rect.height;
-      }
-
-      // Convert normalized position to relative position
-      const xPos = this.currentBoostData.dotPos.x * rect.width;
-      const yPos = this.currentBoostData.dotPos.y * rect.height;
-
-      dot.style.left = `${xPos}px`;
-      dot.style.top = `${yPos}px`;
-    }
-
-    if (
-      this.currentBoostData.secondaryDotPos?.x != null &&
-      this.currentBoostData.secondaryDotPos?.y != null
+      this.currentBoostData.dotPos.x > 1 ||
+      this.currentBoostData.dotPos.x < 0 ||
+      this.currentBoostData.dotPos.y > 1 ||
+      this.currentBoostData.dotPos.y < 0
     ) {
-      const xPosSec = this.currentBoostData.secondaryDotPos.x * rect.width;
-      const yPosSec = this.currentBoostData.secondaryDotPos.y * rect.height;
-
-      dotSec.style.left = `${xPosSec}px`;
-      dotSec.style.top = `${yPosSec}px`;
+      // Normalize position
+      this.currentBoostData.dotPos.x =
+        this.currentBoostData.dotPos.x / rect.width;
+      this.currentBoostData.dotPos.y =
+        this.currentBoostData.dotPos.y / rect.height;
     }
+
+    // Convert normalized position to relative position
+    const xPos = this.currentBoostData.dotPos.x * rect.width;
+    const yPos = this.currentBoostData.dotPos.y * rect.height;
+
+    dot.style.left = `${xPos}px`;
+    dot.style.top = `${yPos}px`;
+
+    const xPosSec = this.currentBoostData.secondaryDotPos.x * rect.width;
+    const yPosSec = this.currentBoostData.secondaryDotPos.y * rect.height;
+
+    dotSec.style.left = `${xPosSec}px`;
+    dotSec.style.top = `${yPosSec}px`;
 
     this.editorWindow._editor.setText(this.currentBoostData.customCSS || "");
 

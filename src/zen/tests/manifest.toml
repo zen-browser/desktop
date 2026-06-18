@@ -17,16 +17,6 @@ disable = [
 source = "browser/components/safebrowsing/content/test"
 is_direct_path = true
 
-[sandbox]
-source = "security/sandbox/test"
-is_direct_path = true
-disable = [
-  "browser_bug1393259.js",
-]
-
-[sandbox.replace-manifest]
-"../../../" = "../../../../"
-
 [shell]
 source = "browser/components/shell/test"
 is_direct_path = true

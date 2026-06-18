@@ -1,0 +1,80 @@
+diff --git a/layout/svg/SVGImageContext.h b/layout/svg/SVGImageContext.h
+index 159d9cbbd0711076ee6c2a71a3da04bd92a0102c..daefc40590c4d7d7fac9db25c6ec4ba2424dded5 100644
+--- a/layout/svg/SVGImageContext.h
++++ b/layout/svg/SVGImageContext.h
+@@ -6,6 +6,7 @@
+ #define LAYOUT_SVG_SVGIMAGECONTEXT_H_
+ 
+ #include "Units.h"
++#include "nsColor.h"
+ #include "mozilla/Maybe.h"
+ #include "mozilla/SVGContextPaint.h"
+ #include "mozilla/SVGPreserveAspectRatio.h"
+@@ -63,6 +64,11 @@ class SVGImageContext {
+                                      nsISVGPaintContext* aPaintContext,
+                                      imgIContainer* aImgContainer);
+ 
++  // Carry the host document's Zen boost into the image context so the image
++  // renders with the same accent/inversion as the page.
++  static void MaybeStoreZenBoosts(SVGImageContext& aContext,
++                                  const nsPresContext& aPresContext);
++
+   const Maybe<CSSIntSize>& GetViewportSize() const { return mViewportSize; }
+ 
+   void SetViewportSize(const Maybe<CSSIntSize>& aSize) {
+@@ -75,6 +81,21 @@ class SVGImageContext {
+     mColorScheme = aScheme;
+   }
+ 
++  // Zen boosts state carried from the host document so the image renders with
++  // the same boost. Part of the cache key below so boosted and unboosted
++  // renderings don't collide.
++  void SetZenBoosts(nscolor aAccent, float aComplementaryRotation,
++                    bool aInverted) {
++    mZenBoostsAccent = aAccent;
++    mZenBoostsComplementaryRotation = aComplementaryRotation;
++    mZenBoostsInverted = aInverted;
++  }
++  nscolor GetZenBoostsAccent() const { return mZenBoostsAccent; }
++  float GetZenBoostsComplementaryRotation() const {
++    return mZenBoostsComplementaryRotation;
++  }
++  bool GetZenBoostsInverted() const { return mZenBoostsInverted; }
++
+   const Maybe<SVGPreserveAspectRatio>& GetPreserveAspectRatio() const {
+     return mPreserveAspectRatio;
+   }
+@@ -107,7 +128,11 @@ class SVGImageContext {
+ 
+     return contextPaintIsEqual && mViewportSize == aOther.mViewportSize &&
+            mPreserveAspectRatio == aOther.mPreserveAspectRatio &&
+-           mColorScheme == aOther.mColorScheme;
++           mColorScheme == aOther.mColorScheme &&
++           mZenBoostsAccent == aOther.mZenBoostsAccent &&
++           mZenBoostsComplementaryRotation ==
++               aOther.mZenBoostsComplementaryRotation &&
++           mZenBoostsInverted == aOther.mZenBoostsInverted;
+   }
+ 
+   bool operator!=(const SVGImageContext&) const = default;
+@@ -119,7 +144,9 @@ class SVGImageContext {
+     }
+     return HashGeneric(hash, mViewportSize.map(HashSize).valueOr(0),
+                        mPreserveAspectRatio.map(HashPAR).valueOr(0),
+-                       mColorScheme.map(HashColorScheme).valueOr(0));
++                       mColorScheme.map(HashColorScheme).valueOr(0),
++                       mZenBoostsAccent, mZenBoostsComplementaryRotation,
++                       mZenBoostsInverted);
+   }
+ 
+  private:
+@@ -138,6 +165,9 @@ class SVGImageContext {
+   Maybe<CSSIntSize> mViewportSize;
+   Maybe<SVGPreserveAspectRatio> mPreserveAspectRatio;
+   Maybe<ColorScheme> mColorScheme;
++  nscolor mZenBoostsAccent = 0;
++  float mZenBoostsComplementaryRotation = 0.0f;
++  bool mZenBoostsInverted = false;
+ };
+ 
+ }  // namespace mozilla

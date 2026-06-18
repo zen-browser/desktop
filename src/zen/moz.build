@@ -19,4 +19,5 @@ DIRS += [
     "sessionstore",
     "share",
     "spaces",
+    "space-routing",
 ]

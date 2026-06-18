@@ -1,5 +1,5 @@
 diff --git a/gfx/layers/AnimationInfo.cpp b/gfx/layers/AnimationInfo.cpp
-index 1d330056bd7a4e89aac5e5296a3c164fb42b5c42..ef112715580b6bb7238e8f37bbe3133e187685dc 100644
+index b4941588bfbd94a337f2e848c659021723e1500d..8f91ca5b2fcca6ff04aa2c0af5ba26dd9fe7df0e 100644
 --- a/gfx/layers/AnimationInfo.cpp
 +++ b/gfx/layers/AnimationInfo.cpp
 @@ -14,6 +14,7 @@
@@ -10,12 +10,20 @@ index 1d330056bd7a4e89aac5e5296a3c164fb42b5c42..ef112715580b6bb7238e8f37bbe3133e
  #include "nsIContent.h"
  #include "nsLayoutUtils.h"
  #include "nsRefreshDriver.h"
-@@ -343,7 +344,7 @@ static void SetAnimatable(NonCustomCSSPropertyId aProperty,
+@@ -341,9 +342,13 @@ static void SetAnimatable(NonCustomCSSPropertyId aProperty,
+     case eCSSProperty_background_color: {
+       // We don't support color animation on the compositor yet so that we can
        // resolve currentColor at this moment.
-       nscolor foreground =
-           aFrame->Style()->GetVisitedDependentColor(&nsStyleText::mColor);
+-      nscolor foreground =
+-          aFrame->Style()->GetVisitedDependentColor(&nsStyleText::mColor);
 -      aAnimatable = aAnimationValue.GetColor(foreground);
-+      aAnimatable = zen::nsZenBoostsBackend::FilterColorFromPresContext(aAnimationValue.GetColor(foreground), aFrame->PresContext());
++      nscolor foreground = aFrame->Style()->GetVisitedDependentColor(
++          &nsStyleText::mColor, nullptr);
++      nscolor resolved = aAnimationValue.GetColor(foreground);
++      aAnimatable = aAnimationValue.IsCurrentColor()
++                        ? resolved
++                        : zen::nsZenBoostsBackend::ResolveStyleColor(resolved,
++                                                                     aFrame);
        break;
      }
      case eCSSProperty_opacity:

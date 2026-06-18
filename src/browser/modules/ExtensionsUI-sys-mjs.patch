@@ -1,8 +1,8 @@
 diff --git a/browser/modules/ExtensionsUI.sys.mjs b/browser/modules/ExtensionsUI.sys.mjs
-index 5251697341bf94f3ca6c877d87a6fe5f4debf03a..71d9247a669cea2135e6f0b76b2c10a869bf35bc 100644
+index 95a4b6e40bd568c3ea5003b648b0acbf96bbb725..6ab8a658721aa6470d482dc958e4b3ac78f49f44 100644
 --- a/browser/modules/ExtensionsUI.sys.mjs
 +++ b/browser/modules/ExtensionsUI.sys.mjs
-@@ -500,7 +500,7 @@ export var ExtensionsUI = {
+@@ -502,7 +502,7 @@ export var ExtensionsUI = {
          eventCallback,
          removeOnDismissal: true,
          popupOptions: {

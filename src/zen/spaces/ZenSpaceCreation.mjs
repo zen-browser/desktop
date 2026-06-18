@@ -219,7 +219,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
           document.getElementById("nav-bar").style.visibility = "collapse";
         }
         this.style.visibility = "visible";
-        gZenCompactModeManager.getAndApplySidebarWidth();
+        gZenCompactModeManager.getAndApplySidebarWidth({});
         this.resolveInitialized();
         let animation = gZenUIManager.motion.animate(
           this.elementsToAnimate,
@@ -261,6 +261,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
   }
 
   async onCancelButtonCommand() {
+    document.documentElement.removeAttribute("zen-creating-workspace");
     await gZenWorkspaces.changeWorkspaceWithID(this.previousWorkspaceId);
   }
 

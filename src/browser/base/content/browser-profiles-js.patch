@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-profiles.js b/browser/base/content/browser-profiles.js
-index fb260896c14b90734182d2f232e33350287f0209..9984a2d18dfd33e3606adac0e8c5f80f7e35e682 100644
+index 35a5fd0c320cdf3cdf42442881d71e5ee6dc865d..6ef175f27c614f74ad32ecefb2854e3b9fc01d13 100644
 --- a/browser/base/content/browser-profiles.js
 +++ b/browser/base/content/browser-profiles.js
 @@ -70,6 +70,7 @@ var gProfiles = {

@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/preferences.xhtml b/browser/components/preferences/preferences.xhtml
-index 3c4b3225c672bcb172e7f946bc5f98d424e21e84..d10824470c564b6631333f197de897c21ccc19f5 100644
+index 9760a4a35b0b3bd21edec07a70c10bccc23e4a09..9f22146c259ea5b45005be660bfcb9ea2c1297ee 100644
 --- a/browser/components/preferences/preferences.xhtml
 +++ b/browser/components/preferences/preferences.xhtml
 @@ -42,6 +42,8 @@
@@ -11,7 +11,7 @@ index 3c4b3225c672bcb172e7f946bc5f98d424e21e84..d10824470c564b6631333f197de897c2
    <link rel="localization" href="branding/brand.ftl"/>
    <link rel="localization" href="browser/browser.ftl"/>
      <!-- Used by fontbuilder.js -->
-@@ -126,6 +128,26 @@
+@@ -121,6 +123,26 @@
          iconsrc="chrome://browser/skin/preferences/category-general.svg"
          data-l10n-id="pane-general-title">
        </html:moz-page-nav-button>
@@ -35,12 +35,12 @@ index 3c4b3225c672bcb172e7f946bc5f98d424e21e84..d10824470c564b6631333f197de897c2
 +        iconsrc="chrome://mozapps/skin/extensions/category-themes.svg"
 +        data-l10n-id="pane-zen-marketplace-title">
 +      </html:moz-page-nav-button>
-       <html:moz-page-nav-button id="category-home"
-         view="paneHome"
-         iconsrc="chrome://browser/skin/home.svg"
-@@ -218,6 +240,10 @@
+       <html:moz-page-nav-button id="category-sync"
+         hidden="true"
+         view="paneSync"
+@@ -253,6 +275,10 @@
+ #include containers.inc.xhtml
  #include sync.inc.xhtml
- #include experimental.inc.xhtml
  #include moreFromMozilla.inc.xhtml
 +#include zenLooksAndFeel.inc.xhtml
 +#include zenKeyboardShortcuts.inc.xhtml

@@ -1,0 +1,60 @@
+diff --git a/layout/svg/SVGUtils.cpp b/layout/svg/SVGUtils.cpp
+index 0819d5258b80f5600329547fd102240af057c5af..ee0478eeeb291991d0d97580375744f6c9a93b34 100644
+--- a/layout/svg/SVGUtils.cpp
++++ b/layout/svg/SVGUtils.cpp
+@@ -1176,23 +1176,23 @@ gfxRect SVGUtils::PathExtentsToMaxStrokeExtents(const gfxRect& aPathExtents,
+ /* static */
+ nscolor SVGUtils::GetFallbackOrPaintColor(
+     const ComputedStyle& aStyle, StyleSVGPaint nsStyleSVG::* aFillOrStroke,
+-    nscolor aDefaultContextFallbackColor) {
++    nscolor aDefaultContextFallbackColor, const nsIFrame* aFrame) {
+   const auto& paint = aStyle.StyleSVG()->*aFillOrStroke;
+   nscolor color;
+   switch (paint.kind.tag) {
+     case StyleSVGPaintKind::Tag::PaintServer:
+       color = paint.fallback.IsColor()
+-                  ? paint.fallback.AsColor().CalcColor(aStyle)
++                  ? paint.fallback.AsColor().CalcColor(aStyle, aFrame)
+                   : NS_RGBA(0, 0, 0, 0);
+       break;
+     case StyleSVGPaintKind::Tag::ContextStroke:
+     case StyleSVGPaintKind::Tag::ContextFill:
+       color = paint.fallback.IsColor()
+-                  ? paint.fallback.AsColor().CalcColor(aStyle)
++                  ? paint.fallback.AsColor().CalcColor(aStyle, aFrame)
+                   : aDefaultContextFallbackColor;
+       break;
+     default:
+-      color = paint.kind.AsColor().CalcColor(aStyle);
++      color = paint.kind.AsColor().CalcColor(aStyle, aFrame);
+       break;
+   }
+   if (const auto* styleIfVisited = aStyle.GetStyleIfVisited()) {
+@@ -1206,7 +1206,8 @@ nscolor SVGUtils::GetFallbackOrPaintColor(
+     // another simple color.
+     if (paintIfVisited.kind.IsColor() && paint.kind.IsColor()) {
+       nscolor colors[2] = {
+-          color, paintIfVisited.kind.AsColor().CalcColor(*styleIfVisited)};
++          color,
++          paintIfVisited.kind.AsColor().CalcColor(*styleIfVisited, aFrame)};
+       return ComputedStyle::CombineVisitedColors(colors,
+                                                  aStyle.RelevantLinkVisited());
+     }
+@@ -1276,7 +1277,7 @@ void SVGUtils::MakeFillPatternFor(nsIFrame* aFrame, gfxContext* aContext,
+   // objectBoundingBox where the width or height of the object is zero.
+   // See http://www.w3.org/TR/SVG11/coords.html#ObjectBoundingBox
+   sRGBColor color(sRGBColor::FromABGR(GetFallbackOrPaintColor(
+-      *aFrame->Style(), &nsStyleSVG::mFill, NS_RGB(0, 0, 0))));
++      *aFrame->Style(), &nsStyleSVG::mFill, NS_RGB(0, 0, 0), aFrame)));
+   color.a *= fillOpacity;
+   aOutPattern->InitColorPattern(ToDeviceColor(color));
+ }
+@@ -1343,7 +1344,7 @@ void SVGUtils::MakeStrokePatternFor(nsIFrame* aFrame, gfxContext* aContext,
+   // objectBoundingBox where the width or height of the object is zero.
+   // See http://www.w3.org/TR/SVG11/coords.html#ObjectBoundingBox
+   sRGBColor color(sRGBColor::FromABGR(GetFallbackOrPaintColor(
+-      *aFrame->Style(), &nsStyleSVG::mStroke, NS_RGBA(0, 0, 0, 0))));
++      *aFrame->Style(), &nsStyleSVG::mStroke, NS_RGBA(0, 0, 0, 0), aFrame)));
+   color.a *= strokeOpacity;
+   aOutPattern->InitColorPattern(ToDeviceColor(color));
+ }

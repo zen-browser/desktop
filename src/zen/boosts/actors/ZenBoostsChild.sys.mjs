@@ -70,6 +70,17 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
   static PREVENTABLE_SET = new Set(ZenBoostsChild.PREVENTABLE_EVENTS);
 
+  actorCreated() {
+    this.#applyBoostForPageIfAvailable();
+  }
+
+  didDestroy() {
+    if (this.#currentState === ZenBoostsChild.STATES.ZAP) {
+      this.disableZapMode();
+    }
+    this.#removeEventListeners();
+  }
+
   /**
    * Inverse of https://searchfox.org/firefox-main/rev/1a8c62b86277005f907151bc5389cf5c5091e76f/gfx/src/nsColor.h#23-27
    *
@@ -179,28 +190,6 @@ export class ZenBoostsChild extends JSWindowActorChild {
     return [h * 60, s, l];
   }
 
-  /**
-   * Handles DOM events for the actor. Applies boost settings when a document
-   * element is inserted.
-   *
-   * @param {Event} event - The DOM event to handle.
-   */
-  handleEvent(event) {
-    switch (event.type) {
-      case "unload":
-        if (this.#currentState === ZenBoostsChild.STATES.ZAP) {
-          this.disableZapMode();
-        }
-        this.#removeEventListeners();
-        break;
-      case "DOMWindowCreated":
-        this.#applyBoostForPageIfAvailable();
-        break;
-      default:
-        break;
-    }
-  }
-
   handleZapEvent(event) {
     if (ZenBoostsChild.ALL_EVENTS_SET.has(event.type)) {
       this.#overlay.handleEvent(
@@ -291,6 +280,9 @@ export class ZenBoostsChild extends JSWindowActorChild {
       case "ZenBoost:OpenInspector":
         this.sendAsyncMessage("ZenBoost:OpenInspector");
         break;
+      case "ZenBoost:DisableSizeOverride":
+        this.disableSizeOverride();
+        break;
     }
     return null;
   }
@@ -322,13 +314,18 @@ export class ZenBoostsChild extends JSWindowActorChild {
     return p;
   }
 
+  get #hostWithoutPort() {
+    const host = this.browsingContext.topWindow?.location.host;
+    return host?.split(":")[0];
+  }
+
   /**
    * Aquires the boost data for this website
    *
    * @returns {object} Boost data for the current website
    */
   getWebsiteBoost() {
-    const domain = this.browsingContext.topWindow?.location?.host;
+    const domain = this.#hostWithoutPort;
     if (!domain) {
       return null;
     }
@@ -362,6 +359,14 @@ export class ZenBoostsChild extends JSWindowActorChild {
         this.#loadStyleSheet(boost.styleSheet);
       }
 
+      if (
+        boostData.sizeOverride &&
+        isFinite(boostData.sizeOverride) &&
+        boostData.sizeOverride !== 1
+      ) {
+        browsingContext.fullZoom = boostData.sizeOverride;
+      }
+
       browsingContext.isZenBoostsInverted = boostData.smartInvert;
       if (boostData.enableColorBoost) {
         let primaryColor;
@@ -384,17 +389,17 @@ export class ZenBoostsChild extends JSWindowActorChild {
           // using the same modifiers as the color above
           primaryColor = this.#buildBoostColor(
             primaryGradientColor[0],
-            primaryGradientColor[1] * (1 - boostData.saturation),
-            0.1 + primaryGradientColor[2] * 0.9 * boostData.brightness,
+            1 - boostData.saturation,
+            0.1 + 0.9 * boostData.brightness,
             boostData
           );
         } else {
           primaryColor = this.#buildBoostColor(
             boostData.dotAngleDeg,
             /* already is [0, 1] */
-            boostData.dotDistance * (1 - boostData.saturation),
+            1 - boostData.saturation,
             /* lightness range from [0.1, 0.9] */
-            0.1 + boostData.dotDistance * 0.8 * boostData.brightness,
+            0.1 + 0.9 * boostData.brightness,
             boostData
           );
         }
@@ -484,7 +489,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
   }
 
   addZapSelector(selector) {
-    const domain = this.browsingContext.topWindow?.location?.host;
+    const domain = this.#hostWithoutPort;
     this.sendQuery("ZenBoost:ZapSelector", {
       action: "add",
       selector,
@@ -493,7 +498,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
   }
 
   removeZapSelector(selector) {
-    const domain = this.browsingContext.topWindow?.location?.host;
+    const domain = this.#hostWithoutPort;
     this.sendQuery("ZenBoost:ZapSelector", {
       action: "remove",
       selector,
@@ -545,6 +550,14 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
     this.#removeEventListeners();
     this.sendNotify("selector-picker-state-update", "ondisable");
+  }
+
+  disableSizeOverride() {
+    const browsingContext = this.browsingContext;
+    if (!browsingContext || browsingContext.parent !== null) {
+      return;
+    }
+    browsingContext.fullZoom = 1;
   }
 
   sendNotify(topic, msg = null) {

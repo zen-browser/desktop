@@ -1,0 +1,13 @@
+diff --git a/layout/svg/SVGContextPaint.cpp b/layout/svg/SVGContextPaint.cpp
+index 57ef88da66a3cacc28f6ea83cf55e5f803be6e56..305a6ae18b7b3ad814fb2aea3d5971f341c68da5 100644
+--- a/layout/svg/SVGContextPaint.cpp
++++ b/layout/svg/SVGContextPaint.cpp
+@@ -143,7 +143,7 @@ static void SetupInheritablePaint(const DrawTarget* aDrawTarget,
+   }
+ 
+   nscolor color = SVGUtils::GetFallbackOrPaintColor(
+-      *aFrame->Style(), aFillOrStroke, aDefaultFallbackColor);
++      *aFrame->Style(), aFillOrStroke, aDefaultFallbackColor, aFrame);
+   aTargetPaint.SetColor(color);
+ }
+ 

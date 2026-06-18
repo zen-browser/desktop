@@ -60,7 +60,7 @@ jobs:
 
           brew install watchman
 
-          cargo install apple-codesign
+          cargo install apple-codesign --locked --force
 
       - name: Force usage of gnu-tar
         run: |

@@ -289,7 +289,7 @@ class nsZenLiveFoldersManager {
     let labelElement = folder.labelElement;
     labelElement.setAttribute("live-folder-animation", "true");
     labelElement.style.backgroundPositionX = "0%";
-    folder.ownerGlobal.gZenUIManager.motion
+    folder.documentGlobal.gZenUIManager.motion
       .animate(
         labelElement,
         {
@@ -472,7 +472,7 @@ class nsZenLiveFoldersManager {
     }
 
     let userContextId = 0;
-    let space = folder.ownerGlobal.gZenWorkspaces.getWorkspaceFromId(
+    let space = folder.documentGlobal.gZenWorkspaces.getWorkspaceFromId(
       folder.getAttribute("zen-workspace-id")
     );
     if (space) {

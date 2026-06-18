@@ -1,0 +1,13 @@
+diff --git a/layout/generic/nsImageFrame.cpp b/layout/generic/nsImageFrame.cpp
+index bb9f5fb626b7c48144e2040967817cfbce82afd9..5c598170d9df73a498b3b62f3e56756c756cce66 100644
+--- a/layout/generic/nsImageFrame.cpp
++++ b/layout/generic/nsImageFrame.cpp
+@@ -1765,7 +1765,7 @@ void nsImageFrame::DisplayAltText(nsPresContext* aPresContext,
+                                   const nsRect& aRect) {
+   // Set font and color
+   aRenderingContext.SetColor(
+-      sRGBColor::FromABGR(StyleText()->mColor.ToColor()));
++      sRGBColor::FromABGR(StyleText()->mColor.ToColor(this)));
+   RefPtr<nsFontMetrics> fm =
+       nsLayoutUtils::GetInflatedFontMetricsForFrame(this);
+ 

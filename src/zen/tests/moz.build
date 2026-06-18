@@ -13,6 +13,7 @@ BROWSER_CHROME_MANIFESTS += [
     "pinned/browser.toml",
     "popover/browser.toml",
     "site_control/browser.toml",
+    "space_routing/browser.toml",
     "spaces/browser.toml",
     "split_view/browser.toml",
     "tabs/browser.toml",

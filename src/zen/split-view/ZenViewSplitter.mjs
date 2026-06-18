@@ -326,7 +326,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       if (
         !gBrowser.isTab(draggedTab) ||
         gBrowser.selectedTab.hasAttribute("zen-empty-tab") ||
-        draggedTab.ownerGlobal !== window
+        draggedTab.documentGlobal !== window
       ) {
         return;
       }
@@ -1226,7 +1226,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const currentTab = gZenGlanceManager.getTabOrGlanceParent(
       window.gBrowser.selectedTab
     );
-    const newTab = this.openAndSwitchToTab(url, { inBackground: false });
+    const newTab = this.openAndSwitchToTab(url, {
+      skipRoute: true,
+      inBackground: false,
+    });
     this.splitTabs([currentTab, newTab], undefined, 1);
   }
 
@@ -1972,7 +1975,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * @returns {tab} The tab that was opened
    */
   openAndSwitchToTab(url, options) {
-    const parentWindow = window.ownerGlobal.parent;
+    const parentWindow = window.parent;
     const targetWindow = parentWindow || window;
     const tab = targetWindow.gBrowser.addTrustedTab(url, options);
     targetWindow.gBrowser.selectedTab = tab;
@@ -2294,7 +2297,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       // Unsplit the tab and exit from the drag view
       this.dropZone?.removeAttribute("enabled");
       this.disableTabRearrangeView(event);
-      this.removeTabFromSplit(browserContainer);
+      this.removeTabFromSplit(event, browserContainer);
       return true;
     }
     return false;

@@ -1,8 +1,8 @@
 diff --git a/browser/themes/shared/urlbar-searchbar.css b/browser/themes/shared/urlbar-searchbar.css
-index 3f46c918e125f9531a536a09358c980b2c923864..cba6f00318ce5dc7b6717b6c9afd2ee916715f8f 100644
+index cbd074b9bacfbf7cc82a67ad586ebc31c4d85970..993c61ba389cb9d912b2cebee9d71bec772e3a7d 100644
 --- a/browser/themes/shared/urlbar-searchbar.css
 +++ b/browser/themes/shared/urlbar-searchbar.css
-@@ -11,7 +11,7 @@
+@@ -12,7 +12,7 @@
    /* Usually we wouldn't need snapping border widths manually, but we use this
     * for other layout calculations too */
    --urlbar-container-border-width: max(env(hairline), round(down, 1px, env(hairline)));
@@ -11,7 +11,7 @@ index 3f46c918e125f9531a536a09358c980b2c923864..cba6f00318ce5dc7b6717b6c9afd2ee9
    --urlbar-container-inset: calc(var(--urlbar-container-border-width) + var(--urlbar-container-padding));
  
    @media (max-width: 770px) {
-@@ -54,7 +54,7 @@ toolbar[inactive="true"] .urlbar,
+@@ -55,7 +55,7 @@ toolbar[inactive="true"] .urlbar,
  .urlbar:not([usertyping]) > .urlbar-input-container > .urlbar-go-button,
  .urlbar:not(#searchbar-new, [focused]) > .urlbar-input-container > .urlbar-go-button,
  #urlbar-revert-button-container {
@@ -20,7 +20,7 @@ index 3f46c918e125f9531a536a09358c980b2c923864..cba6f00318ce5dc7b6717b6c9afd2ee9
  }
  
  /* Document Picture-in-Picture API window */
-@@ -201,6 +201,10 @@ toolbar[inactive="true"] .urlbar,
+@@ -205,6 +205,10 @@ toolbar[inactive="true"] .urlbar,
      mask-image: linear-gradient(to right, transparent var(--urlbar-scheme-size), black calc(var(--urlbar-scheme-size) + 3ch));
    }
  
@@ -31,18 +31,18 @@ index 3f46c918e125f9531a536a09358c980b2c923864..cba6f00318ce5dc7b6717b6c9afd2ee9
    /* stylelint-disable-next-line media-query-no-invalid */
    @media -moz-pref("browser.nova.enabled") {
      &::selection {
-@@ -343,10 +347,14 @@ toolbar[inactive="true"] .urlbar,
+@@ -429,10 +433,14 @@ toolbar[inactive="true"] .urlbar,
  
- .urlbar[breakout][breakout-extend] {
-   height: auto;
-+  align-items: center;
-+  :root:not([zen-single-toolbar='true']) & {
-   margin-left: calc(-1 * var(--urlbar-margin-inline));
-+  }
-   width: calc(var(--urlbar-width) + 2 * var(--urlbar-margin-inline));
- 
-   > .urlbar-input-container {
+   .urlbar[breakout][breakout-extend] {
+     height: auto;
 +    align-items: center;
-     height: var(--urlbar-container-height);
-     padding-block: calc((var(--urlbar-container-height) - var(--urlbar-height)) / 2 + var(--urlbar-container-padding));
-     padding-inline: calc(var(--urlbar-margin-inline) + var(--urlbar-container-padding));
++    :root:not([zen-single-toolbar='true']) & {
+     margin-left: calc(-1 * var(--urlbar-margin-inline));
++    }
+     width: calc(var(--urlbar-width) + 2 * var(--urlbar-margin-inline));
+ 
+     > .urlbar-input-container {
++      align-items: center;
+       height: var(--urlbar-container-height);
+       padding-block: calc((var(--urlbar-container-height) - var(--urlbar-height)) / 2 + var(--urlbar-container-padding));
+       padding-inline: calc(var(--urlbar-margin-inline) + var(--urlbar-container-padding));

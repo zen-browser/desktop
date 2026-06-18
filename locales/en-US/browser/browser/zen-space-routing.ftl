@@ -28,6 +28,6 @@ zen-space-routing-tab-routed-toast = New tab opened in { $targetWorkspace }
 tab-context-zen-add-domain-to-sr = 
     .label = 
         { $tabCount ->
-            [one] Add Route For Domain
-            *[other] Add Route For Domains
+            [one] Add Route for Domain
+            *[other] Add Route for Domains
         }

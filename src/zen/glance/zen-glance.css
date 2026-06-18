@@ -188,3 +188,23 @@
     max-height: 100%;
   }
 }
+
+:root[inDOMFullscreen="true"] .browserSidebarContainer.zen-glance-overlay {
+
+  & .browserContainer {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+  }
+
+  & .browserContainer,
+  & .browserStack {
+    border-radius: 0 !important;
+  }
+
+  & .zen-glance-sidebar-container {
+    display: none !important;
+  }
+}

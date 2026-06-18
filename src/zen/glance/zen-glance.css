@@ -103,11 +103,11 @@
 }
 
 .browserSidebarContainer.zen-glance-background,
-.browserSidebarContainer.zen-glance-overlay .browserContainer:not([fade-out="true"]) {
+:root:not([inDOMFullscreen="true"]) .browserSidebarContainer.zen-glance-overlay .browserContainer:not([fade-out="true"]) {
   border-radius: var(--zen-native-inner-radius);
 }
 
-.browserSidebarContainer.zen-glance-overlay {
+:root:not([inDOMFullscreen="true"]) .browserSidebarContainer.zen-glance-overlay {
   box-shadow: none !important;
   visibility: inherit;
   z-index: 1;
@@ -189,22 +189,6 @@
   }
 }
 
-:root[inDOMFullscreen="true"] .browserSidebarContainer.zen-glance-overlay {
-
-  & .browserContainer {
-    position: fixed !important;
-    inset: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    margin: 0 !important;
-  }
-
-  & .browserContainer,
-  & .browserStack {
-    border-radius: 0 !important;
-  }
-
-  & .zen-glance-sidebar-container {
-    display: none !important;
-  }
+:root[inDOMFullscreen="true"] .zen-glance-sidebar-container {
+  display: none !important;
 }

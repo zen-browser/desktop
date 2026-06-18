@@ -84,6 +84,12 @@ document.addEventListener(
           case "cmd_contextZenRemoveFromEssentials":
             gZenPinnedTabManager.removeEssentials();
             break;
+          case "cmd_contextZenAddDomainToRouting":
+            const selectedTabs = TabContextMenu.contextTab.multiselected
+              ? gBrowser.selectedTabs
+              : [TabContextMenu.contextTab];
+            gZenSpaceRoutingManager.addRouteForSelected(selectedTabs, window);
+            break;
           case "cmd_zenCtxDeleteWorkspace":
             gZenWorkspaces.contextDeleteWorkspace(event);
             break;

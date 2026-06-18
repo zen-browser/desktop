@@ -575,6 +575,11 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
             <menuitem id="context_zen-edit-tab-icon"
                       data-lazy-l10n-id="tab-context-zen-edit-icon"/>
             <menuseparator/>
+            <menuitem id="context_zen-add-domain-to-routing"
+                      data-lazy-l10n-id="tab-context-zen-add-domain-to-sr"
+                      data-l10n-args='{"tabCount": 1}'
+                      command="cmd_contextZenAddDomainToRouting"/>
+            <menuseparator/>
         `);
 
     document.getElementById("context_pinTab")?.before(element);

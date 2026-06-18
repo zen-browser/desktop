@@ -405,31 +405,33 @@ class nsZenSpaceRoutingManager {
 
   /**
    * Adds a new route for all given tabs
-   * 
-   * @param {Array<object>} selectedTabs, - The tabs that should be routed
+   *
+   * @param {Array<object>} selectedTabs - The tabs that should be routed
    * @param {Window} parentWindow - The window from which this is being executed
    */
-  addRouteForSelected(selectedTabs, parentWindow) {    
-    if (!selectedTabs)
+  addRouteForSelected(selectedTabs, parentWindow) {
+    if (!selectedTabs) {
       return;
+    }
 
     const newRoute = this.createNewRoute();
     let routeReference = "";
 
     if (selectedTabs.length == 1) {
       newRoute.matchType = "contains";
-      routeReference =
-        selectedTabs[0].linkedBrowser.currentURI.host.replace(
-          "www.",
-          "",
-        );
+      routeReference = selectedTabs[0].linkedBrowser.currentURI.host.replace(
+        "www.",
+        ""
+      );
     } else {
       newRoute.matchType = "regex";
       routeReference = "(";
       for (let i = 0; i < selectedTabs.length; i++) {
         const domain = selectedTabs[i].linkedBrowser.currentURI.host;
         routeReference += domain.replaceAll(".", "\.");
-        if (i != selectedTabs.length - 1) routeReference += "|";
+        if (i != selectedTabs.length - 1) {
+          routeReference += "|";
+        }
       }
       routeReference += ")";
     }

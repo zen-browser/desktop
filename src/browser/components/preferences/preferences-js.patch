@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/preferences.js b/browser/components/preferences/preferences.js
-index 57add34d876fb885275f1147209c6fbeee367a7c..5f4616d5f7d3d077326246e843775f58c293ee48 100644
+index 57add34d876fb885275f1147209c6fbeee367a7c..be0ab43b299317c0022a5e719f47a070c1574714 100644
 --- a/browser/components/preferences/preferences.js
 +++ b/browser/components/preferences/preferences.js
 @@ -132,6 +132,7 @@ ChromeUtils.defineLazyGetter(this, "gSubDialog", function () {
@@ -39,9 +39,12 @@ index 57add34d876fb885275f1147209c6fbeee367a7c..5f4616d5f7d3d077326246e843775f58
  
    // Restore the cached Firefox Labs nav button visibility so it shows
    // immediately when recipes are expected to be available, before
-@@ -653,7 +660,7 @@ async function gotoPref(
+@@ -651,9 +658,9 @@ async function gotoPref(
+   let redesignEnabled = srdSectionPrefs.all;
+   let categories = document.getElementById("categories");
    const kDefaultCategoryInternalName = redesignEnabled
-     ? "paneSync"
+-    ? "paneSync"
++    ? "paneTabsBrowsing"
      : "paneGeneral";
 -  const kDefaultCategory = redesignEnabled ? "sync" : "general";
 +  const kDefaultCategory = redesignEnabled ? "tabsBrowsing" : "general";

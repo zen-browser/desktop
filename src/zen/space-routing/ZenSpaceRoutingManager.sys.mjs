@@ -40,7 +40,7 @@ class nsZenSpaceRoutingManager {
   /**
    * Callback for when the context menu option to add the selected
    * tabs to a new route is pressed
-   * 
+   *
    * @param {Event} event
    */
   onAddSelectedToRouting(event) {

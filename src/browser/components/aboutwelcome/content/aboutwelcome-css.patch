@@ -1,20 +1,20 @@
 diff --git a/browser/components/aboutwelcome/content/aboutwelcome.css b/browser/components/aboutwelcome/content/aboutwelcome.css
-index 98497769b135efd3200607ee2cf50e82d06ed3fd..68e0778cfc4dc70935a3d48e79542b4133b293d2 100644
+index 4a568479995c43ec2801c5b2f9452610923233ed..857a4a0ed78f3d374ed45fc4ff73e8e51dfbc2b9 100644
 --- a/browser/components/aboutwelcome/content/aboutwelcome.css
 +++ b/browser/components/aboutwelcome/content/aboutwelcome.css
 @@ -330,6 +330,11 @@ panel#feature-callout {
-   --panel-shadow-margin: 6px;
-   --panel-arrow-space: calc(var(--panel-shadow-margin) + var(--arrow-visible-height) - 1.5px);
-   --panel-margin-offset: calc(-1 * (var(--panel-shadow-margin) + var(--arrow-corner-distance) + (var(--arrow-width) / 2)));
+   --panel-box-shadow-margin: 6px;
+   --panel-arrow-space: calc(var(--panel-box-shadow-margin) + var(--arrow-visible-height) - 1.5px);
+   --panel-margin-offset: calc(-1 * (var(--panel-box-shadow-margin) + var(--arrow-corner-distance) + (var(--arrow-width) / 2)));
 +
 +  @media -moz-pref("widget.macos.native-popovers") and (-moz-platform: macos) {
-+    --panel-shadow-margin: 0;
++    --panel-box-shadow-margin: 0;
 +    --panel-arrow-space: 0;
 +  }
  }
  
  panel#feature-callout::part(content) {
-@@ -517,6 +522,12 @@ div#feature-callout.hidden {
+@@ -518,6 +523,12 @@ div#feature-callout.hidden {
    width: 25em;
    gap: 16px;
    background: var(--fc-background);
@@ -27,7 +27,7 @@ index 98497769b135efd3200607ee2cf50e82d06ed3fd..68e0778cfc4dc70935a3d48e79542b41
  }
  #feature-callout .screen[pos=callout] .section-main .main-content .main-content-inner {
    gap: 12px;
-@@ -933,6 +944,10 @@ panel#feature-callout::part(content) {
+@@ -934,6 +945,10 @@ panel#feature-callout::part(content) {
    overflow: visible;
    transform: rotate(45deg);
    transform-style: preserve-3d;

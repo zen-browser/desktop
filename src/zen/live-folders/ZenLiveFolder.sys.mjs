@@ -129,7 +129,7 @@ export class nsZenLiveFolderProvider {
     let userContextId = 0;
     let folder = this.manager.getFolderForLiveFolder(this);
     if (folder) {
-      let space = folder.ownerGlobal.gZenWorkspaces.getWorkspaceFromId(
+      let space = folder.documentGlobal.gZenWorkspaces.getWorkspaceFromId(
         folder.getAttribute("zen-workspace-id")
       );
       if (space) {

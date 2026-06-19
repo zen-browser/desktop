@@ -1,8 +1,8 @@
 diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
-index a2db42fba8d1f1d9df1dc295adb64be3f5885d50..2dd43fe4898badeaf9bc669502ead2c56982d1aa 100644
+index 568f3a7cc7051ff8cb569f6bcb8018a5212f7072..3036768b8911b4fbc28df7528f7189d9ea21b6f6 100644
 --- a/browser/components/tabbrowser/content/tabs.js
 +++ b/browser/components/tabbrowser/content/tabs.js
-@@ -230,7 +230,7 @@
+@@ -220,7 +220,7 @@
  
        this.tooltip = "tabbrowser-tab-tooltip";
  
@@ -11,7 +11,7 @@ index a2db42fba8d1f1d9df1dc295adb64be3f5885d50..2dd43fe4898badeaf9bc669502ead2c5
        this.tabDragAndDrop.init();
      }
  
-@@ -454,7 +454,7 @@
+@@ -444,7 +444,7 @@
        // and we're not hitting the scroll buttons.
        if (
          event.button != 0 ||
@@ -20,7 +20,7 @@ index a2db42fba8d1f1d9df1dc295adb64be3f5885d50..2dd43fe4898badeaf9bc669502ead2c5
          event.composedTarget.localName == "toolbarbutton"
        ) {
          return;
-@@ -535,7 +535,6 @@
+@@ -525,7 +525,6 @@
              });
            }
          } else if (isTabGroupLabel(event.target)) {
@@ -28,7 +28,7 @@ index a2db42fba8d1f1d9df1dc295adb64be3f5885d50..2dd43fe4898badeaf9bc669502ead2c5
          } else if (
            event.originalTarget.closest("scrollbox") &&
            !Services.prefs.getBoolPref(
-@@ -571,6 +570,9 @@
+@@ -561,6 +560,9 @@
      }
  
      on_keydown(event) {
@@ -38,7 +38,7 @@ index a2db42fba8d1f1d9df1dc295adb64be3f5885d50..2dd43fe4898badeaf9bc669502ead2c5
        let { altKey, shiftKey } = event;
        let [accel, nonAccel] =
          AppConstants.platform == "macosx"
-@@ -765,7 +767,6 @@
+@@ -755,7 +757,6 @@
        this._updateCloseButtons();
  
        if (!this.#animatingGroups.size) {
@@ -46,7 +46,7 @@ index a2db42fba8d1f1d9df1dc295adb64be3f5885d50..2dd43fe4898badeaf9bc669502ead2c5
        }
  
        document
-@@ -832,7 +833,7 @@
+@@ -822,7 +823,7 @@
      }
  
      get newTabButton() {
@@ -55,7 +55,7 @@ index a2db42fba8d1f1d9df1dc295adb64be3f5885d50..2dd43fe4898badeaf9bc669502ead2c5
      }
  
      get verticalMode() {
-@@ -848,6 +849,7 @@
+@@ -838,6 +839,7 @@
      }
  
      get overflowing() {
@@ -63,7 +63,7 @@ index a2db42fba8d1f1d9df1dc295adb64be3f5885d50..2dd43fe4898badeaf9bc669502ead2c5
        return this.hasAttribute("overflow");
      }
  
-@@ -861,29 +863,56 @@
+@@ -851,29 +853,56 @@
        if (pinnedChildren?.at(-1)?.id == "pinned-tabs-container-periphery") {
          pinnedChildren.pop();
        }
@@ -130,7 +130,7 @@ index a2db42fba8d1f1d9df1dc295adb64be3f5885d50..2dd43fe4898badeaf9bc669502ead2c5
      }
  
      get allSplitViews() {
-@@ -968,29 +997,28 @@
+@@ -958,29 +987,28 @@
          return this.#focusableItems;
        }
  
@@ -170,7 +170,7 @@ index a2db42fba8d1f1d9df1dc295adb64be3f5885d50..2dd43fe4898badeaf9bc669502ead2c5
        this.#focusableItems = focusableItems;
  
        return this.#focusableItems;
-@@ -1003,6 +1031,7 @@
+@@ -993,6 +1021,7 @@
       * focusable (ex, we don't want the splitview container to be focusable, only its children).
       */
      get dragAndDropElements() {
@@ -178,7 +178,7 @@ index a2db42fba8d1f1d9df1dc295adb64be3f5885d50..2dd43fe4898badeaf9bc669502ead2c5
        if (this.#dragAndDropElements) {
          return this.#dragAndDropElements;
        }
-@@ -1073,6 +1102,7 @@
+@@ -1063,6 +1092,7 @@
      _invalidateCachedTabs() {
        this.#allTabs = null;
        this._invalidateCachedVisibleTabs();
@@ -186,7 +186,7 @@ index a2db42fba8d1f1d9df1dc295adb64be3f5885d50..2dd43fe4898badeaf9bc669502ead2c5
      }
  
      _invalidateCachedVisibleTabs() {
-@@ -1092,7 +1122,8 @@
+@@ -1082,7 +1112,8 @@
  
      isContainerVerticalPinnedGrid(tab) {
        return (
@@ -196,7 +196,7 @@ index a2db42fba8d1f1d9df1dc295adb64be3f5885d50..2dd43fe4898badeaf9bc669502ead2c5
          this.verticalMode &&
          this.hasAttribute("expanded") &&
          !this.expandOnHover
-@@ -1186,7 +1217,7 @@
+@@ -1176,7 +1207,7 @@
  
        if (node == null) {
          // We have a container for non-tab elements at the end of the scrollbox.
@@ -205,7 +205,7 @@ index a2db42fba8d1f1d9df1dc295adb64be3f5885d50..2dd43fe4898badeaf9bc669502ead2c5
        }
  
        node.before(tab);
-@@ -1281,7 +1312,7 @@
+@@ -1271,7 +1302,7 @@
            // There are separate "new tab" buttons for horizontal tabs toolbar, vertical tabs and
            // for when the tab strip is overflowed (which is shared by vertical and horizontal tabs);
            // Attach the long click popup to all of them.
@@ -214,7 +214,7 @@ index a2db42fba8d1f1d9df1dc295adb64be3f5885d50..2dd43fe4898badeaf9bc669502ead2c5
            const newTab2 = this.newTabButton;
            const newTabVertical = document.getElementById(
              "vertical-tabs-newtab-button"
-@@ -1386,8 +1417,10 @@
+@@ -1376,8 +1407,10 @@
       */
      _handleTabSelect(aInstant) {
        let selectedTab = this.selectedItem;
@@ -225,7 +225,7 @@ index a2db42fba8d1f1d9df1dc295adb64be3f5885d50..2dd43fe4898badeaf9bc669502ead2c5
        selectedTab._notselectedsinceload = false;
      }
  
-@@ -1396,7 +1429,7 @@
+@@ -1386,7 +1419,7 @@
       * @param {boolean} [shouldScrollInstantly=false]
       */
      #ensureTabIsVisible(tab, shouldScrollInstantly = false) {
@@ -234,7 +234,7 @@ index a2db42fba8d1f1d9df1dc295adb64be3f5885d50..2dd43fe4898badeaf9bc669502ead2c5
        if (arrowScrollbox?.overflowing) {
          arrowScrollbox.ensureElementIsVisible(tab, shouldScrollInstantly);
        }
-@@ -1523,7 +1556,7 @@
+@@ -1513,7 +1546,7 @@
      }
  
      _notifyBackgroundTab(aTab) {

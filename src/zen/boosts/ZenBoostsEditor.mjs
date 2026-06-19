@@ -18,6 +18,7 @@ export class nsZenBoostEditor {
     "zap-state-update",
     "selector-picker-state-update",
     "zen-boosts-active-change",
+    "zen-theme-change",
   ];
 
   /**
@@ -44,7 +45,6 @@ export class nsZenBoostEditor {
     this.lastDotSetPos = { x: 0, y: 0 };
     this.currentBoostData = null;
     this.boostInfo = null;
-    this.isDarkMode = this.openerWindow.gZenThemePicker.isDarkMode;
 
     this.killOtherEditorInstances();
 
@@ -53,10 +53,26 @@ export class nsZenBoostEditor {
     });
 
     this.init();
-    this.initColorScheme();
     this.initColorPicker();
     this.initFonts();
     this.loadBoost(domain);
+    this.updateColorScheme();
+  }
+
+  get isDarkMode() {
+    return this.openerWindow.gZenThemePicker.isDarkMode;
+  }
+
+  /**
+   * Returns the ZenBoosts JSWindowActor child for the currently selected tab.
+   *
+   * @returns {ZenBoostsChild} zenBoostsChild Boost JSActor child
+   */
+  get zenBoostsChild() {
+    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
+    const actor =
+      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
+    return actor;
   }
 
   /**
@@ -183,17 +199,24 @@ export class nsZenBoostEditor {
       case "zen-boosts-active-change":
         this.editorWindow.close();
         break;
+      case "zen-theme-change":
+        this.updateColorScheme();
+        break;
     }
   }
 
   /**
-   * Initializes the color scheme of the editor window based on the current theme (dark or light mode)
+   * Updates the color scheme of the editor window based on the current theme (dark or light mode)
    */
-  initColorScheme() {
-    if (this.isDarkMode) {
-      this.doc.documentElement.style.colorScheme = "dark";
-    } else {
-      this.doc.documentElement.style.colorScheme = "light";
+  updateColorScheme() {
+    const colorScheme = this.isDarkMode ? "dark" : "light";
+    this.doc.documentElement.style.colorScheme = colorScheme;
+
+    if (this.codeEditorReady) {
+      const container = this.doc.getElementById("zen-boost-code-editor");
+      const editorEl =
+        container.querySelector("iframe").contentDocument.documentElement;
+      editorEl.className = "theme-" + colorScheme;
     }
   }
 
@@ -229,6 +252,8 @@ export class nsZenBoostEditor {
 
     this.editorWindow._editor = editor;
     this.codeEditorReady = true;
+
+    this.updateColorScheme();
   }
 
   /**
@@ -429,20 +454,13 @@ export class nsZenBoostEditor {
   }
 
   async onZapButtonPressed() {
-    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor =
-      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
-    actor.sendQuery("ZenBoost:ToggleZapMode");
-
+    this.zenBoostsChild.sendQuery("ZenBoost:ToggleZapMode");
     // Focus the parent browser window
     this.openerWindow.focus();
   }
 
   async onPickerButtonPressed() {
-    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor =
-      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
-    actor.sendQuery("ZenBoost:TogglePickerMode");
+    this.zenBoostsChild.sendQuery("ZenBoost:TogglePickerMode");
     this.openerWindow.focus();
   }
 
@@ -467,16 +485,11 @@ ${cssSelector} {
   }
 
   onInspectorButtonPressed() {
-    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor =
-      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
-    actor.sendQuery("ZenBoost:OpenInspector");
+    this.zenBoostsChild.sendQuery("ZenBoost:OpenInspector");
   }
 
   async onUpdateZapButtonVisual() {
-    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor =
-      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
+    const actor = this.zenBoostsChild;
     const zapButton = this.doc.getElementById("zen-boost-zap");
 
     const zapEnabled = await actor.sendQuery("ZenBoost:ZapModeEnabled");
@@ -487,12 +500,8 @@ ${cssSelector} {
   }
 
   async onUpdatePickerButtonVisual() {
-    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
-    const actor =
-      linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
-
     const pickerButton = this.doc.getElementById("zen-boost-css-picker");
-    const selectEnabled = await actor.sendQuery(
+    const selectEnabled = await this.zenBoostsChild.sendQuery(
       "ZenBoost:SelectorPickerModeEnabled"
     );
 
@@ -631,6 +640,7 @@ ${cssSelector} {
       this.currentBoostData.textCaseOverride = "uppercase";
     }
 
+    this.currentBoostData.changeWasMade = true;
     this.updateCaseButtonVisuals();
     this.updateCurrentBoost();
   }
@@ -638,7 +648,7 @@ ${cssSelector} {
   /**
    * Handles the size toggle button press, cycling through size override options
    */
-  onBoostSizePressed() {
+  async onBoostSizePressed() {
     if (this.currentBoostData.sizeOverride == 1) {
       this.currentBoostData.sizeOverride = 1.1;
     } else if (this.currentBoostData.sizeOverride == 1.1) {
@@ -649,8 +659,10 @@ ${cssSelector} {
       this.currentBoostData.sizeOverride = 0.9;
     } else if (this.currentBoostData.sizeOverride == 0.9) {
       this.currentBoostData.sizeOverride = 1;
+      await this.zenBoostsChild.sendQuery("ZenBoost:DisableSizeOverride");
     }
 
+    this.currentBoostData.changeWasMade = true;
     this.updateSizeButtonVisuals();
     this.updateCurrentBoost();
   }

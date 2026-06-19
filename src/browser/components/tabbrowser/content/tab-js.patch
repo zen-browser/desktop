@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index b9381999a77ecacdb95c69494ac8972e9f13d14d..a210b53bb46373f8bab532a00b25301d645641cd 100644
+index 8f2ebf3a0bd4e2af01cf41024b16bd491e8ed961..27721e26c3cd8cb066b462dedfa4ce785ca5c2c3 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@
@@ -10,10 +10,10 @@ index b9381999a77ecacdb95c69494ac8972e9f13d14d..a210b53bb46373f8bab532a00b25301d
            <stack class="tab-icon-stack">
              <hbox class="tab-throbber"/>
              <hbox class="tab-icon-pending"/>
-@@ -38,9 +39,11 @@
-             <hbox class="tab-secondary-label">
-               <label class="tab-icon-sound-label tab-icon-sound-pip-label" data-l10n-id="browser-tab-audio-pip" role="presentation"/>
-             </hbox>
+@@ -35,9 +36,11 @@
+                 pack="center"
+                 flex="1">
+             <label class="tab-text tab-label" role="presentation"/>
 +            <label class="zen-tab-sublabel" data-l10n-id="zen-tab-sublabel" data-l10n-args='{"tabSubtitle": "zen-default-pinned"}' role="presentation"/>
            </vbox>
            <image class="tab-note-icon" role="presentation"/>
@@ -22,7 +22,7 @@ index b9381999a77ecacdb95c69494ac8972e9f13d14d..a210b53bb46373f8bab532a00b25301d
          </hbox>
        </stack>
        `;
-@@ -87,7 +90,7 @@
+@@ -84,7 +87,7 @@
          ".tab-content":
            "pinned,selected=visuallyselected,multiselected,titlechanged,attention",
          ".tab-icon-stack":
@@ -31,7 +31,7 @@ index b9381999a77ecacdb95c69494ac8972e9f13d14d..a210b53bb46373f8bab532a00b25301d
          ".tab-throbber":
            "fadein,pinned,busy,progress,selected=visuallyselected",
          ".tab-icon-pending":
-@@ -96,9 +99,9 @@
+@@ -93,9 +96,9 @@
            "src=image,requestcontextid,fadein,pinned,selected=visuallyselected,busy,crashed,sharing,pictureinpicture,pending,discarded",
          ".tab-sharing-icon-overlay": "sharing,selected=visuallyselected,pinned",
          ".tab-icon-overlay":
@@ -43,7 +43,7 @@ index b9381999a77ecacdb95c69494ac8972e9f13d14d..a210b53bb46373f8bab532a00b25301d
          ".tab-label-container":
            "pinned,selected=visuallyselected,labeldirection",
          ".tab-label":
-@@ -189,7 +192,7 @@
+@@ -184,7 +187,7 @@
      }
  
      set _visuallySelected(val) {
@@ -52,7 +52,7 @@ index b9381999a77ecacdb95c69494ac8972e9f13d14d..a210b53bb46373f8bab532a00b25301d
          return;
        }
  
-@@ -225,11 +228,25 @@
+@@ -220,11 +223,25 @@
      }
  
      get visible() {
@@ -83,7 +83,7 @@ index b9381999a77ecacdb95c69494ac8972e9f13d14d..a210b53bb46373f8bab532a00b25301d
      }
  
      get hidden() {
-@@ -308,7 +325,7 @@
+@@ -303,7 +320,7 @@
          return false;
        }
  
@@ -92,7 +92,7 @@ index b9381999a77ecacdb95c69494ac8972e9f13d14d..a210b53bb46373f8bab532a00b25301d
      }
  
      get lastAccessed() {
-@@ -393,7 +410,18 @@
+@@ -388,7 +405,18 @@
      }
  
      get group() {
@@ -112,7 +112,7 @@ index b9381999a77ecacdb95c69494ac8972e9f13d14d..a210b53bb46373f8bab532a00b25301d
      }
  
      get splitview() {
-@@ -475,6 +503,10 @@
+@@ -470,6 +498,10 @@
          }
        }
  
@@ -123,7 +123,7 @@ index b9381999a77ecacdb95c69494ac8972e9f13d14d..a210b53bb46373f8bab532a00b25301d
        // If the previous target wasn't part of this tab then this is a mouseenter event.
        if (!this.contains(event.relatedTarget)) {
          this._mouseenter();
-@@ -504,6 +536,7 @@
+@@ -499,6 +531,7 @@
        if (!this.contains(event.relatedTarget)) {
          this._mouseleave();
        }
@@ -131,7 +131,7 @@ index b9381999a77ecacdb95c69494ac8972e9f13d14d..a210b53bb46373f8bab532a00b25301d
      }
  
      on_dragstart(event) {
-@@ -538,6 +571,8 @@
+@@ -533,6 +566,8 @@
          this.style.MozUserFocus = "ignore";
        } else if (
          event.target.classList.contains("tab-close-button") ||
@@ -140,7 +140,7 @@ index b9381999a77ecacdb95c69494ac8972e9f13d14d..a210b53bb46373f8bab532a00b25301d
          event.target.classList.contains("tab-icon-overlay") ||
          event.target.classList.contains("tab-audio-button")
        ) {
-@@ -572,7 +607,7 @@
+@@ -567,7 +602,7 @@
            }
          } else if (
            event.altKey &&
@@ -149,7 +149,7 @@ index b9381999a77ecacdb95c69494ac8972e9f13d14d..a210b53bb46373f8bab532a00b25301d
          ) {
            eventMaySelectTab = false;
          } else if (!this.selected && this.multiselected) {
-@@ -597,6 +632,10 @@
+@@ -592,6 +627,10 @@
        this.style.MozUserFocus = "";
      }
  
@@ -160,7 +160,7 @@ index b9381999a77ecacdb95c69494ac8972e9f13d14d..a210b53bb46373f8bab532a00b25301d
      on_click(event) {
        if (event.button != 0) {
          return;
-@@ -620,14 +659,31 @@
+@@ -615,14 +654,31 @@
              trigger: "alt_click",
            });
          }
@@ -193,7 +193,7 @@ index b9381999a77ecacdb95c69494ac8972e9f13d14d..a210b53bb46373f8bab532a00b25301d
          gBrowser.multiSelectedTabsCount > 0 &&
          !event.target.classList.contains("tab-close-button") &&
          !event.target.classList.contains("tab-icon-overlay") &&
-@@ -639,8 +695,9 @@
+@@ -634,8 +690,9 @@
        }
  
        if (
@@ -205,7 +205,7 @@ index b9381999a77ecacdb95c69494ac8972e9f13d14d..a210b53bb46373f8bab532a00b25301d
        ) {
          if (this.activeMediaBlocked) {
            if (this.multiselected) {
-@@ -658,7 +715,7 @@
+@@ -653,7 +710,7 @@
          return;
        }
  
@@ -214,7 +214,7 @@ index b9381999a77ecacdb95c69494ac8972e9f13d14d..a210b53bb46373f8bab532a00b25301d
          if (this.multiselected) {
            gBrowser.removeMultiSelectedTabs(
              lazy.TabMetrics.userTriggeredContext(
-@@ -678,6 +735,14 @@
+@@ -673,6 +730,14 @@
          // (see tabbrowser-tabs 'click' handler).
          gBrowser.tabContainer._blockDblClick = true;
        }
@@ -229,7 +229,7 @@ index b9381999a77ecacdb95c69494ac8972e9f13d14d..a210b53bb46373f8bab532a00b25301d
      }
  
      on_dblclick(event) {
-@@ -701,6 +766,8 @@
+@@ -696,6 +761,8 @@
            animate: true,
            triggeringEvent: event,
          });

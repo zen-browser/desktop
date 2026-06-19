@@ -100,7 +100,16 @@ class ZenStartup {
       delete this.promiseInitializedResolve;
 
       setTimeout(() => {
-        gZenWorkspaces._invalidateBookmarkContainers();
+        // Wait for the natural PlacesToolbar rebuild before invalidating, so
+        // the two async rebuilds don't interleave and duplicate bookmarks.
+        // promiseRebuilt() returns undefined when no rebuild is in flight.
+        const rebuilt =
+          document
+            .getElementById("PlacesToolbar")
+            ?._placesView?.promiseRebuilt() ?? Promise.resolve();
+        rebuilt
+          .catch(console.error)
+          .then(() => gZenWorkspaces._invalidateBookmarkContainers());
       });
     });
   }
@@ -147,7 +156,7 @@ class ZenStartup {
   }
 
   #initUIComponents() {
-    const kUIComponents = ["ZenProgressBar"];
+    const kUIComponents = ["ZenProgressBar", "ZenSpaceRoutingNavigation"];
     for (let component of kUIComponents) {
       const module = ChromeUtils.importESModule(
         "resource:///modules/zen/ui/" + component + ".sys.mjs"

@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-siteIdentity.js b/browser/base/content/browser-siteIdentity.js
-index cff28e1cdb550357662e8a7a41856e80b1de0018..9d569c1a1e6249c58a1e30fbb224c316c52ef204 100644
+index c6d060853cd3dab9d5c02bdc8de707b8fbde4b6d..bb3856be183f815f105a1175b71ee9b3a61c2f65 100644
 --- a/browser/base/content/browser-siteIdentity.js
 +++ b/browser/base/content/browser-siteIdentity.js
 @@ -464,11 +464,6 @@ var gIdentityHandler = {
@@ -14,7 +14,7 @@ index cff28e1cdb550357662e8a7a41856e80b1de0018..9d569c1a1e6249c58a1e30fbb224c316
  
      let baseDomain = SiteDataManager.getBaseDomainFromHost(this._uri.host);
      if (SiteDataManager.promptSiteDataRemoval(window, [baseDomain])) {
-@@ -853,7 +848,7 @@ var gIdentityHandler = {
+@@ -860,7 +855,7 @@ var gIdentityHandler = {
        // This is a secure internal Firefox page.
        this._identityBox.className = "chromeUI";
        let brandBundle = document.getElementById("bundle_brand");
@@ -23,7 +23,7 @@ index cff28e1cdb550357662e8a7a41856e80b1de0018..9d569c1a1e6249c58a1e30fbb224c316
      } else if (this._pageExtensionPolicy) {
        // This is a WebExtension page.
        this._identityBox.className = "extensionPage";
-@@ -1196,6 +1191,12 @@ var gIdentityHandler = {
+@@ -1198,6 +1193,12 @@ var gIdentityHandler = {
        }
      }
  

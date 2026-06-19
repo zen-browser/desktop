@@ -1,5 +1,5 @@
 diff --git a/browser/components/asrouter/modules/FeatureCallout.sys.mjs b/browser/components/asrouter/modules/FeatureCallout.sys.mjs
-index f176498a3130b61ac5e75fce8208d1b9eaf13f81..d133526ab5bf3db53e459c36d5f9a7ff37ef972f 100644
+index c4638d2d557f05fa6638cd379be8e0076336f8dc..2e25f485aa94485d12ca9e98aa4eaf56a06cf1f8 100644
 --- a/browser/components/asrouter/modules/FeatureCallout.sys.mjs
 +++ b/browser/components/asrouter/modules/FeatureCallout.sys.mjs
 @@ -778,6 +778,7 @@ export class FeatureCallout {

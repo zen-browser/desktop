@@ -234,7 +234,8 @@ jobs:
           ZEN_RELEASE_BRANCH: ${{ inputs.release-branch }}
           ZEN_SAFEBROWSING_API_KEY: ${{ secrets.ZEN_SAFEBROWSING_API_KEY }}
           ZEN_MOZILLA_API_KEY: ${{ secrets.ZEN_MOZILLA_API_KEY }}
-          ZEN_GOOGLE_LOCATION_SERVICE_API_KEY: ${{ secrets.ZEN_GOOGLE_LOCATION_SERVICE_API_KEY }}
+          # Firefox doesn't support location service for Windows
+          # ZEN_GOOGLE_LOCATION_SERVICE_API_KEY: ${{ secrets.ZEN_GOOGLE_LOCATION_SERVICE_API_KEY }}
         run: |
           set -x
           dos2unix configs/windows/mozconfig

@@ -188,7 +188,7 @@
           // for the tab to be more visible. This is a hacky workaround.
           // TODO: Make windows and linux DnD use nsZenDragAndDrop::mDragImageOpacity
           tabClone.style.colorScheme = "light";
-          tabClone.style.color = "black";
+          tabClone.style.setProperty("--tab-selected-textcolor", "black");
         }
         if (i > 0) {
           tabClone.style.transform = `translate(${i * 4}px, -${i * (tabRect.height - 4)}px)`;
@@ -697,8 +697,13 @@
       for (let tab of tabs) {
         if (isExplicitMode) {
           tab.style.colorScheme = isDarkMode ? "dark" : "light";
+          tab.style.setProperty(
+            "--tab-selected-textcolor",
+            isDarkMode ? "white" : "black"
+          );
         } else {
           tab.style.colorScheme = "";
+          tab.style.removeProperty("--tab-selected-textcolor");
         }
       }
       requestAnimationFrame(() => {
@@ -947,7 +952,7 @@
       const ownerGlobal = event.dataTransfer.mozGetDataAt(
         TAB_DROP_TYPE,
         0
-      )?.ownerGlobal;
+      )?.documentGlobal;
       if (ownerGlobal?.gZenCompactModeManager) {
         // Sometimes, dragend doesn't always get called when dragging
         // to different windows, see gh-8643.
@@ -967,7 +972,7 @@
       const dt = event.dataTransfer;
       const activeWorkspace = gZenWorkspaces.activeWorkspace;
       let draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
-      if (draggedTab.ownerGlobal === window) {
+      if (draggedTab.documentGlobal === window) {
         if (
           !draggedTab.hasAttribute("zen-essential") &&
           draggedTab.getAttribute("zen-workspace-id") != activeWorkspace
@@ -1051,7 +1056,7 @@
             gZenWorkspaces.activeWorkspace ||
           !dropElement.visible ||
           !draggedTab.visible ||
-          draggedTab.ownerGlobal !== window
+          draggedTab.documentGlobal !== window
         ) {
           return;
         }
@@ -1158,7 +1163,7 @@
     handle_dragend(event) {
       const dt = event.dataTransfer;
       const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
-      let ownerGlobal = draggedTab?.ownerGlobal;
+      let ownerGlobal = draggedTab?.documentGlobal;
       draggedTab.style.visibility = "";
       let thisFromGlobal = ownerGlobal?.gBrowser.tabContainer.tabDragAndDrop;
       let currentEssenialContainer =

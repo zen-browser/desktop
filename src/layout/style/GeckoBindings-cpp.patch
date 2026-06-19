@@ -1,8 +1,8 @@
 diff --git a/layout/style/GeckoBindings.cpp b/layout/style/GeckoBindings.cpp
-index 56a16d313a5d30d12edf1f94459db1027af87002..3722f2d6ce6c0864956fed2b00c71a3286edc674 100644
+index ee784cef626a12da58ac1f6c6c8538c454f82f4f..32158faf39de766a16318018f325d0e6c6aef50c 100644
 --- a/layout/style/GeckoBindings.cpp
 +++ b/layout/style/GeckoBindings.cpp
-@@ -1068,7 +1068,7 @@ void Gecko_SetFontPaletteOverride(
+@@ -1032,7 +1032,7 @@ void Gecko_SetFontPaletteOverride(
      return;
    }
    aValues->mOverrides.AppendElement(gfx::FontPaletteValueSet::OverrideColor{

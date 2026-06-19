@@ -1,5 +1,5 @@
 diff --git a/layout/xul/tree/nsTreeBodyFrame.cpp b/layout/xul/tree/nsTreeBodyFrame.cpp
-index b6aa10336e7994c830e0326298820c3a534f8094..7747c52e5c5d227894d8f7fb377c65861dc51c4c 100644
+index f88360d5a787884510c3b461319b1536800a3d8f..1b1df582a1138a9de57fa69cde4441225ad7d4b3 100644
 --- a/layout/xul/tree/nsTreeBodyFrame.cpp
 +++ b/layout/xul/tree/nsTreeBodyFrame.cpp
 @@ -2865,7 +2865,8 @@ ImgDrawResult nsTreeBodyFrame::PaintCell(

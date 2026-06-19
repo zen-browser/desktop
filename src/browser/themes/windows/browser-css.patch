@@ -1,5 +1,5 @@
 diff --git a/browser/themes/windows/browser.css b/browser/themes/windows/browser.css
-index 039cd084f23ef27eb4a1d359c8caca690eb75eb5..432302ce8d29de1836aaf0a756b3aa0ebc86562a 100644
+index 7dcb386d38d25ee483f19322ea327b4dc6a244e0..c30a16e503224691572118efa0f1ff9e108895b3 100644
 --- a/browser/themes/windows/browser.css
 +++ b/browser/themes/windows/browser.css
 @@ -41,7 +41,6 @@
@@ -10,7 +10,7 @@ index 039cd084f23ef27eb4a1d359c8caca690eb75eb5..432302ce8d29de1836aaf0a756b3aa0e
      }
  
      /* Using a semitransparent background preserves the tinting from the backdrop.
-@@ -70,14 +69,13 @@
+@@ -73,14 +72,13 @@
  }
  
  /* This is needed for Windows 10, see bug 1961257 */

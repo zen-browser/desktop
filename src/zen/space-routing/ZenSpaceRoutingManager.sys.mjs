@@ -16,6 +16,7 @@ class nsZenSpaceRoutingManager {
 
   constructor() {
     this.#readFromDisk();
+    this._addSelectedToRouting = this.onAddSelectedToRouting.bind(this);
   }
 
   /**
@@ -28,10 +29,26 @@ class nsZenSpaceRoutingManager {
         <menuseparator/>
         <menuitem id="context_zen-add-domain-to-routing"
                   data-lazy-l10n-id="tab-context-zen-add-domain-to-sr"
-                  data-l10n-args='{"tabCount": 1}'
-                  command="cmd_contextZenAddDomainToRouting"/>
+                  data-l10n-args='{"tabCount": 1}'/>
       `);
     window.document.getElementById("context_undoCloseTab")?.after(element);
+    window.document
+      .getElementById("context_zen-add-domain-to-routing")
+      .addEventListener("command", this._addSelectedToRouting);
+  }
+
+  /**
+   * Callback for when the context menu option to add the selected
+   * tabs to a new route is pressed
+   * 
+   * @param {Event} event
+   */
+  onAddSelectedToRouting(event) {
+    const window = event.target.documentGlobal;
+    const tabs = window.TabContextMenu.contextTab.multiselected
+      ? window.gBrowser.selectedTabs
+      : [window.TabContextMenu.contextTab];
+    gZenSpaceRoutingManager.addRouteForSelected(tabs, window);
   }
 
   /**

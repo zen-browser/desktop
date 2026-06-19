@@ -452,10 +452,7 @@ class nsZenSpaceRoutingManager {
 
     if (selectedTabs.length == 1) {
       newRoute.matchType = "contains";
-      routeReference = selectedTabs[0].linkedBrowser.currentURI.host.replace(
-        "www.",
-        ""
-      );
+      routeReference = selectedTabs[0].linkedBrowser.currentURI.host;
     } else {
       newRoute.matchType = "regex";
       routeReference = "(";

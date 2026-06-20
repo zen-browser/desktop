@@ -1528,7 +1528,7 @@ diff --git a/servo/components/style/values/specified/mod.rs b/servo/components/s
 --- a/servo/components/style/values/specified/mod.rs
 +++ b/servo/components/style/values/specified/mod.rs
 @@ -50,10 +50,11 @@
- };
+ pub use self::calc::{CalcLengthPercentage, CalcNumeric};
  pub use self::color::{
      Color, ColorOrAuto, ColorPropertyValue, ColorScheme, ForcedColorAdjust, PrintColorAdjust,
  };
@@ -1551,6 +1551,21 @@ diff --git a/servo/components/style/values/specified/mod.rs b/servo/components/s
  pub mod effects;
  pub mod flex;
  pub mod font;
+diff --git a/servo/components/style/values/specified/position.rs b/servo/components/style/values/specified/position.rs
+--- a/servo/components/style/values/specified/position.rs
++++ b/servo/components/style/values/specified/position.rs
+@@ -747,11 +747,10 @@
+     #[css(iterable, if_empty = "none")]
+     #[ignore_malloc_size_of = "Arc"]
+     pub crate::ArcSlice<PositionTryFallbacksItem>,
+ );
+ 
+-
+ impl IsTreeScoped for PositionTryFallbacksList {
+     fn is_tree_scoped(&self) -> bool {
+         !self.is_none()
+     }
+ }
 diff --git a/servo/ports/geckolib/cbindgen.toml b/servo/ports/geckolib/cbindgen.toml
 --- a/servo/ports/geckolib/cbindgen.toml
 +++ b/servo/ports/geckolib/cbindgen.toml

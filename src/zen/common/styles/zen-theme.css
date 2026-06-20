@@ -213,7 +213,7 @@
   --toolbarbutton-border-radius: 6px;
   --urlbar-margin-inline: 1px !important;
 
-  --zen-squircle-value: 1.3;
+  --zen-squircle-value: 1.4;
 
   --tab-icon-overlay-stroke: light-dark(white, black) !important;
   --tab-close-button-padding: 4px !important;
@@ -346,6 +346,8 @@
 
 %include zen-buttons.css
 
-*:not(.no-squircles) {
-  corner-shape: superellipse(var(--zen-squircle-value));
+@media (-moz-pref('layout.css.corner-shape.enabled')) {
+  *:not(.no-squircles) {
+    corner-shape: superellipse(var(--zen-squircle-value));
+  }
 }

@@ -609,7 +609,7 @@ diff --git a/gfx/wr/webrender/src/border.rs b/gfx/wr/webrender/src/border.rs
 diff --git a/gfx/wr/webrender/src/clip.rs b/gfx/wr/webrender/src/clip.rs
 --- a/gfx/wr/webrender/src/clip.rs
 +++ b/gfx/wr/webrender/src/clip.rs
-@@ -2334,10 +2334,14 @@
+@@ -2344,10 +2344,14 @@
          BorderRadius {
              top_left: LayoutSize::new(tl, tl),
              top_right: LayoutSize::new(tr, tr),
@@ -624,7 +624,7 @@ diff --git a/gfx/wr/webrender/src/clip.rs b/gfx/wr/webrender/src/clip.rs
  
      #[test]
      fn test_intersect_identical() {
-@@ -2446,10 +2450,14 @@
+@@ -2456,10 +2460,14 @@
      let result_rect = rect_a.intersection(&rect_b)?;
      if result_rect.is_empty() {
          return None;
@@ -639,7 +639,7 @@ diff --git a/gfx/wr/webrender/src/clip.rs b/gfx/wr/webrender/src/clip.rs
              result_rect.min.x, result_rect.min.y,
              rect_a.min.x, rect_a.min.y, radius_a.top_left,
              rect_b.min.x, rect_b.min.y, radius_b.top_left,
-@@ -2471,10 +2479,14 @@
+@@ -2481,10 +2489,14 @@
              result_rect.max.x, result_rect.max.y,
              rect_a.max.x, rect_a.max.y, radius_a.bottom_right,
              rect_b.max.x, rect_b.max.y, radius_b.bottom_right,
@@ -654,6 +654,25 @@ diff --git a/gfx/wr/webrender/src/clip.rs b/gfx/wr/webrender/src/clip.rs
      if !result_radius.can_use_fast_path_in(&result_rect) {
          return None;
      }
+diff --git a/gfx/wr/webrender/src/prim_store/borders.rs b/gfx/wr/webrender/src/prim_store/borders.rs
+--- a/gfx/wr/webrender/src/prim_store/borders.rs
++++ b/gfx/wr/webrender/src/prim_store/borders.rs
+@@ -549,12 +549,12 @@
+     // talos stress tests. If you get a failure here on CI, there's two possibilities:
+     // (a) You made a structure smaller than it currently is. Great work! Update the
+     //     test expectations and move on.
+     // (b) You made a structure larger. This is not necessarily a problem, but should only
+     //     be done with care, and after checking if talos performance regresses badly.
+-    assert_eq!(mem::size_of::<NormalBorderPrim>(), 84, "NormalBorderPrim size changed");
+-    assert_eq!(mem::size_of::<NormalBorderTemplate>(), 140, "NormalBorderTemplate size changed");
+-    assert_eq!(mem::size_of::<NormalBorderKey>(), 88, "NormalBorderKey size changed");
++    assert_eq!(mem::size_of::<NormalBorderPrim>(), 100, "NormalBorderPrim size changed");
++    assert_eq!(mem::size_of::<NormalBorderTemplate>(), 156, "NormalBorderTemplate size changed");
++    assert_eq!(mem::size_of::<NormalBorderKey>(), 104, "NormalBorderKey size changed");
+     assert_eq!(mem::size_of::<ImageBorder>(), 68, "ImageBorder size changed");
+     assert_eq!(mem::size_of::<ImageBorderTemplate>(), 104, "ImageBorderTemplate size changed");
+     assert_eq!(mem::size_of::<ImageBorderKey>(), 72, "ImageBorderKey size changed");
+ }
 diff --git a/gfx/wr/webrender/src/quad.rs b/gfx/wr/webrender/src/quad.rs
 --- a/gfx/wr/webrender/src/quad.rs
 +++ b/gfx/wr/webrender/src/quad.rs
@@ -665,7 +684,7 @@ diff --git a/gfx/wr/webrender/src/quad.rs b/gfx/wr/webrender/src/quad.rs
              } else {
 -                let mut writer = gpu_buffer.write_blocks(4);
 +                let mut writer = gpu_buffer.write_blocks(5);
-                 writer.push_one(rect);
+                 writer.push_one(clip_instance.clip_rect);
                  writer.push_one([
                      radius.top_left.width,
                      radius.top_left.height,
@@ -723,7 +742,7 @@ diff --git a/gfx/wr/webrender/src/tile_cache/mod.rs b/gfx/wr/webrender/src/tile_
 diff --git a/gfx/wr/webrender_api/src/display_item.rs b/gfx/wr/webrender_api/src/display_item.rs
 --- a/gfx/wr/webrender_api/src/display_item.rs
 +++ b/gfx/wr/webrender_api/src/display_item.rs
-@@ -530,23 +530,41 @@
+@@ -523,23 +523,41 @@
  pub struct BorderRadius {
      pub top_left: LayoutSize,
      pub top_right: LayoutSize,
@@ -765,7 +784,7 @@ diff --git a/gfx/wr/webrender_api/src/display_item.rs b/gfx/wr/webrender_api/src
  pub struct BorderSide {
      pub color: ColorF,
      pub style: BorderStyle,
-@@ -2009,28 +2027,40 @@
+@@ -2069,28 +2087,40 @@
          BorderRadius {
              top_left: LayoutSize::new(0.0, 0.0),
              top_right: LayoutSize::new(0.0, 0.0),
@@ -806,7 +825,7 @@ diff --git a/gfx/wr/webrender_api/src/display_item.rs b/gfx/wr/webrender_api/src
  
      pub fn all_sides_uniform(&self) -> bool {
          let corner_is_uniform = |corner: &LayoutSize| corner.width == corner.height;
-@@ -2039,10 +2069,13 @@
+@@ -2099,10 +2129,13 @@
          corner_is_uniform(&self.bottom_right) &&
          corner_is_uniform(&self.bottom_left)
      }
@@ -889,6 +908,25 @@ diff --git a/gfx/wr/wrench/src/yaml_helper.rs b/gfx/wr/wrench/src/yaml_helper.rs
              _ => {
                  panic!("Invalid border radius specified: {:?}", self);
              }
+diff --git a/layout/base/ShapeUtils.cpp b/layout/base/ShapeUtils.cpp
+--- a/layout/base/ShapeUtils.cpp
++++ b/layout/base/ShapeUtils.cpp
+@@ -145,12 +145,13 @@
+ 
+ /* static */
+ bool ShapeUtils::ComputeRectRadii(const StyleBorderRadius& aBorderRadius,
+                                   const nsRect& aRefBox, const nsRect& aRect,
+                                   nsRectCornerRadii& aRadii) {
+-  return nsIFrame::ComputeBorderRadii(aBorderRadius, aRefBox.Size(),
+-                                      aRect.Size(), Sides(), aRadii);
++  return nsIFrame::ComputeBorderRadii(
++      aBorderRadius, {{1.0f}, {1.0f}, {1.0f}, {1.0f}}, aRefBox.Size(),
++      aRect.Size(), Sides(), aRadii);
+ }
+ 
+ /* static */
+ nsTArray<nsPoint> ShapeUtils::ComputePolygonVertices(
+     const StyleBasicShape& aBasicShape, const nsRect& aRefBox) {
 diff --git a/layout/generic/TextDrawTarget.h b/layout/generic/TextDrawTarget.h
 --- a/layout/generic/TextDrawTarget.h
 +++ b/layout/generic/TextDrawTarget.h
@@ -906,46 +944,132 @@ diff --git a/layout/generic/TextDrawTarget.h b/layout/generic/TextDrawTarget.h
      if (!rect.Intersects(GeckoClipRect())) {
        return;
      }
+diff --git a/layout/generic/nsIFrame.h b/layout/generic/nsIFrame.h
+--- a/layout/generic/nsIFrame.h
++++ b/layout/generic/nsIFrame.h
+@@ -1670,10 +1670,11 @@
+    * large.
+    *
+    * Return whether any radii are nonzero.
+    */
+   static bool ComputeBorderRadii(const mozilla::BorderRadius&,
++                                 const mozilla::CornerShapeRect&,
+                                  const nsSize& aFrameSize,
+                                  const nsSize& aBorderArea, Sides aSkipSides,
+                                  nsRectCornerRadii&);
+ 
+   /**
 diff --git a/layout/generic/nsIFrame.cpp b/layout/generic/nsIFrame.cpp
 --- a/layout/generic/nsIFrame.cpp
 +++ b/layout/generic/nsIFrame.cpp
-@@ -1885,10 +1885,15 @@
+@@ -1808,30 +1808,49 @@
+ nsRect nsIFrame::GetContentRect() const {
+   return GetContentRectRelativeToSelf() + GetPosition();
+ }
+ 
+ bool nsIFrame::ComputeBorderRadii(const BorderRadius& aBorderRadius,
++                                  const CornerShapeRect& aCornerShape,
+                                   const nsSize& aFrameSize,
+                                   const nsSize& aBorderArea, Sides aSkipSides,
+                                   nsRectCornerRadii& aRadii) {
+   // Percentages are relative to whichever side they're on.
+   for (const auto i : mozilla::AllPhysicalHalfCorners()) {
+     const LengthPercentage& c = aBorderRadius.Get(i);
+     nscoord axis = HalfCornerIsX(i) ? aFrameSize.width : aFrameSize.height;
+     aRadii[i] = std::max(0, c.Resolve(axis));
+   }
+ 
+-  if (aSkipSides.Intersects(SideBits::eTop | SideBits::eLeft)) {
++  aRadii.mShapeK[mozilla::eCornerTopLeft] = aCornerShape.top_left.k;
++  aRadii.mShapeK[mozilla::eCornerTopRight] = aCornerShape.top_right.k;
++  aRadii.mShapeK[mozilla::eCornerBottomLeft] = aCornerShape.bottom_left.k;
++  aRadii.mShapeK[mozilla::eCornerBottomRight] = aCornerShape.bottom_right.k;
++
++  bool isTopLeftSquare =
++      isinf(aCornerShape.top_left.k) && (aCornerShape.top_left.k > 0.0f);
++  bool isTopRightSquare =
++      isinf(aCornerShape.top_right.k) && (aCornerShape.top_right.k > 0.0f);
++  bool isBottomLeftSquare =
++      isinf(aCornerShape.bottom_left.k) && (aCornerShape.bottom_left.k > 0.0f);
++  bool isBottomRightSquare = isinf(aCornerShape.bottom_right.k) &&
++                             (aCornerShape.bottom_right.k > 0.0f);
++
++  if (aSkipSides.Intersects(SideBits::eTop | SideBits::eLeft) ||
++      isTopLeftSquare) {
+     aRadii.TopLeft() = {};
+   }
+-  if (aSkipSides.Intersects(SideBits::eTop | SideBits::eRight)) {
++  if (aSkipSides.Intersects(SideBits::eTop | SideBits::eRight) ||
++      isTopRightSquare) {
+     aRadii.TopRight() = {};
+   }
+-  if (aSkipSides.Intersects(SideBits::eBottom | SideBits::eLeft)) {
++  if (aSkipSides.Intersects(SideBits::eBottom | SideBits::eLeft) ||
++      isBottomLeftSquare) {
+     aRadii.BottomLeft() = {};
+   }
+-  if (aSkipSides.Intersects(SideBits::eBottom | SideBits::eRight)) {
++  if (aSkipSides.Intersects(SideBits::eBottom | SideBits::eRight) ||
++      isBottomRightSquare) {
+     aRadii.BottomRight() = {};
+   }
+ 
+   // css3-background specifies this algorithm for reducing
+   // corner radii when they are too big.
+@@ -1887,12 +1906,13 @@
+     // zero.
+     return false;
    }
  
    const auto& radii = StyleBorder()->mBorderRadius;
-   const bool hasRadii =
-       ComputeBorderRadii(radii, aFrameSize, aBorderArea, aSkipSides, aRadii);
-+  const auto& shape = StyleBorder()->mCornerShape;
-+  aRadii.mShapeK[mozilla::eCornerTopLeft] = shape.top_left.k;
-+  aRadii.mShapeK[mozilla::eCornerTopRight] = shape.top_right.k;
-+  aRadii.mShapeK[mozilla::eCornerBottomRight] = shape.bottom_right.k;
-+  aRadii.mShapeK[mozilla::eCornerBottomLeft] = shape.bottom_left.k;
+-  const bool hasRadii =
+-      ComputeBorderRadii(radii, aFrameSize, aBorderArea, aSkipSides, aRadii);
++  const auto& cornerShape = StyleBorder()->mCornerShape;
++  const bool hasRadii = ComputeBorderRadii(radii, cornerShape, aFrameSize,
++                                           aBorderArea, aSkipSides, aRadii);
    if (!hasRadii) {
      // TODO(emilio): Maybe we can just remove this bit and do the
      // IsDefinitelyZero check unconditionally. That should still avoid most of
      // the work, though maybe not the cache miss of going through the style and
      // the border struct.
+diff --git a/layout/generic/nsTextFrame.cpp b/layout/generic/nsTextFrame.cpp
+--- a/layout/generic/nsTextFrame.cpp
++++ b/layout/generic/nsTextFrame.cpp
+@@ -7156,12 +7156,15 @@
+               if (auto* style =
+                       aParams.textPaintStyle->GetSelectionPseudoStyle()) {
+                 nsSize size = LayoutDeviceRect::ToAppUnits(selectionRect,
+                                                            appUnitsPerDevPixel)
+                                   .Size();
++
++                const auto& borderRadius = style->StyleBorder()->mBorderRadius;
++                const auto& cornerShape = style->StyleBorder()->mCornerShape;
+                 hasRadii = nsIFrame::ComputeBorderRadii(
+-                    style->StyleBorder()->mBorderRadius, size, size, {}, radii);
++                    borderRadius, cornerShape, size, size, {}, radii);
+               }
+             }
+ 
+             if (hasRadii) {
+               textDrawer->AppendSelectionRoundRect(
 diff --git a/layout/painting/nsCSSRendering.cpp b/layout/painting/nsCSSRendering.cpp
 --- a/layout/painting/nsCSSRendering.cpp
 +++ b/layout/painting/nsCSSRendering.cpp
-@@ -485,10 +485,16 @@
+@@ -484,11 +484,12 @@
+   if (&aBorder == aForFrame->StyleBorder() &&
        frameSize == aOrigBorderArea.Size()) {
      haveRoundedCorners = aForFrame->GetBorderRadii(sz, sz, Sides(), aRadii);
    } else {
      haveRoundedCorners = nsIFrame::ComputeBorderRadii(
-         aBorder.mBorderRadius, frameSize, sz, Sides(), aRadii);
-+    aRadii.mShapeK[mozilla::eCornerTopLeft] = aBorder.mCornerShape.top_left.k;
-+    aRadii.mShapeK[mozilla::eCornerTopRight] = aBorder.mCornerShape.top_right.k;
-+    aRadii.mShapeK[mozilla::eCornerBottomRight] =
-+        aBorder.mCornerShape.bottom_right.k;
-+    aRadii.mShapeK[mozilla::eCornerBottomLeft] =
-+        aBorder.mCornerShape.bottom_left.k;
+-        aBorder.mBorderRadius, frameSize, sz, Sides(), aRadii);
++        aBorder.mBorderRadius, aBorder.mCornerShape, frameSize, sz, Sides(),
++        aRadii);
    }
  
    return haveRoundedCorners;
  }
  
-@@ -593,10 +599,11 @@
+@@ -593,10 +594,11 @@
                                         RectCornerRadii* oBorderRadii) {
    for (const auto corner : mozilla::AllPhysicalCorners()) {
      (*oBorderRadii)[corner] =
@@ -957,14 +1081,29 @@ diff --git a/layout/painting/nsCSSRendering.cpp b/layout/painting/nsCSSRendering
  
  static Maybe<nsStyleBorder> GetBorderIfVisited(const ComputedStyle& aStyle) {
    Maybe<nsStyleBorder> result;
+diff --git a/layout/style/ServoStyleConstsInlines.h b/layout/style/ServoStyleConstsInlines.h
+--- a/layout/style/ServoStyleConstsInlines.h
++++ b/layout/style/ServoStyleConstsInlines.h
+@@ -570,10 +570,11 @@
+ using Length = StyleLength;
+ using LengthOrAuto = StyleLengthOrAuto;
+ using NonNegativeLength = StyleNonNegativeLength;
+ using NonNegativeLengthOrAuto = StyleNonNegativeLengthOrAuto;
+ using BorderRadius = StyleBorderRadius;
++using CornerShapeRect = StyleCornerShapeRect;
+ 
+ bool StyleCSSPixelLength::IsZero() const { return _0 == 0.0f; }
+ 
+ void StyleCSSPixelLength::ScaleBy(float aScale) { _0 *= aScale; }
+ 
 diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-backdrop-filter-overflow.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-backdrop-filter-overflow.html.ini
 --- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-backdrop-filter-overflow.html.ini
 +++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-backdrop-filter-overflow.html.ini
-@@ -1,4 +1,5 @@
+@@ -1,4 +1,4 @@
  [corner-shape-backdrop-filter-overflow.html]
    expected:
      if not useDrawSnapshot and asan and not fission and not swgl: TIMEOUT
-     if useDrawSnapshot: FAIL
+-    if useDrawSnapshot: FAIL
 +    FAIL
 diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-bevel-overflow-composite.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-bevel-overflow-composite.html.ini
 --- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-bevel-overflow-composite.html.ini
@@ -1000,7 +1139,7 @@ diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape
 diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/render-corner-shape.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/render-corner-shape.html.ini
 --- a/testing/web-platform/meta/css/css-borders/corner-shape/render-corner-shape.html.ini
 +++ b/testing/web-platform/meta/css/css-borders/corner-shape/render-corner-shape.html.ini
-@@ -1,125 +1,160 @@
+@@ -1,125 +1,156 @@
  [render-corner-shape.html?border-radius=50&corner-shape=0&shadow-spread=10]
    expected: FAIL
  
@@ -1119,10 +1258,8 @@ diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/render-corne
  
  [render-corner-shape.html?corner-shape=3&border-top-right-radius=33]
 -  expected: FAIL
-+  expected:
-+    if useDrawSnapshot: FAIL
- 
- [render-corner-shape.html?corner-shape=square&border-bottom-left-radius=5]
+-
+-[render-corner-shape.html?corner-shape=square&border-bottom-left-radius=5]
 -  expected: FAIL
 +  expected:
 +    if useDrawSnapshot: FAIL

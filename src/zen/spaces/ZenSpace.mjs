@@ -139,6 +139,11 @@ export class nsZenWorkspace extends MozXULElement {
     this.scrollbox.addEventListener("underflow", this);
     this.scrollbox.addEventListener("overflow", this);
 
+    const refresh = () => this.#refreshScrollShadow();
+    this.scrollbox.addEventListener("scroll", refresh);
+    this.scrollbox.addEventListener("overflow", refresh);
+    this.scrollbox.addEventListener("underflow", refresh);
+
     const indicatorName = this.indicator.querySelector(
       ".zen-current-workspace-indicator-name"
     );
@@ -331,6 +336,22 @@ export class nsZenWorkspace extends MozXULElement {
     } else {
       this.#dispatchEventFromScrollbox("underflow");
     }
+  }
+
+  #refreshScrollShadow() {
+    const arrowscrollbox = this.scrollbox;
+    const scrollbox = arrowscrollbox.scrollbox;
+    const overflowing = scrollbox.scrollHeight > scrollbox.clientHeight + 1;
+    arrowscrollbox.toggleAttribute(
+      "zen-overflow-top",
+      overflowing && scrollbox.scrollTop > 0
+    );
+    arrowscrollbox.toggleAttribute(
+      "zen-overflow-bottom",
+      overflowing &&
+        scrollbox.scrollTop + scrollbox.clientHeight <
+          scrollbox.scrollHeight - 1
+    );
   }
 
   #dispatchEventFromScrollbox(type) {

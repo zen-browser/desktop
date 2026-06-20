@@ -383,11 +383,11 @@ zen-workspace {
         background-color: var(--zen-scrollbar-overflow-background);
       }
 
-      &:not([scrolledtostart])::before {
+      &[zen-overflow-top]::before {
         opacity: 1;
       }
 
-      &:not([scrolledtoend])::after {
+      &[zen-overflow-bottom]::after {
         opacity: 1;
       }
     }

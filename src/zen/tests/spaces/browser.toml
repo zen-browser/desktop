@@ -10,6 +10,8 @@ support-files = [
 
 ["browser_basic_workspaces.js"]
 
+["browser_collapsed_pinned_scroll_shadow.js"]
+
 ["browser_double_click_newtab.js"]
 
 ["browser_issue_10455.js"]

@@ -188,7 +188,3 @@
     max-height: 100%;
   }
 }
-
-:root[inDOMFullscreen="true"] .zen-glance-sidebar-container {
-  display: none !important;
-}

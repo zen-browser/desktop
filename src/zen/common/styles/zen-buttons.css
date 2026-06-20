@@ -126,19 +126,19 @@ xul|button:not(#zen-workspaces-button):active {
   }
 
   .titlebar-min::before {
-    mask-image: url("chrome://global/skin/icons/minimize.svg");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Crect x='0' y='4.5' width='10' height='1'/%3E%3C/svg%3E");
   }
 
   .titlebar-max::before {
-    mask-image: url("chrome://global/skin/icons/maximize.svg");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Crect x='0.5' y='0.5' width='9' height='9' fill='none' stroke='black' stroke-width='1'/%3E%3C/svg%3E");
   }
 
   .titlebar-restore::before {
-    mask-image: url("chrome://global/skin/icons/restore.svg");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Crect x='2.5' y='0.5' width='7' height='7' fill='none' stroke='black' stroke-width='1'/%3E%3Crect x='0.5' y='2.5' width='7' height='7' fill='black'/%3E%3C/svg%3E");
   }
 
   .titlebar-close::before {
-    mask-image: url("chrome://global/skin/icons/close.svg");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cline x1='0.5' y1='0.5' x2='9.5' y2='9.5' stroke='black' stroke-width='1.2'/%3E%3Cline x1='9.5' y1='0.5' x2='0.5' y2='9.5' stroke='black' stroke-width='1.2'/%3E%3C/svg%3E");
   }
 
   .titlebar-close:hover {

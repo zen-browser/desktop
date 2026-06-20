@@ -37,8 +37,8 @@
   value: false
 
 - name: sidebar.revamp
-  value: false
-  locked: true
+  value: true
+  locked: false
 
 - name: sidebar.verticalTabs
   value: false

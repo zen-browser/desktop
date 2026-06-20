@@ -139,6 +139,15 @@ export class nsZenWorkspace extends MozXULElement {
     this.scrollbox.addEventListener("underflow", this);
     this.scrollbox.addEventListener("overflow", this);
 
+    // Drive the scroll-shadow dividers from the real scroll position. The
+    // arrowscrollbox derives scrolledtostart/end from the first/last scrollable
+    // element's edge, which is unreliable when pinned tabs are collapsed; the
+    // raw scrollTop is not. Recompute on scroll and on overflow/underflow.
+    const refresh = () => this.refreshScrollShadow();
+    this.scrollbox.addEventListener("scroll", refresh);
+    this.scrollbox.addEventListener("overflow", refresh);
+    this.scrollbox.addEventListener("underflow", refresh);
+
     const indicatorName = this.indicator.querySelector(
       ".zen-current-workspace-indicator-name"
     );
@@ -267,6 +276,7 @@ export class nsZenWorkspace extends MozXULElement {
     this.prepend(this.collapsiblePins);
 
     this.#updateOverflow();
+    this.refreshScrollShadow();
 
     this.onGradientCacheChanged = this.#onGradientCacheChanged.bind(this);
     window.addEventListener(
@@ -335,6 +345,28 @@ export class nsZenWorkspace extends MozXULElement {
 
   #dispatchEventFromScrollbox(type) {
     this.scrollbox.dispatchEvent(new CustomEvent(type, {}));
+  }
+
+  // Show the top/bottom scroll-shadow dividers based on the real scroll
+  // position: visible as soon as there is hidden content past that edge, hidden
+  // only when actually at the start/end (including collapsed pinned tabs at the
+  // top). Computed from scrollTop so it does not depend on element geometry.
+  refreshScrollShadow() {
+    const arrowscrollbox = this.scrollbox;
+    const scrollbox = arrowscrollbox?.scrollbox;
+    if (!scrollbox) {
+      return;
+    }
+    const overflowing = scrollbox.scrollHeight > scrollbox.clientHeight + 1;
+    arrowscrollbox.toggleAttribute(
+      "zen-overflow-top",
+      overflowing && scrollbox.scrollTop > 0
+    );
+    arrowscrollbox.toggleAttribute(
+      "zen-overflow-bottom",
+      overflowing &&
+        scrollbox.scrollTop + scrollbox.clientHeight < scrollbox.scrollHeight - 1
+    );
   }
 
   get overflows() {

@@ -29,7 +29,7 @@ index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09
 +
 +    try {
 +      let zenWorkspaceParam = cmdLine.handleFlagWithParam("zen-workspace", false);
-+      if (zenWorkspaceParam !== null) {
++      if (zenWorkspaceParam) {
 +        let zenWorkspaceURL = null;
 +        try {
 +          zenWorkspaceURL = cmdLine.handleFlagWithParam("url", false);

@@ -125,6 +125,10 @@
           "dragover",
           this.handle_spaceIconDragOver.bind(this)
         );
+        gZenWorkspaces.workspaceIcons.addEventListener(
+          "drop",
+          this.#handle_spaceIconDrop.bind(this)
+        );
       }
       window.addEventListener(
         "dragleave",
@@ -765,6 +769,35 @@
       gZenWorkspaces.changeWorkspaceWithID(spaceId).then(spaceChanged => {
         this.#onSpaceChanged(spaceChanged, dt);
       });
+    }
+
+    #handle_spaceIconDrop(event) {
+      const dt = event.dataTransfer;
+      const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
+      if (!isTab(draggedTab) || draggedTab.hasAttribute("zen-essential")) {
+        return;
+      }
+      const spaceId = event.target
+        .closest("[zen-workspace-id]")
+        ?.getAttribute("zen-workspace-id");
+      if (!spaceId) {
+        return;
+      }
+      this.clearSpaceSwitchTimer();
+      this.clearDragOverVisuals();
+      const movingTabs = draggedTab._dragData?.movingTabs || [draggedTab];
+      const place = () => {
+        gZenWorkspaces.moveTabsToWorkspace(movingTabs, spaceId);
+        if (draggedTab.ownerGlobal === window) {
+          gBrowser.selectedTab = draggedTab;
+        }
+        gZenWorkspaces.updateTabsContainers();
+      };
+      if (spaceId === gZenWorkspaces.activeWorkspace) {
+        place();
+      } else {
+        gZenWorkspaces.changeWorkspaceWithID(spaceId).then(place);
+      }
     }
 
     #handle_tabDragOverToSplit(event) {

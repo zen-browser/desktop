@@ -265,6 +265,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const image = element.querySelector("image");
     const label = element.querySelector("label");
     image.src = tab.getAttribute("image");
+    image.onerror = () => {
+      image.style.display = "none";
+    };
     label.textContent = tab.label;
     document.documentElement.appendChild(element);
     this._dndElement = element;

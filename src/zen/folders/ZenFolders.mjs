@@ -1185,6 +1185,10 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         gBrowser.getIcon(tab) || PlacesUtils.favicons.defaultFavicon.spec;
 
       icon.src = iconURL;
+      icon.onerror = () => {
+        icon.onerror = null;
+        icon.src = PlacesUtils.favicons.defaultFavicon.spec;
+      };
 
       const labelsContainer = document.createElement("div");
       labelsContainer.className = "folders-tabs-list-item-labels";

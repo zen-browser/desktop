@@ -776,10 +776,16 @@
             const icon = document.createElement("img");
             promises.push(
               (async () => {
-                icon.setAttribute(
-                  "src",
-                  await engine.originalEngine.getIconURL()
-                );
+                try {
+                  const iconURL = await engine.originalEngine.getIconURL();
+                  if (iconURL) {
+                    icon.setAttribute("src", iconURL);
+                  } else {
+                    icon.style.visibility = "hidden";
+                  }
+                } catch {
+                  icon.style.visibility = "hidden";
+                }
               })()
             );
             icon.setAttribute("width", "32");

@@ -33,7 +33,6 @@ class nsZenSpaceRoutingManager {
     window.document.getElementById("context_undoCloseTab").after(element);
 
     const onCommand = function (event) {
-      const window = event.target.documentGlobal;
       const tabs = window.TabContextMenu.contextTab.multiselected
         ? window.gBrowser.selectedTabs
         : [window.TabContextMenu.contextTab];
@@ -42,7 +41,7 @@ class nsZenSpaceRoutingManager {
 
     window.document
       .getElementById("context_zen-add-domain-to-routing")
-      .addEventListener("command", onCommand);
+      .addEventListener("command", onCommand.bind(this));
   }
 
   /**

@@ -40,7 +40,7 @@ add_task(async function test_resolve_workspace_from_string() {
   );
 });
 
-add_task(async function test_open_link_in_workspace_from_command_line() {
+add_task(async function test_change_workspace_from_command_line() {
   const originalWorkspaceUUID = gZenWorkspaces.activeWorkspace;
   await gZenWorkspaces.createAndSaveWorkspace("Cmdline Target");
   const target = gZenWorkspaces
@@ -55,24 +55,24 @@ add_task(async function test_open_link_in_workspace_from_command_line() {
     "We should start from the original workspace."
   );
 
-  await gZenWorkspaces.openLinkInWorkspaceFromCommandLine(
-    "Cmdline Target",
-    "https://example.com/"
-  );
-
+  // Matching by name is case-insensitive.
+  await gZenWorkspaces.changeWorkspaceFromCommandLine("cmdline target");
   Assert.strictEqual(
     gZenWorkspaces.activeWorkspace,
     target.uuid,
     "The command line flag should switch to the target workspace."
   );
-  const tab = gBrowser.selectedTab;
+
+  await gZenWorkspaces.changeWorkspaceWithID(originalWorkspaceUUID);
+  // Matching by UUID also works.
+  await gZenWorkspaces.changeWorkspaceFromCommandLine(target.uuid);
   Assert.strictEqual(
-    tab.getAttribute("zen-workspace-id"),
+    gZenWorkspaces.activeWorkspace,
     target.uuid,
-    "The opened tab should belong to the target workspace."
+    "The command line flag should switch to the target workspace by UUID."
   );
 
-  BrowserTestUtils.removeTab(tab);
+  await gZenWorkspaces.changeWorkspaceWithID(originalWorkspaceUUID);
   await gZenWorkspaces.removeWorkspace(target.uuid);
   Assert.strictEqual(
     gZenWorkspaces.activeWorkspace,
@@ -81,25 +81,14 @@ add_task(async function test_open_link_in_workspace_from_command_line() {
   );
 });
 
-add_task(async function test_open_link_with_unknown_workspace() {
+add_task(async function test_unknown_workspace_does_not_switch() {
   const originalWorkspaceUUID = gZenWorkspaces.activeWorkspace;
 
-  await gZenWorkspaces.openLinkInWorkspaceFromCommandLine(
-    "does-not-exist",
-    "https://example.com/"
-  );
+  await gZenWorkspaces.changeWorkspaceFromCommandLine("does-not-exist");
 
   Assert.strictEqual(
     gZenWorkspaces.activeWorkspace,
     originalWorkspaceUUID,
     "An unknown workspace should not switch spaces."
   );
-  const tab = gBrowser.selectedTab;
-  Assert.strictEqual(
-    tab.getAttribute("zen-workspace-id"),
-    originalWorkspaceUUID,
-    "The tab should open in the active workspace as a fallback."
-  );
-
-  BrowserTestUtils.removeTab(tab);
 });

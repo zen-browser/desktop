@@ -43,15 +43,6 @@ class nsZenSpaceRoutingManager {
     window.document
       .getElementById("context_zen-add-domain-to-routing")
       .addEventListener("command", onCommand);
-    window.addEventListener(
-      "unload",
-      () => {
-        window.document
-          .getElementById("context_zen-add-domain-to-routing")
-          .removeEventListener("command", onCommand);
-      },
-      { once: true }
-    );
   }
 
   /**

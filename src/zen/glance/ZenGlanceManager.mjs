@@ -1430,7 +1430,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       return;
     }
 
-    if (event.target === browser || browser.contains(event.target)) {
+    if (event.target === browser) {
       this.fullyOpenGlance();
     }
   }

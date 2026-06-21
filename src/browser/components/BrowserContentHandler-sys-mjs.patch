@@ -2,7 +2,7 @@ diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/componen
 index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09814422bf 100644
 --- a/browser/components/BrowserContentHandler.sys.mjs
 +++ b/browser/components/BrowserContentHandler.sys.mjs
-@@ -603,6 +603,88 @@ nsBrowserContentHandler.prototype = {
+@@ -603,6 +603,67 @@ nsBrowserContentHandler.prototype = {
        }
      }
  
@@ -30,29 +30,6 @@ index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09
 +    try {
 +      let zenWorkspaceParam = cmdLine.handleFlagWithParam("zen-workspace", false);
 +      if (zenWorkspaceParam) {
-+        let zenWorkspaceURL = null;
-+        try {
-+          zenWorkspaceURL = cmdLine.handleFlagWithParam("url", false);
-+        } catch (e) {}
-+        if (zenWorkspaceURL === null) {
-+          for (let i = cmdLine.length - 1; i >= 0; i--) {
-+            const arg = cmdLine.getArgument(i);
-+            if (arg && arg[0] != "-") {
-+              zenWorkspaceURL = arg;
-+              cmdLine.removeArguments(i, i);
-+              break;
-+            }
-+          }
-+        }
-+        let uri = null;
-+        let principal = null;
-+        if (zenWorkspaceURL !== null) {
-+          const resolved = resolveURIInternal(cmdLine, zenWorkspaceURL);
-+          if (shouldLoadURI(resolved.uri)) {
-+            uri = resolved.uri;
-+            principal = resolved.principal;
-+          }
-+        }
 +        let targetWin = Services.wm.getMostRecentWindow("navigator:browser");
 +        if (
 +          !targetWin?.gZenWorkspaces?.workspaceEnabled ||
@@ -70,16 +47,18 @@ index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09
 +          }
 +        }
 +        if (targetWin) {
-+          targetWin.gZenWorkspaces.openLinkInWorkspaceFromCommandLine(
-+            zenWorkspaceParam,
-+            uri ? uri.spec : null
++          targetWin.gZenWorkspaces.changeWorkspaceFromCommandLine(
++            zenWorkspaceParam
 +          );
-+          targetWin.focus();
++          cmdLine.preventDefault = true;
 +        } else {
-+          let win = openBrowserWindow(cmdLine, principal, uri ? uri.spec : null);
-+          win._zenInitialWorkspace = zenWorkspaceParam;
++          // Cold start: stash the workspace so the first window that
++          // restores picks it up, and let normal startup open that window.
++          Services.prefs.setStringPref(
++            "zen.workspaces.cmdline-initial-workspace",
++            zenWorkspaceParam
++          );
 +        }
-+        cmdLine.preventDefault = true;
 +      }
 +    } catch (e) {
 +      if (e.result != Cr.NS_ERROR_INVALID_ARG) {
@@ -91,12 +70,12 @@ index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09
      var searchParam = cmdLine.handleFlagWithParam("search", false);
      if (searchParam) {
        doSearch(searchParam, cmdLine);
-@@ -672,6 +754,8 @@ nsBrowserContentHandler.prototype = {
+@@ -672,6 +733,8 @@ nsBrowserContentHandler.prototype = {
        "  --new-window <url> Open <url> in a new window.\n" +
        "  --new-tab <url>    Open <url> in a new tab.\n" +
        "  --private-window [<url>] Open <url> in a new private window.\n";
 +    info += "  --blank-window [<url>]  Open the new blank window.\n";
-+    info += "  --zen-workspace <space> [<url>]  Open <url> in the workspace with the given name or UUID.\n";
++    info += "  --zen-workspace <space>  Switch to the workspace with the given name or UUID.\n";
      if (AppConstants.platform == "win") {
        info += "  --preferences      Open Options dialog.\n";
      } else {

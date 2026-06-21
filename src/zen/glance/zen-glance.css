@@ -103,11 +103,11 @@
 }
 
 .browserSidebarContainer.zen-glance-background,
-:root:not([inDOMFullscreen="true"]) .browserSidebarContainer.zen-glance-overlay .browserContainer:not([fade-out="true"]) {
+.browserSidebarContainer.zen-glance-overlay .browserContainer:not([fade-out="true"]) {
   border-radius: var(--zen-native-inner-radius);
 }
 
-:root:not([inDOMFullscreen="true"]) .browserSidebarContainer.zen-glance-overlay {
+.browserSidebarContainer.zen-glance-overlay {
   box-shadow: none !important;
   visibility: inherit;
   z-index: 1;

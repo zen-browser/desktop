@@ -252,8 +252,9 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       return;
     }
 
-    const initialUrl = tab.linkedBrowser?.currentURI?.spec
-     || tab._zenPinnedInitialState?.entry?.url;
+    const initialUrl =
+      tab._zenPinnedInitialState?.entry?.url ||
+      tab.linkedBrowser?.currentURI?.spec;
     const [title, label] = await document.l10n.formatValues([
       { id: "zen-pinned-tab-edit-url-title" },
       { id: "zen-pinned-tab-edit-url-label" },
@@ -271,31 +272,38 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       return;
     }
 
-    let url;
+    let uri;
     try {
-      url = Services.uriFixup.getFixupURIInfo(
+      uri = Services.uriFixup.getFixupURIInfo(
         result.value.trim(),
         Ci.nsIURIFixup.FIXUP_FLAG_FIX_SCHEME_TYPOS
-      ).preferredURI?.spec;
-    } catch (_) {
-    }
-    if (!url) {
+      ).preferredURI;
+    } catch (_) {}
+    if (!uri) {
       gZenUIManager.showToast("zen-pinned-tab-url-invalid");
       return;
     }
+    const url = uri.spec;
 
     // Skip when the value wasn't actually changed from what was prefilled.
     if (url === initialUrl) {
       return;
     }
 
-    window.gZenWindowSync.setPinnedUrl(tab, url);
-    if (tab.hasAttribute("pending")) {
-      this.#resetTabToStoredState(tab);
-    } else {
-      this.pinHasChangedUrl(tab);
-    }
+    const image = tab.zenStaticIcon || (await this.#getCachedFavicon(uri));
+    window.gZenWindowSync.setPinnedUrl(tab, url, image);
+    this.#resetTabToStoredState(tab);
     gZenUIManager.showToast("zen-pinned-tab-url-edited");
+  }
+
+  async #getCachedFavicon(uri) {
+    try {
+      const favicon = await PlacesUtils.favicons.getFaviconForPage(uri);
+      return favicon?.dataURI?.spec;
+    } catch (ex) {
+      console.error("Failed to get favicon for edited pinned url:", ex);
+      return null;
+    }
   }
 
   _initClosePinnedTabShortcut() {
@@ -691,11 +699,13 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         element.hidden = !isVisible;
       }
     });
-    [zenResetPinnedTab, zenEditPinnedPage, zenReplacePinnedUrl].forEach(element => {
-      if (element) {
-        document.l10n.setArgs(element, { isEssential });
+    [zenResetPinnedTab, zenEditPinnedPage, zenReplacePinnedUrl].forEach(
+      element => {
+        if (element) {
+          document.l10n.setArgs(element, { isEssential });
+        }
       }
-    });
+    );
     zenAddEssential.hidden = isEssential || !!contextTab.group;
     document.l10n
       .formatValue("tab-context-zen-add-essential-badge", {
@@ -925,7 +935,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     ) {
       return;
     }
-    // Remove # and ? from the URL
+    // Remove # from the URL
     const pinUrl = tab._zenPinnedInitialState.entry.url.split("#")[0];
     const currentUrl = location.split("#")[0];
     // Add an indicator that the pin has been changed
@@ -965,10 +975,14 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     } else {
       tab.setAttribute("zen-pinned-changed", "true");
     }
-    tab.style.setProperty(
-      "--zen-original-tab-icon",
-      `url(${tab._zenPinnedInitialState.image})`
-    );
+    if (tab._zenPinnedInitialState.image) {
+      tab.style.setProperty(
+        "--zen-original-tab-icon",
+        `url(${tab._zenPinnedInitialState.image})`
+      );
+    } else {
+      tab.style.removeProperty("--zen-original-tab-icon");
+    }
   }
 
   removeTabContainersDragoverClass(hideIndicator = true) {

@@ -4,31 +4,8 @@
 [
   {
     "type": "phabricator",
-    "ids": [
-      "D284084",
-      "D299584"
-    ],
-    "name": "Native MacOS popovers",
-    "replaces": {
-      // Specifically trying to target FeatureCallout.sys.mjs's change.
-      // IMPORTANT: Make sure Feature callouts STILL use native popopvers when
-      //    syncing from upstream, as this is a critical part of the patch.
-      "+            nonnativepopover=\"true\"": "+ ",
-
-      // Fix conflicts with upstream changes.
-      "--menuitem-border-radius: var(--panel-menuitem-border-radius)": "--menuitem-border-radius: var(--arrowpanel-menuitem-border-radius)",
-      "--menuitem-padding: var(--panel-menuitem-padding)": "--menuitem-padding: var(--arrowpanel-menuitem-padding)",
-      "--menuitem-margin: var(--panel-menuitem-margin)": "--menuitem-margin: var(--arrowpanel-menuitem-margin)",
-
-      " \n #include \"nsCocoaWindow.h\"\n \n #include \"nsISupportsPrimitives.h\"\n #include \"nsArrayUtils.h\"":
-        "  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */\n \n #include \"nsCocoaWindow.h\"\n \n #include \"nsISupportsPrimitives.h\"\n #include \"nsArrayUtils.h\"",
-      " #include \"nsISupportsPrimitives.h\"\n": "",
-
-      "     Atom(\"nonnative\", \"nonnative\"),\n": "",
-      "Atom(\"noscript\", \"noscript\"),": "Atom(\"noscript\", \"noscript\"),\n     Atom(\"noshade\", \"noshade\"),",
-
-      "GetBoolAttr(nsGkAtoms::nonnative)": "GetBoolAttr(nsGkAtoms::nonnativepopover)"
-    }
+    "id": "D299584",
+    "name": "Native MacOS popovers fix"
   },
   {
     "type": "phabricator",
@@ -62,17 +39,5 @@
     "type": "phabricator",
     "id": "D291714",
     "name": "gh-12979 Clip dirty_rect to device_size"
-  },
-  {
-    "type": "phabricator",
-    "ids": [
-      "D247215",
-      "D298708"
-    ],
-    "name": "Session store use size hint"
-  },
-  {
-    "type": "local",
-    "path": "firefox/bug_2013682_allow_stacking_contexts_to_be_promoted.patch"
   }
 ]

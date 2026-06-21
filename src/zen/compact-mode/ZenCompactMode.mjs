@@ -1,4 +1,4 @@
-﻿/* This Source Code Form is subject to the terms of the Mozilla Public
+/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -186,7 +186,7 @@ window.gZenCompactModeManager = {
       [
         {
           selector:
-            ":where([panelopen='true'], [open='true'], [breakout-extend='true'])" +
+            ":where([panelopen], [open], [breakout-extend])" +
             ":not(#urlbar[zen-floating-urlbar='true']):not(tab):not(.zen-compact-mode-ignore)",
         },
       ],
@@ -198,7 +198,7 @@ window.gZenCompactModeManager = {
       [
         {
           selector:
-            ":where([panelopen='true'], [open='true'], #urlbar:focus-within, [breakout-extend='true'])" +
+            ":where([panelopen], [open], #urlbar:focus-within, [breakout-extend])" +
             ":not(.zen-compact-mode-ignore)",
         },
       ],
@@ -967,24 +967,35 @@ window.gZenCompactModeManager = {
     );
   },
 
-  async _onTabOpen(tab, inBackground) {
+  async _onTabOpen(tab, inBackground, beforeRouteResult = {}) {
+    const isSidebarHidden = this.preference && !this.isSidebarPotentiallyOpen();
+
     if (
       inBackground &&
-      this.preference &&
-      !this.isSidebarPotentiallyOpen() &&
+      (isSidebarHidden || beforeRouteResult.isRouteFound) &&
       this._canShowBackgroundTabToast &&
       !gZenGlanceManager._animating &&
       !this._nextTimeWillBeActive
     ) {
-      gZenUIManager.showToast("zen-background-tab-opened-toast", {
+      let messageId = "zen-background-tab-opened-toast";
+      let toastOptions = {
         button: {
           id: "zen-open-background-tab-button",
           command: () => {
-            const targetWindow = window.ownerGlobal.parent || window;
+            const targetWindow = window.parent || window;
             targetWindow.gBrowser.selectedTab = tab;
           },
         },
-      });
+      };
+
+      if (beforeRouteResult.isRouteFound) {
+        messageId = "zen-space-routing-tab-routed-toast";
+        toastOptions = {
+          l10nArgs: { targetWorkspace: beforeRouteResult.targetWorkspaceName },
+        };
+      }
+
+      gZenUIManager.showToast(messageId, toastOptions);
     }
     delete this._nextTimeWillBeActive;
   },

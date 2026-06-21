@@ -7,7 +7,7 @@
     @keyframes zenDownloadsArrowBounce {
       0% { transform: translateY(0px); d: path('M 64 45 L 64 83 M 50 69 L 64 83 L 78 69'); animation-timing-function: cubic-bezier(0.33, 0, 0.7, 1.28); }
       31.43% { transform: translateY(10px); d: path('M 64 57 L 64 83 M 50 69 L 64 83 L 78 69'); animation-timing-function: cubic-bezier(0.44, 0.2, 0.44, 0.98); }
-      60% { transform: translateY(-10.83px); d: path('M 64 45 L 64 83 M 50 69 L 64 83 L 78 69'); animation-timing-function: cubic-bezier(0.45, -0.03, 0.83, 0.9); }
+      54.29% { transform: translateY(-10.83px); d: path('M 64 45 L 64 83 M 50 69 L 64 83 L 78 69'); animation-timing-function: cubic-bezier(0.45, -0.03, 0.83, 0.9); }
       85.71% { transform: translateY(0.66px); d: path('M 64 45 L 64 83 M 50 69 L 64 83 L 78 69'); animation-timing-function: cubic-bezier(0.17, -0.98, 0.83, 0.83); }
       100% { transform: translateY(0px); d: path('M 64 45 L 64 83 M 50 69 L 64 83 L 78 69'); }
     }

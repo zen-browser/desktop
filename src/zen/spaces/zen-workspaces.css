@@ -20,7 +20,6 @@
     display: none !important;
   }
 
-  border-radius: var(--button-border-radius) !important;
   background: transparent;
   appearance: unset !important;
   height: fit-content;
@@ -41,6 +40,7 @@
     fill-opacity: 0.6;
     -moz-context-properties: fill-opacity, fill;
     fill: currentColor;
+    scroll-margin: 0 20px;
 
     & .zen-workspace-icon {
       pointer-events: none;
@@ -105,7 +105,7 @@
 
   &[icons-overflow] {
     gap: 0 !important;
-    justify-content: center;
+    justify-content: safe center;
 
     & toolbarbutton {
       margin: 0;
@@ -166,7 +166,7 @@
 
 /* Mark workspaces indicator */
 .zen-current-workspace-indicator {
-  --indicator-gap: calc(var(--toolbarbutton-inner-padding) - 1px);
+  --indicator-gap: calc(var(--toolbarbutton-padding-inner) - 1px);
   padding: calc(3px + var(--tab-inline-padding) + var(--zen-toolbox-padding));
   font-weight: 500;
   position: relative;
@@ -272,7 +272,7 @@
     margin-left: auto !important;
     transition: opacity 0.1s;
     order: 5;
-    --toolbarbutton-inner-padding: 6px !important;
+    --toolbarbutton-padding-inner: 6px !important;
     opacity: 0;
     visibility: collapse;
 
@@ -321,8 +321,11 @@ zen-workspace {
   position: absolute;
   height: 100%;
   overflow: hidden;
-  color: var(--toolbox-textcolor);
-  will-change: transform;
+  color: color-mix(in srgb, var(--toolbox-textcolor) 95%, var(--zen-primary-color));
+
+  --tab-background-color-selected: color-mix(in srgb, light-dark(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.18)) 95%, var(--zen-primary-color)) !important;
+  --tab-selected-shadow: 0 0.8px 1.5px 0px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.05)) !important;
+  --tab-selected-textcolor: color-mix(in srgb, var(--toolbox-textcolor) 95%, var(--zen-primary-color)) !important;
 
   @media not (prefers-reduced-motion: reduce) {
     transition: padding-top 0.1s;
@@ -394,6 +397,10 @@ zen-workspace {
     &[active] .zen-workspace-empty-space {
       -moz-window-dragging: drag;
     }
+  }
+
+  :root:not(:is([animating-background], [swipe-gesture])) #navigator-toolbox:not([movingtab]) &:not([active]) {
+    -moz-subtree-hidden-only-visually: 1;
   }
 }
 

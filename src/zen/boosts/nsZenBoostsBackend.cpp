@@ -450,11 +450,9 @@ inline static void GetZenBoostsDataForFrame(const nsIFrame* aFrame,
 
 }  // namespace
 
+#ifdef ENABLE_TESTS
 namespace detail {
 
-// Thin forwarders that give unit tests access to the pure color math without
-// pulling in the singleton / BrowsingContext. They are defined here, after the
-// anonymous namespace, so they can reach those file-local implementations.
 nsZenAccentOklab PrecomputeAccent(nscolor aAccentColor) {
   return zenPrecomputeAccent(aAccentColor);
 }
@@ -474,7 +472,33 @@ nscolor InvertColorChannel(nscolor aColor) {
   return zenInvertColorChannel(aColor);
 }
 
+size_t AccentCacheSize() { return kAccentCacheSize; }
+
+void ResetAccentCache() {
+  for (auto& entry : sAccentCache) {
+    entry.valid = false;
+    entry.accentNS = 0;
+    entry.rotationDeg = 0.0f;
+  }
+  sAccentCacheNext = 0;
+}
+
+bool IsAccentCached(nscolor aAccentNS, float aRotationDeg) {
+  for (const auto& entry : sAccentCache) {
+    if (entry.valid && entry.accentNS == aAccentNS &&
+        entry.rotationDeg == aRotationDeg) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void EnsureCachedAccent(nscolor aAccentNS, float aRotationDeg) {
+  (void)GetCachedAccent(aAccentNS, aRotationDeg);
+}
+
 }  // namespace detail
+#endif  // ENABLE_TESTS
 
 static mozilla::StaticRefPtr<nsZenBoostsBackend> sZenBoostsBackend;
 

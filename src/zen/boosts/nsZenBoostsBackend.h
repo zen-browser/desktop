@@ -27,10 +27,9 @@ struct nsZenAccentOklab {
   float contrastFactor;
 };
 
+#ifdef ENABLE_TESTS
+// Test-only forwarders into the file-local color math and accent cache.
 namespace detail {
-// Pure color-math primitives, exposed for unit testing. These have no
-// dependency on the singleton, the BrowsingContext, or the process type, so
-// they can be exercised directly from gtest.
 nsZenAccentOklab PrecomputeAccent(nscolor aAccentColor);
 nsZenAccentOklab RotateAccent(const nsZenAccentOklab& aBase,
                               float aRotationDeg);
@@ -38,7 +37,13 @@ nscolor FilterColorChannel(nscolor aOriginalColor,
                            const nsZenAccentOklab& aAccent,
                            const nsZenAccentOklab& aComplementary);
 nscolor InvertColorChannel(nscolor aColor);
+
+size_t AccentCacheSize();
+void ResetAccentCache();
+bool IsAccentCached(nscolor aAccentNS, float aRotationDeg);
+void EnsureCachedAccent(nscolor aAccentNS, float aRotationDeg);
 }  // namespace detail
+#endif  // ENABLE_TESTS
 
 class nsZenBoostsBackend final : public nsISupports {
  public:

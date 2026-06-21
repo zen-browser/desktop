@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarController.sys.mjs b/browser/components/urlbar/UrlbarController.sys.mjs
-index bb0189fbfc91b3fc3b399b077a35f7b60a3f985f..c4dd60c6fb6d7eb2288a033708836f9983530e2c 100644
+index a05894d593e4149097c473822a38f87b2220625f..1660106c2a6548920fdffd2656e5a1f12c2d548b 100644
 --- a/browser/components/urlbar/UrlbarController.sys.mjs
 +++ b/browser/components/urlbar/UrlbarController.sys.mjs
 @@ -305,7 +305,6 @@ export class UrlbarController {
@@ -10,7 +10,7 @@ index bb0189fbfc91b3fc3b399b077a35f7b60a3f985f..c4dd60c6fb6d7eb2288a033708836f99
        this.view.isOpen &&
        event.ctrlKey &&
        (event.key == "n" || event.key == "p")
-@@ -456,6 +455,8 @@ export class UrlbarController {
+@@ -494,6 +493,8 @@ export class UrlbarController {
              });
            }
            event.preventDefault();

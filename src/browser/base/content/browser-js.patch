@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index d1ab42d59f05513ec60a7578b7acab44875c544c..8c3cd75704991b8572d3f13a936fddd2616b2946 100644
+index 1026474bb1bc026987be01a8c18fa0927cb911bc..60294e0587147d86ace8e6d6985d8c6eae8248b6 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -34,6 +34,7 @@ ChromeUtils.defineESModuleGetters(this, {
@@ -24,7 +24,7 @@ index d1ab42d59f05513ec60a7578b7acab44875c544c..8c3cd75704991b8572d3f13a936fddd2
      if (backDisabled) {
        backCommand.removeAttribute("disabled");
      } else {
-@@ -3715,7 +3721,7 @@ function warnAboutClosingWindow() {
+@@ -3719,7 +3725,7 @@ function warnAboutClosingWindow() {
  
    if (!isPBWindow && !toolbar.visible) {
      return gBrowser.warnAboutClosingTabs(
@@ -33,7 +33,7 @@ index d1ab42d59f05513ec60a7578b7acab44875c544c..8c3cd75704991b8572d3f13a936fddd2
        gBrowser.closingTabsEnum.ALL
      );
    }
-@@ -3755,7 +3761,7 @@ function warnAboutClosingWindow() {
+@@ -3759,7 +3765,7 @@ function warnAboutClosingWindow() {
      return (
        isPBWindow ||
        gBrowser.warnAboutClosingTabs(
@@ -42,7 +42,7 @@ index d1ab42d59f05513ec60a7578b7acab44875c544c..8c3cd75704991b8572d3f13a936fddd2
          gBrowser.closingTabsEnum.ALL
        )
      );
-@@ -3780,7 +3786,7 @@ function warnAboutClosingWindow() {
+@@ -3784,7 +3790,7 @@ function warnAboutClosingWindow() {
      AppConstants.platform != "macosx" ||
      isPBWindow ||
      gBrowser.warnAboutClosingTabs(
@@ -51,13 +51,20 @@ index d1ab42d59f05513ec60a7578b7acab44875c544c..8c3cd75704991b8572d3f13a936fddd2
        gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4720,6 +4726,9 @@ var ConfirmationHint = {
+@@ -4744,6 +4750,16 @@ var ConfirmationHint = {
      }
  
-     document.l10n.setAttributes(this._message, messageId, options.l10nArgs);
+     document.l10n.setAttributes(this._message, messageId, l10nArgs);
 +    if (window.gZenUIManager?.showToast) {
-+      return window.gZenUIManager.showToast(messageId, options);
++      return window.gZenUIManager.showToast(messageId, {
++        hideCheckmark,
++        descriptionId,
++        l10nArgs,
++        showDescription,
++        position,
++        event,
++      });
 +    }
-     if (options.descriptionId) {
-       document.l10n.setAttributes(this._description, options.descriptionId);
+     if (descriptionId) {
+       document.l10n.setAttributes(this._description, descriptionId);
        this._description.hidden = false;

@@ -1,8 +1,8 @@
 diff --git a/layout/style/nsStyleStruct.cpp b/layout/style/nsStyleStruct.cpp
-index 80ca0cc08bc675359fbb09100eca43c8e3b9d413..d3ea525f6d84568c4e997a142bbfef6435d21034 100644
+index 758c673f48a5e5b2d440b67713340872e7db3041..3bfaeea43a6710338ab15bdd5dacd03752d718ae 100644
 --- a/layout/style/nsStyleStruct.cpp
 +++ b/layout/style/nsStyleStruct.cpp
-@@ -2208,7 +2208,7 @@ nscolor nsStyleBackground::BackgroundColor(const nsIFrame* aFrame) const {
+@@ -2212,7 +2212,7 @@ nscolor nsStyleBackground::BackgroundColor(const nsIFrame* aFrame) const {
  }
  
  nscolor nsStyleBackground::BackgroundColor(const ComputedStyle* aStyle) const {

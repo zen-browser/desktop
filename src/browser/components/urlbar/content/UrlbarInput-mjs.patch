@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/content/UrlbarInput.mjs b/browser/components/urlbar/content/UrlbarInput.mjs
-index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e6463b45191 100644
+index 0fba59d62af9d3cd05bfee2cf84cd8b7cf9bfd6e..3997a5109267f378b59aa6510cbacd07ed57bd36 100644
 --- a/browser/components/urlbar/content/UrlbarInput.mjs
 +++ b/browser/components/urlbar/content/UrlbarInput.mjs
 @@ -98,6 +98,13 @@ const lazy = XPCOMUtils.declareLazy({
@@ -16,7 +16,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
  const UNLIMITED_MAX_RESULTS = 99;
  
  let getBoundsWithoutFlushing = element =>
-@@ -743,7 +750,16 @@ ${
+@@ -770,7 +777,16 @@ ${
      // See _on_select().  HTMLInputElement.select() dispatches a "select"
      // event but does not set the primary selection.
      this._suppressPrimaryAdjustment = true;
@@ -27,13 +27,13 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
 +      zenToolbox.hasAttribute("zen-user-show")
 +    ));
      this.inputField.select();
-+    this.document.ownerGlobal.setTimeout(() => {
++    this.document.documentGlobal.setTimeout(() => {
 +      this.window.document.documentElement.removeAttribute("supress-primary-adjustment");
 +    }, 0);
      this._suppressPrimaryAdjustment = false;
    }
  
-@@ -817,6 +833,10 @@ ${
+@@ -844,6 +860,10 @@ ${
      hideSearchTerms = false,
      isSameDocument = false,
    } = {}) {
@@ -44,11 +44,10 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
      if (!this.#isAddressbar) {
        throw new Error(
          "Cannot set URI for UrlbarInput that is not an address bar"
-@@ -1106,8 +1126,16 @@ ${
-         return;
-       }
+@@ -1138,7 +1158,16 @@ ${
+       this.searchModeSwitcher?.updateSearchIcon();
      }
--
+ 
 +    const zenToolbox = this.document.getElementById("navigator-toolbox");
 +    this.window.document.documentElement.setAttribute("supress-primary-adjustment", !(
 +      zenToolbox.hasAttribute("zen-has-hover") ||
@@ -56,13 +55,13 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
 +      zenToolbox.hasAttribute("zen-user-show")
 +    ));
      this.handleNavigation({ event });
-+    this.document.ownerGlobal.setTimeout(() => {
++    this.document.documentGlobal.setTimeout(() => {
 +      this.window.document.documentElement.removeAttribute("supress-primary-adjustment");
 +    }, 100);
    }
  
    /**
-@@ -1551,7 +1579,11 @@ ${
+@@ -1627,7 +1656,11 @@ ${
      }
  
      if (!this.#providesSearchMode(result)) {
@@ -75,7 +74,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
      }
  
      if (isCanonized) {
-@@ -2858,6 +2890,42 @@ ${
+@@ -2936,6 +2969,42 @@ ${
      await this.#updateLayoutBreakoutDimensions();
    }
  
@@ -126,7 +125,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
  
      this.#updateTextboxPosition();
  
-     this.setAttribute("breakout-extend", "true");
+     this.toggleAttribute("breakout-extend", true);
  
 +    this.window.gZenUIManager.onUrlbarOpen();
 +    if (this.zenUrlbarBehavior == 'float' || (this.zenUrlbarBehavior == 'floating-on-type' && !this.focusedViaMousedown)) {
@@ -144,9 +143,11 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
  
 +    if (this._zenHandleUrlbarClose) {
 +      this._zenHandleUrlbarClose();
-+    } else if (!this._untrimmedValue || this.searchMode) {
++    } else if (!this._untrimmedValue || (this.#isAddressbar && (this.searchMode || this.window.gZenVerticalTabsManager._hasSetSingleToolbar))) {
 +      // Restore the current page URL when the urlbar is empty on blur
-+      this.handleRevert();
++      this.window.requestAnimationFrame(() => {
++        this.handleRevert();
++      });
 +    }
 +
 +    // Arc like URLbar: Blur the input on exit
@@ -157,7 +158,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
 +      zenToolbox.hasAttribute("zen-user-show")
 +    ));
 +    this.window.gBrowser.selectedBrowser.focus();
-+    this.document.ownerGlobal.setTimeout(() => {
++    this.document.documentGlobal.setTimeout(() => {
 +      this.window.document.documentElement.removeAttribute("supress-primary-adjustment");
 +    }, 100);
 +    this.window.gZenUIManager.onUrlbarClose();
@@ -180,6 +181,7 @@ index d6615ec5a29f3e3327ac4171f3fc5d9a69bd09fe..e1128b0d7f5accfd48af27f99e3b2e64
 @@ -3031,10 +3129,12 @@ export class UrlbarInput extends HTMLElement {
        return;
      }
+ 
      this.style.top = px(
 +      this.window.gZenVerticalTabsManager._hasSetSingleToolbar ?
        this.parentNode.getBoxQuads({

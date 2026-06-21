@@ -1,8 +1,8 @@
 diff --git a/layout/svg/SVGUtils.h b/layout/svg/SVGUtils.h
-index 1f1f7ad6b78e5c411651fee30bbbfeb784257e0a..28c7332aae411c4220bd00af08b491d31d2eb090 100644
+index a4367a69d488c4eab0592d5f460b035efda30e9a..03a305aeb03fe6902eb7aaeb524b70c88836d27f 100644
 --- a/layout/svg/SVGUtils.h
 +++ b/layout/svg/SVGUtils.h
-@@ -428,7 +428,7 @@ class SVGUtils final {
+@@ -429,7 +429,7 @@ class SVGUtils final {
  
    static nscolor GetFallbackOrPaintColor(
        const ComputedStyle&, StyleSVGPaint nsStyleSVG::* aFillOrStroke,

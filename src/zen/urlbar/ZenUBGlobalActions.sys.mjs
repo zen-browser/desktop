@@ -82,6 +82,11 @@ const globalActionsTemplate = [
     },
   },
   {
+    label: "Open Space Routing",
+    command: "cmd_zenOpenSpaceRoutingSettings",
+    icon: "chrome://browser/skin/zen-icons/selectable/airplane.svg",
+  },
+  {
     label: "New Boost",
     icon: "chrome://browser/skin/zen-icons/boost.svg",
     isAvailable: window => {

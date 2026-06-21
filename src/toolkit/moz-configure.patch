@@ -1,8 +1,8 @@
 diff --git a/toolkit/moz.configure b/toolkit/moz.configure
-index 226d0c5a93a9a2404e1974001da4e34b7b670067..b73277448f7d2706d316df2505e17d232f392d47 100644
+index 75e99bbd2490b9014be6f4e956546d4507e751df..fbe16d282113175f067d739e1284b2544d014e7d 100644
 --- a/toolkit/moz.configure
 +++ b/toolkit/moz.configure
-@@ -22,6 +22,7 @@ def check_moz_app_id(moz_app_id, build_project):
+@@ -20,6 +20,7 @@ def check_moz_app_id(moz_app_id, build_project):
  
  project_flag(
      env="MOZ_APP_VENDOR",
@@ -10,7 +10,7 @@ index 226d0c5a93a9a2404e1974001da4e34b7b670067..b73277448f7d2706d316df2505e17d23
      nargs=1,
      help='Used for application.ini\'s "Vendor" field, which also impacts profile location and user-visible fields',
  )
-@@ -35,6 +36,7 @@ project_flag(
+@@ -33,6 +34,7 @@ project_flag(
  
  project_flag(
      "MOZ_APP_PROFILE",
@@ -18,7 +18,7 @@ index 226d0c5a93a9a2404e1974001da4e34b7b670067..b73277448f7d2706d316df2505e17d23
      nargs=1,
      help='Used for application.ini\'s "Profile" field, which controls profile location',
  )
-@@ -86,10 +88,13 @@ option(
+@@ -84,10 +86,13 @@ option(
  )
  set_config("MOZ_INCLUDE_SOURCE_INFO", True, when="MOZ_INCLUDE_SOURCE_INFO")
  
@@ -33,20 +33,7 @@ index 226d0c5a93a9a2404e1974001da4e34b7b670067..b73277448f7d2706d316df2505e17d23
      help="Set distribution-specific id",
  )
  set_config("MOZ_DISTRIBUTION_ID", depends("--with-distribution-id")(lambda v: v[0]))
-@@ -931,9 +936,9 @@ set_config("MOZ_SYSTEM_AV1", True, when="--with-system-av1")
- option("--disable-jxl", help="Disable jxl image support")
- 
- 
--@depends("--disable-jxl", milestone.is_nightly)
--def jxl(value, is_nightly):
--    if is_nightly and value:
-+@depends("--disable-jxl")
-+def jxl(value):
-+    if value:
-         return True
- 
- 
-@@ -2070,7 +2075,7 @@ set_define("A11Y_LOG", True, when=a11y_log)
+@@ -2032,7 +2037,7 @@ set_define("A11Y_LOG", True, when=a11y_log)
  # ==============================================================
  @depends(milestone)
  def require_signing(milestone):
@@ -55,7 +42,7 @@ index 226d0c5a93a9a2404e1974001da4e34b7b670067..b73277448f7d2706d316df2505e17d23
  
  
  option(
-@@ -3903,7 +3908,7 @@ with only_when(compile_environment):
+@@ -3916,7 +3921,7 @@ with only_when(compile_environment):
              return "Mozilla"
          elif target.os == "Android":
              return ".mozilla"
@@ -64,3 +51,12 @@ index 226d0c5a93a9a2404e1974001da4e34b7b670067..b73277448f7d2706d316df2505e17d23
  
      option(
          "--with-user-appdir",
+@@ -4329,7 +4334,7 @@ with only_when(target_is_windows):
+ 
+     @depends(target.abi)
+     def desktop_launcher_enabled(abi):
+-        return abi == "msvc"
++        return False # See gh-13745
+ 
+     set_config("DESKTOP_LAUNCHER_ENABLED", True, when=desktop_launcher_enabled)
+     set_define("DESKTOP_LAUNCHER_ENABLED", True, when=desktop_launcher_enabled)

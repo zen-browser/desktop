@@ -1,8 +1,8 @@
 diff --git a/layout/generic/nsImageFrame.cpp b/layout/generic/nsImageFrame.cpp
-index c4ff60477e3061aeeecbdedb5ad8054d3808ab6e..40857d430eda576c4fca613857860f32abb39e2d 100644
+index bb9f5fb626b7c48144e2040967817cfbce82afd9..5c598170d9df73a498b3b62f3e56756c756cce66 100644
 --- a/layout/generic/nsImageFrame.cpp
 +++ b/layout/generic/nsImageFrame.cpp
-@@ -1764,7 +1764,7 @@ void nsImageFrame::DisplayAltText(nsPresContext* aPresContext,
+@@ -1765,7 +1765,7 @@ void nsImageFrame::DisplayAltText(nsPresContext* aPresContext,
                                    const nsRect& aRect) {
    // Set font and color
    aRenderingContext.SetColor(

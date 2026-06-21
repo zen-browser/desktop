@@ -63,7 +63,7 @@ async function do_test(test) {
   if (test.value) {
     info("Creating mock filepicker to select files");
     let MockFilePicker = SpecialPowers.MockFilePicker;
-    MockFilePicker.init(window.browsingContext);
+    MockFilePicker.init();
     MockFilePicker.returnValue = MockFilePicker.returnOK;
     MockFilePicker.displayDirectory = FileUtils.getDir("TmpD", []);
     MockFilePicker.setFiles([tempFile]);

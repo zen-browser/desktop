@@ -50,7 +50,7 @@ export class SelectorComponent {
     localizationArray = null
   ) {
     this.document = document;
-    this.window = document.ownerGlobal;
+    this.window = document.documentGlobal;
     this.zenBoostsChild = zenBoostsChild;
     this.#onSelect = onSelect;
 

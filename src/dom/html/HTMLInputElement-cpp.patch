@@ -1,5 +1,5 @@
 diff --git a/dom/html/HTMLInputElement.cpp b/dom/html/HTMLInputElement.cpp
-index 3374a88b9335de1659df548fe8c18610f675b336..540f22697e7b85bca2fd6d3fe952ed3944216e17 100644
+index e3698a2cbcfd13ce6075e0a155c46191dfc15a57..99c46e11bb80224986c757ab9a9a7dca4d8982d5 100644
 --- a/dom/html/HTMLInputElement.cpp
 +++ b/dom/html/HTMLInputElement.cpp
 @@ -768,7 +768,7 @@ static void SerializeColorForHTMLCompatibility(const StyleAbsoluteColor& aColor,

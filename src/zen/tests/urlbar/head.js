@@ -19,28 +19,28 @@ function selectWithMouseDrag(fromX, toX, win = window) {
     fromX,
     rect.height / 2,
     { type: "mousemove" },
-    target.ownerGlobal
+    target.documentGlobal
   );
   EventUtils.synthesizeMouse(
     target,
     fromX,
     rect.height / 2,
     { type: "mousedown" },
-    target.ownerGlobal
+    target.documentGlobal
   );
   EventUtils.synthesizeMouse(
     target,
     toX,
     rect.height / 2,
     { type: "mousemove" },
-    target.ownerGlobal
+    target.documentGlobal
   );
   EventUtils.synthesizeMouse(
     target,
     toX,
     rect.height / 2,
     { type: "mouseup" },
-    target.ownerGlobal
+    target.documentGlobal
   );
   return promise;
 }

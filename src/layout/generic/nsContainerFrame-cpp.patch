@@ -1,8 +1,8 @@
 diff --git a/layout/generic/nsContainerFrame.cpp b/layout/generic/nsContainerFrame.cpp
-index c27fec39f9e32e61f0e335e5880ce3e97074965b..7b4f7760dcf92ead74c9f89cfc7a067892af9e34 100644
+index 45090fcb5a0d09109348f916728d01c589fd9a22..a6a2c5dc614c3ef85384f03938383b0a9025d718 100644
 --- a/layout/generic/nsContainerFrame.cpp
 +++ b/layout/generic/nsContainerFrame.cpp
-@@ -349,7 +349,8 @@ class nsDisplaySelectionOverlay final : public nsPaintedDisplayItem {
+@@ -350,7 +350,8 @@ class nsDisplaySelectionOverlay final : public nsPaintedDisplayItem {
        nsDisplayListBuilder* aDisplayListBuilder) override;
    NS_DISPLAY_DECL_NAME("SelectionOverlay", TYPE_SELECTION_OVERLAY)
  
@@ -12,7 +12,7 @@ index c27fec39f9e32e61f0e335e5880ce3e97074965b..7b4f7760dcf92ead74c9f89cfc7a0678
    static DeviceColor ApplyTransparencyIfNecessary(nscolor);
  
   private:
-@@ -371,9 +372,9 @@ DeviceColor nsDisplaySelectionOverlay::ApplyTransparencyIfNecessary(
+@@ -372,9 +373,9 @@ DeviceColor nsDisplaySelectionOverlay::ApplyTransparencyIfNecessary(
  }
  
  DeviceColor nsDisplaySelectionOverlay::ComputeColorFromSelectionStyle(
@@ -25,7 +25,7 @@ index c27fec39f9e32e61f0e335e5880ce3e97074965b..7b4f7760dcf92ead74c9f89cfc7a0678
  }
  
  void nsDisplaySelectionOverlay::Paint(nsDisplayListBuilder* aBuilder,
-@@ -472,7 +473,8 @@ void nsContainerFrame::DisplaySelectionOverlay(nsDisplayListBuilder* aBuilder,
+@@ -473,7 +474,8 @@ void nsContainerFrame::DisplaySelectionOverlay(nsDisplayListBuilder* aBuilder,
              ComputeHighlightSelectionStyle(sd->mHighlightData.mHighlightName)) {
        aList->AppendNewToTopWithIndex<nsDisplaySelectionOverlay>(
            aBuilder, this, index++,
@@ -35,7 +35,7 @@ index c27fec39f9e32e61f0e335e5880ce3e97074965b..7b4f7760dcf92ead74c9f89cfc7a0678
      }
    }
  
-@@ -480,7 +482,8 @@ void nsContainerFrame::DisplaySelectionOverlay(nsDisplayListBuilder* aBuilder,
+@@ -481,7 +483,8 @@ void nsContainerFrame::DisplaySelectionOverlay(nsDisplayListBuilder* aBuilder,
    if (normal) {
      DeviceColor color;
      if (RefPtr<ComputedStyle> style = ComputeSelectionStyle(selectionValue)) {

@@ -32,16 +32,22 @@ class nsZenSpaceRoutingManager {
       `);
     window.document.getElementById("context_undoCloseTab").after(element);
 
-    const onCommand = function () {
-      const tabs = window.TabContextMenu.contextTab.multiselected
-        ? window.gBrowser.selectedTabs
-        : [window.TabContextMenu.contextTab];
-      this.addRouteForSelected(tabs, window);
-    };
-
     window.document
       .getElementById("context_zen-add-domain-to-routing")
-      .addEventListener("command", onCommand.bind(this));
+      .addEventListener("command", this.#onAddSelectedToRouting.bind(this));
+  }
+
+  /**
+   * Callback for whenever the menuitem command is ran
+   *
+   * @param {Event} event - The event parameter
+   */
+  #onAddSelectedToRouting(event) {
+    const window = event.target.documentGlobal;
+    const tabs = window.TabContextMenu.contextTab.multiselected
+      ? window.gBrowser.selectedTabs
+      : [window.TabContextMenu.contextTab];
+    this.addRouteForSelected(tabs, window);
   }
 
   /**

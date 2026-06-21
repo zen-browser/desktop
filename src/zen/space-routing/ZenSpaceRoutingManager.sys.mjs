@@ -31,7 +31,7 @@ class nsZenSpaceRoutingManager {
                   data-lazy-l10n-id="tab-context-zen-add-domain-to-sr"
                   data-l10n-args='{"tabCount": 1}'/>
       `);
-    window.document.getElementById("context_undoCloseTab")?.after(element);
+    window.document.getElementById("context_undoCloseTab").after(element);
     window.document
       .getElementById("context_zen-add-domain-to-routing")
       .addEventListener("command", this._addSelectedToRouting);

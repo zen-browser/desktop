@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import { html, keyed } from "chrome://global/content/vendor/lit.all.mjs";
+import { html } from "chrome://global/content/vendor/lit.all.mjs";
 import { MozLitElement } from "chrome://global/content/lit-utils.mjs";
 
 let lazy = {};
@@ -144,12 +144,9 @@ export class ZenLibrary extends MozLitElement {
                 }}
               >
                 ${this.activeTab === Section.id
-                  ? keyed(
-                      this._iconKeys[Section.id],
-                      html`<img
-                        src=${`chrome://browser/skin/zen-icons/library/library-${Section.id}-active.svg`}
-                      />`
-                    )
+                  ? html`<img
+                      src=${`chrome://browser/skin/zen-icons/library/library-${Section.id}-active.svg?t=${this._iconKeys[Section.id]}`}
+                    />`
                   : html`<img
                       src=${`chrome://browser/skin/zen-icons/library/library-${Section.id}.svg`}
                     />`}

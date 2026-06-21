@@ -20,3 +20,5 @@ support-files = [
 ["browser_glance_prev_tab.js"]
 
 ["browser_glance_select_parent.js"]
+
+["browser_issue_14049.js"]

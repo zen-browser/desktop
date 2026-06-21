@@ -471,7 +471,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       }
       if (tab.pinned) {
         gBrowser.zenHandleTabMove(tab, () => {
-          if (tab.ownerGlobal !== window) {
+          if (tab.documentGlobal !== window) {
             tab = gBrowser.adoptTab(tab, {
               selectTab: tab.selected,
             });
@@ -679,12 +679,15 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         ) {
           workspaceId = gZenWorkspaces.activeWorkspace;
         }
-        if (tab.ownerGlobal !== window) {
+        if (tab.documentGlobal !== window) {
           fromDifferentWindow = true;
           if (workspaceId) {
-            tab.ownerGlobal.gBrowser.selectedTab =
-              tab.ownerGlobal.gBrowser._findTabToBlurTo(tab, movingTabs);
-            tab.ownerGlobal.gZenWorkspaces.moveTabToWorkspace(tab, workspaceId);
+            tab.documentGlobal.gBrowser.selectedTab =
+              tab.documentGlobal.gBrowser._findTabToBlurTo(tab, movingTabs);
+            tab.documentGlobal.gZenWorkspaces.moveTabToWorkspace(
+              tab,
+              workspaceId
+            );
           }
           // Move the tabs into this window. To avoid multiple tab-switches in
           // the original window, the selected tab should be adopted last.

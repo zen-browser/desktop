@@ -33,9 +33,9 @@
 
 menupopup,
 panel {
-  --panel-background: var(--arrowpanel-background);
+  --panel-background-color: var(--arrowpanel-background);
   --menuitem-padding: 6px !important;
-  --panel-shadow-margin: 8px;
+  --panel-box-shadow-margin: 8px;
 
   /* This should match GetMenuCornerRadius() on macOS, or be overridden below */
   @media (-moz-platform: macos) {

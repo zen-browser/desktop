@@ -1,0 +1,288 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+@namespace html "http://www.w3.org/1999/xhtml";
+@namespace xul "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+
+:root {
+  --background-color-canvas: light-dark(white, #212223) !important;
+
+  --select-background-color: light-dark(#eceef0, #3e3f43);
+  --input-background-color: light-dark(#f1f2f4, #2c2d31);
+  --hr-color: light-dark(#cdced4, #313235);
+
+  --sr-width: 510px;
+  --sr-height: 500px;
+
+  --content-padding: 26px;
+  --content-padding-vertical: 16px;
+
+  --text-color: light-dark(#4c4c4c, #dbdcdf);
+  --text-color-secondary: light-dark(#5c5e65, #8b8e98);
+  --text-color-error: light-dark(#9d2222, #d03535);
+
+  --rules-gap: 14px;
+
+  --sr-border-radius: 12px;
+}
+
+window {
+  height: var(--sr-height);
+  max-height: var(--sr-height);
+  min-height: var(--sr-height);
+
+  width: var(--sr-width);
+  max-width: var(--sr-width);
+  min-width: var(--sr-width);
+}
+
+#sr-container {
+  height: var(--sr-height);
+  width: var(--sr-width);
+
+  border-radius: var(--sr-border-radius);
+  overflow: hidden;
+  font-family: system-ui !important;
+
+  position: relative;
+  display: flex;
+}
+
+#sr-empty-content {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  gap: 24px;
+
+  position: absolute;
+  left: 84px;
+  right: 84px;
+
+  bottom: 100px;
+  top: 100px;
+  justify-content: center;
+
+  & image {
+    aspect-ratio: 1;
+    height: 75px;
+
+    min-height: 0;
+    max-height: none;
+    max-width: none;
+    min-width: 0;
+
+    color: var(--text-color-secondary);
+    -moz-context-properties: fill, fill-opacity;
+    fill: currentColor;
+    fill-opacity: 0.65;
+  }
+
+  & p {
+    font-size: small;
+    opacity: 0.8;
+    color: var(--text-color);
+  }
+}
+
+#sr-new-route {
+  padding: 4px 6px !important;
+}
+
+html|hr {
+  border-color: var(--hr-color) !important;
+  padding: 0;
+  margin: 0;
+  margin-left: 22px;
+  margin-right: 22px;
+  border-width: 0.5px;
+}
+
+h3 {
+  font-size: medium;
+  color: var(--text-color);
+  font-weight: normal;
+}
+
+h4 {
+  font-size: small;
+  color: var(--text-color-secondary);
+}
+
+p {
+  color: var(--text-color);
+}
+
+.select {
+  width: 150px;
+  min-height: unset;
+  height: 26px;
+  padding: 4px;
+  background-color: var(--select-background-color) !important;
+  color: var(--text-color);
+  margin: 0;
+
+  &.match-type-select {
+    width: 100px;
+  }
+  &.open-in-select {
+    width: 165px;
+  }
+}
+
+menulist[image]::part(icon) {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  -moz-context-properties: fill, stroke;
+  fill: currentColor;
+  margin-inline-end: 0;
+  padding-left: 2px;
+}
+
+.sr-rule-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sr-rule-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0 24px;
+
+  & p {
+    color: var(--text-color-secondary);
+  }
+}
+
+.sr-rule-bottom {
+  margin-left: 87px;
+}
+
+.input {
+  background-color: var(--input-background-color);
+  color: var(--text-color);
+  margin: 0;
+
+  flex-grow: 1;
+}
+
+.invalid {
+  color: var(--text-color-error) !important;
+
+  text-decoration-line: underline;
+  text-decoration-style: wavy;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--text-color-error);
+}
+
+button {
+  background-color: var(--select-background-color) !important;
+  min-height: unset !important;
+
+  padding: 2px !important;
+  display: flex;
+  justify-content: center;
+
+  margin: 0;
+
+  & hbox {
+    display: none;
+  }
+}
+
+.sr-remove,
+.close-icon {
+  & hbox {
+    display: flex;
+  }
+
+  opacity: 0.5;
+  appearance: none !important;
+  border: none !important;
+
+  height: 32px;
+  width: 32px;
+  padding: 3px;
+
+  min-width: 0 !important;
+  color: var(--text-color-secondary);
+
+  -moz-context-properties: fill, fill-opacity;
+  fill: currentColor;
+
+  &:not(:hover) {
+    background: none !important;
+  }
+}
+
+#sr-header {
+  width: 100%;
+  padding: var(--content-padding) 20px;
+  align-items: center;
+
+  display: flex;
+  flex-direction: row;
+}
+
+.sr-left {
+  margin-left: auto;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+
+  & button {
+    color: var(--text-color);
+    opacity: 1;
+
+    &:hover .sr-remove {
+      opacity: 0.8;
+    }
+  }
+}
+
+#sr-footer {
+  width: 100%;
+  padding: var(--content-padding);
+  align-items: center;
+
+  display: flex;
+  flex-direction: row;
+}
+
+#sr-content {
+  width: 100%;
+  overflow: scroll;
+  padding: 20px var(--content-padding);
+  flex-grow: 1;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--rules-gap);
+}
+
+.sr-label-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  color: var(--text-color-secondary);
+}
+
+.sr-label {
+  margin: 0;
+}
+
+.sr-url-icon,
+.sr-open-in-icon {
+  width: 16px;
+  height: 16px;
+  -moz-context-properties: fill, fill-opacity;
+  fill: currentColor;
+  fill-opacity: 0.65;
+}

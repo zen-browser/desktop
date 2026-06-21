@@ -1,5 +1,5 @@
 diff --git a/browser/themes/linux/browser.css b/browser/themes/linux/browser.css
-index a99181fc249a7086e9886d86d85e8650595a0a0c..dd59739078080738d28bf59a1bb26fc0783bcac6 100644
+index 5e5d39787674d1d5ac8c39edccb04f8b8993fbb8..6c8b483ad19d9b26232592c68a7f2a6887161057 100644
 --- a/browser/themes/linux/browser.css
 +++ b/browser/themes/linux/browser.css
 @@ -14,7 +14,6 @@

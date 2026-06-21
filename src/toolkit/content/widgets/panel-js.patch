@@ -1,5 +1,5 @@
 diff --git a/toolkit/content/widgets/panel.js b/toolkit/content/widgets/panel.js
-index dc3e34847f1b6dfd58f5e036fd7d714ef51c1380..20f18fcb1a2f637d83366b8a517d43200270739f 100644
+index dc3e34847f1b6dfd58f5e036fd7d714ef51c1380..243c5b8c849342dd2e887242d4c8499915ee51c2 100644
 --- a/toolkit/content/widgets/panel.js
 +++ b/toolkit/content/widgets/panel.js
 @@ -136,7 +136,19 @@
@@ -7,11 +7,11 @@ index dc3e34847f1b6dfd58f5e036fd7d714ef51c1380..20f18fcb1a2f637d83366b8a517d4320
              this.anchorNode.closest("toolbarbutton, .anchor-root") ||
              this.anchorNode;
 +          let toolbox = anchorRoot.closest("#navigator-toolbox");
-+          if (toolbox && toolbox.ownerGlobal.gZenCompactModeManager?.preference) {
++          if (toolbox && toolbox.documentGlobal.gZenCompactModeManager?.preference) {
 +            // Disable transitions for now, see gh-11667
 +            toolbox.style.transition = "none";
 +            toolbox.setAttribute("zen-compact-mode-active", "true");
-+            anchorRoot.ownerGlobal.setTimeout(() => {
++            anchorRoot.documentGlobal.setTimeout(() => {
 +              toolbox.style.transition = "";
 +            }, 0);
 +          }

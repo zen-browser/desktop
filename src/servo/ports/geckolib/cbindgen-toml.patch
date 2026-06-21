@@ -1,8 +1,8 @@
 diff --git a/servo/ports/geckolib/cbindgen.toml b/servo/ports/geckolib/cbindgen.toml
-index e9ae0149e80a241b2a32ce445deb923af2fac445..0dc5768ab8bf89f7d6c31ff4c7bd4bb805d64509 100644
+index 17937bd70ead3b86e59b3da8c8d90591ee48e0a2..2bddfd549243ddc387107df00625ea5f38e5c655 100644
 --- a/servo/ports/geckolib/cbindgen.toml
 +++ b/servo/ports/geckolib/cbindgen.toml
-@@ -679,9 +679,9 @@ renaming_overrides_prefixing = true
+@@ -666,9 +666,9 @@ renaming_overrides_prefixing = true
    nscolor CalcColor(const nsIFrame*) const;
    /**
     * Compute the final color, taking into account the foreground color from the
@@ -14,7 +14,7 @@ index e9ae0149e80a241b2a32ce445deb923af2fac445..0dc5768ab8bf89f7d6c31ff4c7bd4bb8
    /**
     * Compute the final color, making the argument the foreground color.
     */
-@@ -704,9 +704,11 @@ renaming_overrides_prefixing = true
+@@ -691,9 +691,11 @@ renaming_overrides_prefixing = true
  
    /**
     * Convert this color to an nscolor. The color will be converted to sRGB first

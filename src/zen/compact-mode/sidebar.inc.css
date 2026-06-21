@@ -38,7 +38,7 @@
 
   #zen-sidebar-top-buttons-customization-target {
     padding-inline-start: calc(
-      var(--zen-toolbox-padding) - var(--toolbarbutton-outer-padding)
+      var(--zen-toolbox-padding) - var(--toolbarbutton-padding-outer)
     ) !important;
   }
 

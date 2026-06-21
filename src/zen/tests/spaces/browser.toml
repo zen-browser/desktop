@@ -14,6 +14,8 @@ support-files = [
 
 ["browser_issue_10455.js"]
 
+["browser_issue_12112.js"]
+
 ["browser_issue_8699.js"]
 
 ["browser_issue_9900.js"]
@@ -23,6 +25,8 @@ support-files = [
 ["browser_private_mode.js"]
 
 ["browser_private_mode_startup.js"]
+
+["browser_select_tab_switches_space.js"]
 
 ["browser_unload_all_other_spaces.js"]
 

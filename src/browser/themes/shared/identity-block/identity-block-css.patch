@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/identity-block/identity-block.css b/browser/themes/shared/identity-block/identity-block.css
-index 72b6673094b80e9c109ae6f125cd25c3e00260ef..d116ab9671b02bbb05eddec8318e1f2835c29f32 100644
+index f239438ce661ae2c33a3e04ecc6d403b3a56a42b..c3a237aa78cff7aaaf0a7b931dd2b4d99049c051 100644
 --- a/browser/themes/shared/identity-block/identity-block.css
 +++ b/browser/themes/shared/identity-block/identity-block.css
 @@ -7,7 +7,7 @@

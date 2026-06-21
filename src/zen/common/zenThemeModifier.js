@@ -168,17 +168,17 @@
         document.documentElement.setAttribute("zen-no-padding", true);
       } else {
         document.documentElement.removeAttribute("zen-no-padding");
-        if (domFullscreen) {
-          const selectedBrowser = gBrowser.selectedBrowser;
-          selectedBrowser.style.paddingRight = "0.5px";
-          window.addEventListener(
-            "MozAfterPaint",
-            () => {
-              selectedBrowser.style.paddingRight = "";
-            },
-            { once: true }
-          );
-        }
+      }
+      if (domFullscreen) {
+        const selectedBrowser = gBrowser.selectedBrowser;
+        selectedBrowser.style.paddingRight = "0.5px";
+        window.addEventListener(
+          "MozAfterPaint",
+          () => {
+            selectedBrowser.style.paddingRight = "";
+          },
+          { once: true }
+        );
       }
     },
 

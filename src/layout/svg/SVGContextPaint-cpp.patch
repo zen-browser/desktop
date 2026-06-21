@@ -1,5 +1,5 @@
 diff --git a/layout/svg/SVGContextPaint.cpp b/layout/svg/SVGContextPaint.cpp
-index 3df8728978c1b48ca326c852feb0553091a99673..9f9096205c3dd3551c41c547a1aee667c0a51238 100644
+index 57ef88da66a3cacc28f6ea83cf55e5f803be6e56..305a6ae18b7b3ad814fb2aea3d5971f341c68da5 100644
 --- a/layout/svg/SVGContextPaint.cpp
 +++ b/layout/svg/SVGContextPaint.cpp
 @@ -143,7 +143,7 @@ static void SetupInheritablePaint(const DrawTarget* aDrawTarget,

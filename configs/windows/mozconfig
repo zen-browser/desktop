@@ -16,9 +16,9 @@ if test "$ZEN_CROSS_COMPILING"; then
   CROSS_COMPILE=1
 
   if test "$SURFER_COMPAT" = "aarch64"; then
-    export WIN32_REDIST_DIR="$(echo ~)/win-cross/vs2026/VC/Redist/MSVC/14.50.35710/arm64/Microsoft.VC145.CRT"
+    export WIN32_REDIST_DIR="$WINSYSROOT/VC/Redist/MSVC/14.50.35710/arm64/Microsoft.VC145.CRT"
   else
-    export WIN32_REDIST_DIR="$(echo ~)/win-cross/vs2026/VC/Redist/MSVC/14.50.35710/x64/Microsoft.VC145.CRT"
+    export WIN32_REDIST_DIR="$WINSYSROOT/VC/Redist/MSVC/14.50.35710/x64/Microsoft.VC145.CRT"
   fi
 fi
 

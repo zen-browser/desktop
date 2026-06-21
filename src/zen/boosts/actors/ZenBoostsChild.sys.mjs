@@ -280,6 +280,9 @@ export class ZenBoostsChild extends JSWindowActorChild {
       case "ZenBoost:OpenInspector":
         this.sendAsyncMessage("ZenBoost:OpenInspector");
         break;
+      case "ZenBoost:DisableSizeOverride":
+        this.disableSizeOverride();
+        break;
     }
     return null;
   }
@@ -547,6 +550,14 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
     this.#removeEventListeners();
     this.sendNotify("selector-picker-state-update", "ondisable");
+  }
+
+  disableSizeOverride() {
+    const browsingContext = this.browsingContext;
+    if (!browsingContext || browsingContext.parent !== null) {
+      return;
+    }
+    browsingContext.fullZoom = 1;
   }
 
   sendNotify(topic, msg = null) {

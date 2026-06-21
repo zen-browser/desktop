@@ -114,9 +114,12 @@ class nsZenBoostsManager {
       boostData: {
         boostName: "My Boost",
 
-        dotAngleDeg: 0,
+        /* These initial values depend on
+        each other. Changing one means having to
+        recalculate all of them manually. */
+        dotAngleDeg: 131.61,
         dotPos: { x: 0.76, y: 0.66 },
-        dotDistance: 0,
+        dotDistance: 0.91,
 
         secondaryDotAngleDegDelta: 55,
         secondaryDotPos: { x: 0.5, y: 0.81 },

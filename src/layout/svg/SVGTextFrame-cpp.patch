@@ -1,8 +1,8 @@
 diff --git a/layout/svg/SVGTextFrame.cpp b/layout/svg/SVGTextFrame.cpp
-index 93f6f2a704734314586fa16b6a45b434f9c2304d..4503ee2b48be39bb2e61962316ef43ad292a7b27 100644
+index 96dfd52fc38fe0833da7fa4c669e2a911c04c236..bb6749f3275f22e1d462d0180e83eb9aa23b6dc0 100644
 --- a/layout/svg/SVGTextFrame.cpp
 +++ b/layout/svg/SVGTextFrame.cpp
-@@ -2662,9 +2662,9 @@ void SVGTextDrawPathCallbacks::ApplyOpacity(
+@@ -2665,9 +2665,9 @@ void SVGTextDrawPathCallbacks::ApplyOpacity(
      sRGBColor& aColor, const StyleSVGPaint& aPaint,
      const StyleSVGOpacity& aOpacity) const {
    if (aPaint.kind.tag == StyleSVGPaintKind::Tag::Color) {
@@ -15,7 +15,7 @@ index 93f6f2a704734314586fa16b6a45b434f9c2304d..4503ee2b48be39bb2e61962316ef43ad
    }
    aColor.a *= SVGUtils::GetOpacity(aOpacity, mContextPaint);
  }
-@@ -5076,8 +5076,8 @@ bool SVGTextFrame::ShouldRenderAsPath(nsTextFrame* aFrame,
+@@ -5083,8 +5083,8 @@ bool SVGTextFrame::ShouldRenderAsPath(nsTextFrame* aFrame,
    // It's possible nsTextFrame will support non-opaque shadows in the future,
    // in which case this test can be removed.
    if (style->mFill.kind.IsColor() && aFrame->StyleText()->HasTextShadow() &&

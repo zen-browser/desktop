@@ -1,12 +1,12 @@
 diff --git a/devtools/startup/DevToolsStartup.sys.mjs b/devtools/startup/DevToolsStartup.sys.mjs
-index d604d0e00c623026928d72b1bcb1ce82e6bb6d4a..e3341c9ffc6db9b4bf360445ea031fc558e6076b 100644
+index ab008a13b4a6a31b18d5587e93e1ff589693cdac..946d1c70600fcfda5452d130dd1924c92d502562 100644
 --- a/devtools/startup/DevToolsStartup.sys.mjs
 +++ b/devtools/startup/DevToolsStartup.sys.mjs
 @@ -836,6 +836,9 @@ export class DevToolsStartup {
      // account (see bug 832984).
      const mainKeyset = doc.getElementById("mainKeyset");
      mainKeyset.parentNode.insertBefore(keyset, mainKeyset);
-+    mainKeyset.ownerGlobal.setTimeout(() => {
++    mainKeyset.documentGlobal.setTimeout(() => {
 +      window.dispatchEvent(new window.Event("zen-devtools-keyset-added"));
 +    }, 0);
    }

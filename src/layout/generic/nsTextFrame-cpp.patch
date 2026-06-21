@@ -1,8 +1,8 @@
 diff --git a/layout/generic/nsTextFrame.cpp b/layout/generic/nsTextFrame.cpp
-index e7f7943a19d3ac71872d0a8439b6ed90e8fd423d..eb3e84fabc67d95b6d194b5aaf3aaef7c38480c0 100644
+index 6c3615f90cdb1e5a42e15a0618cc4649cd0d0a15..17eb9d787e83093b0fea2ce43f05d7a447bd5cc9 100644
 --- a/layout/generic/nsTextFrame.cpp
 +++ b/layout/generic/nsTextFrame.cpp
-@@ -6381,7 +6381,7 @@ void nsTextFrame::DrawSelectionDecorations(
+@@ -6376,7 +6376,7 @@ void nsTextFrame::DrawSelectionDecorations(
            computedStyleFromPseudo->StyleTextReset()->mTextDecorationStyle;
        params.color =
            computedStyleFromPseudo->StyleTextReset()

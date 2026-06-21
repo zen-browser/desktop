@@ -37,7 +37,7 @@ class nsZenSpaceRoutingManager {
       const tabs = window.TabContextMenu.contextTab.multiselected
         ? window.gBrowser.selectedTabs
         : [window.TabContextMenu.contextTab];
-      gZenSpaceRoutingManager.addRouteForSelected(tabs, window);
+      this.addRouteForSelected(tabs, window);
     };
 
     window.document

@@ -35,9 +35,6 @@
 - name: zen.mediacontrols.enabled
   value: false
 
-- name: zen.haptic-feedback.enabled
-  value: false
-
 - name: zen.startup.smooth-scroll-in-tabs
   value: true
 

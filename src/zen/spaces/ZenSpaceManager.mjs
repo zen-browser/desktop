@@ -2228,6 +2228,11 @@ class nsZenWorkspaces {
     if (icon?.endsWith(".svg")) {
       const img = document.createElement("img");
       img.src = icon;
+      img.onerror = () => {
+        img.remove();
+        indicatorIcon.setAttribute("no-icon", "true");
+        iconStack.setAttribute("no-icon", "true");
+      };
       indicatorIcon.appendChild(img);
     } else {
       indicatorIcon.textContent = icon;

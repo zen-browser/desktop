@@ -8,7 +8,7 @@
   value: true
 
 - name: general.smoothScroll.pages
-  value: true
+  value: false
 
 - name: general.smoothScroll.msdPhysics.enabled
   condition: "!defined(XP_MACOSX)"

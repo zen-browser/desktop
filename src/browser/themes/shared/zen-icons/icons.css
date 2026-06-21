@@ -14,7 +14,7 @@
 }
 
 .private-browsing-indicator-icon {
-  list-style-image: url("account-private.svg") !important;
+  list-style-image: url("privateBrowsing.svg") !important;
   border-radius: 100% !important;
 }
 

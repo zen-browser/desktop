@@ -32,7 +32,7 @@ class nsZenSpaceRoutingManager {
       `);
     window.document.getElementById("context_undoCloseTab").after(element);
 
-    const onCommand = function (event) {
+    const onCommand = function () {
       const tabs = window.TabContextMenu.contextTab.multiselected
         ? window.gBrowser.selectedTabs
         : [window.TabContextMenu.contextTab];

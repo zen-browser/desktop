@@ -426,6 +426,32 @@ class nsZenWorkspaces {
     return this.getEssentialsSection(this.getCurrentSpaceContainerId());
   }
 
+  normalizeDuplicatedEssentialTab(tab) {
+    tab.removeAttribute("zen-essential");
+    tab.removeAttribute("zenDefaultUserContextId");
+    if (tab.pinned) {
+      tab.ownerGlobal.gBrowser.unpinTab(tab);
+    }
+  }
+
+  async duplicateEssentialTab(tab) {
+    const duplicatedTab = tab.ownerGlobal.gBrowser.duplicateTab(tab, true, {
+      tabIndex: tab._tPos + 1,
+    });
+    this.normalizeDuplicatedEssentialTab(duplicatedTab);
+
+    return new Promise(resolve => {
+      const onRestored = () => {
+        this.normalizeDuplicatedEssentialTab(duplicatedTab);
+        resolve(duplicatedTab);
+      };
+
+      duplicatedTab.addEventListener("SSTabRestored", onRestored, {
+        once: true,
+      });
+    });
+  }
+
   #createWorkspaceTabsSection(workspace, tabs = []) {
     const workspaceWrapper = document.createXULElement("zen-workspace");
     const container = document.getElementById("tabbrowser-arrowscrollbox");

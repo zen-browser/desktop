@@ -832,44 +832,18 @@ index 08b5b56e069d038d72c87355920c4ce8a55ed805..87f41c8583c26f364530def5bd5d8333
          aTab.selected ||
          aTab.closing ||
          // Tabs that are sharing the screen, microphone or camera cannot be hidden.
-@@ -6834,7 +7037,48 @@
-      * @param {object} [aOptions={}]
-      *   Key-value pairs that will be serialized into the features string.
-      */
+@@ -6834,7 +7037,22 @@
+     * @param {object} [aOptions={}]
+     *   Key-value pairs that will be serialized into the features string.
+     */
 -    replaceTabWithWindow(aTab, aOptions = {}) {
-+    #normalizeDuplicatedEssentialTab(tab) {
-+      tab.removeAttribute("zen-essential");
-+      tab.removeAttribute("zenDefaultUserContextId");
-+      if (tab.pinned) {
-+        tab.ownerGlobal.gBrowser.unpinTab(tab);
-+      }
-+    }
-+
-+    async #duplicateEssentialTab(tab) {
-+      const duplicatedTab = this.duplicateTab(tab, true, {
-+        tabIndex: tab._tPos + 1,
-+      });
-+      this.#normalizeDuplicatedEssentialTab(duplicatedTab);
-+
-+      return new Promise(resolve => {
-+        const onRestored = () => {
-+          this.#normalizeDuplicatedEssentialTab(duplicatedTab);
-+          resolve(duplicatedTab);
-+        };
-+
-+        duplicatedTab.addEventListener("SSTabRestored", onRestored, {
-+          once: true,
-+        });
-+      });
-+    }
-+
 +    replaceTabWithWindow(aTab, aOptions = {}, zenForceSync = false) {
 +      if (!this.isTab(aTab)) return; // TODO: Handle tab groups
 +      if (
 +        !zenForceSync &&
 +        aTab.hasAttribute("zen-essential")
 +      ) {
-+        this.#duplicateEssentialTab(aTab).then(
++        gZenWorkspaces.duplicateEssentialTab(aTab).then(
 +          duplicatedTab => {
 +            if (duplicatedTab) {
 +              this.replaceTabWithWindow(duplicatedTab, aOptions);
@@ -882,7 +856,7 @@ index 08b5b56e069d038d72c87355920c4ce8a55ed805..87f41c8583c26f364530def5bd5d8333
        if (this.tabs.length == 1) {
          return null;
        }
-@@ -6851,7 +7101,7 @@
+@@ -6851,7 +7075,7 @@
        // tell a new window to take the "dropped" tab
        let args = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
        args.appendElement(aTab.splitview ?? aTab);
@@ -891,7 +865,7 @@ index 08b5b56e069d038d72c87355920c4ce8a55ed805..87f41c8583c26f364530def5bd5d8333
          private: PrivateBrowsingUtils.isWindowPrivate(window),
          features: Object.entries(aOptions)
            .map(([key, value]) => `${key}=${value}`)
-@@ -6859,6 +7109,8 @@
+@@ -6859,6 +7083,8 @@
          openerWindow: window,
          args,
        });
@@ -900,7 +874,7 @@ index 08b5b56e069d038d72c87355920c4ce8a55ed805..87f41c8583c26f364530def5bd5d8333
      }
  
      /**
-@@ -6880,10 +7132,35 @@
+@@ -6880,10 +7106,35 @@
         elements = [contextTab.splitview ?? contextTab];
       }
 
@@ -916,7 +890,7 @@ index 08b5b56e069d038d72c87355920c4ce8a55ed805..87f41c8583c26f364530def5bd5d8333
 +        Promise.all(
 +          elements.map(element =>
 +            this.isTab(element) && element.hasAttribute("zen-essential")
-+              ? this.#duplicateEssentialTab(element)
++              ? gZenWorkspaces.duplicateEssentialTab(element)
 +              : element
 +          )
 +        ).then(
@@ -937,7 +911,7 @@ index 08b5b56e069d038d72c87355920c4ce8a55ed805..87f41c8583c26f364530def5bd5d8333
        if (elements.length == 1) {
          return this.replaceTabWithWindow(elements[0], aOptions);
        }
-@@ -6971,7 +7248,7 @@
+@@ -6971,7 +7247,7 @@
      *   `true` if element is a `<tab-group>`
      */
     isTabGroup(element) {

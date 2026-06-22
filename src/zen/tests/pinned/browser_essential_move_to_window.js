@@ -23,7 +23,7 @@ add_task(async function test_Move_Essential_Tab_To_Window_Duplicates() {
   const essentialCount = gBrowser._numZenEssentials;
   const newWindowPromise = BrowserTestUtils.waitForNewWindow();
   const openedWindow = gBrowser.replaceTabWithWindow(tab);
-  ok(openedWindow, "Moving an Essential tab opens a new window");
+  is(openedWindow, null, "Moving an Essential tab is deferred until restored");
 
   const newWindow = await newWindowPromise;
   await BrowserTestUtils.waitForCondition(
@@ -58,6 +58,137 @@ add_task(async function test_Move_Essential_Tab_To_Window_Duplicates() {
 
   await BrowserTestUtils.closeWindow(newWindow);
   await BrowserTestUtils.removeTab(tab);
+});
+
+add_task(async function test_Move_Essential_Waits_For_Duplicate_Restore() {
+  let newWindow;
+  let windowOpened = false;
+  const tab = await BrowserTestUtils.openNewForegroundTab(
+    gBrowser,
+    TEST_URL,
+    true
+  );
+  const duplicate = await BrowserTestUtils.openNewForegroundTab(
+    gBrowser,
+    "https://example.org/",
+    true
+  );
+
+  gZenPinnedTabManager.addToEssentials(tab);
+  const originalDuplicateTab = gBrowser.duplicateTab;
+  gBrowser.duplicateTab = () => duplicate;
+
+  try {
+    const newWindowPromise = BrowserTestUtils.waitForNewWindow().then(win => {
+      windowOpened = true;
+      return win;
+    });
+
+    gBrowser.replaceTabWithWindow(tab);
+    await TestUtils.waitForTick();
+    ok(!windowOpened, "The new window waits for the duplicate to restore");
+
+    duplicate.dispatchEvent(new CustomEvent("SSTabRestored"));
+    newWindow = await newWindowPromise;
+    is(
+      newWindow.gBrowser.selectedBrowser.currentURI.spec,
+      "https://example.org/",
+      "The restored duplicate is moved to the new window"
+    );
+  } finally {
+    gBrowser.duplicateTab = originalDuplicateTab;
+    if (newWindow && !newWindow.closed) {
+      await BrowserTestUtils.closeWindow(newWindow);
+    }
+    for (const candidate of [tab, duplicate]) {
+      if (candidate.isConnected && !candidate.closing) {
+        await BrowserTestUtils.removeTab(candidate);
+      }
+    }
+  }
+});
+
+add_task(async function test_Move_Multiple_Essentials_Waits_For_Restore() {
+  let newWindow;
+  let windowOpened = false;
+  const sourceTabs = [
+    await BrowserTestUtils.openNewForegroundTab(gBrowser, TEST_URL, true),
+    await BrowserTestUtils.openNewForegroundTab(
+      gBrowser,
+      "https://example.org/",
+      true
+    ),
+  ];
+  const duplicateTabs = [
+    await BrowserTestUtils.openNewForegroundTab(
+      gBrowser,
+      "https://example.net/",
+      true
+    ),
+    await BrowserTestUtils.openNewForegroundTab(
+      gBrowser,
+      "https://example.com/?duplicate=2",
+      true
+    ),
+  ];
+
+  for (const tab of sourceTabs) {
+    gZenPinnedTabManager.addToEssentials(tab);
+    gBrowser.addToMultiSelectedTabs(tab);
+  }
+
+  const duplicatesBySource = new Map(
+    sourceTabs.map((tab, index) => [tab, duplicateTabs[index]])
+  );
+  const originalDuplicateTab = gBrowser.duplicateTab;
+  gBrowser.duplicateTab = tab => duplicatesBySource.get(tab);
+
+  try {
+    const newWindowPromise = BrowserTestUtils.waitForNewWindow().then(win => {
+      windowOpened = true;
+      return win;
+    });
+
+    gBrowser.replaceTabsWithWindow(sourceTabs[0]);
+    duplicateTabs[0].dispatchEvent(new CustomEvent("SSTabRestored"));
+    await TestUtils.waitForTick();
+    ok(!windowOpened, "The new window waits for every duplicate to restore");
+
+    duplicateTabs[1].dispatchEvent(new CustomEvent("SSTabRestored"));
+    newWindow = await newWindowPromise;
+    const expectedURLs = [
+      "https://example.net/",
+      "https://example.com/?duplicate=2",
+    ];
+    await BrowserTestUtils.waitForCondition(
+      () =>
+        expectedURLs.every(url =>
+          newWindow.gBrowser.tabs.some(
+            tab => tab.linkedBrowser.currentURI.spec == url
+          )
+        ),
+      "All restored duplicates moved to the new window"
+    );
+
+    const movedURLs = newWindow.gBrowser.tabs
+      .map(tab => tab.linkedBrowser.currentURI.spec)
+      .filter(url => expectedURLs.includes(url));
+    Assert.deepEqual(
+      movedURLs,
+      expectedURLs,
+      "The restored duplicates keep their order and URLs"
+    );
+  } finally {
+    gBrowser.duplicateTab = originalDuplicateTab;
+    if (newWindow && !newWindow.closed) {
+      await BrowserTestUtils.closeWindow(newWindow);
+    }
+    for (const candidate of [...sourceTabs, ...duplicateTabs]) {
+      if (candidate.isConnected && !candidate.closing) {
+        await BrowserTestUtils.removeTab(candidate);
+      }
+    }
+  }
 });
 
 add_task(async function test_Forced_Sync_Moves_Essential_Tab() {

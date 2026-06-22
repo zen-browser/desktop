@@ -55,6 +55,9 @@
   z-index: 1;
 }
 
-:root[zen-compact-mode="true"] #ai-window-splitter {
-  z-index: 5;
+:root[zen-compact-mode="true"] #ai-window-splitter,
+:root[zen-compact-mode="true"] #ai-window-box,
+:root[zen-compact-mode="true"] #sidebar-box {
+  z-index: 20;
+  position: relative;
 }

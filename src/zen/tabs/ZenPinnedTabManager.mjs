@@ -286,7 +286,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     const url = uri.spec;
 
     // Skip when the value wasn't actually changed from what was prefilled.
-    if (url === initialUrl) {
+    if (!url || url === initialUrl) {
       return;
     }
 

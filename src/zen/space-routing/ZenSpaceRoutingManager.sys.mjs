@@ -35,6 +35,27 @@ class nsZenSpaceRoutingManager {
     window.document
       .getElementById("context_zen-add-domain-to-routing")
       .addEventListener("command", this.#onAddSelectedToRouting.bind(this));
+    window.document
+      .getElementById("tabContextMenu")
+      .addEventListener(
+        "popupshowing",
+        this.#updateTabCloseCountState.bind(this)
+      );
+  }
+
+  /**
+   * Updates the "context_zen-add-domain-to-routing" command
+   * to reflect the number of selected tabs, when applicable.
+   *
+   * @param {Event} event - The event param
+   */
+  #updateTabCloseCountState(event) {
+    const window = event.target.documentGlobal;
+    window.document.l10n.setAttributes(
+      window.document.getElementById("context_zen-add-domain-to-routing"),
+      "tab-context-zen-add-domain-to-sr",
+      { tabCount: window.gBrowser.selectedTabs.length }
+    );
   }
 
   /**

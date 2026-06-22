@@ -51,9 +51,8 @@ class nsZenSpaceRoutingManager {
    */
   #updateTabCloseCountState(event) {
     const window = event.target.documentGlobal;
-    window.document.l10n.setAttributes(
+    window.document.l10n.setArgs(
       window.document.getElementById("context_zen-add-domain-to-routing"),
-      "tab-context-zen-add-domain-to-sr",
       { tabCount: window.gBrowser.selectedTabs.length }
     );
   }

@@ -158,6 +158,8 @@ zen-workspace-creation {
 
         & .zen-workspace-creation-profile-label {
           cursor: help;
+          opacity: 0.4;
+          font-size: small;
         }
 
         & .zen-workspace-creation-profile {

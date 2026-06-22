@@ -251,7 +251,7 @@ zen-move-tab-to-workspace-button =
 zen-workspaces-panel-context-reorder =
     .label = Reorder Spaces
 
-zen-workspace-creation-profile = Profile
+zen-workspace-creation-profile = Keep logins separate (optional)
     .tooltiptext = Profiles are used to separate cookies and site data between spaces.
 zen-workspace-creation-header = Create a Space
 zen-workspace-creation-label = Separate study, work, and personal tabs — each Space keeps its own color and logins.

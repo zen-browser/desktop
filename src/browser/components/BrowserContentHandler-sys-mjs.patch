@@ -28,7 +28,7 @@ index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09
 +    }
 +
 +    try {
-+      let zenWorkspaceParam = cmdLine.handleFlagWithParam("zen-workspace", false);
++      let zenWorkspaceParam = cmdLine.handleFlagWithParam("space", false);
 +      if (zenWorkspaceParam) {
 +        let targetWin = lazy.BrowserWindowTracker.getTopWindow({
 +          private: false,
@@ -42,7 +42,7 @@ index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09
 +            zenWorkspaceParam
 +          );
 +        } else {
-+          // Cold start: stash the workspace so the first window that
++          // Cold start: stash the space so the first window that
 +          // restores picks it up, and let normal startup open that window.
 +          Services.prefs.setStringPref(
 +            "zen.workspaces.cmdline-initial-workspace",
@@ -65,7 +65,7 @@ index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09
        "  --new-tab <url>    Open <url> in a new tab.\n" +
        "  --private-window [<url>] Open <url> in a new private window.\n";
 +    info += "  --blank-window [<url>]  Open the new blank window.\n";
-+    info += "  --zen-workspace <space>  Switch to the workspace with the given name or UUID.\n";
++    info += "  --space <space>  Switch to the space with the given name or UUID.\n";
      if (AppConstants.platform == "win") {
        info += "  --preferences      Open Options dialog.\n";
      } else {

@@ -173,10 +173,15 @@ class ZenStartup {
         "astra.updates.last-version",
         Services.appinfo.version
       );
-      Services.scriptloader.loadSubScript(
-        "chrome://browser/content/zen-components/ZenWelcome.mjs",
-        window
-      );
+      try {
+        Services.scriptloader.loadSubScript(
+          "chrome://browser/content/zen-components/ZenWelcome.mjs",
+          window
+        );
+      } catch (e) {
+        console.error("[Astra] Failed to load welcome script:", e);
+        Services.prefs.setBoolPref(kWelcomeScreenSeenPref, false);
+      }
     } else {
       this.#createUpdateAnimation();
     }

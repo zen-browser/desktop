@@ -750,58 +750,65 @@
           },
         ],
         async fadeIn() {
-          const content = document.getElementById("zen-welcome-page-content");
-          const engineStore = new ZenSearchEngineStore();
-          await engineStore.init();
+          try {
+            const content = document.getElementById("zen-welcome-page-content");
+            const engineStore = new ZenSearchEngineStore();
+            await engineStore.init();
 
-          content.setAttribute("select-engine", "true");
+            content.setAttribute("select-engine", "true");
 
-          const defaultEngine = await lazy.SearchService.getDefault();
-          const promises = [];
-          engineStore.getEngines().forEach(engine => {
-            const label = document.createElement("label");
-            const engineId = engine.name.replace(/\s+/g, "-").toLowerCase();
-            label.setAttribute("for", engineId);
-            const input = document.createElement("input");
-            input.setAttribute("type", "radio");
-            input.setAttribute("id", engineId);
-            input.setAttribute("name", "zen-welcome-set-default-browser");
-            input.setAttribute("hidden", "true");
-            if (engine.name === defaultEngine.name) {
-              input.setAttribute("checked", "true");
-            }
-            label.appendChild(input);
-            const engineLabel = document.createElement("label");
-            engineLabel.textContent = engine.name;
-            const icon = document.createElement("img");
-            promises.push(
-              (async () => {
-                try {
-                  const iconURL = await engine.originalEngine.getIconURL();
-                  if (iconURL) {
-                    icon.setAttribute("src", iconURL);
-                  } else {
+            const defaultEngine = await lazy.SearchService.getDefault();
+            const promises = [];
+            engineStore.getEngines().forEach(engine => {
+              const label = document.createElement("label");
+              const engineId = engine.name.replace(/\s+/g, "-").toLowerCase();
+              label.setAttribute("for", engineId);
+              const input = document.createElement("input");
+              input.setAttribute("type", "radio");
+              input.setAttribute("id", engineId);
+              input.setAttribute("name", "zen-welcome-set-default-browser");
+              input.setAttribute("hidden", "true");
+              if (engine.name === defaultEngine?.name) {
+                input.setAttribute("checked", "true");
+              }
+              label.appendChild(input);
+              const engineLabel = document.createElement("label");
+              engineLabel.textContent = engine.name;
+              const icon = document.createElement("img");
+              promises.push(
+                (async () => {
+                  try {
+                    const iconURL = await engine.originalEngine.getIconURL();
+                    if (iconURL) {
+                      icon.setAttribute("src", iconURL);
+                    } else {
+                      icon.style.visibility = "hidden";
+                    }
+                  } catch {
                     icon.style.visibility = "hidden";
                   }
-                } catch {
-                  icon.style.visibility = "hidden";
+                })()
+              );
+              icon.setAttribute("width", "32");
+              icon.setAttribute("height", "32");
+              icon.setAttribute("class", "engine-icon");
+              label.appendChild(icon);
+              label.appendChild(engineLabel);
+              content.appendChild(label);
+              label.addEventListener("click", async () => {
+                const selectedEngine = engineStore.getEngineByName(engine.name);
+                if (selectedEngine) {
+                  await engineStore.setDefaultEngine(selectedEngine);
                 }
-              })()
-            );
-            icon.setAttribute("width", "32");
-            icon.setAttribute("height", "32");
-            icon.setAttribute("class", "engine-icon");
-            label.appendChild(icon);
-            label.appendChild(engineLabel);
-            content.appendChild(label);
-            label.addEventListener("click", async () => {
-              const selectedEngine = engineStore.getEngineByName(engine.name);
-              if (selectedEngine) {
-                await engineStore.setDefaultEngine(selectedEngine);
-              }
+              });
             });
-          });
-          await Promise.all(promises);
+            await Promise.all(promises);
+          } catch (e) {
+            console.error("[Astra] Search engine page fadeIn failed:", e);
+            _welcomePagesInstance?.next().catch(err =>
+              console.error("[Astra] Failed to advance past broken welcome page:", err)
+            );
+          }
         },
         async fadeOut() {
           document
@@ -1117,11 +1124,35 @@
     );
   }
 
+  function restoreBrowserOnWelcomeFailure() {
+    try {
+      document.getElementById("zen-welcome")?.remove();
+      document.documentElement.removeAttribute("zen-welcome-stage");
+      for (const element of document.getElementById("browser").children) {
+        if (kZenElementsToIgnore.includes(element.id)) {
+          continue;
+        }
+        element.style.removeProperty("display");
+      }
+      Services.prefs.setBoolPref("zen.welcome-screen.seen", false);
+    } catch (e) {
+      console.error("[Astra] Failed to restore browser after welcome failure:", e);
+    }
+  }
+
   function startZenWelcome() {
-    clearBrowserElements();
-    centerWindowOnScreen();
-    initializeZenWelcome();
-    animateInitialStage();
+    try {
+      clearBrowserElements();
+      centerWindowOnScreen();
+      initializeZenWelcome();
+      animateInitialStage().catch(e => {
+        console.error("[Astra] Welcome animateInitialStage failed:", e);
+        restoreBrowserOnWelcomeFailure();
+      });
+    } catch (e) {
+      console.error("[Astra] Welcome startup failed:", e);
+      restoreBrowserOnWelcomeFailure();
+    }
   }
 
   startZenWelcome();

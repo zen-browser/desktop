@@ -442,10 +442,6 @@ class nsZenSpaceRoutingManager {
    * @param {Window} parentWindow - The window from which this is being executed
    */
   addRouteForSelected(selectedTabs, parentWindow) {
-    if (!selectedTabs) {
-      return;
-    }
-
     const newRoute = this.createNewRoute();
     let routeReference = "";
 

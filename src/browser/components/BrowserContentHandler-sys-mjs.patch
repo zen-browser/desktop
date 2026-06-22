@@ -2,7 +2,7 @@ diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/componen
 index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09814422bf 100644
 --- a/browser/components/BrowserContentHandler.sys.mjs
 +++ b/browser/components/BrowserContentHandler.sys.mjs
-@@ -603,6 +603,67 @@ nsBrowserContentHandler.prototype = {
+@@ -603,6 +603,57 @@ nsBrowserContentHandler.prototype = {
        }
      }
  
@@ -30,27 +30,17 @@ index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09
 +    try {
 +      let zenWorkspaceParam = cmdLine.handleFlagWithParam("zen-workspace", false);
 +      if (zenWorkspaceParam) {
-+        let targetWin = Services.wm.getMostRecentWindow("navigator:browser");
++        let targetWin = lazy.BrowserWindowTracker.getTopWindow({
++          private: false,
++          allowPopups: false,
++        });
 +        if (
-+          !targetWin?.gZenWorkspaces?.workspaceEnabled ||
-+          targetWin.gZenWorkspaces.isPrivateWindow
++          targetWin?.gZenWorkspaces &&
++          !targetWin.gZenWorkspaces.privateWindowOrDisabled
 +        ) {
-+          targetWin = null;
-+          for (const win of Services.wm.getEnumerator("navigator:browser")) {
-+            if (
-+              !win.closed &&
-+              win.gZenWorkspaces?.workspaceEnabled &&
-+              !win.gZenWorkspaces.isPrivateWindow
-+            ) {
-+              targetWin = win;
-+            }
-+          }
-+        }
-+        if (targetWin) {
 +          targetWin.gZenWorkspaces.changeWorkspaceFromCommandLine(
 +            zenWorkspaceParam
 +          );
-+          cmdLine.preventDefault = true;
 +        } else {
 +          // Cold start: stash the workspace so the first window that
 +          // restores picks it up, and let normal startup open that window.
@@ -70,7 +60,7 @@ index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09
      var searchParam = cmdLine.handleFlagWithParam("search", false);
      if (searchParam) {
        doSearch(searchParam, cmdLine);
-@@ -672,6 +733,8 @@ nsBrowserContentHandler.prototype = {
+@@ -672,6 +723,8 @@ nsBrowserContentHandler.prototype = {
        "  --new-window <url> Open <url> in a new window.\n" +
        "  --new-tab <url>    Open <url> in a new tab.\n" +
        "  --private-window [<url>] Open <url> in a new private window.\n";

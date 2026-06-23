@@ -3,6 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { JSONFile } from "resource://gre/modules/JSONFile.sys.mjs";
+import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
+
+const lazy = {};
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "shouldForceContainerTabsToWorkspace",
+  "zen.workspaces.force-container-workspace",
+  false
+);
 
 class nsZenSpaceRoutingManager {
   #file = null;
@@ -58,6 +68,37 @@ class nsZenSpaceRoutingManager {
           userContextId = targetWorkspace.containerTabId;
           isRouteFound = true;
           targetWorkspaceName = targetWorkspace.name;
+        }
+      }
+    }
+
+    if (!isRouteFound) {
+      let tabSpaceId = options.zenWorkspaceId;
+      let spaceManager = win.gZenWorkspaces;
+      if (lazy.shouldForceContainerTabsToWorkspace) {
+        // In case its undefined, to make it into an integer.
+        const tabContainerId = options.userContextId || 0;
+        const currentSpace = spaceManager.getActiveWorkspaceFromCache();
+          console.log("[ZenSpaceRouting] Tab is opening with userContextId", tabContainerId, "and active space has containerTabId", currentSpace.containerTabId);
+        if (tabContainerId !== currentSpace.containerTabId) {
+          const targetWorkspace = spaceManager.getWorkspaces().find(
+            workspace => workspace.containerTabId === tabContainerId
+          );
+          if (targetWorkspace) {
+            tabSpaceId = targetWorkspace.uuid;
+          }
+        }
+      }
+      // Add support for zen.workspaces.force-container-workspace in SR,
+      // instead of using the old implementation. Lets create a temporary route
+      // for this tab, so that it will be routed to the correct space.
+      if (tabSpaceId && tabSpaceId !== spaceManager.activeWorkspace) {
+        const targetWorkspace = spaceManager.getWorkspaceFromId(tabSpaceId);
+        if (targetWorkspace) {
+          userContextId = targetWorkspace.containerTabId;
+          isRouteFound = true;
+          targetWorkspaceName = targetWorkspace.name;
+          targetRoute = tabSpaceId;
         }
       }
     }
@@ -167,8 +208,8 @@ class nsZenSpaceRoutingManager {
           break;
 
         default: {
-          const workspaces = win?.gZenWorkspaces;
-          const targetWorkspace = workspaces?.getWorkspaceFromId?.(targetRoute);
+          const workspaces = win.gZenWorkspaces;
+          const targetWorkspace = workspaces.getWorkspaceFromId(targetRoute);
 
           if (targetWorkspace) {
             workspaces.moveTabToWorkspace(newTab, targetWorkspace.uuid);

@@ -108,12 +108,6 @@ class nsZenWorkspaces {
     );
     XPCOMUtils.defineLazyPreferenceGetter(
       this,
-      "shouldForceContainerTabsToWorkspace",
-      "zen.workspaces.force-container-workspace",
-      true
-    );
-    XPCOMUtils.defineLazyPreferenceGetter(
-      this,
       "shouldOpenNewTabIfLastUnpinnedTabIsClosed",
       "zen.workspaces.open-new-tab-if-last-unpinned-tab-is-closed",
       false
@@ -788,11 +782,6 @@ class nsZenWorkspaces {
       window.addEventListener("TabUnpinned", tabUpdateListener);
       window.addEventListener("aftercustomization", tabUpdateListener);
       window.addEventListener("TabSelect", this.onLocationChange.bind(this));
-      window.addEventListener(
-        "TabBrowserInserted",
-        this.onTabBrowserInserted.bind(this)
-      );
-
       this.updateWorkspacesChangeContextMenu();
     })();
   }
@@ -2794,44 +2783,6 @@ class nsZenWorkspaces {
     }
   }
 
-  async onTabBrowserInserted(event) {
-    let tab = event.originalTarget;
-    const isEssential = tab.getAttribute("zen-essential") === "true";
-    const workspaceID = tab.getAttribute("zen-workspace-id");
-
-    if (!this.workspaceEnabled || isEssential) {
-      return;
-    }
-
-    if (workspaceID) {
-      if (
-        tab.hasAttribute("change-workspace") &&
-        this.moveTabToWorkspace(tab, workspaceID)
-      ) {
-        this.lastSelectedWorkspaceTabs[workspaceID] =
-          gZenGlanceManager.getTabOrGlanceParent(tab);
-        tab.removeAttribute("change-workspace");
-        const workspace = this.getWorkspaceFromId(workspaceID);
-        setTimeout(() => {
-          this.changeWorkspace(workspace);
-        }, 0);
-      }
-      return;
-    }
-
-    let activeWorkspace = this.getActiveWorkspace();
-    if (!activeWorkspace) {
-      return;
-    }
-    if (tab.hasAttribute("zen-workspace-id")) {
-      const tabWorkspaceId = tab.getAttribute("zen-workspace-id");
-      this.moveTabToWorkspace(tab, tabWorkspaceId);
-      await this.changeWorkspaceWithID(tabWorkspaceId);
-    } else {
-      tab.setAttribute("zen-workspace-id", activeWorkspace.uuid);
-    }
-  }
-
   #changeToEmptyTab() {
     const isEmpty = gBrowser.selectedTab.hasAttribute("zen-empty-tab");
     gZenCompactModeManager.sidebar.toggleAttribute(
@@ -3017,7 +2968,7 @@ class nsZenWorkspaces {
 
   getContextIdIfNeeded(userContextId, fromExternal, triggeringPrincipal) {
     if (!this.workspaceEnabled) {
-      return [userContextId, false, undefined];
+      return [userContextId, false];
     }
 
     if (
@@ -3025,27 +2976,7 @@ class nsZenWorkspaces {
       triggeringPrincipal.isAddonOrExpandedAddonPrincipal &&
       typeof userContextId === "undefined"
     ) {
-      return [userContextId, false, undefined];
-    }
-
-    if (
-      this.shouldForceContainerTabsToWorkspace &&
-      typeof userContextId !== "undefined" &&
-      this._workspaceCache &&
-      !fromExternal
-    ) {
-      // Find all workspaces that match the given userContextId
-      const matchingWorkspaces = this._workspaceCache.filter(
-        workspace => workspace.containerTabId === userContextId
-      );
-
-      // Check if exactly one workspace matches
-      if (matchingWorkspaces.length === 1) {
-        const workspace = matchingWorkspaces[0];
-        if (workspace.uuid !== this.getActiveWorkspaceFromCache().uuid) {
-          return [userContextId, true, workspace.uuid];
-        }
-      }
+      return [userContextId, false];
     }
 
     const activeWorkspace = this.getActiveWorkspaceFromCache();
@@ -3056,9 +2987,9 @@ class nsZenWorkspaces {
       typeof userContextId !== "undefined" &&
       userContextId !== activeWorkspaceUserContextId
     ) {
-      return [userContextId, false, undefined];
+      return [userContextId, false];
     }
-    return [activeWorkspaceUserContextId, true, undefined];
+    return [activeWorkspaceUserContextId, true];
   }
 
   getTabsToExclude(aTab) {

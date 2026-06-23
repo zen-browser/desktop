@@ -1180,6 +1180,19 @@ class nsZenWindowSync {
   }
 
   /**
+   * Whether a tab currently holds real loaded content (as opposed to a blank /
+   * not-yet-restored browser). Used to decide cross-window docshell swaps so we
+   * never swap a blank browser in over a tab the user just activated.
+   *
+   * @param {object} aTab - The tab to check.
+   * @returns {boolean} True if the tab's browser has non-blank content.
+   */
+  #hasLiveContent(aTab) {
+    const spec = aTab?.linkedBrowser?.currentURI?.spec;
+    return !!(spec && spec !== "about:blank");
+  }
+
+  /**
    * Handles tab switch or window focus events to synchronize tab contents visibility.
    *
    * @param {Window} aWindow - The window that triggered the event.
@@ -1225,12 +1238,21 @@ class nsZenWindowSync {
         aWindow,
         selectedTab.id
       );
+      const selHasContent = this.#hasLiveContent(selectedTab);
+      const otherHasContent = this.#hasLiveContent(otherSelectedTab);
       selectedTab._zenContentsVisible = true;
-      if (otherSelectedTab) {
+      if (otherSelectedTab && !selHasContent && otherHasContent) {
+        // This tab is blank and the other window holds the live content: pull
+        // it in.
         delete otherSelectedTab._zenContentsVisible;
         promises.push(
           this.#swapBrowserDocShellsAsync(selectedTab, otherSelectedTab)
         );
+      } else if (otherSelectedTab && !otherHasContent && !selHasContent) {
+        // Neither side has live content yet: hand over the visibility flag but
+        // don't swap, so we never pull a blank browser in over this tab (which
+        // is what left the activated tab grey/blank). It will load its own URL.
+        delete otherSelectedTab._zenContentsVisible;
       }
     }
     await Promise.all(promises);
@@ -1442,6 +1464,11 @@ class nsZenWindowSync {
         animate: true,
         createLazyBrowser: true,
         _forZenEmptyTab: tab.hasAttribute("zen-empty-tab"),
+        // Mirror the source tab's container. Without this the synced tab is
+        // created with no container, and getContextIdIfNeeded() fills it from
+        // THIS window's active Space — so a tab opened in a No-Container Space
+        // wrongly inherits the other window's container.
+        userContextId: tab.userContextId,
       });
       newTab.id = tab.id;
       if (!tab.hasAttribute("pending")) {

@@ -1506,15 +1506,15 @@ class nsZenWorkspaces {
         continue;
       }
 
-      const newtabPlacement = Services.prefs.getBoolPref(
-        "zen.view.show-newtab-button-top",
-        false
-      );
-      const insertElement = newtabPlacement
-        ? container.firstChild
-        : container.lastChild;
-
       if (container) {
+        const newtabPlacement = Services.prefs.getBoolPref(
+          "zen.view.show-newtab-button-top",
+          false
+        );
+        const insertElement = newtabPlacement
+          ? container.firstChild
+          : container.lastChild;
+
         if (tab.group?.hasAttribute("split-view-group")) {
           gBrowser.zenHandleTabMove(tab.group, () => {
             for (const subTab of tab.group.tabs) {

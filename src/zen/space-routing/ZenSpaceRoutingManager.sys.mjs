@@ -51,7 +51,8 @@ class nsZenSpaceRoutingManager {
       case "most-recent-space":
         break;
       default: {
-        const targetWorkspace = win.gZenWorkspaces.getWorkspaceFromId(targetRoute);
+        const targetWorkspace =
+          win.gZenWorkspaces.getWorkspaceFromId(targetRoute);
 
         if (targetWorkspace) {
           userContextId = targetWorkspace.containerTabId;
@@ -106,7 +107,11 @@ class nsZenSpaceRoutingManager {
    * @returns {boolean} True when the navigation should open in a new routed tab
    */
   shouldRedirectNavigation(uriString, currentWorkspaceId, win) {
-    return !!this.getRedirectTargetWorkspaceId(uriString, currentWorkspaceId, win);
+    return !!this.getRedirectTargetWorkspaceId(
+      uriString,
+      currentWorkspaceId,
+      win
+    );
   }
 
   /**
@@ -135,7 +140,9 @@ class nsZenSpaceRoutingManager {
     }
 
     // Only redirect when the destination space actually exists.
-    return win.gZenWorkspaces.getWorkspaceFromId(targetRoute) ? targetRoute : null;
+    return win.gZenWorkspaces.getWorkspaceFromId(targetRoute)
+      ? targetRoute
+      : null;
   }
 
   /**

@@ -5,6 +5,9 @@
 - name: browser.startup.page
   value: 3
 
+- name: browser.startup.homepage
+  value: "about:home"
+
 - name: browser.sessionstore.restore_pinned_tabs_on_demand
   value: true
 

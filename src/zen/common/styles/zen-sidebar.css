@@ -58,6 +58,6 @@
 :root[zen-compact-mode="true"] #ai-window-splitter,
 :root[zen-compact-mode="true"] #ai-window-box,
 :root[zen-compact-mode="true"] #sidebar-box {
-  z-index: 20;
+  z-index: 10;
   position: relative;
 }

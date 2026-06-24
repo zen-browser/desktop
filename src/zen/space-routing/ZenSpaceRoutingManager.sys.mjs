@@ -51,8 +51,7 @@ class nsZenSpaceRoutingManager {
       case "most-recent-space":
         break;
       default: {
-        const targetWorkspace =
-          win?.gZenWorkspaces?.getWorkspaceFromId(targetRoute);
+        const targetWorkspace = win.gZenWorkspaces.getWorkspaceFromId(targetRoute);
 
         if (targetWorkspace) {
           userContextId = targetWorkspace.containerTabId;
@@ -107,8 +106,22 @@ class nsZenSpaceRoutingManager {
    * @returns {boolean} True when the navigation should open in a new routed tab
    */
   shouldRedirectNavigation(uriString, currentWorkspaceId, win) {
+    return !!this.getRedirectTargetWorkspaceId(uriString, currentWorkspaceId, win);
+  }
+
+  /**
+   * Resolves the destination space for an in-place top-level navigation, or
+   * null when the navigation should be left alone (no rule, the destination is
+   * "most-recent-space", the tab already lives there, or the space is gone).
+   *
+   * @param {string} uriString - The destination URI
+   * @param {string|null} currentWorkspaceId - The zen-workspace-id of the navigating tab
+   * @param {Window} win - The owning browser window
+   * @returns {string|null} The target workspace id, or null to leave the navigation in place
+   */
+  getRedirectTargetWorkspaceId(uriString, currentWorkspaceId, win) {
     if (!win?.gZenWorkspaces?.workspaceEnabled) {
-      return false;
+      return null;
     }
 
     const targetRoute = this.routeUri(uriString, { fromExternal: false });
@@ -118,11 +131,11 @@ class nsZenSpaceRoutingManager {
       targetRoute === "most-recent-space" ||
       targetRoute === currentWorkspaceId
     ) {
-      return false;
+      return null;
     }
 
     // Only redirect when the destination space actually exists.
-    return !!win.gZenWorkspaces.getWorkspaceFromId(targetRoute);
+    return win.gZenWorkspaces.getWorkspaceFromId(targetRoute) ? targetRoute : null;
   }
 
   /**

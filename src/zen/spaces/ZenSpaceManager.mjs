@@ -2298,12 +2298,12 @@ class nsZenWorkspaces {
   }
 
   onBeforeTabSelect(aTab) {
-    if (this.#inChangingWorkspace) {
+    if (this.#inChangingWorkspace || !aTab) {
       // Just in case, Let's not do these checks while we are
       // in the middle of changing workspace,
       return false;
     }
-    const tabSpace = aTab?.getAttribute("zen-workspace-id");
+    const tabSpace = aTab.getAttribute("zen-workspace-id");
     if (
       tabSpace &&
       tabSpace !== this.activeWorkspace &&

@@ -35,13 +35,6 @@ export class ZenSpaceRoutingNavigation extends ZenUIComponent {
       return;
     }
 
-    // The tab we spawn for a route must be allowed to load once without being
-    // redirected again, regardless of when its workspace attribute lands.
-    if (aBrowser._zenSkipNavRouteOnce) {
-      aBrowser._zenSkipNavRouteOnce = false;
-      return;
-    }
-
     let uri;
     try {
       uri = aRequest.QueryInterface(Ci.nsIChannel).URI;
@@ -80,16 +73,49 @@ export class ZenSpaceRoutingNavigation extends ZenUIComponent {
     }
 
     const currentWorkspaceId = tab.getAttribute("zen-workspace-id");
-    if (
-      !win.gZenSpaceRoutingManager.shouldRedirectNavigation(
+    const targetWorkspaceId =
+      win.gZenSpaceRoutingManager.getRedirectTargetWorkspaceId(
         uri.spec,
         currentWorkspaceId,
         win
-      )
-    ) {
+      );
+    if (!targetWorkspaceId) {
       return;
     }
 
+    // A brand-new tab whose very first real navigation this is (a
+    // target="_blank" link, window.open(), or a freshly opened tab) is still
+    // showing its initial about:blank document. There is nothing to preserve,
+    // so rather than cancelling the load and spawning a duplicate tab - which
+    // would leave this one behind empty - just move this very tab into the
+    // destination space and let the in-flight load finish in place.
+    const isInitialDocument =
+      aBrowser.browsingContext?.currentWindowGlobal?.isInitialDocument ?? false;
+    if (isInitialDocument) {
+      const wasSelected = tab.selected;
+      // Defer so we don't mutate the tab strip from inside a progress notification.
+      win.setTimeout(() => {
+        if (!tab.isConnected) {
+          return;
+        }
+        gBrowser.selectedTab = tab.owner;
+        win.gZenWorkspaces.moveTabToWorkspace(tab, targetWorkspaceId);
+        if (wasSelected) {
+          const targetWorkspace =
+            win.gZenWorkspaces.getWorkspaceFromId(targetWorkspaceId);
+          if (targetWorkspace) {
+            win.gZenWorkspaces.lastSelectedWorkspaceTabs[targetWorkspaceId] =
+              tab;
+            win.gZenWorkspaces.changeWorkspace(targetWorkspace);
+          }
+        }
+      }, 0);
+      return;
+    }
+
+    // An already-loaded page is navigating in place. Preserve it in its current
+    // tab and re-open the destination in a new routed tab instead.
+    //
     // Under Fission the parent-side aRequest is a RemoteWebProgress stand-in
     // whose cancel()/loadInfo throw NS_ERROR_NOT_IMPLEMENTED (the real channel
     // lives in the content process). Stop the in-place load through the browser,
@@ -111,13 +137,14 @@ export class ZenSpaceRoutingNavigation extends ZenUIComponent {
 
     // Defer so we don't mutate the tab strip from inside a progress notification.
     win.setTimeout(() => {
-      const newTab = gBrowser.addTab(urlToOpen, {
+      gBrowser.addTab(urlToOpen, {
         triggeringPrincipal: principal,
         ownerTab: tab.isConnected ? tab : null,
+        // The user was actively navigating this tab, so follow the navigation
+        // into the routed tab instead of opening it in the background (addTab
+        // defaults inBackground to true).
+        inBackground: false,
       });
-      if (newTab?.linkedBrowser) {
-        newTab.linkedBrowser._zenSkipNavRouteOnce = true;
-      }
     }, 0);
   }
 }

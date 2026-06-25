@@ -98,26 +98,33 @@ class nsZenMods extends nsZenPreloadedFeature {
   }
 
   async #getEnabledMods() {
-    if (Services.prefs.getBoolPref("zen.themes.disable-all", false)) {
-      // eslint-disable-next-line no-console
-      console.info("[ZenMods]: Mods are disabled by user preference.");
-      return [];
-    }
     const modsObject = await this.getMods();
-    const mods = Object.values(modsObject).filter(
-      mod => mod.enabled === undefined || mod.enabled
+    const disableAll = Services.prefs.getBoolPref(
+      "zen.themes.disable-all",
+      false
     );
-
-    // eslint-disable-next-line no-shadow
+    const mods = disableAll
+      ? Object.values(modsObject).filter(
+          mod =>
+            mod.id?.startsWith("astra-") &&
+            (mod.enabled === undefined || mod.enabled)
+        )
+      : Object.values(modsObject).filter(
+          mod => mod.enabled === undefined || mod.enabled
+        );
+    if (disableAll) {
+      // eslint-disable-next-line no-console
+      console.info(
+        "[ZenMods]: Marketplace mods disabled by user preference; Astra first-party mods remain active."
+      );
+    }
+    // eslint-disable-next-line no-console
     const modList = mods.map(({ name }) => name).join(", ");
-
     const message =
       modList !== ""
         ? `[ZenMods]: Loading enabled Zen mods: ${modList}.`
         : "[ZenMods]: No enabled Zen mods.";
-
     console.warn(message);
-
     return mods;
   }
 
@@ -458,12 +465,14 @@ class nsZenMods extends nsZenPreloadedFeature {
     try {
       await SessionStore.promiseInitialized;
 
-      if (
-        Services.prefs.getBoolPref("zen.themes.disable-all", false) ||
-        Services.appinfo.inSafeMode
-      ) {
-        console.warn("[ZenMods]: Mods disabled by user or in safe mode.");
+      if (Services.appinfo.inSafeMode) {
+        console.warn("[ZenMods]: Mods disabled — running in safe mode.");
         return;
+      }
+      if (Services.prefs.getBoolPref("zen.themes.disable-all", false)) {
+        console.warn(
+          "[ZenMods]: Marketplace mods disabled by user preference; Astra first-party mods will still be registered."
+        );
       }
 
       // Astra: Load mods and pre-register default Astra mods

@@ -6,7 +6,7 @@
   "version": {
     "product": "firefox",
     "version": "152.0.3",
-    "candidate": "152.0.2",
+    "candidate": "152.0.3",
     "candidateBuild": 1
   },
   "buildOptions": {
@@ -54,4 +54,4 @@
     "licenseType": "MPL-2.0"
   },
   "updateHostname": "updates.zen-browser.app"
-}
+} 

@@ -1,8 +1,8 @@
 diff --git a/browser/components/preferences/preferences.js b/browser/components/preferences/preferences.js
-index 9d13733318e7a147adee1e44f96570c94f4948df..fb625d8da021dc0cebd7a14ca47446a0632e8e7a 100644
+index 57add34d876fb885275f1147209c6fbeee367a7c..be0ab43b299317c0022a5e719f47a070c1574714 100644
 --- a/browser/components/preferences/preferences.js
 +++ b/browser/components/preferences/preferences.js
-@@ -121,6 +121,7 @@ ChromeUtils.defineLazyGetter(this, "gSubDialog", function () {
+@@ -132,6 +132,7 @@ ChromeUtils.defineLazyGetter(this, "gSubDialog", function () {
        styleSheets: [
          "chrome://browser/skin/preferences/dialog.css",
          "chrome://browser/skin/preferences/preferences.css",
@@ -10,7 +10,25 @@ index 9d13733318e7a147adee1e44f96570c94f4948df..fb625d8da021dc0cebd7a14ca47446a0
        ],
        resizeCallback: async ({ title, frame }) => {
          // Search within main document and highlight matched keyword.
-@@ -398,6 +399,10 @@ function init_all() {
+@@ -437,6 +438,8 @@ const CONFIG_PANES = Object.freeze({
+   tabsBrowsing: {
+     l10nId: "tabs-browsing-section",
+     groupIds: [
++      "defaultBrowserHome",
++      "startupHome",
+       "browserLayout",
+       "tabs",
+       "pageNavigation",
+@@ -477,7 +480,7 @@ function register_module(categoryName, categoryObject) {
+       }
+       this._initted = true;
+       let template = document.getElementById("template-" + categoryName);
+-      if (template && !srdSectionPrefs.all) {
++      if (template && (!srdSectionPrefs.all || categoryName.startsWith("paneZen"))) {
+         // Replace the template element with the nodes inside of it.
+         template.replaceWith(template.content);
+ 
+@@ -522,6 +525,10 @@ function init_all() {
    register_module("paneSearch", gSearchPane);
    register_module("panePrivacy", gPrivacyPane);
    register_module("paneContainers", gContainersPane);
@@ -19,5 +37,17 @@ index 9d13733318e7a147adee1e44f96570c94f4948df..fb625d8da021dc0cebd7a14ca47446a0
 +  register_module("paneZenCKS", gZenCKSSettings);
 +  register_module("paneZenMarketplace", gZenMarketplaceManager);
  
-   if (ExperimentAPI.labsEnabled) {
-     // Set hidden based on previous load's hidden value or if Nimbus is
+   // Restore the cached Firefox Labs nav button visibility so it shows
+   // immediately when recipes are expected to be available, before
+@@ -651,9 +658,9 @@ async function gotoPref(
+   let redesignEnabled = srdSectionPrefs.all;
+   let categories = document.getElementById("categories");
+   const kDefaultCategoryInternalName = redesignEnabled
+-    ? "paneSync"
++    ? "paneTabsBrowsing"
+     : "paneGeneral";
+-  const kDefaultCategory = redesignEnabled ? "sync" : "general";
++  const kDefaultCategory = redesignEnabled ? "tabsBrowsing" : "general";
+   let hash = document.location.hash;
+   let category = aCategory || hash.substring(1) || kDefaultCategoryInternalName;
+ 

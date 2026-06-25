@@ -225,8 +225,8 @@ class nsZenWorkspaces {
       if (
         this._emptyTab &&
         !this._emptyTab.closing &&
-        this._emptyTab.ownerGlobal &&
-        !this._emptyTab.ownerGlobal.closed &&
+        this._emptyTab.documentGlobal &&
+        !this._emptyTab.documentGlobal.closed &&
         gZenVerticalTabsManager._canReplaceNewTab
       ) {
         gBrowser.selectedTab = this._emptyTab;
@@ -1507,18 +1507,26 @@ class nsZenWorkspaces {
       }
 
       if (container) {
+        const newtabPlacement = Services.prefs.getBoolPref(
+          "zen.view.show-newtab-button-top",
+          false
+        );
+        const insertElement = newtabPlacement
+          ? container.firstChild
+          : container.lastChild;
+
         if (tab.group?.hasAttribute("split-view-group")) {
           gBrowser.zenHandleTabMove(tab.group, () => {
             for (const subTab of tab.group.tabs) {
               subTab.setAttribute("zen-workspace-id", workspaceID);
             }
-            container.insertBefore(tab.group, container.lastChild);
+            container.insertBefore(tab.group, insertElement);
           });
           continue;
         }
         gBrowser.zenHandleTabMove(tab, () => {
           tab.setAttribute("zen-workspace-id", workspaceID);
-          container.insertBefore(tab, container.lastChild);
+          container.insertBefore(tab, insertElement);
         });
       }
       // also change glance tab if it's the same tab
@@ -2290,15 +2298,24 @@ class nsZenWorkspaces {
   }
 
   onBeforeTabSelect(aTab) {
-    const tabSpace = aTab?.getAttribute("zen-workspace-id");
+    if (this.#inChangingWorkspace || !aTab) {
+      // Just in case, Let's not do these checks while we are
+      // in the middle of changing workspace,
+      return false;
+    }
+    const tabSpace = aTab.getAttribute("zen-workspace-id");
     if (
       tabSpace &&
       tabSpace !== this.activeWorkspace &&
       !aTab.hasAttribute("zen-empty-tab") &&
       !aTab.hasAttribute("zen-essential")
     ) {
+      this.lastSelectedWorkspaceTabs[tabSpace] =
+        gZenGlanceManager.getTabOrGlanceParent(aTab);
       this.changeWorkspaceWithID(tabSpace);
+      return true;
     }
+    return false;
   }
 
   _shouldShowTab(tab, workspaceUuid, containerId, workspaces) {
@@ -3005,7 +3022,8 @@ class nsZenWorkspaces {
 
     if (
       triggeringPrincipal &&
-      triggeringPrincipal.isAddonOrExpandedAddonPrincipal
+      triggeringPrincipal.isAddonOrExpandedAddonPrincipal &&
+      typeof userContextId === "undefined"
     ) {
       return [userContextId, false, undefined];
     }
@@ -3233,8 +3251,8 @@ class nsZenWorkspaces {
     // Validate tab state
     if (
       tab.closing ||
-      !tab.ownerGlobal ||
-      tab.ownerGlobal.closed ||
+      !tab.documentGlobal ||
+      tab.documentGlobal.closed ||
       !tab.linkedBrowser
     ) {
       console.warn("Tab is no longer valid, cannot select it");

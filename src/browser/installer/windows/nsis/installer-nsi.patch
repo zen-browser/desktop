@@ -1,5 +1,5 @@
 diff --git a/browser/installer/windows/nsis/installer.nsi b/browser/installer/windows/nsis/installer.nsi
-index 36fbee18edd138036c23ee77806f47cd10efce55..f70893700c54bdbc6d6fc5b760fd9a3654eb39e7 100755
+index 785e5ccfba55a98390652a61be9dbdef1e4815eb..cba2c3bb3b2e5bcbe8ba58a40bc9bc145df81fdd 100755
 --- a/browser/installer/windows/nsis/installer.nsi
 +++ b/browser/installer/windows/nsis/installer.nsi
 @@ -845,7 +845,7 @@ Section "-InstallEndCleanup"

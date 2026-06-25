@@ -53,6 +53,10 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   #setupEventListeners() {
     window.addEventListener("TabClose", this.onTabClose.bind(this));
     window.addEventListener("TabSelect", this.onLocationChange.bind(this));
+    window.addEventListener(
+      "MozDOMFullscreen:Entered",
+      this.onFullscreenEntered.bind(this)
+    );
 
     document
       .getElementById("tabbrowser-tabpanels")
@@ -1411,6 +1415,23 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   onTabClose(event) {
     if (event.target === this.#currentParentTab) {
       this.closeGlance({ onTabClose: true });
+    }
+  }
+
+  /**
+   * Handle DOM Fullscreen request while inside glance
+   *
+   * @param {Event} event - The MozDOMFullscreen:Entered event
+   */
+  onFullscreenEntered(event) {
+    const browser = this.#currentBrowser;
+
+    if (!browser) {
+      return;
+    }
+
+    if (event.target === browser) {
+      this.fullyOpenGlance();
     }
   }
 

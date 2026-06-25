@@ -187,8 +187,8 @@
 .identity-box-button {
   --tab-border-radius: 6px;
   --toolbarbutton-border-radius: var(--tab-border-radius);
-  --toolbarbutton-inner-padding: 6px;
-  --toolbarbutton-outer-padding: 1px;
+  --toolbarbutton-padding-inner: 6px;
+  --toolbarbutton-padding-outer: 1px;
   --toolbarbutton-icon-fill: color-mix(in srgb, currentColor 70%, transparent);
 
   transition:
@@ -281,7 +281,7 @@
 
 /* Customizable modes */
 #customization-container {
-  --toolbar-bgcolor: var(--arrowpanel-background);
+  --toolbar-background-color: var(--arrowpanel-background);
 }
 
 /* Site Data popup */

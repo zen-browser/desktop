@@ -21,7 +21,7 @@
   #zen-media-buttons-hbox {
     align-items: start;
     margin-top: -4px;
-    --toolbarbutton-outer-padding: 2px;
+    --toolbarbutton-padding-outer: 2px;
   }
 
   &:not([media-sharing]) {
@@ -274,7 +274,7 @@
   align-items: flex-end;
   justify-content: space-between;
   max-width: 100%;
-  --toolbarbutton-outer-padding: 0;
+  --toolbarbutton-padding-outer: 0;
   container: media-controls / inline-size;
   gap: 0.7rem;
 }

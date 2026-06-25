@@ -1,0 +1,13 @@
+diff --git a/browser/components/nova/NovaPrefs.sys.mjs b/browser/components/nova/NovaPrefs.sys.mjs
+index 3d22c881c481643fcffbc581523905a1847a7d41..453dd4d9c43d7483c037a993afbf2b854533497c 100644
+--- a/browser/components/nova/NovaPrefs.sys.mjs
++++ b/browser/components/nova/NovaPrefs.sys.mjs
+@@ -18,7 +18,7 @@ const PLATFORM_PREFS = (() => {
+ })();
+ 
+ function applyNovaPlatformDefaults() {
+-  const on = Services.prefs.getBoolPref("browser.nova.enabled", false);
++  const on = true;
+   const defaults = Services.prefs.getDefaultBranch("");
+   for (const pref of PLATFORM_PREFS) {
+     defaults.setBoolPref(pref, on);

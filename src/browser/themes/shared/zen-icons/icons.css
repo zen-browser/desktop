@@ -505,9 +505,9 @@
 }
 
 #identity-permission-box,
-:root:not([zen-has-empty-tab="true"]) #urlbar:not([breakout-extend="true"]) #identity-icon-box:not([open]),
+:root:not([zen-has-empty-tab="true"]) #urlbar:not([breakout-extend]) #identity-icon-box:not([open]),
 :root[zen-has-empty-tab="true"] #zen-site-data-icon-button,
-#urlbar[breakout-extend="true"] #zen-site-data-icon-button {
+#urlbar[breakout-extend] #zen-site-data-icon-button {
   display: none !important;
 }
 

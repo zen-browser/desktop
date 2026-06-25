@@ -157,7 +157,7 @@
   }
 
   --zen-toolbar-button-inner-padding: 6px;
-  --toolbarbutton-outer-padding: 4px;
+  --toolbarbutton-padding-outer: 4px;
   --zen-toolbar-height-with-bookmarks: var(--zen-toolbar-height);
   &[zen-has-bookmarks='true'] {
     /* Make sure `30px` matches the bookmarks toolbar height */
@@ -175,7 +175,7 @@
     * as the backdrop matches our color scheme. The .6 matches what we do for
     * acrylic, and the .15 matches the 85% we do for the default toolbar
     * background on the native theme. */
-  --toolbar-bgcolor: light-dark(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.15));
+  --toolbar-background-color: light-dark(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.15));
 
   --toolbarbutton-active-background: color-mix(
     in srgb,
@@ -309,7 +309,7 @@
   & panel,
   & menupopup,
   & .zen-browser-generic-background,
-  & #urlbar[breakout-extend='true'],
+  & #urlbar[breakout-extend],
   & #tabbrowser-tabpanels browser[type='content'],
   &:not([zen-should-be-dark-mode]) #zen-toast-container {
     @media -moz-pref('zen.view.window.scheme', 0) {

@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabgroup.js b/browser/components/tabbrowser/content/tabgroup.js
-index d1be14df27d76a191eaff05502c030fd68c46738..e9b5e90e39b594a6119081c8d707fb4a064fea9b 100644
+index e78fa0dec83424c0059c081f83fda0d23bdb5a94..a7de584d9029ff9e55d809d50377593e398ee999 100644
 --- a/browser/components/tabbrowser/content/tabgroup.js
 +++ b/browser/components/tabbrowser/content/tabgroup.js
 @@ -14,11 +14,11 @@
@@ -49,7 +49,7 @@ index d1be14df27d76a191eaff05502c030fd68c46738..e9b5e90e39b594a6119081c8d707fb4a
  
        // Similar to above, always set up TabSelect listener, as this gets
        // removed in disconnectedCallback
-       this.ownerGlobal.addEventListener("TabSelect", this);
+       this.documentGlobal.addEventListener("TabSelect", this);
        this.addEventListener("SplitViewTabChange", this);
  
 -      if (this._initialized) {
@@ -129,7 +129,7 @@ index d1be14df27d76a191eaff05502c030fd68c46738..e9b5e90e39b594a6119081c8d707fb4a
      }
  
      get color() {
-@@ -317,6 +348,9 @@
+@@ -335,6 +366,9 @@
      }
  
      set collapsed(val) {
@@ -139,7 +139,7 @@ index d1be14df27d76a191eaff05502c030fd68c46738..e9b5e90e39b594a6119081c8d707fb4a
        if (!!val == this.collapsed) {
          return;
        }
-@@ -403,7 +437,6 @@
+@@ -421,7 +455,6 @@
            tabGroupName,
          })
          .then(result => {
@@ -147,7 +147,7 @@ index d1be14df27d76a191eaff05502c030fd68c46738..e9b5e90e39b594a6119081c8d707fb4a
          });
      }
  
-@@ -478,13 +511,68 @@
+@@ -496,13 +529,68 @@
       * @returns {MozTabbrowserTab[]}
       */
      get tabs() {
@@ -221,15 +221,15 @@ index d1be14df27d76a191eaff05502c030fd68c46738..e9b5e90e39b594a6119081c8d707fb4a
      }
  
      /**
-@@ -592,7 +680,6 @@
+@@ -610,7 +698,6 @@
            );
          } else {
            if (tabOrSplitView.pinned) {
--            tabOrSplitView.ownerGlobal.gBrowser.unpinTab(tabOrSplitView);
+-            tabOrSplitView.documentGlobal.gBrowser.unpinTab(tabOrSplitView);
            }
            let tabToMove =
-             this.ownerGlobal === tabOrSplitView.ownerGlobal
-@@ -661,7 +748,7 @@
+             this.documentGlobal === tabOrSplitView.documentGlobal
+@@ -679,7 +766,7 @@
       */
      on_click(event) {
        let isToggleElement =
@@ -238,7 +238,7 @@ index d1be14df27d76a191eaff05502c030fd68c46738..e9b5e90e39b594a6119081c8d707fb4a
          event.target === this.#overflowCountLabel;
        if (isToggleElement && event.button === 0) {
          event.preventDefault();
-@@ -740,5 +827,6 @@
+@@ -758,5 +845,6 @@
      }
    }
  

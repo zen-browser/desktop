@@ -326,7 +326,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       if (
         !gBrowser.isTab(draggedTab) ||
         gBrowser.selectedTab.hasAttribute("zen-empty-tab") ||
-        draggedTab.ownerGlobal !== window
+        draggedTab.documentGlobal !== window
       ) {
         return;
       }
@@ -1240,13 +1240,17 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    */
   contextSplitTabs(otherTabHint = null) {
     let tabs;
-    let currentTab = TabContextMenu.contextTab || gBrowser.selectedTab;
+    let currentTab = gZenGlanceManager.getTabOrGlanceParent(
+      TabContextMenu.contextTab || gBrowser.selectedTab
+    );
     if (currentTab.multiselected) {
       tabs = gBrowser.selectedTabs;
     } else if (!currentTab.selected && !currentTab.splitView) {
       tabs = [
         currentTab,
-        ...gBrowser.selectedTabs.filter(t => t !== currentTab),
+        ...gBrowser.selectedTabs.filter(
+          t => t !== currentTab && !t.hasAttribute("zen-glance-tab")
+        ),
       ];
     } else {
       tabs = [currentTab];
@@ -1975,7 +1979,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * @returns {tab} The tab that was opened
    */
   openAndSwitchToTab(url, options) {
-    const parentWindow = window.ownerGlobal.parent;
+    const parentWindow = window.parent;
     const targetWindow = parentWindow || window;
     const tab = targetWindow.gBrowser.addTrustedTab(url, options);
     targetWindow.gBrowser.selectedTab = tab;

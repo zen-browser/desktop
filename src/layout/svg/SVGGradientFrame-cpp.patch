@@ -1,5 +1,5 @@
 diff --git a/layout/svg/SVGGradientFrame.cpp b/layout/svg/SVGGradientFrame.cpp
-index 9c66d90fc0292abcab30c912968d3f84c0e181ff..aec0b2e48965729ccff19d632ac5e8fd04fd09eb 100644
+index b0d38b0fab01797328af0b1f1f48af8fb5eebe4d..953feffdc96143dc2d8f8e57f8bb4a6aeb33f0c5 100644
 --- a/layout/svg/SVGGradientFrame.cpp
 +++ b/layout/svg/SVGGradientFrame.cpp
 @@ -229,8 +229,9 @@ class MOZ_STACK_CLASS SVGColorStopInterpolator
@@ -18,9 +18,9 @@ index 9c66d90fc0292abcab30c912968d3f84c0e181ff..aec0b2e48965729ccff19d632ac5e8fd
    if (nStops == 1 || GradientVectorLengthIsZero()) {
      // The gradient paints a single colour, using the stop-color of the last
      // gradient step if there are more than one.
--    return do_AddRef(new gfxPattern(ToDeviceColor(stops.LastElement().mColor)));
-+    return do_AddRef(
-+        new gfxPattern(ToDeviceColor(stops.LastElement().mColor, aSource)));
+-    return MakeAndAddRef<gfxPattern>(ToDeviceColor(stops.LastElement().mColor));
++    return MakeAndAddRef<gfxPattern>(
++        ToDeviceColor(stops.LastElement().mColor, aSource));
    }
  
    // Get the transform list (if there is one). We do this after the returns

@@ -1,5 +1,5 @@
 diff --git a/browser/actors/EncryptedMediaParent.sys.mjs b/browser/actors/EncryptedMediaParent.sys.mjs
-index 492dce93d3cc7c6ec16db047c9e47b175ef3a0fe..757e5543e0e6900c414db6d7a96d511608c1e50a 100644
+index 8bdeba9b8803354e23a3881147fee6a6af94a63b..61c8407df1fbebcc36481ad2169a9c103b4faed5 100644
 --- a/browser/actors/EncryptedMediaParent.sys.mjs
 +++ b/browser/actors/EncryptedMediaParent.sys.mjs
 @@ -199,6 +199,7 @@ export class EncryptedMediaParent extends JSWindowActorParent {

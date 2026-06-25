@@ -1,8 +1,8 @@
 diff --git a/eslint-test-paths.config.mjs b/eslint-test-paths.config.mjs
-index 7a87fec812ea8ddea5c10dca53af560e7dc6385b..2b943b031ebd30e06e2aa1043aed13c11bd10db1 100644
+index 0d3bd58e7fb9802223588a46fd83ae6b8e14837f..b8f91f6a6d52d58b47c7556650910f3ac0ec2842 100644
 --- a/eslint-test-paths.config.mjs
 +++ b/eslint-test-paths.config.mjs
-@@ -218,6 +218,7 @@ const extraBrowserTestPaths = [
+@@ -219,6 +219,7 @@ const extraBrowserTestPaths = [
    "toolkit/components/windowwatcher/test/",
    "toolkit/mozapps/extensions/test/xpinstall/",
    "uriloader/exthandler/tests/mochitest/",

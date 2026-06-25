@@ -1,5 +1,5 @@
 diff --git a/gfx/layers/AnimationInfo.cpp b/gfx/layers/AnimationInfo.cpp
-index 1d330056bd7a4e89aac5e5296a3c164fb42b5c42..629fbdd748310c31aeb16b0a8d8e862a99314cc9 100644
+index b4941588bfbd94a337f2e848c659021723e1500d..8f91ca5b2fcca6ff04aa2c0af5ba26dd9fe7df0e 100644
 --- a/gfx/layers/AnimationInfo.cpp
 +++ b/gfx/layers/AnimationInfo.cpp
 @@ -14,6 +14,7 @@

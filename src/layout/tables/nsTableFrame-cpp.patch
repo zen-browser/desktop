@@ -1,8 +1,8 @@
 diff --git a/layout/tables/nsTableFrame.cpp b/layout/tables/nsTableFrame.cpp
-index 7c39ea94392dc158656621dfbee1be72bbcd46f8..e2fe47662b92ac6fb7fe2177d1d2cdab500bb969 100644
+index 00307e123b0d0bac93ad694e75141faca9bc4d56..86495743d49022626646d872f1ff46ed21aefe89 100644
 --- a/layout/tables/nsTableFrame.cpp
 +++ b/layout/tables/nsTableFrame.cpp
-@@ -4088,7 +4088,7 @@ static void GetColorAndStyle(const nsIFrame* aFrame, WritingMode aTableWM,
+@@ -4065,7 +4065,7 @@ static void GetColorAndStyle(const nsIFrame* aFrame, WritingMode aTableWM,
      return;
    }
    *aColor = aFrame->Style()->GetVisitedDependentColor(

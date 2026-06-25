@@ -1,5 +1,5 @@
 diff --git a/toolkit/moz.configure b/toolkit/moz.configure
-index 0f5dab192533aa42df97ee3bd4176a9f44d4d568..d45ad2409f6d36106fce5a380545aaae9397ae84 100644
+index 75e99bbd2490b9014be6f4e956546d4507e751df..fbe16d282113175f067d739e1284b2544d014e7d 100644
 --- a/toolkit/moz.configure
 +++ b/toolkit/moz.configure
 @@ -20,6 +20,7 @@ def check_moz_app_id(moz_app_id, build_project):
@@ -33,20 +33,7 @@ index 0f5dab192533aa42df97ee3bd4176a9f44d4d568..d45ad2409f6d36106fce5a380545aaae
      help="Set distribution-specific id",
  )
  set_config("MOZ_DISTRIBUTION_ID", depends("--with-distribution-id")(lambda v: v[0]))
-@@ -874,9 +879,9 @@ set_config("MOZ_SYSTEM_AV1", True, when="--with-system-av1")
- option("--disable-jxl", help="Disable jxl image support")
- 
- 
--@depends("--disable-jxl", milestone.is_nightly)
--def jxl(value, is_nightly):
--    if is_nightly and value:
-+@depends("--disable-jxl")
-+def jxl(value):
-+    if value:
-         return True
- 
- 
-@@ -2028,7 +2033,7 @@ set_define("A11Y_LOG", True, when=a11y_log)
+@@ -2032,7 +2037,7 @@ set_define("A11Y_LOG", True, when=a11y_log)
  # ==============================================================
  @depends(milestone)
  def require_signing(milestone):
@@ -55,7 +42,7 @@ index 0f5dab192533aa42df97ee3bd4176a9f44d4d568..d45ad2409f6d36106fce5a380545aaae
  
  
  option(
-@@ -3912,7 +3917,7 @@ with only_when(compile_environment):
+@@ -3916,7 +3921,7 @@ with only_when(compile_environment):
              return "Mozilla"
          elif target.os == "Android":
              return ".mozilla"
@@ -64,7 +51,7 @@ index 0f5dab192533aa42df97ee3bd4176a9f44d4d568..d45ad2409f6d36106fce5a380545aaae
  
      option(
          "--with-user-appdir",
-@@ -4325,7 +4330,7 @@ with only_when(target_is_windows):
+@@ -4329,7 +4334,7 @@ with only_when(target_is_windows):
  
      @depends(target.abi)
      def desktop_launcher_enabled(abi):

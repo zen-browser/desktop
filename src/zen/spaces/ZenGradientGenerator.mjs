@@ -177,6 +177,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   handleDarkModeChange() {
     this.updateCurrentWorkspace();
+    Services.obs.notifyObservers(null, "zen-theme-change");
   }
 
   get isDarkMode() {

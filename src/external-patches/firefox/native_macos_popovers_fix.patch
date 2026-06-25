@@ -1,3 +1,18 @@
+diff --git a/toolkit/themes/shared/global-shared.css b/toolkit/themes/shared/global-shared.css
+--- a/toolkit/themes/shared/global-shared.css
++++ b/toolkit/themes/shared/global-shared.css
+@@ -80,11 +80,10 @@
+     background-color: transparent;
+     --panel-background: transparent;
+     --panel-box-shadow: none;
+     --panel-border-color: transparent;
+     --panel-box-shadow-margin: 0px;
+-    --panel-padding: 0px;
+   }
+ }
+ 
+ /* Lightweight theme roots */
+ 
 diff --git a/widget/cocoa/nsCocoaWindow.h b/widget/cocoa/nsCocoaWindow.h
 --- a/widget/cocoa/nsCocoaWindow.h
 +++ b/widget/cocoa/nsCocoaWindow.h
@@ -23,7 +38,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
    return [mWindow isKindOfClass:[PopupWindow class]] &&
           [(PopupWindow*)mWindow usePopover] && popupFrame &&
 -         popupFrame->ShouldFollowAnchor() &&
-          !popupFrame->PopupElement().GetBoolAttr(nsGkAtoms::nonnativepopover);
+          !popupFrame->PopupElement().GetBoolAttr(nsGkAtoms::nonnative);
  }
  
  TransparencyMode nsCocoaWindow::GetTransparencyMode() {

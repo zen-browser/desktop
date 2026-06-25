@@ -78,6 +78,9 @@ document.addEventListener(
           case "cmd_zenReplacePinnedUrlWithCurrent":
             gZenPinnedTabManager.replacePinnedUrlWithCurrent();
             break;
+          case "cmd_zenEditPinnedUrl":
+            gZenPinnedTabManager.editPinnedUrl();
+            break;
           case "cmd_contextZenAddToEssentials":
             gZenPinnedTabManager.addToEssentials();
             break;

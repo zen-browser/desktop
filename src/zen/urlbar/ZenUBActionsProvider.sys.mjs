@@ -550,7 +550,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
     const result = details.result;
     const payload = result.payload;
     const command = payload.zenCommand;
-    const ownerGlobal = details.element.ownerGlobal;
+    const ownerGlobal = details.element.documentGlobal;
     ownerGlobal.gBrowser.selectedBrowser.focus();
     if (typeof command === "function") {
       command(ownerGlobal);

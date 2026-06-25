@@ -299,12 +299,9 @@ window.gZenUIManager = {
   },
 
   openAndChangeToTab(url, options) {
-    if (window.ownerGlobal.parent) {
-      const tab = window.ownerGlobal.parent.gBrowser.addTrustedTab(
-        url,
-        options
-      );
-      window.ownerGlobal.parent.gBrowser.selectedTab = tab;
+    if (window.parent) {
+      const tab = window.parent.gBrowser.addTrustedTab(url, options);
+      window.parent.gBrowser.selectedTab = tab;
       return tab;
     }
     const tab = window.gBrowser.addTrustedTab(url, options);
@@ -616,8 +613,8 @@ window.gZenUIManager = {
       if (
         this._lastTab &&
         !this._lastTab.closing &&
-        this._lastTab.ownerGlobal &&
-        !this._lastTab.ownerGlobal.closed &&
+        this._lastTab.documentGlobal &&
+        !this._lastTab.documentGlobal.closed &&
         gBrowser.selectedTab === this._lastTab
       ) {
         this._lastTab._visuallySelected = true;
@@ -1234,7 +1231,7 @@ window.gZenVerticalTabsManager = {
         let height;
         if (!this._hasSetSingleToolbar) {
           height = AppConstants.platform == "macosx" ? 34 : 32;
-        } else if (gURLBar.getAttribute("breakout-extend") !== "true") {
+        } else if (!gURLBar.hasAttribute("breakout-extend")) {
           height = 38;
         }
         if (typeof height !== "undefined") {

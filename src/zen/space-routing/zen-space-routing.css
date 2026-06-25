@@ -27,11 +27,6 @@
   --sr-border-radius: 12px;
 }
 
-.dialog-button-box {
-  /* Remove default dialog buttons */
-  display: none !important;
-}
-
 window {
   height: var(--sr-height);
   max-height: var(--sr-height);
@@ -123,10 +118,6 @@ p {
   min-height: unset;
   height: 26px;
   padding: 4px;
-}
-
-.select,
-.select * {
   background-color: var(--select-background-color) !important;
   color: var(--text-color);
   margin: 0;
@@ -139,7 +130,6 @@ p {
   }
 }
 
-menulist[image] .menulist-icon,
 menulist[image]::part(icon) {
   width: 16px;
   height: 16px;
@@ -149,10 +139,6 @@ menulist[image]::part(icon) {
   fill: currentColor;
   margin-inline-end: 0;
   padding-left: 2px;
-}
-
-menulist {
-  -moz-box-align: center;
 }
 
 .sr-rule-row {
@@ -176,8 +162,7 @@ menulist {
   margin-left: 87px;
 }
 
-.input,
-.input * {
+.input {
   background-color: var(--input-background-color);
   color: var(--text-color);
   margin: 0;
@@ -185,8 +170,7 @@ menulist {
   flex-grow: 1;
 }
 
-.invalid,
-.invalid * {
+.invalid {
   color: var(--text-color-error) !important;
 
   text-decoration-line: underline;

@@ -457,19 +457,22 @@ class KeyShortcut {
     // When shift is pressed and the char changes when shifted (like 1 -> !),
     // the XUL matches the shifted character so we need to emit the shifted character
     // and drop the shift modifier so XUL can match
+    // This problem is also windows specific
     let keyName = this.#key;
     let modifiers = this.#modifiers;
 
-    const shiftedKey = KeyShortcut.SHIFTED_SYMBOLS[keyName];
-    if (shiftedKey && modifiers.shift) {
-      keyName = shiftedKey;
-      modifiers = new nsKeyShortcutModifiers(
-        modifiers.control,
-        modifiers.alt,
-        false, // -> for shift key
-        modifiers.meta,
-        modifiers.accel
-      );
+    if (AppConstants.platform == "win") {
+      const shiftedKey = KeyShortcut.SHIFTED_SYMBOLS[keyName];
+      if (shiftedKey && modifiers.shift) {
+        keyName = shiftedKey;
+        modifiers = new nsKeyShortcutModifiers(
+          modifiers.control,
+          modifiers.alt,
+          false, // -> for shift key
+          modifiers.meta,
+          modifiers.accel
+        );
+      }
     }
 
     if (this.#keycode) {

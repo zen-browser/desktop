@@ -163,6 +163,8 @@ jobs:
             mkdir -p dist/astra/distribution/extensions
             curl -fsSL "https://github.com/gorhill/uBlock/releases/download/1.62.0/uBlock0_1.62.0.firefox.signed.xpi" \
               -o dist/astra/distribution/extensions/uBlock0@raymondhill.net.xpi
+            cp build/AppDir/distribution/policies.json dist/astra/distribution/policies.json
+            test -s dist/astra/distribution/policies.json
             echo "uBlock injected into Linux build"
           fi
 

@@ -683,6 +683,43 @@ class nsZenMods extends nsZenPreloadedFeature {
     if (modId === "astra-transparent") {
       document.documentElement.classList.add("astra-transparent-enabled");
     }
+    if (modId === "astra-transparent" && AppConstants.platform === "win") {
+      try {
+        const regKey = Cc["@mozilla.org/windows-registry-key;1"].createInstance(
+          Ci.nsIWindowsRegKey
+        );
+        regKey.open(
+          Ci.nsIWindowsRegKey.ROOT_KEY_CURRENT_USER,
+          "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+          Ci.nsIWindowsRegKey.ACCESS_READ
+        );
+        const transparencyEnabled =
+          !regKey.hasValue("EnableTransparency") ||
+          regKey.readIntValue("EnableTransparency") !== 0;
+        regKey.close();
+        if (!transparencyEnabled) {
+          const { default: createSidebarNotification } = ChromeUtils.importESModule(
+            "chrome://browser/content/zen-components/ZenSidebarNotification.mjs"
+          );
+          createSidebarNotification({
+            headingL10nId: "zen-transparency-os-disabled-heading",
+            links: [
+              {
+                action: () => {
+                  Cc["@mozilla.org/uriloader/external-protocol-service;1"]
+                    .getService(Ci.nsIExternalProtocolService)
+                    .loadURI(Services.io.newURI("ms-settings:colors"));
+                },
+                l10nId: "zen-transparency-os-disabled-action",
+                special: true,
+              },
+            ],
+          });
+        }
+      } catch (e) {
+        console.warn("[ZenMods]: Could not check Windows transparency setting", e);
+      }
+    }
   }
 
   async disableMod(modId) {

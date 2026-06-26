@@ -178,7 +178,9 @@ zen-sidebar-notification-restart-safe-mode-tooltip =
     .title = Restart in Safe Mode
 
 zen-transparency-os-disabled-heading = Turn on Windows transparency to see the full effect
-zen-transparency-os-disabled-action-label = Open Windows Settings
+zen-transparency-os-disabled-action-label = Turn on automatically
+zen-transparency-enabled-heading = Transparency enabled — restart to see the effect
+zen-transparency-restart-action-label = Restart now
 
 zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
 zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.

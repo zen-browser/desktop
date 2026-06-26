@@ -706,9 +706,38 @@ class nsZenMods extends nsZenPreloadedFeature {
             links: [
               {
                 action: () => {
-                  Cc["@mozilla.org/uriloader/external-protocol-service;1"]
-                    .getService(Ci.nsIExternalProtocolService)
-                    .loadURI(Services.io.newURI("ms-settings:colors"));
+                  try {
+                    const writeKey = Cc[
+                      "@mozilla.org/windows-registry-key;1"
+                    ].createInstance(Ci.nsIWindowsRegKey);
+                    writeKey.open(
+                      Ci.nsIWindowsRegKey.ROOT_KEY_CURRENT_USER,
+                      "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+                      Ci.nsIWindowsRegKey.ACCESS_WRITE
+                    );
+                    writeKey.writeIntValue("EnableTransparency", 1);
+                    writeKey.close();
+                    createSidebarNotification({
+                      headingL10nId: "zen-transparency-enabled-heading",
+                      links: [
+                        {
+                          action: () => {
+                            Services.startup.quit(
+                              Services.startup.eAttemptQuit |
+                                Services.startup.eRestart
+                            );
+                          },
+                          l10nId: "zen-transparency-restart-action",
+                          special: true,
+                        },
+                      ],
+                    });
+                  } catch (e) {
+                    console.error(
+                      "[ZenMods]: Failed to enable Windows transparency",
+                      e
+                    );
+                  }
                 },
                 l10nId: "zen-transparency-os-disabled-action",
                 special: true,

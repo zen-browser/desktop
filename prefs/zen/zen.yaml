@@ -49,3 +49,8 @@
 
 - name: zen.tabs.ctrl-tab.ignore-pending-tabs
   value: false
+
+- name: astra.ramsaver.enabled
+  value: true
+- name: astra.ramsaver.threshold-mb
+  value: 3072

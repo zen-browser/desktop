@@ -98,6 +98,7 @@ class ZenStartup {
       this.isReady = true;
       this.promiseInitializedResolve();
       delete this.promiseInitializedResolve;
+      this.#initRamSaver();
     });
   }
 
@@ -190,6 +191,84 @@ class ZenStartup {
   async #createUpdateAnimation() {
     checkForZenUpdates();
     return await createWindowUpdateAnimation();
+  }
+
+  #ramSaverIdleObserver = {
+    observe: (subject, topic) => {
+      if (topic !== "idle") {
+        return;
+      }
+      try {
+        const mgr = Cc["@mozilla.org/memory-reporter-manager;1"].getService(
+          Ci.nsIMemoryReporterManager
+        );
+        mgr.minimizeMemoryUsage(() => {
+          console.info("[Astra RAM Saver]: Minimized memory usage during idle.");
+        });
+      } catch (e) {
+        console.warn("[Astra RAM Saver]: Failed to minimize memory usage", e);
+      }
+    },
+  };
+
+  #ramSaverLastNotifiedAt = 0;
+
+  #checkRamSaverThreshold() {
+    try {
+      if (!Services.prefs.getBoolPref("astra.ramsaver.enabled", true)) {
+        return;
+      }
+      const thresholdMB = Services.prefs.getIntPref(
+        "astra.ramsaver.threshold-mb",
+        3072
+      );
+      const mgr = Cc["@mozilla.org/memory-reporter-manager;1"].getService(
+        Ci.nsIMemoryReporterManager
+      );
+      const residentMB = mgr.resident / (1024 * 1024);
+      if (residentMB < thresholdMB) {
+        return;
+      }
+      const now = Date.now();
+      if (now - this.#ramSaverLastNotifiedAt < 30 * 60 * 1000) {
+        return;
+      }
+      this.#ramSaverLastNotifiedAt = now;
+      const { default: createSidebarNotification } = ChromeUtils.importESModule(
+        "chrome://browser/content/zen-components/ZenSidebarNotification.mjs"
+      );
+      createSidebarNotification({
+        headingL10nId: "zen-ramsaver-high-memory-heading",
+        links: [
+          {
+            action: () => {
+              Services.startup.quit(
+                Services.startup.eAttemptQuit | Services.startup.eRestart
+              );
+            },
+            l10nId: "zen-ramsaver-restart-action",
+            special: true,
+          },
+        ],
+      });
+    } catch (e) {
+      console.warn("[Astra RAM Saver]: Threshold check failed", e);
+    }
+  }
+
+  #initRamSaver() {
+    try {
+      if (!Services.prefs.getBoolPref("astra.ramsaver.enabled", true)) {
+        return;
+      }
+      const idleService = Cc["@mozilla.org/user-idle-service;1"].getService(
+        Ci.nsIUserIdleService
+      );
+      idleService.addIdleObserver(this.#ramSaverIdleObserver, 180);
+      setInterval(() => this.#checkRamSaverThreshold(), 5 * 60 * 1000);
+    } catch (e) {
+      console.warn("[Astra RAM Saver]: Failed to initialize", e);
+    }
   }
 }
 

@@ -193,3 +193,6 @@ zen-appmenu-new-blank-window =
 astra-energy-saver-enabled = ⚡ Energy Saver ON - Battery low
 astra-energy-saver-disabled = 🔋 Energy Saver OFF - Battery charging
 
+zen-ramsaver-high-memory-heading = Astra is using more memory than usual
+zen-ramsaver-restart-action-label = Restart to free up memory
+

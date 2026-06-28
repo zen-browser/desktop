@@ -55,9 +55,34 @@
   z-index: 1;
 }
 
+/* Default (sidebar collapsed): keep AI panel BELOW the collapsed sidebar sliver
+   (z-index 3) so mouse hover can still reach it and trigger expansion */
 :root[zen-compact-mode="true"] #ai-window-splitter,
 :root[zen-compact-mode="true"] #ai-window-box,
 :root[zen-compact-mode="true"] #sidebar-box {
-  z-index: 10;
+  z-index: 2;
   position: relative;
+}
+
+/* When sidebar is actively expanded/hovering: raise AI panel ABOVE the active
+   flyout (z-index 15) so it never gets visually overlapped by the expanded sidebar */
+:root[zen-compact-mode="true"]:has(
+  #navigator-toolbox:is(
+    [zen-has-hover], [zen-user-show], [zen-has-empty-tab],
+    [flash-popup], [has-popup-menu], [movingtab], [zen-compact-mode-active]
+  )
+) #ai-window-splitter,
+:root[zen-compact-mode="true"]:has(
+  #navigator-toolbox:is(
+    [zen-has-hover], [zen-user-show], [zen-has-empty-tab],
+    [flash-popup], [has-popup-menu], [movingtab], [zen-compact-mode-active]
+  )
+) #ai-window-box,
+:root[zen-compact-mode="true"]:has(
+  #navigator-toolbox:is(
+    [zen-has-hover], [zen-user-show], [zen-has-empty-tab],
+    [flash-popup], [has-popup-menu], [movingtab], [zen-compact-mode-active]
+  )
+) #sidebar-box {
+  z-index: 20;
 }

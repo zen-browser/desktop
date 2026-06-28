@@ -57,6 +57,22 @@ let JSWINDOWACTORS = {
     remoteTypes: ["web", "file"],
     enablePreference: "zen.glance.enabled",
   },
+  ZenHighlight: {
+    parent: {
+      esModuleURI: "resource:///actors/ZenHighlightParent.sys.mjs",
+    },
+    child: {
+      esModuleURI: "resource:///actors/ZenHighlightChild.sys.mjs",
+      events: {
+        selectionchange: {},
+        mouseup: { capture: true },
+        scroll: { capture: true, passive: true },
+      },
+    },
+    allFrames: true,
+    remoteTypes: ["web", "file"],
+    enablePreference: "zen.highlight.enabled",
+  },
 };
 
 if (!Services.appinfo.inSafeMode) {

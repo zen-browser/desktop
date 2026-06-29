@@ -1612,7 +1612,9 @@ window.gZenVerticalTabsManager = {
         // it will reset to the original name anyway
         if (hasChanged || (this._tabEdited.zenStaticLabel && newName)) {
           this._tabEdited.zenStaticLabel = newName;
-          gBrowser._setTabLabel(this._tabEdited, newName);
+          gBrowser._setTabLabel(this._tabEdited, newName, {
+            _zenChangeLabelFlag: true,
+          });
           gZenUIManager.showToast("zen-tabs-renamed");
         } else {
           delete this._tabEdited.zenStaticLabel;
@@ -1708,7 +1710,8 @@ window.gZenVerticalTabsManager = {
       this._tabEdited.after(input);
     }
     input.focus();
-    input.select();
+    input.setSelectionRange(0, input.value.length, "backward");
+    input.scrollLeft = 0;
 
     input.addEventListener("blur", this._renameTabHalt);
   },

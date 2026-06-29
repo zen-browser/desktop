@@ -99,6 +99,7 @@ class ZenStartup {
       this.promiseInitializedResolve();
       delete this.promiseInitializedResolve;
       this.#initRamSaver();
+      this.#initAiWindowBookmarksFix();
     });
   }
 
@@ -268,6 +269,39 @@ class ZenStartup {
       setInterval(() => this.#checkRamSaverThreshold(), 5 * 60 * 1000);
     } catch (e) {
       console.warn("[Astra RAM Saver]: Failed to initialize", e);
+    }
+  }
+
+  #initAiWindowBookmarksFix() {
+    try {
+      ChromeUtils.defineESModuleGetters(this, {
+        AIWindowUI:
+          "moz-src:///browser/components/aiwindow/ui/modules/AIWindowUI.sys.mjs",
+      });
+      const sidebarBox = document.getElementById("sidebar-box");
+      if (!sidebarBox) {
+        return;
+      }
+      new MutationObserver(mutations => {
+        for (const mutation of mutations) {
+          if (mutation.attributeName !== "sidebarcommand") {
+            continue;
+          }
+          const command = sidebarBox.getAttribute("sidebarcommand");
+          if (command && command !== "viewGenaiChatSidebar") {
+            try {
+              this.AIWindowUI.closeSidebar(window);
+            } catch (e) {
+              console.warn(
+                "[Astra]: Failed to close AI window split pane on sidebar switch",
+                e
+              );
+            }
+          }
+        }
+      }).observe(sidebarBox, { attributes: true, attributeFilter: ["sidebarcommand"] });
+    } catch (e) {
+      console.warn("[Astra]: Failed to initialize AI window/bookmarks fix", e);
     }
   }
 }

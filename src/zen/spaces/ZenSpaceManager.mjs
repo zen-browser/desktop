@@ -823,9 +823,10 @@ class nsZenWorkspaces {
       gBrowser.selectedTab = initialTab;
 
       const initialTabUri = initialTab._uriString;
+      const skipRoute = !initialTabUri || typeof initialTabUri != "string";
       const beforeRouteResult = window.gZenSpaceRoutingManager.onBeforeAddTab(
         initialTabUri,
-        { fromExternal: true },
+        { skipRoute, fromExternal: true },
         window
       );
       if (beforeRouteResult.isRouteFound) {
@@ -951,10 +952,7 @@ class nsZenWorkspaces {
     } else {
       this._initialTab = tab;
       this._initialTab._veryPossiblyEmpty = isEmpty;
-
-      if (uriString && typeof uriString == "string") {
-        this._initialTab._uriString = uriString;
-      }
+      this._initialTab._uriString = uriString;
     }
   }
 

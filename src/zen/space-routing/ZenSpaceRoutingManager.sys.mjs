@@ -212,7 +212,7 @@ class nsZenSpaceRoutingManager {
     // addTab() is being called when the session restores.
     // To avoid automatically routing these tabs,
     // a check if the restore is already complete is needed
-    if (!win.gZenStartup.isReady) {
+    if (!win.gZenStartup.isReady && !options.fromExternal) {
       return nsZenSpaceRoutingManager.SKIP_TYPE.RESTORED_TAB;
     }
 

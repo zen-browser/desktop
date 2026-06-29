@@ -821,11 +821,29 @@ class nsZenWorkspaces {
       let initialTab = this._initialTab || gBrowser.selectedTab;
       initialTabWasEmpty = !!initialTab._veryPossiblyEmpty;
       gBrowser.selectedTab = initialTab;
-      this.moveTabToWorkspace(initialTab, this.activeWorkspace);
-      gBrowser.moveTabTo(initialTab, {
-        forceUngrouped: true,
-        tabIndex: 0,
-      });
+
+      const initialTabUri = initialTab._uriString;
+      const beforeRouteResult = window.gZenSpaceRoutingManager.onBeforeAddTab(
+        initialTabUri,
+        { fromExternal: true },
+        window
+      );
+      if (beforeRouteResult.isRouteFound) {
+        window.gZenSpaceRoutingManager.onAfterAddTab(
+          initialTabUri,
+          initialTab,
+          {},
+          window,
+          beforeRouteResult
+        );
+      } else {
+        this.moveTabToWorkspace(initialTab, this.activeWorkspace);
+        gBrowser.moveTabTo(initialTab, {
+          forceUngrouped: true,
+          tabIndex: 0,
+        });
+      }
+
       removedEmptyTab = true;
       delete this._initialTab;
     }
@@ -923,7 +941,7 @@ class nsZenWorkspaces {
     );
   }
 
-  handleInitialTab(tab, isEmpty) {
+  handleInitialTab(tab, isEmpty, uriString) {
     if (gZenUIManager.testingEnabled || !this.workspaceEnabled) {
       return;
     }
@@ -933,6 +951,10 @@ class nsZenWorkspaces {
     } else {
       this._initialTab = tab;
       this._initialTab._veryPossiblyEmpty = isEmpty;
+
+      if (uriString && typeof uriString == "string") {
+        this._initialTab._uriString = uriString;
+      }
     }
   }
 

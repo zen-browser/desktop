@@ -2,6 +2,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+const unrepeatableActions = new Set([
+  "cmd_zenCopyCurrentURL",
+  "cmd_zenCopyCurrentURLMarkdown",
+]);
+const lastCmdTime = new Map();
+const repeatGuard = 1000;
+
 document.addEventListener(
   "MozBeforeInitialXULLayout",
   () => {
@@ -9,8 +16,18 @@ document.addEventListener(
     document
       .getElementById("zenCommandSet")
       // eslint-disable-next-line complexity
-      .addEventListener("command", event => {
-        switch (event.target.id) {
+      .addEventListener("command", (event) => {
+        const id = event.target.id;
+        if (unrepeatableActions.has(id)) {
+          const now = performance.now();
+          const last = lastCmdTime.get(id) ?? 0;
+          if (now - last < repeatGuard) {
+            return;
+          }
+          lastCmdTime.set(id, now);
+        }
+
+        switch (id) {
           case "cmd_zenCompactModeToggle":
             gZenCompactModeManager.toggle();
             break;
@@ -61,7 +78,7 @@ document.addEventListener(
             break;
           case "cmd_zenChangeWorkspaceTab":
             gZenWorkspaces.changeTabWorkspace(
-              event.sourceEvent.target.getAttribute("zen-workspace-id")
+              event.sourceEvent.target.getAttribute("zen-workspace-id"),
             );
             break;
           case "cmd_zenToggleTabsOnRight":
@@ -93,7 +110,7 @@ document.addEventListener(
           case "cmd_zenChangeWorkspaceName":
             gZenVerticalTabsManager.renameTabStart({
               target: gZenWorkspaces.activeWorkspaceIndicator.querySelector(
-                ".zen-current-workspace-indicator-name"
+                ".zen-current-workspace-indicator-name",
               ),
             });
             break;
@@ -145,7 +162,7 @@ document.addEventListener(
             break;
           case "cmd_zenNewLiveFolder": {
             const { ZenLiveFoldersManager } = ChromeUtils.importESModule(
-              "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs"
+              "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
             );
             ZenLiveFoldersManager.handleEvent(event);
             break;
@@ -164,7 +181,7 @@ document.addEventListener(
               const index =
                 parseInt(
                   event.target.id.replace("cmd_zenWorkspaceSwitch", ""),
-                  10
+                  10,
                 ) - 1;
               gZenWorkspaces.shortcutSwitchTo(index);
             }
@@ -172,5 +189,5 @@ document.addEventListener(
         }
       });
   },
-  { once: true }
+  { once: true },
 );

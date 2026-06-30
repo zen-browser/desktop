@@ -51,6 +51,10 @@
     --zen-toolbox-max-width: 74px !important;
     --zen-compact-float: var(--zen-element-separation);
 
+    @media (-moz-mac-tahoe-theme) {
+      --zen-compact-mode-no-padding-radius-fix: -2px;
+    }
+
     :root[zen-no-padding='true'] & {
       --zen-compact-float: 10px;
       --zen-compact-top-toolbar-hidden-fix: var(--zen-compact-float);

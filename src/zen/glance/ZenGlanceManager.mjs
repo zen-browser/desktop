@@ -85,8 +85,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     menuitem.addEventListener("command", () =>
       this.openGlance({
         url: gContextMenu.linkURL,
-        triggeringPrincipal:
-          Services.scriptSecurityManager.getSystemPrincipal(),
+        triggeringPrincipal: gContextMenu.principal,
       })
     );
 
@@ -355,6 +354,28 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   }
 
   /**
+   * Check whether a glance load is permitted for its triggering principal.
+   *
+   * @param {object} data - Glance data including URL and triggeringPrincipal
+   * @returns {boolean} Whether the load is allowed
+   */
+  #isGlanceLoadAllowed(data) {
+    const { url, triggeringPrincipal } = data ?? {};
+    if (typeof url !== "string" || !url.length || !triggeringPrincipal) {
+      return false;
+    }
+    try {
+      Services.scriptSecurityManager.checkLoadURIStrWithPrincipal(
+        triggeringPrincipal,
+        url
+      );
+    } catch {
+      return false;
+    }
+    return true;
+  }
+
+  /**
    * Open a glance overlay with the specified data
    *
    * @param {object} data - Glance data including URL, position, and dimensions
@@ -369,6 +390,13 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     if (gBrowser.selectedTab === this.#currentParentTab) {
       gBrowser.selectedTab = this.#currentTab;
       return Promise.resolve(this.#currentTab);
+    }
+
+    // Existing-tab glances perform no navigation and are exempt; for fresh
+    // loads, refuse any URL the triggering principal isn't allowed to load
+    // (e.g. a web page linking to file://).
+    if (!existingTab && !this.#isGlanceLoadAllowed(data)) {
+      return Promise.resolve(null);
     }
 
     if (!data.height || !data.width) {

@@ -23,6 +23,7 @@
     "chrome://browser/content/zen-components/ZenMediaController.mjs",
     "chrome://browser/content/zen-components/ZenGlanceManager.mjs",
     "chrome://browser/content/zen-components/ZenPinnedTabManager.mjs",
+    "chrome://browser/content/zen-components/ZenLocalhostSublabel.mjs",
     "chrome://browser/content/zen-components/ZenViewSplitter.mjs",
     "chrome://browser/content/zen-components/ZenFolders.mjs",
     "chrome://browser/content/zen-components/ZenEmojiPicker.mjs",

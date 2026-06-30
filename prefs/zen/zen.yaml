@@ -11,6 +11,9 @@
 - name: zen.tabs.rename-tabs
   value: true
 
+- name: zen.tabs.show-localhost-url
+  value: true # Show the host:port of local/LAN dev servers as a tab sublabel
+
 - name: zen.tabs.essentials.max
   value: 12
 

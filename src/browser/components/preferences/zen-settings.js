@@ -1181,6 +1181,16 @@ Preferences.addAll([
     default: true,
   },
   {
+    id: "zen.highlight.enabled",
+    type: "bool",
+    default: true,
+  },
+  {
+    id: "zen.highlight.default-currency",
+    type: "string",
+    default: "CZK",
+  },
+  {
     id: "zen.urlbar.behavior",
     type: "string",
     default: "float",

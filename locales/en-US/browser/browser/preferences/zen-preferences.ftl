@@ -360,3 +360,24 @@ zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs
 zen-new-unsynced-window-shortcut = New Blank Window
 zen-duplicate-tab-shortcut = Duplicate Tab
 zen-key-find-selection = Find Selection
+
+
+## Zen Highlight
+
+zen-highlight-title = Highlight
+zen-highlight-header = Highlight Toolbar
+zen-highlight-description = Show a floating toolbar with Search, Copy, and Currency Conversion when selecting text.
+zen-highlight-enabled =
+    .label = Enable Highlight Toolbar
+zen-highlight-currency-label = Default Currency:
+
+zen-highlight-currency-czk =
+    .label = CZK - Česká koruna
+zen-highlight-currency-eur =
+    .label = EUR - Euro
+zen-highlight-currency-usd =
+    .label = USD - US Dollar
+zen-highlight-currency-gbp =
+    .label = GBP - British Pound
+zen-highlight-currency-pln =
+    .label = PLN - Polski złoty

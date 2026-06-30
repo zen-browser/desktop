@@ -92,6 +92,35 @@
         </hbox>
 </groupbox>
 
+<hbox id="zenHighlightCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenLooks">
+  <html:h1 data-l10n-id="zen-highlight-title"/>
+</hbox>
+
+<groupbox id="zenHighlightGroup" data-category="paneZenLooks" hidden="true" class="highlighting-group">
+  <label><html:h2 data-l10n-id="zen-highlight-header"/></label>
+  <description class="description-deemphasized" data-l10n-id="zen-highlight-description" />
+  
+  <checkbox id="zenLooksAndFeelHighlightEnabled"
+            data-l10n-id="zen-highlight-enabled"
+            preference="zen.highlight.enabled"/>
+
+  <hbox align="center" style="margin-top: 8px;">
+    <label id="zenHighlightCurrencyLabel" data-l10n-id="zen-highlight-currency-label"/>
+    <menulist id="zenHighlightCurrency" preference="zen.highlight.default-currency">
+      <menupopup>
+        <menuitem data-l10n-id="zen-highlight-currency-czk" value="CZK"/>
+        <menuitem data-l10n-id="zen-highlight-currency-eur" value="EUR"/>
+        <menuitem data-l10n-id="zen-highlight-currency-usd" value="USD"/>
+        <menuitem data-l10n-id="zen-highlight-currency-gbp" value="GBP"/>
+        <menuitem data-l10n-id="zen-highlight-currency-pln" value="PLN"/>
+      </menupopup>
+    </menulist>
+  </hbox>
+</groupbox>
+
 <hbox id="zenUrlBarCategory"
       class="subcategory"
       hidden="true"

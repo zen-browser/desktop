@@ -28,7 +28,7 @@
   value: true
 
 - name: browser.toolbars.bookmarks.visibility
-  value: "never"
+  value: "newtab"
 
 - name: widget.non-native-theme.scrollbar.style
   value: 2

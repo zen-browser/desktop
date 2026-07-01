@@ -832,17 +832,31 @@ index 08b5b56e069d038d72c87355920c4ce8a55ed805..87f41c8583c26f364530def5bd5d8333
          aTab.selected ||
          aTab.closing ||
          // Tabs that are sharing the screen, microphone or camera cannot be hidden.
-@@ -6834,7 +7037,8 @@
-      * @param {object} [aOptions={}]
-      *   Key-value pairs that will be serialized into the features string.
-      */
+@@ -6834,7 +7037,22 @@
+     * @param {object} [aOptions={}]
+     *   Key-value pairs that will be serialized into the features string.
+     */
 -    replaceTabWithWindow(aTab, aOptions = {}) {
 +    replaceTabWithWindow(aTab, aOptions = {}, zenForceSync = false) {
 +      if (!this.isTab(aTab)) return; // TODO: Handle tab groups
++      if (
++        !zenForceSync &&
++        aTab.hasAttribute("zen-essential")
++      ) {
++        gZenWorkspaces.duplicateEssentialTab(aTab).then(
++          duplicatedTab => {
++            if (duplicatedTab) {
++              this.replaceTabWithWindow(duplicatedTab, aOptions);
++            }
++          },
++          error => Cu.reportError(error)
++        );
++        return null;
++      }
        if (this.tabs.length == 1) {
          return null;
        }
-@@ -6851,7 +7055,7 @@
+@@ -6851,7 +7075,7 @@
        // tell a new window to take the "dropped" tab
        let args = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
        args.appendElement(aTab.splitview ?? aTab);
@@ -851,7 +865,7 @@ index 08b5b56e069d038d72c87355920c4ce8a55ed805..87f41c8583c26f364530def5bd5d8333
          private: PrivateBrowsingUtils.isWindowPrivate(window),
          features: Object.entries(aOptions)
            .map(([key, value]) => `${key}=${value}`)
-@@ -6859,6 +7063,8 @@
+@@ -6859,6 +7083,8 @@
          openerWindow: window,
          args,
        });
@@ -860,10 +874,47 @@ index 08b5b56e069d038d72c87355920c4ce8a55ed805..87f41c8583c26f364530def5bd5d8333
      }
  
      /**
-@@ -6971,7 +7177,7 @@
-      *   `true` if element is a `<tab-group>`
-      */
-     isTabGroup(element) {
+@@ -6880,10 +7106,35 @@
+        elements = [contextTab.splitview ?? contextTab];
+      }
+
+-      if (this.tabs.length == elements.length) {
++      const containsEssentialTab = elements.some(
++        element => this.isTab(element) && element.hasAttribute("zen-essential")
++      );
++      if (this.tabs.length == elements.length && !containsEssentialTab) {
+         return null;
+       }
+
++      if (containsEssentialTab) {
++        Promise.all(
++          elements.map(element =>
++            this.isTab(element) && element.hasAttribute("zen-essential")
++              ? gZenWorkspaces.duplicateEssentialTab(element)
++              : element
++          )
++        ).then(
++          duplicatedElements => {
++            if (duplicatedElements.every(Boolean)) {
++              this.#replaceTabsWithWindow(duplicatedElements, aOptions);
++            }
++          },
++          error => Cu.reportError(error)
++        );
++        return null;
++      }
++
++      return this.#replaceTabsWithWindow(elements, aOptions);
++    }
++
++    #replaceTabsWithWindow(elements, aOptions) {
+       if (elements.length == 1) {
+         return this.replaceTabWithWindow(elements[0], aOptions);
+       }
+@@ -6971,7 +7247,7 @@
+     *   `true` if element is a `<tab-group>`
+     */
+    isTabGroup(element) {
 -      return !!(element?.tagName == "tab-group");
 +      return !!(element?.tagName == "tab-group" || element?.tagName == "zen-folder");
      }
@@ -956,7 +1007,7 @@ index 08b5b56e069d038d72c87355920c4ce8a55ed805..87f41c8583c26f364530def5bd5d8333
 +      if (!gZenFolders.canDropElement(element, targetElement)) {
 +        element = element.group;
 +      }
-+      if (!element.hasAttribute('zen-essential') && targetElement?.hasAttribute('zen-essential')) { 
++      if (!element.hasAttribute('zen-essential') && targetElement?.hasAttribute('zen-essential')) {
 +        targetElement = null;
 +        moveBefore = false;
 +      }

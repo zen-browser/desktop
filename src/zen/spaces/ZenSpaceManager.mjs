@@ -831,7 +831,7 @@ class nsZenWorkspaces {
     }
     this._workspaceCache = spacesFromStore.length
       ? [...spacesFromStore]
-      : [this.#createWorkspaceData("General", undefined)];
+      : [this.#createWorkspaceData("General", "🇮🇳")];
     this.activeWorkspace =
       aWinData.activeZenSpace || this._workspaceCache[0].uuid;
     let promise = this.#initializeWorkspaces();

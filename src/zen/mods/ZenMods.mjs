@@ -95,6 +95,13 @@ class nsZenMods extends nsZenPreloadedFeature {
     this.#writeToDom(modsWithPreferences);
 
     await this.#insertStylesheet();
+    const isTransparentEnabled = mods.some(
+      mod => mod.id === "astra-transparent"
+    );
+    document.documentElement.classList.toggle(
+      "astra-transparent-enabled",
+      isTransparentEnabled
+    );
   }
 
   async #getEnabledMods() {

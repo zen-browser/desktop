@@ -1,0 +1,109 @@
+/* zen-highlight.css - Styles for the floating selection toolbar */
+#zen-highlight-container {
+  /* Default Theme Variables */
+  --sst-bg: rgba(43, 42, 51, 0.92);
+  --sst-text: #fbfbfe;
+  --sst-border: rgba(255, 255, 255, 0.08);
+  --sst-accent: #7c6aef;
+  --sst-hover: rgba(255, 255, 255, 0.1);
+  --sst-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --sst-radius: 10px;
+  --sst-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  position: fixed; /* Fixed to window instead of absolute */
+  z-index: 2147483647;
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  width: max-content !important;
+  align-items: center;
+  background: var(--sst-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--sst-border);
+  border-radius: var(--sst-radius);
+  box-shadow: var(--sst-shadow);
+  padding: 4px;
+  gap: 2px;
+  font-family: var(--sst-font);
+  font-size: 13px;
+  color: var(--sst-text);
+  pointer-events: auto;
+  user-select: none;
+  
+  /* Initial state for animation */
+  opacity: 0;
+  transform: translateY(8px) scale(0.95);
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-color-scheme: light) {
+  #zen-highlight-container {
+    --sst-bg: rgba(255, 255, 255, 0.95);
+    --sst-text: #1e1e2e;
+    --sst-border: rgba(0, 0, 0, 0.1);
+    --sst-hover: rgba(0, 0, 0, 0.05);
+    --sst-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  }
+}
+
+#zen-highlight-container[visible="true"] {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.zen-highlight-btn {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: transparent;
+  color: white !important;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px !important;
+  font-size: 13px !important;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  appearance: none;
+}
+
+.zen-highlight-btn:hover {
+  background: var(--sst-hover);
+}
+
+.zen-highlight-btn:active {
+  transform: scale(0.96);
+}
+
+.zen-highlight-divider {
+  width: 1px;
+  height: 16px;
+  background: var(--sst-border);
+  margin: 0 4px;
+}
+
+#zen-highlight-currency {
+  display: flex;
+  align-items: center;
+}
+
+#zen-highlight-currency[hidden],
+#zen-highlight-currency[hidden="true"] {
+  display: none !important;
+}
+
+.zen-highlight-currency-info {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  font-weight: 600;
+  color: var(--sst-accent);
+  background: rgba(124, 106, 239, 0.1);
+  border-radius: 6px;
+  white-space: nowrap;
+}
+

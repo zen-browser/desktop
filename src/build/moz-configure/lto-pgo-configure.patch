@@ -1,0 +1,20 @@
+diff --git a/build/moz.configure/lto-pgo.configure b/build/moz.configure/lto-pgo.configure
+index df2b0bf0081edfdc2c7bccaefc780d2b0c6555ff..53a3b55de7650799e3730372e72ad7b4bb2eea03 100644
+--- a/build/moz.configure/lto-pgo.configure
++++ b/build/moz.configure/lto-pgo.configure
+@@ -234,6 +234,7 @@ def moz_pgo_rust(pgo, profile_use, profile_generate, c_compiler):
+     if c_compiler.type == "gcc":
+         die("Cannot use cross-language PGO with GCC.")
+ 
++    log.info("Enabling cross-language PGO for Rust")
+     return True
+ 
+ 
+@@ -256,7 +257,6 @@ option(
+     help="Indicate that ld64 is free of symbol aliasing bugs",
+ )
+ 
+-imply_option("MOZ_LD64_KNOWN_GOOD", moz_automation)
+ 
+ use_fat_lto = cxx_compiler.try_link(
+     ldflags=depends(stlport_libs)(

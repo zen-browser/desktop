@@ -1,0 +1,13 @@
+diff --git a/layout/generic/nsIFrame.h b/layout/generic/nsIFrame.h
+index 44673860100e7a0b1af95bf3e1d4148d3c643a6e..7f9dde0f1fb9ab85adb12a470ea6f55ab5be224e 100644
+--- a/layout/generic/nsIFrame.h
++++ b/layout/generic/nsIFrame.h
+@@ -1010,7 +1010,7 @@ class nsIFrame : public nsQueryFrame {
+   /** Also forward GetVisitedDependentColor to the style */
+   template <typename T, typename S>
+   nscolor GetVisitedDependentColor(T S::* aField) {
+-    return mComputedStyle->GetVisitedDependentColor(aField);
++    return mComputedStyle->GetVisitedDependentColor(aField, this);
+   }
+ 
+   /**

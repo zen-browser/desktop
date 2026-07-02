@@ -1,0 +1,57 @@
+{
+  "name": "Nixo Browser",
+  "vendor": "Nixo Team",
+  "appId": "nixo",
+  "binaryName": "nixo",
+  "version": {
+    "product": "firefox",
+    "version": "152.0.4",
+    "candidate": "152.0.4",
+    "candidateBuild": 1
+  },
+  "buildOptions": {
+    "generateBranding": true
+  },
+  "addons": {},
+  "brands": {
+    "release": {
+      "backgroundColor": "#282A33",
+      "brandShorterName": "Nixo",
+      "brandShortName": "Nixo",
+      "brandFullName": "Nixo Browser",
+      "release": {
+        "displayVersion": "1.21.5b",
+        "github": {
+          "repo": "nixo-browser/desktop"
+        },
+        "archives": {
+          "windows": "windows.mar",
+          "macos-aarch64": "macos-aarch64.mar",
+          "linux": "linux.mar",
+          "macos-x64": "macos-x64.mar",
+          "windows-arm64": "windows-arm64.mar",
+          "linux-aarch64": "linux-aarch64.mar"
+        }
+      }
+    },
+    "twilight": {
+      "backgroundColor": "#282A33",
+      "brandShorterName": "Nixo",
+      "brandShortName": "Nixo Twilight",
+      "brandFullName": "Nixo Twilight",
+      "release": {
+        "displayVersion": "1.22t",
+        "github": {
+          "repo": "nixo-browser/desktop"
+        }
+      }
+    }
+  },
+  "license": {
+    "ignoredFiles": [
+      ".*\\.json"
+    ],
+    "licenseType": "MPL-2.0"
+  },
+  "updateHostname": "updates.nixo.app"
+}

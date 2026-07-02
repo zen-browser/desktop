@@ -1,0 +1,13 @@
+diff --git a/layout/svg/SVGUtils.h b/layout/svg/SVGUtils.h
+index a4367a69d488c4eab0592d5f460b035efda30e9a..03a305aeb03fe6902eb7aaeb524b70c88836d27f 100644
+--- a/layout/svg/SVGUtils.h
++++ b/layout/svg/SVGUtils.h
+@@ -429,7 +429,7 @@ class SVGUtils final {
+ 
+   static nscolor GetFallbackOrPaintColor(
+       const ComputedStyle&, StyleSVGPaint nsStyleSVG::* aFillOrStroke,
+-      nscolor aDefaultContextFallbackColor);
++      nscolor aDefaultContextFallbackColor, const nsIFrame* aFrame);
+ 
+   static void MakeFillPatternFor(nsIFrame* aFrame, gfxContext* aContext,
+                                  GeneralPattern* aOutPattern,

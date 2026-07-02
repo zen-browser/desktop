@@ -1,0 +1,37 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+.dotbuild/
+engine/
+firefox-*/
+node_modules/
+.surfer/
+
+__pycache__/
+dist/
+
+windsign-temp/
+venv/
+
+!firefox-cache/
+win-cross/
+
+!firefox-patches/
+target/
+.vscode/
+
+locales/firefox-l10n/
+
+!src/toolkit/themes/shared/design-system/dist/
+.DS_Store
+
+mozconfig
+
+build/signing/env/
+build/signing/nss_config/
+build/signing/cert.pem
+build/signing/private_key.pem
+build/signing/private_key.p12
+
+bloat-dump.log

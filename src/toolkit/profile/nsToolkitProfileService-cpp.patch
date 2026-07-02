@@ -1,0 +1,22 @@
+diff --git a/toolkit/profile/nsToolkitProfileService.cpp b/toolkit/profile/nsToolkitProfileService.cpp
+index f624b97e480cdeae8e7621060b33c7ab872c4523..2fc8240543ef391f43ca6a02d169302488d738cc 100644
+--- a/toolkit/profile/nsToolkitProfileService.cpp
++++ b/toolkit/profile/nsToolkitProfileService.cpp
+@@ -101,6 +101,8 @@ using namespace mozilla;
+ #define STORE_ID_PREF "toolkit.profiles.storeID"
+ #define NEW_PROFILE_PREF "toolkit.profiles.newProfileSubmitted"
+ 
++#include "zenToolkitProfileServiceDefaultOverride.h"
++
+ struct KeyValue {
+   KeyValue(const char* aKey, const char* aValue) : key(aKey), value(aValue) {}
+ 
+@@ -1482,7 +1484,7 @@ nsresult nsToolkitProfileService::CreateDefaultProfile(
+   if (mUseDevEditionProfile) {
+     name.AssignLiteral(DEV_EDITION_NAME);
+   } else if (mUseDedicatedProfile) {
+-    name.AppendPrintf("default-%s", mUpdateChannel.get());
++    name.AppendPrintf("Default (%s)", mUpdateChannel.get());
+   } else {
+     name.AssignLiteral(DEFAULT_NAME);
+   }

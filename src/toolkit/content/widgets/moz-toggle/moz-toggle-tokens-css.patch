@@ -1,0 +1,15 @@
+diff --git a/toolkit/content/widgets/moz-toggle/moz-toggle.tokens.css b/toolkit/content/widgets/moz-toggle/moz-toggle.tokens.css
+index 6247d7a3923a6fedd4ec9911aba309ce565cd498..744e670eccc936dde664aa07df3e87bdcafd5e48 100644
+--- a/toolkit/content/widgets/moz-toggle/moz-toggle.tokens.css
++++ b/toolkit/content/widgets/moz-toggle/moz-toggle.tokens.css
+@@ -13,8 +13,8 @@
+     --toggle-background-color: var(--button-background-color);
+     --toggle-background-color-hover: var(--button-background-color-hover);
+     --toggle-background-color-active: var(--button-background-color-active);
+-    --toggle-background-color-pressed: var(--color-accent-primary);
+-    --toggle-background-color-pressed-hover: var(--color-accent-primary-hover);
++    --toggle-background-color-pressed: var(--zen-primary-color);
++    --toggle-background-color-pressed-hover: var(--zen-colors-hover-bg);
+     --toggle-background-color-pressed-active: var(--color-accent-primary-active);
+     --toggle-border-color: var(--border-color-interactive);
+     --toggle-border-color-hover: var(--toggle-border-color);

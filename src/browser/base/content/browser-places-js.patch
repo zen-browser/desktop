@@ -1,0 +1,43 @@
+diff --git a/browser/base/content/browser-places.js b/browser/base/content/browser-places.js
+index b04e9afe4041b9bcd62527a22f468b84bf0de5d9..9e20e5a9d58fb6752037708f3d1404e00c98b132 100644
+--- a/browser/base/content/browser-places.js
++++ b/browser/base/content/browser-places.js
+@@ -262,6 +262,8 @@ var StarUI = {
+       });
+     }
+ 
++    this._setIconAndPreviewImage();
++
+     let onPanelReady = fn => {
+       let target = this.panel;
+       if (target.parentNode) {
+@@ -313,6 +315,21 @@ var StarUI = {
+     }
+   },
+ 
++  _setIconAndPreviewImage() {
++    let faviconImage = this._element("zenEditBookmarkPanelFavicon");
++    faviconImage.removeAttribute("iconloadingprincipal");
++    faviconImage.removeAttribute("src");
++
++    let tab = gBrowser.selectedTab;
++    if (tab.hasAttribute("image") && !tab.hasAttribute("busy")) {
++      faviconImage.setAttribute(
++        "iconloadingprincipal",
++        tab.getAttribute("iconloadingprincipal")
++      );
++      faviconImage.setAttribute("src", tab.getAttribute("image"));
++    }
++  },
++
+   removeBookmarkButtonCommand: function SU_removeBookmarkButtonCommand() {
+     this._removeBookmarksOnPopupHidden = true;
+     this.panel.hidePopup();
+@@ -1841,6 +1858,7 @@ var BookmarkingUI = {
+       document.getElementById("context-bookmarkpage"),
+       PanelMultiView.getViewNode(document, "panelMenuBookmarkThisPage"),
+       document.getElementById("pageAction-panel-bookmark"),
++      document.getElementById("zen-site-data-icon-button"),
+     ]) {
+       if (!element) {
+         // The page action panel element may not have been created yet.

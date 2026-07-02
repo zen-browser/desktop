@@ -1,0 +1,75 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-panel-ui-workspaces-text = مساحات العمل
+zen-panel-ui-spaces-label = 
+    .label = المساحات
+zen-panel-ui-workspaces-create = 
+    .label = إنشاء مساحة عمل
+zen-panel-ui-folder-create = 
+    .label = إنشاء مِلف
+zen-panel-ui-live-folder-create = 
+    .label = مجلد ديناميكي
+zen-panel-ui-new-empty-split = 
+    .label = تقسيم جديد
+zen-workspaces-panel-context-delete = 
+    .label = حذف مساحة العمل
+    .accesskey = د
+zen-workspaces-panel-change-name = 
+    .label = تغيير الاسم
+zen-workspaces-panel-change-icon = 
+    .label = تغيير الأيقونة
+zen-workspaces-panel-context-default-profile = 
+    .label = تعيين المِلَفّ الشخصي
+zen-workspaces-panel-unload = 
+    .label = إلغاء تحميل المساحة
+zen-workspaces-panel-unload-others = 
+    .label = إلغاء تحميل جميع المساحات الأخرى
+zen-workspaces-how-to-reorder-title = كيفية إعادة ترتيب المساحات
+zen-workspaces-how-to-reorder-desc = اسحب أيقونات المساحة في أسفل الشريط الجانبي لإعادة ترتيبها
+zen-workspaces-change-theme = 
+    .label = تعديل السمة
+zen-workspaces-panel-context-open = 
+    .label = فتح فضاء العمل
+    .accesskey = ع
+zen-workspaces-panel-context-edit = 
+    .label = تعديل فضاء العمل
+    .accesskey = ه
+zen-bookmark-edit-panel-workspace-selector = 
+    .value = المساحات
+    .accesskey = W
+zen-panel-ui-gradient-generator-algo-complementary = 
+    .label = تكميلي
+zen-panel-ui-gradient-generator-algo-splitComplementary = 
+    .label = تقسيم
+zen-panel-ui-gradient-generator-algo-analogous = 
+    .label = متشابهة
+zen-panel-ui-gradient-generator-algo-triadic = 
+    .label = ثلاثي
+zen-panel-ui-gradient-generator-algo-floating = 
+    .label = عائم
+zen-panel-ui-gradient-click-to-add = انقر لإضافة لون
+zen-workspace-creation-name = 
+    .placeholder = اسم المساحة
+zen-move-tab-to-workspace-button = 
+    .label = نقل إلى...
+    .tooltiptext = نقل جميع علامات التبويب في هذه النافذة إلى مساحة
+zen-workspaces-panel-context-reorder = 
+    .label = إعادة ترتيب المساحات
+zen-workspace-creation-profile = الملف الشخصي
+    .tooltiptext = تستخدم الملفات الشخصية لفصل ملفات تعريف الارتباط وبيانات الموقع بين المساحات.
+zen-workspace-creation-header = إنشاء مساحة
+zen-workspace-creation-label = يتم استخدام المساحات لتنظيم علامات التبويب والجلسات الخاصة بك.
+zen-workspaces-delete-workspace-title = حذف المساحة؟
+zen-workspaces-delete-workspace-body = هل أنت متأكد من رغبتك في حذف { $name }؟ لا يمكن التراجع عن هذا الإجراء.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = تم إغلاق علامات التبويب! استخدم <span>{ $shortcut }</span> للتراجع.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = إمسح
+    .tooltiptext = إغلاق جميع علامات التبويب الغير مثبتة
+zen-panel-ui-workspaces-change-forward = 
+    .label = المساحة التالية
+zen-panel-ui-workspaces-change-back = 
+    .label = المساحة السابقة

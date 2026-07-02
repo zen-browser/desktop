@@ -1,0 +1,16 @@
+diff --git a/toolkit/mozapps/update/updater/updater-common.build b/toolkit/mozapps/update/updater/updater-common.build
+index 39c9726cfdbfc333cb5eba25f295a1ae641da141..96e823b8654623a82f455bfce60100703c34e139 100644
+--- a/toolkit/mozapps/update/updater/updater-common.build
++++ b/toolkit/mozapps/update/updater/updater-common.build
+@@ -86,6 +86,11 @@ if link_with_nss:
+         "nss",
+         "signmar",
+     ]
++    if CONFIG["OS_ARCH"] == "Linux":
++        # Zen: ensure RPATH is set so NSS/signmar libs are found at runtime
++        OS_LIBS += [
++            "-Wl,-rpath=\\$$ORIGIN",
++        ]
+ 
+ if CONFIG["MOZ_WIDGET_TOOLKIT"] == "gtk":
+     have_progressui = 1

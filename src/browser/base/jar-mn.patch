@@ -1,0 +1,10 @@
+diff --git a/browser/base/jar.mn b/browser/base/jar.mn
+index dd0f873535224344c8015d00a00d56e0b9392951..fcc013514836f2e26ea5c4cef2aa443f0368a3e6 100644
+--- a/browser/base/jar.mn
++++ b/browser/base/jar.mn
+@@ -108,3 +108,5 @@ browser.jar:
+ 
+ # L10n resources and overrides.
+ % override chrome://global/locale/appstrings.properties chrome://browser/locale/appstrings.properties
++
++#include content/zen-assets.jar.inc.mn

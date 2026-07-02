@@ -1,0 +1,36 @@
+
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+[readermode]
+source = "toolkit/components/reader/tests/browser"
+is_direct_path = true
+disable = [
+  "browser_drag_url_readerMode.js",
+  "browser_localfile_readerMode.js",
+  "browser_readerMode.js",
+  "browser_readerMode_colorSchemePref.js",
+]
+
+[safebrowsing]
+source = "browser/components/safebrowsing/content/test"
+is_direct_path = true
+
+[shell]
+source = "browser/components/shell/test"
+is_direct_path = true
+disable = [
+  "browser_1119088.js",
+  "browser_setDesktopBackgroundPreview.js",
+]
+
+[tabMediaIndicator]
+source = "browser/components/tabbrowser/test/browser/tabMediaIndicator"
+is_direct_path = true
+
+[tooltiptext]
+source = "toolkit/components/tooltiptext"
+disable = [
+  "browser_input_file_tooltips.js",
+]

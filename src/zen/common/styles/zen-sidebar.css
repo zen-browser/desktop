@@ -1,0 +1,34 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+/* Bookmarks sidebar */
+#zen-tabbox-wrapper {
+  & #sidebar-splitter {
+    opacity: 0;
+    margin: 0 calc(-1 * var(--zen-element-separation) + 2px);
+  }
+
+  & #sidebar-box {
+    border-radius: var(--zen-native-inner-radius);
+    box-shadow: var(--zen-big-shadow);
+    overflow: hidden;
+  }
+
+  & #tabbrowser-tabbox[sidebar-positionend] {
+    & #sidebar-box {
+      order: 8 !important;
+    }
+
+    & #sidebar-splitter {
+      order: 7 !important;
+    }
+  }
+}
+
+/* Menubar */
+#toolbar-menubar {
+  display: none !important;
+}

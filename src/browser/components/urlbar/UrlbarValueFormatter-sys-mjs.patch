@@ -1,0 +1,49 @@
+diff --git a/browser/components/urlbar/UrlbarValueFormatter.sys.mjs b/browser/components/urlbar/UrlbarValueFormatter.sys.mjs
+index 8def83509f097ba034b9d94ae00d2ee474ec2d30..ebdb84b9af928b132b848bd4c5bb506d813e5e06 100644
+--- a/browser/components/urlbar/UrlbarValueFormatter.sys.mjs
++++ b/browser/components/urlbar/UrlbarValueFormatter.sys.mjs
+@@ -77,7 +77,7 @@ export class UrlbarValueFormatter {
+       if (this.#updateInstance != instance) {
+         return;
+       }
+-      this.#formattingApplied = this.#formatURL() || this.#formatSearchAlias();
++      this.#formattingApplied = this._formatURL() || this.#formatSearchAlias();
+     });
+   }
+ 
+@@ -105,6 +105,18 @@ export class UrlbarValueFormatter {
+   }
+ 
+   #ensureFormattedHostVisible(urlMetaData) {
++    // Make sure the domain is visible even with long subdomains when the single sidebar is being used
++    if (
++      this.#window.gZenVerticalTabsManager?._hasSetSingleToolbar
++      && Services.prefs.getBoolPref("zen.urlbar.show-domain-only-in-sidebar")
++    ) {
++      // also compare the difference in width from this and the urlbar input, to avoid scrolling 
++      // when urlbar buttons are showing.
++      const urlbarInputWidth = this.#window.windowUtils.getBoundsWithoutFlushing(this.#window.gURLBar).width;
++      const inputFieldWidth = this.#window.windowUtils.getBoundsWithoutFlushing(this.#inputField).width;
++      this.#inputField.scrollLeft = (this.#inputField.scrollLeftMax - (urlbarInputWidth - inputFieldWidth) );
++      return;
++    }
+     // Make sure the host is always visible. Since it is aligned on
+     // the first strong directional character, we set scrollLeft
+     // appropriately to ensure the domain stays visible in case of an
+@@ -381,7 +393,7 @@ export class UrlbarValueFormatter {
+    * @returns {boolean}
+    *   True if formatting was applied and false if not.
+    */
+-  #formatURL() {
++  _formatURL() {
+     let urlMetaData = this.#getUrlMetaData();
+     if (!urlMetaData) {
+       return false;
+@@ -650,6 +662,7 @@ export class UrlbarValueFormatter {
+       this.#window.requestAnimationFrame(() => {
+         if (instance == this.#resizeInstance) {
+           this.#ensureFormattedHostVisible();
++          this._formatURL();
+         }
+       });
+     }, 100);

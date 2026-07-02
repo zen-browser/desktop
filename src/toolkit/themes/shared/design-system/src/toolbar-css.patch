@@ -1,0 +1,12 @@
+diff --git a/toolkit/themes/shared/design-system/src/toolbar.css b/toolkit/themes/shared/design-system/src/toolbar.css
+index b5e0d34222312ec568d027725489ac8beee41dbe..c6fc389fbf4b3864f391b197c33ebd616bfc3b3c 100644
+--- a/toolkit/themes/shared/design-system/src/toolbar.css
++++ b/toolkit/themes/shared/design-system/src/toolbar.css
+@@ -9,7 +9,6 @@
+   :root {
+     @media not (prefers-contrast) {
+       @media (prefers-color-scheme: light) {
+-        --toolbar-background-color: var(--color-white);
+       }
+     }
+   }

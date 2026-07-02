@@ -1,0 +1,26 @@
+diff --git a/browser/components/customizableui/content/panelUI.js b/browser/components/customizableui/content/panelUI.js
+index 140ea6eddd0d0c6817bbaabf2dc00083eaa11b13..0fe33867cf64d02b2b6e6db8b6844a4ea044ad33 100644
+--- a/browser/components/customizableui/content/panelUI.js
++++ b/browser/components/customizableui/content/panelUI.js
+@@ -666,10 +666,12 @@ const PanelUI = {
+     if (hasKids && !this.navbar.hasAttribute("nonemptyoverflow")) {
+       this.navbar.setAttribute("nonemptyoverflow", "true");
+       this.overflowPanel.setAttribute("hasfixeditems", "true");
++      window.document.getElementById("zen-sidebar-top-buttons").setAttribute("nonemptyoverflow", "true");
+     } else if (!hasKids && this.navbar.hasAttribute("nonemptyoverflow")) {
+       PanelMultiView.hidePopup(this.overflowPanel);
+       this.overflowPanel.removeAttribute("hasfixeditems");
+       this.navbar.removeAttribute("nonemptyoverflow");
++      window.document.getElementById("zen-sidebar-top-buttons").removeAttribute("nonemptyoverflow");
+     }
+   },
+ 
+@@ -1017,7 +1019,7 @@ const PanelUI = {
+         el.removeAttribute("data-lazy-l10n-id");
+       });
+ 
+-    this.notificationPanel.openPopup(anchor, "bottomright topright");
++    this.notificationPanel.openPopup(anchor, gZenUIManager.panelUIPosition(this.notificationPanel, anchor));
+   },
+ 
+   _clearNotificationPanel() {

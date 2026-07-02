@@ -1,0 +1,75 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-panel-ui-workspaces-text = Spásanna
+zen-panel-ui-spaces-label = 
+    .label = Spásanna
+zen-panel-ui-workspaces-create = 
+    .label = Cruthaigh Spás
+zen-panel-ui-folder-create = 
+    .label = Cruthaigh Fillteán
+zen-panel-ui-live-folder-create = 
+    .label = Fillteán Beo
+zen-panel-ui-new-empty-split = 
+    .label = Scoilt Nua
+zen-workspaces-panel-context-delete = 
+    .label = Scrios Spás
+    .accesskey = D
+zen-workspaces-panel-change-name = 
+    .label = Athraigh Ainm
+zen-workspaces-panel-change-icon = 
+    .label = Athraigh Deilbhín
+zen-workspaces-panel-context-default-profile = 
+    .label = Socraigh Próifíl
+zen-workspaces-panel-unload = 
+    .label = Díluchtaigh Spás
+zen-workspaces-panel-unload-others = 
+    .label = Díluchtaigh Gach Spás Eile
+zen-workspaces-how-to-reorder-title = Conas spásanna a athordú
+zen-workspaces-how-to-reorder-desc = Tarraing na deilbhíní spáis ag bun an bharra taoibh chun iad a athordú
+zen-workspaces-change-theme = 
+    .label = Cuir an Téama in Eagar
+zen-workspaces-panel-context-open = 
+    .label = Oscail Spás Oibre
+    .accesskey = O
+zen-workspaces-panel-context-edit = 
+    .label = Cuir Spás in Eagar
+    .accesskey = E
+zen-bookmark-edit-panel-workspace-selector = 
+    .value = Spásanna
+    .accesskey = W
+zen-panel-ui-gradient-generator-algo-complementary = 
+    .label = Comhlántach
+zen-panel-ui-gradient-generator-algo-splitComplementary = 
+    .label = Scoilt
+zen-panel-ui-gradient-generator-algo-analogous = 
+    .label = Analógach
+zen-panel-ui-gradient-generator-algo-triadic = 
+    .label = Triadach
+zen-panel-ui-gradient-generator-algo-floating = 
+    .label = Ar snámh
+zen-panel-ui-gradient-click-to-add = Cliceáil chun dath a chur leis
+zen-workspace-creation-name = 
+    .placeholder = Ainm an Spáis
+zen-move-tab-to-workspace-button = 
+    .label = Bog go...
+    .tooltiptext = Bog gach cluaisín sa fhuinneog seo go Spás
+zen-workspaces-panel-context-reorder = 
+    .label = Athordaigh Spásanna
+zen-workspace-creation-profile = Próifíl
+    .tooltiptext = Úsáidtear próifílí chun fianáin agus sonraí suímh a dheighilt idir spásanna.
+zen-workspace-creation-header = Cruthaigh Spás
+zen-workspace-creation-label = Úsáidtear spásanna chun do chluaisíní agus do sheisiúin a eagrú.
+zen-workspaces-delete-workspace-title = Scrios an spás?
+zen-workspaces-delete-workspace-body = An bhfuil tú cinnte gur mian leat { $name } a scriosadh? Ní féidir an gníomh seo a chealú.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Cluaisíní Dúnta! Úsáid <span>{ $shortcut }</span> chun é a chealú.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Glan
+    .tooltiptext = Dún gach cluaisín neamhphionáilte
+zen-panel-ui-workspaces-change-forward = 
+    .label = An Chéad Spás Eile
+zen-panel-ui-workspaces-change-back = 
+    .label = Spás Roimhe Seo

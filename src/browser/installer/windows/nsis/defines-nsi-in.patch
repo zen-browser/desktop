@@ -1,0 +1,13 @@
+diff --git a/browser/installer/windows/nsis/defines.nsi.in b/browser/installer/windows/nsis/defines.nsi.in
+index a9bf2d67ce522054442be664bda1434c63609ea1..16e03732d78207ce602066a4bccc0d2c2385ca91 100644
+--- a/browser/installer/windows/nsis/defines.nsi.in
++++ b/browser/installer/windows/nsis/defines.nsi.in
+@@ -147,7 +147,7 @@ VIAddVersionKey "ProductVersion"  "${AppVersion}"
+ !define APPROXIMATE_REQUIRED_SPACE_MB "145"
+ 
+ # Constants for parts of the telemetry submission URL
+-!define TELEMETRY_BASE_URL https://incoming.telemetry.mozilla.org/submit
++!define TELEMETRY_BASE_URL 
+ !define TELEMETRY_NAMESPACE firefox-installer
+ !define TELEMETRY_INSTALL_PING_VERSION 1
+ !define TELEMETRY_INSTALL_PING_DOCTYPE install

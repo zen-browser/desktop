@@ -1,0 +1,20 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+[DEFAULT]
+support-files = [
+  "head.js",
+]
+
+["browser_site_control_header_buttons.js"]
+
+["browser_site_control_manage_addons.js"]
+
+["browser_site_control_shows_installed_addons.js"]
+
+["browser_site_data_panel_opens.js"]
+
+["browser_site_data_permission_toggle.js"]
+
+["browser_site_data_security_scheme.js"]

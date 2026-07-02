@@ -1,0 +1,75 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-panel-ui-workspaces-text = Alanlar
+zen-panel-ui-spaces-label = 
+    .label = Alanlar
+zen-panel-ui-workspaces-create = 
+    .label = Alan oluştur
+zen-panel-ui-folder-create = 
+    .label = Klasör oluştur
+zen-panel-ui-live-folder-create = 
+    .label = Dinamik klasör
+zen-panel-ui-new-empty-split = 
+    .label = Yeni bölünmüş görünüm
+zen-workspaces-panel-context-delete = 
+    .label = Çalışma alanını sil
+    .accesskey = D
+zen-workspaces-panel-change-name = 
+    .label = Adı değiştir
+zen-workspaces-panel-change-icon = 
+    .label = Simgeyi değiştir
+zen-workspaces-panel-context-default-profile = 
+    .label = Profil ayarla
+zen-workspaces-panel-unload = 
+    .label = Alanı boşalt
+zen-workspaces-panel-unload-others = 
+    .label = Diğer tüm çalışma alanlarını uyut
+zen-workspaces-how-to-reorder-title = Alanlar nasıl yeniden sıralanır
+zen-workspaces-how-to-reorder-desc = Alanları yeniden sıralamak için kenar çubuğunun altındaki alan simgelerini sürükleyin
+zen-workspaces-change-theme = 
+    .label = Temayı düzenle
+zen-workspaces-panel-context-open = 
+    .label = Çalışma alanı aç
+    .accesskey = O
+zen-workspaces-panel-context-edit = 
+    .label = Çalışma alanını düzenle
+    .accesskey = E
+zen-bookmark-edit-panel-workspace-selector = 
+    .value = Alanlar
+    .accesskey = W
+zen-panel-ui-gradient-generator-algo-complementary = 
+    .label = Tamamlayıcı
+zen-panel-ui-gradient-generator-algo-splitComplementary = 
+    .label = Böl
+zen-panel-ui-gradient-generator-algo-analogous = 
+    .label = Benzer
+zen-panel-ui-gradient-generator-algo-triadic = 
+    .label = Üçlü
+zen-panel-ui-gradient-generator-algo-floating = 
+    .label = Kayan
+zen-panel-ui-gradient-click-to-add = Renk eklemek için tıkla
+zen-workspace-creation-name = 
+    .placeholder = Alan adı
+zen-move-tab-to-workspace-button = 
+    .label = Şuraya taşı...
+    .tooltiptext = Bu penceredeki tüm sekmeleri bir Alana taşı
+zen-workspaces-panel-context-reorder = 
+    .label = Alanları yeniden sırala
+zen-workspace-creation-profile = Profil
+    .tooltiptext = Profiller, alanlar arasındaki çerezleri ve site verilerini ayırmak için kullanılır.
+zen-workspace-creation-header = Bir Alan Oluştur
+zen-workspace-creation-label = Alanlar, sekme ve oturumlarınızı düzenlemek için kullanılır.
+zen-workspaces-delete-workspace-title = Alan Silinsin mi?
+zen-workspaces-delete-workspace-body = { $name } ögesini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Sekmeler kapatıldı! Geri almak için <span>{ $shortcut }</span> tuşlarını kullan.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Temizle
+    .tooltiptext = Sabitlenmemiş tüm sekmeleri kapat
+zen-panel-ui-workspaces-change-forward = 
+    .label = Sonraki alan
+zen-panel-ui-workspaces-change-back = 
+    .label = Önceki alan

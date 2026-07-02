@@ -1,0 +1,12 @@
+diff --git a/toolkit/moz.configure b/toolkit/moz.configure
+--- a/toolkit/moz.configure
++++ b/toolkit/moz.configure
+@@ -28,7 +28,7 @@ project_flag(
+ 
+ project_flag(
+     env="MOZ_APP_UA_NAME",
+-    default="",
++    default="Firefox",
+     nargs=1,
+     help="Application name in the User Agent string",
+ )

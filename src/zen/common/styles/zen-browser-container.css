@@ -1,0 +1,88 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+:root:not([inDOMFullscreen="true"]):not([chromehidden~="location"]):not([chromehidden~="toolbar"]) {
+  & #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
+    overflow: clip;
+
+    :root:not([zen-no-padding="true"]) &:not(.zen-glance-overlay) {
+      border-radius: var(--zen-native-inner-radius);
+      box-shadow: var(--zen-big-shadow);
+    }
+
+    & browser[type="content"] {
+      &:not([transparent="true"]) {
+        background: light-dark(rgb(255, 255, 255), rgb(32, 32, 32));
+      }
+
+      &[transparent="true"] {
+        background: light-dark(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.1));
+      }
+    }
+
+    /* stylelint-disable-next-line media-query-no-invalid */
+    @media not -moz-pref("layout.css.prefers-color-scheme.content-override", 2) {
+      & browser[type="content"] {
+        color-scheme: env(-moz-content-preferred-color-scheme);
+      }
+    }
+
+    /* stylelint-disable-next-line media-query-no-invalid */
+    @media -moz-pref("zen.theme.acrylic-elements") {
+      & browser[type="content"] {
+        /* For the rendering engine to apply layering optimizations. This
+         * is a hacky solution, but it works for now. Note that this makes
+         * zen REALLY slow, so lets not enable it by default until we have
+         * a better solution. */
+        translate: 0;
+        backface-visibility: hidden;
+      }
+    }
+  }
+
+  /* stylelint-disable-next-line media-query-no-invalid */
+  @media (not -moz-pref("zen.view.shift-down-site-on-hover")) and -moz-pref("zen.view.hide-window-controls") {
+    .browserSidebarContainer:is(.deck-selected, [zen-split="true"]) .browserContainer {
+      transition: margin var(--zen-hidden-toolbar-transition);
+
+      :root[zen-single-toolbar="true"] & {
+        transition-delay: 0.2s;
+        --zen-toolbar-height: 34px;
+      }
+
+      #tabbrowser-tabpanels[has-toolbar-hovered] & {
+        --margin-top-fix: calc(-1 * var(--zen-toolbar-height) + var(--zen-element-separation));
+
+        :root:not([zen-single-toolbar="true"]) & {
+          --margin-top-fix: calc(-1 * var(--zen-toolbar-height-with-bookmarks) + var(--zen-element-separation));
+        }
+
+        /* stylelint-disable-next-line media-query-no-invalid */
+        @media -moz-pref("zen.view.experimental-no-window-controls") or (not -moz-pref("browser.tabs.inTitlebar")) {
+          :root:not([zen-has-bookmarks="true"])[zen-single-toolbar="true"] & {
+            --margin-top-fix: 0px;
+          }
+        }
+
+        margin-top: var(--margin-top-fix);
+      }
+    }
+  }
+}
+
+.zen-pseudo-browser-image {
+  position: absolute;
+  transform: scale(1);
+  width: 100%;
+  height: 100%;
+  inset: 0;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 2;
+}
+
+browser[zen-pseudo-hidden="true"] {
+  -moz-subtree-hidden-only-visually: 1 !important;
+}

@@ -1,0 +1,75 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-panel-ui-workspaces-text = Arbejdsområder
+zen-panel-ui-spaces-label = 
+    .label = Spaces
+zen-panel-ui-workspaces-create = 
+    .label = Opret rum
+zen-panel-ui-folder-create = 
+    .label = Opret mappe
+zen-panel-ui-live-folder-create = 
+    .label = Live Folder
+zen-panel-ui-new-empty-split = 
+    .label = New Split
+zen-workspaces-panel-context-delete = 
+    .label = Slet arbejdsområde
+    .accesskey = D
+zen-workspaces-panel-change-name = 
+    .label = Skift navn
+zen-workspaces-panel-change-icon = 
+    .label = Skift ikon
+zen-workspaces-panel-context-default-profile = 
+    .label = Indstil profil
+zen-workspaces-panel-unload = 
+    .label = Unload Space
+zen-workspaces-panel-unload-others = 
+    .label = Unload All Other Spaces
+zen-workspaces-how-to-reorder-title = Sådan omarrangerer du rum
+zen-workspaces-how-to-reorder-desc = Træk rumikonerne nederst i sidepanelet for at omarrangere dem
+zen-workspaces-change-theme = 
+    .label = Rediger tema
+zen-workspaces-panel-context-open = 
+    .label = Åbn arbejdsområde
+    .accesskey = O
+zen-workspaces-panel-context-edit = 
+    .label = Rediger arbejdsområde
+    .accesskey = E
+zen-bookmark-edit-panel-workspace-selector = 
+    .value = Spaces
+    .accesskey = W
+zen-panel-ui-gradient-generator-algo-complementary = 
+    .label = Komplementær
+zen-panel-ui-gradient-generator-algo-splitComplementary = 
+    .label = Split
+zen-panel-ui-gradient-generator-algo-analogous = 
+    .label = Analog
+zen-panel-ui-gradient-generator-algo-triadic = 
+    .label = Triadisk
+zen-panel-ui-gradient-generator-algo-floating = 
+    .label = Flydende
+zen-panel-ui-gradient-click-to-add = Klik for at tilføje en farve
+zen-workspace-creation-name = 
+    .placeholder = Rumnavn
+zen-move-tab-to-workspace-button = 
+    .label = Move To...
+    .tooltiptext = Move all tabs in this window to a Space
+zen-workspaces-panel-context-reorder = 
+    .label = Omarranger rum
+zen-workspace-creation-profile = Profil
+    .tooltiptext = Profiler bruges til at adskille cookies og webstedsdata mellem forskellige rum.
+zen-workspace-creation-header = Opret et rum
+zen-workspace-creation-label = Rum bruges til at organisere dine faner og sessioner.
+zen-workspaces-delete-workspace-title = Slet arbejdsområde?
+zen-workspaces-delete-workspace-body = Er du sikker på, at du vil slette { $name }? Dette kan ikke fortrydes.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Tabs Closed! Use <span>{ $shortcut }</span> to undo.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Clear
+    .tooltiptext = Close all unpinned tabs
+zen-panel-ui-workspaces-change-forward = 
+    .label = Next Space
+zen-panel-ui-workspaces-change-back = 
+    .label = Previous Space

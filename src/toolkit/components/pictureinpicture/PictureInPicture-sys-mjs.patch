@@ -1,0 +1,23 @@
+diff --git a/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs b/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs
+index e29503cef61f8a08134cb08b6a533cdc9107e725..186d366c71852ae2e04c0455ef769c81cce8c905 100644
+--- a/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs
++++ b/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs
+@@ -122,6 +122,9 @@ export class PictureInPictureToggleParent extends JSWindowActorParent {
+         if (browser.documentGlobal.gBrowser.selectedBrowser == browser) {
+           break;
+         }
++        if (browser.audioMuted) {
++          break;
++        }
+         let actor = browsingContext.currentWindowGlobal.getActor(
+           "PictureInPictureLauncher"
+         );
+@@ -493,7 +496,7 @@ export var PictureInPicture = {
+     // focus the tab's window
+     tab.documentGlobal.focus();
+ 
+-    gBrowser.selectedTab = tab;
++    browser?.documentGlobal?.gZenWorkspaces.switchIfNeeded(browser);
+     await this.closeSinglePipWindow({ reason: "Unpip", actorRef: pipActor });
+   },
+ 

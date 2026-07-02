@@ -1,0 +1,18 @@
+diff --git a/toolkit/modules/ShortcutUtils.sys.mjs b/toolkit/modules/ShortcutUtils.sys.mjs
+index 0a2a5ac202fe7fbdd1540254db847d59c3fe2a88..fca3cd0719e51ffa745e8dac050dcefc7bc70f93 100644
+--- a/toolkit/modules/ShortcutUtils.sys.mjs
++++ b/toolkit/modules/ShortcutUtils.sys.mjs
+@@ -414,13 +414,11 @@ export var ShortcutUtils = {
+         }
+         break;
+       case event.DOM_VK_UP: // fall through
+-      case event.DOM_VK_LEFT:
+         if (metaAltAccel) {
+           return ShortcutUtils.PREVIOUS_TAB;
+         }
+         break;
+       case event.DOM_VK_DOWN: // fall through
+-      case event.DOM_VK_RIGHT:
+         if (metaAltAccel) {
+           return ShortcutUtils.NEXT_TAB;
+         }

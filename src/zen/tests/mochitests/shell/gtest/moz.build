@@ -1,0 +1,14 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+if CONFIG["MOZ_WIDGET_TOOLKIT"] == "windows":
+    LOCAL_INCLUDES += ["/browser/components/shell"]
+
+    UNIFIED_SOURCES += [
+        "LimitedAccessFeatureTests.cpp",
+        "SetDefaultBrowserButtonTests.cpp",
+        "ShellLinkTests.cpp",
+    ]
+
+FINAL_LIBRARY = "xul-gtest"

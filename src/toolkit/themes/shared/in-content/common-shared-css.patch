@@ -1,0 +1,22 @@
+diff --git a/toolkit/themes/shared/in-content/common-shared.css b/toolkit/themes/shared/in-content/common-shared.css
+index 8cbeb5d266b19c2c5b3d605b23c8c421a03c2a0e..7db0baeee11b99a5da1c143c682e38751a9ac03c 100644
+--- a/toolkit/themes/shared/in-content/common-shared.css
++++ b/toolkit/themes/shared/in-content/common-shared.css
+@@ -57,7 +57,7 @@
+    * this in forced colors mode, as we should be using system colours then.
+    */
+   :root[dialogroot] {
+-    --background-color-canvas: #42414d;
++    --background-color-canvas: var(--zen-dialog-background);
+   }
+ }
+ 
+@@ -158,7 +158,7 @@ xul|menulist {
+   border-radius: var(--button-border-radius);
+   background-color: var(--button-background-color);
+   font-weight: normal;
+-  padding: var(--button-padding);
++  padding: 0.7em 1em;
+   text-decoration: none;
+   margin: var(--space-xsmall) var(--space-small);
+   /* Ensure font-size isn't overridden by widget styling (e.g. in forms.css) */

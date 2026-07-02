@@ -1,0 +1,14 @@
+diff --git a/toolkit/content/xul.css b/toolkit/content/xul.css
+index db311601fb2c814139a66316e06707a56b7ac5cc..3a4cefcefe029d0054de0252fe8dead6dc248f59 100644
+--- a/toolkit/content/xul.css
++++ b/toolkit/content/xul.css
+@@ -463,7 +463,8 @@ deck > *|*:not(:-moz-native-anonymous) {
+ tabpanels > .deck-selected,
+ tabpanels > .split-view-panel-active,
+ tabpanels > .split-view-splitter,
+-deck > .deck-selected {
++deck > .deck-selected,
++tabpanels > [zen-split="true"] {
+   -moz-subtree-hidden-only-visually: 0;
+   visibility: inherit;
+ }

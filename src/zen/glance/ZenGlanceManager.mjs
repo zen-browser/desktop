@@ -1794,7 +1794,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     const currentTab = this.#currentTab;
     const currentParentTab = this.#currentParentTab;
 
-    this.#handleZenFolderPinningForSplit(currentParentTab);
+    this.#handleZenFolderPinning();
     await this.fullyOpenGlance({ forSplit: true });
 
     const isRightSidebar = gZenVerticalTabsManager._prefsRightSide;
@@ -1811,22 +1811,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     );
     if (!gReduceMotion && browserContainer) {
       gZenViewSplitter.animateBrowserDrop(browserContainer);
-    }
-  }
-
-  /**
-   * Handle Zen folder pinning for split view
-   *
-   * @param {Tab} parentTab - The parent tab
-   */
-  #handleZenFolderPinningForSplit(parentTab) {
-    const isZenFolder = parentTab?.group?.isZenFolder;
-    if (
-      Services.prefs.getBoolPref("zen.folders.owned-tabs-in-folder") &&
-      isZenFolder
-    ) {
-      this.#currentTab.removeAttribute("glance-id");
-      gBrowser.pinTab(this.#currentTab);
     }
   }
 

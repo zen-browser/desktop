@@ -1603,7 +1603,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     gZenWorkspaces.updateTabsContainers();
     this.overlay.classList.remove("zen-glance-overlay");
     this.#clearContainerStyles(this.browserWrapper);
-    this.animatingFullOpen = false;
     const glanceID = this.#currentGlanceID;
     this.closeGlance({ noAnimation: true, skipPermitUnload: true });
     this.#deleteGlance(glanceID);
@@ -1616,16 +1615,15 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * @param {boolean} options.forSplit - Whether this is for split view
    */
   async fullyOpenGlance({ forSplit = false } = {}) {
-    if (!this.#currentGlanceID || !this.#currentTab) {
+    const currentTab = this.#currentTab;
+    const currentParentTab = this.#currentParentTab;
+
+    if (!this.#currentGlanceID || !currentTab) {
       return;
     }
 
     this.animatingFullOpen = true;
-    this.#currentTab.setAttribute("zen-dont-split-glance", true);
-
-    this.#handleZenFolderPinning();
-    gBrowser.moveTabAfter(this.#currentTab, this.#currentParentTab);
-
+    currentTab.setAttribute("zen-dont-split-glance", true);
     this.#prepareTabForFullOpen();
 
     const sidebarButtons = this.browserWrapper.querySelector(
@@ -1635,32 +1633,31 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       sidebarButtons.remove();
     }
 
-    if (forSplit) {
-      this.finishOpeningGlance();
-      return;
-    }
-
-    if (gReduceMotion) {
+    if (!forSplit && gReduceMotion) {
       gZenViewSplitter.deactivateCurrentSplitView();
-      this.finishOpeningGlance();
-      return;
     }
 
-    await this.#animateFullOpen();
     this.finishOpeningGlance();
+    this.#handleZenFolderPinning(currentTab, currentParentTab);
+    gBrowser.moveTabAfter(currentTab, currentParentTab);
+
+    if (!forSplit && !gReduceMotion) {
+      await this.#animateFullOpen();
+    }
+
+    this.animatingFullOpen = false;
   }
 
   /**
    * Handle Zen folder pinning if applicable
    */
-  #handleZenFolderPinning() {
-    const isZenFolder = this.#currentParentTab?.group?.isZenFolder;
+  #handleZenFolderPinning(currentTab, currentParentTab) {
+    const isZenFolder = currentParentTab?.group?.isZenFolder;
     if (
       Services.prefs.getBoolPref("zen.folders.owned-tabs-in-folder") &&
       isZenFolder
     ) {
-      this.#currentTab.removeAttribute("glance-id");
-      gBrowser.pinTab(this.#currentTab);
+      gBrowser.pinTab(currentTab);
     }
   }
 

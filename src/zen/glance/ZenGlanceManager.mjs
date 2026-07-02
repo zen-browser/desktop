@@ -1650,6 +1650,9 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
   /**
    * Handle Zen folder pinning if applicable
+   *
+   * @param {Tab} currentTab - The current tab
+   * @param {Tab} currentParentTab - The current parent tab
    */
   #handleZenFolderPinning(currentTab, currentParentTab) {
     const isZenFolder = currentParentTab?.group?.isZenFolder;

@@ -1794,7 +1794,6 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     const currentTab = this.#currentTab;
     const currentParentTab = this.#currentParentTab;
 
-    this.#handleZenFolderPinning();
     await this.fullyOpenGlance({ forSplit: true });
 
     const isRightSidebar = gZenVerticalTabsManager._prefsRightSide;

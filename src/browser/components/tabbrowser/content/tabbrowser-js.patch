@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index 08b5b56e069d038d72c87355920c4ce8a55ed805..7349b78214fe23700c6496293ac03cdb992510fa 100644
+index 08b5b56e069d038d72c87355920c4ce8a55ed805..209c0ddc0297adb8340180c58de07ae107790751 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -511,6 +511,7 @@
@@ -113,7 +113,7 @@ index 08b5b56e069d038d72c87355920c4ce8a55ed805..7349b78214fe23700c6496293ac03cdb
        aTab,
        { telemetrySource = this.TabMetrics.METRIC_SOURCE.UNKNOWN } = {}
      ) {
-+      aTab = gZenGlanceManager.getTabOrGlanceParent(gBrowser.selectedTab);
++      aTab = gZenGlanceManager.getTabOrGlanceParent(aTab);
        if (aTab.pinned || aTab == FirefoxViewHandler.tab) {
          return;
        }
@@ -139,7 +139,7 @@ index 08b5b56e069d038d72c87355920c4ce8a55ed805..7349b78214fe23700c6496293ac03cdb
      }
  
      unpinTab(aTab) {
-+      aTab = gZenGlanceManager.getTabOrGlanceParent(gBrowser.selectedTab);
++      aTab = gZenGlanceManager.getTabOrGlanceParent(aTab);
        if (!aTab.pinned) {
          return;
        }

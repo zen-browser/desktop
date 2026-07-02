@@ -1659,6 +1659,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       Services.prefs.getBoolPref("zen.folders.owned-tabs-in-folder") &&
       isZenFolder
     ) {
+      this.#currentTab.removeAttribute("glance-id");
       gBrowser.pinTab(this.#currentTab);
     }
   }
@@ -1824,6 +1825,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       Services.prefs.getBoolPref("zen.folders.owned-tabs-in-folder") &&
       isZenFolder
     ) {
+      this.#currentTab.removeAttribute("glance-id");
       gBrowser.pinTab(this.#currentTab);
     }
   }

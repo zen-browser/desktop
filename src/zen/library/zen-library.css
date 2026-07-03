@@ -109,12 +109,55 @@ zen-library[open] {
     background: color-mix(in srgb, currentColor 10%, transparent);
   }
 
-  & img {
+  & .zen-library-tab-icon {
     width: 28px;
+    height: 28px;
+    overflow: clip;
+  }
+
+  & .zen-library-tab-icon-image {
+    width: calc(36 * 28px);
     height: 28px;
     fill: rgba(255, 255, 255, 0.8);
     stroke: var(--zen-colors-primary);
     -moz-context-properties: fill, stroke;
+    transform: translateX(0);
+  }
+
+  &[data-section="history"] .zen-library-tab-icon-image {
+    background-image: url("chrome://browser/skin/zen-icons/library/library-history-sprite.svg");
+  }
+
+  &[data-section="downloads"] .zen-library-tab-icon-image {
+    background-image: url("chrome://browser/skin/zen-icons/library/library-downloads-sprite.svg");
+  }
+
+  &[data-section="boosts"] .zen-library-tab-icon-image {
+    background-image: url("chrome://browser/skin/zen-icons/library/library-boosts-sprite.svg");
+  }
+
+  &[data-section="spaces"] .zen-library-tab-icon-image {
+    background-image: url("chrome://browser/skin/zen-icons/library/library-spaces-sprite.svg");
+  }
+
+  &[data-section="media"] .zen-library-tab-icon-image {
+    background-image: url("chrome://browser/skin/zen-icons/library/library-media-sprite.svg");
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    &[animate] .zen-library-tab-icon-image {
+      animation: zen-library-tab-icon-play 0.583s steps(36, jump-none);
+    }
+  }
+}
+
+@keyframes zen-library-tab-icon-play {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(35 * -28px));
   }
 }
 

@@ -22,7 +22,7 @@
     .zen-downloads-arrow { animation: zenDownloadsArrowBounce 0.583s forwards; }
   </style>
   <defs>
-    <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front">
+    <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-downloads-grad-front">
       <stop offset="0" stop-color="context-fill"/>
       <stop offset="1" stop-color="context-stroke"/>
     </linearGradient>

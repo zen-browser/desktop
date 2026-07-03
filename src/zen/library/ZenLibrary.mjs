@@ -60,7 +60,6 @@ export class ZenLibrary extends MozLitElement {
 
   constructor() {
     super();
-    this._iconKeys = {};
     this.activeTab = Services.prefs.getStringPref(PREVIOUS_TAB_PREF, "") || "history";
   }
 
@@ -68,7 +67,6 @@ export class ZenLibrary extends MozLitElement {
     if (this.activeTab === value) {
       return;
     }
-    this._iconKeys[value] = Date.now();
     this._activeTab = value;
     Services.prefs.setStringPref(PREVIOUS_TAB_PREF, value);
   }
@@ -83,6 +81,7 @@ export class ZenLibrary extends MozLitElement {
       return;
     }
     window.addEventListener("keydown", this);
+    this.addEventListener("animationend", this);
     // Add connected call back and make `appContentWrapper` transform translate the oposite of this element
     this.#resizeObserver = new ResizeObserver(() => {
       if (gZenWorkspaces._swipeManager._swipeState.librarySwiping) {
@@ -118,6 +117,24 @@ export class ZenLibrary extends MozLitElement {
     this._header.appendChild(
       gZenVerticalTabsManager.actualWindowButtons.cloneNode(true)
     );
+    const activeTabEl = this.querySelector(".zen-library-tab[active]");
+    if (activeTabEl) {
+      this.#animateTabIcon(activeTabEl);
+    }
+  }
+
+  /**
+   * Plays a tab's icon sprite animation, reload-to-stop style: the [animate]
+   * attribute starts the strip's steps() animation (see zen-library.css) and
+   * the animationend handler removes it again. Restarts if mid-animation.
+   *
+   * @param {Element} tab
+   */
+  #animateTabIcon(tab) {
+    tab.removeAttribute("animate");
+    // Flush styles so re-adding the attribute restarts the animation.
+    void tab.offsetWidth;
+    tab.setAttribute("animate", "true");
   }
 
   render() {
@@ -134,22 +151,15 @@ export class ZenLibrary extends MozLitElement {
               <vbox
                 class="zen-library-tab"
                 ?active=${this.activeTab === Section.id}
-                @click=${() => {
-                  this._iconKeys[Section.id] = Date.now();
-                  if (this.activeTab !== Section.id) {
-                    this.activeTab = Section.id;
-                  } else {
-                    this.requestUpdate();
-                  }
+                data-section=${Section.id}
+                @click=${event => {
+                  this.activeTab = Section.id;
+                  this.#animateTabIcon(event.currentTarget);
                 }}
               >
-                ${this.activeTab === Section.id
-                  ? html`<img
-                      src=${`chrome://browser/skin/zen-icons/library/library-${Section.id}-active.svg?t=${this._iconKeys[Section.id]}`}
-                    />`
-                  : html`<img
-                      src=${`chrome://browser/skin/zen-icons/library/library-${Section.id}.svg`}
-                    />`}
+                <div class="zen-library-tab-icon">
+                  <div class="zen-library-tab-icon-image"></div>
+                </div>
                 <label>${lazy.l10n.formatValueSync(Section.label)}</label>
               </vbox>
             `
@@ -172,6 +182,12 @@ export class ZenLibrary extends MozLitElement {
       case "keydown": {
         if (event.key === "Escape" && this.isOpen) {
           ZenLibrary.toggle();
+        }
+        break;
+      }
+      case "animationend": {
+        if (event.animationName === "zen-library-tab-icon-play") {
+          event.target.closest(".zen-library-tab")?.removeAttribute("animate");
         }
         break;
       }

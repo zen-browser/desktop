@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = { $num } / { $max } hutsune beteta
 tab-context-zen-remove-essential = 
     .label = Funtsezko fitxetatik Kendu
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Ordezkatu Funtsezko URLa Oraingoarekin
-           *[false] Ordezkatu Ainguratutako URLa Oraingoarekin
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Etiketa aldatu...
 tab-context-zen-edit-icon = 
@@ -47,6 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Baieztatu
 zen-pinned-tab-replaced = Oraingo estekak ordezkatu du ainguratutako fitxarena!
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Fitxaren izena ongi aldatu da!
 zen-background-tab-opened-toast = Fitxa berri bat zabaldu da bigarren planoan!
 zen-workspace-renamed-toast = Lan-eremuaren izena ongi aldatu da!
@@ -121,7 +131,7 @@ zen-sidebar-notification-restart-safe-mode-tooltip =
     .title = Restart in Safe Mode
 zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
 zen-window-sync-migration-dialog-message = Nixo now syncs windows on the same device, so changes in one window are reflected across the others instantly.
-zen-window-sync-migration-dialog-learn-more = Learn More
+zen-window-sync-migration-dialog-learn-more = Gehiago ikasi
 zen-window-sync-migration-dialog-accept = Got It
 zen-appmenu-new-blank-window = 
     .label = New blank window

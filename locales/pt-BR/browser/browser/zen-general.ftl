@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = { $num } / { $max } Espaços preenchidos
 tab-context-zen-remove-essential = 
     .label = Remover dos Essenciais
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Substituir URL Essencial pela atual
-           *[false] Substituir URL Fixada pela atual
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Alterar Rótulo...
 tab-context-zen-edit-icon = 
@@ -45,6 +51,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Confirmar
 zen-pinned-tab-replaced = A URL da guia fixada foi substituída pela URL atual!
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = A guia foi renomeada com sucesso!
 zen-background-tab-opened-toast = Nova guia em segundo plano aberta!
 zen-workspace-renamed-toast = A área de trabalho foi renomeada com sucesso!
@@ -118,7 +128,7 @@ zen-sidebar-notification-restart-safe-mode-label = Algo quebrou?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Reiniciar no Modo Seguro
 zen-window-sync-migration-dialog-title = Mantenha Suas Janelas em Sincronia
-zen-window-sync-migration-dialog-message = Zen agora sincroniza as janelas no mesmo dispositivo, assim as mudanças feitas em uma janela são refletidas para as outras instantaneamente.
+zen-window-sync-migration-dialog-message = Nixo now syncs windows on the same device, so changes in one window are reflected across the others instantly.
 zen-window-sync-migration-dialog-learn-more = Saiba Mais
 zen-window-sync-migration-dialog-accept = Entendi
 zen-appmenu-new-blank-window = 

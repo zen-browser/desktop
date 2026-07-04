@@ -2024,19 +2024,18 @@ class nsZenWorkspaces {
     const isGoingLeft = diff < 0;
     const essentialsAnimData = [];
     if (shouldAnimate && this.shouldAnimateEssentials && previousWorkspace) {
-      const essentialsParent = document.getElementById("zen-essentials");
-      for (const essentialsSection of essentialsParent.children) {
-        const contextId = parseInt(essentialsSection.getAttribute("container"));
-        const matchingWorkspaces = workspaces.filter(
-          w => w.containerTabId === contextId
-        );
-        // Skip containers that don't have workspaces
-        if (matchingWorkspaces.length === 0) {
-          continue;
+      const containerIds = new Map();
+      for (const workspace of workspaces) {
+        const containerId = workspace.containerTabId;
+        if (!containerIds.has(containerId)) {
+          containerIds.set(containerId, []);
         }
+        containerIds.get(containerId).push(workspace);
+      }
+      for (const [containerId, spaces] of containerIds) {
         essentialsAnimData.push({
-          element: essentialsSection,
-          workspaces: matchingWorkspaces,
+          element: this.getEssentialsSection(containerId),
+          workspaces: spaces,
         });
       }
     }
@@ -2104,8 +2103,8 @@ class nsZenWorkspaces {
       if (spaceLen === 2 && offset !== 0) {
         const currentTransform = parseFloat(
           element.style.transform.split("(")[1]
-        );
-        offset = currentTransform > 0 ? 100 : -100;
+        ) || 0;
+        offset = currentTransform >= 0 ? 100 : -100;
       }
       const newTransform = `translateX(${offset}%)`;
       // Only animate the workspace that is coming in, to avoid having multiple workspaces
@@ -2176,9 +2175,9 @@ class nsZenWorkspaces {
         let existingOffset, newOffset;
         const currentTransform = parseFloat(
           container.style.transform.split("(")[1]
-        );
+        ) || 0;
         if (containsPrev && !containsNew) {
-          existingOffset = currentTransform || 0;
+          existingOffset = currentTransform;
           newOffset = isGoingLeft ? 100 : -100;
         } else {
           existingOffset = isGoingLeft ? -100 : 100;
@@ -2187,10 +2186,10 @@ class nsZenWorkspaces {
 
         if (spaceLen === 2) {
           if (containsPrev && !containsNew) {
-            existingOffset = 0;
-            newOffset = currentTransform > 0 ? 100 : -100;
+            existingOffset = currentTransform;
+            newOffset = currentTransform >= 0 ? 100 : -100;
           } else {
-            existingOffset = currentTransform > 0 ? 100 : -100;
+            existingOffset = currentTransform >= 0 ? 100 : -100;
             newOffset = 0;
           }
         }

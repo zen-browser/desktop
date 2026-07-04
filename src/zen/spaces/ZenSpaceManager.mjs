@@ -2109,7 +2109,9 @@ class nsZenWorkspaces {
       offset = offset * 100;
       // A special case for two spaces
       if (spaceLen === 2 && offset !== 0) {
-        const currentTransform = parseFloat(element.style.transform.split('(')[1]);
+        const currentTransform = parseFloat(
+          element.style.transform.split("(")[1]
+        );
         offset = currentTransform > 0 ? 100 : -100;
       }
       const newTransform = `translateX(${offset}%)`;
@@ -2190,7 +2192,9 @@ class nsZenWorkspaces {
         }
 
         if (workspaceLen === 2) {
-          const currentTransform = parseFloat(container.style.transform.split('(')[1]);
+          const currentTransform = parseFloat(
+            container.style.transform.split("(")[1]
+          );
           if (containsPrev && !containsNew) {
             existingOffset = 0;
             newOffset = currentTransform > 0 ? 100 : -100;

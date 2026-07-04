@@ -1,0 +1,1314 @@
+{
+  "extName": {
+    "message": "Nixo Blocker",
+    "description": "extension name."
+  },
+  "extShortDesc": {
+    "message": "סוף סוף, חוסם יעיל. קל על המעבד והזיכרון.",
+    "description": "this will be in the Chrome web store: must be 132 characters or less"
+  },
+  "dashboardName": {
+    "message": "uBlock₀ — לוח מחוונים",
+    "description": "English: uBlock₀ — Dashboard"
+  },
+  "dashboardUnsavedWarning": {
+    "message": "אזהרה! יש לך שינויים שלא שמרת עדיין",
+    "description": "A warning in the dashboard when navigating away from unsaved changes"
+  },
+  "dashboardUnsavedWarningStay": {
+    "message": "הישאר",
+    "description": "Label for button to prevent navigating away from unsaved changes"
+  },
+  "dashboardUnsavedWarningIgnore": {
+    "message": "התעלם",
+    "description": "Label for button to ignore unsaved changes"
+  },
+  "settingsPageName": {
+    "message": "הגדרות",
+    "description": "appears as tab name in dashboard"
+  },
+  "3pPageName": {
+    "message": "רשימות מסננים",
+    "description": "appears as tab name in dashboard"
+  },
+  "1pPageName": {
+    "message": "המסננים שלי",
+    "description": "appears as tab name in dashboard"
+  },
+  "rulesPageName": {
+    "message": "החוקים שלי",
+    "description": "appears as tab name in dashboard"
+  },
+  "whitelistPageName": {
+    "message": "אתרים מהימנים",
+    "description": "appears as tab name in dashboard"
+  },
+  "shortcutsPageName": {
+    "message": "קיצורי דרך",
+    "description": "appears as tab name in dashboard"
+  },
+  "statsPageName": {
+    "message": "uBlock₀ — מתעד הבקשות",
+    "description": "Title for the logger window"
+  },
+  "aboutPageName": {
+    "message": "אודות",
+    "description": "appears as tab name in dashboard"
+  },
+  "supportPageName": {
+    "message": "תמיכה",
+    "description": "appears as tab name in dashboard"
+  },
+  "assetViewerPageName": {
+    "message": "uBlock₀ — מציג הנכסים",
+    "description": "Title for the asset viewer page"
+  },
+  "advancedSettingsPageName": {
+    "message": "הגדרות מתקדמות",
+    "description": "Title for the advanced settings page"
+  },
+  "popupPowerSwitchInfo": {
+    "message": "לחיצה: כבה/הפעל את uBlock₀ לאתר זה לצמיתות.\n\nCtrl+לחיצה: כבה את uBlock₀ רק בדף זה.",
+    "description": "English: Click: disable/enable uBlock₀ for this site.\n\nCtrl+click: disable uBlock₀ only on this page."
+  },
+  "popupPowerSwitchInfo1": {
+    "message": "לחיצה: כבה את uBlock₀ לאתר זה.\n\nCtrl+לחיצה: כבה את uBlock₀ רק בדף זה.",
+    "description": "Message to be read by screen readers"
+  },
+  "popupPowerSwitchInfo2": {
+    "message": "לחץ על מנת להפעיל את uBlock₀ באתר זה.",
+    "description": "Message to be read by screen readers"
+  },
+  "popupBlockedRequestPrompt": {
+    "message": "בקשות שנחסמו",
+    "description": "English: requests blocked"
+  },
+  "popupBlockedOnThisPagePrompt": {
+    "message": "בדף זה",
+    "description": "English: on this page"
+  },
+  "popupBlockedStats": {
+    "message": "{{count}} ({{percent}}%)",
+    "description": "Example: 15 (13%)"
+  },
+  "popupBlockedSinceInstallPrompt": {
+    "message": "מאז ההתקנה",
+    "description": "English: since install"
+  },
+  "popupOr": {
+    "message": "או",
+    "description": "English: or"
+  },
+  "popupBlockedOnThisPage_v2": {
+    "message": "חסומים בדף זה",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupBlockedSinceInstall_v2": {
+    "message": "נחסמו מאז ההתקנה",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupDomainsConnected_v2": {
+    "message": "דומיינים שהתחברת אליהם",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupTipDashboard": {
+    "message": "פתח את לוח המחוונים",
+    "description": "English: Click to open the dashboard"
+  },
+  "popupTipZapper": {
+    "message": "היכנס למצב מחיקת אלמנט באופן זמני",
+    "description": "Tooltip for the element-zapper icon in the popup panel"
+  },
+  "popupTipPicker": {
+    "message": "היכנס למצב בחירת אלמנט",
+    "description": "English: Enter element picker mode"
+  },
+  "popupTipLog": {
+    "message": "פתח את מתעד הבקשות",
+    "description": "Tooltip used for the logger icon in the panel"
+  },
+  "popupTipReport": {
+    "message": "דווח על בעיה באתר אינטרנט זה",
+    "description": "Tooltip used for the 'chat' icon in the panel"
+  },
+  "popupTipNoPopups": {
+    "message": "הפעל/כבה את החסימה של חלונות קופצים באתר זה",
+    "description": "Tooltip for the no-popups per-site switch"
+  },
+  "popupTipNoPopups1": {
+    "message": "לחץ על מנת לחסום חלונות קופצים באתר זה",
+    "description": "Tooltip for the no-popups per-site switch"
+  },
+  "popupTipNoPopups2": {
+    "message": "לחץ על מנת לבטל את החסימה של חלונות קופצים באתר זה",
+    "description": "Tooltip for the no-popups per-site switch"
+  },
+  "popupTipNoLargeMedia": {
+    "message": "הפעל/כבה את החסימה של אלמנטי מדיה גדולים באתר זה",
+    "description": "Tooltip for the no-large-media per-site switch"
+  },
+  "popupTipNoLargeMedia1": {
+    "message": "לחץ על מנת לחסום אלמנטי מדיה גדולים באתר זה",
+    "description": "Tooltip for the no-large-media per-site switch"
+  },
+  "popupTipNoLargeMedia2": {
+    "message": "לחץ על מנת לבטל את החסימה של אלמנטי מדיה גדולים באתר זה",
+    "description": "Tooltip for the no-large-media per-site switch"
+  },
+  "popupTipNoCosmeticFiltering": {
+    "message": "הפעל/כבה מסננים קוסמטיים באתר זה",
+    "description": "Tooltip for the no-cosmetic-filtering per-site switch"
+  },
+  "popupTipNoCosmeticFiltering1": {
+    "message": "לחץ על מנת לכבות מסננים קוסמטיים באתר זה",
+    "description": "Tooltip for the no-cosmetic-filtering per-site switch"
+  },
+  "popupTipNoCosmeticFiltering2": {
+    "message": "לחץ על מנת להפעיל מסננים קוסמטיים באתר זה",
+    "description": "Tooltip for the no-cosmetic-filtering per-site switch"
+  },
+  "popupTipNoRemoteFonts": {
+    "message": "הפעל/כבה את החסימה של פונטים חיצוניים באתר זה",
+    "description": "Tooltip for the no-remote-fonts per-site switch"
+  },
+  "popupTipNoRemoteFonts1": {
+    "message": "לחץ על מנת לחסום פונטים חיצוניים באתר זה",
+    "description": "Tooltip for the no-remote-fonts per-site switch"
+  },
+  "popupTipNoRemoteFonts2": {
+    "message": "לחץ על מנת לבטל את החסימה של פונטים חיצוניים באתר זה",
+    "description": "Tooltip for the no-remote-fonts per-site switch"
+  },
+  "popupTipNoScripting1": {
+    "message": "לחץ על מנת לחסום JavaScript באתר זה",
+    "description": "Tooltip for the no-scripting per-site switch"
+  },
+  "popupTipNoScripting2": {
+    "message": "לחץ על מנת להפסיק לחסום JavaScript באתר זה",
+    "description": "Tooltip for the no-scripting per-site switch"
+  },
+  "popupNoPopups_v2": {
+    "message": "חלונות קופצים",
+    "description": "Caption for the no-popups per-site switch"
+  },
+  "popupNoLargeMedia_v2": {
+    "message": "אלמנטי מדיה גדולים",
+    "description": "Caption for the no-large-media per-site switch"
+  },
+  "popupNoCosmeticFiltering_v2": {
+    "message": "מסננים קוסמטיים",
+    "description": "Caption for the no-cosmetic-filtering per-site switch"
+  },
+  "popupNoRemoteFonts_v2": {
+    "message": "פונטים חיצוניים",
+    "description": "Caption for the no-remote-fonts per-site switch"
+  },
+  "popupNoScripting_v2": {
+    "message": "JavaScript",
+    "description": "Caption for the no-scripting per-site switch"
+  },
+  "popupMoreButton_v2": {
+    "message": "עוד",
+    "description": "Label to be used to show popup panel sections"
+  },
+  "popupLessButton_v2": {
+    "message": "פחות",
+    "description": "Label to be used to hide popup panel sections"
+  },
+  "popupTipGlobalRules": {
+    "message": "חוקים גלובליים: עמודה זו היא עבור חוקים אשר תקפים לכל האתרים.",
+    "description": "Tooltip when hovering the top-most cell of the global-rules column."
+  },
+  "popupTipLocalRules": {
+    "message": "חוקים לוקאליים: עמודה זו היא עבור חוקים אשר תקפים לאתר הנוכחי בלבד.",
+    "description": "Tooltip when hovering the top-most cell of the local-rules column."
+  },
+  "popupTipSaveRules": {
+    "message": "לחץ על מנת להפוך את השינויים שלך לקבועים.",
+    "description": "Tooltip when hovering over the padlock in the dynamic filtering pane."
+  },
+  "popupTipRevertRules": {
+    "message": "לחץ על מנת לבטל את השינויים שלך.",
+    "description": "Tooltip when hovering over the eraser in the dynamic filtering pane."
+  },
+  "popupAnyRulePrompt": {
+    "message": "הכל",
+    "description": ""
+  },
+  "popupImageRulePrompt": {
+    "message": "תמונות",
+    "description": ""
+  },
+  "popup3pAnyRulePrompt": {
+    "message": "צד-3",
+    "description": ""
+  },
+  "popup3pPassiveRulePrompt": {
+    "message": "CSS/תמונות צד-3",
+    "description": ""
+  },
+  "popupInlineScriptRulePrompt": {
+    "message": "סקריפטים מוטמעים",
+    "description": ""
+  },
+  "popup1pScriptRulePrompt": {
+    "message": "סקריפטים צד-1",
+    "description": ""
+  },
+  "popup3pScriptRulePrompt": {
+    "message": "סקריפטים צד-3",
+    "description": ""
+  },
+  "popup3pFrameRulePrompt": {
+    "message": "מסגרות צד-3",
+    "description": ""
+  },
+  "popupHitDomainCountPrompt": {
+    "message": "דומיינים שהתחברת אליהם",
+    "description": "appears in popup"
+  },
+  "popupHitDomainCount": {
+    "message": "{{count}} מתוך {{total}}",
+    "description": "appears in popup"
+  },
+  "popupVersion": {
+    "message": "גרסה",
+    "description": "Example of use: Version 1.26.4"
+  },
+  "popup3pScriptFilter": {
+    "message": "סקריפט",
+    "description": "Appears as an option to filter out firewall rows"
+  },
+  "popup3pFrameFilter": {
+    "message": "מסגרת",
+    "description": "Appears as an option to filter out firewall rows"
+  },
+  "pickerCreate": {
+    "message": "צור",
+    "description": "English: Create"
+  },
+  "pickerPick": {
+    "message": "בחר",
+    "description": "English: Pick"
+  },
+  "pickerQuit": {
+    "message": "צא",
+    "description": "English: Quit"
+  },
+  "pickerPreview": {
+    "message": "תצוגה מקדימה",
+    "description": "Element picker preview mode: will cause the elements matching the current filter to be removed from the page"
+  },
+  "pickerNetFilters": {
+    "message": "מסנני רשת",
+    "description": "English: header for a type of filter in the element picker dialog"
+  },
+  "pickerCosmeticFilters": {
+    "message": "מסננים קוסמטיים",
+    "description": "English: Cosmetic filters"
+  },
+  "pickerCosmeticFiltersHint": {
+    "message": "לחיצה, Ctrl+לחיצה",
+    "description": "English: Click, Ctrl-click"
+  },
+  "pickerContextMenuEntry": {
+    "message": "חסום אלמנט…",
+    "description": "An entry in the browser's contextual menu"
+  },
+  "settingsCollapseBlockedPrompt": {
+    "message": "הסתר את המקום שנשאר מחסימה של אלמנטים",
+    "description": "English: Hide placeholders of blocked elements"
+  },
+  "settingsIconBadgePrompt": {
+    "message": "הראה את מספר הבקשות החסומות על האייקון",
+    "description": "English: Show the number of blocked requests on the icon"
+  },
+  "settingsTooltipsPrompt": {
+    "message": "כבה רמזים צצים",
+    "description": "A checkbox in the Settings pane"
+  },
+  "settingsContextMenuPrompt": {
+    "message": "הצגת הפריט 'חסום אלמנט' בתפריט הלחצן הימני איפה שאפשר",
+    "description": "English: Make use of context menu where appropriate"
+  },
+  "settingsColorBlindPrompt": {
+    "message": "ידידותי לעיוורי צבעים",
+    "description": "English: Color-blind friendly"
+  },
+  "settingsAppearance": {
+    "message": "נראות",
+    "description": "Section for controlling user interface appearance"
+  },
+  "settingsThemeLabel": {
+    "message": "ערכת נושא",
+    "description": "Label for checkbox to enable a custom dark theme"
+  },
+  "settingsThemeAccent0Label": {
+    "message": "צבע הדגשה מותאם אישית",
+    "description": "Label for checkbox to pick an accent color"
+  },
+  "settingsCloudStorageEnabledPrompt": {
+    "message": "הפעל אחסון בענן",
+    "description": ""
+  },
+  "settingsAdvancedUserPrompt": {
+    "message": "אני משתמש מתקדם",
+    "description": "Checkbox to let user access advanced, technical features"
+  },
+  "settingsPrefetchingDisabledPrompt": {
+    "message": "כבה אחזור מוקדם של משאבים (על מנת למנוע מחיבורים של בקשות רשת חסומות להישלח)",
+    "description": "English: "
+  },
+  "settingsHyperlinkAuditingDisabledPrompt": {
+    "message": "חסום Hyperlink auditing",
+    "description": "English: "
+  },
+  "settingsWebRTCIPAddressHiddenPrompt": {
+    "message": "מנע מ WebRTC להדליף כתובות IP לוקאליות",
+    "description": "English: "
+  },
+  "settingPerSiteSwitchGroup": {
+    "message": "התנהגות ברירת מחדל",
+    "description": ""
+  },
+  "settingPerSiteSwitchGroupSynopsis": {
+    "message": "התנהגויות ברירת מחדל אלו יכולות להיקבע עבור כל אתר בנפרד",
+    "description": ""
+  },
+  "settingsNoCosmeticFilteringPrompt": {
+    "message": "כבה מסננים קוסמטיים",
+    "description": ""
+  },
+  "settingsNoLargeMediaPrompt": {
+    "message": "חסום אלמנטי מדיה הגדולים מ {{input}} KB",
+    "description": ""
+  },
+  "settingsNoRemoteFontsPrompt": {
+    "message": "חסום פונטים חיצוניים",
+    "description": ""
+  },
+  "settingsNoScriptingPrompt": {
+    "message": "חסום JavaScript",
+    "description": "The default state for the per-site no-scripting switch"
+  },
+  "settingsNoCSPReportsPrompt": {
+    "message": "חסום דיווחי CSP",
+    "description": "background information: https://github.com/gorhill/uBlock/issues/3150"
+  },
+  "settingsUncloakCnamePrompt": {
+    "message": "חשוף רשומות DNS מסוג CNAME",
+    "description": "background information: https://github.com/uBlockOrigin/uBlock-issues/issues/1513"
+  },
+  "settingsAdvanced": {
+    "message": "מתקדם",
+    "description": "Section for controlling advanced-user settings"
+  },
+  "settingsAdvancedSynopsis": {
+    "message": "מאפיינים למשתמשים בעלי ידע טכני בלבד",
+    "description": "Description of section controlling advanced-user settings"
+  },
+  "settingsAdvancedUserSettings": {
+    "message": "הגדרות מתקדמות",
+    "description": "For the tooltip of a link which gives access to advanced settings"
+  },
+  "settingsLastRestorePrompt": {
+    "message": "שחזור אחרון:",
+    "description": "English: Last restore:"
+  },
+  "settingsLastBackupPrompt": {
+    "message": "גיבוי אחרון:",
+    "description": "English: Last backup:"
+  },
+  "3pListsOfBlockedHostsPrompt": {
+    "message": "{{netFilterCount}} מסנני רשת + {{cosmeticFilterCount}} מסננים קוסמטיים מתוך:",
+    "description": "Appears at the top of the _3rd-party filters_ pane"
+  },
+  "3pListsOfBlockedHostsPerListStats": {
+    "message": "{{used}} בשימוש מתוך {{total}}",
+    "description": "Appears aside each filter list in the _3rd-party filters_ pane"
+  },
+  "3pAutoUpdatePrompt1": {
+    "message": "עדכן אוטומטית את רשימות המסננים.",
+    "description": "A checkbox in the _3rd-party filters_ pane"
+  },
+  "3pUpdateNow": {
+    "message": "עדכן כעת",
+    "description": "A button in the in the _3rd-party filters_ pane"
+  },
+  "3pPurgeAll": {
+    "message": "נקה את כל זיכרוני המטמון",
+    "description": "A button in the in the _3rd-party filters_ pane"
+  },
+  "3pParseAllABPHideFiltersPrompt1": {
+    "message": "פרסר ואפשר מסננים קוסמטיים.",
+    "description": "English: Parse and enforce Adblock+ element hiding filters."
+  },
+  "3pParseAllABPHideFiltersInfo": {
+    "message": "מסננים קוסמטיים נועדו להסתיר אלמנטים בדף אינטרנט אשר נחשבים למטרד חזותי, ואשר לא יכולים להיחסם על ידי מנוע חסימת בקשות רשת.",
+    "description": "Describes the purpose of the 'Parse and enforce cosmetic filters' feature."
+  },
+  "3pIgnoreGenericCosmeticFilters": {
+    "message": "התעלם ממסננים קוסמטיים כלליים",
+    "description": "This will cause uBO to ignore all generic cosmetic filters."
+  },
+  "3pIgnoreGenericCosmeticFiltersInfo": {
+    "message": "מסננים קוסמטיים כלליים - אלה הם המסננים הקוסמטיים, אשר מיועדים להיות מוחלים על כל דפי האינטרנט. אפשור הגדרה זו תוריד את צריכת הזיכרון והמעבד אשר מתווספות לדפי אינטרנט כתוצאה משימוש במסננים קוסמטיים כלליים.\n\nמומלץ לאפשר הגדרה זו במכשירים פחות חזקים.",
+    "description": "Describes the purpose of the 'Ignore generic cosmetic filters' feature."
+  },
+  "3pSuspendUntilListsAreLoaded": {
+    "message": "השהה פעילות רשת עד לסיום טעינת כל רשימות הסינון",
+    "description": "A checkbox in the 'Filter lists' pane"
+  },
+  "3pListsOfBlockedHostsHeader": {
+    "message": "רשימה של דומיינים חסומים",
+    "description": "English: Lists of blocked hosts"
+  },
+  "3pApplyChanges": {
+    "message": "החל שינויים",
+    "description": "English: Apply changes"
+  },
+  "3pGroupDefault": {
+    "message": "מובנה",
+    "description": "Filter lists section name"
+  },
+  "3pGroupAds": {
+    "message": "פרסומות",
+    "description": "Filter lists section name"
+  },
+  "3pGroupPrivacy": {
+    "message": "פרטיות",
+    "description": "Filter lists section name"
+  },
+  "3pGroupMalware": {
+    "message": "הגנה מפני נוזקות, אבטחה",
+    "description": "Filter lists section name"
+  },
+  "3pGroupSocial": {
+    "message": "יישומונים חברתיים",
+    "description": "Filter lists section name"
+  },
+  "3pGroupCookies": {
+    "message": "הודעות בקשר לעוגיות",
+    "description": "Filter lists section name"
+  },
+  "3pGroupAnnoyances": {
+    "message": "מטרדים",
+    "description": "Filter lists section name"
+  },
+  "3pGroupMultipurpose": {
+    "message": "רב תכליתי",
+    "description": "Filter lists section name"
+  },
+  "3pGroupRegions": {
+    "message": "אזורים, שפות",
+    "description": "Filter lists section name"
+  },
+  "3pGroupCustom": {
+    "message": "מותאם אישית",
+    "description": "Filter lists section name"
+  },
+  "3pImport": {
+    "message": "ייבא…",
+    "description": "The label for the checkbox used to import external filter lists"
+  },
+  "3pExternalListsHint": {
+    "message": "כתובת אינטרנט אחת בכל שורה. כתובות אינטרנט שאינן חוקיות לא יפורשו.",
+    "description": "Short information about how to use the textarea to import external filter lists by URL"
+  },
+  "3pExternalListObsolete": {
+    "message": "לא עדכני.",
+    "description": "used as a tooltip for the out-of-date icon beside a list"
+  },
+  "3pViewContent": {
+    "message": "הצג תוכן",
+    "description": "used as a tooltip for eye icon beside a list"
+  },
+  "3pLastUpdate": {
+    "message": "עדכון אחרון: {{ago}}.\nלחץ על מנת לאלץ עידכון.",
+    "description": "used as a tooltip for the clock icon beside a list"
+  },
+  "3pUpdating": {
+    "message": "מעדכן…",
+    "description": "used as a tooltip for the spinner icon beside a list"
+  },
+  "3pNetworkError": {
+    "message": "בעיית רשת מנעה מהמשאב להתעדכן.",
+    "description": "used as a tooltip for error icon beside a list"
+  },
+  "1pTrustWarning": {
+    "message": "אל תוסיף מסננים ממקורות לא מהימנים.",
+    "description": "Warning against copy-pasting filters from random sources"
+  },
+  "1pEnableMyFiltersLabel": {
+    "message": "אפשור מסננים מותאמים אישית",
+    "description": "Label for the checkbox use to enable/disable 'My filters' list"
+  },
+  "1pTrustMyFiltersLabel": {
+    "message": "אפשור למסננים מותאמים אישית לדרוש אמון",
+    "description": "Label for the checkbox use to trust the content of 'My filters' list"
+  },
+  "1pImport": {
+    "message": "ייבא וצרף…",
+    "description": "Button in the 'My filters' pane"
+  },
+  "1pExport": {
+    "message": "ייצוא…",
+    "description": "Button in the 'My filters' pane"
+  },
+  "1pExportFilename": {
+    "message": "my-ublock-static-filters_{{datetime}}.txt",
+    "description": "English: my-ublock-static-filters_{{datetime}}.txt"
+  },
+  "1pApplyChanges": {
+    "message": "החל שינויים",
+    "description": "English: Apply changes"
+  },
+  "rulesPermanentHeader": {
+    "message": "חוקים קבועים",
+    "description": "header"
+  },
+  "rulesTemporaryHeader": {
+    "message": "חוקים זמניים",
+    "description": "header"
+  },
+  "rulesRevert": {
+    "message": "החזר למצב הקודם",
+    "description": "This will remove all temporary rules"
+  },
+  "rulesCommit": {
+    "message": "החל",
+    "description": "This will persist temporary rules"
+  },
+  "rulesEdit": {
+    "message": "ערוך",
+    "description": "Will enable manual-edit mode (textarea)"
+  },
+  "rulesEditSave": {
+    "message": "שמור",
+    "description": "Will save manually-edited content and exit manual-edit mode"
+  },
+  "rulesEditDiscard": {
+    "message": "בטל",
+    "description": "Will discard manually-edited content and exit manual-edit mode"
+  },
+  "rulesImport": {
+    "message": "ייבא מקובץ…",
+    "description": ""
+  },
+  "rulesExport": {
+    "message": "ייצא לקובץ…",
+    "description": "Button in the 'My rules' pane"
+  },
+  "rulesDefaultFileName": {
+    "message": "my-ublock-dynamic-rules_{{datetime}}.txt",
+    "description": "default file name to use"
+  },
+  "rulesHint": {
+    "message": "רשימת חוקי המסננים הדינאמיים שלך.",
+    "description": "English: List of your dynamic filtering rules."
+  },
+  "rulesFormatHint": {
+    "message": "סינטקס חוק: <code>פעולה סוג יעד מקור</code> (<a href='https://github.com/gorhill/uBlock/wiki/Dynamic-filtering:-rule-syntax'>תיעוד מלא</a>).",
+    "description": "English: dynamic rule syntax and full documentation."
+  },
+  "rulesSort": {
+    "message": "מיין לפי:",
+    "description": "English: label for sort option."
+  },
+  "rulesSortByType": {
+    "message": "סוג הרשומה",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortBySource": {
+    "message": "מקור",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortByDestination": {
+    "message": "יעד",
+    "description": "English: a sort option for list of rules."
+  },
+  "whitelistPrompt": {
+    "message": "הנחיות אתר מהימנות, מכתיבות באילו עמודי מרשתת יש להשבית את uBlock Origin. רשומה אחת לכול שורה.",
+    "description": "A concise description of the 'Trusted sites' pane."
+  },
+  "whitelistImport": {
+    "message": "ייבא וצרף…",
+    "description": "Button in the 'Trusted sites' pane"
+  },
+  "whitelistExport": {
+    "message": "ייצוא…",
+    "description": "Button in the 'Trusted sites' pane"
+  },
+  "whitelistExportFilename": {
+    "message": "my-ublock-trusted-sites_{{datetime}}.txt",
+    "description": "The default filename to use for import/export purpose"
+  },
+  "whitelistApply": {
+    "message": "החל שינויים",
+    "description": "English: Apply changes"
+  },
+  "logRequestsHeaderType": {
+    "message": "סוג",
+    "description": "English: Type"
+  },
+  "logRequestsHeaderDomain": {
+    "message": "דומיין",
+    "description": "English: Domain"
+  },
+  "logRequestsHeaderURL": {
+    "message": "כתובת",
+    "description": "English: URL"
+  },
+  "logRequestsHeaderFilter": {
+    "message": "מסנן",
+    "description": "English: Filter"
+  },
+  "logAll": {
+    "message": "כל הטאבים",
+    "description": "Appears in the logger's tab selector"
+  },
+  "logBehindTheScene": {
+    "message": "מאחורי הקלעים",
+    "description": "Pretty name for behind-the-scene network requests"
+  },
+  "loggerCurrentTab": {
+    "message": "לשונית נוכחית",
+    "description": "Appears in the logger's tab selector"
+  },
+  "loggerReloadTip": {
+    "message": "טען מחדש את תוכן הלשונית",
+    "description": "Tooltip for the reload button in the logger page"
+  },
+  "loggerDomInspectorTip": {
+    "message": "פתח/סגור את ה DOM inspector",
+    "description": "Tooltip for the DOM inspector button in the logger page"
+  },
+  "loggerPopupPanelTip": {
+    "message": "הצג/הסתר את הפאנל הקופץ",
+    "description": "Tooltip for the popup panel button in the logger page"
+  },
+  "loggerInfoTip": {
+    "message": "uBlock Origin וויקי: מתעד הבקשות",
+    "description": "Tooltip for the top-right info label in the logger page"
+  },
+  "loggerClearTip": {
+    "message": "נקה בקשות",
+    "description": "Tooltip for the eraser in the logger page; used to blank the content of the logger"
+  },
+  "loggerPauseTip": {
+    "message": "עצור תיעוד של בקשות (התעלם מכל בקשה חדשה)",
+    "description": "Tooltip for the pause button in the logger page"
+  },
+  "loggerUnpauseTip": {
+    "message": "המשך תיעוד של בקשות",
+    "description": "Tooltip for the play button in the logger page"
+  },
+  "loggerRowFiltererButtonTip": {
+    "message": "הפעל/כבה סינון של מתעד הבקשות",
+    "description": "Tooltip for the row filterer button in the logger page"
+  },
+  "logFilterPrompt": {
+    "message": "סנן רשומות של מתעד הבקשות",
+    "description": "Placeholder string for logger output filtering input field"
+  },
+  "loggerRowFiltererBuiltinTip": {
+    "message": "הגדרות סינון של מתעד הבקשות",
+    "description": "Tooltip for the button to bring up logger output filtering options"
+  },
+  "loggerRowFiltererBuiltinNot": {
+    "message": "לא",
+    "description": "A keyword in the built-in row filtering expression"
+  },
+  "loggerRowFiltererBuiltinEventful": {
+    "message": "eventful",
+    "description": "A keyword in the built-in row filtering expression: all items corresponding to uBO doing something (blocked, allowed, redirected, etc.)"
+  },
+  "loggerRowFiltererBuiltinBlocked": {
+    "message": "חסום",
+    "description": "A keyword in the built-in row filtering expression"
+  },
+  "loggerRowFiltererBuiltinAllowed": {
+    "message": "מאופשר",
+    "description": "A keyword in the built-in row filtering expression"
+  },
+  "loggerRowFiltererBuiltinModified": {
+    "message": "השתנה",
+    "description": "A keyword in the built-in row filtering expression"
+  },
+  "loggerRowFiltererBuiltin1p": {
+    "message": "צד-1",
+    "description": "A keyword in the built-in row filtering expression"
+  },
+  "loggerRowFiltererBuiltin3p": {
+    "message": "צד-3",
+    "description": "A keyword in the built-in row filtering expression"
+  },
+  "loggerEntryDetailsHeader": {
+    "message": "פרטים",
+    "description": "Small header to identify the 'Details' pane for a specific logger entry"
+  },
+  "loggerEntryDetailsFilter": {
+    "message": "מסנן",
+    "description": "Label to identify a filter field"
+  },
+  "loggerEntryDetailsFilterList": {
+    "message": "רשימת מסננים",
+    "description": "Label to identify a filter list field"
+  },
+  "loggerEntryDetailsRule": {
+    "message": "חוק",
+    "description": "Label to identify a rule field"
+  },
+  "loggerEntryDetailsContext": {
+    "message": "הקשר",
+    "description": "Label to identify a context field (typically a hostname)"
+  },
+  "loggerEntryDetailsRootContext": {
+    "message": "ההקשר המקורי",
+    "description": "Label to identify a root context field (typically a hostname)"
+  },
+  "loggerEntryDetailsPartyness": {
+    "message": "צד",
+    "description": "Label to identify a field providing partyness information"
+  },
+  "loggerEntryDetailsType": {
+    "message": "סוג",
+    "description": "Label to identify the type of an entry"
+  },
+  "loggerEntryDetailsURL": {
+    "message": "כתובת",
+    "description": "Label to identify the URL of an entry"
+  },
+  "loggerURLFilteringHeader": {
+    "message": "סינון URL דינאמי",
+    "description": "Small header to identify the dynamic URL filtering section"
+  },
+  "loggerURLFilteringContextLabel": {
+    "message": "הקשר:",
+    "description": "Label for the context selector"
+  },
+  "loggerURLFilteringTypeLabel": {
+    "message": "סוג:",
+    "description": "Label for the type selector"
+  },
+  "loggerStaticFilteringHeader": {
+    "message": "סינון סטאטי",
+    "description": "Small header to identify the static filtering section"
+  },
+  "loggerStaticFilteringSentence": {
+    "message": "{{action}} בקשות רשת מסוג {{type}} {{br}} שה URL שלהן הוא {{url}} {{br}} ואשר מגיע מהאתר {{origin}},{{br}}{{importance}} קיים כבר מסנן שמתיר להעביר בקשות רשת אלה.",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartBlock": {
+    "message": "חסום",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartAllow": {
+    "message": "אפשר",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartType": {
+    "message": "מסוג \"{{type}}\"",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartAnyType": {
+    "message": "כל סוג",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartOrigin": {
+    "message": "מתוך \"{{origin}}\"",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartAnyOrigin": {
+    "message": "מכל מקום",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartNotImportant": {
+    "message": "אך לא כאשר",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartImportant": {
+    "message": "גם אם",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringFinderSentence1": {
+    "message": "המסנן הסטאטי <code>{{filter}}</code> נמצא ב:",
+    "description": "Below this sentence, the filter list(s) in which the filter was found"
+  },
+  "loggerStaticFilteringFinderSentence2": {
+    "message": "המסנן הסטאטי לא נמצא בשום אחת מרשימות המסננים המופעלות כרגע",
+    "description": "Message to show when a filter cannot be found in any filter lists"
+  },
+  "loggerSettingDiscardPrompt": {
+    "message": "רשומות של מתעד הבקשות שלא תואמות את כל שלושת התנאים הבאים לא ישמרו:",
+    "description": "Logger setting: A sentence to describe the purpose of the settings below"
+  },
+  "loggerSettingPerEntryMaxAge": {
+    "message": "שמור היסטוריית רשומות של {{input}} הדקות האחרונות",
+    "description": "A logger setting"
+  },
+  "loggerSettingPerTabMaxLoads": {
+    "message": "שמור היסטוריה של עד {{input}} טעינות עמוד עבור כל לשונית",
+    "description": "A logger setting"
+  },
+  "loggerSettingPerTabMaxEntries": {
+    "message": "שמור היסטוריה עד {{input}} רשומות עבור כל לשונית",
+    "description": "A logger setting"
+  },
+  "loggerSettingPerEntryLineCount": {
+    "message": "השתמש ב {{input}} שורות עבור כל רשומה במצב פרוס אנכית",
+    "description": "A logger setting"
+  },
+  "loggerSettingHideColumnsPrompt": {
+    "message": "הסתר עמודות:",
+    "description": "Logger settings: a sentence to describe the purpose of the checkboxes below"
+  },
+  "loggerSettingHideColumnTime": {
+    "message": "{{input}} זמן",
+    "description": "A label for the time column"
+  },
+  "loggerSettingHideColumnFilter": {
+    "message": "{{input}} מסנן/חוק",
+    "description": "A label for the filter or rule column"
+  },
+  "loggerSettingHideColumnContext": {
+    "message": "{{input}} הקשר",
+    "description": "A label for the context column"
+  },
+  "loggerSettingHideColumnPartyness": {
+    "message": "{{input}} צד",
+    "description": "A label for the partyness column"
+  },
+  "loggerExportFormatList": {
+    "message": "רשימה",
+    "description": "Label for radio-button to pick export format"
+  },
+  "loggerExportFormatTable": {
+    "message": "טבלה",
+    "description": "Label for radio-button to pick export format"
+  },
+  "loggerExportEncodePlain": {
+    "message": "פשוט",
+    "description": "Label for radio-button to pick export text format"
+  },
+  "loggerExportEncodeMarkdown": {
+    "message": "פורמט Markdown",
+    "description": "Label for radio-button to pick export text format"
+  },
+  "supportOpenButton": {
+    "message": "לפתוח",
+    "description": "Text for button which open an external web page in Support pane"
+  },
+  "supportReportSpecificButton": {
+    "message": "צור דוח חדש ב-GitHub",
+    "description": "Text for button which open an external web page in Support pane"
+  },
+  "supportFindSpecificButton": {
+    "message": "מצא דיווחים דומים ב-GitHub",
+    "description": "A clickable link in the filter issue reporter section"
+  },
+  "supportS1H": {
+    "message": "דוקומנטציה",
+    "description": "Header of 'Documentation' section in Support pane"
+  },
+  "supportS1P1": {
+    "message": "קרא את הדוקומנטציה ב <code>uBlock/wik</code> על מנת ללמוד על כל היכולות של uBlock Origin",
+    "description": "First paragraph of 'Documentation' section in Support pane"
+  },
+  "supportS2H": {
+    "message": "שאלות ותמיכה",
+    "description": "Header of 'Questions and support' section in Support pane"
+  },
+  "supportS2P1": {
+    "message": "תשובות לשאלות ושאר סוגי העזרה ניתן להיעזר בסאברדיט <code>/r/uBlockOrigin</code>.",
+    "description": "First paragraph of 'Questions and support' section in Support pane"
+  },
+  "supportS3H": {
+    "message": "בעיות סינון/אתר שבור",
+    "description": "Header of 'Filter issues' section in Support pane"
+  },
+  "supportS3P1": {
+    "message": "דווח על בעיות סינון באתרים קונקרטיים <span data-url=\"https://github.com/uBlockOrigin/uAssets/issues?q=is%3Aissue\">בלוח הבעיות <code>uBlockOrigin/uAssets</code></span>. נדרש משתמש GitHub.",
+    "description": "First paragraph of 'Filter issues' section in Support pane"
+  },
+  "supportS3P2": {
+    "message": "<b>חשוב:</b> המנע משימוש בחוסמים אחרים שיש להם את אותה המטרה באותו הזמן עם uBlock Origin, שכן זה יכול לגרום לבעיות סינון באתרים ספציפיים.",
+    "description": "Second paragraph of 'Filter issues' section in Support pane"
+  },
+  "supportS3P3": {
+    "message": "<b>טיפים:</b> וודאו כי רשימות המסננים שלכם מעודכנים. <span data-url=\"logger-ui.html#_\">מתעד הבקשות</span> הינו הכלי המרכזי לפענוח בעיות הקשורות לרשימות מסננים.",
+    "description": "Third paragraph of 'Filter issues' section in Support pane"
+  },
+  "supportS4H": {
+    "message": "דיווח על באג",
+    "description": "Header of 'Bug report' section in Support pane"
+  },
+  "supportS4P1": {
+    "message": "דווח על בעיות ב uBlock Origin עצמו ל <span data-url=\"https://github.com/uBlockOrigin/uBlock-issues/issues?q=is%3Aissue\"> מעקב הסוגייות <code>uBlockOrigin/uBlock-issue</code></span>.\n<u>נידרש חשבון גיטהאב (GitHub)</u>",
+    "description": "First paragraph of 'Bug report' section in Support pane"
+  },
+  "supportS5H": {
+    "message": "מידע לפתרון בעיות",
+    "description": "Header of 'Troubleshooting Information' section in Support pane"
+  },
+  "supportS5P1": {
+    "message": "ראה מטה מידע טכני שיכול להיות מועיל למתנדב, כאשר הוא מנסה לעזור לך לפתור בעיה.",
+    "description": "First paragraph of 'Troubleshooting Information' section in Support pane"
+  },
+  "supportS6H": {
+    "message": "דיווח על בעיית מסנן",
+    "description": "Header of 'Report a filter issue' section in Support pane"
+  },
+  "supportS6P1S1": {
+    "message": "כדי להימנע מהכבדה על מתנדבים בדווחים כפולים, נא לודא שבעיה דומה טרם דווחה.",
+    "description": "A paragraph in the filter issue reporter section"
+  },
+  "supportS6P2S1": {
+    "message": "רשימות הסינון מתעדכנות מדי יום. וודא שהבעיה שלך עדיין לא טופלה ברשימות הסינון המעודכנות.",
+    "description": "A paragraph in the filter issue reporter section"
+  },
+  "supportS6P2S2": {
+    "message": "וודא כי הבעיה עדיין קיימת לאחר רענון הדף הבעייתי.",
+    "description": "A paragraph in the filter issue reporter section"
+  },
+  "supportS6URL": {
+    "message": "כתובת דף האינטרנט:",
+    "description": "Label for the URL of the page"
+  },
+  "supportS6Select1": {
+    "message": "דף האינטרנט…",
+    "description": "Label for widget to select type of issue"
+  },
+  "supportS6Select1Option0": {
+    "message": "-- בחר קטגוריה --",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Select1Option1": {
+    "message": "הצגת פרסומות או שאריות שלהן",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Select1Option2": {
+    "message": "קיים ריבוד או מטרד אחר",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Select1Option3": {
+    "message": "מזהה את  uBlock Origin",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Select1Option4": {
+    "message": "בעיות הקשורות לפרטיות",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Select1Option5": {
+    "message": "כשל תפעולי כאשר uBlock Origin פעיל",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Select1Option6": {
+    "message": "נפתחים לשוניות או חלונות לא רצויים",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Select1Option7": {
+    "message": "מוביל לנוזקה, פישינג",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Checkbox1": {
+    "message": "תיוג דף האינטרנט כ- לב\"ל (<a href=\"https://wikipedia.org/wiki/Not_safe_for_work\">'לא בטוח לעבודה'</a>)",
+    "description": "A checkbox to use for NSFW sites"
+  },
+  "aboutPrivacyPolicy": {
+    "message": "מדיניות פרטיות",
+    "description": "Link to privacy policy on GitHub (English)"
+  },
+  "aboutChangelog": {
+    "message": "רשימת שינויים",
+    "description": ""
+  },
+  "aboutCode": {
+    "message": "קוד מקור (GPLv3)",
+    "description": "English: Source code (GPLv3)"
+  },
+  "aboutContributors": {
+    "message": "תורמים",
+    "description": "English: Contributors"
+  },
+  "aboutSourceCode": {
+    "message": "קוד מקור",
+    "description": "Link text to source code repo"
+  },
+  "aboutTranslations": {
+    "message": "תרגומים",
+    "description": "Link text to translations repo"
+  },
+  "aboutFilterLists": {
+    "message": "רשימות מסננים",
+    "description": "Link text to uBO's own filter lists repo"
+  },
+  "aboutDependencies": {
+    "message": "תלויות חיצוניות (תואם-GPLv3):",
+    "description": "Shown in the About pane"
+  },
+  "aboutCDNs": {
+    "message": "רשימות המסננים של uBO מופצות בחינם בשירותי ה <a href=\"https://wikipedia.org/wiki/Content_delivery_network\">CDN</a> הבאים:",
+    "description": "Shown in the About pane"
+  },
+  "aboutCDNsInfo": {
+    "message": "שרות CDN אקראי נבחר לשם עדכון רשימת מסננים",
+    "description": "Shown in the About pane"
+  },
+  "aboutBackupDataButton": {
+    "message": "גבה לקובץ…",
+    "description": "Text for button to create a backup of all settings"
+  },
+  "aboutBackupFilename": {
+    "message": "my-ublock-backup_{{datetime}}.txt",
+    "description": "English: my-ublock-backup_{{datetime}}.txt"
+  },
+  "aboutRestoreDataButton": {
+    "message": "שחזר מקובץ…",
+    "description": "English: Restore from file..."
+  },
+  "aboutResetDataButton": {
+    "message": "אפס להגדרות ברירת מחדל…",
+    "description": "English: Reset to default settings..."
+  },
+  "aboutRestoreDataConfirm": {
+    "message": "כל ההגדרות שלך יוחלפו בנתונים שגובו ב {{time}}, ו uBlock₀ יופעל מחדש.\n\nהאם להחליף את כל ההגדרות הקיימות בנתונים המגובים?",
+    "description": "Message asking user to confirm restore"
+  },
+  "aboutRestoreDataError": {
+    "message": "לא הוצלח לקרוא את המידע או שהוא פגום",
+    "description": "Message to display when an error occurred during restore"
+  },
+  "aboutResetDataConfirm": {
+    "message": "כל ההגדרות שלך יימחקו, ו uBlock₀ יופעל מחדש.\n\nלאפס את uBlock₀ להגדרות ברירת מחדל?",
+    "description": "Message asking user to confirm reset"
+  },
+  "errorCantConnectTo": {
+    "message": "בעיית רשת: {{msg}}",
+    "description": "English: Network error: {{msg}}"
+  },
+  "subscribeButton": {
+    "message": "הירשם כמנוי",
+    "description": "For the button used to subscribe to a filter list"
+  },
+  "elapsedOneMinuteAgo": {
+    "message": "לפני דקה",
+    "description": "English: a minute ago"
+  },
+  "elapsedManyMinutesAgo": {
+    "message": "לפני {{value}} דקות",
+    "description": "English: {{value}} minutes ago"
+  },
+  "elapsedOneHourAgo": {
+    "message": "לפני שעה",
+    "description": "English: an hour ago"
+  },
+  "elapsedManyHoursAgo": {
+    "message": "לפני {{value}} שעות",
+    "description": "English: {{value}} hours ago"
+  },
+  "elapsedOneDayAgo": {
+    "message": "לפני יום",
+    "description": "English: a day ago"
+  },
+  "elapsedManyDaysAgo": {
+    "message": "לפני {{value}} ימים",
+    "description": "English: {{value}} days ago"
+  },
+  "showDashboardButton": {
+    "message": "הצג את לוח המחוונים",
+    "description": "Firefox/Fennec-specific: Show Dashboard"
+  },
+  "showNetworkLogButton": {
+    "message": "הצג את מתעד הבקשות",
+    "description": "Firefox/Fennec-specific: Show Logger"
+  },
+  "fennecMenuItemBlockingOff": {
+    "message": "מכובה",
+    "description": "Firefox-specific: appears as 'uBlock₀ (off)'"
+  },
+  "docblockedTitle": {
+    "message": "הדף חסום",
+    "description": "Used as a title for the document-blocked page"
+  },
+  "docblockedPrompt1": {
+    "message": "uBlock Origin מנע מהעמוד הבא להיטען:",
+    "description": "Used in the strict-blocking page"
+  },
+  "docblockedPrompt2": {
+    "message": "בגלל המסנן הבא",
+    "description": "Used in the strict-blocking page"
+  },
+  "docblockedNoParamsPrompt": {
+    "message": "ללא פרמטרים",
+    "description": "label to be used for the parameter-less URL: https://cloud.githubusercontent.com/assets/585534/9832014/bfb1b8f0-593b-11e5-8a27-fba472a5529a.png"
+  },
+  "docblockedFoundIn": {
+    "message": "נמצא ב:",
+    "description": "English: List of filter list names follows"
+  },
+  "docblockedBack": {
+    "message": "חזור אחורה",
+    "description": "English: Go back"
+  },
+  "docblockedClose": {
+    "message": "סגור חלון זה",
+    "description": "English: Close this window"
+  },
+  "docblockedDontWarn": {
+    "message": "אל תתריע לי שוב על אתר זה",
+    "description": "Label for checkbox in document-blocked page"
+  },
+  "docblockedProceed": {
+    "message": "בטל חסימה נוקשה עבור {{hostname}}",
+    "description": "English: Disable strict blocking for {{hostname}} ..."
+  },
+  "docblockedDisableTemporary": {
+    "message": "זמנית",
+    "description": "English: Temporarily"
+  },
+  "docblockedDisablePermanent": {
+    "message": "לצמיתות",
+    "description": "English: Permanently"
+  },
+  "docblockedDisable": {
+    "message": "המשך",
+    "description": "Button text to navigate to the blocked page"
+  },
+  "docblockedRedirectPrompt": {
+    "message": "הדף החסום מבקש לעבור לאתר אחר. אם תחליטו להמשיך, תעברו ישירות ל: {{url}}",
+    "description": "Text warning about an incoming redirect"
+  },
+  "docblockedReasonLabel": {
+    "message": "הסיבה:",
+    "description": "The label which prepend the actual reason why a page was blocked"
+  },
+  "docblockedReasonMalicious": {
+    "message": "זדוני",
+    "description": "An actual reason why a page was blocked"
+  },
+  "docblockedReasonTracker": {
+    "message": "מעקב",
+    "description": "An actual reason why a page was blocked"
+  },
+  "docblockedReasonDisreputable": {
+    "message": "מפוקפק",
+    "description": "An actual reason why a page was blocked"
+  },
+  "cloudPush": {
+    "message": "ייצא לאחסון ענן",
+    "description": "tooltip"
+  },
+  "cloudPull": {
+    "message": "ייבא מאחסון ענן",
+    "description": "tooltip"
+  },
+  "cloudPullAndMerge": {
+    "message": "ייבא מהגיבוי בענן ומזג עם ההגדרות הקיימות",
+    "description": "tooltip"
+  },
+  "cloudNoData": {
+    "message": "…\n…",
+    "description": ""
+  },
+  "cloudDeviceNamePrompt": {
+    "message": "שם המכשיר:",
+    "description": "used as a prompt for the user to provide a custom device name"
+  },
+  "advancedSettingsWarning": {
+    "message": "אזהרה! שינוי הגדרות אלו על אחריותך בלבד.",
+    "description": "A warning to users at the top of 'Advanced settings' page"
+  },
+  "genericSubmit": {
+    "message": "שלח",
+    "description": "for generic 'Submit' buttons"
+  },
+  "genericApplyChanges": {
+    "message": "החל שינויים",
+    "description": "for generic 'Apply changes' buttons"
+  },
+  "genericRevert": {
+    "message": "החזר למצב הקודם",
+    "description": "for generic 'Revert' buttons"
+  },
+  "genericBytes": {
+    "message": "בתים",
+    "description": ""
+  },
+  "contextMenuBlockElementInFrame": {
+    "message": "חסום אלמנט בתוך מסגרת…",
+    "description": "An entry in the browser's contextual menu"
+  },
+  "contextMenuSubscribeToList": {
+    "message": "הירשם לרשימת המסננים…",
+    "description": "An entry in the browser's contextual menu"
+  },
+  "contextMenuTemporarilyAllowLargeMediaElements": {
+    "message": "זמנית אפשר אלמנטי מדיה גדולים",
+    "description": "A context menu entry, present when large media elements have been blocked on the current site"
+  },
+  "contextMenuViewSource": {
+    "message": "צפה בקוד המקור…",
+    "description": "A context menu entry, to view the source code of the target resource"
+  },
+  "shortcutCapturePlaceholder": {
+    "message": "הקלד קיצור דרך",
+    "description": "Placeholder string for input field used to capture a keyboard shortcut"
+  },
+  "genericMergeViewScrollLock": {
+    "message": "הפעל/כבה נעילת גלילה",
+    "description": "Tooltip for the button used to lock scrolling between the views in the 'My rules' pane"
+  },
+  "genericCopyToClipboard": {
+    "message": "העתק ללוח",
+    "description": "Label for buttons used to copy something to the clipboard"
+  },
+  "genericSelectAll": {
+    "message": "בחר הכל",
+    "description": "Label for buttons used to select all text in editor"
+  },
+  "toggleCosmeticFiltering": {
+    "message": "הפעל/כבה מסננים קוסמטיים",
+    "description": "Label for keyboard shortcut used to toggle cosmetic filtering"
+  },
+  "toggleJavascript": {
+    "message": "כיבוי/הפעלה של JavaScript",
+    "description": "Label for keyboard shortcut used to toggle no-scripting switch"
+  },
+  "relaxBlockingMode": {
+    "message": "הרפה את מצב החסימה הנוכחי",
+    "description": "Label for keyboard shortcut used to relax blocking mode"
+  },
+  "storageUsed": {
+    "message": "אחסון בשימוש: {{value}} {{unit}}",
+    "description": " In Setting pane, renders as (example): Storage used: 13.2 MB"
+  },
+  "KB": {
+    "message": "KB",
+    "description": "short for 'kilobytes'"
+  },
+  "MB": {
+    "message": "MB",
+    "description": "short for 'megabytes'"
+  },
+  "GB": {
+    "message": "GB",
+    "description": "short for 'gigabytes'"
+  },
+  "clickToLoad": {
+    "message": "לחץ על מנת לטעון",
+    "description": "Message used in frame placeholders"
+  },
+  "linterMainReport": {
+    "message": "שגיאות: {{count}}",
+    "description": "Summary of number of errors as reported by the linter "
+  },
+  "unprocessedRequestTooltip": {
+    "message": "לא ניתן היה לסנן כראוי בעת הפעלת הדפדפן. נא לטעון את העמוד מחדש להבטחת סינון ראוי.",
+    "description": "A warning which will appear in the popup panel if needed"
+  },
+  "dummy": {
+    "message": "ערך זה חייב להיות האחרון",
+    "description": "so we dont need to deal with comma for last entry"
+  }
+}

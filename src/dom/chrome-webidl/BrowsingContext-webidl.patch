@@ -1,12 +1,13 @@
 diff --git a/dom/chrome-webidl/BrowsingContext.webidl b/dom/chrome-webidl/BrowsingContext.webidl
-index 3bb17157c1dba1ca75ad9cfee2c21fcafb2dd0ee..a43f8aa1e4c808418f1cc7ccc69ced12c9ebfef0 100644
+index d0508a8c29e5bd008213f781beb8eb1fcb458fb8..31130786d4f8e22f2327162c001f786a198bf582 100644
 --- a/dom/chrome-webidl/BrowsingContext.webidl
 +++ b/dom/chrome-webidl/BrowsingContext.webidl
-@@ -169,6 +169,9 @@ interface BrowsingContext {
+@@ -179,6 +179,10 @@ interface BrowsingContext {
  
    [SetterThrows] attribute float textZoom;
  
 +  [SetterThrows] attribute long zenBoostsData;
++  [SetterThrows] attribute float zenBoostsComplementaryRotation;
 +  [SetterThrows] attribute boolean isZenBoostsInverted;
 +
    // Override the dots-per-CSS-pixel scaling factor in this BrowsingContext

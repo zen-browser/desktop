@@ -1,8 +1,8 @@
 diff --git a/browser/components/preferences/sync.inc.xhtml b/browser/components/preferences/sync.inc.xhtml
-index b889d42301de3c4f845105bf09d19b052dca9eae..015b751bd46f2499a93e328c903475ce2d60d079 100644
+index c379e1a5f82692406a92d9fcd3bca2769dfac5b2..af037dd3d995813d966524ac44a3795d0c227071 100644
 --- a/browser/components/preferences/sync.inc.xhtml
 +++ b/browser/components/preferences/sync.inc.xhtml
-@@ -223,6 +223,10 @@
+@@ -224,6 +224,10 @@
                      <image class="sync-engine-image sync-engine-prefs" alt=""/>
                      <label data-l10n-id="sync-currently-syncing-settings"/>
                    </html:div>

@@ -1,0 +1,13 @@
+diff --git a/layout/mathml/nsMathMLChar.cpp b/layout/mathml/nsMathMLChar.cpp
+index befaf7fed81a486f61e1186775c138ce5473a057..c7eb36dc9fcd06f8641d2d1a974e75eb24e07669 100644
+--- a/layout/mathml/nsMathMLChar.cpp
++++ b/layout/mathml/nsMathMLChar.cpp
+@@ -1686,7 +1686,7 @@ void nsMathMLChar::PaintForeground(nsIFrame* aForFrame,
+ 
+   // Set color ...
+   nscolor fgColor = computedStyle->GetVisitedDependentColor(
+-      &nsStyleText::mWebkitTextFillColor);
++      &nsStyleText::mWebkitTextFillColor, aForFrame);
+   if (aIsSelected) {
+     // get color to use for selection from the look&feel object
+     fgColor = LookAndFeel::Color(LookAndFeel::ColorID::Highlighttext, aForFrame,

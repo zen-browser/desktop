@@ -82,6 +82,54 @@ const globalActionsTemplate = [
     },
   },
   {
+    label: "Open Space Routing",
+    command: "cmd_zenOpenSpaceRoutingSettings",
+    icon: "chrome://browser/skin/zen-icons/selectable/airplane.svg",
+  },
+  {
+    label: "New Boost",
+    icon: "chrome://browser/skin/zen-icons/boost.svg",
+    isAvailable: window => {
+      if (!isNotEmptyTab(window)) {
+        return false;
+      }
+
+      // Keep this action consistent with the rest of the Boosts UI.
+      if (!Services.prefs.getBoolPref("zen.boosts.enabled", false)) {
+        return false;
+      }
+
+      const uri = window.gBrowser.currentURI;
+      return !!uri?.schemeIs && (uri.schemeIs("http") || uri.schemeIs("https"));
+    },
+    command: window => {
+      const uri = window.gBrowser.currentURI;
+      if (!uri?.schemeIs || !(uri.schemeIs("http") || uri.schemeIs("https"))) {
+        return;
+      }
+
+      let domain = "";
+      try {
+        domain = uri.host;
+      } catch {
+        return;
+      }
+
+      if (!domain) {
+        return;
+      }
+
+      const { gZenBoostsManager } = ChromeUtils.importESModule(
+        "resource:///modules/zen/boosts/ZenBoostsManager.sys.mjs"
+      );
+      const boost = gZenBoostsManager.createNewBoost(domain);
+      if (!boost) {
+        return;
+      }
+      gZenBoostsManager.openBoostWindow(window, boost, uri);
+    },
+  },
+  {
     label: "Next Space",
     command: "cmd_zenWorkspaceForward",
     icon: "chrome://browser/skin/zen-icons/forward.svg",

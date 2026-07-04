@@ -93,7 +93,6 @@ add_task(async function test_Welcome_Steps() {
         "Welcome page content should have more than 3 essentials after clicking next action"
       );
       await EventUtils.synthesizeMouseAtCenter(essentials[0], {});
-      await EventUtils.synthesizeMouseAtCenter(essentials[1], {});
       await EventUtils.synthesizeMouseAtCenter(essentials[2], {});
 
       ok(

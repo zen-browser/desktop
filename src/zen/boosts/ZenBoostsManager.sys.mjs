@@ -114,9 +114,15 @@ class nsZenBoostsManager {
       boostData: {
         boostName: "My Boost",
 
-        dotAngleDeg: 0,
-        dotPos: { x: null, y: null },
-        dotDistance: 0,
+        /* These initial values depend on
+        each other. Changing one means having to
+        recalculate all of them manually. */
+        dotAngleDeg: 131.61,
+        dotPos: { x: 0.76, y: 0.66 },
+        dotDistance: 0.91,
+
+        secondaryDotAngleDegDelta: 55,
+        secondaryDotPos: { x: 0.5, y: 0.81 },
 
         brightness: 0.5,
         saturation: 0.5,
@@ -131,6 +137,7 @@ class nsZenBoostsManager {
         autoTheme: false,
 
         textCaseOverride: "none",
+        sizeOverride: 1,
 
         zapSelectors: [],
         customCSS: "",
@@ -308,6 +315,7 @@ class nsZenBoostsManager {
 
     Services.obs.notifyObservers(null, "zen-boosts-active-change", { id });
 
+    this.#writeToDisk(this.registeredDomains);
     this.#stylesManager.invalidateStyleForDomain(domain);
     this.notify();
   }
@@ -323,23 +331,23 @@ class nsZenBoostsManager {
 
     if (domainEntry) {
       if (domainEntry.boostEntries.has(id)) {
+        let unloadStyles = false;
         if (domainEntry.activeBoostId === id) {
           domainEntry.activeBoostId = null;
           Services.obs.notifyObservers(null, "zen-boosts-active-change", {
             id: null,
           });
-
-          this.#stylesManager.invalidateStyleForDomain(domain);
-          this.notify(true);
+          unloadStyles = true;
         } else {
           domainEntry.activeBoostId = id;
           Services.obs.notifyObservers(null, "zen-boosts-active-change", {
             id,
           });
-
-          this.#stylesManager.invalidateStyleForDomain(domain);
-          this.notify();
         }
+
+        this.#writeToDisk(this.registeredDomains);
+        this.#stylesManager.invalidateStyleForDomain(domain);
+        this.notify(unloadStyles);
       }
     }
   }
@@ -535,6 +543,12 @@ class nsZenBoostsManager {
     const directoryPath = this.#cssPath;
     const savePath = PathUtils.join(directoryPath, fileName);
 
+    if (!css || css.trim() === "") {
+      if (await IOUtils.exists(savePath)) {
+        await IOUtils.remove(savePath);
+      }
+      return;
+    }
     await IOUtils.makeDirectory(directoryPath, { createAncestors: true });
     await IOUtils.writeUTF8(savePath, css);
   }
@@ -549,7 +563,8 @@ class nsZenBoostsManager {
     const domainEntry = this.#getDomainEntry(domain);
 
     if (domainEntry) {
-      return domainEntry.boostEntries.has(domainEntry.activeBoostId);
+      const boost = this.loadActiveBoostFromStore(domain);
+      return boost?.boostEntry.boostData.changeWasMade ?? false;
     }
 
     return false;

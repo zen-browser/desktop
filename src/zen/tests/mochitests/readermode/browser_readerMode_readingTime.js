@@ -30,10 +30,9 @@ add_task(async function () {
           ".reader-estimated-time"
         );
         ok(readingTimeElement, "Reading time element should be in document");
-        const args = JSON.parse(readingTimeElement.dataset.l10nArgs);
-        is(args.rangePlural, "other", "Reading time should be '9-12 minutes'");
+        const readingTimeText = readingTimeElement.textContent;
         ok(
-          /\b9\b.*\b12\b/.test(args.range),
+          /\b9\b.*\b12\b/.test(readingTimeText),
           "Reading time should be '9-12 minutes'"
         );
 
@@ -66,9 +65,8 @@ add_task(async function () {
           ".reader-estimated-time"
         );
         ok(readingTimeElement, "Reading time element should be in document");
-        const args = JSON.parse(readingTimeElement.dataset.l10nArgs);
-        is(args.rangePlural, "one", "Reading time should be '~1 minute'");
-        ok(/\b1\b/.test(args.range), "Reading time should be '~1 minute'");
+        const readingTimeText = readingTimeElement.textContent;
+        ok(/\b1\b/.test(readingTimeText), "Reading time should be '~1 minute'");
 
         let container = content.document.querySelector(".container");
         ok(
@@ -102,9 +100,72 @@ add_task(async function () {
           ".reader-estimated-time"
         );
         ok(readingTimeElement, "Reading time element should be in document");
-        const args = JSON.parse(readingTimeElement.dataset.l10nArgs);
-        is(args.rangePlural, "other", "Reading time should be '~3 minutes'");
-        ok(/\b3\b/.test(args.range), "Reading time should be '~3 minutes'");
+        const readingTimeText = readingTimeElement.textContent;
+        ok(
+          /\b3\b/.test(readingTimeText),
+          "Reading time should be '~3 minutes'"
+        );
+      });
+    }
+  );
+});
+
+/**
+ * Test that the reader mode correctly calculates and displays the
+ * estimated reading time for a long article where a single number
+ * (hours) is displayed.
+ */
+add_task(async function () {
+  await BrowserTestUtils.withNewTab(
+    TEST_PATH + "readerModeArticleLong.html",
+    async function (browser) {
+      let pageShownPromise = BrowserTestUtils.waitForContentEvent(
+        browser,
+        "AboutReaderContentReady"
+      );
+      let readerButton = document.getElementById("reader-mode-button");
+      readerButton.click();
+      await pageShownPromise;
+      await SpecialPowers.spawn(browser, [], async function () {
+        // make sure there is a reading time on the page and that it displays the correct information
+        let readingTimeElement = content.document.querySelector(
+          ".reader-estimated-time"
+        );
+        ok(readingTimeElement, "Reading time element should be in document");
+        const readingTimeText = readingTimeElement.textContent;
+        ok(/\b2\b/.test(readingTimeText), "Reading time should be '~2 hours'");
+      });
+    }
+  );
+});
+
+/**
+ * Test that the reader mode correctly calculates and displays the
+ * estimated reading time for a very long article where a range
+ * (hours) is displayed.
+ */
+add_task(async function () {
+  await BrowserTestUtils.withNewTab(
+    TEST_PATH + "readerModeArticleVeryLong.html",
+    async function (browser) {
+      let pageShownPromise = BrowserTestUtils.waitForContentEvent(
+        browser,
+        "AboutReaderContentReady"
+      );
+      let readerButton = document.getElementById("reader-mode-button");
+      readerButton.click();
+      await pageShownPromise;
+      await SpecialPowers.spawn(browser, [], async function () {
+        // make sure there is a reading time on the page and that it displays the correct information
+        let readingTimeElement = content.document.querySelector(
+          ".reader-estimated-time"
+        );
+        ok(readingTimeElement, "Reading time element should be in document");
+        const readingTimeText = readingTimeElement.textContent;
+        ok(
+          /\b3\b.*\b4\b/.test(readingTimeText),
+          "Reading time should be '3-4 hours'"
+        );
       });
     }
   );

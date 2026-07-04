@@ -138,8 +138,6 @@ class nsZenWorkspaces {
       document.documentElement.setAttribute("zen-private-window", "true");
     }
 
-    this.popupOpenHandler = this._popupOpenHandler.bind(this);
-
     window.addEventListener("resize", this.onWindowResize.bind(this));
     this.addPopupListeners();
 
@@ -285,8 +283,8 @@ class nsZenWorkspaces {
       if (
         this._emptyTab &&
         !this._emptyTab.closing &&
-        this._emptyTab.ownerGlobal &&
-        !this._emptyTab.ownerGlobal.closed &&
+        this._emptyTab.documentGlobal &&
+        !this._emptyTab.documentGlobal.closed &&
         gZenVerticalTabsManager._canReplaceNewTab
       ) {
         gBrowser.selectedTab = this._emptyTab;
@@ -657,16 +655,6 @@ class nsZenWorkspaces {
     );
   }
 
-  _popupOpenHandler() {
-    // If a popup is opened, we should stop the swipe gesture
-    if (this._swipeManager?.isGestureActive) {
-      document.documentElement.removeAttribute("swipe-gesture");
-      gZenUIManager.tabsWrapper.style.removeProperty("scrollbar-width");
-      this.updateTabsContainers();
-      this._cancelSwipeAnimation();
-    }
-  }
-
   get activeWorkspace() {
     return this.#activeWorkspace;
   }
@@ -886,19 +874,18 @@ class nsZenWorkspaces {
       delete this._tabToSelect;
       delete this._tabToRemoveForEmpty;
       delete this._shouldOverrideTabs;
+      delete this._initialTab;
       resolveSelectPromise();
     };
 
     let removedEmptyTab = false;
     let initialTabWasEmpty = false;
-    if (
-      this._initialTab &&
-      !(this._initialTab._shouldRemove && this._initialTab._veryPossiblyEmpty)
-    ) {
-      initialTabWasEmpty = !!this._initialTab._veryPossiblyEmpty;
-      gBrowser.selectedTab = this._initialTab;
-      this.moveTabToWorkspace(this._initialTab, this.activeWorkspace);
-      gBrowser.moveTabTo(this._initialTab, {
+    if (this._initialTab || this._shouldOverrideTabs) {
+      let initialTab = this._initialTab || gBrowser.selectedTab;
+      initialTabWasEmpty = !!initialTab._veryPossiblyEmpty;
+      gBrowser.selectedTab = initialTab;
+      this.moveTabToWorkspace(initialTab, this.activeWorkspace);
+      gBrowser.moveTabTo(initialTab, {
         forceUngrouped: true,
         tabIndex: 0,
       });
@@ -937,6 +924,7 @@ class nsZenWorkspaces {
             "Selecting empty tab because startup page didnt select a valid tab"
           );
           this.selectEmptyTab();
+          initialTabWasEmpty = true;
         }
         this.log("Removing empty tab added by startup page");
         this._removedByStartupPage = true;
@@ -951,14 +939,6 @@ class nsZenWorkspaces {
     }
 
     await selectPromise;
-    if (this._initialTab) {
-      this._removedByStartupPage = true;
-      gBrowser.removeTab(this._initialTab, {
-        skipSessionStore: true,
-      });
-      delete this._initialTab;
-    }
-
     const openOnStartup = Services.prefs.getBoolPref(
       "zen.urlbar.open-on-startup",
       true
@@ -1010,11 +990,7 @@ class nsZenWorkspaces {
     if (gZenUIManager.testingEnabled || !this.workspaceEnabled) {
       return;
     }
-    // note: We cant access `gZenVerticalTabsManager._canReplaceNewTab` this early
-    if (
-      isEmpty &&
-      Services.prefs.getBoolPref("zen.urlbar.replace-newtab", true)
-    ) {
+    if (isEmpty) {
       tab._markedForReplacement = true;
       this._tabToRemoveForEmpty = tab;
     } else {
@@ -1042,7 +1018,7 @@ class nsZenWorkspaces {
     }
     gZenEmojiPicker.open(anchor, {
       closeOnSelect: false,
-      allowNone: hasNoIcon,
+      allowNone: !hasNoIcon,
       onSelect: async icon => {
         const workspace = this.getWorkspaceFromId(workspaceId);
         if (!workspace) {
@@ -1094,6 +1070,14 @@ class nsZenWorkspaces {
       this.__contextIsDelete ||
       this._removedByStartupPage
     ) {
+      return null;
+    }
+
+    // Closing a glance tab tears down the overlay and restores selection
+    // to its parent tab. Don't run the last-tab handling here:
+    // in a pinned-only window the glance child is the only unpinned tab,
+    // so this would switch to an empty tab and clobber the restore-to-parent.
+    if (tab.hasAttribute("glance-id")) {
       return null;
     }
 
@@ -1612,20 +1596,27 @@ class nsZenWorkspaces {
         continue;
       }
 
-      tab.owner = null;
       if (container) {
+        const newtabPlacement = Services.prefs.getBoolPref(
+          "zen.view.show-newtab-button-top",
+          false
+        );
+        const insertElement = newtabPlacement
+          ? container.firstChild
+          : container.lastChild;
+
         if (tab.group?.hasAttribute("split-view-group")) {
           gBrowser.zenHandleTabMove(tab.group, () => {
             for (const subTab of tab.group.tabs) {
               subTab.setAttribute("zen-workspace-id", workspaceID);
             }
-            container.insertBefore(tab.group, container.lastChild);
+            container.insertBefore(tab.group, insertElement);
           });
           continue;
         }
         gBrowser.zenHandleTabMove(tab, () => {
           tab.setAttribute("zen-workspace-id", workspaceID);
-          container.insertBefore(tab, container.lastChild);
+          container.insertBefore(tab, insertElement);
         });
       }
       // also change glance tab if it's the same tab
@@ -1852,13 +1843,26 @@ class nsZenWorkspaces {
     const otherContainersEssentials = document.querySelectorAll(
       `#zen-essentials .zen-workspace-tabs-section`
     );
+    let nextSpaceIdx;
+    const spaceLen = workspaces.length;
+    if (offsetPixels > 0) {
+      nextSpaceIdx = (workspaceIndex - 1 + spaceLen) % spaceLen;
+    } else if (offsetPixels < 0) {
+      nextSpaceIdx = (workspaceIndex + 1) % spaceLen;
+    } else {
+      nextSpaceIdx = workspaceIndex;
+    }
     const workspaceContextId = workspace.containerTabId;
-    const nextWorkspaceContextId =
-      workspaces[workspaceIndex + (offsetPixels > 0 ? -1 : 1)]?.containerTabId;
+    const nextWorkspaceContextId = workspaces[nextSpaceIdx]?.containerTabId;
     for (const otherWorkspace of workspaces) {
       const element = this.workspaceElement(otherWorkspace.uuid);
-      const newTransform =
-        -(workspaceIndex - workspaces.indexOf(otherWorkspace)) * 100;
+      let diff = workspaces.indexOf(otherWorkspace) - workspaceIndex;
+      if (diff > Math.floor(spaceLen / 2)) {
+        diff -= spaceLen;
+      } else if (diff < -Math.floor(spaceLen / 2)) {
+        diff += spaceLen;
+      }
+      const newTransform = diff * 100;
       element.style.transform = `translateX(${newTransform + offsetPixels / 2}%)`;
     }
     // Hide other essentials with different containerTabId
@@ -1892,8 +1896,7 @@ class nsZenWorkspaces {
     }
     if (offsetPixels) {
       // Find the next workspace we are scrolling to
-      const nextWorkspace =
-        workspaces[workspaceIndex + (offsetPixels > 0 ? -1 : 1)];
+      const nextWorkspace = workspaces[nextSpaceIdx];
       if (nextWorkspace) {
         const {
           gradient: nextGradient,
@@ -1997,14 +2000,23 @@ class nsZenWorkspaces {
     } = {}
   ) {
     gZenUIManager.tabsWrapper.style.scrollbarWidth = "none";
-    const kGlobalAnimationDuration = 0.2;
+    const kGlobalAnimationDuration =
+      Services.prefs.getIntPref("zen.workspaces.switch-animation-duration") /
+      1000;
     this._animatingChange = true;
     const animations = [];
     const workspaces = this.getWorkspaces();
+    const spaceLen = workspaces.length;
     const newWorkspaceIndex = workspaces.findIndex(
       w => w.uuid === newWorkspace.uuid
     );
-    const isGoingLeft = newWorkspaceIndex <= previousWorkspaceIndex;
+    let diff = newWorkspaceIndex - previousWorkspaceIndex;
+    if (diff > Math.floor(spaceLen / 2)) {
+      diff -= spaceLen;
+    } else if (diff < -Math.floor(spaceLen / 2)) {
+      diff += spaceLen;
+    }
+    const isGoingLeft = diff < 0;
     const clonedEssentials = [];
     if (shouldAnimate && this.shouldAnimateEssentials && previousWorkspace) {
       for (const workspace of workspaces) {
@@ -2083,28 +2095,47 @@ class nsZenWorkspaces {
       const elementWorkspaceIndex = workspaces.findIndex(
         w => w.uuid === elementWorkspaceId
       );
-      const offset = -(newWorkspaceIndex - elementWorkspaceIndex) * 100;
+      let offset = elementWorkspaceIndex - newWorkspaceIndex;
+      if (offset > Math.floor(spaceLen / 2)) {
+        offset -= spaceLen;
+      } else if (offset < -Math.floor(spaceLen / 2)) {
+        offset += spaceLen;
+      }
+      offset = offset * 100;
       const newTransform = `translateX(${offset}%)`;
+      // Only animate the workspace that is coming in, to avoid having multiple workspaces
+      // animating off-screen at the same time which can cause performance issues. With an off
+      // set of 1 or -1, so we animate the current workspace and the next one.
+      const totalDistance = Math.abs(diff);
+      const distanceToElement = isGoingLeft
+        ? (previousWorkspaceIndex - elementWorkspaceIndex + spaceLen) % spaceLen
+        : (elementWorkspaceIndex - previousWorkspaceIndex + spaceLen) %
+          spaceLen;
+      const willBeVisible = distanceToElement <= totalDistance;
       if (shouldAnimate) {
-        const existingPaddingTop = element.style.paddingTop;
-        animations.push(
-          gZenUIManager.motion.animate(
-            element,
-            {
-              transform: existingTransform
-                ? [existingTransform, newTransform]
-                : newTransform,
-              paddingTop: existingTransform
-                ? [existingPaddingTop, existingPaddingTop]
-                : existingPaddingTop,
-            },
-            {
-              type: "spring",
-              bounce: 0,
-              duration: kGlobalAnimationDuration,
-            }
-          )
-        );
+        if (!willBeVisible) {
+          element.style.transform = newTransform;
+        } else {
+          const existingPaddingTop = element.style.paddingTop;
+          animations.push(
+            gZenUIManager.motion.animate(
+              element,
+              {
+                transform: existingTransform
+                  ? [existingTransform, newTransform]
+                  : newTransform,
+                paddingTop: existingTransform
+                  ? [existingPaddingTop, existingPaddingTop]
+                  : existingPaddingTop,
+              },
+              {
+                type: "spring",
+                bounce: 0,
+                duration: kGlobalAnimationDuration,
+              }
+            )
+          );
+        }
       }
       element.active = offset === 0;
       if (offset === 0) {
@@ -2354,6 +2385,27 @@ class nsZenWorkspaces {
       currentWorkspace.containerTabId,
       this.getWorkspaces()
     );
+  }
+
+  onBeforeTabSelect(aTab) {
+    if (this.#inChangingWorkspace || !aTab) {
+      // Just in case, Let's not do these checks while we are
+      // in the middle of changing workspace,
+      return false;
+    }
+    const tabSpace = aTab.getAttribute("zen-workspace-id");
+    if (
+      tabSpace &&
+      tabSpace !== this.activeWorkspace &&
+      !aTab.hasAttribute("zen-empty-tab") &&
+      !aTab.hasAttribute("zen-essential")
+    ) {
+      this.lastSelectedWorkspaceTabs[tabSpace] =
+        gZenGlanceManager.getTabOrGlanceParent(aTab);
+      this.changeWorkspaceWithID(tabSpace);
+      return true;
+    }
+    return false;
   }
 
   _shouldShowTab(tab, workspaceUuid, containerId, workspaces) {
@@ -3053,8 +3105,16 @@ class nsZenWorkspaces {
 
   // Tab browser utilities
 
-  getContextIdIfNeeded(userContextId, fromExternal) {
+  getContextIdIfNeeded(userContextId, fromExternal, triggeringPrincipal) {
     if (!this.workspaceEnabled) {
+      return [userContextId, false, undefined];
+    }
+
+    if (
+      triggeringPrincipal &&
+      triggeringPrincipal.isAddonOrExpandedAddonPrincipal &&
+      typeof userContextId === "undefined"
+    ) {
       return [userContextId, false, undefined];
     }
 
@@ -3281,8 +3341,8 @@ class nsZenWorkspaces {
     // Validate tab state
     if (
       tab.closing ||
-      !tab.ownerGlobal ||
-      tab.ownerGlobal.closed ||
+      !tab.documentGlobal ||
+      tab.documentGlobal.closed ||
       !tab.linkedBrowser
     ) {
       console.warn("Tab is no longer valid, cannot select it");

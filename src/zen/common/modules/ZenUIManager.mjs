@@ -257,7 +257,7 @@ window.gZenUIManager = {
   },
 
   updateTabsToolbar() {
-    const kUrlbarHeight = 335;
+    const kUrlbarHeight = 333;
     gURLBar.style.setProperty(
       "--zen-urlbar-top",
       `${window.innerHeight / 2 - Math.max(kUrlbarHeight, window.windowUtils.getBoundsWithoutFlushing(gURLBar).height) / 2}px`
@@ -299,12 +299,9 @@ window.gZenUIManager = {
   },
 
   openAndChangeToTab(url, options) {
-    if (window.ownerGlobal.parent) {
-      const tab = window.ownerGlobal.parent.gBrowser.addTrustedTab(
-        url,
-        options
-      );
-      window.ownerGlobal.parent.gBrowser.selectedTab = tab;
+    if (window.parent) {
+      const tab = window.parent.gBrowser.addTrustedTab(url, options);
+      window.parent.gBrowser.selectedTab = tab;
       return tab;
     }
     const tab = window.gBrowser.addTrustedTab(url, options);
@@ -616,8 +613,8 @@ window.gZenUIManager = {
       if (
         this._lastTab &&
         !this._lastTab.closing &&
-        this._lastTab.ownerGlobal &&
-        !this._lastTab.ownerGlobal.closed &&
+        this._lastTab.documentGlobal &&
+        !this._lastTab.documentGlobal.closed &&
         gBrowser.selectedTab === this._lastTab
       ) {
         this._lastTab._visuallySelected = true;
@@ -698,11 +695,6 @@ window.gZenUIManager = {
       this.urlbarShowDomainOnly
     ) {
       let url = BrowserUIUtils.removeSingleTrailingSlashFromURL(aURL);
-      requestIdleCallback(() => {
-        // Scroll the urlbar all the way to the right so that
-        // the domain is always visible when the url is too long.
-        gURLBar.inputField.scrollLeft = gURLBar.inputField.scrollWidth;
-      });
       let stripped = url.startsWith("https://") ? url.split("/")[2] : url;
       if (stripped.startsWith("www.")) {
         stripped = stripped.substring(4);
@@ -1239,7 +1231,7 @@ window.gZenVerticalTabsManager = {
         let height;
         if (!this._hasSetSingleToolbar) {
           height = AppConstants.platform == "macosx" ? 34 : 32;
-        } else if (gURLBar.getAttribute("breakout-extend") !== "true") {
+        } else if (!gURLBar.hasAttribute("breakout-extend")) {
           height = 38;
         }
         if (typeof height !== "undefined") {
@@ -1363,6 +1355,7 @@ window.gZenVerticalTabsManager = {
         if (!this._hasSetSingleToolbar) {
           buttonsTarget.append(this._topButtonsSeparatorElement);
         }
+        this._hasSetSingleToolbar = true;
         for (const button of elements) {
           this.appendCustomizableItem(this._topButtonsSeparatorElement, button);
         }
@@ -1386,7 +1379,6 @@ window.gZenVerticalTabsManager = {
           titlebar.parentNode.moveBefore(navBar, titlebar);
         }
         document.documentElement.setAttribute("zen-single-toolbar", true);
-        this._hasSetSingleToolbar = true;
       } else if (this._hasSetSingleToolbar) {
         this._hasSetSingleToolbar = false;
         // Do the opposite
@@ -1515,7 +1507,7 @@ window.gZenVerticalTabsManager = {
       this.navigatorToolbox.after(splitter);
       window.dispatchEvent(new Event("resize"));
       if (!isCompactMode) {
-        gZenCompactModeManager.getAndApplySidebarWidth();
+        gZenCompactModeManager.getAndApplySidebarWidth({});
       }
       gZenUIManager.updateTabsToolbar();
       this.rebuildURLBarMenus();
@@ -1587,6 +1579,7 @@ window.gZenVerticalTabsManager = {
           overflowElements.appendChild(child);
         } else {
           const element = document.getElementById("page-action-buttons");
+          child.setAttribute("context", "toolbar-context-menu");
           element.before(child);
         }
         return;
@@ -1620,7 +1613,9 @@ window.gZenVerticalTabsManager = {
         // it will reset to the original name anyway
         if (hasChanged || (this._tabEdited.zenStaticLabel && newName)) {
           this._tabEdited.zenStaticLabel = newName;
-          gBrowser._setTabLabel(this._tabEdited, newName);
+          gBrowser._setTabLabel(this._tabEdited, newName, {
+            _zenChangeLabelFlag: true,
+          });
           gZenUIManager.showToast("zen-tabs-renamed");
         } else {
           delete this._tabEdited.zenStaticLabel;
@@ -1716,7 +1711,8 @@ window.gZenVerticalTabsManager = {
       this._tabEdited.after(input);
     }
     input.focus();
-    input.select();
+    input.setSelectionRange(0, input.value.length, "backward");
+    input.scrollLeft = 0;
 
     input.addEventListener("blur", this._renameTabHalt);
   },

@@ -1,8 +1,8 @@
 diff --git a/browser/components/customizableui/content/panelUI.js b/browser/components/customizableui/content/panelUI.js
-index 5056ff7fba62f8340c58cbaa30833aad12b4fc70..32dbd206cbc8576ec5a5f958f43670fa90c050b8 100644
+index 140ea6eddd0d0c6817bbaabf2dc00083eaa11b13..0fe33867cf64d02b2b6e6db8b6844a4ea044ad33 100644
 --- a/browser/components/customizableui/content/panelUI.js
 +++ b/browser/components/customizableui/content/panelUI.js
-@@ -647,10 +647,12 @@ const PanelUI = {
+@@ -666,10 +666,12 @@ const PanelUI = {
      if (hasKids && !this.navbar.hasAttribute("nonemptyoverflow")) {
        this.navbar.setAttribute("nonemptyoverflow", "true");
        this.overflowPanel.setAttribute("hasfixeditems", "true");
@@ -15,7 +15,7 @@ index 5056ff7fba62f8340c58cbaa30833aad12b4fc70..32dbd206cbc8576ec5a5f958f43670fa
      }
    },
  
-@@ -998,7 +1000,7 @@ const PanelUI = {
+@@ -1017,7 +1019,7 @@ const PanelUI = {
          el.removeAttribute("data-lazy-l10n-id");
        });
  

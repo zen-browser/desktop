@@ -793,6 +793,7 @@ const zenMissingKeyboardShortcutL10n = {
   key_selectTab7: "zen-key-select-tab-7",
   key_selectTab8: "zen-key-select-tab-8",
   key_selectLastTab: "zen-key-select-tab-last",
+  key_duplicateTab: "customkeys-file-duplicate-tab",
 
   key_showAllTabs: "zen-key-show-all-tabs",
   key_gotoHistory: "zen-key-goto-history",
@@ -801,6 +802,7 @@ const zenMissingKeyboardShortcutL10n = {
   key_redo: "zen-key-redo",
 
   key_inspectorMac: "zen-key-inspector-mac",
+  key_findSelection: "zen-key-find-selection",
 
   // Devtools
   key_toggleToolbox: "zen-devtools-toggle-shortcut",
@@ -823,6 +825,7 @@ var zenIgnoreKeyboardShortcutIDs = [
   "key_enterFullScreen_compat",
   "key_exitFullScreen_old",
   "key_exitFullScreen_compat",
+  "key_duplicateTab",
 ];
 
 var zenIgnoreKeyboardShortcutL10n = [
@@ -942,6 +945,7 @@ var gZenCKSSettings = {
       });
 
       input.addEventListener("blur", (event) => {
+        this._currentActionID = null;
         const target = event.target;
         target.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
         if (!this._hasSafed) {
@@ -1046,6 +1050,7 @@ var gZenCKSSettings = {
       input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-not-set`);
       input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
       this._latestValidKey = null;
+      this._currentActionID = null;
       return;
     } else if (shortcut == "Escape" && !modifiersActive) {
       const { hasConflicts, conflictShortcut } = gZenKeyboardShortcutsManager.checkForConflicts(
@@ -1124,7 +1129,7 @@ var gZenCKSSettings = {
     this._hasSafed = false;
     input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`);
     input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-not-set`);
-    input.value = modifiers.toDisplayString() + shortcut;
+    input.value = modifiers.toDisplayString() + gZenKeyboardShortcutsManager.getKeyDisplay(shortcut);
     this._latestValidKey = shortcut;
   },
 };

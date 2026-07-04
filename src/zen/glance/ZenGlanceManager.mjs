@@ -35,7 +35,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   // Arc animation configuration
   #ARC_CONFIG = Object.freeze({
     ARC_STEPS: 80, // Browser interpolates between keyframes natively
-    MAX_ARC_HEIGHT: 25,
+    MAX_ARC_HEIGHT: 20,
     ARC_HEIGHT_RATIO: 0.2, // Arc height = distance * ratio (capped at MAX_ARC_HEIGHT)
   });
 
@@ -53,6 +53,10 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   #setupEventListeners() {
     window.addEventListener("TabClose", this.onTabClose.bind(this));
     window.addEventListener("TabSelect", this.onLocationChange.bind(this));
+    window.addEventListener(
+      "MozDOMFullscreen:Entered",
+      this.onFullscreenEntered.bind(this)
+    );
 
     document
       .getElementById("tabbrowser-tabpanels")
@@ -81,8 +85,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     menuitem.addEventListener("command", () =>
       this.openGlance({
         url: gContextMenu.linkURL,
-        triggeringPrincipal:
-          Services.scriptSecurityManager.getSystemPrincipal(),
+        triggeringPrincipal: gContextMenu.principal,
       })
     );
 
@@ -214,6 +217,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       skipAnimation: true,
       ownerTab: currentTab,
       triggeringPrincipal: data.triggeringPrincipal,
+      skipRoute: true,
     };
   }
 
@@ -313,16 +317,18 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     // content process since it does not take into account scroll. This way, we can
     // be sure that the coordinates are correct.
     const tabPanelsRect = gBrowser.tabpanels.getBoundingClientRect();
+    const zoomLevel =
+      this.#currentParentTab?.linkedBrowser.browsingContext.fullZoom || 1;
     const rect = new DOMRect(
-      data.clientX + tabPanelsRect.left,
-      data.clientY + tabPanelsRect.top,
-      data.width,
-      data.height
+      data.clientX / zoomLevel + tabPanelsRect.left,
+      data.clientY / zoomLevel + tabPanelsRect.top,
+      data.width / zoomLevel,
+      data.height / zoomLevel
     );
     return await this.#imageBitmapToObjectURL(
       await window.browsingContext.currentWindowGlobal.drawSnapshot(
         rect,
-        1,
+        zoomLevel,
         "transparent",
         undefined
       )
@@ -348,6 +354,28 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   }
 
   /**
+   * Check whether a glance load is permitted for its triggering principal.
+   *
+   * @param {object} data - Glance data including URL and triggeringPrincipal
+   * @returns {boolean} Whether the load is allowed
+   */
+  #isGlanceLoadAllowed(data) {
+    const { url, triggeringPrincipal } = data ?? {};
+    if (typeof url !== "string" || !url.length || !triggeringPrincipal) {
+      return false;
+    }
+    try {
+      Services.scriptSecurityManager.checkLoadURIStrWithPrincipal(
+        triggeringPrincipal,
+        url
+      );
+    } catch {
+      return false;
+    }
+    return true;
+  }
+
+  /**
    * Open a glance overlay with the specified data
    *
    * @param {object} data - Glance data including URL, position, and dimensions
@@ -362,6 +390,13 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     if (gBrowser.selectedTab === this.#currentParentTab) {
       gBrowser.selectedTab = this.#currentTab;
       return Promise.resolve(this.#currentTab);
+    }
+
+    // Existing-tab glances perform no navigation and are exempt; for fresh
+    // loads, refuse any URL the triggering principal isn't allowed to load
+    // (e.g. a web page linking to file://).
+    if (!existingTab && !this.#isGlanceLoadAllowed(data)) {
+      return Promise.resolve(null);
     }
 
     if (!data.height || !data.width) {
@@ -1408,6 +1443,23 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   onTabClose(event) {
     if (event.target === this.#currentParentTab) {
       this.closeGlance({ onTabClose: true });
+    }
+  }
+
+  /**
+   * Handle DOM Fullscreen request while inside glance
+   *
+   * @param {Event} event - The MozDOMFullscreen:Entered event
+   */
+  onFullscreenEntered(event) {
+    const browser = this.#currentBrowser;
+
+    if (!browser) {
+      return;
+    }
+
+    if (event.target === browser) {
+      this.fullyOpenGlance();
     }
   }
 

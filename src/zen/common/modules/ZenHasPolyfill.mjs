@@ -53,7 +53,6 @@ class nsHasPolyfill {
     };
 
     const observer = new MutationObserver(updateState);
-    updateState();
     const observerId = this.idStore++;
     this.observers.push({
       id: observerId,

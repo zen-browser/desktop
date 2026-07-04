@@ -5,6 +5,11 @@ run-if = [
 firefox-appdir = "browser"
 tags = "os_integration"
 
+["test_desktopEntryStatus.js"]
+run-if = [
+  "os == 'linux'",
+]
+
 ["test_linuxDesktopEntry.js"]
 run-if = [
   "os == 'linux'",
@@ -13,6 +18,11 @@ run-if = [
 ["test_macOS_showSecurityPreferences.js"]
 run-if = [
   "os == 'mac'",
+]
+
+["test_maybeCreateLaunchOnLoginOnFirstRun.js"]
+run-if = [
+  "os == 'win'"
 ]
 
 ["test_secondaryTileJs.js"]

@@ -17,8 +17,14 @@ XPCOMUtils.defineLazyPreferenceGetter(
   true
 );
 
+// A small threshold to allow for minor mouse jitter during a normal click.
+// Anything beyond this is likely an intentional drag (like selecting text).
+const CLICK_DRAG_THRESHOLD_PX = 4;
+
 export class ZenGlanceChild extends JSWindowActorChild {
   #activationMethod;
+  #mouseDownX = null;
+  #mouseDownY = null;
 
   constructor() {
     super();
@@ -66,11 +72,13 @@ export class ZenGlanceChild extends JSWindowActorChild {
     ) {
       rect = originalTargetRect;
     }
+    // Change the rect to make sure we take into account zoom.
+    const zoom = this.browsingContext.fullZoom;
     this.sendAsyncMessage("ZenGlance:RecordLinkClickData", {
-      clientX: rect.left,
-      clientY: rect.top,
-      width: rect.width,
-      height: rect.height,
+      clientX: rect.left * zoom,
+      clientY: rect.top * zoom,
+      width: rect.width * zoom,
+      height: rect.height * zoom,
     });
   }
 
@@ -119,9 +127,26 @@ export class ZenGlanceChild extends JSWindowActorChild {
     // The problem is that at that stage we don't know the rect or even what
     // element has been clicked, so we send the data here.
     this.#sendClickDataToParent(node, event.target);
+
+    this.#mouseDownX = event.clientX;
+    this.#mouseDownY = event.clientY;
   }
 
   on_click(event) {
+    // If the user drags to select text inside a link, we shouldn't open glance.
+    if (this.#mouseDownX !== null && this.#mouseDownY !== null) {
+      const deltaX = Math.abs(event.clientX - this.#mouseDownX);
+      const deltaY = Math.abs(event.clientY - this.#mouseDownY);
+      this.#mouseDownX = null;
+      this.#mouseDownY = null;
+      if (
+        deltaX > CLICK_DRAG_THRESHOLD_PX ||
+        deltaY > CLICK_DRAG_THRESHOLD_PX
+      ) {
+        return;
+      }
+    }
+
     const { node, href, principal } = this.#getTargetFromEvent(event);
     if (
       event.button !== 0 ||

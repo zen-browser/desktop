@@ -6,9 +6,14 @@
 #define mozilla_ZenBoostsBackend_h_
 
 #include "nsColor.h"
+#include "nsISupportsImpl.h"
 #include "nsPresContext.h"
 
-#include "mozilla/RefPtr.h"
+class nsIFrame;
+
+namespace mozilla::dom {
+class BrowsingContext;
+}
 
 #define ZEN_BOOSTS_BACKEND_CONTRACTID "@mozilla.org/zen/boosts-backend;1"
 
@@ -22,76 +27,52 @@ struct nsZenAccentOklab {
   float contrastFactor;
 };
 
-class nsZenBoostsBackend final {
+#ifdef ENABLE_TESTS
+// Test-only forwarders into the file-local color math and accent cache.
+namespace detail {
+nsZenAccentOklab PrecomputeAccent(nscolor aAccentColor);
+nsZenAccentOklab RotateAccent(const nsZenAccentOklab& aBase,
+                              float aRotationDeg);
+nscolor FilterColorChannel(nscolor aOriginalColor,
+                           const nsZenAccentOklab& aAccent,
+                           const nsZenAccentOklab& aComplementary);
+nscolor InvertColorChannel(nscolor aColor);
+
+size_t AccentCacheSize();
+void ResetAccentCache();
+bool IsAccentCached(nscolor aAccentNS, float aRotationDeg);
+void EnsureCachedAccent(nscolor aAccentNS, float aRotationDeg);
+}  // namespace detail
+#endif  // ENABLE_TESTS
+
+class nsZenBoostsBackend final : public nsISupports {
  public:
+  NS_DECL_ISUPPORTS
+
   explicit nsZenBoostsBackend() = default;
-  ~nsZenBoostsBackend() = default;
 
   /**
-   * Indicates whether the current frame being rendered is for anonymous
-   * content.
-   */
-  bool mCurrentFrameIsAnonymousContent = false;
-
-  /**
-   * @brief Resolve a StyleAbsoluteColor to take into account Zen boosts.
+   * @brief Resolve a color to take into account Zen boosts. This is the single
+   * place style colors are filtered; it is reached for every style color via
+   * StyleAbsoluteColor::ToColor. Do not add a second StyleColor::ResolveColor
+   * filter on top of this or colors get filtered multiple times (which also
+   * makes resting colors disagree with composited transition endpoints).
+   *
+   * The boost state is derived from the frame the color is being resolved for:
+   * its document's top BrowsingContext carries the accent/inversion data. When
+   * @p aFrame is null, or belongs to anonymous content (devtools, screenshots,
+   * the boosts overlays themselves), the color is returned unfiltered.
    * @param aColor The color to resolve.
+   * @param aFrame The frame the color is being resolved for, or null.
    * @return The resolved color with Zen boost filters applied, or the original
    * color if no boost is active.
-   * @see StyleColor::ResolveColor for reference.
+   * @see StyleAbsoluteColor::ToColor for reference.
    */
-  static auto ResolveStyleColor(mozilla::StyleAbsoluteColor aColor)
-      -> mozilla::StyleAbsoluteColor;
-
-  /**
-   * @see ResolveStyleColor for reference.
-   */
-  static auto ResolveStyleColor(nscolor aColor) -> nscolor;
-
-  /**
-   * @brief Filter a color based on the current Zen boost settings.
-   * @param aColor The color to filter.
-   * @param aPresContext The presentation context to use for filtering.
-   * @return The filtered color.
-   */
-  static auto FilterColorFromPresContext(nscolor aColor,
-                                         nsPresContext* aPresContext = nullptr)
+  static auto ResolveStyleColor(nscolor aColor, const nsIFrame* aFrame)
       -> nscolor;
 
-  /**
-   * @brief Called when a presshell is entered during rendering.
-   * @param aDocument The document associated with the presshell being entered.
-   */
-  auto onPresShellEntered(mozilla::dom::Document* aDocument) -> void;
-
-  /**
-   * @brief Refresh the cached boost state from the current top BrowsingContext.
-   * Called from onPresShellEntered and from BrowsingContext::DidSet hooks when
-   * the underlying boost fields change.
-   */
-  auto RefreshCachedBoostState() -> void;
-
-  [[nodiscard]]
-  inline auto GetCurrentBrowsingContext() const {
-    return mCurrentBrowsingContext;
-  }
-
-  /**
-   * Cached boost data for the current top BrowsingContext, refreshed on
-   * presshell entry and on DidSet hooks. Read by the per-color hot path so
-   * that boost-off pages don't pay for a BrowsingContext walk on every color
-   * resolve.
-   */
-  ZenBoostData mCachedCurrentAccent = 0;
-  bool mCachedCurrentInverted = false;
-
  private:
-  /**
-   * The presshell of the current document being rendered.
-   */
-  RefPtr<mozilla::dom::BrowsingContext> mCurrentBrowsingContext;
-
-  static nsZenAccentOklab mCachedAccent;
+  ~nsZenBoostsBackend() = default;
 
  public:
   /**

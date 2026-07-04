@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarProvidersManager.sys.mjs b/browser/components/urlbar/UrlbarProvidersManager.sys.mjs
-index 08455d8d5da233639ccebc0e77c0810fb4f674c3..da8092b561c3dd8864e57f5a52a1a643db29ace1 100644
+index 8de151f473ac6b95bc606251f78a4bede093ee0c..dbd302259c54b0196a370b9ff12ba0dcf1545272 100644
 --- a/browser/components/urlbar/UrlbarProvidersManager.sys.mjs
 +++ b/browser/components/urlbar/UrlbarProvidersManager.sys.mjs
 @@ -913,6 +913,7 @@ export class Query {

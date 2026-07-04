@@ -70,6 +70,17 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
   static PREVENTABLE_SET = new Set(ZenBoostsChild.PREVENTABLE_EVENTS);
 
+  actorCreated() {
+    this.#applyBoostForPageIfAvailable();
+  }
+
+  didDestroy() {
+    if (this.#currentState === ZenBoostsChild.STATES.ZAP) {
+      this.disableZapMode();
+    }
+    this.#removeEventListeners();
+  }
+
   /**
    * Inverse of https://searchfox.org/firefox-main/rev/1a8c62b86277005f907151bc5389cf5c5091e76f/gfx/src/nsColor.h#23-27
    *
@@ -94,6 +105,25 @@ export class ZenBoostsChild extends JSWindowActorChild {
     // shenanigans.
     // Take into account that its an unsigned int
     return ((contrast << 24) | (b << 16) | (g << 8) | r) >>> 0;
+  }
+
+  /**
+   * Builds the packed primary accent NSColor for a boost, with the boost
+   * contrast stored in the alpha byte. The complementary accent is not a
+   * separate color: the backend derives it by rotating this accent's hue by
+   * the boost's `secondaryDotAngleDegDelta`, which is sent separately.
+   *
+   * @param {number} hueDeg - Primary hue in degrees.
+   * @param {number} sat - Saturation in [0, 1].
+   * @param {number} light - Lightness in [0, 1].
+   * @param {object} boostData - The current boost data.
+   * @returns {number} The packed primary NSColor.
+   */
+  #buildBoostColor(hueDeg, sat, light, boostData) {
+    return this.#rgbToNSColor(
+      this.#hslToRgb(hueDeg / 360, sat, light),
+      (1 - boostData.contrast) * 255
+    );
   }
 
   /**
@@ -158,28 +188,6 @@ export class ZenBoostsChild extends JSWindowActorChild {
     let l = (min + max) / 2;
     let s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
     return [h * 60, s, l];
-  }
-
-  /**
-   * Handles DOM events for the actor. Applies boost settings when a document
-   * element is inserted.
-   *
-   * @param {Event} event - The DOM event to handle.
-   */
-  handleEvent(event) {
-    switch (event.type) {
-      case "unload":
-        if (this.#currentState === ZenBoostsChild.STATES.ZAP) {
-          this.disableZapMode();
-        }
-        this.#removeEventListeners();
-        break;
-      case "DOMWindowCreated":
-        this.#applyBoostForPageIfAvailable();
-        break;
-      default:
-        break;
-    }
   }
 
   handleZapEvent(event) {
@@ -272,6 +280,9 @@ export class ZenBoostsChild extends JSWindowActorChild {
       case "ZenBoost:OpenInspector":
         this.sendAsyncMessage("ZenBoost:OpenInspector");
         break;
+      case "ZenBoost:DisableSizeOverride":
+        this.disableSizeOverride();
+        break;
     }
     return null;
   }
@@ -303,13 +314,18 @@ export class ZenBoostsChild extends JSWindowActorChild {
     return p;
   }
 
+  get #hostWithoutPort() {
+    const host = this.browsingContext.topWindow?.location.host;
+    return host?.split(":")[0];
+  }
+
   /**
    * Aquires the boost data for this website
    *
    * @returns {object} Boost data for the current website
    */
   getWebsiteBoost() {
-    const domain = this.browsingContext.topWindow?.location?.host;
+    const domain = this.#hostWithoutPort;
     if (!domain) {
       return null;
     }
@@ -343,8 +359,17 @@ export class ZenBoostsChild extends JSWindowActorChild {
         this.#loadStyleSheet(boost.styleSheet);
       }
 
+      if (
+        boostData.sizeOverride &&
+        isFinite(boostData.sizeOverride) &&
+        boostData.sizeOverride !== 1
+      ) {
+        browsingContext.fullZoom = boostData.sizeOverride;
+      }
+
       browsingContext.isZenBoostsInverted = boostData.smartInvert;
       if (boostData.enableColorBoost) {
+        let primaryColor;
         if (boostData.autoTheme) {
           // Workspace color is converted to the HSL color space
           let primaryGradientColor = boost.workspaceGradient[0]?.c ?? [
@@ -362,40 +387,34 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
           // Workspace color is converted back to rgb
           // using the same modifiers as the color above
-          primaryGradientColor = this.#hslToRgb(
-            primaryGradientColor[0] / 360,
-            primaryGradientColor[1] * (1 - boostData.saturation),
-            0.1 + primaryGradientColor[2] * 0.9 * boostData.brightness
+          primaryColor = this.#buildBoostColor(
+            primaryGradientColor[0],
+            1 - boostData.saturation,
+            0.1 + 0.9 * boostData.brightness,
+            boostData
           );
-
-          const rgbColor = primaryGradientColor;
-          const nsColor = this.#rgbToNSColor(
-            rgbColor,
-            (1 - boostData.contrast) * 255
-          );
-          browsingContext.zenBoostsData = nsColor;
         } else {
-          let colorWheelColor = this.#hslToRgb(
-            boostData.dotAngleDeg / 360,
+          primaryColor = this.#buildBoostColor(
+            boostData.dotAngleDeg,
             /* already is [0, 1] */
-            boostData.dotDistance * (1 - boostData.saturation),
+            1 - boostData.saturation,
             /* lightness range from [0.1, 0.9] */
-            0.1 + boostData.dotDistance * 0.8 * boostData.brightness
+            0.1 + 0.9 * boostData.brightness,
+            boostData
           );
-
-          const rgbColor = colorWheelColor;
-          const nsColor = this.#rgbToNSColor(
-            rgbColor,
-            (1 - boostData.contrast) * 255
-          );
-          browsingContext.zenBoostsData = nsColor;
         }
+        browsingContext.zenBoostsData = primaryColor;
+        // The complementary accent is derived in the backend by rotating the
+        // primary accent's hue by this delta (in degrees).
+        browsingContext.zenBoostsComplementaryRotation =
+          boostData.secondaryDotAngleDegDelta ?? 0;
         return;
       }
     } else {
       browsingContext.isZenBoostsInverted = false;
     }
     browsingContext.zenBoostsData = 0;
+    browsingContext.zenBoostsComplementaryRotation = 0;
   }
 
   /**
@@ -470,7 +489,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
   }
 
   addZapSelector(selector) {
-    const domain = this.browsingContext.topWindow?.location?.host;
+    const domain = this.#hostWithoutPort;
     this.sendQuery("ZenBoost:ZapSelector", {
       action: "add",
       selector,
@@ -479,7 +498,7 @@ export class ZenBoostsChild extends JSWindowActorChild {
   }
 
   removeZapSelector(selector) {
-    const domain = this.browsingContext.topWindow?.location?.host;
+    const domain = this.#hostWithoutPort;
     this.sendQuery("ZenBoost:ZapSelector", {
       action: "remove",
       selector,
@@ -531,6 +550,14 @@ export class ZenBoostsChild extends JSWindowActorChild {
 
     this.#removeEventListeners();
     this.sendNotify("selector-picker-state-update", "ondisable");
+  }
+
+  disableSizeOverride() {
+    const browsingContext = this.browsingContext;
+    if (!browsingContext || browsingContext.parent !== null) {
+      return;
+    }
+    browsingContext.fullZoom = 1;
   }
 
   sendNotify(topic, msg = null) {

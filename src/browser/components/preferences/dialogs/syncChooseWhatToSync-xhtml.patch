@@ -1,8 +1,8 @@
 diff --git a/browser/components/preferences/dialogs/syncChooseWhatToSync.xhtml b/browser/components/preferences/dialogs/syncChooseWhatToSync.xhtml
-index ef127a1bc2e3ea4221b641156c38a74edb3b44ae..acd39fe7f6dc7ec03ea50928e2d002791b834dcf 100644
+index a893c5ec3d007820d98f5d92dd039640faa2c181..9cbd00102e44ccf98b37845474d92d57bac0842d 100644
 --- a/browser/components/preferences/dialogs/syncChooseWhatToSync.xhtml
 +++ b/browser/components/preferences/dialogs/syncChooseWhatToSync.xhtml
-@@ -27,6 +27,10 @@
+@@ -26,6 +26,10 @@
          rel="localization"
          href="browser/preferences/preferences.ftl"
        />
@@ -13,7 +13,7 @@ index ef127a1bc2e3ea4221b641156c38a74edb3b44ae..acd39fe7f6dc7ec03ea50928e2d00279
      </linkset>
      <script src="chrome://global/content/preferencesBindings.js" />
      <script src="chrome://browser/content/preferences/dialogs/syncChooseWhatToSync.js" />
-@@ -87,6 +91,12 @@
+@@ -86,6 +90,12 @@
            preference="services.sync.engine.prefs"
          />
        </html:div>

@@ -34,14 +34,6 @@
   <link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-advanced-color-options.css" />
 
   <link rel="localization" href="browser/zen-boosts.ftl"/>
-
-  <!-- Loading in the window module -->
-  <script>
-    const { nsZenBoostEditor } = ChromeUtils.importESModule( "resource:///modules/zen/boosts/ZenBoostsEditor.mjs" );
-    window.addEventListener("load", () => {
-      window.boostEditor = new nsZenBoostEditor(document, window.domain, window, window.openerWindow);
-    });
-  </script>
 </head>
 <html:body xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <vbox flex="1" id="zen-boost-editor-root">
@@ -57,7 +49,8 @@
     <vbox flex="1" id="zen-boost-filter-wrapper">
       <hbox class="zen-boost-color-picker-gradient zen-boost-panel-disabled">
         <button data-l10n-id="zen-boost-magic-theme" id="zen-boost-magic-theme" class="subviewbutton mod-button"></button>
-        <html:div class="zen-boost-color-picker-dot"></html:div>
+        <html:div id="zen-boost-color-picker-dot-primary" class="zen-boost-color-picker-dot"></html:div>
+        <html:div id="zen-boost-color-picker-dot-secondary" class="zen-boost-color-picker-dot"></html:div>
         <html:div class="zen-boost-color-picker-circle"></html:div>
       </hbox>
 
@@ -69,16 +62,25 @@
 
       <html:div id="zen-boost-font-wrapper">
         <vbox id="zen-boost-font-grid">
-          <!-- Font buttons will be injected here -->
+# Font buttons will be injected here
         </vbox>
         <html:div class="visible-separator"></html:div>
         <hbox flex="1" id="zen-boost-font-toolbar">
           <html:select name="font" id="zen-boost-font-select" class="mod-button">
-            <!-- Additional font options will be injected here -->
+# Additional font options will be injected here
           </html:select>
-          <button data-l10n-id="zen-boost-text-case-toggle" id="zen-boost-text-case-toggle" class="subviewbutton mod-button"></button>
         </hbox>
       </html:div>
+
+      <hbox flex="1" id="zen-boost-toolbar-wrapper">
+        <button id="zen-boost-size" class="subviewbutton mod-button big-button med">
+          <html:p data-l10n-id="zen-boost-size" id="zen-boost-size-text"></html:p>
+          <html:p id="zen-boost-size-value"></html:p>
+        </button>
+        <button id="zen-boost-case" class="subviewbutton mod-button big-button toggleable-button med">
+          <html:p data-l10n-id="zen-boost-case" id="zen-boost-case-text"></html:p>
+        </button>
+      </hbox>
 
       <button id="zen-boost-zap" class="subviewbutton mod-button big-button toggleable-button">
         <html:p data-l10n-id="zen-boost-zap" id="zen-boost-zap-text"></html:p>
@@ -89,10 +91,6 @@
         <html:p data-l10n-id="zen-boost-code" id="zen-boost-code-text"></html:p>
       </button>
 
-      <hbox flex="1" id="zen-boost-toolbar-wrapper">
-        <button data-l10n-id="zen-boost-save" id="zen-boost-save" class="subviewbutton mod-button med"></button>
-        <button data-l10n-id="zen-boost-load" id="zen-boost-load" class="subviewbutton mod-button med"></button>
-      </hbox>
     </vbox>
   </vbox>
   <vbox flex="1" id="zen-boost-code-editor-root">
@@ -114,27 +112,30 @@
   <popupset id="mainPopupSet">
     <panel type="arrow" popupalign="topmiddle" id="zen-boost-advanced-color-options-panel">
       <vbox>
-        <p data-l10n-id="zen-bootst-color-contrast"></p>
+        <p data-l10n-id="zen-boost-color-contrast"></p>
         <html:input id="zen-boost-color-contrast" type="range" min="0.05" max="0.9" value="0.75" step="0.01"/>
       </vbox>
       <vbox>
-        <p data-l10n-id="zen-bootst-color-brightness"></p>
+        <p data-l10n-id="zen-boost-color-brightness"></p>
         <html:input id="zen-boost-color-brightness" type="range" min="0" max="1" value="0.5" step="0.01"/>
       </vbox>
       <vbox>
-        <p data-l10n-id="zen-bootst-color-original-saturation"></p>
+        <p data-l10n-id="zen-boost-color-original-saturation"></p>
         <html:input id="zen-boost-color-saturation" type="range" min="0" max="1" value="0.5" step="0.01"/>
       </vbox>
     </panel>
-  </popupset>
 
-  <menupopup id="zenBoostContextMenu">
-    <menuitem data-l10n-id="zen-boost-edit-rename" id="zen-boost-edit-rename" command="cmd_zenBoostEditName" />
-    <menuitem data-l10n-id="zen-boost-edit-shuffle" id="zen-boost-edit-shuffle" command="cmd_zenBoostShuffle" />
-    <menuitem data-l10n-id="zen-boost-edit-reset" id="zen-boost-edit-reset" command="cmd_zenBoostReset" />
-    <menuseparator/>
-    <menuitem data-l10n-id="zen-boost-edit-delete" id="zen-boost-edit-delete" command="cmd_zenBoostDelete" />
-  </menupopup>
+    <menupopup id="zenBoostContextMenu">
+      <menuitem data-l10n-id="zen-boost-edit-rename" id="zen-boost-edit-rename" command="cmd_zenBoostEditName" />
+      <menuitem data-l10n-id="zen-boost-edit-shuffle" id="zen-boost-edit-shuffle" command="cmd_zenBoostShuffle" />
+      <menuitem data-l10n-id="zen-boost-edit-reset" id="zen-boost-edit-reset" command="cmd_zenBoostReset" />
+      <menuseparator/>
+      <menuitem data-l10n-id="zen-boost-load" id="zen-boost-load" command="cmd_zenBoostLoad" />
+      <menuitem data-l10n-id="zen-boost-save" id="zen-boost-save" command="cmd_zenBoostSave" />
+      <menuseparator/>
+      <menuitem data-l10n-id="zen-boost-edit-delete" id="zen-boost-edit-delete" command="cmd_zenBoostDelete" />
+    </menupopup>
+  </popupset>
 
   <commandset id="zenBoostCommandSet">
     <command id="cmd_zenBoostEditName"
@@ -146,8 +147,19 @@
     <command id="cmd_zenBoostReset"
             oncommand="window.boostEditor.resetBoost();" />
 
+    <command id="cmd_zenBoostLoad"
+      oncommand="window.boostEditor.onLoadBoostClick();" />
+
+    <command id="cmd_zenBoostSave"
+            oncommand="window.boostEditor.onSaveBoostClick();" />
+
     <command id="cmd_zenBoostDelete"
             oncommand="window.boostEditor.deleteBoost();" />
   </commandset>
+
+  <script>
+    const { nsZenBoostEditor } = ChromeUtils.importESModule( "resource:///modules/zen/boosts/ZenBoostsEditor.mjs" );
+    window.boostEditor = new nsZenBoostEditor(document, window.domain, window, window.openerWindow);
+  </script>
 </html:body>
 </html>

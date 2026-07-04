@@ -2031,7 +2031,9 @@ class nsZenWorkspaces {
           w => w.containerTabId === contextId
         );
         // Skip containers that don't have workspaces
-        if (matchingWorkspaces.length === 0) continue;
+        if (matchingWorkspaces.length === 0) {
+          continue;
+        }
         essentialsAnimData.push({
           element: essentialsSection,
           workspaces: matchingWorkspaces,

@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = Impostazioni Routing Spazio
-zen-space-routing-rulepanel-placeholder = I percorsi ti permettono di scegliere dove aprire siti specifici all'interno di Nixo. Ad esempio, puoi instradare i link di YouTube per aprire sempre all'interno del tuo spazio Personale.
+zen-space-routing-rulepanel-placeholder = Routes let you choose where specific sites open inside Nixo. For example, you can route YouTube links to always open inside your Personal space.
 zen-space-routing-dialog-title = Impostazioni Routing Spazio
 zen-space-routing-external-default = Percorso predefinito per collegamenti esterni
 zen-space-routing-new-route = Nuova Percorso

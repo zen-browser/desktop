@@ -192,9 +192,6 @@ class nsZenWorkspaceCreation extends MozXULElement {
 
       this.currentProfile = {
         id: 0,
-        // Match the localized label Firefox uses for the default (no-container)
-        // entry in the profiles popup (see createUserContextMenu), instead of a
-        // hardcoded English "Default".
         name: ContextualIdentityService.formatContextLabel("user-context-none"),
       };
     } else {

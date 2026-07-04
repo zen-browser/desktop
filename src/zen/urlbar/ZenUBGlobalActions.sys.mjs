@@ -14,7 +14,7 @@ XPCOMUtils.defineLazyPreferenceGetter(
 );
 
 ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
-  return new Localization(["browser/zen-general.ftl"], true);
+  return new Localization(["browser/zen-command-palette.ftl"], true);
 });
 
 function isNotEmptyTab(window) {
@@ -259,38 +259,21 @@ const globalActionsTemplate = [
   },
 ];
 
-// Labels are resolved from Fluent so the command palette actions are
-// translatable (see the zen-action-* ids in zen-general.ftl). Resolution is
-// lazy so it never runs at module-load time, when the localization source may
-// not be registered yet.
-ChromeUtils.defineLazyGetter(lazy, "actionLabels", () => {
-  return lazy.l10n.formatValuesSync(
-    globalActionsTemplate.map(action => ({ id: action.l10nId }))
-  );
-});
-
-export const globalActions = globalActionsTemplate.map((action, index) => {
-  const builtAction = {
-    isAvailable: window => {
-      return (
-        window.document
-          .getElementById(action.command)
-          ?.getAttribute("disabled") !== "true"
-      );
-    },
-    // Derive the commandId from the (stable) l10nId rather than the label, so
-    // it stays identical across languages and keeps the learned priorities in
-    // ZenUBResultsLearner valid.
-    commandId:
-      typeof action.command === "string"
-        ? action.command
-        : `zen:global-action-${action.l10nId.replace("zen-action-", "")}`,
-    extraPayload: {},
-    ...action,
-  };
-  Object.defineProperty(builtAction, "label", {
-    enumerable: true,
-    get: () => lazy.actionLabels[index],
-  });
-  return builtAction;
-});
+export const globalActions = globalActionsTemplate.map(action => ({
+  isAvailable: window => {
+    return (
+      window.document
+        .getElementById(action.command)
+        ?.getAttribute("disabled") !== "true"
+    );
+  },
+  commandId:
+    typeof action.command === "string"
+      ? action.command
+      : `zen:global-action-${action.l10nId.replace("zen-action-", "")}`,
+  extraPayload: {},
+  ...action,
+  get label() {
+    return lazy.l10n.formatValueSync(action.l10nId);
+  },
+}));

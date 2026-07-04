@@ -28,7 +28,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 });
 
 ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
-  return new Localization(["browser/zen-general.ftl"], true);
+  return new Localization(["browser/zen-command-palette.ftl"], true);
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(

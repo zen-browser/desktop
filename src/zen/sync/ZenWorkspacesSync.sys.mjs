@@ -11,8 +11,15 @@ import { CryptoWrapper } from "resource://services-sync/record.sys.mjs";
 import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 import { SCORE_INCREMENT_XLARGE } from "resource://services-sync/constants.sys.mjs";
 import {
+  CONTEXTUAL_IDENTITY_TOPIC_PREFIX,
+  OBSERVER_TOPICS,
   RECORD_ID_PREFIX_BY_TYPE,
+  RECORD_TYPES,
   RECORD_TYPE_BY_PREFIX,
+  SYNC_PREFS,
+  WORKSPACES_ENGINE_NAME,
+  WORKSPACES_RECORD_LOG_NAME,
+  WORKSPACES_RECORD_TYPE,
 } from "resource:///modules/zen/ZenSyncConstants.sys.mjs";
 
 const lazy = {};
@@ -26,7 +33,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
   "gSyncOnlyPinnedTabs",
-  "zen.window-sync.sync-only-pinned-tabs",
+  SYNC_PREFS.SYNC_ONLY_PINNED_TABS,
   true
 );
 
@@ -35,10 +42,10 @@ XPCOMUtils.defineLazyPreferenceGetter(
  * Workspaces engine collection.
  */
 export class ZenWorkspacesRecord extends CryptoWrapper {
-  _logName = "Sync.Record.ZenSpaces";
+  _logName = WORKSPACES_RECORD_LOG_NAME;
 }
 
-ZenWorkspacesRecord.prototype.type = "spaces";
+ZenWorkspacesRecord.prototype.type = WORKSPACES_RECORD_TYPE;
 
 function parseRecordId(id) {
   const sep = id.indexOf("~");
@@ -94,30 +101,30 @@ class ZenWorkspacesStore extends Store {
 
     for (const space of sidebar.spaces || []) {
       if (space.uuid) {
-        ids[createRecordId("space", space.uuid)] = true;
+        ids[createRecordId(RECORD_TYPES.SPACE, space.uuid)] = true;
       }
     }
 
     for (const c of lazy.ContextualIdentityService.getPublicIdentities()) {
-      ids[createRecordId("container", c.userContextId)] = true;
+      ids[createRecordId(RECORD_TYPES.CONTAINER, c.userContextId)] = true;
     }
     const pinnedOnly = lazy.gSyncOnlyPinnedTabs;
 
     for (const tab of sidebar.tabs || []) {
       if (tab.zenSyncId && (!pinnedOnly || tab.pinned)) {
-        ids[createRecordId("tab", tab.zenSyncId)] = true;
+        ids[createRecordId(RECORD_TYPES.TAB, tab.zenSyncId)] = true;
       }
     }
 
     for (const folder of sidebar.folders || []) {
       if (folder.id) {
-        ids[createRecordId("folder", folder.id)] = true;
+        ids[createRecordId(RECORD_TYPES.FOLDER, folder.id)] = true;
       }
     }
 
     for (const splitGroup of sidebar.splitViewData || []) {
       if (splitGroup.groupId) {
-        ids[createRecordId("split", splitGroup.groupId)] = true;
+        ids[createRecordId(RECORD_TYPES.SPLIT, splitGroup.groupId)] = true;
       }
     }
 
@@ -132,17 +139,17 @@ class ZenWorkspacesStore extends Store {
     const sidebar = lazy.ZenSyncStore.getSidebarData();
 
     switch (parsed.type) {
-      case "space":
+      case RECORD_TYPES.SPACE:
         return (sidebar.spaces || []).some(s => s.uuid === parsed.key);
-      case "container":
+      case RECORD_TYPES.CONTAINER:
         return lazy.ContextualIdentityService.getPublicIdentities().some(
           c => String(c.userContextId) === parsed.key
         );
-      case "tab":
+      case RECORD_TYPES.TAB:
         return (sidebar.tabs || []).some(t => t.zenSyncId === parsed.key);
-      case "folder":
+      case RECORD_TYPES.FOLDER:
         return (sidebar.folders || []).some(f => String(f.id) === parsed.key);
-      case "split":
+      case RECORD_TYPES.SPLIT:
         return (sidebar.splitViewData || []).some(
           splitGroup => splitGroup.groupId === parsed.key
         );
@@ -162,7 +169,7 @@ class ZenWorkspacesStore extends Store {
     const sidebar = lazy.ZenSyncStore.getSidebarData();
 
     switch (parsed.type) {
-      case "space": {
+      case RECORD_TYPES.SPACE: {
         const spaces = sidebar.spaces || [];
         const idx = spaces.findIndex(s => s.uuid === parsed.key);
         if (idx === -1) {
@@ -171,11 +178,16 @@ class ZenWorkspacesStore extends Store {
         }
         const rest = { ...spaces[idx] };
         delete rest.syncStatus;
-        record.cleartext = { id, type: "space", ...rest, position: idx };
+        record.cleartext = {
+          id,
+          type: RECORD_TYPES.SPACE,
+          ...rest,
+          position: idx,
+        };
         break;
       }
 
-      case "container": {
+      case RECORD_TYPES.CONTAINER: {
         const container =
           lazy.ContextualIdentityService.getPublicIdentities().find(
             c => String(c.userContextId) === parsed.key
@@ -186,7 +198,7 @@ class ZenWorkspacesStore extends Store {
         }
         record.cleartext = {
           id,
-          type: "container",
+          type: RECORD_TYPES.CONTAINER,
           userContextId: container.userContextId,
           name: container.name,
           icon: container.icon,
@@ -194,7 +206,7 @@ class ZenWorkspacesStore extends Store {
         };
         break;
       }
-      case "tab": {
+      case RECORD_TYPES.TAB: {
         const tabs = sidebar.tabs || [];
         const idx = tabs.findIndex(t => t.zenSyncId === parsed.key);
         const tab = idx === -1 ? null : tabs[idx];
@@ -210,10 +222,10 @@ class ZenWorkspacesStore extends Store {
           record.deleted = true;
           return record;
         }
-        record.cleartext = { id, type: "tab", ...syncableTabData };
+        record.cleartext = { id, type: RECORD_TYPES.TAB, ...syncableTabData };
         break;
       }
-      case "folder": {
+      case RECORD_TYPES.FOLDER: {
         const folder = (sidebar.folders || []).find(
           f => String(f.id) === parsed.key
         );
@@ -222,10 +234,15 @@ class ZenWorkspacesStore extends Store {
           return record;
         }
         const { syncStatus: _s, id: folderId, ...rest } = folder;
-        record.cleartext = { id, type: "folder", folderId, ...rest };
+        record.cleartext = {
+          id,
+          type: RECORD_TYPES.FOLDER,
+          folderId,
+          ...rest,
+        };
         break;
       }
-      case "split": {
+      case RECORD_TYPES.SPLIT: {
         const splitGroup = (sidebar.splitViewData || []).find(
           group => group.groupId === parsed.key
         );
@@ -235,7 +252,7 @@ class ZenWorkspacesStore extends Store {
         }
         record.cleartext = {
           id,
-          type: "split",
+          type: RECORD_TYPES.SPLIT,
           groupId: splitGroup.groupId,
           gridType: splitGroup.gridType,
           layoutTree: splitGroup.layoutTree,
@@ -277,15 +294,17 @@ class ZenWorkspacesStore extends Store {
       const parsedRecordId = parseRecordId(record.id);
       const clean = stripSyncFields(data);
       switch (data.type) {
-        case "space":
+        case RECORD_TYPES.SPACE:
           pulled.spaces.push(clean);
           break;
-        case "container":
+        case RECORD_TYPES.CONTAINER:
           pulled.containers.push(clean);
           break;
-        case "tab": {
+        case RECORD_TYPES.TAB: {
           const recordTabId =
-            parsedRecordId?.type === "tab" ? parsedRecordId.key : null;
+            parsedRecordId?.type === RECORD_TYPES.TAB
+              ? parsedRecordId.key
+              : null;
           const syncId =
             typeof recordTabId === "string" && recordTabId
               ? recordTabId
@@ -297,20 +316,24 @@ class ZenWorkspacesStore extends Store {
           pulled.tabs.push(clean);
           break;
         }
-        case "folder":
+        case RECORD_TYPES.FOLDER:
           clean.id =
             clean.folderId ||
-            (parsedRecordId?.type === "folder" ? parsedRecordId.key : null);
+            (parsedRecordId?.type === RECORD_TYPES.FOLDER
+              ? parsedRecordId.key
+              : null);
           if (!clean.id) {
             break;
           }
           delete clean.folderId;
           pulled.folders.push(clean);
           break;
-        case "split":
+        case RECORD_TYPES.SPLIT:
           clean.groupId =
             clean.groupId ||
-            (parsedRecordId?.type === "split" ? parsedRecordId.key : null);
+            (parsedRecordId?.type === RECORD_TYPES.SPLIT
+              ? parsedRecordId.key
+              : null);
           if (!clean.groupId) {
             break;
           }
@@ -336,10 +359,10 @@ class ZenWorkspacesStore extends Store {
       return;
     }
     switch (parsed.type) {
-      case "space":
+      case RECORD_TYPES.SPACE:
         removals.spaces.push({ uuid: parsed.key });
         break;
-      case "container": {
+      case RECORD_TYPES.CONTAINER: {
         const userContextId = normalizeUserContextId(parsed.key);
         if (userContextId === null) {
           console.warn(
@@ -351,13 +374,13 @@ class ZenWorkspacesStore extends Store {
         removals.containers.push({ userContextId });
         break;
       }
-      case "tab":
+      case RECORD_TYPES.TAB:
         removals.tabs.push({ zenSyncId: parsed.key });
         break;
-      case "folder":
+      case RECORD_TYPES.FOLDER:
         removals.folders.push({ id: parsed.key });
         break;
-      case "split":
+      case RECORD_TYPES.SPLIT:
         removals.splits.push({ groupId: parsed.key });
         break;
     }
@@ -403,15 +426,17 @@ class ZenWorkspacesStore extends Store {
         splits: [],
       };
       switch (data.type) {
-        case "space":
+        case RECORD_TYPES.SPACE:
           pulled.spaces.push(clean);
           break;
-        case "container":
+        case RECORD_TYPES.CONTAINER:
           pulled.containers.push(clean);
           break;
-        case "tab": {
+        case RECORD_TYPES.TAB: {
           const recordTabId =
-            parsedRecordId?.type === "tab" ? parsedRecordId.key : null;
+            parsedRecordId?.type === RECORD_TYPES.TAB
+              ? parsedRecordId.key
+              : null;
           const syncId =
             typeof recordTabId === "string" && recordTabId
               ? recordTabId
@@ -423,20 +448,24 @@ class ZenWorkspacesStore extends Store {
           pulled.tabs.push(clean);
           break;
         }
-        case "folder":
+        case RECORD_TYPES.FOLDER:
           clean.id =
             clean.folderId ||
-            (parsedRecordId?.type === "folder" ? parsedRecordId.key : null);
+            (parsedRecordId?.type === RECORD_TYPES.FOLDER
+              ? parsedRecordId.key
+              : null);
           if (!clean.id) {
             break;
           }
           delete clean.folderId;
           pulled.folders.push(clean);
           break;
-        case "split":
+        case RECORD_TYPES.SPLIT:
           clean.groupId =
             clean.groupId ||
-            (parsedRecordId?.type === "split" ? parsedRecordId.key : null);
+            (parsedRecordId?.type === RECORD_TYPES.SPLIT
+              ? parsedRecordId.key
+              : null);
           if (!clean.groupId) {
             break;
           }
@@ -485,33 +514,45 @@ class ZenWorkspacesTracker extends Tracker {
   }
 
   onStart() {
-    Services.obs.addObserver(this, "zen-workspace-item-changed");
-    Services.obs.addObserver(this, "contextual-identity-created");
-    Services.obs.addObserver(this, "contextual-identity-updated");
-    Services.obs.addObserver(this, "contextual-identity-deleted");
+    Services.obs.addObserver(this, OBSERVER_TOPICS.ZEN_WORKSPACE_ITEM_CHANGED);
+    Services.obs.addObserver(this, OBSERVER_TOPICS.CONTEXTUAL_IDENTITY_CREATED);
+    Services.obs.addObserver(this, OBSERVER_TOPICS.CONTEXTUAL_IDENTITY_UPDATED);
+    Services.obs.addObserver(this, OBSERVER_TOPICS.CONTEXTUAL_IDENTITY_DELETED);
   }
 
   onStop() {
-    Services.obs.removeObserver(this, "zen-workspace-item-changed");
-    Services.obs.removeObserver(this, "contextual-identity-created");
-    Services.obs.removeObserver(this, "contextual-identity-updated");
-    Services.obs.removeObserver(this, "contextual-identity-deleted");
+    Services.obs.removeObserver(
+      this,
+      OBSERVER_TOPICS.ZEN_WORKSPACE_ITEM_CHANGED
+    );
+    Services.obs.removeObserver(
+      this,
+      OBSERVER_TOPICS.CONTEXTUAL_IDENTITY_CREATED
+    );
+    Services.obs.removeObserver(
+      this,
+      OBSERVER_TOPICS.CONTEXTUAL_IDENTITY_UPDATED
+    );
+    Services.obs.removeObserver(
+      this,
+      OBSERVER_TOPICS.CONTEXTUAL_IDENTITY_DELETED
+    );
   }
 
   observe(subject, topic, _data) {
     if (this.#ignoreAll) {
       return;
     }
-    if (topic === "zen-workspace-item-changed") {
+    if (topic === OBSERVER_TOPICS.ZEN_WORKSPACE_ITEM_CHANGED) {
       const type = subject?.wrappedJSObject?.type;
       const id = subject?.wrappedJSObject?.id;
       if (type && id) {
         this._trackChange({ type, id });
       }
-    } else if (topic.startsWith("contextual-identity-")) {
+    } else if (topic.startsWith(CONTEXTUAL_IDENTITY_TOPIC_PREFIX)) {
       const id = subject?.wrappedJSObject?.userContextId;
       if (id && normalizeUserContextId(id) !== null) {
-        this._trackChange({ type: "container", id });
+        this._trackChange({ type: RECORD_TYPES.CONTAINER, id });
       }
     }
   }
@@ -553,11 +594,11 @@ class ZenWorkspacesTracker extends Tracker {
  */
 export class ZenWorkspacesEngine extends SyncEngine {
   static get name() {
-    return "Spaces";
+    return WORKSPACES_ENGINE_NAME;
   }
 
   constructor(service) {
-    super("Spaces", service);
+    super(WORKSPACES_ENGINE_NAME, service);
   }
 
   get _storeObj() {

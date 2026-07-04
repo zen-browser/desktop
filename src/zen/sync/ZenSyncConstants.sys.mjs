@@ -10,6 +10,23 @@ export const RECORD_TYPES = Object.freeze({
   SPLIT: "split",
 });
 
+export const WORKSPACES_ENGINE_NAME = "Workspaces";
+export const WORKSPACES_RECORD_LOG_NAME = "Sync.Record.ZenWorkspaces";
+export const WORKSPACES_RECORD_TYPE = "workspaces";
+
+export const SYNC_PREFS = Object.freeze({
+  SYNC_ONLY_PINNED_TABS: "zen.window-sync.sync-only-pinned-tabs",
+});
+
+export const OBSERVER_TOPICS = Object.freeze({
+  ZEN_WORKSPACE_ITEM_CHANGED: "zen-workspace-item-changed",
+  CONTEXTUAL_IDENTITY_CREATED: "contextual-identity-created",
+  CONTEXTUAL_IDENTITY_UPDATED: "contextual-identity-updated",
+  CONTEXTUAL_IDENTITY_DELETED: "contextual-identity-deleted",
+});
+
+export const CONTEXTUAL_IDENTITY_TOPIC_PREFIX = "contextual-identity-";
+
 export const RECORD_ID_PREFIX_BY_TYPE = Object.freeze({
   [RECORD_TYPES.SPACE]: "s",
   [RECORD_TYPES.CONTAINER]: "c",

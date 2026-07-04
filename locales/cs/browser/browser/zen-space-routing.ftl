@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = Nastavení směrování mezery
-zen-space-routing-rulepanel-placeholder = Routy vám umožní zvolit místo otevření konkrétních stránek v Nixu. Například můžete směrovat odkazy na YouTube do vašeho osobního prostoru.
+zen-space-routing-rulepanel-placeholder = Routes let you choose where specific sites open inside Nixo. For example, you can route YouTube links to always open inside your Personal space.
 zen-space-routing-dialog-title = Nastavení směrování mezery
 zen-space-routing-external-default = Výchozí cesta pro externí odkazy
 zen-space-routing-new-route = Nová trasa

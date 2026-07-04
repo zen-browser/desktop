@@ -1,0 +1,49 @@
+[
+  {
+    "namespace": "ttsEngine",
+    "description": "Use the chrome.ttsEngine API to implement a TTS engine.",
+    "permissions": ["ttsEngine"],
+    "types": [
+      {
+        "id": "TtsVoice",
+        "type": "object",
+        "properties": {
+          "voiceName": { "type": "string", "optional": true },
+          "lang": { "type": "string", "optional": true },
+          "gender": { "type": "string", "optional": true },
+          "eventTypes": { "type": "array", "items": { "type": "string" }, "optional": true }
+        }
+      }
+    ],
+    "functions": [
+      {
+        "name": "updateVoices",
+        "type": "function",
+        "description": "Updates the list of voices provided by the engine.",
+        "parameters": [
+          { "name": "voices", "type": "array", "items": { "$ref": "TtsVoice" } }
+        ]
+      }
+    ],
+    "events": [
+      {
+        "name": "onSpeak",
+        "type": "function",
+        "description": "Fired when the extension should speak.",
+        "parameters": [
+          { "name": "utterance", "type": "string" },
+          { "name": "options", "type": "object" },
+          { "name": "sendTtsEvent", "type": "function", "parameters": [
+            { "name": "event", "type": "object" }
+          ] }
+        ]
+      },
+      {
+        "name": "onStop",
+        "type": "function",
+        "description": "Fired when the extension should stop speaking.",
+        "parameters": []
+      }
+    ]
+  }
+]

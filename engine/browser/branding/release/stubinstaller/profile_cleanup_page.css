@@ -1,0 +1,36 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+body {
+  color: white;
+}
+
+#header,
+#refreshCheckboxContainer,
+#refreshButtonContainer {
+  text-align: center;
+  margin-left: 40px;
+  margin-right: 40px;
+  margin-bottom: 30px;
+}
+
+#header {
+  font-size: 35px;
+  font-weight: normal;
+  margin-top: 45px;
+}
+
+#refreshCheckbox {
+  vertical-align: middle;
+}
+
+#checkboxLabel {
+  font-size: 13px;
+}
+
+#refreshButton {
+  padding: 8px 40px;
+  font-size: 15px;
+}
+:root { --theme-bg: #282A33 }

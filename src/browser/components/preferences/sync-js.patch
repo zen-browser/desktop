@@ -6,7 +6,7 @@ index dc89a9c41a0dbd44054ede0025d333773f0ae908..7fd91bd704b3b187277e4c8b076f990c
    { id: "services.sync.engine.creditcards", type: "bool" },
    { id: "services.sync.engine.addons", type: "bool" },
    { id: "services.sync.engine.prefs", type: "bool" },
-+  { id: "services.sync.engine.workspaces", type: "bool" },
++  { id: "services.sync.engine.spaces", type: "bool" },
  ]);
 
  /**
@@ -14,7 +14,7 @@ index dc89a9c41a0dbd44054ede0025d333773f0ae908..7fd91bd704b3b187277e4c8b076f990c
    },
    { id: "syncAddons", pref: "services.sync.engine.addons", type: "addons" },
    { id: "syncSettings", pref: "services.sync.engine.prefs", type: "settings" },
-+  { id: "syncWorkspaces", pref: "services.sync.engine.workspaces", type: "workspaces" },
++  { id: "syncWorkspaces", pref: "services.sync.engine.spaces", type: "workspaces" },
  ];
 
  SYNC_ENGINE_SETTINGS.forEach(({ id, pref }) => {

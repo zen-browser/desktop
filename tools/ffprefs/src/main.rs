@@ -346,6 +346,17 @@ fn expand_pref_values(prefs: &mut [Preference]) {
             }
             pref.value = new_value.clone();
         }
+        // Also change the condition if it contains placeholders
+        if let Some(condition) = &pref.condition {
+            let mut new_condition = condition.clone();
+            for (key, value) in &env_values {
+                let placeholder = format!("@{}@", key);
+                if new_condition.contains(&placeholder) {
+                    new_condition = new_condition.replace(&placeholder, if *value { "1" } else { "0" });
+                }
+                pref.condition = Some(new_condition.clone());
+            }
+        }
     }
 }
 

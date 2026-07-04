@@ -6,7 +6,7 @@ index b889d42301de3c4f845105bf09d19b052dca9eae..015b751bd46f2499a93e328c903475ce
                      <image class="sync-engine-image sync-engine-prefs" alt=""/>
                      <label data-l10n-id="sync-currently-syncing-settings"/>
                    </html:div>
-+                  <html:div engine_preference="services.sync.engine.workspaces">
++                  <html:div engine_preference="services.sync.engine.spaces">
 +                    <image class="sync-engine-image sync-engine-workspaces" alt=""/>
 +                    <label data-l10n-id="sync-currently-syncing-workspaces"/>
 +                  </html:div>

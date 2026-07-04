@@ -1,0 +1,32 @@
+[
+  {
+    "namespace": "wallpaper",
+    "description": "Use the chrome.wallpaper API to set the wallpaper.",
+    "permissions": ["wallpaper"],
+    "types": [
+      {
+        "id": "WallpaperDetails",
+        "type": "object",
+        "properties": {
+          "data": { "type": "array", "items": { "type": "integer" }, "optional": true },
+          "url": { "type": "string", "optional": true },
+          "layout": { "type": "string", "enum": ["STRETCH", "CENTER", "CROP"], "optional": true },
+          "filename": { "type": "string", "optional": true },
+          "thumbnail": { "type": "boolean", "optional": true }
+        }
+      }
+    ],
+    "functions": [
+      {
+        "name": "setWallpaper",
+        "type": "function",
+        "async": true,
+        "description": "Sets the desktop wallpaper.",
+        "parameters": [
+          { "name": "details", "$ref": "WallpaperDetails" }
+        ],
+        "returns": { "type": "string", "optional": true }
+      }
+    ]
+  }
+]

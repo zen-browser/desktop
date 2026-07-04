@@ -23,4 +23,4 @@ zen-welcome-start-browsing = Зануритися!
 zen-welcome-default-search-title = Ваша типова пошукова система
 zen-welcome-default-search-description = Оберіть вашу типову пошукову систему. Ви завжди зможете змінити її пізніше!
 zen-welcome-skip-button = Пропустити
-zen-welcome-finished = Zen налаштовано правильно!
+zen-welcome-finished = Your Nixo has been set up correctly!

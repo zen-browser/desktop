@@ -30,4 +30,4 @@ zen-welcome-default-search-description = Choose your default search engine. You 
 
 zen-welcome-skip-button = Skip
 
-zen-welcome-finished = Your Zen has been set up correctly!
+zen-welcome-finished = Your Nixo has been set up correctly!

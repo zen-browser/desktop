@@ -23,4 +23,4 @@ zen-welcome-start-browsing = Keşfetmeye başla!
 zen-welcome-default-search-title = Varsayılan Arama Motorun
 zen-welcome-default-search-description = Varsayılan arama motorunu seç. Bu seçimi istediğin zaman değiştirebilirsin!
 zen-welcome-skip-button = Atla
-zen-welcome-finished = Zen başarıyla kuruldu ve ayarlandı!
+zen-welcome-finished = Your Nixo has been set up correctly!

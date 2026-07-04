@@ -23,4 +23,4 @@ zen-welcome-start-browsing = انطلق!
 zen-welcome-default-search-title = محرك البحث الافتراضي
 zen-welcome-default-search-description = اختر محرك البحث الافتراضي. يمكنك تغييره لاحقًا!
 zen-welcome-skip-button = تخطي
-zen-welcome-finished = تم إعداد نسختك بشكل صحيح!
+zen-welcome-finished = Your Nixo has been set up correctly!

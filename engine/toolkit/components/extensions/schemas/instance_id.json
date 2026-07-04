@@ -1,0 +1,44 @@
+[
+  {
+    "namespace": "instanceID",
+    "description": "Use the chrome.instanceID API to access instance IDs.",
+    "permissions": ["gcm"],
+    "functions": [
+      {
+        "name": "getID",
+        "type": "function",
+        "async": true,
+        "returns": { "type": "string" }
+      },
+      {
+        "name": "getCreationTime",
+        "type": "function",
+        "async": true,
+        "returns": { "type": "number" }
+      },
+      {
+        "name": "getToken",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          { "name": "options", "type": "object", "additionalProperties": { "type": "any" } }
+        ],
+        "returns": { "type": "string" }
+      },
+      {
+        "name": "deleteToken",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          { "name": "options", "type": "object", "additionalProperties": { "type": "any" } }
+        ]
+      },
+      {
+        "name": "deleteID",
+        "type": "function",
+        "async": true,
+        "parameters": []
+      }
+    ]
+  }
+]

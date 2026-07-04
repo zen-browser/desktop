@@ -1,0 +1,42 @@
+[
+  {
+    "namespace": "loginState",
+    "description": "Use the chrome.loginState API to query login state.",
+    "permissions": ["loginState"],
+    "types": [
+      {
+        "id": "ProfileType",
+        "type": "string",
+        "enum": ["UNMANAGED", "MANAGED", "CHILD", "SIGNIN"]
+      },
+      {
+        "id": "SessionState",
+        "type": "string",
+        "enum": ["UNKNOWN", "IN_PROGRESS", "SIGNED_OUT", "SIGNED_IN"]
+      }
+    ],
+    "functions": [
+      {
+        "name": "getProfileType",
+        "type": "function",
+        "async": true,
+        "returns": { "$ref": "ProfileType" }
+      },
+      {
+        "name": "getSessionState",
+        "type": "function",
+        "async": true,
+        "returns": { "$ref": "SessionState" }
+      }
+    ],
+    "events": [
+      {
+        "name": "onSessionStateChanged",
+        "type": "function",
+        "parameters": [
+          { "name": "sessionState", "$ref": "SessionState" }
+        ]
+      }
+    ]
+  }
+]

@@ -37,15 +37,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nixo-browser/desktop.git"
+    "url": "git+https://github.com/nixo-browser/nixo.git"
   },
   "keywords": [],
   "author": "",
   "license": "MPL-2.0",
   "bugs": {
-    "url": "https://github.com/nixo-browser/desktop/issues"
+    "url": "https://github.com/nixo-browser/nixo/issues"
   },
-  "homepage": "https://github.com/nixo-browser/desktop#readme",
+  "homepage": "https://github.com/nixo-browser/nixo#readme",
   "devDependencies": {
     "@babel/preset-typescript": "^7.27.0",
     "@zen-browser/prettier": "^3.9.3",

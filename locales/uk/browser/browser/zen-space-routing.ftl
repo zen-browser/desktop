@@ -3,28 +3,28 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-space-routing-settings = 
-    .label = Space Routing Settings
+    .label = Параметри маршрутизації області
 zen-space-routing-rulepanel-placeholder = Routes let you choose where specific sites open inside Nixo. For example, you can route YouTube links to always open inside your Personal space.
-zen-space-routing-dialog-title = Space Routing Settings
-zen-space-routing-external-default = Default route for external links
-zen-space-routing-new-route = New Route
-zen-space-routing-open-in-space = Open in Space
-zen-space-routing-most-recent-space = Most recent Space
+zen-space-routing-dialog-title = Параметри маршрутизації області
+zen-space-routing-external-default = Маршрут за замовчуванням для зовнішніх посилань
+zen-space-routing-new-route = Новий маршрут
+zen-space-routing-open-in-space = Відкрити в області
+zen-space-routing-most-recent-space = Найновіший простір
 zen-space-routing-close-button = 
-    .aria-label = Close
-    .tooltiptext = Close
+    .aria-label = Закрити
+    .tooltiptext = Закрити
 zen-space-routing-contains = 
-    .label = Contains
+    .label = Містить
 zen-space-routing-equal-to = 
-    .label = Is Equal To
+    .label = Дорівнює
 zen-space-routing-regex = 
-    .label = RegEx
-zen-space-routing-open-in = Open In
-zen-space-routing-url = URL
-zen-space-routing-tab-routed-toast = New tab opened in { $targetWorkspace }
+    .label = Реджекс
+zen-space-routing-open-in = Відкрити у
+zen-space-routing-url = Адреса
+zen-space-routing-tab-routed-toast = Нова вкладка відкрита у { $targetWorkspace}
 tab-context-zen-add-domain-to-sr = 
     .label =
         { $tabCount ->
-            [one] Add Route for Domain
-           *[other] Add Route for Domains
+            [one] Додати маршрут для домену
+           *[other] Додати маршрут для доменів
         }

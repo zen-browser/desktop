@@ -11,6 +11,7 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
+  ZenSyncStore: "resource:///modules/zen/ZenSyncManager.sys.mjs",
 });
 
 ChromeUtils.defineLazyGetter(lazy, "browserBackgroundElement", () => {
@@ -148,7 +149,7 @@ class nsZenWorkspaces {
     if (!this.privateWindowOrDisabled) {
       const observerFunction = async () => {
         delete this._workspaceBookmarksCache;
-        await this.workspaceBookmarks();
+        await this.#initializeWorkspaceBookmarks();
         this._invalidateBookmarkContainers();
       };
       Services.obs.addObserver(observerFunction, "workspace-bookmarks-updated");
@@ -166,6 +167,63 @@ class nsZenWorkspaces {
       /* eslint-disable no-console */
       console.debug(`[gZenWorkspaces]:`, ...args);
     }
+  }
+
+  /**
+   * Applies live sync changes: updates workspace cache, removes deleted items,
+   * then creates/updates pulled items.
+   *
+   * @param {{ spaces: Array}} pulled  Reconcile-pulled items.
+   * @param {{ spaces: Array}} removals  Items to remove.
+   */
+  async _applySyncChanges(pulled, removals = {}) {
+    if (!this.shouldHaveWorkspaces || this.privateWindowOrDisabled) {
+      return;
+    }
+    await this.promiseInitialized;
+
+    // 1. Update workspace cache (remove deleted, merge pulled)
+    const removedSpaceIds = new Set((removals.spaces || []).map(s => s.uuid));
+    if (removedSpaceIds.size || pulled.spaces?.length) {
+      const localMap = new Map(
+        this.getWorkspaces()
+          .filter(w => !removedSpaceIds.has(w.uuid))
+          .map(w => [w.uuid, w])
+      );
+      for (const space of pulled.spaces || []) {
+        if (!space?.uuid) {
+          continue;
+        }
+        const existing = localMap.get(space.uuid);
+        localMap.set(space.uuid, existing ? { ...existing, ...space } : space);
+      }
+      await this.propagateWorkspaces(
+        this.#getOrderedWorkspacesByPosition(Array.from(localMap.values()))
+      );
+      this.#propagateWorkspaceData();
+    }
+  }
+
+  #getOrderedWorkspacesByPosition(workspaces) {
+    return [...workspaces]
+      .map((workspace, index) => ({ workspace, index }))
+      .sort((a, b) => {
+        const aPosition =
+          typeof a.workspace.position === "number"
+            ? a.workspace.position
+            : a.index;
+        const bPosition =
+          typeof b.workspace.position === "number"
+            ? b.workspace.position
+            : b.index;
+        return aPosition - bPosition || a.index - b.index;
+      })
+      .map(({ workspace }) => {
+        // strip the position property that comes from pulled workspaces
+        const rest = { ...workspace };
+        delete rest.position;
+        return rest;
+      });
   }
 
   #afterLoadInit() {
@@ -691,17 +749,17 @@ class nsZenWorkspaces {
     return spacesForSS;
   }
 
-  async workspaceBookmarks() {
+  async #initializeWorkspaceBookmarks() {
     if (this.privateWindowOrDisabled) {
       this._workspaceBookmarksCache = {
         bookmarks: [],
         lastChangeTimestamp: 0,
       };
-      return this._workspaceBookmarksCache;
+      return;
     }
 
     if (this._workspaceBookmarksCache) {
-      return this._workspaceBookmarksCache;
+      return;
     }
 
     const [bookmarks, lastChangeTimestamp] = await Promise.all([
@@ -710,8 +768,6 @@ class nsZenWorkspaces {
     ]);
 
     this._workspaceBookmarksCache = { bookmarks, lastChangeTimestamp };
-
-    return this._workspaceCache;
   }
 
   restoreWorkspacesFromSessionStore(aWinData = {}) {
@@ -771,7 +827,7 @@ class nsZenWorkspaces {
     return (async () => {
       await this.#waitForPromises();
       this.#afterLoadInit();
-      await this.workspaceBookmarks();
+      await this.#initializeWorkspaceBookmarks();
       await this.changeWorkspace(activeWorkspace, { onInit: true });
       this.#fixTabPositions();
       this.onWindowResize();
@@ -795,6 +851,13 @@ class nsZenWorkspaces {
 
       this.updateWorkspacesChangeContextMenu();
     })();
+  }
+
+  #markWorkspaceChanged(workspaceId) {
+    lazy.ZenSyncStore.markItemChanged({
+      type: "space",
+      id: workspaceId,
+    });
   }
 
   async selectStartPage() {
@@ -1214,12 +1277,19 @@ class nsZenWorkspaces {
     } else {
       workspacesData.push(workspaceData);
     }
+    // mark item as changed for sync
+    this.#markWorkspaceChanged(workspaceData.uuid);
+
     this.#propagateWorkspaceData();
   }
 
   removeWorkspace(windowID) {
     let { promise, resolve } = Promise.withResolvers();
     this.#deleteWorkspaceOwnedTabs(windowID);
+
+    // mark item as changed for sync
+    this.#markWorkspaceChanged(windowID);
+
     let workspacesData = this.getWorkspaces();
     // Remove the workspace from the cache
     workspacesData = workspacesData.filter(
@@ -1351,30 +1421,50 @@ class nsZenWorkspaces {
     if (this.privateWindowOrDisabled) {
       return;
     }
-    const workspaces = this._workspaceCache;
+    const workspaces = this.getWorkspaces();
+    // Track previous positions so we only notify observers for workspaces whose
+    // position changed during the reorder.
+    const previousPositions = new Map(
+      workspaces.map((workspace, index) => [workspace.uuid, index])
+    );
+
     const workspace = workspaces.find(w => w.uuid === id);
     if (!workspace) {
       console.warn(`Workspace with ID ${id} not found for reordering.`);
       return;
     }
+
     // Remove the workspace from its current position
     const currentIndex = workspaces.indexOf(workspace);
     if (currentIndex === -1) {
       console.warn(`Workspace with ID ${id} not found in the list.`);
       return;
     }
-    workspaces.splice(currentIndex, 1);
+
     // Insert the workspace at the new position
-    if (newPosition < 0 || newPosition > workspaces.length) {
+    if (newPosition < 0 || newPosition >= workspaces.length) {
       console.warn(
         `Invalid position ${newPosition} for reordering workspace with ID ${id}.`
       );
       return;
     }
+
+    workspaces.splice(currentIndex, 1);
     workspaces.splice(newPosition, 0, workspace);
+
     // Propagate the changes if the order has changed
     if (currentIndex !== newPosition) {
-      this.#propagateWorkspaceData();
+      this._workspaceCache = workspaces;
+
+      for (const [i, ws] of workspaces.entries()) {
+        if (previousPositions.get(ws.uuid) === i) {
+          continue;
+        }
+        // mark item as changed for sync
+        this.#markWorkspaceChanged(ws.uuid);
+      }
+
+      this.#propagateWorkspaceData(workspaces);
     }
   }
 
@@ -2493,7 +2583,7 @@ class nsZenWorkspaces {
       for (const tab of gBrowser.tabs) {
         if (
           !tab.hasAttribute("zen-workspace-id") &&
-          !tab.hasAttribute("zen-workspace-id")
+          !tab.hasAttribute("zen-essential")
         ) {
           tab.setAttribute("zen-workspace-id", workspace.uuid);
         }

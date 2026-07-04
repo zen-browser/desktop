@@ -32,9 +32,6 @@
 - name: zen.workspaces.scroll-modifier-key
   value: ctrl
 
-- name: services.sync.engine.workspaces
-  value: false
-
 - name: zen.workspaces.separate-essentials
   value: true
 

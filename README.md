@@ -8,9 +8,9 @@
 
 ### `Nixo Browser`
 
-[![Downloads](https://img.shields.io/github/downloads/nixo-browser/desktop/total.svg)](https://github.com/nixo-browser/desktop/releases)
+[![Downloads](https://img.shields.io/github/downloads/nixo-browser/desktop/total.svg)](https://github.com/nixo-browser/nixo/releases)
 [![Crowdin](https://badges.crowdin.net/nixo-browser/localized.svg)](https://crowdin.com/project/nixo-browser)
-[![Nixo Release builds](https://github.com/nixo-browser/desktop/actions/workflows/build.yml/badge.svg?branch=stable)](https://github.com/nixo-browser/desktop/actions/workflows/build.yml)
+[![Nixo Release builds](https://github.com/nixo-browser/nixo/actions/workflows/build.yml/badge.svg?branch=stable)](https://github.com/nixo-browser/nixo/actions/workflows/build.yml)
 
 Nixo is a firefox-based browser with the aim of pushing your productivity to a new level!
 
@@ -39,7 +39,7 @@ Nixo is a firefox-based browser with the aim of pushing your productivity to a n
 
 ### Contributing
 
-If you'd like to report a bug, please do so on our [GitHub Issues page](https://github.com/nixo-browser/desktop/issues/) and for feature requests, you can use [GitHub Discussions](https://github.com/nixo-browser/desktop/discussions).
+If you'd like to report a bug, please do so on our [GitHub Issues page](https://github.com/nixo-browser/nixo/issues/) and for feature requests, you can use [GitHub Discussions](https://github.com/nixo-browser/nixo/discussions).
 
 Nixo is an open-source project, and we welcome contributions from the community! Please take a look at the [contribution guidelines](./docs/contribute.md) before getting started!
 

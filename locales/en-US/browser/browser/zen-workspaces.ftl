@@ -8,10 +8,10 @@ zen-panel-ui-spaces-label =
     .label = Spaces
 
 zen-panel-ui-workspaces-create =
-    .label = Create Space
+    .label = Create Space…
 
 zen-panel-ui-folder-create =
-    .label = Create Folder
+    .label = Create Folder…
 
 zen-panel-ui-live-folder-create =
     .label = Live Folder

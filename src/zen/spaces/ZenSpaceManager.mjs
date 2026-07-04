@@ -2022,28 +2022,19 @@ class nsZenWorkspaces {
       diff += spaceLen;
     }
     const isGoingLeft = diff < 0;
-    const clonedEssentials = [];
+    const essentialsAnimData = [];
     if (shouldAnimate && this.shouldAnimateEssentials && previousWorkspace) {
-      for (const workspace of workspaces) {
-        const essentialsContainer = this.getEssentialsSection(
-          workspace.containerTabId
+      const essentialsParent = document.getElementById("zen-essentials");
+      for (const essentialsSection of essentialsParent.children) {
+        const contextId = parseInt(essentialsSection.getAttribute("container"));
+        const matchingWorkspaces = workspaces.filter(
+          w => w.containerTabId === contextId
         );
-        let lastCloned = clonedEssentials[clonedEssentials.length - 1];
-        if (lastCloned && lastCloned.contextId == workspace.containerTabId) {
-          lastCloned.repeat++;
-          lastCloned.workspaces.push(workspace);
-          continue;
-        }
-        essentialsContainer.setAttribute("hidden", "true");
-        const essentialsClone = essentialsContainer.cloneNode(true);
-        essentialsClone.removeAttribute("hidden");
-        essentialsClone.setAttribute("cloned", "true");
-        clonedEssentials.push({
-          container: essentialsClone,
-          workspaces: [workspace],
-          contextId: workspace.containerTabId,
-          originalContainer: essentialsContainer,
-          repeat: 0,
+        // Skip containers that don't have workspaces
+        if (matchingWorkspaces.length === 0) continue;
+        essentialsAnimData.push({
+          element: essentialsSection,
+          workspaces: matchingWorkspaces,
         });
       }
     }
@@ -2157,12 +2148,9 @@ class nsZenWorkspaces {
       }
     }
     if (this.shouldAnimateEssentials && previousWorkspace) {
-      for (const cloned of clonedEssentials) {
-        const container = cloned.container;
-        const essentialsWorkspaces = cloned.workspaces;
-        cloned.originalContainer.style.removeProperty("transform");
-        cloned.originalContainer.parentNode.appendChild(container);
-        container.style.position = "absolute";
+      for (const data of essentialsAnimData) {
+        const container = data.element;
+        const essentialsWorkspaces = data.workspaces;
 
         const containsPrev = essentialsWorkspaces.some(
           w => w.uuid === previousWorkspace.uuid
@@ -2176,25 +2164,26 @@ class nsZenWorkspaces {
           continue;
         }
 
+        container.removeAttribute("hidden");
+
         if (containsPrev && containsNew) {
           container.style.transform = "translateX(0%)";
           continue;
         }
 
         let existingOffset, newOffset;
-        const workspaceLen = this.getWorkspaces().length;
+        const currentTransform = parseFloat(
+          container.style.transform.split("(")[1]
+        );
         if (containsPrev && !containsNew) {
-          existingOffset = 0;
+          existingOffset = currentTransform || 0;
           newOffset = isGoingLeft ? 100 : -100;
         } else {
           existingOffset = isGoingLeft ? -100 : 100;
           newOffset = 0;
         }
 
-        if (workspaceLen === 2) {
-          const currentTransform = parseFloat(
-            container.style.transform.split("(")[1]
-          );
+        if (spaceLen === 2) {
           if (containsPrev && !containsNew) {
             existingOffset = 0;
             newOffset = currentTransform > 0 ? 100 : -100;
@@ -2241,17 +2230,12 @@ class nsZenWorkspaces {
     this.#currentSpaceSwitchContext.animations = [];
     document.documentElement.removeAttribute("animating-background");
     if (shouldAnimate) {
-      for (const cloned of clonedEssentials) {
-        cloned.container.remove();
+      for (const data of essentialsAnimData) {
+        data.element.style.removeProperty("transform");
       }
       this._alwaysAnimatePaddingTop = true;
       this.updateTabsContainers();
     }
-    const essentialsContainer = this.getEssentialsSection(
-      newWorkspace.containerTabId
-    );
-    essentialsContainer.removeAttribute("hidden");
-    essentialsContainer.style.transform = "none";
     gBrowser.tabContainer._invalidateCachedTabs();
     gZenUIManager.tabsWrapper.style.removeProperty("scrollbar-width");
     this._animatingChange = false;

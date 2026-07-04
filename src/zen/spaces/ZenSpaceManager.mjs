@@ -449,7 +449,7 @@ class nsZenWorkspaces {
       container = 0;
     }
     let essentialsContainer = document.querySelector(
-      `.zen-essentials-container[container="${container}"]:not([cloned])`
+      `.zen-essentials-container[container="${container}"]`
     );
     if (!essentialsContainer) {
       essentialsContainer = document.createXULElement("hbox");
@@ -3109,9 +3109,6 @@ class nsZenWorkspaces {
       ...normalContainers,
     ];
     for (const container of containers) {
-      if (container.hasAttribute("cloned")) {
-        continue;
-      }
       for (const tab of container.children) {
         if (gBrowser.isTab(tab)) {
           tabs.push(tab);

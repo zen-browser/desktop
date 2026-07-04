@@ -2178,7 +2178,7 @@ class nsZenWorkspaces {
           existingOffset = currentTransform;
           newOffset = isGoingLeft ? 100 : -100;
         } else {
-          existingOffset = isGoingLeft ? -100 : 100;
+          existingOffset = currentTransform || (isGoingLeft ? -100 : 100);
           newOffset = 0;
         }
 

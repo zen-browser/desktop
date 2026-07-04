@@ -1,0 +1,1314 @@
+{
+  "extName": {
+    "message": "ಯುಬ್ಲಾಕ್",
+    "description": "extension name."
+  },
+  "extShortDesc": {
+    "message": "ಕೊನೆಗೆ, ಒಂದು ದಕ್ಷ ನಿರ್ಬಂಧಕ. ಮಿತವಾದ ಸಿಪಿಯೂ ಹಾಗು ಮೆಮೊರಿ ಬಳಿಕೇಒಂದಿಗೆ .",
+    "description": "this will be in the Chrome web store: must be 132 characters or less"
+  },
+  "dashboardName": {
+    "message": "uBlock₀ - ಡ್ಯಾಶ್ಬೋರ್ಡು",
+    "description": "English: uBlock₀ — Dashboard"
+  },
+  "dashboardUnsavedWarning": {
+    "message": "ಎಚ್ಚರಿಕೆ! ನೀವು ಉಳಿಸದ ಬದಲಾವಣೆಗಳನ್ನು ಹೊಂದಿದ್ದೀರಿ",
+    "description": "A warning in the dashboard when navigating away from unsaved changes"
+  },
+  "dashboardUnsavedWarningStay": {
+    "message": "ಇಲ್ಲೇ ಇರು",
+    "description": "Label for button to prevent navigating away from unsaved changes"
+  },
+  "dashboardUnsavedWarningIgnore": {
+    "message": "ನಿರ್ಲಕ್ಷಿಸು",
+    "description": "Label for button to ignore unsaved changes"
+  },
+  "settingsPageName": {
+    "message": "ಸೆಟ್ಟಿಂಗ್ಸ್",
+    "description": "appears as tab name in dashboard"
+  },
+  "3pPageName": {
+    "message": "೩ನೇ ವ್ಯಕ್ತಿ ಶೋಧಕಗಳು",
+    "description": "appears as tab name in dashboard"
+  },
+  "1pPageName": {
+    "message": "ನನ್ನ ಶೋಧಕಗಳು",
+    "description": "appears as tab name in dashboard"
+  },
+  "rulesPageName": {
+    "message": "ನನ್ನ ನಿಯಮಗಳು",
+    "description": "appears as tab name in dashboard"
+  },
+  "whitelistPageName": {
+    "message": "ವೈಟ್ ಲಿಸ್ಟ್",
+    "description": "appears as tab name in dashboard"
+  },
+  "shortcutsPageName": {
+    "message": "ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು",
+    "description": "appears as tab name in dashboard"
+  },
+  "statsPageName": {
+    "message": "uBlock₀ —  ಲಾಗರ್",
+    "description": "Title for the logger window"
+  },
+  "aboutPageName": {
+    "message": "ಕುರಿತು",
+    "description": "appears as tab name in dashboard"
+  },
+  "supportPageName": {
+    "message": "ಬೆಂಬಲ",
+    "description": "appears as tab name in dashboard"
+  },
+  "assetViewerPageName": {
+    "message": "uBlock₀ — ಆಸ್ತಿ ವೀಕ್ಷಕ",
+    "description": "Title for the asset viewer page"
+  },
+  "advancedSettingsPageName": {
+    "message": "ಸುಧಾರಿತ ಆಯ್ಕೆಗಳು",
+    "description": "Title for the advanced settings page"
+  },
+  "popupPowerSwitchInfo": {
+    "message": "ಕ್ಲಿಕ್: ಈ ಜಾಲತಾಣಕ್ಕೆ ನಿಷ್ಕ್ರಿಯ/ಸಕ್ರಿಯಗೊಳಿಸಲು.\nಕಂಟ್ರೋಲ್ + ಕ್ಲಿಕ್: ಈ ಜಾಲತಾಣಕ್ಕೆ ಮಾತ್ರ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು.",
+    "description": "English: Click: disable/enable uBlock₀ for this site.\n\nCtrl+click: disable uBlock₀ only on this page."
+  },
+  "popupPowerSwitchInfo1": {
+    "message": "ಈ ಸೈಟ್‌ಗಾಗಿ uBlock₀ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ.\n\nಈ ಪುಟದಲ್ಲಿ ಮಾತ್ರ uBlock₀ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು Ctrl+ಕ್ಲಿಕ್ ಮಾಡಿ.",
+    "description": "Message to be read by screen readers"
+  },
+  "popupPowerSwitchInfo2": {
+    "message": "ಈ ಸೈಟ್‌ಗಾಗಿ uBlock₀ ಸಕ್ರಿಯಗೊಳಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ.",
+    "description": "Message to be read by screen readers"
+  },
+  "popupBlockedRequestPrompt": {
+    "message": "ಬೇಡಿಕೆಗಳನ್ನು ತಡೆಹಿಡಿಯಲಾಗಿದೆ",
+    "description": "English: requests blocked"
+  },
+  "popupBlockedOnThisPagePrompt": {
+    "message": "ಈ ಪುಟದಲ್ಲಿ",
+    "description": "English: on this page"
+  },
+  "popupBlockedStats": {
+    "message": "{{count}} ಅಥವಾ {{percent}}%",
+    "description": "Example: 15 (13%)"
+  },
+  "popupBlockedSinceInstallPrompt": {
+    "message": "ಅನುಸ್ಥಾಪಿಸಿದ ಈಚೆಗೆ",
+    "description": "English: since install"
+  },
+  "popupOr": {
+    "message": "ಅಥವಾ",
+    "description": "English: or"
+  },
+  "popupBlockedOnThisPage_v2": {
+    "message": "ಈ ಪುಟದಲ್ಲಿ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupBlockedSinceInstall_v2": {
+    "message": "ಸ್ಥಾಪಿಸಿದಾಗಿನಿಂದ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupDomainsConnected_v2": {
+    "message": "ಸಂಪರ್ಕಳಗಿಸಿದ ಡೊಮೈನುಗಳು ",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupTipDashboard": {
+    "message": "ಡ್ಯಾಶ್ಬೋರ್ಡ ತೆರೆಯಲು ಕ್ಲಿಕಿಸಿ",
+    "description": "English: Click to open the dashboard"
+  },
+  "popupTipZapper": {
+    "message": "Element zapper ಮೋಡ್ ಅನ್ನು ಬಳಸಿ",
+    "description": "Tooltip for the element-zapper icon in the popup panel"
+  },
+  "popupTipPicker": {
+    "message": "ಅಂಶ ಆಯ್ವಿಕೆ ಕ್ರಮಕ್ಕೆ ದಾಖಲಾಗಿ",
+    "description": "English: Enter element picker mode"
+  },
+  "popupTipLog": {
+    "message": "ಲಾಗರ್ ತೆರೆಯಿರಿ",
+    "description": "Tooltip used for the logger icon in the panel"
+  },
+  "popupTipReport": {
+    "message": "ublock origin ಗೆ ಸಂಬಂಧಿಸಿದ ಈ ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿ ಸಮಸ್ಯೆಯನ್ನು ವರದಿ ಮಾಡಿ",
+    "description": "Tooltip used for the 'chat' icon in the panel"
+  },
+  "popupTipNoPopups": {
+    "message": "ಈ ಜಾಲತಾಣದ ಎಲ್ಲಾ ಪಾಪ್ಅಪ್ ಗಳ ನಿರ್ಬಂಧವನ್ನು ಟಾಗಲ್ ಮಾಡಿ",
+    "description": "Tooltip for the no-popups per-site switch"
+  },
+  "popupTipNoPopups1": {
+    "message": "ಈ ಸೈಟ್‌ನಲ್ಲಿ ಎಲ್ಲಾ ಪಾಪ್‌ಅಪ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ",
+    "description": "Tooltip for the no-popups per-site switch"
+  },
+  "popupTipNoPopups2": {
+    "message": "ಈ ಸೈಟ್‌ನಲ್ಲಿ ಇನ್ನು ಮುಂದೆ ಎಲ್ಲಾ ಪಾಪ್‌ಅಪ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸದಿರಲು ಕ್ಲಿಕ್ ಮಾಡಿ",
+    "description": "Tooltip for the no-popups per-site switch"
+  },
+  "popupTipNoLargeMedia": {
+    "message": "ಈ ಸೈಟ್‌ಗಾಗಿ ದೊಡ್ಡ ಮಾಧ್ಯಮ ಅಂಶಗಳ ನಿರ್ಬಂಧಿಸುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ",
+    "description": "Tooltip for the no-large-media per-site switch"
+  },
+  "popupTipNoLargeMedia1": {
+    "message": "ಈ ಸೈಟ್‌ಗಾಗಿ ದೊಡ್ಡ ಮಾಧ್ಯಮ ಅಂಶಗಳ ನಿರ್ಬಂಧಿಸುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ",
+    "description": "Tooltip for the no-large-media per-site switch"
+  },
+  "popupTipNoLargeMedia2": {
+    "message": "Click to no longer block large media elements on this site",
+    "description": "Tooltip for the no-large-media per-site switch"
+  },
+  "popupTipNoCosmeticFiltering": {
+    "message": "ಈ ಜಾಲತಾಣಕ್ಕೆ ಕಾಸ್ಮೆಟಿಕ್ ಫಿಲ್ಟರಿಂಗನ್ನು ಟಾಗಲ್ ಮಾಡಿ",
+    "description": "Tooltip for the no-cosmetic-filtering per-site switch"
+  },
+  "popupTipNoCosmeticFiltering1": {
+    "message": "ಈ ಸೈಟ್‌ನಲ್ಲಿ ಕಾಸ್ಮೆಟಿಕ್ ಫಿಲ್ಟರಿಂಗ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ.",
+    "description": "Tooltip for the no-cosmetic-filtering per-site switch"
+  },
+  "popupTipNoCosmeticFiltering2": {
+    "message": "ಈ ಸೈಟ್‌ನಲ್ಲಿ ಕಾಸ್ಮೆಟಿಕ್ ಫಿಲ್ಟರಿಂಗ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ.",
+    "description": "Tooltip for the no-cosmetic-filtering per-site switch"
+  },
+  "popupTipNoRemoteFonts": {
+    "message": "ಈ ಜಾಲತಾಣಕ್ಕೆ ದೂರಸ್ಥ ಅಕ್ಷರಶೈಲಿಯ ನಿರ್ಬಂಧವನ್ನು ಟಾಗಲ್ ಮಾಡಿ",
+    "description": "Tooltip for the no-remote-fonts per-site switch"
+  },
+  "popupTipNoRemoteFonts1": {
+    "message": "Click to block remote fonts on this site",
+    "description": "Tooltip for the no-remote-fonts per-site switch"
+  },
+  "popupTipNoRemoteFonts2": {
+    "message": "Click to no longer block remote fonts on this site",
+    "description": "Tooltip for the no-remote-fonts per-site switch"
+  },
+  "popupTipNoScripting1": {
+    "message": "ಈ ಸೈಟ್‌ನಲ್ಲಿ ಜಾವಾಸ್ಕ್ರಿಪ್ಟ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ",
+    "description": "Tooltip for the no-scripting per-site switch"
+  },
+  "popupTipNoScripting2": {
+    "message": "Click to no longer disable JavaScript on this site",
+    "description": "Tooltip for the no-scripting per-site switch"
+  },
+  "popupNoPopups_v2": {
+    "message": "ಪಾಪ್-ಅಪ್ ವಿಂಡೋ",
+    "description": "Caption for the no-popups per-site switch"
+  },
+  "popupNoLargeMedia_v2": {
+    "message": "ದೊಡ್ಡ ಮಾಧ್ಯಮ ಅಂಶಗಳು",
+    "description": "Caption for the no-large-media per-site switch"
+  },
+  "popupNoCosmeticFiltering_v2": {
+    "message": "ಕಾಸ್ಮೆಟಿಕ್ ಫಿಲ್ಟರಿಂಗ್",
+    "description": "Caption for the no-cosmetic-filtering per-site switch"
+  },
+  "popupNoRemoteFonts_v2": {
+    "message": "Remote fonts",
+    "description": "Caption for the no-remote-fonts per-site switch"
+  },
+  "popupNoScripting_v2": {
+    "message": "ಜಾವಾಸ್ಕ್ರಿಪ್ಟ್",
+    "description": "Caption for the no-scripting per-site switch"
+  },
+  "popupMoreButton_v2": {
+    "message": "ಅಧಿಕ",
+    "description": "Label to be used to show popup panel sections"
+  },
+  "popupLessButton_v2": {
+    "message": "ಕಡಿಮೆ",
+    "description": "Label to be used to hide popup panel sections"
+  },
+  "popupTipGlobalRules": {
+    "message": "Global rules: this column is for rules which apply to all sites.",
+    "description": "Tooltip when hovering the top-most cell of the global-rules column."
+  },
+  "popupTipLocalRules": {
+    "message": "Local rules: this column is for rules which apply to the current site only.",
+    "description": "Tooltip when hovering the top-most cell of the local-rules column."
+  },
+  "popupTipSaveRules": {
+    "message": "ಶಾಶ್ವತ ಬದಲಾವಣೆಗಳನ್ನು ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ",
+    "description": "Tooltip when hovering over the padlock in the dynamic filtering pane."
+  },
+  "popupTipRevertRules": {
+    "message": "ನಿಮ್ಮ ಬದಲಾವಣೆಗಳನ್ನು ಹಿಂತಿರುಗಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ",
+    "description": "Tooltip when hovering over the eraser in the dynamic filtering pane."
+  },
+  "popupAnyRulePrompt": {
+    "message": "ಎಲ್ಲಾ",
+    "description": ""
+  },
+  "popupImageRulePrompt": {
+    "message": "ಚಿತ್ರಗಳು",
+    "description": ""
+  },
+  "popup3pAnyRulePrompt": {
+    "message": "೩ನೇ ವ್ಯಕ್ತಿ",
+    "description": ""
+  },
+  "popup3pPassiveRulePrompt": {
+    "message": "೩ನೇ ವ್ಯಕ್ತಿ ಸಿಎಸ್ಸೇಸು/ಚಿತ್ರಗಳು",
+    "description": ""
+  },
+  "popupInlineScriptRulePrompt": {
+    "message": "ಒಳಸಾಲಿನ ಸ್ಕ್ರಿಪ್ಟುಗಳು",
+    "description": ""
+  },
+  "popup1pScriptRulePrompt": {
+    "message": "೧ನೇ ವ್ಯಕ್ತಿ ಸ್ಕ್ರಿಪ್ಟುಗಳು",
+    "description": ""
+  },
+  "popup3pScriptRulePrompt": {
+    "message": "೩ನೇ ವ್ಯಕ್ತಿ ಸ್ಕ್ರಿಪ್ಟುಗಳು",
+    "description": ""
+  },
+  "popup3pFrameRulePrompt": {
+    "message": "೩ನೇ ವ್ಯಕ್ತಿ ಫ್ರೇಮುಗಳು",
+    "description": ""
+  },
+  "popupHitDomainCountPrompt": {
+    "message": "ಸಂಪರ್ಕ ಹೊಂದಿರುವ ಡೊಮೈನ್ಗಳು",
+    "description": "appears in popup"
+  },
+  "popupHitDomainCount": {
+    "message": "{{total}} ರಲ್ಲಿ {{count}}",
+    "description": "appears in popup"
+  },
+  "popupVersion": {
+    "message": "ಆವೃತ್ತಿ",
+    "description": "Example of use: Version 1.26.4"
+  },
+  "popup3pScriptFilter": {
+    "message": "ಸ್ಕ್ರಿಪ್ಟ್",
+    "description": "Appears as an option to filter out firewall rows"
+  },
+  "popup3pFrameFilter": {
+    "message": "ಫ್ರೇಮ್",
+    "description": "Appears as an option to filter out firewall rows"
+  },
+  "pickerCreate": {
+    "message": "ರಚಿಸಿ",
+    "description": "English: Create"
+  },
+  "pickerPick": {
+    "message": "ಆಯ್ಕೆ",
+    "description": "English: Pick"
+  },
+  "pickerQuit": {
+    "message": "ತ್ಯಜಿಸಿ",
+    "description": "English: Quit"
+  },
+  "pickerPreview": {
+    "message": "ಮುನ್ನೋಟ",
+    "description": "Element picker preview mode: will cause the elements matching the current filter to be removed from the page"
+  },
+  "pickerNetFilters": {
+    "message": "ನಿವ್ವಳ ಫಿಲ್ಟರುಗಳು",
+    "description": "English: header for a type of filter in the element picker dialog"
+  },
+  "pickerCosmeticFilters": {
+    "message": "ಕಾಸ್ಮೆಟಿಕ್ ಫಿಲ್ಟರುಗಳು",
+    "description": "English: Cosmetic filters"
+  },
+  "pickerCosmeticFiltersHint": {
+    "message": "ಕ್ಲಿಕ್, ಕಂಟ್ರೋಲ್-ಕ್ಲಿಕ್",
+    "description": "English: Click, Ctrl-click"
+  },
+  "pickerContextMenuEntry": {
+    "message": "ಭಾಗ ತಡೆಹಿಡಿಯಿರಿ",
+    "description": "An entry in the browser's contextual menu"
+  },
+  "settingsCollapseBlockedPrompt": {
+    "message": "ನಿರ್ಬಂಧಿಸಿದ ಭಾಗಗಳಿರುವ ಪ್ಲೇಸ್ಹೋಲ್ಡರ್ಸ್ ಮರೆಮಾಡಿ",
+    "description": "English: Hide placeholders of blocked elements"
+  },
+  "settingsIconBadgePrompt": {
+    "message": "Show the number of blocked requests on the icon",
+    "description": "English: Show the number of blocked requests on the icon"
+  },
+  "settingsTooltipsPrompt": {
+    "message": "Disable tooltips",
+    "description": "A checkbox in the Settings pane"
+  },
+  "settingsContextMenuPrompt": {
+    "message": "Make use of context menu where appropriate",
+    "description": "English: Make use of context menu where appropriate"
+  },
+  "settingsColorBlindPrompt": {
+    "message": "ಬಣ್ಣ ಅಂಧತೆ ಉಪಯುಕ್ತ",
+    "description": "English: Color-blind friendly"
+  },
+  "settingsAppearance": {
+    "message": "ನೋಟ",
+    "description": "Section for controlling user interface appearance"
+  },
+  "settingsThemeLabel": {
+    "message": "ಥೀಮ್",
+    "description": "Label for checkbox to enable a custom dark theme"
+  },
+  "settingsThemeAccent0Label": {
+    "message": "Custom accent color",
+    "description": "Label for checkbox to pick an accent color"
+  },
+  "settingsCloudStorageEnabledPrompt": {
+    "message": "Enable cloud storage support",
+    "description": ""
+  },
+  "settingsAdvancedUserPrompt": {
+    "message": "ನಾನು ಮುಂದುವರಿದ ಬಳಕೆದಾರ",
+    "description": "Checkbox to let user access advanced, technical features"
+  },
+  "settingsPrefetchingDisabledPrompt": {
+    "message": "Disable pre-fetching (to prevent any connection for blocked network requests)",
+    "description": "English: "
+  },
+  "settingsHyperlinkAuditingDisabledPrompt": {
+    "message": "Disable hyperlink auditing",
+    "description": "English: "
+  },
+  "settingsWebRTCIPAddressHiddenPrompt": {
+    "message": "Prevent WebRTC from leaking local IP addresses",
+    "description": "English: "
+  },
+  "settingPerSiteSwitchGroup": {
+    "message": "Default behavior",
+    "description": ""
+  },
+  "settingPerSiteSwitchGroupSynopsis": {
+    "message": "These default behaviors can be overridden on a per-site basis",
+    "description": ""
+  },
+  "settingsNoCosmeticFilteringPrompt": {
+    "message": "Disable cosmetic filtering",
+    "description": ""
+  },
+  "settingsNoLargeMediaPrompt": {
+    "message": "Block media elements larger than {{input}} KB",
+    "description": ""
+  },
+  "settingsNoRemoteFontsPrompt": {
+    "message": "Block remote fonts",
+    "description": ""
+  },
+  "settingsNoScriptingPrompt": {
+    "message": "ಜಾವಾಸ್ಕ್ರಿಪ್ಟ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ",
+    "description": "The default state for the per-site no-scripting switch"
+  },
+  "settingsNoCSPReportsPrompt": {
+    "message": "Block CSP reports",
+    "description": "background information: https://github.com/gorhill/uBlock/issues/3150"
+  },
+  "settingsUncloakCnamePrompt": {
+    "message": "Uncloak canonical names",
+    "description": "background information: https://github.com/uBlockOrigin/uBlock-issues/issues/1513"
+  },
+  "settingsAdvanced": {
+    "message": "ಉನ್ನತ ಸಂಯೋಜನೆಗಳು",
+    "description": "Section for controlling advanced-user settings"
+  },
+  "settingsAdvancedSynopsis": {
+    "message": "Features suitable only for technical users",
+    "description": "Description of section controlling advanced-user settings"
+  },
+  "settingsAdvancedUserSettings": {
+    "message": "ಮು೦ದುವರಿದ ಸೆಟ್ಟಿಂಗ್ಸ್",
+    "description": "For the tooltip of a link which gives access to advanced settings"
+  },
+  "settingsLastRestorePrompt": {
+    "message": "Last restore:",
+    "description": "English: Last restore:"
+  },
+  "settingsLastBackupPrompt": {
+    "message": "ಕೊನೆಯ ಬ್ಯಾಕಪ್:",
+    "description": "English: Last backup:"
+  },
+  "3pListsOfBlockedHostsPrompt": {
+    "message": "ಕೆಳಗಿನ ಫೈಲಟ್ರ್ಪಟ್ಟಿಗೆಯಿಂದ {{netFilterCount}} ನೆಟ್ವರ್ಕ್ ಫಿಲ್ಟರ್ಗಳು + {{cosmeticfiltercount}} ಕಾಸ್ಮೆಟಿಕ್ ಶೋಧಕಗಳು ಕ್ರಿಯಾಶೀಲವಾಗಿದೆ:",
+    "description": "Appears at the top of the _3rd-party filters_ pane"
+  },
+  "3pListsOfBlockedHostsPerListStats": {
+    "message": "{{total}} ರಿಂದ {{used}} ಬಳಸಲುಗುವುತಿದೆ ",
+    "description": "Appears aside each filter list in the _3rd-party filters_ pane"
+  },
+  "3pAutoUpdatePrompt1": {
+    "message": "ಶೋಧಕ ಪಟ್ಟಿಗಳನ್ನು ಸ್ವಯಂ ನವೀಕರಿಸಿ.",
+    "description": "A checkbox in the _3rd-party filters_ pane"
+  },
+  "3pUpdateNow": {
+    "message": "ಈಗ ನವೀಕರಿಸಿ",
+    "description": "A button in the in the _3rd-party filters_ pane"
+  },
+  "3pPurgeAll": {
+    "message": "Purge all caches",
+    "description": "A button in the in the _3rd-party filters_ pane"
+  },
+  "3pParseAllABPHideFiltersPrompt1": {
+    "message": "Parse and enforce cosmetic filters",
+    "description": "English: Parse and enforce Adblock+ element hiding filters."
+  },
+  "3pParseAllABPHideFiltersInfo": {
+    "message": "Cosmetic filters serve to hide elements in a web page which are deemed to be a visual nuisance, and which can't be blocked by the network request-based filtering engines.",
+    "description": "Describes the purpose of the 'Parse and enforce cosmetic filters' feature."
+  },
+  "3pIgnoreGenericCosmeticFilters": {
+    "message": "Ignore generic cosmetic filters",
+    "description": "This will cause uBO to ignore all generic cosmetic filters."
+  },
+  "3pIgnoreGenericCosmeticFiltersInfo": {
+    "message": "Generic cosmetic filters are those cosmetic filters which are meant to apply on all web sites. Enabling this option will eliminate the memory and CPU overhead added to web pages as a result of handling generic cosmetic filters.\n\nIt is recommended to enable this option on less powerful devices.",
+    "description": "Describes the purpose of the 'Ignore generic cosmetic filters' feature."
+  },
+  "3pSuspendUntilListsAreLoaded": {
+    "message": "Suspend network activity until all filter lists are loaded",
+    "description": "A checkbox in the 'Filter lists' pane"
+  },
+  "3pListsOfBlockedHostsHeader": {
+    "message": "Lists of blocked hosts",
+    "description": "English: Lists of blocked hosts"
+  },
+  "3pApplyChanges": {
+    "message": "ಬದಲಾವಣೆಗಳನ್ನು ಅನ್ವಯಿಸಿ",
+    "description": "English: Apply changes"
+  },
+  "3pGroupDefault": {
+    "message": "Built-in",
+    "description": "Filter lists section name"
+  },
+  "3pGroupAds": {
+    "message": "ಜಾಹಿರಾತು",
+    "description": "Filter lists section name"
+  },
+  "3pGroupPrivacy": {
+    "message": "ಗೌಪ್ಯತೆ",
+    "description": "Filter lists section name"
+  },
+  "3pGroupMalware": {
+    "message": "ಮಾಲ್ವೇರ್ ರಕ್ಷಣೆ, ಭದ್ರತೆ",
+    "description": "Filter lists section name"
+  },
+  "3pGroupSocial": {
+    "message": "Social widgets",
+    "description": "Filter lists section name"
+  },
+  "3pGroupCookies": {
+    "message": "Cookie notices",
+    "description": "Filter lists section name"
+  },
+  "3pGroupAnnoyances": {
+    "message": "Annoyances",
+    "description": "Filter lists section name"
+  },
+  "3pGroupMultipurpose": {
+    "message": "ಬಹುಪಯೋಗಿ",
+    "description": "Filter lists section name"
+  },
+  "3pGroupRegions": {
+    "message": "ಪ್ರದೇಶಗಳು, ಭಾಷೆಗಳು",
+    "description": "Filter lists section name"
+  },
+  "3pGroupCustom": {
+    "message": "ಇಚ್ಛೆಯ",
+    "description": "Filter lists section name"
+  },
+  "3pImport": {
+    "message": "ಆಮದು...",
+    "description": "The label for the checkbox used to import external filter lists"
+  },
+  "3pExternalListsHint": {
+    "message": "One URL per line. Invalid URLs will be silently ignored.",
+    "description": "Short information about how to use the textarea to import external filter lists by URL"
+  },
+  "3pExternalListObsolete": {
+    "message": "ಹಳೆಯದಾಗಿದೆ",
+    "description": "used as a tooltip for the out-of-date icon beside a list"
+  },
+  "3pViewContent": {
+    "message": "ವಿಷಯವನ್ನು ವೀಕ್ಷಿಸಿ",
+    "description": "used as a tooltip for eye icon beside a list"
+  },
+  "3pLastUpdate": {
+    "message": "Last update: {{ago}}.\nClick to force an update.",
+    "description": "used as a tooltip for the clock icon beside a list"
+  },
+  "3pUpdating": {
+    "message": "ಸೇರಿಸಲಾಗುತ್ತಿದೆ...",
+    "description": "used as a tooltip for the spinner icon beside a list"
+  },
+  "3pNetworkError": {
+    "message": "A network error prevented the resource from being updated.",
+    "description": "used as a tooltip for error icon beside a list"
+  },
+  "1pTrustWarning": {
+    "message": "Do not add filters from untrusted sources.",
+    "description": "Warning against copy-pasting filters from random sources"
+  },
+  "1pEnableMyFiltersLabel": {
+    "message": "Enable my custom filters",
+    "description": "Label for the checkbox use to enable/disable 'My filters' list"
+  },
+  "1pTrustMyFiltersLabel": {
+    "message": "Allow custom filters requiring trust",
+    "description": "Label for the checkbox use to trust the content of 'My filters' list"
+  },
+  "1pImport": {
+    "message": "ಆಮದಿಸಿ ಸೇರ್ಪಡಿಸು...",
+    "description": "Button in the 'My filters' pane"
+  },
+  "1pExport": {
+    "message": "ರಫ್ತು...",
+    "description": "Button in the 'My filters' pane"
+  },
+  "1pExportFilename": {
+    "message": "ನನ್ನ-ublock-ಸ್ಥಿರ-ಶೋಧಕಗಳು_{{datetime}}.txt",
+    "description": "English: my-ublock-static-filters_{{datetime}}.txt"
+  },
+  "1pApplyChanges": {
+    "message": "ಬದಲಾವಣೆಗಳನ್ನು ಅನ್ವಯಿಸಿ",
+    "description": "English: Apply changes"
+  },
+  "rulesPermanentHeader": {
+    "message": "ಶಾಶ್ವತ ನಿಯಮಗಳು",
+    "description": "header"
+  },
+  "rulesTemporaryHeader": {
+    "message": "ತಾತ್ಕಾಲಿಕ ನಿಯಮಗಳು",
+    "description": "header"
+  },
+  "rulesRevert": {
+    "message": "ಹಿಂತಿರುಗಿಸಿ",
+    "description": "This will remove all temporary rules"
+  },
+  "rulesCommit": {
+    "message": "ಕಮಿಟ್",
+    "description": "This will persist temporary rules"
+  },
+  "rulesEdit": {
+    "message": "ತಿದ್ದಿ ",
+    "description": "Will enable manual-edit mode (textarea)"
+  },
+  "rulesEditSave": {
+    "message": "ಉಳಿಸು",
+    "description": "Will save manually-edited content and exit manual-edit mode"
+  },
+  "rulesEditDiscard": {
+    "message": "ತ್ಯಜಿಸಿ",
+    "description": "Will discard manually-edited content and exit manual-edit mode"
+  },
+  "rulesImport": {
+    "message": "ಫೈಲಿಂದ ಆಮದಿಸು...\n",
+    "description": ""
+  },
+  "rulesExport": {
+    "message": "Export to file…",
+    "description": "Button in the 'My rules' pane"
+  },
+  "rulesDefaultFileName": {
+    "message": "ನನ್ನ-ublock-ಡೈನಾಮಿಕ್-ಫಿಲ್ಟರ್-ನಿಯಮಗಳು_{{datetime}}.txt",
+    "description": "default file name to use"
+  },
+  "rulesHint": {
+    "message": "List of your dynamic filtering rules.",
+    "description": "English: List of your dynamic filtering rules."
+  },
+  "rulesFormatHint": {
+    "message": "Rule syntax: <code>source destination type action</code> (<a href='https://github.com/gorhill/uBlock/wiki/Dynamic-filtering:-rule-syntax'>full documentation</a>).",
+    "description": "English: dynamic rule syntax and full documentation."
+  },
+  "rulesSort": {
+    "message": "Sort:",
+    "description": "English: label for sort option."
+  },
+  "rulesSortByType": {
+    "message": "ನಿಯಮದ ಪ್ರಕಾರ",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortBySource": {
+    "message": "ಮೂಲ",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortByDestination": {
+    "message": "ಗಮ್ಯಸ್ಥಾನ",
+    "description": "English: a sort option for list of rules."
+  },
+  "whitelistPrompt": {
+    "message": "The trusted site directives dictate on which web pages uBlock Origin should be disabled. One entry per line.",
+    "description": "A concise description of the 'Trusted sites' pane."
+  },
+  "whitelistImport": {
+    "message": "ಆಮದಿಸಿ ಸೇರ್ಪಡಿಸು",
+    "description": "Button in the 'Trusted sites' pane"
+  },
+  "whitelistExport": {
+    "message": "ರಫ್ತು...\n",
+    "description": "Button in the 'Trusted sites' pane"
+  },
+  "whitelistExportFilename": {
+    "message": "ನನ್ನ-ublock-ವಿಶ್ವಾಸಾರ್ಹ-ಸೈಟ್ಗಳು_{{datetime}}.txt",
+    "description": "The default filename to use for import/export purpose"
+  },
+  "whitelistApply": {
+    "message": "ಬದಲಾವಣೆಗಳನ್ನು ಅನ್ವಯಿಸಿ",
+    "description": "English: Apply changes"
+  },
+  "logRequestsHeaderType": {
+    "message": "ವಿಧ",
+    "description": "English: Type"
+  },
+  "logRequestsHeaderDomain": {
+    "message": "ಡೊಮೇನ್",
+    "description": "English: Domain"
+  },
+  "logRequestsHeaderURL": {
+    "message": "URL",
+    "description": "English: URL"
+  },
+  "logRequestsHeaderFilter": {
+    "message": "ಫಿಲ್ಟರ್",
+    "description": "English: Filter"
+  },
+  "logAll": {
+    "message": "ಎಲ್ಲಾ",
+    "description": "Appears in the logger's tab selector"
+  },
+  "logBehindTheScene": {
+    "message": "Tabless",
+    "description": "Pretty name for behind-the-scene network requests"
+  },
+  "loggerCurrentTab": {
+    "message": "ಪ್ರಸ್ತುತ ಟ್ಯಾಬ್",
+    "description": "Appears in the logger's tab selector"
+  },
+  "loggerReloadTip": {
+    "message": "Reload the tab content",
+    "description": "Tooltip for the reload button in the logger page"
+  },
+  "loggerDomInspectorTip": {
+    "message": "Toggle the DOM inspector",
+    "description": "Tooltip for the DOM inspector button in the logger page"
+  },
+  "loggerPopupPanelTip": {
+    "message": "Toggle the popup panel",
+    "description": "Tooltip for the popup panel button in the logger page"
+  },
+  "loggerInfoTip": {
+    "message": "uBlock Origin wiki: The logger",
+    "description": "Tooltip for the top-right info label in the logger page"
+  },
+  "loggerClearTip": {
+    "message": "Clear logger",
+    "description": "Tooltip for the eraser in the logger page; used to blank the content of the logger"
+  },
+  "loggerPauseTip": {
+    "message": "Pause logger (discard all incoming data)",
+    "description": "Tooltip for the pause button in the logger page"
+  },
+  "loggerUnpauseTip": {
+    "message": "Unpause logger",
+    "description": "Tooltip for the play button in the logger page"
+  },
+  "loggerRowFiltererButtonTip": {
+    "message": "Toggle logger filtering",
+    "description": "Tooltip for the row filterer button in the logger page"
+  },
+  "logFilterPrompt": {
+    "message": "filter logger content",
+    "description": "Placeholder string for logger output filtering input field"
+  },
+  "loggerRowFiltererBuiltinTip": {
+    "message": "Logger filtering options",
+    "description": "Tooltip for the button to bring up logger output filtering options"
+  },
+  "loggerRowFiltererBuiltinNot": {
+    "message": "ಅಲ್ಲದ ",
+    "description": "A keyword in the built-in row filtering expression"
+  },
+  "loggerRowFiltererBuiltinEventful": {
+    "message": "eventful",
+    "description": "A keyword in the built-in row filtering expression: all items corresponding to uBO doing something (blocked, allowed, redirected, etc.)"
+  },
+  "loggerRowFiltererBuiltinBlocked": {
+    "message": "blocked",
+    "description": "A keyword in the built-in row filtering expression"
+  },
+  "loggerRowFiltererBuiltinAllowed": {
+    "message": "ಅನುಮತಿಸಲಾಗಿದೆ",
+    "description": "A keyword in the built-in row filtering expression"
+  },
+  "loggerRowFiltererBuiltinModified": {
+    "message": "modified",
+    "description": "A keyword in the built-in row filtering expression"
+  },
+  "loggerRowFiltererBuiltin1p": {
+    "message": "1st-party",
+    "description": "A keyword in the built-in row filtering expression"
+  },
+  "loggerRowFiltererBuiltin3p": {
+    "message": "3rd-party",
+    "description": "A keyword in the built-in row filtering expression"
+  },
+  "loggerEntryDetailsHeader": {
+    "message": "ವಿವರಗಳು",
+    "description": "Small header to identify the 'Details' pane for a specific logger entry"
+  },
+  "loggerEntryDetailsFilter": {
+    "message": "ಫಿಲ್ಟರ್",
+    "description": "Label to identify a filter field"
+  },
+  "loggerEntryDetailsFilterList": {
+    "message": "ಫಿಲ್ಟರ್ ಪಟ್ಟಿ",
+    "description": "Label to identify a filter list field"
+  },
+  "loggerEntryDetailsRule": {
+    "message": "ನಿಯಮ",
+    "description": "Label to identify a rule field"
+  },
+  "loggerEntryDetailsContext": {
+    "message": "Context",
+    "description": "Label to identify a context field (typically a hostname)"
+  },
+  "loggerEntryDetailsRootContext": {
+    "message": "Root context",
+    "description": "Label to identify a root context field (typically a hostname)"
+  },
+  "loggerEntryDetailsPartyness": {
+    "message": "Partyness",
+    "description": "Label to identify a field providing partyness information"
+  },
+  "loggerEntryDetailsType": {
+    "message": "ವಿಧ",
+    "description": "Label to identify the type of an entry"
+  },
+  "loggerEntryDetailsURL": {
+    "message": "URL",
+    "description": "Label to identify the URL of an entry"
+  },
+  "loggerURLFilteringHeader": {
+    "message": "URL ನಿಯಮ ",
+    "description": "Small header to identify the dynamic URL filtering section"
+  },
+  "loggerURLFilteringContextLabel": {
+    "message": "Context:",
+    "description": "Label for the context selector"
+  },
+  "loggerURLFilteringTypeLabel": {
+    "message": "ವಿಧ:",
+    "description": "Label for the type selector"
+  },
+  "loggerStaticFilteringHeader": {
+    "message": "Static filter",
+    "description": "Small header to identify the static filtering section"
+  },
+  "loggerStaticFilteringSentence": {
+    "message": "{{action}} network requests of {{type}} {{br}}which URL address matches {{url}} {{br}}and which originates {{origin}},{{br}}{{importance}} there is a matching exception filter.",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartBlock": {
+    "message": "ನಿರ್ಬಂಧಿಸು",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartAllow": {
+    "message": "ಅನುಮತಿಸು",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartType": {
+    "message": "type “{{type}}”",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartAnyType": {
+    "message": "any type",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartOrigin": {
+    "message": "\"{{origin}} \"ಇಂದಾ",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartAnyOrigin": {
+    "message": "from anywhere",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartNotImportant": {
+    "message": "except when",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartImportant": {
+    "message": "even if",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringFinderSentence1": {
+    "message": "Static filter <code>{{filter}}</code> found in:",
+    "description": "Below this sentence, the filter list(s) in which the filter was found"
+  },
+  "loggerStaticFilteringFinderSentence2": {
+    "message": "Static filter could not be found in any of the currently enabled filter lists",
+    "description": "Message to show when a filter cannot be found in any filter lists"
+  },
+  "loggerSettingDiscardPrompt": {
+    "message": "Logger entries which do not fulfill all three conditions below will be automatically discarded:",
+    "description": "Logger setting: A sentence to describe the purpose of the settings below"
+  },
+  "loggerSettingPerEntryMaxAge": {
+    "message": "Preserve entries from the last {{input}} minutes",
+    "description": "A logger setting"
+  },
+  "loggerSettingPerTabMaxLoads": {
+    "message": "Preserve at most {{input}} page loads per tab",
+    "description": "A logger setting"
+  },
+  "loggerSettingPerTabMaxEntries": {
+    "message": "Preserve at most {{input}} entries per tab",
+    "description": "A logger setting"
+  },
+  "loggerSettingPerEntryLineCount": {
+    "message": "Use {{input}} lines per entry in vertically expanded mode",
+    "description": "A logger setting"
+  },
+  "loggerSettingHideColumnsPrompt": {
+    "message": "Hide columns:",
+    "description": "Logger settings: a sentence to describe the purpose of the checkboxes below"
+  },
+  "loggerSettingHideColumnTime": {
+    "message": "{{input}} ಗಂಟೆ",
+    "description": "A label for the time column"
+  },
+  "loggerSettingHideColumnFilter": {
+    "message": "{{input}} Filter/rule",
+    "description": "A label for the filter or rule column"
+  },
+  "loggerSettingHideColumnContext": {
+    "message": "{{input}} Context",
+    "description": "A label for the context column"
+  },
+  "loggerSettingHideColumnPartyness": {
+    "message": "{{input}} Partyness",
+    "description": "A label for the partyness column"
+  },
+  "loggerExportFormatList": {
+    "message": "List",
+    "description": "Label for radio-button to pick export format"
+  },
+  "loggerExportFormatTable": {
+    "message": "Table",
+    "description": "Label for radio-button to pick export format"
+  },
+  "loggerExportEncodePlain": {
+    "message": "ಸಾದಾ",
+    "description": "Label for radio-button to pick export text format"
+  },
+  "loggerExportEncodeMarkdown": {
+    "message": "Markdown",
+    "description": "Label for radio-button to pick export text format"
+  },
+  "supportOpenButton": {
+    "message": "ತೆರೆ",
+    "description": "Text for button which open an external web page in Support pane"
+  },
+  "supportReportSpecificButton": {
+    "message": "Create new report on GitHub",
+    "description": "Text for button which open an external web page in Support pane"
+  },
+  "supportFindSpecificButton": {
+    "message": "Find similar reports on GitHub",
+    "description": "A clickable link in the filter issue reporter section"
+  },
+  "supportS1H": {
+    "message": "Documentation",
+    "description": "Header of 'Documentation' section in Support pane"
+  },
+  "supportS1P1": {
+    "message": "Read the documentation at <code>uBlock/wiki</code> to learn about all of uBlock Origin's features.",
+    "description": "First paragraph of 'Documentation' section in Support pane"
+  },
+  "supportS2H": {
+    "message": "Questions and support",
+    "description": "Header of 'Questions and support' section in Support pane"
+  },
+  "supportS2P1": {
+    "message": "Answers to questions and other kinds of help support is provided on the subreddit <code>/r/uBlockOrigin</code>.",
+    "description": "First paragraph of 'Questions and support' section in Support pane"
+  },
+  "supportS3H": {
+    "message": "Filter issues/website is broken",
+    "description": "Header of 'Filter issues' section in Support pane"
+  },
+  "supportS3P1": {
+    "message": "Report filter issues with specific websites to the <span data-url=\"https://github.com/uBlockOrigin/uAssets/issues?q=is%3Aissue\"><code>uBlockOrigin/uAssets</code> issue tracker</span>. <u>Requires a GitHub account.</u>",
+    "description": "First paragraph of 'Filter issues' section in Support pane"
+  },
+  "supportS3P2": {
+    "message": "<b>Important:</b> Avoid using other similarly-purposed blockers along with uBlock Origin, as this may cause filter issues on specific websites.",
+    "description": "Second paragraph of 'Filter issues' section in Support pane"
+  },
+  "supportS3P3": {
+    "message": "<b>Tips:</b> Be sure your filter lists are up to date. <span data-url=\"logger-ui.html#_\">The logger</span> is the primary tool to diagnose filter-related issues.",
+    "description": "Third paragraph of 'Filter issues' section in Support pane"
+  },
+  "supportS4H": {
+    "message": "Bug report",
+    "description": "Header of 'Bug report' section in Support pane"
+  },
+  "supportS4P1": {
+    "message": "Report issues with uBlock Origin itself to the <span data-url=\"https://github.com/uBlockOrigin/uBlock-issues/issues?q=is%3Aissue\"><code>uBlockOrigin/uBlock-issue</code> issue tracker</span>. <u>Requires a GitHub account.</u>",
+    "description": "First paragraph of 'Bug report' section in Support pane"
+  },
+  "supportS5H": {
+    "message": "Troubleshooting Information",
+    "description": "Header of 'Troubleshooting Information' section in Support pane"
+  },
+  "supportS5P1": {
+    "message": "Below is technical information that might be useful when volunteers are trying to help you solve a problem.",
+    "description": "First paragraph of 'Troubleshooting Information' section in Support pane"
+  },
+  "supportS6H": {
+    "message": "Report a filter issue",
+    "description": "Header of 'Report a filter issue' section in Support pane"
+  },
+  "supportS6P1S1": {
+    "message": "To avoid burdening volunteers with duplicate reports, please verify that the issue has not already been reported. <b>Note:</b> clicking the button will cause the page's origin to be sent to GitHub.",
+    "description": "A paragraph in the filter issue reporter section"
+  },
+  "supportS6P2S1": {
+    "message": "Filter lists are updated daily. Be sure your issue has not already been addressed in the most recent filter lists.",
+    "description": "A paragraph in the filter issue reporter section"
+  },
+  "supportS6P2S2": {
+    "message": "Verify that the issue still exists after reloading the problematic web page.",
+    "description": "A paragraph in the filter issue reporter section"
+  },
+  "supportS6URL": {
+    "message": "Address of the web page:",
+    "description": "Label for the URL of the page"
+  },
+  "supportS6Select1": {
+    "message": "The web page…",
+    "description": "Label for widget to select type of issue"
+  },
+  "supportS6Select1Option0": {
+    "message": "-- Pick an entry --",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Select1Option1": {
+    "message": "Shows ads or ad leftovers",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Select1Option2": {
+    "message": "Has overlays or other nuisances",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Select1Option3": {
+    "message": "Detects uBlock Origin",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Select1Option4": {
+    "message": "Has privacy-related issues",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Select1Option5": {
+    "message": "Malfunctions when uBlock Origin is enabled",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Select1Option6": {
+    "message": "Opens unwanted tabs or windows",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Select1Option7": {
+    "message": "Leads to badware, phishing",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Checkbox1": {
+    "message": "Label the web page as “NSFW” (<a href=\"https://wikipedia.org/wiki/Not_safe_for_work\">“Not Safe For Work”</a>)",
+    "description": "A checkbox to use for NSFW sites"
+  },
+  "aboutPrivacyPolicy": {
+    "message": "ಗೌಪ್ಯತಾ ನೀತಿ\n",
+    "description": "Link to privacy policy on GitHub (English)"
+  },
+  "aboutChangelog": {
+    "message": "ಬದಲಾವಣೆಗಳು",
+    "description": ""
+  },
+  "aboutCode": {
+    "message": "Source code (GPLv3)",
+    "description": "English: Source code (GPLv3)"
+  },
+  "aboutContributors": {
+    "message": "ನೀಡುಗರು",
+    "description": "English: Contributors"
+  },
+  "aboutSourceCode": {
+    "message": "ಮೂಲ ಕೊಡ್",
+    "description": "Link text to source code repo"
+  },
+  "aboutTranslations": {
+    "message": "ಅನುವಾದ",
+    "description": "Link text to translations repo"
+  },
+  "aboutFilterLists": {
+    "message": "ಫಿಲ್ಟರ್ ಪಟ್ಟಿಗಳು",
+    "description": "Link text to uBO's own filter lists repo"
+  },
+  "aboutDependencies": {
+    "message": "External dependencies (GPLv3-compatible):",
+    "description": "Shown in the About pane"
+  },
+  "aboutCDNs": {
+    "message": "uBO's own filter lists are freely hosted on the following <a href=\"https://wikipedia.org/wiki/Content_delivery_network\">CDNs</a>:",
+    "description": "Shown in the About pane"
+  },
+  "aboutCDNsInfo": {
+    "message": "A randomly picked CDN is used when a filter list needs to be updated.",
+    "description": "Shown in the About pane"
+  },
+  "aboutBackupDataButton": {
+    "message": "Back up to file…",
+    "description": "Text for button to create a backup of all settings"
+  },
+  "aboutBackupFilename": {
+    "message": "my-ublock-backup_{{datetime}}.txt",
+    "description": "English: my-ublock-backup_{{datetime}}.txt"
+  },
+  "aboutRestoreDataButton": {
+    "message": "Restore from file…",
+    "description": "English: Restore from file..."
+  },
+  "aboutResetDataButton": {
+    "message": "Reset to default settings…",
+    "description": "English: Reset to default settings..."
+  },
+  "aboutRestoreDataConfirm": {
+    "message": "All your settings will be overwritten using data backed up on {{time}}, and uBlock₀ will restart.\n\nOverwrite all existing settings using backed up data?",
+    "description": "Message asking user to confirm restore"
+  },
+  "aboutRestoreDataError": {
+    "message": "The data could not be read or is invalid",
+    "description": "Message to display when an error occurred during restore"
+  },
+  "aboutResetDataConfirm": {
+    "message": "All your settings will be removed, and uBlock₀ will restart.\n\nReset uBlock₀ to factory settings?",
+    "description": "Message asking user to confirm reset"
+  },
+  "errorCantConnectTo": {
+    "message": "Network error: {{msg}}",
+    "description": "English: Network error: {{msg}}"
+  },
+  "subscribeButton": {
+    "message": "ಫಿಲ್ಟರ್ ಪಟ್ಟಿಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ",
+    "description": "For the button used to subscribe to a filter list"
+  },
+  "elapsedOneMinuteAgo": {
+    "message": "ಒಂದು ನಿಮಿಷದ ಹಿಂದೆ",
+    "description": "English: a minute ago"
+  },
+  "elapsedManyMinutesAgo": {
+    "message": "{{value}} ನಿಮಿಷದ ಹಿಂದೆ",
+    "description": "English: {{value}} minutes ago"
+  },
+  "elapsedOneHourAgo": {
+    "message": "ಒಂದು ತಾಸಿನ ಹಿಂದೆ",
+    "description": "English: an hour ago"
+  },
+  "elapsedManyHoursAgo": {
+    "message": "{{value}} ತಾಸಿನ ಹಿಂದೆ",
+    "description": "English: {{value}} hours ago"
+  },
+  "elapsedOneDayAgo": {
+    "message": "ಒಂದು ದಿನದ ಹಿಂದೆ",
+    "description": "English: a day ago"
+  },
+  "elapsedManyDaysAgo": {
+    "message": "{{value}} ದಿನದ ಹಿಂದೆ",
+    "description": "English: {{value}} days ago"
+  },
+  "showDashboardButton": {
+    "message": "Show Dashboard",
+    "description": "Firefox/Fennec-specific: Show Dashboard"
+  },
+  "showNetworkLogButton": {
+    "message": "Show Logger",
+    "description": "Firefox/Fennec-specific: Show Logger"
+  },
+  "fennecMenuItemBlockingOff": {
+    "message": "ಆಫ್",
+    "description": "Firefox-specific: appears as 'uBlock₀ (off)'"
+  },
+  "docblockedTitle": {
+    "message": "Page blocked",
+    "description": "Used as a title for the document-blocked page"
+  },
+  "docblockedPrompt1": {
+    "message": "uBlock Origin ಈ ಕೆಳಗಿನ ಪುಟವನ್ನು ಲೋಡ್ ಮಾಡುವುದನ್ನು ತಡೆಯುತ್ತದೆ:",
+    "description": "Used in the strict-blocking page"
+  },
+  "docblockedPrompt2": {
+    "message": "This happened because of the following filter:",
+    "description": "Used in the strict-blocking page"
+  },
+  "docblockedNoParamsPrompt": {
+    "message": "without parameters",
+    "description": "label to be used for the parameter-less URL: https://cloud.githubusercontent.com/assets/585534/9832014/bfb1b8f0-593b-11e5-8a27-fba472a5529a.png"
+  },
+  "docblockedFoundIn": {
+    "message": "The filter has been found in:",
+    "description": "English: List of filter list names follows"
+  },
+  "docblockedBack": {
+    "message": "ಹಿಂದೆ ಹೋಗಿ",
+    "description": "English: Go back"
+  },
+  "docblockedClose": {
+    "message": "ಈ ವಿಂಡೋವನ್ನು ಮುಚ್ಚಿ",
+    "description": "English: Close this window"
+  },
+  "docblockedDontWarn": {
+    "message": "Don't warn me again about this site",
+    "description": "Label for checkbox in document-blocked page"
+  },
+  "docblockedProceed": {
+    "message": "Disable strict blocking for {{hostname}}",
+    "description": "English: Disable strict blocking for {{hostname}} ..."
+  },
+  "docblockedDisableTemporary": {
+    "message": "ತಾತ್ಕಾಲಿಕವಾಗಿ",
+    "description": "English: Temporarily"
+  },
+  "docblockedDisablePermanent": {
+    "message": "ಶಾಶ್ವತವಾಗಿ",
+    "description": "English: Permanently"
+  },
+  "docblockedDisable": {
+    "message": "Proceed",
+    "description": "Button text to navigate to the blocked page"
+  },
+  "docblockedRedirectPrompt": {
+    "message": "The blocked page wants to redirect to another site. If you choose to proceed, you will navigate directly to: {{url}}",
+    "description": "Text warning about an incoming redirect"
+  },
+  "docblockedReasonLabel": {
+    "message": "Reason:",
+    "description": "The label which prepend the actual reason why a page was blocked"
+  },
+  "docblockedReasonMalicious": {
+    "message": "Malicious",
+    "description": "An actual reason why a page was blocked"
+  },
+  "docblockedReasonTracker": {
+    "message": "Tracker",
+    "description": "An actual reason why a page was blocked"
+  },
+  "docblockedReasonDisreputable": {
+    "message": "Disreputable",
+    "description": "An actual reason why a page was blocked"
+  },
+  "cloudPush": {
+    "message": "Export to cloud storage",
+    "description": "tooltip"
+  },
+  "cloudPull": {
+    "message": "Import from cloud storage",
+    "description": "tooltip"
+  },
+  "cloudPullAndMerge": {
+    "message": "Import from cloud storage and merge with current settings",
+    "description": "tooltip"
+  },
+  "cloudNoData": {
+    "message": "…\n…",
+    "description": ""
+  },
+  "cloudDeviceNamePrompt": {
+    "message": "ಈ ಸಾಧನದ ಹೆಸರು:",
+    "description": "used as a prompt for the user to provide a custom device name"
+  },
+  "advancedSettingsWarning": {
+    "message": "Warning! Change these advanced settings at your own risk.",
+    "description": "A warning to users at the top of 'Advanced settings' page"
+  },
+  "genericSubmit": {
+    "message": "ಸಲ್ಲಿಸಿ",
+    "description": "for generic 'Submit' buttons"
+  },
+  "genericApplyChanges": {
+    "message": "ಬದಲಾವಣೆಗಳನ್ನು ಅನ್ವಯಿಸಿ",
+    "description": "for generic 'Apply changes' buttons"
+  },
+  "genericRevert": {
+    "message": "ಹಿಂತಿರುಗಿಸಿ",
+    "description": "for generic 'Revert' buttons"
+  },
+  "genericBytes": {
+    "message": "ಬೈಟ್ಗಳು",
+    "description": ""
+  },
+  "contextMenuBlockElementInFrame": {
+    "message": "Block element in frame…",
+    "description": "An entry in the browser's contextual menu"
+  },
+  "contextMenuSubscribeToList": {
+    "message": "Subscribe to filter list…",
+    "description": "An entry in the browser's contextual menu"
+  },
+  "contextMenuTemporarilyAllowLargeMediaElements": {
+    "message": "Temporarily allow large media elements",
+    "description": "A context menu entry, present when large media elements have been blocked on the current site"
+  },
+  "contextMenuViewSource": {
+    "message": "View source code…",
+    "description": "A context menu entry, to view the source code of the target resource"
+  },
+  "shortcutCapturePlaceholder": {
+    "message": "Type a shortcut",
+    "description": "Placeholder string for input field used to capture a keyboard shortcut"
+  },
+  "genericMergeViewScrollLock": {
+    "message": "Toggle locked scrolling",
+    "description": "Tooltip for the button used to lock scrolling between the views in the 'My rules' pane"
+  },
+  "genericCopyToClipboard": {
+    "message": "Copy to clipboard",
+    "description": "Label for buttons used to copy something to the clipboard"
+  },
+  "genericSelectAll": {
+    "message": "Select all",
+    "description": "Label for buttons used to select all text in editor"
+  },
+  "toggleCosmeticFiltering": {
+    "message": "Toggle cosmetic filtering",
+    "description": "Label for keyboard shortcut used to toggle cosmetic filtering"
+  },
+  "toggleJavascript": {
+    "message": "Toggle JavaScript",
+    "description": "Label for keyboard shortcut used to toggle no-scripting switch"
+  },
+  "relaxBlockingMode": {
+    "message": "Relax blocking mode",
+    "description": "Label for keyboard shortcut used to relax blocking mode"
+  },
+  "storageUsed": {
+    "message": "ಉಪಯೊಗಿಸುತಿರುವ ಸಂಗ್ರಹಣೆ: {{value}} {{unit}}",
+    "description": " In Setting pane, renders as (example): Storage used: 13.2 MB"
+  },
+  "KB": {
+    "message": "KB",
+    "description": "short for 'kilobytes'"
+  },
+  "MB": {
+    "message": "MB",
+    "description": "short for 'megabytes'"
+  },
+  "GB": {
+    "message": "GB",
+    "description": "short for 'gigabytes'"
+  },
+  "clickToLoad": {
+    "message": "Click to load",
+    "description": "Message used in frame placeholders"
+  },
+  "linterMainReport": {
+    "message": "Errors: {{count}}",
+    "description": "Summary of number of errors as reported by the linter "
+  },
+  "unprocessedRequestTooltip": {
+    "message": "Could not filter properly at browser launch. Reload the page to ensure proper filtering.",
+    "description": "A warning which will appear in the popup panel if needed"
+  },
+  "dummy": {
+    "message": "This entry must be the last one",
+    "description": "so we dont need to deal with comma for last entry"
+  }
+}

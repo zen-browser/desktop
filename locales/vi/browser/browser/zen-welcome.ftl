@@ -23,4 +23,4 @@ zen-welcome-start-browsing = Bắt đầu nào!
 zen-welcome-default-search-title = Công cụ tìm kiếm mặc định của bạn là?
 zen-welcome-default-search-description = Hãy chọn công cụ tìm kiếm mặc đinh. Bạn luôn có thể đổi nó sau này!
 zen-welcome-skip-button = Bỏ qua
-zen-welcome-finished = Trình duyệt của bạn đã được thiết lập thành công!
+zen-welcome-finished = Your Nixo has been set up correctly!

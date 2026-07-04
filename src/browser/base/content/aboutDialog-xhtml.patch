@@ -24,7 +24,7 @@ index 3ffd464b960a4299a7dd0cd87e4fc2f781b9d593..7a831c8ee2b73bb89bf8a82ac24958b5
            </vbox>
            <description class="text-blurb" id="communityDesc" data-l10n-id="community-2">
 -            <label is="text-link" href="https://www.mozilla.org/?utm_source=firefox-browser&#38;utm_medium=firefox-desktop&#38;utm_campaign=about-dialog" data-l10n-name="community-mozillaLink"/>
-+            <label is="text-link" href="https://github.com/nixo-browser/desktop" data-l10n-name="community-mozillaLink"/>
++            <label is="text-link" href="https://github.com/nixo-browser/nixo" data-l10n-name="community-mozillaLink"/>
              <label is="text-link" useoriginprincipal="true" href="about:credits" data-l10n-name="community-creditsLink"/>
            </description>
 -          <description class="text-blurb" id="contributeDesc" data-l10n-id="helpus">

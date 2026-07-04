@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = { $num } / { $max } platser fyllda
 tab-context-zen-remove-essential = 
     .label = Ta bort från Essentials
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Ersätt Essential webbadress med nuvarande
-           *[false] Ersätt fäst webbadress med nuvarande
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Ändra etikett...
 tab-context-zen-edit-icon = 
@@ -47,6 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Bekräfta
 zen-pinned-tab-replaced = Den fästa flikens URL har ersatts med den aktuella URL!
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Fliken har fått nytt namn!
 zen-background-tab-opened-toast = Ny bakgrundsflik öppnad!
 zen-workspace-renamed-toast = Arbetsytan har fått ett nytt namn!
@@ -120,7 +130,7 @@ zen-sidebar-notification-restart-safe-mode-label = Har något gått sönder?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Starta om i felsäkert läge
 zen-window-sync-migration-dialog-title = Behåll dina fönster i Sync
-zen-window-sync-migration-dialog-message = Zen synkroniserar nu fönster på samma enhet, så ändringar i ett fönster återspeglas direkt i de andra.
+zen-window-sync-migration-dialog-message = Nixo now syncs windows on the same device, so changes in one window are reflected across the others instantly.
 zen-window-sync-migration-dialog-learn-more = Läs mer
 zen-window-sync-migration-dialog-accept = Jag förstår
 zen-appmenu-new-blank-window = 

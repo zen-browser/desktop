@@ -1,0 +1,63 @@
+[
+  {
+    "namespace": "tabCapture",
+    "description": "Use the chrome.tabCapture API to capture tab media.",
+    "permissions": ["tabCapture"],
+    "types": [
+      {
+        "id": "CaptureOptions",
+        "type": "object",
+        "properties": {
+          "audio": { "type": "boolean", "optional": true },
+          "video": { "type": "boolean", "optional": true },
+          "audioConstraints": { "type": "object", "optional": true, "additionalProperties": { "type": "any" } },
+          "videoConstraints": { "type": "object", "optional": true, "additionalProperties": { "type": "any" } }
+        }
+      },
+      {
+        "id": "CaptureInfo",
+        "type": "object",
+        "properties": {
+          "tabId": { "type": "integer", "optional": true },
+          "status": { "type": "string" }
+        }
+      }
+    ],
+    "functions": [
+      {
+        "name": "capture",
+        "type": "function",
+        "async": true,
+        "description": "Captures the visible area of a tab.",
+        "parameters": [
+          {
+            "name": "options",
+            "$ref": "CaptureOptions",
+            "optional": true
+          }
+        ],
+        "returns": { "type": "any", "description": "MediaStream" }
+      },
+      {
+        "name": "getCapturedTabs",
+        "type": "function",
+        "async": true,
+        "description": "Returns a list of tabs being captured.",
+        "returns": {
+          "type": "array",
+          "items": { "$ref": "CaptureInfo" }
+        }
+      }
+    ],
+    "events": [
+      {
+        "name": "onCaptured",
+        "type": "function",
+        "description": "Fired when a tab is captured.",
+        "parameters": [
+          { "name": "captureInfo", "$ref": "CaptureInfo" }
+        ]
+      }
+    ]
+  }
+]

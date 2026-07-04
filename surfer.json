@@ -20,7 +20,7 @@
       "brandShortName": "Nixo",
       "brandFullName": "Nixo Browser",
       "release": {
-        "displayVersion": "1.21.5b",
+        "displayVersion": "1.21",
         "github": {
           "repo": "nixo-browser/desktop"
         },
@@ -40,7 +40,7 @@
       "brandShortName": "Nixo Twilight",
       "brandFullName": "Nixo Twilight",
       "release": {
-        "displayVersion": "1.22t",
+        "displayVersion": "1.21t",
         "github": {
           "repo": "nixo-browser/desktop"
         }

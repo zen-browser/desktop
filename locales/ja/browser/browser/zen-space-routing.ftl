@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = スペースルーティングの設定
-zen-space-routing-rulepanel-placeholder = ルートを使用すると、Nixo内で特定のサイトを開く場所を選択できます。たとえば、YouTubeのリンクをあなたの個人的なスペース内に常に開くようにルーティングできます。
+zen-space-routing-rulepanel-placeholder = Routes let you choose where specific sites open inside Nixo. For example, you can route YouTube links to always open inside your Personal space.
 zen-space-routing-dialog-title = スペースルーティングの設定
 zen-space-routing-external-default = 外部リンクのデフォルトルート
 zen-space-routing-new-route = 新しいルート

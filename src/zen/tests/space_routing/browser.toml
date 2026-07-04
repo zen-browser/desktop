@@ -17,6 +17,8 @@ support-files = [
 
 ["browser_space_routing_redirect_navigation.js"]
 
+["browser_space_routing_route_existing_tab.js"]
+
 ["browser_space_routing_route_matching.js"]
 
 ["browser_space_routing_route_uri.js"]

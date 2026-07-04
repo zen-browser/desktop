@@ -1621,6 +1621,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       return;
     }
 
+    const tab = this.#currentTab;
     this.animatingFullOpen = true;
     this.#currentTab.setAttribute("zen-dont-split-glance", true);
 
@@ -1643,12 +1644,11 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
     if (gReduceMotion) {
       gZenViewSplitter.deactivateCurrentSplitView();
-      this.finishOpeningGlance();
-      return;
+    } else {
+      await this.#animateFullOpen();
     }
-
-    await this.#animateFullOpen();
     this.finishOpeningGlance();
+    await this.#routeExpandedTab(tab);
   }
 
   /**
@@ -1661,6 +1661,24 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       isZenFolder
     ) {
       gBrowser.pinTab(this.#currentTab);
+    }
+  }
+
+  /**
+   * Route the expanded tab to the space its Space Routing rule points at.
+   * Glance tabs are exempt from routing while they are previews, so the
+   * rules have to be applied when one is promoted to a regular tab.
+   *
+   * @param {Tab} tab - The expanded tab
+   */
+  #routeExpandedTab(tab) {
+    if (!tab?.isConnected || tab.closing || tab.pinned || tab.group) {
+      return;
+    }
+
+    const uriString = tab.linkedBrowser?.currentURI?.spec;
+    if (uriString) {
+      return gZenSpaceRoutingManager.routeExistingTab(uriString, tab, window);
     }
   }
 

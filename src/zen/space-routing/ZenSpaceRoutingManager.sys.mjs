@@ -198,6 +198,49 @@ class nsZenSpaceRoutingManager {
   }
 
   /**
+   * Routes an already-open tab to the space its rule points at. Used for
+   * tabs that were exempt from routing when they were created, like a
+   * glance preview being promoted to a regular tab. No-op when no rule
+   * matches, the tab already lives in the destination space, or the
+   * destination space no longer exists.
+   *
+   * @param {string} uriString - The URI the tab is showing
+   * @param {Tab} tab - The tab element
+   * @param {Window} win - The window which the tab belongs to
+   */
+  routeExistingTab(uriString, tab, win) {
+    if (tab.closing) {
+      return;
+    }
+
+    const targetWorkspaceId = this.getRedirectTargetWorkspaceId(
+      uriString,
+      tab.getAttribute("zen-workspace-id"),
+      win
+    );
+
+    if (!targetWorkspaceId) {
+      return;
+    }
+
+    const targetWorkspace =
+      win.gZenWorkspaces.getWorkspaceFromId(targetWorkspaceId);
+    const tabContainerId =
+      parseInt(tab.getAttribute("usercontextid") ?? "0", 10) || 0;
+    if (tabContainerId !== (targetWorkspace.containerTabId ?? 0)) {
+      // A loaded tab cannot change containers without reloading, so keep it
+      // here to preserve its live state.
+      return;
+    }
+
+    if (tab.selected && tab.owner) {
+      win.gBrowser.selectedTab = tab.owner;
+    }
+
+    return this.#routeToWorkspace(targetWorkspaceId, tab, false, win);
+  }
+
+  /**
    * Checks if the tab should be processed or not
    *
    * @param {object} options - The tab creation options
@@ -230,7 +273,7 @@ class nsZenSpaceRoutingManager {
    */
   async #routeToWorkspace(targetRoute, newTab, inBackground, win) {
     try {
-      if (!newTab || !newTab.parentNode) {
+      if (!newTab || !newTab.parentNode || newTab.closing) {
         return;
       }
 

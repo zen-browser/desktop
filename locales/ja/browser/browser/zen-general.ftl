@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = { $num } / { $max }スロットがいっ�
 tab-context-zen-remove-essential = 
     .label = Essentialsから削除
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] EssentialタブのURLを今開いているURLで置き換える
-           *[false] ピン留めされたタブのURLを今開いているURLで置き換える
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = ラベルを変更する...
 tab-context-zen-edit-icon = 
@@ -47,6 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = 確定
 zen-pinned-tab-replaced = 固定したタブのURLが現在のURLに置き換えられました！
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = タブの名前は無事に変更されました！
 zen-background-tab-opened-toast = 新しい背景タブが開きました！
 zen-workspace-renamed-toast = ワークスペースの名前が変更されました！
@@ -120,7 +130,7 @@ zen-sidebar-notification-restart-safe-mode-label = 何か壊れましたか？
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = セーフモードで再起動する
 zen-window-sync-migration-dialog-title = Windowsを同期させておく
-zen-window-sync-migration-dialog-message = Zenは同一デバイス内のウィンドウを同期するようになり、１つのウィンドウでの操作が、他のウィンドウに、即座に反映されます。
+zen-window-sync-migration-dialog-message = Nixo now syncs windows on the same device, so changes in one window are reflected across the others instantly.
 zen-window-sync-migration-dialog-learn-more = もっと詳しく
 zen-window-sync-migration-dialog-accept = わかりました
 zen-appmenu-new-blank-window = 

@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = { $num } / { $max } užpildytų vietų
 tab-context-zen-remove-essential = 
     .label = Šalinti iš būtiniausių
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Keisti būtiniausią URL su dabartiniu
-           *[false] Keisti prisegtą URL su dabartiniu
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Keisti žymę...
 tab-context-zen-edit-icon = 
@@ -47,6 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Patvirtinti
 zen-pinned-tab-replaced = Prisegtos kortelės URL pakeistas dabartiniu URL.
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Kortelė sėkmingai pervadinta.
 zen-background-tab-opened-toast = Nauja fonos kortelė atverta.
 zen-workspace-renamed-toast = Darbo sritis sėkmingai pervadintas.
@@ -120,7 +130,7 @@ zen-sidebar-notification-restart-safe-mode-label = Kažkas neveikia?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Paleisti iš naujo saugioje režime
 zen-window-sync-migration-dialog-title = Išlaikykite savo langus sinchronizuotus
-zen-window-sync-migration-dialog-message = „Zen“ dabar sinchronizuoja langus tame pačiame įrenginyje, todėl viename lange atlikti pakeitimai iš karto atsispindi ir kituose.
+zen-window-sync-migration-dialog-message = Nixo now syncs windows on the same device, so changes in one window are reflected across the others instantly.
 zen-window-sync-migration-dialog-learn-more = Sužinoti daugiau
 zen-window-sync-migration-dialog-accept = Supratau
 zen-appmenu-new-blank-window = 

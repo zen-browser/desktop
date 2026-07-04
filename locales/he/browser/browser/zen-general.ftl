@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = { $num } / { $max } מקומות מלאי�
 tab-context-zen-remove-essential = 
     .label = הסרה מהחיוניות
     .accesskey = ר
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Replace Essential URL with Current
-           *[false] Replace Pinned URL with Current
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = ב
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = שינוי תווית...
 tab-context-zen-edit-icon = 
@@ -45,6 +51,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = אישור
 zen-pinned-tab-replaced = כתובת הלשונית המוצמדת הוחלפה בכתובת הנוכחית!
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = שם הלשונית השתנה בהצלחה!
 zen-background-tab-opened-toast = לשונית נפתחה ברקע!
 zen-workspace-renamed-toast = שם מרחב העבודה השתנה בהצלחה!
@@ -118,7 +128,7 @@ zen-sidebar-notification-restart-safe-mode-label = משהו השתבש?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = הפעלה מחדש במצב בטוח
 zen-window-sync-migration-dialog-title = החלונות שלך עכשיו מסונכרנים
-zen-window-sync-migration-dialog-message = Zen עכשיו מסנכרן חלונות על אותו מכשיר, כך ששינוים בחלון אחד מושקפים מיידית על האחרים.
+zen-window-sync-migration-dialog-message = Nixo now syncs windows on the same device, so changes in one window are reflected across the others instantly.
 zen-window-sync-migration-dialog-learn-more = מידע נוסף
 zen-window-sync-migration-dialog-accept = הבנתי
 zen-appmenu-new-blank-window = 

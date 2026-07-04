@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
 tab-context-zen-remove-essential = 
     .label = Fjern fra Essentielle
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Replace Essential URL with Current
-           *[false] Replace Pinned URL with Current
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Change Label...
 tab-context-zen-edit-icon = 
@@ -47,6 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Bekræft
 zen-pinned-tab-replaced = Den fastgjorte fane-URL blev erstattet med den aktuelle.
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Fanen blev omdøbt!
 zen-background-tab-opened-toast = Ny baggrundsfane åbnet!
 zen-workspace-renamed-toast = Arbejdsområde blev omdøbt!
@@ -97,7 +107,7 @@ zen-site-data-header-reader-mode =
 zen-site-data-header-screenshot = 
     .tooltiptext = Take a Screenshot
 zen-site-data-header-bookmark = 
-    .tooltiptext = Bookmark This Page
+    .tooltiptext = Bogmærk denne side
 zen-urlbar-copy-url-button = 
     .tooltiptext = Kopiér URL
 zen-site-data-setting-site-protection = Sporingsbeskyttelse
@@ -121,7 +131,7 @@ zen-sidebar-notification-restart-safe-mode-tooltip =
     .title = Restart in Safe Mode
 zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
 zen-window-sync-migration-dialog-message = Nixo now syncs windows on the same device, so changes in one window are reflected across the others instantly.
-zen-window-sync-migration-dialog-learn-more = Learn More
+zen-window-sync-migration-dialog-learn-more = Lær mere
 zen-window-sync-migration-dialog-accept = Got It
 zen-appmenu-new-blank-window = 
     .label = New blank window

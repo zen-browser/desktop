@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = Využité pozície: { $num } / { $max }
 tab-context-zen-remove-essential = 
     .label = Odstrániť z hlavných
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Replace Essential URL with Current
-           *[false] Replace Pinned URL with Current
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Zmeniť Označenie...
 tab-context-zen-edit-icon = 
@@ -45,6 +51,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Potvrdiť
 zen-pinned-tab-replaced = URL pripnutej karty bola nahradená aktuálnou URL!
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Karta bola úspešne premenovaná!
 zen-background-tab-opened-toast = Nová karta otvorená na pozadí!
 zen-workspace-renamed-toast = Pracovný priestor bol úspešne premenovaný!
@@ -118,7 +128,7 @@ zen-sidebar-notification-restart-safe-mode-label = Niečo sa pokazilo?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Reštartovať v Núdzovom Režime
 zen-window-sync-migration-dialog-title = Majte svoje okná synchronizované
-zen-window-sync-migration-dialog-message = Zen teraz synchronizuje okná v rámci jedného zariadenia, takže zmeny v jednom okne sa okamžite prejavia vo všetkých ostatných.
+zen-window-sync-migration-dialog-message = Nixo now syncs windows on the same device, so changes in one window are reflected across the others instantly.
 zen-window-sync-migration-dialog-learn-more = Dozvedieť sa Viac
 zen-window-sync-migration-dialog-accept = Rozumiem
 zen-appmenu-new-blank-window = 

@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = { $num } / { $max } hely foglalt
 tab-context-zen-remove-essential = 
     .label = Eltávolítás az alapvetőkből
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Alapvető lap cseréje az aktuális URL-el
-           *[false] Rögzített lap cseréje az aktuális URL-el
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Címke módosítása...
 tab-context-zen-edit-icon = 
@@ -47,6 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Megerősítés
 zen-pinned-tab-replaced = A rögzített lap URL címe helyébe az aktuális URL cím lépett!
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = A lap sikeresen át lett nevezve!
 zen-background-tab-opened-toast = Új lap megnyitva!
 zen-workspace-renamed-toast = A munkakörnyezet sikeresen át lett nevezve!
@@ -120,7 +130,7 @@ zen-sidebar-notification-restart-safe-mode-label = Valami elromlott?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Újraindítás biztonságos módban
 zen-window-sync-migration-dialog-title = Tartsad szinkronban az ablakaid
-zen-window-sync-migration-dialog-message = A Zen mostantól szinkronizálja az ugyanazon eszközön található ablakokat, így az egyik ablakban végzett módosítások azonnal megjelennek a többiben is.
+zen-window-sync-migration-dialog-message = Nixo now syncs windows on the same device, so changes in one window are reflected across the others instantly.
 zen-window-sync-migration-dialog-learn-more = Tudj meg többet
 zen-window-sync-migration-dialog-accept = Értettem
 zen-appmenu-new-blank-window = 

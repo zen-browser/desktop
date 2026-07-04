@@ -13,20 +13,24 @@ tab-context-zen-reset-pinned-tab =
     .accesskey = ر
 tab-context-zen-add-essential = 
     .label = أضف إلى الأساسيات
-    .accesskey = E
+    .accesskey = ه
 tab-context-zen-add-essential-badge = { $num } / { $max } مملؤة
 tab-context-zen-remove-essential = 
     .label = إزالة من الأساسيات
-    .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+    .accesskey = ر
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] استبدل الرابط الأساسي بـ
-           *[false]
-                استبدل الرابط المثبت بـ
-                الحالي
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = ه
 tab-context-zen-edit-title = 
     .label = تغيير الاسم...
 tab-context-zen-edit-icon = 
@@ -49,6 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = تأكيد
 zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL.
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = تم تغيير اسم التبويب بنجاح!
 zen-background-tab-opened-toast = تم فتح علامة تبويب خلفية جديدة!
 zen-workspace-renamed-toast = تم تغيير اسم مساحة العمل بنجاح!
@@ -122,7 +130,7 @@ zen-sidebar-notification-restart-safe-mode-label = شيء معطل؟
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = إعادة التشغيل في الوضع الآمن
 zen-window-sync-migration-dialog-title = حافظ على تزامن نوافذك
-zen-window-sync-migration-dialog-message = يقوم Zen الآن بمزامنة النوافذ على نفس الجهاز، لذا فإن التغييرات في نافذة واحدة تنعكس في النوافذ الأخرى على الفور.
+zen-window-sync-migration-dialog-message = Nixo now syncs windows on the same device, so changes in one window are reflected across the others instantly.
 zen-window-sync-migration-dialog-learn-more = تعرف على المزيد
 zen-window-sync-migration-dialog-accept = فهمت
 zen-appmenu-new-blank-window = 

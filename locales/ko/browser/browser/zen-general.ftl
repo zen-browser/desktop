@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = { $num } / { $max }개 추가됨
 tab-context-zen-remove-essential = 
     .label = 에센셜에서 제거하기
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] 에센셜 탭을 현재 URL로 초기화
-           *[false] 고정된 탭을 현재 URL로 초기화
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = 라벨 편집...
 tab-context-zen-edit-icon = 
@@ -47,6 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = 확인
 zen-pinned-tab-replaced = 고정 URL이 현재 URL로 변경되었습니다!
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = 탭의 이름이 성공적으로 변경되었습니다!
 zen-background-tab-opened-toast = 새 백그라운드 탭이 열렸습니다!
 zen-workspace-renamed-toast = 워크스페이스 이름이 변경되었습니다!
@@ -120,7 +130,7 @@ zen-sidebar-notification-restart-safe-mode-label = 무언가 고장났나요?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = 안전 모드로 다시 시작
 zen-window-sync-migration-dialog-title = 창을 동기화 상태로 유지
-zen-window-sync-migration-dialog-message = Zen이 이제 같은 기기에서 창을 동기화합니다. 한 창에서의 변경이 다른 창에서도 즉시 적용됩니다.
+zen-window-sync-migration-dialog-message = Nixo now syncs windows on the same device, so changes in one window are reflected across the others instantly.
 zen-window-sync-migration-dialog-learn-more = 더 알아보기
 zen-window-sync-migration-dialog-accept = 알겠습니다
 zen-appmenu-new-blank-window = 

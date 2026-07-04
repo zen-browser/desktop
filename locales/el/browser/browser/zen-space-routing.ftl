@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = Ρυθμίσεις Δρομολόγησης Χώρου
-zen-space-routing-rulepanel-placeholder = Για παράδειγμα, μπορείτε να δρομολογήσετε συνδέσεις YouTube για να ανοίξετε πάντα μέσα στον Προσωπικό σας χώρο.
+zen-space-routing-rulepanel-placeholder = Routes let you choose where specific sites open inside Nixo. For example, you can route YouTube links to always open inside your Personal space.
 zen-space-routing-dialog-title = Ρυθμίσεις Δρομολόγησης Χώρου
 zen-space-routing-external-default = Προεπιλεγμένη διαδρομή για εξωτερικούς συνδέσμους
 zen-space-routing-new-route = Νέα Διαδρομή

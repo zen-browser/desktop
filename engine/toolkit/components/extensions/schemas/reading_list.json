@@ -1,0 +1,71 @@
+[
+  {
+    "namespace": "readingList",
+    "description": "Use the chrome.readingList API to manage reading list entries.",
+    "permissions": ["readingList"],
+    "types": [
+      {
+        "id": "ReadingListEntry",
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "url": { "type": "string" },
+          "hasBeenRead": { "type": "boolean", "optional": true },
+          "creationTime": { "type": "number", "optional": true },
+          "updatedTime": { "type": "number", "optional": true }
+        }
+      },
+      {
+        "id": "ReadingListQueryOptions",
+        "type": "object",
+        "properties": {
+          "title": { "type": "string", "optional": true },
+          "url": { "type": "string", "optional": true },
+          "hasBeenRead": { "type": "boolean", "optional": true },
+          "createdBefore": { "type": "number", "optional": true },
+          "createdAfter": { "type": "number", "optional": true }
+        }
+      }
+    ],
+    "functions": [
+      {
+        "name": "addEntry",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          { "name": "entry", "$ref": "ReadingListEntry" }
+        ]
+      },
+      {
+        "name": "removeEntry",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          { "name": "info", "type": "object", "properties": {
+            "url": { "type": "string" }
+          } }
+        ]
+      },
+      {
+        "name": "updateEntry",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          { "name": "info", "type": "object", "properties": {
+            "url": { "type": "string" }
+          } },
+          { "name": "updates", "$ref": "ReadingListEntry" }
+        ]
+      },
+      {
+        "name": "query",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          { "name": "info", "$ref": "ReadingListQueryOptions", "optional": true }
+        ],
+        "returns": { "type": "array", "items": { "$ref": "ReadingListEntry" } }
+      }
+    ]
+  }
+]

@@ -146,7 +146,7 @@ add_task(async function test_Welcome_Steps() {
       Assert.greater(
         gBrowser._numZenEssentials,
         3,
-        "There should be more than 3 Zen Essentials after the welcome process"
+        "There should be more than 3 Nixo Essentials after the welcome process"
       );
       Assert.equal(
         gBrowser.tabs.filter(
@@ -172,7 +172,7 @@ add_task(async function test_Welcome_Steps() {
       Assert.equal(
         group.label,
         "zen basics",
-        'The first tab group should be labeled "zen basics" after the welcome process'
+        'The first tab group should be labeled "nixo basics" after the welcome process'
       );
       for (const tab of gBrowser.tabs) {
         if (tab.hasAttribute("zen-empty-tab")) {

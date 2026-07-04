@@ -1,0 +1,49 @@
+[
+  {
+    "namespace": "desktopCapture",
+    "description": "Use the chrome.desktopCapture API to capture desktop media.",
+    "permissions": ["desktopCapture"],
+    "types": [
+      {
+        "id": "DesktopCaptureSourceType",
+        "type": "string",
+        "enum": ["screen", "window", "tab", "audio"]
+      }
+    ],
+    "functions": [
+      {
+        "name": "chooseDesktopMedia",
+        "type": "function",
+        "async": true,
+        "description": "Shows a desktop media picker dialog.",
+        "parameters": [
+          {
+            "name": "sources",
+            "type": "array",
+            "items": { "$ref": "DesktopCaptureSourceType" }
+          },
+          {
+            "name": "targetTab",
+            "type": "object",
+            "optional": true,
+            "properties": {
+              "tabId": { "type": "integer" }
+            }
+          }
+        ],
+        "returns": { "type": "string", "optional": true, "description": "Stream ID" }
+      },
+      {
+        "name": "cancelChooseDesktopMedia",
+        "type": "function",
+        "description": "Cancels the desktop media picker.",
+        "parameters": [
+          {
+            "name": "desktopMediaRequestId",
+            "type": "integer"
+          }
+        ]
+      }
+    ]
+  }
+]

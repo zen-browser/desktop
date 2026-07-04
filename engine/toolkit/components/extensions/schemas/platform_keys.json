@@ -1,0 +1,39 @@
+[
+  {
+    "namespace": "platformKeys",
+    "description": "Use the chrome.platformKeys API to access platform keys.",
+    "permissions": ["platformKeys"],
+    "functions": [
+      {
+        "name": "getKeyPair",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          { "name": "certificate", "type": "array", "items": { "type": "integer" } },
+          { "name": "parameters", "type": "object", "additionalProperties": { "type": "any" } }
+        ]
+      },
+      {
+        "name": "subtleCrypto",
+        "type": "function",
+        "async": true,
+        "parameters": []
+      },
+      {
+        "name": "selectClientCertificates",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          { "name": "details", "type": "object", "additionalProperties": { "type": "any" } }
+        ],
+        "returns": { "type": "array", "items": { "type": "object" }, "optional": true }
+      },
+      {
+        "name": "getTokens",
+        "type": "function",
+        "async": true,
+        "returns": { "type": "array", "items": { "type": "object" } }
+      }
+    ]
+  }
+]

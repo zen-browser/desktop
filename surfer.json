@@ -1,8 +1,8 @@
 {
-  "name": "Zen Browser",
-  "vendor": "Zen OSS Team",
-  "appId": "zen",
-  "binaryName": "zen",
+  "name": "Nixo Browser",
+  "vendor": "Nixo Team",
+  "appId": "nixo",
+  "binaryName": "nixo",
   "version": {
     "product": "firefox",
     "version": "152.0.4",
@@ -16,13 +16,13 @@
   "brands": {
     "release": {
       "backgroundColor": "#282A33",
-      "brandShorterName": "Zen",
-      "brandShortName": "Zen",
-      "brandFullName": "Zen Browser",
+      "brandShorterName": "Nixo",
+      "brandShortName": "Nixo",
+      "brandFullName": "Nixo Browser",
       "release": {
-        "displayVersion": "1.21.5b",
+        "displayVersion": "1.21",
         "github": {
-          "repo": "zen-browser/desktop"
+          "repo": "nixo-browser/desktop"
         },
         "archives": {
           "windows": "windows.mar",
@@ -36,13 +36,13 @@
     },
     "twilight": {
       "backgroundColor": "#282A33",
-      "brandShorterName": "Zen",
-      "brandShortName": "Twilight",
-      "brandFullName": "Zen Twilight",
+      "brandShorterName": "Nixo",
+      "brandShortName": "Nixo Twilight",
+      "brandFullName": "Nixo Twilight",
       "release": {
-        "displayVersion": "1.22t",
+        "displayVersion": "1.21t",
         "github": {
-          "repo": "zen-browser/desktop"
+          "repo": "nixo-browser/desktop"
         }
       }
     }
@@ -53,5 +53,5 @@
     ],
     "licenseType": "MPL-2.0"
   },
-  "updateHostname": "updates.zen-browser.app"
+  "updateHostname": "updates.nixo.app"
 }

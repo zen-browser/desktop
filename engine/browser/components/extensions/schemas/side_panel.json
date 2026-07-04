@@ -1,0 +1,146 @@
+[
+  {
+    "namespace": "manifest",
+    "types": [
+      {
+        "$extend": "WebExtensionManifest",
+        "properties": {
+          "side_panel": {
+            "min_manifest_version": 3,
+            "type": "object",
+            "optional": true,
+            "properties": {
+              "default_path": {
+                "type": "string",
+                "format": "strictRelativeUrl",
+                "preprocess": "localize"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "namespace": "sidePanel",
+    "description": "Use the chrome.sidePanel API to manage side panels.",
+    "permissions": ["manifest:side_panel"],
+    "types": [
+      {
+        "id": "SidePanelOptions",
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "optional": true,
+            "format": "relativeUrl"
+          },
+          "enabled": {
+            "type": "boolean",
+            "optional": true
+          },
+          "tabId": {
+            "type": "integer",
+            "optional": true
+          }
+        }
+      },
+      {
+        "id": "PanelBehavior",
+        "type": "object",
+        "properties": {
+          "openPanelOnActionClick": {
+            "type": "boolean"
+          }
+        }
+      },
+      {
+        "id": "GetPanelOptions",
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "optional": true
+          },
+          "enabled": {
+            "type": "boolean"
+          }
+        }
+      }
+    ],
+    "functions": [
+      {
+        "name": "setOptions",
+        "type": "function",
+        "async": true,
+        "description": "Configures the side panel.",
+        "parameters": [
+          {
+            "name": "details",
+            "$ref": "SidePanelOptions"
+          }
+        ]
+      },
+      {
+        "name": "getOptions",
+        "type": "function",
+        "async": true,
+        "description": "Returns the active side panel configuration.",
+        "parameters": [
+          {
+            "name": "details",
+            "type": "object",
+            "properties": {
+              "tabId": {
+                "type": "integer",
+                "optional": true
+              }
+            }
+          }
+        ],
+        "returns": {
+          "$ref": "GetPanelOptions"
+        }
+      },
+      {
+        "name": "open",
+        "type": "function",
+        "async": true,
+        "description": "Opens the side panel for the extension.",
+        "parameters": [
+          {
+            "name": "details",
+            "type": "object",
+            "properties": {
+              "tabId": {
+                "type": "integer",
+                "optional": true
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "setPanelBehavior",
+        "type": "function",
+        "async": true,
+        "description": "Sets the side panel behavior.",
+        "parameters": [
+          {
+            "name": "behavior",
+            "$ref": "PanelBehavior"
+          }
+        ]
+      },
+      {
+        "name": "getPanelBehavior",
+        "type": "function",
+        "async": true,
+        "description": "Returns the side panel behavior.",
+        "returns": {
+          "$ref": "PanelBehavior"
+        }
+      }
+    ]
+  }
+]

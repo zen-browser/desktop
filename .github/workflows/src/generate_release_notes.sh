@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-RELEASE_NOTES_URL="https://raw.githubusercontent.com/zen-browser/www/refs/heads/main/src/release-notes/stable.json"
+RELEASE_NOTES_URL="https://raw.githubusercontent.com/nixo-browser/www/refs/heads/main/src/release-notes/stable.json"
 
 if [ "$RELEASE_BRANCH" = "release" ]; then
   RELEASE_TYPE="Stable"
@@ -26,7 +26,7 @@ fi
     echo "> [!NOTE]"
     echo "> You're currently in Twilight mode, this means you're downloading the latest experimental features and updates."
     echo ">"
-    echo "> If you encounter any issues, please report them on the [issues page](https://github.com/zen-browser/desktop/issues)."
+    echo "> If you encounter any issues, please report them on the [issues page](https://github.com/nixo-browser/nixo/issues)."
   fi
 
   if [ "$RELEASE_TYPE" = "Stable" ]; then
@@ -47,7 +47,7 @@ fi
     if echo "$LATEST_RELEASE" | jq -e '(.fixes // []) | length > 0' > /dev/null; then
       echo
       echo "## Fixes"
-      echo "$LATEST_RELEASE" | jq -r '.fixes[] | if type=="object" then "- " + .description + " ([#" + (.issue|tostring) + "](" + "https://github.com/zen-browser/desktop/issues/" + (.issue|tostring) + "))" else "- " + . end'
+      echo "$LATEST_RELEASE" | jq -r '.fixes[] | if type=="object" then "- " + .description + " ([#" + (.issue|tostring) + "](" + "https://github.com/nixo-browser/nixo/issues/" + (.issue|tostring) + "))" else "- " + . end'
     fi
 
     if echo "$LATEST_RELEASE" | jq -e '(.breakingChanges // []) | length > 0' > /dev/null; then

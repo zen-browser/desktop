@@ -1,0 +1,66 @@
+[
+  {
+    "namespace": "tts",
+    "description": "Use the chrome.tts API to synthesize speech.",
+    "permissions": ["tts"],
+    "types": [
+      {
+        "id": "TtsVoice",
+        "type": "object",
+        "properties": {
+          "voiceName": { "type": "string", "optional": true },
+          "lang": { "type": "string", "optional": true },
+          "gender": { "type": "string", "optional": true },
+          "remote": { "type": "boolean", "optional": true },
+          "extensionId": { "type": "string", "optional": true },
+          "eventTypes": { "type": "array", "items": { "type": "string" }, "optional": true }
+        }
+      },
+      {
+        "id": "SpeakOptions",
+        "type": "object",
+        "properties": {
+          "voiceName": { "type": "string", "optional": true },
+          "lang": { "type": "string", "optional": true },
+          "rate": { "type": "number", "optional": true },
+          "pitch": { "type": "number", "optional": true },
+          "volume": { "type": "number", "optional": true },
+          "enqueue": { "type": "boolean", "optional": true },
+          "requiredEventTypes": { "type": "array", "items": { "type": "string" }, "optional": true },
+          "desiredEventTypes": { "type": "array", "items": { "type": "string" }, "optional": true },
+          "onEvent": { "type": "function", "optional": true, "parameters": [
+            { "name": "event", "type": "object" }
+          ] }
+        }
+      }
+    ],
+    "functions": [
+      {
+        "name": "speak",
+        "type": "function",
+        "description": "Speaks text using synthesized speech.",
+        "parameters": [
+          { "name": "utterance", "type": "string" },
+          { "name": "options", "$ref": "SpeakOptions", "optional": true }
+        ]
+      },
+      {
+        "name": "stop",
+        "type": "function",
+        "description": "Stops current speech."
+      },
+      {
+        "name": "isSpeaking",
+        "type": "function",
+        "async": true,
+        "returns": { "type": "boolean" }
+      },
+      {
+        "name": "getVoices",
+        "type": "function",
+        "async": true,
+        "returns": { "type": "array", "items": { "$ref": "TtsVoice" } }
+      }
+    ]
+  }
+]

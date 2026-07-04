@@ -203,15 +203,15 @@ jobs:
       - name: Sign .dmg
         run: |
           set -ex
-          hdiutil convert zen-macOS-universal-temp.dmg -format UDZO -imagekey zlib-level=9 -o zen.macos-universal.dmg
-          codesign -s "${{ secrets.macOS_AppleDeveloperId }}" zen.macos-universal.dmg
-          xcrun notarytool submit "zen.macos-universal.dmg" \
+          hdiutil convert zen-macOS-universal-temp.dmg -format UDZO -imagekey zlib-level=9 -o nixo.macos-universal.dmg
+          codesign -s "${{ secrets.macOS_AppleDeveloperId }}" nixo.macos-universal.dmg
+          xcrun notarytool submit "nixo.macos-universal.dmg" \
             --apple-id "${{ secrets.macOS_AppleAccountId }}" \
             --team-id "${{ secrets.macOS_AppleDeveloperIdTeamId }}" \
             --password "${{ secrets.macOS_AppleDeveloperIdPassword }}" \
             --no-s3-acceleration \
             --wait
-          xcrun stapler staple "zen.macos-universal.dmg"
+          xcrun stapler staple "nixo.macos-universal.dmg"
 
       - name: Download host mar
         uses: actions/download-artifact@v4
@@ -222,8 +222,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           retention-days: 5
-          name: zen.macos-universal.dmg
-          path: ./zen.macos-universal.dmg
+          name: nixo.macos-universal.dmg
+          path: ./nixo.macos-universal.dmg
 
       - name: Download platform.ini
         uses: actions/download-artifact@v4

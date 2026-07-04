@@ -1,0 +1,59 @@
+[
+  {
+    "namespace": "offscreen",
+    "description": "Use the chrome.offscreen API to create and manage offscreen documents.",
+    "permissions": ["offscreen"],
+    "types": [
+      {
+        "id": "Reason",
+        "type": "string",
+        "enum": ["TESTING", "AUDIO_PLAYBACK", "IFRAME_SCRIPTING", "DOM_SCRAPING", "BLOBS", "DOM_PARSER", "USER_MEDIA", "DISPLAY_MEDIA", "LOGIN", "CLIPBOARD", "SINGLETON", "MATCH_MEDIA"]
+      },
+      {
+        "id": "CreateParameters",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "relativeUrl"
+          },
+          "reasons": {
+            "type": "array",
+            "items": { "$ref": "Reason" },
+            "minItems": 1
+          },
+          "justification": {
+            "type": "string"
+          }
+        }
+      }
+    ],
+    "functions": [
+      {
+        "name": "createDocument",
+        "type": "function",
+        "async": true,
+        "description": "Creates an offscreen document for the extension.",
+        "parameters": [
+          {
+            "name": "parameters",
+            "$ref": "CreateParameters"
+          }
+        ]
+      },
+      {
+        "name": "closeDocument",
+        "type": "function",
+        "async": true,
+        "description": "Closes the offscreen document for the extension."
+      },
+      {
+        "name": "hasDocument",
+        "type": "function",
+        "async": true,
+        "description": "Checks whether the extension has an offscreen document.",
+        "returns": { "type": "boolean" }
+      }
+    ]
+  }
+]

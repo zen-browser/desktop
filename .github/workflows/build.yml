@@ -150,7 +150,7 @@ jobs:
 
       - name: Setup Surfer
         run: |
-          npm i -g @zen-browser/surfer
+          npm i -g @nixo-browser/surfer
 
       - name: Bump version
         if: ${{ inputs.update_version && inputs.update_branch == 'release' }}
@@ -182,7 +182,7 @@ jobs:
         with:
           commit_message: 🔖 Update version to ${{ steps.data.outputs.version }}
           commit_user_name: Zen Browser Robot
-          commit_user_email: zen-browser-auto@users.noreply.github.com
+          commit_user_email: nixo-browser-auto@users.noreply.github.com
 
   check-release:
     runs-on: ubuntu-latest
@@ -205,7 +205,7 @@ jobs:
 
       - name: Setup Surfer
         run: |
-          npm i -g @zen-browser/surfer
+          npm i -g @nixo-browser/surfer
 
       - name: Activate Surfer CLI
         run: |
@@ -267,15 +267,15 @@ jobs:
           tar \
             --exclude='./.git' \
             --use-compress-program=zstd \
-            -hcf zen.source.tar.zst \
+            -hcf nixo.source.tar.zst \
             -C engine .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           retention-days: 5
-          name: zen.source.tar.zst
-          path: ./zen.source.tar.zst
+          name: nixo.source.tar.zst
+          path: ./nixo.source.tar.zst
 
   windows-step-1:
     name: Windows build step 1 (PGO build)
@@ -385,23 +385,23 @@ jobs:
       - name: Download Linux build
         uses: actions/download-artifact@v4
         with:
-          name: zen.linux-${{ matrix.arch }}.tar.xz
+          name: nixo.linux-${{ matrix.arch }}.tar.xz
 
       - name: Execute AppImage build
         run: |
           set -eux
           export ARCH=${{ matrix.arch }}
-          UPINFO="gh-releases-zsync|$GITHUB_REPOSITORY_OWNER|desktop|latest|zen-$ARCH.AppImage.zsync"
+          UPINFO="gh-releases-zsync|$GITHUB_REPOSITORY_OWNER|desktop|latest|nixo-$ARCH.AppImage.zsync"
           rm build/AppDir/.DirIcon || true
-          cp configs/branding/${{ inputs.update_branch }}/logo128.png build/AppDir/usr/share/icons/hicolor/128x128/apps/zen.png
-          cp configs/branding/${{ inputs.update_branch }}/logo128.png build/AppDir/zen.png && ln -s zen.png build/AppDir/.DirIcon
+          cp configs/branding/${{ inputs.update_branch }}/logo128.png build/AppDir/usr/share/icons/hicolor/128x128/apps/nixo.png
+          cp configs/branding/${{ inputs.update_branch }}/logo128.png build/AppDir/nixo.png && ln -s nixo.png build/AppDir/.DirIcon
 
           if [ "${{ inputs.update_branch }}" = "twilight" ]; then
-            sed -i -e 's/Name=Zen Browser/Name=Zen Twilight/g' build/AppDir/zen.desktop
-            sed -i -e 's/StartupWMClass=zen/StartupWMClass=zen-twilight/g' build/AppDir/zen.desktop
+            sed -i -e 's/Name=Nixo Browser/Name=Nixo Twilight/g' build/AppDir/nixo.desktop
+            sed -i -e 's/StartupWMClass=nixo/StartupWMClass=nixo-twilight/g' build/AppDir/nixo.desktop
           fi
 
-          sed -i -e 's/\$VERSION/${{ needs.build-data.outputs.version }}/g' build/AppDir/zen.desktop
+          sed -i -e 's/\$VERSION/${{ needs.build-data.outputs.version }}/g' build/AppDir/nixo.desktop
 
           APPDIR=build/AppDir
           tar -xvf *.tar.* && rm -rf *.tar.*
@@ -419,7 +419,7 @@ jobs:
           ls -al
           find .
           ls -al "$APPDIR"
-          ./appimagetool-x86_64.AppImage -u "$UPINFO" "$APPDIR" zen-"$ARCH".AppImage --runtime-file ./uruntime-appimage-squashfs-lite-"$ARCH"
+          ./appimagetool-x86_64.AppImage -u "$UPINFO" "$APPDIR" nixo-"$ARCH".AppImage --runtime-file ./uruntime-appimage-squashfs-lite-"$ARCH"
           mkdir dist
           mv zen*AppImage* dist/.
           unset ARCH
@@ -428,15 +428,15 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           retention-days: 5
-          name: zen-${{ matrix.arch }}.AppImage
-          path: ./dist/zen-${{ matrix.arch }}.AppImage
+           name: nixo-${{ matrix.arch }}.AppImage
+           path: ./dist/nixo-${{ matrix.arch }}.AppImage
 
-      - name: Upload artifact (ZSync)
-        uses: actions/upload-artifact@v4
-        with:
-          retention-days: 5
-          name: zen-${{ matrix.arch }}.AppImage.zsync
-          path: ./dist/zen-${{ matrix.arch }}.AppImage.zsync
+       - name: Upload artifact (ZSync)
+         uses: actions/upload-artifact@v4
+         with:
+           retention-days: 5
+           name: nixo-${{ matrix.arch }}.AppImage.zsync
+           path: ./dist/nixo-${{ matrix.arch }}.AppImage.zsync
 
   stop-self-hosted:
     runs-on: ubuntu-latest
@@ -496,14 +496,14 @@ jobs:
       - name: Checkout updates repository
         uses: actions/checkout@v4
         with:
-          repository: zen-browser/updates-server
+          repository: nixo-browser/updates-server
           path: updates-server
           token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Download object files
         if: ${{ inputs.update_branch == 'release' }}
         run: |
-          git clone https://github.com/zen-browser/windows-binaries.git .github/workflows/object --depth 1
+          git clone https://github.com/nixo-browser/windows-binaries.git .github/workflows/object --depth 1
 
       - name: Sign MAR files
         env:
@@ -548,7 +548,7 @@ jobs:
         with:
           commit_message: 🚀 Update update manifests
           commit_user_name: Zen Browser Robot
-          commit_user_email: zen-browser-auto@users.noreply.github.com
+          commit_user_email: nixo-browser-auto@users.noreply.github.com
           repository: ./updates-server
 
       - name: Generate Release Notes
@@ -563,21 +563,21 @@ jobs:
         with:
           body_path: release_notes.md
           files: |
-            ./zen.source.tar.zst/*
-            ./zen.linux-x86_64.tar.xz/*
-            ./zen.linux-aarch64.tar.xz/*
-            ./zen-x86_64.AppImage/*
-            ./zen-x86_64.AppImage.zsync/*
-            ./zen-aarch64.AppImage/*
-            ./zen-aarch64.AppImage.zsync/*
+            ./nixo.source.tar.zst/*
+            ./nixo.linux-x86_64.tar.xz/*
+            ./nixo.linux-aarch64.tar.xz/*
+            ./nixo-x86_64.AppImage/*
+            ./nixo-x86_64.AppImage.zsync/*
+            ./nixo-aarch64.AppImage/*
+            ./nixo-aarch64.AppImage.zsync/*
             ./linux.mar/*
             ./linux-aarch64.mar/*
             ./windows.mar/*
             ./windows-arm64.mar/*
             ./macos.mar/*
-            ./zen.installer.exe/*
-            ./zen.installer-arm64.exe/*
-            ./zen.macos-universal.dmg/*
+            ./nixo.installer.exe/*
+            ./nixo.installer-arm64.exe/*
+            ./nixo.macos-universal.dmg/*
           tag_name: "twilight-1"
           name: "Twilight build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }} at ${{ needs.build-data.outputs.build_time }})"
           draft: false
@@ -600,21 +600,21 @@ jobs:
           name: "Release build - ${{ needs.build-data.outputs.version }} (${{ needs.build-data.outputs.build_date }})"
           body_path: release_notes.md
           files: |
-            ./zen.source.tar.zst/*
-            ./zen.linux-x86_64.tar.xz/*
-            ./zen.linux-aarch64.tar.xz/*
-            ./zen-x86_64.AppImage/*
-            ./zen-x86_64.AppImage.zsync/*
-            ./zen-aarch64.AppImage/*
-            ./zen-aarch64.AppImage.zsync/*
+            ./nixo.source.tar.zst/*
+            ./nixo.linux-x86_64.tar.xz/*
+            ./nixo.linux-aarch64.tar.xz/*
+            ./nixo-x86_64.AppImage/*
+            ./nixo-x86_64.AppImage.zsync/*
+            ./nixo-aarch64.AppImage/*
+            ./nixo-aarch64.AppImage.zsync/*
             ./linux.mar/*
             ./linux-aarch64.mar/*
             ./.github/workflows/object/windows-x64-signed-x86_64/windows.mar
             ./.github/workflows/object/windows-x64-signed-arm64/windows-arm64.mar
             ./macos.mar/*
-            ./.github/workflows/object/windows-x64-signed-x86_64/zen.installer.exe
-            ./.github/workflows/object/windows-x64-signed-arm64/zen.installer-arm64.exe
-            ./zen.macos-universal.dmg/*
+            ./.github/workflows/object/windows-x64-signed-x86_64/nixo.installer.exe
+            ./.github/workflows/object/windows-x64-signed-arm64/nixo.installer-arm64.exe
+            ./nixo.macos-universal.dmg/*
 
   prepare-flatpak:
     if: ${{ inputs.create_release && inputs.update_branch == 'release' }}
@@ -627,7 +627,7 @@ jobs:
       - name: Checkout Flatpak repository
         uses: actions/checkout@v4
         with:
-          repository: zen-browser/release-utils
+          repository: nixo-browser/release-utils
           token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Install dependencies
@@ -646,12 +646,12 @@ jobs:
         with:
           commit_message: 🚀 Update releases for Flatpak
           commit_user_name: Zen Browser Robot
-          commit_user_email: zen-browser-auto@users.noreply.github.com
+          commit_user_email: nixo-browser-auto@users.noreply.github.com
 
       - name: Checkout Flatpak repository
         uses: actions/checkout@v4
         with:
-          repository: zen-browser/flatpak
+          repository: nixo-browser/flatpak
           token: ${{ secrets.DEPLOY_KEY }}
           path: flatpak
 
@@ -669,7 +669,7 @@ jobs:
         with:
           commit_message: "[release]: Update Flatpak manifest"
           commit_user_name: Zen Browser Robot
-          commit_user_email: zen-browser-auto@users.noreply.github.com
+          commit_user_email: nixo-browser-auto@users.noreply.github.com
           repository: ./flatpak
 
       - name: Wait 2 minutes for the Flatpak repo to update
@@ -692,22 +692,22 @@ jobs:
       - name: Download Linux x86_64 build
         uses: actions/download-artifact@v4
         with:
-          name: zen.linux-x86_64.tar.xz
+          name: nixo.linux-x86_64.tar.xz
 
       - name: Download Linux aarch64 build
         uses: actions/download-artifact@v4
         with:
-          name: zen.linux-aarch64.tar.xz
+          name: nixo.linux-aarch64.tar.xz
 
       - name: Update repository
         uses: actions/checkout@v4
         with:
-          path: zen-browser
+          path: nixo-browser
           token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Download Flatpak archive
         run: |
-          wget https://github.com/zen-browser/flatpak/releases/latest/download/archive.tar -O archive.tar
+          wget https://github.com/nixo-browser/flatpak/releases/latest/download/archive.tar -O archive.tar
 
       - name: Setup Git
         run: |
@@ -716,13 +716,13 @@ jobs:
 
       - name: Prepare Flatpak manifest
         run: |
-          python3 ./zen-browser/scripts/prepare-flatpak-release.py \
+          python3 ./nixo-browser/scripts/prepare-flatpak-release.py \
             --flatpak-archive archive.tar \
             --version ${{ needs.build-data.outputs.version }} \
-            --linux-archive zen.linux-x86_64.tar.xz \
-            --linux-aarch64-archive zen.linux-aarch64.tar.xz \
+            --linux-archive nixo.linux-x86_64.tar.xz \
+            --linux-aarch64-archive nixo.linux-aarch64.tar.xz \
             --output app.zen_browser.zen.yml \
-            --template-root ./zen-browser/build/flatpak
+            --template-root ./nixo-browser/build/flatpak
 
       - name: Commit changes
         run: |
@@ -731,10 +731,10 @@ jobs:
 
       - name: Clean up
         run: |
-          rm -rf zen-browser
+          rm -rf nixo-browser
           rm -rf archive.tar
-          rm -rf zen.linux-x86_64.tar.xz
-          rm -rf zen.linux-aarch64.tar.xz
+          rm -rf nixo.linux-x86_64.tar.xz
+          rm -rf nixo.linux-aarch64.tar.xz
 
       - name: Upload Flatpak manifest
         uses: actions/upload-artifact@v4

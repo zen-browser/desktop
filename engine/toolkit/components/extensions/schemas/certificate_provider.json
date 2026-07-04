@@ -1,0 +1,54 @@
+[
+  {
+    "namespace": "certificateProvider",
+    "description": "Use the chrome.certificateProvider API to provide certificates.",
+    "permissions": ["certificateProvider"],
+    "types": [
+      {
+        "id": "Hash",
+        "type": "string",
+        "enum": ["SHA1", "SHA256", "SHA384", "SHA512"]
+      },
+      {
+        "id": "SignRequest",
+        "type": "object",
+        "properties": {
+          "digest": { "type": "array", "items": { "type": "integer" } },
+          "hash": { "$ref": "Hash" },
+          "publicKey": { "type": "array", "items": { "type": "integer" } },
+          "signingScheme": { "type": "string" }
+        }
+      }
+    ],
+    "functions": [
+      {
+        "name": "reportCertificate",
+        "type": "function",
+        "parameters": [
+          { "name": "certificate", "type": "array", "items": { "type": "integer" } }
+        ]
+      }
+    ],
+    "events": [
+      {
+        "name": "onCertificatesRequested",
+        "type": "function",
+        "parameters": [
+          { "name": "reportCallback", "type": "function", "parameters": [
+            { "name": "certificates", "type": "array", "items": { "type": "array", "items": { "type": "integer" } } }
+          ] }
+        ]
+      },
+      {
+        "name": "onSignatureRequested",
+        "type": "function",
+        "parameters": [
+          { "name": "signRequest", "$ref": "SignRequest" },
+          { "name": "signCallback", "type": "function", "parameters": [
+            { "name": "signature", "type": "array", "items": { "type": "integer" }, "optional": true }
+          ] }
+        ]
+      }
+    ]
+  }
+]

@@ -45,7 +45,7 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Install Surfer
-        run: npm i -g @zen-browser/surfer
+        run: npm i -g @nixo-browser/surfer
 
       - name: Load Surfer CI setup
         run: npm run surfer -- ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
@@ -55,7 +55,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: C:\artifact
-          name: ${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}-zen-windows-profile-data-and-jarlog.zip
+          name: ${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}-nixo-windows-profile-data-and-jarlog.zip
 
       - name: Unpack artifact
         if: ${{ matrix.arch == 'x86_64' }}

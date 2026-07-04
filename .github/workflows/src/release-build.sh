@@ -18,17 +18,17 @@ if ! test "$ZEN_CROSS_COMPILING" && test "$(uname -s)" = "Linux"; then
   fi
 fi
 
-mkdir -p ~/.zen-keys
+mkdir -p ~/.nixo-keys
 if test "$ZEN_SAFEBROWSING_API_KEY"; then
-  echo "$ZEN_SAFEBROWSING_API_KEY" > ~/.zen-keys/safebrowsing.dat
+  echo "$ZEN_SAFEBROWSING_API_KEY" > ~/.nixo-keys/safebrowsing.dat
 fi
 
 if test "$ZEN_MOZILLA_API_KEY"; then
-  echo "$ZEN_MOZILLA_API_KEY" > ~/.zen-keys/mozilla.dat
+  echo "$ZEN_MOZILLA_API_KEY" > ~/.nixo-keys/mozilla.dat
 fi
 
 if test "$ZEN_GOOGLE_LOCATION_SERVICE_API_KEY"; then
-  echo "$ZEN_GOOGLE_LOCATION_SERVICE_API_KEY" > ~/.zen-keys/google_location_service.dat
+  echo "$ZEN_GOOGLE_LOCATION_SERVICE_API_KEY" > ~/.nixo-keys/google_location_service.dat
 fi
 
 . $HOME/.cargo/env
@@ -55,4 +55,4 @@ else
 fi
 
 echo "Build complete, removing API keys"
-rm -rf ~/.zen-keys
+rm -rf ~/.nixo-keys

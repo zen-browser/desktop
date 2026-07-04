@@ -6,7 +6,7 @@ index 75e99bbd2490b9014be6f4e956546d4507e751df..fbe16d282113175f067d739e1284b254
  
  project_flag(
      env="MOZ_APP_VENDOR",
-+    default="Zen Team",
++    default="Nixo Team",
      nargs=1,
      help='Used for application.ini\'s "Vendor" field, which also impacts profile location and user-visible fields',
  )
@@ -14,7 +14,7 @@ index 75e99bbd2490b9014be6f4e956546d4507e751df..fbe16d282113175f067d739e1284b254
  
  project_flag(
      "MOZ_APP_PROFILE",
-+    default="zen",
++    default="nixo",
      nargs=1,
      help='Used for application.ini\'s "Profile" field, which controls profile location',
  )
@@ -29,7 +29,7 @@ index 75e99bbd2490b9014be6f4e956546d4507e751df..fbe16d282113175f067d739e1284b254
      "--with-distribution-id",
      nargs=1,
 -    default="org.mozilla",
-+    default="app.zen-browser",
++    default="app.nixo-browser",
      help="Set distribution-specific id",
  )
  set_config("MOZ_DISTRIBUTION_ID", depends("--with-distribution-id")(lambda v: v[0]))
@@ -47,7 +47,7 @@ index 75e99bbd2490b9014be6f4e956546d4507e751df..fbe16d282113175f067d739e1284b254
          elif target.os == "Android":
              return ".mozilla"
 -        return "mozilla"
-+        return "zen"
++        return "nixo"
  
      option(
          "--with-user-appdir",

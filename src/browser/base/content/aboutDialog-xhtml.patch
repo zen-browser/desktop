@@ -10,37 +10,37 @@ index 3ffd464b960a4299a7dd0cd87e4fc2f781b9d593..7a831c8ee2b73bb89bf8a82ac24958b5
 -                <label id="aboutDialogHelpLink" is="text-link" data-l10n-id="aboutdialog-help-user"/>
 -                <label id="submit-feedback" is="text-link" data-l10n-id="aboutdialog-submit-feedback"/>
 -              </description>
-             </vbox>
+               </vbox>
  #endif
-           </hbox>
+             </hbox>
 @@ -120,26 +116,22 @@
            <vbox id="experimental" hidden="true">
              <description class="text-blurb" id="warningDesc" data-l10n-id="warningDesc-version"></description>
              <description class="text-blurb" id="communityExperimentalDesc" data-l10n-id="community-exp">
 -              <label is="text-link" href="https://www.mozilla.org/?utm_source=firefox-browser&#38;utm_medium=firefox-desktop&#38;utm_campaign=about-dialog" data-l10n-name="community-exp-mozillaLink"/>
-+              <label is="text-link" href="https://zen-browser.app/about" data-l10n-name="community-exp-mozillaLink"/>
++              <label is="text-link" href="https://nixo.app/about" data-l10n-name="community-exp-mozillaLink"/>
                <label is="text-link" useoriginprincipal="true" href="about:credits" data-l10n-name="community-exp-creditsLink"/>
              </description>
            </vbox>
            <description class="text-blurb" id="communityDesc" data-l10n-id="community-2">
 -            <label is="text-link" href="https://www.mozilla.org/?utm_source=firefox-browser&#38;utm_medium=firefox-desktop&#38;utm_campaign=about-dialog" data-l10n-name="community-mozillaLink"/>
-+            <label is="text-link" href="https://github.com/zen-browser/desktop" data-l10n-name="community-mozillaLink"/>
++            <label is="text-link" href="https://github.com/nixo-browser/nixo" data-l10n-name="community-mozillaLink"/>
              <label is="text-link" useoriginprincipal="true" href="about:credits" data-l10n-name="community-creditsLink"/>
            </description>
 -          <description class="text-blurb" id="contributeDesc" data-l10n-id="helpus">
 -            <label is="text-link" href="https://foundation.mozilla.org/?form=firefox-about" data-l10n-name="helpus-donateLink"/>
 -            <label is="text-link" href="https://www.mozilla.org/contribute/?utm_source=firefox-browser&#38;utm_medium=firefox-desktop&#38;utm_campaign=about-dialog" data-l10n-name="helpus-getInvolvedLink"/>
 -          </description>
+           </vbox>
          </vbox>
-       </vbox>
-     </hbox>
-     <vbox id="bottomBox">
-       <hbox pack="center">
-         <label is="text-link" class="bottom-link" useoriginprincipal="true" href="about:license" data-l10n-id="bottomLinks-license"/>
+       </hbox>
+       <vbox id="bottomBox">
+         <hbox pack="center">
+           <label is="text-link" class="bottom-link" useoriginprincipal="true" href="about:license" data-l10n-id="bottomLinks-license"/>
 -        <label is="text-link" class="bottom-link" href="https://www.mozilla.org/about/legal/terms/firefox/" data-l10n-id="bottom-links-terms"/>
 -        <label is="text-link" class="bottom-link" href="https://www.mozilla.org/privacy/firefox/?utm_source=firefox-browser&#38;utm_medium=firefox-desktop&#38;utm_campaign=about-dialog" data-l10n-id="bottom-links-privacy"/>
 +        <label is="text-link" class="bottom-link" href="about:rights" data-l10n-id="bottom-links-terms"/>
-+        <label is="text-link" class="bottom-link" href="https://www.zen-browser.app/privacy-policy/" data-l10n-id="bottom-links-privacy"/>
-       </hbox>
-       <description id="trademark" data-l10n-id="trademarkInfo"></description>
-     </vbox>
++        <label is="text-link" class="bottom-link" href="https://www.nixo.app/privacy-policy/" data-l10n-id="bottom-links-privacy"/>
+         </hbox>
+         <description id="trademark" data-l10n-id="trademarkInfo"></description>
+       </vbox>

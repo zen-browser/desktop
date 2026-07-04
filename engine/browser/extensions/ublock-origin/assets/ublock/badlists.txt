@@ -1,0 +1,94 @@
+# The lists below are known to create issues in uBO.
+
+# Reek's Anti-Adblock Killer
+https://raw.github.com/reek/anti-adblock-killer/master/anti-adblock-killer-filters.txt
+https://raw.githubusercontent.com/reek/anti-adblock-killer/master/anti-adblock-killer-filters.txt
+https://rawcdn.githack.com/reek/anti-adblock-killer/master/anti-adblock-killer-filters.txt
+https://github.com/reek/anti-adblock-killer/raw/master/anti-adblock-killer-filters.txt
+
+# ABP anti-circumvention filter lists
+https://easylist-downloads.adblockplus.org/abp-filters-anti-cv.txt
+https://easylist-msie.adblockplus.org/abp-filters-anti-cv.txt
+https://raw.githubusercontent.com/abp-filters/abp-filters-anti-cv/master/english.txt
+
+# https://github.com/uBlockOrigin/uBlock-issues/issues/971
+https://hosts-file.net/.%5Cad_servers.txt remove
+http://hosts-file.net/.%5Cad_servers.txt remove
+
+# https://github.com/uBlockOrigin/uAssets/issues/8738
+https://raw.githubusercontent.com/k2jp/abp-japanese-filters/master/abpjf.txt
+
+# https://github.com/uBlockOrigin/uAssets/issues/13566
+# https://twitter.com/gorhill/status/1352651716265713665
+https://www.joinhoney.com/whitelist/honey-smart-shopping.txt
+
+# whitelisting lists
+https://slickdeals.net/attachment/extension/allowlist.txt
+https://easylist-downloads.adblockplus.org/exceptionrules.txt
+https://letyshops.com/adblock.txt
+https://www.aadvantageeshopping.com/adBlockWhitelist.php
+https://multiup.org/list_adblock.txt
+https://multiup.io/list_adblock.txt
+https://downloads.zohocdn.com/ulaa-browser/release/adb/stable/ulaa-filters.txt
+https://cdn.dsbn.org/ublock_dsbn.txt
+
+# https://www.reddit.com/r/uBlockOrigin/comments/143k8lm/
+https://www.topcashback.co.uk/misc/AdBlockWhiteList.aspx
+https://www.topcashback.co.uk/Misc/AdBlockWhiteList.aspx
+https://www.topcashback.com/Misc/AdBlockWhiteList.aspx
+
+# https://github.com/collinbarrett/FilterLists/issues/3794
+https://www.rakuten.ca/static/cashback-shopping-whitelist
+https://www.rakuten.ca/static/cashback-shopping-whitelist?title=Rakuten%20Cash%20Back%20Shopping
+# redirect to the new list
+https://www.ebates.com/whitelist/ebates-cash-back-shopping.txt
+https://www.rakuten.com/whitelist/ebates-cash-back-shopping.txt
+
+# obsolete lists
+https://cdn.rawgit.com/NanoAdblocker/NanoFilters/master/NanoFilters/NanoAnnoyance.txt
+https://cdn.rawgit.com/NanoAdblocker/NanoFilters/master/NanoFilters/NanoBase.txt
+https://cdn.rawgit.com/NanoAdblocker/NanoFilters/master/NanoFilters/NanoWhitelist.txt
+https://raw.githubusercontent.com/NanoAdblocker/NanoFilters/master/NanoFilters/NanoAnnoyance.txt
+https://raw.githubusercontent.com/NanoAdblocker/NanoFilters/master/NanoFilters/NanoWhitelist.txt
+https://raw.githubusercontent.com/NanoAdblocker/NanoFilters/master/NanoFiltersSource/NanoAnnoyance.txt
+https://raw.githubusercontent.com/NanoAdblocker/NanoFilters/master/NanoFiltersSource/NanoBase.txt
+https://raw.githubusercontent.com/NanoAdblocker/NanoFilters/master/NanoFiltersSource/NanoWhitelist.txt
+https://raw.githubusercontent.com/jspenguin2017/uBlockProtector/master/uBlockProtectorList.txt
+https://cdn.rawgit.com/NanoAdblocker/NanoFilters/master/NanoMirror/NanoDefender.txt
+https://cdn.rawgit.com/NanoMeow/MDLMirror/master/hosts.txt
+
+# outdated prebake list
+https://raw.githubusercontent.com/liamja/Prebake/master/obtrusive.txt
+
+# interfere negatively; generic exceptions to ad servers
+https://raw.githubusercontent.com/bogachenko/fuckfuckadblock/master/fuckfuckadblock.txt
+https://cdn.statically.io/gh/bogachenko/fuckfuckadblock/master/fuckfuckadblock.txt
+https://raw.githack.com/bogachenko/fuckfuckadblock/master/fuckfuckadblock.txt
+https://cdn.jsdelivr.net/gh/bogachenko/fuckfuckadblock/fuckfuckadblock.txt
+https://cdn.jsdelivr.net/gh/bogachenko/fuckfuckadblock@master/fuckfuckadblock.txt
+https://fuckfuckadblock.pages.dev/fuckfuckadblock.txt
+https://fuckfuckadblock.pages.dev/fuckfuckadblock.txt?_=3
+https://raw.githack.com/bogachenko/fuckfuckadblock/master/fuckfuckadblock.txt?_=3
+https://cdn.statically.io/gh/bogachenko/fuckfuckadblock/master/fuckfuckadblock.txt?_=3
+https://raw.githubusercontent.com/bogachenko/fuckfuckadblock/master/fuckfuckadblock.txt?_=3
+# https://www.reddit.com/r/uBlockOrigin/comments/1cl3qgh/ads_getting_through/
+https://raw.githubusercontent.com/bogachenko/fuckfuckadblock/master/fuckfuckadblock.txt?_=raw
+# https://github.com/uBlockOrigin/uAssets/issues/26120
+https://raw.githubusercontent.com/bogachenko/fuckfuckadblock/master/fuckfuckadblock.txt?_=rawlist
+# https://github.com/uBlockOrigin/uAssets/issues/27183
+https://raw.githubusercontent.com/bogachenko/fuckfuckadblock/master/fuckfuckadblock.txt?_=fuckfuckadblock
+
+# interfere normal operation; generic exceptions to ad servers and analytics
+https://raw.githubusercontent.com/Apious/whoru/main/Source1.txt
+https://raw.githubusercontent.com/Apious/whoru/main/Source2.txt
+
+# Ad-Shield allowlist
+https://error-report.com/filter/allowlist
+
+# Not a list
+# https://www.reddit.com/r/uBlockOrigin/comments/1hcqkoe/ubo_breaking_oldredditres_and_youtube/
+https://raw.githubusercontent.com/pixeltris/TwitchAdSolutions/master/video-swap-new/video-swap-new-ublock-origin.js
+https://raw.githubusercontent.com/pixeltris/TwitchAdSolutions/master/vaft/vaft-ublock-origin.js
+
+# https://github.com/uBlockOrigin/uAssets/pull/30703
+https://www.eff.org/files/cookieblocklist.txt

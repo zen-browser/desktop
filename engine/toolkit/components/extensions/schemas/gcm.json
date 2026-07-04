@@ -1,0 +1,55 @@
+[
+  {
+    "namespace": "gcm",
+    "description": "Use the chrome.gcm API to send and receive messages via Google Cloud Messaging.",
+    "permissions": ["gcm"],
+    "types": [
+      {
+        "id": "GcmClientId",
+        "type": "object",
+        "properties": {},
+        "additionalProperties": { "type": "any" }
+      }
+    ],
+    "functions": [
+      {
+        "name": "register",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          { "name": "senderIds", "type": "array", "items": { "type": "string" } }
+        ],
+        "returns": { "type": "string" }
+      },
+      {
+        "name": "unregister",
+        "type": "function",
+        "async": true,
+        "parameters": []
+      },
+      {
+        "name": "send",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          { "name": "message", "type": "object", "additionalProperties": { "type": "any" } }
+        ],
+        "returns": { "type": "string" }
+      }
+    ],
+    "events": [
+      {
+        "name": "onMessage",
+        "type": "function",
+        "parameters": [
+          { "name": "message", "type": "object" }
+        ]
+      },
+      {
+        "name": "onMessagesDeleted",
+        "type": "function",
+        "parameters": []
+      }
+    ]
+  }
+]

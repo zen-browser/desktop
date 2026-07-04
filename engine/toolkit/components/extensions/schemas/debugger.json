@@ -1,0 +1,122 @@
+[
+  {
+    "namespace": "debugger",
+    "description": "Use the chrome.debugger API to attach to network targets.",
+    "permissions": ["debugger"],
+    "types": [
+      {
+        "id": "Debuggee",
+        "type": "object",
+        "properties": {
+          "tabId": { "type": "integer", "optional": true },
+          "extensionId": { "type": "string", "optional": true },
+          "targetId": { "type": "string", "optional": true }
+        }
+      },
+      {
+        "id": "TargetInfo",
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "type": { "type": "string" },
+          "title": { "type": "string" },
+          "url": { "type": "string" },
+          "attached": { "type": "boolean" },
+          "tabId": { "type": "integer", "optional": true },
+          "extensionId": { "type": "string", "optional": true },
+          "faviconUrl": { "type": "string", "optional": true },
+          "size": { "type": "string", "optional": true }
+        }
+      },
+      {
+        "id": "DetachReason",
+        "type": "string",
+        "enum": ["target_closed", "canceled_by_user", "replaced_with_devtools"]
+      }
+    ],
+    "functions": [
+      {
+        "name": "attach",
+        "type": "function",
+        "async": true,
+        "description": "Attaches debugger to a target.",
+        "parameters": [
+          {
+            "name": "target",
+            "$ref": "Debuggee"
+          },
+          {
+            "name": "requiredVersion",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "detach",
+        "type": "function",
+        "async": true,
+        "description": "Detaches debugger from a target.",
+        "parameters": [
+          {
+            "name": "target",
+            "$ref": "Debuggee"
+          }
+        ]
+      },
+      {
+        "name": "sendCommand",
+        "type": "function",
+        "async": true,
+        "description": "Sends a command to the debug target.",
+        "parameters": [
+          {
+            "name": "target",
+            "$ref": "Debuggee"
+          },
+          {
+            "name": "method",
+            "type": "string"
+          },
+          {
+            "name": "commandParams",
+            "type": "object",
+            "optional": true,
+            "additionalProperties": { "type": "any" }
+          }
+        ],
+        "returns": { "type": "object", "additionalProperties": { "type": "any" }, "optional": true }
+      },
+      {
+        "name": "getTargets",
+        "type": "function",
+        "async": true,
+        "description": "Returns available targets.",
+        "returns": {
+          "type": "array",
+          "items": { "$ref": "TargetInfo" }
+        }
+      }
+    ],
+    "events": [
+      {
+        "name": "onEvent",
+        "type": "function",
+        "description": "Fired when a debugger event occurs.",
+        "parameters": [
+          { "name": "source", "$ref": "Debuggee" },
+          { "name": "method", "type": "string" },
+          { "name": "params", "type": "object", "additionalProperties": { "type": "any" } }
+        ]
+      },
+      {
+        "name": "onDetach",
+        "type": "function",
+        "description": "Fired when the debugger is detached.",
+        "parameters": [
+          { "name": "source", "$ref": "Debuggee" },
+          { "name": "detachReason", "$ref": "DetachReason" }
+        ]
+      }
+    ]
+  }
+]

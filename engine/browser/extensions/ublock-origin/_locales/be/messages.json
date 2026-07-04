@@ -1,0 +1,1314 @@
+{
+  "extName": {
+    "message": "Nixo Blocker",
+    "description": "extension name."
+  },
+  "extShortDesc": {
+    "message": "Нарэшце, эфектыўны блакавальнік. Не нагружае працэсар і памяць.",
+    "description": "this will be in the Chrome web store: must be 132 characters or less"
+  },
+  "dashboardName": {
+    "message": "uBlock₀ — Панэль кіравання",
+    "description": "English: uBlock₀ — Dashboard"
+  },
+  "dashboardUnsavedWarning": {
+    "message": "Увага! Ёсць незахаваныя змены",
+    "description": "A warning in the dashboard when navigating away from unsaved changes"
+  },
+  "dashboardUnsavedWarningStay": {
+    "message": "Застацца",
+    "description": "Label for button to prevent navigating away from unsaved changes"
+  },
+  "dashboardUnsavedWarningIgnore": {
+    "message": "Ігнараваць",
+    "description": "Label for button to ignore unsaved changes"
+  },
+  "settingsPageName": {
+    "message": "Налады",
+    "description": "appears as tab name in dashboard"
+  },
+  "3pPageName": {
+    "message": "Спісы фільтраў",
+    "description": "appears as tab name in dashboard"
+  },
+  "1pPageName": {
+    "message": "Мае фільтры",
+    "description": "appears as tab name in dashboard"
+  },
+  "rulesPageName": {
+    "message": "Мае правілы",
+    "description": "appears as tab name in dashboard"
+  },
+  "whitelistPageName": {
+    "message": "Давераныя сайты",
+    "description": "appears as tab name in dashboard"
+  },
+  "shortcutsPageName": {
+    "message": "Спалучэнні клавіш",
+    "description": "appears as tab name in dashboard"
+  },
+  "statsPageName": {
+    "message": "uBlock₀ — Журнал сеткавых запытаў",
+    "description": "Title for the logger window"
+  },
+  "aboutPageName": {
+    "message": "Пра пашырэнне",
+    "description": "appears as tab name in dashboard"
+  },
+  "supportPageName": {
+    "message": "Падтрымка",
+    "description": "appears as tab name in dashboard"
+  },
+  "assetViewerPageName": {
+    "message": "uBlock₀ — Прагляд рэсурсаў",
+    "description": "Title for the asset viewer page"
+  },
+  "advancedSettingsPageName": {
+    "message": "Пашыраныя налады",
+    "description": "Title for the advanced settings page"
+  },
+  "popupPowerSwitchInfo": {
+    "message": "Націсканне: адключыць/уключыць uBlock₀ для гэтага сайта.\n\nCtrl+націсканне: адключыць uBlock₀ толькі на гэтай старонцы.",
+    "description": "English: Click: disable/enable uBlock₀ for this site.\n\nCtrl+click: disable uBlock₀ only on this page."
+  },
+  "popupPowerSwitchInfo1": {
+    "message": "Націсніце, каб адключыць uBlock₀ для гэтага сайта.\n\nНацісніце з Ctrl, каб адключыць uBlock₀ толькі на гэтай старонцы.",
+    "description": "Message to be read by screen readers"
+  },
+  "popupPowerSwitchInfo2": {
+    "message": "Націсніце, каб уключыць uBlock₀ для гэтага сайта.",
+    "description": "Message to be read by screen readers"
+  },
+  "popupBlockedRequestPrompt": {
+    "message": "запытаў заблакавана",
+    "description": "English: requests blocked"
+  },
+  "popupBlockedOnThisPagePrompt": {
+    "message": "на гэтай старонцы",
+    "description": "English: on this page"
+  },
+  "popupBlockedStats": {
+    "message": "{{count}} ({{percent}}%)",
+    "description": "Example: 15 (13%)"
+  },
+  "popupBlockedSinceInstallPrompt": {
+    "message": "з моманту ўсталявання",
+    "description": "English: since install"
+  },
+  "popupOr": {
+    "message": "або",
+    "description": "English: or"
+  },
+  "popupBlockedOnThisPage_v2": {
+    "message": "Заблакавана на гэтай старонцы",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupBlockedSinceInstall_v2": {
+    "message": "Заблакавана з моманту ўсталявання",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupDomainsConnected_v2": {
+    "message": "Даменаў падлучана",
+    "description": "For the new mobile-friendly popup design"
+  },
+  "popupTipDashboard": {
+    "message": "Адкрыць панэль кіравання",
+    "description": "English: Click to open the dashboard"
+  },
+  "popupTipZapper": {
+    "message": "Перайсці ў рэжым імгненнага хавання элементаў",
+    "description": "Tooltip for the element-zapper icon in the popup panel"
+  },
+  "popupTipPicker": {
+    "message": "Перайсці ў рэжым выбару элементаў",
+    "description": "English: Enter element picker mode"
+  },
+  "popupTipLog": {
+    "message": "Адкрыць журнал запытаў",
+    "description": "Tooltip used for the logger icon in the panel"
+  },
+  "popupTipReport": {
+    "message": "Паведаміць аб праблеме з сайтам",
+    "description": "Tooltip used for the 'chat' icon in the panel"
+  },
+  "popupTipNoPopups": {
+    "message": "Пераключыць блакаванне ўсіх выплыўных акон на гэтым сайце",
+    "description": "Tooltip for the no-popups per-site switch"
+  },
+  "popupTipNoPopups1": {
+    "message": "Націсніце, каб блакаваць усе выплыўныя вокны на гэтым сайце",
+    "description": "Tooltip for the no-popups per-site switch"
+  },
+  "popupTipNoPopups2": {
+    "message": "Націсніце, каб выключыць блакаванне ўсіх выплыўных акон на гэтым сайце",
+    "description": "Tooltip for the no-popups per-site switch"
+  },
+  "popupTipNoLargeMedia": {
+    "message": "Пераключыць блакаванне вялікіх медыя-элементаў на гэтым сайце",
+    "description": "Tooltip for the no-large-media per-site switch"
+  },
+  "popupTipNoLargeMedia1": {
+    "message": "Націсніце, каб блакаваць вялікія медыя-элементы на гэтым сайце",
+    "description": "Tooltip for the no-large-media per-site switch"
+  },
+  "popupTipNoLargeMedia2": {
+    "message": "Націсніце, каб выключыць блакаванне вялікіх медыя-элементаў на гэтым сайце",
+    "description": "Tooltip for the no-large-media per-site switch"
+  },
+  "popupTipNoCosmeticFiltering": {
+    "message": "Пераключыць касметычнае фільтраванне на гэтым сайце",
+    "description": "Tooltip for the no-cosmetic-filtering per-site switch"
+  },
+  "popupTipNoCosmeticFiltering1": {
+    "message": "Націсніце, каб выключыць касметычнае фільтраванне на гэтым сайце",
+    "description": "Tooltip for the no-cosmetic-filtering per-site switch"
+  },
+  "popupTipNoCosmeticFiltering2": {
+    "message": "Націсніце, каб уключыць касметычнае фільтраванне на гэтым сайце",
+    "description": "Tooltip for the no-cosmetic-filtering per-site switch"
+  },
+  "popupTipNoRemoteFonts": {
+    "message": "Пераключыць блакаванне аддаленых шрыфтоў на гэтым сайце",
+    "description": "Tooltip for the no-remote-fonts per-site switch"
+  },
+  "popupTipNoRemoteFonts1": {
+    "message": "Націсніце, каб блакаваць аддаленыя шрыфты на гэтым сайце",
+    "description": "Tooltip for the no-remote-fonts per-site switch"
+  },
+  "popupTipNoRemoteFonts2": {
+    "message": "Націсніце, каб выключыць блакаванне аддаленых шрыфтоў на гэтым сайце",
+    "description": "Tooltip for the no-remote-fonts per-site switch"
+  },
+  "popupTipNoScripting1": {
+    "message": "Націсніце, каб выключыць JavaScript на гэтым сайце",
+    "description": "Tooltip for the no-scripting per-site switch"
+  },
+  "popupTipNoScripting2": {
+    "message": "Націсніце, каб JavaScript не быў выключаны на гэтым сайце",
+    "description": "Tooltip for the no-scripting per-site switch"
+  },
+  "popupNoPopups_v2": {
+    "message": "Выплыўныя вокны",
+    "description": "Caption for the no-popups per-site switch"
+  },
+  "popupNoLargeMedia_v2": {
+    "message": "Вялікія медыя-элементы",
+    "description": "Caption for the no-large-media per-site switch"
+  },
+  "popupNoCosmeticFiltering_v2": {
+    "message": "Касметычнае фільтраванне",
+    "description": "Caption for the no-cosmetic-filtering per-site switch"
+  },
+  "popupNoRemoteFonts_v2": {
+    "message": "Аддаленыя шрыфты",
+    "description": "Caption for the no-remote-fonts per-site switch"
+  },
+  "popupNoScripting_v2": {
+    "message": "JavaScript",
+    "description": "Caption for the no-scripting per-site switch"
+  },
+  "popupMoreButton_v2": {
+    "message": "Больш",
+    "description": "Label to be used to show popup panel sections"
+  },
+  "popupLessButton_v2": {
+    "message": "Менш",
+    "description": "Label to be used to hide popup panel sections"
+  },
+  "popupTipGlobalRules": {
+    "message": "Глабальныя правілы: гэты слупок для правіл, якія прымяняюцца на ўсіх сайтах.",
+    "description": "Tooltip when hovering the top-most cell of the global-rules column."
+  },
+  "popupTipLocalRules": {
+    "message": "Лакальныя правілы: гэты слупок для правіл, якія прымяняюцца толькі на гэтым сайце.",
+    "description": "Tooltip when hovering the top-most cell of the local-rules column."
+  },
+  "popupTipSaveRules": {
+    "message": "Націсніце, каб захаваць змены.",
+    "description": "Tooltip when hovering over the padlock in the dynamic filtering pane."
+  },
+  "popupTipRevertRules": {
+    "message": "Націсніце, каб вярнуць змены.",
+    "description": "Tooltip when hovering over the eraser in the dynamic filtering pane."
+  },
+  "popupAnyRulePrompt": {
+    "message": "усе",
+    "description": ""
+  },
+  "popupImageRulePrompt": {
+    "message": "відарысы",
+    "description": ""
+  },
+  "popup3pAnyRulePrompt": {
+    "message": "староннія",
+    "description": ""
+  },
+  "popup3pPassiveRulePrompt": {
+    "message": "староннія CSS/відарысы",
+    "description": ""
+  },
+  "popupInlineScriptRulePrompt": {
+    "message": "убудаваныя скрыпты",
+    "description": ""
+  },
+  "popup1pScriptRulePrompt": {
+    "message": "Асноўныя скрыпты",
+    "description": ""
+  },
+  "popup3pScriptRulePrompt": {
+    "message": "староннія скрыпты",
+    "description": ""
+  },
+  "popup3pFrameRulePrompt": {
+    "message": "староннія фрэймы",
+    "description": ""
+  },
+  "popupHitDomainCountPrompt": {
+    "message": "даменаў падлучана",
+    "description": "appears in popup"
+  },
+  "popupHitDomainCount": {
+    "message": "{{count}} з {{total}}",
+    "description": "appears in popup"
+  },
+  "popupVersion": {
+    "message": "Версія",
+    "description": "Example of use: Version 1.26.4"
+  },
+  "popup3pScriptFilter": {
+    "message": "скрыпт",
+    "description": "Appears as an option to filter out firewall rows"
+  },
+  "popup3pFrameFilter": {
+    "message": "рамка",
+    "description": "Appears as an option to filter out firewall rows"
+  },
+  "pickerCreate": {
+    "message": "Стварыць",
+    "description": "English: Create"
+  },
+  "pickerPick": {
+    "message": "Выбраць",
+    "description": "English: Pick"
+  },
+  "pickerQuit": {
+    "message": "Выйсці",
+    "description": "English: Quit"
+  },
+  "pickerPreview": {
+    "message": "Папярэдні прагляд",
+    "description": "Element picker preview mode: will cause the elements matching the current filter to be removed from the page"
+  },
+  "pickerNetFilters": {
+    "message": "Сеткавыя фільтры",
+    "description": "English: header for a type of filter in the element picker dialog"
+  },
+  "pickerCosmeticFilters": {
+    "message": "Касметычныя фільтры",
+    "description": "English: Cosmetic filters"
+  },
+  "pickerCosmeticFiltersHint": {
+    "message": "Націсканне, Ctrl + націсканне",
+    "description": "English: Click, Ctrl-click"
+  },
+  "pickerContextMenuEntry": {
+    "message": "Блакаваць элемент…",
+    "description": "An entry in the browser's contextual menu"
+  },
+  "settingsCollapseBlockedPrompt": {
+    "message": "Хаваць контуры заблакаваных элементаў",
+    "description": "English: Hide placeholders of blocked elements"
+  },
+  "settingsIconBadgePrompt": {
+    "message": "Паказваць колькасць заблакаваных запытаў на значцы",
+    "description": "English: Show the number of blocked requests on the icon"
+  },
+  "settingsTooltipsPrompt": {
+    "message": "Адключыць выплыўныя падказкі",
+    "description": "A checkbox in the Settings pane"
+  },
+  "settingsContextMenuPrompt": {
+    "message": "Выкарыстоўваць кантэкстнае меню, дзе магчыма",
+    "description": "English: Make use of context menu where appropriate"
+  },
+  "settingsColorBlindPrompt": {
+    "message": "Колеравая схема для дальтонікаў",
+    "description": "English: Color-blind friendly"
+  },
+  "settingsAppearance": {
+    "message": "Выгляд",
+    "description": "Section for controlling user interface appearance"
+  },
+  "settingsThemeLabel": {
+    "message": "Тэма",
+    "description": "Label for checkbox to enable a custom dark theme"
+  },
+  "settingsThemeAccent0Label": {
+    "message": "Уласны колеравы акцэнт",
+    "description": "Label for checkbox to pick an accent color"
+  },
+  "settingsCloudStorageEnabledPrompt": {
+    "message": "Уключыць падтрымку воблачнага сховішча",
+    "description": ""
+  },
+  "settingsAdvancedUserPrompt": {
+    "message": "Я — дасведчаны карыстальнік",
+    "description": "Checkbox to let user access advanced, technical features"
+  },
+  "settingsPrefetchingDisabledPrompt": {
+    "message": "Адключыць папярэднюю загрузку (каб прадухіліць злучэнне для заблакаваных сеткавых запытаў)",
+    "description": "English: "
+  },
+  "settingsHyperlinkAuditingDisabledPrompt": {
+    "message": "Выключыць праверку гіперспасылак",
+    "description": "English: "
+  },
+  "settingsWebRTCIPAddressHiddenPrompt": {
+    "message": "Прадухіліць уцечку лакальнага IP-адраса праз WebRTC",
+    "description": "English: "
+  },
+  "settingPerSiteSwitchGroup": {
+    "message": "Прадвызначаныя паводзіны",
+    "description": ""
+  },
+  "settingPerSiteSwitchGroupSynopsis": {
+    "message": "Гэтыя налады могуць быць перавызначаныя для кожнага сайта асобна",
+    "description": ""
+  },
+  "settingsNoCosmeticFilteringPrompt": {
+    "message": "Выключыць касметычныя фільтры",
+    "description": ""
+  },
+  "settingsNoLargeMediaPrompt": {
+    "message": "Блакаваць медыя-элементы большыя за {{input}} КБ",
+    "description": ""
+  },
+  "settingsNoRemoteFontsPrompt": {
+    "message": "Блакаваць аддаленыя шрыфты",
+    "description": ""
+  },
+  "settingsNoScriptingPrompt": {
+    "message": "Адключыць JavaScript",
+    "description": "The default state for the per-site no-scripting switch"
+  },
+  "settingsNoCSPReportsPrompt": {
+    "message": "Блакаваць справаздачы CSP",
+    "description": "background information: https://github.com/gorhill/uBlock/issues/3150"
+  },
+  "settingsUncloakCnamePrompt": {
+    "message": "Раскрываць CNAME назвы",
+    "description": "background information: https://github.com/uBlockOrigin/uBlock-issues/issues/1513"
+  },
+  "settingsAdvanced": {
+    "message": "Пашыраныя налады",
+    "description": "Section for controlling advanced-user settings"
+  },
+  "settingsAdvancedSynopsis": {
+    "message": "Функцыі, патрэбныя толькі тэхнічным карыстальнікам",
+    "description": "Description of section controlling advanced-user settings"
+  },
+  "settingsAdvancedUserSettings": {
+    "message": "пашыраныя налады",
+    "description": "For the tooltip of a link which gives access to advanced settings"
+  },
+  "settingsLastRestorePrompt": {
+    "message": "Апошняе аднаўленне:",
+    "description": "English: Last restore:"
+  },
+  "settingsLastBackupPrompt": {
+    "message": "Апошняя рэзервовая копія:",
+    "description": "English: Last backup:"
+  },
+  "3pListsOfBlockedHostsPrompt": {
+    "message": "{{netFilterCount}} сеткавых фільтраў ＋ {{cosmeticFilterCount}} касметычных фільтраў з:",
+    "description": "Appears at the top of the _3rd-party filters_ pane"
+  },
+  "3pListsOfBlockedHostsPerListStats": {
+    "message": "Выкарыстана: {{used}} з {{total}}",
+    "description": "Appears aside each filter list in the _3rd-party filters_ pane"
+  },
+  "3pAutoUpdatePrompt1": {
+    "message": "Аўтаматычна абнаўляць спісы фільтраў",
+    "description": "A checkbox in the _3rd-party filters_ pane"
+  },
+  "3pUpdateNow": {
+    "message": "Абнавіць зараз",
+    "description": "A button in the in the _3rd-party filters_ pane"
+  },
+  "3pPurgeAll": {
+    "message": "Ачысціць усе кэшы",
+    "description": "A button in the in the _3rd-party filters_ pane"
+  },
+  "3pParseAllABPHideFiltersPrompt1": {
+    "message": "Разбіраць і прымяняць касметычныя фільтры",
+    "description": "English: Parse and enforce Adblock+ element hiding filters."
+  },
+  "3pParseAllABPHideFiltersInfo": {
+    "message": "Касметычныя фільтры служаць для хавання элементаў вэб-старонак, якія ствараюць візуальныя нязручнасці, і якія не могуць быць заблакаваныя сродкамі фільтравання сеткавых запытаў.",
+    "description": "Describes the purpose of the 'Parse and enforce cosmetic filters' feature."
+  },
+  "3pIgnoreGenericCosmeticFilters": {
+    "message": "Ігнараваць агульныя касметычныя фільтры",
+    "description": "This will cause uBO to ignore all generic cosmetic filters."
+  },
+  "3pIgnoreGenericCosmeticFiltersInfo": {
+    "message": "Агульныя касметычныя фільтры — гэта тыя касметычныя фільтры, якія прызначаны для прымянення на ўсіх вэб-сайтах. Уключэнне гэтай налады знізіць спажыванне памяці і працэсара, дададзенае да вэб-старонак у выніку працы агульных касметычных фільтраў.\n\nРэкамендуецца ўключыць гэту наладу на менш магутных прыладах.",
+    "description": "Describes the purpose of the 'Ignore generic cosmetic filters' feature."
+  },
+  "3pSuspendUntilListsAreLoaded": {
+    "message": "Прыпыніць сеткавую актыўнасць, пакуль не пагрузяцца ўсе спісы фільтраў",
+    "description": "A checkbox in the 'Filter lists' pane"
+  },
+  "3pListsOfBlockedHostsHeader": {
+    "message": "Lists of blocked hosts",
+    "description": "English: Lists of blocked hosts"
+  },
+  "3pApplyChanges": {
+    "message": "Ужыць змяненні",
+    "description": "English: Apply changes"
+  },
+  "3pGroupDefault": {
+    "message": "Убудаваныя",
+    "description": "Filter lists section name"
+  },
+  "3pGroupAds": {
+    "message": "Рэклама",
+    "description": "Filter lists section name"
+  },
+  "3pGroupPrivacy": {
+    "message": "Прыватнасць",
+    "description": "Filter lists section name"
+  },
+  "3pGroupMalware": {
+    "message": "Абарона ад шкоднасных праграм, бяспека",
+    "description": "Filter lists section name"
+  },
+  "3pGroupSocial": {
+    "message": "Віджэты сацыяльных сетак",
+    "description": "Filter lists section name"
+  },
+  "3pGroupCookies": {
+    "message": "Абвесткі пра кукі",
+    "description": "Filter lists section name"
+  },
+  "3pGroupAnnoyances": {
+    "message": "Надакучлівасці",
+    "description": "Filter lists section name"
+  },
+  "3pGroupMultipurpose": {
+    "message": "Шматмэтавыя",
+    "description": "Filter lists section name"
+  },
+  "3pGroupRegions": {
+    "message": "Рэгіёны, мовы",
+    "description": "Filter lists section name"
+  },
+  "3pGroupCustom": {
+    "message": "Карыстальніцкія",
+    "description": "Filter lists section name"
+  },
+  "3pImport": {
+    "message": "Імпартаваць…",
+    "description": "The label for the checkbox used to import external filter lists"
+  },
+  "3pExternalListsHint": {
+    "message": "Адзін URL на радок. Няспраўныя URL-адрасы будуць праігнараваныя.",
+    "description": "Short information about how to use the textarea to import external filter lists by URL"
+  },
+  "3pExternalListObsolete": {
+    "message": "Неактуальны.",
+    "description": "used as a tooltip for the out-of-date icon beside a list"
+  },
+  "3pViewContent": {
+    "message": "паглядзець змест",
+    "description": "used as a tooltip for eye icon beside a list"
+  },
+  "3pLastUpdate": {
+    "message": "Апошняе абнаўленне: {{ago}}.\nНацісніце для прымусовага абнаўлення.",
+    "description": "used as a tooltip for the clock icon beside a list"
+  },
+  "3pUpdating": {
+    "message": "Абнаўляецца…",
+    "description": "used as a tooltip for the spinner icon beside a list"
+  },
+  "3pNetworkError": {
+    "message": "Памылка сеткі не дазволіла абнавіць рэсурс.",
+    "description": "used as a tooltip for error icon beside a list"
+  },
+  "1pTrustWarning": {
+    "message": "Не дадавайце фільтры з крыніц, якім не давяраеце.",
+    "description": "Warning against copy-pasting filters from random sources"
+  },
+  "1pEnableMyFiltersLabel": {
+    "message": "Уключыць мае карыстальніцкія фільтры",
+    "description": "Label for the checkbox use to enable/disable 'My filters' list"
+  },
+  "1pTrustMyFiltersLabel": {
+    "message": "Дазволіць карыстальніцкія фільтры, якія патрабуюць даверу",
+    "description": "Label for the checkbox use to trust the content of 'My filters' list"
+  },
+  "1pImport": {
+    "message": "Імпартаваць і дадаць…",
+    "description": "Button in the 'My filters' pane"
+  },
+  "1pExport": {
+    "message": "Экспартаваць…",
+    "description": "Button in the 'My filters' pane"
+  },
+  "1pExportFilename": {
+    "message": "my-ublock-static-filters_{{datetime}}.txt",
+    "description": "English: my-ublock-static-filters_{{datetime}}.txt"
+  },
+  "1pApplyChanges": {
+    "message": "Ужыць змяненні",
+    "description": "English: Apply changes"
+  },
+  "rulesPermanentHeader": {
+    "message": "Пастаянныя правілы",
+    "description": "header"
+  },
+  "rulesTemporaryHeader": {
+    "message": "Часовыя правілы",
+    "description": "header"
+  },
+  "rulesRevert": {
+    "message": "Вярнуць",
+    "description": "This will remove all temporary rules"
+  },
+  "rulesCommit": {
+    "message": "Зацвердзіць",
+    "description": "This will persist temporary rules"
+  },
+  "rulesEdit": {
+    "message": "Змяніць",
+    "description": "Will enable manual-edit mode (textarea)"
+  },
+  "rulesEditSave": {
+    "message": "Захаваць",
+    "description": "Will save manually-edited content and exit manual-edit mode"
+  },
+  "rulesEditDiscard": {
+    "message": "Адкінуць",
+    "description": "Will discard manually-edited content and exit manual-edit mode"
+  },
+  "rulesImport": {
+    "message": "Імпартаваць з файла…",
+    "description": ""
+  },
+  "rulesExport": {
+    "message": "Экспартаваць у файл…",
+    "description": "Button in the 'My rules' pane"
+  },
+  "rulesDefaultFileName": {
+    "message": "my-ublock-dynamic-rules_{{datetime}}.txt",
+    "description": "default file name to use"
+  },
+  "rulesHint": {
+    "message": "Спіс вашых правіл дынамічнага фільтравання.",
+    "description": "English: List of your dynamic filtering rules."
+  },
+  "rulesFormatHint": {
+    "message": "Сінтаксіс правіл: <code>крыніца прызначэнне тып дзеянне</code> (<a href='https://github.com/gorhill/uBlock/wiki/Dynamic-filtering:-rule-syntax'>поўная дакументацыя</a>).",
+    "description": "English: dynamic rule syntax and full documentation."
+  },
+  "rulesSort": {
+    "message": "Сартаванне:",
+    "description": "English: label for sort option."
+  },
+  "rulesSortByType": {
+    "message": "Тып правіла",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortBySource": {
+    "message": "Крыніца",
+    "description": "English: a sort option for list of rules."
+  },
+  "rulesSortByDestination": {
+    "message": "Прызначэнне",
+    "description": "English: a sort option for list of rules."
+  },
+  "whitelistPrompt": {
+    "message": "Дырэктывы давераных сайтаў указваюць, на якіх вэб-старонках uBlock Origin павінен быць выключаны. Адзін запіс на радок.",
+    "description": "A concise description of the 'Trusted sites' pane."
+  },
+  "whitelistImport": {
+    "message": "Імпартаваць і дадаць…",
+    "description": "Button in the 'Trusted sites' pane"
+  },
+  "whitelistExport": {
+    "message": "Экспартаваць…",
+    "description": "Button in the 'Trusted sites' pane"
+  },
+  "whitelistExportFilename": {
+    "message": "my-ublock-trusted-sites_{{datetime}}.txt",
+    "description": "The default filename to use for import/export purpose"
+  },
+  "whitelistApply": {
+    "message": "Ужыць змяненні",
+    "description": "English: Apply changes"
+  },
+  "logRequestsHeaderType": {
+    "message": "Тып",
+    "description": "English: Type"
+  },
+  "logRequestsHeaderDomain": {
+    "message": "Дамен",
+    "description": "English: Domain"
+  },
+  "logRequestsHeaderURL": {
+    "message": "URL",
+    "description": "English: URL"
+  },
+  "logRequestsHeaderFilter": {
+    "message": "Фільтр",
+    "description": "English: Filter"
+  },
+  "logAll": {
+    "message": "Усе",
+    "description": "Appears in the logger's tab selector"
+  },
+  "logBehindTheScene": {
+    "message": "Па-за карткамі",
+    "description": "Pretty name for behind-the-scene network requests"
+  },
+  "loggerCurrentTab": {
+    "message": "Бягучая ўкладка",
+    "description": "Appears in the logger's tab selector"
+  },
+  "loggerReloadTip": {
+    "message": "Перазагрузіць змесціва карткі",
+    "description": "Tooltip for the reload button in the logger page"
+  },
+  "loggerDomInspectorTip": {
+    "message": "Пераключыць інспектар DOM",
+    "description": "Tooltip for the DOM inspector button in the logger page"
+  },
+  "loggerPopupPanelTip": {
+    "message": "Пераключыць выплыўную панэль",
+    "description": "Tooltip for the popup panel button in the logger page"
+  },
+  "loggerInfoTip": {
+    "message": "uBlock Origin вікі: Логер",
+    "description": "Tooltip for the top-right info label in the logger page"
+  },
+  "loggerClearTip": {
+    "message": "Ачысціць логер",
+    "description": "Tooltip for the eraser in the logger page; used to blank the content of the logger"
+  },
+  "loggerPauseTip": {
+    "message": "Паставіць логер на паўзу (адкідваць усе ўваходныя звесткі)",
+    "description": "Tooltip for the pause button in the logger page"
+  },
+  "loggerUnpauseTip": {
+    "message": "Зняць логер з паўзы",
+    "description": "Tooltip for the play button in the logger page"
+  },
+  "loggerRowFiltererButtonTip": {
+    "message": "Пераключыць фільтраванне логера",
+    "description": "Tooltip for the row filterer button in the logger page"
+  },
+  "logFilterPrompt": {
+    "message": "фільтраваць запісы логера",
+    "description": "Placeholder string for logger output filtering input field"
+  },
+  "loggerRowFiltererBuiltinTip": {
+    "message": "Налады фільтравання логера",
+    "description": "Tooltip for the button to bring up logger output filtering options"
+  },
+  "loggerRowFiltererBuiltinNot": {
+    "message": "Не",
+    "description": "A keyword in the built-in row filtering expression"
+  },
+  "loggerRowFiltererBuiltinEventful": {
+    "message": "eventful",
+    "description": "A keyword in the built-in row filtering expression: all items corresponding to uBO doing something (blocked, allowed, redirected, etc.)"
+  },
+  "loggerRowFiltererBuiltinBlocked": {
+    "message": "заблакаваны",
+    "description": "A keyword in the built-in row filtering expression"
+  },
+  "loggerRowFiltererBuiltinAllowed": {
+    "message": "дазволены",
+    "description": "A keyword in the built-in row filtering expression"
+  },
+  "loggerRowFiltererBuiltinModified": {
+    "message": "мадыфікаваны",
+    "description": "A keyword in the built-in row filtering expression"
+  },
+  "loggerRowFiltererBuiltin1p": {
+    "message": "асноўны",
+    "description": "A keyword in the built-in row filtering expression"
+  },
+  "loggerRowFiltererBuiltin3p": {
+    "message": "староннія",
+    "description": "A keyword in the built-in row filtering expression"
+  },
+  "loggerEntryDetailsHeader": {
+    "message": "Падрабязнасці",
+    "description": "Small header to identify the 'Details' pane for a specific logger entry"
+  },
+  "loggerEntryDetailsFilter": {
+    "message": "Фільтр",
+    "description": "Label to identify a filter field"
+  },
+  "loggerEntryDetailsFilterList": {
+    "message": "Спіс фільтраў",
+    "description": "Label to identify a filter list field"
+  },
+  "loggerEntryDetailsRule": {
+    "message": "Правіла",
+    "description": "Label to identify a rule field"
+  },
+  "loggerEntryDetailsContext": {
+    "message": "Кантэкст",
+    "description": "Label to identify a context field (typically a hostname)"
+  },
+  "loggerEntryDetailsRootContext": {
+    "message": "Кантэкст кораня",
+    "description": "Label to identify a root context field (typically a hostname)"
+  },
+  "loggerEntryDetailsPartyness": {
+    "message": "Старана",
+    "description": "Label to identify a field providing partyness information"
+  },
+  "loggerEntryDetailsType": {
+    "message": "Тып",
+    "description": "Label to identify the type of an entry"
+  },
+  "loggerEntryDetailsURL": {
+    "message": "URL-адрас",
+    "description": "Label to identify the URL of an entry"
+  },
+  "loggerURLFilteringHeader": {
+    "message": "URL правіла",
+    "description": "Small header to identify the dynamic URL filtering section"
+  },
+  "loggerURLFilteringContextLabel": {
+    "message": "Кантэкст:",
+    "description": "Label for the context selector"
+  },
+  "loggerURLFilteringTypeLabel": {
+    "message": "Тып:",
+    "description": "Label for the type selector"
+  },
+  "loggerStaticFilteringHeader": {
+    "message": "Статычны фільтр",
+    "description": "Small header to identify the static filtering section"
+  },
+  "loggerStaticFilteringSentence": {
+    "message": "{{action}} сеткавыя запыты {{type}}, {{br}}URL-адрас якіх супадае з {{url}} {{br}}і якія паходзяць з {{origin}},{{br}}{{importance}} з'яўляюцца адпаведным фільтрам выключэння.",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartBlock": {
+    "message": "Блакаваць",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartAllow": {
+    "message": "Дазволіць",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartType": {
+    "message": "тыпу “{{type}}”",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartAnyType": {
+    "message": "любы тып",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartOrigin": {
+    "message": "з “{{origin}}”",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartAnyOrigin": {
+    "message": "з любога месца",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartNotImportant": {
+    "message": "акрамя выпадкаў, калі",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringSentencePartImportant": {
+    "message": "нават калі",
+    "description": "Used in the static filtering wizard"
+  },
+  "loggerStaticFilteringFinderSentence1": {
+    "message": "Статычны фільтр <code>{{filter}}</code> знойдзены ў:",
+    "description": "Below this sentence, the filter list(s) in which the filter was found"
+  },
+  "loggerStaticFilteringFinderSentence2": {
+    "message": "Статычны фільтр не знойдзены ні ў адным з уключаных зараз спісе фільтраў",
+    "description": "Message to show when a filter cannot be found in any filter lists"
+  },
+  "loggerSettingDiscardPrompt": {
+    "message": "Запісы логера, якія не адпавядаюць усім тром дадзеным ніжэй умовам, будуць аўтаматычна адкінуты:",
+    "description": "Logger setting: A sentence to describe the purpose of the settings below"
+  },
+  "loggerSettingPerEntryMaxAge": {
+    "message": "Захоўваць запісы за апошнія {{input}} хвілін",
+    "description": "A logger setting"
+  },
+  "loggerSettingPerTabMaxLoads": {
+    "message": "Захоўваць не больш за {{input}} загрузак старонкі на картцы",
+    "description": "A logger setting"
+  },
+  "loggerSettingPerTabMaxEntries": {
+    "message": "Захоўваць не больш за {{input}} запісаў на картку",
+    "description": "A logger setting"
+  },
+  "loggerSettingPerEntryLineCount": {
+    "message": "Выкарыстоўваць {{input}} радкоў на запіс пры вертыкальным пашырэнні",
+    "description": "A logger setting"
+  },
+  "loggerSettingHideColumnsPrompt": {
+    "message": "Схаваць слупкі:",
+    "description": "Logger settings: a sentence to describe the purpose of the checkboxes below"
+  },
+  "loggerSettingHideColumnTime": {
+    "message": "{{input}} Час",
+    "description": "A label for the time column"
+  },
+  "loggerSettingHideColumnFilter": {
+    "message": "{{input}} Фільтр/правіла",
+    "description": "A label for the filter or rule column"
+  },
+  "loggerSettingHideColumnContext": {
+    "message": "{{input}} Кантэкст",
+    "description": "A label for the context column"
+  },
+  "loggerSettingHideColumnPartyness": {
+    "message": "{{input}} Старана",
+    "description": "A label for the partyness column"
+  },
+  "loggerExportFormatList": {
+    "message": "Спіс",
+    "description": "Label for radio-button to pick export format"
+  },
+  "loggerExportFormatTable": {
+    "message": "Табліца",
+    "description": "Label for radio-button to pick export format"
+  },
+  "loggerExportEncodePlain": {
+    "message": "Просты",
+    "description": "Label for radio-button to pick export text format"
+  },
+  "loggerExportEncodeMarkdown": {
+    "message": "Markdown",
+    "description": "Label for radio-button to pick export text format"
+  },
+  "supportOpenButton": {
+    "message": "Адкрыць",
+    "description": "Text for button which open an external web page in Support pane"
+  },
+  "supportReportSpecificButton": {
+    "message": "Стварыць новую справаздачу на GitHub",
+    "description": "Text for button which open an external web page in Support pane"
+  },
+  "supportFindSpecificButton": {
+    "message": "Знайсці падобныя справаздачы на GitHub",
+    "description": "A clickable link in the filter issue reporter section"
+  },
+  "supportS1H": {
+    "message": "Дакументацыя",
+    "description": "Header of 'Documentation' section in Support pane"
+  },
+  "supportS1P1": {
+    "message": "Прачытайце дакументацыю на <code>uBlock/wiki</code>, каб даведацца пра ўсе магчымасці uBlock Origin.",
+    "description": "First paragraph of 'Documentation' section in Support pane"
+  },
+  "supportS2H": {
+    "message": "Пытанні і падтрымка",
+    "description": "Header of 'Questions and support' section in Support pane"
+  },
+  "supportS2P1": {
+    "message": "Адказы на пытанні і іншыя віды падтрымкі даступныя на сабрэддыце <code>/r/uBlockOrigin</code>.",
+    "description": "First paragraph of 'Questions and support' section in Support pane"
+  },
+  "supportS3H": {
+    "message": "Праблемы з фільтрамі/няспраўны сайт",
+    "description": "Header of 'Filter issues' section in Support pane"
+  },
+  "supportS3P1": {
+    "message": "Паведамляйце аб праблемах з фільтрамі на пэўных сайтах на <span data-url=\"https://github.com/uBlockOrigin/uAssets/issues?q=is%3Aissue\">трэкеры хібаў <code>uBlockOrigin/uAssets</code></span>. <u>Патрабуе ўліковы запіс GitHub.</u>",
+    "description": "First paragraph of 'Filter issues' section in Support pane"
+  },
+  "supportS3P2": {
+    "message": "<b>Важна:</b> Пазбягайце выкарыстання іншых блакавальнікаў падобнага прызначэння разам з uBlock Origin, паколькі гэта можа прывесці да праблем з фільтрамі на пэўных сайтах.",
+    "description": "Second paragraph of 'Filter issues' section in Support pane"
+  },
+  "supportS3P3": {
+    "message": "<b>Парада:</b> Пераканайцеся, што вашы спісы фільтраў знаходзяцца ў актуальным стане. <span data-url=\"logger-ui.html#_\">Рэгістратар</span> — гэта галоўны інструмент для дыягностыкі праблем, якія звязаны з фільтрамі.",
+    "description": "Third paragraph of 'Filter issues' section in Support pane"
+  },
+  "supportS4H": {
+    "message": "Справаздача пра хібу",
+    "description": "Header of 'Bug report' section in Support pane"
+  },
+  "supportS4P1": {
+    "message": "Паведамляйце пра праблемы самога uBlock Origin на <span data-url=\"https://github.com/uBlockOrigin/uBlock-issues/issues?q=is%3Aissue\">трэкеры хібаў <code>uBlockOrigin/uBlock-issue</code></span>. <u>Патрабуе ўліковы запіс GitHub.</u>",
+    "description": "First paragraph of 'Bug report' section in Support pane"
+  },
+  "supportS5H": {
+    "message": "Інфармацыя для выпраўлення непаладак",
+    "description": "Header of 'Troubleshooting Information' section in Support pane"
+  },
+  "supportS5P1": {
+    "message": "Ніжэй - тэхнічная інфармацыя, што можа быць карысная добраахвотнікам, якія паспрабуюць дапамагчы вам вырашыць праблему.",
+    "description": "First paragraph of 'Troubleshooting Information' section in Support pane"
+  },
+  "supportS6H": {
+    "message": "Паведаміць аб праблеме з фільтрам",
+    "description": "Header of 'Report a filter issue' section in Support pane"
+  },
+  "supportS6P1S1": {
+    "message": "Каб не абцяжарваць добраахвотнікаў дубляванымі справаздачамі, праверце, ці не паведамлялі пра гэтую праблему раней. <b>Заўвага:</b> націсканне кнопкі прывядзе да адпраўкі паходжання старонкі на GitHub.",
+    "description": "A paragraph in the filter issue reporter section"
+  },
+  "supportS6P2S1": {
+    "message": "Спісы фільтраў абнаўляюцца штодзённа. Упэўніцеся, што ваша праблема не была вырашана ў найноўшых спісах фільтраў.",
+    "description": "A paragraph in the filter issue reporter section"
+  },
+  "supportS6P2S2": {
+    "message": "Спраўдзіце, ці праблема ўсё яшчэ існуе пасля перазагрузкі праблемнай вэб-старонкі.",
+    "description": "A paragraph in the filter issue reporter section"
+  },
+  "supportS6URL": {
+    "message": "Адрас вэб-старонкі:",
+    "description": "Label for the URL of the page"
+  },
+  "supportS6Select1": {
+    "message": "Вэб-старонка…",
+    "description": "Label for widget to select type of issue"
+  },
+  "supportS6Select1Option0": {
+    "message": "-- Выберыце праблему --",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Select1Option1": {
+    "message": "Паказвае рэкламу або яе астачу",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Select1Option2": {
+    "message": "Мае накладанні або іншыя недарэчнасці",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Select1Option3": {
+    "message": "Выяўляе uBlock Origin",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Select1Option4": {
+    "message": "Праблемы, звязаныя з прыватнасцю",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Select1Option5": {
+    "message": "Няспраўная, калі ўключаны uBlock Origin",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Select1Option6": {
+    "message": "Адкрывае непажаданыя карткі або вокны",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Select1Option7": {
+    "message": "Вядзе да шкодных праграм, фішынгу",
+    "description": "An entry in the widget used to select the type of issue"
+  },
+  "supportS6Checkbox1": {
+    "message": "Пазначыць вэб-старонку як “NSFW” (<a href=\"https://wikipedia.org/wiki/Not_safe_for_work\">“Not Safe For Work”</a>)",
+    "description": "A checkbox to use for NSFW sites"
+  },
+  "aboutPrivacyPolicy": {
+    "message": "Палітыка прыватнасці",
+    "description": "Link to privacy policy on GitHub (English)"
+  },
+  "aboutChangelog": {
+    "message": "Журнал змяненняў",
+    "description": ""
+  },
+  "aboutCode": {
+    "message": "Зыходны код (GPLv3)",
+    "description": "English: Source code (GPLv3)"
+  },
+  "aboutContributors": {
+    "message": "Удзельнікі",
+    "description": "English: Contributors"
+  },
+  "aboutSourceCode": {
+    "message": "Зыходны код",
+    "description": "Link text to source code repo"
+  },
+  "aboutTranslations": {
+    "message": "Пераклады",
+    "description": "Link text to translations repo"
+  },
+  "aboutFilterLists": {
+    "message": "Спісы фільтраў",
+    "description": "Link text to uBO's own filter lists repo"
+  },
+  "aboutDependencies": {
+    "message": "Вонкавыя залежнасці (GPLv3-сумяшчальныя):",
+    "description": "Shown in the About pane"
+  },
+  "aboutCDNs": {
+    "message": "Уласныя спісы фільтраў uBO свабодна размяшчаюцца ў наступных сетках <a href=\"https://wikipedia.org/wiki/Content_delivery_network\">CDN</a>:",
+    "description": "Shown in the About pane"
+  },
+  "aboutCDNsInfo": {
+    "message": "Пры абнаўленні спіса фільтраў выкарыстоўваецца CDN, які выбіраецца выпадковым чынам",
+    "description": "Shown in the About pane"
+  },
+  "aboutBackupDataButton": {
+    "message": "Стварыць рэзервовую копію…",
+    "description": "Text for button to create a backup of all settings"
+  },
+  "aboutBackupFilename": {
+    "message": "my-ublock-backup_{{datetime}}.txt",
+    "description": "English: my-ublock-backup_{{datetime}}.txt"
+  },
+  "aboutRestoreDataButton": {
+    "message": "Аднавіць з файла…",
+    "description": "English: Restore from file..."
+  },
+  "aboutResetDataButton": {
+    "message": "Скінуць на пачатковыя налады…",
+    "description": "English: Reset to default settings..."
+  },
+  "aboutRestoreDataConfirm": {
+    "message": "Усе вашы налады будуць заменены звесткамі з рэзервовай копіі, створанай {{time}}, затым uBlock₀ будзе перазапушчаны.\n\nПеразапісаць усе налады, выкарыстаўшы рэзервовую копію?",
+    "description": "Message asking user to confirm restore"
+  },
+  "aboutRestoreDataError": {
+    "message": "Звесткі немагчыма прачытаць або яны нядзейсныя",
+    "description": "Message to display when an error occurred during restore"
+  },
+  "aboutResetDataConfirm": {
+    "message": "Усе вашы налады будуць выдаленыя, uBlock₀ будзе перазапушчаны.\n\nСкінуць uBlock₀ да прадвызначаных налад?",
+    "description": "Message asking user to confirm reset"
+  },
+  "errorCantConnectTo": {
+    "message": "Памылка сеткі: {{msg}}",
+    "description": "English: Network error: {{msg}}"
+  },
+  "subscribeButton": {
+    "message": "Падпісацца",
+    "description": "For the button used to subscribe to a filter list"
+  },
+  "elapsedOneMinuteAgo": {
+    "message": "хвіліну таму",
+    "description": "English: a minute ago"
+  },
+  "elapsedManyMinutesAgo": {
+    "message": "Хвілін таму: {{value}}",
+    "description": "English: {{value}} minutes ago"
+  },
+  "elapsedOneHourAgo": {
+    "message": "гадзіну таму",
+    "description": "English: an hour ago"
+  },
+  "elapsedManyHoursAgo": {
+    "message": "Гадзін таму: {{value}}",
+    "description": "English: {{value}} hours ago"
+  },
+  "elapsedOneDayAgo": {
+    "message": "дзень таму",
+    "description": "English: a day ago"
+  },
+  "elapsedManyDaysAgo": {
+    "message": "Дзён таму: {{value}}",
+    "description": "English: {{value}} days ago"
+  },
+  "showDashboardButton": {
+    "message": "Паказаць панэль кіравання",
+    "description": "Firefox/Fennec-specific: Show Dashboard"
+  },
+  "showNetworkLogButton": {
+    "message": "Паказаць логер",
+    "description": "Firefox/Fennec-specific: Show Logger"
+  },
+  "fennecMenuItemBlockingOff": {
+    "message": "выключаны",
+    "description": "Firefox-specific: appears as 'uBlock₀ (off)'"
+  },
+  "docblockedTitle": {
+    "message": "Старонка заблакавана",
+    "description": "Used as a title for the document-blocked page"
+  },
+  "docblockedPrompt1": {
+    "message": "uBlock Origin папярэдзіў чытанне наступнай старонкі:",
+    "description": "Used in the strict-blocking page"
+  },
+  "docblockedPrompt2": {
+    "message": "Гэта адбылося з-за наступнага фільтра:",
+    "description": "Used in the strict-blocking page"
+  },
+  "docblockedNoParamsPrompt": {
+    "message": "без параметраў",
+    "description": "label to be used for the parameter-less URL: https://cloud.githubusercontent.com/assets/585534/9832014/bfb1b8f0-593b-11e5-8a27-fba472a5529a.png"
+  },
+  "docblockedFoundIn": {
+    "message": "Фільтр быў знойдзены ў:",
+    "description": "English: List of filter list names follows"
+  },
+  "docblockedBack": {
+    "message": "Вярнуцца",
+    "description": "English: Go back"
+  },
+  "docblockedClose": {
+    "message": "Закрыць гэта акно",
+    "description": "English: Close this window"
+  },
+  "docblockedDontWarn": {
+    "message": "Не папярэджваць больш пра гэты сайт",
+    "description": "Label for checkbox in document-blocked page"
+  },
+  "docblockedProceed": {
+    "message": "Выключыць строгае блакаванне для {{hostname}}",
+    "description": "English: Disable strict blocking for {{hostname}} ..."
+  },
+  "docblockedDisableTemporary": {
+    "message": "Часова",
+    "description": "English: Temporarily"
+  },
+  "docblockedDisablePermanent": {
+    "message": "Назаўжды",
+    "description": "English: Permanently"
+  },
+  "docblockedDisable": {
+    "message": "Працягнуць",
+    "description": "Button text to navigate to the blocked page"
+  },
+  "docblockedRedirectPrompt": {
+    "message": "Заблакаваная старонка мае намер перанакіраваць на іншы сайт. Калі вырашыце працягнуць, вы пяройдзеце непасрэдна да: {{url}}",
+    "description": "Text warning about an incoming redirect"
+  },
+  "docblockedReasonLabel": {
+    "message": "Падстава:",
+    "description": "The label which prepend the actual reason why a page was blocked"
+  },
+  "docblockedReasonMalicious": {
+    "message": "Шкодная актыўнасць",
+    "description": "An actual reason why a page was blocked"
+  },
+  "docblockedReasonTracker": {
+    "message": "Трэкер",
+    "description": "An actual reason why a page was blocked"
+  },
+  "docblockedReasonDisreputable": {
+    "message": "Сумнеўны змест",
+    "description": "An actual reason why a page was blocked"
+  },
+  "cloudPush": {
+    "message": "Экспартаваць у воблачнае сховішча",
+    "description": "tooltip"
+  },
+  "cloudPull": {
+    "message": "Імпартаваць з воблачнага сховішча",
+    "description": "tooltip"
+  },
+  "cloudPullAndMerge": {
+    "message": "Імпартаваць з воблачнага сховішча і аб'яднаць з дзейнымі наладамі",
+    "description": "tooltip"
+  },
+  "cloudNoData": {
+    "message": "…\n…",
+    "description": ""
+  },
+  "cloudDeviceNamePrompt": {
+    "message": "Назва гэтай прылады:",
+    "description": "used as a prompt for the user to provide a custom device name"
+  },
+  "advancedSettingsWarning": {
+    "message": "Увага! Змяняйце гэтыя пашыраныя налады на ўласную рызыку.",
+    "description": "A warning to users at the top of 'Advanced settings' page"
+  },
+  "genericSubmit": {
+    "message": "Пацвердзіць",
+    "description": "for generic 'Submit' buttons"
+  },
+  "genericApplyChanges": {
+    "message": "Ужыць змяненні",
+    "description": "for generic 'Apply changes' buttons"
+  },
+  "genericRevert": {
+    "message": "Вярнуць",
+    "description": "for generic 'Revert' buttons"
+  },
+  "genericBytes": {
+    "message": "байтаў",
+    "description": ""
+  },
+  "contextMenuBlockElementInFrame": {
+    "message": "Заблакаваць элемент у рамцы…",
+    "description": "An entry in the browser's contextual menu"
+  },
+  "contextMenuSubscribeToList": {
+    "message": "Падпісацца на спіс фільтраў…",
+    "description": "An entry in the browser's contextual menu"
+  },
+  "contextMenuTemporarilyAllowLargeMediaElements": {
+    "message": "Тымчасова дазволіць вялікія медыя-элементы",
+    "description": "A context menu entry, present when large media elements have been blocked on the current site"
+  },
+  "contextMenuViewSource": {
+    "message": "Паглядзець зыходны код…",
+    "description": "A context menu entry, to view the source code of the target resource"
+  },
+  "shortcutCapturePlaceholder": {
+    "message": "Упішыце спалучэнне",
+    "description": "Placeholder string for input field used to capture a keyboard shortcut"
+  },
+  "genericMergeViewScrollLock": {
+    "message": "Пераключыць агульную пракрутку",
+    "description": "Tooltip for the button used to lock scrolling between the views in the 'My rules' pane"
+  },
+  "genericCopyToClipboard": {
+    "message": "Капіяваць у буфер абмену",
+    "description": "Label for buttons used to copy something to the clipboard"
+  },
+  "genericSelectAll": {
+    "message": "Абраць усе",
+    "description": "Label for buttons used to select all text in editor"
+  },
+  "toggleCosmeticFiltering": {
+    "message": "Пераключыць касметычнае фільтраванне",
+    "description": "Label for keyboard shortcut used to toggle cosmetic filtering"
+  },
+  "toggleJavascript": {
+    "message": "Уключыць/адключыць JavaScript",
+    "description": "Label for keyboard shortcut used to toggle no-scripting switch"
+  },
+  "relaxBlockingMode": {
+    "message": "Паслаблены рэжым блакавання",
+    "description": "Label for keyboard shortcut used to relax blocking mode"
+  },
+  "storageUsed": {
+    "message": "Памер сховішча: {{value}} {{unit}}",
+    "description": " In Setting pane, renders as (example): Storage used: 13.2 MB"
+  },
+  "KB": {
+    "message": "КБ",
+    "description": "short for 'kilobytes'"
+  },
+  "MB": {
+    "message": "МБ",
+    "description": "short for 'megabytes'"
+  },
+  "GB": {
+    "message": "ГБ",
+    "description": "short for 'gigabytes'"
+  },
+  "clickToLoad": {
+    "message": "Націсніце, каб загрузіць",
+    "description": "Message used in frame placeholders"
+  },
+  "linterMainReport": {
+    "message": "Памылак: {{count}}",
+    "description": "Summary of number of errors as reported by the linter "
+  },
+  "unprocessedRequestTooltip": {
+    "message": "Немагчыма фільтраваць належным чынам пры запуску браўзера.\nАбнавіце старонку, каб забяспечыць належнае фільтраванне.",
+    "description": "A warning which will appear in the popup panel if needed"
+  },
+  "dummy": {
+    "message": "This entry must be the last one",
+    "description": "so we dont need to deal with comma for last entry"
+  }
+}

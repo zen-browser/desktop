@@ -1,0 +1,56 @@
+[
+  {
+    "namespace": "enterprise",
+    "description": "Use the chrome.enterprise API for enterprise-specific functionality.",
+    "permissions": ["enterprise"],
+    "functions": []
+  },
+  {
+    "namespace": "enterprise.platformKeys",
+    "description": "Use the chrome.enterprise.platformKeys API to access enterprise certificates.",
+    "permissions": ["enterprise.platformKeys"],
+    "functions": [
+      {
+        "name": "getTokens",
+        "type": "function",
+        "async": true,
+        "returns": { "type": "array", "items": { "type": "object" } }
+      },
+      {
+        "name": "getCertificate",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          { "name": "tokenId", "type": "string" }
+        ],
+        "returns": { "type": "array", "items": { "type": "integer" }, "optional": true }
+      }
+    ]
+  },
+  {
+    "namespace": "enterprise.networkingAttributes",
+    "description": "Use the chrome.enterprise.networkingAttributes API.",
+    "permissions": ["enterprise.networkingAttributes"],
+    "functions": [
+      {
+        "name": "getNetworkDetails",
+        "type": "function",
+        "async": true,
+        "returns": { "type": "object" }
+      }
+    ]
+  },
+  {
+    "namespace": "enterprise.hardware",
+    "description": "Use the chrome.enterprise.hardware API.",
+    "permissions": ["enterprise.hardware"],
+    "functions": [
+      {
+        "name": "getDeviceUUID",
+        "type": "function",
+        "async": true,
+        "returns": { "type": "string" }
+      }
+    ]
+  }
+]

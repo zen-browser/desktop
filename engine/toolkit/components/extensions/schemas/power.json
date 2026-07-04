@@ -1,0 +1,26 @@
+[
+  {
+    "namespace": "power",
+    "description": "Use the chrome.power API to override the system's power management features.",
+    "permissions": ["power"],
+    "functions": [
+      {
+        "name": "requestKeepAwake",
+        "type": "function",
+        "description": "Requests keeping the system awake.",
+        "parameters": [
+          {
+            "name": "level",
+            "type": "string",
+            "enum": ["system", "display"]
+          }
+        ]
+      },
+      {
+        "name": "releaseKeepAwake",
+        "type": "function",
+        "description": "Releases a previously requested keep-awake."
+      }
+    ]
+  }
+]

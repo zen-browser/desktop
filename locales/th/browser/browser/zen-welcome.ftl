@@ -23,4 +23,4 @@ zen-welcome-start-browsing = เริ่มเลย!
 zen-welcome-default-search-title = เครื่องมือค้นหาเริ่มต้นของคุณ
 zen-welcome-default-search-description = เลือกเครื่องมือค้นหาเริ่มต้นของคุณ คุณสามารถเปลี่ยนมันในภายหลังได้เสมอ!
 zen-welcome-skip-button = ข้าม
-zen-welcome-finished = Zen ของคุณได้ถูกตั้งค่าอย่างถูกต้องแล้ว
+zen-welcome-finished = Your Nixo has been set up correctly!

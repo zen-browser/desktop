@@ -1,0 +1,12 @@
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this file,
+   - You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<Application xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
+  <VisualElements
+      ShowNameOnSquare150x150Logo='on'
+      Square150x150Logo='browser\VisualElements\PrivateBrowsing_150.png'
+      Square70x70Logo='browser\VisualElements\PrivateBrowsing_70.png'
+      ForegroundText='light'
+      BackgroundColor='#14171a'/>
+</Application>

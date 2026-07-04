@@ -1864,6 +1864,11 @@ class nsZenWorkspaces {
       }
       const newTransform = diff * 100;
       element.style.transform = `translateX(${newTransform + offsetPixels / 2}%)`;
+      // A special case for two spaces
+      if (spaceLen === 2 && diff !== 0) {
+        const side = offsetPixels > 0 ? -100 : 100;
+        element.style.transform = `translateX(${side + offsetPixels / 2}%)`;
+      }
     }
     // Hide other essentials with different containerTabId
     for (const container of otherContainersEssentials) {
@@ -2102,6 +2107,11 @@ class nsZenWorkspaces {
         offset += spaceLen;
       }
       offset = offset * 100;
+      // A special case for two spaces
+      if (spaceLen === 2 && offset !== 0) {
+        const currentTransform = parseFloat(element.style.transform.split('(')[1]);
+        offset = currentTransform > 0 ? 100 : -100;
+      }
       const newTransform = `translateX(${offset}%)`;
       // Only animate the workspace that is coming in, to avoid having multiple workspaces
       // animating off-screen at the same time which can cause performance issues. With an off
@@ -2145,190 +2155,60 @@ class nsZenWorkspaces {
       }
     }
     if (this.shouldAnimateEssentials && previousWorkspace) {
-      // Animate essentials
-      const newWorkspaceEssentialsContainer = clonedEssentials.find(cloned =>
-        cloned.workspaces.some(w => w.uuid === newWorkspace.uuid)
-      );
-      // Get a list of essentials containers that are in between the first and last workspace
-      const essentialsContainersInBetween = clonedEssentials.filter(cloned => {
-        const essentialsWorkspaces = cloned.workspaces;
-        const firstIndex = workspaces.findIndex(
-          w => w.uuid === essentialsWorkspaces[0].uuid
-        );
-        const lastIndex = workspaces.findIndex(
-          w =>
-            w.uuid ===
-            essentialsWorkspaces[essentialsWorkspaces.length - 1].uuid
-        );
-
-        const [start, end] = [
-          Math.min(previousWorkspaceIndex, newWorkspaceIndex),
-          Math.max(previousWorkspaceIndex, newWorkspaceIndex),
-        ];
-
-        // Check if any part of the container overlaps with the movement range
-        return firstIndex <= end && lastIndex >= start;
-      });
       for (const cloned of clonedEssentials) {
         const container = cloned.container;
         const essentialsWorkspaces = cloned.workspaces;
-        const repeats = cloned.repeat;
-        // Animate like the workspaces above expect essentials are a bit more
-        // complicated because they are not based on workspaces but on containers
-        // So, if we have the following arangement:
-        //  | [workspace1] [workspace2] [workspace3] [workspace4]
-        //  | [container1] [container1] [container2] [container1]
-        // And if we are changing from workspace 1 to workspace 4,
-        // we should be doing the following:
-        // First container (repeat 2 times) will stay in place until
-        // we reach container 3, then animate to the left and container 2
-        // also move to the left after that while container 1 in workspace 4
-        // will slide in from the right
-
-        // Get the index from first and last workspace
-        const firstWorkspaceIndex = workspaces.findIndex(
-          w => w.uuid === essentialsWorkspaces[0].uuid
-        );
-        const lastWorkspaceIndex = workspaces.findIndex(
-          w =>
-            w.uuid ===
-            essentialsWorkspaces[essentialsWorkspaces.length - 1].uuid
-        );
         cloned.originalContainer.style.removeProperty("transform");
-        // Check if the container is even going to appear on the screen, to save on animation
-        if (
-          // We also need to check if the container is even going to appear on the screen.
-          // In order to do this, we need to check if the container is between the first and last workspace.
-          // Note that essential containers can have multiple workspaces,
-          // so we need to check if any of the workspaces in the container are between the
-          // first and last workspace.
-          !essentialsContainersInBetween.find(
-            ce =>
-              ce.workspaces.some(
-                w => w.uuid === essentialsWorkspaces[0].uuid
-              ) &&
-              ce.workspaces.some(
-                w =>
-                  w.uuid ===
-                  essentialsWorkspaces[essentialsWorkspaces.length - 1].uuid
-              )
-          )
-        ) {
+        cloned.originalContainer.parentNode.appendChild(container);
+        container.style.position = "absolute";
+
+        const containsPrev = essentialsWorkspaces.some(
+          w => w.uuid === previousWorkspace.uuid
+        );
+        const containsNew = essentialsWorkspaces.some(
+          w => w.uuid === newWorkspace.uuid
+        );
+
+        if (!containsPrev && !containsNew) {
+          container.setAttribute("hidden", "true");
           continue;
         }
-        cloned.originalContainer.parentNode.appendChild(container);
-        let stepsInBetween =
-          Math.abs(
-            newWorkspaceIndex -
-              (isGoingLeft ? firstWorkspaceIndex : lastWorkspaceIndex)
-          ) + 1;
-        const usingSameContainer =
-          newWorkspaceEssentialsContainer?.workspaces.some(
-            w => w.uuid === newWorkspace.uuid
-          ) &&
-          newWorkspaceEssentialsContainer?.workspaces.some(
-            w => w.uuid === previousWorkspace.uuid
-          );
-        let newOffset =
-          -(
-            newWorkspaceIndex -
-            (isGoingLeft ? firstWorkspaceIndex : lastWorkspaceIndex) +
-            (!isGoingLeft ? repeats - 1 : -repeats + 1)
-          ) * 100;
 
-        let existingOffset =
-          -(
-            newWorkspaceIndex -
-            (isGoingLeft ? lastWorkspaceIndex : firstWorkspaceIndex) +
-            (isGoingLeft ? repeats - 1 : -repeats + 1)
-          ) * 100;
-
-        // If we are on the same container and both new and old workspace are in the same "essentialsWorkspaces"
-        // we can simply not animate the essentials
-        if (
-          usingSameContainer &&
-          essentialsWorkspaces.some(w => w.uuid === newWorkspace.uuid) &&
-          essentialsWorkspaces.some(w => w.uuid === previousWorkspace.uuid)
-        ) {
-          newOffset = 0;
-          existingOffset = 0;
+        if (containsPrev && containsNew) {
+          container.style.transform = "translateX(0%)";
+          continue;
         }
 
-        const needsOffsetAdjustment =
-          stepsInBetween > essentialsWorkspaces.length || usingSameContainer;
+        let existingOffset, newOffset;
+        const workspaceLen = this.getWorkspaces().length;
+        if (containsPrev && !containsNew) {
+          existingOffset = 0;
+          newOffset = isGoingLeft ? 100 : -100;
+        } else {
+          existingOffset = isGoingLeft ? -100 : 100;
+          newOffset = 0;
+        }
 
-        if (repeats > 0 && needsOffsetAdjustment) {
-          if (!isGoingLeft) {
-            if (existingOffset !== 0) {
-              existingOffset += 100;
-            }
-            if (newOffset !== 0) {
-              newOffset += 100;
-            }
+        if (workspaceLen === 2) {
+          const currentTransform = parseFloat(container.style.transform.split('(')[1]);
+          if (containsPrev && !containsNew) {
+            existingOffset = 0;
+            newOffset = currentTransform > 0 ? 100 : -100;
           } else {
-            if (existingOffset !== 0) {
-              existingOffset -= 100;
-            }
-            if (newOffset !== 0) {
-              newOffset -= 100;
-            }
+            existingOffset = currentTransform > 0 ? 100 : -100;
+            newOffset = 0;
           }
-        }
-
-        // Special case: going forward from single reused container to a new one
-        if (
-          !usingSameContainer &&
-          !isGoingLeft &&
-          lastWorkspaceIndex === newWorkspaceIndex - 1
-        ) {
-          existingOffset = 0;
-          newOffset = -100;
-          stepsInBetween = 1;
-        }
-        if (
-          !usingSameContainer &&
-          isGoingLeft &&
-          firstWorkspaceIndex === newWorkspaceIndex + 1
-        ) {
-          existingOffset = 0;
-          newOffset = 100;
-          stepsInBetween = 1;
-        }
-        if (
-          !usingSameContainer &&
-          isGoingLeft &&
-          (firstWorkspaceIndex === newWorkspaceIndex - 1 ||
-            firstWorkspaceIndex === newWorkspaceIndex)
-        ) {
-          existingOffset = -100;
-          newOffset = 0;
-          stepsInBetween = 1;
-        }
-        if (
-          !usingSameContainer &&
-          !isGoingLeft &&
-          firstWorkspaceIndex === newWorkspaceIndex
-        ) {
-          existingOffset = 100;
-          newOffset = 0;
-          stepsInBetween = 1;
         }
 
         const newTransform = `translateX(${newOffset}%)`;
         let existingTransform = `translateX(${existingOffset}%)`;
-        if (container.style.transform && container.style.transform !== "none") {
-          existingTransform = container.style.transform;
-        }
         if (shouldAnimate) {
           container.style.transform = existingTransform;
           animations.push(
             gZenUIManager.motion.animate(
               container,
               {
-                transform: [
-                  existingTransform,
-                  new Array(stepsInBetween).fill(newTransform).join(","),
-                ],
+                transform: [existingTransform, newTransform],
               },
               {
                 type: "spring",

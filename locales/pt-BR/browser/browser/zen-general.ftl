@@ -21,15 +21,15 @@ tab-context-zen-remove-essential =
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Editar URL Essencial
+           *[false] Editar URL Fixada
         }
-    .accesskey = P
+    .accesskey = PT
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = Substituir com URL atual
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
+    .label = Editar…
     .accesskey = E
 tab-context-zen-edit-title = 
     .label = Alterar Rótulo...
@@ -51,10 +51,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Confirmar
 zen-pinned-tab-replaced = A URL da guia fixada foi substituída pela URL atual!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = A URL da guia fixada foi atualizada!
+zen-pinned-tab-url-invalid = Isso não parece ser uma URL válida.
+zen-pinned-tab-edit-url-title = Editar URL Fixada
+zen-pinned-tab-edit-url-label = Digite o URL que esta guia fixada deve apontar para:
 zen-tabs-renamed = A guia foi renomeada com sucesso!
 zen-background-tab-opened-toast = Nova guia em segundo plano aberta!
 zen-workspace-renamed-toast = A área de trabalho foi renomeada com sucesso!
@@ -116,7 +116,7 @@ zen-site-data-panel-feature-callout-title = Um novo lar para extensões, permiss
 zen-site-data-panel-feature-callout-subtitle = Clique no ícone para gerenciar configurações do site, visualizar informações de segurança, acessar extensões e realizar ações comuns.
 zen-open-link-in-glance = 
     .label = Abrir Link no Glance
-    .accesskey = G
+    .accesskey = Segunda:
 zen-sidebar-notification-updated-heading = Atualização Completa!
 
 # See ZenSidebarNotification.mjs to see how these would be used

@@ -22,11 +22,11 @@ tab-context-zen-edit-pinned-page =
     .label =
         { $isEssential ->
             [true] Edit Essential URL
-           *[false] Edit Pinned URL
+           *[false] Edit Pined URL
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = 現在の URL で置換
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
     .label = Edit…
@@ -53,10 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = 確定
 zen-pinned-tab-replaced = 固定したタブのURLが現在のURLに置き換えられました！
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = ピン留めされたタブのURLが更新されました！
+zen-pinned-tab-url-invalid = 有効な URL ではありません。
+zen-pinned-tab-edit-url-title = ピン留めされた URL を編集
+zen-pinned-tab-edit-url-label = このピン留めされたタブが指すURLを入力してください:
 zen-tabs-renamed = タブの名前は無事に変更されました！
 zen-background-tab-opened-toast = 新しい背景タブが開きました！
 zen-workspace-renamed-toast = ワークスペースの名前が変更されました！

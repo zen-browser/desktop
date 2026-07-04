@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = { $num } / { $max } sliotán líonta
 tab-context-zen-remove-essential = 
     .label = Bain de na Bunriachtanais
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Cuir an URL Riachtanach in ionad an URL Reatha
-           *[false] Cuir an URL Priontáilte in ionad an URL Reatha
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Athraigh Lipéad...
 tab-context-zen-edit-icon = 
@@ -47,6 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Deimhnigh
 zen-pinned-tab-replaced = Tá URL an chluaisín phinnáilte curtha in ionad an URL reatha!
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Athainmníodh an cluaisín go rathúil!
 zen-background-tab-opened-toast = Tá cluaisín cúlra nua oscailte!
 zen-workspace-renamed-toast = Athainmníodh an spás oibre go rathúil!
@@ -120,7 +130,7 @@ zen-sidebar-notification-restart-safe-mode-label = Bhris rud éigin?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Atosaigh i Mód Sábháilte
 zen-window-sync-migration-dialog-title = Coinnigh Do Windows Sioncrónaithe
-zen-window-sync-migration-dialog-message = Déanann Zen sioncrónú ar fhuinneoga ar an ngléas céanna anois, mar sin léirítear athruithe i bhfuinneog amháin sna fuinneoga eile láithreach.
+zen-window-sync-migration-dialog-message = Nixo now syncs windows on the same device, so changes in one window are reflected across the others instantly.
 zen-window-sync-migration-dialog-learn-more = Foghlaim Tuilleadh
 zen-window-sync-migration-dialog-accept = Tuigim é
 zen-appmenu-new-blank-window = 

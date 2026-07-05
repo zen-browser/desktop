@@ -3,56 +3,56 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-boost-edit-rename = 
-    .label = Rename Boost
+    .label = إعادة تسمية التعزيز
 zen-boost-edit-shuffle = 
-    .label = Shuffle Vibes
+    .label = خلط الشريط
 zen-boost-edit-reset = 
-    .label = Reset All Edits
+    .label = إعادة تعيين كافة التعديلات
 zen-boost-edit-delete = 
-    .label = Delete Boost
-zen-boost-size = Size
-zen-boost-case = Case
+    .label = حذف التعزيز
+zen-boost-size = الحجم
+zen-boost-case = حالة
 zen-boost-zap = Zap
-zen-boost-code = Code
-zen-boost-back = Back
+zen-boost-code = الكود
+zen-boost-back = الرجوع
 zen-boost-shuffle = 
-    .tooltiptext = Shuffle Boost Settings
+    .tooltiptext = تبديل إعدادات التعزيز
 zen-boost-invert = 
-    .tooltiptext = Smart Invert Colors
+    .tooltiptext = عكس الألوان الذكية
 zen-boost-controls = 
-    .tooltiptext = Advanced Color Controls
+    .tooltiptext = التحكم بالألوان المتقدم
 zen-boost-disable = 
-    .tooltiptext = Disable Color Adjustments
+    .tooltiptext = تعطيل تعديلات الألوان
 zen-boost-text-case-toggle = 
-    .tooltiptext = Toggle Text Case
+    .tooltiptext = تبديل حالة النص
 zen-boost-css-picker = 
-    .tooltiptext = Pick Selector
+    .tooltiptext = اختر محدد
 zen-boost-css-inspector = 
-    .tooltiptext = Open Inspector
+    .tooltiptext = فتح مفتش
 zen-boost-color-contrast = Contrast
-zen-boost-color-brightness = Brightness
-zen-boost-color-original-saturation = Original Saturation
-zen-add-zap-helper = Click elements on the page to <b>Zap</b> them
-zen-remove-zap-helper = ← Click to Unzap
-zen-select-this = Insert selector for this
-zen-select-related = Insert selector for related
-zen-select-cancel = Cancel
-zen-zap-this = Zap this
-zen-zap-related = Zap all related elements
-zen-zap-cancel = Cancel
-zen-zap-done = Done
+zen-boost-color-brightness = السطوع
+zen-boost-color-original-saturation = التشبع الأصلي
+zen-add-zap-helper = انقر فوق عناصر في الصفحة إلى <b>زاب</b>
+zen-remove-zap-helper = <unk> انقر للفك
+zen-select-this = إدراج منتقي لهذا
+zen-select-related = إدراج منتقي ذي الصلة
+zen-select-cancel = إلغاء
+zen-zap-this = اترك هذا
+zen-zap-related = افصل كل العناصر ذات الصلة
+zen-zap-cancel = إلغاء
+zen-zap-done = تم
 zen-unzap-tooltip =
     { $elementCount ->
-        [0] No elements zapped
-        [1] { $elementCount } element zapped
-       *[other] { $elementCount } elements zapped
+        [0] لا توجد عناصر من
+        [1] { $elementCount } تم زرعها
+       *[other] { $elementCount } عناصر تم زرعها
     }
 zen-boost-save = 
-    .label = Export Boost
+    .label = تصدير التعزيز
 zen-boost-load = 
-    .label = Import Boost
-zen-panel-ui-boosts-exported-message = Boost exported!
-zen-site-data-boosts = Boosts
+    .label = استيراد التعزيز
+zen-panel-ui-boosts-exported-message = تم تصدير التعزيز!
+zen-site-data-boosts = الترقيات
 zen-site-data-create-boost = 
-    .tooltiptext = Create new boost
-zen-boost-rename-boost-prompt = Rename Boost?
+    .tooltiptext = إنشاء تعزيز جديد
+zen-boost-rename-boost-prompt = إعادة تسمية التعزيز؟

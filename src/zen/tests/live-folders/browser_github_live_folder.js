@@ -13,7 +13,8 @@ function getGithubProviderForTest(sandbox, customOptions = {}) {
   const defaultOptions = {
     authorMe: true,
     assignedMe: false,
-    reviewRequested: false,
+    reviewMe: false,
+    reviewTeam: false,
     ...customOptions,
   };
 
@@ -49,7 +50,8 @@ add_task(async function test_fetch_items_url_construction() {
   let instance = getGithubProviderForTest(sandbox, {
     authorMe: true,
     assignedMe: false,
-    reviewRequested: false,
+    reviewMe: false,
+    reviewTeam: false,
     type: "pull-requests",
   });
 
@@ -73,8 +75,8 @@ add_task(async function test_fetch_items_url_construction() {
   Assert.ok(query.includes("author:@me"), "Should include author:@me");
   Assert.ok(!query.includes("assignee:@me"), "Should NOT include assignee:@me");
   Assert.ok(
-    !query.includes("review-requested:@me"),
-    "Should NOT include review-requested"
+    !query.includes("user-review-requested:@me"),
+    "Should NOT include user-review-requested"
   );
 
   sandbox.restore();
@@ -88,8 +90,12 @@ add_task(async function test_fetch_items_url_complex_options() {
   let instance = getGithubProviderForTest(sandbox, {
     authorMe: true,
     assignedMe: true,
-    reviewRequested: true,
+    reviewMe: true,
+    type: "pull-requests",
   });
+
+  // The JSON API path combines every enabled filter into a single OR query.
+  instance.state.isJsonApi = true;
 
   instance.fetch.resolves({
     status: 200,
@@ -104,11 +110,67 @@ add_task(async function test_fetch_items_url_complex_options() {
   Assert.ok(query.includes("author:@me"), "Should include author");
   Assert.ok(query.includes("assignee:@me"), "Should include assignee");
   Assert.ok(
-    query.includes("review-requested:@me"),
-    "Should include review-requested"
+    query.includes("user-review-requested:@me"),
+    "Should include user-review-requested"
   );
 
   Assert.ok(query.includes(" OR "), "Should contain OR operators");
+  sandbox.restore();
+});
+
+add_task(async function test_team_review_requested_uses_team_qualifier() {
+  info(
+    "team review requests should query team-review-requested-user:@me directly"
+  );
+
+  let sandbox = sinon.createSandbox();
+  let instance = getGithubProviderForTest(sandbox, {
+    type: "pull-requests",
+    authorMe: false,
+    assignedMe: false,
+    reviewMe: false,
+    reviewTeam: true,
+  });
+
+  // Use the JSON API path so we can return a structured payload.
+  instance.state.isJsonApi = true;
+
+  instance.fetch.resolves({
+    status: 200,
+    text: JSON.stringify({
+      payload: {
+        pullsDashboardSurfaceContentRoute: {
+          results: [
+            {
+              repoNameWithOwner: "zen-browser/desktop",
+              number: 1,
+              title: "PR 1",
+              author: { displayLogin: "alice" },
+              permalink: "https://github.com/zen-browser/desktop/pull/1",
+            },
+          ],
+        },
+      },
+    }),
+  });
+
+  const items = await instance.fetchItems();
+
+  Assert.ok(instance.fetch.calledOnce, "Should fetch a single query");
+
+  const query = new URL(instance.fetch.firstCall.args[0]).searchParams.get("q");
+  Assert.ok(
+    query.includes("team-review-requested-user:@me"),
+    "Should query team-review-requested-user:@me"
+  );
+  Assert.ok(
+    !query.includes("user-review-requested:@me"),
+    "Should NOT query user-review-requested for team-only"
+  );
+
+  Assert.equal(items.length, 1, "Should return the team-routed PR");
+  Assert.equal(items[0].id, "zen-browser/desktop#1");
+
   sandbox.restore();
 });
 
@@ -187,7 +249,8 @@ add_task(async function test_no_filter_enabled_returns_error() {
     type: "pull-requests",
     authorMe: false,
     assignedMe: false,
-    reviewRequested: false,
+    reviewMe: false,
+    reviewTeam: false,
   });
 
   const result = await instance.fetchItems();
@@ -235,7 +298,8 @@ add_task(async function test_repo_excludes_emit_negative_repo_filters() {
     type: "pull-requests",
     authorMe: true,
     assignedMe: false,
-    reviewRequested: false,
+    reviewMe: false,
+    reviewTeam: false,
     repoExcludes: ["zen-browser/desktop", "foo/bar"],
   });
 

@@ -19,14 +19,25 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     this.state.options = state.options ?? {};
     this.state.repos = new Set(state.repos ?? []);
     this.state.options.repoExcludes = new Set(state.options.repoExcludes ?? []);
+
+    // Migrate the legacy combined "Review Requests" filter into "My"/"Team".
+    if ("reviewRequested" in this.state.options) {
+      if (this.state.options.reviewRequested) {
+        this.state.options.reviewMe ??= true;
+        this.state.options.reviewTeam ??= true;
+      }
+      delete this.state.options.reviewRequested;
+    }
   }
 
   async fetchItems() {
     try {
+      const isPr = this.state.type === "pull-requests";
       const hasAnyFilterEnabled =
         (this.state.options.authorMe ?? false) ||
         (this.state.options.assignedMe ?? true) ||
-        (this.state.options.reviewRequested ?? false);
+        (isPr && (this.state.options.reviewMe ?? false)) ||
+        (isPr && (this.state.options.reviewTeam ?? false));
 
       if (!hasAnyFilterEnabled) {
         return "zen-live-folder-github-no-filter";
@@ -253,6 +264,8 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       "sort:updated-desc",
     ];
 
+    const isPr = this.state.type === "pull-requests";
+
     const options = [
       {
         value: "author:@me",
@@ -263,8 +276,12 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         enabled: this.state.options.assignedMe ?? true,
       },
       {
-        value: "review-requested:@me",
-        enabled: this.state.options.reviewRequested ?? false,
+        value: "user-review-requested:@me",
+        enabled: isPr && (this.state.options.reviewMe ?? false),
+      },
+      {
+        value: "team-review-requested-user:@me",
+        enabled: isPr && (this.state.options.reviewTeam ?? false),
       },
     ];
 
@@ -331,9 +348,15 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         checked: this.state.options.assignedMe ?? true,
       },
       {
-        l10nId: "zen-live-folder-github-option-review-requested",
-        key: "reviewRequested",
-        checked: this.state.options.reviewRequested ?? false,
+        l10nId: "zen-live-folder-github-option-my-review-requested",
+        key: "reviewMe",
+        checked: this.state.options.reviewMe ?? false,
+        hidden: this.state.type === "issues",
+      },
+      {
+        l10nId: "zen-live-folder-github-option-team-review-requested",
+        key: "reviewTeam",
+        checked: this.state.options.reviewTeam ?? false,
         hidden: this.state.type === "issues",
       },
       { type: "separator" },

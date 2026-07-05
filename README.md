@@ -32,6 +32,10 @@ Nixo is a firefox-based browser with the aim of pushing your productivity to a n
   </a>
 </div>
 
+### development status
+currently we added ublock origin built in and now we are planing to change the ui in a overhaul
+
+
 ### Firefox Versions
 
 - [`Release`](https://nixo.app/download) - Is currently built using Firefox version `152.0.4`! 🚀
@@ -43,10 +47,3 @@ If you'd like to report a bug, please do so on our [GitHub Issues page](https://
 
 Nixo is an open-source project, and we welcome contributions from the community! Please take a look at the [contribution guidelines](./docs/contribute.md) before getting started!
 
-#### Partners
-
-Thanks to all the partners of Nixo for their support and contributions:
-
-<a href="https://blacksmith.sh">
-  <img src="./docs/assets/blacksmith-yellow.png" width="350px"/>
-</a>

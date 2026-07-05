@@ -3,117 +3,141 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 pane-zen-looks-title = Look and Feel
-category-zen-looks = 
+category-zen-looks =
     .tooltiptext = { pane-zen-looks-title }
+
 zen-warning-language = Changing the default language could make it easier for Websites to track you.
+
 zen-vertical-tabs-layout-header = Browser Layout
 zen-vertical-tabs-layout-description = Choose the layout that suits you best
+
 zen-layout-single-toolbar = Only Sidebar
 zen-layout-multiple-toolbar = Sidebar and Top Toolbar
 zen-layout-collapsed-toolbar = Collapsed Sidebar
+
 sync-currently-syncing-workspaces = Workspaces
-sync-engine-workspaces = 
+sync-engine-workspaces =
     .label = Workspaces
     .tooltiptext = Sync your workspaces across devices
     .accesskey = W
+
 zen-glance-title = Glance
 zen-glance-header = General settings for glance
 zen-glance-description = Get a quick overview of your links without opening them in a new tab
 zen-glance-trigger-label = Trigger method
-zen-glance-enabled = 
+zen-glance-enabled =
     .label = Enable Glance
-zen-glance-trigger-ctrl-click = 
+
+zen-glance-trigger-ctrl-click =
     .label = Ctrl + Click
-zen-glance-trigger-alt-click = 
+zen-glance-trigger-alt-click =
     .label = Alt + Click
-zen-glance-trigger-shift-click = 
+zen-glance-trigger-shift-click =
     .label = Shift + Click
-zen-glance-trigger-meta-click = 
+zen-glance-trigger-meta-click =
     .label = Meta (Command) + Click
+
 zen-look-and-feel-compact-view-header = Show in compact view
 zen-look-and-feel-compact-view-description = Only show the toolbars you use!
-zen-look-and-feel-compact-view-enabled = 
+zen-look-and-feel-compact-view-enabled =
     .label = Enable { -brand-short-name }'s compact mode
-zen-look-and-feel-compact-view-top-toolbar = 
+
+zen-look-and-feel-compact-view-top-toolbar =
     .label = Hide the top toolbar as well in compact mode
-zen-look-and-feel-compact-toolbar-flash-popup = 
+
+zen-look-and-feel-compact-toolbar-flash-popup =
     .label = Briefly make the toolbar popup when switching or opening new tabs in compact mode
+
 pane-zen-tabs-title = Tab Management
-category-zen-workspaces = 
+category-zen-workspaces =
     .tooltiptext = { pane-zen-tabs-title }
 pane-settings-workspaces-title = Workspaces
-zen-tabs-select-recently-used-on-close = 
+
+zen-tabs-select-recently-used-on-close =
     .label = When closing a tab, switch to the most recently used tab instead of the next tab
-zen-tabs-close-on-back-with-no-history = 
+
+zen-tabs-close-on-back-with-no-history =
     .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
-zen-settings-workspaces-sync-unpinned-tabs = 
+
+zen-settings-workspaces-sync-unpinned-tabs =
     .label = Sync only pinned tabs in workspaces
-zen-tabs-cycle-by-attribute = 
-    .label = Ctrl+Tab cycles within Essential or Workspace tabs only
-zen-tabs-cycle-ignore-pending-tabs = 
-    .label = Ignore Pending tabs when cycling with Ctrl+Tab
+
+zen-tabs-cycle-by-attribute =
+  .label = Ctrl+Tab cycles within Essential or Workspace tabs only
+zen-tabs-cycle-ignore-pending-tabs =
+  .label = Ignore Pending tabs when cycling with Ctrl+Tab
 zen-tabs-cycle-by-attribute-warning = Ctrl+Tab will cycle by recently used order, as it is enabled
-zen-look-and-feel-compact-toolbar-themed = 
+
+zen-look-and-feel-compact-toolbar-themed =
     .label = Use themed background for compact toolbar
-zen-workspace-continue-where-left-off = 
+
+zen-workspace-continue-where-left-off =
     .label = Continue where you left off
+
 pane-zen-pinned-tab-manager-title = Pinned Tabs
 zen-pinned-tab-manager-header = General settings for pinned tabs
 zen-pinned-tab-manager-description = Manage additional behavior of pinned tabs
-zen-pinned-tab-manager-restore-pinned-tabs-to-pinned-url = 
+zen-pinned-tab-manager-restore-pinned-tabs-to-pinned-url =
     .label = Restore pinned tabs to their originally pinned URL on startup
-zen-pinned-tab-manager-container-specific-essentials-enabled = 
+zen-pinned-tab-manager-container-specific-essentials-enabled =
     .label = Enable container-specific essentials
 zen-pinned-tab-manager-close-shortcut-behavior-label = Close Tab Shortcut Behavior
-zen-pinned-tab-manager-reset-unload-switch-close-shortcut-option = 
+zen-pinned-tab-manager-reset-unload-switch-close-shortcut-option =
     .label = Reset URL, unload and switch to next tab
-zen-pinned-tab-manager-unload-switch-close-shortcut-option = 
+zen-pinned-tab-manager-unload-switch-close-shortcut-option =
     .label = Unload and switch to next tab
-zen-pinned-tab-manager-reset-switch-close-shortcut-option = 
+zen-pinned-tab-manager-reset-switch-close-shortcut-option =
     .label = Reset URL and switch to next tab
-zen-pinned-tab-manager-switch-close-shortcut-option = 
+zen-pinned-tab-manager-switch-close-shortcut-option =
     .label = Switch to next tab
-zen-pinned-tab-manager-reset-close-shortcut-option = 
+zen-pinned-tab-manager-reset-close-shortcut-option =
     .label = Reset URL
-zen-pinned-tab-manager-close-close-shortcut-option = 
+zen-pinned-tab-manager-close-close-shortcut-option =
     .label = Close tab
+
 pane-zen-workspaces-header = Workspaces
 zen-settings-workspaces-header = General settings for workspaces
 zen-settings-workspaces-description = With workspaces, you can have multiple browsing sessions at once!
-zen-settings-workspaces-enabled = 
+zen-settings-workspaces-enabled =
     .label = Enable Workspaces
-zen-settings-workspaces-hide-default-container-indicator = 
+zen-settings-workspaces-hide-default-container-indicator =
     .label = Hide the default container indicator in the tab bar
+
 zen-key-unsaved = Unsaved shortcut! Please save it by clicking the "Escape" key after retyping it.
 zen-key-conflict = Conflicts with { $group } -> { $shortcut }
+
 pane-zen-theme-title = Theme Settings
+
 zen-vertical-tabs-title = Sidebar and tabs layout
 zen-vertical-tabs-header = Vertical Tabs
 zen-vertical-tabs-description = Manage your tabs in a vertical layout
-zen-vertical-tabs-show-expand-button = 
+zen-vertical-tabs-show-expand-button =
     .label = Show Expand Button
-zen-vertical-tabs-newtab-on-tab-list = 
+zen-vertical-tabs-newtab-on-tab-list =
     .label = Show New Tab Button on Tab List
-zen-vertical-tabs-newtab-top-button-up = 
+zen-vertical-tabs-newtab-top-button-up =
     .label = Move the new tab button to the top
+
 zen-vertical-tabs-expand-tabs-by-default = Expand Tabs by Default
 zen-vertical-tabs-dont-expand-tabs-by-default = Don't Expand Tabs by Default
 zen-vertical-tabs-expand-tabs-on-hover = Expand Tabs on Hover (Won't work on compact mode)
+
 zen-vertical-tabs-expand-tabs-header = How to expand tabs
 zen-vertical-tabs-expand-tabs-description = Choose how to expand tabs in the sidebar
+
 zen-theme-marketplace-header = Zen Mods
-zen-theme-disable-all-enabled = 
+zen-theme-disable-all-enabled =
     .title = Disable all mods
-zen-theme-disable-all-disabled = 
+zen-theme-disable-all-disabled =
     .title = Enable all mods
 zen-theme-marketplace-description = Find and install mods from the store.
-zen-theme-marketplace-remove-button = 
+zen-theme-marketplace-remove-button =
     .label = Remove mod
-zen-theme-marketplace-check-for-updates-button = 
+zen-theme-marketplace-check-for-updates-button =
     .label = Check for Updates
-zen-theme-marketplace-import-button = 
+zen-theme-marketplace-import-button=
     .label = Import mods
-zen-theme-marketplace-export-button = 
+zen-theme-marketplace-export-button =
     .label = Export Mods
 zen-theme-marketplace-import-success = Mods imported successfully
 zen-theme-marketplace-import-failure = There was an error importing the mods
@@ -121,56 +145,70 @@ zen-theme-marketplace-export-success = Mods exported successfully
 zen-theme-marketplace-export-failure = There was an error exporting the mods
 zen-theme-marketplace-updates-success = Mods updated successfully
 zen-theme-marketplace-updates-failure = Couldn't find any updates!
-zen-theme-marketplace-toggle-enabled-button = 
+zen-theme-marketplace-toggle-enabled-button =
     .title = Disable mod
-zen-theme-marketplace-toggle-disabled-button = 
+zen-theme-marketplace-toggle-disabled-button =
     .title = Enable mod
 zen-theme-marketplace-remove-confirmation = Are you sure you want to remove this mod?
 zen-theme-marketplace-close-modal = Close
-zen-theme-marketplace-theme-header-title = 
+zen-theme-marketplace-theme-header-title =
     .title = CSS Selector: { $name }
-zen-theme-marketplace-dropdown-default-label = 
+zen-theme-marketplace-dropdown-default-label =
     .label = None
-zen-theme-marketplace-input-default-placeholder = 
+zen-theme-marketplace-input-default-placeholder =
     .placeholder = Type something...
 pane-zen-marketplace-title = Zen Mods
-zen-themes-auto-update = 
-    .label = Automatically update installed mods on startup
-zen-settings-workspaces-force-container-tabs-to-workspace = 
+zen-themes-auto-update =
+   .label = Automatically update installed mods on startup
+
+zen-settings-workspaces-force-container-tabs-to-workspace =
     .label = Switch to workspace where container is set as default when opening container tabs
+
 zen-theme-marketplace-link = Visit Store
+
 zen-dark-theme-styles-header = Dark Theme Styles
 zen-dark-theme-styles-description = Customize the dark theme to your liking
+
 zen-dark-theme-styles-amoled = Night Theme
 zen-dark-theme-styles-default = Default Dark Theme
 zen-dark-theme-styles-colorful = Colorful Dark Theme
+
 zen-compact-mode-styles-left = Hide Tab bar
 zen-compact-mode-styles-top = Hide Top bar
 zen-compact-mode-styles-both = Hide Both
+
 zen-urlbar-title = Zen URL Bar
 zen-urlbar-header = General settings for the URL bar
 zen-urlbar-description = Customize the URL bar to your liking
+
 zen-urlbar-behavior-label = Behavior
-zen-urlbar-behavior-normal = 
+zen-urlbar-behavior-normal =
     .label = Normal
-zen-urlbar-behavior-floating-on-type = 
+zen-urlbar-behavior-floating-on-type =
     .label = Floating only when typing
-zen-urlbar-behavior-float = 
+zen-urlbar-behavior-float =
     .label = Always floating
+
 pane-zen-CKS-title = Keyboard Shortcuts
-category-zen-CKS = 
+category-zen-CKS =
     .tooltiptext = { pane-zen-CKS-title }
 pane-settings-CKS-title = { -brand-short-name } Keyboard Shortcuts
-category-zen-marketplace = 
+
+category-zen-marketplace =
     .tooltiptext = Zen Mods
+
 zen-settings-CKS-header = Customize your keyboard shortcuts
 zen-settings-CKS-description = Change the default keyboard shortcuts to your liking and improve your browsing experience
-zen-settings-CKS-disable-firefox = 
+
+zen-settings-CKS-disable-firefox =
     .label = Disable { -brand-short-name }'s default keyboard shortcuts
-zen-settings-CKS-duplicate-shortcut = 
+
+zen-settings-CKS-duplicate-shortcut =
     .label = Duplicate Shortcut
-zen-settings-CKS-reset-shortcuts = 
+
+zen-settings-CKS-reset-shortcuts =
     .label = Reset to Default
+
 zenCKSOption-group-other = Other
 zenCKSOption-group-windowAndTabManagement = Window & Tab Management
 zenCKSOption-group-navigation = Navigation
@@ -183,6 +221,7 @@ zenCKSOption-group-zen-workspace = Workspaces
 zenCKSOption-group-zen-other = Other Zen Features
 zenCKSOption-group-zen-split-view = Split View
 zenCKSOption-group-devTools = Developer Tools
+
 zen-key-quick-restart = Quick Restart
 zen-window-new-shortcut = New Window
 zen-tab-new-shortcut = New Tab
@@ -254,6 +293,7 @@ zen-full-zoom-reset-shortcut = Reset Zoom
 zen-full-zoom-reset-shortcut-alt = Reset Zoom (Alt)
 zen-full-zoom-enlarge-shortcut-alt = Zoom In (Alt)
 zen-full-zoom-enlarge-shortcut-alt2 = Zoom In (Alt 2)
+
 zen-bidi-switch-direction-shortcut = Switch Text Direction
 zen-private-browsing-shortcut = Private Browsing
 zen-screenshot-shortcut = Take Screenshot

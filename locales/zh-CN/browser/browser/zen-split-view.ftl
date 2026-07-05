@@ -9,10 +9,10 @@ tab-zen-split-tabs =
             [1] 添加分屏视图
            *[other] 分屏 { $tabCount } 个标签页
         }
-    .accesskey = S
+    .accesskey = 秒
 zen-split-link = 
     .label = 拆分链接到新标签页
-    .accesskey = S
+    .accesskey = 秒
 zen-split-view-modifier-header = 分屏视图
 zen-split-view-modifier-activate-reallocation = 
     .label = 激活重新分配

@@ -15,19 +15,19 @@ zen-boost-case = Case
 zen-boost-zap = Zap
 zen-boost-code = Code
 zen-boost-back = Back
-zen-boost-shuffle =
+zen-boost-shuffle = 
     .tooltiptext = Shuffle Boost Settings
-zen-boost-invert =
+zen-boost-invert = 
     .tooltiptext = Smart Invert Colors
-zen-boost-controls =
+zen-boost-controls = 
     .tooltiptext = Advanced Color Controls
-zen-boost-disable =
+zen-boost-disable = 
     .tooltiptext = Disable Color Adjustments
-zen-boost-text-case-toggle =
+zen-boost-text-case-toggle = 
     .tooltiptext = Toggle Text Case
-zen-boost-css-picker =
+zen-boost-css-picker = 
     .tooltiptext = Pick Selector
-zen-boost-css-inspector =
+zen-boost-css-inspector = 
     .tooltiptext = Open Inspector
 zen-boost-color-contrast = Contrast
 zen-boost-color-brightness = Brightness
@@ -41,19 +41,18 @@ zen-zap-this = Zap this
 zen-zap-related = Zap all related elements
 zen-zap-cancel = Cancel
 zen-zap-done = Done
-zen-unzap-tooltip = 
-    {
-        $elementCount -> 
-            [0] No elements zapped
-            [1] { $elementCount } element zapped
-            *[other] { $elementCount } elements zapped
+zen-unzap-tooltip =
+    { $elementCount ->
+        [0] No elements zapped
+        [1] { $elementCount } element zapped
+       *[other] { $elementCount } elements zapped
     }
-zen-boost-save =
+zen-boost-save = 
     .label = Export Boost
-zen-boost-load =
+zen-boost-load = 
     .label = Import Boost
 zen-panel-ui-boosts-exported-message = Boost exported!
 zen-site-data-boosts = Boosts
-zen-site-data-create-boost =
+zen-site-data-create-boost = 
     .tooltiptext = Create new boost
 zen-boost-rename-boost-prompt = Rename Boost?

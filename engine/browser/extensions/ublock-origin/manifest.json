@@ -7,12 +7,12 @@
     "browser_style": false,
     "default_area": "navbar",
     "default_icon": {
-      "16": "img/icon_16.png",
-      "32": "img/icon_32.png",
-      "64": "img/icon_64.png"
+      "16": "img/nixo-blocker.svg",
+      "32": "img/nixo-blocker.svg",
+      "64": "img/nixo-blocker.svg"
     },
     "default_popup": "popup-fenix.html",
-    "default_title": "Nixo Blocker"
+    "default_title": "uBlock Origin"
   },
   "browser_specific_settings": {
     "gecko": {
@@ -107,7 +107,7 @@
     "96": "img/nixo-blocker.svg"
   },
   "manifest_version": 2,
-  "name": "Nixo Blocker",
+  "name": "uBlock Origin",
   "options_ui": {
     "open_in_tab": true,
     "page": "dashboard.html"
@@ -125,7 +125,7 @@
     "webRequestBlocking",
     "<all_urls>"
   ],
-  "short_name": "Nixo Blocker",
+  "short_name": "uBlock Origin",
   "version": "1.72.0",
   "web_accessible_resources": [
     "/web_accessible_resources/*"

@@ -620,6 +620,7 @@ const onMessage = function(request, sender, callback) {
             );
             µb.updateToolbarIcon(request.tabId, 0b111);
         }
+        response = popupDataFromTabId(request.tabId);
         break;
     }
     default:

@@ -868,15 +868,20 @@ const renderPopupLazy = (( ) => {
 
 /******************************************************************************/
 
-const toggleNetFilteringSwitch = function(ev) {
+const toggleNetFilteringSwitch = async function(ev) {
     if ( !popupData || !popupData.pageURL ) { return; }
-    messaging.send('popupPanel', {
+    const response = await messaging.send('popupPanel', {
         what: 'toggleNetFiltering',
         url: popupData.pageURL,
         scope: ev.ctrlKey || ev.metaKey ? 'page' : '',
         state: dom.cl.toggle(dom.body, 'off') === false,
         tabId: popupData.tabId,
     });
+    if ( response ) {
+        cachePopupData(response);
+        const isFiltering = popupData.netFilteringSwitch;
+        dom.cl.toggle(dom.body, 'off', popupData.pageURL === '' || isFiltering !== true);
+    }
     renderTooltips('#switch');
     hashFromPopupData();
 };

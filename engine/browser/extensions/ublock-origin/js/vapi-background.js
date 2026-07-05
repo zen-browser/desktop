@@ -758,14 +758,14 @@ if ( webext.browserAction instanceof Object ) {
     const titleTemplate = `${browser.runtime.getManifest().browser_action.default_title} ({badge})`;
     const icons = [
         { path: {
-            '16': 'img/icon_16-off.png',
-            '32': 'img/icon_32-off.png',
-            '64': 'img/icon_64-off.png',
+            '16': 'img/ublock-off.svg',
+            '32': 'img/ublock-off.svg',
+            '64': 'img/ublock-off.svg',
         } },
         { path: {
-            '16': 'img/icon_16.png',
-            '32': 'img/icon_32.png',
-            '64': 'img/icon_64.png',
+            '16': 'img/nixo-blocker.svg',
+            '32': 'img/nixo-blocker.svg',
+            '64': 'img/nixo-blocker.svg',
         } },
     ];
 

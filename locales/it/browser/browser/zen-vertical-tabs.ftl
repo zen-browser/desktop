@@ -42,6 +42,6 @@ tabbrowser-reset-pin-button =
 zen-tab-sublabel =
     { $tabSubtitle ->
         [zen-default-pinned] Back to pinned url
-        [zen-default-pinned-cmd] Separate from pinned tab
+        [zen-default-pinned-cmd] Separa dalla scheda
        *[other] { $tabSubtitle }
     }

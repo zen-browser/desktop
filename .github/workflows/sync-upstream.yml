@@ -22,7 +22,7 @@ permissions:
 jobs:
   check_candidates:
     name: Sync Upstream
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
 
     steps:
       - name: Check out repository

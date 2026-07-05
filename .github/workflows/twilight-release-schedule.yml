@@ -25,7 +25,7 @@ jobs:
 
   post-build:
     name: Post Build
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: twilight-release-schedule
     steps:
       - name: Checkout repository

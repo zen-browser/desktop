@@ -3,56 +3,56 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-boost-edit-rename = 
-    .label = Rename Boost
+    .label = Přejmenovat Zrychlení
 zen-boost-edit-shuffle = 
-    .label = Shuffle Vibes
+    .label = Zamíchat vibry
 zen-boost-edit-reset = 
-    .label = Reset All Edits
+    .label = Resetovat všechny úpravy
 zen-boost-edit-delete = 
-    .label = Delete Boost
-zen-boost-size = Size
-zen-boost-case = Case
+    .label = Odstranit Zrychlení
+zen-boost-size = Velikost
+zen-boost-case = Případ
 zen-boost-zap = Zap
-zen-boost-code = Code
-zen-boost-back = Back
+zen-boost-code = Kód
+zen-boost-back = Zpět
 zen-boost-shuffle = 
-    .tooltiptext = Shuffle Boost Settings
+    .tooltiptext = Zamíchat nastavení zesílení
 zen-boost-invert = 
-    .tooltiptext = Smart Invert Colors
+    .tooltiptext = Inteligentní Invertovat barvy
 zen-boost-controls = 
-    .tooltiptext = Advanced Color Controls
+    .tooltiptext = Pokročilé ovládání barev
 zen-boost-disable = 
-    .tooltiptext = Disable Color Adjustments
+    .tooltiptext = Zakázat úpravy barev
 zen-boost-text-case-toggle = 
-    .tooltiptext = Toggle Text Case
+    .tooltiptext = Přepnout písmo textu
 zen-boost-css-picker = 
-    .tooltiptext = Pick Selector
+    .tooltiptext = Vybrat výběr
 zen-boost-css-inspector = 
-    .tooltiptext = Open Inspector
+    .tooltiptext = Otevřený inspektor
 zen-boost-color-contrast = Contrast
-zen-boost-color-brightness = Brightness
-zen-boost-color-original-saturation = Original Saturation
-zen-add-zap-helper = Click elements on the page to <b>Zap</b> them
-zen-remove-zap-helper = ← Click to Unzap
-zen-select-this = Insert selector for this
-zen-select-related = Insert selector for related
-zen-select-cancel = Cancel
-zen-zap-this = Zap this
-zen-zap-related = Zap all related elements
-zen-zap-cancel = Cancel
-zen-zap-done = Done
+zen-boost-color-brightness = Jas
+zen-boost-color-original-saturation = Původní sytost
+zen-add-zap-helper = Klepněte na prvky na stránce do <b>Zap</b>
+zen-remove-zap-helper = <unk> Klikni pro odkrytí
+zen-select-this = Vložit selektor pro toto
+zen-select-related = Vložit selektor pro související
+zen-select-cancel = Zrušit
+zen-zap-this = Zap toto
+zen-zap-related = Zap všechny související prvky
+zen-zap-cancel = Zrušit
+zen-zap-done = Hotovo
 zen-unzap-tooltip =
     { $elementCount ->
-        [0] No elements zapped
+        [0] Žádné prvky zapped
         [1] { $elementCount } element zapped
-       *[other] { $elementCount } elements zapped
+       *[other] { $elementCount } prvky zapped
     }
 zen-boost-save = 
-    .label = Export Boost
+    .label = Zrychlení exportu
 zen-boost-load = 
-    .label = Import Boost
-zen-panel-ui-boosts-exported-message = Boost exported!
-zen-site-data-boosts = Boosts
+    .label = Zrychlení importu
+zen-panel-ui-boosts-exported-message = Zesílit export!
+zen-site-data-boosts = Boosty
 zen-site-data-create-boost = 
-    .tooltiptext = Create new boost
-zen-boost-rename-boost-prompt = Rename Boost?
+    .tooltiptext = Vytvořit nové zesílení
+zen-boost-rename-boost-prompt = Přejmenovat Boost?

@@ -1911,6 +1911,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         this.tabBrowserPanel.removeAttribute("zen-split-resizing");
         if (this.currentView >= 0) {
           const group = this._data[this.currentView];
+
+          if (!group || !group.groupId || !group.tabs?.length) return;
+
           this.#dispatchItemEvent(
             "ZenSplitViewGroupUpdated",
             group.tabs[0].group,

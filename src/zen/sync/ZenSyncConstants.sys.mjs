@@ -10,9 +10,9 @@ export const RECORD_TYPES = Object.freeze({
   SPLIT: "split",
 });
 
-export const WORKSPACES_ENGINE_NAME = "Workspaces";
-export const WORKSPACES_RECORD_LOG_NAME = "Sync.Record.ZenWorkspaces";
-export const WORKSPACES_RECORD_TYPE = "workspaces";
+export const WORKSPACES_ENGINE_NAME = "Spaces";
+export const WORKSPACES_RECORD_LOG_NAME = "Sync.Record.ZenSpaces";
+export const WORKSPACES_RECORD_TYPE = "spaces";
 
 export const SYNC_PREFS = Object.freeze({
   SYNC_ONLY_PINNED_TABS: "zen.window-sync.sync-only-pinned-tabs",

@@ -1368,6 +1368,10 @@ class nsZenWindowSync {
       return;
     }
 
+    if(item.hasAttribute("zen-glance-tab")){
+      return;
+    }
+
     this.#maybeFlushTabState(item).finally(() => {
       if (!item.hasAttribute("zen-empty-tab")) {
         lazy.ZenSyncStore.markTabChanged(item.id);
@@ -1773,10 +1777,12 @@ class nsZenWindowSync {
 
   on_ZenSplitViewTabsSplit(aEvent) {
     const tabGroup = aEvent.target;
-    const window = tabGroup.documentGlobal;
     if (!tabGroup?.id) {
+      // Split groups need a stable ID so other windows and Sync can reference
+      // the same group.
       return;
     }
+    const window = tabGroup.documentGlobal;
     const tabs = tabGroup.tabs;
     for (const tab of tabs) {
       this.#notifySyncItemChanged(tab);

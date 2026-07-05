@@ -21,15 +21,15 @@ tab-context-zen-remove-essential =
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Redigera Essential URL
+           *[false] Redigera Pinned URL
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = Ersätt med nuvarande URL
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
+    .label = Redigera…
     .accesskey = E
 tab-context-zen-edit-title = 
     .label = Ändra etikett...
@@ -53,10 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Bekräfta
 zen-pinned-tab-replaced = Den fästa flikens URL har ersatts med den aktuella URL!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = Fäst flik-URL har uppdaterats!
+zen-pinned-tab-url-invalid = Det ser inte ut som en giltig URL.
+zen-pinned-tab-edit-url-title = Redigera Pinned URL
+zen-pinned-tab-edit-url-label = Ange den URL som den fästa fliken ska peka på:
 zen-tabs-renamed = Fliken har fått nytt namn!
 zen-background-tab-opened-toast = Ny bakgrundsflik öppnad!
 zen-workspace-renamed-toast = Arbetsytan har fått ett nytt namn!

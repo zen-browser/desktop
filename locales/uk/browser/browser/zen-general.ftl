@@ -13,24 +13,24 @@ tab-context-zen-reset-pinned-tab =
     .accesskey = Р
 tab-context-zen-add-essential = 
     .label = Додати до необхідного
-    .accesskey = E
+    .accesskey = Мі
 tab-context-zen-add-essential-badge = { $num } / { $max } комірок заповнено
 tab-context-zen-remove-essential = 
     .label = Вилучити з основних елементів
-    .accesskey = R
+    .accesskey = Р
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
             [true] Edit Essential URL
-           *[false] Edit Pinned URL
+           *[false] Редагувати закріплений URL
         }
-    .accesskey = P
+    .accesskey = Пн
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
-    .accesskey = C
+    .label = Замінити поточним посиланням
+    .accesskey = До
 tab-context-zen-edit-pinned-url = 
     .label = Edit…
-    .accesskey = E
+    .accesskey = Мі
 tab-context-zen-edit-title = 
     .label = Змінити мітку...
 tab-context-zen-edit-icon = 
@@ -53,10 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Підтвердити
 zen-pinned-tab-replaced = URL-адресу закріпленої вкладки замінено на поточну URL-адресу.
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = Закріплена URL-адреса вкладки була оновлена!
+zen-pinned-tab-url-invalid = Не схоже на вірну URL-адресу.
+zen-pinned-tab-edit-url-title = Редагувати закріплений URL
+zen-pinned-tab-edit-url-label = Введіть URL, на якому закріплена вкладка має вказувати:
 zen-tabs-renamed = Вкладку успішно перейменовано!
 zen-background-tab-opened-toast = Відкрито нову фонову вкладку!
 zen-workspace-renamed-toast = Робочий простір успішно перейменовано!
@@ -118,7 +118,7 @@ zen-site-data-panel-feature-callout-title = Новий дім для допов�
 zen-site-data-panel-feature-callout-subtitle = Натисніть значок, щоби керувати налаштуваннями сайту, переглядати інформацію про безпеку, отримувати доступ до розширень і виконувати поширені дії.
 zen-open-link-in-glance = 
     .label = Відкрити посилання в передперегляді
-    .accesskey = G
+    .accesskey = Соль
 zen-sidebar-notification-updated-heading = Оновлення завершено!
 
 # See ZenSidebarNotification.mjs to see how these would be used

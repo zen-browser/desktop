@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = Indstillinger For Rute
-zen-space-routing-rulepanel-placeholder = Ruter lader dig vælge, hvor bestemte websteder åbner inde Nixo. For eksempel kan du rute YouTube-links til altid at åbne inde i dit personlige rum.
+zen-space-routing-rulepanel-placeholder = Routes let you choose where specific sites open inside Nixo. For example, you can route YouTube links to always open inside your Personal space.
 zen-space-routing-dialog-title = Indstillinger For Rute
 zen-space-routing-external-default = Standard rute for eksterne links
 zen-space-routing-new-route = Ny Rute

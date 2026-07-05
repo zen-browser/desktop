@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = Avaruusreitityksen Asetukset
-zen-space-routing-rulepanel-placeholder = Reitit antavat sinun valita, mihin tietyt sivustot avautuvat Nixossa. Voit esimerkiksi reitittää YouTube-linkkejä avataksesi ne aina henkilökohtaisessa tilassasi.
+zen-space-routing-rulepanel-placeholder = Routes let you choose where specific sites open inside Nixo. For example, you can route YouTube links to always open inside your Personal space.
 zen-space-routing-dialog-title = Avaruusreitityksen Asetukset
 zen-space-routing-external-default = Oletus reitti ulkoisille linkeille
 zen-space-routing-new-route = Uusi Reitti

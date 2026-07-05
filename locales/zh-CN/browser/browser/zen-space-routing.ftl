@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = 空间路由设置
-zen-space-routing-rulepanel-placeholder = 路由让您选择在Nixo中打开的特定站点。例如，您可以路由YouTube链接在您的个人空间内始终开启。
+zen-space-routing-rulepanel-placeholder = Routes let you choose where specific sites open inside Nixo. For example, you can route YouTube links to always open inside your Personal space.
 zen-space-routing-dialog-title = 空间路由设置
 zen-space-routing-external-default = 外部链接的默认路径
 zen-space-routing-new-route = 新建路由

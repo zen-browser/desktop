@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = Configurações de roteamento espacial
-zen-space-routing-rulepanel-placeholder = As rotas permitem escolher onde sites específicos abrem dentro do Nixo. Por exemplo, você pode encaminhar links do YouTube para sempre abrir dentro de seu Espaço Pessoal.
+zen-space-routing-rulepanel-placeholder = Routes let you choose where specific sites open inside Nixo. For example, you can route YouTube links to always open inside your Personal space.
 zen-space-routing-dialog-title = Configurações de roteamento espacial
 zen-space-routing-external-default = Rota padrão para links externos
 zen-space-routing-new-route = Nova rota

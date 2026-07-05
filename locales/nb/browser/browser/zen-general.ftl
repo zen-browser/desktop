@@ -10,27 +10,27 @@ tab-context-zen-reset-pinned-tab =
             [true] Nullstill Essential fane
            *[false] Nullstill festet fane
         }
-    .accesskey = R
+    .accesskey = L
 tab-context-zen-add-essential = 
     .label = Legg til i Essentials
-    .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max }
+    .accesskey = Ø
+tab-context-zen-add-essential-badge = { $num } / { $max}
 tab-context-zen-remove-essential = 
     .label = Fjern fra Essentials
-    .accesskey = R
+    .accesskey = L
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Rediger Essential URL
+           *[false] Rediger Pinned URL
         }
-    .accesskey = P
+    .accesskey = L
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
-    .accesskey = C
+    .label = Erstatt med gjeldende URL
+    .accesskey = K
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
-    .accesskey = E
+    .label = Rediger…
+    .accesskey = Ø
 tab-context-zen-edit-title = 
     .label = Endre etikett...
 tab-context-zen-edit-icon = 
@@ -53,10 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Bekreft
 zen-pinned-tab-replaced = Festet fanes nettadresse har blit erstattet med gjeldende nettadresse!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = Festet fane URL er oppdatert!
+zen-pinned-tab-url-invalid = Det ser ikke ut som en gyldig URL-adresse.
+zen-pinned-tab-edit-url-title = Rediger fast nettadresse
+zen-pinned-tab-edit-url-label = Skriv inn URL-adressen for den låste fanen skal peke til:
 zen-tabs-renamed = Fanen har fått nytt navn!
 zen-background-tab-opened-toast = Ny bakgrunnsfane åpnet!
 zen-workspace-renamed-toast = Arbeidsområdet har fått nytt navn!

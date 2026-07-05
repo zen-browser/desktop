@@ -4,7 +4,7 @@
 
 zen-space-routing-settings = 
     .label = إعدادات مسار الفضاء
-zen-space-routing-rulepanel-placeholder = تسمح لك الطرق باختيار المواقع المحددة المفتوحة داخل نيكسو. على سبيل المثال، يمكنك توجيه روابط يوتيوب إلى الفتح دائمًا داخل الفضاء الشخصي الخاص بك.
+zen-space-routing-rulepanel-placeholder = Routes let you choose where specific sites open inside Nixo. For example, you can route YouTube links to always open inside your Personal space.
 zen-space-routing-dialog-title = إعدادات مسار الفضاء
 zen-space-routing-external-default = المسار الافتراضي للروابط الخارجية
 zen-space-routing-new-route = طريق جديد

@@ -9,7 +9,7 @@ zen-toolbar-context-compact-mode =
     .label = Kompaktní režim
 zen-toolbar-context-compact-mode-enable = 
     .label = Povolit kompaktní režim
-    .accesskey = D
+    .accesskey = L 343, 22.12.2009, s. 1).
 zen-toolbar-context-compact-mode-just-tabs = 
     .label = Skrýt boční panel
 zen-toolbar-context-compact-mode-just-toolbar = 
@@ -19,10 +19,10 @@ zen-toolbar-context-compact-mode-hide-both =
     .accesskey = H
 zen-toolbar-context-move-to-folder = 
     .label = Přesunout do složky...
-    .accesskey = M
+    .accesskey = MM
 zen-toolbar-context-new-folder = 
     .label = Nová složka
-    .accesskey = N
+    .accesskey = SP
 sidebar-zen-expand = 
     .label = Zvětšit boční panel
 sidebar-zen-create-new = 
@@ -43,7 +43,7 @@ tabbrowser-reset-pin-button =
         }
 zen-tab-sublabel =
     { $tabSubtitle ->
-        [zen-default-pinned] Back to pinned url
-        [zen-default-pinned-cmd] Separate from pinned tab
+        [zen-default-pinned] Zpět na připnutou url
+        [zen-default-pinned-cmd] Oddělit od připnuté karty
        *[other] { $tabSubtitle }
     }

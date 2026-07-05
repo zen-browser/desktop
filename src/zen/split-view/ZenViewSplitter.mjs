@@ -1916,7 +1916,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         if (this.currentView >= 0) {
           const group = this._data[this.currentView];
 
-          if (!group || !group.groupId || !group.tabs?.length) return;
+          if (!group || !group.groupId || !group.tabs?.length) {
+            return;
+          }
 
           this.#dispatchItemEvent(
             "ZenSplitViewGroupUpdated",

@@ -192,7 +192,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
 
       this.currentProfile = {
         id: 0,
-        name: "Default",
+        name: ContextualIdentityService.formatContextLabel("user-context-none"),
       };
     } else {
       this.inputProfile.parentNode.hidden = true;

@@ -1149,15 +1149,19 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * Removes a group.
    *
    * @param {number} groupIndex - The index of the group to remove.
+   * @param {object} options - Additional options.
+   * @param {boolean} options.suppressEvents - Whether to skip split removal events.
    */
-  removeGroup(groupIndex) {
+  removeGroup(groupIndex, { suppressEvents = false } = {}) {
     const group = this._data[groupIndex];
-    for (const tab of group.tabs.reverse()) {
+    for (const tab of [...group.tabs].reverse()) {
       if (tab.group?.hasAttribute("split-view-group")) {
         gBrowser.ungroupTab(tab);
-        this.#dispatchItemEvent("ZenTabRemovedFromSplit", tab, {
-          groupId: group.groupId,
-        });
+        if (!suppressEvents) {
+          this.#dispatchItemEvent("ZenTabRemovedFromSplit", tab, {
+            groupId: group.groupId,
+          });
+        }
       }
     }
     if (this.currentView === groupIndex) {
@@ -2432,14 +2436,32 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     for (const groupData of data) {
       try {
         const group = document.getElementById(groupData.groupId);
-        if (!gBrowser.isTabGroup(group)) {
-          continue;
+        const existingGroup = gBrowser.isTabGroup(group) ? group : null;
+        let tabs;
+        let existingGroupRemoved = false;
+        if (existingGroup?.tabs?.length >= 2) {
+          existingGroup.setAttribute("split-view-group", "true");
+          tabs = existingGroup.tabs;
+        } else {
+          tabs = (groupData.tabs || [])
+            .map(tabId => document.getElementById(tabId))
+            .filter(tab => gBrowser.isTab(tab));
+          if (tabs.length < 2) {
+            continue;
+          }
+          if (existingGroup) {
+            gBrowser.removeTabGroup(existingGroup);
+            existingGroupRemoved = true;
+          }
         }
 
-        // Backwards compatibility
-        group.setAttribute("split-view-group", "true");
         if (!groupData?.layoutTree) {
-          this.splitTabs(group.tabs, group.gridType);
+          this.splitTabs(
+            tabs,
+            existingGroup?.gridType ?? groupData.gridType,
+            -1,
+            { groupFetchId: groupData.groupId }
+          );
           delete this._sessionRestoring;
           return;
         }
@@ -2471,11 +2493,13 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         };
 
         const layout = deserializeNode(groupData.layoutTree);
-        const splitData = this.splitTabs(group.tabs, groupData.gridType, -1);
+        const splitData = this.splitTabs(tabs, groupData.gridType, -1, {
+          groupFetchId: groupData.groupId,
+        });
         if (splitData) {
           splitData.layoutTree = layout;
-        } else {
-          gBrowser.removeTabGroup(group);
+        } else if (existingGroup && !existingGroupRemoved) {
+          gBrowser.removeTabGroup(existingGroup);
         }
       } catch (e) {
         console.error("Error restoring split view session data:", e);

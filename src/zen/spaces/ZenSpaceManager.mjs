@@ -403,11 +403,16 @@ class nsZenWorkspaces {
         // Group/folder membership.
         const currentGroupId = existingTab.group?.id || null;
         const targetGroupId = tabData.groupId || null;
-        if (currentGroupId !== targetGroupId) {
+        const targetGroup = targetGroupId
+          ? document.getElementById(targetGroupId)
+          : null;
+        if (
+          currentGroupId !== targetGroupId &&
+          !targetGroup?.hasAttribute("split-view-group")
+        ) {
           if (targetGroupId) {
-            const folder = document.getElementById(targetGroupId);
-            if (folder?.isZenFolder) {
-              folder.addTabs([existingTab]);
+            if (targetGroup?.isZenFolder) {
+              targetGroup.addTabs([existingTab]);
             }
           } else if (currentGroupId) {
             gBrowser.ungroupTab(existingTab);
@@ -886,7 +891,7 @@ class nsZenWorkspaces {
       const existingGroup = localSplitGroupsById.get(splitData.groupId);
       if (
         existingGroup &&
-        JSON.stringify(existingGroup) === JSON.stringify(splitData)
+        this.#splitViewDataMatches(existingGroup, splitData)
       ) {
         continue;
       }
@@ -907,7 +912,7 @@ class nsZenWorkspaces {
       }
 
       for (const index of conflictingGroupIndexes.sort((a, b) => b - a)) {
-        splitter.removeGroup(index);
+        splitter.removeGroup(index, { suppressEvents: true });
       }
 
       splitter.restoreDataFromSessionStore([splitData]);
@@ -917,6 +922,57 @@ class nsZenWorkspaces {
     splitter.onAfterWorkspaceSessionRestore?.();
     this.makeSureEmptyTabIsFirst();
     this.updateTabsContainers();
+  }
+
+  #splitViewDataMatches(localSplitData, incomingSplitData) {
+    return (
+      localSplitData.groupId === incomingSplitData.groupId &&
+      localSplitData.gridType === incomingSplitData.gridType &&
+      this.#arrayMatches(localSplitData.tabs, incomingSplitData.tabs) &&
+      this.#splitLayoutTreeMatches(
+        localSplitData.layoutTree,
+        incomingSplitData.layoutTree
+      )
+    );
+  }
+
+  #arrayMatches(localItems, incomingItems) {
+    if (
+      !Array.isArray(localItems) ||
+      !Array.isArray(incomingItems) ||
+      localItems.length !== incomingItems.length
+    ) {
+      return false;
+    }
+
+    return localItems.every((item, index) => item === incomingItems[index]);
+  }
+
+  #splitLayoutTreeMatches(localNode, incomingNode) {
+    if (!localNode || !incomingNode || localNode.type !== incomingNode.type) {
+      return false;
+    }
+
+    if (localNode.sizeInParent !== incomingNode.sizeInParent) {
+      return false;
+    }
+
+    if (localNode.type === "leaf") {
+      return localNode.tabId === incomingNode.tabId;
+    }
+
+    if (localNode.direction !== incomingNode.direction) {
+      return false;
+    }
+
+    return (
+      Array.isArray(localNode.children) &&
+      Array.isArray(incomingNode.children) &&
+      localNode.children.length === incomingNode.children.length &&
+      localNode.children.every((child, index) =>
+        this.#splitLayoutTreeMatches(child, incomingNode.children[index])
+      )
+    );
   }
 
   #applyIncomingTabPositions(tabDataList) {

@@ -6,7 +6,7 @@ index c873293871ffaba305bc1bf41730d79c13546b85..0e0171cec13dfcbb296ec7bf03628370
      whenTrue: "ExtensionStorageEngineKinto",
      whenFalse: "ExtensionStorageEngineBridge",
    };
-+  result.Workspaces = {
++  result.Spaces = {
 +    module: "resource:///modules/zen/ZenWorkspacesSync.sys.mjs",
 +    symbol: "ZenWorkspacesEngine",
 +  };

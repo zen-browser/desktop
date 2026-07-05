@@ -9,10 +9,10 @@ tab-zen-split-tabs =
             [1] Adicionar vista dividida...
            *[other] Juntar { $tabCount } Separadores
         }
-    .accesskey = S
+    .accesskey = S.O.
 zen-split-link = 
     .label = Dividir ligação para um novo separador
-    .accesskey = S
+    .accesskey = S.O.
 zen-split-view-modifier-header = Vista Dividida
 zen-split-view-modifier-activate-reallocation = 
     .label = Ativar realocação

@@ -3,56 +3,56 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-boost-edit-rename = 
-    .label = Rename Boost
+    .label = Усиление переименования
 zen-boost-edit-shuffle = 
-    .label = Shuffle Vibes
+    .label = Перемешать вибсы
 zen-boost-edit-reset = 
-    .label = Reset All Edits
+    .label = Сбросить все правки
 zen-boost-edit-delete = 
-    .label = Delete Boost
-zen-boost-size = Size
-zen-boost-case = Case
+    .label = Усиление удаления
+zen-boost-size = Размер
+zen-boost-case = Случай
 zen-boost-zap = Zap
-zen-boost-code = Code
-zen-boost-back = Back
+zen-boost-code = Код
+zen-boost-back = Назад
 zen-boost-shuffle = 
-    .tooltiptext = Shuffle Boost Settings
+    .tooltiptext = Настройки анимации перемешивания
 zen-boost-invert = 
-    .tooltiptext = Smart Invert Colors
+    .tooltiptext = Инвертировать цвета
 zen-boost-controls = 
-    .tooltiptext = Advanced Color Controls
+    .tooltiptext = Дополнительные элементы управления цветом
 zen-boost-disable = 
-    .tooltiptext = Disable Color Adjustments
+    .tooltiptext = Отключить цветовые регулировки
 zen-boost-text-case-toggle = 
-    .tooltiptext = Toggle Text Case
+    .tooltiptext = Переключить текстовый регистр
 zen-boost-css-picker = 
-    .tooltiptext = Pick Selector
+    .tooltiptext = Выбрать селектор
 zen-boost-css-inspector = 
-    .tooltiptext = Open Inspector
+    .tooltiptext = Открыть инспектор
 zen-boost-color-contrast = Contrast
-zen-boost-color-brightness = Brightness
-zen-boost-color-original-saturation = Original Saturation
-zen-add-zap-helper = Click elements on the page to <b>Zap</b> them
-zen-remove-zap-helper = ← Click to Unzap
-zen-select-this = Insert selector for this
-zen-select-related = Insert selector for related
-zen-select-cancel = Cancel
-zen-zap-this = Zap this
-zen-zap-related = Zap all related elements
-zen-zap-cancel = Cancel
-zen-zap-done = Done
+zen-boost-color-brightness = Яркость
+zen-boost-color-original-saturation = Исходная насыщенность
+zen-add-zap-helper = Нажмите элементы на странице для <b>Zap</b> их
+zen-remove-zap-helper = <unk> Нажмите для разглашения
+zen-select-this = Вставить селектор для этого
+zen-select-related = Вставить селектор для связанных
+zen-select-cancel = Отмена
+zen-zap-this = Зафиксировать
+zen-zap-related = Сделать все связанные элементы
+zen-zap-cancel = Отмена
+zen-zap-done = Готово
 zen-unzap-tooltip =
     { $elementCount ->
-        [0] No elements zapped
-        [1] { $elementCount } element zapped
-       *[other] { $elementCount } elements zapped
+        [0] Нет элементов в зазупленном
+        [1] { $elementCount } элемент в зазупленном
+       *[other] { $elementCount } элементов в зазупленном
     }
 zen-boost-save = 
-    .label = Export Boost
+    .label = Ускорение экспорта
 zen-boost-load = 
-    .label = Import Boost
-zen-panel-ui-boosts-exported-message = Boost exported!
-zen-site-data-boosts = Boosts
+    .label = Ускорение импорта
+zen-panel-ui-boosts-exported-message = Ускорение экспортировано!
+zen-site-data-boosts = Усиление
 zen-site-data-create-boost = 
-    .tooltiptext = Create new boost
-zen-boost-rename-boost-prompt = Rename Boost?
+    .tooltiptext = Создать новый ускоритель
+zen-boost-rename-boost-prompt = Переименовать ускоритель?

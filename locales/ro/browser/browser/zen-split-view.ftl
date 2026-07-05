@@ -7,12 +7,12 @@ tab-zen-split-tabs =
         { $tabCount ->
             [-1] Split out tab
             [1] Add split view...
-           *[other] Join { $tabCount } Tabs
+           *[other] Alătură-te { $tabCount } Tabs
         }
     .accesskey = S
 zen-split-link = 
-    .label = Split link to new tab
+    .label = Împarte link-ul către fila nouă
     .accesskey = S
-zen-split-view-modifier-header = Split View
+zen-split-view-modifier-header = Vizualizare împărțită
 zen-split-view-modifier-activate-reallocation = 
-    .label = Activate reallocation
+    .label = Activează realocarea

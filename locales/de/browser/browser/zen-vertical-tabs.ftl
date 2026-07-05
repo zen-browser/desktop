@@ -4,7 +4,7 @@
 
 zen-toolbar-context-tabs-right = 
     .label = Tabs rechts anzeigen
-    .accesskey = R
+    .accesskey = L
 zen-toolbar-context-compact-mode = 
     .label = Kompaktmodus
 zen-toolbar-context-compact-mode-enable = 

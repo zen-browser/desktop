@@ -1551,7 +1551,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     return (
       owner &&
       owner.pinned &&
-      !owner.glanceTab &&
+      !owner.hasAttribute("glance-id") &&
       this._lazyPref.SHOULD_OPEN_EXTERNAL_TABS_IN_GLANCE &&
       owner.linkedBrowser?.browsingContext?.isAppTab &&
       this.tabDomainsDiffer(owner, uri) &&

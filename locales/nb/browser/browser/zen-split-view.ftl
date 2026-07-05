@@ -9,10 +9,10 @@ tab-zen-split-tabs =
             [1] Legg til delt visning
            *[other] Spleis { $tabCount } faner
         }
-    .accesskey = S
+    .accesskey = L
 zen-split-link = 
     .label = Del opp lenke til ny fane
-    .accesskey = S
+    .accesskey = L
 zen-split-view-modifier-header = Splittet visning
 zen-split-view-modifier-activate-reallocation = 
     .label = Aktiver reallokasjon

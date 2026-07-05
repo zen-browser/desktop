@@ -1,0 +1,75 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+zen-panel-ui-workspaces-text = Fellesskap
+zen-panel-ui-spaces-label = 
+    .label = Fellesskap
+zen-panel-ui-workspaces-create = 
+    .label = Opprett område
+zen-panel-ui-folder-create = 
+    .label = Opprett mappe
+zen-panel-ui-live-folder-create = 
+    .label = Live mappe
+zen-panel-ui-new-empty-split = 
+    .label = Nytt splitt
+zen-workspaces-panel-context-delete = 
+    .label = Slett grupperom
+    .accesskey = V
+zen-workspaces-panel-change-name = 
+    .label = Endre navn…
+zen-workspaces-panel-change-icon = 
+    .label = Endre ikon…
+zen-workspaces-panel-context-default-profile = 
+    .label = Angi profil
+zen-workspaces-panel-unload = 
+    .label = Fjern mellomrom
+zen-workspaces-panel-unload-others = 
+    .label = Fjern alle andre fellesskap
+zen-workspaces-how-to-reorder-title = Hvordan endre rekkefølge på mellomrom
+zen-workspaces-how-to-reorder-desc = Dra mellomromsikonene nederst på sidepanelet for å endre rekkefølgen på dem
+zen-workspaces-change-theme = 
+    .label = Rediger tema…
+zen-workspaces-panel-context-open = 
+    .label = Åpne arbeidsområde
+    .accesskey = O
+zen-workspaces-panel-context-edit = 
+    .label = Rediger område
+    .accesskey = Ø
+zen-bookmark-edit-panel-workspace-selector = 
+    .value = Fellesskap
+    .accesskey = V
+zen-panel-ui-gradient-generator-algo-complementary = 
+    .label = Fullstendig
+zen-panel-ui-gradient-generator-algo-splitComplementary = 
+    .label = Splitt
+zen-panel-ui-gradient-generator-algo-analogous = 
+    .label = Analog
+zen-panel-ui-gradient-generator-algo-triadic = 
+    .label = Triadisk
+zen-panel-ui-gradient-generator-algo-floating = 
+    .label = Flytende
+zen-panel-ui-gradient-click-to-add = Klikk for å legge til en farge
+zen-workspace-creation-name = 
+    .placeholder = Fellesskapets navn
+zen-move-tab-to-workspace-button = 
+    .label = Flytt til
+    .tooltiptext = Flytt alle fanene i dette vinduet til et område
+zen-workspaces-panel-context-reorder = 
+    .label = Omorganiser mellomrom
+zen-workspace-creation-profile = Profil
+    .tooltiptext = Profiler brukes til å skille informasjonskapsler og nettstedsdata mellom mellomrom.
+zen-workspace-creation-header = Opprette et fellesskap
+zen-workspace-creation-label = Områder brukes til å organisere faner og økter.
+zen-workspaces-delete-workspace-title = Slette området?
+zen-workspaces-delete-workspace-body = Er du sikker på at du vil slette { $name }? Denne handlingen kan ikke angres.
+# Note that the html tag MUST not be changed or removed, as it is used to better
+# display the shortcut in the toast notification.
+zen-workspaces-close-all-unpinned-tabs-toast = Faner lukket! Bruk <span>{ $shortcut }</span> for å angre.
+zen-workspaces-close-all-unpinned-tabs-title = 
+    .label = Tøm
+    .tooltiptext = Lukk alle ulåste faner
+zen-panel-ui-workspaces-change-forward = 
+    .label = Neste fellesskap
+zen-panel-ui-workspaces-change-back = 
+    .label = Forrige område

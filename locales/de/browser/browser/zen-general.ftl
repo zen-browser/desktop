@@ -10,27 +10,27 @@ tab-context-zen-reset-pinned-tab =
             [true] Essential-Tab zurücksetzen
            *[false] Angehefteten Tab zurücksetzen
         }
-    .accesskey = R
+    .accesskey = L
 tab-context-zen-add-essential = 
     .label = Zu Essentials hinzufügen
-    .accesskey = E
+    .accesskey = G
 tab-context-zen-add-essential-badge = { $num } / { $max } Plätzen belegt
 tab-context-zen-remove-essential = 
     .label = Aus Essentials entfernen
-    .accesskey = R
+    .accesskey = L
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Essentielle URL bearbeiten
+           *[false] URL bearbeiten
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = Mit aktueller URL ersetzen
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
-    .accesskey = E
+    .label = Bearbeite…
+    .accesskey = G
 tab-context-zen-edit-title = 
     .label = Titel ändern...
 tab-context-zen-edit-icon = 
@@ -53,10 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Bestätigen
 zen-pinned-tab-replaced = Die URL des angehefteten Tabs wurde aktualisiert!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = URL des angepinnten Tabs wurde aktualisiert!
+zen-pinned-tab-url-invalid = Das sieht nicht wie eine gültige URL aus.
+zen-pinned-tab-edit-url-title = Pinned URL bearbeiten
+zen-pinned-tab-edit-url-label = Geben Sie die URL ein, auf die dieser angepinnte Tab verweisen sollte:
 zen-tabs-renamed = Tab umbenannt!
 zen-background-tab-opened-toast = Neuer Tab im Hintergrund geöffnet!
 zen-workspace-renamed-toast = Arbeitsbereich umbenannt!
@@ -75,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Symbole
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Aktionen
 zen-site-data-settings = Einstellungen
 zen-generic-manage = Verwalten

@@ -21,16 +21,16 @@ tab-context-zen-remove-essential =
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Изменить основной URL-адрес
+           *[false] Изменить вложенный URL-адрес
         }
-    .accesskey = P
+    .accesskey = П
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = Заменить текущим URL-адресом
     .accesskey = С
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
-    .accesskey = E
+    .label = Изменить…
+    .accesskey = В
 tab-context-zen-edit-title = 
     .label = Переименовать...
 tab-context-zen-edit-icon = 
@@ -53,10 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Подтвердить
 zen-pinned-tab-replaced = Адрес закреплённой вкладки заменён на текущий адрес!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = Ссылка на закрепленную вкладку обновлена!
+zen-pinned-tab-url-invalid = Это не похоже на допустимый URL.
+zen-pinned-tab-edit-url-title = Изменить прикрепленный URL
+zen-pinned-tab-edit-url-label = Введите URL, указанный вкладкой с прикрепленными ссылками в адрес:
 zen-tabs-renamed = Вкладка успешно переименована!
 zen-background-tab-opened-toast = Открыта новая фоновая вкладка!
 zen-workspace-renamed-toast = Пространство успешно переименовано!
@@ -75,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Эмодзи
 zen-icons-picker-svg = 
     .label = Иконки
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Действия
 zen-site-data-settings = Настройки
 zen-generic-manage = Изменить

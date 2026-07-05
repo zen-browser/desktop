@@ -23,4 +23,4 @@ zen-welcome-start-browsing = Dýfðu þér í djúpu laugina!
 zen-welcome-default-search-title = Sjálfgefna leitarvélin þín
 zen-welcome-default-search-description = Veldu þér sjálfgefna leitarvél. Þú getur alltaf breytt þessu síðar.
 zen-welcome-skip-button = Sleppa
-zen-welcome-finished = Zen-vafrinn þinn hefur verið uppsettur með tilhlýðilegum hætti!
+zen-welcome-finished = Your Nixo has been set up correctly!

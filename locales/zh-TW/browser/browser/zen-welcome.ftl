@@ -23,4 +23,4 @@ zen-welcome-start-browsing = 立即開始！
 zen-welcome-default-search-title = 您的預設搜尋引擎
 zen-welcome-default-search-description = 選擇您的預設搜尋引擎，您可以隨時更改它！
 zen-welcome-skip-button = 跳過
-zen-welcome-finished = 您的 Zen 瀏覽器已成功設定！
+zen-welcome-finished = Your Nixo has been set up correctly!

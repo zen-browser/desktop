@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential = 
     .label = Temel sekmelerden kaldır
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Temel sekmenin URL’sini geçerli olanla değiştir
-           *[false] Sabitlenmiş sekme URL’sini geçerli olanla değiştir
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Etiketi Değiştir...
 tab-context-zen-edit-icon = 
@@ -47,6 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Onayla
 zen-pinned-tab-replaced = Sabitlenmiş sekmenin URL’si, mevcut URL ile değiştirildi!
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Sekme başarıyla yeniden adlandırıldı!
 zen-background-tab-opened-toast = Yeni arka plan sekmesi açıldı!
 zen-workspace-renamed-toast = Çalışma alanı başarıyla yeniden adlandırıldı!
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Emojiler
 zen-icons-picker-svg = 
     .label = Simgeler
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Eylemler
 zen-site-data-settings = Ayarlar
 zen-generic-manage = Yönet
@@ -120,7 +132,7 @@ zen-sidebar-notification-restart-safe-mode-label = Bir sorun mu oluştu?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Güvenli Modda Yeniden Başlat
 zen-window-sync-migration-dialog-title = Pencerelerinizi Senkronize Tutun
-zen-window-sync-migration-dialog-message = Zen artık aynı cihazdaki pencereleri senkronize ediyor; böylece bir pencerede yapılan değişiklikler anında diğer pencerelere yansıyor.
+zen-window-sync-migration-dialog-message = Nixo now syncs windows on the same device, so changes in one window are reflected across the others instantly.
 zen-window-sync-migration-dialog-learn-more = Daha fazla bilgi
 zen-window-sync-migration-dialog-accept = Anladım
 zen-appmenu-new-blank-window = 

@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
 tab-context-zen-remove-essential = 
     .label = Eemalda olulistest
     .accesskey = o
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Replace Essential URL with Current
-           *[false] Replace Pinned URL with Current
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = p
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Change Label...
 tab-context-zen-edit-icon = 
@@ -47,6 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Kinnita
 zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL.
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Kaart on edukalt ümber nimetatud!
 zen-background-tab-opened-toast = Taustal avati uus kaart!
 zen-workspace-renamed-toast = Tööruum on edukalt ümber nimetatud!
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Emojid
 zen-icons-picker-svg = 
     .label = Ikoonid
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Tegevused
 zen-site-data-settings = Sätted
 zen-generic-manage = Halda

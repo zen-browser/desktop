@@ -2,8 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-current-profile-text = current profile
-unified-extensions-description = Extensions are used to bring more extra functionality into { -brand-short-name }.
+zen-panel-ui-current-profile-text = profil curent
+unified-extensions-description = Extensiile sunt utilizate pentru a aduce mai multe funcționalități suplimentare în { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label =
         { $isEssential ->
@@ -12,126 +12,128 @@ tab-context-zen-reset-pinned-tab =
         }
     .accesskey = R
 tab-context-zen-add-essential = 
-    .label = Add to Essentials
+    .label = Adaugă la Essentials
     .accesskey = E
 tab-context-zen-add-essential-badge = { $num } / { $max } slots filled
 tab-context-zen-remove-essential = 
-    .label = Remove from Essentials
+    .label = Elimină din Essentials
     .accesskey = R
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Editați URL-ul esențial
+           *[false] Editare URL Pinned
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = Înlocuiește cu URL-ul curent
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
+    .label = Editare…
     .accesskey = E
 tab-context-zen-edit-title = 
     .label = Change Label...
 tab-context-zen-edit-icon = 
     .label = Change Icon...
-zen-themes-corrupted = Your { -brand-short-name } mods file is corrupted. They have been reset to the default theme.
-zen-shortcuts-corrupted = Your { -brand-short-name } shortcuts file is corrupted. They have been reset to the default shortcuts.
+zen-themes-corrupted = Fișierul dvs. { -brand-short-name } modds este corupt. Acestea au fost resetate la tema implicită.
+zen-shortcuts-corrupted = Fișierul de comenzi rapide { -brand-short-name } este corupt. Acestea au fost resetate la comenzile rapide implicite.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
-    The new URL bar has been enabled, removing the need for new tab pages.<br/><br/>
-    Try opening a new tab to see the new URL bar in action!
-zen-disable = Disable
+    Noua bară URL a fost activată, eliminând necesitatea pentru paginile cu file noi.<br/><br/>
+    Încearcă să deschizi o filă nouă pentru a vedea noua bară URL în acțiune!
+zen-disable = Dezactivează
 pictureinpicture-minimize-btn = 
     .aria-label = Minimize
     .tooltip = Minimize
-zen-panel-ui-gradient-generator-custom-color = Custom Color
-zen-copy-current-url-confirmation = Copied current URL!
-zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
+zen-panel-ui-gradient-generator-custom-color = Culoare personalizată
+zen-copy-current-url-confirmation = URL curent copiat!
+zen-copy-current-url-as-markdown-confirmation = URL-ul curent copiat ca Markdown!
 zen-general-cancel-label = 
-    .label = Cancel
+    .label = Anulează
 zen-general-confirm = 
-    .label = Confirm
-zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
-zen-tabs-renamed = Tab has been successfully renamed!
-zen-background-tab-opened-toast = New background tab opened!
-zen-workspace-renamed-toast = Workspace has been successfully renamed!
-zen-split-view-limit-toast = Can't add more panels to the split view!
+    .label = Confirmare
+zen-pinned-tab-replaced = URL-ul filei fixate a fost înlocuit cu URL-ul curent!
+zen-pinned-tab-url-edited = URL-ul filei fixate a fost actualizat!
+zen-pinned-tab-url-invalid = Asta nu arată ca un URL valid.
+zen-pinned-tab-edit-url-title = Editare URL fixat
+zen-pinned-tab-edit-url-label = Introduceți adresa URL pe care această filă ar trebui să o indice:
+zen-tabs-renamed = Fila a fost redenumită cu succes!
+zen-background-tab-opened-toast = Noua filă de fundal deschisă!
+zen-workspace-renamed-toast = Spațiul de lucru a fost redenumit cu succes!
+zen-split-view-limit-toast = Nu se pot adăuga mai multe panouri la vizualizarea divizată!
 zen-toggle-compact-mode-button = 
-    .label = Compact Mode
-    .tooltiptext = Toggle Compact Mode
+    .label = Mod compact
+    .tooltiptext = Comutare mod compact
 
 # note: Do not translate the "<br/>" tags in the following string
 
-zen-learn-more-text = Learn More
-zen-close-label = Close
+zen-learn-more-text = Află mai multe
+zen-close-label = Inchide
 zen-singletoolbar-urlbar-placeholder-with-name = 
-    .placeholder = Search...
+    .placeholder = Caută...
 zen-icons-picker-emoji = 
     .label = Emojis
 zen-icons-picker-svg = 
-    .label = Icons
-urlbar-search-mode-zen_actions = Actions
-zen-site-data-settings = Settings
-zen-generic-manage = Manage
-zen-generic-more = More
-zen-generic-next = Next
-zen-essentials-promo-label = Add to Essentials
-zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
+    .label = Iconițe
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
+urlbar-search-mode-zen_actions = Acțiuni
+zen-site-data-settings = Setări
+zen-generic-manage = Gestionează
+zen-generic-more = Mai
+zen-generic-next = Următoarea
+zen-essentials-promo-label = Adaugă la Essentials
+zen-essentials-promo-sublabel = Ține filele tale preferate la doar un clic distanță
 # These labels will be used for the site data panel settings
-zen-site-data-setting-allow = Allowed
-zen-site-data-setting-block = Blocked
-zen-site-data-protections-enabled = Enabled
-zen-site-data-protections-disabled = Disabled
-zen-site-data-setting-cross-site = Cross-Site cookie
+zen-site-data-setting-allow = Permis
+zen-site-data-setting-block = Blocat
+zen-site-data-protections-enabled = Activat
+zen-site-data-protections-disabled = Dezactivat
+zen-site-data-setting-cross-site = Cookie-uri trans-site
 zen-site-data-security-info-extension = 
-    .label = Extension
+    .label = Extensie
 zen-site-data-security-info-secure = 
-    .label = Secure
+    .label = Securizat
 zen-site-data-security-info-not-secure = 
-    .label = Not Secure
+    .label = Nu este securizat
 zen-site-data-manage-addons = 
-    .label = Manage Extensions
+    .label = Gestionare extensii
 zen-site-data-get-addons = 
-    .label = Add Extensions
+    .label = Adaugă Extensii
 zen-site-data-site-settings = 
-    .label = All Site Settings
+    .label = Toate Setările Site-ului
 zen-site-data-header-share = 
-    .tooltiptext = Share This Page
+    .tooltiptext = Distribuie această pagină
 zen-site-data-header-reader-mode = 
-    .tooltiptext = Enter Reader Mode
+    .tooltiptext = Intră în modul Cititor
 zen-site-data-header-screenshot = 
-    .tooltiptext = Take a Screenshot
+    .tooltiptext = Captură de ecran
 zen-site-data-header-bookmark = 
-    .tooltiptext = Bookmark This Page
+    .tooltiptext = Marchează această pagină
 zen-urlbar-copy-url-button = 
-    .tooltiptext = Copy URL
-zen-site-data-setting-site-protection = Tracking Protection
+    .tooltiptext = Copiază URL-ul
+zen-site-data-setting-site-protection = Protecție de urmărire
 
 # Section: Feature callouts
 
-zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
-zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-site-data-panel-feature-callout-title = O locuinţă nouă pentru suplimente, permisiuni şi multe altele
+zen-site-data-panel-feature-callout-subtitle = Faceți clic pe pictogramă pentru a gestiona setările site-ului, pentru a vizualiza informațiile de securitate, extensiile de acces și pentru a efectua acțiuni comune.
 zen-open-link-in-glance = 
-    .label = Open Link in Glance
+    .label = Deschide link-ul în Glance
     .accesskey = G
-zen-sidebar-notification-updated-heading = Update Complete!
+zen-sidebar-notification-updated-heading = Actualizare finalizată!
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-label = Ce este nou în { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
-    .title = View Release Notes
-zen-sidebar-notification-restart-safe-mode-label = Something broke?
+    .title = Vezi notele de lansare
+zen-sidebar-notification-restart-safe-mode-label = Ceva s-a rupt?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = Restart in Safe Mode
-zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
+    .title = Repornire în modul sigur
+zen-window-sync-migration-dialog-title = Păstrați Windows în sincronizare
 zen-window-sync-migration-dialog-message = Nixo now syncs windows on the same device, so changes in one window are reflected across the others instantly.
-zen-window-sync-migration-dialog-learn-more = Learn More
-zen-window-sync-migration-dialog-accept = Got It
+zen-window-sync-migration-dialog-learn-more = Află mai multe
+zen-window-sync-migration-dialog-accept = Am înţeles
 zen-appmenu-new-blank-window = 
-    .label = New blank window
+    .label = Fereastră nouă goală

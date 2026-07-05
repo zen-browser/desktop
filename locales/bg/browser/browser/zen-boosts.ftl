@@ -36,10 +36,10 @@ zen-add-zap-helper = Click elements on the page to <b>Zap</b> them
 zen-remove-zap-helper = ← Click to Unzap
 zen-select-this = Insert selector for this
 zen-select-related = Insert selector for related
-zen-select-cancel = Cancel
+zen-select-cancel = Отказ
 zen-zap-this = Zap this
 zen-zap-related = Zap all related elements
-zen-zap-cancel = Cancel
+zen-zap-cancel = Отказ
 zen-zap-done = Done
 zen-unzap-tooltip =
     { $elementCount ->

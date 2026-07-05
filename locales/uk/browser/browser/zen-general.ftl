@@ -13,18 +13,24 @@ tab-context-zen-reset-pinned-tab =
     .accesskey = Р
 tab-context-zen-add-essential = 
     .label = Додати до необхідного
-    .accesskey = E
+    .accesskey = Мі
 tab-context-zen-add-essential-badge = { $num } / { $max } комірок заповнено
 tab-context-zen-remove-essential = 
     .label = Вилучити з основних елементів
-    .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+    .accesskey = Р
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Замінити основну адресу на поточну
-           *[false] Замінити закріплену адресу на поточну
+            [true] Edit Essential URL
+           *[false] Редагувати закріплений URL
         }
-    .accesskey = C
+    .accesskey = Пн
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Замінити поточним посиланням
+    .accesskey = До
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = Мі
 tab-context-zen-edit-title = 
     .label = Змінити мітку...
 tab-context-zen-edit-icon = 
@@ -47,6 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Підтвердити
 zen-pinned-tab-replaced = URL-адресу закріпленої вкладки замінено на поточну URL-адресу.
+zen-pinned-tab-url-edited = Закріплена URL-адреса вкладки була оновлена!
+zen-pinned-tab-url-invalid = Не схоже на вірну URL-адресу.
+zen-pinned-tab-edit-url-title = Редагувати закріплений URL
+zen-pinned-tab-edit-url-label = Введіть URL, на якому закріплена вкладка має вказувати:
 zen-tabs-renamed = Вкладку успішно перейменовано!
 zen-background-tab-opened-toast = Відкрито нову фонову вкладку!
 zen-workspace-renamed-toast = Робочий простір успішно перейменовано!
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Емоджі
 zen-icons-picker-svg = 
     .label = Значки
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Дії
 zen-site-data-settings = Налаштування
 zen-generic-manage = Керувати
@@ -108,7 +120,7 @@ zen-site-data-panel-feature-callout-title = Новий дім для допов�
 zen-site-data-panel-feature-callout-subtitle = Натисніть значок, щоби керувати налаштуваннями сайту, переглядати інформацію про безпеку, отримувати доступ до розширень і виконувати поширені дії.
 zen-open-link-in-glance = 
     .label = Відкрити посилання в передперегляді
-    .accesskey = G
+    .accesskey = Соль
 zen-sidebar-notification-updated-heading = Оновлення завершено!
 
 # See ZenSidebarNotification.mjs to see how these would be used
@@ -120,7 +132,7 @@ zen-sidebar-notification-restart-safe-mode-label = Щось зламалося?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Перезапустити в безпечному режимі
 zen-window-sync-migration-dialog-title = Тримати ваші вікна синхронізованими
-zen-window-sync-migration-dialog-message = Zen тепер синхронізує вікна на одному пристрої, тому зміни в одному вікні миттєво показуватимуться в інших.
+zen-window-sync-migration-dialog-message = Nixo now syncs windows on the same device, so changes in one window are reflected across the others instantly.
 zen-window-sync-migration-dialog-learn-more = Дізнатися більше
 zen-window-sync-migration-dialog-accept = Зрозуміло
 zen-appmenu-new-blank-window = 

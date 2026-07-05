@@ -21,12 +21,12 @@ tab-context-zen-remove-essential =
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Bewerk Essentiële URL
+           *[false] Bewerk Vastgezette URL
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = Vervang door huidige URL
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
     .label = Edit…
@@ -53,10 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Bevestigen
 zen-pinned-tab-replaced = Vastgemaakte tabblad URL is vervangen met de huidige URL!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = Vastgezette tab URL is bijgewerkt!
+zen-pinned-tab-url-invalid = Dat lijkt niet op een geldige URL.
+zen-pinned-tab-edit-url-title = Vastgezette URL bewerken
+zen-pinned-tab-edit-url-label = Voer de URL in waar dit vastgezette tabblad naar moet verwijzen:
 zen-tabs-renamed = Tabblad is succesvol hernoemd!
 zen-background-tab-opened-toast = Nieuw achtergrondtabblad geopend!
 zen-workspace-renamed-toast = Werkruimte succesvol is hernoemd!
@@ -75,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Emoji's
 zen-icons-picker-svg = 
     .label = Iconen
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Acties
 zen-site-data-settings = Instellingen
 zen-generic-manage = Beheren

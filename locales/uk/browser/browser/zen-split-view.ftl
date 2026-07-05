@@ -10,10 +10,10 @@ tab-zen-split-tabs =
             [few] Об’єднати { $tabCount } вкладки
            *[other] Об’єднати { $tabCount } вкладок
         }
-    .accesskey = S
+    .accesskey = Пд
 zen-split-link = 
     .label = Розділити посилання на нову вкладку
-    .accesskey = S
+    .accesskey = Пд
 zen-split-view-modifier-header = Розділений перегляд
 zen-split-view-modifier-activate-reallocation = 
     .label = Увімкнути перегрупування

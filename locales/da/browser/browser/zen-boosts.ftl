@@ -3,56 +3,56 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-boost-edit-rename = 
-    .label = Rename Boost
+    .label = Omdøb Boost
 zen-boost-edit-shuffle = 
-    .label = Shuffle Vibes
+    .label = Bland Vibes
 zen-boost-edit-reset = 
-    .label = Reset All Edits
+    .label = Nulstil Alle Redigeringer
 zen-boost-edit-delete = 
-    .label = Delete Boost
-zen-boost-size = Size
-zen-boost-case = Case
+    .label = Slet Boost
+zen-boost-size = Størrelse
+zen-boost-case = Sag
 zen-boost-zap = Zap
-zen-boost-code = Code
-zen-boost-back = Back
+zen-boost-code = Kode
+zen-boost-back = Tilbage
 zen-boost-shuffle = 
-    .tooltiptext = Shuffle Boost Settings
+    .tooltiptext = Bland Boost-indstillinger
 zen-boost-invert = 
-    .tooltiptext = Smart Invert Colors
+    .tooltiptext = Smarte Invertér Farver
 zen-boost-controls = 
-    .tooltiptext = Advanced Color Controls
+    .tooltiptext = Avancerede Farvekontroller
 zen-boost-disable = 
-    .tooltiptext = Disable Color Adjustments
+    .tooltiptext = Deaktivér Farvejusteringer
 zen-boost-text-case-toggle = 
-    .tooltiptext = Toggle Text Case
+    .tooltiptext = Skift Tekstfelt
 zen-boost-css-picker = 
-    .tooltiptext = Pick Selector
+    .tooltiptext = Vælg Vælger
 zen-boost-css-inspector = 
-    .tooltiptext = Open Inspector
+    .tooltiptext = Åben Inspektør
 zen-boost-color-contrast = Contrast
-zen-boost-color-brightness = Brightness
-zen-boost-color-original-saturation = Original Saturation
-zen-add-zap-helper = Click elements on the page to <b>Zap</b> them
-zen-remove-zap-helper = ← Click to Unzap
-zen-select-this = Insert selector for this
-zen-select-related = Insert selector for related
-zen-select-cancel = Cancel
-zen-zap-this = Zap this
-zen-zap-related = Zap all related elements
-zen-zap-cancel = Cancel
-zen-zap-done = Done
+zen-boost-color-brightness = Lysstyrke
+zen-boost-color-original-saturation = Oprindelig Farvemætning
+zen-add-zap-helper = Klik på elementer på siden for at <b>Zap</b> dem
+zen-remove-zap-helper = ← Klik for at Unzap
+zen-select-this = Indsæt vælger for dette
+zen-select-related = Indsæt selector for relateret
+zen-select-cancel = Annuller
+zen-zap-this = Zap dette
+zen-zap-related = Zap alle relaterede elementer
+zen-zap-cancel = Annuller
+zen-zap-done = Udført
 zen-unzap-tooltip =
     { $elementCount ->
-        [0] No elements zapped
-        [1] { $elementCount } element zapped
-       *[other] { $elementCount } elements zapped
+        [0] Ingen elementer tilføjet
+        [1] { $elementCount } element zappet
+       *[other] { $elementCount } elementer zappet
     }
 zen-boost-save = 
-    .label = Export Boost
+    .label = Eksporter Boost
 zen-boost-load = 
-    .label = Import Boost
-zen-panel-ui-boosts-exported-message = Boost exported!
-zen-site-data-boosts = Boosts
+    .label = Importér Boost
+zen-panel-ui-boosts-exported-message = Boost eksporteret!
+zen-site-data-boosts = Booster
 zen-site-data-create-boost = 
-    .tooltiptext = Create new boost
-zen-boost-rename-boost-prompt = Rename Boost?
+    .tooltiptext = Opret nyt boost
+zen-boost-rename-boost-prompt = Omdøb Boost?

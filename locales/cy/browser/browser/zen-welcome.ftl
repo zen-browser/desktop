@@ -23,4 +23,4 @@ zen-welcome-start-browsing = Ymlaen!
 zen-welcome-default-search-title = Eich Peiriant Chwilio Arferol
 zen-welcome-default-search-description = Dewiswch eich peiriant chwilio arferol. Gallwch chi ei newid yn nes ymlaen!
 zen-welcome-skip-button = Hepgor
-zen-welcome-finished = Mae eich Zen wedi'i osog yn gywir!
+zen-welcome-finished = Your Nixo has been set up correctly!

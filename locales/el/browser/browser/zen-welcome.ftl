@@ -23,4 +23,4 @@ zen-welcome-start-browsing = Ξεκινήστε!
 zen-welcome-default-search-title = Η Προεπιλεγμένη Μηχανή Αναζήτησης Σας
 zen-welcome-default-search-description = Επιλέξτε την προεπιλεγμένη μηχανή αναζήτησης. Μπορείτε πάντα να την αλλάξετε αργότερα!
 zen-welcome-skip-button = Παράλειψη
-zen-welcome-finished = Το Zen σας έχει ρυθμιστεί σωστά!
+zen-welcome-finished = Your Nixo has been set up correctly!

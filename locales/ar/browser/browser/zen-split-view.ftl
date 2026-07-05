@@ -5,9 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Split out tab
-            [1] Add split view...
-           *[other] Join { $tabCount } Tabs
+            [-1] تقسيم علامة التبويب
+            [1] إضافة عرض مقسم...
+           *[other] انضم إلى { $tabCount } علامات التبويب
         }
     .accesskey = س
 zen-split-link = 

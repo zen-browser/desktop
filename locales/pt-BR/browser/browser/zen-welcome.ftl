@@ -23,4 +23,4 @@ zen-welcome-start-browsing = Mergulhe de cabeça!
 zen-welcome-default-search-title = Seu Mecanismo de Busca Padrão
 zen-welcome-default-search-description = Escolha seu mecanismo de busca padrão. Você sempre pode alterá-lo mais tarde!
 zen-welcome-skip-button = Pular
-zen-welcome-finished = Seu Zen foi configurado corretamente!
+zen-welcome-finished = Your Nixo has been set up correctly!

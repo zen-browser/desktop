@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = { $num } / { $max } Espaços preenchidos
 tab-context-zen-remove-essential = 
     .label = Remover dos Essenciais
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Substituir URL Essencial pela atual
-           *[false] Substituir URL Fixada pela atual
+            [true] Editar URL Essencial
+           *[false] Editar URL Fixada
         }
+    .accesskey = PT
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Substituir com URL atual
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Editar…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Alterar Rótulo...
 tab-context-zen-edit-icon = 
@@ -45,6 +51,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Confirmar
 zen-pinned-tab-replaced = A URL da guia fixada foi substituída pela URL atual!
+zen-pinned-tab-url-edited = A URL da guia fixada foi atualizada!
+zen-pinned-tab-url-invalid = Isso não parece ser uma URL válida.
+zen-pinned-tab-edit-url-title = Editar URL Fixada
+zen-pinned-tab-edit-url-label = Digite o URL que esta guia fixada deve apontar para:
 zen-tabs-renamed = A guia foi renomeada com sucesso!
 zen-background-tab-opened-toast = Nova guia em segundo plano aberta!
 zen-workspace-renamed-toast = A área de trabalho foi renomeada com sucesso!
@@ -63,6 +73,8 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Ícones
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Ações
 zen-site-data-settings = Configurações
 zen-generic-manage = Gerenciar
@@ -106,7 +118,7 @@ zen-site-data-panel-feature-callout-title = Um novo lar para extensões, permiss
 zen-site-data-panel-feature-callout-subtitle = Clique no ícone para gerenciar configurações do site, visualizar informações de segurança, acessar extensões e realizar ações comuns.
 zen-open-link-in-glance = 
     .label = Abrir Link no Glance
-    .accesskey = G
+    .accesskey = Segunda:
 zen-sidebar-notification-updated-heading = Atualização Completa!
 
 # See ZenSidebarNotification.mjs to see how these would be used
@@ -118,7 +130,7 @@ zen-sidebar-notification-restart-safe-mode-label = Algo quebrou?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Reiniciar no Modo Seguro
 zen-window-sync-migration-dialog-title = Mantenha Suas Janelas em Sincronia
-zen-window-sync-migration-dialog-message = Zen agora sincroniza as janelas no mesmo dispositivo, assim as mudanças feitas em uma janela são refletidas para as outras instantaneamente.
+zen-window-sync-migration-dialog-message = Nixo now syncs windows on the same device, so changes in one window are reflected across the others instantly.
 zen-window-sync-migration-dialog-learn-more = Saiba Mais
 zen-window-sync-migration-dialog-accept = Entendi
 zen-appmenu-new-blank-window = 

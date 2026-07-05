@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential = 
     .label = 從 Essentials 中移除
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] 以當前網址替換Essentials
-           *[false] 以當前網址替換釘選分頁
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = 重新命名
 tab-context-zen-edit-icon = 
@@ -45,6 +51,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = 確認
 zen-pinned-tab-replaced = 釘選分頁網址已替換為當前網址！
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = 成功重新命名分頁！
 zen-background-tab-opened-toast = 新分頁已在背景開啟！
 zen-workspace-renamed-toast = 成功重新命名工作區！
@@ -63,6 +73,8 @@ zen-icons-picker-emoji =
     .label = 表情符號
 zen-icons-picker-svg = 
     .label = 圖示
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = 操作
 zen-site-data-settings = 設定
 zen-generic-manage = 管理
@@ -118,7 +130,7 @@ zen-sidebar-notification-restart-safe-mode-label = 有東西壞掉了嗎？
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = 在安全模式下重新啟動
 zen-window-sync-migration-dialog-title = 讓您的視窗處於同步狀態
-zen-window-sync-migration-dialog-message = Zen現在能同步同裝置上的各個視窗，在某一視窗上的變動將會立即在其它視窗上反映出來。
+zen-window-sync-migration-dialog-message = Nixo now syncs windows on the same device, so changes in one window are reflected across the others instantly.
 zen-window-sync-migration-dialog-learn-more = 了解更多
 zen-window-sync-migration-dialog-accept = 明白了
 zen-appmenu-new-blank-window = 

@@ -10,10 +10,10 @@ tab-zen-split-tabs =
             [few] Złącz { $tabCount } karty
            *[other] Złącz { $tabCount } kart
         }
-    .accesskey = S
+    .accesskey = Pr
 zen-split-link = 
     .label = Otwórz link w widoku podzielonym
-    .accesskey = S
+    .accesskey = Pr
 zen-split-view-modifier-header = Widok podzielony
 zen-split-view-modifier-activate-reallocation = 
     .label = Aktywuj realokację

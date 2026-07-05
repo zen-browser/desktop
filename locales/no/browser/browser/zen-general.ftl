@@ -2,136 +2,138 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-current-profile-text = current profile
-unified-extensions-description = Extensions are used to bring more extra functionality into { -brand-short-name }.
+zen-panel-ui-current-profile-text = gjeldende profil
+unified-extensions-description = Utvidelser brukes for å få mer tilleggsfunksjonalitet inn i { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label =
         { $isEssential ->
             [true] Reset Essential Tab
            *[false] Reset Pinned Tab
         }
-    .accesskey = R
+    .accesskey = L
 tab-context-zen-add-essential = 
-    .label = Add to Essentials
-    .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max }
+    .label = Legg til i Essentials
+    .accesskey = Ø
+tab-context-zen-add-essential-badge = { $num } / { $max}
 tab-context-zen-remove-essential = 
-    .label = Remove from Essentials
-    .accesskey = R
+    .label = Fjern fra Essentials
+    .accesskey = L
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Rediger Essential URL
+           *[false] Rediger Pinned URL
         }
-    .accesskey = P
+    .accesskey = L
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
-    .accesskey = C
+    .label = Erstatt med gjeldende URL
+    .accesskey = K
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
-    .accesskey = E
+    .label = Rediger…
+    .accesskey = Ø
 tab-context-zen-edit-title = 
-    .label = Change Label…
+    .label = Endre etikett…
 tab-context-zen-edit-icon = 
-    .label = Change Icon…
-zen-themes-corrupted = Your { -brand-short-name } mods file is corrupted. They have been reset to the default theme.
-zen-shortcuts-corrupted = Your { -brand-short-name } shortcuts file is corrupted. They have been reset to the default shortcuts.
+    .label = Endre ikon…
+zen-themes-corrupted = Din { -brand-short-name } mods fil er skadet. De har blitt tilbakestilt til standardtemaet.
+zen-shortcuts-corrupted = { -brand-short-name } snarvei-filen din er skadet. De har blitt tilbakestilt til standard snarveier.
 # note: Do not translate the "<br/>" tags in the following string
 zen-new-urlbar-notification =
-    The new URL bar has been enabled, removing the need for new tab pages.<br/><br/>
-    Try opening a new tab to see the new URL bar in action!
-zen-disable = Disable
+    Den nye URL-linjen er aktivert, fjerner behovet for nye fanesider.<br/><br/>
+    Prøv å åpne en ny fane for å se den nye URL-linjen som brukes i handling!
+zen-disable = Deaktiver
 pictureinpicture-minimize-btn = 
     .aria-label = Minimize
     .tooltip = Minimize
-zen-panel-ui-gradient-generator-custom-color = Custom Color
-zen-copy-current-url-confirmation = Copied current URL!
-zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
+zen-panel-ui-gradient-generator-custom-color = Egendefinert farge
+zen-copy-current-url-confirmation = Kopierte gjeldende URL!
+zen-copy-current-url-as-markdown-confirmation = Kopierte gjeldende nettadresse som Markdown!
 zen-general-cancel-label = 
-    .label = Cancel
+    .label = Avbryt
 zen-general-confirm = 
-    .label = Confirm
-zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
-zen-tabs-renamed = Tab has been successfully renamed!
-zen-background-tab-opened-toast = New background tab opened!
-zen-workspace-renamed-toast = Workspace has been successfully renamed!
-zen-split-view-limit-toast = Can't add more panels to the split view!
+    .label = Bekreft
+zen-pinned-tab-replaced = Festet tab-URL har blitt erstattet med gjeldende URL!
+zen-pinned-tab-url-edited = Festet fane URL er oppdatert!
+zen-pinned-tab-url-invalid = Det ser ikke ut som en gyldig URL-adresse.
+zen-pinned-tab-edit-url-title = Rediger fast nettadresse
+zen-pinned-tab-edit-url-label = Skriv inn URL-adressen for den låste fanen skal peke til:
+zen-tabs-renamed = Kategorien har blitt omdøpt!
+zen-background-tab-opened-toast = Ny bakgrunnsfane åpnet!
+zen-workspace-renamed-toast = Arbeidsområdet har blitt omdøpt!
+zen-split-view-limit-toast = Kan ikke legge til flere paneler i delt visning!
 zen-toggle-compact-mode-button = 
-    .label = Compact Mode
-    .tooltiptext = Toggle Compact Mode
+    .label = Kompakt modus
+    .tooltiptext = Kompaktmodus av/på
 
 # note: Do not translate the "<br/>" tags in the following string
 
-zen-learn-more-text = Learn More
-zen-close-label = Close
+zen-learn-more-text = Finn ut mer
+zen-close-label = Lukk
 zen-singletoolbar-urlbar-placeholder-with-name = 
-    .placeholder = Search...
+    .placeholder = Søk...
 zen-icons-picker-emoji = 
     .label = Emojis
 zen-icons-picker-svg = 
-    .label = Icons
-urlbar-search-mode-zen_actions = Actions
-zen-site-data-settings = Settings
-zen-generic-manage = Manage
-zen-generic-more = More
-zen-generic-next = Next
-zen-essentials-promo-label = Add to Essentials
-zen-essentials-promo-sublabel = Keep your favorite tabs just a click away
+    .label = Ikoner
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
+urlbar-search-mode-zen_actions = Handlinger
+zen-site-data-settings = Innstillinger
+zen-generic-manage = Administrer
+zen-generic-more = Mer
+zen-generic-next = Neste
+zen-essentials-promo-label = Legg til i Essentials
+zen-essentials-promo-sublabel = Hold favorittfanene dine bare et klikk unna
 # These labels will be used for the site data panel settings
-zen-site-data-setting-allow = Allowed
-zen-site-data-setting-block = Blocked
-zen-site-data-protections-enabled = Enabled
-zen-site-data-protections-disabled = Disabled
+zen-site-data-setting-allow = Tillatt
+zen-site-data-setting-block = Blokkert
+zen-site-data-protections-enabled = Aktivert
+zen-site-data-protections-disabled = Deaktivert
 zen-site-data-setting-cross-site = Cross-Site cookie
 zen-site-data-security-info-extension = 
-    .label = Extension
+    .label = Utvidelse
 zen-site-data-security-info-secure = 
-    .label = Secure
+    .label = Sikker
 zen-site-data-security-info-not-secure = 
-    .label = Not Secure
+    .label = Ikke sikker
 zen-site-data-manage-addons = 
-    .label = Manage Extensions
+    .label = Oppdater utvidelser
 zen-site-data-get-addons = 
-    .label = Add Extensions
+    .label = Legg til utvidelser
 zen-site-data-site-settings = 
-    .label = All Site Settings
+    .label = Alle nettstedsinnstillinger
 zen-site-data-header-share = 
-    .tooltiptext = Share This Page
+    .tooltiptext = Del denne siden
 zen-site-data-header-reader-mode = 
-    .tooltiptext = Enter Reader Mode
+    .tooltiptext = Gå til lesemodus
 zen-site-data-header-screenshot = 
-    .tooltiptext = Take a Screenshot
+    .tooltiptext = Ta et skjermbilde
 zen-site-data-header-bookmark = 
-    .tooltiptext = Bookmark This Page
+    .tooltiptext = Bokmerk denne siden
 zen-urlbar-copy-url-button = 
-    .tooltiptext = Copy URL
-zen-site-data-setting-site-protection = Tracking Protection
+    .tooltiptext = Kopier URL
+zen-site-data-setting-site-protection = Sporer beskyttelse
 
 # Section: Feature callouts
 
-zen-site-data-panel-feature-callout-title = A new home for add-ons, permissions, and more
-zen-site-data-panel-feature-callout-subtitle = Click the icon to manage site settings, view security info, access extensions, and perform common actions.
+zen-site-data-panel-feature-callout-title = Et nytt hjem for tillegg, tillatelser og mer
+zen-site-data-panel-feature-callout-subtitle = Klikk på ikonet for å administrere innstillinger på nettstedet, se sikkerhetsinformasjon, tilgangsutvidelser og utføre vanlige handlinger.
 zen-open-link-in-glance = 
-    .label = Open Link in Glance
+    .label = Åpne link i sammenheng
     .accesskey = G
-zen-sidebar-notification-updated-heading = Update Complete!
+zen-sidebar-notification-updated-heading = Oppdatering fullført!
 
 # See ZenSidebarNotification.mjs to see how these would be used
 
-zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
+zen-sidebar-notification-updated-label = Hva er nytt i { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
-    .title = View Release Notes
-zen-sidebar-notification-restart-safe-mode-label = Something broke?
+    .title = Se utgivelsesnotater
+zen-sidebar-notification-restart-safe-mode-label = Noe er ødelagt?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
-    .title = Restart in Safe Mode
-zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
+    .title = Omstart i sikker modus
+zen-window-sync-migration-dialog-title = Behold Windows er synkronisert
 zen-window-sync-migration-dialog-message = Nixo now syncs windows on the same device, so changes in one window are reflected across the others instantly.
-zen-window-sync-migration-dialog-learn-more = Learn More
-zen-window-sync-migration-dialog-accept = Got It
+zen-window-sync-migration-dialog-learn-more = Finn ut mer
+zen-window-sync-migration-dialog-accept = Har det
 zen-appmenu-new-blank-window = 
-    .label = New blank window
+    .label = Nytt tomt vindu

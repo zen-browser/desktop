@@ -21,15 +21,15 @@ tab-context-zen-remove-essential =
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] تحرير الرابط الأساسي
+           *[false] تحرير الرابط المثبت
         }
-    .accesskey = P
+    .accesskey = ب
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
-    .accesskey = C
+    .label = استبدال بالرابط الحالي
+    .accesskey = ج
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
+    .label = تحرير…
     .accesskey = ه
 tab-context-zen-edit-title = 
     .label = تغيير الاسم...
@@ -53,14 +53,14 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = تأكيد
 zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL.
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = تم تحديث رابط علامة التبويب المثبتة!
+zen-pinned-tab-url-invalid = هذا لا يبدو مثل عنوان URL صالح.
+zen-pinned-tab-edit-url-title = تحرير الرابط المثبت
+zen-pinned-tab-edit-url-label = أدخل عنوان URL هذا التبويب المثبت ينبغي أن يشير إلى:
 zen-tabs-renamed = تم تغيير اسم التبويب بنجاح!
 zen-background-tab-opened-toast = تم فتح علامة تبويب خلفية جديدة!
 zen-workspace-renamed-toast = تم تغيير اسم مساحة العمل بنجاح!
-zen-split-view-limit-toast = Can't add more panels to the split view!
+zen-split-view-limit-toast = لا يمكن إضافة المزيد من اللوحات إلى طريقة عرض التقسيم!
 zen-toggle-compact-mode-button = 
     .label = الوضع المدمج
     .tooltiptext = تبديل الوضع المدمج
@@ -75,6 +75,8 @@ zen-icons-picker-emoji =
     .label = ايموجي
 zen-icons-picker-svg = 
     .label = الأيقونات
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = الإجراءات
 zen-site-data-settings = الاعدادات
 zen-generic-manage = إدارة
@@ -118,7 +120,7 @@ zen-site-data-panel-feature-callout-title = منزل جديد للإضافات �
 zen-site-data-panel-feature-callout-subtitle = انقر على أيقونة لإدارة إعدادات الموقع، وعرض معلومات الأمان، والوصول إلى الملحقات، وتنفيذ الإجراءات الشائعة.
 zen-open-link-in-glance = 
     .label = فتح الرابط بلمحة
-    .accesskey = G
+    .accesskey = ج
 zen-sidebar-notification-updated-heading = اكتمل التحديث!
 
 # See ZenSidebarNotification.mjs to see how these would be used

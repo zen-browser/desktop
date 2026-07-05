@@ -5,18 +5,18 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Expand Pinned Tabs
-           *[false] Collapse Pinned Tabs
+            [true] Laajenna Kiinnitetyt Välilehdet
+           *[false] Tiivistetyt Välilehdet
         }
 zen-menubar-appearance = 
-    .label = Appearance
+    .label = Ulkoasu
 zen-menubar-appearance-description = 
-    .label = Websites will use:
+    .label = Sivustot käyttävät:
 zen-menubar-appearance-auto = 
-    .label = Automatic
+    .label = Automaattinen
 zen-menubar-appearance-light = 
-    .label = Light
+    .label = Vaalea
 zen-menubar-appearance-dark = 
-    .label = Dark
+    .label = Tumma
 zen-menubar-new-blank-window = 
-    .label = New Blank Window
+    .label = Uusi Tyhjä Ikkuna

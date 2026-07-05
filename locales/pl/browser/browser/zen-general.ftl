@@ -14,22 +14,22 @@ tab-context-zen-reset-pinned-tab =
 tab-context-zen-add-essential = 
     .label = Dodaj do niezbędnych
     .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max }
+tab-context-zen-add-essential-badge = { $num } / { $max}
 tab-context-zen-remove-essential = 
     .label = Usuń z niezbędnych
     .accesskey = R
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Edytuj niezbędny adres URL
+           *[false] Edytuj przypięty adres URL
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = Zastąp bieżącym adresem URL
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
+    .label = Edytuj…
     .accesskey = E
 tab-context-zen-edit-title = 
     .label = Zmień nazwę...
@@ -53,10 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Potwierdź
 zen-pinned-tab-replaced = URL przypiętej karty został zastąpiony bieżącym adresem!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = URL przypiętej karty został zaktualizowany!
+zen-pinned-tab-url-invalid = To nie wygląda jak poprawny adres URL.
+zen-pinned-tab-edit-url-title = Edytuj przypięty adres URL
+zen-pinned-tab-edit-url-label = Wprowadź adres URL przypiętej karty powinien wskazywać na:
 zen-tabs-renamed = Nazwa karty została pomyślnie zmieniona!
 zen-background-tab-opened-toast = Nowa karta została otworzona w tle!
 zen-workspace-renamed-toast = Zmieniono nazwę przestrzeni roboczej!
@@ -75,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Emotikony
 zen-icons-picker-svg = 
     .label = Ikony
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Akcje
 zen-site-data-settings = Ustawienia
 zen-generic-manage = Zarządzaj

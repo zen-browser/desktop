@@ -10,21 +10,27 @@ tab-context-zen-reset-pinned-tab =
             [true] Nullstill Essential fane
            *[false] Nullstill festet fane
         }
-    .accesskey = R
+    .accesskey = L
 tab-context-zen-add-essential = 
     .label = Legg til i Essentials
-    .accesskey = E
-tab-context-zen-add-essential-badge = { $num } / { $max }
+    .accesskey = Ø
+tab-context-zen-add-essential-badge = { $num } / { $max}
 tab-context-zen-remove-essential = 
     .label = Fjern fra Essentials
-    .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+    .accesskey = L
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Erstatt Essential nettadresse med gjeldende
-           *[false] Erstatt festet nettadresse med gjeldende
+            [true] Rediger Essential URL
+           *[false] Rediger Pinned URL
         }
-    .accesskey = C
+    .accesskey = L
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Erstatt med gjeldende URL
+    .accesskey = K
+tab-context-zen-edit-pinned-url = 
+    .label = Rediger…
+    .accesskey = Ø
 tab-context-zen-edit-title = 
     .label = Endre etikett...
 tab-context-zen-edit-icon = 
@@ -47,6 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Bekreft
 zen-pinned-tab-replaced = Festet fanes nettadresse har blit erstattet med gjeldende nettadresse!
+zen-pinned-tab-url-edited = Festet fane URL er oppdatert!
+zen-pinned-tab-url-invalid = Det ser ikke ut som en gyldig URL-adresse.
+zen-pinned-tab-edit-url-title = Rediger fast nettadresse
+zen-pinned-tab-edit-url-label = Skriv inn URL-adressen for den låste fanen skal peke til:
 zen-tabs-renamed = Fanen har fått nytt navn!
 zen-background-tab-opened-toast = Ny bakgrunnsfane åpnet!
 zen-workspace-renamed-toast = Arbeidsområdet har fått nytt navn!
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Emojier
 zen-icons-picker-svg = 
     .label = Ikoner
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Handlinger
 zen-site-data-settings = Innstillinger
 zen-generic-manage = Behandle
@@ -120,7 +132,7 @@ zen-sidebar-notification-restart-safe-mode-label = Er noe ødelagt?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Start på nytt i sikker modus
 zen-window-sync-migration-dialog-title = Hold vinduene dine synkronisert
-zen-window-sync-migration-dialog-message = Zen synkroniserer nå vinduer på samme enhet, så endringer i ett vindu blir reflekterte på tvers de andre med en gang.
+zen-window-sync-migration-dialog-message = Nixo now syncs windows on the same device, so changes in one window are reflected across the others instantly.
 zen-window-sync-migration-dialog-learn-more = Lær mer
 zen-window-sync-migration-dialog-accept = Skjønner
 zen-appmenu-new-blank-window = 

@@ -23,4 +23,4 @@ zen-welcome-start-browsing = Pustit se do toho!
 zen-welcome-default-search-title = Váš výchozí vyhledávač
 zen-welcome-default-search-description = Vyberte si svůj výchozí vyhledávač. Později jej můžete změnit!
 zen-welcome-skip-button = Přeskočit
-zen-welcome-finished = Váš Zen byl úspěšně nastaven!
+zen-welcome-finished = Your Nixo has been set up correctly!

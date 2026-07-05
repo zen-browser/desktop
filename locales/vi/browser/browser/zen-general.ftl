@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential = 
     .label = Gỡ khỏi thẻ chính
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Thay thế URL của thẻ chính bằng URL hiện tại
-           *[false] Thay thế URL của thẻ đã ghim bằng URL hiện tại
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Đổi tên...
 tab-context-zen-edit-icon = 
@@ -45,6 +51,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Xác nhận
 zen-pinned-tab-replaced = URL của thẻ đã ghim đã được thay thế bằng URL hiện tại!
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Thẻ đã được đổi tên!
 zen-background-tab-opened-toast = Một thẻ mới đã được mở dưới nền!
 zen-workspace-renamed-toast = Không gian làm việc đã được đổi tên!
@@ -63,6 +73,8 @@ zen-icons-picker-emoji =
     .label = Biểu cảm
 zen-icons-picker-svg = 
     .label = Biểu tượng
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Hành động
 zen-site-data-settings = Thiết lập
 zen-generic-manage = Quản lý
@@ -118,7 +130,7 @@ zen-sidebar-notification-restart-safe-mode-label = Có lỗi xảy ra?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Khởi động lại ở Chế độ an toàn
 zen-window-sync-migration-dialog-title = Luôn đồng bộ các cửa sổ
-zen-window-sync-migration-dialog-message = Zen hiện đã đồng bộ hóa các cửa sổ trên cùng một thiết bị, mọi thay đổi sẽ được cập nhật tức thì trên toàn bộ cửa sổ còn lại.
+zen-window-sync-migration-dialog-message = Nixo now syncs windows on the same device, so changes in one window are reflected across the others instantly.
 zen-window-sync-migration-dialog-learn-more = Tìm hiểu thêm
 zen-window-sync-migration-dialog-accept = Đã hiểu
 zen-appmenu-new-blank-window = 

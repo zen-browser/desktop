@@ -21,15 +21,15 @@ tab-context-zen-remove-essential =
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Editar URL Esencial
+           *[false] Editar URL Anclada
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = Reemplazar con la URL actual
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
+    .label = Editar…
     .accesskey = E
 tab-context-zen-edit-title = 
     .label = Cambiar etiqueta...
@@ -53,10 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Confirmar
 zen-pinned-tab-replaced = La URL de la pestaña fijada se ha reemplazado por la URL actual.
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = ¡La URL de la pestaña anclada ha sido actualizada!
+zen-pinned-tab-url-invalid = Esto no parece una URL válida.
+zen-pinned-tab-edit-url-title = Editar URL anclada
+zen-pinned-tab-edit-url-label = Introduzca la URL a la que debe apuntar esta pestaña fija:
 zen-tabs-renamed = ¡La pestaña se ha renombrado con éxito!
 zen-background-tab-opened-toast = ¡Nueva pestaña abierta en segundo plano!
 zen-workspace-renamed-toast = ¡El espacio de trabajo ha sido renombrado con éxito!
@@ -75,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Iconos
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Acciones
 zen-site-data-settings = Ajustes
 zen-generic-manage = Administrar
@@ -118,7 +120,7 @@ zen-site-data-panel-feature-callout-title = Un nuevo hogar para complementos, pe
 zen-site-data-panel-feature-callout-subtitle = Haga clic en el icono para administrar la configuración del sitio, ver información de seguridad, acceder a extensiones, y realizar acciones comunes.
 zen-open-link-in-glance = 
     .label = Abrir enlace en Glance
-    .accesskey = G
+    .accesskey = M
 zen-sidebar-notification-updated-heading = ¡Actualización completada!
 
 # See ZenSidebarNotification.mjs to see how these would be used

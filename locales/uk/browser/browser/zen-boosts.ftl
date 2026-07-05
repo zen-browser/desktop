@@ -11,7 +11,7 @@ zen-boost-edit-reset =
 zen-boost-edit-delete = 
     .label = Видалити підсилення
 zen-boost-size = Розмір
-zen-boost-case = Case
+zen-boost-case = Звернення
 zen-boost-zap = Сховати
 zen-boost-code = Код
 zen-boost-back = Назад
@@ -44,14 +44,14 @@ zen-zap-done = Готово
 zen-unzap-tooltip =
     { $elementCount ->
         [0] Жоден елемент не сховано
-        [1] Сховано {$elementCount} елемент
-        [few] Сховано {$elementCount} елементи
-       *[other] Сховано {$elementCount} елементів
+        [1] Сховано { $elementCount } елемент
+        [few] Сховано { $elementCount } елементи
+       *[other] Сховано { $elementCount } елементів
     }
 zen-boost-save = 
-    .label = Export Boost
+    .label = Пришвидшувач експорту
 zen-boost-load = 
-    .label = Import Boost
+    .label = Імпорт прискорювача
 zen-panel-ui-boosts-exported-message = Підсилення експортовано!
 zen-site-data-boosts = Підсилення
 zen-site-data-create-boost = 

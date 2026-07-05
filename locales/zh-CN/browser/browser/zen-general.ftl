@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = 已使用 { $num } / { $max }
 tab-context-zen-remove-essential = 
     .label = 从常驻标签页中移除
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] 用当前内容替换常驻标签页URL
-           *[false] 用当前内容替换标签页URL
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = 用当前URL替换
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = 编辑…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = 更改标签…
 tab-context-zen-edit-icon = 
@@ -45,6 +51,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = 确认
 zen-pinned-tab-replaced = 固定标签页的网址已更新为当前页面网址！
+zen-pinned-tab-url-edited = 置顶的标签 URL 已更新！
+zen-pinned-tab-url-invalid = 这看起来不像一个有效的 URL。
+zen-pinned-tab-edit-url-title = 编辑固定的 URL
+zen-pinned-tab-edit-url-label = 输入固定标签应指向的网址：
 zen-tabs-renamed = 标签页重命名成功！
 zen-background-tab-opened-toast = 新的后台标签页已打开 ！
 zen-workspace-renamed-toast = 工作区重命名成功！
@@ -63,6 +73,8 @@ zen-icons-picker-emoji =
     .label = 表情符号
 zen-icons-picker-svg = 
     .label = 图标集
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = 操作
 zen-site-data-settings = 设置
 zen-generic-manage = 管理
@@ -118,7 +130,7 @@ zen-sidebar-notification-restart-safe-mode-label = 出了什么问题吗？
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = 在排障模式下重启
 zen-window-sync-migration-dialog-title = 保持您的窗口同步
-zen-window-sync-migration-dialog-message = Zen 现已支持同一设备上的窗口同步，一个窗口的更改将即时同步到其他窗口。
+zen-window-sync-migration-dialog-message = Nixo now syncs windows on the same device, so changes in one window are reflected across the others instantly.
 zen-window-sync-migration-dialog-learn-more = 了解更多
 zen-window-sync-migration-dialog-accept = 知道了
 zen-appmenu-new-blank-window = 

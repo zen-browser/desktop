@@ -657,7 +657,11 @@ class nsZenWorkspaces {
   }
 
   #getSyncedTabState(tab) {
-    return JSON.parse(SessionStore.getTabState(tab));
+    try {
+      return JSON.parse(SessionStore.getTabState(tab));
+    } catch (e) {
+      return null;
+    }
   }
 
   #getSyncedTabUserContextId(tabData) {

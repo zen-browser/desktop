@@ -7,3 +7,4 @@
 
 - name: zen.keyboard.shortcuts.disable-mainkeyset-clear
   value: false # for debugging
+# NIXO enhancements

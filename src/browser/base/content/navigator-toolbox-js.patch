@@ -53,9 +53,9 @@ index 1982ebadbd2df5ea309db487a4f30288f1af43e5..926c681d4733c84768a23407d60ca058
 +          gUnifiedExtensions.togglePanel(
 +            event,
 +            null,
-+            window.gZenSiteDataPanel.unifiedPanel,
-+            window.gZenSiteDataPanel.unifiedPanelView,
-+            window.gZenSiteDataPanel.anchor,
++            window.gNixoSiteDataPanel.unifiedPanel,
++            window.gNixoSiteDataPanel.unifiedPanelView,
++            window.gNixoSiteDataPanel.anchor,
 +          );
 +          break;
 +

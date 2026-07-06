@@ -58,3 +58,4 @@ add_task(async function test_Restore_Closed_Tabs() {
     await BrowserTestUtils.removeTab(tab);
   }
 });
+// NIXO

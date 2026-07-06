@@ -6,7 +6,7 @@ index 98b10b1d789c20b3463de4f703af102f6908318b..29534480fbeda6d66cb9dab81afdaed8
  
      let tabbrowser = browser.documentGlobal.gBrowser;
      if (tabbrowser) {
-+      browser.documentGlobal.gZenMediaController.updateMediaSharing(state);
++      browser.documentGlobal.gNixoMediaController.updateMediaSharing(state);
        tabbrowser.updateBrowserSharing(browser, {
          webRTC: state,
        });

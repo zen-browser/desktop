@@ -5,8 +5,8 @@
  */
 
 zen-essentials-promo {
-  background: color-mix(in srgb, var(--zen-primary-color) 40%, transparent);
-  border: 1px solid var(--zen-primary-color);
+  background: color-mix(in srgb, var(var(--nixo-color-brand)) 40%, transparent);
+  border: 1px solid var(var(--nixo-color-brand));
   border-radius: var(--border-radius-medium);
   justify-content: center;
   align-items: center;
@@ -18,7 +18,7 @@ zen-essentials-promo {
   transition: background 0.1s;
 
   &:not([dragover="true"]) {
-    background: color-mix(in srgb, var(--zen-primary-color) 60%, transparent);
+    background: color-mix(in srgb, var(var(--nixo-color-brand)) 60%, transparent);
     outline: 1px dashed currentColor;
   }
 

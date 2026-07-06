@@ -833,7 +833,7 @@ body {
 
 #import-animation-border {
   position: absolute;
-  border-radius: var(--zen-border-radius);
+  border-radius: var(var(--nixo-radius-lg));
   left: 0;
   right: 0;
   top: 0;

@@ -30,3 +30,4 @@ add_task(async function test_clicking_icon_opens_and_prepares_panel() {
     BrowserTestUtils.removeTab(tab);
   }
 });
+// NIXO

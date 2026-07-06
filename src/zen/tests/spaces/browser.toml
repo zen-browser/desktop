@@ -28,6 +28,8 @@ support-files = [
 
 ["browser_select_tab_switches_space.js"]
 
+["browser_theme_picker_visualization.js"]
+
 ["browser_unload_all_other_spaces.js"]
 
 ["browser_workspace_bookmarks.js"]

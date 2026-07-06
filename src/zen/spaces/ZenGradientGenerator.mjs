@@ -580,6 +580,24 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return JSON.stringify({ x: Math.round(x), y: Math.round(y) });
   }
 
+  updateThemePickerVisualization() {
+    const gradient = this.panel.querySelector(".zen-theme-picker-gradient");
+    const primaryDot = this.dots.find(dot => dot.ID === 0);
+    let mode = "lightness";
+
+    if (primaryDot?.type === EXPLICIT_LIGHTNESS_TYPE) {
+      mode = "saturation";
+    } else if (primaryDot?.type === EXPLICIT_BLACKWHITE_TYPE) {
+      mode = "grayscale";
+    }
+
+    gradient.setAttribute("data-color-mode", mode);
+    gradient.style.setProperty(
+      "--zen-theme-picker-lightness",
+      `${primaryDot?.lightness ?? this.#currentLightness}%`
+    );
+  }
+
   createDot(color, fromWorkspace = false) {
     const [r, g, b] = color.c;
     const dot = document.createElement("div");
@@ -624,6 +642,9 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         type: color.type,
         lightness: color.lightness,
       });
+      if (id === 0) {
+        this.updateThemePickerVisualization();
+      }
     }
     if (!fromWorkspace) {
       this.updateCurrentWorkspace(true);
@@ -762,6 +783,9 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       lightness: this.#currentLightness,
       type: dotData.type,
     });
+    if (id === 0) {
+      this.updateThemePickerVisualization();
+    }
   }
 
   calculateCompliments(dots, action = "update", useHarmony = "") {
@@ -952,6 +976,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         });
       }
     });
+    this.updateThemePickerVisualization();
   }
 
   onThemePickerClick(event) {
@@ -1777,6 +1802,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       if (!skipUpdate) {
         browser.gZenThemePicker.dots = [];
         browser.gZenThemePicker.recalculateDots(workspaceTheme.gradientColors);
+        browser.gZenThemePicker.updateThemePickerVisualization();
       }
     });
 
@@ -1925,6 +1951,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   handlePanelOpen() {
     this.initThemePicker();
+    this.updateThemePickerVisualization();
     setTimeout(() => {
       this.updateCurrentWorkspace();
     }, 200);

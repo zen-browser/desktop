@@ -244,15 +244,71 @@
 }
 
 .zen-theme-picker-gradient {
+  --zen-theme-picker-lightness: 50%;
+  --zen-theme-picker-hues: conic-gradient(
+    from 90deg,
+    hsl(0 100% 50%),
+    hsl(60 100% 50%),
+    hsl(120 100% 50%),
+    hsl(180 100% 50%),
+    hsl(240 100% 50%),
+    hsl(300 100% 50%),
+    hsl(360 100% 50%)
+  );
+  --zen-theme-picker-pattern: radial-gradient(
+    light-dark(rgba(0, 0, 0, 0.18), rgba(255, 255, 255, 0.14)) 1px,
+    transparent 0
+  );
   position: relative;
   overflow: hidden;
   border-radius: calc(var(--panel-border-radius) - 4px);
 
   min-height: calc(var(--panel-width) - var(--panel-padding) * 2 - 2px);
   background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.03));
-  background-image: radial-gradient(light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.05)) 1px, transparent 0);
-  background-position: -23px -23px;
-  background-size: 6px 6px;
+  background-image:
+    var(--zen-theme-picker-pattern),
+    radial-gradient(
+      circle,
+      black 0%,
+      transparent 50%,
+      hsl(0 0% 92.5% / 92.5%) 100%
+    ),
+    var(--zen-theme-picker-hues);
+  background-position:
+    -23px -23px,
+    center,
+    center;
+  background-size:
+    6px 6px,
+    100% 100%,
+    100% 100%;
+
+  &[data-color-mode="saturation"] {
+    --zen-theme-picker-hues: conic-gradient(
+      from 90deg,
+      hsl(0 100% var(--zen-theme-picker-lightness)),
+      hsl(60 100% var(--zen-theme-picker-lightness)),
+      hsl(120 100% var(--zen-theme-picker-lightness)),
+      hsl(180 100% var(--zen-theme-picker-lightness)),
+      hsl(240 100% var(--zen-theme-picker-lightness)),
+      hsl(300 100% var(--zen-theme-picker-lightness)),
+      hsl(360 100% var(--zen-theme-picker-lightness))
+    );
+    background-image:
+      var(--zen-theme-picker-pattern),
+      radial-gradient(
+        circle,
+        transparent 0%,
+        hsl(0 0% var(--zen-theme-picker-lightness) / 92.5%) 100%
+      ),
+      var(--zen-theme-picker-hues);
+  }
+
+  &[data-color-mode="grayscale"] {
+    background-image:
+      var(--zen-theme-picker-pattern),
+      radial-gradient(circle, black 0%, hsl(0 0% 92.5%) 100%);
+  }
 
   & .zen-theme-picker-dot {
     position: fixed;

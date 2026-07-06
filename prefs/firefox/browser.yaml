@@ -99,3 +99,4 @@
 # Only enabled for windows, doesn't really fit inside Zen.
 - name: browser.startup.preXulSkeletonUI
   value: false
+# NIXO enhancements

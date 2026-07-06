@@ -556,3 +556,4 @@ add_task(async function test_setAsDefaultPDFHandler_useOpenWithDisabled() {
     await SpecialPowers.popPrefEnv();
   }
 });
+// NIXO

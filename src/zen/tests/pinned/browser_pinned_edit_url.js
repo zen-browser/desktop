@@ -382,3 +382,4 @@ add_task(async function test_EditPinnedUrl_PrefillsWithStoredUrl() {
     await BrowserTestUtils.removeTab(tab);
   }
 });
+// NIXO

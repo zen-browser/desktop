@@ -216,3 +216,12 @@ class nsZenWorkspaceIcons extends MozXULElement {
 }
 
 customElements.define("zen-workspace-icons", nsZenWorkspaceIcons);
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO

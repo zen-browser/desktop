@@ -333,7 +333,7 @@ body,
     opacity 0.2s ease-in-out;
 
   &:hover {
-    background: var(--zen-primary-color);
+    background: var(var(--nixo-color-brand));
     transition: background 0.2s ease-in-out;
     transition-delay: 0.2s;
     opacity: 1;

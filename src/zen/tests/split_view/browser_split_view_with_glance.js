@@ -110,3 +110,4 @@ add_task(async function test_Basic_Split_View_Glance_Split() {
   );
   BrowserTestUtils.removeTab(tab);
 });
+// NIXO

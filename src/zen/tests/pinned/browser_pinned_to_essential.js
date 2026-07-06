@@ -32,3 +32,4 @@ add_task(async function test_Pinned_To_Essential() {
   await promise;
   await BrowserTestUtils.removeTab(newTab);
 });
+// NIXO

@@ -80,3 +80,4 @@ add_task(async function test_double_toolbar_keeps_typed_value_on_blur() {
   gURLBar.handleRevert();
   await SpecialPowers.popPrefEnv();
 });
+// NIXO

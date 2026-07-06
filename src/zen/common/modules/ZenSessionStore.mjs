@@ -52,3 +52,12 @@ class ZenSessionStore extends nsZenPreloadedFeature {
 }
 
 window.gZenSessionStore = new ZenSessionStore();
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO

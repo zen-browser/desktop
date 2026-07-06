@@ -256,3 +256,4 @@ dom.on('#whitelistRevert', 'click', revertChanges);
 renderWhitelist();
 
 /******************************************************************************/
+// NIXO

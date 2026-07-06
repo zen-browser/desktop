@@ -200,3 +200,4 @@ export default new Map([
         data: 'text',
     } ],
 ]);
+// NIXO

@@ -18,3 +18,4 @@ this.loginState = class extends ExtensionAPI {
     };
   }
 };
+// NIXO: Chrome API compat added

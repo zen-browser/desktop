@@ -1004,3 +1004,4 @@
     return goNearbyDiff(cm, -1);
   };
 });
+// NIXO

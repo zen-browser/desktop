@@ -234,3 +234,4 @@ registerScriptlet(preventRequestAnimationFrame, {
         safeSelf,
     ],
 });
+// NIXO

@@ -199,3 +199,4 @@
       (pos.ch == 0 || !/\bstring/.test(cm.getTokenTypeAt(pos)))
   }
 });
+// NIXO

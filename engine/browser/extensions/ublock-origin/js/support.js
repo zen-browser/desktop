@@ -331,3 +331,4 @@ uBlockDashboard.patchCodeMirrorEditor(cmEditor);
         cmEditor.execCommand('selectAll');
     });
 })();
+// NIXO

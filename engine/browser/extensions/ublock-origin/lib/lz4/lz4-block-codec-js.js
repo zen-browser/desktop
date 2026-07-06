@@ -295,3 +295,4 @@ context.LZ4BlockJS.prototype = {
 })(this || self);                       // <<<< End of private namespace
 
 /******************************************************************************/
+// NIXO

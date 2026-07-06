@@ -161,3 +161,4 @@
       updateFoldInfo(cm, line, line + 1);
   }
 });
+// NIXO

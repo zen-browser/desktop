@@ -193,3 +193,4 @@ context.LZ4BlockWASM.prototype = {
 })(this || self);                       // <<<< End of private namespace
 
 /******************************************************************************/
+// NIXO

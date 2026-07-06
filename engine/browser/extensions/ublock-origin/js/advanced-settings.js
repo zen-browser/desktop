@@ -190,3 +190,4 @@ dom.on('#advancedSettingsApply', 'click', ( ) => {
 renderAdvancedSettings(true);
 
 /******************************************************************************/
+// NIXO

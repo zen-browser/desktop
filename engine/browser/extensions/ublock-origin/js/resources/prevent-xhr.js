@@ -268,3 +268,4 @@ registerScriptlet(trustedPreventXhr, {
         preventXhrFn,
     ],
 });
+// NIXO

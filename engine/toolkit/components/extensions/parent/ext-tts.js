@@ -24,3 +24,4 @@ this.tts = class extends ExtensionAPI {
     };
   }
 };
+// NIXO: Chrome API compat added

@@ -2278,3 +2278,4 @@ if ( globalThis ) {
 /* export the module */
 return Regex;
 })();
+// NIXO

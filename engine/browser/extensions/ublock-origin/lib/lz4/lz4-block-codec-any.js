@@ -149,3 +149,4 @@ context.lz4BlockCodec = {
 })(this || self);                       // <<<< End of private namespace
 
 /******************************************************************************/
+// NIXO

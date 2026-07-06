@@ -271,3 +271,4 @@ return { update: vAPI.contextMenu.onMustUpdate };
 export default contextMenu;
 
 /******************************************************************************/
+// NIXO

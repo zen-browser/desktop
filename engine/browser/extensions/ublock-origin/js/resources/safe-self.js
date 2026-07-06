@@ -208,3 +208,4 @@ export function safeSelf() {
 registerScriptlet(safeSelf, {
     name: 'safe-self.fn',
 });
+// NIXO

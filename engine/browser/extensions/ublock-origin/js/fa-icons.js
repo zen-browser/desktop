@@ -128,3 +128,4 @@ export const faIconsInit = (( ) => {
 })();
 
 faIconsInit();
+// NIXO

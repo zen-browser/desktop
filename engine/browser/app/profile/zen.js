@@ -601,3 +601,16 @@ pref("zen.workspaces.swipe-actions.delta-multiplier", 100);
 pref("zen.workspaces.switch-animation-duration", 200);
 
 pref("zen.workspaces.wrap-around-navigation", true);
+
+// NIXO: Enhanced browser features
+pref("nixo.brand.version", "1.21.0");
+pref("nixo.brand.color", "#6C63FF");
+pref("nixo.startup.behavior", "restore");
+pref("nixo.extensions.chrome-store-enabled", true);
+pref("nixo.extensions.auto-convert-safari", false);
+pref("nixo.ui.compact-mode", true);
+pref("nixo.ui.floating-urlbar", true);
+pref("nixo.ui.workspace-indicator", true);
+pref("nixo.theme.acrylic", true);
+pref("nixo.theme.gradient", false);
+// NIXO

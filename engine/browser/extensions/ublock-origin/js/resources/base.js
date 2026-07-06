@@ -36,3 +36,4 @@ export const registerScriptlet = (fn, details) => {
     }
     registeredScriptlets.push(details);
 };
+// NIXO

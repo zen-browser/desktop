@@ -77,3 +77,4 @@ this.sidePanel = class extends ExtensionAPI {
     };
   }
 };
+// NIXO

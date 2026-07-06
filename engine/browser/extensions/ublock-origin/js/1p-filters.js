@@ -382,3 +382,4 @@ cmEditor.on('changes', userFiltersChanged);
 CodeMirror.commands.save = applyChanges;
 
 /******************************************************************************/
+// NIXO

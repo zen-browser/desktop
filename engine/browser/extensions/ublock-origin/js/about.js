@@ -30,3 +30,4 @@ import { dom } from './dom.js';
 
     dom.text('#aboutNameVer', appData.name + ' ' + appData.version);
 })();
+// NIXO

@@ -1,7 +1,8 @@
 {
-  "name": "Nixo",
-  "version": "1.0.0",
-  "description": "",
+  "name": "nixo",
+  "displayName": "Nixo Browser",
+  "version": "1.21.0",
+  "description": "The most customizable browser ever built — fork of Zen Browser with Chrome & Safari extension support, modern UI, and unprecedented customization.",
   "lint-staged": {
     "**/*": ""
   },

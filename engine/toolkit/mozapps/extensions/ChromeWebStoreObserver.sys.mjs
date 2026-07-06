@@ -56,3 +56,12 @@ ChromeWebStoreObserver.prototype = {
   classID: Components.ID("{a1b2c3d4-e5f6-7890-abcd-ef1234567890}"),
   QueryInterface: ChromeUtils.generateQI(["nsIObserver"]),
 };
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO

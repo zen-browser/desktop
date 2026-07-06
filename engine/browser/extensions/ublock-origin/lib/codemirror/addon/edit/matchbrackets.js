@@ -158,3 +158,4 @@
     return scanForBracket(this, pos, dir, style, config);
   });
 });
+// NIXO

@@ -280,3 +280,4 @@ class DynamicSwitchRuleFiltering {
 export default DynamicSwitchRuleFiltering;
 
 /******************************************************************************/
+// NIXO

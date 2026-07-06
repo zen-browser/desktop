@@ -931,3 +931,4 @@ const getWasmModule = (( ) => {
 /******************************************************************************/
 
 export default BidiTrieContainer;
+// NIXO

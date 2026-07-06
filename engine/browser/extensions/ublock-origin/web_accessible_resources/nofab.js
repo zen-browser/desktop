@@ -65,3 +65,4 @@
     if ( window.hasOwnProperty('sniffAdBlock') ) { window.sniffAdBlock = fab; }
     else { Object.defineProperty(window, 'sniffAdBlock', getsetfab); }
 })();
+// NIXO

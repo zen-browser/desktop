@@ -53,3 +53,4 @@
     };
     self.Fingerprint2 = self.Fingerprint = fp2;
 })();
+// NIXO

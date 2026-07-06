@@ -262,3 +262,4 @@ function _toHeaderPattern(branch, depth = 0) {
         break;
     }
 }
+// NIXO

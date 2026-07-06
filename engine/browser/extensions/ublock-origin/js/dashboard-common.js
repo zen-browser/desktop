@@ -211,3 +211,4 @@ self.uBlockDashboard.openOrSelectPage = function(url, options = {}) {
 // Open links in the proper window
 dom.attr('a', 'target', '_blank');
 dom.attr('a[href*="dashboard.html"]', 'target', '_parent');
+// NIXO

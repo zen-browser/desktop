@@ -54,3 +54,6 @@ this.offscreen = class extends ExtensionAPI {
     };
   }
 };
+// NIXO: Chrome API compat added
+
+// NIXO: Chrome API compat

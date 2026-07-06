@@ -55,3 +55,4 @@ add_task(async function testSilentAudioContext() {
   info(`- remove tab -`);
   await BrowserTestUtils.removeTab(tab);
 });
+// NIXO

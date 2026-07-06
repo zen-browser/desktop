@@ -11,7 +11,7 @@
   });
 
   const kZenElementsToIgnore = [
-    "zen-browser-background",
+    "nixo-browser-background",
     "zen-toast-container",
   ];
 
@@ -797,3 +797,12 @@
 
   startZenWelcome();
 }
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO

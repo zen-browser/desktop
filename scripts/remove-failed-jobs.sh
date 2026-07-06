@@ -4,7 +4,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 gh_bulk_delete_workflow_runs() {
-  local repo=zen-browser/$1
+  local repo=nixo-browser/$1
 
   # Ensure the repo argument is provided
   if [[ -z "$repo" ]]; then

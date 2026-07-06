@@ -1,0 +1,29 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# NIXO EXTENSION COMPATIBILITY PREFERENCES
+
+# Enable Chrome extension API compatibility layer
+- name: nixo.extensions.chrome-compat
+  value: true
+
+# Enable Safari Web Extension conversion support
+- name: nixo.extensions.safari-compat
+  value: true
+
+# Show a banner when a Chrome extension is installed
+- name: nixo.extensions.show-compat-banner
+  value: true
+
+# Automatically convert Safari extensions on install
+- name: nixo.extensions.auto-convert-safari
+  value: false
+
+# Enable experimental Manifest V3 features
+- name: nixo.extensions.experimental-mv3
+  value: true
+
+# Enable the Extension Compatibility Dashboard
+- name: nixo.extensions.compat-dashboard
+  value: true

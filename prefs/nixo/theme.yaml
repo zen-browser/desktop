@@ -1,0 +1,53 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# NIXO THEME ENHANCEMENTS
+
+# Enable frosted glass effects in the UI
+- name: nixo.theme.frosted-glass
+  value: true
+
+# Enable accent color glow effects
+- name: nixo.theme.accent-glow
+  value: true
+
+# Accent color saturation boost (0 = grayscale, 100 = normal, 200 = vibrant)
+- name: nixo.theme.accent-vibrancy
+  value: 100
+
+# Enable dynamic scrollbar theming
+- name: nixo.theme.dynamic-scrollbars
+  value: true
+
+# Background image for the browser chrome
+- name: nixo.theme.chrome-background
+  value: ""
+
+# Chrome background blur amount (0-50px)
+- name: nixo.theme.chrome-background-blur
+  value: 0
+
+# Enable animated tab transitions
+- name: nixo.theme.animated-tabs
+  value: true
+
+# Enable compact mode animations
+- name: nixo.theme.animations-enabled
+  value: true
+
+# Tab appearance style: "modern", "classic", "minimal"
+- name: nixo.theme.tab-style
+  value: "modern"
+
+# Sidebar width when expanded (in px)
+- name: nixo.theme.sidebar-width
+  value: 280
+
+# Show workspace indicator as colorful bar
+- name: nixo.theme.colorful-workspaces
+  value: true
+
+# Enable grainy background texture
+- name: nixo.theme.grainy-texture
+  value: false

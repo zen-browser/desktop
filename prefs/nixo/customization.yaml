@@ -1,0 +1,45 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# NIXO CUSTOMIZATION PREFERENCES
+
+# Enable the complete customization system
+- name: nixo.customization.enabled
+  value: true
+
+# Global custom CSS injected into the browser chrome
+- name: nixo.customization.css.global
+  value: ""
+
+# Tab-level custom CSS for web content
+- name: nixo.customization.css.tab
+  value: ""
+
+# Saved window layouts (JSON array)
+- name: nixo.customization.layouts
+  value: "[]"
+
+# Current active layout preset
+- name: nixo.customization.active-preset
+  value: "classic"
+
+# Enable user scripts (Greasemonkey-style)
+- name: nixo.customization.user-scripts
+  value: true
+
+# Enable the CSS live editor in Developer Tools
+- name: nixo.customization.css-editor
+  value: true
+
+# Enable layout presets (quick mode switching)
+- name: nixo.customization.layout-presets
+  value: true
+
+# Default accent color preset name
+- name: nixo.customization.accent-preset
+  value: "dynamic"
+
+# Accent color saturation multiplier (0-200%)
+- name: nixo.customization.accent-saturation
+  value: 100

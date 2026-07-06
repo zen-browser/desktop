@@ -5,7 +5,7 @@
 const lazy = {};
 
 ChromeUtils.defineLazyGetter(lazy, "browserBackgroundElement", () => {
-  return document.getElementById("zen-browser-background");
+  return document.getElementById("nixo-browser-background");
 });
 
 ChromeUtils.defineLazyGetter(lazy, "toolbarBackgroundElement", () => {
@@ -209,3 +209,12 @@ export class ZenSpacesSwipe {
     return this._swipeState?.isGestureActive;
   }
 }
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO

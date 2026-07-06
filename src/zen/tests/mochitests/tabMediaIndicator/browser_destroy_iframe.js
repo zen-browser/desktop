@@ -48,3 +48,4 @@ function removeIframe(tab) {
     content.document.getElementsByTagName("iframe")[0].remove();
   });
 }
+// NIXO

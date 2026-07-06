@@ -51,3 +51,4 @@
 
 - name: browser.vpn_promo.enabled
   value: false
+# NIXO enhancements

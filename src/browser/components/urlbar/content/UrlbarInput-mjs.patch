@@ -121,10 +121,10 @@ index 0fba59d62af9d3cd05bfee2cf84cd8b7cf9bfd6e..3997a5109267f378b59aa6510cbacd07
  
      this.toggleAttribute("breakout-extend", true);
  
-+    this.window.gZenUIManager.onUrlbarOpen();
++    this.window.gNixoUIManager.onUrlbarOpen();
 +    if (this.zenUrlbarBehavior == 'float' || (this.zenUrlbarBehavior == 'floating-on-type' && !this.focusedViaMousedown)) {
 +      this.setAttribute("zen-floating-urlbar", "true");
-+      this.window.gZenUIManager.onFloatingURLBarOpen();
++      this.window.gNixoUIManager.onFloatingURLBarOpen();
 +    } else {
 +      this.removeAttribute("zen-floating-urlbar");
 +    }
@@ -137,7 +137,7 @@ index 0fba59d62af9d3cd05bfee2cf84cd8b7cf9bfd6e..3997a5109267f378b59aa6510cbacd07
  
 +    if (this._zenHandleUrlbarClose) {
 +      this._zenHandleUrlbarClose();
-+    } else if (!this._untrimmedValue || (this.#isAddressbar && (this.searchMode || this.window.gZenVerticalTabsManager._hasSetSingleToolbar))) {
++    } else if (!this._untrimmedValue || (this.#isAddressbar && (this.searchMode || this.window.gNixoVerticalTabsManager._hasSetSingleToolbar))) {
 +      // Restore the current page URL when the urlbar is empty on blur
 +      this.window.requestAnimationFrame(() => {
 +        this.handleRevert();
@@ -155,7 +155,7 @@ index 0fba59d62af9d3cd05bfee2cf84cd8b7cf9bfd6e..3997a5109267f378b59aa6510cbacd07
 +    this.document.documentGlobal.setTimeout(() => {
 +      this.window.document.documentElement.removeAttribute("supress-primary-adjustment");
 +    }, 100);
-+    this.window.gZenUIManager.onUrlbarClose();
++    this.window.gNixoUIManager.onUrlbarClose();
 +    this.removeAttribute("zen-floating-urlbar");
 +
      this.toggleAttribute("breakout-extend", false);
@@ -174,7 +174,7 @@ index 0fba59d62af9d3cd05bfee2cf84cd8b7cf9bfd6e..3997a5109267f378b59aa6510cbacd07
      }
  
      this.style.top = px(
-+      this.window.gZenVerticalTabsManager._hasSetSingleToolbar ?
++      this.window.gNixoVerticalTabsManager._hasSetSingleToolbar ?
        this.parentNode.getBoxQuads({
          ignoreTransforms: true,
          flush: false,
@@ -187,7 +187,7 @@ index 0fba59d62af9d3cd05bfee2cf84cd8b7cf9bfd6e..3997a5109267f378b59aa6510cbacd07
            return;
          }
  
-+        this.window.gZenVerticalTabsManager.recalculateURLBarHeight();
++        this.window.gNixoVerticalTabsManager.recalculateURLBarHeight();
          this.parentNode.style.setProperty(
            "--urlbar-container-height",
 -          px(getBoundsWithoutFlushing(this.parentNode).height)
@@ -218,7 +218,7 @@ index 0fba59d62af9d3cd05bfee2cf84cd8b7cf9bfd6e..3997a5109267f378b59aa6510cbacd07
      resultDetails = null,
      browser = this.window.gBrowser.selectedBrowser
    ) {
-+    openUILinkWhere = this.window.gZenUIManager.getOpenUILinkWhere(url, browser, openUILinkWhere);
++    openUILinkWhere = this.window.gNixoUIManager.getOpenUILinkWhere(url, browser, openUILinkWhere);
      if (this.#isAddressbar) {
        this.#prepareAddressbarLoad(
          url,
@@ -265,7 +265,7 @@ index 0fba59d62af9d3cd05bfee2cf84cd8b7cf9bfd6e..3997a5109267f378b59aa6510cbacd07
      }
 -
 +    this.window.dispatchEvent(
-+      new CustomEvent("Zen:UrlbarSearchModeChanged", {
++      new CustomEvent("Nixo:UrlbarSearchModeChanged", {
 +        detail: { searchMode },
 +      })
 +    );
@@ -276,7 +276,7 @@ index 0fba59d62af9d3cd05bfee2cf84cd8b7cf9bfd6e..3997a5109267f378b59aa6510cbacd07
  
      this.document.l10n.setAttributes(
        this.inputField,
-+      this.window.gZenVerticalTabsManager._hasSetSingleToolbar ? 'zen-singletoolbar-urlbar-placeholder-with-name' :
++      this.window.gNixoVerticalTabsManager._hasSetSingleToolbar ? 'zen-singletoolbar-urlbar-placeholder-with-name' :
        l10nId,
        l10nId == "urlbar-placeholder-with-name"
          ? { name: engineName }
@@ -312,7 +312,7 @@ index 0fba59d62af9d3cd05bfee2cf84cd8b7cf9bfd6e..3997a5109267f378b59aa6510cbacd07
 +        const isProbablyFloating =
 +          (this.zenUrlbarBehavior == "floating-on-type" &&
 +          this.hasAttribute("breakout-extend") && !this.focusedViaMousedown) ||
-+          (this.zenUrlbarBehavior == "float") || this.window.gZenVerticalTabsManager._hasSetSingleToolbar;
++          (this.zenUrlbarBehavior == "float") || this.window.gNixoVerticalTabsManager._hasSetSingleToolbar;
 +        if (event.type != "click" && isProbablyFloating || event.type == "click" && !isProbablyFloating) {
 +          return true;
 +        }

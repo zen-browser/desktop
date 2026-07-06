@@ -70,3 +70,4 @@ add_task(async function mute_web_audio() {
   info("- remove tab -");
   BrowserTestUtils.removeTab(tab);
 });
+// NIXO

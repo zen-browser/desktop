@@ -6,7 +6,7 @@ index 1026474bb1bc026987be01a8c18fa0927cb911bc..60294e0587147d86ace8e6d6985d8c6e
      "resource://gre/modules/ContextualIdentityService.sys.mjs",
    CustomizableUI:
      "moz-src:///browser/components/customizableui/CustomizableUI.sys.mjs",
-+  ZenCustomizableUI: "resource:///modules/ZenCustomizableUI.sys.mjs",
++  NixoCustomizableUI: "resource:///modules/NixoCustomizableUI.sys.mjs",
    DevToolsSocketStatus:
      "resource://devtools/shared/security/DevToolsSocketStatus.sys.mjs",
    DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
@@ -17,7 +17,7 @@ index 1026474bb1bc026987be01a8c18fa0927cb911bc..60294e0587147d86ace8e6d6985d8c6e
 -  if (backDisabled == aWebNavigation.canGoBack) {
 +  var canGoBack = aWebNavigation.canGoBack;
 +  if (!canGoBack) {
-+    canGoBack = gZenCommonActions.shouldCloseTabOnBack();
++    canGoBack = gNixoCommonActions.shouldCloseTabOnBack();
 +  }
 +  
 +  if (backDisabled == canGoBack) {
@@ -55,8 +55,8 @@ index 1026474bb1bc026987be01a8c18fa0927cb911bc..60294e0587147d86ace8e6d6985d8c6e
      }
  
      document.l10n.setAttributes(this._message, messageId, l10nArgs);
-+    if (window.gZenUIManager?.showToast) {
-+      return window.gZenUIManager.showToast(messageId, {
++    if (window.gNixoUIManager?.showToast) {
++      return window.gNixoUIManager.showToast(messageId, {
 +        hideCheckmark,
 +        descriptionId,
 +        l10nArgs,

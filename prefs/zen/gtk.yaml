@@ -12,3 +12,4 @@
 - name: zen.widget.linux.transparency
   value: false
   condition: "defined(MOZ_WIDGET_GTK)"
+# NIXO enhancements

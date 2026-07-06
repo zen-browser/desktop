@@ -14,7 +14,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 });
 
 ChromeUtils.defineLazyGetter(lazy, "browserBackgroundElement", () => {
-  return document.getElementById("zen-browser-background");
+  return document.getElementById("nixo-browser-background");
 });
 
 ChromeUtils.defineLazyGetter(lazy, "toolbarBackgroundElement", () => {
@@ -1686,7 +1686,7 @@ class nsZenWorkspaces {
   }
 
   #fixTabPositions() {
-    // See issue https://github.com/zen-browser/desktop/issues/10157
+    // See issue https://github.com/nixo-browser/desktop/issues/10157
     if (this.tabContainer) {
       this.tabContainer._invalidateCachedTabs();
     }
@@ -2130,7 +2130,7 @@ class nsZenWorkspaces {
       setTimeout(resolve, kGlobalAnimationDuration * 1000 + 50)
     );
     this.#currentSpaceSwitchContext.animations = animations;
-    // See issue https://github.com/zen-browser/desktop/issues/9334, we need to add
+    // See issue https://github.com/nixo-browser/desktop/issues/9334, we need to add
     // some sort of timeout to the animation promise, just in case it gets stuck.
     // We are doing a race between the timeout and the animations finishing.
     await Promise.race([Promise.all(animations), promiseTimeout]).catch(
@@ -2194,7 +2194,7 @@ class nsZenWorkspaces {
       return true; // Always show glance tabs
     }
 
-    // See https://github.com/zen-browser/desktop/issues/10666, we should never
+    // See https://github.com/nixo-browser/desktop/issues/10666, we should never
     // show closing tabs and consider them as not part of any workspace. This will
     // invalidate the `lastSelectedTab[previousWorkspaceId]` logic in `_handleTabSelection`
     if (tab.closing) {
@@ -3282,3 +3282,12 @@ class nsZenWorkspaces {
 }
 
 window.gZenWorkspaces = new nsZenWorkspaces();
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO

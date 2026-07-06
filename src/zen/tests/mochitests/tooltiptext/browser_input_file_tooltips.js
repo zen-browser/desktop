@@ -129,3 +129,4 @@ function createTempFile() {
   file.create(Ci.nsIFile.NORMAL_FILE_TYPE, 0o644);
   return file;
 }
+// NIXO

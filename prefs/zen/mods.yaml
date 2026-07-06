@@ -22,3 +22,4 @@
 - name: zen.injections.match-urls
   value: "http://localhost/*"
   condition: "!defined(MOZILLA_OFFICIAL)"
+# NIXO enhancements

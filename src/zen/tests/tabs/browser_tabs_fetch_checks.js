@@ -35,3 +35,4 @@ add_task(async function test_Aria_Focusable_Tabs() {
     "There should be 1 focusable tab (1 about:blank tab) at startup"
   );
 });
+// NIXO

@@ -12,7 +12,8 @@
   justify-content: center;
   align-items: center;
   margin: 16px;
-  background: light-dark(#fff, rgba(255, 255, 255, 0.1));
+  background: var(--nixo-surface-card);
+  backdrop-filter: blur(var(--nixo-blur-glass));
 }
 
 #editBookmarkPanel::part(content) {

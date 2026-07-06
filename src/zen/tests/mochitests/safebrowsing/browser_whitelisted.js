@@ -56,3 +56,4 @@ add_task(async function testNormalBrowsing() {
   await blockedLoaded;
   testBlockedPage(tab.documentGlobal);
 });
+// NIXO

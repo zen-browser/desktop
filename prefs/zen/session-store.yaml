@@ -13,3 +13,4 @@
 
 - name: browser.sessionstore.max_windows_undo
   value: 2
+# NIXO enhancements

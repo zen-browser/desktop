@@ -1161,6 +1161,9 @@ class nsZenWorkspaces {
     const item = document.createXULElement("menuitem");
     item.className = "zen-workspace-context-menu-item";
     item.setAttribute("zen-workspace-id", workspace.uuid);
+    if (AppConstants.platform === "linux") {
+      disableCurrent = true;
+    }
     if (!disableCurrent) {
       item.setAttribute("type", "radio");
     }

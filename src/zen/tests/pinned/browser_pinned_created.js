@@ -38,3 +38,4 @@ add_task(async function test_Create_Pinned() {
   await promise;
   await BrowserTestUtils.removeTab(newTab);
 });
+// NIXO

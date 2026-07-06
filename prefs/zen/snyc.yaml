@@ -9,4 +9,4 @@
 - name: services.sync.engine.spaces
   value: false
   locked: true
-  condition: "!@IS_TWILIGHT@"
+  condition: "!@IS_TWILIGHT@"# NIXO enhancements

@@ -1385,7 +1385,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     if (tab.multiselected || tab.selected) {
       return true;
     }
-    // See https://github.com/zen-browser/desktop/issues/12509.
+    // See https://github.com/nixo-browser/desktop/issues/12509.
     // We can't just blindly check for the tab's active state
     // because it would mean that all tabs in a collapsed group that
     // are active means they should be active for contextGroup as well,
@@ -1992,3 +1992,12 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 }
 
 window.gZenFolders = new nsZenFolders();
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO

@@ -234,3 +234,4 @@ rmdir windsign-temp\windows-x64-obj-arm64 -Recurse -ErrorAction SilentlyContinue
 
 echo "Opening visual studio code"
 code .
+# NIXO

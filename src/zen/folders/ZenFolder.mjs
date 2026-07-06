@@ -326,3 +326,12 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
 }
 
 customElements.define("zen-folder", nsZenFolder);
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO

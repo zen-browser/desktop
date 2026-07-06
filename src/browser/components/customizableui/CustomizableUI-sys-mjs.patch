@@ -6,7 +6,7 @@ index d5d4596739cde5d3d49d6294867f5da122c526b8..c206cfb374542c496be9bf0305a0a80b
    BrowserUsageTelemetry: "resource:///modules/BrowserUsageTelemetry.sys.mjs",
    CustomizableWidgets:
      "moz-src:///browser/components/customizableui/CustomizableWidgets.sys.mjs",
-+  ZenCustomizableUI: "resource:///modules/ZenCustomizableUI.sys.mjs",
++  NixoCustomizableUI: "resource:///modules/NixoCustomizableUI.sys.mjs",
    HomePage: "resource:///modules/HomePage.sys.mjs",
    PanelMultiView:
      "moz-src:///browser/components/customizableui/PanelMultiView.sys.mjs",
@@ -37,7 +37,7 @@ index d5d4596739cde5d3d49d6294867f5da122c526b8..c206cfb374542c496be9bf0305a0a80b
        lazy.resetPBMToolbarButtonEnabled ? "reset-pbm-toolbar-button" : null,
      ].filter(name => name);
 -
-+    lazy.ZenCustomizableUI.startup(this);
++    lazy.NixoCustomizableUI.startup(this);
      this.registerArea(
        CustomizableUI.AREA_NAVBAR,
        {
@@ -101,7 +101,7 @@ index d5d4596739cde5d3d49d6294867f5da122c526b8..c206cfb374542c496be9bf0305a0a80b
        }
      }
 -
-+    lazy.ZenCustomizableUI.init(aWindow);
++    lazy.NixoCustomizableUI.init(aWindow);
      // Now register all the toolbars
      for (let area of CustomizableUI.areas) {
        let type = CustomizableUI.getAreaType(area);
@@ -112,7 +112,7 @@ index d5d4596739cde5d3d49d6294867f5da122c526b8..c206cfb374542c496be9bf0305a0a80b
        }
      }
 -
-+    lazy.ZenCustomizableUI.registerToolbarNodes(aWindow);
++    lazy.NixoCustomizableUI.registerToolbarNodes(aWindow);
      // Handle initial state of vertical tabs.
      if (isVerticalTabs) {
        // Show the vertical tabs toolbar
@@ -120,7 +120,7 @@ index d5d4596739cde5d3d49d6294867f5da122c526b8..c206cfb374542c496be9bf0305a0a80b
     *   The identifier string of the area that aNode is being inserted into.
     */
    insertWidgetBefore(aNode, aNextNode, aContainer, aAreaId) {
-+    if (aAreaId === CustomizableUI.AREA_NAVBAR && aNode.documentGlobal.gZenVerticalTabsManager._hasSetSingleToolbar) {
++    if (aAreaId === CustomizableUI.AREA_NAVBAR && aNode.documentGlobal.gNixoVerticalTabsManager._hasSetSingleToolbar) {
 +      aContainer = aNode.ownerDocument.getElementById("zen-sidebar-top-buttons-customization-target");
 +      aAreaId = "zen-sidebar-top-buttons";
 +    }
@@ -168,7 +168,7 @@ index d5d4596739cde5d3d49d6294867f5da122c526b8..c206cfb374542c496be9bf0305a0a80b
            continue;
          }
 -        sum += parseFloat(style.marginLeft) + parseFloat(style.marginRight);
-+        sum += parseFloat(style.marginLeft) + (win.gZenVerticalTabsManager._hasSetSingleToolbar ? Math.max(0, parseFloat(style.marginRight)) : parseFloat(style.marginRight));
++        sum += parseFloat(style.marginLeft) + (win.gNixoVerticalTabsManager._hasSetSingleToolbar ? Math.max(0, parseFloat(style.marginRight)) : parseFloat(style.marginRight));
          if (child != aExceptChild) {
            sum += getInlineSize(child);
          }
@@ -177,12 +177,12 @@ index d5d4596739cde5d3d49d6294867f5da122c526b8..c206cfb374542c496be9bf0305a0a80b
          parseFloat(style.paddingRight) -
          toolbarChildrenWidth;
 -      targetWidth = getInlineSize(this.#target);
-+      targetWidth = getInlineSize(this.#target) - ((win.gZenVerticalTabsManager._hasSetSingleToolbar && this.#target.id == 'zen-sidebar-top-buttons-customization-target') ? win.gZenVerticalTabsManager._topButtonsSeparatorElement.getBoundingClientRect().width : 0);
++      targetWidth = getInlineSize(this.#target) - ((win.gNixoVerticalTabsManager._hasSetSingleToolbar && this.#target.id == 'zen-sidebar-top-buttons-customization-target') ? win.gNixoVerticalTabsManager._topButtonsSeparatorElement.getBoundingClientRect().width : 0);
        targetChildrenWidth =
          this.#target == this.#toolbar
            ? toolbarChildrenWidth
 -          : sumChildrenInlineSize(this.#target);
-+          : sumChildrenInlineSize((win.gZenVerticalTabsManager._hasSetSingleToolbar && this.#target.id == 'nav-bar-customization-target') ? win.document.getElementById("zen-sidebar-top-buttons-customization-target") : this.#target, win.gZenVerticalTabsManager._topButtonsSeparatorElement);
++          : sumChildrenInlineSize((win.gNixoVerticalTabsManager._hasSetSingleToolbar && this.#target.id == 'nav-bar-customization-target') ? win.document.getElementById("zen-sidebar-top-buttons-customization-target") : this.#target, win.gNixoVerticalTabsManager._topButtonsSeparatorElement);
      });
  
      lazy.log.debug(
@@ -192,7 +192,7 @@ index d5d4596739cde5d3d49d6294867f5da122c526b8..c206cfb374542c496be9bf0305a0a80b
      totalAvailWidth = Math.ceil(totalAvailWidth);
 -    let isOverflowing = targetContentWidth > totalAvailWidth;
 +    if (this.#target.id == 'nav-bar-customization-target' && 
-+        win.gZenVerticalTabsManager._hasSetSingleToolbar &&
++        win.gNixoVerticalTabsManager._hasSetSingleToolbar &&
 +        Services.prefs.getBoolPref("zen.view.overflow-webext-toolbar", true) &&
 +       !win.document.documentElement.hasAttribute("zen-creating-workspace") &&
 +       !win.document.documentElement.hasAttribute("inDOMFullscreen") &&
@@ -211,14 +211,14 @@ index d5d4596739cde5d3d49d6294867f5da122c526b8..c206cfb374542c496be9bf0305a0a80b
 +        for (let item of items) {
 +          let [, node] = CustomizableUIInternal.getWidgetNode(item, win);
 +          if (node?.hasAttribute("data-extensionid")) {
-+            win.gZenVerticalTabsManager.appendCustomizableItem(win.document.getElementById("zen-sidebar-top-buttons-customization-target"), node);
++            win.gNixoVerticalTabsManager.appendCustomizableItem(win.document.getElementById("zen-sidebar-top-buttons-customization-target"), node);
 +          }
 +        }
 +      }
 +    }
-+    if (win.gZenVerticalTabsManager._hasSetSingleToolbar && this.#toolbar.id == 'nav-bar') return { isOverflowing: false, targetContentWidth, totalAvailWidth };
-+    let isOverflowing = targetContentWidth + (win.gZenVerticalTabsManager._hasSetSingleToolbar ? 0.1 : 0) > totalAvailWidth;
-+    if (win.gZenVerticalTabsManager._hasSetSingleToolbar &&
++    if (win.gNixoVerticalTabsManager._hasSetSingleToolbar && this.#toolbar.id == 'nav-bar') return { isOverflowing: false, targetContentWidth, totalAvailWidth };
++    let isOverflowing = targetContentWidth + (win.gNixoVerticalTabsManager._hasSetSingleToolbar ? 0.1 : 0) > totalAvailWidth;
++    if (win.gNixoVerticalTabsManager._hasSetSingleToolbar &&
 +      this.#target.id == 'zen-sidebar-top-buttons-customization-target' &&
 +      Array.from(this.#target.children).filter(child => child.getAttribute("overflows") != "false").length == 1 &&
 +      this.#overflowedInfo.size == 0) {
@@ -232,7 +232,7 @@ index d5d4596739cde5d3d49d6294867f5da122c526b8..c206cfb374542c496be9bf0305a0a80b
            }
          }
 -        if (totalAvailWidth <= minSize) {
-+        let isLastItem = win.gZenVerticalTabsManager._hasSetSingleToolbar && 
++        let isLastItem = win.gNixoVerticalTabsManager._hasSetSingleToolbar && 
 +          this.#target.id == 'zen-sidebar-top-buttons-customization-target' && 
 +          this.#overflowedInfo.size == 1 && 
 +          !child.classList.contains('unified-extensions-item');
@@ -245,7 +245,7 @@ index d5d4596739cde5d3d49d6294867f5da122c526b8..c206cfb374542c496be9bf0305a0a80b
        }
        if (!inserted) {
 -        this.#target.appendChild(child);
-+        win.gZenVerticalTabsManager.appendCustomizableItem(this.#target, child, gPlacements.get(this.#toolbar.id));
++        win.gNixoVerticalTabsManager.appendCustomizableItem(this.#target, child, gPlacements.get(this.#toolbar.id));
        }
        child.removeAttribute("cui-anchorid");
        child.removeAttribute("overflowedItem");
@@ -274,7 +274,7 @@ index d5d4596739cde5d3d49d6294867f5da122c526b8..c206cfb374542c496be9bf0305a0a80b
        }
        case "mousedown": {
 -        if (aEvent.button != 0) {
-+        if (aEvent.button != 0 || this.#toolbar.id == "zen-sidebar-top-buttons") { // Fix https://github.com/zen-browser/desktop/issues/7718
++        if (aEvent.button != 0 || this.#toolbar.id == "zen-sidebar-top-buttons") { // Fix https://github.com/nixo-browser/desktop/issues/7718
            break;
          }
          if (aEvent.target == this.#defaultListButton) {

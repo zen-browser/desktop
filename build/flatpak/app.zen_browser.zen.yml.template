@@ -75,3 +75,4 @@ modules:
         sha256: {flatpak_sha256}
         strip-components: 0
         dest: metadata
+# NIXO

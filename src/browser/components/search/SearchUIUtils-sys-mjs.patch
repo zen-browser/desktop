@@ -6,7 +6,7 @@ index cc84dd2417809ca7f8403c07a52601d37f79354b..3d54118375691af3a5cd8f2191be930b
        },
      });
  
-+    window.gZenGlanceManager?.onSearchSelectCommand(where);
++    window.gNixoGlanceManager?.onSearchSelectCommand(where);
      lazy.BrowserSearchTelemetry.recordSearch(
        window.gBrowser.selectedBrowser,
        engine,

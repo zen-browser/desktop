@@ -8,10 +8,10 @@
 @import url("chrome://browser/content/zen-styles/zen-panels/dialog.css");
 
 :root {
-  --arrowpanel-menuitem-border-radius: 5px;
+  --arrowpanel-menuitem-border-radius: var(--nixo-radius-sm);
   --arrowpanel-menuitem-margin: var(--uc-arrowpanel-menuitem-margin-block) var(--uc-arrowpanel-menuitem-margin-inline);
-  --arrowpanel-menuitem-padding-block: 8px;
-  --arrowpanel-menuitem-padding-inline: 14px;
+  --arrowpanel-menuitem-padding-block: var(--nixo-space-2);
+  --arrowpanel-menuitem-padding-inline: var(--nixo-space-3-5);
   --uc-arrowpanel-menuicon-margin-inline: 14px;
   --uc-arrowpanel-menuitem-margin-inline: 4px;
   --uc-arrowpanel-menuitem-margin-block: 2px;
@@ -49,7 +49,7 @@ panel {
 
 /* split-view popup */
 #confirmation-hint {
-  --arrowpanel-background: var(--zen-colors-primary);
+  --arrowpanel-background: var(--nixo-color-brand);
 }
 
 /* app menu */
@@ -325,22 +325,21 @@ menuseparator {
       translate: 100%;
     }
 
-    --zen-toast-padding: 6px;
+    --zen-toast-padding: var(--nixo-space-1-5);
     --zen-toast-max-height: 42px;
     @media (-moz-platform: macos) {
-      --zen-toast-padding: 8px;
+      --zen-toast-padding: var(--nixo-space-2);
       --zen-toast-max-height: 48px;
     }
 
-    gap: 8px;
-    z-index: 1000;
+    gap: var(--nixo-space-2);
+    z-index: var(--nixo-z-toast);
     padding: var(--zen-toast-padding);
-    border-radius: 10px;
-    background: linear-gradient(to bottom, var(--zen-primary-color) -40%, color-mix(in srgb, var(--zen-primary-color), #0f0f0f 20%));
-    box-shadow: light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4)) 0 0 22px 2px;
-    border: none;
-    display: flex;
-    font-weight: 600;
+    border-radius: var(--nixo-radius-lg);
+    background: linear-gradient(to bottom, var(--nixo-color-brand) -40%, color-mix(in srgb, var(--nixo-color-brand), #0f0f0f 20%));
+    box-shadow: var(--nixo-shadow-lg);
+    border: var(--nixo-border-none);
+    font-weight: var(--nixo-weight-semibold);
     align-items: center;
     width: max-content;
     position: absolute;

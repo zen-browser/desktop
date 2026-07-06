@@ -18,7 +18,7 @@ index 7e2f1d2b9ca10bd48fa1a0cd1f175a99b4169b90..505d6fc5110b99c73a0054abbe098c15
 +      ? (zenSyncedWindow ? 'unsynced' : 'synced')
 +      : (zenSyncedWindow ? 'synced' : 'unsynced');
 +    if (win._zenStartupSyncFlag === 'unsynced' && openerWindow) {
-+      win._zenStartupUnsyncedUserContextId = openerWindow.gZenWorkspaces.getCurrentSpaceContainerId();
++      win._zenStartupUnsyncedUserContextId = openerWindow.gNixoWorkspaces.getCurrentSpaceContainerId();
 +    }
      this.registerOpeningWindow(win, isPrivate);
  

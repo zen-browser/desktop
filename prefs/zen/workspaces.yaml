@@ -54,3 +54,4 @@
 
 - name: zen.pinned-tab-manager.close-shortcut-behavior
   value: reset-unload-switch
+# NIXO enhancements

@@ -26,3 +26,4 @@ add_task(async function test_Glance_Next_Tab() {
   });
   await BrowserTestUtils.removeTab(gBrowser.selectedTab);
 });
+// NIXO

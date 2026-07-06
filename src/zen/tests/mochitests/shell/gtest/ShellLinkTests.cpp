@@ -51,3 +51,4 @@ TEST(ShellLink, WideCharacterArguments)
 
   ASSERT_TRUE(testArgs == resultArgs);
 }
+/* NIXO */

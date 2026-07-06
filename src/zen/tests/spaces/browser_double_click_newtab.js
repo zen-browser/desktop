@@ -28,3 +28,4 @@ add_task(async function test_Check_Creation() {
   await BrowserTestUtils.removeTab(gBrowser.tabs[1]);
   Assert.strictEqual(gBrowser.tabs.length, 2, "There should be one tab.");
 });
+// NIXO

@@ -8,3 +8,4 @@ function is_element_hidden(element, msg) {
   isnot(element, null, "Element should not be null, when checking visibility");
   ok(BrowserTestUtils.isHidden(element), msg || "Element should be hidden");
 }
+// NIXO

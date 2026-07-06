@@ -129,3 +129,4 @@ add_task(function test_desktopEntryStatus() {
     );
   }
 });
+// NIXO

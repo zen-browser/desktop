@@ -402,3 +402,12 @@ class nsZenWorkspaceCreation extends MozXULElement {
 }
 
 customElements.define("zen-workspace-creation", nsZenWorkspaceCreation);
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO

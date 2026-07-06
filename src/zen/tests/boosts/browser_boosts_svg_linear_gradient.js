@@ -69,3 +69,4 @@ add_task(async function svg_linear_gradient_stops_are_boosted() {
     );
   });
 });
+// NIXO

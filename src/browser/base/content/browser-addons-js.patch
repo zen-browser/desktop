@@ -7,7 +7,7 @@ index 56acad9b7c21c07842f901d24525a97a0ba20217..829054218dc6fbb14fe034546e8da62b
        hideClose: true,
        popupOptions: {
 -        position: "bottomright topright",
-+        position: gZenUIManager.panelUIPosition(),
++        position: gNixoUIManager.panelUIPosition(),
        },
      };
  
@@ -16,7 +16,7 @@ index 56acad9b7c21c07842f901d24525a97a0ba20217..829054218dc6fbb14fe034546e8da62b
        timeout: Date.now() + 30000,
        popupOptions: {
 -        position: "bottomright topright",
-+        position: gZenUIManager.panelUIPosition(),
++        position: gNixoUIManager.panelUIPosition(),
        },
      };
  
@@ -166,7 +166,7 @@ index 56acad9b7c21c07842f901d24525a97a0ba20217..829054218dc6fbb14fe034546e8da62b
 -        PanelMultiView.openPopup(panel, this._button, {
 -          position: "bottomright topright",
 +        PanelMultiView.openPopup(panel, button, {
-+          position: gZenUIManager.panelUIPosition(panel, button),
++          position: gNixoUIManager.panelUIPosition(panel, button),
            triggerEvent: aEvent,
          });
        }
@@ -184,12 +184,12 @@ index 56acad9b7c21c07842f901d24525a97a0ba20217..829054218dc6fbb14fe034546e8da62b
        ? CustomizableUI.AREA_NAVBAR
        : CustomizableUI.AREA_ADDONS;
      let newPosition = shouldPinToToolbar ? undefined : 0;
-+    await gZenVerticalTabsManager._preCustomize();
++    await gNixoVerticalTabsManager._preCustomize();
  
      CustomizableUI.addWidgetToArea(widgetId, newArea, newPosition);
      // addWidgetToArea() will trigger onWidgetAdded or onWidgetMoved as needed,
      // and our handlers will call updateAttention() as needed.
-+    await gZenVerticalTabsManager._postCustomize();
++    await gNixoVerticalTabsManager._postCustomize();
    },
  
    async moveWidget(menu, direction) {

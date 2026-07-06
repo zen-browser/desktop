@@ -54,3 +54,4 @@ add_task(async function test_reader_button() {
     "Reader mode button is still not present on tab with unreadable content."
   );
 });
+// NIXO

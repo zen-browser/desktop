@@ -16,22 +16,22 @@ index 9760a4a35b0b3bd21edec07a70c10bccc23e4a09..9f22146c259ea5b45005be660bfcb9ea
          data-l10n-id="pane-general-title">
        </html:moz-page-nav-button>
 +      <html:moz-page-nav-button id="category-zen-looks"
-+        view="paneZenLooks"
++        view="paneNixoLooks"
 +        iconsrc="chrome://browser/skin/customize.svg"
 +        data-l10n-id="pane-zen-looks-title">
 +      </html:moz-page-nav-button>
 +      <html:moz-page-nav-button id="category-zen-tabs-management"
-+        view="paneZenTabManagement"
++        view="paneNixoTabManagement"
 +        iconsrc="chrome://browser/skin/window.svg"
 +        data-l10n-id="pane-zen-tabs-title">
 +      </html:moz-page-nav-button>
 +      <html:moz-page-nav-button id="category-zen-CKS"
-+        view="paneZenCKS"
++        view="paneNixoCKS"
 +        iconsrc="chrome://browser/skin/quickactions.svg"
 +        data-l10n-id="pane-zen-CKS-title">
 +      </html:moz-page-nav-button>
 +      <html:moz-page-nav-button id="category-zen-marketplace"
-+        view="paneZenMarketplace"
++        view="paneNixoMarketplace"
 +        iconsrc="chrome://mozapps/skin/extensions/category-themes.svg"
 +        data-l10n-id="pane-zen-marketplace-title">
 +      </html:moz-page-nav-button>

@@ -6,3 +6,4 @@
   value: "@cond"
   sticky: true
   condition: "defined(MOZILLA_OFFICIAL)"
+# NIXO enhancements

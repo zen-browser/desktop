@@ -256,3 +256,4 @@ function updateMedia(tab, { muted, volume } = {}) {
     }
   );
 }
+// NIXO

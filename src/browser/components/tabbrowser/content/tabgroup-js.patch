@@ -111,7 +111,7 @@ index e78fa0dec83424c0059c081f83fda0d23bdb5a94..a7de584d9029ff9e55d809d50377593e
              this.dispatchEvent(
                new CustomEvent("TabGroupRemoved", { bubbles: true })
              );
-+          gZenVerticalTabsManager.animateItemClose(this).then(() => {
++          gNixoVerticalTabsManager.animateItemClose(this).then(() => {
              this.remove();
 +          });
              Services.obs.notifyObservers(
@@ -210,7 +210,7 @@ index e78fa0dec83424c0059c081f83fda0d23bdb5a94..a7de584d9029ff9e55d809d50377593e
 +          return false;
 +        }
 +      }
-+      if (this.pinned && gZenWorkspaces.activeWorkspaceElement?.hasCollapsedPinnedTabs) {
++      if (this.pinned && gNixoWorkspaces.activeWorkspaceElement?.hasCollapsedPinnedTabs) {
 +        return false;
 +      }
 +      return true;

@@ -12,7 +12,7 @@
   overflow: clip;
   z-index: -1;
   background: light-dark(#e9e9e9, #131313);
-  box-shadow: var(--zen-big-shadow);
+  box-shadow: var(var(--nixo-shadow-md));
   @media -moz-pref('zen.theme.acrylic-elements') {
     background: transparent;
     backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;

@@ -7,7 +7,7 @@ index 8c33192e589de1d819cbb21c31cec0480ed4c85e..9db296363303c153dc05ad9e85493f11
  STATUS_CLEANUP=A Little Housekeeping…
  
 -UN_SURVEY_CHECKBOX_LABEL=Tell Mozilla why you uninstalled $BrandShortName
-+UN_SURVEY_CHECKBOX_LABEL=Tell Zen´s Team why you uninstalled $BrandShortName
++UN_SURVEY_CHECKBOX_LABEL=Tell Nixo´s Team why you uninstalled $BrandShortName
  
  # _DESC strings support approximately 65 characters per line.
  # One line

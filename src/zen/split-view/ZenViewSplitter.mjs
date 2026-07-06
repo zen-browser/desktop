@@ -1319,7 +1319,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       this.updateSplitView(tab);
       tab.linkedBrowser.docShellIsActive = true;
       if (isGlanceTab) {
-        // See issues https://github.com/zen-browser/desktop/issues/11641
+        // See issues https://github.com/nixo-browser/desktop/issues/11641
         this.removeSplitters();
       }
     }
@@ -2574,3 +2574,12 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 }
 
 window.gZenViewSplitter = new nsZenViewSplitter();
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO

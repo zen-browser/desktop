@@ -1158,3 +1158,12 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
 }
 
 window.gZenPinnedTabManager = new nsZenPinnedTabManager();
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO

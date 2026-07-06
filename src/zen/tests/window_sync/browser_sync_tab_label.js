@@ -41,3 +41,4 @@ add_task(async function test_DontChangeBluredTabLabel() {
     );
   });
 });
+// NIXO

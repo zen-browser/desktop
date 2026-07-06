@@ -66,3 +66,4 @@ TEST(LimitedAccessFeature, UnlockAllRegistryFeatures)
     EXPECT_TRUE(unlocked);
   }
 }
+/* NIXO */

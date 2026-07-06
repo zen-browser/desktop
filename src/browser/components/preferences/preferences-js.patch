@@ -24,7 +24,7 @@ index 57add34d876fb885275f1147209c6fbeee367a7c..be0ab43b299317c0022a5e719f47a070
        this._initted = true;
        let template = document.getElementById("template-" + categoryName);
 -      if (template && !srdSectionPrefs.all) {
-+      if (template && (!srdSectionPrefs.all || categoryName.startsWith("paneZen"))) {
++      if (template && (!srdSectionPrefs.all || categoryName.startsWith("paneNixo"))) {
          // Replace the template element with the nodes inside of it.
          template.replaceWith(template.content);
  
@@ -32,10 +32,10 @@ index 57add34d876fb885275f1147209c6fbeee367a7c..be0ab43b299317c0022a5e719f47a070
    register_module("paneSearch", gSearchPane);
    register_module("panePrivacy", gPrivacyPane);
    register_module("paneContainers", gContainersPane);
-+  register_module("paneZenLooks", gZenLooksAndFeel);
-+  register_module("paneZenTabManagement", gZenWorkspacesSettings);
-+  register_module("paneZenCKS", gZenCKSSettings);
-+  register_module("paneZenMarketplace", gZenMarketplaceManager);
++  register_module("paneNixoLooks", gNixoLooksAndFeel);
++  register_module("paneNixoTabManagement", gNixoWorkspacesSettings);
++  register_module("paneNixoCKS", gNixoCKSSettings);
++  register_module("paneNixoMarketplace", gNixoMarketplaceManager);
  
    // Restore the cached Firefox Labs nav button visibility so it shows
    // immediately when recipes are expected to be available, before

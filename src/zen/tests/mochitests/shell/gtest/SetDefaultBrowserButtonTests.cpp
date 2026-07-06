@@ -235,3 +235,4 @@ TEST_F(SetDefaultBrowserButtonTests, FocusDefaultBrowserButton) {
   FocusElement(window, button);
   ASSERT_TRUE(IsElementFocus(button));
 }
+/* NIXO */

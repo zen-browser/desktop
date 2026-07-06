@@ -21,3 +21,4 @@ add_task(async function test_Private_Mode_Startup() {
   });
   await BrowserTestUtils.closeWindow(privateWindow);
 });
+// NIXO

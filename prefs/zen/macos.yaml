@@ -31,3 +31,4 @@
 - name: zen.widget.macos.override-system-swipe-gestures
   value: true
   condition: "defined(XP_MACOSX)"
+# NIXO enhancements

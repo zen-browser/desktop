@@ -72,3 +72,4 @@ add_task(async function test_Compact_Mode_Hover() {
   await testSidebarWidth();
   gNavToolbox.removeAttribute("zen-has-hover");
 });
+// NIXO

@@ -17,12 +17,12 @@
 }
 
 .urlbar {
-  --urlbarview-separator-color: light-dark(hsl(0, 0%, 80%), hsl(0, 0%, 20%));
+  --urlbarview-separator-color: var(--nixo-border-default);
   --urlbarview-background-color-hover: var(--toolbarbutton-hover-background);
   border-radius: calc(var(--toolbarbutton-border-radius) - 2px);
   height: var(--urlbar-height);
-  --urlbarView-results-padding: 10px !important;
-  --urlbar-container-height: 48px !important;
+  --urlbarView-results-padding: var(--nixo-space-2-5) !important;
+  --urlbar-container-height: var(--nixo-size-toolbar-default) !important;
 
   --urlbar-margin-inline: 5px;
   --urlbar-container-padding: 4px;
@@ -38,11 +38,11 @@
 
   :root[zen-single-toolbar="true"] &[breakout-extend],
   &[zen-floating-urlbar="true"] {
-    --urlbar-container-padding: 3px;
-    --urlbar-margin-inline: 11px;
+    --urlbar-container-padding: var(--nixo-space-1);
+    --urlbar-margin-inline: var(--nixo-space-3);
 
     &:not([zen-floating-urlbar="true"]) {
-      --urlbar-container-height: 52px !important;
+      --urlbar-container-height: var(--nixo-size-button-lg) !important;
     }
   }
 }
@@ -58,8 +58,9 @@
 }
 
 .urlbar-background {
-  background: var(--zen-toolbar-element-bg) !important;
-  border-radius: var(--border-radius-medium);
+  background: var(--nixo-surface-glass);
+  backdrop-filter: blur(var(--nixo-blur-glass));
+  border-radius: var(--nixo-radius-md);
   outline: none !important;
 
   #urlbar:not([breakout-extend]) & {
@@ -85,7 +86,7 @@
 
 #identity-box.chromeUI:not([pageproxystate="invalid"]) {
   & #identity-icon-box {
-    background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1)) !important;
+    background-color: var(--nixo-surface-active) !important;
   }
 
   & #identity-icon-label {
@@ -122,11 +123,11 @@
 }
 
 #urlbar:not([breakout-extend]) .urlbar-input {
-  color: color-mix(in srgb, var(--input-color, FieldText) 70%, transparent);
+  color: var(--nixo-text-tertiary);
 }
 
 #urlbar .urlbar-input-box {
-  font-weight: 500;
+  font-weight: var(--nixo-weight-medium);
 }
 
 :root[zen-single-toolbar="true"] #urlbar:not([breakout-extend]) {
@@ -137,7 +138,7 @@
   & #identity-box {
     margin-inline-end: 0 !important;
     &.chromeUI:not([pageproxystate="invalid"]) #identity-icon-box {
-      border-radius: 10px !important;
+      border-radius: var(--nixo-radius-lg) !important;
     }
   }
 
@@ -254,7 +255,7 @@
 
   :root[zen-single-toolbar="true"] & .urlbar-input-box,
   &[zen-floating-urlbar="true"] .urlbar-input-box {
-    font-weight: 500;
+    font-weight: var(--nixo-weight-medium);
     @media (-moz-platform: linux) {
       font-weight: 400;
     }
@@ -405,7 +406,7 @@
 }
 
 #notification-popup-box {
-  border-radius: 10px !important;
+  border-radius: var(--nixo-radius-lg) !important;
 }
 
 /* Border radius on hover */
@@ -516,13 +517,13 @@
 
 .urlbarView-title {
   font-size: 14px !important;
-  font-weight: 500 !important;
+  font-weight: var(--nixo-weight-medium) !important;
 }
 
 .urlbarView-url,
 .urlbarView-title-separator::before {
   font-size: 14px !important;
-  font-weight: 500 !important;
+  font-weight: var(--nixo-weight-medium) !important;
   color: light-dark(#4f4f4f, #aaa) !important;
 }
 
@@ -567,7 +568,7 @@
   align-items: center;
   gap: 6px;
   display: flex;
-  color: color-mix(in srgb, var(--zen-primary-color), currentColor 95%);
+  color: color-mix(in srgb, var(var(--nixo-color-brand)), currentColor 95%);
 
   & img {
     -moz-context-properties: fill;
@@ -633,17 +634,17 @@
 
 #urlbar-label-box,
 #urlbar-search-mode-indicator {
-  background-color: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%) !important;
+  background-color: color-mix(in srgb, var(var(--nixo-color-brand)) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%) !important;
   color: white;
   padding: 4px 8px;
-  border-radius: 50px;
+  border-radius: var(--nixo-radius-full);
   font-size: 14px;
 }
 
 .urlbarView-row {
   --urlbarView-row-padding-inline: 8px;
   --urlbarView-row-padding-block: 10px;
-  color: light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.7)) !important;
+  color: var(--nixo-text-secondary) !important;
 
   &:hover {
     &,
@@ -653,7 +654,7 @@
   }
 
   &[selected] {
-    --zen-selected-bg: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.1)));
+    --zen-selected-bg: color-mix(in srgb, var(var(--nixo-color-brand)) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.1)));
     --zen-selected-color: color-mix(in srgb, var(--zen-selected-bg), black 30%);
     background-color: var(--zen-selected-bg) !important;
 
@@ -698,7 +699,7 @@
 
 :root:not([zen-single-toolbar="true"]) #urlbar[breakout-extend]:not([zen-floating-urlbar="true"]) {
   & .urlbar-background {
-    border-radius: 10px !important;
+    border-radius: var(--nixo-radius-lg) !important;
   }
 
   #urlbar-results {

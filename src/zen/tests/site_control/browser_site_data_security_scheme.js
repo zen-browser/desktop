@@ -38,3 +38,4 @@ add_task(async function test_security_identity_by_scheme() {
     BrowserTestUtils.removeTab(tab);
   }
 });
+// NIXO

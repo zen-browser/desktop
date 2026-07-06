@@ -9,3 +9,4 @@ const { openGlanceOnTab: internalGlanceHandle } = ChromeUtils.importESModule(
 function openGlanceOnTab(callback, close = true) {
   return internalGlanceHandle(window, callback, close);
 }
+// NIXO

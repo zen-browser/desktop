@@ -39,3 +39,4 @@ add_task(async function test_Folder_Multiselected_Tabs() {
   gBrowser.selectedTab = selectedTab;
   await removeFolder(folder);
 });
+// NIXO

@@ -361,3 +361,4 @@ add_task(async function test_onAfterAddTab_activates_workspace_on_origin() {
     await gZenWorkspaces.removeWorkspace(target.uuid);
   }
 });
+// NIXO

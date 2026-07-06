@@ -28,11 +28,42 @@
 @keyframes zen-urlbar-searchmode {
   0% {
     box-shadow: 0 0 20px
-      color-mix(in srgb, color-mix(in srgb, var(--zen-primary-color), var(--toolbox-textcolor) 20%), light-dark(rgba(0, 0, 0, 0.3), transparent) 50%);
+      color-mix(in srgb, color-mix(in srgb, var(var(--nixo-color-brand)), var(--toolbox-textcolor) 20%), light-dark(rgba(0, 0, 0, 0.3), transparent) 50%);
   }
 
   100% {
-    box-shadow: 0 0 250px color-mix(in srgb, var(--zen-primary-color), transparent 100%);
+    box-shadow: 0 0 250px color-mix(in srgb, var(var(--nixo-color-brand)), transparent 100%);
+  }
+}
+
+@keyframes nixo-fade-in {
+  from {
+    opacity: var(--nixo-opacity-0);
+    transform: translateY(var(--nixo-space-1));
+  }
+  to {
+    opacity: var(--nixo-opacity-100);
+    transform: translateY(0);
+  }
+}
+
+@keyframes nixo-slide-up {
+  from {
+    opacity: var(--nixo-opacity-0);
+    transform: translateY(var(--nixo-space-2));
+  }
+  to {
+    opacity: var(--nixo-opacity-100);
+    transform: translateY(0);
+  }
+}
+
+@keyframes nixo-pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 4px color-mix(in srgb, var(--nixo-color-brand) 20%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 12px color-mix(in srgb, var(--nixo-color-brand) 40%, transparent);
   }
 }
 

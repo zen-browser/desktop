@@ -22,3 +22,4 @@ add_task(async function test_Create_Folder() {
   Assert.equal(folder.tabs.length, 0, "Folder is empty after deletion");
   ok(tab.closing, "Tab is closing after folder deletion");
 });
+// NIXO

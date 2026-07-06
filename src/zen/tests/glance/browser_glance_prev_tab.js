@@ -27,3 +27,4 @@ add_task(async function test_Glance_Prev_Tab() {
     await BrowserTestUtils.removeTab(tabToCheck);
   });
 });
+// NIXO

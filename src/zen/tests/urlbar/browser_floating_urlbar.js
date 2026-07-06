@@ -56,3 +56,4 @@ add_task(async function test_Floating_Highlight_Everything() {
     "Selection end should be the length of the value"
   );
 });
+// NIXO

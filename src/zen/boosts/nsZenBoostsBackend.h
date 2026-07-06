@@ -85,3 +85,8 @@ class nsZenBoostsBackend final : public nsISupports {
 }  // namespace zen
 
 #endif
+// NIXO .h
+// NIXO .h
+/* NIXO */
+/* NIXO */
+/* NIXO */

@@ -15,7 +15,7 @@ index 4aad4e4fb4139aa3d81e00eefa82e26b697df973..eb4055341964edaaff53163da8fc3723
                    src="chrome://browser/locale/places/bookmarkProperties.properties"/>
    </stringbundleset>
  
-+  <script src="chrome://browser/content/zen-components/ZenSpaceBookmarksStorage.js" />
++  <script src="chrome://browser/content/zen-components/NixoSpaceBookmarksStorage.js" />
 +  <script src="chrome://browser/content/zenThemeModifier.js"></script>
    <script src="chrome://browser/content/places/editBookmark.js"/>
    <script src="chrome://browser/content/places/bookmarkProperties.js"/>

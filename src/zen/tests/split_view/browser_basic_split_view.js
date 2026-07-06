@@ -30,3 +30,4 @@ add_task(async function test_Browser_Elements_Attributes() {
     "There should be no split browser sidebars in unsplit view"
   );
 });
+// NIXO

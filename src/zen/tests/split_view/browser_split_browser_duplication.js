@@ -169,3 +169,4 @@ add_task(async function test_Split_View_Duplication_Essential() {
     await BrowserTestUtils.removeTab(tab);
   }
 });
+// NIXO

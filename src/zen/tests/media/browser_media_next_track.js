@@ -72,3 +72,4 @@ add_task(async function test_next_track_button_disabled_without_handler() {
     gBrowser.selectedTab = originalTab;
   }
 });
+// NIXO

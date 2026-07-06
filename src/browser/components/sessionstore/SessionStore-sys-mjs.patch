@@ -8,7 +8,7 @@ index 183543c5f29ff4c879d3058e4c09faf376a69cb7..ab482c32cc697ccef82bf0aeaa0e3a1d
    "SplitViewCreated",
 +  "TabAddedToEssentials",
 +  "TabRemovedFromEssentials",
-+  "ZenWorkspaceDataChanged",
++  "NixoWorkspaceDataChanged",
  ];
  
  const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
@@ -16,8 +16,8 @@ index 183543c5f29ff4c879d3058e4c09faf376a69cb7..ab482c32cc697ccef82bf0aeaa0e3a1d
    TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
    TabStateFlusher: "resource:///modules/sessionstore/TabStateFlusher.sys.mjs",
    setTimeout: "resource://gre/modules/Timer.sys.mjs",
-+  ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
-+  ZenWindowSync: "resource:///modules/zen/ZenWindowSync.sys.mjs",
++  NixoSessionStore: "resource:///modules/zen/NixoSessionManager.sys.mjs",
++  NixoWindowSync: "resource:///modules/zen/NixoWindowSync.sys.mjs",
  });
  
  ChromeUtils.defineLazyGetter(lazy, "blankURI", () => {
@@ -39,7 +39,7 @@ index 183543c5f29ff4c879d3058e4c09faf376a69cb7..ab482c32cc697ccef82bf0aeaa0e3a1d
        case "SwapDocShells":
 +      case "TabRemovedFromEssentials":
 +      case "TabAddedToEssentials":
-+      case "ZenWorkspaceDataChanged":
++      case "NixoWorkspaceDataChanged":
          this.saveStateDelayed(win);
          break;
        case "TabGroupCreate":
@@ -48,7 +48,7 @@ index 183543c5f29ff4c879d3058e4c09faf376a69cb7..ab482c32cc697ccef82bf0aeaa0e3a1d
      }
  
 +    if (aWindow.document.documentElement.hasAttribute("zen-unsynced-window")) {
-+      this._windows[aWindow.__SSi].isZenUnsynced = true;
++      this._windows[aWindow.__SSi].isNixoUnsynced = true;
 +    }
 +
      if (lazy.AIWindow.isAIWindowActiveAndEnabled(aWindow)) {
@@ -59,7 +59,7 @@ index 183543c5f29ff4c879d3058e4c09faf376a69cb7..ab482c32cc697ccef82bf0aeaa0e3a1d
      // A regular window is not a private window, taskbar tab window, or popup window
      let isRegularWindow =
 -      !isPrivateWindow && !isTaskbarTab && aWindow.toolbar.visible;
-+      !isPrivateWindow && !isTaskbarTab && aWindow.toolbar.visible && !this._windows[aWindow.__SSi].isZenUnsynced;
++      !isPrivateWindow && !isTaskbarTab && aWindow.toolbar.visible && !this._windows[aWindow.__SSi].isNixoUnsynced;
  
      // perform additional initialization when the first window is loading
      if (lazy.RunState.isStopped) {
@@ -76,7 +76,7 @@ index 183543c5f29ff4c879d3058e4c09faf376a69cb7..ab482c32cc697ccef82bf0aeaa0e3a1d
            null,
            "sessionstore-one-or-no-tab-restored"
          );
-+        lazy.ZenSessionStore.onNewEmptySession(aWindow);
++        lazy.NixoSessionStore.onNewEmptySession(aWindow);
          this._deferredAllWindowsRestored.resolve();
        }
        // this window was opened by _openWindowWithState
@@ -92,7 +92,7 @@ index 183543c5f29ff4c879d3058e4c09faf376a69cb7..ab482c32cc697ccef82bf0aeaa0e3a1d
          }
  
          if (newWindowState) {
-+          lazy.ZenSessionStore.onRestoringClosedWindow(newWindowState);
++          lazy.NixoSessionStore.onRestoringClosedWindow(newWindowState);
            // Ensure that the window state isn't hidden
            this._restoreCount = 1;
            let state = { windows: [newWindowState] };
@@ -106,7 +106,7 @@ index 183543c5f29ff4c879d3058e4c09faf376a69cb7..ab482c32cc697ccef82bf0aeaa0e3a1d
 +        windowPromises.push(lazy.TabStateFlusher.flushWindow(window));
 +      }
 +      Promise.all(windowPromises).finally(() => {
-+        lazy.ZenSessionStore.restoreNewWindow(aWindow, this);
++        lazy.NixoSessionStore.restoreNewWindow(aWindow, this);
 +      });
 +    }
  
@@ -117,7 +117,7 @@ index 183543c5f29ff4c879d3058e4c09faf376a69cb7..ab482c32cc697ccef82bf0aeaa0e3a1d
      var tabbrowser = aWindow.gBrowser;
  
 -    let browsers = Array.from(tabbrowser.browsers);
-+    let browsers = aWindow.gZenWorkspaces.allUsedBrowsers;
++    let browsers = aWindow.gNixoWorkspaces.allUsedBrowsers;
  
      TAB_EVENTS.forEach(function (aEvent) {
        tabbrowser.tabContainer.removeEventListener(aEvent, this, true);
@@ -126,7 +126,7 @@ index 183543c5f29ff4c879d3058e4c09faf376a69cb7..ab482c32cc697ccef82bf0aeaa0e3a1d
        let isLastRegularWindow =
          Object.values(this._windows).filter(
 -          wData => !wData.isPrivate && !wData.isTaskbarTab
-+          wData => !wData.isPrivate && !wData.isTaskbarTab && !wData.isZenUnsynced
++          wData => !wData.isPrivate && !wData.isTaskbarTab && !wData.isNixoUnsynced
          ).length == 1;
        this._log.debug(
          `onClose, closing window isLastRegularWindow? ${isLastRegularWindow}`
@@ -136,7 +136,7 @@ index 183543c5f29ff4c879d3058e4c09faf376a69cb7..ab482c32cc697ccef82bf0aeaa0e3a1d
        //    in _closedWindows, and add/remove as necessary.
 -      if (!winData.isPrivate && !winData.isTaskbarTab) {
 -        this.maybeSaveClosedWindow(winData, isLastWindow);
-+      if (!winData.isPrivate && !winData.isTaskbarTab && !winData.isZenUnsynced) {
++      if (!winData.isPrivate && !winData.isTaskbarTab && !winData.isNixoUnsynced) {
 +        this.maybeSaveClosedWindow(winData, isLastWindow, isLastRegularWindow);
        }
  
@@ -147,8 +147,8 @@ index 183543c5f29ff4c879d3058e4c09faf376a69cb7..ab482c32cc697ccef82bf0aeaa0e3a1d
          // least one saveable tab or are the last window.
 -        if (!winData.isPrivate && !winData.isTaskbarTab) {
 -          this.maybeSaveClosedWindow(winData, isLastWindow);
-+        lazy.ZenWindowSync.on_WindowCloseAndBrowserFlushed(browsers);
-+        if (!winData.isPrivate && !winData.isTaskbarTab && !winData.isZenUnsynced) {
++        lazy.NixoWindowSync.on_WindowCloseAndBrowserFlushed(browsers);
++        if (!winData.isPrivate && !winData.isTaskbarTab && !winData.isNixoUnsynced) {
 +          this.maybeSaveClosedWindow(winData, isLastWindow, isLastRegularWindow);
  
            if (!isLastWindow && winData.closedId > -1) {
@@ -166,7 +166,7 @@ index 183543c5f29ff4c879d3058e4c09faf376a69cb7..ab482c32cc697ccef82bf0aeaa0e3a1d
        // _closedWindows from a previous call to this function.
        let winIndex = this._closedWindows.indexOf(winData);
        let alreadyStored = winIndex != -1;
-+      lazy.ZenSessionStore.maybeSaveClosedWindow(winData, isLastRegularWindow);
++      lazy.NixoSessionStore.maybeSaveClosedWindow(winData, isLastRegularWindow);
        // If sidebar command is truthy, i.e. sidebar is open, store sidebar settings
        let shouldStore = hasSaveableTabs || isLastWindow;
  
@@ -188,7 +188,7 @@ index 183543c5f29ff4c879d3058e4c09faf376a69cb7..ab482c32cc697ccef82bf0aeaa0e3a1d
 +      tabState.zenIsGlance = false;
 +      tabState.zenGlanceId = null;
 +      tabState.zenHasStaticLabel = false;
-+      tabState.zenWorkspace = aWindow.gZenWorkspaces.activeWorkspace;
++      tabState.zenWorkspace = aWindow.gNixoWorkspaces.activeWorkspace;
  
        if (inBackground === false) {
          aWindow.gBrowser.selectedTab = newTab;
@@ -227,7 +227,7 @@ index 183543c5f29ff4c879d3058e4c09faf376a69cb7..ab482c32cc697ccef82bf0aeaa0e3a1d
      // collect the data for all windows
      for (ix in this._windows) {
 -      if (this._windows[ix]._restoring || this._windows[ix].isTaskbarTab) {
-+      if (this._windows[ix]._restoring || this._windows[ix].isTaskbarTab && !this._windows[ix].isZenUnsynced) {
++      if (this._windows[ix]._restoring || this._windows[ix].isTaskbarTab && !this._windows[ix].isNixoUnsynced) {
          // window data is still in _statesToRestore
          continue;
        }
@@ -236,12 +236,12 @@ index 183543c5f29ff4c879d3058e4c09faf376a69cb7..ab482c32cc697ccef82bf0aeaa0e3a1d
  
      let tabbrowser = aWindow.gBrowser;
 -    let tabs = tabbrowser.tabs;
-+    let tabs = aWindow.gZenWorkspaces.allStoredTabs;
++    let tabs = aWindow.gNixoWorkspaces.allStoredTabs;
      /** @type {WindowStateData} */
      let winData = this._windows[aWindow.__SSi];
      let tabsData = (winData.tabs = []);
  
-+    winData.splitViewData = aWindow.gZenViewSplitter?.storeDataForSessionStore();
++    winData.splitViewData = aWindow.gNixoViewSplitter?.storeDataForSessionStore();
      // update the internal state data for this window
      for (let tab of tabs) {
        if (tab == aWindow.FirefoxViewHandler.tab) {
@@ -249,9 +249,9 @@ index 183543c5f29ff4c879d3058e4c09faf376a69cb7..ab482c32cc697ccef82bf0aeaa0e3a1d
        tabsData.push(tabData);
      }
  
-+    winData.folders = aWindow.gZenFolders?.storeDataForSessionStore() || [];
-+    winData.activeZenSpace = aWindow.gZenWorkspaces?.activeWorkspace || null;
-+    winData.spaces = aWindow.gZenWorkspaces?.getWorkspacesForSessionStore();
++    winData.folders = aWindow.gNixoFolders?.storeDataForSessionStore() || [];
++    winData.activeNixoSpace = aWindow.gNixoWorkspaces?.activeWorkspace || null;
++    winData.spaces = aWindow.gNixoWorkspaces?.getWorkspacesForSessionStore();
      // update tab group state for this window
      winData.groups = [];
      for (let tabGroup of aWindow.gBrowser.tabGroups) {
@@ -279,7 +279,7 @@ index 183543c5f29ff4c879d3058e4c09faf376a69cb7..ab482c32cc697ccef82bf0aeaa0e3a1d
      if (overwriteTabs) {
        for (let i = tabbrowser.browsers.length - 1; i >= 0; i--) {
          if (!tabbrowser.tabs[i].selected) {
-+          aWindow.gZenWorkspaces._shouldOverrideTabs = true;
++          aWindow.gNixoWorkspaces._shouldOverrideTabs = true;
            tabbrowser.removeTab(tabbrowser.tabs[i]);
          }
        }
@@ -287,12 +287,12 @@ index 183543c5f29ff4c879d3058e4c09faf376a69cb7..ab482c32cc697ccef82bf0aeaa0e3a1d
          savedTabGroup => !openTabGroupIdsInWindow.has(savedTabGroup.id)
        );
      }
-+    if (winData.isZenUnsynced) {
++    if (winData.isNixoUnsynced) {
 +      aWindow.document.documentElement.setAttribute("zen-unsynced-window", "true");
 +    }
-+    aWindow.gZenFolders?.restoreDataFromSessionStore(winData.folders);
-+    aWindow.gZenWorkspaces?.restoreWorkspacesFromSessionStore(winData);
-+    aWindow.gZenViewSplitter?.restoreDataFromSessionStore(winData.splitViewData);
++    aWindow.gNixoFolders?.restoreDataFromSessionStore(winData.folders);
++    aWindow.gNixoWorkspaces?.restoreWorkspacesFromSessionStore(winData);
++    aWindow.gNixoViewSplitter?.restoreDataFromSessionStore(winData.splitViewData);
  
      // Move the originally open tabs to the end.
      if (initialTabs) {
@@ -326,8 +326,8 @@ index 183543c5f29ff4c879d3058e4c09faf376a69cb7..ab482c32cc697ccef82bf0aeaa0e3a1d
          aWindow.gURLBar.readOnly = false;
        }
      }
-+    if (aWinData.isZenUnsynced) {
-+      this._windows[aWindow.__SSi].isZenUnsynced = true;
++    if (aWinData.isNixoUnsynced) {
++      this._windows[aWindow.__SSi].isNixoUnsynced = true;
 +    }
  
      let promiseParts = Promise.withResolvers();

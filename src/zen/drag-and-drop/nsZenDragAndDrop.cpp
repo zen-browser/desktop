@@ -45,3 +45,6 @@ nsZenDragAndDrop::OnDragEnd() {
 }
 
 }  // namespace zen
+/* NIXO */
+/* NIXO */
+/* NIXO */

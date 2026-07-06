@@ -6,7 +6,7 @@ index 86600ffb5178599ab23270a964064ca657a3283f..70d7b5c7d69d3700475d663b59505226
    StartupPerformance:
      "resource:///modules/sessionstore/StartupPerformance.sys.mjs",
    sessionStoreLogger: "resource:///modules/sessionstore/SessionLogger.sys.mjs",
-+  ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
++  NixoSessionStore: "resource:///modules/zen/NixoSessionManager.sys.mjs",
  });
  
  const STATE_RUNNING_STR = "running";
@@ -23,7 +23,7 @@ index 86600ffb5178599ab23270a964064ca657a3283f..70d7b5c7d69d3700475d663b59505226
        this._initialState = parsed;
      }
  
-+    this._initialState = lazy.ZenSessionStore.onFileRead(this._initialState);
++    this._initialState = lazy.NixoSessionStore.onFileRead(this._initialState);
 +
      if (this._initialState == null) {
        // No valid session found.
@@ -32,7 +32,7 @@ index 86600ffb5178599ab23270a964064ca657a3283f..70d7b5c7d69d3700475d663b59505226
          `Previous shutdown ok? ${this._previousSessionCrashed}, reason: ${previousSessionCrashedReason}`
        );
  
-+      lazy.ZenSessionStore.onCrashCheckpoints(this._initialState);
++      lazy.NixoSessionStore.onCrashCheckpoints(this._initialState);
 +
        Services.obs.addObserver(this, "sessionstore-windows-restored", true);
  

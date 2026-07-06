@@ -1,91 +1,111 @@
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
+/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-/* Here, we contain all the theme related variables, for example theme
- * colors, border radius, etc.
- * We have `--zen-border-radius` and `--zen-primary-color` as variables.
- */
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* ═══════════════════════════════════════════════════════════════════════
+ *  NIXO THEME SYSTEM — Core theme variables & theming infrastructure
+ *
+ *  This file defines the visual theme for the entire browser.
+ *  All color, spacing, radius, and animation decisions flow from here.
+ * ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Import Design Tokens ── */
+/* The design-tokens.css file provides the foundation token system */
 
 :host(:is(.anonymous-content-host, notification-message)),
 :root {
-  /* Default values */
-  --zen-border-radius: 7px;
-  --zen-primary-color: AccentColor;
-
+  /* ── Zen Legacy Variables (mapped to new tokens) ── */
+  var(--nixo-radius-lg): var(--nixo-radius-lg);
+  var(--nixo-color-brand): var(--nixo-color-brand);
   --zen-background-opacity: 1;
 
-  /* Branding */
-  --zen-branding-dark: #101010;
-  --zen-branding-paper: #e2e2e2;
-
+  /* ── Branding ── */
+  --zen-branding-dark: var(--nixo-color-neutral-950);
+  --zen-branding-paper: var(--nixo-color-neutral-100);
   --zen-branding-bg: light-dark(var(--zen-branding-paper), var(--zen-branding-dark));
   --zen-branding-bg-reverse: light-dark(var(--zen-branding-dark), var(--zen-branding-paper));
 
-  /** Zen colors are generated automatically from the primary color */
+  /* ── Zen Colors (generated from primary via color-mix) ── */
   --zen-colors-primary: light-dark(
-    color-mix(in srgb, var(--zen-primary-color) 50%, black 50%),
-    color-mix(in srgb, var(--zen-primary-color) 20%, var(--zen-branding-bg) 80%)
+    color-mix(in srgb, var(--nixo-color-brand) 50%, black 50%),
+    color-mix(in srgb, var(--nixo-color-brand) 20%, var(--nixo-surface-page) 80%)
   );
   --zen-colors-secondary: light-dark(
     color-mix(in srgb, var(--zen-colors-primary) 20%, white 80%),
-    color-mix(in srgb, var(--zen-primary-color) 30%, var(--zen-branding-bg) 70%)
+    color-mix(in srgb, var(--nixo-color-brand) 30%, var(--nixo-surface-page) 70%)
   );
   --zen-colors-tertiary: light-dark(
-    color-mix(in srgb, var(--zen-primary-color) 2%, white 98%),
-    color-mix(in srgb, var(--zen-primary-color) 1%, var(--zen-branding-bg) 99%)
+    color-mix(in srgb, var(--nixo-color-brand) 2%, white 98%),
+    color-mix(in srgb, var(--nixo-color-brand) 1%, var(--nixo-surface-page) 99%)
   );
-
   --zen-colors-hover-bg: light-dark(
-    color-mix(in srgb, var(--zen-primary-color) 90%, white 10%),
-    color-mix(in srgb, var(--zen-primary-color) 90%, var(--zen-branding-bg) 10%)
+    color-mix(in srgb, var(--nixo-color-brand) 90%, white 10%),
+    color-mix(in srgb, var(--nixo-color-brand) 90%, var(--nixo-surface-page) 10%)
   );
   --zen-colors-primary-foreground: light-dark(
-    var(--zen-branding-bg-reverse),
-    color-mix(in srgb, var(--zen-primary-color) 80%, white 20%)
+    var(--nixo-text-inverse),
+    color-mix(in srgb, var(--nixo-color-brand) 80%, white 20%)
   );
-  --zen-colors-border: light-dark(
-    color-mix(in srgb, var(--zen-colors-secondary) 50%, transparent),
-    color-mix(in srgb, var(--zen-colors-secondary) 20%, rgb(79, 79, 79))
-  );
-  --zen-colors-border-contrast: light-dark(
-    color-mix(in srgb, var(--zen-colors-secondary) 10%, rgba(181, 181, 181, 0.11) 90%),
-    color-mix(in srgb, var(--zen-colors-secondary) 10%, rgba(255, 255, 255, 0.11) 90%)
-  );
+  --zen-colors-border: var(--nixo-border-subtle);
+  --zen-colors-border-contrast: var(--nixo-border-default);
 
-  --zen-colors-input-bg: light-dark(
-    color-mix(in srgb, var(--zen-primary-color) 1%, var(--zen-colors-tertiary) 99%),
-    color-mix(in srgb, var(--zen-primary-color) 1%, var(--zen-branding-bg) 99%)
-  );
+  /* ── Input & Dialog backgrounds ── */
+  --zen-colors-input-bg: var(--nixo-surface-input);
+  --zen-dialog-background: var(--nixo-surface-modal);
+  --zen-urlbar-background: var(--nixo-surface-glass);
+  --zen-secondary-btn-color: var(--nixo-text-primary);
 
-  --zen-dialog-background: light-dark(#fafbff, #1c1c1c);
-  --zen-urlbar-background: light-dark(
-    color-mix(in srgb, var(--zen-primary-color) 3%, #f4f4f4 97%),
-    color-mix(in srgb, var(--zen-primary-color) 4%, rgb(24, 24, 24) 96%)
-  );
-
-  --zen-secondary-btn-color: var(--zen-colors-primary-foreground);
+  /* ── Panel separator ── */
   --panel-separator-zap-gradient: none !important;
 
-  --in-content-primary-button-background: color-mix(
-    in srgb,
-    var(--zen-primary-color) 40%,
-    var(--zen-branding-bg-reverse)
-  ) !important;
-  --in-content-primary-button-background-hover: color-mix(
-    in srgb,
-    var(--zen-primary-color) 45%,
-    var(--zen-branding-bg-reverse)
-  ) !important;
+  /* ── In-content button overrides ── */
+  --in-content-primary-button-background: var(--nixo-surface-active) !important;
+  --in-content-primary-button-background-hover: var(--nixo-color-brand) !important;
   --in-content-primary-button-background-active: color-mix(
-    in srgb,
-    var(--zen-primary-color) 50%,
-    var(--zen-branding-bg-reverse)
+    in srgb, var(--nixo-color-brand) 85%, black 15%
   ) !important;
-  --in-content-primary-button-text-color: var(--zen-branding-bg) !important;
+  --in-content-primary-button-text-color: var(--nixo-text-on-brand) !important;
   --in-content-primary-button-border-color: transparent !important;
   --in-content-primary-button-border-hover: transparent !important;
+
+  /* ── Page & toolbar backgrounds ── */
+  --zen-main-browser-background: var(--nixo-surface-page);
+  --zen-main-browser-background-old: var(--nixo-surface-page);
+  --zen-main-browser-background-toolbar: var(--nixo-surface-toolbar);
+  --zen-main-browser-background-toolbar-old: var(--nixo-surface-toolbar);
+
+  /* ── URL bar styling ── */
+  --zen-urlbar-background: var(--nixo-surface-glass);
+  --toolbar-field-background-color: var(--nixo-surface-input) !important;
+  --arrowpanel-background: var(--nixo-surface-elevated) !important;
+  --panel-separator-color: var(--nixo-border-subtle) !important;
+
+  /* ── Shadow ── */
+  var(--nixo-shadow-md): var(--nixo-shadow-md);
+
+  /* ── Tab scaling ── */
+  --zen-active-tab-scale: 0.985;
+  --tab-hover-background-color: var(--nixo-surface-hover);
+
+  /* ── Sidebar ── */
+  --zen-sidebar-notification-bg: var(--nixo-surface-elevated);
+  --zen-sidebar-notification-shadow: var(--nixo-shadow-sm);
+  --zen-sidebar-themed-icon-fill: var(--nixo-text-secondary);
+
+  /* ── Native inner radius ── */
+  --zen-native-inner-radius: max(5px, calc(var(--nixo-radius-lg) - var(--nixo-space-2) / 2));
+
+  /* ── Workspace indicator ── */
+  --zen-workspace-indicator-height: 42px;
+
+  /* ── Platform-specific fonts ── */
+  @media (-moz-platform: macos) {
+    font-family: var(--nixo-font-sans);
+  }
+  @media (-moz-platform: windows) {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+}t !important;
   --in-content-primary-button-border-active: var(--zen-colors-border) !important;
 
   --in-content-accent-color: var(--zen-colors-primary) !important;
@@ -230,7 +250,7 @@
   &[zen-private-window='true'] {
     --zen-main-browser-background: color-mix(in srgb, rgb(11, 10, 11) 90%, var(--zen-themed-toolbar-bg-transparent));
     --zen-main-browser-background-toolbar: var(--zen-main-browser-background);
-    --zen-primary-color: rgb(11, 10, 11) !important;
+    var(--nixo-color-brand): rgb(11, 10, 11) !important;
     /* Make sure its in sync with getToolbarColor */
     --toolbox-textcolor: rgba(255, 255, 255, 0.8) !important;
     --toolbar-color-scheme: dark !important;
@@ -239,7 +259,7 @@
   &[zen-unsynced-window='true'] {
     --zen-main-browser-background: color-mix(in srgb, light-dark(rgb(196, 202, 229), rgb(8, 9, 40)) 60%, var(--zen-themed-toolbar-bg-transparent));
     --zen-main-browser-background-toolbar: var(--zen-main-browser-background);
-    --zen-primary-color: light-dark(rgb(100, 115, 255), rgb(80, 90, 200)) !important;
+    var(--nixo-color-brand): light-dark(rgb(100, 115, 255), rgb(80, 90, 200)) !important;
     --toolbox-textcolor: color-mix(in srgb, currentColor 95%, transparent) !important;
     --zen-workspace-indicator-height: 42px;
   }
@@ -249,7 +269,7 @@
 
   --panel-separator-color: color-mix(in srgb, currentColor 15%, transparent) !important;
 
-  --zen-big-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  var(--nixo-shadow-md): rgba(0, 0, 0, 0.24) 0px 3px 8px;
   --zen-active-tab-scale: 0.985;
 
   /* Define tab hover background color */
@@ -258,12 +278,12 @@
   /* Sidebar Notifications */
   --zen-sidebar-notification-bg: color-mix(
     in srgb,
-    var(--zen-primary-color) 5%,
+    var(var(--nixo-color-brand)) 5%,
     light-dark(white, black)
   );
   --zen-sidebar-notification-shadow: 0 0 6px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
 
-  --zen-sidebar-themed-icon-fill: light-dark(color-mix(in srgb, var(--zen-primary-color) 50%, black), color-mix(in srgb, var(--zen-colors-primary) 15%, #ebebeb));
+  --zen-sidebar-themed-icon-fill: light-dark(color-mix(in srgb, var(var(--nixo-color-brand)) 50%, black), color-mix(in srgb, var(--zen-colors-primary) 15%, #ebebeb));
 
   --zen-native-inner-radius: var(
     --zen-webview-border-radius,
@@ -271,7 +291,7 @@
        * 1. If the native radius - the separation is less than 4px, use 4px.
        * 2. Otherwise, use the the calculated value (inner radius = outer radius - separation).
      */
-      max(5px, calc(var(--zen-border-radius) - var(--zen-element-separation) / 2))
+      max(5px, calc(var(var(--nixo-radius-lg)) - var(--zen-element-separation) / 2))
   );
 
   /** Other theme-related styles */

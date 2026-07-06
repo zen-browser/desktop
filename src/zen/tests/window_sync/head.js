@@ -47,3 +47,4 @@ async function withNewTabAndWindow(action) {
   BrowserTestUtils.removeTab(newTab);
   await portalTabClosing;
 }
+// NIXO

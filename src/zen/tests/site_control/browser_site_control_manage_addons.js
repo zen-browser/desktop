@@ -91,3 +91,4 @@ add_task(async function test_get_addons_button_opens_amo() {
     await SpecialPowers.popPrefEnv();
   }
 });
+// NIXO

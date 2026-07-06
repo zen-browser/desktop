@@ -53,3 +53,4 @@ Services.prefs.setCharPref(
   "moztest-block-simple"
 );
 SafeBrowsing.init();
+// NIXO

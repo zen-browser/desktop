@@ -28,3 +28,4 @@ add_task(async function test_getSelectionPath_invalidNode() {
     "HTML element should return null"
   );
 });
+// NIXO

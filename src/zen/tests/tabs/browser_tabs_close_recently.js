@@ -78,3 +78,4 @@ add_task(async function test_closeToLastTab() {
   gBrowser.removeTab(tab3);
   await SpecialPowers.popPrefEnv();
 });
+// NIXO

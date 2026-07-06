@@ -17,7 +17,7 @@ index 8bb1219962a1368f50b53c61041f135c68e35f31..8e72441d26883cbef7a352b00c0fe2b1
  
        let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
 +      if (draggedTab && dropEffect === "move") {
-+        gZenViewSplitter.onBrowserDragEndToSplit(event);
++        gNixoViewSplitter.onBrowserDragEndToSplit(event);
 +      }
        if (
          (dropEffect == "move" || dropEffect == "copy") &&
@@ -26,7 +26,7 @@ index 8bb1219962a1368f50b53c61041f135c68e35f31..8e72441d26883cbef7a352b00c0fe2b1
            !draggedTab.group.collapsed
          ) {
            draggedTab.group.collapsed = true;
-+          gZenFolders.animateGroupMove(draggedTab.group);
++          gNixoFolders.animateGroupMove(draggedTab.group);
          }
  
          if (dropEffect == "move") {
@@ -47,7 +47,7 @@ index 8bb1219962a1368f50b53c61041f135c68e35f31..8e72441d26883cbef7a352b00c0fe2b1
        event.stopPropagation();
 +      if (draggedTab && dropEffect == "move") {
 +        this.handle_drop_transition?.(draggedTab._dragData.dropElement, draggedTab, movingTabs, draggedTab._dragData.dropBefore);
-+        [draggedTab, movingTabs] = gZenPinnedTabManager.moveToAnotherTabContainerIfNecessary(event, draggedTab, movingTabs, this._getDropIndex(event));
++        [draggedTab, movingTabs] = gNixoPinnedTabManager.moveToAnotherTabContainerIfNecessary(event, draggedTab, movingTabs, this._getDropIndex(event));
 +      }
        if (draggedTab && dropEffect == "copy") {
          let duplicatedDraggedTab;
@@ -64,8 +64,8 @@ index 8bb1219962a1368f50b53c61041f135c68e35f31..8e72441d26883cbef7a352b00c0fe2b1
          let tabs = this._tabbrowserTabs.dragAndDropElements.slice(
 -          isPinned ? 0 : numPinned,
 -          isPinned ? numPinned : undefined
-+          isPinned ? (essential ? 0 : gBrowser._numZenEssentials) : numPinned,
-+          isPinned ? (essential ? gBrowser._numZenEssentials : numPinned) : undefined
++          isPinned ? (essential ? 0 : gBrowser._numNixoEssentials) : numPinned,
++          isPinned ? (essential ? gBrowser._numNixoEssentials : numPinned) : undefined
          );
 +        if (tabs.length == 0) {
 +          tabs = [...movingTabs];
@@ -137,7 +137,7 @@ index 8bb1219962a1368f50b53c61041f135c68e35f31..8e72441d26883cbef7a352b00c0fe2b1
  
            let nextItem = this._tabbrowserTabs.dragAndDropElements[newIndex];
            let tabGroup = isTab(nextItem) && nextItem.group;
-+          if (gZenViewSplitter.handleTabDrop(event, urls, replace, inBackground)) return;
++          if (gNixoViewSplitter.handleTabDrop(event, urls, replace, inBackground)) return;
            gBrowser.loadTabs(urls, {
              inBackground,
              replace,
@@ -147,14 +147,14 @@ index 8bb1219962a1368f50b53c61041f135c68e35f31..8e72441d26883cbef7a352b00c0fe2b1
        this._resetTabsAfterDrop(draggedTab.ownerDocument);
 -
 +      if (!dt.mozUserCancelled && dt.dropEffect == "none" && !this._isCustomizing) {
-+        const moved = gZenViewSplitter.moveTabToSplitView(event, draggedTab);
++        const moved = gNixoViewSplitter.moveTabToSplitView(event, draggedTab);
 +        if (moved) {
 +          delete draggedTab._dragData;
 +          return;
 +        }
 +      } else if (dt.mozUserCancelled) {
-+        gZenViewSplitter.onBrowserDragEndToSplit(event, true);
-+        if (gZenViewSplitter._lastOpenedTab) gZenViewSplitter._lastOpenedTab._visuallySelected = false;
++        gNixoViewSplitter.onBrowserDragEndToSplit(event, true);
++        if (gNixoViewSplitter._lastOpenedTab) gNixoViewSplitter._lastOpenedTab._visuallySelected = false;
 +      }
        if (
          dt.mozUserCancelled ||
@@ -191,7 +191,7 @@ index 8bb1219962a1368f50b53c61041f135c68e35f31..8e72441d26883cbef7a352b00c0fe2b1
        ) {
 -        draggedTab.group.collapsed = false;
 +        draggedTab.group.collapsed = draggedTab.group.hasAttribute("has-active");
-+        gZenFolders.animateGroupMove(draggedTab.group, true);
++        gNixoFolders.animateGroupMove(draggedTab.group, true);
        }
      }
  

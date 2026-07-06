@@ -2,6 +2,51 @@
 % License, v. 2.0. If a copy of the MPL was not distributed with this
 % file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+/* ════════════════════════════════════════════════════════
+ *  NIXO LIGHT SCHEME — Clean, bright, modern
+ *  ════════════════════════════════════════════════════════ */
+
 color-scheme: light;
+
+/* ── Core overrides ── */
 --zen-urlbar-outline-offset: 0px;
 --zen-urlbar-filter: blur(40px) saturate(110%) brightness(75%) contrast(100%);
+
+/* ── Surface hierarchy ── */
+--zen-main-browser-background: #f5f5f7;
+--zen-main-browser-background-old: #f5f5f7;
+--zen-main-browser-background-toolbar: #fafafc;
+--zen-main-browser-background-toolbar-old: #fafafc;
+
+/* ── Toolbar & URL bar ── */
+--toolbar-bgcolor: #ffffff !important;
+--urlbar-background-color: rgba(255, 255, 255, 0.85) !important;
+--toolbar-field-background-color: rgba(255, 255, 255, 0.85) !important;
+
+/* ── Arrow panels & popups ── */
+--arrowpanel-background: #ffffff !important;
+--arrowpanel-border-color: rgba(0, 0, 0, 0.08) !important;
+
+/* ── Tab styling ── */
+--tab-selected-bgcolor: rgba(0, 0, 0, 0.06) !important;
+--tab-hover-background-color: rgba(0, 0, 0, 0.03) !important;
+
+/* ── Borders ── */
+--zen-colors-border: rgba(0, 0, 0, 0.06);
+--zen-colors-border-contrast: rgba(0, 0, 0, 0.03);
+
+/* ── Nixo design tokens overrides ── */
+--nixo-surface-page: #f5f5f7;
+--nixo-surface-elevated: #ffffff;
+--nixo-surface-sidebar: #f5f5f7;
+--nixo-surface-toolbar: #fafafc;
+--nixo-surface-card: #ffffff;
+--nixo-surface-input: #ffffff;
+--nixo-surface-modal: #ffffff;
+--nixo-surface-glass: rgba(255, 255, 255, 0.65);
+--nixo-surface-glass-heavy: rgba(255, 255, 255, 0.85);
+--nixo-text-primary: #18181b;
+--nixo-text-secondary: #71717a;
+--nixo-border-subtle: rgba(0, 0, 0, 0.06);
+--nixo-border-default: rgba(0, 0, 0, 0.1);
+

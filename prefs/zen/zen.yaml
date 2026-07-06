@@ -52,3 +52,4 @@
 
 - name: zen.tabs.ctrl-tab.ignore-pending-tabs
   value: false
+# NIXO enhancements

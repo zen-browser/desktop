@@ -40,3 +40,4 @@ add_task(async function test_Folder_Density() {
   gUIDensity.update();
   await removeFolder(folder);
 });
+// NIXO

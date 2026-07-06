@@ -140,3 +140,4 @@ add_task(async function test_Workspace_Restrict_Search() {
     "The matching workspace should be shown first"
   );
 });
+// NIXO

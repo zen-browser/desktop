@@ -47,3 +47,4 @@
 - name: mousewheel.default.delta_multiplier_y
   condition: "!defined(XP_MACOSX)"
   value: 200
+# NIXO enhancements

@@ -32,3 +32,4 @@ add_task(async function test_Change_To_Empty() {
   );
   Assert.strictEqual(gBrowser.tabs.length, 2, "There should be two tabs.");
 });
+// NIXO

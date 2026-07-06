@@ -106,13 +106,13 @@ index f5df770e7c03446c2d23664b9100e12149ea7a59..398ae5b75a27aec60341f3058310013d
 +    if(document.documentElement.getAttribute("windowtype") === "Places:Organizer") {
 +      return;
 +    }
-+    const { ZenSessionStore } = ChromeUtils.importESModule(
-+      "resource:///modules/zen/ZenSessionManager.sys.mjs"
++    const { NixoSessionStore } = ChromeUtils.importESModule(
++      "resource:///modules/zen/NixoSessionManager.sys.mjs"
 +    );
-+    this._workspaces = ZenSessionStore.getClonedSpaces();
++    this._workspaces = NixoSessionStore.getClonedSpaces();
 +    const workspaceList = this._workspaceList;
 +    if(aInfo.node?.bookmarkGuid) {
-+      this._selectedWorkspaces = await ZenWorkspaceBookmarksStorage.getBookmarkWorkspaces(aInfo.node.bookmarkGuid);
++      this._selectedWorkspaces = await NixoWorkspaceBookmarksStorage.getBookmarkWorkspaces(aInfo.node.bookmarkGuid);
 +    }
 +
 +    // Clear existing items

@@ -99,3 +99,4 @@ add_task(async function test_Glance_Close_Pinned_Parent() {
   );
   ok(parentTab.selected, "The pinned parent tab should be visually selected");
 });
+// NIXO

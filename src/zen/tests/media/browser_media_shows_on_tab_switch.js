@@ -72,3 +72,4 @@ add_task(async function test_media_bar_shows_when_switching_off_playing_tab() {
     gBrowser.selectedTab = originalTab;
   }
 });
+// NIXO

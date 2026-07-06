@@ -6,7 +6,7 @@ index 9141793550f7c7ff6aa63d4c85bf571b4499e2d0..6906fd9be7ae6ca4316133e0d6552b79
    SessionFile: "resource:///modules/sessionstore/SessionFile.sys.mjs",
    SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
    sessionStoreLogger: "resource:///modules/sessionstore/SessionLogger.sys.mjs",
-+  ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
++  NixoSessionStore: "resource:///modules/zen/NixoSessionManager.sys.mjs",
  });
  
  /*
@@ -23,7 +23,7 @@ index 9141793550f7c7ff6aa63d4c85bf571b4499e2d0..6906fd9be7ae6ca4316133e0d6552b79
      this._maybeClearCookiesAndStorage(state);
  
      Glean.sessionRestore.collectData.stopAndAccumulate(timerId);
-+    lazy.ZenSessionStore.saveState(state);
++    lazy.NixoSessionStore.saveState(state);
      return this._writeState(state);
    },
  

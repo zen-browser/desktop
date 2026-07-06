@@ -60,3 +60,4 @@ add_task(async function box_shadow_is_tinted_alpha_preserved() {
     Assert.equal(boosted.a, 255, "composited shadow pixel has full alpha");
   });
 });
+// NIXO

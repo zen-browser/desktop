@@ -44,3 +44,8 @@ class nsZenDragAndDrop final : public nsIZenDragAndDrop {
 }  // namespace zen
 
 #endif
+// NIXO .h
+// NIXO .h
+/* NIXO */
+/* NIXO */
+/* NIXO */

@@ -63,3 +63,4 @@ add_task(async function testPhishing() {
 
   gBrowser.removeCurrentTab();
 });
+// NIXO

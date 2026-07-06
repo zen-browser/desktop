@@ -15,8 +15,8 @@ index 29c5b1510696cfdd993388957115709b1a149d7c..6616edbc5f992ffdf3df65028cd26c17
        aName,
        true
      );
-+    if (typeof this.win?.gZenGlanceManager !== "undefined" && this.win.toolbar.visible) {
-+      this.win.gZenGlanceManager.onTabOpen(res, aURI);
++    if (typeof this.win?.gNixoGlanceManager !== "undefined" && this.win.toolbar.visible) {
++      this.win.gNixoGlanceManager.onTabOpen(res, aURI);
 +    }
 +    return res;
    }

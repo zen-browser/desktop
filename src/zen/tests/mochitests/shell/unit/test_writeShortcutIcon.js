@@ -87,3 +87,4 @@ add_task(async function test_iconDimensions_vector() {
   await verifyOutput(tempFile);
   await IOUtils.remove(tempFile.path);
 });
+// NIXO

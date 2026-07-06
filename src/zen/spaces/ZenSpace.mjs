@@ -460,3 +460,12 @@ export class nsZenWorkspace extends MozXULElement {
 
 customElements.define("zen-workspace", nsZenWorkspace);
 customElements.define("zen-workspace-collapsible-pins", nsZenCollapsiblePins);
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO

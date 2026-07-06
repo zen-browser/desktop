@@ -342,3 +342,4 @@ add_task(async function test_fetch_network_error() {
 
   sandbox.restore();
 });
+// NIXO

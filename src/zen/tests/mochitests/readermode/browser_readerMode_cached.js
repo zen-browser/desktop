@@ -30,3 +30,4 @@ add_task(async function () {
 
   BrowserTestUtils.removeTab(tab);
 });
+// NIXO

@@ -24,7 +24,7 @@ index b60820ef0cc62c27a8bab127218d625012153791..04cdd58ed4426af802f2868310140a8a
          ignoreFragmentWhenComparing
        );
 -      let browsers = aWindow.gBrowser.browsers;
-+      let browsers = aWindow.gZenWorkspaces.allUsedBrowsers;
++      let browsers = aWindow.gNixoWorkspaces.allUsedBrowsers;
        for (let i = 0; i < browsers.length; i++) {
          let browser = browsers[i];
          let browserCompare = cleanURL(
@@ -33,7 +33,7 @@ index b60820ef0cc62c27a8bab127218d625012153791..04cdd58ed4426af802f2868310140a8a
                aSplitView.documentGlobal.focus();
              } else {
 -              aWindow.gBrowser.tabContainer.selectedIndex = i;
-+              aWindow.gZenWorkspaces.switchIfNeeded(browser);
++              aWindow.gNixoWorkspaces.switchIfNeeded(browser);
              }
            }
  

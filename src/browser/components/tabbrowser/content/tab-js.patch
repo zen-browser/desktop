@@ -75,8 +75,8 @@ index 8f2ebf3a0bd4e2af01cf41024b16bd491e8ed961..27721e26c3cd8cb066b462dedfa4ce78
 +        currentParent = currentParent.group;
 +      }
 +      if (this.pinned && !this.hasAttribute("zen-essential") &&
-+          gZenWorkspaces.activeWorkspaceElement?.hasCollapsedPinnedTabs &&
-+          !gZenWorkspaces.activeWorkspaceElement.collapsiblePins.activeTabs?.includes(this)) {
++          gNixoWorkspaces.activeWorkspaceElement?.hasCollapsedPinnedTabs &&
++          !gNixoWorkspaces.activeWorkspaceElement.collapsiblePins.activeTabs?.includes(this)) {
 +        return false;
 +      }
 +      return true;
@@ -104,7 +104,7 @@ index 8f2ebf3a0bd4e2af01cf41024b16bd491e8ed961..27721e26c3cd8cb066b462dedfa4ce78
 +        return this.parentElement.parentElement;
 +      }
 +      if (this.pinned && !this.hasAttribute('zen-essential')) {
-+        let collapsiblePins = gZenWorkspaces.workspaceElement(this.getAttribute('zen-workspace-id'))?.collapsiblePins;
++        let collapsiblePins = gNixoWorkspaces.workspaceElement(this.getAttribute('zen-workspace-id'))?.collapsiblePins;
 +        if (collapsiblePins?.collapsed) {
 +          return collapsiblePins;
 +        }
@@ -117,7 +117,7 @@ index 8f2ebf3a0bd4e2af01cf41024b16bd491e8ed961..27721e26c3cd8cb066b462dedfa4ce78
        }
  
 +      if (event.target.classList.contains("tab-reset-pin-button")) {
-+        gZenPinnedTabManager.onResetPinButtonMouseOver(this, event);
++        gNixoPinnedTabManager.onResetPinButtonMouseOver(this, event);
 +      }
 +
        // If the previous target wasn't part of this tab then this is a mouseenter event.
@@ -127,7 +127,7 @@ index 8f2ebf3a0bd4e2af01cf41024b16bd491e8ed961..27721e26c3cd8cb066b462dedfa4ce78
        if (!this.contains(event.relatedTarget)) {
          this._mouseleave();
        }
-+      gZenPinnedTabManager.onResetPinButtonMouseOut(this);
++      gNixoPinnedTabManager.onResetPinButtonMouseOut(this);
      }
  
      on_dragstart(event) {
@@ -171,10 +171,10 @@ index 8f2ebf3a0bd4e2af01cf41024b16bd491e8ed961..27721e26c3cd8cb066b462dedfa4ce78
 +          Services.prefs.getBoolPref("zen.splitView.enable-tab-click-split", false)
 +        ) {
 +          if (!this.splitView) {
-+            gZenViewSplitter.contextSplitTabs(this);
++            gNixoViewSplitter.contextSplitTabs(this);
 +          } else {
 +            gBrowser.selectedTab = this;
-+            gZenViewSplitter.removeTabFromGroup(this, undefined, {
++            gNixoViewSplitter.removeTabFromGroup(this, undefined, {
 +              forUnsplit: true,
 +              changeTab: false
 +            });
@@ -220,10 +220,10 @@ index 8f2ebf3a0bd4e2af01cf41024b16bd491e8ed961..27721e26c3cd8cb066b462dedfa4ce78
        }
 +
 +      if (event.target.classList.contains("tab-reset-pin-button")) {
-+        gZenPinnedTabManager._onTabResetPinButton(event, this, 'reset');
++        gNixoPinnedTabManager._onTabResetPinButton(event, this, 'reset');
 +        gBrowser.tabContainer._blockDblClick = true;
 +      } else if (!event.getModifierState("Accel") && event.target.classList.contains("tab-reset-button")) {
-+        gZenPinnedTabManager.onCloseTabShortcut(event, this);
++        gNixoPinnedTabManager.onCloseTabShortcut(event, this);
 +        gBrowser.tabContainer._blockDblClick = true;
 +      }
      }
@@ -234,7 +234,7 @@ index 8f2ebf3a0bd4e2af01cf41024b16bd491e8ed961..27721e26c3cd8cb066b462dedfa4ce78
            triggeringEvent: event,
          });
 +      } else if (this.hasAttribute('zen-essential') && !event.target.classList.contains("tab-icon-overlay")) {
-+        gZenPinnedTabManager._onTabResetPinButton(event, this, 'reset');
++        gNixoPinnedTabManager._onTabResetPinButton(event, this, 'reset');
        }
      }
  

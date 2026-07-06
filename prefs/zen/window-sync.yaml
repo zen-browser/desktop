@@ -16,3 +16,4 @@
 
 - name: zen.window-sync.sync-only-pinned-tabs
   value: false
+# NIXO enhancements

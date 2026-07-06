@@ -32,3 +32,4 @@ async function addTabTo(
   await BrowserTestUtils.browserLoaded(browser);
   return tab;
 }
+// NIXO

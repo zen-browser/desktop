@@ -119,3 +119,4 @@ TEST(ZenBoostsColorFilter, InvertPreservesAlpha)
     EXPECT_EQ(NS_GET_A(InvertColorChannel(c)), NS_GET_A(c));
   }
 }
+/* NIXO */

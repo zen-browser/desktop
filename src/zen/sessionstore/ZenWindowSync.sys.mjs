@@ -222,7 +222,7 @@ class nsZenWindowSync {
     // to avoid confusing the old private window behavior.
     let forcedSync = !aWindow.gZenWorkspaces?.privateWindowOrDisabled;
     let hasUnsyncedArg = false;
-    // See issue https://github.com/zen-browser/desktop/issues/12211
+    // See issue https://github.com/nixo-browser/desktop/issues/12211
     if (lazy.PrivateBrowsingUtils.isWindowPrivate(aWindow)) {
       aWindow._zenStartupSyncFlag = "synced";
     }
@@ -1738,3 +1738,18 @@ export const gWindowSyncEnabled = lazy.gWindowSyncEnabled;
 // eslint-disable-next-line mozilla/valid-lazy
 export const gSyncOnlyPinnedTabs = lazy.gSyncOnlyPinnedTabs;
 export const ZenWindowSync = new nsZenWindowSync();
+// NIXO
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .sys.mjs
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO

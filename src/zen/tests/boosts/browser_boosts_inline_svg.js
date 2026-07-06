@@ -104,3 +104,4 @@ add_task(async function inline_svg_currentcolor_matches_css_under_boost() {
     );
   });
 });
+// NIXO

@@ -19,8 +19,8 @@ index e7e94e13a990c154fb54bda4a3420ca00bdac009..8253b7d403734973729a5982cceafc12
    </toolbar>
  
 +<hbox id="titlebar">
-+  <html:div id="zen-toolbar-background" class="zen-toolbar-background zen-browser-generic-background">
-+    <html:div class="zen-browser-grain" />
++  <html:div id="zen-toolbar-background" class="zen-toolbar-background nixo-browser-generic-background">
++    <html:div class="nixo-browser-grain" />
 +  </html:div>
 +  <box id="zen-overflow-extensions-list" skipintoolbarset="true" contextmenu="toolbar-context-menu" />
    <toolbar id="TabsToolbar"

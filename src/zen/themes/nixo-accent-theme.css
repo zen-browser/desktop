@@ -1,0 +1,69 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/**
+ * Nixo Accent Theme — Dynamic accent color propagation
+ *
+ * This file provides CSS for accent-colored elements throughout the
+ * browser. It works in tandem with ZenThemeModifier which sets
+ * --nixo-color-brand dynamically from the user's preference.
+ */
+
+:root {
+  /* ── Accent color application ── */
+  --nixo-accent-bg: var(--nixo-color-brand);
+  --nixo-accent-text: var(--nixo-text-on-brand);
+  --nixo-accent-border: color-mix(in srgb, var(--nixo-color-brand) 70%, transparent);
+  --nixo-accent-glow: 0 0 20px color-mix(in srgb, var(--nixo-color-brand) 30%, transparent);
+  --nixo-accent-soft-bg: color-mix(in srgb, var(--nixo-color-brand) 10%, var(--nixo-surface-page));
+  --nixo-accent-soft-hover: color-mix(in srgb, var(--nixo-color-brand) 15%, var(--nixo-surface-page));
+  --nixo-accent-soft-active: color-mix(in srgb, var(--nixo-color-brand) 20%, var(--nixo-surface-page));
+
+  /* ── Scrollbar accent ── */
+  scrollbar-color: color-mix(in srgb, var(--nixo-color-brand) 40%, transparent) transparent;
+
+  /* ── Focus ring accent ── */
+  --focus-outline-color: var(--nixo-color-brand) !important;
+}
+
+/* ── Accent-colored active tab indicator ── */
+.tabbrowser-tab[selected] .tab-stack .tab-background {
+  border-color: color-mix(in srgb, var(--nixo-color-brand) 30%, transparent) !important;
+}
+
+/* ── Accent-colored button on hover ── */
+toolbarbutton:hover:not([disabled="true"]) {
+  --toolbarbutton-hover-background: var(--nixo-accent-soft-bg);
+}
+
+toolbarbutton[checked="true"],
+toolbarbutton[open="true"] {
+  --toolbarbutton-active-background: var(--nixo-accent-soft-hover);
+}
+
+/* ── URL bar focus glow ── */
+#urlbar[focused="true"]:not([suppress-focus-border]) > #urlbar-background {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--nixo-color-brand) 30%, transparent), var(--nixo-shadow-urlbar) !important;
+}
+
+/* ── Sidebar active element accent ── */
+#sidebar-box[selected="true"] {
+  background: var(--nixo-accent-soft-bg);
+}
+
+/* ── Progress bar accent ── */
+#nixo-progress-bar::-moz-progress-bar {
+  background: var(--nixo-color-brand) !important;
+}
+
+/* ── Toast notifications accent ── */
+#zen-toast-container .zen-toast {
+  border-left: 3px solid var(--nixo-color-brand);
+}
+
+/* ── Split view handle ── */
+#zen-sidebar-splitter:hover {
+  background: var(--nixo-color-brand) !important;
+  box-shadow: var(--nixo-accent-glow);
+}

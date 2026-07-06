@@ -1,0 +1,242 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * NIXO DESIGN SYSTEM — Design Tokens
+ * Naming: --nixo-{category}-{property}-{variant}
+ * Categories: color, surface, text, border, shadow, radius, space,
+ *             font, motion, opacity, z, sizing
+ */
+
+:root {
+  /* ── Color Palette ── */
+  --nixo-color-brand-h: 248;
+  --nixo-color-brand-s: 100%;
+  --nixo-color-brand-l: 65%;
+  --nixo-color-brand: hsl(var(--nixo-color-brand-h), var(--nixo-color-brand-s), var(--nixo-color-brand-l));
+  --nixo-color-success: #22c55e;
+  --nixo-color-warning: #f59e0b;
+  --nixo-color-error: #ef4444;
+  --nixo-color-info: #3b82f6;
+  --nixo-color-neutral-50: #fafafa;
+  --nixo-color-neutral-100: #f4f4f5;
+  --nixo-color-neutral-200: #e4e4e7;
+  --nixo-color-neutral-300: #d4d4d8;
+  --nixo-color-neutral-400: #a1a1aa;
+  --nixo-color-neutral-500: #71717a;
+  --nixo-color-neutral-600: #52525b;
+  --nixo-color-neutral-700: #3f3f46;
+  --nixo-color-neutral-800: #27272a;
+  --nixo-color-neutral-900: #18181b;
+  --nixo-color-neutral-950: #09090b;
+
+  /* ── Surface Tokens ── */
+  --nixo-surface-page: light-dark(var(--nixo-color-neutral-50), var(--nixo-color-neutral-950));
+  --nixo-surface-elevated: light-dark(#ffffff, var(--nixo-color-neutral-900));
+  --nixo-surface-overlay: light-dark(rgba(255,255,255,0.8), rgba(0,0,0,0.8));
+  --nixo-surface-sidebar: light-dark(var(--nixo-color-neutral-50), #141416);
+  --nixo-surface-toolbar: light-dark(color-mix(in srgb, var(--nixo-color-brand) 3%, var(--nixo-color-neutral-50) 97%), color-mix(in srgb, var(--nixo-color-brand) 3%, #141416 97%));
+  --nixo-surface-card: light-dark(#ffffff, var(--nixo-color-neutral-800));
+  --nixo-surface-input: light-dark(#ffffff, var(--nixo-color-neutral-800));
+  --nixo-surface-modal: light-dark(#ffffff, #1c1c1e);
+  --nixo-surface-tooltip: light-dark(var(--nixo-color-neutral-800), var(--nixo-color-neutral-200));
+  --nixo-surface-hover: light-dark(color-mix(in srgb, var(--nixo-color-brand) 8%, transparent), color-mix(in srgb, var(--nixo-color-brand) 12%, transparent));
+  --nixo-surface-active: light-dark(color-mix(in srgb, var(--nixo-color-brand) 15%, transparent), color-mix(in srgb, var(--nixo-color-brand) 20%, transparent));
+  --nixo-surface-selected: light-dark(color-mix(in srgb, var(--nixo-color-brand) 12%, transparent), color-mix(in srgb, var(--nixo-color-brand) 18%, transparent));
+  --nixo-surface-glass: light-dark(rgba(255,255,255,0.65), rgba(30,30,35,0.75));
+  --nixo-surface-glass-heavy: light-dark(rgba(255,255,255,0.85), rgba(20,20,25,0.9));
+
+  /* ── Text Tokens ── */
+  --nixo-text-primary: light-dark(var(--nixo-color-neutral-900), var(--nixo-color-neutral-100));
+  --nixo-text-secondary: light-dark(var(--nixo-color-neutral-500), var(--nixo-color-neutral-400));
+  --nixo-text-tertiary: light-dark(var(--nixo-color-neutral-400), var(--nixo-color-neutral-500));
+  --nixo-text-inverse: light-dark(#ffffff, var(--nixo-color-neutral-950));
+  --nixo-text-link: light-dark(#2563eb, #60a5fa);
+  --nixo-text-brand: var(--nixo-color-brand);
+  --nixo-text-on-brand: #ffffff;
+  --nixo-text-success: var(--nixo-color-success);
+  --nixo-text-warning: var(--nixo-color-warning);
+  --nixo-text-error: var(--nixo-color-error);
+  --nixo-text-disabled: light-dark(var(--nixo-color-neutral-300), var(--nixo-color-neutral-600));
+  --nixo-text-placeholder: light-dark(var(--nixo-color-neutral-400), var(--nixo-color-neutral-500));
+
+  /* ── Border Tokens ── */
+  --nixo-border-subtle: light-dark(color-mix(in srgb, var(--nixo-color-neutral-200) 80%, transparent), color-mix(in srgb, var(--nixo-color-neutral-700) 60%, transparent));
+  --nixo-border-default: light-dark(var(--nixo-color-neutral-200), var(--nixo-color-neutral-700));
+  --nixo-border-strong: light-dark(var(--nixo-color-neutral-300), var(--nixo-color-neutral-600));
+  --nixo-border-brand: var(--nixo-color-brand);
+  --nixo-border-focus: light-dark(#2563eb, #60a5fa);
+  --nixo-border-error: var(--nixo-color-error);
+  --nixo-border-success: var(--nixo-color-success);
+
+  /* ── Radius Tokens ── */
+  --nixo-radius-none: 0px;
+  --nixo-radius-xs: 2px;
+  --nixo-radius-sm: 4px;
+  --nixo-radius-md: 6px;
+  --nixo-radius-lg: 8px;
+  --nixo-radius-xl: 12px;
+  --nixo-radius-2xl: 16px;
+  --nixo-radius-3xl: 20px;
+  --nixo-radius-full: 9999px;
+  --nixo-radius-button: var(--nixo-radius-md);
+  --nixo-radius-card: var(--nixo-radius-lg);
+  --nixo-radius-input: var(--nixo-radius-md);
+  --nixo-radius-modal: var(--nixo-radius-xl);
+  --nixo-radius-popup: var(--nixo-radius-lg);
+  --nixo-radius-tab: var(--nixo-radius-md);
+
+  /* ── Shadow / Elevation Tokens ── */
+  --nixo-shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+  --nixo-shadow-sm: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+  --nixo-shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+  --nixo-shadow-lg: 0 10px 15px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.05);
+  --nixo-shadow-xl: 0 20px 25px rgba(0,0,0,0.1), 0 10px 10px rgba(0,0,0,0.04);
+  --nixo-shadow-2xl: 0 25px 50px rgba(0,0,0,0.25);
+  --nixo-shadow-card: var(--nixo-shadow-sm);
+  --nixo-shadow-dropdown: var(--nixo-shadow-lg);
+  --nixo-shadow-modal: var(--nixo-shadow-xl);
+  --nixo-shadow-toast: var(--nixo-shadow-lg);
+  --nixo-shadow-tooltip: var(--nixo-shadow-md);
+  --nixo-shadow-urlbar: var(--nixo-shadow-lg);
+  --nixo-shadow-sidebar: var(--nixo-shadow-sm);
+
+  /* ── Spacing Tokens (4px grid) ── */
+  --nixo-space-0: 0px;
+  --nixo-space-0_5: 2px;
+  --nixo-space-1: 4px;
+  --nixo-space-1_5: 6px;
+  --nixo-space-2: 8px;
+  --nixo-space-2_5: 10px;
+  --nixo-space-3: 12px;
+  --nixo-space-3_5: 14px;
+  --nixo-space-4: 16px;
+  --nixo-space-5: 20px;
+  --nixo-space-6: 24px;
+  --nixo-space-7: 28px;
+  --nixo-space-8: 32px;
+  --nixo-space-9: 36px;
+  --nixo-space-10: 40px;
+  --nixo-space-12: 48px;
+  --nixo-space-14: 56px;
+  --nixo-space-16: 64px;
+  --nixo-space-20: 80px;
+  --nixo-space-24: 96px;
+  --nixo-space-inset-xs: var(--nixo-space-1);
+  --nixo-space-inset-sm: var(--nixo-space-1_5);
+  --nixo-space-inset-md: var(--nixo-space-2);
+  --nixo-space-inset-lg: var(--nixo-space-3);
+  --nixo-space-inset-xl: var(--nixo-space-4);
+
+  /* ── Typography Tokens ── */
+  --nixo-font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --nixo-font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', 'JetBrains Mono', 'Fira Mono', 'Droid Sans Mono', 'Consolas', monospace;
+  --nixo-font-ui: system-ui, -apple-system, sans-serif;
+  --nixo-text-xs: 0.75rem;
+  --nixo-text-sm: 0.8125rem;
+  --nixo-text-base: 0.875rem;
+  --nixo-text-lg: 1rem;
+  --nixo-text-xl: 1.125rem;
+  --nixo-text-2xl: 1.25rem;
+  --nixo-text-3xl: 1.5rem;
+  --nixo-text-4xl: 2rem;
+  --nixo-weight-normal: 400;
+  --nixo-weight-medium: 500;
+  --nixo-weight-semibold: 600;
+  --nixo-weight-bold: 700;
+  --nixo-leading-none: 1;
+  --nixo-leading-tight: 1.25;
+  --nixo-leading-normal: 1.5;
+  --nixo-leading-relaxed: 1.625;
+  --nixo-tracking-tight: -0.025em;
+  --nixo-tracking-normal: 0;
+  --nixo-tracking-wide: 0.025em;
+
+  /* ── Motion Tokens ── */
+  --nixo-duration-instant: 0ms;
+  --nixo-duration-faster: 100ms;
+  --nixo-duration-fast: 150ms;
+  --nixo-duration-normal: 200ms;
+  --nixo-duration-slow: 300ms;
+  --nixo-duration-slower: 400ms;
+  --nixo-duration-slowest: 500ms;
+  --nixo-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --nixo-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --nixo-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --nixo-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --nixo-ease-bounce: cubic-bezier(0.68, -0.55, 0.27, 1.55);
+  --nixo-motion-enter: var(--nixo-duration-fast) var(--nixo-ease-out);
+  --nixo-motion-exit: var(--nixo-duration-fast) var(--nixo-ease-in);
+  --nixo-motion-switch: var(--nixo-duration-normal) var(--nixo-ease-in-out);
+  --nixo-motion-expand: var(--nixo-duration-slow) var(--nixo-ease-out);
+  --nixo-motion-spring: var(--nixo-duration-normal) var(--nixo-ease-spring);
+
+  /* ── Opacity Tokens ── */
+  --nixo-opacity-0: 0;
+  --nixo-opacity-5: 0.05;
+  --nixo-opacity-10: 0.1;
+  --nixo-opacity-20: 0.2;
+  --nixo-opacity-30: 0.3;
+  --nixo-opacity-40: 0.4;
+  --nixo-opacity-50: 0.5;
+  --nixo-opacity-60: 0.6;
+  --nixo-opacity-70: 0.7;
+  --nixo-opacity-80: 0.8;
+  --nixo-opacity-90: 0.9;
+  --nixo-opacity-100: 1;
+  --nixo-opacity-disabled: var(--nixo-opacity-50);
+  --nixo-opacity-muted: var(--nixo-opacity-60);
+  --nixo-opacity-overlay: var(--nixo-opacity-50);
+
+  /* ── Z-Index Layers ── */
+  --nixo-z-base: 0;
+  --nixo-z-sidebar: 10;
+  --nixo-z-toolbar: 20;
+  --nixo-z-popover: 30;
+  --nixo-z-dropdown: 40;
+  --nixo-z-sticky: 50;
+  --nixo-z-banner: 60;
+  --nixo-z-overlay: 70;
+  --nixo-z-modal: 80;
+  --nixo-z-toast: 90;
+  --nixo-z-tooltip: 100;
+
+  /* ── Sizing Tokens ── */
+  --nixo-icon-xs: 12px;
+  --nixo-icon-sm: 14px;
+  --nixo-icon-md: 16px;
+  --nixo-icon-lg: 20px;
+  --nixo-icon-xl: 24px;
+  --nixo-icon-2xl: 32px;
+  --nixo-size-tab-min: 36px;
+  --nixo-size-tab-default: 40px;
+  --nixo-size-tab-pinned: 32px;
+  --nixo-size-sidebar-default: 280px;
+  --nixo-size-sidebar-collapsed: 48px;
+  --nixo-size-toolbar-default: 44px;
+  --nixo-size-urlbar-default: 36px;
+  --nixo-size-button-sm: 28px;
+  --nixo-size-button-md: 32px;
+  --nixo-size-button-lg: 36px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --nixo-duration-faster: 0ms;
+    --nixo-duration-fast: 0ms;
+    --nixo-duration-normal: 0ms;
+    --nixo-duration-slow: 0ms;
+    --nixo-duration-slower: 0ms;
+    --nixo-duration-slowest: 0ms;
+  }
+}
+
+@media (prefers-contrast: high) {
+  :root {
+    --nixo-border-subtle: var(--nixo-border-default);
+    --nixo-border-default: var(--nixo-border-strong);
+    --nixo-opacity-muted: var(--nixo-opacity-20);
+    --nixo-surface-glass: var(--nixo-surface-elevated);
+    --nixo-surface-glass-heavy: var(--nixo-surface-elevated);
+  }
+}

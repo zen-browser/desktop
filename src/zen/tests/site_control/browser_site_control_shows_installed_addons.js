@@ -110,3 +110,4 @@ add_task(async function test_panel_drops_uninstalled_addon() {
     BrowserTestUtils.removeTab(tab);
   }
 });
+// NIXO

@@ -277,3 +277,18 @@ export const globalActions = globalActionsTemplate.map(action => ({
     return lazy.l10n.formatValueSync(action.l10nId);
   },
 }));
+// NIXO
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .sys.mjs
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO

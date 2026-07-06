@@ -76,7 +76,7 @@ index 7c2786cc1be512ddfc165fb8f6514131ac033040..5846aff53030ef0fad2f87d017ba3713
    }
  
 +  async updateBookmarkWorkspaces(bookmarkGuid, workspaces) {
-+    await lazy.PlacesUtils.withConnectionWrapper('ZenWorkspaceBookmarksStorage.updateBookmarkWorkspaces', async (db) => {
++    await lazy.PlacesUtils.withConnectionWrapper('NixoWorkspaceBookmarksStorage.updateBookmarkWorkspaces', async (db) => {
 +      const now = Date.now();
 +
 +      await db.executeTransaction(async () => {

@@ -11,7 +11,7 @@ body:
               <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/nixo-browser/desktop/dev/docs/assets/zen-dark.svg">
               <img src="https://raw.githubusercontent.com/nixo-browser/desktop/dev/docs/assets/zen-light.svg" alt="Nixo Logo" width="64" height="64">
             </picture>
-            <img src="https://raw.githubusercontent.com/nixo-browser/desktop/dev/docs/assets/zen-browser.svg" alt="Nixo Browser Text" width="156" height="64">
+            <img src="https://raw.githubusercontent.com/nixo-browser/desktop/dev/docs/assets/nixo-browser.svg" alt="Nixo Browser Text" width="156" height="64">
           </a>
         </p>
 

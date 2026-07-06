@@ -24,3 +24,4 @@ add_task(async function test_Glance_Basic_Close() {
     await BrowserTestUtils.removeTab(glanceTab);
   }, false);
 });
+// NIXO

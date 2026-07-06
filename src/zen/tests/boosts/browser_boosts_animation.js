@@ -50,3 +50,4 @@ add_task(async function animated_background_is_boosted() {
     );
   });
 });
+// NIXO

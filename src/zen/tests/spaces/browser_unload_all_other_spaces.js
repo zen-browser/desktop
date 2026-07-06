@@ -160,3 +160,4 @@ add_task(async function test_UnloadAllOtherWorkspace_essentials() {
   await gZenWorkspaces.removeWorkspace(inactiveWorkspaceId);
   await gZenWorkspaces.removeWorkspace(activeWorkspaceId);
 });
+// NIXO

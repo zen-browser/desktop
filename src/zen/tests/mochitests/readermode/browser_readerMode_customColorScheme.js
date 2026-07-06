@@ -60,3 +60,4 @@ add_task(async function () {
   await testCustomColors("visited-links", "#ffffff");
   await testCustomColors("selection-highlight", "#ffffff");
 });
+// NIXO

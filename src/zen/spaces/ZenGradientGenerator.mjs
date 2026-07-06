@@ -58,7 +58,7 @@ ChromeUtils.defineLazyGetter(lazy, "MIN_OPACITY", () => {
 });
 
 ChromeUtils.defineLazyGetter(lazy, "browserBackgroundElement", () => {
-  return document.getElementById("zen-browser-background");
+  return document.getElementById("nixo-browser-background");
 });
 
 ChromeUtils.defineLazyGetter(lazy, "toolbarBackgroundElement", () => {
@@ -2017,3 +2017,12 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return this.#gradientsCache[uuid];
   }
 }
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO

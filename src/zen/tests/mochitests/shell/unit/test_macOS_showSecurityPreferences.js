@@ -38,3 +38,4 @@ add_task(async function test_prefsOpen() {
 
   equal(killSystemPreferences(), 0, "Ensure System Preferences was started");
 });
+// NIXO

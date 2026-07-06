@@ -54,3 +54,4 @@ add_task(async function () {
   // Testing a test/plain document
   await testRefresh(TEST_PATH + "readerModeArticleTextPlain.txt");
 });
+// NIXO

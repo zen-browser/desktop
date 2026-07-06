@@ -72,3 +72,4 @@ add_task(async function test_Duplicate_Tab_Inside_Folder_Unpinned() {
   await removeFolder(folder);
   await SpecialPowers.popPrefEnv();
 });
+// NIXO

@@ -15,7 +15,7 @@ index a05894d593e4149097c473822a38f87b2220625f..1660106c2a6548920fdffd2656e5a1f1
            }
            event.preventDefault();
 +        } else if (!this.input.value && !(event.ctrlKey || event.altKey || event.shiftKey)) {
-+          this.browserWindow.gZenUIManager.enableCommandsMode(event);
++          this.browserWindow.gNixoUIManager.enableCommandsMode(event);
          }
          break;
        }

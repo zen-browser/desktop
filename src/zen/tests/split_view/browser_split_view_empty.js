@@ -54,3 +54,4 @@ add_task(async function test_Split_View_Empty() {
     await BrowserTestUtils.removeTab(selectedTab);
   });
 });
+// NIXO

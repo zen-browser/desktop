@@ -1579,6 +1579,7 @@ window.gZenVerticalTabsManager = {
           overflowElements.appendChild(child);
         } else {
           const element = document.getElementById("page-action-buttons");
+          child.setAttribute("context", "toolbar-context-menu");
           element.before(child);
         }
         return;

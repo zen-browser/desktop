@@ -20,4 +20,5 @@ DIRS += [
     "share",
     "spaces",
     "space-routing",
+    "sync",
 ]

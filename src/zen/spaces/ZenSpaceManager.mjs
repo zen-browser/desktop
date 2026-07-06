@@ -11,6 +11,7 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
+  ZenSyncStore: "resource:///modules/zen/ZenSyncManager.sys.mjs",
 });
 
 ChromeUtils.defineLazyGetter(lazy, "browserBackgroundElement", () => {
@@ -148,7 +149,7 @@ class nsZenWorkspaces {
     if (!this.privateWindowOrDisabled) {
       const observerFunction = async () => {
         delete this._workspaceBookmarksCache;
-        await this.workspaceBookmarks();
+        await this.#initializeWorkspaceBookmarks();
         this._invalidateBookmarkContainers();
       };
       Services.obs.addObserver(observerFunction, "workspace-bookmarks-updated");
@@ -166,6 +167,63 @@ class nsZenWorkspaces {
       /* eslint-disable no-console */
       console.debug(`[gZenWorkspaces]:`, ...args);
     }
+  }
+
+  /**
+   * Applies live sync changes: updates workspace cache, removes deleted items,
+   * then creates/updates pulled items.
+   *
+   * @param {{ spaces: Array}} pulled  Reconcile-pulled items.
+   * @param {{ spaces: Array}} removals  Items to remove.
+   */
+  async _applySyncChanges(pulled, removals = {}) {
+    if (!this.shouldHaveWorkspaces || this.privateWindowOrDisabled) {
+      return;
+    }
+    await this.promiseInitialized;
+
+    // 1. Update workspace cache (remove deleted, merge pulled)
+    const removedSpaceIds = new Set((removals.spaces || []).map(s => s.uuid));
+    if (removedSpaceIds.size || pulled.spaces?.length) {
+      const localMap = new Map(
+        this.getWorkspaces()
+          .filter(w => !removedSpaceIds.has(w.uuid))
+          .map(w => [w.uuid, w])
+      );
+      for (const space of pulled.spaces || []) {
+        if (!space?.uuid) {
+          continue;
+        }
+        const existing = localMap.get(space.uuid);
+        localMap.set(space.uuid, existing ? { ...existing, ...space } : space);
+      }
+      await this.propagateWorkspaces(
+        this.#getOrderedWorkspacesByPosition(Array.from(localMap.values()))
+      );
+      this.#propagateWorkspaceData();
+    }
+  }
+
+  #getOrderedWorkspacesByPosition(workspaces) {
+    return [...workspaces]
+      .map((workspace, index) => ({ workspace, index }))
+      .sort((a, b) => {
+        const aPosition =
+          typeof a.workspace.position === "number"
+            ? a.workspace.position
+            : a.index;
+        const bPosition =
+          typeof b.workspace.position === "number"
+            ? b.workspace.position
+            : b.index;
+        return aPosition - bPosition || a.index - b.index;
+      })
+      .map(({ workspace }) => {
+        // strip the position property that comes from pulled workspaces
+        const rest = { ...workspace };
+        delete rest.position;
+        return rest;
+      });
   }
 
   #afterLoadInit() {
@@ -391,7 +449,7 @@ class nsZenWorkspaces {
       container = 0;
     }
     let essentialsContainer = document.querySelector(
-      `.zen-essentials-container[container="${container}"]:not([cloned])`
+      `.zen-essentials-container[container="${container}"]`
     );
     if (!essentialsContainer) {
       essentialsContainer = document.createXULElement("hbox");
@@ -691,17 +749,17 @@ class nsZenWorkspaces {
     return spacesForSS;
   }
 
-  async workspaceBookmarks() {
+  async #initializeWorkspaceBookmarks() {
     if (this.privateWindowOrDisabled) {
       this._workspaceBookmarksCache = {
         bookmarks: [],
         lastChangeTimestamp: 0,
       };
-      return this._workspaceBookmarksCache;
+      return;
     }
 
     if (this._workspaceBookmarksCache) {
-      return this._workspaceBookmarksCache;
+      return;
     }
 
     const [bookmarks, lastChangeTimestamp] = await Promise.all([
@@ -710,8 +768,6 @@ class nsZenWorkspaces {
     ]);
 
     this._workspaceBookmarksCache = { bookmarks, lastChangeTimestamp };
-
-    return this._workspaceCache;
   }
 
   restoreWorkspacesFromSessionStore(aWinData = {}) {
@@ -771,7 +827,7 @@ class nsZenWorkspaces {
     return (async () => {
       await this.#waitForPromises();
       this.#afterLoadInit();
-      await this.workspaceBookmarks();
+      await this.#initializeWorkspaceBookmarks();
       await this.changeWorkspace(activeWorkspace, { onInit: true });
       this.#fixTabPositions();
       this.onWindowResize();
@@ -795,6 +851,13 @@ class nsZenWorkspaces {
 
       this.updateWorkspacesChangeContextMenu();
     })();
+  }
+
+  #markWorkspaceChanged(workspaceId) {
+    lazy.ZenSyncStore.markItemChanged({
+      type: "space",
+      id: workspaceId,
+    });
   }
 
   async selectStartPage() {
@@ -1234,12 +1297,19 @@ class nsZenWorkspaces {
     } else {
       workspacesData.push(workspaceData);
     }
+    // mark item as changed for sync
+    this.#markWorkspaceChanged(workspaceData.uuid);
+
     this.#propagateWorkspaceData();
   }
 
   removeWorkspace(windowID) {
     let { promise, resolve } = Promise.withResolvers();
     this.#deleteWorkspaceOwnedTabs(windowID);
+
+    // mark item as changed for sync
+    this.#markWorkspaceChanged(windowID);
+
     let workspacesData = this.getWorkspaces();
     // Remove the workspace from the cache
     workspacesData = workspacesData.filter(
@@ -1371,30 +1441,50 @@ class nsZenWorkspaces {
     if (this.privateWindowOrDisabled) {
       return;
     }
-    const workspaces = this._workspaceCache;
+    const workspaces = this.getWorkspaces();
+    // Track previous positions so we only notify observers for workspaces whose
+    // position changed during the reorder.
+    const previousPositions = new Map(
+      workspaces.map((workspace, index) => [workspace.uuid, index])
+    );
+
     const workspace = workspaces.find(w => w.uuid === id);
     if (!workspace) {
       console.warn(`Workspace with ID ${id} not found for reordering.`);
       return;
     }
+
     // Remove the workspace from its current position
     const currentIndex = workspaces.indexOf(workspace);
     if (currentIndex === -1) {
       console.warn(`Workspace with ID ${id} not found in the list.`);
       return;
     }
-    workspaces.splice(currentIndex, 1);
+
     // Insert the workspace at the new position
-    if (newPosition < 0 || newPosition > workspaces.length) {
+    if (newPosition < 0 || newPosition >= workspaces.length) {
       console.warn(
         `Invalid position ${newPosition} for reordering workspace with ID ${id}.`
       );
       return;
     }
+
+    workspaces.splice(currentIndex, 1);
     workspaces.splice(newPosition, 0, workspace);
+
     // Propagate the changes if the order has changed
     if (currentIndex !== newPosition) {
-      this.#propagateWorkspaceData();
+      this._workspaceCache = workspaces;
+
+      for (const [i, ws] of workspaces.entries()) {
+        if (previousPositions.get(ws.uuid) === i) {
+          continue;
+        }
+        // mark item as changed for sync
+        this.#markWorkspaceChanged(ws.uuid);
+      }
+
+      this.#propagateWorkspaceData(workspaces);
     }
   }
 
@@ -1794,6 +1884,11 @@ class nsZenWorkspaces {
       }
       const newTransform = diff * 100;
       element.style.transform = `translateX(${newTransform + offsetPixels / 2}%)`;
+      // A special case for two spaces
+      if (spaceLen === 2 && diff !== 0) {
+        const side = offsetPixels > 0 ? -100 : 100;
+        element.style.transform = `translateX(${side + offsetPixels / 2}%)`;
+      }
     }
     // Hide other essentials with different containerTabId
     for (const container of otherContainersEssentials) {
@@ -1947,28 +2042,20 @@ class nsZenWorkspaces {
       diff += spaceLen;
     }
     const isGoingLeft = diff < 0;
-    const clonedEssentials = [];
+    const essentialsAnimData = [];
     if (shouldAnimate && this.shouldAnimateEssentials && previousWorkspace) {
+      const containerIds = new Map();
       for (const workspace of workspaces) {
-        const essentialsContainer = this.getEssentialsSection(
-          workspace.containerTabId
-        );
-        let lastCloned = clonedEssentials[clonedEssentials.length - 1];
-        if (lastCloned && lastCloned.contextId == workspace.containerTabId) {
-          lastCloned.repeat++;
-          lastCloned.workspaces.push(workspace);
-          continue;
+        const containerId = workspace.containerTabId;
+        if (!containerIds.has(containerId)) {
+          containerIds.set(containerId, []);
         }
-        essentialsContainer.setAttribute("hidden", "true");
-        const essentialsClone = essentialsContainer.cloneNode(true);
-        essentialsClone.removeAttribute("hidden");
-        essentialsClone.setAttribute("cloned", "true");
-        clonedEssentials.push({
-          container: essentialsClone,
-          workspaces: [workspace],
-          contextId: workspace.containerTabId,
-          originalContainer: essentialsContainer,
-          repeat: 0,
+        containerIds.get(containerId).push(workspace);
+      }
+      for (const [containerId, spaces] of containerIds) {
+        essentialsAnimData.push({
+          element: this.getEssentialsSection(containerId),
+          workspaces: spaces,
         });
       }
     }
@@ -2032,6 +2119,12 @@ class nsZenWorkspaces {
         offset += spaceLen;
       }
       offset = offset * 100;
+      // A special case for two spaces
+      if (spaceLen === 2 && offset !== 0) {
+        const currentTransform =
+          parseFloat(element.style.transform.split("(")[1]) || 0;
+        offset = currentTransform >= 0 ? 100 : -100;
+      }
       const newTransform = `translateX(${offset}%)`;
       // Only animate the workspace that is coming in, to avoid having multiple workspaces
       // animating off-screen at the same time which can cause performance issues. With an off
@@ -2075,190 +2168,59 @@ class nsZenWorkspaces {
       }
     }
     if (this.shouldAnimateEssentials && previousWorkspace) {
-      // Animate essentials
-      const newWorkspaceEssentialsContainer = clonedEssentials.find(cloned =>
-        cloned.workspaces.some(w => w.uuid === newWorkspace.uuid)
-      );
-      // Get a list of essentials containers that are in between the first and last workspace
-      const essentialsContainersInBetween = clonedEssentials.filter(cloned => {
-        const essentialsWorkspaces = cloned.workspaces;
-        const firstIndex = workspaces.findIndex(
-          w => w.uuid === essentialsWorkspaces[0].uuid
+      for (const data of essentialsAnimData) {
+        const container = data.element;
+        const essentialsWorkspaces = data.workspaces;
+
+        const containsPrev = essentialsWorkspaces.some(
+          w => w.uuid === previousWorkspace.uuid
         );
-        const lastIndex = workspaces.findIndex(
-          w =>
-            w.uuid ===
-            essentialsWorkspaces[essentialsWorkspaces.length - 1].uuid
+        const containsNew = essentialsWorkspaces.some(
+          w => w.uuid === newWorkspace.uuid
         );
 
-        const [start, end] = [
-          Math.min(previousWorkspaceIndex, newWorkspaceIndex),
-          Math.max(previousWorkspaceIndex, newWorkspaceIndex),
-        ];
-
-        // Check if any part of the container overlaps with the movement range
-        return firstIndex <= end && lastIndex >= start;
-      });
-      for (const cloned of clonedEssentials) {
-        const container = cloned.container;
-        const essentialsWorkspaces = cloned.workspaces;
-        const repeats = cloned.repeat;
-        // Animate like the workspaces above expect essentials are a bit more
-        // complicated because they are not based on workspaces but on containers
-        // So, if we have the following arangement:
-        //  | [workspace1] [workspace2] [workspace3] [workspace4]
-        //  | [container1] [container1] [container2] [container1]
-        // And if we are changing from workspace 1 to workspace 4,
-        // we should be doing the following:
-        // First container (repeat 2 times) will stay in place until
-        // we reach container 3, then animate to the left and container 2
-        // also move to the left after that while container 1 in workspace 4
-        // will slide in from the right
-
-        // Get the index from first and last workspace
-        const firstWorkspaceIndex = workspaces.findIndex(
-          w => w.uuid === essentialsWorkspaces[0].uuid
-        );
-        const lastWorkspaceIndex = workspaces.findIndex(
-          w =>
-            w.uuid ===
-            essentialsWorkspaces[essentialsWorkspaces.length - 1].uuid
-        );
-        cloned.originalContainer.style.removeProperty("transform");
-        // Check if the container is even going to appear on the screen, to save on animation
-        if (
-          // We also need to check if the container is even going to appear on the screen.
-          // In order to do this, we need to check if the container is between the first and last workspace.
-          // Note that essential containers can have multiple workspaces,
-          // so we need to check if any of the workspaces in the container are between the
-          // first and last workspace.
-          !essentialsContainersInBetween.find(
-            ce =>
-              ce.workspaces.some(
-                w => w.uuid === essentialsWorkspaces[0].uuid
-              ) &&
-              ce.workspaces.some(
-                w =>
-                  w.uuid ===
-                  essentialsWorkspaces[essentialsWorkspaces.length - 1].uuid
-              )
-          )
-        ) {
+        if (!containsPrev && !containsNew) {
+          container.setAttribute("hidden", "true");
           continue;
         }
-        cloned.originalContainer.parentNode.appendChild(container);
-        let stepsInBetween =
-          Math.abs(
-            newWorkspaceIndex -
-              (isGoingLeft ? firstWorkspaceIndex : lastWorkspaceIndex)
-          ) + 1;
-        const usingSameContainer =
-          newWorkspaceEssentialsContainer?.workspaces.some(
-            w => w.uuid === newWorkspace.uuid
-          ) &&
-          newWorkspaceEssentialsContainer?.workspaces.some(
-            w => w.uuid === previousWorkspace.uuid
-          );
-        let newOffset =
-          -(
-            newWorkspaceIndex -
-            (isGoingLeft ? firstWorkspaceIndex : lastWorkspaceIndex) +
-            (!isGoingLeft ? repeats - 1 : -repeats + 1)
-          ) * 100;
 
-        let existingOffset =
-          -(
-            newWorkspaceIndex -
-            (isGoingLeft ? lastWorkspaceIndex : firstWorkspaceIndex) +
-            (isGoingLeft ? repeats - 1 : -repeats + 1)
-          ) * 100;
+        container.removeAttribute("hidden");
 
-        // If we are on the same container and both new and old workspace are in the same "essentialsWorkspaces"
-        // we can simply not animate the essentials
-        if (
-          usingSameContainer &&
-          essentialsWorkspaces.some(w => w.uuid === newWorkspace.uuid) &&
-          essentialsWorkspaces.some(w => w.uuid === previousWorkspace.uuid)
-        ) {
-          newOffset = 0;
-          existingOffset = 0;
+        if (containsPrev && containsNew) {
+          container.style.transform = "translateX(0%)";
+          continue;
         }
 
-        const needsOffsetAdjustment =
-          stepsInBetween > essentialsWorkspaces.length || usingSameContainer;
+        let existingOffset, newOffset;
+        const currentTransform =
+          parseFloat(container.style.transform.split("(")[1]) || 0;
+        if (containsPrev && !containsNew) {
+          existingOffset = currentTransform;
+          newOffset = isGoingLeft ? 100 : -100;
+        } else {
+          existingOffset = currentTransform || (isGoingLeft ? -100 : 100);
+          newOffset = 0;
+        }
 
-        if (repeats > 0 && needsOffsetAdjustment) {
-          if (!isGoingLeft) {
-            if (existingOffset !== 0) {
-              existingOffset += 100;
-            }
-            if (newOffset !== 0) {
-              newOffset += 100;
-            }
+        if (spaceLen === 2) {
+          if (containsPrev && !containsNew) {
+            existingOffset = currentTransform;
+            newOffset = currentTransform >= 0 ? 100 : -100;
           } else {
-            if (existingOffset !== 0) {
-              existingOffset -= 100;
-            }
-            if (newOffset !== 0) {
-              newOffset -= 100;
-            }
+            existingOffset = currentTransform >= 0 ? 100 : -100;
+            newOffset = 0;
           }
-        }
-
-        // Special case: going forward from single reused container to a new one
-        if (
-          !usingSameContainer &&
-          !isGoingLeft &&
-          lastWorkspaceIndex === newWorkspaceIndex - 1
-        ) {
-          existingOffset = 0;
-          newOffset = -100;
-          stepsInBetween = 1;
-        }
-        if (
-          !usingSameContainer &&
-          isGoingLeft &&
-          firstWorkspaceIndex === newWorkspaceIndex + 1
-        ) {
-          existingOffset = 0;
-          newOffset = 100;
-          stepsInBetween = 1;
-        }
-        if (
-          !usingSameContainer &&
-          isGoingLeft &&
-          (firstWorkspaceIndex === newWorkspaceIndex - 1 ||
-            firstWorkspaceIndex === newWorkspaceIndex)
-        ) {
-          existingOffset = -100;
-          newOffset = 0;
-          stepsInBetween = 1;
-        }
-        if (
-          !usingSameContainer &&
-          !isGoingLeft &&
-          firstWorkspaceIndex === newWorkspaceIndex
-        ) {
-          existingOffset = 100;
-          newOffset = 0;
-          stepsInBetween = 1;
         }
 
         const newTransform = `translateX(${newOffset}%)`;
         let existingTransform = `translateX(${existingOffset}%)`;
-        if (container.style.transform && container.style.transform !== "none") {
-          existingTransform = container.style.transform;
-        }
         if (shouldAnimate) {
           container.style.transform = existingTransform;
           animations.push(
             gZenUIManager.motion.animate(
               container,
               {
-                transform: [
-                  existingTransform,
-                  new Array(stepsInBetween).fill(newTransform).join(","),
-                ],
+                transform: [existingTransform, newTransform],
               },
               {
                 type: "spring",
@@ -2287,17 +2249,12 @@ class nsZenWorkspaces {
     this.#currentSpaceSwitchContext.animations = [];
     document.documentElement.removeAttribute("animating-background");
     if (shouldAnimate) {
-      for (const cloned of clonedEssentials) {
-        cloned.container.remove();
+      for (const data of essentialsAnimData) {
+        data.element.style.removeProperty("transform");
       }
       this._alwaysAnimatePaddingTop = true;
       this.updateTabsContainers();
     }
-    const essentialsContainer = this.getEssentialsSection(
-      newWorkspace.containerTabId
-    );
-    essentialsContainer.removeAttribute("hidden");
-    essentialsContainer.style.transform = "none";
     gBrowser.tabContainer._invalidateCachedTabs();
     gZenUIManager.tabsWrapper.style.removeProperty("scrollbar-width");
     this._animatingChange = false;
@@ -2513,7 +2470,7 @@ class nsZenWorkspaces {
       for (const tab of gBrowser.tabs) {
         if (
           !tab.hasAttribute("zen-workspace-id") &&
-          !tab.hasAttribute("zen-workspace-id")
+          !tab.hasAttribute("zen-essential")
         ) {
           tab.setAttribute("zen-workspace-id", workspace.uuid);
         }
@@ -3172,9 +3129,6 @@ class nsZenWorkspaces {
       ...normalContainers,
     ];
     for (const container of containers) {
-      if (container.hasAttribute("cloned")) {
-        continue;
-      }
       for (const tab of container.children) {
         if (gBrowser.isTab(tab)) {
           tabs.push(tab);

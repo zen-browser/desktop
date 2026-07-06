@@ -115,7 +115,9 @@ document.addEventListener(
             });
             break;
           case "cmd_zenTogglePinTab": {
-            const currentTab = gBrowser.selectedTab;
+            const currentTab = gZenGlanceManager.getTabOrGlanceParent(
+              gBrowser.selectedTab
+            );
             if (currentTab && !currentTab.hasAttribute("zen-empty-tab")) {
               if (currentTab.pinned) {
                 gBrowser.unpinTab(currentTab);

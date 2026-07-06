@@ -87,6 +87,8 @@ zen-icons-picker-emoji =
   .label = Emojis
 zen-icons-picker-svg =
   .label = Icons
+zen-emojis-picker-search =
+  .placeholder = Search emojis
 
 urlbar-search-mode-zen_actions = Actions
 zen-site-data-settings = Settings

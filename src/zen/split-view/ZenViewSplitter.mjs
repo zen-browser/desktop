@@ -1229,7 +1229,11 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const newTab = this.openAndSwitchToTab(url, {
       skipRoute: true,
       inBackground: false,
+      triggeringPrincipal: window.gContextMenu.principal,
     });
+    if (!newTab) {
+      return;
+    }
     this.splitTabs([currentTab, newTab], undefined, 1);
   }
 
@@ -1979,9 +1983,24 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * @returns {tab} The tab that was opened
    */
   openAndSwitchToTab(url, options) {
+    const triggeringPrincipal = options?.triggeringPrincipal;
+    if (!triggeringPrincipal) {
+      return null;
+    }
+    try {
+      Services.scriptSecurityManager.checkLoadURIStrWithPrincipal(
+        triggeringPrincipal,
+        url
+      );
+    } catch {
+      return null;
+    }
     const parentWindow = window.parent;
     const targetWindow = parentWindow || window;
-    const tab = targetWindow.gBrowser.addTrustedTab(url, options);
+    const tab = targetWindow.gBrowser.addTab(url, {
+      ...options,
+      triggeringPrincipal,
+    });
     targetWindow.gBrowser.selectedTab = tab;
     return tab;
   }

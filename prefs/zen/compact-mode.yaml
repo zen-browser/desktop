@@ -36,3 +36,4 @@
 - name: zen.view.compact.enable-at-startup
   hidden: true
   value: false
+# NIXO enhancements

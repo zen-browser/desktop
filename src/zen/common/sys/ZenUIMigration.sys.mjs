@@ -19,7 +19,7 @@ class nsZenUIMigration {
       try {
         this._migrate();
       } catch (e) {
-        console.error("ZenUIMigration: Error during migration", e);
+        console.error("NixoUIMigration: Error during migration", e);
       }
     }
     this.clearVariables();
@@ -143,7 +143,7 @@ class nsZenUIMigration {
         // User has clicked on "Learn More"
         if (buttonPressed === 0) {
           win.openTrustedLinkIn(
-            "https://docs.zen-browser.app/user-manual/window-sync",
+            "https://docs.nixo-browser.app/user-manual/window-sync",
             "tab"
           );
         }
@@ -153,3 +153,18 @@ class nsZenUIMigration {
 }
 
 export var gZenUIMigration = new nsZenUIMigration();
+// NIXO
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .sys.mjs
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO

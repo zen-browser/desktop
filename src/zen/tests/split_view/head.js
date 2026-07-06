@@ -45,3 +45,4 @@ async function basicSplitNTabs(callback, type = "grid", n = 2) {
     await BrowserTestUtils.removeTab(tab);
   }
 }
+// NIXO

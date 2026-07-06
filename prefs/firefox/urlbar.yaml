@@ -64,3 +64,4 @@
 
 - name: browser.urlbar.trustPanel.featureGate
   value: false
+# NIXO enhancements

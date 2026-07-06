@@ -41,4 +41,4 @@
   value: true
 
 - name: browser.urlbar.shortcuts.workspaces
-  value: true
+  value: true# NIXO enhancements

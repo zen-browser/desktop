@@ -10,3 +10,4 @@
 
 - name: pdfjs.enableScripting
   value: false
+# NIXO enhancements

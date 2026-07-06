@@ -67,3 +67,4 @@ add_task(function test_handles_missing_tab() {
     Assert.deepEqual(calls, [], "A missing tab is ignored without throwing");
   });
 });
+// NIXO

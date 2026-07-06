@@ -66,3 +66,4 @@
 
 - name: zen.view.enable-loading-indicator
   value: true
+# NIXO enhancements

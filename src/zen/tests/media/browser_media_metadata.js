@@ -61,3 +61,4 @@ add_task(async function test_media_bar_shows_metadata_from_page() {
     gBrowser.selectedTab = originalTab;
   }
 });
+// NIXO

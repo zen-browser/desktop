@@ -58,3 +58,5 @@ if __name__ == "__main__":
   with open(emojis_path, "w", encoding="utf-8") as file:
     file.write(js_code)
   print(f"Emojis data has been written to {emojis_path}")
+# NIXO
+# NIXO

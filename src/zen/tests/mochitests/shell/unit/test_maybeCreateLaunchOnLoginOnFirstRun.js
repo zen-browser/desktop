@@ -107,3 +107,4 @@ add_task(async function test_uses_pref_default_when_unset() {
     "createLaunchOnLogin should be called when pref is at its built-in default of true"
   );
 });
+// NIXO

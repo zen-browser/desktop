@@ -203,3 +203,4 @@ add_task(async function test_Welcome_Steps() {
   }
   ok(true, "Welcome process completed successfully");
 });
+// NIXO

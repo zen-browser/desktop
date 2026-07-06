@@ -108,3 +108,4 @@ add_task(async function test_reader_mode_button_disabled_when_unavailable() {
     BrowserTestUtils.removeTab(tab);
   }
 });
+// NIXO

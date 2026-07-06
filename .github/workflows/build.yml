@@ -181,7 +181,7 @@ jobs:
         if: ${{ inputs.update_version }}
         with:
           commit_message: 🔖 Update version to ${{ steps.data.outputs.version }}
-          commit_user_name: Zen Browser Robot
+          commit_user_name: Nixo Browser Robot
           commit_user_email: nixo-browser-auto@users.noreply.github.com
 
   check-release:
@@ -547,7 +547,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: 🚀 Update update manifests
-          commit_user_name: Zen Browser Robot
+          commit_user_name: Nixo Browser Robot
           commit_user_email: nixo-browser-auto@users.noreply.github.com
           repository: ./updates-server
 
@@ -645,7 +645,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: 🚀 Update releases for Flatpak
-          commit_user_name: Zen Browser Robot
+          commit_user_name: Nixo Browser Robot
           commit_user_email: nixo-browser-auto@users.noreply.github.com
 
       - name: Checkout Flatpak repository
@@ -668,7 +668,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "[release]: Update Flatpak manifest"
-          commit_user_name: Zen Browser Robot
+          commit_user_name: Nixo Browser Robot
           commit_user_email: nixo-browser-auto@users.noreply.github.com
           repository: ./flatpak
 
@@ -753,7 +753,7 @@ jobs:
           commit-message: Update to version `${{ needs.build-data.outputs.version }}`
           title: Update to version `${{ needs.build-data.outputs.version }}`
           body: |
-            This PR updates the Zen Browser Flatpak package to version ${{ needs.build-data.outputs.version }}.
+            This PR updates the Nixo Browser Flatpak package to version ${{ needs.build-data.outputs.version }}.
 
             @${{ github.actor }} please review and merge this PR.
           branch: update-to-${{ needs.build-data.outputs.version }}

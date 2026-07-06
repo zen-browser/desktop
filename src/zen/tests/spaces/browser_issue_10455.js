@@ -62,3 +62,4 @@ add_task(async function test_Issue_10455_Dont_Close() {
   await BrowserTestUtils.closeWindow(newWindow);
   await SpecialPowers.popPrefEnv();
 });
+// NIXO

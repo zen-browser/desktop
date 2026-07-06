@@ -37,6 +37,24 @@
   condition: "defined(XP_MACOSX)"
 
 - name: zen.theme.hide-unified-extensions-button
+  value: false
+
+# ── Nixo Theme Enhancements ──
+
+# Enable dynamic accent color derivation
+- name: nixo.theme.dynamic-accent
+  value: true
+
+# Enable frosted glass effects for panels and popups
+- name: nixo.theme.frosted-glass
+  value: true
+
+# Enable accent glow on focus elements
+- name: nixo.theme.accent-glow
+  value: true
+
+# Animate tab hover/selection transitions
+- name: nixo.theme.animated-tabs
   value: true
 
 # ==== Mark: border radius ====
@@ -45,3 +63,4 @@
 # Set to a positive value to override with a custom radius
 - name: zen.theme.border-radius
   value: -1
+# NIXO enhancements

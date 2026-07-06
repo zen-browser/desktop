@@ -13,7 +13,7 @@
 
   & #sidebar-box {
     border-radius: var(--zen-native-inner-radius);
-    box-shadow: var(--zen-big-shadow);
+    box-shadow: var(var(--nixo-shadow-md));
     overflow: hidden;
   }
 

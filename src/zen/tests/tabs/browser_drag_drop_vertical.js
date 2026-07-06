@@ -188,3 +188,4 @@ add_task(async function test_basic_unpinned_vertical_ltr() {
     "confirm that tab1 moved before tab2"
   );
 });
+// NIXO

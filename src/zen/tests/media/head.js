@@ -94,3 +94,4 @@ async function waitForMediaSessionAction(tab) {
     return content.wrappedJSObject.__zenActionFired;
   });
 }
+// NIXO

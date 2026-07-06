@@ -6,7 +6,7 @@ index 87148c353ee852248e887e3ae31d46bcbee1cd11..91b1d5a8e0e512dd50139f99ad3e3ba7
      const where = BrowserUtils.whereToOpenLink(aEvent, false, true);
  
      if (where == "current") {
-+      if (!gBrowser.webNavigation.canGoBack && gZenCommonActions.shouldCloseTabOnBack()) {
++      if (!gBrowser.webNavigation.canGoBack && gNixoCommonActions.shouldCloseTabOnBack()) {
 +        gBrowser.removeTab(gBrowser.selectedTab, { animate: true });
 +        return;
 +      }
@@ -17,7 +17,7 @@ index 87148c353ee852248e887e3ae31d46bcbee1cd11..91b1d5a8e0e512dd50139f99ad3e3ba7
        }
      }
  
-+    if (gZenUIManager.handleNewTab(werePassedURL, searchClipboard, where)) {
++    if (gNixoUIManager.handleNewTab(werePassedURL, searchClipboard, where)) {
 +      return;
 +    }
 +
@@ -32,7 +32,7 @@ index 87148c353ee852248e887e3ae31d46bcbee1cd11..91b1d5a8e0e512dd50139f99ad3e3ba7
 +      if (gBrowser.selectedTab.hasAttribute("split-view")) {
 +        return;
 +      }
-+      gZenWorkspaces.handleTabCloseWindow();
++      gNixoWorkspaces.handleTabCloseWindow();
 +      return;
 +    }
 +

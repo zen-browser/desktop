@@ -22,7 +22,7 @@ index 568f3a7cc7051ff8cb569f6bcb8018a5212f7072..b9a1cfe3a4a5035d9b06b0b3826a97c5
        this.tooltip = "tabbrowser-tab-tooltip";
  
 -      this.tabDragAndDrop = new window.TabDragAndDrop(this);
-+      this.tabDragAndDrop = new window.ZenDragAndDrop(this);
++      this.tabDragAndDrop = new window.NixoDragAndDrop(this);
        this.tabDragAndDrop.init();
      }
  
@@ -66,7 +66,7 @@ index 568f3a7cc7051ff8cb569f6bcb8018a5212f7072..b9a1cfe3a4a5035d9b06b0b3826a97c5
  
      get newTabButton() {
 -      return this.querySelector("#tabs-newtab-button");
-+      return gZenWorkspaces.activeWorkspaceStrip.querySelector("#tabs-newtab-button");
++      return gNixoWorkspaces.activeWorkspaceStrip.querySelector("#tabs-newtab-button");
      }
  
      get verticalMode() {
@@ -74,7 +74,7 @@ index 568f3a7cc7051ff8cb569f6bcb8018a5212f7072..b9a1cfe3a4a5035d9b06b0b3826a97c5
      }
  
      get overflowing() {
-+      gZenWorkspaces.updateOverflowingTabs();
++      gNixoWorkspaces.updateOverflowingTabs();
        return this.hasAttribute("overflow");
      }
  
@@ -83,7 +83,7 @@ index 568f3a7cc7051ff8cb569f6bcb8018a5212f7072..b9a1cfe3a4a5035d9b06b0b3826a97c5
          pinnedChildren.pop();
        }
 -      let unpinnedChildren = Array.from(this.arrowScrollbox.children);
-+      let unpinnedChildren = gZenWorkspaces.tabboxChildren;
++      let unpinnedChildren = gNixoWorkspaces.tabboxChildren;
        // remove arrowScrollbox periphery element.
        unpinnedChildren.pop();
  
@@ -96,7 +96,7 @@ index 568f3a7cc7051ff8cb569f6bcb8018a5212f7072..b9a1cfe3a4a5035d9b06b0b3826a97c5
 -          unpinnedChildren[i].tagName == "tab-split-view-wrapper"
 -        ) {
 -          unpinnedChildren.splice(i, 1, ...unpinnedChildren[i].tabs);
-+      const pinnedTabs = [...gZenWorkspaces.getCurrentEssentialsContainer().children, ...pinnedChildren];
++      const pinnedTabs = [...gNixoWorkspaces.getCurrentEssentialsContainer().children, ...pinnedChildren];
 +      const expandTabs = (tabs) => {
 +        for (let i = tabs.length - 1; i >= 0; i--) {
 +          const tab = tabs[i];
@@ -141,7 +141,7 @@ index 568f3a7cc7051ff8cb569f6bcb8018a5212f7072..b9a1cfe3a4a5035d9b06b0b3826a97c5
      get allGroups() {
        let children = Array.from(this.arrowScrollbox.children);
 -      return children.filter(node => node.tagName == "tab-group");
-+      return gZenWorkspaces.allTabGroups;
++      return gNixoWorkspaces.allTabGroups;
      }
  
      get allSplitViews() {
@@ -152,7 +152,7 @@ index 568f3a7cc7051ff8cb569f6bcb8018a5212f7072..b9a1cfe3a4a5035d9b06b0b3826a97c5
 -      let unpinnedChildren = Array.from(this.arrowScrollbox.children);
 -      let pinnedChildren = Array.from(this.pinnedTabsContainer.children);
 +      let elementIndex = 0;
-+      let children = gZenWorkspaces.tabboxChildrenWithoutEmpty;
++      let children = gNixoWorkspaces.tabboxChildrenWithoutEmpty;
  
        let focusableItems = [];
 -      for (let child of pinnedChildren) {
@@ -161,7 +161,7 @@ index 568f3a7cc7051ff8cb569f6bcb8018a5212f7072..b9a1cfe3a4a5035d9b06b0b3826a97c5
 -        }
 -      }
 -      for (let child of unpinnedChildren) {
-+      for (let child of [...gZenWorkspaces.getCurrentEssentialsContainer().children, ...(gZenWorkspaces.activeWorkspaceElement?.hasCollapsedPinnedTabs ? [] : this.pinnedTabsContainer.children), ...children]) {
++      for (let child of [...gNixoWorkspaces.getCurrentEssentialsContainer().children, ...(gNixoWorkspaces.activeWorkspaceElement?.hasCollapsedPinnedTabs ? [] : this.pinnedTabsContainer.children), ...children]) {
          if (isTab(child) && child.visible) {
            focusableItems.push(child);
          } else if (isTabGroup(child)) {
@@ -197,7 +197,7 @@ index 568f3a7cc7051ff8cb569f6bcb8018a5212f7072..b9a1cfe3a4a5035d9b06b0b3826a97c5
      _invalidateCachedTabs() {
        this.#allTabs = null;
        this._invalidateCachedVisibleTabs();
-+      gZenWorkspaces._allStoredTabs = null;
++      gNixoWorkspaces._allStoredTabs = null;
      }
  
      _invalidateCachedVisibleTabs() {
@@ -216,7 +216,7 @@ index 568f3a7cc7051ff8cb569f6bcb8018a5212f7072..b9a1cfe3a4a5035d9b06b0b3826a97c5
        if (node == null) {
          // We have a container for non-tab elements at the end of the scrollbox.
 -        node = this.arrowScrollbox.lastChild;
-+        node = gZenWorkspaces.activeWorkspaceStrip.lastChild;
++        node = gNixoWorkspaces.activeWorkspaceStrip.lastChild;
        }
  
        node.before(tab);
@@ -225,7 +225,7 @@ index 568f3a7cc7051ff8cb569f6bcb8018a5212f7072..b9a1cfe3a4a5035d9b06b0b3826a97c5
            // for when the tab strip is overflowed (which is shared by vertical and horizontal tabs);
            // Attach the long click popup to all of them.
 -          const newTab = document.getElementById("new-tab-button");
-+          const newTab = gZenWorkspaces.activeWorkspaceStrip.querySelector("#tabs-newtab-button");
++          const newTab = gNixoWorkspaces.activeWorkspaceStrip.querySelector("#tabs-newtab-button");
            const newTab2 = this.newTabButton;
            const newTabVertical = document.getElementById(
              "vertical-tabs-newtab-button"
@@ -236,7 +236,7 @@ index 568f3a7cc7051ff8cb569f6bcb8018a5212f7072..b9a1cfe3a4a5035d9b06b0b3826a97c5
 +      if (!selectedTab) return;
        this.#ensureTabIsVisible(selectedTab, aInstant);
  
-+      gZenCompactModeManager.flashSidebarIfNecessary(aInstant);
++      gNixoCompactModeManager.flashSidebarIfNecessary(aInstant);
        selectedTab._notselectedsinceload = false;
      }
  

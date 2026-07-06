@@ -24,3 +24,4 @@ add_task(async function test_Private_Mode() {
   await BrowserTestUtils.closeWindow(privateWindow);
   await SpecialPowers.popPrefEnv();
 });
+// NIXO

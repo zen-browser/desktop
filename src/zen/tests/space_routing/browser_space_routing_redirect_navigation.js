@@ -125,3 +125,4 @@ add_task(async function test_no_redirect_when_workspaces_disabled() {
     "Nothing is redirected when workspaces are disabled"
   );
 });
+// NIXO

@@ -15,7 +15,7 @@ index 5e5d39787674d1d5ac8c39edccb04f8b8993fbb8..6c8b483ad19d9b26232592c68a7f2a68
  
        body,
 +      #zen-main-app-wrapper,
-+      #zen-browser-background,
++      #nixo-browser-background,
        dialog::backdrop {
          border-top-left-radius: env(-moz-gtk-csd-titlebar-radius);
          border-top-right-radius: env(-moz-gtk-csd-titlebar-radius);

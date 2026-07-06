@@ -62,3 +62,4 @@ add_task(async function test_mute_from_media_bar() {
     gBrowser.selectedTab = originalTab;
   }
 });
+// NIXO

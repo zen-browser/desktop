@@ -463,3 +463,4 @@ add_task(async function test_deletion() {
   await ShellService.deleteLinuxDesktopEntry("deletion");
   ok(!(await IOUtils.exists(path)), "The desktop file was deleted");
 });
+// NIXO

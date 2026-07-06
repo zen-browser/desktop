@@ -61,3 +61,4 @@ add_task(async function svg_as_img_matches_inline_under_boost() {
     );
   });
 });
+// NIXO

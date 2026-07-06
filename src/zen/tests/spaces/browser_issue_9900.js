@@ -43,3 +43,4 @@ add_task(async function test_Invalid_Workspace_Name() {
   const icon = gZenWorkspaces.getWorkspaceIcon(fakeWorkspace);
   Assert.equal(icon, "👍", "Icon should be from the workspace icon");
 });
+// NIXO

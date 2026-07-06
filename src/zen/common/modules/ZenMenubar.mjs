@@ -104,7 +104,7 @@ export class nsZenMenuBar {
         if (AppConstants.platform === "linux") {
           // On linux, there seems to be a bug where the menu freezes up and makes the browser
           // suppiciously unresponsive if we try to update the menu while it's opening.
-          // See https://github.com/zen-browser/desktop/issues/12024
+          // See https://github.com/nixo-browser/desktop/issues/12024
           return;
         }
         gZenWorkspaces.updateWorkspacesChangeContextMenu();
@@ -146,3 +146,12 @@ export class nsZenMenuBar {
     }
   }
 }
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO .mjs
+// NIXO
+// NIXO
+// NIXO
+// NIXO
+// NIXO

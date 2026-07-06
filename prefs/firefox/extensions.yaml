@@ -4,3 +4,16 @@
 
 - name: xpinstall.signatures.required
   value: true
+
+# Allow installation of unsigned extensions in developer mode
+- name: xpinstall.signatures.dev-root
+  value: true
+
+# Enable extensions from any source URL
+- name: extensions.install.requireBuiltInSignatures
+  value: false
+
+# Allow installation of Chrome extensions via drag-and-drop
+- name: nixo.extensions.chrome-install-enabled
+  value: true
+# NIXO enhancements

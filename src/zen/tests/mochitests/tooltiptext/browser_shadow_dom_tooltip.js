@@ -164,3 +164,4 @@ add_task(async function test_title_through_slot() {
   info("Closing tab");
   BrowserTestUtils.removeTab(tab);
 });
+// NIXO

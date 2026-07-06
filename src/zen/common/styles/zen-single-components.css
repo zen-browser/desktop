@@ -235,7 +235,7 @@
 
 #zen-update-animation-border {
   position: absolute;
-  border-radius: var(--zen-border-radius);
+  border-radius: var(var(--nixo-radius-lg));
   width: 100%;
   height: 100%;
 }
@@ -273,7 +273,7 @@
       border: 1px solid rgba(225, 225, 225, 0.15) !important;
       padding: 4px 8px 5px 8px !important;
       font-weight: 600 !important;
-      background: color-mix(in srgb, var(--zen-primary-color), black 70%) !important;
+      background: color-mix(in srgb, var(var(--nixo-color-brand)), black 70%) !important;
       color: rgba(255, 255, 255, 0.8) !important;
     }
   }
@@ -729,7 +729,7 @@
       background: color-mix(in srgb, var(--zen-colors-tertiary) 70%, transparent 30%);
       backdrop-filter: blur(10px);
       border: 1px solid var(--arrowpanel-border-color);
-      border-radius: var(--zen-border-radius);
+      border-radius: var(var(--nixo-radius-lg));
 
       &::before {
         display: none;
@@ -740,7 +740,7 @@
 
 /* Loading progress bar */
 #zen-loading-progress-bar {
-  --zen-loading-progress-bar-color: color-mix(in srgb, var(--zen-primary-color), light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.5)) 70%);
+  --zen-loading-progress-bar-color: color-mix(in srgb, var(var(--nixo-color-brand)), light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.5)) 70%);
 
   position: fixed;
   top: calc(var(--zen-element-separation) / -2);

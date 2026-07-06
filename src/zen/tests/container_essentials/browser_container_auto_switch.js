@@ -42,3 +42,4 @@ add_task(async function test_Container_Essentials_Auto_Swithc() {
   await gZenWorkspaces.changeWorkspace(workspaces[0]);
   await gZenWorkspaces.removeWorkspace(newWorkspaceUUID);
 });
+// NIXO

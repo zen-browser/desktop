@@ -7,8 +7,8 @@ index 31cd4f927c273573b38021f84417101c57377902..f293e1c61d3b7a80b7dc472d927893f0
  
  <hbox flex="1" id="browser">
 +#include navigator-toolbox.inc.xhtml
-+  <html:div id="zen-browser-background" class="zen-browser-generic-background">
-+    <html:div class="zen-browser-grain" />
++  <html:div id="nixo-browser-background" class="nixo-browser-generic-background">
++    <html:div class="nixo-browser-grain" />
 +  </html:div>
    <box context="sidebar-context-menu" id="sidebar-main" class="chrome-block" hidden="true">
      <html:sidebar-main flex="1">

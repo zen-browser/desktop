@@ -61,3 +61,4 @@
 
   Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenDragAndDrop.js", this);
 }
+// NIXO

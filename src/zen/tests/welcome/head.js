@@ -23,3 +23,4 @@ async function goNextWelcomePage(l10nId) {
 async function waitForFocus(...args) {
   await new Promise(resolve => SimpleTest.waitForFocus(resolve, ...args));
 }
+// NIXO

@@ -116,3 +116,4 @@ add_task(async function test_frame() {
     test_visibility.bind(undefined, PAGE)
   );
 });
+// NIXO

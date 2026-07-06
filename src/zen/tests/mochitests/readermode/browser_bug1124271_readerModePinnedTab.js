@@ -55,3 +55,4 @@ add_task(async function () {
 
   gBrowser.removeCurrentTab();
 });
+// NIXO

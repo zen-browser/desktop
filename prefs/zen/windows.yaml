@@ -13,3 +13,4 @@
 - name: widget.windows.mica.toplevel-backdrop
   value: 2
   condition: "defined(XP_WIN)"
+# NIXO enhancements

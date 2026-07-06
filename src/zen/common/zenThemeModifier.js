@@ -196,14 +196,86 @@
       const accentColor = Services.prefs.getStringPref(
         "zen.theme.accent-color"
       );
+
+      // Parse the color and derive a full palette
+      const color = this._parseColor(accentColor);
+
+      // Set both legacy and new token variables
       document.documentElement.style.setProperty(
         "--zen-primary-color",
         accentColor
       );
+      document.documentElement.style.setProperty(
+        "--nixo-color-brand",
+        accentColor
+      );
+      document.documentElement.style.setProperty(
+        "--nixo-color-brand-h",
+        color.h + ""
+      );
+      document.documentElement.style.setProperty(
+        "--nixo-color-brand-s",
+        color.s + "%"
+      );
+      document.documentElement.style.setProperty(
+        "--nixo-color-brand-l",
+        color.l + "%"
+      );
+
+      // Derive a contrasting text color for the accent
+      const isLight = color.l > 55;
+      document.documentElement.style.setProperty(
+        "--nixo-text-on-brand",
+        isLight ? "#000000" : "#ffffff"
+      );
+
+      // Set accent glow
+      document.documentElement.style.setProperty(
+        "--nixo-accent-glow",
+        `0 0 20px color-mix(in srgb, ${accentColor} 30%, transparent)`
+      );
     },
+
+    /**
+     * Parse a CSS color string into HSL components.
+     * Supports hex, rgb(), hsl(), and named colors.
+     */
+    _parseColor(colorStr) {
+      const tmp = document.createElement("div");
+      tmp.style.color = colorStr;
+      document.body.appendChild(tmp);
+      const computed = getComputedStyle(tmp).color;
+      document.body.removeChild(tmp);
+
+      // Parse rgb(r, g, b) format
+      const rgbMatch = computed.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+      if (rgbMatch) {
+        const [_, r, g, b] = rgbMatch.map(Number);
+        return this._rgbToHsl(r, g, b);
+      }
+      // Default fallback
+      return { h: 248, s: 100, l: 65 };
+    },
+
+    _rgbToHsl(r, g, b) {
+      r /= 255; g /= 255; b /= 255;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h = 0, s = 0, l = (max + min) / 2;
+      if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+          case g: h = ((b - r) / d + 2) / 6; break;
+          case b: h = ((r - g) / d + 4) / 6; break;
+        }
+      }
+      return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+    }
   };
 
   if (typeof Services !== "undefined") {
     ZenThemeModifier.init();
   }
 }
+// NIXO

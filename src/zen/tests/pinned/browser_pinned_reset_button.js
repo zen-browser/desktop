@@ -197,3 +197,4 @@ add_task(async function test_Hover_SublabelChangesWithAccelKey() {
 
   gBrowser.removeTab(tab);
 });
+// NIXO

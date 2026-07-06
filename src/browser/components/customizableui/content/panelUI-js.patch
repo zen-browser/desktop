@@ -20,7 +20,7 @@ index 140ea6eddd0d0c6817bbaabf2dc00083eaa11b13..0fe33867cf64d02b2b6e6db8b6844a4e
        });
  
 -    this.notificationPanel.openPopup(anchor, "bottomright topright");
-+    this.notificationPanel.openPopup(anchor, gZenUIManager.panelUIPosition(this.notificationPanel, anchor));
++    this.notificationPanel.openPopup(anchor, gNixoUIManager.panelUIPosition(this.notificationPanel, anchor));
    },
  
    _clearNotificationPanel() {

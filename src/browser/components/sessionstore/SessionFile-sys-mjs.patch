@@ -6,7 +6,7 @@ index 5580838acd72bf0e1189d367984859529d89f5b4..e5fa6076a9cc6ada016ccc4e129cad45
    RunState: "resource:///modules/sessionstore/RunState.sys.mjs",
    SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
    SessionWriter: "resource:///modules/sessionstore/SessionWriter.sys.mjs",
-+  ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
++  NixoSessionStore: "resource:///modules/zen/NixoSessionManager.sys.mjs",
  });
  
  const PREF_UPGRADE_BACKUP = "browser.sessionstore.upgradeBackup.latestBuildID";
@@ -15,7 +15,7 @@ index 5580838acd72bf0e1189d367984859529d89f5b4..e5fa6076a9cc6ada016ccc4e129cad45
  
      result.noFilesFound = noFilesFound;
 -
-+    await lazy.ZenSessionStore.readFile();
++    await lazy.NixoSessionStore.readFile();
      return result;
    },
  

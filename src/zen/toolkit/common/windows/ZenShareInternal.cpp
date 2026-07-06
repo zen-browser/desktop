@@ -35,3 +35,6 @@ auto nsZenNativeShareInternal::ShowNativeDialog(
                               zen::NS_ConvertUTF8toUTF16_MaybeVoid(urlString));
   return NS_OK;
 }
+/* NIXO */
+/* NIXO */
+/* NIXO */

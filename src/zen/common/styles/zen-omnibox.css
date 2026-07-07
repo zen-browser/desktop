@@ -696,6 +696,18 @@
   }
 }
 
+.urlbarView-row[has-action]:is([type="switchtab"]) .action-contextualidentity {
+  display: flex !important;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--zen-colors-tertiary, color-mix(in srgb, currentColor 10%, transparent));
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  opacity: 0.8;
+  margin-right: 8px;
+}
+
 :root:not([zen-single-toolbar="true"]) #urlbar[breakout-extend]:not([zen-floating-urlbar="true"]) {
   & .urlbar-background {
     border-radius: 10px !important;

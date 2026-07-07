@@ -40,3 +40,35 @@ index b665adb1a1ce8bbae8df4cbea6c3248c3e4fb431..1de7f9461b8ccbd4680b917e6dd5ba3c
      this.#rows.toggleAttribute("wrap", wrap);
      this.oneOffSearchButtons?.container.toggleAttribute("wrap", wrap);
    }
+@@ -2914,6 +2914,30 @@
+       return;
+     }
+     actionNode.innerHTML = "";
++
++    let tabWorkspace = null;
++    if (this.#window.gZenWorkspaces) {
++      let browsers = this.#window.gZenWorkspaces.allUsedBrowsers;
++      for (let browser of browsers) {
++        let tab = this.#window.gBrowser.getTabForBrowser(browser);
++        if (tab && tab.getAttribute("usercontextid") == result.payload.userContextId) {
++           if (result.payload.url === browser.currentURI?.spec || result.payload.url === browser.userTypedValue) {
++             let wsId = tab.getAttribute("zen-workspace-id");
++             if (wsId) {
++               tabWorkspace = this.#window.gZenWorkspaces.getWorkspaceFromId(wsId);
++               break;
++             }
++           }
++        }
++      }
++    }
++    if (tabWorkspace) {
++      actionNode.textContent = (tabWorkspace.icon ? tabWorkspace.icon + " " : "") + tabWorkspace.name;
++      actionNode.classList.add("urlbarView-userContext");
++      actionNode.classList.remove("urlbarView-switchToTab");
++      actionNode.style.display = "flex";
++      return;
++    }
++
+     let identity = lazy.ContextualIdentityService.getPublicIdentityFromId(
+       result.payload.userContextId
+     );

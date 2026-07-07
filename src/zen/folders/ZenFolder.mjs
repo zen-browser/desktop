@@ -289,6 +289,9 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
   addTabs(tabs) {
     let tabsFromOutside = [];
     for (let tab of tabs) {
+      if (tab.hasAttribute("zen-essential")) {
+        gZenPinnedTabManager.removeEssentials(tab, false);
+      }
       if (tab.group !== this) {
         tabsFromOutside.push(tab);
       }

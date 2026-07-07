@@ -622,14 +622,13 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   }
 
   createFolder(tabs = [], options = {}) {
-    const filteredTabs = tabs
-      .map(tab => {
-        gBrowser.pinTab(tab);
-        if (tab?.group?.hasAttribute("split-view-group")) {
-          tab = tab.group;
-        }
-        return tab;
-      });
+    const filteredTabs = tabs.map(tab => {
+      gBrowser.pinTab(tab);
+      if (tab?.group?.hasAttribute("split-view-group")) {
+        tab = tab.group;
+      }
+      return tab;
+    });
 
     const workspacePinned = gZenWorkspaces.workspaceElement(
       options.workspaceId

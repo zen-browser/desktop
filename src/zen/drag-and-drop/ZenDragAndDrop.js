@@ -727,7 +727,8 @@
         clientX <= allowedMargin ||
         clientX >= winWidth - allowedMargin ||
         clientY <= allowedMargin ||
-        clientY >= winHeight - allowedMargin);
+        clientY >= winHeight - allowedMargin
+      );
     }
 
     #handle_sidebarDragOver(event) {

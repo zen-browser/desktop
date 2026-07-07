@@ -725,10 +725,10 @@
         this.#shouldSwitchSpace(event);
       if (isNearLeftEdge || isNearRightEdge) {
         this.#lastDragOverTime = Date.now();
-        if (!this.#changeSpaceTimer && !this.#isOutOfWindow) {
+        if (!this.#changeSpaceTimer) {
           this.#changeSpaceTimer = setTimeout(() => {
             const timeSinceLastDragOver = Date.now() - this.#lastDragOverTime;
-            if (this.#isOutOfWindow || timeSinceLastDragOver > 250) {
+            if (timeSinceLastDragOver > 250) {
               return;
             }
             this.clearDragOverVisuals();

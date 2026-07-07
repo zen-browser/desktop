@@ -623,7 +623,6 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
   createFolder(tabs = [], options = {}) {
     const filteredTabs = tabs
-      .filter(tab => !tab.hasAttribute("zen-essential"))
       .map(tab => {
         gBrowser.pinTab(tab);
         if (tab?.group?.hasAttribute("split-view-group")) {

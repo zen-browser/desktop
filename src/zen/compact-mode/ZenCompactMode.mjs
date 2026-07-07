@@ -988,7 +988,10 @@ window.gZenCompactModeManager = {
         },
       };
 
-      if (beforeRouteResult.isRouteFound) {
+      if (
+        beforeRouteResult.isRouteFound &&
+        beforeRouteResult.targetRoute != gZenWorkspaces.activeWorkspace
+      ) {
         messageId = "zen-space-routing-tab-routed-toast";
         toastOptions = {
           l10nArgs: { targetWorkspace: beforeRouteResult.targetWorkspaceName },

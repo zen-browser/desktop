@@ -713,6 +713,23 @@
       });
     }
 
+    #isOutsideWindow(event) {
+      let { screenX, clientX, screenY, clientY } = event;
+      if (!screenX && !screenY) {
+        return false;
+      }
+      const { innerWidth: winWidth, innerHeight: winHeight } = window;
+      let allowedMargin = Services.prefs.getIntPref(
+        "zen.tabs.dnd-outside-window-margin",
+        5
+      );
+      return (
+        clientX <= allowedMargin ||
+        clientX >= winWidth - allowedMargin ||
+        clientY <= allowedMargin ||
+        clientY >= winHeight - allowedMargin);
+    }
+
     #handle_sidebarDragOver(event) {
       const dt = event.dataTransfer;
       const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
@@ -720,10 +737,11 @@
         this.clearSpaceSwitchTimer();
         return;
       }
+      const isOutOfWindow = this.#isOutsideWindow(event);
       const { isNearLeftEdge, isNearRightEdge } =
         this.#shouldSwitchSpace(event);
       if (isNearLeftEdge || isNearRightEdge) {
-        if (!this.#changeSpaceTimer && !this.#isOutOfWindow) {
+        if (!this.#changeSpaceTimer && !isOutOfWindow) {
           this.#changeSpaceTimer = setTimeout(() => {
             if (this.#isOutOfWindow) {
               return;
@@ -904,20 +922,7 @@
       if (!isTab(draggedTab)) {
         return;
       }
-      let { screenX, clientX, screenY, clientY } = event;
-      if (!screenX && !screenY) {
-        return;
-      }
-      const { innerWidth: winWidth, innerHeight: winHeight } = window;
-      let allowedMargin = Services.prefs.getIntPref(
-        "zen.tabs.dnd-outside-window-margin",
-        5
-      );
-      const isOutOfWindow =
-        clientX <= allowedMargin ||
-        clientX >= winWidth - allowedMargin ||
-        clientY <= allowedMargin ||
-        clientY >= winHeight - allowedMargin;
+      const isOutOfWindow = this.#isOutsideWindow(event);
       if (isOutOfWindow && !this.#isOutOfWindow) {
         this.#isOutOfWindow = true;
         gZenViewSplitter.onBrowserDragEndToSplit(event, true);

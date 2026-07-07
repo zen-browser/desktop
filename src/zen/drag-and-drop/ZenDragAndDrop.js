@@ -723,8 +723,8 @@
       }
       const { isNearLeftEdge, isNearRightEdge } =
         this.#shouldSwitchSpace(event);
-      this.#lastDragOverTime = Date.now();
       if (isNearLeftEdge || isNearRightEdge) {
+        this.#lastDragOverTime = Date.now();
         if (!this.#changeSpaceTimer && !this.#isOutOfWindow) {
           this.#changeSpaceTimer = setTimeout(() => {
             const timeSinceLastDragOver = Date.now() - this.#lastDragOverTime;

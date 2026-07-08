@@ -1864,11 +1864,6 @@ class nsZenWorkspaces {
       }
       const newTransform = diff * 100;
       element.style.transform = `translateX(${newTransform + offsetPixels / 2}%)`;
-      // A special case for two spaces
-      if (spaceLen === 2 && diff !== 0) {
-        const side = offsetPixels > 0 ? -100 : 100;
-        element.style.transform = `translateX(${side + offsetPixels / 2}%)`;
-      }
     }
     // Hide other essentials with different containerTabId
     for (const container of otherContainersEssentials) {
@@ -2099,12 +2094,6 @@ class nsZenWorkspaces {
         offset += spaceLen;
       }
       offset = offset * 100;
-      // A special case for two spaces
-      if (spaceLen === 2 && offset !== 0) {
-        const currentTransform =
-          parseFloat(element.style.transform.split("(")[1]) || 0;
-        offset = currentTransform >= 0 ? 100 : -100;
-      }
       const newTransform = `translateX(${offset}%)`;
       // Only animate the workspace that is coming in, to avoid having multiple workspaces
       // animating off-screen at the same time which can cause performance issues. With an off
@@ -2181,17 +2170,6 @@ class nsZenWorkspaces {
           existingOffset = currentTransform || (isGoingLeft ? -100 : 100);
           newOffset = 0;
         }
-
-        if (spaceLen === 2) {
-          if (containsPrev && !containsNew) {
-            existingOffset = currentTransform;
-            newOffset = currentTransform >= 0 ? 100 : -100;
-          } else {
-            existingOffset = currentTransform >= 0 ? 100 : -100;
-            newOffset = 0;
-          }
-        }
-
         const newTransform = `translateX(${newOffset}%)`;
         let existingTransform = `translateX(${existingOffset}%)`;
         if (shouldAnimate) {

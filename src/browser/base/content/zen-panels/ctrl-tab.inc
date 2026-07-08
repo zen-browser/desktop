@@ -9,7 +9,7 @@
         noautofocus="true"
         consumeoutsideclicks="true"
         animate="false"
-        nonnativepopover="true">
+        nonnative="">
   <panelmultiview id="zen-ctrl-tab-panel-multiview"
                   mainViewId="zen-ctrl-tab-panel-view">
     <panelview id="zen-ctrl-tab-panel-view"

@@ -53,7 +53,7 @@
 }
 
 .zen-ctrl-tab-panel-card.zen-ctrl-tab-panel-selected {
-  background: var(--arrowpanel-dimmed);
+  background: var(--panel-background-color-dimmed);
 }
 
 .zen-ctrl-tab-panel-thumbnail {

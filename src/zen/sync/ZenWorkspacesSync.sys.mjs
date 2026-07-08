@@ -33,10 +33,10 @@ const RECORD_TYPE_BY_PREFIX = Object.freeze({
  * Workspaces engine collection.
  */
 export class ZenWorkspacesRecord extends CryptoWrapper {
-  _logName = "Sync.Record.ZenWorkspaces";
+  _logName = "Sync.Record.ZenSpaces";
 }
 
-ZenWorkspacesRecord.prototype.type = "workspaces";
+ZenWorkspacesRecord.prototype.type = "spaces";
 
 function parseRecordId(id) {
   const sep = id.indexOf("~");
@@ -51,7 +51,7 @@ function parseRecordId(id) {
 function createRecordId(type, id) {
   const prefix = RECORD_ID_PREFIX_BY_TYPE[type];
   if (!prefix) {
-    throw new Error(`Unknown Workspaces Sync record type: ${type}`);
+    throw new Error(`Unknown Spaces Sync record type: ${type}`);
   }
   return `${prefix}~${id}`;
 }
@@ -371,11 +371,11 @@ class ZenWorkspacesTracker extends Tracker {
  */
 export class ZenWorkspacesEngine extends SyncEngine {
   static get name() {
-    return "Workspaces";
+    return "Spaces";
   }
 
   constructor(service) {
-    super("Workspaces", service);
+    super("Spaces", service);
   }
 
   get _storeObj() {

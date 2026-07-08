@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/urlbar/variables.css b/browser/themes/shared/urlbar/variables.css
-index 34ab3df5ed433dafed00799c902afc276a722862..1e71860631f33839bdc7e1ec3a1e877bef744b55 100644
+index 64eb46b3061504e590d3fcee0c30c902f68764fe..6e7ffe043c5676da27a6eb5b105dac2fde3309da 100644
 --- a/browser/themes/shared/urlbar/variables.css
 +++ b/browser/themes/shared/urlbar/variables.css
 @@ -9,7 +9,7 @@

@@ -246,6 +246,66 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     gZenUIManager.showToast("zen-pinned-tab-replaced");
   }
 
+  async editPinnedUrl(tab = undefined) {
+    tab ??= TabContextMenu.contextTab;
+    if (!tab || !tab.pinned) {
+      return;
+    }
+
+    const initialUrl =
+      tab._zenPinnedInitialState?.entry?.url ||
+      tab.linkedBrowser?.currentURI?.spec;
+    const [title, label] = await document.l10n.formatValues([
+      { id: "zen-pinned-tab-edit-url-title" },
+      { id: "zen-pinned-tab-edit-url-label" },
+    ]);
+    const result = { value: initialUrl ?? "" };
+    const confirmed = Services.prompt.prompt(
+      window,
+      title,
+      label,
+      result,
+      null,
+      { value: false }
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    let uri;
+    try {
+      uri = Services.uriFixup.getFixupURIInfo(
+        result.value.trim(),
+        Ci.nsIURIFixup.FIXUP_FLAG_FIX_SCHEME_TYPOS
+      ).preferredURI;
+    } catch (_) {}
+    if (!uri) {
+      gZenUIManager.showToast("zen-pinned-tab-url-invalid");
+      return;
+    }
+    const url = uri.spec;
+
+    // Skip when the value wasn't actually changed from what was prefilled.
+    if (!url || url === initialUrl) {
+      return;
+    }
+
+    const image = tab.zenStaticIcon || (await this.#getCachedFavicon(uri));
+    window.gZenWindowSync.setPinnedUrl(tab, url, image);
+    this.#resetTabToStoredState(tab);
+    gZenUIManager.showToast("zen-pinned-tab-url-edited");
+  }
+
+  async #getCachedFavicon(uri) {
+    try {
+      const favicon = await PlacesUtils.favicons.getFaviconForPage(uri);
+      return favicon?.dataURI?.spec;
+    } catch (ex) {
+      console.error("Failed to get favicon for edited pinned url:", ex);
+      return null;
+    }
+  }
+
   _initClosePinnedTabShortcut() {
     let cmdClose = document.getElementById("cmd_close");
 
@@ -471,7 +531,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       }
       if (tab.pinned) {
         gBrowser.zenHandleTabMove(tab, () => {
-          if (tab.ownerGlobal !== window) {
+          if (tab.documentGlobal !== window) {
             tab = gBrowser.adoptTab(tab, {
               selectTab: tab.selected,
             });
@@ -545,11 +605,20 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
     const elements = window.MozXULElement.parseXULToFragment(`
             <menuseparator id="context_zen-pinned-tab-separator" hidden="true"/>
-            <menuitem id="context_zen-replace-pinned-url-with-current"
-                      data-lazy-l10n-id="tab-context-zen-replace-pinned-url-with-current"
-                      data-l10n-args="{&quot;isEssential&quot;:&quot;&quot;}"
-                      hidden="true"
-                      command="cmd_zenReplacePinnedUrlWithCurrent"/>
+            <menu id="context_zen-edit-pinned-page"
+                  data-lazy-l10n-id="tab-context-zen-edit-pinned-page"
+                  data-l10n-args="{&quot;isEssential&quot;:&quot;&quot;}"
+                  hidden="true">
+              <menupopup>
+                <menuitem id="context_zen-replace-pinned-url-with-current"
+                          data-lazy-l10n-id="tab-context-zen-replace-pinned-url-with-current"
+                          data-l10n-args="{&quot;isEssential&quot;:&quot;&quot;}"
+                          command="cmd_zenReplacePinnedUrlWithCurrent"/>
+                <menuitem id="context_zen-edit-pinned-url"
+                          data-lazy-l10n-id="tab-context-zen-edit-pinned-url"
+                          command="cmd_zenEditPinnedUrl"/>
+              </menupopup>
+            </menu>
             <menuitem id="context_zen-reset-pinned-tab"
                       data-lazy-l10n-id="tab-context-zen-reset-pinned-tab"
                       data-l10n-args="{&quot;isEssential&quot;:&quot;&quot;}"
@@ -619,15 +688,24 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     const zenResetPinnedTab = document.getElementById(
       "context_zen-reset-pinned-tab"
     );
+    const zenEditPinnedPage = document.getElementById(
+      "context_zen-edit-pinned-page"
+    );
     const zenReplacePinnedUrl = document.getElementById(
       "context_zen-replace-pinned-url-with-current"
     );
-    [zenResetPinnedTab, zenReplacePinnedUrl].forEach(element => {
+    [zenResetPinnedTab, zenEditPinnedPage].forEach(element => {
       if (element) {
         element.hidden = !isVisible;
-        document.l10n.setArgs(element, { isEssential });
       }
     });
+    [zenResetPinnedTab, zenEditPinnedPage, zenReplacePinnedUrl].forEach(
+      element => {
+        if (element) {
+          document.l10n.setArgs(element, { isEssential });
+        }
+      }
+    );
     zenAddEssential.hidden = isEssential || !!contextTab.group;
     document.l10n
       .formatValue("tab-context-zen-add-essential-badge", {
@@ -679,12 +757,15 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         ) {
           workspaceId = gZenWorkspaces.activeWorkspace;
         }
-        if (tab.ownerGlobal !== window) {
+        if (tab.documentGlobal !== window) {
           fromDifferentWindow = true;
           if (workspaceId) {
-            tab.ownerGlobal.gBrowser.selectedTab =
-              tab.ownerGlobal.gBrowser._findTabToBlurTo(tab, movingTabs);
-            tab.ownerGlobal.gZenWorkspaces.moveTabToWorkspace(tab, workspaceId);
+            tab.documentGlobal.gBrowser.selectedTab =
+              tab.documentGlobal.gBrowser._findTabToBlurTo(tab, movingTabs);
+            tab.documentGlobal.gZenWorkspaces.moveTabToWorkspace(
+              tab,
+              workspaceId
+            );
           }
           // Move the tabs into this window. To avoid multiple tab-switches in
           // the original window, the selected tab should be adopted last.
@@ -854,7 +935,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     ) {
       return;
     }
-    // Remove # and ? from the URL
+    // Remove # from the URL
     const pinUrl = tab._zenPinnedInitialState.entry.url.split("#")[0];
     const currentUrl = location.split("#")[0];
     // Add an indicator that the pin has been changed
@@ -894,10 +975,14 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     } else {
       tab.setAttribute("zen-pinned-changed", "true");
     }
-    tab.style.setProperty(
-      "--zen-original-tab-icon",
-      `url(${tab._zenPinnedInitialState.image})`
-    );
+    if (tab._zenPinnedInitialState.image) {
+      tab.style.setProperty(
+        "--zen-original-tab-icon",
+        `url(${tab._zenPinnedInitialState.image})`
+      );
+    } else {
+      tab.style.removeProperty("--zen-original-tab-icon");
+    }
   }
 
   removeTabContainersDragoverClass(hideIndicator = true) {

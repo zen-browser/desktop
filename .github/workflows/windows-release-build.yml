@@ -154,7 +154,7 @@ jobs:
             zlib1g-dev \
             aria2
           echo Setup wine
-          aria2c "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-1.toolchains.v3.linux64-wine.latest/artifacts/public%2Fbuild%2Fwine.tar.zst" -o wine.tar.zst
+          aria2c "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/dQz_aHy8Rl-Lt0xf2WlrMw/artifacts/public/build/wine.tar.zst" -o wine.tar.zst
           tar --zstd -xf wine.tar.zst -C ~/win-cross
           rm wine.tar.zst
           echo Setup Visual Studio
@@ -234,7 +234,8 @@ jobs:
           ZEN_RELEASE_BRANCH: ${{ inputs.release-branch }}
           ZEN_SAFEBROWSING_API_KEY: ${{ secrets.ZEN_SAFEBROWSING_API_KEY }}
           ZEN_MOZILLA_API_KEY: ${{ secrets.ZEN_MOZILLA_API_KEY }}
-          ZEN_GOOGLE_LOCATION_SERVICE_API_KEY: ${{ secrets.ZEN_GOOGLE_LOCATION_SERVICE_API_KEY }}
+          # Firefox doesn't support location service for Windows
+          # ZEN_GOOGLE_LOCATION_SERVICE_API_KEY: ${{ secrets.ZEN_GOOGLE_LOCATION_SERVICE_API_KEY }}
         run: |
           set -x
           dos2unix configs/windows/mozconfig

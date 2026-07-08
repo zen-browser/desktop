@@ -1,13 +1,24 @@
 diff --git a/toolkit/themes/shared/design-system/dist/tokens-shared.css b/toolkit/themes/shared/design-system/dist/tokens-shared.css
-index 452f3731fbca42a3529ab14421ef1c2c453b6c01..66791a5b6b074bccb02905053f043cc054b6bd57 100644
+index 94afbe630914eef375967f2eff310d69c61fa1aa..04b42529d43c5100a76c883220875c0b70ad0616 100644
 --- a/toolkit/themes/shared/design-system/dist/tokens-shared.css
 +++ b/toolkit/themes/shared/design-system/dist/tokens-shared.css
 @@ -7,6 +7,8 @@
  
- @layer tokens-foundation, tokens-foundation-nova, tokens-prefers-contrast, tokens-prefers-contrast-nova, tokens-forced-colors, tokens-forced-colors-nova;
+ @layer tokens-foundation, tokens-foundation-nova, tokens-prefers-contrast, tokens-prefers-contrast-nova, tokens-forced-colors, tokens-forced-colors-nova, tokens-browser-theme, tokens-browser-theme-nova;
  
 +@import url("chrome://browser/content/zen-styles/zen-theme.css");
 +
  @layer tokens-foundation {
    :root,
    :host(.anonymous-content-host) {
+@@ -368,8 +370,8 @@
+     --panel-background-color-dimmed-further: color-mix(in srgb, currentColor 30%, transparent);
+     --panel-border-color: ThreeDShadow;
+     --panel-border-radius: var(--border-radius-medium);
+-    --panel-box-shadow: 0 0 var(--panel-box-shadow-margin) hsla(0, 0%, 0%, 0.2);
+-    --panel-box-shadow-margin: 4px;
++    --panel-box-shadow: var(--zen-big-shadow);
++    --panel-box-shadow-margin: 8px;
+     --panel-menuitem-border-radius: var(--border-radius-small);
+     --panel-menuitem-margin: var(--panel-menuitem-margin-block) var(--panel-menuitem-margin-inline);
+     --panel-menuitem-margin-block: 0px;

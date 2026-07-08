@@ -38,18 +38,6 @@ void BrowsingContext::WalkPresContexts(Callback&& aCallback) {
   });
 }
 
-static void RefreshBoostCacheIfMatchesCurrent(BrowsingContext* aChanged) {
-  auto* backend = zen::nsZenBoostsBackend::GetInstance();
-  if (!backend) {
-    return;
-  }
-  RefPtr<BrowsingContext> current = backend->GetCurrentBrowsingContext();
-  if (!current || current->Top() != aChanged) {
-    return;
-  }
-  backend->RefreshCachedBoostState();
-}
-
 /**
  * @brief Called when the ZenBoostsData field is set on a browsing context.
  * Triggers a restyle if the boost data has changed.
@@ -61,7 +49,6 @@ void BrowsingContext::DidSet(FieldIndex<IDX_ZenBoostsData>,
   if (ZenBoostsData() == aOldValue) {
     return;
   }
-  RefreshBoostCacheIfMatchesCurrent(this);
   PresContextAffectingFieldChanged();
   TRIGGER_PRES_CONTEXT_RESTYLE();
 }
@@ -79,7 +66,6 @@ void BrowsingContext::DidSet(FieldIndex<IDX_ZenBoostsComplementaryRotation>,
   if (ZenBoostsComplementaryRotation() == aOldValue) {
     return;
   }
-  RefreshBoostCacheIfMatchesCurrent(this);
   PresContextAffectingFieldChanged();
   TRIGGER_PRES_CONTEXT_RESTYLE();
 }
@@ -95,7 +81,6 @@ void BrowsingContext::DidSet(FieldIndex<IDX_IsZenBoostsInverted>,
   if (IsZenBoostsInverted() == aOldValue) {
     return;
   }
-  RefreshBoostCacheIfMatchesCurrent(this);
   PresContextAffectingFieldChanged();
   TRIGGER_PRES_CONTEXT_RESTYLE();
 }

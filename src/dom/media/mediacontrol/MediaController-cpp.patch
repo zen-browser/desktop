@@ -1,5 +1,5 @@
 diff --git a/dom/media/mediacontrol/MediaController.cpp b/dom/media/mediacontrol/MediaController.cpp
-index f28ec5e406bfeefd624c9538878d423e99b0df6a..afb60df8ddec86c0c83584b8325add8d1c373d0e 100644
+index e7fd71ac228370e4805f86d213e40c13e1520ad3..c82d485f1c30af1b4879c18fd4e33e0017cb6abc 100644
 --- a/dom/media/mediacontrol/MediaController.cpp
 +++ b/dom/media/mediacontrol/MediaController.cpp
 @@ -49,6 +49,25 @@ void MediaController::GetSupportedKeys(
@@ -28,7 +28,7 @@ index f28ec5e406bfeefd624c9538878d423e99b0df6a..afb60df8ddec86c0c83584b8325add8d
  void MediaController::GetMetadata(MediaMetadataInit& aMetadata,
                                    ErrorResult& aRv) {
    if (!IsActive() || mShutdown) {
-@@ -435,6 +454,7 @@ void MediaController::SetIsInPictureInPictureMode(
+@@ -457,6 +476,7 @@ void MediaController::SetIsInPictureInPictureMode(
    ForceToBecomeMainControllerIfNeeded();
    UpdateDeactivationTimerIfNeeded();
    mPictureInPictureModeChangedEvent.Notify(mIsInPictureInPictureMode);

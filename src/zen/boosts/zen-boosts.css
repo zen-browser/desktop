@@ -5,10 +5,33 @@
  */
 
 #zenBoostWindow {
-  /* For the mica effect we want a white tint */
-  @media not (-moz-platform: linux) {
-    color-scheme: light;
-  }
+  --zen-boosts-primary-background: light-dark(#fcfcfe, #171717);
+  --zen-boosts-secondary-background: light-dark(#f6f6f8, #1c1c1e);
+  --zen-boosts-mica-background: light-dark(#f6f6f8c0, #1c1c1ec0);
+
+  --zen-boosts-primary-color: light-dark(#3a3a3b, #f3f3f3);
+  --zen-boosts-secondary-color: light-dark(#727272, #b1b1b1);
+
+  --zen-boosts-button-background: light-dark(#ebebed, #262626);
+
+  --mod-button-c1: light-dark(#ebebed, #262626);
+  --mod-button-c2: light-dark(#ebebed, #262626);
+
+  --zen-boosts-active-button-background: light-dark(#3a3a3a, #cccccc);
+  --zen-boosts-active-button-hover-background: light-dark(#5b5b5c, #c9c9c9);
+  --zen-boosts-active-button-color: light-dark(#fcfcfe, #1c1c1e);
+  --zen-boosts-back-button-hover-background: light-dark(#e3e3e6, #3a3a3a);
+
+  --zen-boosts-magic-theme-background: light-dark(white, #3a3a3a);
+  --zen-boosts-magic-theme-active-background: light-dark(#3a3a3a, white);
+
+  --zen-boosts-font-wrapper-background: light-dark(white, #262626);
+
+  --zen-boosts-primary-border-color: light-dark(#ededef, #3a3a3a);
+
+  --zen-boosts-color-picker-background: light-dark(#fbfbfdea, #1c1c1eea);
+  --zen-boosts-color-picker-pattern-color: light-dark(#e3e9e4, #3a3a3a);
+
   appearance: none;
   border: none;
 
@@ -40,12 +63,12 @@
 
   width: 100%;
   height: 40px;
-  background-color: #f6f6f8;
+  background-color: var(--zen-boosts-secondary-background);
   @media (-moz-windows-mica) {
-    background-color: #f6f6f8c0;
+    background-color: var(--zen-boosts-mica-background);
   }
 
-  border: solid 0 #ededef;
+  border: solid 0 var(--zen-boosts-primary-border-color);
   border-bottom-width: 1px;
 }
 
@@ -57,6 +80,9 @@
   padding: 4px 18px 4px 2px;
   margin-left: 4px;
   border-radius: 8px;
+
+  -moz-context-properties: fill;
+  fill: var(--zen-boosts-primary-color);
 
   opacity: 0.75;
   background-color: transparent;
@@ -79,12 +105,12 @@
 
   width: 100%;
   height: 60px;
-  background-color: #f6f6f8;
+  background-color: var(--zen-boosts-secondary-background);
   @media (-moz-windows-mica) {
-    background-color: #f6f6f8c0;
+    background-color: var(--zen-boosts-mica-background);
   }
 
-  border: solid 0 #ededef;
+  border: solid 0 var(--zen-boosts-primary-border-color);
   border-top-width: 1px;
 
   display: flex;
@@ -113,6 +139,7 @@ body {
   user-select: none;
 
   width: 100%;
+  min-height: 582px;
   height: 100%;
   padding: 0;
   margin: 0;
@@ -148,7 +175,7 @@ body {
 }
 
 .subviewbutton {
-  color: #3a3a3b;
+  color: var(--zen-boosts-primary-color);
 }
 
 #zen-boost-editor-view {
@@ -166,11 +193,11 @@ body {
   min-height: 40px;
   max-height: 40px;
   align-items: center;
-  background-color: #f6f6f8;
-  border: solid 1px #e7e7e7ab;
+  background-color: var(--zen-boosts-secondary-background);
+  border: solid 1px var(--zen-boosts-primary-border-color);
 
   @media (-moz-windows-mica) {
-    background-color: #f6f6f8c0;
+    background-color: var(--zen-boosts-mica-background);
     border: none;
   }
 
@@ -232,6 +259,7 @@ body {
   padding: 2px;
 
   & button {
+    color: var(--zen-boosts-primary-color) !important;
     padding: auto;
     margin: auto;
     background-color: transparent;
@@ -243,7 +271,7 @@ body {
   gap: 14px;
   padding-top: 6px;
 
-  background-color: #fcfcfe;
+  background-color: var(--zen-boosts-primary-background);
 
   -moz-window-dragging: drag;
   & > * {
@@ -328,7 +356,7 @@ body {
     border-radius: 12px;
   }
 
-  background-color: #ebebed;
+  background-color: var(--zen-boosts-button-background);
 
   transition:
     0.4s background-color cubic-bezier(0.075, 0.82, 0.165, 1),
@@ -348,7 +376,7 @@ body {
 }
 
 #zen-boost-case:not([case-mode="none"]) {
-  background-color: #ebebed;
+  background-color: var(--zen-boosts-button-background);
   font-weight: 600 !important;
 }
 
@@ -373,7 +401,7 @@ body {
   font-size: 8pt;
   text-indent: 2px;
   vertical-align: middle;
-  color: #3a3a3b;
+  color: var(--zen-boosts-primary-color);
 
   justify-content: center;
 }
@@ -397,12 +425,16 @@ body {
 }
 
 .zen-boost-button-active {
-  background-color: #3a3a3a;
-  color: #fcfcfe;
+  background-color: var(--zen-boosts-active-button-background);
+  color: var(--zen-boosts-active-button-color);
+
+  &#zen-boost-magic-theme {
+    background-color: var(--zen-boosts-magic-theme-active-background);
+  }
 }
 
 .zen-boost-button-active:hover {
-  background-color: #5b5b5c;
+  background-color: var(--zen-boosts-active-button-hover-background);
 }
 
 .zen-boost-button-active-transparent {
@@ -430,12 +462,13 @@ body {
   }
 
   &:not(.zen-boost-button-active) {
-    background: white;
+    background: var(--zen-boosts-magic-theme-background);
+    color: var(--zen-boosts-primary-color);
   }
 }
 
 .footer {
-  background-color: #F6F6F8;
+  background-color: var(--zen-boosts-secondary-background);
   padding: 20px;
 }
 
@@ -471,7 +504,7 @@ body {
 
   transition: 0.2s opacity ease-in-out;
 
-  color: #727272;
+  color: var(--zen-boosts-secondary-color);
   background: none;
 
   font-size: 9pt;
@@ -490,7 +523,7 @@ body {
 
   &[has-selection="true"] {
     opacity: 1;
-    background-color: #ebebed;
+    background-color: var(--zen-boosts-button-background);
   }
 }
 
@@ -513,7 +546,7 @@ body {
 
 #zen-boost-font-wrapper {
   box-shadow: 0 2px 6px rgba(0,0,0,.15);
-  background-color: #ffffff;
+  background-color: var(--zen-boosts-font-wrapper-background);
 
   border-radius: 6px;
   @media (-moz-platform: macos) {
@@ -564,35 +597,35 @@ body {
 
 @property --mod-button-c1 {
   syntax: "<color>";
-  inherits: false;
-  initial-value: #ebebed;
+  inherits: true;
+  initial-value: transparent;
 }
 
 @property --mod-button-c2 {
   syntax: "<color>";
-  inherits: false;
-  initial-value: #ebebed;
+  inherits: true;
+  initial-value: transparent;
 }
 
 .mod-button[mode="orange"] {
   color: #e3e9e4;
-  --mod-button-c1: #ffbb5d;
-  --mod-button-c2: #ffa01d;
+  --mod-button-c1: light-dark(#ffbb5d, #c37a3f);
+  --mod-button-c2: light-dark(#ffa01d, #9f5a2a);
 }
 .mod-button[mode="orange-red"] {
   color: #e3e9e4;
-  --mod-button-c1: #ff8758;
-  --mod-button-c2: #ff5b1b;
+  --mod-button-c1: light-dark(#ff8758, #bd6048);
+  --mod-button-c2: light-dark(#ff5b1b, #9b422b);
 }
 .mod-button[mode="red"] {
   color: #e3e9e4;
-  --mod-button-c1: #ff595f;
-  --mod-button-c2: #ff121b;
+  --mod-button-c1: light-dark(#ff595f, #b94a50);
+  --mod-button-c2: light-dark(#ff121b, #95272e);
 }
 .mod-button[mode="blue"] {
   color: #e3e9e4;
-  --mod-button-c1: #6650fc;
-  --mod-button-c2: #4125ff;
+  --mod-button-c1: light-dark(#6650fc, #5d56ca);
+  --mod-button-c2: light-dark(#4125ff, #453aa9);
 }
 .mod-button[mode] {
   background: linear-gradient(180deg, var(--mod-button-c1) 0%, var(--mod-button-c2) 100%) border-box;
@@ -608,7 +641,7 @@ body {
   background-color: transparent;
 
   &:hover {
-    background-color: #e3e3e6;
+    background-color: var(--zen-boosts-back-button-hover-background);
   }
 }
 
@@ -635,17 +668,17 @@ body {
 
   z-index: 2;
 
-  background: #fbfbfdea;
+  background: var(--zen-boosts-color-picker-background);
 
   background-position: -23px -23px;
   backdrop-filter: saturate(2) blur(15px);
 
   background-size: 6px 6px;
-  background-image: radial-gradient(#e3e9e4, 1px, transparent 0);
+  background-image: radial-gradient(var(--zen-boosts-color-picker-pattern-color), 1px, transparent 0);
 
   @media (-moz-platform: macos) {
     background-size: 4px 4px;
-    background-image: radial-gradient(#e3e9e4 0.5px, transparent 0);
+    background-image: radial-gradient(var(--zen-boosts-color-picker-pattern-color) 0.5px, transparent 0);
   }
 }
 

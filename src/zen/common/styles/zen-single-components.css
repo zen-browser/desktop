@@ -187,8 +187,8 @@
 .identity-box-button {
   --tab-border-radius: 6px;
   --toolbarbutton-border-radius: var(--tab-border-radius);
-  --toolbarbutton-inner-padding: 6px;
-  --toolbarbutton-outer-padding: 1px;
+  --toolbarbutton-padding-inner: 6px;
+  --toolbarbutton-padding-outer: 1px;
   --toolbarbutton-icon-fill: color-mix(in srgb, currentColor 70%, transparent);
 
   transition:
@@ -281,7 +281,7 @@
 
 /* Customizable modes */
 #customization-container {
-  --toolbar-bgcolor: var(--arrowpanel-background);
+  --toolbar-background-color: var(--arrowpanel-background);
 }
 
 /* Site Data popup */
@@ -495,7 +495,7 @@
     border-radius: 99px;
     width: var(--size-item-large);
     height: var(--size-item-large);
-    background: var(--button-background-color-primary);
+    background: var(--zen-sidebar-themed-icon-fill);
     opacity: 0.6;
     transition:
       transform 0.12s ease-in-out,
@@ -540,6 +540,10 @@
 
   & toolbarbutton {
     margin: 0;
+
+    &[disabled] {
+      visibility: hidden;
+    }
   }
 }
 
@@ -621,7 +625,7 @@
       color: var(--button-primary-color);
 
       &::before {
-        background: var(--button-background-color-primary);
+        background: var(--zen-sidebar-themed-icon-fill);
       }
     }
 
@@ -784,6 +788,10 @@
 
   /* stylelint-disable-next-line media-query-no-invalid */
   @media not -moz-pref("zen.view.enable-loading-indicator") {
+    display: none;
+  }
+
+  :root[inDOMFullscreen="true"] & {
     display: none;
   }
 }

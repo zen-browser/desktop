@@ -323,14 +323,39 @@ add_task(async function test_setAsDefaultPDFHandler_knownBrowser() {
   }
 });
 
+// Wait for the deferred set_default_pdf_handler_attempt event to be recorded,
+// then return the single event that was emitted by the most recent call.
+async function awaitAttemptEvent() {
+  await TestUtils.waitForCondition(() => {
+    const events = Glean.browser.setDefaultPdfHandlerAttempt.testGetValue();
+    return events && events.length;
+  }, "Recorded set_default_pdf_handler_attempt event");
+  const events = Glean.browser.setDefaultPdfHandlerAttempt.testGetValue();
+  Assert.equal(events.length, 1, "Recorded exactly one attempt event");
+  return events[0];
+}
+
 add_task(async function test_setAsDefaultPDFHandler_fallback() {
   const sandbox = sinon.createSandbox();
+  // Enable the IOpenWithLauncher branch explicitly so the test does not
+  // depend on the build-channel default of
+  // browser.shell.setDefaultPDFHandler.useOpenWith, and use a 0ms wait so
+  // the deferred attempt event fires promptly.
+  await SpecialPowers.pushPrefEnv({
+    set: [
+      ["browser.shell.setDefaultPDFHandler.useOpenWith", true],
+      ["browser.shell.setDefaultPDFHandler.attemptWaitTimeMs", 0],
+    ],
+  });
 
   try {
     const userChoiceStub = sandbox
       .stub(ShellService, "setAsDefaultPDFHandlerUserChoice")
       .rejects(new Error("mock userChoice failure"));
     sandbox.stub(ShellService, "_isWindows11").returns(true);
+    const isDefaultHandlerForStub = sandbox
+      .stub(ShellService, "isDefaultHandlerFor")
+      .returns(true);
 
     info(
       "When userChoice fails and open-with picker succeeds, should not fall back to settings dialog"
@@ -352,27 +377,42 @@ add_task(async function test_setAsDefaultPDFHandler_fallback() {
       1,
       "Recorded user-choice failure"
     );
+
+    let event = await awaitAttemptEvent();
+    Assert.equal(event.extra.method, "open_with", "Event method is open_with");
+    Assert.equal(event.extra.success, "true", "Event success is true");
     Assert.equal(
-      Glean.browser.setDefaultPdfHandlerUserChoiceResult.Success.testGetValue(),
-      undefined,
-      "Did not record user-choice success"
+      event.extra.result_is_default,
+      "true",
+      "Event result_is_default reflects isDefaultHandlerFor"
     );
-    Assert.equal(
-      Glean.browser.setDefaultPdfHandlerOpenWithResult.Success.testGetValue(),
-      1,
-      "Recorded open-with success"
-    );
-    Assert.equal(
-      Glean.browser.setDefaultPdfHandlerOpenWithResult.Failure.testGetValue(),
-      undefined,
-      "Did not record open-with failure"
-    );
-    Assert.equal(
-      Glean.browser.setDefaultPdfHandlerModernSettingsResult.Success.testGetValue(),
-      undefined,
-      "Did not record modern settings result"
+    Assert.ok(
+      isDefaultHandlerForStub.calledWith(".pdf"),
+      "Sampled isDefaultHandlerFor after the delay"
     );
     userChoiceStub.resetHistory();
+    isDefaultHandlerForStub.resetHistory();
+    launchOpenWithDefaultPickerForFileTypeStub.resetHistory();
+    launchModernSettingsDialogDefaultAppsStub.resetHistory();
+
+    info(
+      "When the picker succeeds but Firefox is not default after the delay, event records result_is_default=false"
+    );
+    Services.fog.testResetFOG();
+    isDefaultHandlerForStub.returns(false);
+    await ShellService.setAsDefaultPDFHandler(false);
+
+    event = await awaitAttemptEvent();
+    Assert.equal(event.extra.method, "open_with", "Event method is open_with");
+    Assert.equal(event.extra.success, "true", "Event success is true");
+    Assert.equal(
+      event.extra.result_is_default,
+      "false",
+      "Event result_is_default is false when Firefox did not become default"
+    );
+    isDefaultHandlerForStub.returns(true);
+    userChoiceStub.resetHistory();
+    isDefaultHandlerForStub.resetHistory();
     launchOpenWithDefaultPickerForFileTypeStub.resetHistory();
     launchModernSettingsDialogDefaultAppsStub.resetHistory();
 
@@ -400,71 +440,119 @@ add_task(async function test_setAsDefaultPDFHandler_fallback() {
       "Recorded user-choice failure"
     );
     Assert.equal(
-      Glean.browser.setDefaultPdfHandlerUserChoiceResult.Success.testGetValue(),
-      undefined,
-      "Did not record user-choice success"
-    );
-    Assert.equal(
-      Glean.browser.setDefaultPdfHandlerOpenWithResult.Failure.testGetValue(),
-      1,
-      "Recorded open-with failure"
-    );
-    Assert.equal(
-      Glean.browser.setDefaultPdfHandlerOpenWithResult.Success.testGetValue(),
-      undefined,
-      "Did not record open-with success"
-    );
-    Assert.equal(
       Glean.browser.setDefaultPdfHandlerModernSettingsResult.Success.testGetValue(),
       1,
       "Recorded modern settings success"
     );
+
+    event = await awaitAttemptEvent();
     Assert.equal(
-      Glean.browser.setDefaultPdfHandlerModernSettingsResult.Failure.testGetValue(),
-      undefined,
-      "Did not record modern settings failure"
+      event.extra.method,
+      "settings",
+      "Event method is settings (last attempted)"
+    );
+    Assert.equal(
+      event.extra.success,
+      "true",
+      "Event success reflects modern settings launch"
+    );
+    Assert.equal(
+      event.extra.result_is_default,
+      "true",
+      "Event result_is_default reflects isDefaultHandlerFor"
     );
     userChoiceStub.resetHistory();
+    isDefaultHandlerForStub.resetHistory();
     launchOpenWithDefaultPickerForFileTypeStub.resetHistory();
     launchModernSettingsDialogDefaultAppsStub.resetHistory();
 
     info(
-      "When userChoice fails, open-with fails, and modern settings fails, should record all failures"
+      "When userChoice fails, open-with fails, and modern settings fails, event records success=false"
     );
     Services.fog.testResetFOG();
+    isDefaultHandlerForStub.returns(false);
     launchModernSettingsDialogDefaultAppsStub.throws(
       new Error("mock modern settings failure")
     );
     await ShellService.setAsDefaultPDFHandler(false);
 
     Assert.equal(
-      Glean.browser.setDefaultPdfHandlerUserChoiceResult.ErrOther.testGetValue(),
-      1,
-      "Recorded user-choice failure"
-    );
-    Assert.equal(
-      Glean.browser.setDefaultPdfHandlerUserChoiceResult.Success.testGetValue(),
-      undefined,
-      "Did not record user-choice success"
-    );
-    Assert.equal(
-      Glean.browser.setDefaultPdfHandlerOpenWithResult.Failure.testGetValue(),
-      1,
-      "Recorded open-with failure"
-    );
-    Assert.equal(
       Glean.browser.setDefaultPdfHandlerModernSettingsResult.Failure.testGetValue(),
       1,
       "Recorded modern settings failure"
     );
+
+    event = await awaitAttemptEvent();
     Assert.equal(
-      Glean.browser.setDefaultPdfHandlerModernSettingsResult.Success.testGetValue(),
-      undefined,
-      "Did not record modern settings success"
+      event.extra.method,
+      "settings",
+      "Event method is settings (last attempted)"
+    );
+    Assert.equal(
+      event.extra.success,
+      "false",
+      "Event success is false when every method failed"
+    );
+    Assert.equal(
+      event.extra.result_is_default,
+      "false",
+      "Event result_is_default is false when no method set the default"
     );
   } finally {
     launchOpenWithDefaultPickerForFileTypeStub.reset();
     launchModernSettingsDialogDefaultAppsStub.reset();
     sandbox.restore();
+    await SpecialPowers.popPrefEnv();
+  }
+});
+
+add_task(async function test_setAsDefaultPDFHandler_useOpenWithDisabled() {
+  const sandbox = sinon.createSandbox();
+  // With useOpenWith disabled, a userChoice failure should skip the
+  // IOpenWithLauncher branch entirely and fall straight through to the
+  // modern settings dialog.
+  await SpecialPowers.pushPrefEnv({
+    set: [
+      ["browser.shell.setDefaultPDFHandler.useOpenWith", false],
+      ["browser.shell.setDefaultPDFHandler.attemptWaitTimeMs", 0],
+    ],
+  });
+
+  try {
+    sandbox
+      .stub(ShellService, "setAsDefaultPDFHandlerUserChoice")
+      .rejects(new Error("mock userChoice failure"));
+    sandbox.stub(ShellService, "_isWindows11").returns(true);
+    sandbox.stub(ShellService, "isDefaultHandlerFor").returns(true);
+
+    Services.fog.testResetFOG();
+    await ShellService.setAsDefaultPDFHandler(false);
+
+    Assert.ok(
+      launchOpenWithDefaultPickerForFileTypeStub.notCalled,
+      "Did not invoke open-with picker when pref is disabled"
+    );
+    Assert.ok(
+      launchModernSettingsDialogDefaultAppsStub.called,
+      "Fell through to modern settings dialog"
+    );
+
+    const event = await awaitAttemptEvent();
+    Assert.equal(
+      event.extra.method,
+      "settings",
+      "Event method skipped open_with and recorded settings"
+    );
+    Assert.equal(event.extra.success, "true", "Event success is true");
+    Assert.equal(
+      event.extra.result_is_default,
+      "true",
+      "Event result_is_default reflects isDefaultHandlerFor"
+    );
+  } finally {
+    launchOpenWithDefaultPickerForFileTypeStub.reset();
+    launchModernSettingsDialogDefaultAppsStub.reset();
+    sandbox.restore();
+    await SpecialPowers.popPrefEnv();
   }
 });

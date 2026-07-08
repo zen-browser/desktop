@@ -1,5 +1,5 @@
 diff --git a/eslint-file-globals.config.mjs b/eslint-file-globals.config.mjs
-index c17a96adb86eff46c8dafc5cbef83eb10b5fbeeb..4d00012889a846fabfd9172fb05459318e4b4746 100644
+index bf1341a84382380d45b936aeffde3f167301a9ed..b6aa373252888dcdefd528a40329f1959086d8e5 100644
 --- a/eslint-file-globals.config.mjs
 +++ b/eslint-file-globals.config.mjs
 @@ -22,6 +22,7 @@
@@ -10,7 +10,7 @@ index c17a96adb86eff46c8dafc5cbef83eb10b5fbeeb..4d00012889a846fabfd9172fb0545931
  
  export default [
    {
-@@ -549,4 +550,9 @@ export default [
+@@ -550,4 +551,9 @@ export default [
      ],
      languageOptions: { globals: globals.worker },
    },

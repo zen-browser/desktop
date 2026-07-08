@@ -27,7 +27,7 @@
   display: flex;
   position: relative;
   flex: 1;
-  padding: 8px;
+  padding: 16px;
   border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent);
 }
 
@@ -38,6 +38,12 @@
   white-space: nowrap;
   font-weight: 500;
   flex: 1;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  width: calc(100% - 40px);
+  padding: 0 16px;
 }
 
 .zen-sidebar-notification-close-button {

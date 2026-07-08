@@ -1,8 +1,8 @@
 diff --git a/browser/installer/package-manifest.in b/browser/installer/package-manifest.in
-index 36eafe35063f02fe3d4acaab24a08dc1b7b0ae24..b6bf327bf286de5246e5c50d89519d16d5771caf 100644
+index 83e52b260c380b8a4fdcb9146c36a048adffba68..f55844c294bc0a0e648fd6fc09f63218c9b71de2 100644
 --- a/browser/installer/package-manifest.in
 +++ b/browser/installer/package-manifest.in
-@@ -386,9 +386,9 @@ bin/libfreebl_64int_3.so
+@@ -390,9 +390,9 @@ bin/libfreebl_64int_3.so
  ;
  #ifdef MOZ_CRASHREPORTER
  #ifdef XP_MACOSX

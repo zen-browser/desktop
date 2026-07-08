@@ -164,7 +164,7 @@ void main() {
       return;
     }
     this.document = document;
-    this.window = document.ownerGlobal;
+    this.window = document.documentGlobal;
   }
 
   /**

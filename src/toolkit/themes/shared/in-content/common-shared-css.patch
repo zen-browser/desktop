@@ -1,5 +1,5 @@
 diff --git a/toolkit/themes/shared/in-content/common-shared.css b/toolkit/themes/shared/in-content/common-shared.css
-index 37c30173e5670f4ed0a557c6118c8e8cab53026f..cb9deb4386fe7dda6672df5fd7d51277f2d638dc 100644
+index 8cbeb5d266b19c2c5b3d605b23c8c421a03c2a0e..7db0baeee11b99a5da1c143c682e38751a9ac03c 100644
 --- a/toolkit/themes/shared/in-content/common-shared.css
 +++ b/toolkit/themes/shared/in-content/common-shared.css
 @@ -57,7 +57,7 @@

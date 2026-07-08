@@ -15,12 +15,12 @@ class nsZenWorkspaceIcons extends MozXULElement {
 
     this.initDragAndDrop();
     this.addEventListener("mouseover", e => {
-      if (this.isReorderMode) {
+      if (e.shiftKey || this.isReorderMode) {
         return;
       }
       const target = e.target.closest("toolbarbutton[zen-workspace-id]");
       if (target) {
-        this.scrollLeft = target.offsetLeft - 10;
+        target.scrollIntoView({ behavior: "smooth", inline: "nearest" });
       }
     });
   }
@@ -178,7 +178,7 @@ class nsZenWorkspaceIcons extends MozXULElement {
       return;
     }
     buttons[selected].setAttribute("active", true);
-    this.scrollLeft = buttons[selected].offsetLeft - 10;
+    buttons[selected].scrollIntoView({ behavior: "smooth", inline: "nearest" });
     this.setAttribute("selected", selected);
   }
 

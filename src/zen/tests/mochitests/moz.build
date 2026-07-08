@@ -10,7 +10,6 @@
 BROWSER_CHROME_MANIFESTS += [
 	"readermode/browser.toml",
 	"safebrowsing/browser.toml",
-	"sandbox/browser.toml",
 	"shell/browser.toml",
 	"tabMediaIndicator/browser.toml",
 	"tooltiptext/browser.toml",

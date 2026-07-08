@@ -1,0 +1,59 @@
+diff --git a/layout/painting/nsCSSRenderingGradients.h b/layout/painting/nsCSSRenderingGradients.h
+index 30f665f7cacabb15fb6a1656385c5936d42be48b..8c4c4147ee8ec6812e9418f95b7b7c0358dcb735 100644
+--- a/layout/painting/nsCSSRenderingGradients.h
++++ b/layout/painting/nsCSSRenderingGradients.h
+@@ -42,10 +42,11 @@ class MOZ_STACK_CLASS ColorStopInterpolator {
+   ColorStopInterpolator(
+       const nsTArray<ColorStop>& aStops,
+       const StyleColorInterpolationMethod& aStyleColorInterpolationMethod,
+-      bool aExtend)
++      bool aExtend, const nsIFrame* aFrame)
+       : mStyleColorInterpolationMethod(aStyleColorInterpolationMethod),
+         mStops(aStops),
+-        mExtend(aExtend) {}
++        mExtend(aExtend),
++        mFrame(aFrame) {}
+ 
+   void CreateStops() {
+     // This loop intentionally iterates extra stops at the beginning and end
+@@ -96,7 +97,7 @@ class MOZ_STACK_CLASS ColorStopInterpolator {
+             Servo_InterpolateColor(mStyleColorInterpolationMethod,
+                                    &start.mColor, &end.mColor, progress);
+         static_cast<T*>(this)->CreateStop(float(position),
+-                                          gfx::ToDeviceColor(color));
++                                          gfx::ToDeviceColor(color, mFrame));
+       }
+     }
+   }
+@@ -108,6 +109,7 @@ class MOZ_STACK_CLASS ColorStopInterpolator {
+   // which only matters if this is a CSS non-repeating gradient with
+   // StyleHueInterpolationMethod::Longer (only valid for hsl/hwb/lch/oklch).
+   bool mExtend;
++  const nsIFrame* mFrame;
+ 
+   // This could be made tunable, but at 1.0/128 the error is largely
+   // irrelevant, as WebRender re-encodes it to 128 pairs of stops.
+@@ -126,6 +128,7 @@ class nsCSSGradientRenderer final {
+    */
+   static nsCSSGradientRenderer Create(nsPresContext* aPresContext,
+                                       ComputedStyle* aComputedStyle,
++                                      const nsIFrame* aFrame,
+                                       const StyleGradient& aGradient,
+                                       const nsSize& aIntrinsiceSize);
+ 
+@@ -173,6 +176,7 @@ class nsCSSGradientRenderer final {
+  private:
+   nsCSSGradientRenderer()
+       : mPresContext(nullptr),
++        mFrame(nullptr),
+         mGradient(nullptr),
+         mRadiusX(0.0),
+         mRadiusY(0.0),
+@@ -192,6 +196,7 @@ class nsCSSGradientRenderer final {
+       const nsSize& aRepeatSize, bool aForceRepeatToCoverTiles);
+ 
+   nsPresContext* mPresContext;
++  const nsIFrame* mFrame;
+   const StyleGradient* mGradient;
+   nsTArray<ColorStop> mStops;
+   gfxPoint mLineStart, mLineEnd;  // only for linear/radial gradients

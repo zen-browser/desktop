@@ -1,8 +1,8 @@
 diff --git a/browser/themes/shared/browser-shared.css b/browser/themes/shared/browser-shared.css
-index 70571d8f32d60d10e59e33cb83e38229de026fc6..8e420ed6f6838499553c55265a1e35f5c3801d35 100644
+index 2287d8f9fd5a86be00a0e9d7635a119fca446f50..7870cd7a15688e6046e586ec91861439c4182933 100644
 --- a/browser/themes/shared/browser-shared.css
 +++ b/browser/themes/shared/browser-shared.css
-@@ -253,13 +253,13 @@ body {
+@@ -347,13 +347,13 @@ body {
  
    @media (-moz-platform: macos) and (not (-moz-mac-rtl)) {
      &:-moz-locale-dir(ltr) {

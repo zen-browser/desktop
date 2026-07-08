@@ -182,8 +182,8 @@ class nsZenWorkspaceCreation extends MozXULElement {
         this.onProfileCommand.bind(this)
       );
       this.profilesPopup.addEventListener(
-        "popupshown",
-        this.onProfilePopupShown.bind(this)
+        "popupshowing",
+        this.onProfilePopupShowing.bind(this)
       );
       this.profilesPopup.addEventListener(
         "command",
@@ -192,7 +192,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
 
       this.currentProfile = {
         id: 0,
-        name: "Default",
+        name: ContextualIdentityService.formatContextLabel("user-context-none"),
       };
     } else {
       this.inputProfile.parentNode.hidden = true;
@@ -261,6 +261,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
   }
 
   async onCancelButtonCommand() {
+    document.documentElement.removeAttribute("zen-creating-workspace");
     await gZenWorkspaces.changeWorkspaceWithID(this.previousWorkspaceId);
   }
 
@@ -295,7 +296,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
     this.profilesPopup.openPopup(event.target, "after_start");
   }
 
-  onProfilePopupShown(event) {
+  onProfilePopupShowing(event) {
     return window.createUserContextMenu(event, {
       isContextMenu: true,
       showDefaultTab: true,

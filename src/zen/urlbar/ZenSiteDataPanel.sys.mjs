@@ -142,7 +142,9 @@ export class nsZenSiteDataPanel {
       this.anchor.removeAttribute("boosting");
     }
     // Force a reflow to ensure the attribute change is applied before any potential animation.
-    this.anchor.getBoundingClientRect();
+    if (this.unifiedPanel.state === "open") {
+      this.anchor.getBoundingClientRect();
+    }
   }
 
   #initCopyUrlButton() {
@@ -250,11 +252,11 @@ export class nsZenSiteDataPanel {
     const boostButton = this.document.getElementById("zen-site-data-boost");
     if (!canBoostSite) {
       boostButton.removeAttribute("boosting");
-    }
-
-    if (!canBoostSite) {
+      boostButton.setAttribute("disabled", "true");
       return;
     }
+
+    boostButton.removeAttribute("disabled");
 
     if (lazy.gZenBoostsManager.registeredBoostForDomain(domain)) {
       boostButton.setAttribute("boosting", "true");

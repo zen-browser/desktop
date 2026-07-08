@@ -675,7 +675,7 @@
             .appendChild(anchor);
           gZenThemePicker.panel.setAttribute("noautohide", "true");
           gZenThemePicker.panel.setAttribute("consumeoutsideclicks", "false");
-          gZenThemePicker.panel.setAttribute("nonnativepopover", "true");
+          gZenThemePicker.panel.setAttribute("nonnative", "");
           gZenThemePicker.panel.addEventListener(
             "popupshowing",
             () => {
@@ -694,7 +694,7 @@
         async fadeOut() {
           gZenThemePicker.panel.removeAttribute("noautohide");
           gZenThemePicker.panel.removeAttribute("consumeoutsideclicks");
-          gZenThemePicker.panel.removeAttribute("nonnativepopover");
+          gZenThemePicker.panel.removeAttribute("nonnative");
           await animate(gZenThemePicker.panel, { opacity: [1, 0] });
           gZenThemePicker.panel.hidePopup();
           gZenThemePicker.panel.removeAttribute("style");

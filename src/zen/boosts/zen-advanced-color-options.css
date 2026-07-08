@@ -5,11 +5,10 @@
  */
 
 #zen-boost-advanced-color-options-panel {
-  color-scheme: light;
   --panel-padding: 15px;
 
   & p {
-    color: #3a3a3b;
+    color: var(--zen-boosts-primary-color);
   }
 
   & input {

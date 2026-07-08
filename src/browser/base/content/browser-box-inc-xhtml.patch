@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-box.inc.xhtml b/browser/base/content/browser-box.inc.xhtml
-index d58fcdf99843d110b708f3fbf9fb317787fadfcf..cfc2aad902641609c3804e615c4cb66ce65299b7 100644
+index 31cd4f927c273573b38021f84417101c57377902..f293e1c61d3b7a80b7dc472d927893f0439d6af9 100644
 --- a/browser/base/content/browser-box.inc.xhtml
 +++ b/browser/base/content/browser-box.inc.xhtml
 @@ -3,12 +3,22 @@
@@ -10,7 +10,7 @@ index d58fcdf99843d110b708f3fbf9fb317787fadfcf..cfc2aad902641609c3804e615c4cb66c
 +  <html:div id="zen-browser-background" class="zen-browser-generic-background">
 +    <html:div class="zen-browser-grain" />
 +  </html:div>
-   <box context="sidebar-context-menu" id="sidebar-main" hidden="true">
+   <box context="sidebar-context-menu" id="sidebar-main" class="chrome-block" hidden="true">
      <html:sidebar-main flex="1">
        <box id="vertical-tabs" slot="tabstrip" customizable="true" contextmenu="toolbar-context-menu"></box>
      </html:sidebar-main>
@@ -22,7 +22,7 @@ index d58fcdf99843d110b708f3fbf9fb317787fadfcf..cfc2aad902641609c3804e615c4cb66c
 +  </html:div>
 +<hbox id="zen-tabbox-wrapper" flex="1">
 +  <tabbox id="tabbrowser-tabbox" flex="1" tabcontainer="tabbrowser-tabs">
-   <vbox id="sidebar-box" hidden="true" class="chromeclass-extrachrome">
+   <vbox id="sidebar-box" hidden="true" class="chromeclass-extrachrome chrome-block">
      <box id="sidebar-header" align="center">
        <toolbarbutton id="sidebar-switcher-target" class="tabbable" aria-expanded="false">
 @@ -25,7 +35,7 @@

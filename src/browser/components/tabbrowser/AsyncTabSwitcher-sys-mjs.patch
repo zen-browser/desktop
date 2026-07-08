@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs b/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs
-index eebff0f59df42d3ef075f3eea1bd9269c47ba80d..6ab43a810f4cb61eedc02bb42026f6b5e282e785 100644
+index 577e27598597de27116153be1ad149facd721e41..eeca455aad8323ef24957af076f131cb70d66e7d 100644
 --- a/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs
 +++ b/browser/components/tabbrowser/AsyncTabSwitcher.sys.mjs
 @@ -938,6 +938,7 @@ export class AsyncTabSwitcher {

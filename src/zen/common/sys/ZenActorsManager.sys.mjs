@@ -67,8 +67,9 @@ if (!Services.appinfo.inSafeMode) {
     child: {
       esModuleURI: "resource:///actors/ZenBoostsChild.sys.mjs",
       events: {
+        // Needed to let the actor be created, please don't remove
+        // without checking if boosts still work without it, thanks <3
         DOMWindowCreated: {},
-        unload: {},
       },
     },
     allFrames: true,

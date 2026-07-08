@@ -1,0 +1,18 @@
+diff --git a/browser/base/content/aboutDialog.css b/browser/base/content/aboutDialog.css
+index 017125bc2510e5f5e317a5e78c40d6aa9ded76ca..d343d8c62a2251e3c3a33ae8f2ab9c4c68218c22 100644
+--- a/browser/base/content/aboutDialog.css
++++ b/browser/base/content/aboutDialog.css
+@@ -135,6 +135,13 @@
+   margin: 0 40px;
+ }
+ 
++#trademark {
++  font-size: xx-small;
++  text-align: center;
++  margin-block: 10px;
++  color: var(--text-color-deemphasized);
++}
++
+ #currentChannel {
+   margin: 0;
+   padding: 0;

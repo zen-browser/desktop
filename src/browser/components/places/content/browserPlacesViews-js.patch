@@ -1,8 +1,8 @@
 diff --git a/browser/components/places/content/browserPlacesViews.js b/browser/components/places/content/browserPlacesViews.js
-index 463913926c58e6c622e0fcc60534921f02814829..0143c48c48e132464226db810f4ea4d2720c3c49 100644
+index 229e7960fc461475426b538f3a5fdc134a99ebcf..22b0eb8e23fc56cd4d8892e3ecebe389ea00ce1f 100644
 --- a/browser/components/places/content/browserPlacesViews.js
 +++ b/browser/components/places/content/browserPlacesViews.js
-@@ -328,12 +328,23 @@ class PlacesViewBase {
+@@ -343,12 +343,23 @@ class PlacesViewBase {
  
      this._cleanPopup(aPopup);
  
@@ -29,7 +29,7 @@ index 463913926c58e6c622e0fcc60534921f02814829..0143c48c48e132464226db810f4ea4d2
          this._insertNewItemToPopup(child, fragment);
        }
        aPopup.insertBefore(fragment, aPopup._endMarker);
-@@ -391,6 +402,7 @@ class PlacesViewBase {
+@@ -406,6 +417,7 @@ class PlacesViewBase {
            "scheme",
            PlacesUIUtils.guessUrlSchemeForUI(aPlacesNode.uri)
          );
@@ -37,7 +37,7 @@ index 463913926c58e6c622e0fcc60534921f02814829..0143c48c48e132464226db810f4ea4d2
        } else if (PlacesUtils.containerTypes.includes(type)) {
          element = document.createXULElement("menu");
          element.setAttribute("container", "true");
-@@ -1058,25 +1070,33 @@ class PlacesToolbar extends PlacesViewBase {
+@@ -1076,25 +1088,33 @@ class PlacesToolbar extends PlacesViewBase {
        this._rootElt.firstChild.remove();
      }
  
@@ -82,7 +82,7 @@ index 463913926c58e6c622e0fcc60534921f02814829..0143c48c48e132464226db810f4ea4d2
            );
            ++startIndex;
            if (elt.localName != "toolbarseparator") {
-@@ -1084,15 +1104,12 @@ class PlacesToolbar extends PlacesViewBase {
+@@ -1102,15 +1122,12 @@ class PlacesToolbar extends PlacesViewBase {
            }
          }
          if (!elt) {
@@ -101,7 +101,7 @@ index 463913926c58e6c622e0fcc60534921f02814829..0143c48c48e132464226db810f4ea4d2
          });
        });
  
-@@ -1102,7 +1119,7 @@ class PlacesToolbar extends PlacesViewBase {
+@@ -1120,7 +1137,7 @@ class PlacesToolbar extends PlacesViewBase {
  
        let fragment = document.createDocumentFragment();
        for (let i = startIndex; i < limit; ++i) {
@@ -110,7 +110,7 @@ index 463913926c58e6c622e0fcc60534921f02814829..0143c48c48e132464226db810f4ea4d2
        }
        await new Promise(resolve => window.requestAnimationFrame(resolve));
        if (!this._isAlive) {
-@@ -1165,6 +1182,8 @@ class PlacesToolbar extends PlacesViewBase {
+@@ -1183,6 +1200,8 @@ class PlacesToolbar extends PlacesViewBase {
            "scheme",
            PlacesUIUtils.guessUrlSchemeForUI(aChild.uri)
          );
@@ -119,7 +119,7 @@ index 463913926c58e6c622e0fcc60534921f02814829..0143c48c48e132464226db810f4ea4d2
        }
      }
  
-@@ -2359,7 +2378,7 @@ this.PlacesPanelview = class PlacesPanelview extends PlacesViewBase {
+@@ -2395,7 +2414,7 @@ this.PlacesPanelview = class PlacesPanelview extends PlacesViewBase {
          PlacesUIUtils.guessUrlSchemeForUI(placesNode.uri)
        );
        element.setAttribute("label", PlacesUIUtils.getBestTitle(placesNode));

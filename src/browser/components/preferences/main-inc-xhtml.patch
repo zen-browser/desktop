@@ -1,8 +1,8 @@
 diff --git a/browser/components/preferences/main.inc.xhtml b/browser/components/preferences/main.inc.xhtml
-index 6b96ff01e43087f8c609df17204441616b7013f3..df85ec789c54146b3a702169f33adf36c11b85da 100644
+index f6badc31b612c9198c56bb06751e9bbc4a0dd54b..5f9eca1ad0795ac38c02449c91e9f61bf6661252 100644
 --- a/browser/components/preferences/main.inc.xhtml
 +++ b/browser/components/preferences/main.inc.xhtml
-@@ -96,6 +96,7 @@
+@@ -98,6 +98,7 @@
                languages-customize-add.label,
              " />
    </hbox>

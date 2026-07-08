@@ -64,7 +64,7 @@ diff --git a/gfx/wr/webrender/src/device/gl.rs b/gfx/wr/webrender/src/device/gl.
 diff --git a/gfx/wr/webrender/src/renderer/init.rs b/gfx/wr/webrender/src/renderer/init.rs
 --- a/gfx/wr/webrender/src/renderer/init.rs
 +++ b/gfx/wr/webrender/src/renderer/init.rs
-@@ -204,10 +204,12 @@
+@@ -204,6 +204,8 @@
      pub low_quality_pinch_zoom: bool,
      pub max_shared_surface_size: i32,
      /// If true, open a debug socket to listen for remote debugger.
@@ -72,19 +72,14 @@ diff --git a/gfx/wr/webrender/src/renderer/init.rs b/gfx/wr/webrender/src/render
      pub enable_debugger: bool,
 +    /// See explanation of `gfx.webrender.opaque-backdrop-fallback`.
 +    pub opaque_backdrop_fallback: bool,
- 
-     /// Use the new quad primitive path for box-shadow blur rendering.
-     pub use_quad_box_shadow: bool,
  }
- 
-@@ -277,10 +279,11 @@
+@@ -277,9 +279,10 @@
              enable_instancing: true,
              reject_software_rasterizer: false,
              low_quality_pinch_zoom: false,
              max_shared_surface_size: 2048,
              enable_debugger: true,
 +            opaque_backdrop_fallback: false,
-             use_quad_box_shadow: true,
          }
      }
  }

@@ -1,5 +1,5 @@
 diff --git a/docshell/base/BrowsingContext.h b/docshell/base/BrowsingContext.h
-index 4e20d7b602932621baf9082f6d28911701b7aa5b..d6e141b235ce60be5db86bc40578d0741b79b014 100644
+index 02abb6ab9562a7b41f4a95a6289c80da8d1176e8..1722802021f331338fc10c768301a953e582b711 100644
 --- a/docshell/base/BrowsingContext.h
 +++ b/docshell/base/BrowsingContext.h
 @@ -265,6 +265,9 @@ struct EmbedderColorSchemes {
@@ -12,7 +12,7 @@ index 4e20d7b602932621baf9082f6d28911701b7aa5b..d6e141b235ce60be5db86bc40578d074
    /* Whether we can execute scripts in this BrowsingContext. Has no effect    \
     * unless scripts are also allowed in the parent WindowContext. */          \
    FIELD(AllowJavascript, bool)                                                \
-@@ -680,6 +683,11 @@ class BrowsingContext : public nsILoadContext, public nsWrapperCache {
+@@ -671,6 +674,11 @@ class BrowsingContext : public nsILoadContext, public nsWrapperCache {
  
    bool FullscreenAllowed() const;
  
@@ -24,7 +24,7 @@ index 4e20d7b602932621baf9082f6d28911701b7aa5b..d6e141b235ce60be5db86bc40578d074
    float FullZoom() const { return GetFullZoom(); }
    float TextZoom() const { return GetTextZoom(); }
  
-@@ -1284,6 +1292,9 @@ class BrowsingContext : public nsILoadContext, public nsWrapperCache {
+@@ -1275,6 +1283,9 @@ class BrowsingContext : public nsILoadContext, public nsWrapperCache {
    }
  
    void DidSet(FieldIndex<IDX_SessionStoreEpoch>, uint32_t aOldValue);

@@ -1,8 +1,8 @@
 diff --git a/browser/components/sessionstore/TabState.sys.mjs b/browser/components/sessionstore/TabState.sys.mjs
-index eb24c3ffdd2cfb33379aca993af5171fdb91ac2c..15d3fbff397df23f112355e22ca5dba5bf29528f 100644
+index 4ba4dda363b602cb6f4445ef056f2f9abb1b0e1e..6b4b407e05e26faca69d9d7ac6f31510620898fe 100644
 --- a/browser/components/sessionstore/TabState.sys.mjs
 +++ b/browser/components/sessionstore/TabState.sys.mjs
-@@ -99,7 +99,25 @@ class _TabState {
+@@ -99,10 +99,28 @@ class _TabState {
        }
      }
  
@@ -21,8 +21,11 @@ index eb24c3ffdd2cfb33379aca993af5171fdb91ac2c..15d3fbff397df23f112355e22ca5dba5
 +    tabData._zenIsActiveTab = tab._zenContentsVisible;
 +    tabData.zenLiveFolderItemId = tab.getAttribute("zen-live-folder-item-id");
 +
-     tabData.searchMode = tab.ownerGlobal.gURLBar.getSearchMode(browser, true);
-+    if (tabData.searchMode?.source === tab.ownerGlobal.UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS) {
+     tabData.searchMode = tab.documentGlobal.gURLBar.getSearchMode(
+       browser,
+       true
+     );
++    if (tabData.searchMode?.source === tab.documentGlobal.UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS) {
 +      delete tabData.searchMode;
 +    }
  

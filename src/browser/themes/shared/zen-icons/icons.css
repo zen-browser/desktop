@@ -51,7 +51,8 @@
 }
 
 #PanelUI-zen-gradient-generator-color-remove,
-#zen-gradient-generator-color-remove {
+#zen-gradient-generator-color-remove,
+.sr-remove {
   list-style-image: url("unpin.svg") !important;
 }
 
@@ -132,6 +133,10 @@
 #PanelUI-zen-gradient-generator-color-page-right,
 .zen-permission-popup-boost-editor-button {
   list-style-image: url("arrow-right.svg");
+}
+
+.sr-open-in-icon {
+  list-style-image: url("arrow-corner-down-right.svg");
 }
 
 #PanelUI-menu-button,
@@ -435,6 +440,7 @@
 }
 
 #zen-copy-current-url-button,
+#share-tab-button,
 #zen-site-data-header-share {
   list-style-image: url("share.svg");
 }
@@ -499,9 +505,9 @@
 }
 
 #identity-permission-box,
-:root:not([zen-has-empty-tab="true"]) #urlbar:not([breakout-extend="true"]) #identity-icon-box:not([open]),
+:root:not([zen-has-empty-tab="true"]) #urlbar:not([breakout-extend]) #identity-icon-box:not([open]),
 :root[zen-has-empty-tab="true"] #zen-site-data-icon-button,
-#urlbar[breakout-extend="true"] #zen-site-data-icon-button {
+#urlbar[breakout-extend] #zen-site-data-icon-button {
   display: none !important;
 }
 
@@ -519,7 +525,8 @@
     list-style-image: url("permissions-fill.svg");
   }
   &[boosting] image {
-    color: var(--color-accent-primary);
+    fill-opacity: 1 !important;
+    color: var(--zen-sidebar-themed-icon-fill);
     list-style-image: url("permissions-fill.svg");
   }
 
@@ -536,7 +543,9 @@
     display: flex;
     width: 100%;
     height: 100%;
-    color: var(--color-accent-primary);
+    color: var(--zen-sidebar-themed-icon-fill);
+    -moz-context-properties: fill;
+    fill: currentColor;
     list-style-image: url("chrome://browser/content/zen-images/boost-indicator.svg");
     transform: translateX(-20%);
     z-index: 0;
@@ -1002,7 +1011,8 @@
   }
 }
 
-#zen-copy-url-button image {
+#zen-copy-url-button image,
+.sr-url-icon {
   list-style-image: url("link.svg");
   fill-opacity: 0.65;
 }
@@ -1085,4 +1095,8 @@
 
 #zen-boost-load {
   list-style-image: url("open.svg");
+}
+
+.sr-airplane {
+  list-style-image: url("selectable/airplane.svg");
 }

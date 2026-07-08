@@ -1,0 +1,22 @@
+diff --git a/widget/ScrollbarDrawingWin11.cpp b/widget/ScrollbarDrawingWin11.cpp
+index be059ca615d1e0281af64984cfc8121be2f6e305..6326c98b369d948052c3cb1df13c8cfaaa472f5c 100644
+--- a/widget/ScrollbarDrawingWin11.cpp
++++ b/widget/ScrollbarDrawingWin11.cpp
+@@ -78,7 +78,7 @@ sRGBColor ScrollbarDrawingWin11::ComputeScrollbarTrackColor(
+   const nsStyleUI* ui = aStyle.StyleUI();
+   if (ui->mScrollbarColor.IsColors()) {
+     return sRGBColor::FromABGR(
+-        ui->mScrollbarColor.AsColors().track.CalcColor(aStyle));
++        ui->mScrollbarColor.AsColors().track.CalcColor(aStyle, aFrame));
+   }
+   return aColors.IsDark() ? sRGBColor::FromU8(23, 23, 23, 255)
+                           : sRGBColor::FromU8(240, 240, 240, 255);
+@@ -94,7 +94,7 @@ sRGBColor ScrollbarDrawingWin11::ComputeScrollbarThumbColor(
+   const nscolor baseColor = [&] {
+     const nsStyleUI* ui = aStyle.StyleUI();
+     if (ui->mScrollbarColor.IsColors()) {
+-      return ui->mScrollbarColor.AsColors().thumb.CalcColor(aStyle);
++      return ui->mScrollbarColor.AsColors().thumb.CalcColor(aStyle, aFrame);
+     }
+     return aColors.IsDark() ? NS_RGBA(149, 149, 149, 255)
+                             : NS_RGBA(133, 133, 133, 255);

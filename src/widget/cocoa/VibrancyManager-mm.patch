@@ -45,7 +45,7 @@ index 5df70a63afb235d2db11712276bb63f756222a0f..a2865aa2748433cbfd956ae46d197200
      case VibrancyType::Titlebar:
        return NSVisualEffectMaterialTitlebar;
    }
-@@ -76,6 +96,7 @@ static NSVisualEffectBlendingMode VisualEffectBlendingModeForVibrancyType(
+@@ -76,6 +96,7 @@ - (NSView*)hitTest:(NSPoint)aPoint {
  
  - (void)prefChanged {
    self.blendingMode = VisualEffectBlendingModeForVibrancyType(mType);

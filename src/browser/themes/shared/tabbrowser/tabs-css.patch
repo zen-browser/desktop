@@ -1,8 +1,8 @@
 diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
-index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..3c297614afd323e210ebf0018d4aca22c000e105 100644
+index b70af17781a4128593e3c092cf0f6aec81ab5f9a..1c11c2bf9dcde9d468959e9115a48cf272870987 100644
 --- a/browser/themes/shared/tabbrowser/tabs.css
 +++ b/browser/themes/shared/tabbrowser/tabs.css
-@@ -25,7 +25,7 @@
+@@ -34,7 +34,7 @@
    --tab-group-line-thickness: 2px;
    --tab-group-line-toolbar-border-distance: 1px;
    /* Collapsed tabs should be square, so set width to match the min height */
@@ -11,15 +11,15 @@ index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..3c297614afd323e210ebf0018d4aca22
    --tab-collapsed-width: calc(var(--tab-collapsed-background-width) + 2 * var(--tab-inner-inline-margin));
    --tab-pinned-min-width-expanded: calc(var(--tab-pinned-expanded-background-width) + 2 * var(--tab-pinned-margin-inline-expanded));
    --tab-note-icon-end-margin: var(--dimension-4);
-@@ -276,7 +276,6 @@ tab-split-view-wrapper[dragtarget] {
+@@ -285,7 +285,6 @@ tab-split-view-wrapper[dragtarget] {
    }
  
    :root:not([uidensity="compact"], [sidebar-expand-on-hover]) &[pinned] {
--    padding: 0 10px;
+-    padding: 0 calc((var(--tab-min-height) - var(--icon-size)) / 2);
    }
  
    &:is([selected], [multiselected]) {
-@@ -290,6 +289,7 @@ tab-split-view-wrapper[dragtarget] {
+@@ -299,6 +298,7 @@ tab-split-view-wrapper[dragtarget] {
      border-radius: inherit;
      position: relative;
      overflow: hidden;
@@ -27,7 +27,7 @@ index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..3c297614afd323e210ebf0018d4aca22
  
      &::before {
        position: absolute;
-@@ -489,10 +489,6 @@ tab-split-view-wrapper[dragtarget] {
+@@ -498,10 +498,6 @@ tab-split-view-wrapper[dragtarget] {
    /* stylelint-disable-next-line media-query-no-invalid */
    @media -moz-pref("browser.tabs.fadeOutUnloadedTabs") {
      &[pending] {
@@ -38,7 +38,7 @@ index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..3c297614afd323e210ebf0018d4aca22
        opacity: 0.5;
        /* Fade the favicon out */
        transition-property: filter, opacity;
-@@ -509,10 +505,6 @@ tab-split-view-wrapper[dragtarget] {
+@@ -518,10 +514,6 @@ tab-split-view-wrapper[dragtarget] {
    /* stylelint-disable-next-line media-query-no-invalid */
    @media -moz-pref("browser.tabs.fadeOutExplicitlyUnloadedTabs") {
      &[pending][discarded] {
@@ -49,8 +49,8 @@ index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..3c297614afd323e210ebf0018d4aca22
        opacity: 0.5;
        /* Fade the favicon out */
        transition-property: filter, opacity;
-@@ -581,7 +573,7 @@ tab-split-view-wrapper[dragtarget] {
-   z-index: 1; /* Overlay tab title */
+@@ -596,7 +588,7 @@ tab-split-view-wrapper[dragtarget] {
+   }
  
    #tabbrowser-tabs[orient="vertical"] & {
 -    top: 7px;
@@ -58,7 +58,7 @@ index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..3c297614afd323e210ebf0018d4aca22
    }
  
    &[crashed] {
-@@ -589,7 +581,7 @@ tab-split-view-wrapper[dragtarget] {
+@@ -604,7 +596,7 @@ tab-split-view-wrapper[dragtarget] {
    }
  
    #tabbrowser-tabs[orient="vertical"]:not([expanded]) &:not([crashed]),
@@ -67,7 +67,7 @@ index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..3c297614afd323e210ebf0018d4aca22
      &[soundplaying] {
        list-style-image: url("chrome://browser/skin/tabbrowser/tab-audio-playing-small.svg");
      }
-@@ -644,7 +636,7 @@ tab-split-view-wrapper[dragtarget] {
+@@ -661,7 +653,7 @@ tab-split-view-wrapper[dragtarget] {
      }
    }
  
@@ -76,7 +76,7 @@ index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..3c297614afd323e210ebf0018d4aca22
    &[crashed] {
      display: revert;
    }
-@@ -810,7 +802,7 @@ tab-split-view-wrapper[dragtarget] {
+@@ -829,7 +821,7 @@ tab-split-view-wrapper[dragtarget] {
        has not been added to root. There are certain scenarios when that attribute is temporarily
        removed from root such as when toggling the sidebar to expand with the toolbar button. */
      #tabbrowser-tabs[orient="horizontal"] &:not([pinned]):not([crashed]),
@@ -85,7 +85,7 @@ index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..3c297614afd323e210ebf0018d4aca22
        &:is([soundplaying], [muted], [activemedia-blocked]) {
          display: flex;
        }
-@@ -1026,7 +1018,6 @@ tab-split-view-wrapper[dragtarget] {
+@@ -1053,7 +1045,6 @@ tab-split-view-wrapper[dragtarget] {
  .tabbrowser-tab:is([image], [pinned]) > .tab-stack > .tab-content[attention]:not([selected]),
  .tabbrowser-tab > .tab-stack > .tab-content[pinned][titlechanged]:not([selected]),
  #tabbrowser-tabs[orient="vertical"] .tabbrowser-tab > .tab-stack > .tab-content[titlechanged]:not([selected]) {
@@ -93,7 +93,7 @@ index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..3c297614afd323e210ebf0018d4aca22
    background-position: center bottom 6.5px;
    background-size: 4px 4px;
    background-repeat: no-repeat;
-@@ -1635,7 +1626,7 @@ tab-group {
+@@ -1813,7 +1804,7 @@ tab-group {
  }
  
  #tabbrowser-tabs[orient="vertical"][expanded] {
@@ -102,7 +102,7 @@ index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..3c297614afd323e210ebf0018d4aca22
    &[movingtab][movingtab-addToGroup]:not([movingtab-group], [movingtab-ungroup]) .tabbrowser-tab:is(:active, [multiselected]) {
      margin-inline-start: var(--space-medium);
    }
-@@ -2128,7 +2119,7 @@ tab-group {
+@@ -2378,7 +2369,7 @@ tab-group {
    }
  }
  
@@ -111,7 +111,7 @@ index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..3c297614afd323e210ebf0018d4aca22
  #vertical-tabs-newtab-button {
    appearance: none;
    min-height: var(--tab-min-height);
-@@ -2139,7 +2130,7 @@ tab-group {
+@@ -2389,7 +2380,7 @@ tab-group {
    margin-inline: var(--tab-inner-inline-margin);
  
    #tabbrowser-tabs[orient="vertical"]:not([expanded]) & > .toolbarbutton-text {
@@ -120,7 +120,7 @@ index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..3c297614afd323e210ebf0018d4aca22
    }
  
    &:hover {
-@@ -2163,7 +2154,7 @@ tab-group {
+@@ -2413,7 +2404,7 @@ tab-group {
   * flex container. #tabs-newtab-button is a child of the arrowscrollbox where
   * we don't want a gap (between tabs), so we have to add some margin.
   */
@@ -129,7 +129,7 @@ index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..3c297614afd323e210ebf0018d4aca22
    margin-block: var(--tab-block-margin);
  }
  
-@@ -2351,7 +2342,6 @@ tab-group {
+@@ -2610,7 +2601,6 @@ tab-group {
  
    &:not([expanded]) {
      .tabbrowser-tab[pinned] {
@@ -137,7 +137,7 @@ index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..3c297614afd323e210ebf0018d4aca22
      }
  
      .tab-background {
-@@ -2391,8 +2381,8 @@ tab-group {
+@@ -2651,8 +2641,8 @@ tab-group {
        display: block;
        position: absolute;
        inset: auto;
@@ -148,7 +148,7 @@ index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..3c297614afd323e210ebf0018d4aca22
  
        &:-moz-window-inactive {
          background-image:
-@@ -2480,9 +2470,6 @@ tab-group {
+@@ -2753,9 +2743,6 @@ tab-group {
    ~ #tabbrowser-tabs[orient="horizontal"]::before {
      display: flex;
      content: "";
@@ -158,7 +158,7 @@ index 2ce8b135dcf087a2e2cb75c3417be8c9ba4178e6..3c297614afd323e210ebf0018d4aca22
    }
  }
  
-@@ -2515,7 +2502,6 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
+@@ -2788,7 +2775,6 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
    list-style-image: url(chrome://global/skin/icons/plus.svg);
  }
  

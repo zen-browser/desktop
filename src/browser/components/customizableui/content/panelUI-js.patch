@@ -1,5 +1,5 @@
 diff --git a/browser/components/customizableui/content/panelUI.js b/browser/components/customizableui/content/panelUI.js
-index 5a469ce153dada011144fb4b66747c41e778ff1e..83bedb74df5b4064e8a0580f8b2ee9c0c27f81a8 100644
+index 140ea6eddd0d0c6817bbaabf2dc00083eaa11b13..0fe33867cf64d02b2b6e6db8b6844a4ea044ad33 100644
 --- a/browser/components/customizableui/content/panelUI.js
 +++ b/browser/components/customizableui/content/panelUI.js
 @@ -666,10 +666,12 @@ const PanelUI = {

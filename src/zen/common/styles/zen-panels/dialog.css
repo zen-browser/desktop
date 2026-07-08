@@ -5,10 +5,10 @@
  */
 .dialogBox {
   border-radius: 12px !important;
-  border: 1px solid light-dark(rgba(168, 168, 169, 0.50), var(--zen-dialog-background)) !important;
+  border: 0.5px solid light-dark(rgba(0, 0, 0, 0.4), var(--zen-dialog-background)) !important;
   outline: 1px solid light-dark(transparent, rgba(168, 168, 169, 0.50)) !important;
   box-shadow: 0 10px 8px rgba(0, 0 , 0, 0.15) !important;
-  outline-offset: -1.5px;
+  outline-offset: -2px;
 
   @media not (prefers-reduced-motion: reduce) {
     animation: zen-dialog-fade-in 0.3s ease-out;

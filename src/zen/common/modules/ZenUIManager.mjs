@@ -299,12 +299,9 @@ window.gZenUIManager = {
   },
 
   openAndChangeToTab(url, options) {
-    if (window.ownerGlobal.parent) {
-      const tab = window.ownerGlobal.parent.gBrowser.addTrustedTab(
-        url,
-        options
-      );
-      window.ownerGlobal.parent.gBrowser.selectedTab = tab;
+    if (window.parent) {
+      const tab = window.parent.gBrowser.addTrustedTab(url, options);
+      window.parent.gBrowser.selectedTab = tab;
       return tab;
     }
     const tab = window.gBrowser.addTrustedTab(url, options);
@@ -616,8 +613,8 @@ window.gZenUIManager = {
       if (
         this._lastTab &&
         !this._lastTab.closing &&
-        this._lastTab.ownerGlobal &&
-        !this._lastTab.ownerGlobal.closed &&
+        this._lastTab.documentGlobal &&
+        !this._lastTab.documentGlobal.closed &&
         gBrowser.selectedTab === this._lastTab
       ) {
         this._lastTab._visuallySelected = true;
@@ -1234,7 +1231,7 @@ window.gZenVerticalTabsManager = {
         let height;
         if (!this._hasSetSingleToolbar) {
           height = AppConstants.platform == "macosx" ? 34 : 32;
-        } else if (gURLBar.getAttribute("breakout-extend") !== "true") {
+        } else if (!gURLBar.hasAttribute("breakout-extend")) {
           height = 38;
         }
         if (typeof height !== "undefined") {
@@ -1582,6 +1579,7 @@ window.gZenVerticalTabsManager = {
           overflowElements.appendChild(child);
         } else {
           const element = document.getElementById("page-action-buttons");
+          child.setAttribute("context", "toolbar-context-menu");
           element.before(child);
         }
         return;
@@ -1615,7 +1613,9 @@ window.gZenVerticalTabsManager = {
         // it will reset to the original name anyway
         if (hasChanged || (this._tabEdited.zenStaticLabel && newName)) {
           this._tabEdited.zenStaticLabel = newName;
-          gBrowser._setTabLabel(this._tabEdited, newName);
+          gBrowser._setTabLabel(this._tabEdited, newName, {
+            _zenChangeLabelFlag: true,
+          });
           gZenUIManager.showToast("zen-tabs-renamed");
         } else {
           delete this._tabEdited.zenStaticLabel;
@@ -1711,7 +1711,8 @@ window.gZenVerticalTabsManager = {
       this._tabEdited.after(input);
     }
     input.focus();
-    input.select();
+    input.setSelectionRange(0, input.value.length, "backward");
+    input.scrollLeft = 0;
 
     input.addEventListener("blur", this._renameTabHalt);
   },

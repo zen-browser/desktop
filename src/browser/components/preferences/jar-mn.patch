@@ -1,10 +1,12 @@
 diff --git a/browser/components/preferences/jar.mn b/browser/components/preferences/jar.mn
-index 78e38f98c1f69df31459fd4b6a119c93f6509c02..33abd46566146272da9f561e11ffa290d7000111 100644
+index aec7888f59eeb5dbffc62b861fe223159ac42586..a593f3015469c11c762ae01465964251a77ddb45 100644
 --- a/browser/components/preferences/jar.mn
 +++ b/browser/components/preferences/jar.mn
-@@ -54,3 +54,5 @@ browser.jar:
-    content/browser/preferences/widgets/sync-device-name.mjs          (widgets/sync-device-name/sync-device-name.mjs)
-    content/browser/preferences/widgets/sync-engines-list.mjs          (widgets/sync-engine-list/sync-engines-list.mjs)
+@@ -69,5 +69,7 @@ browser.jar:
     content/browser/preferences/widgets/sync-engines-list.css          (widgets/sync-engine-list/sync-engines-list.css)
+    content/browser/preferences/widgets/update-information.mjs          (widgets/update-information/update-information.mjs)
+    content/browser/preferences/widgets/update-information.css          (widgets/update-information/update-information.css)
 +
 +   content/browser/preferences/zen-settings.js
+    content/browser/preferences/widgets/update-state.mjs          (widgets/update-state/update-state.mjs)
+    content/browser/preferences/widgets/update-state.css          (widgets/update-state/update-state.css)

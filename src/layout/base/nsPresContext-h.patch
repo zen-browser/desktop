@@ -1,0 +1,39 @@
+diff --git a/layout/base/nsPresContext.h b/layout/base/nsPresContext.h
+index 13aa7141c8e5297d0dd6aa9bd78fd32f050e8123..149a89e928d354f116c54f71605830f5ec6b7f8a 100644
+--- a/layout/base/nsPresContext.h
++++ b/layout/base/nsPresContext.h
+@@ -594,6 +594,22 @@ class nsPresContext : public nsISupports,
+    */
+   void SetColorSchemeOverride(mozilla::dom::PrefersColorSchemeOverride);
+ 
++  // Zen boosts override. SVG images render in their own document, which has no
++  // BrowsingContext to carry the page's boost, so the host propagates it here.
++  void SetZenBoostsOverride(nscolor aAccent, float aComplementaryRotation,
++                            bool aInverted) {
++    mZenBoostsOverrideAccent = aAccent;
++    mZenBoostsOverrideComplementaryRotation = aComplementaryRotation;
++    mZenBoostsOverrideInverted = aInverted;
++    mHasZenBoostsOverride = true;
++  }
++  bool HasZenBoostsOverride() const { return mHasZenBoostsOverride; }
++  nscolor ZenBoostsOverrideAccent() const { return mZenBoostsOverrideAccent; }
++  float ZenBoostsOverrideComplementaryRotation() const {
++    return mZenBoostsOverrideComplementaryRotation;
++  }
++  bool ZenBoostsOverrideInverted() const { return mZenBoostsOverrideInverted; }
++
+   /**
+    * Return the device's screen size in inches, for font size
+    * inflation.
+@@ -1441,6 +1457,11 @@ class nsPresContext : public nsISupports,
+   mozilla::dom::PrefersColorSchemeOverride mOverriddenOrEmbedderColorScheme;
+   mozilla::StyleForcedColors mForcedColors;
+ 
++  nscolor mZenBoostsOverrideAccent = 0;
++  float mZenBoostsOverrideComplementaryRotation = 0.0f;
++  bool mZenBoostsOverrideInverted = false;
++  bool mHasZenBoostsOverride = false;
++
+  protected:
+   virtual ~nsPresContext();
+ 

@@ -34,14 +34,6 @@
   <link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-advanced-color-options.css" />
 
   <link rel="localization" href="browser/zen-boosts.ftl"/>
-
-  <!-- Loading in the window module -->
-  <script>
-    const { nsZenBoostEditor } = ChromeUtils.importESModule( "resource:///modules/zen/boosts/ZenBoostsEditor.mjs" );
-    window.addEventListener("load", () => {
-      window.boostEditor = new nsZenBoostEditor(document, window.domain, window, window.openerWindow);
-    });
-  </script>
 </head>
 <html:body xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <vbox flex="1" id="zen-boost-editor-root">
@@ -120,15 +112,15 @@
   <popupset id="mainPopupSet">
     <panel type="arrow" popupalign="topmiddle" id="zen-boost-advanced-color-options-panel">
       <vbox>
-        <p data-l10n-id="zen-bootst-color-contrast"></p>
+        <p data-l10n-id="zen-boost-color-contrast"></p>
         <html:input id="zen-boost-color-contrast" type="range" min="0.05" max="0.9" value="0.75" step="0.01"/>
       </vbox>
       <vbox>
-        <p data-l10n-id="zen-bootst-color-brightness"></p>
+        <p data-l10n-id="zen-boost-color-brightness"></p>
         <html:input id="zen-boost-color-brightness" type="range" min="0" max="1" value="0.5" step="0.01"/>
       </vbox>
       <vbox>
-        <p data-l10n-id="zen-bootst-color-original-saturation"></p>
+        <p data-l10n-id="zen-boost-color-original-saturation"></p>
         <html:input id="zen-boost-color-saturation" type="range" min="0" max="1" value="0.5" step="0.01"/>
       </vbox>
     </panel>
@@ -164,5 +156,10 @@
     <command id="cmd_zenBoostDelete"
             oncommand="window.boostEditor.deleteBoost();" />
   </commandset>
+
+  <script>
+    const { nsZenBoostEditor } = ChromeUtils.importESModule( "resource:///modules/zen/boosts/ZenBoostsEditor.mjs" );
+    window.boostEditor = new nsZenBoostEditor(document, window.domain, window, window.openerWindow);
+  </script>
 </html:body>
 </html>

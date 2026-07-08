@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
-index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea30f7d70a 100644
+index 183543c5f29ff4c879d3058e4c09faf376a69cb7..ab482c32cc697ccef82bf0aeaa0e3a1db40aecce 100644
 --- a/browser/components/sessionstore/SessionStore.sys.mjs
 +++ b/browser/components/sessionstore/SessionStore.sys.mjs
 @@ -129,6 +129,9 @@ const TAB_EVENTS = [
@@ -21,7 +21,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
  });
  
  ChromeUtils.defineLazyGetter(lazy, "blankURI", () => {
-@@ -1291,10 +1296,7 @@ var SessionStoreInternal = {
+@@ -1287,10 +1292,7 @@ var SessionStoreInternal = {
     */
    get willAutoRestore() {
      return (
@@ -33,7 +33,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
      );
    },
  
-@@ -1970,6 +1972,9 @@ var SessionStoreInternal = {
+@@ -1965,6 +1967,9 @@ var SessionStoreInternal = {
        case "TabPinned":
        case "TabUnpinned":
        case "SwapDocShells":
@@ -43,7 +43,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
          this.saveStateDelayed(win);
          break;
        case "TabGroupCreate":
-@@ -2083,6 +2088,10 @@ var SessionStoreInternal = {
+@@ -2074,6 +2079,10 @@ var SessionStoreInternal = {
        this._windows[aWindow.__SSi].isTaskbarTab = true;
      }
  
@@ -54,7 +54,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
      if (lazy.AIWindow.isAIWindowActiveAndEnabled(aWindow)) {
        this._windows[aWindow.__SSi].isAIWindow = true;
      }
-@@ -2119,7 +2128,7 @@ var SessionStoreInternal = {
+@@ -2110,7 +2119,7 @@ var SessionStoreInternal = {
      let isTaskbarTab = this._windows[aWindow.__SSi].isTaskbarTab;
      // A regular window is not a private window, taskbar tab window, or popup window
      let isRegularWindow =
@@ -63,7 +63,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
  
      // perform additional initialization when the first window is loading
      if (lazy.RunState.isStopped) {
-@@ -2131,7 +2140,7 @@ var SessionStoreInternal = {
+@@ -2122,7 +2131,7 @@ var SessionStoreInternal = {
          // to disk to NOW() to enforce a full interval before the next write.
          lazy.SessionSaver.updateLastSaveTime();
  
@@ -72,7 +72,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
            this._log.debug(
              "initializeWindow, the window is private or a web app. Saving SessionStartup.state for possibly restoring later"
            );
-@@ -2173,6 +2182,7 @@ var SessionStoreInternal = {
+@@ -2164,6 +2173,7 @@ var SessionStoreInternal = {
            null,
            "sessionstore-one-or-no-tab-restored"
          );
@@ -80,7 +80,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
          this._deferredAllWindowsRestored.resolve();
        }
        // this window was opened by _openWindowWithState
-@@ -2222,7 +2232,6 @@ var SessionStoreInternal = {
+@@ -2213,7 +2223,6 @@ var SessionStoreInternal = {
        if (closedWindowState) {
          let newWindowState;
          if (
@@ -88,7 +88,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
            !lazy.SessionStartup.willRestore()
          ) {
            // We want to split the window up into pinned tabs and unpinned tabs.
-@@ -2258,6 +2267,7 @@ var SessionStoreInternal = {
+@@ -2249,6 +2258,7 @@ var SessionStoreInternal = {
          }
  
          if (newWindowState) {
@@ -96,7 +96,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
            // Ensure that the window state isn't hidden
            this._restoreCount = 1;
            let state = { windows: [newWindowState] };
-@@ -2286,6 +2296,15 @@ var SessionStoreInternal = {
+@@ -2277,6 +2287,15 @@ var SessionStoreInternal = {
        });
        this._shouldRestoreLastSession = false;
      }
@@ -112,7 +112,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
  
      if (this._restoreLastWindow && aWindow.toolbar.visible) {
        // always reset (if not a popup window)
-@@ -2436,7 +2455,7 @@ var SessionStoreInternal = {
+@@ -2427,7 +2446,7 @@ var SessionStoreInternal = {
  
      var tabbrowser = aWindow.gBrowser;
  
@@ -121,7 +121,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
  
      TAB_EVENTS.forEach(function (aEvent) {
        tabbrowser.tabContainer.removeEventListener(aEvent, this, true);
-@@ -2487,7 +2506,7 @@ var SessionStoreInternal = {
+@@ -2478,7 +2497,7 @@ var SessionStoreInternal = {
  
        let isLastRegularWindow =
          Object.values(this._windows).filter(
@@ -130,7 +130,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
          ).length == 1;
        this._log.debug(
          `onClose, closing window isLastRegularWindow? ${isLastRegularWindow}`
-@@ -2544,8 +2563,8 @@ var SessionStoreInternal = {
+@@ -2535,8 +2554,8 @@ var SessionStoreInternal = {
        // 2) Flush the window.
        // 3) When the flush is complete, revisit our decision to store the window
        //    in _closedWindows, and add/remove as necessary.
@@ -141,7 +141,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
        }
  
        completionPromise = lazy.TabStateFlusher.flushWindow(aWindow).then(() => {
-@@ -2565,8 +2584,9 @@ var SessionStoreInternal = {
+@@ -2556,8 +2575,9 @@ var SessionStoreInternal = {
  
          // Save non-private windows if they have at
          // least one saveable tab or are the last window.
@@ -153,7 +153,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
  
            if (!isLastWindow && winData.closedId > -1) {
              this._addClosedAction(
-@@ -2642,7 +2662,7 @@ var SessionStoreInternal = {
+@@ -2633,7 +2653,7 @@ var SessionStoreInternal = {
     *        to call this method again asynchronously (for example, after
     *        a window flush).
     */
@@ -162,7 +162,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
      // Make sure SessionStore is still running, and make sure that we
      // haven't chosen to forget this window.
      if (
-@@ -2659,6 +2679,7 @@ var SessionStoreInternal = {
+@@ -2650,6 +2670,7 @@ var SessionStoreInternal = {
        // _closedWindows from a previous call to this function.
        let winIndex = this._closedWindows.indexOf(winData);
        let alreadyStored = winIndex != -1;
@@ -170,7 +170,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
        // If sidebar command is truthy, i.e. sidebar is open, store sidebar settings
        let shouldStore = hasSaveableTabs || isLastWindow;
  
-@@ -3480,7 +3501,7 @@ var SessionStoreInternal = {
+@@ -3467,7 +3488,7 @@ var SessionStoreInternal = {
      if (!isPrivateWindow && tabState.isPrivate) {
        return;
      }
@@ -179,7 +179,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
        return;
      }
  
-@@ -4220,6 +4241,12 @@ var SessionStoreInternal = {
+@@ -4206,6 +4227,12 @@ var SessionStoreInternal = {
          Math.min(tabState.index, tabState.entries.length)
        );
        tabState.pinned = false;
@@ -192,7 +192,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
  
        if (inBackground === false) {
          aWindow.gBrowser.selectedTab = newTab;
-@@ -4656,6 +4683,8 @@ var SessionStoreInternal = {
+@@ -4642,6 +4669,8 @@ var SessionStoreInternal = {
        // Append the tab if we're opening into a different window,
        tabIndex: aSource == aTargetWindow ? pos : Infinity,
        pinned: state.pinned,
@@ -201,7 +201,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
        userContextId: state.userContextId,
        skipLoad: true,
        preferredRemoteType,
-@@ -5160,9 +5189,10 @@ var SessionStoreInternal = {
+@@ -5146,9 +5175,10 @@ var SessionStoreInternal = {
        if (activePageData.title && activePageData.title != activePageData.url) {
          win.gBrowser.setInitialTabTitle(tab, activePageData.title, {
            isContentTitle: true,
@@ -213,7 +213,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
        }
      }
  
-@@ -5527,7 +5557,7 @@ var SessionStoreInternal = {
+@@ -5513,7 +5543,7 @@ var SessionStoreInternal = {
  
      for (let i = tabbrowser.pinnedTabCount; i < tabbrowser.tabs.length; i++) {
        let tab = tabbrowser.tabs[i];
@@ -222,7 +222,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
          removableTabs.push(tab);
        }
      }
-@@ -5640,7 +5670,7 @@ var SessionStoreInternal = {
+@@ -5626,7 +5656,7 @@ var SessionStoreInternal = {
  
      // collect the data for all windows
      for (ix in this._windows) {
@@ -231,7 +231,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
          // window data is still in _statesToRestore
          continue;
        }
-@@ -5784,11 +5814,12 @@ var SessionStoreInternal = {
+@@ -5770,11 +5800,12 @@ var SessionStoreInternal = {
      }
  
      let tabbrowser = aWindow.gBrowser;
@@ -245,7 +245,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
      // update the internal state data for this window
      for (let tab of tabs) {
        if (tab == aWindow.FirefoxViewHandler.tab) {
-@@ -5799,6 +5830,9 @@ var SessionStoreInternal = {
+@@ -5785,6 +5816,9 @@ var SessionStoreInternal = {
        tabsData.push(tabData);
      }
  
@@ -255,7 +255,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
      // update tab group state for this window
      winData.groups = [];
      for (let tabGroup of aWindow.gBrowser.tabGroups) {
-@@ -5815,7 +5849,7 @@ var SessionStoreInternal = {
+@@ -5801,7 +5835,7 @@ var SessionStoreInternal = {
      // a window is closed, point to the first item in the tab strip instead (it will never be the Firefox View tab,
      // since it's only inserted into the tab strip after it's selected).
      if (aWindow.FirefoxViewHandler.tab?.selected) {
@@ -264,7 +264,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
        winData.title = tabbrowser.tabs[0].label;
      }
      winData.selected = selectedIndex;
-@@ -6017,8 +6051,8 @@ var SessionStoreInternal = {
+@@ -6003,8 +6037,8 @@ var SessionStoreInternal = {
      // selectTab represents.
      let selectTab = 0;
      if (overwriteTabs) {
@@ -275,7 +275,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
        selectTab = Math.min(selectTab, winData.tabs.length);
      }
  
-@@ -6040,6 +6074,7 @@ var SessionStoreInternal = {
+@@ -6026,6 +6060,7 @@ var SessionStoreInternal = {
      if (overwriteTabs) {
        for (let i = tabbrowser.browsers.length - 1; i >= 0; i--) {
          if (!tabbrowser.tabs[i].selected) {
@@ -283,7 +283,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
            tabbrowser.removeTab(tabbrowser.tabs[i]);
          }
        }
-@@ -6074,6 +6109,12 @@ var SessionStoreInternal = {
+@@ -6060,6 +6095,12 @@ var SessionStoreInternal = {
          savedTabGroup => !openTabGroupIdsInWindow.has(savedTabGroup.id)
        );
      }
@@ -296,7 +296,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
  
      // Move the originally open tabs to the end.
      if (initialTabs) {
-@@ -6640,6 +6681,25 @@ var SessionStoreInternal = {
+@@ -6626,6 +6667,25 @@ var SessionStoreInternal = {
  
      // Most of tabData has been restored, now continue with restoring
      // attributes that may trigger external events.
@@ -322,7 +322,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
  
      if (tabData.pinned) {
        tabbrowser.pinTab(tab);
-@@ -6807,6 +6867,9 @@ var SessionStoreInternal = {
+@@ -6793,6 +6853,9 @@ var SessionStoreInternal = {
          aWindow.gURLBar.readOnly = false;
        }
      }
@@ -332,7 +332,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
  
      let promiseParts = Promise.withResolvers();
      aWindow.setTimeout(() => {
-@@ -7602,7 +7665,7 @@ var SessionStoreInternal = {
+@@ -7588,7 +7651,7 @@ var SessionStoreInternal = {
  
        let groupsToSave = new Map();
        for (let tIndex = 0; tIndex < window.tabs.length; ) {
@@ -341,7 +341,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
            // Adjust window.selected
            if (tIndex + 1 < window.selected) {
              window.selected -= 1;
-@@ -7617,7 +7680,7 @@ var SessionStoreInternal = {
+@@ -7603,7 +7666,7 @@ var SessionStoreInternal = {
            );
            // We don't want to increment tIndex here.
            continue;
@@ -350,7 +350,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
            // Convert any open groups into saved groups.
            let groupStateToSave = window.groups.find(
              groupState => groupState.id == window.tabs[tIndex].groupId
-@@ -8076,7 +8139,6 @@ var SessionStoreInternal = {
+@@ -8062,7 +8125,6 @@ var SessionStoreInternal = {
      timer.initWithCallback(
        function () {
          if (beats <= 0) {
@@ -358,7 +358,7 @@ index 95f4960c3d8a2a4ca9bce24bcc54971877ee55ca..5bef8eeeb7cc26c930e3884e6eede6ea
            Glean.sessionRestore.shutdownFlushAllOutcomes.timed_out.add(1);
            deferred.resolve();
          }
-@@ -8554,6 +8616,7 @@ var SessionStoreInternal = {
+@@ -8540,6 +8602,7 @@ var SessionStoreInternal = {
      if (
        !savedTabGroupState.tabs.length ||
        this.getSavedTabGroup(savedTabGroupState.id)

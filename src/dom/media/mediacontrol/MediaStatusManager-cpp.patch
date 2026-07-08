@@ -1,8 +1,8 @@
 diff --git a/dom/media/mediacontrol/MediaStatusManager.cpp b/dom/media/mediacontrol/MediaStatusManager.cpp
-index c1282b8b1d99327df972c8f0aa848816fcbc4b2b..acaaff389838886267f96993a7f0d27950f08624 100644
+index 9348a0b69e4d389b92931d46ba6c1849d6883450..920a0b2ebc7ac3c4ecd0245903ccb1d8d4258820 100644
 --- a/dom/media/mediacontrol/MediaStatusManager.cpp
 +++ b/dom/media/mediacontrol/MediaStatusManager.cpp
-@@ -427,7 +427,8 @@ void MediaStatusManager::UpdateGuessedPositionState(
+@@ -431,7 +431,8 @@ void MediaStatusManager::UpdateGuessedPositionState(
      return;
    }
  

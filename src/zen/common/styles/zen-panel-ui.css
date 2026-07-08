@@ -11,11 +11,11 @@ panel[type="arrow"]:not(#feature-callout) {
     -moz-default-appearance: menupopup;
     /* The blur behind doesn't blur all that much, add a semi-transparent
      * background to improve contrast */
-    --panel-background: light-dark(rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.5)) !important;
+    --panel-background-color: light-dark(rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.5)) !important;
 
     /* The mica rendering already adds a shadow and a border, so we
      * remove the one we add via CSS */
-    --panel-shadow-margin: 0px !important;
+    --panel-box-shadow-margin: 0px !important;
     --panel-border-color: transparent !important;
     border: none !important;
 
@@ -30,7 +30,7 @@ panel[type="arrow"]:not(#feature-callout) {
   }
 
   @media (-moz-platform: macos) {
-    &:where([nonnativepopover="true"], :not([type="arrow"])) {
+    &:is([nonnative], :not([type="arrow"])) {
       appearance: auto !important;
       -moz-default-appearance: menupopup;
       /* We set the default background here, rather than on ::part(content),
@@ -39,8 +39,8 @@ panel[type="arrow"]:not(#feature-callout) {
       background-color: Menu !important;
     }
 
-    --panel-shadow-margin: 0px !important;
-    --panel-background: transparent !important;
+    --panel-box-shadow-margin: 0px !important;
+    --panel-background-color: transparent !important;
     --panel-border-color: transparent;
 
     /* Remove the shadow for the native panels, as macos already
@@ -48,7 +48,7 @@ panel[type="arrow"]:not(#feature-callout) {
      * on Tahoe, where we *don't* apply an image mask, meaning that
      * trying to render a shadow would end up in having weird borders
      * around the panel */
-    --panel-shadow: none;
+    --panel-box-shadow: none;
 
     &::part(content) {
       /* This shoudn't really be needed, but just in case */

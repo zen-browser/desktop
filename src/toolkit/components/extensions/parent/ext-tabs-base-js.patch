@@ -1,5 +1,5 @@
 diff --git a/toolkit/components/extensions/parent/ext-tabs-base.js b/toolkit/components/extensions/parent/ext-tabs-base.js
-index e617b47c547f633c95fe05023d2e748192c0b1b9..e12466e45d71376e975a127086a1ac5a57a38dd0 100644
+index 17321c22d36b3e44d32c1fe1cf35fbb94f8e4b91..c5f1dfb163fb64b29c2b0f70abe37d878cf8a625 100644
 --- a/toolkit/components/extensions/parent/ext-tabs-base.js
 +++ b/toolkit/components/extensions/parent/ext-tabs-base.js
 @@ -1966,6 +1966,7 @@ class TabManagerBase {

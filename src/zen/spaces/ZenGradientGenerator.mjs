@@ -177,6 +177,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   handleDarkModeChange() {
     this.updateCurrentWorkspace();
+    Services.obs.notifyObservers(null, "zen-theme-change");
   }
 
   get isDarkMode() {
@@ -1494,12 +1495,9 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return color;
   }
 
-  getToolbarColor(isDarkMode = false, accentColor = null) {
+  getToolbarColor(isDarkMode = false) {
     const opacity = 0.8;
     let baseColor = isDarkMode ? [255, 255, 255, opacity] : [0, 0, 0, opacity]; // Default toolbar
-    if (accentColor) {
-      return this.blendColors(baseColor.slice(0, 3), accentColor, 75).concat(1);
-    }
     return baseColor;
   }
 
@@ -1765,7 +1763,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         docElement.style.setProperty("--zen-primary-color", primaryColor);
 
         // Set `--toolbox-textcolor` to have a contrast with the primary color
-        let textColor = this.getToolbarColor(isDarkMode, dominantColor);
+        let textColor = this.getToolbarColor(isDarkMode);
         docElement.style.setProperty(
           "--toolbox-textcolor",
           `rgba(${textColor[0]}, ${textColor[1]}, ${textColor[2]}, ${textColor[3]})`
@@ -2011,7 +2009,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       grain: theme.texture ?? 0,
       isDarkMode,
       isExplicitMode,
-      toolbarColor: this.getToolbarColor(isDarkMode, dominantColor),
+      toolbarColor: this.getToolbarColor(isDarkMode),
       primaryColor: this.getAccentColorForUI(dominantColor, isDarkMode),
     };
     this.currentOpacity = previousOpacity;

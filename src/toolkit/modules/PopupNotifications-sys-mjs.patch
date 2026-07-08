@@ -1,8 +1,8 @@
 diff --git a/toolkit/modules/PopupNotifications.sys.mjs b/toolkit/modules/PopupNotifications.sys.mjs
-index a53369760ced2df3d2d9682142d94dfc7deda71c..8755f15ea82f6a7addcf91b62b1b3e7b1e20bce6 100644
+index 5e88f279e570edbf95823bb9dc9835bae89feb32..f50db584dff740583665239d2cc2c5d00c5010e9 100644
 --- a/toolkit/modules/PopupNotifications.sys.mjs
 +++ b/toolkit/modules/PopupNotifications.sys.mjs
-@@ -1526,6 +1526,15 @@ PopupNotifications.prototype = {
+@@ -1532,6 +1532,15 @@ PopupNotifications.prototype = {
    ) {
      for (let anchorElement of anchorElements) {
        anchorElement.setAttribute(ICON_ATTRIBUTE_SHOWING, "true");
@@ -11,7 +11,7 @@ index a53369760ced2df3d2d9682142d94dfc7deda71c..8755f15ea82f6a7addcf91b62b1b3e7b
 +        // Disable transitions for now, see gh-11667
 +        toolbox.style.transition = "none";
 +        toolbox.setAttribute("zen-compact-mode-active", "true");
-+        anchorElement.ownerGlobal.setTimeout(() => {
++        anchorElement.documentGlobal.setTimeout(() => {
 +          toolbox.style.transition = "";
 +        }, 0);
 +      }

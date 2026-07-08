@@ -1,0 +1,16 @@
+diff --git a/gfx/thebes/gfxUtils.cpp b/gfx/thebes/gfxUtils.cpp
+index 6c19c572f06e8c4c97ce3f9dd390a32832e2f527..d11cbad2ee32a1507316809893e9c42a883e6c12 100644
+--- a/gfx/thebes/gfxUtils.cpp
++++ b/gfx/thebes/gfxUtils.cpp
+@@ -1743,8 +1743,9 @@ DeviceColor ToDeviceColor(nscolor aColor) {
+   return ToDeviceColor(sRGBColor::FromABGR(aColor));
+ }
+ 
+-DeviceColor ToDeviceColor(const StyleAbsoluteColor& aColor) {
+-  return ToDeviceColor(aColor.ToColor());
++DeviceColor ToDeviceColor(const StyleAbsoluteColor& aColor,
++                          const nsIFrame* aFrame) {
++  return ToDeviceColor(aColor.ToColor(aFrame));
+ }
+ 
+ sRGBColor ToSRGBColor(const StyleAbsoluteColor& aColor) {

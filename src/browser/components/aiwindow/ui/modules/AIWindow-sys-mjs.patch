@@ -1,8 +1,8 @@
 diff --git a/browser/components/aiwindow/ui/modules/AIWindow.sys.mjs b/browser/components/aiwindow/ui/modules/AIWindow.sys.mjs
-index 97710ab0570a1a477ef4ed74a78c16448dfb7674..7d8ba5b1f2f330175fb57b906bb572fd7e1d36c8 100644
+index f6f1dd1f6b4d21d27e39b48bb7a57871ad5d019d..bf743120cf9f137cbe06d05896f706fb3d5b9435 100644
 --- a/browser/components/aiwindow/ui/modules/AIWindow.sys.mjs
 +++ b/browser/components/aiwindow/ui/modules/AIWindow.sys.mjs
-@@ -277,6 +277,7 @@ export const AIWindow = {
+@@ -287,6 +287,7 @@ export const AIWindow = {
    },
  
    _updateToolbarButtonPositions(win, { isToggling = false } = {}) {

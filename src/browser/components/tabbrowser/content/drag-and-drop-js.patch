@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/drag-and-drop.js b/browser/components/tabbrowser/content/drag-and-drop.js
-index ea4f83fad1757f073ea1bbe5c93a4ebe5ecc0abe..904e604e28c96757fabf0dd3a749c85280e74993 100644
+index 8bb1219962a1368f50b53c61041f135c68e35f31..8e72441d26883cbef7a352b00c0fe2b15a030046 100644
 --- a/browser/components/tabbrowser/content/drag-and-drop.js
 +++ b/browser/components/tabbrowser/content/drag-and-drop.js
 @@ -35,6 +35,9 @@
@@ -159,7 +159,7 @@ index ea4f83fad1757f073ea1bbe5c93a4ebe5ecc0abe..904e604e28c96757fabf0dd3a749c852
        if (
          dt.mozUserCancelled ||
          dt.dropEffect != "none" ||
-@@ -918,11 +938,10 @@
+@@ -927,11 +947,10 @@
          return this.#getHorizontalScrollboxDragTarget(event, ignoreSides);
        }
        while (target) {
@@ -175,7 +175,7 @@ index ea4f83fad1757f073ea1bbe5c93a4ebe5ecc0abe..904e604e28c96757fabf0dd3a749c852
            break;
          }
          target = target.parentNode;
-@@ -952,6 +971,9 @@
+@@ -961,6 +980,9 @@
            return null;
          }
        }
@@ -185,7 +185,7 @@ index ea4f83fad1757f073ea1bbe5c93a4ebe5ecc0abe..904e604e28c96757fabf0dd3a749c852
        return target;
      }
  
-@@ -1011,7 +1033,8 @@
+@@ -1014,7 +1036,8 @@
          isTabGroupLabel(draggedTab) &&
          draggedTab._dragData?.expandGroupOnDrop
        ) {
@@ -195,7 +195,7 @@ index ea4f83fad1757f073ea1bbe5c93a4ebe5ecc0abe..904e604e28c96757fabf0dd3a749c852
        }
      }
  
-@@ -1195,7 +1218,6 @@
+@@ -1206,7 +1229,6 @@
          // using updateDragImage. On Linux, we can use a panel.
          if (platform == "win" || platform == "macosx") {
            captureListener = function () {
@@ -203,7 +203,7 @@ index ea4f83fad1757f073ea1bbe5c93a4ebe5ecc0abe..904e604e28c96757fabf0dd3a749c852
            };
          } else {
            // Create a panel to use it in setDragImage
-@@ -1233,7 +1255,6 @@
+@@ -1244,7 +1266,6 @@
          );
          dragImageOffset = dragImageOffset * scale;
        }
@@ -211,7 +211,7 @@ index ea4f83fad1757f073ea1bbe5c93a4ebe5ecc0abe..904e604e28c96757fabf0dd3a749c852
  
        // _dragData.offsetX/Y give the coordinates that the mouse should be
        // positioned relative to the corner of the new window created upon
-@@ -1252,7 +1273,7 @@
+@@ -1263,7 +1284,7 @@
        let dropEffect = this.getDropEffectForTabDrag(event);
        let isMovingInTabStrip = !fromTabList && dropEffect == "move";
        let collapseTabGroupDuringDrag =
@@ -220,7 +220,7 @@ index ea4f83fad1757f073ea1bbe5c93a4ebe5ecc0abe..904e604e28c96757fabf0dd3a749c852
  
        tab._dragData = {
          offsetX: this._tabbrowserTabs.verticalMode
-@@ -1262,7 +1283,7 @@
+@@ -1273,7 +1294,7 @@
            ? event.screenY - window.screenY - tabOffset
            : event.screenY - window.screenY,
          scrollPos:
@@ -229,7 +229,7 @@ index ea4f83fad1757f073ea1bbe5c93a4ebe5ecc0abe..904e604e28c96757fabf0dd3a749c852
              ? this._tabbrowserTabs.pinnedTabsContainer.scrollPosition
              : this._tabbrowserTabs.arrowScrollbox.scrollPosition,
          screenX: event.screenX,
-@@ -1309,6 +1330,7 @@
+@@ -1320,6 +1341,7 @@
        if (tabStripItemElement.hasAttribute("dragtarget")) {
          return;
        }
@@ -237,7 +237,7 @@ index ea4f83fad1757f073ea1bbe5c93a4ebe5ecc0abe..904e604e28c96757fabf0dd3a749c852
        let isPinned = tab.pinned;
        let dragAndDropElements = this._tabbrowserTabs.dragAndDropElements;
        let isGrid = this._tabbrowserTabs.isContainerVerticalPinnedGrid(tab);
-@@ -1675,23 +1697,6 @@
+@@ -1686,23 +1708,6 @@
  
        // Slide the relevant tabs to their new position.
        // non-moving tabs adjust for RTL
@@ -261,7 +261,7 @@ index ea4f83fad1757f073ea1bbe5c93a4ebe5ecc0abe..904e604e28c96757fabf0dd3a749c852
        // moving tabs don't adjust for RTL
        for (let item of selectedElements) {
          if (
-@@ -1740,7 +1745,6 @@
+@@ -1751,7 +1756,6 @@
        for (let item of this._tabbrowserTabs.dragAndDropElements) {
          delete item._moveTogetherSelectedTabsData;
          item = elementToMove(item);
@@ -269,7 +269,7 @@ index ea4f83fad1757f073ea1bbe5c93a4ebe5ecc0abe..904e604e28c96757fabf0dd3a749c852
          item.removeAttribute("multiselected-move-together");
        }
      }
-@@ -2587,7 +2591,6 @@
+@@ -2598,7 +2602,6 @@
          tab.style.top = "";
          tab.style.maxWidth = "";
          tab.style.pointerEvents = "";
@@ -277,7 +277,7 @@ index ea4f83fad1757f073ea1bbe5c93a4ebe5ecc0abe..904e604e28c96757fabf0dd3a749c852
          tab.removeAttribute("small-stack");
          tab.removeAttribute("big-stack");
        }
-@@ -2596,11 +2599,9 @@
+@@ -2607,11 +2610,9 @@
        )) {
          label.style.width = "";
          label.style.maxWidth = "";

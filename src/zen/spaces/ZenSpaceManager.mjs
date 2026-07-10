@@ -460,16 +460,19 @@ class nsZenWorkspaces {
       document
         .getElementById("zen-essentials")
         .appendChild(essentialsContainer);
-
-      // Set an initial hidden state if the essentials section is not supposed
-      // to be shown on the current workspace
-      if (
-        this.containerSpecificEssentials &&
-        this.getActiveWorkspaceFromCache()?.containerTabId != container
-      ) {
-        essentialsContainer.setAttribute("hidden", "true");
-      }
     }
+
+    // Set a hidden state if the essentials section is not supposed
+    // to be shown on the current workspace, else remove the hidden state
+    if (
+      this.containerSpecificEssentials &&
+      this.getActiveWorkspaceFromCache()?.containerTabId != container
+    ) {
+      essentialsContainer.setAttribute("hidden", "true");
+    } else {
+      essentialsContainer.removeAttribute("hidden");
+    }
+
     return essentialsContainer;
   }
 

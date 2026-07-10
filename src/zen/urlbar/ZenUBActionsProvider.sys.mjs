@@ -27,6 +27,10 @@ ChromeUtils.defineESModuleGetters(lazy, {
   UrlUtils: "resource://gre/modules/UrlUtils.sys.mjs",
 });
 
+ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
+  return new Localization(["browser/zen-command-palette.ftl"], true);
+});
+
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
   "enabledPref",
@@ -182,7 +186,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
           .workspaceElement(workspace.uuid)
           ?.style.getPropertyValue("--zen-primary-color");
         actions.push({
-          label: "Focus on",
+          label: lazy.l10n.formatValueSync("zen-action-focus-on"),
           extraPayload: {
             workspaceId: workspace.uuid,
             prettyName: workspace.name,
@@ -215,7 +219,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       .map(addon => {
         return {
           icon: "chrome://browser/skin/zen-icons/extension.svg",
-          label: "Extension",
+          label: lazy.l10n.formatValueSync("zen-action-extension"),
           commandId: `zen:extension-${addon.id}`,
           extraPayload: {
             extensionId: addon.id,

@@ -723,8 +723,11 @@
       const { isNearLeftEdge, isNearRightEdge } =
         this.#shouldSwitchSpace(event);
       if (isNearLeftEdge || isNearRightEdge) {
-        if (!this.#changeSpaceTimer) {
+        if (!this.#changeSpaceTimer && !this.#isOutOfWindow) {
           this.#changeSpaceTimer = setTimeout(() => {
+            if (this.#isOutOfWindow) {
+              return;
+            }
             this.clearDragOverVisuals();
             gZenWorkspaces
               .changeWorkspaceShortcut(
@@ -956,8 +959,10 @@
       if (ownerGlobal?.gZenCompactModeManager) {
         // Sometimes, dragend doesn't always get called when dragging
         // to different windows, see gh-8643.
-        delete ownerGlobal.gZenCompactModeManager._isTabBeingDragged;
-        ownerGlobal.gZenCompactModeManager._clearAllHoverStates();
+        requestAnimationFrame(() => {
+          delete ownerGlobal.gZenCompactModeManager._isTabBeingDragged;
+          ownerGlobal.gZenCompactModeManager._clearAllHoverStates();
+        });
       }
       this.clearSpaceSwitchTimer();
       gZenFolders.highlightGroupOnDragOver(null);

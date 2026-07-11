@@ -179,9 +179,11 @@ class nsZenWorkspaces {
    * @param {{ spaces: Array, tabs: Array, folders: Array, splits: Array }} removals  Items to remove.
    */
   async _applySyncChanges(pulled, removals = {}) {
-    await new lazy.ZenSpaceSyncResolver(this).applySyncChanges(pulled, removals);
+    await new lazy.ZenSpaceSyncResolver(this).applySyncChanges(
+      pulled,
+      removals
+    );
   }
-
 
   #afterLoadInit() {
     const onResize = (...args) => {

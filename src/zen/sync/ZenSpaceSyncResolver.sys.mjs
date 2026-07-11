@@ -14,7 +14,7 @@ XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
   "gSyncOnlyPinnedTabs",
   "zen.window-sync.sync-only-pinned-tabs",
-  true,
+  true
 );
 
 export class ZenSpaceSyncResolver {
@@ -45,13 +45,13 @@ export class ZenSpaceSyncResolver {
     await this.#spaceManager.promiseInitialized;
 
     // 1. Update workspace cache (remove deleted, merge pulled)
-    const removedSpaceIds = new Set((removals.spaces || []).map((s) => s.uuid));
+    const removedSpaceIds = new Set((removals.spaces || []).map(s => s.uuid));
     if (removedSpaceIds.size || pulled.spaces?.length) {
       const localMap = new Map(
         this.#spaceManager
           .getWorkspaces()
-          .filter((w) => !removedSpaceIds.has(w.uuid))
-          .map((w) => [w.uuid, w]),
+          .filter(w => !removedSpaceIds.has(w.uuid))
+          .map(w => [w.uuid, w])
       );
       for (const space of pulled.spaces || []) {
         if (!space?.uuid) {
@@ -61,7 +61,7 @@ export class ZenSpaceSyncResolver {
         localMap.set(space.uuid, existing ? { ...existing, ...space } : space);
       }
       await this.#spaceManager.propagateWorkspaces(
-        this.#getOrderedWorkspacesByPosition(Array.from(localMap.values())),
+        this.#getOrderedWorkspacesByPosition(Array.from(localMap.values()))
       );
       this.#spaceManager._propagateWorkspaceDataForSync();
     }
@@ -103,7 +103,7 @@ export class ZenSpaceSyncResolver {
         continue;
       }
       const groupIndex = this.#win.gZenViewSplitter._data.findIndex(
-        (group) => group.groupId === splitData.groupId,
+        group => group.groupId === splitData.groupId
       );
       if (groupIndex >= 0) {
         this.#win.gZenViewSplitter.removeGroup(groupIndex);
@@ -156,11 +156,11 @@ export class ZenSpaceSyncResolver {
     const incomingFolders = pulled.folders || [];
     const incomingSplits = pulled.splits || [];
     // Filter out folder placeholder tabs, they should never be synced.
-    let incomingTabs = (pulled.tabs || []).filter((t) => !t.zenIsEmpty);
+    let incomingTabs = (pulled.tabs || []).filter(t => !t.zenIsEmpty);
 
     // When the pref is set, skip incoming unpinned tabs.
     if (lazy.gSyncOnlyPinnedTabs) {
-      incomingTabs = incomingTabs.filter((t) => t.pinned);
+      incomingTabs = incomingTabs.filter(t => t.pinned);
     }
 
     if (
@@ -197,11 +197,11 @@ export class ZenSpaceSyncResolver {
         if (folderData.userIcon !== undefined) {
           this.#win.gZenFolders.setFolderUserIcon(
             existing,
-            folderData.userIcon,
+            folderData.userIcon
           );
         }
         existing.dispatchEvent(
-          new this.#win.CustomEvent("TabGroupUpdate", { bubbles: true }),
+          new this.#win.CustomEvent("TabGroupUpdate", { bubbles: true })
         );
       } else {
         this.#win.gZenFolders.createFolder([], {
@@ -214,12 +214,12 @@ export class ZenSpaceSyncResolver {
         });
         if (folderData.userIcon !== undefined) {
           const createdFolder = this.#win.document.getElementById(
-            folderData.id,
+            folderData.id
           );
           if (createdFolder?.isZenFolder) {
             this.#win.gZenFolders.setFolderUserIcon(
               createdFolder,
-              folderData.userIcon,
+              folderData.userIcon
             );
           }
         }
@@ -248,7 +248,7 @@ export class ZenSpaceSyncResolver {
         } else if (!shouldBeEssential && isCurrentlyEssential) {
           this.#win.gZenPinnedTabManager.removeEssentials(
             existingTab,
-            /* unpin */ false,
+            /* unpin */ false
           );
         }
 
@@ -260,7 +260,7 @@ export class ZenSpaceSyncResolver {
         ) {
           this.#spaceManager.moveTabToWorkspace(
             existingTab,
-            tabData.zenWorkspace,
+            tabData.zenWorkspace
           );
         }
 
@@ -346,7 +346,7 @@ export class ZenSpaceSyncResolver {
         }
         const newTab = this.#win.gBrowser.addTrustedTab(
           "about:blank",
-          pinnedOptions,
+          pinnedOptions
         );
 
         // Set the zenSyncId as the DOM id BEFORE pinning.
@@ -517,7 +517,7 @@ export class ZenSpaceSyncResolver {
 
     return (
       this.#win.gBrowser.tabs.find(
-        (tab) => tab?.id === syncId || tab?.getAttribute("id") === syncId,
+        tab => tab?.id === syncId || tab?.getAttribute("id") === syncId
       ) || null
     );
   }
@@ -606,11 +606,11 @@ export class ZenSpaceSyncResolver {
     }
 
     const incomingEntries = Array.isArray(tabData.entries)
-      ? tabData.entries.map((entry) => ({ ...entry }))
+      ? tabData.entries.map(entry => ({ ...entry }))
       : [{ ...incomingEntry }];
     const incomingIndex = Math.min(
       Math.max(typeof tabData.index === "number" ? tabData.index : 1, 1),
-      incomingEntries.length,
+      incomingEntries.length
     );
 
     const newState = {
@@ -628,7 +628,7 @@ export class ZenSpaceSyncResolver {
   #getSyncedFolderContainer(folderData) {
     if (folderData.parentId) {
       const parentFolder = this.#win.document.getElementById(
-        folderData.parentId,
+        folderData.parentId
       );
       if (!parentFolder?.isZenFolder) {
         return null;
@@ -662,7 +662,7 @@ export class ZenSpaceSyncResolver {
     const seen = new Set();
     const visiting = new Set();
 
-    const sortChildren = (parentId) => {
+    const sortChildren = parentId => {
       const children = childrenByParent.get(parentId) || [];
       for (const folderData of children) {
         visitChild(folderData, children);
@@ -679,7 +679,7 @@ export class ZenSpaceSyncResolver {
           ? folderData.prevSiblingInfo.id
           : null;
       if (siblingId) {
-        const sibling = siblings.find((other) => other.id === siblingId);
+        const sibling = siblings.find(other => other.id === siblingId);
         if (sibling) {
           visitChild(sibling, siblings);
         }
@@ -701,7 +701,7 @@ export class ZenSpaceSyncResolver {
 
   #applyIncomingFolderStructure(folderDataList) {
     const orderedFolders = this.#getOrderedIncomingFolders(
-      folderDataList.filter((folderData) => folderData?.id),
+      folderDataList.filter(folderData => folderData?.id)
     );
 
     for (const folderData of orderedFolders) {
@@ -730,8 +730,8 @@ export class ZenSpaceSyncResolver {
 
         if (placement.parentFolder) {
           const initialSibling =
-            placement.parentFolder.tabs.find((tab) =>
-              tab.hasAttribute("zen-empty-tab"),
+            placement.parentFolder.tabs.find(tab =>
+              tab.hasAttribute("zen-empty-tab")
             ) || null;
           if (
             initialSibling?.parentNode === container &&
@@ -762,9 +762,7 @@ export class ZenSpaceSyncResolver {
     }
 
     const localSplitGroupsById = new Map(
-      splitter
-        .storeDataForSessionStore()
-        .map((group) => [group.groupId, group]),
+      splitter.storeDataForSessionStore().map(group => [group.groupId, group])
     );
 
     for (const splitData of splitViewDataList) {
@@ -785,7 +783,7 @@ export class ZenSpaceSyncResolver {
       }
 
       const incomingTabIds = new Set(
-        splitData.tabs.filter((tabId) => typeof tabId === "string" && tabId),
+        splitData.tabs.filter(tabId => typeof tabId === "string" && tabId)
       );
       const conflictingGroupIndexes = [];
 
@@ -793,7 +791,7 @@ export class ZenSpaceSyncResolver {
         const group = splitter._data[index];
         if (
           group.groupId === splitData.groupId ||
-          group.tabs.some((tab) => incomingTabIds.has(tab.id))
+          group.tabs.some(tab => incomingTabIds.has(tab.id))
         ) {
           conflictingGroupIndexes.push(index);
         }
@@ -819,7 +817,7 @@ export class ZenSpaceSyncResolver {
       this.#arrayMatches(localSplitData.tabs, incomingSplitData.tabs) &&
       this.#splitLayoutTreeMatches(
         localSplitData.layoutTree,
-        incomingSplitData.layoutTree,
+        incomingSplitData.layoutTree
       )
     );
   }
@@ -858,14 +856,14 @@ export class ZenSpaceSyncResolver {
       Array.isArray(incomingNode.children) &&
       localNode.children.length === incomingNode.children.length &&
       localNode.children.every((child, index) =>
-        this.#splitLayoutTreeMatches(child, incomingNode.children[index]),
+        this.#splitLayoutTreeMatches(child, incomingNode.children[index])
       )
     );
   }
 
   #applyIncomingTabPositions(tabDataList) {
     const orderedTabs = [...tabDataList]
-      .filter((tabData) => typeof tabData.position === "number")
+      .filter(tabData => typeof tabData.position === "number")
       .sort((a, b) => a.position - b.position);
 
     if (!orderedTabs.length) {
@@ -941,8 +939,8 @@ export class ZenSpaceSyncResolver {
       return {
         container: tab.group.groupContainer,
         initialSibling:
-          tab.group.tabs.find((groupTab) =>
-            groupTab.hasAttribute("zen-empty-tab"),
+          tab.group.tabs.find(groupTab =>
+            groupTab.hasAttribute("zen-empty-tab")
           ) || null,
       };
     }

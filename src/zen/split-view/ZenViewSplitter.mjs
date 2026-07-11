@@ -1134,7 +1134,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    *
    * @param {string} eventName - The name of the event to dispatch.
    * @param {HTMLElement} item - The item on which to dispatch the event.
-   * @param detail
+   * @param {object} detail - Additional details to include in the event.
    */
   #dispatchItemEvent(eventName, item, detail = {}) {
     const event = new CustomEvent(eventName, {

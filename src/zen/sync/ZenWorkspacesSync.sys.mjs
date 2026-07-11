@@ -56,14 +56,6 @@ function createRecordId(type, id) {
   return `${prefix}~${id}`;
 }
 
-function normalizeUserContextId(value) {
-  const normalized = typeof value === "string" ? Number(value) : value;
-  if (!Number.isSafeInteger(normalized) || normalized <= 0) {
-    return null;
-  }
-  return normalized;
-}
-
 /**
  * Strips the sync-envelope fields (`id` and `type`) from incoming record data
  * and restores the item's real identity key where needed
@@ -96,8 +88,12 @@ class ZenWorkspacesStore extends Store {
       }
     }
 
-    for (const c of lazy.ContextualIdentityService.getPublicIdentities()) {
-      ids[createRecordId("container", c.userContextId)] = true;
+    for (const container of lazy.ContextualIdentityService.getPublicIdentities()) {
+      for (const syncId of lazy.ZenSyncStore.getContainerSyncIds(
+        container.userContextId
+      )) {
+        ids[createRecordId("container", syncId)] = true;
+      }
     }
 
     return ids;
@@ -115,7 +111,9 @@ class ZenWorkspacesStore extends Store {
         return (sidebar.spaces || []).some(s => s.uuid === parsed.key);
       case "container":
         return lazy.ContextualIdentityService.getPublicIdentities().some(
-          c => String(c.userContextId) === parsed.key
+          container =>
+            container.userContextId ===
+            lazy.ZenSyncStore.resolveLocalContainerId(parsed.key)
         );
       default:
         return false;
@@ -142,14 +140,22 @@ class ZenWorkspacesStore extends Store {
         }
         const rest = { ...spaces[idx] };
         delete rest.syncStatus;
+        const containerSyncId = lazy.ZenSyncStore.getContainerSyncId(
+          rest.containerTabId
+        );
+        delete rest.containerTabId;
         record.cleartext = { id, type: "space", ...rest, position: idx };
+        if (containerSyncId) {
+          record.cleartext.containerSyncId = containerSyncId;
+        }
         break;
       }
 
       case "container": {
+        const localId = lazy.ZenSyncStore.resolveLocalContainerId(parsed.key);
         const container =
           lazy.ContextualIdentityService.getPublicIdentities().find(
-            c => String(c.userContextId) === parsed.key
+            candidate => candidate.userContextId === localId
           );
         if (!container) {
           record.deleted = true;
@@ -158,10 +164,16 @@ class ZenWorkspacesStore extends Store {
         record.cleartext = {
           id,
           type: "container",
-          userContextId: container.userContextId,
-          name: container.name,
+          syncId: parsed.key,
+          name: lazy.ContextualIdentityService.getUserContextLabel(
+            container.userContextId
+          ),
+          l10nId: container.l10nId || null,
           icon: container.icon,
           color: container.color,
+          semanticOrdinal: lazy.ZenSyncStore.getContainerSemanticOrdinal(
+            container.userContextId
+          ),
         };
         break;
       }
@@ -187,11 +199,19 @@ class ZenWorkspacesStore extends Store {
         continue;
       }
       const clean = stripSyncFields(data);
+      const parsedRecordId = parseRecordId(record.id);
       switch (data.type) {
         case "space":
           pulled.spaces.push(clean);
           break;
         case "container":
+          clean.syncId =
+            parsedRecordId?.type === "container"
+              ? parsedRecordId.key
+              : clean.syncId;
+          if (!clean.syncId) {
+            break;
+          }
           pulled.containers.push(clean);
           break;
       }
@@ -218,15 +238,7 @@ class ZenWorkspacesStore extends Store {
         removals.spaces.push({ uuid: parsed.key });
         break;
       case "container": {
-        const userContextId = normalizeUserContextId(parsed.key);
-        if (userContextId === null) {
-          console.warn(
-            "ZenWorkspacesStore: Ignoring container removal with invalid userContextId",
-            { id }
-          );
-          break;
-        }
-        removals.containers.push({ userContextId });
+        removals.containers.push({ syncId: parsed.key });
         break;
       }
     }
@@ -257,12 +269,20 @@ class ZenWorkspacesStore extends Store {
         return;
       }
       const clean = stripSyncFields(data);
+      const parsedRecordId = parseRecordId(record.id);
       const pulled = { spaces: [], containers: [] };
       switch (data.type) {
         case "space":
           pulled.spaces.push(clean);
           break;
         case "container":
+          clean.syncId =
+            parsedRecordId?.type === "container"
+              ? parsedRecordId.key
+              : clean.syncId;
+          if (!clean.syncId) {
+            break;
+          }
           pulled.containers.push(clean);
           break;
       }
@@ -330,8 +350,8 @@ class ZenWorkspacesTracker extends Tracker {
       }
     } else if (topic.startsWith("contextual-identity-")) {
       const id = subject?.wrappedJSObject?.userContextId;
-      if (id && normalizeUserContextId(id) !== null) {
-        this._trackChange({ type: "container", id });
+      for (const syncId of lazy.ZenSyncStore.getContainerSyncIds(id)) {
+        this._trackChange({ type: "container", id: syncId });
       }
     }
   }
@@ -391,7 +411,7 @@ export class ZenWorkspacesEngine extends SyncEngine {
   }
 
   get version() {
-    return 2;
+    return 3;
   }
 
   get syncPriority() {

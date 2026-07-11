@@ -254,6 +254,8 @@ class ZenSyncManager {
   async applyIncomingBatch(pulled, removals) {
     try {
       this.#ignoreChanges = true;
+      // ContextualIdentityService.remove() clears local site data. Container
+      // deletion therefore remains an explicit, device-local operation.
       this.#applyIncomingContainers(pulled.containers || []);
       this.#mapIncomingSpaceReferences(pulled.spaces || []);
 

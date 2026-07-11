@@ -251,6 +251,7 @@ zen-history-sidebar-shortcut = Show History Sidebar
 zen-window-minimize-shortcut = Minimize Window
 zen-help-shortcut = Open Help
 zen-preferences-shortcut = Open Preferences
+zen-open-settings-shortcut = Open Settings
 zen-hide-app-shortcut = Hide Application
 zen-hide-other-apps-shortcut = Hide Other Applications
 zen-search-focus-shortcut = Focus Search

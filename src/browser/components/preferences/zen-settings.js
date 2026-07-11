@@ -782,6 +782,8 @@ const zenMissingKeyboardShortcutL10n = {
   key_wrToggleCaptureSequenceCmd: "zen-key-wr-toggle-capture-sequence-cmd",
   key_undoCloseWindow: "zen-key-undo-close-window",
 
+  "zen-open-settings": "zen-open-settings-shortcut",
+
   "zen-glance-expand": "zen-glance-expand",
 
   key_selectTab1: "zen-key-select-tab-1",

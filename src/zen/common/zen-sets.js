@@ -160,6 +160,9 @@ document.addEventListener(
             }
             break;
           }
+          case "cmd_zenOpenPreferences":
+            openPreferences();
+            break;
           default:
             gZenGlanceManager.handleMainCommandSet(event);
             if (event.target.id.startsWith("cmd_zenWorkspaceSwitch")) {

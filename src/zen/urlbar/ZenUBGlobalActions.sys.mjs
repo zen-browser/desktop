@@ -49,7 +49,7 @@ const globalActionsTemplate = [
   },
   {
     l10nId: "zen-action-settings",
-    command: window => window.openPreferences(),
+    command: "cmd_zenOpenPreferences",
     icon: "chrome://browser/skin/zen-icons/settings.svg",
   },
   {

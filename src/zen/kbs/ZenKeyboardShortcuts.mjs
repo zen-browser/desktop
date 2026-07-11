@@ -848,7 +848,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 19;
+  static LATEST_KBS_VERSION = 20;
 
   constructor() {}
 
@@ -1252,6 +1252,31 @@ class nsZenKeyboardShortcutsVersioner {
           shortcut.shouldBeEmpty = true;
           shortcut.setDisabled(true);
           break;
+        }
+      }
+    }
+
+    if (version < 20) {
+      // Migrate from version 19 to 20.
+      // Add shortcut to open Settings: default Ctrl/Cmd+,
+      data.push(
+        new KeyShortcut(
+          "zen-open-settings",
+          ",",
+          "",
+          ZEN_OTHER_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({ accel: true }),
+          "cmd_zenOpenPreferences",
+          "zen-open-settings-shortcut"
+        )
+      );
+
+      if (AppConstants.platform == "macosx") {
+        for (let shortcut of data) {
+          if (shortcut.getID() == "key_preferencesCmdMac") {
+            shortcut.shouldBeEmpty = true;
+            break;
+          }
         }
       }
     }

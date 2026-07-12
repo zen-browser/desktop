@@ -1471,8 +1471,7 @@
       let dragData = draggedTab._dragData;
       let movingTabs = dragData.movingTabs;
       if (
-        !gZenPinnedTabManager.canEssentialBeAdded(draggedTab) &&
-        !draggedTab.hasAttribute("zen-essential")
+        !gZenPinnedTabManager.canEssentialBeAdded(draggedTab)
       ) {
         return;
       }

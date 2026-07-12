@@ -728,10 +728,10 @@
         if (!this.#changeSpaceTimer) {
           this.#changeSpaceTimer = setTimeout(() => {
             const timeSinceLastDragOver = Date.now() - this.#lastDragOverTime;
+            this.clearDragOverVisuals();
             if (timeSinceLastDragOver > 250) {
               return;
             }
-            this.clearDragOverVisuals();
             gZenWorkspaces
               .changeWorkspaceShortcut(
                 isNearLeftEdge ? -1 : 1,
@@ -907,6 +907,7 @@
       if (!isTab(draggedTab)) {
         return;
       }
+      this.clearDragOverVisuals();
       let { screenX, clientX, screenY, clientY } = event;
       if (!screenX && !screenY) {
         return;
@@ -926,7 +927,6 @@
         gZenViewSplitter.onBrowserDragEndToSplit(event, true);
         this.#maybeClearVerticalPinnedGridDragOver();
         this.clearSpaceSwitchTimer();
-        this.clearDragOverVisuals();
         const dt = event.dataTransfer;
         let dragData = draggedTab._dragData;
         let movingTabs = dragData.movingTabs;

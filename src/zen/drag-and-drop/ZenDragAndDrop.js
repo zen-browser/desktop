@@ -69,7 +69,6 @@
     #changeSpaceTimer = null;
     #isAnimatingTabMove = false;
     #firstHapticFeedbackPlayed = false;
-    #lastDragOverTime = 0;
 
     #dragOverSplit = {};
 
@@ -724,14 +723,9 @@
       const { isNearLeftEdge, isNearRightEdge } =
         this.#shouldSwitchSpace(event);
       if (isNearLeftEdge || isNearRightEdge) {
-        this.#lastDragOverTime = Date.now();
-        if (!this.#changeSpaceTimer) {
+        if (!this.#changeSpaceTimer && !this.#isOutOfWindow) {
           this.#changeSpaceTimer = setTimeout(() => {
-            const timeSinceLastDragOver = Date.now() - this.#lastDragOverTime;
             this.clearDragOverVisuals();
-            if (timeSinceLastDragOver > 250) {
-              return;
-            }
             this.#maybeClearVerticalPinnedGridDragOver();
             gZenWorkspaces
               .changeWorkspaceShortcut(

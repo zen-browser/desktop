@@ -1129,6 +1129,30 @@ window.gZenVerticalTabsManager = {
     return this.__actualWindowButtons;
   },
 
+  /**
+   * Keep toolbox, <html>, and #tabbrowser-tabs expanded attrs in lockstep.
+   * Zen CSS keys off zen-sidebar-expanded; Firefox tab close-button layout
+   * keys off #tabbrowser-tabs[expanded]. Diverging them yields an absolute
+   * left-clipped close button while labels still render in the wide sidebar.
+   *
+   * zen-sidebar-expanded must use value "true" because selectors are
+   * [zen-sidebar-expanded="true"] (toggleAttribute would set an empty value).
+   *
+   * @param {boolean} expanded
+   */
+  _applySidebarExpandedState(expanded) {
+    // navigatorToolbox is gNavToolbox for this window.
+    if (expanded) {
+      this.navigatorToolbox?.setAttribute("zen-sidebar-expanded", "true");
+      document.documentElement.setAttribute("zen-sidebar-expanded", "true");
+      gBrowser?.tabContainer?.toggleAttribute("expanded", true);
+    } else {
+      this.navigatorToolbox?.removeAttribute("zen-sidebar-expanded");
+      document.documentElement.removeAttribute("zen-sidebar-expanded");
+      gBrowser?.tabContainer?.toggleAttribute("expanded", false);
+    }
+  },
+
   async _preCustomize() {
     await this._multiWindowFeature.foreachWindowAsActive(async browser => {
       browser.gZenVerticalTabsManager._updateEvent({
@@ -1137,8 +1161,8 @@ window.gZenVerticalTabsManager = {
       });
     });
     this.rebuildAreas();
-    this.navigatorToolbox.setAttribute("zen-sidebar-expanded", "true");
-    document.documentElement.setAttribute("zen-sidebar-expanded", "true"); // force expanded sidebar
+    // Force expanded chrome during customize; keep tabContainer in sync.
+    this._applySidebarExpandedState(true);
   },
 
   _postCustomize() {
@@ -1297,14 +1321,8 @@ window.gZenVerticalTabsManager = {
         this._hadSidebarCollapse = !document.documentElement.hasAttribute(
           "zen-sidebar-expanded"
         );
-        this.navigatorToolbox.setAttribute("zen-sidebar-expanded", "true");
-        document.documentElement.setAttribute("zen-sidebar-expanded", "true");
-        gBrowser.tabContainer.setAttribute("expanded", "true");
-      } else {
-        this.navigatorToolbox.removeAttribute("zen-sidebar-expanded");
-        document.documentElement.removeAttribute("zen-sidebar-expanded");
-        gBrowser.tabContainer.removeAttribute("expanded");
       }
+      this._applySidebarExpandedState(isSidebarExpanded);
 
       const appContentNavbarContaienr = document.getElementById(
         "zen-appcontent-navbar-container"

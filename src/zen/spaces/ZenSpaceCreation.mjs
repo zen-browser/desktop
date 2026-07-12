@@ -9,13 +9,42 @@ import {
 
 class nsZenWorkspaceCreation extends MozXULElement {
   #pendingPresetTheme = null;
-  #wasInCollapsedMode = false;
+  #previousExpandedState = null;
 
   promiseInitialized = new Promise(resolve => {
     this.resolveInitialized = resolve;
   });
 
   #hiddenElements = [];
+
+  #captureExpandedState() {
+    return {
+      toolboxExpanded:
+        gNavToolbox?.getAttribute("zen-sidebar-expanded") === "true",
+      rootExpanded:
+        document.documentElement.getAttribute("zen-sidebar-expanded") ===
+        "true",
+      tabsExpanded: !!gBrowser?.tabContainer?.hasAttribute("expanded"),
+    };
+  }
+
+  #restoreExpandedState(state) {
+    if (!state) {
+      return;
+    }
+    if (state.toolboxExpanded) {
+      gNavToolbox?.setAttribute("zen-sidebar-expanded", "true");
+    } else {
+      gNavToolbox?.removeAttribute("zen-sidebar-expanded");
+    }
+    if (state.rootExpanded) {
+      document.documentElement.setAttribute("zen-sidebar-expanded", "true");
+    } else {
+      document.documentElement.removeAttribute("zen-sidebar-expanded");
+    }
+    gBrowser?.tabContainer?.toggleAttribute("expanded", state.tabsExpanded);
+    this.#previousExpandedState = null;
+  }
 
   static get elementsToDisable() {
     return [
@@ -119,11 +148,13 @@ class nsZenWorkspaceCreation extends MozXULElement {
       element.style.opacity = 0;
     }
 
-    this.#wasInCollapsedMode =
-      document.documentElement.getAttribute("zen-sidebar-expanded") !== "true";
-
-    gNavToolbox.setAttribute("zen-sidebar-expanded", "true");
-    document.documentElement.setAttribute("zen-sidebar-expanded", "true");
+    this.#previousExpandedState = this.#captureExpandedState();
+    try {
+      gZenVerticalTabsManager._applySidebarExpandedState(true);
+    } catch (e) {
+      this.#restoreExpandedState(this.#previousExpandedState);
+      throw e;
+    }
 
     window.docShell.treeOwner
       .QueryInterface(Ci.nsIInterfaceRequestor)
@@ -392,9 +423,8 @@ class nsZenWorkspaceCreation extends MozXULElement {
       }
     }
 
-    if (this.#wasInCollapsedMode) {
-      gNavToolbox.removeAttribute("zen-sidebar-expanded");
-      document.documentElement.removeAttribute("zen-sidebar-expanded");
+    if (this.#previousExpandedState) {
+      this.#restoreExpandedState(this.#previousExpandedState);
     }
 
     document.documentElement.removeAttribute("zen-creating-workspace");

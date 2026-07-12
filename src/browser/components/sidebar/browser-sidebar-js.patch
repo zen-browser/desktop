@@ -1,5 +1,4 @@
 diff --git a/browser/components/sidebar/browser-sidebar.js b/browser/components/sidebar/browser-sidebar.js
-index ae85009ad8f0a1cc6d3f3a890b27178df99e5ece..a432f7ee5d3f92bf623ff6d00d5b68ab7a6ecbe7 100644
 --- a/browser/components/sidebar/browser-sidebar.js
 +++ b/browser/components/sidebar/browser-sidebar.js
 @@ -807,7 +807,7 @@ var SidebarController = {
@@ -11,3 +10,14 @@ index ae85009ad8f0a1cc6d3f3a890b27178df99e5ece..a432f7ee5d3f92bf623ff6d00d5b68ab
      [...browser.children].forEach((node, i, children) => {
        node.style.order = this._positionStart ? i + 1 : children.length - i;
      });
+@@ -2218,6 +2218,9 @@ var SidebarController = {
+       this._clearToolbarButtonBadge();
+     } else {
+       arrowScrollbox.setAttribute("orient", "horizontal");
+-      tabStrip.removeAttribute("expanded");
++      // When Zen vertical tabs own the strip, do not clear [expanded] here.
++      if (!Services.prefs.getBoolPref("zen.tabs.vertical", true)) {
++        tabStrip.removeAttribute("expanded");
++      }
+       tabStrip.setAttribute("orient", "horizontal");
+     }

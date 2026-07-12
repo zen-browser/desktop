@@ -35,12 +35,13 @@ export class ZenSpaceRoutingNavigation extends ZenUIComponent {
       return;
     }
 
-    let uri;
+    let channel;
     try {
-      uri = aRequest.QueryInterface(Ci.nsIChannel).URI;
+      channel = aRequest.QueryInterface(Ci.nsIChannel);
     } catch (e) {
       return;
     }
+    const uri = channel.URI;
     if (!uri || !(uri.schemeIs("http") || uri.schemeIs("https"))) {
       return;
     }
@@ -56,7 +57,8 @@ export class ZenSpaceRoutingNavigation extends ZenUIComponent {
     } catch (e) {
       currentURI = null;
     }
-    if (currentURI?.equals(uri)) {
+    const isRedirect = channel.originalURI && !channel.originalURI.equals(uri);
+    if (!isRedirect && currentURI?.equals(uri)) {
       return;
     }
 
@@ -77,7 +79,7 @@ export class ZenSpaceRoutingNavigation extends ZenUIComponent {
       win.gZenSpaceRoutingManager.getRedirectTargetWorkspaceId(
         uri.spec,
         currentWorkspaceId,
-        win
+        win,
       );
     if (!targetWorkspaceId) {
       return;

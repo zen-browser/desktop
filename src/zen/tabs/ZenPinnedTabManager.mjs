@@ -836,8 +836,10 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         // Check for essentials container
         if (essentialTabsTarget) {
           if (gZenWorkspaces.containerSpecificEssentials) {
-            const targetContainerId = gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId;
-            const sameContextId = (tab.getAttribute("usercontextid") || 0) == targetContainerId;
+            const targetContainerId =
+              gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId;
+            const sameContextId =
+              (tab.getAttribute("usercontextid") || 0) == targetContainerId;
             if (!sameContextId && tab.hasAttribute("zen-essential")) {
               this.removeEssentials(tab, false);
               moved = true;

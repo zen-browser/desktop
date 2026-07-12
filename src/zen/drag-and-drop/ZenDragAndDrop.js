@@ -1470,9 +1470,7 @@
       let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
       let dragData = draggedTab._dragData;
       let movingTabs = dragData.movingTabs;
-      if (
-        !gZenPinnedTabManager.canEssentialBeAdded(draggedTab)
-      ) {
+      if (!gZenPinnedTabManager.canEssentialBeAdded(draggedTab)) {
         return;
       }
       let essentialsPromoStatus = this.createZenEssentialsPromo();

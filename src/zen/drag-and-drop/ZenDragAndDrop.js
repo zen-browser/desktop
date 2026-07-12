@@ -126,6 +126,10 @@
           "dragover",
           this.handle_spaceIconDragOver.bind(this)
         );
+        gZenWorkspaces.workspaceIcons.addEventListener(
+          "drop",
+          this.#handle_spaceIconDrop.bind(this)
+        );
       }
       window.addEventListener(
         "dragleave",
@@ -755,10 +759,15 @@
       if (draggedTab.hasAttribute("zen-essential")) {
         return;
       }
-      const target = event.target;
-      const spaceId = target.getAttribute("zen-workspace-id");
+      const spaceId = event.target
+        .closest("[zen-workspace-id]")
+        ?.getAttribute("zen-workspace-id");
       if (!spaceId) {
         return;
+      }
+      if (this.#supportsDirectSpaceIconDrop(draggedTab)) {
+        event.preventDefault();
+        dt.dropEffect = "move";
       }
       this.clearDragOverVisuals();
       const currentSpaceId = gZenWorkspaces.activeWorkspace;
@@ -768,6 +777,45 @@
       gZenWorkspaces.changeWorkspaceWithID(spaceId).then(spaceChanged => {
         this.#onSpaceChanged(spaceChanged, dt);
       });
+    }
+
+    #handle_spaceIconDrop(event) {
+      const draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
+      if (!this.#supportsDirectSpaceIconDrop(draggedTab)) {
+        return;
+      }
+      const spaceId = event.target
+        .closest("[zen-workspace-id]")
+        ?.getAttribute("zen-workspace-id");
+      if (!spaceId) {
+        return;
+      }
+      event.preventDefault();
+      this.clearSpaceSwitchTimer();
+      this.clearDragOverVisuals();
+      requestAnimationFrame(() =>
+        gZenCompactModeManager?._clearAllHoverStates()
+      );
+
+      const movingTabs = draggedTab._dragData?.movingTabs || [draggedTab];
+      const moveTabs = () => {
+        gZenWorkspaces.moveTabsToWorkspace(movingTabs, spaceId);
+        gBrowser.selectedTab = draggedTab;
+        gZenWorkspaces.updateTabsContainers();
+      };
+      if (spaceId === gZenWorkspaces.activeWorkspace) {
+        moveTabs();
+      } else {
+        gZenWorkspaces.changeWorkspaceWithID(spaceId).then(moveTabs);
+      }
+    }
+
+    #supportsDirectSpaceIconDrop(draggedTab) {
+      return (
+        isTab(draggedTab) &&
+        !draggedTab.hasAttribute("zen-essential") &&
+        draggedTab.documentGlobal === window
+      );
     }
 
     #handle_tabDragOverToSplit(event) {

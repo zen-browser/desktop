@@ -69,6 +69,7 @@
     #changeSpaceTimer = null;
     #isAnimatingTabMove = false;
     #firstHapticFeedbackPlayed = false;
+    #lastDragOverTime = 0;
 
     #dragOverSplit = {};
 
@@ -723,9 +724,11 @@
       const { isNearLeftEdge, isNearRightEdge } =
         this.#shouldSwitchSpace(event);
       if (isNearLeftEdge || isNearRightEdge) {
-        if (!this.#changeSpaceTimer && !this.#isOutOfWindow) {
+        this.#lastDragOverTime = Date.now();
+        if (!this.#changeSpaceTimer) {
           this.#changeSpaceTimer = setTimeout(() => {
-            if (this.#isOutOfWindow) {
+            const timeSinceLastDragOver = Date.now() - this.#lastDragOverTime;
+            if (timeSinceLastDragOver > 250) {
               return;
             }
             this.clearDragOverVisuals();

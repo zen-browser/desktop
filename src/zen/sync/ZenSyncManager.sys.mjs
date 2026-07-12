@@ -8,6 +8,7 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
+  BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
   ContextualIdentityService:
     "resource://gre/modules/ContextualIdentityService.sys.mjs",
   ZenWindowSync: "resource:///modules/zen/ZenWindowSync.sys.mjs",
@@ -181,22 +182,57 @@ class ZenSyncManager {
     }
   }
 
-  createSyncableTabData(
-    tabData,
-    { position, trimHistoryForUnpinned = false } = {}
-  ) {
+  #getTab(tabId) {
+    if (!tabId) {
+      return null;
+    }
+
+    const orderedWindows = lazy.BrowserWindowTracker.getOrderedWindows({
+      private: false,
+    });
+    for (const win of orderedWindows) {
+      if (!win.gBrowser) {
+        continue;
+      }
+
+      for (let position = 0; position < win.gBrowser.tabs.length; position++) {
+        const tab = win.gBrowser.tabs[position];
+        if (tab.id !== tabId) {
+          continue;
+        }
+
+        return { position, tab };
+      }
+    }
+
+    return null;
+  }
+
+  createSyncableTabData(tabId, { trimHistoryForUnpinned = false } = {}) {
+    const tabInfo = this.#getTab(tabId);
+    const { position, tab } = tabInfo || {};
+    const isEssential = tab?.hasAttribute("zen-essential");
+
     if (
-      !tabData?.zenSyncId ||
-      tabData.zenIsEmpty ||
-      tabData.zenLiveFolderItemId ||
-      (!tabData.pinned && lazy.gSyncOnlyPinnedTabs)
+      !tab?.id ||
+      tab.hasAttribute("zen-empty-tab") ||
+      tab.hasAttribute("zen-live-folder-item-id") ||
+      (!(tab.pinned || isEssential) && lazy.gSyncOnlyPinnedTabs)
     ) {
       return null;
     }
 
-    const pinned = !!tabData.pinned;
-    let entries = Array.isArray(tabData.entries) ? [...tabData.entries] : [];
-    let index = typeof tabData.index === "number" ? tabData.index : 1;
+    const currentURL = tab.linkedBrowser?.currentURI?.spec;
+    const currentEntry = currentURL
+      ? {
+          url: currentURL,
+          title: tab.linkedBrowser.contentTitle || tab.label || "",
+        }
+      : null;
+
+    const pinned = !!(tab.pinned || isEssential);
+    let entries = currentEntry ? [currentEntry] : [];
+    let index = 1;
 
     if (trimHistoryForUnpinned && !pinned && entries.length) {
       const entryIndex = Math.max(0, index - 1);
@@ -205,26 +241,32 @@ class ZenSyncManager {
       index = 1;
     }
 
-    const isEssential = !!tabData.zenEssential;
+    const image =
+      tab.zenStaticIcon ||
+      tab.getAttribute("image") ||
+      tab.documentGlobal.gBrowser.getIcon(tab) ||
+      "";
     const syncTabData = {
       entries,
-      groupId: tabData.groupId || null,
-      image: typeof tabData.image === "string" ? tabData.image : "",
+      groupId: tab.group?.id || null,
+      image,
       index,
       pinned,
-      userContextId: parseInt(tabData.userContextId, 10) || 0,
-      zenDefaultUserContextId: !!tabData.zenDefaultUserContextId,
+      userContextId: tab.userContextId || 0,
+      zenDefaultUserContextId: tab.hasAttribute("zenDefaultUserContextId"),
       zenEssential: isEssential,
-      zenHasStaticIcon: !!tabData.zenHasStaticIcon,
-      zenSyncId: tabData.zenSyncId,
-      zenWorkspace: isEssential ? null : tabData.zenWorkspace || null,
+      zenHasStaticIcon: !!tab.zenStaticIcon,
+      zenSyncId: tab.id,
+      zenWorkspace: isEssential
+        ? null
+        : tab.getAttribute("zen-workspace-id") || null,
     };
 
-    if (typeof tabData.zenStaticLabel === "string") {
-      syncTabData.zenStaticLabel = tabData.zenStaticLabel;
+    if (typeof tab.zenStaticLabel === "string") {
+      syncTabData.zenStaticLabel = tab.zenStaticLabel;
     }
-    if (tabData._zenPinnedInitialState) {
-      syncTabData._zenPinnedInitialState = tabData._zenPinnedInitialState;
+    if (tab._zenPinnedInitialState) {
+      syncTabData._zenPinnedInitialState = tab._zenPinnedInitialState;
     }
     if (typeof position === "number") {
       syncTabData.position = position;

@@ -207,17 +207,12 @@ class ZenWorkspacesStore extends Store {
         break;
       }
       case RECORD_TYPES.TAB: {
-        const tabs = sidebar.tabs || [];
-        const idx = tabs.findIndex(t => t.zenSyncId === parsed.key);
-        const tab = idx === -1 ? null : tabs[idx];
-        if (!tab) {
-          record.deleted = true;
-          return record;
-        }
-        const syncableTabData = lazy.ZenSyncStore.createSyncableTabData(tab, {
-          position: idx,
-          trimHistoryForUnpinned: true,
-        });
+        const syncableTabData = lazy.ZenSyncStore.createSyncableTabData(
+          parsed.key,
+          {
+            trimHistoryForUnpinned: true,
+          }
+        );
         if (!syncableTabData?.zenSyncId) {
           record.deleted = true;
           return record;

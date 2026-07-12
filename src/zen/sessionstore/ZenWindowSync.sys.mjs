@@ -1372,11 +1372,9 @@ class nsZenWindowSync {
       return;
     }
 
-    this.#maybeFlushTabState(item).finally(() => {
-      if (!item.hasAttribute("zen-empty-tab")) {
-        lazy.ZenSyncStore.markTabChanged(item.id);
-      }
-    });
+    if (!item.hasAttribute("zen-empty-tab")) {
+      lazy.ZenSyncStore.markTabChanged(item.id);
+    }
   }
 
   /* Mark: Event Handlers */

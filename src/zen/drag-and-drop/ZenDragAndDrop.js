@@ -732,6 +732,7 @@
             if (timeSinceLastDragOver > 250) {
               return;
             }
+            this.#maybeClearVerticalPinnedGridDragOver();
             gZenWorkspaces
               .changeWorkspaceShortcut(
                 isNearLeftEdge ? -1 : 1,

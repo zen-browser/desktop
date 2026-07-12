@@ -661,6 +661,13 @@
       // can change the workspace after a short delay.
       const splitter = document.getElementById("zen-sidebar-splitter");
       let rect = window.windowUtils.getBoundsWithoutFlushing(gNavToolbox);
+      // If we are hovering over the essentials container, we can't change the workspace
+      const essentialsContainer = event.target.closest(
+        ".zen-essentials-container"
+      );
+      if (essentialsContainer) {
+        return { isNearLeftEdge: false, isNearRightEdge: false };
+      }
       if (!(
         gZenCompactModeManager.preference &&
         gZenCompactModeManager.canHideSidebar
@@ -715,11 +722,7 @@
 
     #handle_sidebarDragOver(event) {
       const dt = event.dataTransfer;
-      const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
-      if (draggedTab.hasAttribute("zen-essential")) {
-        this.clearSpaceSwitchTimer();
-        return;
-      }
+
       const { isNearLeftEdge, isNearRightEdge } =
         this.#shouldSwitchSpace(event);
       if (isNearLeftEdge || isNearRightEdge) {

@@ -899,6 +899,10 @@
     }
 
     handle_windowDragLeave(event) {
+      // If relatedTarget exists, then we are still in the window
+      if (event.relatedTarget) {
+        return;
+      }
       const canvas = this._tabbrowserTabs._dndCanvas;
       if (!this.#isMovingTab() || !canvas) {
         return;
@@ -907,51 +911,42 @@
       if (!isTab(draggedTab)) {
         return;
       }
-      this.clearDragOverVisuals();
-      let { screenX, clientX, screenY, clientY } = event;
+      let { screenX, screenY } = event;
       if (!screenX && !screenY) {
         return;
       }
-      const { innerWidth: winWidth, innerHeight: winHeight } = window;
-      let allowedMargin = Services.prefs.getIntPref(
-        "zen.tabs.dnd-outside-window-margin",
-        5
-      );
-      const isOutOfWindow =
-        clientX <= allowedMargin ||
-        clientX >= winWidth - allowedMargin ||
-        clientY <= allowedMargin ||
-        clientY >= winHeight - allowedMargin;
-      if (isOutOfWindow && !this.#isOutOfWindow) {
-        this.#isOutOfWindow = true;
-        gZenViewSplitter.onBrowserDragEndToSplit(event, true);
-        this.#maybeClearVerticalPinnedGridDragOver();
-        this.clearSpaceSwitchTimer();
-        const dt = event.dataTransfer;
-        let dragData = draggedTab._dragData;
-        let movingTabs = dragData.movingTabs;
-        if (!this._browserDragImageWrapper) {
-          const wrappingDiv = document.createXULElement("vbox");
-          canvas.style.borderRadius = "8px";
-          canvas.style.border = "2px solid white";
-          wrappingDiv.style.width = 200 + "px";
-          wrappingDiv.style.height = 130 + "px";
-          wrappingDiv.style.position = "relative";
-          this.#maybeCreateDragImageDot(movingTabs, wrappingDiv);
-          wrappingDiv.appendChild(canvas);
-          this._browserDragImageWrapper = wrappingDiv;
-          document.documentElement.appendChild(wrappingDiv);
-        }
-        dt.updateDragImage(
-          this._browserDragImageWrapper,
-          this.originalDragImageArgs[1],
-          this.originalDragImageArgs[2]
-        );
-        window.addEventListener("dragenter", this.handle_windowDragEnter, {
-          once: true,
-          capture: true,
-        });
+      if (this.#isOutOfWindow) {
+        return;
       }
+      this.#isOutOfWindow = true;
+      gZenViewSplitter.onBrowserDragEndToSplit(event, true);
+      this.#maybeClearVerticalPinnedGridDragOver();
+      this.clearDragOverVisuals();
+      this.clearSpaceSwitchTimer();
+      const dt = event.dataTransfer;
+      let dragData = draggedTab._dragData;
+      let movingTabs = dragData.movingTabs;
+      if (!this._browserDragImageWrapper) {
+        const wrappingDiv = document.createXULElement("vbox");
+        canvas.style.borderRadius = "8px";
+        canvas.style.border = "2px solid white";
+        wrappingDiv.style.width = 200 + "px";
+        wrappingDiv.style.height = 130 + "px";
+        wrappingDiv.style.position = "relative";
+        this.#maybeCreateDragImageDot(movingTabs, wrappingDiv);
+        wrappingDiv.appendChild(canvas);
+        this._browserDragImageWrapper = wrappingDiv;
+        document.documentElement.appendChild(wrappingDiv);
+      }
+      dt.updateDragImage(
+        this._browserDragImageWrapper,
+        this.originalDragImageArgs[1],
+        this.originalDragImageArgs[2]
+      );
+      window.addEventListener("dragenter", this.handle_windowDragEnter, {
+        once: true,
+        capture: true,
+      });
     }
 
     handle_drop(event) {

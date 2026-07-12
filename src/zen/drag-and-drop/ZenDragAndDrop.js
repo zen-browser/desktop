@@ -911,10 +911,6 @@
       if (!isTab(draggedTab)) {
         return;
       }
-      let { screenX, screenY } = event;
-      if (!screenX && !screenY) {
-        return;
-      }
       if (this.#isOutOfWindow) {
         return;
       }

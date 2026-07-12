@@ -8,7 +8,6 @@ BROWSER_CHROME_MANIFESTS += [
     "container_essentials/browser.toml",
     "folders/browser.toml",
     "glance/browser.toml",
-    "kbs/browser.toml",
     "live-folders/browser.toml",
     "media/browser.toml",
     "pinned/browser.toml",

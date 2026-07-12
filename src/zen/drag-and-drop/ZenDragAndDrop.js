@@ -1336,7 +1336,8 @@
       // Essentials should be properly handled by ::animateVerticalPinnedGridDragOver
       if (!dropElement || dropElement.hasAttribute("zen-essential")) {
         this.clearDragOverVisuals();
-        return null;
+        // If dropElement is null or essential, dropElement should be the empty tab
+        return [dropBefore, gZenWorkspaces._emptyTab];
       }
       if (dropElement.hasAttribute("zen-empty-tab") && dropElement.group) {
         let secondTab = dropElement.group.tabs[1];

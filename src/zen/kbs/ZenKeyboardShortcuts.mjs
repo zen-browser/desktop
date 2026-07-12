@@ -1258,26 +1258,20 @@ class nsZenKeyboardShortcutsVersioner {
 
     if (version < 20) {
       // Migrate from version 19 to 20.
-      // Add shortcut to open Settings: default Ctrl/Cmd+,
-      data.push(
-        new KeyShortcut(
-          "zen-open-settings",
-          ",",
-          "",
-          ZEN_OTHER_SHORTCUTS_GROUP,
-          nsKeyShortcutModifiers.fromObject({ accel: true }),
-          "cmd_zenOpenPreferences",
-          "zen-open-settings-shortcut"
-        )
-      );
-
-      if (AppConstants.platform == "macosx") {
-        for (let shortcut of data) {
-          if (shortcut.getID() == "key_preferencesCmdMac") {
-            shortcut.shouldBeEmpty = true;
-            break;
-          }
-        }
+      // Add Open Settings (Ctrl+,) on non-macOS only.
+      // macOS already opens Settings with Cmd+, via key_preferencesCmdMac.
+      if (AppConstants.platform != "macosx") {
+        data.push(
+          new KeyShortcut(
+            "zen-open-settings",
+            ",",
+            "",
+            ZEN_OTHER_SHORTCUTS_GROUP,
+            nsKeyShortcutModifiers.fromObject({ accel: true }),
+            "cmd_zenOpenPreferences",
+            "zen-open-settings-shortcut"
+          )
+        );
       }
     }
 

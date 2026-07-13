@@ -2294,6 +2294,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     this.loadPresetLibraries();
     this.refreshVisibleColorPages();
     this.initThemePicker();
+    window.gAstraTransparency?.syncThemePickerButton?.();
     setTimeout(() => {
       this.updateCurrentWorkspace(true, true);
     }, 200);

@@ -5,7 +5,7 @@
  */
 /* All overrides for compact mode go here */
 
-.zen-toolbar-background {
+  .zen-toolbar-background {
   display: none;
   pointer-events: none;
 
@@ -16,10 +16,6 @@
   @media -moz-pref('zen.theme.acrylic-elements') {
     background: transparent !important;
     backdrop-filter: blur(42px) saturate(110%) brightness(0.25) contrast(100%) !important;
-  }
-  .astra-transparent-enabled & {
-    background: rgba(20, 20, 30, 0.35) !important;
-    backdrop-filter: blur(32px) saturate(180%) brightness(0.85) !important;
   }
 
   &::before,

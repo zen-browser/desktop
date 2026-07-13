@@ -430,6 +430,9 @@ document.addEventListener(
 
     window.gZenStartup?.promiseInitialized?.then(() => {
       void gZenEnergySaver.init().catch(console.warn);
+      // init() is idempotent: first call registers observers; later calls reapply only.
+      window.gAstraTransparency?.init?.();
+      window.gAstraTransparency?.syncThemePickerButton?.();
     });
 
     // <commandset id="mainCommandSet"> defined in browser-sets.inc

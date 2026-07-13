@@ -36,16 +36,16 @@
       <description class="description-deemphasized" data-l10n-id="zen-theme-marketplace-export-failure" hidden="true" id="zenThemeMarketplaceExportFailure" />
 
       <vbox id="zen-astra-featured-mods">
-        <label class="zen-theme-picker-section-title" value="⭐ Astra Featured Mods"/>
-        <hbox class="zen-featured-mod-item">
+        <label class="zen-theme-picker-section-title" data-l10n-id="astra-theme-options-title"/>
+        <hbox class="zen-featured-mod-item" align="center">
           <vbox flex="1">
-            <label value="🪟 Astra Transparent Mode"/>
-            <description class="description-deemphasized">
-              Make sidebar transparent with beautiful blur effect
-            </description>
+            <label data-l10n-id="astra-theme-transparent-mode-label"/>
+            <description class="description-deemphasized" data-l10n-id="astra-theme-transparent-mode-description"/>
           </vbox>
-          <button label="Enable Transparent Mode"
-            oncommand="window.gZenMods.enableMod('astra-transparent');"/>
+          <checkbox id="astraTransparentModeCheckbox"
+                    data-l10n-id="astra-theme-transparent-mode-checkbox"
+                    preference="astra.theme.transparent.enabled"
+                    oncommand="if (this.checked) { window.gAstraTransparency?.promptOsTransparencyIfNeeded?.(); }"/>
         </hbox>
       </vbox>
 

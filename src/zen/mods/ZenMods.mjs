@@ -95,13 +95,6 @@ class nsZenMods extends nsZenPreloadedFeature {
     this.#writeToDom(modsWithPreferences);
 
     await this.#insertStylesheet();
-    const isTransparentEnabled = mods.some(
-      mod => mod.id === "astra-transparent"
-    );
-    document.documentElement.classList.toggle(
-      "astra-transparent-enabled",
-      isTransparentEnabled
-    );
   }
 
   async #getEnabledMods() {
@@ -114,10 +107,13 @@ class nsZenMods extends nsZenPreloadedFeature {
       ? Object.values(modsObject).filter(
           mod =>
             mod.id?.startsWith("astra-") &&
+            mod.id !== "astra-transparent" &&
             (mod.enabled === undefined || mod.enabled)
         )
       : Object.values(modsObject).filter(
-          mod => mod.enabled === undefined || mod.enabled
+          mod =>
+            mod.id !== "astra-transparent" &&
+            (mod.enabled === undefined || mod.enabled)
         );
     if (disableAll) {
       // eslint-disable-next-line no-console
@@ -482,48 +478,9 @@ class nsZenMods extends nsZenPreloadedFeature {
         );
       }
 
-      // Astra: Load mods and pre-register default Astra mods
-      const ASTRA_DEFAULT_MODS = {
-        "astra-transparent": {
-          id: "astra-transparent",
-          name: "Astra Transparent Mode",
-          description: "Transparent sidebar with acrylic blur effect",
-          author: "Astra Team",
-          version: "1.0.0",
-          enabled: false,
-          style: "https://raw.githubusercontent.com/Hrishikeshmind/astradesktop/dev/mods/astra-transparent/chrome.css",
-          readme: "https://raw.githubusercontent.com/Hrishikeshmind/astradesktop/dev/mods/astra-transparent/readme.md"
-        }
-      };
-      let currentMods = await this.getMods();
-      let needsUpdate = false;
-      for (const [id, mod] of Object.entries(ASTRA_DEFAULT_MODS)) {
-        if (!currentMods[id]) {
-          currentMods[id] = mod;
-          needsUpdate = true;
-        }
-      }
-      if (needsUpdate) {
-        await this.updateMods(currentMods);
-        // Astra: Install default mods that were just registered
-        for (const [id, mod] of Object.entries(ASTRA_DEFAULT_MODS)) {
-          try {
-            const modPath = PathUtils.join(this.modsRootPath, id);
-            const cssPath = PathUtils.join(modPath, "chrome.css");
-            const exists = await IOUtils.exists(cssPath);
-            if (!exists) {
-              await this.installMod(mod);
-            }
-          } catch(e) {
-            console.error("[ZenMods]: Error installing Astra default mod", id, e);
-          }
-        }
-      }
-      if (globalThis.ZenMods?.isModEnabled?.("astra-transparent")) {
-        document.documentElement.classList.add("astra-transparent-enabled");
-      } else if (currentMods["astra-transparent"]?.enabled) {
-        document.documentElement.classList.add("astra-transparent-enabled");
-      }
+      // One-shot migration: retire the legacy astra-transparent Zen Mod.
+      await this.#migrateLegacyAstraTransparentMod();
+
       const mods = await this.#getEnabledMods();
 
       const modsWithPreferences = await Promise.all(
@@ -567,6 +524,76 @@ class nsZenMods extends nsZenPreloadedFeature {
       "zen.themes.disable-all",
       this.#handleDisableMods.bind(this)
     );
+  }
+
+  /**
+   * One-shot migration: retire the legacy astra-transparent Zen Mod.
+   *
+   * Rules:
+   * - Run only while astra.theme.transparent.mod-migrated is false.
+   * - If the old mod was enabled and the built-in pref has no user value,
+   *   enable astra.theme.transparent.enabled.
+   * - Never overwrite an existing user value of the built-in pref.
+   * - Remove only the astra-transparent registry entry and its profile folder.
+   * - Mark migration complete only after successful cleanup (or if absent).
+   * - Do not network, prompt, or fail ZenMods init on errors.
+   */
+  async #migrateLegacyAstraTransparentMod() {
+    const migrationPref = "astra.theme.transparent.mod-migrated";
+    const featurePref = "astra.theme.transparent.enabled";
+    if (Services.prefs.getBoolPref(migrationPref, false)) {
+      return;
+    }
+
+    let changed = false;
+    let succeeded = false;
+    try {
+      const mods = await this.getMods();
+      const legacy = mods?.["astra-transparent"];
+      if (!legacy) {
+        succeeded = true;
+      } else {
+        if (
+          legacy.enabled &&
+          !Services.prefs.prefHasUserValue(featurePref)
+        ) {
+          Services.prefs.setBoolPref(featurePref, true);
+        }
+
+        // Smaller than removeMod()+trigger: no mods-update observer flip.
+        const modPath = this.getModFolder("astra-transparent");
+        await IOUtils.remove(modPath, {
+          recursive: true,
+          ignoreAbsent: true,
+        });
+        delete mods["astra-transparent"];
+        await IOUtils.writeJSON(this.modsDataFile, mods);
+        document.documentElement.classList.remove("astra-transparent-enabled");
+        changed = true;
+        succeeded = true;
+      }
+    } catch (e) {
+      console.error(
+        "[ZenMods]: Failed migrating legacy astra-transparent mod",
+        e
+      );
+      succeeded = false;
+    }
+
+    // Only mark complete on success so a transient failure can retry.
+    if (succeeded) {
+      Services.prefs.setBoolPref(migrationPref, true);
+      if (changed) {
+        try {
+          await this.#rebuildModsStylesheet();
+        } catch (e) {
+          console.error(
+            "[ZenMods]: Failed rebuilding mods stylesheet after transparency migration",
+            e
+          );
+        }
+      }
+    }
   }
 
   #setNewMilestoneIfNeeded() {
@@ -680,82 +707,12 @@ class nsZenMods extends nsZenPreloadedFeature {
     console.warn(`[ZenMods]: Enabling mod ${mod.name}`);
     mod.enabled = true;
     await IOUtils.writeJSON(this.modsDataFile, mods);
-    // Astra: Always re-download CSS on enable to get latest version
     try {
       await this.installMod(mod);
-    } catch(e) {
+    } catch (e) {
       console.warn(`[ZenMods]: Could not refresh mod CSS`, e);
     }
     await this.#rebuildModsStylesheet();
-    if (modId === "astra-transparent") {
-      document.documentElement.classList.add("astra-transparent-enabled");
-    }
-    if (modId === "astra-transparent" && AppConstants.platform === "win") {
-      try {
-        const regKey = Cc["@mozilla.org/windows-registry-key;1"].createInstance(
-          Ci.nsIWindowsRegKey
-        );
-        regKey.open(
-          Ci.nsIWindowsRegKey.ROOT_KEY_CURRENT_USER,
-          "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
-          Ci.nsIWindowsRegKey.ACCESS_READ
-        );
-        const transparencyEnabled =
-          !regKey.hasValue("EnableTransparency") ||
-          regKey.readIntValue("EnableTransparency") !== 0;
-        regKey.close();
-        if (!transparencyEnabled) {
-          const { default: createSidebarNotification } = ChromeUtils.importESModule(
-            "chrome://browser/content/zen-components/ZenSidebarNotification.mjs"
-          );
-          createSidebarNotification({
-            headingL10nId: "zen-transparency-os-disabled-heading",
-            links: [
-              {
-                action: () => {
-                  try {
-                    const writeKey = Cc[
-                      "@mozilla.org/windows-registry-key;1"
-                    ].createInstance(Ci.nsIWindowsRegKey);
-                    writeKey.open(
-                      Ci.nsIWindowsRegKey.ROOT_KEY_CURRENT_USER,
-                      "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
-                      Ci.nsIWindowsRegKey.ACCESS_WRITE
-                    );
-                    writeKey.writeIntValue("EnableTransparency", 1);
-                    writeKey.close();
-                    createSidebarNotification({
-                      headingL10nId: "zen-transparency-enabled-heading",
-                      links: [
-                        {
-                          action: () => {
-                            Services.startup.quit(
-                              Services.startup.eAttemptQuit |
-                                Services.startup.eRestart
-                            );
-                          },
-                          l10nId: "zen-transparency-restart-action",
-                          special: true,
-                        },
-                      ],
-                    });
-                  } catch (e) {
-                    console.error(
-                      "[ZenMods]: Failed to enable Windows transparency",
-                      e
-                    );
-                  }
-                },
-                l10nId: "zen-transparency-os-disabled-action",
-                special: true,
-              },
-            ],
-          });
-        }
-      } catch (e) {
-        console.warn("[ZenMods]: Could not check Windows transparency setting", e);
-      }
-    }
   }
 
   async disableMod(modId) {
@@ -769,9 +726,6 @@ class nsZenMods extends nsZenPreloadedFeature {
     mod.enabled = false;
     await IOUtils.writeJSON(this.modsDataFile, mods);
     await this.#rebuildModsStylesheet();
-    if (modId === "astra-transparent") {
-      document.documentElement.classList.remove("astra-transparent-enabled");
-    }
   }
 
   async updateMods(mods = undefined) {

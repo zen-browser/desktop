@@ -34,6 +34,10 @@ var gZenMarketplaceManager = {
     if (!window.gZenMods) {
       window.gZenMods = nsZenMultiWindowFeature.currentBrowser.gZenMods;
     }
+    if (!window.gAstraTransparency) {
+      window.gAstraTransparency =
+        nsZenMultiWindowFeature.currentBrowser?.gAstraTransparency;
+    }
 
     header.appendChild(this._initDisableAll());
 

@@ -1,0 +1,213 @@
+/*
+ * Astra built-in Transparent Mode
+ * --------------------------------
+ * Active only when documentElement has astra-transparent-mode="true"
+ * (AstraTransparencyManager ← astra.theme.transparent.enabled).
+ *
+ * Packaged offline via jar.inc.mn → chrome://browser/content/zen-styles/
+ * Linked last in zen-assets.inc.xhtml so it wins over Zen/Astra theme CSS.
+ *
+ * Does not target webpage content documents or browser[type="content"].
+ *
+ * !important is used only to beat:
+ * - inline custom properties from ZenGradientGenerator on background elements
+ * - later Zen mica tint / toolbar fill rules
+ */
+
+/* Root vars: baseline when no child-level override exists */
+:root[astra-transparent-mode="true"] {
+  --zen-main-browser-background: transparent !important; /* beat theme defaults */
+  --zen-main-browser-background-toolbar: transparent !important;
+  --zen-themed-toolbar-bg-transparent: transparent !important;
+  --zen-dialog-background: rgba(20, 20, 30, 0.55) !important;
+  --zen-colors-tertiary: rgba(255, 255, 255, 0.06) !important;
+}
+
+/*
+ * Element-level vars: ZenGradientGenerator writes these via style.setProperty
+ * on the painted nodes. Child custom properties override inherited :root
+ * values, so they must be cleared here with !important.
+ */
+:root[astra-transparent-mode="true"] #zen-browser-background,
+:root[astra-transparent-mode="true"] #zen-toolbar-background {
+  --zen-main-browser-background: transparent !important;
+  --zen-main-browser-background-toolbar: transparent !important;
+  --zen-main-browser-background-old: transparent !important;
+  --zen-main-browser-background-toolbar-old: transparent !important;
+}
+
+/* Hide the painted gradient layers (::after/::before) while mode is on */
+:root[astra-transparent-mode="true"] .zen-browser-generic-background::after,
+:root[astra-transparent-mode="true"] .zen-browser-generic-background::before {
+  background: transparent !important;
+  opacity: 0 !important; /* defeat transitioned opacity from workspace swipe */
+}
+
+/* Chrome shells — let Acrylic/Mica show through (not content browsers) */
+:root[astra-transparent-mode="true"] #browser,
+:root[astra-transparent-mode="true"] #tabbrowser-tabbox,
+:root[astra-transparent-mode="true"] #appcontent,
+:root[astra-transparent-mode="true"] #zen-appcontent-wrapper,
+:root[astra-transparent-mode="true"] .browserStack,
+:root[astra-transparent-mode="true"] .browserContainer {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/*
+ * Sidebar / navigator chrome — frosted glass.
+ * Soft fill remains when backdrop-filter is unavailable (Win10, RDP, no HWA,
+ * energy saver) so the UI never becomes invisible.
+ */
+:root[astra-transparent-mode="true"] #navigator-toolbox,
+:root[astra-transparent-mode="true"] #TabsToolbar,
+:root[astra-transparent-mode="true"] .zen-workspace-tabs-section,
+:root[astra-transparent-mode="true"] #zen-tabbox-wrapper {
+  background: rgba(18, 18, 26, 0.42) !important;
+}
+
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) #navigator-toolbox,
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) #TabsToolbar,
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) .zen-workspace-tabs-section,
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) #zen-tabbox-wrapper {
+  backdrop-filter: blur(28px) saturate(170%) brightness(0.92) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(170%) brightness(0.92) !important;
+}
+
+:root[astra-transparent-mode="true"] .zen-toolbar-background {
+  background: rgba(20, 20, 30, 0.42) !important;
+}
+
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) .zen-toolbar-background {
+  backdrop-filter: blur(32px) saturate(180%) brightness(0.85) !important;
+}
+
+/* Tab pills */
+:root[astra-transparent-mode="true"] .tabbrowser-tab .tab-background {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) .tabbrowser-tab .tab-background {
+  backdrop-filter: blur(8px) saturate(140%) !important;
+}
+
+:root[astra-transparent-mode="true"] .tabbrowser-tab[selected="true"] .tab-background,
+:root[astra-transparent-mode="true"] .tabbrowser-tab[multiselected] .tab-background {
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) .tabbrowser-tab[selected="true"] .tab-background,
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) .tabbrowser-tab[multiselected] .tab-background {
+  backdrop-filter: blur(14px) saturate(160%) !important;
+}
+
+:root[astra-transparent-mode="true"] .tabbrowser-tab:hover .tab-background {
+  background: rgba(255, 255, 255, 0.09) !important;
+}
+
+/* URL bar chrome */
+:root[astra-transparent-mode="true"] #urlbar,
+:root[astra-transparent-mode="true"] #urlbar-background,
+:root[astra-transparent-mode="true"] #urlbar[breakout-extend="true"] #urlbar-background,
+:root[astra-transparent-mode="true"] #searchbar {
+  /* Beat zen-omnibox !important fills */
+  background: rgba(18, 18, 26, 0.5) !important;
+  background-color: rgba(18, 18, 26, 0.5) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) #urlbar,
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) #urlbar-background,
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) #urlbar[breakout-extend="true"] #urlbar-background,
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) #searchbar {
+  backdrop-filter: blur(22px) saturate(160%) !important;
+}
+
+:root[astra-transparent-mode="true"] .urlbarView,
+:root[astra-transparent-mode="true"] #urlbar .urlbarView-row[selected],
+:root[astra-transparent-mode="true"] #urlbar .urlbarView-row:hover {
+  background: rgba(20, 20, 30, 0.55) !important;
+}
+
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) .urlbarView,
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) #urlbar .urlbarView-row[selected],
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) #urlbar .urlbarView-row:hover {
+  backdrop-filter: blur(28px) saturate(170%) !important;
+}
+
+:root[astra-transparent-mode="true"] toolbarbutton .toolbarbutton-icon,
+:root[astra-transparent-mode="true"] toolbarbutton:not([disabled="true"]):hover .toolbarbutton-icon {
+  background: transparent !important;
+}
+
+:root[astra-transparent-mode="true"] toolbarbutton:not([disabled="true"]):hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Chrome panels / menus only */
+:root[astra-transparent-mode="true"] panel,
+:root[astra-transparent-mode="true"] menupopup,
+:root[astra-transparent-mode="true"] .panel-arrowcontent,
+:root[astra-transparent-mode="true"] #widget-overflow,
+:root[astra-transparent-mode="true"] #identity-popup,
+:root[astra-transparent-mode="true"] #permission-popup,
+:root[astra-transparent-mode="true"] #protections-popup,
+:root[astra-transparent-mode="true"] #unified-extensions-panel {
+  background: rgba(20, 20, 30, 0.72) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) panel,
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) menupopup,
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) .panel-arrowcontent,
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) #widget-overflow,
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) #identity-popup,
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) #permission-popup,
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) #protections-popup,
+:root[astra-transparent-mode="true"]:not([astra-energy-saver="true"]) #unified-extensions-panel {
+  backdrop-filter: blur(32px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(180%) !important;
+}
+
+:root[astra-transparent-mode="true"] #sidebar-splitter,
+:root[astra-transparent-mode="true"] #statuspanel-label {
+  background: transparent !important;
+}
+
+/* Light theme — higher-alpha frosted fills for contrast */
+@media (prefers-color-scheme: light) {
+  :root[astra-transparent-mode="true"] #navigator-toolbox,
+  :root[astra-transparent-mode="true"] #TabsToolbar,
+  :root[astra-transparent-mode="true"] .zen-workspace-tabs-section,
+  :root[astra-transparent-mode="true"] #zen-tabbox-wrapper,
+  :root[astra-transparent-mode="true"] .zen-toolbar-background {
+    background: rgba(255, 255, 255, 0.55) !important;
+  }
+
+  :root[astra-transparent-mode="true"] #urlbar,
+  :root[astra-transparent-mode="true"] #urlbar-background,
+  :root[astra-transparent-mode="true"] #searchbar {
+    background: rgba(255, 255, 255, 0.62) !important;
+    background-color: rgba(255, 255, 255, 0.62) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+  }
+
+  :root[astra-transparent-mode="true"] panel,
+  :root[astra-transparent-mode="true"] menupopup,
+  :root[astra-transparent-mode="true"] .panel-arrowcontent {
+    background: rgba(255, 255, 255, 0.78) !important;
+    border-color: rgba(0, 0, 0, 0.06) !important;
+  }
+
+  :root[astra-transparent-mode="true"] .tabbrowser-tab[selected="true"] .tab-background {
+    background: rgba(0, 0, 0, 0.06) !important;
+  }
+}
+
+/* Private window — slightly darker frosted fill, still transparent to backdrop */
+:root[astra-transparent-mode="true"][zen-private-window="true"] #navigator-toolbox,
+:root[astra-transparent-mode="true"][privatebrowsingmode="temporary"] #navigator-toolbox,
+:root[astra-transparent-mode="true"][zen-private-window="true"] #TabsToolbar,
+:root[astra-transparent-mode="true"][privatebrowsingmode="temporary"] #TabsToolbar {
+  background: rgba(11, 10, 11, 0.55) !important;
+}

@@ -16,10 +16,11 @@
   condition: "defined(XP_WIN)"
 
 # 1 = DWMSBT_MAINWINDOW
-# 2 = DWMSBT_TRANSIENTWINDOW (default, also used for popups)
-# 3 = DWMSBT_TABBEDWINDOW
+# 2 = DWMSBT_TRANSIENTWINDOW (Acrylic; Zen 1.19.7b default, also used for popups)
+# 3 = DWMSBT_TABBEDWINDOW (MicaAlt)
+# Keep 2 so Zen chrome CSS does not apply the non-Acrylic frosted tint path.
 - name: widget.windows.mica.toplevel-backdrop
-  value: 3
+  value: 2
   condition: "defined(XP_WIN)"
 
 - name: widget.transparent-windows

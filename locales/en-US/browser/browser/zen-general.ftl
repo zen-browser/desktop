@@ -179,8 +179,22 @@ zen-sidebar-notification-restart-safe-mode-tooltip =
 
 zen-transparency-os-disabled-heading = Turn on Windows transparency to see the full effect
 zen-transparency-os-disabled-action-label = Turn on automatically
+zen-transparency-os-disabled-action-tooltip =
+    .title = Enable Windows transparency effects
 zen-transparency-enabled-heading = Transparency enabled — restart to see the effect
 zen-transparency-restart-action-label = Restart now
+zen-transparency-restart-action-tooltip =
+    .title = Restart Astra to apply the Windows setting
+
+astra-theme-options-title = Astra Options
+astra-theme-transparent-mode-label = Transparent Mode
+astra-theme-transparent-mode-description = Frosted glass chrome over the Windows backdrop. Does not change website transparency.
+astra-theme-transparent-mode-checkbox =
+    .label = Enable Transparent Mode
+astra-theme-transparent-on =
+    .label = ON
+astra-theme-transparent-off =
+    .label = OFF
 
 zen-window-sync-migration-dialog-title = Keep Your Windows in Sync
 zen-window-sync-migration-dialog-message = Zen now syncs windows on the same device, so changes in one window are reflected across the others instantly.

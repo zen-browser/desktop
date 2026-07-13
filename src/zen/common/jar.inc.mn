@@ -10,6 +10,7 @@
         content/browser/ZenUpdates.mjs                                          (../../zen/common/modules/ZenUpdates.mjs)
         content/browser/ZenUIManager.mjs                                        (../../zen/common/modules/ZenUIManager.mjs)
         content/browser/ZenEnergySaver.mjs                                      (../../zen/common/modules/ZenEnergySaver.mjs)
+        content/browser/zen-components/AstraTransparencyManager.mjs             (../../zen/common/modules/AstraTransparencyManager.mjs)
         content/browser/zen-components/ZenCommonUtils.mjs                       (../../zen/common/modules/ZenCommonUtils.mjs)
         content/browser/zen-components/ZenSessionStore.mjs                      (../../zen/common/modules/ZenSessionStore.mjs)
         content/browser/zen-components/ZenHasPolyfill.mjs                       (../../zen/common/modules/ZenHasPolyfill.mjs)
@@ -44,3 +45,4 @@
         content/browser/zen-styles/astra-workspaces.css                         (../../zen/common/styles/astra-workspaces.css)
         content/browser/zen-styles/astra-compact.css                            (../../zen/common/styles/astra-compact.css)
         content/browser/zen-styles/astra-patches.css                            (../../zen/common/styles/astra-patches.css)
+        content/browser/zen-styles/astra-transparent-mode.css                   (../../zen/common/styles/astra-transparent-mode.css)

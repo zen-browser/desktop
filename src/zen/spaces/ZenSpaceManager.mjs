@@ -2348,16 +2348,21 @@ class nsZenWorkspaces {
 
     // If we found a tab to select, select it
     if (!onInit && !tabToSelect) {
-      // Create new tab if needed and no suitable tab was found
       const newTab = this.selectEmptyTab();
       tabToSelect = newTab;
     }
-    if (tabToSelect && !onInit) {
+
+    if (!tabToSelect) {
+      const newTab = this.selectEmptyTab();
+      tabToSelect = newTab;
+    }
+
+    if (tabToSelect) {
       tabToSelect._visuallySelected = true;
     }
 
-    // Always make sure we always unselect the tab from the old workspace
-    if (currentSelectedTab && currentSelectedTab !== tabToSelect) {
+    // Only unselect the old tab when we have a confirmed replacement
+    if (tabToSelect && currentSelectedTab && currentSelectedTab !== tabToSelect) {
       currentSelectedTab._selected = false;
     }
     return tabToSelect;
@@ -3356,3 +3361,4 @@ class nsZenWorkspaces {
 }
 
 window.gZenWorkspaces = new nsZenWorkspaces();
+

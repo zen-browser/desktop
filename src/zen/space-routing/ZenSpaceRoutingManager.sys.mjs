@@ -254,6 +254,13 @@ class nsZenSpaceRoutingManager {
               ] = newTab;
 
               if (!inBackground) {
+                // Yield to the event loop so the compositor can settle
+                // after DOM reparenting before switching workspace.
+                // On Windows, DirectComposition needs time to re-establish
+                // the browser surface after the element is reparented.
+                await new Promise(resolve =>
+                  Services.tm.dispatchToMainThread(resolve)
+                );
                 await win.gZenWorkspaces.changeWorkspace(targetWorkspace);
               }
             }
@@ -567,3 +574,4 @@ class nsZenSpaceRoutingManager {
 }
 
 export const gZenSpaceRoutingManager = new nsZenSpaceRoutingManager();
+

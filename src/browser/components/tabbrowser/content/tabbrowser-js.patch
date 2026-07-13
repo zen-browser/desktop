@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index 08b5b56e069d038d72c87355920c4ce8a55ed805..e1a3a18081c7a8153f8d12c187bf4dd522944fcb 100644
+index 08b5b56e069d038d72c87355920c4ce8a55ed805..0e4f57c21d28ccf173d8d1e13e96c2c1f8a79f34 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -511,6 +511,7 @@
@@ -692,6 +692,15 @@ index 08b5b56e069d038d72c87355920c4ce8a55ed805..e1a3a18081c7a8153f8d12c187bf4dd5
          return;
        }
  
+@@ -5776,7 +5973,7 @@
+      */
+     #isLastTabInWindow(tab) {
+       for (const otherTab of this.tabs) {
+-        if (otherTab != tab && otherTab.isOpen && !otherTab.hidden) {
++        if (otherTab != tab && otherTab.isOpen && !otherTab.hidden && !otherTab.hasAttribute("zen-empty-tab")) {
+           return false;
+         }
+       }
 @@ -5867,7 +6064,7 @@
            closeWindowWithLastTab != null
              ? closeWindowWithLastTab

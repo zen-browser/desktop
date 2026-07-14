@@ -1593,7 +1593,7 @@ class nsZenWorkspaces {
       "zen.view.show-newtab-button-top",
       false
     );
-    tabs = newTabPlacement ? tabs.reverse() : tabs
+    tabs = newTabPlacement ? tabs.reverse() : tabs;
     for (let tab of tabs) {
       const workspaceContainer = this.workspaceElement(workspaceID);
       const container = tab.pinned
@@ -2482,7 +2482,9 @@ class nsZenWorkspaces {
     if (gZenWorkspaces.privateWindowOrDisabled) {
       return;
     }
-    const workspaces = this.getWorkspaces().filter(w => w.uuid !== this.activeWorkspace);
+    const workspaces = this.getWorkspaces().filter(
+      w => w.uuid !== this.activeWorkspace
+    );
     const ctxCommand = document.getElementById("cmd_zenCtxDeleteWorkspace");
     if (workspaces.length <= 1) {
       ctxCommand.setAttribute("disabled", "true");

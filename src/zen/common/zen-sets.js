@@ -160,6 +160,9 @@ document.addEventListener(
             }
             break;
           }
+          case "cmd_zenUnloadSelectedTabs":
+            void gBrowser.explicitUnloadTabs(gBrowser.selectedTabs);
+            break;
           default:
             gZenGlanceManager.handleMainCommandSet(event);
             if (event.target.id.startsWith("cmd_zenWorkspaceSwitch")) {

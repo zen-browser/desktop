@@ -848,7 +848,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 19;
+  static LATEST_KBS_VERSION = 20;
 
   constructor() {}
 
@@ -1254,6 +1254,22 @@ class nsZenKeyboardShortcutsVersioner {
           break;
         }
       }
+    }
+
+    if (version < 20) {
+      // Migrate from version 19 to 20.
+      // Add shortcut to unload the selected tabs (unbound by default).
+      data.push(
+        new KeyShortcut(
+          "zen-unload-selected-tabs",
+          "",
+          "",
+          "windowAndTabManagement",
+          nsKeyShortcutModifiers.fromObject({}),
+          "cmd_zenUnloadSelectedTabs",
+          "zen-unload-selected-tabs-shortcut"
+        )
+      );
     }
 
     return data;

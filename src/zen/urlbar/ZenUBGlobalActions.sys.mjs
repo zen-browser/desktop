@@ -30,7 +30,7 @@ const globalActionsTemplate = [
   },
   {
     label: "Astra App Hub",
-    command: window => window.gZenAppLauncher?.open?.(null, window),
+    command: window => window.gZenAppLauncher?.toggle?.(null, window),
     icon: "chrome://browser/skin/zen-icons/selectable/grid-3x3.svg",
   },
   {

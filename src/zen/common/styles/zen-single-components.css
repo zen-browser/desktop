@@ -796,8 +796,9 @@
   border: none !important;
   background: transparent !important;
 }
-.zen-app-launcher-item:hover {
-  background: var(--button-hover-bgcolor) !important;
+.zen-app-launcher-item:focus-visible {
+  outline: 2px solid var(--focus-outline-color, Highlight);
+  outline-offset: 1px;
 }
 .zen-app-launcher-item-icon {
   width: 24px !important;

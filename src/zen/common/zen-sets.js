@@ -68,35 +68,6 @@ function openAstraTrustedUrl(url, panelId, contextLabel) {
   }
 }
 
-window.gZenAppLauncher = {
-  open(event, win = window) {
-    try {
-      const doc = win.document || document;
-      const panel = doc.getElementById("PanelUI-zen-app-launcher");
-      if (!panel) return;
-      const isUsableAnchor = node => {
-        if (!node || !node.isConnected ||
-            typeof node.getBoundingClientRect !== "function") return false;
-        const rect = node.getBoundingClientRect();
-        return rect.width > 0 || rect.height > 0;
-      };
-      const eventAnchor = event?.sourceEvent?.target;
-      const anchor =
-        (isUsableAnchor(eventAnchor) && eventAnchor) ||
-        doc.getElementById("zen-sidebar-top-buttons-separator") ||
-        doc.getElementById("zen-sidebar-top-buttons") ||
-        doc.getElementById("nav-bar") ||
-        doc.getElementById("browser");
-      panel.openPopup(anchor, "after_start", 0, 0, false, false);
-    } catch(e) {
-      console.error("Astra: App Hub open error:", e);
-    }
-  },
-  openApp(url) {
-    openAstraTrustedUrl(url, "PanelUI-zen-app-launcher", "App Hub");
-  },
-};
-
 window.gZenIndiaGov = {
   open(event, win = window) {
     try {
@@ -159,23 +130,7 @@ function bindAstraCommandHandler(panel, panelName, resolver) {
 
 function attachAstraPanelDelegation() {
   try {
-    const appLauncherPanel = document.getElementById("PanelUI-zen-app-launcher");
-    if (appLauncherPanel) {
-      bindAstraCommandHandler(
-        appLauncherPanel,
-        "App Launcher",
-        (item, panel) => {
-          const url = item.getAttribute("data-url");
-          console.log("Astra: App Launcher command detected", { url });
-          if (url && window.gZenAppLauncher) {
-            window.gZenAppLauncher.openApp(url);
-            panel.hidePopup();
-          }
-        }
-      );
-    } else {
-      console.log("Astra: App Launcher panel not found during delegation attach");
-    }
+    // App Hub command handling is owned by AstraAppHubManager.
 
     const indiaGovPanel = document.getElementById("PanelUI-zen-india-gov");
     if (indiaGovPanel) {
@@ -269,7 +224,6 @@ function initAstraPanelDelegation() {
   try {
     console.log("Astra: initializing panel delegation");
     attachAstraPanelDelegation();
-    bindAstraPopupShowingHook("PanelUI-zen-app-launcher", "App Launcher");
     bindAstraPopupShowingHook("PanelUI-zen-india-gov", "India Gov");
     bindAstraPopupShowingHook("PanelUI-zen-tab-notes", "Tab Notes");
   } catch (error) {
@@ -606,9 +560,25 @@ document.addEventListener(
             }
             break;
           }
-          case "cmd_zenOpenAppLauncher":
-            gZenAppLauncher.open(event);
+          case "cmd_zenOpenAppLauncher": {
+            const hub = window.gAstraAppHubManager || window.gZenAppLauncher;
+            const sourceEvent = event?.sourceEvent;
+            const sourceType = sourceEvent?.type;
+            const source =
+              sourceType === "keydown" ||
+              sourceType === "keypress" ||
+              sourceType === "keyup"
+                ? "keyboard"
+                : sourceType && String(sourceType).startsWith("mouse")
+                  ? "mouse"
+                  : "command";
+            if (hub?.toggle) {
+              void hub.toggle({ event, source });
+            } else if (hub?.open) {
+              void hub.open({ event, source });
+            }
             break;
+          }
           case "cmd_zenOpenIndiaGov":
             gZenIndiaGov.open(event);
             break;

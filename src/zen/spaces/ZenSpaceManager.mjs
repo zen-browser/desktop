@@ -1589,8 +1589,28 @@ class nsZenWorkspaces {
   }
 
   moveTabsToWorkspace(tabs, workspaceID) {
+    const workspaceContainer = this.workspaceElement(workspaceID);
+    const newtabPlacement = Services.prefs.getBoolPref(
+      "zen.view.show-newtab-button-top",
+      false
+    );
+
+    // The insertion anchor must be captured once per container before any
+    // tab is moved. Recomputing firstChild/lastChild after each tab is
+    // inserted would use the tab we just moved as the new anchor, which
+    // reverses the order of a multi-tab move.
+    const insertElements = new Map();
+    const getInsertElement = container => {
+      if (!insertElements.has(container)) {
+        insertElements.set(
+          container,
+          newtabPlacement ? container.firstChild : container.lastChild
+        );
+      }
+      return insertElements.get(container);
+    };
+
     for (let tab of tabs) {
-      const workspaceContainer = this.workspaceElement(workspaceID);
       const container = tab.pinned
         ? workspaceContainer?.pinnedTabsContainer
         : workspaceContainer?.tabsContainer;
@@ -1603,13 +1623,7 @@ class nsZenWorkspaces {
       }
 
       if (container) {
-        const newtabPlacement = Services.prefs.getBoolPref(
-          "zen.view.show-newtab-button-top",
-          false
-        );
-        const insertElement = newtabPlacement
-          ? container.firstChild
-          : container.lastChild;
+        const insertElement = getInsertElement(container);
 
         if (tab.group?.hasAttribute("split-view-group")) {
           gBrowser.zenHandleTabMove(tab.group, () => {
@@ -2936,15 +2950,23 @@ class nsZenWorkspaces {
       ? gBrowser.selectedTabs
       : [TabContextMenu.contextTab];
     document.getElementById("tabContextMenu").hidePopup();
-    for (let tab of tabs) {
-      const previousWorkspaceID = tab.getAttribute("zen-workspace-id");
-      this.moveTabToWorkspace(tab, workspaceID);
+    // Snapshot the previous workspace of each tab before moving anything,
+    // since moveTabsToWorkspace will overwrite the zen-workspace-id attribute.
+    const previousWorkspaceIDs = tabs.map(tab =>
+      tab.getAttribute("zen-workspace-id")
+    );
+    // Move all tabs in a single batched call so they share one insertion
+    // anchor and keep their relative order, instead of moving them one at a
+    // time, which reverses the order of a multi-tab selection.
+    this.moveTabsToWorkspace(tabs, workspaceID);
+    tabs.forEach((tab, index) => {
+      const previousWorkspaceID = previousWorkspaceIDs[index];
       if (this.lastSelectedWorkspaceTabs[previousWorkspaceID] === tab) {
         // This tab is no longer the last selected tab in the previous workspace because it's being moved to
         // the current workspace
         delete this.lastSelectedWorkspaceTabs[previousWorkspaceID];
       }
-    }
+    });
     // Make sure we select the last tab in the new workspace
     this.lastSelectedWorkspaceTabs[workspaceID] =
       gZenGlanceManager.getTabOrGlanceParent(tabs[tabs.length - 1]);

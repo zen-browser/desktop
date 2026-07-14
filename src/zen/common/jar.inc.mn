@@ -8,6 +8,7 @@
 
         content/browser/zen-components/AstraAppHubManager.mjs                   (../../zen/common/modules/AstraAppHubManager.mjs)
         content/browser/zen-components/AstraAppHubState.mjs                     (../../zen/common/modules/AstraAppHubState.mjs)
+        content/browser/zen-components/AstraAppHubIcons.mjs                     (../../zen/common/modules/AstraAppHubIcons.mjs)
         content/browser/zen-components/astra-app-hub-catalog.json               (../../zen/common/app-hub/astra-app-hub-catalog.json)
 
         content/browser/ZenStartup.mjs                                          (../../zen/common/modules/ZenStartup.mjs)
@@ -50,3 +51,4 @@
         content/browser/zen-styles/astra-compact.css                            (../../zen/common/styles/astra-compact.css)
         content/browser/zen-styles/astra-patches.css                            (../../zen/common/styles/astra-patches.css)
         content/browser/zen-styles/astra-transparent-mode.css                   (../../zen/common/styles/astra-transparent-mode.css)
+        content/browser/zen-styles/astra-app-hub.css                            (../../zen/common/styles/astra-app-hub.css)

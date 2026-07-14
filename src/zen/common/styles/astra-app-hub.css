@@ -1,0 +1,461 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* Astra App Hub — Phase 2 panel */
+
+#PanelUI-zen-app-launcher.astra-app-hub-panel,
+#PanelUI-zen-app-launcher {
+  --astra-app-hub-width: min(420px, 92vw);
+  --astra-app-hub-max-height: min(72vh, 720px);
+  --astra-app-hub-accent-0: color-mix(in srgb, var(--focus-outline-color, #5b9fff) 55%, transparent);
+  --astra-app-hub-accent-1: color-mix(in srgb, #34c759 45%, transparent);
+  --astra-app-hub-accent-2: color-mix(in srgb, #ff9f0a 45%, transparent);
+  --astra-app-hub-accent-3: color-mix(in srgb, #ff453a 45%, transparent);
+  --astra-app-hub-accent-4: color-mix(in srgb, #bf5af2 45%, transparent);
+  --astra-app-hub-accent-5: color-mix(in srgb, #64d2ff 45%, transparent);
+  --astra-app-hub-accent-6: color-mix(in srgb, #ac8e68 45%, transparent);
+  --astra-app-hub-accent-7: color-mix(in srgb, #30b0c7 45%, transparent);
+
+  width: var(--astra-app-hub-width);
+  min-width: min(320px, 92vw);
+  max-width: min(460px, 96vw);
+  max-height: var(--astra-app-hub-max-height);
+  padding: 0;
+}
+
+#PanelUI-zen-app-launcher-container,
+.astra-app-hub-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-height: var(--astra-app-hub-max-height);
+  min-height: 0;
+  padding: 10px 12px 8px;
+  box-sizing: border-box;
+}
+
+.astra-app-hub-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0 8px;
+  border-bottom: 1px solid var(--panel-separator-color, color-mix(in srgb, currentColor 18%, transparent));
+  margin-bottom: 8px;
+  min-width: 0;
+}
+
+.astra-app-hub-title {
+  font-size: 1.05rem;
+  font-weight: 650;
+  margin: 0;
+}
+
+.astra-app-hub-shortcut-hint {
+  font-size: 0.7rem;
+  opacity: 0.65;
+  margin-inline-start: 4px;
+}
+
+.astra-app-hub-header-btn {
+  -moz-appearance: none;
+  appearance: none;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  padding: 4px 8px;
+  min-height: 28px;
+  cursor: pointer;
+}
+
+.astra-app-hub-header-btn:hover {
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.astra-app-hub-header-btn:focus-visible {
+  outline: 2px solid var(--focus-outline-color, Highlight);
+  outline-offset: 1px;
+}
+
+.astra-app-hub-search-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.astra-app-hub-search {
+  flex: 1;
+  min-width: 0;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  background: color-mix(in srgb, var(--arrowpanel-background, Canvas) 92%, currentColor);
+  color: inherit;
+  padding: 0 10px;
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.astra-app-hub-search:focus-visible {
+  outline: 2px solid var(--focus-outline-color, Highlight);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+.astra-app-hub-search-clear {
+  -moz-appearance: none;
+  appearance: none;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  min-width: 28px;
+  min-height: 28px;
+  cursor: pointer;
+}
+
+.astra-app-hub-search-status {
+  font-size: 0.75rem;
+  opacity: 0.75;
+  margin: 0 0 6px;
+}
+
+#PanelUI-zen-app-launcher-list,
+.astra-app-hub-list {
+  flex: 1 1 auto;
+  min-height: 120px;
+  max-height: none;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-inline-end: 2px;
+}
+
+.astra-app-hub-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.astra-app-hub-section[hidden],
+.astra-app-hub-item[hidden],
+.astra-app-hub-grid[hidden] {
+  display: none !important;
+}
+
+.astra-app-hub-section-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 28px;
+  padding: 2px 2px;
+  border-radius: 6px;
+  cursor: pointer;
+  -moz-appearance: none;
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: inherit;
+  width: 100%;
+  text-align: start;
+}
+
+.astra-app-hub-section-header:hover {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+.astra-app-hub-section-header:focus-visible {
+  outline: 2px solid var(--focus-outline-color, Highlight);
+  outline-offset: 1px;
+}
+
+.astra-app-hub-section-title,
+.zen-app-launcher-section-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-color-deemphasized, color-mix(in srgb, currentColor 65%, transparent));
+  flex: 1;
+  margin: 0;
+}
+
+.astra-app-hub-section-chevron {
+  font-size: 0.7rem;
+  opacity: 0.7;
+  width: 1.2em;
+  text-align: center;
+}
+
+.astra-app-hub-grid,
+.zen-app-launcher-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 4px !important;
+}
+
+.astra-app-hub-item,
+.zen-app-launcher-item {
+  position: relative;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 8px 4px !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+  min-height: 64px !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  color: inherit !important;
+}
+
+.astra-app-hub-item:hover,
+.zen-app-launcher-item:hover {
+  background: color-mix(in srgb, currentColor 8%, transparent) !important;
+}
+
+.astra-app-hub-item:focus-visible,
+.zen-app-launcher-item:focus-visible {
+  outline: 2px solid var(--focus-outline-color, Highlight);
+  outline-offset: 1px;
+}
+
+.astra-app-hub-item[aria-selected="true"] {
+  background: color-mix(in srgb, var(--focus-outline-color, Highlight) 18%, transparent) !important;
+  border-color: color-mix(in srgb, var(--focus-outline-color, Highlight) 45%, transparent) !important;
+}
+
+.astra-app-hub-item-icon,
+.zen-app-launcher-item-icon {
+  width: 28px !important;
+  height: 28px !important;
+  margin-bottom: 4px !important;
+  border-radius: 8px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  list-style-image: none !important;
+}
+
+.astra-app-hub-item-monogram {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: CanvasText;
+  background: var(--astra-app-hub-accent-0);
+}
+
+.astra-app-hub-item-monogram[data-accent="1"] { background: var(--astra-app-hub-accent-1); }
+.astra-app-hub-item-monogram[data-accent="2"] { background: var(--astra-app-hub-accent-2); }
+.astra-app-hub-item-monogram[data-accent="3"] { background: var(--astra-app-hub-accent-3); }
+.astra-app-hub-item-monogram[data-accent="4"] { background: var(--astra-app-hub-accent-4); }
+.astra-app-hub-item-monogram[data-accent="5"] { background: var(--astra-app-hub-accent-5); }
+.astra-app-hub-item-monogram[data-accent="6"] { background: var(--astra-app-hub-accent-6); }
+.astra-app-hub-item-monogram[data-accent="7"] { background: var(--astra-app-hub-accent-7); }
+
+.astra-app-hub-item-label,
+.zen-app-launcher-item-label {
+  font-size: 0.68rem !important;
+  text-align: center !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  margin: 0 !important;
+}
+
+.astra-app-hub-fav-btn {
+  position: absolute;
+  top: 2px;
+  inset-inline-end: 2px;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  opacity: 0;
+  cursor: pointer;
+  font-size: 0.7rem;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.astra-app-hub-item:hover .astra-app-hub-fav-btn,
+.astra-app-hub-item:focus-within .astra-app-hub-fav-btn,
+.astra-app-hub-fav-btn[aria-pressed="true"] {
+  opacity: 1;
+}
+
+.astra-app-hub-fav-btn:focus-visible {
+  opacity: 1;
+  outline: 2px solid var(--focus-outline-color, Highlight);
+}
+
+.astra-app-hub-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-top: 8px;
+  margin-top: 4px;
+  border-top: 1px solid var(--panel-separator-color, color-mix(in srgb, currentColor 18%, transparent));
+}
+
+.astra-app-hub-footer toolbarbutton {
+  -moz-appearance: none;
+  appearance: none;
+  border: none;
+  background: color-mix(in srgb, currentColor 8%, transparent);
+  border-radius: 8px;
+  padding: 6px 10px;
+  min-height: 30px;
+  cursor: pointer;
+}
+
+.astra-app-hub-footer toolbarbutton:hover {
+  background: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.astra-app-hub-footer toolbarbutton:focus-visible {
+  outline: 2px solid var(--focus-outline-color, Highlight);
+  outline-offset: 1px;
+}
+
+/* Customize mode */
+#PanelUI-zen-app-launcher[customize-mode="true"] {
+  outline: 2px solid color-mix(in srgb, var(--focus-outline-color, Highlight) 55%, transparent);
+  outline-offset: -2px;
+}
+
+#PanelUI-zen-app-launcher[customize-mode="true"] .astra-app-hub-item {
+  cursor: grab !important;
+}
+
+#PanelUI-zen-app-launcher[customize-mode="true"] .astra-app-hub-item.astra-app-hub-dragging {
+  opacity: 0.55;
+  cursor: grabbing !important;
+}
+
+.astra-app-hub-drop-indicator {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--focus-outline-color, Highlight);
+  margin: 2px 4px;
+}
+
+.astra-app-hub-move-controls {
+  display: flex;
+  gap: 2px;
+}
+
+.astra-app-hub-move-controls toolbarbutton {
+  min-width: 22px;
+  min-height: 22px;
+  padding: 0;
+  -moz-appearance: none;
+  appearance: none;
+  border: none;
+  border-radius: 4px;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  cursor: pointer;
+}
+
+/* Editor */
+.astra-app-hub-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 0 8px;
+  min-width: 0;
+}
+
+.astra-app-hub-editor[hidden] {
+  display: none !important;
+}
+
+.astra-app-hub-editor input,
+.astra-app-hub-editor select {
+  width: 100%;
+  box-sizing: border-box;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  background: color-mix(in srgb, var(--arrowpanel-background, Canvas) 92%, currentColor);
+  color: inherit;
+  padding: 0 8px;
+  font: inherit;
+}
+
+.astra-app-hub-editor input:focus-visible,
+.astra-app-hub-editor select:focus-visible {
+  outline: 2px solid var(--focus-outline-color, Highlight);
+  outline-offset: 1px;
+}
+
+.astra-app-hub-editor-error {
+  color: #ff453a;
+  font-size: 0.75rem;
+  min-height: 1.1em;
+}
+
+.astra-app-hub-editor-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.astra-app-hub-editor-actions toolbarbutton {
+  -moz-appearance: none;
+  appearance: none;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.astra-app-hub-editor-actions toolbarbutton.primary {
+  background: color-mix(in srgb, var(--focus-outline-color, Highlight) 35%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #PanelUI-zen-app-launcher *,
+  #PanelUI-zen-app-launcher *::before,
+  #PanelUI-zen-app-launcher *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .astra-app-hub-item,
+  .astra-app-hub-section-header,
+  .astra-app-hub-search {
+    border-color: CanvasText !important;
+  }
+  .astra-app-hub-item-monogram {
+    border: 1px solid CanvasText;
+  }
+}
+
+@media (max-width: 420px) {
+  .astra-app-hub-grid,
+  .zen-app-launcher-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}

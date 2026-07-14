@@ -748,71 +748,7 @@
   }
 }
 
-#PanelUI-zen-app-launcher {
-  min-width: 340px;
-  max-width: 380px;
-  padding: 12px;
-}
-
-#PanelUI-zen-app-launcher-list {
-  max-height: 70vh;
-  overflow-y: auto !important;
-  scrollbar-width: thin;
-  display: flex;
-  flex-direction: column;
-}
-#PanelUI-zen-app-launcher-title {
-  font-size: 14px;
-  font-weight: 600;
-  padding: 0 0 8px 0;
-  border-bottom: 1px solid var(--panel-separator-color);
-  margin-bottom: 6px;
-}
-.zen-app-launcher-section-title {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--text-color-deemphasized);
-  padding: 10px 0 6px 0;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  display: block;
-}
-.zen-app-launcher-grid {
-  display: grid !important;
-  grid-template-columns: repeat(4, 1fr) !important;
-  gap: 4px !important;
-}
-.zen-app-launcher-item {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 8px 4px !important;
-  border-radius: 8px !important;
-  cursor: pointer !important;
-  min-height: 56px !important;
-  -moz-appearance: none !important;
-  appearance: none !important;
-  border: none !important;
-  background: transparent !important;
-}
-.zen-app-launcher-item:focus-visible {
-  outline: 2px solid var(--focus-outline-color, Highlight);
-  outline-offset: 1px;
-}
-.zen-app-launcher-item-icon {
-  width: 24px !important;
-  height: 24px !important;
-  margin-bottom: 4px !important;
-}
-.zen-app-launcher-item-label {
-  font-size: 10px !important;
-  text-align: center !important;
-  max-width: 70px !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-}
+/* App Hub styles live in astra-app-hub.css */
 
 /* Astra - Custom workspace background image */
 #zen-appcontent-wrapper[has-custom-bg] {

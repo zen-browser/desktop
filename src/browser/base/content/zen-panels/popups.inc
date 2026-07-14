@@ -127,13 +127,16 @@
   type="arrow"
   orient="vertical"
   id="PanelUI-zen-app-launcher"
+  class="astra-app-hub-panel"
   position="bottomright topright"
   side="bottom"
-  noautofocus="true">
-  <vbox id="PanelUI-zen-app-launcher-container">
-    <label id="PanelUI-zen-app-launcher-title" value="Astra App Hub 🚀" />
-    <vbox id="PanelUI-zen-app-launcher-list">
-      <!-- Categories and apps are rendered by AstraAppHubManager from the packaged catalog. -->
+  noautofocus="true"
+  role="dialog"
+  aria-labelledby="astra-app-hub-title">
+  <vbox id="PanelUI-zen-app-launcher-container" class="astra-app-hub-container">
+    <!-- Header, search, footer, editor, and menus are built by AstraAppHubManager. -->
+    <vbox id="PanelUI-zen-app-launcher-list" class="astra-app-hub-list">
+      <!-- Categories and apps rendered by AstraAppHubManager. -->
     </vbox>
   </vbox>
 </panel>

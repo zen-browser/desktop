@@ -132,9 +132,279 @@
   side="bottom"
   noautofocus="true"
   role="dialog"
-  aria-labelledby="astra-app-hub-title">
+  aria-labelledby="astra-app-hub-title"
+  app-hub-mode="fallback">
   <vbox id="PanelUI-zen-app-launcher-container" class="astra-app-hub-container">
-    <!-- Header, search, footer, editor, and menus are built by AstraAppHubManager. -->
+    <!-- Known-good static fallback (legacy 145f29e apps). Used when advanced manager is unavailable. -->
+    <vbox id="PanelUI-zen-app-launcher-fallback">
+      <label id="PanelUI-zen-app-launcher-title" value="Astra App Hub" />
+      <vbox id="PanelUI-zen-app-launcher-fallback-list">
+
+
+      <label class="zen-app-launcher-section-title" value="📧 Mail"/>
+      <hbox class="zen-app-launcher-grid">
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://gmail.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Gmail"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://outlook.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Outlook"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://mail.zoho.in">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Zoho Mail"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://mail.yahoo.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Yahoo Mail"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://proton.me">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="ProtonMail"/>
+        </toolbarbutton>
+      </hbox>
+
+      <label class="zen-app-launcher-section-title" value="📹 Meetings"/>
+      <hbox class="zen-app-launcher-grid">
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://meet.google.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Google Meet"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://zoom.us/join">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Zoom"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://teams.microsoft.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="MS Teams"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://webex.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Webex"/>
+        </toolbarbutton>
+      </hbox>
+
+      <label class="zen-app-launcher-section-title" value="💾 Storage"/>
+      <hbox class="zen-app-launcher-grid">
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://drive.google.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Google Drive"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://onedrive.live.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="OneDrive"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://dropbox.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Dropbox"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://workdrive.zoho.in">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Zoho Drive"/>
+        </toolbarbutton>
+      </hbox>
+
+      <label class="zen-app-launcher-section-title" value="📝 Productivity"/>
+      <hbox class="zen-app-launcher-grid">
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://docs.google.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Google Docs"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://microsoft365.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Microsoft 365"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://notion.so">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Notion"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://canva.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Canva"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://sheet.zoho.in">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Zoho Docs"/>
+        </toolbarbutton>
+      </hbox>
+
+      <label class="zen-app-launcher-section-title" value="🎓 Education"/>
+      <hbox class="zen-app-launcher-grid">
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://classroom.google.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Classroom"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://teams.microsoft.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Teams EDU"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://zoom.us/education">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Zoom EDU"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://swayam.gov.in">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="SWAYAM"/>
+        </toolbarbutton>
+      </hbox>
+
+      <label class="zen-app-launcher-section-title" value="🎵 Entertainment"/>
+      <hbox class="zen-app-launcher-grid">
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://youtube.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="YouTube"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://spotify.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Spotify"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://jiosaavn.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="JioSaavn"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://jiohotstar.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="JioHotstar"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://netflix.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Netflix"/>
+        </toolbarbutton>
+      </hbox>
+
+      <label class="zen-app-launcher-section-title" value="🛒 Shopping"/>
+      <hbox class="zen-app-launcher-grid">
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://amazon.in">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Amazon"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://flipkart.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Flipkart"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://meesho.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Meesho"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://myntra.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Myntra"/>
+        </toolbarbutton>
+      </hbox>
+
+      <label class="zen-app-launcher-section-title" value="🇮🇳 Government"/>
+      <hbox class="zen-app-launcher-grid">
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://irctc.co.in">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="IRCTC"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://incometax.gov.in">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Income Tax"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://digilocker.gov.in">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="DigiLocker"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://gst.gov.in">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="GST Portal"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://epfindia.gov.in">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="EPFO"/>
+        </toolbarbutton>
+      </hbox>
+
+      <label class="zen-app-launcher-section-title" value="📰 News"/>
+      <hbox class="zen-app-launcher-grid">
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://inshorts.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Inshorts"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://ndtv.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="NDTV"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://timesofindia.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="TOI"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://news.google.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Google News"/>
+        </toolbarbutton>
+      </hbox>
+
+      <label class="zen-app-launcher-section-title" value="💼 Business"/>
+      <hbox class="zen-app-launcher-grid">
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://linkedin.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="LinkedIn"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://slack.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Slack"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://freshdesk.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Freshdesk"/>
+        </toolbarbutton>
+        <toolbarbutton class="zen-app-launcher-item"
+          data-url="https://trello.com">
+          <image class="zen-app-launcher-item-icon"/>
+          <label class="zen-app-launcher-item-label" value="Trello"/>
+        </toolbarbutton>
+      </hbox>
+
+    </vbox>
+      </vbox>
+    </vbox>
+    <!-- Advanced UI shell: header/search/footer built by AstraAppHubManager; list rendered from catalog. -->
     <vbox id="PanelUI-zen-app-launcher-list" class="astra-app-hub-list">
       <!-- Categories and apps rendered by AstraAppHubManager. -->
     </vbox>

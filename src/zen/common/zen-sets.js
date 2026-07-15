@@ -561,7 +561,8 @@ document.addEventListener(
             break;
           }
           case "cmd_zenOpenAppLauncher": {
-            const hub = window.gAstraAppHubManager || window.gZenAppLauncher;
+            // Always use the stable bootstrap facade (never call manager directly).
+            const hub = window.gZenAppLauncher;
             const sourceEvent = event?.sourceEvent;
             const sourceType = sourceEvent?.type;
             const source =
@@ -576,6 +577,10 @@ document.addEventListener(
               void hub.toggle({ event, source });
             } else if (hub?.open) {
               void hub.open({ event, source });
+            } else {
+              console.error(
+                "[AstraAppHub] command invoked but gZenAppLauncher is missing"
+              );
             }
             break;
           }

@@ -459,3 +459,94 @@
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   }
 }
+
+/* —— Fallback mode (known-good static markup) —— */
+#PanelUI-zen-app-launcher[app-hub-mode="fallback"] #astra-app-hub-header,
+#PanelUI-zen-app-launcher[app-hub-mode="fallback"] #astra-app-hub-search-row,
+#PanelUI-zen-app-launcher[app-hub-mode="fallback"] #astra-app-hub-search-status,
+#PanelUI-zen-app-launcher[app-hub-mode="fallback"] #PanelUI-zen-app-launcher-list,
+#PanelUI-zen-app-launcher[app-hub-mode="fallback"] #astra-app-hub-footer,
+#PanelUI-zen-app-launcher[app-hub-mode="fallback"] #astra-app-hub-editor {
+  display: none !important;
+}
+
+#PanelUI-zen-app-launcher[app-hub-mode="advanced"] #PanelUI-zen-app-launcher-fallback {
+  display: none !important;
+}
+
+#PanelUI-zen-app-launcher-fallback {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-height: var(--astra-app-hub-max-height, min(72vh, 720px));
+}
+
+#PanelUI-zen-app-launcher-fallback-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 70vh;
+  overflow-y: auto !important;
+  scrollbar-width: thin;
+  min-height: 0;
+}
+
+#PanelUI-zen-app-launcher-title {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0 0 8px 0;
+  border-bottom: 1px solid var(--panel-separator-color, color-mix(in srgb, currentColor 18%, transparent));
+  margin-bottom: 6px;
+}
+
+#PanelUI-zen-app-launcher-fallback .zen-app-launcher-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-color-deemphasized, inherit);
+  opacity: 0.85;
+  padding: 10px 0 6px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  display: block;
+}
+
+#PanelUI-zen-app-launcher-fallback .zen-app-launcher-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 4px !important;
+}
+
+#PanelUI-zen-app-launcher-fallback .zen-app-launcher-item {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 8px 4px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  min-height: 56px !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+#PanelUI-zen-app-launcher-fallback .zen-app-launcher-item:hover {
+  background: var(--button-hover-bgcolor, color-mix(in srgb, currentColor 10%, transparent)) !important;
+}
+
+#PanelUI-zen-app-launcher-fallback .zen-app-launcher-item-icon {
+  width: 24px !important;
+  height: 24px !important;
+  margin-bottom: 4px !important;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  border-radius: 6px;
+}
+
+#PanelUI-zen-app-launcher-fallback .zen-app-launcher-item-label {
+  font-size: 10px !important;
+  text-align: center !important;
+  max-width: 70px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}

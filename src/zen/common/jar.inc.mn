@@ -6,6 +6,7 @@
         content/browser/ZenPreloadedScripts.js                                  (../../zen/common/ZenPreloadedScripts.js)
         content/browser/zen-sets.js                                             (../../zen/common/zen-sets.js)
 
+        content/browser/zen-components/AstraAppHubBootstrap.mjs                 (../../zen/common/modules/AstraAppHubBootstrap.mjs)
         content/browser/zen-components/AstraAppHubManager.mjs                   (../../zen/common/modules/AstraAppHubManager.mjs)
         content/browser/zen-components/AstraAppHubState.mjs                     (../../zen/common/modules/AstraAppHubState.mjs)
         content/browser/zen-components/AstraAppHubIcons.mjs                     (../../zen/common/modules/AstraAppHubIcons.mjs)

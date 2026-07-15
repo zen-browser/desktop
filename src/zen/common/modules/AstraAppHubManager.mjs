@@ -18,12 +18,32 @@ const {
 } = ChromeUtils.importESModule(
   "chrome://browser/content/zen-components/AstraAppHubState.mjs"
 );
-const { resolveAppIcon, pickAndStoreCustomIcon, deleteCustomIcons } =
-  ChromeUtils.importESModule(
-    "chrome://browser/content/zen-components/AstraAppHubIcons.mjs"
-  );
 
-gAstraAppHubState.setIconCleanupHandler(deleteCustomIcons);
+let resolveAppIcon;
+let pickAndStoreCustomIcon;
+let deleteCustomIcons;
+try {
+  ({ resolveAppIcon, pickAndStoreCustomIcon, deleteCustomIcons } =
+    ChromeUtils.importESModule(
+      "chrome://browser/content/zen-components/AstraAppHubIcons.mjs"
+    ));
+  gAstraAppHubState.setIconCleanupHandler(deleteCustomIcons);
+} catch (iconModuleError) {
+  console.error(
+    "[AstraAppHub] icon module failed; continuing without custom icons:",
+    iconModuleError
+  );
+  resolveAppIcon = app => ({
+    type: "monogram",
+    text: String(app?.name || app?.id || "?")
+      .trim()
+      .slice(0, 2)
+      .toUpperCase() || "?",
+    accent: 0,
+  });
+  pickAndStoreCustomIcon = async () => null;
+  deleteCustomIcons = async () => {};
+}
 
 const CATALOG_URL =
   "chrome://browser/content/zen-components/astra-app-hub-catalog.json";
@@ -233,24 +253,12 @@ class AstraAppHubManager {
 
   constructor() {
     window.gAstraAppHubManager = this;
-    window.gZenAppLauncher = {
-      open: (eventOrOptions, win = window) => {
-        const options = this.#normalizeCompatArgs(eventOrOptions);
-        if (win && win !== window && win.gAstraAppHubManager) {
-          return win.gAstraAppHubManager.open(options);
-        }
-        return this.open(options);
-      },
-      close: options => this.close(options),
-      toggle: (eventOrOptions, win = window) => {
-        const options = this.#normalizeCompatArgs(eventOrOptions);
-        if (win && win !== window && win.gAstraAppHubManager) {
-          return win.gAstraAppHubManager.toggle(options);
-        }
-        return this.toggle(options);
-      },
-      openApp: (appOrUrl, options) => this.openApp(appOrUrl, options),
-    };
+    // Attach to stable bootstrap facade — never replace window.gZenAppLauncher.
+    try {
+      window.gAstraAppHubBootstrap?.attachManager?.(this);
+    } catch (error) {
+      console.error("[AstraAppHub] bootstrap attach failed:", error);
+    }
 
     window.addEventListener(
       "unload",
@@ -262,6 +270,11 @@ class AstraAppHubManager {
 
     void this.init().catch(error => {
       console.error("[AstraAppHub] background init failed:", error);
+      try {
+        window.gAstraAppHubBootstrap?.markManagerFailed?.(error, "init");
+      } catch {
+        // ignore
+      }
     });
   }
 
@@ -339,20 +352,53 @@ class AstraAppHubManager {
   }
 
   async #initInternal() {
+    // Critical: panel wiring must not depend on profile IO / catalog.
     try {
-      await gAstraAppHubState.load();
-      this.#lastAppliedRevision = gAstraAppHubState.revision;
-      const response = await fetch(CATALOG_URL);
-      if (!response.ok) {
-        throw new Error(`catalog fetch failed: ${response.status}`);
+      this.#ensureShell();
+      this.#bindPanelListeners();
+    } catch (error) {
+      console.error("[AstraAppHub] critical shell init failed:", error);
+      try {
+        window.gAstraAppHubBootstrap?.markManagerFailed?.(error, "shell");
+      } catch {
+        // ignore
       }
-      const raw = await response.json();
-      this.#catalog = validateCatalog(raw);
-      this.#catalogError = null;
-      await this.#pruneUnknown();
+      this.#initialized = true;
+      return null;
+    }
+
+    // Non-critical: state, catalog, icons, prune.
+    try {
+      try {
+        await gAstraAppHubState.load();
+        this.#lastAppliedRevision = gAstraAppHubState.revision;
+      } catch (stateError) {
+        console.warn("[AstraAppHub] state load failed:", stateError);
+      }
+
+      try {
+        const response = await fetch(CATALOG_URL);
+        if (!response.ok) {
+          throw new Error(`catalog fetch failed: ${response.status}`);
+        }
+        const raw = await response.json();
+        this.#catalog = validateCatalog(raw);
+        this.#catalogError = null;
+        await this.#pruneUnknown();
+      } catch (catalogError) {
+        this.#catalog = null;
+        this.#catalogError = catalogError;
+        console.error("[AstraAppHub] catalog load failed:", catalogError);
+      }
+
       this.#ensureShell();
       this.#bindPanelListeners();
       this.#initialized = true;
+      try {
+        window.gAstraAppHubBootstrap?.setAdvancedReady?.(true);
+      } catch {
+        // ignore
+      }
       return this.#catalog;
     } catch (error) {
       this.#catalog = null;
@@ -361,6 +407,12 @@ class AstraAppHubManager {
       console.error("[AstraAppHub] catalog load failed:", error);
       this.#ensureShell();
       this.#bindPanelListeners();
+      try {
+        // Shell works — still prefer advanced error UI over silent failure.
+        window.gAstraAppHubBootstrap?.setAdvancedReady?.(true);
+      } catch {
+        // ignore
+      }
       return null;
     }
   }
@@ -392,6 +444,11 @@ class AstraAppHubManager {
     this.#priorFocus = null;
     this.#dragState = null;
     this.#contextAppId = null;
+    try {
+      window.gAstraAppHubBootstrap?.setAdvancedReady?.(false);
+    } catch {
+      // ignore
+    }
   }
 
   #ensureShell() {
@@ -424,7 +481,11 @@ class AstraAppHubManager {
       hint.id = "astra-app-hub-shortcut-hint";
       hint.classList.add("astra-app-hub-shortcut-hint");
       header.appendChild(hint);
-      this.#updateShortcutHint(hint);
+      try {
+        this.#updateShortcutHint(hint);
+      } catch (hintError) {
+        console.warn("[AstraAppHub] shortcut hint failed:", hintError);
+      }
 
       const spacer = document.createXULElement("spacer");
       spacer.setAttribute("flex", "1");
@@ -446,10 +507,20 @@ class AstraAppHubManager {
       header.appendChild(doneBtn);
 
       const oldTitle = document.getElementById("PanelUI-zen-app-launcher-title");
-      if (oldTitle) {
+      // Never destroy the known-good fallback title node.
+      if (
+        oldTitle &&
+        !oldTitle.closest?.("#PanelUI-zen-app-launcher-fallback")
+      ) {
         oldTitle.remove();
       }
-      container.insertBefore(header, container.firstChild);
+      // Insert advanced header before the advanced list (after fallback block).
+      const listEl = this.list;
+      if (listEl && listEl.parentNode === container) {
+        container.insertBefore(header, listEl);
+      } else {
+        container.insertBefore(header, container.firstChild);
+      }
     }
 
     // Search row
@@ -966,20 +1037,25 @@ class AstraAppHubManager {
 
   async toggle(options = {}) {
     if (this.#destroyed || window.closed) {
-      return;
+      return false;
     }
-    await this.init();
+    // Do not block toggle on non-critical init; open path is resilient.
+    void this.init();
     if (this.#destroyed || window.closed) {
-      return;
+      return false;
     }
     if (this.#popupTransition || this.#isHiding) {
-      return;
+      if (this.#popupTransition && !this.isOpen && !this.#isHiding) {
+        this.#popupTransition = false;
+      } else {
+        return false;
+      }
     }
     if (this.isOpen) {
       this.close({ ...options, restoreFocus: true });
-      return;
+      return true;
     }
-    await this.open(options);
+    return this.open(options);
   }
 
   #resolveOpenSource(options = {}) {
@@ -999,35 +1075,91 @@ class AstraAppHubManager {
 
   async open(options = {}) {
     if (this.#destroyed || window.closed) {
-      return;
+      return false;
     }
-    await this.init();
-    if (this.#destroyed || window.closed) {
-      return;
-    }
+
+    // Kick non-critical init without blocking the first paint of the panel.
+    const initPromise = this.init();
+
     const panel = this.panel;
     if (!panel) {
       console.error("[AstraAppHub] panel missing");
-      return;
+      // Panel may appear after head-script construction; retry after init.
+      try {
+        await initPromise;
+      } catch {
+        // ignore
+      }
+      if (!this.panel) {
+        return false;
+      }
     }
 
     this.#openSource = this.#resolveOpenSource(options);
     this.#capturePriorFocus();
-    this.#ensureShell();
-    this.#ensureRendered();
+    try {
+      this.#ensureShell();
+      this.#bindPanelListeners();
+    } catch (error) {
+      this.#popupTransition = false;
+      console.error("[AstraAppHub] shell/bind failed:", error);
+      return false;
+    }
+
+    // Render if catalog already available; otherwise show shell and fill later.
+    try {
+      if (this.#catalog || this.#catalogError || this.#initialized) {
+        this.#ensureRendered();
+      }
+    } catch (error) {
+      console.warn("[AstraAppHub] render failed before open:", error);
+    }
+
+    const livePanel = this.panel;
+    if (!livePanel) {
+      console.error("[AstraAppHub] panel missing");
+      return false;
+    }
 
     if (this.isOpen || this.#popupTransition || this.#isHiding) {
-      return;
+      // Recover from a stuck transition after a failed previous open.
+      if (this.#popupTransition && !this.isOpen && !this.#isHiding) {
+        this.#popupTransition = false;
+      } else {
+        return true;
+      }
     }
 
     const anchor = this.#resolveAnchor(options.event);
     this.#popupTransition = true;
     try {
-      panel.openPopup(anchor, "after_start", 0, 0, false, false);
+      livePanel.openPopup(anchor, "after_start", 0, 0, false, false);
     } catch (error) {
       this.#popupTransition = false;
       console.error("[AstraAppHub] openPopup failed:", error);
+      return false;
     }
+
+    // Finish init/render in the background; never leave transition stuck.
+    void initPromise
+      .then(() => {
+        if (this.#destroyed || window.closed) {
+          return;
+        }
+        try {
+          this.#ensureShell();
+          this.#bindPanelListeners();
+          this.#ensureRendered();
+        } catch (error) {
+          console.warn("[AstraAppHub] post-open render failed:", error);
+        }
+      })
+      .catch(error => {
+        this.#popupTransition = false;
+        console.error("[AstraAppHub] background init failed:", error);
+      });
+
+    return true;
   }
 
   close(options = {}) {
@@ -2812,18 +2944,33 @@ class AstraAppHubManager {
       ) {
         return false;
       }
+      try {
+        if (node.ownerGlobal && node.ownerGlobal !== window) {
+          return false;
+        }
+      } catch {
+        return false;
+      }
       const rect = node.getBoundingClientRect();
       return rect.width > 0 || rect.height > 0;
     };
     const eventAnchor = event?.sourceEvent?.target || event?.target;
-    return (
-      (isUsableAnchor(eventAnchor) && eventAnchor) ||
-      document.getElementById("zen-app-launcher-button") ||
-      document.getElementById("zen-sidebar-top-buttons-separator") ||
-      document.getElementById("zen-sidebar-top-buttons") ||
-      document.getElementById("nav-bar") ||
-      document.getElementById("browser")
-    );
+    const candidates = [
+      isUsableAnchor(eventAnchor) ? eventAnchor : null,
+      document.getElementById("zen-app-launcher-button"),
+      document.getElementById("zen-sidebar-top-buttons-separator"),
+      document.getElementById("zen-sidebar-top-buttons"),
+      document.getElementById("nav-bar"),
+      document.getElementById("PersonalToolbar"),
+      document.getElementById("browser"),
+      document.documentElement,
+    ];
+    for (const node of candidates) {
+      if (isUsableAnchor(node)) {
+        return node;
+      }
+    }
+    return document.documentElement;
   }
 
   #capturePriorFocus() {

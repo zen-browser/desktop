@@ -25,6 +25,12 @@
       // Bootstrap itself must never break later preloads.
     }
   }
+  // Suraksha: bootstrap only — manager/adapters lazy-load on first open.
+  try {
+    ChromeUtils.importESModule("chrome://browser/content/zen-components/AstraSurakshaBootstrap.mjs", { global: "current" });
+  } catch (error) {
+    console.error("[AstraSuraksha] bootstrap failed to initialize", error);
+  }
   ChromeUtils.importESModule("chrome://browser/content/zen-components/ZenKeyboardShortcuts.mjs", { global: "current" });
   ChromeUtils.importESModule("chrome://browser/content/zen-components/ZenSessionStore.mjs", { global: "current" });
 

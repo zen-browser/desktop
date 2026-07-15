@@ -1,0 +1,160 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#PanelUI-astra-suraksha {
+  --astra-suraksha-width: min(360px, 92vw);
+  --astra-suraksha-pad: 12px;
+  --astra-suraksha-gap: 10px;
+  --astra-suraksha-radius: 10px;
+  --astra-suraksha-border: color-mix(in srgb, currentColor 14%, transparent);
+  --astra-suraksha-surface: color-mix(in srgb, currentColor 6%, transparent);
+  width: var(--astra-suraksha-width);
+  max-width: 92vw;
+  max-height: min(80vh, 640px);
+}
+
+#PanelUI-astra-suraksha-container {
+  padding: var(--astra-suraksha-pad);
+  gap: var(--astra-suraksha-gap);
+  overflow-y: auto;
+  max-height: min(80vh, 640px);
+}
+
+#astra-suraksha-header {
+  align-items: center;
+  gap: 8px;
+}
+
+#astra-suraksha-title {
+  font-weight: 600;
+  font-size: 1.05em;
+}
+
+#astra-suraksha-mode-label {
+  opacity: 0.72;
+  font-size: 0.85em;
+}
+
+#astra-suraksha-refresh {
+  margin-inline-start: auto;
+}
+
+.astra-suraksha-section-title {
+  font-weight: 600;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+  margin-block: 4px 2px;
+}
+
+.astra-suraksha-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px;
+  border: 1px solid var(--astra-suraksha-border);
+  border-radius: var(--astra-suraksha-radius);
+  background: var(--astra-suraksha-surface);
+}
+
+.astra-suraksha-hostname {
+  font-weight: 600;
+}
+
+.astra-suraksha-card-status {
+  font-weight: 500;
+}
+
+.astra-suraksha-card-detail,
+.astra-suraksha-perm-temp {
+  opacity: 0.75;
+  font-size: 0.9em;
+}
+
+.astra-suraksha-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-block-start: 4px;
+}
+
+.astra-suraksha-action {
+  appearance: none;
+}
+
+.astra-suraksha-perm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.astra-suraksha-perm-row {
+  align-items: center;
+  gap: 8px;
+}
+
+.astra-suraksha-perm-name {
+  flex: 1;
+}
+
+.astra-suraksha-perm-state {
+  font-weight: 500;
+}
+
+#PanelUI-astra-suraksha-fallback,
+#PanelUI-astra-suraksha-advanced {
+  gap: var(--astra-suraksha-gap);
+}
+
+#PanelUI-astra-suraksha[astra-suraksha-mode="fallback"] #PanelUI-astra-suraksha-advanced {
+  display: none;
+}
+
+#PanelUI-astra-suraksha[astra-suraksha-mode="advanced"] #PanelUI-astra-suraksha-fallback {
+  display: none;
+}
+
+#astra-suraksha-button .toolbarbutton-icon,
+#astra-suraksha-button > toolbarbutton > .toolbarbutton-icon,
+#appMenu-astra-suraksha-button .toolbarbutton-icon {
+  list-style-image: url("chrome://browser/skin/tracking-protection.svg");
+}
+
+/* Compact / Transparent scoped adjustments */
+:root[zen-compact-mode="true"] #PanelUI-astra-suraksha {
+  --astra-suraksha-pad: 10px;
+}
+
+:root[astra-transparent-mode="true"] #PanelUI-astra-suraksha .astra-suraksha-card {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #PanelUI-astra-suraksha *,
+  #PanelUI-astra-suraksha *::before,
+  #PanelUI-astra-suraksha *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .astra-suraksha-card {
+    border-width: 2px;
+  }
+
+  .astra-suraksha-action:focus-visible,
+  #astra-suraksha-refresh:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+}
+
+.astra-suraksha-action:focus-visible,
+#astra-suraksha-refresh:focus-visible,
+#astra-suraksha-button > toolbarbutton:focus-visible {
+  outline: 2px solid SelectedItem;
+  outline-offset: 2px;
+}

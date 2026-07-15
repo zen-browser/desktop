@@ -129,6 +129,28 @@ export class nsZenMenuBar {
                 key="zen-new-unsynced-window"
                 command="cmd_zenNewNavigatorUnsynced"/>`)
     );
+
+    // Astra Suraksha Center — additive App Menu entry (independent of App Hub).
+    try {
+      const extensionsBtn = PanelMultiView.getViewNode(
+        document,
+        "appMenu-extensions-themes-button"
+      );
+      if (extensionsBtn && !document.getElementById("appMenu-astra-suraksha-button")) {
+        const surakshaItem = window.MozXULElement.parseXULToFragment(
+          `<toolbarbutton id="appMenu-astra-suraksha-button"
+                    class="subviewbutton subviewbutton-iconic"
+                    data-l10n-id="astra-suraksha-appmenu"
+                    command="cmd_astraOpenSurakshaCenter"/>`
+        ).querySelector("toolbarbutton");
+        extensionsBtn.before(surakshaItem);
+        if (!Services.prefs.getBoolPref("astra.suraksha.enabled", true)) {
+          surakshaItem.setAttribute("hidden", "true");
+        }
+      }
+    } catch {
+      // App Menu entry is optional; toolbar command remains available.
+    }
   }
 
   #hideWindowRestoreMenus() {

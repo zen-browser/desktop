@@ -414,6 +414,117 @@
 <panel
   type="arrow"
   orient="vertical"
+  id="PanelUI-astra-suraksha"
+  class="astra-suraksha-panel"
+  position="bottomright topright"
+  side="bottom"
+  noautofocus="true"
+  role="dialog"
+  aria-labelledby="astra-suraksha-title"
+  astra-suraksha-mode="fallback">
+  <vbox id="PanelUI-astra-suraksha-container" class="astra-suraksha-container">
+    <hbox id="astra-suraksha-header">
+      <vbox flex="1">
+        <label id="astra-suraksha-title"
+               value="Astra Suraksha Center"
+               data-l10n-id="astra-suraksha-title"/>
+        <label id="astra-suraksha-mode-label"
+               value="Basic controls"
+               data-l10n-id="astra-suraksha-mode-fallback"/>
+      </vbox>
+      <toolbarbutton id="astra-suraksha-refresh"
+                     class="subviewbutton"
+                     data-l10n-id="astra-suraksha-refresh"/>
+    </hbox>
+
+    <!-- Static fallback: usable with no manager/adapters.
+         Emergency label= text remains if Fluent fails to load. -->
+    <vbox id="PanelUI-astra-suraksha-fallback">
+      <label class="astra-suraksha-section-title"
+             value="Quick actions"
+             data-l10n-id="astra-suraksha-section-fallback"/>
+      <toolbarbutton class="astra-suraksha-action subviewbutton"
+                     data-suraksha-action="protections-panel"
+                     label="Open Firefox protection panel"
+                     data-l10n-id="astra-suraksha-action-protections-panel"/>
+      <toolbarbutton class="astra-suraksha-action subviewbutton"
+                     data-suraksha-action="site-info"
+                     label="Open site information"
+                     data-l10n-id="astra-suraksha-action-site-info"/>
+      <toolbarbutton class="astra-suraksha-action subviewbutton"
+                     data-suraksha-action="protections-dashboard"
+                     label="Open protection dashboard"
+                     data-l10n-id="astra-suraksha-action-protections-dashboard"/>
+      <toolbarbutton class="astra-suraksha-action subviewbutton"
+                     data-suraksha-action="addons"
+                     label="Open Add-ons Manager"
+                     data-l10n-id="astra-suraksha-action-addons"/>
+    </vbox>
+
+    <!-- Advanced cards: populated by lazy manager. -->
+    <vbox id="PanelUI-astra-suraksha-advanced" hidden="true">
+      <label class="astra-suraksha-section-title" data-l10n-id="astra-suraksha-section-site"/>
+      <vbox id="astra-suraksha-card-connection" class="astra-suraksha-card" data-state="loading">
+        <label class="astra-suraksha-hostname" data-l10n-id="astra-suraksha-hostname-unknown"/>
+        <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+        <label class="astra-suraksha-card-detail" hidden="true"/>
+        <hbox class="astra-suraksha-card-actions"/>
+      </vbox>
+
+      <label class="astra-suraksha-section-title" data-l10n-id="astra-suraksha-section-protection"/>
+      <vbox id="astra-suraksha-card-protection" class="astra-suraksha-card" data-state="loading">
+        <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+        <label class="astra-suraksha-card-detail" hidden="true"/>
+        <hbox class="astra-suraksha-card-actions"/>
+      </vbox>
+      <vbox id="astra-suraksha-card-ublock" class="astra-suraksha-card" data-state="loading">
+        <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+        <label class="astra-suraksha-card-detail" hidden="true"/>
+        <hbox class="astra-suraksha-card-actions"/>
+      </vbox>
+
+      <label class="astra-suraksha-section-title" data-l10n-id="astra-suraksha-section-permissions"/>
+      <vbox id="astra-suraksha-card-permissions" class="astra-suraksha-card" data-state="loading">
+        <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+        <vbox class="astra-suraksha-perm-list"/>
+        <hbox class="astra-suraksha-card-actions"/>
+      </vbox>
+
+      <label class="astra-suraksha-section-title" data-l10n-id="astra-suraksha-section-site-data"/>
+      <vbox id="astra-suraksha-card-site-data" class="astra-suraksha-card" data-state="loading">
+        <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+        <hbox class="astra-suraksha-card-actions"/>
+      </vbox>
+
+      <label class="astra-suraksha-section-title" data-l10n-id="astra-suraksha-section-clean-link"/>
+      <vbox id="astra-suraksha-card-clean-link" class="astra-suraksha-card" data-state="loading">
+        <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+        <hbox class="astra-suraksha-card-actions"/>
+      </vbox>
+
+      <label class="astra-suraksha-section-title" data-l10n-id="astra-suraksha-section-advanced"/>
+      <toolbarbutton class="astra-suraksha-action subviewbutton"
+                     data-suraksha-action="protections-panel"
+                     data-l10n-id="astra-suraksha-action-protections-panel"/>
+      <toolbarbutton class="astra-suraksha-action subviewbutton"
+                     data-suraksha-action="site-info"
+                     data-l10n-id="astra-suraksha-action-site-info"/>
+      <toolbarbutton class="astra-suraksha-action subviewbutton"
+                     data-suraksha-action="etp-dashboard"
+                     data-l10n-id="astra-suraksha-action-protections-dashboard"/>
+      <toolbarbutton class="astra-suraksha-action subviewbutton"
+                     data-suraksha-action="ublock-popup"
+                     data-l10n-id="astra-suraksha-action-ublock-popup"/>
+      <toolbarbutton class="astra-suraksha-action subviewbutton"
+                     data-suraksha-action="addons"
+                     data-l10n-id="astra-suraksha-action-addons"/>
+    </vbox>
+  </vbox>
+</panel>
+
+<panel
+  type="arrow"
+  orient="vertical"
   id="PanelUI-zen-india-gov"
   position="bottomright topright"
   side="bottom"

@@ -163,6 +163,41 @@ window.gZenUIManager = {
       console.error("Error adding compact mode button to sidebar:", e);
     }
     Services.prefs.setBoolPref(kPref, true);
+
+    // Additive Suraksha toolbar placement for existing profiles (independent of App Hub).
+    // Do not consume the migration flag while the feature is disabled or the widget
+    // DOM is not ready yet — otherwise re-enabling never places the button.
+    const kSurakshaPref = "astra.ui.migration.suraksha-button-added";
+    try {
+      if (!Services.prefs.getBoolPref(kSurakshaPref, false)) {
+        if (!Services.prefs.getBoolPref("astra.suraksha.enabled", true)) {
+          // Defer until Suraksha is enabled.
+        } else if (!document.getElementById("astra-suraksha-button")) {
+          // Widget markup not ready in this window yet — retry later.
+        } else {
+          const placements = CustomizableUI.getWidgetIdsInArea(
+            "zen-sidebar-top-buttons"
+          );
+          if (placements.includes("astra-suraksha-button")) {
+            Services.prefs.setBoolPref(kSurakshaPref, true);
+          } else if (placements.includes("zen-app-launcher-button")) {
+            const hubIndex = placements.indexOf("zen-app-launcher-button");
+            CustomizableUI.addWidgetToArea(
+              "astra-suraksha-button",
+              "zen-sidebar-top-buttons",
+              hubIndex + 1
+            );
+            Services.prefs.setBoolPref(kSurakshaPref, true);
+          } else {
+            // Feature enabled and widget exists, but current layout has no hub
+            // anchor — stop retrying without forcing a layout reset.
+            Services.prefs.setBoolPref(kSurakshaPref, true);
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Error adding Suraksha button to sidebar:", e);
+    }
   },
 
   _initBookmarkCollapseListener() {

@@ -22,6 +22,7 @@ export const ZenCustomizableUI = new (class {
         defaultPlacements: [
           "zen-toggle-compact-mode",
           "zen-app-launcher-button",
+          "astra-suraksha-button",
         ],
         defaultCollapsed: null,
         overflowable: true,
@@ -89,6 +90,14 @@ export const ZenCustomizableUI = new (class {
               class="toolbarbutton-1"
               command="cmd_zenOpenAppLauncher"
               tooltiptext="Bharat Apps 🇮🇳"
+              flex="1" />
+          </toolbaritem>
+          <toolbaritem id="astra-suraksha-button" removable="true" data-l10n-id="astra-suraksha-button">
+            <toolbarbutton
+              id="astra-suraksha-toolbarbutton"
+              class="toolbarbutton-1"
+              command="cmd_astraOpenSurakshaCenter"
+              data-l10n-id="astra-suraksha-button"
               flex="1" />
           </toolbaritem>
           <html:div id="zen-sidebar-top-buttons-separator" skipintoolbarset="true" overflows="false"></html:div>

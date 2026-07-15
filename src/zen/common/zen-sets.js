@@ -584,6 +584,25 @@ document.addEventListener(
             }
             break;
           }
+          case "cmd_astraOpenSurakshaCenter": {
+            const suraksha = window.gAstraSuraksha;
+            const sourceEvent = event?.sourceEvent;
+            const sourceType = sourceEvent?.type;
+            const source =
+              sourceType === "keydown" ||
+              sourceType === "keypress" ||
+              sourceType === "keyup"
+                ? "keyboard"
+                : sourceType && String(sourceType).startsWith("mouse")
+                  ? "mouse"
+                  : "command";
+            if (suraksha?.toggle) {
+              void suraksha.toggle({ event, source });
+            } else if (suraksha?.open) {
+              void suraksha.open({ event, source });
+            }
+            break;
+          }
           case "cmd_zenOpenIndiaGov":
             gZenIndiaGov.open(event);
             break;

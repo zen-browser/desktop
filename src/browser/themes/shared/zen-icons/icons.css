@@ -94,6 +94,13 @@
   list-style-image: url("chrome://browser/skin/zen-icons/selectable/grid-3x3.svg");
 }
 
+#astra-suraksha-button .toolbarbutton-icon,
+#astra-suraksha-button > toolbarbutton > .toolbarbutton-icon,
+#astra-suraksha-toolbarbutton .toolbarbutton-icon,
+#appMenu-astra-suraksha-button .toolbarbutton-icon {
+  list-style-image: url("chrome://browser/skin/tracking-protection.svg");
+}
+
 #downloads-button,
 #downloads-indicator-anchor,
 #appMenu-downloads-button,

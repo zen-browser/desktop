@@ -13,18 +13,9 @@
   ChromeUtils.importESModule("chrome://browser/content/ZenUIManager.mjs", { global: "current" });
   ChromeUtils.importESModule("chrome://browser/content/zen-components/ZenMods.mjs", { global: "current" });
   ChromeUtils.importESModule("chrome://browser/content/zen-components/AstraTransparencyManager.mjs", { global: "current" });
-  // App Hub: stable bootstrap first so gZenAppLauncher always exists.
+  // App Hub: stable bootstrap only at startup. Advanced manager lazy-loads on
+  // first open so catalog/profile IO does not compete with first navigation.
   ChromeUtils.importESModule("chrome://browser/content/zen-components/AstraAppHubBootstrap.mjs", { global: "current" });
-  try {
-    ChromeUtils.importESModule("chrome://browser/content/zen-components/AstraAppHubManager.mjs", { global: "current" });
-  } catch (error) {
-    console.error("[AstraAppHub] advanced manager failed; fallback active", error);
-    try {
-      window.gAstraAppHubBootstrap?.markManagerFailed?.(error, "import");
-    } catch (_ignored) {
-      // Bootstrap itself must never break later preloads.
-    }
-  }
   // Suraksha: bootstrap only — manager/adapters lazy-load on first open.
   try {
     ChromeUtils.importESModule("chrome://browser/content/zen-components/AstraSurakshaBootstrap.mjs", { global: "current" });

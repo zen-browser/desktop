@@ -183,23 +183,25 @@
 - name: privacy.globalprivacycontrol.functionality.enabled
   value: true
 
-# Astra: HTTP/3 (QUIC) — TLS 1.3, faster on modern CDNs; Chrome enables by default
+# Astra: HTTP/3 (QUIC) — match Firefox upstream (enabled)
 - name: network.http.http3.enable
   value: true
 
-# Astra: Disable DNS prefetching
+# Prefer Firefox networking defaults for page-load latency.
+# Prior Astra privacy overrides (disablePrefetch=true, prefetch-next=false,
+# speculative-parallel-limit=4) measurably delayed navigation vs upstream.
+# Tracking protection remains via ETP + uBlock, not by disabling DNS/link hints.
 - name: network.dns.disablePrefetch
-  value: true
+  value: false
 - name: network.dns.disablePrefetchFromHTTPS
-  value: true
-
-# Astra: Disable link prefetching
-- name: network.prefetch-next
   value: false
 
-# Astra: Limited speculative connects (Chrome uses ~6; 0 was hurting speed)
+- name: network.prefetch-next
+  value: true
+
+# Firefox upstream default is 20 (firefox.js).
 - name: network.http.speculative-parallel-limit
-  value: 4
+  value: 20
 
 # Astra: Disable TLS 0-RTT early data (replay risk; tiny latency tradeoff)
 - name: security.tls.enable_0rtt_data

@@ -19,7 +19,7 @@
   value: "@cond"
   mirror: once
 
-# Astra: Hardware acceleration
+# Astra: Hardware acceleration — match upstream enabled defaults (no force-disable)
 - name: gfx.canvas.accelerated
   value: true
 - name: layers.gpu-process.enabled
@@ -27,29 +27,31 @@
 - name: media.hardware-video-decoding.enabled
   value: true
 
-# Astra: JavaScript JIT engine optimization
+# JavaScript JIT — keep Ion/Baseline on; asm.js stays at upstream default (false).
+# Forcing asmjs=true contradicted Firefox 149 (asm.js disabled) and is not a
+# WebGL/3D win.
 - name: javascript.options.ion
   value: true
 - name: javascript.options.baselinejit
   value: true
-- name: javascript.options.asmjs
-  value: true
 
-# Astra: Cap RAM cache (~48 MB) — -1 can grow too large vs Chrome/Brave
+# Memory cache: restore Firefox dynamic sizing (-1). A hard 48 MB cap starved
+# image-heavy and 3D asset pages after disk-cache cold starts.
 - name: browser.cache.memory.enable
   value: true
 - name: browser.cache.memory.capacity
-  value: 49152
+  value: -1
 - name: browser.cache.disk.enable
   value: true
 - name: browser.cache.disk.smart_size.enabled
   value: true
 
-# Astra: Less RAM for back/forward cache and decoded media
+# BFCache / session history — restore Firefox default (-1 = automatic).
+# Cap of 1 forced almost every back/forward navigation to full reload.
 - name: browser.sessionhistory.max_total_viewers
-  value: 1
+  value: -1
 - name: browser.sessionhistory.max_entries
-  value: 12
+  value: 50
 - name: image.mem.max_decoded_image_kb
   value: 98304
 - name: media.memory_cache_max_size
@@ -57,9 +59,9 @@
 - name: browser.sessionstore.max_tabs_undo
   value: 6
 
-# Astra: Faster page rendering
+# Content notification interval — Firefox upstream is 120000 µs.
 - name: content.notify.interval
-  value: 100000
+  value: 120000
 - name: image.mem.decode_bytes_at_a_time
   value: 65536
 
@@ -75,17 +77,18 @@
 - name: network.trr.bootstrapAddr
   value: "1.1.1.1"
 
-# Astra: Better connection handling (fail faster on poor mobile/Wi‑Fi)
+# Connection timeouts — restore Firefox retry default (250 ms). Zero disabled
+# normal retry pacing and could thrash failing routes.
 - name: network.http.connection-retry-timeout
-  value: 0
+  value: 250
 - name: network.http.connection-timeout
-  value: 45
+  value: 90
 - name: network.http.response.timeout
-  value: 120
+  value: 300
 - name: network.http.fast-fallback-to-IPv4
   value: true
 - name: network.http.max-persistent-connections-per-server
-  value: 8
+  value: 6
 
 # Astra: Smooth scroll without extra compositor precision (saves CPU/RAM)
 - name: general.smoothScroll
@@ -95,12 +98,7 @@
 - name: layout.frame_rate.precise
   value: false
 
-# Astra: Fewer idle content processes (Firefox-style RAM savings)
-- name: dom.ipc.processCount.web
-  value: 4
-- name: dom.ipc.processCount.webLargeAllocation
-  value: 1
-
-# Astra: TCP Fast Open - faster connections
-- name: network.tcp.tcp_fastopen_enable
-  value: true
+# dom.ipc.processCount is intentionally NOT overridden.
+# Upstream all.js sets 8 normally, 4 under ASAN/TSAN, 1 under fuzzing.
+# Astra previously forced processCount.web=4 (wrong pref / too low). Removing
+# the override restores exact platform-adaptive Firefox behavior.

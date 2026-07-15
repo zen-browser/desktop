@@ -63,14 +63,13 @@ if (
   ok("only bootstrap preloaded");
 } else fail("preload must include bootstrap only");
 
-// App Hub recovery intact
+// App Hub: bootstrap at startup; advanced manager must not be eagerly preloaded
 if (
   preload.includes("AstraAppHubBootstrap.mjs") &&
-  preload.indexOf("AstraAppHubBootstrap.mjs") <
-    preload.indexOf("AstraAppHubManager.mjs")
+  !preload.includes("AstraAppHubManager.mjs")
 ) {
-  ok("App Hub bootstrap loads before manager");
-} else fail("App Hub preload order broken");
+  ok("App Hub bootstrap-only preload (manager lazy)");
+} else fail("App Hub preload must be bootstrap-only");
 
 const sets = read("src/zen/common/zen-sets.js");
 if (sets.includes("cmd_zenOpenAppLauncher") && sets.includes("gZenAppLauncher")) {

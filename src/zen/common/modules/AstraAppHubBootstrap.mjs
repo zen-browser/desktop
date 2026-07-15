@@ -68,6 +68,8 @@ class AstraAppHubBootstrap {
   #lastErrorStage = null;
   #lastOpenAttempt = null;
   #loggedReady = false;
+  #managerImportPromise = null;
+  #managerImportFailed = false;
 
   constructor() {
     window.gAstraAppHubBootstrap = this;
@@ -290,6 +292,40 @@ class AstraAppHubBootstrap {
     await this.open(eventOrOptions, win);
   }
 
+  /**
+   * Lazy-import advanced manager on first open. Startup only loads bootstrap.
+   * Catalog/profile IO must not compete with first navigation / session restore.
+   */
+  async #ensureManagerImported() {
+    if (this.#manager || this.#managerImportFailed) {
+      return;
+    }
+    if (this.#managerImportPromise) {
+      await this.#managerImportPromise;
+      return;
+    }
+    this.#managerImportPromise = (async () => {
+      try {
+        ChromeUtils.importESModule(
+          "chrome://browser/content/zen-components/AstraAppHubManager.mjs",
+          { global: "current" }
+        );
+        if (window.gAstraAppHubManager?.init) {
+          // Await init so first open prefers advanced UI when catalog is ready.
+          await window.gAstraAppHubManager.init();
+        }
+      } catch (error) {
+        this.#managerImportFailed = true;
+        this.markManagerFailed(error, "import");
+      }
+    })();
+    try {
+      await this.#managerImportPromise;
+    } finally {
+      this.#managerImportPromise = null;
+    }
+  }
+
   async open(eventOrOptions, win = window) {
     if (win && win !== window && win.gAstraAppHubBootstrap) {
       return win.gAstraAppHubBootstrap.open(eventOrOptions, win);
@@ -298,6 +334,10 @@ class AstraAppHubBootstrap {
     this.#lastOpenAttempt = Date.now();
     this.#ensureListeners();
     this.#applyMode();
+
+    if (!this.#managerImportFailed && !this.#advancedReady) {
+      await this.#ensureManagerImported();
+    }
 
     if (this.#advancedReady && this.#manager) {
       try {

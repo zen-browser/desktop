@@ -7,5 +7,6 @@ EXTRA_JS_MODULES += [
   "ZenUBActionsProvider.sys.mjs",
   "ZenUBGlobalActions.sys.mjs",
   "ZenUBProvider.sys.mjs",
+  "ZenUBRenamedTabsProvider.sys.mjs",
   "ZenUBResultsLearner.sys.mjs",
 ]

@@ -19,7 +19,17 @@ index b60820ef0cc62c27a8bab127218d625012153791..04cdd58ed4426af802f2868310140a8a
          where = "tab";
          targetBrowser = null;
        } else if (
-@@ -981,7 +982,7 @@ export const URILoadingHelper = {
+@@ -930,3 +931,4 @@ export const URILoadingHelper = {
+     let ignoreQueryString = aOpenParams.ignoreQueryString;
+     let replaceQueryString = aOpenParams.replaceQueryString;
++    let zenTargetBrowsingContextId = aOpenParams.zenTargetBrowsingContextId;
+     let adoptIntoActiveWindow = aOpenParams.adoptIntoActiveWindow;
+@@ -937,3 +939,4 @@ export const URILoadingHelper = {
+     delete aOpenParams.ignoreQueryString;
+     delete aOpenParams.replaceQueryString;
++    delete aOpenParams.zenTargetBrowsingContextId;
+     delete aOpenParams.adoptIntoActiveWindow;
+@@ -981,9 +984,15 @@ export const URILoadingHelper = {
          ignoreQueryString || replaceQueryString,
          ignoreFragmentWhenComparing
        );
@@ -27,7 +37,15 @@ index b60820ef0cc62c27a8bab127218d625012153791..04cdd58ed4426af802f2868310140a8a
 +      let browsers = aWindow.gZenWorkspaces.allUsedBrowsers;
        for (let i = 0; i < browsers.length; i++) {
          let browser = browsers[i];
++        if (
++          zenTargetBrowsingContextId != null &&
++          browser.browsingContext.id != zenTargetBrowsingContextId
++        ) {
++          continue;
++        }
          let browserCompare = cleanURL(
+           browser.currentURI.displaySpec,
+           ignoreQueryString || replaceQueryString,
 @@ -1037,7 +1038,7 @@ export const URILoadingHelper = {
                }
                aSplitView.documentGlobal.focus();

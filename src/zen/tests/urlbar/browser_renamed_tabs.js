@@ -10,7 +10,7 @@ ChromeUtils.defineESModuleGetters(this, {
 UrlbarTestUtils.init(this);
 
 const CUSTOM_LABEL = "Zen Project Dashboard 14595";
-const PROVIDER_NAME = "ZenUrlbarProviderRenamedTabs";
+const PROVIDER_NAME = "ZenUrlbarProviderTabs";
 
 async function findRenamedTabResult(searchString) {
   await UrlbarTestUtils.promiseAutocompleteResultPopup({
@@ -29,6 +29,10 @@ async function findRenamedTabResult(searchString) {
 }
 
 add_task(async function test_urlbar_matches_renamed_tab_label() {
+  const duplicateTab = await BrowserTestUtils.openNewForegroundTab(
+    gBrowser,
+    "https://example.com/?zen-renamed-tab"
+  );
   const targetTab = await BrowserTestUtils.openNewForegroundTab(
     gBrowser,
     "https://example.com/?zen-renamed-tab"
@@ -39,7 +43,7 @@ add_task(async function test_urlbar_matches_renamed_tab_label() {
   );
 
   registerCleanupFunction(async () => {
-    for (const tab of [targetTab, searchTab]) {
+    for (const tab of [duplicateTab, targetTab, searchTab]) {
       if (tab.isConnected) {
         await BrowserTestUtils.removeTab(tab);
       }
@@ -92,6 +96,6 @@ add_task(async function test_urlbar_matches_renamed_tab_label() {
   Assert.equal(
     gBrowser.selectedTab,
     targetTab,
-    "Selecting the result should switch to the renamed tab"
+    "Selecting the result should switch to the matched renamed tab when URLs are duplicated"
   );
 });

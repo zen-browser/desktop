@@ -21,9 +21,9 @@ ChromeUtils.defineESModuleGetters(lazy, {
 });
 
 /**
- * Provides switch-to-tab results that match a tab's Zen-specific static label.
+ * Provides Zen-specific switch-to-tab results.
  */
-export class ZenUrlbarProviderRenamedTabs extends UrlbarProvider {
+export class ZenUrlbarProviderTabs extends UrlbarProvider {
   /**
    * @returns {Values<typeof UrlbarUtils.PROVIDER_TYPE>}
    */
@@ -98,6 +98,7 @@ export class ZenUrlbarProviderRenamedTabs extends UrlbarProvider {
         const payload = {
           url,
           title,
+          zenTargetBrowsingContextId: tab.linkedBrowser.browsingContext.id,
           icon:
             browserWindow.gBrowser.getIcon(tab) ||
             UrlbarUtils.getIconForUrl(url),

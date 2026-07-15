@@ -48,3 +48,13 @@ index aa7c67f2bfaa3f15d592a14b527a8721dfc9bc6f..d2fe012796ea3a5be05090a732011b3c
          case "UrlbarProviderOmnibox":
            return this.RESULT_GROUP.HEURISTIC_OMNIBOX;
          case "UrlbarProviderRestrictKeywordsAutofill":
+@@ -2678,6 +2696,9 @@ UrlbarUtils.RESULT_PAYLOAD_SCHEMA = {
+       userContextId: {
+         type: "number",
+       },
++      zenTargetBrowsingContextId: {
++        type: "number",
++      },
+     },
+   },
+   [UrlbarUtils.RESULT_TYPE.SEARCH]: {

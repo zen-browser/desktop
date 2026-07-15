@@ -37,11 +37,24 @@
 
 # Astra built-in Transparent Mode (chrome glass). Independent of
 # browser.tabs.allow_transparent_browser (web-content transparency).
+# Desired-state only — effective mode is computed per window at runtime.
+# Fresh profiles: enabled (restores pre-V2 always-on glass product appearance
+# under Astra ownership). Explicit user on/off values are preserved.
 - name: astra.theme.transparent.enabled
-  value: false
+  value: true
+
+# Requested glass path: auto | acrylic | mica | mica-alt | astra-glass
+# Effective mode is never stored in prefs.
+- name: astra.theme.transparent.mode
+  value: "auto"
 
 # One-shot migration from the legacy astra-transparent Zen Mod.
 - name: astra.theme.transparent.mod-migrated
+  value: false
+
+# One-shot: Astra owns widget.windows.mica* (clears stale always-on user values
+# when Transparent Mode is off). Does not alter astra.theme.transparent.enabled.
+- name: astra.theme.transparent.v2-native-owned
   value: false
 
 # Web-content transparency (Firefox default). Keep false so pages with missing

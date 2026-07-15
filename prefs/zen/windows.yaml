@@ -2,23 +2,26 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Mica effect preferences for Windows
+# Native Mica/Acrylic defaults — Astra Transparent Mode owns live requests.
+# Do not force mica on independently of astra.theme.transparent.enabled.
+# When Transparent Mode is on, AstraTransparencyManager sets these live prefs.
 - name: widget.windows.mica
-  value: true
+  value: false
   condition: "defined(XP_WIN)"
 
 - name: zen.widget.windows.acrylic
   value: false
   condition: "defined(XP_WIN)"
 
+# 0 = never, 1 = always, 2 = auto. Off by default; manager enables with Transparent Mode.
 - name: widget.windows.mica.popups
-  value: true
+  value: 0
   condition: "defined(XP_WIN)"
 
-# 1 = DWMSBT_MAINWINDOW
-# 2 = DWMSBT_TRANSIENTWINDOW (Acrylic; Zen 1.19.7b default, also used for popups)
-# 3 = DWMSBT_TABBEDWINDOW (MicaAlt)
-# Keep 2 so Zen chrome CSS does not apply the non-Acrylic frosted tint path.
+# 1 = DWMSBT_MAINWINDOW (Mica)
+# 2 = DWMSBT_TRANSIENTWINDOW (Acrylic)
+# 3 = DWMSBT_TABBEDWINDOW (Mica Alt)
+# Default is unused while mica=false. Manager sets 1/2/3 explicitly — never 0 while active.
 - name: widget.windows.mica.toplevel-backdrop
   value: 2
   condition: "defined(XP_WIN)"

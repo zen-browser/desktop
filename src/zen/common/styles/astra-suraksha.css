@@ -127,7 +127,11 @@
   --astra-suraksha-pad: 10px;
 }
 
-:root[astra-transparent-mode="true"] #PanelUI-astra-suraksha .astra-suraksha-card {
+:root[astra-transparent-mode="true"] #PanelUI-astra-suraksha .astra-suraksha-card,
+:root[astra-transparent-effective-mode="astra-glass"] #PanelUI-astra-suraksha .astra-suraksha-card,
+:root[astra-transparent-effective-mode="native-acrylic"] #PanelUI-astra-suraksha .astra-suraksha-card,
+:root[astra-transparent-effective-mode="native-mica"] #PanelUI-astra-suraksha .astra-suraksha-card,
+:root[astra-transparent-effective-mode="native-mica-alt"] #PanelUI-astra-suraksha .astra-suraksha-card {
   background: color-mix(in srgb, currentColor 8%, transparent);
 }
 

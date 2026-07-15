@@ -170,3 +170,63 @@ astra-suraksha-action-etp-panel =
     .label = Open tracking protection
 astra-suraksha-action-etp-dashboard =
     .label = Open about:protections
+
+## Safe Browsing
+
+astra-suraksha-safebrowsing-enabled =
+    .value = Safe Browsing enabled
+astra-suraksha-safebrowsing-partial =
+    .value = Safe Browsing partially enabled
+astra-suraksha-safebrowsing-disabled =
+    .value = Safe Browsing disabled
+astra-suraksha-safebrowsing-phishing-on =
+    .value = Phishing protection on
+astra-suraksha-safebrowsing-phishing-off =
+    .value = Phishing protection off
+astra-suraksha-safebrowsing-malware-on =
+    .value = Malware protection on
+astra-suraksha-safebrowsing-malware-off =
+    .value = Malware protection off
+astra-suraksha-safebrowsing-downloads-on =
+    .value = Download protection on
+astra-suraksha-safebrowsing-downloads-off =
+    .value = Download protection off
+astra-suraksha-safebrowsing-remote-off =
+    .value = Remote download checks off
+astra-suraksha-safebrowsing-freshness-unknown =
+    .value = List freshness not reported here
+astra-suraksha-action-safebrowsing-settings =
+    .label = Open privacy and security settings
+
+## Passwords
+
+astra-suraksha-passwords-enabled =
+    .value = Password protection available
+astra-suraksha-passwords-partial =
+    .value = Password manager on — some alerts off
+astra-suraksha-passwords-disabled =
+    .value = Password manager disabled
+astra-suraksha-passwords-private =
+    .value = Password status limited in private windows
+astra-suraksha-passwords-private-detail =
+    .value = Open the password manager for account passwords when Firefox allows it.
+astra-suraksha-passwords-manager-on =
+    .value = Password manager enabled
+astra-suraksha-passwords-manager-off =
+    .value = Password manager disabled
+astra-suraksha-passwords-autofill-on =
+    .value = Form autofill enabled
+astra-suraksha-passwords-autofill-off =
+    .value = Form autofill disabled
+astra-suraksha-passwords-breach-on =
+    .value = Breach alerts enabled
+astra-suraksha-passwords-breach-off =
+    .value = Breach alerts disabled
+astra-suraksha-passwords-vulnerable-on =
+    .value = Vulnerable-password alerts enabled
+astra-suraksha-passwords-vulnerable-off =
+    .value = Vulnerable-password alerts disabled
+astra-suraksha-action-passwords-manager =
+    .label = Open Password Manager
+astra-suraksha-action-passwords-settings =
+    .label = Open password settings

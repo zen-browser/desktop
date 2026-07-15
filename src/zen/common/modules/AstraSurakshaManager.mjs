@@ -32,6 +32,15 @@ import {
   readCleanLink,
   copyCleanLink,
 } from "chrome://browser/content/zen-components/AstraSurakshaCleanLink.mjs";
+import {
+  readSafeBrowsing,
+  openSafeBrowsingSettings,
+} from "chrome://browser/content/zen-components/AstraSurakshaSafeBrowsing.mjs";
+import {
+  readPasswords,
+  openPasswordManager,
+  openPasswordSettings,
+} from "chrome://browser/content/zen-components/AstraSurakshaPasswords.mjs";
 
 const LOG_PREFIX = "[AstraSuraksha]";
 const PANEL_ID = "PanelUI-astra-suraksha";
@@ -210,6 +219,8 @@ class AstraSurakshaManager {
     this.#showCardLoading("astra-suraksha-card-connection");
     this.#showCardLoading("astra-suraksha-card-protection");
     this.#showCardLoading("astra-suraksha-card-ublock");
+    this.#showCardLoading("astra-suraksha-card-safebrowsing");
+    this.#showCardLoading("astra-suraksha-card-passwords");
     this.#showCardLoading("astra-suraksha-card-permissions");
     this.#showCardLoading("astra-suraksha-card-site-data");
     this.#showCardLoading("astra-suraksha-card-clean-link");
@@ -234,6 +245,18 @@ class AstraSurakshaManager {
           return;
         }
         this.#renderUBlock(result);
+      }),
+      this.#safe(() => readSafeBrowsing(win)).then(result => {
+        if (!this.#isCurrent(generation)) {
+          return;
+        }
+        this.#renderSafeBrowsing(result);
+      }),
+      this.#safe(() => readPasswords(win)).then(result => {
+        if (!this.#isCurrent(generation)) {
+          return;
+        }
+        this.#renderPasswords(result);
       }),
       this.#safe(() => readPermissions(win)).then(result => {
         if (!this.#isCurrent(generation)) {
@@ -451,6 +474,54 @@ class AstraSurakshaManager {
     card.setAttribute("data-state", result?.state || "error");
   }
 
+  #renderDetailListCard(cardId, result) {
+    const card = document.getElementById(cardId);
+    if (!card) {
+      return;
+    }
+    const status = card.querySelector(".astra-suraksha-card-status");
+    const detail = card.querySelector(".astra-suraksha-card-detail");
+    const actions = card.querySelector(".astra-suraksha-card-actions");
+    this.#setL10n(status, result?.labelId || "astra-suraksha-error");
+
+    card
+      .querySelectorAll(".astra-suraksha-card-detail-extra")
+      .forEach(node => node.remove());
+
+    const details = result?.details || [];
+    if (detail) {
+      if (details[0]?.id) {
+        detail.hidden = false;
+        this.#setL10n(detail, details[0].id);
+        for (let i = 1; i < details.length; i++) {
+          const extra = document.createXULElement("label");
+          extra.classList.add(
+            "astra-suraksha-card-detail",
+            "astra-suraksha-card-detail-extra"
+          );
+          this.#setL10n(extra, details[i].id);
+          if (actions?.parentNode) {
+            actions.parentNode.insertBefore(extra, actions);
+          } else {
+            detail.parentNode?.appendChild(extra);
+          }
+        }
+      } else {
+        detail.hidden = true;
+      }
+    }
+    this.#renderActionButtons(actions, result?.actions || []);
+    card.setAttribute("data-state", result?.state || "error");
+  }
+
+  #renderSafeBrowsing(result) {
+    this.#renderDetailListCard("astra-suraksha-card-safebrowsing", result);
+  }
+
+  #renderPasswords(result) {
+    this.#renderDetailListCard("astra-suraksha-card-passwords", result);
+  }
+
   #renderPermissions(result) {
     const card = document.getElementById("astra-suraksha-card-permissions");
     if (!card) {
@@ -561,6 +632,18 @@ class AstraSurakshaManager {
       case "ublock-manage":
         bootstrap?.close?.({ restoreFocus: false });
         void manageUBlock(win);
+        break;
+      case "safebrowsing-settings":
+        bootstrap?.close?.({ restoreFocus: false });
+        openSafeBrowsingSettings(win);
+        break;
+      case "passwords-manager":
+        bootstrap?.close?.({ restoreFocus: false });
+        openPasswordManager(win);
+        break;
+      case "passwords-settings":
+        bootstrap?.close?.({ restoreFocus: false });
+        openPasswordSettings(win);
         break;
       case "addons":
         bootstrap?.close?.({ restoreFocus: false });

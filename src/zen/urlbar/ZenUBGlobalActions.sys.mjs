@@ -44,6 +44,11 @@ const globalActionsTemplate = [
     icon: "chrome://browser/skin/zen-icons/shield.svg",
   },
   {
+    label: "Search Open Tabs",
+    command: "cmd_zenSearchOpenTabs",
+    icon: "chrome://browser/skin/zen-icons/search-glass.svg",
+  },
+  {
     label: "Optimize Memory (Smart Suspend)",
     command: "cmd_zenSmartSuspendNow",
     icon: "chrome://browser/skin/zen-icons/selectable/time.svg",

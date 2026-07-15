@@ -647,10 +647,10 @@
               sub: "zen-feat-glance-sub",
             },
             {
-              icon: "hand-finger",
+              icon: "shield",
               color: "pink",
-              name: "zen-feat-gestures",
-              sub: "zen-feat-gestures-sub",
+              name: "zen-feat-suraksha",
+              sub: "zen-feat-suraksha-sub",
             },
           ];
 

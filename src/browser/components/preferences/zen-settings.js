@@ -975,6 +975,7 @@ var gZenWorkspacesSettings = {
     };
 
     toggleZenCycleByAttrWarning.observe(); // call it once on initial load
+    this._bindPerformanceSection();
 
     Services.prefs.addObserver("zen.glance.enabled", tabsUnloaderPrefListener); // We can use the same listener for both prefs
     Services.prefs.addObserver("zen.workspaces.separate-essentials", tabsUnloaderPrefListener);
@@ -1002,6 +1003,62 @@ var gZenWorkspacesSettings = {
         toggleZenCycleByAttrWarning
       );
     });
+  },
+
+  _bindPerformanceSection() {
+    const openAbout = url => {
+      try {
+        // Preferences window: open in most recent browser window.
+        const win =
+          Services.wm.getMostRecentWindow("navigator:browser") || window;
+        win.openTrustedLinkIn?.(url, "tab");
+      } catch (error) {
+        console.error("[AstraPerformance] open failed", error);
+      }
+    };
+    document
+      .getElementById("zenPerfOpenProcesses")
+      ?.addEventListener("click", () => openAbout("about:processes"));
+    document
+      .getElementById("zenPerfOpenUnloads")
+      ?.addEventListener("click", () => openAbout("about:unloads"));
+    document
+      .getElementById("zenPerfOpenMemory")
+      ?.addEventListener("click", () => openAbout("about:memory"));
+
+    const statusEl = document.getElementById("zenEnergySaverStatus");
+    const updateEnergyStatus = () => {
+      if (!statusEl) {
+        return;
+      }
+      let mode = "auto";
+      try {
+        mode = Services.prefs.getStringPref("zen.energy-saver.mode", "auto");
+      } catch {
+        mode = "auto";
+      }
+      if (!["auto", "on", "off"].includes(mode)) {
+        mode = "auto";
+      }
+      // Settings process has no live Energy Saver manager — report requested mode.
+      const id =
+        mode === "on"
+          ? "zen-energy-saver-status-manual"
+          : mode === "off"
+            ? "zen-energy-saver-status-inactive"
+            : "zen-energy-saver-status-auto-hint";
+      document.l10n?.setAttributes?.(statusEl, id);
+    };
+    updateEnergyStatus();
+    const energyObserver = { observe: updateEnergyStatus };
+    try {
+      Services.prefs.addObserver("zen.energy-saver.mode", energyObserver);
+      window.addEventListener("unload", () => {
+        Services.prefs.removeObserver("zen.energy-saver.mode", energyObserver);
+      });
+    } catch {
+      // ignore
+    }
   },
 };
 
@@ -1527,6 +1584,21 @@ Preferences.addAll([
     id: "zen.tab-unloader.auto-unload-inactive",
     type: "bool",
     default: false,
+  },
+  {
+    id: "zen.energy-saver.mode",
+    type: "string",
+    default: "auto",
+  },
+  {
+    id: "zen.folders.accordion-mode",
+    type: "bool",
+    default: false,
+  },
+  {
+    id: "intl.multilingual.downloadEnabled",
+    type: "bool",
+    default: true,
   },
 ]);
 

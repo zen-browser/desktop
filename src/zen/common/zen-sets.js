@@ -642,6 +642,20 @@ document.addEventListener(
           case "cmd_zenOpenCrashRecovery":
             openCrashRecoveryPanel(event);
             break;
+          case "cmd_zenSearchOpenTabs": {
+            const { searchOpenTabs } = ChromeUtils.importESModule(
+              "chrome://browser/content/zen-components/AstraPhase1Actions.mjs"
+            );
+            searchOpenTabs(window);
+            break;
+          }
+          case "cmd_zenReadAloud": {
+            const { openReaderForReadAloud } = ChromeUtils.importESModule(
+              "chrome://browser/content/zen-components/AstraPhase1Actions.mjs"
+            );
+            openReaderForReadAloud(window);
+            break;
+          }
           case "cmd_zenCrashRestoreSession": {
             document.getElementById("PanelUI-zen-crash-recovery")?.hidePopup();
             document

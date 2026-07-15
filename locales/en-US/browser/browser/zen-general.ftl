@@ -124,10 +124,18 @@ zen-site-data-header-share =
     .tooltiptext = Share This Page
 zen-site-data-header-reader-mode =
     .tooltiptext = Enter Reader Mode
+zen-site-data-header-read-aloud =
+    .tooltiptext = Read Aloud (opens Reader View — use Listen)
 zen-site-data-header-screenshot =
     .tooltiptext = Take a Screenshot
 zen-site-data-header-bookmark =
     .tooltiptext = Bookmark This Page
+
+zen-panel-ui-search-open-tabs =
+    .label = Search Open Tabs
+
+zen-read-aloud-use-listen = Use Listen in the Reader toolbar to hear this page.
+zen-read-aloud-unavailable = Read Aloud is not available for this page or platform.
 
 zen-urlbar-copy-url-button =
   .tooltiptext = Copy URL
@@ -205,8 +213,10 @@ zen-window-sync-migration-dialog-accept = Got It
 zen-appmenu-new-blank-window =
     .label = New blank window
 
-astra-energy-saver-enabled = ⚡ Energy Saver ON - Battery low
-astra-energy-saver-disabled = 🔋 Energy Saver OFF - Battery charging
+astra-energy-saver-enabled = Energy Saver on — low battery
+astra-energy-saver-enabled-manual = Energy Saver on
+astra-energy-saver-disabled = Energy Saver off — charging or battery recovered
+astra-energy-saver-disabled-manual = Energy Saver off
 
 zen-ramsaver-high-memory-heading = Astra is using more memory than usual
 zen-ramsaver-restart-action-label = Restart to free up memory

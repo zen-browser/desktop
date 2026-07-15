@@ -23,6 +23,10 @@
                         command="View:ReaderView"
                         tooltip="dynamic-shortcut-tooltip"
                         flex="1" />
+        <toolbarbutton id="zen-site-data-header-read-aloud"
+                        data-l10n-id="zen-site-data-header-read-aloud"
+                        command="cmd_zenReadAloud"
+                        flex="1" />
         <toolbarbutton id="zen-site-data-header-screenshot"
                         data-l10n-id="zen-site-data-header-screenshot"
                         command="Browser:Screenshot"

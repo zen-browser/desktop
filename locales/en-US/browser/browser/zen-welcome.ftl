@@ -4,7 +4,7 @@
 
 zen-welcome-title-line1 = Welcome to Astra Browser
 zen-welcome-title-line2 = Made for India 🇮🇳
-zen-welcome-subtitle = India's fastest, most private browser
+zen-welcome-subtitle = India's private, tool-rich browser
 zen-welcome-get-started = Get Started
 
 zen-welcome-features-title = Everything you need
@@ -14,24 +14,24 @@ zen-feat-workspaces-sub = Separate tabs by context
 zen-feat-splitview = Split View
 zen-feat-splitview-sub = Two pages, one screen
 zen-feat-smartguard = Smart Guard
-zen-feat-smartguard-sub = Block trackers and ads
+zen-feat-smartguard-sub = Local scam and download safety signals
 zen-feat-compact = Compact Mode
 zen-feat-compact-sub = More space for content
 zen-feat-glance = Glance
 zen-feat-glance-sub = Preview links without leaving
-zen-feat-gestures = Gestures
-zen-feat-gestures-sub = Navigate with mouse gestures
+zen-feat-suraksha = Suraksha Center
+zen-feat-suraksha-sub = Protection status in one place
 
 zen-welcome-privacy-title = Browse safer with Smart Guard
-zen-welcome-privacy-sub = Astra blocks trackers, ads, and fingerprinting automatically
+zen-welcome-privacy-sub = Strict tracking protection plus uBlock Origin in packaged Windows and Linux builds
 zen-privacy-trackers = Tracker blocking enabled
-zen-privacy-ads = Ad blocking enabled
+zen-privacy-ads = uBlock Origin in packaged builds
 zen-privacy-fingerprint = Fingerprint protection on
-zen-privacy-telemetry = No telemetry sent to anyone
+zen-privacy-telemetry = Product telemetry disabled by default
 zen-privacy-https = HTTPS-only mode
-zen-privacy-https-sub = Force secure connections always
+zen-privacy-https-sub = Prefer secure connections
 zen-privacy-safebrowsing = Safe browsing
-zen-privacy-safebrowsing-sub = Warn before visiting malicious sites
+zen-privacy-safebrowsing-sub = Warn before visiting known malicious sites
 
 zen-welcome-workspaces-title = Organise with Workspaces
 zen-welcome-workspaces-sub = Keep work, study, and personal browsing completely separate

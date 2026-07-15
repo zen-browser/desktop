@@ -72,6 +72,37 @@ zen-tab-unloader-aggressiveness-aggressive =
 zen-tab-unloader-timeout-label = Suspend tabs after inactivity
 zen-tab-unloader-high-threshold-label = High-pressure trigger
 
+zen-folders-accordion-checkbox =
+    .label = Accordion folders — one open folder per workspace
+
+pane-zen-performance-title = Performance
+zen-performance-header = Performance
+zen-performance-description = Status and tools for memory, battery, and processes. Values come from Firefox — Astra does not invent per-tab RAM figures.
+zen-energy-saver-mode-label = Energy Saver
+zen-energy-saver-mode-auto =
+    .label = Automatic
+zen-energy-saver-mode-on =
+    .label = On
+zen-energy-saver-mode-off =
+    .label = Off
+zen-energy-saver-status-inactive = Status: Inactive
+zen-energy-saver-status-manual = Status: Active — manually enabled
+zen-energy-saver-status-low-battery = Status: Active — low battery
+zen-energy-saver-status-unavailable = Status: Battery status unavailable
+zen-energy-saver-status-auto-hint = Status: Automatic — activates on low battery while unplugged
+zen-performance-smart-suspend-status = Smart Suspend: Controlled in Tab Management above (Firefox also unloads tabs under memory pressure).
+zen-performance-session-restore-status = Session restore: Background tabs restore lazily; pinned tabs restore on demand.
+zen-performance-hw-accel-status = Hardware acceleration: Automatic (Firefox / driver policy)
+zen-performance-process-isolation-status = Process isolation: Firefox-managed (Fission / site isolation)
+zen-performance-open-processes =
+    .label = Open Process Manager
+zen-performance-open-unloads =
+    .label = Open Tab Unload Manager
+zen-performance-open-memory =
+    .label = Open Memory Diagnostics
+zen-local-translation-header = Local Page Translation
+zen-local-translation-description = Translation happens on this device after the required language model is downloaded through Firefox. Not every language is supported. Astra does not send page contents to Astra servers.
+
 zen-privacy-presets-header = Privacy Presets
 zen-privacy-presets-description = Choose a simple privacy level. You can still customize advanced privacy settings separately.
 zen-privacy-presets-label = Preset

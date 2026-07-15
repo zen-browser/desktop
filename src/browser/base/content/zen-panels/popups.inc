@@ -43,6 +43,7 @@
     </menupopup>
   </menu>
   <menuseparator/>
+  <menuitem data-l10n-id="zen-panel-ui-search-open-tabs" command="cmd_zenSearchOpenTabs" image="chrome://browser/skin/zen-icons/search-glass.svg" />
   <menuitem data-l10n-id="zen-panel-ui-new-empty-split" command="cmd_zenNewEmptySplit" image="chrome://browser/skin/zen-icons/split.svg" />
   <menuitem data-l10n-id="tabs-toolbar-new-tab" command="cmd_newNavigatorTab" image="chrome://browser/skin/zen-icons/plus.svg" />
 </menupopup>
@@ -478,6 +479,16 @@
         <hbox class="astra-suraksha-card-actions"/>
       </vbox>
       <vbox id="astra-suraksha-card-ublock" class="astra-suraksha-card" data-state="loading">
+        <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+        <label class="astra-suraksha-card-detail" hidden="true"/>
+        <hbox class="astra-suraksha-card-actions"/>
+      </vbox>
+      <vbox id="astra-suraksha-card-safebrowsing" class="astra-suraksha-card" data-state="loading">
+        <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+        <label class="astra-suraksha-card-detail" hidden="true"/>
+        <hbox class="astra-suraksha-card-actions"/>
+      </vbox>
+      <vbox id="astra-suraksha-card-passwords" class="astra-suraksha-card" data-state="loading">
         <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
         <label class="astra-suraksha-card-detail" hidden="true"/>
         <hbox class="astra-suraksha-card-actions"/>

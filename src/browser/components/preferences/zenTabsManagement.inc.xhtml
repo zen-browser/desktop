@@ -76,6 +76,55 @@
                   </menupopup>
             </menulist>
       </hbox>
+      <checkbox id="zenFoldersAccordionMode"
+            data-l10n-id="zen-folders-accordion-checkbox"
+            preference="zen.folders.accordion-mode"/>
+</groupbox>
+
+<hbox id="zenPerformanceCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenTabManagement">
+      <html:h1 data-l10n-id="pane-zen-performance-title"/>
+</hbox>
+
+<groupbox id="zenPerformanceGroup" data-category="paneZenTabManagement" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-performance-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-performance-description" />
+
+      <hbox align="center">
+            <label id="zenEnergySaverModeLabel" data-l10n-id="zen-energy-saver-mode-label"/>
+            <menulist id="zenEnergySaverMode" preference="zen.energy-saver.mode">
+                  <menupopup>
+                        <menuitem data-l10n-id="zen-energy-saver-mode-auto" value="auto"/>
+                        <menuitem data-l10n-id="zen-energy-saver-mode-on" value="on"/>
+                        <menuitem data-l10n-id="zen-energy-saver-mode-off" value="off"/>
+                  </menupopup>
+            </menulist>
+      </hbox>
+      <description id="zenEnergySaverStatus"
+            class="description-deemphasized"
+            data-l10n-id="zen-energy-saver-status-inactive"/>
+
+      <description class="description-deemphasized" data-l10n-id="zen-performance-smart-suspend-status"/>
+      <description class="description-deemphasized" data-l10n-id="zen-performance-session-restore-status"/>
+      <description class="description-deemphasized" data-l10n-id="zen-performance-hw-accel-status"/>
+      <description class="description-deemphasized" data-l10n-id="zen-performance-process-isolation-status"/>
+
+      <hbox class="indent">
+            <html:button id="zenPerfOpenProcesses"
+                  class="accessory-button"
+                  data-l10n-id="zen-performance-open-processes"/>
+            <html:button id="zenPerfOpenUnloads"
+                  class="accessory-button"
+                  data-l10n-id="zen-performance-open-unloads"/>
+            <html:button id="zenPerfOpenMemory"
+                  class="accessory-button"
+                  data-l10n-id="zen-performance-open-memory"/>
+      </hbox>
+
+      <label><html:h2 data-l10n-id="zen-local-translation-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-local-translation-description" />
 </groupbox>
 
 <hbox id="zenPinnedTabsManagerCategory"

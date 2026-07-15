@@ -547,8 +547,71 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       return;
     }
 
+    try {
+      if (Services.prefs.getBoolPref("zen.folders.accordion-mode", false)) {
+        this.#collapseSiblingFolders(group);
+      }
+    } catch {
+      // Pref missing — keep multi-open behavior.
+    }
+
     await this.animateExpand(group);
     this.updateFolderDashboard(group);
+  }
+
+  /**
+   * Accordion presentation: collapse other Zen folders in the same workspace.
+   * Uses the same collapsed property / TabGroupCollapse path as user collapse.
+   */
+  #collapseSiblingFolders(expandedFolder) {
+    if (!expandedFolder?.isZenFolder) {
+      return;
+    }
+    const workspaceId =
+      expandedFolder.getAttribute("zen-workspace-id") ||
+      gZenWorkspaces?.activeWorkspace;
+    const groups =
+      gZenWorkspaces?.allTabGroups || gBrowser?.tabGroups || [];
+    for (const folder of groups) {
+      if (
+        folder === expandedFolder ||
+        !folder?.isZenFolder ||
+        folder.collapsed
+      ) {
+        continue;
+      }
+      if (
+        workspaceId &&
+        folder.getAttribute("zen-workspace-id") &&
+        folder.getAttribute("zen-workspace-id") !== workspaceId
+      ) {
+        continue;
+      }
+      // Skip split-view groups, live folders, and folders holding the
+      // selected or multi-selected tab (must remain visible).
+      if (
+        folder.hasAttribute("split-view-group") ||
+        folder.isLiveFolder
+      ) {
+        continue;
+      }
+      const tabs = folder.tabs || [];
+      if (
+        tabs.some(
+          tab =>
+            tab?.selected ||
+            tab?.multiselected ||
+            tab === gBrowser?.selectedTab
+        )
+      ) {
+        continue;
+      }
+      try {
+        folder.collapsed = true;
+      } catch {
+        // ignore individual failures
+      }
+    }
   }
 
   #onNewFolder(event) {

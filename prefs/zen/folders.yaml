@@ -44,3 +44,8 @@
 
 - name: zen.folders.keyboard-search.enabled
   value: true
+
+# Accordion: expanding one folder collapses siblings in the same workspace.
+# Default false preserves existing multi-folder open behavior.
+- name: zen.folders.accordion-mode
+  value: false

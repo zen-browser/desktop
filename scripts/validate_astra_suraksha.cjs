@@ -32,6 +32,8 @@ const expectedJar = [
   "AstraSurakshaPermissions.mjs",
   "AstraSurakshaSiteData.mjs",
   "AstraSurakshaCleanLink.mjs",
+  "AstraSurakshaSafeBrowsing.mjs",
+  "AstraSurakshaPasswords.mjs",
   "astra-suraksha.css",
 ];
 for (const name of expectedJar) {
@@ -171,6 +173,8 @@ const scanTargets = [
   "src/zen/common/modules/AstraSurakshaPermissions.mjs",
   "src/zen/common/modules/AstraSurakshaSiteData.mjs",
   "src/zen/common/modules/AstraSurakshaCleanLink.mjs",
+  "src/zen/common/modules/AstraSurakshaSafeBrowsing.mjs",
+  "src/zen/common/modules/AstraSurakshaPasswords.mjs",
 ];
 const refIds = new Set();
 for (const rel of scanTargets) {

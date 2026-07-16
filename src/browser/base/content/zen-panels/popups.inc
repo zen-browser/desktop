@@ -404,7 +404,6 @@
 
     </vbox>
       </vbox>
-    </vbox>
     <!-- Advanced UI shell: header/search/footer built by AstraAppHubManager; list rendered from catalog. -->
     <vbox id="PanelUI-zen-app-launcher-list" class="astra-app-hub-list">
       <!-- Categories and apps rendered by AstraAppHubManager. -->

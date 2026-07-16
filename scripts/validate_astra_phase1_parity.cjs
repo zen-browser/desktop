@@ -209,6 +209,165 @@ if (/fission\.autostart[\s\S]*value:\s*false|security\.sandbox[\s\S]*value:\s*fa
   fail("sandbox/Fission weakened");
 } else ok("sandbox/Fission not weakened in Astra prefs");
 
+/**
+ * Stack-based XUL/XML tag balance check.
+ * Reports file, line, expected tag, and actual tag on mismatch/unclosed tags.
+ */
+function validateBalancedXulTags(rel) {
+  const filePath = path.join(root, rel);
+  const text = fs.readFileSync(filePath, "utf8");
+  const stack = [];
+  let i = 0;
+  let line = 1;
+
+  const advance = (n) => {
+    for (let k = 0; k < n; k++) {
+      if (text[i + k] === "\n") line++;
+    }
+    i += n;
+  };
+
+  while (i < text.length) {
+    if (text[i] === "\n") {
+      line++;
+      i++;
+      continue;
+    }
+
+    if (text.startsWith("<!--", i)) {
+      const end = text.indexOf("-->", i + 4);
+      if (end < 0) {
+        fail(`XUL unclosed comment in ${rel}:${line}`);
+        return;
+      }
+      advance(end + 3 - i);
+      continue;
+    }
+
+    if (text.startsWith("<![CDATA[", i)) {
+      const end = text.indexOf("]]>", i + 9);
+      if (end < 0) {
+        fail(`XUL unclosed CDATA in ${rel}:${line}`);
+        return;
+      }
+      advance(end + 3 - i);
+      continue;
+    }
+
+    if (text[i] !== "<") {
+      i++;
+      continue;
+    }
+
+    // Declarations / processing instructions — skip to '>'
+    if (text[i + 1] === "!" || text[i + 1] === "?") {
+      const startLine = line;
+      let j = i + 2;
+      while (j < text.length && text[j] !== ">") {
+        if (text[j] === "\n") line++;
+        j++;
+      }
+      if (j >= text.length) {
+        fail(`XUL unclosed declaration in ${rel}:${startLine}`);
+        return;
+      }
+      i = j + 1;
+      continue;
+    }
+
+    const tagStartLine = line;
+    const isClose = text[i + 1] === "/";
+    let j = i + (isClose ? 2 : 1);
+    while (j < text.length && /[A-Za-z0-9_:-]/.test(text[j])) j++;
+    if (j === i + (isClose ? 2 : 1)) {
+      i++;
+      continue;
+    }
+    const tagName = text.slice(i + (isClose ? 2 : 1), j);
+
+    // Scan to end of tag, respecting quotes
+    let inQuote = null;
+    let selfClosing = false;
+    let closed = false;
+    while (j < text.length) {
+      const ch = text[j];
+      if (ch === "\n") line++;
+      if (inQuote) {
+        if (ch === inQuote) inQuote = null;
+        j++;
+        continue;
+      }
+      if (ch === '"' || ch === "'") {
+        inQuote = ch;
+        j++;
+        continue;
+      }
+      if (ch === "/" && text[j + 1] === ">") {
+        selfClosing = true;
+        j += 2;
+        closed = true;
+        break;
+      }
+      if (ch === ">") {
+        j++;
+        closed = true;
+        break;
+      }
+      j++;
+    }
+    if (!closed) {
+      fail(`XUL unclosed tag <${tagName}> in ${rel}:${tagStartLine}`);
+      return;
+    }
+
+    i = j;
+
+    if (selfClosing) continue;
+
+    if (isClose) {
+      if (!stack.length) {
+        fail(
+          `XUL tag mismatch in ${rel}:${tagStartLine}: expected (none), found </${tagName}>`
+        );
+        return;
+      }
+      const top = stack[stack.length - 1];
+      if (top.name !== tagName) {
+        fail(
+          `XUL tag mismatch in ${rel}:${tagStartLine}: expected </${top.name}>, found </${tagName}>`
+        );
+        return;
+      }
+      stack.pop();
+    } else {
+      stack.push({ name: tagName, line: tagStartLine });
+    }
+  }
+
+  if (stack.length) {
+    const top = stack[stack.length - 1];
+    fail(
+      `XUL unclosed tag in ${rel}: <${top.name}> opened at line ${top.line} (expected </${top.name}>)`
+    );
+    return;
+  }
+  ok(`balanced XUL tags ${rel}`);
+}
+
+const xulMarkupFiles = [
+  "src/browser/base/content/zen-panels/popups.inc",
+  "src/browser/base/content/zen-panels/site-data.inc",
+  "src/browser/base/content/zen-commands.inc.xhtml",
+  "src/browser/components/preferences/zenTabsManagement.inc.xhtml",
+];
+for (const rel of xulMarkupFiles) {
+  if (!exists(rel)) {
+    fail(`missing XUL markup file ${rel}`);
+    continue;
+  }
+  validateBalancedXulTags(rel);
+}
+
 if (errors.length) {
   console.error(`\n${errors.length} failure(s)`);
   process.exit(1);

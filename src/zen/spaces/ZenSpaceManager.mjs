@@ -2486,7 +2486,7 @@ class nsZenWorkspaces {
       w => w.uuid !== this.activeWorkspace
     );
     const ctxCommand = document.getElementById("cmd_zenCtxDeleteWorkspace");
-    const hasMultipleWorkspaces = workspaces.length > 0;
+    const hasMultipleWorkspaces = !!workspaces.length;
     if (!hasMultipleWorkspaces) {
       ctxCommand.setAttribute("disabled", "true");
     } else {

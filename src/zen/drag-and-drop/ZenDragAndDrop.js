@@ -69,7 +69,6 @@
     #changeSpaceTimer = null;
     #isAnimatingTabMove = false;
     #firstHapticFeedbackPlayed = false;
-    #lastDragOverTime = 0;
 
     #dragOverSplit = {};
 
@@ -662,6 +661,13 @@
       // can change the workspace after a short delay.
       const splitter = document.getElementById("zen-sidebar-splitter");
       let rect = window.windowUtils.getBoundsWithoutFlushing(gNavToolbox);
+      // If we are hovering over the essentials container, we can't change the workspace
+      const essentialsContainer = event.target.closest(
+        ".zen-essentials-container"
+      );
+      if (essentialsContainer) {
+        return { isNearLeftEdge: false, isNearRightEdge: false };
+      }
       if (!(
         gZenCompactModeManager.preference &&
         gZenCompactModeManager.canHideSidebar
@@ -716,22 +722,14 @@
 
     #handle_sidebarDragOver(event) {
       const dt = event.dataTransfer;
-      const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
-      if (draggedTab.hasAttribute("zen-essential")) {
-        this.clearSpaceSwitchTimer();
-        return;
-      }
+
       const { isNearLeftEdge, isNearRightEdge } =
         this.#shouldSwitchSpace(event);
       if (isNearLeftEdge || isNearRightEdge) {
-        this.#lastDragOverTime = Date.now();
-        if (!this.#changeSpaceTimer) {
+        if (!this.#changeSpaceTimer && !this.#isOutOfWindow) {
           this.#changeSpaceTimer = setTimeout(() => {
-            const timeSinceLastDragOver = Date.now() - this.#lastDragOverTime;
-            if (timeSinceLastDragOver > 250) {
-              return;
-            }
             this.clearDragOverVisuals();
+            this.#maybeClearVerticalPinnedGridDragOver();
             gZenWorkspaces
               .changeWorkspaceShortcut(
                 isNearLeftEdge ? -1 : 1,
@@ -899,6 +897,10 @@
     }
 
     handle_windowDragLeave(event) {
+      // If relatedTarget exists, then we are still in the window
+      if (event.relatedTarget) {
+        return;
+      }
       const canvas = this._tabbrowserTabs._dndCanvas;
       if (!this.#isMovingTab() || !canvas) {
         return;
@@ -907,51 +909,38 @@
       if (!isTab(draggedTab)) {
         return;
       }
-      let { screenX, clientX, screenY, clientY } = event;
-      if (!screenX && !screenY) {
+      if (this.#isOutOfWindow) {
         return;
       }
-      const { innerWidth: winWidth, innerHeight: winHeight } = window;
-      let allowedMargin = Services.prefs.getIntPref(
-        "zen.tabs.dnd-outside-window-margin",
-        5
-      );
-      const isOutOfWindow =
-        clientX <= allowedMargin ||
-        clientX >= winWidth - allowedMargin ||
-        clientY <= allowedMargin ||
-        clientY >= winHeight - allowedMargin;
-      if (isOutOfWindow && !this.#isOutOfWindow) {
-        this.#isOutOfWindow = true;
-        gZenViewSplitter.onBrowserDragEndToSplit(event, true);
-        this.#maybeClearVerticalPinnedGridDragOver();
-        this.clearSpaceSwitchTimer();
-        this.clearDragOverVisuals();
-        const dt = event.dataTransfer;
-        let dragData = draggedTab._dragData;
-        let movingTabs = dragData.movingTabs;
-        if (!this._browserDragImageWrapper) {
-          const wrappingDiv = document.createXULElement("vbox");
-          canvas.style.borderRadius = "8px";
-          canvas.style.border = "2px solid white";
-          wrappingDiv.style.width = 200 + "px";
-          wrappingDiv.style.height = 130 + "px";
-          wrappingDiv.style.position = "relative";
-          this.#maybeCreateDragImageDot(movingTabs, wrappingDiv);
-          wrappingDiv.appendChild(canvas);
-          this._browserDragImageWrapper = wrappingDiv;
-          document.documentElement.appendChild(wrappingDiv);
-        }
-        dt.updateDragImage(
-          this._browserDragImageWrapper,
-          this.originalDragImageArgs[1],
-          this.originalDragImageArgs[2]
-        );
-        window.addEventListener("dragenter", this.handle_windowDragEnter, {
-          once: true,
-          capture: true,
-        });
+      this.#isOutOfWindow = true;
+      gZenViewSplitter.onBrowserDragEndToSplit(event, true);
+      this.#maybeClearVerticalPinnedGridDragOver();
+      this.clearDragOverVisuals();
+      this.clearSpaceSwitchTimer();
+      const dt = event.dataTransfer;
+      let dragData = draggedTab._dragData;
+      let movingTabs = dragData.movingTabs;
+      if (!this._browserDragImageWrapper) {
+        const wrappingDiv = document.createXULElement("vbox");
+        canvas.style.borderRadius = "8px";
+        canvas.style.border = "2px solid white";
+        wrappingDiv.style.width = 200 + "px";
+        wrappingDiv.style.height = 130 + "px";
+        wrappingDiv.style.position = "relative";
+        this.#maybeCreateDragImageDot(movingTabs, wrappingDiv);
+        wrappingDiv.appendChild(canvas);
+        this._browserDragImageWrapper = wrappingDiv;
+        document.documentElement.appendChild(wrappingDiv);
       }
+      dt.updateDragImage(
+        this._browserDragImageWrapper,
+        this.originalDragImageArgs[1],
+        this.originalDragImageArgs[2]
+      );
+      window.addEventListener("dragenter", this.handle_windowDragEnter, {
+        once: true,
+        capture: true,
+      });
     }
 
     handle_drop(event) {
@@ -1481,10 +1470,7 @@
       let draggedTab = event.dataTransfer.mozGetDataAt(TAB_DROP_TYPE, 0);
       let dragData = draggedTab._dragData;
       let movingTabs = dragData.movingTabs;
-      if (
-        !gZenPinnedTabManager.canEssentialBeAdded(draggedTab) &&
-        !draggedTab.hasAttribute("zen-essential")
-      ) {
+      if (!gZenPinnedTabManager.canEssentialBeAdded(draggedTab)) {
         return;
       }
       let essentialsPromoStatus = this.createZenEssentialsPromo();

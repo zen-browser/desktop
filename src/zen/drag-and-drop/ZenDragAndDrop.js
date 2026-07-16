@@ -898,7 +898,7 @@
 
     handle_windowDragLeave(event) {
       // If relatedTarget exists, then we are still in the window
-      if (event.relatedTarget) {
+      if (event.relatedTarget || gZenSplitVIew.fakeBrowser) {
         return;
       }
       const canvas = this._tabbrowserTabs._dndCanvas;

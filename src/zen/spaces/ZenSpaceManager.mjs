@@ -2486,7 +2486,8 @@ class nsZenWorkspaces {
       w => w.uuid !== this.activeWorkspace
     );
     const ctxCommand = document.getElementById("cmd_zenCtxDeleteWorkspace");
-    if (workspaces.length <= 1) {
+    const hasMultipleWorkspaces = workspaces.length > 0;
+    if (!hasMultipleWorkspaces) {
       ctxCommand.setAttribute("disabled", "true");
     } else {
       ctxCommand.removeAttribute("disabled");
@@ -2505,6 +2506,9 @@ class nsZenWorkspaces {
         ".zen-workspace-context-menu-item"
       )) {
         item.remove();
+      }
+      if (!hasMultipleWorkspaces) {
+        continue;
       }
       const separator = document.createXULElement("menuseparator");
       separator.classList.add("zen-workspace-context-menu-item");

@@ -187,6 +187,17 @@ if (
   ok("App Hub/Suraksha bootstrap-only preload preserved");
 } else fail("preload architecture regression");
 
+const hubMgr = read("src/zen/common/modules/AstraAppHubManager.mjs");
+if (
+  hubMgr.includes("#applyCatalogReadyState") &&
+  hubMgr.includes("#retryCatalog") &&
+  hubMgr.includes("#retryInFlight") &&
+  hubMgr.includes("#handoffFocusFromHiddenFallback") &&
+  !/Try again after restarting/i.test(hubMgr)
+) {
+  ok("App Hub catalog fail-safe keeps fallback (no restart-only path)");
+} else fail("App Hub catalog fail-safe regression");
+
 // Transparent / performance invariants
 const theme = read("prefs/zen/theme.yaml");
 if (/browser\.tabs\.allow_transparent_browser[\s\S]*value:\s*false/.test(theme)) {

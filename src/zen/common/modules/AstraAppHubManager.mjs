@@ -213,6 +213,104 @@ function validateCatalog(raw) {
   return { schemaVersion: CATALOG_SCHEMA_VERSION, categories, apps };
 }
 
+/**
+ * Load packaged chrome catalog without treating HTTP response.ok as the
+ * only success signal. Prefer a readable JSON body; fall back to NetUtil.
+ * Diagnostics never include user apps, URLs, profile paths, or search text.
+ */
+async function loadPackagedCatalog() {
+  const diag = {
+    stage: "fetch",
+    chromeResourcePath: CATALOG_URL,
+    responseStatus: null,
+    exceptionName: null,
+    schemaReason: null,
+  };
+
+  let raw = null;
+  let fetchError = null;
+
+  try {
+    const response = await fetch(CATALOG_URL);
+    diag.responseStatus =
+      typeof response?.status === "number" ? response.status : null;
+    diag.stage = "parse";
+    const text = await response.text();
+    if (text && text.trim()) {
+      try {
+        raw = JSON.parse(text);
+      } catch (parseError) {
+        diag.exceptionName = parseError?.name || "SyntaxError";
+        if (response && response.ok === false) {
+          throw new Error(`catalog fetch failed: ${response.status}`);
+        }
+        throw parseError;
+      }
+    } else if (response && response.ok === false) {
+      throw new Error(`catalog fetch failed: ${response.status}`);
+    } else {
+      throw new Error("catalog empty body");
+    }
+  } catch (error) {
+    fetchError = error;
+    diag.exceptionName = error?.name || "Error";
+    diag.stage = "netutil";
+    try {
+      const { NetUtil } = ChromeUtils.importESModule(
+        "resource://gre/modules/NetUtil.sys.mjs"
+      );
+      const uri = Services.io.newURI(CATALOG_URL);
+      const channel = NetUtil.newChannel({
+        uri,
+        loadUsingSystemPrincipal: true,
+      });
+      const stream = channel.open();
+      try {
+        const count = stream.available();
+        const data = NetUtil.readInputStreamToString(stream, count);
+        raw = JSON.parse(data);
+        diag.exceptionName = null;
+        diag.responseStatus = 200;
+      } finally {
+        try {
+          stream.close();
+        } catch {
+          // ignore
+        }
+      }
+    } catch (netError) {
+      diag.exceptionName = netError?.name || fetchError?.name || "Error";
+      diag.stage = fetchError ? "fetch" : "netutil";
+      throw fetchError || netError;
+    }
+  }
+
+  try {
+    diag.stage = "validate";
+    const catalog = validateCatalog(raw);
+    return { catalog, error: null, diag: null };
+  } catch (schemaError) {
+    diag.exceptionName = schemaError?.name || "Error";
+    diag.schemaReason = String(schemaError?.message || schemaError).slice(
+      0,
+      160
+    );
+    throw Object.assign(schemaError, { astraCatalogDiag: diag });
+  }
+}
+
+function logCatalogFailure(diag, error) {
+  const payload = {
+    stage: diag?.stage || "unknown",
+    chromeResourcePath: diag?.chromeResourcePath || CATALOG_URL,
+    responseStatus: diag?.responseStatus ?? null,
+    exceptionName:
+      diag?.exceptionName || error?.name || error?.constructor?.name || "Error",
+    schemaReason: diag?.schemaReason || null,
+  };
+  console.error("[AstraAppHub] catalog load failed:", payload);
+}
+
 class AstraAppHubManager {
   #initPromise = null;
   #initialized = false;
@@ -222,6 +320,8 @@ class AstraAppHubManager {
   #boundOverflowPopupShowing = null;
   #catalog = null;
   #catalogError = null;
+  #catalogDiag = null;
+  #retryInFlight = false;
   #rendered = false;
   #priorFocus = null;
   #openSource = "unknown";
@@ -377,43 +477,209 @@ class AstraAppHubManager {
       }
 
       try {
-        const response = await fetch(CATALOG_URL);
-        if (!response.ok) {
-          throw new Error(`catalog fetch failed: ${response.status}`);
+        const loaded = await loadPackagedCatalog();
+        if (this.#destroyed || window.closed) {
+          return null;
         }
-        const raw = await response.json();
-        this.#catalog = validateCatalog(raw);
+        this.#catalog = loaded.catalog;
         this.#catalogError = null;
+        this.#catalogDiag = null;
         await this.#pruneUnknown();
       } catch (catalogError) {
+        if (this.#destroyed || window.closed) {
+          return null;
+        }
         this.#catalog = null;
         this.#catalogError = catalogError;
-        console.error("[AstraAppHub] catalog load failed:", catalogError);
+        this.#catalogDiag = catalogError?.astraCatalogDiag || {
+          stage: "fetch",
+          chromeResourcePath: CATALOG_URL,
+          responseStatus: null,
+          exceptionName: catalogError?.name || "Error",
+          schemaReason: null,
+        };
+        logCatalogFailure(this.#catalogDiag, catalogError);
       }
 
+      if (this.#destroyed || window.closed) {
+        return null;
+      }
       this.#ensureShell();
       this.#bindPanelListeners();
       this.#initialized = true;
-      try {
-        window.gAstraAppHubBootstrap?.setAdvancedReady?.(true);
-      } catch {
-        // ignore
-      }
+      this.#applyCatalogReadyState();
       return this.#catalog;
     } catch (error) {
+      if (this.#destroyed || window.closed) {
+        return null;
+      }
       this.#catalog = null;
       this.#catalogError = error;
+      this.#catalogDiag = {
+        stage: "init",
+        chromeResourcePath: CATALOG_URL,
+        responseStatus: null,
+        exceptionName: error?.name || "Error",
+        schemaReason: null,
+      };
       this.#initialized = true;
-      console.error("[AstraAppHub] catalog load failed:", error);
+      logCatalogFailure(this.#catalogDiag, error);
       this.#ensureShell();
       this.#bindPanelListeners();
-      try {
-        // Shell works — still prefer advanced error UI over silent failure.
-        window.gAstraAppHubBootstrap?.setAdvancedReady?.(true);
-      } catch {
-        // ignore
-      }
+      this.#applyCatalogReadyState();
       return null;
+    }
+  }
+
+  /**
+   * ADVANCED READY only when catalog + shell can render.
+   * Otherwise keep fallback visible/usable with a compact retry banner.
+   * When the panel is open, rebuild advanced content before mode handoff so
+   * fallback is never swapped for an empty advanced panel.
+   */
+  #applyCatalogReadyState() {
+    if (this.#destroyed || window.closed) {
+      return;
+    }
+    let ready = !!(this.#catalog && this.#shellBuilt && !this.#catalogError);
+    if (ready && this.isOpen) {
+      this.#rendered = false;
+      try {
+        this.#rebuildList();
+      } catch (error) {
+        console.warn("[AstraAppHub] rebuild after catalog ready failed:", error);
+      }
+      ready = !!(this.#catalog && this.#shellBuilt && !this.#catalogError);
+    }
+    try {
+      window.gAstraAppHubBootstrap?.setAdvancedReady?.(ready);
+    } catch {
+      // ignore
+    }
+    if (ready) {
+      this.#handoffFocusFromHiddenFallback();
+    }
+    this.#showFallbackFailureBanner(!ready && !!this.#catalogError);
+  }
+
+  /**
+   * If focus was inside the fallback subtree that is about to hide, move it
+   * to advanced search (or the panel) once. No polling.
+   */
+  #handoffFocusFromHiddenFallback() {
+    try {
+      const fallback = document.getElementById(
+        "PanelUI-zen-app-launcher-fallback"
+      );
+      const active = document.activeElement;
+      if (!fallback || !active || !fallback.contains(active)) {
+        return;
+      }
+      const search = this.searchInput;
+      if (search && search.isConnected && !search.hidden) {
+        search.focus();
+        return;
+      }
+      this.panel?.focus?.();
+    } catch {
+      // ignore
+    }
+  }
+
+  #showFallbackFailureBanner(show) {
+    const fallback = document.getElementById(
+      "PanelUI-zen-app-launcher-fallback"
+    );
+    if (!fallback) {
+      return;
+    }
+    let banner = document.getElementById("astra-app-hub-fallback-banner");
+    if (show && !banner) {
+      banner = document.createXULElement("hbox");
+      banner.id = "astra-app-hub-fallback-banner";
+      banner.classList.add("astra-app-hub-fallback-banner");
+      banner.setAttribute("role", "status");
+      banner.setAttribute("align", "center");
+
+      const msg = document.createXULElement("label");
+      msg.classList.add("astra-app-hub-fallback-banner-msg");
+      msg.setAttribute("flex", "1");
+      setL10nOrText(
+        msg,
+        "astra-app-hub-advanced-unavailable",
+        "Advanced App Hub is unavailable. Basic apps are ready."
+      );
+
+      const retry = document.createXULElement("toolbarbutton");
+      retry.id = "astra-app-hub-retry-btn";
+      retry.classList.add("astra-app-hub-retry-btn");
+      retry.setAttribute("data-action", "retry-catalog");
+      setL10nOrText(retry, "astra-app-hub-retry", "Retry");
+
+      banner.appendChild(msg);
+      banner.appendChild(retry);
+
+      const title = document.getElementById("PanelUI-zen-app-launcher-title");
+      if (title && title.parentNode === fallback) {
+        fallback.insertBefore(banner, title.nextSibling);
+      } else {
+        fallback.insertBefore(banner, fallback.firstChild);
+      }
+    }
+    if (banner) {
+      banner.hidden = !show;
+      const retryBtn = document.getElementById("astra-app-hub-retry-btn");
+      if (retryBtn) {
+        if (this.#retryInFlight) {
+          retryBtn.setAttribute("disabled", "true");
+        } else {
+          retryBtn.removeAttribute("disabled");
+        }
+      }
+    }
+  }
+
+  async #retryCatalog() {
+    if (this.#retryInFlight || this.#destroyed || window.closed) {
+      return null;
+    }
+    this.#retryInFlight = true;
+    this.#showFallbackFailureBanner(true);
+    try {
+      const loaded = await loadPackagedCatalog();
+      if (this.#destroyed || window.closed) {
+        return null;
+      }
+      this.#catalog = loaded.catalog;
+      this.#catalogError = null;
+      this.#catalogDiag = null;
+      await this.#pruneUnknown();
+      if (this.#destroyed || window.closed) {
+        return null;
+      }
+      this.#applyCatalogReadyState();
+      return this.#catalog;
+    } catch (catalogError) {
+      if (this.#destroyed || window.closed) {
+        return null;
+      }
+      this.#catalog = null;
+      this.#catalogError = catalogError;
+      this.#catalogDiag = catalogError?.astraCatalogDiag || {
+        stage: "retry",
+        chromeResourcePath: CATALOG_URL,
+        responseStatus: null,
+        exceptionName: catalogError?.name || "Error",
+        schemaReason: null,
+      };
+      logCatalogFailure(this.#catalogDiag, catalogError);
+      this.#applyCatalogReadyState();
+      return null;
+    } finally {
+      this.#retryInFlight = false;
+      if (!this.#destroyed && !window.closed) {
+        this.#showFallbackFailureBanner(!!this.#catalogError);
+      }
     }
   }
 
@@ -1019,12 +1285,12 @@ class AstraAppHubManager {
   }
 
   async reloadCatalog() {
-    this.#initialized = false;
     this.#rendered = false;
     this.#catalog = null;
     this.#catalogError = null;
+    this.#catalogDiag = null;
     clearChildren(this.list);
-    return this.init();
+    return this.#retryCatalog();
   }
 
   getCatalog() {
@@ -1521,18 +1787,19 @@ class AstraAppHubManager {
     this.#focusedItemIndex = -1;
 
     if (this.#catalogError || !this.#catalog) {
-      const msg = document.createXULElement("label");
-      msg.classList.add("zen-app-launcher-section-title", "astra-app-hub-error");
-      setL10nOrText(
-        msg,
-        "astra-app-hub-load-error",
-        "App Hub could not load. Try again after restarting."
-      );
-      list.appendChild(msg);
+      // Never leave an empty advanced panel; keep static fallback usable.
+      try {
+        window.gAstraAppHubBootstrap?.setAdvancedReady?.(false);
+      } catch {
+        // ignore
+      }
+      this.#showFallbackFailureBanner(true);
       this.#rendered = true;
       this.#lastAppliedRevision = gAstraAppHubState.revision;
       return;
     }
+
+    this.#showFallbackFailureBanner(false);
 
     const state = gAstraAppHubState.data;
     const appMap = this.#allAppsMap();
@@ -2069,6 +2336,9 @@ class AstraAppHubManager {
       target.closest?.("[data-category-id]")?.getAttribute("data-category-id");
 
     switch (action) {
+      case "retry-catalog":
+        void this.#retryCatalog();
+        break;
       case "clear-search":
         this.#clearSearch();
         this.searchInput?.focus();

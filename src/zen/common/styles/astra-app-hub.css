@@ -87,14 +87,19 @@
 .astra-app-hub-search {
   flex: 1;
   min-width: 0;
-  height: 30px;
+  height: 36px;
+  min-height: 36px;
   border-radius: 8px;
   border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
   background: color-mix(in srgb, var(--arrowpanel-background, Canvas) 92%, currentColor);
   color: inherit;
-  padding: 0 10px;
+  padding: 0 10px 0 32px;
   font: inherit;
   font-size: 0.85rem;
+  background-image: url("chrome://browser/skin/zen-icons/search-glass.svg");
+  background-repeat: no-repeat;
+  background-position: 10px center;
+  background-size: 14px;
 }
 
 .astra-app-hub-search:focus-visible {
@@ -458,6 +463,72 @@
   .zen-app-launcher-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   }
+}
+
+/* Compact failure banner — fallback stays fully usable */
+.astra-app-hub-fallback-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  max-height: 40px;
+  padding: 4px 8px;
+  margin: 0 0 8px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  background: color-mix(in srgb, currentColor 7%, transparent);
+  box-sizing: border-box;
+}
+
+.astra-app-hub-fallback-banner[hidden] {
+  display: none !important;
+}
+
+.astra-app-hub-fallback-banner-msg {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.75rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.astra-app-hub-retry-btn {
+  -moz-appearance: none;
+  appearance: none;
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  border-radius: 6px;
+  padding: 2px 10px;
+  min-height: 28px;
+  min-width: 56px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.75rem;
+}
+
+.astra-app-hub-retry-btn:hover {
+  background: color-mix(in srgb, currentColor 16%, transparent);
+}
+
+.astra-app-hub-retry-btn:focus-visible {
+  outline: 2px solid var(--focus-outline-color, Highlight);
+  outline-offset: 1px;
+}
+
+.astra-app-hub-retry-btn[disabled] {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.astra-app-hub-shortcut-hint {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  background: color-mix(in srgb, currentColor 6%, transparent);
+  font-size: 0.68rem;
+  opacity: 0.8;
 }
 
 /* —— Fallback mode (known-good static markup) —— */

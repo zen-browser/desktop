@@ -423,17 +423,18 @@
   aria-labelledby="astra-suraksha-title"
   astra-suraksha-mode="fallback">
   <vbox id="PanelUI-astra-suraksha-container" class="astra-suraksha-container">
-    <hbox id="astra-suraksha-header">
-      <vbox flex="1">
+    <hbox id="astra-suraksha-header" class="astra-suraksha-header" align="center">
+      <image id="astra-suraksha-header-icon" class="astra-suraksha-header-icon"/>
+      <vbox flex="1" class="astra-suraksha-header-text">
         <label id="astra-suraksha-title"
-               value="Astra Suraksha Center"
+               value="Astra Suraksha"
                data-l10n-id="astra-suraksha-title"/>
         <label id="astra-suraksha-mode-label"
-               value="Basic controls"
-               data-l10n-id="astra-suraksha-mode-fallback"/>
+               value="Protection overview for this site"
+               data-l10n-id="astra-suraksha-subtitle"/>
       </vbox>
       <toolbarbutton id="astra-suraksha-refresh"
-                     class="subviewbutton"
+                     class="astra-suraksha-icon-btn"
                      data-l10n-id="astra-suraksha-refresh"/>
     </hbox>
 
@@ -443,91 +444,126 @@
       <label class="astra-suraksha-section-title"
              value="Quick actions"
              data-l10n-id="astra-suraksha-section-fallback"/>
-      <toolbarbutton class="astra-suraksha-action subviewbutton"
+      <toolbarbutton class="astra-suraksha-action astra-suraksha-action-compact"
                      data-suraksha-action="protections-panel"
                      label="Open Firefox protection panel"
                      data-l10n-id="astra-suraksha-action-protections-panel"/>
-      <toolbarbutton class="astra-suraksha-action subviewbutton"
+      <toolbarbutton class="astra-suraksha-action astra-suraksha-action-compact"
                      data-suraksha-action="site-info"
                      label="Open site information"
                      data-l10n-id="astra-suraksha-action-site-info"/>
-      <toolbarbutton class="astra-suraksha-action subviewbutton"
+      <toolbarbutton class="astra-suraksha-action astra-suraksha-action-compact"
                      data-suraksha-action="protections-dashboard"
                      label="Open protection dashboard"
                      data-l10n-id="astra-suraksha-action-protections-dashboard"/>
-      <toolbarbutton class="astra-suraksha-action subviewbutton"
+      <toolbarbutton class="astra-suraksha-action astra-suraksha-action-compact"
                      data-suraksha-action="addons"
                      label="Open Add-ons Manager"
                      data-l10n-id="astra-suraksha-action-addons"/>
     </vbox>
 
     <!-- Advanced cards: populated by lazy manager. -->
-    <vbox id="PanelUI-astra-suraksha-advanced" hidden="true">
-      <label class="astra-suraksha-section-title" data-l10n-id="astra-suraksha-section-site"/>
-      <vbox id="astra-suraksha-card-connection" class="astra-suraksha-card" data-state="loading">
-        <label class="astra-suraksha-hostname" data-l10n-id="astra-suraksha-hostname-unknown"/>
-        <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+    <vbox id="PanelUI-astra-suraksha-advanced" class="astra-suraksha-advanced" hidden="true">
+      <vbox id="astra-suraksha-card-connection"
+            class="astra-suraksha-card astra-suraksha-card-hero"
+            data-state="loading"
+            data-variant="loading">
+        <hbox class="astra-suraksha-card-head" align="center">
+          <image class="astra-suraksha-card-icon" data-icon="connection"/>
+          <vbox flex="1" class="astra-suraksha-card-head-text">
+            <label class="astra-suraksha-hostname" data-l10n-id="astra-suraksha-hostname-unknown"/>
+            <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+          </vbox>
+        </hbox>
         <label class="astra-suraksha-card-detail" hidden="true"/>
         <hbox class="astra-suraksha-card-actions"/>
       </vbox>
 
       <label class="astra-suraksha-section-title" data-l10n-id="astra-suraksha-section-protection"/>
-      <vbox id="astra-suraksha-card-protection" class="astra-suraksha-card" data-state="loading">
-        <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+      <vbox id="astra-suraksha-card-protection" class="astra-suraksha-card" data-state="loading" data-variant="loading">
+        <hbox class="astra-suraksha-card-head" align="center">
+          <image class="astra-suraksha-card-icon" data-icon="protection"/>
+          <label class="astra-suraksha-card-title" data-l10n-id="astra-suraksha-card-title-protection"/>
+          <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+        </hbox>
         <label class="astra-suraksha-card-detail" hidden="true"/>
         <hbox class="astra-suraksha-card-actions"/>
       </vbox>
-      <vbox id="astra-suraksha-card-ublock" class="astra-suraksha-card" data-state="loading">
-        <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+      <vbox id="astra-suraksha-card-ublock" class="astra-suraksha-card" data-state="loading" data-variant="loading">
+        <hbox class="astra-suraksha-card-head" align="center">
+          <image class="astra-suraksha-card-icon" data-icon="ublock"/>
+          <label class="astra-suraksha-card-title" data-l10n-id="astra-suraksha-card-title-ublock"/>
+          <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+        </hbox>
         <label class="astra-suraksha-card-detail" hidden="true"/>
         <hbox class="astra-suraksha-card-actions"/>
       </vbox>
-      <vbox id="astra-suraksha-card-safebrowsing" class="astra-suraksha-card" data-state="loading">
-        <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+      <vbox id="astra-suraksha-card-safebrowsing" class="astra-suraksha-card" data-state="loading" data-variant="loading">
+        <hbox class="astra-suraksha-card-head" align="center">
+          <image class="astra-suraksha-card-icon" data-icon="safebrowsing"/>
+          <label class="astra-suraksha-card-title" data-l10n-id="astra-suraksha-card-title-safebrowsing"/>
+          <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+        </hbox>
         <label class="astra-suraksha-card-detail" hidden="true"/>
+        <vbox id="astra-suraksha-card-safebrowsing-details"
+              class="astra-suraksha-card-details"
+              hidden="true"/>
         <hbox class="astra-suraksha-card-actions"/>
       </vbox>
-      <vbox id="astra-suraksha-card-passwords" class="astra-suraksha-card" data-state="loading">
-        <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+      <vbox id="astra-suraksha-card-passwords" class="astra-suraksha-card" data-state="loading" data-variant="loading">
+        <hbox class="astra-suraksha-card-head" align="center">
+          <image class="astra-suraksha-card-icon" data-icon="passwords"/>
+          <label class="astra-suraksha-card-title" data-l10n-id="astra-suraksha-card-title-passwords"/>
+          <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+        </hbox>
         <label class="astra-suraksha-card-detail" hidden="true"/>
+        <vbox id="astra-suraksha-card-passwords-details"
+              class="astra-suraksha-card-details"
+              hidden="true"/>
         <hbox class="astra-suraksha-card-actions"/>
       </vbox>
 
-      <label class="astra-suraksha-section-title" data-l10n-id="astra-suraksha-section-permissions"/>
-      <vbox id="astra-suraksha-card-permissions" class="astra-suraksha-card" data-state="loading">
-        <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+      <label class="astra-suraksha-section-title" data-l10n-id="astra-suraksha-section-site-controls"/>
+      <vbox id="astra-suraksha-card-permissions" class="astra-suraksha-card" data-state="loading" data-variant="loading">
+        <hbox class="astra-suraksha-card-head" align="center">
+          <image class="astra-suraksha-card-icon" data-icon="permissions"/>
+          <label class="astra-suraksha-card-title" data-l10n-id="astra-suraksha-card-title-permissions"/>
+          <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+        </hbox>
         <vbox class="astra-suraksha-perm-list"/>
         <hbox class="astra-suraksha-card-actions"/>
       </vbox>
-
-      <label class="astra-suraksha-section-title" data-l10n-id="astra-suraksha-section-site-data"/>
-      <vbox id="astra-suraksha-card-site-data" class="astra-suraksha-card" data-state="loading">
-        <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+      <vbox id="astra-suraksha-card-site-data" class="astra-suraksha-card" data-state="loading" data-variant="loading">
+        <hbox class="astra-suraksha-card-head" align="center">
+          <image class="astra-suraksha-card-icon" data-icon="site-data"/>
+          <label class="astra-suraksha-card-title" data-l10n-id="astra-suraksha-card-title-site-data"/>
+          <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+        </hbox>
+        <hbox class="astra-suraksha-card-actions"/>
+      </vbox>
+      <vbox id="astra-suraksha-card-clean-link" class="astra-suraksha-card" data-state="loading" data-variant="loading">
+        <hbox class="astra-suraksha-card-head" align="center">
+          <image class="astra-suraksha-card-icon" data-icon="clean-link"/>
+          <label class="astra-suraksha-card-title" data-l10n-id="astra-suraksha-card-title-clean-link"/>
+          <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+        </hbox>
         <hbox class="astra-suraksha-card-actions"/>
       </vbox>
 
-      <label class="astra-suraksha-section-title" data-l10n-id="astra-suraksha-section-clean-link"/>
-      <vbox id="astra-suraksha-card-clean-link" class="astra-suraksha-card" data-state="loading">
-        <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
-        <hbox class="astra-suraksha-card-actions"/>
-      </vbox>
-
-      <label class="astra-suraksha-section-title" data-l10n-id="astra-suraksha-section-advanced"/>
-      <toolbarbutton class="astra-suraksha-action subviewbutton"
-                     data-suraksha-action="protections-panel"
-                     data-l10n-id="astra-suraksha-action-protections-panel"/>
-      <toolbarbutton class="astra-suraksha-action subviewbutton"
-                     data-suraksha-action="site-info"
-                     data-l10n-id="astra-suraksha-action-site-info"/>
-      <toolbarbutton class="astra-suraksha-action subviewbutton"
-                     data-suraksha-action="etp-dashboard"
-                     data-l10n-id="astra-suraksha-action-protections-dashboard"/>
-      <toolbarbutton class="astra-suraksha-action subviewbutton"
-                     data-suraksha-action="ublock-popup"
-                     data-l10n-id="astra-suraksha-action-ublock-popup"/>
-      <toolbarbutton class="astra-suraksha-action subviewbutton"
-                     data-suraksha-action="addons"
-                     data-l10n-id="astra-suraksha-action-addons"/>
+      <hbox id="astra-suraksha-footer" class="astra-suraksha-footer">
+        <toolbarbutton class="astra-suraksha-footer-btn"
+                       data-suraksha-action="safebrowsing-settings"
+                       data-l10n-id="astra-suraksha-footer-privacy"/>
+        <toolbarbutton class="astra-suraksha-footer-btn"
+                       data-suraksha-action="etp-dashboard"
+                       data-l10n-id="astra-suraksha-footer-dashboard"/>
+        <toolbarbutton class="astra-suraksha-footer-btn"
+                       data-suraksha-action="addons"
+                       data-l10n-id="astra-suraksha-footer-addons"/>
+        <toolbarbutton class="astra-suraksha-footer-btn"
+                       data-suraksha-action="site-info"
+                       data-l10n-id="astra-suraksha-footer-more"/>
+      </hbox>
     </vbox>
   </vbox>
 </panel>

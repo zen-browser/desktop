@@ -1,18 +1,76 @@
-/* Astra — Tab stripe geometry (compact-guarded) */
+/* Astra — Tab stripe geometry (compact-guarded)
+ *
+ * Own the gutter on the workspace tab-list container so selected/hover
+ * backgrounds stay inside the sidebar lane. Logical properties keep
+ * left/right sidebar layouts correct. Avoid negative-margin bleed hacks.
+ */
+
 :root:not([zen-compact-mode="true"]) #zen-tabbox-wrapper {
   margin: 0;
 }
-.zen-workspace-tabs-section {
-  padding: 0;
-  min-width: 100%;
-  border-bottom: none;
-  margin-bottom: 0;
-}
-:root .tab-background {
-  margin-inline: 0;
-}
+
 #zen-tabbox-wrapper,
 #tabbrowser-tabbox {
   border: none;
   outline: none;
+}
+
+/* Strip chrome only — keep a logical inline gutter for tab cards. */
+.zen-workspace-tabs-section {
+  border-bottom: none;
+  margin-bottom: 0;
+  box-sizing: border-box;
+  min-inline-size: 0;
+}
+
+.zen-workspace-tabs-section:not(.zen-current-workspace-indicator):not(
+    .zen-essentials-container
+  ) {
+  /* Equal gutters from both sidebar edges; prefer Zen toolbox padding. */
+  --astra-tab-lane-gutter: var(--zen-toolbox-padding, 4px);
+  padding-inline: var(--astra-tab-lane-gutter);
+  box-sizing: border-box;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+}
+
+/* Card geometry stays inside the padded lane. */
+#navigator-toolbox[zen-sidebar-expanded="true"]
+  .zen-workspace-tabs-section:not(.zen-current-workspace-indicator):not(
+    .zen-essentials-container
+  )
+  .tabbrowser-tab,
+#navigator-toolbox[zen-sidebar-expanded="true"]
+  .zen-workspace-tabs-section:not(.zen-current-workspace-indicator):not(
+    .zen-essentials-container
+  )
+  .tab-stack,
+#navigator-toolbox[zen-sidebar-expanded="true"]
+  .zen-workspace-tabs-section:not(.zen-current-workspace-indicator):not(
+    .zen-essentials-container
+  )
+  .tab-background {
+  box-sizing: border-box;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+}
+
+#navigator-toolbox[zen-sidebar-expanded="true"]
+  .zen-workspace-tabs-section:not(.zen-current-workspace-indicator):not(
+    .zen-essentials-container
+  )
+  .tab-content {
+  min-inline-size: 0;
+}
+
+/* Do not force full-bleed backgrounds across the content seam. */
+#navigator-toolbox[zen-sidebar-expanded="true"]
+  .zen-workspace-tabs-section:not(.zen-current-workspace-indicator):not(
+    .zen-essentials-container
+  )
+  .tabbrowser-tab
+  .tab-background {
+  margin-inline: 0;
+  width: auto;
+  inline-size: auto;
 }

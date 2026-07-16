@@ -323,7 +323,7 @@ class AstraSurakshaManager {
       document.l10n?.setAttributes?.(
         el,
         mode === "advanced"
-          ? "astra-suraksha-mode-advanced"
+          ? "astra-suraksha-subtitle"
           : "astra-suraksha-mode-fallback"
       );
     } catch {
@@ -331,15 +331,60 @@ class AstraSurakshaManager {
     }
   }
 
+  #variantForState(state) {
+    switch (String(state || "")) {
+      case "secure":
+      case "ok":
+      case "active":
+      case "present":
+      case "ready":
+      case "has":
+        return "good";
+      case "warn":
+      case "exception":
+      case "disabled":
+      case "not-secure":
+      case "partial":
+      case "private":
+        return "attention";
+      case "broken":
+      case "cert-error":
+      case "https-only-error":
+      case "net-error":
+      case "error":
+      case "missing":
+      case "app-disabled":
+        return "danger";
+      case "loading":
+      case "checking":
+      case "pending":
+        return "loading";
+      default:
+        return "neutral";
+    }
+  }
+
+  #applyCardVariant(card, state) {
+    if (!card) {
+      return;
+    }
+    const resolved = state || "error";
+    card.setAttribute("data-state", resolved);
+    card.setAttribute("data-variant", this.#variantForState(resolved));
+  }
+
   #showCardLoading(cardId) {
+    const card = document.getElementById(cardId);
     const status = document.querySelector(`#${cardId} .astra-suraksha-card-status`);
     if (status) {
+      status.hidden = false;
       try {
         document.l10n?.setAttributes?.(status, "astra-suraksha-loading");
       } catch {
         // ignore
       }
     }
+    this.#applyCardVariant(card, "loading");
   }
 
   #setL10n(el, id, args) {
@@ -371,12 +416,20 @@ class AstraSurakshaManager {
     if (!container || !actions?.length) {
       return;
     }
-    for (const action of actions) {
-      const btn = document.createXULElement("toolbarbutton");
-      btn.classList.add("astra-suraksha-action", "subviewbutton");
-      btn.setAttribute("data-suraksha-action", action.id);
-      this.#setL10n(btn, action.labelId);
-      container.appendChild(btn);
+    // One primary + optional overflow keeps cards compact.
+    const primary = actions[0];
+    const rest = actions.slice(1);
+    const btn = document.createXULElement("toolbarbutton");
+    btn.classList.add("astra-suraksha-action", "astra-suraksha-action-compact");
+    btn.setAttribute("data-suraksha-action", primary.id);
+    this.#setL10n(btn, primary.labelId);
+    container.appendChild(btn);
+    for (const action of rest) {
+      const extra = document.createXULElement("toolbarbutton");
+      extra.classList.add("astra-suraksha-action", "astra-suraksha-action-compact");
+      extra.setAttribute("data-suraksha-action", action.id);
+      this.#setL10n(extra, action.labelId);
+      container.appendChild(extra);
     }
   }
 
@@ -407,7 +460,7 @@ class AstraSurakshaManager {
       }
     }
     this.#renderActionButtons(actions, result?.actions || []);
-    card.setAttribute("data-state", result?.state || "error");
+    this.#applyCardVariant(card, result?.state || "error");
   }
 
   #renderProtection(result) {
@@ -440,7 +493,7 @@ class AstraSurakshaManager {
       }
     }
     this.#renderActionButtons(actions, result?.actions || []);
-    card.setAttribute("data-state", result?.state || "error");
+    this.#applyCardVariant(card, result?.state || "error");
   }
 
   #renderUBlock(result) {
@@ -471,7 +524,7 @@ class AstraSurakshaManager {
       }
     }
     this.#renderActionButtons(actions, result?.actions || []);
-    card.setAttribute("data-state", result?.state || "error");
+    this.#applyCardVariant(card, result?.state || "error");
   }
 
   #renderDetailListCard(cardId, result) {
@@ -481,29 +534,59 @@ class AstraSurakshaManager {
     }
     const status = card.querySelector(".astra-suraksha-card-status");
     const detail = card.querySelector(".astra-suraksha-card-detail");
+    const detailsBox = card.querySelector(".astra-suraksha-card-details");
     const actions = card.querySelector(".astra-suraksha-card-actions");
+    if (status) {
+      status.hidden = false;
+    }
     this.#setL10n(status, result?.labelId || "astra-suraksha-error");
 
     card
-      .querySelectorAll(".astra-suraksha-card-detail-extra")
+      .querySelectorAll(".astra-suraksha-card-detail-extra, .astra-suraksha-more-details")
       .forEach(node => node.remove());
+    if (detailsBox) {
+      this.#clearChildren(detailsBox);
+      detailsBox.hidden = true;
+    }
 
     const details = result?.details || [];
     if (detail) {
       if (details[0]?.id) {
         detail.hidden = false;
         this.#setL10n(detail, details[0].id);
-        for (let i = 1; i < details.length; i++) {
-          const extra = document.createXULElement("label");
-          extra.classList.add(
-            "astra-suraksha-card-detail",
-            "astra-suraksha-card-detail-extra"
+        if (details.length > 1 && detailsBox) {
+          if (!detailsBox.id) {
+            detailsBox.id = `${cardId}-details`;
+          }
+          const more = document.createXULElement("toolbarbutton");
+          more.classList.add(
+            "astra-suraksha-action",
+            "astra-suraksha-action-compact",
+            "astra-suraksha-more-details"
           );
-          this.#setL10n(extra, details[i].id);
+          more.setAttribute("aria-expanded", "false");
+          more.setAttribute("aria-controls", detailsBox.id);
+          this.#setL10n(more, "astra-suraksha-more-details");
+          more.addEventListener("command", () => {
+            const open = detailsBox.hidden;
+            detailsBox.hidden = !open;
+            more.setAttribute("aria-expanded", open ? "true" : "false");
+            if (open && !detailsBox.childElementCount) {
+              for (let i = 1; i < details.length; i++) {
+                const extra = document.createXULElement("label");
+                extra.classList.add(
+                  "astra-suraksha-card-detail",
+                  "astra-suraksha-card-detail-extra"
+                );
+                this.#setL10n(extra, details[i].id);
+                detailsBox.appendChild(extra);
+              }
+            }
+          });
           if (actions?.parentNode) {
-            actions.parentNode.insertBefore(extra, actions);
+            actions.parentNode.insertBefore(more, actions);
           } else {
-            detail.parentNode?.appendChild(extra);
+            detail.parentNode?.appendChild(more);
           }
         }
       } else {
@@ -511,7 +594,7 @@ class AstraSurakshaManager {
       }
     }
     this.#renderActionButtons(actions, result?.actions || []);
-    card.setAttribute("data-state", result?.state || "error");
+    this.#applyCardVariant(card, result?.state || "error");
   }
 
   #renderSafeBrowsing(result) {
@@ -563,7 +646,7 @@ class AstraSurakshaManager {
       status.hidden = false;
     }
     this.#renderActionButtons(actions, result?.actions || []);
-    card.setAttribute("data-state", result?.state || "error");
+    this.#applyCardVariant(card, result?.state || "error");
   }
 
   #renderSiteData(result) {
@@ -573,9 +656,12 @@ class AstraSurakshaManager {
     }
     const status = card.querySelector(".astra-suraksha-card-status");
     const actions = card.querySelector(".astra-suraksha-card-actions");
+    if (status) {
+      status.hidden = false;
+    }
     this.#setL10n(status, result?.labelId || "astra-suraksha-error");
     this.#renderActionButtons(actions, result?.actions || []);
-    card.setAttribute("data-state", result?.state || "error");
+    this.#applyCardVariant(card, result?.state || "error");
   }
 
   #renderCleanLink(result) {
@@ -590,9 +676,12 @@ class AstraSurakshaManager {
     card.hidden = false;
     const status = card.querySelector(".astra-suraksha-card-status");
     const actions = card.querySelector(".astra-suraksha-card-actions");
+    if (status) {
+      status.hidden = false;
+    }
     this.#setL10n(status, result?.labelId || "astra-suraksha-error");
     this.#renderActionButtons(actions, result?.actions || []);
-    card.setAttribute("data-state", result?.state || "error");
+    this.#applyCardVariant(card, result?.state || "error");
   }
 
   #onAdvancedCommand(event) {

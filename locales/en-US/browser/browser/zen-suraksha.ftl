@@ -5,28 +5,33 @@
 ## Astra Suraksha Center
 
 astra-suraksha-title =
-    .value = Astra Suraksha Center
-    .label = Astra Suraksha Center
+    .value = Astra Suraksha
+    .label = Astra Suraksha
 
 astra-suraksha-button =
     .label = Suraksha
-    .tooltiptext = Astra Suraksha Center
+    .tooltiptext = Astra Suraksha
 
 astra-suraksha-appmenu =
-    .label = Astra Suraksha Center
+    .label = Astra Suraksha
 
+astra-suraksha-subtitle =
+    .value = Protection overview for this site
 astra-suraksha-mode-fallback =
     .value = Basic controls
 astra-suraksha-mode-advanced =
-    .value = Status overview
+    .value = Protection overview for this site
 astra-suraksha-refresh =
     .label = Refresh
-    .tooltiptext = Refresh status
+    .tooltiptext = Refresh protection status
+    .aria-label = Refresh protection status
 
 astra-suraksha-section-site =
     .value = Current site
 astra-suraksha-section-protection =
     .value = Protection
+astra-suraksha-section-site-controls =
+    .value = Site controls
 astra-suraksha-section-permissions =
     .value = Permissions
 astra-suraksha-section-site-data =
@@ -34,9 +39,37 @@ astra-suraksha-section-site-data =
 astra-suraksha-section-clean-link =
     .value = Clean link
 astra-suraksha-section-advanced =
-    .value = Advanced
+    .value = More tools
 astra-suraksha-section-fallback =
     .value = Quick actions
+
+astra-suraksha-card-title-protection =
+    .value = Tracking Protection
+astra-suraksha-card-title-ublock =
+    .value = uBlock Origin
+astra-suraksha-card-title-safebrowsing =
+    .value = Safe Browsing
+astra-suraksha-card-title-passwords =
+    .value = Password Protection
+astra-suraksha-card-title-permissions =
+    .value = Permissions
+astra-suraksha-card-title-site-data =
+    .value = Site Data
+astra-suraksha-card-title-clean-link =
+    .value = Clean Link
+
+astra-suraksha-footer-privacy =
+    .label = Privacy Settings
+astra-suraksha-footer-dashboard =
+    .label = Protection Dashboard
+astra-suraksha-footer-addons =
+    .label = Add-ons Manager
+astra-suraksha-footer-more =
+    .label = More Security Tools
+
+astra-suraksha-more-details =
+    .label = More details
+    .tooltiptext = Show additional details
 
 astra-suraksha-loading =
     .value = Checking…

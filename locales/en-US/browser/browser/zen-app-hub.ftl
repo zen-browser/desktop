@@ -120,7 +120,12 @@ astra-app-hub-error-generic =
     .value = Could not save this app.
 
 astra-app-hub-load-error =
-    .value = App Hub could not load. Try again after restarting.
+    .value = Advanced App Hub is unavailable. Basic apps are ready.
+astra-app-hub-advanced-unavailable =
+    .value = Advanced App Hub is unavailable. Basic apps are ready.
+astra-app-hub-retry =
+    .label = Retry
+    .tooltiptext = Retry loading Advanced App Hub
 
 astra-app-hub-confirm-delete-title = Delete custom app?
 astra-app-hub-confirm-delete-body = This removes the app from App Hub, favorites, and recent lists.

@@ -898,7 +898,10 @@
 
     handle_windowDragLeave(event) {
       // If relatedTarget exists, then we are still in the window
-      if (event.relatedTarget || gZenSplitVIew.fakeBrowser) {
+      if (
+        event.relatedTarget ||
+        event.target.id === "zen-split-view-fake-browser"
+      ) {
         return;
       }
       const canvas = this._tabbrowserTabs._dndCanvas;

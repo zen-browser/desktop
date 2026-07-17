@@ -21,16 +21,20 @@ const {
 
 let resolveAppIcon;
 let getPackagedIconURL;
-let pickAndStoreCustomIcon;
+let pickCustomIconAsDataURI;
 let deleteCustomIcons;
 let resolvePlacesFaviconURL;
+let sanitizeDataImageURI;
+let migrateLegacyIconFileName;
 try {
   ({
     resolveAppIcon,
     getPackagedIconURL,
-    pickAndStoreCustomIcon,
+    pickCustomIconAsDataURI,
     deleteCustomIcons,
     resolvePlacesFaviconURL,
+    sanitizeDataImageURI,
+    migrateLegacyIconFileName,
   } = ChromeUtils.importESModule(
     "chrome://browser/content/zen-components/AstraAppHubIcons.mjs"
   ));
@@ -46,12 +50,19 @@ try {
       .trim()
       .slice(0, 3)
       .toUpperCase() || "?",
+    monogram: String(app?.monogram || app?.name || app?.id || "?")
+      .trim()
+      .slice(0, 3)
+      .toUpperCase() || "?",
     accent: 0,
+    iconSource: "monogram",
   });
   getPackagedIconURL = () => null;
-  pickAndStoreCustomIcon = async () => null;
+  pickCustomIconAsDataURI = async () => null;
   deleteCustomIcons = async () => {};
   resolvePlacesFaviconURL = async () => null;
+  sanitizeDataImageURI = () => "";
+  migrateLegacyIconFileName = async () => "";
 }
 
 const CATALOG_MODULE_URL =
@@ -321,13 +332,16 @@ class AstraAppHubManager {
   #customizeMode = false;
   #editorMode = null; // null | "add" | "edit"
   #editingAppId = null;
-  #pendingIconFile = null;
+  #pendingIconData = null;
+  #pendingResetIcon = false;
   #searchQuery = "";
   #lastAppliedRevision = -1;
   #contextAppId = null;
   #dragState = null;
   #suppressLaunch = false;
   #focusedItemIndex = -1;
+  /** @type {Map<string, object>} Bounded per-app favicon capture sessions. */
+  #faviconCaptures = new Map();
 
   #boundCommand = null;
   #boundPopupShown = null;
@@ -735,6 +749,7 @@ class AstraAppHubManager {
       return;
     }
     this.#destroyed = true;
+    this.#stopAllFaviconCaptures();
     this.#unbindPanelListeners();
     this.#removeMenus();
     this.#priorFocus = null;
@@ -976,6 +991,16 @@ class AstraAppHubManager {
       iconBtn.setAttribute("data-action", "pick-icon");
       setL10nOrText(iconBtn, "astra-app-hub-editor-icon", "Choose icon");
       editor.appendChild(iconBtn);
+
+      const resetIconBtn = document.createXULElement("toolbarbutton");
+      resetIconBtn.id = "astra-app-hub-editor-reset-icon-btn";
+      resetIconBtn.setAttribute("data-action", "reset-icon");
+      setL10nOrText(
+        resetIconBtn,
+        "astra-app-hub-editor-reset-icon",
+        "Reset icon"
+      );
+      editor.appendChild(resetIconBtn);
 
       const err = document.createXULElement("label");
       err.id = "astra-app-hub-editor-error";
@@ -1552,19 +1577,27 @@ class AstraAppHubManager {
 
     this.close({ restoreFocus: false });
 
+    const isPrivate =
+      mode === "private" ||
+      (typeof PrivateBrowsingUtils !== "undefined" &&
+        PrivateBrowsingUtils.isWindowPrivate(window));
+
     let ok = false;
+    let launchedTab = null;
     try {
-      ok = await this.#launch(check.href, mode, options);
+      const launchResult = await this.#launch(check.href, mode, options);
+      if (launchResult && typeof launchResult === "object") {
+        ok = !!launchResult.ok;
+        launchedTab = launchResult.tab || null;
+      } else {
+        ok = !!launchResult;
+      }
     } catch (error) {
       console.error("[AstraAppHub] openApp failed:", error);
       ok = false;
     }
 
     if (ok && app.id) {
-      const isPrivate =
-        mode === "private" ||
-        (typeof PrivateBrowsingUtils !== "undefined" &&
-          PrivateBrowsingUtils.isWindowPrivate(window));
       try {
         await gAstraAppHubState.recordRecent(app.id, {
           privateWindow: isPrivate,
@@ -1572,6 +1605,17 @@ class AstraAppHubManager {
         this.#lastAppliedRevision = gAstraAppHubState.revision;
       } catch (error) {
         console.warn("[AstraAppHub] recordRecent failed:", error);
+      }
+
+      // Bounded favicon capture only for custom apps launched in normal windows.
+      if (
+        app.builtin === false &&
+        !isPrivate &&
+        mode !== "private" &&
+        typeof app.id === "string" &&
+        app.id.startsWith("custom-")
+      ) {
+        this.#beginFaviconCapture(app, launchedTab);
       }
     }
   }
@@ -1611,25 +1655,30 @@ class AstraAppHubManager {
           triggeringPrincipal: systemPrincipal(),
           inBackground: false,
         });
-        return true;
+        const tab =
+          where === "tab" || where === "current"
+            ? window.gBrowser?.selectedTab || null
+            : null;
+        return { ok: true, tab };
       }
       if (where === "tab" && window.gBrowser) {
-        window.gBrowser.selectedTab = window.gBrowser.addTrustedTab(url, {
+        const tab = window.gBrowser.addTrustedTab(url, {
           triggeringPrincipal: systemPrincipal(),
           inBackground: false,
         });
-        return true;
+        window.gBrowser.selectedTab = tab;
+        return { ok: true, tab };
       }
       if (where === "current" && window.gBrowser?.selectedBrowser) {
         window.gBrowser.loadURI(Services.io.newURI(url), {
           triggeringPrincipal: systemPrincipal(),
         });
-        return true;
+        return { ok: true, tab: window.gBrowser.selectedTab || null };
       }
     } catch (error) {
       console.error("[AstraAppHub] openTrusted failed:", error);
     }
-    return false;
+    return { ok: false, tab: null };
   }
 
   async #openPrivate(url) {
@@ -1715,26 +1764,26 @@ class AstraAppHubManager {
 
   async #openInWorkspace(url, workspaceId) {
     const tabOk = this.#openTrusted(url, "tab");
-    if (!tabOk) {
+    if (!tabOk?.ok) {
       return false;
     }
     const ws = window.gZenWorkspaces;
     if (!ws || typeof ws.moveTabToWorkspace !== "function") {
-      return true;
+      return tabOk;
     }
     const targetId = workspaceId || ws.activeWorkspace;
     if (!targetId) {
-      return true;
+      return tabOk;
     }
     try {
-      const tab = window.gBrowser?.selectedTab;
+      const tab = tabOk.tab || window.gBrowser?.selectedTab;
       if (tab) {
         ws.moveTabToWorkspace(tab, targetId);
       }
-      return true;
+      return tabOk;
     } catch (error) {
       console.warn("[AstraAppHub] moveTabToWorkspace failed:", error);
-      return true;
+      return tabOk;
     }
   }
 
@@ -1756,7 +1805,7 @@ class AstraAppHubManager {
       if (cur && newTab) {
         splitter.splitTabs([cur, newTab], "vsep", 1);
       }
-      return true;
+      return { ok: true, tab: newTab };
     } catch (error) {
       console.error("[AstraAppHub] split launch failed:", error);
       // Roll back orphan tab created before a failed split.
@@ -1767,28 +1816,28 @@ class AstraAppHubManager {
       } catch {
         // ignore
       }
-      return false;
+      return { ok: false, tab: null };
     }
   }
 
   #openEssentials(url) {
     const tabOk = this.#openTrusted(url, "tab");
-    if (!tabOk) {
+    if (!tabOk?.ok) {
       return false;
     }
     const mgr = window.gZenPinnedTabManager;
     if (!mgr || typeof mgr.addToEssentials !== "function") {
-      return true;
+      return tabOk;
     }
     try {
-      const tab = window.gBrowser?.selectedTab;
+      const tab = tabOk.tab || window.gBrowser?.selectedTab;
       if (tab) {
         mgr.addToEssentials(tab);
       }
-      return true;
+      return tabOk;
     } catch (error) {
       console.warn("[AstraAppHub] addToEssentials failed:", error);
-      return true;
+      return tabOk;
     }
   }
 
@@ -2138,7 +2187,11 @@ class AstraAppHubManager {
     button.appendChild(label);
     button.setAttribute("aria-label", app.name);
 
-    if (app.builtin === false && !app.icon) {
+    if (
+      app.builtin === false &&
+      !sanitizeDataImageURI(app.customIconData) &&
+      !sanitizeDataImageURI(app.cachedFaviconData)
+    ) {
       void this.#enrichCustomAppIcon(button, app);
     }
 
@@ -2199,18 +2252,60 @@ class AstraAppHubManager {
   }
 
   /**
-   * For custom apps without a stored icon, try Places data: favicon (no remote fetch).
-   * Private windows keep monogram only. Stale results ignored after rebuild/close.
+   * For custom apps without stored data icons: migrate legacy profile filename
+   * (once, Astra icon dir only) then try Places data: favicon (no remote fetch).
+   * Private windows keep monogram only.
    */
   async #enrichCustomAppIcon(button, app) {
     if (!button || !app || app.builtin !== false) {
       return;
     }
-    if (app.icon || PrivateBrowsingUtils.isWindowPrivate(window)) {
+    if (PrivateBrowsingUtils.isWindowPrivate(window)) {
       return;
     }
+    const appId = app.id;
+    const expectedUrl = app.url;
+    if (typeof appId !== "string" || !appId.startsWith("custom-")) {
+      return;
+    }
+
     try {
-      const faviconURI = await resolvePlacesFaviconURL(app.url, {
+      // Legacy filename → bounded PNG data URI inside astra-app-icons only.
+      if (
+        app.icon &&
+        !sanitizeDataImageURI(app.customIconData) &&
+        typeof migrateLegacyIconFileName === "function"
+      ) {
+        const migrated = await migrateLegacyIconFileName(app.icon);
+        const latest = (gAstraAppHubState.data.customApps || []).find(
+          a => a.id === appId
+        );
+        if (
+          latest &&
+          latest.url === expectedUrl &&
+          !sanitizeDataImageURI(latest.customIconData)
+        ) {
+          if (migrated) {
+            await gAstraAppHubState.updateCustomApp(appId, {
+              customIconData: migrated,
+              icon: "",
+            });
+            this.#lastAppliedRevision = gAstraAppHubState.revision;
+            return;
+          }
+          // Unsafe / missing legacy file — drop the filename claim.
+          if (latest.icon) {
+            await gAstraAppHubState.updateCustomApp(appId, { icon: "" });
+            this.#lastAppliedRevision = gAstraAppHubState.revision;
+          }
+        }
+      }
+
+      if (sanitizeDataImageURI(app.cachedFaviconData)) {
+        return;
+      }
+
+      const faviconURI = await resolvePlacesFaviconURL(expectedUrl, {
         privateBrowsing: false,
       });
       if (
@@ -2221,57 +2316,368 @@ class AstraAppHubManager {
       ) {
         return;
       }
-if (
-        !faviconURI.startsWith("data:image/") ||
-        faviconURI.startsWith("http:") ||
-        faviconURI.startsWith("https:")
+      const safe = sanitizeDataImageURI(faviconURI);
+      if (!safe) {
+        return;
+      }
+
+      const still = (gAstraAppHubState.data.customApps || []).find(
+        a => a.id === appId
+      );
+      if (
+        !still ||
+        still.url.toLowerCase() !== expectedUrl.toLowerCase() ||
+        sanitizeDataImageURI(still.customIconData)
       ) {
+        return;
+      }
+
+      try {
+        await gAstraAppHubState.setCachedFaviconData(appId, safe, {
+          expectedUrl,
+        });
+        this.#lastAppliedRevision = gAstraAppHubState.revision;
+      } catch {
+        // ignore persist errors; still paint this session
+      }
+
+      if (this.#destroyed || window.closed || !button.isConnected) {
+        return;
+      }
+      if (sanitizeDataImageURI(still.customIconData)) {
         return;
       }
       const stack = button.querySelector(".astra-app-hub-item-icon-stack");
       if (!stack || stack.querySelector(".astra-app-hub-item-icon")) {
         return;
       }
-      const image = document.createElement("img");
-      image.classList.add(
-        "zen-app-launcher-item-icon",
-        "astra-app-hub-item-icon"
-      );
-      image.setAttribute("alt", "");
-      image.setAttribute("draggable", "false");
-      image.setAttribute("aria-hidden", "true");
-      image.addEventListener(
-        "load",
-        () => {
-          if (!stack.isConnected) {
-            return;
-          }
-          stack.setAttribute("data-icon-loaded", "true");
-          stack.removeAttribute("data-icon-error");
-        },
-        { once: true }
-      );
-      image.addEventListener(
-        "error",
-        () => {
-          if (!stack.isConnected) {
-            return;
-          }
-          stack.setAttribute("data-icon-error", "true");
-          stack.removeAttribute("data-icon-loaded");
-          try {
-            image.remove();
-          } catch {
-            // ignore
-          }
-        },
-        { once: true }
-      );
-      image.src = faviconURI;
-      stack.appendChild(image);
+      this.#paintIconOnStack(stack, safe);
     } catch {
       // monogram remains
     }
+  }
+
+  #paintIconOnStack(stack, dataURI) {
+    if (!stack || !dataURI) {
+      return;
+    }
+    const image = document.createElement("img");
+    image.classList.add(
+      "zen-app-launcher-item-icon",
+      "astra-app-hub-item-icon"
+    );
+    image.setAttribute("alt", "");
+    image.setAttribute("draggable", "false");
+    image.setAttribute("aria-hidden", "true");
+    image.addEventListener(
+      "load",
+      () => {
+        if (!stack.isConnected) {
+          return;
+        }
+        stack.setAttribute("data-icon-loaded", "true");
+        stack.removeAttribute("data-icon-error");
+      },
+      { once: true }
+    );
+    image.addEventListener(
+      "error",
+      () => {
+        if (!stack.isConnected) {
+          return;
+        }
+        stack.setAttribute("data-icon-error", "true");
+        stack.removeAttribute("data-icon-loaded");
+        try {
+          image.remove();
+        } catch {
+          // ignore
+        }
+      },
+      { once: true }
+    );
+    image.src = dataURI;
+    stack.appendChild(image);
+  }
+
+  /**
+   * After the user launches a custom app, capture the Places favicon once
+   * the tab finishes loading (bounded; no permanent navigation listener).
+   * Uses gBrowser.addTabsProgressListener — same interface as zen/tests/spaces.
+   * Link-icon progress callbacks are intentionally unused (no in-tree precedent).
+   */
+  #beginFaviconCapture(app, tabHint = null) {
+    if (
+      this.#destroyed ||
+      window.closed ||
+      !app?.id ||
+      app.builtin !== false ||
+      PrivateBrowsingUtils.isWindowPrivate(window)
+    ) {
+      return;
+    }
+    if (this.#faviconCaptures.has(app.id)) {
+      return;
+    }
+    const tab =
+      tabHint ||
+      window.gBrowser?.selectedTab ||
+      null;
+    const expectedUrl = app.url;
+    const urlKey = String(expectedUrl || "").toLowerCase();
+    const expectedOrigin = (() => {
+      try {
+        return new URL(expectedUrl).origin;
+      } catch {
+        return "";
+      }
+    })();
+
+    if (!tab?.linkedBrowser) {
+      void this.#tryPersistPlacesFavicon(app.id, expectedUrl, 0, {
+        urlKey,
+        expectedUrl,
+      });
+      return;
+    }
+
+    const session = {
+      appId: app.id,
+      expectedUrl,
+      urlKey,
+      expectedOrigin,
+      tab,
+      browser: tab.linkedBrowser,
+      attempts: 0,
+      done: false,
+      cleaned: false,
+      retryTimer: null,
+      listener: null,
+      onTabClose: null,
+      onTabAttr: null,
+    };
+
+    const cleanup = () => {
+      if (session.cleaned) {
+        return;
+      }
+      session.cleaned = true;
+      session.done = true;
+      try {
+        if (session.retryTimer) {
+          clearTimeout(session.retryTimer);
+          session.retryTimer = null;
+        }
+      } catch {
+        // ignore
+      }
+      try {
+        if (session.listener) {
+          window.gBrowser?.removeTabsProgressListener?.(session.listener);
+        }
+      } catch {
+        // ignore
+      }
+      try {
+        if (session.onTabClose) {
+          tab.removeEventListener("TabClose", session.onTabClose);
+        }
+        if (session.onTabAttr) {
+          tab.removeEventListener("TabAttrModified", session.onTabAttr);
+        }
+      } catch {
+        // ignore
+      }
+      this.#faviconCaptures.delete(app.id);
+    };
+
+    const tryCapture = async reason => {
+      if (session.done || session.cleaned || this.#destroyed || window.closed) {
+        cleanup();
+        return;
+      }
+      const ok = await this.#tryPersistPlacesFavicon(
+        app.id,
+        session.expectedUrl,
+        session.attempts,
+        session
+      );
+      if (ok) {
+        cleanup();
+        return;
+      }
+      session.attempts += 1;
+      // Cross-origin redirect: one Places attempt for the saved URL, then stop.
+      if (session.attempts >= 2 || reason === "cross-origin-final") {
+        cleanup();
+        return;
+      }
+      // One delayed retry after first miss (favicon often lands after STATE_STOP).
+      if (!session.retryTimer && reason !== "retry") {
+        session.retryTimer = setTimeout(() => {
+          session.retryTimer = null;
+          void tryCapture("retry");
+        }, 1500);
+      }
+    };
+
+    // Proven tabs-progress methods: onStateChange / onLocationChange only.
+    session.listener = {
+      onStateChange(browser, webProgress, _request, flags, _status) {
+        try {
+          if (browser !== session.browser || !webProgress?.isTopLevel) {
+            return;
+          }
+          const stop =
+            flags & Ci.nsIWebProgressListener.STATE_STOP &&
+            flags & Ci.nsIWebProgressListener.STATE_IS_NETWORK &&
+            flags & Ci.nsIWebProgressListener.STATE_IS_WINDOW;
+          if (stop) {
+            void tryCapture("stop");
+          }
+        } catch {
+          // ignore
+        }
+      },
+      onLocationChange(browser, webProgress, _request, location) {
+        try {
+          if (browser !== session.browser || !webProgress?.isTopLevel) {
+            return;
+          }
+          const spec =
+            typeof location?.spec === "string"
+              ? location.spec
+              : location?.asciiSpec || "";
+          if (!spec || !session.expectedOrigin) {
+            return;
+          }
+          // same-origin only. Cross-site redirects must not drive capture;
+          // Places lookup always uses the saved app URL (never redirect URL).
+          const origin = new URL(spec).origin;
+          if (origin !== session.expectedOrigin) {
+            void tryCapture("cross-origin-final");
+          }
+        } catch {
+          // ignore
+        }
+      },
+    };
+
+    session.onTabClose = () => cleanup();
+    session.onTabAttr = event => {
+      const changed = event?.detail?.changed;
+      if (Array.isArray(changed) && changed.includes("image")) {
+        void tryCapture("attr");
+      }
+    };
+
+    try {
+      if (typeof window.gBrowser?.addTabsProgressListener !== "function") {
+        throw new Error("no-tabs-progress");
+      }
+      window.gBrowser.addTabsProgressListener(session.listener);
+      tab.addEventListener("TabClose", session.onTabClose, { once: true });
+      tab.addEventListener("TabAttrModified", session.onTabAttr);
+      this.#faviconCaptures.set(app.id, { ...session, cleanup });
+    } catch (error) {
+      console.warn("[AstraAppHub] favicon capture setup failed:", error);
+      cleanup();
+      void this.#tryPersistPlacesFavicon(app.id, expectedUrl, 0, {
+        urlKey,
+        expectedUrl,
+      });
+    }
+  }
+
+  /**
+   * Persist Places data URI for a custom app after revision/session guards.
+   */
+  async #tryPersistPlacesFavicon(appId, pageUrl, _attempt, session = null) {
+    if (
+      this.#destroyed ||
+      window.closed ||
+      PrivateBrowsingUtils.isWindowPrivate(window)
+    ) {
+      return false;
+    }
+    if (session?.cleaned || session?.done) {
+      return false;
+    }
+    const expectedUrl =
+      session?.expectedUrl ||
+      pageUrl ||
+      "";
+    const urlKey =
+      session?.urlKey || String(expectedUrl).toLowerCase();
+    try {
+      const before = (gAstraAppHubState.data.customApps || []).find(
+        a => a.id === appId
+      );
+      if (!before || before.url.toLowerCase() !== urlKey) {
+        return false;
+      }
+
+      // Always query the saved app URL — never the redirected tab URL.
+      const faviconURI = await resolvePlacesFaviconURL(expectedUrl, {
+        privateBrowsing: false,
+      });
+      if (
+        !faviconURI ||
+        this.#destroyed ||
+        window.closed ||
+        session?.cleaned
+      ) {
+        return false;
+      }
+      const safe = sanitizeDataImageURI(faviconURI);
+      if (!safe) {
+        return false;
+      }
+
+      const existing = (gAstraAppHubState.data.customApps || []).find(
+        a => a.id === appId
+      );
+      if (!existing || existing.url.toLowerCase() !== urlKey) {
+        return false;
+      }
+      if (session && this.#faviconCaptures.get(appId)?.cleaned) {
+        return false;
+      }
+      if (existing.cachedFaviconData === safe) {
+        return true;
+      }
+      await gAstraAppHubState.setCachedFaviconData(appId, safe, {
+        expectedUrl,
+      });
+      this.#lastAppliedRevision = gAstraAppHubState.revision;
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  #cancelFaviconCapture(appId) {
+    if (!appId) {
+      return;
+    }
+    const session = this.#faviconCaptures.get(appId);
+    try {
+      session?.cleanup?.();
+    } catch {
+      // ignore
+    }
+    this.#faviconCaptures.delete(appId);
+  }
+
+  #stopAllFaviconCaptures() {
+    for (const session of this.#faviconCaptures.values()) {
+      try {
+        session.cleanup?.();
+      } catch {
+        // ignore
+      }
+    }
+    this.#faviconCaptures.clear();
   }
 
   #updateCustomizeChrome() {
@@ -2605,7 +3011,19 @@ if (
         this.#closeEditor();
         break;
       case "pick-icon":
+        if (PrivateBrowsingUtils.isWindowPrivate(window)) {
+          this.#setEditorErrorL10n("astra-app-hub-error-private-edit");
+          break;
+        }
         await this.#pickEditorIcon();
+        break;
+      case "reset-icon":
+        if (PrivateBrowsingUtils.isWindowPrivate(window)) {
+          this.#setEditorErrorL10n("astra-app-hub-error-private-edit");
+          break;
+        }
+        this.#pendingIconData = null;
+        this.#pendingResetIcon = true;
         break;
       case "export":
         await this.#exportState();
@@ -2920,6 +3338,7 @@ if (
       return;
     }
     await gAstraAppHubState.deleteCustomApp(appId);
+    this.#cancelFaviconCapture(appId);
     this.#lastAppliedRevision = gAstraAppHubState.revision;
     this.#rendered = false;
     this.#rebuildList();
@@ -2930,7 +3349,8 @@ if (
   #openEditor(mode, appId = null) {
     this.#editorMode = mode;
     this.#editingAppId = appId;
-    this.#pendingIconFile = null;
+    this.#pendingIconData = null;
+    this.#pendingResetIcon = false;
     this.#updateCustomizeChrome();
 
     const nameEl = document.getElementById("astra-app-hub-editor-name");
@@ -2938,9 +3358,41 @@ if (
     const catEl = document.getElementById("astra-app-hub-editor-category");
     const kwEl = document.getElementById("astra-app-hub-editor-keywords");
     const errEl = document.getElementById("astra-app-hub-editor-error");
+    const iconBtn = document.getElementById("astra-app-hub-editor-icon-btn");
+    const resetIconBtn = document.getElementById(
+      "astra-app-hub-editor-reset-icon-btn"
+    );
+    const saveBtn = document.getElementById("astra-app-hub-editor-save");
     if (errEl) {
       errEl.hidden = true;
+      errEl.removeAttribute("data-l10n-id");
       errEl.setAttribute("value", "");
+    }
+
+    const isPrivate = PrivateBrowsingUtils.isWindowPrivate(window);
+    if (iconBtn) {
+      iconBtn.disabled = isPrivate;
+    }
+    if (resetIconBtn) {
+      resetIconBtn.disabled = isPrivate;
+    }
+    if (saveBtn) {
+      saveBtn.disabled = isPrivate;
+    }
+    if (nameEl) {
+      nameEl.disabled = isPrivate;
+    }
+    if (urlEl) {
+      urlEl.disabled = isPrivate;
+    }
+    if (catEl) {
+      catEl.disabled = isPrivate;
+    }
+    if (kwEl) {
+      kwEl.disabled = isPrivate;
+    }
+    if (isPrivate) {
+      this.#setEditorErrorL10n("astra-app-hub-error-private-edit");
     }
 
     // Populate categories
@@ -2985,40 +3437,75 @@ if (
         kwEl.value = "";
       }
     }
-    nameEl?.focus();
+    if (!isPrivate) {
+      nameEl?.focus();
+    }
   }
 
   #closeEditor() {
     this.#editorMode = null;
     this.#editingAppId = null;
-    this.#pendingIconFile = null;
+    this.#pendingIconData = null;
+    this.#pendingResetIcon = false;
     this.#updateCustomizeChrome();
     this.#rendered = false;
     this.#rebuildList();
   }
 
   async #pickEditorIcon() {
+    if (PrivateBrowsingUtils.isWindowPrivate(window)) {
+      this.#setEditorErrorL10n("astra-app-hub-error-private-edit");
+      return;
+    }
     try {
-      const fileName = await pickAndStoreCustomIcon(window);
-      if (fileName) {
-        this.#pendingIconFile = fileName;
+      const dataURI = await pickCustomIconAsDataURI(window);
+      if (dataURI) {
+        this.#pendingIconData = dataURI;
+        this.#pendingResetIcon = false;
+        this.#setEditorErrorL10n(null);
       }
     } catch (error) {
       console.warn("[AstraAppHub] icon pick failed:", error);
-      this.#setEditorError("Could not store icon. Use PNG, WebP, or ICO.");
+      const reason = error?.message || String(error);
+      if (reason === "too-large") {
+        this.#setEditorErrorL10n("astra-app-hub-error-icon-too-large");
+      } else {
+        this.#setEditorErrorL10n("astra-app-hub-error-icon-unsupported");
+      }
     }
   }
 
+  #setEditorErrorL10n(l10nId) {
+    const errEl = document.getElementById("astra-app-hub-editor-error");
+    if (!errEl) {
+      return;
+    }
+    if (!l10nId) {
+      errEl.hidden = true;
+      errEl.removeAttribute("data-l10n-id");
+      errEl.setAttribute("value", "");
+      return;
+    }
+    errEl.hidden = false;
+    setL10nOrText(errEl, l10nId, "");
+  }
+
+  /** @deprecated use #setEditorErrorL10n */
   #setEditorError(message) {
     const errEl = document.getElementById("astra-app-hub-editor-error");
     if (!errEl) {
       return;
     }
+    errEl.removeAttribute("data-l10n-id");
     errEl.hidden = !message;
     errEl.setAttribute("value", message || "");
   }
 
   async #saveEditor() {
+    if (PrivateBrowsingUtils.isWindowPrivate(window)) {
+      this.#setEditorErrorL10n("astra-app-hub-error-private-edit");
+      return;
+    }
     const nameEl = document.getElementById("astra-app-hub-editor-name");
     const urlEl = document.getElementById("astra-app-hub-editor-url");
     const catEl = document.getElementById("astra-app-hub-editor-category");
@@ -3032,12 +3519,12 @@ if (
       .filter(Boolean);
 
     if (!name) {
-      this.#setEditorError("Name is required.");
+      this.#setEditorErrorL10n("astra-app-hub-error-empty-name");
       return;
     }
     const urlCheck = validateAppUrl(url);
     if (!urlCheck.ok) {
-      this.#setEditorError(`Invalid URL (${urlCheck.reason}). HTTPS only.`);
+      this.#setEditorErrorL10n("astra-app-hub-error-url");
       return;
     }
 
@@ -3047,27 +3534,66 @@ if (
       category,
       keywords,
     };
-    if (this.#pendingIconFile) {
-      payload.icon = this.#pendingIconFile;
+    if (this.#pendingResetIcon) {
+      payload.clearCustomIcon = true;
+    } else if (this.#pendingIconData) {
+      payload.customIconData = this.#pendingIconData;
+      payload.icon = "";
     }
 
     try {
+      let savedId = this.#editingAppId;
+      const hadCustomPick = !!this.#pendingIconData && !this.#pendingResetIcon;
+      const prevApp =
+        this.#editorMode === "edit" && this.#editingAppId
+          ? (gAstraAppHubState.data.customApps || []).find(
+              a => a.id === this.#editingAppId
+            )
+          : null;
+      const urlChanged =
+        !!prevApp &&
+        prevApp.url.toLowerCase() !== urlCheck.href.toLowerCase();
+
       if (this.#editorMode === "edit" && this.#editingAppId) {
+        if (urlChanged) {
+          this.#cancelFaviconCapture(this.#editingAppId);
+        }
         await gAstraAppHubState.updateCustomApp(this.#editingAppId, payload);
       } else {
+        const before = new Set(
+          (gAstraAppHubState.data.customApps || []).map(a => a.id)
+        );
         await gAstraAppHubState.addCustomApp(payload);
+        const added = (gAstraAppHubState.data.customApps || []).find(
+          a => !before.has(a.id)
+        );
+        savedId = added?.id || null;
       }
       this.#lastAppliedRevision = gAstraAppHubState.revision;
       this.#closeEditor();
+
+      // Non-blocking Places upgrade after save (monogram already visible).
+      if (
+        savedId &&
+        !hadCustomPick &&
+        !PrivateBrowsingUtils.isWindowPrivate(window)
+      ) {
+        void this.#tryPersistPlacesFavicon(savedId, urlCheck.href, 0, {
+          expectedUrl: urlCheck.href,
+          urlKey: urlCheck.href.toLowerCase(),
+        });
+      }
     } catch (error) {
       const reason = error?.message || String(error);
-      const messages = {
-        "duplicate-url": "An app with this URL already exists.",
-        "custom-limit": "Custom app limit reached.",
-        "empty-name": "Name is required.",
-        "not-found": "App not found.",
+      const l10nByReason = {
+        "duplicate-url": "astra-app-hub-error-duplicate",
+        "custom-limit": "astra-app-hub-error-generic",
+        "empty-name": "astra-app-hub-error-empty-name",
+        "not-found": "astra-app-hub-error-generic",
       };
-      this.#setEditorError(messages[reason] || `Could not save (${reason}).`);
+      this.#setEditorErrorL10n(
+        l10nByReason[reason] || "astra-app-hub-error-generic"
+      );
     }
   }
 
@@ -3455,7 +3981,8 @@ if (
     if (this.#editorMode) {
       this.#editorMode = null;
       this.#editingAppId = null;
-      this.#pendingIconFile = null;
+      this.#pendingIconData = null;
+      this.#pendingResetIcon = false;
       needsRebuild = true;
       this.#updateCustomizeChrome();
     }

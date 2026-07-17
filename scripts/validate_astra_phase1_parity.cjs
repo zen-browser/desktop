@@ -211,12 +211,29 @@ if (
   hubIconsParity.includes("ASTRA_APP_HUB_ICONS") &&
   hubIconsParity.includes("getFaviconForPage") &&
   hubIconsParity.includes("data:image/") &&
+  hubIconsParity.includes("sanitizeDataImageURI") &&
+  hubIconsParity.includes("cachedFaviconData") &&
+  hubIconsParity.includes("MAX_STORED_ICON_BYTES") &&
+  hubIconsParity.includes("migrateLegacyIconFileName") &&
   !/["'`]page-icon:/.test(hubIconsParity) &&
+  !/\bsrc\s*=\s*["'`]file:/i.test(hubIconsParity) &&
   (hubJarParity.match(/app-hub-icons\//g) || []).length >= 44 &&
   !hubJarParity.includes("ICON_SOURCES.md")
 ) {
   ok("App Hub packaged icon registry + JAR mappings present");
 } else fail("App Hub icon packaging regression");
+
+const hubMgrParityExtra = read("src/zen/common/modules/AstraAppHubManager.mjs");
+if (
+  hubMgrParityExtra.includes("#beginFaviconCapture") &&
+  hubMgrParityExtra.includes("addTabsProgressListener") &&
+  hubMgrParityExtra.includes("#stopAllFaviconCaptures") &&
+  hubMgrParityExtra.includes("#cancelFaviconCapture") &&
+  hubMgrParityExtra.includes("expectedUrl") &&
+  !/\bonLinkIconAvailable\s*\(/.test(hubMgrParityExtra)
+) {
+  ok("App Hub bounded favicon capture present");
+} else fail("App Hub favicon capture regression");
 
 // Transparent / performance invariants
 const theme = read("prefs/zen/theme.yaml");

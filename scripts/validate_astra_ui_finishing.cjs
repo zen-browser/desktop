@@ -390,20 +390,94 @@ if (
   hubMgr.includes("resolvePlacesFaviconURL") &&
   hubMgr.includes("#enrichCustomAppIcon") &&
   hubMgr.includes("button.isConnected") &&
+  hubMgr.includes("#beginFaviconCapture") &&
+  hubMgr.includes("#stopAllFaviconCaptures") &&
+  hubMgr.includes("#cancelFaviconCapture") &&
+  hubMgr.includes("setCachedFaviconData") &&
+  hubMgr.includes("expectedUrl") &&
+  hubMgr.includes("addTabsProgressListener") &&
+  hubMgr.includes("STATE_IS_WINDOW") &&
+  hubMgr.includes("customIconData") &&
+  hubMgr.includes("cachedFaviconData") &&
+  hubMgr.includes("#pendingResetIcon") &&
+  hubMgr.includes('"reset-icon"') &&
+  hubMgr.includes("migrateLegacyIconFileName") &&
+  hubMgr.includes("astra-app-hub-error-icon-too-large") &&
+  hubMgr.includes("astra-app-hub-error-private-edit") &&
+  !/\bonLinkIconAvailable\s*\(/.test(hubMgr) &&
   hubIcons.includes("getFaviconForPage") &&
   hubIcons.includes("data:image/") &&
+  hubIcons.includes("sanitizeDataImageURI") &&
+  hubIcons.includes("pickCustomIconAsDataURI") &&
+  hubIcons.includes("customIconData") &&
+  hubIcons.includes("MAX_DATA_ICON_CHARS") &&
+  hubIcons.includes("MAX_STORED_ICON_BYTES") &&
+  hubIcons.includes("MAX_DECODE_EDGE") &&
+  hubIcons.includes("rasterBytesToSafeDataURI") &&
+  hubIcons.includes("migrateLegacyIconFileName") &&
+  hubIcons.includes('type: "image/png"') &&
+  !hubIcons.includes("localIconFileURI") &&
+  !/\bsrc\s*=\s*["'`]file:/i.test(hubIcons) &&
   !/["'`]page-icon:/.test(hubIcons) &&
   !/["'`]page-icon:/.test(hubMgr) &&
-  !/favicon\?\.uri/.test(hubMgr)
+  !/favicon\?\.uri/.test(hubMgr) &&
+  !/favicon\.uri\.spec/.test(hubIcons) &&
+  !/duckduckgo\.com\/ip3|gstatic\.com\/favicon|clearbit|google\.com\/s2\/favicons/i.test(
+    hubMgr + hubIcons
+  )
 ) {
-  ok("user-added favicon uses Places dataURI only (no page-icon/remote uri)");
-} else fail("user-added favicon Places path missing or unsafe");
+  ok("custom favicon: Places dataURI + bounded capture + no proxy");
+} else fail("custom favicon hardening incomplete or unsafe");
+
+const hubState = read("src/zen/common/modules/AstraAppHubState.mjs");
+if (
+  hubState.includes("cachedFaviconData") &&
+  hubState.includes("customIconData") &&
+  hubState.includes("sanitizeDataImageURI") &&
+  hubState.includes("iconSource") &&
+  hubState.includes("clearCustomIcon") &&
+  hubState.includes("urlChanged") &&
+  hubState.includes("setCachedFaviconData") &&
+  hubState.includes("expectedUrl") &&
+  hubState.includes("MAX_TOTAL_CUSTOM_ICON_CHARS") &&
+  /MAX_DATA_ICON_CHARS\s*=\s*256\s*\*\s*1024/.test(hubState) &&
+  hubState.includes('iconSource: "monogram"') &&
+  hubState.includes("image/svg") &&
+  hubState.includes("moz-extension:") &&
+  !hubState.includes("image/x-icon") &&
+  !hubState.includes("700_000")
+) {
+  ok("state stores custom/learned icons with URL-change clear");
+} else fail("App Hub state custom-icon schema incomplete");
+
+if (
+  hubFtl.includes("astra-app-hub-editor-icon") &&
+  hubFtl.includes("astra-app-hub-editor-reset-icon") &&
+  hubFtl.includes("astra-app-hub-error-icon-unsupported") &&
+  hubFtl.includes("astra-app-hub-error-icon-too-large") &&
+  hubFtl.includes("astra-app-hub-error-private-edit") &&
+  hubMgr.includes("astra-app-hub-error-icon-unsupported") &&
+  hubMgr.includes("#setEditorErrorL10n")
+) {
+  ok("App Hub icon/private Fluent strings wired");
+} else fail("App Hub icon Fluent strings missing or unwired");
+
+if (
+  hubMgr.includes("expectedOrigin") &&
+  hubMgr.includes("cross-origin-final") &&
+  hubMgr.includes("same-origin") &&
+  hubState.includes("urlChanged") &&
+  /cachedFaviconData\s*=\s*""/.test(hubState)
+) {
+  ok("redirect same-origin policy + URL-edit clears learned favicon");
+} else fail("redirect/URL-edit favicon guards incomplete");
 
 if (
   !bootstrap.includes("AstraAppHubIcons") &&
   !bootstrap.includes("PlacesUtils") &&
   !bootstrap.includes("getFaviconForPage") &&
-  !bootstrap.includes("ASTRA_APP_HUB_CATALOG")
+  !bootstrap.includes("ASTRA_APP_HUB_CATALOG") &&
+  !bootstrap.includes("#beginFaviconCapture")
 ) {
   ok("bootstrap performs no startup icon/catalog/Places work");
 } else fail("bootstrap references icon/catalog/Places at module scope");
@@ -802,10 +876,24 @@ async function validateCatalogModuleShape() {
 
   if (
     hubMgr.includes("PrivateBrowsingUtils.isWindowPrivate") &&
-    hubMgr.includes("#enrichCustomAppIcon")
+    hubMgr.includes("#enrichCustomAppIcon") &&
+    hubMgr.includes("#beginFaviconCapture") &&
+    hubMgr.includes("astra-app-hub-error-private-edit") &&
+    /isWindowPrivate\(window\)[\s\S]{0,200}#beginFaviconCapture|PrivateBrowsingUtils\.isWindowPrivate\(window\)[\s\S]{0,80}return/m.test(
+      hubMgr
+    )
   ) {
     ok("private windows skip Places favicon enrichment");
   } else fail("private-window favicon skip missing");
+
+  if (
+    hubIcons.includes("resolveLocalIconPath") &&
+    hubIcons.includes("migrateLegacyIconFileName") &&
+    !/image\.src\s*=\s*.*file:/i.test(hubMgr) &&
+    !hubIcons.includes("localIconFileURI")
+  ) {
+    ok("legacy icons migrate via profile dir; no file:// render");
+  } else fail("legacy file:// icon render still possible");
 }
 
 validateCatalogModuleShape()

@@ -26,6 +26,13 @@ export const MAX_KEYWORD_LENGTH = 40;
 export const MAX_KEYWORDS = 16;
 export const MAX_ID_LENGTH = 80;
 export const MAX_ICON_REF_LENGTH = 120;
+/** Absolute max persisted data:image URI character length (post-resize). */
+export const MAX_DATA_ICON_CHARS = 256 * 1024;
+/** Max decoded raster bytes accepted for a stored icon. */
+export const MAX_STORED_ICON_BYTES = 96 * 1024;
+/** Soft total budget across all custom/cached icon payloads. */
+export const MAX_TOTAL_CUSTOM_ICON_CHARS = 4 * 1024 * 1024;
+export const ICON_SOURCES = Object.freeze(["custom", "places", "monogram"]);
 
 const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 
@@ -222,15 +229,133 @@ function sanitizeIconRef(value) {
   if (typeof value !== "string" || !value) {
     return "";
   }
-  // Only allow safe relative icon filenames stored by the icon service.
+  // Legacy relative icon filenames stored by the older icon service.
   const name = value.replace(/\\/g, "/").split("/").pop() || "";
-  if (!/^[a-zA-Z0-9._-]{1,100}\.(png|webp|ico)$/i.test(name)) {
+  if (!/^[a-zA-Z0-9._-]{1,100}\.(png|jpe?g|webp|ico)$/i.test(name)) {
     return "";
   }
   if (name.includes("..")) {
     return "";
   }
   return name.slice(0, MAX_ICON_REF_LENGTH);
+}
+
+/**
+ * Persist only validated data:image/{png,jpeg,webp};base64 payloads.
+ * Rejects ICO/SVG storage, remote/privilege schemes, and oversized payloads.
+ * Never trust startsWith("data:image/") alone.
+ */
+export function sanitizeDataImageURI(value) {
+  if (typeof value !== "string" || !value) {
+    return "";
+  }
+  if (value.length > MAX_DATA_ICON_CHARS) {
+    return "";
+  }
+  const trimmed = value.trim();
+  if (trimmed.length < 22 || trimmed.length > MAX_DATA_ICON_CHARS) {
+    return "";
+  }
+  if (!/^data:image\//i.test(trimmed)) {
+    return "";
+  }
+  const lower = trimmed.toLowerCase();
+  if (
+    lower.includes("javascript:") ||
+    lower.startsWith("http:") ||
+    lower.startsWith("https:") ||
+    lower.startsWith("//") ||
+    lower.startsWith("chrome:") ||
+    lower.startsWith("resource:") ||
+    lower.startsWith("file:") ||
+    lower.startsWith("moz-extension:") ||
+    /^page-icon:/i.test(trimmed) ||
+    lower.includes("image/svg") ||
+    lower.includes("text/html") ||
+    trimmed.includes("..")
+  ) {
+    return "";
+  }
+  const comma = trimmed.indexOf(",");
+  if (comma < 0) {
+    return "";
+  }
+  const header = trimmed.slice(5, comma).toLowerCase();
+  const mime = header.split(";")[0];
+  if (!["image/png", "image/jpeg", "image/webp"].includes(mime)) {
+    return "";
+  }
+  if (!header.includes("base64")) {
+    return "";
+  }
+  const payload = trimmed.slice(comma + 1).replace(/\s+/g, "");
+  if (
+    !payload ||
+    payload.length > MAX_DATA_ICON_CHARS ||
+    /[^A-Za-z0-9+/=]/.test(payload)
+  ) {
+    return "";
+  }
+  try {
+    const binary = atob(payload);
+    if (!binary.length || binary.length > MAX_STORED_ICON_BYTES) {
+      return "";
+    }
+  } catch {
+    return "";
+  }
+  return `data:${mime};base64,${payload}`;
+}
+
+function totalIconChars(apps) {
+  let total = 0;
+  for (const app of apps || []) {
+    if (typeof app?.customIconData === "string") {
+      total += app.customIconData.length;
+    }
+    if (typeof app?.cachedFaviconData === "string") {
+      total += app.cachedFaviconData.length;
+    }
+  }
+  return total;
+}
+
+function sanitizeMonogram(value, fallbackName) {
+  if (typeof value === "string") {
+    const trimmed = value.trim().slice(0, 3);
+    if (trimmed.length >= 1) {
+      return trimmed;
+    }
+  }
+  if (typeof fallbackName === "string" && fallbackName.trim()) {
+    const cleaned = fallbackName
+      .normalize("NFKC")
+      .replace(/[^\p{L}\p{N}\s]+/gu, " ")
+      .trim();
+    if (!cleaned) {
+      return fallbackName.trim().slice(0, 1).toUpperCase() || "?";
+    }
+    const parts = cleaned.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return parts[0].slice(0, 2).toUpperCase();
+  }
+  return "?";
+}
+
+/**
+ * Derive iconSource from valid payloads only.
+ * Legacy filename `icon` must never imply "custom" — migrate or discard separately.
+ */
+function deriveIconSource(customIconData, cachedFaviconData) {
+  if (customIconData) {
+    return "custom";
+  }
+  if (cachedFaviconData) {
+    return "places";
+  }
+  return "monogram";
 }
 
 function sanitizeCustomApp(raw, knownUrls = new Set()) {
@@ -265,13 +390,29 @@ function sanitizeCustomApp(raw, knownUrls = new Set()) {
   if (!category || DANGEROUS_KEYS.has(category)) {
     return null;
   }
+  const customIconData = sanitizeDataImageURI(raw.customIconData);
+  // Legacy filename kept only for one-shot profile-dir cleanup/migration —
+  // never treated as a renderable icon source.
+  const icon = sanitizeIconRef(raw.icon);
+  const cachedFaviconData = sanitizeDataImageURI(raw.cachedFaviconData);
+  const monogram = sanitizeMonogram(raw.monogram, name);
+  const iconSource = deriveIconSource(customIconData, cachedFaviconData);
+  const iconUpdatedAt =
+    typeof raw.iconUpdatedAt === "number" && Number.isFinite(raw.iconUpdatedAt)
+      ? raw.iconUpdatedAt
+      : 0;
   return {
     id,
     name,
     url: urlCheck.href,
     category,
     keywords: sanitizeKeywords(raw.keywords),
-    icon: sanitizeIconRef(raw.icon),
+    icon,
+    customIconData,
+    cachedFaviconData,
+    monogram,
+    iconSource,
+    iconUpdatedAt,
     builtin: false,
     createdAt:
       typeof raw.createdAt === "number" && Number.isFinite(raw.createdAt)
@@ -799,7 +940,18 @@ class AstraAppHubStateStore {
       if (urls.has(prepared.app.url.toLowerCase())) {
         throw new Error("duplicate-url");
       }
-      state.customApps.push(prepared.app);
+      // Soft icon budget: drop icon payloads rather than reject the app.
+      const app = { ...prepared.app };
+      const withoutIcons = totalIconChars(state.customApps);
+      const added =
+        (app.customIconData?.length || 0) + (app.cachedFaviconData?.length || 0);
+      if (withoutIcons + added > MAX_TOTAL_CUSTOM_ICON_CHARS) {
+        app.customIconData = "";
+        app.cachedFaviconData = "";
+        app.iconSource = "monogram";
+        app.iconUpdatedAt = 0;
+      }
+      state.customApps.push(app);
       return state;
     });
   }
@@ -814,11 +966,48 @@ class AstraAppHubStateStore {
         throw new Error("not-found");
       }
       const existing = state.customApps[idx];
-      const prepared = this.#prepareCustomAppInput({
+      const urlChanged =
+        typeof input?.url === "string" &&
+        input.url.trim() &&
+        validateAppUrl(input.url).ok &&
+        validateAppUrl(input.url).href.toLowerCase() !==
+          existing.url.toLowerCase();
+      const nameChanged =
+        typeof input?.name === "string" &&
+        input.name.trim() &&
+        input.name.trim() !== existing.name;
+
+      const merged = {
         ...existing,
         ...input,
         id: existing.id,
-      });
+      };
+      // URL change: drop learned favicon for the previous site.
+      if (urlChanged) {
+        merged.cachedFaviconData = "";
+        merged.iconUpdatedAt = 0;
+        merged.iconSource = "monogram";
+      }
+      // Preserve user custom icon unless explicitly cleared.
+      if (input?.clearCustomIcon) {
+        merged.customIconData = "";
+        merged.icon = "";
+      } else {
+        if (input?.customIconData === undefined) {
+          merged.customIconData = existing.customIconData;
+        }
+        if (input?.icon === undefined) {
+          merged.icon = existing.icon;
+        }
+      }
+      if (input?.cachedFaviconData === undefined && !urlChanged) {
+        merged.cachedFaviconData = existing.cachedFaviconData;
+      }
+      if (!nameChanged && input?.monogram === undefined) {
+        merged.monogram = existing.monogram;
+      }
+
+      const prepared = this.#prepareCustomAppInput(merged);
       if (!prepared.ok) {
         throw new Error(prepared.reason);
       }
@@ -834,6 +1023,106 @@ class AstraAppHubStateStore {
         ...prepared.app,
         id: existing.id,
         createdAt: existing.createdAt,
+        updatedAt: Date.now(),
+      };
+      // Soft icon budget: keep name/URL; drop oversized icon payloads.
+      const others = state.customApps.filter((_, i) => i !== idx);
+      const without = totalIconChars(others);
+      const next = state.customApps[idx];
+      const added =
+        (next.customIconData?.length || 0) +
+        (next.cachedFaviconData?.length || 0);
+      if (without + added > MAX_TOTAL_CUSTOM_ICON_CHARS) {
+        next.customIconData = "";
+        next.cachedFaviconData = sanitizeDataImageURI(
+          urlChanged ? "" : existing.cachedFaviconData
+        );
+        if (
+          without +
+            (next.cachedFaviconData?.length || 0) >
+          MAX_TOTAL_CUSTOM_ICON_CHARS
+        ) {
+          next.cachedFaviconData = "";
+        }
+        next.iconSource = deriveIconSource(
+          next.customIconData,
+          next.cachedFaviconData
+        );
+      }
+      return state;
+    });
+  }
+
+  /**
+   * Persist a Places-learned favicon for a custom app (data:image only).
+   * App-scoped: refuses stale writes when expectedUrl no longer matches.
+   * Never overwrites display priority of a user custom icon (iconSource stays
+   * custom when customIconData is present).
+   */
+  async setCachedFaviconData(
+    appId,
+    dataURI,
+    { expectedUrl = null } = {}
+  ) {
+    if (typeof appId !== "string" || !appId.startsWith("custom-")) {
+      return this.#data;
+    }
+    const safe = sanitizeDataImageURI(dataURI);
+    if (!safe) {
+      return this.#data;
+    }
+    return this.update(state => {
+      const idx = state.customApps.findIndex(app => app.id === appId);
+      if (idx < 0) {
+        return state;
+      }
+      const existing = state.customApps[idx];
+      if (
+        expectedUrl &&
+        existing.url.toLowerCase() !== expectedUrl.toLowerCase()
+      ) {
+        return state;
+      }
+      if (existing.cachedFaviconData === safe) {
+        return state;
+      }
+      const priorChars =
+        totalIconChars(state.customApps) -
+        (typeof existing.cachedFaviconData === "string"
+          ? existing.cachedFaviconData.length
+          : 0);
+      if (priorChars + safe.length > MAX_TOTAL_CUSTOM_ICON_CHARS) {
+        return state;
+      }
+      const customIconData = sanitizeDataImageURI(existing.customIconData);
+      state.customApps[idx] = {
+        ...existing,
+        cachedFaviconData: safe,
+        iconSource: deriveIconSource(customIconData, safe),
+        iconUpdatedAt: Date.now(),
+        // Do not bump updatedAt — avoids racing capture session URL guards.
+      };
+      return state;
+    });
+  }
+
+  async clearCustomIcon(appId) {
+    if (typeof appId !== "string" || !appId.startsWith("custom-")) {
+      return this.#data;
+    }
+    return this.update(state => {
+      const idx = state.customApps.findIndex(app => app.id === appId);
+      if (idx < 0) {
+        return state;
+      }
+      const existing = state.customApps[idx];
+      const cached = sanitizeDataImageURI(existing.cachedFaviconData);
+      state.customApps[idx] = {
+        ...existing,
+        customIconData: "",
+        icon: "",
+        iconSource: deriveIconSource("", cached),
+        iconUpdatedAt: Date.now(),
         updatedAt: Date.now(),
       };
       return state;
@@ -880,6 +1169,19 @@ class AstraAppHubStateStore {
         ? input.category.trim().slice(0, MAX_ID_LENGTH)
         : "productivity";
     const now = Date.now();
+    const customIconData = sanitizeDataImageURI(input.customIconData);
+    // Legacy filename for cleanup only — not a render source.
+    const icon = sanitizeIconRef(input.icon);
+    const cachedFaviconData = sanitizeDataImageURI(input.cachedFaviconData);
+    const monogram = sanitizeMonogram(input.monogram, name);
+    const iconSource = deriveIconSource(customIconData, cachedFaviconData);
+    const iconUpdatedAt =
+      typeof input.iconUpdatedAt === "number" &&
+      Number.isFinite(input.iconUpdatedAt)
+        ? input.iconUpdatedAt
+        : customIconData || cachedFaviconData
+          ? now
+          : 0;
     return {
       ok: true,
       app: {
@@ -888,7 +1190,12 @@ class AstraAppHubStateStore {
         url: urlCheck.href,
         category,
         keywords: sanitizeKeywords(input.keywords),
-        icon: sanitizeIconRef(input.icon),
+        icon,
+        customIconData,
+        cachedFaviconData,
+        monogram,
+        iconSource,
+        iconUpdatedAt,
         builtin: false,
         createdAt:
           typeof input.createdAt === "number" ? input.createdAt : now,
@@ -932,13 +1239,15 @@ class AstraAppHubStateStore {
       categoryOrder: data.categoryOrder,
       appOrder: data.appOrder,
       collapsedCategories: data.collapsedCategories,
+      // Icon payloads / iconSource / iconUpdatedAt / legacy filenames are
+      // profile-local — omit so import never claims custom/places without data.
       customApps: data.customApps.map(app => ({
         id: app.id,
         name: app.name,
         url: app.url,
         category: app.category,
         keywords: app.keywords,
-        // Profile-local icon files are not portable — omit from export.
+        monogram: app.monogram,
       })),
       settings: data.settings,
       // recent intentionally omitted
@@ -989,12 +1298,23 @@ class AstraAppHubStateStore {
           id = `custom-${crypto.randomUUID()}`;
         }
         used.add(id);
-        // Drop non-portable icon refs on import.
-        const { icon: _dropIcon, ...rest } = app;
+        // Drop non-portable icon payloads and stale iconSource claims on import.
+        const {
+          icon: _dropIcon,
+          customIconData: _dropCustom,
+          cachedFaviconData: _dropCached,
+          iconSource: _dropSource,
+          iconUpdatedAt: _dropUpdated,
+          ...rest
+        } = app;
         prepared.push({
           ...rest,
           id,
           icon: "",
+          customIconData: "",
+          cachedFaviconData: "",
+          iconSource: "monogram",
+          iconUpdatedAt: 0,
           _originalId: originalId,
         });
       }

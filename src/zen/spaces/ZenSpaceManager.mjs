@@ -16,6 +16,9 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
+  AstraSpaceIntegrity: "resource:///modules/zen/AstraSpaceIntegrity.mjs",
+  AstraSpaceRouting: "resource:///modules/zen/AstraSpaceRouting.mjs",
+  AstraSpaceAppBridge: "resource:///modules/zen/AstraSpaceAppBridge.mjs",
 });
 
 ChromeUtils.defineLazyGetter(lazy, "browserBackgroundElement", () => {
@@ -42,6 +45,9 @@ class nsZenWorkspaces {
   draggedElement = null;
 
   #hasInitialized = false;
+  #astraIntegrityGeneration = 0;
+  #astraIntegrityRan = false;
+  #astraSessionRestoreComplete = false;
 
   #canDebug = Services.prefs.getBoolPref("zen.workspaces.debug", false);
   #activeWorkspace = "";
@@ -880,7 +886,7 @@ class nsZenWorkspaces {
       this.#fixTabPositions();
       this.onWindowResize();
       this._resolveInitialized();
-      this.#clearAnyZombieTabs(); // Dont call with await
+      // Integrity runs from selectStartPage after AfterWorkspacesSessionRestore.
       delete this._resolveInitialized;
 
       const tabUpdateListener = () => this.scheduleTabsContainerUpdate();
@@ -1051,6 +1057,8 @@ class nsZenWorkspaces {
     window.dispatchEvent(
       new CustomEvent("AfterWorkspacesSessionRestore", { bubbles: true })
     );
+    this.#astraSessionRestoreComplete = true;
+    void this.#runAstraSpaceIntegrity("startup");
   }
 
   handleInitialTab(tab, isEmpty) {
@@ -1110,27 +1118,203 @@ class nsZenWorkspaces {
     );
   }
 
-  async #clearAnyZombieTabs() {
+  #clearAnyZombieTabs() {
+    // Upstream zombie cleanup for non-live / empty-folder remnants only.
+    // Live tabs with invalid Space IDs are recovered by Astra integrity.
+    const { classifyTabForIntegrity } = lazy.AstraSpaceIntegrity;
+    const validIds = new Set(this.getWorkspaces().map(w => w.uuid));
     const tabs = this.allStoredTabs;
-    const workspaces = this.getWorkspaces();
     for (let tab of tabs) {
-      const workspaceID = tab.getAttribute("zen-workspace-id");
+      const snap = {
+        id: tab?.id || "",
+        workspaceId: tab?.getAttribute?.("zen-workspace-id") || "",
+        essential: !!tab?.hasAttribute?.("zen-essential"),
+        empty: !!tab?.hasAttribute?.("zen-empty-tab"),
+        alive: !!tab?.linkedBrowser && !!tab?.isConnected,
+        closing:
+          !!tab?.closing || !!(gBrowser?._removingTabs?.has?.(tab)),
+        pending: !!tab?.hasAttribute?.("pending"),
+        pinned: !!tab?.pinned,
+        hasGroup: !!tab?.group,
+        splitView: !!tab?.group?.hasAttribute?.("split-view-group"),
+        restoring: !!tab?.hasAttribute?.("pending") && !tab?.linkedBrowser,
+      };
+      const kind = classifyTabForIntegrity(snap, validIds).kind;
       if (
-        (workspaceID &&
-          !tab.hasAttribute("zen-essential") &&
-          !workspaces.find(workspace => workspace.uuid === workspaceID)) ||
-        // Also remove empty tabs that are supposed to be from parent folders but
-        // they dont exist anymore
-        (tab.pinned && tab.hasAttribute("zen-empty-tab") && !tab.group)
+        kind === "zombie-empty-folder" ||
+        kind === "zombie-stale" ||
+        kind === "zombie-closing"
       ) {
-        // Remove any tabs where their workspace doesn't exist anymore
-        this.log("Removed zombie tab from non-existing workspace", tab);
-        gBrowser.unpinTab(tab);
-        gBrowser.removeTab(tab, {
-          skipSessionStore: true,
-          closeWindowWithLastTab: false,
-        });
+        this.log("Removed non-live zombie tab", kind);
+        try {
+          if (tab.pinned) {
+            gBrowser.unpinTab(tab);
+          }
+          gBrowser.removeTab(tab, {
+            skipSessionStore: true,
+            closeWindowWithLastTab: false,
+          });
+        } catch {
+          // ignore
+        }
       }
+    }
+  }
+
+  /**
+   * Ensure a single Recovered Tabs Space exists (idempotent).
+   * Never hijacks a user Space occupying the reserved UUID.
+   */
+  async ensureAstraRecoveredTabsSpace({ avoidUuid = null, preferUuid = null } = {}) {
+    const {
+      RECOVERED_TABS_SPACE_UUID,
+      ASTRA_SPACE_ROLE_RECOVERED,
+      resolveRecoveredSpaceIdentity,
+    } = lazy.AstraSpaceIntegrity;
+    const identity = resolveRecoveredSpaceIdentity(this.getWorkspaces());
+    if (!identity.create && identity.spaceId) {
+      return this.getWorkspaceFromId(identity.spaceId);
+    }
+    if (this.privateWindowOrDisabled) {
+      return null;
+    }
+    let name = "Recovered Tabs";
+    try {
+      const [localized] = await document.l10n.formatValues([
+        { id: "astra-spaces-recovered-tabs-name" },
+      ]);
+      if (localized) {
+        name = localized;
+      }
+    } catch {
+      // fallback English above
+    }
+    let uuid =
+      preferUuid ||
+      (!identity.collided ? RECOVERED_TABS_SPACE_UUID : null) ||
+      gZenUIManager.generateUuidv4();
+    if (avoidUuid && uuid === avoidUuid) {
+      uuid = gZenUIManager.generateUuidv4();
+    }
+    // Final collision check.
+    if (this.getWorkspaceFromId(uuid)) {
+      uuid = gZenUIManager.generateUuidv4();
+    }
+    const workspaceData = {
+      uuid,
+      icon: "📦",
+      name,
+      theme: nsZenThemePicker.getTheme([]),
+      containerTabId: 0,
+      astraRole: ASTRA_SPACE_ROLE_RECOVERED,
+    };
+    this.#prepareNewWorkspace(workspaceData);
+    this.#createWorkspaceTabsSection(workspaceData, []);
+    this.saveWorkspace(workspaceData);
+    this.onWindowResize();
+    return workspaceData;
+  }
+
+  async #runAstraSpaceIntegrity(reason = "manual") {
+    if (!this.workspaceEnabled || this.privateWindowOrDisabled) {
+      return;
+    }
+    if (reason === "startup" && !this.#astraSessionRestoreComplete) {
+      return;
+    }
+    const generation = ++this.#astraIntegrityGeneration;
+    try {
+      await this.promiseInitialized;
+      if (generation !== this.#astraIntegrityGeneration) {
+        return;
+      }
+      this.#clearAnyZombieTabs();
+      const result = await lazy.AstraSpaceIntegrity.runSpaceIntegrityPass(
+        window,
+        {
+          sessionRestoreComplete:
+            this.#astraSessionRestoreComplete || reason !== "startup",
+          requireReady: reason === "startup",
+          spacePinsApi: {
+            removeSpacePins: id =>
+              lazy.AstraSpaceAppBridge.onSpaceDeleted(id),
+            unpinApp: async () => {},
+          },
+        }
+      );
+      if (generation !== this.#astraIntegrityGeneration) {
+        return;
+      }
+      if (result?.deferred) {
+        return;
+      }
+      this.#astraIntegrityRan = true;
+      if (result?.repaired) {
+        window.dispatchEvent(
+          new CustomEvent("AstraSpaceIntegrityRepaired", {
+            bubbles: true,
+            detail: {
+              reason,
+              repairedItemCounts: result.counts || {},
+            },
+          })
+        );
+        try {
+          gZenUIManager?.showToast?.("astra-spaces-integrity-repaired");
+        } catch {
+          // ignore
+        }
+      }
+      if (reason === "startup") {
+        window.dispatchEvent(
+          new CustomEvent("AstraSpaceReady", {
+            bubbles: true,
+            detail: { reason: "startup" },
+          })
+        );
+      }
+    } catch (error) {
+      console.warn("[AstraSpaces] integrity pass failed; Spaces remain usable");
+      try {
+        this.#clearAnyZombieTabs();
+      } catch {
+        // ignore
+      }
+    }
+  }
+
+  /** Public: transactional Space switch. */
+  async switchSpaceSafely(targetSpaceId, options = {}) {
+    return lazy.AstraSpaceRouting.switchSpaceSafely(
+      window,
+      targetSpaceId,
+      options
+    );
+  }
+
+  /** Public: re-run integrity (debug / after failed switch). */
+  async runAstraSpaceIntegrity(reason = "manual") {
+    return this.#runAstraSpaceIntegrity(reason);
+  }
+
+  /** Public: open Peek (context / keyboard — focuses search). */
+  async openAstraSpacePeek() {
+    const spaceId =
+      this.#contextMenuData?.workspaceId || this.activeWorkspace;
+    const opener =
+      this.#contextMenuData?.originalTarget ||
+      document.getElementById("zen-workspaces-button");
+    return this.openAstraSpacePeekFor(spaceId, opener, { focusSearch: true });
+  }
+
+  async openAstraSpacePeekFor(spaceId, opener, options = {}) {
+    try {
+      const { openSpacePeek } = ChromeUtils.importESModule(
+        "resource:///modules/zen/AstraSpaceOverview.mjs"
+      );
+      await openSpacePeek(window, spaceId, opener, options);
+    } catch (error) {
+      console.warn("[AstraSpaces] Peek failed; normal switching remains usable");
     }
   }
 
@@ -1700,6 +1884,8 @@ class nsZenWorkspaces {
       console.error("Astra: failed to apply space preset theme", e);
     }
     this.#maybeShowSpaceDiscoveryToasts(workspace.name);
+    // Pin suggestions are available via AstraSpaceAppBridge.suggestPinsForPreset
+    // (user confirmation required before pinning — no auto-install).
     return workspace;
   }
 
@@ -3404,15 +3590,90 @@ class nsZenWorkspaces {
   async contextDeleteWorkspace() {
     const workspaceId =
       this.#contextMenuData?.workspaceId || this.activeWorkspace;
-    const [title, body] = await document.l10n.formatValues([
-      { id: "zen-workspaces-delete-workspace-title" },
-      {
-        id: "zen-workspaces-delete-workspace-body",
-        args: { name: this.getWorkspaceFromId(workspaceId).name },
-      },
-    ]);
-    if (Services.prompt.confirm(null, title, body)) {
-      this.removeWorkspace(workspaceId);
+    const workspace = this.getWorkspaceFromId(workspaceId);
+    if (!workspace) {
+      return;
+    }
+    const spaces = this.getWorkspaces();
+    if (spaces.length <= 1) {
+      return;
+    }
+    const ownedTabs = this.allStoredTabs.filter(
+      tab =>
+        tab.getAttribute("zen-workspace-id") === workspaceId &&
+        !tab.hasAttribute("zen-essential") &&
+        !(tab.hasAttribute("zen-empty-tab") && !tab.group)
+    );
+
+    let disposition = "close";
+    let targetSpaceId = spaces.find(s => s.uuid !== workspaceId)?.uuid || null;
+
+    if (ownedTabs.length) {
+      const [title, body, moveLabel, closeLabel, cancelLabel] =
+        await document.l10n.formatValues([
+          { id: "astra-spaces-delete-title" },
+          {
+            id: "astra-spaces-delete-body",
+            args: { name: workspace.name, count: ownedTabs.length },
+          },
+          { id: "astra-spaces-delete-move" },
+          { id: "astra-spaces-delete-close" },
+          { id: "astra-spaces-delete-cancel" },
+        ]);
+      // 0 = move, 1 = close, 2 = cancel (button order).
+      const flags =
+        Services.prompt.BUTTON_TITLE_IS_STRING * Services.prompt.BUTTON_POS_0 +
+        Services.prompt.BUTTON_TITLE_IS_STRING * Services.prompt.BUTTON_POS_1 +
+        Services.prompt.BUTTON_TITLE_IS_STRING * Services.prompt.BUTTON_POS_2 +
+        Services.prompt.BUTTON_POS_2_DEFAULT;
+      const button = Services.prompt.confirmEx(
+        window,
+        title,
+        body,
+        flags,
+        moveLabel,
+        closeLabel,
+        cancelLabel,
+        null,
+        {}
+      );
+      if (button === 2) {
+        return;
+      }
+      disposition = button === 0 ? "move" : "close";
+    } else {
+      const [title, body] = await document.l10n.formatValues([
+        { id: "zen-workspaces-delete-workspace-title" },
+        {
+          id: "zen-workspaces-delete-workspace-body",
+          args: { name: workspace.name },
+        },
+      ]);
+      if (!Services.prompt.confirm(null, title, body)) {
+        return;
+      }
+      disposition = "close";
+    }
+
+    const result = await lazy.AstraSpaceRouting.deleteSpaceSafely(
+      window,
+      workspaceId,
+      { disposition, targetSpaceId }
+    );
+    if (result.ok) {
+      try {
+        await lazy.AstraSpaceAppBridge.onSpaceDeleted(workspaceId);
+      } catch {
+        // ignore
+      }
+      void this.#runAstraSpaceIntegrity("after-delete");
+    } else if (result.reason !== "cancelled") {
+      try {
+        gZenUIManager?.showToast?.("astra-spaces-delete-failed");
+      } catch {
+        // ignore
+      }
+      void this.#runAstraSpaceIntegrity("after-delete-failed");
     }
   }
 

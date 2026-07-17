@@ -49,6 +49,9 @@
 </menupopup>
 
 <menupopup id="zenWorkspaceMoreActions">
+  <menuitem id="context_zenPeekWorkspace"
+            data-l10n-id="astra-space-peek-open"
+            oncommand="gZenWorkspaces.openAstraSpacePeek();"/>
   <menuitem id="context_zenEditWorkspace" data-l10n-id="zen-workspaces-panel-change-name" command="cmd_zenChangeWorkspaceName"/>
   <menuitem id="context_zenEditWorkspaceIcon" data-l10n-id="zen-workspaces-panel-change-icon" command="cmd_zenChangeWorkspaceIcon"/>
   <menuitem class="zenToolbarThemePicker"
@@ -123,6 +126,46 @@
 # Popup to move tabs to a synced workspace.
 # This would be automatically populated with the list of available synced workspaces.
 </menupopup>
+
+<panel
+  type="arrow"
+  orient="vertical"
+  id="PanelUI-astra-space-peek"
+  class="astra-space-peek-panel"
+  position="topcenter bottomleft"
+  noautofocus="false"
+  role="dialog"
+  aria-labelledby="astra-space-peek-title">
+  <vbox id="astra-space-peek-container" class="astra-space-peek-container">
+    <hbox id="astra-space-peek-header" align="center">
+      <label id="astra-space-peek-icon" class="astra-space-peek-icon"/>
+      <vbox flex="1">
+        <label id="astra-space-peek-title" class="astra-space-peek-title" crop="end"/>
+        <label id="astra-space-peek-meta" class="astra-space-peek-meta" crop="end"/>
+      </vbox>
+    </hbox>
+    <html:input
+      type="search"
+      id="astra-space-peek-search"
+      class="astra-space-peek-search"
+      data-l10n-id="astra-space-peek-search"/>
+    <vbox id="astra-space-peek-list" class="astra-space-peek-list" flex="1"/>
+    <hbox id="astra-space-peek-actions" class="astra-space-peek-actions">
+      <toolbarbutton
+        id="astra-space-peek-switch"
+        class="subviewbutton"
+        data-l10n-id="astra-space-peek-switch"/>
+      <toolbarbutton
+        id="astra-space-peek-move"
+        class="subviewbutton"
+        data-l10n-id="astra-space-peek-move"/>
+      <toolbarbutton
+        id="astra-space-peek-newtab"
+        class="subviewbutton"
+        data-l10n-id="astra-space-peek-newtab"/>
+    </hbox>
+  </vbox>
+</panel>
 
 <panel
   type="arrow"

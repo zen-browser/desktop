@@ -277,3 +277,48 @@ zen-workspace-background-removed-toast = Background image removed!
 
 zen-tab-note-saved-toast = Note saved! 📝
 zen-tab-note-cleared-toast = Note cleared!
+
+# —— Astra Spaces launch-safe additions ——
+astra-spaces-recovered-tabs-name = Recovered Tabs
+
+astra-spaces-integrity-repaired =
+    .label = Space state was repaired
+
+astra-spaces-delete-title = Delete Space?
+astra-spaces-delete-body = “{ $name }” has { $count } tabs. Choose what to do with them.
+astra-spaces-delete-move = Move tabs
+astra-spaces-delete-close = Close tabs
+astra-spaces-delete-cancel = Cancel
+astra-spaces-delete-failed =
+    .label = Could not delete this Space
+
+astra-space-peek-open =
+    .label = Peek at Space…
+astra-space-peek-search =
+    .placeholder = Search this Space
+astra-space-peek-switch =
+    .label = Switch to Space
+astra-space-peek-move =
+    .label = Move current tab here
+astra-space-peek-newtab =
+    .label = New tab in Space
+astra-space-peek-tab-row =
+    .label = { $title }
+astra-space-peek-more =
+    .value = Showing { $shown } of { $total }
+astra-space-peek-error =
+    .label = That Space action could not be completed
+
+astra-app-hub-space-pins-title = Pinned for this Space
+astra-app-hub-space-pins-empty =
+    .label = Pin apps to this Space
+astra-app-hub-open-current-space =
+    .label = Open in current Space
+astra-app-hub-open-another-space =
+    .label = Open in another Space…
+astra-app-hub-pin-current-space =
+    .label = Pin to current Space
+astra-app-hub-unpin-current-space =
+    .label = Unpin from current Space
+astra-app-hub-space-private-unavailable =
+    .value = Space pins are unavailable in a private window

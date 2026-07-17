@@ -141,6 +141,59 @@ class nsZenWorkspaceIcons extends MozXULElement {
       button.appendChild(icon);
     }
     button.addEventListener("command", this);
+    button.addEventListener("auxclick", e => {
+      if (e.button !== 1) {
+        return;
+      }
+      // Middle-click is unused on Space icons; dedicated Peek entry (focuses search).
+      e.preventDefault();
+      e.stopPropagation();
+      const id = button.getAttribute("zen-workspace-id");
+      if (id) {
+        void gZenWorkspaces.openAstraSpacePeekFor(id, button, {
+          focusSearch: true,
+        });
+      }
+    });
+    // Hover Peek after delay — does not steal click-to-switch or move focus.
+    let hoverTimer = null;
+    button.addEventListener("mouseenter", () => {
+      if (this.isReorderMode) {
+        return;
+      }
+      if (document.documentElement.hasAttribute("zen-compact-animating")) {
+        return;
+      }
+      if (document.querySelector("panel[panelopen=true], menupopup[open=true]")) {
+        return;
+      }
+      hoverTimer = setTimeout(() => {
+        hoverTimer = null;
+        if (this.isReorderMode) {
+          return;
+        }
+        if (document.documentElement.hasAttribute("zen-compact-animating")) {
+          return;
+        }
+        if (
+          document.querySelector("panel[panelopen=true], menupopup[open=true]")
+        ) {
+          return;
+        }
+        const id = button.getAttribute("zen-workspace-id");
+        if (id && id !== gZenWorkspaces.activeWorkspace) {
+          void gZenWorkspaces.openAstraSpacePeekFor(id, button, {
+            focusSearch: false,
+          });
+        }
+      }, 650);
+    });
+    button.addEventListener("mouseleave", () => {
+      if (hoverTimer) {
+        clearTimeout(hoverTimer);
+        hoverTimer = null;
+      }
+    });
     return button;
   }
 
@@ -184,7 +237,7 @@ class nsZenWorkspaceIcons extends MozXULElement {
     const button = event.target;
     const uuid = button.getAttribute("zen-workspace-id");
     if (uuid) {
-      gZenWorkspaces.changeWorkspaceWithID(uuid);
+      void gZenWorkspaces.switchSpaceSafely(uuid);
     }
   }
 

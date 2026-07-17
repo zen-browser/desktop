@@ -337,6 +337,8 @@ class AstraAppHubManager {
   #searchQuery = "";
   #lastAppliedRevision = -1;
   #contextAppId = null;
+  /** @type {string[]} */
+  #spacePinIds = [];
   #dragState = null;
   #suppressLaunch = false;
   #focusedItemIndex = -1;
@@ -1108,6 +1110,13 @@ class AstraAppHubManager {
         null,
         ["astra-app-hub-ctx-split", "Open in Split View", "split"],
         ["astra-app-hub-ctx-essentials", "Pin to Essentials", "essentials"],
+        null,
+        ["astra-app-hub-pin-current-space", "Pin to current Space", "pin-space"],
+        [
+          "astra-app-hub-unpin-current-space",
+          "Unpin from current Space",
+          "unpin-space",
+        ],
       ];
 
       for (const entry of items) {
@@ -1125,7 +1134,11 @@ class AstraAppHubManager {
 
       const wsMenu = document.createXULElement("menu");
       wsMenu.id = "astra-app-hub-ctx-workspace";
-      setL10nOrText(wsMenu, "astra-app-hub-ctx-workspace", "Open in Workspace");
+      setL10nOrText(
+        wsMenu,
+        "astra-app-hub-open-another-space",
+        "Open in another Space…"
+      );
       const wsPopup = document.createXULElement("menupopup");
       wsPopup.id = "astra-app-hub-ctx-workspace-popup";
       wsMenu.appendChild(wsPopup);
@@ -1429,6 +1442,7 @@ class AstraAppHubManager {
 
     // Render if catalog already available; otherwise show shell and fill later.
     try {
+      await this.#refreshSpacePins();
       if (this.#catalog || this.#catalogError || this.#initialized) {
         this.#ensureRendered();
       }
@@ -1763,28 +1777,24 @@ class AstraAppHubManager {
   }
 
   async #openInWorkspace(url, workspaceId) {
-    const tabOk = this.#openTrusted(url, "tab");
-    if (!tabOk?.ok) {
-      return false;
-    }
-    const ws = window.gZenWorkspaces;
-    if (!ws || typeof ws.moveTabToWorkspace !== "function") {
-      return tabOk;
-    }
-    const targetId = workspaceId || ws.activeWorkspace;
-    if (!targetId) {
-      return tabOk;
-    }
     try {
-      const tab = tabOk.tab || window.gBrowser?.selectedTab;
-      if (tab) {
-        ws.moveTabToWorkspace(tab, targetId);
+      const { openURLInSpace } = ChromeUtils.importESModule(
+        "resource:///modules/zen/AstraSpaceRouting.mjs"
+      );
+      const result = await openURLInSpace(window, {
+        url,
+        targetSpaceId: workspaceId || null,
+        inBackground: false,
+        source: "app-hub",
+      });
+      if (result?.ok) {
+        return { ok: true, tab: result.tab || null };
       }
-      return tabOk;
     } catch (error) {
-      console.warn("[AstraAppHub] moveTabToWorkspace failed:", error);
-      return tabOk;
+      console.warn("[AstraAppHub] Space routing failed; falling back");
     }
+    // Fallback: current-Space trusted open (never invisible invalid Space).
+    return this.#openTrusted(url, "tab");
   }
 
   #openSplit(url) {
@@ -1912,6 +1922,26 @@ class AstraAppHubManager {
       );
     }
 
+    // Optional per-Space pins (compact; omitted when empty).
+    if (
+      this.#spacePinIds.length &&
+      !PrivateBrowsingUtils.isWindowPrivate(window)
+    ) {
+      const pinnedApps = this.#spacePinIds
+        .map(id => appMap.get(id))
+        .filter(app => app && !hidden.has(app.id));
+      if (pinnedApps.length) {
+        this.#appendSection(
+          list,
+          "__space-pins__",
+          "Pinned for this Space",
+          "astra-app-hub-space-pins-title",
+          pinnedApps,
+          { collapsible: false, special: true }
+        );
+      }
+    }
+
     const categoryOrder = this.#orderedCategories(state);
     for (const category of categoryOrder) {
       const apps = this.#orderedAppsForCategory(category.id, appMap, state, hidden);
@@ -1949,6 +1979,21 @@ class AstraAppHubManager {
     this.#rendered = true;
     this.#lastAppliedRevision = gAstraAppHubState.revision;
     this.#updateCustomizeChrome();
+  }
+
+  async #refreshSpacePins() {
+    if (PrivateBrowsingUtils.isWindowPrivate(window)) {
+      this.#spacePinIds = [];
+      return;
+    }
+    try {
+      const { getPinsForCurrentSpace } = ChromeUtils.importESModule(
+        "resource:///modules/zen/AstraSpaceAppBridge.mjs"
+      );
+      this.#spacePinIds = await getPinsForCurrentSpace(window);
+    } catch {
+      this.#spacePinIds = [];
+    }
   }
 
   #orderedCategories(state) {
@@ -3004,6 +3049,40 @@ class AstraAppHubManager {
         }
         break;
       }
+      case "pin-space": {
+        const pinId = this.#contextAppId || appId;
+        if (pinId && !PrivateBrowsingUtils.isWindowPrivate(window)) {
+          try {
+            const { pinAppToCurrentSpace } = ChromeUtils.importESModule(
+              "resource:///modules/zen/AstraSpaceAppBridge.mjs"
+            );
+            await pinAppToCurrentSpace(window, pinId);
+            await this.#refreshSpacePins();
+            this.#rendered = false;
+            this.#rebuildList();
+          } catch {
+            // ignore
+          }
+        }
+        break;
+      }
+      case "unpin-space": {
+        const unpinId = this.#contextAppId || appId;
+        if (unpinId && !PrivateBrowsingUtils.isWindowPrivate(window)) {
+          try {
+            const { unpinAppFromCurrentSpace } = ChromeUtils.importESModule(
+              "resource:///modules/zen/AstraSpaceAppBridge.mjs"
+            );
+            await unpinAppFromCurrentSpace(window, unpinId);
+            await this.#refreshSpacePins();
+            this.#rendered = false;
+            this.#rebuildList();
+          } catch {
+            // ignore
+          }
+        }
+        break;
+      }
       case "editor-save":
         await this.#saveEditor();
         break;
@@ -3252,6 +3331,20 @@ class AstraAppHubManager {
         this.#populateWorkspaceSubmenu();
       }
     }
+    const isPrivate = PrivateBrowsingUtils.isWindowPrivate(window);
+    const pinItem = document.getElementById("astra-app-hub-pin-current-space");
+    const unpinItem = document.getElementById(
+      "astra-app-hub-unpin-current-space"
+    );
+    const pinnedHere = this.#spacePinIds.includes(this.#contextAppId);
+    if (pinItem) {
+      pinItem.hidden = isPrivate || pinnedHere || !this.#contextAppId;
+      pinItem.disabled = isPrivate;
+    }
+    if (unpinItem) {
+      unpinItem.hidden = isPrivate || !pinnedHere;
+      unpinItem.disabled = isPrivate;
+    }
     const privItem = document.getElementById("astra-app-hub-ctx-private");
     if (privItem) {
       privItem.hidden = typeof OpenBrowserWindow !== "function";
@@ -3339,6 +3432,14 @@ class AstraAppHubManager {
     }
     await gAstraAppHubState.deleteCustomApp(appId);
     this.#cancelFaviconCapture(appId);
+    try {
+      const { onCustomAppDeleted } = ChromeUtils.importESModule(
+        "resource:///modules/zen/AstraSpaceAppBridge.mjs"
+      );
+      await onCustomAppDeleted(appId);
+    } catch {
+      // ignore
+    }
     this.#lastAppliedRevision = gAstraAppHubState.revision;
     this.#rendered = false;
     this.#rebuildList();

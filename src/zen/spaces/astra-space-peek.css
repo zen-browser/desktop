@@ -1,0 +1,110 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+.astra-space-peek-panel {
+  --astra-space-peek-pad: 10px;
+  min-width: 280px;
+  max-width: 360px;
+  max-height: min(70vh, 520px);
+}
+
+.astra-space-peek-container {
+  padding: var(--astra-space-peek-pad);
+  gap: 8px;
+}
+
+.astra-space-peek-header {
+  gap: 8px;
+  margin-block-end: 4px;
+}
+
+.astra-space-peek-icon {
+  font-size: 1.4rem;
+  min-width: 1.6em;
+  text-align: center;
+}
+
+.astra-space-peek-icon[no-icon] {
+  opacity: 0.35;
+}
+
+.astra-space-peek-title {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.astra-space-peek-meta {
+  opacity: 0.7;
+  font-size: 0.85rem;
+}
+
+.astra-space-peek-search {
+  width: 100%;
+  box-sizing: border-box;
+  margin-block: 4px;
+  padding: 6px 8px;
+  border-radius: var(--border-radius-medium, 6px);
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  background: transparent;
+  color: inherit;
+}
+
+.astra-space-peek-list {
+  overflow-y: auto;
+  max-height: 280px;
+  gap: 2px;
+}
+
+.astra-space-peek-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 28px;
+}
+
+.astra-space-peek-row:focus-visible {
+  outline: 2px solid SelectedItem;
+  outline-offset: 1px;
+}
+
+.astra-space-peek-favicon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.astra-space-peek-row-label {
+  min-width: 0;
+}
+
+.astra-space-peek-audio {
+  opacity: 0.75;
+  font-size: 0.85rem;
+}
+
+.astra-space-peek-more {
+  opacity: 0.6;
+  padding-block: 6px;
+  text-align: center;
+}
+
+.astra-space-peek-actions {
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-block-start: 6px;
+}
+
+.astra-space-peek-actions > toolbarbutton {
+  flex: 1 1 auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .astra-space-peek-panel,
+  .astra-space-peek-row {
+    transition: none !important;
+    animation: none !important;
+  }
+}

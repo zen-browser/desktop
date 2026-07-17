@@ -3,6 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 EXTRA_JS_MODULES.zen += [
+  "AstraSpaceAppBridge.mjs",
+  "AstraSpaceAppState.mjs",
+  "AstraSpaceIntegrity.mjs",
+  "AstraSpaceOverview.mjs",
+  "AstraSpaceRouting.mjs",
   "ZenGradientGenerator.mjs",
   "ZenSpace.mjs",
   "ZenSpaceCreation.mjs",

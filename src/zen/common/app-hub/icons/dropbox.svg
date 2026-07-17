@@ -1,0 +1,5 @@
+<!-- Dropbox diamonds — identification only. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img">
+  <rect width="64" height="64" rx="14" fill="#0061FF"/>
+  <path fill="#FFFFFF" d="M32 10l12 8-12 8-12-8 12-8zm0 20l12 8-12 8-12-8 12-8zm-12-4l12 8v12l-12-8V26zm24 0v12l-12 8V34l12-8z"/>
+</svg>

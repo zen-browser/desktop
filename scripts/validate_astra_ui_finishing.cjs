@@ -306,6 +306,125 @@ if (fallbackMonograms >= 44 && fallbackMonogramLabels >= 44) {
   );
 }
 
+const fallbackImages = (
+  fallbackBlock.match(/class="zen-app-launcher-item-icon"/g) || []
+).length;
+const fallbackNames = (
+  fallbackBlock.match(/zen-app-launcher-item-name/g) || []
+).length;
+const fallbackDisabledMono = (
+  fallbackBlock.match(/zen-app-launcher-item-monogram"[^>]*\sdisabled=/g) || []
+).length;
+if (fallbackImages >= 44 && fallbackNames >= 44) {
+  ok(`fallback has image+name for each app (${fallbackImages}/${fallbackNames})`);
+} else {
+  fail(
+    `fallback missing image/name nodes (${fallbackImages} icons / ${fallbackNames} names)`
+  );
+}
+if (fallbackDisabledMono === 0) {
+  ok("fallback monograms are not disabled");
+} else fail("fallback monograms still use disabled=true");
+
+if (
+  /app-hub-icons\//.test(fallbackBlock) &&
+  !/https?:\/\/.*favicon|duckduckgo\.com\/ip3|gstatic\.com\/favicon|clearbit/i.test(
+    fallbackBlock
+  )
+) {
+  ok("fallback icons use local chrome app-hub-icons paths");
+} else fail("fallback icons missing or use remote favicon proxy");
+
+const hubIcons = read("src/zen/common/modules/AstraAppHubIcons.mjs");
+if (
+  hubIcons.includes("ASTRA_APP_HUB_ICONS") &&
+  hubIcons.includes("getPackagedIconURL") &&
+  hubIcons.includes(
+    "chrome://browser/content/zen-components/app-hub-icons/"
+  ) &&
+  !/https?:\/\/.*favicon|duckduckgo\.com\/ip3|clearbit/i.test(hubIcons)
+) {
+  ok("packaged icon registry present (local chrome only)");
+} else fail("packaged icon registry missing or allows remote icons");
+
+const iconJarLines = jar
+  .split(/\r?\n/)
+  .filter(line =>
+    /^\s*content\/browser\/zen-components\/app-hub-icons\//.test(line)
+  );
+if (iconJarLines.length === 44) {
+  ok("exactly 44 app-hub icon JAR mappings");
+} else fail(`app-hub icon JAR mappings != 44 (${iconJarLines.length})`);
+
+if (
+  hubCss.includes('data-icon-loaded="true"') &&
+  /\[data-icon-loaded="true"\][\s\S]*visibility:\s*hidden/.test(hubCss) &&
+  /icon-stack\s*>\s*\.zen-app-launcher-item-icon[\s\S]*visibility:\s*hidden/.test(
+    hubCss
+  ) &&
+  /\[data-icon-loaded="true"\]\s*>\s*\.zen-app-launcher-item-icon[\s\S]*visibility:\s*visible/.test(
+    hubCss
+  ) &&
+  !/#PanelUI-zen-app-launcher-fallback \.zen-app-launcher-item-icon \{\s*display:\s*none/s.test(
+    hubCss
+  ) &&
+  !/-moz-context-properties/.test(hubCss)
+) {
+  ok("icon success hides monogram; pre-load monogram visible; no fill mask");
+} else fail("icon/monogram visibility CSS incomplete");
+
+if (
+  hubMgr.includes("data-icon-loaded") &&
+  hubMgr.includes("data-icon-error") &&
+  hubMgr.includes("zen-app-launcher-item-icon-stack") &&
+  hubMgr.includes('document.createElement("img")') &&
+  bootstrap.includes("#bindFallbackIconHandlers") &&
+  bootstrap.includes("#destroyListeners") &&
+  /<html:img class="zen-app-launcher-item-icon"/.test(fallbackBlock) &&
+  !/<image class="zen-app-launcher-item-icon"/.test(fallbackBlock)
+) {
+  ok("advanced+fallback use HTML img load/error (not XUL image)");
+} else fail("icon load/error handling missing or still uses XUL image");
+
+if (
+  hubMgr.includes("resolvePlacesFaviconURL") &&
+  hubMgr.includes("#enrichCustomAppIcon") &&
+  hubMgr.includes("button.isConnected") &&
+  hubIcons.includes("getFaviconForPage") &&
+  hubIcons.includes("data:image/") &&
+  !/["'`]page-icon:/.test(hubIcons) &&
+  !/["'`]page-icon:/.test(hubMgr) &&
+  !/favicon\?\.uri/.test(hubMgr)
+) {
+  ok("user-added favicon uses Places dataURI only (no page-icon/remote uri)");
+} else fail("user-added favicon Places path missing or unsafe");
+
+if (
+  !bootstrap.includes("AstraAppHubIcons") &&
+  !bootstrap.includes("PlacesUtils") &&
+  !bootstrap.includes("getFaviconForPage") &&
+  !bootstrap.includes("ASTRA_APP_HUB_CATALOG")
+) {
+  ok("bootstrap performs no startup icon/catalog/Places work");
+} else fail("bootstrap references icon/catalog/Places at module scope");
+
+if (
+  !jar.includes("ICON_SOURCES.md") &&
+  exists("src/zen/common/app-hub/ICON_SOURCES.md")
+) {
+  const sources = read("src/zen/common/app-hub/ICON_SOURCES.md");
+  const sourceRows = (sources.match(/^\| [a-z][a-z0-9-]* \|/gm) || []).length;
+  if (
+    sources.includes("| File |") &&
+    /trademark/i.test(sources) &&
+    /generated-identification/i.test(sources) &&
+    !/C:\\\\ZenFork|C:\/ZenFork/i.test(sources) &&
+    sourceRows === 44
+  ) {
+    ok("ICON_SOURCES.md documents 44 apps (source-only, not JAR-packaged)");
+  } else fail("ICON_SOURCES.md incomplete or implies bad provenance");
+} else fail("ICON_SOURCES.md missing or incorrectly JAR-mapped");
+
 if (
   hubCss.includes("astra-app-hub-fallback-banner") &&
   hubCss.includes('app-hub-mode="fallback"') &&
@@ -584,6 +703,15 @@ async function validateCatalogModuleShape() {
   let remoteIcon = false;
   let badCat = 0;
   let badUrl = 0;
+  let missingIconKey = 0;
+  let missingMonogram = 0;
+  let badMonogram = 0;
+  const iconKeys = new Set();
+  const hubIconsSrc = fs.readFileSync(
+    path.join(root, "src/zen/common/modules/AstraAppHubIcons.mjs"),
+    "utf8"
+  );
+  const iconsDir = path.join(root, "src/zen/common/app-hub/icons");
   for (const app of catalog.apps) {
     if (appIds.has(app.id)) fail(`duplicate app id ${app.id}`);
     appIds.add(app.id);
@@ -600,6 +728,22 @@ async function validateCatalogModuleShape() {
     ) {
       remoteIcon = true;
     }
+    if (typeof app.iconKey !== "string" || !app.iconKey.trim()) {
+      missingIconKey++;
+    } else {
+      iconKeys.add(app.iconKey);
+      if (!hubIconsSrc.includes(`${app.iconKey}:`) && !hubIconsSrc.includes(`"${app.iconKey}"`)) {
+        // allow either bare key or quoted key in registry
+        if (!new RegExp(`["']?${app.iconKey}["']?\\s*:`).test(hubIconsSrc)) {
+          fail(`iconKey ${app.iconKey} missing from ASTRA_APP_HUB_ICONS`);
+        }
+      }
+    }
+    if (typeof app.monogram !== "string" || !app.monogram.trim()) {
+      missingMonogram++;
+    } else if (app.monogram.trim().length < 1 || app.monogram.trim().length > 3) {
+      badMonogram++;
+    }
   }
   if (!badCat) ok("imported catalog category references valid");
   else fail(`${badCat} apps reference unknown categories`);
@@ -607,6 +751,61 @@ async function validateCatalogModuleShape() {
   else fail(`${badUrl} apps have invalid URLs`);
   if (!remoteIcon) ok("imported catalog has no remote icon URLs");
   else fail("imported catalog contains remote icon URLs");
+  if (!missingIconKey && iconKeys.size === 44) {
+    ok("every catalog app has iconKey (44)");
+  } else {
+    fail(
+      `iconKey incomplete (missing=${missingIconKey}, unique=${iconKeys.size})`
+    );
+  }
+  if (!missingMonogram && !badMonogram) {
+    ok("every catalog app has monogram (1–3 chars)");
+  } else {
+    fail(
+      `monogram incomplete (missing=${missingMonogram}, badLen=${badMonogram})`
+    );
+  }
+
+  const iconFiles = fs.existsSync(iconsDir)
+    ? fs.readdirSync(iconsDir).filter(f => /\.(svg|png|ico|webp)$/i.test(f))
+    : [];
+  if (iconFiles.length === 44 && iconFiles.every(f => /\.svg$/i.test(f))) {
+    ok("44 packaged SVG icon source files on disk (no png/ico)");
+  } else fail(`icon source files != 44 SVG (${iconFiles.length})`);
+
+  let oversized = 0;
+  let totalBytes = 0;
+  for (const file of iconFiles) {
+    const full = path.join(iconsDir, file);
+    const st = fs.statSync(full);
+    totalBytes += st.size;
+    if (st.size > 32 * 1024) {
+      oversized++;
+      fail(`oversized SVG ${file} (${st.size} bytes)`);
+    }
+    const raw = fs.readFileSync(full, "utf8");
+    if (
+      /<script[\s>]|onload=|onclick=|onerror=|foreignObject|xlink:href=["']https?:|href=["']https?:|url\(\s*['"]?https?:|<animate[\s>]|base64,/i.test(
+        raw
+      ) ||
+      !/<svg[\s>]/.test(raw) ||
+      !/viewBox=/.test(raw)
+    ) {
+      fail(`unsafe/malformed SVG content in ${file}`);
+    }
+  }
+  if (!oversized) {
+    ok(
+      `packaged SVG icons safe/valid (total ${(totalBytes / 1024).toFixed(1)} KB)`
+    );
+  }
+
+  if (
+    hubMgr.includes("PrivateBrowsingUtils.isWindowPrivate") &&
+    hubMgr.includes("#enrichCustomAppIcon")
+  ) {
+    ok("private windows skip Places favicon enrichment");
+  } else fail("private-window favicon skip missing");
 }
 
 validateCatalogModuleShape()

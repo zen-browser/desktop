@@ -85,7 +85,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "mail",
     "order": 10,
     "builtin": true,
-    "icon": "",
+    "iconKey": "gmail",
+    "monogram": "G",
     "keywords": [
       "mail",
       "email",
@@ -100,7 +101,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "mail",
     "order": 20,
     "builtin": true,
-    "icon": "",
+    "iconKey": "outlook",
+    "monogram": "O",
     "keywords": [
       "mail",
       "email",
@@ -116,7 +118,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "mail",
     "order": 30,
     "builtin": true,
-    "icon": "",
+    "iconKey": "zoho-mail",
+    "monogram": "ZM",
     "keywords": [
       "mail",
       "email",
@@ -131,7 +134,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "mail",
     "order": 40,
     "builtin": true,
-    "icon": "",
+    "iconKey": "yahoo-mail",
+    "monogram": "Y",
     "keywords": [
       "mail",
       "email",
@@ -146,7 +150,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "mail",
     "order": 50,
     "builtin": true,
-    "icon": "",
+    "iconKey": "protonmail",
+    "monogram": "P",
     "keywords": [
       "mail",
       "email",
@@ -162,7 +167,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "meetings",
     "order": 10,
     "builtin": true,
-    "icon": "",
+    "iconKey": "google-meet",
+    "monogram": "GM",
     "keywords": [
       "meet",
       "video",
@@ -178,7 +184,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "meetings",
     "order": 20,
     "builtin": true,
-    "icon": "",
+    "iconKey": "zoom",
+    "monogram": "Z",
     "keywords": [
       "meet",
       "video",
@@ -193,7 +200,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "meetings",
     "order": 30,
     "builtin": true,
-    "icon": "",
+    "iconKey": "ms-teams",
+    "monogram": "MT",
     "keywords": [
       "meet",
       "teams",
@@ -209,7 +217,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "meetings",
     "order": 40,
     "builtin": true,
-    "icon": "",
+    "iconKey": "webex",
+    "monogram": "W",
     "keywords": [
       "meet",
       "cisco",
@@ -224,7 +233,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "storage",
     "order": 10,
     "builtin": true,
-    "icon": "",
+    "iconKey": "google-drive",
+    "monogram": "GD",
     "keywords": [
       "drive",
       "storage",
@@ -240,7 +250,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "storage",
     "order": 20,
     "builtin": true,
-    "icon": "",
+    "iconKey": "onedrive",
+    "monogram": "OD",
     "keywords": [
       "storage",
       "microsoft",
@@ -255,7 +266,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "storage",
     "order": 30,
     "builtin": true,
-    "icon": "",
+    "iconKey": "dropbox",
+    "monogram": "D",
     "keywords": [
       "storage",
       "files",
@@ -270,7 +282,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "storage",
     "order": 40,
     "builtin": true,
-    "icon": "",
+    "iconKey": "zoho-drive",
+    "monogram": "ZD",
     "keywords": [
       "storage",
       "zoho",
@@ -285,7 +298,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "productivity",
     "order": 10,
     "builtin": true,
-    "icon": "",
+    "iconKey": "google-docs",
+    "monogram": "Do",
     "keywords": [
       "docs",
       "documents",
@@ -301,7 +315,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "productivity",
     "order": 20,
     "builtin": true,
-    "icon": "",
+    "iconKey": "microsoft-365",
+    "monogram": "M",
     "keywords": [
       "office",
       "microsoft",
@@ -317,7 +332,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "productivity",
     "order": 30,
     "builtin": true,
-    "icon": "",
+    "iconKey": "notion",
+    "monogram": "N",
     "keywords": [
       "notes",
       "wiki",
@@ -332,7 +348,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "productivity",
     "order": 40,
     "builtin": true,
-    "icon": "",
+    "iconKey": "canva",
+    "monogram": "C",
     "keywords": [
       "design",
       "graphics"
@@ -346,7 +363,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "productivity",
     "order": 50,
     "builtin": true,
-    "icon": "",
+    "iconKey": "zoho-docs",
+    "monogram": "Zo",
     "keywords": [
       "docs",
       "zoho"
@@ -360,7 +378,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "education",
     "order": 10,
     "builtin": true,
-    "icon": "",
+    "iconKey": "classroom",
+    "monogram": "Cl",
     "keywords": [
       "education",
       "google",
@@ -375,7 +394,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "education",
     "order": 20,
     "builtin": true,
-    "icon": "",
+    "iconKey": "teams-edu",
+    "monogram": "TE",
     "keywords": [
       "education",
       "teams",
@@ -390,7 +410,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "education",
     "order": 30,
     "builtin": true,
-    "icon": "",
+    "iconKey": "zoom-edu",
+    "monogram": "ZE",
     "keywords": [
       "education",
       "zoom"
@@ -404,7 +425,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "education",
     "order": 40,
     "builtin": true,
-    "icon": "",
+    "iconKey": "swayam",
+    "monogram": "S",
     "keywords": [
       "education",
       "india",
@@ -419,7 +441,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "entertainment",
     "order": 10,
     "builtin": true,
-    "icon": "",
+    "iconKey": "youtube",
+    "monogram": "YT",
     "keywords": [
       "video",
       "google",
@@ -434,7 +457,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "entertainment",
     "order": 20,
     "builtin": true,
-    "icon": "",
+    "iconKey": "spotify",
+    "monogram": "Sp",
     "keywords": [
       "music",
       "audio"
@@ -448,7 +472,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "entertainment",
     "order": 30,
     "builtin": true,
-    "icon": "",
+    "iconKey": "jiosaavn",
+    "monogram": "JS",
     "keywords": [
       "music",
       "india",
@@ -463,7 +488,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "entertainment",
     "order": 40,
     "builtin": true,
-    "icon": "",
+    "iconKey": "jiohotstar",
+    "monogram": "JH",
     "keywords": [
       "video",
       "streaming",
@@ -478,7 +504,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "entertainment",
     "order": 50,
     "builtin": true,
-    "icon": "",
+    "iconKey": "netflix",
+    "monogram": "Nf",
     "keywords": [
       "video",
       "streaming"
@@ -492,7 +519,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "shopping",
     "order": 10,
     "builtin": true,
-    "icon": "",
+    "iconKey": "amazon",
+    "monogram": "A",
     "keywords": [
       "shop",
       "shopping",
@@ -507,7 +535,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "shopping",
     "order": 20,
     "builtin": true,
-    "icon": "",
+    "iconKey": "flipkart",
+    "monogram": "F",
     "keywords": [
       "shop",
       "shopping",
@@ -522,7 +551,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "shopping",
     "order": 30,
     "builtin": true,
-    "icon": "",
+    "iconKey": "meesho",
+    "monogram": "Me",
     "keywords": [
       "shop",
       "shopping",
@@ -537,7 +567,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "shopping",
     "order": 40,
     "builtin": true,
-    "icon": "",
+    "iconKey": "myntra",
+    "monogram": "My",
     "keywords": [
       "shop",
       "fashion",
@@ -552,7 +583,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "government",
     "order": 10,
     "builtin": true,
-    "icon": "",
+    "iconKey": "irctc",
+    "monogram": "I",
     "keywords": [
       "train",
       "rail",
@@ -568,7 +600,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "government",
     "order": 20,
     "builtin": true,
-    "icon": "",
+    "iconKey": "income-tax",
+    "monogram": "IT",
     "keywords": [
       "tax",
       "india",
@@ -583,7 +616,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "government",
     "order": 30,
     "builtin": true,
-    "icon": "",
+    "iconKey": "digilocker",
+    "monogram": "DL",
     "keywords": [
       "gov",
       "india",
@@ -598,7 +632,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "government",
     "order": 40,
     "builtin": true,
-    "icon": "",
+    "iconKey": "gst-portal",
+    "monogram": "GST",
     "keywords": [
       "gst",
       "tax",
@@ -614,7 +649,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "government",
     "order": 50,
     "builtin": true,
-    "icon": "",
+    "iconKey": "epfo",
+    "monogram": "E",
     "keywords": [
       "pf",
       "pension",
@@ -630,7 +666,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "news",
     "order": 10,
     "builtin": true,
-    "icon": "",
+    "iconKey": "inshorts",
+    "monogram": "In",
     "keywords": [
       "news",
       "india"
@@ -644,7 +681,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "news",
     "order": 20,
     "builtin": true,
-    "icon": "",
+    "iconKey": "ndtv",
+    "monogram": "ND",
     "keywords": [
       "news",
       "india"
@@ -658,7 +696,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "news",
     "order": 30,
     "builtin": true,
-    "icon": "",
+    "iconKey": "toi",
+    "monogram": "T",
     "keywords": [
       "news",
       "india",
@@ -673,7 +712,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "news",
     "order": 40,
     "builtin": true,
-    "icon": "",
+    "iconKey": "google-news",
+    "monogram": "GN",
     "keywords": [
       "news",
       "google"
@@ -687,7 +727,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "business",
     "order": 10,
     "builtin": true,
-    "icon": "",
+    "iconKey": "linkedin",
+    "monogram": "L",
     "keywords": [
       "jobs",
       "network",
@@ -702,7 +743,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "business",
     "order": 20,
     "builtin": true,
-    "icon": "",
+    "iconKey": "slack",
+    "monogram": "Sl",
     "keywords": [
       "chat",
       "work",
@@ -717,7 +759,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "business",
     "order": 30,
     "builtin": true,
-    "icon": "",
+    "iconKey": "freshdesk",
+    "monogram": "Fr",
     "keywords": [
       "support",
       "helpdesk",
@@ -732,7 +775,8 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "category": "business",
     "order": 40,
     "builtin": true,
-    "icon": "",
+    "iconKey": "trello",
+    "monogram": "Tr",
     "keywords": [
       "boards",
       "tasks",

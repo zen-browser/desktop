@@ -146,38 +146,83 @@
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://gmail.com"
+          data-app-id="gmail"
           data-monogram="G"
-          data-accent="mail">
-          <label class="zen-app-launcher-item-monogram" value="G" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Gmail"/>
+          data-accent="mail"
+          label="Gmail">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/gmail.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="G"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Gmail"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://outlook.com"
+          data-app-id="outlook"
           data-monogram="O"
-          data-accent="mail">
-          <label class="zen-app-launcher-item-monogram" value="O" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Outlook"/>
+          data-accent="mail"
+          label="Outlook">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/outlook.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="O"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Outlook"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://mail.zoho.in"
+          data-app-id="zoho-mail"
           data-monogram="ZM"
-          data-accent="mail">
-          <label class="zen-app-launcher-item-monogram" value="ZM" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Zoho Mail"/>
+          data-accent="mail"
+          label="Zoho Mail">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/zoho-mail.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="ZM"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Zoho Mail"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://mail.yahoo.com"
+          data-app-id="yahoo-mail"
           data-monogram="Y"
-          data-accent="mail">
-          <label class="zen-app-launcher-item-monogram" value="Y" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Yahoo Mail"/>
+          data-accent="mail"
+          label="Yahoo Mail">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/yahoo-mail.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="Y"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Yahoo Mail"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://proton.me"
+          data-app-id="protonmail"
           data-monogram="P"
-          data-accent="mail">
-          <label class="zen-app-launcher-item-monogram" value="P" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="ProtonMail"/>
+          data-accent="mail"
+          label="ProtonMail">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/proton-mail.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="P"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="ProtonMail"/>
+          </vbox>
         </toolbarbutton>
       </hbox>
 
@@ -185,31 +230,67 @@
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://meet.google.com"
+          data-app-id="google-meet"
           data-monogram="GM"
-          data-accent="meetings">
-          <label class="zen-app-launcher-item-monogram" value="GM" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Google Meet"/>
+          data-accent="meetings"
+          label="Google Meet">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/google-meet.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="GM"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Google Meet"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://zoom.us/join"
+          data-app-id="zoom"
           data-monogram="Z"
-          data-accent="meetings">
-          <label class="zen-app-launcher-item-monogram" value="Z" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Zoom"/>
+          data-accent="meetings"
+          label="Zoom">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/zoom.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="Z"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Zoom"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://teams.microsoft.com"
+          data-app-id="ms-teams"
           data-monogram="MT"
-          data-accent="meetings">
-          <label class="zen-app-launcher-item-monogram" value="MT" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="MS Teams"/>
+          data-accent="meetings"
+          label="MS Teams">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/microsoft-teams.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="MT"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="MS Teams"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://webex.com"
+          data-app-id="webex"
           data-monogram="W"
-          data-accent="meetings">
-          <label class="zen-app-launcher-item-monogram" value="W" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Webex"/>
+          data-accent="meetings"
+          label="Webex">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/webex.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="W"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Webex"/>
+          </vbox>
         </toolbarbutton>
       </hbox>
 
@@ -217,31 +298,67 @@
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://drive.google.com"
+          data-app-id="google-drive"
           data-monogram="GD"
-          data-accent="storage">
-          <label class="zen-app-launcher-item-monogram" value="GD" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Google Drive"/>
+          data-accent="storage"
+          label="Google Drive">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/google-drive.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="GD"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Google Drive"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://onedrive.live.com"
+          data-app-id="onedrive"
           data-monogram="OD"
-          data-accent="storage">
-          <label class="zen-app-launcher-item-monogram" value="OD" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="OneDrive"/>
+          data-accent="storage"
+          label="OneDrive">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/onedrive.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="OD"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="OneDrive"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://dropbox.com"
+          data-app-id="dropbox"
           data-monogram="D"
-          data-accent="storage">
-          <label class="zen-app-launcher-item-monogram" value="D" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Dropbox"/>
+          data-accent="storage"
+          label="Dropbox">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/dropbox.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="D"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Dropbox"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://workdrive.zoho.in"
+          data-app-id="zoho-drive"
           data-monogram="ZD"
-          data-accent="storage">
-          <label class="zen-app-launcher-item-monogram" value="ZD" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Zoho Drive"/>
+          data-accent="storage"
+          label="Zoho Drive">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/zoho-drive.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="ZD"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Zoho Drive"/>
+          </vbox>
         </toolbarbutton>
       </hbox>
 
@@ -249,38 +366,83 @@
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://docs.google.com"
+          data-app-id="google-docs"
           data-monogram="Do"
-          data-accent="productivity">
-          <label class="zen-app-launcher-item-monogram" value="Do" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Google Docs"/>
+          data-accent="productivity"
+          label="Google Docs">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/google-docs.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="Do"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Google Docs"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://microsoft365.com"
+          data-app-id="microsoft-365"
           data-monogram="M"
-          data-accent="productivity">
-          <label class="zen-app-launcher-item-monogram" value="M" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Microsoft 365"/>
+          data-accent="productivity"
+          label="Microsoft 365">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/microsoft-365.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="M"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Microsoft 365"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://notion.so"
+          data-app-id="notion"
           data-monogram="N"
-          data-accent="productivity">
-          <label class="zen-app-launcher-item-monogram" value="N" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Notion"/>
+          data-accent="productivity"
+          label="Notion">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/notion.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="N"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Notion"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://canva.com"
+          data-app-id="canva"
           data-monogram="C"
-          data-accent="productivity">
-          <label class="zen-app-launcher-item-monogram" value="C" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Canva"/>
+          data-accent="productivity"
+          label="Canva">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/canva.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="C"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Canva"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://sheet.zoho.in"
+          data-app-id="zoho-docs"
           data-monogram="Zo"
-          data-accent="productivity">
-          <label class="zen-app-launcher-item-monogram" value="Zo" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Zoho Docs"/>
+          data-accent="productivity"
+          label="Zoho Docs">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/zoho-docs.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="Zo"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Zoho Docs"/>
+          </vbox>
         </toolbarbutton>
       </hbox>
 
@@ -288,31 +450,67 @@
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://classroom.google.com"
+          data-app-id="classroom"
           data-monogram="Cl"
-          data-accent="education">
-          <label class="zen-app-launcher-item-monogram" value="Cl" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Classroom"/>
+          data-accent="education"
+          label="Classroom">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/classroom.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="Cl"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Classroom"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://teams.microsoft.com"
+          data-app-id="teams-edu"
           data-monogram="TE"
-          data-accent="education">
-          <label class="zen-app-launcher-item-monogram" value="TE" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Teams EDU"/>
+          data-accent="education"
+          label="Teams EDU">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/teams-edu.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="TE"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Teams EDU"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://zoom.us/education"
+          data-app-id="zoom-edu"
           data-monogram="ZE"
-          data-accent="education">
-          <label class="zen-app-launcher-item-monogram" value="ZE" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Zoom EDU"/>
+          data-accent="education"
+          label="Zoom EDU">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/zoom-edu.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="ZE"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Zoom EDU"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://swayam.gov.in"
+          data-app-id="swayam"
           data-monogram="S"
-          data-accent="education">
-          <label class="zen-app-launcher-item-monogram" value="S" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="SWAYAM"/>
+          data-accent="education"
+          label="SWAYAM">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/swayam.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="S"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="SWAYAM"/>
+          </vbox>
         </toolbarbutton>
       </hbox>
 
@@ -320,38 +518,83 @@
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://youtube.com"
+          data-app-id="youtube"
           data-monogram="YT"
-          data-accent="entertainment">
-          <label class="zen-app-launcher-item-monogram" value="YT" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="YouTube"/>
+          data-accent="entertainment"
+          label="YouTube">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/youtube.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="YT"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="YouTube"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://spotify.com"
+          data-app-id="spotify"
           data-monogram="Sp"
-          data-accent="entertainment">
-          <label class="zen-app-launcher-item-monogram" value="Sp" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Spotify"/>
+          data-accent="entertainment"
+          label="Spotify">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/spotify.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="Sp"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Spotify"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://jiosaavn.com"
+          data-app-id="jiosaavn"
           data-monogram="JS"
-          data-accent="entertainment">
-          <label class="zen-app-launcher-item-monogram" value="JS" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="JioSaavn"/>
+          data-accent="entertainment"
+          label="JioSaavn">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/jiosaavn.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="JS"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="JioSaavn"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://jiohotstar.com"
+          data-app-id="jiohotstar"
           data-monogram="JH"
-          data-accent="entertainment">
-          <label class="zen-app-launcher-item-monogram" value="JH" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="JioHotstar"/>
+          data-accent="entertainment"
+          label="JioHotstar">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/jiohotstar.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="JH"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="JioHotstar"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://netflix.com"
+          data-app-id="netflix"
           data-monogram="Nf"
-          data-accent="entertainment">
-          <label class="zen-app-launcher-item-monogram" value="Nf" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Netflix"/>
+          data-accent="entertainment"
+          label="Netflix">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/netflix.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="Nf"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Netflix"/>
+          </vbox>
         </toolbarbutton>
       </hbox>
 
@@ -359,31 +602,67 @@
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://amazon.in"
+          data-app-id="amazon"
           data-monogram="A"
-          data-accent="shopping">
-          <label class="zen-app-launcher-item-monogram" value="A" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Amazon"/>
+          data-accent="shopping"
+          label="Amazon">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/amazon.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="A"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Amazon"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://flipkart.com"
+          data-app-id="flipkart"
           data-monogram="F"
-          data-accent="shopping">
-          <label class="zen-app-launcher-item-monogram" value="F" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Flipkart"/>
+          data-accent="shopping"
+          label="Flipkart">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/flipkart.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="F"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Flipkart"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://meesho.com"
+          data-app-id="meesho"
           data-monogram="Me"
-          data-accent="shopping">
-          <label class="zen-app-launcher-item-monogram" value="Me" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Meesho"/>
+          data-accent="shopping"
+          label="Meesho">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/meesho.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="Me"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Meesho"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://myntra.com"
+          data-app-id="myntra"
           data-monogram="My"
-          data-accent="shopping">
-          <label class="zen-app-launcher-item-monogram" value="My" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Myntra"/>
+          data-accent="shopping"
+          label="Myntra">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/myntra.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="My"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Myntra"/>
+          </vbox>
         </toolbarbutton>
       </hbox>
 
@@ -391,38 +670,83 @@
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://irctc.co.in"
+          data-app-id="irctc"
           data-monogram="I"
-          data-accent="government">
-          <label class="zen-app-launcher-item-monogram" value="I" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="IRCTC"/>
+          data-accent="government"
+          label="IRCTC">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/irctc.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="I"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="IRCTC"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://incometax.gov.in"
+          data-app-id="income-tax"
           data-monogram="IT"
-          data-accent="government">
-          <label class="zen-app-launcher-item-monogram" value="IT" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Income Tax"/>
+          data-accent="government"
+          label="Income Tax">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/income-tax.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="IT"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Income Tax"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://digilocker.gov.in"
+          data-app-id="digilocker"
           data-monogram="DL"
-          data-accent="government">
-          <label class="zen-app-launcher-item-monogram" value="DL" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="DigiLocker"/>
+          data-accent="government"
+          label="DigiLocker">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/digilocker.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="DL"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="DigiLocker"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://gst.gov.in"
+          data-app-id="gst-portal"
           data-monogram="GST"
-          data-accent="government">
-          <label class="zen-app-launcher-item-monogram" value="GST" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="GST Portal"/>
+          data-accent="government"
+          label="GST Portal">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/gst-portal.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="GST"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="GST Portal"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://epfindia.gov.in"
+          data-app-id="epfo"
           data-monogram="E"
-          data-accent="government">
-          <label class="zen-app-launcher-item-monogram" value="E" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="EPFO"/>
+          data-accent="government"
+          label="EPFO">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/epfo.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="E"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="EPFO"/>
+          </vbox>
         </toolbarbutton>
       </hbox>
 
@@ -430,31 +754,67 @@
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://inshorts.com"
+          data-app-id="inshorts"
           data-monogram="In"
-          data-accent="news">
-          <label class="zen-app-launcher-item-monogram" value="In" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Inshorts"/>
+          data-accent="news"
+          label="Inshorts">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/inshorts.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="In"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Inshorts"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://ndtv.com"
+          data-app-id="ndtv"
           data-monogram="ND"
-          data-accent="news">
-          <label class="zen-app-launcher-item-monogram" value="ND" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="NDTV"/>
+          data-accent="news"
+          label="NDTV">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/ndtv.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="ND"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="NDTV"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://timesofindia.com"
+          data-app-id="toi"
           data-monogram="T"
-          data-accent="news">
-          <label class="zen-app-launcher-item-monogram" value="T" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="TOI"/>
+          data-accent="news"
+          label="TOI">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/toi.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="T"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="TOI"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://news.google.com"
+          data-app-id="google-news"
           data-monogram="GN"
-          data-accent="news">
-          <label class="zen-app-launcher-item-monogram" value="GN" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Google News"/>
+          data-accent="news"
+          label="Google News">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/google-news.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="GN"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Google News"/>
+          </vbox>
         </toolbarbutton>
       </hbox>
 
@@ -462,31 +822,67 @@
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://linkedin.com"
+          data-app-id="linkedin"
           data-monogram="L"
-          data-accent="business">
-          <label class="zen-app-launcher-item-monogram" value="L" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="LinkedIn"/>
+          data-accent="business"
+          label="LinkedIn">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/linkedin.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="L"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="LinkedIn"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://slack.com"
+          data-app-id="slack"
           data-monogram="Sl"
-          data-accent="business">
-          <label class="zen-app-launcher-item-monogram" value="Sl" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Slack"/>
+          data-accent="business"
+          label="Slack">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/slack.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="Sl"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Slack"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://freshdesk.com"
+          data-app-id="freshdesk"
           data-monogram="Fr"
-          data-accent="business">
-          <label class="zen-app-launcher-item-monogram" value="Fr" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Freshdesk"/>
+          data-accent="business"
+          label="Freshdesk">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/freshdesk.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="Fr"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Freshdesk"/>
+          </vbox>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://trello.com"
+          data-app-id="trello"
           data-monogram="Tr"
-          data-accent="business">
-          <label class="zen-app-launcher-item-monogram" value="Tr" disabled="true"/>
-          <label class="zen-app-launcher-item-label" value="Trello"/>
+          data-accent="business"
+          label="Trello">
+          <vbox class="zen-app-launcher-item-content">
+            <stack class="zen-app-launcher-item-icon-stack">
+              <html:img class="zen-app-launcher-item-icon"
+                src="chrome://browser/content/zen-components/app-hub-icons/trello.svg"
+                alt="" draggable="false"/>
+              <label class="zen-app-launcher-item-monogram" value="Tr"/>
+            </stack>
+            <label class="zen-app-launcher-item-name" value="Trello"/>
+          </vbox>
         </toolbarbutton>
       </hbox>
 

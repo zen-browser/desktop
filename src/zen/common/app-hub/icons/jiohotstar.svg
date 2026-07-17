@@ -1,0 +1,7 @@
+<!-- App Hub launcher icon — identification mark only. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img">
+  <rect width="64" height="64" rx="14" fill="#0D47A1"/>
+  <text x="32" y="34" text-anchor="middle" dominant-baseline="middle"
+        font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700"
+        fill="#FFFFFF">JH</text>
+</svg>

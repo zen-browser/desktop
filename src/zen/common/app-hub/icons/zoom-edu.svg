@@ -1,0 +1,6 @@
+<!-- Zoom camera — identification only. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img">
+  <rect width="64" height="64" rx="14" fill="#2D8CFF"/>
+  <rect x="12" y="20" width="28" height="24" rx="4" fill="#FFFFFF"/>
+  <path fill="#FFFFFF" d="M42 26l12-6v24l-12-6z"/>
+</svg>

@@ -62,8 +62,10 @@ class AstraAppHubBootstrap {
   #fallbackActive = true;
   #popupTransition = false;
   #boundFallbackCommand = null;
+  #boundFallbackIconEvent = null;
   #boundPopupShown = null;
   #boundPopupHidden = null;
+  #boundUnload = null;
   #listenersBound = false;
   #lastErrorStage = null;
   #lastOpenAttempt = null;
@@ -186,9 +188,13 @@ class AstraAppHubBootstrap {
     }
     this.#boundPopupShown = () => {
       this.#popupTransition = false;
+      this.#bindFallbackIconHandlers();
     };
     this.#boundPopupHidden = () => {
       this.#popupTransition = false;
+    };
+    this.#boundUnload = () => {
+      this.#destroyListeners();
     };
     this.#boundFallbackCommand = event => {
       try {
@@ -212,10 +218,93 @@ class AstraAppHubBootstrap {
         console.error(`${LOG_PREFIX} fallback command failed`, error);
       }
     };
+    this.#boundFallbackIconEvent = event => {
+      try {
+        const image = event.target;
+        if (
+          !image ||
+          typeof image.closest !== "function" ||
+          !image.classList?.contains("zen-app-launcher-item-icon")
+        ) {
+          return;
+        }
+        const fallback = this.fallback;
+        if (!fallback || !fallback.contains(image)) {
+          return;
+        }
+        const stack = image.closest(".zen-app-launcher-item-icon-stack");
+        if (!stack) {
+          return;
+        }
+        if (event.type === "load") {
+          stack.setAttribute("data-icon-loaded", "true");
+          stack.removeAttribute("data-icon-error");
+        } else if (event.type === "error") {
+          stack.setAttribute("data-icon-error", "true");
+          stack.removeAttribute("data-icon-loaded");
+          try {
+            image.removeAttribute("src");
+          } catch {
+            // ignore
+          }
+        }
+      } catch {
+        // ignore icon handler errors
+      }
+    };
     panel.addEventListener("popupshown", this.#boundPopupShown);
     panel.addEventListener("popuphidden", this.#boundPopupHidden);
     panel.addEventListener("command", this.#boundFallbackCommand);
+    window.addEventListener("unload", this.#boundUnload, { once: true });
     this.#listenersBound = true;
+  }
+
+  /**
+   * One delegated load/error handler for static fallback icons.
+   * Bound on first panel open only; uses HTML img (XUL image has no load/error).
+   */
+  #bindFallbackIconHandlers() {
+    const fallback = this.fallback;
+    if (!fallback || fallback.dataset.astraIconHandlersBound === "1") {
+      return;
+    }
+    if (!this.#boundFallbackIconEvent) {
+      return;
+    }
+    fallback.addEventListener("load", this.#boundFallbackIconEvent, true);
+    fallback.addEventListener("error", this.#boundFallbackIconEvent, true);
+    fallback.dataset.astraIconHandlersBound = "1";
+  }
+
+  #destroyListeners() {
+    const panel = this.panel;
+    if (panel && this.#listenersBound) {
+      if (this.#boundPopupShown) {
+        panel.removeEventListener("popupshown", this.#boundPopupShown);
+      }
+      if (this.#boundPopupHidden) {
+        panel.removeEventListener("popuphidden", this.#boundPopupHidden);
+      }
+      if (this.#boundFallbackCommand) {
+        panel.removeEventListener("command", this.#boundFallbackCommand);
+      }
+    }
+    const fallback = this.fallback;
+    if (fallback && this.#boundFallbackIconEvent) {
+      fallback.removeEventListener("load", this.#boundFallbackIconEvent, true);
+      fallback.removeEventListener("error", this.#boundFallbackIconEvent, true);
+      try {
+        delete fallback.dataset.astraIconHandlersBound;
+      } catch {
+        // ignore
+      }
+    }
+    this.#listenersBound = false;
+    this.#boundPopupShown = null;
+    this.#boundPopupHidden = null;
+    this.#boundFallbackCommand = null;
+    this.#boundFallbackIconEvent = null;
+    this.#boundUnload = null;
   }
 
   #normalizeArgs(eventOrOptions) {

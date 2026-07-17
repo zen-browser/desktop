@@ -196,12 +196,27 @@ if (
   hubMgr.includes("#handoffFocusFromHiddenFallback") &&
   hubMgr.includes("AstraAppHubCatalog.mjs") &&
   hubMgr.includes("ASTRA_APP_HUB_CATALOG") &&
+  hubMgr.includes("iconKey") &&
+  hubMgr.includes("getPackagedIconURL") &&
   !hubMgr.includes("NetUtil") &&
   !/\bfetch\s*\(/.test(hubMgr) &&
   !/Try again after restarting/i.test(hubMgr)
 ) {
   ok("App Hub catalog fail-safe keeps fallback (ESM, no restart-only path)");
 } else fail("App Hub catalog fail-safe regression");
+
+const hubIconsParity = read("src/zen/common/modules/AstraAppHubIcons.mjs");
+const hubJarParity = read("src/zen/common/jar.inc.mn");
+if (
+  hubIconsParity.includes("ASTRA_APP_HUB_ICONS") &&
+  hubIconsParity.includes("getFaviconForPage") &&
+  hubIconsParity.includes("data:image/") &&
+  !/["'`]page-icon:/.test(hubIconsParity) &&
+  (hubJarParity.match(/app-hub-icons\//g) || []).length >= 44 &&
+  !hubJarParity.includes("ICON_SOURCES.md")
+) {
+  ok("App Hub packaged icon registry + JAR mappings present");
+} else fail("App Hub icon packaging regression");
 
 // Transparent / performance invariants
 const theme = read("prefs/zen/theme.yaml");

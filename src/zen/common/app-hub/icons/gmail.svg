@@ -1,0 +1,8 @@
+<!-- Gmail M — identification only. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img">
+  <rect width="64" height="64" rx="14" fill="#FFFFFF"/>
+  <path fill="#EA4335" d="M8 16v32h10V30l14 10 14-10v18h10V16L32 32 8 16z"/>
+  <path fill="#4285F4" d="M8 16l10 8v-8z"/>
+  <path fill="#34A853" d="M56 16l-10 8v-8z"/>
+  <path fill="#FBBC04" d="M18 16h28v8H18z"/>
+</svg>

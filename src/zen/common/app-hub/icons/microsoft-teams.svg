@@ -1,0 +1,9 @@
+<!-- Teams mark — identification only. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img">
+  <rect width="64" height="64" rx="14" fill="#6264A7"/>
+  <rect x="14" y="18" width="26" height="30" rx="4" fill="#FFFFFF"/>
+  <text x="27" y="38" text-anchor="middle" dominant-baseline="middle"
+        font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700"
+        fill="#6264A7">T</text>
+  <circle cx="46" cy="24" r="8" fill="#7B83EB"/>
+</svg>

@@ -1,0 +1,7 @@
+<!-- Drive triangle — identification only. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img">
+  <rect width="64" height="64" rx="14" fill="#F1F3F4"/>
+  <path fill="#4285F4" d="M22 14h20l12 20H34z"/>
+  <path fill="#EA4335" d="M10 48l12-20h20L30 48z"/>
+  <path fill="#FBBC04" d="M34 34h20L42 54H22z"/>
+</svg>

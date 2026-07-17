@@ -1,0 +1,6 @@
+<!-- Spotify circles — identification only. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img">
+  <circle cx="32" cy="32" r="30" fill="#1DB954"/>
+  <path fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"
+        d="M18 26c8-3 20-3 28 1M16 34c9-3.5 22-3.5 31 1.5M15 42c10-3.5 23-3.5 32 1.5"/>
+</svg>

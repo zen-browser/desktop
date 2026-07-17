@@ -4,11 +4,67 @@
 
 /**
  * Local-only App Hub icon helpers.
- * Never fetches remote favicons. Custom icons stay in the profile directory.
+ * Packaged default icons: chrome allowlist only.
+ * Custom icons stay in the profile directory.
+ * Never fetches remote favicons for the default grid.
  */
 
 export const ICON_DIR_NAME = "astra-app-hub-icons";
 export const MAX_ICON_BYTES = 512 * 1024;
+
+const ICON_BASE =
+  "chrome://browser/content/zen-components/app-hub-icons/";
+
+/**
+ * Stable packaged icon map (iconKey → local chrome URL).
+ * Unknown keys must not pass through arbitrary URLs.
+ */
+export const ASTRA_APP_HUB_ICONS = Object.freeze({
+  gmail: `${ICON_BASE}gmail.svg`,
+  outlook: `${ICON_BASE}outlook.svg`,
+  "zoho-mail": `${ICON_BASE}zoho-mail.svg`,
+  "yahoo-mail": `${ICON_BASE}yahoo-mail.svg`,
+  protonmail: `${ICON_BASE}proton-mail.svg`,
+  "google-meet": `${ICON_BASE}google-meet.svg`,
+  zoom: `${ICON_BASE}zoom.svg`,
+  "ms-teams": `${ICON_BASE}microsoft-teams.svg`,
+  webex: `${ICON_BASE}webex.svg`,
+  "google-drive": `${ICON_BASE}google-drive.svg`,
+  onedrive: `${ICON_BASE}onedrive.svg`,
+  dropbox: `${ICON_BASE}dropbox.svg`,
+  "zoho-drive": `${ICON_BASE}zoho-drive.svg`,
+  "google-docs": `${ICON_BASE}google-docs.svg`,
+  "microsoft-365": `${ICON_BASE}microsoft-365.svg`,
+  notion: `${ICON_BASE}notion.svg`,
+  canva: `${ICON_BASE}canva.svg`,
+  "zoho-docs": `${ICON_BASE}zoho-docs.svg`,
+  classroom: `${ICON_BASE}classroom.svg`,
+  "teams-edu": `${ICON_BASE}teams-edu.svg`,
+  "zoom-edu": `${ICON_BASE}zoom-edu.svg`,
+  swayam: `${ICON_BASE}swayam.svg`,
+  youtube: `${ICON_BASE}youtube.svg`,
+  spotify: `${ICON_BASE}spotify.svg`,
+  jiosaavn: `${ICON_BASE}jiosaavn.svg`,
+  jiohotstar: `${ICON_BASE}jiohotstar.svg`,
+  netflix: `${ICON_BASE}netflix.svg`,
+  amazon: `${ICON_BASE}amazon.svg`,
+  flipkart: `${ICON_BASE}flipkart.svg`,
+  meesho: `${ICON_BASE}meesho.svg`,
+  myntra: `${ICON_BASE}myntra.svg`,
+  irctc: `${ICON_BASE}irctc.svg`,
+  "income-tax": `${ICON_BASE}income-tax.svg`,
+  digilocker: `${ICON_BASE}digilocker.svg`,
+  "gst-portal": `${ICON_BASE}gst-portal.svg`,
+  epfo: `${ICON_BASE}epfo.svg`,
+  inshorts: `${ICON_BASE}inshorts.svg`,
+  ndtv: `${ICON_BASE}ndtv.svg`,
+  toi: `${ICON_BASE}toi.svg`,
+  "google-news": `${ICON_BASE}google-news.svg`,
+  linkedin: `${ICON_BASE}linkedin.svg`,
+  slack: `${ICON_BASE}slack.svg`,
+  freshdesk: `${ICON_BASE}freshdesk.svg`,
+  trello: `${ICON_BASE}trello.svg`,
+});
 
 const ALLOWED_MIME = new Set([
   "image/png",
@@ -30,6 +86,23 @@ function isSafeIconFileName(name) {
     /^[a-zA-Z0-9._-]{1,100}\.(png|webp|ico)$/i.test(name) &&
     !name.includes("..")
   );
+}
+
+/**
+ * Allowlisted packaged chrome/resource URL for an iconKey, or null.
+ */
+export function getPackagedIconURL(iconKey) {
+  if (typeof iconKey !== "string" || !iconKey) {
+    return null;
+  }
+  const url = ASTRA_APP_HUB_ICONS[iconKey];
+  if (typeof url !== "string" || !url) {
+    return null;
+  }
+  if (!url.startsWith(ICON_BASE) || url.includes("..")) {
+    return null;
+  }
+  return url;
 }
 
 export function getIconDirectory() {
@@ -65,7 +138,8 @@ export function localIconFileURI(fileName) {
 }
 
 /**
- * Packaged chrome icons only (never http/https).
+ * Packaged chrome icons / local file / data-image URIs only (never http/https).
+ * Places cache URIs that may network-fetch are intentionally excluded.
  */
 export function isPackagedIconUrl(url) {
   if (typeof url !== "string" || !url) {
@@ -74,7 +148,9 @@ export function isPackagedIconUrl(url) {
   return (
     url.startsWith("chrome://") ||
     url.startsWith("resource://") ||
-    url.startsWith("moz-icon://")
+    url.startsWith("moz-icon://") ||
+    url.startsWith("file://") ||
+    url.startsWith("data:image/")
   );
 }
 
@@ -82,21 +158,21 @@ export function isPackagedIconUrl(url) {
  * Monogram text from app name (CSS-rendered; no network).
  */
 export function monogramForName(name) {
-  if (typeof name !== "string" || !name.trim()) {
-    return "?";
+  if (typeof name === "string" && name.trim()) {
+    const cleaned = name
+      .normalize("NFKC")
+      .replace(/[^\p{L}\p{N}\s]+/gu, " ")
+      .trim();
+    if (!cleaned) {
+      return name.trim().slice(0, 1).toUpperCase() || "?";
+    }
+    const parts = cleaned.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return parts[0].slice(0, 2).toUpperCase();
   }
-  const cleaned = name
-    .normalize("NFKC")
-    .replace(/[^\p{L}\p{N}\s]+/gu, " ")
-    .trim();
-  if (!cleaned) {
-    return name.trim().slice(0, 1).toUpperCase() || "?";
-  }
-  const parts = cleaned.split(/\s+/).filter(Boolean);
-  if (parts.length >= 2) {
-    return (parts[0][0] + parts[1][0]).toUpperCase();
-  }
-  return parts[0].slice(0, 2).toUpperCase();
+  return "?";
 }
 
 /**
@@ -111,25 +187,92 @@ export function monogramAccentIndex(idOrName) {
   return hash % 8;
 }
 
+function normalizeMonogram(value, fallbackName) {
+  if (typeof value === "string") {
+    const trimmed = value.trim().slice(0, 3);
+    if (trimmed.length >= 1) {
+      return trimmed;
+    }
+  }
+  return monogramForName(fallbackName);
+}
+
 /**
  * Resolve display icon for an app.
- * @returns {{ type: "image", src: string } | { type: "monogram", text: string, accent: number }}
+ * Priority: custom local file → packaged iconKey → safe local URI → monogram.
+ * @returns {{ type: "image", src: string, monogram: string, accent: number } |
+ *           { type: "monogram", text: string, accent: number }}
  */
 export function resolveAppIcon(app) {
-  if (app?.icon && isPackagedIconUrl(app.icon)) {
-    return { type: "image", src: app.icon };
-  }
+  const monogram = normalizeMonogram(
+    app?.monogram,
+    app?.name || app?.id || "?"
+  );
+  const accent = monogramAccentIndex(app?.id || app?.name || "");
+
   if (app?.icon && isSafeIconFileName(app.icon)) {
     const uri = localIconFileURI(app.icon);
     if (uri) {
-      return { type: "image", src: uri };
+      return { type: "image", src: uri, monogram, accent };
     }
   }
+
+  const packaged = getPackagedIconURL(app?.iconKey || app?.id);
+  if (packaged) {
+    return { type: "image", src: packaged, monogram, accent };
+  }
+
+  // Optional already-resolved local URI (chrome/resource/file/data-image only).
+  if (app?.icon && isPackagedIconUrl(app.icon)) {
+    const safe = String(app.icon);
+    if (
+      !safe.startsWith("http:") &&
+      !safe.startsWith("https:") &&
+      !safe.startsWith("//")
+    ) {
+      return { type: "image", src: safe, monogram, accent };
+    }
+  }
+
   return {
     type: "monogram",
-    text: monogramForName(app?.name || app?.id || "?"),
-    accent: monogramAccentIndex(app?.id || app?.name || ""),
+    text: monogram,
+    accent,
   };
+}
+
+/**
+ * Resolve a local Places favicon data: URI for a user-added app.
+ * Uses getFaviconForPage (same pattern as ZenPinnedTabManager) and returns
+ * only data:image/... — never http(s) and never network-fetching cache schemes.
+ * Returns null when unavailable or in private windows.
+ */
+export async function resolvePlacesFaviconURL(
+  pageUrl,
+  { privateBrowsing = false } = {}
+) {
+  if (privateBrowsing || typeof pageUrl !== "string" || !pageUrl) {
+    return null;
+  }
+  try {
+    const uri = Services.io.newURI(pageUrl);
+    if (uri.scheme !== "https" && uri.scheme !== "http") {
+      return null;
+    }
+    const favicon = await PlacesUtils.favicons.getFaviconForPage(uri);
+    const dataURI = favicon?.dataURI;
+    const spec = typeof dataURI === "string" ? dataURI : dataURI?.spec;
+    if (
+      typeof spec !== "string" ||
+      !spec.startsWith("data:image/") ||
+      spec.length > MAX_ICON_BYTES * 2
+    ) {
+      return null;
+    }
+    return spec;
+  } catch {
+    return null;
+  }
 }
 
 function sniffImageMime(bytes) {

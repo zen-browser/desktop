@@ -20,13 +20,20 @@ const {
 );
 
 let resolveAppIcon;
+let getPackagedIconURL;
 let pickAndStoreCustomIcon;
 let deleteCustomIcons;
+let resolvePlacesFaviconURL;
 try {
-  ({ resolveAppIcon, pickAndStoreCustomIcon, deleteCustomIcons } =
-    ChromeUtils.importESModule(
-      "chrome://browser/content/zen-components/AstraAppHubIcons.mjs"
-    ));
+  ({
+    resolveAppIcon,
+    getPackagedIconURL,
+    pickAndStoreCustomIcon,
+    deleteCustomIcons,
+    resolvePlacesFaviconURL,
+  } = ChromeUtils.importESModule(
+    "chrome://browser/content/zen-components/AstraAppHubIcons.mjs"
+  ));
   gAstraAppHubState.setIconCleanupHandler(deleteCustomIcons);
 } catch (iconModuleError) {
   console.error(
@@ -35,14 +42,16 @@ try {
   );
   resolveAppIcon = app => ({
     type: "monogram",
-    text: String(app?.name || app?.id || "?")
+    text: String(app?.monogram || app?.name || app?.id || "?")
       .trim()
-      .slice(0, 2)
+      .slice(0, 3)
       .toUpperCase() || "?",
     accent: 0,
   });
+  getPackagedIconURL = () => null;
   pickAndStoreCustomIcon = async () => null;
   deleteCustomIcons = async () => {};
+  resolvePlacesFaviconURL = async () => null;
 }
 
 const CATALOG_MODULE_URL =
@@ -173,13 +182,35 @@ function validateCatalog(raw) {
           .map(k => k.trim().slice(0, 40))
           .slice(0, 16)
       : [];
-    // Strip remote http(s) icons from catalog — never use as list-style-image.
+    // Catalog stores iconKey only — never remote http(s) icon URLs.
+    let iconKey =
+      typeof app.iconKey === "string" && app.iconKey.trim()
+        ? app.iconKey.trim()
+        : app.id;
+    if (
+      iconKey.startsWith("http:") ||
+      iconKey.startsWith("https:") ||
+      iconKey.startsWith("//")
+    ) {
+      iconKey = app.id;
+    }
+    let monogram =
+      typeof app.monogram === "string" ? app.monogram.trim().slice(0, 3) : "";
+    if (!monogram) {
+      monogram = String(app.name || app.id)
+        .trim()
+        .slice(0, 2)
+        .toUpperCase() || "?";
+    }
+    // Legacy/custom icon field: profile file name only (never remote).
     let icon = typeof app.icon === "string" ? app.icon : "";
     if (
       icon &&
       (icon.startsWith("http:") ||
         icon.startsWith("https:") ||
-        icon.startsWith("//"))
+        icon.startsWith("//") ||
+        icon.startsWith("chrome:") ||
+        icon.startsWith("resource:"))
     ) {
       icon = "";
     }
@@ -189,6 +220,8 @@ function validateCatalog(raw) {
       name: typeof app.name === "string" ? app.name : app.id,
       url: urlCheck.href,
       category: app.category,
+      iconKey,
+      monogram,
       icon,
       order: Number.isFinite(app.order) ? app.order : 0,
       builtin: app.builtin !== false,
@@ -258,6 +291,7 @@ function loadPackagedCatalog() {
 function logCatalogFailure(diag, error) {
   const payload = {
     stage: diag?.stage || "unknown",
+    resource: diag?.chromeResourcePath || CATALOG_MODULE_URL,
     chromeResourcePath: diag?.chromeResourcePath || CATALOG_MODULE_URL,
     responseStatus: diag?.responseStatus ?? null,
     exceptionName:
@@ -2021,10 +2055,30 @@ class AstraAppHubManager {
       button.setAttribute("data-favorite", "true");
     }
 
-    // Icon via resolveAppIcon — never http(s)
+    // Icon stack: packaged/local image + monogram fallback (never http/https).
     const iconInfo = resolveAppIcon(app);
-    const iconBox = document.createXULElement("vbox");
-    iconBox.classList.add("astra-app-hub-item-icon-box");
+    const stack = document.createXULElement("stack");
+    stack.classList.add(
+      "zen-app-launcher-item-icon-stack",
+      "astra-app-hub-item-icon-stack"
+    );
+    stack.setAttribute("aria-hidden", "true");
+
+    const mono = document.createXULElement("label");
+    mono.classList.add(
+      "zen-app-launcher-item-monogram",
+      "astra-app-hub-item-monogram"
+    );
+    mono.setAttribute(
+      "value",
+      iconInfo.monogram || iconInfo.text || app.monogram || "?"
+    );
+    mono.setAttribute(
+      "data-accent",
+      String(iconInfo?.accent ?? 0)
+    );
+    stack.appendChild(mono);
+
     if (iconInfo.type === "image" && iconInfo.src) {
       const safe = String(iconInfo.src);
       if (
@@ -2032,31 +2086,61 @@ class AstraAppHubManager {
         !safe.startsWith("https:") &&
         !safe.startsWith("//")
       ) {
-        const image = document.createXULElement("image");
+        // HTML img: XUL <image> no longer fires load/error (Bug 1815229).
+        const image = document.createElement("img");
         image.classList.add(
           "zen-app-launcher-item-icon",
           "astra-app-hub-item-icon"
         );
-        // Match ZenSpaceManager profile-local image pattern (list-style-image /
-        // CSS url), which is proven for chrome loading of PathUtils.toFileURI.
-        const escaped = safe.replace(/\\/g, "/").replace(/"/g, "%22");
-        image.style.listStyleImage = `url("${escaped}")`;
-        iconBox.appendChild(image);
-      } else {
-        this.#appendMonogram(iconBox, app, iconInfo);
+        image.setAttribute("alt", "");
+        image.setAttribute("draggable", "false");
+        image.setAttribute("aria-hidden", "true");
+        image.addEventListener(
+          "load",
+          () => {
+            if (!stack.isConnected) {
+              return;
+            }
+            stack.setAttribute("data-icon-loaded", "true");
+            stack.removeAttribute("data-icon-error");
+          },
+          { once: true }
+        );
+        image.addEventListener(
+          "error",
+          () => {
+            if (!stack.isConnected) {
+              return;
+            }
+            stack.setAttribute("data-icon-error", "true");
+            stack.removeAttribute("data-icon-loaded");
+            try {
+              image.removeAttribute("src");
+            } catch {
+              // ignore
+            }
+          },
+          { once: true }
+        );
+        image.src = safe;
+        stack.appendChild(image);
       }
-    } else {
-      this.#appendMonogram(iconBox, app, iconInfo);
     }
-    button.appendChild(iconBox);
+    button.appendChild(stack);
 
     const label = document.createXULElement("label");
     label.classList.add(
       "zen-app-launcher-item-label",
-      "astra-app-hub-item-label"
+      "astra-app-hub-item-label",
+      "astra-app-name"
     );
     label.setAttribute("value", app.name);
     button.appendChild(label);
+    button.setAttribute("aria-label", app.name);
+
+    if (app.builtin === false && !app.icon) {
+      void this.#enrichCustomAppIcon(button, app);
+    }
 
     if (!this.#customizeMode) {
       const star = document.createXULElement("toolbarbutton");
@@ -2101,17 +2185,93 @@ class AstraAppHubManager {
   }
 
   #appendMonogram(parent, app, iconInfo) {
-    const mono = document.createElementNS(
-      "http://www.w3.org/1999/xhtml",
-      "span"
-    );
+    const mono = document.createXULElement("label");
     mono.classList.add("astra-app-hub-item-monogram");
     mono.setAttribute(
       "data-accent",
       String(iconInfo?.accent ?? 0)
     );
-    mono.textContent = iconInfo?.text || "?";
+    mono.setAttribute(
+      "value",
+      iconInfo?.monogram || iconInfo?.text || app?.monogram || "?"
+    );
     parent.appendChild(mono);
+  }
+
+  /**
+   * For custom apps without a stored icon, try Places data: favicon (no remote fetch).
+   * Private windows keep monogram only. Stale results ignored after rebuild/close.
+   */
+  async #enrichCustomAppIcon(button, app) {
+    if (!button || !app || app.builtin !== false) {
+      return;
+    }
+    if (app.icon || PrivateBrowsingUtils.isWindowPrivate(window)) {
+      return;
+    }
+    try {
+      const faviconURI = await resolvePlacesFaviconURL(app.url, {
+        privateBrowsing: false,
+      });
+      if (
+        !faviconURI ||
+        this.#destroyed ||
+        window.closed ||
+        !button.isConnected
+      ) {
+        return;
+      }
+if (
+        !faviconURI.startsWith("data:image/") ||
+        faviconURI.startsWith("http:") ||
+        faviconURI.startsWith("https:")
+      ) {
+        return;
+      }
+      const stack = button.querySelector(".astra-app-hub-item-icon-stack");
+      if (!stack || stack.querySelector(".astra-app-hub-item-icon")) {
+        return;
+      }
+      const image = document.createElement("img");
+      image.classList.add(
+        "zen-app-launcher-item-icon",
+        "astra-app-hub-item-icon"
+      );
+      image.setAttribute("alt", "");
+      image.setAttribute("draggable", "false");
+      image.setAttribute("aria-hidden", "true");
+      image.addEventListener(
+        "load",
+        () => {
+          if (!stack.isConnected) {
+            return;
+          }
+          stack.setAttribute("data-icon-loaded", "true");
+          stack.removeAttribute("data-icon-error");
+        },
+        { once: true }
+      );
+      image.addEventListener(
+        "error",
+        () => {
+          if (!stack.isConnected) {
+            return;
+          }
+          stack.setAttribute("data-icon-error", "true");
+          stack.removeAttribute("data-icon-loaded");
+          try {
+            image.remove();
+          } catch {
+            // ignore
+          }
+        },
+        { once: true }
+      );
+      image.src = faviconURI;
+      stack.appendChild(image);
+    } catch {
+      // monogram remains
+    }
   }
 
   #updateCustomizeChrome() {

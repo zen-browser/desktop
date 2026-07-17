@@ -239,37 +239,93 @@
 
 .astra-app-hub-item-icon,
 .zen-app-launcher-item-icon {
-  width: 28px !important;
-  height: 28px !important;
-  margin-bottom: 4px !important;
-  border-radius: 8px;
+  width: 48px !important;
+  height: 48px !important;
+  max-width: 48px !important;
+  max-height: 48px !important;
+  margin: 0 !important;
+  border-radius: 10px;
+  background-color: transparent;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
+  object-fit: contain !important;
   list-style-image: none !important;
+  pointer-events: none;
+}
+
+.zen-app-launcher-item-icon-stack,
+.astra-app-hub-item-icon-stack {
+  position: relative;
+  display: grid !important;
+  place-items: center !important;
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  min-height: 48px !important;
+  margin-bottom: 6px !important;
+}
+
+.zen-app-launcher-item-icon-stack > .zen-app-launcher-item-icon,
+.zen-app-launcher-item-icon-stack > .zen-app-launcher-item-monogram,
+.astra-app-hub-item-icon-stack > .astra-app-hub-item-icon,
+.astra-app-hub-item-icon-stack > .astra-app-hub-item-monogram {
+  grid-area: 1 / 1;
 }
 
 .astra-app-hub-item-monogram,
 .zen-app-launcher-item-monogram {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  font-size: 0.7rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  margin-bottom: 4px;
-  color: CanvasText;
-  background: var(--astra-app-hub-accent-0);
+  margin: 0 !important;
+  color: CanvasText !important;
+  background: color-mix(in srgb, var(--astra-app-hub-accent-0) 70%, Canvas) !important;
   text-align: center;
   -moz-appearance: none !important;
   appearance: none !important;
   border: none !important;
   padding: 0 !important;
-  min-width: 28px !important;
-  min-height: 28px !important;
+  min-width: 48px !important;
+  min-height: 48px !important;
   pointer-events: none;
+  opacity: 1 !important;
+  visibility: visible;
+  z-index: 0;
+}
+
+.zen-app-launcher-item-icon-stack[data-icon-loaded="true"] .zen-app-launcher-item-monogram,
+.astra-app-hub-item-icon-stack[data-icon-loaded="true"] .astra-app-hub-item-monogram,
+.zen-app-launcher-item-icon-stack[data-icon-loaded="true"] .astra-app-hub-item-monogram {
+  visibility: hidden;
+}
+
+.zen-app-launcher-item-icon-stack[data-icon-error="true"] .zen-app-launcher-item-icon,
+.astra-app-hub-item-icon-stack[data-icon-error="true"] .astra-app-hub-item-icon,
+.zen-app-launcher-item-icon-stack[data-icon-error="true"] .zen-app-launcher-item-icon {
+  visibility: hidden !important;
+  display: none !important;
+}
+
+/* Monogram is the default visible tile; hide image until proven load success. */
+.zen-app-launcher-item-icon-stack > .zen-app-launcher-item-icon,
+.astra-app-hub-item-icon-stack > .astra-app-hub-item-icon {
+  z-index: 1;
+  background-color: transparent;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.zen-app-launcher-item-icon-stack[data-icon-loaded="true"] > .zen-app-launcher-item-icon,
+.astra-app-hub-item-icon-stack[data-icon-loaded="true"] > .astra-app-hub-item-icon,
+.zen-app-launcher-item-icon-stack[data-icon-loaded="true"] > .astra-app-hub-item-icon {
+  visibility: visible;
+  opacity: 1;
 }
 
 .astra-app-hub-item-monogram[data-accent="1"],
@@ -310,7 +366,9 @@
 }
 
 .astra-app-hub-item-label,
-.zen-app-launcher-item-label {
+.zen-app-launcher-item-label,
+.zen-app-launcher-item-name,
+.astra-app-name {
   font-size: 0.68rem !important;
   text-align: center !important;
   max-width: 100% !important;
@@ -318,6 +376,17 @@
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
   margin: 0 !important;
+  color: inherit !important;
+  opacity: 1 !important;
+}
+
+.zen-app-launcher-item-content {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100% !important;
+  pointer-events: none;
 }
 
 .astra-app-hub-fav-btn {
@@ -647,25 +716,39 @@
 }
 
 #PanelUI-zen-app-launcher-fallback .zen-app-launcher-item-icon {
-  display: none !important;
+  width: 48px !important;
+  height: 48px !important;
+  display: block !important;
+  /* visibility/opacity controlled by data-icon-loaded on the stack */
+}
+
+#PanelUI-zen-app-launcher-fallback .zen-app-launcher-item-icon-stack {
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  min-height: 48px !important;
+  margin-bottom: 4px !important;
 }
 
 #PanelUI-zen-app-launcher-fallback .zen-app-launcher-item-monogram {
-  width: 52px !important;
-  height: 52px !important;
-  min-width: 52px !important;
-  min-height: 52px !important;
-  margin-bottom: 4px !important;
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  min-height: 48px !important;
+  margin: 0 !important;
   border-radius: 12px !important;
   font-size: 0.85rem !important;
   font-weight: 700 !important;
   color: CanvasText !important;
-  background: color-mix(in srgb, currentColor 14%, transparent) !important;
+  background: color-mix(in srgb, currentColor 18%, Canvas) !important;
   overflow: hidden !important;
   text-overflow: clip !important;
   white-space: nowrap !important;
   box-sizing: border-box !important;
   padding-inline: 2px !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  -moz-user-focus: ignore;
 }
 
 #PanelUI-zen-app-launcher-fallback .zen-app-launcher-item[data-accent="mail"] .zen-app-launcher-item-monogram {
@@ -695,7 +778,8 @@
   background: var(--astra-app-hub-accent-7) !important;
 }
 
-#PanelUI-zen-app-launcher-fallback .zen-app-launcher-item-label {
+#PanelUI-zen-app-launcher-fallback .zen-app-launcher-item-label,
+#PanelUI-zen-app-launcher-fallback .zen-app-launcher-item-name {
   font-size: 10px !important;
   text-align: center !important;
   max-width: 72px !important;
@@ -703,6 +787,7 @@
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
   margin: 0 !important;
+  opacity: 1 !important;
 }
 
 @media (max-width: 360px) {
@@ -711,10 +796,12 @@
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   }
 
-  #PanelUI-zen-app-launcher-fallback .zen-app-launcher-item-monogram {
-    width: 48px !important;
-    height: 48px !important;
-    min-width: 48px !important;
-    min-height: 48px !important;
+  #PanelUI-zen-app-launcher-fallback .zen-app-launcher-item-monogram,
+  #PanelUI-zen-app-launcher-fallback .zen-app-launcher-item-icon,
+  #PanelUI-zen-app-launcher-fallback .zen-app-launcher-item-icon-stack {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
   }
 }

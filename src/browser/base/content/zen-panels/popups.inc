@@ -145,28 +145,38 @@
       <label class="zen-app-launcher-section-title" value="📧 Mail"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://gmail.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://gmail.com"
+          data-monogram="G"
+          data-accent="mail">
+          <label class="zen-app-launcher-item-monogram" value="G" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Gmail"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://outlook.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://outlook.com"
+          data-monogram="O"
+          data-accent="mail">
+          <label class="zen-app-launcher-item-monogram" value="O" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Outlook"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://mail.zoho.in">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://mail.zoho.in"
+          data-monogram="ZM"
+          data-accent="mail">
+          <label class="zen-app-launcher-item-monogram" value="ZM" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Zoho Mail"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://mail.yahoo.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://mail.yahoo.com"
+          data-monogram="Y"
+          data-accent="mail">
+          <label class="zen-app-launcher-item-monogram" value="Y" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Yahoo Mail"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://proton.me">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://proton.me"
+          data-monogram="P"
+          data-accent="mail">
+          <label class="zen-app-launcher-item-monogram" value="P" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="ProtonMail"/>
         </toolbarbutton>
       </hbox>
@@ -174,23 +184,31 @@
       <label class="zen-app-launcher-section-title" value="📹 Meetings"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://meet.google.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://meet.google.com"
+          data-monogram="GM"
+          data-accent="meetings">
+          <label class="zen-app-launcher-item-monogram" value="GM" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Google Meet"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://zoom.us/join">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://zoom.us/join"
+          data-monogram="Z"
+          data-accent="meetings">
+          <label class="zen-app-launcher-item-monogram" value="Z" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Zoom"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://teams.microsoft.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://teams.microsoft.com"
+          data-monogram="MT"
+          data-accent="meetings">
+          <label class="zen-app-launcher-item-monogram" value="MT" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="MS Teams"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://webex.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://webex.com"
+          data-monogram="W"
+          data-accent="meetings">
+          <label class="zen-app-launcher-item-monogram" value="W" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Webex"/>
         </toolbarbutton>
       </hbox>
@@ -198,23 +216,31 @@
       <label class="zen-app-launcher-section-title" value="💾 Storage"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://drive.google.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://drive.google.com"
+          data-monogram="GD"
+          data-accent="storage">
+          <label class="zen-app-launcher-item-monogram" value="GD" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Google Drive"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://onedrive.live.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://onedrive.live.com"
+          data-monogram="OD"
+          data-accent="storage">
+          <label class="zen-app-launcher-item-monogram" value="OD" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="OneDrive"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://dropbox.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://dropbox.com"
+          data-monogram="D"
+          data-accent="storage">
+          <label class="zen-app-launcher-item-monogram" value="D" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Dropbox"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://workdrive.zoho.in">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://workdrive.zoho.in"
+          data-monogram="ZD"
+          data-accent="storage">
+          <label class="zen-app-launcher-item-monogram" value="ZD" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Zoho Drive"/>
         </toolbarbutton>
       </hbox>
@@ -222,28 +248,38 @@
       <label class="zen-app-launcher-section-title" value="📝 Productivity"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://docs.google.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://docs.google.com"
+          data-monogram="Do"
+          data-accent="productivity">
+          <label class="zen-app-launcher-item-monogram" value="Do" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Google Docs"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://microsoft365.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://microsoft365.com"
+          data-monogram="M"
+          data-accent="productivity">
+          <label class="zen-app-launcher-item-monogram" value="M" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Microsoft 365"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://notion.so">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://notion.so"
+          data-monogram="N"
+          data-accent="productivity">
+          <label class="zen-app-launcher-item-monogram" value="N" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Notion"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://canva.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://canva.com"
+          data-monogram="C"
+          data-accent="productivity">
+          <label class="zen-app-launcher-item-monogram" value="C" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Canva"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://sheet.zoho.in">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://sheet.zoho.in"
+          data-monogram="Zo"
+          data-accent="productivity">
+          <label class="zen-app-launcher-item-monogram" value="Zo" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Zoho Docs"/>
         </toolbarbutton>
       </hbox>
@@ -251,23 +287,31 @@
       <label class="zen-app-launcher-section-title" value="🎓 Education"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://classroom.google.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://classroom.google.com"
+          data-monogram="Cl"
+          data-accent="education">
+          <label class="zen-app-launcher-item-monogram" value="Cl" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Classroom"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://teams.microsoft.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://teams.microsoft.com"
+          data-monogram="TE"
+          data-accent="education">
+          <label class="zen-app-launcher-item-monogram" value="TE" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Teams EDU"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://zoom.us/education">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://zoom.us/education"
+          data-monogram="ZE"
+          data-accent="education">
+          <label class="zen-app-launcher-item-monogram" value="ZE" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Zoom EDU"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://swayam.gov.in">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://swayam.gov.in"
+          data-monogram="S"
+          data-accent="education">
+          <label class="zen-app-launcher-item-monogram" value="S" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="SWAYAM"/>
         </toolbarbutton>
       </hbox>
@@ -275,28 +319,38 @@
       <label class="zen-app-launcher-section-title" value="🎵 Entertainment"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://youtube.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://youtube.com"
+          data-monogram="YT"
+          data-accent="entertainment">
+          <label class="zen-app-launcher-item-monogram" value="YT" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="YouTube"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://spotify.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://spotify.com"
+          data-monogram="Sp"
+          data-accent="entertainment">
+          <label class="zen-app-launcher-item-monogram" value="Sp" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Spotify"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://jiosaavn.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://jiosaavn.com"
+          data-monogram="JS"
+          data-accent="entertainment">
+          <label class="zen-app-launcher-item-monogram" value="JS" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="JioSaavn"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://jiohotstar.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://jiohotstar.com"
+          data-monogram="JH"
+          data-accent="entertainment">
+          <label class="zen-app-launcher-item-monogram" value="JH" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="JioHotstar"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://netflix.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://netflix.com"
+          data-monogram="Nf"
+          data-accent="entertainment">
+          <label class="zen-app-launcher-item-monogram" value="Nf" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Netflix"/>
         </toolbarbutton>
       </hbox>
@@ -304,23 +358,31 @@
       <label class="zen-app-launcher-section-title" value="🛒 Shopping"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://amazon.in">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://amazon.in"
+          data-monogram="A"
+          data-accent="shopping">
+          <label class="zen-app-launcher-item-monogram" value="A" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Amazon"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://flipkart.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://flipkart.com"
+          data-monogram="F"
+          data-accent="shopping">
+          <label class="zen-app-launcher-item-monogram" value="F" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Flipkart"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://meesho.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://meesho.com"
+          data-monogram="Me"
+          data-accent="shopping">
+          <label class="zen-app-launcher-item-monogram" value="Me" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Meesho"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://myntra.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://myntra.com"
+          data-monogram="My"
+          data-accent="shopping">
+          <label class="zen-app-launcher-item-monogram" value="My" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Myntra"/>
         </toolbarbutton>
       </hbox>
@@ -328,28 +390,38 @@
       <label class="zen-app-launcher-section-title" value="🇮🇳 Government"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://irctc.co.in">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://irctc.co.in"
+          data-monogram="I"
+          data-accent="government">
+          <label class="zen-app-launcher-item-monogram" value="I" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="IRCTC"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://incometax.gov.in">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://incometax.gov.in"
+          data-monogram="IT"
+          data-accent="government">
+          <label class="zen-app-launcher-item-monogram" value="IT" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Income Tax"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://digilocker.gov.in">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://digilocker.gov.in"
+          data-monogram="DL"
+          data-accent="government">
+          <label class="zen-app-launcher-item-monogram" value="DL" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="DigiLocker"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://gst.gov.in">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://gst.gov.in"
+          data-monogram="GST"
+          data-accent="government">
+          <label class="zen-app-launcher-item-monogram" value="GST" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="GST Portal"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://epfindia.gov.in">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://epfindia.gov.in"
+          data-monogram="E"
+          data-accent="government">
+          <label class="zen-app-launcher-item-monogram" value="E" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="EPFO"/>
         </toolbarbutton>
       </hbox>
@@ -357,23 +429,31 @@
       <label class="zen-app-launcher-section-title" value="📰 News"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://inshorts.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://inshorts.com"
+          data-monogram="In"
+          data-accent="news">
+          <label class="zen-app-launcher-item-monogram" value="In" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Inshorts"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://ndtv.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://ndtv.com"
+          data-monogram="ND"
+          data-accent="news">
+          <label class="zen-app-launcher-item-monogram" value="ND" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="NDTV"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://timesofindia.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://timesofindia.com"
+          data-monogram="T"
+          data-accent="news">
+          <label class="zen-app-launcher-item-monogram" value="T" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="TOI"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://news.google.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://news.google.com"
+          data-monogram="GN"
+          data-accent="news">
+          <label class="zen-app-launcher-item-monogram" value="GN" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Google News"/>
         </toolbarbutton>
       </hbox>
@@ -381,23 +461,31 @@
       <label class="zen-app-launcher-section-title" value="💼 Business"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://linkedin.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://linkedin.com"
+          data-monogram="L"
+          data-accent="business">
+          <label class="zen-app-launcher-item-monogram" value="L" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="LinkedIn"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://slack.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://slack.com"
+          data-monogram="Sl"
+          data-accent="business">
+          <label class="zen-app-launcher-item-monogram" value="Sl" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Slack"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://freshdesk.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://freshdesk.com"
+          data-monogram="Fr"
+          data-accent="business">
+          <label class="zen-app-launcher-item-monogram" value="Fr" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Freshdesk"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
-          data-url="https://trello.com">
-          <image class="zen-app-launcher-item-icon"/>
+          data-url="https://trello.com"
+          data-monogram="Tr"
+          data-accent="business">
+          <label class="zen-app-launcher-item-monogram" value="Tr" disabled="true"/>
           <label class="zen-app-launcher-item-label" value="Trello"/>
         </toolbarbutton>
       </hbox>
@@ -422,21 +510,21 @@
   role="dialog"
   aria-labelledby="astra-suraksha-title"
   astra-suraksha-mode="fallback">
-  <vbox id="PanelUI-astra-suraksha-container" class="astra-suraksha-container">
-    <hbox id="astra-suraksha-header" class="astra-suraksha-header" align="center">
-      <image id="astra-suraksha-header-icon" class="astra-suraksha-header-icon"/>
-      <vbox flex="1" class="astra-suraksha-header-text">
-        <label id="astra-suraksha-title"
-               value="Astra Suraksha"
-               data-l10n-id="astra-suraksha-title"/>
-        <label id="astra-suraksha-mode-label"
-               value="Protection overview for this site"
-               data-l10n-id="astra-suraksha-subtitle"/>
-      </vbox>
-      <toolbarbutton id="astra-suraksha-refresh"
-                     class="astra-suraksha-icon-btn"
-                     data-l10n-id="astra-suraksha-refresh"/>
-    </hbox>
+  <html:div id="PanelUI-astra-suraksha-container" class="astra-suraksha-shell astra-suraksha-container">
+    <html:header id="astra-suraksha-header" class="astra-suraksha-header">
+      <html:span id="astra-suraksha-header-icon" class="astra-suraksha-header-icon" role="presentation"/>
+      <html:div class="astra-suraksha-header-text">
+        <html:h1 id="astra-suraksha-title"
+                  data-l10n-id="astra-suraksha-title">Astra Suraksha</html:h1>
+        <html:p id="astra-suraksha-mode-label"
+                data-l10n-id="astra-suraksha-subtitle">Protection overview for this site</html:p>
+      </html:div>
+      <html:button id="astra-suraksha-refresh"
+                   type="button"
+                   class="astra-suraksha-icon-btn"
+                   data-l10n-id="astra-suraksha-refresh"
+                   title="Refresh"/>
+    </html:header>
 
     <!-- Static fallback: usable with no manager/adapters.
          Emergency label= text remains if Fluent fails to load. -->
@@ -462,110 +550,152 @@
                      data-l10n-id="astra-suraksha-action-addons"/>
     </vbox>
 
-    <!-- Advanced cards: populated by lazy manager. -->
-    <vbox id="PanelUI-astra-suraksha-advanced" class="astra-suraksha-advanced" hidden="true">
-      <vbox id="astra-suraksha-card-connection"
-            class="astra-suraksha-card astra-suraksha-card-hero"
-            data-state="loading"
-            data-variant="loading">
-        <hbox class="astra-suraksha-card-head" align="center">
-          <image class="astra-suraksha-card-icon" data-icon="connection"/>
-          <vbox flex="1" class="astra-suraksha-card-head-text">
-            <label class="astra-suraksha-hostname" data-l10n-id="astra-suraksha-hostname-unknown"/>
-            <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
-          </vbox>
-        </hbox>
-        <label class="astra-suraksha-card-detail" hidden="true"/>
-        <hbox class="astra-suraksha-card-actions"/>
-      </vbox>
+    <!-- Advanced cards: HTML layout populated by lazy manager. -->
+    <html:div id="PanelUI-astra-suraksha-advanced" class="astra-suraksha-advanced" hidden="true">
+      <html:div class="astra-suraksha-scroll">
+        <html:section class="astra-suraksha-site-hero" aria-label="Connection">
+          <html:article id="astra-suraksha-card-connection"
+                        class="astra-suraksha-card astra-suraksha-card-hero"
+                        data-state="loading"
+                        data-variant="loading">
+            <html:div class="astra-suraksha-card-head">
+              <html:span class="astra-suraksha-card-icon" data-icon="connection" role="presentation"/>
+              <html:span class="astra-suraksha-hostname" data-l10n-id="astra-suraksha-hostname-unknown"/>
+              <html:span class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+            </html:div>
+            <html:p class="astra-suraksha-card-detail" hidden="true"/>
+            <html:div class="astra-suraksha-card-actions"/>
+          </html:article>
+        </html:section>
 
-      <label class="astra-suraksha-section-title" data-l10n-id="astra-suraksha-section-protection"/>
-      <vbox id="astra-suraksha-card-protection" class="astra-suraksha-card" data-state="loading" data-variant="loading">
-        <hbox class="astra-suraksha-card-head" align="center">
-          <image class="astra-suraksha-card-icon" data-icon="protection"/>
-          <label class="astra-suraksha-card-title" data-l10n-id="astra-suraksha-card-title-protection"/>
-          <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
-        </hbox>
-        <label class="astra-suraksha-card-detail" hidden="true"/>
-        <hbox class="astra-suraksha-card-actions"/>
-      </vbox>
-      <vbox id="astra-suraksha-card-ublock" class="astra-suraksha-card" data-state="loading" data-variant="loading">
-        <hbox class="astra-suraksha-card-head" align="center">
-          <image class="astra-suraksha-card-icon" data-icon="ublock"/>
-          <label class="astra-suraksha-card-title" data-l10n-id="astra-suraksha-card-title-ublock"/>
-          <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
-        </hbox>
-        <label class="astra-suraksha-card-detail" hidden="true"/>
-        <hbox class="astra-suraksha-card-actions"/>
-      </vbox>
-      <vbox id="astra-suraksha-card-safebrowsing" class="astra-suraksha-card" data-state="loading" data-variant="loading">
-        <hbox class="astra-suraksha-card-head" align="center">
-          <image class="astra-suraksha-card-icon" data-icon="safebrowsing"/>
-          <label class="astra-suraksha-card-title" data-l10n-id="astra-suraksha-card-title-safebrowsing"/>
-          <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
-        </hbox>
-        <label class="astra-suraksha-card-detail" hidden="true"/>
-        <vbox id="astra-suraksha-card-safebrowsing-details"
-              class="astra-suraksha-card-details"
-              hidden="true"/>
-        <hbox class="astra-suraksha-card-actions"/>
-      </vbox>
-      <vbox id="astra-suraksha-card-passwords" class="astra-suraksha-card" data-state="loading" data-variant="loading">
-        <hbox class="astra-suraksha-card-head" align="center">
-          <image class="astra-suraksha-card-icon" data-icon="passwords"/>
-          <label class="astra-suraksha-card-title" data-l10n-id="astra-suraksha-card-title-passwords"/>
-          <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
-        </hbox>
-        <label class="astra-suraksha-card-detail" hidden="true"/>
-        <vbox id="astra-suraksha-card-passwords-details"
-              class="astra-suraksha-card-details"
-              hidden="true"/>
-        <hbox class="astra-suraksha-card-actions"/>
-      </vbox>
+        <html:section class="astra-suraksha-section" aria-labelledby="astra-suraksha-section-protection">
+          <html:h2 id="astra-suraksha-section-protection"
+                   class="astra-suraksha-section-title"
+                   data-l10n-id="astra-suraksha-section-protection"/>
 
-      <label class="astra-suraksha-section-title" data-l10n-id="astra-suraksha-section-site-controls"/>
-      <vbox id="astra-suraksha-card-permissions" class="astra-suraksha-card" data-state="loading" data-variant="loading">
-        <hbox class="astra-suraksha-card-head" align="center">
-          <image class="astra-suraksha-card-icon" data-icon="permissions"/>
-          <label class="astra-suraksha-card-title" data-l10n-id="astra-suraksha-card-title-permissions"/>
-          <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
-        </hbox>
-        <vbox class="astra-suraksha-perm-list"/>
-        <hbox class="astra-suraksha-card-actions"/>
-      </vbox>
-      <vbox id="astra-suraksha-card-site-data" class="astra-suraksha-card" data-state="loading" data-variant="loading">
-        <hbox class="astra-suraksha-card-head" align="center">
-          <image class="astra-suraksha-card-icon" data-icon="site-data"/>
-          <label class="astra-suraksha-card-title" data-l10n-id="astra-suraksha-card-title-site-data"/>
-          <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
-        </hbox>
-        <hbox class="astra-suraksha-card-actions"/>
-      </vbox>
-      <vbox id="astra-suraksha-card-clean-link" class="astra-suraksha-card" data-state="loading" data-variant="loading">
-        <hbox class="astra-suraksha-card-head" align="center">
-          <image class="astra-suraksha-card-icon" data-icon="clean-link"/>
-          <label class="astra-suraksha-card-title" data-l10n-id="astra-suraksha-card-title-clean-link"/>
-          <label class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
-        </hbox>
-        <hbox class="astra-suraksha-card-actions"/>
-      </vbox>
+          <html:article id="astra-suraksha-card-protection"
+                        class="astra-suraksha-card"
+                        data-state="loading"
+                        data-variant="loading">
+            <html:div class="astra-suraksha-card-head">
+              <html:span class="astra-suraksha-card-icon" data-icon="protection" role="presentation"/>
+              <html:span class="astra-suraksha-card-title" data-l10n-id="astra-suraksha-card-title-protection"/>
+              <html:span class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+            </html:div>
+            <html:p class="astra-suraksha-card-detail" hidden="true"/>
+            <html:div class="astra-suraksha-card-actions"/>
+          </html:article>
 
-      <hbox id="astra-suraksha-footer" class="astra-suraksha-footer">
-        <toolbarbutton class="astra-suraksha-footer-btn"
-                       data-suraksha-action="safebrowsing-settings"
-                       data-l10n-id="astra-suraksha-footer-privacy"/>
-        <toolbarbutton class="astra-suraksha-footer-btn"
-                       data-suraksha-action="etp-dashboard"
-                       data-l10n-id="astra-suraksha-footer-dashboard"/>
-        <toolbarbutton class="astra-suraksha-footer-btn"
-                       data-suraksha-action="addons"
-                       data-l10n-id="astra-suraksha-footer-addons"/>
-        <toolbarbutton class="astra-suraksha-footer-btn"
-                       data-suraksha-action="site-info"
-                       data-l10n-id="astra-suraksha-footer-more"/>
-      </hbox>
-    </vbox>
-  </vbox>
+          <html:article id="astra-suraksha-card-ublock"
+                        class="astra-suraksha-card"
+                        data-state="loading"
+                        data-variant="loading">
+            <html:div class="astra-suraksha-card-head">
+              <html:span class="astra-suraksha-card-icon" data-icon="ublock" role="presentation"/>
+              <html:span class="astra-suraksha-card-title" data-l10n-id="astra-suraksha-card-title-ublock"/>
+              <html:span class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+            </html:div>
+            <html:p class="astra-suraksha-card-detail" hidden="true"/>
+            <html:div class="astra-suraksha-card-actions"/>
+          </html:article>
+
+          <html:article id="astra-suraksha-card-safebrowsing"
+                        class="astra-suraksha-card"
+                        data-state="loading"
+                        data-variant="loading">
+            <html:div class="astra-suraksha-card-head">
+              <html:span class="astra-suraksha-card-icon" data-icon="safebrowsing" role="presentation"/>
+              <html:span class="astra-suraksha-card-title" data-l10n-id="astra-suraksha-card-title-safebrowsing"/>
+              <html:span class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+            </html:div>
+            <html:p class="astra-suraksha-card-detail" hidden="true"/>
+            <html:div id="astra-suraksha-card-safebrowsing-details"
+                      class="astra-suraksha-card-details"
+                      hidden="true"/>
+            <html:div class="astra-suraksha-card-actions"/>
+          </html:article>
+
+          <html:article id="astra-suraksha-card-passwords"
+                        class="astra-suraksha-card"
+                        data-state="loading"
+                        data-variant="loading">
+            <html:div class="astra-suraksha-card-head">
+              <html:span class="astra-suraksha-card-icon" data-icon="passwords" role="presentation"/>
+              <html:span class="astra-suraksha-card-title" data-l10n-id="astra-suraksha-card-title-passwords"/>
+              <html:span class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+            </html:div>
+            <html:p class="astra-suraksha-card-detail" hidden="true"/>
+            <html:div id="astra-suraksha-card-passwords-details"
+                      class="astra-suraksha-card-details"
+                      hidden="true"/>
+            <html:div class="astra-suraksha-card-actions"/>
+          </html:article>
+        </html:section>
+
+        <html:section class="astra-suraksha-section" aria-labelledby="astra-suraksha-section-site-controls">
+          <html:h2 id="astra-suraksha-section-site-controls"
+                   class="astra-suraksha-section-title"
+                   data-l10n-id="astra-suraksha-section-site-controls"/>
+
+          <html:article id="astra-suraksha-card-permissions"
+                        class="astra-suraksha-card"
+                        data-state="loading"
+                        data-variant="loading">
+            <html:div class="astra-suraksha-card-head">
+              <html:span class="astra-suraksha-card-icon" data-icon="permissions" role="presentation"/>
+              <html:span class="astra-suraksha-card-title" data-l10n-id="astra-suraksha-card-title-permissions"/>
+              <html:span class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+            </html:div>
+            <html:div class="astra-suraksha-perm-list"/>
+            <html:div class="astra-suraksha-card-actions"/>
+          </html:article>
+
+          <html:article id="astra-suraksha-card-site-data"
+                        class="astra-suraksha-card"
+                        data-state="loading"
+                        data-variant="loading">
+            <html:div class="astra-suraksha-card-head">
+              <html:span class="astra-suraksha-card-icon" data-icon="site-data" role="presentation"/>
+              <html:span class="astra-suraksha-card-title" data-l10n-id="astra-suraksha-card-title-site-data"/>
+              <html:span class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+            </html:div>
+            <html:div class="astra-suraksha-card-actions"/>
+          </html:article>
+
+          <html:article id="astra-suraksha-card-clean-link"
+                        class="astra-suraksha-card"
+                        data-state="loading"
+                        data-variant="loading">
+            <html:div class="astra-suraksha-card-head">
+              <html:span class="astra-suraksha-card-icon" data-icon="clean-link" role="presentation"/>
+              <html:span class="astra-suraksha-card-title" data-l10n-id="astra-suraksha-card-title-clean-link"/>
+              <html:span class="astra-suraksha-card-status" data-l10n-id="astra-suraksha-loading"/>
+            </html:div>
+            <html:div class="astra-suraksha-card-actions"/>
+          </html:article>
+        </html:section>
+      </html:div>
+
+      <html:footer id="astra-suraksha-footer" class="astra-suraksha-footer">
+        <html:button type="button"
+                     class="astra-suraksha-footer-btn"
+                     data-suraksha-action="safebrowsing-settings"
+                     data-l10n-id="astra-suraksha-footer-privacy">Privacy</html:button>
+        <html:button type="button"
+                     class="astra-suraksha-footer-btn"
+                     data-suraksha-action="etp-dashboard"
+                     data-l10n-id="astra-suraksha-footer-dashboard">Dashboard</html:button>
+        <html:button type="button"
+                     class="astra-suraksha-footer-btn"
+                     data-suraksha-action="addons"
+                     data-l10n-id="astra-suraksha-footer-addons">Add-ons</html:button>
+        <html:button type="button"
+                     class="astra-suraksha-footer-btn"
+                     data-suraksha-action="site-info"
+                     data-l10n-id="astra-suraksha-footer-more">More</html:button>
+      </html:footer>
+    </html:div>
+  </html:div>
 </panel>
 
 <panel

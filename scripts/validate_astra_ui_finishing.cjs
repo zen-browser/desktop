@@ -175,55 +175,62 @@ const hubFtl = read("locales/en-US/browser/browser/zen-app-hub.ftl");
 const jar = read("src/zen/common/jar.inc.mn");
 const preload = read("src/zen/common/ZenPreloadedScripts.js");
 const popups = read("src/browser/base/content/zen-panels/popups.inc");
-const catalogRel = "src/zen/common/app-hub/astra-app-hub-catalog.json";
+const catalogRel = "src/zen/common/app-hub/AstraAppHubCatalog.mjs";
+const CATALOG_MODULE_URL =
+  "chrome://browser/content/zen-components/AstraAppHubCatalog.mjs";
 
 if (!exists(catalogRel)) {
-  fail("catalog JSON missing on disk");
+  fail("catalog ESM module missing on disk");
 } else {
   const catalogJarLines = jar
     .split(/\r?\n/)
     .filter(line =>
-      /^\s*content\/browser\/zen-components\/astra-app-hub-catalog\.json\b/.test(
+      /^\s*content\/browser\/zen-components\/AstraAppHubCatalog\.mjs\b/.test(
         line
       )
     );
   if (catalogJarLines.length === 1) ok("catalog packaged exactly once");
   else fail(`catalog jar entries != 1 (${catalogJarLines.length})`);
 
-  let catalog;
-  try {
-    catalog = JSON.parse(read(catalogRel));
-  } catch (e) {
-    fail(`catalog JSON parse failed: ${e.message}`);
-    catalog = null;
-  }
-  if (catalog) {
-    if (catalog.schemaVersion === 1) ok("catalog schemaVersion matches manager");
-    else fail("catalog schemaVersion mismatch");
-    if (Array.isArray(catalog.categories) && catalog.categories.length) {
-      ok("catalog categories non-empty");
-    } else fail("catalog categories empty");
-    if (Array.isArray(catalog.apps) && catalog.apps.length) {
-      ok(`catalog apps non-empty (${catalog.apps.length})`);
-    } else fail("catalog apps empty");
-    const catIds = new Set(
-      (catalog.categories || []).map(c => c && c.id).filter(Boolean)
-    );
-    const bad = (catalog.apps || []).filter(a => !catIds.has(a.category));
-    if (!bad.length) ok("every app references a valid category");
-    else fail(`${bad.length} apps reference unknown categories`);
-  }
+  if (jar.includes("astra-app-hub-catalog.json")) {
+    fail("legacy catalog JSON still packaged");
+  } else ok("legacy catalog JSON mapping removed");
+
+  if (hubMgr.includes(CATALOG_MODULE_URL)) {
+    ok("manager catalog URL matches JAR destination");
+  } else fail("manager catalog URL mismatch");
+
+  if (exists("src/zen/common/app-hub/astra-app-hub-catalog.json")) {
+    fail("legacy catalog JSON file still present (must be single canonical source)");
+  } else ok("single canonical ESM catalog source");
 }
 
 if (
   hubMgr.includes("loadPackagedCatalog") &&
-  hubMgr.includes("NetUtil") &&
+  hubMgr.includes("ChromeUtils.importESModule") &&
+  hubMgr.includes("ASTRA_APP_HUB_CATALOG") &&
   hubMgr.includes("#applyCatalogReadyState") &&
   hubMgr.includes("#retryCatalog") &&
-  hubMgr.includes("#retryInFlight")
+  hubMgr.includes("#retryInFlight") &&
+  hubMgr.includes("#catalogRetryExhausted") &&
+  !hubMgr.includes("NetUtil") &&
+  !/\bfetch\s*\(/.test(hubMgr) &&
+  !/channel\.open\s*\(/.test(hubMgr)
 ) {
-  ok("App Hub catalog loader + fail-safe state machine present");
-} else fail("App Hub fail-safe state machine incomplete");
+  ok("App Hub ESM catalog loader + fail-safe state machine present");
+} else fail("App Hub fail-safe state machine incomplete or still uses fetch/NetUtil");
+
+const preloadSrc = read("src/zen/common/ZenPreloadedScripts.js");
+if (
+  /ChromeUtils\.importESModule\(\s*"chrome:\/\/browser\/content\/zen-components\//.test(
+    preloadSrc
+  ) &&
+  /ChromeUtils\.importESModule\(\s*"chrome:\/\/browser\/content\/zen-components\/AstraAppHubState\.mjs"/.test(
+    hubMgr
+  )
+) {
+  ok("chrome:// ES module imports have in-tree precedent (preload + App Hub)");
+} else fail("chrome:// ES module import precedent missing");
 
 const applyReadyFn = hubMgr.slice(
   hubMgr.indexOf("#applyCatalogReadyState()"),
@@ -232,16 +239,15 @@ const applyReadyFn = hubMgr.slice(
 if (
   hubMgr.includes("#applyCatalogReadyState") &&
   /setAdvancedReady\?\.\(ready\)/.test(applyReadyFn) &&
-  applyReadyFn.includes(
-    "let ready = !!(this.#catalog && this.#shellBuilt && !this.#catalogError)"
-  ) &&
+  applyReadyFn.includes("stage: \"render\"") &&
+  applyReadyFn.includes("this.#rebuildList()") &&
+  applyReadyFn.includes("this.#rendered") &&
   applyReadyFn.includes("this.#destroyed || window.closed") &&
   hubMgr.includes("#handoffFocusFromHiddenFallback") &&
-  applyReadyFn.indexOf("this.#rebuildList()") >= 0 &&
   applyReadyFn.indexOf("this.#rebuildList()") <
     applyReadyFn.indexOf("setAdvancedReady?.(ready)")
 ) {
-  ok("advanced-ready gated on catalog+shell, destroyed-safe, rebuild-before-handoff");
+  ok("advanced-ready gated on catalog+shell+render, destroyed-safe, rebuild-before-handoff");
 } else fail("advanced-ready gating missing or unsafe handoff order");
 
 if (
@@ -262,10 +268,23 @@ if (/https?:\/\/.*catalog|fetch\(\s*["']https?:/i.test(hubMgr)) {
 
 if (
   preload.includes("AstraAppHubBootstrap.mjs") &&
-  !preload.includes("AstraAppHubManager.mjs")
+  !preload.includes("AstraAppHubManager.mjs") &&
+  !preload.includes("AstraAppHubCatalog.mjs")
 ) {
-  ok("no startup manager import");
-} else fail("App Hub manager eagerly preloaded");
+  ok("no startup manager/catalog import");
+} else fail("App Hub manager/catalog eagerly preloaded");
+
+const bootstrap = read("src/zen/common/modules/AstraAppHubBootstrap.mjs");
+const bootstrapTop = bootstrap.slice(0, bootstrap.indexOf("class AstraAppHubBootstrap"));
+if (
+  !bootstrap.includes("AstraAppHubCatalog") &&
+  !/^\s*import\s+.*AstraAppHubManager/m.test(bootstrap) &&
+  !bootstrapTop.includes("AstraAppHubManager.mjs") &&
+  bootstrap.includes("ChromeUtils.importESModule") &&
+  bootstrap.includes("AstraAppHubManager.mjs")
+) {
+  ok("bootstrap does not import catalog/manager eagerly");
+} else fail("bootstrap eagerly imports catalog or manager");
 
 const fallbackBlock = popups.slice(
   popups.indexOf('id="PanelUI-zen-app-launcher-fallback"'),
@@ -275,11 +294,24 @@ const fallbackUrls = (fallbackBlock.match(/data-url="/g) || []).length;
 if (fallbackUrls >= 44) ok(`44-app fallback IDs remain intact (${fallbackUrls})`);
 else fail(`fallback apps reduced (${fallbackUrls})`);
 
+const fallbackMonograms = (fallbackBlock.match(/data-monogram="/g) || []).length;
+const fallbackMonogramLabels = (
+  fallbackBlock.match(/zen-app-launcher-item-monogram/g) || []
+).length;
+if (fallbackMonograms >= 44 && fallbackMonogramLabels >= 44) {
+  ok(`fallback monograms present (${fallbackMonograms})`);
+} else {
+  fail(
+    `fallback monograms incomplete (${fallbackMonograms} attrs / ${fallbackMonogramLabels} labels)`
+  );
+}
+
 if (
   hubCss.includes("astra-app-hub-fallback-banner") &&
-  hubCss.includes('app-hub-mode="fallback"')
+  hubCss.includes('app-hub-mode="fallback"') &&
+  hubCss.includes("zen-app-launcher-item-monogram")
 ) {
-  ok("App Hub CSS keeps fallback mode + compact banner");
+  ok("App Hub CSS keeps fallback mode + compact banner + monograms");
 } else fail("App Hub fallback CSS incomplete");
 
 // —— SURAKSHA ——
@@ -372,8 +404,18 @@ if (hubCss.includes("chrome://browser/skin/zen-icons/search-glass.svg")) {
 } else fail("App Hub search icon not using zen-icons jar asset");
 
 if (
+  surFtl.includes("astra-suraksha-footer-privacy = Privacy Settings") &&
+  surFtl.includes("astra-suraksha-action-etp-panel = Open tracking protection") &&
+  surFtl.includes("astra-suraksha-loading = Checking") &&
+  surFtl.includes("astra-suraksha-card-title-protection = Tracking Protection")
+) {
+  ok("Suraksha Fluent provides message values for HTML textContent");
+} else fail("Suraksha Fluent missing HTML message values (attribute-only would blank HTML)");
+
+if (
   surMgr.includes("aria-controls") &&
   surMgr.includes("aria-expanded") &&
+  surMgr.includes("data-suraksha-toggle-details") &&
   popups.includes("astra-suraksha-card-safebrowsing-details") &&
   popups.includes("astra-suraksha-card-passwords-details")
 ) {
@@ -381,8 +423,9 @@ if (
 } else fail("Suraksha details a11y wiring incomplete");
 
 if (
-  surCss.includes('astra-suraksha-mode="advanced"] #PanelUI-astra-suraksha-advanced') &&
-  surCss.includes("overflow-y: auto")
+  surCss.includes('astra-suraksha-mode="advanced"] .astra-suraksha-scroll') &&
+  surCss.includes("overflow-y: auto") &&
+  surCss.includes(".astra-suraksha-scroll")
 ) {
   ok("Suraksha primary scroll is mode-scoped (single active region)");
 } else fail("Suraksha primary scroll region not mode-scoped");
@@ -390,10 +433,47 @@ if (
 if (
   popups.includes("astra-suraksha-footer") &&
   popups.includes("astra-suraksha-section-site-controls") &&
-  popups.includes("astra-suraksha-card-hero")
+  popups.includes("astra-suraksha-card-hero") &&
+  popups.includes("astra-suraksha-shell") &&
+  popups.includes("<html:article") &&
+  popups.includes("astra-suraksha-scroll")
 ) {
-  ok("Suraksha IA: hero + site controls + compact footer");
+  ok("Suraksha IA: HTML shell + hero + site controls + compact footer");
 } else fail("Suraksha information architecture incomplete");
+
+if (
+  surMgr.includes('createElementNS') &&
+  surMgr.includes("http://www.w3.org/1999/xhtml") &&
+  surMgr.includes('btn.type = "button"') &&
+  surMgr.includes("#onAdvancedClick") &&
+  !surMgr.includes("createXULElement(\"toolbarbutton\")") &&
+  !surMgr.includes("#onAdvancedCommand")
+) {
+  ok("Suraksha dynamic actions use HTML buttons + delegated click");
+} else fail("Suraksha still uses XUL toolbarbutton/command for dynamic actions");
+
+const cardRuleMatch = surCss.match(
+  /\.astra-suraksha-card\s*\{[^}]+\}/
+);
+const cardRule = cardRuleMatch ? cardRuleMatch[0] : "";
+const headRuleMatch = surCss.match(
+  /\.astra-suraksha-card-head\s*\{[^}]+\}/
+);
+const headRule = headRuleMatch ? headRuleMatch[0] : "";
+if (
+  surCss.includes("display: grid") &&
+  /grid-template-areas:/.test(cardRule) &&
+  /block-size:\s*auto/.test(cardRule) &&
+  !/block-size:\s*\d+px/.test(cardRule) &&
+  !/height:\s*\d+px/.test(cardRule) &&
+  !/min-height:\s*[1-9]/.test(cardRule) &&
+  !/position:\s*absolute/.test(surCss) &&
+  !/margin-(block-start|top):\s*-/.test(surCss) &&
+  /display:\s*grid/.test(headRule) &&
+  !/display:\s*contents/.test(headRule)
+) {
+  ok("Suraksha cards use nested intrinsic CSS grid (no fixed/absolute/contents overlap hacks)");
+} else fail("Suraksha card layout still uses fixed height, contents, or overlap workarounds");
 
 const advancedStart = popups.indexOf('id="PanelUI-astra-suraksha-advanced"');
 const advancedEnd = popups.indexOf("</panel>", advancedStart);
@@ -401,13 +481,20 @@ const advancedBlock = popups.slice(advancedStart, advancedEnd);
 const longAdvancedRows = (
   advancedBlock.match(/class="astra-suraksha-action subviewbutton"/g) || []
 ).length;
-if (longAdvancedRows === 0) {
-  ok("no duplicate oversized advanced action rows");
-} else fail(`duplicate advanced subviewbutton rows remain (${longAdvancedRows})`);
+const advancedXulToolbarActions = (
+  advancedBlock.match(/<toolbarbutton[^>]*data-suraksha-action/g) || []
+).length;
+if (longAdvancedRows === 0 && advancedXulToolbarActions === 0) {
+  ok("no duplicate oversized / XUL toolbarbutton advanced card actions");
+} else {
+  fail(
+    `advanced action markup regression (subview=${longAdvancedRows}, xul=${advancedXulToolbarActions})`
+  );
+}
 
 if (
   surCss.includes("overflow-y: auto") &&
-  surCss.includes("#PanelUI-astra-suraksha-advanced")
+  surCss.includes(".astra-suraksha-scroll")
 ) {
   ok("Suraksha has primary scroll container");
 } else fail("Suraksha scroll container missing");
@@ -466,9 +553,71 @@ for (const id of [
   else fail(`missing Fluent ${id}`);
 }
 
-if (errors.length) {
-  console.error(`\n${errors.length} failure(s)`);
-  process.exit(1);
+async function validateCatalogModuleShape() {
+  const { pathToFileURL } = require("url");
+  const catalogPath = path.join(root, catalogRel);
+  if (!fs.existsSync(catalogPath)) {
+    fail("cannot import missing catalog module");
+    return;
+  }
+  const mod = await import(pathToFileURL(catalogPath).href);
+  const catalog = mod.ASTRA_APP_HUB_CATALOG;
+  if (!catalog) {
+    fail("ASTRA_APP_HUB_CATALOG export missing");
+    return;
+  }
+  if (catalog.schemaVersion === 1) ok("imported catalog schemaVersion is 1");
+  else fail(`imported catalog schemaVersion ${catalog.schemaVersion}`);
+  if (Array.isArray(catalog.categories) && catalog.categories.length === 10) {
+    ok("imported catalog has exactly 10 categories");
+  } else {
+    fail(
+      `imported catalog categories != 10 (${catalog.categories?.length})`
+    );
+  }
+  if (Array.isArray(catalog.apps) && catalog.apps.length === 44) {
+    ok("imported catalog has exactly 44 apps");
+  } else fail(`imported catalog apps != 44 (${catalog.apps?.length})`);
+
+  const catIds = new Set(catalog.categories.map(c => c.id));
+  const appIds = new Set();
+  let remoteIcon = false;
+  let badCat = 0;
+  let badUrl = 0;
+  for (const app of catalog.apps) {
+    if (appIds.has(app.id)) fail(`duplicate app id ${app.id}`);
+    appIds.add(app.id);
+    if (!catIds.has(app.category)) badCat++;
+    try {
+      const u = new URL(app.url);
+      if (u.protocol !== "https:" && u.protocol !== "http:") badUrl++;
+    } catch {
+      badUrl++;
+    }
+    if (
+      typeof app.icon === "string" &&
+      /^https?:/i.test(app.icon)
+    ) {
+      remoteIcon = true;
+    }
+  }
+  if (!badCat) ok("imported catalog category references valid");
+  else fail(`${badCat} apps reference unknown categories`);
+  if (!badUrl) ok("imported catalog URLs valid");
+  else fail(`${badUrl} apps have invalid URLs`);
+  if (!remoteIcon) ok("imported catalog has no remote icon URLs");
+  else fail("imported catalog contains remote icon URLs");
 }
-console.log("\nAll Astra UI finishing checks passed.");
-process.exit(0);
+
+validateCatalogModuleShape()
+  .catch(err => {
+    fail(`catalog module import failed: ${err.message}`);
+  })
+  .finally(() => {
+    if (errors.length) {
+      console.error(`\n${errors.length} failure(s)`);
+      process.exit(1);
+    }
+    console.log("\nAll Astra UI finishing checks passed.");
+    process.exit(0);
+  });

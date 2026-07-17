@@ -192,10 +192,15 @@ if (
   hubMgr.includes("#applyCatalogReadyState") &&
   hubMgr.includes("#retryCatalog") &&
   hubMgr.includes("#retryInFlight") &&
+  hubMgr.includes("#catalogRetryExhausted") &&
   hubMgr.includes("#handoffFocusFromHiddenFallback") &&
+  hubMgr.includes("AstraAppHubCatalog.mjs") &&
+  hubMgr.includes("ASTRA_APP_HUB_CATALOG") &&
+  !hubMgr.includes("NetUtil") &&
+  !/\bfetch\s*\(/.test(hubMgr) &&
   !/Try again after restarting/i.test(hubMgr)
 ) {
-  ok("App Hub catalog fail-safe keeps fallback (no restart-only path)");
+  ok("App Hub catalog fail-safe keeps fallback (ESM, no restart-only path)");
 } else fail("App Hub catalog fail-safe regression");
 
 // Transparent / performance invariants

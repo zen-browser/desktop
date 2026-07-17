@@ -10,7 +10,7 @@
         content/browser/zen-components/AstraAppHubManager.mjs                   (../../zen/common/modules/AstraAppHubManager.mjs)
         content/browser/zen-components/AstraAppHubState.mjs                     (../../zen/common/modules/AstraAppHubState.mjs)
         content/browser/zen-components/AstraAppHubIcons.mjs                     (../../zen/common/modules/AstraAppHubIcons.mjs)
-        content/browser/zen-components/astra-app-hub-catalog.json               (../../zen/common/app-hub/astra-app-hub-catalog.json)
+        content/browser/zen-components/AstraAppHubCatalog.mjs                   (../../zen/common/app-hub/AstraAppHubCatalog.mjs)
 
         content/browser/zen-components/AstraSurakshaBootstrap.mjs               (../../zen/common/modules/AstraSurakshaBootstrap.mjs)
         content/browser/zen-components/AstraSurakshaManager.mjs                 (../../zen/common/modules/AstraSurakshaManager.mjs)

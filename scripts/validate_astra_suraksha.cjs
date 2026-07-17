@@ -102,6 +102,25 @@ if (
   ok("Suraksha panel + static fallback present");
 } else fail("Suraksha panel/fallback missing");
 
+if (
+  popups.includes("astra-suraksha-shell") &&
+  popups.includes("<html:article") &&
+  popups.includes("astra-suraksha-scroll") &&
+  popups.includes("<html:footer")
+) {
+  ok("Suraksha advanced content uses HTML shell/scroll/cards");
+} else fail("Suraksha HTML advanced layout missing");
+
+const mgr = read("src/zen/common/modules/AstraSurakshaManager.mjs");
+if (
+  mgr.includes('createElementNS') &&
+  mgr.includes("http://www.w3.org/1999/xhtml") &&
+  mgr.includes("#onAdvancedClick") &&
+  !mgr.includes('createXULElement("toolbarbutton")')
+) {
+  ok("Suraksha manager uses HTML buttons (no dynamic XUL toolbarbutton actions)");
+} else fail("Suraksha manager still creates XUL toolbarbutton actions");
+
 // Emergency labels for fail-safe fallback when Fluent is missing
 const fallbackBlock = popups.slice(
   popups.indexOf('id="PanelUI-astra-suraksha-fallback"'),

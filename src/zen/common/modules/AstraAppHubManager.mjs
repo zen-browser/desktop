@@ -4,7 +4,7 @@
 
 /**
  * Per-window Astra App Hub controller (Phase 2).
- * Catalog: chrome-packaged JSON. State: profile-local singleton.
+ * Catalog: chrome-packaged ESM module (lazy import). State: profile-local singleton.
  * Icons: local/packaged only — never remote http(s) list-style-image.
  */
 
@@ -45,8 +45,8 @@ try {
   deleteCustomIcons = async () => {};
 }
 
-const CATALOG_URL =
-  "chrome://browser/content/zen-components/astra-app-hub-catalog.json";
+const CATALOG_MODULE_URL =
+  "chrome://browser/content/zen-components/AstraAppHubCatalog.mjs";
 const CATALOG_SCHEMA_VERSION = 1;
 
 const SECTION_FAVORITES = "__favorites__";
@@ -214,79 +214,35 @@ function validateCatalog(raw) {
 }
 
 /**
- * Load packaged chrome catalog without treating HTTP response.ok as the
- * only success signal. Prefer a readable JSON body; fall back to NetUtil.
+ * Lazily import the packaged ESM catalog and validate a mutable clone.
  * Diagnostics never include user apps, URLs, profile paths, or search text.
+ * Stages: module-import | catalog-validate | shell | render | state
  */
-async function loadPackagedCatalog() {
+function loadPackagedCatalog() {
   const diag = {
-    stage: "fetch",
-    chromeResourcePath: CATALOG_URL,
+    stage: "module-import",
+    chromeResourcePath: CATALOG_MODULE_URL,
     responseStatus: null,
     exceptionName: null,
     schemaReason: null,
   };
 
-  let raw = null;
-  let fetchError = null;
-
+  let raw;
   try {
-    const response = await fetch(CATALOG_URL);
-    diag.responseStatus =
-      typeof response?.status === "number" ? response.status : null;
-    diag.stage = "parse";
-    const text = await response.text();
-    if (text && text.trim()) {
-      try {
-        raw = JSON.parse(text);
-      } catch (parseError) {
-        diag.exceptionName = parseError?.name || "SyntaxError";
-        if (response && response.ok === false) {
-          throw new Error(`catalog fetch failed: ${response.status}`);
-        }
-        throw parseError;
-      }
-    } else if (response && response.ok === false) {
-      throw new Error(`catalog fetch failed: ${response.status}`);
-    } else {
-      throw new Error("catalog empty body");
-    }
+    const { ASTRA_APP_HUB_CATALOG } = ChromeUtils.importESModule(
+      CATALOG_MODULE_URL
+    );
+    raw = JSON.parse(JSON.stringify(ASTRA_APP_HUB_CATALOG));
   } catch (error) {
-    fetchError = error;
     diag.exceptionName = error?.name || "Error";
-    diag.stage = "netutil";
-    try {
-      const { NetUtil } = ChromeUtils.importESModule(
-        "resource://gre/modules/NetUtil.sys.mjs"
-      );
-      const uri = Services.io.newURI(CATALOG_URL);
-      const channel = NetUtil.newChannel({
-        uri,
-        loadUsingSystemPrincipal: true,
-      });
-      const stream = channel.open();
-      try {
-        const count = stream.available();
-        const data = NetUtil.readInputStreamToString(stream, count);
-        raw = JSON.parse(data);
-        diag.exceptionName = null;
-        diag.responseStatus = 200;
-      } finally {
-        try {
-          stream.close();
-        } catch {
-          // ignore
-        }
-      }
-    } catch (netError) {
-      diag.exceptionName = netError?.name || fetchError?.name || "Error";
-      diag.stage = fetchError ? "fetch" : "netutil";
-      throw fetchError || netError;
-    }
+    diag.stage = "module-import";
+    throw Object.assign(error instanceof Error ? error : new Error(String(error)), {
+      astraCatalogDiag: { ...diag },
+    });
   }
 
   try {
-    diag.stage = "validate";
+    diag.stage = "catalog-validate";
     const catalog = validateCatalog(raw);
     return { catalog, error: null, diag: null };
   } catch (schemaError) {
@@ -295,14 +251,14 @@ async function loadPackagedCatalog() {
       0,
       160
     );
-    throw Object.assign(schemaError, { astraCatalogDiag: diag });
+    throw Object.assign(schemaError, { astraCatalogDiag: { ...diag } });
   }
 }
 
 function logCatalogFailure(diag, error) {
   const payload = {
     stage: diag?.stage || "unknown",
-    chromeResourcePath: diag?.chromeResourcePath || CATALOG_URL,
+    chromeResourcePath: diag?.chromeResourcePath || CATALOG_MODULE_URL,
     responseStatus: diag?.responseStatus ?? null,
     exceptionName:
       diag?.exceptionName || error?.name || error?.constructor?.name || "Error",
@@ -322,6 +278,8 @@ class AstraAppHubManager {
   #catalogError = null;
   #catalogDiag = null;
   #retryInFlight = false;
+  /** True after a user Retry still fails at module-import or catalog-validate. */
+  #catalogRetryExhausted = false;
   #rendered = false;
   #priorFocus = null;
   #openSource = "unknown";
@@ -492,8 +450,8 @@ class AstraAppHubManager {
         this.#catalog = null;
         this.#catalogError = catalogError;
         this.#catalogDiag = catalogError?.astraCatalogDiag || {
-          stage: "fetch",
-          chromeResourcePath: CATALOG_URL,
+          stage: "module-import",
+          chromeResourcePath: CATALOG_MODULE_URL,
           responseStatus: null,
           exceptionName: catalogError?.name || "Error",
           schemaReason: null,
@@ -516,8 +474,8 @@ class AstraAppHubManager {
       this.#catalog = null;
       this.#catalogError = error;
       this.#catalogDiag = {
-        stage: "init",
-        chromeResourcePath: CATALOG_URL,
+        stage: "shell",
+        chromeResourcePath: CATALOG_MODULE_URL,
         responseStatus: null,
         exceptionName: error?.name || "Error",
         schemaReason: null,
@@ -532,24 +490,45 @@ class AstraAppHubManager {
   }
 
   /**
-   * ADVANCED READY only when catalog + shell can render.
+   * ADVANCED READY only when catalog imported + validated, shell exists,
+   * advanced render succeeds, and the manager/window is still alive.
    * Otherwise keep fallback visible/usable with a compact retry banner.
-   * When the panel is open, rebuild advanced content before mode handoff so
-   * fallback is never swapped for an empty advanced panel.
+   * Rebuild advanced content before mode handoff so fallback is never swapped
+   * for an empty advanced panel.
    */
   #applyCatalogReadyState() {
     if (this.#destroyed || window.closed) {
       return;
     }
-    let ready = !!(this.#catalog && this.#shellBuilt && !this.#catalogError);
-    if (ready && this.isOpen) {
+    let ready = false;
+    if (this.#catalog && this.#shellBuilt && !this.#catalogError) {
       this.#rendered = false;
       try {
         this.#rebuildList();
+        ready = !!(
+          this.#catalog &&
+          this.#shellBuilt &&
+          !this.#catalogError &&
+          this.#rendered &&
+          !this.#destroyed &&
+          !window.closed
+        );
       } catch (error) {
         console.warn("[AstraAppHub] rebuild after catalog ready failed:", error);
+        this.#catalogDiag = {
+          stage: "render",
+          chromeResourcePath: CATALOG_MODULE_URL,
+          responseStatus: null,
+          exceptionName: error?.name || "Error",
+          schemaReason: String(error?.message || error).slice(0, 160),
+        };
+        ready = false;
+        try {
+          logCatalogFailure(this.#catalogDiag, error);
+        } catch {
+          // ignore
+        }
       }
-      ready = !!(this.#catalog && this.#shellBuilt && !this.#catalogError);
     }
     try {
       window.gAstraAppHubBootstrap?.setAdvancedReady?.(ready);
@@ -559,7 +538,7 @@ class AstraAppHubManager {
     if (ready) {
       this.#handoffFocusFromHiddenFallback();
     }
-    this.#showFallbackFailureBanner(!ready && !!this.#catalogError);
+    this.#showFallbackFailureBanner(!ready);
   }
 
   /**
@@ -630,7 +609,11 @@ class AstraAppHubManager {
       banner.hidden = !show;
       const retryBtn = document.getElementById("astra-app-hub-retry-btn");
       if (retryBtn) {
-        if (this.#retryInFlight) {
+        // Module-import/validate failures are process-cached; after one user
+        // Retry still fails, stop offering Retry. Render failures stay retryable.
+        const allowRetry = show && !this.#catalogRetryExhausted;
+        retryBtn.hidden = !allowRetry;
+        if (!allowRetry || this.#retryInFlight) {
           retryBtn.setAttribute("disabled", "true");
         } else {
           retryBtn.removeAttribute("disabled");
@@ -640,7 +623,12 @@ class AstraAppHubManager {
   }
 
   async #retryCatalog() {
-    if (this.#retryInFlight || this.#destroyed || window.closed) {
+    if (
+      this.#retryInFlight ||
+      this.#catalogRetryExhausted ||
+      this.#destroyed ||
+      window.closed
+    ) {
       return null;
     }
     this.#retryInFlight = true;
@@ -653,6 +641,7 @@ class AstraAppHubManager {
       this.#catalog = loaded.catalog;
       this.#catalogError = null;
       this.#catalogDiag = null;
+      this.#catalogRetryExhausted = false;
       await this.#pruneUnknown();
       if (this.#destroyed || window.closed) {
         return null;
@@ -666,19 +655,26 @@ class AstraAppHubManager {
       this.#catalog = null;
       this.#catalogError = catalogError;
       this.#catalogDiag = catalogError?.astraCatalogDiag || {
-        stage: "retry",
-        chromeResourcePath: CATALOG_URL,
+        stage: "module-import",
+        chromeResourcePath: CATALOG_MODULE_URL,
         responseStatus: null,
         exceptionName: catalogError?.name || "Error",
         schemaReason: null,
       };
+      const stage = this.#catalogDiag.stage;
+      if (stage === "module-import" || stage === "catalog-validate") {
+        // Failed import/validate is normally permanent for this process/build.
+        this.#catalogRetryExhausted = true;
+      }
       logCatalogFailure(this.#catalogDiag, catalogError);
       this.#applyCatalogReadyState();
       return null;
     } finally {
       this.#retryInFlight = false;
       if (!this.#destroyed && !window.closed) {
-        this.#showFallbackFailureBanner(!!this.#catalogError);
+        const advanced =
+          this.panel?.getAttribute("app-hub-mode") === "advanced";
+        this.#showFallbackFailureBanner(!advanced);
       }
     }
   }

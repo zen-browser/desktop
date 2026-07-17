@@ -249,27 +249,65 @@
   list-style-image: none !important;
 }
 
-.astra-app-hub-item-monogram {
+.astra-app-hub-item-monogram,
+.zen-app-launcher-item-monogram {
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   font-size: 0.7rem;
   font-weight: 700;
   margin-bottom: 4px;
   color: CanvasText;
   background: var(--astra-app-hub-accent-0);
+  text-align: center;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  border: none !important;
+  padding: 0 !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  pointer-events: none;
 }
 
-.astra-app-hub-item-monogram[data-accent="1"] { background: var(--astra-app-hub-accent-1); }
-.astra-app-hub-item-monogram[data-accent="2"] { background: var(--astra-app-hub-accent-2); }
-.astra-app-hub-item-monogram[data-accent="3"] { background: var(--astra-app-hub-accent-3); }
-.astra-app-hub-item-monogram[data-accent="4"] { background: var(--astra-app-hub-accent-4); }
-.astra-app-hub-item-monogram[data-accent="5"] { background: var(--astra-app-hub-accent-5); }
-.astra-app-hub-item-monogram[data-accent="6"] { background: var(--astra-app-hub-accent-6); }
-.astra-app-hub-item-monogram[data-accent="7"] { background: var(--astra-app-hub-accent-7); }
+.astra-app-hub-item-monogram[data-accent="1"],
+.zen-app-launcher-item-monogram[data-accent="1"],
+.zen-app-launcher-item[data-accent="meetings"] .zen-app-launcher-item-monogram {
+  background: var(--astra-app-hub-accent-1);
+}
+.astra-app-hub-item-monogram[data-accent="2"],
+.zen-app-launcher-item[data-accent="storage"] .zen-app-launcher-item-monogram {
+  background: var(--astra-app-hub-accent-2);
+}
+.astra-app-hub-item-monogram[data-accent="3"],
+.zen-app-launcher-item[data-accent="shopping"] .zen-app-launcher-item-monogram {
+  background: var(--astra-app-hub-accent-3);
+}
+.astra-app-hub-item-monogram[data-accent="4"],
+.zen-app-launcher-item[data-accent="entertainment"] .zen-app-launcher-item-monogram {
+  background: var(--astra-app-hub-accent-4);
+}
+.astra-app-hub-item-monogram[data-accent="5"],
+.zen-app-launcher-item[data-accent="education"] .zen-app-launcher-item-monogram {
+  background: var(--astra-app-hub-accent-5);
+}
+.astra-app-hub-item-monogram[data-accent="6"],
+.zen-app-launcher-item[data-accent="government"] .zen-app-launcher-item-monogram {
+  background: var(--astra-app-hub-accent-6);
+}
+.astra-app-hub-item-monogram[data-accent="7"],
+.zen-app-launcher-item[data-accent="business"] .zen-app-launcher-item-monogram,
+.zen-app-launcher-item[data-accent="news"] .zen-app-launcher-item-monogram {
+  background: var(--astra-app-hub-accent-7);
+}
+.zen-app-launcher-item[data-accent="productivity"] .zen-app-launcher-item-monogram {
+  background: var(--astra-app-hub-accent-1);
+}
+.zen-app-launcher-item[data-accent="mail"] .zen-app-launcher-item-monogram {
+  background: var(--astra-app-hub-accent-0);
+}
 
 .astra-app-hub-item-label,
 .zen-app-launcher-item-label {
@@ -469,11 +507,11 @@
 .astra-app-hub-fallback-banner {
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-height: 32px;
+  gap: 6px;
+  min-height: 0;
   max-height: 40px;
-  padding: 4px 8px;
-  margin: 0 0 8px;
+  padding: 4px 6px;
+  margin: 0 0 6px;
   border-radius: 8px;
   border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
   background: color-mix(in srgb, currentColor 7%, transparent);
@@ -555,8 +593,10 @@
 #PanelUI-zen-app-launcher-fallback-list {
   display: flex;
   flex-direction: column;
+  gap: 12px;
   max-height: 70vh;
   overflow-y: auto !important;
+  overflow-x: hidden !important;
   scrollbar-width: thin;
   min-height: 0;
 }
@@ -564,9 +604,9 @@
 #PanelUI-zen-app-launcher-title {
   font-size: 14px;
   font-weight: 600;
-  padding: 0 0 8px 0;
+  padding: 0 0 6px 0;
   border-bottom: 1px solid var(--panel-separator-color, color-mix(in srgb, currentColor 18%, transparent));
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 #PanelUI-zen-app-launcher-fallback .zen-app-launcher-section-title {
@@ -574,7 +614,8 @@
   font-weight: 700;
   color: var(--text-color-deemphasized, inherit);
   opacity: 0.85;
-  padding: 10px 0 6px 0;
+  padding: 2px 0 4px 0;
+  margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.8px;
   display: block;
@@ -582,8 +623,8 @@
 
 #PanelUI-zen-app-launcher-fallback .zen-app-launcher-grid {
   display: grid !important;
-  grid-template-columns: repeat(4, 1fr) !important;
-  gap: 4px !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 10px !important;
 }
 
 #PanelUI-zen-app-launcher-fallback .zen-app-launcher-item {
@@ -591,10 +632,10 @@
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
-  padding: 8px 4px !important;
+  padding: 6px 2px !important;
   border-radius: 8px !important;
   cursor: pointer !important;
-  min-height: 56px !important;
+  min-height: 0 !important;
   -moz-appearance: none !important;
   appearance: none !important;
   border: none !important;
@@ -606,18 +647,74 @@
 }
 
 #PanelUI-zen-app-launcher-fallback .zen-app-launcher-item-icon {
-  width: 24px !important;
-  height: 24px !important;
+  display: none !important;
+}
+
+#PanelUI-zen-app-launcher-fallback .zen-app-launcher-item-monogram {
+  width: 52px !important;
+  height: 52px !important;
+  min-width: 52px !important;
+  min-height: 52px !important;
   margin-bottom: 4px !important;
-  background: color-mix(in srgb, currentColor 12%, transparent);
-  border-radius: 6px;
+  border-radius: 12px !important;
+  font-size: 0.85rem !important;
+  font-weight: 700 !important;
+  color: CanvasText !important;
+  background: color-mix(in srgb, currentColor 14%, transparent) !important;
+  overflow: hidden !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+  padding-inline: 2px !important;
+}
+
+#PanelUI-zen-app-launcher-fallback .zen-app-launcher-item[data-accent="mail"] .zen-app-launcher-item-monogram {
+  background: var(--astra-app-hub-accent-0) !important;
+}
+#PanelUI-zen-app-launcher-fallback .zen-app-launcher-item[data-accent="meetings"] .zen-app-launcher-item-monogram,
+#PanelUI-zen-app-launcher-fallback .zen-app-launcher-item[data-accent="productivity"] .zen-app-launcher-item-monogram {
+  background: var(--astra-app-hub-accent-1) !important;
+}
+#PanelUI-zen-app-launcher-fallback .zen-app-launcher-item[data-accent="storage"] .zen-app-launcher-item-monogram {
+  background: var(--astra-app-hub-accent-2) !important;
+}
+#PanelUI-zen-app-launcher-fallback .zen-app-launcher-item[data-accent="shopping"] .zen-app-launcher-item-monogram {
+  background: var(--astra-app-hub-accent-3) !important;
+}
+#PanelUI-zen-app-launcher-fallback .zen-app-launcher-item[data-accent="entertainment"] .zen-app-launcher-item-monogram {
+  background: var(--astra-app-hub-accent-4) !important;
+}
+#PanelUI-zen-app-launcher-fallback .zen-app-launcher-item[data-accent="education"] .zen-app-launcher-item-monogram {
+  background: var(--astra-app-hub-accent-5) !important;
+}
+#PanelUI-zen-app-launcher-fallback .zen-app-launcher-item[data-accent="government"] .zen-app-launcher-item-monogram {
+  background: var(--astra-app-hub-accent-6) !important;
+}
+#PanelUI-zen-app-launcher-fallback .zen-app-launcher-item[data-accent="news"] .zen-app-launcher-item-monogram,
+#PanelUI-zen-app-launcher-fallback .zen-app-launcher-item[data-accent="business"] .zen-app-launcher-item-monogram {
+  background: var(--astra-app-hub-accent-7) !important;
 }
 
 #PanelUI-zen-app-launcher-fallback .zen-app-launcher-item-label {
   font-size: 10px !important;
   text-align: center !important;
-  max-width: 70px !important;
+  max-width: 72px !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
+  margin: 0 !important;
+}
+
+@media (max-width: 360px) {
+  #PanelUI-zen-app-launcher-fallback .zen-app-launcher-grid,
+  .zen-app-launcher-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  #PanelUI-zen-app-launcher-fallback .zen-app-launcher-item-monogram {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+  }
 }

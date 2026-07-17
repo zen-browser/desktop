@@ -44,6 +44,7 @@ import {
 
 const LOG_PREFIX = "[AstraSuraksha]";
 const PANEL_ID = "PanelUI-astra-suraksha";
+const XHTML_NS = "http://www.w3.org/1999/xhtml";
 
 class AstraSurakshaManager {
   #generation = 0;
@@ -51,7 +52,7 @@ class AstraSurakshaManager {
   #boundTabSelect = null;
   #boundProgress = null;
   #boundRefreshClick = null;
-  #boundAdvancedCommand = null;
+  #boundAdvancedClick = null;
   #listenersBound = false;
   #addonListener = null;
 
@@ -109,10 +110,11 @@ class AstraSurakshaManager {
         }
       },
     };
-    this.#boundRefreshClick = () => {
+    this.#boundRefreshClick = event => {
+      event?.preventDefault?.();
       void this.refresh();
     };
-    this.#boundAdvancedCommand = event => this.#onAdvancedCommand(event);
+    this.#boundAdvancedClick = event => this.#onAdvancedClick(event);
 
     try {
       window.gBrowser?.tabContainer?.addEventListener(
@@ -125,10 +127,10 @@ class AstraSurakshaManager {
     }
 
     const refreshBtn = document.getElementById("astra-suraksha-refresh");
-    refreshBtn?.addEventListener("command", this.#boundRefreshClick);
+    refreshBtn?.addEventListener("click", this.#boundRefreshClick);
 
     const advanced = document.getElementById("PanelUI-astra-suraksha-advanced");
-    advanced?.addEventListener("command", this.#boundAdvancedCommand);
+    advanced?.addEventListener("click", this.#boundAdvancedClick);
 
     try {
       const { AddonManager } = ChromeUtils.importESModule(
@@ -163,10 +165,10 @@ class AstraSurakshaManager {
     }
     document
       .getElementById("astra-suraksha-refresh")
-      ?.removeEventListener("command", this.#boundRefreshClick);
+      ?.removeEventListener("click", this.#boundRefreshClick);
     document
       .getElementById("PanelUI-astra-suraksha-advanced")
-      ?.removeEventListener("command", this.#boundAdvancedCommand);
+      ?.removeEventListener("click", this.#boundAdvancedClick);
     if (this.#addonListener) {
       try {
         const { AddonManager } = ChromeUtils.importESModule(
@@ -402,6 +404,10 @@ class AstraSurakshaManager {
     }
   }
 
+  #htmlEl(tag) {
+    return document.createElementNS(XHTML_NS, tag);
+  }
+
   #clearChildren(node) {
     if (!node) {
       return;
@@ -412,24 +418,25 @@ class AstraSurakshaManager {
   }
 
   #renderActionButtons(container, actions) {
-    this.#clearChildren(container);
-    if (!container || !actions?.length) {
+    if (!container) {
       return;
     }
-    // One primary + optional overflow keeps cards compact.
-    const primary = actions[0];
-    const rest = actions.slice(1);
-    const btn = document.createXULElement("toolbarbutton");
-    btn.classList.add("astra-suraksha-action", "astra-suraksha-action-compact");
-    btn.setAttribute("data-suraksha-action", primary.id);
-    this.#setL10n(btn, primary.labelId);
-    container.appendChild(btn);
-    for (const action of rest) {
-      const extra = document.createXULElement("toolbarbutton");
-      extra.classList.add("astra-suraksha-action", "astra-suraksha-action-compact");
-      extra.setAttribute("data-suraksha-action", action.id);
-      this.#setL10n(extra, action.labelId);
-      container.appendChild(extra);
+    // Preserve a More Details control if already placed in this actions row.
+    const more = container.querySelector(".astra-suraksha-more-details");
+    this.#clearChildren(container);
+    if (more) {
+      container.appendChild(more);
+    }
+    if (!actions?.length) {
+      return;
+    }
+    for (const action of actions) {
+      const btn = this.#htmlEl("button");
+      btn.type = "button";
+      btn.classList.add("astra-suraksha-action", "astra-suraksha-action-compact");
+      btn.setAttribute("data-suraksha-action", action.id);
+      this.#setL10n(btn, action.labelId);
+      container.appendChild(btn);
     }
   }
 
@@ -445,7 +452,7 @@ class AstraSurakshaManager {
     if (hostEl) {
       if (result?.hostname) {
         hostEl.removeAttribute("data-l10n-id");
-        hostEl.setAttribute("value", result.hostname);
+        hostEl.textContent = result.hostname;
       } else {
         this.#setL10n(hostEl, "astra-suraksha-hostname-unknown");
       }
@@ -475,16 +482,18 @@ class AstraSurakshaManager {
     if (detail) {
       if (result?.detailId && result?.modeId) {
         detail.hidden = false;
-        // Compose mode label into detail via two-pass: set mode text into attr.
         try {
-          const modeLabel = document.createXULElement("label");
+          const modeLabel = this.#htmlEl("span");
           document.l10n.setAttributes(modeLabel, result.modeId);
-          document.l10n.translateElements([modeLabel]).then(() => {
-            const mode = modeLabel.value || modeLabel.textContent || "";
-            document.l10n.setAttributes(detail, result.detailId, { mode });
-          }).catch(() => {
-            this.#setL10n(detail, result.detailId, { mode: "" });
-          });
+          document.l10n
+            .translateElements([modeLabel])
+            .then(() => {
+              const mode = modeLabel.textContent || "";
+              document.l10n.setAttributes(detail, result.detailId, { mode });
+            })
+            .catch(() => {
+              this.#setL10n(detail, result.detailId, { mode: "" });
+            });
         } catch {
           this.#setL10n(detail, result.detailId, { mode: "" });
         }
@@ -541,12 +550,17 @@ class AstraSurakshaManager {
     }
     this.#setL10n(status, result?.labelId || "astra-suraksha-error");
 
+    // Drop prior more-details / extras before rebuild (no duplicates on refresh).
+    actions
+      ?.querySelectorAll(".astra-suraksha-more-details")
+      .forEach(node => node.remove());
     card
-      .querySelectorAll(".astra-suraksha-card-detail-extra, .astra-suraksha-more-details")
+      .querySelectorAll(".astra-suraksha-card-detail-extra")
       .forEach(node => node.remove());
     if (detailsBox) {
       this.#clearChildren(detailsBox);
       detailsBox.hidden = true;
+      detailsBox.setAttribute("hidden", "true");
     }
 
     const details = result?.details || [];
@@ -554,40 +568,25 @@ class AstraSurakshaManager {
       if (details[0]?.id) {
         detail.hidden = false;
         this.#setL10n(detail, details[0].id);
-        if (details.length > 1 && detailsBox) {
-          if (!detailsBox.id) {
-            detailsBox.id = `${cardId}-details`;
-          }
-          const more = document.createXULElement("toolbarbutton");
+        if (details.length > 1 && detailsBox && actions) {
+          const detailsId = detailsBox.id || `${cardId}-details`;
+          detailsBox.id = detailsId;
+          detailsBox.setAttribute(
+            "data-pending-details",
+            JSON.stringify(details.slice(1).map(d => d.id).filter(Boolean))
+          );
+          const more = this.#htmlEl("button");
+          more.type = "button";
           more.classList.add(
             "astra-suraksha-action",
             "astra-suraksha-action-compact",
             "astra-suraksha-more-details"
           );
           more.setAttribute("aria-expanded", "false");
-          more.setAttribute("aria-controls", detailsBox.id);
+          more.setAttribute("aria-controls", detailsId);
+          more.setAttribute("data-suraksha-toggle-details", detailsId);
           this.#setL10n(more, "astra-suraksha-more-details");
-          more.addEventListener("command", () => {
-            const open = detailsBox.hidden;
-            detailsBox.hidden = !open;
-            more.setAttribute("aria-expanded", open ? "true" : "false");
-            if (open && !detailsBox.childElementCount) {
-              for (let i = 1; i < details.length; i++) {
-                const extra = document.createXULElement("label");
-                extra.classList.add(
-                  "astra-suraksha-card-detail",
-                  "astra-suraksha-card-detail-extra"
-                );
-                this.#setL10n(extra, details[i].id);
-                detailsBox.appendChild(extra);
-              }
-            }
-          });
-          if (actions?.parentNode) {
-            actions.parentNode.insertBefore(more, actions);
-          } else {
-            detail.parentNode?.appendChild(more);
-          }
+          actions.appendChild(more);
         }
       } else {
         detail.hidden = true;
@@ -621,18 +620,18 @@ class AstraSurakshaManager {
     } else {
       status.hidden = true;
       for (const item of result.items) {
-        const row = document.createXULElement("hbox");
+        const row = this.#htmlEl("div");
         row.classList.add("astra-suraksha-perm-row");
-        const name = document.createXULElement("label");
+        const name = this.#htmlEl("span");
         name.classList.add("astra-suraksha-perm-name");
-        name.setAttribute("value", item.name);
-        const state = document.createXULElement("label");
+        name.textContent = item.name;
+        const state = this.#htmlEl("span");
         state.classList.add("astra-suraksha-perm-state");
         this.#setL10n(state, item.stateLabelId);
         row.appendChild(name);
         row.appendChild(state);
         if (item.temporary) {
-          const temp = document.createXULElement("label");
+          const temp = this.#htmlEl("span");
           temp.classList.add("astra-suraksha-perm-temp");
           this.#setL10n(temp, "astra-suraksha-perm-temporary");
           row.appendChild(temp);
@@ -684,20 +683,74 @@ class AstraSurakshaManager {
     this.#applyCardVariant(card, result?.state || "error");
   }
 
-  #onAdvancedCommand(event) {
+  #toggleDetails(detailsId, trigger) {
+    const detailsBox = document.getElementById(detailsId);
+    if (!detailsBox || !trigger) {
+      return;
+    }
+    const currentlyHidden = !!detailsBox.hidden;
+    if (currentlyHidden) {
+      detailsBox.hidden = false;
+      detailsBox.removeAttribute("hidden");
+      trigger.setAttribute("aria-expanded", "true");
+      if (!detailsBox.childElementCount) {
+        const pending = detailsBox.getAttribute("data-pending-details");
+        if (pending) {
+          try {
+            const ids = JSON.parse(pending);
+            for (const id of ids) {
+              const extra = this.#htmlEl("p");
+              extra.classList.add(
+                "astra-suraksha-card-detail",
+                "astra-suraksha-card-detail-extra"
+              );
+              this.#setL10n(extra, id);
+              detailsBox.appendChild(extra);
+            }
+          } catch {
+            // ignore malformed pending payload
+          }
+          detailsBox.removeAttribute("data-pending-details");
+        }
+      }
+    } else {
+      detailsBox.hidden = true;
+      detailsBox.setAttribute("hidden", "true");
+      trigger.setAttribute("aria-expanded", "false");
+    }
+  }
+
+  #onAdvancedClick(event) {
     try {
       const target = event.target;
       if (!target || typeof target.closest !== "function") {
         return;
       }
-      const item = target.closest("[data-suraksha-action]");
-      if (!item) {
+      // Ignore non-primary clicks / already-handled controls.
+      if (event.button != null && event.button !== 0) {
         return;
       }
+      const toggle = target.closest("[data-suraksha-toggle-details]");
+      if (toggle) {
+        if (toggle.disabled) {
+          return;
+        }
+        event.preventDefault();
+        this.#toggleDetails(
+          toggle.getAttribute("data-suraksha-toggle-details"),
+          toggle
+        );
+        return;
+      }
+      const item = target.closest("[data-suraksha-action]");
+      if (!item || item.disabled) {
+        return;
+      }
+      event.preventDefault();
       const action = item.getAttribute("data-suraksha-action");
       this.#runAction(action, event);
     } catch (error) {
-      console.error(`${LOG_PREFIX} openPopup failed`, error);
+      console.error(`${LOG_PREFIX} advanced click failed`, error);
     }
   }
 

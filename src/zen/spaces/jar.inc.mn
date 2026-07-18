@@ -5,4 +5,4 @@
         content/browser/zen-components/ZenSpaceBookmarksStorage.js              (../../zen/spaces/ZenSpaceBookmarksStorage.js)
 *       content/browser/zen-styles/zen-workspaces.css                           (../../zen/spaces/zen-workspaces.css)
         content/browser/zen-styles/zen-gradient-generator.css                   (../../zen/spaces/zen-gradient-generator.css)
-*       content/browser/zen-styles/astra-space-peek.css                         (../../zen/spaces/astra-space-peek.css)
+        content/browser/zen-styles/astra-space-peek.css                         (../../zen/spaces/astra-space-peek.css)

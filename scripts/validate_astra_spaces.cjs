@@ -160,17 +160,45 @@ for (const name of [
 }
 
 const jar = read("src/zen/spaces/jar.inc.mn");
-if (jar.includes("astra-space-peek.css")) {
-  ok("jar packs astra-space-peek.css");
-} else {
-  fail("jar missing astra-space-peek.css");
+{
+  // Plain CSS must NOT use jar.mn preprocessing (*). failUnused rejects empty PP.
+  const peekJarLines = jar
+    .split(/\r?\n/)
+    .filter(line => line.includes("astra-space-peek.css"));
+  const dest =
+    "content/browser/zen-styles/astra-space-peek.css";
+  const srcRel = "../../zen/spaces/astra-space-peek.css";
+  if (peekJarLines.length !== 1) {
+    fail(
+      `astra-space-peek.css jar mapping count=${peekJarLines.length} (want 1)`
+    );
+  } else {
+    const line = peekJarLines[0];
+    const trimmed = line.trimStart();
+    if (trimmed.startsWith("*")) {
+      fail(
+        "astra-space-peek.css must not use jar.mn preprocessing (*)"
+      );
+    } else if (!line.includes(dest) || !line.includes(srcRel)) {
+      fail("astra-space-peek.css jar destination/source mismatch");
+    } else if (!exists("src/zen/spaces/astra-space-peek.css")) {
+      fail("astra-space-peek.css source missing");
+    } else {
+      ok("jar packs astra-space-peek.css once without preprocessing");
+    }
+  }
 }
 
 const assets = read("src/browser/base/content/zen-assets.inc.xhtml");
-if (assets.includes("astra-space-peek.css")) {
-  ok("assets include peek CSS");
-} else {
-  fail("assets missing peek CSS");
+{
+  const peekAssetCount = (
+    assets.match(/astra-space-peek\.css/g) || []
+  ).length;
+  if (peekAssetCount === 1) {
+    ok("assets include peek CSS exactly once");
+  } else {
+    fail(`assets peek CSS count=${peekAssetCount} (want 1)`);
+  }
 }
 
 const integrity = read("src/zen/spaces/AstraSpaceIntegrity.mjs");

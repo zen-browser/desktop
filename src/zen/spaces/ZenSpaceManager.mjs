@@ -1828,7 +1828,8 @@ class nsZenWorkspaces {
       !(
         this.#inChangingWorkspace &&
         !forAnimation &&
-        !this._alwaysAnimatePaddingTop
+        !this._alwaysAnimatePaddingTop &&
+        !this._cleanupSpaceCreation
       )
     ) {
       delete this._alwaysAnimatePaddingTop;

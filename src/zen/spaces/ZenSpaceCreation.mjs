@@ -344,7 +344,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
         }
       );
     }
-    // Prevent recalculation of essentials height on cleanup 
+    // Prevent recalculation of essentials height on cleanup
     gZenWorkspaces._cleanupSpaceCreation = true;
 
     document.getElementById("zen-sidebar-splitter").style.pointerEvents = "";

@@ -1299,6 +1299,12 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
               // Should insert after zen-empty-tab
               const start =
                 parentWorkingData.node.groupStartElement.nextElementSibling;
+              if (!start) {
+                console.error(
+                  `Zen Folders: Could not find start element for parent folder with id ${stateData.parentId} while restoring session.`
+                );
+                break;
+              }
               start.after(node);
             }
           }

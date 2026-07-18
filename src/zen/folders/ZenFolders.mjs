@@ -1297,9 +1297,11 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
             }
             default: {
               // Should insert after zen-empty-tab
-              const start =
+              let start =
                 parentWorkingData.node.groupStartElement.nextElementSibling;
-              start ||= parentWorkingData.node.tabs[0] || parentWorkingData.node.groupStartElement;
+              start ||=
+                parentWorkingData.node.tabs[0] ||
+                parentWorkingData.node.groupStartElement;
               if (!start) {
                 console.error(
                   `Zen Folders: Could not find start element for parent folder with id ${stateData.parentId} while restoring session.`

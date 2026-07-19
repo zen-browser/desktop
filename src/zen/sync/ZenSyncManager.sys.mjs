@@ -262,6 +262,11 @@ class ZenSyncManager {
         : tab.getAttribute("zen-workspace-id") || null,
     };
 
+    this.#appendOptionalTabSyncData(syncTabData, tab, position);
+    return syncTabData;
+  }
+
+  #appendOptionalTabSyncData(syncTabData, tab, position) {
     if (typeof tab.zenStaticLabel === "string") {
       syncTabData.zenStaticLabel = tab.zenStaticLabel;
     }
@@ -271,8 +276,6 @@ class ZenSyncManager {
     if (typeof position === "number") {
       syncTabData.position = position;
     }
-
-    return syncTabData;
   }
 }
 

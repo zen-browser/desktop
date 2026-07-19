@@ -228,7 +228,8 @@ class ZenWorkspacesStore extends Store {
           record.deleted = true;
           return record;
         }
-        const { syncStatus: _s, id: folderId, ...rest } = folder;
+        const { id: folderId, ...rest } = folder;
+        delete rest.syncStatus;
         record.cleartext = {
           id,
           type: RECORD_TYPES.FOLDER,

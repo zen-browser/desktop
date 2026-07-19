@@ -6,7 +6,6 @@
 
 import { nsZenThemePicker } from "resource:///modules/zen/ZenGradientGenerator.mjs";
 import { ZenSpacesSwipe } from "resource:///modules/zen/ZenSpacesSwipe.mjs";
-import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 
 const lazy = {};
 
@@ -14,6 +13,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
   ZenSyncStore: "resource:///modules/zen/ZenSyncManager.sys.mjs",
   ZenSpaceSyncResolver: "resource:///modules/zen/ZenSpaceSyncResolver.sys.mjs",
+  XPCOMUtils: "resource://gre/modules/XPCOMUtils.sys.mjs",
 });
 
 ChromeUtils.defineLazyGetter(lazy, "browserBackgroundElement", () => {
@@ -91,31 +91,31 @@ class nsZenWorkspaces {
     }
 
     this.ownerWindow = window;
-    XPCOMUtils.defineLazyPreferenceGetter(
+    lazy.XPCOMUtils.defineLazyPreferenceGetter(
       this,
       "activationMethod",
       "zen.workspaces.scroll-modifier-key",
       "ctrl"
     );
-    XPCOMUtils.defineLazyPreferenceGetter(
+    lazy.XPCOMUtils.defineLazyPreferenceGetter(
       this,
       "naturalScroll",
       "zen.workspaces.natural-scroll",
       true
     );
-    XPCOMUtils.defineLazyPreferenceGetter(
+    lazy.XPCOMUtils.defineLazyPreferenceGetter(
       this,
       "shouldWrapAroundNavigation",
       "zen.workspaces.wrap-around-navigation",
       true
     );
-    XPCOMUtils.defineLazyPreferenceGetter(
+    lazy.XPCOMUtils.defineLazyPreferenceGetter(
       this,
       "shouldForceContainerTabsToWorkspace",
       "zen.workspaces.force-container-workspace",
       true
     );
-    XPCOMUtils.defineLazyPreferenceGetter(
+    lazy.XPCOMUtils.defineLazyPreferenceGetter(
       this,
       "shouldOpenNewTabIfLastUnpinnedTabIsClosed",
       "zen.workspaces.open-new-tab-if-last-unpinned-tab-is-closed",

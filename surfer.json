@@ -6,7 +6,7 @@
   "version": {
     "product": "firefox",
     "version": "152.0.6",
-    "candidate": "152.0.6",
+    "candidate": "153.0",
     "candidateBuild": 1
   },
   "buildOptions": {

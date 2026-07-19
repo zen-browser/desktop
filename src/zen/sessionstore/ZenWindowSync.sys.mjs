@@ -79,6 +79,22 @@ const SYNC_FLAG_LABEL = 1 << 0;
 const SYNC_FLAG_ICON = 1 << 1;
 const SYNC_FLAG_MOVE = 1 << 2;
 
+// Events that automatically trigger a #notifySyncItemChanged call in #handleNextEvent.
+const SYNC_CHANGE_EVENTS = [
+  "TabHide",
+  "TabShow",
+  "TabMove",
+  "TabPinned",
+  "TabUnpinned",
+  "TabAddedToEssentials",
+  "TabRemovedFromEssentials",
+  "TabClose",
+  "TabGroupRemoved",
+  "TabGroupMoved",
+  "TabGroupUpdate",
+  "ZenTabRemovedFromSplit",
+];
+
 class nsZenWindowSync {
   #initialized = false;
   constructor() {}
@@ -466,6 +482,10 @@ class nsZenWindowSync {
       await this.#handleNextEventInternal(aEvent);
     } catch (e) {
       console.error(e);
+    } finally {
+      if (SYNC_CHANGE_EVENTS.includes(aEvent.type)) {
+        this.#notifySyncItemChanged(aEvent.target);
+      }
     }
     for (let syncHandler of this.#syncHandlers) {
       try {
@@ -1446,8 +1466,6 @@ class nsZenWindowSync {
   on_TabHide(aEvent) {
     const tab = aEvent.target;
     const window = tab.documentGlobal;
-    this.#notifySyncItemChanged(aEvent.target);
-
     if (lazy.gSyncOnlyPinnedTabs && !tab.pinned) {
       return;
     }
@@ -1462,8 +1480,6 @@ class nsZenWindowSync {
   on_TabShow(aEvent) {
     const tab = aEvent.target;
     const window = tab.documentGlobal;
-    this.#notifySyncItemChanged(aEvent.target);
-
     if (lazy.gSyncOnlyPinnedTabs && !tab.pinned) {
       return;
     }
@@ -1476,15 +1492,12 @@ class nsZenWindowSync {
   }
 
   on_TabMove(aEvent) {
-    this.#notifySyncItemChanged(aEvent.target);
     this.#delegateGenericSyncEvent(aEvent, SYNC_FLAG_MOVE);
     return Promise.resolve();
   }
 
   on_TabPinned(aEvent) {
     const tab = aEvent.target;
-    this.#notifySyncItemChanged(tab);
-
     // There are cases where the pinned state is changed but we don't
     // wan't to override the initial state we stored when the tab was created.
     // For example, when session restore pins a tab again.
@@ -1504,7 +1517,6 @@ class nsZenWindowSync {
 
   on_TabUnpinned(aEvent) {
     const tab = aEvent.target;
-    this.#notifySyncItemChanged(tab);
     this.#runOnAllWindows(null, win => {
       const targetTab = this.getItemFromWindow(win, tab.id);
       if (targetTab) {
@@ -1519,19 +1531,16 @@ class nsZenWindowSync {
   }
 
   on_TabAddedToEssentials(aEvent) {
-    this.#notifySyncItemChanged(aEvent.target);
     return this.on_TabMove(aEvent);
   }
 
   on_TabRemovedFromEssentials(aEvent) {
-    this.#notifySyncItemChanged(aEvent.target);
     return this.on_TabMove(aEvent);
   }
 
   on_TabClose(aEvent) {
     const tab = aEvent.target;
     const window = tab.documentGlobal;
-    this.#notifySyncItemChanged(tab);
     this.#runOnAllWindows(window, win => {
       const targetTab = this.getItemFromWindow(win, tab.id);
       if (targetTab) {
@@ -1727,7 +1736,6 @@ class nsZenWindowSync {
   on_TabGroupRemoved(aEvent) {
     const tabGroup = aEvent.target;
     const window = tabGroup.documentGlobal;
-    this.#notifySyncItemChanged(tabGroup);
     this.#runOnAllWindows(window, win => {
       const targetGroup = this.getItemFromWindow(win, tabGroup.id);
       if (targetGroup) {
@@ -1741,12 +1749,10 @@ class nsZenWindowSync {
   }
 
   on_TabGroupMoved(aEvent) {
-    this.#notifySyncItemChanged(aEvent.target);
     return this.on_TabMove(aEvent);
   }
 
   on_TabGroupUpdate(aEvent) {
-    this.#notifySyncItemChanged(aEvent.target);
     return this.#delegateGenericSyncEvent(
       aEvent,
       SYNC_FLAG_ICON | SYNC_FLAG_LABEL
@@ -1765,7 +1771,6 @@ class nsZenWindowSync {
     const tab = aEvent.target;
     const window = tab.documentGlobal;
     const groupId = aEvent.detail?.groupId;
-    this.#notifySyncItemChanged(tab);
     if (groupId) {
       lazy.ZenSyncStore.markSplitChanged(groupId);
     }

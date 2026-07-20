@@ -659,7 +659,10 @@ ${cssSelector} {
       this.currentBoostData.sizeOverride = 0.9;
     } else if (this.currentBoostData.sizeOverride == 0.9) {
       this.currentBoostData.sizeOverride = 1;
-      await this.zenBoostsChild.sendQuery("ZenBoost:DisableSizeOverride");
+      await this.zenBoostsChild.updateBoostSize(
+        this.currentBoostData.sizeOverride,
+        /* disableOverride: */ true
+      );
     }
 
     this.currentBoostData.changeWasMade = true;

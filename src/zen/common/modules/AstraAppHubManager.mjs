@@ -4061,6 +4061,13 @@ class AstraAppHubManager {
     if (this.#destroyed) {
       return;
     }
+    try {
+      window.gZenCompactModeManager?.lockForPanel?.(
+        "PanelUI-zen-app-launcher"
+      );
+    } catch {
+      // Compact lock is best-effort; never block App Hub.
+    }
     this.#updateShortcutHint();
     // Keyboard open focuses search; mouse open does not steal focus.
     if (this.#openSource === "keyboard") {
@@ -4078,6 +4085,13 @@ class AstraAppHubManager {
 
   #onPopupHidden() {
     this.#popupTransition = false;
+    try {
+      window.gZenCompactModeManager?.unlockForPanel?.(
+        "PanelUI-zen-app-launcher"
+      );
+    } catch {
+      // ignore
+    }
     let needsRebuild = false;
     if (this.#editorMode) {
       this.#editorMode = null;

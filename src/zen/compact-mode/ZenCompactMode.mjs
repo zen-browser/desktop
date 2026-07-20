@@ -59,6 +59,8 @@ window.gZenCompactModeManager = {
   _edgeRevealActive: false,
   _cachedSidebarVerticalBounds: null,
   _cachedSidebarHandoffExtent: null,
+  /** @type {Set<string>|null} Tokens for Astra-owned panels locking compact reveal. */
+  _panelLockTokens: null,
 
   preInit() {
     this._wasInCompactMode = Services.prefs.getBoolPref(
@@ -91,6 +93,7 @@ window.gZenCompactModeManager = {
           tabIsRightObserver
         );
         this._teardownEdgeRevealListener();
+        this._clearAllPanelLocks();
       },
       { once: true }
     );
@@ -181,8 +184,68 @@ window.gZenCompactModeManager = {
     this._invalidateSidebarBoundsCache();
     if (!value) {
       this._clearEdgeRevealState();
+      this._clearAllPanelLocks();
     }
     this._updateEvent();
+  },
+
+  /**
+   * Lock the Zen compact sidebar open while an Astra-owned panel is shown.
+   * Does not read or write Firefox SidebarState / AI panel state.
+   *
+   * @param {string} token Stable id such as "PanelUI-zen-app-launcher".
+   */
+  lockForPanel(token) {
+    if (!token || !this.sidebar) {
+      return;
+    }
+    if (!this._panelLockTokens) {
+      this._panelLockTokens = new Set();
+    }
+    this._panelLockTokens.add(String(token));
+    this.clearFlashTimeout("has-hover" + this.sidebar.id);
+    if (this._removeHoverFrames?.[this.sidebar.id]) {
+      window.cancelAnimationFrame(this._removeHoverFrames[this.sidebar.id]);
+      this._removeHoverFrames[this.sidebar.id] = null;
+    }
+    this._edgeRevealActive = true;
+    this._setElementExpandAttribute(this.sidebar, true, "zen-has-hover");
+    this._setElementExpandAttribute(this.sidebar, true, "has-popup-menu");
+  },
+
+  /**
+   * Release a panel lock. When no locks remain, clear has-popup-menu only;
+   * zen-has-hover continues under normal edge/hover rules.
+   *
+   * @param {string} token
+   */
+  unlockForPanel(token) {
+    if (!token || !this._panelLockTokens) {
+      return;
+    }
+    this._panelLockTokens.delete(String(token));
+    if (this._panelLockTokens.size > 0) {
+      return;
+    }
+    if (this.sidebar) {
+      this._setElementExpandAttribute(this.sidebar, false, "has-popup-menu");
+    }
+  },
+
+  isPanelLocked() {
+    return !!(this._panelLockTokens && this._panelLockTokens.size > 0);
+  },
+
+  _clearAllPanelLocks() {
+    if (!this._panelLockTokens?.size) {
+      this._panelLockTokens = null;
+      return;
+    }
+    this._panelLockTokens.clear();
+    this._panelLockTokens = null;
+    if (this.sidebar) {
+      this._setElementExpandAttribute(this.sidebar, false, "has-popup-menu");
+    }
   },
 
   get sidebarIsOnRight() {
@@ -921,6 +984,9 @@ window.gZenCompactModeManager = {
     // Edge detector only initiates reveal. Leaving the 8px strip while still
     // inside the sidebar handoff zone (or over :hover toolbox) must not hide.
     if (this._edgeRevealActive) {
+      if (this.isPanelLocked()) {
+        return;
+      }
       if (sidebarHovered) {
         this._edgeRevealActive = false;
         return;
@@ -932,7 +998,8 @@ window.gZenCompactModeManager = {
       if (
         this.sidebar.hasAttribute("zen-has-hover") &&
         !this.sidebar.hasAttribute("zen-user-show") &&
-        !this.sidebar.hasAttribute("zen-has-empty-tab")
+        !this.sidebar.hasAttribute("zen-has-empty-tab") &&
+        !this.sidebar.hasAttribute("has-popup-menu")
       ) {
         this.flashElement(
           this.sidebar,
@@ -1092,6 +1159,10 @@ window.gZenCompactModeManager = {
             return;
           }
 
+          if (target === this.sidebar && this.isPanelLocked()) {
+            return;
+          }
+
           if (target === this.sidebar) {
             this._edgeRevealActive = false;
           }
@@ -1145,6 +1216,9 @@ window.gZenCompactModeManager = {
               7
             )
           ) {
+            continue;
+          }
+          if (target === this.sidebar && this.isPanelLocked()) {
             continue;
           }
           window.cancelAnimationFrame(this._removeHoverFrames[target.id]);
@@ -1227,7 +1301,9 @@ window.gZenCompactModeManager = {
     return (
       this.sidebar.hasAttribute("zen-user-show") ||
       this.sidebar.hasAttribute("zen-has-hover") ||
-      this.sidebar.hasAttribute("zen-has-empty-tab")
+      this.sidebar.hasAttribute("zen-has-empty-tab") ||
+      this.sidebar.hasAttribute("has-popup-menu") ||
+      this.isPanelLocked()
     );
   },
 

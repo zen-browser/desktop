@@ -64,8 +64,10 @@
   position: relative;
 }
 
-/* When sidebar is actively expanded/hovering: raise AI panel ABOVE the active
-   flyout (z-index 15) so it never gets visually overlapped by the expanded sidebar */
+/* When Zen is actively revealed, keep Firefox AI/history panels clickable but
+   below the Zen flyout (z-index 15) so the temporary sidebar stays usable.
+   Collapsed state still keeps AI below the edge sliver (z-index 2 vs toolbox 3)
+   and the launcher rail above the sliver (#sidebar-main z-index 5). */
 :root[zen-compact-mode="true"]:has(
   #navigator-toolbox:is(
     [zen-has-hover], [zen-user-show], [zen-has-empty-tab],
@@ -84,5 +86,5 @@
     [flash-popup], [has-popup-menu], [movingtab], [zen-compact-mode-active]
   )
 ) #sidebar-box {
-  z-index: 20;
+  z-index: 14;
 }

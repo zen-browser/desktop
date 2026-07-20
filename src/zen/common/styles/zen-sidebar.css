@@ -71,19 +71,22 @@
 :root[zen-compact-mode="true"]:has(
   #navigator-toolbox:is(
     [zen-has-hover], [zen-user-show], [zen-has-empty-tab],
-    [flash-popup], [has-popup-menu], [movingtab], [zen-compact-mode-active]
+    [flash-popup], [has-popup-menu], [movingtab], [zen-compact-mode-active],
+    [astra-compact-panel-lock]
   )
 ) #ai-window-splitter,
 :root[zen-compact-mode="true"]:has(
   #navigator-toolbox:is(
     [zen-has-hover], [zen-user-show], [zen-has-empty-tab],
-    [flash-popup], [has-popup-menu], [movingtab], [zen-compact-mode-active]
+    [flash-popup], [has-popup-menu], [movingtab], [zen-compact-mode-active],
+    [astra-compact-panel-lock]
   )
 ) #ai-window-box,
 :root[zen-compact-mode="true"]:has(
   #navigator-toolbox:is(
     [zen-has-hover], [zen-user-show], [zen-has-empty-tab],
-    [flash-popup], [has-popup-menu], [movingtab], [zen-compact-mode-active]
+    [flash-popup], [has-popup-menu], [movingtab], [zen-compact-mode-active],
+    [astra-compact-panel-lock]
   )
 ) #sidebar-box {
   z-index: 14;

@@ -61,6 +61,9 @@ window.gZenCompactModeManager = {
   _cachedSidebarHandoffExtent: null,
   /** @type {Set<string>|null} Tokens for Astra-owned panels locking compact reveal. */
   _panelLockTokens: null,
+  /** True only while Astra itself set zen-has-hover for a panel lock. */
+  _panelLockOwnedHover: false,
+  PANEL_LOCK_ATTR: "astra-compact-panel-lock",
 
   preInit() {
     this._wasInCompactMode = Services.prefs.getBoolPref(
@@ -191,6 +194,8 @@ window.gZenCompactModeManager = {
 
   /**
    * Lock the Zen compact sidebar open while an Astra-owned panel is shown.
+   * Uses a dedicated attribute so we never steal or clear shared has-popup-menu
+   * ownership from ZenUIManager popup tracking.
    * Does not read or write Firefox SidebarState / AI panel state.
    *
    * @param {string} token Stable id such as "PanelUI-zen-app-launcher".
@@ -199,9 +204,18 @@ window.gZenCompactModeManager = {
     if (!token || !this.sidebar) {
       return;
     }
+    // Visual lock only applies when compact mode is actively hiding the sidebar.
+    if (!this.preference || !this.canHideSidebar) {
+      if (!this._panelLockTokens) {
+        this._panelLockTokens = new Set();
+      }
+      this._panelLockTokens.add(String(token));
+      return;
+    }
     if (!this._panelLockTokens) {
       this._panelLockTokens = new Set();
     }
+    const already = this._panelLockTokens.has(String(token));
     this._panelLockTokens.add(String(token));
     this.clearFlashTimeout("has-hover" + this.sidebar.id);
     if (this._removeHoverFrames?.[this.sidebar.id]) {
@@ -209,13 +223,22 @@ window.gZenCompactModeManager = {
       this._removeHoverFrames[this.sidebar.id] = null;
     }
     this._edgeRevealActive = true;
-    this._setElementExpandAttribute(this.sidebar, true, "zen-has-hover");
-    this._setElementExpandAttribute(this.sidebar, true, "has-popup-menu");
+    this.sidebar.setAttribute(this.PANEL_LOCK_ATTR, "true");
+    // Preserve a pre-existing hover/popup attribute; only claim hover if needed.
+    const hadHover = this.sidebar.hasAttribute("zen-has-hover");
+    if (!hadHover) {
+      this._setElementExpandAttribute(this.sidebar, true, "zen-has-hover");
+      this._panelLockOwnedHover = true;
+    } else if (!already && this._panelLockTokens.size === 1) {
+      // First lock while already hovered by the pointer — do not own hover.
+      this._panelLockOwnedHover = false;
+    }
   },
 
   /**
-   * Release a panel lock. When no locks remain, clear has-popup-menu only;
-   * zen-has-hover continues under normal edge/hover rules.
+   * Release a panel lock. When no Astra tokens remain, clear only Astra-owned
+   * state. Never clears shared has-popup-menu. Clears zen-has-hover only when
+   * Astra previously owned it and the pointer is not still over the sidebar.
    *
    * @param {string} token
    */
@@ -227,25 +250,49 @@ window.gZenCompactModeManager = {
     if (this._panelLockTokens.size > 0) {
       return;
     }
-    if (this.sidebar) {
-      this._setElementExpandAttribute(this.sidebar, false, "has-popup-menu");
-    }
+    this._releasePanelLockVisualState();
   },
 
   isPanelLocked() {
     return !!(this._panelLockTokens && this._panelLockTokens.size > 0);
   },
 
+  _releasePanelLockVisualState() {
+    this._panelLockTokens = null;
+    if (!this.sidebar) {
+      this._panelLockOwnedHover = false;
+      return;
+    }
+    this.sidebar.removeAttribute(this.PANEL_LOCK_ATTR);
+    const ownedHover = this._panelLockOwnedHover;
+    this._panelLockOwnedHover = false;
+    if (!ownedHover) {
+      return;
+    }
+    // Do not strip real pointer hover or native popup-tracking ownership.
+    if (
+      this.sidebar.matches(":hover") ||
+      this.sidebar.hasAttribute("has-popup-menu") ||
+      this.sidebar.hasAttribute("zen-user-show") ||
+      this.sidebar.hasAttribute("zen-has-empty-tab")
+    ) {
+      return;
+    }
+    this._setElementExpandAttribute(this.sidebar, false, "zen-has-hover");
+    this._edgeRevealActive = false;
+  },
+
   _clearAllPanelLocks() {
     if (!this._panelLockTokens?.size) {
       this._panelLockTokens = null;
+      this._panelLockOwnedHover = false;
+      if (this.sidebar) {
+        this.sidebar.removeAttribute(this.PANEL_LOCK_ATTR);
+      }
       return;
     }
     this._panelLockTokens.clear();
-    this._panelLockTokens = null;
-    if (this.sidebar) {
-      this._setElementExpandAttribute(this.sidebar, false, "has-popup-menu");
-    }
+    this._releasePanelLockVisualState();
   },
 
   get sidebarIsOnRight() {
@@ -842,10 +889,11 @@ window.gZenCompactModeManager = {
     } else {
       width = this.sidebar.getBoundingClientRect().width;
     }
-    // Widen past the 8px edge strip so moving into the revealed flyout (or
-    // across #sidebar-main under it) does not drop hover mid-handoff.
+    // Cap handoff to Zen sidebar width (+ small rail allowance). Do not treat
+    // an expanded Firefox AI/history panel as permanent Zen hover territory.
+    const railAllowance = 48;
     this._cachedSidebarHandoffExtent = Math.max(
-      width,
+      Math.min(width + railAllowance, width > 1 ? width + railAllowance : 56),
       this.EDGE_REVEAL_THRESHOLD
     );
     return this._cachedSidebarHandoffExtent;
@@ -999,7 +1047,9 @@ window.gZenCompactModeManager = {
         this.sidebar.hasAttribute("zen-has-hover") &&
         !this.sidebar.hasAttribute("zen-user-show") &&
         !this.sidebar.hasAttribute("zen-has-empty-tab") &&
-        !this.sidebar.hasAttribute("has-popup-menu")
+        !this.sidebar.hasAttribute("has-popup-menu") &&
+        !this.sidebar.hasAttribute(this.PANEL_LOCK_ATTR) &&
+        !this.isPanelLocked()
       ) {
         this.flashElement(
           this.sidebar,
@@ -1279,7 +1329,12 @@ window.gZenCompactModeManager = {
   },
 
   _clearAllHoverStates() {
-    // Clear hover attributes from all hoverable elements
+    // Clear hover attributes from all hoverable elements, but never while an
+    // Astra panel lock is holding the Zen sidebar open.
+    if (this.isPanelLocked()) {
+      this._edgeRevealActive = true;
+      return;
+    }
     for (let entry of this.hoverableElements) {
       const target = entry.element;
       if (
@@ -1303,6 +1358,7 @@ window.gZenCompactModeManager = {
       this.sidebar.hasAttribute("zen-has-hover") ||
       this.sidebar.hasAttribute("zen-has-empty-tab") ||
       this.sidebar.hasAttribute("has-popup-menu") ||
+      this.sidebar.hasAttribute(this.PANEL_LOCK_ATTR) ||
       this.isPanelLocked()
     );
   },

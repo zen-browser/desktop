@@ -27,6 +27,20 @@
   #protections-popup-mainView-panel-header {
   border-inline-start: 3px solid var(--astra-suraksha-accent);
   padding-inline-start: 10px;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+}
+
+#protections-popup[astra-suraksha-native="true"]
+  #astra-suraksha-brand-label,
+#protections-popup[astra-suraksha-native="true"]
+  .astra-suraksha-brand-label {
+  font-weight: 650;
+  font-size: 0.78em;
+  letter-spacing: 0.02em;
+  opacity: 0.9;
+  margin: 0;
+  width: 100%;
 }
 
 #protections-popup[astra-suraksha-native="true"]

@@ -95,13 +95,15 @@ export function openProtectionPanel(win, event) {
     return;
   }
   try {
+    // XOR: trust-panel mode opens the dashboard only; never both.
+    if (handler.trustPanelEnabledPref) {
+      openProtectionDashboard(win);
+      return;
+    }
     handler.showProtectionsPopup({
       event,
       openingReason: "astraSuraksha",
     });
-    if (handler.trustPanelEnabledPref) {
-      openProtectionDashboard(win);
-    }
   } catch {
     openProtectionDashboard(win);
   }

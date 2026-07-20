@@ -51,14 +51,32 @@ export async function readUBlock(win) {
     if (addon.pendingOperations) {
       details.push({ id: "astra-suraksha-ublock-pending" });
     }
+    let privateAccess = "unknown";
     if (addon.incognito === "spanning") {
       details.push({ id: "astra-suraksha-ublock-pb-spanning" });
+      privateAccess = "spanning";
     } else if (addon.incognito === "not_allowed") {
       details.push({ id: "astra-suraksha-ublock-pb-not-allowed" });
+      privateAccess = "not_allowed";
+    }
+
+    // Private windows: do not claim Active when private browsing is not allowed.
+    try {
+      if (
+        state === "active" &&
+        privateAccess === "not_allowed" &&
+        typeof PrivateBrowsingUtils !== "undefined" &&
+        PrivateBrowsingUtils.isWindowPrivate(win)
+      ) {
+        state = "disabled";
+        labelId = "astra-suraksha-ublock-disabled";
+      }
+    } catch {
+      // ignore
     }
 
     const actions = [];
-    if (addon.isActive) {
+    if (state === "active") {
       actions.push({
         id: "ublock-popup",
         labelId: "astra-suraksha-action-ublock-popup",
@@ -78,6 +96,7 @@ export async function readUBlock(win) {
       version: addon.version || null,
       details,
       locked,
+      privateAccess,
       actions,
     };
   } catch {

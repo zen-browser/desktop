@@ -15,7 +15,8 @@ const PREF_ENABLED = "astra.suraksha.enabled";
 const LOG_PREFIX = "[AstraSuraksha]";
 const NATIVE_POPUP_ID = "protections-popup";
 const UBLOCK_ROW_ID = "astra-suraksha-ublock-row";
-const PANEL_LOCK_TOKEN = "protections-popup";
+const BRAND_ID = "astra-suraksha-brand-label";
+const PANEL_LOCK_TOKEN = "astra-suraksha-protections";
 const UBLOCK_MODULE_URL =
   "chrome://browser/content/zen-components/AstraSurakshaUBlock.mjs";
 
@@ -26,12 +27,18 @@ class AstraSurakshaBootstrap {
   #lastOpenAttempt = null;
   #boundUnload = null;
   #boundPrefObserver = null;
+  #boundNativeShowing = null;
   #boundNativeShown = null;
   #boundNativeHidden = null;
   #boundUBlockCommand = null;
   #nativeListenersBound = false;
   #enabled = true;
   #ublockModule = null;
+  /** True only for the current open cycle started by Astra Suraksha. */
+  #astraOwnedOpen = false;
+  /** Monotonic generation for stale async uBlock results. */
+  #ublockGeneration = 0;
+  #ublockActionInFlight = false;
 
   constructor() {
     window.gAstraSurakshaBootstrap = this;
@@ -76,6 +83,9 @@ class AstraSurakshaBootstrap {
       get nativeMode() {
         return true;
       },
+      get astraOwnedOpen() {
+        return self.#astraOwnedOpen;
+      },
       get lastErrorStage() {
         return self.#lastErrorStage;
       },
@@ -113,6 +123,8 @@ class AstraSurakshaBootstrap {
     }, 0);
     this.#ensureUnload();
     this.#retireLegacyPanel();
+    // Wire once if the popup already exists; otherwise wait until first open.
+    this.#ensureNativeListeners();
   }
 
   destroy() {
@@ -120,18 +132,16 @@ class AstraSurakshaBootstrap {
       return;
     }
     this.#destroyed = true;
+    this.#astraOwnedOpen = false;
+    this.#ublockGeneration += 1;
     try {
       this.close({ restoreFocus: false });
     } catch {
       // ignore
     }
+    this.#releaseCompactLock();
     this.#teardownNativeListeners();
     this.#teardownPrefObserver();
-    try {
-      window.gZenCompactModeManager?.unlockForPanel?.(PANEL_LOCK_TOKEN);
-    } catch {
-      // ignore
-    }
     if (this.#boundUnload) {
       window.removeEventListener("unload", this.#boundUnload);
       this.#boundUnload = null;
@@ -204,6 +214,11 @@ class AstraSurakshaBootstrap {
       if (legacy) {
         legacy.hidden = true;
         legacy.setAttribute("astra-suraksha-retired", "true");
+        try {
+          legacy.hidePopup?.();
+        } catch {
+          // ignore
+        }
       }
     } catch {
       // ignore
@@ -243,7 +258,7 @@ class AstraSurakshaBootstrap {
       document.getElementById(BUTTON_ITEM_ID) ||
       document.getElementById("tracking-protection-icon-container") ||
       document.getElementById(APPMENU_ID) ||
-      document.documentElement
+      null
     );
   }
 
@@ -254,7 +269,7 @@ class AstraSurakshaBootstrap {
     if (!this.#enabled) {
       return;
     }
-    if (this.isOpen) {
+    if (this.isOpen && this.#astraOwnedOpen) {
       this.close({ restoreFocus: true });
       return;
     }
@@ -322,15 +337,46 @@ class AstraSurakshaBootstrap {
     }
   }
 
+  #acquireCompactLock() {
+    try {
+      window.gZenCompactModeManager?.lockForPanel?.(PANEL_LOCK_TOKEN);
+    } catch {
+      // ignore
+    }
+  }
+
+  #releaseCompactLock() {
+    try {
+      window.gZenCompactModeManager?.unlockForPanel?.(PANEL_LOCK_TOKEN);
+    } catch {
+      // ignore
+    }
+  }
+
   #openNativeProtections(options = {}) {
     const handler = window.gProtectionsHandler;
     if (!handler || typeof handler.showProtectionsPopup !== "function") {
       this.#lastErrorStage = "handler-missing";
+      this.#astraOwnedOpen = false;
       this.#openProtectionsDashboard();
       return;
     }
 
-    // Ensure popup exists before wiring branding/listeners.
+    // Trust-panel builds deliberately replace the classic popup. Open exactly
+    // one destination — never flash the classic popup then the dashboard.
+    let trustPanel = false;
+    try {
+      trustPanel = !!handler.trustPanelEnabledPref;
+    } catch {
+      trustPanel = false;
+    }
+    if (trustPanel) {
+      this.#astraOwnedOpen = false;
+      this.#releaseCompactLock();
+      this.#openProtectionsDashboard();
+      return;
+    }
+
     try {
       handler._initializePopup?.();
     } catch {
@@ -338,41 +384,31 @@ class AstraSurakshaBootstrap {
     }
 
     this.#ensureNativeListeners();
-    this.#applyNativeBranding();
+
+    const anchor = this.#resolveAnchor(options.event);
+    let event = options.event;
+    if (anchor && (!event || !event.target)) {
+      event = {
+        target: anchor,
+        originalTarget: anchor,
+        type: "command",
+      };
+    }
+
+    // Mark ownership before open so popupshowing can lock compact mode.
+    this.#astraOwnedOpen = true;
+    this.#acquireCompactLock();
+    this.#prepareNativeBranding();
 
     try {
-      // Anchor preference: Suraksha button when available.
-      const anchor = this.#resolveAnchor(options.event);
-      let event = options.event;
-      if (anchor && (!event || !event.target)) {
-        event = {
-          target: anchor,
-          originalTarget: anchor,
-          type: "command",
-        };
-      }
       handler.showProtectionsPopup({
         event,
         openingReason: "astraSuraksha",
       });
-      if (handler.trustPanelEnabledPref) {
-        this.#openProtectionsDashboard();
-        return;
-      }
-      const popup = this.nativePopup;
-      if (popup && popup.state === "closed") {
-        window.setTimeout(() => {
-          try {
-            if (popup.state === "closed") {
-              this.#openProtectionsDashboard();
-            }
-          } catch {
-            // ignore
-          }
-        }, 0);
-      }
     } catch (error) {
       this.#lastErrorStage = "open-native";
+      this.#astraOwnedOpen = false;
+      this.#releaseCompactLock();
       console.error(`${LOG_PREFIX} native protections open failed`, error);
       this.#openProtectionsDashboard();
     }
@@ -386,22 +422,33 @@ class AstraSurakshaBootstrap {
     if (!popup) {
       return;
     }
-    this.#boundNativeShown = () => {
-      try {
-        window.gZenCompactModeManager?.lockForPanel?.(PANEL_LOCK_TOKEN);
-      } catch {
-        // ignore
+    this.#boundNativeShowing = () => {
+      if (!this.#astraOwnedOpen || this.#destroyed) {
+        return;
       }
+      this.#acquireCompactLock();
+      this.#prepareNativeBranding();
+    };
+    this.#boundNativeShown = () => {
+      if (!this.#astraOwnedOpen || this.#destroyed) {
+        // Native shield / other openers: never lock or brand as Astra.
+        this.#clearAstraBranding();
+        return;
+      }
+      this.#acquireCompactLock();
       this.#applyNativeBranding();
       void this.#injectUBlockRow();
     };
     this.#boundNativeHidden = () => {
-      try {
-        window.gZenCompactModeManager?.unlockForPanel?.(PANEL_LOCK_TOKEN);
-      } catch {
-        // ignore
+      const wasOurs = this.#astraOwnedOpen;
+      this.#astraOwnedOpen = false;
+      this.#ublockGeneration += 1;
+      if (wasOurs) {
+        this.#releaseCompactLock();
+        this.#clearAstraBranding();
       }
     };
+    popup.addEventListener("popupshowing", this.#boundNativeShowing);
     popup.addEventListener("popupshown", this.#boundNativeShown);
     popup.addEventListener("popuphidden", this.#boundNativeHidden);
     this.#nativeListenersBound = true;
@@ -409,39 +456,81 @@ class AstraSurakshaBootstrap {
 
   #teardownNativeListeners() {
     const popup = this.nativePopup;
-    if (!this.#nativeListenersBound || !popup) {
-      this.#nativeListenersBound = false;
+    if (!this.#nativeListenersBound) {
       return;
     }
-    if (this.#boundNativeShown) {
-      popup.removeEventListener("popupshown", this.#boundNativeShown);
-    }
-    if (this.#boundNativeHidden) {
-      popup.removeEventListener("popuphidden", this.#boundNativeHidden);
+    if (popup) {
+      if (this.#boundNativeShowing) {
+        popup.removeEventListener("popupshowing", this.#boundNativeShowing);
+      }
+      if (this.#boundNativeShown) {
+        popup.removeEventListener("popupshown", this.#boundNativeShown);
+      }
+      if (this.#boundNativeHidden) {
+        popup.removeEventListener("popuphidden", this.#boundNativeHidden);
+      }
     }
     if (this.#boundUBlockCommand) {
       const row = document.getElementById(UBLOCK_ROW_ID);
       row?.removeEventListener("command", this.#boundUBlockCommand);
-      row?.removeEventListener("click", this.#boundUBlockCommand);
     }
+    this.#boundNativeShowing = null;
+    this.#boundNativeShown = null;
+    this.#boundNativeHidden = null;
+    this.#boundUBlockCommand = null;
     this.#nativeListenersBound = false;
+  }
+
+  #prepareNativeBranding() {
+    try {
+      const popup = this.nativePopup;
+      if (!popup || !this.#astraOwnedOpen) {
+        return;
+      }
+      popup.setAttribute("astra-suraksha-native", "true");
+    } catch {
+      // ignore
+    }
   }
 
   #applyNativeBranding() {
     try {
       const popup = this.nativePopup;
-      if (!popup) {
+      if (!popup || !this.#astraOwnedOpen) {
         return;
       }
       popup.setAttribute("astra-suraksha-native", "true");
+      // Keep the native hostname/title span intact; add a brand label instead.
+      let brand = document.getElementById(BRAND_ID);
       const header = document.getElementById(
-        "protections-popup-mainView-panel-header-span"
+        "protections-popup-mainView-panel-header"
       );
-      if (header) {
-        document.l10n?.setAttributes?.(header, "astra-suraksha-title");
+      if (!brand && header) {
+        brand = document.createXULElement("label");
+        brand.id = BRAND_ID;
+        brand.classList.add("astra-suraksha-brand-label");
+        document.l10n?.setAttributes?.(brand, "astra-suraksha-title");
+        brand.setAttribute("value", "Astra Suraksha");
+        header.insertBefore(brand, header.firstChild);
+      } else if (brand) {
+        document.l10n?.setAttributes?.(brand, "astra-suraksha-title");
+        brand.hidden = false;
       }
     } catch (error) {
       console.warn(`${LOG_PREFIX} branding apply failed`, error);
+    }
+  }
+
+  #clearAstraBranding() {
+    try {
+      const popup = this.nativePopup;
+      popup?.removeAttribute("astra-suraksha-native");
+      const brand = document.getElementById(BRAND_ID);
+      if (brand) {
+        brand.hidden = true;
+      }
+    } catch {
+      // ignore
     }
   }
 
@@ -461,9 +550,10 @@ class AstraSurakshaBootstrap {
   }
 
   async #injectUBlockRow() {
+    const generation = ++this.#ublockGeneration;
     const popup = this.nativePopup;
     const mainView = document.getElementById("protections-popup-mainView");
-    if (!popup || !mainView) {
+    if (!popup || !mainView || !this.#astraOwnedOpen || this.#destroyed) {
       return;
     }
 
@@ -507,22 +597,16 @@ class AstraSurakshaBootstrap {
       row.appendChild(textCol);
       row.appendChild(action);
 
+      // Single command path — no parallel click handler (avoids double action).
       this.#boundUBlockCommand = event => {
-        const t = event.target;
-        if (!t?.closest) {
-          return;
-        }
-        if (t.closest("#astra-suraksha-ublock-open")) {
+        if (event.type === "command") {
+          event.stopPropagation();
           void this.#onOpenUBlock();
         }
       };
-      row.addEventListener("command", this.#boundUBlockCommand);
-      row.addEventListener("click", this.#boundUBlockCommand);
+      action.addEventListener("command", this.#boundUBlockCommand);
 
-      // Place after the TP switch / category list when present.
-      const footer = document.getElementById(
-        "protections-popup-footer"
-      );
+      const footer = document.getElementById("protections-popup-footer");
       const tpSwitch = document.getElementById("protections-popup-tp-switch");
       const insertAfter =
         document.getElementById("protections-popup-category-list") ||
@@ -540,6 +624,14 @@ class AstraSurakshaBootstrap {
     const statusEl = document.getElementById("astra-suraksha-ublock-status");
     const openBtn = document.getElementById("astra-suraksha-ublock-open");
     const mod = await this.#loadUBlockModule();
+    if (
+      this.#destroyed ||
+      generation !== this.#ublockGeneration ||
+      !this.#astraOwnedOpen ||
+      !popup.isConnected
+    ) {
+      return;
+    }
     if (!mod?.readUBlock) {
       if (statusEl) {
         document.l10n?.setAttributes?.(
@@ -560,7 +652,31 @@ class AstraSurakshaBootstrap {
       result = null;
     }
 
-    const state = result?.state || "error";
+    if (
+      this.#destroyed ||
+      generation !== this.#ublockGeneration ||
+      !this.#astraOwnedOpen ||
+      !document.getElementById(UBLOCK_ROW_ID)
+    ) {
+      return;
+    }
+
+    const isPrivate =
+      typeof PrivateBrowsingUtils !== "undefined" &&
+      PrivateBrowsingUtils.isWindowPrivate(window);
+
+    let state = result?.state || "error";
+    // Do not claim Active in a private window when private access is denied.
+    if (
+      isPrivate &&
+      state === "active" &&
+      result?.details?.some?.(
+        d => d.id === "astra-suraksha-ublock-pb-not-allowed"
+      )
+    ) {
+      state = "disabled";
+    }
+
     const labelId =
       state === "active"
         ? "astra-suraksha-ublock-active"
@@ -574,7 +690,6 @@ class AstraSurakshaBootstrap {
       document.l10n?.setAttributes?.(statusEl, labelId);
     }
     if (openBtn) {
-      // Show open only when installed; otherwise offer manage/addons via same btn label.
       if (state === "missing") {
         document.l10n?.setAttributes?.(
           openBtn,
@@ -596,27 +711,35 @@ class AstraSurakshaBootstrap {
   }
 
   async #onOpenUBlock() {
-    const openBtn = document.getElementById("astra-suraksha-ublock-open");
-    const action = openBtn?.getAttribute("data-ublock-action") || "popup";
-    const mod = await this.#loadUBlockModule();
-    if (!mod) {
+    if (this.#ublockActionInFlight || this.#destroyed) {
       return;
     }
+    this.#ublockActionInFlight = true;
     try {
-      this.close({ restoreFocus: false });
-    } catch {
-      // ignore
-    }
-    try {
-      if (action === "addons") {
-        mod.openAddonsManager?.(window);
-      } else if (typeof mod.openUBlockBrowserAction === "function") {
-        mod.openUBlockBrowserAction(window);
-      } else {
-        await mod.manageUBlock?.(window);
+      const openBtn = document.getElementById("astra-suraksha-ublock-open");
+      const action = openBtn?.getAttribute("data-ublock-action") || "popup";
+      const mod = await this.#loadUBlockModule();
+      if (!mod || this.#destroyed) {
+        return;
       }
-    } catch (error) {
-      console.warn(`${LOG_PREFIX} uBlock action failed`, error);
+      try {
+        this.close({ restoreFocus: false });
+      } catch {
+        // ignore
+      }
+      try {
+        if (action === "addons") {
+          mod.openAddonsManager?.(window);
+        } else if (typeof mod.openUBlockBrowserAction === "function") {
+          mod.openUBlockBrowserAction(window);
+        } else {
+          await mod.manageUBlock?.(window);
+        }
+      } catch (error) {
+        console.warn(`${LOG_PREFIX} uBlock action failed`, error);
+      }
+    } finally {
+      this.#ublockActionInFlight = false;
     }
   }
 
@@ -657,7 +780,7 @@ class AstraSurakshaBootstrap {
 
   #openProtectionsDashboard() {
     try {
-      this.close({ restoreFocus: false });
+      // Do not also hide a popup we never successfully opened.
       const handler = window.gProtectionsHandler;
       if (handler && typeof handler.openProtections === "function") {
         handler.openProtections(true);

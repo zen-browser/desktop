@@ -57,6 +57,14 @@ class AstraSurakshaManager {
   #addonListener = null;
 
   constructor() {
+    // Native Suraksha path owns the UX. Keep this module inert if present.
+    if (window.gAstraSurakshaDiagnostics?.nativeMode) {
+      console.log(
+        `${LOG_PREFIX} legacy manager suppressed; native protections path active`
+      );
+      this.#destroyed = true;
+      return;
+    }
     window.gAstraSurakshaManager = this;
     try {
       window.gAstraSurakshaBootstrap?.attachManager?.(this);

@@ -7,6 +7,8 @@
 astra-suraksha-title = Astra Suraksha
     .value = Astra Suraksha
     .label = Astra Suraksha
+    .value = Astra Suraksha
+    .label = Astra Suraksha
 
 astra-suraksha-button = Suraksha
     .label = Suraksha

@@ -2,6 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# Astra feature toggle: Zen Spaces/Workspaces UI (single-space mode).
+# Disabled by default: the workspaces engine keeps running with the default
+# space (tab strip, session restore, and pinning depend on it), but all
+# Spaces UI is hidden and space creation is a no-op. Flip to true to fully
+# restore Spaces — no engine code is modified.
+- name: astra.feature.spaces.enabled
+  value: false
+
 - name: zen.workspaces.continue-where-left-off
   value: false
 

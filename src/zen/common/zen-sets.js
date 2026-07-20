@@ -504,9 +504,21 @@ document.addEventListener(
             });
             break;
           case "cmd_zenOpenWorkspaceCreation":
-            gZenWorkspaces.openWorkspaceCreation(event);
+            // Astra: Spaces UI is pref-gated (astra.feature.spaces.enabled,
+            // default false → single-space mode). Creation no-ops when
+            // disabled; the workspaces engine itself keeps running.
+            if (
+              Services.prefs.getBoolPref("astra.feature.spaces.enabled", false)
+            ) {
+              gZenWorkspaces.openWorkspaceCreation(event);
+            }
             break;
           case "cmd_zenCreateSpaceFromPreset": {
+            if (
+              !Services.prefs.getBoolPref("astra.feature.spaces.enabled", false)
+            ) {
+              break;
+            }
             const presetId =
               event.sourceEvent?.target?.getAttribute("zen-space-preset") ||
               event.target?.getAttribute("zen-space-preset");

@@ -17,3 +17,24 @@
     display: none !important;
   }
 }
+
+/* ASTRA-FEATURE-GATE: Spaces/Workspaces UI (single-space mode).
+   While astra.feature.spaces.enabled is false, hide the Spaces strip, the
+   menubar Spaces menu, the current-workspace indicator, and every
+   space-creation menu entry. The workspaces engine (ZenSpaceManager and the
+   default space) keeps running untouched — tab strip, session restore, and
+   pinning depend on it. Workspace forward/back shortcuts and swipe stay
+   functional as a safety valve for profiles that already have multiple
+   spaces. Flip the pref to true to restore all Spaces UI. */
+/* stylelint-disable-next-line media-query-no-invalid */
+@media not (-moz-pref("astra.feature.spaces.enabled")) {
+  #zen-workspaces-button,
+  #zen-spaces-menubar,
+  #zen-current-workspace-indicator-container,
+  .zen-current-workspace-indicator,
+  menuitem[command="cmd_zenCreateSpaceFromPreset"],
+  menuitem[command="cmd_zenOpenWorkspaceCreation"],
+  #zenCreateNewPopup menuitem[data-l10n-id="zen-create-new-section-spaces"] {
+    display: none !important;
+  }
+}

@@ -659,7 +659,7 @@ ${cssSelector} {
       this.currentBoostData.sizeOverride = 0.9;
     } else if (this.currentBoostData.sizeOverride == 0.9) {
       this.currentBoostData.sizeOverride = 1;
-      await this.zenBoostsChild.updateBoostSize(
+      await this.zenBoostsChild.updateBoostSizeOverride(
         this.currentBoostData.sizeOverride,
         /* disable: */ true
       );

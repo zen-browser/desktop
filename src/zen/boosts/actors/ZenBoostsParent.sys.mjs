@@ -193,7 +193,7 @@ export class ZenBoostsParent extends JSWindowActorParent {
       }
       case "ZenBoost:UpdateBoostSize": {
         const { sizeOverride } = message.data;
-        this.updateBoostSize(sizeOverride);
+        this.updateBoostSizeOverride(sizeOverride);
         break;
       }
       default: {

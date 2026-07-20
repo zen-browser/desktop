@@ -430,10 +430,14 @@ class AstraAppHubBootstrap {
 
     if (this.#manager) {
       try {
-        // Prefer the personal launchpad whenever the manager is attached.
-        // Catalog/extra failures are non-fatal and must not force the static fallback banner.
+        // Prefer the manager only when it has proven launchpad readiness.
+        // Never force setAdvancedReady(true) merely because the object exists.
         if (!this.#advancedReady) {
-          this.setAdvancedReady(true);
+          console.warn(
+            `${LOG_PREFIX} manager attached but launchpad not ready; using fallback`
+          );
+          this.#openFallback(options);
+          return;
         }
         const opened = await this.#manager.open(options);
         if (opened !== false) {

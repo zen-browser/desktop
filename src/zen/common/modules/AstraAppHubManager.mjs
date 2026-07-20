@@ -12,6 +12,7 @@ const {
   gAstraAppHubState,
   STATE_CHANGED_TOPIC,
   validateAppUrl,
+  normalizeAppUrlKey,
   MAX_NAME_LENGTH,
   MAX_URL_LENGTH,
   isPlainObject,
@@ -389,6 +390,7 @@ class AstraAppHubManager {
   #faviconCaptures = new Map();
 
   #boundCommand = null;
+  #boundPopupShowing = null;
   #boundPopupShown = null;
   #boundPopupHidden = null;
   #boundKeydown = null;
@@ -583,10 +585,8 @@ class AstraAppHubManager {
   }
 
   /**
-   * ADVANCED READY when the shell can render the personal launchpad.
-   * Catalog failure is non-fatal: pinned/custom apps still work; Browse Apps
-   * simply has fewer (or no) discovery categories. Never show a technical
-   * "Advanced unavailable" banner to normal users — log diagnostics instead.
+   * Launchpad readiness: shell + mandatory controls + successful render.
+   * Catalog failure is non-fatal and does not block advanced mode.
    */
   #applyCatalogReadyState() {
     if (this.#destroyed || window.closed) {
@@ -596,13 +596,26 @@ class AstraAppHubManager {
     if (this.#shellBuilt) {
       this.#rendered = false;
       try {
-        this.#rebuildList();
-        ready = !!(
-          this.#shellBuilt &&
-          this.#rendered &&
-          !this.#destroyed &&
-          !window.closed
+        const controlsOk = !!(
+          this.panel &&
+          this.container &&
+          this.list &&
+          this.searchInput
         );
+        if (controlsOk) {
+          this.#rebuildList();
+          ready = !!(
+            this.#shellBuilt &&
+            this.#rendered &&
+            controlsOk &&
+            !this.#destroyed &&
+            !window.closed
+          );
+        } else {
+          console.warn(
+            "[AstraAppHub] launchpad controls missing; not marking ready"
+          );
+        }
       } catch (error) {
         console.warn("[AstraAppHub] launchpad render failed:", error);
         this.#catalogDiag = {
@@ -628,7 +641,6 @@ class AstraAppHubManager {
     if (ready) {
       this.#handoffFocusFromHiddenFallback();
     }
-    // Never surface a technical failure banner in the UI.
     this.#showFallbackFailureBanner(false);
   }
 
@@ -753,6 +765,13 @@ class AstraAppHubManager {
     this.#priorFocus = null;
     this.#dragState = null;
     this.#contextAppId = null;
+    try {
+      window.gZenCompactModeManager?.unlockForPanel?.(
+        "PanelUI-zen-app-launcher"
+      );
+    } catch {
+      // ignore
+    }
     try {
       window.gAstraAppHubBootstrap?.setAdvancedReady?.(false);
     } catch {
@@ -1266,6 +1285,7 @@ class AstraAppHubManager {
       return;
     }
     this.#boundCommand = event => this.#onCommand(event);
+    this.#boundPopupShowing = () => this.#onPopupShowing();
     this.#boundPopupShown = event => this.#onPopupShown(event);
     this.#boundPopupHidden = event => this.#onPopupHidden(event);
     this.#boundKeydown = event => this.#onPanelKeydown(event);
@@ -1281,6 +1301,7 @@ class AstraAppHubManager {
     };
 
     panel.addEventListener("command", this.#boundCommand);
+    panel.addEventListener("popupshowing", this.#boundPopupShowing);
     panel.addEventListener("popupshown", this.#boundPopupShown);
     panel.addEventListener("popuphidden", this.#boundPopupHidden);
     panel.addEventListener("keydown", this.#boundKeydown);
@@ -1337,6 +1358,9 @@ class AstraAppHubManager {
       return;
     }
     panel.removeEventListener("command", this.#boundCommand);
+    if (this.#boundPopupShowing) {
+      panel.removeEventListener("popupshowing", this.#boundPopupShowing);
+    }
     panel.removeEventListener("popupshown", this.#boundPopupShown);
     panel.removeEventListener("popuphidden", this.#boundPopupHidden);
     panel.removeEventListener("keydown", this.#boundKeydown);
@@ -1370,6 +1394,7 @@ class AstraAppHubManager {
     }
 
     this.#boundCommand = null;
+    this.#boundPopupShowing = null;
     this.#boundPopupShown = null;
     this.#boundPopupHidden = null;
     this.#boundKeydown = null;
@@ -1521,9 +1546,21 @@ class AstraAppHubManager {
     const anchor = this.#resolveAnchor(options.event);
     this.#popupTransition = true;
     try {
+      // Acquire compact lock before openPopup so hide timers cannot race during
+      // popupshowing while the pointer moves from the sidebar into the panel.
+      window.gZenCompactModeManager?.lockForPanel?.(
+        "PanelUI-zen-app-launcher"
+      );
       livePanel.openPopup(anchor, "after_start", 0, 0, false, false);
     } catch (error) {
       this.#popupTransition = false;
+      try {
+        window.gZenCompactModeManager?.unlockForPanel?.(
+          "PanelUI-zen-app-launcher"
+        );
+      } catch {
+        // ignore
+      }
       console.error("[AstraAppHub] openPopup failed:", error);
       return false;
     }
@@ -4006,6 +4043,24 @@ class AstraAppHubManager {
       return;
     }
 
+    // Duplicate detection against custom apps and catalog apps (normalized).
+    const nextKey = normalizeAppUrlKey(urlCheck.href);
+    if (nextKey) {
+      const conflict = [...this.#allAppsMap().values()].find(app => {
+        if (!app?.url) {
+          return false;
+        }
+        if (this.#editorMode === "edit" && app.id === this.#editingAppId) {
+          return false;
+        }
+        return normalizeAppUrlKey(app.url) === nextKey;
+      });
+      if (conflict) {
+        this.#setEditorErrorL10n("astra-app-hub-error-duplicate");
+        return;
+      }
+    }
+
     const payload = {
       name,
       url: urlCheck.href,
@@ -4443,11 +4498,25 @@ class AstraAppHubManager {
     }
   }
 
+  #onPopupShowing() {
+    if (this.#destroyed) {
+      return;
+    }
+    try {
+      window.gZenCompactModeManager?.lockForPanel?.(
+        "PanelUI-zen-app-launcher"
+      );
+    } catch {
+      // Compact lock is best-effort; never block App Hub.
+    }
+  }
+
   #onPopupShown() {
     this.#popupTransition = false;
     if (this.#destroyed) {
       return;
     }
+    // Reinforce lock in case openPopup path was skipped (e.g. restore).
     try {
       window.gZenCompactModeManager?.lockForPanel?.(
         "PanelUI-zen-app-launcher"

@@ -1,5 +1,5 @@
 diff --git a/docshell/base/BrowsingContext.h b/docshell/base/BrowsingContext.h
-index 6f7f58bba3be6f08b3b27e81f30864c61d683351..3b8f2c14c80d931ec03c124d96f797ddda3f5431 100644
+index 6f7f58bba3be6f08b3b27e81f30864c61d683351..2516126365ee9e1c07e245a873efe5f48767aff7 100644
 --- a/docshell/base/BrowsingContext.h
 +++ b/docshell/base/BrowsingContext.h
 @@ -265,6 +265,9 @@ struct EmbedderColorSchemes {
@@ -24,13 +24,23 @@ index 6f7f58bba3be6f08b3b27e81f30864c61d683351..3b8f2c14c80d931ec03c124d96f797dd
    float FullZoom() const { return GetFullZoom(); }
    float TextZoom() const { return GetTextZoom(); }
  
-@@ -1290,6 +1298,9 @@ class BrowsingContext : public nsILoadContext, public nsWrapperCache {
+@@ -1290,6 +1298,19 @@ class BrowsingContext : public nsILoadContext, public nsWrapperCache {
    }
  
    void DidSet(FieldIndex<IDX_SessionStoreEpoch>, uint32_t aOldValue);
 +  void DidSet(FieldIndex<IDX_ZenBoostsData>, nscolor aOldValue);
 +  void DidSet(FieldIndex<IDX_ZenBoostsComplementaryRotation>, float aOldValue);
 +  void DidSet(FieldIndex<IDX_IsZenBoostsInverted>, bool aOldValue);
++  bool CanSet(FieldIndex<IDX_ZenBoostsData>, const nscolor&, ContentParent*) {
++    return true;
++  }
++  bool CanSet(FieldIndex<IDX_ZenBoostsComplementaryRotation>, const float&,
++              ContentParent*) {
++    return true;
++  }
++  bool CanSet(FieldIndex<IDX_IsZenBoostsInverted>, const bool&, ContentParent*) {
++    return true;
++  }
  
    // Ensure that opener is in the same BrowsingContextGroup.
    bool CanSet(FieldIndex<IDX_OpenerId>, const uint64_t& aValue,

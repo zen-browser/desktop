@@ -3,39 +3,35 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /**
- * Stable per-window Suraksha Center entry point.
- * Always creates window.gAstraSuraksha. Advanced manager attaches later.
- * If the advanced manager is unavailable, opens the known-good static fallback.
+ * Astra Suraksha entry point — opens Firefox's native protections popup
+ * (gProtectionsHandler / #protections-popup) with light Astra branding and a
+ * thin optional uBlock Origin status row. The legacy custom Suraksha panel is
+ * no longer opened as the primary UI.
  */
 
-const PANEL_ID = "PanelUI-astra-suraksha";
-const FALLBACK_ID = "PanelUI-astra-suraksha-fallback";
-const ADVANCED_ID = "PanelUI-astra-suraksha-advanced";
 const BUTTON_ITEM_ID = "astra-suraksha-button";
 const APPMENU_ID = "appMenu-astra-suraksha-button";
 const PREF_ENABLED = "astra.suraksha.enabled";
 const LOG_PREFIX = "[AstraSuraksha]";
-const MANAGER_URL =
-  "chrome://browser/content/zen-components/AstraSurakshaManager.mjs";
+const NATIVE_POPUP_ID = "protections-popup";
+const UBLOCK_ROW_ID = "astra-suraksha-ublock-row";
+const PANEL_LOCK_TOKEN = "protections-popup";
+const UBLOCK_MODULE_URL =
+  "chrome://browser/content/zen-components/AstraSurakshaUBlock.mjs";
 
 class AstraSurakshaBootstrap {
-  #manager = null;
-  #advancedReady = false;
-  #fallbackActive = true;
-  #popupTransition = false;
-  #listenersBound = false;
   #prefObserverBound = false;
   #destroyed = false;
-  #managerRequested = false;
-  #managerImportPromise = null;
   #lastErrorStage = null;
   #lastOpenAttempt = null;
-  #boundPopupShown = null;
-  #boundPopupHidden = null;
-  #boundFallbackCommand = null;
   #boundUnload = null;
   #boundPrefObserver = null;
+  #boundNativeShown = null;
+  #boundNativeHidden = null;
+  #boundUBlockCommand = null;
+  #nativeListenersBound = false;
   #enabled = true;
+  #ublockModule = null;
 
   constructor() {
     window.gAstraSurakshaBootstrap = this;
@@ -66,16 +62,19 @@ class AstraSurakshaBootstrap {
         return !self.#destroyed;
       },
       get managerRequested() {
-        return self.#managerRequested;
+        return false;
       },
       get managerReady() {
-        return self.#advancedReady && !!self.#manager;
+        return false;
       },
       get fallbackActive() {
-        return self.#fallbackActive;
+        return false;
       },
       get panelFound() {
-        return !!document.getElementById(PANEL_ID);
+        return !!document.getElementById(NATIVE_POPUP_ID);
+      },
+      get nativeMode() {
+        return true;
       },
       get lastErrorStage() {
         return self.#lastErrorStage;
@@ -83,29 +82,17 @@ class AstraSurakshaBootstrap {
     };
   }
 
-  get panel() {
-    return document.getElementById(PANEL_ID);
-  }
-
-  get fallback() {
-    return document.getElementById(FALLBACK_ID);
-  }
-
-  get advanced() {
-    return document.getElementById(ADVANCED_ID);
+  get nativePopup() {
+    return document.getElementById(NATIVE_POPUP_ID);
   }
 
   get isOpen() {
-    const panel = this.panel;
+    const panel = this.nativePopup;
     if (!panel) {
       return false;
     }
     const state = panel.state;
     return state === "open" || state === "showing";
-  }
-
-  get #isHiding() {
-    return this.panel?.state === "hiding";
   }
 
   get enabled() {
@@ -119,15 +106,13 @@ class AstraSurakshaBootstrap {
     this.#enabled = Services.prefs.getBoolPref(PREF_ENABLED, true);
     this.#ensurePrefObserver();
     this.#applyEnabledUI();
-    // Toolbar/App Menu nodes may appear after bootstrap; re-apply shortly.
     window.setTimeout(() => {
       if (!this.#destroyed) {
         this.#applyEnabledUI();
       }
     }, 0);
-    this.#applyMode();
-    this.#ensureListeners();
     this.#ensureUnload();
+    this.#retireLegacyPanel();
   }
 
   destroy() {
@@ -140,47 +125,25 @@ class AstraSurakshaBootstrap {
     } catch {
       // ignore
     }
-    this.#teardownListeners();
+    this.#teardownNativeListeners();
     this.#teardownPrefObserver();
+    try {
+      window.gZenCompactModeManager?.unlockForPanel?.(PANEL_LOCK_TOKEN);
+    } catch {
+      // ignore
+    }
     if (this.#boundUnload) {
       window.removeEventListener("unload", this.#boundUnload);
       this.#boundUnload = null;
     }
-    try {
-      this.#manager?.destroy?.();
-    } catch {
-      // ignore
-    }
-    this.#manager = null;
-    this.#advancedReady = false;
-    this.#fallbackActive = true;
   }
 
-  attachManager(manager) {
-    if (!manager || this.#destroyed) {
+  #ensureUnload() {
+    if (this.#boundUnload) {
       return;
     }
-    this.#manager = manager;
-    this.#lastErrorStage = null;
-  }
-
-  setAdvancedReady(ready) {
-    this.#advancedReady = !!ready && !!this.#manager;
-    this.#fallbackActive = !this.#advancedReady;
-    this.#applyMode();
-  }
-
-  markManagerFailed(error, stage = "manager") {
-    this.#manager = null;
-    this.#advancedReady = false;
-    this.#fallbackActive = true;
-    this.#lastErrorStage = stage;
-    this.#managerImportPromise = null;
-    this.#applyMode();
-    console.error(
-      `${LOG_PREFIX} manager import failed; fallback active`,
-      error || stage
-    );
+    this.#boundUnload = () => this.destroy();
+    window.addEventListener("unload", this.#boundUnload, { once: true });
   }
 
   #ensurePrefObserver() {
@@ -191,23 +154,19 @@ class AstraSurakshaBootstrap {
       try {
         this.#enabled = Services.prefs.getBoolPref(PREF_ENABLED, true);
         this.#applyEnabledUI();
-        if (!this.#enabled && this.isOpen) {
-          this.close({ restoreFocus: true });
-        }
-        // Deferred migration may still need to place the toolbar button.
-        if (this.#enabled) {
-          try {
-            window.gZenUIManager?._addNewCustomizableButtonsIfNeeded?.();
-          } catch {
-            // ignore
-          }
+        if (!this.#enabled) {
+          this.close({ restoreFocus: false });
         }
       } catch {
         // ignore
       }
     };
-    Services.prefs.addObserver(PREF_ENABLED, this.#boundPrefObserver);
-    this.#prefObserverBound = true;
+    try {
+      Services.prefs.addObserver(PREF_ENABLED, this.#boundPrefObserver);
+      this.#prefObserverBound = true;
+    } catch {
+      this.#prefObserverBound = false;
+    }
   }
 
   #teardownPrefObserver() {
@@ -224,101 +183,31 @@ class AstraSurakshaBootstrap {
   }
 
   #applyEnabledUI() {
-    const hidden = !this.#enabled;
     for (const id of [BUTTON_ITEM_ID, APPMENU_ID]) {
       const node = document.getElementById(id);
       if (!node) {
         continue;
       }
-      if (hidden) {
-        node.setAttribute("hidden", "true");
+      node.hidden = !this.#enabled;
+      if (this.#enabled) {
+        node.removeAttribute("disabled");
       } else {
-        node.removeAttribute("hidden");
+        node.setAttribute("disabled", "true");
       }
     }
   }
 
-  #applyMode() {
-    const panel = this.panel;
-    if (!panel) {
-      return;
-    }
-    const mode = this.#advancedReady ? "advanced" : "fallback";
-    panel.setAttribute("astra-suraksha-mode", mode);
-    const fallback = this.fallback;
-    const advanced = this.advanced;
-    if (fallback) {
-      // Fallback remains in markup; only hide when advanced is ready.
-      fallback.hidden = mode === "advanced";
-    }
-    if (advanced) {
-      advanced.hidden = mode !== "advanced";
-    }
-  }
-
-  #ensureUnload() {
-    if (this.#boundUnload) {
-      return;
-    }
-    this.#boundUnload = () => this.destroy();
-    window.addEventListener("unload", this.#boundUnload, { once: true });
-  }
-
-  #ensureListeners() {
-    const panel = this.panel;
-    if (!panel || this.#listenersBound) {
-      return;
-    }
-    this.#boundPopupShown = () => {
-      this.#popupTransition = false;
-    };
-    this.#boundPopupHidden = () => {
-      this.#popupTransition = false;
-    };
-    this.#boundFallbackCommand = event => {
-      try {
-        const target = event.target;
-        if (!target || typeof target.closest !== "function") {
-          return;
-        }
-        const fallback = this.fallback;
-        if (!fallback || fallback.hidden) {
-          return;
-        }
-        const item = target.closest("[data-suraksha-action]");
-        if (!item || !fallback.contains(item)) {
-          return;
-        }
-        const action = item.getAttribute("data-suraksha-action");
-        if (action) {
-          this.openFallbackAction(action, event);
-        }
-      } catch (error) {
-        console.error(`${LOG_PREFIX} fallback command failed`, error);
+  /** Keep legacy custom panel out of the active runtime surface. */
+  #retireLegacyPanel() {
+    try {
+      const legacy = document.getElementById("PanelUI-astra-suraksha");
+      if (legacy) {
+        legacy.hidden = true;
+        legacy.setAttribute("astra-suraksha-retired", "true");
       }
-    };
-    panel.addEventListener("popupshown", this.#boundPopupShown);
-    panel.addEventListener("popuphidden", this.#boundPopupHidden);
-    panel.addEventListener("command", this.#boundFallbackCommand);
-    this.#listenersBound = true;
-  }
-
-  #teardownListeners() {
-    const panel = this.panel;
-    if (!this.#listenersBound || !panel) {
-      this.#listenersBound = false;
-      return;
+    } catch {
+      // ignore
     }
-    if (this.#boundPopupShown) {
-      panel.removeEventListener("popupshown", this.#boundPopupShown);
-    }
-    if (this.#boundPopupHidden) {
-      panel.removeEventListener("popuphidden", this.#boundPopupHidden);
-    }
-    if (this.#boundFallbackCommand) {
-      panel.removeEventListener("command", this.#boundFallbackCommand);
-    }
-    this.#listenersBound = false;
   }
 
   #normalizeArgs(eventOrOptions) {
@@ -335,60 +224,27 @@ class AstraSurakshaBootstrap {
     return { event: eventOrOptions || null, source: "compat" };
   }
 
-  #isUsableAnchor(node) {
-    if (
-      !node ||
-      !node.isConnected ||
-      typeof node.getBoundingClientRect !== "function"
-    ) {
-      return false;
-    }
+  #resolveAnchor(event) {
     try {
-      if (node.ownerGlobal && node.ownerGlobal !== window) {
-        return false;
+      const target = event?.target || event?.originalTarget || event?.srcElement;
+      if (target?.closest) {
+        const btn =
+          target.closest(`#${BUTTON_ITEM_ID}`) ||
+          target.closest(`#${APPMENU_ID}`) ||
+          target.closest("#tracking-protection-icon-container");
+        if (btn) {
+          return btn;
+        }
       }
     } catch {
-      return false;
+      // fall through
     }
-    const rect = node.getBoundingClientRect();
-    return rect.width > 0 || rect.height > 0;
-  }
-
-  #resolveAnchor(event) {
-    const doc = document;
-    const eventAnchor = event?.sourceEvent?.target || event?.target;
-    const candidates = [
-      this.#isUsableAnchor(eventAnchor) ? eventAnchor : null,
-      doc.getElementById(BUTTON_ITEM_ID),
-      doc.getElementById("zen-app-launcher-button"),
-      doc.getElementById("zen-sidebar-top-buttons-separator"),
-      doc.getElementById("zen-sidebar-top-buttons"),
-      doc.getElementById("PanelUI-menu-button"),
-      doc.getElementById("nav-bar"),
-      doc.getElementById("browser"),
-      doc.documentElement,
-    ];
-    for (const node of candidates) {
-      if (this.#isUsableAnchor(node)) {
-        return node;
-      }
-    }
-    return doc.documentElement;
-  }
-
-  #requestManager() {
-    if (this.#destroyed || this.#manager || this.#managerImportPromise) {
-      return this.#managerImportPromise;
-    }
-    this.#managerRequested = true;
-    this.#managerImportPromise = (async () => {
-      try {
-        await ChromeUtils.importESModule(MANAGER_URL, { global: "current" });
-      } catch (error) {
-        this.markManagerFailed(error, "import");
-      }
-    })();
-    return this.#managerImportPromise;
+    return (
+      document.getElementById(BUTTON_ITEM_ID) ||
+      document.getElementById("tracking-protection-icon-container") ||
+      document.getElementById(APPMENU_ID) ||
+      document.documentElement
+    );
   }
 
   async toggle(eventOrOptions, win = window) {
@@ -397,15 +253,6 @@ class AstraSurakshaBootstrap {
     }
     if (!this.#enabled) {
       return;
-    }
-    this.#ensureListeners();
-    this.#applyMode();
-    if (this.#popupTransition || this.#isHiding) {
-      if (this.#popupTransition && !this.isOpen && !this.#isHiding) {
-        this.#popupTransition = false;
-      } else {
-        return;
-      }
     }
     if (this.isOpen) {
       this.close({ restoreFocus: true });
@@ -418,127 +265,45 @@ class AstraSurakshaBootstrap {
     if (win && win !== window && win.gAstraSurakshaBootstrap) {
       return win.gAstraSurakshaBootstrap.open(eventOrOptions, win);
     }
-    if (!this.#enabled) {
+    if (!this.#enabled || this.#destroyed) {
       return;
     }
     const options = this.#normalizeArgs(eventOrOptions);
     this.#lastOpenAttempt = Date.now();
-    this.#ensureListeners();
-    this.#applyMode();
-
-    // Open shell immediately — never await adapters/manager.
-    this.#openShell(options);
-
-    // Kick off lazy manager import without blocking the popup.
-    void this.#requestManager().then(() => {
-      if (this.#destroyed || !this.#manager) {
-        return;
-      }
-      try {
-        if (this.#advancedReady) {
-          void this.#manager.refresh?.(options);
-        } else {
-          void this.#manager.onShellOpened?.(options);
-        }
-      } catch (error) {
-        this.markManagerFailed(error, "open");
-      }
-    });
+    this.#openNativeProtections(options);
   }
 
-  #openShell(options = {}) {
-    const panel = this.panel;
-    if (!panel) {
-      this.#lastErrorStage = "panel-missing";
-      console.error(`${LOG_PREFIX} panel missing`);
-      return;
-    }
-    this.#applyMode();
-
-    if (this.isOpen || this.#popupTransition || this.#isHiding) {
-      if (this.#popupTransition && !this.isOpen && !this.#isHiding) {
-        this.#popupTransition = false;
-      } else {
-        return;
-      }
-    }
-
-    const anchor = this.#resolveAnchor(options.event);
-    this.#popupTransition = true;
+  close(_options = {}) {
     try {
-      if (options.source === "keyboard") {
-        panel.removeAttribute("noautofocus");
-      } else {
-        panel.setAttribute("noautofocus", "true");
-      }
-      panel.openPopup(anchor, "after_start", 0, 0, false, false);
-    } catch (error) {
-      this.#popupTransition = false;
-      this.#lastErrorStage = "openPopup";
-      console.error(`${LOG_PREFIX} openPopup failed`, error);
-      try {
-        if (typeof panel.openPopupAtScreen === "function") {
-          const x =
-            options.event?.screenX ?? options.event?.sourceEvent?.screenX;
-          const y =
-            options.event?.screenY ?? options.event?.sourceEvent?.screenY;
-          if (Number.isFinite(x) && Number.isFinite(y)) {
-            this.#popupTransition = true;
-            panel.openPopupAtScreen(x, y, false);
-          }
-        }
-      } catch (retryError) {
-        this.#popupTransition = false;
-        console.error(`${LOG_PREFIX} openPopup failed`, retryError);
-      }
-    }
-  }
-
-  close(options = {}) {
-    if (this.#advancedReady && this.#manager?.close) {
-      try {
-        this.#manager.close(options);
+      const handler = window.gProtectionsHandler;
+      if (handler && typeof handler._hidePopup === "function") {
+        handler._hidePopup();
         return;
-      } catch (error) {
-        console.error(`${LOG_PREFIX} advanced close failed`, error);
       }
+    } catch {
+      // fall through
     }
-    const panel = this.panel;
-    if (!panel) {
-      return;
-    }
-    if (this.isOpen) {
-      this.#popupTransition = true;
-      try {
-        panel.hidePopup();
-      } catch (error) {
-        this.#popupTransition = false;
-        console.error(`${LOG_PREFIX} hidePopup failed`, error);
+    try {
+      const popup = this.nativePopup;
+      if (popup && typeof PanelMultiView !== "undefined") {
+        PanelMultiView.hidePopup(popup);
+      } else {
+        popup?.hidePopup?.();
       }
+    } catch {
+      // ignore
     }
   }
 
   refresh() {
-    if (!this.#enabled || this.#destroyed) {
-      return;
-    }
-    if (this.#advancedReady && this.#manager?.refresh) {
-      try {
-        void this.#manager.refresh();
-        return;
-      } catch (error) {
-        this.markManagerFailed(error, "refresh");
-      }
-    }
-    // Attempt lazy manager load so Refresh can upgrade from fallback.
-    void this.#requestManager();
+    // Native popup refreshes itself on open / tab change.
   }
 
   openFallbackAction(action, event) {
     try {
       switch (action) {
         case "protections-panel":
-          this.#openProtectionsPanel(event);
+          this.#openNativeProtections({ event });
           break;
         case "site-info":
           this.#openSiteInfo(event);
@@ -553,29 +318,49 @@ class AstraSurakshaBootstrap {
           break;
       }
     } catch {
-      // Individual fallback actions fail independently.
+      // ignore
     }
   }
 
-  #openProtectionsPanel(event) {
+  #openNativeProtections(options = {}) {
     const handler = window.gProtectionsHandler;
     if (!handler || typeof handler.showProtectionsPopup !== "function") {
+      this.#lastErrorStage = "handler-missing";
       this.#openProtectionsDashboard();
       return;
     }
+
+    // Ensure popup exists before wiring branding/listeners.
     try {
-      this.close({ restoreFocus: false });
+      handler._initializePopup?.();
+    } catch {
+      // ignore
+    }
+
+    this.#ensureNativeListeners();
+    this.#applyNativeBranding();
+
+    try {
+      // Anchor preference: Suraksha button when available.
+      const anchor = this.#resolveAnchor(options.event);
+      let event = options.event;
+      if (anchor && (!event || !event.target)) {
+        event = {
+          target: anchor,
+          originalTarget: anchor,
+          type: "command",
+        };
+      }
       handler.showProtectionsPopup({
         event,
         openingReason: "astraSuraksha",
       });
-      // If trust-panel pref causes an early return, fall back to dashboard.
-      const popup = document.getElementById("protections-popup");
-      const trustGate = handler.trustPanelEnabledPref;
-      if (trustGate) {
+      if (handler.trustPanelEnabledPref) {
         this.#openProtectionsDashboard();
-      } else if (popup && popup.state === "closed") {
-        // Best-effort: if still closed shortly after, open dashboard.
+        return;
+      }
+      const popup = this.nativePopup;
+      if (popup && popup.state === "closed") {
         window.setTimeout(() => {
           try {
             if (popup.state === "closed") {
@@ -586,8 +371,252 @@ class AstraSurakshaBootstrap {
           }
         }, 0);
       }
-    } catch {
+    } catch (error) {
+      this.#lastErrorStage = "open-native";
+      console.error(`${LOG_PREFIX} native protections open failed`, error);
       this.#openProtectionsDashboard();
+    }
+  }
+
+  #ensureNativeListeners() {
+    if (this.#nativeListenersBound) {
+      return;
+    }
+    const popup = this.nativePopup;
+    if (!popup) {
+      return;
+    }
+    this.#boundNativeShown = () => {
+      try {
+        window.gZenCompactModeManager?.lockForPanel?.(PANEL_LOCK_TOKEN);
+      } catch {
+        // ignore
+      }
+      this.#applyNativeBranding();
+      void this.#injectUBlockRow();
+    };
+    this.#boundNativeHidden = () => {
+      try {
+        window.gZenCompactModeManager?.unlockForPanel?.(PANEL_LOCK_TOKEN);
+      } catch {
+        // ignore
+      }
+    };
+    popup.addEventListener("popupshown", this.#boundNativeShown);
+    popup.addEventListener("popuphidden", this.#boundNativeHidden);
+    this.#nativeListenersBound = true;
+  }
+
+  #teardownNativeListeners() {
+    const popup = this.nativePopup;
+    if (!this.#nativeListenersBound || !popup) {
+      this.#nativeListenersBound = false;
+      return;
+    }
+    if (this.#boundNativeShown) {
+      popup.removeEventListener("popupshown", this.#boundNativeShown);
+    }
+    if (this.#boundNativeHidden) {
+      popup.removeEventListener("popuphidden", this.#boundNativeHidden);
+    }
+    if (this.#boundUBlockCommand) {
+      const row = document.getElementById(UBLOCK_ROW_ID);
+      row?.removeEventListener("command", this.#boundUBlockCommand);
+      row?.removeEventListener("click", this.#boundUBlockCommand);
+    }
+    this.#nativeListenersBound = false;
+  }
+
+  #applyNativeBranding() {
+    try {
+      const popup = this.nativePopup;
+      if (!popup) {
+        return;
+      }
+      popup.setAttribute("astra-suraksha-native", "true");
+      const header = document.getElementById(
+        "protections-popup-mainView-panel-header-span"
+      );
+      if (header) {
+        document.l10n?.setAttributes?.(header, "astra-suraksha-title");
+      }
+    } catch (error) {
+      console.warn(`${LOG_PREFIX} branding apply failed`, error);
+    }
+  }
+
+  async #loadUBlockModule() {
+    if (this.#ublockModule) {
+      return this.#ublockModule;
+    }
+    try {
+      this.#ublockModule = ChromeUtils.importESModule(UBLOCK_MODULE_URL, {
+        global: "current",
+      });
+    } catch (error) {
+      console.warn(`${LOG_PREFIX} uBlock module unavailable`, error);
+      this.#ublockModule = null;
+    }
+    return this.#ublockModule;
+  }
+
+  async #injectUBlockRow() {
+    const popup = this.nativePopup;
+    const mainView = document.getElementById("protections-popup-mainView");
+    if (!popup || !mainView) {
+      return;
+    }
+
+    let row = document.getElementById(UBLOCK_ROW_ID);
+    if (!row) {
+      row = document.createXULElement("hbox");
+      row.id = UBLOCK_ROW_ID;
+      row.classList.add("astra-suraksha-ublock-row");
+      row.setAttribute("align", "center");
+
+      const textCol = document.createXULElement("vbox");
+      textCol.setAttribute("flex", "1");
+      textCol.classList.add("astra-suraksha-ublock-text");
+
+      const title = document.createXULElement("label");
+      title.classList.add("astra-suraksha-ublock-title");
+      document.l10n?.setAttributes?.(
+        title,
+        "astra-suraksha-ublock-section-title"
+      );
+
+      const status = document.createXULElement("label");
+      status.id = "astra-suraksha-ublock-status";
+      status.classList.add("astra-suraksha-ublock-status");
+
+      textCol.appendChild(title);
+      textCol.appendChild(status);
+
+      const action = document.createXULElement("toolbarbutton");
+      action.id = "astra-suraksha-ublock-open";
+      action.classList.add(
+        "subviewbutton",
+        "astra-suraksha-ublock-open",
+        "toolbarbutton-1"
+      );
+      document.l10n?.setAttributes?.(
+        action,
+        "astra-suraksha-action-ublock-popup"
+      );
+
+      row.appendChild(textCol);
+      row.appendChild(action);
+
+      this.#boundUBlockCommand = event => {
+        const t = event.target;
+        if (!t?.closest) {
+          return;
+        }
+        if (t.closest("#astra-suraksha-ublock-open")) {
+          void this.#onOpenUBlock();
+        }
+      };
+      row.addEventListener("command", this.#boundUBlockCommand);
+      row.addEventListener("click", this.#boundUBlockCommand);
+
+      // Place after the TP switch / category list when present.
+      const footer = document.getElementById(
+        "protections-popup-footer"
+      );
+      const tpSwitch = document.getElementById("protections-popup-tp-switch");
+      const insertAfter =
+        document.getElementById("protections-popup-category-list") ||
+        tpSwitch?.parentElement ||
+        null;
+      if (footer?.parentElement) {
+        footer.parentElement.insertBefore(row, footer);
+      } else if (insertAfter?.parentElement) {
+        insertAfter.parentElement.insertBefore(row, insertAfter.nextSibling);
+      } else {
+        mainView.appendChild(row);
+      }
+    }
+
+    const statusEl = document.getElementById("astra-suraksha-ublock-status");
+    const openBtn = document.getElementById("astra-suraksha-ublock-open");
+    const mod = await this.#loadUBlockModule();
+    if (!mod?.readUBlock) {
+      if (statusEl) {
+        document.l10n?.setAttributes?.(
+          statusEl,
+          "astra-suraksha-ublock-unavailable"
+        );
+      }
+      if (openBtn) {
+        openBtn.hidden = true;
+      }
+      return;
+    }
+
+    let result;
+    try {
+      result = await mod.readUBlock(window);
+    } catch {
+      result = null;
+    }
+
+    const state = result?.state || "error";
+    const labelId =
+      state === "active"
+        ? "astra-suraksha-ublock-active"
+        : state === "disabled" || state === "app-disabled"
+          ? "astra-suraksha-ublock-disabled"
+          : state === "missing"
+            ? "astra-suraksha-ublock-missing"
+            : "astra-suraksha-ublock-unavailable";
+
+    if (statusEl) {
+      document.l10n?.setAttributes?.(statusEl, labelId);
+    }
+    if (openBtn) {
+      // Show open only when installed; otherwise offer manage/addons via same btn label.
+      if (state === "missing") {
+        document.l10n?.setAttributes?.(
+          openBtn,
+          "astra-suraksha-action-addons"
+        );
+        openBtn.hidden = false;
+        openBtn.setAttribute("data-ublock-action", "addons");
+      } else if (state === "error" || !result?.available) {
+        openBtn.hidden = true;
+      } else {
+        document.l10n?.setAttributes?.(
+          openBtn,
+          "astra-suraksha-action-ublock-popup"
+        );
+        openBtn.hidden = false;
+        openBtn.setAttribute("data-ublock-action", "popup");
+      }
+    }
+  }
+
+  async #onOpenUBlock() {
+    const openBtn = document.getElementById("astra-suraksha-ublock-open");
+    const action = openBtn?.getAttribute("data-ublock-action") || "popup";
+    const mod = await this.#loadUBlockModule();
+    if (!mod) {
+      return;
+    }
+    try {
+      this.close({ restoreFocus: false });
+    } catch {
+      // ignore
+    }
+    try {
+      if (action === "addons") {
+        mod.openAddonsManager?.(window);
+      } else if (typeof mod.openUBlockBrowserAction === "function") {
+        mod.openUBlockBrowserAction(window);
+      } else {
+        await mod.manageUBlock?.(window);
+      }
+    } catch (error) {
+      console.warn(`${LOG_PREFIX} uBlock action failed`, error);
     }
   }
 
@@ -597,10 +626,6 @@ class AstraSurakshaBootstrap {
     } catch {
       // ignore
     }
-
-    // Prefer the public identity-button path only when the location is valid.
-    // Command/synthetic events are accepted by the type gate, but pageproxystate
-    // can still cause a silent early return — fall back to Page Info.
     try {
       const handler = window.gIdentityHandler;
       const pageProxyValid =
@@ -619,9 +644,8 @@ class AstraSurakshaBootstrap {
         return;
       }
     } catch {
-      // fall through to Page Info
+      // fall through
     }
-
     try {
       if (typeof window.BrowserCommands?.pageInfo === "function") {
         window.BrowserCommands.pageInfo(null, "securityTab");
@@ -655,9 +679,7 @@ class AstraSurakshaBootstrap {
   #openAddons() {
     try {
       this.close({ restoreFocus: false });
-      if (window.BrowserAddonUI?.openAddonsMgr) {
-        window.BrowserAddonUI.openAddonsMgr("addons://list/extension");
-      }
+      window.BrowserAddonUI?.openAddonsMgr?.("addons://list/extension");
     } catch {
       // ignore
     }

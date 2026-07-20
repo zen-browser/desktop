@@ -128,14 +128,18 @@ astra-suraksha-etp-detail-mode = Firefox Enhanced Tracking Protection · { $mode
 
 ## uBlock
 
-astra-suraksha-ublock-active = uBlock Origin active
-    .value = uBlock Origin active
-astra-suraksha-ublock-disabled = uBlock Origin disabled
-    .value = uBlock Origin disabled
-astra-suraksha-ublock-missing = uBlock Origin not installed
-    .value = uBlock Origin not installed
-astra-suraksha-ublock-app-disabled = uBlock Origin application-disabled
-    .value = uBlock Origin application-disabled
+astra-suraksha-ublock-section-title = Ad & content blocking
+    .value = Ad & content blocking
+astra-suraksha-ublock-unavailable = Status unavailable
+    .value = Status unavailable
+astra-suraksha-ublock-active = uBlock Origin — Active
+    .value = uBlock Origin — Active
+astra-suraksha-ublock-disabled = uBlock Origin — Disabled
+    .value = uBlock Origin — Disabled
+astra-suraksha-ublock-missing = uBlock Origin — Not installed
+    .value = uBlock Origin — Not installed
+astra-suraksha-ublock-app-disabled = uBlock Origin — Disabled
+    .value = uBlock Origin — Disabled
 astra-suraksha-ublock-locked = Managed by policy
     .value = Managed by policy
 astra-suraksha-ublock-version = Version { $version }

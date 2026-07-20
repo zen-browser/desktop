@@ -73,6 +73,23 @@ export class ZenBoostsParent extends JSWindowActorParent {
   }
 
   /**
+   * Updates the boost size override on webpage
+   *
+   * @param {number} sizeOverride - The size to apply on the webpage as a override
+   * @param {boolean} disable - Whether to disable the override (sets override to the default 1)
+   */
+  updateBoostSizeOverride(sizeOverride, disable = false) {
+    if (
+      sizeOverride &&
+      isFinite(sizeOverride) &&
+      (sizeOverride !== 1 || disable)
+    ) {
+      const fullZoom = this.browsingContext.topChromeWindow.FullZoom;
+      fullZoom.setZoom(sizeOverride);
+    }
+  }
+
+  /**
    * Handles messages received from child actors.
    * Retrieves boost data for a domain when requested.
    *
@@ -173,6 +190,11 @@ export class ZenBoostsParent extends JSWindowActorParent {
               }
             : null,
         };
+      }
+      case "ZenBoost:UpdateBoostSize": {
+        const { sizeOverride } = message.data;
+        this.updateBoostSizeOverride(sizeOverride);
+        break;
       }
       default: {
         console.warn(`[ZenBoostsParent]: Unknown message: ${message.name}`);

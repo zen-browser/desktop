@@ -27,6 +27,9 @@ const globalActionsTemplate = [
     label: "Open Theme Picker",
     command: "cmd_zenOpenZenThemePicker",
     icon: "chrome://browser/skin/zen-icons/edit-theme.svg",
+    // Astra: Edit Theme is pref-gated (default off).
+    isAvailable: () =>
+      Services.prefs.getBoolPref("astra.feature.editTheme.enabled", false),
   },
   {
     label: "Astra App Hub",

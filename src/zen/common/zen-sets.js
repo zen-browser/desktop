@@ -442,7 +442,16 @@ document.addEventListener(
             gZenVerticalTabsManager.toggleExpand();
             break;
           case "cmd_zenOpenZenThemePicker":
-            gZenThemePicker.openThemePicker(event);
+            // Astra: Edit Theme is pref-gated (astra.feature.editTheme.enabled,
+            // default false). No-op when disabled; implementation kept intact.
+            if (
+              Services.prefs.getBoolPref(
+                "astra.feature.editTheme.enabled",
+                false
+              )
+            ) {
+              gZenThemePicker.openThemePicker(event);
+            }
             break;
           case "cmd_zenSetWorkspaceBg":
             gZenWorkspaces.openBackgroundImagePicker();

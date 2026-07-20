@@ -63,6 +63,12 @@
 - name: browser.tabs.allow_transparent_browser
   value: false
 
+# Astra feature toggle: Zen "Edit Theme" (gradient/theme picker).
+# Disabled by default. Flip to true to fully restore the feature — the
+# implementation (ZenGradientGenerator.mjs, theme-picker.inc) is untouched.
+- name: astra.feature.editTheme.enabled
+  value: false
+
 - name: zen.theme.disable-lightweight
   value: true
 

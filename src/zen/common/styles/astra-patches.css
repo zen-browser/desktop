@@ -3,3 +3,17 @@
 #zen-workspaces-button:not([dont-show]) {
   min-height: 32px;
 }
+
+/* ASTRA-FEATURE-GATE: Edit Theme (Zen theme picker).
+   Hides every Edit Theme entry point while astra.feature.editTheme.enabled is
+   false. Implementation files are untouched; flipping the pref restores all
+   UI without code changes. */
+/* stylelint-disable-next-line media-query-no-invalid */
+@media not (-moz-pref("astra.feature.editTheme.enabled")) {
+  #zenToolbarThemePicker,
+  #context_zenChangeWorkspaceTheme,
+  menuitem[command="cmd_zenOpenZenThemePicker"],
+  .zen-workspace-creation-edit-theme-button {
+    display: none !important;
+  }
+}

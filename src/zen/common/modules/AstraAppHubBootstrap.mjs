@@ -428,8 +428,13 @@ class AstraAppHubBootstrap {
       await this.#ensureManagerImported();
     }
 
-    if (this.#advancedReady && this.#manager) {
+    if (this.#manager) {
       try {
+        // Prefer the personal launchpad whenever the manager is attached.
+        // Catalog/extra failures are non-fatal and must not force the static fallback banner.
+        if (!this.#advancedReady) {
+          this.setAdvancedReady(true);
+        }
         const opened = await this.#manager.open(options);
         if (opened !== false) {
           return;

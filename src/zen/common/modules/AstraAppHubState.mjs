@@ -153,7 +153,8 @@ function sanitizeAppOrder(value) {
 }
 
 /**
- * Validate HTTPS app URLs for built-in and custom apps.
+ * Validate app URLs for built-in and custom apps.
+ * Allows https always; http only when the user explicitly enters the http scheme.
  * @returns {{ ok: true, href: string, hostname: string } | { ok: false, reason: string }}
  */
 export function validateAppUrl(url) {
@@ -171,11 +172,11 @@ export function validateAppUrl(url) {
     return { ok: false, reason: "unparseable" };
   }
   const scheme = parsed.protocol.replace(":", "").toLowerCase();
-  if (scheme !== "https") {
-    return { ok: false, reason: `scheme:${scheme}` };
-  }
   if (FORBIDDEN_SCHEMES.has(scheme)) {
     return { ok: false, reason: `forbidden:${scheme}` };
+  }
+  if (scheme !== "https" && scheme !== "http") {
+    return { ok: false, reason: `scheme:${scheme}` };
   }
   if (parsed.username || parsed.password) {
     return { ok: false, reason: "credentials" };
@@ -191,6 +192,28 @@ export function validateAppUrl(url) {
     return { ok: false, reason: "hostname" };
   }
   return { ok: true, href: parsed.href, hostname: hostname.toLowerCase() };
+}
+
+/**
+ * Stable key for duplicate detection (scheme + host + path, no trailing slash).
+ */
+export function normalizeAppUrlKey(url) {
+  const check = validateAppUrl(url);
+  if (!check.ok) {
+    return "";
+  }
+  try {
+    const parsed = new URL(check.href);
+    parsed.hash = "";
+    let path = parsed.pathname || "/";
+    if (path.length > 1 && path.endsWith("/")) {
+      path = path.slice(0, -1);
+    }
+    parsed.pathname = path;
+    return `${parsed.protocol}//${parsed.host.toLowerCase()}${parsed.pathname}${parsed.search}`.toLowerCase();
+  } catch {
+    return check.href.toLowerCase();
+  }
 }
 
 export function normalizeHostname(url) {
@@ -935,9 +958,10 @@ class AstraAppHubStateStore {
         throw new Error("custom-limit");
       }
       const urls = new Set(
-        state.customApps.map(app => app.url.toLowerCase())
+        state.customApps.map(app => normalizeAppUrlKey(app.url)).filter(Boolean)
       );
-      if (urls.has(prepared.app.url.toLowerCase())) {
+      const nextKey = normalizeAppUrlKey(prepared.app.url);
+      if (nextKey && urls.has(nextKey)) {
         throw new Error("duplicate-url");
       }
       // Soft icon budget: drop icon payloads rather than reject the app.
@@ -1014,9 +1038,10 @@ class AstraAppHubStateStore {
       const urls = new Set(
         state.customApps
           .filter(app => app.id !== appId)
-          .map(app => app.url.toLowerCase())
+          .map(app => normalizeAppUrlKey(app.url))
+          .filter(Boolean)
       );
-      if (urls.has(prepared.app.url.toLowerCase())) {
+      if (urls.has(normalizeAppUrlKey(prepared.app.url))) {
         throw new Error("duplicate-url");
       }
       state.customApps[idx] = {

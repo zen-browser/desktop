@@ -5,7 +5,7 @@
 ### Astra App Hub
 
 astra-app-hub-title =
-    .value = App Hub
+    .value = Astra App Hub
 
 astra-app-hub-shortcut-hint =
     .value = Ctrl+Shift+U
@@ -20,28 +20,55 @@ astra-app-hub-customize =
     .label = Customize
     .tooltiptext = Customize App Hub
 
+astra-app-hub-manage =
+    .label = Manage Apps
+    .tooltiptext = Manage pinned apps and layout
+
+astra-app-hub-browse =
+    .label = Browse Apps
+    .tooltiptext = Browse the app catalog
+
+astra-app-hub-back =
+    .label = Back
+    .tooltiptext = Back to launchpad
+
 astra-app-hub-done =
     .label = Done
 
 astra-app-hub-search-placeholder =
-    .placeholder = Search apps
+    .placeholder = Search apps or enter a website…
 
 astra-app-hub-search-clear =
     .label = Clear
     .tooltiptext = Clear search
+
+astra-app-hub-search-results =
+    .value = Results
 
 astra-app-hub-no-results =
     .value = No apps match your search.
 
 astra-app-hub-favorites =
     .value = Favorites
+astra-app-hub-pinned =
+    .value = Pinned
 astra-app-hub-recent =
-    .value = Recently Used
+    .value = Recent
 astra-app-hub-hidden =
     .value = Hidden Apps
 
 astra-app-hub-add =
     .label = Add App
+astra-app-hub-add-website =
+    .label = Add Website
+astra-app-hub-add-website-short =
+    .label = +
+    .tooltiptext = Add website
+astra-app-hub-add-tile =
+    .value = Add app
+
+astra-app-hub-browse-empty =
+    .value = No catalog apps are available right now.
 
 astra-app-hub-overflow =
     .label = More
@@ -98,7 +125,7 @@ astra-app-hub-overflow-toggle-favorites =
 astra-app-hub-editor-name-label =
     .value = Name
 astra-app-hub-editor-url-label =
-    .value = URL (HTTPS)
+    .value = Website URL
 astra-app-hub-editor-category-label =
     .value = Category
 astra-app-hub-editor-keywords-label =
@@ -115,7 +142,7 @@ astra-app-hub-editor-cancel =
 astra-app-hub-error-empty-name =
     .value = Enter an app name.
 astra-app-hub-error-url =
-    .value = Enter a valid HTTPS URL.
+    .value = Enter a valid http or https URL.
 astra-app-hub-error-duplicate =
     .value = An app with this URL already exists.
 astra-app-hub-error-generic =
@@ -128,12 +155,12 @@ astra-app-hub-error-icon-too-large =
     .value = That image is too large. Choose a file under 1 MB.
 
 astra-app-hub-load-error =
-    .value = Advanced App Hub is unavailable. Basic apps are ready.
+    .value = Could not load App Hub extras. Your pinned apps are still available.
 astra-app-hub-advanced-unavailable =
-    .value = Advanced App Hub is unavailable. Basic apps are ready.
+    .value = Could not load App Hub extras. Your pinned apps are still available.
 astra-app-hub-retry =
     .label = Retry
-    .tooltiptext = Retry loading Advanced App Hub
+    .tooltiptext = Retry loading App Hub catalog
 
 astra-app-hub-confirm-delete-title = Delete custom app?
 astra-app-hub-confirm-delete-body = This removes the app from App Hub, favorites, and recent lists.

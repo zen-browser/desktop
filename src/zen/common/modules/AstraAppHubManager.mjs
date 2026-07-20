@@ -71,6 +71,10 @@ const CATALOG_SCHEMA_VERSION = 1;
 
 const SECTION_FAVORITES = "__favorites__";
 const SECTION_RECENT = "__recent__";
+const SECTION_PINNED = "__pinned__";
+const SECTION_SEARCH = "__search__";
+/** Recommended maximum visible pinned apps on the main launchpad. */
+const MAIN_PINNED_LIMIT = 12;
 
 /** @type {(url: string) => { ok: true, href: string, hostname?: string } | { ok: false, reason: string }} */
 export const validateBuiltinAppUrl = validateAppUrl;
@@ -81,6 +85,43 @@ function normalizeSearchQuery(value) {
     .toLocaleLowerCase()
     .trim()
     .replace(/\s+/g, " ");
+}
+
+function formatRelativeTime(ts) {
+  const time = Number(ts);
+  if (!Number.isFinite(time) || time <= 0) {
+    return "";
+  }
+  const diffMs = Date.now() - time;
+  if (diffMs < 0) {
+    return "";
+  }
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) {
+    return "Just now";
+  }
+  if (mins < 60) {
+    return `${mins} min ago`;
+  }
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) {
+    return hours === 1 ? "1 hour ago" : `${hours} hours ago`;
+  }
+  const days = Math.floor(hours / 24);
+  if (days === 1) {
+    return "Yesterday";
+  }
+  if (days < 7) {
+    return `${days} days ago`;
+  }
+  try {
+    return new Date(time).toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+    });
+  } catch {
+    return "";
+  }
 }
 
 function hostnameFromUrl(url) {
@@ -335,6 +376,8 @@ class AstraAppHubManager {
   #pendingIconData = null;
   #pendingResetIcon = false;
   #searchQuery = "";
+  /** @type {"launchpad"|"browse"} */
+  #hubView = "launchpad";
   #lastAppliedRevision = -1;
   #contextAppId = null;
   /** @type {string[]} */
@@ -540,31 +583,28 @@ class AstraAppHubManager {
   }
 
   /**
-   * ADVANCED READY only when catalog imported + validated, shell exists,
-   * advanced render succeeds, and the manager/window is still alive.
-   * Otherwise keep fallback visible/usable with a compact retry banner.
-   * Rebuild advanced content before mode handoff so fallback is never swapped
-   * for an empty advanced panel.
+   * ADVANCED READY when the shell can render the personal launchpad.
+   * Catalog failure is non-fatal: pinned/custom apps still work; Browse Apps
+   * simply has fewer (or no) discovery categories. Never show a technical
+   * "Advanced unavailable" banner to normal users — log diagnostics instead.
    */
   #applyCatalogReadyState() {
     if (this.#destroyed || window.closed) {
       return;
     }
     let ready = false;
-    if (this.#catalog && this.#shellBuilt && !this.#catalogError) {
+    if (this.#shellBuilt) {
       this.#rendered = false;
       try {
         this.#rebuildList();
         ready = !!(
-          this.#catalog &&
           this.#shellBuilt &&
-          !this.#catalogError &&
           this.#rendered &&
           !this.#destroyed &&
           !window.closed
         );
       } catch (error) {
-        console.warn("[AstraAppHub] rebuild after catalog ready failed:", error);
+        console.warn("[AstraAppHub] launchpad render failed:", error);
         this.#catalogDiag = {
           stage: "render",
           chromeResourcePath: CATALOG_MODULE_URL,
@@ -588,7 +628,8 @@ class AstraAppHubManager {
     if (ready) {
       this.#handoffFocusFromHiddenFallback();
     }
-    this.#showFallbackFailureBanner(!ready);
+    // Never surface a technical failure banner in the UI.
+    this.#showFallbackFailureBanner(false);
   }
 
   /**
@@ -616,59 +657,14 @@ class AstraAppHubManager {
   }
 
   #showFallbackFailureBanner(show) {
-    const fallback = document.getElementById(
-      "PanelUI-zen-app-launcher-fallback"
-    );
-    if (!fallback) {
-      return;
-    }
-    let banner = document.getElementById("astra-app-hub-fallback-banner");
-    if (show && !banner) {
-      banner = document.createXULElement("hbox");
-      banner.id = "astra-app-hub-fallback-banner";
-      banner.classList.add("astra-app-hub-fallback-banner");
-      banner.setAttribute("role", "status");
-      banner.setAttribute("align", "center");
-
-      const msg = document.createXULElement("label");
-      msg.classList.add("astra-app-hub-fallback-banner-msg");
-      msg.setAttribute("flex", "1");
-      setL10nOrText(
-        msg,
-        "astra-app-hub-advanced-unavailable",
-        "Advanced App Hub is unavailable. Basic apps are ready."
-      );
-
-      const retry = document.createXULElement("toolbarbutton");
-      retry.id = "astra-app-hub-retry-btn";
-      retry.classList.add("astra-app-hub-retry-btn");
-      retry.setAttribute("data-action", "retry-catalog");
-      setL10nOrText(retry, "astra-app-hub-retry", "Retry");
-
-      banner.appendChild(msg);
-      banner.appendChild(retry);
-
-      const title = document.getElementById("PanelUI-zen-app-launcher-title");
-      if (title && title.parentNode === fallback) {
-        fallback.insertBefore(banner, title.nextSibling);
-      } else {
-        fallback.insertBefore(banner, fallback.firstChild);
-      }
-    }
+    const banner = document.getElementById("astra-app-hub-fallback-banner");
     if (banner) {
-      banner.hidden = !show;
-      const retryBtn = document.getElementById("astra-app-hub-retry-btn");
-      if (retryBtn) {
-        // Module-import/validate failures are process-cached; after one user
-        // Retry still fails, stop offering Retry. Render failures stay retryable.
-        const allowRetry = show && !this.#catalogRetryExhausted;
-        retryBtn.hidden = !allowRetry;
-        if (!allowRetry || this.#retryInFlight) {
-          retryBtn.setAttribute("disabled", "true");
-        } else {
-          retryBtn.removeAttribute("disabled");
-        }
-      }
+      banner.hidden = true;
+    }
+    if (show) {
+      console.warn(
+        "[AstraAppHub] launchpad unavailable; static fallback remains usable"
+      );
     }
   }
 
@@ -787,7 +783,7 @@ class AstraAppHubManager {
       const title = document.createXULElement("label");
       title.id = "astra-app-hub-title";
       title.classList.add("astra-app-hub-title");
-      setL10nOrText(title, "astra-app-hub-title", "App Hub");
+      setL10nOrText(title, "astra-app-hub-title", "Astra App Hub");
       header.appendChild(title);
 
       const hint = document.createXULElement("label");
@@ -804,11 +800,19 @@ class AstraAppHubManager {
       spacer.setAttribute("flex", "1");
       header.appendChild(spacer);
 
+      const addHeaderBtn = document.createXULElement("toolbarbutton");
+      addHeaderBtn.id = "astra-app-hub-add-header-btn";
+      addHeaderBtn.classList.add("astra-app-hub-header-btn", "astra-app-hub-add-header-btn");
+      addHeaderBtn.setAttribute("data-action", "add-app");
+      addHeaderBtn.setAttribute("tooltiptext", "Add website");
+      setL10nOrText(addHeaderBtn, "astra-app-hub-add-website-short", "+");
+      header.appendChild(addHeaderBtn);
+
       const customizeBtn = document.createXULElement("toolbarbutton");
       customizeBtn.id = "astra-app-hub-customize-btn";
       customizeBtn.classList.add("astra-app-hub-header-btn");
-      customizeBtn.setAttribute("data-action", "customize");
-      setL10nOrText(customizeBtn, "astra-app-hub-customize", "Customize");
+      customizeBtn.setAttribute("data-action", "manage-apps");
+      setL10nOrText(customizeBtn, "astra-app-hub-manage", "Manage");
       header.appendChild(customizeBtn);
 
       const doneBtn = document.createXULElement("toolbarbutton");
@@ -852,7 +856,7 @@ class AstraAppHubManager {
       search.classList.add("astra-app-hub-search");
       search.setAttribute("type", "search");
       search.setAttribute("autocomplete", "off");
-      search.setAttribute("placeholder", "Search apps");
+      search.setAttribute("placeholder", "Search apps or enter a website...");
       if (document.l10n) {
         try {
           document.l10n.setAttributes(search, "astra-app-hub-search-placeholder");
@@ -912,15 +916,34 @@ class AstraAppHubManager {
       footer.classList.add("astra-app-hub-footer");
       footer.setAttribute("align", "center");
 
-      const addBtn = document.createXULElement("toolbarbutton");
-      addBtn.id = "astra-app-hub-add-btn";
-      addBtn.setAttribute("data-action", "add-app");
-      setL10nOrText(addBtn, "astra-app-hub-add", "Add app");
-      footer.appendChild(addBtn);
+      const browseBtn = document.createXULElement("toolbarbutton");
+      browseBtn.id = "astra-app-hub-browse-btn";
+      browseBtn.setAttribute("data-action", "browse-apps");
+      setL10nOrText(browseBtn, "astra-app-hub-browse", "Browse Apps");
+      footer.appendChild(browseBtn);
+
+      const backBtn = document.createXULElement("toolbarbutton");
+      backBtn.id = "astra-app-hub-back-btn";
+      backBtn.setAttribute("data-action", "back-launchpad");
+      backBtn.hidden = true;
+      setL10nOrText(backBtn, "astra-app-hub-back", "Back");
+      footer.appendChild(backBtn);
+
+      const manageBtn = document.createXULElement("toolbarbutton");
+      manageBtn.id = "astra-app-hub-manage-btn";
+      manageBtn.setAttribute("data-action", "manage-apps");
+      setL10nOrText(manageBtn, "astra-app-hub-manage", "Manage Apps");
+      footer.appendChild(manageBtn);
 
       const spacer = document.createXULElement("spacer");
       spacer.setAttribute("flex", "1");
       footer.appendChild(spacer);
+
+      const addBtn = document.createXULElement("toolbarbutton");
+      addBtn.id = "astra-app-hub-add-btn";
+      addBtn.setAttribute("data-action", "add-app");
+      setL10nOrText(addBtn, "astra-app-hub-add-website", "Add Website");
+      footer.appendChild(addBtn);
 
       const overflowBtn = document.createXULElement("toolbarbutton");
       overflowBtn.id = "astra-app-hub-overflow-btn";
@@ -929,6 +952,36 @@ class AstraAppHubManager {
       footer.appendChild(overflowBtn);
 
       container.appendChild(footer);
+    } else {
+      // Upgrade older footer layout in-session if needed.
+      if (!document.getElementById("astra-app-hub-browse-btn")) {
+        const browseBtn = document.createXULElement("toolbarbutton");
+        browseBtn.id = "astra-app-hub-browse-btn";
+        browseBtn.setAttribute("data-action", "browse-apps");
+        setL10nOrText(browseBtn, "astra-app-hub-browse", "Browse Apps");
+        footer.insertBefore(browseBtn, footer.firstChild);
+      }
+      if (!document.getElementById("astra-app-hub-back-btn")) {
+        const backBtn = document.createXULElement("toolbarbutton");
+        backBtn.id = "astra-app-hub-back-btn";
+        backBtn.setAttribute("data-action", "back-launchpad");
+        backBtn.hidden = true;
+        setL10nOrText(backBtn, "astra-app-hub-back", "Back");
+        const browse = document.getElementById("astra-app-hub-browse-btn");
+        footer.insertBefore(backBtn, browse?.nextSibling || footer.firstChild);
+      }
+      if (!document.getElementById("astra-app-hub-manage-btn")) {
+        const manageBtn = document.createXULElement("toolbarbutton");
+        manageBtn.id = "astra-app-hub-manage-btn";
+        manageBtn.setAttribute("data-action", "manage-apps");
+        setL10nOrText(manageBtn, "astra-app-hub-manage", "Manage Apps");
+        const back = document.getElementById("astra-app-hub-back-btn");
+        footer.insertBefore(manageBtn, back?.nextSibling || footer.firstChild);
+      }
+      const legacyAdd = document.getElementById("astra-app-hub-add-btn");
+      if (legacyAdd) {
+        setL10nOrText(legacyAdd, "astra-app-hub-add-website", "Add Website");
+      }
     }
 
     // Editor subview
@@ -952,7 +1005,7 @@ class AstraAppHubManager {
       editor.appendChild(nameInput);
 
       const urlLabel = document.createXULElement("label");
-      setL10nOrText(urlLabel, "astra-app-hub-editor-url-label", "URL (https)");
+      setL10nOrText(urlLabel, "astra-app-hub-editor-url-label", "URL");
       editor.appendChild(urlLabel);
       const urlInput = document.createElementNS(
         "http://www.w3.org/1999/xhtml",
@@ -1874,25 +1927,32 @@ class AstraAppHubManager {
     }
     clearChildren(list);
     this.#focusedItemIndex = -1;
-
-    if (this.#catalogError || !this.#catalog) {
-      // Never leave an empty advanced panel; keep static fallback usable.
-      try {
-        window.gAstraAppHubBootstrap?.setAdvancedReady?.(false);
-      } catch {
-        // ignore
-      }
-      this.#showFallbackFailureBanner(true);
-      this.#rendered = true;
-      this.#lastAppliedRevision = gAstraAppHubState.revision;
-      return;
-    }
-
-    this.#showFallbackFailureBanner(false);
+    this.#updateHubChrome();
 
     const state = gAstraAppHubState.data;
     const appMap = this.#allAppsMap();
     const hidden = new Set(state.hidden || []);
+    const query = this.#searchQuery;
+
+    // Launchpad (and search) never require the packaged catalog.
+    if (this.#hubView === "launchpad" && !this.#customizeMode) {
+      this.#rebuildLaunchpad(list, state, appMap, hidden, query);
+      this.#rendered = true;
+      this.#lastAppliedRevision = gAstraAppHubState.revision;
+      this.#updateCustomizeChrome();
+      return;
+    }
+
+    if (this.#catalogError && !this.#catalog && this.#hubView === "browse") {
+      // Browse without catalog: show an empty discovery state, not a technical banner.
+      console.warn(
+        "[AstraAppHub] Browse Apps opened without catalog:",
+        this.#catalogDiag?.exceptionName || "unavailable"
+      );
+    }
+
+    this.#showFallbackFailureBanner(false);
+
     const favorites = (state.favorites || []).filter(
       id => appMap.has(id) && !hidden.has(id)
     );
@@ -1900,32 +1960,34 @@ class AstraAppHubManager {
       .map(e => e.id)
       .filter(id => appMap.has(id) && !hidden.has(id));
 
-    if (state.settings?.showFavorites && favorites.length) {
-      this.#appendSection(
-        list,
-        SECTION_FAVORITES,
-        "Favorites",
-        "astra-app-hub-favorites",
-        favorites.map(id => appMap.get(id)),
-        { collapsible: false, special: true }
-      );
-    }
-
-    if (state.settings?.showRecent && recent.length) {
-      this.#appendSection(
-        list,
-        SECTION_RECENT,
-        "Recently Used",
-        "astra-app-hub-recent",
-        recent.map(id => appMap.get(id)),
-        { collapsible: false, special: true }
-      );
+    if (this.#customizeMode) {
+      if (state.settings?.showFavorites && favorites.length) {
+        this.#appendSection(
+          list,
+          SECTION_FAVORITES,
+          "Pinned",
+          "astra-app-hub-pinned",
+          favorites.map(id => appMap.get(id)),
+          { collapsible: false, special: true }
+        );
+      }
+      if (state.settings?.showRecent && recent.length) {
+        this.#appendSection(
+          list,
+          SECTION_RECENT,
+          "Recent",
+          "astra-app-hub-recent",
+          recent.map(id => appMap.get(id)),
+          { collapsible: false, special: true }
+        );
+      }
     }
 
     // Optional per-Space pins (compact; omitted when empty).
     if (
       this.#spacePinIds.length &&
-      !PrivateBrowsingUtils.isWindowPrivate(window)
+      !PrivateBrowsingUtils.isWindowPrivate(window) &&
+      (this.#customizeMode || this.#hubView === "browse")
     ) {
       const pinnedApps = this.#spacePinIds
         .map(id => appMap.get(id))
@@ -1943,6 +2005,7 @@ class AstraAppHubManager {
     }
 
     const categoryOrder = this.#orderedCategories(state);
+    let catalogSections = 0;
     for (const category of categoryOrder) {
       const apps = this.#orderedAppsForCategory(category.id, appMap, state, hidden);
       if (!apps.length && !this.#customizeMode) {
@@ -1957,6 +2020,23 @@ class AstraAppHubManager {
         apps,
         { collapsible: true, collapsed, special: false }
       );
+      catalogSections += 1;
+    }
+
+    if (
+      this.#hubView === "browse" &&
+      !this.#customizeMode &&
+      !catalogSections &&
+      !query
+    ) {
+      const empty = document.createXULElement("label");
+      empty.classList.add("astra-app-hub-search-status");
+      setL10nOrText(
+        empty,
+        "astra-app-hub-browse-empty",
+        "No catalog apps are available right now."
+      );
+      list.appendChild(empty);
     }
 
     // Hidden apps section (customize mode only)
@@ -1979,6 +2059,280 @@ class AstraAppHubManager {
     this.#rendered = true;
     this.#lastAppliedRevision = gAstraAppHubState.revision;
     this.#updateCustomizeChrome();
+  }
+
+  #rebuildLaunchpad(list, state, appMap, hidden, query) {
+    if (query) {
+      const matches = [...appMap.values()].filter(
+        app =>
+          app &&
+          !hidden.has(app.id) &&
+          this.#appMatchesQuery(app, app.category || "", query)
+      );
+      this.#appendSection(
+        list,
+        SECTION_SEARCH,
+        "Results",
+        "astra-app-hub-search-results",
+        matches.slice(0, 40),
+        { collapsible: false, special: true }
+      );
+      if (!matches.length) {
+        const empty = document.createXULElement("label");
+        empty.classList.add("astra-app-hub-search-status");
+        setL10nOrText(empty, "astra-app-hub-no-results", "No apps match your search.");
+        list.appendChild(empty);
+      }
+      return;
+    }
+
+    const pinnedIds = (state.favorites || []).filter(
+      id => appMap.has(id) && !hidden.has(id)
+    );
+    // Prefer favorites; if empty, surface custom apps as the personal launchpad.
+    let pinnedApps = pinnedIds
+      .map(id => appMap.get(id))
+      .filter(Boolean)
+      .slice(0, MAIN_PINNED_LIMIT);
+    if (!pinnedApps.length) {
+      pinnedApps = (state.customApps || [])
+        .map(app => appMap.get(app.id))
+        .filter(app => app && !hidden.has(app.id))
+        .slice(0, MAIN_PINNED_LIMIT);
+    }
+
+    const pinnedSection = this.#appendSection(
+      list,
+      SECTION_PINNED,
+      "Pinned",
+      "astra-app-hub-pinned",
+      pinnedApps,
+      { collapsible: false, special: true, includeAddTile: true }
+    );
+
+    // Space pins stay compact when already available.
+    if (
+      this.#spacePinIds.length &&
+      !PrivateBrowsingUtils.isWindowPrivate(window)
+    ) {
+      const spaceApps = this.#spacePinIds
+        .map(id => appMap.get(id))
+        .filter(app => app && !hidden.has(app.id));
+      if (spaceApps.length) {
+        this.#appendSection(
+          list,
+          "__space-pins__",
+          "Pinned for this Space",
+          "astra-app-hub-space-pins-title",
+          spaceApps.slice(0, MAIN_PINNED_LIMIT),
+          { collapsible: false, special: true }
+        );
+      }
+    }
+
+    if (state.settings?.showRecent !== false) {
+      const recentEntries = (state.recent || []).filter(
+        e => appMap.has(e.id) && !hidden.has(e.id)
+      );
+      if (recentEntries.length) {
+        this.#appendRecentList(list, recentEntries, appMap);
+      }
+    }
+
+    if (!pinnedApps.length && pinnedSection) {
+      // Empty pinned grid still has the Add tile from includeAddTile.
+    }
+  }
+
+  #appendRecentList(list, recentEntries, appMap) {
+    const section = document.createXULElement("vbox");
+    section.classList.add("astra-app-hub-section", "astra-app-hub-recent-section");
+    section.setAttribute("data-category-id", SECTION_RECENT);
+    section.setAttribute("data-special", "true");
+
+    const header = document.createXULElement("hbox");
+    header.classList.add(
+      "astra-app-hub-section-header",
+      "zen-app-launcher-section-title"
+    );
+    header.setAttribute("align", "center");
+    const title = document.createXULElement("label");
+    title.classList.add("astra-app-hub-section-label");
+    setL10nOrText(title, "astra-app-hub-recent", "Recent");
+    header.appendChild(title);
+    section.appendChild(header);
+
+    const rows = document.createXULElement("vbox");
+    rows.classList.add("astra-app-hub-recent-list");
+    for (const entry of recentEntries.slice(0, 6)) {
+      const app = appMap.get(entry.id);
+      if (!app) {
+        continue;
+      }
+      rows.appendChild(this.#createRecentRow(app, entry.lastOpened));
+    }
+    section.appendChild(rows);
+    list.appendChild(section);
+  }
+
+  #createRecentRow(app, lastOpened) {
+    const row = document.createXULElement("toolbarbutton");
+    row.classList.add("astra-app-hub-recent-row", "astra-app-hub-item");
+    row.setAttribute("data-app-id", app.id);
+    row.setAttribute("data-url", app.url);
+    row.setAttribute("tooltiptext", app.name);
+    row.setAttribute("aria-label", app.name);
+
+    const iconInfo = resolveAppIcon(app);
+    const stack = document.createXULElement("stack");
+    stack.classList.add(
+      "zen-app-launcher-item-icon-stack",
+      "astra-app-hub-item-icon-stack",
+      "astra-app-hub-recent-icon-stack"
+    );
+    stack.setAttribute("aria-hidden", "true");
+    const mono = document.createXULElement("label");
+    mono.classList.add(
+      "zen-app-launcher-item-monogram",
+      "astra-app-hub-item-monogram"
+    );
+    mono.setAttribute(
+      "value",
+      iconInfo.monogram || iconInfo.text || app.monogram || "?"
+    );
+    mono.setAttribute("data-accent", String(iconInfo?.accent ?? 0));
+    stack.appendChild(mono);
+    if (
+      iconInfo.type === "image" &&
+      iconInfo.src &&
+      !String(iconInfo.src).startsWith("http:") &&
+      !String(iconInfo.src).startsWith("https:") &&
+      !String(iconInfo.src).startsWith("//")
+    ) {
+      const image = document.createElement("img");
+      image.classList.add(
+        "zen-app-launcher-item-icon",
+        "astra-app-hub-item-icon"
+      );
+      image.setAttribute("alt", "");
+      image.setAttribute("draggable", "false");
+      image.addEventListener(
+        "load",
+        () => {
+          if (!stack.isConnected) {
+            return;
+          }
+          stack.setAttribute("data-icon-loaded", "true");
+        },
+        { once: true }
+      );
+      image.addEventListener(
+        "error",
+        () => {
+          if (!stack.isConnected) {
+            return;
+          }
+          stack.setAttribute("data-icon-error", "true");
+        },
+        { once: true }
+      );
+      image.src = String(iconInfo.src);
+      stack.appendChild(image);
+    }
+    row.appendChild(stack);
+
+    const name = document.createXULElement("label");
+    name.classList.add("astra-app-hub-recent-name");
+    name.setAttribute("flex", "1");
+    name.setAttribute("crop", "end");
+    name.setAttribute("value", app.name);
+    row.appendChild(name);
+
+    const when = document.createXULElement("label");
+    when.classList.add("astra-app-hub-recent-when");
+    when.setAttribute("value", formatRelativeTime(lastOpened));
+    row.appendChild(when);
+    return row;
+  }
+
+  #createAddAppTile() {
+    const button = document.createXULElement("toolbarbutton");
+    button.classList.add(
+      "zen-app-launcher-item",
+      "astra-app-hub-item",
+      "astra-app-hub-add-tile"
+    );
+    button.setAttribute("data-action", "add-app");
+    button.setAttribute("tooltiptext", "Add website");
+
+    const stack = document.createXULElement("stack");
+    stack.classList.add(
+      "zen-app-launcher-item-icon-stack",
+      "astra-app-hub-item-icon-stack"
+    );
+    stack.setAttribute("aria-hidden", "true");
+    const mono = document.createXULElement("label");
+    mono.classList.add(
+      "zen-app-launcher-item-monogram",
+      "astra-app-hub-item-monogram",
+      "astra-app-hub-add-tile-mark"
+    );
+    mono.setAttribute("value", "+");
+    stack.appendChild(mono);
+    button.appendChild(stack);
+
+    const label = document.createXULElement("label");
+    label.classList.add(
+      "zen-app-launcher-item-label",
+      "astra-app-hub-item-label"
+    );
+    setL10nOrText(label, "astra-app-hub-add-tile", "Add app");
+    button.appendChild(label);
+    button.setAttribute("aria-label", "Add website");
+    return button;
+  }
+
+  #updateHubChrome() {
+    const browseBtn = document.getElementById("astra-app-hub-browse-btn");
+    const backBtn = document.getElementById("astra-app-hub-back-btn");
+    const manageBtn = document.getElementById("astra-app-hub-manage-btn");
+    const addBtn = document.getElementById("astra-app-hub-add-btn");
+    const addHeader = document.getElementById("astra-app-hub-add-header-btn");
+    const customizeBtn = document.getElementById("astra-app-hub-customize-btn");
+    const browsing = this.#hubView === "browse";
+    const editing = !!this.#editorMode || this.#customizeMode;
+    if (browseBtn) {
+      browseBtn.hidden = browsing || editing;
+    }
+    if (backBtn) {
+      backBtn.hidden = !browsing || editing;
+    }
+    if (manageBtn) {
+      manageBtn.hidden = editing;
+    }
+    if (addBtn) {
+      addBtn.hidden = browsing || editing;
+    }
+    if (addHeader) {
+      addHeader.hidden = editing;
+    }
+    if (customizeBtn) {
+      customizeBtn.hidden = this.#customizeMode || !!this.#editorMode;
+    }
+    try {
+      this.panel?.setAttribute("app-hub-view", this.#hubView);
+    } catch {
+      // ignore
+    }
+  }
+
+  #setHubView(view) {
+    this.#hubView = view === "browse" ? "browse" : "launchpad";
+    this.#rendered = false;
+    this.#rebuildList();
+    if (this.#searchQuery) {
+      this.#applySearchFilter(this.#searchQuery);
+    }
   }
 
   async #refreshSpacePins() {
@@ -2124,8 +2478,12 @@ class AstraAppHubManager {
       }
       grid.appendChild(this.#createAppButton(app, options));
     }
+    if (options.includeAddTile) {
+      grid.appendChild(this.#createAddAppTile());
+    }
     section.appendChild(grid);
     list.appendChild(section);
+    return section;
   }
 
   #createAppButton(app, sectionOptions = {}) {
@@ -2759,6 +3117,7 @@ class AstraAppHubManager {
     if (editor) {
       editor.hidden = !this.#editorMode;
     }
+    this.#updateHubChrome();
   }
 
   // —— Search ——
@@ -2773,6 +3132,11 @@ class AstraAppHubManager {
     const clearBtn = document.getElementById("astra-app-hub-search-clear");
     if (clearBtn) {
       clearBtn.hidden = !q;
+    }
+    if (this.#hubView === "launchpad" && !this.#customizeMode) {
+      this.#rendered = false;
+      this.#rebuildList();
+      return;
     }
     this.#applySearchFilter(q);
   }
@@ -2871,6 +3235,11 @@ class AstraAppHubManager {
     if (clearBtn) {
       clearBtn.hidden = true;
     }
+    if (this.#hubView === "launchpad" && !this.#customizeMode) {
+      this.#rendered = false;
+      this.#rebuildList();
+      return;
+    }
     this.#applySearchFilter("");
   }
 
@@ -2946,15 +3315,23 @@ class AstraAppHubManager {
       case "retry-catalog":
         void this.#retryCatalog();
         break;
+      case "browse-apps":
+        this.#setHubView("browse");
+        break;
+      case "back-launchpad":
+        this.#setHubView("launchpad");
+        break;
+      case "manage-apps":
+      case "customize":
+        this.#enterCustomizeMode();
+        break;
       case "clear-search":
         this.#clearSearch();
         this.searchInput?.focus();
         break;
-      case "customize":
-        this.#enterCustomizeMode();
-        break;
       case "done-customize":
         this.#exitCustomizeMode();
+        this.#setHubView("launchpad");
         break;
       case "add-app":
         this.#openEditor("add");
@@ -3669,6 +4046,16 @@ class AstraAppHubManager {
           a => !before.has(a.id)
         );
         savedId = added?.id || null;
+        if (savedId) {
+          try {
+            const favs = gAstraAppHubState.data.favorites || [];
+            if (!favs.includes(savedId)) {
+              await gAstraAppHubState.toggleFavorite(savedId);
+            }
+          } catch (favError) {
+            console.warn("[AstraAppHub] auto-pin custom app failed:", favError);
+          }
+        }
       }
       this.#lastAppliedRevision = gAstraAppHubState.revision;
       this.#closeEditor();
@@ -4105,6 +4492,10 @@ class AstraAppHubManager {
       this.#customizeMode = false;
       needsRebuild = true;
       this.#updateCustomizeChrome();
+    }
+    if (this.#hubView !== "launchpad") {
+      this.#hubView = "launchpad";
+      needsRebuild = true;
     }
     if (needsRebuild) {
       this.#rendered = false;

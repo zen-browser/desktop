@@ -447,6 +447,101 @@
   outline-offset: 1px;
 }
 
+.astra-app-hub-add-header-btn {
+  font-weight: 700;
+  min-width: 28px;
+}
+
+.astra-app-hub-add-tile {
+  border-style: dashed !important;
+  border-color: color-mix(in srgb, currentColor 28%, transparent) !important;
+}
+
+.astra-app-hub-add-tile-mark {
+  font-size: 1.35rem !important;
+  background: color-mix(in srgb, currentColor 10%, transparent) !important;
+}
+
+.astra-app-hub-recent-section {
+  margin-top: 4px;
+}
+
+.astra-app-hub-recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.astra-app-hub-recent-row {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+  min-height: 36px !important;
+  padding: 4px 8px !important;
+  border-radius: 8px !important;
+  width: 100%;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  color: inherit !important;
+  cursor: pointer !important;
+}
+
+.astra-app-hub-recent-row:hover {
+  background: color-mix(in srgb, currentColor 8%, transparent) !important;
+}
+
+.astra-app-hub-recent-row:focus-visible {
+  outline: 2px solid var(--focus-outline-color, Highlight);
+  outline-offset: 1px;
+}
+
+.astra-app-hub-recent-icon-stack {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  margin-bottom: 0 !important;
+}
+
+.astra-app-hub-recent-icon-stack .astra-app-hub-item-monogram,
+.astra-app-hub-recent-icon-stack .zen-app-launcher-item-monogram,
+.astra-app-hub-recent-icon-stack .astra-app-hub-item-icon,
+.astra-app-hub-recent-icon-stack .zen-app-launcher-item-icon {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  border-radius: 7px !important;
+  font-size: 0.7rem !important;
+}
+
+.astra-app-hub-recent-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9rem;
+  margin: 0 !important;
+}
+
+.astra-app-hub-recent-when {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  opacity: 0.7;
+  margin: 0 !important;
+}
+
+#PanelUI-zen-app-launcher[app-hub-view="browse"] .astra-app-hub-list {
+  /* Discovery catalog uses the same single scroll region */
+}
+
+.astra-app-hub-fallback-banner,
+#astra-app-hub-fallback-banner {
+  display: none !important;
+}
+
 /* Customize mode */
 #PanelUI-zen-app-launcher[customize-mode="true"] {
   outline: 2px solid color-mix(in srgb, var(--focus-outline-color, Highlight) 55%, transparent);

@@ -891,16 +891,61 @@
   display: none !important;
 }
 
+/*
+ * Authoritative Zen sidebar resize hit target (normal expanded mode).
+ *
+ * Native XUL #zen-sidebar-splitter uses resizebefore="sibling" against
+ * #navigator-toolbox. It must stay position:relative / in-flow so the
+ * previous-sibling resize path remains valid next to Firefox #sidebar-main.
+ *
+ * !important on position/width overrides the former absolute +
+ * --zen-element-separation width pairing from zen-browser-ui.css and keeps a
+ * stable ~8px chrome hit strip (not a large gutter). Compact mode continues
+ * to hide this splitter via sidebar.inc.css.
+ */
 #zen-sidebar-splitter {
+  --zen-sidebar-splitter-hit-width: 8px;
+
+  box-sizing: border-box;
   opacity: 0;
-  max-width: var(--zen-toolbox-padding) !important;
-  min-width: var(--zen-toolbox-padding) !important;
+  width: var(--zen-sidebar-splitter-hit-width) !important;
+  min-width: var(--zen-sidebar-splitter-hit-width) !important;
+  max-width: var(--zen-sidebar-splitter-hit-width) !important;
   height: 100%;
+  margin: 0;
+  flex: 0 0 var(--zen-sidebar-splitter-hit-width);
+  flex-shrink: 0;
+  overflow: visible;
   transition: opacity 0.2s ease-in-out;
-  background: var(--zen-colors-border);
+  background: transparent;
+  border: none;
   appearance: none;
+  /* Retained: overrides any absolute positioning that would take the splitter
+   * out of the XUL sibling resize flow. */
   position: relative !important;
   order: 0;
+  z-index: 3;
+  pointer-events: auto;
+  cursor: ew-resize;
+
+  &::before {
+    height: 50px;
+    width: 2px;
+    background: var(--button-background-color-primary);
+    border-radius: 2px;
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.1s ease-in-out;
+    pointer-events: none;
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
 }
 
 :root[zen-right-side="true"] {

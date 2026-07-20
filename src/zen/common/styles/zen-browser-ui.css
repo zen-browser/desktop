@@ -245,25 +245,23 @@
   }
 }
 
-.zen-split-view-splitter[orient="vertical"],
-#zen-sidebar-splitter {
+/*
+ * Split-view splitters stay absolutely positioned over the content gap.
+ * #zen-sidebar-splitter is intentionally excluded: it must remain an in-flow
+ * XUL sibling after #navigator-toolbox so resizebefore="sibling" works. Its
+ * hit-area/position source of truth lives in vertical-tabs.css.
+ */
+.zen-split-view-splitter[orient="vertical"] {
   position: absolute;
   top: 0;
   left: 0;
   height: 100%;
-  width: var(--zen-element-separation);
+  width: var(--zen-split-row-gap);
+  margin-left: calc(var(--zen-element-separation) * -1 - 1px);
   background: transparent;
   border: none;
   cursor: ew-resize;
   z-index: 3;
-
-  &:is(.zen-split-view-splitter[orient="vertical"]) {
-    /* Bit of a hacky solution, but it works */
-    width: var(--zen-split-row-gap);
-    margin-left: calc(var(--zen-element-separation) * -1 - 1px);
-    height: unset;
-    cursor: ew-resize;
-  }
 
   &::before {
     height: 50px;
@@ -318,6 +316,7 @@
   margin: 10px 2px 0 0;
 }
 
+/* Visual hover cue only — geometry/hit-testing owned by vertical-tabs.css. */
 #zen-sidebar-splitter {
   border-radius: 14px;
   transition:

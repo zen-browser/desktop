@@ -510,7 +510,14 @@
 }
 
 #navigator-toolbox[zen-sidebar-expanded="true"] {
-  --zen-toolbox-min-width: fit-content;
+  /* Upstream uses fit-content, but Astra's expanded sidebar content resolves
+   * that to ~289px (urlbar in single toolbar, spaces strip, titlebar 150px
+   * floor), which exceeds the 186px default width. Gecko's splitter clamps
+   * drags at the target's computed min-width (nsSplitterFrame
+   * CollectChildInfos info.min), so every shrink became a no-op and resize
+   * appeared broken. A fixed floor restores the drag range; content narrower
+   * than the floor never mattered because the default width exceeds it. */
+  --zen-toolbox-min-width: 120px;
 
   padding: 0 !important;
   padding-left: 0 !important;

@@ -661,7 +661,7 @@ ${cssSelector} {
       this.currentBoostData.sizeOverride = 1;
       await this.zenBoostsChild.updateBoostSize(
         this.currentBoostData.sizeOverride,
-        /* disableOverride: */ true
+        /* disable: */ true
       );
     }
 

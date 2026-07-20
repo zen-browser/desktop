@@ -57,16 +57,9 @@
         content/browser/zen-components/app-hub-icons/freshdesk.svg              (../../zen/common/app-hub/icons/freshdesk.svg)
         content/browser/zen-components/app-hub-icons/trello.svg                 (../../zen/common/app-hub/icons/trello.svg)
 
-        content/browser/zen-components/AstraSurakshaBootstrap.mjs               (../../zen/common/modules/AstraSurakshaBootstrap.mjs)
-        content/browser/zen-components/AstraSurakshaManager.mjs                 (../../zen/common/modules/AstraSurakshaManager.mjs)
-        content/browser/zen-components/AstraSurakshaConnection.mjs              (../../zen/common/modules/AstraSurakshaConnection.mjs)
-        content/browser/zen-components/AstraSurakshaProtection.mjs              (../../zen/common/modules/AstraSurakshaProtection.mjs)
-        content/browser/zen-components/AstraSurakshaUBlock.mjs                  (../../zen/common/modules/AstraSurakshaUBlock.mjs)
-        content/browser/zen-components/AstraSurakshaPermissions.mjs             (../../zen/common/modules/AstraSurakshaPermissions.mjs)
-        content/browser/zen-components/AstraSurakshaSiteData.mjs                (../../zen/common/modules/AstraSurakshaSiteData.mjs)
-        content/browser/zen-components/AstraSurakshaCleanLink.mjs               (../../zen/common/modules/AstraSurakshaCleanLink.mjs)
-        content/browser/zen-components/AstraSurakshaSafeBrowsing.mjs            (../../zen/common/modules/AstraSurakshaSafeBrowsing.mjs)
-        content/browser/zen-components/AstraSurakshaPasswords.mjs               (../../zen/common/modules/AstraSurakshaPasswords.mjs)
+        content/browser/zen-components/AstraMigrationBootstrap.mjs             (../../zen/common/modules/AstraMigrationBootstrap.mjs)
+        content/browser/zen-components/AstraMigrationCenter.mjs                 (../../zen/common/modules/AstraMigrationCenter.mjs)
+
         content/browser/zen-components/AstraPhase1Actions.mjs                   (../../zen/common/modules/AstraPhase1Actions.mjs)
 
         content/browser/ZenStartup.mjs                                          (../../zen/common/modules/ZenStartup.mjs)
@@ -110,4 +103,4 @@
         content/browser/zen-styles/astra-patches.css                            (../../zen/common/styles/astra-patches.css)
         content/browser/zen-styles/astra-transparent-mode.css                   (../../zen/common/styles/astra-transparent-mode.css)
         content/browser/zen-styles/astra-app-hub.css                            (../../zen/common/styles/astra-app-hub.css)
-        content/browser/zen-styles/astra-suraksha.css                           (../../zen/common/styles/astra-suraksha.css)
+        content/browser/zen-styles/astra-migration.css                          (../../zen/common/styles/astra-migration.css)

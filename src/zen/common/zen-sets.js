@@ -586,21 +586,29 @@ document.addEventListener(
             break;
           }
           case "cmd_astraOpenSurakshaCenter": {
-            const suraksha = window.gAstraSuraksha;
-            const sourceEvent = event?.sourceEvent;
-            const sourceType = sourceEvent?.type;
-            const source =
-              sourceType === "keydown" ||
-              sourceType === "keypress" ||
-              sourceType === "keyup"
-                ? "keyboard"
-                : sourceType && String(sourceType).startsWith("mouse")
-                  ? "mouse"
-                  : "command";
-            if (suraksha?.toggle) {
-              void suraksha.toggle({ event, source });
-            } else if (suraksha?.open) {
-              void suraksha.open({ event, source });
+            // Custom Suraksha panel is retired. The Suraksha button now opens
+            // Firefox's native protections popup (#protections-popup), same as
+            // clicking the tracking-protection shield in the URL bar.
+            const handler = window.gProtectionsHandler;
+            if (
+              typeof handler?.showProtectionsPopup === "function" &&
+              !handler.trustPanelEnabledPref
+            ) {
+              handler.showProtectionsPopup({
+                event: event?.sourceEvent || event,
+                openingReason: "astraSuraksha",
+              });
+            } else if (typeof handler?.openProtections === "function") {
+              // Trust-panel builds early-return from showProtectionsPopup;
+              // fall back to the protections dashboard.
+              handler.openProtections(true);
+            } else if (typeof window.switchToTabHavingURI === "function") {
+              window.switchToTabHavingURI("about:protections", true, {
+                replaceQueryString: true,
+                relatedToCurrent: true,
+                triggeringPrincipal:
+                  Services.scriptSecurityManager.getSystemPrincipal(),
+              });
             }
             break;
           }

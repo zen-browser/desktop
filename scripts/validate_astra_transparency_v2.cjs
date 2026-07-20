@@ -258,10 +258,10 @@ const commands = read("src/browser/base/content/zen-commands.inc.xhtml");
 
 if (
   preload.includes("AstraAppHubBootstrap.mjs") &&
-  preload.includes("AstraSurakshaBootstrap.mjs")
+  !preload.includes("AstraSuraksha")
 ) {
-  ok("App Hub and Suraksha still preloaded");
-} else fail("App Hub/Suraksha preload missing");
+  ok("App Hub preloaded; retired Suraksha absent");
+} else fail("App Hub preload missing or retired Suraksha still preloaded");
 
 if (sets.includes("cmd_zenOpenAppLauncher") && sets.includes("gZenAppLauncher")) {
   ok("App Hub command intact");
@@ -269,9 +269,9 @@ if (sets.includes("cmd_zenOpenAppLauncher") && sets.includes("gZenAppLauncher"))
 
 if (
   sets.includes("cmd_astraOpenSurakshaCenter") &&
-  sets.includes("gAstraSuraksha")
+  sets.includes("showProtectionsPopup")
 ) {
-  ok("Suraksha command intact");
+  ok("Suraksha command rewired to native protections popup");
 } else fail("Suraksha command broken");
 
 if ((commands.match(/cmd_astraOpenSurakshaCenter/g) || []).length >= 1) {

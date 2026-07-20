@@ -171,24 +171,17 @@ if (/inDOMFullscreen[\s\S]{0,200}backdrop-filter:\s*none/.test(transparentCss)) 
 if (/setInterval/.test(manager)) fail("transparency setInterval");
 else ok("no transparency setInterval");
 
-// Suraksha navigation cost
-const suraksha = read("src/zen/common/modules/AstraSurakshaManager.mjs");
-if (/nsIContentPolicy|http-on-modify-request|webRequest/.test(suraksha)) {
-  fail("Suraksha appears to implement request blocking");
-} else ok("Suraksha is not a second request blocker");
-
-if (/isOpen[\s\S]{0,120}refresh|if\s*\(\s*!this\.isOpen/.test(suraksha)) {
-  ok("Suraksha refresh gated on panel open");
-} else fail("Suraksha refresh gating unclear");
+// Suraksha custom panel retired — no Suraksha modules may load at startup.
+if (!preload.includes("AstraSuraksha")) {
+  ok("Suraksha retired: no Suraksha preload");
+} else fail("retired Suraksha module still preloaded");
 
 // App Hub: bootstrap only at startup; manager lazy on first open
 if (
   preload.includes("AstraAppHubBootstrap.mjs") &&
-  !preload.includes("AstraAppHubManager.mjs") &&
-  preload.includes("AstraSurakshaBootstrap.mjs") &&
-  !preload.includes("AstraSurakshaManager.mjs")
+  !preload.includes("AstraAppHubManager.mjs")
 ) {
-  ok("App Hub/Suraksha startup preload is bootstrap-only");
+  ok("App Hub startup preload is bootstrap-only");
 } else fail("preload must be bootstrap-only (no eager managers)");
 
 if (
@@ -204,9 +197,9 @@ if (sets.includes("cmd_zenOpenAppLauncher") && sets.includes("gZenAppLauncher"))
 
 if (
   sets.includes("cmd_astraOpenSurakshaCenter") &&
-  sets.includes("gAstraSuraksha")
+  sets.includes("showProtectionsPopup")
 ) {
-  ok("Suraksha command intact");
+  ok("Suraksha command rewired to native protections popup");
 } else fail("Suraksha command broken");
 
 if ((commands.match(/cmd_astraOpenSurakshaCenter/g) || []).length >= 1) {

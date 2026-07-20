@@ -33,9 +33,6 @@ const prefsYamlEnergy = exists("prefs/zen/energy-saver.yaml")
   : "";
 const multilingual = read("prefs/firefox/multilingual.yaml");
 const foldersYaml = read("prefs/zen/folders.yaml");
-const sb = read("src/zen/common/modules/AstraSurakshaSafeBrowsing.mjs");
-const pw = read("src/zen/common/modules/AstraSurakshaPasswords.mjs");
-const manager = read("src/zen/common/modules/AstraSurakshaManager.mjs");
 const jar = read("src/zen/common/jar.inc.mn");
 const policies = exists("build/AppDir/distribution/policies.json")
   ? read("build/AppDir/distribution/policies.json")
@@ -106,37 +103,10 @@ if (!/translate\.google|deepl\.com|astra.*translate/i.test(multilingual + phase1
   ok("no Astra/cloud translation servers");
 } else fail("cloud translation reference found");
 
-// Suraksha adapters lazy/open-gated
-if (
-  !preload.includes("AstraSurakshaSafeBrowsing") &&
-  !preload.includes("AstraSurakshaPasswords") &&
-  !preload.includes("AstraSurakshaManager")
-) {
-  ok("new Suraksha adapters not in startup preload");
-} else fail("Suraksha adapters eagerly preloaded");
-if (
-  manager.includes("readSafeBrowsing") &&
-  manager.includes("readPasswords") &&
-  manager.includes("if (this.isOpen)")
-) {
-  ok("Suraksha manager wires new cards with open-gated refresh");
-} else fail("Suraksha manager wiring incomplete");
-if (manager.includes("astra-suraksha-card-detail-extra") && pw.includes("passwords-partial")) {
-  ok("Suraksha detail cards render full detail list + partial password state");
-} else fail("Suraksha detail honesty incomplete");
-if (/getAllLogins|Services\.logins|searchLogins|nsILoginInfo/i.test(pw)) {
-  fail("password adapter accesses credentials");
-} else ok("password adapter is prefs-only");
-if (/No threats found|fully up to date|security score|% safe/i.test(sb)) {
-  fail("Safe Browsing adapter has fake claims");
-} else ok("Safe Browsing adapter has no fake freshness/score");
-if (/fetch\(|XMLHttpRequest|http-on-modify/i.test(sb + pw)) {
-  fail("Suraksha Phase1 adapters perform network/request work");
-} else ok("Suraksha Phase1 adapters are local prefs-only");
-
-if (jar.includes("AstraSurakshaSafeBrowsing.mjs") && jar.includes("AstraSurakshaPasswords.mjs")) {
-  ok("jar packages new Suraksha adapters");
-} else fail("jar missing new Suraksha adapters");
+// Suraksha custom panel retired — no adapters may be packaged or preloaded.
+if (!preload.includes("AstraSuraksha") && !jar.includes("AstraSuraksha")) {
+  ok("retired Suraksha adapters absent from preload/jar");
+} else fail("retired Suraksha adapters still packaged/preloaded");
 
 // Accordion extends ZenFolders
 if (
@@ -178,13 +148,12 @@ if (
   ok("policies force_install + lock uBlock");
 } else fail("policies.json uBlock force_installed missing");
 
-// App Hub / Suraksha bootstrap architecture
+// App Hub bootstrap architecture
 if (
   preload.includes("AstraAppHubBootstrap.mjs") &&
-  !preload.includes("AstraAppHubManager.mjs") &&
-  preload.includes("AstraSurakshaBootstrap.mjs")
+  !preload.includes("AstraAppHubManager.mjs")
 ) {
-  ok("App Hub/Suraksha bootstrap-only preload preserved");
+  ok("App Hub bootstrap-only preload preserved");
 } else fail("preload architecture regression");
 
 const hubMgr = read("src/zen/common/modules/AstraAppHubManager.mjs");

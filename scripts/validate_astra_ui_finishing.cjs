@@ -276,64 +276,62 @@ if (
 
 const bootstrap = read("src/zen/common/modules/AstraAppHubBootstrap.mjs");
 const bootstrapTop = bootstrap.slice(0, bootstrap.indexOf("class AstraAppHubBootstrap"));
+// V3: the manager chrome URL may be declared as a module-scope const string, but
+// nothing (catalog or manager) may be *imported* eagerly. importESModule must
+// only appear inside the class (lazy init/prewarm), never before the class body.
 if (
   !bootstrap.includes("AstraAppHubCatalog") &&
   !/^\s*import\s+.*AstraAppHubManager/m.test(bootstrap) &&
-  !bootstrapTop.includes("AstraAppHubManager.mjs") &&
+  !bootstrapTop.includes("importESModule") &&
   bootstrap.includes("ChromeUtils.importESModule") &&
   bootstrap.includes("AstraAppHubManager.mjs")
 ) {
-  ok("bootstrap does not import catalog/manager eagerly");
+  ok("bootstrap lazy-imports manager (no eager catalog/manager import)");
 } else fail("bootstrap eagerly imports catalog or manager");
 
-const fallbackBlock = popups.slice(
-  popups.indexOf('id="PanelUI-zen-app-launcher-fallback"'),
-  popups.indexOf("Advanced UI shell")
-);
-const fallbackUrls = (fallbackBlock.match(/data-url="/g) || []).length;
-if (fallbackUrls >= 44) ok(`44-app fallback IDs remain intact (${fallbackUrls})`);
-else fail(`fallback apps reduced (${fallbackUrls})`);
+// V3 single shell: popups.inc must NOT carry the static fallback catalog block.
+if (!popups.includes("PanelUI-zen-app-launcher-fallback")) {
+  ok("popups.inc has no static PanelUI-zen-app-launcher-fallback block (single shell)");
+} else fail("popups.inc still contains the removed static fallback block");
 
-const fallbackMonograms = (fallbackBlock.match(/data-monogram="/g) || []).length;
-const fallbackMonogramLabels = (
-  fallbackBlock.match(/zen-app-launcher-item-monogram/g) || []
-).length;
-if (fallbackMonograms >= 44 && fallbackMonogramLabels >= 44) {
-  ok(`fallback monograms present (${fallbackMonograms})`);
-} else {
-  fail(
-    `fallback monograms incomplete (${fallbackMonograms} attrs / ${fallbackMonogramLabels} labels)`
-  );
-}
-
-const fallbackImages = (
-  fallbackBlock.match(/class="zen-app-launcher-item-icon"/g) || []
-).length;
-const fallbackNames = (
-  fallbackBlock.match(/zen-app-launcher-item-name/g) || []
-).length;
-const fallbackDisabledMono = (
-  fallbackBlock.match(/zen-app-launcher-item-monogram"[^>]*\sdisabled=/g) || []
-).length;
-if (fallbackImages >= 44 && fallbackNames >= 44) {
-  ok(`fallback has image+name for each app (${fallbackImages}/${fallbackNames})`);
-} else {
-  fail(
-    `fallback missing image/name nodes (${fallbackImages} icons / ${fallbackNames} names)`
-  );
-}
-if (fallbackDisabledMono === 0) {
-  ok("fallback monograms are not disabled");
-} else fail("fallback monograms still use disabled=true");
-
+// V3 minimal shell: one container + one list, packaged in app-hub-mode="shell".
 if (
-  /app-hub-icons\//.test(fallbackBlock) &&
-  !/https?:\/\/.*favicon|duckduckgo\.com\/ip3|gstatic\.com\/favicon|clearbit/i.test(
-    fallbackBlock
-  )
+  popups.includes('id="PanelUI-zen-app-launcher-container"') &&
+  popups.includes('id="PanelUI-zen-app-launcher-list"') &&
+  /app-hub-mode="shell"/.test(popups)
 ) {
-  ok("fallback icons use local chrome app-hub-icons paths");
-} else fail("fallback icons missing or use remote favicon proxy");
+  ok("popups.inc keeps the minimal single-shell container + list (app-hub-mode=shell)");
+} else fail("popups.inc single-shell container/list/mode missing");
+
+// Idle prewarm after delayed startup (V3 perf finishing).
+if (
+  (/idleDispatchToMainThread/.test(bootstrap) ||
+    /requestIdleCallback/.test(bootstrap)) &&
+  /#schedulePrewarm|#dispatchIdlePrewarm|prewarm/.test(bootstrap) &&
+  (bootstrap.includes("delayedStartupFinished") ||
+    bootstrap.includes("browser-delayed-startup-finished"))
+) {
+  ok("bootstrap idle-prewarms the manager after delayed startup");
+} else fail("bootstrap idle prewarm / delayed-startup deferral missing");
+
+// The normal-state "basic apps are ready" notice must never appear anywhere.
+const NORMAL_UNAVAILABLE_NOTICE =
+  "Advanced App Hub is unavailable. Basic apps are ready.";
+if (
+  !hubMgr.includes(NORMAL_UNAVAILABLE_NOTICE) &&
+  !hubFtl.includes(NORMAL_UNAVAILABLE_NOTICE) &&
+  !bootstrap.includes(NORMAL_UNAVAILABLE_NOTICE)
+) {
+  ok("no normal-state 'basic apps are ready' unavailable banner string");
+} else fail("normal-state 'basic apps are ready' banner string still present");
+
+// V3 single shell: the 44-app catalog is owned by the manager/catalog module,
+// not a static fallback subtree. Confirm the packaged catalog + icons still hold
+// 44 apps (imported-catalog shape is verified in validateCatalogModuleShape).
+const catalogSrc = read(catalogRel);
+if (/schemaVersion:\s*1/.test(catalogSrc)) {
+  ok("catalog declares schemaVersion 1 (single canonical source)");
+} else fail("catalog schemaVersion missing");
 
 const hubIcons = read("src/zen/common/modules/AstraAppHubIcons.mjs");
 if (
@@ -373,18 +371,38 @@ if (
   ok("icon success hides monogram; pre-load monogram visible; no fill mask");
 } else fail("icon/monogram visibility CSS incomplete");
 
+// V3: tiles are built by the manager with an XHTML <img> (createElementNS), and
+// load/error must be bound BEFORE src so a synchronous/cached decode cannot be
+// missed. XUL <image> no longer fires load/error (Bug 1815229).
 if (
   hubMgr.includes("data-icon-loaded") &&
   hubMgr.includes("data-icon-error") &&
-  hubMgr.includes("zen-app-launcher-item-icon-stack") &&
-  hubMgr.includes('document.createElement("img")') &&
-  bootstrap.includes("#bindFallbackIconHandlers") &&
-  bootstrap.includes("#destroyListeners") &&
-  /<html:img class="zen-app-launcher-item-icon"/.test(fallbackBlock) &&
-  !/<image class="zen-app-launcher-item-icon"/.test(fallbackBlock)
+  hubMgr.includes("astra-app-hub-item-icon-stack") &&
+  /createElementNS\(\s*[\s\S]{0,40}"http:\/\/www\.w3\.org\/1999\/xhtml",\s*[\s\S]{0,20}"img"/.test(
+    hubMgr
+  ) &&
+  !/document\.createElement\("img"\)/.test(hubMgr)
 ) {
-  ok("advanced+fallback use HTML img load/error (not XUL image)");
-} else fail("icon load/error handling missing or still uses XUL image");
+  ok("manager builds tiles with XHTML img (createElementNS) load/error, not XUL image");
+} else fail("manager icon load/error handling missing or still uses XUL image");
+
+// The manager must reconcile each already-complete <img> right after setting
+// src (image.complete / naturalWidth) so a synchronous decode does not leave the
+// tile stuck on its monogram. Shared #reconcileIconState helper owns this.
+if (
+  hubMgr.includes("#reconcileIconState") &&
+  /image\.src\s*=\s*safe[\s\S]{0,500}#reconcileIconState/.test(hubMgr) &&
+  /#reconcileIconState[\s\S]*\.complete/.test(hubMgr) &&
+  /#reconcileIconState[\s\S]*naturalWidth/.test(hubMgr) &&
+  /#reconcileIconState[\s\S]*data-icon-loaded/.test(hubMgr) &&
+  /#reconcileIconState[\s\S]*data-icon-error/.test(hubMgr)
+) {
+  ok("manager reconciles already-complete icons via complete/naturalWidth (no monogram-only lock)");
+} else {
+  fail(
+    "manager does not reconcile already-complete icons; synchronously-decoded logos would not render"
+  );
+}
 
 if (
   hubMgr.includes("resolvePlacesFaviconURL") &&
@@ -482,6 +500,40 @@ if (
   ok("bootstrap performs no startup icon/catalog/Places work");
 } else fail("bootstrap references icon/catalog/Places at module scope");
 
+// First-open manager request must expose the exact failing stage and must NOT
+// permanently process-cache a rejection behind a stale flag; a later open or a
+// Retry can re-attempt. The manager exposes a sanitized advanced diagnostic.
+if (
+  bootstrap.includes('"manager-import"') &&
+  bootstrap.includes('"manager-create"') &&
+  bootstrap.includes('"manager-init"') &&
+  !bootstrap.includes("#managerImportFailed") &&
+  bootstrap.includes("managerStage") &&
+  hubMgr.includes("get advancedDiagnostics()")
+) {
+  ok("App Hub manager: staged diagnostics, retryable rejection, manager-ready flag exposed");
+} else {
+  fail(
+    "App Hub manager staging / non-cached rejection / advancedDiagnostics incomplete"
+  );
+}
+// advanced-ready must still be gated after rebuild and the import must use the
+// proven chrome URL with the current-window global.
+// V3 declares the manager chrome URL as a module const and imports it lazily
+// with the current-window global. Accept either the literal URL or the const.
+if (
+  /MANAGER_MODULE_URL\s*=\s*\n?\s*"chrome:\/\/browser\/content\/zen-components\/AstraAppHubManager\.mjs"/.test(
+    bootstrap
+  ) &&
+  /ChromeUtils\.importESModule\(\s*(?:MANAGER_MODULE_URL|"chrome:\/\/browser\/content\/zen-components\/AstraAppHubManager\.mjs"),\s*\{\s*global:\s*"current"\s*\}\s*\)/.test(
+    bootstrap
+  )
+) {
+  ok("App Hub manager import uses proven chrome URL + current-window global");
+} else {
+  fail("App Hub manager import URL/global option incorrect");
+}
+
 if (
   !jar.includes("ICON_SOURCES.md") &&
   exists("src/zen/common/app-hub/ICON_SOURCES.md")
@@ -499,78 +551,54 @@ if (
   } else fail("ICON_SOURCES.md incomplete or implies bad provenance");
 } else fail("ICON_SOURCES.md missing or incorrectly JAR-mapped");
 
+// V3 single shell: CSS keeps the compact fatal banner + monogram styling, must
+// NOT depend on app-hub-mode="fallback", keeps a single scroll region, and
+// reveals the favorite star on hover AND keyboard focus (focus-within).
+const hubScrollRegions = (hubCss.match(/overflow-y:\s*auto/g) || []).length;
 if (
   hubCss.includes("astra-app-hub-fallback-banner") &&
-  hubCss.includes('app-hub-mode="fallback"') &&
-  hubCss.includes("zen-app-launcher-item-monogram")
+  hubCss.includes("astra-app-hub-retry-btn") &&
+  hubCss.includes("zen-app-launcher-item-monogram") &&
+  !/app-hub-mode="fallback"/.test(hubCss) &&
+  hubScrollRegions <= 1 &&
+  /:hover .astra-app-hub-fav-btn/.test(hubCss) &&
+  /:focus-within .astra-app-hub-fav-btn/.test(hubCss)
 ) {
-  ok("App Hub CSS keeps fallback mode + compact banner + monograms");
-} else fail("App Hub fallback CSS incomplete");
+  ok("App Hub CSS: single-shell fatal banner + monogram + single scroll + fav hover/focus (no fallback mode)");
+} else fail("App Hub single-shell CSS incomplete");
 
-// —— SURAKSHA ——
-const surMgr = read("src/zen/common/modules/AstraSurakshaManager.mjs");
-const surCss = read("src/zen/common/styles/astra-suraksha.css");
+// —— SURAKSHA (retired) ——
+// The custom Suraksha panel is fully retired. The button remains and opens
+// Firefox's native protections popup via cmd_astraOpenSurakshaCenter.
 const surFtl = read("locales/en-US/browser/browser/zen-suraksha.ftl");
 
 if (
-  preload.includes("AstraSurakshaBootstrap.mjs") &&
-  !preload.includes("AstraSurakshaManager.mjs")
+  !preload.includes("AstraSuraksha") &&
+  !exists("src/zen/common/modules/AstraSurakshaBootstrap.mjs") &&
+  !exists("src/zen/common/modules/AstraSurakshaManager.mjs") &&
+  !exists("src/zen/common/styles/astra-suraksha.css")
 ) {
-  ok("Suraksha bootstrap remains only startup preload");
-} else fail("Suraksha manager eagerly preloaded");
+  ok("Suraksha custom panel modules/CSS retired");
+} else fail("Suraksha retirement incomplete (modules/CSS/preload remain)");
 
-if (surMgr.includes("if (this.isOpen)") && surMgr.includes("#safe(")) {
-  ok("adapters remain open-gated / failure-isolated");
-} else fail("Suraksha open-gated refresh missing");
+if (!popups.includes("PanelUI-astra-suraksha")) {
+  ok("Suraksha custom panel markup removed from popups.inc");
+} else fail("Suraksha panel markup still present in popups.inc");
+
+const setsSrc = read("src/zen/common/zen-sets.js");
+if (
+  setsSrc.includes("cmd_astraOpenSurakshaCenter") &&
+  setsSrc.includes("showProtectionsPopup")
+) {
+  ok("Suraksha command rewired to native protections popup");
+} else fail("Suraksha command not rewired to gProtectionsHandler");
 
 if (
-  surMgr.includes("#variantForState") &&
-  surMgr.includes("#applyCardVariant") &&
-  /return "good"|return "attention"|return "danger"|return "neutral"|return "loading"/.test(
-    surMgr
-  )
+  surFtl.includes("astra-suraksha-button") &&
+  surFtl.includes("astra-suraksha-appmenu")
 ) {
-  ok("status variants are bounded");
-} else fail("Suraksha status variants missing/unbounded");
-
-if (/security score|site safe|100% safe|scam-proof|fully up to date/i.test(surMgr + surFtl)) {
-  fail("fake Suraksha score/safety claim present");
-} else ok("no fake Suraksha score/safety claims");
-
-if (/getAllLogins|Services\.logins|searchLogins|nsILoginInfo/i.test(surMgr)) {
-  fail("Suraksha manager accesses credentials");
-} else ok("no credential access in Suraksha manager");
-
-if (
-  surCss.includes("--astra-status-good") &&
-  surCss.includes("data-variant") &&
-  surCss.includes("astra-suraksha-footer") &&
-  !/backdrop-filter\s*:/.test(surCss)
-) {
-  ok("Suraksha visual system + footer without nested backdrop-filter");
-} else fail("Suraksha visual system incomplete or uses backdrop-filter cards");
-
-const surCssIconUrls = [...surCss.matchAll(/url\("([^"]+)"\)/g)].map(m => m[1]);
-const badSurIcons = surCssIconUrls.filter(
-  u =>
-    /identity-icon\.svg/.test(u) ||
-    /chrome:\/\/global\/skin\/icons\/(security|delete|link|warning|reload)\.svg/.test(
-      u
-    ) ||
-    /chrome:\/\/mozapps\/skin\/extensions\/extension\.svg/.test(u) ||
-    (/chrome:\/\/browser\/skin\/tracking-protection\.svg/.test(u) &&
-      !u.includes("zen-icons"))
-);
-if (badSurIcons.length) {
-  fail(`Suraksha CSS uses unproven/obsolete icon chrome URLs: ${badSurIcons.join(", ")}`);
-} else if (
-  surCss.includes("chrome://browser/skin/zen-icons/security.svg") &&
-  surCss.includes("chrome://browser/skin/zen-icons/info.svg") &&
-  surCss.includes("chrome://browser/skin/zen-icons/edit-delete.svg") &&
-  surCss.includes("chrome://browser/skin/zen-icons/extension.svg")
-) {
-  ok("Suraksha icons use proven zen-icons jar paths");
-} else fail("Suraksha icon packaging incomplete");
+  ok("Suraksha button Fluent strings retained");
+} else fail("Suraksha button Fluent strings missing");
 
 const zenIconJar = read("src/browser/themes/shared/zen-icons/jar.inc.mn");
 for (const icon of [
@@ -596,101 +624,94 @@ if (hubCss.includes("chrome://browser/skin/zen-icons/search-glass.svg")) {
   ok("App Hub search icon uses proven zen-icons path");
 } else fail("App Hub search icon not using zen-icons jar asset");
 
+// —— SIDEBAR WIDTH ——
+const cui = read("src/zen/common/sys/ZenCustomizableUI.sys.mjs");
 if (
-  surFtl.includes("astra-suraksha-footer-privacy = Privacy Settings") &&
-  surFtl.includes("astra-suraksha-action-etp-panel = Open tracking protection") &&
-  surFtl.includes("astra-suraksha-loading = Checking") &&
-  surFtl.includes("astra-suraksha-card-title-protection = Tracking Protection")
+  cui.includes("#isValidSidebarWidth") &&
+  cui.includes("#clearPersistedSidebarWidth") &&
+  cui.includes("px > 0") &&
+  cui.includes("px$/") &&
+  /Services\.xulStore\.removeValue\(\s*uri,\s*"navigator-toolbox",\s*"width"\s*\)/.test(
+    cui
+  ) &&
+  /Services\.xulStore\.removeValue\(\s*uri,\s*"navigator-toolbox",\s*"style"\s*\)/.test(
+    cui
+  ) &&
+  cui.includes('AppConstants.platform === "macosx" ? "230px" : "186px"')
 ) {
-  ok("Suraksha Fluent provides message values for HTML textContent");
-} else fail("Suraksha Fluent missing HTML message values (attribute-only would blank HTML)");
-
-if (
-  surMgr.includes("aria-controls") &&
-  surMgr.includes("aria-expanded") &&
-  surMgr.includes("data-suraksha-toggle-details") &&
-  popups.includes("astra-suraksha-card-safebrowsing-details") &&
-  popups.includes("astra-suraksha-card-passwords-details")
-) {
-  ok("Suraksha collapsible details expose aria-expanded/controls + unique IDs");
-} else fail("Suraksha details a11y wiring incomplete");
-
-if (
-  surCss.includes('astra-suraksha-mode="advanced"] .astra-suraksha-scroll') &&
-  surCss.includes("overflow-y: auto") &&
-  surCss.includes(".astra-suraksha-scroll")
-) {
-  ok("Suraksha primary scroll is mode-scoped (single active region)");
-} else fail("Suraksha primary scroll region not mode-scoped");
-
-if (
-  popups.includes("astra-suraksha-footer") &&
-  popups.includes("astra-suraksha-section-site-controls") &&
-  popups.includes("astra-suraksha-card-hero") &&
-  popups.includes("astra-suraksha-shell") &&
-  popups.includes("<html:article") &&
-  popups.includes("astra-suraksha-scroll")
-) {
-  ok("Suraksha IA: HTML shell + hero + site controls + compact footer");
-} else fail("Suraksha information architecture incomplete");
-
-if (
-  surMgr.includes('createElementNS') &&
-  surMgr.includes("http://www.w3.org/1999/xhtml") &&
-  surMgr.includes('btn.type = "button"') &&
-  surMgr.includes("#onAdvancedClick") &&
-  !surMgr.includes("createXULElement(\"toolbarbutton\")") &&
-  !surMgr.includes("#onAdvancedCommand")
-) {
-  ok("Suraksha dynamic actions use HTML buttons + delegated click");
-} else fail("Suraksha still uses XUL toolbarbutton/command for dynamic actions");
-
-const cardRuleMatch = surCss.match(
-  /\.astra-suraksha-card\s*\{[^}]+\}/
-);
-const cardRule = cardRuleMatch ? cardRuleMatch[0] : "";
-const headRuleMatch = surCss.match(
-  /\.astra-suraksha-card-head\s*\{[^}]+\}/
-);
-const headRule = headRuleMatch ? headRuleMatch[0] : "";
-if (
-  surCss.includes("display: grid") &&
-  /grid-template-areas:/.test(cardRule) &&
-  /block-size:\s*auto/.test(cardRule) &&
-  !/block-size:\s*\d+px/.test(cardRule) &&
-  !/height:\s*\d+px/.test(cardRule) &&
-  !/min-height:\s*[1-9]/.test(cardRule) &&
-  !/position:\s*absolute/.test(surCss) &&
-  !/margin-(block-start|top):\s*-/.test(surCss) &&
-  /display:\s*grid/.test(headRule) &&
-  !/display:\s*contents/.test(headRule)
-) {
-  ok("Suraksha cards use nested intrinsic CSS grid (no fixed/absolute/contents overlap hacks)");
-} else fail("Suraksha card layout still uses fixed height, contents, or overlap workarounds");
-
-const advancedStart = popups.indexOf('id="PanelUI-astra-suraksha-advanced"');
-const advancedEnd = popups.indexOf("</panel>", advancedStart);
-const advancedBlock = popups.slice(advancedStart, advancedEnd);
-const longAdvancedRows = (
-  advancedBlock.match(/class="astra-suraksha-action subviewbutton"/g) || []
-).length;
-const advancedXulToolbarActions = (
-  advancedBlock.match(/<toolbarbutton[^>]*data-suraksha-action/g) || []
-).length;
-if (longAdvancedRows === 0 && advancedXulToolbarActions === 0) {
-  ok("no duplicate oversized / XUL toolbarbutton advanced card actions");
+  ok("sidebar: invalid persisted width cleared via XULStore; upstream default preserved");
 } else {
-  fail(
-    `advanced action markup regression (subview=${longAdvancedRows}, xul=${advancedXulToolbarActions})`
-  );
+  fail("sidebar invalid-width handling / upstream default / canonical-clear incomplete");
+}
+// Native splitter remains the sole resize owner — no second custom drag system.
+if (
+  cui.includes('createXULElement("splitter")') &&
+  cui.includes('"zen-sidebar-splitter"') &&
+  cui.includes('splitter.setAttribute("resizebefore", "sibling")') &&
+  !/addEventListener\("mousemove"/.test(cui)
+) {
+  ok("sidebar: native splitter is sole resize owner (no second drag system)");
+} else {
+  fail("sidebar splitter ownership missing or a second drag system was added");
 }
 
+// Upstream Zen intent: sidebar-top defaults to compact-mode only. App Hub +
+// Suraksha are creatable widgets (palette / App Menu), never default-placed.
+const topDefaults = cui.match(
+  /registerArea\(\s*"zen-sidebar-top-buttons"[\s\S]*?defaultPlacements:\s*\[([\s\S]*?)\]/
+);
 if (
-  surCss.includes("overflow-y: auto") &&
-  surCss.includes(".astra-suraksha-scroll")
+  topDefaults &&
+  topDefaults[1].includes("zen-toggle-compact-mode") &&
+  !topDefaults[1].includes("zen-app-launcher-button") &&
+  !topDefaults[1].includes("astra-suraksha-button")
 ) {
-  ok("Suraksha has primary scroll container");
-} else fail("Suraksha scroll container missing");
+  ok("sidebar-top defaultPlacements are compact-mode only (no App Hub/Suraksha)");
+} else {
+  fail("sidebar-top defaultPlacements still include App Hub/Suraksha");
+}
+
+// Suraksha owns its public widget id on a single real toolbarbutton — no nested
+// public <toolbaritem> wrapper and no separate inner toolbarbutton id.
+if (
+  !/<toolbaritem\s+id="astra-suraksha-button"/.test(cui) &&
+  /<toolbarbutton\s+id="astra-suraksha-button"[\s\S]*?command="cmd_astraOpenSurakshaCenter"/.test(
+    cui
+  ) &&
+  !cui.includes('id="astra-suraksha-toolbarbutton"')
+) {
+  ok("Suraksha is a direct toolbarbutton (no nested public toolbaritem)");
+} else {
+  fail("Suraksha direct toolbarbutton wiring missing or still nested in a toolbaritem");
+}
+
+// Versioned one-time sidebar cleanup migration (App Hub + Suraksha removed from
+// sidebar-top; one-time 186px/230px width reset via XULStore).
+const uim = read("src/zen/common/modules/ZenUIManager.mjs");
+if (
+  uim.includes("astra.ui.sidebar-cleanup.version") &&
+  uim.includes("_migrateAstraSidebarCleanupIfNeeded") &&
+  uim.includes("CustomizableUI.removeWidgetFromArea") &&
+  uim.includes("zen-app-launcher-button") &&
+  uim.includes("astra-suraksha-button") &&
+  /removeValue\(\s*uri,\s*"navigator-toolbox",\s*"width"\s*\)/.test(uim) &&
+  uim.includes('"230px" : "186px"')
+) {
+  ok("sidebar cleanup migration present (versioned removal + one-time width reset)");
+} else fail("sidebar cleanup migration incomplete");
+
+// The cleanup removal list must be Astra-only — never target extension/uBlock.
+const removeIdsMatch = uim.match(/removeIds\s*=\s*\[([\s\S]*?)\]/);
+if (
+  removeIdsMatch &&
+  removeIdsMatch[1].includes("zen-app-launcher-button") &&
+  removeIdsMatch[1].includes("astra-suraksha-button") &&
+  !/uBlock|ublock0|extension|webext/i.test(removeIdsMatch[1])
+) {
+  ok("sidebar cleanup removal list is Astra-only (no extension/uBlock)");
+} else {
+  fail("sidebar cleanup removal list missing or includes extension/uBlock widgets");
+}
 
 // —— GENERAL / XUL ——
 const markupFiles = [
@@ -708,12 +729,11 @@ for (const rel of markupFiles) {
 }
 
 const hubPanel = popups.indexOf('id="PanelUI-zen-app-launcher"');
-const surPanel = popups.indexOf('id="PanelUI-astra-suraksha"');
-if (hubPanel >= 0 && surPanel >= 0 && hubPanel < surPanel) {
-  ok("App Hub and Suraksha panels are siblings in markup order");
-} else fail("App Hub/Suraksha panel sibling order broken");
+if (hubPanel >= 0) {
+  ok("App Hub panel present in markup");
+} else fail("App Hub panel missing from popups.inc");
 
-// Attribute id= only (avoid matching data-l10n-id=). Scope to App Hub + Suraksha panels.
+// Attribute id= only (avoid matching data-l10n-id=). Scope to the App Hub panel.
 const hubSurStart = popups.indexOf('id="PanelUI-zen-app-launcher"');
 const hubSurEnd = popups.indexOf('id="PanelUI-zen-india-gov"');
 const hubSurBlock = popups.slice(
@@ -729,19 +749,15 @@ for (const id of ids) {
   if (seen.has(id)) dupes.push(id);
   else seen.add(id);
 }
-if (!dupes.length) ok("no duplicate IDs in App Hub/Suraksha panels");
-else fail(`duplicate IDs in App Hub/Suraksha panels: ${[...new Set(dupes)].join(", ")}`);
+if (!dupes.length) ok("no duplicate IDs in App Hub panel");
+else fail(`duplicate IDs in App Hub panel: ${[...new Set(dupes)].join(", ")}`);
 
-// Fluent refs used by new Suraksha/App Hub finishing strings
+// Fluent refs used by App Hub finishing strings
 for (const id of [
   "astra-app-hub-advanced-unavailable",
   "astra-app-hub-retry",
-  "astra-suraksha-subtitle",
-  "astra-suraksha-section-site-controls",
-  "astra-suraksha-footer-privacy",
-  "astra-suraksha-card-title-protection",
 ]) {
-  const ftl = id.startsWith("astra-app-hub") ? hubFtl : surFtl;
+  const ftl = hubFtl;
   if (ftl.includes(`${id} =`) || ftl.includes(`${id}=\n`)) ok(`Fluent ${id}`);
   else fail(`missing Fluent ${id}`);
 }

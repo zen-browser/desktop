@@ -128,7 +128,7 @@
 #PanelUI-zen-app-launcher-list,
 .astra-app-hub-list {
   flex: 1 1 auto;
-  min-height: 120px;
+  min-height: 0;
   max-height: none;
   overflow-x: hidden;
   overflow-y: auto;
@@ -137,6 +137,10 @@
   flex-direction: column;
   gap: 2px;
   padding-inline-end: 2px;
+}
+
+#PanelUI-zen-app-launcher[app-hub-view="browse"] .astra-app-hub-list {
+  min-height: 140px;
 }
 
 .astra-app-hub-section {
@@ -533,8 +537,70 @@
   margin: 0 !important;
 }
 
-#PanelUI-zen-app-launcher[app-hub-view="browse"] .astra-app-hub-list {
-  /* Discovery catalog uses the same single scroll region */
+.astra-app-hub-empty-section {
+  margin-bottom: 4px;
+}
+
+.astra-app-hub-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 14px 12px 12px;
+  border-radius: 10px;
+  border: 1px dashed color-mix(in srgb, currentColor 28%, transparent);
+  background: color-mix(in srgb, currentColor 5%, transparent);
+  box-sizing: border-box;
+}
+
+.astra-app-hub-empty-title {
+  font-size: 0.95rem;
+  font-weight: 650;
+  margin: 0;
+}
+
+.astra-app-hub-empty-body {
+  font-size: 0.8rem;
+  opacity: 0.78;
+  margin: 0;
+  white-space: normal;
+}
+
+.astra-app-hub-empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.astra-app-hub-empty-btn {
+  -moz-appearance: none !important;
+  appearance: none !important;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 12px;
+  min-height: 32px;
+  cursor: pointer;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  color: inherit;
+}
+
+.astra-app-hub-empty-btn:hover {
+  background: color-mix(in srgb, currentColor 16%, transparent);
+}
+
+.astra-app-hub-empty-btn:focus-visible {
+  outline: 2px solid var(--focus-outline-color, Highlight);
+  outline-offset: 1px;
+}
+
+.astra-app-hub-empty-btn.primary {
+  background: color-mix(in srgb, var(--focus-outline-color, Highlight) 35%, transparent);
+  font-weight: 600;
+}
+
+.astra-app-hub-empty-btn.primary:hover {
+  background: color-mix(in srgb, var(--focus-outline-color, Highlight) 48%, transparent);
 }
 
 .astra-app-hub-fallback-banner,

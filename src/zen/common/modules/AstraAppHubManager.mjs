@@ -2138,14 +2138,18 @@ class AstraAppHubManager {
         .slice(0, MAIN_PINNED_LIMIT);
     }
 
-    const pinnedSection = this.#appendSection(
-      list,
-      SECTION_PINNED,
-      "Pinned",
-      "astra-app-hub-pinned",
-      pinnedApps,
-      { collapsible: false, special: true, includeAddTile: true }
-    );
+    if (!pinnedApps.length) {
+      this.#appendEmptyLaunchpad(list);
+    } else {
+      this.#appendSection(
+        list,
+        SECTION_PINNED,
+        "Pinned",
+        "astra-app-hub-pinned",
+        pinnedApps,
+        { collapsible: false, special: true, includeAddTile: true }
+      );
+    }
 
     // Space pins stay compact when already available.
     if (
@@ -2175,10 +2179,73 @@ class AstraAppHubManager {
         this.#appendRecentList(list, recentEntries, appMap);
       }
     }
+  }
 
-    if (!pinnedApps.length && pinnedSection) {
-      // Empty pinned grid still has the Add tile from includeAddTile.
+  /**
+   * First-run / empty launchpad: message + Browse CTA so the panel does not
+   * look like a broken empty grid.
+   */
+  #appendEmptyLaunchpad(list) {
+    const section = document.createXULElement("vbox");
+    section.classList.add("astra-app-hub-section", "astra-app-hub-empty-section");
+    section.setAttribute("data-category-id", SECTION_PINNED);
+    section.setAttribute("data-special", "true");
+
+    const header = document.createXULElement("hbox");
+    header.classList.add(
+      "astra-app-hub-section-header",
+      "zen-app-launcher-section-title"
+    );
+    header.setAttribute("align", "center");
+    const title = document.createXULElement("label");
+    title.classList.add("astra-app-hub-section-label");
+    setL10nOrText(title, "astra-app-hub-pinned", "Pinned");
+    header.appendChild(title);
+    section.appendChild(header);
+
+    const empty = document.createXULElement("vbox");
+    empty.classList.add("astra-app-hub-empty");
+    empty.setAttribute("role", "status");
+
+    const emptyTitle = document.createXULElement("label");
+    emptyTitle.classList.add("astra-app-hub-empty-title");
+    setL10nOrText(
+      emptyTitle,
+      "astra-app-hub-empty-title",
+      "No pinned apps yet"
+    );
+    empty.appendChild(emptyTitle);
+
+    const emptyBody = document.createXULElement("label");
+    emptyBody.classList.add("astra-app-hub-empty-body");
+    setL10nOrText(
+      emptyBody,
+      "astra-app-hub-empty-body",
+      "Browse the catalog or add a website to build your launchpad."
+    );
+    empty.appendChild(emptyBody);
+
+    const actions = document.createXULElement("hbox");
+    actions.classList.add("astra-app-hub-empty-actions");
+    actions.setAttribute("align", "center");
+
+    const browseBtn = document.createXULElement("toolbarbutton");
+    browseBtn.classList.add("astra-app-hub-empty-btn", "primary");
+    browseBtn.setAttribute("data-action", "browse-apps");
+    setL10nOrText(browseBtn, "astra-app-hub-empty-browse", "Browse Apps");
+    actions.appendChild(browseBtn);
+
+    if (!PrivateBrowsingUtils.isWindowPrivate(window)) {
+      const addBtn = document.createXULElement("toolbarbutton");
+      addBtn.classList.add("astra-app-hub-empty-btn");
+      addBtn.setAttribute("data-action", "add-app");
+      setL10nOrText(addBtn, "astra-app-hub-empty-add", "Add website");
+      actions.appendChild(addBtn);
     }
+
+    empty.appendChild(actions);
+    section.appendChild(empty);
+    list.appendChild(section);
   }
 
   #appendRecentList(list, recentEntries, appMap) {

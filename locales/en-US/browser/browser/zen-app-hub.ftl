@@ -67,6 +67,15 @@ astra-app-hub-add-website-short =
 astra-app-hub-add-tile =
     .value = Add app
 
+astra-app-hub-empty-title =
+    .value = No pinned apps yet
+astra-app-hub-empty-body =
+    .value = Browse the catalog or add a website to build your launchpad.
+astra-app-hub-empty-browse =
+    .label = Browse Apps
+astra-app-hub-empty-add =
+    .label = Add website
+
 astra-app-hub-browse-empty =
     .value = No catalog apps are available right now.
 

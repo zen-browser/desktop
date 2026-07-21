@@ -197,9 +197,10 @@ if (sets.includes("cmd_zenOpenAppLauncher") && sets.includes("gZenAppLauncher"))
 
 if (
   sets.includes("cmd_astraOpenSurakshaCenter") &&
-  sets.includes("showProtectionsPopup")
+  sets.includes("openAstraSurakshaProtectionsPopup") &&
+  sets.includes("resolveAstraSurakshaAnchor")
 ) {
-  ok("Suraksha command rewired to native protections popup");
+  ok("Suraksha command opens native protections via stable urlbar anchor");
 } else fail("Suraksha command broken");
 
 if ((commands.match(/cmd_astraOpenSurakshaCenter/g) || []).length >= 1) {

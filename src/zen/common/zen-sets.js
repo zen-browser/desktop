@@ -28,6 +28,146 @@ function reportAstraActionError(message, error) {
   }
 }
 
+/**
+ * Prefer a visible, layout-stable chrome node for the native protections popup.
+ * Do not use #tracking-protection-icon-container — Zen hides it by default
+ * (zen.urlbar.show-protections-icon=false), which breaks openPopup from
+ * toolbar overflow on Windows.
+ */
+function resolveAstraSurakshaAnchor() {
+  const isUsable = node => {
+    if (
+      !node ||
+      !node.isConnected ||
+      typeof node.getBoundingClientRect !== "function"
+    ) {
+      return false;
+    }
+    try {
+      const rect = node.getBoundingClientRect();
+      return rect.width > 0 || rect.height > 0;
+    } catch {
+      return false;
+    }
+  };
+  const candidates = [
+    document.getElementById("identity-icon-box"),
+    document.getElementById("identity-box"),
+    document.getElementById("urlbar-input-container"),
+    document.getElementById("urlbar"),
+    document.getElementById("nav-bar"),
+    document.documentElement,
+  ];
+  for (const node of candidates) {
+    if (isUsable(node)) {
+      return node;
+    }
+  }
+  return document.documentElement;
+}
+
+/**
+ * Open native #protections-popup anchored to identity/urlbar chrome.
+ * Mirrors gProtectionsHandler.showProtectionsPopup setup, but never anchors
+ * to the (often display:none) tracking-protection icon container.
+ * Defers when #widget-overflow is still open/hiding to avoid the Windows
+ * "open while another popup is hiding" PanelMultiView failure.
+ */
+function openAstraSurakshaProtectionsPopup(triggerEvent) {
+  const handler = window.gProtectionsHandler;
+  if (!handler) {
+    return false;
+  }
+  if (handler.trustPanelEnabledPref) {
+    return false;
+  }
+  if (typeof handler._initializePopup !== "function") {
+    return false;
+  }
+  if (typeof PanelMultiView?.openPopup !== "function") {
+    return false;
+  }
+
+  const runOpen = () => {
+    try {
+      handler._initializePopup();
+      handler._protectionsPopupOpeningReason = "astraSuraksha";
+
+      if (Object.prototype.hasOwnProperty.call(handler, "_lastEvent")) {
+        handler.updatePanelForBlockingEvent(handler._lastEvent);
+        delete handler._lastEvent;
+      }
+
+      if (handler._toastPanelTimer) {
+        clearTimeout(handler._toastPanelTimer);
+        delete handler._toastPanelTimer;
+      }
+
+      const popup = handler._protectionsPopup;
+      if (!popup) {
+        return;
+      }
+      popup.toggleAttribute("toast", false);
+      if (typeof handler.refreshProtectionsPopup === "function") {
+        handler.refreshProtectionsPopup();
+      }
+
+      for (const panel of document.querySelectorAll("panel[openpanel]")) {
+        try {
+          PanelMultiView.hidePopup(panel);
+        } catch {
+          // ignore
+        }
+      }
+
+      const anchor = resolveAstraSurakshaAnchor();
+      PanelMultiView.openPopup(popup, anchor, {
+        position: "bottomleft topleft",
+        triggerEvent: triggerEvent || undefined,
+      }).catch(console.error);
+    } catch (error) {
+      console.error("[AstraSuraksha] protections popup open failed:", error);
+    }
+  };
+
+  const overflow = document.getElementById("widget-overflow");
+  const overflowBusy =
+    overflow &&
+    (overflow.state === "open" ||
+      overflow.state === "showing" ||
+      overflow.state === "hiding");
+
+  if (overflowBusy) {
+    let opened = false;
+    let fallbackTimer = 0;
+    const finish = () => {
+      if (opened) {
+        return;
+      }
+      opened = true;
+      overflow.removeEventListener("popuphidden", onHidden);
+      if (fallbackTimer) {
+        clearTimeout(fallbackTimer);
+        fallbackTimer = 0;
+      }
+      runOpen();
+    };
+    const onHidden = () => finish();
+    overflow.addEventListener("popuphidden", onHidden, { once: true });
+    // Fallback if popuphidden never fires (detached / already closed).
+    fallbackTimer = setTimeout(finish, 350);
+    try {
+      PanelMultiView.hidePopup(overflow);
+    } catch {
+      // runOpen still scheduled via popuphidden or timeout
+    }
+    return true;
+  }
+
+  runOpen();
+  return true;
+}
+
 function openAstraTrustedUrl(url, panelId, contextLabel) {
   try {
     if (!isAstraSafeUrl(url)) {
@@ -607,21 +747,16 @@ document.addEventListener(
             break;
           }
           case "cmd_astraOpenSurakshaCenter": {
-            // Custom Suraksha panel is retired. The Suraksha button now opens
-            // Firefox's native protections popup (#protections-popup), same as
-            // clicking the tracking-protection shield in the URL bar.
+            // Custom Suraksha panel is retired. Open native #protections-popup
+            // anchored to identity/urlbar chrome (not the hidden TP icon), and
+            // defer past #widget-overflow hide to avoid Windows openPopup races.
+            const trigger = event?.sourceEvent || event;
+            if (openAstraSurakshaProtectionsPopup(trigger)) {
+              break;
+            }
             const handler = window.gProtectionsHandler;
-            if (
-              typeof handler?.showProtectionsPopup === "function" &&
-              !handler.trustPanelEnabledPref
-            ) {
-              handler.showProtectionsPopup({
-                event: event?.sourceEvent || event,
-                openingReason: "astraSuraksha",
-              });
-            } else if (typeof handler?.openProtections === "function") {
-              // Trust-panel builds early-return from showProtectionsPopup;
-              // fall back to the protections dashboard.
+            if (typeof handler?.openProtections === "function") {
+              // Trust-panel builds / missing PanelMultiView path.
               handler.openProtections(true);
             } else if (typeof window.switchToTabHavingURI === "function") {
               window.switchToTabHavingURI("about:protections", true, {

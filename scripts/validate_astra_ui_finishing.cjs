@@ -588,10 +588,12 @@ if (!popups.includes("PanelUI-astra-suraksha")) {
 const setsSrc = read("src/zen/common/zen-sets.js");
 if (
   setsSrc.includes("cmd_astraOpenSurakshaCenter") &&
-  setsSrc.includes("showProtectionsPopup")
+  setsSrc.includes("openAstraSurakshaProtectionsPopup") &&
+  setsSrc.includes("resolveAstraSurakshaAnchor") &&
+  setsSrc.includes("_protectionsPopup")
 ) {
-  ok("Suraksha command rewired to native protections popup");
-} else fail("Suraksha command not rewired to gProtectionsHandler");
+  ok("Suraksha command opens native protections via stable urlbar anchor");
+} else fail("Suraksha command not rewired to native protections popup");
 
 if (
   surFtl.includes("astra-suraksha-button") &&

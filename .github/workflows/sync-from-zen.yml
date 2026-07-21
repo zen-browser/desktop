@@ -1,0 +1,191 @@
+# Keep this fork up to date with zen-browser/desktop.
+# Never pushes to upstream — only pulls from OG Zen into this fork.
+name: Sync from OG Zen
+
+on:
+  schedule:
+    # Every 6 hours
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      sync_feature_branch:
+        description: "Also merge OG Zen into feat/native-tree-connectors"
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: sync-from-zen
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Sync fork from zen-browser/desktop
+    runs-on: ubuntu-latest
+    env:
+      UPSTREAM_REPO: zen-browser/desktop
+      UPSTREAM_BRANCH: dev
+      FORK_MIRROR_BRANCH: dev
+      FEATURE_BRANCH: feat/native-tree-connectors
+
+    steps:
+      - name: Checkout fork (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Add upstream remote (fetch only)
+        run: |
+          git remote add upstream "https://github.com/${UPSTREAM_REPO}.git" || \
+            git remote set-url upstream "https://github.com/${UPSTREAM_REPO}.git"
+          # Guardrail: never allow pushes to OG Zen from this workflow
+          git remote set-url --push upstream DISABLE_PUSH_TO_UPSTREAM
+          git fetch upstream "${UPSTREAM_BRANCH}"
+          git fetch origin
+
+      - name: Sync mirror branch (dev) from OG Zen
+        id: sync-dev
+        run: |
+          set -euo pipefail
+
+          git checkout -B "${FORK_MIRROR_BRANCH}" "origin/${FORK_MIRROR_BRANCH}"
+
+          before="$(git rev-parse HEAD)"
+          upstream_sha="$(git rev-parse "upstream/${UPSTREAM_BRANCH}")"
+
+          if [ "$before" = "$upstream_sha" ]; then
+            echo "dev_updated=false" >> "$GITHUB_OUTPUT"
+            echo "Fork ${FORK_MIRROR_BRANCH} already matches upstream/${UPSTREAM_BRANCH} (${upstream_sha})"
+            exit 0
+          fi
+
+          # Prefer a clean fast-forward when possible; otherwise merge.
+          if git merge-base --is-ancestor HEAD "upstream/${UPSTREAM_BRANCH}"; then
+            git merge --ff-only "upstream/${UPSTREAM_BRANCH}"
+          else
+            git merge --no-edit "upstream/${UPSTREAM_BRANCH}" \
+              -m "chore: sync ${FORK_MIRROR_BRANCH} with ${UPSTREAM_REPO}@${UPSTREAM_BRANCH}"
+          fi
+
+          git push origin "HEAD:${FORK_MIRROR_BRANCH}"
+          echo "dev_updated=true" >> "$GITHUB_OUTPUT"
+          echo "Updated ${FORK_MIRROR_BRANCH}: ${before} -> $(git rev-parse HEAD)"
+
+      - name: Merge OG Zen into feature branch
+        id: sync-feature
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.sync_feature_branch }}
+        run: |
+          set -euo pipefail
+
+          if ! git ls-remote --exit-code --heads origin "${FEATURE_BRANCH}" >/dev/null 2>&1; then
+            echo "feature_updated=false" >> "$GITHUB_OUTPUT"
+            echo "feature_conflict=false" >> "$GITHUB_OUTPUT"
+            echo "Feature branch ${FEATURE_BRANCH} not found on origin; skipping."
+            exit 0
+          fi
+
+          git checkout -B "${FEATURE_BRANCH}" "origin/${FEATURE_BRANCH}"
+          before="$(git rev-parse HEAD)"
+
+          if git merge-base --is-ancestor "upstream/${UPSTREAM_BRANCH}" HEAD; then
+            echo "feature_updated=false" >> "$GITHUB_OUTPUT"
+            echo "feature_conflict=false" >> "$GITHUB_OUTPUT"
+            echo "Feature branch already contains upstream/${UPSTREAM_BRANCH}"
+            exit 0
+          fi
+
+          if git merge --no-edit "upstream/${UPSTREAM_BRANCH}" \
+            -m "chore: merge ${UPSTREAM_REPO}@${UPSTREAM_BRANCH} into ${FEATURE_BRANCH}"; then
+            after="$(git rev-parse HEAD)"
+            if [ "$before" != "$after" ]; then
+              git push origin "HEAD:${FEATURE_BRANCH}"
+              echo "feature_updated=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "feature_updated=false" >> "$GITHUB_OUTPUT"
+            fi
+            echo "feature_conflict=false" >> "$GITHUB_OUTPUT"
+          else
+            git merge --abort || true
+            conflict_branch="chore/sync-zen-into-feature"
+            git checkout -B "${conflict_branch}" "origin/${FEATURE_BRANCH}"
+            # Push a branch pointing at current feature tip for a manual merge PR base
+            git push -u origin "${conflict_branch}" --force
+            echo "feature_updated=false" >> "$GITHUB_OUTPUT"
+            echo "feature_conflict=true" >> "$GITHUB_OUTPUT"
+            echo "Merge conflict while updating ${FEATURE_BRANCH}"
+          fi
+
+      - name: Open PR when feature sync conflicts
+        if: steps.sync-feature.outputs.feature_conflict == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          existing="$(gh pr list --head chore/sync-zen-into-feature --base "${FEATURE_BRANCH}" --state open --json number --jq '.[0].number // empty')"
+          if [ -n "$existing" ]; then
+            echo "Conflict PR already open: #$existing"
+            exit 0
+          fi
+          # Create an empty-ish PR branch from upstream so the PR shows the needed merge
+          git fetch upstream "${UPSTREAM_BRANCH}"
+          git checkout -B chore/sync-zen-into-feature "upstream/${UPSTREAM_BRANCH}"
+          git push -u origin chore/sync-zen-into-feature --force
+          gh pr create \
+            --base "${FEATURE_BRANCH}" \
+            --head chore/sync-zen-into-feature \
+            --title "chore: resolve OG Zen sync into ${FEATURE_BRANCH}" \
+            --body "$(cat <<'EOF'
+          Automatic merge of `zen-browser/desktop@dev` into this feature branch hit conflicts.
+
+          Please merge/rebase locally, resolve conflicts (especially tree-connector files), then push.
+
+          ```bash
+          git fetch upstream
+          git checkout feat/native-tree-connectors
+          git merge upstream/dev
+          # resolve conflicts
+          git push origin HEAD
+          ```
+
+          This workflow never pushes to OG Zen — only into this fork.
+          EOF
+          )"
+
+      - name: Create issue on hard failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          title="OG Zen auto-sync failed ($(date -u +%Y-%m-%d))"
+          existing="$(gh issue list --search "$title in:title" --state open --json number --jq '.[0].number // empty')"
+          if [ -n "$existing" ]; then
+            echo "Issue already open: #$existing"
+            exit 0
+          fi
+          gh issue create \
+            --title "$title" \
+            --body "The scheduled \`Sync from OG Zen\` workflow failed. Check the [Actions run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})."
+
+      - name: Summary
+        run: |
+          {
+            echo "## Sync from OG Zen"
+            echo ""
+            echo "- Upstream: \`${UPSTREAM_REPO}@${UPSTREAM_BRANCH}\`"
+            echo "- Mirror branch (\`${FORK_MIRROR_BRANCH}\`) updated: \`${{ steps.sync-dev.outputs.dev_updated || 'n/a' }}\`"
+            echo "- Feature branch (\`${FEATURE_BRANCH}\`) updated: \`${{ steps.sync-feature.outputs.feature_updated || 'skipped' }}\`"
+            echo "- Feature conflict PR needed: \`${{ steps.sync-feature.outputs.feature_conflict || 'false' }}\`"
+            echo ""
+            echo "Pushes only go to this fork. Upstream push URL stays disabled."
+          } >> "$GITHUB_STEP_SUMMARY"

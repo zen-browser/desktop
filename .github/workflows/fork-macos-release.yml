@@ -1,0 +1,114 @@
+name: Fork macOS release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "GitHub release tag to upload"
+        required: true
+        default: "tree-1.21.8b.1"
+        type: string
+      display_version:
+        description: "Version shown in Zen"
+        required: true
+        default: "1.21.8b"
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fork-macos-release-${{ inputs.release_tag }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build Apple Silicon DMG
+    runs-on: macos-15
+    timeout-minutes: 360
+
+    env:
+      SURFER_COMPAT: aarch64
+      SURFER_PLATFORM: darwin
+      ZEN_GA_DISABLE_PGO: true
+      ZEN_RELEASE: 1
+      ZEN_RELEASE_BRANCH: release
+
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: npm
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build dependencies
+        run: |
+          brew install cairo gnu-tar mercurial watchman
+          python3 -m pip install setuptools mercurial
+          rustup toolchain install "$(cat .rust-toolchain)" --profile minimal
+          rustup default "$(cat .rust-toolchain)"
+          rustup target add aarch64-apple-darwin
+          npm ci
+
+      - name: Configure release
+        run: |
+          npm run surfer -- ci --brand release --display-version "${{ inputs.display_version }}"
+
+      - name: Download Firefox source
+        run: npm run download
+
+      - name: Import Zen sources
+        run: npm run import
+
+      - name: Bootstrap toolchain
+        run: |
+          cd engine
+          ./mach --no-interactive bootstrap \
+            --application-choice browser \
+            --exclude macos-sdk || true
+
+      - name: Build Zen
+        run: bash .github/workflows/src/release-build.sh
+
+      - name: Package DMG
+        run: npm run package
+
+      - name: Prepare release assets
+        run: |
+          dmg="$(find dist -maxdepth 1 -name '*.dmg' -print -quit)"
+          test -n "$dmg"
+          cp "$dmg" zen-tree-connectors-macos-arm64.dmg
+          shasum -a 256 zen-tree-connectors-macos-arm64.dmg \
+            > zen-tree-connectors-macos-arm64.dmg.sha256
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zen-tree-connectors-macos-arm64
+          path: |
+            zen-tree-connectors-macos-arm64.dmg
+            zen-tree-connectors-macos-arm64.dmg.sha256
+          retention-days: 14
+
+      - name: Upload GitHub release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.release_tag }}
+        run: |
+          gh release view "$TAG" >/dev/null 2>&1 || \
+            gh release create "$TAG" \
+              --target "$GITHUB_SHA" \
+              --title "Zen Tree Connectors $TAG" \
+              --notes "Fork build with native tree-style tabs. Standard signed Firefox WebExtensions remain supported, and the upstream-compatible browser layout supports Sine installation."
+          gh release upload "$TAG" \
+            zen-tree-connectors-macos-arm64.dmg \
+            zen-tree-connectors-macos-arm64.dmg.sha256 \
+            --clobber

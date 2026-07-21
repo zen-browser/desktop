@@ -63,8 +63,11 @@
   min-inline-size: 0;
 }
 
-/* Do not force full-bleed backgrounds across the content seam. */
+/* Do not force full-bleed backgrounds across the content seam.
+ * Include #tabbrowser-tabs so this beats vertical-tabs.css
+ * `width: -moz-available` (same ID count, later in cascade via astra-tabs). */
 #navigator-toolbox[zen-sidebar-expanded="true"]
+  #tabbrowser-tabs
   .zen-workspace-tabs-section:not(.zen-current-workspace-indicator):not(
     .zen-essentials-container
   )
@@ -73,4 +76,6 @@
   margin-inline: 0;
   width: auto;
   inline-size: auto;
+  max-inline-size: 100%;
+  box-sizing: border-box;
 }

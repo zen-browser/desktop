@@ -294,7 +294,15 @@
   padding-inline-start: 0 !important;
   overflow-y: unset !important;
   overflow-x: clip;
+  /* Keep shadow bleed inside toolbox padding on the outer edge only — never
+   * past the appcontent seam (toolbox has no padding on that side). */
   overflow-clip-margin: var(--zen-toolbox-padding);
+  overflow-clip-margin-inline-end: 0;
+
+  :root[zen-right-side="true"] & {
+    overflow-clip-margin-inline-end: var(--zen-toolbox-padding);
+    overflow-clip-margin-inline-start: 0;
+  }
 
   --focus-outline-color: transparent;
 
@@ -511,12 +519,12 @@
 
 #navigator-toolbox[zen-sidebar-expanded="true"] {
   /* Upstream uses fit-content, but Astra's expanded sidebar content resolves
-   * that to ~289px (urlbar in single toolbar, spaces strip, titlebar 150px
-   * floor), which exceeds the 186px default width. Gecko's splitter clamps
-   * drags at the target's computed min-width (nsSplitterFrame
+   * that to ~289px (urlbar in single toolbar, spaces strip, former titlebar
+   * 150px floor), which exceeds the 186px default width. Gecko's splitter
+   * clamps drags at the target's computed min-width (nsSplitterFrame
    * CollectChildInfos info.min), so every shrink became a no-op and resize
-   * appeared broken. A fixed floor restores the drag range; content narrower
-   * than the floor never mattered because the default width exceeds it. */
+   * appeared broken. A fixed 120px floor restores the drag range; #titlebar
+   * is capped to the toolbox below so it cannot reintroduce a 150px spill. */
   --zen-toolbox-min-width: 120px;
 
   padding: 0 !important;
@@ -540,8 +548,17 @@
     margin-top: -1px;
   }
 
+  /* Cap titlebar to the toolbox. A 150px min-width fought the 120px expanded
+   * floor (c953996) so #titlebar — and selected/hover .tab-background
+   * highlights inside it — laid out wider than the sidebar and painted into
+   * the content pane. overflow-x: clip is a paint safety net during live
+   * window resize before flex finishes recomputing. */
   & #titlebar {
-    min-width: 150px;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: clip;
   }
 
   & #tabbrowser-arrowscrollbox-periphery {

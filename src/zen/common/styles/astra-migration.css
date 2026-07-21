@@ -1,0 +1,104 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* Scoped to Astra Migration Center panel only. */
+
+#PanelUI-astra-migration {
+  --astra-migration-width: min(360px, 92vw);
+  --astra-migration-max-height: min(520px, 70vh);
+}
+
+#PanelUI-astra-migration-container {
+  width: var(--astra-migration-width);
+  max-height: var(--astra-migration-max-height);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px 10px;
+  box-sizing: border-box;
+}
+
+#astra-migration-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+#astra-migration-title {
+  font-size: 1.15em;
+  font-weight: 600;
+}
+
+#astra-migration-subtitle {
+  opacity: 0.75;
+  font-size: 0.92em;
+}
+
+#astra-migration-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.astra-migration-section {
+  margin: 10px 0 4px;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+.astra-migration-options {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.astra-migration-option {
+  justify-content: flex-start;
+}
+
+.astra-migration-option[checked="true"] {
+  font-weight: 600;
+  outline: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+}
+
+.astra-migration-resources {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-inline-start: 2px;
+}
+
+.astra-migration-resource {
+  opacity: 0.9;
+}
+
+.astra-migration-warning {
+  margin-block: 6px 2px;
+  font-size: 0.88em;
+  opacity: 0.85;
+  white-space: normal;
+}
+
+#astra-migration-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  padding-top: 8px;
+  border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #PanelUI-astra-migration * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .astra-migration-option[checked="true"] {
+    outline-width: 2px;
+  }
+}

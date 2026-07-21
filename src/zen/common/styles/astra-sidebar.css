@@ -6,3 +6,24 @@
   display: flex;
   pointer-events: auto;
 }
+
+/* ==========================================================================
+ * Sidebar ↔ content seam (single source of truth)
+ *
+ * Zen floats #zen-tabbox-wrapper with --zen-element-separation and paints
+ * .browserSidebarContainer with border-radius + --zen-big-shadow
+ * (zen-browser-container.css). Astra had zeroed that margin, which made the
+ * junction a hard flush cut. Margins are restored in zen-browser-ui.css;
+ * this file owns the shadow token so the seam weight can be tuned in one
+ * place without touching layout/clip rules (safe vs 61386bd spill fixes).
+ *
+ * Works for expanded / collapsed-at-floor / left+right sidebar. Compact mode
+ * keeps its own float path; zen-no-padding still disables the shadow.
+ * ========================================================================== */
+:root {
+  /* Soft depth only — no 1px ring (that reads as the hard cut we're removing).
+   * light-dark keeps weight readable on both chrome schemes. */
+  --zen-big-shadow:
+    light-dark(rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.45)) 0 1px 3px,
+    light-dark(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.32)) 0 6px 18px;
+}

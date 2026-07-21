@@ -172,17 +172,22 @@
 }
 
 :root:not([inDOMFullscreen="true"]):not([chromehidden~="location"]):not([chromehidden~="toolbar"]) {
+  /* Match Zen 1.19.7b: float the content card with --zen-element-separation so
+   * border-radius + --zen-big-shadow can read as a soft seam. Astra previously
+   * forced margin: 0 (74697f5 / astra-tabs), which produced a hard flush cut
+   * against the sidebar. Left/right zero keeps the card flush to the sidebar
+   * edge while outer edges stay padded. */
   & #zen-tabbox-wrapper {
-    margin: 0 !important;
-    margin-top: 0 !important;
+    margin: var(--zen-element-separation);
+    margin-top: 0;
   }
 
   &:not([zen-right-side="true"]) #zen-tabbox-wrapper {
-    margin-left: 0 !important;
+    margin-left: 0;
   }
 
   &[zen-right-side="true"] #zen-tabbox-wrapper {
-    margin-right: 0 !important;
+    margin-right: 0;
   }
 }
 

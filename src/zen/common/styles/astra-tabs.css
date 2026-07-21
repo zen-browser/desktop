@@ -3,11 +3,11 @@
  * Own the gutter on the workspace tab-list container so selected/hover
  * backgrounds stay inside the sidebar lane. Logical properties keep
  * left/right sidebar layouts correct. Avoid negative-margin bleed hacks.
+ *
+ * Do NOT zero #zen-tabbox-wrapper margin here — that kills Zen's floating
+ * content-card seam (radius + --zen-big-shadow). Seam polish lives in
+ * astra-sidebar.css; layout margins belong to zen-browser-ui.css.
  */
-
-:root:not([zen-compact-mode="true"]) #zen-tabbox-wrapper {
-  margin: 0;
-}
 
 #zen-tabbox-wrapper,
 #tabbrowser-tabbox {

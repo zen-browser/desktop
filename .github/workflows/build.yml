@@ -301,7 +301,7 @@ jobs:
     needs: [windows-step-1, build-data]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
-      profile-data-path-archive: zen.win64-pgo-stage-1.zip
+      profile-data-path-archive: zen.win64-pgo-stage-1.tar
       release-branch: ${{ inputs.update_branch }}
 
   windows-step-3:

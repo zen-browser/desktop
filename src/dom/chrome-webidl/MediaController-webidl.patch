@@ -1,5 +1,5 @@
 diff --git a/dom/chrome-webidl/MediaController.webidl b/dom/chrome-webidl/MediaController.webidl
-index 6063e86e747dac87aafc865af95800daef2a5b9d..7fc4e72ee73a16b9ec2c1b9d11d926246fb7f7b6 100644
+index 790bc66a31253a861b21658e67c83796ae939298..0fb7e6cfbb1d1d35aeceb8d7b903cd86bf64403c 100644
 --- a/dom/chrome-webidl/MediaController.webidl
 +++ b/dom/chrome-webidl/MediaController.webidl
 @@ -23,6 +23,12 @@ enum MediaControlKey {
@@ -15,12 +15,15 @@ index 6063e86e747dac87aafc865af95800daef2a5b9d..7fc4e72ee73a16b9ec2c1b9d11d92624
  /**
   * MediaController is used to control media playback for a tab, and each tab
   * would only have one media controller, which can be accessed from the
-@@ -36,10 +42,14 @@ interface MediaController : EventTarget {
+@@ -36,6 +42,7 @@ interface MediaController : EventTarget {
    readonly attribute boolean isPlaying;
    readonly attribute boolean isAnyMediaBeingControlled;
    readonly attribute MediaSessionPlaybackState playbackState;
 +  readonly attribute boolean isBeingUsedInPIPModeOrFullscreen;
  
+   // The effective audio-session type the tab is currently claiming. Chrome
+   // consumers can use this to apply tab/application level audio-focus
+@@ -46,6 +53,9 @@ interface MediaController : EventTarget {
    [Throws]
    MediaMetadataInit getMetadata();
  

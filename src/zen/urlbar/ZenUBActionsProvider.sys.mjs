@@ -21,7 +21,7 @@ const MINIMUM_QUERY_SCORE = 92;
 const MINIMUM_PREFIXED_QUERY_SCORE = 30;
 
 ChromeUtils.defineESModuleGetters(lazy, {
-  UrlbarResult: "moz-src:///browser/components/urlbar/UrlbarResult.sys.mjs",
+  UrlbarResult: "chrome://browser/content/urlbar/UrlbarResult.mjs",
   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
   AddonManager: "resource://gre/modules/AddonManager.sys.mjs",
   UrlUtils: "resource://gre/modules/UrlUtils.sys.mjs",
@@ -133,11 +133,6 @@ function payloadAndSimpleHighlights(tokens, payloadInfo) {
  */
 export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
   #seenCommands = new Set();
-
-  constructor() {
-    super();
-    lazy.UrlbarResult.addDynamicResultType(DYNAMIC_TYPE_NAME);
-  }
 
   get name() {
     return "ZenUrlbarProviderGlobalActions";

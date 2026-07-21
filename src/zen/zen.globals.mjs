@@ -32,6 +32,7 @@ export default [
   "gZenEmojiPicker",
   "gZenSessionStore",
   "gZenFolders",
+  "gZenTreeConnectors",
   "gZenMediaController",
   "gZenGlanceManager",
   "gZenLiveFoldersUI",

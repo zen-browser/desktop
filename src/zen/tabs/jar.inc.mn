@@ -4,5 +4,7 @@
 
         content/browser/zen-components/ZenPinnedTabManager.mjs                  (../../zen/tabs/ZenPinnedTabManager.mjs)
         content/browser/zen-components/ZenEssentialsPromo.mjs                   (../../zen/tabs/ZenEssentialsPromo.mjs)
+        content/browser/zen-components/ZenTreeConnectors.mjs                    (../../zen/tabs/ZenTreeConnectors.mjs)
 *       content/browser/zen-styles/zen-tabs.css                                 (../../zen/tabs/zen-tabs.css)
         content/browser/zen-styles/zen-tabs/vertical-tabs.css                   (../../zen/tabs/zen-tabs/vertical-tabs.css)
+        content/browser/zen-styles/zen-tree-connectors.css                      (../../zen/tabs/zen-tree-connectors.css)

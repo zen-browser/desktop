@@ -25,6 +25,7 @@
     "chrome://browser/content/zen-components/ZenPinnedTabManager.mjs",
     "chrome://browser/content/zen-components/ZenViewSplitter.mjs",
     "chrome://browser/content/zen-components/ZenFolders.mjs",
+    "chrome://browser/content/zen-components/ZenTreeConnectors.mjs",
     "chrome://browser/content/zen-components/ZenEmojiPicker.mjs",
     "chrome://browser/content/zen-components/ZenLiveFoldersUI.mjs",
     "chrome://browser/content/zen-components/ZenDownloadAnimation.mjs",

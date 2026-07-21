@@ -1,0 +1,98 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* Native tree connectors for folders + regular tabs */
+
+:root[zen-sidebar-expanded="true"][zen-tree-connectors-folders="true"]
+  zen-folder
+  > .tab-group-container {
+  position: relative;
+  margin-inline-start: 12px !important;
+}
+
+:root[zen-sidebar-expanded="true"][zen-tree-connectors-regular="true"]
+  .zen-tree-regular-host,
+:root[zen-sidebar-expanded="true"][zen-tree-connectors-regular="true"]
+  .zen-workspace-normal-tabs-section {
+  position: relative !important;
+  margin-inline-start: 12px !important;
+  overflow: visible !important;
+}
+
+.zen-tree-connector {
+  position: absolute;
+  top: 0;
+  inset-inline-start: -15px;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+tab.zen-is-related-parent {
+  overflow: visible !important;
+}
+
+tab.zen-is-related-parent > .tab-stack {
+  position: relative;
+  z-index: 1;
+}
+
+:root[zen-sidebar-expanded="true"][zen-tree-connectors="true"]
+  tab.zen-is-related-child
+  > .tab-stack {
+  --zen-tree-connector-indent: 20px;
+  margin-inline-start: var(--zen-tree-connector-indent) !important;
+  width: calc(100% - var(--zen-tree-connector-indent)) !important;
+}
+
+:root[zen-sidebar-expanded="true"][zen-tree-connectors-regular="true"]
+  tab.zen-tree-regular-tab {
+  overflow: visible !important;
+}
+
+:root[zen-sidebar-expanded="true"][zen-tree-connectors-regular="true"]
+  tab.zen-tree-regular-tab
+  > .tab-stack {
+  position: relative;
+  z-index: 1;
+}
+
+.connector-hitbox {
+  stroke: transparent;
+  stroke-width: 12px;
+  fill: none;
+}
+
+.connector-visible {
+  transition: opacity 0.1s ease;
+}
+
+:root[zen-tree-connectors-interactive="true"] .folder-connector-group {
+  pointer-events: stroke;
+  cursor: pointer;
+}
+
+:root[zen-tree-connectors-interactive="true"]
+  .folder-connector-group:hover
+  .connector-visible {
+  stroke-width: 2px !important;
+  opacity: 0.5 !important;
+  stroke: currentColor !important;
+}
+
+:root[zen-tree-connectors-highlight-hover="true"]
+  zen-folder:has(> .tab-group-label-container:hover)
+  > .tab-group-container
+  > .zen-tree-connector
+  .connector-visible {
+  opacity: 0.5 !important;
+}
+
+:root[zen-tree-connectors-highlight-hover="true"]
+  .zen-tree-regular-host:hover
+  > .zen-tree-connector
+  .connector-visible {
+  opacity: 0.45 !important;
+}

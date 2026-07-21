@@ -651,8 +651,8 @@
 .astra-app-hub-editor {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 4px 0 8px;
+  gap: 8px;
+  padding: 4px 0 10px;
   min-width: 0;
 }
 
@@ -660,50 +660,108 @@
   display: none !important;
 }
 
+.astra-app-hub-editor-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  opacity: 0.85;
+  margin: 2px 0 0;
+}
+
 .astra-app-hub-editor input,
-.astra-app-hub-editor select {
+.astra-app-hub-editor select,
+.astra-app-hub-editor-field {
+  -moz-appearance: none !important;
+  appearance: none !important;
   width: 100%;
   box-sizing: border-box;
-  height: 30px;
+  height: 34px;
+  min-height: 34px;
   border-radius: 8px;
   border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
-  background: color-mix(in srgb, var(--arrowpanel-background, Canvas) 92%, currentColor);
-  color: inherit;
-  padding: 0 8px;
+  background: color-mix(in srgb, var(--arrowpanel-background, Canvas) 88%, currentColor) !important;
+  color: inherit !important;
+  padding: 0 10px;
   font: inherit;
+  font-size: 0.85rem;
 }
 
 .astra-app-hub-editor input:focus-visible,
-.astra-app-hub-editor select:focus-visible {
+.astra-app-hub-editor select:focus-visible,
+.astra-app-hub-editor-field:focus-visible {
   outline: 2px solid var(--focus-outline-color, Highlight);
   outline-offset: 1px;
+  border-color: transparent;
+}
+
+.astra-app-hub-editor-icon-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.astra-app-hub-editor-hint {
+  font-size: 0.72rem;
+  opacity: 0.7;
+  margin: 0;
+  white-space: normal;
 }
 
 .astra-app-hub-editor-error {
   color: #ff453a;
   font-size: 0.75rem;
   min-height: 1.1em;
+  white-space: normal;
 }
 
 .astra-app-hub-editor-actions {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   justify-content: flex-end;
-  margin-top: 4px;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--panel-separator-color, color-mix(in srgb, currentColor 18%, transparent));
 }
 
-.astra-app-hub-editor-actions toolbarbutton {
-  -moz-appearance: none;
-  appearance: none;
+.astra-app-hub-editor-actions toolbarbutton,
+.astra-app-hub-editor-secondary-btn {
+  -moz-appearance: none !important;
+  appearance: none !important;
   border: none;
   border-radius: 8px;
-  padding: 6px 12px;
+  padding: 7px 14px;
+  min-height: 32px;
   cursor: pointer;
   background: color-mix(in srgb, currentColor 10%, transparent);
+  color: inherit;
+  font: inherit;
+}
+
+.astra-app-hub-editor-actions toolbarbutton:hover,
+.astra-app-hub-editor-secondary-btn:hover {
+  background: color-mix(in srgb, currentColor 16%, transparent);
+}
+
+.astra-app-hub-editor-actions toolbarbutton:focus-visible,
+.astra-app-hub-editor-secondary-btn:focus-visible {
+  outline: 2px solid var(--focus-outline-color, Highlight);
+  outline-offset: 1px;
 }
 
 .astra-app-hub-editor-actions toolbarbutton.primary {
-  background: color-mix(in srgb, var(--focus-outline-color, Highlight) 35%, transparent);
+  background: color-mix(in srgb, var(--focus-outline-color, Highlight) 40%, transparent);
+  font-weight: 650;
+}
+
+.astra-app-hub-editor-actions toolbarbutton.primary:hover {
+  background: color-mix(in srgb, var(--focus-outline-color, Highlight) 55%, transparent);
+}
+
+.astra-app-hub-editor-actions toolbarbutton[disabled],
+.astra-app-hub-editor-secondary-btn[disabled] {
+  opacity: 0.5;
+  cursor: default;
 }
 
 @media (prefers-reduced-motion: reduce) {

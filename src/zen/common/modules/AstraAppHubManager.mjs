@@ -77,6 +77,33 @@ const SECTION_SEARCH = "__search__";
 /** Recommended maximum visible pinned apps on the main launchpad. */
 const MAIN_PINNED_LIMIT = 12;
 
+/** Used when the packaged catalog has not loaded yet. */
+const EDITOR_CATEGORY_FALLBACK = [
+  { id: "mail", label: "Mail" },
+  { id: "meetings", label: "Meetings" },
+  { id: "storage", label: "Storage" },
+  { id: "productivity", label: "Productivity" },
+  { id: "education", label: "Education" },
+  { id: "entertainment", label: "Entertainment" },
+  { id: "shopping", label: "Shopping" },
+  { id: "government", label: "Government" },
+  { id: "news", label: "News" },
+  { id: "business", label: "Business" },
+];
+
+const EDITOR_ERROR_FALLBACKS = {
+  "astra-app-hub-error-empty-name": "Enter an app name.",
+  "astra-app-hub-error-url": "Enter a valid http or https URL.",
+  "astra-app-hub-error-duplicate": "An app with this URL already exists.",
+  "astra-app-hub-error-generic": "Could not save this app.",
+  "astra-app-hub-error-private-edit":
+    "Custom apps cannot be edited in a private window.",
+  "astra-app-hub-error-icon-unsupported":
+    "Use a PNG, JPEG, WebP, or ICO image.",
+  "astra-app-hub-error-icon-too-large":
+    "That image is too large. Choose a file under 1 MB.",
+};
+
 /** @type {(url: string) => { ok: true, href: string, hostname?: string } | { ok: false, reason: string }} */
 export const validateBuiltinAppUrl = validateAppUrl;
 
@@ -1012,6 +1039,8 @@ class AstraAppHubManager {
       editor.hidden = true;
 
       const nameLabel = document.createXULElement("label");
+      nameLabel.classList.add("astra-app-hub-editor-label");
+      nameLabel.setAttribute("control", "astra-app-hub-editor-name");
       setL10nOrText(nameLabel, "astra-app-hub-editor-name-label", "Name");
       editor.appendChild(nameLabel);
       const nameInput = document.createElementNS(
@@ -1019,23 +1048,29 @@ class AstraAppHubManager {
         "input"
       );
       nameInput.id = "astra-app-hub-editor-name";
+      nameInput.classList.add("astra-app-hub-editor-field");
       nameInput.setAttribute("type", "text");
       nameInput.setAttribute("maxlength", String(MAX_NAME_LENGTH));
       editor.appendChild(nameInput);
 
       const urlLabel = document.createXULElement("label");
-      setL10nOrText(urlLabel, "astra-app-hub-editor-url-label", "URL");
+      urlLabel.classList.add("astra-app-hub-editor-label");
+      urlLabel.setAttribute("control", "astra-app-hub-editor-url");
+      setL10nOrText(urlLabel, "astra-app-hub-editor-url-label", "Website URL");
       editor.appendChild(urlLabel);
       const urlInput = document.createElementNS(
         "http://www.w3.org/1999/xhtml",
         "input"
       );
       urlInput.id = "astra-app-hub-editor-url";
+      urlInput.classList.add("astra-app-hub-editor-field");
       urlInput.setAttribute("type", "url");
       urlInput.setAttribute("maxlength", String(MAX_URL_LENGTH));
       editor.appendChild(urlInput);
 
       const catLabel = document.createXULElement("label");
+      catLabel.classList.add("astra-app-hub-editor-label");
+      catLabel.setAttribute("control", "astra-app-hub-editor-category");
       setL10nOrText(catLabel, "astra-app-hub-editor-category-label", "Category");
       editor.appendChild(catLabel);
       const catSelect = document.createElementNS(
@@ -1043,13 +1078,16 @@ class AstraAppHubManager {
         "select"
       );
       catSelect.id = "astra-app-hub-editor-category";
+      catSelect.classList.add("astra-app-hub-editor-field");
       editor.appendChild(catSelect);
 
       const kwLabel = document.createXULElement("label");
+      kwLabel.classList.add("astra-app-hub-editor-label");
+      kwLabel.setAttribute("control", "astra-app-hub-editor-keywords");
       setL10nOrText(
         kwLabel,
         "astra-app-hub-editor-keywords-label",
-        "Keywords (comma-separated)"
+        "Keywords (optional)"
       );
       editor.appendChild(kwLabel);
       const kwInput = document.createElementNS(
@@ -1057,24 +1095,41 @@ class AstraAppHubManager {
         "input"
       );
       kwInput.id = "astra-app-hub-editor-keywords";
+      kwInput.classList.add("astra-app-hub-editor-field");
       kwInput.setAttribute("type", "text");
       editor.appendChild(kwInput);
 
+      const iconRow = document.createXULElement("hbox");
+      iconRow.classList.add("astra-app-hub-editor-icon-row");
+      iconRow.setAttribute("align", "center");
+
       const iconBtn = document.createXULElement("toolbarbutton");
       iconBtn.id = "astra-app-hub-editor-icon-btn";
+      iconBtn.classList.add("astra-app-hub-editor-secondary-btn");
       iconBtn.setAttribute("data-action", "pick-icon");
-      setL10nOrText(iconBtn, "astra-app-hub-editor-icon", "Choose icon");
-      editor.appendChild(iconBtn);
+      setL10nOrText(iconBtn, "astra-app-hub-editor-icon", "Choose icon…");
+      iconRow.appendChild(iconBtn);
 
       const resetIconBtn = document.createXULElement("toolbarbutton");
       resetIconBtn.id = "astra-app-hub-editor-reset-icon-btn";
+      resetIconBtn.classList.add("astra-app-hub-editor-secondary-btn");
       resetIconBtn.setAttribute("data-action", "reset-icon");
       setL10nOrText(
         resetIconBtn,
         "astra-app-hub-editor-reset-icon",
         "Reset icon"
       );
-      editor.appendChild(resetIconBtn);
+      iconRow.appendChild(resetIconBtn);
+      editor.appendChild(iconRow);
+
+      const iconHint = document.createXULElement("label");
+      iconHint.classList.add("astra-app-hub-editor-hint");
+      setL10nOrText(
+        iconHint,
+        "astra-app-hub-editor-icon-hint",
+        "Optional — the site favicon is used after save if you skip this."
+      );
+      editor.appendChild(iconHint);
 
       const err = document.createXULElement("label");
       err.id = "astra-app-hub-editor-error";
@@ -1083,22 +1138,78 @@ class AstraAppHubManager {
       editor.appendChild(err);
 
       const actions = document.createXULElement("hbox");
-      const saveBtn = document.createXULElement("toolbarbutton");
-      saveBtn.id = "astra-app-hub-editor-save";
-      saveBtn.setAttribute("data-action", "editor-save");
-      setL10nOrText(saveBtn, "astra-app-hub-editor-save", "Save");
-      actions.appendChild(saveBtn);
+      actions.classList.add("astra-app-hub-editor-actions");
+      actions.setAttribute("align", "center");
       const cancelBtn = document.createXULElement("toolbarbutton");
       cancelBtn.id = "astra-app-hub-editor-cancel";
+      cancelBtn.classList.add("astra-app-hub-editor-secondary-btn");
       cancelBtn.setAttribute("data-action", "editor-cancel");
       setL10nOrText(cancelBtn, "astra-app-hub-editor-cancel", "Cancel");
       actions.appendChild(cancelBtn);
+      const saveBtn = document.createXULElement("toolbarbutton");
+      saveBtn.id = "astra-app-hub-editor-save";
+      saveBtn.classList.add("primary");
+      saveBtn.setAttribute("data-action", "editor-save");
+      setL10nOrText(saveBtn, "astra-app-hub-editor-save", "Add");
+      actions.appendChild(saveBtn);
       editor.appendChild(actions);
 
-      container.appendChild(editor);
+      const footer = document.getElementById("astra-app-hub-footer");
+      if (footer && footer.parentNode === container) {
+        container.insertBefore(editor, footer);
+      } else {
+        container.appendChild(editor);
+      }
+    } else {
+      this.#upgradeEditorShell(editor);
     }
 
     this.#ensureMenus();
+  }
+
+  /** Ensure older in-session editor markup picks up Task 3 classes/actions. */
+  #upgradeEditorShell(editor) {
+    if (!editor) {
+      return;
+    }
+    editor.classList.add("astra-app-hub-editor");
+    for (const id of [
+      "astra-app-hub-editor-name",
+      "astra-app-hub-editor-url",
+      "astra-app-hub-editor-category",
+      "astra-app-hub-editor-keywords",
+    ]) {
+      document.getElementById(id)?.classList.add("astra-app-hub-editor-field");
+    }
+    const saveBtn = document.getElementById("astra-app-hub-editor-save");
+    if (saveBtn) {
+      saveBtn.classList.add("primary");
+      if (!saveBtn.closest(".astra-app-hub-editor-actions")) {
+        let actions = editor.querySelector(".astra-app-hub-editor-actions");
+        if (!actions) {
+          actions = document.createXULElement("hbox");
+          actions.classList.add("astra-app-hub-editor-actions");
+          actions.setAttribute("align", "center");
+          editor.appendChild(actions);
+        }
+        const cancelBtn = document.getElementById("astra-app-hub-editor-cancel");
+        if (cancelBtn && cancelBtn.parentNode !== actions) {
+          actions.appendChild(cancelBtn);
+        }
+        if (saveBtn.parentNode !== actions) {
+          actions.appendChild(saveBtn);
+        }
+      }
+    }
+    document
+      .getElementById("astra-app-hub-editor-icon-btn")
+      ?.classList.add("astra-app-hub-editor-secondary-btn");
+    document
+      .getElementById("astra-app-hub-editor-reset-icon-btn")
+      ?.classList.add("astra-app-hub-editor-secondary-btn");
+    document
+      .getElementById("astra-app-hub-editor-cancel")
+      ?.classList.add("astra-app-hub-editor-secondary-btn");
   }
 
   #updateShortcutHint(hintEl = null) {
@@ -3977,10 +4088,14 @@ class AstraAppHubManager {
       this.#setEditorErrorL10n("astra-app-hub-error-private-edit");
     }
 
-    // Populate categories
+    // Populate categories (catalog when ready; otherwise stable fallback).
     if (catEl) {
       clearChildren(catEl);
-      for (const cat of this.#catalog?.categories || []) {
+      const categories =
+        this.#catalog?.categories?.length > 0
+          ? this.#catalog.categories
+          : EDITOR_CATEGORY_FALLBACK;
+      for (const cat of categories) {
         const opt = document.createElementNS(
           "http://www.w3.org/1999/xhtml",
           "option"
@@ -3989,6 +4104,14 @@ class AstraAppHubManager {
         opt.textContent = cat.label;
         catEl.appendChild(opt);
       }
+    }
+
+    const saveBtnLabel =
+      mode === "edit"
+        ? ["astra-app-hub-editor-save", "Save"]
+        : ["astra-app-hub-editor-add", "Add"];
+    if (saveBtn) {
+      setL10nOrText(saveBtn, saveBtnLabel[0], saveBtnLabel[1]);
     }
 
     if (mode === "edit" && appId) {
@@ -4069,7 +4192,11 @@ class AstraAppHubManager {
       return;
     }
     errEl.hidden = false;
-    setL10nOrText(errEl, l10nId, "");
+    setL10nOrText(
+      errEl,
+      l10nId,
+      EDITOR_ERROR_FALLBACKS[l10nId] || "Could not save this app."
+    );
   }
 
   /** @deprecated use #setEditorErrorL10n */
@@ -4699,8 +4826,20 @@ class AstraAppHubManager {
       return;
     }
 
-    // Enter/Space: rely on XUL toolbarbutton "command" — do not double-fire on keydown.
+    // Enter in editor fields submits; otherwise rely on XUL toolbarbutton command.
     if (event.key === "Enter" || event.key === " ") {
+      if (
+        event.key === "Enter" &&
+        this.#editorMode &&
+        !PrivateBrowsingUtils.isWindowPrivate(window)
+      ) {
+        const tag = event.target?.localName?.toLowerCase?.();
+        if (tag === "input") {
+          event.preventDefault();
+          void this.#saveEditor();
+          return;
+        }
+      }
       return;
     }
 

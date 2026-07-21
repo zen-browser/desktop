@@ -1098,7 +1098,10 @@
 
 #zen-sidebar-top-buttons {
   order: -1;
-  min-width: unset !important;
+  /* Shrink below intrinsic content width so OverflowableToolbar can detect
+   * overflow. `unset`/`auto` lets the strip grow with its children, which
+   * makes isOverflowing never fire and buttons paint past the sidebar edge. */
+  min-width: 0 !important;
 
   :root[zen-sidebar-expanded="true"] & {
     --toolbarbutton-inner-padding: var(--zen-toolbar-button-inner-padding) !important;
@@ -1116,6 +1119,7 @@
   }
 
   & #zen-sidebar-top-buttons-customization-target {
+    min-width: 0;
     height: 100%;
     align-items: center;
 
@@ -1134,6 +1138,17 @@
       display: none !important;
     }
   }
+}
+
+/* Cap the strip to the toolbox width (including the 120px expanded floor).
+ * Scoped under #navigator-toolbox so single-toolbar / appcontent placements
+ * that set max-width: fit-content are not overridden. overflow-x: clip is a
+ * paint safety net during live resize before checkOverflow finishes moving
+ * items into widget-overflow. */
+#navigator-toolbox #zen-sidebar-top-buttons {
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: clip;
 }
 
 #tabs-newtab-button {

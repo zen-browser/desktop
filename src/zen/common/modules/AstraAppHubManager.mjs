@@ -3458,6 +3458,10 @@ class AstraAppHubManager {
   }
 
   #clearSearch() {
+    if (this.#searchDebounceTimer) {
+      clearTimeout(this.#searchDebounceTimer);
+      this.#searchDebounceTimer = null;
+    }
     const search = this.searchInput;
     if (search) {
       search.value = "";

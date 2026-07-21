@@ -5,8 +5,10 @@
 - name: zen.session-store.backup-file
   value: true
 
+# Debug logging only — leave off in shipping builds (console.debug on every
+# session save/restore path otherwise).
 - name: zen.session-store.log
-  value: true
+  value: false
 
 - name: zen.session-store.restore-unsynced-windows
   value: true

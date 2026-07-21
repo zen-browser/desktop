@@ -415,6 +415,8 @@ class AstraAppHubManager {
   #focusedItemIndex = -1;
   /** @type {Map<string, object>} Bounded per-app favicon capture sessions. */
   #faviconCaptures = new Map();
+  /** @type {number|null} Debounce timer for search rebuild/filter. */
+  #searchDebounceTimer = null;
 
   #boundCommand = null;
   #boundPopupShowing = null;
@@ -786,6 +788,10 @@ class AstraAppHubManager {
       return;
     }
     this.#destroyed = true;
+    if (this.#searchDebounceTimer) {
+      clearTimeout(this.#searchDebounceTimer);
+      this.#searchDebounceTimer = null;
+    }
     this.#stopAllFaviconCaptures();
     this.#unbindPanelListeners();
     this.#removeMenus();
@@ -3348,12 +3354,23 @@ class AstraAppHubManager {
     if (clearBtn) {
       clearBtn.hidden = !q;
     }
-    if (this.#hubView === "launchpad" && !this.#customizeMode) {
-      this.#rendered = false;
-      this.#rebuildList();
-      return;
+    // Debounce full rebuild / filter — each keystroke previously rebuilt the
+    // launchpad DOM or walked every catalog item synchronously.
+    if (this.#searchDebounceTimer) {
+      clearTimeout(this.#searchDebounceTimer);
     }
-    this.#applySearchFilter(q);
+    this.#searchDebounceTimer = setTimeout(() => {
+      this.#searchDebounceTimer = null;
+      if (this.#destroyed) {
+        return;
+      }
+      if (this.#hubView === "launchpad" && !this.#customizeMode) {
+        this.#rendered = false;
+        this.#rebuildList();
+        return;
+      }
+      this.#applySearchFilter(this.#searchQuery);
+    }, 120);
   }
 
   #applySearchFilter(query) {

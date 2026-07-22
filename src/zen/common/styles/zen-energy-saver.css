@@ -5,6 +5,17 @@
   transition-duration: 0.001ms !important;
 }
 
+/*
+ * PanelMultiView.#transitionViews awaits transitionend on .panel-viewstack
+ * transform. A zero/near-zero duration suppresses that event (no transition
+ * → no transitionend), leaving panelmultiview[transitioning] stuck with
+ * pointer-events:none and views never activated — so Suraksha / app-menu
+ * subview back buttons appear dead. Keep the stock subview duration here.
+ */
+:root[astra-energy-saver="true"] panelmultiview .panel-viewstack {
+  transition-duration: var(--panelui-subview-transition-duration, 150ms) !important;
+}
+
 :root[astra-energy-saver="true"] .zen-toolbar-background {
   backdrop-filter: none !important;
 }

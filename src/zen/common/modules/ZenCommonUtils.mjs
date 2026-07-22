@@ -93,9 +93,37 @@ window.gZenCommonActions = {
     Services.clipboardHelper.copyString(text);
   },
 
+  /**
+   * Resolve the current page URI + clipboard helper.
+   * Prefers gURLBar.zenStrippedURI (UrlbarInput patch) when available;
+   * falls back so the copy-URL toolbar button still works if the patch
+   * is missing or throws.
+   */
+  _getCurrentUrlForClipboard() {
+    try {
+      const stripped = gURLBar?.zenStrippedURI;
+      if (Array.isArray(stripped) && stripped[0]) {
+        return {
+          currentUrl: stripped[0],
+          ClipboardHelper: stripped[1] || Services.clipboardHelper,
+        };
+      }
+    } catch (error) {
+      console.warn("Astra: zenStrippedURI failed, using currentURI:", error);
+    }
+    return {
+      currentUrl: gBrowser.currentURI,
+      ClipboardHelper: Services.clipboardHelper,
+    };
+  },
+
   copyCurrentURLToClipboard() {
-    const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
-    const displaySpec = currentUrl.displaySpec;
+    const { currentUrl, ClipboardHelper } = this._getCurrentUrlForClipboard();
+    const displaySpec = currentUrl?.displaySpec;
+    if (!displaySpec) {
+      console.error("Astra: copyCurrentURLToClipboard: no URL available");
+      return;
+    }
     if (window.gZenSmartGuard?.guardedCopyToClipboard) {
       window.gZenSmartGuard.guardedCopyToClipboard(displaySpec, "current-url");
     } else {
@@ -128,9 +156,16 @@ window.gZenCommonActions = {
   },
 
   copyCurrentURLAsMarkdownToClipboard() {
-    const [currentUrl, ClipboardHelper] = gURLBar.zenStrippedURI;
+    const { currentUrl, ClipboardHelper } = this._getCurrentUrlForClipboard();
+    const displaySpec = currentUrl?.displaySpec;
+    if (!displaySpec) {
+      console.error(
+        "Astra: copyCurrentURLAsMarkdownToClipboard: no URL available"
+      );
+      return;
+    }
     const tabTitle = gBrowser.selectedTab.label;
-    const markdownLink = `[${tabTitle}](${currentUrl.displaySpec})`;
+    const markdownLink = `[${tabTitle}](${displaySpec})`;
     if (window.gZenSmartGuard?.guardedCopyToClipboard) {
       window.gZenSmartGuard.guardedCopyToClipboard(
         markdownLink,

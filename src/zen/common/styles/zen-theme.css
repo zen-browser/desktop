@@ -362,6 +362,15 @@
     scroll-behavior: auto !important;
   }
 
+  /*
+   * Same PanelMultiView trap as zen-energy-saver.css: 0s duration means
+   * transform never emits transitionend, so subview back navigation hangs.
+   */
+  #main-window panelmultiview .panel-viewstack {
+    transition-duration: var(--panelui-subview-transition-duration, 150ms) !important;
+    transition-delay: 0s !important;
+  }
+
   /* Astra - Allow acrylic blur effects when enabled */
   @media not -moz-pref('zen.theme.acrylic-elements') {
     #main-window,

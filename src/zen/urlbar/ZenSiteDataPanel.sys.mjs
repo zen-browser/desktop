@@ -118,15 +118,23 @@ export class nsZenSiteDataPanel {
       this.document.getElementById("cmd_zenCopyCurrentURL").doCommand();
     });
 
+    const syncCopyUrlEnabled = uri => {
+      const disabled = !this.#canCopyUrl(uri);
+      if (disabled) {
+        aElement.setAttribute("disabled", true);
+      } else {
+        aElement.removeAttribute("disabled");
+      }
+    };
+
+    // Progress listener only fires on navigation — sync the already-loaded tab
+    // so the button is not stuck disabled until the next location change.
+    syncCopyUrlEnabled(this.window.gBrowser.currentURI);
+
     this.window.gBrowser.addProgressListener({
       onLocationChange: (aWebProgress, aRequest, aLocation) => {
         if (aWebProgress.isTopLevel) {
-          const disabled = !this.#canCopyUrl(aLocation);
-          if (disabled) {
-            aElement.setAttribute("disabled", true);
-          } else {
-            aElement.removeAttribute("disabled");
-          }
+          syncCopyUrlEnabled(aLocation);
         }
       },
     });

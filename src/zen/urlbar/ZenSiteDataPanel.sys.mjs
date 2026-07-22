@@ -99,6 +99,22 @@ export class nsZenSiteDataPanel {
     // This function is a bit out of place, but it's related enough to the panel
     // that it's easier to do it here than in a separate module.
     const container = this.document.getElementById("page-action-buttons");
+    // TEMP DIAG — remove after Copy URL root cause is confirmed.
+    const diag = (msg, detail) => {
+      const line = detail
+        ? `Astra CopyURL DIAG: ${msg} ${JSON.stringify(detail)}`
+        : `Astra CopyURL DIAG: ${msg}`;
+      console.error(line);
+      try {
+        dump(`${line}\n`);
+      } catch {
+        // dump unavailable in some packaging modes
+      }
+    };
+    if (!container) {
+      diag("init FAILED: #page-action-buttons missing");
+      return;
+    }
     const fragment = this.window.MozXULElement.parseXULToFragment(`
       <hbox id="zen-copy-url-button"
             class="urlbar-page-action"
@@ -115,11 +131,35 @@ export class nsZenSiteDataPanel {
     container.prepend(fragment);
 
     const aElement = this.document.getElementById("zen-copy-url-button");
+    if (!aElement) {
+      diag("init FAILED: #zen-copy-url-button missing after prepend");
+      return;
+    }
+    diag("init OK", {
+      parentId: aElement.parentElement?.id || null,
+      parentTag: aElement.parentElement?.localName || null,
+      inPageActions: !!aElement.closest("#page-action-buttons"),
+      gZenCommonActions: typeof this.window.gZenCommonActions?.copyCurrentURLToClipboard,
+    });
     const activate = event => {
-      if (aElement.hasAttribute("disabled")) {
+      const disabled = aElement.hasAttribute("disabled");
+      diag(`${event.type} received`, {
+        button: event.button,
+        disabled,
+        target: event.target?.localName || null,
+        targetId: event.target?.id || null,
+        currentTargetId: event.currentTarget?.id || null,
+        defaultPrevented: event.defaultPrevented,
+        cancelable: event.cancelable,
+        eventPhase: event.eventPhase,
+        uriScheme: this.window.gBrowser?.currentURI?.scheme || null,
+      });
+      if (disabled) {
+        diag(`${event.type} early-return: button disabled`);
         return;
       }
       if (event.type === "click" && event.button != 0) {
+        diag("click early-return: non-primary button");
         return;
       }
       if (
@@ -137,17 +177,59 @@ export class nsZenSiteDataPanel {
         }
         event.preventDefault();
         event.stopPropagation();
+        diag("mousedown handled (no clipboard write on mousedown)");
         return;
       }
       event.preventDefault();
       event.stopPropagation();
       // Call the action directly. Do not use <command>.doCommand() — that path
       // depends on zenCommandSet bubbling and can no-op with no clipboard write.
-      this.window.gZenCommonActions.copyCurrentURLToClipboard();
+      try {
+        diag("calling copyCurrentURLToClipboard");
+        if (!this.window.gZenCommonActions?.copyCurrentURLToClipboard) {
+          diag("FAILED: gZenCommonActions.copyCurrentURLToClipboard missing");
+          return;
+        }
+        this.window.gZenCommonActions.copyCurrentURLToClipboard();
+        diag("copyCurrentURLToClipboard returned");
+      } catch (error) {
+        diag("copyCurrentURLToClipboard THREW", {
+          name: error?.name || null,
+          message: String(error?.message || error),
+        });
+        console.error("Astra CopyURL DIAG stack:", error);
+      }
     };
+    // Capture-only probe: proves the event reached our node even if a later
+    // bubble listener stops it. Does not write the clipboard.
+    const captureProbe = event => {
+      diag(`${event.type} CAPTURE probe`, {
+        button: event.button,
+        target: event.target?.localName || null,
+        targetId: event.target?.id || null,
+        disabled: aElement.hasAttribute("disabled"),
+      });
+    };
+    aElement.addEventListener("mousedown", captureProbe, true);
+    aElement.addEventListener("mouseup", captureProbe, true);
+    aElement.addEventListener("click", captureProbe, true);
     aElement.addEventListener("mousedown", activate);
     aElement.addEventListener("click", activate);
     aElement.addEventListener("keypress", activate);
+    // Also watch the container: if these fire but button listeners don't,
+    // the event is reaching page-actions but not our node.
+    container.addEventListener(
+      "click",
+      event => {
+        if (event.target?.closest?.("#zen-copy-url-button")) {
+          diag("container click saw #zen-copy-url-button", {
+            target: event.target?.localName || null,
+            targetId: event.target?.id || null,
+          });
+        }
+      },
+      true
+    );
 
     const syncCopyUrlEnabled = uri => {
       const disabled = !this.#canCopyUrl(uri);
@@ -156,6 +238,11 @@ export class nsZenSiteDataPanel {
       } else {
         aElement.removeAttribute("disabled");
       }
+      diag("sync enabled state", {
+        disabled,
+        scheme: uri?.scheme || null,
+        spec: uri?.spec?.slice?.(0, 120) || null,
+      });
     };
 
     // Progress listener only fires on navigation — sync the already-loaded tab

@@ -318,79 +318,6 @@
   left: 2px;
 }
 
-/* ── Workspace color dots ── */
-.zen-welcome-workspace-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: light-dark(#f7f7f5, #161620);
-  border: 0.5px solid light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.07));
-  border-radius: 10px;
-  padding: 9px 12px;
-}
-
-.zen-welcome-workspace-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-/* ── Theme swatches ── */
-.zen-welcome-theme-row {
-  display: flex;
-  gap: 8px;
-}
-
-.zen-welcome-theme-swatch {
-  flex: 1;
-  height: 72px;
-  border-radius: 10px;
-  border: 1.5px solid transparent;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: border-color 0.2s;
-}
-
-.zen-welcome-theme-swatch[selected] {
-  border-color: #ff9933;
-}
-
-.zen-welcome-theme-swatch-label {
-  position: absolute;
-  bottom: 5px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: 0.62rem;
-  font-weight: 500;
-}
-
-.zen-welcome-theme-dark {
-  background: #0a0a0f;
-}
-
-.zen-welcome-theme-light {
-  background: #f0f0ea;
-}
-
-.zen-welcome-theme-system {
-  background: linear-gradient(135deg, #0a0a0f 50%, #f0f0ea 50%);
-}
-
-.zen-welcome-theme-dark .zen-welcome-theme-swatch-label {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.zen-welcome-theme-light .zen-welcome-theme-swatch-label {
-  color: #555;
-}
-
-.zen-welcome-theme-system .zen-welcome-theme-swatch-label {
-  color: rgba(255, 255, 255, 0.7);
-}
-
 /* ── Buttons ── */
 .zen-welcome-btn-row {
   display: flex;
@@ -515,13 +442,6 @@
   line-height: 1.6;
 }
 
-/* ── hint text ── */
-.zen-welcome-hint {
-  font-size: 0.62rem;
-  color: light-dark(#aaa, rgba(255, 255, 255, 0.3));
-  line-height: 1.5;
-}
-
 /* ── Search engine grid ── */
 #zen-welcome-page-content[select-engine="true"] {
   display: grid !important;
@@ -567,13 +487,4 @@
   font-size: 0.72rem;
   font-weight: 500;
   color: light-dark(#111, #eee);
-}
-
-/* ── Theme picker anchor ── */
-#zen-welcome-workspace-colors-anchor {
-  display: block;
-  min-width: 1px;
-  min-height: 1px;
-  width: 1px;
-  height: 1px;
 }

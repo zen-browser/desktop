@@ -33,19 +33,6 @@ zen-privacy-https-sub = Prefer secure connections
 zen-privacy-safebrowsing = Safe browsing
 zen-privacy-safebrowsing-sub = Warn before visiting known malicious sites
 
-zen-welcome-workspaces-title = Organise with Workspaces
-zen-welcome-workspaces-sub = Keep work, study, and personal browsing completely separate
-zen-workspace-work = Work
-zen-workspace-study = Study
-zen-workspace-personal = Personal
-zen-workspace-hint = You can add more workspaces any time from the sidebar
-
-zen-welcome-theme-title = Make it yours
-zen-welcome-theme-sub = Pick a theme. You can always change it later.
-zen-theme-dark = Dark
-zen-theme-light = Light
-zen-theme-system = System
-
 zen-welcome-search-title = Your Default Search Engine
 zen-welcome-search-sub = Choose your search engine. You can always change it later.
 

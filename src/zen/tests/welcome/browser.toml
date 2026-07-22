@@ -9,3 +9,5 @@ support-files = [
 ]
 
 ["browser_welcome.js"]
+
+["browser_welcome_simplified_flow.js"]

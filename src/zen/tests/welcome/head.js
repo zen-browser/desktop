@@ -23,3 +23,65 @@ async function goNextWelcomePage(l10nId) {
 async function waitForFocus(...args) {
   await new Promise(resolve => SimpleTest.waitForFocus(resolve, ...args));
 }
+
+async function waitForWelcomeElement(getter, message, timeout = 15000) {
+  await TestUtils.waitForCondition(getter, message, 100, timeout / 100);
+  const element = getter();
+  ok(element, message);
+  return element;
+}
+
+async function waitForWelcomeSidebarTitle(l10nId, message) {
+  return waitForWelcomeElement(
+    () =>
+      document.querySelector(
+        `#zen-welcome-sidebar-title[data-l10n-id="${l10nId}"]`
+      ),
+    message || `Welcome sidebar title should be ${l10nId}`
+  );
+}
+
+async function waitForClickableWelcomeButton(l10nId) {
+  return waitForWelcomeElement(() => {
+    const button = document.querySelector(
+      `.zen-welcome-btn-row button[data-l10n-id="${l10nId}"]`
+    );
+    if (!button) {
+      return null;
+    }
+    if (getComputedStyle(button).pointerEvents === "none") {
+      return null;
+    }
+    return button;
+  }, `Clickable welcome button ${l10nId} should appear`);
+}
+
+async function clickWelcomePrimaryButton(l10nId) {
+  const button = await waitForClickableWelcomeButton(l10nId);
+  await EventUtils.synthesizeMouseAtCenter(button, {});
+  return button;
+}
+
+function assertWelcomeStepProgress(stepNum, totalSteps) {
+  const pill = document.querySelector(".zen-welcome-step-pill");
+  ok(pill, "Welcome step pill should exist");
+  Assert.equal(
+    pill.textContent.trim(),
+    `Step ${stepNum} of ${totalSteps}`,
+    `Step pill should read Step ${stepNum} of ${totalSteps}`
+  );
+  const dots = document.querySelectorAll(".zen-welcome-dots .zen-welcome-dot");
+  Assert.equal(
+    dots.length,
+    totalSteps,
+    `Progress dots should total ${totalSteps}`
+  );
+  const activeIndex = Array.from(dots).findIndex(dot =>
+    dot.hasAttribute("active")
+  );
+  Assert.equal(
+    activeIndex,
+    stepNum - 1,
+    `Active progress dot should match step ${stepNum}`
+  );
+}

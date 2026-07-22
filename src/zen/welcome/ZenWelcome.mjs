@@ -174,82 +174,6 @@
     };
   }
 
-  function buildWorkspaceToggle(labelKey, dotColor, defaultOn = true) {
-    const el = document.createElement("div");
-    el.className = "zen-welcome-workspace-item";
-
-    const left = document.createElement("div");
-    left.style.display = "flex";
-    left.style.alignItems = "center";
-    left.style.gap = "8px";
-
-    const dot = document.createElement("div");
-    dot.className = "zen-welcome-workspace-dot";
-    dot.style.background = dotColor;
-
-    const label = document.createElement("div");
-    label.className = "zen-welcome-toggle-label";
-    document.l10n.setAttributes(label, labelKey);
-
-    left.appendChild(dot);
-    left.appendChild(label);
-
-    const pill = document.createElement("div");
-    pill.className = "zen-welcome-toggle-pill";
-    if (!defaultOn) {
-      pill.setAttribute("off", "true");
-    }
-    pill.addEventListener("click", () => {
-      pill.toggleAttribute("off");
-    });
-
-    el.appendChild(left);
-    el.appendChild(pill);
-
-    return {
-      el,
-      isOn: () => !pill.hasAttribute("off"),
-    };
-  }
-
-  function applyThemeMode(mode) {
-    const schemeMap = { dark: 0, light: 1, system: 2 };
-    const scheme = schemeMap[mode];
-    if (scheme !== undefined) {
-      Services.prefs.setIntPref("zen.view.window.scheme", scheme);
-    }
-  }
-
-  function embedThemePickerPanel(content) {
-    const anchor = document.createElement("div");
-    anchor.id = "zen-welcome-workspace-colors-anchor";
-    content.appendChild(anchor);
-    gZenThemePicker.panel.setAttribute("noautohide", "true");
-    gZenThemePicker.panel.setAttribute("consumeoutsideclicks", "false");
-    gZenThemePicker.panel.setAttribute("nonnativepopover", "true");
-    gZenThemePicker.panel.addEventListener(
-      "popupshowing",
-      () => {
-        const panelRect = gZenThemePicker.panel.getBoundingClientRect();
-        anchor.style.height = panelRect.height - 20 + "px";
-        anchor.style.width = panelRect.width - 20 + "px";
-      },
-      { once: true }
-    );
-    PanelMultiView.openPopup(gZenThemePicker.panel, anchor, {
-      position: "overlap",
-    });
-  }
-
-  async function teardownThemePickerPanel() {
-    gZenThemePicker.panel.removeAttribute("noautohide");
-    gZenThemePicker.panel.removeAttribute("consumeoutsideclicks");
-    gZenThemePicker.panel.removeAttribute("nonnativepopover");
-    await animate(gZenThemePicker.panel, { opacity: [1, 0] });
-    gZenThemePicker.panel.hidePopup();
-    gZenThemePicker.panel.removeAttribute("style");
-  }
-
   class nsZenWelcomePages {
     constructor(pages) {
       this._currentPage = -1;
@@ -592,14 +516,14 @@
   }
 
   function getWelcomePages() {
-    let workspaceToggles = {};
     let importToggle;
     let defaultToggle;
+    const totalSteps = 4;
 
     return [
       {
         stepNum: 1,
-        totalSteps: 6,
+        totalSteps,
         text: [
           { id: "zen-welcome-features-title" },
           { id: "zen-welcome-features-sub" },
@@ -685,7 +609,7 @@
       },
       {
         stepNum: 2,
-        totalSteps: 6,
+        totalSteps,
         text: [
           { id: "zen-welcome-privacy-title" },
           { id: "zen-welcome-privacy-sub" },
@@ -738,7 +662,7 @@
       },
       {
         stepNum: 3,
-        totalSteps: 6,
+        totalSteps,
         text: [
           { id: "zen-welcome-search-title" },
           { id: "zen-welcome-search-sub" },
@@ -818,133 +742,7 @@
       },
       {
         stepNum: 4,
-        totalSteps: 6,
-        text: [
-          { id: "zen-welcome-workspaces-title" },
-          { id: "zen-welcome-workspaces-sub" },
-        ],
-        buttons: [
-          {
-            l10n: "zen-generic-next",
-            onclick: async () => {
-              if (typeof gZenWorkspaces !== "undefined") {
-                if (workspaceToggles.work?.isOn()) {
-                  await gZenWorkspaces.createWorkspaceFromPreset("work");
-                }
-                if (workspaceToggles.study?.isOn()) {
-                  await gZenWorkspaces.createWorkspaceFromPreset("study");
-                }
-                if (workspaceToggles.personal?.isOn()) {
-                  await gZenWorkspaces.createWorkspaceFromPreset("personal");
-                }
-              }
-              return true;
-            },
-          },
-        ],
-        fadeIn() {
-          const content = document.getElementById("zen-welcome-page-content");
-          const toggleList = document.createElement("div");
-          toggleList.className = "zen-welcome-toggle-list";
-
-          workspaceToggles.work = buildWorkspaceToggle(
-            "zen-workspace-work",
-            "#ff9933",
-            true
-          );
-          workspaceToggles.study = buildWorkspaceToggle(
-            "zen-workspace-study",
-            "#1565c0",
-            true
-          );
-          workspaceToggles.personal = buildWorkspaceToggle(
-            "zen-workspace-personal",
-            "#138808",
-            true
-          );
-
-          toggleList.appendChild(workspaceToggles.work.el);
-          toggleList.appendChild(workspaceToggles.study.el);
-          toggleList.appendChild(workspaceToggles.personal.el);
-          content.appendChild(toggleList);
-
-          const hint = document.createElement("div");
-          hint.className = "zen-welcome-hint";
-          document.l10n.setAttributes(hint, "zen-workspace-hint");
-          content.appendChild(hint);
-        },
-        fadeOut() {},
-      },
-      {
-        stepNum: 5,
-        totalSteps: 6,
-        text: [
-          { id: "zen-welcome-theme-title" },
-          { id: "zen-welcome-theme-sub" },
-        ],
-        buttons: [
-          {
-            l10n: "zen-generic-next",
-            onclick: async () => true,
-          },
-        ],
-        fadeIn() {
-          const content = document.getElementById("zen-welcome-page-content");
-          const row = document.createElement("div");
-          row.className = "zen-welcome-theme-row";
-
-          const modes = [
-            { id: "dark", className: "zen-welcome-theme-dark", l10n: "zen-theme-dark" },
-            { id: "light", className: "zen-welcome-theme-light", l10n: "zen-theme-light" },
-            {
-              id: "system",
-              className: "zen-welcome-theme-system",
-              l10n: "zen-theme-system",
-            },
-          ];
-
-          const currentScheme = Services.prefs.getIntPref(
-            "zen.view.window.scheme",
-            2
-          );
-          const defaultMode =
-            currentScheme === 0
-              ? "dark"
-              : currentScheme === 1
-                ? "light"
-                : "system";
-
-          for (const mode of modes) {
-            const swatch = document.createElement("div");
-            swatch.className = `zen-welcome-theme-swatch ${mode.className}`;
-            swatch.dataset.mode = mode.id;
-            if (mode.id === defaultMode) {
-              swatch.setAttribute("selected", "true");
-            }
-            const swatchLabel = document.createElement("div");
-            swatchLabel.className = "zen-welcome-theme-swatch-label";
-            document.l10n.setAttributes(swatchLabel, mode.l10n);
-            swatch.appendChild(swatchLabel);
-            swatch.addEventListener("click", () => {
-              row
-                .querySelectorAll(".zen-welcome-theme-swatch")
-                .forEach(s => s.removeAttribute("selected"));
-              swatch.setAttribute("selected", "true");
-              applyThemeMode(mode.id);
-            });
-            row.appendChild(swatch);
-          }
-          content.appendChild(row);
-          embedThemePickerPanel(content);
-        },
-        dontFadeOut: true,
-        async fadeOut() {
-          await teardownThemePickerPanel();
-        },
-      },
-      {
-        stepNum: 6,
-        totalSteps: 6,
+        totalSteps,
         text: [
           { id: "zen-welcome-import-title" },
           { id: "zen-welcome-import-sub" },

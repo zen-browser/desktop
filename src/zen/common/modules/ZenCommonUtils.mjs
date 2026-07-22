@@ -134,64 +134,23 @@ window.gZenCommonActions = {
   },
 
   copyCurrentURLToClipboard() {
-    // TEMP DIAG — remove after Copy URL root cause is confirmed.
-    const diag = (msg, detail) => {
-      const line = detail
-        ? `Astra CopyURL DIAG[utils]: ${msg} ${JSON.stringify(detail)}`
-        : `Astra CopyURL DIAG[utils]: ${msg}`;
-      console.error(line);
-      try {
-        dump(`${line}\n`);
-      } catch {
-        // ignore
-      }
-    };
-    diag("enter");
-    let resolved;
-    try {
-      resolved = this._resolveCurrentUrlStringForClipboard();
-    } catch (error) {
-      diag("resolve THREW", {
-        name: error?.name || null,
-        message: String(error?.message || error),
-      });
-      console.error("Astra CopyURL DIAG resolve stack:", error);
-      return;
-    }
+    const resolved = this._resolveCurrentUrlStringForClipboard();
     if (!resolved?.text) {
-      diag("no URL available", {
-        hasResolved: !!resolved,
-        currentURI: gBrowser?.currentURI?.spec?.slice?.(0, 120) || null,
-        hasZenStrippedURI: gURLBar?.zenStrippedURI != null,
-      });
       console.error("Astra: copyCurrentURLToClipboard: no URL available");
       return;
     }
     const { text, uri: currentUrl } = resolved;
-    diag("resolved URL", {
-      textPreview: String(text).slice(0, 160),
-      textLen: String(text).length,
-      viaSmartGuard: !!window.gZenSmartGuard?.guardedCopyToClipboard,
-      hasClipboardHelper: !!Services.clipboardHelper,
-      helperType: typeof Services.clipboardHelper?.copyString,
-    });
 
     // Privileged synchronous write — do not use navigator.clipboard (can
     // silently fail in chrome when focus is on the urlbar input).
     try {
       if (window.gZenSmartGuard?.guardedCopyToClipboard) {
         window.gZenSmartGuard.guardedCopyToClipboard(text, "current-url");
-        diag("guardedCopyToClipboard returned");
       } else {
         Services.clipboardHelper.copyString(text);
-        diag("Services.clipboardHelper.copyString returned");
       }
     } catch (error) {
-      diag("clipboard write THREW", {
-        name: error?.name || null,
-        message: String(error?.message || error),
-      });
-      console.error("Astra CopyURL DIAG clipboard stack:", error);
+      console.error("[Astra Copy URL] Failed to copy current URL:", error);
       return;
     }
 
@@ -225,10 +184,8 @@ window.gZenCommonActions = {
         button,
         timeout: 3000,
       });
-      diag("toast shown");
     } catch (error) {
       // Clipboard already written — toast is best-effort only.
-      diag("toast failed", { message: String(error?.message || error) });
       console.warn("Astra: copy toast failed:", error);
     }
   },

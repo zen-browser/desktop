@@ -10,4 +10,6 @@ support-files = [
 
 ["browser_floating_urlbar.js"]
 
+["browser_copy_url_button.js"]
+
 ["browser_issue_7385.js"]

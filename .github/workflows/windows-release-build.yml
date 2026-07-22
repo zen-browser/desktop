@@ -261,19 +261,19 @@ jobs:
           export ZEN_RELEASE=1
           npm run package
           ls ./dist
-          mv ./dist/zen-$(npm run --silent surfer -- get version | xargs).en-US.win64${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.tar zen.win64.tar
+          mv ./dist/zen-$(npm run --silent surfer -- get version | xargs).en-US.win64${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.zip zen.win64.zip
           ls .
 
       - name: Move package for PGO upload
         if: ${{ inputs.generate-gpo && matrix.arch == 'x86_64' }}
         run: |
           set -x
-          mv ./zen.win64.tar ./zen.win64-pgo-stage-1.tar
+          mv ./zen.win64.zip ./zen.win64-pgo-stage-1.zip
 
       - name: Rename artifacts
         if: ${{ !inputs.generate-gpo }}
         run: |
-          mv ./zen.win64.tar zen.win-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}.tar
+          mv ./zen.win64.zip zen.win-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}.zip
           mv ./dist/output.mar windows${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.mar
           mv ./dist/zen.installer.exe ./zen.installer${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.exe
 
@@ -283,7 +283,7 @@ jobs:
         with:
           retention-days: 2
           name: ${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}-${{ inputs.profile-data-path-archive }}
-          path: ./zen.win64-pgo-stage-1.tar
+          path: ./zen.win64-pgo-stage-1.zip
 
       - name: Remove unnecessary files from obj
         if: ${{ !inputs.generate-gpo }}

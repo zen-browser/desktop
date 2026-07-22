@@ -61,8 +61,7 @@ jobs:
         if: ${{ matrix.arch == 'x86_64' }}
         run: |
           cd C:\artifact
-          ls
-          tar -xf .\${{ inputs.profile-data-path-archive }} -C C:\artifact
+          Expand-Archive -Path .\${{ inputs.profile-data-path-archive }} -DestinationPath C:\artifact
           ls
 
       - name: Setup

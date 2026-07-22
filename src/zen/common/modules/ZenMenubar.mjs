@@ -139,7 +139,7 @@ export class nsZenMenuBar {
       if (extensionsBtn && !document.getElementById("appMenu-astra-suraksha-button")) {
         const surakshaItem = window.MozXULElement.parseXULToFragment(
           `<toolbarbutton id="appMenu-astra-suraksha-button"
-                    class="subviewbutton subviewbutton-iconic"
+                    class="subviewbutton"
                     data-l10n-id="astra-suraksha-appmenu"
                     command="cmd_astraOpenSurakshaCenter"/>`
         ).querySelector("toolbarbutton");

@@ -97,7 +97,7 @@
 #astra-suraksha-button .toolbarbutton-icon,
 #astra-suraksha-button > toolbarbutton > .toolbarbutton-icon,
 #astra-suraksha-toolbarbutton .toolbarbutton-icon,
-#appMenu-astra-suraksha-button .toolbarbutton-icon {
+#appMenu-astra-suraksha-button {
   list-style-image: url("chrome://browser/skin/tracking-protection.svg");
 }
 

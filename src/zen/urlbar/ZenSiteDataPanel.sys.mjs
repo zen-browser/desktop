@@ -103,20 +103,51 @@ export class nsZenSiteDataPanel {
       <hbox id="zen-copy-url-button"
             class="urlbar-page-action"
             role="button"
+            tabindex="0"
             data-l10n-id="zen-urlbar-copy-url-button"
             disabled="true">
         <image class="urlbar-icon"/>
       </hbox>
     `);
-    container.after(fragment);
+    // Must live inside #page-action-buttons (peers with star/reader). Inserting
+    // via .after() left it outside the page-action row and made click/focus
+    // handling race the urlbar input.
+    container.prepend(fragment);
 
     const aElement = this.document.getElementById("zen-copy-url-button");
-    aElement.addEventListener("click", () => {
+    const activate = event => {
       if (aElement.hasAttribute("disabled")) {
         return;
       }
-      this.document.getElementById("cmd_zenCopyCurrentURL").doCommand();
-    });
+      if (event.type === "click" && event.button != 0) {
+        return;
+      }
+      if (
+        event.type === "keypress" &&
+        event.charCode != this.window.KeyEvent.DOM_VK_SPACE &&
+        event.keyCode != this.window.KeyEvent.DOM_VK_RETURN
+      ) {
+        return;
+      }
+      // mousedown: stop urlbar from focusing/selecting on this press so the
+      // subsequent click is a clean activation (matches page-action UX).
+      if (event.type === "mousedown") {
+        if (event.button != 0) {
+          return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      // Call the action directly. Do not use <command>.doCommand() — that path
+      // depends on zenCommandSet bubbling and can no-op with no clipboard write.
+      this.window.gZenCommonActions.copyCurrentURLToClipboard();
+    };
+    aElement.addEventListener("mousedown", activate);
+    aElement.addEventListener("click", activate);
+    aElement.addEventListener("keypress", activate);
 
     const syncCopyUrlEnabled = uri => {
       const disabled = !this.#canCopyUrl(uri);

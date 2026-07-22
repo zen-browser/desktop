@@ -94,89 +94,122 @@ window.gZenCommonActions = {
   },
 
   /**
-   * Resolve the current page URI + clipboard helper.
-   * Prefers gURLBar.zenStrippedURI (UrlbarInput patch) when available;
-   * falls back so the copy-URL toolbar button still works if the patch
-   * is missing or throws.
+   * Resolve the current tab URL string for clipboard writes.
+   * Never depends on urlbar selection/focus. Prefer zenStrippedURI when the
+   * UrlbarInput patch is present; otherwise strip via QueryStringStripper or
+   * fall back to gBrowser.currentURI.
    */
-  _getCurrentUrlForClipboard() {
+  _resolveCurrentUrlStringForClipboard() {
+    let uri = gBrowser?.currentURI;
+    if (!uri) {
+      return null;
+    }
+
     try {
       const stripped = gURLBar?.zenStrippedURI;
       if (Array.isArray(stripped) && stripped[0]) {
-        return {
-          currentUrl: stripped[0],
-          ClipboardHelper: stripped[1] || Services.clipboardHelper,
-        };
+        const text = stripped[0].displaySpec || stripped[0].spec;
+        if (text) {
+          return { text, uri: stripped[0] };
+        }
       }
     } catch (error) {
       console.warn("Astra: zenStrippedURI failed, using currentURI:", error);
     }
-    return {
-      currentUrl: gBrowser.currentURI,
-      ClipboardHelper: Services.clipboardHelper,
-    };
+
+    try {
+      const stripper = Cc[
+        "@mozilla.org/url-query-string-stripper;1"
+      ].getService(Ci.nsIURLQueryStringStripper);
+      const stripped = stripper.stripForCopyOrShare(uri);
+      if (stripped) {
+        uri = gURLBar?.makeURIReadable?.(stripped) || stripped;
+      }
+    } catch (_error) {
+      // Stripper optional — raw currentURI is fine.
+    }
+
+    const text = uri.displaySpec || uri.spec;
+    return text ? { text, uri } : null;
   },
 
   copyCurrentURLToClipboard() {
-    const { currentUrl, ClipboardHelper } = this._getCurrentUrlForClipboard();
-    const displaySpec = currentUrl?.displaySpec;
-    if (!displaySpec) {
+    const resolved = this._resolveCurrentUrlStringForClipboard();
+    if (!resolved?.text) {
       console.error("Astra: copyCurrentURLToClipboard: no URL available");
       return;
     }
+    const { text, uri: currentUrl } = resolved;
+
+    // Privileged synchronous write — do not use navigator.clipboard (can
+    // silently fail in chrome when focus is on the urlbar input).
     if (window.gZenSmartGuard?.guardedCopyToClipboard) {
-      window.gZenSmartGuard.guardedCopyToClipboard(displaySpec, "current-url");
+      window.gZenSmartGuard.guardedCopyToClipboard(text, "current-url");
     } else {
-      ClipboardHelper.copyString(displaySpec);
+      Services.clipboardHelper.copyString(text);
     }
+
     let button;
-    /* eslint-disable mozilla/valid-services */
-    if (Services.zen.canShare() && displaySpec.startsWith("http")) {
-      button = {
-        id: "zen-copy-current-url-button",
-        command: event => {
-          const buttonRect = event.target.getBoundingClientRect();
-          /* eslint-disable mozilla/valid-services */
-          Services.zen.share(
-            currentUrl,
-            "",
-            "",
-            buttonRect.left,
-            window.innerHeight - buttonRect.bottom,
-            buttonRect.width,
-            buttonRect.height
-          );
-        },
-      };
+    try {
+      /* eslint-disable mozilla/valid-services */
+      if (Services.zen?.canShare?.() && text.startsWith("http")) {
+        button = {
+          id: "zen-copy-current-url-button",
+          command: event => {
+            const buttonRect = event.target.getBoundingClientRect();
+            /* eslint-disable mozilla/valid-services */
+            Services.zen.share(
+              currentUrl,
+              "",
+              "",
+              buttonRect.left,
+              window.innerHeight - buttonRect.bottom,
+              buttonRect.width,
+              buttonRect.height
+            );
+          },
+        };
+      }
+    } catch (error) {
+      console.warn("Astra: share toast button skipped:", error);
     }
-    gZenUIManager.showToast("zen-copy-current-url-confirmation", {
-      button,
-      timeout: 3000,
-    });
+
+    try {
+      gZenUIManager.showToast("zen-copy-current-url-confirmation", {
+        button,
+        timeout: 3000,
+      });
+    } catch (error) {
+      // Clipboard already written — toast is best-effort only.
+      console.warn("Astra: copy toast failed:", error);
+    }
   },
 
   copyCurrentURLAsMarkdownToClipboard() {
-    const { currentUrl, ClipboardHelper } = this._getCurrentUrlForClipboard();
-    const displaySpec = currentUrl?.displaySpec;
-    if (!displaySpec) {
+    const resolved = this._resolveCurrentUrlStringForClipboard();
+    if (!resolved?.text) {
       console.error(
         "Astra: copyCurrentURLAsMarkdownToClipboard: no URL available"
       );
       return;
     }
     const tabTitle = gBrowser.selectedTab.label;
-    const markdownLink = `[${tabTitle}](${displaySpec})`;
+    const markdownLink = `[${tabTitle}](${resolved.text})`;
     if (window.gZenSmartGuard?.guardedCopyToClipboard) {
       window.gZenSmartGuard.guardedCopyToClipboard(
         markdownLink,
         "current-url-markdown"
       );
     } else {
-      ClipboardHelper.copyString(markdownLink);
+      Services.clipboardHelper.copyString(markdownLink);
     }
-    gZenUIManager.showToast("zen-copy-current-url-as-markdown-confirmation", {
-      timeout: 3000,
-    });
+    try {
+      gZenUIManager.showToast("zen-copy-current-url-as-markdown-confirmation", {
+        timeout: 3000,
+      });
+    } catch (error) {
+      console.warn("Astra: markdown copy toast failed:", error);
+    }
   },
 
   throttle(f, delay) {

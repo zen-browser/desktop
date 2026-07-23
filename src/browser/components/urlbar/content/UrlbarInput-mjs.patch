@@ -297,7 +297,7 @@ index 0fba59d62af9d3cd05bfee2cf84cd8b7cf9bfd6e..3997a5109267f378b59aa6510cbacd07
      }
  
 -    if (this.focusedViaMousedown) {
-+    if (this.focusedViaMousedown || this.hasAttribute("zen-newtab")) {
++    if (this.focusedViaMousedown || this.hasAttribute("zen-newtab") || this.zenUrlbarBehavior == "float") {
        this.view.autoOpen({ event });
      } else {
        if (this._untrimOnFocusAfterKeydown) {

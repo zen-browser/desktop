@@ -41,6 +41,25 @@ add_task(async function test_Click_Shoudnt_FLoat_Urlbar() {
   );
 });
 
+add_task(async function test_Keyboard_Focus_Floats_In_Float_Mode() {
+  await SpecialPowers.pushPrefEnv({ set: [["zen.urlbar.behavior", "float"]] });
+  gURLBar.blur();
+  await SimpleTest.promiseFocus(window);
+
+  // Keyboard-style focus (no mousedown, so focusedViaMousedown stays false),
+  // the same path F6 exercises.
+  gURLBar.focus();
+
+  await BrowserTestUtils.waitForCondition(
+    () => gURLBar.hasAttribute("zen-floating-urlbar"),
+    "URL bar should float on keyboard focus in 'float' mode"
+  );
+  ok(gURLBar.hasAttribute("zen-floating-urlbar"), "URL bar is floating");
+
+  gURLBar.blur();
+  await SpecialPowers.popPrefEnv();
+});
+
 add_task(async function test_Floating_Highlight_Everything() {
   gURLBar.blur();
 

@@ -860,9 +860,18 @@
       { id: "zen-welcome-title-line2" },
     ]);
     const titleElement = document.getElementById("zen-welcome-start-title");
-    const line2Text = line2.replace(/\s*🇮🇳\s*$/, "").trim();
-    /* eslint-disable no-unsanitized/property */
-    titleElement.innerHTML = `${line1}<br><span>${line2Text}</span> 🇮🇳`;
+    // XHTML chrome rejects bare <br>/<span> via innerHTML (SyntaxError:
+    // "An invalid or illegal string was specified"). Build with DOM APIs.
+    // Emoji is fine as a text node; FTL may keep 🇮🇳 — only innerHTML parsing
+    // was broken in the packaged runtime probe.
+    const line2Text = line2.replace(/\s*🇮🇳\s*$/u, "").trim();
+    titleElement.replaceChildren();
+    titleElement.appendChild(document.createTextNode(line1));
+    titleElement.appendChild(document.createElement("br"));
+    const line2Span = document.createElement("span");
+    line2Span.textContent = line2Text;
+    titleElement.appendChild(line2Span);
+    titleElement.appendChild(document.createTextNode(" 🇮🇳"));
 
     await animate(
       "#zen-welcome-start-title, #zen-welcome-start-subtitle",

@@ -170,14 +170,16 @@ function SignAndPackage($name) {
     echo "Packaging $name"
     npm run package -- --verbose
 
-    # In the release script, we do the following:
+    # We assemble the signed bundle as a plain folder here (with no top-level
+    # directory inside it) and compress it into windows-x64-signed-$name.tar.gz
+    # at the end of the script, once every .exe has been signed. The release
+    # workflow expands it back with:
     #  tar -xvf .github/workflows/object/windows-x64-signed-x86_64.tar.gz -C windows-x64-signed-x86_64
-    # We need to create a tar with the same structure and no top-level directory
-    # Inside, we need:
+    # Inside the bundle we need:
     #  - update_manifest/*
     #  - windows.mar
     #  - zen.installer.exe
-    echo "Creating tar for $name"
+    echo "Preparing signed bundle for $name"
     rm .\windsign-temp\windows-x64-signed-$name -Recurse -ErrorAction SilentlyContinue
     mkdir windsign-temp\windows-x64-signed-$name
 
@@ -213,6 +215,22 @@ SignAndPackage x86_64
 
 $files = Get-ChildItem .\windsign-temp\windows-binaries -Recurse -Include *.exe
 signtool.exe sign /n "$SignIdentity" /t http://time.certum.pl/ /fd sha256 /v $files
+
+# Compress each signed bundle into a gzip tarball and drop the raw folder, so the
+# windows-binaries repo only ever stores the compressed archive. The tar is
+# created with `-C <dir> .` so it has no top-level directory and expands straight
+# into windows-x64-signed-$name/ in the release workflow.
+foreach ($name in @("x86_64", "arm64")) {
+    $signedDir = ".\windsign-temp\windows-binaries\windows-x64-signed-$name"
+    $archive = ".\windsign-temp\windows-binaries\windows-x64-signed-$name.tar.gz"
+    echo "Creating compressed tar for $name"
+    Remove-Item $archive -ErrorAction SilentlyContinue
+    tar -czvf $archive -C $signedDir .
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to create tar archive for $name"
+    }
+    rmdir $signedDir -Recurse -ErrorAction SilentlyContinue
+}
 
 echo "All artifacts signed and packaged, ready for release!"
 echo "Commiting the changes to the repository"

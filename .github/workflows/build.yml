@@ -505,6 +505,14 @@ jobs:
         run: |
           git clone https://github.com/zen-browser/windows-binaries.git .github/workflows/object --depth 1
 
+          for arch in x86_64 arm64; do
+            archive=".github/workflows/object/windows-x64-signed-$arch.tar.gz"
+            dest=".github/workflows/object/windows-x64-signed-$arch"
+            echo "Expanding $archive"
+            mkdir -p "$dest"
+            tar -xvf "$archive" -C "$dest"
+          done
+
       - name: Sign MAR files
         env:
           SIGNMAR: ${{ github.workspace }}/linux-bin-x86_64/signmar

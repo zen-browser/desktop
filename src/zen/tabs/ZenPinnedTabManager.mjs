@@ -835,6 +835,16 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         let isRegularTabs = false;
         // Check for essentials container
         if (essentialTabsTarget) {
+          if (gZenWorkspaces.containerSpecificEssentials) {
+            const targetContainerId =
+              gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId || 0;
+            const sameContextId =
+              (tab.getAttribute("usercontextid") || 0) == targetContainerId;
+            if (!sameContextId && tab.hasAttribute("zen-essential")) {
+              this.removeEssentials(tab, false);
+              moved = true;
+            }
+          }
           if (
             !tab.hasAttribute("zen-essential") &&
             !tab?.group?.hasAttribute("split-view-group")
@@ -1012,7 +1022,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     return (
       !(
         (tab.getAttribute("usercontextid") || 0) !=
-          gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId &&
+          (gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId || 0) &&
         gZenWorkspaces.containerSpecificEssentials
       ) && gBrowser._numZenEssentials < this.maxEssentialTabs
     );

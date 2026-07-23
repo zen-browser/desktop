@@ -1549,6 +1549,11 @@ class nsZenWorkspaces {
   }
 
   moveTabsToWorkspace(tabs, workspaceID) {
+    const newTabPlacement = Services.prefs.getBoolPref(
+      "zen.view.show-newtab-button-top",
+      false
+    );
+    tabs = newTabPlacement ? tabs.reverse() : tabs;
     for (let tab of tabs) {
       const workspaceContainer = this.workspaceElement(workspaceID);
       const container = tab.pinned
@@ -1563,14 +1568,11 @@ class nsZenWorkspaces {
       }
 
       if (container) {
-        const newtabPlacement = Services.prefs.getBoolPref(
-          "zen.view.show-newtab-button-top",
-          false
-        );
-        const insertElement = newtabPlacement
+        const insertElement = newTabPlacement
           ? container.firstChild
           : container.lastChild;
 
+        const previousWorkspaceID = tab.getAttribute("zen-workspace-id");
         if (tab.group?.hasAttribute("split-view-group")) {
           gBrowser.zenHandleTabMove(tab.group, () => {
             for (const subTab of tab.group.tabs) {
@@ -1584,6 +1586,12 @@ class nsZenWorkspaces {
           tab.setAttribute("zen-workspace-id", workspaceID);
           container.insertBefore(tab, insertElement);
         });
+
+        if (this.lastSelectedWorkspaceTabs[previousWorkspaceID] === tab) {
+          // This tab is no longer the last selected tab in the previous workspace because it's being moved to
+          // the current workspace
+          delete this.lastSelectedWorkspaceTabs[previousWorkspaceID];
+        }
       }
       // also change glance tab if it's the same tab
       const glanceTab = tab.querySelector(".tabbrowser-tab[zen-glance-tab]");
@@ -1656,6 +1664,7 @@ class nsZenWorkspaces {
     try {
       this.log("Changing workspace to", workspace?.uuid);
       await this.#performWorkspaceChange(workspace, ...args);
+      this.updateWorkspacesChangeContextMenu();
     } catch (e) {
       console.error("gZenWorkspaces: Error changing workspace", e);
     }
@@ -2433,9 +2442,12 @@ class nsZenWorkspaces {
     if (gZenWorkspaces.privateWindowOrDisabled) {
       return;
     }
-    const workspaces = this.getWorkspaces();
+    const workspaces = this.getWorkspaces().filter(
+      w => w.uuid !== this.activeWorkspace
+    );
     const ctxCommand = document.getElementById("cmd_zenCtxDeleteWorkspace");
-    if (workspaces.length <= 1) {
+    const hasMultipleWorkspaces = !!workspaces.length;
+    if (!hasMultipleWorkspaces) {
       ctxCommand.setAttribute("disabled", "true");
     } else {
       ctxCommand.removeAttribute("disabled");
@@ -2454,6 +2466,9 @@ class nsZenWorkspaces {
         ".zen-workspace-context-menu-item"
       )) {
         item.remove();
+      }
+      if (!hasMultipleWorkspaces) {
+        continue;
       }
       const separator = document.createXULElement("menuseparator");
       separator.classList.add("zen-workspace-context-menu-item");
@@ -2896,15 +2911,7 @@ class nsZenWorkspaces {
       ? gBrowser.selectedTabs
       : [TabContextMenu.contextTab];
     document.getElementById("tabContextMenu").hidePopup();
-    for (let tab of tabs) {
-      const previousWorkspaceID = tab.getAttribute("zen-workspace-id");
-      this.moveTabToWorkspace(tab, workspaceID);
-      if (this.lastSelectedWorkspaceTabs[previousWorkspaceID] === tab) {
-        // This tab is no longer the last selected tab in the previous workspace because it's being moved to
-        // the current workspace
-        delete this.lastSelectedWorkspaceTabs[previousWorkspaceID];
-      }
-    }
+    this.moveTabsToWorkspace(tabs, workspaceID);
     // Make sure we select the last tab in the new workspace
     this.lastSelectedWorkspaceTabs[workspaceID] =
       gZenGlanceManager.getTabOrGlanceParent(tabs[tabs.length - 1]);

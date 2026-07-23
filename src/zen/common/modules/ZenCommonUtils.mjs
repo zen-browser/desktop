@@ -85,12 +85,22 @@ export class nsZenPreloadedFeature {
 }
 
 window.gZenCommonActions = {
+  /**
+   * Privileged clipboard write. Services.clipboardHelper is undefined in this
+   * Firefox 149 chrome build — use the XPCOM clipboard helper directly.
+   */
+  copyStringToClipboard(text) {
+    Cc["@mozilla.org/widget/clipboardhelper;1"]
+      .getService(Ci.nsIClipboardHelper)
+      .copyString(text);
+  },
+
   copyToClipboardWithSmartGuard(text, source = "generic") {
     if (window.gZenSmartGuard?.guardedCopyToClipboard) {
       window.gZenSmartGuard.guardedCopyToClipboard(text, source);
       return;
     }
-    Services.clipboardHelper.copyString(text);
+    this.copyStringToClipboard(text);
   },
 
   /**
@@ -147,7 +157,7 @@ window.gZenCommonActions = {
       if (window.gZenSmartGuard?.guardedCopyToClipboard) {
         window.gZenSmartGuard.guardedCopyToClipboard(text, "current-url");
       } else {
-        Services.clipboardHelper.copyString(text);
+        this.copyStringToClipboard(text);
       }
     } catch (error) {
       console.error("[Astra Copy URL] Failed to copy current URL:", error);
@@ -206,7 +216,7 @@ window.gZenCommonActions = {
         "current-url-markdown"
       );
     } else {
-      Services.clipboardHelper.copyString(markdownLink);
+      this.copyStringToClipboard(markdownLink);
     }
     try {
       gZenUIManager.showToast("zen-copy-current-url-as-markdown-confirmation", {

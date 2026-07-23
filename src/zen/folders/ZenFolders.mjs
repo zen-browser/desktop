@@ -851,7 +851,9 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       );
       return;
     }
-    Services.clipboardHelper.copyString(links.join("\n"));
+    Cc["@mozilla.org/widget/clipboardhelper;1"]
+      .getService(Ci.nsIClipboardHelper)
+      .copyString(links.join("\n"));
   }
 
   updateFolderDashboard(folder) {

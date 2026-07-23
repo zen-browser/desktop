@@ -168,7 +168,10 @@ class nsZenSmartGuard extends nsZenDOMOperatedFeature {
   }
 
   guardedCopyToClipboard(text, source = "generic") {
-    Services.clipboardHelper.copyString(text);
+    // Services.clipboardHelper is undefined in this Firefox 149 chrome build.
+    Cc["@mozilla.org/widget/clipboardhelper;1"]
+      .getService(Ci.nsIClipboardHelper)
+      .copyString(text);
     if (!this.enabled || !Services.prefs.getBoolPref(PREFS.CLIPBOARD, false)) {
       return;
     }

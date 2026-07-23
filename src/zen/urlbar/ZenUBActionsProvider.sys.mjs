@@ -188,7 +188,10 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         const output = `Base: ₹${this.#formatRupeeNumber(base)} | GST: ₹${this.#formatRupeeNumber(gstAmount)} | Total: ₹${this.#formatRupeeNumber(total)}`;
         actions.push({
           label: "GST Calculator",
-          command: () => Services.clipboardHelper.copyString(output),
+          command: () =>
+            Cc["@mozilla.org/widget/clipboardhelper;1"]
+              .getService(Ci.nsIClipboardHelper)
+              .copyString(output),
           commandId: "zen:gst-calculator-result",
           icon: "chrome://browser/skin/zen-icons/stats-chart.svg",
           extraPayload: {
@@ -209,7 +212,10 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         const output = `${panInput} — ${status}`;
         actions.push({
           label: "PAN Validator",
-          command: () => Services.clipboardHelper.copyString(output),
+          command: () =>
+            Cc["@mozilla.org/widget/clipboardhelper;1"]
+              .getService(Ci.nsIClipboardHelper)
+              .copyString(output),
           commandId: "zen:pan-validator-result",
           icon: "chrome://browser/skin/zen-icons/checkbox.svg",
           extraPayload: {

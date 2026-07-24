@@ -1,0 +1,14 @@
+diff --git a/browser/components/sidebar/sidebar-main.mjs b/browser/components/sidebar/sidebar-main.mjs
+--- a/browser/components/sidebar/sidebar-main.mjs
++++ b/browser/components/sidebar/sidebar-main.mjs
+@@ -401,7 +401,9 @@ export default class SidebarMain extends MozLitElement {
+     this._reportExtensionMenuItem.hidden = true;
+     this._unpinExtensionMenuItem.hidden = true;
+     this._customizeSidebarMenuItem.hidden = false;
+-    this._enableVerticalTabsMenuItem.hidden = false;
++    // Astra uses zen.tabs.vertical (always on); do not offer Firefox's
++    // sidebar.verticalTabs toggle in the sidebar context menu.
++    this._enableVerticalTabsMenuItem.hidden = true;
+     this._hideSidebarMenuItem.hidden = false;
+     this.hideToolMenuItems();
+   }

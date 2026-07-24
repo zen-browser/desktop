@@ -1,22 +1,20 @@
 diff --git a/browser/components/sidebar/SidebarState.sys.mjs b/browser/components/sidebar/SidebarState.sys.mjs
 --- a/browser/components/sidebar/SidebarState.sys.mjs
 +++ b/browser/components/sidebar/SidebarState.sys.mjs
-@@ -9,7 +9,13 @@
- XPCOMUtils.defineLazyPreferenceGetter(
-   lazy,
+@@ -11,6 +11,12 @@ XPCOMUtils.defineLazyPreferenceGetter(
    "verticalTabsEnabled",
    "sidebar.verticalTabs"
  );
--
 +XPCOMUtils.defineLazyPreferenceGetter(
 +  lazy,
 +  "zenVerticalTabsEnabled",
 +  "zen.tabs.vertical",
 +  true
 +);
-+
+ 
  const DEFAULT_LAUNCHER_VISIBLE = false;
-@@ -500,7 +506,11 @@
+ 
+@@ -500,7 +506,11 @@ export class SidebarState {
      const boxEl = this.#controller._box;
      const contentAreaEl =
        this.#controllerGlobal.document.getElementById("tabbrowser-tabbox");

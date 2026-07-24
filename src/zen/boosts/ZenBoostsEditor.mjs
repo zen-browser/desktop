@@ -138,6 +138,18 @@ export class nsZenBoostEditor {
       .getElementById("zen-boost-css-inspector")
       .addEventListener("click", this.onInspectorButtonPressed.bind(this));
 
+    const commandActions = {
+      cmd_zenBoostEditName: () => this.editBoostName(),
+      cmd_zenBoostShuffle: () => this.shuffleBoost(),
+      cmd_zenBoostReset: () => this.resetBoost(),
+      cmd_zenBoostLoad: () => this.onLoadBoostClick(),
+      cmd_zenBoostSave: () => this.onSaveBoostClick(),
+      cmd_zenBoostDelete: () => this.deleteBoost(),
+    };
+    for (const [id, action] of Object.entries(commandActions)) {
+      this.doc.getElementById(id).addEventListener("command", action);
+    }
+
     this.doc.addEventListener("keydown", event => {
       if (
         event.key === "Escape" ||

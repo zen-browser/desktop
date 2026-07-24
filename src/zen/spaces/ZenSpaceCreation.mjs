@@ -370,7 +370,6 @@ class nsZenWorkspaceCreation extends MozXULElement {
     }
 
     this.remove();
-    gZenUIManager.updateTabsToolbar();
 
     const workspace = gZenWorkspaces.getActiveWorkspace();
     gZenWorkspaces._organizeWorkspaceStripLocations(workspace);
@@ -398,6 +397,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
     }
 
     this.#hiddenElements = [];
+    gZenUIManager.updateTabsToolbar();
   }
 }
 

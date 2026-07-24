@@ -4,16 +4,70 @@
 {
   "remove": {
     "identifiers": [
-      // Firefox adds Perplexity by default, we don't want it as
-      // its not very privacy focused.
-      "perplexity",
-
-      // These are not search engines, Firefox adds them by default
-      // but we don't want them.
+      // These are not general search engines; Firefox adds them by default
+      // but we don't want them in Astra's Search settings list.
       "wikipedia",
       "wikipedia-*",
       "ebay",
       "ebay-*"
     ]
-  }
+  },
+  "add": {
+    "engines": [
+      // Global Yahoo is not in stock Firefox search-config-v2 (only Yahoo! JAPAN).
+      // Shape mirrors peer general engines (bing/ddg/perplexity).
+      {
+        "base": {
+          "aliases": [
+            "yahoo"
+          ],
+          "classification": "general",
+          "name": "Yahoo",
+          "urls": {
+            "search": {
+              "base": "https://search.yahoo.com/search",
+              "searchTermParamName": "p"
+            },
+            "suggestions": {
+              "base": "https://search.yahoo.com/sugg/ff",
+              "params": [
+                {
+                  "name": "output",
+                  "value": "fxjson"
+                }
+              ],
+              "searchTermParamName": "command"
+            }
+          }
+        },
+        "id": "a7c4e2b1-9d8f-4e6a-b3c5-1f0e9d8a7b6c",
+        "identifier": "yahoo",
+        "last_modified": 1753344000000,
+        "recordType": "engine",
+        "schema": 1753344000000,
+        "variants": [
+          {
+            "environment": {
+              "allRegionsAndLocales": true,
+              "applications": [
+                "firefox",
+                "firefox-android",
+                "firefox-ios"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "iconShares": [
+    // Reuse the existing Yahoo! JAPAN desktop/mobile icons for global Yahoo
+    // (same brand mark; avoids shipping a new attachment blob).
+    {
+      "existingIdentifier": "yahoo-jp",
+      "alsoMatch": [
+        "yahoo"
+      ]
+    }
+  ]
 }

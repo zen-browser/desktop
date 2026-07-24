@@ -1546,6 +1546,33 @@ window.gZenKeyboardShortcutsManager = {
     };
   },
 
+  async moveShortcut(existingShortcutId, targetShortcutId, key, modifiers) {
+    const existingShortcut = this._currentShortcutList.find(
+      shortcut => shortcut.getID() === existingShortcutId
+    );
+
+    const targetShortcut = this._currentShortcutList.find(
+      shortcut => shortcut.getID() === targetShortcutId
+    );
+
+    if (!existingShortcut || !targetShortcut) {
+      throw new Error(
+        `Unable to move shortcut: existing=${existingShortcutId}, target=${targetShortcutId}`
+      );
+    }
+
+    if (existingShortcutId === targetShortcutId) {
+      throw new Error("Cannot move a shortcut to the same action");
+    }
+
+    existingShortcut.clearKeybind();
+    targetShortcut.setNewBinding(key);
+    targetShortcut.setModifiers(modifiers);
+
+    await this._saveShortcuts();
+    this.triggerShortcutRebuild();
+  },
+
   getShortcutFromCommand(command) {
     for (let targetShortcut of this._currentShortcutList) {
       if (targetShortcut.getAction() == command) {

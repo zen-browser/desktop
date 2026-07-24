@@ -1072,23 +1072,81 @@ var gZenCKSSettings = {
             zenMissingKeyboardShortcutL10n[conflictShortcut.getID()] ??
             conflictShortcut.getL10NID();
 
-          const [group, conflictName] = await document.l10n.formatValues([
-            { id: `${ZEN_CKS_GROUP_PREFIX}-${conflictShortcut.getGroup()}` },
-            { id: shortcutL10nKey },
-          ]);
+          const conflictName =
+            await document.l10n.formatValue(shortcutL10nKey);
 
-          if (!input.nextElementSibling) {
-            input.after(
-              window.MozXULElement.parseXULToFragment(`
-                <label class="${ZEN_CKS_CLASS_BASE}-conflict" data-l10n-id="zen-key-conflict"></label>
-              `)
+          const shortcuts =
+            await gZenKeyboardShortcutsManager.getModifiableShortcuts();
+
+          const targetShortcut = shortcuts.find(
+            shortcut => shortcut.getID() === this._currentActionID
+          );
+
+          const targetL10nKey =
+            zenMissingKeyboardShortcutL10n[targetShortcut.getID()] ??
+            targetShortcut.getL10NID();
+
+          const targetActionName =
+            await document.l10n.formatValue(targetL10nKey);
+
+          const [promptTitle, promptDescription, moveButtonLabel] =
+            await document.l10n.formatValues([
+              { id: "zen-key-conflict-dialog-title" },
+              {
+                id: "zen-key-conflict-dialog-description",
+                args: {
+                  existingAction: conflictName,
+                  targetAction: targetActionName,
+                },
+              },
+              { id: "zen-key-conflict-dialog-action" },
+            ]);
+
+          const buttonPressed = Services.prompt.confirmEx(
+            window,
+            promptTitle,
+            promptDescription,
+            Services.prompt.BUTTON_POS_0 *
+              Services.prompt.BUTTON_TITLE_IS_STRING +
+              Services.prompt.BUTTON_POS_1 *
+                Services.prompt.BUTTON_TITLE_CANCEL +
+              Services.prompt.BUTTON_POS_1_DEFAULT,
+            moveButtonLabel,
+            null,
+            null,
+            null,
+            {}
+          );
+
+          if (buttonPressed === 0) {
+            await gZenKeyboardShortcutsManager.moveShortcut(
+              conflictShortcut.getID(),
+              this._currentActionID,
+              this._latestValidKey,
+              this._latestModifier
             );
+
+            const conflictInput = document.getElementById(
+              `${ZEN_CKS_INPUT_FIELD_CLASS}-${conflictShortcut.getID()}`
+            );
+
+            if (conflictInput) {
+              conflictInput.value = "Not set";
+              conflictInput.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-not-set`);
+            }
+          } else {
+            if (targetShortcut.isEmpty()) {
+              input.value = "Not set";
+              input.classList.add(`${ZEN_CKS_INPUT_FIELD_CLASS}-not-set`);
+            } else {
+              input.value = targetShortcut.toDisplayString();
+            }
           }
 
-          document.l10n.setAttributes(input.nextElementSibling, "zen-key-conflict", {
-            group: group ?? "",
-            shortcut: conflictName ?? shortcut ?? "",
-          });
+          this._latestValidKey = null;
+          this._latestModifier = null;
+          input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-invalid`);
+          input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);
         }
       } else {
         input.classList.remove(`${ZEN_CKS_INPUT_FIELD_CLASS}-editing`);

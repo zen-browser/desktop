@@ -43,20 +43,26 @@ add_task(async function test_Click_Shoudnt_FLoat_Urlbar() {
 
 add_task(async function test_Keyboard_Focus_Floats_In_Float_Mode() {
   await SpecialPowers.pushPrefEnv({ set: [["zen.urlbar.behavior", "float"]] });
-  gURLBar.blur();
-  await SimpleTest.promiseFocus(window);
 
-  // Keyboard-style focus (no mousedown, so focusedViaMousedown stays false),
-  // the same path F6 exercises.
-  gURLBar.focus();
+  if (gURLBar.view.isOpen) {
+    await UrlbarTestUtils.promisePopupClose(window, () => gURLBar.blur());
+  } else {
+    gURLBar.blur();
+  }
+  await SimpleTest.promiseFocus(window);
+  gBrowser.selectedBrowser.focus();
+
+  let focusPromise = BrowserTestUtils.waitForEvent(gURLBar.inputField, "focus");
+  EventUtils.synthesizeKey("VK_F6");
+  await focusPromise;
 
   await BrowserTestUtils.waitForCondition(
     () => gURLBar.hasAttribute("zen-floating-urlbar"),
-    "URL bar should float on keyboard focus in 'float' mode"
+    "URL bar should float after pressing F6 in 'float' mode"
   );
   ok(gURLBar.hasAttribute("zen-floating-urlbar"), "URL bar is floating");
 
-  gURLBar.blur();
+  await UrlbarTestUtils.promisePopupClose(window, () => gURLBar.blur());
   await SpecialPowers.popPrefEnv();
 });
 

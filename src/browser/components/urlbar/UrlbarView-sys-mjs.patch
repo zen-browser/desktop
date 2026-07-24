@@ -2,12 +2,36 @@ diff --git a/browser/components/urlbar/UrlbarView.sys.mjs b/browser/components/u
 index b665adb1a1ce8bbae8df4cbea6c3248c3e4fb431..1de7f9461b8ccbd4680b917e6dd5ba3c02f69a94 100644
 --- a/browser/components/urlbar/UrlbarView.sys.mjs
 +++ b/browser/components/urlbar/UrlbarView.sys.mjs
-@@ -640,7 +640,7 @@ export class UrlbarView {
+@@ -675,12 +675,18 @@ export class UrlbarView {
+    *
+    * @param {object} options Options object
+    * @param {Event} options.event The event associated with the call to autoOpen.
++   * @param {boolean} [options.allowFocusEvent] Whether a focus event is allowed
++   *        to open the view.
+    * @param {boolean} [options.suppressFocusBorder] If true, we hide the focus border
+    *        when the panel is opened. This is true by default to avoid flashing
+    *        the border when the unfocused address bar is clicked.
+    * @returns {boolean} Whether the view was opened.
+    */
+-  autoOpen({ event, suppressFocusBorder = true }) {
++  autoOpen({
++    event,
++    allowFocusEvent = false,
++    suppressFocusBorder = true,
++  }) {
+     if (!event) {
+       return false;
+     }
+@@ -700,7 +706,11 @@ export class UrlbarView {
        !this.input.value ||
        this.input.getAttribute("pageproxystate") == "valid"
      ) {
 -      if (!this.isOpen && ["mousedown", "command"].includes(event.type)) {
-+      if (!this.isOpen && ["mousedown", "click", "command"].includes(event.type)) {
++      if (
++        !this.isOpen &&
++        (["mousedown", "click", "command"].includes(event.type) ||
++          (allowFocusEvent && event.type == "focus"))
++      ) {
          // Try to reuse the cached top-sites context. If it's not cached, then
          // there will be a gap of time between when the input is focused and
          // when the view opens that can be perceived as flicker.

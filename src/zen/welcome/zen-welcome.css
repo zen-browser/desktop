@@ -142,7 +142,7 @@
   padding: 2.2rem 2rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 1.1rem;
   overflow-y: auto;
   background: transparent;
@@ -152,7 +152,9 @@
   position: relative;
 }
 
-#zen-welcome-page-content > * {
+/* Content fades in via JS; keep the button row out of this rule so Next/Back
+   never stay stuck at opacity 0 after their own slide-in animation. */
+#zen-welcome-page-content > *:not(.zen-welcome-btn-row) {
   opacity: 0;
 }
 
@@ -322,7 +324,11 @@
 .zen-welcome-btn-row {
   display: flex;
   gap: 8px;
-  margin-top: 4px;
+  margin-top: auto;
+  padding-top: 8px;
+  flex-shrink: 0;
+  opacity: 1;
+  -moz-window-dragging: no-drag;
 }
 
 .zen-welcome-btn-primary {
@@ -335,10 +341,16 @@
   font-weight: 500;
   cursor: pointer;
   transition: opacity 0.15s;
+  -moz-window-dragging: no-drag;
 }
 
 .zen-welcome-btn-primary:hover {
   opacity: 0.88;
+}
+
+.zen-welcome-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: default;
 }
 
 .zen-welcome-btn-ghost {
@@ -349,6 +361,7 @@
   padding: 8px 16px;
   font-size: 0.75rem;
   cursor: pointer;
+  -moz-window-dragging: no-drag;
 }
 
 /* ── Start screen ── */
@@ -398,6 +411,11 @@
 
 #zen-welcome-start-button {
   opacity: 0;
+  /* Parent uses -moz-window-dragging: drag; without no-drag, clicks are often
+     eaten as window-move gestures and Get Started needs multiple presses. */
+  -moz-window-dragging: no-drag;
+  position: relative;
+  z-index: 1;
 }
 
 /* ── Finish screen ── */
@@ -448,6 +466,12 @@
   grid-template-columns: 1fr 1fr;
   gap: 8px;
   align-content: start;
+}
+
+#zen-welcome-page-content[select-engine="true"] .zen-welcome-btn-row,
+[select-engine="true"] .zen-welcome-btn-row {
+  grid-column: 1 / -1;
+  margin-top: 8px;
 }
 
 [select-engine="true"] {

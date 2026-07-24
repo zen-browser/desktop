@@ -178,6 +178,7 @@
     constructor(pages) {
       this._currentPage = -1;
       this._pages = pages;
+      this._navigating = false;
       _welcomePagesInstance = this;
       this.init();
       this.next();
@@ -243,8 +244,9 @@
         btnRow.className = "zen-welcome-btn-row";
         content.appendChild(btnRow);
       }
+      // Ensure the row itself is never left at the content's default opacity: 0.
+      btnRow.style.opacity = "1";
 
-      let i = 0;
       const insertedButtons = [];
       for (const button of page.buttons) {
         const buttonElement = document.createElement("button");
@@ -253,13 +255,23 @@
         } else if (button.label) {
           buttonElement.textContent = button.label;
         }
+        const isPrimary =
+          button.primary === true ||
+          (button.primary !== false &&
+            !button.back &&
+            !insertedButtons.some(b => b.classList.contains("zen-welcome-btn-primary")));
         buttonElement.classList.add(
-          i++ === 0 || button.primary ? "zen-welcome-btn-primary" : "zen-welcome-btn-ghost"
+          isPrimary ? "zen-welcome-btn-primary" : "zen-welcome-btn-ghost"
         );
         buttonElement.addEventListener("click", async () => {
-          const shouldSkip = await button.onclick();
-          if (shouldSkip) {
-            this.next();
+          if (this._navigating) {
+            return;
+          }
+          const shouldAdvance = await button.onclick();
+          if (shouldAdvance === "back") {
+            await this.prev();
+          } else if (shouldAdvance) {
+            await this.next();
           }
         });
         buttonElement.style.pointerEvents = "none";
@@ -268,7 +280,7 @@
       }
       await animate(
         ".zen-welcome-btn-row button",
-        { x: ["150%", 0] },
+        { opacity: [0, 1], x: ["150%", 0] },
         {
           delay: getMotion().stagger(0.1, { startDelay: 0.4 }),
           type: "spring",
@@ -352,34 +364,71 @@
       );
     }
 
-    async next() {
-      if (this._currentPage !== -1) {
-        const previousPage = this._pages[this._currentPage];
-        const promises = [this.fadeOutSidebar(), this.fadeOutButtons()];
-        if (!previousPage.dontFadeOut) {
-          promises.push(this.fadeOutContent());
-        }
-        await Promise.all(promises);
-        await previousPage.fadeOut();
-        const content = document.getElementById("zen-welcome-page-content");
-        if (content) {
-          content.innerHTML = "";
-          content.removeAttribute("select-engine");
-        }
+    async #transitionAwayFromCurrentPage() {
+      if (this._currentPage === -1) {
+        return;
       }
-      this._currentPage++;
+      const previousPage = this._pages[this._currentPage];
+      const promises = [this.fadeOutSidebar(), this.fadeOutButtons()];
+      if (!previousPage.dontFadeOut) {
+        promises.push(this.fadeOutContent());
+      }
+      await Promise.all(promises);
+      await previousPage.fadeOut();
+      const content = document.getElementById("zen-welcome-page-content");
+      if (content) {
+        content.innerHTML = "";
+        content.removeAttribute("select-engine");
+      }
+    }
+
+    async #showCurrentPage() {
       const currentPage = this._pages[this._currentPage];
       if (!currentPage) {
-        this.finish();
+        await this.finish();
         return;
       }
       await Promise.all([
         this.fadeInSidebar(currentPage),
         this.fadeInTitles(currentPage),
-        this.fadeInButtons(currentPage),
       ]);
+      // Unlock before page fadeIn so slow/failing pages (search engines) can
+      // advance; buttons are not in the DOM yet so users can't double-navigate.
+      this._navigating = false;
       await currentPage.fadeIn();
-      await this.fadeInContent();
+      // Buttons after content so the row stays at the bottom of the flex column.
+      await Promise.all([
+        this.fadeInButtons(currentPage),
+        this.fadeInContent(),
+      ]);
+    }
+
+    async next() {
+      if (this._navigating) {
+        return;
+      }
+      this._navigating = true;
+      try {
+        await this.#transitionAwayFromCurrentPage();
+        this._currentPage++;
+        await this.#showCurrentPage();
+      } finally {
+        this._navigating = false;
+      }
+    }
+
+    async prev() {
+      if (this._navigating || this._currentPage <= 0) {
+        return;
+      }
+      this._navigating = true;
+      try {
+        await this.#transitionAwayFromCurrentPage();
+        this._currentPage--;
+        await this.#showCurrentPage();
+      } finally {
+        this._navigating = false;
+      }
     }
 
     async finish() {
@@ -520,6 +569,17 @@
     let defaultToggle;
     const totalSteps = 4;
 
+    const backButton = {
+      l10n: "zen-welcome-back",
+      back: true,
+      onclick: async () => "back",
+    };
+    const nextButton = {
+      l10n: "zen-generic-next",
+      primary: true,
+      onclick: async () => true,
+    };
+
     return [
       {
         stepNum: 1,
@@ -528,12 +588,7 @@
           { id: "zen-welcome-features-title" },
           { id: "zen-welcome-features-sub" },
         ],
-        buttons: [
-          {
-            l10n: "zen-generic-next",
-            onclick: async () => true,
-          },
-        ],
+        buttons: [nextButton],
         fadeIn() {
           const content = document.getElementById("zen-welcome-page-content");
           const grid = document.createElement("div");
@@ -614,12 +669,7 @@
           { id: "zen-welcome-privacy-title" },
           { id: "zen-welcome-privacy-sub" },
         ],
-        buttons: [
-          {
-            l10n: "zen-generic-next",
-            onclick: async () => true,
-          },
-        ],
+        buttons: [backButton, nextButton],
         fadeIn() {
           const content = document.getElementById("zen-welcome-page-content");
 
@@ -667,12 +717,7 @@
           { id: "zen-welcome-search-title" },
           { id: "zen-welcome-search-sub" },
         ],
-        buttons: [
-          {
-            l10n: "zen-generic-next",
-            onclick: async () => true,
-          },
-        ],
+        buttons: [backButton, nextButton],
         async fadeIn() {
           try {
             const content = document.getElementById("zen-welcome-page-content");
@@ -748,8 +793,10 @@
           { id: "zen-welcome-import-sub" },
         ],
         buttons: [
+          backButton,
           {
             l10n: "zen-generic-next",
+            primary: true,
             onclick: async () => {
               if (importToggle?.isOn()) {
                 MigrationUtils.showMigrationWizard(window, {
@@ -886,18 +933,31 @@
     );
 
     const button = document.getElementById("zen-welcome-start-button");
+    let starting = false;
     button.addEventListener("click", async () => {
-      await animate(
-        "#zen-welcome-start-title, #zen-welcome-start-subtitle, #zen-welcome-start-button",
-        { opacity: [1, 0], y: [0, -10], filter: ["blur(0px)", "blur(2px)"] },
-        {
-          type: "spring",
-          ease: [0.755, 0.05, 0.855, 0.06],
-          bounce: 0.4,
-          delay: getMotion().stagger(0.2),
-        }
-      );
-      new nsZenWelcomePages(getWelcomePages());
+      // Single-flight: ignore repeats while the exit animation / page boot runs.
+      if (starting || button.disabled) {
+        return;
+      }
+      starting = true;
+      button.disabled = true;
+      try {
+        await animate(
+          "#zen-welcome-start-title, #zen-welcome-start-subtitle, #zen-welcome-start-button",
+          { opacity: [1, 0], y: [0, -10], filter: ["blur(0px)", "blur(2px)"] },
+          {
+            type: "spring",
+            ease: [0.755, 0.05, 0.855, 0.06],
+            bounce: 0.4,
+            delay: getMotion().stagger(0.2),
+          }
+        );
+        new nsZenWelcomePages(getWelcomePages());
+      } catch (e) {
+        starting = false;
+        button.disabled = false;
+        throw e;
+      }
     });
     await animate(
       button,

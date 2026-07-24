@@ -75,5 +75,6 @@ zen-welcome-default-search-description = Choose your default search engine. You 
 
 zen-welcome-skip-button = Skip
 zen-welcome-skip = Skip
+zen-welcome-back = Back
 
 zen-welcome-finished = Your Astra Browser has been set up correctly!

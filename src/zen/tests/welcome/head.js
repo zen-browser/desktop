@@ -49,7 +49,16 @@ async function waitForClickableWelcomeButton(l10nId) {
     if (!button) {
       return null;
     }
-    if (getComputedStyle(button).pointerEvents === "none") {
+    const style = getComputedStyle(button);
+    if (style.pointerEvents === "none") {
+      return null;
+    }
+    // Catch the opacity:0 regression where Next existed but was invisible.
+    if (parseFloat(style.opacity) === 0) {
+      return null;
+    }
+    const row = button.closest(".zen-welcome-btn-row");
+    if (row && parseFloat(getComputedStyle(row).opacity) === 0) {
       return null;
     }
     return button;

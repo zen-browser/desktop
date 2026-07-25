@@ -264,6 +264,8 @@
   border-radius: var(--zen-border-radius);
   width: 100%;
   height: 100%;
+  /* Decorative sweep only — must not steal chrome clicks (App Hub / Suraksha). */
+  pointer-events: none;
 }
 
 #zen-update-animation-border::before {

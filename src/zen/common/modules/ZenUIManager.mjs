@@ -1488,6 +1488,17 @@ window.gZenVerticalTabsManager = {
         document
           .getElementById("astra-suraksha-button")
           ?.setAttribute("overflows", "false");
+        // Stock Firefox pins back/forward overflows="false" so they stay on
+        // wide nav-bar. In the narrow single-toolbar strip that leaves them
+        // painting under #nav-bar-overflow-button (~27px hit-steal). Allow
+        // them to park in widget-overflow-list like stop-reload — do NOT
+        // unlock App Hub / Suraksha (95590c2 seen=true recovery).
+        document
+          .getElementById("back-button")
+          ?.removeAttribute("overflows");
+        document
+          .getElementById("forward-button")
+          ?.removeAttribute("overflows");
         buttonsTarget.parentElement.append(
           document.getElementById("nav-bar-overflow-button")
         );
@@ -1520,6 +1531,13 @@ window.gZenVerticalTabsManager = {
         const panelUIButton = document.getElementById("PanelUI-button");
         navBar.appendChild(panelUIButton);
         panelUIButton.removeAttribute("overflows");
+        // Restore Firefox wide-navbar behavior: back/forward always visible.
+        document
+          .getElementById("back-button")
+          ?.setAttribute("overflows", "false");
+        document
+          .getElementById("forward-button")
+          ?.setAttribute("overflows", "false");
         navBar.appendChild(document.getElementById("nav-bar-overflow-button"));
         this._toolbarOriginalParent.prepend(navBar);
         if (!dontRebuildAreas) {

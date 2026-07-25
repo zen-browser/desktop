@@ -503,6 +503,12 @@
       if (!gBrowser.selectedTab.hasAttribute("zen-empty-tab")) {
         tabsToGroup.push(gBrowser.selectedTab);
       }
+      // Fresh install often has nothing real to group (empty essentials +
+      // empty-tab selected). Creating a folder anyway left a default
+      // "astra basics" group in the sidebar with no user bookmarks/tabs.
+      if (!tabsToGroup.length) {
+        return;
+      }
       gZenFolders.createFolder(tabsToGroup, {
         renameFolder: false,
         label: "astra basics",

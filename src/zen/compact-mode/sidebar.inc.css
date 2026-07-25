@@ -57,8 +57,10 @@
       --zen-compact-mode-no-padding-radius-fix: 2px;
     }
 
-    /* Initial padding for when we are animating */
-    padding: 0;
+    /* Initial padding for when we are animating.
+     * Float padding matches Zen upstream so radius/shadow can read; z-index
+     * stays at Astra's AI-coexistence values (3 collapsed / 15 when revealed). */
+    padding: 0 0 0 var(--zen-toolbox-padding) !important;
 
     &:not([animate='true']) {
       position: fixed;
@@ -68,7 +70,7 @@
         right 0.15s ease,
         visibility 0.15s ease;
       bottom: var(--zen-compact-float);
-      padding: 0;
+      padding: 0 var(--zen-compact-float) !important;
       :root[zen-single-toolbar='true'] & {
         /* We add an extra offset since windows users have a border top
              * in the window in order to compensate how windows renders the

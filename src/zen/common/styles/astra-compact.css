@@ -1,4 +1,7 @@
-/* Astra — Compact mode coexistence */
-:root:not([zen-compact-mode="true"]) #navigator-toolbox {
-  padding: 0;
-}
+/* Astra — Compact mode coexistence
+ *
+ * Do not zero #navigator-toolbox padding in normal (non-compact) mode.
+ * That override undid Zen's expanded toolbox air (padding-right/bottom) and
+ * fought the Phase A restore in vertical-tabs.css. Compact float padding is
+ * owned by sidebar.inc.css; AI z-index stacking lives in zen-sidebar.css.
+ */

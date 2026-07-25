@@ -527,11 +527,12 @@
    * is capped to the toolbox below so it cannot reintroduce a 150px spill. */
   --zen-toolbox-min-width: 120px;
 
-  padding: 0 !important;
-  padding-left: 0 !important;
-  padding-top: 0 !important;
-  padding-right: 0 !important;
-  padding-bottom: 0 !important;
+  /* Restore Zen float air (right/bottom toolbox padding). The resize fix is
+   * only --zen-toolbox-min-width: 120px above — zeroing padding was an older
+   * tab-stripe/transparency side-effect and is not required for drag range. */
+  padding: var(--zen-toolbox-padding);
+  padding-left: 0;
+  padding-top: 0;
 
   #PersonalToolbar:not([collapsed]) {
     padding-left: 0 !important;

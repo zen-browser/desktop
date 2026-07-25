@@ -32,8 +32,11 @@
 - name: zen.theme.essentials-favicon-bg
   value: true
 
+# Match Zen upstream: CSS backdrop blur for omnibox/compact toolbar stays off.
+# Astra Transparent Mode owns glass separately (native DWM / astra-glass CSS);
+# stacking acrylic-elements on top muddies chrome and doubles GPU blur cost.
 - name: zen.theme.acrylic-elements
-  value: true
+  value: false
 
 # Astra built-in Transparent Mode (chrome glass). Independent of
 # browser.tabs.allow_transparent_browser (web-content transparency).
@@ -92,8 +95,12 @@
 - name: zen.theme.border-radius
   value: -1
 
+# Opt-in via Looks and Feel. Default false so normal profiles keep Zen/Firefox
+# transitions and animations (the previous true default zeroed all motion and
+# made chrome feel abrupt). Energy Saver and prefers-reduced-motion remain
+# separate reduced-motion paths.
 - name: zen.performance.low-bandwidth-mode.enabled
-  value: true
+  value: false
 
 - name: zen.performance.low-bandwidth-mode.block-images
   value: false

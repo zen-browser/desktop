@@ -308,6 +308,77 @@ window.gZenUIManager = {
     delete this._preventToolbarRebuild;
   },
 
+  /**
+   * Recover toolbar widgets parked in #widget-overflow-list during early /
+   * zero-width layout (welcome chrome hide, or cold start before single-toolbar
+   * widths stabilize). CustomizableUI.addWidgetToArea is a no-op when the
+   * placement is already recorded, and nav-bar OverflowableToolbar will not
+   * move items back under single-toolbar — so restore via DOM and mark the
+   * essential chrome widgets non-overflowable.
+   */
+  async settleToolbarOverflow({
+    widgetIds = ["zen-app-launcher-button", "astra-suraksha-button"],
+  } = {}) {
+    document.getElementById("navigator-toolbox")?.getBoundingClientRect();
+
+    const target = document.getElementById(
+      "zen-sidebar-top-buttons-customization-target"
+    );
+    const placements = CustomizableUI.getWidgetIdsInArea(
+      "zen-sidebar-top-buttons"
+    );
+
+    for (const widgetId of widgetIds) {
+      const el = document.getElementById(widgetId);
+      if (!el) {
+        continue;
+      }
+      // Match compact-mode / PanelUI: these must stay visible in the sidebar.
+      el.setAttribute("overflows", "false");
+      const overflowed =
+        el.parentElement?.id === "widget-overflow-list" ||
+        el.getAttribute("overflowedItem") === "true";
+      if (!overflowed || !target) {
+        continue;
+      }
+      el.removeAttribute("overflowedItem");
+      el.removeAttribute("cui-anchorid");
+      try {
+        if (gZenVerticalTabsManager?.appendCustomizableItem) {
+          gZenVerticalTabsManager.appendCustomizableItem(
+            target,
+            el,
+            placements
+          );
+        } else {
+          target.appendChild(el);
+        }
+      } catch (e) {
+        console.warn(
+          "[Astra] Failed to restore overflowed toolbar widget:",
+          widgetId,
+          e
+        );
+        try {
+          target.appendChild(el);
+        } catch (e2) {
+          console.warn(
+            "[Astra] Fallback append also failed for toolbar widget:",
+            widgetId,
+            e2
+          );
+        }
+      }
+    }
+
+    gZenVerticalTabsManager?._updateEvent();
+    await new Promise(resolve => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(resolve);
+      });
+    });
+  },
+
   get tabsWrapper() {
     if (this._tabsWrapper) {
       return this._tabsWrapper;
@@ -1411,6 +1482,12 @@ window.gZenVerticalTabsManager = {
         const panelUIButton = document.getElementById("PanelUI-button");
         buttonsTarget.prepend(panelUIButton);
         panelUIButton.setAttribute("overflows", "false");
+        document
+          .getElementById("zen-app-launcher-button")
+          ?.setAttribute("overflows", "false");
+        document
+          .getElementById("astra-suraksha-button")
+          ?.setAttribute("overflows", "false");
         buttonsTarget.parentElement.append(
           document.getElementById("nav-bar-overflow-button")
         );

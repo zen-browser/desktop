@@ -95,6 +95,12 @@ class ZenStartup {
       document
         .getElementById("tabbrowser-arrowscrollbox")
         .setAttribute("orient", "vertical");
+      // Welcome's finish() recovers overflow after unhiding chrome. When welcome
+      // never runs (seen=true / skipped / headless), settle here so App Hub and
+      // Suraksha are not left parked in #widget-overflow-list from early layout.
+      if (!document.documentElement.hasAttribute("zen-welcome-stage")) {
+        await gZenUIManager.settleToolbarOverflow();
+      }
       this.isReady = true;
       this.promiseInitializedResolve();
       delete this.promiseInitializedResolve;

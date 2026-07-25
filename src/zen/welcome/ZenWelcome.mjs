@@ -37,8 +37,8 @@
   /**
    * After welcome hides #browser chrome with display:none, OverflowableToolbar
    * may have parked widgets in #widget-overflow-list against zero width.
-   * Unhide is not enough — re-run single-toolbar layout and let the window
-   * resize handler drive #checkOverflow so items can un-overflow if they fit.
+   * Unhide is not enough — re-run single-toolbar layout and explicitly restore
+   * App Hub / Suraksha if they remain overflowed.
    */
   function restoreBrowserChromeLayout() {
     document.getElementById("navigator-toolbox")?.getBoundingClientRect();
@@ -46,9 +46,12 @@
   }
 
   async function settleToolbarOverflowAfterWelcome() {
-    // OverflowableToolbar.#checkOverflow is async (kicked off by the resize
-    // dispatched inside _updateEvent). Wait two frames so un-overflow completes
-    // before welcome fade-in, not on some later idle tick.
+    if (gZenUIManager?.settleToolbarOverflow) {
+      await gZenUIManager.settleToolbarOverflow();
+      return;
+    }
+    // Fallback if UI manager is unavailable during early failure recovery.
+    restoreBrowserChromeLayout();
     await new Promise(resolve => {
       requestAnimationFrame(() => {
         requestAnimationFrame(resolve);
@@ -1079,6 +1082,9 @@
         element.style.removeProperty("display");
       }
       restoreBrowserChromeLayout();
+      // Fire-and-forget settle: failure path is sync; two rAFs still let
+      // OverflowableToolbar un-park before the user interacts.
+      settleToolbarOverflowAfterWelcome();
       Services.prefs.setBoolPref("zen.welcome-screen.seen", false);
     } catch (e) {
       console.error("[Astra] Failed to restore browser after welcome failure:", e);

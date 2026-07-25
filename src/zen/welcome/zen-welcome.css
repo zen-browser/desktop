@@ -4,8 +4,45 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#zen-welcome,
-#zen-welcome-start,
+/* ── Shared tokens ── */
+:root[zen-welcome-stage] {
+  min-width: 875px;
+  min-height: 560px;
+
+  --zen-welcome-grad: linear-gradient(
+    165deg,
+    #4a3fd6 0%,
+    #1e1670 52%,
+    #0a0730 100%
+  );
+  --zen-welcome-cta-text: #2a2280;
+  --zen-welcome-white-08: rgba(255, 255, 255, 0.08);
+  --zen-welcome-white-10: rgba(255, 255, 255, 0.1);
+  --zen-welcome-white-14: rgba(255, 255, 255, 0.14);
+  --zen-welcome-white-18: rgba(255, 255, 255, 0.18);
+  --zen-welcome-white-20: rgba(255, 255, 255, 0.2);
+  --zen-welcome-white-25: rgba(255, 255, 255, 0.25);
+  --zen-welcome-white-30: rgba(255, 255, 255, 0.3);
+  --zen-welcome-white-40: rgba(255, 255, 255, 0.4);
+  --zen-welcome-white-65: rgba(255, 255, 255, 0.65);
+  --zen-welcome-white-70: rgba(255, 255, 255, 0.7);
+  --zen-welcome-white-85: rgba(255, 255, 255, 0.85);
+
+  #zen-sidebar-splitter {
+    display: none;
+  }
+}
+
+#zen-welcome {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #07051f;
+  -moz-window-dragging: drag;
+}
+
 #zen-welcome-pages {
   width: 100%;
   height: 100%;
@@ -15,141 +52,275 @@
   -moz-window-dragging: drag;
 }
 
-:root[zen-welcome-stage] {
-  min-width: 875px;
-  min-height: 560px;
-
-  --zen-branding-bg: linear-gradient(
-    180deg,
-    #ff9933 0%,
-    #ffffff 45%,
-    #ffffff 55%,
-    #138808 100%
-  );
-
-  #zen-sidebar-splitter {
-    display: none;
-  }
-}
-
+/* ── Pages shell ── */
 #zen-welcome-pages {
   -moz-window-dragging: no-drag;
   opacity: 0;
   display: none;
   background: transparent;
-  border-radius: 0;
   position: relative;
   width: 100%;
   height: 100%;
-  box-shadow: none;
   overflow: visible;
   justify-content: center;
   align-items: center;
 }
 
-/* ── Tiranga top strip ── */
-#zen-welcome-wizard::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #ff9933 33%, #ffffff 33% 66%, #138808 66%);
-  z-index: 10;
-  border-radius: 12px 12px 0 0;
-}
-
-/* ── Wizard card ── */
+/* ── Wizard panel ── */
 #zen-welcome-wizard {
   display: flex;
-  width: 60vw;
-  min-width: 760px;
-  max-width: 980px;
-  height: 520px;
-  border-radius: 14px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: min(720px, 88vw);
+  min-width: 520px;
+  max-width: 760px;
+  height: min(620px, 86vh);
+  min-height: 520px;
+  border-radius: var(--zen-border-radius);
   overflow: hidden;
   position: relative;
-  background: light-dark(#ffffff, #0e0e14);
-  border: 0.5px solid light-dark(rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.08));
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+  background: var(--zen-welcome-grad);
+  border: 0.5px solid var(--zen-welcome-white-18);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+  padding: 2.4rem 2.5rem 1.8rem;
+  box-sizing: border-box;
+  -moz-window-dragging: no-drag;
 }
 
-/* ── Sidebar (left 38%) ── */
-#zen-welcome-sidebar {
-  width: 38%;
-  background: light-dark(#0a0a0f, #050508);
+/* ── Decorative badges / dots ── */
+.zen-welcome-decor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.zen-welcome-decor-badge {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--zen-welcome-white-08);
+  border: 1px solid var(--zen-welcome-white-18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.zen-welcome-decor-badge[data-pos="tl"] {
+  top: 28px;
+  left: 32px;
+}
+
+.zen-welcome-decor-badge[data-pos="tr"] {
+  top: 36px;
+  right: 40px;
+}
+
+.zen-welcome-decor-badge[data-pos="bl"] {
+  bottom: 56px;
+  left: 40px;
+}
+
+.zen-welcome-decor-badge[data-pos="br"] {
+  bottom: 48px;
+  right: 36px;
+}
+
+.zen-welcome-decor-dot {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--zen-welcome-white-30);
+}
+
+.zen-welcome-decor-dot[data-pos="a"] {
+  width: 8px;
+  height: 8px;
+  top: 22%;
+  right: 18%;
+  opacity: 0.9;
+}
+
+.zen-welcome-decor-dot[data-pos="b"] {
+  width: 12px;
+  height: 12px;
+  bottom: 30%;
+  left: 16%;
+  opacity: 0.7;
+}
+
+/* Faint dashed ring around central mark only */
+.zen-welcome-mark-ring {
+  position: absolute;
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+}
+
+/* ── Hero (centered copy) ── */
+#zen-welcome-hero {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  padding: 2rem 1.6rem;
-  position: relative;
+  align-items: center;
+  text-align: center;
+  gap: 0;
+  width: 100%;
+  max-width: 420px;
   flex-shrink: 0;
 }
 
-.zen-welcome-step-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: rgba(255, 153, 51, 0.15);
-  border: 0.5px solid rgba(255, 153, 51, 0.35);
-  border-radius: 20px;
-  padding: 3px 10px;
-  font-size: 11px;
-  color: #ff9933;
-  margin-bottom: 10px;
-  width: fit-content;
-}
-
-#zen-welcome-sidebar-title {
-  font-size: 1.15rem;
-  font-weight: 500;
-  color: #ffffff;
-  line-height: 1.35;
-  margin-bottom: 8px;
-}
-
-#zen-welcome-sidebar-sub {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.45);
-  line-height: 1.6;
-}
-
-/* ── Progress dots ── */
-.zen-welcome-dots {
+.zen-welcome-mark-wrap {
+  position: relative;
   display: flex;
-  gap: 5px;
-  margin-top: 1.4rem;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.1rem;
 }
 
-.zen-welcome-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.18);
-  transition: all 0.3s ease;
+.zen-welcome-mark {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--zen-welcome-white-10);
+  border: 1px solid var(--zen-welcome-white-20);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  position: relative;
+  z-index: 1;
 }
 
-.zen-welcome-dot[active] {
-  background: #ff9933;
+.zen-welcome-wordmark {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--zen-welcome-white-70);
+  margin-bottom: 0.55rem;
+}
+
+.zen-welcome-eyebrow {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--zen-welcome-white-70);
+  margin-bottom: 0.45rem;
+  text-transform: none;
+}
+
+#zen-welcome-sidebar-title,
+.zen-welcome-headline {
+  font-size: 30px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+  margin: 0 0 0.65rem;
+  max-width: 380px;
+}
+
+#zen-welcome-sidebar-sub,
+.zen-welcome-subhead {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--zen-welcome-white-65);
+  line-height: 1.6;
+  max-width: 360px;
+  margin: 0;
+}
+
+/* ── Icon glyph via mask (reuses zen-icons SVGs) ── */
+.zen-welcome-icon {
+  display: block;
+  width: 24px;
+  height: 24px;
+  background-color: currentColor;
+  -moz-context-properties: fill, fill-opacity;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
+.zen-welcome-decor-badge .zen-welcome-icon {
   width: 18px;
-  border-radius: 3px;
+  height: 18px;
 }
 
-/* ── Content (right 62%) ── */
+.zen-welcome-icon[data-icon="sparkles"] {
+  mask-image: url("chrome://browser/skin/zen-icons/sparkles.svg");
+  -webkit-mask-image: url("chrome://browser/skin/zen-icons/sparkles.svg");
+}
+
+.zen-welcome-icon[data-icon="shield"] {
+  mask-image: url("chrome://browser/skin/zen-icons/tracking-protection.svg");
+  -webkit-mask-image: url("chrome://browser/skin/zen-icons/tracking-protection.svg");
+}
+
+.zen-welcome-icon[data-icon="folder"] {
+  mask-image: url("chrome://browser/skin/zen-icons/folder.svg");
+  -webkit-mask-image: url("chrome://browser/skin/zen-icons/folder.svg");
+}
+
+.zen-welcome-icon[data-icon="lock"] {
+  mask-image: url("chrome://browser/skin/zen-icons/selectable/lock-closed.svg");
+  -webkit-mask-image: url("chrome://browser/skin/zen-icons/selectable/lock-closed.svg");
+}
+
+.zen-welcome-icon[data-icon="ad-block"] {
+  mask-image: url("chrome://browser/skin/zen-icons/extension-blocked.svg");
+  -webkit-mask-image: url("chrome://browser/skin/zen-icons/extension-blocked.svg");
+}
+
+.zen-welcome-icon[data-icon="eye"] {
+  mask-image: url("chrome://browser/skin/zen-icons/selectable/eye.svg");
+  -webkit-mask-image: url("chrome://browser/skin/zen-icons/selectable/eye.svg");
+}
+
+.zen-welcome-icon[data-icon="chat"] {
+  mask-image: url("chrome://browser/skin/zen-icons/selectable/chat.svg");
+  -webkit-mask-image: url("chrome://browser/skin/zen-icons/selectable/chat.svg");
+}
+
+.zen-welcome-icon[data-icon="translate"] {
+  mask-image: url("chrome://browser/skin/zen-icons/translations.svg");
+  -webkit-mask-image: url("chrome://browser/skin/zen-icons/translations.svg");
+}
+
+/* Compact Mode toggle uses sidebar.svg in icons.css */
+.zen-welcome-icon[data-icon="compact"] {
+  mask-image: url("chrome://browser/skin/zen-icons/sidebar.svg");
+  -webkit-mask-image: url("chrome://browser/skin/zen-icons/sidebar.svg");
+}
+
+.zen-welcome-icon[data-icon="search"] {
+  mask-image: url("chrome://browser/skin/zen-icons/search-glass.svg");
+  -webkit-mask-image: url("chrome://browser/skin/zen-icons/search-glass.svg");
+}
+
+/* ── Content column ── */
 #zen-welcome-page-content {
-  flex: 1;
-  padding: 2.2rem 2rem;
+  position: relative;
+  z-index: 1;
+  flex: 0 1 auto;
+  width: 100%;
+  max-width: 420px;
+  padding: 1.1rem 0 0;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: flex-start;
-  gap: 1.1rem;
+  gap: 0.85rem;
   overflow-y: auto;
   background: transparent;
-  width: auto;
-  max-width: none;
-  height: auto;
-  position: relative;
+  min-height: 0;
 }
 
 /* Content fades in via JS; keep the button row out of this rule so Next/Back
@@ -158,194 +329,138 @@
   opacity: 0;
 }
 
-/* ── Feature grid (page 1) ── */
-.zen-welcome-feature-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.zen-welcome-feat-card {
-  background: light-dark(#f7f7f5, #161620);
-  border: 0.5px solid light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.07));
-  border-radius: 10px;
-  padding: 10px 12px;
+/* ── Progress dots ── */
+.zen-welcome-dots {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-}
-
-.zen-welcome-feat-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  display: flex;
+  gap: 6px;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  font-size: 14px;
-}
-
-.zen-welcome-feat-icon[data-color="orange"] {
-  background: light-dark(#fff3e0, #2a1a00);
-  color: #e65100;
-}
-
-.zen-welcome-feat-icon[data-color="blue"] {
-  background: light-dark(#e3f2fd, #001a2a);
-  color: #1565c0;
-}
-
-.zen-welcome-feat-icon[data-color="green"] {
-  background: light-dark(#e8f5e9, #001a00);
-  color: #2e7d32;
-}
-
-.zen-welcome-feat-icon[data-color="purple"] {
-  background: light-dark(#ede7f6, #1a0030);
-  color: #4527a0;
-}
-
-.zen-welcome-feat-icon[data-color="teal"] {
-  background: light-dark(#e0f7fa, #001a1a);
-  color: #00695c;
-}
-
-.zen-welcome-feat-icon[data-color="pink"] {
-  background: light-dark(#fce4ec, #2a0010);
-  color: #880e4f;
-}
-
-.zen-welcome-feat-name {
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: light-dark(#111, #eee);
-  line-height: 1.3;
-}
-
-.zen-welcome-feat-sub {
-  font-size: 0.65rem;
-  color: light-dark(#666, rgba(255, 255, 255, 0.4));
-  margin-top: 2px;
-}
-
-/* ── Privacy checklist ── */
-.zen-welcome-privacy-list {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-
-.zen-welcome-priv-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.72rem;
-  color: light-dark(#111, #eee);
-}
-
-.zen-welcome-priv-check {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #138808;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  font-size: 9px;
-  color: #fff;
-}
-
-/* ── Toggle rows ── */
-.zen-welcome-toggle-list {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  margin-top: 4px;
-}
-
-.zen-welcome-toggle-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: light-dark(#f7f7f5, #161620);
-  border: 0.5px solid light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.07));
-  border-radius: 10px;
-  padding: 9px 12px;
-  gap: 12px;
-}
-
-.zen-welcome-toggle-label {
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: light-dark(#111, #eee);
-}
-
-.zen-welcome-toggle-sub {
-  font-size: 0.62rem;
-  color: light-dark(#888, rgba(255, 255, 255, 0.35));
-  margin-top: 1px;
-}
-
-.zen-welcome-toggle-pill {
-  width: 32px;
-  height: 18px;
-  border-radius: 9px;
-  background: #ff9933;
+  margin-top: 1.25rem;
   position: relative;
+  z-index: 1;
   flex-shrink: 0;
-  transition: background 0.2s;
-  cursor: pointer;
 }
 
-.zen-welcome-toggle-pill::after {
-  content: '';
-  position: absolute;
-  right: 2px;
-  top: 2px;
-  width: 14px;
-  height: 14px;
+.zen-welcome-dot {
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: #fff;
-  transition: all 0.2s;
+  background: var(--zen-welcome-white-25);
+  transition: background 0.35s ease, width 0.35s ease, border-radius 0.35s ease;
 }
 
-.zen-welcome-toggle-pill[off] {
-  background: light-dark(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.15));
+.zen-welcome-dot[active] {
+  background: var(--zen-welcome-white-85);
+  width: 16px;
+  border-radius: 3px;
 }
 
-.zen-welcome-toggle-pill[off]::after {
-  right: auto;
-  left: 2px;
+/* ── Compact Mode before/after graphic ── */
+.zen-welcome-compact-compare {
+  display: flex;
+  gap: 14px;
+  align-items: flex-end;
+  justify-content: center;
+  margin-top: 0.25rem;
+}
+
+.zen-welcome-compact-pane {
+  width: 88px;
+  height: 72px;
+  border-radius: 10px;
+  background: var(--zen-welcome-white-08);
+  border: 1px solid var(--zen-welcome-white-18);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.zen-welcome-compact-pane .bar {
+  background: rgba(255, 255, 255, 0.22);
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.zen-welcome-compact-pane[data-variant="before"] .bar {
+  height: 18px;
+}
+
+.zen-welcome-compact-pane[data-variant="after"] .bar {
+  height: 8px;
+}
+
+.zen-welcome-compact-pane .body {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.zen-welcome-compact-label {
+  font-size: 11px;
+  color: var(--zen-welcome-white-40);
+  text-align: center;
+  margin-top: 6px;
+}
+
+.zen-welcome-compact-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* ── Buttons ── */
 .zen-welcome-btn-row {
   display: flex;
-  gap: 8px;
-  margin-top: auto;
-  padding-top: 8px;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 0.35rem;
+  padding-top: 4px;
   flex-shrink: 0;
   opacity: 1;
+  width: 100%;
   -moz-window-dragging: no-drag;
+}
+
+.zen-welcome-btn-row-main {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
 .zen-welcome-btn-primary {
-  background: #ff9933;
-  color: #fff;
+  background: #fff;
+  color: var(--zen-welcome-cta-text);
   border: none;
-  border-radius: 8px;
-  padding: 8px 20px;
-  font-size: 0.75rem;
-  font-weight: 500;
+  border-radius: 10px;
+  padding: 13px 30px;
+  font-size: 14.5px;
+  font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: opacity 0.2s ease, transform 0.2s ease;
   -moz-window-dragging: no-drag;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.zen-welcome-btn-primary::after {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background-color: currentColor;
+  mask: url("chrome://browser/skin/zen-icons/arrow-right.svg") center / contain
+    no-repeat;
+  -webkit-mask: url("chrome://browser/skin/zen-icons/arrow-right.svg") center /
+    contain no-repeat;
 }
 
 .zen-welcome-btn-primary:hover {
-  opacity: 0.88;
+  opacity: 0.92;
 }
 
 .zen-welcome-btn-primary:disabled {
@@ -355,58 +470,97 @@
 
 .zen-welcome-btn-ghost {
   background: transparent;
-  color: light-dark(#555, rgba(255, 255, 255, 0.45));
-  border: 0.5px solid light-dark(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.15));
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 0.75rem;
+  color: var(--zen-welcome-white-70);
+  border: 1px solid var(--zen-welcome-white-20);
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
   -moz-window-dragging: no-drag;
+  transition: background 0.2s ease, border-color 0.2s ease;
 }
 
-/* ── Start screen ── */
+.zen-welcome-btn-ghost:hover {
+  background: var(--zen-welcome-white-08);
+  border-color: var(--zen-welcome-white-30);
+}
+
+.zen-welcome-btn-skip,
+#zen-welcome-import-link {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: var(--zen-welcome-white-70);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  -moz-window-dragging: no-drag;
+  opacity: 1;
+}
+
+.zen-welcome-btn-skip:hover,
+#zen-welcome-import-link:hover {
+  color: #fff;
+}
+
+/* ── Intro / start screen ── */
 #zen-welcome-start {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: 12px;
-  width: 100%;
-  height: 100%;
-  background: #0a0a0f;
+  gap: 0;
+  width: min(720px, 88vw);
+  min-width: 520px;
+  max-width: 760px;
+  height: min(620px, 86vh);
+  min-height: 520px;
+  background: var(--zen-welcome-grad);
+  border-radius: var(--zen-border-radius);
+  border: 0.5px solid var(--zen-welcome-white-18);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
   position: relative;
+  overflow: hidden;
+  padding: 2.4rem 2.5rem 1.8rem;
+  box-sizing: border-box;
   -moz-window-dragging: drag;
 }
 
-#zen-welcome-start::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #ff9933 33%, #ffffff 33% 66%, #138808 66%);
+#zen-welcome-start-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 420px;
 }
 
 #zen-welcome-start-title {
-  font-size: 2rem;
-  font-weight: 500;
+  font-size: 36px;
+  font-weight: 700;
   color: #fff;
   line-height: 1.2;
   opacity: 0;
+  margin: 0 0 0.65rem;
+  max-width: 400px;
 }
 
-#zen-welcome-start-title span {
-  color: #ff9933;
+#zen-welcome-start-title > div {
+  display: block;
 }
 
 #zen-welcome-start-subtitle {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.4);
+  font-size: 14px;
+  color: var(--zen-welcome-white-65);
   max-width: 360px;
   line-height: 1.6;
   opacity: 0;
+  margin: 0 0 1.4rem;
 }
 
 #zen-welcome-start-button {
@@ -416,99 +570,66 @@
   -moz-window-dragging: no-drag;
   position: relative;
   z-index: 1;
+  margin-bottom: 0.75rem;
 }
 
-/* ── Finish screen ── */
-#zen-welcome-finish {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 10px;
-  width: 100%;
-  height: 100%;
-  background: #0a0a0f;
-  position: relative;
-}
-
-#zen-welcome-finish::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #ff9933 33%, #ffffff 33% 66%, #138808 66%);
-}
-
-#zen-welcome-finish-icon {
-  font-size: 2.5rem;
-  margin-bottom: 4px;
-}
-
-#zen-welcome-finish-title {
-  font-size: 1.1rem;
-  font-weight: 500;
-  color: #fff;
-}
-
-#zen-welcome-finish-sub {
-  font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.4);
-  max-width: 260px;
-  line-height: 1.6;
+#zen-welcome-start .zen-welcome-dots {
+  opacity: 0;
 }
 
 /* ── Search engine grid ── */
 #zen-welcome-page-content[select-engine="true"] {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
   align-content: start;
+  max-width: 420px;
+  width: 100%;
 }
 
 #zen-welcome-page-content[select-engine="true"] .zen-welcome-btn-row,
 [select-engine="true"] .zen-welcome-btn-row {
-  grid-column: 1 / -1;
-  margin-top: 8px;
+  flex: 1 0 100%;
+  margin-top: 6px;
 }
 
-[select-engine="true"] {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  align-content: start;
-}
-
-[select-engine="true"] label {
-  background: light-dark(#f7f7f5, #161620);
-  border: 0.5px solid light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.07));
+[select-engine="true"] label.zen-welcome-engine-card {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 10px;
-  padding: 10px 12px;
+  padding: 12px 10px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   cursor: pointer;
-  transition: border-color 0.2s;
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease;
   opacity: 1;
-  width: auto;
+  width: calc(33.33% - 8px);
+  min-width: 110px;
+  max-width: 128px;
+  box-sizing: border-box;
+  text-align: center;
 }
 
-[select-engine="true"] label:has(:checked) {
-  border-color: #ff9933;
-  background: light-dark(#fff8f0, #1a1000);
+[select-engine="true"] label.zen-welcome-engine-card:has(:checked) {
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.14);
 }
 
-[select-engine="true"] label img {
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
+[select-engine="true"] label.zen-welcome-engine-card img {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
 }
 
-[select-engine="true"] label span,
-[select-engine="true"] label label {
-  font-size: 0.72rem;
+[select-engine="true"] label.zen-welcome-engine-card > label,
+[select-engine="true"] .zen-welcome-engine-name {
+  font-size: 12px;
   font-weight: 500;
-  color: light-dark(#111, #eee);
+  color: #fff;
+  pointer-events: none;
 }

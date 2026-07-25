@@ -1110,7 +1110,7 @@ var gZenCKSSettings = {
               Services.prompt.BUTTON_TITLE_IS_STRING +
               Services.prompt.BUTTON_POS_1 *
                 Services.prompt.BUTTON_TITLE_CANCEL +
-              Services.prompt.BUTTON_POS_1_DEFAULT,
+              Services.prompt.BUTTON_POS_0_DEFAULT,
             moveButtonLabel,
             null,
             null,

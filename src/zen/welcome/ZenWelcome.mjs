@@ -580,9 +580,15 @@
     }
 
     async setDefaultEngine(engine) {
+      // FF149+ (bug 2003300): Ci.nsISearchService.CHANGE_REASON_* was removed.
+      // SearchService.setDefault expects SearchService.CHANGE_REASON string values.
+      await lazy.SearchService.init();
+      const liveEngine =
+        lazy.SearchService.getEngineByName(engine.name) ||
+        engine.originalEngine;
       await lazy.SearchService.setDefault(
-        engine.originalEngine,
-        Ci.nsISearchService.CHANGE_REASON_USER
+        liveEngine,
+        lazy.SearchService.CHANGE_REASON.USER
       );
     }
   }
@@ -751,6 +757,15 @@
 
             const defaultEngine = await lazy.SearchService.getDefault();
             const promises = [];
+            const applySelectedEngine = async engineName => {
+              const selectedEngine = engineStore.getEngineByName(engineName);
+              if (!selectedEngine) {
+                throw new Error(
+                  `Welcome search engine not in store: ${engineName}`
+                );
+              }
+              await engineStore.setDefaultEngine(selectedEngine);
+            };
             engineStore.getEngines().forEach(engine => {
               const label = document.createElement("label");
               const engineId = engine.name.replace(/\s+/g, "-").toLowerCase();
@@ -760,6 +775,9 @@
               input.setAttribute("id", engineId);
               input.setAttribute("name", "zen-welcome-set-default-browser");
               input.setAttribute("hidden", "true");
+              // Stable id for commit on leave — display names match
+              // search-config-v2 (Google/Bing/DuckDuckGo/Perplexity/Yahoo).
+              input.dataset.engineName = engine.name;
               if (engine.name === defaultEngine?.name) {
                 input.setAttribute("checked", "true");
               }
@@ -787,10 +805,19 @@
               label.appendChild(icon);
               label.appendChild(engineLabel);
               content.appendChild(label);
-              label.addEventListener("click", async () => {
-                const selectedEngine = engineStore.getEngineByName(engine.name);
-                if (selectedEngine) {
-                  await engineStore.setDefaultEngine(selectedEngine);
+              // Apply on radio change (label click checks the input).
+              // Matches step 4 committing choices via real browser APIs.
+              input.addEventListener("change", async () => {
+                if (!input.checked) {
+                  return;
+                }
+                try {
+                  await applySelectedEngine(engine.name);
+                } catch (e) {
+                  console.error(
+                    "[Astra] Failed to set default search engine:",
+                    e
+                  );
                 }
               });
             });
@@ -803,9 +830,36 @@
           }
         },
         async fadeOut() {
-          document
-            .getElementById("zen-welcome-page-content")
-            .removeAttribute("select-engine");
+          const content = document.getElementById("zen-welcome-page-content");
+          // Commit the checked radio on leave so Next still applies the
+          // choice even if the change handler did not settle.
+          const checked = content?.querySelector(
+            'input[name="zen-welcome-set-default-browser"]:checked'
+          );
+          const engineName = checked?.dataset?.engineName?.trim();
+          if (engineName) {
+            try {
+              await lazy.SearchService.init();
+              const engine = lazy.SearchService.getEngineByName(engineName);
+              if (engine) {
+                await lazy.SearchService.setDefault(
+                  engine,
+                  lazy.SearchService.CHANGE_REASON.USER
+                );
+              } else {
+                console.error(
+                  "[Astra] Welcome search engine not found:",
+                  engineName
+                );
+              }
+            } catch (e) {
+              console.error(
+                "[Astra] Failed to apply welcome search engine on leave:",
+                e
+              );
+            }
+          }
+          content?.removeAttribute("select-engine");
         },
       },
       {

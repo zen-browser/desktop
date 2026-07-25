@@ -34,6 +34,28 @@
     }
   }
 
+  /**
+   * After welcome hides #browser chrome with display:none, OverflowableToolbar
+   * may have parked widgets in #widget-overflow-list against zero width.
+   * Unhide is not enough — re-run single-toolbar layout and let the window
+   * resize handler drive #checkOverflow so items can un-overflow if they fit.
+   */
+  function restoreBrowserChromeLayout() {
+    document.getElementById("navigator-toolbox")?.getBoundingClientRect();
+    gZenVerticalTabsManager?._updateEvent();
+  }
+
+  async function settleToolbarOverflowAfterWelcome() {
+    // OverflowableToolbar.#checkOverflow is async (kicked off by the resize
+    // dispatched inside _updateEvent). Wait two frames so un-overflow completes
+    // before welcome fade-in, not on some later idle tick.
+    await new Promise(resolve => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(resolve);
+      });
+    });
+  }
+
   function getMotion() {
     return gZenUIManager.motion;
   }
@@ -457,7 +479,8 @@
         element.style.opacity = 0;
         element.style.removeProperty("display");
       }
-      gZenUIManager.updateTabsToolbar();
+      restoreBrowserChromeLayout();
+      await settleToolbarOverflowAfterWelcome();
       let elementsToIgnore = kZenElementsToIgnore
         .map(id => `#${id}`)
         .join(", ");
@@ -1001,6 +1024,7 @@
         }
         element.style.removeProperty("display");
       }
+      restoreBrowserChromeLayout();
       Services.prefs.setBoolPref("zen.welcome-screen.seen", false);
     } catch (e) {
       console.error("[Astra] Failed to restore browser after welcome failure:", e);

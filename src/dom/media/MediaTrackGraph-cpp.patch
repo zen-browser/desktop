@@ -1,0 +1,16 @@
+diff --git a/dom/media/MediaTrackGraph.cpp b/dom/media/MediaTrackGraph.cpp
+index 7b27d9db19487d353a75dbf9da301006792b4aca..1bea2369a14f5d077e18f883347885534cfafe90 100644
+--- a/dom/media/MediaTrackGraph.cpp
++++ b/dom/media/MediaTrackGraph.cpp
+@@ -4230,6 +4230,9 @@ AudioInputType MediaTrackGraphImpl::AudioInputDevicePreference(
+   MOZ_ASSERT(OnGraphThreadOrNotRunning());
+   DeviceInputTrack* t =
+       mDeviceInputTrackManagerGraphThread.GetDeviceInputTrack(aID);
+-  return t && t->HasVoiceInput() ? AudioInputType::Voice
+-                                 : AudioInputType::Unknown;
++  return t && t->HasVoiceInput() &&
++                 StaticPrefs::
++                     media_getusermedia_microphone_prefer_voice_stream_with_processing_enabled()
++             ? AudioInputType::Voice
++             : AudioInputType::Unknown;
+ }

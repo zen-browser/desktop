@@ -1,0 +1,13 @@
+diff --git a/toolkit/library/rust/shared/Cargo.toml b/toolkit/library/rust/shared/Cargo.toml
+index dbcd527798..d87d9cb898 100644
+--- a/toolkit/library/rust/shared/Cargo.toml
++++ b/toolkit/library/rust/shared/Cargo.toml
+@@ -23,7 +23,7 @@ profiler_helper = { path = "../../../../tools/profiler/rust-helper" }
+ mozurl = { path = "../../../../netwerk/base/mozurl" }
+ harfbuzz_glue = { path = "../../../../gfx/harfbuzz_glue" }
+ webrender_bindings = { path = "../../../../gfx/webrender_bindings" }
+-cubeb-coreaudio = { git = "https://github.com/mozilla/cubeb-coreaudio-rs", rev = "0bb8a45a040e85d313eb18deb36570e87df3a6af", optional = true, features=["vpio-forcelist"] }
++cubeb-coreaudio = { git = "https://github.com/mozilla/cubeb-coreaudio-rs", rev = "0bb8a45a040e85d313eb18deb36570e87df3a6af", optional = true, features=[] }
+ cubeb-pulse = { git = "https://github.com/mozilla/cubeb-pulse-rs", rev="5eb4d5bdb725d3d53e42cc88f82269fac2aa42b7", optional = true, features=["pulse-dlopen"] }
+ cubeb-sys = { version = "0.32.0", optional = true, features=["gecko-in-tree"] }
+ audioipc2-client = { git = "https://github.com/mozilla/audioipc", rev = "c9dcbaee1624daad2fa6b1445fd047efde4f1ec0", optional = true }

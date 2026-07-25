@@ -1,0 +1,143 @@
+diff --git a/dom/media/gtest/TestAudioTrackGraph.cpp b/dom/media/gtest/TestAudioTrackGraph.cpp
+index 17c15c454087389259a15629d535e6bf215b94cd..06a048ec673a7a26afee6d4c4f461fe1440d11cf 100644
+--- a/dom/media/gtest/TestAudioTrackGraph.cpp
++++ b/dom/media/gtest/TestAudioTrackGraph.cpp
+@@ -51,5 +51,35 @@ using testing::StrictMock;
+ namespace {
+ #ifdef MOZ_WEBRTC
++class MOZ_RAII ScopedBoolPref {
++ public:
++  ScopedBoolPref(const char* aPrefName, bool aValue)
++      : mPrefName(aPrefName),
++        mHadUserValue(Preferences::HasUserValue(aPrefName)),
++        mOriginalValue(Preferences::GetBool(aPrefName, false)) {
++    MOZ_ASSERT(NS_IsMainThread());
++    MOZ_ALWAYS_SUCCEEDS(Preferences::SetBool(mPrefName, aValue));
++  }
++
++  ~ScopedBoolPref() {
++    MOZ_ASSERT(NS_IsMainThread());
++    if (mHadUserValue) {
++      MOZ_ALWAYS_SUCCEEDS(Preferences::SetBool(mPrefName, mOriginalValue));
++    } else {
++      MOZ_ALWAYS_SUCCEEDS(Preferences::ClearUser(mPrefName));
++    }
++  }
++
++  ScopedBoolPref(const ScopedBoolPref&) = delete;
++  ScopedBoolPref& operator=(const ScopedBoolPref&) = delete;
++  ScopedBoolPref(ScopedBoolPref&&) = delete;
++  ScopedBoolPref& operator=(ScopedBoolPref&&) = delete;
++
++ private:
++  const char* mPrefName;
++  const bool mHadUserValue;
++  const bool mOriginalValue;
++};
++
+ /*
+  * Common ControlMessages
+  */
+@@ -1333,5 +1363,101 @@ TEST(TestAudioTrackGraph, AudioProcessingTrack)
+   EXPECT_LE(nrDiscontinuities, 1U);
+ }
+-
++
++TEST(TestAudioTrackGraph, ProcessedInputWithoutVoicePreference)
++{
++  ScopedBoolPref preferVoice(
++      "media.getusermedia.microphone."
++      "prefer_voice_stream_with_processing.enabled",
++      false);
++
++  MockCubeb* cubeb = new MockCubeb();
++  CubebUtils::ForceSetCubebContext(cubeb->AsCubebContext());
++  auto unforcer = WaitFor(cubeb->ForceAudioThread()).unwrap();
++  (void)unforcer;
++
++  MediaTrackGraph* graph = MediaTrackGraphImpl::GetInstance(
++      MediaTrackGraph::SYSTEM_THREAD_DRIVER, /*Window ID*/ 1,
++      CubebUtils::PreferredSampleRate(/* aShouldResistFingerprinting */ false),
++      nullptr, GetMainThreadSerialEventTarget());
++
++  const CubebUtils::AudioDeviceID deviceId = (CubebUtils::AudioDeviceID)1;
++
++  RefPtr<AudioProcessingTrack> processingTrack;
++  RefPtr<ProcessedMediaTrack> outputTrack;
++  RefPtr<MediaInputPort> port;
++  RefPtr<AudioInputProcessing> listener;
++  DispatchFunction([&] {
++    processingTrack = AudioProcessingTrack::Create(graph);
++    outputTrack = graph->CreateForwardedInputTrack(MediaSegment::AUDIO);
++    outputTrack->QueueSetAutoend(false);
++    outputTrack->AddAudioOutput(reinterpret_cast<void*>(1), nullptr);
++    port = outputTrack->AllocateInputPort(processingTrack);
++
++    listener = new AudioInputProcessing(2);
++    processingTrack->SetInputProcessing(listener);
++    processingTrack->GraphImpl()->AppendMessage(
++        MakeUnique<StartInputProcessing>(processingTrack, listener));
++    processingTrack->ConnectDeviceInput(deviceId, listener,
++                                        PRINCIPAL_HANDLE_NONE);
++
++    MediaEnginePrefs settings;
++    settings.mChannels = 2;
++    settings.mAgcOn = true;
++    settings.mUsePlatformProcessing = false;
++    QueueApplySettings(processingTrack, listener, settings);
++  });
++
++  RefPtr<SmartMockCubebStream> stream = WaitFor(cubeb->StreamInitEvent());
++  if (!stream->mHasInput) {
++    stream = WaitFor(cubeb->StreamInitEvent());
++  }
++  ASSERT_TRUE(stream->mHasInput);
++
++  using PreferencePromise =
++      MozPromise<AudioInputType, nsresult, /* IsExclusive = */ true>;
++  struct PreferenceMessage : public ControlMessage {
++    const CubebUtils::AudioDeviceID mDeviceId;
++    MozPromiseHolder<PreferencePromise> mHolder;
++
++    PreferenceMessage(AudioProcessingTrack* aTrack,
++                      CubebUtils::AudioDeviceID aDeviceId,
++                      MozPromiseHolder<PreferencePromise>&& aHolder)
++        : ControlMessage(aTrack),
++          mDeviceId(aDeviceId),
++          mHolder(std::move(aHolder)) {}
++
++    void Run() override {
++      const AudioInputType preference =
++          mTrack->GraphImpl()->AudioInputDevicePreference(mDeviceId);
++      mTrack->GraphImpl()->Dispatch(NS_NewRunnableFunction(
++          "TestAudioTrackGraph::PreferenceMessage",
++          [holder = std::move(mHolder), preference]() mutable {
++            holder.Resolve(preference, __func__);
++          }));
++    }
++  };
++
++  MozPromiseHolder<PreferencePromise> holder;
++  RefPtr<PreferencePromise> preference = holder.Ensure(__func__);
++  DispatchFunction([&] {
++    processingTrack->GraphImpl()->AppendMessage(MakeUnique<PreferenceMessage>(
++        processingTrack, deviceId, std::move(holder)));
++  });
++  Result<AudioInputType, nsresult> result = WaitFor(preference);
++  ASSERT_TRUE(result.isOk());
++  EXPECT_EQ(result.unwrap(), AudioInputType::Unknown);
++
++  DispatchFunction([&] {
++    outputTrack->RemoveAudioOutput((void*)1);
++    outputTrack->Destroy();
++    port->Destroy();
++    processingTrack->GraphImpl()->AppendMessage(
++        MakeUnique<StopInputProcessing>(processingTrack, listener));
++    processingTrack->DisconnectDeviceInput();
++    processingTrack->Destroy();
++  });
++  WaitFor(cubeb->StreamDestroyEvent());
++}
++
+ TEST(TestAudioTrackGraph, ReConnectDeviceInput)
+ {

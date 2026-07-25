@@ -14,3 +14,20 @@
 
 - name: media.eme.enabled
   value: true
+
+# Avoid macOS VoiceProcessingIO for microphone capture. When engaged (even in
+# bypass mode, as Google Meet's raw-audio request causes), it attenuates the
+# built-in microphone by 20-35 dB for the capturing page and for every other
+# app system-wide on affected Macs. See gh-10394.
+- name: media.getusermedia.microphone.prefer_voice_stream_with_processing.enabled
+  value: false
+  condition: "defined(XP_MACOSX)"
+
+- name: media.getusermedia.microphone.voice_stream_priming.enabled
+  value: false
+  condition: "defined(XP_MACOSX)"
+
+# Use Firefox's software audio processing after opting out of VPIO.
+- name: media.getusermedia.audio.processing.platform.enabled
+  value: false
+  condition: "defined(XP_MACOSX)"

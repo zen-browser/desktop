@@ -1,6 +1,8 @@
 /* Astra — Sidebar foot buttons */
 :root #zen-sidebar-foot-buttons #zen-create-new-button,
-:root #zen-create-new-button {
+:root #zen-create-new-button,
+:root #zen-sidebar-foot-buttons #zen-toggle-window-scheme,
+:root #zen-toggle-window-scheme {
   opacity: 1;
   visibility: visible;
   display: flex;

@@ -1019,7 +1019,13 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     folder.id = id;
     folder.label = options.label || "New Folder";
     folder.saveOnWindowClose = !!options.saveOnWindowClose;
-    folder.color = "zen-workspace-color";
+    // Default: follow workspace accent. Callers may pass options.color
+    // (tab-group named color) and/or options.folderAccent (hex) for branded
+    // Astra-created folders only — user-created folders omit both.
+    folder.color = options.color || "zen-workspace-color";
+    if (options.folderAccent) {
+      folder.style.setProperty("--zen-primary-color", options.folderAccent);
+    }
     folder.isLiveFolder = options.isLiveFolder;
 
     folder.setAttribute(

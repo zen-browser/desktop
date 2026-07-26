@@ -11,6 +11,7 @@ export const ZenCustomizableUI = new (class {
   defaultSidebarIcons = [
     "downloads-button",
     "zen-workspaces-button",
+    "zen-toggle-window-scheme",
     "zen-create-new-button",
   ];
 

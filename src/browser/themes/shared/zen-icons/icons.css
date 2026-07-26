@@ -859,7 +859,8 @@
   fill: currentColor;
 }
 
-#zen-create-new-button {
+#zen-create-new-button,
+#zen-toggle-window-scheme {
   border-radius: var(--tab-border-radius);
 
   &:hover {
@@ -868,6 +869,35 @@
 
   & image {
     background: transparent !important;
+  }
+}
+
+/* Current-theme icon: sun while light, moon while dark (incl. auto). */
+#zen-toggle-window-scheme {
+  list-style-image: url("moon-stars.svg") !important;
+}
+
+@media -moz-pref("zen.view.window.scheme", 1) {
+  #zen-toggle-window-scheme {
+    list-style-image: url("face-sun.svg") !important;
+  }
+}
+
+@media -moz-pref("zen.view.window.scheme", 2) {
+  #zen-toggle-window-scheme {
+    list-style-image: url("face-sun.svg") !important;
+  }
+
+  @media (-moz-system-dark-theme) {
+    #zen-toggle-window-scheme {
+      list-style-image: url("moon-stars.svg") !important;
+    }
+  }
+}
+
+@media -moz-pref("zen.view.window.scheme", 0) {
+  #zen-toggle-window-scheme {
+    list-style-image: url("moon-stars.svg") !important;
   }
 }
 

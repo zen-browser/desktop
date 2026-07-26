@@ -29,6 +29,10 @@ sidebar-zen-expand =
 sidebar-zen-create-new =
   .label = New Space or Tab…
 
+sidebar-zen-toggle-theme =
+  .label = Toggle light or dark theme
+  .tooltiptext = Toggle light or dark theme
+
 tabbrowser-unload-tab-button =
 .tooltiptext =
     { $tabCount ->

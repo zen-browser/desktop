@@ -4,18 +4,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* ── Shared tokens ── */
+/* ── Shared tokens ──
+ * Dark indigo splash is the default. Light scheme (and auto+system light)
+ * swaps to a polished cool-neutral palette via -moz-pref + light-dark().
+ * Brand accent stays #FF9933 in both themes.
+ */
 :root[zen-welcome-stage] {
   min-width: 875px;
   min-height: 560px;
 
+  --zen-welcome-brand: #ff9933;
   --zen-welcome-grad: linear-gradient(
     165deg,
     #4a3fd6 0%,
     #1e1670 52%,
     #0a0730 100%
   );
+  --zen-welcome-stage-bg: #07051f;
+  --zen-welcome-heading: #fff;
+  --zen-welcome-cta-bg: #fff;
   --zen-welcome-cta-text: #2a2280;
+  --zen-welcome-link-hover: #fff;
+  --zen-welcome-engine-selected-border: #fff;
   --zen-welcome-white-08: rgba(255, 255, 255, 0.08);
   --zen-welcome-white-10: rgba(255, 255, 255, 0.1);
   --zen-welcome-white-14: rgba(255, 255, 255, 0.14);
@@ -27,9 +37,119 @@
   --zen-welcome-white-65: rgba(255, 255, 255, 0.65);
   --zen-welcome-white-70: rgba(255, 255, 255, 0.7);
   --zen-welcome-white-85: rgba(255, 255, 255, 0.85);
+  --zen-welcome-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+  --zen-welcome-compact-bar: rgba(255, 255, 255, 0.22);
+  --zen-welcome-compact-body: rgba(255, 255, 255, 0.04);
+  --zen-welcome-mark-ring: rgba(255, 255, 255, 0.12);
+  --zen-welcome-icon: #fff;
+  --zen-welcome-decor-icon: rgba(255, 255, 255, 0.75);
 
   #zen-sidebar-splitter {
     display: none;
+  }
+}
+
+/* Forced light */
+@media -moz-pref("zen.view.window.scheme", 1) {
+  :root[zen-welcome-stage] {
+    --zen-welcome-grad: linear-gradient(
+      165deg,
+      #f7f4ef 0%,
+      #ebe6dc 48%,
+      #f3efe7 100%
+    );
+    --zen-welcome-stage-bg: #e8e4db;
+    --zen-welcome-heading: #1c1914;
+    --zen-welcome-cta-bg: var(--zen-welcome-brand);
+    --zen-welcome-cta-text: #1c1208;
+    --zen-welcome-link-hover: #1c1914;
+    --zen-welcome-engine-selected-border: var(--zen-welcome-brand);
+    --zen-welcome-white-08: rgba(28, 25, 20, 0.05);
+    --zen-welcome-white-10: rgba(28, 25, 20, 0.07);
+    --zen-welcome-white-14: rgba(28, 25, 20, 0.1);
+    --zen-welcome-white-18: rgba(28, 25, 20, 0.12);
+    --zen-welcome-white-20: rgba(28, 25, 20, 0.14);
+    --zen-welcome-white-25: rgba(28, 25, 20, 0.18);
+    --zen-welcome-white-30: rgba(28, 25, 20, 0.22);
+    --zen-welcome-white-40: rgba(28, 25, 20, 0.4);
+    --zen-welcome-white-65: rgba(28, 25, 20, 0.62);
+    --zen-welcome-white-70: rgba(28, 25, 20, 0.68);
+    --zen-welcome-white-85: rgba(28, 25, 20, 0.88);
+    --zen-welcome-shadow: 0 24px 64px rgba(40, 32, 20, 0.12);
+    --zen-welcome-compact-bar: rgba(28, 25, 20, 0.18);
+    --zen-welcome-compact-body: rgba(28, 25, 20, 0.04);
+    --zen-welcome-mark-ring: rgba(28, 25, 20, 0.14);
+    --zen-welcome-icon: #2a241c;
+    --zen-welcome-decor-icon: rgba(42, 36, 28, 0.72);
+  }
+}
+
+/* Auto: light baseline, dark when system is dark */
+@media -moz-pref("zen.view.window.scheme", 2) {
+  :root[zen-welcome-stage] {
+    --zen-welcome-grad: linear-gradient(
+      165deg,
+      #f7f4ef 0%,
+      #ebe6dc 48%,
+      #f3efe7 100%
+    );
+    --zen-welcome-stage-bg: #e8e4db;
+    --zen-welcome-heading: #1c1914;
+    --zen-welcome-cta-bg: var(--zen-welcome-brand);
+    --zen-welcome-cta-text: #1c1208;
+    --zen-welcome-link-hover: #1c1914;
+    --zen-welcome-engine-selected-border: var(--zen-welcome-brand);
+    --zen-welcome-white-08: rgba(28, 25, 20, 0.05);
+    --zen-welcome-white-10: rgba(28, 25, 20, 0.07);
+    --zen-welcome-white-14: rgba(28, 25, 20, 0.1);
+    --zen-welcome-white-18: rgba(28, 25, 20, 0.12);
+    --zen-welcome-white-20: rgba(28, 25, 20, 0.14);
+    --zen-welcome-white-25: rgba(28, 25, 20, 0.18);
+    --zen-welcome-white-30: rgba(28, 25, 20, 0.22);
+    --zen-welcome-white-40: rgba(28, 25, 20, 0.4);
+    --zen-welcome-white-65: rgba(28, 25, 20, 0.62);
+    --zen-welcome-white-70: rgba(28, 25, 20, 0.68);
+    --zen-welcome-white-85: rgba(28, 25, 20, 0.88);
+    --zen-welcome-shadow: 0 24px 64px rgba(40, 32, 20, 0.12);
+    --zen-welcome-compact-bar: rgba(28, 25, 20, 0.18);
+    --zen-welcome-compact-body: rgba(28, 25, 20, 0.04);
+    --zen-welcome-mark-ring: rgba(28, 25, 20, 0.14);
+    --zen-welcome-icon: #2a241c;
+    --zen-welcome-decor-icon: rgba(42, 36, 28, 0.72);
+  }
+
+  @media (-moz-system-dark-theme) {
+    :root[zen-welcome-stage] {
+      --zen-welcome-grad: linear-gradient(
+        165deg,
+        #4a3fd6 0%,
+        #1e1670 52%,
+        #0a0730 100%
+      );
+      --zen-welcome-stage-bg: #07051f;
+      --zen-welcome-heading: #fff;
+      --zen-welcome-cta-bg: #fff;
+      --zen-welcome-cta-text: #2a2280;
+      --zen-welcome-link-hover: #fff;
+      --zen-welcome-engine-selected-border: #fff;
+      --zen-welcome-white-08: rgba(255, 255, 255, 0.08);
+      --zen-welcome-white-10: rgba(255, 255, 255, 0.1);
+      --zen-welcome-white-14: rgba(255, 255, 255, 0.14);
+      --zen-welcome-white-18: rgba(255, 255, 255, 0.18);
+      --zen-welcome-white-20: rgba(255, 255, 255, 0.2);
+      --zen-welcome-white-25: rgba(255, 255, 255, 0.25);
+      --zen-welcome-white-30: rgba(255, 255, 255, 0.3);
+      --zen-welcome-white-40: rgba(255, 255, 255, 0.4);
+      --zen-welcome-white-65: rgba(255, 255, 255, 0.65);
+      --zen-welcome-white-70: rgba(255, 255, 255, 0.7);
+      --zen-welcome-white-85: rgba(255, 255, 255, 0.85);
+      --zen-welcome-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+      --zen-welcome-compact-bar: rgba(255, 255, 255, 0.22);
+      --zen-welcome-compact-body: rgba(255, 255, 255, 0.04);
+      --zen-welcome-mark-ring: rgba(255, 255, 255, 0.12);
+      --zen-welcome-icon: #fff;
+      --zen-welcome-decor-icon: rgba(255, 255, 255, 0.75);
+    }
   }
 }
 
@@ -39,7 +159,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #07051f;
+  background: var(--zen-welcome-stage-bg);
   -moz-window-dragging: drag;
 }
 
@@ -82,7 +202,7 @@
   position: relative;
   background: var(--zen-welcome-grad);
   border: 0.5px solid var(--zen-welcome-white-18);
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--zen-welcome-shadow);
   padding: 2.4rem 2.5rem 1.8rem;
   box-sizing: border-box;
   -moz-window-dragging: no-drag;
@@ -106,7 +226,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--zen-welcome-decor-icon);
 }
 
 .zen-welcome-decor-badge[data-pos="tl"] {
@@ -157,7 +277,7 @@
   width: 72px;
   height: 72px;
   border-radius: 18px;
-  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border: 1px dashed var(--zen-welcome-mark-ring);
   pointer-events: none;
 }
 
@@ -192,7 +312,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--zen-welcome-icon);
   position: relative;
   z-index: 1;
 }
@@ -218,7 +338,7 @@
 .zen-welcome-headline {
   font-size: 30px;
   font-weight: 700;
-  color: #fff;
+  color: var(--zen-welcome-heading);
   line-height: 1.2;
   margin: 0 0 0.65rem;
   max-width: 380px;
@@ -376,7 +496,7 @@
 }
 
 .zen-welcome-compact-pane .bar {
-  background: rgba(255, 255, 255, 0.22);
+  background: var(--zen-welcome-compact-bar);
   width: 100%;
   flex-shrink: 0;
 }
@@ -391,7 +511,7 @@
 
 .zen-welcome-compact-pane .body {
   flex: 1;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--zen-welcome-compact-body);
 }
 
 .zen-welcome-compact-label {
@@ -430,7 +550,7 @@
 }
 
 .zen-welcome-btn-primary {
-  background: #fff;
+  background: var(--zen-welcome-cta-bg);
   color: var(--zen-welcome-cta-text);
   border: none;
   border-radius: 10px;
@@ -504,7 +624,7 @@
 
 .zen-welcome-btn-skip:hover,
 #zen-welcome-import-link:hover {
-  color: #fff;
+  color: var(--zen-welcome-link-hover);
 }
 
 /* ── Intro / start screen ── */
@@ -523,7 +643,7 @@
   background: var(--zen-welcome-grad);
   border-radius: var(--zen-border-radius);
   border: 0.5px solid var(--zen-welcome-white-18);
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+  box-shadow: var(--zen-welcome-shadow);
   position: relative;
   overflow: hidden;
   padding: 2.4rem 2.5rem 1.8rem;
@@ -543,7 +663,7 @@
 #zen-welcome-start-title {
   font-size: 36px;
   font-weight: 700;
-  color: #fff;
+  color: var(--zen-welcome-heading);
   line-height: 1.2;
   opacity: 0;
   margin: 0 0 0.65rem;
@@ -604,8 +724,8 @@
 }
 
 [select-engine="true"] label.zen-welcome-engine-card {
-  background: rgba(255, 255, 255, 0.07);
-  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  background: var(--zen-welcome-white-08);
+  border: 1.5px solid var(--zen-welcome-white-14);
   border-radius: 12px;
   padding: 14px 10px 12px;
   display: flex;
@@ -631,14 +751,15 @@
 }
 
 [select-engine="true"] label.zen-welcome-engine-card:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.28);
+  background: var(--zen-welcome-white-10);
+  border-color: var(--zen-welcome-white-30);
 }
 
 [select-engine="true"] label.zen-welcome-engine-card:has(:checked) {
-  border-color: #fff;
-  background: rgba(255, 255, 255, 0.16);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35);
+  border-color: var(--zen-welcome-engine-selected-border);
+  background: var(--zen-welcome-white-14);
+  box-shadow: 0 0 0 1px
+    color-mix(in srgb, var(--zen-welcome-engine-selected-border) 55%, transparent);
 }
 
 [select-engine="true"] label.zen-welcome-engine-card img,
@@ -652,7 +773,7 @@
 [select-engine="true"] .zen-welcome-engine-name {
   font-size: 12px;
   font-weight: 500;
-  color: #fff;
+  color: var(--zen-welcome-heading);
   pointer-events: none;
   line-height: 1.25;
   max-width: 100%;

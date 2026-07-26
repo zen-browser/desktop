@@ -722,6 +722,23 @@ document.addEventListener(
             }
             break;
           }
+          case "cmd_zenToggleWindowScheme": {
+            // Toggle between forced light (1) and dark (0). Auto (2) resolves
+            // to the opposite of the currently effective scheme.
+            const pref = "zen.view.window.scheme";
+            const current = Services.prefs.getIntPref(pref, 2);
+            let isDark;
+            if (current === 0) {
+              isDark = true;
+            } else if (current === 1) {
+              isDark = false;
+            } else {
+              isDark = window.matchMedia("(prefers-color-scheme: dark)")
+                .matches;
+            }
+            Services.prefs.setIntPref(pref, isDark ? 1 : 0);
+            break;
+          }
           case "cmd_zenOpenAppLauncher": {
             // Always use the stable bootstrap facade (never call manager directly).
             const hub = window.gZenAppLauncher;

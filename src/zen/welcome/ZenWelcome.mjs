@@ -679,6 +679,10 @@
       gZenFolders.createFolder(tabsToGroup, {
         renameFolder: false,
         label: "astra basics",
+        // Astra brand orange — scoped to this auto-created folder only.
+        // User-created folders keep Zen's default workspace accent path.
+        color: "orange",
+        folderAccent: "#FF9933",
       });
     }
   }

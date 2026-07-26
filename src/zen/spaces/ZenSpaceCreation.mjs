@@ -308,6 +308,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
     window.createUserContextMenu(event, {
       isContextMenu: true,
       showDefaultTab: true,
+      showManageContainers: false,
     });
 
     const defaultItem = event.target.querySelector(

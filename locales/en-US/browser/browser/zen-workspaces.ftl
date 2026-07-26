@@ -82,7 +82,7 @@ zen-workspace-creation-profile = Profile
     .tooltiptext = Profiles are used to separate cookies and site data between spaces.
 zen-workspace-creation-header = Create a Space
 zen-workspace-creation-label = Spaces are used to organize your tabs and sessions.
-zen-workspace-creation-default-profile = Default
+zen-workspace-default-profile = Default
 
 zen-workspaces-delete-workspace-title = Delete Space?
 zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.

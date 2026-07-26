@@ -199,7 +199,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
       this.currentProfile = {
         id: 0,
         name: lazy.l10n.formatValueSync(
-          "zen-workspace-creation-default-profile"
+          "zen-workspace-default-profile"
         ),
       };
     } else {
@@ -317,7 +317,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
     if (defaultItem) {
       defaultItem.removeAttribute("data-l10n-id");
       defaultItem.label = lazy.l10n.formatValueSync(
-        "zen-workspace-creation-default-profile"
+        "zen-workspace-default-profile"
       );
     }
   }

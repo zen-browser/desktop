@@ -190,7 +190,7 @@
   --urlbar-box-active-bgcolor: var(--toolbarbutton-hover-background) !important;
   --zen-input-border-color: light-dark(rgb(204, 204, 204), rgb(66, 65, 77));
   --urlbar-box-hover-bgcolor: var(--toolbarbutton-hover-background) !important;
-  --input-bgcolor: light-dark(rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.2)) !important;
+  --input-text-background-color: light-dark(rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.2)) !important;
   --toolbar-field-focus-background-color: light-dark(
     rgba(255, 255, 255, 0.25),
     rgba(0, 0, 0, 0.3)

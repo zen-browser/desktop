@@ -2,6 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+const lazy = {};
+
+ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
+  return new Localization(["browser/zen-workspaces.ftl"], true);
+});
+
 class nsZenWorkspaceCreation extends MozXULElement {
   #wasInCollapsedMode = false;
 
@@ -192,7 +198,9 @@ class nsZenWorkspaceCreation extends MozXULElement {
 
       this.currentProfile = {
         id: 0,
-        name: ContextualIdentityService.formatContextLabel("user-context-none"),
+        name: lazy.l10n.formatValueSync(
+          "zen-workspace-creation-default-profile"
+        ),
       };
     } else {
       this.inputProfile.parentNode.hidden = true;
@@ -297,10 +305,21 @@ class nsZenWorkspaceCreation extends MozXULElement {
   }
 
   onProfilePopupShowing(event) {
-    return window.createUserContextMenu(event, {
+    window.createUserContextMenu(event, {
       isContextMenu: true,
       showDefaultTab: true,
     });
+
+    const defaultItem = event.target.querySelector(
+      '[data-usercontextid="0"]'
+    );
+
+    if (defaultItem) {
+      defaultItem.removeAttribute("data-l10n-id");
+      defaultItem.label = lazy.l10n.formatValueSync(
+        "zen-workspace-creation-default-profile"
+      );
+    }
   }
 
   onProfilePopupCommand(event) {

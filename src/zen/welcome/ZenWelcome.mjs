@@ -8,7 +8,10 @@
   let lazy = {};
 
   ChromeUtils.defineESModuleGetters(lazy, {
+    ConfigSearchEngine:
+      "moz-src:///toolkit/components/search/ConfigSearchEngine.sys.mjs",
     SearchService: "moz-src:///toolkit/components/search/SearchService.sys.mjs",
+    SearchUtils: "moz-src:///toolkit/components/search/SearchUtils.sys.mjs",
   });
 
   const kZenElementsToIgnore = [
@@ -203,9 +206,10 @@
 
   var _iconToData = {};
 
-  async function getIconData(iconURL) {
-    if (_iconToData[iconURL]) {
-      return _iconToData[iconURL];
+  async function getIconData(iconURL, mimeType = null) {
+    const cacheKey = mimeType ? `${iconURL}|${mimeType}` : iconURL;
+    if (_iconToData[cacheKey]) {
+      return _iconToData[cacheKey];
     }
     const response = await fetch(iconURL);
     if (!response.ok) {
@@ -213,16 +217,100 @@
       return null;
     }
     const blob = await response.blob();
-    const reader = new FileReader();
-    const data = await new Promise(resolve => {
-      reader.onloadend = () => {
-        const base64Data = reader.result.split(",")[1];
-        _iconToData[iconURL] = `data:${blob.type};base64,${base64Data}`;
-        resolve(_iconToData[iconURL]);
+    // resource:// dumps often report application/x-unknown-content-type;
+    // SVGs need image/svg+xml or <img> naturalWidth stays 0.
+    const type =
+      mimeType ||
+      (blob.type && !blob.type.includes("unknown") ? blob.type : null) ||
+      "application/octet-stream";
+    const buffer = await blob.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+    let binary = "";
+    for (let i = 0; i < bytes.length; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    const dataURI = `data:${type};base64,${btoa(binary)}`;
+    _iconToData[cacheKey] = dataURI;
+    return dataURI;
+  }
+
+  /**
+   * Packaged search-config-icons dump for an engine.
+   * Used when SearchService.getIconURL() returns null — e.g. Marionette sets
+   * services.settings.server to the dummy URI, which forces LOAD_DUMPS=false
+   * and skips Attachments.get() dump fallback even though the files are present
+   * at resource://app/defaults/settings/main/search-config-icons/.
+   *
+   * @returns {Promise<?{url: string, mimeType: ?string}>}
+   */
+  async function getPackagedSearchIcon(engineId, preferredWidth = 32) {
+    if (!engineId) {
+      return null;
+    }
+    try {
+      const records =
+        await lazy.ConfigSearchEngine.iconHandler.getAvailableRecords(engineId);
+      // Prefer raster/SVG brand assets — skip PDF/other non-<img> types.
+      const renderable = records.filter(r => {
+        const mime = r.attachment?.mimetype || "";
+        return (
+          mime.startsWith("image/") ||
+          mime === "image/svg+xml" ||
+          mime === "image/x-icon" ||
+          mime === "image/vnd.microsoft.icon"
+        );
+      });
+      const pool = renderable.length ? renderable : records;
+      if (!pool.length) {
+        return null;
+      }
+      const sizes = pool.map(r => r.imageSize);
+      const width = lazy.SearchUtils.chooseIconSize(preferredWidth, sizes);
+      const record = pool.find(r => r.imageSize == width) || pool[0];
+      if (!record?.id) {
+        return null;
+      }
+      return {
+        url:
+          "resource://app/defaults/settings/main/search-config-icons/" +
+          record.id,
+        mimeType: record.attachment?.mimetype || null,
       };
-      reader.readAsDataURL(blob);
-    });
-    return data;
+    } catch (e) {
+      console.warn("[Astra] Packaged search icon lookup failed:", engineId, e);
+      return null;
+    }
+  }
+
+  /**
+   * Resolve a brand icon URL for the welcome search grid.
+   * Prefer SearchService blob URLs; fall back to packaged dumps; never invert.
+   */
+  async function resolveWelcomeEngineIconURL(searchEngine) {
+    const preferredWidth = 32;
+    try {
+      const iconURL = await searchEngine.getIconURL(preferredWidth);
+      if (iconURL) {
+        return iconURL;
+      }
+    } catch (e) {
+      console.warn(
+        "[Astra] getIconURL failed:",
+        searchEngine?.id || searchEngine?.name,
+        e
+      );
+    }
+    const packaged = await getPackagedSearchIcon(
+      searchEngine.id,
+      preferredWidth
+    );
+    if (!packaged) {
+      return null;
+    }
+    // Prefer a data URI with the catalog mimetype so SVG/ICO both decode.
+    return (
+      (await getIconData(packaged.url, packaged.mimeType)) || packaged.url
+    );
   }
 
   function setRequestedLocale(localeList) {
@@ -928,23 +1016,33 @@
               engineLabel.className = "zen-welcome-engine-name";
               engineLabel.textContent = engine.name;
               const icon = document.createElement("img");
+              icon.setAttribute("width", "28");
+              icon.setAttribute("height", "28");
+              icon.setAttribute("class", "engine-icon");
+              icon.setAttribute("alt", "");
+              icon.setAttribute("decoding", "async");
               promises.push(
                 (async () => {
                   try {
-                    const iconURL = await engine.originalEngine.getIconURL();
+                    const iconURL = await resolveWelcomeEngineIconURL(
+                      engine.originalEngine
+                    );
                     if (iconURL) {
                       icon.setAttribute("src", iconURL);
+                      icon.style.visibility = "";
                     } else {
                       icon.style.visibility = "hidden";
                     }
-                  } catch {
+                  } catch (e) {
+                    console.error(
+                      "[Astra] Welcome search engine icon failed:",
+                      engine.name,
+                      e
+                    );
                     icon.style.visibility = "hidden";
                   }
                 })()
               );
-              icon.setAttribute("width", "28");
-              icon.setAttribute("height", "28");
-              icon.setAttribute("class", "engine-icon");
               label.appendChild(icon);
               label.appendChild(engineLabel);
               content.appendChild(label);

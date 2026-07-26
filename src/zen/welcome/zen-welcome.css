@@ -5,13 +5,17 @@
  */
 
 /* ── Shared tokens ──
- * Dark indigo splash is the default. Light scheme (and auto+system light)
- * swaps to a polished cool-neutral palette via -moz-pref + light-dark().
- * Brand accent stays #FF9933 in both themes.
+ * Welcome always uses the dark indigo splash, regardless of
+ * zen.view.window.scheme / OS theme. That pref still controls the rest of
+ * the browser (sidebar toggle #zen-toggle-window-scheme); onboarding must
+ * not flip it. Brand accent stays #FF9933.
  */
 :root[zen-welcome-stage] {
   min-width: 875px;
   min-height: 560px;
+  /* Keep any inherited light-dark() chrome resolving to the dark side while
+   * the welcome stage is up — does not change the global scheme pref. */
+  color-scheme: dark !important;
 
   --zen-welcome-brand: #ff9933;
   --zen-welcome-grad: linear-gradient(
@@ -46,110 +50,6 @@
 
   #zen-sidebar-splitter {
     display: none;
-  }
-}
-
-/* Forced light */
-@media -moz-pref("zen.view.window.scheme", 1) {
-  :root[zen-welcome-stage] {
-    --zen-welcome-grad: linear-gradient(
-      165deg,
-      #f7f4ef 0%,
-      #ebe6dc 48%,
-      #f3efe7 100%
-    );
-    --zen-welcome-stage-bg: #e8e4db;
-    --zen-welcome-heading: #1c1914;
-    --zen-welcome-cta-bg: var(--zen-welcome-brand);
-    --zen-welcome-cta-text: #1c1208;
-    --zen-welcome-link-hover: #1c1914;
-    --zen-welcome-engine-selected-border: var(--zen-welcome-brand);
-    --zen-welcome-white-08: rgba(28, 25, 20, 0.05);
-    --zen-welcome-white-10: rgba(28, 25, 20, 0.07);
-    --zen-welcome-white-14: rgba(28, 25, 20, 0.1);
-    --zen-welcome-white-18: rgba(28, 25, 20, 0.12);
-    --zen-welcome-white-20: rgba(28, 25, 20, 0.14);
-    --zen-welcome-white-25: rgba(28, 25, 20, 0.18);
-    --zen-welcome-white-30: rgba(28, 25, 20, 0.22);
-    --zen-welcome-white-40: rgba(28, 25, 20, 0.4);
-    --zen-welcome-white-65: rgba(28, 25, 20, 0.62);
-    --zen-welcome-white-70: rgba(28, 25, 20, 0.68);
-    --zen-welcome-white-85: rgba(28, 25, 20, 0.88);
-    --zen-welcome-shadow: 0 24px 64px rgba(40, 32, 20, 0.12);
-    --zen-welcome-compact-bar: rgba(28, 25, 20, 0.18);
-    --zen-welcome-compact-body: rgba(28, 25, 20, 0.04);
-    --zen-welcome-mark-ring: rgba(28, 25, 20, 0.14);
-    --zen-welcome-icon: #2a241c;
-    --zen-welcome-decor-icon: rgba(42, 36, 28, 0.72);
-  }
-}
-
-/* Auto: light baseline, dark when system is dark */
-@media -moz-pref("zen.view.window.scheme", 2) {
-  :root[zen-welcome-stage] {
-    --zen-welcome-grad: linear-gradient(
-      165deg,
-      #f7f4ef 0%,
-      #ebe6dc 48%,
-      #f3efe7 100%
-    );
-    --zen-welcome-stage-bg: #e8e4db;
-    --zen-welcome-heading: #1c1914;
-    --zen-welcome-cta-bg: var(--zen-welcome-brand);
-    --zen-welcome-cta-text: #1c1208;
-    --zen-welcome-link-hover: #1c1914;
-    --zen-welcome-engine-selected-border: var(--zen-welcome-brand);
-    --zen-welcome-white-08: rgba(28, 25, 20, 0.05);
-    --zen-welcome-white-10: rgba(28, 25, 20, 0.07);
-    --zen-welcome-white-14: rgba(28, 25, 20, 0.1);
-    --zen-welcome-white-18: rgba(28, 25, 20, 0.12);
-    --zen-welcome-white-20: rgba(28, 25, 20, 0.14);
-    --zen-welcome-white-25: rgba(28, 25, 20, 0.18);
-    --zen-welcome-white-30: rgba(28, 25, 20, 0.22);
-    --zen-welcome-white-40: rgba(28, 25, 20, 0.4);
-    --zen-welcome-white-65: rgba(28, 25, 20, 0.62);
-    --zen-welcome-white-70: rgba(28, 25, 20, 0.68);
-    --zen-welcome-white-85: rgba(28, 25, 20, 0.88);
-    --zen-welcome-shadow: 0 24px 64px rgba(40, 32, 20, 0.12);
-    --zen-welcome-compact-bar: rgba(28, 25, 20, 0.18);
-    --zen-welcome-compact-body: rgba(28, 25, 20, 0.04);
-    --zen-welcome-mark-ring: rgba(28, 25, 20, 0.14);
-    --zen-welcome-icon: #2a241c;
-    --zen-welcome-decor-icon: rgba(42, 36, 28, 0.72);
-  }
-
-  @media (-moz-system-dark-theme) {
-    :root[zen-welcome-stage] {
-      --zen-welcome-grad: linear-gradient(
-        165deg,
-        #4a3fd6 0%,
-        #1e1670 52%,
-        #0a0730 100%
-      );
-      --zen-welcome-stage-bg: #07051f;
-      --zen-welcome-heading: #fff;
-      --zen-welcome-cta-bg: #fff;
-      --zen-welcome-cta-text: #2a2280;
-      --zen-welcome-link-hover: #fff;
-      --zen-welcome-engine-selected-border: #fff;
-      --zen-welcome-white-08: rgba(255, 255, 255, 0.08);
-      --zen-welcome-white-10: rgba(255, 255, 255, 0.1);
-      --zen-welcome-white-14: rgba(255, 255, 255, 0.14);
-      --zen-welcome-white-18: rgba(255, 255, 255, 0.18);
-      --zen-welcome-white-20: rgba(255, 255, 255, 0.2);
-      --zen-welcome-white-25: rgba(255, 255, 255, 0.25);
-      --zen-welcome-white-30: rgba(255, 255, 255, 0.3);
-      --zen-welcome-white-40: rgba(255, 255, 255, 0.4);
-      --zen-welcome-white-65: rgba(255, 255, 255, 0.65);
-      --zen-welcome-white-70: rgba(255, 255, 255, 0.7);
-      --zen-welcome-white-85: rgba(255, 255, 255, 0.85);
-      --zen-welcome-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
-      --zen-welcome-compact-bar: rgba(255, 255, 255, 0.22);
-      --zen-welcome-compact-body: rgba(255, 255, 255, 0.04);
-      --zen-welcome-mark-ring: rgba(255, 255, 255, 0.12);
-      --zen-welcome-icon: #fff;
-      --zen-welcome-decor-icon: rgba(255, 255, 255, 0.75);
-    }
   }
 }
 
@@ -768,6 +668,12 @@
   height: 28px;
   border-radius: 6px;
   flex-shrink: 0;
+  /* Real brand assets (search-config-icons) — never theme-recolor/invert. */
+  filter: none;
+  opacity: 1;
+  object-fit: contain;
+  -moz-context-properties: initial;
+  background-color: #fff;
 }
 
 [select-engine="true"] .zen-welcome-engine-name {

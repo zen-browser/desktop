@@ -654,6 +654,10 @@
     }
 
     #shouldSwitchSpace(event) {
+      if (document.documentElement.hasAttribute("customizing")) {
+        return { isNearLeftEdge: false, isNearRightEdge: false };
+      }
+
       const padding = Services.prefs.getIntPref(
         "zen.workspaces.dnd-switch-padding"
       );

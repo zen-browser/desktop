@@ -131,6 +131,27 @@
   z-index: 3;
 }
 
+/* Sidebar + Top Toolbar cohesion: pull the top chrome strip across the
+ * splitter so it meets #navigator-toolbox as one L-shaped surface.
+ * Scoped to multiple-toolbar + expanded sidebar only — do not touch
+ * Only Sidebar (single-toolbar) or Collapsed Sidebar. */
+:root:not([zen-single-toolbar="true"])[zen-sidebar-expanded="true"]:not([inDOMFullscreen="true"]) {
+  & #zen-appcontent-navbar-wrapper {
+    margin-inline-start: calc(-1 * var(--zen-element-separation));
+    width: calc(100% + var(--zen-element-separation));
+    box-sizing: border-box;
+    /* Keep toolbar controls optically aligned with content below. */
+    padding-inline-start: var(--zen-element-separation);
+  }
+
+  &[zen-right-side="true"] #zen-appcontent-navbar-wrapper {
+    margin-inline-start: 0;
+    margin-inline-end: calc(-1 * var(--zen-element-separation));
+    padding-inline-start: 0;
+    padding-inline-end: var(--zen-element-separation);
+  }
+}
+
 #nav-bar {
   border-top-color: transparent !important;
 

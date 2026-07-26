@@ -306,6 +306,9 @@
   &,
   & panel,
   & menupopup,
+  /* XUL <tooltip> is a popup frame — without this, Windows light-dark()
+   * tooltips stay light (white box) when zen.view.window.scheme is dark. */
+  & tooltip,
   & .zen-browser-generic-background,
   & #urlbar[breakout-extend='true'],
   & #tabbrowser-tabpanels browser[type='content'],

@@ -160,7 +160,11 @@
 :root[astra-transparent-effective-mode="native-mica-alt"] #zen-tabbox-wrapper,
 :root[astra-transparent-effective-mode="native-acrylic"] .zen-toolbar-background,
 :root[astra-transparent-effective-mode="native-mica"] .zen-toolbar-background,
-:root[astra-transparent-effective-mode="native-mica-alt"] .zen-toolbar-background {
+:root[astra-transparent-effective-mode="native-mica-alt"] .zen-toolbar-background,
+/* Multiple-toolbar: top strip shares native chrome tint with sidebar */
+:root[astra-transparent-effective-mode="native-acrylic"]:not([zen-single-toolbar="true"]) #zen-appcontent-navbar-wrapper,
+:root[astra-transparent-effective-mode="native-mica"]:not([zen-single-toolbar="true"]) #zen-appcontent-navbar-wrapper,
+:root[astra-transparent-effective-mode="native-mica-alt"]:not([zen-single-toolbar="true"]) #zen-appcontent-navbar-wrapper {
   background: color-mix(in srgb, var(--astra-glass-tint) 70%, transparent) !important;
 }
 
@@ -173,7 +177,10 @@
 :root[astra-transparent-effective-mode="native-mica-alt"][astra-energy-saver="true"] #TabsToolbar,
 :root[astra-transparent-effective-mode="native-acrylic"][astra-energy-saver="true"] #zen-tabbox-wrapper,
 :root[astra-transparent-effective-mode="native-mica"][astra-energy-saver="true"] #zen-tabbox-wrapper,
-:root[astra-transparent-effective-mode="native-mica-alt"][astra-energy-saver="true"] #zen-tabbox-wrapper {
+:root[astra-transparent-effective-mode="native-mica-alt"][astra-energy-saver="true"] #zen-tabbox-wrapper,
+:root[astra-transparent-effective-mode="native-acrylic"][astra-energy-saver="true"]:not([zen-single-toolbar="true"]) #zen-appcontent-navbar-wrapper,
+:root[astra-transparent-effective-mode="native-mica"][astra-energy-saver="true"]:not([zen-single-toolbar="true"]) #zen-appcontent-navbar-wrapper,
+:root[astra-transparent-effective-mode="native-mica-alt"][astra-energy-saver="true"]:not([zen-single-toolbar="true"]) #zen-appcontent-navbar-wrapper {
   background: var(--astra-glass-tint-strong) !important;
 }
 
@@ -291,13 +298,16 @@
 :root[astra-transparent-effective-mode="astra-glass"] #TabsToolbar,
 :root[astra-transparent-effective-mode="astra-glass"] .zen-workspace-tabs-section,
 :root[astra-transparent-effective-mode="astra-glass"] #zen-tabbox-wrapper,
-:root[astra-transparent-effective-mode="astra-glass"] .zen-toolbar-background {
+:root[astra-transparent-effective-mode="astra-glass"] .zen-toolbar-background,
+/* Multiple-toolbar L-chrome: top strip uses the same glass tint as the sidebar */
+:root[astra-transparent-effective-mode="astra-glass"]:not([zen-single-toolbar="true"]) #zen-appcontent-navbar-wrapper {
   background: var(--astra-glass-tint) !important;
   border-color: var(--astra-glass-highlight);
 }
 
 :root[astra-transparent-effective-mode="astra-glass"]:not([astra-energy-saver="true"]) #navigator-toolbox,
-:root[astra-transparent-effective-mode="astra-glass"]:not([astra-energy-saver="true"]) #zen-tabbox-wrapper {
+:root[astra-transparent-effective-mode="astra-glass"]:not([astra-energy-saver="true"]) #zen-tabbox-wrapper,
+:root[astra-transparent-effective-mode="astra-glass"]:not([astra-energy-saver="true"]):not([zen-single-toolbar="true"]) #zen-appcontent-navbar-wrapper {
   /* Single chrome blur layer — avoid nested blur on tabs/urlbar/panels (GPU cost with WebGL). */
   backdrop-filter: blur(24px) saturate(150%) brightness(0.94) !important;
   -webkit-backdrop-filter: blur(24px) saturate(150%) brightness(0.94) !important;
@@ -305,7 +315,8 @@
 
 @media -moz-pref("zen.view.window.scheme", 1) {
   :root[astra-transparent-effective-mode="astra-glass"]:not([astra-energy-saver="true"]) #navigator-toolbox,
-  :root[astra-transparent-effective-mode="astra-glass"]:not([astra-energy-saver="true"]) #zen-tabbox-wrapper {
+  :root[astra-transparent-effective-mode="astra-glass"]:not([astra-energy-saver="true"]) #zen-tabbox-wrapper,
+  :root[astra-transparent-effective-mode="astra-glass"]:not([astra-energy-saver="true"]):not([zen-single-toolbar="true"]) #zen-appcontent-navbar-wrapper {
     backdrop-filter: blur(24px) saturate(140%) brightness(1.02) !important;
     -webkit-backdrop-filter: blur(24px) saturate(140%) brightness(1.02) !important;
   }
@@ -313,14 +324,16 @@
 
 @media -moz-pref("zen.view.window.scheme", 2) {
   :root[astra-transparent-effective-mode="astra-glass"]:not([astra-energy-saver="true"]) #navigator-toolbox,
-  :root[astra-transparent-effective-mode="astra-glass"]:not([astra-energy-saver="true"]) #zen-tabbox-wrapper {
+  :root[astra-transparent-effective-mode="astra-glass"]:not([astra-energy-saver="true"]) #zen-tabbox-wrapper,
+  :root[astra-transparent-effective-mode="astra-glass"]:not([astra-energy-saver="true"]):not([zen-single-toolbar="true"]) #zen-appcontent-navbar-wrapper {
     backdrop-filter: blur(24px) saturate(140%) brightness(1.02) !important;
     -webkit-backdrop-filter: blur(24px) saturate(140%) brightness(1.02) !important;
   }
 
   @media (-moz-system-dark-theme) {
     :root[astra-transparent-effective-mode="astra-glass"]:not([astra-energy-saver="true"]) #navigator-toolbox,
-    :root[astra-transparent-effective-mode="astra-glass"]:not([astra-energy-saver="true"]) #zen-tabbox-wrapper {
+    :root[astra-transparent-effective-mode="astra-glass"]:not([astra-energy-saver="true"]) #zen-tabbox-wrapper,
+    :root[astra-transparent-effective-mode="astra-glass"]:not([astra-energy-saver="true"]):not([zen-single-toolbar="true"]) #zen-appcontent-navbar-wrapper {
       backdrop-filter: blur(24px) saturate(150%) brightness(0.94) !important;
       -webkit-backdrop-filter: blur(24px) saturate(150%) brightness(0.94) !important;
     }
@@ -331,7 +344,8 @@
 :root[astra-transparent-effective-mode="astra-glass"][astra-energy-saver="true"] #navigator-toolbox,
 :root[astra-transparent-effective-mode="astra-glass"][astra-energy-saver="true"] #TabsToolbar,
 :root[astra-transparent-effective-mode="astra-glass"][astra-energy-saver="true"] #zen-tabbox-wrapper,
-:root[astra-transparent-effective-mode="astra-glass"][astra-energy-saver="true"] .zen-toolbar-background {
+:root[astra-transparent-effective-mode="astra-glass"][astra-energy-saver="true"] .zen-toolbar-background,
+:root[astra-transparent-effective-mode="astra-glass"][astra-energy-saver="true"]:not([zen-single-toolbar="true"]) #zen-appcontent-navbar-wrapper {
   background: var(--astra-glass-tint-strong) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
@@ -369,6 +383,7 @@
 /* Fullscreen media/3D: drop chrome blur while content owns the GPU */
 :root[inDOMFullscreen="true"][astra-transparent-effective-mode="astra-glass"] #navigator-toolbox,
 :root[inDOMFullscreen="true"][astra-transparent-effective-mode="astra-glass"] #zen-tabbox-wrapper,
+:root[inDOMFullscreen="true"][astra-transparent-effective-mode="astra-glass"]:not([zen-single-toolbar="true"]) #zen-appcontent-navbar-wrapper,
 :root[inDOMFullscreen="true"][astra-transparent-effective-mode="native-acrylic"] #navigator-toolbox,
 :root[inDOMFullscreen="true"][astra-transparent-effective-mode="native-mica"] #navigator-toolbox,
 :root[inDOMFullscreen="true"][astra-transparent-effective-mode="native-mica-alt"] #navigator-toolbox {

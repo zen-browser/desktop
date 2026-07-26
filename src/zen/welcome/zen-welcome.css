@@ -577,59 +577,86 @@
   opacity: 0;
 }
 
-/* ── Search engine grid ── */
+/* ── Search engine grid ──
+   Must set flex-direction: row. The base #zen-welcome-page-content rule uses
+   column; without overriding it, flex-wrap wraps into a second COLUMN and
+   flex: 1 0 100% on the button row becomes full HEIGHT — parking Back/Finish
+   in a tall side strip (and clipping Finish via wizard overflow:hidden). */
 #zen-welcome-page-content[select-engine="true"] {
   display: flex !important;
+  flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
-  align-content: start;
+  align-content: center;
+  align-items: stretch;
+  gap: 12px;
   max-width: 420px;
   width: 100%;
+  padding-top: 0.6rem;
 }
 
 #zen-welcome-page-content[select-engine="true"] .zen-welcome-btn-row,
 [select-engine="true"] .zen-welcome-btn-row {
   flex: 1 0 100%;
-  margin-top: 6px;
+  width: 100%;
+  margin-top: 10px;
+  order: 10;
 }
 
 [select-engine="true"] label.zen-welcome-engine-card {
   background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
-  padding: 12px 10px;
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  padding: 14px 10px 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   cursor: pointer;
   transition:
     border-color 0.25s ease,
-    background 0.25s ease;
+    background 0.25s ease,
+    box-shadow 0.25s ease;
   opacity: 1;
-  width: calc(33.33% - 8px);
-  min-width: 110px;
+  /* Three equal columns; justify-content:center centers the final 2-card row. */
+  flex: 0 0 calc((100% - 24px) / 3);
+  width: calc((100% - 24px) / 3);
+  min-width: 0;
   max-width: 128px;
+  min-height: 92px;
   box-sizing: border-box;
   text-align: center;
+  -moz-window-dragging: no-drag;
+}
+
+[select-engine="true"] label.zen-welcome-engine-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.28);
 }
 
 [select-engine="true"] label.zen-welcome-engine-card:has(:checked) {
   border-color: #fff;
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35);
 }
 
-[select-engine="true"] label.zen-welcome-engine-card img {
+[select-engine="true"] label.zen-welcome-engine-card img,
+[select-engine="true"] label.zen-welcome-engine-card .engine-icon {
   width: 28px;
   height: 28px;
   border-radius: 6px;
+  flex-shrink: 0;
 }
 
-[select-engine="true"] label.zen-welcome-engine-card > label,
 [select-engine="true"] .zen-welcome-engine-name {
   font-size: 12px;
   font-weight: 500;
   color: #fff;
   pointer-events: none;
+  line-height: 1.25;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

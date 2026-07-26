@@ -919,7 +919,8 @@
                 input.setAttribute("checked", "true");
               }
               label.appendChild(input);
-              const engineLabel = document.createElement("label");
+              // Use <span>, not nested <label> (invalid HTML / hit-testing quirks).
+              const engineLabel = document.createElement("span");
               engineLabel.className = "zen-welcome-engine-name";
               engineLabel.textContent = engine.name;
               const icon = document.createElement("img");

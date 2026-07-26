@@ -712,7 +712,7 @@
 }
 
 /* Hide the results body when there are no results, to avoid showing an empty box */
-.urlbarView[noresults] > .urlbarView-body-outer > .urlbarView-body-inner,
+.urlbar[noresults] > .urlbarView-body-outer > .urlbarView-body-inner,
 #urlbar-search-mode-indicator-close {
   display: none;
 }

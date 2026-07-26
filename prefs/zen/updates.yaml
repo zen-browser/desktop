@@ -5,5 +5,28 @@
 - name: astra.updates.show-update-notification
   value: true
 
+# Temporary stopgap URLs until astra-browser.app marketing pages exist.
+# Keep in sync with engine/browser/branding/{release,twilight}/pref/firefox-branding.js
+- name: app.update.url.manual
+  value: "https://github.com/Hrishikeshmind/astradesktop/releases"
+
+- name: app.update.url.details
+  value: "https://github.com/Hrishikeshmind/astradesktop/releases"
+
+- name: app.releaseNotesURL
+  value: "https://github.com/Hrishikeshmind/astradesktop/releases"
+
+- name: app.releaseNotesURL.aboutDialog
+  value: "https://github.com/Hrishikeshmind/astradesktop/releases"
+
 - name: app.releaseNotesURL.prompt
   value: "https://github.com/Hrishikeshmind/astradesktop/releases/tag/%VERSION%"
+
+- name: startup.homepage_override_url
+  value: "https://github.com/Hrishikeshmind/astradesktop/releases"
+
+- name: startup.homepage_welcome_url
+  value: ""
+
+- name: startup.homepage_welcome_url.additional
+  value: ""

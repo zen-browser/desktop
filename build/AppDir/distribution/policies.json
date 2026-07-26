@@ -2,6 +2,7 @@
   "policies": {
     "DisableAppUpdate": false,
     "AppAutoUpdate": true,
+    "AppUpdateURL": "https://hrishikeshmind.github.io/astradesktop/updates/browser/%BUILD_TARGET%/%CHANNEL%/update.xml",
     "Extensions": {
       "Install": [],
       "Locked": ["uBlock0@raymondhill.net"]

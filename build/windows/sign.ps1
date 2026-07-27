@@ -202,9 +202,8 @@ function SignAndPackage($name) {
     # Move the manifest
     mv .\dist\update\. windsign-temp\windows-x64-signed-$name\update_manifest
 
-    # note: We need to sign it into a parent folder, called windows-x64-signed-$name
-    rmdir .\windsign-temp\windows-binaries\windows-x64-signed-$name -Recurse -ErrorAction SilentlyContinue
-    mv windsign-temp\windows-x64-signed-$name .\windsign-temp\windows-binaries -Force
+    # The signed bundle stays in windsign-temp\windows-x64-signed-$name; it is
+    # compressed and uploaded to the staging release once every .exe is signed.
     rmdir engine\obj-$objName-pc-windows-msvc\ -Recurse -ErrorAction SilentlyContinue
 
     echo "Finished $name"
@@ -213,32 +212,42 @@ function SignAndPackage($name) {
 SignAndPackage arm64
 SignAndPackage x86_64
 
-$files = Get-ChildItem .\windsign-temp\windows-binaries -Recurse -Include *.exe
+$files = Get-ChildItem .\windsign-temp\windows-x64-signed-x86_64, .\windsign-temp\windows-x64-signed-arm64 -Recurse -Include *.exe
 signtool.exe sign /n "$SignIdentity" /t http://time.certum.pl/ /fd sha256 /v $files
 
-# Compress each signed bundle into a gzip tarball and drop the raw folder, so the
-# windows-binaries repo only ever stores the compressed archive. The tar is
-# created with `-C <dir> .` so it has no top-level directory and expands straight
-# into windows-x64-signed-$name/ in the release workflow.
+# Compress each signed bundle into a single gzip tarball (`-C <dir> .` so it has
+# no top-level directory) and upload it as a release asset on the windows-binaries
+# repo, keyed to this build's run id. Release assets keep the bundles out of git
+# (they were too large to commit) while still living in the windows-binaries repo.
+# The gated release job downloads and expands these from that repo's releases.
+$binariesRepo = "zen-browser/windows-binaries"
+$stagingTag = "windows-signed-$GithubRunId"
+echo "Ensuring staging release $stagingTag exists on $binariesRepo"
+gh release view $stagingTag --repo $binariesRepo *> $null
+if ($LASTEXITCODE -ne 0) {
+    gh release create $stagingTag --repo $binariesRepo --prerelease --title "Windows signed bundles ($GithubRunId)" --notes "Signed Windows bundles for run $GithubRunId, consumed by the release workflow. Safe to delete."
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to create staging release $stagingTag on $binariesRepo"
+    }
+}
+
 foreach ($name in @("x86_64", "arm64")) {
-    $signedDir = ".\windsign-temp\windows-binaries\windows-x64-signed-$name"
-    $archive = ".\windsign-temp\windows-binaries\windows-x64-signed-$name.tar.gz"
+    $signedDir = ".\windsign-temp\windows-x64-signed-$name"
+    $archive = ".\windsign-temp\windows-x64-signed-$name.tar.gz"
     echo "Creating compressed tar for $name"
     Remove-Item $archive -ErrorAction SilentlyContinue
     tar -czvf $archive -C $signedDir .
     if ($LASTEXITCODE -ne 0) {
         throw "Failed to create tar archive for $name"
     }
-    rmdir $signedDir -Recurse -ErrorAction SilentlyContinue
+    echo "Uploading $archive to $binariesRepo release $stagingTag"
+    gh release upload $stagingTag $archive --repo $binariesRepo --clobber
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to upload $archive to release $stagingTag"
+    }
 }
 
-echo "All artifacts signed and packaged, ready for release!"
-echo "Commiting the changes to the repository"
-cd windsign-temp\windows-binaries
-git add .
-git commit -m "Sign and package windows artifacts"
-git push
-cd ..\..
+echo "All artifacts signed, packaged, and uploaded to $binariesRepo release $stagingTag!"
 
 # Cleaning up
 

@@ -85,7 +85,7 @@ export class ZenBoostsParent extends JSWindowActorParent {
       (sizeOverride !== 1 || disable)
     ) {
       const fullZoom = this.browsingContext.topChromeWindow.FullZoom;
-      fullZoom.setZoom(sizeOverride);
+      fullZoom.setZoom(sizeOverride, this.browsingContext.top.embedderElement);
     }
   }
 

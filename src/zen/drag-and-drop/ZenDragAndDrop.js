@@ -654,6 +654,10 @@
     }
 
     #shouldSwitchSpace(event) {
+      if (document.documentElement.hasAttribute("customizing")) {
+        return { isNearLeftEdge: false, isNearRightEdge: false };
+      }
+
       const padding = Services.prefs.getIntPref(
         "zen.workspaces.dnd-switch-padding"
       );
@@ -722,10 +726,11 @@
 
     #handle_sidebarDragOver(event) {
       const dt = event.dataTransfer;
+      const isTabDrag = dt.mozTypesAt(0)[0] === TAB_DROP_TYPE;
 
       const { isNearLeftEdge, isNearRightEdge } =
         this.#shouldSwitchSpace(event);
-      if (isNearLeftEdge || isNearRightEdge) {
+      if (isTabDrag && (isNearLeftEdge || isNearRightEdge)) {
         if (!this.#changeSpaceTimer && !this.#isOutOfWindow) {
           this.#changeSpaceTimer = setTimeout(() => {
             this.clearDragOverVisuals();
@@ -749,6 +754,10 @@
 
     handle_spaceIconDragOver(event) {
       const dt = event.dataTransfer;
+      if (dt.mozTypesAt(0)[0] !== TAB_DROP_TYPE) {
+        return;
+      }
+
       const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
       if (draggedTab.hasAttribute("zen-essential")) {
         return;

@@ -49,10 +49,14 @@ tab-group[split-view-group] > .zen-tree-twisty {
   z-index: 3;
 }
 
-.tabbrowser-tab[zen-tree-parent]:hover .zen-tree-twisty,
-.tabbrowser-tab[zen-tree-collapsed] .zen-tree-twisty,
-tab-group[split-view-group][zen-tree-parent]:hover > .zen-tree-twisty,
-tab-group[split-view-group][zen-tree-collapsed] > .zen-tree-twisty {
+#tabbrowser-tabs .tabbrowser-tab[zen-tree-parent]:hover .zen-tree-twisty,
+#tabbrowser-tabs .tabbrowser-tab[zen-tree-collapsed] .zen-tree-twisty,
+#tabbrowser-tabs
+  tab-group[split-view-group][zen-tree-parent]:hover
+  > .zen-tree-twisty,
+#tabbrowser-tabs
+  tab-group[split-view-group][zen-tree-collapsed]
+  > .zen-tree-twisty {
   opacity: 0.85;
   pointer-events: auto;
 }
@@ -64,15 +68,23 @@ tab-group[split-view-group][zen-tree-collapsed] > .zen-tree-twisty {
 /* Favicon steps aside while the twisty is shown over it. On a split group the
    twisty sits over the leftmost tab's favicon, so hide that one. The container's
    first child is a .zen-tab-group-start spacer, so the leftmost tab is the one
-   right after it (not :first-child). */
-.tabbrowser-tab[zen-tree-parent]:hover .tab-icon-image,
-.tabbrowser-tab[zen-tree-collapsed] .tab-icon-image,
-tab-group[split-view-group][zen-tree-parent]:hover
+   right after it (not :first-child).
+
+   Scoped through #tabbrowser-tabs on purpose: a tab with no favicon of its own
+   gets a placeholder square from vertical-tabs.css
+   (`.tab-icon-image:not([src])`, nested under #tabbrowser-tabs and so more
+   specific than a bare class chain), which otherwise keeps showing through
+   underneath the twisty. */
+#tabbrowser-tabs .tabbrowser-tab[zen-tree-parent]:hover .tab-icon-image,
+#tabbrowser-tabs .tabbrowser-tab[zen-tree-collapsed] .tab-icon-image,
+#tabbrowser-tabs
+  tab-group[split-view-group][zen-tree-parent]:hover
   .tab-group-container
   > .zen-tab-group-start
   + .tabbrowser-tab
   .tab-icon-image,
-tab-group[split-view-group][zen-tree-collapsed]
+#tabbrowser-tabs
+  tab-group[split-view-group][zen-tree-collapsed]
   .tab-group-container
   > .zen-tab-group-start
   + .tabbrowser-tab

@@ -4,11 +4,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-/* Bookmarks sidebar */
+/* Bookmarks / AI (sidebar.revamp) panel */
 #zen-tabbox-wrapper {
   & #sidebar-splitter {
     opacity: 0;
-    margin: 0 calc(-1 * var(--zen-element-separation) + 2px);
+    /* Match #zen-sidebar-splitter: stable ~8px grab target. Negative margins
+     * collapse the flanking #tabbrowser-tabbox flex gaps
+     * (2 × --zen-element-separation) so the panel and content read as
+     * adjacent (~2px optical seam) rather than a 13px gutter.
+     * visual = 2*8 + hit + 2*margin ≈ 2 when margin = -(separation + 3px). */
+    --zen-sidebar-panel-splitter-hit: 8px;
+    box-sizing: border-box;
+    width: var(--zen-sidebar-panel-splitter-hit) !important;
+    min-width: var(--zen-sidebar-panel-splitter-hit) !important;
+    max-width: var(--zen-sidebar-panel-splitter-hit) !important;
+    border-inline-width: 0 !important;
+    margin-inline: calc(-1 * var(--zen-element-separation) - 3px);
   }
 
   & #sidebar-box {
@@ -17,6 +28,18 @@
     overflow: hidden;
   }
 
+}
+
+/* Align #sidebar-main first tool (AI/history/bookmarks) with the top toolbar
+ * row in Sidebar+Top Toolbar mode. Consumed by sidebar-main.css via
+ * --astra-sidebar-tools-first-pad (inherits into the shadow tree).
+ * 32px button centered in --zen-toolbar-height (38px) => 3px pad each side. */
+:root:not([zen-single-toolbar="true"]) #sidebar-main,
+:root:not([zen-single-toolbar="true"]) sidebar-main {
+  --astra-sidebar-tools-first-pad: max(
+    0px,
+    calc((var(--zen-toolbar-height) - var(--button-size-icon, 32px)) / 2)
+  );
 }
 
 :root #zen-tabbox-wrapper #tabbrowser-tabbox[sidebar-positionend] #sidebar-box {

@@ -1,0 +1,24 @@
+diff --git a/browser/components/sidebar/sidebar-main.css b/browser/components/sidebar/sidebar-main.css
+--- a/browser/components/sidebar/sidebar-main.css
++++ b/browser/components/sidebar/sidebar-main.css
+@@ -85,8 +85,18 @@
+     --button-outer-padding-block: var(--space-xxsmall);
+ 
+     &:first-of-type {
+-      --button-outer-padding-block-start: var(--space-small);
++      /* --astra-sidebar-tools-first-pad is set by zen-sidebar.css in
++       * Sidebar+Top Toolbar mode to center the glyph on the toolbar band. */
++      --button-outer-padding-block-start: var(
++        --astra-sidebar-tools-first-pad,
++        var(--space-small)
++      );
++      --button-outer-padding-block-end: var(
++        --astra-sidebar-tools-first-pad,
++        var(--button-outer-padding-block)
++      );
+     }
+ 
+     &:last-of-type {
+       --button-outer-padding-block-end: var(--space-small);
+     }
+   }

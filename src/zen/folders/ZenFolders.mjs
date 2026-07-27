@@ -1019,9 +1019,12 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     folder.id = id;
     folder.label = options.label || "New Folder";
     folder.saveOnWindowClose = !!options.saveOnWindowClose;
-    // Default: follow workspace accent. Callers may pass options.color
-    // (tab-group named color) and/or options.folderAccent (hex) for branded
-    // Astra-created folders only — user-created folders omit both.
+    // Default: follow workspace accent for the folder icon glyph. Callers may
+    // pass options.folderAccent (hex) to force icon color — e.g. Astra's
+    // welcome "astra basics" folder. Row/label backgrounds stay neutral
+    // (zen-folders.css nulls --tab-group-color*). Avoid options.color named
+    // values like "orange" for branding; they set --tab-group-color-invert
+    // and can paint the full label pill. User-created folders omit both.
     folder.color = options.color || "zen-workspace-color";
     if (options.folderAccent) {
       folder.style.setProperty("--zen-primary-color", options.folderAccent);

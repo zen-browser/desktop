@@ -767,9 +767,10 @@
       gZenFolders.createFolder(tabsToGroup, {
         renameFolder: false,
         label: "astra basics",
-        // Astra brand orange — scoped to this auto-created folder only.
-        // User-created folders keep Zen's default workspace accent path.
-        color: "orange",
+        // Icon-only brand orange via folderAccent (--zen-primary-color on the
+        // folder node). Do NOT pass color: "orange" — that sets Firefox
+        // --tab-group-color-invert and paints the full label/row as a pill.
+        // User-created folders omit folderAccent and keep workspace accent.
         folderAccent: "#FF9933",
       });
     }

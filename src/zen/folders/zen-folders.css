@@ -66,8 +66,11 @@ zen-folder {
   & > .tab-group-label-container {
     flex: 0 0 auto !important;
     top: 0 !important;
+    /* Folder accent tints the icon glyph only (--zen-folder-*). Neutralize
+     * Firefox tab-group pill vars so named colors never paint the row. */
     --tab-group-color-pale: transparent !important;
     --tab-group-color: transparent !important;
+    --tab-group-color-invert: transparent !important;
     padding-block-end: 0;
     margin: 0;
     height: calc(var(--tab-block-margin) * 2 + var(--tab-min-height));
@@ -196,6 +199,8 @@ zen-folder {
     & > label {
       width: 100% !important;
       border: none !important;
+      /* Override Firefox .tab-group-label pill background/color. */
+      background-color: transparent !important;
       color: var(--sidebar-text-color) !important;
       margin: 0;
       font-weight: 600;

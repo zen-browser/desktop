@@ -12,7 +12,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 
 class nsZenUIMigration {
   PREF_NAME = "zen.ui.migration.version";
-  MIGRATION_VERSION = 6;
+  MIGRATION_VERSION = 7;
 
   init(isNewProfile) {
     if (!isNewProfile) {
@@ -149,6 +149,16 @@ class nsZenUIMigration {
         }
       }, 1000);
     });
+  }
+
+  _migrateV7() {
+    // Default layout changed from Only Sidebar (use-single-toolbar=true) to
+    // Sidebar and Top Toolbar (false) for new profiles. Pin existing profiles
+    // that never set this pref so they keep Only Sidebar; respect any user value.
+    const kSingleToolbar = "zen.view.use-single-toolbar";
+    if (!Services.prefs.prefHasUserValue(kSingleToolbar)) {
+      Services.prefs.setBoolPref(kSingleToolbar, true);
+    }
   }
 }
 

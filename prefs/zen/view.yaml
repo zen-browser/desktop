@@ -16,8 +16,10 @@
   value: true
   condition: "defined(XP_MACOSX)"
 
+# false = "Sidebar and Top Toolbar" (Chrome-familiar default for new profiles).
+# true = "Only Sidebar". Paired with sidebar-expanded=true.
 - name: zen.view.use-single-toolbar
-  value: true
+  value: false
 
 - name: zen.view.sidebar-expanded
   value: true

@@ -559,7 +559,7 @@ class nsZenWindowSync {
           // URI) over the image attribute: the attribute may hold a derived
           // URL (e.g. moz-remote-image:) that setIcon rejects as remote.
           const icon =
-            aOriginalItem.ownerGlobal.gBrowser.getIcon(aOriginalItem) ||
+            aOriginalItem.documentGlobal?.gBrowser.getIcon(aOriginalItem) ||
             aOriginalItem.getAttribute("image") ||
             "";
           const targetIcon =

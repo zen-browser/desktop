@@ -198,9 +198,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
 
       this.currentProfile = {
         id: 0,
-        name: lazy.l10n.formatValueSync(
-          "zen-workspace-default-profile"
-        ),
+        name: lazy.l10n.formatValueSync("zen-workspace-default-profile"),
       };
     } else {
       this.inputProfile.parentNode.hidden = true;
@@ -311,9 +309,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
       showManageContainers: false,
     });
 
-    const defaultItem = event.target.querySelector(
-      '[data-usercontextid="0"]'
-    );
+    const defaultItem = event.target.querySelector('[data-usercontextid="0"]');
     if (defaultItem) {
       defaultItem.removeAttribute("data-l10n-id");
       defaultItem.label = lazy.l10n.formatValueSync(

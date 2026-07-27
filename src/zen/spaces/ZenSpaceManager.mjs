@@ -1273,9 +1273,7 @@ class nsZenWorkspaces {
       showDefaultTab: true,
     });
 
-    const defaultItem = event.target.querySelector(
-      '[data-usercontextid="0"]'
-    );
+    const defaultItem = event.target.querySelector('[data-usercontextid="0"]');
     if (defaultItem) {
       defaultItem.removeAttribute("data-l10n-id");
       defaultItem.label = lazy.l10n.formatValueSync(

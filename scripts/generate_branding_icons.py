@@ -17,6 +17,27 @@ SIZES: list[int] = [16, 22, 24, 32, 48, 64, 128, 256, 512, 1024]
 NSIS_WATERMARK_SIZE: tuple[int, int] = (164, 314)
 NSIS_HEADER_SIZE: tuple[int, int] = (150, 57)
 
+# Match Firefox/Mozilla Windows VisualElements sizes (used by Start tiles and
+# toast AppUserModelId IconUri → VisualElements_70.png).
+VISUAL_ELEMENTS_SIZES: dict[str, int] = {
+    "VisualElements_70.png": 126,
+    "VisualElements_150.png": 270,
+}
+
+# MSIX package logos (scale-200 / targetsize variants used by AppxManifest).
+MSIX_ASSET_SIZES: dict[str, tuple[int, int]] = {
+    "Document44x44.png": (44, 44),
+    "LargeTile.scale-200.png": (620, 620),
+    "SmallTile.scale-200.png": (142, 142),
+    "Square150x150Logo.scale-200.png": (300, 300),
+    "Square44x44Logo.altform-lightunplated_targetsize-256.png": (256, 256),
+    "Square44x44Logo.altform-unplated_targetsize-256.png": (256, 256),
+    "Square44x44Logo.scale-200.png": (88, 88),
+    "Square44x44Logo.targetsize-256.png": (256, 256),
+    "StoreLogo.scale-200.png": (100, 100),
+    "Wide310x150Logo.scale-200.png": (620, 300),
+}
+
 
 @dataclass(frozen=True)
 class RemoveBgOptions:
@@ -116,7 +137,42 @@ def center_on_square_canvas(img: Image.Image, size: int) -> Image.Image:
     return canvas
 
 
-def write_icons(src_logo_path: Path, out_dir: Path) -> None:
+def resize_contain(square_logo: Image.Image, size: tuple[int, int]) -> Image.Image:
+    """Resize logo to fit inside `size`, centered on a transparent canvas."""
+    canvas_w, canvas_h = size
+    side = min(canvas_w, canvas_h)
+    logo = square_logo.resize((side, side), resample=Image.Resampling.LANCZOS)
+    canvas = Image.new("RGBA", (canvas_w, canvas_h), (0, 0, 0, 0))
+    ox = (canvas_w - logo.width) // 2
+    oy = (canvas_h - logo.height) // 2
+    canvas.paste(logo, (ox, oy), logo)
+    return canvas
+
+
+def write_visual_elements(square_logo: Image.Image, out_dir: Path) -> None:
+    """
+    Write Windows VisualElements PNGs used for Start tiles and toast IconUri.
+
+    Installer registers:
+      HKLM\\...\\AppUserModelId\\{ToastAumidPrefix}{hash}\\IconUri
+        = $INSTDIR\\browser\\VisualElements\\VisualElements_70.png
+    """
+    for filename, side in VISUAL_ELEMENTS_SIZES.items():
+        resized = square_logo.resize((side, side), resample=Image.Resampling.LANCZOS)
+        resized.save(out_dir / filename, format="PNG", optimize=True)
+
+
+def write_msix_assets(square_logo: Image.Image, out_dir: Path) -> None:
+    """Write MSIX AppxManifest logo assets from the brand logo."""
+    assets_dir = out_dir / "msix" / "Assets"
+    assets_dir.mkdir(parents=True, exist_ok=True)
+    for filename, size in MSIX_ASSET_SIZES.items():
+        resize_contain(square_logo, size).save(
+            assets_dir / filename, format="PNG", optimize=True
+        )
+
+
+def write_icons(src_logo_path: Path, out_dir: Path, *, write_msix: bool = False) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "content").mkdir(parents=True, exist_ok=True)
 
@@ -133,7 +189,10 @@ def write_icons(src_logo_path: Path, out_dir: Path) -> None:
         resized = squared.resize((s, s), resample=Image.Resampling.LANCZOS)
         resized.save(out_dir / f"logo{s}.png", format="PNG", optimize=True)
 
+    write_visual_elements(squared, out_dir)
     write_nsis_bitmaps(squared, out_dir)
+    if write_msix:
+        write_msix_assets(squared, out_dir)
 
 
 def write_nsis_bitmaps(square_logo: Image.Image, out_dir: Path) -> None:
@@ -184,12 +243,24 @@ def main() -> None:
     if not src_logo.exists():
         raise SystemExit(f"Input logo not found: {src_logo}")
 
-    write_icons(src_logo, root / "configs" / "branding" / "release")
-    write_icons(src_logo, root / "configs" / "branding" / "twilight")
+    config_targets = [
+        root / "configs" / "branding" / "release",
+        root / "configs" / "branding" / "twilight",
+    ]
+    engine_targets = [
+        root / "engine" / "browser" / "branding" / "release",
+        root / "engine" / "browser" / "branding" / "twilight",
+    ]
 
-    print("Wrote branding PNGs to:")
-    print(f"  - {root / 'configs' / 'branding' / 'release'}")
-    print(f"  - {root / 'configs' / 'branding' / 'twilight'}")
+    for out_dir in config_targets:
+        write_icons(src_logo, out_dir, write_msix=False)
+    for out_dir in engine_targets:
+        if out_dir.exists():
+            write_icons(src_logo, out_dir, write_msix=True)
+
+    print("Wrote branding PNGs (incl. VisualElements) to:")
+    for out_dir in config_targets + [p for p in engine_targets if p.exists()]:
+        print(f"  - {out_dir}")
 
 
 if __name__ == "__main__":

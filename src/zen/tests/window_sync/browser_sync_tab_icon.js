@@ -8,6 +8,7 @@ const TEST_ICON =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
 
 add_task(async function test_SimpleIconChange() {
+  const initialTabs = new Set(gBrowser.tabs);
   await withNewTabAndWindow(async (newTab, win) => {
     let otherTab = gZenWindowSync.getItemFromWindow(win, newTab.id);
     Assert.ok(otherTab, "The opened tab should be found in the synced window");
@@ -38,9 +39,20 @@ add_task(async function test_SimpleIconChange() {
       "ZenTabIconChanged"
     );
   });
+  // withNewTabAndWindow closes the tab it opened, but window sync also mirrors
+  // the synced window's blank tab into this one; drop that too.
+  const closing = [];
+  for (const tab of [...gBrowser.tabs]) {
+    if (!initialTabs.has(tab) && !tab.closing) {
+      closing.push(BrowserTestUtils.waitForTabClosing(tab));
+      BrowserTestUtils.removeTab(tab);
+    }
+  }
+  await Promise.all(closing);
 });
 
 add_task(async function test_IconRemovalSyncs() {
+  const initialTabs = new Set(gBrowser.tabs);
   await withNewTabAndWindow(async (newTab, win) => {
     let otherTab = gZenWindowSync.getItemFromWindow(win, newTab.id);
     await BrowserTestUtils.browserLoaded(newTab.linkedBrowser);
@@ -81,9 +93,20 @@ add_task(async function test_IconRemovalSyncs() {
       "TabAttrModified"
     );
   });
+  // withNewTabAndWindow closes the tab it opened, but window sync also mirrors
+  // the synced window's blank tab into this one; drop that too.
+  const closing = [];
+  for (const tab of [...gBrowser.tabs]) {
+    if (!initialTabs.has(tab) && !tab.closing) {
+      closing.push(BrowserTestUtils.waitForTabClosing(tab));
+      BrowserTestUtils.removeTab(tab);
+    }
+  }
+  await Promise.all(closing);
 });
 
 add_task(async function test_DontChangeBluredTabIcon() {
+  const initialTabs = new Set(gBrowser.tabs);
   await withNewTabAndWindow(async (newTab, win) => {
     let otherTab = gZenWindowSync.getItemFromWindow(win, newTab.id);
     Assert.ok(!otherTab._zenContentsVisible, "The synced tab should be blured");
@@ -103,4 +126,14 @@ add_task(async function test_DontChangeBluredTabIcon() {
       "ZenTabIconChanged"
     );
   });
+  // withNewTabAndWindow closes the tab it opened, but window sync also mirrors
+  // the synced window's blank tab into this one; drop that too.
+  const closing = [];
+  for (const tab of [...gBrowser.tabs]) {
+    if (!initialTabs.has(tab) && !tab.closing) {
+      closing.push(BrowserTestUtils.waitForTabClosing(tab));
+      BrowserTestUtils.removeTab(tab);
+    }
+  }
+  await Promise.all(closing);
 });

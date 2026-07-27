@@ -12,6 +12,7 @@ const { TabStateFlusher } = ChromeUtils.importESModule(
 // undo close tab (ctrl+shift+t) restores the mirror copy (often blank or
 // stale) instead of the tab the user actually closed.
 add_task(async function test_SyncCloseDoesNotRecordMirrorTabs() {
+  const initialTabs = new Set(gBrowser.tabs);
   await withNewSyncedWindow(async win => {
     let newTab;
     await runSyncAction(
@@ -27,7 +28,15 @@ add_task(async function test_SyncCloseDoesNotRecordMirrorTabs() {
     const otherTab = gZenWindowSync.getItemFromWindow(win, syncId);
     Assert.ok(otherTab, "The opened tab should be found in the synced window");
 
-    await BrowserTestUtils.browserLoaded(newTab.linkedBrowser);
+    // Not browserLoaded(): runSyncAction resolves on the TabOpen sync event,
+    // and the load can finish before we get a listener attached, leaving that
+    // promise waiting for a load that already happened.
+    await TestUtils.waitForCondition(
+      () =>
+        newTab.linkedBrowser.currentURI.spec === "https://example.com/" &&
+        !newTab.linkedBrowser.webProgress.isLoadingDocument,
+      "Waiting for the opened tab to finish loading"
+    );
     await TabStateFlusher.flush(newTab.linkedBrowser);
 
     // Simulate the mirror tab ending up with restorable-looking state, like
@@ -66,12 +75,24 @@ add_task(async function test_SyncCloseDoesNotRecordMirrorTabs() {
       "The sync-propagated close should not be recorded in the other window"
     );
   });
+
+  // Window sync mirrors the synced window's blank tab into this one; drop
+  // whatever it left behind so the harness doesn't flag an unexpected tab.
+  const closing = [];
+  for (const tab of [...gBrowser.tabs]) {
+    if (!initialTabs.has(tab) && !tab.closing) {
+      closing.push(BrowserTestUtils.waitForTabClosing(tab));
+      BrowserTestUtils.removeTab(tab);
+    }
+  }
+  await Promise.all(closing);
 });
 
 // When the user closes the inactive (blank) copy of a synced tab, the close
 // propagated to the window holding the active contents must still be
 // recorded, so undo close tab can restore the page.
 add_task(async function test_SyncCloseRecordsActiveTab() {
+  const initialTabs = new Set(gBrowser.tabs);
   await withNewSyncedWindow(async win => {
     let newTab;
     await runSyncAction(
@@ -91,7 +112,15 @@ add_task(async function test_SyncCloseRecordsActiveTab() {
       "The original tab should hold the contents"
     );
 
-    await BrowserTestUtils.browserLoaded(newTab.linkedBrowser);
+    // Not browserLoaded(): runSyncAction resolves on the TabOpen sync event,
+    // and the load can finish before we get a listener attached, leaving that
+    // promise waiting for a load that already happened.
+    await TestUtils.waitForCondition(
+      () =>
+        newTab.linkedBrowser.currentURI.spec === "https://example.com/" &&
+        !newTab.linkedBrowser.webProgress.isLoadingDocument,
+      "Waiting for the opened tab to finish loading"
+    );
     await TabStateFlusher.flush(newTab.linkedBrowser);
 
     const closedCountBefore = SessionStore.getClosedTabCountForWindow(window);
@@ -115,4 +144,15 @@ add_task(async function test_SyncCloseRecordsActiveTab() {
       "The window holding the active tab contents should record the close"
     );
   });
+
+  // Window sync mirrors the synced window's blank tab into this one; drop
+  // whatever it left behind so the harness doesn't flag an unexpected tab.
+  const closing = [];
+  for (const tab of [...gBrowser.tabs]) {
+    if (!initialTabs.has(tab) && !tab.closing) {
+      closing.push(BrowserTestUtils.waitForTabClosing(tab));
+      BrowserTestUtils.removeTab(tab);
+    }
+  }
+  await Promise.all(closing);
 });

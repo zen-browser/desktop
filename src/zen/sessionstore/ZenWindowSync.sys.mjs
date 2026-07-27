@@ -49,10 +49,16 @@ const UNSYNCED_WINDOW_EVENTS = ["TabOpen"];
 // already matches the original), so processing them late can't start a
 // sync loop, while dropping them would permanently lose the change (a
 // favicon is usually only set once per page load).
+//
+// TabClose belongs here for the same reason, and more urgently: dropping it
+// leaves the mirror copies open forever with no later event to clean them up.
+// Its handler is idempotent because it looks the mirror up by id and does
+// nothing when it has already gone.
 const CROSS_WINDOW_QUEUED_EVENTS = [
   "ZenTabIconChanged",
   "ZenTabLabelChanged",
   "TabAttrModified",
+  "TabClose",
 ];
 const EVENTS = [
   "TabClose",
@@ -394,6 +400,10 @@ class nsZenWindowSync {
 
   handleEvent(aEvent) {
     const window = aEvent.currentTarget.documentGlobal ?? aEvent.currentTarget;
+    // A queued handler can run after its tab has been detached, at which point
+    // tab.documentGlobal is null. Remember which window the event came from
+    // while we still know, so handlers can still exclude it.
+    aEvent._zenSourceWindow ??= window;
     if (
       !window.gZenStartup.isReady ||
       !window.gZenWorkspaces?.shouldHaveWorkspaces ||
@@ -1593,7 +1603,11 @@ class nsZenWindowSync {
 
   on_TabClose(aEvent) {
     const tab = aEvent.target;
-    const window = tab.documentGlobal;
+    // Falls back to the window recorded at dispatch: by the time a queued
+    // close runs, the tab is already detached and has no documentGlobal, and
+    // a null here would make #runOnAllWindows include the closing tab's own
+    // window and mark the user's close as a sync-propagated one.
+    const window = tab.documentGlobal ?? aEvent._zenSourceWindow;
     this.#runOnAllWindows(window, win => {
       const targetTab = this.getItemFromWindow(win, tab.id);
       if (targetTab) {

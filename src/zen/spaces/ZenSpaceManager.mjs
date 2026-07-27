@@ -22,6 +22,10 @@ ChromeUtils.defineLazyGetter(lazy, "toolbarBackgroundElement", () => {
   return document.getElementById("zen-toolbar-background");
 });
 
+ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
+  return new Localization(["browser/zen-workspaces.ftl"], true);
+});
+
 /**
  * Zen Spaces manager. This class is mainly responsible for the UI
  * and user interactions but it also contains some logic to manage
@@ -1263,11 +1267,19 @@ class nsZenWorkspaces {
       workspace = this.getActiveWorkspaceFromCache();
     }
     let containerTabId = workspace.containerTabId;
-    return window.createUserContextMenu(event, {
+    window.createUserContextMenu(event, {
       isContextMenu: true,
       excludeUserContextId: containerTabId,
       showDefaultTab: true,
     });
+
+    const defaultItem = event.target.querySelector('[data-usercontextid="0"]');
+    if (defaultItem) {
+      defaultItem.removeAttribute("data-l10n-id");
+      defaultItem.label = lazy.l10n.formatValueSync(
+        "zen-workspace-default-profile"
+      );
+    }
   }
 
   saveWorkspace(workspaceData) {

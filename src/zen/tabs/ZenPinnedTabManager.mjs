@@ -1026,7 +1026,8 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
           (gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId || 0) &&
         gZenWorkspaces.containerSpecificEssentials
       ) &&
-      (isExistingEssentialTab || gBrowser._numZenEssentials < this.maxEssentialTabs)
+      (isExistingEssentialTab ||
+        gBrowser._numZenEssentials < this.maxEssentialTabs)
     );
   }
 

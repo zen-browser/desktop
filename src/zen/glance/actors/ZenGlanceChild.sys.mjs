@@ -16,10 +16,19 @@ export class ZenGlanceChild extends JSWindowActorChild {
     }
   }
 
-  async #initActivationMethod() {
-    this.#activationMethod = await this.sendQuery(
-      "ZenGlance:GetActivationMethod"
-    );
+  /**
+   * Read activation method sync from prefs (content process has access).
+   * Avoids per-navigation chrome IPC that previously ran on every
+   * DOMContentLoaded across allFrames.
+   */
+  #getActivationMethod() {
+    if (this.#activationMethod === undefined) {
+      this.#activationMethod = Services.prefs.getStringPref(
+        "zen.glance.activation-method",
+        "ctrl"
+      );
+    }
+    return this.#activationMethod;
   }
 
   #ensureOnlyKeyModifiers(event) {
@@ -96,7 +105,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
     ) {
       return;
     }
-    const activationMethod = this.#activationMethod;
+    const activationMethod = this.#getActivationMethod();
     if (activationMethod === "ctrl" && !event.ctrlKey) {
       return;
     } else if (activationMethod === "alt" && !event.altKey) {
@@ -120,9 +129,5 @@ export class ZenGlanceChild extends JSWindowActorChild {
         this.contentWindow.document.activeElement !==
         this.contentWindow.document.body,
     });
-  }
-
-  async on_DOMContentLoaded() {
-    await this.#initActivationMethod();
   }
 }

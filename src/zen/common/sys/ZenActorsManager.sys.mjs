@@ -41,7 +41,8 @@ let JSWINDOWACTORS = {
     child: {
       esModuleURI: "resource:///actors/ZenGlanceChild.sys.mjs",
       events: {
-        DOMContentLoaded: {},
+        // Intentionally no DOMContentLoaded: activation method is lazy-fetched
+        // on first mousedown/click so navigations avoid per-frame chrome IPC.
         mousedown: {
           capture: true,
         },

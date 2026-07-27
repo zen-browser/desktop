@@ -62,11 +62,21 @@
 - name: browser.urlbar.showSearchSuggestionsFirst
   value: true
 
+# Match Chrome/Google omnibox density (~8–10 rows); was 8
 - name: browser.urlbar.maxRichResults
-  value: 8
+  value: 10
 
 - name: browser.urlbar.maxHistoricalSearchSuggestions
   value: 6
+
+# Keystroke → non-heuristic providers (Places + search suggest). Stock FF=50.
+# 25ms keeps cancel-on-type behavior for fast typists while cutting ~25ms off TTFS.
+- name: browser.urlbar.delay
+  value: 25
+
+# Remote suggest XHR abort. Stock=500; Bing often needs 600–800ms on this network.
+- name: browser.search.suggest.timeout
+  value: 800
 
 - name: browser.urlbar.suggest.history
   value: true

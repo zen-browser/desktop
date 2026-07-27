@@ -1019,12 +1019,15 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   }
 
   canEssentialBeAdded(tab) {
+    const isExistingEssentialTab = tab.hasAttribute("zen-essential");
     return (
       !(
         (tab.getAttribute("usercontextid") || 0) !=
           (gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId || 0) &&
         gZenWorkspaces.containerSpecificEssentials
-      ) && gBrowser._numZenEssentials < this.maxEssentialTabs
+      ) &&
+      (isExistingEssentialTab ||
+        gBrowser._numZenEssentials < this.maxEssentialTabs)
     );
   }
 

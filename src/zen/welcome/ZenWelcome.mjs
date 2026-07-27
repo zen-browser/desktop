@@ -72,6 +72,102 @@
     return getMotion().animate(...args);
   }
 
+  /** Cap page swaps at ≤150ms; springs were ~800ms+ and blocked interactivity. */
+  const kWelcomeSwapSec = 0.12;
+
+  function prefersReducedMotion() {
+    try {
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    } catch {
+      return false;
+    }
+  }
+
+  function welcomeQueryAll(targets) {
+    if (typeof targets === "string") {
+      return [...document.querySelectorAll(targets)];
+    }
+    if (Array.isArray(targets)) {
+      return targets.filter(Boolean);
+    }
+    return targets ? [targets] : [];
+  }
+
+  function setWelcomeOpacity(targets, opacity) {
+    for (const el of welcomeQueryAll(targets)) {
+      el.style.opacity = String(opacity);
+      el.style.transform = "";
+    }
+  }
+
+  /**
+   * Single GPU-only welcome transition (opacity / transform only).
+   * Honors prefers-reduced-motion; never animates layout properties.
+   */
+  async function welcomeTransition(targets, { from = 0, to = 1, y = 0 } = {}) {
+    const els = welcomeQueryAll(targets);
+    if (!els.length) {
+      return;
+    }
+    if (prefersReducedMotion() || !getMotion()?.animate) {
+      setWelcomeOpacity(els, to);
+      return;
+    }
+    const keyframes =
+      y !== 0
+        ? {
+            opacity: [from, to],
+            y: from < to ? [y, 0] : [0, -Math.abs(y)],
+          }
+        : { opacity: [from, to] };
+    try {
+      // Prefer selector strings when possible — Motion One handles them reliably.
+      const animateTarget =
+        typeof targets === "string" ? targets : els.length === 1 ? els[0] : els;
+      await animate(animateTarget, keyframes, {
+        duration: kWelcomeSwapSec,
+        easing: "easeOut",
+      });
+    } catch {
+      // Fall through to final opacity.
+    }
+    setWelcomeOpacity(els, to);
+  }
+
+  /** Valid Glean MigrationUtils entrypoint — "astra-welcome" is not in the enum. */
+  function welcomeMigrationEntrypoint(mu) {
+    return (
+      mu?.MIGRATION_ENTRYPOINTS?.FIRSTRUN ||
+      mu?.MIGRATION_ENTRYPOINTS?.UNKNOWN ||
+      "firstrun"
+    );
+  }
+
+  /**
+   * Open a visible, non-blocking migration dialog.
+   * isStartupMigration:true uses a blocking modal that can open with no usable
+   * surface during welcome; about:preferences is also hidden (display:none).
+   */
+  function openWelcomeMigrationDialog(mu, options = {}) {
+    const entrypoint =
+      options.entrypoint &&
+      Object.values(mu?.MIGRATION_ENTRYPOINTS || {}).includes(options.entrypoint)
+        ? options.entrypoint
+        : welcomeMigrationEntrypoint(mu);
+    Services.ww.openWindow(
+      window,
+      "chrome://browser/content/migration/migration-dialog-window.html",
+      "_blank",
+      "chrome,centerscreen,resizable=no,dialog",
+      {
+        options: {
+          entrypoint,
+          isStartupMigration: false,
+        },
+      }
+    );
+  }
+
   function createIconEl(iconKey, size = 24) {
     const el = document.createElement("span");
     el.className = "zen-welcome-icon";
@@ -117,11 +213,25 @@
   }
 
   async function openImportSettings() {
+    // Always open a standalone non-modal dialog. Welcome hides #browser chrome
+    // (so about:preferences migrate is invisible), and isStartupMigration opens
+    // a blocking modal that can fail to present a usable window here.
+    try {
+      const { MigrationUtils: mu } = ChromeUtils.importESModule(
+        "resource:///modules/MigrationUtils.sys.mjs"
+      );
+      openWelcomeMigrationDialog(mu);
+      return;
+    } catch (e) {
+      console.warn("[Astra] Direct migration dialog open failed:", e);
+    }
     try {
       if (window.gAstraMigration?.openNativeWizard) {
         const result = await window.gAstraMigration.openNativeWizard({
-          isStartupMigration: true,
-          entrypoint: "astra-welcome",
+          // Non-startup: avoid blocking modal. Entrypoint must be Glean-valid.
+          isStartupMigration: false,
+          entrypoint: "firstrun",
+          standalone: true,
         });
         if (result?.ok !== false) {
           return;
@@ -131,8 +241,12 @@
       console.warn("[Astra] gAstraMigration open failed, falling back:", e);
     }
     try {
+      const { MigrationUtils } = ChromeUtils.importESModule(
+        "resource:///modules/MigrationUtils.sys.mjs"
+      );
+      // Last resort: may open about:preferences (hidden during welcome).
       MigrationUtils.showMigrationWizard(window, {
-        isStartupMigration: true,
+        entrypoint: welcomeMigrationEntrypoint(MigrationUtils),
       });
     } catch (e) {
       console.error("[Astra] Failed to open import settings wizard:", e);
@@ -406,11 +520,8 @@
       }
       document.getElementById("zen-welcome-pages").style.display = "flex";
       window.maximize();
-      animate(
-        "#zen-welcome-pages",
-        { opacity: [0, 1] },
-        { delay: 0.2, duration: 0.1 }
-      );
+      // Non-blocking; page show runs its own synchronized fade.
+      welcomeTransition("#zen-welcome-pages", { from: 0, to: 1 });
     }
 
     async returnToIntro() {
@@ -457,16 +568,9 @@
       if (page.noSidebar || !page.stepNum) {
         return;
       }
+      // DOM only — opacity animated later with content+buttons as one group.
       await buildHero(page);
-      await animate(
-        "#zen-welcome-hero > *",
-        { opacity: [0, 1], y: [16, 0] },
-        {
-          delay: getMotion().stagger(0.05),
-          type: "spring",
-          bounce: 0.2,
-        }
-      );
+      setWelcomeOpacity("#zen-welcome-hero > *", 0);
     }
 
     async fadeInTitles(page) {
@@ -484,9 +588,13 @@
       }
     }
 
-    async fadeInButtons(page) {
+    /**
+     * Mount Back/Continue/Skip immediately and leave them interactive.
+     * Visibility is handled by the synchronized page fade (Option A).
+     */
+    mountButtons(page) {
       if (page.skipButtons) {
-        return;
+        return [];
       }
       const content = document.getElementById("zen-welcome-page-content");
       let btnRow = content.querySelector(".zen-welcome-btn-row");
@@ -495,8 +603,7 @@
         btnRow.className = "zen-welcome-btn-row";
         content.appendChild(btnRow);
       }
-      // Ensure the row itself is never left at the content's default opacity: 0.
-      btnRow.style.opacity = "1";
+      btnRow.style.opacity = "0";
 
       const mainRow = document.createElement("div");
       mainRow.className = "zen-welcome-btn-row-main";
@@ -526,13 +633,11 @@
             isPrimary ? "zen-welcome-btn-primary" : "zen-welcome-btn-ghost"
           );
         }
+        if (button.disabled) {
+          buttonElement.disabled = true;
+        }
         buttonElement.addEventListener("click", async () => {
-          // Ignore programmatic/early clicks while the fade-in lock is held
-          // (pointer-events:none alone does not block element.click()).
-          if (
-            this._navigating ||
-            buttonElement.style.pointerEvents === "none"
-          ) {
+          if (this._navigating || buttonElement.disabled) {
             return;
           }
           const shouldAdvance = await button.onclick();
@@ -542,7 +647,7 @@
             await this.next();
           }
         });
-        buttonElement.style.pointerEvents = "none";
+        // Interactive as soon as mounted — no pointer-events lock waiting on fades.
         insertedButtons.push(buttonElement);
         if (isSkip) {
           btnRow.appendChild(buttonElement);
@@ -550,95 +655,25 @@
           mainRow.appendChild(buttonElement);
         }
       }
-      try {
-        await animate(
-          ".zen-welcome-btn-row button",
-          { opacity: [0, 1], y: [12, 0] },
-          {
-            delay: getMotion().stagger(0.08, { startDelay: 0.2 }),
-            type: "spring",
-            bounce: 0.2,
-          }
-        );
-      } finally {
-        // Always unlock — never leave Continue/Back stuck non-interactive.
-        for (const button of insertedButtons) {
-          button.style.pointerEvents = "";
-          button.style.opacity = "1";
-        }
-      }
+      return insertedButtons;
     }
 
-    async fadeInContent() {
-      const selector = "#zen-welcome-page-content > *:not(.zen-welcome-btn-row)";
-      const targets = document.querySelectorAll(selector);
-      if (!targets.length) {
-        return;
-      }
-      await animate(
-        selector,
-        { opacity: [0, 1] },
-        {
-          delay: getMotion().stagger(0.1),
-          type: "spring",
-          bounce: 0.2,
-        }
+    async fadeOutPageGroup() {
+      await welcomeTransition(
+        "#zen-welcome-hero > *, #zen-welcome-page-content > *, #zen-welcome-wizard > .zen-welcome-decor, #zen-welcome-wizard > .zen-welcome-dots",
+        { from: 1, to: 0, y: 8 }
       );
     }
 
-    async fadeOutButtons() {
-      const btnRow = document.querySelector(".zen-welcome-btn-row");
-      if (!btnRow) {
-        return;
-      }
-      await animate(
-        ".zen-welcome-btn-row button",
-        { opacity: [1, 0], y: [0, -8] },
-        {
-          type: "spring",
-          bounce: 0,
-          delay: getMotion().stagger(0.05, { startDelay: 0.15 }),
-        }
+    async fadeInPageGroup() {
+      // Ensure starting opacity for the synchronized fade.
+      setWelcomeOpacity(
+        "#zen-welcome-hero > *, #zen-welcome-page-content > *",
+        0
       );
-      btnRow.remove();
-    }
-
-    async fadeOutSidebar() {
-      const hero = document.getElementById("zen-welcome-hero");
-      if (!hero) {
-        return;
-      }
-      await animate(
-        "#zen-welcome-hero > *",
-        { opacity: [1, 0], y: [0, -12] },
-        {
-          delay: getMotion().stagger(0.04, { startDelay: 0.1 }),
-          type: "spring",
-          bounce: 0,
-        }
-      );
-      hero.remove();
-      document.querySelector("#zen-welcome-wizard > .zen-welcome-decor")?.remove();
-      document
-        .querySelector("#zen-welcome-wizard > .zen-welcome-dots")
-        ?.remove();
-    }
-
-    async fadeOutContent() {
-      const selector = "#zen-welcome-page-content > *:not(.zen-welcome-btn-row)";
-      const targets = document.querySelectorAll(selector);
-      if (!targets.length) {
-        return;
-      }
-      await animate(
-        selector,
-        { opacity: [1, 0] },
-        {
-          delay: getMotion().stagger(0.05, { startDelay: 0.15 }),
-          type: "spring",
-          bounce: 0,
-          duration: 0.15,
-        }
+      await welcomeTransition(
+        "#zen-welcome-hero > *, #zen-welcome-page-content > *",
+        { from: 0, to: 1, y: 10 }
       );
     }
 
@@ -647,17 +682,21 @@
         return;
       }
       const previousPage = this._pages[this._currentPage];
-      const promises = [this.fadeOutSidebar(), this.fadeOutButtons()];
+      // One short fade for the whole page (content + controls together).
       if (!previousPage.dontFadeOut) {
-        promises.push(this.fadeOutContent());
+        await this.fadeOutPageGroup();
       }
-      await Promise.all(promises);
       await previousPage.fadeOut();
       const content = document.getElementById("zen-welcome-page-content");
       if (content) {
         content.innerHTML = "";
         content.removeAttribute("select-engine");
       }
+      document.getElementById("zen-welcome-hero")?.remove();
+      document.querySelector("#zen-welcome-wizard > .zen-welcome-decor")?.remove();
+      document
+        .querySelector("#zen-welcome-wizard > .zen-welcome-dots")
+        ?.remove();
     }
 
     async #showCurrentPage() {
@@ -666,19 +705,32 @@
         await this.finish();
         return;
       }
-      await Promise.all([
-        this.fadeInSidebar(currentPage),
-        this.fadeInTitles(currentPage),
-      ]);
-      // Unlock before page fadeIn so slow/failing pages (search engines) can
-      // advance; buttons are not in the DOM yet so users can't double-navigate.
+      // Mount hero + page body structure first. Search mounts the card grid
+      // synchronously here and fills icons in the background.
+      await this.fadeInSidebar(currentPage);
+      await this.fadeInTitles(currentPage);
+
+      const pageFade = Promise.resolve(currentPage.fadeIn()).catch(e => {
+        console.error("[Astra] Welcome page fadeIn failed:", e);
+      });
+      // Wait only for structure (search resolves before icon fetches).
+      await pageFade;
+
+      // Buttons after content so the row stays at the bottom of the flex column,
+      // but still before the synchronized fade — content and controls appear together.
+      this.mountButtons(currentPage);
+
+      performance.mark?.("zen-welcome-content-painted");
+
+      await this.fadeInPageGroup();
+      // Unlock after the short synchronized fade (≤150ms), not after multi-second springs.
       this._navigating = false;
-      await currentPage.fadeIn();
-      // Buttons after content so the row stays at the bottom of the flex column.
-      await Promise.all([
-        this.fadeInButtons(currentPage),
-        this.fadeInContent(),
-      ]);
+      performance.mark?.("zen-welcome-buttons-interactive");
+      try {
+        currentPage.afterPaint?.();
+      } catch (e) {
+        console.error("[Astra] Welcome afterPaint failed:", e);
+      }
     }
 
     async next() {
@@ -977,101 +1029,138 @@
           },
         ],
         async fadeIn() {
-          try {
-            const content = document.getElementById("zen-welcome-page-content");
-            const engineStore = new ZenSearchEngineStore();
-            await engineStore.init();
+          const content = document.getElementById("zen-welcome-page-content");
+          content.setAttribute("select-engine", "true");
 
-            content.setAttribute("select-engine", "true");
+          // Skeleton grid first (sync) so the page has structure before icons/data.
+          const skeletons = [];
+          for (let i = 0; i < kPreferredSearchEngines.length; i++) {
+            const label = document.createElement("label");
+            label.className =
+              "zen-welcome-engine-card zen-welcome-engine-skeleton";
+            label.setAttribute("aria-hidden", "true");
+            const icon = document.createElement("span");
+            icon.className = "engine-icon engine-icon-skeleton";
+            const name = document.createElement("span");
+            name.className = "zen-welcome-engine-name";
+            name.textContent = "\u00a0";
+            label.appendChild(icon);
+            label.appendChild(name);
+            content.appendChild(label);
+            skeletons.push(label);
+          }
 
-            const defaultEngine = await lazy.SearchService.getDefault();
-            const promises = [];
-            const applySelectedEngine = async engineName => {
-              const selectedEngine = engineStore.getEngineByName(engineName);
-              if (!selectedEngine) {
-                throw new Error(
-                  `Welcome search engine not in store: ${engineName}`
+          // Hydrate after the synchronized fade so replacement cards stay visible.
+          this.afterPaint = () => {
+            this.afterPaint = null;
+            (async () => {
+              try {
+                const engineStore = new ZenSearchEngineStore();
+                await engineStore.init();
+                const defaultEngine = await lazy.SearchService.getDefault();
+                const applySelectedEngine = async engineName => {
+                  const selectedEngine =
+                    engineStore.getEngineByName(engineName);
+                  if (!selectedEngine) {
+                    throw new Error(
+                      `Welcome search engine not in store: ${engineName}`
+                    );
+                  }
+                  await engineStore.setDefaultEngine(selectedEngine);
+                };
+
+                const btnRow = content.querySelector(".zen-welcome-btn-row");
+                for (const sk of skeletons) {
+                  sk.remove();
+                }
+
+                const iconJobs = [];
+                for (const engine of engineStore.getWelcomeEngines()) {
+                  const label = document.createElement("label");
+                  label.className = "zen-welcome-engine-card";
+                  label.style.opacity = "1";
+                  const engineId = engine.name
+                    .replace(/\s+/g, "-")
+                    .toLowerCase();
+                  label.setAttribute("for", engineId);
+                  const input = document.createElement("input");
+                  input.setAttribute("type", "radio");
+                  input.setAttribute("id", engineId);
+                  input.setAttribute(
+                    "name",
+                    "zen-welcome-set-default-browser"
+                  );
+                  input.setAttribute("hidden", "true");
+                  input.dataset.engineName = engine.name;
+                  if (engine.name === defaultEngine?.name) {
+                    input.setAttribute("checked", "true");
+                  }
+                  label.appendChild(input);
+                  const engineLabel = document.createElement("span");
+                  engineLabel.className = "zen-welcome-engine-name";
+                  engineLabel.textContent = engine.name;
+                  const icon = document.createElement("img");
+                  icon.setAttribute("width", "28");
+                  icon.setAttribute("height", "28");
+                  icon.setAttribute("class", "engine-icon");
+                  icon.setAttribute("alt", "");
+                  icon.setAttribute("decoding", "async");
+                  icon.style.visibility = "hidden";
+                  iconJobs.push(
+                    (async () => {
+                      try {
+                        const iconURL = await resolveWelcomeEngineIconURL(
+                          engine.originalEngine
+                        );
+                        if (iconURL) {
+                          icon.setAttribute("src", iconURL);
+                          icon.style.visibility = "";
+                        }
+                      } catch (e) {
+                        console.error(
+                          "[Astra] Welcome search engine icon failed:",
+                          engine.name,
+                          e
+                        );
+                      }
+                    })()
+                  );
+                  label.appendChild(icon);
+                  label.appendChild(engineLabel);
+                  if (btnRow) {
+                    content.insertBefore(label, btnRow);
+                  } else {
+                    content.appendChild(label);
+                  }
+                  input.addEventListener("change", async () => {
+                    if (!input.checked) {
+                      return;
+                    }
+                    try {
+                      await applySelectedEngine(engine.name);
+                    } catch (e) {
+                      console.error(
+                        "[Astra] Failed to set default search engine:",
+                        e
+                      );
+                    }
+                  });
+                }
+                Promise.all(iconJobs).catch(() => {});
+              } catch (e) {
+                console.error("[Astra] Search engine page fadeIn failed:", e);
+                for (const sk of skeletons) {
+                  sk.remove();
+                }
+                _welcomePagesInstance?.next().catch(err =>
+                  console.error(
+                    "[Astra] Failed to advance past broken welcome page:",
+                    err
+                  )
                 );
               }
-              await engineStore.setDefaultEngine(selectedEngine);
-            };
-            engineStore.getWelcomeEngines().forEach(engine => {
-              const label = document.createElement("label");
-              label.className = "zen-welcome-engine-card";
-              const engineId = engine.name.replace(/\s+/g, "-").toLowerCase();
-              label.setAttribute("for", engineId);
-              const input = document.createElement("input");
-              input.setAttribute("type", "radio");
-              input.setAttribute("id", engineId);
-              input.setAttribute("name", "zen-welcome-set-default-browser");
-              input.setAttribute("hidden", "true");
-              // Stable id for commit on leave — display names match
-              // search-config-v2 (Google/Bing/DuckDuckGo/Perplexity/Yahoo).
-              input.dataset.engineName = engine.name;
-              if (engine.name === defaultEngine?.name) {
-                input.setAttribute("checked", "true");
-              }
-              label.appendChild(input);
-              // Use <span>, not nested <label> (invalid HTML / hit-testing quirks).
-              const engineLabel = document.createElement("span");
-              engineLabel.className = "zen-welcome-engine-name";
-              engineLabel.textContent = engine.name;
-              const icon = document.createElement("img");
-              icon.setAttribute("width", "28");
-              icon.setAttribute("height", "28");
-              icon.setAttribute("class", "engine-icon");
-              icon.setAttribute("alt", "");
-              icon.setAttribute("decoding", "async");
-              promises.push(
-                (async () => {
-                  try {
-                    const iconURL = await resolveWelcomeEngineIconURL(
-                      engine.originalEngine
-                    );
-                    if (iconURL) {
-                      icon.setAttribute("src", iconURL);
-                      icon.style.visibility = "";
-                    } else {
-                      icon.style.visibility = "hidden";
-                    }
-                  } catch (e) {
-                    console.error(
-                      "[Astra] Welcome search engine icon failed:",
-                      engine.name,
-                      e
-                    );
-                    icon.style.visibility = "hidden";
-                  }
-                })()
-              );
-              label.appendChild(icon);
-              label.appendChild(engineLabel);
-              content.appendChild(label);
-              // Apply on radio change (label click checks the input).
-              input.addEventListener("change", async () => {
-                if (!input.checked) {
-                  return;
-                }
-                try {
-                  await applySelectedEngine(engine.name);
-                } catch (e) {
-                  console.error(
-                    "[Astra] Failed to set default search engine:",
-                    e
-                  );
-                }
-              });
-            });
-            await Promise.all(promises);
-          } catch (e) {
-            console.error("[Astra] Search engine page fadeIn failed:", e);
-            _welcomePagesInstance?.next().catch(err =>
-              console.error(
-                "[Astra] Failed to advance past broken welcome page:",
-                err
-              )
-            );
-          }
+            })();
+          };
         },
         async fadeOut() {
           const content = document.getElementById("zen-welcome-page-content");
@@ -1164,15 +1253,9 @@
       starting = true;
       button.disabled = true;
       try {
-        await animate(
+        await welcomeTransition(
           "#zen-welcome-start-inner > *, #zen-welcome-start > .zen-welcome-decor",
-          { opacity: [1, 0], y: [0, -10] },
-          {
-            type: "spring",
-            ease: [0.755, 0.05, 0.855, 0.06],
-            bounce: 0.3,
-            delay: getMotion().stagger(0.08),
-          }
+          { from: 1, to: 0, y: 8 }
         );
         new nsZenWelcomePages(getWelcomePages());
       } catch (e) {

@@ -343,10 +343,53 @@
   min-height: 0;
 }
 
-/* Content fades in via JS; keep the button row out of this rule so Next/Back
-   never stay stuck at opacity 0 after their own slide-in animation. */
-#zen-welcome-page-content > *:not(.zen-welcome-btn-row) {
+/* Content + button row start hidden and fade in together (Option A). */
+#zen-welcome-page-content > *,
+#zen-welcome-hero > * {
   opacity: 0;
+}
+
+.zen-welcome-engine-skeleton {
+  pointer-events: none;
+  min-height: 72px;
+}
+
+.zen-welcome-engine-skeleton .engine-icon-skeleton {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--zen-welcome-white-14);
+}
+
+.zen-welcome-engine-skeleton .zen-welcome-engine-name {
+  display: block;
+  width: 64px;
+  height: 10px;
+  border-radius: 4px;
+  background: var(--zen-welcome-white-10);
+  margin-top: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #zen-welcome-page-content > *,
+  #zen-welcome-hero > *,
+  #zen-welcome-pages,
+  #zen-welcome-start-title,
+  #zen-welcome-start-subtitle,
+  #zen-welcome-start-button,
+  #zen-welcome-import-link,
+  #zen-welcome-start .zen-welcome-dots,
+  #zen-welcome-start .zen-welcome-mark-wrap,
+  #zen-welcome-start .zen-welcome-wordmark {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .zen-welcome-dot {
+    transition: none !important;
+  }
 }
 
 /* ── Progress dots ── */
@@ -436,7 +479,6 @@
   margin-top: 0.35rem;
   padding-top: 4px;
   flex-shrink: 0;
-  opacity: 1;
   width: 100%;
   -moz-window-dragging: no-drag;
 }

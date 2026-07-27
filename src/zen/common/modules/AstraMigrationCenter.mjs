@@ -208,12 +208,40 @@ export async function openNativeMigrationWizard(win, options = {}) {
     }
   }
 
-  const entrypoint =
+  const entrypointRaw =
     options.entrypoint || mu.MIGRATION_ENTRYPOINTS?.UNKNOWN || "unknown";
+  const validEntrypoints = new Set(
+    Object.values(mu.MIGRATION_ENTRYPOINTS || {})
+  );
+  // Invalid labels (e.g. "astra-welcome") throw in Glean categorical metrics
+  // and abort showMigrationWizard before openWindow runs.
+  const entrypoint = validEntrypoints.has(entrypointRaw)
+    ? entrypointRaw
+    : mu.MIGRATION_ENTRYPOINTS?.FIRSTRUN ||
+      mu.MIGRATION_ENTRYPOINTS?.UNKNOWN ||
+      "firstrun";
   const wizardOptions = {
     entrypoint,
     isStartupMigration: !!options.isStartupMigration,
   };
+  // Welcome / explicit standalone: open a non-blocking dialog window. Avoid
+  // isStartupMigration's modal path (can block with no usable surface) and
+  // avoid about:preferences while welcome has #browser display:none.
+  if (options.standalone && !options.isStartupMigration) {
+    try {
+      Services.ww.openWindow(
+        win || null,
+        "chrome://browser/content/migration/migration-dialog-window.html",
+        "_blank",
+        "chrome,centerscreen,resizable=no,dialog",
+        { options: wizardOptions }
+      );
+      return { ok: true, opened: true };
+    } catch {
+      safeLog("open-wizard-failed", { errorCategory: "standalone-open" });
+      return { ok: false, reason: "wizard-open" };
+    }
+  }
   // Only pass migratorKey when caller explicitly skips source selection
   // (startup/welcome paths). Normal Astra Center leaves selection to the wizard.
   if (options.migratorKey && options.skipSourceSelection) {

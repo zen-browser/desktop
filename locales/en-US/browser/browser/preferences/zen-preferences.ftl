@@ -264,7 +264,7 @@ zen-compact-mode-styles-left = Hide Tab bar
 zen-compact-mode-styles-top = Hide Top bar
 zen-compact-mode-styles-both = Hide Both
 
-zen-urlbar-title = Zen URL Bar
+zen-urlbar-title = URL Bar
 zen-urlbar-header = General settings for the URL bar
 zen-urlbar-description = Customize the URL bar to your liking
 
@@ -305,7 +305,7 @@ zenCKSOption-group-historyAndBookmarks = History & Bookmarks
 zenCKSOption-group-mediaAndDisplay = Media & Display
 zenCKSOption-group-zen-compact-mode = Compact Mode
 zenCKSOption-group-zen-workspace = Workspaces
-zenCKSOption-group-zen-other = Other Zen Features
+zenCKSOption-group-zen-other = Other Astra Features
 zenCKSOption-group-zen-split-view = Split View
 zenCKSOption-group-devTools = Developer Tools
 

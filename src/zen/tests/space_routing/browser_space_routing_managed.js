@@ -33,6 +33,7 @@ add_task(async function test_managed_route_resolves_space_by_name() {
       userContextId: work.containerTabId,
       isRouteFound: true,
       targetRoute: work.uuid,
+      targetWorkspaceName: work.name,
     },
     "A managed route resolves its target Space by name to that Space's id"
   );

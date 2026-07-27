@@ -16,13 +16,33 @@ const { ContextualIdentityService } = ChromeUtils.importESModule(
 );
 
 async function withManagedSpaces(json, fn) {
+  const before = new Set(gZenWorkspaces.getWorkspaces().map(w => w.uuid));
+  const activeBefore = gZenWorkspaces.activeWorkspace;
   await SpecialPowers.pushPrefEnv({
     set: [["zen.space-routing.managed-spaces", JSON.stringify(json)]],
   });
   try {
     await fn();
   } finally {
+    // Pop the pref first: while it is set the Spaces it describes are managed,
+    // and removeWorkspace refuses to delete those.
     await SpecialPowers.popPrefEnv();
+    // The reconcile pass creates Spaces as a side effect. Leaving them behind
+    // leaks into later tests in this directory, whose real addTab() calls then
+    // trip over a workspace whose tab has no linked browser yet.
+    for (const ws of gZenWorkspaces.getWorkspaces()) {
+      if (!before.has(ws.uuid)) {
+        await gZenWorkspaces.removeWorkspace(ws.uuid);
+      }
+    }
+    if (activeBefore && gZenWorkspaces.activeWorkspace !== activeBefore) {
+      const restore = gZenWorkspaces
+        .getWorkspaces()
+        .find(w => w.uuid === activeBefore);
+      if (restore) {
+        await gZenWorkspaces.changeWorkspace(restore);
+      }
+    }
   }
 }
 

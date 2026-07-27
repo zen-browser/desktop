@@ -1,7 +1,7 @@
 diff --git a/browser/components/sidebar/sidebar-main.css b/browser/components/sidebar/sidebar-main.css
 --- a/browser/components/sidebar/sidebar-main.css
 +++ b/browser/components/sidebar/sidebar-main.css
-@@ -85,8 +85,18 @@
+@@ -85,10 +85,19 @@
      --button-outer-padding-block: var(--space-xxsmall);
  
      &:first-of-type {

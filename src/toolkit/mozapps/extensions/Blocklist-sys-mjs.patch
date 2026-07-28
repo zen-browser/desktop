@@ -1,0 +1,13 @@
+diff --git a/toolkit/mozapps/extensions/Blocklist.sys.mjs b/toolkit/mozapps/extensions/Blocklist.sys.mjs
+index 4e1e0aac91612c846bb664efe3dbb50ecf63597d..5fbdcd6f05363527deeba524e6d8a3137b8925e8 100644
+--- a/toolkit/mozapps/extensions/Blocklist.sys.mjs
++++ b/toolkit/mozapps/extensions/Blocklist.sys.mjs
+@@ -411,7 +411,7 @@ class TargetAppFilter {
+     if (!Array.isArray(versionRange)) {
+       const { maxVersion = "*" } = versionRange;
+       const matchesRange =
+-        Services.vc.compare(lazy.gApp.version, maxVersion) <= 0;
++        Services.vc.compare(lazy.gApp.platformVersion, maxVersion) <= 0;
+       return matchesRange ? entry : null;
+     }
+ 

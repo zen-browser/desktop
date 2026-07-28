@@ -16,7 +16,7 @@
         "type": "github"
       }
     },
-    "nixpkgs-cbindgen": {
+    "nixpkgs-newer": {
       "locked": {
         "lastModified": 1784783405,
         "narHash": "sha256-4IHyyLgLBdKefkljdKod4IMn023pQiDXAWJA187cmdY=",
@@ -35,7 +35,7 @@
     "root": {
       "inputs": {
         "nixpkgs": "nixpkgs",
-        "nixpkgs-cbindgen": "nixpkgs-cbindgen"
+        "nixpkgs-newer": "nixpkgs-newer"
       }
     }
   },

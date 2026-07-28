@@ -1,134 +1,236 @@
-<!--
-   - This Source Code Form is subject to the terms of the Mozilla Public
-   - License, v. 2.0. If a copy of the MPL was not distributed with this
-   - file, You can obtain one at http://mozilla.org/MPL/2.0/.
-   -->
+# Astra Browser Code of Conduct
 
-# Contributor Covenant Code of Conduct
+## Our commitment
 
-## Our Pledge
+Astra Browser is an open-source project built around curiosity, collaboration, respect and the shared goal of creating a better browsing experience.
 
-We as members, contributors, and leaders pledge to make participation in our
-community a harassment-free experience for everyone, regardless of age, body
-size, visible or invisible disability, ethnicity, sex characteristics, gender
-identity and expression, level of experience, education, socio-economic status,
-nationality, personal appearance, race, religion, or sexual identity
-and orientation.
+We are committed to providing a welcoming and safe environment for everyone who participates in the Astra community, regardless of experience level, background, identity, location, education or technical ability.
 
-We pledge to act and interact in ways that contribute to an open, welcoming,
-diverse, inclusive, and healthy community.
+Everyone participating in the project is expected to follow this Code of Conduct.
 
-## Our Standards
+## Our values
 
-Examples of behavior that contributes to a positive environment for our
-community include:
+The Astra community is guided by the following principles:
 
-- Demonstrating empathy and kindness toward other people
-- Being respectful of differing opinions, viewpoints, and experiences
-- Giving and gracefully accepting constructive feedback
-- Accepting responsibility and apologizing to those affected by our mistakes,
-  and learning from the experience
-- Focusing on what is best not just for us as individuals, but for the
-  overall community
+- **Respect:** Treat every person with dignity and patience.
+- **Collaboration:** Work together and help others succeed.
+- **Constructive feedback:** Critique ideas and code without attacking people.
+- **Transparency:** Communicate honestly about bugs, limitations and project decisions.
+- **Inclusion:** Make space for contributors with different experiences and perspectives.
+- **Learning:** Allow people to ask questions, make mistakes and improve.
+- **User safety:** Do not intentionally introduce harmful, deceptive or insecure behavior.
 
-Examples of unacceptable behavior include:
+## Expected behavior
 
-- The use of sexualized language or imagery, and sexual attention or
-  advances of any kind
-- Trolling, insulting or derogatory comments, and personal or political attacks
-- Public or private harassment
-- Publishing others' private information, such as a physical or email
-  address, without their explicit permission
-- Other conduct which could reasonably be considered inappropriate in a
-  professional setting
+Community members are expected to:
 
-## Enforcement Responsibilities
+- Communicate respectfully and professionally.
+- Be patient with beginners and first-time contributors.
+- Give feedback that is specific, useful and focused on the work.
+- Accept constructive criticism without hostility.
+- Respect different technical opinions and design preferences.
+- Clearly explain disagreements instead of insulting others.
+- Credit contributors for their work and ideas.
+- Protect private or sensitive information.
+- Follow project contribution, security and licensing guidelines.
+- Report serious problems through the appropriate private channel.
+- Help maintain a welcoming and productive community.
 
-Community leaders are responsible for clarifying and enforcing our standards of
-acceptable behavior and will take appropriate and fair corrective action in
-response to any behavior that they deem inappropriate, threatening, offensive,
-or harmful.
+Examples of constructive feedback include:
 
-Community leaders have the right and responsibility to remove, edit, or reject
-comments, commits, code, wiki edits, issues, and other contributions that are
-not aligned to this Code of Conduct, and will communicate reasons for moderation
-decisions when appropriate.
+> “This change may increase memory usage. Could we add a benchmark before merging?”
+
+> “I can reproduce this issue on Windows 11. Here are the steps and logs.”
+
+> “The current interface may be difficult to use with a keyboard. Could we review its accessibility?”
+
+## Unacceptable behavior
+
+The following behavior is not allowed:
+
+- Harassment, bullying, intimidation or personal attacks.
+- Discrimination based on identity, background, nationality, disability, religion, gender, age or any other personal characteristic.
+- Threats of violence or encouragement of harm.
+- Sexual harassment or unwanted sexual attention.
+- Publishing another person's private information without permission.
+- Deliberately humiliating or targeting another community member.
+- Repeated disruptive arguments after a moderation decision has been made.
+- Spam, scams, impersonation or deceptive promotion.
+- Sharing malware, malicious code or intentionally unsafe instructions.
+- Knowingly submitting code designed to steal data, weaken security or mislead users.
+- Abusing project infrastructure, automation, issue trackers or discussions.
+- Creating fake reviews, fake download counts or misleading project claims.
+- Plagiarizing another person's code, design, documentation or research.
+- Removing required copyright, attribution or license notices.
+- Retaliating against someone who reports a concern in good faith.
+
+Disagreement is allowed. Disrespect is not.
+
+## Technical discussions
+
+Astra encourages strong technical discussion, but conversations must remain focused on evidence and project goals.
+
+When disagreeing:
+
+1. Explain the technical concern clearly.
+2. Provide examples, logs, measurements or documentation when possible.
+3. Consider alternative solutions.
+4. Avoid assumptions about another person's skills or intentions.
+5. Respect the final project decision even when your preferred solution is not selected.
+
+Maintainers may close conversations that become repetitive, hostile, unrelated or unproductive.
 
 ## Scope
 
-This Code of Conduct applies within all community spaces, and also applies when
-an individual is officially representing the community in public spaces.
-Examples of representing our community include using an official e-mail address,
-posting via an official social media account, or acting as an appointed
-representative at an online or offline event.
+This Code of Conduct applies to all Astra community spaces, including:
+
+- GitHub issues
+- Pull requests
+- Discussions
+- Code reviews
+- Project documentation
+- Official social-media accounts
+- Community chats or forums
+- Online and in-person project events
+- Private communication related to Astra
+- Any situation where someone publicly represents the Astra project
+
+Behavior outside official spaces may also be considered when it creates a serious safety risk for project participants.
+
+## Reporting a concern
+
+Do not report harassment, threats or sensitive personal matters through a public GitHub issue.
+
+Send a private report to:
+
+**Email:** `REPLACE_WITH_PRIVATE_CONTACT_EMAIL`
+
+Include as much of the following information as possible:
+
+- What happened
+- Where it happened
+- When it happened
+- People involved
+- Screenshots, links or other evidence
+- Whether the behavior is continuing
+- Any immediate safety concern
+- The outcome you are requesting
+
+Anonymous or incomplete reports may still be reviewed, although limited information can make investigation more difficult.
+
+Reports made honestly and in good faith will not result in punishment, even when the available evidence is insufficient for action.
+
+## Privacy and confidentiality
+
+Maintainers will handle reports as privately as reasonably possible.
+
+Information may be shared only when necessary to:
+
+- Investigate the report
+- Protect affected community members
+- Obtain relevant technical or legal advice
+- Comply with applicable law
+- Prevent an immediate safety or security risk
+
+The project will not publicly identify a reporter without permission unless disclosure is legally required.
 
 ## Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the community leaders responsible for enforcement at
-hello@zen-browser.app.
-All complaints will be reviewed and investigated promptly and fairly.
+Maintainers may take action depending on the seriousness, impact and history of the behavior.
 
-All community leaders are obligated to respect the privacy and security of the
-reporter of any incident.
+Possible actions include:
 
-## Enforcement Guidelines
+### 1. Informal guidance
 
-Community leaders will follow these Community Impact Guidelines in determining
-the consequences for any action they deem in violation of this Code of Conduct:
+A private explanation of why certain behavior was inappropriate and how to improve it.
 
-### 1. Correction
+### 2. Formal warning
 
-**Community Impact**: Use of inappropriate language or other behavior deemed
-unprofessional or unwelcome in the community.
+A documented warning explaining the violation and the behavior expected in the future.
 
-**Consequence**: A private, written warning from community leaders, providing
-clarity around the nature of the violation and an explanation of why the
-behavior was inappropriate. A public apology may be requested.
+### 3. Temporary restriction
 
-### 2. Warning
+Temporary limits on participation in issues, discussions, pull requests or other community spaces.
 
-**Community Impact**: A violation through a single incident or series
-of actions.
+### 4. Contribution rejection
 
-**Consequence**: A warning with consequences for continued behavior. No
-interaction with the people involved, including unsolicited interaction with
-those enforcing the Code of Conduct, for a specified period of time. This
-includes avoiding interactions in community spaces as well as external channels
-like social media. Violating these terms may lead to a temporary or
-permanent ban.
+Closing or rejecting contributions associated with repeated disruption, abuse, licensing violations or security concerns.
 
-### 3. Temporary Ban
+### 5. Temporary ban
 
-**Community Impact**: A serious violation of community standards, including
-sustained inappropriate behavior.
+Temporary removal from Astra community spaces.
 
-**Consequence**: A temporary ban from any sort of interaction or public
-communication with the community for a specified period of time. No public or
-private interaction with the people involved, including unsolicited interaction
-with those enforcing the Code of Conduct, is allowed during this period.
-Violating these terms may lead to a permanent ban.
+### 6. Permanent ban
 
-### 4. Permanent Ban
+Permanent removal when behavior is severe, repeated or creates a significant safety risk.
 
-**Community Impact**: Demonstrating a pattern of violation of community
-standards, including sustained inappropriate behavior, harassment of an
-individual, or aggression toward or disparagement of classes of individuals.
+Serious threats, malware distribution, deliberate security abuse or targeted harassment may result in immediate removal without a prior warning.
 
-**Consequence**: A permanent ban from any sort of public interaction within
-the community.
+## Maintainer responsibilities
 
-## Attribution
+Project maintainers are responsible for:
 
-This Code of Conduct is adapted from the [Contributor Covenant][homepage],
-version 2.0, available at
-https://www.contributor-covenant.org/version/2/0/code_of_conduct.html.
+- Applying this Code of Conduct fairly.
+- Responding to reports within a reasonable period.
+- Avoiding conflicts of interest when reviewing complaints.
+- Documenting important enforcement decisions privately.
+- Protecting reporters from retaliation.
+- Correcting decisions when new evidence becomes available.
+- Holding maintainers and contributors to the same behavioral standards.
 
-Community Impact Guidelines were inspired by [Mozilla's code of conduct
-enforcement ladder](https://github.com/mozilla/diversity).
+A maintainer directly involved in a complaint should not be the sole person deciding its outcome whenever another suitable reviewer is available.
 
-[homepage]: https://www.contributor-covenant.org
+## Appeals
 
-For answers to common questions about this code of conduct, see the FAQ at
-https://www.contributor-covenant.org/faq. Translations are available at
-https://www.contributor-covenant.org/translations.
+A person affected by an enforcement decision may request a review by contacting the reporting email.
+
+An appeal should explain:
+
+- Which decision is being appealed
+- Why the decision may be incorrect or disproportionate
+- Any new information that should be considered
+
+Submitting an appeal does not automatically reverse the original decision.
+
+## Good-faith security research
+
+Astra welcomes responsible security research.
+
+Security researchers should:
+
+- Avoid accessing or changing data that does not belong to them.
+- Avoid disrupting users or project infrastructure.
+- Report vulnerabilities privately through the process described in `SECURITY.md`.
+- Give maintainers a reasonable opportunity to investigate before public disclosure.
+- Follow applicable laws and platform rules.
+
+Responsible reports will be treated respectfully.
+
+## Project decisions
+
+Maintainers are responsible for the final direction of Astra Browser.
+
+Not every feature request, pull request or design proposal will be accepted. Rejection of an idea or contribution is not a rejection of the contributor as a person.
+
+Project decisions may consider:
+
+- Security
+- Privacy
+- Performance
+- Accessibility
+- Maintenance cost
+- Compatibility
+- Product direction
+- Available contributor time
+- Upstream Firefox and Zen Browser changes
+
+## Acknowledgement
+
+By participating in the Astra Browser community, you agree to follow this Code of Conduct and help create a respectful, safe and constructive open-source environment.
+
+---
+
+Astra Browser is currently led and maintained by  
+[Hrishikesh Gade](https://github.com/Hrishikeshmind)
+
+This Code of Conduct may be updated as the project and its community grow.

@@ -79,17 +79,23 @@ const MAIN_PINNED_LIMIT = 12;
 
 /** Used when the packaged catalog has not loaded yet. */
 const EDITOR_CATEGORY_FALLBACK = [
-  { id: "mail", label: "Mail" },
-  { id: "meetings", label: "Meetings" },
-  { id: "storage", label: "Storage" },
-  { id: "productivity", label: "Productivity" },
-  { id: "education", label: "Education" },
-  { id: "entertainment", label: "Entertainment" },
-  { id: "shopping", label: "Shopping" },
+  { id: "communication", label: "Communication" },
+  { id: "study", label: "Study" },
+  { id: "work", label: "Work" },
   { id: "government", label: "Government" },
-  { id: "news", label: "News" },
-  { id: "business", label: "Business" },
+  { id: "finance", label: "Finance" },
+  { id: "entertainment", label: "Entertainment" },
 ];
+
+/** First-run launchpad pins when the user has not customized favorites yet. */
+const DEFAULT_LAUNCHPAD_FAVORITES = Object.freeze([
+  "gmail",
+  "google-meet",
+  "google-drive",
+  "digilocker",
+  "youtube",
+  "linkedin",
+]);
 
 const EDITOR_ERROR_FALLBACKS = {
   "astra-app-hub-error-empty-name": "Enter an app name.",
@@ -566,7 +572,13 @@ class AstraAppHubManager {
         this.#catalog = loaded.catalog;
         this.#catalogError = null;
         this.#catalogDiag = null;
-        await this.#pruneUnknown();
+        await this.#seedDefaultFavorites();
+        try {
+          await this.#pruneUnknown();
+        } catch (pruneError) {
+          // Prune must not wipe a successfully loaded catalog.
+          console.warn("[AstraAppHub] prune failed:", pruneError);
+        }
       } catch (catalogError) {
         if (this.#destroyed || window.closed) {
           return null;
@@ -615,10 +627,20 @@ class AstraAppHubManager {
 
   /**
    * Launchpad readiness: shell + mandatory controls + successful render.
-   * Catalog failure is non-fatal and does not block advanced mode.
+   * If the packaged catalog failed, keep the static fallback visible — advanced
+   * Browse would otherwise open empty while hiding working shortcut tiles.
    */
   #applyCatalogReadyState() {
     if (this.#destroyed || window.closed) {
+      return;
+    }
+    if (this.#catalogError && !this.#catalog) {
+      try {
+        window.gAstraAppHubBootstrap?.setAdvancedReady?.(false);
+      } catch {
+        // ignore
+      }
+      this.#showFallbackFailureBanner(true);
       return;
     }
     let ready = false;
@@ -671,6 +693,58 @@ class AstraAppHubManager {
       this.#handoffFocusFromHiddenFallback();
     }
     this.#showFallbackFailureBanner(false);
+  }
+
+  /**
+   * One-time first-run pins so the launchpad is useful immediately.
+   * Skipped once the user has any favorites/custom apps or after seed.
+   */
+  async #seedDefaultFavorites() {
+    if (!this.#catalog?.apps?.length) {
+      return;
+    }
+    const state = gAstraAppHubState.data;
+    if (!state) {
+      return;
+    }
+    if (state.settings?.defaultsSeeded) {
+      return;
+    }
+    if ((state.favorites || []).length || (state.customApps || []).length) {
+      try {
+        await gAstraAppHubState.update(current => {
+          const settings = {
+            ...(current.settings || {}),
+            defaultsSeeded: true,
+          };
+          return { ...current, settings };
+        });
+      } catch {
+        // ignore
+      }
+      return;
+    }
+    const known = new Set(this.#catalog.apps.map(a => a.id));
+    const seed = DEFAULT_LAUNCHPAD_FAVORITES.filter(id => known.has(id));
+    if (!seed.length) {
+      return;
+    }
+    try {
+      await gAstraAppHubState.update(current => {
+        const settings = {
+          ...(current.settings || {}),
+          defaultsSeeded: true,
+        };
+        return {
+          ...current,
+          favorites: seed.slice(0, MAIN_PINNED_LIMIT),
+          settings,
+        };
+      });
+      this.#lastAppliedRevision = gAstraAppHubState.revision;
+    } catch (error) {
+      console.warn("[AstraAppHub] default favorite seed failed:", error);
+    }
   }
 
   /**
@@ -1742,7 +1816,7 @@ class AstraAppHubManager {
       const category =
         typeof app.category === "string" && knownCats.has(app.category)
           ? app.category
-          : "productivity";
+          : "work";
       map.set(app.id, {
         ...app,
         category,
@@ -2401,7 +2475,7 @@ class AstraAppHubManager {
     row.classList.add("astra-app-hub-recent-row", "astra-app-hub-item");
     row.setAttribute("data-app-id", app.id);
     row.setAttribute("data-url", app.url);
-    row.setAttribute("tooltiptext", app.name);
+    row.setAttribute("tooltiptext", `${app.name} — Opens in new tab`);
     row.setAttribute("aria-label", app.name);
 
     const iconInfo = resolveAppIcon(app);
@@ -2715,7 +2789,10 @@ class AstraAppHubManager {
     );
     button.setAttribute("data-app-id", app.id);
     button.setAttribute("data-url", app.url);
-    button.setAttribute("tooltiptext", app.name);
+    button.setAttribute(
+      "tooltiptext",
+      `${app.name} — Opens in new tab`
+    );
     if (app.builtin === false || String(app.id).startsWith("custom-")) {
       button.setAttribute("data-custom", "true");
     }
@@ -4157,7 +4234,7 @@ class AstraAppHubManager {
         urlEl.value = "https://";
       }
       if (catEl && catEl.options.length) {
-        catEl.value = "productivity";
+        catEl.value = "work";
       }
       if (kwEl) {
         kwEl.value = "";
@@ -4242,7 +4319,7 @@ class AstraAppHubManager {
     const kwEl = document.getElementById("astra-app-hub-editor-keywords");
     const name = (nameEl?.value || "").trim();
     const url = (urlEl?.value || "").trim();
-    const category = catEl?.value || "productivity";
+    const category = catEl?.value || "work";
     const keywords = (kwEl?.value || "")
       .split(",")
       .map(s => s.trim())

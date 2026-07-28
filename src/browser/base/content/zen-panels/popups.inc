@@ -185,7 +185,7 @@
       <vbox id="PanelUI-zen-app-launcher-fallback-list">
 
 
-      <label class="zen-app-launcher-section-title" value="📧 Mail"/>
+      <label class="zen-app-launcher-section-title" value="Communication"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://gmail.com"
@@ -269,7 +269,7 @@
         </toolbarbutton>
       </hbox>
 
-      <label class="zen-app-launcher-section-title" value="📹 Meetings"/>
+      <label class="zen-app-launcher-section-title" value="Communication"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://meet.google.com"
@@ -337,7 +337,7 @@
         </toolbarbutton>
       </hbox>
 
-      <label class="zen-app-launcher-section-title" value="💾 Storage"/>
+      <label class="zen-app-launcher-section-title" value="Work"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://drive.google.com"
@@ -405,7 +405,7 @@
         </toolbarbutton>
       </hbox>
 
-      <label class="zen-app-launcher-section-title" value="📝 Productivity"/>
+      <label class="zen-app-launcher-section-title" value="Work"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://docs.google.com"
@@ -489,7 +489,7 @@
         </toolbarbutton>
       </hbox>
 
-      <label class="zen-app-launcher-section-title" value="🎓 Education"/>
+      <label class="zen-app-launcher-section-title" value="Study"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://classroom.google.com"
@@ -557,7 +557,7 @@
         </toolbarbutton>
       </hbox>
 
-      <label class="zen-app-launcher-section-title" value="🎵 Entertainment"/>
+      <label class="zen-app-launcher-section-title" value="Entertainment"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://youtube.com"
@@ -641,7 +641,7 @@
         </toolbarbutton>
       </hbox>
 
-      <label class="zen-app-launcher-section-title" value="🛒 Shopping"/>
+      <label class="zen-app-launcher-section-title" value="Entertainment"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://amazon.in"
@@ -709,7 +709,7 @@
         </toolbarbutton>
       </hbox>
 
-      <label class="zen-app-launcher-section-title" value="🇮🇳 Government"/>
+      <label class="zen-app-launcher-section-title" value="Government"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://irctc.co.in"
@@ -793,7 +793,7 @@
         </toolbarbutton>
       </hbox>
 
-      <label class="zen-app-launcher-section-title" value="📰 News"/>
+      <label class="zen-app-launcher-section-title" value="Work"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://inshorts.com"
@@ -861,7 +861,7 @@
         </toolbarbutton>
       </hbox>
 
-      <label class="zen-app-launcher-section-title" value="💼 Business"/>
+      <label class="zen-app-launcher-section-title" value="Work"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
           data-url="https://linkedin.com"

@@ -55,6 +55,7 @@ function defaultSettings() {
   return {
     showRecent: true,
     showFavorites: true,
+    defaultsSeeded: false,
   };
 }
 
@@ -73,13 +74,30 @@ export function defaultState() {
   };
 }
 
+/**
+ * Cross-compartment-safe plain-object check.
+ * A strict `=== Object.prototype` test fails for JSON clones created in another
+ * realm (e.g. window global vs system-module global), which previously made the
+ * packaged App Hub catalog always fail validation in the browser UI.
+ */
 export function isPlainObject(value) {
-  return (
-    value !== null &&
-    typeof value === "object" &&
-    !Array.isArray(value) &&
-    Object.getPrototypeOf(value) === Object.prototype
-  );
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    return false;
+  }
+  const proto = Object.getPrototypeOf(value);
+  if (proto === null || proto === Object.prototype) {
+    return true;
+  }
+  // Plain object from another global: its prototype is that realm's
+  // Object.prototype (proto-of-proto is null). Reject class instances.
+  try {
+    return (
+      Object.prototype.toString.call(value) === "[object Object]" &&
+      Object.getPrototypeOf(proto) === null
+    );
+  } catch {
+    return false;
+  }
 }
 
 export function hasDangerousKey(obj) {
@@ -409,7 +427,7 @@ function sanitizeCustomApp(raw, knownUrls = new Set()) {
   const category =
     typeof raw.category === "string"
       ? raw.category.trim().slice(0, MAX_ID_LENGTH)
-      : "productivity";
+      : "work";
   if (!category || DANGEROUS_KEYS.has(category)) {
     return null;
   }
@@ -520,6 +538,10 @@ function sanitizeSettings(value) {
       typeof value.showFavorites === "boolean"
         ? value.showFavorites
         : defaults.showFavorites,
+    defaultsSeeded:
+      typeof value.defaultsSeeded === "boolean"
+        ? value.defaultsSeeded
+        : defaults.defaultsSeeded,
   };
 }
 
@@ -1192,7 +1214,7 @@ class AstraAppHubStateStore {
     const category =
       typeof input.category === "string" && input.category.trim()
         ? input.category.trim().slice(0, MAX_ID_LENGTH)
-        : "productivity";
+        : "work";
     const now = Date.now();
     const customIconData = sanitizeDataImageURI(input.customIconData);
     // Legacy filename for cleanup only — not a render source.

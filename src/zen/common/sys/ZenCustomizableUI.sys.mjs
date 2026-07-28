@@ -90,7 +90,7 @@ export const ZenCustomizableUI = new (class {
             <toolbarbutton
               class="toolbarbutton-1"
               command="cmd_zenOpenAppLauncher"
-              tooltiptext="Bharat Apps 🇮🇳"
+              tooltiptext="Astra App Hub"
               flex="1" />
           </toolbaritem>
           <toolbaritem id="astra-suraksha-button" removable="true" overflows="false" data-l10n-id="astra-suraksha-button">

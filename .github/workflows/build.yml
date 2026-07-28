@@ -489,7 +489,18 @@ jobs:
           rm stop.sh || true
 
   release:
-    if: ${{ inputs.create_release || inputs.update_branch == 'twilight' }}
+    if: >-
+      ${{ always()
+          && !cancelled()
+          && (inputs.create_release || inputs.update_branch == 'twilight')
+          && needs.build-data.result == 'success'
+          && needs.linux.result == 'success'
+          && needs.windows-step-1.result == 'success'
+          && needs.check-release.result == 'success'
+          && needs.source.result == 'success'
+          && (needs.appimage.result == 'success' || needs.appimage.result == 'skipped')
+          && (needs.stop-self-hosted.result == 'success' || needs.stop-self-hosted.result == 'skipped' || needs.stop-self-hosted.result == 'failure')
+      }}
     permissions: write-all
     name: Release
     needs:
@@ -526,36 +537,66 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
-      - name: Download object files
-        if: ${{ false }}
-        run: |
-          git clone https://github.com/zen-browser/windows-binaries.git .github/workflows/object --depth 1
-
       - name: Copy update manifests
         env:
           RELEASE_BRANCH: ${{ inputs.update_branch }}
         run: |
-          mkdir -p updates-server || true
-          cd updates-server
-          git init || true
-          git checkout -b updates 2>/dev/null || git checkout updates 2>/dev/null || true
-          cd ..
+          set -euo pipefail
           cd updates-server
           mkdir -p updates
-          cp -a ../linux_update_manifest_x86_64/.  updates/
-          cp -a ../linux_update_manifest_aarch64/.  updates/
 
-          if [[ $RELEASE_BRANCH == 'release' ]]; then
-            if [ -d "../.github/workflows/object" ]; then
-              cp -a ../.github/workflows/object/windows-x64-signed-x86_64/update_manifest/. updates/ || true
-              cp -a ../.github/workflows/object/windows-x64-signed-arm64/update_manifest/. updates/ || true
+          # Required Linux + Windows manifests (built locally for both channels).
+          # Do not depend on zen-browser/windows-binaries.
+          for dir in \
+            ../linux_update_manifest_x86_64 \
+            ../linux_update_manifest_aarch64 \
+            ../windows_update_manifest_x86_64 \
+            ../windows_update_manifest_arm64
+          do
+            if [[ ! -d "$dir" ]]; then
+              echo "::error::Missing update manifest artifact directory: $dir"
+              ls -la .. || true
+              exit 1
             fi
+            cp -a "$dir"/. updates/
+          done
+
+          # macOS is optional so a Mac build failure does not block Windows/Linux updates.
+          if [[ -d ../macos_update_manifest ]]; then
+            cp -a ../macos_update_manifest/. updates/
           else
-            cp -a ../windows_update_manifest_x86_64/.  updates/
-            cp -a ../windows_update_manifest_arm64/.  updates/
+            echo "::warning::macos_update_manifest artifact missing; skipping Darwin update.xml publish"
           fi
 
-          cp -a ../macos_update_manifest/.  updates/
+          echo "=== ${RELEASE_BRANCH} update.xml files ==="
+          mapfile -t channel_xmls < <(find updates/browser -type f \( -path "*/WINNT_*/${RELEASE_BRANCH}/update.xml" -o -path "*/Linux_*/${RELEASE_BRANCH}/update.xml" \) | sort)
+          if [[ ${#channel_xmls[@]} -eq 0 ]]; then
+            echo "::error::No Linux/Windows update.xml files found for channel '${RELEASE_BRANCH}'"
+            find updates -type f -name 'update.xml' -print | sort || true
+            exit 1
+          fi
+          empty=0
+          windows_ok=0
+          for f in "${channel_xmls[@]}"; do
+            if ! grep -q '<patch ' "$f"; then
+              echo "::error::Empty or stub update manifest: $f"
+              cat "$f" || true
+              empty=1
+            else
+              echo "OK non-empty: $f ($(wc -c < "$f") bytes)"
+              if [[ "$f" == *"/WINNT_"* ]]; then
+                windows_ok=1
+              fi
+            fi
+          done
+          if [[ "$empty" -ne 0 ]]; then
+            echo "One or more ${RELEASE_BRANCH} Linux/Windows update.xml files are empty stubs; refusing to publish."
+            exit 1
+          fi
+          if [[ "$windows_ok" -eq 0 ]]; then
+            echo "::error::No non-empty Windows (WINNT_*) update.xml published for '${RELEASE_BRANCH}'"
+            exit 1
+          fi
 
       - name: Commit
         uses: stefanzweifel/git-auto-commit-action@v5
@@ -564,6 +605,8 @@ jobs:
           commit_user_name: Astra Browser Robot
           commit_user_email: astra-browser-auto@users.noreply.github.com
           repository: ./updates-server
+          branch: updates
+          file_pattern: updates/**
 
       - name: Generate Release Notes
         env:

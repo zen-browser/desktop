@@ -431,7 +431,7 @@ jobs:
           fi
 
           if [ -f ./dist/output.mar ]; then
-            mv ./dist/output.mar windows.mar
+            mv ./dist/output.mar "windows${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.mar"
           fi
 
           echo "=== Final files ==="
@@ -492,8 +492,8 @@ jobs:
           path: ./astra.installer*.exe
           if-no-files-found: warn
 
-      - name: Upload artifact (if Twilight branch, .mar)
-        if: ${{ inputs['release-branch'] == 'twilight' && !inputs['generate-gpo'] }}
+      - name: Upload artifact (.mar)
+        if: ${{ !inputs['generate-gpo'] }}
         uses: actions/upload-artifact@v4
         with:
           retention-days: 5
@@ -501,8 +501,8 @@ jobs:
           path: ./windows${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.mar
           if-no-files-found: warn
 
-      - name: Upload artifact (if Twilight branch, update manifests)
-        if: ${{ inputs['release-branch'] == 'twilight' && !inputs['generate-gpo'] }}
+      - name: Upload artifact (update manifests)
+        if: ${{ !inputs['generate-gpo'] }}
         uses: actions/upload-artifact@v4
         with:
           retention-days: 5

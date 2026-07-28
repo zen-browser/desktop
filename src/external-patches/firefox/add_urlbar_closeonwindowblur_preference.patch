@@ -32,7 +32,7 @@ diff --git a/browser/components/urlbar/UrlbarPrefs.sys.mjs b/browser/components/
    // or remote settings.
    ["flightStatus.minKeywordLength", 0],
  
-diff --git a/browser/components/urlbar/UrlbarView.sys.mjs b/browser/components/urlbar/UrlbarView.sys.mjs
+diff --git a/browser/components/urlbar/content/UrlbarView.mjs b/browser/components/urlbar/content/UrlbarView.mjs
 --- a/browser/components/urlbar/UrlbarView.sys.mjs
 +++ b/browser/components/urlbar/UrlbarView.sys.mjs
 @@ -3909,10 +3909,16 @@

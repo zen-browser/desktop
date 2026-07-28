@@ -71,4 +71,10 @@ add_task(async function () {
     ],
     screenshotPath
   );
+
+  // Regression test for bug 2003265, likely to become flaky if it regresses.
+  await testFileCreationPositive(
+    ["-url", "about:blank", "-screenshot", screenshotPath],
+    screenshotPath
+  );
 });

@@ -4,9 +4,22 @@
 "use strict";
 
 let gZmsInitialTab;
+let gZmsInitialSpaces;
 
 add_setup(function capture_initial_tab() {
   gZmsInitialTab = gBrowser.selectedTab;
+  gZmsInitialSpaces = new Set(gZenWorkspaces.getWorkspaces().map(w => w.uuid));
+});
+
+registerCleanupFunction(async function restore_initial_space_state() {
+  // Drop Spaces this file introduced. One left behind keeps a lazy empty-tab
+  // placeholder at the front of the strip, and the next file's first real
+  // addTab() then throws reading its missing linkedBrowser.
+  for (const ws of gZenWorkspaces.getWorkspaces()) {
+    if (!gZmsInitialSpaces.has(ws.uuid)) {
+      await gZenWorkspaces.removeWorkspace(ws.uuid);
+    }
+  }
 });
 
 registerCleanupFunction(function restore_initial_tab_state() {
@@ -19,7 +32,11 @@ registerCleanupFunction(function restore_initial_tab_state() {
     gBrowser.selectedTab = gZmsInitialTab;
   }
   for (const tab of Array.from(gBrowser.tabs)) {
-    if (tab !== gZmsInitialTab) {
+    // Leave Zen's empty-tab placeholders alone. Removing one makes Zen build a
+    // replacement with a lazy browser, and it sits at the front of the strip
+    // with a null linkedBrowser, which the next file's first real addTab()
+    // then trips over inside _insertBrowser.
+    if (tab !== gZmsInitialTab && !tab.hasAttribute("zen-empty-tab")) {
       BrowserTestUtils.removeTab(tab);
     }
   }
@@ -153,7 +170,10 @@ add_task(async function test_reconcile_updates_existing_not_duplicate() {
     }
   );
 
-  gZenWorkspaces.removeWorkspace(existing.uuid);
+  // Not fire-and-forget: removeWorkspace settles on a microtask, and a Space
+  // left behind keeps its lazy empty-tab placeholder at the front of the strip,
+  // where a later real addTab() trips over its missing linkedBrowser.
+  await gZenWorkspaces.removeWorkspace(existing.uuid);
 });
 
 add_task(async function test_reconcile_never_deletes() {
@@ -174,7 +194,7 @@ add_task(async function test_reconcile_never_deletes() {
     );
   });
 
-  gZenWorkspaces.removeWorkspace(kept.uuid);
+  await gZenWorkspaces.removeWorkspace(kept.uuid);
 });
 
 add_task(async function test_startup_reconcile_in_new_window() {
@@ -214,7 +234,7 @@ add_task(async function test_managed_space_is_read_only() {
       Assert.ok(space, "managed Space exists");
 
       const countBefore = gZenWorkspaces.getWorkspaces().length;
-      gZenWorkspaces.removeWorkspace(space.uuid);
+      await gZenWorkspaces.removeWorkspace(space.uuid);
       Assert.equal(
         gZenWorkspaces.getWorkspaces().length,
         countBefore,

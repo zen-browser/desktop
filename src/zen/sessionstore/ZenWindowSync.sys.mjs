@@ -54,11 +54,17 @@ const UNSYNCED_WINDOW_EVENTS = ["TabOpen"];
 // leaves the mirror copies open forever with no later event to clean them up.
 // Its handler is idempotent because it looks the mirror up by id and does
 // nothing when it has already gone.
+//
+// TabOpen likewise. It is what assigns the tab its sync id, so dropping it
+// doesn't just skip one update, it leaves the tab unsyncable for the rest of
+// its life with nothing to retry it. Running it late is safe because it
+// returns early once the tab has an id.
 const CROSS_WINDOW_QUEUED_EVENTS = [
   "ZenTabIconChanged",
   "ZenTabLabelChanged",
   "TabAttrModified",
   "TabClose",
+  "TabOpen",
 ];
 const EVENTS = [
   "TabClose",
@@ -1455,7 +1461,12 @@ class nsZenWindowSync {
 
   on_TabOpen(aEvent, { ignoreExistingId = false } = {}) {
     const tab = aEvent.target;
-    const window = tab.documentGlobal;
+    // Queued behind another window, this can run after the tab is gone, and
+    // #runOnAllWindows treats a null window as "no window to exclude".
+    const window = tab.documentGlobal ?? aEvent._zenSourceWindow;
+    if (!window) {
+      return;
+    }
     const isUnsyncedWindow = window.gZenWorkspaces.privateWindowOrDisabled;
     if (tab.id && !ignoreExistingId) {
       // This tab was opened as part of a sync operation.

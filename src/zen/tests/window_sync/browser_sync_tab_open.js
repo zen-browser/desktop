@@ -4,6 +4,7 @@
 "use strict";
 
 add_task(async function test_SimpleTabOpen() {
+  const initialTabs = new Set(gBrowser.tabs);
   await withNewTabAndWindow(async (newTab, win) => {
     let tabId = newTab.id;
     let otherTab = gZenWindowSync.getItemFromWindow(win, tabId);
@@ -15,4 +16,13 @@ add_task(async function test_SimpleTabOpen() {
       "The opened tab ID should match the synced tab ID"
     );
   });
+  // Window sync mirrors the synced window's blank tab into this one.
+  const closing = [];
+  for (const tab of [...gBrowser.tabs]) {
+    if (!initialTabs.has(tab) && !tab.closing) {
+      closing.push(BrowserTestUtils.waitForTabClosing(tab));
+      BrowserTestUtils.removeTab(tab);
+    }
+  }
+  await Promise.all(closing);
 });

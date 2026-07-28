@@ -292,7 +292,26 @@ jobs:
             Write-Host "Rename step will search all paths"
             Get-ChildItem ./dist/ -ErrorAction SilentlyContinue
           }
+          # Surfer's built-in Windows MAR step is known-broken on GA runners
+          # (drive-letter path conversion + dist/astra vs dist/bin). Create the
+          # MAR in the next step instead of failing the whole package here.
           exit 0
+
+      - name: Create Windows MAR + update manifests
+        if: ${{ !inputs['generate-gpo'] }}
+        shell: bash
+        env:
+          MAR_CHANNEL_ID: firefox-mozilla-central
+          ACCEPTED_MAR_CHANNEL_IDS: firefox-mozilla-central
+        run: |
+          set -euo pipefail
+          FF_VERSION="$(node -e "const c=require('./surfer.json'); process.stdout.write(c.version.version)")"
+          bash scripts/create_windows_mar.sh \
+            "${{ matrix.arch }}" \
+            "${{ inputs['build-version'] }}" \
+            "${{ inputs['release-branch'] }}" \
+            "${{ github.repository }}" \
+            "${FF_VERSION}"
 
       - name: Verify uBlock + policies inside packaged installer and zip
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}
@@ -499,7 +518,7 @@ jobs:
           retention-days: 5
           name: windows${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.mar
           path: ./windows${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.mar
-          if-no-files-found: warn
+          if-no-files-found: error
 
       - name: Upload artifact (update manifests)
         if: ${{ !inputs['generate-gpo'] }}
@@ -508,4 +527,4 @@ jobs:
           retention-days: 5
           name: windows_update_manifest_${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}
           path: ./dist/update
-          if-no-files-found: warn
+          if-no-files-found: error

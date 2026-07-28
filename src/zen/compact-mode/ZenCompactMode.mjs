@@ -977,6 +977,14 @@ window.gZenCompactModeManager = {
       !gZenGlanceManager._animating &&
       !this._nextTimeWillBeActive
     ) {
+      const isTabRoutedToCurrentSpace =
+        beforeRouteResult.targetRoute === gZenWorkspaces.activeWorkspace;
+      // Do not show the toast if the sidebar is not hidden and
+      // the tab is being routed to the current space
+      if (!isSidebarHidden && isTabRoutedToCurrentSpace) {
+        return;
+      }
+
       let messageId = "zen-background-tab-opened-toast";
       let toastOptions = {
         button: {
@@ -988,7 +996,7 @@ window.gZenCompactModeManager = {
         },
       };
 
-      if (beforeRouteResult.isRouteFound) {
+      if (beforeRouteResult.isRouteFound && !isTabRoutedToCurrentSpace) {
         messageId = "zen-space-routing-tab-routed-toast";
         toastOptions = {
           l10nArgs: { targetWorkspace: beforeRouteResult.targetWorkspaceName },

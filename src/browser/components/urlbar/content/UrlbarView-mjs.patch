@@ -2,27 +2,16 @@ diff --git a/browser/components/urlbar/content/UrlbarView.mjs b/browser/componen
 index 8afb2bf4a757b3ef7902f5a6e6eed6b70ca2845e..440dea1e66540ca1998cb7464b6695ac823fedcb 100644
 --- a/browser/components/urlbar/content/UrlbarView.mjs
 +++ b/browser/components/urlbar/content/UrlbarView.mjs
-@@ -649,12 +649,18 @@ export class UrlbarView {
-    *
-    * @param {object} options Options object
-    * @param {Event} options.event The event associated with the call to autoOpen.
-+   * @param {boolean} [options.allowFocusEvent] Whether a focus event is allowed
-+   *        to open the view.
-    * @param {boolean} [options.suppressFocusBorder] If true, we hide the focus border
-    *        when the panel is opened. This is true by default to avoid flashing
+@@ -654,7 +654,7 @@ export class UrlbarView {
     *        the border when the unfocused address bar is clicked.
     * @returns {boolean} Whether the view was opened.
     */
 -  autoOpen({ event, suppressFocusBorder = true }) {
-+  autoOpen({
-+    event,
-+    allowFocusEvent = false,
-+    suppressFocusBorder = true,
-+  }) {
++  autoOpen({ event, allowFocusEvent = false, suppressFocusBorder = true }) {
      if (!event) {
        return false;
      }
-@@ -674,7 +680,11 @@ export class UrlbarView {
+@@ -674,7 +674,11 @@ export class UrlbarView {
        !this.input.value ||
        this.input.getAttribute("pageproxystate") == "valid"
      ) {

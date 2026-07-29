@@ -132,20 +132,29 @@
 }
 
 /* Sidebar + Top Toolbar cohesion: pull the top chrome strip across the
- * splitter so it meets #navigator-toolbox as one L-shaped surface.
+ * splitter so it meets #navigator-toolbox as one L-shaped surface, and
+ * inset the trailing edge to match the floating content card
+ * (--zen-element-separation + radius) so the top-right corner aligns.
  * Scoped to multiple-toolbar + expanded sidebar only — do not touch
- * Only Sidebar (single-toolbar) or Collapsed Sidebar. */
+ * Only Sidebar (single-toolbar) or Collapsed Sidebar.
+ *
+ * Evidence (Marionette, 1280px, Light/Dark): content.right=1272 while
+ * navbar.right=1280 (8px overhang past the card). Left bridge was done in
+ * ee7ab2e; this closes the trailing-edge gap. */
 :root:not([zen-single-toolbar="true"])[zen-sidebar-expanded="true"]:not([inDOMFullscreen="true"]) {
   & #zen-appcontent-navbar-wrapper {
     margin-inline-start: calc(-1 * var(--zen-element-separation));
-    width: calc(100% + var(--zen-element-separation));
+    /* Trailing inset matches #zen-tabbox-wrapper margin-inline-end. */
+    margin-inline-end: var(--zen-element-separation);
+    width: 100%;
     box-sizing: border-box;
     /* Keep toolbar controls optically aligned with content below. */
     padding-inline-start: var(--zen-element-separation);
   }
 
   &[zen-right-side="true"] #zen-appcontent-navbar-wrapper {
-    margin-inline-start: 0;
+    /* Sidebar on the right: bridge the trailing splitter, inset the leading edge. */
+    margin-inline-start: var(--zen-element-separation);
     margin-inline-end: calc(-1 * var(--zen-element-separation));
     padding-inline-start: 0;
     padding-inline-end: var(--zen-element-separation);

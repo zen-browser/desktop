@@ -29,3 +29,57 @@
     light-dark(rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.45)) 0 1px 3px,
     light-dark(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.32)) 0 6px 18px;
 }
+
+/* ==========================================================================
+ * Sidebar secondary navigation (Back / Forward / Reload)
+ * Additive only — does not remove top-toolbar nav controls.
+ * ========================================================================== */
+#astra-sidebar-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  margin-inline: 2px;
+  min-width: 0;
+}
+
+#astra-sidebar-navigation .astra-sidebar-nav-group {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 1px;
+  border-radius: 8px;
+  background: color-mix(in srgb, currentColor 6%, transparent);
+  border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+}
+
+#astra-sidebar-navigation .astra-sidebar-nav-btn {
+  margin: 0 !important;
+  min-width: 28px !important;
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+}
+
+#astra-sidebar-navigation .astra-sidebar-nav-menu {
+  display: none;
+  min-width: 32px !important;
+  width: 32px !important;
+  height: 32px !important;
+  list-style-image: url("chrome://browser/skin/back.svg");
+}
+
+/* Collapsed rail or height-constrained strip → single Navigation menu */
+#astra-sidebar-navigation[astra-nav-compact] .astra-sidebar-nav-group {
+  display: none;
+}
+
+#astra-sidebar-navigation[astra-nav-compact] .astra-sidebar-nav-menu {
+  display: flex;
+}
+
+/* Avoid colliding with App Hub / Suraksha when the top strip is narrow */
+:root:not([zen-sidebar-expanded="true"]) #astra-sidebar-navigation {
+  /* Mode attribute still drives visibility; ensure no extra overflow. */
+  max-width: 36px;
+}

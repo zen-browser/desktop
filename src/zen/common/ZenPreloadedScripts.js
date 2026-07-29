@@ -16,6 +16,34 @@
   // App Hub: stable bootstrap only at startup. Advanced manager lazy-loads on
   // first open so catalog/profile IO does not compete with first navigation.
   ChromeUtils.importESModule("chrome://browser/content/zen-components/AstraAppHubBootstrap.mjs", { global: "current" });
+  // Sidebar secondary nav: install after delayed startup so chrome XUL exists.
+  try {
+    const { installAstraSidebarNavigation } = ChromeUtils.importESModule(
+      "chrome://browser/content/zen-components/AstraSidebarNavigation.mjs"
+    );
+    const install = () => {
+      try {
+        installAstraSidebarNavigation(window);
+      } catch (error) {
+        console.warn("[AstraSidebarNavigation] install failed", error);
+      }
+    };
+    if (window.gBrowserInit?.delayedStartupFinished) {
+      install();
+    } else {
+      const observer = {
+        observe(subject, topic) {
+          if (topic === "browser-delayed-startup-finished" && subject === window) {
+            Services.obs.removeObserver(observer, topic);
+            install();
+          }
+        },
+      };
+      Services.obs.addObserver(observer, "browser-delayed-startup-finished");
+    }
+  } catch (error) {
+    console.warn("[AstraSidebarNavigation] failed to initialize; browser remains usable", error);
+  }
   // Migration Center: bootstrap only — center module lazy-loads on first open.
   try {
     ChromeUtils.importESModule("chrome://browser/content/zen-components/AstraMigrationBootstrap.mjs", { global: "current" });

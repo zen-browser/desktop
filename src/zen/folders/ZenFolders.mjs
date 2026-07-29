@@ -1591,7 +1591,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
           }
         }
       } catch (e) {
-        console.error("Error restoring Zen Folders session data:", e);
+        console.error("Error restoring Folders session data:", e);
       }
     }
 

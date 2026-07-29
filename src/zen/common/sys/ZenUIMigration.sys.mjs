@@ -19,7 +19,7 @@ class nsZenUIMigration {
       try {
         this._migrate();
       } catch (e) {
-        console.error("ZenUIMigration: Error during migration", e);
+        console.error("AstraUIMigration: Error during migration", e);
       }
     }
     this.clearVariables();

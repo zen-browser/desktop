@@ -60,7 +60,7 @@ class ZenStartup {
         this.#checkForWelcomePage();
       }, 0);
     } catch (e) {
-      console.error("ZenThemeModifier: Error initializing browser layout", e);
+      console.error("AstraThemeModifier: Error initializing browser layout", e);
     }
     if (gBrowserInit.delayedStartupFinished) {
       this.delayedStartupFinished();

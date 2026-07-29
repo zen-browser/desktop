@@ -125,8 +125,8 @@ class nsZenMods extends nsZenPreloadedFeature {
     const modList = mods.map(({ name }) => name).join(", ");
     const message =
       modList !== ""
-        ? `[ZenMods]: Loading enabled Zen mods: ${modList}.`
-        : "[ZenMods]: No enabled Zen mods.";
+        ? `[ZenMods]: Loading enabled mods: ${modList}.`
+        : "[ZenMods]: No enabled mods.";
     console.warn(message);
     return mods;
   }
@@ -513,7 +513,7 @@ class nsZenMods extends nsZenPreloadedFeature {
         );
       }
     } catch (e) {
-      console.error("[ZenMods]: Error loading Zen Mods:", e);
+      console.error("[ZenMods]: Error loading mods:", e);
     }
 
     Services.prefs.addObserver(

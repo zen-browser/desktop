@@ -163,7 +163,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         this.resetPinChangedUrl(tab);
         break;
       default:
-        console.warn("ZenPinnedTabManager: Unhandled tab event", action);
+        console.warn("[ZenPinnedTabManager] Unhandled tab event", action);
         break;
     }
   }

@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
-# Create a Windows complete MAR + AUS update.xml using dist/bin (not dist/astra).
+# Create a Windows complete MAR + AUS update.xml.
 # Surfer's package step fails on GitHub Windows runners because:
 #  1) windowsPathToUnix strips the drive letter (D:\a\... -> /a/...)
-#  2) it looks for obj*/dist/astra instead of obj*/dist/bin
+#  2) it looks for obj*/dist/astra instead of the packaged app tree
+#
+# After mach package, obj*/dist/bin exists but does NOT contain precomplete
+# (that file is written into the staged package that becomes the win64 zip /
+# installer). Prefer unpacking the distribution zip as the MAR source.
 set -euo pipefail
 
 ARCH="${1:?arch}"
@@ -12,37 +16,89 @@ REPO="${4:?repo}"
 FF_VERSION="${5:?ff-version}"
 
 OBJ="engine/obj-${ARCH}-pc-windows-msvc"
-APP_DIR="${OBJ}/dist/bin"
+MAR_SRC="dist/mar-source"
 
-if [[ ! -d "${APP_DIR}" ]]; then
-  echo "dist/bin missing; attempting to unpack distribution zip"
-  ZIP="$(find dist "${OBJ}/dist" -maxdepth 1 -type f -name '*.win64.zip' ! -name '*xpt*' ! -name '*tests*' ! -name '*crashreporter*' 2>/dev/null | head -1 || true)"
-  if [[ -z "${ZIP}" ]]; then
-    echo "::error::No dist/bin and no win64.zip available for MAR packaging"
+find_zip() {
+  find dist "${OBJ}/dist" -maxdepth 1 -type f -name '*.win64.zip' \
+    ! -name '*xpt*' ! -name '*tests*' ! -name '*crashreporter*' ! -name '*langpack*' \
+    2>/dev/null | head -1 || true
+}
+
+generate_precomplete_if_needed() {
+  local app_dir="$1"
+  if [[ -f "${app_dir}/precomplete" ]]; then
+    return 0
+  fi
+  local script=""
+  for candidate in \
+    "engine/config/createprecomplete.py" \
+    "${OBJ}/../config/createprecomplete.py"
+  do
+    if [[ -f "${candidate}" ]]; then
+      script="$(cd "$(dirname "${candidate}")" && pwd)/$(basename "${candidate}")"
+      break
+    fi
+  done
+  if [[ -z "${script}" ]]; then
+    echo "::error::precomplete missing under ${app_dir} and createprecomplete.py not found"
+    ls -la "${app_dir}" || true
     exit 1
   fi
-  mkdir -p "${APP_DIR}"
-  7z x "${ZIP}" -o"${APP_DIR}" -y >/dev/null
-fi
+  echo "Generating precomplete in ${app_dir} via ${script}"
+  (
+    cd "${app_dir}"
+    python "${script}"
+  )
+  test -f "${app_dir}/precomplete"
+}
 
-if [[ ! -f "${APP_DIR}/astra.exe" && ! -f "${APP_DIR}/firefox.exe" ]]; then
-  # Some zips nest content under a single top-level folder.
-  NESTED="$(find "${APP_DIR}" -maxdepth 2 -type f \( -name 'astra.exe' -o -name 'firefox.exe' \) | head -1 || true)"
-  if [[ -n "${NESTED}" ]]; then
-    APP_DIR="$(dirname "${NESTED}")"
+prepare_mar_source() {
+  rm -rf "${MAR_SRC}"
+  mkdir -p "${MAR_SRC}"
+
+  local zip
+  zip="$(find_zip)"
+  if [[ -n "${zip}" ]]; then
+    echo "Unpacking MAR source from ${zip}"
+    7z x "${zip}" -o"${MAR_SRC}" -y >/dev/null
+  elif [[ -d "${OBJ}/dist/bin" ]]; then
+    echo "No win64.zip; copying MAR source from ${OBJ}/dist/bin"
+    cp -a "${OBJ}/dist/bin/." "${MAR_SRC}/"
+  else
+    echo "::error::No win64.zip and no dist/bin available for MAR packaging"
+    exit 1
   fi
-fi
 
-if [[ ! -f "${APP_DIR}/astra.exe" && ! -f "${APP_DIR}/firefox.exe" ]]; then
-  echo "::error::No astra.exe/firefox.exe under ${APP_DIR}"
-  ls -la "${APP_DIR}" || true
-  exit 1
-fi
+  # Packaged zips nest content under a single top-level folder (e.g. astra/).
+  if [[ ! -f "${MAR_SRC}/astra.exe" && ! -f "${MAR_SRC}/firefox.exe" ]]; then
+    local nested nested_dir
+    nested="$(find "${MAR_SRC}" -maxdepth 2 -type f \( -name 'astra.exe' -o -name 'firefox.exe' \) | head -1 || true)"
+    if [[ -n "${nested}" ]]; then
+      nested_dir="$(dirname "${nested}")"
+      echo "Flattening nested app dir ${nested_dir}"
+      shopt -s dotglob nullglob
+      mv "${nested_dir}"/* "${MAR_SRC}/"
+      shopt -u dotglob nullglob
+      rmdir "${nested_dir}" 2>/dev/null || true
+    fi
+  fi
 
-if [[ ! -f "${APP_DIR}/precomplete" ]]; then
-  echo "::error::precomplete missing under ${APP_DIR} (required for make_full_update.sh)"
-  exit 1
-fi
+  if [[ ! -f "${MAR_SRC}/astra.exe" && ! -f "${MAR_SRC}/firefox.exe" ]]; then
+    echo "::error::No astra.exe/firefox.exe under ${MAR_SRC}"
+    ls -la "${MAR_SRC}" || true
+    exit 1
+  fi
+
+  generate_precomplete_if_needed "${MAR_SRC}"
+
+  # platform.ini is required for BuildID in update.xml; copy from obj if zip omitted it.
+  if [[ ! -f "${MAR_SRC}/platform.ini" && -f "${OBJ}/dist/bin/platform.ini" ]]; then
+    cp "${OBJ}/dist/bin/platform.ini" "${MAR_SRC}/platform.ini"
+  fi
+}
+
+prepare_mar_source
+APP_DIR="${MAR_SRC}"
 
 MAR_EXE="${OBJ}/dist/host/bin/mar.exe"
 if [[ ! -f "${MAR_EXE}" ]]; then
@@ -84,6 +140,12 @@ bash engine/tools/update-packaging/make_full_update.sh "${OUT_UNIX}" "${APP_UNIX
 test -s "${OUT_MAR}"
 echo "Created $(du -h "${OUT_MAR}" | awk '{print $1}') MAR at ${OUT_MAR}"
 
+# Ensure generate script can find platform.ini BuildID.
+if [[ ! -f "${OBJ}/dist/bin/platform.ini" && -f "${APP_DIR}/platform.ini" ]]; then
+  mkdir -p "${OBJ}/dist/bin"
+  cp "${APP_DIR}/platform.ini" "${OBJ}/dist/bin/platform.ini"
+fi
+
 node scripts/generate_windows_update_xml.mjs \
   --mar "${OUT_MAR}" \
   --version "${VERSION}" \
@@ -91,6 +153,7 @@ node scripts/generate_windows_update_xml.mjs \
   --arch "${ARCH}" \
   --repo "${REPO}" \
   --obj-dir "${OBJ}" \
+  --mar-source "${APP_DIR}" \
   --ff-version "${FF_VERSION}" \
   --out dist/update
 

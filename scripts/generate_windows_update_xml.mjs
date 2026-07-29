@@ -47,11 +47,13 @@ function xmlEscape(value) {
     .replace(/>/g, '&gt;')
 }
 
-function readBuildId(objDir) {
+function readBuildId(objDir, marSourceDir) {
   const candidates = [
+    marSourceDir ? join(marSourceDir, 'platform.ini') : null,
     join(objDir, 'dist', 'bin', 'platform.ini'),
     join(objDir, 'dist', 'astra', 'platform.ini'),
-  ]
+    join('dist', 'mar-source', 'platform.ini'),
+  ].filter(Boolean)
   for (const p of candidates) {
     if (!existsSync(p)) continue
     const m = readFileSync(p, 'utf8').match(/^BuildID=(.+)$/m)
@@ -110,7 +112,7 @@ async function main() {
 
   const marSize = statSync(args.mar).size
   const hashValue = await sha512File(args.mar)
-  const buildID = readBuildId(args['obj-dir'])
+  const buildID = readBuildId(args['obj-dir'], args['mar-source'])
   const marFile = marNameForArch(args.arch)
   // Release assets are tagged with displayVersion; twilight assets use twilight-1.
   const downloadTag = args.channel === 'twilight' ? 'twilight-1' : args.version

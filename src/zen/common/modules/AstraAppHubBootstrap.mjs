@@ -11,6 +11,8 @@
 const PANEL_ID = "PanelUI-zen-app-launcher";
 const FALLBACK_ID = "PanelUI-zen-app-launcher-fallback";
 const LOG_PREFIX = "[AstraAppHub]";
+/** Feature gate — flip prefs/zen/app-hub.yaml to restore App Hub for users. */
+const PREF_ENABLED = "astra.apphub.enabled";
 
 function isHttpsUrl(url) {
   try {
@@ -72,6 +74,11 @@ class AstraAppHubBootstrap {
   #loggedReady = false;
   #managerImportPromise = null;
   #managerImportFailed = false;
+  #prefObserved = false;
+
+  #prefObserver = () => {
+    this.#applyEnabledState();
+  };
 
   constructor() {
     window.gAstraAppHubBootstrap = this;
@@ -85,8 +92,113 @@ class AstraAppHubBootstrap {
     };
     window.gAstraAppHubDiagnostics = this.#createDiagnostics();
     console.log(`${LOG_PREFIX} bootstrap loaded`);
+    this.#observeEnabledPref();
+    this.#applyEnabledState();
+    // Command node may arrive after preload — re-apply once chrome is ready.
+    if (window.gBrowserInit?.delayedStartupFinished) {
+      this.#setCommandDisabled(!this.#isEnabled());
+    } else {
+      const observer = {
+        observe: (subject, topic) => {
+          if (topic !== "browser-delayed-startup-finished" || subject !== window) {
+            return;
+          }
+          try {
+            Services.obs.removeObserver(observer, topic);
+          } catch {
+            // ignore
+          }
+          this.#applyEnabledState();
+        },
+      };
+      try {
+        Services.obs.addObserver(observer, "browser-delayed-startup-finished");
+      } catch {
+        // ignore
+      }
+    }
+  }
+
+  #isEnabled() {
+    try {
+      return Services.prefs.getBoolPref(PREF_ENABLED, false);
+    } catch {
+      return false;
+    }
+  }
+
+  #observeEnabledPref() {
+    if (this.#prefObserved) {
+      return;
+    }
+    try {
+      Services.prefs.addObserver(PREF_ENABLED, this.#prefObserver);
+      this.#prefObserved = true;
+      window.addEventListener(
+        "unload",
+        () => {
+          try {
+            if (this.#prefObserved) {
+              Services.prefs.removeObserver(PREF_ENABLED, this.#prefObserver);
+              this.#prefObserved = false;
+            }
+          } catch {
+            // ignore
+          }
+        },
+        { once: true }
+      );
+    } catch (error) {
+      console.warn(`${LOG_PREFIX} pref observer failed`, error);
+    }
+  }
+
+  /**
+   * Apply astra.apphub.enabled: hide/disable chrome when false; restore when
+   * true. Never clears App Hub profile state.
+   */
+  #applyEnabledState() {
+    const enabled = this.#isEnabled();
+    this.#setCommandDisabled(!enabled);
+    if (!enabled) {
+      try {
+        if (this.isOpen) {
+          this.close({ restoreFocus: false });
+        }
+      } catch {
+        // ignore close failures while disabling
+      }
+      this.#destroyListeners();
+      // Drop in-memory manager attachment so re-enable re-inits cleanly.
+      // Profile JSON / pins are untouched.
+      this.#manager = null;
+      this.#advancedReady = false;
+      this.#fallbackActive = true;
+      this.#managerImportFailed = false;
+      this.#managerImportPromise = null;
+      this.#loggedReady = false;
+      this.#applyMode();
+      return;
+    }
     this.#applyMode();
-    this.#ensureListeners();
+    // Listeners stay lazy until first open — avoid unnecessary observers
+    // while the panel is unused.
+  }
+
+  #setCommandDisabled(disabled) {
+    try {
+      const cmd = document.getElementById("cmd_zenOpenAppLauncher");
+      if (!cmd) {
+        return;
+      }
+      if (disabled) {
+        cmd.setAttribute("disabled", "true");
+      } else {
+        cmd.removeAttribute("disabled");
+      }
+    } catch {
+      // Command node may not exist yet in early chrome.
+    }
   }
 
   #createDiagnostics() {
@@ -94,6 +206,9 @@ class AstraAppHubBootstrap {
     return {
       get bootstrapReady() {
         return true;
+      },
+      get enabled() {
+        return self.#isEnabled();
       },
       get managerReady() {
         return self.#advancedReady && !!self.#manager;
@@ -182,6 +297,9 @@ class AstraAppHubBootstrap {
   }
 
   #ensureListeners() {
+    if (!this.#isEnabled()) {
+      return;
+    }
     const panel = this.panel;
     if (!panel || this.#listenersBound) {
       return;
@@ -365,6 +483,9 @@ class AstraAppHubBootstrap {
     if (win && win !== window && win.gAstraAppHubBootstrap) {
       return win.gAstraAppHubBootstrap.toggle(eventOrOptions, win);
     }
+    if (!this.#isEnabled()) {
+      return;
+    }
     this.#ensureListeners();
     this.#applyMode();
     if (this.#popupTransition || this.#isHiding) {
@@ -386,6 +507,9 @@ class AstraAppHubBootstrap {
    * Catalog/profile IO must not compete with first navigation / session restore.
    */
   async #ensureManagerImported() {
+    if (!this.#isEnabled()) {
+      return;
+    }
     if (this.#manager || this.#managerImportFailed) {
       return;
     }
@@ -418,6 +542,9 @@ class AstraAppHubBootstrap {
   async open(eventOrOptions, win = window) {
     if (win && win !== window && win.gAstraAppHubBootstrap) {
       return win.gAstraAppHubBootstrap.open(eventOrOptions, win);
+    }
+    if (!this.#isEnabled()) {
+      return;
     }
     const options = this.#normalizeArgs(eventOrOptions);
     this.#lastOpenAttempt = Date.now();
@@ -452,6 +579,9 @@ class AstraAppHubBootstrap {
   }
 
   #openFallback(options = {}) {
+    if (!this.#isEnabled()) {
+      return;
+    }
     const panel = this.panel;
     if (!panel) {
       this.#lastErrorStage = "panel-missing";
@@ -521,6 +651,9 @@ class AstraAppHubBootstrap {
   }
 
   openApp(appOrUrl, options = {}) {
+    if (!this.#isEnabled()) {
+      return;
+    }
     if (this.#advancedReady && this.#manager?.openApp) {
       try {
         return this.#manager.openApp(appOrUrl, options);

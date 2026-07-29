@@ -38,3 +38,17 @@
     display: none !important;
   }
 }
+
+/* ASTRA-FEATURE-GATE: App Hub (temporarily disabled).
+   While astra.apphub.enabled is false, hide the sidebar App Hub button and
+   any menu entries that invoke cmd_zenOpenAppLauncher. Bootstrap stays
+   loaded so flipping the pref restores UI without deleting modules/data. */
+/* stylelint-disable-next-line media-query-no-invalid */
+@media not (-moz-pref("astra.apphub.enabled")) {
+  #zen-app-launcher-button,
+  toolbaritem#zen-app-launcher-button,
+  toolbarbutton[command="cmd_zenOpenAppLauncher"],
+  menuitem[command="cmd_zenOpenAppLauncher"] {
+    display: none !important;
+  }
+}

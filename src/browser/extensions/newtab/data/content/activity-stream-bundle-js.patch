@@ -1,0 +1,13 @@
+diff --git a/browser/extensions/newtab/data/content/activity-stream.bundle.js b/browser/extensions/newtab/data/content/activity-stream.bundle.js
+index c012fc616a3b6231e83bde74599307a47ef977b6..fd972f7bf9948e4c49eb64ee4ca46591830b02ce 100644
+--- a/browser/extensions/newtab/data/content/activity-stream.bundle.js
++++ b/browser/extensions/newtab/data/content/activity-stream.bundle.js
+@@ -9145,7 +9145,7 @@ class _TopSiteList extends (external_React_default()).PureComponent {
+     const addButtonIndex = topSites.findIndex(site => site?.isAddButton);
+ 
+     // Find the position right after the last regular shortcut
+-    let targetPosition = topSites.length - 1;
++    let targetPosition = 0;
+     for (let i = topSites.length - 1; i >= 0; i--) {
+       if (topSites[i] && !topSites[i].isAddButton) {
+         targetPosition = i + 1;

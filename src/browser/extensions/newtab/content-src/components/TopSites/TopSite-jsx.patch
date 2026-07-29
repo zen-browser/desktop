@@ -1,0 +1,13 @@
+diff --git a/browser/extensions/newtab/content-src/components/TopSites/TopSite.jsx b/browser/extensions/newtab/content-src/components/TopSites/TopSite.jsx
+index 7dc90627644cb952b98423d3d8e7ad2e25f3131b..030f9f2aec09a903337d965f2ab10e8ac840a289 100644
+--- a/browser/extensions/newtab/content-src/components/TopSites/TopSite.jsx
++++ b/browser/extensions/newtab/content-src/components/TopSites/TopSite.jsx
+@@ -825,7 +825,7 @@ export class _TopSiteList extends React.PureComponent {
+     const addButtonIndex = topSites.findIndex(site => site?.isAddButton);
+ 
+     // Find the position right after the last regular shortcut
+-    let targetPosition = topSites.length - 1;
++    let targetPosition = 0;
+     for (let i = topSites.length - 1; i >= 0; i--) {
+       if (topSites[i] && !topSites[i].isAddButton) {
+         targetPosition = i + 1;

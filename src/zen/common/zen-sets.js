@@ -741,8 +741,8 @@ document.addEventListener(
           }
           case "cmd_zenOpenAppLauncher": {
             // Always use the stable bootstrap facade (never call manager directly).
-            // Feature-gated: astra.apphub.enabled (default false while Hub is paused).
-            if (!Services.prefs.getBoolPref("astra.apphub.enabled", false)) {
+            // Feature-gated: astra.apphub.enabled (default true; set false to hide).
+            if (!Services.prefs.getBoolPref("astra.apphub.enabled", true)) {
               break;
             }
             const hub = window.gZenAppLauncher;

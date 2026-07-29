@@ -75,6 +75,24 @@ export const ASTRA_APP_HUB_CATALOG = deepFreeze({
     "hostname": "gmail.com"
   },
   {
+    "id": "whatsapp",
+    "name": "WhatsApp",
+    "url": "https://web.whatsapp.com",
+    "category": "communication",
+    "order": 15,
+    "builtin": true,
+    "iconKey": "whatsapp",
+    "monogram": "WA",
+    "keywords": [
+      "chat",
+      "message",
+      "whatsapp",
+      "business",
+      "india"
+    ],
+    "hostname": "web.whatsapp.com"
+  },
+  {
     "id": "outlook",
     "name": "Outlook",
     "url": "https://outlook.com",

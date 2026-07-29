@@ -11,7 +11,7 @@
 const PANEL_ID = "PanelUI-zen-app-launcher";
 const FALLBACK_ID = "PanelUI-zen-app-launcher-fallback";
 const LOG_PREFIX = "[AstraAppHub]";
-/** Feature gate — flip prefs/zen/app-hub.yaml to restore App Hub for users. */
+/** Feature gate — prefs/zen/app-hub.yaml (default true). Set false to hide Hub. */
 const PREF_ENABLED = "astra.apphub.enabled";
 
 function isHttpsUrl(url) {
@@ -121,9 +121,9 @@ class AstraAppHubBootstrap {
 
   #isEnabled() {
     try {
-      return Services.prefs.getBoolPref(PREF_ENABLED, false);
+      return Services.prefs.getBoolPref(PREF_ENABLED, true);
     } catch {
-      return false;
+      return true;
     }
   }
 

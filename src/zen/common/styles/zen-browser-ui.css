@@ -159,6 +159,15 @@
     padding-inline-start: 0;
     padding-inline-end: var(--zen-element-separation);
   }
+
+  /* Split View uses a negative tabbox margin-right (--zen-split-column-gap)
+   * that was meant to absorb pane gaps when the navbar went edge-to-edge.
+   * With the trailing inset above, that pull overshoots: Marionette
+   * (kavya_power, 1280px) measured nav.right=1272 vs content.right=1281.
+   * Cancel the negative margin so split panes keep the same trailing edge. */
+  & #tabbrowser-tabbox[zen-split-view="true"] {
+    margin-right: 0;
+  }
 }
 
 #nav-bar {

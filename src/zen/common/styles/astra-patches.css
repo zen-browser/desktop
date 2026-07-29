@@ -39,7 +39,7 @@
   }
 }
 
-/* ASTRA-FEATURE-GATE: App Hub (temporarily disabled).
+/* ASTRA-FEATURE-GATE: App Hub.
    While astra.apphub.enabled is false, hide the sidebar App Hub button and
    any menu entries that invoke cmd_zenOpenAppLauncher. Bootstrap stays
    loaded so flipping the pref restores UI without deleting modules/data. */

@@ -14,6 +14,7 @@
         content/browser/zen-components/AstraAppHubCatalog.mjs                   (../../zen/common/app-hub/AstraAppHubCatalog.mjs)
 
         content/browser/zen-components/app-hub-icons/gmail.svg                  (../../zen/common/app-hub/icons/gmail.svg)
+        content/browser/zen-components/app-hub-icons/whatsapp.svg               (../../zen/common/app-hub/icons/whatsapp.svg)
         content/browser/zen-components/app-hub-icons/outlook.svg                (../../zen/common/app-hub/icons/outlook.svg)
         content/browser/zen-components/app-hub-icons/zoho-mail.svg              (../../zen/common/app-hub/icons/zoho-mail.svg)
         content/browser/zen-components/app-hub-icons/yahoo-mail.svg             (../../zen/common/app-hub/icons/yahoo-mail.svg)

@@ -1,9 +1,5 @@
-# This Source Code Form is subject to the terms of the Mozilla Public
-# License, v. 2.0. If a copy of the MPL was not distributed with this
-# file, You can obtain one at http://mozilla.org/MPL/2.0/.
-
-# Astra App Hub — temporarily disabled for users.
-# Implementation remains in-tree; flip to true to restore button, command,
-# keyboard shortcut, and panel without restoring deleted code.
+# Astra App Hub — enabled for shipping.
+# Set to false to hide the sidebar button, command, shortcut, and panel
+# without deleting App Hub modules or user pin data.
 - name: astra.apphub.enabled
-  value: false
+  value: true

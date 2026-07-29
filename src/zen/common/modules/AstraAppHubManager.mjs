@@ -87,14 +87,15 @@ const EDITOR_CATEGORY_FALLBACK = [
   { id: "entertainment", label: "Entertainment" },
 ];
 
-/** First-run launchpad pins when the user has not customized favorites yet. */
+/** First-run launchpad pins when the user has not customized favorites yet.
+ * India-first defaults: mail, chat, gov docs, rail, video, files. */
 const DEFAULT_LAUNCHPAD_FAVORITES = Object.freeze([
   "gmail",
-  "google-meet",
-  "google-drive",
+  "whatsapp",
   "digilocker",
+  "irctc",
   "youtube",
-  "linkedin",
+  "google-drive",
 ]);
 
 const EDITOR_ERROR_FALLBACKS = {

@@ -47,6 +47,7 @@ const ALLOWED_SOURCE_MIME = new Set([
  */
 export const ASTRA_APP_HUB_ICONS = Object.freeze({
   gmail: `${ICON_BASE}gmail.svg`,
+  whatsapp: `${ICON_BASE}whatsapp.svg`,
   outlook: `${ICON_BASE}outlook.svg`,
   "zoho-mail": `${ICON_BASE}zoho-mail.svg`,
   "yahoo-mail": `${ICON_BASE}yahoo-mail.svg`,

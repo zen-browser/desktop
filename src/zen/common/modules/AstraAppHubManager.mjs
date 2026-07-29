@@ -5,7 +5,8 @@
 /**
  * Per-window Astra App Hub controller (Phase 2).
  * Catalog: chrome-packaged ESM module (lazy import). State: profile-local singleton.
- * Icons: local/packaged only — never remote http(s) list-style-image.
+ * Icons: packaged chrome / cached data:image only in the grid — never raw http(s)
+ * list-style-image. Custom-app add may discover a site's own icons and cache them.
  */
 
 const {
@@ -25,6 +26,7 @@ let getPackagedIconURL;
 let pickCustomIconAsDataURI;
 let deleteCustomIcons;
 let resolvePlacesFaviconURL;
+let resolveCustomAppFaviconDataURI;
 let sanitizeDataImageURI;
 let migrateLegacyIconFileName;
 try {
@@ -34,6 +36,7 @@ try {
     pickCustomIconAsDataURI,
     deleteCustomIcons,
     resolvePlacesFaviconURL,
+    resolveCustomAppFaviconDataURI,
     sanitizeDataImageURI,
     migrateLegacyIconFileName,
   } = ChromeUtils.importESModule(
@@ -62,6 +65,7 @@ try {
   pickCustomIconAsDataURI = async () => null;
   deleteCustomIcons = async () => {};
   resolvePlacesFaviconURL = async () => null;
+  resolveCustomAppFaviconDataURI = async () => null;
   sanitizeDataImageURI = () => "";
   migrateLegacyIconFileName = async () => "";
 }
@@ -1208,7 +1212,7 @@ class AstraAppHubManager {
       setL10nOrText(
         iconHint,
         "astra-app-hub-editor-icon-hint",
-        "Optional — the site favicon is used after save if you skip this."
+        "Optional — we'll fetch the site icon automatically if you skip this."
       );
       editor.appendChild(iconHint);
 
@@ -2505,35 +2509,7 @@ class AstraAppHubManager {
       !String(iconInfo.src).startsWith("https:") &&
       !String(iconInfo.src).startsWith("//")
     ) {
-      const image = document.createElement("img");
-      image.classList.add(
-        "zen-app-launcher-item-icon",
-        "astra-app-hub-item-icon"
-      );
-      image.setAttribute("alt", "");
-      image.setAttribute("draggable", "false");
-      image.addEventListener(
-        "load",
-        () => {
-          if (!stack.isConnected) {
-            return;
-          }
-          stack.setAttribute("data-icon-loaded", "true");
-        },
-        { once: true }
-      );
-      image.addEventListener(
-        "error",
-        () => {
-          if (!stack.isConnected) {
-            return;
-          }
-          stack.setAttribute("data-icon-error", "true");
-        },
-        { once: true }
-      );
-      image.src = String(iconInfo.src);
-      stack.appendChild(image);
+      this.#appendSafeIconImage(stack, String(iconInfo.src));
     }
     row.appendChild(stack);
 
@@ -2837,44 +2813,7 @@ class AstraAppHubManager {
         !safe.startsWith("https:") &&
         !safe.startsWith("//")
       ) {
-        // HTML img: XUL <image> no longer fires load/error (Bug 1815229).
-        const image = document.createElement("img");
-        image.classList.add(
-          "zen-app-launcher-item-icon",
-          "astra-app-hub-item-icon"
-        );
-        image.setAttribute("alt", "");
-        image.setAttribute("draggable", "false");
-        image.setAttribute("aria-hidden", "true");
-        image.addEventListener(
-          "load",
-          () => {
-            if (!stack.isConnected) {
-              return;
-            }
-            stack.setAttribute("data-icon-loaded", "true");
-            stack.removeAttribute("data-icon-error");
-          },
-          { once: true }
-        );
-        image.addEventListener(
-          "error",
-          () => {
-            if (!stack.isConnected) {
-              return;
-            }
-            stack.setAttribute("data-icon-error", "true");
-            stack.removeAttribute("data-icon-loaded");
-            try {
-              image.removeAttribute("src");
-            } catch {
-              // ignore
-            }
-          },
-          { once: true }
-        );
-        image.src = safe;
-        stack.appendChild(image);
+        this.#appendSafeIconImage(stack, safe);
       }
     }
     button.appendChild(stack);
@@ -2955,8 +2894,8 @@ class AstraAppHubManager {
 
   /**
    * For custom apps without stored data icons: migrate legacy profile filename
-   * (once, Astra icon dir only) then try Places data: favicon (no remote fetch).
-   * Private windows keep monogram only.
+   * (once, Astra icon dir only) then Places → remote site-icon discovery.
+   * Private windows keep monogram only. Monogram stays as intentional fallback.
    */
   async #enrichCustomAppIcon(button, app) {
     if (!button || !app || app.builtin !== false) {
@@ -3007,9 +2946,14 @@ class AstraAppHubManager {
         return;
       }
 
-      const faviconURI = await resolvePlacesFaviconURL(expectedUrl, {
-        privateBrowsing: false,
-      });
+      const faviconURI =
+        typeof resolveCustomAppFaviconDataURI === "function"
+          ? await resolveCustomAppFaviconDataURI(expectedUrl, {
+              privateBrowsing: false,
+            })
+          : await resolvePlacesFaviconURL(expectedUrl, {
+              privateBrowsing: false,
+            });
       if (
         !faviconURI ||
         this.#destroyed ||
@@ -3055,15 +2999,42 @@ class AstraAppHubManager {
       }
       this.#paintIconOnStack(stack, safe);
     } catch {
-      // monogram remains
+      // monogram remains — intentional branded fallback
     }
   }
 
-  #paintIconOnStack(stack, dataURI) {
-    if (!stack || !dataURI) {
+  /**
+   * Reconcile icon stack state for already-decoded (often sync data:) images
+   * so tiles do not stay stuck on the monogram when load never fires again.
+   */
+  #reconcileIconState(stack, image) {
+    if (!stack || !image || !stack.isConnected) {
       return;
     }
-    const image = document.createElement("img");
+    try {
+      if (image.complete) {
+        if (image.naturalWidth > 0) {
+          stack.setAttribute("data-icon-loaded", "true");
+          stack.removeAttribute("data-icon-error");
+        } else {
+          stack.setAttribute("data-icon-error", "true");
+          stack.removeAttribute("data-icon-loaded");
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  /** XHTML <img> — XUL <image> no longer fires load/error (Bug 1815229). */
+  #appendSafeIconImage(stack, dataURI) {
+    if (!stack || !dataURI) {
+      return null;
+    }
+    const image = document.createElementNS(
+      "http://www.w3.org/1999/xhtml",
+      "img"
+    );
     image.classList.add(
       "zen-app-launcher-item-icon",
       "astra-app-hub-item-icon"
@@ -3091,7 +3062,7 @@ class AstraAppHubManager {
         stack.setAttribute("data-icon-error", "true");
         stack.removeAttribute("data-icon-loaded");
         try {
-          image.remove();
+          image.removeAttribute("src");
         } catch {
           // ignore
         }
@@ -3100,6 +3071,15 @@ class AstraAppHubManager {
     );
     image.src = dataURI;
     stack.appendChild(image);
+    this.#reconcileIconState(stack, image);
+    return image;
+  }
+
+  #paintIconOnStack(stack, dataURI) {
+    if (!stack || !dataURI) {
+      return;
+    }
+    this.#appendSafeIconImage(stack, dataURI);
   }
 
   /**
@@ -3292,9 +3272,10 @@ class AstraAppHubManager {
   }
 
   /**
-   * Persist Places data URI for a custom app after revision/session guards.
+   * Persist Places and/or remotely-discovered favicon for a custom app.
+   * Guarantees: never blocks UI; monogram remains until a safe data URI lands.
    */
-  async #tryPersistPlacesFavicon(appId, pageUrl, _attempt, session = null) {
+  async #tryPersistCustomAppFavicon(appId, pageUrl, session = null) {
     if (
       this.#destroyed ||
       window.closed ||
@@ -3305,12 +3286,9 @@ class AstraAppHubManager {
     if (session?.cleaned || session?.done) {
       return false;
     }
-    const expectedUrl =
-      session?.expectedUrl ||
-      pageUrl ||
-      "";
-    const urlKey =
-      session?.urlKey || String(expectedUrl).toLowerCase();
+    const expectedUrl = session?.expectedUrl || pageUrl || "";
+    const urlKey = session?.urlKey || String(expectedUrl).toLowerCase();
+    const allowRemote = session?.allowRemote !== false;
     try {
       const before = (gAstraAppHubState.data.customApps || []).find(
         a => a.id === appId
@@ -3318,11 +3296,23 @@ class AstraAppHubManager {
       if (!before || before.url.toLowerCase() !== urlKey) {
         return false;
       }
+      if (sanitizeDataImageURI(before.customIconData)) {
+        return true;
+      }
+      if (sanitizeDataImageURI(before.cachedFaviconData) && !allowRemote) {
+        return true;
+      }
 
-      // Always query the saved app URL — never the redirected tab URL.
-      const faviconURI = await resolvePlacesFaviconURL(expectedUrl, {
-        privateBrowsing: false,
-      });
+      // Always query the saved app URL — never a redirected tab URL.
+      const faviconURI =
+        typeof resolveCustomAppFaviconDataURI === "function"
+          ? await resolveCustomAppFaviconDataURI(expectedUrl, {
+              privateBrowsing: false,
+              allowRemote,
+            })
+          : await resolvePlacesFaviconURL(expectedUrl, {
+              privateBrowsing: false,
+            });
       if (
         !faviconURI ||
         this.#destroyed ||
@@ -3356,6 +3346,20 @@ class AstraAppHubManager {
     } catch {
       return false;
     }
+  }
+
+  /**
+   * Persist Places data URI for a custom app after revision/session guards.
+   * Capture sessions use Places-only (tab load already populated Places).
+   */
+  async #tryPersistPlacesFavicon(appId, pageUrl, _attempt, session = null) {
+    return this.#tryPersistCustomAppFavicon(appId, pageUrl, {
+      ...(session || {}),
+      expectedUrl: session?.expectedUrl || pageUrl,
+      urlKey: session?.urlKey || String(pageUrl || "").toLowerCase(),
+      // After launch, Places is authoritative; skip a second remote round-trip.
+      allowRemote: session?.allowRemote === true,
+    });
   }
 
   #cancelFaviconCapture(appId) {
@@ -4408,15 +4412,17 @@ class AstraAppHubManager {
       this.#lastAppliedRevision = gAstraAppHubState.revision;
       this.#closeEditor();
 
-      // Non-blocking Places upgrade after save (monogram already visible).
+      // Non-blocking icon upgrade after save (monogram already visible).
+      // Places first, then direct site-icon discovery — never blocks Add.
       if (
         savedId &&
         !hadCustomPick &&
         !PrivateBrowsingUtils.isWindowPrivate(window)
       ) {
-        void this.#tryPersistPlacesFavicon(savedId, urlCheck.href, 0, {
+        void this.#tryPersistCustomAppFavicon(savedId, urlCheck.href, {
           expectedUrl: urlCheck.href,
           urlKey: urlCheck.href.toLowerCase(),
+          allowRemote: true,
         });
       }
     } catch (error) {

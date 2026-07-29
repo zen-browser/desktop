@@ -391,7 +391,7 @@ if (
 // tile stuck on its monogram. Shared #reconcileIconState helper owns this.
 if (
   hubMgr.includes("#reconcileIconState") &&
-  /image\.src\s*=\s*safe[\s\S]{0,500}#reconcileIconState/.test(hubMgr) &&
+  /image\.src\s*=\s*\w+[\s\S]{0,500}#reconcileIconState/.test(hubMgr) &&
   /#reconcileIconState[\s\S]*\.complete/.test(hubMgr) &&
   /#reconcileIconState[\s\S]*naturalWidth/.test(hubMgr) &&
   /#reconcileIconState[\s\S]*data-icon-loaded/.test(hubMgr) &&
@@ -406,6 +406,7 @@ if (
 
 if (
   hubMgr.includes("resolvePlacesFaviconURL") &&
+  hubMgr.includes("resolveCustomAppFaviconDataURI") &&
   hubMgr.includes("#enrichCustomAppIcon") &&
   hubMgr.includes("button.isConnected") &&
   hubMgr.includes("#beginFaviconCapture") &&
@@ -424,6 +425,9 @@ if (
   hubMgr.includes("astra-app-hub-error-private-edit") &&
   !/\bonLinkIconAvailable\s*\(/.test(hubMgr) &&
   hubIcons.includes("getFaviconForPage") &&
+  hubIcons.includes("fetchRemoteFaviconAsDataURI") &&
+  hubIcons.includes("parseHtmlIconCandidates") &&
+  hubIcons.includes("resolveCustomAppFaviconDataURI") &&
   hubIcons.includes("data:image/") &&
   hubIcons.includes("sanitizeDataImageURI") &&
   hubIcons.includes("pickCustomIconAsDataURI") &&
@@ -444,7 +448,9 @@ if (
     hubMgr + hubIcons
   )
 ) {
-  ok("custom favicon: Places dataURI + bounded capture + no proxy");
+  ok(
+    "custom favicon: Places + direct site discovery + bounded capture + no proxy"
+  );
 } else fail("custom favicon hardening incomplete or unsafe");
 
 const hubState = read("src/zen/common/modules/AstraAppHubState.mjs");

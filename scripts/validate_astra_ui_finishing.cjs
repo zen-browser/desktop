@@ -453,6 +453,24 @@ if (
   );
 } else fail("custom favicon hardening incomplete or unsafe");
 
+if (
+  hubMgr.includes("TAB_DROP_TYPE") &&
+  hubMgr.includes("#extractExternalAppDrop") &&
+  hubMgr.includes("#addCustomAppFromDrop") &&
+  hubMgr.includes("#canAcceptExternalDrop") &&
+  hubMgr.includes("data-external-drop-active") &&
+  hubMgr.includes("astra-app-hub-drop-target-active") &&
+  hubIcons.includes("resolvePreferredIconHint") &&
+  hubIcons.includes("preferredIconHint") &&
+  hubCss.includes("data-external-drop-active") &&
+  hubCss.includes("astra-app-hub-drop-target-active") &&
+  hubFtl.includes("astra-app-hub-drop-adding") &&
+  hubFtl.includes("astra-app-hub-drop-error-invalid") &&
+  hubFtl.includes("astra-app-hub-add-tile-tooltip")
+) {
+  ok("App Hub external drag-and-drop add handlers + drop-active UI present");
+} else fail("App Hub external drag-and-drop add incomplete");
+
 const hubState = read("src/zen/common/modules/AstraAppHubState.mjs");
 if (
   hubState.includes("cachedFaviconData") &&

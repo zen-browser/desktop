@@ -115,6 +115,95 @@ const EDITOR_ERROR_FALLBACKS = {
     "That image is too large. Choose a file under 1 MB.",
 };
 
+const TAB_DROP_TYPE =
+  typeof globalThis.TAB_DROP_TYPE === "string"
+    ? globalThis.TAB_DROP_TYPE
+    : "application/x-moz-tabbrowser-tab";
+
+const DROP_STATUS_FALLBACKS = {
+  "astra-app-hub-drop-error-invalid": "Drop a website link or browser tab.",
+  "astra-app-hub-drop-error-private":
+    "Custom apps cannot be added in a private window.",
+  "astra-app-hub-drop-adding": "Adding…",
+  "astra-app-hub-error-duplicate": "An app with this URL already exists.",
+  "astra-app-hub-error-url": "Enter a valid http or https URL.",
+};
+
+function mozItemTypes(dt, index = 0) {
+  try {
+    const list = dt?.mozTypesAt?.(index);
+    if (!list) {
+      return [];
+    }
+    return typeof list.length === "number" ? [...list] : [];
+  } catch {
+    return [];
+  }
+}
+
+function dataTransferHasExternalAppPayload(dt) {
+  if (!dt) {
+    return false;
+  }
+  const types = new Set([
+    ...(dt.types ? [...dt.types] : []),
+    ...mozItemTypes(dt, 0),
+  ]);
+  return (
+    types.has(TAB_DROP_TYPE) ||
+    types.has("text/x-moz-url") ||
+    types.has("text/uri-list") ||
+    types.has("text/plain")
+  );
+}
+
+function firstUrlLineFromText(text) {
+  if (typeof text !== "string") {
+    return "";
+  }
+  for (const line of text.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) {
+      continue;
+    }
+    return trimmed.split(/\s+/)[0] || "";
+  }
+  return text.trim().split(/\s+/)[0] || "";
+}
+
+function titleFromMozUrlPayload(text) {
+  if (typeof text !== "string") {
+    return "";
+  }
+  const lines = text.split(/\r?\n/);
+  return (lines[1] || "").trim();
+}
+
+function readDataTransferString(dt, flavor) {
+  if (!dt) {
+    return "";
+  }
+  try {
+    if (typeof dt.getData === "function") {
+      const v = dt.getData(flavor);
+      if (v) {
+        return v;
+      }
+    }
+  } catch {
+    // ignore
+  }
+  try {
+    if (mozItemTypes(dt, 0).includes(flavor)) {
+      const v = dt.mozGetDataAt(flavor, 0);
+      return typeof v === "string" ? v : "";
+    }
+  } catch {
+    // ignore
+  }
+  return "";
+}
+
 /** @type {(url: string) => { ok: true, href: string, hostname?: string } | { ok: false, reason: string }} */
 export const validateBuiltinAppUrl = validateAppUrl;
 
@@ -422,6 +511,11 @@ class AstraAppHubManager {
   /** @type {string[]} */
   #spacePinIds = [];
   #dragState = null;
+  #externalDropActive = false;
+  #externalDropDepth = 0;
+  #externalDropInFlight = false;
+  /** @type {number|null} */
+  #dropStatusTimer = null;
   #suppressLaunch = false;
   #focusedItemIndex = -1;
   /** @type {Map<string, object>} Bounded per-app favicon capture sessions. */
@@ -441,6 +535,8 @@ class AstraAppHubManager {
   #boundDragOver = null;
   #boundDrop = null;
   #boundDragEnd = null;
+  #boundDragEnter = null;
+  #boundDragLeave = null;
   #boundStateChanged = null;
   #shellBuilt = false;
 
@@ -877,6 +973,12 @@ class AstraAppHubManager {
     this.#priorFocus = null;
     this.#dragState = null;
     this.#contextAppId = null;
+    if (this.#dropStatusTimer) {
+      clearTimeout(this.#dropStatusTimer);
+      this.#dropStatusTimer = null;
+    }
+    this.#clearExternalDropActive();
+    this.#externalDropInFlight = false;
     try {
       window.gZenCompactModeManager?.unlockForPanel?.(
         "PanelUI-zen-app-launcher"
@@ -1492,6 +1594,8 @@ class AstraAppHubManager {
     this.#boundDragOver = event => this.#onDragOver(event);
     this.#boundDrop = event => this.#onDrop(event);
     this.#boundDragEnd = event => this.#onDragEnd(event);
+    this.#boundDragEnter = event => this.#onDragEnter(event);
+    this.#boundDragLeave = event => this.#onDragLeave(event);
     this.#boundStateChanged = (_subject, _topic, data) => {
       this.#onStateChanged(data);
     };
@@ -1508,6 +1612,8 @@ class AstraAppHubManager {
     panel.addEventListener("dragover", this.#boundDragOver);
     panel.addEventListener("drop", this.#boundDrop);
     panel.addEventListener("dragend", this.#boundDragEnd);
+    panel.addEventListener("dragenter", this.#boundDragEnter);
+    panel.addEventListener("dragleave", this.#boundDragLeave);
 
     try {
       Services.obs.addObserver(this.#boundStateChanged, STATE_CHANGED_TOPIC);
@@ -1567,6 +1673,12 @@ class AstraAppHubManager {
     panel.removeEventListener("dragover", this.#boundDragOver);
     panel.removeEventListener("drop", this.#boundDrop);
     panel.removeEventListener("dragend", this.#boundDragEnd);
+    if (this.#boundDragEnter) {
+      panel.removeEventListener("dragenter", this.#boundDragEnter);
+    }
+    if (this.#boundDragLeave) {
+      panel.removeEventListener("dragleave", this.#boundDragLeave);
+    }
 
     const ctx = this.contextMenu;
     if (ctx && this.#boundCommand) {
@@ -1601,6 +1713,8 @@ class AstraAppHubManager {
     this.#boundDragOver = null;
     this.#boundDrop = null;
     this.#boundDragEnd = null;
+    this.#boundDragEnter = null;
+    this.#boundDragLeave = null;
     this.#boundStateChanged = null;
     this.#boundCtxPopupShowing = null;
     this.#boundCtxPopupHidden = null;
@@ -2535,7 +2649,19 @@ class AstraAppHubManager {
       "astra-app-hub-add-tile"
     );
     button.setAttribute("data-action", "add-app");
-    button.setAttribute("tooltiptext", "Add website");
+    if (document.l10n) {
+      try {
+        document.l10n.setAttributes(button, "astra-app-hub-add-tile-tooltip");
+      } catch {
+        button.setAttribute(
+          "tooltiptext",
+          "Add website or drop a tab here"
+        );
+      }
+    } else {
+      button.setAttribute("tooltiptext", "Add website or drop a tab here");
+    }
+    button.setAttribute("aria-label", "Add website or drop a tab here");
 
     const stack = document.createXULElement("stack");
     stack.classList.add(
@@ -2560,7 +2686,6 @@ class AstraAppHubManager {
     );
     setL10nOrText(label, "astra-app-hub-add-tile", "Add app");
     button.appendChild(label);
-    button.setAttribute("aria-label", "Add website");
     return button;
   }
 
@@ -3309,6 +3434,7 @@ class AstraAppHubManager {
           ? await resolveCustomAppFaviconDataURI(expectedUrl, {
               privateBrowsing: false,
               allowRemote,
+              preferredIconHint: session?.preferredIconHint || null,
             })
           : await resolvePlacesFaviconURL(expectedUrl, {
               privateBrowsing: false,
@@ -4490,6 +4616,312 @@ class AstraAppHubManager {
     this.#rebuildList();
   }
 
+  // —— External drag-and-drop (launchpad add) ——
+
+  #canAcceptExternalDrop() {
+    return (
+      this.#hubView === "launchpad" &&
+      !this.#customizeMode &&
+      !this.#editorMode
+    );
+  }
+
+  #setExternalDropActive(active) {
+    if (this.#externalDropActive === active) {
+      return;
+    }
+    this.#externalDropActive = active;
+    const panel = this.panel;
+    const list = this.list;
+    if (panel) {
+      if (active) {
+        panel.setAttribute("data-external-drop-active", "true");
+      } else {
+        panel.removeAttribute("data-external-drop-active");
+      }
+    }
+    if (list) {
+      list.classList.toggle("astra-app-hub-drop-target-active", active);
+    }
+    for (const el of list?.querySelectorAll(
+      ".astra-app-hub-add-tile, .astra-app-hub-empty"
+    ) || []) {
+      el.classList.toggle("astra-app-hub-drop-target-active", active);
+    }
+  }
+
+  #clearExternalDropActive() {
+    this.#externalDropDepth = 0;
+    this.#setExternalDropActive(false);
+  }
+
+  #setDropAdding(active) {
+    const tile = this.list?.querySelector(".astra-app-hub-add-tile");
+    const label = tile?.querySelector(".astra-app-hub-item-label");
+    if (tile) {
+      if (active) {
+        tile.setAttribute("data-drop-adding", "true");
+      } else {
+        tile.removeAttribute("data-drop-adding");
+      }
+    }
+    if (label) {
+      if (active) {
+        setL10nOrText(label, "astra-app-hub-drop-adding", "Adding…");
+      } else {
+        setL10nOrText(label, "astra-app-hub-add-tile", "Add app");
+      }
+    }
+    const status = document.getElementById("astra-app-hub-search-status");
+    if (!tile && status && active && !this.#searchQuery) {
+      status.hidden = false;
+      status.classList.add("astra-app-hub-drop-status");
+      setL10nOrText(status, "astra-app-hub-drop-adding", "Adding…");
+    }
+  }
+
+  #showDropStatus(l10nId, durationMs = 3200) {
+    const status = document.getElementById("astra-app-hub-search-status");
+    if (!status || this.#searchQuery) {
+      return;
+    }
+    if (this.#dropStatusTimer) {
+      clearTimeout(this.#dropStatusTimer);
+      this.#dropStatusTimer = null;
+    }
+    status.hidden = false;
+    status.classList.add("astra-app-hub-drop-status");
+    status.classList.toggle(
+      "astra-app-hub-drop-error",
+      String(l10nId || "").includes("error")
+    );
+    setL10nOrText(
+      status,
+      l10nId,
+      DROP_STATUS_FALLBACKS[l10nId] || "Could not add this app."
+    );
+    this.#dropStatusTimer = setTimeout(() => {
+      if (!this.#searchQuery) {
+        status.hidden = true;
+        status.removeAttribute("data-l10n-id");
+        status.setAttribute("value", "");
+        status.classList.remove(
+          "astra-app-hub-drop-status",
+          "astra-app-hub-drop-error"
+        );
+      }
+      this.#dropStatusTimer = null;
+    }, durationMs);
+  }
+
+  #extractExternalAppDrop(dt) {
+    if (!dt || !dataTransferHasExternalAppPayload(dt)) {
+      return null;
+    }
+
+    // Tab drag (often lacks text/x-moz-url).
+    try {
+      const types = new Set([
+        ...(dt.types ? [...dt.types] : []),
+        ...mozItemTypes(dt, 0),
+      ]);
+      if (types.has(TAB_DROP_TYPE)) {
+        const tab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
+        const browser = tab?.linkedBrowser;
+        const spec =
+          browser?.currentURI?.spec ||
+          tab?.linkedBrowser?.documentURI?.spec ||
+          "";
+        if (typeof spec === "string" && spec) {
+          const urlCheck = validateAppUrl(spec);
+          if (urlCheck.ok) {
+            let faviconHint = null;
+            const image =
+              (typeof tab?.image === "string" && tab.image) ||
+              (typeof tab?.getAttribute === "function" &&
+                tab.getAttribute("image")) ||
+              "";
+            if (typeof image === "string" && /^data:image\//i.test(image)) {
+              faviconHint = image;
+            }
+            return {
+              url: urlCheck.href,
+              title: (tab?.label || tab?.getAttribute?.("label") || "").trim(),
+              faviconHint,
+              source: "tab",
+            };
+          }
+        }
+      }
+    } catch {
+      // fall through to link flavors
+    }
+
+    const mozUrl = readDataTransferString(dt, "text/x-moz-url");
+    if (mozUrl) {
+      const rawUrl = firstUrlLineFromText(mozUrl);
+      const urlCheck = validateAppUrl(rawUrl);
+      if (urlCheck.ok) {
+        return {
+          url: urlCheck.href,
+          title: titleFromMozUrlPayload(mozUrl),
+          faviconHint: null,
+          source: "link",
+        };
+      }
+    }
+
+    for (const flavor of ["text/uri-list", "text/plain"]) {
+      const raw = readDataTransferString(dt, flavor);
+      if (!raw) {
+        continue;
+      }
+      const rawUrl = firstUrlLineFromText(raw);
+      const urlCheck = validateAppUrl(rawUrl);
+      if (urlCheck.ok) {
+        return {
+          url: urlCheck.href,
+          title: "",
+          faviconHint: null,
+          source: "link",
+        };
+      }
+    }
+
+    return null;
+  }
+
+  async #addCustomAppFromDrop(payload) {
+    if (this.#externalDropInFlight) {
+      return;
+    }
+    if (PrivateBrowsingUtils.isWindowPrivate(window)) {
+      this.#showDropStatus("astra-app-hub-drop-error-private");
+      return;
+    }
+    if (!payload?.url) {
+      this.#showDropStatus("astra-app-hub-drop-error-invalid");
+      return;
+    }
+
+    const urlCheck = validateAppUrl(payload.url);
+    if (!urlCheck.ok) {
+      this.#showDropStatus("astra-app-hub-error-url");
+      return;
+    }
+
+    const nextKey = normalizeAppUrlKey(urlCheck.href);
+    if (nextKey) {
+      const conflict = [...this.#allAppsMap().values()].find(app => {
+        if (!app?.url) {
+          return false;
+        }
+        return normalizeAppUrlKey(app.url) === nextKey;
+      });
+      if (conflict) {
+        this.#showDropStatus("astra-app-hub-error-duplicate");
+        return;
+      }
+    }
+
+    this.#externalDropInFlight = true;
+    this.#setDropAdding(true);
+    try {
+      const name =
+        (payload.title || "").trim() ||
+        urlCheck.hostname ||
+        urlCheck.href;
+      const appPayload = {
+        name: name.slice(0, MAX_NAME_LENGTH),
+        url: urlCheck.href,
+        category: "work",
+        keywords: [],
+      };
+      const preferredData = sanitizeDataImageURI(payload.faviconHint || "");
+      if (preferredData) {
+        appPayload.cachedFaviconData = preferredData;
+      }
+
+      const before = new Set(
+        (gAstraAppHubState.data.customApps || []).map(a => a.id)
+      );
+      await gAstraAppHubState.addCustomApp(appPayload);
+      const added = (gAstraAppHubState.data.customApps || []).find(
+        a => !before.has(a.id)
+      );
+      const savedId = added?.id || null;
+      if (savedId) {
+        try {
+          const favs = gAstraAppHubState.data.favorites || [];
+          if (!favs.includes(savedId)) {
+            await gAstraAppHubState.toggleFavorite(savedId);
+          }
+        } catch (favError) {
+          console.warn("[AstraAppHub] auto-pin dropped app failed:", favError);
+        }
+      }
+      this.#lastAppliedRevision = gAstraAppHubState.revision;
+      this.#rendered = false;
+      this.#rebuildList();
+
+      if (
+        savedId &&
+        !preferredData &&
+        !PrivateBrowsingUtils.isWindowPrivate(window)
+      ) {
+        void this.#tryPersistCustomAppFavicon(savedId, urlCheck.href, {
+          expectedUrl: urlCheck.href,
+          urlKey: urlCheck.href.toLowerCase(),
+          allowRemote: true,
+          preferredIconHint: payload.faviconHint || null,
+        });
+      }
+    } catch (error) {
+      console.warn("[AstraAppHub] external drop add failed:", error);
+      const reason = error?.message || String(error);
+      const l10nByReason = {
+        "duplicate-url": "astra-app-hub-error-duplicate",
+        "custom-limit": "astra-app-hub-error-generic",
+      };
+      this.#showDropStatus(
+        l10nByReason[reason] || "astra-app-hub-drop-error-invalid"
+      );
+    } finally {
+      this.#externalDropInFlight = false;
+      this.#setDropAdding(false);
+    }
+  }
+
+  #onDragEnter(event) {
+    if (!this.#canAcceptExternalDrop()) {
+      return;
+    }
+    if (this.#customizeMode && this.#dragState) {
+      return;
+    }
+    if (!dataTransferHasExternalAppPayload(event.dataTransfer)) {
+      return;
+    }
+    event.preventDefault();
+    this.#externalDropDepth += 1;
+    this.#setExternalDropActive(true);
+  }
+
+  #onDragLeave(event) {
+    if (!this.#externalDropActive) {
+      return;
+    }
+    const panel = this.panel;
+    const related = event.relatedTarget;
+    if (panel && related && panel.contains(related)) {
+      return;
+    }
+    this.#externalDropDepth = Math.max(0, this.#externalDropDepth - 1);
+    if (this.#externalDropDepth === 0) {
+      this.#setExternalDropActive(false);
+    }
+  }
+
   #onDragStart(event) {
     if (!this.#customizeMode) {
       return;
@@ -4525,98 +4957,124 @@ class AstraAppHubManager {
   }
 
   #onDragOver(event) {
-    if (!this.#customizeMode || !this.#dragState) {
+    if (this.#customizeMode && this.#dragState) {
+      event.preventDefault();
+      try {
+        event.dataTransfer.dropEffect = "move";
+      } catch {
+        // ignore
+      }
+      return;
+    }
+    if (!this.#canAcceptExternalDrop()) {
+      return;
+    }
+    if (!dataTransferHasExternalAppPayload(event.dataTransfer)) {
       return;
     }
     event.preventDefault();
     try {
-      event.dataTransfer.dropEffect = "move";
+      event.dataTransfer.dropEffect = "copy";
     } catch {
       // ignore
     }
+    this.#setExternalDropActive(true);
   }
 
   async #onDrop(event) {
-    if (!this.#customizeMode || !this.#dragState) {
+    if (this.#customizeMode && this.#dragState) {
+      event.preventDefault();
+      const target = event.target;
+      if (!target || typeof target.closest !== "function") {
+        return;
+      }
+
+      if (this.#dragState.type === "category") {
+        const header = target.closest(
+          ".astra-app-hub-section-header[data-category-id]"
+        );
+        const dropId = header?.getAttribute("data-category-id");
+        if (dropId && dropId !== this.#dragState.id && !dropId.startsWith("__")) {
+          const order = this.#orderedCategories(gAstraAppHubState.data).map(
+            c => c.id
+          );
+          const from = order.indexOf(this.#dragState.id);
+          const to = order.indexOf(dropId);
+          if (from >= 0 && to >= 0) {
+            order.splice(from, 1);
+            order.splice(to, 0, this.#dragState.id);
+            await gAstraAppHubState.setCategoryOrder(order);
+            this.#lastAppliedRevision = gAstraAppHubState.revision;
+            this.#rendered = false;
+            this.#rebuildList();
+          }
+        }
+      } else if (this.#dragState.type === "app") {
+        const dropItem = target.closest(".astra-app-hub-item[data-app-id]");
+        const dropAppId = dropItem?.getAttribute("data-app-id");
+        const dropCat =
+          dropItem
+            ?.closest("[data-category-id]")
+            ?.getAttribute("data-category-id") || this.#dragState.categoryId;
+        if (
+          dropAppId &&
+          dropAppId !== this.#dragState.id &&
+          dropCat &&
+          !dropCat.startsWith("__")
+        ) {
+          const state = gAstraAppHubState.data;
+          const hidden = new Set(state.hidden || []);
+          const apps = this.#orderedAppsForCategory(
+            dropCat,
+            this.#allAppsMap(),
+            state,
+            hidden
+          );
+          let ids = apps.map(a => a.id);
+          const dragApp = this.#allAppsMap().get(this.#dragState.id);
+          if (dragApp && dragApp.category !== dropCat) {
+            if (dragApp.category === dropCat || !dragApp.builtin) {
+              // For Phase 2: restrict reorder to same category
+            }
+            if (dragApp.category !== dropCat) {
+              this.#onDragEnd();
+              return;
+            }
+          }
+          const from = ids.indexOf(this.#dragState.id);
+          const to = ids.indexOf(dropAppId);
+          if (from >= 0 && to >= 0) {
+            ids.splice(from, 1);
+            ids.splice(to, 0, this.#dragState.id);
+            await gAstraAppHubState.setAppOrder(dropCat, ids);
+            this.#lastAppliedRevision = gAstraAppHubState.revision;
+            this.#rendered = false;
+            this.#rebuildList();
+          }
+        }
+      }
+      this.#onDragEnd();
+      return;
+    }
+
+    this.#clearExternalDropActive();
+    if (!this.#canAcceptExternalDrop()) {
+      return;
+    }
+    const payload = this.#extractExternalAppDrop(event.dataTransfer);
+    if (!payload) {
+      this.#showDropStatus("astra-app-hub-drop-error-invalid");
       return;
     }
     event.preventDefault();
-    const target = event.target;
-    if (!target || typeof target.closest !== "function") {
-      return;
-    }
-
-    if (this.#dragState.type === "category") {
-      const header = target.closest(
-        ".astra-app-hub-section-header[data-category-id]"
-      );
-      const dropId = header?.getAttribute("data-category-id");
-      if (dropId && dropId !== this.#dragState.id && !dropId.startsWith("__")) {
-        const order = this.#orderedCategories(gAstraAppHubState.data).map(
-          c => c.id
-        );
-        const from = order.indexOf(this.#dragState.id);
-        const to = order.indexOf(dropId);
-        if (from >= 0 && to >= 0) {
-          order.splice(from, 1);
-          order.splice(to, 0, this.#dragState.id);
-          await gAstraAppHubState.setCategoryOrder(order);
-          this.#lastAppliedRevision = gAstraAppHubState.revision;
-          this.#rendered = false;
-          this.#rebuildList();
-        }
-      }
-    } else if (this.#dragState.type === "app") {
-      const dropItem = target.closest(".astra-app-hub-item[data-app-id]");
-      const dropAppId = dropItem?.getAttribute("data-app-id");
-      const dropCat =
-        dropItem
-          ?.closest("[data-category-id]")
-          ?.getAttribute("data-category-id") || this.#dragState.categoryId;
-      if (
-        dropAppId &&
-        dropAppId !== this.#dragState.id &&
-        dropCat &&
-        !dropCat.startsWith("__")
-      ) {
-        const state = gAstraAppHubState.data;
-        const hidden = new Set(state.hidden || []);
-        const apps = this.#orderedAppsForCategory(
-          dropCat,
-          this.#allAppsMap(),
-          state,
-          hidden
-        );
-        let ids = apps.map(a => a.id);
-        // If moving across categories, update app.category via custom only —
-        // for builtins keep within same category.
-        const dragApp = this.#allAppsMap().get(this.#dragState.id);
-        if (dragApp && dragApp.category !== dropCat) {
-          // Only allow same-category reorder for built-ins; custom can stay put.
-          if (dragApp.category === dropCat || !dragApp.builtin) {
-            // For Phase 2: restrict reorder to same category
-          }
-          if (dragApp.category !== dropCat) {
-            this.#onDragEnd();
-            return;
-          }
-        }
-        const from = ids.indexOf(this.#dragState.id);
-        const to = ids.indexOf(dropAppId);
-        if (from >= 0 && to >= 0) {
-          ids.splice(from, 1);
-          ids.splice(to, 0, this.#dragState.id);
-          await gAstraAppHubState.setAppOrder(dropCat, ids);
-          this.#lastAppliedRevision = gAstraAppHubState.revision;
-          this.#rendered = false;
-          this.#rebuildList();
-        }
-      }
-    }
-    this.#onDragEnd();
+    event.stopPropagation();
+    await this.#addCustomAppFromDrop(payload);
   }
 
   #onDragEnd() {
+    if (this.#externalDropActive) {
+      this.#clearExternalDropActive();
+    }
     const dragging = this.list?.querySelectorAll("[data-dragging]");
     if (dragging) {
       for (const el of dragging) {
@@ -4874,6 +5332,12 @@ class AstraAppHubManager {
     this.#contextAppId = null;
     this.#dragState = null;
     this.#suppressLaunch = false;
+    this.#clearExternalDropActive();
+    if (this.#dropStatusTimer) {
+      clearTimeout(this.#dropStatusTimer);
+      this.#dropStatusTimer = null;
+    }
+    this.#externalDropInFlight = false;
   }
 
   #visibleItems() {

@@ -66,11 +66,22 @@ astra-app-hub-add-website-short =
     .tooltiptext = Add website
 astra-app-hub-add-tile =
     .value = Add app
+astra-app-hub-add-tile-tooltip =
+    .tooltiptext = Add website or drop a tab here
+
+astra-app-hub-drop-adding =
+    .value = Adding…
+astra-app-hub-drop-hint =
+    .value = Drop a tab or link to pin it here
+astra-app-hub-drop-error-invalid =
+    .value = Drop a website link or browser tab.
+astra-app-hub-drop-error-private =
+    .value = Custom apps cannot be added in a private window.
 
 astra-app-hub-empty-title =
     .value = No pinned apps yet
 astra-app-hub-empty-body =
-    .value = Browse the catalog or add a website to build your launchpad.
+    .value = Browse the catalog, add a website, or drop a tab or link here to build your launchpad.
 astra-app-hub-empty-browse =
     .label = Browse Apps
 astra-app-hub-empty-add =

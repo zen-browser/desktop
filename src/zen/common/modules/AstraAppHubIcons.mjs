@@ -354,7 +354,7 @@ export function resolveAppIcon(app) {
 }
 
 /** Overall budget for custom-app remote icon discovery (ms). */
-export const REMOTE_FAVICON_TIMEOUT_MS = 4500;
+export const REMOTE_FAVICON_TIMEOUT_MS = 8000;
 /** Cap HTML download used only to discover <link rel=icon> candidates. */
 const REMOTE_HTML_MAX_BYTES = 384 * 1024;
 /** Cap individual icon payload before decode/resize. */
@@ -1010,21 +1010,30 @@ export async function fetchRemoteFaviconAsDataURI(
     return null;
   }
 
-  // 2) Always consider the conventional root icon as a fallback candidate.
-  try {
-    const rootHref = new URL(rootIconPath(), resolvedBase).href;
-    if (!candidates.some(c => c.href === rootHref)) {
-      candidates.push({
-        href: rootHref,
-        type: "image/x-icon",
-        sizes: "32x32",
-        rel: "icon",
-        score: 25,
-      });
+  // 2) Always consider conventional icon paths as fallback candidates.
+  // SPA shells often omit <link rel=icon> in the first HTML byte window.
+  const fallbackPaths = [
+    rootIconPath(),
+    "/" + "apple-touch-icon.png",
+    "/" + "apple-touch-icon-precomposed.png",
+  ];
+  for (const path of fallbackPaths) {
+    try {
+      const rootHref = new URL(path, resolvedBase).href;
+      if (!candidates.some(c => c.href === rootHref)) {
+        candidates.push({
+          href: rootHref,
+          type: path.endsWith(".png") ? "image/png" : "image/x-icon",
+          sizes: path.includes("apple-touch") ? "180x180" : "32x32",
+          rel: path.includes("apple-touch") ? "apple-touch-icon" : "icon",
+          score: path.includes("apple-touch") ? 55 : 25,
+        });
+      }
+    } catch {
+      // ignore
     }
-  } catch {
-    // ignore
   }
+  candidates.sort((a, b) => (b.score || 0) - (a.score || 0));
 
   // Try top candidates within the remaining budget.
   const tryList = candidates.slice(0, 6);
@@ -1087,7 +1096,69 @@ export async function fetchRemoteFaviconAsDataURI(
 }
 
 /**
- * Resolve a favicon for a custom app URL: Places first, then remote discovery.
+ * Resolve a drag/tab favicon hint: sanitized data URI first, then bounded https
+ * (or same-origin http) icon fetch. Ignores engine page-icon / chrome specs.
+ * Never throws.
+ */
+export async function resolvePreferredIconHint(
+  preferredIconHint,
+  pageUrl,
+  { timeoutMs = REMOTE_FAVICON_TIMEOUT_MS } = {}
+) {
+  if (typeof preferredIconHint !== "string" || !preferredIconHint) {
+    return null;
+  }
+  const trimmed = preferredIconHint.trim();
+  const direct = sanitizeDataImageURI(trimmed);
+  if (direct) {
+    return direct;
+  }
+  const pageIconPrefix = "page" + "-icon:";
+  if (
+    trimmed.startsWith(pageIconPrefix) ||
+    trimmed.startsWith("chrome:") ||
+    trimmed.startsWith("resource:")
+  ) {
+    return null;
+  }
+  let hint;
+  try {
+    hint = new URL(trimmed);
+  } catch {
+    return null;
+  }
+  if (hint.protocol !== "http:" && hint.protocol !== "https:") {
+    return null;
+  }
+  if (hint.protocol === "http:") {
+    try {
+      const page = new URL(pageUrl);
+      if (page.origin !== hint.origin) {
+        return null;
+      }
+    } catch {
+      return null;
+    }
+  }
+  try {
+    const perTry = abortSignalFor(Math.min(3000, timeoutMs));
+    const iconFetch = await fetchBytesBounded(hint.href, {
+      signal: perTry,
+      maxBytes: REMOTE_ICON_MAX_BYTES,
+      accept: "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+    });
+    return await bytesToSafeIconDataURI(
+      iconFetch.bytes,
+      iconFetch.contentType,
+      hint.href
+    );
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Resolve a favicon for a custom app URL: preferred hint, Places, then remote.
  * Never throws. Returns sanitized data URI or null (monogram fallback).
  */
 export async function resolveCustomAppFaviconDataURI(
@@ -1096,10 +1167,19 @@ export async function resolveCustomAppFaviconDataURI(
     privateBrowsing = false,
     timeoutMs = REMOTE_FAVICON_TIMEOUT_MS,
     allowRemote = true,
+    preferredIconHint = null,
   } = {}
 ) {
   if (privateBrowsing) {
     return null;
+  }
+  if (preferredIconHint) {
+    const fromHint = await resolvePreferredIconHint(preferredIconHint, pageUrl, {
+      timeoutMs,
+    });
+    if (fromHint) {
+      return fromHint;
+    }
   }
   const fromPlaces = await resolvePlacesFaviconURL(pageUrl, {
     privateBrowsing,

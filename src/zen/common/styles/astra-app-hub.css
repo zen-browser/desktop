@@ -459,6 +459,37 @@
 .astra-app-hub-add-tile {
   border-style: dashed !important;
   border-color: color-mix(in srgb, currentColor 28%, transparent) !important;
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease;
+}
+
+#PanelUI-zen-app-launcher[data-external-drop-active="true"] .astra-app-hub-list,
+.astra-app-hub-list.astra-app-hub-drop-target-active {
+  outline: 2px dashed color-mix(in srgb, var(--focus-outline-color, Highlight) 40%, transparent);
+  outline-offset: 2px;
+  border-radius: 10px;
+  transition: outline-color 120ms ease;
+}
+
+#PanelUI-zen-app-launcher[data-external-drop-active="true"] .astra-app-hub-add-tile,
+#PanelUI-zen-app-launcher[data-external-drop-active="true"] .astra-app-hub-empty,
+.astra-app-hub-add-tile.astra-app-hub-drop-target-active,
+.astra-app-hub-empty.astra-app-hub-drop-target-active {
+  border-color: color-mix(in srgb, var(--focus-outline-color, Highlight) 55%, transparent) !important;
+  background: color-mix(in srgb, var(--focus-outline-color, Highlight) 12%, transparent) !important;
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease;
+}
+
+.astra-app-hub-add-tile[data-drop-adding="true"] .astra-app-hub-item-label,
+.astra-app-hub-drop-status {
+  opacity: 0.85;
+}
+
+.astra-app-hub-drop-error {
+  color: color-mix(in srgb, #c0392b 85%, CanvasText) !important;
 }
 
 .astra-app-hub-add-tile-mark {
@@ -551,6 +582,9 @@
   border: 1px dashed color-mix(in srgb, currentColor 28%, transparent);
   background: color-mix(in srgb, currentColor 5%, transparent);
   box-sizing: border-box;
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease;
 }
 
 .astra-app-hub-empty-title {

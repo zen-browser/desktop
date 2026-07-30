@@ -360,3 +360,4 @@ zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs
 zen-new-unsynced-window-shortcut = New Blank Window
 zen-duplicate-tab-shortcut = Duplicate Tab
 zen-key-find-selection = Find Selection
+zen-move-tab-to-folder-shortcut = Move Tab to Folder

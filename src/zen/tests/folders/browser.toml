@@ -24,6 +24,8 @@ support-files = [
 
 ["browser_folder_max_subfolders.js"]
 
+["browser_folder_move_shortcut.js"]
+
 ["browser_folder_multiselected.js"]
 
 ["browser_folder_owner_tabs.js"]

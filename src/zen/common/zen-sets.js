@@ -114,6 +114,9 @@ document.addEventListener(
               renameFolder: true,
             });
             break;
+          case "cmd_zenMoveTabToFolder":
+            gZenFolders.moveSelectedTabsToFolder();
+            break;
           case "cmd_zenTogglePinTab": {
             const currentTab = gZenGlanceManager.getTabOrGlanceParent(
               gBrowser.selectedTab

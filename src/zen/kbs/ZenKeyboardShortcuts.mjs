@@ -848,7 +848,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 19;
+  static LATEST_KBS_VERSION = 21;
 
   constructor() {}
 
@@ -1254,6 +1254,27 @@ class nsZenKeyboardShortcutsVersioner {
           break;
         }
       }
+    }
+
+    if (version < 21) {
+      // Migrate from version 20 to 21.
+      // Add shortcut to move the current tab into a folder: Default
+      //  Accel+Alt+Shift+F. Accel+Alt+F is taken by "key_search2".
+      data.push(
+        new KeyShortcut(
+          "zen-move-tab-to-folder",
+          "F",
+          "",
+          ZEN_OTHER_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({
+            accel: true,
+            alt: true,
+            shift: true,
+          }),
+          "cmd_zenMoveTabToFolder",
+          "zen-move-tab-to-folder-shortcut"
+        )
+      );
     }
 
     return data;

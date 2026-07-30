@@ -48,6 +48,10 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
 
   #lastFolderContextMenu = null;
 
+  // Maps a workspace ID to the ID of the folder last used in it. Used by
+  //  "cmd_zenMoveTabToFolder" to know where to move tabs to.
+  #lastUsedFolderIds = new Map();
+
   #foldersEnabled = false;
 
   #animationCount = 0;
@@ -250,19 +254,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       let tabs = TabContextMenu.contextTab?.multiselected
         ? gBrowser.selectedTabs
         : [TabContextMenu.contextTab];
-      let groups = gBrowser.tabGroups.filter(group => {
-        const isZenFolder = group?.isZenFolder;
-        const isLiveFolder = group?.isLiveFolder;
-        const spaceId = group?.getAttribute("zen-workspace-id");
-        if (
-          !isZenFolder ||
-          isLiveFolder ||
-          spaceId !== gZenWorkspaces.activeWorkspace
-        ) {
-          return false;
-        }
-        return !tabs.some(tab => tab.group === group);
-      });
+      let groups = this.getTargetFoldersForTabs(tabs);
       separator.hidden = groups.length === 0;
       for (const group of groups) {
         const icon = group.iconURL;
@@ -300,6 +292,81 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         : [TabContextMenu.contextTab];
       group.addTabs(tabs);
     });
+  }
+
+  /**
+   * Get the folders of the active space the given tabs can be moved into.
+   *
+   * @param {MozTabbrowserTab[]} tabs The tabs about to be moved.
+   * @returns {ZenFolder[]} The eligible folders, in sidebar order.
+   */
+  getTargetFoldersForTabs(tabs) {
+    return gBrowser.tabGroups.filter(group => {
+      const isZenFolder = group?.isZenFolder;
+      const isLiveFolder = group?.isLiveFolder;
+      const spaceId = group?.getAttribute("zen-workspace-id");
+      if (
+        !isZenFolder ||
+        isLiveFolder ||
+        spaceId !== gZenWorkspaces.activeWorkspace
+      ) {
+        return false;
+      }
+      return !tabs.some(tab => tab.group === group);
+    });
+  }
+
+  /**
+   * Move tabs into a folder. Folders live in the pinned area and `addTabs`
+   * leaves the pinned state of a tab untouched, so the tabs are pinned first,
+   * exactly like `createFolder` does before handing them to `addTabs`.
+   *
+   * @param {ZenFolder} folder The folder to move the tabs into.
+   * @param {MozTabbrowserTab[]} tabs The tabs to move.
+   */
+  moveTabsToFolder(folder, tabs) {
+    const items = tabs.map(tab => {
+      gBrowser.pinTab(tab);
+      return tab?.group?.hasAttribute("split-view-group") ? tab.group : tab;
+    });
+    folder.addTabs(items);
+    this.#lastUsedFolderIds.set(
+      folder.getAttribute("zen-workspace-id"),
+      folder.id
+    );
+  }
+
+  /**
+   * Move the selected tabs into the folder last used in the active space,
+   * falling back to the first folder of the space. Does nothing when there is
+   * no folder to move them into.
+   */
+  moveSelectedTabsToFolder() {
+    if (!this.#foldersEnabled) {
+      return;
+    }
+    const tabs = gBrowser.selectedTabs
+      .map(tab => gZenGlanceManager.getTabOrGlanceParent(tab))
+      .filter(tab => tab && !tab.hasAttribute("zen-empty-tab"));
+    if (!tabs.length) {
+      return;
+    }
+    const folders = this.getTargetFoldersForTabs(tabs);
+    if (!folders.length) {
+      return;
+    }
+    const lastUsedId = this.#lastUsedFolderIds.get(
+      gZenWorkspaces.activeWorkspace
+    );
+    const folder = folders.find(f => f.id === lastUsedId) ?? folders[0];
+    // Expand the folder and its parents, otherwise a keyboard-only move
+    //  gives no feedback at all.
+    let currentFolder = folder;
+    do {
+      currentFolder.collapsed = false;
+      currentFolder = currentFolder.group;
+    } while (currentFolder);
+    this.moveTabsToFolder(folder, tabs);
   }
 
   handleEvent(aEvent) {
@@ -383,6 +450,11 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     if (!group?.isZenFolder) {
       return;
     }
+
+    this.#lastUsedFolderIds.set(
+      group.getAttribute("zen-workspace-id"),
+      group.id
+    );
 
     const collapsedRoot = group.rootMostCollapsedFolder;
     if (!collapsedRoot) {

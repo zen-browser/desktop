@@ -19,9 +19,27 @@ OBJ="engine/obj-${ARCH}-pc-windows-msvc"
 MAR_SRC="dist/mar-source"
 
 find_zip() {
-  find dist "${OBJ}/dist" -maxdepth 1 -type f -name '*.win64.zip' \
-    ! -name '*xpt*' ! -name '*tests*' ! -name '*crashreporter*' ! -name '*langpack*' \
-    2>/dev/null | head -1 || true
+  # Mozilla names aarch64 packages win64-aarch64 (see package-name.mk), not win64.
+  # Prefer the arch-specific zip when present so we never fall back to dist/bin
+  # (full build tree >> packaged tree, and blows Windows/MSYS ARG_MAX in mar.exe).
+  local candidates=()
+  if [[ "${ARCH}" == "aarch64" ]]; then
+    while IFS= read -r f; do candidates+=("$f"); done < <(
+      find dist "${OBJ}/dist" -maxdepth 1 -type f \( -name '*.win64-aarch64.zip' -o -name '*.win64.zip' \) \
+        ! -name '*xpt*' ! -name '*tests*' ! -name '*crashreporter*' ! -name '*langpack*' \
+        2>/dev/null | sort
+    )
+  else
+    while IFS= read -r f; do candidates+=("$f"); done < <(
+      find dist "${OBJ}/dist" -maxdepth 1 -type f -name '*.win64.zip' \
+        ! -name '*xpt*' ! -name '*tests*' ! -name '*crashreporter*' ! -name '*langpack*' \
+        ! -name '*aarch64*' \
+        2>/dev/null | sort
+    )
+  fi
+  if ((${#candidates[@]} > 0)); then
+    printf '%s\n' "${candidates[0]}"
+  fi
 }
 
 generate_precomplete_if_needed() {
@@ -62,10 +80,11 @@ prepare_mar_source() {
     echo "Unpacking MAR source from ${zip}"
     7z x "${zip}" -o"${MAR_SRC}" -y >/dev/null
   elif [[ -d "${OBJ}/dist/bin" ]]; then
-    echo "No win64.zip; copying MAR source from ${OBJ}/dist/bin"
+    echo "No packaged win64/win64-aarch64 zip; copying MAR source from ${OBJ}/dist/bin"
+    echo "::warning::Using dist/bin fallback - this tree is much larger than the packaged zip and can exceed mar.exe argv limits"
     cp -a "${OBJ}/dist/bin/." "${MAR_SRC}/"
   else
-    echo "::error::No win64.zip and no dist/bin available for MAR packaging"
+    echo "::error::No win64/win64-aarch64 zip and no dist/bin available for MAR packaging"
     exit 1
   fi
 
@@ -132,10 +151,49 @@ export MOZ_PRODUCT_VERSION="${VERSION}"
 export MAR_CHANNEL_ID="${MAR_CHANNEL_ID:-firefox-mozilla-central}"
 export ACCEPTED_MAR_CHANNEL_IDS="${ACCEPTED_MAR_CHANNEL_IDS:-firefox-mozilla-central}"
 
+# Diagnose ARG_MAX risk: make_full_update.sh historically did
+#   targetfiles="$targetfiles \"$f\""; eval "$mar_command $targetfiles"
+# which passes every member path as an argv element to mar.exe (no @filelist).
+ARG_BYTES="$(
+  python -c '
+import os, sys
+root = sys.argv[1]
+total = 0
+n = 0
+for dirpath, _, filenames in os.walk(root):
+    for name in filenames:
+        if name in ("update.manifest", "updatev2.manifest", "updatev3.manifest"):
+            continue
+        rel = os.path.relpath(os.path.join(dirpath, name), root).replace("\\", "/")
+        total += len(rel) + 3  # quoted path + space, as make_full_update.sh builds
+        n += 1
+print(f"{n} {total}")
+' "${APP_DIR}"
+)"
+ARG_FILE_COUNT="${ARG_BYTES%% *}"
+ARG_LEN="${ARG_BYTES##* }"
+echo "MAR source argv estimate: ${ARG_FILE_COUNT} members / ${ARG_LEN} bytes"
+# Windows CreateProcess cmdline limit is 32767; MSYS often fails earlier.
+if [[ "${ARG_LEN}" -gt 28000 ]]; then
+  echo "::warning::Estimated mar.exe argv (~${ARG_LEN} bytes) is near/over Windows limits; using file-list MAR creator"
+fi
+
 echo "Creating MAR from ${APP_DIR}"
 echo "  MAR=${MAR}"
 echo "  OUT=${OUT_UNIX}"
-bash engine/tools/update-packaging/make_full_update.sh "${OUT_UNIX}" "${APP_UNIX}"
+
+MAKE_FULL_UPDATE="engine/tools/update-packaging/make_full_update.sh"
+if [[ ! -f "${MAKE_FULL_UPDATE}" ]]; then
+  echo "::error::${MAKE_FULL_UPDATE} not found"
+  exit 1
+fi
+
+# mar.exe has no response-file input. Patch the eval-based argv construction to
+# write a file list and invoke scripts/mar_create_from_filelist.py instead.
+ROOT_UNIX="$(to_msys "$(pwd)")"
+python scripts/patch_make_full_update_arg_max.py "${MAKE_FULL_UPDATE}" "${ROOT_UNIX}"
+
+bash "${MAKE_FULL_UPDATE}" "${OUT_UNIX}" "${APP_UNIX}"
 
 test -s "${OUT_MAR}"
 echo "Created $(du -h "${OUT_MAR}" | awk '{print $1}') MAR at ${OUT_MAR}"

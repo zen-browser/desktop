@@ -87,6 +87,19 @@ document.addEventListener(
           case "cmd_contextZenRemoveFromEssentials":
             gZenPinnedTabManager.removeEssentials();
             break;
+          case "cmd_zenAddToEssentials": {
+            const currentTab = gZenGlanceManager.getTabOrGlanceParent(
+              gBrowser.selectedTab
+            );
+            if (
+              currentTab &&
+              !currentTab.hasAttribute("zen-empty-tab") &&
+              gZenPinnedTabManager.canEssentialBeAdded(currentTab)
+            ) {
+              gZenPinnedTabManager.addToEssentials(currentTab);
+            }
+            break;
+          }
           case "cmd_zenCtxDeleteWorkspace":
             gZenWorkspaces.contextDeleteWorkspace(event);
             break;

@@ -848,7 +848,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 19;
+  static LATEST_KBS_VERSION = 20;
 
   constructor() {}
 
@@ -1254,6 +1254,27 @@ class nsZenKeyboardShortcutsVersioner {
           break;
         }
       }
+    }
+
+    if (version < 20) {
+      // Migrate from version 19 to 20.
+      // Add shortcut to add the current tab to Essentials:
+      // Default Accel+Alt+Shift+E
+      data.push(
+        new KeyShortcut(
+          "zen-add-to-essentials",
+          "E",
+          "",
+          ZEN_OTHER_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({
+            accel: true,
+            alt: true,
+            shift: true,
+          }),
+          "cmd_zenAddToEssentials",
+          "zen-add-to-essentials-shortcut"
+        )
+      );
     }
 
     return data;

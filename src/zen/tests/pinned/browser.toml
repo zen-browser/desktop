@@ -5,6 +5,8 @@
 [DEFAULT]
 prefs = ["zen.workspaces.separate-essentials=false"]
 
+["browser_essential_shortcut.js"]
+
 ["browser_issue_8726.js"]
 
 ["browser_pinned_changed.js"]

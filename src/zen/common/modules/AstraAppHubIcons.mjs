@@ -361,6 +361,87 @@ const REMOTE_HTML_MAX_BYTES = 384 * 1024;
 const REMOTE_ICON_MAX_BYTES = MAX_PICKER_BYTES;
 
 /**
+ * Reject hosts that must never be fetched with a chrome/system principal.
+ * Blocks loopback, link-local, RFC1918, ULA, metadata endpoints, and .local.
+ * Literal IPs only for private ranges (DNS rebinding remains a residual risk).
+ * @param {string} hostname
+ * @returns {boolean} true when the host is unsafe for privileged favicon fetch
+ */
+export function isBlockedPrivilegedFetchHost(hostname) {
+  if (typeof hostname !== "string" || !hostname) {
+    return true;
+  }
+  const host = hostname.replace(/^\[|\]$/g, "").toLowerCase();
+  if (
+    host === "localhost" ||
+    host === "localhost." ||
+    host.endsWith(".localhost") ||
+    host.endsWith(".local") ||
+    host === "metadata.google.internal" ||
+    host === "metadata"
+  ) {
+    return true;
+  }
+  // IPv4 literals (incl. decimal-encoded single-int forms are rare; cover dotted).
+  const v4 = host.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  if (v4) {
+    const parts = v4.slice(1).map(n => Number(n));
+    if (parts.some(n => n > 255)) {
+      return true;
+    }
+    const [a, b] = parts;
+    if (a === 0 || a === 10 || a === 127) {
+      return true;
+    }
+    if (a === 169 && b === 254) {
+      return true; // link-local / cloud metadata
+    }
+    if (a === 172 && b >= 16 && b <= 31) {
+      return true;
+    }
+    if (a === 192 && b === 168) {
+      return true;
+    }
+    if (a === 100 && b >= 64 && b <= 127) {
+      return true; // CGNAT
+    }
+    return false;
+  }
+  // IPv6 literals — block loopback, ULA, link-local.
+  if (host.includes(":")) {
+    if (
+      host === "::1" ||
+      host === "0:0:0:0:0:0:0:1" ||
+      host.startsWith("fc") ||
+      host.startsWith("fd") ||
+      host.startsWith("fe8") ||
+      host.startsWith("fe9") ||
+      host.startsWith("fea") ||
+      host.startsWith("feb")
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function assertPublicHttpUrl(urlSpec) {
+  let uri;
+  try {
+    uri = Services.io.newURI(urlSpec);
+  } catch (error) {
+    throw error instanceof Error ? error : new Error("bad-url");
+  }
+  if (uri.scheme !== "http" && uri.scheme !== "https") {
+    throw new Error("bad-scheme");
+  }
+  if (isBlockedPrivilegedFetchHost(uri.host || uri.asciiHost || "")) {
+    throw new Error("blocked-host");
+  }
+  return uri;
+}
+
+/**
  * Local Places favicon → sanitized PNG/JPEG/WebP data:image only.
  * ICO and other engine-decoded formats are resized/normalized to PNG.
  */
@@ -568,6 +649,16 @@ export function parseHtmlIconCandidates(html, baseUrl) {
     if (!/^https?:/i.test(abs) && !/^data:image\//i.test(abs)) {
       continue;
     }
+    if (/^https?:/i.test(abs)) {
+      try {
+        const candHost = new URL(abs).hostname;
+        if (isBlockedPrivilegedFetchHost(candHost)) {
+          continue;
+        }
+      } catch {
+        continue;
+      }
+    }
     if (seen.has(abs)) {
       continue;
     }
@@ -651,13 +742,9 @@ function fetchBytesBounded(
   return new Promise((resolve, reject) => {
     let uri;
     try {
-      uri = Services.io.newURI(url);
+      uri = assertPublicHttpUrl(url);
     } catch (error) {
       reject(error);
-      return;
-    }
-    if (uri.scheme !== "http" && uri.scheme !== "https") {
-      reject(new Error("bad-scheme"));
       return;
     }
 
@@ -674,6 +761,44 @@ function fetchBytesBounded(
     } catch (error) {
       reject(error);
       return;
+    }
+
+    // Cap redirect hops and reject private/metadata redirect targets early.
+    try {
+      channel.redirectionLimit = Math.min(channel.redirectionLimit || 5, 3);
+    } catch {
+      // ignore
+    }
+    try {
+      const sink = {
+        asyncOnChannelRedirect(oldChannel, newChannel, flags, callback) {
+          try {
+            const next = newChannel.URI || newChannel.originalURI;
+            const scheme = next?.scheme || "";
+            const host = next?.host || next?.asciiHost || "";
+            if (
+              (scheme !== "http" && scheme !== "https") ||
+              isBlockedPrivilegedFetchHost(host)
+            ) {
+              callback.onRedirectVerifyCallback(Cr.NS_ERROR_ABORT);
+              return;
+            }
+            callback.onRedirectVerifyCallback(Cr.NS_OK);
+          } catch {
+            callback.onRedirectVerifyCallback(Cr.NS_ERROR_ABORT);
+          }
+        },
+        getInterface(iid) {
+          return this.QueryInterface(iid);
+        },
+        QueryInterface: ChromeUtils.generateQI([
+          "nsIChannelEventSink",
+          "nsIInterfaceRequestor",
+        ]),
+      };
+      channel.notificationCallbacks = sink;
+    } catch {
+      // If redirect sink cannot attach, host pre-check still applies.
     }
 
     try {
@@ -830,6 +955,13 @@ function fetchBytesBounded(
           // non-HTTP (shouldn't happen)
         }
 
+        try {
+          assertPublicHttpUrl(finalUrl);
+        } catch {
+          finishReject(new Error("blocked-host"));
+          return;
+        }
+
         if (httpStatus && (httpStatus < 200 || httpStatus >= 300)) {
           finishReject(new Error(`http-${httpStatus}`));
           return;
@@ -943,6 +1075,9 @@ export async function fetchRemoteFaviconAsDataURI(
     return null;
   }
   if (page.protocol !== "http:" && page.protocol !== "https:") {
+    return null;
+  }
+  if (isBlockedPrivilegedFetchHost(page.hostname)) {
     return null;
   }
 

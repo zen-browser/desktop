@@ -9,4 +9,9 @@ EXTRA_JS_MODULES.zen += [
   "ZenSpaceIcons.mjs",
   "ZenSpaceManager.mjs",
   "ZenSpacesSwipe.mjs",
+  "ZenWorkspaceCommandLine.sys.mjs",
+]
+
+XPCOM_MANIFESTS += [
+  "components.conf",
 ]

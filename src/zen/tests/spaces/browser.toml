@@ -31,3 +31,5 @@ support-files = [
 ["browser_unload_all_other_spaces.js"]
 
 ["browser_workspace_bookmarks.js"]
+
+["browser_workspace_command_line.js"]

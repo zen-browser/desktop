@@ -218,14 +218,19 @@ jobs:
       - name: Insert API Keys
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.zen-keys"
+          New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.zen-keys" | Out-Null
           $key = "${{ secrets.ZEN_SAFEBROWSING_API_KEY }}"
           if ([string]::IsNullOrWhiteSpace($key)) { $key = "placeholder" }
-          Set-Content -Path "$env:USERPROFILE\.zen-keys\safebrowsing.dat" -Value $key
-
-          # Also create for MSYS/bash path
-          $msysPath = $env:USERPROFILE -replace 'C:\\', '/c/' -replace '\\', '/'
-          bash -c "mkdir -p $msysPath/.zen-keys && echo '$key' > $msysPath/.zen-keys/safebrowsing.dat"
+          # Write via .NET only — never interpolate the secret into bash -c
+          # (a quote in the key would break the shell or leak via argv).
+          # MSYS on GA runners shares this USERPROFILE path as /c/Users/...
+          [System.IO.File]::WriteAllText(
+            "$env:USERPROFILE\.zen-keys\safebrowsing.dat",
+            $key
+          )
+          if (-not (Test-Path "$env:USERPROFILE\.zen-keys\safebrowsing.dat")) {
+            throw "Failed to write safebrowsing.dat"
+          }
 
       - name: Build
         if: ${{ !(inputs['generate-gpo'] && matrix.arch == 'aarch64') }}

@@ -178,7 +178,15 @@ jobs:
           npm run package
           test -s dist/output.mar
           test -d dist/update
-          echo "Linux package OK: $(du -h dist/output.mar | awk '{print $1}') MAR"
+          # Fail closed on stub/corrupt MARs (manifest-only packs are ~600-900 bytes).
+          MAR_BYTES="$(wc -c < dist/output.mar | tr -d ' ')"
+          MIN_MAR_BYTES=10485760 # 10 MiB; real Linux packs are tens of MiB
+          if [ "${MAR_BYTES}" -lt "${MIN_MAR_BYTES}" ]; then
+            echo "::error::dist/output.mar is only ${MAR_BYTES} bytes (min ${MIN_MAR_BYTES})"
+            ls -la dist/output.mar || true
+            exit 1
+          fi
+          echo "Linux package OK: $(du -h dist/output.mar | awk '{print $1}') (${MAR_BYTES} bytes) MAR"
 
       - name: Remove API Keys
         continue-on-error: true
@@ -210,6 +218,11 @@ jobs:
           fi
           mv "$LINUX_TAR" "astra.linux-${{ matrix.arch }}.tar.xz"
           test -s dist/output.mar
+          MAR_BYTES="$(wc -c < dist/output.mar | tr -d ' ')"
+          if [ "${MAR_BYTES}" -lt 10485760 ]; then
+            echo "::error::Refusing to publish stub MAR (${MAR_BYTES} bytes)"
+            exit 1
+          fi
           mv dist/output.mar "linux${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.mar"
           test -s "linux${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.mar"
           # Align Surfer twilight download tag with GitHub release tag twilight-1.

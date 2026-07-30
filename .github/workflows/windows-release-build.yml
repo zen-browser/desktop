@@ -468,6 +468,11 @@ jobs:
           fi
 
           if [ -f ./dist/output.mar ]; then
+            MAR_BYTES="$(wc -c < ./dist/output.mar | tr -d ' ')"
+            if [ "${MAR_BYTES}" -lt 10485760 ]; then
+              echo "::error::Refusing to publish stub Windows MAR (${MAR_BYTES} bytes)"
+              exit 1
+            fi
             mv ./dist/output.mar "windows${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.mar"
           fi
 

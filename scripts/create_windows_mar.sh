@@ -200,7 +200,14 @@ python scripts/patch_make_full_update_arg_max.py "${MAKE_FULL_UPDATE}" "${ROOT_U
 bash "${MAKE_FULL_UPDATE}" "${OUT_UNIX}" "${APP_UNIX}"
 
 test -s "${OUT_MAR}"
-echo "Created $(du -h "${OUT_MAR}" | awk '{print $1}') MAR at ${OUT_MAR}"
+MAR_BYTES="$(wc -c < "${OUT_MAR}" | tr -d ' ')"
+MIN_MAR_BYTES=10485760 # 10 MiB; real Windows packs are ~80-110 MiB
+if [ "${MAR_BYTES}" -lt "${MIN_MAR_BYTES}" ]; then
+  echo "::error::${OUT_MAR} is only ${MAR_BYTES} bytes (min ${MIN_MAR_BYTES})"
+  ls -la "${OUT_MAR}" || true
+  exit 1
+fi
+echo "Created $(du -h "${OUT_MAR}" | awk '{print $1}') (${MAR_BYTES} bytes) MAR at ${OUT_MAR}"
 
 # Ensure generate script can find platform.ini BuildID.
 if [[ ! -f "${OBJ}/dist/bin/platform.ini" && -f "${APP_DIR}/platform.ini" ]]; then

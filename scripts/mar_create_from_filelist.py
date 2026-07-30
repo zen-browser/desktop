@@ -58,6 +58,11 @@ def create_mar(
     product_version: str,
 ) -> None:
     dest.parent.mkdir(parents=True, exist_ok=True)
+    # Write to a temp path and rename only after the MAR is fully finalized so a
+    # mid-write failure cannot leave a stub/corrupt dest that later passes test -s.
+    tmp = dest.with_name(dest.name + ".tmp")
+    if tmp.exists():
+        tmp.unlink()
     index = bytearray()
     last_offset = (
         len(MAR_ID)
@@ -67,45 +72,54 @@ def create_mar(
         + 4  # numAdditionalSections
     )
 
-    with dest.open("wb") as fp:
-        fp.write(MAR_ID)
-        fp.write(b"\0" * 4)  # offset_to_index placeholder
-        fp.write(b"\0" * 8)  # sizeOfEntireMAR placeholder
-        fp.write(struct.pack(">I", 0))  # numSignatures
-        fp.write(struct.pack(">I", 1))  # numAdditionalSections
-        last_offset += _write_product_info_block(fp, channel_id, product_version)
+    try:
+        with tmp.open("wb") as fp:
+            fp.write(MAR_ID)
+            fp.write(b"\0" * 4)  # offset_to_index placeholder
+            fp.write(b"\0" * 8)  # sizeOfEntireMAR placeholder
+            fp.write(struct.pack(">I", 0))  # numSignatures
+            fp.write(struct.pack(">I", 1))  # numAdditionalSections
+            last_offset += _write_product_info_block(fp, channel_id, product_version)
 
-        for name in files:
-            path = workdir / name
-            if not path.is_file():
-                raise FileNotFoundError(f"file not found: {path}")
-            st = path.stat()
-            length = st.st_size
-            # Match copy_perm() in update-packaging/common.sh: executable -> 0755 else 0644
-            flags = 0o755 if os.access(path, os.X_OK) else 0o644
-            name_b = name.encode("utf-8")
-            index.extend(struct.pack(">III", last_offset, length, flags))
-            index.extend(name_b + b"\0")
-            last_offset += length
+            for name in files:
+                path = workdir / name
+                if not path.is_file():
+                    raise FileNotFoundError(f"file not found: {path}")
+                st = path.stat()
+                length = st.st_size
+                # Match copy_perm() in update-packaging/common.sh: executable -> 0755 else 0644
+                flags = 0o755 if os.access(path, os.X_OK) else 0o644
+                name_b = name.encode("utf-8")
+                index.extend(struct.pack(">III", last_offset, length, flags))
+                index.extend(name_b + b"\0")
+                last_offset += length
 
-            with path.open("rb") as inp:
-                while True:
-                    chunk = inp.read(BLOCKSIZE)
-                    if not chunk:
-                        break
-                    fp.write(chunk)
+                with path.open("rb") as inp:
+                    while True:
+                        chunk = inp.read(BLOCKSIZE)
+                        if not chunk:
+                            break
+                        fp.write(chunk)
 
-        size_of_index = len(index)
-        fp.write(struct.pack(">I", size_of_index))
-        fp.write(index)
+            size_of_index = len(index)
+            fp.write(struct.pack(">I", size_of_index))
+            fp.write(index)
 
-        if fp.tell() > MAX_SIZE_OF_MAR_FILE:
-            raise RuntimeError(f"MAR exceeds MAX_SIZE_OF_MAR_FILE ({MAX_SIZE_OF_MAR_FILE})")
+            if fp.tell() > MAX_SIZE_OF_MAR_FILE:
+                raise RuntimeError(
+                    f"MAR exceeds MAX_SIZE_OF_MAR_FILE ({MAX_SIZE_OF_MAR_FILE})"
+                )
 
-        size_of_entire_mar = last_offset + size_of_index + 4
-        fp.seek(len(MAR_ID))
-        fp.write(struct.pack(">I", last_offset))
-        fp.write(struct.pack(">Q", size_of_entire_mar))
+            size_of_entire_mar = last_offset + size_of_index + 4
+            fp.seek(len(MAR_ID))
+            fp.write(struct.pack(">I", last_offset))
+            fp.write(struct.pack(">Q", size_of_entire_mar))
+
+        os.replace(tmp, dest)
+    except Exception:
+        if tmp.exists():
+            tmp.unlink()
+        raise
 
 
 def _read_filelist(path: Path) -> list[str]:

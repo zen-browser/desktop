@@ -22,10 +22,11 @@ find_zip() {
   # Mozilla names aarch64 packages win64-aarch64 (see package-name.mk), not win64.
   # Prefer the arch-specific zip when present so we never fall back to dist/bin
   # (full build tree >> packaged tree, and blows Windows/MSYS ARG_MAX in mar.exe).
+  # Fail closed on aarch64: never accept a plain *.win64.zip (x86_64 naming).
   local candidates=()
   if [[ "${ARCH}" == "aarch64" ]]; then
     while IFS= read -r f; do candidates+=("$f"); done < <(
-      find dist "${OBJ}/dist" -maxdepth 1 -type f \( -name '*.win64-aarch64.zip' -o -name '*.win64.zip' \) \
+      find dist "${OBJ}/dist" -maxdepth 1 -type f -name '*.win64-aarch64.zip' \
         ! -name '*xpt*' ! -name '*tests*' ! -name '*crashreporter*' ! -name '*langpack*' \
         2>/dev/null | sort
     )
@@ -79,12 +80,15 @@ prepare_mar_source() {
   if [[ -n "${zip}" ]]; then
     echo "Unpacking MAR source from ${zip}"
     7z x "${zip}" -o"${MAR_SRC}" -y >/dev/null
-  elif [[ -d "${OBJ}/dist/bin" ]]; then
-    echo "No packaged win64/win64-aarch64 zip; copying MAR source from ${OBJ}/dist/bin"
-    echo "::warning::Using dist/bin fallback - this tree is much larger than the packaged zip and can exceed mar.exe argv limits"
-    cp -a "${OBJ}/dist/bin/." "${MAR_SRC}/"
   else
-    echo "::error::No win64/win64-aarch64 zip and no dist/bin available for MAR packaging"
+    # Do not fall back to dist/bin in CI: that tree is far larger than the
+    # packaged zip and historically blew Windows/MSYS ARG_MAX for mar.exe.
+    if [[ "${ARCH}" == "aarch64" ]]; then
+      echo "::error::No *.win64-aarch64.zip found for Windows aarch64 MAR packaging"
+    else
+      echo "::error::No *.win64.zip found for Windows x86_64 MAR packaging"
+    fi
+    ls -la dist "${OBJ}/dist" 2>/dev/null || true
     exit 1
   fi
 

@@ -433,17 +433,30 @@ jobs:
           ls ./dist/ 2>/dev/null || echo "dist empty"
           echo "=== Files in root ==="
           ls . 2>/dev/null
-          set -x
+          set -eux
           ls ./dist/ || true
           ls . || true
 
-          ZIP=$(find . -name "*.win64.zip" \
-            2>/dev/null | head -1)
-          if [ -n "$ZIP" ]; then
-            cp "$ZIP" ./astra.win-x86_64.zip
+          ARCH="${{ matrix.arch }}"
+          if [[ "${ARCH}" == "aarch64" ]]; then
+            ZIP=$(find . -name "*.win64-aarch64.zip" \
+              ! -name '*xpt*' ! -name '*tests*' ! -name '*crashreporter*' ! -name '*langpack*' \
+              2>/dev/null | head -1)
+            ZIP_OUT="./astra.win-arm64.zip"
+          else
+            ZIP=$(find . -name "*.win64.zip" \
+              ! -name '*aarch64*' ! -name '*xpt*' ! -name '*tests*' ! -name '*crashreporter*' ! -name '*langpack*' \
+              2>/dev/null | head -1)
+            ZIP_OUT="./astra.win-x86_64.zip"
+          fi
+          if [ -n "${ZIP}" ]; then
+            cp "$ZIP" "${ZIP_OUT}"
+            echo "Copied distribution zip: ${ZIP} -> ${ZIP_OUT}"
+          else
+            echo "::warning::No arch-matching distribution zip found for ${ARCH}"
           fi
 
-          if [[ "${{ matrix.arch }}" == "aarch64" ]]; then
+          if [[ "${ARCH}" == "aarch64" ]]; then
             find . -name "*.installer*.exe" | head -1 | xargs -I{} mv {} ./astra.installer-arm64.exe || true
           else
             find . -name "*.installer*.exe" | head -1 | xargs -I{} mv {} ./astra.installer.exe || true
@@ -455,7 +468,8 @@ jobs:
 
           echo "=== Final files ==="
           ls . || true
-          exit 0
+          # Do not mask missing MAR: Create Windows MAR step must have produced it.
+          test -s "./windows${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.mar"
 
 
       - name: Upload artifact (PGO)

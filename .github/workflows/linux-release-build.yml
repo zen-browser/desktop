@@ -143,11 +143,42 @@ jobs:
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
           ZEN_GA_DISABLE_PGO: true
+          # Match Windows MAR channel IDs so updater accepts cross-platform packs.
+          MAR_CHANNEL_ID: firefox-mozilla-central
+          ACCEPTED_MAR_CHANNEL_IDS: firefox-mozilla-central
         run: |
+          set -euo pipefail
           export SURFER_PLATFORM="linux"
           export ZEN_RELEASE=1
+          export MAR_CHANNEL_ID="${MAR_CHANNEL_ID}"
+          export ACCEPTED_MAR_CHANNEL_IDS="${ACCEPTED_MAR_CHANNEL_IDS}"
+          # Force Surfer MAR channel IDs to match Windows builds (firefox-mozilla-central).
+          node -e "
+            const fs = require('fs');
+            const p = 'node_modules/@zen-browser/surfer/dist/commands/package.js';
+            let t = fs.readFileSync(p, 'utf8');
+            const next = t.replace(
+              /MAR_CHANNEL_ID:\s*channel,/,
+              'MAR_CHANNEL_ID: process.env.MAR_CHANNEL_ID || channel,'
+            );
+            if (next === t) {
+              console.warn('Surfer package.js MAR_CHANNEL_ID override not applied (pattern miss)');
+            } else {
+              fs.writeFileSync(p, next);
+              console.log('Surfer package.js uses MAR_CHANNEL_ID from env when set');
+            }
+          "
+          # Same ARG_MAX-safe MAR path used on Windows (file-list + Python writer).
+          ROOT_UNIX="$(pwd)"
+          if [[ -f engine/tools/update-packaging/make_full_update.sh ]]; then
+            python3 scripts/patch_make_full_update_arg_max.py \
+              engine/tools/update-packaging/make_full_update.sh \
+              "${ROOT_UNIX}"
+          fi
           npm run package
-          exit 0
+          test -s dist/output.mar
+          test -d dist/update
+          echo "Linux package OK: $(du -h dist/output.mar | awk '{print $1}') MAR"
 
       - name: Remove API Keys
         continue-on-error: true
@@ -170,22 +201,27 @@ jobs:
 
       - name: Rename artifacts
         run: |
-          set -eu
+          set -euo pipefail
           LINUX_TAR=$(find dist -maxdepth 1 -type f -name "*.tar.xz" 2>/dev/null | head -1)
           if [ -z "$LINUX_TAR" ]; then
-            echo "No Linux archive (*.tar.xz) found in dist/"
+            echo "::error::No Linux archive (*.tar.xz) found in dist/"
             ls -la dist || true
-            exit 0
+            exit 1
           fi
           mv "$LINUX_TAR" "astra.linux-${{ matrix.arch }}.tar.xz"
-          mv dist/output.mar linux${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.mar || true
+          test -s dist/output.mar
+          mv dist/output.mar "linux${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.mar"
+          test -s "linux${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.mar"
+          # Align Surfer twilight download tag with GitHub release tag twilight-1.
+          if [[ "${{ inputs['release-branch'] }}" == "twilight" ]]; then
+            python3 scripts/fix_linux_update_xml_twilight_tag.py dist/update
+          fi
           if [ -f "dist/zen-${{ matrix.arch }}.AppImage" ]; then
             mv "dist/zen-${{ matrix.arch }}.AppImage" "dist/astra-${{ matrix.arch }}.AppImage"
           fi
           if [ -f "dist/zen-${{ matrix.arch }}.AppImage.zsync" ]; then
             mv "dist/zen-${{ matrix.arch }}.AppImage.zsync" "dist/astra-${{ matrix.arch }}.AppImage.zsync"
           fi
-          exit 0
 
       - name: Upload build artifact (binary)
         uses: actions/upload-artifact@v4
@@ -193,7 +229,7 @@ jobs:
           retention-days: 5
           name: astra.linux-${{ matrix.arch }}.tar.xz
           path: ./astra.linux-${{ matrix.arch }}.tar.xz
-          if-no-files-found: warn
+          if-no-files-found: error
 
       - name: Upload build artifact (.mar)
         uses: actions/upload-artifact@v4
@@ -201,7 +237,7 @@ jobs:
           retention-days: 5
           name: linux${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.mar
           path: ./linux${{ matrix.arch == 'aarch64' && '-aarch64' || '' }}.mar
-          if-no-files-found: warn
+          if-no-files-found: error
 
       - name: Upload build artifact (update manifests)
         uses: actions/upload-artifact@v4
@@ -209,4 +245,4 @@ jobs:
           retention-days: 5
           name: linux_update_manifest_${{ matrix.arch }}
           path: ./dist/update
-          if-no-files-found: warn
+          if-no-files-found: error

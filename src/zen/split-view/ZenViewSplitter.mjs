@@ -230,7 +230,17 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       }
       this.removeGroup(groupIndex);
       if (changeTab) {
-        gBrowser.selectedTab = remainingTabs[0];
+        const win = tab.ownerGlobal || window;
+        const winGBrowser = win.gBrowser || gBrowser;
+        const remainingUnsplitTabs = remainingTabs.filter(t => t !== tab);
+        if (
+          winGBrowser.selectedTab === tab ||
+          !remainingUnsplitTabs.includes(winGBrowser.selectedTab)
+        ) {
+          if (remainingUnsplitTabs.length > 0) {
+            winGBrowser.selectedTab = remainingUnsplitTabs[0];
+          }
+        }
         document
           .getElementById("cmd_zenNewEmptySplit")
           .removeAttribute("disabled");
@@ -248,8 +258,12 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       const toUpdate = this.removeNode(node);
       this.applyGridLayout(toUpdate);
       // Select next tab if the removed tab was selected
-      if (gBrowser.selectedTab === tab) {
-        gBrowser.selectedTab = group.tabs[0];
+      if (changeTab) {
+        const win = tab.ownerGlobal || window;
+        const winGBrowser = win.gBrowser || gBrowser;
+        if (winGBrowser.selectedTab === tab && group.tabs.length > 0) {
+          winGBrowser.selectedTab = group.tabs[0];
+        }
       }
     }
   }

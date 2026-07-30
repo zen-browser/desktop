@@ -271,8 +271,11 @@ class AstraSpaceAppStateStore {
   }
 
   async pruneInvalidSpaces(validSpaceIds, { privateWindow = false } = {}) {
+    // Cross-compartment-safe: Object.prototype.toString, not instanceof Set.
     const valid =
-      validSpaceIds instanceof Set
+      validSpaceIds != null &&
+      typeof validSpaceIds === "object" &&
+      Object.prototype.toString.call(validSpaceIds) === "[object Set]"
         ? validSpaceIds
         : new Set(validSpaceIds || []);
     return this.update(

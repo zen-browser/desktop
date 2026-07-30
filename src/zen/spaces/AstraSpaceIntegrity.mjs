@@ -44,16 +44,35 @@ export function isValidSpaceUuid(value) {
  */
 
 /**
+ * Cross-compartment-safe Set coercion.
+ * `instanceof Set` fails when the Set was created in another global
+ * (window vs system module), which would treat a valid id set as empty
+ * and mark live tabs as orphans / skip pin validation.
+ */
+export function asIdSet(value) {
+  if (value != null && typeof value === "object") {
+    try {
+      if (Object.prototype.toString.call(value) === "[object Set]") {
+        return value;
+      }
+    } catch {
+      // fall through
+    }
+  }
+  if (Array.isArray(value)) {
+    return new Set(value);
+  }
+  return new Set();
+}
+
+/**
  * Classify a tab for integrity — mutation-free.
  * Only `orphan-live` may be assigned to Recovered Tabs.
  * `zombie-*` may be cleaned by upstream empty/stale cleanup (never recovered).
  * `not-ready` must wait for restore; do not repair yet.
  */
 export function classifyTabForIntegrity(tab, validSpaceIds) {
-  const ids =
-    validSpaceIds instanceof Set
-      ? validSpaceIds
-      : new Set(Array.isArray(validSpaceIds) ? validSpaceIds : []);
+  const ids = asIdSet(validSpaceIds);
   if (!tab || typeof tab !== "object") {
     return { kind: "skip", reason: "null" };
   }
@@ -308,9 +327,10 @@ export function validateSpaceState({
         invalidAppPins.push({ spaceId, reason: "pins-not-array" });
         continue;
       }
-      if (knownAppIds instanceof Set) {
+      if (knownAppIds != null) {
+        const known = asIdSet(knownAppIds);
         for (const pin of pins) {
-          if (typeof pin !== "string" || !knownAppIds.has(pin)) {
+          if (typeof pin !== "string" || !known.has(pin)) {
             invalidAppPins.push({
               spaceId,
               appId: typeof pin === "string" ? pin : "",
@@ -504,7 +524,7 @@ export function sanitizeSpacePins(
     if (!isValidSpaceUuid(spaceId)) {
       continue;
     }
-    if (validSpaceIds instanceof Set && !validSpaceIds.has(spaceId)) {
+    if (validSpaceIds != null && !asIdSet(validSpaceIds).has(spaceId)) {
       continue;
     }
     if (!Array.isArray(pins)) {
@@ -512,11 +532,12 @@ export function sanitizeSpacePins(
     }
     const seen = new Set();
     const clean = [];
+    const known = knownAppIds != null ? asIdSet(knownAppIds) : null;
     for (const pin of pins) {
       if (typeof pin !== "string" || !pin || seen.has(pin)) {
         continue;
       }
-      if (knownAppIds instanceof Set && !knownAppIds.has(pin)) {
+      if (known && !known.has(pin)) {
         continue;
       }
       seen.add(pin);

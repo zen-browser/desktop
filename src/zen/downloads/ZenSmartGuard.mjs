@@ -61,6 +61,7 @@ const CLIPBOARD_PATTERNS = Object.freeze([
 
 class nsZenSmartGuard extends nsZenDOMOperatedFeature {
   #downloadView = null;
+  #onTabSelect = null;
   #state = {
     suspiciousScore: 0,
     download: { level: "none", score: 0, reasons: [] },
@@ -76,7 +77,9 @@ class nsZenSmartGuard extends nsZenDOMOperatedFeature {
   async init() {
     window.gZenSmartGuard = this;
     await this.#setupDownloadListener();
-    window.addEventListener("TabSelect", () => this.refreshScreenAssessment());
+    // Named handler so a future teardown can removeEventListener cleanly.
+    this.#onTabSelect = () => this.refreshScreenAssessment();
+    window.addEventListener("TabSelect", this.#onTabSelect);
     this.refreshScreenAssessment();
   }
 

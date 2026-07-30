@@ -233,13 +233,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         const win = tab.ownerGlobal || window;
         const winGBrowser = win.gBrowser || gBrowser;
         const remainingUnsplitTabs = remainingTabs.filter(t => t !== tab);
-        if (
-          winGBrowser.selectedTab === tab ||
-          !remainingUnsplitTabs.includes(winGBrowser.selectedTab)
-        ) {
-          if (remainingUnsplitTabs.length > 0) {
-            winGBrowser.selectedTab = remainingUnsplitTabs[0];
-          }
+        if (winGBrowser.selectedTab === tab && remainingUnsplitTabs.length > 0) {
+          winGBrowser.selectedTab = remainingUnsplitTabs[0];
         }
         document
           .getElementById("cmd_zenNewEmptySplit")

@@ -1271,7 +1271,6 @@ class nsZenKeyboardShortcutsVersioner {
         if (shouldBeDisabledShortcuts.includes(shortcut.getID())) {
           shortcut.shouldBeEmpty = true;
           shortcut.setDisabled(true);
-          break;
         }
       }
     }

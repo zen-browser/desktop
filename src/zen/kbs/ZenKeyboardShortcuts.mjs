@@ -848,7 +848,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 19;
+  static LATEST_KBS_VERSION = 20;
 
   constructor() {}
 
@@ -1249,6 +1249,23 @@ class nsZenKeyboardShortcutsVersioner {
       // Disable "key_duplicateTab" since we already had "cmd_zenDuplicateTab" before Firefox 151.
       for (let shortcut of data) {
         if (shortcut.getID() == "key_duplicateTab") {
+          shortcut.shouldBeEmpty = true;
+          shortcut.setDisabled(true);
+          break;
+        }
+      }
+    }
+
+    if (version < 20) {
+      // Migrate from version 18 to 19.
+      // Disable "key_addTabSplitView" and "key_separateTabSplitView"
+      // since we already had "cmd_zenNewEmptySplit" and "cmd_zenSplitViewUnsplit" before Firefox 153.
+      const shouldBeDisabledShortcuts = [
+        "key_addTabSplitView",
+        "key_separateTabSplitView",
+      ];
+      for (let shortcut of data) {
+        if (shouldBeDisabledShortcuts.includes(shortcut.getID())) {
           shortcut.shouldBeEmpty = true;
           shortcut.setDisabled(true);
           break;

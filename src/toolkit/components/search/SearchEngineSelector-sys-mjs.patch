@@ -1,0 +1,101 @@
+--- a/toolkit/components/search/SearchEngineSelector.sys.mjs
++++ b/toolkit/components/search/SearchEngineSelector.sys.mjs
+@@ -24,6 +24,7 @@
+   SearchUpdateChannel:
+     "moz-src:///toolkit/components/uniffi-bindgen-gecko-js/components/generated/RustSearch.sys.mjs",
+   SearchUtils: "moz-src:///toolkit/components/search/SearchUtils.sys.mjs",
++  SharedUtils: "resource://services-settings/SharedUtils.sys.mjs",
+   logConsole: () =>
+     console.createInstance({
+       prefix: "SearchEngineSelector",
+@@ -312,6 +313,70 @@
+   #getConfigurationPromise;
+ 
+   /**
++   * Astra ships a dump overlay (configs/dumps/search-config-v2.json) that adds
++   * global Yahoo and removes Wikipedia/eBay. A Remote Settings sync from
++   * Mozilla overwrites the local IDB with upstream search-config-v2, which
++   * drops Yahoo and restores Wikipedia/eBay — then SearchService falls back
++   * to Google and shows the "default search engine has been changed" toast.
++   *
++   * Re-apply the dump delta in-memory after every fetch/sync so the overlay
++   * survives without mutating signed Remote Settings records.
++   *
++   * @param {object[]} remoteRecords
++   * @returns {Promise<object[]>}
++   */
++  async #applyAstraDumpOverlay(remoteRecords) {
++    if (!Array.isArray(remoteRecords) || !remoteRecords.length) {
++      return remoteRecords;
++    }
++
++    let dump;
++    try {
++      ({ data: dump } = await lazy.SharedUtils.loadJSONDump(
++        "main",
++        "search-config-v2"
++      ));
++    } catch (e) {
++      lazy.logConsole.warn("Astra search dump overlay: load failed", e);
++      return remoteRecords;
++    }
++    if (!dump?.length) {
++      return remoteRecords;
++    }
++
++    const removeExact = new Set(["wikipedia", "ebay"]);
++    const removePrefixes = ["wikipedia-", "ebay-"];
++    const shouldRemove = id => {
++      if (!id) {
++        return false;
++      }
++      if (removeExact.has(id)) {
++        return true;
++      }
++      return removePrefixes.some(prefix => id.startsWith(prefix));
++    };
++
++    let result = remoteRecords.filter(r => !shouldRemove(r.identifier));
++    const present = new Set(result.map(r => r.identifier).filter(Boolean));
++    const remoteIds = new Set(
++      remoteRecords.map(r => r.identifier).filter(Boolean)
++    );
++
++    for (const rec of dump) {
++      const id = rec.identifier;
++      if (!id || present.has(id) || shouldRemove(id)) {
++        continue;
++      }
++      // Dump is a subset of upstream; only inject dump-only engines (Yahoo).
++      if (!remoteIds.has(id)) {
++        result.push(rec);
++        present.add(id);
++      }
++    }
++    return result;
++  }
++
++  /**
+    * Obtains the configuration from remote settings. This includes
+    * verifying the signature of the record within the database.
+    *
+@@ -348,7 +413,7 @@
+       // Now call this again.
+       return this.#getConfiguration(false);
+     }
+-    return result;
++    return this.#applyAstraDumpOverlay(result);
+   }
+ 
+   /**
+@@ -365,8 +430,8 @@
+    * @param {Array} options.data.current
+    *   The new configuration object
+    */
+-  _onConfigurationUpdated({ data: { current } }) {
+-    this.#configuration = current;
++  async _onConfigurationUpdated({ data: { current } }) {
++    this.#configuration = await this.#applyAstraDumpOverlay(current);
+ 
+     this.#selector.setSearchConfig(
+       JSON.stringify({ data: this.#configuration })

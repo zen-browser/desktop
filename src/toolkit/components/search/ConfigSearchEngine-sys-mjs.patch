@@ -1,0 +1,25 @@
+--- a/toolkit/components/search/ConfigSearchEngine.sys.mjs
++++ b/toolkit/components/search/ConfigSearchEngine.sys.mjs
+@@ -247,7 +247,21 @@
+ 
+     this.#iconMap = new Map();
+     for (let record of iconList) {
+-      let keys = new Set(record.engineIdentifiers.map(this.getKey));
++      // Astra iconShares (configs/dumps/search-config-v2.json): global Yahoo
++      // reuses Yahoo! JAPAN icons. RS sync of search-config-icons drops the
++      // dump-only "yahoo" engineIdentifier, so re-attach it in-memory.
++      let engineIdentifiers = record.engineIdentifiers || [];
++      if (
++        engineIdentifiers.includes("yahoo-jp") &&
++        !engineIdentifiers.includes("yahoo")
++      ) {
++        record = {
++          ...record,
++          engineIdentifiers: [...engineIdentifiers, "yahoo"],
++        };
++        engineIdentifiers = record.engineIdentifiers;
++      }
++      let keys = new Set(engineIdentifiers.map(this.getKey));
+       for (let key of keys) {
+         if (this.#iconMap.has(key)) {
+           this.#iconMap.get(key).push(record);

@@ -79,21 +79,21 @@ export const ZenCustomizableUI = new (class {
         addon-webext-overflowtarget="overflowed-extensions-list"
         mode="icons">
         <hbox id="zen-sidebar-top-buttons-customization-target" class="customization-target" flex="1">
-          <toolbaritem id="zen-toggle-compact-mode" removable="true" overflows="false" data-l10n-id="zen-toggle-compact-mode-button">
+          <toolbaritem id="zen-toggle-compact-mode" removable="true" data-l10n-id="zen-toggle-compact-mode-button">
             <toolbarbutton
               class="toolbarbutton-1"
               command="cmd_toggleCompactModeIgnoreHover"
               data-l10n-id="zen-toggle-compact-mode-button"
               flex="1" />
           </toolbaritem>
-          <toolbaritem id="zen-app-launcher-button" removable="true" overflows="false">
+          <toolbaritem id="zen-app-launcher-button" removable="true">
             <toolbarbutton
               class="toolbarbutton-1"
               command="cmd_zenOpenAppLauncher"
               tooltiptext="Astra App Hub"
               flex="1" />
           </toolbaritem>
-          <toolbaritem id="astra-suraksha-button" removable="true" overflows="false" data-l10n-id="astra-suraksha-button">
+          <toolbaritem id="astra-suraksha-button" removable="true" data-l10n-id="astra-suraksha-button">
             <toolbarbutton
               id="astra-suraksha-toolbarbutton"
               class="toolbarbutton-1"

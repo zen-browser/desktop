@@ -30,80 +30,8 @@
     light-dark(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.32)) 0 6px 18px;
 }
 
-/* ==========================================================================
- * Sidebar secondary navigation (Back / Forward / Reload)
- *
- * Expanded Sidebar+Top Toolbar: additive 3-button group in the sidebar strip
- * (native Back/Forward stay on the top toolbar).
- * Only Sidebar: single Navigation menu (strip is too narrow for the group).
- * Collapsed: hidden — Zen parks the strip in the titlebar beside #nav-bar, so
- * a second Back/Forward set would duplicate the native toolbar controls.
- * ========================================================================== */
-#astra-sidebar-navigation {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  margin-inline: 2px;
-  min-width: 0;
-}
-
-:root:not([zen-sidebar-expanded="true"]) #astra-sidebar-navigation {
-  display: none !important;
-}
-
-#astra-sidebar-navigation .astra-sidebar-nav-group {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  padding: 1px;
-  border-radius: 8px;
-  background: color-mix(in srgb, currentColor 6%, transparent);
-  border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
-}
-
-#astra-sidebar-navigation .astra-sidebar-nav-btn {
-  margin: 0 !important;
-  min-width: 28px !important;
-  width: 28px !important;
-  height: 28px !important;
-  padding: 0 !important;
-  -moz-context-properties: fill, fill-opacity;
-  fill: var(--toolbarbutton-icon-fill, currentColor);
-}
-
-#astra-sidebar-back {
-  list-style-image: url("chrome://browser/skin/zen-icons/back.svg") !important;
-}
-
-#astra-sidebar-forward {
-  list-style-image: url("chrome://browser/skin/zen-icons/forward.svg") !important;
-}
-
-#astra-sidebar-reload {
-  list-style-image: url("chrome://browser/skin/zen-icons/reload.svg") !important;
-}
-
-#astra-sidebar-navigation .astra-sidebar-nav-menu {
-  display: none;
-  min-width: 32px !important;
-  width: 32px !important;
-  height: 32px !important;
-  list-style-image: url("chrome://browser/skin/zen-icons/back.svg") !important;
-  -moz-context-properties: fill, fill-opacity;
-  fill: var(--toolbarbutton-icon-fill, currentColor);
-}
-
-/* type="menu" paints a dropmarker beside the icon — that mash-up is the
- * "wrong/mixed-up" glyph in Only Sidebar. Keep a single clean back arrow. */
-#astra-sidebar-nav-menu > .toolbarbutton-menu-dropmarker {
-  display: none !important;
-}
-
-#astra-sidebar-navigation[astra-nav-compact] .astra-sidebar-nav-group {
-  display: none;
-}
-
-#astra-sidebar-navigation[astra-nav-compact] .astra-sidebar-nav-menu {
-  display: flex;
-}
+/* Sidebar navigation follows Zen stock: the native #nav-bar Back/Forward/
+ * Reload buttons are the single set in every layout mode. In Only Sidebar
+ * (single toolbar) ZenUIManager sweeps them into the sidebar top strip;
+ * in Sidebar+Top Toolbar and Collapsed they live on the top toolbar.
+ * No Astra-added duplicate controls. */

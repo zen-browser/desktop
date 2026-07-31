@@ -309,69 +309,21 @@ window.gZenUIManager = {
   },
 
   /**
-   * Recover toolbar widgets parked in #widget-overflow-list during early /
-   * zero-width layout (welcome chrome hide, or cold start before single-toolbar
-   * widths stabilize). CustomizableUI.addWidgetToArea is a no-op when the
-   * placement is already recorded, and nav-bar OverflowableToolbar will not
-   * move items back under single-toolbar — so restore via DOM and mark the
-   * essential chrome widgets non-overflowable.
+   * Re-settle toolbar overflow after early / zero-width layout (welcome
+   * chrome hide, or cold start before single-toolbar widths stabilize).
+   *
+   * Widgets parked in #widget-overflow-list against zero width stay parked
+   * because OverflowableToolbar only re-checks on window resize. Dispatch a
+   * synthetic resize (same mechanism updateToolbarLayout uses) so every
+   * overflowable toolbar re-measures with real widths: items that fit move
+   * back to the strip, items that don't stay reachable in the chevron panel.
+   * Widgets are intentionally NOT pinned (overflows="false") here — pinning
+   * more than stock (PanelUI) makes the narrow Only Sidebar strip overflow
+   * onto the native Back/Forward buttons instead of parking gracefully.
    */
-  async settleToolbarOverflow({
-    widgetIds = ["zen-app-launcher-button", "astra-suraksha-button"],
-  } = {}) {
+  async settleToolbarOverflow() {
     document.getElementById("navigator-toolbox")?.getBoundingClientRect();
-
-    const target = document.getElementById(
-      "zen-sidebar-top-buttons-customization-target"
-    );
-    const placements = CustomizableUI.getWidgetIdsInArea(
-      "zen-sidebar-top-buttons"
-    );
-
-    for (const widgetId of widgetIds) {
-      const el = document.getElementById(widgetId);
-      if (!el) {
-        continue;
-      }
-      // Match compact-mode / PanelUI: these must stay visible in the sidebar.
-      el.setAttribute("overflows", "false");
-      const overflowed =
-        el.parentElement?.id === "widget-overflow-list" ||
-        el.getAttribute("overflowedItem") === "true";
-      if (!overflowed || !target) {
-        continue;
-      }
-      el.removeAttribute("overflowedItem");
-      el.removeAttribute("cui-anchorid");
-      try {
-        if (gZenVerticalTabsManager?.appendCustomizableItem) {
-          gZenVerticalTabsManager.appendCustomizableItem(
-            target,
-            el,
-            placements
-          );
-        } else {
-          target.appendChild(el);
-        }
-      } catch (e) {
-        console.warn(
-          "[Astra] Failed to restore overflowed toolbar widget:",
-          widgetId,
-          e
-        );
-        try {
-          target.appendChild(el);
-        } catch (e2) {
-          console.warn(
-            "[Astra] Fallback append also failed for toolbar widget:",
-            widgetId,
-            e2
-          );
-        }
-      }
-    }
-
-    gZenVerticalTabsManager?._updateEvent();
+    window.dispatchEvent(new Event("resize"));
     await new Promise(resolve => {
       requestAnimationFrame(() => {
         requestAnimationFrame(resolve);
@@ -1482,23 +1434,6 @@ window.gZenVerticalTabsManager = {
         const panelUIButton = document.getElementById("PanelUI-button");
         buttonsTarget.prepend(panelUIButton);
         panelUIButton.setAttribute("overflows", "false");
-        document
-          .getElementById("zen-app-launcher-button")
-          ?.setAttribute("overflows", "false");
-        document
-          .getElementById("astra-suraksha-button")
-          ?.setAttribute("overflows", "false");
-        // Stock Firefox pins back/forward overflows="false" so they stay on
-        // wide nav-bar. In the narrow single-toolbar strip that leaves them
-        // painting under #nav-bar-overflow-button (~27px hit-steal). Allow
-        // them to park in widget-overflow-list like stop-reload — do NOT
-        // unlock App Hub / Suraksha (95590c2 seen=true recovery).
-        document
-          .getElementById("back-button")
-          ?.removeAttribute("overflows");
-        document
-          .getElementById("forward-button")
-          ?.removeAttribute("overflows");
         buttonsTarget.parentElement.append(
           document.getElementById("nav-bar-overflow-button")
         );
@@ -1521,30 +1456,18 @@ window.gZenVerticalTabsManager = {
         const elements = document.querySelectorAll(
           '#zen-sidebar-top-buttons-customization-target > :is([cui-areatype="toolbar"], .chromeclass-toolbar-additional)'
         );
-        const navBarTarget = document.getElementById(
-          "nav-bar-customization-target"
-        );
         for (const button of elements) {
-          // Keep secondary sidebar Back/Forward/Reload pinned in the sidebar
-          // strip — sweeping it into #nav-bar left empty icon shells there.
-          if (button.id === "astra-sidebar-navigation") {
-            continue;
-          }
-          navBarTarget.append(button);
+          document
+            .getElementById("nav-bar-customization-target")
+            .append(button);
         }
         this._topButtonsSeparatorElement.remove();
         document.documentElement.removeAttribute("zen-single-toolbar");
         const panelUIButton = document.getElementById("PanelUI-button");
         navBar.appendChild(panelUIButton);
         panelUIButton.removeAttribute("overflows");
-        // Restore Firefox wide-navbar behavior: back/forward always visible.
-        // Setting overflows=false alone does not pull already-overflowed nodes
-        // out of #widget-overflow-list (OverflowableToolbar only reflows on
-        // window resize), so move them back explicitly.
-        this._restoreNavButtonsFromOverflow(navBarTarget);
         navBar.appendChild(document.getElementById("nav-bar-overflow-button"));
         this._toolbarOriginalParent.prepend(navBar);
-        window.gAstraSidebarNavigation?.update?.();
         if (!dontRebuildAreas) {
           this.rebuildAreas();
         }
@@ -1673,39 +1596,6 @@ window.gZenVerticalTabsManager = {
     gURLBar._initPasteAndGo();
     gURLBar._initStripOnShare();
     gURLBar._updatePlaceholderFromDefaultEngine();
-  },
-
-  _restoreNavButtonsFromOverflow(navBarTarget) {
-    const target =
-      navBarTarget || document.getElementById("nav-bar-customization-target");
-    if (!target) {
-      return;
-    }
-    const stopReload = document.getElementById("stop-reload-button");
-    const anchor =
-      stopReload?.parentElement === target
-        ? stopReload
-        : document.getElementById("urlbar-container");
-    for (const id of ["back-button", "forward-button"]) {
-      const btn = document.getElementById(id);
-      if (!btn) {
-        continue;
-      }
-      btn.setAttribute("overflows", "false");
-      const inOverflow =
-        btn.getAttribute("overflowedItem") === "true" ||
-        btn.parentElement?.id === "widget-overflow-list";
-      if (!inOverflow && btn.parentElement === target) {
-        continue;
-      }
-      if (anchor?.parentElement === target) {
-        target.insertBefore(btn, anchor);
-      } else {
-        target.prepend(btn);
-      }
-      btn.removeAttribute("overflowedItem");
-      btn.removeAttribute("cui-anchorid");
-    }
   },
 
   rebuildAreas() {

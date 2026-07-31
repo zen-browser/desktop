@@ -723,7 +723,10 @@
       height: 100%;
     }
 
-    &:is([open="true"], :hover) .zen-current-workspace-indicator-icon {
+    &[open="true"] .zen-current-workspace-indicator-icon,
+    :root[zen-unsynced-window="true"]
+      &:hover
+      .zen-current-workspace-indicator-icon {
       display: none;
     }
   }

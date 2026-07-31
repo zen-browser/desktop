@@ -304,7 +304,8 @@
   :root[zen-unsynced-window='true']
     #navigator-toolbox[zen-has-implicit-hover='true']
     & .zen-workspaces-actions,
-  :root:not([zen-unsynced-window]) &:hover .zen-workspaces-actions,
+  :root[zen-sidebar-expanded='true']:not([zen-unsynced-window])
+    &:hover .zen-workspaces-actions,
   & .zen-workspaces-actions[open='true'] {
     visibility: visible;
     pointer-events: auto;

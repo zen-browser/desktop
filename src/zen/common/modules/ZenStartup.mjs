@@ -81,7 +81,6 @@ class ZenStartup {
   delayedStartupFinished() {
     gZenWorkspaces.promiseInitialized.then(async () => {
       await delayedStartupPromise;
-      await SessionStore.promiseAllWindowsRestored;
       delete gZenUIManager.promiseInitialized;
       gZenCompactModeManager.init();
       // Fix for https://github.com/zen-browser/desktop/issues/7605, specially in compact mode
@@ -96,10 +95,12 @@ class ZenStartup {
         .getElementById("tabbrowser-arrowscrollbox")
         .setAttribute("orient", "vertical");
       this.isReady = true;
+
+      await SessionStore.promiseAllWindowsRestored;
       this.promiseInitializedResolve();
       delete this.promiseInitializedResolve;
 
-      setTimeout(() => {
+      Services.tm.idleDispatchToMainThread(() => {
         // Wait for the natural PlacesToolbar rebuild before invalidating, so
         // the two async rebuilds don't interleave and duplicate bookmarks.
         // promiseRebuilt() returns undefined when no rebuild is in flight.

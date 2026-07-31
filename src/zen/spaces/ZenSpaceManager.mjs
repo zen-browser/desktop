@@ -46,6 +46,9 @@ class nsZenWorkspaces {
   #canDebug = Services.prefs.getBoolPref("zen.workspaces.debug", false);
   #activeWorkspace = "";
 
+  #windowRestored = false;
+  #promiseWindowRestored = null;
+
   _workspaceCache = [];
 
   #lastScrollTime = 0;
@@ -74,9 +77,27 @@ class nsZenWorkspaces {
     if (this.privateWindowOrDisabled) {
       return;
     }
+    if (!this.#promiseWindowRestored) {
+      this.#promiseWindowRestored = new Promise(resolve => {
+        if (this.#windowRestored) {
+          resolve();
+          return;
+        }
+        const listener = () => {
+          this.#windowRestored = true;
+          resolve();
+        };
+        this.ownerWindow.addEventListener("SSWindowRestored", listener, {
+          once: true,
+        });
+      });
+    }
     await Promise.all([
       this.promisePinnedInitialized,
-      SessionStore.promiseAllWindowsRestored,
+      Promise.race([
+        this.#promiseWindowRestored,
+        SessionStore.promiseAllWindowsRestored,
+      ]),
     ]);
   }
 

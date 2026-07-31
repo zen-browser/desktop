@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 - name: zen.view.sidebar-height-throttle
-  value: 0
+  value: 50
 
 - name: zen.view.sidebar-expanded.max-width
   value: 500

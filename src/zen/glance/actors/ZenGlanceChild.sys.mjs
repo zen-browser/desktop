@@ -25,9 +25,29 @@ export class ZenGlanceChild extends JSWindowActorChild {
   #activationMethod;
   #mouseDownX = null;
   #mouseDownY = null;
+  #listenersAttached = false;
 
   constructor() {
     super();
+  }
+
+  actorCreated() {
+    if (this.document?.readyState === "complete") {
+      this.#attachListeners();
+    }
+  }
+
+  async #attachListeners() {
+    if (this.#listenersAttached) {
+      return;
+    }
+    this.#listenersAttached = true;
+
+    await this.#initActivationMethod();
+
+    this.document.addEventListener("mousedown", this, true);
+    this.document.addEventListener("click", this, true);
+    this.document.addEventListener("keydown", this, true);
   }
 
   async handleEvent(event) {
@@ -157,6 +177,9 @@ export class ZenGlanceChild extends JSWindowActorChild {
       return;
     }
     const activationMethod = this.#activationMethod;
+    if (activationMethod === undefined) {
+      return;
+    }
     if (activationMethod === "ctrl" && !event.ctrlKey) {
       return;
     } else if (activationMethod === "alt" && !event.altKey) {
@@ -186,6 +209,10 @@ export class ZenGlanceChild extends JSWindowActorChild {
   }
 
   async on_DOMContentLoaded() {
-    await this.#initActivationMethod();
+    await this.#attachListeners();
+  }
+
+  async on_pageshow() {
+    await this.#attachListeners();
   }
 }

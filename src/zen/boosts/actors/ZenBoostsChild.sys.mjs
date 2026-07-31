@@ -350,62 +350,66 @@ export class ZenBoostsChild extends JSWindowActorChild {
       this.#unloadCurrentStyleSheet();
     }
 
-    if (boost) {
-      const { boostData } = boost.boostEntry;
-      if (boost.styleSheet) {
-        this.#loadStyleSheet(boost.styleSheet);
+    if (!boost) {
+      if (unloadStyles) {
+        browsingContext.isZenBoostsInverted = false;
+        browsingContext.zenBoostsData = 0;
+        browsingContext.zenBoostsComplementaryRotation = 0;
       }
-
-      this.sendAsyncMessage("ZenBoost:UpdateBoostSize", {
-        sizeOverride: boostData.sizeOverride,
-      });
-
-      browsingContext.isZenBoostsInverted = boostData.smartInvert;
-      if (boostData.enableColorBoost) {
-        let primaryColor;
-        if (boostData.autoTheme) {
-          // Workspace color is converted to the HSL color space
-          let primaryGradientColor = boost.workspaceGradient[0]?.c ?? [
-            0, 0, 0.6,
-          ];
-          boost.workspaceGradient.forEach(color => {
-            if (color.isPrimary) {
-              primaryGradientColor = this.#rgbToHsl(
-                color.c[0],
-                color.c[1],
-                color.c[2]
-              );
-            }
-          });
-
-          // Workspace color is converted back to rgb
-          // using the same modifiers as the color above
-          primaryColor = this.#buildBoostColor(
-            primaryGradientColor[0],
-            1 - boostData.saturation,
-            0.1 + 0.9 * boostData.brightness,
-            boostData
-          );
-        } else {
-          primaryColor = this.#buildBoostColor(
-            boostData.dotAngleDeg,
-            /* already is [0, 1] */
-            1 - boostData.saturation,
-            /* lightness range from [0.1, 0.9] */
-            0.1 + 0.9 * boostData.brightness,
-            boostData
-          );
-        }
-        browsingContext.zenBoostsData = primaryColor;
-        // The complementary accent is derived in the backend by rotating the
-        // primary accent's hue by this delta (in degrees).
-        browsingContext.zenBoostsComplementaryRotation =
-          boostData.secondaryDotAngleDegDelta ?? 0;
-        return;
-      }
-    } else {
-      browsingContext.isZenBoostsInverted = false;
+      return;
     }
+
+    const { boostData } = boost.boostEntry;
+    if (boost.styleSheet) {
+      this.#loadStyleSheet(boost.styleSheet);
+    }
+
+    this.sendAsyncMessage("ZenBoost:UpdateBoostSize", {
+      sizeOverride: boostData.sizeOverride,
+    });
+
+    browsingContext.isZenBoostsInverted = boostData.smartInvert;
+    if (boostData.enableColorBoost) {
+      let primaryColor;
+      if (boostData.autoTheme) {
+        // Workspace color is converted to the HSL color space
+        let primaryGradientColor = boost.workspaceGradient[0]?.c ?? [0, 0, 0.6];
+        boost.workspaceGradient.forEach(color => {
+          if (color.isPrimary) {
+            primaryGradientColor = this.#rgbToHsl(
+              color.c[0],
+              color.c[1],
+              color.c[2]
+            );
+          }
+        });
+
+        // Workspace color is converted back to rgb
+        // using the same modifiers as the color above
+        primaryColor = this.#buildBoostColor(
+          primaryGradientColor[0],
+          1 - boostData.saturation,
+          0.1 + 0.9 * boostData.brightness,
+          boostData
+        );
+      } else {
+        primaryColor = this.#buildBoostColor(
+          boostData.dotAngleDeg,
+          /* already is [0, 1] */
+          1 - boostData.saturation,
+          /* lightness range from [0.1, 0.9] */
+          0.1 + 0.9 * boostData.brightness,
+          boostData
+        );
+      }
+      browsingContext.zenBoostsData = primaryColor;
+      // The complementary accent is derived in the backend by rotating the
+      // primary accent's hue by this delta (in degrees).
+      browsingContext.zenBoostsComplementaryRotation =
+        boostData.secondaryDotAngleDegDelta ?? 0;
+      return;
+    }
+
     browsingContext.zenBoostsData = 0;
     browsingContext.zenBoostsComplementaryRotation = 0;
   }

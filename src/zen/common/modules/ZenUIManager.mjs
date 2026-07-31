@@ -45,12 +45,23 @@ window.gZenUIManager = {
       return document.getElementById("zen-toast-container");
     });
 
+    const throttleDelay = Math.max(
+      Services.prefs.getIntPref("zen.view.sidebar-height-throttle", 0),
+      16
+    );
     new ResizeObserver(
       gZenCommonActions.throttle(
-        gZenCompactModeManager.getAndApplySidebarWidth.bind(
-          gZenCompactModeManager
-        ),
-        Services.prefs.getIntPref("zen.view.sidebar-height-throttle", 500)
+        (...args) => {
+          if (
+            gZenCompactModeManager.preference &&
+            !gNavToolbox.hasAttribute("zen-has-hover") &&
+            !gNavToolbox.hasAttribute("zen-user-show")
+          ) {
+            return;
+          }
+          gZenCompactModeManager.getAndApplySidebarWidth(...args);
+        },
+        throttleDelay
       )
     ).observe(gNavToolbox);
 
@@ -65,15 +76,34 @@ window.gZenUIManager = {
       this.onUrlbarSearchModeChanged.bind(this)
     );
 
-    gZenMediaController.init();
     gZenVerticalTabsManager.init();
-    gZenLiveFoldersUI.init();
 
     this._initCreateNewPopup();
-    this._debloatContextMenus();
     this._addNewCustomizableButtonsIfNeeded();
-    this._initOmnibox();
     this._initBookmarkCollapseListener();
+
+    gZenWorkspaces.promiseInitialized.then(() => {
+      this._debloatContextMenus();
+      this._initOmnibox();
+    });
+
+    const delayedStartupObserver = {
+      observe: (subject, topic) => {
+        if (topic !== "browser-delayed-startup-finished" || subject != window) {
+          return;
+        }
+        Services.obs.removeObserver(
+          delayedStartupObserver,
+          "browser-delayed-startup-finished"
+        );
+        gZenMediaController.init();
+        gZenLiveFoldersUI.init();
+      },
+    };
+    Services.obs.addObserver(
+      delayedStartupObserver,
+      "browser-delayed-startup-finished"
+    );
 
     gURLBar._setPlaceholder(null);
 

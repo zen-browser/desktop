@@ -205,8 +205,7 @@ window.gZenCompactModeManager = {
       "zen-compact-mode-active",
       attributes
     );
-    // Always connect this observer, we need it even if compact mode is disabled
-    ZenHasPolyfill.connectObserver(this.toolbarObserverId);
+    // Observers are connected/disconnected in _updateEvent based on compact mode.
   },
 
   flashSidebarIfNecessary(aInstant = false) {
@@ -367,8 +366,10 @@ window.gZenCompactModeManager = {
     }
     if (this.preference) {
       ZenHasPolyfill.connectObserver(this.sidebarObserverId);
+      ZenHasPolyfill.connectObserver(this.toolbarObserverId);
     } else {
       ZenHasPolyfill.disconnectObserver(this.sidebarObserverId);
+      ZenHasPolyfill.disconnectObserver(this.toolbarObserverId);
     }
     window.dispatchEvent(
       new CustomEvent("ZenCompactMode:Toggled", { detail: this.preference })

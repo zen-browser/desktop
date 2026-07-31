@@ -13,3 +13,9 @@
 
 - name: browser.sessionstore.max_windows_undo
   value: 2
+
+- name: zen.session-store.max-backups
+  value: 5
+
+- name: zen.session-store.backup-hour-span
+  value: 6

@@ -20,47 +20,64 @@ class nsHasPolyfill {
     stateAttribute,
     attributeFilter = []
   ) {
-    const updateState = () => {
-      const exists = descendantSelectors.some(({ selector }) => {
-        let selected = element.querySelector(selector);
-        if (selected?.tagName?.toLowerCase() === "menu") {
-          return null;
-        }
-        if (selected) {
-          gZenCompactModeManager.log(
-            `Selector "${selector}" exists for: `,
-            element
-          );
-        }
-        return selected;
+    const observerId = this.idStore++;
+    const observerEntry = {
+      id: observerId,
+      observer: null,
+      element,
+      attributeFilter,
+      stateAttribute,
+      descendantSelectors,
+      scheduled: false,
+    };
+    this.observers.push(observerEntry);
+
+    const scheduleUpdate = () => {
+      if (observerEntry.scheduled) {
+        return;
+      }
+      observerEntry.scheduled = true;
+      window.requestAnimationFrame(() => {
+        observerEntry.scheduled = false;
+        this._updateState(observerEntry);
       });
-      const { exists: shouldExist = true } = descendantSelectors;
-      if (exists === shouldExist) {
-        if (!element.hasAttribute(stateAttribute)) {
-          gZenCompactModeManager._setElementExpandAttribute(
-            element,
-            true,
-            stateAttribute
-          );
-        }
-      } else if (element.hasAttribute(stateAttribute)) {
+    };
+
+    observerEntry.observer = new MutationObserver(scheduleUpdate);
+    return observerId;
+  }
+
+  _updateState(observerEntry) {
+    const { element, descendantSelectors, stateAttribute } = observerEntry;
+    const exists = descendantSelectors.some(({ selector }) => {
+      let selected = element.querySelector(selector);
+      if (selected?.tagName?.toLowerCase() === "menu") {
+        return null;
+      }
+      if (selected) {
+        gZenCompactModeManager.log(
+          `Selector "${selector}" exists for: `,
+          element
+        );
+      }
+      return selected;
+    });
+    const { exists: shouldExist = true } = descendantSelectors;
+    if (exists === shouldExist) {
+      if (!element.hasAttribute(stateAttribute)) {
         gZenCompactModeManager._setElementExpandAttribute(
           element,
-          false,
+          true,
           stateAttribute
         );
       }
-    };
-
-    const observer = new MutationObserver(updateState);
-    const observerId = this.idStore++;
-    this.observers.push({
-      id: observerId,
-      observer,
-      element,
-      attributeFilter,
-    });
-    return observerId;
+    } else if (element.hasAttribute(stateAttribute)) {
+      gZenCompactModeManager._setElementExpandAttribute(
+        element,
+        false,
+        stateAttribute
+      );
+    }
   }
 
   disconnectObserver(observerId) {

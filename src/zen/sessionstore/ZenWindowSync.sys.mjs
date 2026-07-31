@@ -15,6 +15,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
   TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
   setTimeout: "resource://gre/modules/Timer.sys.mjs",
+  clearTimeout: "resource://gre/modules/Timer.sys.mjs",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
   RunState: "resource:///modules/sessionstore/RunState.sys.mjs",
 });
@@ -44,6 +45,7 @@ const OBSERVING = [
 ];
 const INSTANT_EVENTS = ["SSWindowClosing", "TabSelect", "focus"];
 const UNSYNCED_WINDOW_EVENTS = ["TabOpen"];
+const SYNC_DEBOUNCE_MS = 50;
 const EVENTS = [
   "TabClose",
 
@@ -95,6 +97,9 @@ class nsZenWindowSync {
     eventCount: 0,
     lastHandlerPromise: Promise.resolve(),
   };
+
+  #pendingSyncEvents = [];
+  #syncDebounceTimeout = null;
 
   /**
    * Promise|null that resolves when the current docshell swap operation is finished.
@@ -398,30 +403,87 @@ class nsZenWindowSync {
       this.#handleNextEventInternal(aEvent);
       return;
     }
+    this.#pendingSyncEvents.push(aEvent);
+    if (this.#syncDebounceTimeout) {
+      lazy.clearTimeout(this.#syncDebounceTimeout);
+    }
+    this.#syncDebounceTimeout = lazy.setTimeout(() => {
+      this.#syncDebounceTimeout = null;
+      this.#flushPendingSyncEvents(window);
+    }, SYNC_DEBOUNCE_MS);
+  }
+
+  #drainPendingSyncEvents() {
+    const events = this.#pendingSyncEvents;
+    this.#pendingSyncEvents = [];
+
+    const closing = new Set();
+    for (const event of events) {
+      if (event.type === "TabClose") {
+        closing.add(event.target);
+      }
+    }
+
+    const result = [];
+    const seen = new Map();
+    for (let i = events.length - 1; i >= 0; i--) {
+      const event = events[i];
+      if (closing.has(event.target) && event.type !== "TabClose") {
+        continue;
+      }
+      let typeMap = seen.get(event.target);
+      if (!typeMap) {
+        typeMap = new Map();
+        seen.set(event.target, typeMap);
+      }
+      if (typeMap.has(event.type)) {
+        continue;
+      }
+      typeMap.set(event.type, event);
+      result.unshift(event);
+    }
+    return result;
+  }
+
+  #flushPendingSyncEvents(aWindow) {
+    const events = this.#drainPendingSyncEvents();
+    if (!events.length) {
+      return;
+    }
+    const window =
+      aWindow ??
+      events[0].currentTarget.documentGlobal ??
+      events[0].currentTarget;
     if (
       this.#eventHandlingContext.window &&
       this.#eventHandlingContext.window !== window
     ) {
       // We're already handling an event for another window.
-      // To avoid re-entrancy issues, we skip this event.
+      // Put the events back and try again on the next tick.
+      this.#pendingSyncEvents.unshift(...events);
+      this.#syncDebounceTimeout = lazy.setTimeout(() => {
+        this.#syncDebounceTimeout = null;
+        this.#flushPendingSyncEvents();
+      }, SYNC_DEBOUNCE_MS);
       return;
     }
-    const lastHandlerPromise = this.#eventHandlingContext.lastHandlerPromise;
-    this.#eventHandlingContext.eventCount++;
-    this.#eventHandlingContext.window = window;
-    let resolveNewPromise;
-    this.#eventHandlingContext.lastHandlerPromise = new Promise(resolve => {
-      resolveNewPromise = resolve;
-    });
-    // Wait for the last handler to finish before processing the next event.
-    lastHandlerPromise.then(() => {
-      this.#handleNextEvent(aEvent).finally(() => {
-        if (--this.#eventHandlingContext.eventCount === 0) {
-          this.#eventHandlingContext.window = null;
-        }
-        resolveNewPromise();
+    for (const aEvent of events) {
+      const lastHandlerPromise = this.#eventHandlingContext.lastHandlerPromise;
+      this.#eventHandlingContext.eventCount++;
+      this.#eventHandlingContext.window = window;
+      let resolveNewPromise;
+      this.#eventHandlingContext.lastHandlerPromise = new Promise(resolve => {
+        resolveNewPromise = resolve;
       });
-    });
+      lastHandlerPromise.then(() => {
+        this.#handleNextEvent(aEvent).finally(() => {
+          if (--this.#eventHandlingContext.eventCount === 0) {
+            this.#eventHandlingContext.window = null;
+          }
+          resolveNewPromise();
+        });
+      });
+    }
   }
 
   /**

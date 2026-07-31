@@ -803,6 +803,7 @@ const zenMissingKeyboardShortcutL10n = {
 
   key_inspectorMac: "zen-key-inspector-mac",
   key_findSelection: "zen-key-find-selection",
+  key_findPrevious2: "zen-search-find-again-shortcut-prev-alt",
 
   // Devtools
   key_toggleToolbox: "zen-devtools-toggle-shortcut",
@@ -826,6 +827,9 @@ var zenIgnoreKeyboardShortcutIDs = [
   "key_exitFullScreen_old",
   "key_exitFullScreen_compat",
   "key_duplicateTab",
+  "key_addTabSplitView",
+  "key_separateTabSplitView",
+  "viewOpenTabsSidebarKb",
 ];
 
 var zenIgnoreKeyboardShortcutL10n = [

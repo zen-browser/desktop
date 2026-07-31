@@ -85,9 +85,10 @@ const defaultKeyboardGroups = {
     "zen-search-focus-shortcut",
     "zen-search-focus-shortcut-alt",
     "zen-find-shortcut",
-    "zen-search-find-again-shortcut-2",
     "zen-search-find-again-shortcut",
+    "zen-search-find-again-shortcut-alt",
     "zen-search-find-again-shortcut-prev",
+    "zen-search-find-again-shortcut-prev-alt",
   ],
   pageOperations: [
     "zen-text-action-copy-url-markdown-shortcut",
@@ -893,7 +894,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 19;
+  static LATEST_KBS_VERSION = 20;
 
   constructor() {}
 
@@ -1297,6 +1298,24 @@ class nsZenKeyboardShortcutsVersioner {
           shortcut.shouldBeEmpty = true;
           shortcut.setDisabled(true);
           break;
+        }
+      }
+    }
+
+    if (version < 20) {
+      // Migrate from version 19 to 20.
+      // - Disable "key_addTabSplitView" and "key_separateTabSplitView"
+      // since we already had "cmd_zenNewEmptySplit" and "cmd_zenSplitViewUnsplit" before Firefox 153.
+      // - Disable firefox's "viewOpenTabsSidebarKb" as it depends on firefox's native sidebar feature
+      const shouldBeDisabledShortcuts = [
+        "key_addTabSplitView",
+        "key_separateTabSplitView",
+        "viewOpenTabsSidebarKb",
+      ];
+      for (let shortcut of data) {
+        if (shouldBeDisabledShortcuts.includes(shortcut.getID())) {
+          shortcut.shouldBeEmpty = true;
+          shortcut.setDisabled(true);
         }
       }
     }

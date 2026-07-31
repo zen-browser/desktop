@@ -90,7 +90,7 @@ export class nsZenWorkspace extends MozXULElement {
 
   static get moveTabToButtonMarkup() {
     return `
-      <toolbarbutton class="toolbarbutton-1 chromeclass-toolbar-additional zen-workspaces-actions"
+      <toolbarbutton class="toolbarbutton-1 chromeclass-toolbar-additional zen-workspaces-actions zen-move-tabs-to-workspace-button"
                      tooltip="dynamic-shortcut-tooltip"
                      data-l10n-id="zen-move-tab-to-workspace-button" />
     `;
@@ -447,10 +447,12 @@ export class nsZenWorkspace extends MozXULElement {
     }
 
     button.setAttribute("open", "true");
+    this.indicator.setAttribute("open", "true");
     popup.addEventListener(
       "popuphidden",
       () => {
         button.removeAttribute("open");
+        this.indicator.removeAttribute("open");
       },
       { once: true }
     );

@@ -1076,11 +1076,17 @@
   --astra-app-hub-border: color-mix(in srgb, currentColor 14%, transparent);
   --astra-app-hub-border-strong: color-mix(in srgb, currentColor 22%, transparent);
   --astra-app-hub-accent: var(--focus-outline-color, #5b9fff);
+  /* Match Astra rounded-card language (zen-popup already sets this, reinforce). */
+  --panel-border-radius: 14px;
 }
 
+/* ID selector needed — earlier rule on #PanelUI-zen-app-launcher-container
+ * outranks the class-only polish padding and left the denser 10/12/8 inset. */
+#PanelUI-zen-app-launcher-container,
 .astra-app-hub-container {
   gap: 2px;
   padding: 12px 12px 10px;
+  box-sizing: border-box;
 }
 
 .astra-app-hub-header {
@@ -1164,28 +1170,42 @@
   border-color: color-mix(in srgb, var(--astra-app-hub-accent) 42%, transparent) !important;
 }
 
+/* Icon well: 48px tile matches packaged SVG viewBoxes. Monogram fills the
+ * same well so built-ins and custom pins share one silhouette. */
 .zen-app-launcher-item-icon-stack,
 .astra-app-hub-item-icon-stack {
-  width: 52px !important;
-  height: 52px !important;
-  min-width: 52px !important;
-  min-height: 52px !important;
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  min-height: 48px !important;
   margin-bottom: 8px !important;
   border-radius: var(--astra-app-hub-icon-radius);
   background: color-mix(in srgb, currentColor 7%, transparent);
   border: 1px solid var(--astra-app-hub-border);
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .astra-app-hub-item-icon,
 .zen-app-launcher-item-icon,
 .astra-app-hub-item-monogram,
 .zen-app-launcher-item-monogram {
-  width: 40px !important;
-  height: 40px !important;
-  max-width: 40px !important;
-  max-height: 40px !important;
-  border-radius: calc(var(--astra-app-hub-icon-radius) - 2px);
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  border-radius: inherit;
+  box-sizing: border-box;
+}
+
+/* Packaged SVGs already carry their own rounded fill — drop the well chrome
+ * once the image is proven loaded so tiles don't read as a card-in-card. */
+.zen-app-launcher-item-icon-stack[data-icon-loaded="true"],
+.astra-app-hub-item-icon-stack[data-icon-loaded="true"] {
+  background: transparent;
+  border-color: transparent;
 }
 
 .astra-app-hub-item-label,
@@ -1198,19 +1218,25 @@
 }
 
 .astra-app-hub-footer {
-  gap: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 6px;
   padding-top: 10px;
   margin-top: 8px;
   border-top-color: var(--astra-app-hub-border);
 }
 
 .astra-app-hub-footer toolbarbutton {
+  flex: 1 1 auto;
+  min-width: 0;
   border-radius: 10px;
-  padding: 7px 12px;
+  padding: 7px 10px;
   min-height: 32px;
   background: var(--astra-app-hub-surface);
   border: 1px solid var(--astra-app-hub-border);
   font-weight: 600;
+  text-align: center;
 }
 
 .astra-app-hub-footer toolbarbutton:hover {
@@ -1218,22 +1244,44 @@
   border-color: var(--astra-app-hub-border-strong);
 }
 
+/* "Add Website" is the primary footer action; Browse stays secondary. */
 .astra-app-hub-footer toolbarbutton.primary,
-.astra-app-hub-footer toolbarbutton[anonid="manage"],
-.astra-app-hub-footer toolbarbutton[data-primary="true"] {
+.astra-app-hub-footer toolbarbutton[data-primary="true"],
+#astra-app-hub-add-btn {
   background: color-mix(in srgb, var(--astra-app-hub-accent) 18%, transparent);
   border-color: color-mix(in srgb, var(--astra-app-hub-accent) 40%, transparent);
 }
 
+#astra-app-hub-add-btn:hover {
+  background: color-mix(in srgb, var(--astra-app-hub-accent) 28%, transparent);
+  border-color: color-mix(in srgb, var(--astra-app-hub-accent) 55%, transparent);
+}
+
 .astra-app-hub-add-tile {
   border-style: dashed !important;
+  border-width: 1.5px !important;
   border-color: var(--astra-app-hub-border-strong) !important;
   background: color-mix(in srgb, currentColor 3.5%, transparent) !important;
 }
 
+.astra-app-hub-add-tile:hover {
+  border-color: color-mix(in srgb, var(--astra-app-hub-accent) 45%, transparent) !important;
+  background: color-mix(in srgb, var(--astra-app-hub-accent) 10%, transparent) !important;
+}
+
+.astra-app-hub-add-tile .astra-app-hub-item-icon-stack,
+.astra-app-hub-add-tile .zen-app-launcher-item-icon-stack {
+  background: var(--astra-app-hub-surface) !important;
+  border-style: dashed !important;
+  border-color: var(--astra-app-hub-border-strong) !important;
+}
+
 .astra-app-hub-add-tile-mark {
   border-radius: var(--astra-app-hub-icon-radius) !important;
-  background: var(--astra-app-hub-surface) !important;
+  background: transparent !important;
+  font-size: 1.5rem !important;
+  font-weight: 500 !important;
+  opacity: 0.85;
 }
 
 .astra-app-hub-recent-section {

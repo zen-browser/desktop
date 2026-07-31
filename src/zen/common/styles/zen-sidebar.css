@@ -26,6 +26,47 @@
     border-radius: var(--zen-native-inner-radius);
     box-shadow: var(--zen-big-shadow);
     overflow: hidden;
+    /* Firefox revamp adds a 6px block-end padding which showed as a stray
+     * light "tray" under the panel inside the rounded card (Marionette:
+     * box h=686.8 vs inner #sidebar h=680.8, pb=6px). The card is the
+     * spacing unit in Astra, so the panel should fill it completely. */
+    padding: 0;
+  }
+
+  /* The inner #sidebar browser carries its own revamp card chrome (8px
+   * radius, 0.5px outline, content-area shadow) which fights the 5px
+   * card clip above: corners leave slivers at the toolbar junction and
+   * shadows double up. The outer card owns radius/shadow; flatten the
+   * inner browser to fill it edge-to-edge. */
+  & #sidebar {
+    border-radius: var(--zen-native-inner-radius);
+    outline: none;
+    box-shadow: none;
+  }
+
+  /* AI (smartwindow) panel: same rounded-card treatment as #sidebar-box and
+   * the web content (.browserSidebarContainer) so the junction under the top
+   * toolbar reads as two matching cards instead of a square, unthemed box. */
+  & #ai-window-box {
+    border-radius: var(--zen-native-inner-radius);
+    box-shadow: var(--zen-big-shadow);
+    overflow: hidden;
+    /* Themed backdrop so the panel never flashes/glares white in dark theme
+     * while the AI document is still loading (its <browser> is transparent). */
+    background-color: var(--zen-colors-tertiary);
+  }
+
+  /* Match #sidebar-splitter: invisible ~8px grab target. #zen-tabbox-wrapper
+   * has no flex gap, so -3px side margins keep the current 2px optical seam
+   * (8px - 2*3px) while the hit area overlaps both rounded cards. */
+  & #ai-window-splitter {
+    opacity: 0;
+    box-sizing: border-box;
+    width: var(--zen-sidebar-panel-splitter-hit, 8px) !important;
+    min-width: var(--zen-sidebar-panel-splitter-hit, 8px) !important;
+    max-width: var(--zen-sidebar-panel-splitter-hit, 8px) !important;
+    border-inline-width: 0 !important;
+    margin-inline: -3px;
   }
 
 }

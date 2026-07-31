@@ -828,6 +828,7 @@ var zenIgnoreKeyboardShortcutIDs = [
   "key_duplicateTab",
   "key_addTabSplitView",
   "key_separateTabSplitView",
+  "viewOpenTabsSidebarKb",
 ];
 
 var zenIgnoreKeyboardShortcutL10n = [

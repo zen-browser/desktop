@@ -1257,12 +1257,14 @@ class nsZenKeyboardShortcutsVersioner {
     }
 
     if (version < 20) {
-      // Migrate from version 18 to 19.
-      // Disable "key_addTabSplitView" and "key_separateTabSplitView"
+      // Migrate from version 19 to 20.
+      // - Disable "key_addTabSplitView" and "key_separateTabSplitView"
       // since we already had "cmd_zenNewEmptySplit" and "cmd_zenSplitViewUnsplit" before Firefox 153.
+      // - Disable firefox's "viewOpenTabsSidebarKb" as it depends on firefox's native sidebar feature
       const shouldBeDisabledShortcuts = [
         "key_addTabSplitView",
         "key_separateTabSplitView",
+        "viewOpenTabsSidebarKb",
       ];
       for (let shortcut of data) {
         if (shouldBeDisabledShortcuts.includes(shortcut.getID())) {

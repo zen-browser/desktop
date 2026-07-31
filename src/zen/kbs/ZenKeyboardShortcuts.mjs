@@ -808,6 +808,17 @@ class nsZenKeyboardShortcutsLoader {
     );
     newShortcutList.push(
       new KeyShortcut(
+        "astra-open-suraksha",
+        "I",
+        "",
+        ZEN_OTHER_SHORTCUTS_GROUP,
+        nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
+        "cmd_astraOpenSurakshaCenter",
+        "astra-open-suraksha-shortcut"
+      )
+    );
+    newShortcutList.push(
+      new KeyShortcut(
         "zen-open-india-gov",
         "Y",
         "",
@@ -855,7 +866,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 32;
+  static LATEST_KBS_VERSION = 33;
 
   constructor() {}
 
@@ -1294,6 +1305,22 @@ class nsZenKeyboardShortcutsVersioner {
       const indiaGov = data.find(s => s.getID?.() === "zen-open-india-gov");
       if (indiaGov && (indiaGov.getKeyName?.() === "I" || indiaGov.getKeyName?.() === "G")) {
         indiaGov.key = "Y";
+      }
+    }
+    if (version < 33) {
+      // Astra Suraksha: Ctrl+Shift+I (Inspector was remapped to L in Zen defaults)
+      if (!data.find(s => s.getID?.() === "astra-open-suraksha")) {
+        data.push(
+          new KeyShortcut(
+            "astra-open-suraksha",
+            "I",
+            "",
+            ZEN_OTHER_SHORTCUTS_GROUP,
+            nsKeyShortcutModifiers.fromObject({ accel: true, shift: true }),
+            "cmd_astraOpenSurakshaCenter",
+            "astra-open-suraksha-shortcut"
+          )
+        );
       }
     }
     if (version < 31) {

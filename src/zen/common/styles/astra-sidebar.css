@@ -32,7 +32,12 @@
 
 /* ==========================================================================
  * Sidebar secondary navigation (Back / Forward / Reload)
- * Additive only — does not remove top-toolbar nav controls.
+ *
+ * Expanded Sidebar+Top Toolbar: additive 3-button group in the sidebar strip
+ * (native Back/Forward stay on the top toolbar).
+ * Only Sidebar: single Navigation menu (strip is too narrow for the group).
+ * Collapsed: hidden — Zen parks the strip in the titlebar beside #nav-bar, so
+ * a second Back/Forward set would duplicate the native toolbar controls.
  * ========================================================================== */
 #astra-sidebar-navigation {
   display: flex;
@@ -41,6 +46,10 @@
   flex: 0 0 auto;
   margin-inline: 2px;
   min-width: 0;
+}
+
+:root:not([zen-sidebar-expanded="true"]) #astra-sidebar-navigation {
+  display: none !important;
 }
 
 #astra-sidebar-navigation .astra-sidebar-nav-group {
@@ -59,6 +68,20 @@
   width: 28px !important;
   height: 28px !important;
   padding: 0 !important;
+  -moz-context-properties: fill, fill-opacity;
+  fill: var(--toolbarbutton-icon-fill, currentColor);
+}
+
+#astra-sidebar-back {
+  list-style-image: url("chrome://browser/skin/zen-icons/back.svg") !important;
+}
+
+#astra-sidebar-forward {
+  list-style-image: url("chrome://browser/skin/zen-icons/forward.svg") !important;
+}
+
+#astra-sidebar-reload {
+  list-style-image: url("chrome://browser/skin/zen-icons/reload.svg") !important;
 }
 
 #astra-sidebar-navigation .astra-sidebar-nav-menu {
@@ -66,20 +89,21 @@
   min-width: 32px !important;
   width: 32px !important;
   height: 32px !important;
-  list-style-image: url("chrome://browser/skin/back.svg");
+  list-style-image: url("chrome://browser/skin/zen-icons/back.svg") !important;
+  -moz-context-properties: fill, fill-opacity;
+  fill: var(--toolbarbutton-icon-fill, currentColor);
 }
 
-/* Collapsed rail or height-constrained strip → single Navigation menu */
+/* type="menu" paints a dropmarker beside the icon — that mash-up is the
+ * "wrong/mixed-up" glyph in Only Sidebar. Keep a single clean back arrow. */
+#astra-sidebar-nav-menu > .toolbarbutton-menu-dropmarker {
+  display: none !important;
+}
+
 #astra-sidebar-navigation[astra-nav-compact] .astra-sidebar-nav-group {
   display: none;
 }
 
 #astra-sidebar-navigation[astra-nav-compact] .astra-sidebar-nav-menu {
   display: flex;
-}
-
-/* Avoid colliding with App Hub / Suraksha when the top strip is narrow */
-:root:not([zen-sidebar-expanded="true"]) #astra-sidebar-navigation {
-  /* Mode attribute still drives visibility; ensure no extra overflow. */
-  max-width: 36px;
 }

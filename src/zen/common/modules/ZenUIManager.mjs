@@ -1521,10 +1521,16 @@ window.gZenVerticalTabsManager = {
         const elements = document.querySelectorAll(
           '#zen-sidebar-top-buttons-customization-target > :is([cui-areatype="toolbar"], .chromeclass-toolbar-additional)'
         );
+        const navBarTarget = document.getElementById(
+          "nav-bar-customization-target"
+        );
         for (const button of elements) {
-          document
-            .getElementById("nav-bar-customization-target")
-            .append(button);
+          // Keep secondary sidebar Back/Forward/Reload pinned in the sidebar
+          // strip — sweeping it into #nav-bar left empty icon shells there.
+          if (button.id === "astra-sidebar-navigation") {
+            continue;
+          }
+          navBarTarget.append(button);
         }
         this._topButtonsSeparatorElement.remove();
         document.documentElement.removeAttribute("zen-single-toolbar");
@@ -1532,14 +1538,13 @@ window.gZenVerticalTabsManager = {
         navBar.appendChild(panelUIButton);
         panelUIButton.removeAttribute("overflows");
         // Restore Firefox wide-navbar behavior: back/forward always visible.
-        document
-          .getElementById("back-button")
-          ?.setAttribute("overflows", "false");
-        document
-          .getElementById("forward-button")
-          ?.setAttribute("overflows", "false");
+        // Setting overflows=false alone does not pull already-overflowed nodes
+        // out of #widget-overflow-list (OverflowableToolbar only reflows on
+        // window resize), so move them back explicitly.
+        this._restoreNavButtonsFromOverflow(navBarTarget);
         navBar.appendChild(document.getElementById("nav-bar-overflow-button"));
         this._toolbarOriginalParent.prepend(navBar);
+        window.gAstraSidebarNavigation?.update?.();
         if (!dontRebuildAreas) {
           this.rebuildAreas();
         }
@@ -1668,6 +1673,39 @@ window.gZenVerticalTabsManager = {
     gURLBar._initPasteAndGo();
     gURLBar._initStripOnShare();
     gURLBar._updatePlaceholderFromDefaultEngine();
+  },
+
+  _restoreNavButtonsFromOverflow(navBarTarget) {
+    const target =
+      navBarTarget || document.getElementById("nav-bar-customization-target");
+    if (!target) {
+      return;
+    }
+    const stopReload = document.getElementById("stop-reload-button");
+    const anchor =
+      stopReload?.parentElement === target
+        ? stopReload
+        : document.getElementById("urlbar-container");
+    for (const id of ["back-button", "forward-button"]) {
+      const btn = document.getElementById(id);
+      if (!btn) {
+        continue;
+      }
+      btn.setAttribute("overflows", "false");
+      const inOverflow =
+        btn.getAttribute("overflowedItem") === "true" ||
+        btn.parentElement?.id === "widget-overflow-list";
+      if (!inOverflow && btn.parentElement === target) {
+        continue;
+      }
+      if (anchor?.parentElement === target) {
+        target.insertBefore(btn, anchor);
+      } else {
+        target.prepend(btn);
+      }
+      btn.removeAttribute("overflowedItem");
+      btn.removeAttribute("cui-anchorid");
+    }
   },
 
   rebuildAreas() {

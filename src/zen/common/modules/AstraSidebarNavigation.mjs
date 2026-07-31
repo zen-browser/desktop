@@ -5,9 +5,10 @@
 /**
  * Secondary Back / Forward / Reload access in the sidebar icon rail.
  *
- * Expanded: compact grouped buttons near #zen-sidebar-top-buttons.
- * Collapsed / height-constrained: single Navigation button → menupopup
- * using the same native Firefox commands (no reimplemented disabled logic).
+ * Sidebar+Top Toolbar (expanded): 3-button group near #zen-sidebar-top-buttons
+ *   (additive — native top-toolbar controls stay).
+ * Only Sidebar: single Navigation menu (strip is too narrow for the group).
+ * Collapsed: hidden via CSS so native toolbar Back/Forward stay the only set.
  */
 
 const gInited = new WeakSet();
@@ -21,16 +22,23 @@ export function installAstraSidebarNavigation(win = window) {
   ensureMounted(win);
 }
 
+function sidebarTarget(doc) {
+  return (
+    doc.getElementById("zen-sidebar-top-buttons-customization-target") ||
+    doc.getElementById("zen-sidebar-top-buttons")
+  );
+}
+
 function ensureMounted(win) {
   const doc = win.document;
-  if (doc.getElementById("astra-sidebar-navigation")) {
+  const existing = doc.getElementById("astra-sidebar-navigation");
+  if (existing) {
+    pinToSidebarStrip(win, existing);
     bind(win);
     return;
   }
 
-  const target =
-    doc.getElementById("zen-sidebar-top-buttons-customization-target") ||
-    doc.getElementById("zen-sidebar-top-buttons");
+  const target = sidebarTarget(doc);
   if (!target || !win.MozXULElement) {
     win.setTimeout(() => ensureMounted(win), 250);
     return;
@@ -38,9 +46,12 @@ function ensureMounted(win) {
 
   let frag;
   try {
+    // Intentionally NOT chromeclass-toolbar-additional: ZenUIManager's
+    // leave-single-toolbar path sweeps that class into #nav-bar, which left
+    // empty Back/Forward shells on the top toolbar (Bug 2) after layout flips.
     frag = win.MozXULElement.parseXULToFragment(`
       <toolbaritem id="astra-sidebar-navigation"
-                   class="chromeclass-toolbar-additional astra-sidebar-navigation"
+                   class="astra-sidebar-navigation"
                    removable="false"
                    overflows="false"
                    skipintoolbarset="true">
@@ -84,6 +95,21 @@ function ensureMounted(win) {
   bind(win);
 }
 
+function pinToSidebarStrip(win, host) {
+  const target = sidebarTarget(win.document);
+  if (!target || !host || host.parentNode === target) {
+    return;
+  }
+  const separator = win.document.getElementById(
+    "zen-sidebar-top-buttons-separator"
+  );
+  if (separator && separator.parentNode === target) {
+    target.insertBefore(host, separator);
+  } else {
+    target.appendChild(host);
+  }
+}
+
 function isExpanded(win) {
   const root = win.document.documentElement;
   const toolbox = win.document.getElementById("navigator-toolbox");
@@ -93,22 +119,8 @@ function isExpanded(win) {
   );
 }
 
-function isHeightConstrained(win) {
-  const host = win.document.getElementById("astra-sidebar-navigation");
-  const group = win.document.getElementById("astra-sidebar-nav-group");
-  const target = win.document.getElementById(
-    "zen-sidebar-top-buttons-customization-target"
-  );
-  if (!host || !group || !target) {
-    return false;
-  }
-  // Horizontal squeeze only — the top strip is always ~toolbar-height tall,
-  // so never use height. If the 3-button group cannot fit beside App Hub /
-  // Suraksha without overflowing the customization target, use the menu.
-  const groupW = group.getBoundingClientRect().width || 90;
-  const targetW = target.getBoundingClientRect().width;
-  const hostW = host.getBoundingClientRect().width;
-  return targetW > 0 && targetW < groupW + 72;
+function isSingleToolbar(win) {
+  return win.document.documentElement.getAttribute("zen-single-toolbar") === "true";
 }
 
 function updateMode(win) {
@@ -116,7 +128,11 @@ function updateMode(win) {
   if (!host) {
     return;
   }
-  const useMenu = !isExpanded(win) || isHeightConstrained(win);
+  pinToSidebarStrip(win, host);
+
+  // Collapsed: CSS hides the host. Only Sidebar: compact Navigation menu.
+  // Sidebar+Top expanded: 3-button group.
+  const useMenu = isExpanded(win) && isSingleToolbar(win);
   if (useMenu) {
     host.setAttribute("astra-nav-compact", "true");
   } else {
@@ -142,7 +158,11 @@ function bind(win) {
   }
   new win.MutationObserver(update).observe(doc.documentElement, {
     attributes: true,
-    attributeFilter: ["zen-sidebar-expanded", "zen-compact-mode"],
+    attributeFilter: [
+      "zen-sidebar-expanded",
+      "zen-compact-mode",
+      "zen-single-toolbar",
+    ],
   });
 
   if (typeof win.ResizeObserver === "function") {

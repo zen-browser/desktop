@@ -5,6 +5,7 @@
 EXTRA_JS_MODULES += [
     "modules/ZenEnergySaver.mjs",
     "sys/ZenActorsManager.sys.mjs",
+    "sys/ZenContentColorScheme.sys.mjs",
     "sys/ZenCustomizableUI.sys.mjs",
     "sys/ZenUIMigration.sys.mjs",
 ]

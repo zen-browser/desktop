@@ -3,3 +3,4 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 category browser-before-ui-startup resource:///modules/ZenActorsManager.sys.mjs gZenActorsManager.init
+category browser-before-ui-startup resource:///modules/ZenContentColorScheme.sys.mjs gZenContentColorScheme.init

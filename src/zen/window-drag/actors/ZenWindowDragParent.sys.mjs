@@ -22,6 +22,12 @@ export class ZenWindowDragParent extends JSWindowActorParent {
     if (!win || win.closed || win.windowState === win.STATE_FULLSCREEN) {
       return;
     }
+    if (Cu.isInAutomation) {
+      // Tests can't exercise a real OS drag session; let them observe the
+      // decision instead.
+      Services.obs.notifyObservers(win, "zen-window-drag-started");
+      return;
+    }
     lazy.zenDragAndDropService.beginNativeWindowMove(win);
   }
 }

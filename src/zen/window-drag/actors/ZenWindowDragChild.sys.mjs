@@ -103,6 +103,10 @@ export class ZenWindowDragChild extends JSWindowActorChild {
   #startScreenY = 0;
 
   handleEvent(event) {
+    // Never let pages spoof the gesture with synthetic events.
+    if (!event.isTrusted) {
+      return;
+    }
     switch (event.type) {
       case "mousedown":
         this.#onMouseDown(event);
@@ -321,7 +325,9 @@ export class ZenWindowDragChild extends JSWindowActorChild {
     if (!style) {
       return false;
     }
-    const cursor = style.cursor.split(",").pop().trim();
+    // The keyword is always the last component of the computed value.
+    // Don't split on "," as url() cursor images may contain commas.
+    const cursor = style.cursor.match(/[a-z-]+$/)?.[0];
     return kInteractiveCursors.has(cursor);
   }
 }

@@ -756,11 +756,6 @@
         border-radius: var(--border-radius-circle) !important;
         transform: rotate(90deg);
 
-        &:-moz-window-inactive {
-          background-image:
-            image(var(--close-button-extra-background)), image(var(--tab-background-color-selected)), image(var(--toolbox-background-color-inactive));
-        }
-
         &:hover {
           --close-button-extra-background: var(--button-background-color-ghost-hover);
         }

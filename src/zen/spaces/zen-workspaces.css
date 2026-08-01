@@ -309,6 +309,9 @@
   :root[zen-unsynced-window='true'] &:hover .zen-workspaces-actions,
   :root[zen-sidebar-expanded='true']:not([zen-unsynced-window])
     &:hover .zen-workspaces-actions,
+  :root:not([zen-sidebar-expanded='true']):not([zen-unsynced-window])
+    &:hover
+    .zen-workspaces-actions:not(.zen-move-tabs-to-workspace-button),
   & .zen-workspaces-actions[open='true'] {
     visibility: visible;
     pointer-events: auto;

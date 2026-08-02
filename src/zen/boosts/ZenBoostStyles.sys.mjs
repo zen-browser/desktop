@@ -81,8 +81,15 @@ export class nsZenBoostStyles {
     }
 
     if (fontCase != "" || fontFamily != "") {
+      const ignoredElements = [
+        ".google-symbols",
+        "gf-load-icon-font",
+        "mat-icon",
+        ".google-material-icons",
+        "span[data-cds='Icon']",
+      ];
       style += `/* Text Format */\n`;
-      style += `body *:not(.google-symbols, gf-load-icon-font, mat-icon, .google-material-icons) {\n`;
+      style += `body *:not(${ignoredElements.join(",")}) {\n`;
       style += `${fontFamily}\n`;
       style += `${fontCase}\n`;
       style += `}\n`;

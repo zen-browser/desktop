@@ -2,8 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+# Default false so Sidebar+Top Toolbar / Collapsed compact modes keep the
+# sidebar visible unless the user explicitly chooses hide-tabs / hide-both.
+# Only Sidebar + Compact auto-hides the sidebar regardless of this pref.
 - name: zen.view.compact.hide-tabbar
-  value: true
+  value: false
 
 - name: zen.view.compact.hide-toolbar
   value: false

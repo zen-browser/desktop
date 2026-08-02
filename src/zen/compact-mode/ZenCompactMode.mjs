@@ -139,6 +139,7 @@ window.gZenCompactModeManager = {
 
     SessionStore.promiseAllWindowsRestored.then(() => {
       this.preference = this._wasInCompactMode;
+      this._syncAutohideSidebarAttribute();
     });
   },
 
@@ -189,7 +190,22 @@ window.gZenCompactModeManager = {
       this._clearEdgeRevealState();
       this._clearAllPanelLocks();
     }
+    this._syncAutohideSidebarAttribute();
     this._updateEvent();
+  },
+
+  /** Only Sidebar + Compact: expose auto-hide sidebar for CSS/tests. */
+  _syncAutohideSidebarAttribute() {
+    const autohide =
+      this.preference && gZenVerticalTabsManager._hasSetSingleToolbar;
+    if (autohide) {
+      document.documentElement.setAttribute(
+        "zen-compact-autohide-sidebar",
+        "true"
+      );
+    } else {
+      document.documentElement.removeAttribute("zen-compact-autohide-sidebar");
+    }
   },
 
   /**
@@ -392,6 +408,7 @@ window.gZenCompactModeManager = {
   },
 
   updateCompactModeContext(isSingleToolbar) {
+    this._syncAutohideSidebarAttribute();
     const isIllegalState = this.checkIfIllegalState();
     const menuitem = document.getElementById(
       "zen-context-menu-compact-mode-toggle"
@@ -556,10 +573,15 @@ window.gZenCompactModeManager = {
   },
 
   get canHideSidebar() {
-    return (
-      Services.prefs.getBoolPref("zen.view.compact.hide-tabbar") ||
-      gZenVerticalTabsManager._hasSetSingleToolbar
-    );
+    const isSingleToolbar = gZenVerticalTabsManager._hasSetSingleToolbar;
+    if (isSingleToolbar) {
+      // Only Sidebar + Compact: auto-hide sidebar with edge hover reveal.
+      // This is the distinct purpose of Compact in Only Sidebar layout.
+      return this.preference;
+    }
+    // Sidebar+Top Toolbar / Collapsed: hide sidebar only when user picks it
+    // in the compact context menu (hide tabs / hide both).
+    return Services.prefs.getBoolPref("zen.view.compact.hide-tabbar");
   },
 
   get canHideToolbar() {

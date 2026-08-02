@@ -40,14 +40,14 @@ XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
   "COMPACT_MODE_OUTSIDE_WINDOW_HORIZONTAL_OFFSET",
   "zen.view.compact.outside-window-edge-offset.horizontal",
-  100
+  250
 );
 
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
   "COMPACT_MODE_OUTSIDE_WINDOW_VERTICAL_OFFSET",
   "zen.view.compact.outside-window-edge-offset.vertical",
-  200
+  150
 );
 
 XPCOMUtils.defineLazyServiceGetter(

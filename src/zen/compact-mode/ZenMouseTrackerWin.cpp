@@ -28,8 +28,16 @@ nsresult ZenNativeMouseMonitor::Start() {
   if (sMouseHook) {
     return NS_OK;
   }
-  sMouseHook = ::SetWindowsHookExW(WH_MOUSE_LL, MouseHookProc,
-                                   ::GetModuleHandleW(nullptr), 0);
+  // Pass the module that actually contains the hook proc (xul.dll), not the
+  // executable's module
+  HMODULE module = nullptr;
+  if (!::GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+                                GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                            reinterpret_cast<LPCWSTR>(&MouseHookProc),
+                            &module)) {
+    return NS_ERROR_NOT_AVAILABLE;
+  }
+  sMouseHook = ::SetWindowsHookExW(WH_MOUSE_LL, MouseHookProc, module, 0);
   return sMouseHook ? NS_OK : NS_ERROR_NOT_AVAILABLE;
 }
 

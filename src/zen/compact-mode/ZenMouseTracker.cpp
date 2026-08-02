@@ -5,6 +5,7 @@
 #include "ZenMouseTracker.h"
 #include "ZenMouseTrackerInternal.h"
 
+#include "mozilla/Atomic.h"
 #include "mozilla/Services.h"
 #include "mozilla/WidgetUtils.h"
 #include "nsIObserverService.h"
@@ -19,10 +20,12 @@ static ZenMouseTracker* sInstance = nullptr;
 
 // Pointer moves are coalesced: the backends may report them faster than we
 // want to run the checks, and on Windows they arrive from a low level hook
-// where as little work as possible should happen.
-static float sLatestPointerX = 0.0f;
-static float sLatestPointerY = 0.0f;
-static bool sPendingEvaluation = false;
+// where as little work as possible should happen. These are atomic since
+// some backends (e.g. the macOS global event monitor) may deliver the moves
+// off the main thread.
+static mozilla::Atomic<int32_t> sLatestPointerX(0);
+static mozilla::Atomic<int32_t> sLatestPointerY(0);
+static mozilla::Atomic<bool> sPendingEvaluation(false);
 
 ZenMouseTracker::ZenMouseTracker() {
   MOZ_ASSERT(NS_IsMainThread());
@@ -30,7 +33,6 @@ ZenMouseTracker::ZenMouseTracker() {
 }
 
 ZenMouseTracker::~ZenMouseTracker() {
-  printf("ZenMouseTracker::~ZenMouseTracker() called\n");
   ZenNativeMouseMonitor::Stop();
   if (sInstance == this) {
     sInstance = nullptr;
@@ -139,20 +141,25 @@ void ZenMouseTracker::OnTrackedListChanged() {
 
 // static
 void ZenMouseTracker::OnNativePointerMove(const mozilla::DesktopPoint& aPoint) {
-  sLatestPointerX = aPoint.x;
-  sLatestPointerY = aPoint.y;
-  if (sPendingEvaluation) {
+  sLatestPointerX = int32_t(aPoint.x);
+  sLatestPointerY = int32_t(aPoint.y);
+  if (sPendingEvaluation.exchange(true)) {
+    // An already queued evaluation will pick up the position we just stored
     return;
   }
-  sPendingEvaluation = true;
-  NS_DispatchToMainThread(
+  nsresult rv = NS_DispatchToMainThread(
       NS_NewRunnableFunction("zen::ZenMouseTracker::Evaluate", [] {
         sPendingEvaluation = false;
         if (RefPtr<ZenMouseTracker> tracker = sInstance) {
-          tracker->Evaluate(
-              mozilla::DesktopPoint(sLatestPointerX, sLatestPointerY));
+          tracker->Evaluate(mozilla::DesktopPoint(float(sLatestPointerX),
+                                                  float(sLatestPointerY)));
         }
       }));
+  if (NS_FAILED(rv)) {
+    // Don't let a failed dispatch (e.g. during shutdown) block all future
+    // evaluations
+    sPendingEvaluation = false;
+  }
 }
 
 void ZenMouseTracker::Evaluate(const mozilla::DesktopPoint& aPoint) {

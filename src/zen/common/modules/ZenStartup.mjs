@@ -106,6 +106,7 @@ class ZenStartup {
       delete this.promiseInitializedResolve;
       this.#initRamSaver();
       this.#initAiWindowBookmarksFix();
+      this.#initSidebarLauncherAutoHide();
     });
   }
 
@@ -275,6 +276,58 @@ class ZenStartup {
       setInterval(() => this.#checkRamSaverThreshold(), 5 * 60 * 1000);
     } catch (e) {
       console.warn("[Astra RAM Saver]: Failed to initialize", e);
+    }
+  }
+
+  /**
+   * With sidebar.visibility="hide-sidebar", opening a sidebar panel (AI chat,
+   * history, bookmarks) forces Firefox's revamp launcher rail (#sidebar-main)
+   * visible — a hard requirement inside SidebarState.panelOpen. That 50px rail
+   * shoves Compact Mode / App Hub / Suraksha right in Collapsed and
+   * Sidebar+Top Toolbar layouts, and the panel close path only hides the
+   * panel, leaving the rail stuck forever.
+   *
+   * Fold the rail back on both show and hide. The panel can stay open with the
+   * launcher hidden (Firefox already pads that case). Intentional launcher-only
+   * toggles via the sidebar toolbar button (no panel) are left alone.
+   */
+  #initSidebarLauncherAutoHide() {
+    try {
+      const box = document.getElementById("sidebar-box");
+      if (!box || !SidebarController?.sidebarRevampEnabled) {
+        return;
+      }
+      const foldLauncher = () => {
+        if (
+          SidebarController.sidebarRevampVisibility !== "hide-sidebar" ||
+          !SidebarController.launcherVisible
+        ) {
+          return;
+        }
+        SidebarController._state.updateVisibility(false);
+        SidebarController.updateToolbarButton();
+      };
+      // sidebar-show/hide can race panelOpen / isOpen; settle next frame.
+      box.addEventListener("sidebar-show", () => {
+        requestAnimationFrame(() => {
+          if (SidebarController.isOpen) {
+            foldLauncher();
+          }
+        });
+      });
+      box.addEventListener("sidebar-hide", () => {
+        requestAnimationFrame(() => {
+          if (!SidebarController.isOpen) {
+            foldLauncher();
+          }
+        });
+      });
+      // Settle stale launcher left visible from a previous session.
+      if (!SidebarController.isOpen) {
+        foldLauncher();
+      }
+    } catch (e) {
+      console.warn("[Astra]: Failed to init sidebar launcher auto-hide", e);
     }
   }
 

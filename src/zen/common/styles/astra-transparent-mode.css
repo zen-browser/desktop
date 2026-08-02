@@ -391,8 +391,17 @@
   -webkit-backdrop-filter: none !important;
 }
 
-:root[astra-transparent-effective-mode="astra-glass"] toolbarbutton:not([disabled="true"]):hover {
-  background: var(--astra-glass-hover) !important;
+/*
+ * Do NOT paint hover on the toolbarbutton element itself.
+ * Firefox already paints a rounded highlight on
+ * .toolbarbutton-icon / .toolbarbutton-badge-stack. A full-button
+ * background with border-radius:0 stacks a sharp rectangle behind that
+ * rounded surface and reads as a jagged/"torn" hover — unlike the
+ * clean 8px titlebar-button hover. Keep glass hover on the icon stack
+ * via --toolbarbutton-hover-background instead.
+ */
+:root[astra-transparent-effective-mode="astra-glass"] {
+  --toolbarbutton-hover-background: var(--astra-glass-hover) !important;
 }
 
 :root[astra-transparent-effective-mode="astra-glass"] #sidebar-splitter,

@@ -210,7 +210,8 @@
 
   --zen-appcontent-border: 1px solid var(--zen-colors-border);
 
-  --toolbarbutton-border-radius: 6px;
+  /* Align with Windows .titlebar-button hover radius (zen-buttons.css). */
+  --toolbarbutton-border-radius: 8px;
   --urlbar-margin-inline: 1px !important;
 
   --tab-icon-overlay-stroke: light-dark(white, black) !important;

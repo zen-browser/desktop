@@ -208,21 +208,31 @@
   }
 }
 
-.toolbarbutton-1:not(#tabs-newtab-button),
+/* Match Windows titlebar-button hover: 8px radius, 0.15s ease.
+ * Hover paint stays on .toolbarbutton-icon / .toolbarbutton-badge-stack
+ * (Firefox default) — not the full button — so corners anti-alias cleanly.
+ * Leave third-party webextension actions (e.g. uBlock) on stock styling. */
+.toolbarbutton-1:not(#tabs-newtab-button):not(.webextension-browser-action),
 .urlbar-page-action,
 .identity-box-button {
-  --tab-border-radius: 6px;
+  --tab-border-radius: 8px;
   --toolbarbutton-border-radius: var(--tab-border-radius);
   --toolbarbutton-inner-padding: 6px;
   --toolbarbutton-outer-padding: 1px;
   --toolbarbutton-icon-fill: color-mix(in srgb, currentColor 70%, transparent);
 
   transition:
-    background-color 0.1s,
-    transform 0.2s;
+    background-color 0.15s ease,
+    transform 0.2s ease;
+
+  & > .toolbarbutton-icon,
+  & > .toolbarbutton-text,
+  & > .toolbarbutton-badge-stack {
+    transition: background-color 0.15s ease;
+  }
 
   &[open="true"] {
-    transition: background-color 0.1s;
+    transition: background-color 0.15s ease;
   }
 
   &:not([open="true"]):active:hover {

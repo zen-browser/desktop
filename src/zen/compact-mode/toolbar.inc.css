@@ -31,8 +31,10 @@
     }
     transition: height var(--zen-hidden-toolbar-transition);
 
-    height: var(--zen-element-separation);
-    overflow: clip;
+    /* Zero visible chrome; astra-compact.css adds an invisible top hit zone. */
+    height: 0;
+    min-height: 0;
+    overflow: visible;
 
     & #urlbar:not([breakout-extend='true']) {
       /* Sometimes, "opacity: 1" is forced elsewhere */

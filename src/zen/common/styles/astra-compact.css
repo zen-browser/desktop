@@ -5,3 +5,71 @@
  * fought the Phase A restore in vertical-tabs.css. Compact float padding is
  * owned by sidebar.inc.css; AI z-index stacking lives in zen-sidebar.css.
  */
+
+/* ==========================================================================
+   Part A — Remove leftover top chrome strip in Compact Mode
+   ==========================================================================
+   Zen collapses hidden top toolbars to ~8px (var(--zen-element-separation))
+   for window dragging. In Astra we reclaim that space and rely on:
+   - edge hover reveal (ZenCompactMode screen-edge detection)
+   - sidebar hover reveal for caption buttons in Only Sidebar mode
+   ========================================================================== */
+
+:root[zen-compact-mode='true']:not([customizing]):not([inDOMFullscreen='true']) {
+  --zen-compact-top-hit-zone: 4px;
+
+  /* Only Sidebar: the drag strip is redundant — nav lives in the sidebar. */
+  &[zen-single-toolbar='true'] #zen-appcontent-navbar-wrapper {
+    min-height: 0 !important;
+    height: 0 !important;
+    max-height: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    -moz-window-dragging: no-drag;
+  }
+
+  /* Sidebar+Top Toolbar / Collapsed: zero visible strip when toolbar is hidden. */
+  &:not([zen-single-toolbar='true']) #zen-appcontent-navbar-wrapper {
+    min-height: 0;
+    height: 0;
+    overflow: visible;
+
+    /* Invisible top-edge hit target for hover reveal (replaces visible 8px strip). */
+    &::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--zen-compact-top-hit-zone);
+      z-index: 4;
+      pointer-events: auto;
+      -moz-window-dragging: drag;
+    }
+
+    &:is(
+      [zen-has-hover],
+      [has-popup-menu],
+      [zen-compact-mode-active]
+    )::before {
+      display: none;
+    }
+  }
+
+  /* Reclaim any top margin reserved for the hidden toolbar in compact sidebar mode. */
+  &:not([zen-single-toolbar='true']) #navigator-toolbox:not([animate='true']) {
+    @media -moz-pref('zen.view.compact.hide-toolbar') {
+      margin-top: 0 !important;
+    }
+  }
+}
+
+/* Part B — Only Sidebar + Compact: mark distinct auto-hide sidebar mode. */
+:root[zen-compact-autohide-sidebar='true'] {
+  /* Full-bleed content when sidebar is tucked away. */
+  & #zen-appcontent-wrapper {
+    margin-top: 0 !important;
+  }
+}

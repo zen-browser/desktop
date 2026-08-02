@@ -22,4 +22,5 @@ DIRS += [
     "spaces",
     "space-routing",
     "sync",
+    "window-drag",
 ]

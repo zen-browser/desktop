@@ -5,7 +5,58 @@
 #include "nsZenDragAndDrop.h"
 #include "nsBaseDragService.h"
 
+#include "mozilla/WidgetUtils.h"
+#include "nsIWidget.h"
+#include "nsPIDOMWindow.h"
+
+#if defined(XP_WIN)
+#  include <windows.h>
+#elif defined(MOZ_WIDGET_GTK)
+#  include <gdk/gdk.h>
+#endif
+
 namespace zen {
+
+#if defined(XP_MACOSX)
+nsresult StartNativeWindowMoveCocoa(nsIWidget* aWidget);
+#endif
+
+/**
+ * @brief Start a native, OS-driven move of the window backing aWidget.
+ * @see nsIZenDragAndDrop::beginNativeWindowMove for more details.
+ */
+static nsresult StartNativeWindowMove(nsIWidget* aWidget) {
+#if defined(XP_MACOSX)
+  return StartNativeWindowMoveCocoa(aWidget);
+#elif defined(XP_WIN)
+  HWND hwnd = static_cast<HWND>(aWidget->GetNativeData(NS_NATIVE_WINDOW));
+  NS_ENSURE_TRUE(hwnd, NS_ERROR_FAILURE);
+  // Hand the drag over to the OS as if the titlebar was grabbed; this
+  // enters the native move loop.
+  ::ReleaseCapture();
+  ::PostMessageW(hwnd, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+  return NS_OK;
+#elif defined(MOZ_WIDGET_GTK)
+  auto* gdkWindow =
+      static_cast<GdkWindow*>(aWidget->GetNativeData(NS_NATIVE_WINDOW));
+  NS_ENSURE_TRUE(gdkWindow, NS_ERROR_FAILURE);
+  GdkWindow* toplevel = gdk_window_get_toplevel(gdkWindow);
+  GdkSeat* seat =
+      gdk_display_get_default_seat(gdk_window_get_display(toplevel));
+  GdkDevice* pointer = seat ? gdk_seat_get_pointer(seat) : nullptr;
+  NS_ENSURE_TRUE(pointer, NS_ERROR_FAILURE);
+  // A native move works on both X11 and Wayland, unlike moving the
+  // window programmatically.
+  gint rootX = 0;
+  gint rootY = 0;
+  gdk_device_get_position(pointer, nullptr, &rootX, &rootY);
+  gdk_window_begin_move_drag_for_device(toplevel, pointer, 1, rootX, rootY,
+                                        GDK_CURRENT_TIME);
+  return NS_OK;
+#else
+  return NS_ERROR_NOT_IMPLEMENTED;
+#endif
+}
 namespace {
 
 static constexpr auto kZenDefaultDragImageOpacity =
@@ -42,6 +93,17 @@ NS_IMETHODIMP
 nsZenDragAndDrop::OnDragEnd() {
   mDragImageOpacity = kZenDefaultDragImageOpacity;
   return NS_OK;
+}
+
+NS_IMETHODIMP
+nsZenDragAndDrop::BeginNativeWindowMove(mozIDOMWindowProxy* aWindow) {
+  NS_ENSURE_ARG_POINTER(aWindow);
+  nsCOMPtr<nsPIDOMWindowOuter> outer = nsPIDOMWindowOuter::From(aWindow);
+  NS_ENSURE_TRUE(outer, NS_ERROR_INVALID_ARG);
+  RefPtr<nsIWidget> widget =
+      mozilla::widget::WidgetUtils::DOMWindowToWidget(outer);
+  NS_ENSURE_TRUE(widget, NS_ERROR_FAILURE);
+  return StartNativeWindowMove(widget);
 }
 
 }  // namespace zen

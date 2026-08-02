@@ -5,7 +5,8 @@
 #include "ZenMouseTracker.h"
 #include "ZenMouseTrackerInternal.h"
 
-#include "mozilla/Atomic.h"
+#include <atomic>
+
 #include "mozilla/Services.h"
 #include "mozilla/WidgetUtils.h"
 #include "nsIObserverService.h"
@@ -23,9 +24,9 @@ static ZenMouseTracker* sInstance = nullptr;
 // where as little work as possible should happen. These are atomic since
 // some backends (e.g. the macOS global event monitor) may deliver the moves
 // off the main thread.
-static mozilla::Atomic<int32_t> sLatestPointerX(0);
-static mozilla::Atomic<int32_t> sLatestPointerY(0);
-static mozilla::Atomic<bool> sPendingEvaluation(false);
+static std::atomic<int32_t> sLatestPointerX{0};
+static std::atomic<int32_t> sLatestPointerY{0};
+static std::atomic<bool> sPendingEvaluation{false};
 
 ZenMouseTracker::ZenMouseTracker() {
   MOZ_ASSERT(NS_IsMainThread());

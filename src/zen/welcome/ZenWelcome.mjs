@@ -19,7 +19,10 @@
     "zen-toast-container",
   ];
 
-  const kTotalWelcomeSteps = 5;
+  const kTotalWelcomeSteps = 6;
+
+  /** @type {"chrome"|"new"|null} Layout choice from the browser-switcher step. */
+  let _welcomeBrowserChoice = null;
 
   /** Preferred welcome search engines (display order). */
   const kPreferredSearchEngines = [
@@ -196,6 +199,13 @@
       }
     }
     return decor;
+  }
+
+  function contentQuerySelectedBrowserChoice() {
+    const checked = document.querySelector(
+      'input[name="zen-welcome-browser-choice"]:checked'
+    );
+    return checked?.value || null;
   }
 
   function buildProgressDots(stepNum, totalSteps) {
@@ -932,6 +942,93 @@
       {
         stepNum: 2,
         totalSteps,
+        icon: "folder",
+        eyebrow: "zen-welcome-browser-eyebrow",
+        text: [
+          { id: "zen-welcome-browser-title" },
+          { id: "zen-welcome-browser-sub" },
+        ],
+        decor: [
+          { icon: "folder", pos: "tl" },
+          { icon: "sparkles", pos: "tr" },
+          { type: "dot", pos: "a" },
+        ],
+        buttons: [backButton, continueButton, skipButton],
+        fadeIn() {
+          const content = document.getElementById("zen-welcome-page-content");
+          content.setAttribute("browser-choice", "true");
+
+          const list = document.createElement("div");
+          list.className = "zen-welcome-choice-list";
+
+          for (const [value, titleId, subId] of [
+            ["chrome", "zen-welcome-browser-yes", "zen-welcome-browser-yes-sub"],
+            ["new", "zen-welcome-browser-no", "zen-welcome-browser-no-sub"],
+          ]) {
+            const label = document.createElement("label");
+            label.className = "zen-welcome-choice-card";
+            const input = document.createElement("input");
+            input.type = "radio";
+            input.name = "zen-welcome-browser-choice";
+            input.value = value;
+            input.checked =
+              _welcomeBrowserChoice === value ||
+              (_welcomeBrowserChoice === null && value === "chrome");
+            input.addEventListener("change", () => {
+              if (input.checked) {
+                _welcomeBrowserChoice = value;
+              }
+            });
+            const body = document.createElement("div");
+            body.className = "zen-welcome-choice-body";
+            const title = document.createElement("div");
+            title.className = "zen-welcome-choice-title";
+            document.l10n.setAttributes(title, titleId);
+            const sub = document.createElement("div");
+            sub.className = "zen-welcome-choice-sub";
+            document.l10n.setAttributes(sub, subId);
+            body.appendChild(title);
+            body.appendChild(sub);
+            label.appendChild(input);
+            label.appendChild(body);
+            list.appendChild(label);
+          }
+          content.appendChild(list);
+
+          const importRow = document.createElement("div");
+          importRow.className = "zen-welcome-browser-import-row";
+          const importBtn = document.createElement("button");
+          importBtn.type = "button";
+          importBtn.className = "zen-welcome-btn-ghost zen-welcome-browser-import-btn";
+          document.l10n.setAttributes(importBtn, "zen-welcome-browser-import");
+          importBtn.addEventListener("click", () => openImportSettings());
+          importRow.appendChild(importBtn);
+          content.appendChild(importRow);
+
+          if (_welcomeBrowserChoice === null) {
+            _welcomeBrowserChoice = "chrome";
+          }
+        },
+        fadeOut() {
+          const selected =
+            contentQuerySelectedBrowserChoice() || _welcomeBrowserChoice || "chrome";
+          _welcomeBrowserChoice = selected;
+          const fromChrome = selected === "chrome";
+          // Soft default: Chrome-like top bar for switchers; Only Sidebar for others.
+          Services.prefs.setBoolPref(
+            "zen.view.use-single-toolbar",
+            !fromChrome
+          );
+          Services.prefs.setBoolPref("zen.view.sidebar-expanded", true);
+          gZenVerticalTabsManager?._updateEvent?.();
+          document
+            .getElementById("zen-welcome-page-content")
+            ?.removeAttribute("browser-choice");
+        },
+      },
+      {
+        stepNum: 3,
+        totalSteps,
         icon: "shield",
         eyebrow: "zen-welcome-ublock-eyebrow",
         text: [
@@ -948,7 +1045,7 @@
         fadeOut() {},
       },
       {
-        stepNum: 3,
+        stepNum: 4,
         totalSteps,
         icon: "sparkles",
         eyebrow: "zen-welcome-ai-eyebrow",
@@ -966,7 +1063,7 @@
         fadeOut() {},
       },
       {
-        stepNum: 4,
+        stepNum: 5,
         totalSteps,
         icon: "compact",
         eyebrow: "zen-welcome-compact-eyebrow",
@@ -1009,7 +1106,7 @@
         fadeOut() {},
       },
       {
-        stepNum: 5,
+        stepNum: 6,
         totalSteps,
         icon: "search",
         eyebrow: "zen-welcome-search-eyebrow",

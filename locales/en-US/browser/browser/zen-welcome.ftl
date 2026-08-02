@@ -9,24 +9,34 @@ zen-welcome-get-started = Get Started
 zen-welcome-import-settings = Import settings
 zen-welcome-continue = Continue
 
-# Page 2 — uBlock Origin
+# Page 2 — Browser switcher (Chrome / layout default)
+zen-welcome-browser-eyebrow = Quick setup
+zen-welcome-browser-title = Coming from Chrome or another browser?
+zen-welcome-browser-sub = We'll pick a familiar layout and help you bring your bookmarks over.
+zen-welcome-browser-yes = Yes — I'm switching from Chrome or another browser
+zen-welcome-browser-yes-sub = Sidebar and top toolbar, like Chrome
+zen-welcome-browser-no = No — show me Astra's layout
+zen-welcome-browser-no-sub = Only sidebar — more space for your pages
+zen-welcome-browser-import = Import bookmarks & settings
+
+# Page 3 — uBlock Origin
 zen-welcome-ublock-eyebrow = uBlock Origin
 zen-welcome-ublock-title = No ads. No trackers.
 zen-welcome-ublock-sub = Blocks intrusive ads and trackers automatically, right from your first tab.
 
-# Page 3 — AI Sidebar
+# Page 4 — AI Sidebar
 zen-welcome-ai-eyebrow = AI Sidebar
 zen-welcome-ai-title = Ask anything. Stay on the page.
 zen-welcome-ai-sub = Summarize, translate, and chat without ever leaving the tab you’re on.
 
-# Page 4 — Compact Mode
+# Page 5 — Compact Mode
 zen-welcome-compact-eyebrow = Compact Mode
 zen-welcome-compact-title = More page. Less chrome.
 zen-welcome-compact-sub = Shrinks the toolbar so your content gets the space it deserves.
 zen-welcome-compact-before = Before
 zen-welcome-compact-after = After
 
-# Page 5 — Default Search Engine
+# Page 6 — Default Search Engine
 zen-welcome-search-eyebrow = One last thing
 zen-welcome-search-title = Pick your default search engine
 zen-welcome-search-sub = You can always change this later.

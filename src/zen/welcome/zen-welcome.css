@@ -665,6 +665,99 @@
   order: 10;
 }
 
+/* Browser switcher step (Part C — Chrome onboarding) */
+#zen-welcome-page-content[browser-choice="true"],
+[browser-choice="true"] {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  width: 100%;
+  max-width: 460px;
+}
+
+.zen-welcome-choice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.zen-welcome-choice-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--zen-welcome-white-14);
+  background: var(--zen-welcome-white-08);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+  -moz-window-dragging: no-drag;
+}
+
+.zen-welcome-choice-card:hover {
+  background: var(--zen-welcome-white-10);
+  border-color: var(--zen-welcome-white-30);
+}
+
+.zen-welcome-choice-card:has(:checked) {
+  border-color: var(--zen-welcome-engine-selected-border);
+  background: color-mix(
+    in srgb,
+    var(--zen-welcome-engine-selected-border) 12%,
+    transparent
+  );
+  box-shadow: 0 0 0 1px
+    color-mix(in srgb, var(--zen-welcome-engine-selected-border) 35%, transparent);
+}
+
+.zen-welcome-choice-card input[type='radio'] {
+  margin-top: 3px;
+  accent-color: var(--zen-welcome-engine-selected-border);
+  flex-shrink: 0;
+}
+
+.zen-welcome-choice-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: start;
+}
+
+.zen-welcome-choice-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--zen-welcome-heading);
+  line-height: 1.35;
+}
+
+.zen-welcome-choice-sub {
+  font-size: 12px;
+  color: var(--zen-welcome-white-70);
+  line-height: 1.4;
+}
+
+.zen-welcome-browser-import-row {
+  display: flex;
+  justify-content: center;
+  padding-top: 4px;
+}
+
+.zen-welcome-browser-import-btn {
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+}
+
+[browser-choice="true"] .zen-welcome-btn-row {
+  width: 100%;
+  margin-top: 4px;
+}
+
 [select-engine="true"] label.zen-welcome-engine-card {
   background: var(--zen-welcome-white-08);
   border: 1.5px solid var(--zen-welcome-white-14);

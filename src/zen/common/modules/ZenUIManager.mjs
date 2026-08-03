@@ -316,10 +316,11 @@ window.gZenUIManager = {
    * because OverflowableToolbar only re-checks on window resize. Dispatch a
    * synthetic resize so every overflowable toolbar re-measures with real
    * widths. Compact Mode is pinned (overflows="false") so it always stays in
-   * the sidebar strip; App Hub / Suraksha remain overflow-eligible so the
-   * narrow Only Sidebar strip does not shove native Back/Forward under the
-   * chevron (see e6e0988). If Compact Mode was already parked from an older
-   * profile, pull it back onto the strip.
+   * the sidebar strip. In Only Sidebar, App Hub / Suraksha are shortcut-only
+   * (no dedicated strip button) so Back/Forward/Reload keep a dedicated
+   * non-overlapping spot; other layouts keep their visible App Hub/Suraksha
+   * buttons. If Compact Mode was already parked from an older profile, pull
+   * it back onto the strip.
    */
   async settleToolbarOverflow() {
     document.getElementById("navigator-toolbox")?.getBoundingClientRect();
@@ -353,6 +354,10 @@ window.gZenUIManager = {
         }
       }
     }
+
+    gZenVerticalTabsManager._applyOnlySidebarIconAllocation(
+      !!gZenVerticalTabsManager._hasSetSingleToolbar
+    );
 
     window.dispatchEvent(new Event("resize"));
     await new Promise(resolve => {
@@ -1104,6 +1109,110 @@ window.gZenVerticalTabsManager = {
     return this.__topButtonsSeparatorElement;
   },
 
+  /**
+   * Only Sidebar (zen-single-toolbar) is too narrow for Compact + App Hub +
+   * Suraksha + Back/Forward/Reload + the » chevron. Prefer navigation: hide
+   * App Hub / Suraksha dedicated strip buttons (Ctrl+Shift+U / Ctrl+Shift+I
+   * still open them) and pin Back/Forward/Reload so they cannot park under ».
+   * Sidebar+Top Toolbar and Collapsed keep their visible App Hub/Suraksha.
+   */
+  _restoreWidgetToSidebarStrip(el) {
+    if (!el) {
+      return;
+    }
+    const target = document.getElementById(
+      "zen-sidebar-top-buttons-customization-target"
+    );
+    if (!target) {
+      return;
+    }
+    const parked =
+      el.parentElement?.id === "widget-overflow-list" ||
+      el.getAttribute("overflowedItem") === "true";
+    if (!parked && target.contains(el)) {
+      return;
+    }
+    el.removeAttribute("overflowedItem");
+    el.removeAttribute("cui-anchorid");
+    const separator = this._topButtonsSeparatorElement;
+    try {
+      if (separator && target.contains(separator)) {
+        target.insertBefore(el, separator);
+      } else if (!target.contains(el)) {
+        target.append(el);
+      }
+    } catch (e) {
+      console.warn("[Astra] Failed to restore sidebar widget from overflow:", e);
+    }
+  },
+
+  _applyOnlySidebarIconAllocation(enable) {
+    const hubIds = ["zen-app-launcher-button", "astra-suraksha-button"];
+    const navIds = ["back-button", "forward-button", "stop-reload-button"];
+
+    if (enable) {
+      for (const id of hubIds) {
+        const el = document.getElementById(id);
+        if (!el) {
+          continue;
+        }
+        // Pull out of » first so hiding them actually empties the overflow list.
+        this._restoreWidgetToSidebarStrip(el);
+        el.setAttribute("overflows", "false");
+        el.setAttribute("hidden", "true");
+        el.setAttribute("astra-only-sidebar-shortcut-only", "true");
+      }
+      for (const id of navIds) {
+        const el = document.getElementById(id);
+        if (!el) {
+          continue;
+        }
+        el.setAttribute("overflows", "false");
+        el.setAttribute("astra-only-sidebar-nav-pinned", "true");
+        this._restoreWidgetToSidebarStrip(el);
+        // Ensure nav sits after the separator with the swept toolbar icons.
+        const separator = this._topButtonsSeparatorElement;
+        const target = document.getElementById(
+          "zen-sidebar-top-buttons-customization-target"
+        );
+        if (separator && target?.contains(separator) && target.contains(el)) {
+          // Keep relative order: back → forward → reload after separator.
+          if (id === "back-button") {
+            separator.after(el);
+          } else if (id === "forward-button") {
+            const back = document.getElementById("back-button");
+            (back?.parentElement === target ? back : separator).after(el);
+          } else if (id === "stop-reload-button") {
+            const forward = document.getElementById("forward-button");
+            (forward?.parentElement === target ? forward : separator).after(el);
+          }
+        }
+      }
+    } else {
+      for (const id of hubIds) {
+        const el = document.getElementById(id);
+        if (!el?.hasAttribute("astra-only-sidebar-shortcut-only")) {
+          continue;
+        }
+        el.removeAttribute("hidden");
+        el.removeAttribute("overflows");
+        el.removeAttribute("astra-only-sidebar-shortcut-only");
+      }
+      for (const id of navIds) {
+        const el = document.getElementById(id);
+        if (!el?.hasAttribute("astra-only-sidebar-nav-pinned")) {
+          continue;
+        }
+        el.removeAttribute("astra-only-sidebar-nav-pinned");
+        // stop-reload is overflow-eligible outside Only Sidebar (more room on
+        // the top toolbar). Back/Forward stay Firefox-default non-overflowing.
+        if (id === "stop-reload-button") {
+          el.removeAttribute("overflows");
+        }
+      }
+    }
+  },
+
   animateItemOpen(aItem) {
     if (
       gReduceMotion ||
@@ -1484,8 +1593,10 @@ window.gZenVerticalTabsManager = {
         }
         document.documentElement.setAttribute("zen-single-toolbar", true);
         this._hasSetSingleToolbar = true;
+        this._applyOnlySidebarIconAllocation(true);
       } else if (this._hasSetSingleToolbar) {
         this._hasSetSingleToolbar = false;
+        this._applyOnlySidebarIconAllocation(false);
         // Do the opposite
         this._navbarParent.prepend(navBar);
         const elements = document.querySelectorAll(

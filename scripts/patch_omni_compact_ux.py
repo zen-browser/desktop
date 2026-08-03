@@ -32,6 +32,8 @@ REPLACEMENTS = {
     / "zen/common/sys/ZenCustomizableUI.sys.mjs",
     "chrome/browser/content/browser/zen-styles/zen-single-components.css": SRC
     / "zen/common/styles/zen-single-components.css",
+    "chrome/browser/content/browser/zen-styles/astra-sidebar.css": SRC
+    / "zen/common/styles/astra-sidebar.css",
 }
 
 

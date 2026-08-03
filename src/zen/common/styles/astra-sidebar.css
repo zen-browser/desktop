@@ -34,4 +34,15 @@
  * Reload buttons are the single set in every layout mode. In Only Sidebar
  * (single toolbar) ZenUIManager sweeps them into the sidebar top strip;
  * in Sidebar+Top Toolbar and Collapsed they live on the top toolbar.
- * No Astra-added duplicate controls. */
+ * No Astra-added duplicate controls.
+ *
+ * Only Sidebar space allocation: App Hub / Suraksha are shortcut-only here
+ * (Ctrl+Shift+U / Ctrl+Shift+I). Hide their dedicated strip buttons so
+ * Back/Forward/Reload keep a non-overlapping spot. Other layouts keep the
+ * visible buttons. JS also sets hidden + overflows=false; CSS is the
+ * layout-mode belt-and-suspenders so a late overflow settle cannot flash them.
+ */
+:root[zen-single-toolbar="true"] #zen-app-launcher-button,
+:root[zen-single-toolbar="true"] #astra-suraksha-button {
+  display: none !important;
+}

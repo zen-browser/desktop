@@ -29,12 +29,15 @@
     & .zen-toolbar-background {
       display: flex;
     }
-    transition: height var(--zen-hidden-toolbar-transition);
+    transition:
+      height var(--zen-hidden-toolbar-transition),
+      opacity var(--zen-hidden-toolbar-transition);
 
-    /* Zero visible chrome; astra-compact.css adds an invisible top hit zone. */
+    /* Zero layout chrome; astra-compact.css owns overlay positioning/backdrop. */
     height: 0;
     min-height: 0;
-    overflow: visible;
+    overflow: clip;
+    pointer-events: none;
 
     & #urlbar:not([breakout-extend='true']) {
       /* Sometimes, "opacity: 1" is forced elsewhere */
@@ -47,7 +50,11 @@
 
     & #zen-appcontent-navbar-container {
       opacity: 0;
-      transition: opacity var(--zen-hidden-toolbar-transition);
+      visibility: hidden;
+      pointer-events: none;
+      transition:
+        opacity var(--zen-hidden-toolbar-transition),
+        visibility 0s linear var(--zen-hidden-toolbar-transition-duration);
     }
   }
 
@@ -56,8 +63,15 @@
     [has-popup-menu],
     [zen-compact-mode-active]
   ) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 10;
     height: var(--zen-toolbar-height-with-bookmarks);
-    overflow: inherit;
+    overflow: visible;
+    pointer-events: auto;
 
 %include windows-captions-fix-active.inc.css
 
@@ -68,6 +82,11 @@
 
     & #zen-appcontent-navbar-container {
       opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transition:
+        opacity var(--zen-hidden-toolbar-transition),
+        visibility 0s;
     }
   }
 }

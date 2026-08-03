@@ -13,10 +13,24 @@
    for window dragging. In Astra we reclaim that space and rely on:
    - edge hover reveal (ZenCompactMode screen-edge detection)
    - sidebar hover reveal for caption buttons in Only Sidebar mode
+
+   Part A2 — Auto-hide overlay toolbar (general collision fix)
+   Hidden toolbar buttons must not paint over web content (sticky headers on
+   YouTube, Gmail, etc.). At rest the strip has zero layout/paint footprint;
+   on top-edge hover it reveals as a fixed semi-transparent overlay.
    ========================================================================== */
 
 :root[zen-compact-mode='true']:not([customizing]):not([inDOMFullscreen='true']) {
-  --zen-compact-top-hit-zone: 4px;
+  --zen-compact-top-hit-zone: 8px;
+  --zen-compact-toolbar-overlay-z: 10;
+  --zen-compact-toolbar-overlay-bg: light-dark(
+    rgba(245, 245, 245, 0.92),
+    rgba(24, 24, 24, 0.92)
+  );
+  --zen-compact-toolbar-overlay-border: light-dark(
+    rgba(0, 0, 0, 0.1),
+    rgba(255, 255, 255, 0.1)
+  );
 
   /* Only Sidebar: the drag strip is redundant — nav lives in the sidebar. */
   &[zen-single-toolbar='true'] #zen-appcontent-navbar-wrapper {
@@ -30,38 +44,97 @@
     -moz-window-dragging: no-drag;
   }
 
-  /* Sidebar+Top Toolbar / Collapsed: zero visible strip when toolbar is hidden. */
-  &:not([zen-single-toolbar='true']) #zen-appcontent-navbar-wrapper {
-    min-height: 0;
-    height: 0;
-    overflow: visible;
-
-    /* Invisible top-edge hit target for hover reveal (replaces visible 8px strip). */
-    &::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: var(--zen-compact-top-hit-zone);
-      z-index: 4;
-      pointer-events: auto;
-      -moz-window-dragging: drag;
-    }
-
-    &:is(
-      [zen-has-hover],
-      [has-popup-menu],
-      [zen-compact-mode-active]
-    )::before {
-      display: none;
-    }
-  }
-
-  /* Reclaim any top margin reserved for the hidden toolbar in compact sidebar mode. */
-  &:not([zen-single-toolbar='true']) #navigator-toolbox:not([animate='true']) {
+  /* Sidebar+Top Toolbar / Collapsed: zero footprint + hover overlay. */
+  &:not([zen-single-toolbar='true']) {
     @media -moz-pref('zen.view.compact.hide-toolbar') {
-      margin-top: 0 !important;
+      & #zen-appcontent-navbar-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100% !important;
+        box-sizing: border-box;
+        height: 0 !important;
+        min-height: 0 !important;
+        max-height: 0 !important;
+        margin: 0 !important;
+        overflow: clip !important;
+        pointer-events: none;
+        z-index: var(--zen-compact-toolbar-overlay-z);
+        -moz-window-dragging: no-drag;
+
+        /* Invisible top-edge hit target for hover reveal + window drag. */
+        &::before {
+          content: '';
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: var(--zen-compact-top-hit-zone);
+          z-index: calc(var(--zen-compact-toolbar-overlay-z) + 1);
+          pointer-events: auto;
+          -moz-window-dragging: drag;
+        }
+
+        & #zen-appcontent-navbar-container {
+          opacity: 0 !important;
+          visibility: hidden !important;
+          pointer-events: none !important;
+        }
+
+        & #urlbar:not([breakout-extend='true']) {
+          pointer-events: none !important;
+        }
+
+        & .zen-toolbar-background {
+          display: none !important;
+        }
+
+        /* Revealed: fixed overlay — never pushes page content down. */
+        &:is(
+          [zen-has-hover],
+          [has-popup-menu],
+          [zen-compact-mode-active]
+        ) {
+          height: var(--zen-toolbar-height-with-bookmarks) !important;
+          max-height: none !important;
+          overflow: visible !important;
+          pointer-events: auto;
+
+          &::before {
+            display: none;
+          }
+
+          & #zen-appcontent-navbar-container {
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+          }
+
+          & .zen-toolbar-background {
+            display: flex !important;
+            background: var(--zen-compact-toolbar-overlay-bg) !important;
+            backdrop-filter: blur(20px) saturate(130%);
+            box-shadow: 0 1px 0 var(--zen-compact-toolbar-overlay-border);
+
+            @media -moz-pref('zen.theme.acrylic-elements') {
+              background: light-dark(
+                rgba(245, 245, 245, 0.82),
+                rgba(24, 24, 24, 0.82)
+              ) !important;
+              backdrop-filter: blur(24px) saturate(140%) !important;
+            }
+          }
+        }
+      }
+
+      & #navigator-toolbox:not([animate='true']) {
+        margin-top: 0 !important;
+      }
+
+      & #zen-appcontent-wrapper {
+        margin-top: 0 !important;
+      }
     }
   }
 }

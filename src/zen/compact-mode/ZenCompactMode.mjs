@@ -57,6 +57,7 @@ window.gZenCompactModeManager = {
   _edgeRevealRaf: null,
   _pendingEdgePointer: null,
   _edgeRevealActive: false,
+  _topToolbarEdgeRevealActive: false,
   _cachedSidebarVerticalBounds: null,
   _cachedSidebarHandoffExtent: null,
   /** @type {Set<string>|null} Tokens for Astra-owned panels locking compact reveal. */
@@ -923,6 +924,7 @@ window.gZenCompactModeManager = {
 
   _clearEdgeRevealState() {
     this._edgeRevealActive = false;
+    this._topToolbarEdgeRevealActive = false;
     this._pendingEdgePointer = null;
     if (this._edgeRevealRaf) {
       window.cancelAnimationFrame(this._edgeRevealRaf);
@@ -935,8 +937,8 @@ window.gZenCompactModeManager = {
       return;
     }
     this._edgePointerListener = event => this._onEdgePointerMove(event);
-    // Capture-phase so chrome at the physical edge (#sidebar-main, AI chrome)
-    // is observed regardless of event.target.
+    // Capture-phase so chrome at the physical edge (#sidebar-main, AI chrome,
+    // compact toolbar hit zone) is observed regardless of event.target.
     window.addEventListener("pointermove", this._edgePointerListener, true);
     this._edgePointerBound = true;
   },
@@ -978,7 +980,7 @@ window.gZenCompactModeManager = {
   },
 
   _onEdgePointerMove(event) {
-    if (!this._canProcessEdgeReveal(event)) {
+    if (!this._canProcessEdgeReveal(event) && !this._canProcessTopToolbarEdgeReveal(event)) {
       return;
     }
 
@@ -993,7 +995,100 @@ window.gZenCompactModeManager = {
     this._edgeRevealRaf = window.requestAnimationFrame(() => {
       this._edgeRevealRaf = null;
       this._processEdgeReveal();
+      this._processTopToolbarEdgeReveal();
     });
+  },
+
+  _canProcessTopToolbarEdgeReveal(event) {
+    if (
+      !this.preference ||
+      !this.canHideToolbar ||
+      !this.shouldBeCompact ||
+      this._ignoreNextHover ||
+      document.documentElement.hasAttribute("zen-compact-animating") ||
+      window.closed
+    ) {
+      return false;
+    }
+    if (event) {
+      if (event.isPrimary === false || event.buttons !== 0) {
+        return false;
+      }
+    }
+    return true;
+  },
+
+  _getTopToolbarElement() {
+    return document.getElementById("zen-appcontent-navbar-wrapper");
+  },
+
+  _isPointerOnTopToolbarEdge(clientY) {
+    return clientY <= this.EDGE_REVEAL_THRESHOLD;
+  },
+
+  _isPointerInTopToolbarHandoffZone(clientX, clientY) {
+    const toolbar = this._getTopToolbarElement();
+    if (!toolbar) {
+      return false;
+    }
+    const threshold = this.EDGE_REVEAL_THRESHOLD;
+    if (clientY > (toolbar.hasAttribute("zen-has-hover") ? toolbar.getBoundingClientRect().bottom + threshold : threshold * 5)) {
+      return false;
+    }
+    const rect = toolbar.getBoundingClientRect();
+    return clientX >= rect.left - threshold && clientX <= rect.right + threshold;
+  },
+
+  _processTopToolbarEdgeReveal() {
+    const pending = this._pendingEdgePointer;
+    if (!pending || !this._canProcessTopToolbarEdgeReveal()) {
+      return;
+    }
+
+    const toolbar = this._getTopToolbarElement();
+    if (!toolbar) {
+      return;
+    }
+
+    const { x, y } = pending;
+    const onEdge = this._isPointerOnTopToolbarEdge(y);
+    const toolbarHovered = toolbar.matches(":hover");
+
+    if (onEdge) {
+      if (toolbar.hasAttribute("zen-has-hover")) {
+        this._topToolbarEdgeRevealActive = true;
+        return;
+      }
+
+      window.cancelAnimationFrame(this._removeHoverFrames[toolbar.id]);
+      this.clearFlashTimeout("has-hover" + toolbar.id);
+      this._topToolbarEdgeRevealActive = true;
+      this._setElementExpandAttribute(toolbar, true, "zen-has-hover");
+      return;
+    }
+
+    if (this._topToolbarEdgeRevealActive) {
+      if (toolbarHovered) {
+        this._topToolbarEdgeRevealActive = false;
+        return;
+      }
+      if (this._isPointerInTopToolbarHandoffZone(x, y)) {
+        return;
+      }
+      this._topToolbarEdgeRevealActive = false;
+      if (
+        toolbar.hasAttribute("zen-has-hover") &&
+        !toolbar.hasAttribute("has-popup-menu") &&
+        !toolbar.hasAttribute("zen-compact-mode-active")
+      ) {
+        this.flashElement(
+          toolbar,
+          this.hideAfterHoverDuration,
+          "has-hover" + toolbar.id,
+          "zen-has-hover"
+        );
+      }
+    }
   },
 
   _isPointerOnSidebarEdge(clientX, clientY) {
@@ -1239,6 +1334,10 @@ window.gZenCompactModeManager = {
             this._edgeRevealActive = false;
           }
 
+          if (target === this._getTopToolbarElement()) {
+            this._topToolbarEdgeRevealActive = false;
+          }
+
           if (this.hoverableElements[i].keepHoverDuration) {
             this.flashElement(
               target,
@@ -1369,6 +1468,7 @@ window.gZenCompactModeManager = {
       }
     }
     this._edgeRevealActive = false;
+    this._topToolbarEdgeRevealActive = false;
   },
 
   isSidebarPotentiallyOpen() {

@@ -20,9 +20,7 @@ namespace zen {
 static guint sTimerId = 0;
 
 static gboolean OnTimer(gpointer) {
-  GdkDisplay* display = gdk_display_get_default();
-  GdkSeat* seat = display ? gdk_display_get_default_seat(display) : nullptr;
-  GdkDevice* pointer = seat ? gdk_seat_get_pointer(seat) : nullptr;
+  GdkDevice* pointer = mozilla::widget::GdkGetPointer();
   if (pointer) {
     gint x = 0, y = 0;
     gdk_device_get_position(pointer, nullptr, &x, &y);

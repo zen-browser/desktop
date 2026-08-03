@@ -58,6 +58,13 @@ window.gZenCompactModeManager = {
   _pendingEdgePointer: null,
   _edgeRevealActive: false,
   _topToolbarEdgeRevealActive: false,
+  /**
+   * Shared reveal flag for Sidebar+Top Toolbar + Compact: sidebar and toolbar
+   * are one L-shaped chrome unit (never independently visible).
+   */
+  _compactChromeRevealed: false,
+  COMPACT_CHROME_ATTR: "zen-compact-chrome-revealed",
+  COMPACT_CHROME_FLASH_ID: "compact-chrome",
   _cachedSidebarVerticalBounds: null,
   _cachedSidebarHandoffExtent: null,
   /** @type {Set<string>|null} Tokens for Astra-owned panels locking compact reveal. */
@@ -187,7 +194,11 @@ window.gZenCompactModeManager = {
       Services.prefs.setBoolPref("zen.view.compact.enable-at-startup", value);
     }
     this._invalidateSidebarBoundsCache();
-    if (!value) {
+    if (value) {
+      // Compact Mode always auto-hides the sidebar; keep the CSS gate
+      // (hide-tabbar OR single-toolbar) satisfied for every layout mode.
+      Services.prefs.setBoolPref("zen.view.compact.hide-tabbar", true);
+    } else {
       this._clearEdgeRevealState();
       this._clearAllPanelLocks();
     }
@@ -195,11 +206,9 @@ window.gZenCompactModeManager = {
     this._updateEvent();
   },
 
-  /** Only Sidebar + Compact: expose auto-hide sidebar for CSS/tests. */
+  /** Compact Mode: expose sidebar auto-hide for CSS/tests (all layouts). */
   _syncAutohideSidebarAttribute() {
-    const autohide =
-      this.preference && gZenVerticalTabsManager._hasSetSingleToolbar;
-    if (autohide) {
+    if (this.preference) {
       document.documentElement.setAttribute(
         "zen-compact-autohide-sidebar",
         "true"
@@ -239,7 +248,11 @@ window.gZenCompactModeManager = {
       window.cancelAnimationFrame(this._removeHoverFrames[this.sidebar.id]);
       this._removeHoverFrames[this.sidebar.id] = null;
     }
-    this._edgeRevealActive = true;
+    if (this.usesUnifiedCompactChrome) {
+      this._setCompactChromeRevealed(true);
+    } else {
+      this._edgeRevealActive = true;
+    }
     this.sidebar.setAttribute(this.PANEL_LOCK_ATTR, "true");
     // Preserve a pre-existing hover/popup attribute; only claim hover if needed.
     const hadHover = this.sidebar.hasAttribute("zen-has-hover");
@@ -296,7 +309,25 @@ window.gZenCompactModeManager = {
       return;
     }
     this._setElementExpandAttribute(this.sidebar, false, "zen-has-hover");
-    this._edgeRevealActive = false;
+    if (this.usesUnifiedCompactChrome) {
+      // Keep unified chrome in sync: releasing owned hover must not leave
+      // the toolbar stranded alone.
+      const toolbar = this._getTopToolbarElement();
+      if (
+        toolbar &&
+        toolbar.hasAttribute("zen-has-hover") &&
+        !toolbar.matches(":hover") &&
+        !toolbar.hasAttribute("has-popup-menu") &&
+        !toolbar.hasAttribute("zen-compact-mode-active")
+      ) {
+        this._setCompactChromeRevealed(false, { immediate: true });
+      } else {
+        this._compactChromeRevealed = false;
+        document.documentElement.removeAttribute(this.COMPACT_CHROME_ATTR);
+      }
+    } else {
+      this._edgeRevealActive = false;
+    }
   },
 
   _clearAllPanelLocks() {
@@ -443,7 +474,8 @@ window.gZenCompactModeManager = {
 
   hideToolbar() {
     Services.prefs.setBoolPref("zen.view.compact.hide-toolbar", true);
-    Services.prefs.setBoolPref("zen.view.compact.hide-tabbar", false);
+    // Compact Mode always keeps sidebar auto-hide across layouts.
+    Services.prefs.setBoolPref("zen.view.compact.hide-tabbar", true);
     this.callAllEventListeners();
   },
 
@@ -574,15 +606,10 @@ window.gZenCompactModeManager = {
   },
 
   get canHideSidebar() {
-    const isSingleToolbar = gZenVerticalTabsManager._hasSetSingleToolbar;
-    if (isSingleToolbar) {
-      // Only Sidebar + Compact: auto-hide sidebar with edge hover reveal.
-      // This is the distinct purpose of Compact in Only Sidebar layout.
-      return this.preference;
-    }
-    // Sidebar+Top Toolbar / Collapsed: hide sidebar only when user picks it
-    // in the compact context menu (hide tabs / hide both).
-    return Services.prefs.getBoolPref("zen.view.compact.hide-tabbar");
+    // Compact Mode always auto-hides the sidebar (edge-hover reveal) in every
+    // layout: Only Sidebar, Sidebar+Top Toolbar, and Collapsed. Max screen
+    // space is the point of Compact Mode.
+    return this.preference;
   },
 
   get canHideToolbar() {
@@ -590,6 +617,14 @@ window.gZenCompactModeManager = {
       Services.prefs.getBoolPref("zen.view.compact.hide-toolbar") &&
       !gZenVerticalTabsManager._hasSetSingleToolbar
     );
+  },
+
+  /**
+   * Sidebar+Top Toolbar + Compact with both chrome pieces auto-hiding:
+   * one shared reveal/hide unit (L-zone), never independent.
+   */
+  get usesUnifiedCompactChrome() {
+    return this.preference && this.canHideSidebar && this.canHideToolbar;
   },
 
   _clearIgnoreNextHover() {
@@ -925,6 +960,9 @@ window.gZenCompactModeManager = {
   _clearEdgeRevealState() {
     this._edgeRevealActive = false;
     this._topToolbarEdgeRevealActive = false;
+    this._compactChromeRevealed = false;
+    document.documentElement.removeAttribute(this.COMPACT_CHROME_ATTR);
+    this.clearFlashTimeout(this.COMPACT_CHROME_FLASH_ID);
     this._pendingEdgePointer = null;
     if (this._edgeRevealRaf) {
       window.cancelAnimationFrame(this._edgeRevealRaf);
@@ -980,7 +1018,15 @@ window.gZenCompactModeManager = {
   },
 
   _onEdgePointerMove(event) {
-    if (!this._canProcessEdgeReveal(event) && !this._canProcessTopToolbarEdgeReveal(event)) {
+    const unified = this.usesUnifiedCompactChrome;
+    if (
+      !unified &&
+      !this._canProcessEdgeReveal(event) &&
+      !this._canProcessTopToolbarEdgeReveal(event)
+    ) {
+      return;
+    }
+    if (unified && !this._canProcessEdgeReveal(event) && !this._canProcessTopToolbarEdgeReveal(event)) {
       return;
     }
 
@@ -994,8 +1040,12 @@ window.gZenCompactModeManager = {
     }
     this._edgeRevealRaf = window.requestAnimationFrame(() => {
       this._edgeRevealRaf = null;
-      this._processEdgeReveal();
-      this._processTopToolbarEdgeReveal();
+      if (this.usesUnifiedCompactChrome) {
+        this._processUnifiedChromeReveal();
+      } else {
+        this._processEdgeReveal();
+        this._processTopToolbarEdgeReveal();
+      }
     });
   },
 
@@ -1022,6 +1072,93 @@ window.gZenCompactModeManager = {
     return document.getElementById("zen-appcontent-navbar-wrapper");
   },
 
+  /**
+   * Apply or clear the single shared compact-chrome visibility state.
+   * Sidebar and top toolbar always move together in unified mode.
+   */
+  _setCompactChromeRevealed(revealed, { immediate = false } = {}) {
+    const toolbar = this._getTopToolbarElement();
+    this.clearFlashTimeout(this.COMPACT_CHROME_FLASH_ID);
+    this.clearFlashTimeout("has-hover" + this.sidebar.id);
+    if (toolbar) {
+      this.clearFlashTimeout("has-hover" + toolbar.id);
+      window.cancelAnimationFrame(this._removeHoverFrames[toolbar.id]);
+    }
+    window.cancelAnimationFrame(this._removeHoverFrames[this.sidebar.id]);
+
+    if (revealed) {
+      this._compactChromeRevealed = true;
+      this._edgeRevealActive = true;
+      this._topToolbarEdgeRevealActive = true;
+      document.documentElement.setAttribute(this.COMPACT_CHROME_ATTR, "true");
+      this._setElementExpandAttribute(this.sidebar, true, "zen-has-hover");
+      if (toolbar) {
+        this._setElementExpandAttribute(toolbar, true, "zen-has-hover");
+      }
+      return;
+    }
+
+    const sidebarMustStay =
+      !!this.sidebar &&
+      (this.sidebar.hasAttribute("zen-user-show") ||
+        this.sidebar.hasAttribute("zen-has-empty-tab") ||
+        this.sidebar.hasAttribute("has-popup-menu") ||
+        this.sidebar.hasAttribute(this.PANEL_LOCK_ATTR) ||
+        this.isPanelLocked());
+    const toolbarMustStay =
+      !!toolbar &&
+      (toolbar.hasAttribute("has-popup-menu") ||
+        toolbar.hasAttribute("zen-compact-mode-active"));
+
+    // Never leave a partial state: if either piece must stay, keep BOTH.
+    if (sidebarMustStay || toolbarMustStay) {
+      this._setCompactChromeRevealed(true);
+      return;
+    }
+
+    const hideBoth = () => {
+      this._compactChromeRevealed = false;
+      this._edgeRevealActive = false;
+      this._topToolbarEdgeRevealActive = false;
+      document.documentElement.removeAttribute(this.COMPACT_CHROME_ATTR);
+      if (this.sidebar) {
+        this._setElementExpandAttribute(this.sidebar, false, "zen-has-hover");
+      }
+      if (toolbar) {
+        this._setElementExpandAttribute(toolbar, false, "zen-has-hover");
+      }
+    };
+
+    if (immediate) {
+      hideBoth();
+      return;
+    }
+
+    // Shared hide-delay: one timer, both pieces disappear together.
+    this._compactChromeRevealed = true;
+    document.documentElement.setAttribute(this.COMPACT_CHROME_ATTR, "true");
+    this._flashTimeouts[this.COMPACT_CHROME_FLASH_ID] = setTimeout(() => {
+      window.requestAnimationFrame(() => {
+        // Re-check locks at fire time so we still never desync.
+        if (
+          this.sidebar?.hasAttribute("zen-user-show") ||
+          this.sidebar?.hasAttribute("zen-has-empty-tab") ||
+          this.sidebar?.hasAttribute("has-popup-menu") ||
+          this.sidebar?.hasAttribute(this.PANEL_LOCK_ATTR) ||
+          this.isPanelLocked() ||
+          toolbar?.hasAttribute("has-popup-menu") ||
+          toolbar?.hasAttribute("zen-compact-mode-active")
+        ) {
+          this._setCompactChromeRevealed(true);
+          this._flashTimeouts[this.COMPACT_CHROME_FLASH_ID] = null;
+          return;
+        }
+        hideBoth();
+        this._flashTimeouts[this.COMPACT_CHROME_FLASH_ID] = null;
+      });
+    }, this.hideAfterHoverDuration);
+  },
+
   _isPointerOnTopToolbarEdge(clientY) {
     return clientY <= this.EDGE_REVEAL_THRESHOLD;
   },
@@ -1032,14 +1169,96 @@ window.gZenCompactModeManager = {
       return false;
     }
     const threshold = this.EDGE_REVEAL_THRESHOLD;
-    if (clientY > (toolbar.hasAttribute("zen-has-hover") ? toolbar.getBoundingClientRect().bottom + threshold : threshold * 5)) {
+    if (
+      clientY >
+      (toolbar.hasAttribute("zen-has-hover")
+        ? toolbar.getBoundingClientRect().bottom + threshold
+        : threshold * 5)
+    ) {
       return false;
     }
     const rect = toolbar.getBoundingClientRect();
-    return clientX >= rect.left - threshold && clientX <= rect.right + threshold;
+    return (
+      clientX >= rect.left - threshold && clientX <= rect.right + threshold
+    );
+  },
+
+  /**
+   * L-shaped hover zone: top edge OR sidebar side edge (or handoff of either
+   * while already revealed). Entering ANY arm reveals BOTH chrome pieces.
+   */
+  _isPointerInUnifiedChromeZone(clientX, clientY) {
+    if (this._isPointerOnTopToolbarEdge(clientY)) {
+      return true;
+    }
+    if (this._isPointerOnSidebarEdge(clientX, clientY)) {
+      return true;
+    }
+    if (!this._compactChromeRevealed) {
+      return false;
+    }
+    // Keep revealed while traversing the L handoff (toolbar strip or sidebar).
+    if (this._isPointerInTopToolbarHandoffZone(clientX, clientY)) {
+      return true;
+    }
+    if (this._isPointerInSidebarHandoffZone(clientX, clientY)) {
+      return true;
+    }
+    if (this.sidebar?.matches(":hover")) {
+      return true;
+    }
+    const toolbar = this._getTopToolbarElement();
+    if (toolbar?.matches(":hover")) {
+      return true;
+    }
+    return false;
+  },
+
+  _processUnifiedChromeReveal() {
+    const pending = this._pendingEdgePointer;
+    if (
+      !pending ||
+      (!this._canProcessEdgeReveal() && !this._canProcessTopToolbarEdgeReveal())
+    ) {
+      return;
+    }
+
+    const { x, y } = pending;
+    const inZone = this._isPointerInUnifiedChromeZone(x, y);
+
+    if (inZone) {
+      if (
+        this._compactChromeRevealed &&
+        this.sidebar.hasAttribute("zen-has-hover") &&
+        this._getTopToolbarElement()?.hasAttribute("zen-has-hover")
+      ) {
+        // Still in zone — cancel any pending shared hide.
+        this.clearFlashTimeout(this.COMPACT_CHROME_FLASH_ID);
+        this._compactChromeRevealed = true;
+        document.documentElement.setAttribute(this.COMPACT_CHROME_ATTR, "true");
+        return;
+      }
+      this._setCompactChromeRevealed(true);
+      return;
+    }
+
+    if (!this._compactChromeRevealed && !this._edgeRevealActive) {
+      return;
+    }
+    if (this.isPanelLocked()) {
+      return;
+    }
+
+    // Left the L-zone: schedule shared hide for both pieces together.
+    this._setCompactChromeRevealed(false);
   },
 
   _processTopToolbarEdgeReveal() {
+    // Independent toolbar path — Only used when unified chrome is OFF
+    // (e.g. hide-toolbar without sidebar hide, which Compact no longer does).
+    if (this.usesUnifiedCompactChrome) {
+      return;
+    }
     const pending = this._pendingEdgePointer;
     if (!pending || !this._canProcessTopToolbarEdgeReveal()) {
       return;
@@ -1123,6 +1342,10 @@ window.gZenCompactModeManager = {
   },
 
   _processEdgeReveal() {
+    // Sidebar-only path (Only Sidebar + Compact, or hide-toolbar off).
+    if (this.usesUnifiedCompactChrome) {
+      return;
+    }
     const pending = this._pendingEdgePointer;
     if (!pending || !this._canProcessEdgeReveal()) {
       return;
@@ -1271,8 +1494,24 @@ window.gZenCompactModeManager = {
                 target === this.sidebar &&
                 target.hasAttribute("zen-has-hover")
               ) {
-                this._edgeRevealActive = false;
+                if (this.usesUnifiedCompactChrome) {
+                  this._compactChromeRevealed = true;
+                  document.documentElement.setAttribute(
+                    this.COMPACT_CHROME_ATTR,
+                    "true"
+                  );
+                } else {
+                  this._edgeRevealActive = false;
+                }
               }
+              return;
+            }
+            if (
+              this.usesUnifiedCompactChrome &&
+              (target === this.sidebar ||
+                target === this._getTopToolbarElement())
+            ) {
+              this._setCompactChromeRevealed(true);
               return;
             }
             this._setElementExpandAttribute(target, true);
@@ -1327,6 +1566,23 @@ window.gZenCompactModeManager = {
           }
 
           if (target === this.sidebar && this.isPanelLocked()) {
+            return;
+          }
+
+          if (
+            this.usesUnifiedCompactChrome &&
+            (target === this.sidebar ||
+              target === this._getTopToolbarElement())
+          ) {
+            // Only hide when the pointer has left the entire L-chrome unit.
+            const other =
+              target === this.sidebar
+                ? this._getTopToolbarElement()
+                : this.sidebar;
+            if (other?.matches(":hover")) {
+              return;
+            }
+            this._setCompactChromeRevealed(false);
             return;
           }
 
@@ -1453,7 +1709,11 @@ window.gZenCompactModeManager = {
     // Clear hover attributes from all hoverable elements, but never while an
     // Astra panel lock is holding the Zen sidebar open.
     if (this.isPanelLocked()) {
-      this._edgeRevealActive = true;
+      if (this.usesUnifiedCompactChrome) {
+        this._setCompactChromeRevealed(true);
+      } else {
+        this._edgeRevealActive = true;
+      }
       return;
     }
     for (let entry of this.hoverableElements) {
@@ -1469,6 +1729,9 @@ window.gZenCompactModeManager = {
     }
     this._edgeRevealActive = false;
     this._topToolbarEdgeRevealActive = false;
+    this._compactChromeRevealed = false;
+    document.documentElement.removeAttribute(this.COMPACT_CHROME_ATTR);
+    this.clearFlashTimeout(this.COMPACT_CHROME_FLASH_ID);
   },
 
   isSidebarPotentiallyOpen() {

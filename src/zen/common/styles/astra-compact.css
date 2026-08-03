@@ -23,13 +23,20 @@
 :root[zen-compact-mode='true']:not([customizing]):not([inDOMFullscreen='true']) {
   --zen-compact-top-hit-zone: 8px;
   --zen-compact-toolbar-overlay-z: 10;
+  /* Follow browser Light/Dark (color-scheme / zen.view.window.scheme), not the
+   * site. Near-opaque tint so icons stay readable over white or dark pages;
+   * shadow+border keep the strip separable from light OR dark page backgrounds. */
   --zen-compact-toolbar-overlay-bg: light-dark(
-    rgba(245, 245, 245, 0.92),
-    rgba(24, 24, 24, 0.92)
+    rgba(226, 228, 233, 0.98),
+    rgba(36, 36, 40, 0.98)
   );
   --zen-compact-toolbar-overlay-border: light-dark(
-    rgba(0, 0, 0, 0.1),
-    rgba(255, 255, 255, 0.1)
+    rgba(0, 0, 0, 0.22),
+    rgba(255, 255, 255, 0.2)
+  );
+  --zen-compact-toolbar-overlay-drop: light-dark(
+    0 4px 16px rgba(0, 0, 0, 0.18),
+    0 4px 18px rgba(0, 0, 0, 0.65)
   );
 
   /* Only Sidebar: the drag strip is redundant — nav lives in the sidebar. */
@@ -62,6 +69,10 @@
         pointer-events: none;
         z-index: var(--zen-compact-toolbar-overlay-z);
         -moz-window-dragging: no-drag;
+        background: transparent !important;
+        box-shadow: none !important;
+        border-bottom: none !important;
+        backdrop-filter: none !important;
 
         /* Invisible top-edge hit target for hover reveal + window drag. */
         &::before {
@@ -86,6 +97,8 @@
           pointer-events: none !important;
         }
 
+        /* .zen-toolbar-background lives under #titlebar (sidebar), not here —
+         * do not rely on it for the top-toolbar overlay backdrop. */
         & .zen-toolbar-background {
           display: none !important;
         }
@@ -97,9 +110,16 @@
           [zen-compact-mode-active]
         ) {
           height: var(--zen-toolbar-height-with-bookmarks) !important;
+          min-height: var(--zen-toolbar-height, 38px) !important;
           max-height: none !important;
           overflow: visible !important;
           pointer-events: auto;
+          /* Opaque theme-tinted floor so icons stay readable on light OR dark
+           * page content. Overrides Transparent Mode glass tint on this strip. */
+          background: var(--zen-compact-toolbar-overlay-bg) !important;
+          backdrop-filter: blur(18px) saturate(120%) !important;
+          border-bottom: 1px solid var(--zen-compact-toolbar-overlay-border) !important;
+          box-shadow: var(--zen-compact-toolbar-overlay-drop) !important;
 
           &::before {
             display: none;
@@ -109,21 +129,21 @@
             opacity: 1 !important;
             visibility: visible !important;
             pointer-events: auto !important;
+            background: transparent !important;
           }
 
-          & .zen-toolbar-background {
-            display: flex !important;
-            background: var(--zen-compact-toolbar-overlay-bg) !important;
-            backdrop-filter: blur(20px) saturate(130%);
-            box-shadow: 0 1px 0 var(--zen-compact-toolbar-overlay-border);
+          & #nav-bar,
+          & #PersonalToolbar {
+            background: transparent !important;
+          }
 
-            @media -moz-pref('zen.theme.acrylic-elements') {
-              background: light-dark(
-                rgba(245, 245, 245, 0.82),
-                rgba(24, 24, 24, 0.82)
-              ) !important;
-              backdrop-filter: blur(24px) saturate(140%) !important;
-            }
+          @media -moz-pref('zen.theme.acrylic-elements') {
+            /* Still near-opaque: blur alone is not enough on white pages. */
+            background: light-dark(
+              rgba(226, 228, 233, 0.96),
+              rgba(36, 36, 40, 0.96)
+            ) !important;
+            backdrop-filter: blur(22px) saturate(130%) !important;
           }
         }
       }
@@ -139,7 +159,7 @@
   }
 }
 
-/* Part B — Only Sidebar + Compact: mark distinct auto-hide sidebar mode. */
+/* Part B — Compact Mode: sidebar auto-hides in all layout modes. */
 :root[zen-compact-autohide-sidebar='true'] {
   /* Full-bleed content when sidebar is tucked away. */
   & #zen-appcontent-wrapper {

@@ -33,9 +33,5 @@ if CONFIG["MOZ_WIDGET_TOOLKIT"] == "cocoa":
 if CONFIG["MOZ_WIDGET_TOOLKIT"] == "windows":
     SOURCES += ["ZenMouseTrackerWin.cpp"]
 
-if CONFIG["MOZ_WIDGET_TOOLKIT"] == "gtk":
-    SOURCES += ["ZenMouseTrackerGtk.cpp"]
-    CXXFLAGS += CONFIG["MOZ_GTK3_CFLAGS"]
-
 FINAL_LIBRARY = "xul"
 XPIDL_MODULE = "zen_compact_mode"

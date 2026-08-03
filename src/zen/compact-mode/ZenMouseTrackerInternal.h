@@ -7,7 +7,10 @@
 
 #include "nscore.h"
 
-#if defined(XP_MACOSX) || defined(XP_WIN) || defined(MOZ_WIDGET_GTK)
+// On Linux there's no reliable way to observe the global pointer (Wayland
+// doesn't expose it at all), so we don't track there and callers fall back
+// to their timeout based behavior
+#if defined(XP_MACOSX) || defined(XP_WIN)
 #  define NS_ZEN_CAN_TRACK_POINTER 1
 #endif
 
@@ -25,7 +28,7 @@ class ZenNativeMouseMonitor final {
    * @brief Start delivering pointer moves. Safe to call while already
    *   started.
    * @throws NS_ERROR_NOT_AVAILABLE when the platform cannot observe the
-   *   global pointer (e.g. on Wayland).
+   *   global pointer (e.g. on Linux).
    */
   static nsresult Start();
   /**

@@ -1,29 +1,112 @@
 diff --git a/browser/components/extensions/parent/ext-browser.js b/browser/components/extensions/parent/ext-browser.js
-index 91adc6bc3649af47745818e6f9d00cbbdffc35a5..e221b077dbfbe20c8696732f003bd5809d761a02 100644
+index 91adc6bc3649af47745818e6f9d00cbbdffc35a5..cd83459693067211f030b6354b839a555df2e822 100644
 --- a/browser/components/extensions/parent/ext-browser.js
 +++ b/browser/components/extensions/parent/ext-browser.js
-@@ -362,6 +362,7 @@ class TabTracker extends TabTrackerBase {
+@@ -27,6 +27,59 @@ function isPrivateTab(nativeTab) {
+   return PrivateBrowsingUtils.isBrowserPrivate(nativeTab.linkedBrowser);
+ }
+ 
++// Zen hides placeholder "empty tabs" (the workspace New Tab button and one
++// per folder) from extensions, so extension-facing indices are "logical"
++// indices that exclude them, translated to physical gBrowser.tabs positions
++// at the boundaries below.
++function zenIsEmptyTab(nativeTab) {
++  return (
++    nativeTab && nativeTab.hasAttribute && nativeTab.hasAttribute("zen-empty-tab")
++  );
++}
++
++// Extension-visible index of nativeTab: count of non-empty tabs before it.
++function zenLogicalTabIndex(nativeTab) {
++  let gBrowser = nativeTab.documentGlobal.gBrowser;
++  let logical = 0;
++  let pos = nativeTab._tPos;
++  for (let i = 0; i < pos; i++) {
++    if (!zenIsEmptyTab(gBrowser.tabs[i])) {
++      logical++;
++    }
++  }
++  return logical;
++}
++
++// The nativeTab at the given logical index in gBrowser, or undefined.
++function zenGetNativeTabAtLogicalIndex(gBrowser, logicalIndex) {
++  let seen = 0;
++  for (let tab of gBrowser.tabs) {
++    if (zenIsEmptyTab(tab)) {
++      continue;
++    }
++    if (seen === logicalIndex) {
++      return tab;
++    }
++    seen++;
++  }
++  return undefined;
++}
++
++// Map a logical index from an extension to a physical tab index for
++// gBrowser.addTab / moveTabTo. -1 and out-of-range values map to the end.
++function zenLogicalIndexToTabIndex(gBrowser, logicalIndex) {
++  if (logicalIndex === -1) {
++    return gBrowser.tabs.length;
++  }
++  let tab = zenGetNativeTabAtLogicalIndex(gBrowser, logicalIndex);
++  return tab ? tab._tPos : gBrowser.tabs.length;
++}
++
+ /* eslint-disable mozilla/balanced-listeners */
+ extensions.on("uninstalling", (msg, extension) => {
+   if (extension.uninstallURL) {
+@@ -362,6 +415,9 @@ class TabTracker extends TabTrackerBase {
    }
  
    getId(nativeTab) {
-+    if (nativeTab.hasAttribute("zen-empty-tab")) return -1;
++    if (zenIsEmptyTab(nativeTab)) {
++      return -1;
++    }
      let id = this._tabs.get(nativeTab);
      if (id) {
        return id;
-@@ -395,6 +396,7 @@ class TabTracker extends TabTrackerBase {
+@@ -395,6 +451,9 @@ class TabTracker extends TabTrackerBase {
      if (nativeTab.documentGlobal.closed) {
        throw new Error("Cannot attach ID to a tab in a closed window.");
      }
-+    if (nativeTab.hasAttribute("zen-empty-tab")) return;
++    if (zenIsEmptyTab(nativeTab)) {
++      return;
++    }
  
      this._tabs.set(nativeTab, id);
      this._tabIds.set(id, nativeTab);
-@@ -1262,6 +1264,10 @@ class TabManager extends TabManagerBase {
+@@ -846,7 +905,13 @@ class Tab extends TabBase {
+   }
+ 
+   get index() {
+-    return this.nativeTab._tPos;
++    // Report the logical index (excluding empty tabs) so query() results
++    // have contiguous indices 0..N-1.
++    if (zenIsEmptyTab(this.nativeTab)) {
++      return -1;
++    }
++    return zenLogicalTabIndex(this.nativeTab);
+   }
+ 
+   get mutedInfo() {
+@@ -1197,7 +1262,9 @@ class Window extends WindowBase {
+   }
+ 
+   getTabAtIndex(index) {
+-    let nativeTab = this.window.gBrowser.tabs[index];
++    // Translate the logical index to the physical tab, skipping empty tabs.
++    let nativeTab = zenGetNativeTabAtLogicalIndex(this.window.gBrowser, index);
+     if (nativeTab) {
+       return this.extension.tabManager.getWrapper(nativeTab);
+     }
+@@ -1262,6 +1329,10 @@ class TabManager extends TabManagerBase {
    }
  
    canAccessTab(nativeTab) {
-+    if (nativeTab.hasAttribute("zen-empty-tab")) {
-+      return false
++    if (zenIsEmptyTab(nativeTab)) {
++      return false;
 +    }
 +
      // Check private browsing access at browser window level.

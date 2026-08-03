@@ -10,7 +10,7 @@ XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
   "dragRegionHeightPercentage",
   "zen.view.drag-window-from-content.height-percentage",
-  30
+  10
 );
 
 XPCOMUtils.defineLazyServiceGetter(

@@ -188,6 +188,7 @@ zen-urlbar-behavior-floating-on-type =
     .label = Floating only when typing
 zen-urlbar-behavior-float =
     .label = Always floating
+zen-urlbar-show-favicon-when-sidebar-collapsed = Show the active tab favicon when the sidebar is collapsed
 
 pane-zen-CKS-title = Keyboard Shortcuts
 category-zen-CKS =

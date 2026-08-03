@@ -1190,6 +1190,11 @@ Preferences.addAll([
     default: "float",
   },
   {
+    id: "zen.urlbar.show-favicon-when-sidebar-collapsed",
+    type: "bool",
+    default: false,
+  },
+  {
     id: "zen.workspaces.separate-essentials",
     type: "bool",
     default: false,

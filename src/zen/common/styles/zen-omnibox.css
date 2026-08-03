@@ -129,6 +129,30 @@
   font-weight: 500;
 }
 
+#zen-urlbar-tab-favicon {
+  display: none;
+  height: 16px;
+  pointer-events: none;
+  width: 16px;
+}
+
+@media -moz-pref("zen.urlbar.show-favicon-when-sidebar-collapsed") {
+  :root[zen-single-toolbar="true"]:not([zen-sidebar-expanded="true"])
+    #urlbar[zen-has-tab-favicon]:not([focused]):not([breakout-extend]) {
+    & .urlbar-input-container {
+      justify-content: center;
+    }
+
+    & :is(.urlbar-input-box, #identity-box, #page-action-buttons) {
+      opacity: 0;
+    }
+
+    & #zen-urlbar-tab-favicon {
+      display: block;
+    }
+  }
+}
+
 :root[zen-single-toolbar="true"] #urlbar:not([breakout-extend]) {
   & #urlbar-input {
     cursor: default;

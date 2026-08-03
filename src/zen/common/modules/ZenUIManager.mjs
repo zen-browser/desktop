@@ -73,6 +73,7 @@ window.gZenUIManager = {
     this._debloatContextMenus();
     this._addNewCustomizableButtonsIfNeeded();
     this._initOmnibox();
+    this._initCollapsedUrlbarFavicon();
     this._initBookmarkCollapseListener();
 
     gURLBar._setPlaceholder(null);
@@ -197,6 +198,47 @@ window.gZenUIManager = {
     registerZenUrlbarProviders();
     window.gZenSiteDataPanel = new ZenSiteDataPanel(window);
     gURLBar._zenTrimURL = this.urlbarTrim.bind(this);
+  },
+
+  _initCollapsedUrlbarFavicon() {
+    const inputContainer = gURLBar.querySelector(".urlbar-input-container");
+    if (!inputContainer) {
+      return;
+    }
+
+    const favicon = document.createElement("img");
+    favicon.id = "zen-urlbar-tab-favicon";
+    favicon.alt = "";
+    favicon.setAttribute("aria-hidden", "true");
+    inputContainer.prepend(favicon);
+    this._collapsedUrlbarFavicon = favicon;
+
+    this.updateCollapsedUrlbarFavicon();
+    window.addEventListener("TabSelect", () => {
+      this.updateCollapsedUrlbarFavicon();
+    });
+    gBrowser.tabContainer.addEventListener("TabAttrModified", event => {
+      if (event.target === gBrowser.selectedTab) {
+        this.updateCollapsedUrlbarFavicon();
+      }
+    });
+  },
+
+  updateCollapsedUrlbarFavicon() {
+    const favicon = this._collapsedUrlbarFavicon;
+    if (!favicon) {
+      return;
+    }
+
+    const tabIcon = gBrowser.selectedTab?.querySelector(".tab-icon-image");
+    const faviconURL = tabIcon?.getAttribute("src");
+
+    gURLBar.toggleAttribute("zen-has-tab-favicon", Boolean(faviconURL));
+    if (faviconURL) {
+      favicon.setAttribute("src", faviconURL);
+    } else {
+      favicon.removeAttribute("src");
+    }
   },
 
   _debloatContextMenus() {

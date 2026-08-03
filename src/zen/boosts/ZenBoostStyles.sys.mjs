@@ -86,7 +86,7 @@ export class nsZenBoostStyles {
         "gf-load-icon-font",
         "mat-icon",
         ".google-material-icons",
-        "span[data-cds='Icon']",
+        "span",
       ];
       style += `/* Text Format */\n`;
       style += `body *:not(${ignoredElements.join(",")}) {\n`;

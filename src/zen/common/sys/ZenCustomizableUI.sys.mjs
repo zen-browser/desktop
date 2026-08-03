@@ -79,7 +79,7 @@ export const ZenCustomizableUI = new (class {
         addon-webext-overflowtarget="overflowed-extensions-list"
         mode="icons">
         <hbox id="zen-sidebar-top-buttons-customization-target" class="customization-target" flex="1">
-          <toolbaritem id="zen-toggle-compact-mode" removable="true" data-l10n-id="zen-toggle-compact-mode-button">
+          <toolbaritem id="zen-toggle-compact-mode" removable="true" overflows="false" data-l10n-id="zen-toggle-compact-mode-button">
             <toolbarbutton
               class="toolbarbutton-1"
               command="cmd_toggleCompactModeIgnoreHover"

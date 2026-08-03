@@ -314,15 +314,46 @@ window.gZenUIManager = {
    *
    * Widgets parked in #widget-overflow-list against zero width stay parked
    * because OverflowableToolbar only re-checks on window resize. Dispatch a
-   * synthetic resize (same mechanism updateToolbarLayout uses) so every
-   * overflowable toolbar re-measures with real widths: items that fit move
-   * back to the strip, items that don't stay reachable in the chevron panel.
-   * Widgets are intentionally NOT pinned (overflows="false") here — pinning
-   * more than stock (PanelUI) makes the narrow Only Sidebar strip overflow
-   * onto the native Back/Forward buttons instead of parking gracefully.
+   * synthetic resize so every overflowable toolbar re-measures with real
+   * widths. Compact Mode is pinned (overflows="false") so it always stays in
+   * the sidebar strip; App Hub / Suraksha remain overflow-eligible so the
+   * narrow Only Sidebar strip does not shove native Back/Forward under the
+   * chevron (see e6e0988). If Compact Mode was already parked from an older
+   * profile, pull it back onto the strip.
    */
   async settleToolbarOverflow() {
     document.getElementById("navigator-toolbox")?.getBoundingClientRect();
+
+    const compact = document.getElementById("zen-toggle-compact-mode");
+    if (compact) {
+      compact.setAttribute("overflows", "false");
+      const target = document.getElementById(
+        "zen-sidebar-top-buttons-customization-target"
+      );
+      const parked =
+        compact.parentElement?.id === "widget-overflow-list" ||
+        compact.getAttribute("overflowedItem") === "true";
+      if (parked && target) {
+        compact.removeAttribute("overflowedItem");
+        compact.removeAttribute("cui-anchorid");
+        const separator = document.getElementById(
+          "zen-sidebar-top-buttons-separator"
+        );
+        try {
+          if (separator && target.contains(separator)) {
+            target.insertBefore(compact, separator);
+          } else {
+            target.prepend(compact);
+          }
+        } catch (e) {
+          console.warn(
+            "[Astra] Failed to restore Compact Mode from overflow:",
+            e
+          );
+        }
+      }
+    }
+
     window.dispatchEvent(new Event("resize"));
     await new Promise(resolve => {
       requestAnimationFrame(() => {
@@ -1434,6 +1465,10 @@ window.gZenVerticalTabsManager = {
         const panelUIButton = document.getElementById("PanelUI-button");
         buttonsTarget.prepend(panelUIButton);
         panelUIButton.setAttribute("overflows", "false");
+        // Compact Mode must stay visible in Only Sidebar — never park in » .
+        document
+          .getElementById("zen-toggle-compact-mode")
+          ?.setAttribute("overflows", "false");
         buttonsTarget.parentElement.append(
           document.getElementById("nav-bar-overflow-button")
         );

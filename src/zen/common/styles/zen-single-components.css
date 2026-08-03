@@ -240,6 +240,36 @@
   }
 }
 
+/*
+ * Settings / hamburger: Firefox stocks padding-inline-end:
+ * var(--toolbar-start-end-padding) so the button box is wider than the icon
+ * hover (37px vs 28px). That reads as an oversized highlight next to the
+ * snug 8px treatment on Reload / Compact. Match other chrome buttons.
+ */
+#PanelUI-menu-button {
+  padding-inline-end: var(--toolbarbutton-outer-padding, 1px) !important;
+}
+
+#PanelUI-button {
+  --tab-border-radius: 8px;
+  --toolbarbutton-border-radius: 8px;
+  --toolbarbutton-inner-padding: 6px;
+}
+
+/*
+ * Astra wrapper around extension toolbar actions (e.g. uBlock's
+ * toolbaritem). Constrain the wrapper box and cascade the 8px hover
+ * radius via CSS variables — do NOT target .webextension-browser-action
+ * internals (uBlock's own rendering stays untouched).
+ */
+toolbaritem.unified-extensions-item,
+toolbaritem[id$="-browser-action"] {
+  align-self: center;
+  --tab-border-radius: 8px;
+  --toolbarbutton-border-radius: 8px;
+  --toolbarbutton-inner-padding: 6px;
+}
+
 .zen-interactive-button {
   background: color-mix(in srgb, currentColor 6%, transparent) !important;
   transition:

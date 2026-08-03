@@ -26,6 +26,12 @@ REPLACEMENTS = {
     "chrome/browser/content/browser/zen-styles/zen-welcome.css": SRC
     / "zen/welcome/zen-welcome.css",
     "localization/en-US/browser/zen-welcome.ftl": LOCALE,
+    "chrome/browser/content/browser/zen-components/ZenUIManager.mjs": SRC
+    / "zen/common/modules/ZenUIManager.mjs",
+    "modules/ZenCustomizableUI.sys.mjs": SRC
+    / "zen/common/sys/ZenCustomizableUI.sys.mjs",
+    "chrome/browser/content/browser/zen-styles/zen-single-components.css": SRC
+    / "zen/common/styles/zen-single-components.css",
 }
 
 

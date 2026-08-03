@@ -383,8 +383,13 @@ index c42b1a1a8df6b38886c17f71ea88e5aaa7eebc80..c741404ed973ee3ac246fe246c0f645e
        // Additionally send pinned tab events
        if (pinned) {
          this.#notifyPinnedStatus(t);
-@@ -3553,6 +3686,15 @@
-       if (!inBackground) {
+@@ -3553,6 +3686,19 @@
+-      if (!inBackground) {
++      const shouldDeferRoutedTabSelection =
++        beforeRouteResult.isRouteFound &&
++        beforeRouteResult.targetRoute !== gZenWorkspaces.activeWorkspace &&
++        window === Services.wm.getMostRecentWindow("navigator:browser");
++      if (!inBackground && !shouldDeferRoutedTabSelection) {
          this.selectedTab = t;
        }
 +
@@ -733,6 +738,27 @@ index c42b1a1a8df6b38886c17f71ea88e5aaa7eebc80..c741404ed973ee3ac246fe246c0f645e
        } else {
          TabBarVisibility.update();
        }
+@@ -6019,6 +6215,20 @@
+
+       var browser = this.getBrowserForTab(aTab);
+
++      if (this.selectedTab === aTab) {
++        let replacementTab = this.visibleTabs.find(
++          tab => tab !== aTab && !tab.closing && tab.linkedBrowser
++        );
++        if (!replacementTab) {
++          replacementTab = this.tabs.find(
++            tab => tab !== aTab && !tab.closing && tab.linkedBrowser
++          );
++        }
++        if (replacementTab) {
++          this.tabbox.selectedTab = replacementTab;
++        }
++      }
++
+       if (aTab.linkedPanel) {
+         // Because of the fact that we are setting JS properties on
+         // the browser elements, and we have code in place
 @@ -6040,6 +6232,7 @@
          this.tabs[i]._tPos = i;
        }

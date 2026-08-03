@@ -10,36 +10,25 @@ XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
   "dragRegionHeightPercentage",
   "zen.view.drag-window-from-content.height-percentage",
-  30
+  10
 );
 
-// A small threshold to allow for minor mouse jitter during a normal click.
-// Anything beyond this is considered an intentional window drag.
-const DRAG_START_THRESHOLD_PX = 4;
+XPCOMUtils.defineLazyServiceGetter(
+  lazy,
+  "zenWindowDragUtils",
+  "@mozilla.org/zen/window-drag-utils;1",
+  Ci.nsIZenWindowDragUtils
+);
 
-const kInteractiveTags = new Set([
-  "a",
-  "area",
-  "audio",
-  "button",
-  "canvas",
-  "details",
-  "dialog",
-  "embed",
-  "frame",
-  "iframe",
-  "img",
-  "input",
-  "label",
-  "menu",
-  "object",
-  "optgroup",
-  "option",
-  "select",
-  "summary",
-  "textarea",
-  "video",
-]);
+// Movement below this is considered a click, not a window drag. Fast
+// clicks commonly slide a few pixels (especially on trackpads), and once
+// the native move starts the OS swallows the mouseup — so keep this
+// comfortably above click jitter or clicks in the region get lost.
+const DRAG_START_THRESHOLD_PX = 10;
+
+// Content that drives its own mouse interaction without being
+// interactive HTML content in the spec sense.
+const kAppContentTags = new Set(["audio", "canvas", "video"]);
 
 const kInteractiveRoles = new Set([
   "button",
@@ -282,21 +271,41 @@ export class ZenWindowDragChild extends JSWindowActorChild {
         return true;
       }
     }
-    return this.#hasInteractiveCursor(target);
+    return (
+      this.#hasInteractiveCursor(target) || this.#isOverSelectableText(event)
+    );
+  }
+
+  /**
+   * A drag starting over selectable text should select it, not move the
+   * window. rangeParent is the caret position Gecko computed for the
+   * event, so this also covers empty space on the same line, where
+   * dragging extends a selection.
+   *
+   * @param {MouseEvent} event
+   */
+  #isOverSelectableText(event) {
+    const node = event.rangeParent;
+    if (node?.nodeType !== Node.TEXT_NODE) {
+      return false;
+    }
+    const parent = node.parentElement;
+    return (
+      !parent ||
+      this.contentWindow.getComputedStyle(parent).userSelect !== "none"
+    );
   }
 
   #isInteractiveElement(element) {
-    if (kInteractiveTags.has(element.localName)) {
+    // Gecko's own notion of interactive, editable or draggable content.
+    if (lazy.zenWindowDragUtils.isInteractiveContent(element)) {
       return true;
     }
-    // Covers [draggable="true"] and elements draggable by default,
-    // like links and images.
-    if (element.draggable) {
+    if (kAppContentTags.has(element.localName)) {
       return true;
     }
-    if (element.isContentEditable) {
-      return true;
-    }
+    // Declarative signals the engine check doesn't cover: ARIA widget
+    // roles and explicit tab stops.
     if (
       element.tabIndex >= 0 &&
       element !== this.document.body &&
@@ -305,19 +314,7 @@ export class ZenWindowDragChild extends JSWindowActorChild {
       return true;
     }
     const role = element.getAttribute?.("role");
-    if (role && kInteractiveRoles.has(role.toLowerCase())) {
-      return true;
-    }
-    // Inline event handlers are a strong hint of a custom widget.
-    if (
-      element.onclick ||
-      element.onmousedown ||
-      element.onpointerdown ||
-      element.ondragstart
-    ) {
-      return true;
-    }
-    return false;
+    return !!role && kInteractiveRoles.has(role.toLowerCase());
   }
 
   #hasInteractiveCursor(element) {

@@ -50,7 +50,7 @@
   value: true
 
 - name: zen.view.drag-window-from-content.height-percentage
-  value: 30
+  value: 10
 
 - name: zen.view.borderless-fullscreen
   value: true

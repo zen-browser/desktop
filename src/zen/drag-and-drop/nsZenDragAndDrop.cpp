@@ -13,6 +13,7 @@
 #  include <windows.h>
 #elif defined(MOZ_WIDGET_GTK)
 #  include <gdk/gdk.h>
+#  include "mozilla/WidgetUtilsGtk.h"
 #endif
 
 namespace zen {
@@ -41,9 +42,7 @@ static nsresult StartNativeWindowMove(nsIWidget* aWidget) {
       static_cast<GdkWindow*>(aWidget->GetNativeData(NS_NATIVE_WINDOW));
   NS_ENSURE_TRUE(gdkWindow, NS_ERROR_FAILURE);
   GdkWindow* toplevel = gdk_window_get_toplevel(gdkWindow);
-  GdkSeat* seat =
-      gdk_display_get_default_seat(gdk_window_get_display(toplevel));
-  GdkDevice* pointer = seat ? gdk_seat_get_pointer(seat) : nullptr;
+  GdkDevice* pointer = mozilla::widget::GdkGetPointer();
   NS_ENSURE_TRUE(pointer, NS_ERROR_FAILURE);
   // A native move works on both X11 and Wayland, unlike moving the
   // window programmatically.

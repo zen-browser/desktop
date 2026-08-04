@@ -253,6 +253,13 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       "sort:updated-desc",
     ];
 
+    if (
+      this.state.type === "pull-requests" &&
+      !(this.state.options.includeDrafts ?? true)
+    ) {
+      baseQuery.push("draft:false");
+    }
+
     const options = [
       {
         value: "author:@me",
@@ -334,6 +341,12 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         l10nId: "zen-live-folder-github-option-review-requested",
         key: "reviewRequested",
         checked: this.state.options.reviewRequested ?? false,
+        hidden: this.state.type === "issues",
+      },
+      {
+        l10nId: "zen-live-folder-github-option-include-drafts",
+        key: "includeDrafts",
+        checked: this.state.options.includeDrafts ?? true,
         hidden: this.state.type === "issues",
       },
       { type: "separator" },

@@ -24,7 +24,7 @@ XPCOMUtils.defineLazyServiceGetter(
 // clicks commonly slide a few pixels (especially on trackpads), and once
 // the native move starts the OS swallows the mouseup — so keep this
 // comfortably above click jitter or clicks in the region get lost.
-const DRAG_START_THRESHOLD_PX = 10;
+const DRAG_START_THRESHOLD_PX = 4;
 
 // Content that drives its own mouse interaction without being
 // interactive HTML content in the spec sense.
@@ -256,8 +256,13 @@ export class ZenWindowDragChild extends JSWindowActorChild {
     if (event.originalTarget?.isNativeAnonymous) {
       return true;
     }
-    let target = event.composedTarget;
+    let target = event.explicitOriginalTarget;
     if (target?.nodeType === Node.TEXT_NODE) {
+      // The hit-test landed on rendered text; a drag here should select
+      // it instead, unless it isn't selectable.
+      if (this.#isSelectableText(target)) {
+        return true;
+      }
       target = target.parentElement;
     }
     if (!target || target.nodeType !== Node.ELEMENT_NODE) {
@@ -271,24 +276,10 @@ export class ZenWindowDragChild extends JSWindowActorChild {
         return true;
       }
     }
-    return (
-      this.#hasInteractiveCursor(target) || this.#isOverSelectableText(event)
-    );
+    return this.#hasInteractiveCursor(target);
   }
 
-  /**
-   * A drag starting over selectable text should select it, not move the
-   * window. rangeParent is the caret position Gecko computed for the
-   * event, so this also covers empty space on the same line, where
-   * dragging extends a selection.
-   *
-   * @param {MouseEvent} event
-   */
-  #isOverSelectableText(event) {
-    const node = event.rangeParent;
-    if (node?.nodeType !== Node.TEXT_NODE) {
-      return false;
-    }
+  #isSelectableText(node) {
     const parent = node.parentElement;
     return (
       !parent ||

@@ -34,6 +34,29 @@ XPCOMUtils.defineLazyPreferenceGetter(
   true
 );
 
+// Distance (in CSS pixels) the mouse can travel past the window bounds after
+// leaving the window before the hovered element is collapsed
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "COMPACT_MODE_OUTSIDE_WINDOW_HORIZONTAL_OFFSET",
+  "zen.view.compact.outside-window-edge-offset.horizontal",
+  250
+);
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "COMPACT_MODE_OUTSIDE_WINDOW_VERTICAL_OFFSET",
+  "zen.view.compact.outside-window-edge-offset.vertical",
+  150
+);
+
+XPCOMUtils.defineLazyServiceGetter(
+  lazy,
+  "zenMouseTracker",
+  "@mozilla.org/zen/mouse-tracker;1",
+  Ci.nsIZenMouseTracker
+);
+
 ChromeUtils.defineLazyGetter(lazy, "mainAppWrapper", () =>
   document.getElementById("zen-main-app-wrapper")
 );
@@ -71,9 +94,21 @@ window.gZenCompactModeManager = {
       tabIsRightObserver
     );
 
+    const outsideMouseTrackerExitObserver =
+      this._onOutsideMouseTrackerExit.bind(this);
+    Services.obs.addObserver(
+      outsideMouseTrackerExitObserver,
+      "zen-mouse-tracker:exited"
+    );
+
     window.addEventListener(
       "unload",
       () => {
+        this._stopTrackingMouseOutsideWindow();
+        Services.obs.removeObserver(
+          outsideMouseTrackerExitObserver,
+          "zen-mouse-tracker:exited"
+        );
         Services.prefs.removeObserver(
           "zen.tabs.vertical.right-side",
           tabIsRightObserver
@@ -93,6 +128,10 @@ window.gZenCompactModeManager = {
     window.addEventListener("sizemodechange", () =>
       this._clearAllHoverStates()
     );
+
+    // Hide any element kept open by the outside mouse tracking as soon as the
+    // window loses focus
+    window.addEventListener("deactivate", () => this._collapseTrackedElement());
 
     this._canShowBackgroundTabToast = Services.prefs.getBoolPref(
       "zen.view.compact.show-background-tab-toast",
@@ -149,6 +188,7 @@ window.gZenCompactModeManager = {
       return;
     }
     delete this._isTabBeingDragged;
+    this._stopTrackingMouseOutsideWindow();
     this.sidebar.removeAttribute("zen-user-show");
     // We use this element in order to make it persis across restarts, by using the XULStore.
     // main-window can't store attributes other than window sizes, so we use this instead
@@ -723,6 +763,9 @@ window.gZenCompactModeManager = {
       }
     } else {
       if (attr === "zen-has-hover") {
+        if (element === this._outsideTrackedElement) {
+          this._stopTrackingMouseOutsideWindow();
+        }
         element.removeAttribute("zen-has-implicit-hover");
         gURLBar.updateTextOverflow();
       }
@@ -886,18 +929,23 @@ window.gZenCompactModeManager = {
           }
           window.cancelAnimationFrame(this._removeHoverFrames[target.id]);
 
-          this.flashElement(
-            target,
-            this.hideAfterHoverDuration,
-            "has-hover" + target.id,
-            "zen-has-hover"
-          );
+          if (!this._trackMouseOutsideWindow(entry.screenEdge, target)) {
+            // We can't track the mouse position outside of the window on
+            // this platform, fall back to hiding after a fixed duration
+            this.flashElement(
+              target,
+              this.hideAfterHoverDuration,
+              "has-hover" + target.id,
+              "zen-has-hover"
+            );
+          }
           document.addEventListener(
             "mousemove",
             () => {
               if (target.matches(":hover")) {
                 return;
               }
+              // Closing the element also stops the outside mouse tracking
               this._setElementExpandAttribute(target, false);
               this.clearFlashTimeout("has-hover" + target.id);
             },
@@ -941,7 +989,55 @@ window.gZenCompactModeManager = {
     return bBox.left - error < x && x < bBox.right + error;
   },
 
+  _trackMouseOutsideWindow(screenEdge, target) {
+    this._stopTrackingMouseOutsideWindow();
+    const maxEdgeOffset =
+      screenEdge === "left" || screenEdge === "right"
+        ? lazy.COMPACT_MODE_OUTSIDE_WINDOW_HORIZONTAL_OFFSET
+        : lazy.COMPACT_MODE_OUTSIDE_WINDOW_VERTICAL_OFFSET;
+    try {
+      lazy.zenMouseTracker.registerWindow(window, screenEdge, maxEdgeOffset);
+    } catch (e) {
+      // The platform can't track the global mouse position (e.g. Linux)
+      return false;
+    }
+    this._outsideTrackedElement = target;
+    this.clearFlashTimeout("has-hover" + target.id);
+    window.requestAnimationFrame(() => {
+      if (this._outsideTrackedElement === target) {
+        this._setElementExpandAttribute(target, true);
+      }
+    });
+    return true;
+  },
+
+  _stopTrackingMouseOutsideWindow() {
+    const target = this._outsideTrackedElement;
+    if (!target) {
+      return;
+    }
+    this._outsideTrackedElement = null;
+    lazy.zenMouseTracker.unregisterWindow(window);
+  },
+
+  _collapseTrackedElement() {
+    const target = this._outsideTrackedElement;
+    if (!target) {
+      return;
+    }
+    // Closing the element also unregisters us from the mouse tracker
+    this._setElementExpandAttribute(target, false);
+    this.clearFlashTimeout("has-hover" + target.id);
+  },
+
+  _onOutsideMouseTrackerExit(subject) {
+    if (subject === window) {
+      this._collapseTrackedElement();
+    }
+  },
+
   _clearAllHoverStates() {
+    this._stopTrackingMouseOutsideWindow();
     // Clear hover attributes from all hoverable elements
     for (let entry of this.hoverableElements) {
       const target = entry.element;

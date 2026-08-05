@@ -5,11 +5,7 @@
 [DEFAULT]
 support-files = [
   "head.js",
-  "space-routing-source.html",
-  "space-routing-target.html",
 ]
-
-["browser_space_routing_click_repro.js"]
 
 ["browser_space_routing_crud.js"]
 

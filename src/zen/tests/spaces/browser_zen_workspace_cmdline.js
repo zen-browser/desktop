@@ -104,3 +104,82 @@ add_task(async function test_unknown_workspace_does_not_switch() {
     "An unknown workspace should not switch spaces."
   );
 });
+
+add_task(async function test_initial_workspace_pref_consumed_on_restore() {
+  await SpecialPowers.pushPrefEnv({
+    set: [["zen.testing.enabled", false]],
+  });
+  const originalWorkspaceUUID = gZenWorkspaces.activeWorkspace;
+  await gZenWorkspaces.createAndSaveWorkspace("Cmdline Cold Start");
+  const target = gZenWorkspaces
+    .getWorkspaces()
+    .find(workspace => workspace.name === "Cmdline Cold Start");
+  Assert.ok(target, "The target workspace should exist.");
+  registerCleanupFunction(async () => {
+    Services.prefs.clearUserPref("zen.workspaces.cmdline-initial-workspace");
+    if (gZenWorkspaces.getWorkspaceFromId(target.uuid)) {
+      await gZenWorkspaces.changeWorkspaceWithID(originalWorkspaceUUID);
+      await gZenWorkspaces.removeWorkspace(target.uuid);
+    }
+  });
+
+  // Simulates the pref stashed by `--space` on a cold start, see
+  // BrowserContentHandler.sys.mjs.
+  Services.prefs.setStringPref(
+    "zen.workspaces.cmdline-initial-workspace",
+    "cmdline cold start"
+  );
+
+  const newWindow = await BrowserTestUtils.openNewBrowserWindow();
+  await newWindow.gZenWorkspaces.promiseInitialized;
+
+  Assert.strictEqual(
+    newWindow.gZenWorkspaces.activeWorkspace,
+    target.uuid,
+    "The restored window should start on the requested workspace."
+  );
+  Assert.strictEqual(
+    Services.prefs.getStringPref(
+      "zen.workspaces.cmdline-initial-workspace",
+      ""
+    ),
+    "",
+    "The pref should be consumed by the restored window."
+  );
+
+  await BrowserTestUtils.closeWindow(newWindow);
+  await gZenWorkspaces.changeWorkspaceWithID(originalWorkspaceUUID);
+  await gZenWorkspaces.removeWorkspace(target.uuid);
+  await SpecialPowers.popPrefEnv();
+});
+
+add_task(async function test_initial_workspace_pref_survives_private_window() {
+  await SpecialPowers.pushPrefEnv({
+    set: [["zen.testing.enabled", false]],
+  });
+  Services.prefs.setStringPref(
+    "zen.workspaces.cmdline-initial-workspace",
+    "does-not-matter"
+  );
+  registerCleanupFunction(() => {
+    Services.prefs.clearUserPref("zen.workspaces.cmdline-initial-workspace");
+  });
+
+  const privateWindow = await BrowserTestUtils.openNewBrowserWindow({
+    private: true,
+  });
+  await privateWindow.gZenWorkspaces.promiseInitialized;
+
+  Assert.strictEqual(
+    Services.prefs.getStringPref(
+      "zen.workspaces.cmdline-initial-workspace",
+      ""
+    ),
+    "does-not-matter",
+    "A private window should not consume the initial workspace pref."
+  );
+
+  await BrowserTestUtils.closeWindow(privateWindow);
+  Services.prefs.clearUserPref("zen.workspaces.cmdline-initial-workspace");
+  await SpecialPowers.popPrefEnv();
+});

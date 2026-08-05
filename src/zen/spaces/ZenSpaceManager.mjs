@@ -757,14 +757,17 @@ class nsZenWorkspaces {
       : [this.#createWorkspaceData("Space", undefined)];
     this.activeWorkspace =
       aWinData.activeZenSpace || this._workspaceCache[0].uuid;
-    const cmdLineWorkspace = Services.prefs.getStringPref(
-      "zen.workspaces.cmdline-initial-workspace",
-      ""
-    );
+    const cmdLineWorkspace = this.privateWindowOrDisabled
+      ? ""
+      : Services.prefs.getStringPref(
+          "zen.workspaces.cmdline-initial-workspace",
+          ""
+        );
     if (cmdLineWorkspace) {
       // Set by the `--space` command line flag on a cold start,
-      // see BrowserContentHandler.sys.mjs. Consumed by the first window
-      // that restores its workspaces.
+      // see BrowserContentHandler.sys.mjs. Consumed by the first syncing
+      // window that restores its workspaces; private and unsynced windows
+      // must not eat the pref.
       Services.prefs.clearUserPref("zen.workspaces.cmdline-initial-workspace");
       const initialWorkspace = this.resolveWorkspaceFromString(cmdLineWorkspace);
       if (initialWorkspace) {

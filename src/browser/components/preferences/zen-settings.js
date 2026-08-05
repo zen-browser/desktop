@@ -694,17 +694,23 @@ var gZenLooksAndFeel = {
           return;
         }
 
-        for (const el of document.getElementById("zenLayoutList").children) {
-          el.classList.remove("selected");
+        if (window._zenLayoutUpdateTimer) {
+          clearTimeout(window._zenLayoutUpdateTimer);
         }
 
-        layout.classList.add("selected");
+        window._zenLayoutUpdateTimer = setTimeout(() => {
+          for (const el of document.getElementById("zenLayoutList").children) {
+            el.classList.remove("selected");
+          }
 
-        Services.prefs.setBoolPref(
-          kZenExtendedSidebar,
-          layout.getAttribute("layout") != "collapsed"
-        );
-        Services.prefs.setBoolPref(kZenSingleToolbar, layout.getAttribute("layout") == "single");
+          layout.classList.add("selected");
+
+          Services.prefs.setBoolPref(
+            kZenExtendedSidebar,
+            layout.getAttribute("layout") != "collapsed"
+          );
+          Services.prefs.setBoolPref(kZenSingleToolbar, layout.getAttribute("layout") == "single");
+        }, 150);
       });
     }
   },

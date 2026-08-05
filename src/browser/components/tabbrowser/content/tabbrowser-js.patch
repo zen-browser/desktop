@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index c42b1a1a8df6b38886c17f71ea88e5aaa7eebc80..c741404ed973ee3ac246fe246c0f645eb49d12e9 100644
+index c42b1a1a8df6b38886c17f71ea88e5aaa7eebc80..a61644ed4dee93d24fa57bd95f41b8783d8e7a47 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -509,6 +509,7 @@
@@ -738,27 +738,6 @@ index c42b1a1a8df6b38886c17f71ea88e5aaa7eebc80..c741404ed973ee3ac246fe246c0f645e
        } else {
          TabBarVisibility.update();
        }
-@@ -6019,6 +6215,20 @@
-
-       var browser = this.getBrowserForTab(aTab);
-
-+      if (this.selectedTab === aTab) {
-+        let replacementTab = this.visibleTabs.find(
-+          tab => tab !== aTab && !tab.closing && tab.linkedBrowser
-+        );
-+        if (!replacementTab) {
-+          replacementTab = this.tabs.find(
-+            tab => tab !== aTab && !tab.closing && tab.linkedBrowser
-+          );
-+        }
-+        if (replacementTab) {
-+          this.tabbox.selectedTab = replacementTab;
-+        }
-+      }
-+
-       if (aTab.linkedPanel) {
-         // Because of the fact that we are setting JS properties on
-         // the browser elements, and we have code in place
 @@ -6040,6 +6232,7 @@
          this.tabs[i]._tPos = i;
        }
@@ -817,7 +796,7 @@ index c42b1a1a8df6b38886c17f71ea88e5aaa7eebc80..c741404ed973ee3ac246fe246c0f645e
        }
  
        // If no qualifying visible tab was found, see if there is a tab in
-@@ -6325,7 +6527,7 @@
+@@ -6325,18 +6513,31 @@
          });
        }
  
@@ -826,7 +805,23 @@ index c42b1a1a8df6b38886c17f71ea88e5aaa7eebc80..c741404ed973ee3ac246fe246c0f645e
      }
  
      _blurTab(aTab) {
-@@ -6336,7 +6538,7 @@
+       this.selectedTab = this._findTabToBlurTo(aTab);
++
++      if (aTab.closing && this.selectedTab === aTab) {
++        const replacementTab =
++          this.visibleTabs.find(
++            tab => tab !== aTab && !tab.closing && tab.linkedBrowser
++          ) ??
++          this.tabs.find(
++            tab => tab !== aTab && !tab.closing && tab.linkedBrowser
++          );
++        if (replacementTab) {
++          this.tabbox.selectedTab = replacementTab;
++        }
++      }
+     }
+
+     /**
       * @returns {boolean}
       *   False if swapping isn't permitted, true otherwise.
       */

@@ -2,12 +2,25 @@ diff --git a/browser/components/urlbar/content/UrlbarView.mjs b/browser/componen
 index 8afb2bf4a757b3ef7902f5a6e6eed6b70ca2845e..440dea1e66540ca1998cb7464b6695ac823fedcb 100644
 --- a/browser/components/urlbar/content/UrlbarView.mjs
 +++ b/browser/components/urlbar/content/UrlbarView.mjs
-@@ -674,7 +674,7 @@ export class UrlbarView {
+@@ -654,7 +654,7 @@ export class UrlbarView {
+    *        the border when the unfocused address bar is clicked.
+    * @returns {boolean} Whether the view was opened.
+    */
+-  autoOpen({ event, suppressFocusBorder = true }) {
++  autoOpen({ event, allowFocusEvent = false, suppressFocusBorder = true }) {
+     if (!event) {
+       return false;
+     }
+@@ -674,7 +674,11 @@ export class UrlbarView {
        !this.input.value ||
        this.input.getAttribute("pageproxystate") == "valid"
      ) {
 -      if (!this.isOpen && ["mousedown", "command"].includes(event.type)) {
-+      if (!this.isOpen && ["mousedown", "click", "command"].includes(event.type)) {
++      if (
++        !this.isOpen &&
++        (["mousedown", "click", "command"].includes(event.type) ||
++          (allowFocusEvent && event.type == "focus"))
++      ) {
          // Try to reuse the cached top-sites context. If it's not cached, then
          // there will be a gap of time between when the input is focused and
          // when the view opens that can be perceived as flicker.

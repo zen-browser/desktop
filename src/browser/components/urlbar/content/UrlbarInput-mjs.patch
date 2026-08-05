@@ -292,7 +292,7 @@ index 0b1b4b2f0f8d6b0fb126aa1224409ab6f1ffb8d8..942c6e1e3b6cd9de65df54a1d83884f2
      switch (event.target) {
        case this.inputField:
        case this._inputContainer:
-@@ -5374,7 +5495,7 @@ ${
+@@ -5374,7 +5495,10 @@ ${
        }
      }
  
@@ -300,6 +300,9 @@ index 0b1b4b2f0f8d6b0fb126aa1224409ab6f1ffb8d8..942c6e1e3b6cd9de65df54a1d83884f2
 +    if (this.focusedViaMousedown || this.hasAttribute("zen-newtab")) {
        this.view.autoOpen({ event });
      } else {
++      if (this.zenUrlbarBehavior == "float") {
++        this.view.autoOpen({ event, allowFocusEvent: true });
++      }
        if (this._untrimOnFocusAfterKeydown) {
 @@ -5414,9 +5535,16 @@ ${
    }

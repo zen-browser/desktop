@@ -41,6 +41,31 @@ add_task(async function test_Click_Shoudnt_FLoat_Urlbar() {
   );
 });
 
+add_task(async function test_Keyboard_Focus_Floats_In_Float_Mode() {
+  await SpecialPowers.pushPrefEnv({ set: [["zen.urlbar.behavior", "float"]] });
+
+  if (gURLBar.view.isOpen) {
+    await UrlbarTestUtils.promisePopupClose(window, () => gURLBar.blur());
+  } else {
+    gURLBar.blur();
+  }
+  await SimpleTest.promiseFocus(window);
+  gBrowser.selectedBrowser.focus();
+
+  let focusPromise = BrowserTestUtils.waitForEvent(gURLBar.inputField, "focus");
+  EventUtils.synthesizeKey("VK_F6");
+  await focusPromise;
+
+  await BrowserTestUtils.waitForCondition(
+    () => gURLBar.hasAttribute("zen-floating-urlbar"),
+    "URL bar should float after pressing F6 in 'float' mode"
+  );
+  ok(gURLBar.hasAttribute("zen-floating-urlbar"), "URL bar is floating");
+
+  await UrlbarTestUtils.promisePopupClose(window, () => gURLBar.blur());
+  await SpecialPowers.popPrefEnv();
+});
+
 add_task(async function test_Floating_Highlight_Everything() {
   gURLBar.blur();
 

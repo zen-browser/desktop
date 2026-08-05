@@ -10,6 +10,12 @@ add_task(async function test_resolve_workspace_from_string() {
     .getWorkspaces()
     .find(workspace => workspace.name === "Cmdline Space");
   Assert.ok(created, "The new workspace should exist.");
+  registerCleanupFunction(async () => {
+    if (gZenWorkspaces.getWorkspaceFromId(created.uuid)) {
+      await gZenWorkspaces.changeWorkspaceWithID(originalWorkspaceUUID);
+      await gZenWorkspaces.removeWorkspace(created.uuid);
+    }
+  });
 
   Assert.strictEqual(
     gZenWorkspaces.resolveWorkspaceFromString(created.uuid)?.uuid,
@@ -47,6 +53,12 @@ add_task(async function test_change_workspace_from_command_line() {
     .getWorkspaces()
     .find(workspace => workspace.name === "Cmdline Target");
   Assert.ok(target, "The target workspace should exist.");
+  registerCleanupFunction(async () => {
+    if (gZenWorkspaces.getWorkspaceFromId(target.uuid)) {
+      await gZenWorkspaces.changeWorkspaceWithID(originalWorkspaceUUID);
+      await gZenWorkspaces.removeWorkspace(target.uuid);
+    }
+  });
 
   await gZenWorkspaces.changeWorkspaceWithID(originalWorkspaceUUID);
   Assert.strictEqual(

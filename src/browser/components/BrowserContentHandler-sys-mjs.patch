@@ -38,9 +38,9 @@ index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09
 +          targetWin?.gZenWorkspaces &&
 +          !targetWin.gZenWorkspaces.privateWindowOrDisabled
 +        ) {
-+          targetWin.gZenWorkspaces.changeWorkspaceFromCommandLine(
-+            zenWorkspaceParam
-+          );
++          targetWin.gZenWorkspaces
++            .changeWorkspaceFromCommandLine(zenWorkspaceParam)
++            .catch(console.error);
 +        } else {
 +          // Cold start: stash the space so the first window that
 +          // restores picks it up, and let normal startup open that window.

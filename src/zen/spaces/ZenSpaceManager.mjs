@@ -762,7 +762,7 @@ class nsZenWorkspaces {
       ""
     );
     if (cmdLineWorkspace) {
-      // Set by the `--zen-workspace` command line flag on a cold start,
+      // Set by the `--space` command line flag on a cold start,
       // see BrowserContentHandler.sys.mjs. Consumed by the first window
       // that restores its workspaces.
       Services.prefs.clearUserPref("zen.workspaces.cmdline-initial-workspace");
@@ -1651,7 +1651,7 @@ class nsZenWorkspaces {
   }
 
   /**
-   * Handles the `--zen-workspace` command line flag for an already running
+   * Handles the `--space` command line flag for an already running
    * browser: switches to the workspace matching the given name or UUID.
    *
    * @param {string} workspaceMatch - The workspace UUID or name to switch to

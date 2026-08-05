@@ -10,6 +10,8 @@ support-files = [
 
 ["browser_basic_workspaces.js"]
 
+["browser_custom_space_icon.js"]
+
 ["browser_double_click_newtab.js"]
 
 ["browser_issue_10455.js"]

@@ -387,7 +387,7 @@ export class nsZenSpaceRoutingDialog {
       menuItem.setAttribute("value", id || text);
 
       if (iconPath) {
-        if (iconPath.startsWith("chrome://")) {
+        if (this.openerWindow.gZenEmojiPicker.isImageIcon(iconPath)) {
           menuItem.setAttribute("class", "menuitem-iconic");
           menuItem.setAttribute("image", iconPath);
         } else {

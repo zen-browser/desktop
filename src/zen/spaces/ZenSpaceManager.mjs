@@ -1027,6 +1027,7 @@ class nsZenWorkspaces {
     gZenEmojiPicker.open(anchor, {
       closeOnSelect: false,
       allowNone: !hasNoIcon,
+      allowCustomImage: true,
       onSelect: async icon => {
         const workspace = this.getWorkspaceFromId(workspaceId);
         if (!workspace) {
@@ -1179,12 +1180,12 @@ class nsZenWorkspaces {
       item.setAttribute(disableCurrent ? "disabled" : "checked", true);
     }
     let name = workspace.name;
-    const iconIsSvg = workspace.icon && workspace.icon.endsWith(".svg");
-    if (workspace.icon && workspace.icon !== "" && !iconIsSvg) {
+    const iconIsImage = gZenEmojiPicker.isImageIcon(workspace.icon);
+    if (workspace.icon && workspace.icon !== "" && !iconIsImage) {
       name = `${workspace.icon}  ${name}`;
     }
     item.setAttribute("label", name);
-    if (iconIsSvg) {
+    if (iconIsImage) {
       item.setAttribute("image", workspace.icon);
       item.classList.add("zen-workspace-context-icon");
     }
@@ -1997,7 +1998,7 @@ class nsZenWorkspaces {
     }
     const icon = this.getWorkspaceIcon(currentWorkspace);
     indicatorIcon.innerHTML = "";
-    if (icon?.endsWith(".svg")) {
+    if (gZenEmojiPicker.isImageIcon(icon)) {
       const img = document.createElement("img");
       img.src = icon;
       indicatorIcon.appendChild(img);

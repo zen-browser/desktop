@@ -30,6 +30,16 @@ const SVG_ICONS = [
   "water.svg", "weight.svg",
 ];
 
+// Custom icons are stored inline as data URLs on the object that owns them
+// (e.g. a space), which is persisted to the session store, so they have to stay
+// small. Raster images are re-encoded down to this size; 192px still covers a
+// 32px icon on a 4x display while keeping the encoded result at a few KB.
+const CUSTOM_ICON_MAX_DIMENSION = 192;
+
+// Refused before we try to decode, so a mistakenly picked huge file can't stall
+// the browser.
+const CUSTOM_ICON_MAX_FILE_SIZE = 10 * 1024 * 1024;
+
 class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
   #panel;
 
@@ -39,6 +49,7 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
   #onSelect = null;
   #hasSelection = false;
   #lastSelectedEmoji = null;
+  #allowCustomImage = false;
 
   #currentPromise = null;
   #currentPromiseResolve = null;
@@ -51,6 +62,21 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     this.#panel.addEventListener("popuphidden", this);
     this.#panel.addEventListener("command", this);
     this.searchInput.addEventListener("input", this);
+  }
+
+  /**
+   * Whether an icon value is meant to be rendered as an image rather than as
+   * text. Covers both the bundled `chrome://` SVGs and the data URLs produced
+   * for custom images and for emojis rasterized via `emojiAsSVG`.
+   *
+   * @param {string} [icon] The stored icon value.
+   * @returns {boolean} True when the icon should be rendered as an image.
+   */
+  isImageIcon(icon) {
+    return (
+      typeof icon === "string" &&
+      (icon.endsWith(".svg") || icon.startsWith("data:image/"))
+    );
   }
 
   handleEvent(event) {
@@ -70,9 +96,17 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
         } else if (
           event.target.id === "PanelUI-zen-emojis-picker-change-emojis"
         ) {
-          this.#changePage(false);
+          this.#changePage("emojis");
         } else if (event.target.id === "PanelUI-zen-emojis-picker-change-svg") {
-          this.#changePage(true);
+          this.#changePage("svg");
+        } else if (
+          event.target.id === "PanelUI-zen-emojis-picker-change-custom"
+        ) {
+          this.#changePage("custom");
+        } else if (
+          event.target.id === "PanelUI-zen-emojis-picker-custom-choose"
+        ) {
+          this.#pickCustomImage();
         }
         break;
       case "input":
@@ -107,11 +141,13 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     return document.getElementById("PanelUI-zen-emojis-picker-search");
   }
 
-  #changePage(toSvg = false, { animate = true } = {}) {
+  get customPreview() {
+    return document.getElementById("PanelUI-zen-emojis-picker-custom-preview");
+  }
+
+  #changePage(page = "emojis", { animate = true } = {}) {
     const pages = document.getElementById("PanelUI-zen-emojis-picker-pages");
-    const itemToScroll = toSvg
-      ? this.svgList
-      : pages.querySelector('[emojis="true"]');
+    const itemToScroll = pages.querySelector(`[page="${page}"]`);
     if (animate) {
       itemToScroll.scrollIntoView({
         behavior: "smooth",
@@ -119,16 +155,16 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
         inline: "start",
       });
     } else {
-      pages.scrollLeft = toSvg ? itemToScroll.offsetLeft : 0;
+      pages.scrollLeft = itemToScroll.offsetLeft;
     }
-    const button = document.getElementById(
-      `PanelUI-zen-emojis-picker-change-${toSvg ? "svg" : "emojis"}`
-    );
-    const otherButton = document.getElementById(
-      `PanelUI-zen-emojis-picker-change-${toSvg ? "emojis" : "svg"}`
-    );
-    button.classList.add("selected");
-    otherButton.classList.remove("selected");
+    for (const button of document.getElementById(
+      "PanelUI-zen-emojis-buttons-wrapper"
+    ).children) {
+      button.classList.toggle(
+        "selected",
+        button.id === `PanelUI-zen-emojis-picker-change-${page}`
+      );
+    }
   }
 
   #clearEmojis() {
@@ -211,7 +247,7 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     if (allowEmojis) {
       this.searchInput.focus({ preventScroll: true });
     }
-    this.#changePage(false, { animate: false });
+    this.#changePage(allowEmojis ? "emojis" : "svg", { animate: false });
   }
 
   #onPopupHidden(event) {
@@ -224,6 +260,8 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     emojiList.innerHTML = "";
 
     this.svgList.innerHTML = "";
+    this.customPreview.removeAttribute("src");
+    this.customPreview.hidden = true;
 
     if (!this.#hasSelection) {
       this.#currentPromiseReject?.(
@@ -240,14 +278,141 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     this.#closeOnSelect = true;
     this.#hasSelection = false;
     this.#lastSelectedEmoji = null;
+    this.#allowCustomImage = false;
 
     this.#anchor.removeAttribute("zen-emoji-open");
     this.#anchor.parentElement.removeAttribute("zen-emoji-open");
     this.#anchor = null;
   }
 
+  /**
+   * Prompts for an image file and turns it into a data URL usable as an icon.
+   * Kept inline (rather than copied into the profile) so that an icon travels
+   * with the object that owns it, including across synced devices.
+   */
+  async #pickCustomImage() {
+    if (!this.#allowCustomImage) {
+      return;
+    }
+
+    // A modal file dialog takes focus and dismisses the panel on some
+    // platforms, so hold on to the callbacks and report the result directly
+    // instead of going back through #selectEmoji, whose state may already have
+    // been torn down by then.
+    const onSelect = this.#onSelect;
+    const resolveSelection = this.#currentPromiseResolve;
+    const closeOnSelect = this.#closeOnSelect;
+
+    // Keeps #onPopupHidden from rejecting the pending promise if the panel goes
+    // away while the dialog is up.
+    this.#hasSelection = true;
+
+    const path = await this.#promptForImageFile();
+    if (!path) {
+      return;
+    }
+
+    let icon;
+    try {
+      icon = await this.#encodeCustomImage(path);
+    } catch (error) {
+      console.error("Failed to import a custom icon:", error);
+      gZenUIManager.showToast("zen-icons-picker-custom-failed");
+      return;
+    }
+    if (!icon) {
+      return;
+    }
+
+    if (this.#panel.state === "open") {
+      this.customPreview.src = icon;
+      this.customPreview.hidden = false;
+    }
+    this.#lastSelectedEmoji = icon;
+    this.#setAllowNone(true);
+    onSelect?.(icon);
+    resolveSelection?.(icon);
+    if (closeOnSelect) {
+      this.#panel.hidePopup();
+    }
+  }
+
+  /**
+   * @returns {Promise<string|null>} Path of the picked file, or null if the
+   *   dialog was dismissed.
+   */
+  async #promptForImageFile() {
+    const filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(
+      Ci.nsIFilePicker
+    );
+    filePicker.init(
+      window.browsingContext,
+      await document.l10n.formatValue("zen-icons-picker-custom-title"),
+      Ci.nsIFilePicker.modeOpen
+    );
+    filePicker.appendFilters(Ci.nsIFilePicker.filterImages);
+
+    const result = await new Promise(resolve => filePicker.open(resolve));
+    if (result !== Ci.nsIFilePicker.returnOK || !filePicker.file) {
+      return null;
+    }
+    return filePicker.file.path;
+  }
+
+  /**
+   * @param {string} path Absolute path of the image the user picked.
+   * @returns {Promise<string|null>} A data URL, or null if the file was rejected.
+   */
+  async #encodeCustomImage(path) {
+    const { size } = await IOUtils.stat(path);
+    if (size > CUSTOM_ICON_MAX_FILE_SIZE) {
+      gZenUIManager.showToast("zen-icons-picker-custom-too-large", {
+        l10nArgs: { limit: CUSTOM_ICON_MAX_FILE_SIZE / (1024 * 1024) },
+      });
+      return null;
+    }
+
+    const bytes = await IOUtils.read(path);
+
+    // SVGs are kept as-is so they stay sharp at any size. Rendering happens in
+    // an <img>, which does not run scripts or load external references, so an
+    // untrusted document is inert here.
+    if (path.toLowerCase().endsWith(".svg")) {
+      return this.#blobToDataURL(new Blob([bytes], { type: "image/svg+xml" }));
+    }
+
+    // Throws for anything that is not a decodable image, which is also how we
+    // reject files that merely have an image extension.
+    const bitmap = await createImageBitmap(new Blob([bytes]));
+    const scale = Math.min(
+      1,
+      CUSTOM_ICON_MAX_DIMENSION / Math.max(bitmap.width, bitmap.height)
+    );
+    const width = Math.max(1, Math.round(bitmap.width * scale));
+    const height = Math.max(1, Math.round(bitmap.height * scale));
+
+    const canvas = new OffscreenCanvas(width, height);
+    canvas.getContext("2d").drawImage(bitmap, 0, 0, width, height);
+    bitmap.close();
+
+    // WebP keeps transparency and stays far smaller than PNG for photos. If the
+    // encoder does not support it, it falls back to PNG on its own.
+    return this.#blobToDataURL(
+      await canvas.convertToBlob({ type: "image/webp", quality: 0.9 })
+    );
+  }
+
+  #blobToDataURL(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(blob);
+    });
+  }
+
   #selectEmoji(emoji) {
-    if (this.#emojiAsSVG && emoji && !emoji.startsWith("chrome://")) {
+    if (this.#emojiAsSVG && emoji && !this.isImageIcon(emoji)) {
       emoji = `data:image/svg+xml;base64,${btoa(
         `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><text y="28" font-size="28" x="0">${unescape(
           encodeURIComponent(emoji)
@@ -272,6 +437,7 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
       emojiAsSVG = false,
       allowNone = true,
       closeOnSelect = true,
+      allowCustomImage = false,
       onSelect = null,
     } = {}
   ) {
@@ -283,6 +449,7 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     this.#onSelect = onSelect;
     this.#hasSelection = false;
     this.#lastSelectedEmoji = null;
+    this.#allowCustomImage = allowCustomImage;
     this.#currentPromise = new Promise((resolve, reject) => {
       this.#currentPromiseResolve = resolve;
       this.#currentPromiseReject = reject;
@@ -294,6 +461,11 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
       this.#panel.setAttribute("only-svg-icons", "true");
     } else {
       this.#panel.removeAttribute("only-svg-icons");
+    }
+    if (this.#allowCustomImage) {
+      this.#panel.setAttribute("allow-custom-image", "true");
+    } else {
+      this.#panel.removeAttribute("allow-custom-image");
     }
     this.#setAllowNone(allowNone);
     this.#panel.openPopup(anchor, "after_start", 0, 0, false, false);

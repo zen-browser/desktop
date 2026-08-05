@@ -83,8 +83,36 @@
       pointer-events: none;
     }
 
-    & #PanelUI-zen-emojis-picker-pages > vbox[emojis="true"] {
+    & #PanelUI-zen-emojis-picker-pages > [page="emojis"] {
       display: none;
+    }
+  }
+
+  &:not([allow-custom-image="true"]) {
+    & #PanelUI-zen-emojis-picker-change-custom,
+    & #PanelUI-zen-emojis-picker-pages > [page="custom"] {
+      display: none;
+    }
+  }
+
+  #PanelUI-zen-emojis-picker-custom {
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 20px;
+
+    & #PanelUI-zen-emojis-picker-custom-preview {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+
+    & #PanelUI-zen-emojis-picker-custom-hint {
+      margin: 0;
+      font-size: x-small;
+      text-align: center;
+      opacity: 0.6;
     }
   }
 

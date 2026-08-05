@@ -274,16 +274,16 @@ class nsZenWorkspaceCreation extends MozXULElement {
   onIconCommand(event) {
     gZenEmojiPicker.open(event.target, {
       closeOnSelect: false,
+      allowCustomImage: true,
       onSelect: async icon => {
-        const isSvg = icon && icon.endsWith(".svg");
-        if (isSvg) {
+        if (gZenEmojiPicker.isImageIcon(icon)) {
           this.inputIcon.label = "";
           this.inputIcon.image = icon;
-          this.inputIcon.setAttribute("has-svg-icon", "true");
+          this.inputIcon.setAttribute("has-image-icon", "true");
         } else {
           this.inputIcon.image = "";
           this.inputIcon.label = icon || "";
-          this.inputIcon.removeAttribute("has-svg-icon");
+          this.inputIcon.removeAttribute("has-image-icon");
         }
       },
     });

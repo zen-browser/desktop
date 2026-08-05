@@ -75,11 +75,12 @@ zen-workspace-creation {
             position: absolute;
             width: var(--size-item-small);
             height: var(--size-item-small);
+            object-fit: contain;
             -moz-context-properties: fill-opacity, fill;
             fill: currentColor;
           }
 
-          &:not([has-svg-icon="true"]) image {
+          &:not([has-image-icon="true"]) image {
             display: none;
           }
 
@@ -89,7 +90,7 @@ zen-workspace-creation {
             justify-content: center;
           }
 
-          &[has-svg-icon="true"] label {
+          &[has-image-icon="true"] label {
             display: none;
           }
 

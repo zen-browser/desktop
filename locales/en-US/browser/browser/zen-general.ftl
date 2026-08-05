@@ -87,6 +87,16 @@ zen-icons-picker-emoji =
   .label = Emojis
 zen-icons-picker-svg =
   .label = Icons
+zen-icons-picker-custom =
+  .label = Custom
+zen-icons-picker-custom-choose =
+  .label = Choose an image…
+zen-icons-picker-custom-hint = SVG, PNG, JPEG, GIF, WebP and other image files. Large images are resized.
+# Title of the file dialog used to pick a custom icon.
+zen-icons-picker-custom-title = Choose an image
+# $limit (Number) - The maximum accepted file size, in megabytes.
+zen-icons-picker-custom-too-large = That image is too big. Choose a file smaller than { $limit } MB.
+zen-icons-picker-custom-failed = That file could not be used as an icon.
 zen-emojis-picker-search =
   .placeholder = Search emojis
 

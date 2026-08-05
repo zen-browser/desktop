@@ -111,9 +111,9 @@ class nsZenWorkspaceIcons extends MozXULElement {
     button.setAttribute("context", "zenWorkspaceMoreActions");
     const icon = document.createXULElement("label");
     icon.setAttribute("class", "zen-workspace-icon");
-    const isSvgIcon = workspace.icon && workspace.icon.endsWith(".svg");
+    const isImageIcon = gZenEmojiPicker.isImageIcon(workspace.icon);
     if (gZenWorkspaces.workspaceHasIcon(workspace)) {
-      if (isSvgIcon) {
+      if (isImageIcon) {
         const image = document.createElement("img");
         image.src = workspace.icon;
         image.classList.add("zen-workspace-icon");
@@ -124,7 +124,7 @@ class nsZenWorkspaceIcons extends MozXULElement {
     } else {
       icon.setAttribute("no-icon", true);
     }
-    if (!isSvgIcon) {
+    if (!isImageIcon) {
       button.appendChild(icon);
     }
     button.addEventListener("command", this);

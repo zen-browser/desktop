@@ -441,10 +441,14 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
    * @returns {object} An object describing the view update.
    */
   getViewUpdate(result) {
-    const prettyIconIsSvg =
+    // Space icons can be an emoji, a bundled icon or a user-supplied image
+    // stored as a data URL. Keep this in sync with nsZenEmojiPicker.isImageIcon;
+    // this module cannot reach the window-scoped picker.
+    const prettyIconIsImage =
       result.payload.prettyIcon &&
       (result.payload.prettyIcon.endsWith(".svg") ||
-        result.payload.prettyIcon.endsWith(".png"));
+        result.payload.prettyIcon.endsWith(".png") ||
+        result.payload.prettyIcon.startsWith("data:image/"));
     return {
       icon: {
         attributes: {
@@ -467,7 +471,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       prettyNameTitle: {
         /* eslint-disable-next-line no-nested-ternary */
         textContent: result.payload.prettyName
-          ? prettyIconIsSvg || !result.payload.prettyIcon
+          ? prettyIconIsImage || !result.payload.prettyIcon
             ? result.payload.prettyName
             : `${result.payload.prettyIcon}  ${result.payload.prettyName}`
           : "",
@@ -476,7 +480,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       prettyNameIcon: {
         attributes: {
           src: result.payload.prettyIcon || "",
-          hidden: !prettyIconIsSvg || !result.payload.prettyIcon,
+          hidden: !prettyIconIsImage || !result.payload.prettyIcon,
         },
       },
     };

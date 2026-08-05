@@ -89,9 +89,7 @@
     }
 
     & .zen-media-card {
-      transform: translateY(
-        calc(var(--zen-media-card-index, 0) * (-100% - var(--zen-media-stack-gap)))
-      );
+      transform: none;
       opacity: 1;
     }
 
@@ -133,21 +131,25 @@
 }
 
 .zen-media-card {
-  flex-grow: 1;
-  position: absolute;
-  left: 0;
-  bottom: 0;
+  position: relative;
+  flex-shrink: 0;
+  order: var(--zen-media-card-index, 0);
   width: 100%;
   padding: 4px 6px;
   border-radius: var(--border-radius-medium);
+  outline: var(--zen-sidebar-notification-outline);
+  outline-offset: -1.5px;
   box-shadow: var(--zen-sidebar-notification-shadow);
   background-color: var(--zen-sidebar-notification-bg);
   transform-origin: top center;
-  /* Collapsed stack: cards behind the front card peek out at the top,
-     fading the deeper they sit */
-  transform: translateY(calc(-1 * var(--zen-media-stack-peek) * var(--zen-media-card-peek-level, 0)))
+  transform: translateY(
+      calc(
+        var(--zen-media-card-index, 0) * (100% + var(--zen-media-stack-gap)) -
+          var(--zen-media-stack-peek) * var(--zen-media-card-peek-level, 0)
+      )
+    )
     scale(calc(1 - 0.04 * var(--zen-media-card-peek-level, 0)));
-  opacity: calc(1 - 0.2 * var(--zen-media-card-peek-level, 0));
+  opacity: calc(1 - 0.4 * var(--zen-media-card-peek-level, 0));
   transition:
     transform 0.1s ease-out,
     opacity 0.2s ease-out,
@@ -234,8 +236,12 @@
 
   &:not([hidden]) {
     display: flex;
-    /* The collapsed height includes the room for the peeking stacked
-       cards, so the stack never shifts the surrounding UI */
+    flex-direction: column-reverse;
+    gap: var(--zen-media-stack-gap);
+    /* The toolbar keeps its collapsed height even while expanded: the
+       cards' flow positions overflow above the box, so the expanded stack
+       floats over the sidebar instead of pushing it around. The collapsed
+       height includes the room for the peeking stacked cards. */
     height: calc(
       var(--zen-media-collapsed-height, 2.5rem) + var(--zen-media-stack-peek) *
         var(--zen-media-stack-behind, 0)

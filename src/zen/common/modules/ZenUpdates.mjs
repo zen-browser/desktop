@@ -32,6 +32,11 @@ export default function checkForZenUpdates() {
         ),
         l10nId: "zen-sidebar-notification-updated",
         special: true,
+        icon: "chrome://browser/skin/zen-icons/sparkles.svg",
+      },
+      {
+        url: "https://www.zen-browser.app/donate",
+        l10nId: "zen-sidebar-notification-donate",
         icon: "chrome://browser/skin/zen-icons/heart-circle-fill.svg",
       },
       {

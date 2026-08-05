@@ -998,7 +998,7 @@ window.gZenCompactModeManager = {
     try {
       lazy.zenMouseTracker.registerWindow(window, screenEdge, maxEdgeOffset);
     } catch (e) {
-      // The platform can't track the global mouse position (e.g. Wayland)
+      // The platform can't track the global mouse position (e.g. Linux)
       return false;
     }
     this._outsideTrackedElement = target;

@@ -7,7 +7,7 @@ import checkForZenUpdates, {
 } from "chrome://browser/content/ZenUpdates.mjs";
 
 class ZenStartup {
-  #watermarkIgnoreElements = ["zen-toast-container"];
+  #watermarkIgnoreElements = ["zen-toast-container", "zen-browser-background"];
   #hasInitializedLayout = false;
 
   isReady = false;
@@ -53,12 +53,11 @@ class ZenStartup {
       // overlap and interaction issues with vertical tabs
       document.getElementById("browser").prepend(deckTemplate);
 
-      gZenWorkspaces.init();
-      setTimeout(() => {
+      gZenWorkspaces.init().then(() => {
         gZenUIManager.init();
         this.#initUIComponents();
         this.#checkForWelcomePage();
-      }, 0);
+      });
     } catch (e) {
       console.error("ZenThemeModifier: Error initializing browser layout", e);
     }
@@ -119,7 +118,9 @@ class ZenStartup {
       document.documentElement.removeAttribute("zen-before-loaded");
       return;
     }
-    for (let elem of document.querySelectorAll("#browser > *, #urlbar")) {
+    for (let elem of document.querySelectorAll(
+      `#browser > *:not(${this.#watermarkIgnoreElements.map(id => "#" + id).join(", ")}), #urlbar`
+    )) {
       elem.style.opacity = 0;
     }
   }

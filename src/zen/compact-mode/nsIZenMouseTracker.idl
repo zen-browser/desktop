@@ -28,7 +28,7 @@ interface nsIZenMouseTracker : nsISupports {
    * @param maxEdgeOffset How far (in CSS pixels) the pointer may travel past
    *   screenEdge before the exit notification is fired.
    * @throws NS_ERROR_NOT_AVAILABLE when the platform cannot track the global
-   *   pointer position (e.g. on Wayland).
+   *   pointer position (e.g. on Linux).
    */
   void registerWindow(in mozIDOMWindowProxy window, in ACString screenEdge,
                       in float maxEdgeOffset);

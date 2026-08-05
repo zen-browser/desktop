@@ -1491,7 +1491,7 @@ class nsZenWindowSync {
       if (!targetTab) {
         return;
       }
-      if (targetTab.splitView && win.gZenViewSplitter) {
+      if (targetTab.splitView) {
         win.gZenViewSplitter.removeTabFromGroup(targetTab, undefined, {
           forUnsplit: true,
           changeTab: false,

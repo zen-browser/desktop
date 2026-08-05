@@ -87,18 +87,15 @@
   & #identity-icon-box {
     background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1)) !important;
   }
+}
 
-  & #identity-icon-label {
-    display: none;
-  }
+
+#identity-icon-box #identity-icon-label {
+  display: none;
 }
 
 #identity-permission-box:not(:hover):not(:focus-within) {
   background: transparent !important;
-}
-
-#identity-box:not(.chromeUI) #identity-icon-label {
-  padding-inline-start: 8px !important;
 }
 
 #urlbar:not([extend="true"]) #identity-box #identity-icon-box {
@@ -112,9 +109,6 @@
 
   margin-bottom: auto;
   padding: 6px !important;
-  :root:not([zen-single-toolbar="true"]) & {
-    padding-block: 2px !important;
-  }
 }
 
 #urlbar .urlbar-input {
@@ -310,16 +304,13 @@
   }
 }
 
+
 :root[zen-single-toolbar="true"] {
   --urlbar-icon-border-radius: 8px !important;
   --urlbar-inner-border-radius: 6px !important;
 
   #identity-permission-box > *:not(#zen-site-data-icon-button) {
     visibility: collapse;
-  }
-
-  #identity-icon-label {
-    display: none;
   }
 
   &:not([zen-has-empty-tab="true"]) #urlbar:not([breakout-extend]) #identity-box {

@@ -19,3 +19,12 @@ index a05894d593e4149097c473822a38f87b2220625f..1660106c2a6548920fdffd2656e5a1f1
          }
          break;
        }
+
+@@ -362,6 +362,7 @@
+    switch (event.keyCode) {
+      case KeyEvent.DOM_VK_ESCAPE:
+        if (executeAction) {
+          if (this.view.isOpen) {
+            this.view.close();
++           this.input.handleRevert();
+          } else if (

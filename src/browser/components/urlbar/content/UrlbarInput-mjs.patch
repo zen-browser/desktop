@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/content/UrlbarInput.mjs b/browser/components/urlbar/content/UrlbarInput.mjs
-index 0b1b4b2f0f8d6b0fb126aa1224409ab6f1ffb8d8..942c6e1e3b6cd9de65df54a1d83884f2633c1284 100644
+index 0b1b4b2f0f8d6b0fb126aa1224409ab6f1ffb8d8..4405e1bf385477c2161ae3a5a62e32c1403a3630 100644
 --- a/browser/components/urlbar/content/UrlbarInput.mjs
 +++ b/browser/components/urlbar/content/UrlbarInput.mjs
 @@ -98,6 +98,13 @@ const lazy = XPCOMUtils.declareLazy({
@@ -292,7 +292,11 @@ index 0b1b4b2f0f8d6b0fb126aa1224409ab6f1ffb8d8..942c6e1e3b6cd9de65df54a1d83884f2
      switch (event.target) {
        case this.inputField:
        case this._inputContainer:
-@@ -5374,7 +5495,7 @@ ${
+@@ -5371,10 +5492,11 @@ ${
+       }
+       if (untrim) {
+         this._setValue(this._untrimmedValue);
++        this.setSelectionRange(0, this.value.length);
        }
      }
  
@@ -301,7 +305,7 @@ index 0b1b4b2f0f8d6b0fb126aa1224409ab6f1ffb8d8..942c6e1e3b6cd9de65df54a1d83884f2
        this.view.autoOpen({ event });
      } else {
        if (this._untrimOnFocusAfterKeydown) {
-@@ -5414,9 +5535,16 @@ ${
+@@ -5414,9 +5536,16 @@ ${
    }
  
    _on_mousedown(event) {
@@ -319,7 +323,7 @@ index 0b1b4b2f0f8d6b0fb126aa1224409ab6f1ffb8d8..942c6e1e3b6cd9de65df54a1d83884f2
          if (
            event.composedTarget != this.inputField &&
            event.composedTarget != this._inputContainer
-@@ -5426,6 +5554,10 @@ ${
+@@ -5426,6 +5555,10 @@ ${
  
          this.focusedViaMousedown = !this.focused;
          this.#preventClickSelectsAll = this.focused;
@@ -330,7 +334,7 @@ index 0b1b4b2f0f8d6b0fb126aa1224409ab6f1ffb8d8..942c6e1e3b6cd9de65df54a1d83884f2
  
          // Keep the focus status, since the attribute may be changed
          // upon calling this.focus().
-@@ -5461,7 +5593,7 @@ ${
+@@ -5461,7 +5594,7 @@ ${
          }
          // Don't close the view when clicking on a tab; we may want to keep the
          // view open on tab switch, and the TabSelect event arrived earlier.
@@ -339,7 +343,7 @@ index 0b1b4b2f0f8d6b0fb126aa1224409ab6f1ffb8d8..942c6e1e3b6cd9de65df54a1d83884f2
            break;
          }
  
-@@ -5750,7 +5882,7 @@ ${
+@@ -5750,7 +5883,7 @@ ${
      // When we are in actions search mode we can show more results so
      // increase the limit.
      let maxResults =

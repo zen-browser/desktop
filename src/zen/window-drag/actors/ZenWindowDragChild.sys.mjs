@@ -54,33 +54,6 @@ const kInteractiveRoles = new Set([
   "treegrid",
 ]);
 
-// Cursors that signal the page considers the area interactive or draggable.
-const kInteractiveCursors = new Set([
-  "pointer",
-  "grab",
-  "grabbing",
-  "move",
-  "all-scroll",
-  "text",
-  "vertical-text",
-  "cell",
-  "crosshair",
-  "col-resize",
-  "row-resize",
-  "n-resize",
-  "e-resize",
-  "s-resize",
-  "w-resize",
-  "ne-resize",
-  "nw-resize",
-  "se-resize",
-  "sw-resize",
-  "ew-resize",
-  "ns-resize",
-  "nesw-resize",
-  "nwse-resize",
-]);
-
 const kGestureListenerOptions = { mozSystemGroup: true, capture: true };
 
 const kGestureEvents = ["mousemove", "mouseup", "dragstart", "unload"];
@@ -276,7 +249,12 @@ export class ZenWindowDragChild extends JSWindowActorChild {
         return true;
       }
     }
-    return this.#hasInteractiveCursor(target);
+    // The effective cursor, resolved the same way it is shown to the user.
+    return lazy.zenWindowDragUtils.isInteractiveCursor(
+      event.composedTarget,
+      event.clientX,
+      event.clientY
+    );
   }
 
   #isSelectableText(node) {
@@ -306,16 +284,5 @@ export class ZenWindowDragChild extends JSWindowActorChild {
     }
     const role = element.getAttribute?.("role");
     return !!role && kInteractiveRoles.has(role.toLowerCase());
-  }
-
-  #hasInteractiveCursor(element) {
-    const style = element.ownerGlobal?.getComputedStyle(element);
-    if (!style) {
-      return false;
-    }
-    // The keyword is always the last component of the computed value.
-    // Don't split on "," as url() cursor images may contain commas.
-    const cursor = style.cursor.match(/[a-z-]+$/)?.[0];
-    return kInteractiveCursors.has(cursor);
   }
 }

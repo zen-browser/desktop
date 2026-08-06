@@ -693,24 +693,22 @@ var gZenLooksAndFeel = {
         if (layout.hasAttribute("disabled")) {
           return;
         }
-
-        if (window._zenLayoutUpdateTimer) {
-          clearTimeout(window._zenLayoutUpdateTimer);
+        let win = Services.wm.getMostRecentWindow("navigator:browser");
+        if (win && win.gZenVerticalTabsManager && win.gZenVerticalTabsManager._isUpdating) {
+          return;
         }
 
-        window._zenLayoutUpdateTimer = setTimeout(() => {
-          for (const el of document.getElementById("zenLayoutList").children) {
-            el.classList.remove("selected");
-          }
+        for (const el of document.getElementById("zenLayoutList").children) {
+          el.classList.remove("selected");
+        }
 
-          layout.classList.add("selected");
+        layout.classList.add("selected");
 
-          Services.prefs.setBoolPref(
-            kZenExtendedSidebar,
-            layout.getAttribute("layout") != "collapsed"
-          );
-          Services.prefs.setBoolPref(kZenSingleToolbar, layout.getAttribute("layout") == "single");
-        }, 150);
+        Services.prefs.setBoolPref(
+          kZenExtendedSidebar,
+          layout.getAttribute("layout") != "collapsed"
+        );
+        Services.prefs.setBoolPref(kZenSingleToolbar, layout.getAttribute("layout") == "single");
       });
     }
   },

@@ -1488,9 +1488,16 @@ class nsZenWindowSync {
     const window = tab.documentGlobal;
     this.#runOnAllWindows(window, win => {
       const targetTab = this.getItemFromWindow(win, tab.id);
-      if (targetTab) {
-        win.gBrowser.removeTab(targetTab, { animate: true });
+      if (!targetTab) {
+        return;
       }
+      if (targetTab.splitView) {
+        win.gZenViewSplitter.removeTabFromGroup(targetTab, undefined, {
+          forUnsplit: true,
+          changeTab: false,
+        });
+      }
+      win.gBrowser.removeTab(targetTab, { animate: true });
     });
   }
 

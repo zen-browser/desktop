@@ -4,24 +4,6 @@
 [
   {
     "type": "phabricator",
-    "ids": [
-      "D296935",
-      "D303334",
-      "D297660",
-      "D304517",
-
-      "D306773",
-      "D306774",
-      "D306775",
-      "D306776",
-      "D306777",
-      "D306778",
-      "D306779"
-    ],
-    "name": "Corner shape support"
-  },
-  {
-    "type": "phabricator",
     "id": "D299584",
     "name": "Native MacOS popovers fix"
   },

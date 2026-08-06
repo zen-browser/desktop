@@ -1,42 +1,46 @@
 diff --git a/browser/components/extensions/parent/ext-tabs.js b/browser/components/extensions/parent/ext-tabs.js
-index f342748d4b680a5de3a8b7c90df79f7c380b9e1c..5e5b19f52d036808e73b8a3f57258571a24f8de7 100644
+index f342748d4b680a5de3a8b7c90df79f7c380b9e1c...c61b2d2763838563f4acb7c370cfc4fd92c96a7a 100644
 --- a/browser/components/extensions/parent/ext-tabs.js
 +++ b/browser/components/extensions/parent/ext-tabs.js
-@@ -438,6 +438,7 @@ this.tabs = class extends ExtensionAPIPersistent {
+@@ -97,6 +97,11 @@ const allProperties = new Set([
+ ]);
+ const restricted = new Set(["url", "favIconUrl", "title"]);
+ 
++function zenLogicalIndexToTabIndex(gBrowser, logicalIndex) {
++  let tab = zenGetNativeTabAtLogicalIndex(gBrowser, logicalIndex);
++  return tab ? tab._tPos : gBrowser.tabs.length;
++}
++
+ this.tabs = class extends ExtensionAPIPersistent {
+   static onUpdate(id, manifest) {
+     if (!manifest.permissions || !manifest.permissions.includes("tabHide")) {
+@@ -438,6 +443,9 @@ this.tabs = class extends ExtensionAPIPersistent {
          }
  
          let tab = tabManager.getWrapper(updatedTab);
-+        if (!tab) return;
++        if (!tab) {
++          return;
++        }
  
          let changeInfo = {};
          for (let prop of needed) {
-@@ -771,7 +772,13 @@ this.tabs = class extends ExtensionAPIPersistent {
+@@ -771,7 +779,10 @@ this.tabs = class extends ExtensionAPIPersistent {
              }
-
+ 
              if (createProperties.index != null) {
 -              options.tabIndex = createProperties.index;
-+              // index is a logical index; translate it to a physical tabIndex.
 +              options.tabIndex = zenLogicalIndexToTabIndex(
 +                window.gBrowser,
 +                createProperties.index
 +              );
              }
-
-             if (createProperties.pinned != null) {
-@@ -806,6 +813,7 @@ this.tabs = class extends ExtensionAPIPersistent {
-               });
-             }
  
-+            window.gZenCompactModeManager._nextTimeWillBeActive = active;
-             let nativeTab = window.gBrowser.addTab(url, options);
-             tabTracker.addTabReadyBlocker(nativeTab);
-
-@@ -1114,14 +1122,15 @@ this.tabs = class extends ExtensionAPIPersistent {
+             if (createProperties.pinned != null) {
+@@ -1114,14 +1125,12 @@ this.tabs = class extends ExtensionAPIPersistent {
              let insertionPoint;
              let lastInsertion = lastInsertionMap.get(window);
              if (lastInsertion == null) {
 -              insertionPoint = moveProperties.index;
-+              // index is a logical index; map it to a physical tabIndex.
                let maxIndex = gBrowser.tabs.length - (isSameWindow ? 1 : 0);
 -              if (insertionPoint == -1) {
 -                // If the index is -1 it should go to the end of the tabs.
@@ -52,12 +56,11 @@ index f342748d4b680a5de3a8b7c90df79f7c380b9e1c..5e5b19f52d036808e73b8a3f57258571
              } else if (isSameWindow && nativeTab._tPos <= lastInsertion) {
                // lastInsertion is the current index of the last inserted tab.
                // insertionPoint is the desired index of the current tab *after* moving it.
-@@ -1694,7 +1703,9 @@ this.tabs = class extends ExtensionAPIPersistent {
+@@ -1694,7 +1703,7 @@ this.tabs = class extends ExtensionAPIPersistent {
              throw new ExtensionError("No highlighted tab.");
            }
            window.gBrowser.selectedTabs = tabs.map(tabIndex => {
 -            let tab = window.gBrowser.tabs[tabIndex];
-+            // tabIndex is a logical index; resolve the physical tab.
 +            let tab = zenGetNativeTabAtLogicalIndex(window.gBrowser, tabIndex);
              if (!tab || !tabManager.canAccessTab(tab)) {
                throw new ExtensionError("No tab at index: " + tabIndex);

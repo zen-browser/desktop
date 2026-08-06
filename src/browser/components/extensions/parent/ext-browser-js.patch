@@ -1,35 +1,31 @@
 diff --git a/browser/components/extensions/parent/ext-browser.js b/browser/components/extensions/parent/ext-browser.js
-index 91adc6bc3649af47745818e6f9d00cbbdffc35a5..cd83459693067211f030b6354b839a555df2e822 100644
+index 91adc6bc3649af47745818e6f9d00cbbdffc35a5...4ff10dc750e037dbc9c342f616b4132ee6ef2865 100644
 --- a/browser/components/extensions/parent/ext-browser.js
 +++ b/browser/components/extensions/parent/ext-browser.js
-@@ -27,6 +27,59 @@ function isPrivateTab(nativeTab) {
+@@ -27,6 +27,40 @@ function isPrivateTab(nativeTab) {
    return PrivateBrowsingUtils.isBrowserPrivate(nativeTab.linkedBrowser);
  }
  
-+// Zen hides placeholder "empty tabs" (the workspace New Tab button and one
-+// per folder) from extensions, so extension-facing indices are "logical"
-+// indices that exclude them, translated to physical gBrowser.tabs positions
-+// at the boundaries below.
++// Zen hides placeholder "empty tabs" (workspace New Tab button, one per
++// folder) from extensions; _zenLogicalIndex holds the extension-facing index.
 +function zenIsEmptyTab(nativeTab) {
-+  return (
-+    nativeTab && nativeTab.hasAttribute && nativeTab.hasAttribute("zen-empty-tab")
-+  );
++  return nativeTab?.hasAttribute("zen-empty-tab");
 +}
 +
-+// Extension-visible index of nativeTab: count of non-empty tabs before it.
-+function zenLogicalTabIndex(nativeTab) {
-+  let gBrowser = nativeTab.documentGlobal.gBrowser;
++// Recompute _zenLogicalIndex for every tab; skip the closing tab, which is
++// still listed when TabClose fires.
++function zenSyncTabIndices(gBrowser, excludedTab) {
++  // gBrowser.tabs is cached and can be stale at event time.
++  gBrowser.tabContainer._invalidateCachedTabs();
 +  let logical = 0;
-+  let pos = nativeTab._tPos;
-+  for (let i = 0; i < pos; i++) {
-+    if (!zenIsEmptyTab(gBrowser.tabs[i])) {
-+      logical++;
++  for (let tab of gBrowser.tabs) {
++    if (tab === excludedTab) {
++      continue;
 +    }
++    tab._zenLogicalIndex = zenIsEmptyTab(tab) ? -1 : logical++;
 +  }
-+  return logical;
 +}
 +
-+// The nativeTab at the given logical index in gBrowser, or undefined.
 +function zenGetNativeTabAtLogicalIndex(gBrowser, logicalIndex) {
 +  let seen = 0;
 +  for (let tab of gBrowser.tabs) {
@@ -44,20 +40,18 @@ index 91adc6bc3649af47745818e6f9d00cbbdffc35a5..cd83459693067211f030b6354b839a55
 +  return undefined;
 +}
 +
-+// Map a logical index from an extension to a physical tab index for
-+// gBrowser.addTab / moveTabTo. -1 and out-of-range values map to the end.
-+function zenLogicalIndexToTabIndex(gBrowser, logicalIndex) {
-+  if (logicalIndex === -1) {
-+    return gBrowser.tabs.length;
-+  }
-+  let tab = zenGetNativeTabAtLogicalIndex(gBrowser, logicalIndex);
-+  return tab ? tab._tPos : gBrowser.tabs.length;
-+}
-+
  /* eslint-disable mozilla/balanced-listeners */
  extensions.on("uninstalling", (msg, extension) => {
    if (extension.uninstallURL) {
-@@ -362,6 +415,9 @@ class TabTracker extends TabTrackerBase {
+@@ -348,6 +382,7 @@ class TabTracker extends TabTrackerBase {
+ 
+     windowTracker.addListener("TabClose", this);
+     windowTracker.addListener("TabOpen", this);
++    windowTracker.addListener("TabMove", this);
+     windowTracker.addListener("TabSelect", this);
+     windowTracker.addListener("TabMultiSelect", this);
+     windowTracker.addOpenListener(this._handleWindowOpen);
+@@ -362,6 +397,9 @@ class TabTracker extends TabTrackerBase {
    }
  
    getId(nativeTab) {
@@ -67,7 +61,7 @@ index 91adc6bc3649af47745818e6f9d00cbbdffc35a5..cd83459693067211f030b6354b839a55
      let id = this._tabs.get(nativeTab);
      if (id) {
        return id;
-@@ -395,6 +451,9 @@ class TabTracker extends TabTrackerBase {
+@@ -395,6 +433,9 @@ class TabTracker extends TabTrackerBase {
      if (nativeTab.documentGlobal.closed) {
        throw new Error("Cannot attach ID to a tab in a closed window.");
      }
@@ -77,31 +71,56 @@ index 91adc6bc3649af47745818e6f9d00cbbdffc35a5..cd83459693067211f030b6354b839a55
  
      this._tabs.set(nativeTab, id);
      this._tabIds.set(id, nativeTab);
-@@ -846,7 +905,13 @@ class Tab extends TabBase {
+@@ -531,6 +572,7 @@ class TabTracker extends TabTrackerBase {
+ 
+     switch (event.type) {
+       case "TabOpen": {
++        zenSyncTabIndices(nativeTab.documentGlobal.gBrowser);
+         let { adoptedTab } = event.detail;
+         if (adoptedTab) {
+           // This tab is being created to adopt a tab from a different window.
+@@ -564,6 +606,7 @@ class TabTracker extends TabTrackerBase {
+       }
+ 
+       case "TabClose": {
++        zenSyncTabIndices(nativeTab.documentGlobal.gBrowser, nativeTab);
+         let { adoptedBy } = event.detail;
+         if (adoptedBy) {
+           // This tab is being closed because it was adopted by a new window.
+@@ -599,6 +642,10 @@ class TabTracker extends TabTrackerBase {
+           });
+         }
+         break;
++
++      case "TabMove":
++        zenSyncTabIndices(event.target.documentGlobal.gBrowser);
++        break;
+     }
+   }
+ 
+@@ -846,7 +893,11 @@ class Tab extends TabBase {
    }
  
    get index() {
 -    return this.nativeTab._tPos;
-+    // Report the logical index (excluding empty tabs) so query() results
-+    // have contiguous indices 0..N-1.
-+    if (zenIsEmptyTab(this.nativeTab)) {
-+      return -1;
++    let { nativeTab } = this;
++    if (nativeTab._zenLogicalIndex === undefined) {
++      zenSyncTabIndices(nativeTab.documentGlobal.gBrowser);
 +    }
-+    return zenLogicalTabIndex(this.nativeTab);
++    return nativeTab._zenLogicalIndex;
    }
  
    get mutedInfo() {
-@@ -1197,7 +1262,9 @@ class Window extends WindowBase {
+@@ -1197,7 +1248,7 @@ class Window extends WindowBase {
    }
  
    getTabAtIndex(index) {
 -    let nativeTab = this.window.gBrowser.tabs[index];
-+    // Translate the logical index to the physical tab, skipping empty tabs.
 +    let nativeTab = zenGetNativeTabAtLogicalIndex(this.window.gBrowser, index);
      if (nativeTab) {
        return this.extension.tabManager.getWrapper(nativeTab);
      }
-@@ -1262,6 +1329,10 @@ class TabManager extends TabManagerBase {
+@@ -1262,6 +1313,10 @@ class TabManager extends TabManagerBase {
    }
  
    canAccessTab(nativeTab) {

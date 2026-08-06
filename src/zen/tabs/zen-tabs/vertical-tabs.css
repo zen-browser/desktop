@@ -1156,10 +1156,6 @@
     pointer-events: none;
     position: fixed; /* Fix position to prevent scrolling */
   }
-
-  &[cloned] {
-    pointer-events: none;
-  }
 }
 
 .tabbrowser-tab[zen-essential="true"],

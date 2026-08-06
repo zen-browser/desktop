@@ -19,6 +19,8 @@
   flex-direction: column;
   min-width: 0;
   border-radius: var(--border-radius-medium);
+  outline: var(--zen-sidebar-notification-outline);
+  outline-offset: -1.5px;
   box-shadow: var(--zen-sidebar-notification-shadow);
   font-size: 12px;
 }

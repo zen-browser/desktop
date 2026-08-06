@@ -57,6 +57,22 @@ let JSWINDOWACTORS = {
     remoteTypes: ["web", "file"],
     enablePreference: "zen.glance.enabled",
   },
+  ZenWindowDrag: {
+    parent: {
+      esModuleURI: "resource:///actors/ZenWindowDragParent.sys.mjs",
+    },
+    child: {
+      esModuleURI: "resource:///actors/ZenWindowDragChild.sys.mjs",
+      events: {
+        mousedown: {
+          mozSystemGroup: true,
+        },
+      },
+    },
+    messageManagerGroups: ["browsers"],
+    remoteTypes: ["web", "file"],
+    enablePreference: "zen.view.drag-window-from-content",
+  },
 };
 
 if (!Services.appinfo.inSafeMode) {

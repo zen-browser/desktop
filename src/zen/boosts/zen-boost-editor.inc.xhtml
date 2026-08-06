@@ -138,28 +138,14 @@
   </popupset>
 
   <commandset id="zenBoostCommandSet">
-    <command id="cmd_zenBoostEditName"
-            oncommand="window.boostEditor.editBoostName();" />
-
-    <command id="cmd_zenBoostShuffle"
-            oncommand="window.boostEditor.shuffleBoost();" />
-
-    <command id="cmd_zenBoostReset"
-            oncommand="window.boostEditor.resetBoost();" />
-
-    <command id="cmd_zenBoostLoad"
-      oncommand="window.boostEditor.onLoadBoostClick();" />
-
-    <command id="cmd_zenBoostSave"
-            oncommand="window.boostEditor.onSaveBoostClick();" />
-
-    <command id="cmd_zenBoostDelete"
-            oncommand="window.boostEditor.deleteBoost();" />
+    <command id="cmd_zenBoostEditName" />
+    <command id="cmd_zenBoostShuffle" />
+    <command id="cmd_zenBoostReset" />
+    <command id="cmd_zenBoostLoad" />
+    <command id="cmd_zenBoostSave" />
+    <command id="cmd_zenBoostDelete" />
   </commandset>
 
-  <script>
-    const { nsZenBoostEditor } = ChromeUtils.importESModule( "resource:///modules/zen/boosts/ZenBoostsEditor.mjs" );
-    window.boostEditor = new nsZenBoostEditor(document, window.domain, window, window.openerWindow);
-  </script>
+  <script src="chrome://browser/content/zen-components/windows/zen-boost-editor.js"></script>
 </html:body>
 </html>

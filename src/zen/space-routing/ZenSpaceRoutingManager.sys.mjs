@@ -19,6 +19,58 @@ class nsZenSpaceRoutingManager {
   }
 
   /**
+   * Auto invoked for every window on delayed startup
+   *
+   * @param {nsIDOMWindow} window - The browser window that just started up
+   */
+  onDelayedBrowserStartup(window) {
+    const element = window.MozXULElement.parseXULToFragment(`
+        <menuseparator/>
+        <menuitem id="context_zen-add-domain-to-routing"
+                  data-lazy-l10n-id="tab-context-zen-add-domain-to-sr"
+                  data-l10n-args='{"tabCount": 1}'/>
+      `);
+    window.document.getElementById("context_undoCloseTab").after(element);
+
+    window.document
+      .getElementById("context_zen-add-domain-to-routing")
+      .addEventListener("command", this.#onAddSelectedToRouting.bind(this));
+    window.document
+      .getElementById("tabContextMenu")
+      .addEventListener(
+        "popupshowing",
+        this.#updateTabCloseCountState.bind(this)
+      );
+  }
+
+  /**
+   * Updates the "context_zen-add-domain-to-routing" command
+   * to reflect the number of selected tabs, when applicable.
+   *
+   * @param {Event} event - The event param
+   */
+  #updateTabCloseCountState(event) {
+    const window = event.target.documentGlobal;
+    window.document.l10n.setArgs(
+      window.document.getElementById("context_zen-add-domain-to-routing"),
+      { tabCount: window.gBrowser.selectedTabs.length }
+    );
+  }
+
+  /**
+   * Callback for whenever the menuitem command is ran
+   *
+   * @param {Event} event - The event parameter
+   */
+  #onAddSelectedToRouting(event) {
+    const window = event.target.documentGlobal;
+    const tabs = window.TabContextMenu.contextTab.multiselected
+      ? window.gBrowser.selectedTabs
+      : [window.TabContextMenu.contextTab];
+    this.addRouteForSelected(tabs, window);
+  }
+
+  /**
    * Callback that will be executed from tabbrowser.js
    * This method can be used to stop the tab from being created.
    *
@@ -52,7 +104,7 @@ class nsZenSpaceRoutingManager {
         break;
       default: {
         const targetWorkspace =
-          win?.gZenWorkspaces?.getWorkspaceFromId(targetRoute);
+          win.gZenWorkspaces.getWorkspaceFromId(targetRoute);
 
         if (targetWorkspace) {
           userContextId = targetWorkspace.containerTabId;
@@ -107,8 +159,26 @@ class nsZenSpaceRoutingManager {
    * @returns {boolean} True when the navigation should open in a new routed tab
    */
   shouldRedirectNavigation(uriString, currentWorkspaceId, win) {
+    return !!this.getRedirectTargetWorkspaceId(
+      uriString,
+      currentWorkspaceId,
+      win
+    );
+  }
+
+  /**
+   * Resolves the destination space for an in-place top-level navigation, or
+   * null when the navigation should be left alone (no rule, the destination is
+   * "most-recent-space", the tab already lives there, or the space is gone).
+   *
+   * @param {string} uriString - The destination URI
+   * @param {string|null} currentWorkspaceId - The zen-workspace-id of the navigating tab
+   * @param {Window} win - The owning browser window
+   * @returns {string|null} The target workspace id, or null to leave the navigation in place
+   */
+  getRedirectTargetWorkspaceId(uriString, currentWorkspaceId, win) {
     if (!win?.gZenWorkspaces?.workspaceEnabled) {
-      return false;
+      return null;
     }
 
     const targetRoute = this.routeUri(uriString, { fromExternal: false });
@@ -118,11 +188,13 @@ class nsZenSpaceRoutingManager {
       targetRoute === "most-recent-space" ||
       targetRoute === currentWorkspaceId
     ) {
-      return false;
+      return null;
     }
 
     // Only redirect when the destination space actually exists.
-    return !!win.gZenWorkspaces.getWorkspaceFromId(targetRoute);
+    return win.gZenWorkspaces.getWorkspaceFromId(targetRoute)
+      ? targetRoute
+      : null;
   }
 
   /**
@@ -173,10 +245,6 @@ class nsZenSpaceRoutingManager {
           if (targetWorkspace) {
             workspaces.moveTabToWorkspace(newTab, targetWorkspace.uuid);
 
-            if (inBackground) {
-              return;
-            }
-
             const mostRecentWindow =
               Services.wm.getMostRecentWindow("navigator:browser");
             const isOriginatingWindow = win === mostRecentWindow;
@@ -184,7 +252,10 @@ class nsZenSpaceRoutingManager {
               win.gZenWorkspaces.lastSelectedWorkspaceTabs[
                 targetWorkspace.uuid
               ] = newTab;
-              await win.gZenWorkspaces.changeWorkspace(targetWorkspace);
+
+              if (!inBackground) {
+                await win.gZenWorkspaces.changeWorkspace(targetWorkspace);
+              }
             }
           }
         }
@@ -401,6 +472,37 @@ class nsZenSpaceRoutingManager {
    */
   setDefaultExternalRoute(routeType) {
     this.#file.data.defaultRouteExternal = routeType;
+  }
+
+  /**
+   * Adds a new route for all given tabs
+   *
+   * @param {Array<object>} selectedTabs - The tabs that should be routed
+   * @param {Window} parentWindow - The window from which this is being executed
+   */
+  addRouteForSelected(selectedTabs, parentWindow) {
+    const newRoute = this.createNewRoute();
+    let routeReference = "";
+
+    if (selectedTabs.length == 1) {
+      newRoute.matchType = "contains";
+      routeReference = selectedTabs[0].linkedBrowser.currentURI.host;
+    } else {
+      newRoute.matchType = "regex";
+      routeReference = "(";
+      for (let i = 0; i < selectedTabs.length; i++) {
+        const domain = selectedTabs[i].linkedBrowser.currentURI.host;
+        routeReference += domain.replaceAll(".", "\.");
+        if (i != selectedTabs.length - 1) {
+          routeReference += "|";
+        }
+      }
+      routeReference += ")";
+    }
+
+    newRoute.reference = routeReference;
+    this.updateRoute(newRoute);
+    this.openSpaceRoutingDialog(parentWindow);
   }
 
   /**

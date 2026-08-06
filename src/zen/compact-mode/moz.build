@@ -1,0 +1,37 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+XPIDL_SOURCES += [
+    "nsIZenMouseTracker.idl",
+]
+
+EXPORTS.mozilla += [
+    "ZenMouseTracker.h",
+    "ZenMouseTrackerInternal.h",
+]
+
+SOURCES += [
+    "ZenMouseTracker.cpp",
+]
+
+XPCOM_MANIFESTS += [
+    "components.conf",
+]
+
+LOCAL_INCLUDES += [
+    "/widget",
+]
+
+if CONFIG["MOZ_WIDGET_TOOLKIT"] == "cocoa":
+    SOURCES += ["ZenMouseTrackerCocoa.mm"]
+    LOCAL_INCLUDES += [
+        "/widget/cocoa",
+        "/xpcom/base",
+    ]
+
+if CONFIG["MOZ_WIDGET_TOOLKIT"] == "windows":
+    SOURCES += ["ZenMouseTrackerWin.cpp"]
+
+FINAL_LIBRARY = "xul"
+XPIDL_MODULE = "zen_compact_mode"

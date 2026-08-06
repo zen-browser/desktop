@@ -500,10 +500,24 @@ jobs:
           path: updates-server
           token: ${{ secrets.DEPLOY_KEY }}
 
-      - name: Download object files
+      - name: Download signed windows objects
         if: ${{ inputs.update_branch == 'release' }}
+        env:
+          GH_TOKEN: ${{ secrets.DEPLOY_KEY }}
         run: |
-          git clone https://github.com/zen-browser/windows-binaries.git .github/workflows/object --depth 1
+          mkdir -p .github/workflows/object
+          gh release download "windows-signed-${{ github.run_id }}" \
+            --repo zen-browser/windows-binaries \
+            --pattern 'windows-x64-signed-*.tar.gz' \
+            --dir .github/workflows/object
+
+          for arch in x86_64 arm64; do
+            archive=".github/workflows/object/windows-x64-signed-$arch.tar.gz"
+            dest=".github/workflows/object/windows-x64-signed-$arch"
+            echo "Expanding $archive"
+            mkdir -p "$dest"
+            tar -xvf "$archive" -C "$dest"
+          done
 
       - name: Sign MAR files
         env:
@@ -615,6 +629,17 @@ jobs:
             ./.github/workflows/object/windows-x64-signed-x86_64/zen.installer.exe
             ./.github/workflows/object/windows-x64-signed-arm64/zen.installer-arm64.exe
             ./zen.macos-universal.dmg/*
+
+      - name: Clean up signed windows staging release
+        if: ${{ inputs.update_branch == 'release' }}
+        env:
+          GH_TOKEN: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          # The per-run staging prerelease on windows-binaries has served its purpose
+          # now that the signed bundles are published in the real release. Never fail
+          # the release over this cleanup.
+          gh release delete "windows-signed-${{ github.run_id }}" \
+            --repo zen-browser/windows-binaries --cleanup-tag --yes || true
 
   prepare-flatpak:
     if: ${{ inputs.create_release && inputs.update_branch == 'release' }}

@@ -1,7 +1,7 @@
-<!-- App Hub launcher icon — identification mark only. -->
+<!-- IRCTC train — identification only. -->
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img">
   <rect width="64" height="64" rx="14" fill="#213D77"/>
-  <text x="32" y="34" text-anchor="middle" dominant-baseline="middle"
-        font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700"
-        fill="#FFFFFF">I</text>
+  <path fill="#FFFFFF" d="M16 40h32v3.5H16zm5-20h22a5 5 0 0 1 5 5v12H16V25a5 5 0 0 1 5-5zm4 5.5a3.2 3.2 0 1 0 .001 6.401A3.2 3.2 0 0 0 25 25.5zm14 0a3.2 3.2 0 1 0 .001 6.401A3.2 3.2 0 0 0 39 25.5zM22 16h20v4.5H22z"/>
+  <path fill="#F7C948" d="M18 43.5h6l-2 5h-2zm22 0h6l-2 5h-2z"/>
+  <path fill="#FFFFFF" d="M14 46.5h36v2.5H14z"/>
 </svg>

@@ -45,9 +45,9 @@ Retrieval / creation date: 2026-07-17
 | flipkart | flipkart.com | generated-identification:flipkart.com | `flipkart.svg` | svg | `327996bbbf515548de47eb49128ab35b0d04111e510806cd997e1d577dc54186` | Flipkart F mark (simplified) |
 | meesho | meesho.com | generated-identification:meesho.com | `meesho.svg` | svg | `dbbeb29c34028ed54dd6c50055d202277ec9d3bf848e1243663a9495827d0128` | Meesho M mark (simplified) |
 | myntra | myntra.com | generated-identification:myntra.com | `myntra.svg` | svg | `e3221241029990a6be10f99818edea39b85160004335626bbb00127c0d7c7023` | Myntra M mark (simplified) |
-| irctc | irctc.co.in | generated-identification:irctc.co.in | `irctc.svg` | svg | `b21cafb65baa848519fc844593af83ef12e3e2944f96e41b058ddc3350f2e184` | IRCTC train (simplified) |
+| irctc | irctc.co.in | generated-identification:irctc.co.in | `irctc.svg` | svg | `ad3752a54c402000884b483fb586a6e51d1d3e90b6689222c484fee1419671c3` | IRCTC train (simplified) |
 | income-tax | incometax.gov.in | generated-identification:incometax.gov.in | `income-tax.svg` | svg | `b13eb8b108a78c5a6835dccd42e1ffd99b751b01adc7d4407d491dd2264038e3` | Income Tax emblem (simplified) |
-| digilocker | digilocker.gov.in | generated-identification:digilocker.gov.in | `digilocker.svg` | svg | `3c6d834dbd76c6826767f8f2bcd5367c3b0c76b9407a08fd1aa2ecfcab3a861e` | DigiLocker lock (simplified) |
+| digilocker | digilocker.gov.in | generated-identification:digilocker.gov.in | `digilocker.svg` | svg | `d0873436890686836f463f22c895dd71e1f85d8a088a83d3336bb14a73ca57c1` | DigiLocker lock (simplified) |
 | gst-portal | gst.gov.in | generated-identification:gst.gov.in | `gst-portal.svg` | svg | `5d36567b6635fd5a6ba1356fb073d180b0daf87a725e5f22224e0d13f7a51117` | GST leaf (simplified) |
 | epfo | epfindia.gov.in | generated-identification:epfindia.gov.in | `epfo.svg` | svg | `7f3a4ba65e48064364ad5e34662a8b8c2bb75438f064cd61707598b4977165b2` | EPFO E mark (simplified) |
 | inshorts | inshorts.com | generated-identification:inshorts.com | `inshorts.svg` | svg | `19756daffb0639eec99da16128011ede66f9f289a14f3ad90d606732ea0f3c44` | Inshorts I mark (simplified) |

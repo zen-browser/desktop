@@ -77,9 +77,32 @@ const CATALOG_SCHEMA_VERSION = 1;
 const SECTION_FAVORITES = "__favorites__";
 const SECTION_RECENT = "__recent__";
 const SECTION_PINNED = "__pinned__";
+const SECTION_SUGGESTED = "__suggested__";
 const SECTION_SEARCH = "__search__";
 /** Recommended maximum visible pinned apps on the main launchpad. */
 const MAIN_PINNED_LIMIT = 12;
+
+/**
+ * Fallback suggested apps when the user has no Pinned/Recent history yet.
+ * Prefer catalog `id`; soft entries may supply name/url/monogram for apps
+ * not yet in the packaged catalog. Used only for fresh profiles.
+ */
+const DEFAULT_SUGGESTED_APPS = Object.freeze([
+  { id: "notion" },
+  { id: "slack" },
+  {
+    id: "chatgpt",
+    name: "ChatGPT",
+    url: "https://chatgpt.com",
+    monogram: "AI",
+  },
+  { id: "canva" },
+]);
+
+/** Max chips shown in Suggested for you. */
+const SUGGESTED_LIMIT = 4;
+
+const ICON_CHROME = "chrome://browser/skin/zen-icons/";
 
 /** Used when the packaged catalog has not loaded yet. */
 const EDITOR_CATEGORY_FALLBACK = [
@@ -996,12 +1019,12 @@ class AstraAppHubManager {
   #ensureShell() {
     const panel = this.panel;
     const container = this.container;
-    if (!panel || !container || this.#shellBuilt) {
-      if (panel && container && !this.#shellBuilt) {
-        // Fall through only when not yet built.
-      } else {
-        return;
-      }
+    if (!panel || !container) {
+      return;
+    }
+    if (this.#shellBuilt) {
+      this.#polishShellChrome();
+      return;
     }
     this.#shellBuilt = true;
 
@@ -1033,6 +1056,14 @@ class AstraAppHubManager {
       spacer.setAttribute("flex", "1");
       header.appendChild(spacer);
 
+      const backHeaderBtn = document.createXULElement("toolbarbutton");
+      backHeaderBtn.id = "astra-app-hub-back-header-btn";
+      backHeaderBtn.classList.add("astra-app-hub-header-btn");
+      backHeaderBtn.setAttribute("data-action", "back-launchpad");
+      backHeaderBtn.hidden = true;
+      setL10nOrText(backHeaderBtn, "astra-app-hub-back", "Back");
+      header.appendChild(backHeaderBtn);
+
       const addHeaderBtn = document.createXULElement("toolbarbutton");
       addHeaderBtn.id = "astra-app-hub-add-header-btn";
       addHeaderBtn.classList.add("astra-app-hub-header-btn", "astra-app-hub-add-header-btn");
@@ -1045,8 +1076,19 @@ class AstraAppHubManager {
       customizeBtn.id = "astra-app-hub-customize-btn";
       customizeBtn.classList.add("astra-app-hub-header-btn");
       customizeBtn.setAttribute("data-action", "manage-apps");
-      setL10nOrText(customizeBtn, "astra-app-hub-manage", "Manage");
+      setL10nOrText(customizeBtn, "astra-app-hub-manage", "Manage Apps");
       header.appendChild(customizeBtn);
+
+      const overflowHeaderBtn = document.createXULElement("toolbarbutton");
+      overflowHeaderBtn.id = "astra-app-hub-overflow-header-btn";
+      overflowHeaderBtn.classList.add(
+        "astra-app-hub-header-btn",
+        "astra-app-hub-overflow-header-btn"
+      );
+      overflowHeaderBtn.setAttribute("data-action", "overflow");
+      overflowHeaderBtn.setAttribute("tooltiptext", "More options");
+      setL10nOrText(overflowHeaderBtn, "astra-app-hub-overflow-short", "⋯");
+      header.appendChild(overflowHeaderBtn);
 
       const doneBtn = document.createXULElement("toolbarbutton");
       doneBtn.id = "astra-app-hub-done-btn";
@@ -1081,6 +1123,12 @@ class AstraAppHubManager {
       searchRow.classList.add("astra-app-hub-search-row");
       searchRow.setAttribute("align", "center");
 
+      const searchWrap = document.createXULElement("hbox");
+      searchWrap.id = "astra-app-hub-search-wrap";
+      searchWrap.classList.add("astra-app-hub-search-wrap");
+      searchWrap.setAttribute("flex", "1");
+      searchWrap.setAttribute("align", "center");
+
       const search = document.createElementNS(
         "http://www.w3.org/1999/xhtml",
         "input"
@@ -1097,7 +1145,16 @@ class AstraAppHubManager {
           // keep placeholder
         }
       }
-      searchRow.appendChild(search);
+      searchWrap.appendChild(search);
+
+      const sparkle = document.createXULElement("image");
+      sparkle.id = "astra-app-hub-search-sparkle";
+      sparkle.classList.add("astra-app-hub-search-sparkle");
+      sparkle.setAttribute("src", `${ICON_CHROME}sparkles.svg`);
+      sparkle.setAttribute("aria-hidden", "true");
+      searchWrap.appendChild(sparkle);
+
+      searchRow.appendChild(searchWrap);
 
       const clearBtn = document.createXULElement("toolbarbutton");
       clearBtn.id = "astra-app-hub-search-clear";
@@ -1141,81 +1198,52 @@ class AstraAppHubManager {
       list.classList.add("astra-app-hub-list");
     }
 
-    // Footer
+    // Footer row removed for a minimal launcher feel. Manage Apps / Add
+    // Website / overflow live in the header; Browse remains via Show all /
+    // empty-state / Manage. Clear any legacy in-session footer chrome.
     let footer = document.getElementById("astra-app-hub-footer");
-    if (!footer) {
-      footer = document.createXULElement("hbox");
-      footer.id = "astra-app-hub-footer";
-      footer.classList.add("astra-app-hub-footer");
-      footer.setAttribute("align", "center");
+    if (footer) {
+      clearChildren(footer);
+      footer.hidden = true;
+      footer.setAttribute("data-retired", "true");
+    }
 
-      const browseBtn = document.createXULElement("toolbarbutton");
-      browseBtn.id = "astra-app-hub-browse-btn";
-      browseBtn.setAttribute("data-action", "browse-apps");
-      setL10nOrText(browseBtn, "astra-app-hub-browse", "Browse Apps");
-      footer.appendChild(browseBtn);
-
-      const backBtn = document.createXULElement("toolbarbutton");
-      backBtn.id = "astra-app-hub-back-btn";
-      backBtn.setAttribute("data-action", "back-launchpad");
-      backBtn.hidden = true;
-      setL10nOrText(backBtn, "astra-app-hub-back", "Back");
-      footer.appendChild(backBtn);
-
-      const manageBtn = document.createXULElement("toolbarbutton");
-      manageBtn.id = "astra-app-hub-manage-btn";
-      manageBtn.setAttribute("data-action", "manage-apps");
-      setL10nOrText(manageBtn, "astra-app-hub-manage", "Manage Apps");
-      footer.appendChild(manageBtn);
-
-      const spacer = document.createXULElement("spacer");
-      spacer.setAttribute("flex", "1");
-      footer.appendChild(spacer);
-
-      const addBtn = document.createXULElement("toolbarbutton");
-      addBtn.id = "astra-app-hub-add-btn";
-      addBtn.setAttribute("data-action", "add-app");
-      setL10nOrText(addBtn, "astra-app-hub-add-website", "Add Website");
-      footer.appendChild(addBtn);
-
-      const overflowBtn = document.createXULElement("toolbarbutton");
-      overflowBtn.id = "astra-app-hub-overflow-btn";
-      overflowBtn.setAttribute("data-action", "overflow");
-      setL10nOrText(overflowBtn, "astra-app-hub-overflow", "More");
-      footer.appendChild(overflowBtn);
-
-      container.appendChild(footer);
-    } else {
-      // Upgrade older footer layout in-session if needed.
-      if (!document.getElementById("astra-app-hub-browse-btn")) {
-        const browseBtn = document.createXULElement("toolbarbutton");
-        browseBtn.id = "astra-app-hub-browse-btn";
-        browseBtn.setAttribute("data-action", "browse-apps");
-        setL10nOrText(browseBtn, "astra-app-hub-browse", "Browse Apps");
-        footer.insertBefore(browseBtn, footer.firstChild);
+    // Upgrade older in-session headers that predate Back / overflow controls.
+    const existingHeader = document.getElementById("astra-app-hub-header");
+    if (existingHeader) {
+      if (!document.getElementById("astra-app-hub-back-header-btn")) {
+        const backHeaderBtn = document.createXULElement("toolbarbutton");
+        backHeaderBtn.id = "astra-app-hub-back-header-btn";
+        backHeaderBtn.classList.add("astra-app-hub-header-btn");
+        backHeaderBtn.setAttribute("data-action", "back-launchpad");
+        backHeaderBtn.hidden = true;
+        setL10nOrText(backHeaderBtn, "astra-app-hub-back", "Back");
+        const addBtn = document.getElementById("astra-app-hub-add-header-btn");
+        existingHeader.insertBefore(
+          backHeaderBtn,
+          addBtn || existingHeader.lastChild
+        );
       }
-      if (!document.getElementById("astra-app-hub-back-btn")) {
-        const backBtn = document.createXULElement("toolbarbutton");
-        backBtn.id = "astra-app-hub-back-btn";
-        backBtn.setAttribute("data-action", "back-launchpad");
-        backBtn.hidden = true;
-        setL10nOrText(backBtn, "astra-app-hub-back", "Back");
-        const browse = document.getElementById("astra-app-hub-browse-btn");
-        footer.insertBefore(backBtn, browse?.nextSibling || footer.firstChild);
+      if (!document.getElementById("astra-app-hub-overflow-header-btn")) {
+        const overflowHeaderBtn = document.createXULElement("toolbarbutton");
+        overflowHeaderBtn.id = "astra-app-hub-overflow-header-btn";
+        overflowHeaderBtn.classList.add(
+          "astra-app-hub-header-btn",
+          "astra-app-hub-overflow-header-btn"
+        );
+        overflowHeaderBtn.setAttribute("data-action", "overflow");
+        overflowHeaderBtn.setAttribute("tooltiptext", "More options");
+        setL10nOrText(overflowHeaderBtn, "astra-app-hub-overflow-short", "⋯");
+        const doneBtn = document.getElementById("astra-app-hub-done-btn");
+        existingHeader.insertBefore(overflowHeaderBtn, doneBtn || null);
       }
-      if (!document.getElementById("astra-app-hub-manage-btn")) {
-        const manageBtn = document.createXULElement("toolbarbutton");
-        manageBtn.id = "astra-app-hub-manage-btn";
-        manageBtn.setAttribute("data-action", "manage-apps");
-        setL10nOrText(manageBtn, "astra-app-hub-manage", "Manage Apps");
-        const back = document.getElementById("astra-app-hub-back-btn");
-        footer.insertBefore(manageBtn, back?.nextSibling || footer.firstChild);
-      }
-      const legacyAdd = document.getElementById("astra-app-hub-add-btn");
-      if (legacyAdd) {
-        setL10nOrText(legacyAdd, "astra-app-hub-add-website", "Add Website");
+      const manageHdr = document.getElementById("astra-app-hub-customize-btn");
+      if (manageHdr) {
+        setL10nOrText(manageHdr, "astra-app-hub-manage", "Manage Apps");
       }
     }
+
+    this.#polishShellChrome();
 
     // Editor subview
     let editor = this.editor;
@@ -1352,6 +1380,91 @@ class AstraAppHubManager {
     }
 
     this.#ensureMenus();
+  }
+
+  /**
+   * Idempotent chrome polish for search sparkle + footer action icons/labels.
+   * Safe to call every open once the shell exists.
+   */
+  #polishShellChrome() {
+    const searchRow = document.getElementById("astra-app-hub-search-row");
+    const search = document.getElementById("astra-app-hub-search");
+    if (searchRow && search && !document.getElementById("astra-app-hub-search-wrap")) {
+      const wrap = document.createXULElement("hbox");
+      wrap.id = "astra-app-hub-search-wrap";
+      wrap.classList.add("astra-app-hub-search-wrap");
+      wrap.setAttribute("flex", "1");
+      wrap.setAttribute("align", "center");
+      search.parentNode?.insertBefore(wrap, search);
+      wrap.appendChild(search);
+      const sparkle = document.createXULElement("image");
+      sparkle.id = "astra-app-hub-search-sparkle";
+      sparkle.classList.add("astra-app-hub-search-sparkle");
+      sparkle.setAttribute("src", `${ICON_CHROME}sparkles.svg`);
+      sparkle.setAttribute("aria-hidden", "true");
+      wrap.appendChild(sparkle);
+    } else if (
+      searchRow &&
+      !document.getElementById("astra-app-hub-search-sparkle")
+    ) {
+      const wrap =
+        document.getElementById("astra-app-hub-search-wrap") || searchRow;
+      const sparkle = document.createXULElement("image");
+      sparkle.id = "astra-app-hub-search-sparkle";
+      sparkle.classList.add("astra-app-hub-search-sparkle");
+      sparkle.setAttribute("src", `${ICON_CHROME}sparkles.svg`);
+      sparkle.setAttribute("aria-hidden", "true");
+      wrap.appendChild(sparkle);
+    }
+
+    const footer = document.getElementById("astra-app-hub-footer");
+    if (footer) {
+      clearChildren(footer);
+      footer.hidden = true;
+      footer.setAttribute("data-retired", "true");
+    }
+
+    // Upgrade older in-session headers that predate Back / overflow controls.
+    const existingHeader = document.getElementById("astra-app-hub-header");
+    if (existingHeader) {
+      if (!document.getElementById("astra-app-hub-back-header-btn")) {
+        const backHeaderBtn = document.createXULElement("toolbarbutton");
+        backHeaderBtn.id = "astra-app-hub-back-header-btn";
+        backHeaderBtn.classList.add("astra-app-hub-header-btn");
+        backHeaderBtn.setAttribute("data-action", "back-launchpad");
+        backHeaderBtn.hidden = true;
+        setL10nOrText(backHeaderBtn, "astra-app-hub-back", "Back");
+        const addBtn = document.getElementById("astra-app-hub-add-header-btn");
+        existingHeader.insertBefore(
+          backHeaderBtn,
+          addBtn || existingHeader.lastChild
+        );
+      }
+      if (!document.getElementById("astra-app-hub-overflow-header-btn")) {
+        const overflowHeaderBtn = document.createXULElement("toolbarbutton");
+        overflowHeaderBtn.id = "astra-app-hub-overflow-header-btn";
+        overflowHeaderBtn.classList.add(
+          "astra-app-hub-header-btn",
+          "astra-app-hub-overflow-header-btn"
+        );
+        overflowHeaderBtn.setAttribute("data-action", "overflow");
+        overflowHeaderBtn.setAttribute("tooltiptext", "More options");
+        setL10nOrText(overflowHeaderBtn, "astra-app-hub-overflow-short", "⋯");
+        const doneBtn = document.getElementById("astra-app-hub-done-btn");
+        existingHeader.insertBefore(overflowHeaderBtn, doneBtn || null);
+      }
+    }
+
+    const manageHdr = document.getElementById("astra-app-hub-customize-btn");
+    if (manageHdr) {
+      setL10nOrText(manageHdr, "astra-app-hub-manage", "Manage Apps");
+    }
+    const overflowHdr = document.getElementById(
+      "astra-app-hub-overflow-header-btn"
+    );
+    if (overflowHdr) {
+      setL10nOrText(overflowHdr, "astra-app-hub-overflow-short", "⋯");
+    }
   }
 
   /** Ensure older in-session editor markup picks up Task 3 classes/actions. */
@@ -1923,9 +2036,23 @@ class AstraAppHubManager {
 
   #allAppsMap() {
     const map = new Map();
+    /** @type {Map<string, string>} hostname → packaged iconKey */
+    const hostToIconKey = new Map();
     if (this.#catalog) {
       for (const app of this.#catalog.apps) {
         map.set(app.id, { ...app, builtin: true });
+        const host =
+          (typeof app.hostname === "string" && app.hostname) ||
+          hostnameFromUrl(app.url);
+        if (host && app.iconKey) {
+          hostToIconKey.set(host, app.iconKey);
+          // Also map bare registrable-ish aliases (www.)
+          if (host.startsWith("www.")) {
+            hostToIconKey.set(host.slice(4), app.iconKey);
+          } else {
+            hostToIconKey.set(`www.${host}`, app.iconKey);
+          }
+        }
       }
     }
     const knownCats = new Set(
@@ -1936,12 +2063,28 @@ class AstraAppHubManager {
         typeof app.category === "string" && knownCats.has(app.category)
           ? app.category
           : "work";
+      const hostname = hostnameFromUrl(app.url);
+      // Prefer an explicit iconKey; otherwise reuse a packaged mark when the
+      // custom URL matches a known catalog host (instant icon, no wait).
+      let iconKey = typeof app.iconKey === "string" ? app.iconKey : "";
+      if (
+        !iconKey &&
+        !sanitizeDataImageURI(app.customIconData) &&
+        !sanitizeDataImageURI(app.cachedFaviconData) &&
+        hostname
+      ) {
+        iconKey =
+          hostToIconKey.get(hostname) ||
+          hostToIconKey.get(hostname.replace(/^www\./, "")) ||
+          "";
+      }
       map.set(app.id, {
         ...app,
         category,
         builtin: false,
         keywords: app.keywords || [],
-        hostname: hostnameFromUrl(app.url),
+        hostname,
+        ...(iconKey ? { iconKey } : {}),
       });
     }
     return map;
@@ -2457,7 +2600,16 @@ class AstraAppHubManager {
         "Pinned",
         "astra-app-hub-pinned",
         pinnedApps,
-        { collapsible: false, special: true, includeAddTile: true }
+        {
+          collapsible: false,
+          special: true,
+          includeAddTile: true,
+          richHeader: {
+            icon: "pin",
+            // Minimal launcher: title only — no subtitle chrome.
+            showAll: true,
+          },
+        }
       );
     }
 
@@ -2485,10 +2637,13 @@ class AstraAppHubManager {
       const recentEntries = (state.recent || []).filter(
         e => appMap.has(e.id) && !hidden.has(e.id)
       );
+      // Real usage only — hide the section when history is empty (no placeholders).
       if (recentEntries.length) {
-        this.#appendRecentList(list, recentEntries, appMap);
+        this.#appendRecentChips(list, recentEntries, appMap);
       }
     }
+
+    this.#appendSuggestedSection(list, appMap, hidden, state);
   }
 
   /**
@@ -2559,21 +2714,17 @@ class AstraAppHubManager {
   }
 
   #appendRecentList(list, recentEntries, appMap) {
+    // Legacy row layout kept for customize / browse modes.
     const section = document.createXULElement("vbox");
     section.classList.add("astra-app-hub-section", "astra-app-hub-recent-section");
     section.setAttribute("data-category-id", SECTION_RECENT);
     section.setAttribute("data-special", "true");
 
-    const header = document.createXULElement("hbox");
-    header.classList.add(
-      "astra-app-hub-section-header",
-      "zen-app-launcher-section-title"
-    );
-    header.setAttribute("align", "center");
-    const title = document.createXULElement("label");
-    title.classList.add("astra-app-hub-section-label");
-    setL10nOrText(title, "astra-app-hub-recent", "Recent");
-    header.appendChild(title);
+    const header = this.#createRichSectionHeader({
+      icon: "history",
+      title: "Recent",
+      titleL10n: "astra-app-hub-recent",
+    });
     section.appendChild(header);
 
     const rows = document.createXULElement("vbox");
@@ -2587,6 +2738,312 @@ class AstraAppHubManager {
     }
     section.appendChild(rows);
     list.appendChild(section);
+  }
+
+  /**
+   * Launchpad Recent section — chip row from real usage history only.
+   */
+  #appendRecentChips(list, recentEntries, appMap) {
+    if (!recentEntries?.length) {
+      return;
+    }
+    const section = document.createXULElement("vbox");
+    section.classList.add(
+      "astra-app-hub-section",
+      "astra-app-hub-recent-section",
+      "astra-app-hub-chip-section"
+    );
+    section.setAttribute("data-category-id", SECTION_RECENT);
+    section.setAttribute("data-special", "true");
+
+    section.appendChild(
+      this.#createRichSectionHeader({
+        icon: "history",
+        title: "Recent",
+        titleL10n: "astra-app-hub-recent",
+      })
+    );
+
+    const row = document.createXULElement("hbox");
+    row.classList.add("astra-app-hub-chip-row");
+    row.setAttribute("align", "center");
+
+    // Deduped + most-recent-first (state.recent is already sorted that way).
+    const apps = recentEntries
+      .slice(0, 6)
+      .map(e => appMap.get(e.id))
+      .filter(Boolean);
+
+    for (const app of apps) {
+      row.appendChild(this.#createChipButton(app));
+    }
+    if (!apps.length) {
+      return;
+    }
+    section.appendChild(row);
+    list.appendChild(section);
+  }
+
+  #appendSuggestedSection(list, appMap, hidden, state) {
+    const apps = this.#resolveSuggestedApps(appMap, hidden, state);
+    if (!apps.length) {
+      return;
+    }
+
+    const section = document.createXULElement("vbox");
+    section.classList.add(
+      "astra-app-hub-section",
+      "astra-app-hub-suggested-section",
+      "astra-app-hub-chip-section"
+    );
+    section.setAttribute("data-category-id", SECTION_SUGGESTED);
+    section.setAttribute("data-special", "true");
+
+    section.appendChild(
+      this.#createRichSectionHeader({
+        icon: "sparkles",
+        title: "Suggested for you",
+        titleL10n: "astra-app-hub-suggested",
+      })
+    );
+
+    const row = document.createXULElement("hbox");
+    row.classList.add("astra-app-hub-chip-row");
+    row.setAttribute("align", "center");
+    for (const app of apps) {
+      row.appendChild(this.#createChipButton(app));
+    }
+    section.appendChild(row);
+    list.appendChild(section);
+  }
+
+  /**
+   * Category-based suggestions from local Pinned + Recent usage.
+   * Fresh profiles (no pins/recents) fall back to DEFAULT_SUGGESTED_APPS.
+   * Fully on-device — no network analytics.
+   */
+  #resolveSuggestedApps(appMap, hidden, state = gAstraAppHubState.data) {
+    const pinnedIds = (state?.favorites || []).filter(id => appMap.has(id));
+    const recentIds = (state?.recent || [])
+      .map(e => e.id)
+      .filter(id => appMap.has(id));
+    const usedIds = new Set([...pinnedIds, ...recentIds]);
+
+    const categoryCounts = new Map();
+    for (const id of usedIds) {
+      const app = appMap.get(id);
+      const cat = app?.category;
+      if (!cat || typeof cat !== "string") {
+        continue;
+      }
+      categoryCounts.set(cat, (categoryCounts.get(cat) || 0) + 1);
+    }
+
+    const out = [];
+    const seen = new Set();
+
+    const pushApp = app => {
+      if (!app?.id || seen.has(app.id) || hidden.has(app.id) || usedIds.has(app.id)) {
+        return false;
+      }
+      seen.add(app.id);
+      out.push(app);
+      return out.length >= SUGGESTED_LIMIT;
+    };
+
+    if (categoryCounts.size) {
+      const rankedCats = [...categoryCounts.entries()]
+        .sort(
+          (a, b) =>
+            b[1] - a[1] || String(a[0]).localeCompare(String(b[0]))
+        )
+        .map(([cat]) => cat);
+
+      for (const cat of rankedCats) {
+        const candidates = [...appMap.values()]
+          .filter(
+            app =>
+              app &&
+              app.builtin !== false &&
+              !app.softSuggestion &&
+              app.category === cat &&
+              !hidden.has(app.id) &&
+              !usedIds.has(app.id)
+          )
+          .sort(
+            (a, b) =>
+              (a.order || 0) - (b.order || 0) ||
+              String(a.name || "").localeCompare(String(b.name || ""))
+          );
+        for (const app of candidates) {
+          if (pushApp(app)) {
+            return out;
+          }
+        }
+      }
+    }
+
+    // Fresh profile or not enough same-category matches → general defaults.
+    for (const entry of DEFAULT_SUGGESTED_APPS) {
+      if (!entry?.id || seen.has(entry.id) || usedIds.has(entry.id)) {
+        continue;
+      }
+      if (appMap.has(entry.id)) {
+        const app = appMap.get(entry.id);
+        if (app && !hidden.has(app.id) && pushApp(app)) {
+          return out;
+        }
+        continue;
+      }
+      // Soft suggestion (not in catalog yet).
+      if (typeof entry.url === "string" && entry.url && entry.name) {
+        const soft = {
+          id: entry.id,
+          name: entry.name,
+          url: entry.url,
+          monogram:
+            entry.monogram ||
+            String(entry.name).trim().slice(0, 2).toUpperCase() ||
+            "?",
+          builtin: false,
+          softSuggestion: true,
+        };
+        if (pushApp(soft)) {
+          return out;
+        }
+      }
+    }
+    return out;
+  }
+
+  #createRichSectionHeader({
+    icon = null,
+    title,
+    titleL10n = null,
+    subtitle = null,
+    subtitleL10n = null,
+    showAll = false,
+  } = {}) {
+    const header = document.createXULElement("hbox");
+    header.classList.add(
+      "astra-app-hub-section-header",
+      "astra-app-hub-section-header-rich",
+      "zen-app-launcher-section-title"
+    );
+    header.setAttribute("align", "start");
+
+    const left = document.createXULElement("vbox");
+    left.classList.add("astra-app-hub-section-heading");
+    left.setAttribute("flex", "1");
+
+    const titleRow = document.createXULElement("hbox");
+    titleRow.classList.add("astra-app-hub-section-title-row");
+    titleRow.setAttribute("align", "center");
+
+    if (icon) {
+      const iconEl = document.createXULElement("image");
+      iconEl.classList.add("astra-app-hub-section-icon");
+      iconEl.setAttribute("data-icon", icon);
+      const iconSrc =
+        icon === "sparkles"
+          ? `${ICON_CHROME}sparkles.svg`
+          : icon === "history"
+            ? `${ICON_CHROME}history.svg`
+            : icon === "pin"
+              ? `${ICON_CHROME}pin.svg`
+              : `${ICON_CHROME}${icon}.svg`;
+      iconEl.setAttribute("src", iconSrc);
+      iconEl.setAttribute("aria-hidden", "true");
+      titleRow.appendChild(iconEl);
+    }
+
+    const titleEl = document.createXULElement("label");
+    titleEl.classList.add(
+      "astra-app-hub-section-label",
+      "astra-app-hub-section-title"
+    );
+    if (titleL10n) {
+      setL10nOrText(titleEl, titleL10n, title);
+    } else {
+      titleEl.setAttribute("value", title);
+    }
+    titleRow.appendChild(titleEl);
+    left.appendChild(titleRow);
+
+    if (subtitle || subtitleL10n) {
+      const sub = document.createXULElement("label");
+      sub.classList.add("astra-app-hub-section-subtitle");
+      if (subtitleL10n) {
+        setL10nOrText(sub, subtitleL10n, subtitle || "");
+      } else {
+        sub.setAttribute("value", subtitle);
+      }
+      left.appendChild(sub);
+    }
+
+    header.appendChild(left);
+
+    if (showAll) {
+      const showAllBtn = document.createXULElement("toolbarbutton");
+      showAllBtn.classList.add("astra-app-hub-show-all");
+      showAllBtn.setAttribute("data-action", "browse-apps");
+      setL10nOrText(showAllBtn, "astra-app-hub-show-all", "Show all →");
+      header.appendChild(showAllBtn);
+    }
+
+    return header;
+  }
+
+  #createChipButton(app) {
+    const button = document.createXULElement("toolbarbutton");
+    button.classList.add(
+      "astra-app-hub-chip",
+      "astra-app-hub-item"
+    );
+    button.setAttribute("data-app-id", app.id);
+    button.setAttribute("data-url", app.url);
+    button.setAttribute("tooltiptext", `${app.name} — Opens in new tab`);
+    button.setAttribute("aria-label", app.name);
+    if (app.softSuggestion) {
+      button.setAttribute("data-soft-suggestion", "true");
+    }
+
+    const iconInfo = resolveAppIcon(app);
+    const stack = document.createXULElement("stack");
+    stack.classList.add(
+      "zen-app-launcher-item-icon-stack",
+      "astra-app-hub-item-icon-stack",
+      "astra-app-hub-chip-icon-stack"
+    );
+    stack.setAttribute("aria-hidden", "true");
+    const mono = document.createXULElement("label");
+    mono.classList.add(
+      "zen-app-launcher-item-monogram",
+      "astra-app-hub-item-monogram"
+    );
+    mono.setAttribute(
+      "value",
+      iconInfo.monogram || iconInfo.text || app.monogram || "?"
+    );
+    mono.setAttribute("data-accent", String(iconInfo?.accent ?? 0));
+    stack.appendChild(mono);
+    if (
+      iconInfo.type === "image" &&
+      iconInfo.src &&
+      !String(iconInfo.src).startsWith("http:") &&
+      !String(iconInfo.src).startsWith("https:") &&
+      !String(iconInfo.src).startsWith("//")
+    ) {
+      this.#appendSafeIconImage(stack, String(iconInfo.src));
+    }
+    button.appendChild(stack);
+
+    const label = document.createXULElement("label");
+    label.classList.add("astra-app-hub-chip-label");
+    label.setAttribute("value", app.name);
+    label.setAttribute("crop", "end");
+    button.appendChild(label);
+    return button;
   }
 
   #createRecentRow(app, lastOpened) {
@@ -2690,31 +3147,29 @@ class AstraAppHubManager {
   }
 
   #updateHubChrome() {
-    const browseBtn = document.getElementById("astra-app-hub-browse-btn");
-    const backBtn = document.getElementById("astra-app-hub-back-btn");
-    const manageBtn = document.getElementById("astra-app-hub-manage-btn");
-    const addBtn = document.getElementById("astra-app-hub-add-btn");
+    const backHeader = document.getElementById("astra-app-hub-back-header-btn");
     const addHeader = document.getElementById("astra-app-hub-add-header-btn");
     const customizeBtn = document.getElementById("astra-app-hub-customize-btn");
+    const overflowHeader = document.getElementById(
+      "astra-app-hub-overflow-header-btn"
+    );
+    const footer = document.getElementById("astra-app-hub-footer");
     const browsing = this.#hubView === "browse";
     const editing = !!this.#editorMode || this.#customizeMode;
-    if (browseBtn) {
-      browseBtn.hidden = browsing || editing;
+    if (footer) {
+      footer.hidden = true;
     }
-    if (backBtn) {
-      backBtn.hidden = !browsing || editing;
-    }
-    if (manageBtn) {
-      manageBtn.hidden = editing;
-    }
-    if (addBtn) {
-      addBtn.hidden = browsing || editing;
+    if (backHeader) {
+      backHeader.hidden = !browsing || editing;
     }
     if (addHeader) {
-      addHeader.hidden = editing;
+      addHeader.hidden = editing || browsing;
     }
     if (customizeBtn) {
       customizeBtn.hidden = this.#customizeMode || !!this.#editorMode;
+    }
+    if (overflowHeader) {
+      overflowHeader.hidden = editing;
     }
     try {
       this.panel?.setAttribute("app-hub-view", this.#hubView);
@@ -2809,58 +3264,71 @@ class AstraAppHubManager {
       section.setAttribute("collapsed-section", "true");
     }
 
-    const header = document.createXULElement("hbox");
-    header.classList.add(
-      "astra-app-hub-section-header",
-      "zen-app-launcher-section-title"
-    );
-    header.setAttribute("data-category-id", categoryId);
-    header.setAttribute("align", "center");
-
-    if (options.collapsible) {
-      const toggle = document.createXULElement("toolbarbutton");
-      toggle.classList.add("astra-app-hub-collapse-btn");
-      toggle.setAttribute("data-action", "toggle-collapse");
-      toggle.setAttribute("data-category-id", categoryId);
-      toggle.setAttribute(
-        "aria-expanded",
-        options.collapsed ? "false" : "true"
-      );
-      toggle.textContent = options.collapsed ? "▸" : "▾";
-      header.appendChild(toggle);
-    }
-
-    const title = document.createXULElement("label");
-    title.classList.add("astra-app-hub-section-label");
-    if (l10nId) {
-      setL10nOrText(title, l10nId, label);
+    if (options.richHeader) {
+      const rich = this.#createRichSectionHeader({
+        icon: options.richHeader.icon,
+        title: label,
+        titleL10n: l10nId,
+        subtitle: options.richHeader.subtitle,
+        subtitleL10n: options.richHeader.subtitleL10n,
+        showAll: !!options.richHeader.showAll,
+      });
+      rich.setAttribute("data-category-id", categoryId);
+      section.appendChild(rich);
     } else {
-      title.setAttribute("value", label);
+      const header = document.createXULElement("hbox");
+      header.classList.add(
+        "astra-app-hub-section-header",
+        "zen-app-launcher-section-title"
+      );
+      header.setAttribute("data-category-id", categoryId);
+      header.setAttribute("align", "center");
+
+      if (options.collapsible) {
+        const toggle = document.createXULElement("toolbarbutton");
+        toggle.classList.add("astra-app-hub-collapse-btn");
+        toggle.setAttribute("data-action", "toggle-collapse");
+        toggle.setAttribute("data-category-id", categoryId);
+        toggle.setAttribute(
+          "aria-expanded",
+          options.collapsed ? "false" : "true"
+        );
+        toggle.textContent = options.collapsed ? "▸" : "▾";
+        header.appendChild(toggle);
+      }
+
+      const title = document.createXULElement("label");
+      title.classList.add("astra-app-hub-section-label");
+      if (l10nId) {
+        setL10nOrText(title, l10nId, label);
+      } else {
+        title.setAttribute("value", label);
+      }
+      header.appendChild(title);
+
+      if (this.#customizeMode && !options.special) {
+        header.setAttribute("draggable", "true");
+        header.classList.add("astra-app-hub-draggable");
+
+        const moveUp = document.createXULElement("toolbarbutton");
+        moveUp.classList.add("astra-app-hub-move-btn");
+        moveUp.setAttribute("data-action", "move-category-up");
+        moveUp.setAttribute("data-category-id", categoryId);
+        moveUp.setAttribute("tooltiptext", "Move up");
+        moveUp.textContent = "↑";
+        header.appendChild(moveUp);
+
+        const moveDown = document.createXULElement("toolbarbutton");
+        moveDown.classList.add("astra-app-hub-move-btn");
+        moveDown.setAttribute("data-action", "move-category-down");
+        moveDown.setAttribute("data-category-id", categoryId);
+        moveDown.setAttribute("tooltiptext", "Move down");
+        moveDown.textContent = "↓";
+        header.appendChild(moveDown);
+      }
+
+      section.appendChild(header);
     }
-    header.appendChild(title);
-
-    if (this.#customizeMode && !options.special) {
-      header.setAttribute("draggable", "true");
-      header.classList.add("astra-app-hub-draggable");
-
-      const moveUp = document.createXULElement("toolbarbutton");
-      moveUp.classList.add("astra-app-hub-move-btn");
-      moveUp.setAttribute("data-action", "move-category-up");
-      moveUp.setAttribute("data-category-id", categoryId);
-      moveUp.setAttribute("tooltiptext", "Move up");
-      moveUp.textContent = "↑";
-      header.appendChild(moveUp);
-
-      const moveDown = document.createXULElement("toolbarbutton");
-      moveDown.classList.add("astra-app-hub-move-btn");
-      moveDown.setAttribute("data-action", "move-category-down");
-      moveDown.setAttribute("data-category-id", categoryId);
-      moveDown.setAttribute("tooltiptext", "Move down");
-      moveDown.textContent = "↓";
-      header.appendChild(moveDown);
-    }
-
-    section.appendChild(header);
 
     const grid = document.createXULElement("hbox");
     grid.classList.add("zen-app-launcher-grid", "astra-app-hub-grid");
@@ -3468,9 +3936,48 @@ class AstraAppHubManager {
         expectedUrl,
       });
       this.#lastAppliedRevision = gAstraAppHubState.revision;
+      // Paint immediately so the tile upgrades from monogram without waiting
+      // for a panel reopen (state notify may already have rebuilt, or may
+      // have been skipped if revision was pre-applied).
+      this.#paintCachedIconForApp(appId, safe);
       return true;
     } catch {
       return false;
+    }
+  }
+
+  /**
+   * Upgrade any visible tile/chip for a custom app once a favicon data URI
+   * is available. No-op when the image is already painted.
+   */
+  #paintCachedIconForApp(appId, dataURI) {
+    if (!appId || !dataURI || !this.list) {
+      return;
+    }
+    const safe = sanitizeDataImageURI(dataURI);
+    if (!safe) {
+      return;
+    }
+    let buttons;
+    try {
+      buttons = this.list.querySelectorAll(
+        `.astra-app-hub-item[data-app-id="${CSS.escape(appId)}"]`
+      );
+    } catch {
+      buttons = this.list.querySelectorAll(".astra-app-hub-item[data-app-id]");
+      buttons = [...buttons].filter(
+        el => el.getAttribute("data-app-id") === appId
+      );
+    }
+    for (const button of buttons) {
+      if (!button?.isConnected) {
+        continue;
+      }
+      const stack = button.querySelector(".astra-app-hub-item-icon-stack");
+      if (!stack || stack.querySelector(".astra-app-hub-item-icon")) {
+        continue;
+      }
+      this.#paintIconOnStack(stack, safe);
     }
   }
 
@@ -3536,7 +4043,8 @@ class AstraAppHubManager {
     }
     const footer = document.getElementById("astra-app-hub-footer");
     if (footer) {
-      footer.hidden = !!this.#editorMode;
+      // Footer chrome retired — keep node empty/hidden for layout stability.
+      footer.hidden = true;
     }
     const list = this.list;
     if (list) {
@@ -3721,8 +4229,14 @@ class AstraAppHubManager {
       return;
     }
     const appId = item.getAttribute("data-app-id");
-    if (appId) {
-      void this.openApp(appId, { mode: "tab", source: "item" });
+    const url = item.getAttribute("data-url");
+    if (appId || url) {
+      const map = this.#allAppsMap();
+      const target =
+        appId && map.has(appId)
+          ? appId
+          : url || appId;
+      void this.openApp(target, { mode: "tab", source: "item" });
     }
   }
 
@@ -4025,7 +4539,10 @@ class AstraAppHubManager {
 
   #openOverflowMenu(event) {
     const menu = this.overflowMenu;
-    const btn = document.getElementById("astra-app-hub-overflow-btn");
+    const btn =
+      document.getElementById("astra-app-hub-overflow-header-btn") ||
+      document.getElementById("astra-app-hub-overflow-btn") ||
+      document.getElementById("astra-app-hub-customize-btn");
     if (!menu || !btn) {
       return;
     }

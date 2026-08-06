@@ -52,8 +52,18 @@ astra-app-hub-favorites =
     .value = Favorites
 astra-app-hub-pinned =
     .value = Pinned
+astra-app-hub-pinned-subtitle =
+    .value = Your favorite apps at your fingertips
+astra-app-hub-suggested =
+    .value = Suggested for you
+astra-app-hub-suggested-subtitle =
+    .value = Discover apps that boost your productivity
 astra-app-hub-recent =
     .value = Recent
+astra-app-hub-recent-subtitle =
+    .value = Apps you've used recently
+astra-app-hub-show-all =
+    .label = Show all →
 astra-app-hub-hidden =
     .value = Hidden Apps
 
@@ -91,8 +101,12 @@ astra-app-hub-browse-empty =
     .value = No catalog apps are available right now.
 
 astra-app-hub-overflow =
-    .label = More
+    .label = Explore More
     .tooltiptext = More App Hub actions
+
+astra-app-hub-overflow-short =
+    .label = ⋯
+    .tooltiptext = More App Hub options
 
 astra-app-hub-export =
     .label = Export configuration…

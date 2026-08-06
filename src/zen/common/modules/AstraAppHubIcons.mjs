@@ -582,7 +582,9 @@ function scoreIconCandidate({ rel, href, type, sizes }) {
   }
   let size = parseSizesEdge(sizes);
   if (!size) {
-    if (relL.includes("apple-touch")) {
+    if (relL.includes("manifest")) {
+      size = 192;
+    } else if (relL.includes("apple-touch")) {
       size = 180;
     } else if (relL.includes("shortcut")) {
       size = 32;
@@ -590,14 +592,160 @@ function scoreIconCandidate({ rel, href, type, sizes }) {
       size = 32;
     }
   }
-  // Prefer richer icons (apple-touch / large) over tiny 16px marks.
+  // Prefer richer icons (apple-touch / manifest / large) over tiny 16px marks.
   let relBonus = 0;
-  if (relL.includes("apple-touch")) {
+  if (relL.includes("manifest")) {
+    relBonus = 30;
+  } else if (relL.includes("apple-touch")) {
     relBonus = 20;
   } else if (/\bicon\b/.test(relL)) {
     relBonus = 10;
   }
   return size * 2 + mimeScore + relBonus;
+}
+
+/**
+ * Extract web app manifest hrefs from HTML (<link rel="manifest">).
+ * Absolute-ifies against baseUrl.
+ */
+export function parseHtmlManifestHrefs(html, baseUrl) {
+  if (typeof html !== "string" || !html || typeof baseUrl !== "string") {
+    return [];
+  }
+  let base;
+  try {
+    base = new URL(baseUrl);
+  } catch {
+    return [];
+  }
+  if (base.protocol !== "http:" && base.protocol !== "https:") {
+    return [];
+  }
+  const out = [];
+  const seen = new Set();
+  const tags = html.match(/<link\b[^>]*>/gi) || [];
+  for (const tag of tags) {
+    const rel = attrFromTag(tag, "rel");
+    if (!rel || !/\bmanifest\b/i.test(rel)) {
+      continue;
+    }
+    const href = attrFromTag(tag, "href");
+    if (!href) {
+      continue;
+    }
+    let abs;
+    try {
+      abs = new URL(href, base).href;
+    } catch {
+      continue;
+    }
+    if (!/^https?:/i.test(abs)) {
+      continue;
+    }
+    try {
+      if (isBlockedPrivilegedFetchHost(new URL(abs).hostname)) {
+        continue;
+      }
+    } catch {
+      continue;
+    }
+    if (seen.has(abs)) {
+      continue;
+    }
+    seen.add(abs);
+    out.push(abs);
+  }
+  return out;
+}
+
+/**
+ * Parse icons[] from a web app manifest JSON string into ranked candidates.
+ */
+export function parseManifestIconCandidates(manifestText, manifestUrl) {
+  if (typeof manifestText !== "string" || !manifestText) {
+    return [];
+  }
+  let base;
+  try {
+    base = new URL(manifestUrl);
+  } catch {
+    return [];
+  }
+  if (base.protocol !== "http:" && base.protocol !== "https:") {
+    return [];
+  }
+  let data;
+  try {
+    data = JSON.parse(manifestText);
+  } catch {
+    return [];
+  }
+  if (!data || !Array.isArray(data.icons)) {
+    return [];
+  }
+  const out = [];
+  const seen = new Set();
+  for (const entry of data.icons) {
+    if (!entry || typeof entry !== "object") {
+      continue;
+    }
+    const href = typeof entry.src === "string" ? entry.src.trim() : "";
+    if (!href) {
+      continue;
+    }
+    const type = typeof entry.type === "string" ? entry.type : "";
+    const sizes = typeof entry.sizes === "string" ? entry.sizes : "";
+    // Prefer "any" purpose icons; skip monochrome-only marks when possible.
+    const purpose = String(entry.purpose || "any").toLowerCase();
+    if (purpose.includes("monochrome") && !purpose.includes("any")) {
+      continue;
+    }
+    const score =
+      scoreIconCandidate({
+        rel: "manifest-icon",
+        href,
+        type,
+        sizes: sizes || "192x192",
+      }) + 40;
+    if (score < 0) {
+      continue;
+    }
+    let abs;
+    try {
+      if (/^data:image\//i.test(href)) {
+        abs = href;
+      } else {
+        abs = new URL(href, base).href;
+      }
+    } catch {
+      continue;
+    }
+    if (!/^https?:/i.test(abs) && !/^data:image\//i.test(abs)) {
+      continue;
+    }
+    if (/^https?:/i.test(abs)) {
+      try {
+        if (isBlockedPrivilegedFetchHost(new URL(abs).hostname)) {
+          continue;
+        }
+      } catch {
+        continue;
+      }
+    }
+    if (seen.has(abs)) {
+      continue;
+    }
+    seen.add(abs);
+    out.push({
+      href: abs,
+      type,
+      sizes: sizes || "192x192",
+      rel: "manifest-icon",
+      score,
+    });
+  }
+  out.sort((a, b) => b.score - a.score);
+  return out;
 }
 
 /**
@@ -1053,11 +1201,13 @@ async function bytesToSafeIconDataURI(bytes, contentType, href) {
  * Discover + fetch a site's favicon as a sanitized PNG data URI.
  * Strategy (Arc/Zen-like):
  *  1) Parse HTML <link rel="icon|shortcut icon|apple-touch-icon"> (largest first)
- *  2) Fall back to origin root ICO path
- *  3) Return null → caller keeps intentional monogram
+ *  2) Parse web app manifest icons[] when linked (or common /manifest.json paths)
+ *  3) Fall back to origin root ICO / apple-touch paths
+ *  4) Return null → caller keeps intentional monogram
  *
  * Direct origin fetches only (follows redirects). No third-party icon proxies.
- * Bounded by timeoutMs (default 4.5s). Safe to fire-and-forget after save.
+ * Bounded by timeoutMs (default 8s). Safe to fire-and-forget after save.
+ * Results are persisted by the caller (profile JSON cachedFaviconData).
  *
  * @returns {Promise<string|null>} sanitized data:image/png URI or null
  */
@@ -1105,6 +1255,8 @@ export async function fetchRemoteFaviconAsDataURI(
   /** @type {Array<{href: string, type?: string, sizes?: string, rel?: string, score: number}>} */
   let candidates = [];
   let resolvedBase = page.href;
+  /** @type {string[]} */
+  let manifestHrefs = [];
 
   for (const discoveryUrl of discoveryUrls) {
     if (Date.now() - started >= budgetMs) {
@@ -1132,8 +1284,9 @@ export async function fetchRemoteFaviconAsDataURI(
           htmlFetch.bytes
         );
         candidates = parseHtmlIconCandidates(text, resolvedBase);
+        manifestHrefs = parseHtmlManifestHrefs(text, resolvedBase);
       }
-      if (candidates.length) {
+      if (candidates.length || manifestHrefs.length) {
         break;
       }
     } catch {
@@ -1145,7 +1298,53 @@ export async function fetchRemoteFaviconAsDataURI(
     return null;
   }
 
-  // 2) Always consider conventional icon paths as fallback candidates.
+  // Conventional manifest paths when HTML omitted <link rel=manifest>.
+  const defaultManifestPaths = ["/" + "manifest.json", "/" + "site.webmanifest"];
+  for (const path of defaultManifestPaths) {
+    try {
+      const href = new URL(path, resolvedBase).href;
+      if (!manifestHrefs.includes(href)) {
+        manifestHrefs.push(href);
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  // Prefer higher-res manifest icons over tiny favicon.ico when available.
+  for (const manifestUrl of manifestHrefs.slice(0, 2)) {
+    if (Date.now() - started >= budgetMs) {
+      break;
+    }
+    try {
+      const perTry = abortSignalFor(Math.min(2500, remaining()));
+      const combined = combineSignals([signal, perTry]);
+      const mfFetch = await fetchBytesBounded(manifestUrl, {
+        signal: combined,
+        maxBytes: 64 * 1024,
+        accept: "application/manifest+json,application/json;q=0.9,*/*;q=0.1",
+      });
+      const text = new TextDecoder("utf-8", { fatal: false }).decode(
+        mfFetch.bytes
+      );
+      const fromManifest = parseManifestIconCandidates(
+        text,
+        mfFetch.finalUrl || manifestUrl
+      );
+      for (const cand of fromManifest) {
+        if (!candidates.some(c => c.href === cand.href)) {
+          candidates.push(cand);
+        }
+      }
+      if (fromManifest.length) {
+        break;
+      }
+    } catch {
+      // try next manifest / fall through
+    }
+  }
+
+  // Always consider conventional icon paths as fallback candidates.
   // SPA shells often omit <link rel=icon> in the first HTML byte window.
   const fallbackPaths = [
     rootIconPath(),

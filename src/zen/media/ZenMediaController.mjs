@@ -451,10 +451,22 @@ class nsZenMediaController {
     window.addEventListener("TabBrowserDiscarded", onTabDiscardedOrClosed);
 
     window.addEventListener("DOMAudioPlaybackStarted", event => {
-      this.activateMediaControls(
-        event.target.browsingContext.mediaController,
-        event.target
-      );
+      const browser = event.target;
+      // Only create the card if the media is still playing a moment
+      // later, so short sounds (e.g. notification pings) never produce
+      // one.
+      setTimeout(() => {
+        const mediaController = browser.browsingContext?.mediaController;
+        if (!mediaController?.isPlaying) {
+          return;
+        }
+
+        this.activateMediaControls(mediaController, browser);
+        const card = this.#cardForBrowser(browser);
+        if (card && !card.isSharing) {
+          card.refreshVisibility();
+        }
+      }, 1000);
     });
 
     window.addEventListener("DOMAudioPlaybackStopped", () => {
@@ -483,8 +495,23 @@ class nsZenMediaController {
     );
   }
 
+  #cardForBrowser(browser) {
+    return (
+      Array.from(this.#cards.values()).find(
+        card => card.browser.browserId === browser.browserId
+      ) ?? null
+    );
+  }
+
   activateMediaControls(mediaController, browser) {
-    if (!mediaController?.isActive || this.#cards.has(mediaController.id)) {
+    if (
+      !mediaController?.isActive ||
+      this.#cards.has(mediaController.id) ||
+      // Never stack more than one card for the same browser: sites that
+      // activate a fresh controller for every sound they play (e.g.
+      // notification pings) keep their one card.
+      this.#cardForBrowser(browser)
+    ) {
       return;
     }
 
@@ -572,7 +599,14 @@ class nsZenMediaController {
     const element = this.#createCardElement();
     const card = new ZenMediaCard(this, element, browser, controller);
     this.#cards.set(key, card);
-    card.refreshVisibility();
+    if (controller) {
+      // Media cards start hidden and appear via the delayed check in
+      // DOMAudioPlaybackStarted or on tab switch, like the original bar;
+      // sharing cards show right away.
+      card.element.hidden = true;
+    } else {
+      card.refreshVisibility();
+    }
     this.onCardVisibilityChanged();
     return card;
   }

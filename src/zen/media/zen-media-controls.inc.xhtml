@@ -8,48 +8,41 @@
   mode="icons"
   fullscreentoolbar="true"
   hidden="true">
-  <toolbaritem>
-    <vbox id="zen-media-main-vbox">
-      <vbox>
-        <hbox id="zen-media-info-container" class="show-on-hover">
-          <vbox id="zen-media-info-vbox">
-            <label id="zen-media-title" fadein="true"/>
-            <label id="zen-media-artist" fadein="true"/>
-          </vbox>
-          <hbox id="zen-media-buttons-hbox">
-            <toolbarbutton id="zen-media-pip-button"
-              class="toolbarbutton-1" />
-            <toolbarbutton id="zen-media-close-button"
-              class="toolbarbutton-1" />
+  <html:template id="zen-media-card-template">
+    <toolbaritem class="zen-media-card">
+      <vbox class="zen-media-main-vbox">
+        <vbox>
+          <hbox class="zen-media-info-container show-on-hover">
+            <vbox class="zen-media-info-vbox">
+              <label class="zen-media-title" fadein="true"/>
+              <label class="zen-media-artist" fadein="true"/>
+            </vbox>
+            <hbox class="zen-media-buttons-hbox">
+              <toolbarbutton class="zen-media-pip-button toolbarbutton-1" />
+              <toolbarbutton class="zen-media-close-button toolbarbutton-1" />
+            </hbox>
+          </hbox>
+          <hbox class="zen-media-progress-hbox show-on-hover">
+            <label class="zen-media-current-time">0:00</label>
+            <html:input type="range" class="zen-media-progress-bar"
+              value="0" min="0" max="100" step="0.1"/>
+            <label class="zen-media-duration">0:00</label>
+          </hbox>
+        </vbox>
+        <hbox class="zen-media-controls-hbox">
+          <toolbarbutton class="zen-media-focus-button toolbarbutton-1" />
+          <hbox class="zen-media-playback-buttons">
+            <toolbarbutton class="zen-media-previoustrack-button toolbarbutton-1" />
+            <toolbarbutton class="zen-media-playpause-button toolbarbutton-1" />
+            <toolbarbutton class="zen-media-nexttrack-button toolbarbutton-1" />
+          </hbox>
+          <toolbarbutton class="zen-media-mute-button toolbarbutton-1" />
+          <hbox class="media-device-buttons">
+            <toolbarbutton class="zen-media-mute-mic-button toolbarbutton-1" />
+            <toolbarbutton class="zen-media-mute-camera-button toolbarbutton-1" />
           </hbox>
         </hbox>
-        <hbox id="zen-media-progress-hbox"  class="show-on-hover">
-          <label id="zen-media-current-time">0:00</label>
-          <html:input type="range" id="zen-media-progress-bar"
-            value="0" min="0" max="100" step="0.1"/>
-          <label id="zen-media-duration">0:00</label>
-        </hbox>
       </vbox>
-      <hbox id="zen-media-controls-hbox">
-        <toolbarbutton id="zen-media-focus-button"
-          class="toolbarbutton-1" />
-        <hbox id="zen-media-playback-buttons">
-          <toolbarbutton id="zen-media-previoustrack-button"
-            class="toolbarbutton-1" />
-          <toolbarbutton id="zen-media-playpause-button"
-            class="toolbarbutton-1" />
-          <toolbarbutton id="zen-media-nexttrack-button"
-            class="toolbarbutton-1" />
-        </hbox>
-        <toolbarbutton id="zen-media-mute-button"
-          class="toolbarbutton-1" />
-        <hbox id="media-device-buttons">
-          <toolbarbutton id="zen-media-mute-mic-button"
-            class="toolbarbutton-1" />
-          <toolbarbutton id="zen-media-mute-camera-button"
-            class="toolbarbutton-1" />
-        </hbox>
-      </hbox>
-    </vbox>
-  </toolbaritem>
+    </toolbaritem>
+  </html:template>
 </toolbar>

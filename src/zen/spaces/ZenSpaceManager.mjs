@@ -649,6 +649,7 @@ class nsZenWorkspaces {
         if (Math.abs(delta) < scrollThreshold) {
           return;
         }
+        event.preventDefault();
 
         // Determine scroll direction
         let rawDirection = delta > 0 ? 1 : -1;
@@ -779,6 +780,7 @@ class nsZenWorkspaces {
 
   restoreWorkspacesFromSessionStore(aWinData = {}) {
     if (this.#hasInitialized || !this.workspaceEnabled) {
+      this._resolveInitialized?.();
       return Promise.resolve();
     }
     const spacesFromStore = aWinData.spaces || [];

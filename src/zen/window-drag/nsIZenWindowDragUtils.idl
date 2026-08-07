@@ -20,4 +20,15 @@ interface nsIZenWindowDragUtils : nsISupports {
    * @param node The node to check.
    */
   boolean isInteractiveContent(in Node node);
+
+  /**
+   * @brief Whether the effective cursor for the given node signals
+   * interactive or draggable content (pointer, text, move, resize, ...).
+   * Unlike computed style, this resolves cursor: auto the same way the
+   * cursor actually shown to the user is chosen.
+   * @param node The deepest node hit by the event.
+   * @param clientX Viewport X coordinate of the event, in CSS pixels.
+   * @param clientY Viewport Y coordinate of the event, in CSS pixels.
+   */
+  boolean isInteractiveCursor(in Node node, in float clientX, in float clientY);
 };

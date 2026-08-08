@@ -141,7 +141,7 @@ diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/t
    }
  }
  
- #tabbrowser-arrowscrollbox[orient="vertical"] > #tabbrowser-arrowscrollbox-periphery > #tabs-newtab-button,
+ #tabs-newtab-button,
  #vertical-tabs-newtab-button {
 @@ -2581,11 +2581,11 @@
    }
@@ -370,9 +370,9 @@ diff --git a/toolkit/content/widgets/tabbox.js b/toolkit/content/widgets/tabbox.
 -      this.addEventListener("DOMMouseScroll", event => {
 -        if (Services.prefs.getBoolPref("toolkit.tabbox.switchByScrolling")) {
 -          if (event.detail > 0) {
--            this.advanceSelectedTab(DIRECTION_FORWARD, false, event);
+-            this.advanceSelectedTab(DIRECTION_FORWARD, false);
 -          } else {
--            this.advanceSelectedTab(DIRECTION_BACKWARD, false, event);
+-            this.advanceSelectedTab(DIRECTION_BACKWARD, false);
 -          }
 -          event.stopPropagation();
 -        }

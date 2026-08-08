@@ -27,7 +27,7 @@ body,
   }
 }
 
-:root[zen-before-loaded="true"] #browser > *:not(#zen-toast-container),
+:root[zen-before-loaded="true"] #browser > *:not(#zen-toast-container, #zen-browser-background),
 :root[zen-before-loaded="true"] #urlbar {
   opacity: 0 !important;
 }

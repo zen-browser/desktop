@@ -24,7 +24,7 @@ XPCOMUtils.defineLazyServiceGetter(
 // clicks commonly slide a few pixels (especially on trackpads), and once
 // the native move starts the OS swallows the mouseup — so keep this
 // comfortably above click jitter or clicks in the region get lost.
-const DRAG_START_THRESHOLD_PX = 10;
+const DRAG_START_THRESHOLD_PX = 4;
 
 // Content that drives its own mouse interaction without being
 // interactive HTML content in the spec sense.
@@ -52,33 +52,6 @@ const kInteractiveRoles = new Set([
   "toolbar",
   "tree",
   "treegrid",
-]);
-
-// Cursors that signal the page considers the area interactive or draggable.
-const kInteractiveCursors = new Set([
-  "pointer",
-  "grab",
-  "grabbing",
-  "move",
-  "all-scroll",
-  "text",
-  "vertical-text",
-  "cell",
-  "crosshair",
-  "col-resize",
-  "row-resize",
-  "n-resize",
-  "e-resize",
-  "s-resize",
-  "w-resize",
-  "ne-resize",
-  "nw-resize",
-  "se-resize",
-  "sw-resize",
-  "ew-resize",
-  "ns-resize",
-  "nesw-resize",
-  "nwse-resize",
 ]);
 
 const kGestureListenerOptions = { mozSystemGroup: true, capture: true };
@@ -256,8 +229,13 @@ export class ZenWindowDragChild extends JSWindowActorChild {
     if (event.originalTarget?.isNativeAnonymous) {
       return true;
     }
-    let target = event.composedTarget;
+    let target = event.explicitOriginalTarget;
     if (target?.nodeType === Node.TEXT_NODE) {
+      // The hit-test landed on rendered text; a drag here should select
+      // it instead, unless it isn't selectable.
+      if (this.#isSelectableText(target)) {
+        return true;
+      }
       target = target.parentElement;
     }
     if (!target || target.nodeType !== Node.ELEMENT_NODE) {
@@ -271,24 +249,15 @@ export class ZenWindowDragChild extends JSWindowActorChild {
         return true;
       }
     }
-    return (
-      this.#hasInteractiveCursor(target) || this.#isOverSelectableText(event)
+    // The effective cursor, resolved the same way it is shown to the user.
+    return lazy.zenWindowDragUtils.isInteractiveCursor(
+      event.composedTarget,
+      event.clientX,
+      event.clientY
     );
   }
 
-  /**
-   * A drag starting over selectable text should select it, not move the
-   * window. rangeParent is the caret position Gecko computed for the
-   * event, so this also covers empty space on the same line, where
-   * dragging extends a selection.
-   *
-   * @param {MouseEvent} event
-   */
-  #isOverSelectableText(event) {
-    const node = event.rangeParent;
-    if (node?.nodeType !== Node.TEXT_NODE) {
-      return false;
-    }
+  #isSelectableText(node) {
     const parent = node.parentElement;
     return (
       !parent ||
@@ -315,16 +284,5 @@ export class ZenWindowDragChild extends JSWindowActorChild {
     }
     const role = element.getAttribute?.("role");
     return !!role && kInteractiveRoles.has(role.toLowerCase());
-  }
-
-  #hasInteractiveCursor(element) {
-    const style = element.ownerGlobal?.getComputedStyle(element);
-    if (!style) {
-      return false;
-    }
-    // The keyword is always the last component of the computed value.
-    // Don't split on "," as url() cursor images may contain commas.
-    const cursor = style.cursor.match(/[a-z-]+$/)?.[0];
-    return kInteractiveCursors.has(cursor);
   }
 }

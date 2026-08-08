@@ -4,6 +4,13 @@
 
 import { JSONFile } from "resource://gre/modules/JSONFile.sys.mjs";
 
+const lazy = {};
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  gZenStandaloneWindowManager:
+    "resource:///modules/zen/standalonewindow/ZenStandaloneWindowManager.sys.mjs",
+});
+
 class nsZenSpaceRoutingManager {
   #file = null;
   #saveFilename = "zen-space-routing.jsonlz4";
@@ -96,6 +103,23 @@ class nsZenSpaceRoutingManager {
         targetRoute,
         targetWorkspaceName,
       };
+    }
+
+    if (this.shouldOpenExternalLinkInStandaloneWindow(uriString, options, win)) {
+      const didOpenStandaloneWindow = this.openExternalLinkInStandaloneWindow(
+        uriString,
+        options,
+        win
+      );
+      if (didOpenStandaloneWindow) {
+        return {
+          shouldEarlyExit: true,
+          userContextId,
+          isRouteFound,
+          targetRoute,
+          targetWorkspaceName,
+        };
+      }
     }
 
     targetRoute = this.routeUri(uriString, options);
@@ -217,6 +241,59 @@ class nsZenSpaceRoutingManager {
     }
 
     return nsZenSpaceRoutingManager.SKIP_TYPE.NONE;
+  }
+
+  /**
+   * Checks whether an external URL should use the future standalone-window path.
+   *
+   * @param {string} uriString - The URI as a string
+   * @param {object} options - The tab creation options
+   * @param {Window} win - The owning window
+   * @returns {boolean} True when standalone-window routing should be attempted
+   */
+  shouldOpenExternalLinkInStandaloneWindow(uriString, options, win) {
+    return (
+      typeof uriString === "string" &&
+      !!uriString &&
+      !!options?.fromExternal &&
+      !!win?.gZenWorkspaces?.workspaceEnabled &&
+      Services.prefs.getBoolPref("zen.standalone-window.enabled", false) &&
+      !Services.prefs.getBoolPref(
+        "zen.standalone-window.open-external-links-in-most-recent-space",
+        true
+      )
+    );
+  }
+
+  /**
+   * Future entry point for constructing a standalone window.
+   *
+   * This intentionally falls back to the existing addTab/space-routing flow until
+   * the standalone window constructor exists.
+   *
+   * @param {string} uriString - The URI as a string
+   * @param {object} options - The tab creation options
+   * @param {Window} win - The owning window
+   * @returns {boolean} True when the URL was handled by a standalone window
+   */
+  openExternalLinkInStandaloneWindow(uriString, options, win) {
+    return lazy.gZenStandaloneWindowManager.openExternalLinkStandaloneWindow({
+      uriString,
+      options,
+      openerWindow: win,
+    });
+  }
+
+  /**
+   * Compatibility wrapper for the standalone-window constructor.
+   *
+   * @param {string} uriString - The URI as a string
+   * @param {object} options - The tab creation options
+   * @param {Window} win - The owning window
+   * @returns {boolean} True when the standalone window handled the URL
+   */
+  constructExternalLinkStandaloneWindow(uriString, options, win) {
+    return this.openExternalLinkInStandaloneWindow(uriString, options, win);
   }
 
   /**

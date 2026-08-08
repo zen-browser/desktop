@@ -1,0 +1,18 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+- name: zen.standalone-window.enabled
+  value: true
+
+- name: zen.standalone-window.open-external-links-in-most-recent-space
+  value: true
+
+- name: zen.standalone-window.reuse-existing
+  value: false
+
+- name: zen.standalone-window.default-width
+  value: 1280
+
+- name: zen.standalone-window.default-height
+  value: 820

@@ -103,6 +103,9 @@ zen-settings-workspaces-enabled =
 zen-settings-workspaces-hide-default-container-indicator =
     .label = Hide the default container indicator in the tab bar
 
+zen-standalone-window-open-external-links-in-most-recent-space =
+    .label = Open External Links directly into the most recent space.
+
 zen-key-unsaved = Unsaved shortcut! Please save it by clicking the "Escape" key after retyping it.
 zen-key-conflict = Conflicts with { $group } -> { $shortcut }
 

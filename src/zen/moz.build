@@ -14,6 +14,7 @@ DIRS += [
     "glance",
     "live-folders",
     "mods",
+    "standalone-window",
     "tests",
     "urlbar",
     "toolkit",

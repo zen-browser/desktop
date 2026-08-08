@@ -1175,6 +1175,31 @@ Preferences.addAll([
     default: true,
   },
   {
+    id: "zen.standalone-window.enabled",
+    type: "bool",
+    default: true,
+  },
+  {
+    id: "zen.standalone-window.open-external-links-in-most-recent-space",
+    type: "bool",
+    default: true,
+  },
+  {
+    id: "zen.standalone-window.reuse-existing",
+    type: "bool",
+    default: false,
+  },
+  {
+    id: "zen.standalone-window.default-width",
+    type: "int",
+    default: 1280,
+  },
+  {
+    id: "zen.standalone-window.default-height",
+    type: "int",
+    default: 820,
+  },
+  {
     id: "zen.glance.activation-method",
     type: "string",
     default: "ctrl",

@@ -11,6 +11,22 @@ ChromeUtils.defineESModuleGetters(lazy, {
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
 });
 
+const STANDALONE_WINDOW_HIDDEN_ELEMENT_IDS = [
+  "navigator-toolbox",
+  "TabsToolbar",
+  "tabbrowser-tabs",
+  "zen-tabs-wrapper",
+  "zen-essentials",
+  "zen-workspaces-button",
+  "zen-sidebar-foot-buttons",
+  "sidebar-container",
+  "sidebar-launcher-splitter",
+  "sidebar-box",
+  "sidebar-splitter",
+  "ai-window",
+  "ai-window-splitter",
+];
+
 class nsZenStandaloneWindowManager {
   /**
    * Entry point for links opened from outside Zen.
@@ -157,6 +173,7 @@ class nsZenStandaloneWindowManager {
    */
   initializeStandaloneWindow(standaloneWindow, request) {
     this.markWindowAsStandalone(standaloneWindow, request);
+    this.applyStandaloneWindowState(standaloneWindow, request);
     this.initializeStandaloneToolbar(standaloneWindow, request);
   }
 
@@ -176,6 +193,112 @@ class nsZenStandaloneWindowManager {
       uriString: request.uriString,
       targetRoute: request.targetRoute,
     };
+  }
+
+  /**
+   * Applies standalone-only window and DOM state.
+   *
+   * @param {Window} standaloneWindow - The created standalone window
+   * @param {object} request - Normalized standalone window request
+   */
+  applyStandaloneWindowState(standaloneWindow, request) {
+    if (!standaloneWindow) {
+      return;
+    }
+
+    standaloneWindow._zenStartupSyncFlag = "unsynced";
+    standaloneWindow.ZenExternalLinkStandaloneType =
+      ZEN_STANDALONE_WINDOW_TYPE;
+
+    const applyState = () => {
+      this.markStandaloneDocument(standaloneWindow, request);
+      this.hideStandaloneWorkspaceChrome(standaloneWindow);
+      standaloneWindow.gZenUIManager?.updateTabsToolbar?.();
+    };
+
+    applyState();
+
+    if (standaloneWindow.gBrowserInit?.delayedStartupFinished) {
+      return;
+    }
+
+    const observer = subject => {
+      if (subject !== standaloneWindow) {
+        return;
+      }
+      Services.obs.removeObserver(
+        observer,
+        "browser-delayed-startup-finished"
+      );
+      applyState();
+    };
+
+    Services.obs.addObserver(observer, "browser-delayed-startup-finished");
+    standaloneWindow.addEventListener(
+      "unload",
+      () => {
+        try {
+          Services.obs.removeObserver(
+            observer,
+            "browser-delayed-startup-finished"
+          );
+        } catch {
+          // The observer may already have run.
+        }
+      },
+      { once: true }
+    );
+  }
+
+  /**
+   * Marks the chrome document as a standalone external-link window.
+   *
+   * @param {Window} standaloneWindow - The created standalone window
+   * @param {object} request - Normalized standalone window request
+   */
+  markStandaloneDocument(standaloneWindow, request) {
+    const root = standaloneWindow.document?.documentElement;
+    if (!root) {
+      return;
+    }
+
+    root.setAttribute("zen-standalone-window", "true");
+    root.setAttribute("zen-standalone-window-type", ZEN_STANDALONE_WINDOW_TYPE);
+    root.setAttribute("zen-standalone-window-source", request.source);
+    root.setAttribute("zen-unsynced-window", "true");
+  }
+
+  /**
+   * Hides workspace/sidebar chrome that standalone windows should not expose.
+   *
+   * @param {Window} standaloneWindow - The created standalone window
+   */
+  hideStandaloneWorkspaceChrome(standaloneWindow) {
+    const document = standaloneWindow.document;
+    if (!document) {
+      return;
+    }
+
+    for (const id of STANDALONE_WINDOW_HIDDEN_ELEMENT_IDS) {
+      const element = document.getElementById(id);
+      if (element) {
+        element.setAttribute("hidden", "true");
+      }
+    }
+
+    const mainWrapper = document.getElementById("zen-main-app-wrapper");
+    mainWrapper?.setAttribute("zen-standalone-window", "true");
+
+    const appContentWrapper = document.getElementById(
+      "zen-appcontent-wrapper"
+    );
+    appContentWrapper?.setAttribute("zen-standalone-window", "true");
+
+    const selectedBrowser = standaloneWindow.gBrowser?.selectedBrowser;
+    selectedBrowser?.setAttribute(
+      "zen-standalone-window",
+      ZEN_STANDALONE_WINDOW_TYPE
+    );
   }
 
   /**

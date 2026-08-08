@@ -26,6 +26,10 @@ XPCOMUtils.defineLazyServiceGetter(
 // comfortably above click jitter or clicks in the region get lost.
 const DRAG_START_THRESHOLD_PX = 4;
 
+// Un-snapping a maximized or tiled window is more disruptive, so those
+// need a firmer gesture, mirroring how native titlebars behave.
+const SNAPPED_DRAG_START_THRESHOLD_PX = 50;
+
 // Content that drives its own mouse interaction without being
 // interactive HTML content in the spec sense.
 const kAppContentTags = new Set(["audio", "canvas", "video"]);
@@ -63,6 +67,9 @@ export class ZenWindowDragChild extends JSWindowActorChild {
   #dragging = false;
   #startScreenX = 0;
   #startScreenY = 0;
+  // 0 while waiting for the ZenWindowDrag:IsSnapped answer; no drag can
+  // start until the proper threshold is known.
+  #dragThresholdPx = 0;
 
   handleEvent(event) {
     // Never let pages spoof the gesture with synthetic events.
@@ -145,8 +152,18 @@ export class ZenWindowDragChild extends JSWindowActorChild {
     const { screenX, screenY } = this.#screenPoint(event);
     this.#startScreenX = screenX;
     this.#startScreenY = screenY;
+    this.#dragThresholdPx = 0;
     this.#tracking = true;
     this.#addGestureListeners();
+    this.sendQuery("ZenWindowDrag:IsSnapped")
+      .then(snapped => {
+        if (this.#tracking) {
+          this.#dragThresholdPx = snapped
+            ? SNAPPED_DRAG_START_THRESHOLD_PX
+            : DRAG_START_THRESHOLD_PX;
+        }
+      })
+      .catch(() => this.#reset());
   }
 
   #onMouseMove(event) {
@@ -164,9 +181,12 @@ export class ZenWindowDragChild extends JSWindowActorChild {
       event.preventDefault();
       return;
     }
+    if (!this.#dragThresholdPx) {
+      return;
+    }
     const point = this.#screenPoint(event);
     const threshold =
-      DRAG_START_THRESHOLD_PX * this.contentWindow.devicePixelRatio;
+      this.#dragThresholdPx * this.contentWindow.devicePixelRatio;
     if (
       Math.hypot(
         point.screenX - this.#startScreenX,

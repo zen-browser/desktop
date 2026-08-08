@@ -9,6 +9,7 @@
   --button-spacing: 2px;
   --zen-media-stack-peek: 8px;
   --zen-media-stack-gap: 6px;
+  --zen-media-stack-easing: cubic-bezier(0.25, 1, 0.5, 1);
 
   display: flex;
   min-width: 0;
@@ -88,7 +89,7 @@
       animation: zen-back-and-forth-text 10s infinite ease-in-out;
     }
 
-    & .zen-media-card {
+    & .zen-media-card:not([zen-removing]) {
       transform: none;
       opacity: 1;
     }
@@ -114,10 +115,10 @@
     padding: 0 6px;
     pointer-events: none;
     transition:
-      max-height 0.2s ease,
-      opacity 0.2s ease,
-      transform 0.2s ease,
-      padding 0.2s ease;
+      max-height 0.3s var(--zen-media-stack-easing),
+      opacity 0.3s var(--zen-media-stack-easing),
+      transform 0.3s var(--zen-media-stack-easing),
+      padding 0.3s var(--zen-media-stack-easing);
   }
 
   .zen-media-current-time,
@@ -149,11 +150,38 @@
       )
     )
     scale(calc(1 - 0.04 * var(--zen-media-card-peek-level, 0)));
-  opacity: calc(1 - 0.4 * var(--zen-media-card-peek-level, 0));
+  opacity: calc(1 - 0.3 * var(--zen-media-card-peek-level, 0));
+  filter: blur(0);
   transition:
-    transform 0.1s ease-out,
-    opacity 0.2s ease-out,
+    transform 0.35s var(--zen-media-stack-easing),
+    opacity 0.3s var(--zen-media-stack-easing),
+    filter 0.3s var(--zen-media-stack-easing),
     padding 0.3s ease-out;
+
+  @starting-style {
+    opacity: 0;
+    transform: translateY(0.5rem);
+    filter: blur(4px);
+  }
+
+  &[zen-reindexing] {
+    transition: none;
+  }
+
+  &[zen-removing] {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    transform: none;
+    translate: 0 0.5rem;
+    opacity: 0;
+    filter: blur(2px);
+    pointer-events: none;
+    transition:
+      translate 0.3s var(--zen-media-stack-easing),
+      opacity 0.3s var(--zen-media-stack-easing),
+      filter 0.3s var(--zen-media-stack-easing);
+  }
 
   &[stack-overflow] {
     display: none;
@@ -249,7 +277,7 @@
     overflow: visible;
     position: relative;
     z-index: 2;
-    transition: height 0.2s ease-out;
+    transition: height 0.3s var(--zen-media-stack-easing);
   }
 }
 

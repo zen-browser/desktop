@@ -89,7 +89,6 @@
   }
 }
 
-
 #identity-icon-box #identity-icon-label {
   display: none;
 }
@@ -303,7 +302,6 @@
     display: none;
   }
 }
-
 
 :root[zen-single-toolbar="true"] {
   --urlbar-icon-border-radius: 8px !important;

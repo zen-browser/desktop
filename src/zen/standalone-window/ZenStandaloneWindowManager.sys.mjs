@@ -4,6 +4,13 @@
 
 export const ZEN_STANDALONE_WINDOW_TYPE = "zen:external-link-standalone";
 
+const lazy = {};
+
+ChromeUtils.defineESModuleGetters(lazy, {
+  BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
+  PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
+});
+
 class nsZenStandaloneWindowManager {
   /**
    * Entry point for links opened from outside Zen.
@@ -65,18 +72,45 @@ class nsZenStandaloneWindowManager {
   /**
    * Constructs the standalone popup-like browser window.
    *
-   * This intentionally returns null until the real window construction details
-   * are implemented. Returning null keeps the existing addTab flow intact.
-   *
    * @param {object} request - Normalized standalone window request
    * @returns {Window|null} The created standalone window, or null to fall back
    */
   constructStandaloneWindow(request) {
     const standaloneURL = this.getStandaloneWindowInitialURL(request);
     const features = this.getStandaloneWindowFeatures(request);
-    void standaloneURL;
-    void features;
-    return null;
+    if (!standaloneURL || !features) {
+      return null;
+    }
+
+    try {
+      Services.io.newURI(standaloneURL);
+
+      const openerWindow = request.openerWindow;
+      const args = Cc["@mozilla.org/supports-string;1"].createInstance(
+        Ci.nsISupportsString
+      );
+      args.data = standaloneURL;
+
+      const standaloneWindow = lazy.BrowserWindowTracker.openWindow({
+        private: lazy.PrivateBrowsingUtils.isWindowPrivate(openerWindow),
+        features,
+        all: false,
+        openerWindow,
+        args,
+        zenSyncedWindow: false,
+      });
+
+      if (standaloneWindow) {
+        standaloneWindow._zenStartupSyncFlag = "unsynced";
+        standaloneWindow.ZenExternalLinkStandaloneType =
+          ZEN_STANDALONE_WINDOW_TYPE;
+      }
+
+      return standaloneWindow ?? null;
+    } catch (error) {
+      console.error("Failed to construct Zen standalone window", error);
+      return null;
+    }
   }
 
   /**

@@ -355,9 +355,72 @@ class nsZenStandaloneWindowManager {
    * Handles standalone-window close without keeping it.
    *
    * @param {Window} standaloneWindow - The standalone window being closed
+   * @returns {boolean} True when the close was started
    */
   closeStandaloneWindow(standaloneWindow) {
-    standaloneWindow?.close?.();
+    if (
+      !this.isStandaloneWindow(standaloneWindow) ||
+      standaloneWindow.closed ||
+      standaloneWindow.ZenExternalLinkStandalone?.isClosing
+    ) {
+      return false;
+    }
+
+    if (!this.canCloseStandaloneWindow(standaloneWindow)) {
+      return false;
+    }
+
+    standaloneWindow.ZenExternalLinkStandalone.isClosing = true;
+    standaloneWindow.skipNextCanClose = true;
+    try {
+      standaloneWindow.close();
+      return true;
+    } catch (error) {
+      standaloneWindow.ZenExternalLinkStandalone.isClosing = false;
+      standaloneWindow.skipNextCanClose = false;
+      console.error("Failed to close Zen standalone window", error);
+      return false;
+    }
+  }
+
+  /**
+   * Checks whether a window belongs to this standalone-window feature.
+   *
+   * @param {Window} standaloneWindow - The window to inspect
+   * @returns {boolean} True when this is a standalone external-link window
+   */
+  isStandaloneWindow(standaloneWindow) {
+    return (
+      !!standaloneWindow?.ZenExternalLinkStandalone &&
+      standaloneWindow.ZenExternalLinkStandaloneType ===
+        ZEN_STANDALONE_WINDOW_TYPE
+    );
+  }
+
+  /**
+   * Runs close preflight checks that can be canceled by page beforeunload.
+   *
+   * @param {Window} standaloneWindow - The standalone window being closed
+   * @returns {boolean} True when the window may close
+   */
+  canCloseStandaloneWindow(standaloneWindow) {
+    const browsers = standaloneWindow.gBrowser?.browsers;
+    if (!browsers?.length) {
+      return true;
+    }
+
+    try {
+      return browsers.every(browser => {
+        if (!browser?.permitUnload) {
+          return true;
+        }
+
+        return !!browser.permitUnload().permitUnload;
+      });
+    } catch (error) {
+      console.error("Failed to check standalone window unload state", error);
+      return false;
+    }
   }
 
   /**

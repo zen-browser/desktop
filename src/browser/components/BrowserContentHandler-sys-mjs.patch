@@ -2,7 +2,7 @@ diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/componen
 index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09814422bf 100644
 --- a/browser/components/BrowserContentHandler.sys.mjs
 +++ b/browser/components/BrowserContentHandler.sys.mjs
-@@ -603,6 +603,57 @@ nsBrowserContentHandler.prototype = {
+@@ -603,6 +603,61 @@ nsBrowserContentHandler.prototype = {
        }
      }
  
@@ -41,6 +41,10 @@ index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09
 +          targetWin.gZenWorkspaces
 +            .changeWorkspaceFromCommandLine(zenWorkspaceParam)
 +            .catch(console.error);
++          targetWin.focus();
++          if (!cmdLine.length) {
++            cmdLine.preventDefault = true;
++          }
 +        } else {
 +          // Cold start: stash the space so the first window that
 +          // restores picks it up, and let normal startup open that window.
@@ -60,12 +64,12 @@ index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09
      var searchParam = cmdLine.handleFlagWithParam("search", false);
      if (searchParam) {
        doSearch(searchParam, cmdLine);
-@@ -672,6 +723,8 @@ nsBrowserContentHandler.prototype = {
+@@ -672,6 +727,8 @@ nsBrowserContentHandler.prototype = {
        "  --new-window <url> Open <url> in a new window.\n" +
        "  --new-tab <url>    Open <url> in a new tab.\n" +
        "  --private-window [<url>] Open <url> in a new private window.\n";
 +    info += "  --blank-window [<url>]  Open the new blank window.\n";
-+    info += "  --space <space>  Switch to the space with the given name or UUID.\n";
++    info += "  --space <space> [<url>]  Switch to the space with the given name or UUID, and open <url> in it if given.\n";
      if (AppConstants.platform == "win") {
        info += "  --preferences      Open Options dialog.\n";
      } else {

@@ -26,6 +26,10 @@ XPCOMUtils.defineLazyServiceGetter(
 // comfortably above click jitter or clicks in the region get lost.
 const DRAG_START_THRESHOLD_PX = 4;
 
+// Un-snapping a maximized or tiled window is more disruptive, so those
+// need a firmer gesture, mirroring how native titlebars behave.
+const SNAPPED_DRAG_START_THRESHOLD_PX = 50;
+
 // Content that drives its own mouse interaction without being
 // interactive HTML content in the spec sense.
 const kAppContentTags = new Set(["audio", "canvas", "video"]);
@@ -54,33 +58,6 @@ const kInteractiveRoles = new Set([
   "treegrid",
 ]);
 
-// Cursors that signal the page considers the area interactive or draggable.
-const kInteractiveCursors = new Set([
-  "pointer",
-  "grab",
-  "grabbing",
-  "move",
-  "all-scroll",
-  "text",
-  "vertical-text",
-  "cell",
-  "crosshair",
-  "col-resize",
-  "row-resize",
-  "n-resize",
-  "e-resize",
-  "s-resize",
-  "w-resize",
-  "ne-resize",
-  "nw-resize",
-  "se-resize",
-  "sw-resize",
-  "ew-resize",
-  "ns-resize",
-  "nesw-resize",
-  "nwse-resize",
-]);
-
 const kGestureListenerOptions = { mozSystemGroup: true, capture: true };
 
 const kGestureEvents = ["mousemove", "mouseup", "dragstart", "unload"];
@@ -90,6 +67,9 @@ export class ZenWindowDragChild extends JSWindowActorChild {
   #dragging = false;
   #startScreenX = 0;
   #startScreenY = 0;
+  // 0 while waiting for the ZenWindowDrag:IsSnapped answer; no drag can
+  // start until the proper threshold is known.
+  #dragThresholdPx = 0;
 
   handleEvent(event) {
     // Never let pages spoof the gesture with synthetic events.
@@ -172,8 +152,18 @@ export class ZenWindowDragChild extends JSWindowActorChild {
     const { screenX, screenY } = this.#screenPoint(event);
     this.#startScreenX = screenX;
     this.#startScreenY = screenY;
+    this.#dragThresholdPx = 0;
     this.#tracking = true;
     this.#addGestureListeners();
+    this.sendQuery("ZenWindowDrag:IsSnapped")
+      .then(snapped => {
+        if (this.#tracking) {
+          this.#dragThresholdPx = snapped
+            ? SNAPPED_DRAG_START_THRESHOLD_PX
+            : DRAG_START_THRESHOLD_PX;
+        }
+      })
+      .catch(() => this.#reset());
   }
 
   #onMouseMove(event) {
@@ -191,9 +181,12 @@ export class ZenWindowDragChild extends JSWindowActorChild {
       event.preventDefault();
       return;
     }
+    if (!this.#dragThresholdPx) {
+      return;
+    }
     const point = this.#screenPoint(event);
     const threshold =
-      DRAG_START_THRESHOLD_PX * this.contentWindow.devicePixelRatio;
+      this.#dragThresholdPx * this.contentWindow.devicePixelRatio;
     if (
       Math.hypot(
         point.screenX - this.#startScreenX,
@@ -276,7 +269,12 @@ export class ZenWindowDragChild extends JSWindowActorChild {
         return true;
       }
     }
-    return this.#hasInteractiveCursor(target);
+    // The effective cursor, resolved the same way it is shown to the user.
+    return lazy.zenWindowDragUtils.isInteractiveCursor(
+      event.composedTarget,
+      event.clientX,
+      event.clientY
+    );
   }
 
   #isSelectableText(node) {
@@ -306,16 +304,5 @@ export class ZenWindowDragChild extends JSWindowActorChild {
     }
     const role = element.getAttribute?.("role");
     return !!role && kInteractiveRoles.has(role.toLowerCase());
-  }
-
-  #hasInteractiveCursor(element) {
-    const style = element.ownerGlobal?.getComputedStyle(element);
-    if (!style) {
-      return false;
-    }
-    // The keyword is always the last component of the computed value.
-    // Don't split on "," as url() cursor images may contain commas.
-    const cursor = style.cursor.match(/[a-z-]+$/)?.[0];
-    return kInteractiveCursors.has(cursor);
   }
 }

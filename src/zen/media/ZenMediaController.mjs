@@ -164,11 +164,33 @@ class ZenMediaCard {
   }
 
   setHidden(hidden) {
-    if (this.element.hidden === hidden) {
+    if (!hidden) {
+      // Showing cancels a hide that may still be animating.
+      this.element.removeAttribute("zen-hiding");
+      if (this.element.hidden) {
+        this.element.hidden = false;
+        this.manager.onCardVisibilityChanged();
+      }
       return;
     }
-    this.element.hidden = hidden;
-    this.manager.onCardVisibilityChanged();
+
+    if (this.element.hidden || this.element.hasAttribute("zen-hiding")) {
+      return;
+    }
+    this.element.setAttribute("zen-hiding", "true");
+    Promise.allSettled(
+      this.element.getAnimations().map(animation => animation.finished)
+    ).then(() => {
+      if (!this.element.hasAttribute("zen-hiding")) {
+        return;
+      }
+      this.element.removeAttribute("zen-hiding");
+      if (this.shouldBeVisible) {
+        return;
+      }
+      this.element.hidden = true;
+      this.manager.onCardVisibilityChanged();
+    });
   }
 
   // Mirrors the original bar behavior: hide instantly when the card's own

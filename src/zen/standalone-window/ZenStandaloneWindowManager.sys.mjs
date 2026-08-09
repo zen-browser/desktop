@@ -55,6 +55,11 @@ class nsZenStandaloneWindowManager {
       return false;
     }
 
+    const reusableWindow = this.findReusableStandaloneWindow(request);
+    if (reusableWindow) {
+      return this.reuseStandaloneWindow(reusableWindow, request);
+    }
+
     const standaloneWindow = this.constructStandaloneWindow(request);
     if (!standaloneWindow) {
       return false;
@@ -112,7 +117,7 @@ class nsZenStandaloneWindowManager {
 
       const openerWindow = request.openerWindow;
       const args = Cc["@mozilla.org/supports-string;1"].createInstance(
-        Ci.nsISupportsString
+        Ci.nsISupportsString,
       );
       args.data = standaloneURL;
 
@@ -139,6 +144,72 @@ class nsZenStandaloneWindowManager {
   }
 
   /**
+   * Finds an existing standalone window when reuse is enabled.
+   *
+   * @param {object} request - Normalized standalone window request
+   * @returns {Window|null} Reusable standalone window, or null
+   */
+  findReusableStandaloneWindow(request) {
+    if (
+      !Services.prefs.getBoolPref("zen.standalone-window.reuse-existing", false)
+    ) {
+      return null;
+    }
+
+    const requestedPrivate = lazy.PrivateBrowsingUtils.isWindowPrivate(
+      request.openerWindow,
+    );
+    for (const win of lazy.BrowserWindowTracker.orderedWindows) {
+      if (
+        this.isStandaloneWindow(win) &&
+        !win.closed &&
+        lazy.PrivateBrowsingUtils.isWindowPrivate(win) === requestedPrivate
+      ) {
+        return win;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Navigates an existing standalone window to a new external URL.
+   *
+   * @param {Window} standaloneWindow - Existing standalone window
+   * @param {object} request - Normalized standalone window request
+   * @returns {boolean} True when the existing window handled the URL
+   */
+  reuseStandaloneWindow(standaloneWindow, request) {
+    const browser = standaloneWindow?.gBrowser?.selectedBrowser;
+    if (!browser) {
+      return false;
+    }
+
+    let uri;
+    try {
+      uri = Services.io.newURI(request.uriString);
+    } catch (error) {
+      console.error("Cannot reuse standalone window for invalid URL", error);
+      return false;
+    }
+
+    this.markWindowAsStandalone(standaloneWindow, request);
+    this.initializeStandaloneWindow(standaloneWindow, request);
+
+    try {
+      browser.loadURI(uri, {
+        triggeringPrincipal:
+          Services.scriptSecurityManager.getSystemPrincipal(),
+      });
+      standaloneWindow.focus?.();
+      return true;
+    } catch (error) {
+      console.error("Failed to reuse Zen standalone window", error);
+      return false;
+    }
+  }
+
+  /**
    * Resolves the initial URL loaded by the standalone window.
    *
    * @param {object} request - Normalized standalone window request
@@ -158,11 +229,11 @@ class nsZenStandaloneWindowManager {
     void request;
     const width = Services.prefs.getIntPref(
       "zen.standalone-window.default-width",
-      1280
+      1280,
     );
     const height = Services.prefs.getIntPref(
       "zen.standalone-window.default-height",
-      820
+      820,
     );
     return [
       "chrome",
@@ -264,8 +335,7 @@ class nsZenStandaloneWindowManager {
     }
 
     standaloneWindow._zenStartupSyncFlag = "unsynced";
-    standaloneWindow.ZenExternalLinkStandaloneType =
-      ZEN_STANDALONE_WINDOW_TYPE;
+    standaloneWindow.ZenExternalLinkStandaloneType = ZEN_STANDALONE_WINDOW_TYPE;
 
     const applyState = () => {
       this.markStandaloneDocument(standaloneWindow, request);
@@ -278,14 +348,11 @@ class nsZenStandaloneWindowManager {
       return;
     }
 
-    const observer = subject => {
+    const observer = (subject) => {
       if (subject !== standaloneWindow) {
         return;
       }
-      Services.obs.removeObserver(
-        observer,
-        "browser-delayed-startup-finished"
-      );
+      Services.obs.removeObserver(observer, "browser-delayed-startup-finished");
       applyState();
     };
 
@@ -296,13 +363,13 @@ class nsZenStandaloneWindowManager {
         try {
           Services.obs.removeObserver(
             observer,
-            "browser-delayed-startup-finished"
+            "browser-delayed-startup-finished",
           );
         } catch {
           // The observer may already have run.
         }
       },
-      { once: true }
+      { once: true },
     );
   }
 
@@ -345,15 +412,13 @@ class nsZenStandaloneWindowManager {
     const mainWrapper = document.getElementById("zen-main-app-wrapper");
     mainWrapper?.setAttribute("zen-standalone-window", "true");
 
-    const appContentWrapper = document.getElementById(
-      "zen-appcontent-wrapper"
-    );
+    const appContentWrapper = document.getElementById("zen-appcontent-wrapper");
     appContentWrapper?.setAttribute("zen-standalone-window", "true");
 
     const selectedBrowser = standaloneWindow.gBrowser?.selectedBrowser;
     selectedBrowser?.setAttribute(
       "zen-standalone-window",
-      ZEN_STANDALONE_WINDOW_TYPE
+      ZEN_STANDALONE_WINDOW_TYPE,
     );
   }
 
@@ -400,15 +465,12 @@ class nsZenStandaloneWindowManager {
       openInSpaceButton.id = STANDALONE_WINDOW_OPEN_IN_SPACE_BUTTON_ID;
       openInSpaceButton.setAttribute(
         "class",
-        "toolbarbutton-1 chromeclass-toolbar-additional"
+        "toolbarbutton-1 chromeclass-toolbar-additional",
       );
-      openInSpaceButton.setAttribute(
-        "label",
-        actions.openInDefaultSpace.label
-      );
+      openInSpaceButton.setAttribute("label", actions.openInDefaultSpace.label);
       openInSpaceButton.setAttribute(
         "tooltiptext",
-        actions.openInDefaultSpace.label
+        actions.openInDefaultSpace.label,
       );
 
       const onOpenInDefaultSpaceCommand = () => {
@@ -420,7 +482,7 @@ class nsZenStandaloneWindowManager {
 
       openInSpaceButton.addEventListener(
         "command",
-        onOpenInDefaultSpaceCommand
+        onOpenInDefaultSpaceCommand,
       );
       toolbar.appendChild(openInSpaceButton);
 
@@ -428,17 +490,17 @@ class nsZenStandaloneWindowManager {
       spacePickerButton.id = STANDALONE_WINDOW_SPACE_PICKER_BUTTON_ID;
       spacePickerButton.setAttribute(
         "class",
-        "toolbarbutton-1 chromeclass-toolbar-additional"
+        "toolbarbutton-1 chromeclass-toolbar-additional",
       );
       spacePickerButton.setAttribute("label", actions.openSpacePicker.label);
       spacePickerButton.setAttribute(
         "tooltiptext",
-        actions.openSpacePicker.label
+        actions.openSpacePicker.label,
       );
 
       const spacePickerPopup = document.createXULElement("menupopup");
       spacePickerPopup.id = STANDALONE_WINDOW_SPACE_PICKER_POPUP_ID;
-      const onSpacePickerCommand = event => {
+      const onSpacePickerCommand = (event) => {
         const item = event.target.closest?.("menuitem[zen-workspace-id]");
         const workspaceId = item?.getAttribute("zen-workspace-id");
         if (!workspaceId) {
@@ -554,15 +616,12 @@ class nsZenStandaloneWindowManager {
       return;
     }
 
-    const observer = subject => {
+    const observer = (subject) => {
       if (subject !== standaloneWindow) {
         return;
       }
 
-      Services.obs.removeObserver(
-        observer,
-        "browser-delayed-startup-finished"
-      );
+      Services.obs.removeObserver(observer, "browser-delayed-startup-finished");
       retryAfterStartup();
     };
 
@@ -573,13 +632,13 @@ class nsZenStandaloneWindowManager {
         try {
           Services.obs.removeObserver(
             observer,
-            "browser-delayed-startup-finished"
+            "browser-delayed-startup-finished",
           );
         } catch {
           // The observer may already have run.
         }
       },
-      { once: true }
+      { once: true },
     );
   }
 
@@ -596,15 +655,15 @@ class nsZenStandaloneWindowManager {
 
     toolbar.openInDefaultSpaceButton?.removeEventListener(
       "command",
-      toolbar.onOpenInDefaultSpaceCommand
+      toolbar.onOpenInDefaultSpaceCommand,
     );
     toolbar.spacePickerButton?.removeEventListener(
       "command",
-      toolbar.onOpenSpacePickerCommand
+      toolbar.onOpenSpacePickerCommand,
     );
     toolbar.spacePickerPopup?.removeEventListener(
       "command",
-      toolbar.onSpacePickerCommand
+      toolbar.onSpacePickerCommand,
     );
     toolbar.root?.remove();
     standaloneWindow.ZenExternalLinkStandalone.toolbar = null;
@@ -621,7 +680,7 @@ class nsZenStandaloneWindowManager {
     standaloneWindow?.addEventListener?.(
       "unload",
       () => this.onStandaloneWindowClosed(standaloneWindow),
-      { once: true }
+      { once: true },
     );
   }
 
@@ -684,7 +743,7 @@ class nsZenStandaloneWindowManager {
     }
 
     try {
-      return browsers.every(browser => {
+      return browsers.every((browser) => {
         if (!browser?.permitUnload) {
           return true;
         }
@@ -726,7 +785,7 @@ class nsZenStandaloneWindowManager {
     const opened = this.openStandaloneUrlInSpace(
       standaloneState.uriString,
       route,
-      standaloneWindow
+      standaloneWindow,
     );
     if (!opened) {
       return false;
@@ -798,7 +857,7 @@ class nsZenStandaloneWindowManager {
       item.setAttribute("zen-workspace-id", workspace.uuid);
       item.setAttribute(
         "label",
-        this.getStandaloneWorkspacePickerLabel(workspace)
+        this.getStandaloneWorkspacePickerLabel(workspace),
       );
 
       if (workspace.icon?.endsWith?.(".svg")) {

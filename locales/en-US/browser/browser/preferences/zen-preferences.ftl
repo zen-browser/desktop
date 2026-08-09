@@ -103,8 +103,14 @@ zen-settings-workspaces-enabled =
 zen-settings-workspaces-hide-default-container-indicator =
     .label = Hide the default container indicator in the tab bar
 
+zen-standalone-window-header = Standalone windows
+zen-standalone-window-description = Control how links opened from outside Zen are handled.
+zen-standalone-window-enabled =
+    .label = Open external links in standalone windows
 zen-standalone-window-open-external-links-in-most-recent-space =
-    .label = Open External Links directly into the most recent space.
+    .label = Open external links directly into the most recent space
+zen-standalone-window-reuse-existing =
+    .label = Reuse an existing standalone window
 
 zen-key-unsaved = Unsaved shortcut! Please save it by clicking the "Escape" key after retyping it.
 zen-key-conflict = Conflicts with { $group } -> { $shortcut }

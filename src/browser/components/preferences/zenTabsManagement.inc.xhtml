@@ -42,9 +42,21 @@
             hidden="true"/>
       <checkbox data-l10n-id="zen-tabs-select-recently-used-on-close"
             preference="zen.tabs.select-recently-used-on-close"/>
+</groupbox>
+
+<groupbox id="zenStandaloneWindowGroup" data-category="paneZenTabManagement" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-standalone-window-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-standalone-window-description" />
+
+      <checkbox id="zenStandaloneWindowEnabled"
+            data-l10n-id="zen-standalone-window-enabled"
+            preference="zen.standalone-window.enabled"/>
       <checkbox id="zenStandaloneWindowOpenExternalLinksInMostRecentSpace"
             data-l10n-id="zen-standalone-window-open-external-links-in-most-recent-space"
             preference="zen.standalone-window.open-external-links-in-most-recent-space"/>
+      <checkbox id="zenStandaloneWindowReuseExisting"
+            data-l10n-id="zen-standalone-window-reuse-existing"
+            preference="zen.standalone-window.reuse-existing"/>
 </groupbox>
 
 <hbox id="zenPinnedTabsManagerCategory"

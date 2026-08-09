@@ -12,7 +12,7 @@ XPCOMUtils.defineLazyPreferenceGetter(
 
 // Maximum number of cards shown in the stack; extra cards stay hidden until
 // a slot frees up.
-const MAX_STACKED_CARDS = 5;
+const MAX_STACKED_CARDS = 3;
 // How many background cards visually peek out at the top of the stack.
 // Deeper cards hide perfectly behind the last peeking one, so the stack
 // doesn't take more room with every extra card.
@@ -412,7 +412,25 @@ class ZenMediaCard {
       this.#tabTimeout = null;
     }
 
-    this.element.remove();
+    const { element } = this;
+    if (element.hidden) {
+      element.remove();
+    } else {
+      // Animate the card out instead of popping it away. It leaves the
+      // flex flow immediately (so the remaining cards re-slot right away)
+      // but stays anchored where it currently is while it sinks and fades.
+      const barBottom =
+        this.manager.mediaControlBar.getBoundingClientRect().bottom;
+      element.style.bottom =
+        barBottom - element.getBoundingClientRect().bottom + "px";
+      element.setAttribute("zen-removing", "true");
+      // Resolves once the exit transitions finish or get cancelled, and
+      // immediately if they never start (e.g. reduced motion).
+      Promise.allSettled(
+        element.getAnimations().map(animation => animation.finished)
+      ).then(() => element.remove());
+    }
+
     this.manager.onCardDestroyed(this);
   }
 }
@@ -452,21 +470,28 @@ class nsZenMediaController {
 
     window.addEventListener("DOMAudioPlaybackStarted", event => {
       const browser = event.target;
-      // Only create the card if the media is still playing a moment
-      // later, so short sounds (e.g. notification pings) never produce
-      // one.
+      // The card is created right away (while the controller is fresh)
+      // but only shown if the media is still playing a moment later, so
+      // short sounds (e.g. notification pings) never reveal it.
       setTimeout(() => {
-        const mediaController = browser.browsingContext?.mediaController;
-        if (!mediaController?.isPlaying) {
+        const card = this.#cardForBrowser(browser);
+        if (!card || card.isSharing) {
           return;
         }
-
-        this.activateMediaControls(mediaController, browser);
-        const card = this.#cardForBrowser(browser);
-        if (card && !card.isSharing) {
+        if (card.controller.isPlaying) {
           card.refreshVisibility();
+        } else if (card.element.hidden) {
+          // The sound was over before ever being shown (e.g. a
+          // notification ping): drop the card instead of keeping a ghost
+          // around.
+          card.destroy();
         }
       }, 1000);
+
+      this.activateMediaControls(
+        browser.browsingContext.mediaController,
+        browser
+      );
     });
 
     window.addEventListener("DOMAudioPlaybackStopped", () => {
@@ -623,18 +648,31 @@ class nsZenMediaController {
       card => !card.element.hidden
     );
 
+    // Re-slot the indices without transitions first: the index transform
+    // only compensates the flex-order shift, so a reindexed card keeps
+    // its visual position through this step.
     visibleCards.forEach((card, index) => {
       card.element.toggleAttribute(
         "stack-overflow",
         index >= MAX_STACKED_CARDS
       );
       card.element.toggleAttribute("stacked-behind", index > 0);
+      card.element.setAttribute("zen-reindexing", "true");
       card.element.style.setProperty("--zen-media-card-index", index);
+      card.element.style.zIndex = 100 - index;
+    });
+
+    // Flush styles so the re-slotting lands instantly...
+    this.mediaControlBar.getBoundingClientRect();
+
+    // ...then animate only the peek level: demoted cards slide up from
+    // behind the front card instead of dropping in from above.
+    visibleCards.forEach((card, index) => {
+      card.element.removeAttribute("zen-reindexing");
       card.element.style.setProperty(
         "--zen-media-card-peek-level",
         Math.min(index, MAX_PEEK_LEVELS)
       );
-      card.element.style.zIndex = 100 - index;
     });
 
     const stackedCount = Math.min(visibleCards.length, MAX_STACKED_CARDS);

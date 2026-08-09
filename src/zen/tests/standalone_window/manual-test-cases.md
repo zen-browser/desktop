@@ -3,8 +3,7 @@
 ## Setup
 
 1. Enable `zen.standalone-window.enabled`.
-2. Disable `zen.standalone-window.open-external-links-in-most-recent-space`.
-3. Keep one normal Zen window open with workspaces enabled.
+2. Keep one normal Zen window open with workspaces enabled.
 
 ## Cases
 

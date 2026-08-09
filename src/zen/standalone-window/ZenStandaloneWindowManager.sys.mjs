@@ -55,11 +55,6 @@ class nsZenStandaloneWindowManager {
       return false;
     }
 
-    const reusableWindow = this.findReusableStandaloneWindow(request);
-    if (reusableWindow) {
-      return this.reuseStandaloneWindow(reusableWindow, request);
-    }
-
     const standaloneWindow = this.constructStandaloneWindow(request);
     if (!standaloneWindow) {
       return false;
@@ -140,72 +135,6 @@ class nsZenStandaloneWindowManager {
     } catch (error) {
       console.error("Failed to construct Zen standalone window", error);
       return null;
-    }
-  }
-
-  /**
-   * Finds an existing standalone window when reuse is enabled.
-   *
-   * @param {object} request - Normalized standalone window request
-   * @returns {Window|null} Reusable standalone window, or null
-   */
-  findReusableStandaloneWindow(request) {
-    if (
-      !Services.prefs.getBoolPref("zen.standalone-window.reuse-existing", false)
-    ) {
-      return null;
-    }
-
-    const requestedPrivate = lazy.PrivateBrowsingUtils.isWindowPrivate(
-      request.openerWindow,
-    );
-    for (const win of lazy.BrowserWindowTracker.orderedWindows) {
-      if (
-        this.isStandaloneWindow(win) &&
-        !win.closed &&
-        lazy.PrivateBrowsingUtils.isWindowPrivate(win) === requestedPrivate
-      ) {
-        return win;
-      }
-    }
-
-    return null;
-  }
-
-  /**
-   * Navigates an existing standalone window to a new external URL.
-   *
-   * @param {Window} standaloneWindow - Existing standalone window
-   * @param {object} request - Normalized standalone window request
-   * @returns {boolean} True when the existing window handled the URL
-   */
-  reuseStandaloneWindow(standaloneWindow, request) {
-    const browser = standaloneWindow?.gBrowser?.selectedBrowser;
-    if (!browser) {
-      return false;
-    }
-
-    let uri;
-    try {
-      uri = Services.io.newURI(request.uriString);
-    } catch (error) {
-      console.error("Cannot reuse standalone window for invalid URL", error);
-      return false;
-    }
-
-    this.markWindowAsStandalone(standaloneWindow, request);
-    this.initializeStandaloneWindow(standaloneWindow, request);
-
-    try {
-      browser.loadURI(uri, {
-        triggeringPrincipal:
-          Services.scriptSecurityManager.getSystemPrincipal(),
-      });
-      standaloneWindow.focus?.();
-      return true;
-    } catch (error) {
-      console.error("Failed to reuse Zen standalone window", error);
-      return false;
     }
   }
 

@@ -257,11 +257,7 @@ class nsZenSpaceRoutingManager {
       !!uriString &&
       !!options?.fromExternal &&
       !!win?.gZenWorkspaces?.workspaceEnabled &&
-      Services.prefs.getBoolPref("zen.standalone-window.enabled", false) &&
-      !Services.prefs.getBoolPref(
-        "zen.standalone-window.open-external-links-in-most-recent-space",
-        true
-      )
+      Services.prefs.getBoolPref("zen.standalone-window.enabled", false)
     );
   }
 

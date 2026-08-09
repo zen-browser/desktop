@@ -3,12 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 - name: zen.standalone-window.enabled
-  value: true
-
-- name: zen.standalone-window.open-external-links-in-most-recent-space
-  value: true
-
-- name: zen.standalone-window.reuse-existing
   value: false
 
 - name: zen.standalone-window.default-width

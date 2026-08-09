@@ -5,7 +5,6 @@
 [DEFAULT]
 prefs = [
   "zen.standalone-window.enabled=true",
-  "zen.standalone-window.open-external-links-in-most-recent-space=false",
 ]
 
 ["browser_external_link_standalone_window.js"]

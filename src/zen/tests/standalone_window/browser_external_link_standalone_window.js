@@ -68,39 +68,6 @@ add_task(async function test_multiple_external_links_open_multiple_windows() {
   }
 });
 
-add_task(async function test_reuse_existing_standalone_window_pref() {
-  await SpecialPowers.pushPrefEnv({
-    set: [["zen.standalone-window.reuse-existing", true]],
-  });
-
-  const firstURL = `${TEST_URL_BASE}?reuse=1`;
-  const secondURL = `${TEST_URL_BASE}?reuse=2`;
-  const standaloneWindow = await openExternalLinkStandaloneWindow(firstURL, {
-    requireToolbar: false,
-  });
-
-  try {
-    const reusedWindow = await openExternalLinkReusingStandaloneWindow(
-      standaloneWindow,
-      secondURL,
-    );
-
-    Assert.equal(
-      reusedWindow,
-      standaloneWindow,
-      "The second external link reuses the existing standalone window",
-    );
-    Assert.equal(
-      getStandaloneWindows().filter((win) => win === standaloneWindow).length,
-      1,
-      "No additional standalone window is opened",
-    );
-  } finally {
-    await SpecialPowers.popPrefEnv();
-    await closeStandaloneWindow(standaloneWindow);
-  }
-});
-
 add_task(async function test_close_standalone_window_without_keeping() {
   const initialTabCount = gBrowser.tabs.length;
   const standaloneWindow = await openExternalLinkStandaloneWindow(
@@ -239,31 +206,6 @@ async function openExternalLinkStandaloneWindow(url, options = {}) {
       !existingWindows.has(win) && isStandaloneWindowReady(win, url, options),
   );
   await waitForStandaloneWindowReady(standaloneWindow, url, options);
-  return standaloneWindow;
-}
-
-async function openExternalLinkReusingStandaloneWindow(standaloneWindow, url) {
-  const existingWindows = new Set(getStandaloneWindows());
-  const triggeringPrincipal =
-    Services.scriptSecurityManager.getSystemPrincipal();
-
-  const tab = gBrowser.addTab(url, {
-    fromExternal: true,
-    triggeringPrincipal,
-  });
-  Assert.equal(tab, null, "External addTab is intercepted before tab creation");
-
-  await TestUtils.waitForCondition(
-    () =>
-      getStandaloneWindows().every((win) => existingWindows.has(win)) &&
-      isStandaloneWindowReady(standaloneWindow, url, {
-        requireToolbar: false,
-      }),
-    "Waiting for an existing standalone window to be reused",
-    100,
-    100,
-  );
-
   return standaloneWindow;
 }
 

@@ -1177,16 +1177,6 @@ Preferences.addAll([
   {
     id: "zen.standalone-window.enabled",
     type: "bool",
-    default: true,
-  },
-  {
-    id: "zen.standalone-window.open-external-links-in-most-recent-space",
-    type: "bool",
-    default: true,
-  },
-  {
-    id: "zen.standalone-window.reuse-existing",
-    type: "bool",
     default: false,
   },
   {

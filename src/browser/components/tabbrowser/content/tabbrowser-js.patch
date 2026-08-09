@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index c42b1a1a8df6b38886c17f71ea88e5aaa7eebc80..3cc61a74366334ee0700f1d9165d78e316b3fbfd 100644
+index c42b1a1a8df6b38886c17f71ea88e5aaa7eebc80..c741404ed973ee3ac246fe246c0f645eb49d12e9 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
 @@ -509,6 +509,7 @@
@@ -604,11 +604,10 @@ index c42b1a1a8df6b38886c17f71ea88e5aaa7eebc80..3cc61a74366334ee0700f1d9165d78e3
          const tabContainer = pinned
            ? this.tabContainer.pinnedTabsContainer
            : this.tabContainer;
--        tabContainer.insertBefore(tab, itemAfter);
 +        if (itemAfter) {
 +          itemAfter.before(tab);
 +        } else {
-+        tabContainer.insertBefore(tab, pinned ? tabContainer.lastChild : itemAfter);
+         tabContainer.insertBefore(tab, itemAfter);
 +        }
        }
  

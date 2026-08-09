@@ -191,6 +191,7 @@ class nsZenStandaloneWindowManager {
     standaloneWindow.ZenExternalLinkStandalone = {
       source: request.source,
       uriString: request.uriString,
+      openerWindow: request.openerWindow,
       targetRoute: request.targetRoute,
     };
   }
@@ -509,7 +510,7 @@ class nsZenStandaloneWindowManager {
   }
 
   /**
-   * Future hook for opening a kept standalone-window URL into the requested Zen space.
+   * Opens a kept standalone-window URL into the requested Zen space.
    *
    * @param {string} uriString - Standalone window URL to keep
    * @param {string} targetRoute - Workspace route or "most-recent-space"
@@ -517,10 +518,96 @@ class nsZenStandaloneWindowManager {
    * @returns {boolean} True when the normal tab was opened
    */
   openStandaloneUrlInSpace(uriString, targetRoute, standaloneWindow) {
-    void uriString;
-    void targetRoute;
-    void standaloneWindow;
-    return false;
+    if (typeof uriString !== "string" || !uriString) {
+      return false;
+    }
+
+    try {
+      Services.io.newURI(uriString);
+    } catch (error) {
+      console.error("Cannot keep invalid standalone window URL", error);
+      return false;
+    }
+
+    const targetWindow = this.getStandaloneKeepTargetWindow(standaloneWindow);
+    if (!targetWindow?.gBrowser || !targetWindow?.gZenWorkspaces) {
+      return false;
+    }
+
+    const workspaces = targetWindow.gZenWorkspaces;
+    let targetWorkspace = null;
+    if (targetRoute && targetRoute !== "most-recent-space") {
+      targetWorkspace = workspaces.getWorkspaceFromId?.(targetRoute);
+      if (!targetWorkspace) {
+        return false;
+      }
+    }
+
+    try {
+      const tab = targetWindow.gBrowser.addTrustedTab(uriString, {
+        inBackground: false,
+        skipRoute: true,
+        triggeringPrincipal:
+          Services.scriptSecurityManager.getSystemPrincipal(),
+        userContextId: targetWorkspace?.containerTabId,
+        zenWorkspaceId: targetWorkspace?.uuid,
+      });
+      if (!tab) {
+        return false;
+      }
+
+      targetWindow.gBrowser.selectedTab = tab;
+
+      if (targetWorkspace) {
+        workspaces.moveTabToWorkspace(tab, targetWorkspace.uuid);
+        workspaces.lastSelectedWorkspaceTabs[targetWorkspace.uuid] = tab;
+        workspaces.changeWorkspace?.(targetWorkspace).catch(console.error);
+      }
+
+      targetWindow.focus?.();
+      return true;
+    } catch (error) {
+      console.error("Failed to keep Zen standalone window in space", error);
+      return false;
+    }
+  }
+
+  /**
+   * Finds the normal browser window that should receive a kept standalone URL.
+   *
+   * @param {Window} standaloneWindow - The standalone window being kept
+   * @returns {Window|null} Target browser window, or null when none is available
+   */
+  getStandaloneKeepTargetWindow(standaloneWindow) {
+    const openerWindow =
+      standaloneWindow?.ZenExternalLinkStandalone?.openerWindow;
+    if (this.canKeepStandaloneUrlInWindow(openerWindow)) {
+      return openerWindow;
+    }
+
+    for (const win of lazy.BrowserWindowTracker.orderedWindows) {
+      if (this.canKeepStandaloneUrlInWindow(win)) {
+        return win;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Checks whether a browser window can receive a kept standalone URL.
+   *
+   * @param {Window} win - Candidate target window
+   * @returns {boolean} True when the window can receive the URL
+   */
+  canKeepStandaloneUrlInWindow(win) {
+    return (
+      !!win &&
+      !win.closed &&
+      !this.isStandaloneWindow(win) &&
+      !!win.gBrowser &&
+      !!win.gZenWorkspaces?.workspaceEnabled
+    );
   }
 
   /**

@@ -30,6 +30,10 @@ const STANDALONE_WINDOW_HIDDEN_ELEMENT_IDS = [
 const STANDALONE_WINDOW_TOOLBAR_ID = "zen-standalone-window-toolbar";
 const STANDALONE_WINDOW_OPEN_IN_SPACE_BUTTON_ID =
   "zen-standalone-window-open-in-space-button";
+const STANDALONE_WINDOW_SPACE_PICKER_BUTTON_ID =
+  "zen-standalone-window-space-picker-button";
+const STANDALONE_WINDOW_SPACE_PICKER_POPUP_ID =
+  "zen-standalone-window-space-picker-popup";
 
 class nsZenStandaloneWindowManager {
   /**
@@ -363,12 +367,51 @@ class nsZenStandaloneWindowManager {
       onOpenInDefaultSpaceCommand
     );
     toolbar.appendChild(openInSpaceButton);
+
+    const spacePickerButton = document.createXULElement("toolbarbutton");
+    spacePickerButton.id = STANDALONE_WINDOW_SPACE_PICKER_BUTTON_ID;
+    spacePickerButton.setAttribute(
+      "class",
+      "toolbarbutton-1 chromeclass-toolbar-additional"
+    );
+    spacePickerButton.setAttribute("label", actions.openSpacePicker.label);
+    spacePickerButton.setAttribute(
+      "tooltiptext",
+      actions.openSpacePicker.label
+    );
+
+    const spacePickerPopup = document.createXULElement("menupopup");
+    spacePickerPopup.id = STANDALONE_WINDOW_SPACE_PICKER_POPUP_ID;
+    const onSpacePickerCommand = event => {
+      const item = event.target.closest?.("menuitem[zen-workspace-id]");
+      const workspaceId = item?.getAttribute("zen-workspace-id");
+      if (!workspaceId) {
+        return;
+      }
+
+      openInSpaceButton.setAttribute("disabled", "true");
+      spacePickerButton.setAttribute("disabled", "true");
+      if (!this.onOpenInSelectedSpaceCommand(standaloneWindow, workspaceId)) {
+        openInSpaceButton.removeAttribute("disabled");
+        spacePickerButton.removeAttribute("disabled");
+      }
+    };
+    spacePickerPopup.addEventListener("command", onSpacePickerCommand);
+
+    const onOpenSpacePickerCommand = () => actions.openSpacePicker.command();
+    spacePickerButton.addEventListener("command", onOpenSpacePickerCommand);
+    toolbar.appendChild(spacePickerButton);
+    toolbar.appendChild(spacePickerPopup);
     anchor.appendChild(toolbar);
 
     standaloneWindow.ZenExternalLinkStandalone.toolbar = {
       root: toolbar,
       openInDefaultSpaceButton: openInSpaceButton,
+      spacePickerButton,
+      spacePickerPopup,
       onOpenInDefaultSpaceCommand,
+      onOpenSpacePickerCommand,
+      onSpacePickerCommand,
     };
   }
 
@@ -388,6 +431,7 @@ class nsZenStandaloneWindowManager {
       },
       openSpacePicker: {
         label: "Choose Space",
+        command: () => this.openStandaloneSpacePicker(standaloneWindow),
       },
     };
   }
@@ -467,6 +511,14 @@ class nsZenStandaloneWindowManager {
     toolbar.openInDefaultSpaceButton?.removeEventListener(
       "command",
       toolbar.onOpenInDefaultSpaceCommand
+    );
+    toolbar.spacePickerButton?.removeEventListener(
+      "command",
+      toolbar.onOpenSpacePickerCommand
+    );
+    toolbar.spacePickerPopup?.removeEventListener(
+      "command",
+      toolbar.onSpacePickerCommand
     );
     toolbar.root?.remove();
     standaloneWindow.ZenExternalLinkStandalone.toolbar = null;
@@ -626,8 +678,68 @@ class nsZenStandaloneWindowManager {
    * @returns {boolean} True when the picker was opened
    */
   openStandaloneSpacePicker(standaloneWindow) {
-    void standaloneWindow;
-    return false;
+    if (!this.isStandaloneWindow(standaloneWindow)) {
+      return false;
+    }
+
+    const toolbar = standaloneWindow.ZenExternalLinkStandalone?.toolbar;
+    const popup = toolbar?.spacePickerPopup;
+    const anchor = toolbar?.spacePickerButton;
+    const targetWindow = this.getStandaloneKeepTargetWindow(standaloneWindow);
+    const workspaces = targetWindow?.gZenWorkspaces?.getWorkspaces?.() ?? [];
+    if (!popup || !anchor || !workspaces.length) {
+      return false;
+    }
+
+    this.populateStandaloneSpacePicker(popup, workspaces);
+    popup.openPopup(anchor, "after_end", 0, 0, false, false);
+    return true;
+  }
+
+  /**
+   * Rebuilds the standalone space picker menu.
+   *
+   * @param {Element} popup - Standalone space picker popup
+   * @param {Array<object>} workspaces - Workspaces available in the target window
+   */
+  populateStandaloneSpacePicker(popup, workspaces) {
+    while (popup.firstChild) {
+      popup.firstChild.remove();
+    }
+
+    for (const workspace of workspaces) {
+      const item = popup.ownerDocument.createXULElement("menuitem");
+      item.setAttribute("zen-workspace-id", workspace.uuid);
+      item.setAttribute(
+        "label",
+        this.getStandaloneWorkspacePickerLabel(workspace)
+      );
+
+      if (workspace.icon?.endsWith?.(".svg")) {
+        item.setAttribute("image", workspace.icon);
+        item.classList.add("menuitem-iconic");
+      }
+
+      popup.appendChild(item);
+    }
+  }
+
+  /**
+   * Builds the display label for a workspace picker item.
+   *
+   * @param {object} workspace - Workspace data
+   * @returns {string} Menu item label
+   */
+  getStandaloneWorkspacePickerLabel(workspace) {
+    if (
+      workspace.icon &&
+      !workspace.icon.endsWith?.(".svg") &&
+      workspace.icon !== ""
+    ) {
+      return `${workspace.icon}  ${workspace.name}`;
+    }
+
+    return workspace.name;
   }
 
   /**

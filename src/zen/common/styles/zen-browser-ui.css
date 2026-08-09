@@ -350,6 +350,30 @@ body,
   }
 }
 
+:root[zen-standalone-window="true"] #zen-appcontent-navbar-wrapper {
+  position: relative;
+}
+
+#zen-standalone-window-toolbar {
+  position: absolute;
+  inset-inline-end: calc(var(--zen-element-separation) + 4px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  -moz-window-dragging: no-drag;
+
+  & > toolbarbutton {
+    min-height: 28px;
+    padding-inline: 10px;
+    border-radius: 8px;
+    background: var(--toolbarbutton-hover-background);
+
+    & > .toolbarbutton-text {
+      display: flex;
+    }
+  }
+}
+
 :root[zen-right-side="true"] #zen-appcontent-navbar-wrapper #PanelUI-button {
   order: 2;
 }

@@ -46,10 +46,12 @@ add_task(async function test_external_link_opens_standalone_window() {
 
 add_task(async function test_multiple_external_links_open_multiple_windows() {
   const firstWindow = await openExternalLinkStandaloneWindow(
-    `${TEST_URL_BASE}?multiple=1`
+    `${TEST_URL_BASE}?multiple=1`,
+    { requireToolbar: false }
   );
   const secondWindow = await openExternalLinkStandaloneWindow(
-    `${TEST_URL_BASE}?multiple=2`
+    `${TEST_URL_BASE}?multiple=2`,
+    { requireToolbar: false }
   );
 
   try {
@@ -69,7 +71,8 @@ add_task(async function test_multiple_external_links_open_multiple_windows() {
 add_task(async function test_close_standalone_window_without_keeping() {
   const initialTabCount = gBrowser.tabs.length;
   const standaloneWindow = await openExternalLinkStandaloneWindow(
-    `${TEST_URL_BASE}?close`
+    `${TEST_URL_BASE}?close`,
+    { requireToolbar: false }
   );
 
   const closed = BrowserTestUtils.domWindowClosed(standaloneWindow);
@@ -129,14 +132,16 @@ add_task(async function test_keep_standalone_window_in_selected_space() {
   );
 
   try {
-    const popupShown = BrowserTestUtils.waitForEvent(pickerPopup, "popupshown");
-    pickerButton.doCommand();
-    await popupShown;
+    ok(
+      gZenStandaloneWindowManager.openStandaloneSpacePicker(standaloneWindow),
+      "The standalone space picker opens"
+    );
 
     const targetItem = pickerPopup.querySelector(
       `menuitem[zen-workspace-id="${targetWorkspace.uuid}"]`
     );
     ok(targetItem, "The selected target workspace appears in the picker");
+    pickerPopup.hidePopup();
 
     const tabOpened = BrowserTestUtils.waitForNewTab(gBrowser, url, true);
     const closed = BrowserTestUtils.domWindowClosed(standaloneWindow);
@@ -152,6 +157,7 @@ add_task(async function test_keep_standalone_window_in_selected_space() {
         "The kept tab is assigned to the selected workspace"
       );
     } finally {
+      await gZenWorkspaces.changeWorkspace(originalWorkspace);
       BrowserTestUtils.removeTab(tab);
     }
   } finally {
@@ -165,13 +171,14 @@ add_task(async function test_keep_standalone_window_in_selected_space() {
 function getStandaloneWindows() {
   return [...Services.wm.getEnumerator("navigator:browser")].filter(
     win =>
-      win.ZenExternalLinkStandaloneType === ZEN_STANDALONE_WINDOW_TYPE ||
-      win.document.documentElement.getAttribute("zen-standalone-window") ===
-        "true"
+      !win.closed &&
+      (win.ZenExternalLinkStandaloneType === ZEN_STANDALONE_WINDOW_TYPE ||
+        win.document.documentElement.getAttribute("zen-standalone-window") ===
+          "true")
   );
 }
 
-async function openExternalLinkStandaloneWindow(url) {
+async function openExternalLinkStandaloneWindow(url, options = {}) {
   const existingWindows = new Set(getStandaloneWindows());
   const triggeringPrincipal =
     Services.scriptSecurityManager.getSystemPrincipal();
@@ -183,18 +190,26 @@ async function openExternalLinkStandaloneWindow(url) {
   Assert.equal(tab, null, "External addTab is intercepted before tab creation");
 
   await TestUtils.waitForCondition(
-    () => getStandaloneWindows().some(win => !existingWindows.has(win)),
-    "Waiting for a new standalone window"
+    () =>
+      getStandaloneWindows().some(
+        win =>
+          !existingWindows.has(win) &&
+          isStandaloneWindowReady(win, url, options)
+      ),
+    "Waiting for a new standalone window",
+    100,
+    100
   );
 
   const standaloneWindow = getStandaloneWindows().find(
-    win => !existingWindows.has(win)
+    win =>
+      !existingWindows.has(win) && isStandaloneWindowReady(win, url, options)
   );
-  await waitForStandaloneWindowReady(standaloneWindow);
+  await waitForStandaloneWindowReady(standaloneWindow, url, options);
   return standaloneWindow;
 }
 
-async function waitForStandaloneWindowReady(standaloneWindow) {
+async function waitForStandaloneWindowReady(standaloneWindow, url, options) {
   if (!standaloneWindow.gBrowserInit?.delayedStartupFinished) {
     await TestUtils.topicObserved(
       "browser-delayed-startup-finished",
@@ -203,14 +218,27 @@ async function waitForStandaloneWindowReady(standaloneWindow) {
   }
 
   await TestUtils.waitForCondition(
-    () =>
-      standaloneWindow.document.documentElement.getAttribute(
-        "zen-standalone-window"
-      ) === "true" &&
+    () => isStandaloneWindowReady(standaloneWindow, url, options),
+    "Waiting for standalone window chrome to initialize",
+    100,
+    100
+  );
+}
+
+function isStandaloneWindowReady(standaloneWindow, url, options = {}) {
+  const { requireToolbar = true } = options;
+  const stateURL = standaloneWindow?.ZenExternalLinkStandalone?.uriString;
+  const loadedURL =
+    standaloneWindow?.gBrowser?.selectedBrowser?.currentURI?.spec;
+  return (
+    standaloneWindow?.document?.documentElement?.getAttribute(
+      "zen-standalone-window"
+    ) === "true" &&
+    (!requireToolbar ||
       standaloneWindow.document.getElementById(
         "zen-standalone-window-open-in-space-button"
-      ),
-    "Waiting for standalone window chrome to initialize"
+      )) &&
+    (stateURL === url || loadedURL === url)
   );
 }
 

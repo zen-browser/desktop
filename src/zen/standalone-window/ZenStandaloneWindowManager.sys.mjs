@@ -61,6 +61,7 @@ class nsZenStandaloneWindowManager {
     }
 
     this.initializeStandaloneWindow(standaloneWindow, request);
+    this.scheduleStandaloneWindowInitialization(standaloneWindow, request);
     this.registerStandaloneWindowLifecycle(standaloneWindow, request);
     return true;
   }
@@ -186,6 +187,52 @@ class nsZenStandaloneWindowManager {
   }
 
   /**
+   * Reapplies standalone state after the real browser chrome document settles.
+   *
+   * @param {Window} standaloneWindow - The created standalone window
+   * @param {object} request - Normalized standalone window request
+   */
+  scheduleStandaloneWindowInitialization(standaloneWindow, request) {
+    const state = standaloneWindow?.ZenExternalLinkStandalone;
+    const timerWindow = request?.openerWindow;
+    if (!state || state.windowInitializationPending || !timerWindow) {
+      return;
+    }
+
+    state.windowInitializationPending = true;
+    state.windowInitializationAttempts = 0;
+
+    const retry = () => {
+      if (standaloneWindow.closed) {
+        state.windowInitializationPending = false;
+        return;
+      }
+
+      this.initializeStandaloneWindow(standaloneWindow, request);
+
+      const document = standaloneWindow.document;
+      const initialized =
+        document?.documentElement?.getAttribute("zen-standalone-window") ===
+          "true" &&
+        !!document.getElementById(STANDALONE_WINDOW_OPEN_IN_SPACE_BUTTON_ID);
+      if (initialized) {
+        state.windowInitializationPending = false;
+        return;
+      }
+
+      if (state.windowInitializationAttempts >= 50) {
+        state.windowInitializationPending = false;
+        return;
+      }
+
+      state.windowInitializationAttempts++;
+      timerWindow.setTimeout(retry, 100);
+    };
+
+    timerWindow.setTimeout(retry, 100);
+  }
+
+  /**
    * Marks a browser window as an external-link standalone window.
    *
    * @param {Window} standaloneWindow - The created standalone window
@@ -197,6 +244,7 @@ class nsZenStandaloneWindowManager {
     }
 
     standaloneWindow.ZenExternalLinkStandalone = {
+      ...standaloneWindow.ZenExternalLinkStandalone,
       source: request.source,
       uriString: request.uriString,
       openerWindow: request.openerWindow,
@@ -222,7 +270,6 @@ class nsZenStandaloneWindowManager {
     const applyState = () => {
       this.markStandaloneDocument(standaloneWindow, request);
       this.hideStandaloneWorkspaceChrome(standaloneWindow);
-      standaloneWindow.gZenUIManager?.updateTabsToolbar?.();
     };
 
     applyState();
@@ -322,6 +369,14 @@ class nsZenStandaloneWindowManager {
    */
   initializeStandaloneToolbar(standaloneWindow, request) {
     if (
+      !standaloneWindow?.ZenExternalLinkStandalone &&
+      standaloneWindow?.ZenExternalLinkStandaloneType ===
+        ZEN_STANDALONE_WINDOW_TYPE
+    ) {
+      this.markWindowAsStandalone(standaloneWindow, request);
+    }
+
+    if (
       !this.isStandaloneWindow(standaloneWindow) ||
       standaloneWindow.document?.getElementById(STANDALONE_WINDOW_TOOLBAR_ID)
     ) {
@@ -335,84 +390,88 @@ class nsZenStandaloneWindowManager {
       return;
     }
 
-    const document = standaloneWindow.document;
-    const toolbar = document.createXULElement("hbox");
-    toolbar.id = STANDALONE_WINDOW_TOOLBAR_ID;
-    toolbar.setAttribute("align", "center");
+    try {
+      const document = standaloneWindow.document;
+      const toolbar = document.createXULElement("hbox");
+      toolbar.id = STANDALONE_WINDOW_TOOLBAR_ID;
+      toolbar.setAttribute("align", "center");
 
-    const openInSpaceButton = document.createXULElement("toolbarbutton");
-    openInSpaceButton.id = STANDALONE_WINDOW_OPEN_IN_SPACE_BUTTON_ID;
-    openInSpaceButton.setAttribute(
-      "class",
-      "toolbarbutton-1 chromeclass-toolbar-additional"
-    );
-    openInSpaceButton.setAttribute(
-      "label",
-      actions.openInDefaultSpace.label
-    );
-    openInSpaceButton.setAttribute(
-      "tooltiptext",
-      actions.openInDefaultSpace.label
-    );
+      const openInSpaceButton = document.createXULElement("toolbarbutton");
+      openInSpaceButton.id = STANDALONE_WINDOW_OPEN_IN_SPACE_BUTTON_ID;
+      openInSpaceButton.setAttribute(
+        "class",
+        "toolbarbutton-1 chromeclass-toolbar-additional"
+      );
+      openInSpaceButton.setAttribute(
+        "label",
+        actions.openInDefaultSpace.label
+      );
+      openInSpaceButton.setAttribute(
+        "tooltiptext",
+        actions.openInDefaultSpace.label
+      );
 
-    const onOpenInDefaultSpaceCommand = () => {
-      openInSpaceButton.setAttribute("disabled", "true");
-      if (!actions.openInDefaultSpace.command()) {
-        openInSpaceButton.removeAttribute("disabled");
-      }
-    };
+      const onOpenInDefaultSpaceCommand = () => {
+        openInSpaceButton.setAttribute("disabled", "true");
+        if (!actions.openInDefaultSpace.command()) {
+          openInSpaceButton.removeAttribute("disabled");
+        }
+      };
 
-    openInSpaceButton.addEventListener(
-      "command",
-      onOpenInDefaultSpaceCommand
-    );
-    toolbar.appendChild(openInSpaceButton);
+      openInSpaceButton.addEventListener(
+        "command",
+        onOpenInDefaultSpaceCommand
+      );
+      toolbar.appendChild(openInSpaceButton);
 
-    const spacePickerButton = document.createXULElement("toolbarbutton");
-    spacePickerButton.id = STANDALONE_WINDOW_SPACE_PICKER_BUTTON_ID;
-    spacePickerButton.setAttribute(
-      "class",
-      "toolbarbutton-1 chromeclass-toolbar-additional"
-    );
-    spacePickerButton.setAttribute("label", actions.openSpacePicker.label);
-    spacePickerButton.setAttribute(
-      "tooltiptext",
-      actions.openSpacePicker.label
-    );
+      const spacePickerButton = document.createXULElement("toolbarbutton");
+      spacePickerButton.id = STANDALONE_WINDOW_SPACE_PICKER_BUTTON_ID;
+      spacePickerButton.setAttribute(
+        "class",
+        "toolbarbutton-1 chromeclass-toolbar-additional"
+      );
+      spacePickerButton.setAttribute("label", actions.openSpacePicker.label);
+      spacePickerButton.setAttribute(
+        "tooltiptext",
+        actions.openSpacePicker.label
+      );
 
-    const spacePickerPopup = document.createXULElement("menupopup");
-    spacePickerPopup.id = STANDALONE_WINDOW_SPACE_PICKER_POPUP_ID;
-    const onSpacePickerCommand = event => {
-      const item = event.target.closest?.("menuitem[zen-workspace-id]");
-      const workspaceId = item?.getAttribute("zen-workspace-id");
-      if (!workspaceId) {
-        return;
-      }
+      const spacePickerPopup = document.createXULElement("menupopup");
+      spacePickerPopup.id = STANDALONE_WINDOW_SPACE_PICKER_POPUP_ID;
+      const onSpacePickerCommand = event => {
+        const item = event.target.closest?.("menuitem[zen-workspace-id]");
+        const workspaceId = item?.getAttribute("zen-workspace-id");
+        if (!workspaceId) {
+          return;
+        }
 
-      openInSpaceButton.setAttribute("disabled", "true");
-      spacePickerButton.setAttribute("disabled", "true");
-      if (!this.onOpenInSelectedSpaceCommand(standaloneWindow, workspaceId)) {
-        openInSpaceButton.removeAttribute("disabled");
-        spacePickerButton.removeAttribute("disabled");
-      }
-    };
-    spacePickerPopup.addEventListener("command", onSpacePickerCommand);
+        openInSpaceButton.setAttribute("disabled", "true");
+        spacePickerButton.setAttribute("disabled", "true");
+        if (!this.onOpenInSelectedSpaceCommand(standaloneWindow, workspaceId)) {
+          openInSpaceButton.removeAttribute("disabled");
+          spacePickerButton.removeAttribute("disabled");
+        }
+      };
+      spacePickerPopup.addEventListener("command", onSpacePickerCommand);
 
-    const onOpenSpacePickerCommand = () => actions.openSpacePicker.command();
-    spacePickerButton.addEventListener("command", onOpenSpacePickerCommand);
-    toolbar.appendChild(spacePickerButton);
-    toolbar.appendChild(spacePickerPopup);
-    anchor.appendChild(toolbar);
+      const onOpenSpacePickerCommand = () => actions.openSpacePicker.command();
+      spacePickerButton.addEventListener("command", onOpenSpacePickerCommand);
+      toolbar.appendChild(spacePickerButton);
+      toolbar.appendChild(spacePickerPopup);
+      anchor.appendChild(toolbar);
 
-    standaloneWindow.ZenExternalLinkStandalone.toolbar = {
-      root: toolbar,
-      openInDefaultSpaceButton: openInSpaceButton,
-      spacePickerButton,
-      spacePickerPopup,
-      onOpenInDefaultSpaceCommand,
-      onOpenSpacePickerCommand,
-      onSpacePickerCommand,
-    };
+      standaloneWindow.ZenExternalLinkStandalone.toolbar = {
+        root: toolbar,
+        openInDefaultSpaceButton: openInSpaceButton,
+        spacePickerButton,
+        spacePickerPopup,
+        onOpenInDefaultSpaceCommand,
+        onOpenSpacePickerCommand,
+        onSpacePickerCommand,
+      };
+    } catch (error) {
+      console.error("Failed to initialize Zen standalone toolbar", error);
+    }
   }
 
   /**
@@ -446,7 +505,10 @@ class nsZenStandaloneWindowManager {
     const document = standaloneWindow.document;
     return (
       document?.getElementById("zen-appcontent-navbar-wrapper") ??
-      document?.getElementById("browser")
+      document?.getElementById("browser") ??
+      document?.getElementById("appcontent") ??
+      document?.body ??
+      document?.documentElement
     );
   }
 
@@ -458,15 +520,40 @@ class nsZenStandaloneWindowManager {
    */
   scheduleStandaloneToolbarInitialization(standaloneWindow, request) {
     const state = standaloneWindow?.ZenExternalLinkStandalone;
-    if (
-      !state ||
-      state.toolbarInitializationPending ||
-      standaloneWindow.gBrowserInit?.delayedStartupFinished
-    ) {
+    if (!state || state.toolbarInitializationPending) {
       return;
     }
 
+    const retryAfterStartup = () => {
+      if (
+        standaloneWindow.closed ||
+        !this.isStandaloneWindow(standaloneWindow) ||
+        standaloneWindow.document?.getElementById(STANDALONE_WINDOW_TOOLBAR_ID)
+      ) {
+        state.toolbarInitializationPending = false;
+        return;
+      }
+
+      const attempts = state.toolbarInitializationAttempts ?? 0;
+      if (attempts >= 50) {
+        state.toolbarInitializationPending = false;
+        return;
+      }
+
+      state.toolbarInitializationAttempts = attempts + 1;
+      standaloneWindow.setTimeout(() => {
+        state.toolbarInitializationPending = false;
+        this.initializeStandaloneToolbar(standaloneWindow, request);
+      }, 100);
+    };
+
     state.toolbarInitializationPending = true;
+
+    if (standaloneWindow.gBrowserInit?.delayedStartupFinished) {
+      retryAfterStartup();
+      return;
+    }
+
     const observer = subject => {
       if (subject !== standaloneWindow) {
         return;
@@ -476,8 +563,7 @@ class nsZenStandaloneWindowManager {
         observer,
         "browser-delayed-startup-finished"
       );
-      state.toolbarInitializationPending = false;
-      this.initializeStandaloneToolbar(standaloneWindow, request);
+      retryAfterStartup();
     };
 
     Services.obs.addObserver(observer, "browser-delayed-startup-finished");

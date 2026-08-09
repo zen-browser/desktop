@@ -46,6 +46,10 @@ class ZenMediaCard {
     this.#initListeners();
 
     if (controller) {
+      // Queried before anything is wired up: it throws if the controller
+      // went away in the meantime, and the caller drops the card.
+      const positionState = controller.getPositionState();
+
       this.#controllerListeners = {
         positionstatechange: this.#onPositionstateChange.bind(this),
         playbackstatechange: this.#onPlaybackstateChange.bind(this),
@@ -62,7 +66,7 @@ class ZenMediaCard {
 
       this.element.classList.toggle("playing", controller.isPlaying);
       this.updateMetadata();
-      this.updatePositionState(controller.getPositionState());
+      this.updatePositionState(positionState);
       this.updateSupportedKeys();
     } else {
       this.element.setAttribute("media-sharing", "");
@@ -644,7 +648,15 @@ class nsZenMediaController {
 
   #addCard(key, browser, controller = null) {
     const element = this.#createCardElement();
-    const card = new ZenMediaCard(this, element, browser, controller);
+    let card;
+    try {
+      card = new ZenMediaCard(this, element, browser, controller);
+    } catch (e) {
+      console.error("Failed to create media card", e);
+      // The controller went away while the card was being set up.
+      element.remove();
+      return null;
+    }
     this.#cards.set(key, card);
     if (controller) {
       // Media cards start hidden and appear via the delayed check in

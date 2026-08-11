@@ -478,16 +478,24 @@
     width: calc(100% + var(--zen-toolbox-padding) * 2);
   }
 
-  /* Windows "Always show scrollbars" reserves layout space for the
-     scrollbar, shifting the collapsed icon-only tab list left and
-     clipping the new-tab button (issue #12402). The collapsed sidebar
-     is only ~60px wide; hide the classic scrollbar there so tabs stay
-     centered. Wheel scrolling still works, and the expanded sidebar
-     keeps its scrollbar. Limited to Windows: macOS/Linux use overlay
-     scrollbars that never reserve space. */
-  @media (-moz-platform: windows) {
-    :root:not([zen-sidebar-expanded="true"]) & {
-      scrollbar-width: none;
+  /* Keep classic scrollbars usable without shifting collapsed controls.
+     A scrollbar on one edge is paired with an equal gutter on the opposite
+     edge, so the content remains centered in the full sidebar (issue #12402).
+     Overlay scrollbars do not create a gutter. */
+  :root:not([zen-sidebar-expanded="true"]) &:has(#tabbrowser-tabs[overflow]) {
+    scrollbar-gutter: stable both-edges;
+
+    /* Both gutters reduce the available inline size. Collapsed controls are
+       icon-only, so let them shrink to the available space instead of being
+       clipped by their 48px default minimum. */
+    & #tabbrowser-tabs .tabbrowser-tab,
+    & #tabbrowser-tabs .tabbrowser-tab .tab-background,
+    & #vertical-tabs-newtab-button,
+    & zen-folder,
+    & tab-group[split-view-group],
+    & tab-group[split-view-group] > .tab-group-container {
+      min-width: 0 !important;
+      width: 100% !important;
     }
   }
 }

@@ -479,11 +479,16 @@
   }
 
   /* Windows "Always show scrollbars" reserves layout space for the
-     scrollbar, shifting the collapsed tab list left and clipping the
-     new-tab button (issue #12402). Hide it in the collapsed sidebar
-     where tabs are icon-only; wheel scrolling still works. */
-  :root:not([zen-sidebar-expanded="true"]) & {
-    scrollbar-width: none;
+     scrollbar, shifting the collapsed icon-only tab list left and
+     clipping the new-tab button (issue #12402). The collapsed sidebar
+     is only ~60px wide; hide the classic scrollbar there so tabs stay
+     centered. Wheel scrolling still works, and the expanded sidebar
+     keeps its scrollbar. Limited to Windows: macOS/Linux use overlay
+     scrollbars that never reserve space. */
+  @media (-moz-platform: windows) {
+    :root:not([zen-sidebar-expanded="true"]) & {
+      scrollbar-width: none;
+    }
   }
 }
 

@@ -731,8 +731,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       !isVisible;
     document.getElementById("context_zen-edit-tab-title").hidden =
       isEssential ||
-      !Services.prefs.getBoolPref("zen.tabs.rename-tabs") ||
-      !gZenVerticalTabsManager._prefsSidebarExpanded;
+      !Services.prefs.getBoolPref("zen.tabs.rename-tabs");
   }
 
   // eslint-disable-next-line complexity

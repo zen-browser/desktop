@@ -306,28 +306,28 @@ export class nsKeyShortcutModifiers {
 }
 
 class KeyShortcut {
-  static SHIFTED_SYMBOLS = {
-    1: "!",
-    2: "@",
-    3: "#",
-    4: "$",
-    5: "%",
-    6: "^",
-    7: "&",
-    8: "*",
-    9: "(",
-    0: ")",
-    "`": "~",
-    "-": "_",
-    "=": "+",
-    "[": "{",
-    "]": "}",
-    "\\": "|",
-    ";": ":",
-    "'": '"',
-    ",": "<",
-    ".": ">",
-    "/": "?",
+  static SHIFTED_KEYCODES = {
+    1: "VK_1",
+    2: "VK_2",
+    3: "VK_3",
+    4: "VK_4",
+    5: "VK_5",
+    6: "VK_6",
+    7: "VK_7",
+    8: "VK_8",
+    9: "VK_9",
+    0: "VK_0",
+    "`": "VK_BACK_QUOTE",
+    "-": "VK_HYPHEN_MINUS",
+    "=": "VK_EQUALS",
+    "[": "VK_OPEN_BRACKET",
+    "]": "VK_CLOSE_BRACKET",
+    "\\": "VK_BACK_SLASH",
+    ";": "VK_SEMICOLON",
+    "'": "VK_QUOTE",
+    ",": "VK_COMMA",
+    ".": "VK_PERIOD",
+    "/": "VK_SLASH",
   };
   #id = "";
   #key = "";
@@ -455,34 +455,25 @@ class KeyShortcut {
   replaceWithChild(key) {
     key.id = this.#id;
 
-    // When shift is pressed and the char changes when shifted (like 1 -> !),
-    // the XUL matches the shifted character so we need to emit the shifted character
-    // and drop the shift modifier so XUL can match
-    // This problem is also windows specific
-    let keyName = this.#key;
-    let modifiers = this.#modifiers;
-
-    if (AppConstants.platform == "win") {
-      const shiftedKey = KeyShortcut.SHIFTED_SYMBOLS[keyName];
-      if (shiftedKey && modifiers.shift) {
-        keyName = shiftedKey;
-        modifiers = new nsKeyShortcutModifiers(
-          modifiers.control,
-          modifiers.alt,
-          false, // -> for shift key
-          modifiers.meta,
-          modifiers.accel
-        );
-      }
-    }
+    // Character shortcuts are matched against layout-dependent text. Use the
+    // physical keycode when Shift changes that text so bindings captured from
+    // event.code keep their Shift modifier and work across keyboard layouts.
+    const shiftedKeycode =
+      this.#modifiers.shift && KeyShortcut.SHIFTED_KEYCODES[this.#key];
 
     if (this.#keycode) {
       key.setAttribute("keycode", this.#keycode);
       key.removeAttribute("key");
-    } else if (keyName) {
+    } else if (shiftedKeycode) {
+      key.setAttribute("keycode", shiftedKeycode);
+      key.removeAttribute("key");
+      // Printable keypress events expose a zero keyCode, so physical keycode
+      // shortcuts need to be matched while their keyCode is still available.
+      key.setAttribute("event", "keydown");
+    } else if (this.#key) {
       // note to "mr. macos": Better use setAttribute, because without it, there's a
       //  risk of malforming the XUL element.
-      key.setAttribute("key", keyName);
+      key.setAttribute("key", this.#key);
       key.removeAttribute("keycode");
     } else {
       key.removeAttribute("key");
@@ -497,7 +488,7 @@ class KeyShortcut {
     if (this.#l10nId) {
       // key.setAttribute('data-l10n-id', this.#l10nId);
     }
-    key.setAttribute("modifiers", modifiers.toString());
+    key.setAttribute("modifiers", this.#modifiers.toString());
     if (this.#action) {
       key.setAttribute("command", this.#action);
     }

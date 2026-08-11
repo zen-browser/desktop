@@ -347,8 +347,3 @@ zen-folder[collapsed] > .tab-group-container {
   display: none !important;
 }
 
-:root:not([zen-sidebar-expanded]) {
-  & #context_zenFolderRename {
-    display: none !important;
-  }
-}

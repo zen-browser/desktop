@@ -1647,7 +1647,7 @@ window.gZenVerticalTabsManager = {
     }
   },
 
-  renameTabStart(event) {
+  async renameTabStart(event) {
     let target = event.target;
     if (event.target.id === "context_zen-edit-tab-title") {
       target = TabContextMenu.contextTab;
@@ -1658,8 +1658,7 @@ window.gZenVerticalTabsManager = {
       ((!Services.prefs.getBoolPref("zen.tabs.rename-tabs") ||
         (Services.prefs.getBoolPref("browser.tabs.closeTabByDblclick") &&
           event.type === "dblclick")) &&
-        isTab) ||
-      !gZenVerticalTabsManager._prefsSidebarExpanded
+        isTab)
     ) {
       return;
     }
@@ -1678,6 +1677,56 @@ window.gZenVerticalTabsManager = {
       !this._tabEdited ||
       (this._tabEdited.hasAttribute("zen-essential") && isTab)
     ) {
+      this._tabEdited = null;
+      return;
+    }
+
+    if (!gZenVerticalTabsManager._prefsSidebarExpanded) {
+      const content = isTab ? this._tabEdited.label : this._tabEdited.textContent;
+      const inputVal = { value: content || "" };
+      const isWorkspace = !!this._tabEdited.closest(".zen-current-workspace-indicator-name");
+      let l10nKey = "zen-folders-panel-rename-folder";
+      if (isTab) {
+        l10nKey = "tab-context-zen-edit-title";
+      } else if (isWorkspace) {
+        l10nKey = "zen-workspaces-panel-change-name";
+      }
+
+      let title = "Rename";
+      try {
+        const msgs = await document.l10n.formatMessages([{ id: l10nKey }]);
+        const labelAttr = msgs?.[0]?.attributes?.find(a => a.name === "label");
+        if (labelAttr?.value) {
+          title = labelAttr.value.replace(/…|\.\.\./g, "").trim();
+        }
+      } catch (e) { }
+
+      const confirmed = Services.prompt.prompt(
+        window,
+        title,
+        null,
+        inputVal,
+        null,
+        { value: false }
+      );
+      if (confirmed) {
+        const newName = inputVal.value.replace(/\s+/g, " ").trim();
+        const hasChanged = newName !== content && newName;
+        if (!isTab) {
+          await this._tabEdited.onRenameFinished(newName);
+        } else {
+          if (hasChanged || (this._tabEdited.zenStaticLabel && newName)) {
+            this._tabEdited.zenStaticLabel = newName;
+            gBrowser._setTabLabel(this._tabEdited, newName, {
+              _zenChangeLabelFlag: true,
+            });
+            gZenUIManager.showToast("zen-tabs-renamed");
+          } else if (!newName) {
+            delete this._tabEdited.zenStaticLabel;
+            gBrowser.setTabTitle(this._tabEdited);
+          }
+        }
+      }
       this._tabEdited = null;
       return;
     }

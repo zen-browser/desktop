@@ -1,0 +1,13 @@
+diff --git a/browser/app/macbuild/Contents/Info.plist.in b/browser/app/macbuild/Contents/Info.plist.in
+index 2795b177f4943d58da987153d3f3b66b81bd16ab..eea4e19e95e9e392a021493a8f57444d62e6fd7b 100644
+--- a/browser/app/macbuild/Contents/Info.plist.in
++++ b/browser/app/macbuild/Contents/Info.plist.in
+@@ -319,4 +319,8 @@
+   <key>NSNetworkVolumesUsageDescription</key>
+   <string>@MAC_APP_NAME@ needs access to network volumes to open and save files at your request.</string>
++
++  <key>NSLocalNetworkUsageDescription</key>
++  <string>@MAC_APP_NAME@ needs access to open websites and services hosted on your local network.</string>
++
+ </dict>
+ </plist>

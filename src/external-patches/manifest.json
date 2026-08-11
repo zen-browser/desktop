@@ -26,6 +26,10 @@
     "path": "firefox/no_liquid_glass_icon.patch"
   },
   {
+    "type": "local",
+    "path": "firefox/macos_local_network_usage_description.patch"
+  },
+  {
     "type": "patch",
     "url": "https://codeberg.org/librewolf/source/raw/branch/main/patches/firefox-in-ua.patch",
     "dest": "librewolf",

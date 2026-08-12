@@ -1214,6 +1214,42 @@ class nsZenWindowSync {
   /* Mark: Public API */
 
   /**
+   * Checks whether every open tab in a window has a live synchronized copy in
+   * another window. When this is true, closing the window only removes that
+   * view of the tabs and must not be presented as closing the tabs themselves.
+   *
+   * @param {Window} aWindow - The window that is about to close.
+   * @returns {boolean} Whether its tabs will remain in another synced window.
+   */
+  willTabsPersistAfterWindowClose(aWindow) {
+    if (
+      !lazy.gWindowSyncEnabled ||
+      aWindow?.gZenWindowSync !== this ||
+      aWindow._zenClosingWindow ||
+      !aWindow.gBrowser
+    ) {
+      return false;
+    }
+
+    const openTabs = Array.from(aWindow.gBrowser.openTabs).filter(
+      tab => !tab.hasAttribute("zen-empty-tab")
+    );
+    return this.#browserWindowsList.some(win => {
+      if (
+        win === aWindow ||
+        win._zenClosingWindow ||
+        win.gZenWindowSync !== this
+      ) {
+        return false;
+      }
+      return openTabs.every(tab => {
+        const syncedTab = tab.id && this.getItemFromWindow(win, tab.id);
+        return syncedTab && !syncedTab.closing;
+      });
+    });
+  }
+
+  /**
    * Sets the initial pinned state for a tab across all windows.
    *
    * @param {object} aTab - The tab to set the pinned state for.

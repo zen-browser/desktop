@@ -19,13 +19,19 @@ index 1026474bb1bc026987be01a8c18fa0927cb911bc..60294e0587147d86ace8e6d6985d8c6e
 +  if (!canGoBack) {
 +    canGoBack = gZenCommonActions.shouldCloseTabOnBack();
 +  }
-+  
++
 +  if (backDisabled == canGoBack) {
      if (backDisabled) {
        backCommand.removeAttribute("disabled");
      } else {
-@@ -3719,7 +3725,7 @@ function warnAboutClosingWindow() {
+@@ -3716,9 +3722,13 @@ function warnAboutClosingWindow() {
+     PrivateBrowsingUtils.isWindowPrivate(window) &&
+     !PrivateBrowsingUtils.permanentPrivateBrowsing;
  
++  if (window.gZenWindowSync?.willTabsPersistAfterWindowClose(window)) {
++    return true;
++  }
++
    if (!isPBWindow && !toolbar.visible) {
      return gBrowser.warnAboutClosingTabs(
 -      gBrowser.openTabs.length,
@@ -33,7 +39,7 @@ index 1026474bb1bc026987be01a8c18fa0927cb911bc..60294e0587147d86ace8e6d6985d8c6e
        gBrowser.closingTabsEnum.ALL
      );
    }
-@@ -3759,7 +3765,7 @@ function warnAboutClosingWindow() {
+@@ -3759,7 +3769,7 @@ function warnAboutClosingWindow() {
      return (
        isPBWindow ||
        gBrowser.warnAboutClosingTabs(
@@ -42,7 +48,7 @@ index 1026474bb1bc026987be01a8c18fa0927cb911bc..60294e0587147d86ace8e6d6985d8c6e
          gBrowser.closingTabsEnum.ALL
        )
      );
-@@ -3784,7 +3790,7 @@ function warnAboutClosingWindow() {
+@@ -3784,7 +3794,7 @@ function warnAboutClosingWindow() {
      AppConstants.platform != "macosx" ||
      isPBWindow ||
      gBrowser.warnAboutClosingTabs(
@@ -51,7 +57,7 @@ index 1026474bb1bc026987be01a8c18fa0927cb911bc..60294e0587147d86ace8e6d6985d8c6e
        gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4744,6 +4750,16 @@ var ConfirmationHint = {
+@@ -4744,6 +4754,16 @@ var ConfirmationHint = {
      }
  
      document.l10n.setAttributes(this._message, messageId, l10nArgs);

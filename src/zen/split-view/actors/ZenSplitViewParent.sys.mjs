@@ -30,15 +30,15 @@ export class ZenSplitViewParent extends JSWindowActorParent {
    * The tab the click happened in, which is not always the selected tab: in an
    * existing split, links can be clicked in whichever pane is not focused.
    *
-   * @param {ChromeWindow} window - The chrome window hosting the tab.
+   * @param {ChromeWindow} chromeWindow - The chrome window hosting the tab.
    * @returns {Tab|null} The tab, or null if it could not be resolved.
    */
-  #getSourceTab(window) {
+  #getSourceTab(chromeWindow) {
     const browser = this.browsingContext.top.embedderElement;
     if (!browser) {
       return null;
     }
-    return window?.gBrowser?.getTabForBrowser(browser) ?? null;
+    return chromeWindow?.gBrowser?.getTabForBrowser(browser) ?? null;
   }
 
   receiveMessage(message) {
@@ -47,10 +47,10 @@ export class ZenSplitViewParent extends JSWindowActorParent {
         if (!this.#canSplitOnClick()) {
           return;
         }
-        const window = this.browsingContext.topChromeWindow;
-        window?.gZenViewSplitter?.splitLinkFromURL(message.data.url, {
+        const chromeWindow = this.browsingContext.topChromeWindow;
+        chromeWindow?.gZenViewSplitter?.splitLinkFromURL(message.data.url, {
           triggeringPrincipal: message.data.triggeringPrincipal,
-          sourceTab: this.#getSourceTab(window),
+          sourceTab: this.#getSourceTab(chromeWindow),
         });
         break;
       }

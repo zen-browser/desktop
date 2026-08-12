@@ -8,6 +8,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   setTimeout: "resource://gre/modules/Timer.sys.mjs",
   TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
   ZenWindowSync: "resource:///modules/zen/ZenWindowSync.sys.mjs",
+  ZenSyncStore: "resource:///modules/zen/ZenSyncManager.sys.mjs",
   FeatureCallout: "resource:///modules/asrouter/FeatureCallout.sys.mjs",
 });
 
@@ -200,6 +201,49 @@ class nsZenLiveFoldersManager {
     return this.liveFolders.get(id);
   }
 
+  /**
+   * Returns the provider config needed to recreate this live folder on
+   * another device via Firefox Sync, or null for non-live folders.
+   *
+   * @param {string} id - The folder ID.
+   */
+  getSyncableFolderData(id) {
+    const liveFolder = this.liveFolders.get(id);
+    if (!liveFolder) {
+      return null;
+    }
+    const state = { ...liveFolder.serialize().state };
+    delete state.lastFetched;
+    delete state.lastErrorId;
+    return { type: liveFolder.constructor.type, state };
+  }
+
+  /**
+   * Registers a live folder provider for a folder that arrived from
+   * Firefox Sync. The folder element must already exist.
+   *
+   * @param {string} id - The folder ID.
+   * @param {{ type: string, state: object }} config - Synced provider config.
+   */
+  async adoptSyncedFolder(id, { type, state } = {}) {
+    await this.stateRestored.promise;
+    if (this.liveFolders.has(id)) {
+      return;
+    }
+    const ProviderClass = this.registry.get(type);
+    if (!ProviderClass || !state) {
+      return;
+    }
+    const liveFolder = new ProviderClass({
+      id,
+      state: this.#applyDefaultStateValues({ ...state }),
+      manager: this,
+    });
+    this.liveFolders.set(id, liveFolder);
+    liveFolder.start();
+    this.saveState();
+  }
+
   async createFolder(type) {
     const [provider, providerType] = type.split(":");
     let ProviderClass = this.registry.get(provider);
@@ -264,6 +308,8 @@ class nsZenLiveFoldersManager {
 
     liveFolder.start();
     this.saveState();
+
+    lazy.ZenSyncStore.markFolderChanged(folder.id);
 
     return folder.id;
   }

@@ -1379,7 +1379,7 @@ class nsZenWindowSync {
       return;
     }
 
-    if (item.isZenFolder && !item.isLiveFolder) {
+    if (item.isZenFolder) {
       lazy.ZenSyncStore.markFolderChanged(item.id);
       return;
     }
@@ -1395,7 +1395,11 @@ class nsZenWindowSync {
       return;
     }
 
-    if (item.hasAttribute("zen-glance-tab")) {
+    // Live folder items are provider-generated; only their folder syncs.
+    if (
+      item.hasAttribute("zen-glance-tab") ||
+      item.hasAttribute("zen-live-folder-item-id")
+    ) {
       return;
     }
 

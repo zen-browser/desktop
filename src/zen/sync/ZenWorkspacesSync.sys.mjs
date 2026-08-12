@@ -26,6 +26,7 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   ZenSyncStore: "resource:///modules/zen/ZenSyncManager.sys.mjs",
+  ZenLiveFoldersManager: "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
   ContextualIdentityService:
     "resource://gre/modules/ContextualIdentityService.sys.mjs",
 });
@@ -111,7 +112,11 @@ class ZenWorkspacesStore extends Store {
     const pinnedOnly = lazy.gSyncOnlyPinnedTabs;
 
     for (const tab of sidebar.tabs || []) {
-      if (tab.zenSyncId && (!pinnedOnly || tab.pinned)) {
+      if (
+        tab.zenSyncId &&
+        !tab.zenLiveFolderItemId &&
+        (!pinnedOnly || tab.pinned)
+      ) {
         ids[createRecordId(RECORD_TYPES.TAB, tab.zenSyncId)] = true;
       }
     }
@@ -148,7 +153,9 @@ class ZenWorkspacesStore extends Store {
           c => String(c.userContextId) === parsed.key
         );
       case RECORD_TYPES.TAB:
-        return (sidebar.tabs || []).some(t => t.zenSyncId === parsed.key);
+        return (sidebar.tabs || []).some(
+          t => t.zenSyncId === parsed.key && !t.zenLiveFolderItemId
+        );
       case RECORD_TYPES.FOLDER:
         return (sidebar.folders || []).some(
           f => String(f.id) === parsed.key && !f.splitViewGroup
@@ -240,6 +247,13 @@ class ZenWorkspacesStore extends Store {
           folderId,
           ...rest,
         };
+        if (folder.isLiveFolder) {
+          const liveFolderData =
+            lazy.ZenLiveFoldersManager.getSyncableFolderData(folderId);
+          if (liveFolderData) {
+            record.cleartext.liveFolderData = liveFolderData;
+          }
+        }
         break;
       }
       case RECORD_TYPES.SPLIT: {

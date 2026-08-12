@@ -9,6 +9,7 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
+  ZenLiveFoldersManager: "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -239,6 +240,12 @@ export class ZenSpaceSyncResolver {
           );
         }
       }
+    }
+    if (folderData.isLiveFolder && folderData.liveFolderData) {
+      lazy.ZenLiveFoldersManager.adoptSyncedFolder(
+        folderData.id,
+        folderData.liveFolderData
+      );
     }
   }
 

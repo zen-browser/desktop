@@ -7,6 +7,9 @@
 #zen-media-controls-toolbar {
   --progress-height: 4px;
   --button-spacing: 2px;
+  --zen-media-stack-peek: 8px;
+  --zen-media-stack-gap: 6px;
+  --zen-media-stack-easing: cubic-bezier(0.25, 1, 0.5, 1);
 
   display: flex;
   min-width: 0;
@@ -18,41 +21,14 @@
     border-radius: 5px;
   }
 
-  #zen-media-buttons-hbox {
+  .zen-media-buttons-hbox {
     align-items: start;
     margin-top: -4px;
     --toolbarbutton-padding-outer: 2px;
   }
 
-  &:not([media-sharing]) {
-    #media-device-buttons {
-      display: none;
-    }
-  }
-
-  #media-device-buttons {
+  .media-device-buttons {
     gap: 2px;
-  }
-
-  &[media-sharing] :is(#zen-media-playback-buttons, #zen-media-mute-button) {
-    display: none;
-  }
-
-  &:not([can-pip]) {
-    #zen-media-info-vbox {
-      width: calc(100% - 26px);
-      flex-shrink: 0;
-    }
-
-    #zen-media-pip-button {
-      display: none;
-    }
-  }
-
-  #zen-media-prev-button,
-  #zen-media-play-pause-button,
-  #zen-media-next-button {
-    margin: 0;
   }
 
   image.toolbarbutton-icon {
@@ -61,7 +37,7 @@
     height: 26px;
   }
 
-  #zen-media-progress-bar {
+  .zen-media-progress-bar {
     appearance: none;
     width: 100%;
     height: var(--progress-height);
@@ -109,12 +85,146 @@
       pointer-events: auto;
     }
 
-    & #zen-media-info-vbox label[overflow] {
+    & .zen-media-info-vbox label[overflow] {
       animation: zen-back-and-forth-text 10s infinite ease-in-out;
+    }
+
+    & .zen-media-card:not([zen-removing], [zen-hiding]) {
+      transform: none;
+      opacity: 1;
+    }
+
+    & .zen-media-focus-button::after {
+      display: none;
+    }
+
+    & .zen-media-card::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      height: calc(var(--zen-media-stack-gap) + var(--zen-media-stack-peek));
     }
   }
 
-  & #zen-media-focus-button::after {
+  .show-on-hover {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(1rem);
+    padding: 0 6px;
+    pointer-events: none;
+    transition:
+      max-height 0.3s var(--zen-media-stack-easing),
+      opacity 0.3s var(--zen-media-stack-easing),
+      transform 0.3s var(--zen-media-stack-easing),
+      padding 0.3s var(--zen-media-stack-easing);
+  }
+
+  .zen-media-current-time,
+  .zen-media-duration {
+    margin: 0 0 0 1px;
+    font-size: x-small;
+    opacity: 0.7;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.zen-media-card {
+  position: relative;
+  flex-shrink: 0;
+  order: var(--zen-media-card-index, 0);
+  width: 100%;
+  padding: 4px 6px;
+  border-radius: var(--border-radius-medium);
+  outline: var(--zen-sidebar-notification-outline);
+  outline-offset: -1.5px;
+  box-shadow: var(--zen-sidebar-notification-shadow);
+  background-color: var(--zen-sidebar-notification-bg);
+  transform-origin: top center;
+  transform: translateY(
+      calc(
+        var(--zen-media-card-index, 0) * (100% + var(--zen-media-stack-gap)) -
+          var(--zen-media-stack-peek) * var(--zen-media-card-peek-level, 0)
+      )
+    )
+    scale(calc(1 - 0.04 * var(--zen-media-card-peek-level, 0)));
+  opacity: calc(1 - 0.3 * var(--zen-media-card-peek-level, 0));
+  filter: blur(0);
+  transition:
+    transform 0.35s var(--zen-media-stack-easing),
+    opacity 0.3s var(--zen-media-stack-easing),
+    filter 0.3s var(--zen-media-stack-easing),
+    padding 0.3s ease-out;
+
+  @starting-style {
+    opacity: 0;
+    transform: translateY(0.5rem);
+    filter: blur(4px);
+  }
+
+  &[zen-reindexing] {
+    transition: none;
+  }
+
+  /* Removed and hiding cards sink down behind the stack while fading out */
+  &[zen-removing],
+  &[zen-hiding] {
+    translate: 0 0.5rem;
+    opacity: 0;
+    filter: blur(2px);
+    pointer-events: none;
+    transition:
+      translate 0.3s var(--zen-media-stack-easing),
+      opacity 0.3s var(--zen-media-stack-easing),
+      filter 0.3s var(--zen-media-stack-easing);
+  }
+
+  /* Removed cards additionally leave the flex flow instantly (bottom is
+     set inline to where the card was), so only translate/opacity/filter
+     animate; hiding cards stay in flow until the animation finishes. */
+  &[zen-removing] {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    transform: none;
+  }
+
+  &[stack-overflow] {
+    display: none;
+  }
+
+  &:not([media-sharing]) .media-device-buttons {
+    display: none;
+  }
+
+  &[media-sharing] :is(.zen-media-playback-buttons, .zen-media-mute-button) {
+    display: none;
+  }
+
+  &:not([can-pip]) {
+    .zen-media-info-vbox {
+      width: calc(100% - 26px);
+      flex-shrink: 0;
+    }
+
+    .zen-media-pip-button {
+      display: none;
+    }
+  }
+
+  &[can-pip] {
+    .zen-media-info-vbox {
+      flex-shrink: 1;
+    }
+
+    .zen-media-pip-button {
+      display: flex;
+    }
+  }
+
+  & .zen-media-focus-button::after {
     content: "";
     position: absolute;
     background: url("chrome://browser/content/zen-images/note-indicator.svg") no-repeat;
@@ -129,11 +239,17 @@
     will-change: opacity;
   }
 
-  &:is(:not(.playing:not([muted])), :hover) #zen-media-focus-button::after {
+  &:not(.playing:not([muted])) .zen-media-focus-button::after {
     opacity: 0;
   }
 
-  #zen-media-focus-button {
+  /* Background cards never show the floating notes — only their top sliver
+     is visible and the notes would poke through it */
+  &[stacked-behind] .zen-media-focus-button::after {
+    display: none;
+  }
+
+  .zen-media-focus-button {
     align-self: center;
     transition:
       opacity 0.2s ease,
@@ -147,41 +263,6 @@
       }
     }
   }
-
-  & > toolbaritem {
-    flex-grow: 1;
-    transition: padding 0.3s ease-out;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    padding: 4px 6px;
-    border-radius: var(--border-radius-medium);
-    box-shadow: var(--zen-sidebar-notification-shadow);
-    background-color: var(--zen-sidebar-notification-bg);
-    width: 100%;
-  }
-
-  .show-on-hover {
-    max-height: 0;
-    opacity: 0;
-    transform: translateY(1rem);
-    padding: 0 6px;
-    pointer-events: none;
-    transition:
-      max-height 0.2s ease,
-      opacity 0.2s ease,
-      transform 0.2s ease,
-      padding 0.2s ease;
-  }
-
-  #zen-media-current-time,
-  #zen-media-duration {
-    margin: 0 0 0 1px;
-    font-size: x-small;
-    opacity: 0.7;
-    font-weight: 500;
-    font-variant-numeric: tabular-nums;
-  }
 }
 
 #zen-media-controls-toolbar {
@@ -191,19 +272,29 @@
 
   &:not([hidden]) {
     display: flex;
-    height: 2.5rem;
+    flex-direction: column-reverse;
+    gap: var(--zen-media-stack-gap);
+    /* The toolbar keeps its collapsed height even while expanded: the
+       cards' flow positions overflow above the box, so the expanded stack
+       floats over the sidebar instead of pushing it around. The collapsed
+       height includes the room for the peeking stacked cards. */
+    height: calc(
+      var(--zen-media-collapsed-height, 2.5rem) + var(--zen-media-stack-peek) *
+        var(--zen-media-stack-behind, 0)
+    );
     overflow: visible;
     position: relative;
     z-index: 2;
+    transition: height 0.3s var(--zen-media-stack-easing);
   }
 }
 
-#zen-media-title,
-#zen-media-artist {
+.zen-media-title,
+.zen-media-artist {
   align-self: start;
 }
 
-#zen-media-artist {
+.zen-media-artist {
   opacity: 0.7;
   font-size: smaller;
 
@@ -212,19 +303,19 @@
   }
 }
 
-#zen-media-title {
+.zen-media-title {
   height: var(--size-item-small);
   font-size: math;
 }
 
-#zen-media-main-vbox,
-#zen-media-info-vbox,
-#zen-media-progress-hbox {
+.zen-media-main-vbox,
+.zen-media-info-vbox,
+.zen-media-progress-hbox {
   width: 100%;
 }
 
-#zen-media-info-vbox {
-  #zen-media-controls-toolbar:not([media-position-hidden]) & {
+.zen-media-info-vbox {
+  .zen-media-card:not([media-position-hidden]) & {
     transition-delay: 0.01s !important;
   }
   overflow-x: hidden;
@@ -254,23 +345,23 @@
   }
 }
 
-#zen-media-main-vbox {
+.zen-media-main-vbox {
   height: 100%;
   justify-content: space-between;
 }
 
-#zen-media-progress-hbox {
+.zen-media-progress-hbox {
   flex-grow: 1;
   height: var(--size-item-large);
   align-items: center;
   padding-top: 0 !important;
 
-  #zen-media-controls-toolbar[media-position-hidden] & {
+  .zen-media-card[media-position-hidden] & {
     display: none;
   }
 }
 
-#zen-media-controls-hbox {
+.zen-media-controls-hbox {
   align-items: flex-end;
   justify-content: space-between;
   max-width: 100%;
@@ -279,31 +370,21 @@
   gap: 0.7rem;
 }
 
-#zen-media-playback-buttons {
+.zen-media-playback-buttons {
   justify-content: space-between;
   max-width: 10em;
   width: 100%;
 }
 
-/* Hide #zen-media-focus-button if it doesn't fit in the toolbar */
+/* Hide .zen-media-focus-button if it doesn't fit in the toolbar */
 @container media-controls (max-width: 165px) {
-  #zen-media-focus-button {
+  .zen-media-focus-button {
     display: none;
   }
 }
 
-#zen-media-info-container {
+.zen-media-info-container {
   padding-right: 0 !important;
-}
-
-#zen-media-controls-toolbar[can-pip] {
-  #zen-media-info-vbox {
-    flex-shrink: 1;
-  }
-
-  #zen-media-pip-button {
-    display: flex;
-  }
 }
 
 :root:not([zen-sidebar-expanded="true"]) {

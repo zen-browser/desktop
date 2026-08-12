@@ -27,7 +27,7 @@ body,
   }
 }
 
-:root[zen-before-loaded="true"] #browser > *:not(#zen-toast-container),
+:root[zen-before-loaded="true"] #browser > *:not(#zen-toast-container, #zen-browser-background),
 :root[zen-before-loaded="true"] #urlbar {
   opacity: 0 !important;
 }
@@ -352,4 +352,12 @@ body,
 
 :root[zen-right-side="true"] #zen-appcontent-navbar-wrapper #PanelUI-button {
   order: 2;
+}
+
+/* See #14409: firefox 150's body paint containment prevents the right side compact
+ sidebar from remaining active at the screen edge in macOS fullscreen */
+@media (-moz-platform: macos) {
+  :root[macOSNativeFullscreen][zen-compact-mode][zen-right-side] body {
+    contain: none;
+  }
 }

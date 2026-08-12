@@ -1,0 +1,136 @@
+diff --git a/browser/themes/linux/browser.css b/browser/themes/linux/browser.css
+--- a/browser/themes/linux/browser.css
++++ b/browser/themes/linux/browser.css
+@@ -32,11 +32,11 @@
+  */
+ @media (-moz-gtk-csd-transparency-available) {
+   :root[customtitlebar] {
+     background-color: transparent;
+ 
+-    &[sizemode="normal"]:not([gtktiledwindow]) {
++    &[sizemode="normal"]:not([tiled]) {
+       /* Firefox draws its contents to a child window, while GTK takes care of
+        * drawing the toplevel (which in most cases is just the window
+        * decorations).
+        *
+        * Due to how X11 child windows work, pixels painted by a child window will
+diff --git a/browser/themes/shared/browser-shared.css b/browser/themes/shared/browser-shared.css
+--- a/browser/themes/shared/browser-shared.css
++++ b/browser/themes/shared/browser-shared.css
+@@ -433,18 +433,18 @@
+     }
+   }
+ 
+   @media (-moz-platform: linux) and (-moz-gtk-csd-reversed-placement: 0) {
+     :root:not([sizemode="normal"]) &[type="pre-tabs"],
+-    :root[gtktiledwindow] &[type="pre-tabs"] {
++    :root[tiled] &[type="pre-tabs"] {
+       display: none;
+     }
+   }
+ 
+   @media (-moz-gtk-csd-reversed-placement) {
+     :root:not([sizemode="normal"]) &[type="post-tabs"],
+-    :root[gtktiledwindow] &[type="post-tabs"] {
++    :root[tiled] &[type="post-tabs"] {
+       display: none;
+     }
+   }
+ 
+   @media (max-width: 500px) {
+diff --git a/widget/gtk/nsWindow.cpp b/widget/gtk/nsWindow.cpp
+--- a/widget/gtk/nsWindow.cpp
++++ b/widget/gtk/nsWindow.cpp
+@@ -3683,11 +3683,11 @@
+ #ifdef ACCESSIBILITY
+     DispatchRestoreEventAccessible();
+ #endif  // ACCESSIBILITY
+   }
+ 
+-  mIsTiled = aEvent->new_window_state & GDK_WINDOW_STATE_TILED;
++  SetIsTiled(aEvent->new_window_state & GDK_WINDOW_STATE_TILED);
+   LOG("\tTiled: %d\n", int(mIsTiled));
+   mResizableEdges = [&] {
+     Sides result;
+     if (mSizeMode != nsSizeMode_Normal) {
+       return result;
+diff --git a/widget/nsIWidget.h b/widget/nsIWidget.h
+--- a/widget/nsIWidget.h
++++ b/widget/nsIWidget.h
+@@ -1379,10 +1379,12 @@
+ 
+  protected:
+   // Returns whether compositing should use an external surface size.
+   virtual bool UseExternalCompositingSurface() const { return false; }
+ 
++  void SetIsTiled(bool);
++
+   /**
+    * Starts the OMTC compositor destruction sequence.
+    *
+    * When this function returns, the compositor should not be
+    * able to access the opengl context anymore.
+diff --git a/widget/nsIWidget.cpp b/widget/nsIWidget.cpp
+--- a/widget/nsIWidget.cpp
++++ b/widget/nsIWidget.cpp
+@@ -327,10 +327,16 @@
+ void nsIWidget::QuitIME() {
+   IMEStateManager::WidgetOnQuit(this);
+   this->mIMEHasQuit = true;
+ }
+ 
++void nsIWidget::SetIsTiled(bool aIsTiled) {
++  // TODO: Do we want to report an event here or something when stuff changes?
++  // For now this is propagated in a somewhat out-of-band way via AppWindow.
++  mIsTiled = aIsTiled;
++}
++
+ void nsIWidget::DestroyCompositor() {
+   RevokeTransactionIdAllocator();
+ 
+   // We release this before releasing the compositor, since it may hold the
+   // last reference to our ClientLayerManager. ClientLayerManager's dtor can
+diff --git a/xpcom/ds/StaticAtoms.py b/xpcom/ds/StaticAtoms.py
+--- a/xpcom/ds/StaticAtoms.py
++++ b/xpcom/ds/StaticAtoms.py
+@@ -1512,11 +1512,10 @@
+     Atom("gamma", "gamma"),
+     Atom("glyphRef", "glyphRef"),
+     Atom("grad", "grad"),
+     Atom("gradientTransform", "gradientTransform"),
+     Atom("gradientUnits", "gradientUnits"),
+-    Atom("gtktiledwindow", "gtktiledwindow"),
+     Atom("hardLight", "hard-light"),
+     Atom("hue", "hue"),
+     Atom("hueRotate", "hueRotate"),
+     Atom("identity", "identity"),
+     Atom("image_rendering", "image-rendering"),
+@@ -1950,10 +1949,11 @@
+     Atom("superscriptshift", "superscriptshift"),
+     Atom("symmetric", "symmetric"),
+     Atom("tanh", "tanh"),
+     Atom("tan", "tan"),
+     Atom("tendsto", "tendsto"),
++    Atom("tiled", "tiled"),
+     Atom("times", "times"),
+     Atom("transpose", "transpose"),
+     Atom("union_", "union"),
+     Atom("uplimit", "uplimit"),
+     Atom("variance", "variance"),
+diff --git a/xpfe/appshell/AppWindow.cpp b/xpfe/appshell/AppWindow.cpp
+--- a/xpfe/appshell/AppWindow.cpp
++++ b/xpfe/appshell/AppWindow.cpp
+@@ -1992,11 +1992,11 @@
+     aRootElement.SetAttr(nsGkAtoms::sizemode, sizeString, IgnoreErrors());
+     if (aShouldPersist && aPersistString.Find(u"sizemode") >= 0) {
+       (void)SetPersistentValue(nsGkAtoms::sizemode, sizeString);
+     }
+   }
+-  aRootElement.SetBoolAttr(nsGkAtoms::gtktiledwindow, mWindow->IsTiled());
++  aRootElement.SetBoolAttr(nsGkAtoms::tiled, mWindow->IsTiled());
+ }
+ 
+ void AppWindow::SavePersistentAttributes(
+     const PersistentAttributes aAttributes) {
+   // can happen when the persistence timer fires at an inopportune time
+

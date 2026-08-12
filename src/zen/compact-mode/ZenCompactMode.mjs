@@ -129,6 +129,12 @@ window.gZenCompactModeManager = {
       this._clearAllHoverStates()
     );
 
+    // Modal prompts can interrupt mouseleave delivery and leave a stale hover
+    // state behind after the prompt closes.
+    window.addEventListener("DOMModalDialogClosed", () =>
+      this._clearAllHoverStates()
+    );
+
     // Hide any element kept open by the outside mouse tracking as soon as the
     // window loses focus
     window.addEventListener("deactivate", () => this._collapseTrackedElement());

@@ -9,7 +9,8 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
-  ZenLiveFoldersManager: "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
+  ZenLiveFoldersManager:
+    "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -259,11 +260,7 @@ export class ZenSpaceSyncResolver {
       this.#updateExistingIncomingTab(existingTab, tabData);
       return;
     }
-    if (tabData.pinned) {
-      this.#createIncomingPinnedTab(tabData, syncId);
-    } else {
-      this.#createIncomingUnpinnedTab(tabData, syncId);
-    }
+    this.#createIncomingTab(tabData, syncId);
   }
 
   #updateExistingIncomingTab(existingTab, tabData) {
@@ -346,94 +343,52 @@ export class ZenSpaceSyncResolver {
     this.#applyIncomingTabNavigation(existingTab, tabData);
   }
 
-  #createIncomingPinnedTab(tabData, syncId) {
-    const pinnedInitialState = this.#getSyncedPinnedInitialState(tabData);
+  /**
+   * Creates a tab from an incoming sync record. Pinned tabs start on
+   * about:blank and get their navigation applied afterwards; unpinned tabs
+   * load their active entry directly.
+   *
+   * @param {object} tabData - The incoming tab record data.
+   * @param {string} syncId - The tab's sync ID.
+   */
+  #createIncomingTab(tabData, syncId) {
+    const pinned = !!tabData.pinned;
+    const essential = pinned && !!tabData.zenEssential;
     const activeEntry = this.#getSyncedTabActiveEntry(tabData);
+    const url = pinned ? "about:blank" : activeEntry?.url || "about:blank";
 
-    const pinnedOptions = { createLazyBrowser: true };
-    const pinnedUserContextId = this.#getSyncedTabUserContextId(tabData);
-    if (pinnedUserContextId) {
-      pinnedOptions.userContextId = pinnedUserContextId;
+    const options = { createLazyBrowser: true };
+    const userContextId = this.#getSyncedTabUserContextId(tabData);
+    if (userContextId) {
+      options.userContextId = userContextId;
     }
-    const newTab = this.#win.gBrowser.addTrustedTab(
-      "about:blank",
-      pinnedOptions
-    );
-
+    const newTab = this.#win.gBrowser.addTrustedTab(url, options);
     if (!this.#setIncomingTabSyncId(newTab, syncId)) {
       this.#win.gBrowser.removeTab(newTab, { animate: false });
       return;
     }
 
-    if (tabData.zenEssential) {
-      this.#setupIncomingEssentialTab(
-        newTab,
-        tabData,
-        pinnedInitialState,
-        activeEntry
-      );
-    } else {
-      this.#setupIncomingRegularPinnedTab(
-        newTab,
-        tabData,
-        pinnedInitialState,
-        activeEntry
-      );
-    }
-  }
+    const { label, image } = pinned
+      ? this.#initIncomingPinnedTab(newTab, tabData, activeEntry)
+      : this.#initIncomingUnpinnedTab(newTab, tabData, activeEntry, url);
 
-  #setupIncomingEssentialTab(newTab, tabData, pinnedInitialState, activeEntry) {
-    if (typeof tabData.zenStaticLabel === "string") {
-      newTab.zenStaticLabel = tabData.zenStaticLabel;
-    }
-    if (tabData.zenHasStaticIcon && tabData.image) {
-      newTab.zenStaticIcon = tabData.image;
-    }
-    if (pinnedInitialState) {
-      newTab._zenPinnedInitialState = pinnedInitialState;
-    }
-    const label =
-      newTab.zenStaticLabel ||
-      activeEntry?.title ||
-      pinnedInitialState?.entry?.title ||
-      "";
     if (label) {
       this.#win.gBrowser._setTabLabel(newTab, label);
     }
-    const image = tabData.image || pinnedInitialState?.image || "";
     if (image) {
       this.#win.gBrowser.setIcon(newTab, image);
     }
-    this.#win.gZenPinnedTabManager.addToEssentials(newTab);
-    this.#applyIncomingTabNavigation(newTab, tabData);
-    this.#applyIncomingTabDefaultUserContextId(newTab, tabData);
-  }
 
-  #setupIncomingRegularPinnedTab(
-    newTab,
-    tabData,
-    pinnedInitialState,
-    activeEntry
-  ) {
-    this.#win.gZenSessionStore.restoreInitialTabData(newTab, tabData);
-    if (!newTab._zenPinnedInitialState && pinnedInitialState) {
-      newTab._zenPinnedInitialState = pinnedInitialState;
+    if (essential) {
+      this.#win.gZenPinnedTabManager.addToEssentials(newTab);
+    } else if (pinned) {
+      this.#win.gBrowser.pinTab(newTab);
     }
-    const label =
-      newTab.zenStaticLabel ||
-      activeEntry?.title ||
-      pinnedInitialState?.entry?.title ||
-      "";
-    if (label) {
-      this.#win.gBrowser._setTabLabel(newTab, label);
+    if (pinned) {
+      this.#applyIncomingTabNavigation(newTab, tabData);
     }
-    const image = tabData.image || pinnedInitialState?.image || "";
-    if (image) {
-      this.#win.gBrowser.setIcon(newTab, image);
-    }
-    this.#win.gBrowser.pinTab(newTab);
-    this.#applyIncomingTabNavigation(newTab, tabData);
-    if (tabData.groupId) {
+    // Place in folder if applicable; essentials don't belong to folders.
+    if (!essential && tabData.groupId) {
       const folder = this.#win.document.getElementById(tabData.groupId);
       if (folder?.isZenFolder) {
         folder.addTabs([newTab]);
@@ -442,37 +397,50 @@ export class ZenSpaceSyncResolver {
     this.#applyIncomingTabDefaultUserContextId(newTab, tabData);
   }
 
-  #createIncomingUnpinnedTab(tabData, syncId) {
-    const activeEntry = this.#getSyncedTabActiveEntry(tabData) || {};
-    const url = activeEntry.url || "about:blank";
-    const unpinnedOptions = { createLazyBrowser: true };
-    const unpinnedUserContextId = this.#getSyncedTabUserContextId(tabData);
-    if (unpinnedUserContextId) {
-      unpinnedOptions.userContextId = unpinnedUserContextId;
+  /**
+   * Applies the pinned/essential state of an incoming tab record and
+   * returns the label and image to display.
+   *
+   * @param {MozTabbrowserTab} newTab - The newly created tab.
+   * @param {object} tabData - The incoming tab record data.
+   * @param {object|null} activeEntry - The record's active history entry.
+   */
+  #initIncomingPinnedTab(newTab, tabData, activeEntry) {
+    const pinnedInitialState = this.#getSyncedPinnedInitialState(tabData);
+    if (tabData.zenEssential) {
+      if (typeof tabData.zenStaticLabel === "string") {
+        newTab.zenStaticLabel = tabData.zenStaticLabel;
+      }
+      if (tabData.zenHasStaticIcon && tabData.image) {
+        newTab.zenStaticIcon = tabData.image;
+      }
+      if (pinnedInitialState) {
+        newTab._zenPinnedInitialState = pinnedInitialState;
+      }
+    } else {
+      this.#win.gZenSessionStore.restoreInitialTabData(newTab, tabData);
+      if (!newTab._zenPinnedInitialState && pinnedInitialState) {
+        newTab._zenPinnedInitialState = pinnedInitialState;
+      }
     }
-    const newTab = this.#win.gBrowser.addTrustedTab(url, unpinnedOptions);
-    if (!this.#setIncomingTabSyncId(newTab, syncId)) {
-      this.#win.gBrowser.removeTab(newTab, { animate: false });
-      return;
-    }
+    return {
+      label:
+        newTab.zenStaticLabel ||
+        activeEntry?.title ||
+        pinnedInitialState?.entry?.title ||
+        "",
+      image: tabData.image || pinnedInitialState?.image || "",
+    };
+  }
+
+  #initIncomingUnpinnedTab(newTab, tabData, activeEntry, url) {
     if (tabData.zenWorkspace) {
       newTab.setAttribute("zen-workspace-id", tabData.zenWorkspace);
     }
-    const label = activeEntry.title || url;
-    if (label) {
-      this.#win.gBrowser._setTabLabel(newTab, label);
-    }
-    if (tabData.image) {
-      this.#win.gBrowser.setIcon(newTab, tabData.image);
-    }
-    // Place in folder if applicable
-    if (tabData.groupId) {
-      const folder = this.#win.document.getElementById(tabData.groupId);
-      if (folder?.isZenFolder) {
-        folder.addTabs([newTab]);
-      }
-    }
-    this.#applyIncomingTabDefaultUserContextId(newTab, tabData);
+    return {
+      label: activeEntry?.title || url,
+      image: tabData.image || "",
+    };
   }
 
   #getSyncedTabActiveEntry(tabData) {

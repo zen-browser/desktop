@@ -26,7 +26,8 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   ZenSyncStore: "resource:///modules/zen/ZenSyncManager.sys.mjs",
-  ZenLiveFoldersManager: "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
+  ZenLiveFoldersManager:
+    "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
   ContextualIdentityService:
     "resource://gre/modules/ContextualIdentityService.sys.mjs",
 });

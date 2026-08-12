@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
+import { SYNC_PREFS } from "resource:///modules/zen/ZenSyncConstants.sys.mjs";
 
 const lazy = {};
 
@@ -13,7 +14,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
   "gSyncOnlyPinnedTabs",
-  "zen.window-sync.sync-only-pinned-tabs",
+  SYNC_PREFS.SYNC_ONLY_PINNED_TABS,
   true
 );
 
@@ -106,7 +107,9 @@ export class ZenSpaceSyncResolver {
         group => group.groupId === splitData.groupId
       );
       if (groupIndex >= 0) {
-        this.#win.gZenViewSplitter.removeGroup(groupIndex);
+        this.#win.gZenViewSplitter.removeGroup(groupIndex, {
+          suppressEvents: true,
+        });
       }
     }
 
@@ -153,7 +156,11 @@ export class ZenSpaceSyncResolver {
       return;
     }
 
-    const incomingFolders = pulled.folders || [];
+    // Split views sync as split records; ignore their tab-group folder
+    // entries (marked splitViewGroup) so we don't create phantom folders.
+    const incomingFolders = (pulled.folders || []).filter(
+      folderData => !folderData.splitViewGroup
+    );
     const incomingSplits = pulled.splits || [];
     // Filter out folder placeholder tabs, they should never be synced.
     let incomingTabs = (pulled.tabs || []).filter(t => !t.zenIsEmpty);
@@ -602,18 +609,16 @@ export class ZenSpaceSyncResolver {
       return;
     }
 
-    const incomingEntries = Array.isArray(tabData.entries)
-      ? tabData.entries.map(entry => ({ ...entry }))
-      : [{ ...incomingEntry }];
-    const incomingIndex = Math.min(
-      Math.max(typeof tabData.index === "number" ? tabData.index : 1, 1),
-      incomingEntries.length
-    );
+    const priorEntries = (currentState.entries || []).slice(0, entryIndex + 1);
+    if (priorEntries.at(-1)?.url === "about:blank") {
+      priorEntries.pop();
+    }
+    const newEntries = [...priorEntries, { ...incomingEntry }];
 
     const newState = {
       ...currentState,
-      entries: incomingEntries,
-      index: incomingIndex,
+      entries: newEntries,
+      index: newEntries.length,
     };
     if (tabData.image) {
       newState.image = tabData.image;

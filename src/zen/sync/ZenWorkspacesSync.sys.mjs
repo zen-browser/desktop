@@ -117,7 +117,9 @@ class ZenWorkspacesStore extends Store {
     }
 
     for (const folder of sidebar.folders || []) {
-      if (folder.id) {
+      // Split views inside folders are stored in sidebar.folders too, but
+      // they sync as split records and must not also produce folder records.
+      if (folder.id && !folder.splitViewGroup) {
         ids[createRecordId(RECORD_TYPES.FOLDER, folder.id)] = true;
       }
     }
@@ -148,7 +150,9 @@ class ZenWorkspacesStore extends Store {
       case RECORD_TYPES.TAB:
         return (sidebar.tabs || []).some(t => t.zenSyncId === parsed.key);
       case RECORD_TYPES.FOLDER:
-        return (sidebar.folders || []).some(f => String(f.id) === parsed.key);
+        return (sidebar.folders || []).some(
+          f => String(f.id) === parsed.key && !f.splitViewGroup
+        );
       case RECORD_TYPES.SPLIT:
         return (sidebar.splitViewData || []).some(
           splitGroup => splitGroup.groupId === parsed.key
@@ -222,7 +226,7 @@ class ZenWorkspacesStore extends Store {
       }
       case RECORD_TYPES.FOLDER: {
         const folder = (sidebar.folders || []).find(
-          f => String(f.id) === parsed.key
+          f => String(f.id) === parsed.key && !f.splitViewGroup
         );
         if (!folder) {
           record.deleted = true;
@@ -557,8 +561,9 @@ class ZenWorkspacesTracker extends Tracker {
     if (data.type && data.id) {
       const id = createRecordId(data.type, data.id);
       this.#changedIDs[id] = Date.now() / 1000;
-      // increment score with SCORE_INCREMENT_XLARGE - this will cause and immediate sync
-      // if we want to do less often sync for tabs for example, we can change this to SCORE_INCREMENT_MEDIUM or other values
+      // Incrementing the score with SCORE_INCREMENT_XLARGE causes an immediate
+      // sync. To sync tabs less often, lower this to SCORE_INCREMENT_MEDIUM or
+      // another value.
       this.score += SCORE_INCREMENT_XLARGE;
     }
   }

@@ -2,7 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
-import { RECORD_TYPES } from "resource:///modules/zen/ZenSyncConstants.sys.mjs";
+import {
+  RECORD_TYPES,
+  SYNC_PREFS,
+} from "resource:///modules/zen/ZenSyncConstants.sys.mjs";
 
 const lazy = {};
 
@@ -17,7 +20,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
   "gSyncOnlyPinnedTabs",
-  "zen.window-sync.sync-only-pinned-tabs",
+  SYNC_PREFS.SYNC_ONLY_PINNED_TABS,
   true
 );
 

@@ -484,7 +484,7 @@ class nsZenWindowSync {
       console.error(e);
     } finally {
       if (SYNC_CHANGE_EVENTS.includes(aEvent.type)) {
-        this.#notifySyncItemChanged(aEvent.target);
+        this.#notifySyncItemChanged(aEvent.target, aEvent.type);
       }
     }
     for (let syncHandler of this.#syncHandlers) {
@@ -1374,7 +1374,7 @@ class nsZenWindowSync {
     });
   }
 
-  #notifySyncItemChanged(item) {
+  #notifySyncItemChanged(item, aEventType) {
     if (!item?.id) {
       return;
     }
@@ -1384,7 +1384,14 @@ class nsZenWindowSync {
       return;
     }
 
-    if (lazy.gSyncOnlyPinnedTabs && !item.pinned) {
+    // Unpinning is the one transition where an unpinned tab must still be
+    // marked as changed: the previously-synced pinned tab needs a tombstone
+    // uploaded so other devices drop it.
+    if (
+      lazy.gSyncOnlyPinnedTabs &&
+      !item.pinned &&
+      aEventType !== "TabUnpinned"
+    ) {
       return;
     }
 

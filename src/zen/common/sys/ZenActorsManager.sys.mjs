@@ -64,7 +64,6 @@ let JSWINDOWACTORS = {
     child: {
       esModuleURI: "resource:///actors/ZenSplitViewChild.sys.mjs",
       events: {
-        DOMContentLoaded: {},
         click: {
           capture: true,
         },
@@ -72,6 +71,7 @@ let JSWINDOWACTORS = {
     },
     allFrames: true,
     remoteTypes: ["web", "file"],
+    enablePreference: "zen.splitView.enable-link-click-split",
   },
 };
 

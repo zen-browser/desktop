@@ -8,6 +8,9 @@ ChromeUtils.defineESModuleGetters(this, {
   sinon: "resource://testing-common/Sinon.sys.mjs",
 });
 
+const confusedFoxPath = ShellService.getBundledPdfFile("confused_fox.pdf").path;
+const SET_HANDLER_WIN11 = Ci.nsIWindowsShellService.OPEN_WITH_SET_HANDLER;
+
 const setDefaultBrowserUserChoiceStub = sinon.stub();
 const setDefaultExtensionHandlersUserChoiceStub = sinon
   .stub()
@@ -34,17 +37,15 @@ const _userChoiceImpossibleTelemetryResultStub = sinon
 const setDefaultStub = sinon.stub();
 // We'll dynamically update this as needed during the tests.
 const queryCurrentDefaultHandlerForStub = sinon.stub();
-const launchOpenWithDefaultPickerForFileTypeStub = sinon.stub();
+const launchSetDefaultAppPickerStub = sinon.stub();
 const launchModernSettingsDialogDefaultAppsStub = sinon.stub();
 const shellStub = sinon.stub(ShellService, "shellService").value({
   setDefaultBrowser: setDefaultStub,
   queryCurrentDefaultHandlerFor: queryCurrentDefaultHandlerForStub,
-  QueryInterface: () => ({
-    launchOpenWithDefaultPickerForFileType:
-      launchOpenWithDefaultPickerForFileTypeStub,
-    launchModernSettingsDialogDefaultApps:
-      launchModernSettingsDialogDefaultAppsStub,
-  }),
+  launchSetDefaultAppPicker: launchSetDefaultAppPickerStub,
+  launchModernSettingsDialogDefaultApps:
+    launchModernSettingsDialogDefaultAppsStub,
+  QueryInterface: ChromeUtils.generateQI([]),
 });
 
 registerCleanupFunction(() => {
@@ -228,7 +229,7 @@ add_task(async function test_setAsDefaultPDFHandler_knownBrowser() {
   const expectedArguments = [aumi, [".pdf", "FirefoxPDF"]];
   const resetStubs = () => {
     setDefaultExtensionHandlersUserChoiceStub.resetHistory();
-    launchOpenWithDefaultPickerForFileTypeStub.resetHistory();
+    launchSetDefaultAppPickerStub.resetHistory();
     launchModernSettingsDialogDefaultAppsStub.resetHistory();
   };
 
@@ -250,7 +251,7 @@ add_task(async function test_setAsDefaultPDFHandler_knownBrowser() {
       "Called default browser agent with expected arguments"
     );
     Assert.ok(
-      launchOpenWithDefaultPickerForFileTypeStub.notCalled,
+      launchSetDefaultAppPickerStub.notCalled,
       "Did not fall back to open-with picker"
     );
     Assert.ok(
@@ -271,7 +272,7 @@ add_task(async function test_setAsDefaultPDFHandler_knownBrowser() {
       "Called default browser agent with expected arguments"
     );
     Assert.ok(
-      launchOpenWithDefaultPickerForFileTypeStub.notCalled,
+      launchSetDefaultAppPickerStub.notCalled,
       "Did not fall back to open-with picker"
     );
     Assert.ok(
@@ -289,7 +290,7 @@ add_task(async function test_setAsDefaultPDFHandler_knownBrowser() {
       "Did not use userChoice"
     );
     Assert.ok(
-      launchOpenWithDefaultPickerForFileTypeStub.notCalled,
+      launchSetDefaultAppPickerStub.notCalled,
       "Did not fall back to open-with picker"
     );
     Assert.ok(
@@ -310,7 +311,7 @@ add_task(async function test_setAsDefaultPDFHandler_knownBrowser() {
       "Called default browser agent with expected arguments"
     );
     Assert.ok(
-      launchOpenWithDefaultPickerForFileTypeStub.notCalled,
+      launchSetDefaultAppPickerStub.notCalled,
       "Did not fall back to open-with picker"
     );
     Assert.ok(
@@ -365,8 +366,11 @@ add_task(async function test_setAsDefaultPDFHandler_fallback() {
 
     Assert.ok(userChoiceStub.called, "Attempted userChoice");
     Assert.ok(
-      launchOpenWithDefaultPickerForFileTypeStub.calledWith(".pdf"),
-      "Fell back to open-with picker for .pdf"
+      launchSetDefaultAppPickerStub.calledWith(
+        confusedFoxPath,
+        SET_HANDLER_WIN11
+      ),
+      "Fell back to open-with picker with bundled PDF path and Win11 flag"
     );
     Assert.ok(
       launchModernSettingsDialogDefaultAppsStub.notCalled,
@@ -392,7 +396,7 @@ add_task(async function test_setAsDefaultPDFHandler_fallback() {
     );
     userChoiceStub.resetHistory();
     isDefaultHandlerForStub.resetHistory();
-    launchOpenWithDefaultPickerForFileTypeStub.resetHistory();
+    launchSetDefaultAppPickerStub.resetHistory();
     launchModernSettingsDialogDefaultAppsStub.resetHistory();
 
     info(
@@ -413,22 +417,25 @@ add_task(async function test_setAsDefaultPDFHandler_fallback() {
     isDefaultHandlerForStub.returns(true);
     userChoiceStub.resetHistory();
     isDefaultHandlerForStub.resetHistory();
-    launchOpenWithDefaultPickerForFileTypeStub.resetHistory();
+    launchSetDefaultAppPickerStub.resetHistory();
     launchModernSettingsDialogDefaultAppsStub.resetHistory();
 
     info(
       "When userChoice fails and open-with picker fails, should fall back to settings dialog"
     );
     Services.fog.testResetFOG();
-    launchOpenWithDefaultPickerForFileTypeStub.throws(
+    launchSetDefaultAppPickerStub.throws(
       new Error("mock IOpenWithLauncher failure")
     );
     await ShellService.setAsDefaultPDFHandler(false);
 
     Assert.ok(userChoiceStub.called, "Attempted userChoice");
     Assert.ok(
-      launchOpenWithDefaultPickerForFileTypeStub.calledWith(".pdf"),
-      "Attempted open-with picker for .pdf"
+      launchSetDefaultAppPickerStub.calledWith(
+        confusedFoxPath,
+        SET_HANDLER_WIN11
+      ),
+      "Attempted open-with picker with bundled PDF path and Win11 flag"
     );
     Assert.ok(
       launchModernSettingsDialogDefaultAppsStub.called,
@@ -463,7 +470,7 @@ add_task(async function test_setAsDefaultPDFHandler_fallback() {
     );
     userChoiceStub.resetHistory();
     isDefaultHandlerForStub.resetHistory();
-    launchOpenWithDefaultPickerForFileTypeStub.resetHistory();
+    launchSetDefaultAppPickerStub.resetHistory();
     launchModernSettingsDialogDefaultAppsStub.resetHistory();
 
     info(
@@ -499,7 +506,7 @@ add_task(async function test_setAsDefaultPDFHandler_fallback() {
       "Event result_is_default is false when no method set the default"
     );
   } finally {
-    launchOpenWithDefaultPickerForFileTypeStub.reset();
+    launchSetDefaultAppPickerStub.reset();
     launchModernSettingsDialogDefaultAppsStub.reset();
     sandbox.restore();
     await SpecialPowers.popPrefEnv();
@@ -529,7 +536,7 @@ add_task(async function test_setAsDefaultPDFHandler_useOpenWithDisabled() {
     await ShellService.setAsDefaultPDFHandler(false);
 
     Assert.ok(
-      launchOpenWithDefaultPickerForFileTypeStub.notCalled,
+      launchSetDefaultAppPickerStub.notCalled,
       "Did not invoke open-with picker when pref is disabled"
     );
     Assert.ok(
@@ -550,7 +557,7 @@ add_task(async function test_setAsDefaultPDFHandler_useOpenWithDisabled() {
       "Event result_is_default reflects isDefaultHandlerFor"
     );
   } finally {
-    launchOpenWithDefaultPickerForFileTypeStub.reset();
+    launchSetDefaultAppPickerStub.reset();
     launchModernSettingsDialogDefaultAppsStub.reset();
     sandbox.restore();
     await SpecialPowers.popPrefEnv();

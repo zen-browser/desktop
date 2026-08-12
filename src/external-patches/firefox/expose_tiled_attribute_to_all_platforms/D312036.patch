@@ -1,0 +1,18 @@
+diff --git a/widget/windows/nsWindow.cpp b/widget/windows/nsWindow.cpp
+--- a/widget/windows/nsWindow.cpp
++++ b/widget/windows/nsWindow.cpp
+@@ -6423,10 +6423,13 @@
+       // Skip window size change events below on minimization.
+       return;
+     }
+   }
+ 
++  // Recompute tiled state.
++  SetIsTiled(mWnd && ::IsWindowArranged(mWnd));
++
+   // Notify visibility change when window is activated.
+   if (!(wp->flags & SWP_NOACTIVATE) && NeedsToTrackWindowOcclusionState()) {
+     WinWindowOcclusionTracker::Get()->OnWindowVisibilityChanged(
+         this, mFrameState->GetSizeMode() != nsSizeMode_Minimized);
+   }
+

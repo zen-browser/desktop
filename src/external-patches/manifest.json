@@ -39,5 +39,20 @@
     "type": "phabricator",
     "id": "D291714",
     "name": "gh-12979 Clip dirty_rect to device_size"
+  },
+  {
+    "type": "phabricator",
+    "ids": [
+      "D312028",
+      "D312036",
+      "D312091"
+    ],
+    "name": "Expose tiled attribute to all platforms"
+  },
+  {
+    "type": "patch",
+    "url": "https://gitlab.archlinux.org/archlinux/packaging/packages/firefox/-/raw/main/0002-Bug-2057577-DOM-Media-Add-FFmpeg-63-support.-r-alwu-.patch",
+    "dest": "firefox",
+    "filename": "bug-2057577-ffmpeg-63-support.patch"
   }
 ]

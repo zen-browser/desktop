@@ -5,9 +5,12 @@
 
 add_task(async function test_toolbar_collapses_after_modal_dialog_closes() {
   const toolbar = document.getElementById("zen-appcontent-navbar-wrapper");
-  const browser = gBrowser.selectedBrowser;
 
-  EventUtils.synthesizeMouseAtCenter(browser, { type: "mousemove" }, window);
+  EventUtils.synthesizeMouseAtCenter(
+    gBrowser.selectedBrowser,
+    { type: "mousemove" },
+    window
+  );
   await TestUtils.waitForCondition(
     () => !toolbar.matches(":hover"),
     "The pointer should be outside the toolbar"
@@ -19,8 +22,27 @@ add_task(async function test_toolbar_collapses_after_modal_dialog_closes() {
     "The toolbar starts with a stale hover state"
   );
 
-  // Firefox dispatches this event after beforeunload and other modal prompts.
-  window.dispatchEvent(new CustomEvent("DOMModalDialogClosed"));
+  const dialogClosed = BrowserTestUtils.waitForEvent(
+    window,
+    "DOMModalDialogClosed"
+  );
+  const dialogOpened = BrowserTestUtils.promiseAlertDialogOpen();
+  setTimeout(() => Services.prompt.alert(window, "Test", "Test"), 0);
+
+  let dialogWindow = await dialogOpened;
+  let dialogContainer =
+    dialogWindow.docShell.chromeEventHandler.closest("dialog");
+  const dialogRemoved = BrowserTestUtils.waitForMutationCondition(
+    dialogContainer,
+    { childList: true, attributes: true },
+    () => !dialogContainer.hasChildNodes() && !dialogContainer.open
+  );
+
+  dialogWindow.document.querySelector("dialog").acceptDialog();
+  await dialogClosed;
+  await dialogRemoved;
+  dialogWindow = null;
+  dialogContainer = null;
 
   Assert.ok(
     !toolbar.hasAttribute("zen-has-hover"),

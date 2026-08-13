@@ -322,6 +322,11 @@ class nsZenWorkspaces {
   }
 
   #initializeEmptyTab() {
+    if (window._zenStandaloneWindow) {
+      // A standalone window exists to hold exactly one external page, so it
+      // must not gain the empty tab every other window starts with.
+      return;
+    }
     for (const tab of gBrowser.tabs) {
       // Check if session store has an empty tab
       if (tab.hasAttribute("zen-empty-tab") && !tab.pinned) {

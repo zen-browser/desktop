@@ -105,21 +105,21 @@ class nsZenSpaceRoutingManager {
       };
     }
 
-    if (this.shouldOpenExternalLinkInStandaloneWindow(uriString, options, win)) {
-      const didOpenStandaloneWindow = this.openExternalLinkInStandaloneWindow(
-        uriString,
-        options,
-        win
-      );
-      if (didOpenStandaloneWindow) {
-        return {
-          shouldEarlyExit: true,
-          userContextId,
-          isRouteFound,
-          targetRoute,
-          targetWorkspaceName,
-        };
-      }
+    // Runs after the skip guard so pinned, grouped and explicitly unrouted tabs
+    // keep their normal behaviour even when they arrive from outside Zen. The
+    // first URL opened by the OS is added while gZenStartup is still settling,
+    // but it must follow the same standalone path as later opens.
+    if (
+      this.shouldOpenExternalLinkInStandaloneWindow(uriString, options, win) &&
+      this.openExternalLinkInStandaloneWindow(uriString, options, win)
+    ) {
+      return {
+        shouldEarlyExit: true,
+        userContextId,
+        isRouteFound,
+        targetRoute,
+        targetWorkspaceName,
+      };
     }
 
     targetRoute = this.routeUri(uriString, options);
@@ -244,7 +244,7 @@ class nsZenSpaceRoutingManager {
   }
 
   /**
-   * Checks whether an external URL should use the future standalone-window path.
+   * Checks whether an external URL should use the standalone-window path.
    *
    * @param {string} uriString - The URI as a string
    * @param {object} options - The tab creation options
@@ -256,16 +256,18 @@ class nsZenSpaceRoutingManager {
       typeof uriString === "string" &&
       !!uriString &&
       !!options?.fromExternal &&
-      !!win?.gZenWorkspaces?.workspaceEnabled &&
+      !!win &&
+      // A standalone window must never spawn another standalone window.
+      !win._zenStandaloneWindow &&
       Services.prefs.getBoolPref("zen.standalone-window.enabled", false)
     );
   }
 
   /**
-   * Future entry point for constructing a standalone window.
+   * Hands an eligible external link to the standalone-window manager.
    *
-   * This intentionally falls back to the existing addTab/space-routing flow until
-   * the standalone window constructor exists.
+   * Falls back to the normal addTab/space-routing flow when the manager cannot
+   * create the window.
    *
    * @param {string} uriString - The URI as a string
    * @param {object} options - The tab creation options
@@ -278,18 +280,6 @@ class nsZenSpaceRoutingManager {
       options,
       openerWindow: win,
     });
-  }
-
-  /**
-   * Compatibility wrapper for the standalone-window constructor.
-   *
-   * @param {string} uriString - The URI as a string
-   * @param {object} options - The tab creation options
-   * @param {Window} win - The owning window
-   * @returns {boolean} True when the standalone window handled the URL
-   */
-  constructExternalLinkStandaloneWindow(uriString, options, win) {
-    return this.openExternalLinkInStandaloneWindow(uriString, options, win);
   }
 
   /**

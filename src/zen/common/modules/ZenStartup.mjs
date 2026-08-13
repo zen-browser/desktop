@@ -16,6 +16,11 @@ class ZenStartup {
   });
 
   init() {
+    if (window._zenStandaloneWindow) {
+      // Set before first paint so the standalone window never flashes the
+      // sidebar and tab strip that its stylesheet hides.
+      document.documentElement.setAttribute("zen-standalone-window", "true");
+    }
     this.openWatermark();
     this.#zenInitBrowserLayout();
   }

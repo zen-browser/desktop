@@ -22,3 +22,8 @@ index 29c5b1510696cfdd993388957115709b1a149d7c..6616edbc5f992ffdf3df65028cd26c17
    }
  
    /**
+@@ -164,0 +165,4 @@ export class BrowserDOMWindow {
++    if (!tab) {
++      return null;
++    }
++

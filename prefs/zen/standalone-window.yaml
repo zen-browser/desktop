@@ -5,6 +5,8 @@
 - name: zen.standalone-window.enabled
   value: false
 
+# Size of a newly opened standalone window. Not surfaced in the settings UI;
+# these exist so the default can be tuned without a rebuild.
 - name: zen.standalone-window.default-width
   value: 1280
 

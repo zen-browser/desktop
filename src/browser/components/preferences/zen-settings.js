@@ -1180,16 +1180,6 @@ Preferences.addAll([
     default: false,
   },
   {
-    id: "zen.standalone-window.default-width",
-    type: "int",
-    default: 1280,
-  },
-  {
-    id: "zen.standalone-window.default-height",
-    type: "int",
-    default: 820,
-  },
-  {
     id: "zen.glance.activation-method",
     type: "string",
     default: "ctrl",

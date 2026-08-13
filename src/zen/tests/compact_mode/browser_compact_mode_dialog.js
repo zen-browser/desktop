@@ -3,49 +3,82 @@
 
 "use strict";
 
-add_task(async function test_toolbar_collapses_after_modal_dialog_closes() {
+add_task(async function test_popup_tracking_clears_after_close_warning() {
+  await SpecialPowers.pushPrefEnv({
+    set: [
+      ["browser.tabs.warnOnClose", true],
+      ["browser.warnOnQuit", true],
+    ],
+  });
+  const tab = await BrowserTestUtils.openNewForegroundTab(
+    gBrowser,
+    "about:blank"
+  );
   const toolbar = document.getElementById("zen-appcontent-navbar-wrapper");
-
-  EventUtils.synthesizeMouseAtCenter(
-    gBrowser.selectedBrowser,
-    { type: "mousemove" },
-    window
-  );
-  await TestUtils.waitForCondition(
-    () => !toolbar.matches(":hover"),
-    "The pointer should be outside the toolbar"
-  );
-
-  gZenCompactModeManager._setElementExpandAttribute(toolbar, true);
+  const popupAnchor = document.getElementById("PanelUI-menu-button");
+  const popup = document.createXULElement("menupopup");
+  let trackedToolbar;
   Assert.ok(
-    toolbar.hasAttribute("zen-has-hover"),
-    "The toolbar starts with a stale hover state"
+    toolbar.contains(popupAnchor),
+    "The popup anchor should be inside a tracked toolbar"
   );
+  registerCleanupFunction(() => {
+    if (gZenUIManager.__removeHasPopupAttribute) {
+      document.removeEventListener(
+        "mousemove",
+        gZenUIManager.__removeHasPopupAttribute
+      );
+      gZenUIManager.__removeHasPopupAttribute();
+      gZenUIManager.__removeHasPopupAttribute = null;
+    }
+    gZenUIManager.__currentPopup = null;
+    gZenUIManager.__currentPopupTrackElement = null;
+    if (tab.isConnected) {
+      BrowserTestUtils.removeTab(tab);
+    }
+    trackedToolbar?.removeAttribute("has-popup-menu");
+  });
 
-  const dialogClosed = BrowserTestUtils.waitForEvent(
-    window,
-    "DOMModalDialogClosed"
-  );
-  const dialogOpened = BrowserTestUtils.promiseAlertDialogOpen();
-  setTimeout(() => Services.prompt.alert(window, "Test", "Test"), 0);
+  const dialogClosed = BrowserTestUtils.promiseAlertDialog("", undefined, {
+    callback(dialogWindow) {
+      gZenUIManager.onPopupShowing({
+        explicitOriginalTarget: popupAnchor,
+        target: popup,
+      });
+      trackedToolbar = gZenUIManager.__currentPopupTrackElement;
+      Assert.ok(
+        trackedToolbar?.hasAttribute("has-popup-menu"),
+        "Opening a toolbar popup should set the tracking attribute"
+      );
 
-  let dialogWindow = await dialogOpened;
-  let dialogContainer =
-    dialogWindow.docShell.chromeEventHandler.closest("dialog");
-  const dialogRemoved = BrowserTestUtils.waitForMutationCondition(
-    dialogContainer,
-    { childList: true, attributes: true },
-    () => !dialogContainer.hasChildNodes() && !dialogContainer.open
-  );
-
-  dialogWindow.document.querySelector("dialog").acceptDialog();
+      const mainWindow = document.getElementById("main-window");
+      const matches = mainWindow.matches;
+      Object.defineProperty(mainWindow, "matches", {
+        configurable: true,
+        value(selector) {
+          return selector === ":hover"
+            ? false
+            : matches.call(mainWindow, selector);
+        },
+      });
+      try {
+        gZenUIManager.onPopupHidden({ target: popup });
+      } finally {
+        delete mainWindow.matches;
+      }
+      Assert.ok(
+        trackedToolbar.hasAttribute("has-popup-menu"),
+        "Popup cleanup should be deferred while the modal owns hover"
+      );
+      dialogWindow.document.querySelector("dialog").getButton("cancel").click();
+    },
+  });
+  BrowserCommands.tryToCloseWindow();
   await dialogClosed;
-  await dialogRemoved;
-  dialogWindow = null;
-  dialogContainer = null;
 
   Assert.ok(
-    !toolbar.hasAttribute("zen-has-hover"),
-    "Closing a modal dialog clears the stale toolbar hover state"
+    !trackedToolbar.hasAttribute("has-popup-menu"),
+    "Closing the warning clears the stale toolbar popup state"
   );
+  BrowserTestUtils.removeTab(tab);
 });

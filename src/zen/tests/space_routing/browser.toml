@@ -4,6 +4,8 @@
 
 [DEFAULT]
 support-files = [
+  "file_space_routing_opener.html",
+  "file_space_routing_target.html",
   "head.js",
 ]
 
@@ -12,6 +14,8 @@ support-files = [
 ["browser_space_routing_dialog.js"]
 
 ["browser_space_routing_fuzz.js"]
+
+["browser_space_routing_initial_tab_container.js"]
 
 ["browser_space_routing_on_add_tab.js"]
 

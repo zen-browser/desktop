@@ -297,7 +297,7 @@ index c42b1a1a8df6b38886c17f71ea88e5aaa7eebc80..c741404ed973ee3ac246fe246c0f645e
        } = {}
      ) {
        // all callers of addTab that pass a params object need to pass
-@@ -3330,10 +3423,25 @@
+@@ -3330,10 +3423,33 @@
          );
        }
  
@@ -308,7 +308,15 @@ index c42b1a1a8df6b38886c17f71ea88e5aaa7eebc80..c741404ed973ee3ac246fe246c0f645e
 +
 +      let hasZenDefaultUserContextId = false;
 +      let zenForcedWorkspaceId = undefined;
-+      if (beforeRouteResult.isRouteFound && (typeof userContextId === "undefined" || fromExternal)) {
++      const userContextWasInherited =
++        typeof userContextId !== "undefined" &&
++        userContextId === triggeringPrincipal?.originAttributes?.userContextId;
++      if (
++        beforeRouteResult.isRouteFound &&
++        (typeof userContextId === "undefined" ||
++          userContextWasInherited ||
++          fromExternal)
++      ) {
 +        userContextId = beforeRouteResult.userContextId;
 +        hasZenDefaultUserContextId = true;
 +      } else if (typeof gZenWorkspaces !== "undefined" && !_forZenEmptyTab) {

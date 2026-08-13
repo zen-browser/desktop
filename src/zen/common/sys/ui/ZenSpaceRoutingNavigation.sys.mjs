@@ -14,6 +14,8 @@ import { ZenUIComponent } from "resource:///modules/zen/ui/ZenUIComponent.sys.mj
  * into the matching space.
  */
 export class ZenSpaceRoutingNavigation extends ZenUIComponent {
+  #initialBrowsersBeingReplaced = new WeakSet();
+
   init() {
     this.listenBrowserTabsProgress();
   }
@@ -84,30 +86,48 @@ export class ZenSpaceRoutingNavigation extends ZenUIComponent {
     }
 
     // A brand-new tab whose very first real navigation this is (a
-    // target="_blank" link, window.open(), or a freshly opened tab) is still
-    // showing its initial about:blank document. There is nothing to preserve,
-    // so rather than cancelling the load and spawning a duplicate tab - which
-    // would leave this one behind empty - just move this very tab into the
-    // destination space and let the in-flight load finish in place.
+    // target="_blank" link or window.open()) was created before its target URL
+    // was known, so addTab() could not apply the route's container. Container
+    // origin attributes cannot be changed on an existing browser. Stop this
+    // load and replace the initial tab with one created through the routed
+    // addTab() path, then remove the now-unused blank tab.
     const isInitialDocument =
       aBrowser.browsingContext?.currentWindowGlobal?.isInitialDocument ?? false;
     if (isInitialDocument) {
+      if (this.#initialBrowsersBeingReplaced.has(aBrowser)) {
+        return;
+      }
+      this.#initialBrowsersBeingReplaced.add(aBrowser);
       const wasSelected = tab.selected;
+      const ownerTab = tab.owner;
+      const principal =
+        aBrowser.contentPrincipal ||
+        Services.scriptSecurityManager.createNullPrincipal({});
+      try {
+        aBrowser.stop();
+      } catch (e) {
+        this.#initialBrowsersBeingReplaced.delete(aBrowser);
+        return;
+      }
       // Defer so we don't mutate the tab strip from inside a progress notification.
       win.setTimeout(() => {
         if (!tab.isConnected) {
           return;
         }
-        gBrowser.selectedTab = tab.owner;
-        win.gZenWorkspaces.moveTabToWorkspace(tab, targetWorkspaceId);
-        if (wasSelected) {
-          const targetWorkspace =
-            win.gZenWorkspaces.getWorkspaceFromId(targetWorkspaceId);
-          if (targetWorkspace) {
-            win.gZenWorkspaces.lastSelectedWorkspaceTabs[targetWorkspaceId] =
-              tab;
-            win.gZenWorkspaces.changeWorkspace(targetWorkspace);
-          }
+        let routedTab;
+        try {
+          routedTab = gBrowser.addTab(uri.spec, {
+            triggeringPrincipal: principal,
+            ownerTab: ownerTab?.isConnected ? ownerTab : null,
+            inBackground: !wasSelected,
+          });
+        } catch (e) {
+          console.error("[ZenSpaceRouting]: Failed to replace routed tab", e);
+        }
+        if (routedTab) {
+          gBrowser.removeTab(tab, { animate: false });
+        } else {
+          this.#initialBrowsersBeingReplaced.delete(aBrowser);
         }
       }, 0);
       return;

@@ -26,3 +26,5 @@ files:
     translation: browser/browser/zen-space-routing.ftl
   - source: en-US/browser/browser/zen-command-palette.ftl
     translation: browser/browser/zen-command-palette.ftl
+  - source: en-US/browser/browser/zen-standalone-window.ftl
+    translation: browser/browser/zen-standalone-window.ftl

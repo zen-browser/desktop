@@ -1,0 +1,32 @@
+diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
+index f7d150b3a2d549cb1d485778cfbda71ced8bf779..3065905aa4610b7d360326662d7580b9753a2f26 100644
+--- a/widget/cocoa/nsCocoaWindow.mm
++++ b/widget/cocoa/nsCocoaWindow.mm
+@@ -8318,6 +8318,27 @@ - (NSTimeInterval)animationResizeTime:(NSRect)newFrame {
+   return [super animationResizeTime:newFrame];
+ }
+ 
++// Never animate our geometry implicitly.
++//
++// External window managers (Divvy, Hammerspoon, yabai, Rectangle, ...) place
++// us by setting AXPosition and AXSize back to back through the accessibility
++// API. AppKit routes those through the animator proxy, which installs an
++// implicit CABasicAnimation on "frame"; NSAnimationManager then walks the
++// window to its new frame over several hundred milliseconds. The manager's
++// second request is therefore computed against an intermediate frame, so the
++// window lands somewhere else entirely and the user has to trigger the same
++// shortcut two or three times before it snaps into place.
++//
++// Assistive clients expect the frame to be in effect once the request
++// returns, and Gecko never relies on implicit geometry animations itself, so
++// opt out. See https://github.com/zen-browser/desktop/issues/12327.
++- (id)animationForKey:(NSAnimatablePropertyKey)aKey {
++  if ([aKey isEqualToString:@"frame"]) {
++    return nil;
++  }
++  return [super animationForKey:aKey];
++}
++
+ - (NSView*)trackingAreaView {
+   NSView* contentView = self.contentView;
+   return contentView.superview ? contentView.superview : contentView;

@@ -1846,8 +1846,10 @@ class nsZenWorkspaces {
       )
     ) {
       delete this._alwaysAnimatePaddingTop;
-      const essentialsHeight =
-        Math.max(2, window.windowUtils.getBoundsWithoutFlushing(essentialContainer).height);
+      const essentialsHeight = Math.max(
+        2,
+        window.windowUtils.getBoundsWithoutFlushing(essentialContainer).height
+      );
       requestAnimationFrame(() => {
         workspaceElement.style.paddingTop = essentialsHeight + "px";
       });

@@ -155,7 +155,8 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
    */
   async isActive(queryContext) {
     return (
-      queryContext.searchMode?.source == UrlbarShared.RESULT_SOURCE.WORKSPACES ||
+      queryContext.searchMode?.source ==
+        UrlbarShared.RESULT_SOURCE.WORKSPACES ||
       queryContext.searchMode?.source ==
         UrlbarShared.RESULT_SOURCE.ZEN_ACTIONS ||
       (lazy.enabledPref &&

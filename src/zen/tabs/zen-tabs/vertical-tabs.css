@@ -302,7 +302,7 @@
   position: relative;
   border-bottom: 0 solid transparent !important;
 
-  --tab-block-margin: 2px;
+  --tab-margin-block: 2px;
   grid-gap: 0 !important;
 
   &[overflow]::after,
@@ -530,7 +530,7 @@
   }
 
   & #tabbrowser-arrowscrollbox-periphery {
-    margin-inline: var(--tab-block-margin);
+    margin-inline: var(--tab-margin-block);
   }
 
   & #nav-bar {
@@ -631,7 +631,7 @@
       }
 
       & .tab-background {
-        margin-inline: var(--tab-block-margin);
+        margin-inline: var(--tab-margin-block);
         width: -moz-available;
       }
 
@@ -942,8 +942,8 @@
 .tab-reset-pin-button {
   display: flex;
   position: relative;
-  height: calc(100% - var(--tab-block-margin) * 2);
-  margin-left: calc(-1 * var(--tab-inline-padding) + var(--tab-block-margin));
+  height: calc(100% - var(--tab-margin-block) * 2);
+  margin-left: calc(-1 * var(--tab-inline-padding) + var(--tab-margin-block));
   margin-right: 8px;
   padding: 0 calc(var(--toolbarbutton-padding-inner) - 2px) 0 calc(var(--toolbarbutton-padding-inner) / 3 + var(--tab-inline-padding) - 2px);
   border-radius: 0;
@@ -1085,7 +1085,7 @@
 
     &[in-urlbar] {
       background: var(--tab-background-color-selected) !important;
-      box-shadow: var(--tab-selected-shadow);
+      box-shadow: var(--tab-box-shadow-selected);
     }
   }
 

@@ -1,8 +1,8 @@
 diff --git a/browser/components/preferences/main.js b/browser/components/preferences/main.js
-index fcbd421c99b24e53e46131a1e21ec690814cbf4f..fe3778a57aaeebc53f7f6763ea234cbb41816186 100644
+index 88675d1bcbf000b10d85a9c0980bc6069d88052c..ed3a1e809eb0fcccc5a957be7affb77be8978e32 100644
 --- a/browser/components/preferences/main.js
 +++ b/browser/components/preferences/main.js
-@@ -662,6 +662,11 @@ function createStartupConfig(hidden = false) {
+@@ -528,6 +528,11 @@ function createStartupConfig(hidden = false) {
            },
          ],
        },
@@ -14,16 +14,16 @@ index fcbd421c99b24e53e46131a1e21ec690814cbf4f..fe3778a57aaeebc53f7f6763ea234cbb
        {
          id: "windowsLaunchOnLogin",
          l10nId: "windows-launch-on-login",
-@@ -709,7 +714,7 @@ function createStartupConfig(hidden = false) {
+@@ -575,7 +580,7 @@ function createStartupConfig(hidden = false) {
  SettingGroupManager.registerGroups({
    defaultBrowser: createDefaultBrowserConfig(),
    startup: createStartupConfig(
--    Services.prefs.getBoolPref("browser-settings-redesign.enabled", false)
+-    Services.prefs.getBoolPref("browser.settings-redesign.enabled", false)
 +    false
    ),
  });
  
-@@ -762,7 +767,7 @@ function getBundleForLocales(newLocales) {
+@@ -628,7 +633,7 @@ function getBundleForLocales(newLocales) {
      ])
    );
    return new Localization(

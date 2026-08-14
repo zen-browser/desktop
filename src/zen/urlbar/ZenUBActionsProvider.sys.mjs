@@ -7,6 +7,7 @@ import {
   UrlbarProvider,
   UrlbarUtils,
 } from "moz-src:///browser/components/urlbar/UrlbarUtils.sys.mjs";
+import { UrlbarShared } from "chrome://browser/content/urlbar/UrlbarShared.mjs";
 import { globalActions } from "resource:///modules/ZenUBGlobalActions.sys.mjs";
 import { zenUrlbarResultsLearner } from "./ZenUBResultsLearner.sys.mjs";
 
@@ -154,9 +155,9 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
    */
   async isActive(queryContext) {
     return (
-      queryContext.searchMode?.source == UrlbarUtils.RESULT_SOURCE.WORKSPACES ||
+      queryContext.searchMode?.source == UrlbarShared.RESULT_SOURCE.WORKSPACES ||
       queryContext.searchMode?.source ==
-        UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS ||
+        UrlbarShared.RESULT_SOURCE.ZEN_ACTIONS ||
       (lazy.enabledPref &&
         queryContext.searchString &&
         queryContext.searchString.length < UrlbarUtils.MAX_TEXT_LENGTH &&
@@ -345,10 +346,10 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
   async startQuery(queryContext, addCallback) {
     const query = queryContext.trimmedLowerCaseSearchString;
     const isWorkspaceSearch =
-      queryContext.searchMode?.source == UrlbarUtils.RESULT_SOURCE.WORKSPACES;
+      queryContext.searchMode?.source == UrlbarShared.RESULT_SOURCE.WORKSPACES;
     const isPrefixed =
       isWorkspaceSearch ||
-      queryContext.searchMode?.source == UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS;
+      queryContext.searchMode?.source == UrlbarShared.RESULT_SOURCE.ZEN_ACTIONS;
 
     if (!query && !isPrefixed) {
       return;
@@ -391,10 +392,10 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         zenUrlbarResultsLearner.shouldPrioritize(action.commandId) &&
         !isPrefixed;
       let result = new lazy.UrlbarResult({
-        type: UrlbarUtils.RESULT_TYPE.DYNAMIC,
+        type: UrlbarShared.RESULT_TYPE.DYNAMIC,
         source: isWorkspaceSearch
-          ? UrlbarUtils.RESULT_SOURCE.WORKSPACES
-          : UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS,
+          ? UrlbarShared.RESULT_SOURCE.WORKSPACES
+          : UrlbarShared.RESULT_SOURCE.ZEN_ACTIONS,
         payload,
         highlights: payloadHighlights,
         heuristic: shouldBePrioritized,

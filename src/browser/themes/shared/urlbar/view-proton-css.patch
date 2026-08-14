@@ -1,18 +1,18 @@
 diff --git a/browser/themes/shared/urlbar/view-proton.css b/browser/themes/shared/urlbar/view-proton.css
-index 0b10c077a555e5d0fc488a3bb1b1b920f433204c..38e9d14e9838f2b8de6f654ff4e0700bb65506f0 100644
+index 3620b33cb11f2e6bba189cbaf7532cca0e97cd3b..346c318ed178fb77a217b3b992b94706db6bf0ee 100644
 --- a/browser/themes/shared/urlbar/view-proton.css
 +++ b/browser/themes/shared/urlbar/view-proton.css
-@@ -14,7 +14,7 @@
+@@ -12,7 +12,7 @@
  
    --urlbarView-small-font-size: 0.85em;
  
 -  --urlbarView-results-padding: 7px;
 +  --urlbarView-results-padding: 8px;
    --urlbarView-row-gutter: var(--space-xxsmall);
+   --urlbarview-row-padding-block: 6px;
    --urlbarView-row-padding-inline: var(--urlbar-icon-padding);
-   --urlbarView-row-padding-block: 6px;
-@@ -174,7 +174,6 @@
-       min-height: var(--urlbarView-row-min-height);
+@@ -165,7 +165,6 @@
+       min-height: var(--urlbarview-row-min-height);
      }
      :root[uidensity="touch"] & {
 -      padding-block: 11px;

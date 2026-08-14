@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index 8f2ebf3a0bd4e2af01cf41024b16bd491e8ed961..27721e26c3cd8cb066b462dedfa4ce785ca5c2c3 100644
+index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..8117d9f90b8c619e1568004f7247a331a705f9a8 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@
@@ -52,7 +52,7 @@ index 8f2ebf3a0bd4e2af01cf41024b16bd491e8ed961..27721e26c3cd8cb066b462dedfa4ce78
          return;
        }
  
-@@ -220,11 +223,25 @@
+@@ -216,11 +219,25 @@
      }
  
      get visible() {
@@ -83,7 +83,7 @@ index 8f2ebf3a0bd4e2af01cf41024b16bd491e8ed961..27721e26c3cd8cb066b462dedfa4ce78
      }
  
      get hidden() {
-@@ -303,7 +320,7 @@
+@@ -299,7 +316,7 @@
          return false;
        }
  
@@ -92,7 +92,7 @@ index 8f2ebf3a0bd4e2af01cf41024b16bd491e8ed961..27721e26c3cd8cb066b462dedfa4ce78
      }
  
      get lastAccessed() {
-@@ -388,7 +405,18 @@
+@@ -384,7 +401,18 @@
      }
  
      get group() {
@@ -112,7 +112,7 @@ index 8f2ebf3a0bd4e2af01cf41024b16bd491e8ed961..27721e26c3cd8cb066b462dedfa4ce78
      }
  
      get splitview() {
-@@ -470,6 +498,10 @@
+@@ -466,6 +494,10 @@
          }
        }
  
@@ -123,7 +123,7 @@ index 8f2ebf3a0bd4e2af01cf41024b16bd491e8ed961..27721e26c3cd8cb066b462dedfa4ce78
        // If the previous target wasn't part of this tab then this is a mouseenter event.
        if (!this.contains(event.relatedTarget)) {
          this._mouseenter();
-@@ -499,6 +531,7 @@
+@@ -495,6 +527,7 @@
        if (!this.contains(event.relatedTarget)) {
          this._mouseleave();
        }
@@ -131,7 +131,7 @@ index 8f2ebf3a0bd4e2af01cf41024b16bd491e8ed961..27721e26c3cd8cb066b462dedfa4ce78
      }
  
      on_dragstart(event) {
-@@ -533,6 +566,8 @@
+@@ -529,6 +562,8 @@
          this.style.MozUserFocus = "ignore";
        } else if (
          event.target.classList.contains("tab-close-button") ||
@@ -140,7 +140,7 @@ index 8f2ebf3a0bd4e2af01cf41024b16bd491e8ed961..27721e26c3cd8cb066b462dedfa4ce78
          event.target.classList.contains("tab-icon-overlay") ||
          event.target.classList.contains("tab-audio-button")
        ) {
-@@ -567,7 +602,7 @@
+@@ -563,7 +598,7 @@
            }
          } else if (
            event.altKey &&
@@ -149,7 +149,7 @@ index 8f2ebf3a0bd4e2af01cf41024b16bd491e8ed961..27721e26c3cd8cb066b462dedfa4ce78
          ) {
            eventMaySelectTab = false;
          } else if (!this.selected && this.multiselected) {
-@@ -592,6 +627,10 @@
+@@ -600,6 +635,10 @@
        this.style.MozUserFocus = "";
      }
  
@@ -160,7 +160,7 @@ index 8f2ebf3a0bd4e2af01cf41024b16bd491e8ed961..27721e26c3cd8cb066b462dedfa4ce78
      on_click(event) {
        if (event.button != 0) {
          return;
-@@ -615,14 +654,31 @@
+@@ -623,14 +662,31 @@
              trigger: "alt_click",
            });
          }
@@ -193,7 +193,7 @@ index 8f2ebf3a0bd4e2af01cf41024b16bd491e8ed961..27721e26c3cd8cb066b462dedfa4ce78
          gBrowser.multiSelectedTabsCount > 0 &&
          !event.target.classList.contains("tab-close-button") &&
          !event.target.classList.contains("tab-icon-overlay") &&
-@@ -634,8 +690,9 @@
+@@ -642,8 +698,9 @@
        }
  
        if (
@@ -205,16 +205,16 @@ index 8f2ebf3a0bd4e2af01cf41024b16bd491e8ed961..27721e26c3cd8cb066b462dedfa4ce78
        ) {
          if (this.activeMediaBlocked) {
            if (this.multiselected) {
-@@ -653,7 +710,7 @@
+@@ -661,7 +718,7 @@
          return;
        }
  
 -      if (event.target.classList.contains("tab-close-button")) {
 +      if (!event.getModifierState("Accel") && event.target.classList.contains("tab-close-button")) {
          if (this.multiselected) {
-           gBrowser.removeMultiSelectedTabs(
-             lazy.TabMetrics.userTriggeredContext(
-@@ -673,6 +730,14 @@
+           gBrowser.removeMultiSelectedTabs({
+             metricsContext: lazy.TabMetrics.userTriggeredContext(
+@@ -681,6 +738,14 @@
          // (see tabbrowser-tabs 'click' handler).
          gBrowser.tabContainer._blockDblClick = true;
        }
@@ -229,9 +229,9 @@ index 8f2ebf3a0bd4e2af01cf41024b16bd491e8ed961..27721e26c3cd8cb066b462dedfa4ce78
      }
  
      on_dblclick(event) {
-@@ -696,6 +761,8 @@
-           animate: true,
-           triggeringEvent: event,
+@@ -707,6 +772,8 @@
+             lazy.TabMetrics.METRIC_SOURCE.TAB_STRIP
+           ),
          });
 +      } else if (this.hasAttribute('zen-essential') && !event.target.classList.contains("tab-icon-overlay")) {
 +        gZenPinnedTabManager._onTabResetPinButton(event, this, 'reset');

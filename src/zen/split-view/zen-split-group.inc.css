@@ -38,8 +38,8 @@ tab-group[split-view-group] {
 
     border-radius: var(--border-radius-medium);
     padding: 0 2px;
-    margin-inline: var(--tab-block-margin);
-    margin-block: var(--tab-block-margin);
+    margin-inline: var(--tab-margin-block);
+    margin-block: var(--tab-margin-block);
     min-height: var(--tab-min-height);
     outline: var(--tab-outline);
     outline-offset: var(--tab-outline-offset);
@@ -58,8 +58,8 @@ tab-group[split-view-group] {
 
     & > .tabbrowser-tab {
       --tab-background-color-selected: var(--zen-split-view-active-tab-bg);
-      --tab-hover-background-color: transparent;
-      --tab-selected-shadow: none;
+      --tab-background-color-hover: transparent;
+      --tab-box-shadow-selected: none;
       --border-radius-medium: var(--tab-border-radius);
       --zen-active-tab-scale: 1;
       --zen-folder-indent: 0 !important;
@@ -107,10 +107,10 @@ tab-group[split-view-group] {
     tab-group[split-view-group]:where([hasactivetab]) &,
     &:has(> tab:is([multiselected])) {
       background-color: var(--tab-background-color-selected);
-      box-shadow: var(--tab-selected-shadow);
+      box-shadow: var(--tab-box-shadow-selected);
 
       & > .tabbrowser-tab {
-        --tab-hover-background-color: var(--zen-split-view-active-tab-bg);
+        --tab-background-color-hover: var(--zen-split-view-active-tab-bg);
         & .tab-background {
           background-color: var(--zen-split-view-active-tab-bg) !important;
         }

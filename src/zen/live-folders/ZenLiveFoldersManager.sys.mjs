@@ -343,7 +343,6 @@ class nsZenLiveFoldersManager {
         ],
       },
     });
-
   }
 
   deleteFolder(id, deleteFolder = true) {

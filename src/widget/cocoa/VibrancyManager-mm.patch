@@ -1,16 +1,16 @@
 diff --git a/widget/cocoa/VibrancyManager.mm b/widget/cocoa/VibrancyManager.mm
-index 5df70a63afb235d2db11712276bb63f756222a0f..a2865aa2748433cbfd956ae46d197200fbbcfadd 100644
+index bc62ff28285691c605fe0680e7a98927f11d5882..63403611b9c5c5d12fe221c2bb56f884fabe85ba 100644
 --- a/widget/cocoa/VibrancyManager.mm
 +++ b/widget/cocoa/VibrancyManager.mm
-@@ -11,6 +11,7 @@
+@@ -9,6 +9,7 @@
+ #import <objc/message.h>
  
- #include "nsCocoaWindow.h"
  #include "mozilla/StaticPrefs_widget.h"
 +#include "mozilla/StaticPrefs_zen.h"
+ #include "nsCocoaWindow.h"
  
  using namespace mozilla;
- 
-@@ -29,6 +30,9 @@ static NSVisualEffectState VisualEffectStateForVibrancyType(
+@@ -28,6 +29,9 @@ static NSVisualEffectState VisualEffectStateForVibrancyType(
      case VibrancyType::Sidebar:
        break;
    }
@@ -20,7 +20,7 @@ index 5df70a63afb235d2db11712276bb63f756222a0f..a2865aa2748433cbfd956ae46d197200
    return NSVisualEffectStateFollowsWindowActiveState;
  }
  
-@@ -36,7 +40,23 @@ static NSVisualEffectMaterial VisualEffectMaterialForVibrancyType(
+@@ -35,7 +39,23 @@ static NSVisualEffectMaterial VisualEffectMaterialForVibrancyType(
      VibrancyType aType) {
    switch (aType) {
      case VibrancyType::Sidebar:
@@ -45,7 +45,7 @@ index 5df70a63afb235d2db11712276bb63f756222a0f..a2865aa2748433cbfd956ae46d197200
      case VibrancyType::Titlebar:
        return NSVisualEffectMaterialTitlebar;
    }
-@@ -76,6 +96,7 @@ - (NSView*)hitTest:(NSPoint)aPoint {
+@@ -75,6 +95,7 @@ - (NSView*)hitTest:(NSPoint)aPoint {
  
  - (void)prefChanged {
    self.blendingMode = VisualEffectBlendingModeForVibrancyType(mType);
@@ -53,7 +53,7 @@ index 5df70a63afb235d2db11712276bb63f756222a0f..a2865aa2748433cbfd956ae46d197200
  }
  @end
  
-@@ -86,6 +107,7 @@ static void PrefChanged(const char* aPref, void* aClosure) {
+@@ -85,6 +106,7 @@ static void PrefChanged(const char* aPref, void* aClosure) {
  static constexpr nsLiteralCString kObservedPrefs[] = {
      "widget.macos.sidebar-blend-mode.behind-window"_ns,
      "widget.macos.titlebar-blend-mode.behind-window"_ns,

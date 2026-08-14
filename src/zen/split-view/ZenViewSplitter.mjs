@@ -1559,11 +1559,20 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     if (reset) {
       this.removeSplitters();
     }
-    splitData.tabs.forEach(tab => {
-      if (tab.hasAttribute("pending")) {
-        gBrowser.getBrowserForTab(tab).reload();
-      }
-    });
+    const pendingTabs = splitData.tabs.filter(tab =>
+      tab.hasAttribute("pending")
+    );
+    if (pendingTabs.length) {
+      pendingTabs.forEach(tab => gBrowser._insertBrowser(tab));
+      // SessionStore listens for this on the tab container and restores each
+      // tab's saved history, scroll position and form data. Kept non-bubbling
+      // so it doesn't reach tabbrowser, which tracks Firefox's own split view.
+      gBrowser.tabContainer.dispatchEvent(
+        new CustomEvent("TabSplitViewActivate", {
+          detail: { tabs: pendingTabs },
+        })
+      );
+    }
 
     // Apply grid to tabs first to set zen-split attribute on containers
     // before setting zen-split-view on parents. This prevents the black flash

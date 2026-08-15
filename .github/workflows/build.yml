@@ -331,15 +331,41 @@ jobs:
       MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
       use-sccache: ${{ inputs.use-sccache }}
 
-  mac:
-    name: macOS build
+  mac-step-1:
+    name: macOS build step 1 (PGO build)
+    uses: ./.github/workflows/macos-release-build.yml
+    needs: [build-data, buildid]
+    permissions:
+      contents: write
+    secrets: inherit
+    with:
+      use-sccache: ${{ inputs.use-sccache }}
+      build-version: ${{ needs.build-data.outputs.version }}
+      generate-gpo: true
+      release-branch: ${{ inputs.update_branch }}
+      MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
+
+  mac-step-2:
+    name: macOS build step 2 (Generate profile data)
+    uses: ./.github/workflows/macos-profile-build.yml
+    permissions:
+      contents: write
+    secrets: inherit
+    needs: [mac-step-1, build-data]
+    with:
+      build-version: ${{ needs.build-data.outputs.version }}
+      release-branch: ${{ inputs.update_branch }}
+
+  mac-step-3:
+    name: macOS build step 3 (build with profile data)
     uses: ./.github/workflows/macos-release-build.yml
     permissions:
       contents: write
     secrets: inherit
-    needs: [build-data, buildid]
+    needs: [build-data, mac-step-2, start-self-host, buildid]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
+      generate-gpo: false
       release-branch: ${{ inputs.update_branch }}
       MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
       use-sccache: ${{ inputs.use-sccache }}
@@ -350,7 +376,7 @@ jobs:
     permissions:
       contents: write
     secrets: inherit
-    needs: [build-data, mac]
+    needs: [build-data, mac-step-3]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       release-branch: ${{ inputs.update_branch }}

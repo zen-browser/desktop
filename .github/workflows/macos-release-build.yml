@@ -170,10 +170,17 @@ jobs:
 
       - name: Package instrumented app (PGO stage 1)
         if: ${{ inputs.generate-gpo }}
+        env:
+          SURFER_COMPAT: ${{ matrix.arch }}
+          ZEN_RELEASE: 1
+          SURFER_PLATFORM: darwin
+          ZEN_CROSS_COMPILING: 1
+          ZEN_GA_GENERATE_PROFILE: 1
         run: |
           set -ex
-          cd engine/obj-${{ matrix.arch }}-apple-darwin/dist
-          tar --zstd -cf "$GITHUB_WORKSPACE/zen-macos-pgo-stage1-${{ matrix.arch }}.tar.zst" *.app
+          cd engine
+          ./mach package
+          mv obj-${{ matrix.arch }}-apple-darwin/dist/*.dmg "$GITHUB_WORKSPACE/zen-macos-pgo-stage1-${{ matrix.arch }}.dmg"
 
       - name: Upload artifact (PGO stage 1)
         uses: actions/upload-artifact@v4
@@ -181,7 +188,7 @@ jobs:
         with:
           retention-days: 2
           name: macos-pgo-stage1-${{ matrix.arch }}
-          path: ./zen-macos-pgo-stage1-${{ matrix.arch }}.tar.zst
+          path: ./zen-macos-pgo-stage1-${{ matrix.arch }}.dmg
 
       - name: Package
         if: ${{ !inputs.generate-gpo }}

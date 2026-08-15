@@ -63,16 +63,6 @@ jobs:
           path: ~/instrumented
           name: macos-pgo-stage1-${{ matrix.arch }}
 
-      - name: Unpack instrumented app
-        run: |
-          set -ex
-          brew install zstd || true
-          cd ~/instrumented
-          tar --use-compress-program=unzstd -xf zen-macos-pgo-stage1-${{ matrix.arch }}.tar.zst
-          # Cross-built binaries are not signed; ad-hoc sign so macOS runs them.
-          APP=$(find . -maxdepth 1 -name "*.app" -type d | head -1)
-          codesign --force --deep --sign - "$APP" || true
-
       - name: Download Firefox and dependencies
         run: npm run download
 
@@ -88,6 +78,16 @@ jobs:
           cd engine
           export SURFER_PLATFORM="darwin"
           ./mach --no-interactive bootstrap --application-choice browser --exclude macos-sdk || true
+
+      - name: Extract instrumented app
+        run: |
+          set -ex
+          cd engine
+          ./mach python -m mozbuild.action.unpack_dmg \
+            "$HOME/instrumented/zen-macos-pgo-stage1-${{ matrix.arch }}.dmg" \
+            "$HOME/instrumented/app"
+          APP=$(find "$HOME/instrumented/app" -maxdepth 1 -name "*.app" -type d | head -1)
+          codesign --force --deep --sign - "$APP" || true
 
       - name: Generate profile data
         run: |

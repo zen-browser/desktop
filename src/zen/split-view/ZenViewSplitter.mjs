@@ -1398,7 +1398,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const tabIndexToUse = Math.max(0, initialIndex);
     return this.#withoutSplitViewTransition(() => {
       // TODO: Add support for splitting essential tabs
-      tabs = tabs.filter(t => !t.hidden && !t.hasAttribute("zen-empty-tab"))
+      tabs = tabs
+        .filter(t => !t.hidden && !t.hasAttribute("zen-empty-tab"))
         // use glance parent tab instead of glance tab
         .map(t => gZenGlanceManager.getTabOrGlanceParent(t))
         // remove duplicates

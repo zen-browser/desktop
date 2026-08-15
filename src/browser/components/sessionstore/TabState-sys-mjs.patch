@@ -1,8 +1,8 @@
 diff --git a/browser/components/sessionstore/TabState.sys.mjs b/browser/components/sessionstore/TabState.sys.mjs
-index 4ba4dda363b602cb6f4445ef056f2f9abb1b0e1e..6b4b407e05e26faca69d9d7ac6f31510620898fe 100644
+index 4ba4dda363b602cb6f4445ef056f2f9abb1b0e1e..7c522559cfc984f278e6dc111d60212f12e07e08 100644
 --- a/browser/components/sessionstore/TabState.sys.mjs
 +++ b/browser/components/sessionstore/TabState.sys.mjs
-@@ -99,10 +99,28 @@ class _TabState {
+@@ -99,10 +99,29 @@ class _TabState {
        }
      }
  

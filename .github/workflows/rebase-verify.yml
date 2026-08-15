@@ -1,0 +1,144 @@
+name: Firefox rebase verify
+
+# On-demand compile/import check for firefox-153-rebase (and similar branches).
+# Does not bump versions, create GitHub releases, or merge to dev.
+on:
+  workflow_dispatch:
+    inputs:
+      brand:
+        description: "Surfer brand used for the build (not a git branch)"
+        required: true
+        type: choice
+        options:
+          - release
+          - twilight
+        default: release
+      use-sccache:
+        description: "Use sccache"
+        required: true
+        type: boolean
+        default: false
+      platforms:
+        description: "How far to go after a successful import"
+        required: true
+        type: choice
+        options:
+          - import-only
+          - linux
+          - all
+        default: linux
+
+concurrency:
+  group: rebase-verify-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  buildid:
+    name: Generate build ID
+    runs-on: ubuntu-latest
+    outputs:
+      buildids: ${{ steps.get.outputs.bid }}
+    steps:
+      - id: get
+        shell: bash -xe {0}
+        run: |
+          bdat=`date +"%Y%m%d%I%M%S"`
+          echo "bid=${bdat}" >> $GITHUB_OUTPUT
+
+  import:
+    name: Download Firefox and import patches
+    runs-on: ubuntu-latest
+    needs: [buildid]
+    outputs:
+      version: ${{ steps.data.outputs.version }}
+    steps:
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Setup Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3 python3-pip dos2unix yasm nasm build-essential libgtk-3-dev libasound2-dev libcurl4-openssl-dev libdbus-1-dev libdrm-dev libpulse-dev libx11-xcb-dev libxt-dev xvfb lld llvm xz-utils p7zip-full
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Load Surfer CI setup
+        run: npm run surfer -- ci --brand ${{ inputs.brand }}
+
+      - name: Download Firefox source
+        run: npm run download
+
+      - name: Import patches
+        run: npm run import
+
+      - name: Validate jar manifest paths
+        run: python scripts/validate_jar_manifest.py
+
+      - name: Export version
+        id: data
+        run: echo "version=$(npx --no-install surfer get version | xargs)" >> $GITHUB_OUTPUT
+
+  linux:
+    name: Linux build
+    if: ${{ inputs.platforms != 'import-only' }}
+    uses: ./.github/workflows/linux-release-build.yml
+    permissions:
+      contents: write
+    secrets: inherit
+    needs: [buildid, import]
+    with:
+      build-version: ${{ needs.import.outputs.version }}
+      release-branch: ${{ inputs.brand }}
+      MOZ_BUILD_DATE: ${{ needs.buildid.outputs.buildids }}
+      use-sccache: ${{ inputs.use-sccache }}
+
+  windows:
+    name: Windows build
+    if: ${{ inputs.platforms == 'all' }}
+    uses: ./.github/workflows/windows-release-build.yml
+    permissions:
+      contents: write
+    secrets: inherit
+    needs: [buildid, import]
+    with:
+      use-sccache: ${{ inputs.use-sccache }}
+      build-version: ${{ needs.import.outputs.version }}
+      generate-gpo: false
+      profile-data-path-archive: zen-windows-profile-data-and-jarlog.zip
+      release-branch: ${{ inputs.brand }}
+      MOZ_BUILD_DATE: ${{ needs.buildid.outputs.buildids }}
+
+  macos:
+    name: macOS build
+    if: ${{ inputs.platforms == 'all' }}
+    uses: ./.github/workflows/macos-release-build.yml
+    permissions:
+      contents: write
+    secrets: inherit
+    needs: [buildid, import]
+    with:
+      build-version: ${{ needs.import.outputs.version }}
+      release-branch: ${{ inputs.brand }}
+      MOZ_BUILD_DATE: ${{ needs.buildid.outputs.buildids }}
+      use-sccache: ${{ inputs.use-sccache }}

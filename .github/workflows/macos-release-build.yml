@@ -100,14 +100,12 @@ jobs:
       - name: Setup for macOS (cctools and DMG tools)
         if: steps.cache-mac-cross.outputs.cache-hit != 'true'
         run: |
-          set -x
+          set -ex
           mkdir -p ~/mac-cross
           cd engine/
-          ./mach artifact toolchain \
-            --from-build linux64-cctools-port \
-            --from-build linux64-libdmg \
-            --from-build linux64-hfsplus
+          ./mach artifact toolchain --from-build linux64-cctools-port linux64-libdmg linux64-hfsplus
           mv cctools dmg hfsplus ~/mac-cross/
+          ls ~/mac-cross/cctools/bin/ld ~/mac-cross/dmg/dmg ~/mac-cross/hfsplus/newfs_hfs
 
       - name: Setup Rust
         run: |

@@ -287,7 +287,7 @@ jobs:
     with:
       use-sccache: ${{ inputs.use-sccache }}
       build-version: ${{ needs.build-data.outputs.version }}
-      generate-gpo: true
+      generate-pgo: true
       profile-data-path-archive: zen-windows-profile-data-and-jarlog.zip
       release-branch: ${{ inputs.update_branch }}
       MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
@@ -313,7 +313,7 @@ jobs:
     needs: [build-data, windows-step-2, start-self-host, buildid]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
-      generate-gpo: false
+      generate-pgo: false
       release-branch: ${{ inputs.update_branch }}
       MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
       use-sccache: ${{ inputs.use-sccache }}
@@ -341,7 +341,7 @@ jobs:
     with:
       use-sccache: ${{ inputs.use-sccache }}
       build-version: ${{ needs.build-data.outputs.version }}
-      generate-gpo: true
+      generate-pgo: true
       release-branch: ${{ inputs.update_branch }}
       MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
 
@@ -365,7 +365,7 @@ jobs:
     needs: [build-data, mac-step-2, start-self-host, buildid]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
-      generate-gpo: false
+      generate-pgo: false
       release-branch: ${{ inputs.update_branch }}
       MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
       use-sccache: ${{ inputs.use-sccache }}

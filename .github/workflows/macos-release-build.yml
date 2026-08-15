@@ -6,7 +6,7 @@ permissions:
 on:
   workflow_call:
     inputs:
-      generate-gpo:
+      generate-pgo:
         required: true
         type: boolean
         default: false
@@ -137,13 +137,13 @@ jobs:
 
       - name: Download artifact (if use profdata)
         uses: actions/download-artifact@v4
-        if: ${{ !inputs.generate-gpo }}
+        if: ${{ !inputs.generate-pgo }}
         with:
           path: ~/artifact
           name: macos-profdata-${{ matrix.arch }}
 
       - name: Show artifact info
-        if: ${{ !inputs.generate-gpo }}
+        if: ${{ !inputs.generate-pgo }}
         run: |
           ls ~/artifact
           ls ~/artifact/en-US.log
@@ -160,7 +160,7 @@ jobs:
           set -x
           export SURFER_PLATFORM="darwin"
           export ZEN_CROSS_COMPILING=1
-          if test ${{ inputs.generate-gpo }} = true; then
+          if test ${{ inputs.generate-pgo }} = true; then
             export ZEN_GA_GENERATE_PROFILE=1
           fi
           if [[ -n ${{ inputs.MOZ_BUILD_DATE }} ]];then
@@ -169,7 +169,7 @@ jobs:
           bash .github/workflows/src/release-build.sh
 
       - name: Package instrumented app (PGO stage 1)
-        if: ${{ inputs.generate-gpo }}
+        if: ${{ inputs.generate-pgo }}
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
           ZEN_RELEASE: 1
@@ -184,14 +184,14 @@ jobs:
 
       - name: Upload artifact (PGO stage 1)
         uses: actions/upload-artifact@v4
-        if: ${{ inputs.generate-gpo }}
+        if: ${{ inputs.generate-pgo }}
         with:
           retention-days: 2
           name: macos-pgo-stage1-${{ matrix.arch }}
           path: ./zen-macos-pgo-stage1-${{ matrix.arch }}.dmg
 
       - name: Package
-        if: ${{ !inputs.generate-gpo }}
+        if: ${{ !inputs.generate-pgo }}
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
           ZEN_GA_DISABLE_PGO: true
@@ -203,7 +203,7 @@ jobs:
           npm run package
 
       - name: Rename artifacts
-        if: ${{ !inputs.generate-gpo }}
+        if: ${{ !inputs.generate-pgo }}
         run: |
           set -ex
           mv ./dist/*.dmg ./zen-${{ matrix.arch }}-apple-darwin-dist.dmg
@@ -211,7 +211,7 @@ jobs:
 
       - name: Upload dist dmg
         uses: actions/upload-artifact@v4
-        if: ${{ !inputs.generate-gpo }}
+        if: ${{ !inputs.generate-pgo }}
         with:
           retention-days: 1
           name: zen-${{ matrix.arch }}-apple-darwin-dist.dmg
@@ -219,7 +219,7 @@ jobs:
 
       - name: Upload platform.ini
         uses: actions/upload-artifact@v4
-        if: ${{ !inputs.generate-gpo && matrix.arch == 'x86_64' }}
+        if: ${{ !inputs.generate-pgo && matrix.arch == 'x86_64' }}
         with:
           retention-days: 1
           name: platform.ini

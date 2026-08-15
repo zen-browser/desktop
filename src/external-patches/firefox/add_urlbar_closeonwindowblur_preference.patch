@@ -60,7 +60,7 @@ diff --git a/browser/components/urlbar/content/UrlbarInput.mjs b/browser/compone
      if (this.view.resultMenu.hasAttribute("open")) {
        return;
      }
-
+ 
      lazy.logger.debug("Blur Event");
 +    if (
 +      this.document.commandDispatcher.focusedElement == this.inputField &&

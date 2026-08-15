@@ -1,19 +1,19 @@
 diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 --- a/widget/cocoa/nsCocoaWindow.mm
 +++ b/widget/cocoa/nsCocoaWindow.mm
-@@ -71,10 +71,11 @@
+@@ -70,10 +70,11 @@
+ #include "nsXULPopupManager.h"
  
  #include "gfxPlatform.h"
  #include "qcms.h"
  
- #include <algorithm>
 +#import <objc/runtime.h>
+ #include <algorithm>
  #include "mozilla/AutoRestore.h"
  #include "mozilla/BasicEvents.h"
  #include "mozilla/Maybe.h"
  #include "mozilla/NativeKeyBindingsType.h"
- #include "mozilla/Preferences.h"
-@@ -6948,10 +6949,31 @@ static nsSizeMode GetWindowSizeMode(NSWindow* aWindow, bool aFullScreen) {
+@@ -6948,10 +6949,31 @@
      return nsSizeMode_Maximized;
    }
    return nsSizeMode_Normal;
@@ -45,7 +45,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
  
    // Prevent recursion, which can become infinite (see bug 708278).  This
    // can happen when the call to [NSWindow setFrameTopLeftPoint:] in
-@@ -6961,10 +6983,11 @@ static nsSizeMode GetWindowSizeMode(NSWindow* aWindow, bool aFullScreen) {
+@@ -6961,10 +6983,11 @@
      return;
    }
    mInReportMoveEvent = true;
@@ -57,7 +57,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
    // update our internal mSizeMode. This can happen either if we're maximized
    // and then moved, or if we're not maximized and moved back to zoomed state.
    if (mWindow && (mSizeMode == nsSizeMode_Maximized) ^ mWindow.isZoomed) {
-@@ -7055,10 +7078,11 @@ static nsSizeMode GetWindowSizeMode(NSWindow* aWindow, bool aFullScreen) {
+@@ -7055,10 +7078,11 @@
  
  void nsCocoaWindow::ReportSizeEvent() {
    NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
@@ -69,3 +69,4 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
      mWidgetListener->WindowResized(this, innerBounds.Size());
    }
    if (mAttachedWidgetListener) {
+

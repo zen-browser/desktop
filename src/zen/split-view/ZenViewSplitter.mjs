@@ -1259,6 +1259,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     } else {
       tabs = [currentTab];
     }
+    tabs = tabs.map(t => gZenGlanceManager.getTabOrGlanceParent(t));
     if (otherTabHint && !tabs.includes(otherTabHint)) {
       tabs.push(otherTabHint);
     }

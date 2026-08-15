@@ -24,7 +24,7 @@ jobs:
       matrix:
         arch: [x86_64, aarch64]
 
-    runs-on: macos-26
+    runs-on: ${{ matrix.arch == 'x86_64' && 'macos-26-intel' || 'macos-26' }}
 
     steps:
       - name: Checkout repository
@@ -42,10 +42,6 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Install Rosetta
-        if: ${{ matrix.arch == 'x86_64' }}
-        run: sudo softwareupdate --install-rosetta --agree-to-license || true
 
       - name: Setup Rust
         run: |

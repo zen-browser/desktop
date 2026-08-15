@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..8117d9f90b8c619e1568004f7247a331a705f9a8 100644
+index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8c579171b 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@
@@ -131,7 +131,15 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..8117d9f90b8c619e1568004f7247a331
      }
  
      on_dragstart(event) {
-@@ -529,6 +562,8 @@
+@@ -506,6 +539,7 @@
+       if (event.eventPhase == Event.CAPTURING_PHASE) {
+         this.style.MozUserFocus = "";
+       } else if (
++        event.target.classList?.contains("tab-reset-button") ||
+         event.target.classList?.contains("tab-close-button") ||
+         gSharedTabWarning.willShowSharedTabWarning(this)
+       ) {
+@@ -529,6 +563,8 @@
          this.style.MozUserFocus = "ignore";
        } else if (
          event.target.classList.contains("tab-close-button") ||
@@ -140,7 +148,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..8117d9f90b8c619e1568004f7247a331
          event.target.classList.contains("tab-icon-overlay") ||
          event.target.classList.contains("tab-audio-button")
        ) {
-@@ -563,7 +598,7 @@
+@@ -563,7 +599,7 @@
            }
          } else if (
            event.altKey &&
@@ -149,7 +157,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..8117d9f90b8c619e1568004f7247a331
          ) {
            eventMaySelectTab = false;
          } else if (!this.selected && this.multiselected) {
-@@ -600,6 +635,10 @@
+@@ -600,6 +636,10 @@
        this.style.MozUserFocus = "";
      }
  
@@ -160,7 +168,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..8117d9f90b8c619e1568004f7247a331
      on_click(event) {
        if (event.button != 0) {
          return;
-@@ -623,14 +662,31 @@
+@@ -623,14 +663,31 @@
              trigger: "alt_click",
            });
          }
@@ -193,7 +201,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..8117d9f90b8c619e1568004f7247a331
          gBrowser.multiSelectedTabsCount > 0 &&
          !event.target.classList.contains("tab-close-button") &&
          !event.target.classList.contains("tab-icon-overlay") &&
-@@ -642,8 +698,9 @@
+@@ -642,8 +699,9 @@
        }
  
        if (
@@ -205,7 +213,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..8117d9f90b8c619e1568004f7247a331
        ) {
          if (this.activeMediaBlocked) {
            if (this.multiselected) {
-@@ -661,7 +718,7 @@
+@@ -661,7 +719,7 @@
          return;
        }
  
@@ -214,7 +222,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..8117d9f90b8c619e1568004f7247a331
          if (this.multiselected) {
            gBrowser.removeMultiSelectedTabs({
              metricsContext: lazy.TabMetrics.userTriggeredContext(
-@@ -681,6 +738,14 @@
+@@ -681,6 +739,14 @@
          // (see tabbrowser-tabs 'click' handler).
          gBrowser.tabContainer._blockDblClick = true;
        }
@@ -229,7 +237,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..8117d9f90b8c619e1568004f7247a331
      }
  
      on_dblclick(event) {
-@@ -707,6 +772,8 @@
+@@ -707,6 +773,8 @@
              lazy.TabMetrics.METRIC_SOURCE.TAB_STRIP
            ),
          });

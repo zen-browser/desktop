@@ -23,11 +23,3 @@ zen-space-routing-regex =
 
 zen-space-routing-open-in = Open In
 zen-space-routing-url = URL
-
-zen-space-routing-tab-routed-toast = New tab opened in { $targetWorkspace }
-tab-context-zen-add-domain-to-sr = 
-    .label = 
-        { $tabCount ->
-            [one] Add Route for Domain
-            *[other] Add Route for Domains
-        }

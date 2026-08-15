@@ -1,12 +1,14 @@
 diff --git a/browser/components/sidebar/sidebar-customize.mjs b/browser/components/sidebar/sidebar-customize.mjs
+index 60c31f4c04a552bccc83a64829bc632a9f85a7c7..8a4476db814d2cd691dca297d61de48680d77678 100644
 --- a/browser/components/sidebar/sidebar-customize.mjs
 +++ b/browser/components/sidebar/sidebar-customize.mjs
-@@ -18,27 +18,14 @@ const l10nMap = new Map([
+@@ -18,28 +18,15 @@ const l10nMap = new Map([
    ["viewGenaiChatSidebar", "sidebar-menu-genai-chat-label"],
    ["viewGenaiPageAssistSidebar", "sidebar-menu-genai-page-assist-label"],
    ["viewHistorySidebar", "sidebar-menu-history-label"],
 -  ["viewTabsSidebar", "sidebar-menu-synced-tabs-label"],
    ["viewBookmarksSidebar", "sidebar-menu-bookmarks-label"],
+   ["viewOpenTabsSidebar", "sidebar-menu-open-tabs-label"],
    ["viewCPMSidebar", "sidebar-menu-contextual-password-manager-label"],
  ]);
 -const VISIBILITY_SETTING_PREF = "sidebar.visibility";
@@ -29,7 +31,7 @@ diff --git a/browser/components/sidebar/sidebar-customize.mjs b/browser/componen
      XPCOMUtils.defineLazyPreferenceGetter(
        this.#prefValues,
        "isPositionStart",
-@@ -48,38 +35,14 @@ export class SidebarCustomize extends SidebarPage {
+@@ -49,38 +36,14 @@ export class SidebarCustomize extends SidebarPage {
          this.isPositionStart = newValue;
        }
      );
@@ -68,7 +70,7 @@ diff --git a/browser/components/sidebar/sidebar-customize.mjs b/browser/componen
    };
  
    static queries = {
-@@ -87,9 +50,6 @@ export class SidebarCustomize extends SidebarPage {
+@@ -88,9 +51,6 @@ export class SidebarCustomize extends SidebarPage {
      extensionInputs: { all: ".extensions > .tool" },
      extensionLink: ".extension-item a",
      positionInput: "#position",
@@ -78,7 +80,7 @@ diff --git a/browser/components/sidebar/sidebar-customize.mjs b/browser/componen
    };
  
    connectedCallback() {
-@@ -136,11 +96,6 @@ export class SidebarCustomize extends SidebarPage {
+@@ -137,11 +97,6 @@ export class SidebarCustomize extends SidebarPage {
            checked: e.target.checked,
          });
          break;
@@ -90,15 +92,14 @@ diff --git a/browser/components/sidebar/sidebar-customize.mjs b/browser/componen
        case "viewHistorySidebar":
          Glean.sidebarCustomize.historyEnabled.record({
            checked: e.target.checked,
-@@ -218,50 +173,6 @@ export class SidebarCustomize extends SidebarPage {
+@@ -219,49 +174,6 @@ export class SidebarCustomize extends SidebarPage {
          </sidebar-panel-header>
          <div class="sidebar-panel-scrollable-content">
-           <moz-fieldset class="customize-group no-end-margin" data-l10n-id="sidebar-settings">
+           <moz-fieldset class="customize-group no-end-margin" data-l10n-id="sidebar-settings2">
 -            <moz-checkbox
 -              type="checkbox"
 -              id="vertical-tabs"
 -              name="verticalTabs"
--              iconsrc="chrome://browser/skin/sidebar-collapsed.svg"
 -              data-l10n-id="sidebar-vertical-tabs"
 -              @change=${this.#handleTabDirectionChange}
 -              ?checked=${this.verticalTabsEnabled}
@@ -141,20 +142,19 @@ diff --git a/browser/components/sidebar/sidebar-customize.mjs b/browser/componen
              <moz-checkbox
                type="checkbox"
                id="position"
-@@ -269,7 +180,7 @@ export class SidebarCustomize extends SidebarPage {
+@@ -269,7 +181,7 @@ export class SidebarCustomize extends SidebarPage {
                data-l10n-id=${document.dir == "rtl" ? "sidebar-show-on-the-left" : "sidebar-show-on-the-right"}
                @change=${this.reversePosition}
                ?checked=${!this.isPositionStart}
 -          ></moz-checkbox>
 +            ></moz-checkbox>
            </moz-fieldset>
-           <moz-fieldset class="customize-group tools" data-l10n-id="sidebar-customize-firefox-tools-header">
+           <moz-fieldset class="customize-group tools" data-l10n-id="sidebar-customize-firefox-tools-header2">
              ${this.getWindow()
-@@ -319,38 +230,6 @@ export class SidebarCustomize extends SidebarPage {
-       </div>
+@@ -320,37 +232,6 @@ export class SidebarCustomize extends SidebarPage {
      `;
    }
--
+ 
 -  #handleVisibilityChange(e) {
 -    e.stopPropagation();
 -    this.visibility = e.target.checked ? "hide-sidebar" : "always-show";

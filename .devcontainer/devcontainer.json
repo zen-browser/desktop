@@ -1,0 +1,33 @@
+{
+  "name": "Astra Firefox rebase",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22-bookworm",
+  "hostRequirements": {
+    "cpus": 8,
+    "memory": "32gb",
+    "storage": "64gb"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12"
+    },
+    "ghcr.io/devcontainers/features/rust:1": {
+      "version": "1.94.1"
+    },
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": false,
+      "upgradePackages": false
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["dbaeumer.vscode-eslint", "eamodio.gitlens"]
+    },
+    "codespaces": {
+      "displayName": "Astra Firefox 153 rebase"
+    }
+  },
+  "onCreateCommand": "sudo apt-get update && sudo apt-get install -y --no-install-recommends python3 python3-pip python3-venv xz-utils p7zip-full build-essential m4 yasm nasm pkg-config libgtk-3-dev libasound2-dev libpulse-dev libx11-xcb-dev libxt-dev uuid",
+  "postCreateCommand": "npm ci",
+  "remoteUser": "node"
+}

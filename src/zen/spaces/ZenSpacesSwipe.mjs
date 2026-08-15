@@ -22,6 +22,35 @@ export class ZenSpacesSwipe {
   constructor() {
     this.#attachWorkspaceSwipeGestures(gNavToolbox);
     this._popupOpenHandler = this._popupOpenHandler.bind(this);
+    this.#attachGestureAbortTriggers();
+  }
+
+  // Cleanup only runs on MozSwipeGestureEnd, which never arrives when the window
+  // stops receiving the rest of the gesture. The strip then keeps its offset and
+  // the tab strip its disabled pointer events, see gh-13703 for those.
+  #attachGestureAbortTriggers() {
+    const abort = this.#abortGesture.bind(this);
+    window.addEventListener("deactivate", abort, true);
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        abort();
+      }
+    });
+  }
+
+  #abortGesture() {
+    if (!this._swipeState?.isGestureActive) {
+      return;
+    }
+    const ws = gZenWorkspaces;
+    // Put the strip back on the space we never left
+    ws._organizeWorkspaceStripLocations(ws.getActiveWorkspaceFromCache(), true);
+    for (const container of document.querySelectorAll(
+      "#zen-essentials .zen-workspace-tabs-section"
+    )) {
+      container.style.removeProperty("transform");
+    }
+    this.onSwipeGestureAnimationEnd();
   }
 
   get #stripWidth() {
@@ -202,7 +231,7 @@ export class ZenSpacesSwipe {
   }
 
   _popupOpenHandler() {
-    this.onSwipeGestureAnimationEnd();
+    this.#abortGesture();
   }
 
   get isGestureActive() {

@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential = 
     .label = Temel sekmelerden kaldır
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Temel sekmenin URL’sini geçerli olanla değiştir
-           *[false] Sabitlenmiş sekme URL’sini geçerli olanla değiştir
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Etiketi Değiştir...
 tab-context-zen-edit-icon = 
@@ -47,6 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Onayla
 zen-pinned-tab-replaced = Sabitlenmiş sekmenin URL’si, mevcut URL ile değiştirildi!
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Sekme başarıyla yeniden adlandırıldı!
 zen-background-tab-opened-toast = Yeni arka plan sekmesi açıldı!
 zen-workspace-renamed-toast = Çalışma alanı başarıyla yeniden adlandırıldı!
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Emojiler
 zen-icons-picker-svg = 
     .label = Simgeler
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Eylemler
 zen-site-data-settings = Ayarlar
 zen-generic-manage = Yönet
@@ -116,6 +128,9 @@ zen-sidebar-notification-updated-heading = Güncelleme tamamlandı!
 zen-sidebar-notification-updated-label = { -brand-short-name }'de neler yeni
 zen-sidebar-notification-updated-tooltip = 
     .title = Sürüm Notlarını Görüntüle
+zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Bir sorun mu oluştu?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Güvenli Modda Yeniden Başlat

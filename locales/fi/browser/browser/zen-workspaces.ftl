@@ -61,6 +61,7 @@ zen-workspace-creation-profile = Profiili
     .tooltiptext = Profiileja käytetään erottamaan evästeet ja sivustontiedot tiloihin.
 zen-workspace-creation-header = Luo työtila
 zen-workspace-creation-label = Työtiloja käytetään järjestämään sinun välilehtiä ja istuntoja.
+zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Poista Työtila?
 zen-workspaces-delete-workspace-body = Oletko varma, että haluat poistaa { $name }? Tätä toimintoa ei voi peruuttaa.
 # Note that the html tag MUST not be changed or removed, as it is used to better

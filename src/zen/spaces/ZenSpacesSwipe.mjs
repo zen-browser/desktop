@@ -36,7 +36,7 @@ export class ZenSpacesSwipe {
   }
 
   #abortGesture() {
-    if (!this._swipeState?.isGestureActive) {
+    if (!this.isGestureActive) {
       return;
     }
     gZenWorkspaces._cancelSwipeAnimation();

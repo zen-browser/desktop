@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
 set -x
 
 if command -v apt-get &> /dev/null; then
@@ -12,7 +13,7 @@ if [ -f "$HOME/.cargo/env" ]; then
   . "$HOME/.cargo/env"
 fi
 
-if ! test "$ZEN_CROSS_COMPILING" && test "$(uname -s)" = "Linux"; then
+if ! test "${ZEN_CROSS_COMPILING:-}" && test "$(uname -s)" = "Linux"; then
   if test -d "$HOME/.mozbuild/clang/bin"; then
       export CC="$HOME/.mozbuild/clang/bin/clang"
       export CXX="$HOME/.mozbuild/clang/bin/clang++"
@@ -23,15 +24,15 @@ if ! test "$ZEN_CROSS_COMPILING" && test "$(uname -s)" = "Linux"; then
 fi
 
 mkdir -p ~/.zen-keys
-if test "$ZEN_SAFEBROWSING_API_KEY"; then
+if test "${ZEN_SAFEBROWSING_API_KEY:-}"; then
   echo "$ZEN_SAFEBROWSING_API_KEY" > ~/.zen-keys/safebrowsing.dat
 fi
 
-if test "$ZEN_MOZILLA_API_KEY"; then
+if test "${ZEN_MOZILLA_API_KEY:-}"; then
   echo "$ZEN_MOZILLA_API_KEY" > ~/.zen-keys/mozilla.dat
 fi
 
-if test "$ZEN_GOOGLE_LOCATION_SERVICE_API_KEY"; then
+if test "${ZEN_GOOGLE_LOCATION_SERVICE_API_KEY:-}"; then
   echo "$ZEN_GOOGLE_LOCATION_SERVICE_API_KEY" > ~/.zen-keys/google_location_service.dat
 fi
 
@@ -42,7 +43,7 @@ fi
 ulimit -n 4096 || true
 
 if command -v Xvfb &> /dev/null; then
-  if ! test "$ZEN_CROSS_COMPILING"; then
+  if ! test "${ZEN_CROSS_COMPILING:-}"; then
     Xvfb :2 -nolisten tcp -noreset -screen 0 1024x768x24 &
     export LLVM_PROFDATA=$HOME/.mozbuild/clang/bin/llvm-profdata
     export DISPLAY=:2

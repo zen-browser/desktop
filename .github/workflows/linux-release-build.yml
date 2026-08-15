@@ -132,6 +132,9 @@ jobs:
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
           ZEN_RELEASE_BRANCH: ${{ inputs['release-branch'] }}
+          # Rebase/CI builds do not download PGO profiles; without this,
+          # configs/linux/mozconfig enables --with-pgo-profile-path and configure fails.
+          ZEN_GA_DISABLE_PGO: true
         run: |
           export SURFER_PLATFORM="linux"
           if [[ -n "${{ inputs.MOZ_BUILD_DATE }}" ]]; then

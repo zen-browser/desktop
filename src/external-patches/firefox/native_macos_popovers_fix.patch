@@ -1,0 +1,66 @@
+diff --git a/toolkit/themes/shared/global-shared.css b/toolkit/themes/shared/global-shared.css
+--- a/toolkit/themes/shared/global-shared.css
++++ b/toolkit/themes/shared/global-shared.css
+@@ -80,11 +80,10 @@
+     background-color: transparent;
+     --panel-background: transparent;
+     --panel-box-shadow: none;
+     --panel-border-color: transparent;
+     --panel-box-shadow-margin: 0px;
+-    --panel-padding: 0px;
+   }
+ }
+ 
+ /* Lightweight theme roots */
+ 
+diff --git a/widget/cocoa/nsCocoaWindow.h b/widget/cocoa/nsCocoaWindow.h
+--- a/widget/cocoa/nsCocoaWindow.h
++++ b/widget/cocoa/nsCocoaWindow.h
+@@ -140,10 +140,11 @@
+ 
+   // NSPopover support for native appearance
+   NSPopover* mPopover;
+   NSViewController* mPopoverViewController;
+   BOOL mUsePopover;
++  NSRect mLastPopoverRect;
+ }
+ 
+ - (id)initWithContentRect:(NSRect)contentRect
+                 styleMask:(NSUInteger)styleMask
+                   backing:(NSBackingStoreType)bufferingType
+diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
+--- a/widget/cocoa/nsCocoaWindow.mm
++++ b/widget/cocoa/nsCocoaWindow.mm
+@@ -5597,11 +5597,10 @@
+     return false;
+   }
+   nsMenuPopupFrame* popupFrame = GetPopupFrame();
+   return [mWindow isKindOfClass:[PopupWindow class]] &&
+          [(PopupWindow*)mWindow usePopover] && popupFrame &&
+-         popupFrame->ShouldFollowAnchor() &&
+          !popupFrame->PopupElement().GetBoolAttr(nsGkAtoms::nonnative);
+ }
+ 
+ TransparencyMode nsCocoaWindow::GetTransparencyMode() {
+   NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
+@@ -8775,10 +8774,19 @@
+   NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
+   if (!mPopover) {
+     return;
+   }
+ 
++  if (!positioningRect.size.width && !positioningRect.size.height &&
++      mLastPopoverRect.size.width && mLastPopoverRect.size.height) {
++    // Sometimes, specially when downloading addons from unofficial sources,
++    // the popover is shown in a very fast motion and the positioningRect is
++    // empty.
++    positioningRect = mLastPopoverRect;
++  }
++  mLastPopoverRect = positioningRect;
++
+   // Close existing popover if it's already shown
+   if (mPopover.shown) {
+     [mPopover close];
+   }
+ 
+

@@ -204,6 +204,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   handleDarkModeChange() {
     this.updateCurrentWorkspace();
+    Services.obs.notifyObservers(null, "zen-theme-change");
   }
 
   get isDarkMode() {
@@ -1621,10 +1622,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     let colorToBlendOpacity;
     if (this.isMica) {
       colorToBlend = this.isDarkMode ? [0, 0, 0] : [255, 255, 255];
-      colorToBlendOpacity = 0.25;
+      colorToBlendOpacity = 0.12;
     } else if (AppConstants.platform === "macosx") {
       colorToBlend = [255, 255, 255];
-      colorToBlendOpacity = 0.35;
+      colorToBlendOpacity = 0.18;
     }
     if (colorToBlend) {
       const blendedAlpha = Math.min(
@@ -1833,10 +1834,19 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
    * Get the primary color from a list of colors.
    *
    * @param {Array<number>} accentColor The accent color as an array of RGB values.
+   * @param {boolean} isDarkMode Whether the current theme is in dark mode.
    * @returns {string} The primary color in hex format.
    */
-  getAccentColorForUI(accentColor) {
-    return `rgb(${accentColor[0]}, ${accentColor[1]}, ${accentColor[2]})`;
+  getAccentColorForUI(accentColor, isDarkMode) {
+    const [h, s, l] = this.rgbToHsl(...accentColor);
+    if (isDarkMode) {
+      return `rgb(${accentColor[0]}, ${accentColor[1]}, ${accentColor[2]})`;
+    }
+    const saturation = Math.min(1, s + 0.3);
+    const targetLightness = this.isDarkMode ? 0.62 : 0.42;
+    const lightness = l * 0.4 + targetLightness * 0.6;
+    const [r, g, b] = this.hslToRgb(h / 360, saturation, lightness);
+    return `rgb(${r}, ${g}, ${b})`;
   }
 
   getMostDominantColor(allColors) {
@@ -1850,7 +1860,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   getToolbarColor(isDarkMode = false) {
     const opacity = 0.8;
-    return isDarkMode ? [255, 255, 255, opacity] : [0, 0, 0, opacity]; // Default toolbar
+    let baseColor = isDarkMode ? [255, 255, 255, opacity] : [0, 0, 0, opacity]; // Default toolbar
+    return baseColor;
   }
 
   get browserBackgroundElement() {
@@ -2086,9 +2097,6 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         docElement.removeAttribute("zen-default-theme");
       }
       if (dominantColor) {
-        const primaryColor = this.getAccentColorForUI(dominantColor);
-        docElement.style.setProperty("--zen-primary-color", primaryColor);
-
         // Should be set to `this.isLegacyVersion` but for some reason it is set to undefined if we open a private window,
         // so instead get the pref value directly.
         browser.gZenThemePicker.isLegacyVersion =
@@ -2110,8 +2118,15 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
             );
           }
         }
+
+        const primaryColor = this.getAccentColorForUI(
+          dominantColor,
+          isDarkMode
+        );
+        docElement.style.setProperty("--zen-primary-color", primaryColor);
+
         // Set `--toolbox-textcolor` to have a contrast with the primary color
-        const textColor = this.getToolbarColor(isDarkMode);
+        let textColor = this.getToolbarColor(isDarkMode);
         docElement.style.setProperty(
           "--toolbox-textcolor",
           `rgba(${textColor[0]}, ${textColor[1]}, ${textColor[2]}, ${textColor[3]})`
@@ -2127,6 +2142,15 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         browser.gZenThemePicker.recalculateDots(workspaceTheme.gradientColors);
       }
     });
+
+    // Notify observers that gradient updated
+    // note: We just notify if we are not skipping the update,
+    //   because otherwise, it can get pretty laggy if we notify on every change
+    //   when the user is dragging a dot.
+    // TODO(cheff): We should probably find a better way to handle this
+    if (!skipUpdate) {
+      Services.obs.notifyObservers(null, "zen-space-gradient-update");
+    }
   }
 
   fixTheme(theme) {
@@ -2252,8 +2276,8 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     }
     let currentWorkspace = gZenWorkspaces.getActiveWorkspace();
 
+    currentWorkspace.theme = gradient;
     if (!skipSave) {
-      currentWorkspace.theme = gradient;
       gZenWorkspaces.saveWorkspace(currentWorkspace);
       this.#updatedWithoutPreview = false;
     }
@@ -2380,7 +2404,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       isDarkMode,
       isExplicitMode,
       toolbarColor: this.getToolbarColor(isDarkMode),
-      primaryColor: this.getAccentColorForUI(dominantColor),
+      primaryColor: this.getAccentColorForUI(dominantColor, isDarkMode),
     };
     this.currentOpacity = previousOpacity;
     this.#currentLightness = previousLightness;

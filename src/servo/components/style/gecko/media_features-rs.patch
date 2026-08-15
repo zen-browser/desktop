@@ -1,8 +1,8 @@
 diff --git a/servo/components/style/gecko/media_features.rs b/servo/components/style/gecko/media_features.rs
-index 21c274075116ace81c29babbf8b2ce94fa749e4f..512f34734d6a4d81bde1aed3df5a655e9310a2ec 100644
+index 4524fd263d791ccf4da1cd0476f3ecc7a02253aa..f5d120748f3d4156c6544fffc10d4f6140ef80ae 100644
 --- a/servo/components/style/gecko/media_features.rs
 +++ b/servo/components/style/gecko/media_features.rs
-@@ -15,6 +15,9 @@ use crate::values::computed::{CSSPixelLength, Context, Ratio, Resolution};
+@@ -16,6 +16,9 @@ use crate::values::computed::{CSSPixelLength, Context, Ratio, Resolution};
  use crate::values::specified::color::ForcedColors;
  use app_units::Au;
  use euclid::default::Size2D;
@@ -12,7 +12,7 @@ index 21c274075116ace81c29babbf8b2ce94fa749e4f..512f34734d6a4d81bde1aed3df5a655e
  
  fn device_size(device: &Device) -> Size2D<Au> {
      let mut width = 0;
-@@ -617,6 +620,13 @@ fn eval_scripting(context: &Context, query_value: Option<Scripting>) -> bool {
+@@ -618,6 +621,13 @@ fn eval_scripting(context: &Context, query_value: Option<Scripting>) -> bool {
  fn eval_moz_overlay_scrollbars(context: &Context) -> bool {
      unsafe { bindings::Gecko_MediaFeatures_UseOverlayScrollbars(context.device().document()) }
  }
@@ -26,7 +26,7 @@ index 21c274075116ace81c29babbf8b2ce94fa749e4f..512f34734d6a4d81bde1aed3df5a655e
  
  fn eval_moz_mac_rtl(context: &Context) -> bool {
      unsafe { bindings::Gecko_MediaFeatures_MacRTL(context.device().document()) }
-@@ -660,7 +670,13 @@ macro_rules! lnf_int_feature {
+@@ -661,7 +671,13 @@ macro_rules! lnf_int_feature {
  /// to support new types in these entries and (2) ensuring that either
  /// nsPresContext::MediaFeatureValuesChanged is called when the value that
  /// would be returned by the evaluator function could change.

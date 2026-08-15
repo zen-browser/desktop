@@ -1,0 +1,14 @@
+diff --git a/dom/canvas/CanvasRenderingContext2D.cpp b/dom/canvas/CanvasRenderingContext2D.cpp
+index 9c0d63f030848d379a66b7229b8378b214796c25..9409764996ed58974d88de68bc37d3b9d081ed9e 100644
+--- a/dom/canvas/CanvasRenderingContext2D.cpp
++++ b/dom/canvas/CanvasRenderingContext2D.cpp
+@@ -1327,7 +1327,8 @@ Maybe<nscolor> CanvasRenderingContext2D::ParseColor(
+     RefPtr<const ComputedStyle> canvasStyle =
+         nsComputedDOMStyle::GetComputedStyle(mCanvasElement);
+     if (canvasStyle) {
+-      return Some(canvasStyle->StyleText()->mColor.ToColor());
++      return Some(canvasStyle->StyleText()->mColor.ToColor(
++          mCanvasElement->GetPrimaryFrame()));
+     }
+   }
+   return data.mColor;

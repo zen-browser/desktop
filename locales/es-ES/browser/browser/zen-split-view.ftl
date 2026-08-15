@@ -5,9 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Deshacer división
-            [1] Vista dividida (seleccione varias pestañas)
-           *[other] Añadir { $tabCount } pestañas a la vista dividida
+            [-1] Separar pestaña
+            [1] Añadir vista dividida...
+           *[other] Unir { $tabCount } pestañas
         }
     .accesskey = S
 zen-split-link = 

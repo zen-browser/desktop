@@ -12,7 +12,7 @@ add_task(async function () {
   await BrowserTestUtils.withNewTab(
     {
       gBrowser,
-      url: "about:logo",
+      url: getRootDirectory(gTestPath) + "large.png",
     },
     () => {
       var brandName = Services.strings
@@ -46,7 +46,7 @@ add_task(async function () {
 
       // For simplicity, we're going to reach in and access the image on the
       // page directly, which means the page shouldn't be running in a remote
-      // browser. Thankfully, about:logo runs in the parent process for now.
+      // browser. Thankfully, chrome:// runs in the parent process for now.
       Assert.ok(
         !gBrowser.selectedBrowser.isRemoteBrowser,
         "image can be accessed synchronously from the parent process"

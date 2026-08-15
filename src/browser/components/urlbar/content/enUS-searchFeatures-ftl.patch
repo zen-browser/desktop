@@ -1,0 +1,14 @@
+diff --git a/browser/components/urlbar/content/enUS-searchFeatures.ftl b/browser/components/urlbar/content/enUS-searchFeatures.ftl
+index e405f0f8844eea7081e4302cc35ccd8d8124aa90..90baec46971c6bd3ec738a338834af0351872d14 100644
+--- a/browser/components/urlbar/content/enUS-searchFeatures.ftl
++++ b/browser/components/urlbar/content/enUS-searchFeatures.ftl
+@@ -2,6 +2,9 @@
+ # License, v. 2.0. If a copy of the MPL was not distributed with this
+ # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ 
++urlbar-search-mode-workspaces = Spaces
++urlbar-search-mode-workspaces-en = Spaces
++
+ ### These strings are related to the Firefox Suggest feature. Firefox Suggest
+ ### shows recommended and sponsored third-party results in the address bar
+ ### panel. It also shows headings/labels above different groups of results. For

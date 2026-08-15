@@ -1,0 +1,15 @@
+diff --git a/widget/ScrollbarDrawingCocoa.cpp b/widget/ScrollbarDrawingCocoa.cpp
+index f0dff9276f9880034c800413c4afc2400136b35a..1dd5b53bfda64e1d3b4c1870680fa1a43de0e6fb 100644
+--- a/widget/ScrollbarDrawingCocoa.cpp
++++ b/widget/ScrollbarDrawingCocoa.cpp
+@@ -61,8 +61,8 @@ static ScrollbarParams ComputeScrollbarParams(nsIFrame* aFrame,
+   if (ui->HasCustomScrollbars()) {
+     const auto& colors = ui->mScrollbarColor.AsColors();
+     params.isCustom = true;
+-    params.trackColor = colors.track.CalcColor(aStyle);
+-    params.faceColor = colors.thumb.CalcColor(aStyle);
++    params.trackColor = colors.track.CalcColor(aStyle, aFrame);
++    params.faceColor = colors.thumb.CalcColor(aStyle, aFrame);
+   }
+ 
+   return params;

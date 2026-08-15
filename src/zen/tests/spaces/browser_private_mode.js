@@ -5,16 +5,20 @@
 
 add_task(async function test_Private_Mode() {
   await SpecialPowers.pushPrefEnv({
-    set: [["privacy.userContext.enabled", true]],
+    set: [
+      ["privacy.userContext.enabled", true],
+      ["zen.testing.enabled", false],
+    ],
   });
 
   let privateWindow = await BrowserTestUtils.openNewBrowserWindow({
     private: true,
   });
   await privateWindow.gZenWorkspaces.promiseInitialized;
-  ok(
-    privateWindow.document.documentElement.hasAttribute("zen-workspace-id"),
-    "Private window should have a zen-workspace-id attribute"
+
+  Assert.ok(
+    privateWindow.gBrowser.selectedTab.hasAttribute("zen-empty-tab"),
+    "Private window should start with a zen empty tab"
   );
 
   await BrowserTestUtils.closeWindow(privateWindow);

@@ -5,8 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] Scoilt Cluaisín (tá gá le roinnt cluaisíní roghnaithe)
-           *[other] Scoilt { $tabCount } Cluaisíní
+            [-1] Cluaisín scoilte
+            [1] Amharc scoilte a chur leis...
+           *[other] Ceangail le { $tabCount } Cluaisíní
         }
     .accesskey = S
 zen-split-link = 

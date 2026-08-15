@@ -5,8 +5,8 @@
   "binaryName": "astra",
   "version": {
     "product": "firefox",
-    "version": "149.0.2",
-    "candidate": "149.0.2",
+    "version": "153.0.4",
+    "candidate": "153.0.4",
     "candidateBuild": 1
   },
   "buildOptions": {
@@ -40,7 +40,7 @@
       "brandShortName": "Twilight",
       "brandFullName": "Astra Nova",
       "release": {
-        "displayVersion": "1.20t",
+        "displayVersion": "1.22t",
         "github": {
           "repo": "Hrishikeshmind/astradesktop"
         }

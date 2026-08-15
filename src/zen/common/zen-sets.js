@@ -618,6 +618,9 @@ document.addEventListener(
           case "cmd_zenReplacePinnedUrlWithCurrent":
             gZenPinnedTabManager.replacePinnedUrlWithCurrent();
             break;
+          case "cmd_zenEditPinnedUrl":
+            gZenPinnedTabManager.editPinnedUrl();
+            break;
           case "cmd_contextZenAddToEssentials":
             gZenPinnedTabManager.addToEssentials();
             break;
@@ -683,7 +686,9 @@ document.addEventListener(
             gZenFolders.openSearchForActiveFolder();
             break;
           case "cmd_zenTogglePinTab": {
-            const currentTab = gBrowser.selectedTab;
+            const currentTab = gZenGlanceManager.getTabOrGlanceParent(
+              gBrowser.selectedTab
+            );
             if (currentTab && !currentTab.hasAttribute("zen-empty-tab")) {
               if (currentTab.pinned) {
                 gBrowser.unpinTab(currentTab);
@@ -702,6 +707,10 @@ document.addEventListener(
           }
           case "cmd_zenUnloadAllOtherWorkspace": {
             gZenWorkspaces.unloadAllOtherWorkspaces();
+            break;
+          }
+          case "cmd_zenOpenSpaceRoutingSettings": {
+            gZenSpaceRoutingManager.openSpaceRoutingDialog(window);
             break;
           }
           case "cmd_zenNewNavigatorUnsynced":

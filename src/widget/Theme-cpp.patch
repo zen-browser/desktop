@@ -1,0 +1,56 @@
+diff --git a/widget/Theme.cpp b/widget/Theme.cpp
+index 766a8ca4bc6fcc98f719ad4f472b20bc1d198ac9..be4419cfafb55e5cac8f5de741185ee3cabc4722 100644
+--- a/widget/Theme.cpp
++++ b/widget/Theme.cpp
+@@ -18,6 +18,7 @@
+ #include "mozilla/RelativeLuminanceUtils.h"
+ #include "mozilla/ScrollContainerFrame.h"
+ #include "mozilla/StaticPrefs_widget.h"
++#include "mozilla/nsZenBoostsBackend.h"
+ #include "mozilla/webrender/WebRenderAPI.h"
+ #include "nsCSSColorUtils.h"
+ #include "nsCSSRendering.h"
+@@ -670,10 +671,15 @@ template <typename PaintBackendData>
+ void Theme::PaintTextField(PaintBackendData& aPaintData,
+                            const LayoutDeviceRect& aRect,
+                            const ElementState& aState, const Colors& aColors,
+-                           DPIRatio aDpiRatio) {
++                           DPIRatio aDpiRatio, const nsIFrame* aFrame) {
+   auto [backgroundColor, borderColor] =
+       ComputeTextfieldColors(aState, aColors, OutlineCoversBorder::Yes);
+ 
++  // The default field background comes from a theme/system color rather than a
++  // resolved style color, so apply Zen boosts here to match boosted content.
++  backgroundColor = sRGBColor::FromABGR(zen::nsZenBoostsBackend::ResolveStyleColor(
++      backgroundColor.ToABGR(), aFrame));
++
+   const CSSCoord radius = 2.0f;
+ 
+   ThemeDrawing::PaintRoundedRectWithRadius(aPaintData, aRect, backgroundColor,
+@@ -690,9 +696,9 @@ template <typename PaintBackendData>
+ void Theme::PaintListbox(PaintBackendData& aPaintData,
+                          const LayoutDeviceRect& aRect,
+                          const ElementState& aState, const Colors& aColors,
+-                         DPIRatio aDpiRatio) {
++                         DPIRatio aDpiRatio, const nsIFrame* aFrame) {
+   // We happen to share style between text fields and list boxes.
+-  return PaintTextField(aPaintData, aRect, aState, aColors, aDpiRatio);
++  return PaintTextField(aPaintData, aRect, aState, aColors, aDpiRatio, aFrame);
+ }
+ 
+ template <typename PaintBackendData>
+@@ -1158,10 +1164,12 @@ bool Theme::DoDrawWidgetBackground(PaintBackendData& aPaintData,
+     case StyleAppearance::Textfield:
+     case StyleAppearance::NumberInput:
+     case StyleAppearance::PasswordInput:
+-      PaintTextField(aPaintData, devPxRect, elementState, colors, dpiRatio);
++      PaintTextField(aPaintData, devPxRect, elementState, colors, dpiRatio,
++                     aFrame);
+       break;
+     case StyleAppearance::Listbox:
+-      PaintListbox(aPaintData, devPxRect, elementState, colors, dpiRatio);
++      PaintListbox(aPaintData, devPxRect, elementState, colors, dpiRatio,
++                   aFrame);
+       break;
+     case StyleAppearance::Menulist:
+       PaintMenulist(aPaintData, devPxRect, elementState, colors, dpiRatio);

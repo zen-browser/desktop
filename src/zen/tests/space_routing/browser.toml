@@ -1,0 +1,22 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+[DEFAULT]
+support-files = [
+  "head.js",
+]
+
+["browser_space_routing_crud.js"]
+
+["browser_space_routing_dialog.js"]
+
+["browser_space_routing_fuzz.js"]
+
+["browser_space_routing_on_add_tab.js"]
+
+["browser_space_routing_redirect_navigation.js"]
+
+["browser_space_routing_route_matching.js"]
+
+["browser_space_routing_route_uri.js"]

@@ -20,7 +20,7 @@ jobs:
     with:
       create_release: ${{ github.event_name != 'workflow_dispatch' && true || inputs.create_release }}
       update_branch: twilight
-      use-sccache: false
+      use-sccache: true
       update_version: false
 
   post-build:

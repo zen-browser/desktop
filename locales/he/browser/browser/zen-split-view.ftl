@@ -5,8 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] פיצול לשונית (נדרש מספר לשוניות מסומנות)
-           *[other] פיצול { $tabCount } לשוניות
+            [-1] Split out tab
+            [1] Add split view...
+           *[other] Join { $tabCount } Tabs
         }
     .accesskey = ד
 zen-split-link = 

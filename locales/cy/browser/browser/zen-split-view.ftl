@@ -5,8 +5,9 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [1] Tab Hollt (angen sawl tab wedi'u dewis)
-           *[other] Hollti { $tabCount } Tab
+            [-1] Rhannu tab
+            [1] Ychwanegu golwg hollt...
+           *[other] Uno { $tabCount } Tab
         }
     .accesskey = H
 zen-split-link = 

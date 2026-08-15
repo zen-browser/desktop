@@ -32,7 +32,6 @@ const KEYCODE_MAP = {
   TAB: "VK_TAB",
   ENTER: "VK_RETURN",
   ESCAPE: "VK_ESCAPE",
-  SPACE: "VK_SPACE",
   ARROWLEFT: "VK_LEFT",
   ARROWRIGHT: "VK_RIGHT",
   ARROWUP: "VK_UP",
@@ -43,6 +42,10 @@ const KEYCODE_MAP = {
   NUM_LOCK: "VK_NUMLOCK",
   SCROLL_LOCK: "VK_SCROLL",
 };
+
+const REVERSE_KEYCODE_MAP = Object.fromEntries(
+  Object.entries(KEYCODE_MAP).map(([k, v]) => [v, k])
+);
 
 const defaultKeyboardGroups = {
   windowAndTabManagement: [
@@ -82,9 +85,10 @@ const defaultKeyboardGroups = {
     "zen-search-focus-shortcut",
     "zen-search-focus-shortcut-alt",
     "zen-find-shortcut",
-    "zen-search-find-again-shortcut-2",
     "zen-search-find-again-shortcut",
+    "zen-search-find-again-shortcut-alt",
     "zen-search-find-again-shortcut-prev",
+    "zen-search-find-again-shortcut-prev-alt",
   ],
   pageOperations: [
     "zen-text-action-copy-url-markdown-shortcut",
@@ -302,6 +306,29 @@ export class nsKeyShortcutModifiers {
 }
 
 class KeyShortcut {
+  static SHIFTED_SYMBOLS = {
+    1: "!",
+    2: "@",
+    3: "#",
+    4: "$",
+    5: "%",
+    6: "^",
+    7: "&",
+    8: "*",
+    9: "(",
+    0: ")",
+    "`": "~",
+    "-": "_",
+    "=": "+",
+    "[": "{",
+    "]": "}",
+    "\\": "|",
+    ";": ":",
+    "'": '"',
+    ",": "<",
+    ".": ">",
+    "/": "?",
+  };
   #id = "";
   #key = "";
   #keycode = "";
@@ -427,13 +454,38 @@ class KeyShortcut {
 
   replaceWithChild(key) {
     key.id = this.#id;
+
+    // When shift is pressed and the char changes when shifted (like 1 -> !),
+    // the XUL matches the shifted character so we need to emit the shifted character
+    // and drop the shift modifier so XUL can match
+    // This problem is also windows specific
+    let keyName = this.#key;
+    let modifiers = this.#modifiers;
+
+    if (AppConstants.platform == "win") {
+      const shiftedKey = KeyShortcut.SHIFTED_SYMBOLS[keyName];
+      if (shiftedKey && modifiers.shift) {
+        keyName = shiftedKey;
+        modifiers = new nsKeyShortcutModifiers(
+          modifiers.control,
+          modifiers.alt,
+          false, // -> for shift key
+          modifiers.meta,
+          modifiers.accel
+        );
+      }
+    }
+
     if (this.#keycode) {
       key.setAttribute("keycode", this.#keycode);
       key.removeAttribute("key");
-    } else {
+    } else if (keyName) {
       // note to "mr. macos": Better use setAttribute, because without it, there's a
       //  risk of malforming the XUL element.
-      key.setAttribute("key", this.#key);
+      key.setAttribute("key", keyName);
+      key.removeAttribute("keycode");
+    } else {
+      key.removeAttribute("key");
       key.removeAttribute("keycode");
     }
     key.setAttribute("group", this.#group);
@@ -445,7 +497,7 @@ class KeyShortcut {
     if (this.#l10nId) {
       // key.setAttribute('data-l10n-id', this.#l10nId);
     }
-    key.setAttribute("modifiers", this.#modifiers.toString());
+    key.setAttribute("modifiers", modifiers.toString());
     if (this.#action) {
       key.setAttribute("command", this.#action);
     }
@@ -553,16 +605,21 @@ class KeyShortcut {
     };
   }
 
-  toDisplayString() {
-    let str = this.#modifiers.toDisplayString();
-
-    if (this.#key) {
-      str += this.#key.toUpperCase();
-    } else if (this.#keycode) {
+  static keyToDisplayString(key, keycode) {
+    let str = "";
+    if (key) {
+      switch (key) {
+        case " ":
+          str += AppConstants.platform == "macosx" ? "␣" : "Space";
+          break;
+        default:
+          str += key.toUpperCase();
+      }
+    } else if (keycode) {
       // Get the key from the value
-      for (let [key, value] of Object.entries(KEYCODE_MAP)) {
-        if (value == this.#keycode) {
-          const normalizedKey = key.toLowerCase();
+      for (let [k, value] of Object.entries(KEYCODE_MAP)) {
+        if (value == keycode) {
+          const normalizedKey = k.toLowerCase();
           switch (normalizedKey) {
             case "arrowleft":
               str += "←";
@@ -582,18 +639,23 @@ class KeyShortcut {
             case "enter":
               str += AppConstants.platform == "macosx" ? "↩" : "Enter";
               break;
-            case "space":
-              str += AppConstants.platform == "macosx" ? "␣" : "Space";
-              break;
             default:
               str += normalizedKey;
           }
           break;
         }
       }
-    } else {
+    }
+    return str;
+  }
+
+  toDisplayString() {
+    if (!this.#key && !this.#keycode) {
       return "";
     }
+
+    let str = this.#modifiers.toDisplayString();
+    str += KeyShortcut.keyToDisplayString(this.#key, this.#keycode);
     return str;
   }
 
@@ -1246,6 +1308,60 @@ class nsZenKeyboardShortcutsVersioner {
       );
     }
 
+    if (version < 18) {
+      // Migrate from version 17 to 18.
+      // Add shortcut to Create New Workspace (unbound by default)
+      data.push(
+        new KeyShortcut(
+          "zen-workspace-create",
+          "",
+          "",
+          ZEN_WORKSPACE_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({}),
+          "cmd_zenOpenWorkspaceCreation",
+          "zen-workspace-shortcut-create"
+        )
+      );
+    }
+
+    if (version < 19) {
+      // Disable "key_duplicateTab" since we already had "cmd_zenDuplicateTab" before Firefox 151.
+      for (let shortcut of data) {
+        if (shortcut.getID() == "key_duplicateTab") {
+          shortcut.shouldBeEmpty = true;
+          shortcut.setDisabled(true);
+          break;
+        }
+      }
+    }
+
+    if (version < 20) {
+      // Disable Firefox 153 split-view / native-sidebar shortcuts that clash with Zen.
+      const shouldBeDisabledShortcuts = [
+        "key_addTabSplitView",
+        "key_separateTabSplitView",
+        "viewOpenTabsSidebarKb",
+      ];
+      for (let shortcut of data) {
+        if (shouldBeDisabledShortcuts.includes(shortcut.getID())) {
+          shortcut.shouldBeEmpty = true;
+          shortcut.setDisabled(true);
+        }
+      }
+      // Astra: folder quick search
+      data.push(
+        new KeyShortcut(
+          "zen-folder-quick-search",
+          "F",
+          "",
+          ZEN_OTHER_SHORTCUTS_GROUP,
+          nsKeyShortcutModifiers.fromObject({ accel: true, alt: true }),
+          "cmd_zenFolderQuickSearch",
+          "zen-folder-quick-search-shortcut"
+        )
+      );
+    }
+
     if (version < 26) {
       // App launcher: Ctrl+Shift+B (default added via fillDefaultIfNotPresent)
     }
@@ -1326,20 +1442,6 @@ class nsZenKeyboardShortcutsVersioner {
     if (version < 31) {
       const idx = data.findIndex(s => s.getID?.() === "zen-open-india-services");
       if (idx !== -1) data.splice(idx, 1);
-    }
-    if (version < 20) {
-      // Add shortcut for folder quick search.
-      data.push(
-        new KeyShortcut(
-          "zen-folder-quick-search",
-          "F",
-          "",
-          ZEN_OTHER_SHORTCUTS_GROUP,
-          nsKeyShortcutModifiers.fromObject({ accel: true, alt: true }),
-          "cmd_zenFolderQuickSearch",
-          "zen-folder-quick-search-shortcut"
-        )
-      );
     }
 
     return data;
@@ -1614,9 +1716,11 @@ window.gZenKeyboardShortcutsManager = {
         continue;
       }
 
+      const keyNameOrCode = targetShortcut.getKeyNameOrCode();
+      const key = REVERSE_KEYCODE_MAP[keyNameOrCode] ?? keyNameOrCode;
       if (
         targetShortcut.getModifiers().equals(modifiers) &&
-        targetShortcut.getKeyNameOrCode()?.toLowerCase() == realShortcut
+        key?.toLowerCase() == realShortcut
       ) {
         return {
           hasConflicts: true,
@@ -1654,5 +1758,23 @@ window.gZenKeyboardShortcutsManager = {
       return shortcut.toDisplayString();
     }
     return null;
+  },
+
+  getKeyDisplay(shortcut) {
+    if (shortcut == "") {
+      return "";
+    }
+
+    let key = shortcut;
+    let keycode = "";
+    for (let kc of Object.keys(KEYCODE_MAP)) {
+      if (kc == shortcut.toUpperCase()) {
+        keycode = KEYCODE_MAP[kc];
+        key = "";
+        break;
+      }
+    }
+
+    return KeyShortcut.keyToDisplayString(key, keycode);
   },
 };

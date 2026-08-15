@@ -7,8 +7,8 @@ unified-extensions-description = Rozšíření slouží k přidání dalších f
 tab-context-zen-reset-pinned-tab = 
     .label =
         { $isEssential ->
-            [true] Reset Essential Tab
-           *[false] Reset Pinned Tab
+            [true] Resetovat Essential panel
+           *[false] Resetovat připnutý panel
         }
     .accesskey = R
 tab-context-zen-add-essential = 
@@ -21,8 +21,8 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] Replace Essential URL with Current
-           *[false] Replace Pinned URL with Current
+            [true] Nahradit Essential URL aktuální
+           *[false] Nahradit připnutou URL aktuální
         }
     .accesskey = C
 tab-context-zen-edit-title = 
@@ -41,7 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimalizovat
 zen-panel-ui-gradient-generator-custom-color = Vlastní barva
 zen-copy-current-url-confirmation = URL adresa byla zkopírována!
-zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
+zen-copy-current-url-as-markdown-confirmation = Kopírovat aktuální URL jako Markdown!
 zen-general-cancel-label = 
     .label = Zrušit
 zen-general-confirm = 
@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = Připnutá URL adresa panelu byla nahrazena aktuální
 zen-tabs-renamed = Panel byl úspěšně přejmenován!
 zen-background-tab-opened-toast = Nový panel na pozadí byl otevřen!
 zen-workspace-renamed-toast = Pracovní prostor byl úspěšně přejmenován!
+zen-split-view-limit-toast = Do rozděleného zobrazení nelze přidat více panelů!
 zen-toggle-compact-mode-button = 
     .label = Kompaktní režim
     .tooltiptext = Přepnout kompaktní režim
@@ -123,4 +124,4 @@ zen-window-sync-migration-dialog-message = Zen nyní synchronizuje okna na stejn
 zen-window-sync-migration-dialog-learn-more = Zjistit více
 zen-window-sync-migration-dialog-accept = Rozumím
 zen-appmenu-new-blank-window = 
-    .label = New blank window
+    .label = Nové prázdné okno

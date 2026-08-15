@@ -1,6 +1,3 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 /**
  * NOTE: Do not modify this file by hand.
  * Content was generated from source XPCOM .idl files.
@@ -8,21 +5,23 @@
  */
 
 declare global {
-  // https://searchfox.org/mozilla-central/source/browser/components/shell/nsIGNOMEShellService.idl
+  // https://searchfox.org/firefox-main/source/browser/components/shell/nsIGNOMEShellService.idl
 
   interface nsIGNOMEShellService extends nsIShellService {
     readonly canSetDesktopBackground: boolean;
     isDefaultForScheme(aScheme: string): boolean;
+    getGSettingsString(aScheme: string, aKey: string): string;
+    setGSettingsString(aScheme: string, aKey: string, aValue: string): void;
   }
 
-  // https://searchfox.org/mozilla-central/source/browser/components/shell/nsIOpenTabsProvider.idl
+  // https://searchfox.org/firefox-main/source/browser/components/shell/nsIOpenTabsProvider.idl
 
   interface nsIOpenTabsProvider extends nsISupports {
     getOpenTabs(): string[];
     switchToOpenTab(url: string): void;
   }
 
-  // https://searchfox.org/mozilla-central/source/widget/nsIApplicationChooser.idl
+  // https://searchfox.org/firefox-main/source/widget/nsIApplicationChooser.idl
 
   type nsIApplicationChooserFinishedCallback = Callable<{
     done(handlerApp: nsIHandlerApp): void;
@@ -36,13 +35,13 @@ declare global {
     ): void;
   }
 
-  // https://searchfox.org/mozilla-central/source/widget/nsIGtkTaskbarProgress.idl
+  // https://searchfox.org/firefox-main/source/widget/nsIGtkTaskbarProgress.idl
 
   interface nsIGtkTaskbarProgress extends nsITaskbarProgress {
     setPrimaryWindow(aWindow: mozIDOMWindowProxy): void;
   }
 
-  // https://searchfox.org/mozilla-central/source/widget/nsITaskbarProgress.idl
+  // https://searchfox.org/firefox-main/source/widget/nsITaskbarProgress.idl
 
   interface nsITaskbarProgress extends nsISupports {
     readonly STATE_NO_PROGRESS?: 0;
@@ -69,7 +68,11 @@ declare global {
 } // global
 
 // Typedefs from xpidl.
+type CSPDirective = nsIContentSecurityPolicy.CSPDirective;
 type PRTime = i64;
+type RequireTrustedTypesForDirectiveState =
+  nsIContentSecurityPolicy.RequireTrustedTypesForDirectiveState;
+type nsContentPolicyType = nsIContentPolicy.nsContentPolicyType;
 type nsHandlerInfoAction = i32;
 type nsTaskbarProgressState = i32;
 

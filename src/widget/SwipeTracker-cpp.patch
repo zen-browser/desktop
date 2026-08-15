@@ -1,8 +1,8 @@
 diff --git a/widget/SwipeTracker.cpp b/widget/SwipeTracker.cpp
-index b09252fd60beb10d5865d226c39ee0c8a9c22d87..91f68161209c6ca3f3bac22997d4e2066f1fafec 100644
+index 887d06d3bd9cdaa934880e0ae7a11ec8b737fb61..979f93ddab0d661ac1a1d73e7a0ba27fa2c8f9b7 100644
 --- a/widget/SwipeTracker.cpp
 +++ b/widget/SwipeTracker.cpp
-@@ -5,6 +5,7 @@
+@@ -3,6 +3,7 @@
   * You can obtain one at http://mozilla.org/MPL/2.0/. */
  
  #include "SwipeTracker.h"
@@ -10,7 +10,25 @@ index b09252fd60beb10d5865d226c39ee0c8a9c22d87..91f68161209c6ca3f3bac22997d4e206
  
  #include "InputData.h"
  #include "mozilla/FlushType.h"
-@@ -90,7 +91,7 @@ bool SwipeTracker::ComputeSwipeSuccess() const {
+@@ -67,6 +68,9 @@ double SwipeTracker::SwipeSuccessTargetValue() const {
+ }
+ 
+ double SwipeTracker::ClampToAllowedRange(double aGestureAmount) const {
++  if (StaticPrefs::zen_swipe_is_fast_swipe()) {
++    return aGestureAmount;
++  }
+   // gestureAmount needs to stay between -1 and 0 when swiping right and
+   // between 0 and 1 when swiping left.
+   double min =
+@@ -84,13 +88,14 @@ bool SwipeTracker::ComputeSwipeSuccess() const {
+   // If the fingers were moving away from the target direction when they were
+   // lifted from the touchpad, abort the swipe.
+   if (mCurrentVelocity * targetValue <
+-      -StaticPrefs::widget_swipe_velocity_twitch_tolerance()) {
++      -StaticPrefs::widget_swipe_velocity_twitch_tolerance()
++    && !StaticPrefs::zen_swipe_is_fast_swipe()) {
+     return false;
+   }
  
    return (mGestureAmount * targetValue +
            mCurrentVelocity * targetValue *
@@ -19,3 +37,13 @@ index b09252fd60beb10d5865d226c39ee0c8a9c22d87..91f68161209c6ca3f3bac22997d4e206
           kSwipeSuccessThreshold;
  }
  
+@@ -141,7 +146,8 @@ nsEventStatus SwipeTracker::ProcessEvent(
+   // display the UI as if we were at the success threshold as that would
+   // give a false indication that navigation would happen.
+   if (!computedSwipeSuccess && (eventAmount >= kSwipeSuccessThreshold ||
+-                                eventAmount <= -kSwipeSuccessThreshold)) {
++                                eventAmount <= -kSwipeSuccessThreshold)
++                              && !StaticPrefs::zen_swipe_is_fast_swipe()) {
+     eventAmount = 0.999 * kSwipeSuccessThreshold;
+     if (mGestureAmount < 0.f) {
+       eventAmount = -eventAmount;

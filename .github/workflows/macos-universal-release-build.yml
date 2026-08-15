@@ -57,7 +57,7 @@ jobs:
 
           brew install watchman
 
-          cargo install apple-codesign
+          cargo install apple-codesign --locked --force
 
       - name: Force usage of gnu-tar
         run: |
@@ -90,6 +90,7 @@ jobs:
         env:
           SURFER_MOZCONFIG_ONLY: true
           ZEN_RELEASE: 1
+          ZEN_GA_DISABLE_PGO: true
         run: |
           npm run build
           cd engine
@@ -229,6 +230,7 @@ jobs:
       - name: Package for mar
         env:
           JUST_MAR: true
+          ZEN_GA_DISABLE_PGO: true
         run: |
           # we don't need it anymore
           set -ex

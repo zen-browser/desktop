@@ -18,4 +18,6 @@
 #include ../../../zen/images/jar.inc.mn
 #include ../../../zen/vendor/jar.inc.mn
 #include ../../../zen/fonts/jar.inc.mn
+#include ../../../zen/boosts/jar.inc.mn
 #include ../../../zen/live-folders/jar.inc.mn
+#include ../../../zen/space-routing/jar.inc.mn

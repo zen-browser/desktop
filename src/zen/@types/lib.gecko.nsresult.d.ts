@@ -1,6 +1,3 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 /**
  * NOTE: Do not modify this file by hand.
  * Content was generated from xpc.msg and error_list.json.
@@ -368,9 +365,6 @@ interface nsIXPCComponents_Results {
   /** The connection was refused */
   NS_ERROR_CONNECTION_REFUSED: 0x804b000d;
 
-  /** User refused navigation to potentially unsafe URL with embedded credentials/superfluos authentication */
-  NS_ERROR_SUPERFLUOS_AUTH: 0x804b005b;
-
   /** User attempted basic HTTP authentication when it is disabled */
   NS_ERROR_BASIC_HTTP_AUTH_DISABLED: 0x804b005c;
 
@@ -674,6 +668,12 @@ interface nsIXPCComponents_Results {
   /** The URI is email tracking */
   NS_ERROR_EMAILTRACKING_URI: 0x805d002c;
 
+  /** The URI is not available for add-ons */
+  NS_ERROR_HARMFULADDON_URI: 0x805d002e;
+
+  /** Save Link As failed to see the headers early enough to choose a filename */
+  NS_ERROR_SAVE_LINK_AS_TIMEOUT: 0x805d0020;
+
   // Profile manager error codes
 
   /** Flushing the profiles to disk would have overwritten changes made elsewhere. */
@@ -703,6 +703,11 @@ interface nsIXPCComponents_Results {
 
   /** Client initialization attempted before origin has been initialized. */
   NS_ERROR_DOM_QM_CLIENT_INIT_ORIGIN_UNINITIALIZED: 0x80730001;
+
+  // Codes related to IndexedDB
+
+  /** A mutation operation was attempted on a database that did not allow mutations. */
+  NS_ERROR_DOM_INDEXEDDB_NOT_ALLOWED_ERR: 0x80660006;
 }
 
 type nsIXPCComponents_Values =

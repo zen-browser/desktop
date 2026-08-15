@@ -4,9 +4,9 @@
 
 # GTK-specific preferences
 - name: widget.gtk.rounded-bottom-corners.enabled
-  # Disabled for https://github.com/zen-browser/desktop/issues/6302,
-  # also see https://bugzilla.mozilla.org/show_bug.cgi?id=1979083
-  value: false
+  # See https://bugzilla.mozilla.org/show_bug.cgi?id=1979083
+  #   and https://bugzilla.mozilla.org/show_bug.cgi?id=1994267
+  value: true
   condition: "defined(MOZ_WIDGET_GTK)"
 
 - name: zen.widget.linux.transparency

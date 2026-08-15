@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-gestureSupport.js b/browser/base/content/browser-gestureSupport.js
-index a28d54bf72c0e6495b9586f220d1859aac794936..411d7255a68c48643617d77cc279a0a831fdf5c9 100644
+index f94b39d26a1a9626b3e1f518e2395bc394d1262d..15e198f4bb440cff0bbfb8ccd97c2ce180d5724f 100644
 --- a/browser/base/content/browser-gestureSupport.js
 +++ b/browser/base/content/browser-gestureSupport.js
 @@ -247,6 +247,10 @@ var gGestureSupport = {
@@ -13,7 +13,7 @@ index a28d54bf72c0e6495b9586f220d1859aac794936..411d7255a68c48643617d77cc279a0a8
      return canGoBack || canGoForward;
    },
  
-@@ -832,7 +836,7 @@ var gHistorySwipeAnimation = {
+@@ -848,7 +852,7 @@ var gHistorySwipeAnimation = {
     * @return true if there is a previous page in history, false otherwise.
     */
    canGoBack: function HSA_canGoBack() {

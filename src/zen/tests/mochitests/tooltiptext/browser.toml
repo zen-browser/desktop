@@ -11,6 +11,7 @@ support-files = ["xul_tooltiptext.xhtml"]
 ["browser_bug581947.js"]
 
 ["browser_input_file_tooltips.js"]
+disabled="Disabled by import_external_tests.py"
 
 ["browser_nac_tooltip.js"]
 

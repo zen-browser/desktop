@@ -1,0 +1,18 @@
+diff --git a/accessible/base/TextAttrs.cpp b/accessible/base/TextAttrs.cpp
+index d2ce06bef67ecb6d6ccb798a62d7f2759dd9da18..fb4952df9aa54d4085a282dc269a48ad72979b8b 100644
+--- a/accessible/base/TextAttrs.cpp
++++ b/accessible/base/TextAttrs.cpp
+@@ -237,11 +237,11 @@ bool TextAttrsMgr::BGColorTextAttr::GetColor(nsIFrame* aFrame,
+ TextAttrsMgr::ColorTextAttr::ColorTextAttr(nsIFrame* aRootFrame,
+                                            nsIFrame* aFrame)
+     : TTextAttr<nscolor>(!aFrame) {
+-  mRootNativeValue = aRootFrame->StyleText()->mColor.ToColor();
++  mRootNativeValue = aRootFrame->StyleText()->mColor.ToColor(aRootFrame);
+   mIsRootDefined = true;
+ 
+   if (aFrame) {
+-    mNativeValue = aFrame->StyleText()->mColor.ToColor();
++    mNativeValue = aFrame->StyleText()->mColor.ToColor(aFrame);
+     mIsDefined = true;
+   }
+ }

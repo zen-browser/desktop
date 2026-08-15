@@ -1,5 +1,5 @@
 diff --git a/browser/modules/BrowserWindowTracker.sys.mjs b/browser/modules/BrowserWindowTracker.sys.mjs
-index 9aecab66d8f23fac9f16cea2120a5fe903ae1122..692f2bfe3899a58925789503a6bb2a547cdbf7f3 100644
+index 7e2f1d2b9ca10bd48fa1a0cd1f175a99b4169b90..505d6fc5110b99c73a0054abbe098c154227cf50 100644
 --- a/browser/modules/BrowserWindowTracker.sys.mjs
 +++ b/browser/modules/BrowserWindowTracker.sys.mjs
 @@ -330,6 +330,7 @@ export const BrowserWindowTracker = {

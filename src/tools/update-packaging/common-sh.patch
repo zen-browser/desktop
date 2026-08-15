@@ -1,0 +1,13 @@
+diff --git a/tools/update-packaging/common.sh b/tools/update-packaging/common.sh
+index be2061b98cbba0d472e5f4d03cab2b058b249cb8..caa3379cd09efc2ded9686929fc658985a9dda51 100755
+--- a/tools/update-packaging/common.sh
++++ b/tools/update-packaging/common.sh
+@@ -94,8 +94,6 @@ check_for_add_if_not_update() {
+ 
+   if [[ "$(basename "$add_if_not_file_chk")" = "channel-prefs.js" || \
+         "$add_if_not_file_chk" =~ (^|/)ChannelPrefs\.framework/ || \
+-        "$(basename "$add_if_not_file_chk")" = "update-settings.ini" || \
+-        "$add_if_not_file_chk" =~ (^|/)UpdateSettings\.framework/ || \
+         "$(basename "$add_if_not_file_chk")" = "distribution.ini" ]]; then
+     ## "true"
+     return 0;

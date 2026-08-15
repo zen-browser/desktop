@@ -36,7 +36,7 @@
 # Astra Transparent Mode owns glass separately (native DWM / astra-glass CSS);
 # stacking acrylic-elements on top muddies chrome and doubles GPU blur cost.
 - name: zen.theme.acrylic-elements
-  value: false
+  value: "@IS_TWILIGHT@"
 
 # Astra built-in Transparent Mode (chrome glass). Independent of
 # browser.tabs.allow_transparent_browser (web-content transparency).

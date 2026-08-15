@@ -1,0 +1,14 @@
+diff --git a/image/AutoRestoreSVGState.h b/image/AutoRestoreSVGState.h
+index be639a7b78c13c2d56be49a9690bf711ccaf0a8f..28bea58034ead1206d77521934e92d3a69bfd84b 100644
+--- a/image/AutoRestoreSVGState.h
++++ b/image/AutoRestoreSVGState.h
+@@ -47,6 +47,9 @@ class MOZ_STACK_CLASS AutoRestoreSVGState final {
+         }
+         return dom::PrefersColorSchemeOverride::None;
+       }());
++      pc->SetZenBoostsOverride(aSVGContext.GetZenBoostsAccent(),
++                               aSVGContext.GetZenBoostsComplementaryRotation(),
++                               aSVGContext.GetZenBoostsInverted());
+     }
+ 
+     aSVGDocumentWrapper->mIsDrawing = true;

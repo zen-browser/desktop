@@ -21,10 +21,14 @@ const MINIMUM_QUERY_SCORE = 92;
 const MINIMUM_PREFIXED_QUERY_SCORE = 30;
 
 ChromeUtils.defineESModuleGetters(lazy, {
-  UrlbarResult: "moz-src:///browser/components/urlbar/UrlbarResult.sys.mjs",
+  UrlbarResult: "chrome://browser/content/urlbar/UrlbarResult.mjs",
   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
   AddonManager: "resource://gre/modules/AddonManager.sys.mjs",
   UrlUtils: "resource://gre/modules/UrlUtils.sys.mjs",
+});
+
+ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
+  return new Localization(["browser/zen-command-palette.ftl"], true);
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -130,11 +134,6 @@ function payloadAndSimpleHighlights(tokens, payloadInfo) {
 export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
   #seenCommands = new Set();
 
-  constructor() {
-    super();
-    lazy.UrlbarResult.addDynamicResultType(DYNAMIC_TYPE_NAME);
-  }
-
   get name() {
     return "ZenUrlbarProviderGlobalActions";
   }
@@ -154,78 +153,16 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
    * @param {UrlbarQueryContext} queryContext The query context object
    */
   async isActive(queryContext) {
-    const rawQuery = queryContext.searchString?.trim() || "";
     return (
+      queryContext.searchMode?.source == UrlbarUtils.RESULT_SOURCE.WORKSPACES ||
       queryContext.searchMode?.source ==
         UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS ||
       (lazy.enabledPref &&
-        rawQuery &&
-        rawQuery.length < UrlbarUtils.MAX_TEXT_LENGTH &&
-        (rawQuery.length > 2 || rawQuery === "₹") &&
-        !lazy.UrlUtils.REGEXP_LIKE_PROTOCOL.test(rawQuery))
+        queryContext.searchString &&
+        queryContext.searchString.length < UrlbarUtils.MAX_TEXT_LENGTH &&
+        queryContext.searchString.length > 2 &&
+        !lazy.UrlUtils.REGEXP_LIKE_PROTOCOL.test(queryContext.searchString))
     );
-  }
-
-  #formatRupeeNumber(value) {
-    if (Number.isInteger(value)) {
-      return value.toString();
-    }
-    return value.toFixed(2).replace(/\.?0+$/, "");
-  }
-
-  #getUtilityActions(rawQuery) {
-    const actions = [];
-
-    const gstMatch = rawQuery.match(
-      /^gst\s+([0-9]+(?:\.[0-9]+)?)\s+([0-9]+(?:\.[0-9]+)?)$/i
-    );
-    if (gstMatch) {
-      const base = Number.parseFloat(gstMatch[1]);
-      const rate = Number.parseFloat(gstMatch[2]);
-      if (Number.isFinite(base) && Number.isFinite(rate)) {
-        const gstAmount = (base * rate) / 100;
-        const total = base + gstAmount;
-        const output = `Base: ₹${this.#formatRupeeNumber(base)} | GST: ₹${this.#formatRupeeNumber(gstAmount)} | Total: ₹${this.#formatRupeeNumber(total)}`;
-        actions.push({
-          label: "GST Calculator",
-          command: () =>
-            Cc["@mozilla.org/widget/clipboardhelper;1"]
-              .getService(Ci.nsIClipboardHelper)
-              .copyString(output),
-          commandId: "zen:gst-calculator-result",
-          icon: "chrome://browser/skin/zen-icons/stats-chart.svg",
-          extraPayload: {
-            prettyName: output,
-          },
-        });
-      }
-    }
-
-    const panMatch = rawQuery.match(/^pan\s+(.+)$/i);
-    if (panMatch) {
-      const panInput = panMatch[1].trim().toUpperCase();
-      if (panInput) {
-        const isValidPan = /^[A-Z]{5}[0-9]{4}[A-Z]$/.test(panInput);
-        const status = isValidPan
-          ? "Valid PAN format ✅"
-          : "Invalid PAN format ❌";
-        const output = `${panInput} — ${status}`;
-        actions.push({
-          label: "PAN Validator",
-          command: () =>
-            Cc["@mozilla.org/widget/clipboardhelper;1"]
-              .getService(Ci.nsIClipboardHelper)
-              .copyString(output),
-          commandId: "zen:pan-validator-result",
-          icon: "chrome://browser/skin/zen-icons/checkbox.svg",
-          extraPayload: {
-            prettyName: status,
-          },
-        });
-      }
-    }
-
-    return actions;
   }
 
   #getWorkspaceActions(window) {
@@ -244,7 +181,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
           .workspaceElement(workspace.uuid)
           ?.style.getPropertyValue("--zen-primary-color");
         actions.push({
-          label: "Focus on",
+          label: lazy.l10n.formatValueSync("zen-action-focus-on"),
           extraPayload: {
             workspaceId: workspace.uuid,
             prettyName: workspace.name,
@@ -277,7 +214,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       .map(addon => {
         return {
           icon: "chrome://browser/skin/zen-icons/extension.svg",
-          label: "Extension",
+          label: lazy.l10n.formatValueSync("zen-action-extension"),
           commandId: `zen:extension-${addon.id}`,
           extraPayload: {
             extensionId: addon.id,
@@ -304,18 +241,14 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
    *
    * @param {string} query The user's search query.
    * @param {boolean} isPrefixed Whether the query is prefixed.
+   * @param {boolean} isWorkspaceSearch Whether this is a workspace search query
    */
-  async #findMatchingActions(query, isPrefixed) {
+  async #findMatchingActions(query, isPrefixed, isWorkspaceSearch) {
     const window = lazy.BrowserWindowTracker.getTopWindow();
-    const actions = await this.#getAvailableActions(window);
+    const actions = isWorkspaceSearch
+      ? this.#getWorkspaceActions(window)
+      : await this.#getAvailableActions(window);
     let results = [];
-    if (query === "₹") {
-      for (const action of actions) {
-        if (action.label?.includes("₹")) {
-          results.push({ action, score: 1000 });
-        }
-      }
-    }
     for (let action of actions) {
       if (isPrefixed && query.length < 1) {
         results.push({ action, score: 100 });
@@ -411,43 +344,40 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
 
   async startQuery(queryContext, addCallback) {
     const query = queryContext.trimmedLowerCaseSearchString;
-    const rawQuery = (queryContext.searchString || "").trim();
+    const isWorkspaceSearch =
+      queryContext.searchMode?.source == UrlbarUtils.RESULT_SOURCE.WORKSPACES;
     const isPrefixed =
+      isWorkspaceSearch ||
       queryContext.searchMode?.source == UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS;
+
     if (!query && !isPrefixed) {
       return;
     }
 
-    const utilityActions = this.#getUtilityActions(rawQuery);
-    const actionsResults = utilityActions.concat(
-      await this.#findMatchingActions(query, isPrefixed)
+    const actionsResults = await this.#findMatchingActions(
+      query,
+      isPrefixed,
+      isWorkspaceSearch
     );
-    const uniqueActions = [];
-    const seenActionIds = new Set();
-    for (const action of actionsResults) {
-      const id = action.commandId || action.label;
-      if (seenActionIds.has(id)) {
-        continue;
-      }
-      seenActionIds.add(id);
-      uniqueActions.push(action);
-    }
-    if (!uniqueActions.length) {
+    if (!actionsResults.length) {
       return;
     }
 
     const ownerGlobal = lazy.BrowserWindowTracker.getTopWindow();
     let finalResults = [];
-    for (const action of uniqueActions) {
+    for (const action of actionsResults) {
       const { payload, payloadHighlights } = payloadAndSimpleHighlights([], {
         suggestion: action.label,
         title: action.label,
         zenCommand: action.command,
         dynamicType: DYNAMIC_TYPE_NAME,
         zenAction: true,
-        query: isPrefixed
-          ? action.label.trimStart()
-          : queryContext.searchString,
+        // eslint-disable-next-line no-nested-ternary
+        query: isWorkspaceSearch
+          ? action.extraPayload.prettyName
+          : isPrefixed
+            ? action.label.trimStart()
+            : queryContext.searchString,
         icon: action.icon,
         shortcutContent:
           ownerGlobal.gZenKeyboardShortcutsManager.getShortcutDisplayFromCommand(
@@ -462,7 +392,9 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         !isPrefixed;
       let result = new lazy.UrlbarResult({
         type: UrlbarUtils.RESULT_TYPE.DYNAMIC,
-        source: UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS,
+        source: isWorkspaceSearch
+          ? UrlbarUtils.RESULT_SOURCE.WORKSPACES
+          : UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS,
         payload,
         highlights: payloadHighlights,
         heuristic: shouldBePrioritized,
@@ -482,7 +414,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
     zenUrlbarResultsLearner
       .sortCommandsByPriority(finalResults)
       .forEach(result => {
-        if (isPrefixed && i === 0 && query.length > 1) {
+        if (isPrefixed && !isWorkspaceSearch && i === 0 && query.length > 1) {
           result.heuristic = true;
           delete result.suggestedIndex;
         }
@@ -617,7 +549,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
     const result = details.result;
     const payload = result.payload;
     const command = payload.zenCommand;
-    const ownerGlobal = details.element.ownerGlobal;
+    const ownerGlobal = details.element.documentGlobal;
     ownerGlobal.gBrowser.selectedBrowser.focus();
     if (typeof command === "function") {
       command(ownerGlobal);

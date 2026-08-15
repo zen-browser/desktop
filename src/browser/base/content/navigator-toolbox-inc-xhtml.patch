@@ -1,18 +1,18 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index 3f7b85086de11923f9453c8f02afb517c49afa8b..5be31a0cb3c5a52ba90cd2cd7f333a0354d9f2af 100644
+index e7e94e13a990c154fb54bda4a3420ca00bdac009..8253b7d403734973729a5982cceafc12bab24f54 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
 @@ -2,7 +2,7 @@
  # License, v. 2.0. If a copy of the MPL was not distributed with this
  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
  
--<toolbox id="navigator-toolbox" class="browser-toolbox-background">
-+<toolbox id="navigator-toolbox" class="browser-toolbox-background" persist="width style">
+-<toolbox id="navigator-toolbox" class="chrome-block">
++<toolbox id="navigator-toolbox" class="chrome-block" persist="width style">
    <script src="chrome://browser/content/navigator-toolbox.js" />
  
    <!-- Menu -->
-@@ -18,9 +18,12 @@
- #include browser-menubar.inc
+@@ -18,9 +18,13 @@
+ #include browser-menubar.inc.xhtml
      </toolbaritem>
      <spacer flex="1" skipintoolbarset="true" style="order: 1000;"/>
 -#include titlebar-items.inc.xhtml
@@ -22,14 +22,14 @@ index 3f7b85086de11923f9453c8f02afb517c49afa8b..5be31a0cb3c5a52ba90cd2cd7f333a03
 +  <html:div id="zen-toolbar-background" class="zen-toolbar-background zen-browser-generic-background">
 +    <html:div class="zen-browser-grain" />
 +  </html:div>
++  <box id="zen-overflow-extensions-list" skipintoolbarset="true" contextmenu="toolbar-context-menu" />
    <toolbar id="TabsToolbar"
             class="browser-toolbar browser-titlebar"
             fullscreentoolbar="true"
-@@ -62,6 +65,9 @@
+@@ -62,6 +66,8 @@
            <html:sidebar-pins-promo id="drag-to-pin-promo-card"></html:sidebar-pins-promo>
            <arrowscrollbox id="pinned-tabs-container" orient="horizontal" clicktoscroll=""></arrowscrollbox>
            <splitter orient="vertical" id="vertical-pinned-tabs-splitter" resizebefore="sibling" resizeafter="none" hidden="true"/>
-+<html:div id="zen-overflow-extensions-list" skipintoolbarset="true"></html:div>
 +<html:div id="zen-essentials" skipintoolbarset="true"></html:div>
 +<html:div id="zen-tabs-wrapper">
            <hbox class="tab-drop-indicator" hidden="true"/>
@@ -43,7 +43,7 @@ index 3f7b85086de11923f9453c8f02afb517c49afa8b..5be31a0cb3c5a52ba90cd2cd7f333a03
          </tabs>
  
          <toolbarbutton id="new-tab-button"
-@@ -114,9 +121,10 @@
+@@ -115,9 +122,10 @@
  
      <toolbarbutton class="content-analysis-indicator toolbarbutton-1 content-analysis-indicator-icon"/>
  

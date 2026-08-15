@@ -50,7 +50,8 @@ export class nsZenMenuBar {
 
     const sibling = document.getElementById("viewSidebarMenuMenu");
     const togglePinnedItem = window.MozXULElement.parseXULToFragment(
-      '<menuitem data-l10n-id="zen-menubar-toggle-pinned-tabs" />'
+      '<menuitem data-l10n-id="zen-menubar-toggle-pinned-tabs"' +
+        ' data-l10n-args="{&quot;pinnedAreCollapsed&quot;:&quot;&quot;}" />'
     ).querySelector("menuitem");
     if (!gZenWorkspaces.privateWindowOrDisabled) {
       sibling.after(togglePinnedItem);
@@ -92,7 +93,7 @@ export class nsZenMenuBar {
             key="zen-workspace-forward"/>
           <menuitem
             data-l10n-id="zen-panel-ui-workspaces-change-back"
-            command="cmd_zenWorkspaceBack"
+            command="cmd_zenWorkspaceBackward"
             key="zen-workspace-backward"/>
         </menupopup>
       </menu>`);

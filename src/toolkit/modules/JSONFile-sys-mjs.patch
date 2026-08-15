@@ -1,0 +1,29 @@
+diff --git a/toolkit/modules/JSONFile.sys.mjs b/toolkit/modules/JSONFile.sys.mjs
+index 397991e4af8f49b6365d729fc11267b5c1113400..9b1d6fd3850b239000a3c4d2a2d5799a0989f4e3 100644
+--- a/toolkit/modules/JSONFile.sys.mjs
++++ b/toolkit/modules/JSONFile.sys.mjs
+@@ -132,6 +132,7 @@ export function JSONFile(config) {
+     this._finalizeInternalBound,
+     () => ({ sanitizedBasename: this.sanitizedBasename })
+   );
++  this._useSizeHints = config.useSizeHints ?? false;
+ }
+ 
+ JSONFile.prototype = {
+@@ -423,11 +424,15 @@ JSONFile.prototype = {
+     }
+ 
+     try {
+-      await IOUtils.writeJSON(
++      if (this._useSizeHints && this._lastSavedSize) {
++        this._options.jsonLengthHint = Math.ceil(this._lastSavedSize * 1.05);
++      }
++      const result = await IOUtils.writeJSON(
+         this.path,
+         this._data,
+         Object.assign({ tmpPath: this.path + ".tmp" }, this._options)
+       );
++      this._lastSavedSize = this._useSizeHints ? result : null;
+     } catch (ex) {
+       if (typeof this._data.toJSONSafe == "function") {
+         // If serialization fails, try fallback safe JSON converter.

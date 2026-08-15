@@ -7,7 +7,7 @@ import checkForZenUpdates, {
 } from "chrome://browser/content/ZenUpdates.mjs";
 
 class ZenStartup {
-  #watermarkIgnoreElements = ["zen-toast-container"];
+  #watermarkIgnoreElements = ["zen-toast-container", "zen-browser-background"];
   #hasInitializedLayout = false;
 
   isReady = false;
@@ -17,7 +17,6 @@ class ZenStartup {
 
   init() {
     this.openWatermark();
-    this.#changeSidebarLocation();
     this.#zenInitBrowserLayout();
   }
 
@@ -54,11 +53,11 @@ class ZenStartup {
       // overlap and interaction issues with vertical tabs
       document.getElementById("browser").prepend(deckTemplate);
 
-      gZenWorkspaces.init();
-      setTimeout(() => {
+      gZenWorkspaces.init().then(() => {
         gZenUIManager.init();
+        this.#initUIComponents();
         this.#checkForWelcomePage();
-      }, 0);
+      });
     } catch (e) {
       console.error("AstraThemeModifier: Error initializing browser layout", e);
     }
@@ -107,6 +106,19 @@ class ZenStartup {
       this.#initRamSaver();
       this.#initAiWindowBookmarksFix();
       this.#initSidebarLauncherAutoHide();
+
+      setTimeout(() => {
+        // Wait for the natural PlacesToolbar rebuild before invalidating, so
+        // the two async rebuilds don't interleave and duplicate bookmarks.
+        // promiseRebuilt() returns undefined when no rebuild is in flight.
+        const rebuilt =
+          document
+            .getElementById("PlacesToolbar")
+            ?._placesView?.promiseRebuilt() ?? Promise.resolve();
+        rebuilt
+          .catch(console.error)
+          .then(() => gZenWorkspaces._invalidateBookmarkContainers());
+      });
     });
   }
 
@@ -115,7 +127,9 @@ class ZenStartup {
       document.documentElement.removeAttribute("zen-before-loaded");
       return;
     }
-    for (let elem of document.querySelectorAll("#browser > *, #urlbar")) {
+    for (let elem of document.querySelectorAll(
+      `#browser > *:not(${this.#watermarkIgnoreElements.map(id => "#" + id).join(", ")}), #urlbar`
+    )) {
       elem.style.opacity = 0;
     }
   }
@@ -151,18 +165,13 @@ class ZenStartup {
     });
   }
 
-  #changeSidebarLocation() {
-    const kElementsToAppend = ["sidebar-splitter", "sidebar-box"];
-
-    const browser = document.getElementById("browser");
-    browser.prepend(gNavToolbox);
-
-    const sidebarPanelWrapper = document.getElementById("tabbrowser-tabbox");
-    for (let id of kElementsToAppend) {
-      const elem = document.getElementById(id);
-      if (elem) {
-        sidebarPanelWrapper.prepend(elem);
-      }
+  #initUIComponents() {
+    const kUIComponents = ["ZenProgressBar", "ZenSpaceRoutingNavigation"];
+    for (let component of kUIComponents) {
+      const module = ChromeUtils.importESModule(
+        "resource:///modules/zen/ui/" + component + ".sys.mjs"
+      );
+      new module[component](window);
     }
   }
 

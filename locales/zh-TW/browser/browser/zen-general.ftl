@@ -21,8 +21,8 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] 以當前URL替換Essentials
-           *[false] 以當前URL替換釘選分頁
+            [true] 以當前網址替換Essentials
+           *[false] 以當前網址替換釘選分頁
         }
     .accesskey = C
 tab-context-zen-edit-title = 
@@ -39,18 +39,19 @@ pictureinpicture-minimize-btn =
     .tooltip = 最小化
 zen-panel-ui-gradient-generator-custom-color = 自訂顏色
 zen-copy-current-url-confirmation = 網址已複製到剪貼簿！
-zen-copy-current-url-as-markdown-confirmation = 已以Markdown格式複製當前URL！
+zen-copy-current-url-as-markdown-confirmation = 已以Markdown格式複製當前網址！
 zen-general-cancel-label = 
     .label = 取消
 zen-general-confirm = 
     .label = 確認
 zen-pinned-tab-replaced = 釘選分頁網址已替換為當前網址！
-zen-tabs-renamed = 已成功重新命名分頁！
-zen-background-tab-opened-toast = 已在背景開啟新分頁！
-zen-workspace-renamed-toast = 已成功重新命名工作區！
+zen-tabs-renamed = 成功重新命名分頁！
+zen-background-tab-opened-toast = 新分頁已在背景開啟！
+zen-workspace-renamed-toast = 成功重新命名工作區！
+zen-split-view-limit-toast = 無法加入更多分頁至分割畫面！
 zen-toggle-compact-mode-button = 
-    .label = 簡潔模式
-    .tooltiptext = 切換簡潔模式
+    .label = 緊湊模式
+    .tooltiptext = 切換緊湊模式
 
 # note: Do not translate the "<br/>" tags in the following string
 
@@ -121,4 +122,4 @@ zen-window-sync-migration-dialog-message = Zen現在能同步同裝置上的各�
 zen-window-sync-migration-dialog-learn-more = 了解更多
 zen-window-sync-migration-dialog-accept = 明白了
 zen-appmenu-new-blank-window = 
-    .label = 新簡白視窗
+    .label = 開新簡白視窗

@@ -7,6 +7,12 @@ import {
   themeFromSpacePreset,
 } from "resource:///modules/zen/ZenSpacePresets.mjs";
 
+const lazy = {};
+
+ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
+  return new Localization(["browser/zen-workspaces.ftl"], true);
+});
+
 class nsZenWorkspaceCreation extends MozXULElement {
   #pendingPresetTheme = null;
   #previousExpandedState = null;
@@ -191,6 +197,28 @@ class nsZenWorkspaceCreation extends MozXULElement {
       this.createButton.disabled = !this.inputName.value.trim();
     });
 
+    this.inputName.addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!this.createButton.disabled) {
+          this.createButton.doCommand();
+        }
+      }
+    });
+
+    // Bound on the root so Esc works regardless of which child has focus
+    // (name input, icon picker trigger, profile button, primary button).
+    // Open popups consume Esc before it reaches us, so the emoji/profile
+    // pickers still close as expected.
+    this.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        this.cancelButton.doCommand();
+      }
+    });
+
     this.inputIcon.addEventListener("command", this.onIconCommand.bind(this));
 
     this.profilesPopup = this.querySelector(
@@ -203,8 +231,8 @@ class nsZenWorkspaceCreation extends MozXULElement {
         this.onProfileCommand.bind(this)
       );
       this.profilesPopup.addEventListener(
-        "popupshown",
-        this.onProfilePopupShown.bind(this)
+        "popupshowing",
+        this.onProfilePopupShowing.bind(this)
       );
       this.profilesPopup.addEventListener(
         "command",
@@ -213,7 +241,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
 
       this.currentProfile = {
         id: 0,
-        name: "Default",
+        name: lazy.l10n.formatValueSync("zen-workspace-default-profile"),
       };
     } else {
       this.inputProfile.parentNode.hidden = true;
@@ -240,7 +268,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
           document.getElementById("nav-bar").style.visibility = "collapse";
         }
         this.style.visibility = "visible";
-        gZenCompactModeManager.getAndApplySidebarWidth();
+        gZenCompactModeManager.getAndApplySidebarWidth({});
         this.resolveInitialized();
         let animation = gZenUIManager.motion.animate(
           this.elementsToAnimate,
@@ -329,6 +357,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
   }
 
   async onCancelButtonCommand() {
+    document.documentElement.removeAttribute("zen-creating-workspace");
     await gZenWorkspaces.changeWorkspaceWithID(this.previousWorkspaceId);
   }
 
@@ -364,11 +393,20 @@ class nsZenWorkspaceCreation extends MozXULElement {
     this.profilesPopup.openPopup(event.target, "after_start");
   }
 
-  onProfilePopupShown(event) {
-    return window.createUserContextMenu(event, {
+  onProfilePopupShowing(event) {
+    window.createUserContextMenu(event, {
       isContextMenu: true,
       showDefaultTab: true,
+      showManageContainers: false,
     });
+
+    const defaultItem = event.target.querySelector('[data-usercontextid="0"]');
+    if (defaultItem) {
+      defaultItem.removeAttribute("data-l10n-id");
+      defaultItem.label = lazy.l10n.formatValueSync(
+        "zen-workspace-default-profile"
+      );
+    }
   }
 
   onProfilePopupCommand(event) {
@@ -437,7 +475,6 @@ class nsZenWorkspaceCreation extends MozXULElement {
     }
 
     this.remove();
-    gZenUIManager.updateTabsToolbar();
 
     const workspace = gZenWorkspaces.getActiveWorkspace();
     gZenWorkspaces._organizeWorkspaceStripLocations(workspace);
@@ -465,6 +502,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
     }
 
     this.#hiddenElements = [];
+    gZenUIManager.updateTabsToolbar();
   }
 }
 

@@ -3,10 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 [DEFAULT]
-prefs = ["zen.view.mac.show-three-dot-menu=true"]
+prefs = ["zen.view.mac.show-three-dot-menu=true", "widget.macos.native-context-menus=true"]
 
 ["browser_popover_height_constraint.js"]
 run-if = [
   "os == 'mac'", # gh-12782
 ]
-prefs = ["widget.macos.native-context-menus=true"]

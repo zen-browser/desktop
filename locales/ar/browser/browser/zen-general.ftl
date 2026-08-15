@@ -52,6 +52,7 @@ zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL.
 zen-tabs-renamed = تم تغيير اسم التبويب بنجاح!
 zen-background-tab-opened-toast = تم فتح علامة تبويب خلفية جديدة!
 zen-workspace-renamed-toast = تم تغيير اسم مساحة العمل بنجاح!
+zen-split-view-limit-toast = Can't add more panels to the split view!
 zen-toggle-compact-mode-button = 
     .label = الوضع المدمج
     .tooltiptext = تبديل الوضع المدمج

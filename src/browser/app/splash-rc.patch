@@ -1,8 +1,8 @@
 diff --git a/browser/app/splash.rc b/browser/app/splash.rc
-index 259a8068c3aa256b8c50487a04f1844292b90b2e..8b9c792e1484bb801246b06b6ce43fb6d6271ee8 100644
+index 04c1d3e1db7d067d579512999a08de85a0aa212c..4e04eb5008ca1701c731c3109ba184ccf465b51b 100644
 --- a/browser/app/splash.rc
 +++ b/browser/app/splash.rc
-@@ -6,6 +6,9 @@
+@@ -5,6 +5,9 @@
  #include <windows.h>
  #include "nsNativeAppSupportWin.h"
  

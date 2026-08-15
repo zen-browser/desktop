@@ -62,6 +62,14 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
           if (!item.url || !item.date) {
             return false;
           }
+          try {
+            const parsed = Services.io.newURI(item.url);
+            if (parsed.scheme !== "http" && parsed.scheme !== "https") {
+              return false;
+            }
+          } catch {
+            return false;
+          }
           if (!this.state.timeRange) {
             return true;
           }
@@ -73,10 +81,9 @@ export class nsRssLiveFolderProvider extends nsZenLiveFolderProvider {
       for (let item of items) {
         if (item.url) {
           try {
-            const url = new URL(item.url);
-            const favicon = await lazy.PlacesUtils.favicons.getFaviconForPage(
-              Services.io.newURI(url.href)
-            );
+            const url = Services.io.newURI(item.url);
+            const favicon =
+              await lazy.PlacesUtils.favicons.getFaviconForPage(url);
             item.icon =
               favicon?.dataURI.spec ||
               this.manager.window.gZenEmojiPicker.getSVGURL("logo-rss.svg");

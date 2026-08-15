@@ -1,8 +1,8 @@
 diff --git a/browser/components/tabbrowser/TabUnloader.sys.mjs b/browser/components/tabbrowser/TabUnloader.sys.mjs
-index aefccef39f0b81176a5710a794e8a5e2650d6507..53c838b3bc322cadee4ef9b411d02fc0af8c35e5 100644
+index a6d6c5405f98c839b7c0f2007e053e874bb7ce07..9d8c6066ce917e15fbf9e19284a3db50aa5a3815 100644
 --- a/browser/components/tabbrowser/TabUnloader.sys.mjs
 +++ b/browser/components/tabbrowser/TabUnloader.sys.mjs
-@@ -52,7 +52,7 @@ let CRITERIA_WEIGHT = 1;
+@@ -51,7 +51,7 @@ let CRITERIA_WEIGHT = 1;
   */
  let DefaultTabUnloaderMethods = {
    isNonDiscardable(tab, weight) {
@@ -11,7 +11,7 @@ index aefccef39f0b81176a5710a794e8a5e2650d6507..53c838b3bc322cadee4ef9b411d02fc0
        return weight;
      }
  
-@@ -106,7 +106,7 @@ let DefaultTabUnloaderMethods = {
+@@ -105,7 +105,7 @@ let DefaultTabUnloaderMethods = {
  
    *iterateTabs() {
      for (let win of Services.wm.getEnumerator("navigator:browser")) {

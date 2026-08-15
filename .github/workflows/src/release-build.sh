@@ -12,6 +12,33 @@ if [ -f "$HOME/.cargo/env" ]; then
   . "$HOME/.cargo/env"
 fi
 
+if ! test "$ZEN_CROSS_COMPILING" && test "$(uname -s)" = "Linux"; then
+  if test -d "$HOME/.mozbuild/clang/bin"; then
+      export CC="$HOME/.mozbuild/clang/bin/clang"
+      export CXX="$HOME/.mozbuild/clang/bin/clang++"
+  else
+      export CC=clang
+      export CXX=clang++
+  fi
+fi
+
+mkdir -p ~/.zen-keys
+if test "$ZEN_SAFEBROWSING_API_KEY"; then
+  echo "$ZEN_SAFEBROWSING_API_KEY" > ~/.zen-keys/safebrowsing.dat
+fi
+
+if test "$ZEN_MOZILLA_API_KEY"; then
+  echo "$ZEN_MOZILLA_API_KEY" > ~/.zen-keys/mozilla.dat
+fi
+
+if test "$ZEN_GOOGLE_LOCATION_SERVICE_API_KEY"; then
+  echo "$ZEN_GOOGLE_LOCATION_SERVICE_API_KEY" > ~/.zen-keys/google_location_service.dat
+fi
+
+if [ -f ./scripts/mar_sign.sh ]; then
+  bash ./scripts/mar_sign.sh -i || true
+fi
+
 ulimit -n 4096 || true
 
 if command -v Xvfb &> /dev/null; then
@@ -30,3 +57,6 @@ else
   export ZEN_RELEASE=1
   npm run build
 fi
+
+echo "Build complete, removing API keys"
+rm -rf ~/.zen-keys

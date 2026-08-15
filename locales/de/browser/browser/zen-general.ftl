@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = Die URL des angehefteten Tabs wurde aktualisiert!
 zen-tabs-renamed = Tab umbenannt!
 zen-background-tab-opened-toast = Neuer Tab im Hintergrund geöffnet!
 zen-workspace-renamed-toast = Arbeitsbereich umbenannt!
+zen-split-view-limit-toast = Diese Split View kann keine weiteren Panels aufnehmen!
 zen-toggle-compact-mode-button = 
     .label = Kompakter Modus
     .tooltiptext = Kompakten Modus umschalten

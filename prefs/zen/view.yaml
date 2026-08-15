@@ -35,7 +35,10 @@
   value: false
 
 - name: zen.view.grey-out-inactive-windows
+  cpptype: bool
   value: true
+  mirror: always
+  type: static
 
 - name: zen.view.show-newtab-button-top
   value: true
@@ -45,6 +48,12 @@
 
 - name: zen.view.context-menu.refresh
   value: "@IS_TWILIGHT@"
+
+- name: zen.view.drag-window-from-content
+  value: true
+
+- name: zen.view.drag-window-from-content.height-percentage
+  value: 5
 
 - name: zen.view.borderless-fullscreen
   value: true
@@ -60,6 +69,12 @@
 
 - name: zen.view.overflow-webext-toolbar
   value: "@IS_TWILIGHT@"
+
+- name: zen.view.overflow-webext-toolbar-threshold
+  value: 55
+
+- name: zen.view.enable-loading-indicator
+  value: true
 
 - name: zen.sidebar.enabled
   value: true

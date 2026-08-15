@@ -11,9 +11,11 @@
 
 #include "nsStyleSheetService.h"
 
-#include "mozilla/css/SheetParsingMode.h"
+#include "mozilla/ClearOnShutdown.h"
 #include "mozilla/GlobalStyleSheetCache.h"
 #include "mozilla/RefPtr.h"
+#include "mozilla/ServoStyleConsts.h"
+#include "mozilla/StyleSheet.h"
 
 #define GET_MODS_FILE(chromeFile, err)                                        \
   NS_GetSpecialDirectory(NS_APP_USER_CHROME_DIR, getter_AddRefs(chromeFile)); \
@@ -45,12 +47,11 @@ auto ZenStyleSheetCache::GetModsSheet() -> StyleSheet* {
     }
   }
 
-  LoadSheetFile(chromeFile, css::eUserSheetFeatures);
+  LoadSheetFile(chromeFile, StyleOrigin::User);
   return mModsSheet;
 }
 
-auto ZenStyleSheetCache::LoadSheetFile(nsIFile* aFile,
-                                       css::SheetParsingMode aParsingMode)
+auto ZenStyleSheetCache::LoadSheetFile(nsIFile* aFile, StyleOrigin aOrigin)
     -> void {
   nsCOMPtr<nsIURI> uri;
   NS_NewFileURI(getter_AddRefs(uri), aFile);
@@ -59,8 +60,8 @@ auto ZenStyleSheetCache::LoadSheetFile(nsIFile* aFile,
   }
 
   RefPtr<mozilla::css::Loader> loader = new mozilla::css::Loader;
-  auto result = loader->LoadSheetSync(uri, aParsingMode,
-                                      css::Loader::UseSystemPrincipal::Yes);
+  auto result =
+      loader->LoadSheetSync(uri, aOrigin, css::Loader::UseSystemPrincipal::Yes);
   if (MOZ_UNLIKELY(result.isErr())) {
     return;
   }
@@ -72,6 +73,7 @@ auto ZenStyleSheetCache::Singleton() -> ZenStyleSheetCache* {
   MOZ_ASSERT(NS_IsMainThread());
   if (!gZenModsCache) {
     gZenModsCache = new ZenStyleSheetCache;
+    ClearOnShutdown(&gZenModsCache);
   }
   return gZenModsCache;
 }

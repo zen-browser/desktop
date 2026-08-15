@@ -4,45 +4,55 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-#zen-overflow-extensions-list:not(:empty) {
-  --uei-icon-size: 14px;
-  display: flex;
-  gap: 8px;
-  padding: 8px 2px;
-  padding-bottom: 0;
+#zen-overflow-extensions-list {
+  display: none;
 
-  & .unified-extensions-item {
-    flex: 1;
-    margin: 0;
-  }
+  :root[zen-single-toolbar="true"] &:not(:empty) {
+    --uei-icon-size: 14px;
+    display: grid;
+    gap: 8px;
+    padding: 8px 2px;
+    padding-bottom: 0;
+    border-radius: calc(var(--border-radius-medium) - 4px);
+    grid-template-columns: repeat(auto-fit, minmax(32px, 1fr));
 
-  & .toolbarbutton-badge-stack {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    padding: 8px 0;
-    justify-content: center;
-    align-items: center;
-  }
-
-  & .unified-extensions-item-action-button {
-    background-color: var(--zen-toolbar-element-bg);
-    height: 30px;
-    margin: 0;
-    justify-content: center;
-    align-items: center;
-    border-radius: var(--border-radius-medium);
-    overflow: clip;
-    padding: 0;
-
-    &:hover {
-      background-color: var(--zen-toolbar-element-bg-hover);
+    & .unified-extensions-item {
+      flex: 1;
+      margin: 0;
     }
-  }
 
-  .unified-extensions-item-contents,
-  .unified-extensions-item-menu-button,
-  unified-extensions-item-messagebar-wrapper {
-    display: none;
+    & .toolbarbutton-badge-stack {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      justify-content: center;
+      align-items: center;
+    }
+
+    & .unified-extensions-item-action-button {
+      appearance: none;
+      background-color: var(--zen-toolbar-element-bg);
+      height: 26px;
+      margin: 0;
+      justify-content: center;
+      align-items: center;
+      border-radius: calc(var(--border-radius-medium) - 2px);
+      overflow: visible;
+      padding: 0;
+
+      &:hover {
+        background-color: var(--zen-toolbar-element-bg-hover);
+      }
+
+      & .toolbarbutton-badge {
+        transform: translate(4px, 2px);
+      }
+    }
+
+    .unified-extensions-item-contents,
+    .unified-extensions-item-menu-button,
+    unified-extensions-item-messagebar-wrapper {
+      display: none;
+    }
   }
 }

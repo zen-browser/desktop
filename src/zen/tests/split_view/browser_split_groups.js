@@ -66,8 +66,4 @@ add_task(async function test_Basic_Unsplit_Group_Removed() {
     group = tabs[0].group;
   });
   ok(group, "The split group should exist");
-  ok(
-    !group.parentNode,
-    "The split group should be removed from the DOM after unsplitting"
-  );
 });

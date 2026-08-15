@@ -27,7 +27,7 @@
   value: 20 # Percentage of folder height to trigger dragover
 
 - name: zen.tabs.dnd-switch-space-delay
-  value: 800 # milliseconds
+  value: 500 # milliseconds
 
 - name: zen.ctrlTab.show-pending-tabs
   value: false

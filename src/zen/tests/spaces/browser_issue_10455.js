@@ -4,19 +4,24 @@
 "use strict";
 
 add_task(async function test_Issue_10455() {
-  debugger;
   await SpecialPowers.pushPrefEnv({
-    set: [["browser.tabs.closeWindowWithLastTab", true]],
+    set: [
+      ["browser.tabs.closeWindowWithLastTab", true],
+      ["zen.testing.enabled", false],
+      ["zen.window-sync.enabled", false],
+    ],
   });
 
   let newWindow = await BrowserTestUtils.openNewBrowserWindow();
   await newWindow.gZenWorkspaces.promiseInitialized;
-  ok(
-    newWindow.document.documentElement.hasAttribute("zen-workspace-id"),
-    "New window should have a zen-workspace-id attribute"
-  );
 
   const unloadEvent = BrowserTestUtils.waitForEvent(newWindow, "unload");
+  Assert.equal(
+    newWindow.gBrowser.tabs.length,
+    3,
+    "New window should have three tabs"
+  );
+  newWindow.BrowserCommands.closeTabOrWindow();
   newWindow.BrowserCommands.closeTabOrWindow();
   await unloadEvent;
 
@@ -25,18 +30,23 @@ add_task(async function test_Issue_10455() {
 });
 
 add_task(async function test_Issue_10455_Dont_Close() {
-  debugger;
   await SpecialPowers.pushPrefEnv({
-    set: [["browser.tabs.closeWindowWithLastTab", false]],
+    set: [
+      ["browser.tabs.closeWindowWithLastTab", false],
+      ["zen.testing.enabled", false],
+      ["zen.window-sync.enabled", false],
+    ],
   });
 
   let newWindow = await BrowserTestUtils.openNewBrowserWindow();
   await newWindow.gZenWorkspaces.promiseInitialized;
-  ok(
-    newWindow.document.documentElement.hasAttribute("zen-workspace-id"),
-    "New window should have a zen-workspace-id attribute"
-  );
 
+  Assert.equal(
+    newWindow.gBrowser.tabs.length,
+    3,
+    "New window should have three tabs"
+  );
+  newWindow.BrowserCommands.closeTabOrWindow();
   newWindow.BrowserCommands.closeTabOrWindow();
   Assert.strictEqual(
     newWindow.gBrowser.tabs.length,

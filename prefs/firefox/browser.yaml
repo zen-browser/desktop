@@ -98,6 +98,10 @@
   value: false
   locked: true
 
+# See gh-13853 for details on why we should disable this preference
+- name: browser.privatebrowsing.resetPBM.enabled
+  value: false
+
 # See gh-12985 for details on the following preferences
 - name: browser.search.widget.new
   value: true
@@ -179,3 +183,8 @@
   value: "https://safebrowsing.googleapis.com/v4/threatListUpdates:fetch?$ct=application/x-protobuf&key=%GOOGLE_SAFEBROWSING_API_KEY%&pver=2.2"
 - name: browser.safebrowsing.provider.google4.gethashURL
   value: "https://safebrowsing.googleapis.com/v4/fullHashes:find?$ct=application/x-protobuf&key=%GOOGLE_SAFEBROWSING_API_KEY%&pver=2.2"
+
+# Disabled from https://searchfox.org/firefox-main/rev/d6bfff43852356ca98af848b4705d37f8d41856f/modules/libpref/init/StaticPrefList.yaml#2008
+# Only enabled for windows, doesn't really fit inside Zen.
+- name: browser.startup.preXulSkeletonUI
+  value: false

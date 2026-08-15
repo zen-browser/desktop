@@ -1,5 +1,5 @@
 diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/components/BrowserContentHandler.sys.mjs
-index 2152327b42c884456785ef065422e3ca6cc8c50b..932150495d23c0a63987abf14b3dc8a12eb42d6c 100644
+index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09814422bf 100644
 --- a/browser/components/BrowserContentHandler.sys.mjs
 +++ b/browser/components/BrowserContentHandler.sys.mjs
 @@ -603,6 +603,28 @@ nsBrowserContentHandler.prototype = {

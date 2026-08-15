@@ -7,6 +7,7 @@ import createSidebarNotification from "chrome://browser/content/zen-components/Z
 const ZEN_UPDATE_PREF = "astra.updates.last-version";
 const ZEN_BUILD_ID_PREF = "astra.updates.last-build-id";
 const ZEN_UPDATE_SHOW = "astra.updates.show-update-notification";
+const ZEN_UPDATE_NOTIFICATION_TIMEOUT_MS = 15000;
 
 export default function checkForZenUpdates() {
   const version = Services.appinfo.version;
@@ -25,6 +26,7 @@ export default function checkForZenUpdates() {
   );
   createSidebarNotification({
     headingL10nId: "zen-sidebar-notification-updated-heading",
+    autoHideMs: ZEN_UPDATE_NOTIFICATION_TIMEOUT_MS,
     links: [
       {
         url: Services.urlFormatter.formatURL(
@@ -32,6 +34,11 @@ export default function checkForZenUpdates() {
         ),
         l10nId: "zen-sidebar-notification-updated",
         special: true,
+        icon: "chrome://browser/skin/zen-icons/sparkles.svg",
+      },
+      {
+        url: "https://www.zen-browser.app/donate",
+        l10nId: "zen-sidebar-notification-donate",
         icon: "chrome://browser/skin/zen-icons/heart-circle-fill.svg",
       },
       {

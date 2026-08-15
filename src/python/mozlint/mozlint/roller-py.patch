@@ -1,8 +1,8 @@
 diff --git a/python/mozlint/mozlint/roller.py b/python/mozlint/mozlint/roller.py
-index aeafa93cc525d2846614b600e95fd817b832b0ef..69414ed032523f1b53b78ad867145efaea422c63 100644
+index 607b1f1b386ee0ed85277f00b62184fc726c9946..6d460349d1b75b6c4f2caaaf16afdaa1249a4d54 100644
 --- a/python/mozlint/mozlint/roller.py
 +++ b/python/mozlint/mozlint/roller.py
-@@ -92,7 +92,6 @@ def _run_worker(config, paths, **lintargs):
+@@ -87,7 +87,6 @@ def _run_worker(config, paths, **lintargs):
              res = res or []
          else:
              log.error(f"Unexpected result type received: {type(res)}")

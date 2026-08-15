@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 0ea3d82b88819c41ffd866ae9533ebb5a7bff957..37db181d7e71fb6250df5bae363e9cf984b44f79 100644
+index 1026474bb1bc026987be01a8c18fa0927cb911bc..60294e0587147d86ace8e6d6985d8c6eae8248b6 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
-@@ -33,6 +33,7 @@ ChromeUtils.defineESModuleGetters(this, {
+@@ -34,6 +34,7 @@ ChromeUtils.defineESModuleGetters(this, {
      "resource://gre/modules/ContextualIdentityService.sys.mjs",
    CustomizableUI:
      "moz-src:///browser/components/customizableui/CustomizableUI.sys.mjs",
@@ -10,7 +10,7 @@ index 0ea3d82b88819c41ffd866ae9533ebb5a7bff957..37db181d7e71fb6250df5bae363e9cf9
    DevToolsSocketStatus:
      "resource://devtools/shared/security/DevToolsSocketStatus.sys.mjs",
    DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
-@@ -814,7 +815,12 @@ function UpdateBackForwardCommands(aWebNavigation) {
+@@ -816,7 +817,12 @@ function UpdateBackForwardCommands(aWebNavigation) {
  
    var backDisabled = backCommand.hasAttribute("disabled");
    var forwardDisabled = forwardCommand.hasAttribute("disabled");
@@ -24,16 +24,7 @@ index 0ea3d82b88819c41ffd866ae9533ebb5a7bff957..37db181d7e71fb6250df5bae363e9cf9
      if (backDisabled) {
        backCommand.removeAttribute("disabled");
      } else {
-@@ -2305,6 +2311,8 @@ var XULBrowserWindow = {
-     AboutReaderParent.updateReaderButton(gBrowser.selectedBrowser);
-     TranslationsParent.onLocationChange(gBrowser.selectedBrowser);
- 
-+    gZenPinnedTabManager.onLocationChange(gBrowser.selectedBrowser, location);
-+
-     PictureInPicture.updateUrlbarToggle(gBrowser.selectedBrowser);
- 
-     if (!gMultiProcessBrowser) {
-@@ -3820,7 +3828,7 @@ function warnAboutClosingWindow() {
+@@ -3719,7 +3725,7 @@ function warnAboutClosingWindow() {
  
    if (!isPBWindow && !toolbar.visible) {
      return gBrowser.warnAboutClosingTabs(
@@ -42,7 +33,7 @@ index 0ea3d82b88819c41ffd866ae9533ebb5a7bff957..37db181d7e71fb6250df5bae363e9cf9
        gBrowser.closingTabsEnum.ALL
      );
    }
-@@ -3860,7 +3868,7 @@ function warnAboutClosingWindow() {
+@@ -3759,7 +3765,7 @@ function warnAboutClosingWindow() {
      return (
        isPBWindow ||
        gBrowser.warnAboutClosingTabs(
@@ -51,7 +42,7 @@ index 0ea3d82b88819c41ffd866ae9533ebb5a7bff957..37db181d7e71fb6250df5bae363e9cf9
          gBrowser.closingTabsEnum.ALL
        )
      );
-@@ -3885,7 +3893,7 @@ function warnAboutClosingWindow() {
+@@ -3784,7 +3790,7 @@ function warnAboutClosingWindow() {
      AppConstants.platform != "macosx" ||
      isPBWindow ||
      gBrowser.warnAboutClosingTabs(
@@ -60,13 +51,20 @@ index 0ea3d82b88819c41ffd866ae9533ebb5a7bff957..37db181d7e71fb6250df5bae363e9cf9
        gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4825,6 +4833,9 @@ var ConfirmationHint = {
+@@ -4744,6 +4750,16 @@ var ConfirmationHint = {
      }
  
-     document.l10n.setAttributes(this._message, messageId, options.l10nArgs);
+     document.l10n.setAttributes(this._message, messageId, l10nArgs);
 +    if (window.gZenUIManager?.showToast) {
-+      return window.gZenUIManager.showToast(messageId, options);
++      return window.gZenUIManager.showToast(messageId, {
++        hideCheckmark,
++        descriptionId,
++        l10nArgs,
++        showDescription,
++        position,
++        event,
++      });
 +    }
-     if (options.descriptionId) {
-       document.l10n.setAttributes(this._description, options.descriptionId);
+     if (descriptionId) {
+       document.l10n.setAttributes(this._description, descriptionId);
        this._description.hidden = false;

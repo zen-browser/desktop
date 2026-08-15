@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = URL przypiętej karty został zastąpiony bieżącym a
 zen-tabs-renamed = Nazwa karty została pomyślnie zmieniona!
 zen-background-tab-opened-toast = Nowa karta została otworzona w tle!
 zen-workspace-renamed-toast = Zmieniono nazwę przestrzeni roboczej!
+zen-split-view-limit-toast = Nie można dodać kolejnych paneli do widoku podzielonego!
 zen-toggle-compact-mode-button = 
     .label = Tryb kompaktowy
     .tooltiptext = Przełącz tryb kompaktowy

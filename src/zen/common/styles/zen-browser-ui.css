@@ -4,6 +4,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+body,
 #tabbrowser-tabpanels {
   background: transparent !important;
 }
@@ -26,7 +27,7 @@
   }
 }
 
-:root[zen-before-loaded="true"] #browser > *:not(#zen-toast-container),
+:root[zen-before-loaded="true"] #browser > *:not(#zen-toast-container, #zen-browser-background),
 :root[zen-before-loaded="true"] #urlbar {
   opacity: 0 !important;
 }
@@ -44,6 +45,7 @@
   overflow: clip;
 
   isolation: isolate;
+  contain: content;
 
   &::after,
   &::before {
@@ -52,6 +54,7 @@
     inset: 0;
     z-index: 0;
     pointer-events: none;
+    will-change: background-color;
   }
 
   &::after {
@@ -102,6 +105,11 @@
       transition: opacity 0.2s ease-in-out;
     }
   }
+}
+
+:root[swipe-gesture] #tabbrowser-arrowscrollbox {
+  /* See gh-13703 for rationale. */
+  pointer-events: none;
 }
 
 #zen-browser-background {
@@ -389,5 +397,10 @@
   order: 2;
 }
 
-
-
+/* See #14409: firefox 150's body paint containment prevents the right side compact
+ sidebar from remaining active at the screen edge in macOS fullscreen */
+@media (-moz-platform: macos) {
+  :root[macOSNativeFullscreen][zen-compact-mode][zen-right-side] body {
+    contain: none;
+  }
+}

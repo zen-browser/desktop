@@ -17,9 +17,8 @@ add_task(async function test_Max_Subfolders() {
   let currentFolder = folder;
   for (let i = 1; i < TEST_MAX_FOLDERS; i++) {
     await openFolderContextMenu(currentFolder);
-    Assert.notStrictEqual(
-      subfolderItem.getAttribute("disabled"),
-      "true",
+    Assert.ok(
+      !subfolderItem.hasAttribute("disabled"),
       `Subfolder item should be enabled`
     );
     const folderCreateEvent = BrowserTestUtils.waitForEvent(
@@ -35,9 +34,8 @@ add_task(async function test_Max_Subfolders() {
   }
 
   await openFolderContextMenu(currentFolder);
-  Assert.equal(
-    subfolderItem.getAttribute("disabled"),
-    "true",
+  Assert.ok(
+    subfolderItem.hasAttribute("disabled"),
     `Subfolder item should be disabled after reaching max subfolders`
   );
 

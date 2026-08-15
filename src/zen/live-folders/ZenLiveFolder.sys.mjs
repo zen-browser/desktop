@@ -122,14 +122,14 @@ export class nsZenLiveFolderProvider {
     this.manager.saveState();
   }
 
-  fetch(url, { maxContentLength = 5 * 1024 * 1024 } = {}) {
+  fetch(url, { maxContentLength = 5 * 1024 * 1024, headers = {} } = {}) {
     const uri = lazy.NetUtil.newURI(url);
     // TODO: Support userContextId when fetching, it should be inherited from the folder's
     // current space context ID.
     let userContextId = 0;
     let folder = this.manager.getFolderForLiveFolder(this);
     if (folder) {
-      let space = folder.ownerGlobal.gZenWorkspaces.getWorkspaceFromId(
+      let space = folder.documentGlobal.gZenWorkspaces.getWorkspaceFromId(
         folder.getAttribute("zen-workspace-id")
       );
       if (space) {
@@ -154,6 +154,10 @@ export class nsZenLiveFolderProvider {
         Ci.nsILoadInfo.SEC_COOKIES_INCLUDE,
       triggeringPrincipal: principal,
     }).QueryInterface(Ci.nsIHttpChannel);
+
+    for (const [name, value] of Object.entries(headers)) {
+      channel.setRequestHeader(name, value, false);
+    }
 
     let httpStatus = null;
     let contentType = "";

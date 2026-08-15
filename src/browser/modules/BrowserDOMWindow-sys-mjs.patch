@@ -1,8 +1,8 @@
 diff --git a/browser/modules/BrowserDOMWindow.sys.mjs b/browser/modules/BrowserDOMWindow.sys.mjs
-index e951af5edb966718ee20422c8e46d868c177cd1c..cd41305a4da8e675417eca7df5cd4a1ecee90c3d 100644
+index 29c5b1510696cfdd993388957115709b1a149d7c..6616edbc5f992ffdf3df65028cd26c17ef13f315 100644
 --- a/browser/modules/BrowserDOMWindow.sys.mjs
 +++ b/browser/modules/BrowserDOMWindow.sys.mjs
-@@ -437,7 +437,7 @@ export class BrowserDOMWindow {
+@@ -436,7 +436,7 @@ export class BrowserDOMWindow {
      // Passing a null-URI to only create the content window,
      // and pass true for aSkipLoad to prevent loading of
      // about:blank
@@ -11,7 +11,7 @@ index e951af5edb966718ee20422c8e46d868c177cd1c..cd41305a4da8e675417eca7df5cd4a1e
        null,
        aParams,
        aWhere,
-@@ -445,6 +445,10 @@ export class BrowserDOMWindow {
+@@ -444,6 +444,10 @@ export class BrowserDOMWindow {
        aName,
        true
      );

@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = L’adresse de l'onglet épinglé a été remplacée p
 zen-tabs-renamed = L’onglet a été renommé avec succès !
 zen-background-tab-opened-toast = Nouvel onglet ouvert en arrière-plan !
 zen-workspace-renamed-toast = L'espace de travail a été renommé avec succès !
+zen-split-view-limit-toast = Impossible d'ajouter d'autres panneaux à la vue fractionnée !
 zen-toggle-compact-mode-button = 
     .label = Mode compact
     .tooltiptext = Activer/Désactiver le mode compact

@@ -17,6 +17,9 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = Απόκρυψη όλων
     .accesskey = H
+zen-toolbar-context-move-to-folder = 
+    .label = Move to Folder...
+    .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Δημιουργία Φακέλου
     .accesskey = N
@@ -38,7 +41,7 @@ tabbrowser-reset-pin-button =
         }
 zen-tab-sublabel =
     { $tabSubtitle ->
-        [zen-default-pinned] Back to pinned url
-        [zen-default-pinned-cmd] Separate from pinned tab
+        [zen-default-pinned] Πίσω στην καρφιτσωμένη διεύθυνσή
+        [zen-default-pinned-cmd] Διαχωρισμός από την καρφιτσωμένη καρτέλα
        *[other] { $tabSubtitle }
     }

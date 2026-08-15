@@ -528,7 +528,7 @@ function setScrollPosition(bc, x, y) {
       content.addEventListener(
         "mozvisualscroll",
         function onScroll(event) {
-          if (content.document.ownerGlobal.visualViewport == event.target) {
+          if (content.document.documentGlobal.visualViewport == event.target) {
             content.removeEventListener("mozvisualscroll", onScroll, {
               mozSystemGroup: true,
             });
@@ -576,7 +576,7 @@ function setPropertyOfFormField(browserContext, selector, propName, newValue) {
       node[propNameChild] = newValueChild;
 
       let event = node.ownerDocument.createEvent("UIEvents");
-      event.initUIEvent("input", true, true, node.ownerGlobal, 0);
+      event.initUIEvent("input", true, true, node.documentGlobal, 0);
       node.dispatchEvent(event);
     }
   );
@@ -678,7 +678,7 @@ async function openTabMenuFor(tab) {
   EventUtils.synthesizeMouseAtCenter(
     tab,
     { type: "contextmenu" },
-    tab.ownerGlobal
+    tab.documentGlobal
   );
   await tabMenuShown;
 

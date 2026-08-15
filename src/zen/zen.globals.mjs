@@ -41,6 +41,8 @@ export default [
 
   "gZenViewSplitter",
 
+  "gZenSpaceRoutingManager",
+
   "Ci",
   "Cu",
   "Cc",

@@ -4,15 +4,8 @@
 [
   {
     "type": "phabricator",
-    "id": "D284084",
-    "name": "Native MacOS popovers",
-    "replaces": {
-      // Specifically trying to target FeatureCallout.sys.mjs's change.
-      // IMPORTANT: Make sure Feature callouts STILL use native popopvers when
-      //    syncing from upstream, as this is a critical part of the patch.
-      "+            nonnativepopover=\"true\"": "+ ",
-      "body,": ".browser-toolbox-background,"
-    }
+    "id": "D299584",
+    "name": "Native MacOS popovers fix"
   },
   {
     "type": "phabricator",
@@ -21,6 +14,12 @@
     "replaces": {
       "\n\n": "\n     // may want to figure out a more robust way to detect abandonment."
     }
+  },
+  {
+    "type": "local",
+    // TODO: Convert into https://phabricator.services.mozilla.com/D298079
+    //    once it gets accepted.
+    "path": "firefox/allow_backdrop_to_work_on_transparency.patch"
   },
   {
     "type": "local",
@@ -40,5 +39,20 @@
     "type": "phabricator",
     "id": "D291714",
     "name": "gh-12979 Clip dirty_rect to device_size"
+  },
+  {
+    "type": "phabricator",
+    "ids": [
+      "D312028",
+      "D312036",
+      "D312091"
+    ],
+    "name": "Expose tiled attribute to all platforms"
+  },
+  {
+    "type": "patch",
+    "url": "https://gitlab.archlinux.org/archlinux/packaging/packages/firefox/-/raw/main/0002-Bug-2057577-DOM-Media-Add-FFmpeg-63-support.-r-alwu-.patch",
+    "dest": "firefox",
+    "filename": "bug-2057577-ffmpeg-63-support.patch"
   }
 ]

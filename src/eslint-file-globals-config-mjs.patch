@@ -1,5 +1,5 @@
 diff --git a/eslint-file-globals.config.mjs b/eslint-file-globals.config.mjs
-index 4f07a1bf0e0845fc955601167d011cbac8d73801..d1bda7e60d4d807226153a98198150005b69abe0 100644
+index c15744aeaf940cea9e438e7b9924a328d2615b9f..df5c6c3f36e78537e0a54fb89dfd5b3d510a51a4 100644
 --- a/eslint-file-globals.config.mjs
 +++ b/eslint-file-globals.config.mjs
 @@ -22,6 +22,7 @@
@@ -10,9 +10,9 @@ index 4f07a1bf0e0845fc955601167d011cbac8d73801..d1bda7e60d4d807226153a9819815000
  
  export default [
    {
-@@ -553,4 +554,9 @@ export default [
-     ],
-     languageOptions: { globals: globals.worker },
+@@ -576,4 +577,9 @@ export default [
+       globals: globals.audioWorklet,
+     },
    },
 +  {
 +    name: "zen-globals",

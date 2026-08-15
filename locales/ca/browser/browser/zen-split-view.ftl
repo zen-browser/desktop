@@ -6,7 +6,7 @@ tab-zen-split-tabs =
     .label =
         { $tabCount ->
             [-1] Pestanya dividida
-            [1] Uneix pestanyes (calen diverses pestanyes seleccionades)
+            [1] Afegeix una vista dividida...
            *[other] Uneix { $tabCount } pestanyes
         }
     .accesskey = S

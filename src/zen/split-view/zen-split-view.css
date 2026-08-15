@@ -238,7 +238,7 @@
   width: 200px;
   height: 250px;
   border-radius: 16px;
-  background: black;
+  background: light-dark(white, black);
   justify-content: center;
   align-items: center;
   padding: 20px;
@@ -251,7 +251,7 @@
   }
 
   & label {
-    color: white;
+    color: light-dark(black, white);
     font-size: 14px;
     font-weight: bold;
     text-align: center;

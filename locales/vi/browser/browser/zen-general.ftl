@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-panel-ui-current-profile-text = Hồ sơ hiện tại
+zen-panel-ui-current-profile-text = hồ sơ hiện tại
 unified-extensions-description = Các tiện ích mở rộng được sử dụng để mang thêm tính năng vào { -brand-short-name }.
 tab-context-zen-reset-pinned-tab = 
     .label =
@@ -14,7 +14,7 @@ tab-context-zen-reset-pinned-tab =
 tab-context-zen-add-essential = 
     .label = Thêm vào thẻ chính
     .accesskey = E
-tab-context-zen-add-essential-badge = Đã dùng { $num } / { $max } vị trí
+tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential = 
     .label = Gỡ khỏi thẻ chính
     .accesskey = R
@@ -48,6 +48,7 @@ zen-pinned-tab-replaced = URL của thẻ đã ghim đã được thay thế b�
 zen-tabs-renamed = Thẻ đã được đổi tên!
 zen-background-tab-opened-toast = Một thẻ mới đã được mở dưới nền!
 zen-workspace-renamed-toast = Không gian làm việc đã được đổi tên!
+zen-split-view-limit-toast = Không thể chia thêm màn hình!
 zen-toggle-compact-mode-button = 
     .label = Chế độ thu gọn
     .tooltiptext = Bật Chế độ thu gọn

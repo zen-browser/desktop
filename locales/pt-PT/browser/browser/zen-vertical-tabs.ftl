@@ -17,6 +17,9 @@ zen-toolbar-context-compact-mode-just-toolbar =
 zen-toolbar-context-compact-mode-hide-both = 
     .label = Ocultar ambas
     .accesskey = H
+zen-toolbar-context-move-to-folder = 
+    .label = Mover para Pasta...
+    .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Nova Pasta
     .accesskey = N
@@ -28,7 +31,7 @@ tabbrowser-unload-tab-button =
     .tooltiptext =
         { $tabCount ->
             [one] Hibernar e mudar para o separador
-           *[other] Hibernar { $tabCount } separadores mudar para o primeiro
+           *[other] Hibernar { $tabCount } separadores e mudar para o primeiro
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
@@ -37,8 +40,8 @@ tabbrowser-reset-pin-button =
            *[other] Restaurar e fixar { $tabCount } separadores
         }
 zen-tab-sublabel =
-    { $tabSubtitle ->
-        [zen-default-pinned] Back to pinned url
-        [zen-default-pinned-cmd] Separate from pinned tab
+    rl{ $tabSubtitle ->
+        [zen-default-pinned] Voltar para URL fixado
+        [zen-default-pinned-cmd] Separar do separador fixado
        *[other] { $tabSubtitle }
     }

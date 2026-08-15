@@ -1,9 +1,9 @@
 diff --git a/tools/lint/rejected-words.yml b/tools/lint/rejected-words.yml
-index d5ca2e05fb335fcd17d1559d5332ec4a43d7cd1d..1f34e8d5e05508fc541bc7aa6a779cd98206032a 100644
+index eae20774aaf1001a8fd06dbfe13dca13979db4ad..dd4786dcb8ea1ca4d2115a775bd1e940d2ccd725 100644
 --- a/tools/lint/rejected-words.yml
 +++ b/tools/lint/rejected-words.yml
-@@ -8,7 +8,6 @@ avoid-blacklist-and-whitelist:
-     ignore-case: true
+@@ -13,7 +13,6 @@ avoid-blacklist-and-whitelist:
+         - 'tools/lint/mozcheck/**'
      # Based on codespell with idl and webidl added.
      extensions:
 -        - js

@@ -8,18 +8,25 @@ ac_add_options --disable-dmd
 ac_add_options --enable-eme=widevine
 
 if test "$ZEN_RELEASE"; then
-  # override LTO settings
-  # TODO: Dont use LTO for now, it's causing a lot of issues
-  export MOZ_LTO=cross,thin
-  ac_add_options --enable-lto=cross,thin
+  ALLOWED_SDKS="26.5 26.4"
+  for SDK in $ALLOWED_SDKS; do
+    if [ -d "/Library/Developer/CommandLineTools/SDKs/MacOSX${SDK}.sdk" ]; then
+      ac_add_options --with-macos-sdk=/Library/Developer/CommandLineTools/SDKs/MacOSX${SDK}.sdk
+      break
+    fi
+  done
 fi
 
 if test "$ZEN_RELEASE"; then
-  if test "$ZEN_GA_DISABLE_PGO"; then
-    export ZEN_DUMMY=1
-  else
-    export MOZ_PGO=1
-    ac_add_options MOZ_PGO=1
+  if ! test "$ZEN_GA_DISABLE_PGO"; then
+    if test "$ZEN_GA_GENERATE_PROFILE"; then
+      mk_add_options "export MOZ_AUTOMATION_PACKAGE_GENERATED_SOURCES=0"
+      ac_add_options --enable-profile-generate=cross
+    else
+      ac_add_options --enable-profile-use=cross
+      ac_add_options --with-pgo-profile-path="$(echo ~)/artifact/merged.profdata"
+      ac_add_options --with-pgo-jarlog="$(echo ~)/artifact/en-US.log"
+    fi
   fi
 fi
 
@@ -28,9 +35,12 @@ if test "$SURFER_COMPAT" = "x86_64"; then
 
   if test "$ZEN_RELEASE"; then
     ac_add_options --enable-wasm-avx
+
+    # override LTO settings
+    export MOZ_LTO=cross,thin
+    ac_add_options --enable-lto=cross,thin
   fi
 else
-  ac_add_options --enable-clang-plugin
   ac_add_options --target=aarch64-apple-darwin
 
   if test "$ZEN_RELEASE"; then

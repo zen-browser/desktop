@@ -1,5 +1,5 @@
 diff --git a/browser/installer/windows/nsis/defines.nsi.in b/browser/installer/windows/nsis/defines.nsi.in
-index c6bb41695d70d17e5691e0d1856b79f7111d5026..8a9393a79a60aca23f80fc989fe2ae333ba54e39 100644
+index a9bf2d67ce522054442be664bda1434c63609ea1..16e03732d78207ce602066a4bccc0d2c2385ca91 100644
 --- a/browser/installer/windows/nsis/defines.nsi.in
 +++ b/browser/installer/windows/nsis/defines.nsi.in
 @@ -90,7 +90,7 @@
@@ -11,7 +11,7 @@ index c6bb41695d70d17e5691e0d1856b79f7111d5026..8a9393a79a60aca23f80fc989fe2ae33
  
  # ARCH is used when it is necessary to differentiate the x64 registry keys from
  # the x86 registry keys (e.g. the uninstall registry key).
-@@ -151,7 +151,11 @@ VIAddVersionKey "ProductVersion"  "${AppVersion}"
+@@ -147,7 +147,11 @@ VIAddVersionKey "ProductVersion"  "${AppVersion}"
 +VIAddVersionKey "SupportLink" "https://github.com/Hrishikeshmind/astradesktop"
 +VIAddVersionKey "URLUpdateInfo" "https://github.com/Hrishikeshmind/astradesktop/releases"
 +VIAddVersionKey "URLInfoAbout" "https://github.com/Hrishikeshmind/astradesktop"

@@ -26,21 +26,33 @@ export MOZ_INCLUDE_SOURCE_INFO=1
 
 ac_add_options --enable-application=browser
 
-# Anything except 'SCCACHE_GHA_ENABLED == false'
-if ! test "$SCCACHE_GHA_ENABLED" = "false"; then
+if test "$SCCACHE_GHA_ENABLED" = "true"; then
   if test -x "$(command -v sccache)"; then
     ac_add_options --with-ccache=sccache
   elif test -f "$HOME/.mozbuild/sccache/sccache"; then
     ac_add_options --with-ccache="$HOME"/.mozbuild/sccache/sccache
   fi
+
+  mk_add_options 'export RUSTC_WRAPPER=sccache'
+  mk_add_options 'export CCACHE_CPP2=yes'
 fi
 
-ac_add_options --without-google-safebrowsing-api-keyfile
+# add API keys if the file exists (CI writes this; local builds skip)
+if test -f "$HOME/.zen-keys/safebrowsing.dat"; then
+  ac_add_options --with-google-safebrowsing-api-keyfile="$HOME/.zen-keys/safebrowsing.dat"
+fi
+
+if test -f "$HOME/.zen-keys/mozilla.dat"; then
+  ac_add_options --with-mozilla-api-keyfile="$HOME/.zen-keys/mozilla.dat"
+fi
+
+if test -f "$HOME/.zen-keys/google_location_service.dat"; then
+  ac_add_options --with-google-location-service-api-keyfile="$HOME/.zen-keys/google_location_service.dat"
+fi
 
 if test "$ZEN_RELEASE"; then
 
-  # TODO: Make this successful in builds
-  # ac_add_options --enable-clang-plugin
+  ac_add_options --enable-clang-plugin
   ac_add_options --enable-bootstrap=-sccache
 
   ac_add_options --enable-optimize
@@ -86,8 +98,6 @@ if test "$ZEN_RELEASE"; then
   # but may cause stability issues.
   ac_add_options --enable-replace-malloc
 fi
-
-ac_add_options --enable-unverified-updates
 
 ac_add_options --enable-jxl
 

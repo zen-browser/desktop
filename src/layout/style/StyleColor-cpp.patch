@@ -1,0 +1,70 @@
+diff --git a/layout/style/StyleColor.cpp b/layout/style/StyleColor.cpp
+index bbee32af30f35525730a10d0b242c0e8a8fe4695..a590fff105b30bc96fa7a0d8a8d3b1d5aa997e08 100644
+--- a/layout/style/StyleColor.cpp
++++ b/layout/style/StyleColor.cpp
+@@ -9,6 +9,7 @@
+ #include "mozilla/dom/BindingDeclarations.h"
+ #include "nsIFrame.h"
+ #include "nsStyleStruct.h"
++#include "mozilla/nsZenBoostsBackend.h"
+ 
+ namespace mozilla {
+ 
+@@ -96,23 +97,24 @@ StyleAbsoluteColor StyleColor::ResolveColor(
+ 
+ template <>
+ nscolor StyleColor::CalcColor(nscolor aColor) const {
+-  return ResolveColor(StyleAbsoluteColor::FromColor(aColor)).ToColor();
++  return ResolveColor(StyleAbsoluteColor::FromColor(aColor)).ToColor(nullptr);
+ }
+ 
+ template <>
+ nscolor StyleColor::CalcColor(
+     const StyleAbsoluteColor& aForegroundColor) const {
+-  return ResolveColor(aForegroundColor).ToColor();
++  return ResolveColor(aForegroundColor).ToColor(nullptr);
+ }
+ 
+ template <>
+-nscolor StyleColor::CalcColor(const ComputedStyle& aStyle) const {
+-  return ResolveColor(aStyle.StyleText()->mColor).ToColor();
++nscolor StyleColor::CalcColor(const ComputedStyle& aStyle,
++                              const nsIFrame* aFrame) const {
++  return ResolveColor(aStyle.StyleText()->mColor).ToColor(aFrame);
+ }
+ 
+ template <>
+ nscolor StyleColor::CalcColor(const nsIFrame* aFrame) const {
+-  return ResolveColor(aFrame->StyleText()->mColor).ToColor();
++  return ResolveColor(aFrame->StyleText()->mColor).ToColor(aFrame);
+ }
+ 
+ StyleAbsoluteColor StyleAbsoluteColor::ToColorSpace(
+@@ -120,7 +122,7 @@ StyleAbsoluteColor StyleAbsoluteColor::ToColorSpace(
+   return Servo_ConvertColorSpace(this, aColorSpace);
+ }
+ 
+-nscolor StyleAbsoluteColor::ToColor() const {
++nscolor StyleAbsoluteColor::ToColor(const nsIFrame* aFrame) const {
+   constexpr StyleColorSpace DEST_COLOR_SPACE = StyleColorSpace::Srgb;
+ 
+   constexpr float MIN = 0.0f;
+@@ -162,11 +164,13 @@ nscolor StyleAbsoluteColor::ToColor() const {
+     }
+   }
+ 
+-  return NS_RGBA(
+-      nsStyleUtil::FloatToColorComponent(translatedColor.components._0),
+-      nsStyleUtil::FloatToColorComponent(translatedColor.components._1),
+-      nsStyleUtil::FloatToColorComponent(translatedColor.components._2),
+-      nsStyleUtil::FloatToColorComponent(translatedColor.alpha));
++  return zen::nsZenBoostsBackend::ResolveStyleColor(
++      NS_RGBA(
++          nsStyleUtil::FloatToColorComponent(translatedColor.components._0),
++          nsStyleUtil::FloatToColorComponent(translatedColor.components._1),
++          nsStyleUtil::FloatToColorComponent(translatedColor.components._2),
++          nsStyleUtil::FloatToColorComponent(translatedColor.alpha)),
++      aFrame);
+ }
+ 
+ }  // namespace mozilla

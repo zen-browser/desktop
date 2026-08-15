@@ -4,7 +4,6 @@
 
 class nsZenWorkspaceIcons extends MozXULElement {
   #hasConnected = false;
-  #addChip = null;
 
   connectedCallback() {
     if (this.delayConnectedCallback() || this.#hasConnected) {
@@ -16,12 +15,12 @@ class nsZenWorkspaceIcons extends MozXULElement {
 
     this.initDragAndDrop();
     this.addEventListener("mouseover", e => {
-      if (this.isReorderMode) {
+      if (e.shiftKey || this.isReorderMode) {
         return;
       }
       const target = e.target.closest("toolbarbutton[zen-workspace-id]");
       if (target) {
-        this.scrollLeft = target.offsetLeft - 10;
+        target.scrollIntoView({ behavior: "smooth", inline: "nearest" });
       }
     });
   }
@@ -53,9 +52,7 @@ class nsZenWorkspaceIcons extends MozXULElement {
         }
 
         if (this.isReorderMode) {
-          const tabs = [...this.children].filter(
-            el => el.hasAttribute("zen-workspace-id")
-          );
+          const tabs = [...this.children];
           const mouse = moveEvent[clientPos];
 
           for (const tab of tabs) {
@@ -94,9 +91,7 @@ class nsZenWorkspaceIcons extends MozXULElement {
 
         this.reorderWorkspaceToIndex(
           draggedTab,
-          Array.from(this.querySelectorAll("[zen-workspace-id]")).indexOf(
-            draggedTab
-          )
+          Array.from(this.children).indexOf(draggedTab)
         );
 
         draggedTab = null;
@@ -116,108 +111,24 @@ class nsZenWorkspaceIcons extends MozXULElement {
     button.setAttribute("context", "zenWorkspaceMoreActions");
     const icon = document.createXULElement("label");
     icon.setAttribute("class", "zen-workspace-icon");
-    const isValidIcon =
-      gZenWorkspaces.workspaceHasIcon(workspace) &&
-      window.gZenEmojiPicker?.isValidWorkspaceIcon(workspace.icon);
-    const isSvgIcon = isValidIcon && workspace.icon.endsWith(".svg");
-    if (isValidIcon) {
+    const isSvgIcon = workspace.icon && workspace.icon.endsWith(".svg");
+    if (gZenWorkspaces.workspaceHasIcon(workspace)) {
       if (isSvgIcon) {
         const image = document.createElement("img");
         image.src = workspace.icon;
         image.classList.add("zen-workspace-icon");
-        image.onerror = () => {
-          image.remove();
-          icon.setAttribute("no-icon", "true");
-          button.appendChild(icon);
-        };
         button.appendChild(image);
       } else {
         icon.textContent = workspace.icon;
       }
     } else {
-      icon.setAttribute("no-icon", "true");
+      icon.setAttribute("no-icon", true);
     }
     if (!isSvgIcon) {
       button.appendChild(icon);
     }
     button.addEventListener("command", this);
-    button.addEventListener("auxclick", e => {
-      if (e.button !== 1) {
-        return;
-      }
-      // Middle-click is unused on Space icons; dedicated Peek entry (focuses search).
-      e.preventDefault();
-      e.stopPropagation();
-      const id = button.getAttribute("zen-workspace-id");
-      if (id) {
-        void gZenWorkspaces.openAstraSpacePeekFor(id, button, {
-          focusSearch: true,
-        });
-      }
-    });
-    // Hover Peek after delay — does not steal click-to-switch or move focus.
-    let hoverTimer = null;
-    button.addEventListener("mouseenter", () => {
-      if (this.isReorderMode) {
-        return;
-      }
-      if (document.documentElement.hasAttribute("zen-compact-animating")) {
-        return;
-      }
-      if (document.querySelector("panel[panelopen=true], menupopup[open=true]")) {
-        return;
-      }
-      hoverTimer = setTimeout(() => {
-        hoverTimer = null;
-        if (this.isReorderMode) {
-          return;
-        }
-        if (document.documentElement.hasAttribute("zen-compact-animating")) {
-          return;
-        }
-        if (
-          document.querySelector("panel[panelopen=true], menupopup[open=true]")
-        ) {
-          return;
-        }
-        const id = button.getAttribute("zen-workspace-id");
-        if (id && id !== gZenWorkspaces.activeWorkspace) {
-          void gZenWorkspaces.openAstraSpacePeekFor(id, button, {
-            focusSearch: false,
-          });
-        }
-      }, 650);
-    });
-    button.addEventListener("mouseleave", () => {
-      if (hoverTimer) {
-        clearTimeout(hoverTimer);
-        hoverTimer = null;
-      }
-    });
     return button;
-  }
-
-  #ensureAddChip() {
-    if (this.#addChip?.isConnected) {
-      return this.#addChip;
-    }
-    const chip = document.createXULElement("toolbarbutton");
-    chip.classList.add(
-      "subviewbutton",
-      "toolbarbutton-1",
-      "zen-workspace-add-chip"
-    );
-    chip.setAttribute("context", "zenSpaceQuickMenu");
-    document.l10n.setAttributes(chip, "zen-spaces-add-chip");
-    chip.addEventListener("click", event => {
-      event.stopPropagation();
-      const popup = document.getElementById("zenSpaceQuickMenu");
-      if (popup) {
-        popup.openPopup(chip, "after_start");
-      }
-    });
-    this.#addChip = chip;
-    return chip;
   }
 
   async #updateIcons() {
@@ -227,9 +138,11 @@ class nsZenWorkspaceIcons extends MozXULElement {
       const button = this.#createWorkspaceIcon(workspace);
       this.appendChild(button);
     }
-    this.appendChild(this.#ensureAddChip());
-    this.removeAttribute("dont-show");
-    this.toggleAttribute("astra-single-space", workspaces.length <= 1);
+    if (workspaces.length <= 1) {
+      this.setAttribute("dont-show", "true");
+    } else {
+      this.removeAttribute("dont-show");
+    }
     gZenWorkspaces.onWindowResize();
   }
 
@@ -237,7 +150,7 @@ class nsZenWorkspaceIcons extends MozXULElement {
     const button = event.target;
     const uuid = button.getAttribute("zen-workspace-id");
     if (uuid) {
-      void gZenWorkspaces.switchSpaceSafely(uuid);
+      gZenWorkspaces.changeWorkspaceWithID(uuid);
     }
   }
 
@@ -247,7 +160,7 @@ class nsZenWorkspaceIcons extends MozXULElement {
   }
 
   set activeIndex(uuid) {
-    const buttons = this.querySelectorAll("[zen-workspace-id]");
+    const buttons = this.querySelectorAll("toolbarbutton");
     if (!buttons.length) {
       return;
     }
@@ -264,14 +177,14 @@ class nsZenWorkspaceIcons extends MozXULElement {
     if (selected == -1) {
       return;
     }
-    buttons[selected].setAttribute("active", "true");
-    this.scrollLeft = buttons[selected].offsetLeft - 10;
+    buttons[selected].setAttribute("active", true);
+    buttons[selected].scrollIntoView({ behavior: "smooth", inline: "nearest" });
     this.setAttribute("selected", selected);
   }
 
   get activeIndex() {
     const selected = this.getAttribute("selected");
-    const buttons = this.querySelectorAll("[zen-workspace-id]");
+    const buttons = this.querySelectorAll("toolbarbutton");
     let i = 0;
     for (const button of buttons) {
       if (i == selected) {

@@ -39,7 +39,7 @@
     overflow: clip;
     pointer-events: none;
 
-    & #urlbar:not([breakout-extend='true']) {
+    & #urlbar:not([breakout-extend]) {
       /* Sometimes, "opacity: 1" is forced elsewhere */
       opacity: 0 !important;
       pointer-events: none;

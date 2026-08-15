@@ -1,4 +1,4 @@
-﻿/* This Source Code Form is subject to the terms of the Mozilla Public
+/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -32,6 +32,29 @@ XPCOMUtils.defineLazyPreferenceGetter(
   "COMPACT_MODE_SHOW_SIDEBAR_AND_TOOLBAR_ON_HOVER",
   "zen.view.compact.show-sidebar-and-toolbar-on-hover",
   true
+);
+
+// Distance (in CSS pixels) the mouse can travel past the window bounds after
+// leaving the window before the hovered element is collapsed
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "COMPACT_MODE_OUTSIDE_WINDOW_HORIZONTAL_OFFSET",
+  "zen.view.compact.outside-window-edge-offset.horizontal",
+  250
+);
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "COMPACT_MODE_OUTSIDE_WINDOW_VERTICAL_OFFSET",
+  "zen.view.compact.outside-window-edge-offset.vertical",
+  150
+);
+
+XPCOMUtils.defineLazyServiceGetter(
+  lazy,
+  "zenMouseTracker",
+  "@mozilla.org/zen/mouse-tracker;1",
+  Ci.nsIZenMouseTracker
 );
 
 ChromeUtils.defineLazyGetter(lazy, "mainAppWrapper", () =>
@@ -96,9 +119,21 @@ window.gZenCompactModeManager = {
       tabIsRightObserver
     );
 
+    const outsideMouseTrackerExitObserver =
+      this._onOutsideMouseTrackerExit.bind(this);
+    Services.obs.addObserver(
+      outsideMouseTrackerExitObserver,
+      "zen-mouse-tracker:exited"
+    );
+
     window.addEventListener(
       "unload",
       () => {
+        this._stopTrackingMouseOutsideWindow();
+        Services.obs.removeObserver(
+          outsideMouseTrackerExitObserver,
+          "zen-mouse-tracker:exited"
+        );
         Services.prefs.removeObserver(
           "zen.tabs.vertical.right-side",
           tabIsRightObserver
@@ -129,6 +164,10 @@ window.gZenCompactModeManager = {
       this._invalidateSidebarBoundsCache();
       this._clearEdgeRevealState();
     });
+
+    // Hide any element kept open by the outside mouse tracking as soon as the
+    // window loses focus
+    window.addEventListener("deactivate", () => this._collapseTrackedElement());
 
     this._canShowBackgroundTabToast = Services.prefs.getBoolPref(
       "zen.view.compact.show-background-tab-toast",
@@ -185,6 +224,8 @@ window.gZenCompactModeManager = {
       // We dont want the user to be able to spam the button
       return;
     }
+    delete this._isTabBeingDragged;
+    this._stopTrackingMouseOutsideWindow();
     this.sidebar.removeAttribute("zen-user-show");
     // We use this element in order to make it persis across restarts, by using the XULStore.
     // main-window can't store attributes other than window sizes, so we use this instead
@@ -361,7 +402,6 @@ window.gZenCompactModeManager = {
     const attributes = [
       "panelopen",
       "open",
-      "opening",
       "breakout-extend",
       "zen-floating-urlbar",
     ];
@@ -370,7 +410,7 @@ window.gZenCompactModeManager = {
       [
         {
           selector:
-            ":where([panelopen='true'], [open='true'], [showing='true'], [breakout-extend='true'])" +
+            ":where([panelopen], [open], [breakout-extend])" +
             ":not(#urlbar[zen-floating-urlbar='true']):not(tab):not(.zen-compact-mode-ignore)",
         },
       ],
@@ -382,7 +422,7 @@ window.gZenCompactModeManager = {
       [
         {
           selector:
-            ":where([panelopen='true'], [open='true'], [showing='true'], #urlbar:focus-within, [breakout-extend='true'])" +
+            ":where([panelopen], [open], #urlbar:focus-within, [breakout-extend])" +
             ":not(.zen-compact-mode-ignore)",
         },
       ],
@@ -1433,7 +1473,11 @@ window.gZenCompactModeManager = {
       }
     } else {
       if (attr === "zen-has-hover") {
+        if (element === this._outsideTrackedElement) {
+          this._stopTrackingMouseOutsideWindow();
+        }
         element.removeAttribute("zen-has-implicit-hover");
+        gURLBar.updateTextOverflow();
       }
       element.removeAttribute(attr);
       // Only remove if none of the verified attributes are present
@@ -1650,18 +1694,23 @@ window.gZenCompactModeManager = {
           }
           window.cancelAnimationFrame(this._removeHoverFrames[target.id]);
 
-          this.flashElement(
-            target,
-            this.hideAfterHoverDuration,
-            "has-hover" + target.id,
-            "zen-has-hover"
-          );
+          if (!this._trackMouseOutsideWindow(entry.screenEdge, target)) {
+            // We can't track the mouse position outside of the window on
+            // this platform, fall back to hiding after a fixed duration
+            this.flashElement(
+              target,
+              this.hideAfterHoverDuration,
+              "has-hover" + target.id,
+              "zen-has-hover"
+            );
+          }
           document.addEventListener(
             "mousemove",
             () => {
               if (target.matches(":hover")) {
                 return;
               }
+              // Closing the element also stops the outside mouse tracking
               this._setElementExpandAttribute(target, false);
               this.clearFlashTimeout("has-hover" + target.id);
             },
@@ -1705,7 +1754,55 @@ window.gZenCompactModeManager = {
     return bBox.left - error < x && x < bBox.right + error;
   },
 
+  _trackMouseOutsideWindow(screenEdge, target) {
+    this._stopTrackingMouseOutsideWindow();
+    const maxEdgeOffset =
+      screenEdge === "left" || screenEdge === "right"
+        ? lazy.COMPACT_MODE_OUTSIDE_WINDOW_HORIZONTAL_OFFSET
+        : lazy.COMPACT_MODE_OUTSIDE_WINDOW_VERTICAL_OFFSET;
+    try {
+      lazy.zenMouseTracker.registerWindow(window, screenEdge, maxEdgeOffset);
+    } catch (e) {
+      // The platform can't track the global mouse position (e.g. Linux)
+      return false;
+    }
+    this._outsideTrackedElement = target;
+    this.clearFlashTimeout("has-hover" + target.id);
+    window.requestAnimationFrame(() => {
+      if (this._outsideTrackedElement === target) {
+        this._setElementExpandAttribute(target, true);
+      }
+    });
+    return true;
+  },
+
+  _stopTrackingMouseOutsideWindow() {
+    const target = this._outsideTrackedElement;
+    if (!target) {
+      return;
+    }
+    this._outsideTrackedElement = null;
+    lazy.zenMouseTracker.unregisterWindow(window);
+  },
+
+  _collapseTrackedElement() {
+    const target = this._outsideTrackedElement;
+    if (!target) {
+      return;
+    }
+    // Closing the element also unregisters us from the mouse tracker
+    this._setElementExpandAttribute(target, false);
+    this.clearFlashTimeout("has-hover" + target.id);
+  },
+
+  _onOutsideMouseTrackerExit(subject) {
+    if (subject === window) {
+      this._collapseTrackedElement();
+    }
+  },
+
   _clearAllHoverStates() {
+    this._stopTrackingMouseOutsideWindow();
     // Clear hover attributes from all hoverable elements, but never while an
     // Astra panel lock is holding the Zen sidebar open.
     if (this.isPanelLocked()) {
@@ -1748,24 +1845,43 @@ window.gZenCompactModeManager = {
     );
   },
 
-  async _onTabOpen(tab, inBackground) {
+  async _onTabOpen(tab, inBackground, beforeRouteResult = {}) {
+    const isSidebarHidden = this.preference && !this.isSidebarPotentiallyOpen();
+
     if (
       inBackground &&
-      this.preference &&
-      !this.isSidebarPotentiallyOpen() &&
+      (isSidebarHidden || beforeRouteResult.isRouteFound) &&
       this._canShowBackgroundTabToast &&
       !gZenGlanceManager._animating &&
       !this._nextTimeWillBeActive
     ) {
-      gZenUIManager.showToast("zen-background-tab-opened-toast", {
+      const isTabRoutedToCurrentSpace =
+        beforeRouteResult.targetRoute === gZenWorkspaces.activeWorkspace;
+      // Do not show the toast if the sidebar is not hidden and
+      // the tab is being routed to the current space
+      if (!isSidebarHidden && isTabRoutedToCurrentSpace) {
+        return;
+      }
+
+      let messageId = "zen-background-tab-opened-toast";
+      let toastOptions = {
         button: {
           id: "zen-open-background-tab-button",
           command: () => {
-            const targetWindow = window.ownerGlobal.parent || window;
+            const targetWindow = window.parent || window;
             targetWindow.gBrowser.selectedTab = tab;
           },
         },
-      });
+      };
+
+      if (beforeRouteResult.isRouteFound && !isTabRoutedToCurrentSpace) {
+        messageId = "zen-space-routing-tab-routed-toast";
+        toastOptions = {
+          l10nArgs: { targetWorkspace: beforeRouteResult.targetWorkspaceName },
+        };
+      }
+
+      gZenUIManager.showToast(messageId, toastOptions);
     }
     delete this._nextTimeWillBeActive;
   },

@@ -22,6 +22,14 @@
 - name: zen.view.compact.sidebar-keep-hover.duration
   value: 150
 
+# How far (in CSS pixels) the mouse may travel past the window bounds after
+# leaving the window before the hovered sidebar/toolbar is collapsed
+- name: zen.view.compact.outside-window-edge-offset.horizontal
+  value: 200
+
+- name: zen.view.compact.outside-window-edge-offset.vertical
+  value: 100
+
 - name: zen.view.compact.animate-sidebar
   value: true
 

@@ -1,0 +1,14 @@
+diff --git a/layout/painting/nsCSSRenderingBorders.cpp b/layout/painting/nsCSSRenderingBorders.cpp
+index fd2524fd78b1709363afda35e4b0d4320913d9ec..c5b90bc789cdd7f8b0b661ca99b8c7f4d01e6d68 100644
+--- a/layout/painting/nsCSSRenderingBorders.cpp
++++ b/layout/painting/nsCSSRenderingBorders.cpp
+@@ -3624,7 +3624,8 @@ ImgDrawResult nsCSSBorderImageRenderer::CreateWebRenderCommands(
+     case StyleImage::Tag::Gradient: {
+       const StyleGradient& gradient = *mImageRenderer.GetGradientData();
+       nsCSSGradientRenderer renderer = nsCSSGradientRenderer::Create(
+-          aForFrame->PresContext(), aForFrame->Style(), gradient, mImageSize);
++          aForFrame->PresContext(), aForFrame->Style(), aForFrame, gradient,
++          mImageSize);
+ 
+       wr::ExtendMode extendMode;
+       nsTArray<wr::GradientStop> stops;

@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = Адресът на закачения раздел б
 zen-tabs-renamed = Разделът беше успешно преименуван!
 zen-background-tab-opened-toast = Отворен е нов раздел на заден план!
 zen-workspace-renamed-toast = Работното пространство беше преименувано успешно!
+zen-split-view-limit-toast = Can't add more panels to the split view!
 zen-toggle-compact-mode-button = 
     .label = Компактен изглед
     .tooltiptext = Превключи компактен режим

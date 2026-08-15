@@ -7,8 +7,8 @@ unified-extensions-description = As extensões são usadas para trazer funcional
 tab-context-zen-reset-pinned-tab = 
     .label =
         { $isEssential ->
-            [true] Reset Essential Tab
-           *[false] Reset Pinned Tab
+            [true] Repor Separador Essencial
+           *[false] Repor Separador Fixado
         }
     .accesskey = R
 tab-context-zen-add-essential = 
@@ -21,8 +21,8 @@ tab-context-zen-remove-essential =
 tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] Replace Essential URL with Current
-           *[false] Replace Pinned URL with Current
+            [true] Substituir URL Essencial com o Atual
+           *[false] Substituir URL Fixado com o Atual
         }
     .accesskey = C
 tab-context-zen-edit-title = 
@@ -41,7 +41,7 @@ pictureinpicture-minimize-btn =
     .tooltip = Minimizar
 zen-panel-ui-gradient-generator-custom-color = Cor personalizada
 zen-copy-current-url-confirmation = URL atual copiado!
-zen-copy-current-url-as-markdown-confirmation = Copied current URL as Markdown!
+zen-copy-current-url-as-markdown-confirmation = URL atual copiado em Markdown!
 zen-general-cancel-label = 
     .label = Cancelar
 zen-general-confirm = 
@@ -50,6 +50,7 @@ zen-pinned-tab-replaced = O URL do separador fixado foi substituído pelo URL at
 zen-tabs-renamed = Nome do separador alterado com sucesso!
 zen-background-tab-opened-toast = Novo separador aberto em segundo plano!
 zen-workspace-renamed-toast = Nome do espaço de trabalho alterado com sucesso!
+zen-split-view-limit-toast = Não é possível adicionar mais painéis à vista dividida!
 zen-toggle-compact-mode-button = 
     .label = Modo Compacto
     .tooltiptext = Alternar Modo Compacto
@@ -123,4 +124,4 @@ zen-window-sync-migration-dialog-message = Agora, o Zen sincroniza as janelas no
 zen-window-sync-migration-dialog-learn-more = Saber Mais
 zen-window-sync-migration-dialog-accept = Entendido
 zen-appmenu-new-blank-window = 
-    .label = New blank window
+    .label = Nova janela sem sincronização

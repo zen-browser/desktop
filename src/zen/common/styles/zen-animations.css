@@ -48,11 +48,55 @@
   }
 }
 
+@keyframes zen-dialog-fade-in-shifted {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-10% - 10px));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(-10%);
+  }
+}
+
 @keyframes zen-text-gradient {
   0% {
     background-position: 0% 50%;
   }
   100% {
     background-position: -400% 50%;
+  }
+}
+
+@keyframes zen-progress-bar-pulse {
+  from {
+    transform: scale(0.85) translate(-50%, -50%);
+    opacity: 0.6;
+  }
+
+  to {
+    transform: scale(0.95) translate(-50%, -50%);
+    opacity: 1;
+  }
+}
+
+@keyframes zen-progress-bar-long-load {
+  0% {
+    left: -100%;
+    opacity: 1;
+  }
+
+  100% {
+    left: 100%;
+    opacity: 1;
+  }
+}
+
+@keyframes zen-progress-bar-settle {
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    width: 10rem;
   }
 }

@@ -27,3 +27,11 @@ locales/firefox-l10n/
 .DS_Store
 
 mozconfig
+
+build/signing/env/
+build/signing/nss_config/
+build/signing/cert.pem
+build/signing/private_key.pem
+build/signing/private_key.p12
+
+bloat-dump.log

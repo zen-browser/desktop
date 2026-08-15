@@ -19,7 +19,7 @@ add_task(async function test_Floating_Urlbar() {
   });
 
   ok(
-    gURLBar.textbox.hasAttribute("zen-floating-urlbar"),
+    gURLBar.hasAttribute("zen-floating-urlbar"),
     "URL bar should be in floating mode"
   );
 });
@@ -36,7 +36,7 @@ add_task(async function test_Click_Shoudnt_FLoat_Urlbar() {
   });
 
   ok(
-    !gURLBar.textbox.hasAttribute("zen-floating-urlbar"),
+    !gURLBar.hasAttribute("zen-floating-urlbar"),
     "URL bar should not be in floating mode"
   );
 });

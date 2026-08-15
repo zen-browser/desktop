@@ -25,7 +25,7 @@ add_task(async function test_Issue_() {
     window,
     "TabGroupCollapse"
   );
-  EventUtils.synthesizeMouseAtCenter(folder.labelElement, {});
+  folder.collapsed = true;
   await collapseEvent;
 
   gBrowser.clearMultiSelectedTabs();

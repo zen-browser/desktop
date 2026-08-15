@@ -1,5 +1,5 @@
 diff --git a/toolkit/mozapps/installer/windows/nsis/makensis.mk b/toolkit/mozapps/installer/windows/nsis/makensis.mk
-index facc5b1c058bc90ae12cb2e68f8db86e71626300..5940cf442b38b0c786818c6b76fa6c88b9a619ec 100755
+index d081f84b38e601eb6aae78b5ae45e1c771777ca7..00eec74413ef733b69d45e9542badae6a1dd7403 100755
 --- a/toolkit/mozapps/installer/windows/nsis/makensis.mk
 +++ b/toolkit/mozapps/installer/windows/nsis/makensis.mk
 @@ -63,6 +63,11 @@ endif

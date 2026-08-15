@@ -1,8 +1,8 @@
 diff --git a/dom/base/Document.cpp b/dom/base/Document.cpp
-index 2876a539b21c038340d318d8f0d29da88c518686..1f6bbf828b86dc509f63c7c3d0032f1d4d551d9c 100644
+index 73eb08f648d55121a0cd96cd808f932fb14bfee6..efa99861a5da12ad8d0daa2c0eb1473c57810397 100644
 --- a/dom/base/Document.cpp
 +++ b/dom/base/Document.cpp
-@@ -464,6 +464,7 @@
+@@ -471,6 +471,7 @@
  #include "prtime.h"
  #include "prtypes.h"
  #include "xpcpublic.h"
@@ -10,14 +10,15 @@ index 2876a539b21c038340d318d8f0d29da88c518686..1f6bbf828b86dc509f63c7c3d0032f1d
  
  // clang-format off
  #include "mozilla/Encoding.h"
-@@ -3317,6 +3318,10 @@ void Document::FillStyleSetUserAndUASheets() {
-   for (StyleSheet* sheet : *sheetService->UserStyleSheets()) {
-     styleSet.AppendStyleSheet(*sheet);
-   }
-+  if (auto sheet = zen::ZenStyleSheetCache::Singleton()->GetModsSheet(); sheet && IsInChromeDocShell()) {
-+    // The mods sheet is only used in the chrome docshell.
-+    styleSet.AppendStyleSheet(*sheet);
-+  }
+@@ -3164,6 +3165,11 @@ void Document::FillStyleSetUserAndUASheets() {
+     }
+   };
  
-   StyleSheet* sheet = IsInChromeDocShell() ? cache->GetUserChromeSheet()
-                                            : cache->GetUserContentSheet();
++  if (IsInChromeDocShell()) {
++    // The mods sheet is only used in the chrome docshell.
++    MaybeAppend(zen::ZenStyleSheetCache::Singleton()->GetModsSheet());
++  }
++
+   MaybeAppend(IsInChromeDocShell() ? cache->GetUserChromeSheet()
+                                    : cache->GetUserContentSheet());
+   MaybeAppend(cache->GetUASheet());

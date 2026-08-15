@@ -24,7 +24,7 @@ jobs:
       matrix:
         arch: [x86_64, aarch64]
 
-    runs-on: ${{ matrix.arch == 'x86_64' && 'macos-26-intel' || 'macos-26' }}
+    runs-on: ${{ matrix.arch == 'x86_64' && 'macos-15-intel' || 'macos-26' }}
 
     steps:
       - name: Checkout repository

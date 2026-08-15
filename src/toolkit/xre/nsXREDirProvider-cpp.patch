@@ -1,5 +1,5 @@
 diff --git a/toolkit/xre/nsXREDirProvider.cpp b/toolkit/xre/nsXREDirProvider.cpp
-index b54980f967ab8fe9b9c13bbad8fae6323ec84f1f..f1a5481fb3bd44c1f8f6e40f4163aa7842623325 100644
+index fea288aa5b6d933b97d746b5b543e1bb869f5b02..25b1376d40afd7cc4b32338ef5c97a7c6e49f426 100644
 --- a/toolkit/xre/nsXREDirProvider.cpp
 +++ b/toolkit/xre/nsXREDirProvider.cpp
 @@ -1333,9 +1333,11 @@ nsresult nsXREDirProvider::AppendFromAppData(nsIFile* aFile, bool aIsDotted) {
@@ -15,19 +15,19 @@ index b54980f967ab8fe9b9c13bbad8fae6323ec84f1f..f1a5481fb3bd44c1f8f6e40f4163aa78
      MOZ_TRY(aFile->AppendRelativeNativePath(profile));
    } else {
      nsAutoCString vendor;
-@@ -1345,8 +1347,6 @@ nsresult nsXREDirProvider::AppendFromAppData(nsIFile* aFile, bool aIsDotted) {
+@@ -1345,8 +1347,9 @@ nsresult nsXREDirProvider::AppendFromAppData(nsIFile* aFile, bool aIsDotted) {
      ToLowerCase(vendor);
      ToLowerCase(appName);
  
 -    MOZ_TRY(aFile->AppendRelativeNativePath(aIsDotted ? ("."_ns + vendor)
 -                                                      : vendor));
-+    // Astra: single %AppData% folder — never create a parallel "zen" directory
++    // Astra: single %AppData% folder - never create a parallel "zen" directory
 +    appName.AssignLiteral("astra");
 +
      MOZ_TRY(aFile->AppendRelativeNativePath(appName));
    }
  
-@@ -1514,13 +1514,8 @@ nsresult nsXREDirProvider::GetLegacyOrXDGHomePath(const char* aHomeDir,
+@@ -1514,13 +1517,8 @@ nsresult nsXREDirProvider::GetLegacyOrXDGHomePath(const char* aHomeDir,
  
      // If the build was made against a specific profile name, MOZ_APP_PROFILE=
      // then make sure we respect this and dont move to XDG directory
@@ -35,7 +35,8 @@ index b54980f967ab8fe9b9c13bbad8fae6323ec84f1f..f1a5481fb3bd44c1f8f6e40f4163aa78
 -      MOZ_TRY(NS_NewNativeLocalFile(nsDependentCString(aHomeDir),
 -                                    getter_AddRefs(localDir)));
 -    } else {
-       MOZ_TRY(GetLegacyOrXDGConfigHome(aHomeDir, getter_AddRefs(localDir)));
+-      MOZ_TRY(GetLegacyOrXDGConfigHome(aHomeDir, getter_AddRefs(localDir)));
++    MOZ_TRY(GetLegacyOrXDGConfigHome(aHomeDir, getter_AddRefs(localDir)));
        MOZ_TRY(localDir->Clone(getter_AddRefs(parentDir)));
 -    }
  

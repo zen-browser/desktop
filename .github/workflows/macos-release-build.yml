@@ -105,7 +105,7 @@ jobs:
           cd engine/
           ./mach artifact toolchain --from-build linux64-cctools-port linux64-libdmg linux64-hfsplus
           mv cctools dmg hfsplus ~/mac-cross/
-          ls ~/mac-cross/cctools/bin/ld ~/mac-cross/dmg/dmg ~/mac-cross/hfsplus/newfs_hfs
+          ls ~/mac-cross/cctools/bin/x86_64-apple-darwin-ld ~/mac-cross/cctools/bin/aarch64-apple-darwin-ld ~/mac-cross/dmg/dmg ~/mac-cross/hfsplus/newfs_hfs
 
       - name: Setup Rust
         run: |

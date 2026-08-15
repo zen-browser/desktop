@@ -1,16 +1,17 @@
 diff --git a/browser/components/sidebar/SidebarManager.sys.mjs b/browser/components/sidebar/SidebarManager.sys.mjs
+index 3d1b64ba6a78dc662124fd774e016250843ae8fb..f18aed45755846e6465347d36f02e11ef79ceb5b 100644
 --- a/browser/components/sidebar/SidebarManager.sys.mjs
 +++ b/browser/components/sidebar/SidebarManager.sys.mjs
 @@ -15,7 +15,7 @@ const PINNED_PROMO_PREF = "sidebar.verticalTabs.dragToPinPromo.dismissed";
  // New panels that are ready to be introduced to new sidebar users should be added to this list;
  // ensure your feature flag is enabled at the same time you do this and that its the same value as
  // what you added to .
--const DEFAULT_LAUNCHER_TOOLS = "aichat,syncedtabs,history,bookmarks";
-+const DEFAULT_LAUNCHER_TOOLS = "aichat,history,bookmarks";
+-const DEFAULT_LAUNCHER_TOOLS = "aichat,syncedtabs,history,bookmarks,opentabs";
++const DEFAULT_LAUNCHER_TOOLS = "aichat,history,bookmarks,opentabs";
  const lazy = {};
  ChromeUtils.defineESModuleGetters(lazy, {
    BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
-@@ -265,10 +265,22 @@ class SidebarManager extends EventTarget {
+@@ -279,10 +279,22 @@ class SidebarManager extends EventTarget {
        return;
      }
      let tools = lazy.sidebarTools;
@@ -33,7 +34,7 @@ diff --git a/browser/components/sidebar/SidebarManager.sys.mjs b/browser/compone
      }
  
      for (const pref of Services.prefs.getChildList(
-@@ -299,6 +311,7 @@ class SidebarManager extends EventTarget {
+@@ -313,6 +325,7 @@ class SidebarManager extends EventTarget {
          // avoid adding a tool from the pref branch where it's already been added to the DEFAULT_LAUNCHER_TOOLS (for new users)
          if (!tools.includes(newTool)) {
            tools += "," + newTool;
@@ -41,7 +42,7 @@ diff --git a/browser/components/sidebar/SidebarManager.sys.mjs b/browser/compone
          }
          options.alreadyShown = true;
          Services.prefs.setStringPref(pref, JSON.stringify(options));
-@@ -306,7 +319,7 @@ class SidebarManager extends EventTarget {
+@@ -320,7 +333,7 @@ class SidebarManager extends EventTarget {
          console.error("Failed to handle pref " + pref, ex);
        }
      }

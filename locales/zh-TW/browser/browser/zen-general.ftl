@@ -18,19 +18,13 @@ tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential = 
     .label = 從 Essentials 中移除
     .accesskey = R
-tab-context-zen-edit-pinned-page = 
+tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] 將當前頁面取代原Essential網址
+           *[false] 將當前頁面取代原釘選分頁網址
         }
-    .accesskey = P
-tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
     .accesskey = C
-tab-context-zen-edit-pinned-url = 
-    .label = Edit…
-    .accesskey = E
 tab-context-zen-edit-title = 
     .label = 重新命名
 tab-context-zen-edit-icon = 
@@ -51,10 +45,6 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = 確認
 zen-pinned-tab-replaced = 釘選分頁網址已替換為當前網址！
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = 成功重新命名分頁！
 zen-background-tab-opened-toast = 新分頁已在背景開啟！
 zen-workspace-renamed-toast = 成功重新命名工作區！
@@ -73,8 +63,6 @@ zen-icons-picker-emoji =
     .label = 表情符號
 zen-icons-picker-svg = 
     .label = 圖示
-zen-emojis-picker-search = 
-    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = 操作
 zen-site-data-settings = 設定
 zen-generic-manage = 管理
@@ -126,9 +114,6 @@ zen-sidebar-notification-updated-heading = 更新成功！
 zen-sidebar-notification-updated-label = { -brand-short-name } 更新了什麼
 zen-sidebar-notification-updated-tooltip = 
     .title = 查看版本資訊
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
-zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = 有東西壞掉了嗎？
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = 在安全模式下重新啟動

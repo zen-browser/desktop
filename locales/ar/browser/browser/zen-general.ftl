@@ -18,23 +18,17 @@ tab-context-zen-add-essential-badge = { $num } / { $max } مملؤة
 tab-context-zen-remove-essential = 
     .label = إزالة من الأساسيات
     .accesskey = R
-tab-context-zen-edit-pinned-page = 
+tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
         }
-    .accesskey = P
-tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
     .accesskey = C
-tab-context-zen-edit-pinned-url = 
-    .label = Edit…
-    .accesskey = E
 tab-context-zen-edit-title = 
-    .label = تغيير الاسم...
+    .label = Change Label...
 tab-context-zen-edit-icon = 
-    .label = تغيير الأيقونة...
+    .label = Change Icon...
 zen-themes-corrupted = ملف التعديل { -brand-short-name } الخاص بك تالف. تم إعادة تعيينه إلى السمة الافتراضية.
 zen-shortcuts-corrupted = ملف الاختصارات { -brand-short-name } الخاص بك تالف. تم إعادة تعيينه إلى الاختصارات الافتراضية.
 # note: Do not translate the "<br/>" tags in the following string
@@ -53,10 +47,6 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = تأكيد
 zen-pinned-tab-replaced = Pinned tab URL has been replaced with the current URL.
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = تم تغيير اسم التبويب بنجاح!
 zen-background-tab-opened-toast = تم فتح علامة تبويب خلفية جديدة!
 zen-workspace-renamed-toast = تم تغيير اسم مساحة العمل بنجاح!
@@ -75,8 +65,6 @@ zen-icons-picker-emoji =
     .label = ايموجي
 zen-icons-picker-svg = 
     .label = الأيقونات
-zen-emojis-picker-search = 
-    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = الإجراءات
 zen-site-data-settings = الاعدادات
 zen-generic-manage = إدارة
@@ -128,9 +116,6 @@ zen-sidebar-notification-updated-heading = اكتمل التحديث!
 zen-sidebar-notification-updated-label = ما الجديد في { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = عرض ملاحظات الإصدار
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
-zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = شيء معطل؟
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = إعادة التشغيل في الوضع الآمن

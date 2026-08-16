@@ -18,7 +18,7 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = Folaigh an dá cheann
     .accesskey = H
 zen-toolbar-context-move-to-folder = 
-    .label = Bog go Fillteán...
+    .label = Move to Folder...
     .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Fillteán Nua
@@ -26,7 +26,7 @@ zen-toolbar-context-new-folder =
 sidebar-zen-expand = 
     .label = Barra Taoibh a Leathnú
 sidebar-zen-create-new = 
-    .label = Cruthaigh Nua...
+    .label = Create New...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->

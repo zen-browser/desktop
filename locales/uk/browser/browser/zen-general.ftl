@@ -18,23 +18,17 @@ tab-context-zen-add-essential-badge = { $num } / { $max } комірок зап�
 tab-context-zen-remove-essential = 
     .label = Вилучити з основних елементів
     .accesskey = R
-tab-context-zen-edit-pinned-page = 
+tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
         }
-    .accesskey = P
-tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
     .accesskey = C
-tab-context-zen-edit-pinned-url = 
-    .label = Edit…
-    .accesskey = E
 tab-context-zen-edit-title = 
-    .label = Змінити мітку...
+    .label = Change Label...
 tab-context-zen-edit-icon = 
-    .label = Змінити значок...
+    .label = Change Icon...
 zen-themes-corrupted = Ваш файл модифікацій { -brand-short-name } пошкоджено. Вони були скинуті до типової теми.
 zen-shortcuts-corrupted = Ваш файл { -brand-short-name } комбінацій пошкоджено. Їх було скинуто до типових комбінацій.
 # note: Do not translate the "<br/>" tags in the following string
@@ -53,10 +47,6 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Підтвердити
 zen-pinned-tab-replaced = URL-адресу закріпленої вкладки замінено на поточну URL-адресу.
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Вкладку успішно перейменовано!
 zen-background-tab-opened-toast = Відкрито нову фонову вкладку!
 zen-workspace-renamed-toast = Робочий простір успішно перейменовано!
@@ -75,8 +65,6 @@ zen-icons-picker-emoji =
     .label = Емоджі
 zen-icons-picker-svg = 
     .label = Значки
-zen-emojis-picker-search = 
-    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Дії
 zen-site-data-settings = Налаштування
 zen-generic-manage = Керувати
@@ -128,9 +116,6 @@ zen-sidebar-notification-updated-heading = Оновлення завершено
 zen-sidebar-notification-updated-label = Що нового в { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Переглянути примітки до випуску
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
-zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Щось зламалося?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Перезапустити в безпечному режимі

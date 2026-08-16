@@ -18,23 +18,17 @@ tab-context-zen-add-essential-badge = Запълнени слотове: { $num 
 tab-context-zen-remove-essential = 
     .label = Премахване от Основни
     .accesskey = R
-tab-context-zen-edit-pinned-page = 
+tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
         }
-    .accesskey = P
-tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
     .accesskey = C
-tab-context-zen-edit-pinned-url = 
-    .label = Edit…
-    .accesskey = E
 tab-context-zen-edit-title = 
-    .label = Промени етикета...
+    .label = Change Label...
 tab-context-zen-edit-icon = 
-    .label = Промени иконата...
+    .label = Change Icon...
 zen-themes-corrupted = Файлът с модификации на { -brand-short-name } е повреден. Те бяха нулирани до темата по подразбиране.
 zen-shortcuts-corrupted = Файлът с клавишни комбинации на { -brand-short-name } е повреден. Комбинациите бяха нулирани до настройките по подразбиране.
 # note: Do not translate the "<br/>" tags in the following string
@@ -53,10 +47,6 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Потвърди
 zen-pinned-tab-replaced = Адресът на закачения раздел беше заменен с текущия адрес!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Разделът беше успешно преименуван!
 zen-background-tab-opened-toast = Отворен е нов раздел на заден план!
 zen-workspace-renamed-toast = Работното пространство беше преименувано успешно!
@@ -75,8 +65,6 @@ zen-icons-picker-emoji =
     .label = Емоджита
 zen-icons-picker-svg = 
     .label = Икони
-zen-emojis-picker-search = 
-    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Действия
 zen-site-data-settings = Настройки
 zen-generic-manage = Управление
@@ -128,9 +116,6 @@ zen-sidebar-notification-updated-heading = Актуализацията е за�
 zen-sidebar-notification-updated-label = Какво е ново в { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Виж бележките към изданието
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
-zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Има проблем?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Рестартирай в безопасен режим

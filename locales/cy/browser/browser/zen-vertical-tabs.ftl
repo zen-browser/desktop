@@ -18,7 +18,7 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = Cuddio'r ddau
     .accesskey = C
 zen-toolbar-context-move-to-folder = 
-    .label = Symud i Ffolder...
+    .label = Move to Folder...
     .accesskey = S
 zen-toolbar-context-new-folder = 
     .label = Ffolder Newydd
@@ -26,7 +26,7 @@ zen-toolbar-context-new-folder =
 sidebar-zen-expand = 
     .label = Ehangu'r Bar Ochr
 sidebar-zen-create-new = 
-    .label = Creu Newydd...
+    .label = Create New...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->

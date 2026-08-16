@@ -37,10 +37,10 @@ if test "$SCCACHE_GHA_ENABLED" = "true"; then
   mk_add_options 'export CCACHE_CPP2=yes'
 fi
 
-# add API keys if the file exists (CI writes this; local builds skip)
-if test -f "$HOME/.zen-keys/safebrowsing.dat"; then
-  ac_add_options --with-google-safebrowsing-api-keyfile="$HOME/.zen-keys/safebrowsing.dat"
-fi
+# Astra has no Google Safe Browsing partner key. --without is required:
+# a placeholder file only satisfies configure and still breaks Windows
+# because MSYS $HOME expands to /c/Users/... which Python cannot open.
+ac_add_options --without-google-safebrowsing-api-keyfile
 
 if test -f "$HOME/.zen-keys/mozilla.dat"; then
   ac_add_options --with-mozilla-api-keyfile="$HOME/.zen-keys/mozilla.dat"

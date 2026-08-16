@@ -18,7 +18,7 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = Skrýt obojí
     .accesskey = H
 zen-toolbar-context-move-to-folder = 
-    .label = Přesunout do složky...
+    .label = Move to Folder...
     .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Nová složka
@@ -26,7 +26,7 @@ zen-toolbar-context-new-folder =
 sidebar-zen-expand = 
     .label = Zvětšit boční panel
 sidebar-zen-create-new = 
-    .label = Vytvořit nový...
+    .label = Create New...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->

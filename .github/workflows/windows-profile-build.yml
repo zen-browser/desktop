@@ -61,7 +61,6 @@ jobs:
         if: ${{ matrix.arch == 'x86_64' }}
         run: |
           cd C:\artifact
-          ls
           Expand-Archive -Path .\${{ inputs.profile-data-path-archive }} -DestinationPath C:\artifact
           ls
 

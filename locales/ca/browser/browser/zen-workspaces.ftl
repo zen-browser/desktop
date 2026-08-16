@@ -61,6 +61,7 @@ zen-workspace-creation-profile = Perfil
     .tooltiptext = Els perfils s'utilitzen per separar les galetes i les dades del lloc entre espais.
 zen-workspace-creation-header = Creació d'un espai
 zen-workspace-creation-label = Els espais s'utilitzen per organitzar les pestanyes i les sessions.
+zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Voleu suprimir l'espai de treball?
 zen-workspaces-delete-workspace-body = Esteu segur que voleu suprimir { $name }? Aquesta acció no es pot desfer.
 # Note that the html tag MUST not be changed or removed, as it is used to better

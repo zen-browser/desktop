@@ -3,19 +3,6 @@
 
 "use strict";
 
-// User flow:
-//   1. A music page registers a "nexttrack" action handler (like most
-//      streaming sites do).
-//   2. User is on another tab, media bar is showing with the next-track
-//      button enabled.
-//   3. User clicks next-track.
-//   4. The action fires inside the page — the page is responsible for
-//      loading the next song. Zen's job here is to relay the click.
-//
-// Also guards the button-enablement logic: if the page does NOT register a
-// handler, the next-track button must be disabled. Otherwise clicks go
-// nowhere and users think the bar is broken.
-
 add_task(async function test_next_track_relays_to_page() {
   const originalTab = gBrowser.selectedTab;
   const mediaTab = await addMediaTab();
@@ -28,7 +15,9 @@ add_task(async function test_next_track_relays_to_page() {
     await BrowserTestUtils.switchTab(gBrowser, originalTab);
     await waitForMediaBarVisible();
 
-    const nextButton = document.getElementById("zen-media-nexttrack-button");
+    const nextButton = frontMediaCard().element.querySelector(
+      ".zen-media-nexttrack-button"
+    );
 
     // supportedkeyschange propagates asynchronously; wait for the bar's
     // next-track button to become enabled before clicking.
@@ -60,7 +49,9 @@ add_task(async function test_next_track_button_disabled_without_handler() {
     await BrowserTestUtils.switchTab(gBrowser, originalTab);
     await waitForMediaBarVisible();
 
-    const nextButton = document.getElementById("zen-media-nexttrack-button");
+    const nextButton = frontMediaCard().element.querySelector(
+      ".zen-media-nexttrack-button"
+    );
     Assert.equal(
       nextButton.disabled,
       true,

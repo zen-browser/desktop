@@ -73,7 +73,7 @@ zen-folder {
     }
   }
 
-  margin: 0 var(--tab-block-margin);
+  margin: 0 var(--tab-margin-block);
   margin-inline-end: 0;
 
   & > .tab-group-label-container {
@@ -83,7 +83,7 @@ zen-folder {
     --tab-group-color: transparent !important;
     padding-block-end: 0 !important;
     margin: 0 !important;
-    height: calc(var(--tab-block-margin) * 2 + var(--tab-min-height));
+    height: calc(var(--tab-margin-block) * 2 + var(--tab-min-height));
     padding-inline: var(--tab-group-label-padding);
 
     :root[zen-sidebar-expanded="true"] & {
@@ -174,7 +174,7 @@ zen-folder {
     }
 
     &:hover::before {
-      background-color: var(--tab-hover-background-color) !important;
+      background-color: var(--tab-background-color-hover) !important;
     }
 
     &:after {

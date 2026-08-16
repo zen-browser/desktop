@@ -1,16 +1,16 @@
 diff --git a/browser/themes/shared/tabbrowser/content-area.css b/browser/themes/shared/tabbrowser/content-area.css
-index dff8162a84dbbe6873fa771828698b47b80d0472..e0c378af7a5cc607c2de1c9b5693adb04ac6adbd 100644
+index 3acdec2b8e043fe27919cfa54e73f4d3c491bfc8..267a1087134464a8193a824a2d7f8ac15ff8ad60 100644
 --- a/browser/themes/shared/tabbrowser/content-area.css
 +++ b/browser/themes/shared/tabbrowser/content-area.css
-@@ -171,7 +171,6 @@
+@@ -157,7 +157,6 @@
    min-height: 0;
  
    /* We want to be able to show the frame color behind the clipped radiused corner */
 -  background: var(--tabpanel-background-color);
  
-   /* stylelint-disable-next-line media-query-no-invalid */
    @media -moz-pref("sidebar.revamp") {
-@@ -235,7 +234,6 @@
+     outline: 0.01px solid var(--chrome-content-separator-color);
+@@ -216,7 +215,6 @@
    }
  
    browser:is([blank], [pendingpaint]) {
@@ -18,7 +18,7 @@ index dff8162a84dbbe6873fa771828698b47b80d0472..e0c378af7a5cc607c2de1c9b5693adb0
    }
  
    /* Exclude browsers with smartwindow-content attribute which inherit
-@@ -555,7 +553,7 @@ split-view-footer {
+@@ -553,7 +551,7 @@ split-view-footer {
  
  .dialogStack {
    z-index: var(--browser-stack-z-index-dialog-stack);
@@ -27,7 +27,7 @@ index dff8162a84dbbe6873fa771828698b47b80d0472..e0c378af7a5cc607c2de1c9b5693adb0
    inset: 0;
    /* --browser-with-dialog set on browser[tabDialogShowing], we want to position the overlay
       only on the top of the <browser> element so it doesn't overlap the DevTools toolbox */
-@@ -722,7 +720,7 @@ split-view-footer {
+@@ -718,7 +716,7 @@ split-view-footer {
  
  .dialogOverlay[topmost="true"],
  #window-modal-dialog::backdrop {

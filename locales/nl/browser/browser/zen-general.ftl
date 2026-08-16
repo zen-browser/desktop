@@ -18,23 +18,17 @@ tab-context-zen-add-essential-badge = { $num } / { $max } plekken bezet
 tab-context-zen-remove-essential = 
     .label = Verwijderen uit Essentials
     .accesskey = R
-tab-context-zen-edit-pinned-page = 
+tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
         }
-    .accesskey = P
-tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
     .accesskey = C
-tab-context-zen-edit-pinned-url = 
-    .label = Edit…
-    .accesskey = E
 tab-context-zen-edit-title = 
-    .label = Naam veranderen...
+    .label = Change Label...
 tab-context-zen-edit-icon = 
-    .label = Icoon veranderen...
+    .label = Change Icon...
 zen-themes-corrupted = Je { -brand-short-name } mods bestand is beschadigd. Ze zijn gereset naar het standaard thema.
 zen-shortcuts-corrupted = Je { -brand-short-name } snelkoppelingsbestand is beschadigd. Ze zijn gereset naar de standaard snelkoppelingen.
 # note: Do not translate the "<br/>" tags in the following string
@@ -53,10 +47,6 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Bevestigen
 zen-pinned-tab-replaced = Vastgemaakte tabblad URL is vervangen met de huidige URL!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Tabblad is succesvol hernoemd!
 zen-background-tab-opened-toast = Nieuw achtergrondtabblad geopend!
 zen-workspace-renamed-toast = Werkruimte succesvol is hernoemd!
@@ -75,8 +65,6 @@ zen-icons-picker-emoji =
     .label = Emoji's
 zen-icons-picker-svg = 
     .label = Iconen
-zen-emojis-picker-search = 
-    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Acties
 zen-site-data-settings = Instellingen
 zen-generic-manage = Beheren
@@ -128,9 +116,6 @@ zen-sidebar-notification-updated-heading = Update voltooid!
 zen-sidebar-notification-updated-label = Wat is er veranderd in { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Versie-informatie bekijken
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
-zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Werkt er iets niet?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Herstarten in veilige modus

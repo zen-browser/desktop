@@ -102,3 +102,7 @@
 
 - name: browser.preonboarding.enabled
   value: false
+
+- name: browser.referrals.enabled
+  value: false
+  locked: true

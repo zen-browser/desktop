@@ -122,6 +122,7 @@ jobs:
           SURFER_COMPAT: ${{ matrix.arch }}
           SURFER_CERT_PATCH_ISSUER: ${{ secrets.SURFER_CERT_PATCH_ISSUER }}
           SURFER_CERT_PATCH_NAME: ${{ secrets.SURFER_CERT_PATCH_NAME }}
+          SURFER_PLATFORM: darwin
         run: |
           . "$HOME/.cargo/env"
           npm run import -- --verbose

@@ -18,7 +18,7 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = Slėpti abi
     .accesskey = H
 zen-toolbar-context-move-to-folder = 
-    .label = Perkelti į aplanką...
+    .label = Move to Folder...
     .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Naujas aplankas
@@ -26,7 +26,7 @@ zen-toolbar-context-new-folder =
 sidebar-zen-expand = 
     .label = Išskleisti šoninę juostą
 sidebar-zen-create-new = 
-    .label = Kurti naują...
+    .label = Create New...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->

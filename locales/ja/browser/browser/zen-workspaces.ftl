@@ -53,7 +53,7 @@ zen-panel-ui-gradient-click-to-add = クリックして色を追加する
 zen-workspace-creation-name = 
     .placeholder = スペース名
 zen-move-tab-to-workspace-button = 
-    .label = 移動先…
+    .label = 移動先...
     .tooltiptext = このウィンドウ内のすべてのタブをスペースに移動する
 zen-workspaces-panel-context-reorder = 
     .label = スペースの順序を変更する
@@ -61,7 +61,6 @@ zen-workspace-creation-profile = プロファイル
     .tooltiptext = プロファイルはスペース間でクッキーとサイトデータを分離するために使用されます。
 zen-workspace-creation-header = スペースを作成する
 zen-workspace-creation-label = スペースはタブやセッションを整理するために使用されます。
-zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = スペースを削除しますか？
 zen-workspaces-delete-workspace-body = { $name }を削除してもよろしいですか？この操作は元に戻せません。
 # Note that the html tag MUST not be changed or removed, as it is used to better

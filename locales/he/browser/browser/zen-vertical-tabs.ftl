@@ -18,7 +18,7 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = הסתרת שני הסרגלים
     .accesskey = י
 zen-toolbar-context-move-to-folder = 
-    .label = העברה לתיקייה...
+    .label = Move to Folder...
     .accesskey = צ
 zen-toolbar-context-new-folder = 
     .label = תיקייה חדשה
@@ -26,7 +26,7 @@ zen-toolbar-context-new-folder =
 sidebar-zen-expand = 
     .label = הרחבת סרגל הצד
 sidebar-zen-create-new = 
-    .label = יצירת חדש...
+    .label = Create New...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->

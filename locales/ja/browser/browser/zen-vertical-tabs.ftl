@@ -18,7 +18,7 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = サイドバーとツールバーを隠す
     .accesskey = H
 zen-toolbar-context-move-to-folder = 
-    .label = フォルダに移動する…
+    .label = フォルダに移動する
     .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = 新しいフォルダ
@@ -26,7 +26,7 @@ zen-toolbar-context-new-folder =
 sidebar-zen-expand = 
     .label = サイドバーを展開する
 sidebar-zen-create-new = 
-    .label = 新しく作成する…
+    .label = 新しく作成する
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->

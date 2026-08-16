@@ -18,23 +18,17 @@ tab-context-zen-add-essential-badge = { $num } / { $max } slot riempiti
 tab-context-zen-remove-essential = 
     .label = Rimuovi dagli Essenziali
     .accesskey = R
-tab-context-zen-edit-pinned-page = 
+tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
         }
-    .accesskey = P
-tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
     .accesskey = C
-tab-context-zen-edit-pinned-url = 
-    .label = Edit…
-    .accesskey = E
 tab-context-zen-edit-title = 
-    .label = Cambia Etichetta...
+    .label = Change Label...
 tab-context-zen-edit-icon = 
-    .label = Cambia icona...
+    .label = Change Icon...
 zen-themes-corrupted = Il tuo file { -brand-short-name } mods è danneggiato. Sono stati reimpostati al tema predefinito.
 zen-shortcuts-corrupted = Il file delle scorciatoie per { -brand-short-name } è corrotto. Le scorciatoie sono state riportate alle impostazioni predefinite.
 # note: Do not translate the "<br/>" tags in the following string
@@ -51,10 +45,6 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Conferma
 zen-pinned-tab-replaced = L'URL della scheda bloccata è stato sostituito con l'URL attuale.
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = La scheda è stata rinominata con successo!
 zen-background-tab-opened-toast = Nuova scheda aperta in background!
 zen-workspace-renamed-toast = Il Workspace è stato rinominato con successo!
@@ -73,8 +63,6 @@ zen-icons-picker-emoji =
     .label = Emoji
 zen-icons-picker-svg = 
     .label = Icone
-zen-emojis-picker-search = 
-    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Azioni
 zen-site-data-settings = Impostazioni
 zen-generic-manage = Gestisci
@@ -126,9 +114,6 @@ zen-sidebar-notification-updated-heading = Aggiornamento completato!
 zen-sidebar-notification-updated-label = Cosa c'è di nuovo in { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Vedi Note di Rilascio
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
-zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Si è rotto qualcosa?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Riavvia in Modalità Provvisoria

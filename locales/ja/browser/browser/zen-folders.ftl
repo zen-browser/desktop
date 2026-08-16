@@ -3,19 +3,19 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-folders-search-placeholder = 
-    .placeholder = { $folder-name } を検索
+    .placeholder = { $folder-name } を検索…
 zen-folders-panel-rename-folder = 
-    .label = フォルダの名前を変更
+    .label = フォルダをリネーム
 zen-folders-panel-unpack-folder = 
     .label = フォルダを解除
 zen-folders-new-subfolder = 
-    .label = 新規サブフォルダ
+    .label = 新しくサブフォルダを作成
 zen-folders-panel-delete-folder = 
     .label = フォルダを削除
 zen-folders-panel-convert-folder-to-space = 
     .label = フォルダをスペースに変換
 zen-folders-panel-change-folder-space = 
-    .label = スペースを変更...
+    .label = スペースを変更…
 zen-folders-unload-all-tooltip = 
     .tooltiptext = このフォルダでアクティブになっている状態をアンロードします
 zen-folders-unload-folder = 

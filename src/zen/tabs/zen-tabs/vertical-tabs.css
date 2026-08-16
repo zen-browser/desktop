@@ -1138,7 +1138,7 @@
   min-width: calc(100% + var(--zen-toolbox-padding) * 2);
   width: calc(100% + var(--zen-toolbox-padding) * 2);
   padding: 0 var(--zen-toolbox-padding);
-  display: grid;
+  display: grid !important; /* Override the hidden attribute */
 
   position: absolute;
 

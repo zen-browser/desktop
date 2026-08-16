@@ -45,7 +45,8 @@
     "id": "D298708",
     "name": "Issue 14990",
     "replaces": {
-      "this._lastJsonLength = uncompressedBytes;": "this._lastJsonLength = uncompressedBytes.jsonLength;"
+      "this._lastJsonLength = uncompressedBytes;": "this._lastJsonLength = uncompressedBytes.jsonLength;",
+      "          jsonLengthHint,": "          lengthHint: jsonLengthHint,"
     }
   }
 ]

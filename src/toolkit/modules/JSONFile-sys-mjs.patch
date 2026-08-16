@@ -1,5 +1,5 @@
 diff --git a/toolkit/modules/JSONFile.sys.mjs b/toolkit/modules/JSONFile.sys.mjs
-index 397991e4af8f49b6365d729fc11267b5c1113400..70da83a0dd7658986dfd5f52103873bbb33b3c18 100644
+index 397991e4af8f49b6365d729fc11267b5c1113400..599ed16981aa1f1e9abfee2ad6c1883efd88e0ba 100644
 --- a/toolkit/modules/JSONFile.sys.mjs
 +++ b/toolkit/modules/JSONFile.sys.mjs
 @@ -132,6 +132,7 @@ export function JSONFile(config) {
@@ -16,7 +16,7 @@ index 397991e4af8f49b6365d729fc11267b5c1113400..70da83a0dd7658986dfd5f52103873bb
      try {
 -      await IOUtils.writeJSON(
 +      if (this._useSizeHints && this._lastSavedSize) {
-+        this._options.jsonLengthHint = Math.ceil(this._lastSavedSize * 1.05);
++        this._options.lengthHint = Math.ceil(this._lastSavedSize * 1.05);
 +      }
 +      const result = await IOUtils.writeJSON(
          this.path,

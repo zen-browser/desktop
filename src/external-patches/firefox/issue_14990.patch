@@ -54,7 +54,7 @@ diff --git a/browser/components/sessionstore/SessionWriter.sys.mjs b/browser/com
 +        uncompressedBytes = await IOUtils.writeJSON(this.Paths.clean, state, {
            tmpPath: this.Paths.clean + ".tmp",
            compress: true,
-+          jsonLengthHint,
++          lengthHint: jsonLengthHint,
          });
          fileStat = await IOUtils.stat(this.Paths.clean);
        } else if (this.state == STATE_RECOVERY) {
@@ -69,7 +69,7 @@ diff --git a/browser/components/sessionstore/SessionWriter.sys.mjs b/browser/com
            tmpPath: this.Paths.recovery + ".tmp",
            backupFile: this.Paths.recoveryBackup,
            compress: true,
-+          jsonLengthHint,
++          lengthHint: jsonLengthHint,
          });
          fileStat = await IOUtils.stat(this.Paths.recovery);
        } else {
@@ -80,7 +80,7 @@ diff --git a/browser/components/sessionstore/SessionWriter.sys.mjs b/browser/com
 +        uncompressedBytes = await IOUtils.writeJSON(this.Paths.recovery, state, {
            tmpPath: this.Paths.recovery + ".tmp",
            compress: true,
-+          jsonLengthHint,
++          lengthHint: jsonLengthHint,
          });
          fileStat = await IOUtils.stat(this.Paths.recovery);
        }

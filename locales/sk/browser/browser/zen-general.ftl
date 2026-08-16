@@ -18,23 +18,17 @@ tab-context-zen-add-essential-badge = Využité pozície: { $num } / { $max }
 tab-context-zen-remove-essential = 
     .label = Odstrániť z hlavných
     .accesskey = R
-tab-context-zen-edit-pinned-page = 
+tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
         }
-    .accesskey = P
-tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
     .accesskey = C
-tab-context-zen-edit-pinned-url = 
-    .label = Edit…
-    .accesskey = E
 tab-context-zen-edit-title = 
-    .label = Zmeniť Označenie...
+    .label = Change Label...
 tab-context-zen-edit-icon = 
-    .label = Zmeniť Ikonu...
+    .label = Change Icon...
 zen-themes-corrupted = Váš súbor módov { -brand-short-name } je poškodený. Témy boli resetované na predvolené.
 zen-shortcuts-corrupted = Váš súbor skratiek { -brand-short-name } je poškodený. Skratky boli resetované na predvolené.
 # note: Do not translate the "<br/>" tags in the following string
@@ -51,10 +45,6 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Potvrdiť
 zen-pinned-tab-replaced = URL pripnutej karty bola nahradená aktuálnou URL!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Karta bola úspešne premenovaná!
 zen-background-tab-opened-toast = Nová karta otvorená na pozadí!
 zen-workspace-renamed-toast = Pracovný priestor bol úspešne premenovaný!
@@ -73,8 +63,6 @@ zen-icons-picker-emoji =
     .label = Emoji
 zen-icons-picker-svg = 
     .label = Ikony
-zen-emojis-picker-search = 
-    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Akcie
 zen-site-data-settings = Nastavenia
 zen-generic-manage = Spravovať
@@ -126,9 +114,6 @@ zen-sidebar-notification-updated-heading = Aktualizácia Dokončená!
 zen-sidebar-notification-updated-label = Čo je nové v { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Zobraziť Poznámky k Vydaniu
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
-zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Niečo sa pokazilo?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Reštartovať v Núdzovom Režime

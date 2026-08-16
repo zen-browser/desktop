@@ -18,23 +18,17 @@ tab-context-zen-add-essential-badge = { $num } / { $max } sliotán líonta
 tab-context-zen-remove-essential = 
     .label = Bain de na Bunriachtanais
     .accesskey = R
-tab-context-zen-edit-pinned-page = 
+tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
         }
-    .accesskey = P
-tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
     .accesskey = C
-tab-context-zen-edit-pinned-url = 
-    .label = Edit…
-    .accesskey = E
 tab-context-zen-edit-title = 
-    .label = Athraigh Lipéad...
+    .label = Change Label...
 tab-context-zen-edit-icon = 
-    .label = Athraigh Deilbhín...
+    .label = Change Icon...
 zen-themes-corrupted = Tá do chomhad mods { -brand-short-name } truaillithe. Tá siad athshocraithe chuig an téama réamhshocraithe.
 zen-shortcuts-corrupted = Tá do chomhad aicearraí { -brand-short-name } truaillithe. Tá siad athshocraithe chuig na haicearraí réamhshocraithe.
 # note: Do not translate the "<br/>" tags in the following string
@@ -53,10 +47,6 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Deimhnigh
 zen-pinned-tab-replaced = Tá URL an chluaisín phinnáilte curtha in ionad an URL reatha!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Athainmníodh an cluaisín go rathúil!
 zen-background-tab-opened-toast = Tá cluaisín cúlra nua oscailte!
 zen-workspace-renamed-toast = Athainmníodh an spás oibre go rathúil!
@@ -75,8 +65,6 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Deilbhíní
-zen-emojis-picker-search = 
-    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Gníomhartha
 zen-site-data-settings = Socruithe
 zen-generic-manage = Bainistigh
@@ -128,9 +116,6 @@ zen-sidebar-notification-updated-heading = Nuashonrú críochnaithe!
 zen-sidebar-notification-updated-label = Cad atá nua i { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Féach ar Nótaí Eisiúna
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
-zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Bhris rud éigin?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Atosaigh i Mód Sábháilte

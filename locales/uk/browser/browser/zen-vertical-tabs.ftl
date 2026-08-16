@@ -18,7 +18,7 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = Приховувати обидві
     .accesskey = Н
 zen-toolbar-context-move-to-folder = 
-    .label = Перемістити до теки...
+    .label = Move to Folder...
     .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Нова тека
@@ -26,7 +26,7 @@ zen-toolbar-context-new-folder =
 sidebar-zen-expand = 
     .label = Розгорнути бічну панель
 sidebar-zen-create-new = 
-    .label = Створити новий...
+    .label = Create New...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->

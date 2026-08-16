@@ -26,7 +26,7 @@ zen-toolbar-context-new-folder =
 sidebar-zen-expand = 
     .label = Laajenna sivupalkkia
 sidebar-zen-create-new = 
-    .label = Luo uusi...
+    .label = Create New...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->

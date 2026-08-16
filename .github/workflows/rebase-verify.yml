@@ -25,6 +25,7 @@ on:
         options:
           - import-only
           - linux
+          - windows
           - all
         default: linux
 
@@ -101,7 +102,7 @@ jobs:
 
   linux:
     name: Linux build
-    if: ${{ inputs.platforms != 'import-only' }}
+    if: ${{ inputs.platforms == 'linux' || inputs.platforms == 'all' }}
     uses: ./.github/workflows/linux-release-build.yml
     permissions:
       contents: write
@@ -115,7 +116,7 @@ jobs:
 
   windows:
     name: Windows build
-    if: ${{ inputs.platforms == 'all' }}
+    if: ${{ inputs.platforms == 'windows' || inputs.platforms == 'all' }}
     uses: ./.github/workflows/windows-release-build.yml
     permissions:
       contents: write

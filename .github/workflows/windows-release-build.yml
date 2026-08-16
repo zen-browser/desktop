@@ -111,7 +111,10 @@ jobs:
         continue-on-error: true
         with:
           path: ${{ runner.temp }}/win-cross
-          key: win-cross
+          # Hash vs2026.yaml so a toolchain bump does not restore a stale VS/SDK layout.
+          # File exists after "Download Firefox and dependencies" above.
+          key: win-cross-${{ hashFiles('engine/build/vs/vs2026.yaml') }}
+          save-always: true
 
       - name: Install MozillaBuild
         continue-on-error: true
@@ -124,6 +127,7 @@ jobs:
 
       - name: Setup for Windows
         if: steps.cache-win-cross.outputs.cache-hit != 'true' && !(inputs['generate-gpo'] && matrix.arch == 'aarch64')
+        timeout-minutes: 20
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path "${{ runner.temp }}/win-cross" | Out-Null

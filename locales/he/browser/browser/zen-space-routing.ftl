@@ -21,10 +21,3 @@ zen-space-routing-regex =
     .label = ביטוי רגולרי
 zen-space-routing-open-in = פתיחה בתוך
 zen-space-routing-url = כתובת
-zen-space-routing-tab-routed-toast = New tab opened in { $targetWorkspace }
-tab-context-zen-add-domain-to-sr = 
-    .label =
-        { $tabCount ->
-            [one] Add Route for Domain
-           *[other] Add Route for Domains
-        }

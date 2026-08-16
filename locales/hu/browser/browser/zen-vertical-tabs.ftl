@@ -18,7 +18,7 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = Mindkettő elrejtése
     .accesskey = H
 zen-toolbar-context-move-to-folder = 
-    .label = Áthelyezés mappába...
+    .label = Move to Folder...
     .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Új mappa
@@ -26,7 +26,7 @@ zen-toolbar-context-new-folder =
 sidebar-zen-expand = 
     .label = Oldalsáv kibontása
 sidebar-zen-create-new = 
-    .label = Új létrehozása...
+    .label = Create New...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->

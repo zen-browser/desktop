@@ -26,7 +26,7 @@ zen-toolbar-context-new-folder =
 sidebar-zen-expand = 
     .label = Rozwiń panel boczny
 sidebar-zen-create-new = 
-    .label = Utwórz nową...
+    .label = Utwórz...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->

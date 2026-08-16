@@ -53,7 +53,7 @@ zen-panel-ui-gradient-click-to-add = 点击添加颜色
 zen-workspace-creation-name = 
     .placeholder = 工作区名称
 zen-move-tab-to-workspace-button = 
-    .label = 移动到……
+    .label = 移动到…
     .tooltiptext = 将当前窗口的所有标签页移动到一个工作区
 zen-workspaces-panel-context-reorder = 
     .label = 排序工作区
@@ -61,7 +61,6 @@ zen-workspace-creation-profile = 身份
     .tooltiptext = 身份用于在工作区之间分隔 Cookie 和站点数据。
 zen-workspace-creation-header = 创建工作区
 zen-workspace-creation-label = 工作区用于组织标签页和会话。
-zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = 删除工作区？
 zen-workspaces-delete-workspace-body = 你确定要删除 { $name } 吗？这个操作无法撤销。
 # Note that the html tag MUST not be changed or removed, as it is used to better

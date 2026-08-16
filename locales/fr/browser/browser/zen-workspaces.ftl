@@ -19,7 +19,7 @@ zen-workspaces-panel-context-delete =
 zen-workspaces-panel-change-name = 
     .label = Modifier le nom
 zen-workspaces-panel-change-icon = 
-    .label = Changer d'icône
+    .label = Changer l'icône
 zen-workspaces-panel-context-default-profile = 
     .label = Définir le profil
 zen-workspaces-panel-unload = 
@@ -61,7 +61,6 @@ zen-workspace-creation-profile = Profil
     .tooltiptext = Les profils sont utilisés pour séparer les cookies et les données des sites entre les espaces.
 zen-workspace-creation-header = Créer un espace
 zen-workspace-creation-label = Les espaces sont utilisés pour organiser vos onglets et sessions.
-zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Supprimer l’espace ?
 zen-workspaces-delete-workspace-body = Êtes-vous sûr de vouloir supprimer { $name } ? Cette action ne peut pas être annulée.
 # Note that the html tag MUST not be changed or removed, as it is used to better

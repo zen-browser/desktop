@@ -18,7 +18,7 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = Ẩn cả hai
     .accesskey = H
 zen-toolbar-context-move-to-folder = 
-    .label = Chuyển vào thư mục...
+    .label = Move to Folder...
     .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Thư mục mới
@@ -26,7 +26,7 @@ zen-toolbar-context-new-folder =
 sidebar-zen-expand = 
     .label = Mở rộng thanh bên
 sidebar-zen-create-new = 
-    .label = Tạo... mới
+    .label = Create New...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->

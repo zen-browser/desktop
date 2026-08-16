@@ -26,7 +26,7 @@ zen-toolbar-context-new-folder =
 sidebar-zen-expand = 
     .label = Επέκταση Πλαϊνής στήλης
 sidebar-zen-create-new = 
-    .label = Δημιουργία Νέας...
+    .label = Create New...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->

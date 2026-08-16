@@ -18,7 +18,7 @@ zen-toolbar-context-compact-mode-hide-both =
     .label = Ocultar ambas
     .accesskey = H
 zen-toolbar-context-move-to-folder = 
-    .label = Mover para Pasta...
+    .label = Move to Folder...
     .accesskey = M
 zen-toolbar-context-new-folder = 
     .label = Nova Pasta
@@ -26,7 +26,7 @@ zen-toolbar-context-new-folder =
 sidebar-zen-expand = 
     .label = Expandir Barra Lateral
 sidebar-zen-create-new = 
-    .label = Criar Novo...
+    .label = Create New...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->

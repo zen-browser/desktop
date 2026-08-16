@@ -61,7 +61,6 @@ zen-workspace-creation-profile = Profil
     .tooltiptext = Profilurile sunt folosite pentru a separa cookie-urile și datele site-ului între spații.
 zen-workspace-creation-header = Creează un Spațiu
 zen-workspace-creation-label = Spațiile sunt folosite pentru a organiza filele și sesiunile tale.
-zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Ștergi Spațiul?
 zen-workspaces-delete-workspace-body = Ești sigur că vrei să ștergi { $name }? Această acțiune nu poate fi anulată.
 # Note that the html tag MUST not be changed or removed, as it is used to better

@@ -1,9 +1,9 @@
 diff --git a/browser/components/urlbar/UrlbarUtils.sys.mjs b/browser/components/urlbar/UrlbarUtils.sys.mjs
-index 2f03bdf632c6ca15c728df2801162da5159682da..6834daede8cb11854f137602100183d85a930686 100644
+index 78c76bde00b6b581184cee1cd0e1756e5f2da6a4..94c713470b1240729ef2350d090b0449f3801af4 100644
 --- a/browser/components/urlbar/UrlbarUtils.sys.mjs
 +++ b/browser/components/urlbar/UrlbarUtils.sys.mjs
-@@ -109,6 +109,8 @@ export var UrlbarUtils = {
-     RESTRICT_SEARCH_KEYWORD: "restrictSearchKeyword",
+@@ -126,6 +126,8 @@ export var UrlbarUtils = {
+     SEMANTIC_HISTORY: "semanticHistory",
      SUGGESTED_INDEX: "suggestedIndex",
      TAIL_SUGGESTION: "tailSuggestion",
 +    ZEN_ACTION: "zenAction",
@@ -11,22 +11,13 @@ index 2f03bdf632c6ca15c728df2801162da5159682da..6834daede8cb11854f137602100183d8
    }),
  
    // Defines provider types.
-@@ -170,6 +172,8 @@ export var UrlbarUtils = {
-     OTHER_NETWORK: 6,
-     ADDON: 7,
-     ACTIONS: 8,
-+    ZEN_ACTIONS: 9,
-+    WORKSPACES: 10,
-   }),
- 
-   // Per-result exposure telemetry.
-@@ -319,6 +323,14 @@ export var UrlbarUtils = {
+@@ -274,6 +276,14 @@ export var UrlbarUtils = {
          telemetryLabel: "actions",
-         uiLabel: "urlbar-searchmode-actions2",
+         uiLabel: "urlbar-searchmode-actions3",
        },
 +      {
-+        source: this.RESULT_SOURCE.WORKSPACES,
-+        restrict: lazy.UrlbarTokenizer.RESTRICT.WORKSPACE,
++        source: UrlbarShared.RESULT_SOURCE.WORKSPACES,
++        restrict: UrlbarShared.RESTRICT_TOKENS.WORKSPACE,
 +        icon: "chrome://browser/skin/zen-icons/selectable/layers.svg",
 +        pref: "shortcuts.workspaces",
 +        telemetryLabel: "workspaces",
@@ -35,12 +26,12 @@ index 2f03bdf632c6ca15c728df2801162da5159682da..6834daede8cb11854f137602100183d8
      ]);
    },
  
-@@ -611,6 +623,12 @@ export var UrlbarUtils = {
+@@ -566,6 +576,12 @@ export var UrlbarUtils = {
            return this.RESULT_GROUP.HEURISTIC_FALLBACK;
          case "UrlbarProviderHistoryUrlHeuristic":
            return this.RESULT_GROUP.HEURISTIC_HISTORY_URL;
 +        case "ZenUrlbarProviderGlobalActions":
-+          if (result.source == this.RESULT_SOURCE.WORKSPACES) {
++          if (result.source == UrlbarShared.RESULT_SOURCE.WORKSPACES) {
 +            return this.RESULT_GROUP.ZEN_WORKSPACE;
 +          } else {
 +            return this.RESULT_GROUP.ZEN_ACTION;

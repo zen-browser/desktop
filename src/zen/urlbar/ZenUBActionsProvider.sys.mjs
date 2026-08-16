@@ -7,6 +7,7 @@ import {
   UrlbarProvider,
   UrlbarUtils,
 } from "moz-src:///browser/components/urlbar/UrlbarUtils.sys.mjs";
+import { UrlbarShared } from "chrome://browser/content/urlbar/UrlbarShared.mjs";
 import { globalActions } from "resource:///modules/ZenUBGlobalActions.sys.mjs";
 import { zenUrlbarResultsLearner } from "./ZenUBResultsLearner.sys.mjs";
 
@@ -21,10 +22,14 @@ const MINIMUM_QUERY_SCORE = 92;
 const MINIMUM_PREFIXED_QUERY_SCORE = 30;
 
 ChromeUtils.defineESModuleGetters(lazy, {
-  UrlbarResult: "moz-src:///browser/components/urlbar/UrlbarResult.sys.mjs",
+  UrlbarResult: "chrome://browser/content/urlbar/UrlbarResult.mjs",
   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
   AddonManager: "resource://gre/modules/AddonManager.sys.mjs",
   UrlUtils: "resource://gre/modules/UrlUtils.sys.mjs",
+});
+
+ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
+  return new Localization(["browser/zen-command-palette.ftl"], true);
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -130,11 +135,6 @@ function payloadAndSimpleHighlights(tokens, payloadInfo) {
 export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
   #seenCommands = new Set();
 
-  constructor() {
-    super();
-    lazy.UrlbarResult.addDynamicResultType(DYNAMIC_TYPE_NAME);
-  }
-
   get name() {
     return "ZenUrlbarProviderGlobalActions";
   }
@@ -155,9 +155,10 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
    */
   async isActive(queryContext) {
     return (
-      queryContext.searchMode?.source == UrlbarUtils.RESULT_SOURCE.WORKSPACES ||
       queryContext.searchMode?.source ==
-        UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS ||
+        UrlbarShared.RESULT_SOURCE.WORKSPACES ||
+      queryContext.searchMode?.source ==
+        UrlbarShared.RESULT_SOURCE.ZEN_ACTIONS ||
       (lazy.enabledPref &&
         queryContext.searchString &&
         queryContext.searchString.length < UrlbarUtils.MAX_TEXT_LENGTH &&
@@ -182,7 +183,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
           .workspaceElement(workspace.uuid)
           ?.style.getPropertyValue("--zen-primary-color");
         actions.push({
-          label: "Focus on",
+          label: lazy.l10n.formatValueSync("zen-action-focus-on"),
           extraPayload: {
             workspaceId: workspace.uuid,
             prettyName: workspace.name,
@@ -215,7 +216,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       .map(addon => {
         return {
           icon: "chrome://browser/skin/zen-icons/extension.svg",
-          label: "Extension",
+          label: lazy.l10n.formatValueSync("zen-action-extension"),
           commandId: `zen:extension-${addon.id}`,
           extraPayload: {
             extensionId: addon.id,
@@ -346,10 +347,10 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
   async startQuery(queryContext, addCallback) {
     const query = queryContext.trimmedLowerCaseSearchString;
     const isWorkspaceSearch =
-      queryContext.searchMode?.source == UrlbarUtils.RESULT_SOURCE.WORKSPACES;
+      queryContext.searchMode?.source == UrlbarShared.RESULT_SOURCE.WORKSPACES;
     const isPrefixed =
       isWorkspaceSearch ||
-      queryContext.searchMode?.source == UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS;
+      queryContext.searchMode?.source == UrlbarShared.RESULT_SOURCE.ZEN_ACTIONS;
 
     if (!query && !isPrefixed) {
       return;
@@ -392,10 +393,10 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         zenUrlbarResultsLearner.shouldPrioritize(action.commandId) &&
         !isPrefixed;
       let result = new lazy.UrlbarResult({
-        type: UrlbarUtils.RESULT_TYPE.DYNAMIC,
+        type: UrlbarShared.RESULT_TYPE.DYNAMIC,
         source: isWorkspaceSearch
-          ? UrlbarUtils.RESULT_SOURCE.WORKSPACES
-          : UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS,
+          ? UrlbarShared.RESULT_SOURCE.WORKSPACES
+          : UrlbarShared.RESULT_SOURCE.ZEN_ACTIONS,
         payload,
         highlights: payloadHighlights,
         heuristic: shouldBePrioritized,

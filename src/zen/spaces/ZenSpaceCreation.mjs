@@ -2,6 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+const lazy = {};
+
+ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
+  return new Localization(["browser/zen-workspaces.ftl"], true);
+});
+
 class nsZenWorkspaceCreation extends MozXULElement {
   #wasInCollapsedMode = false;
 
@@ -182,8 +188,8 @@ class nsZenWorkspaceCreation extends MozXULElement {
         this.onProfileCommand.bind(this)
       );
       this.profilesPopup.addEventListener(
-        "popupshown",
-        this.onProfilePopupShown.bind(this)
+        "popupshowing",
+        this.onProfilePopupShowing.bind(this)
       );
       this.profilesPopup.addEventListener(
         "command",
@@ -192,7 +198,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
 
       this.currentProfile = {
         id: 0,
-        name: "Default",
+        name: lazy.l10n.formatValueSync("zen-workspace-default-profile"),
       };
     } else {
       this.inputProfile.parentNode.hidden = true;
@@ -296,11 +302,20 @@ class nsZenWorkspaceCreation extends MozXULElement {
     this.profilesPopup.openPopup(event.target, "after_start");
   }
 
-  onProfilePopupShown(event) {
-    return window.createUserContextMenu(event, {
+  onProfilePopupShowing(event) {
+    window.createUserContextMenu(event, {
       isContextMenu: true,
       showDefaultTab: true,
+      showManageContainers: false,
     });
+
+    const defaultItem = event.target.querySelector('[data-usercontextid="0"]');
+    if (defaultItem) {
+      defaultItem.removeAttribute("data-l10n-id");
+      defaultItem.label = lazy.l10n.formatValueSync(
+        "zen-workspace-default-profile"
+      );
+    }
   }
 
   onProfilePopupCommand(event) {
@@ -370,7 +385,6 @@ class nsZenWorkspaceCreation extends MozXULElement {
     }
 
     this.remove();
-    gZenUIManager.updateTabsToolbar();
 
     const workspace = gZenWorkspaces.getActiveWorkspace();
     gZenWorkspaces._organizeWorkspaceStripLocations(workspace);
@@ -398,6 +412,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
     }
 
     this.#hiddenElements = [];
+    gZenUIManager.updateTabsToolbar();
   }
 }
 

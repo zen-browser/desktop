@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential = 
     .label = Fjarlægja úr þarfaflipum
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Skipta út vefslóð þarfaflipa fyrir fyrirliggjandi slóð
-           *[false] Skipta út vefslóð fests flipa fyrir fyrirliggjandi slóð
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
     .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
+    .accesskey = P
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Skipta um merkingu...
 tab-context-zen-edit-icon = 
@@ -45,6 +51,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Staðfesta
 zen-pinned-tab-replaced = URL-slóð festa flipans hefur verið skipt út með fyrirliggjandi slóð!
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Tókst að endurnefna flipann!
 zen-background-tab-opened-toast = Nýr bakgrunnsflipi opnaður!
 zen-workspace-renamed-toast = Tókst að endurnefna vinnusvæðið!
@@ -63,6 +73,8 @@ zen-icons-picker-emoji =
     .label = Emoji-tákn
 zen-icons-picker-svg = 
     .label = Táknmyndir
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Aðgerðir
 zen-site-data-settings = Stillingar
 zen-generic-manage = Sýsla
@@ -114,6 +126,9 @@ zen-sidebar-notification-updated-heading = Uppfærslu lokið!
 zen-sidebar-notification-updated-label = Nýtt á döfinni í { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Skoða útgáfuupplýsingar
+zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Bilaði eitthvað?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Endurræsa í öruggum ham

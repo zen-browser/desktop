@@ -1,0 +1,37 @@
+diff --git a/browser/components/urlbar/content/UrlbarShared.mjs b/browser/components/urlbar/content/UrlbarShared.mjs
+index 5b45afb747bfcdbd06782186737669aa2c4c634d..f68bd009f70415b5fb513abdfe19b4427ceefbfc 100644
+--- a/browser/components/urlbar/content/UrlbarShared.mjs
++++ b/browser/components/urlbar/content/UrlbarShared.mjs
+@@ -47,6 +47,7 @@ export const UrlbarShared = {
+     // `looksLikeOrigin()` returned `LOOKS_LIKE_ORIGIN.OTHER` for this token.
+     // It may or may not be an origin.
+     POSSIBLE_ORIGIN_BUT_SEARCH_ALLOWED: 12,
++    RESTRICT_WORKSPACE: 13,
+   }),
+ 
+   /**
+@@ -67,6 +68,7 @@ export const UrlbarShared = {
+     TITLE: "#",
+     URL: "$",
+     ACTION: ">",
++    WORKSPACE: "`",
+   }),
+ 
+   // Defines UrlbarResult types.
+@@ -112,6 +114,8 @@ export const UrlbarShared = {
+     OTHER_NETWORK: 6,
+     ADDON: 7,
+     ACTIONS: 8,
++    ZEN_ACTIONS: 9,
++    WORKSPACES: 10,
+   }),
+ 
+   /**
+@@ -128,6 +132,7 @@ export const UrlbarShared = {
+     if (lazy.UrlbarPrefs.get("scotchBonnet.enableOverride")) {
+       keys.push(this.RESTRICT_TOKENS.ACTION);
+     }
++    keys.push(this.RESTRICT_TOKENS.WORKSPACE);
+     return new Set(keys);
+   },
+ 

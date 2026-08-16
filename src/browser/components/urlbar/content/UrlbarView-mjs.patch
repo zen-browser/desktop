@@ -1,0 +1,42 @@
+diff --git a/browser/components/urlbar/content/UrlbarView.mjs b/browser/components/urlbar/content/UrlbarView.mjs
+index 8afb2bf4a757b3ef7902f5a6e6eed6b70ca2845e..440dea1e66540ca1998cb7464b6695ac823fedcb 100644
+--- a/browser/components/urlbar/content/UrlbarView.mjs
++++ b/browser/components/urlbar/content/UrlbarView.mjs
+@@ -674,7 +674,7 @@ export class UrlbarView {
+       !this.input.value ||
+       this.input.getAttribute("pageproxystate") == "valid"
+     ) {
+-      if (!this.isOpen && ["mousedown", "command"].includes(event.type)) {
++      if (!this.isOpen && ["mousedown", "click", "command"].includes(event.type)) {
+         // Try to reuse the cached top-sites context. If it's not cached, then
+         // there will be a gap of time between when the input is focused and
+         // when the view opens that can be perceived as flicker.
+@@ -812,10 +812,6 @@ export class UrlbarView {
+     }
+ 
+     // If search mode isn't active, close the view.
+-    if (!this.input.searchMode) {
+-      this.close();
+-      return;
+-    }
+ 
+     // Search mode is active.  If the one-offs should be shown, make sure they
+     // are enabled and show the view.
+@@ -3031,6 +3027,8 @@ export class UrlbarView {
+       if (row?.hasAttribute("row-selectable")) {
+         row?.toggleAttribute("selected", true);
+       }
++      // only scroll if its not already fully visible
++      element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+       if (element != row) {
+         row?.toggleAttribute("descendant-selected", true);
+       }
+@@ -3544,7 +3542,7 @@ export class UrlbarView {
+   }
+ 
+   #enableOrDisableRowWrap() {
+-    let wrap = getBoundsWithoutFlushing(this.input).width < 650;
++    let wrap = false;
+     this.#rows.toggleAttribute("wrap", wrap);
+     this.oneOffSearchButtons?.container.toggleAttribute("wrap", wrap);
+   }

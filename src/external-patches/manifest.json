@@ -37,7 +37,7 @@
   },
   {
     "type": "phabricator",
-    "id": "D291714",
-    "name": "gh-12979 Clip dirty_rect to device_size"
+    "id": "D312091",
+    "name": "Expose tiled attribute to all platforms"
   }
 ]

@@ -61,6 +61,7 @@ zen-workspace-creation-profile = פרופיל
     .tooltiptext = פרופילים משמשים להפרדת קובצי Cookie ונתוני אתר בין מרחבים שונים.
 zen-workspace-creation-header = יצירת מרחב
 zen-workspace-creation-label = המרחבים משמשים לסידור לשוניות והפעלות.
+zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = למחוק את המרחב?
 zen-workspaces-delete-workspace-body = למחוק את { $name }? לא ניתן לבטל פעולה זו.
 # Note that the html tag MUST not be changed or removed, as it is used to better

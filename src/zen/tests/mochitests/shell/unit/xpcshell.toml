@@ -10,21 +10,6 @@ run-if = [
   "os == 'linux'",
 ]
 
-["test_dynamicLauncher.js"]
-environment = [
-  "XPCSHELL_TEST=1",
-  # The following prevents gsettings from initializing dbus before our mock is
-  # ready.
-  "GSETTINGS_BACKEND=memory",
-]
-run-if = [
-  "os == 'linux'",
-]
-support-files = [
-  "../../../places/tests/browser/favicon-normal16.png",
-]
-tags = ["portal"]
-
 ["test_linuxDesktopEntry.js"]
 run-if = [
   "os == 'linux'",
@@ -33,6 +18,11 @@ run-if = [
 ["test_macOS_showSecurityPreferences.js"]
 run-if = [
   "os == 'mac'",
+]
+
+["test_maybeCreateLaunchOnLoginOnFirstRun.js"]
+run-if = [
+  "os == 'win'"
 ]
 
 ["test_secondaryTileJs.js"]

@@ -1229,11 +1229,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const newTab = this.openAndSwitchToTab(url, {
       skipRoute: true,
       inBackground: false,
-      triggeringPrincipal: window.gContextMenu.principal,
     });
-    if (!newTab) {
-      return;
-    }
     this.splitTabs([currentTab, newTab], undefined, 1);
   }
 
@@ -1398,12 +1394,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const tabIndexToUse = Math.max(0, initialIndex);
     return this.#withoutSplitViewTransition(() => {
       // TODO: Add support for splitting essential tabs
-      tabs = tabs
-        .filter(t => !t.hidden && !t.hasAttribute("zen-empty-tab"))
-        // use glance parent tab instead of glance tab
-        .map(t => gZenGlanceManager.getTabOrGlanceParent(t))
-        // remove duplicates
-        .filter((t, i, arr) => arr.indexOf(t) === i);
+      tabs = tabs.filter(t => !t.hidden && !t.hasAttribute("zen-empty-tab"));
       if (tabs.length < 2 || tabs.length > this.MAX_TABS) {
         return;
       }
@@ -1564,20 +1555,11 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     if (reset) {
       this.removeSplitters();
     }
-    const pendingTabs = splitData.tabs.filter(tab =>
-      tab.hasAttribute("pending")
-    );
-    if (pendingTabs.length) {
-      pendingTabs.forEach(tab => gBrowser._insertBrowser(tab));
-      // SessionStore listens for this on the tab container and restores each
-      // tab's saved history, scroll position and form data. Kept non-bubbling
-      // so it doesn't reach tabbrowser, which tracks Firefox's own split view.
-      gBrowser.tabContainer.dispatchEvent(
-        new CustomEvent("TabSplitViewActivate", {
-          detail: { tabs: pendingTabs },
-        })
-      );
-    }
+    splitData.tabs.forEach(tab => {
+      if (tab.hasAttribute("pending")) {
+        gBrowser.getBrowserForTab(tab).reload();
+      }
+    });
 
     // Apply grid to tabs first to set zen-split attribute on containers
     // before setting zen-split-view on parents. This prevents the black flash
@@ -1997,24 +1979,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * @returns {tab} The tab that was opened
    */
   openAndSwitchToTab(url, options) {
-    const triggeringPrincipal = options?.triggeringPrincipal;
-    if (!triggeringPrincipal) {
-      return null;
-    }
-    try {
-      Services.scriptSecurityManager.checkLoadURIStrWithPrincipal(
-        triggeringPrincipal,
-        url
-      );
-    } catch {
-      return null;
-    }
     const parentWindow = window.parent;
     const targetWindow = parentWindow || window;
-    const tab = targetWindow.gBrowser.addTab(url, {
-      ...options,
-      triggeringPrincipal,
-    });
+    const tab = targetWindow.gBrowser.addTrustedTab(url, options);
     targetWindow.gBrowser.selectedTab = tab;
     return tab;
   }

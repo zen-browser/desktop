@@ -1,15 +1,15 @@
 diff --git a/widget/SwipeTracker.cpp b/widget/SwipeTracker.cpp
-index 83b80a808261ce28e5c571dc802993556477f0c8..8de39d5c724e23f540a70f47e893e46bcf1112e6 100644
+index 887d06d3bd9cdaa934880e0ae7a11ec8b737fb61..979f93ddab0d661ac1a1d73e7a0ba27fa2c8f9b7 100644
 --- a/widget/SwipeTracker.cpp
 +++ b/widget/SwipeTracker.cpp
-@@ -10,6 +10,7 @@
- #include "mozilla/PresShell.h"
- #include "mozilla/StaticPrefs_browser.h"
- #include "mozilla/StaticPrefs_widget.h"
+@@ -3,6 +3,7 @@
+  * You can obtain one at http://mozilla.org/MPL/2.0/. */
+ 
+ #include "SwipeTracker.h"
 +#include "mozilla/StaticPrefs_zen.h"
- #include "mozilla/TimeStamp.h"
- #include "mozilla/TouchEvents.h"
- #include "mozilla/dom/SimpleGestureEventBinding.h"
+ 
+ #include "InputData.h"
+ #include "mozilla/FlushType.h"
 @@ -67,6 +68,9 @@ double SwipeTracker::SwipeSuccessTargetValue() const {
  }
  

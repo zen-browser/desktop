@@ -18,19 +18,13 @@ tab-context-zen-add-essential-badge = { $num } / { $max } מקומות מלאי�
 tab-context-zen-remove-essential = 
     .label = הסרה מהחיוניות
     .accesskey = ר
-tab-context-zen-edit-pinned-page = 
+tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Replace Essential URL with Current
+           *[false] Replace Pinned URL with Current
         }
-    .accesskey = P
-tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
     .accesskey = ב
-tab-context-zen-edit-pinned-url = 
-    .label = Edit…
-    .accesskey = E
 tab-context-zen-edit-title = 
     .label = שינוי תווית...
 tab-context-zen-edit-icon = 
@@ -51,10 +45,6 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = אישור
 zen-pinned-tab-replaced = כתובת הלשונית המוצמדת הוחלפה בכתובת הנוכחית!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = שם הלשונית השתנה בהצלחה!
 zen-background-tab-opened-toast = לשונית נפתחה ברקע!
 zen-workspace-renamed-toast = שם מרחב העבודה השתנה בהצלחה!
@@ -73,8 +63,6 @@ zen-icons-picker-emoji =
     .label = אימוג׳י
 zen-icons-picker-svg = 
     .label = סמלים
-zen-emojis-picker-search = 
-    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = פעולות
 zen-site-data-settings = הגדרות
 zen-generic-manage = ניהול
@@ -126,9 +114,6 @@ zen-sidebar-notification-updated-heading = העדכון הושלם!
 zen-sidebar-notification-updated-label = מה חדש ב־{ -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = צפייה בהערות שחרור הגרסה
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
-zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = משהו השתבש?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = הפעלה מחדש במצב בטוח

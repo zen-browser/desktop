@@ -46,12 +46,6 @@
 - name: zen.view.context-menu.refresh
   value: "@IS_TWILIGHT@"
 
-- name: zen.view.drag-window-from-content
-  value: true
-
-- name: zen.view.drag-window-from-content.height-percentage
-  value: 5
-
 - name: zen.view.borderless-fullscreen
   value: true
 

@@ -635,13 +635,15 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   }
 
   createFolder(tabs = [], options = {}) {
-    const filteredTabs = tabs.map(tab => {
-      gBrowser.pinTab(tab);
-      if (tab?.group?.hasAttribute("split-view-group")) {
-        tab = tab.group;
-      }
-      return tab;
-    });
+    const filteredTabs = tabs
+      .filter(tab => !tab.hasAttribute("zen-essential"))
+      .map(tab => {
+        gBrowser.pinTab(tab);
+        if (tab?.group?.hasAttribute("split-view-group")) {
+          tab = tab.group;
+        }
+        return tab;
+      });
 
     const workspacePinned = gZenWorkspaces.workspaceElement(
       options.workspaceId
@@ -1317,17 +1319,8 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
             }
             default: {
               // Should insert after zen-empty-tab
-              let start =
+              const start =
                 parentWorkingData.node.groupStartElement.nextElementSibling;
-              start ||=
-                parentWorkingData.node.tabs[0] ||
-                parentWorkingData.node.groupStartElement;
-              if (!start) {
-                console.error(
-                  `Zen Folders: Could not find start element for parent folder with id ${stateData.parentId} while restoring session.`
-                );
-                break;
-              }
               start.after(node);
             }
           }

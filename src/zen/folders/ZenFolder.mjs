@@ -321,11 +321,6 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
   }
 
   addTabs(tabs) {
-    for (let tab of tabs) {
-      if (tab.hasAttribute("zen-essential")) {
-        gZenPinnedTabManager.removeEssentials(tab, false);
-      }
-    }
     super.addTabs(tabs);
     if (
       this.collapsed &&

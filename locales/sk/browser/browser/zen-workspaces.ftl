@@ -61,7 +61,6 @@ zen-workspace-creation-profile = Profil
     .tooltiptext = Profily sa používajú na oddelenie súborov cookie a údajov stránok medzi priestormi.
 zen-workspace-creation-header = Vytvoriť priestor
 zen-workspace-creation-label = Priestory sa používajú na organizáciu vašich kariet a relácií.
-zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Odstrániť priestor?
 zen-workspaces-delete-workspace-body = Naozaj chcete odstrániť priestor { $name }? Túto akciu nie je možné vrátiť späť.
 # Note that the html tag MUST not be changed or removed, as it is used to better

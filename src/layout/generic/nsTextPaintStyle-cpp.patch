@@ -1,5 +1,5 @@
 diff --git a/layout/generic/nsTextPaintStyle.cpp b/layout/generic/nsTextPaintStyle.cpp
-index 9dba72de611cd84ed07805f5ce40f882071240f0..782dea67f6d975ba5b7daa1e2e2ed862f7941952 100644
+index 5d1bf44687e925aff67f44c8e0629f7f06e84e98..1fa60a4d91edc60ba733cefc5f73ab8b7684d02a 100644
 --- a/layout/generic/nsTextPaintStyle.cpp
 +++ b/layout/generic/nsTextPaintStyle.cpp
 @@ -240,7 +240,7 @@ bool nsTextPaintStyle::GetTargetTextColor(nscolor* aForeColor) {
@@ -39,14 +39,27 @@ index 9dba72de611cd84ed07805f5ce40f882071240f0..782dea67f6d975ba5b7daa1e2e2ed862
    return NS_GET_A(*aBackColor) != 0;
  }
  
-@@ -463,9 +464,9 @@ bool nsTextPaintStyle::InitSelectionColorsAndShadow() {
-     if (mSelectionPseudoStyle->HasAuthorSpecifiedTextColor() ||
-         mSelectionPseudoStyle->HasAuthorSpecifiedBorderOrBackground()) {
+@@ -466,19 +467,19 @@ bool nsTextPaintStyle::InitSelectionColorsAndShadow() {
+     // this is web content or chrome content. See bug 2029839.
+     if (!mFrame->PresContext()->Document()->ChromeRulesEnabled()) {
        mSelectionBGColor = mSelectionPseudoStyle->GetVisitedDependentColor(
 -          &nsStyleBackground::mBackgroundColor);
 -      mSelectionTextColor =
 -          mSelectionPseudoStyle->GetVisitedDependentColor(&nsStyleText::mColor);
 +          &nsStyleBackground::mBackgroundColor, mFrame);
++      mSelectionTextColor = mSelectionPseudoStyle->GetVisitedDependentColor(
++          &nsStyleText::mColor, mFrame);
+       return true;
+     }
+ 
+     if (nscolor bgColor = mSelectionPseudoStyle->GetVisitedDependentColor(
+-            &nsStyleBackground::mBackgroundColor);
++            &nsStyleBackground::mBackgroundColor, mFrame);
+         mSelectionPseudoStyle->HasAuthorSpecifiedTextColor() ||
+         NS_GET_A(bgColor) > 0) {
+       mSelectionBGColor = bgColor;
+-      mSelectionTextColor =
+-          mSelectionPseudoStyle->GetVisitedDependentColor(&nsStyleText::mColor);
 +      mSelectionTextColor = mSelectionPseudoStyle->GetVisitedDependentColor(
 +          &nsStyleText::mColor, mFrame);
        return true;

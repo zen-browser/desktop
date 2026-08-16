@@ -343,6 +343,10 @@ class nsZenLiveFoldersManager {
         ],
       },
     });
+
+    lazy.setTimeout(() => {
+      callout.endTour();
+    }, 10000);
   }
 
   deleteFolder(id, deleteFolder = true) {

@@ -245,6 +245,10 @@ class nsZenSpaceRoutingManager {
           if (targetWorkspace) {
             workspaces.moveTabToWorkspace(newTab, targetWorkspace.uuid);
 
+            if (inBackground) {
+              return;
+            }
+
             const mostRecentWindow =
               Services.wm.getMostRecentWindow("navigator:browser");
             const isOriginatingWindow = win === mostRecentWindow;
@@ -252,10 +256,7 @@ class nsZenSpaceRoutingManager {
               win.gZenWorkspaces.lastSelectedWorkspaceTabs[
                 targetWorkspace.uuid
               ] = newTab;
-
-              if (!inBackground) {
-                await win.gZenWorkspaces.changeWorkspace(targetWorkspace);
-              }
+              await win.gZenWorkspaces.changeWorkspace(targetWorkspace);
             }
           }
         }

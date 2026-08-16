@@ -1,18 +1,18 @@
 diff --git a/browser/themes/shared/identity-block/identity-block.css b/browser/themes/shared/identity-block/identity-block.css
-index 82c3e319f783e6383ce437131808bbde14293379..6b4444b8ad68664f746be057aae4c59e01e8d170 100644
+index f239438ce661ae2c33a3e04ecc6d403b3a56a42b..c3a237aa78cff7aaaf0a7b931dd2b4d99049c051 100644
 --- a/browser/themes/shared/identity-block/identity-block.css
 +++ b/browser/themes/shared/identity-block/identity-block.css
-@@ -12,7 +12,7 @@
- }
- 
+@@ -7,7 +7,7 @@
  #identity-box {
+   margin-inline-end: var(--identity-box-margin-inline);
+ 
 -  &[pageproxystate="invalid"] {
 +  :root[zen-has-empty-tab='true'] & {
      pointer-events: none;
      -moz-user-focus: ignore;
- 
-@@ -96,13 +96,6 @@
-   margin: 0;
+   }
+@@ -85,13 +85,6 @@
+   }
  }
  
 -#identity-box[pageproxystate="valid"]:is(.notSecureText, .chromeUI, .extensionPage) > .identity-box-button,
@@ -25,7 +25,7 @@ index 82c3e319f783e6383ce437131808bbde14293379..6b4444b8ad68664f746be057aae4c59e
  
  #urlbar[focused] {
    #identity-box[pageproxystate="valid"]:is(.notSecureText, .chromeUI, .extensionPage) > .identity-box-button:not(:hover, [open]),
-@@ -193,16 +186,17 @@
+@@ -182,16 +175,17 @@
    }
  
    #identity-icon {

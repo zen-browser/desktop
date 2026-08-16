@@ -8,5 +8,9 @@
 - name: svg.context-properties.content.enabled
   value: true
 
+- name: image.avif.enabled
+  value: true
+  locked: true
+
 - name: media.eme.enabled
   value: true

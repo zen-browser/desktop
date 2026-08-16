@@ -5,8 +5,8 @@
   "binaryName": "zen",
   "version": {
     "product": "firefox",
-    "version": "153.0.4",
-    "candidate": "154.0",
+    "version": "152.0.2",
+    "candidate": "152.0.2",
     "candidateBuild": 1
   },
   "buildOptions": {
@@ -20,7 +20,7 @@
       "brandShortName": "Zen",
       "brandFullName": "Zen Browser",
       "release": {
-        "displayVersion": "1.21.14b",
+        "displayVersion": "1.21.4b",
         "github": {
           "repo": "zen-browser/desktop"
         },

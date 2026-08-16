@@ -4,8 +4,6 @@
 
 #include "nsISupports.idl"
 
-interface mozIDOMWindowProxy;
-
 /**
  * @brief Interface for Zen's drag and drop functionality.
  */
@@ -23,14 +21,4 @@ interface nsIZenDragAndDrop : nsISupports {
    * @brief Indicate that a drag operation has ended.
    */
   void onDragEnd();
-
-  /**
-   * @brief Start a native, OS-driven interactive move of the window,
-   * as if the user had grabbed its titlebar. Must be called while the
-   * primary mouse button is held down. The OS takes over the drag,
-   * providing native behaviors like macOS window tiling or Windows
-   * snap layouts, and ends it when the button is released.
-   * @param window The chrome window to move.
-   */
-  void beginNativeWindowMove(in mozIDOMWindowProxy window);
 };

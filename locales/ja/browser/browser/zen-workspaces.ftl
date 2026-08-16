@@ -61,7 +61,6 @@ zen-workspace-creation-profile = プロファイル
     .tooltiptext = プロファイルはスペース間でクッキーとサイトデータを分離するために使用されます。
 zen-workspace-creation-header = スペースを作成する
 zen-workspace-creation-label = スペースはタブやセッションを整理するために使用されます。
-zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = スペースを削除しますか？
 zen-workspaces-delete-workspace-body = { $name }を削除してもよろしいですか？この操作は元に戻せません。
 # Note that the html tag MUST not be changed or removed, as it is used to better

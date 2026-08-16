@@ -23,6 +23,3 @@
 
 - name: browser.ml.linkPreview.enabled
   value: false
-
-- name: browser.preferences.aiControls
-  value: false

@@ -1,10 +1,13 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 /**
  * Gecko XPIDL base types.
  */
 
 /**
  * Generic IDs are created by most code which passes a nsID to js.
- * https://searchfox.org/firefox-main/source/js/xpconnect/src/XPCJSID.cpp#24
+ * https://searchfox.org/mozilla-central/source/js/xpconnect/src/XPCJSID.cpp#24
  */
 interface nsID<uuid = string> {
   readonly number: uuid;
@@ -13,7 +16,7 @@ interface nsID<uuid = string> {
 /**
  * In addition to nsID, interface IIDs support instanceof type guards,
  * and expose constants defined on the class, including variants from enums.
- * https://searchfox.org/firefox-main/source/js/xpconnect/src/XPCJSID.cpp#45
+ * https://searchfox.org/mozilla-central/source/js/xpconnect/src/XPCJSID.cpp#45
  */
 type nsJSIID<iface, enums = {}> = nsID &
   Constants<iface> &
@@ -28,10 +31,8 @@ type nsIID = nsIXPCComponents_Interfaces[keyof nsIXPCComponents_Interfaces];
 /** A generic to resolve QueryInterface return type from a nsIID. */
 type nsQIResult<iid> = iid extends { prototype: infer U } ? U : never;
 
-/** Picks only const number properties from T and marks them as required. */
-type Constants<T> = {
-  [K in keyof T as IfConst<K, T[K]>]-?: Exclude<T[K], undefined>;
-};
+/** Picks only const number properties from T. */
+type Constants<T> = { [K in keyof T as IfConst<K, T[K]>]: T[K] };
 
 /** Resolves only for keys K whose corresponding type T is a narrow number. */
 type IfConst<K, T> = T extends number ? (number extends T ? never : K) : never;

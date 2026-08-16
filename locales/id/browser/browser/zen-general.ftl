@@ -18,19 +18,13 @@ tab-context-zen-add-essential-badge = { $num } / { $max } slot terisi
 tab-context-zen-remove-essential = 
     .label = Hapus dari Esensial
     .accesskey = R
-tab-context-zen-edit-pinned-page = 
+tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Perbarui URL awal Tab Esensial
+           *[false] Perbarui URL awal Tab Sematan
         }
-    .accesskey = P
-tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
     .accesskey = C
-tab-context-zen-edit-pinned-url = 
-    .label = Edit…
-    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Ubah Label...
 tab-context-zen-edit-icon = 
@@ -53,10 +47,6 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Konfirmasi
 zen-pinned-tab-replaced = URL awal dari tab yang disematkan telah diganti dengan URL saat ini.
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Tab telah berhasil diubah namanya!
 zen-background-tab-opened-toast = Tab baru telah terbuka di latar belakang!
 zen-workspace-renamed-toast = Ruang Kerja telah berhasil diubah namanya!
@@ -75,8 +65,6 @@ zen-icons-picker-emoji =
     .label = Emoji
 zen-icons-picker-svg = 
     .label = Ikon
-zen-emojis-picker-search = 
-    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Aksi
 zen-site-data-settings = Pengaturan
 zen-generic-manage = Kelola
@@ -128,9 +116,6 @@ zen-sidebar-notification-updated-heading = Pembaruan Selesai!
 zen-sidebar-notification-updated-label = Apa yang baru di { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Lihat Catatan Rilis
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
-zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Ada yang rusak?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Mulai Ulang dalam Mode Aman

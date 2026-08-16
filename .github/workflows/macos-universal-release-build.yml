@@ -99,16 +99,6 @@ jobs:
           cd engine
           ./mach configure
 
-      - name: Build host mar tool
-        run: |
-          set -ex
-          cd engine
-          echo "ac_add_options --enable-project=tools/update-packaging" > mar-mozconfig
-          echo "mk_add_options MOZ_OBJDIR=@TOPSRCDIR@/obj-mar-tools" >> mar-mozconfig
-          MOZCONFIG=$PWD/mar-mozconfig ./mach build -v
-          cp obj-mar-tools/dist/host/bin/mar ../zen-macos-host-mar
-          rm -rf obj-mar-tools mar-mozconfig
-
       - name: Download x86_64 DMG from artifacts
         uses: actions/download-artifact@v4
         with:
@@ -222,6 +212,11 @@ jobs:
             --no-s3-acceleration \
             --wait
           xcrun stapler staple "zen.macos-universal.dmg"
+
+      - name: Download host mar
+        uses: actions/download-artifact@v4
+        with:
+          name: zen-macos-host-mar
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4

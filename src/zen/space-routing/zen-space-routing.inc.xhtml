@@ -82,5 +82,15 @@
     </hbox>
   </vbox>
 
-  <script src="chrome://browser/content/zen-components/windows/zen-space-routing.js"></script>
+  <script>
+    const { nsZenSpaceRoutingDialog } = ChromeUtils.importESModule(
+      "resource:///modules/zen/spacerouting/ZenSpaceRoutingDialog.mjs",
+    );
+    const args = window.arguments?.[0] || {};
+    window.spaceroutingDialog = new nsZenSpaceRoutingDialog(
+      document,
+      window,
+      args.parentWindow,
+    );
+  </script>
 </window>

@@ -118,19 +118,7 @@ run-if = [
 ]
 tags = "os_integration"
 
-["browser_setDefaultProtocolHandler.js"]
-run-if = [
-  "os == 'win'",
-]
-tags = "os_integration"
-
 ["browser_setDesktopBackgroundPreview.js"]
 disabled="Disabled by import_external_tests.py"
-support-files = ["large.png", "canvas.html"]
-tags = "os_integration"
-
-["browser_windowsSetDefaultAppCmdHandler.js"]
-run-if = [
-  "os == 'win'",
-]
+support-files = ["large.png"]
 tags = "os_integration"

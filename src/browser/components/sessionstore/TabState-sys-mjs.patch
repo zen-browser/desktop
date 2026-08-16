@@ -1,16 +1,8 @@
 diff --git a/browser/components/sessionstore/TabState.sys.mjs b/browser/components/sessionstore/TabState.sys.mjs
-index a33deeb5b587d6a950960a1a4781176e4e730ad7..e96cfb9a5ffbe4feccdffa8b6d18ececb48d4c52 100644
+index 4ba4dda363b602cb6f4445ef056f2f9abb1b0e1e..6b4b407e05e26faca69d9d7ac6f31510620898fe 100644
 --- a/browser/components/sessionstore/TabState.sys.mjs
 +++ b/browser/components/sessionstore/TabState.sys.mjs
-@@ -8,6 +8,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
-   PrivacyFilter: "resource://gre/modules/sessionstore/PrivacyFilter.sys.mjs",
-   TabAttributes: "resource:///modules/sessionstore/TabAttributes.sys.mjs",
-   TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
-+  UrlbarShared: "chrome://browser/content/urlbar/UrlbarShared.mjs",
-   sessionStoreLogger: "resource:///modules/sessionstore/SessionLogger.sys.mjs",
- });
- 
-@@ -103,10 +104,28 @@ class _TabState {
+@@ -99,10 +99,28 @@ class _TabState {
        }
      }
  
@@ -33,7 +25,7 @@ index a33deeb5b587d6a950960a1a4781176e4e730ad7..e96cfb9a5ffbe4feccdffa8b6d18ecec
        browser,
        true
      );
-+    if (tabData.searchMode?.source === lazy.UrlbarShared.RESULT_SOURCE.ZEN_ACTIONS) {
++    if (tabData.searchMode?.source === tab.documentGlobal.UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS) {
 +      delete tabData.searchMode;
 +    }
  

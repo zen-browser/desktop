@@ -816,57 +816,61 @@
   display: none !important;
 }
 
-.zen-media-playpause-button {
+#zen-media-playpause-button {
   list-style-image: url("media-play.svg");
 }
 
-.zen-media-card.playing .zen-media-playpause-button {
+#zen-media-controls-toolbar.playing #zen-media-playpause-button {
   list-style-image: url("media-pause.svg");
 }
 
-.zen-media-nexttrack-button {
+#zen-media-nexttrack-button {
   list-style-image: url("media-next.svg");
 }
 
-.zen-media-previoustrack-button {
+#zen-media-previoustrack-button {
   list-style-image: url("media-previous.svg");
 }
 
-.zen-media-card[muted] .zen-media-mute-button {
+#zen-media-controls-toolbar[muted] #zen-media-mute-button {
   list-style-image: url("media-mute.svg");
 }
 
-.zen-media-mute-button {
+#zen-media-mute-button {
   list-style-image: url("media-unmute.svg");
 }
 
-.zen-media-close-button {
+#zen-media-close-button {
   list-style-image: url("close.svg");
 }
 
-.zen-media-focus-button:hover {
+#zen-media-focus-button:hover {
   list-style-image: url("screen.svg");
 }
 
-.zen-media-mute-mic-button {
+#zen-media-close-button {
+  list-style-image: url("close.svg");
+}
+
+#zen-media-mute-mic-button {
   list-style-image: url("microphone-fill.svg");
 }
 
-.zen-media-card[mic-muted] .zen-media-mute-mic-button {
+#zen-media-controls-toolbar[mic-muted] #zen-media-mute-mic-button {
   list-style-image: url("microphone-blocked-fill.svg");
   fill: rgb(224, 41, 29);
 }
 
-.zen-media-mute-camera-button {
+#zen-media-mute-camera-button {
   list-style-image: url("video-fill.svg");
 }
 
-.zen-media-card[camera-muted] .zen-media-mute-camera-button {
+#zen-media-controls-toolbar[camera-muted] #zen-media-mute-camera-button {
   list-style-image: url("video-blocked-fill.svg");
   fill: rgb(224, 41, 29);
 }
 
-.zen-media-pip-button {
+#zen-media-pip-button {
   list-style-image: url("chrome://global/skin/media/picture-in-picture-open.svg");
 }
 

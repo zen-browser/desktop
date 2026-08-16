@@ -76,10 +76,6 @@ add_task(async function test_fetch_items_url_construction() {
     !query.includes("review-requested:@me"),
     "Should NOT include review-requested"
   );
-  Assert.ok(
-    !query.includes("draft:false"),
-    "Should include draft pull requests by default"
-  );
 
   sandbox.restore();
 });
@@ -92,7 +88,6 @@ add_task(async function test_fetch_items_url_complex_options() {
   let instance = getGithubProviderForTest(sandbox, {
     authorMe: true,
     assignedMe: true,
-    includeDrafts: false,
     reviewRequested: true,
   });
 
@@ -111,10 +106,6 @@ add_task(async function test_fetch_items_url_complex_options() {
   Assert.ok(
     query.includes("review-requested:@me"),
     "Should include review-requested"
-  );
-  Assert.ok(
-    query.includes("draft:false"),
-    "Should exclude draft pull requests"
   );
 
   Assert.ok(query.includes(" OR "), "Should contain OR operators");

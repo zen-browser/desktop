@@ -1,5 +1,5 @@
 diff --git a/.stylelintrc.js b/.stylelintrc.js
-index b484bf6600a7e1b8ad2aed8c8b7fe5e84cc3d023..f89712e2c13dfa0bcb48e55cd3872c67f5c98dad 100644
+index 3c9fecf731126fdbf900d1bdcd3635dd31ed53ef..c3a210b8153e9699c6cbdc0d568bb72433976b2c 100644
 --- a/.stylelintrc.js
 +++ b/.stylelintrc.js
 @@ -67,7 +67,7 @@ module.exports = {
@@ -11,9 +11,9 @@ index b484bf6600a7e1b8ad2aed8c8b7fe5e84cc3d023..f89712e2c13dfa0bcb48e55cd3872c67
        {
          ignore: ["blockless-at-rules"],
        },
-@@ -280,7 +280,7 @@ module.exports = {
-     "media-query-no-invalid": null,
-     "stylelint-plugin-mozilla/media-query-no-invalid": true,
+@@ -274,7 +274,7 @@ module.exports = {
+     // Remove this line setting `csscontrols/use-logical` to null after implementing fixes
+     "csstools/use-logical": null,
      "stylelint-plugin-mozilla/no-base-design-tokens": true,
 -    "stylelint-plugin-mozilla/use-design-tokens": true,
 +    "stylelint-plugin-mozilla/use-design-tokens": false,

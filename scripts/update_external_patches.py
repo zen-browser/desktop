@@ -83,7 +83,7 @@ def main():
       dest = patch.get("dest")
       if not url or not dest:
         die(f"Patch entry missing 'url' or 'dest': {patch}")
-      filename = patch.get("filename", url.split("/")[-1])
+      filename = url.split("/")[-1]
       output_file = os.path.join(OUTPUT_DIR, dest, filename)
       download_patch_from_url(url, output_file)
       replaces = patch.get("replaces", {})

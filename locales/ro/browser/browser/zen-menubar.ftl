@@ -5,18 +5,18 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] Extinde Filele Fixate
-           *[false] Restrânge Filele Fixate
+            [true] Expand Pinned Tabs
+           *[false] Collapse Pinned Tabs
         }
 zen-menubar-appearance = 
-    .label = Aspect
+    .label = Appearance
 zen-menubar-appearance-description = 
-    .label = Website-urile vor folosi:
+    .label = Websites will use:
 zen-menubar-appearance-auto = 
-    .label = Automat
+    .label = Automatic
 zen-menubar-appearance-light = 
-    .label = Luminos
+    .label = Light
 zen-menubar-appearance-dark = 
-    .label = Întunecat
+    .label = Dark
 zen-menubar-new-blank-window = 
-    .label = Fereastră Nouă Goală
+    .label = New Blank Window

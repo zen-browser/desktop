@@ -1,10 +1,10 @@
 diff --git a/browser/components/preferences/main.js b/browser/components/preferences/main.js
-index 88675d1bcbf000b10d85a9c0980bc6069d88052c..ed3a1e809eb0fcccc5a957be7affb77be8978e32 100644
+index c86e54bb6f5e00d9d7bdd81154857a5be97f909c..4035f6a667a361ad106e816a172342724a770435 100644
 --- a/browser/components/preferences/main.js
 +++ b/browser/components/preferences/main.js
-@@ -528,6 +528,11 @@ function createStartupConfig(hidden = false) {
-           },
-         ],
+@@ -643,6 +643,11 @@ function createStartupConfig(hidden = false) {
+         id: "browserRestoreSession",
+         l10nId: "startup-restore-windows-and-tabs",
        },
 +      {
 +        id: "zenWorkspaceContinueWhereLeftOff",
@@ -14,16 +14,16 @@ index 88675d1bcbf000b10d85a9c0980bc6069d88052c..ed3a1e809eb0fcccc5a957be7affb77b
        {
          id: "windowsLaunchOnLogin",
          l10nId: "windows-launch-on-login",
-@@ -575,7 +580,7 @@ function createStartupConfig(hidden = false) {
+@@ -690,7 +695,7 @@ function createStartupConfig(hidden = false) {
  SettingGroupManager.registerGroups({
    defaultBrowser: createDefaultBrowserConfig(),
    startup: createStartupConfig(
--    Services.prefs.getBoolPref("browser.settings-redesign.enabled", false)
+-    Services.prefs.getBoolPref("browser-settings-redesign.enabled", false)
 +    false
    ),
  });
  
-@@ -628,7 +633,7 @@ function getBundleForLocales(newLocales) {
+@@ -743,7 +748,7 @@ function getBundleForLocales(newLocales) {
      ])
    );
    return new Localization(

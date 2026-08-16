@@ -6,7 +6,6 @@
 ChromeUtils.defineESModuleGetters(this, {
   UrlbarTestUtils: "resource://testing-common/UrlbarTestUtils.sys.mjs",
   UrlbarUtils: "moz-src:///browser/components/urlbar/UrlbarUtils.sys.mjs",
-  UrlbarShared: "chrome://browser/content/urlbar/UrlbarShared.mjs",
 });
 
 UrlbarTestUtils.init(this);
@@ -30,7 +29,7 @@ add_task(async function test_Workspace_Search_OneOff_Pref() {
 
   function getWorkspaceShortcut() {
     return [...oneOffSearchButtons.localButtons].find(
-      button => button.source == UrlbarShared.RESULT_SOURCE.WORKSPACES
+      button => button.source == UrlbarUtils.RESULT_SOURCE.WORKSPACES
     );
   }
 
@@ -109,7 +108,7 @@ add_task(async function test_Workspace_Restrict_Search() {
   ok(gURLBar.searchMode, "The urlbar should enter search mode");
   Assert.equal(
     gURLBar.searchMode.source,
-    UrlbarShared.RESULT_SOURCE.WORKSPACES,
+    UrlbarUtils.RESULT_SOURCE.WORKSPACES,
     "The typed token should enter workspace search mode"
   );
   Assert.equal(
@@ -130,7 +129,7 @@ add_task(async function test_Workspace_Restrict_Search() {
   ok(
     resultDetails.every(
       ({ result, source }) =>
-        source == UrlbarShared.RESULT_SOURCE.WORKSPACES &&
+        source == UrlbarUtils.RESULT_SOURCE.WORKSPACES &&
         result.providerName == "ZenUrlbarProviderGlobalActions"
     ),
     "Typing the workspace token should limit results to workspace actions"

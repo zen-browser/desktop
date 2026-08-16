@@ -14,5 +14,3 @@ support-files = [
 ["browser_media_next_track.js"]
 
 ["browser_media_shows_on_tab_switch.js"]
-
-["browser_media_stack.js"]

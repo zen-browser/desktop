@@ -3,6 +3,17 @@
 
 "use strict";
 
+// User flow:
+//   1. A page (think Spotify, YouTube Music) plays media and publishes
+//      title/artist via navigator.mediaSession.metadata.
+//   2. User switches off that tab, media bar appears.
+//   3. The title and artist labels in the bar show what the page published.
+//   4. The page then updates the metadata mid-playback (next song starts).
+//   5. The bar updates live, without the user having to switch tabs again.
+//
+// This is what makes the bar feel connected to the playing page instead of
+// a generic "something is playing" indicator.
+
 add_task(async function test_media_bar_shows_metadata_from_page() {
   const originalTab = gBrowser.selectedTab;
   const mediaTab = await addMediaTab();
@@ -17,9 +28,8 @@ add_task(async function test_media_bar_shows_metadata_from_page() {
     await BrowserTestUtils.switchTab(gBrowser, originalTab);
     await waitForMediaBarVisible();
 
-    const card = frontMediaCard().element;
-    const titleEl = card.querySelector(".zen-media-title");
-    const artistEl = card.querySelector(".zen-media-artist");
+    const titleEl = document.getElementById("zen-media-title");
+    const artistEl = document.getElementById("zen-media-artist");
 
     await BrowserTestUtils.waitForCondition(
       () => titleEl.textContent === "Sandstorm",

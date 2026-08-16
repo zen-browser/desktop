@@ -18,19 +18,13 @@ tab-context-zen-add-essential-badge = { $num } / { $max } platser fyllda
 tab-context-zen-remove-essential = 
     .label = Ta bort från Essentials
     .accesskey = R
-tab-context-zen-edit-pinned-page = 
+tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Ersätt Essential webbadress med nuvarande
+           *[false] Ersätt fäst webbadress med nuvarande
         }
-    .accesskey = P
-tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
     .accesskey = C
-tab-context-zen-edit-pinned-url = 
-    .label = Edit…
-    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Ändra etikett...
 tab-context-zen-edit-icon = 
@@ -53,10 +47,6 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Bekräfta
 zen-pinned-tab-replaced = Den fästa flikens URL har ersatts med den aktuella URL!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Fliken har fått nytt namn!
 zen-background-tab-opened-toast = Ny bakgrundsflik öppnad!
 zen-workspace-renamed-toast = Arbetsytan har fått ett nytt namn!
@@ -75,8 +65,6 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Ikoner
-zen-emojis-picker-search = 
-    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Åtgärder
 zen-site-data-settings = Inställningar
 zen-generic-manage = Hantera
@@ -128,9 +116,6 @@ zen-sidebar-notification-updated-heading = Uppdatering slutförd!
 zen-sidebar-notification-updated-label = Vad är nytt i { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Visa versionsfakta
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
-zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Har något gått sönder?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Starta om i felsäkert läge

@@ -24,5 +24,3 @@ files:
     translation: browser/browser/zen-boosts.ftl
   - source: en-US/browser/browser/zen-space-routing.ftl
     translation: browser/browser/zen-space-routing.ftl
-  - source: en-US/browser/browser/zen-command-palette.ftl
-    translation: browser/browser/zen-command-palette.ftl

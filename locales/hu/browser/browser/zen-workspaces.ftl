@@ -61,7 +61,6 @@ zen-workspace-creation-profile = Profil
     .tooltiptext = A profilok arra szolgálnak, hogy a sütiket és a webhelyadatokat elkülönítsék a munkakörnyezetek között.
 zen-workspace-creation-header = Környezet létrehozása
 zen-workspace-creation-label = A munkakörnyezetek a lapok és munkamenetek rendszerezésére szolgálnak.
-zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Munkakörnyezet törlése?
 zen-workspaces-delete-workspace-body = Biztosan törölni szeretnéd ezt: { $name }? Ez a művelet visszafordíthatatlan.
 # Note that the html tag MUST not be changed or removed, as it is used to better

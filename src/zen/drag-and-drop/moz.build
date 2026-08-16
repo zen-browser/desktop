@@ -15,11 +15,6 @@ SOURCES += [
     "nsZenDragAndDrop.cpp",
 ]
 
-if CONFIG["MOZ_WIDGET_TOOLKIT"] == "cocoa":
-    SOURCES += ["nsZenNativeWindowMove.mm"]
-elif CONFIG["MOZ_WIDGET_TOOLKIT"] == "gtk":
-    CXXFLAGS += CONFIG["MOZ_GTK3_CFLAGS"]
-
 XPCOM_MANIFESTS += [
     "components.conf",
 ]

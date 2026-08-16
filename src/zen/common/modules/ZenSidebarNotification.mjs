@@ -22,62 +22,25 @@ class ZenSidebarNotification extends MozLitElement {
   static properties = {
     headingL10nId: { type: String, fluent: true },
     links: { type: Array },
-    autoHideMs: { type: Number },
   };
 
-  #autoHideAnimation = null;
-
-  constructor({ headingL10nId = "", links = [], autoHideMs = 0 } = {}) {
+  constructor({ headingL10nId = "", links = [] } = {}) {
     super();
     this.headingL10nId = headingL10nId;
     this.links = links;
-    this.autoHideMs = autoHideMs;
-    // Hold the countdown while the user is reading.
-    this.addEventListener("mouseenter", () => this.#autoHideAnimation?.pause());
-    this.addEventListener("mouseleave", () => this.#autoHideAnimation?.play());
   }
 
   connectedCallback() {
     super.connectedCallback();
     if (this.parentElement) {
-      this.#animateIn().then(() => this.#startAutoHide());
+      this.#animateIn();
     }
   }
 
   remove() {
-    if (this.#autoHideAnimation?.playState !== "finished") {
-      // Stop a running countdown; a finished one must keep its fill so
-      // the bar doesn't snap back to full during the fade-out.
-      this.#autoHideAnimation?.cancel();
-    }
-    this.#autoHideAnimation = null;
     this.#animateOut().then(() => {
       super.remove();
     });
-  }
-
-  async #startAutoHide() {
-    if (!this.autoHideMs || !this.isConnected) {
-      return;
-    }
-    await this.updateComplete;
-    const bar = this.shadowRoot?.querySelector(
-      ".zen-sidebar-notification-progress-bar"
-    );
-    if (!bar || this.#autoHideAnimation) {
-      return;
-    }
-    this.#autoHideAnimation = bar.animate(
-      { transform: ["scaleX(1)", "scaleX(0)"] },
-      { duration: this.autoHideMs, easing: "linear", fill: "forwards" }
-    );
-    this.#autoHideAnimation.finished.then(
-      () => this.remove(),
-      () => {}
-    );
-    if (this.matches(":hover")) {
-      this.#autoHideAnimation.pause();
-    }
   }
 
   render() {
@@ -99,15 +62,6 @@ class ZenSidebarNotification extends MozLitElement {
           <img src="chrome://browser/skin/zen-icons/close.svg" />
         </div>
       </div>
-      ${
-        this.autoHideMs
-          ? html`
-              <div class="zen-sidebar-notification-progress">
-                <div class="zen-sidebar-notification-progress-bar"></div>
-              </div>
-            `
-          : null
-      }
       <div class="zen-sidebar-notification-body">
         ${this.links.map(
           link => html`

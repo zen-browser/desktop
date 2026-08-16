@@ -642,7 +642,7 @@
 
 .urlbarView-row {
   --urlbarView-row-padding-inline: 8px;
-  --urlbarview-row-padding-block: 10px;
+  --urlbarView-row-padding-block: 10px;
   color: light-dark(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.7)) !important;
 
   &:hover {
@@ -712,7 +712,7 @@
 }
 
 /* Hide the results body when there are no results, to avoid showing an empty box */
-.urlbar[noresults] .urlbarView > .urlbarView-body-outer > .urlbarView-body-inner,
+.urlbarView[noresults] > .urlbarView-body-outer > .urlbarView-body-inner,
 #urlbar-search-mode-indicator-close {
   display: none;
 }

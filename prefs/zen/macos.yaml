@@ -2,10 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Enable transparent background for macos
-- name: widget.macos.sidebar-blend-mode.behind-window
+# Give the whole window a translucent, blurred backdrop, using the material
+# below. See ZenWindowMaterialView in nsCocoaWindow.mm.
+- name: zen.widget.macos.window-vibrancy
   value: true
   condition: "defined(XP_MACOSX)"
+  cpptype: bool
+  mirror: always
+  type: static
 
 # 1. hudWindow
 # 2. fullScreenUI

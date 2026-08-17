@@ -542,22 +542,22 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
     const radius = (rect.width - padding) / 2;
-    const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+    const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2) - 0.2;
     let angle = Math.atan2(y - centerY, x - centerX);
-    angle = (angle * 180) / Math.PI; // Convert to degrees
+    angle = (angle * 180) / Math.PI;
     if (angle < 0) {
-      angle += 360; // Normalize to [0, 360)
+      angle += 360;
     }
-    const normalizedDistance = 1 - Math.min(distance / radius, 1); // Normalize distance to [0, 1]
-    let hue = (angle / 360) * 360; // Normalize angle to [0, 360)
-    let saturation = normalizedDistance * 100; // stays high even in center
+    const normalizedDistance = 1 - Math.min(distance / radius, 1);
+    let hue = (angle / 360) * 360;
+    let saturation = normalizedDistance * 100;
     if (type !== EXPLICIT_LIGHTNESS_TYPE) {
       saturation = 90 + (1 - normalizedDistance) * 10;
       // Set the current lightness to how far we are from the center of the circle
       // For example, moving the dot outside will have higher lightness, while moving it inside will have lower lightness
       this.#currentLightness = Math.round((1 - normalizedDistance) * 100);
     }
-    let lightness = this.#currentLightness; // Fixed lightness for simplicity
+    let lightness = this.#currentLightness;
     if (type === EXPLICIT_BLACKWHITE_TYPE) {
       // We can only get grayscales from white to black
       saturation = 0;
@@ -1259,10 +1259,10 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     let colorToBlendOpacity;
     if (this.isMica) {
       colorToBlend = this.isDarkMode ? [0, 0, 0] : [255, 255, 255];
-      colorToBlendOpacity = 0.12;
+      colorToBlendOpacity = 0.3;
     } else if (AppConstants.platform === "macosx") {
       colorToBlend = [255, 255, 255];
-      colorToBlendOpacity = 0.18;
+      colorToBlendOpacity = 0.6;
     }
     if (colorToBlend) {
       const blendedAlpha = Math.min(
@@ -1495,9 +1495,17 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return color;
   }
 
-  getToolbarColor(isDarkMode = false) {
+  getToolbarColor(isDarkMode = false, accentColor = undefined) {
     const opacity = 0.8;
     let baseColor = isDarkMode ? [255, 255, 255, opacity] : [0, 0, 0, opacity]; // Default toolbar
+    if (accentColor) {
+      // Blend a bit with the accent color to make it more visible
+      baseColor = this.blendColors(
+        accentColor,
+        baseColor.slice(0, 3),
+        10
+      ).concat(opacity);
+    }
     return baseColor;
   }
 
@@ -1763,7 +1771,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         docElement.style.setProperty("--zen-primary-color", primaryColor);
 
         // Set `--toolbox-textcolor` to have a contrast with the primary color
-        let textColor = this.getToolbarColor(isDarkMode);
+        let textColor = this.getToolbarColor(isDarkMode, dominantColor);
         docElement.style.setProperty(
           "--toolbox-textcolor",
           `rgba(${textColor[0]}, ${textColor[1]}, ${textColor[2]}, ${textColor[3]})`
@@ -2009,7 +2017,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       grain: theme.texture ?? 0,
       isDarkMode,
       isExplicitMode,
-      toolbarColor: this.getToolbarColor(isDarkMode),
+      toolbarColor: this.getToolbarColor(isDarkMode, dominantColor),
       primaryColor: this.getAccentColorForUI(dominantColor, isDarkMode),
     };
     this.currentOpacity = previousOpacity;

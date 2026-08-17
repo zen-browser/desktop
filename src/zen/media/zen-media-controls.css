@@ -138,6 +138,9 @@
   width: 100%;
   padding: 4px 6px;
   border-radius: var(--border-radius-medium);
+  @media (-moz-platform: macos) {
+    border-radius: calc(var(--border-radius-medium) - 2px);
+  }
   outline: var(--zen-sidebar-notification-outline);
   outline-offset: -1.5px;
   box-shadow: var(--zen-sidebar-notification-shadow);

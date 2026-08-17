@@ -22,3 +22,6 @@
 #include ../../../zen/live-folders/jar.inc.mn
 #include ../../../zen/space-routing/jar.inc.mn
 #include ../../../zen/new-tab/jar.inc.mn
+
+        content/browser/aboutCredits.html                                       (content/aboutCredits.html)
+        content/browser/aboutLogo.html                                          (content/aboutLogo.html)

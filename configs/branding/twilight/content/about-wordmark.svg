@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 56">
-  <defs>
-    <style>.b{fill:#fff;stroke-width:0px;}</style>
-  </defs>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 96">
   <text
-    class="b"
     x="0"
-    y="42"
+    y="72"
     font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
-    font-size="40"
+    font-size="72"
     font-weight="700"
-    fill="#fff"
+    fill="context-fill currentColor"
   >Astra Browser</text>
 </svg>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Credits — Astra</title>
+    <link rel="icon" href="chrome://branding/content/about-logo.svg" />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: light-dark(#f4f4f5, #0c0c0e);
+        --card: light-dark(#ffffff, #16161a);
+        --text: light-dark(#18181b, #f4f4f5);
+        --muted: light-dark(#52525b, #a1a1aa);
+        --line: light-dark(#e4e4e7, #27272a);
+        --link: light-dark(#b91c1c, #f87171);
+      }
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: var(--bg);
+        color: var(--text);
+        font: 16px/1.55 system-ui, "Segoe UI", sans-serif;
+      }
+      main {
+        max-width: 42rem;
+        margin: 0 auto;
+        padding: 3.5rem 1.5rem 4rem;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 1.25rem;
+        padding: 2rem 2.1rem 2.2rem;
+        box-shadow: 0 18px 50px light-dark(rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.35));
+      }
+      .mark {
+        width: 72px;
+        height: 72px;
+        display: block;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-size: 2rem;
+        letter-spacing: -0.03em;
+        margin: 0 0 0.35rem;
+      }
+      h2 {
+        font-size: 1.05rem;
+        margin: 1.6rem 0 0.4rem;
+      }
+      p,
+      li {
+        color: var(--muted);
+      }
+      p {
+        margin: 0 0 0.85rem;
+      }
+      a {
+        color: var(--link);
+      }
+      ul {
+        margin: 0;
+        padding-left: 1.15rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="card">
+        <img
+          class="mark"
+          src="chrome://branding/content/about-logo.svg"
+          alt=""
+        />
+        <h1>Credits</h1>
+        <p>
+          Astra is an independent browser built on Mozilla Firefox and Zen
+          Browser. This page is shipped with the app so credits stay available
+          offline.
+        </p>
+
+        <h2>Mozilla Firefox</h2>
+        <p>
+          Gecko, toolkit, and countless Firefox features are created by Mozilla
+          and the Firefox community. See
+          <a href="about:license">about:license</a> for the full license text.
+        </p>
+
+        <h2>Zen Browser</h2>
+        <p>
+          Astra’s sidebar, workspaces, compact mode, and related chrome start
+          from Zen Browser. Thank you to the Zen contributors whose work this
+          fork continues.
+        </p>
+
+        <h2>Astra</h2>
+        <ul>
+          <li>Product and desktop browser: Astra</li>
+          <li>Brand, App Hub, Search Hub, and India-focused defaults: Astra</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

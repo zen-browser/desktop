@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Astra</title>
+    <link rel="icon" href="chrome://branding/content/about-logo.svg" />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: light-dark(#f4f4f5, #0b0b0d);
+        --card: light-dark(#ffffff, #17171b);
+        --text: light-dark(#111113, #f5f5f5);
+        --muted: light-dark(#71717a, #a1a1aa);
+        --line: light-dark(#e4e4e7, #2a2a30);
+        --shadow: light-dark(rgba(15, 15, 18, 0.1), rgba(0, 0, 0, 0.5));
+      }
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: var(--bg);
+        color: var(--text);
+      }
+      body {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        font: 16px/1.4 system-ui, "Segoe UI", sans-serif;
+      }
+      .card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.35rem;
+        padding: 3.25rem 3.75rem 2.85rem;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 2rem;
+        box-shadow: 0 28px 80px var(--shadow);
+      }
+      .logo {
+        width: 280px;
+        height: auto;
+        display: block;
+      }
+      .wordmark {
+        width: min(520px, 72vw);
+        height: auto;
+        display: block;
+        color: var(--text);
+        -moz-context-properties: fill, fill-opacity;
+      }
+      .tag {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.95rem;
+        letter-spacing: 0.04em;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="card" aria-label="Astra">
+      <img
+        class="logo"
+        src="chrome://branding/content/about-logo.svg"
+        alt=""
+      />
+      <img
+        class="wordmark"
+        src="chrome://branding/content/about-wordmark.svg"
+        alt="Astra Browser"
+      />
+      <p class="tag">Browser</p>
+    </section>
+  </body>
+</html>

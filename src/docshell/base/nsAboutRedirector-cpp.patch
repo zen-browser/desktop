@@ -2,12 +2,29 @@ diff --git a/docshell/base/nsAboutRedirector.cpp b/docshell/base/nsAboutRedirect
 index 9f6fc3eac6f20aedeb993306818fc536f5ce851a..7269a78061f4be829acd2e1b053565b2f945cb54 100644
 --- a/docshell/base/nsAboutRedirector.cpp
 +++ b/docshell/base/nsAboutRedirector.cpp
-@@ -115,7 +115,7 @@ static const RedirEntry kRedirMap[] = {
+@@ -115,9 +115,9 @@ static const RedirEntry kRedirMap[] = {
      {"crashes", "chrome://global/content/crashes.html",
       nsIAboutModule::IS_SECURE_CHROME_UI},
  #endif
 -    {"credits", "https://www.mozilla.org/credits/",
-+    {"credits", "https://astra-browser.app/about/",
-      nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT |
-          nsIAboutModule::URI_MUST_LOAD_IN_CHILD},
+-     nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT |
+-         nsIAboutModule::URI_MUST_LOAD_IN_CHILD},
++    {"credits", "chrome://browser/content/aboutCredits.html",
++     nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT |
++         nsIAboutModule::IS_SECURE_CHROME_UI},
      {"fingerprintingprotection",
+      "chrome://global/content/usercharacteristics/usercharacteristics.html",
+      nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT |
+@@ -143,9 +143,10 @@ static const RedirEntry kRedirMap[] = {
+     {"license", "chrome://global/content/license.html",
+      nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT |
+          nsIAboutModule::IS_SECURE_CHROME_UI},
+     {"logging", "chrome://global/content/aboutLogging/aboutLogging.html",
+      nsIAboutModule::ALLOW_SCRIPT},
+-    {"logo", "chrome://branding/content/about.png",
+-     nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT},
++    {"logo", "chrome://browser/content/aboutLogo.html",
++     nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT |
++         nsIAboutModule::IS_SECURE_CHROME_UI},
+     {"memory", "chrome://global/content/aboutMemory.xhtml",
+      nsIAboutModule::ALLOW_SCRIPT},

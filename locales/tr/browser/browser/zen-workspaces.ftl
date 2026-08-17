@@ -61,6 +61,7 @@ zen-workspace-creation-profile = Profil
     .tooltiptext = Profiller, alanlar arasındaki çerezleri ve site verilerini ayırmak için kullanılır.
 zen-workspace-creation-header = Bir Alan Oluştur
 zen-workspace-creation-label = Alanlar, sekme ve oturumlarınızı düzenlemek için kullanılır.
+zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Alan Silinsin mi?
 zen-workspaces-delete-workspace-body = { $name } ögesini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
 # Note that the html tag MUST not be changed or removed, as it is used to better

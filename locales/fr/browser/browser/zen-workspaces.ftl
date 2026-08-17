@@ -58,9 +58,10 @@ zen-move-tab-to-workspace-button =
 zen-workspaces-panel-context-reorder = 
     .label = Réorganiser les espaces
 zen-workspace-creation-profile = Profil
-    .tooltiptext = Les profils sont utilisés pour séparer les cookies et les données des sites entre les Espaces.
+    .tooltiptext = Les profils sont utilisés pour séparer les cookies et les données des sites entre les espaces.
 zen-workspace-creation-header = Créer un espace
 zen-workspace-creation-label = Les espaces sont utilisés pour organiser vos onglets et sessions.
+zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Supprimer l’espace ?
 zen-workspaces-delete-workspace-body = Êtes-vous sûr de vouloir supprimer { $name } ? Cette action ne peut pas être annulée.
 # Note that the html tag MUST not be changed or removed, as it is used to better

@@ -2,15 +2,15 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 --- a/widget/cocoa/nsCocoaWindow.mm
 +++ b/widget/cocoa/nsCocoaWindow.mm
 @@ -70,10 +70,11 @@
- #include "nsDocShell.h"
+ #include "nsXULPopupManager.h"
  
  #include "gfxPlatform.h"
  #include "qcms.h"
  
 +#import <objc/runtime.h>
+ #include <algorithm>
  #include "mozilla/AutoRestore.h"
  #include "mozilla/BasicEvents.h"
- #include "mozilla/dom/Document.h"
  #include "mozilla/Maybe.h"
  #include "mozilla/NativeKeyBindingsType.h"
 @@ -6948,10 +6949,31 @@

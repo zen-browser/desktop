@@ -61,6 +61,7 @@ zen-workspace-creation-profile = Profil
     .tooltiptext = Profiler er brukt til å separere informasjonskapsler og nettstedsdata mellom områder.
 zen-workspace-creation-header = Opprett et område
 zen-workspace-creation-label = Områder er brukt til å organisere fanene og øktene dine.
+zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Slett Område?
 zen-workspaces-delete-workspace-body = Er du sikker på at du vil slette { $name }? Denne handlingen kan ikke angres.
 # Note that the html tag MUST not be changed or removed, as it is used to better

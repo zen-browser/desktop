@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential = 
     .label = Usuń z niezbędnych
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Zastąp adres URL niezbędnej karty bieżącym
-           *[false] Zastąp adres URL przypiętej karty bieżącym
+            [true] Edit Essential URL
+           *[false] Edit Pinned URL
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Replace with Current URL
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edit…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Zmień nazwę...
 tab-context-zen-edit-icon = 
@@ -47,6 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Potwierdź
 zen-pinned-tab-replaced = URL przypiętej karty został zastąpiony bieżącym adresem!
+zen-pinned-tab-url-edited = Pinned tab URL has been updated!
+zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
+zen-pinned-tab-edit-url-title = Edit Pinned URL
+zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Nazwa karty została pomyślnie zmieniona!
 zen-background-tab-opened-toast = Nowa karta została otworzona w tle!
 zen-workspace-renamed-toast = Zmieniono nazwę przestrzeni roboczej!
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Emotikony
 zen-icons-picker-svg = 
     .label = Ikony
+zen-emojis-picker-search = 
+    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Akcje
 zen-site-data-settings = Ustawienia
 zen-generic-manage = Zarządzaj
@@ -116,6 +128,9 @@ zen-sidebar-notification-updated-heading = Aktualizacja ukończona!
 zen-sidebar-notification-updated-label = Co nowego w { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Zobacz informacje o aktualizacji
+zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Coś się zepsuło?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Zrestartuj w trybie bezpiecznym

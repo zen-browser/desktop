@@ -48,9 +48,9 @@ zen-unzap-tooltip =
        *[other] { $elementCount } elements zapped
     }
 zen-boost-save = 
-    .label = Ekspor Boost
+    .label = Export Boost
 zen-boost-load = 
-    .label = Impor Boost
+    .label = Import Boost
 zen-panel-ui-boosts-exported-message = Boost exported!
 zen-site-data-boosts = Boosts
 zen-site-data-create-boost = 

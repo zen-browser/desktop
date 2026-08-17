@@ -3,21 +3,21 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-folders-search-placeholder = 
-    .placeholder = Caută { $folder-name }...
+    .placeholder = Search { $folder-name }...
 zen-folders-panel-rename-folder = 
     .label = Rename Folder
 zen-folders-panel-unpack-folder = 
-    .label = Despachetare Folder
+    .label = Unpack Folder
 zen-folders-new-subfolder = 
     .label = New Subfolder
 zen-folders-panel-delete-folder = 
-    .label = Șterge Folder
+    .label = Delete Folder
 zen-folders-panel-convert-folder-to-space = 
-    .label = Convertește folderul în Spațiu
+    .label = Convert folder to Space
 zen-folders-panel-change-folder-space = 
     .label = Change Space...
 zen-folders-unload-all-tooltip = 
-    .tooltiptext = Închide tab-urile active din folder
+    .tooltiptext = Unload active in this folder
 zen-folders-unload-folder = 
-    .label = Închide toate filele
-zen-folders-search-no-results = Nicio filă nu se potrivește căutării 🤔
+    .label = Unload All Tabs
+zen-folders-search-no-results = No tabs matching that search 🤔

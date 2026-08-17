@@ -61,7 +61,6 @@ zen-workspace-creation-profile = Профіль
     .tooltiptext = Профілі використовуються для розділення файлів cookie і даних сайту між просторами.
 zen-workspace-creation-header = Створити простір
 zen-workspace-creation-label = Простори використовуються для організації ваших вкладок та сеансів.
-zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Видалити простір?
 zen-workspaces-delete-workspace-body = Упевнені, що хочете видалити { $name }? Цю дію неможливо скасувати.
 # Note that the html tag MUST not be changed or removed, as it is used to better

@@ -3,45 +3,45 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-toolbar-context-tabs-right = 
-    .label = File pe partea dreaptă
+    .label = Tabs on the right
     .accesskey = R
 zen-toolbar-context-compact-mode = 
-    .label = Modul Compact
+    .label = Compact Mode
 zen-toolbar-context-compact-mode-enable = 
-    .label = Activează modul compact
+    .label = Enable compact mode
     .accesskey = D
 zen-toolbar-context-compact-mode-just-tabs = 
-    .label = Ascunde bara laterală
+    .label = Hide sidebar
 zen-toolbar-context-compact-mode-just-toolbar = 
-    .label = Ascunde bara de unelte
+    .label = Hide toolbar
 zen-toolbar-context-compact-mode-hide-both = 
-    .label = Ascunde ambele
+    .label = Hide both
     .accesskey = H
 zen-toolbar-context-move-to-folder = 
     .label = Move to Folder...
     .accesskey = M
 zen-toolbar-context-new-folder = 
-    .label = Folder Nou
+    .label = New Folder
     .accesskey = N
 sidebar-zen-expand = 
-    .label = Extinde bara laterală
+    .label = Expand Sidebar
 sidebar-zen-create-new = 
     .label = Create New...
 tabbrowser-unload-tab-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Închide şi treci la filă
-           *[other] Închide { $tabCount } file şi treci la prima
+            [one] Unload and switch to tab
+           *[other] Unload { $tabCount } tabs and switch to the first
         }
 tabbrowser-reset-pin-button = 
     .tooltiptext =
         { $tabCount ->
-            [one] Resetează și Fixează fila
-           *[other] Resetează și Fixează { $tabCount } file
+            [one] Reset and pin tab
+           *[other] Reset and pin { $tabCount } tabs
         }
 zen-tab-sublabel =
     { $tabSubtitle ->
-        [zen-default-pinned] Înapoi la url-ul fixat
-        [zen-default-pinned-cmd] Separă de filele fixate
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
        *[other] { $tabSubtitle }
     }

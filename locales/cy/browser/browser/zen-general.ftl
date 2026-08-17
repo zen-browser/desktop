@@ -18,19 +18,13 @@ tab-context-zen-add-essential-badge = { $num } / { $max } slotiau wedi'u llenwi
 tab-context-zen-remove-essential = 
     .label = Dileu o'r Hanfodion
     .accesskey = D
-tab-context-zen-edit-pinned-page = 
+tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Amnewid URL Hanfodol gyda'r Cyfredol
+           *[false] Amnewid URL wedi'i binio gyda'r Cyfredol
         }
     .accesskey = P
-tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
-    .accesskey = P
-tab-context-zen-edit-pinned-url = 
-    .label = Edit…
-    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Newid Label...
 tab-context-zen-edit-icon = 
@@ -53,10 +47,6 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Cadarnhau
 zen-pinned-tab-replaced = Mae URL y tab wedi'i binio wedi'i newid i'r URL gyfredol!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Mae'r tab wedi cael ei ailenwi'n llwyddiannus!
 zen-background-tab-opened-toast = Tab cefndir newydd wedi'i agor!
 zen-workspace-renamed-toast = Mae'r Man Gwaith wedi cael ei ailenwi'n llwyddiannus!
@@ -75,8 +65,6 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Eiconau
-zen-emojis-picker-search = 
-    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Gweithredoedd
 zen-site-data-settings = Gosodiadau
 zen-generic-manage = Rheoli
@@ -128,9 +116,6 @@ zen-sidebar-notification-updated-heading = Diweddariad Wedi'i Gwblhau!
 zen-sidebar-notification-updated-label = Beth sy'n newydd yn { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Gweld Nodiadau Rhyddhau
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
-zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Rhywbeth wedi torri?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Ailgychwyn yn y Modd Diogel

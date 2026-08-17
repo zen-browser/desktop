@@ -5,8 +5,8 @@
 zen-menubar-toggle-pinned-tabs = 
     .label =
         { $pinnedAreCollapsed ->
-            [true] ピン留めされたタブを表示する
-           *[false] ピン留めされたタブを表示しない
+            [true] ピン留めされたタブ
+           *[false] ピン留めされたタブ
         }
 zen-menubar-appearance = 
     .label = 外観

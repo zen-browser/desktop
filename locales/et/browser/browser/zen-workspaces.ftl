@@ -61,7 +61,6 @@ zen-workspace-creation-profile = Profiil
     .tooltiptext = Profiile kasutatakse küpsiste ning saidi andmete eraldamiseks tööruumide vahel.
 zen-workspace-creation-header = Loo uus tööruum
 zen-workspace-creation-label = Tööruume kasutatakse kaartide ja sessioonide organiseerimiseks.
-zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Delete Workspace?
 zen-workspaces-delete-workspace-body = Kas oled kindel, et soovid kustutada tööruumi { $name }? Seda tegevust ei saa tagasi võtta.
 # Note that the html tag MUST not be changed or removed, as it is used to better

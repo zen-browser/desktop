@@ -61,7 +61,6 @@ zen-workspace-creation-profile = Próifíl
     .tooltiptext = Úsáidtear próifílí chun fianáin agus sonraí suímh a dheighilt idir spásanna.
 zen-workspace-creation-header = Cruthaigh Spás
 zen-workspace-creation-label = Úsáidtear spásanna chun do chluaisíní agus do sheisiúin a eagrú.
-zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Scrios an spás?
 zen-workspaces-delete-workspace-body = An bhfuil tú cinnte gur mian leat { $name } a scriosadh? Ní féidir an gníomh seo a chealú.
 # Note that the html tag MUST not be changed or removed, as it is used to better

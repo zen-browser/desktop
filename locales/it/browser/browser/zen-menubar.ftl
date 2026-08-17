@@ -19,4 +19,4 @@ zen-menubar-appearance-light =
 zen-menubar-appearance-dark = 
     .label = Scuro
 zen-menubar-new-blank-window = 
-    .label = Nuova Finestra Vuota
+    .label = New Blank Window

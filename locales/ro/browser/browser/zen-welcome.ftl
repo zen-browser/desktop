@@ -2,25 +2,25 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-welcome-title-line1 = Bine ai venit la
-zen-welcome-title-line2 = un internet mai calm
-zen-welcome-import-title = Un Început Proaspăt, Aceleași Marcaje
-zen-welcome-import-description-1 = Marcajele, istoricul și parolele tale sunt ca un șir de firimituri care îți dezvăluie traseul pe internet — nu le lăsa în urmă!
-zen-welcome-import-description-2 = Adu-le cu ușurință din alt browser și continuă exact de unde ai rămas.
-zen-welcome-import-button = Importă acum
-zen-welcome-set-default-browser = Setează { -brand-short-name } ca browser principal
-zen-welcome-dont-set-default-browser = NU seta { -brand-short-name } ca browser principal
-zen-welcome-initial-essentials-title = Filele tale cheie, întotdeauna la îndemână
-zen-welcome-initial-essentials-description-1 = Păstrează-ți cele mai importante file ușor de accesat, indiferent de câte ai deschise.
-zen-welcome-initial-essentials-description-2 = Filele Esențiale sunt mereu vizibile, indiferent de Spațiul de Lucru în care te afli.
-zen-welcome-workspace-colors-title = Spațiul Tău de Lucru, Culorile Tale
-zen-welcome-workspace-colors-description = Personalizează-ți browser-ul dând fiecărui Spațiu de Lucru o culoare de identitate unică.
+zen-welcome-title-line1 = Welcome to
+zen-welcome-title-line2 = a calmer internet
+zen-welcome-import-title = A Fresh Start, Same Bookmarks
+zen-welcome-import-description-1 = Your bookmarks, history, and passwords are like a trail of breadcrumbs through the internet—don’t leave them behind!
+zen-welcome-import-description-2 = Easily bring them over from another browser and pick up right where you left off.
+zen-welcome-import-button = Import now
+zen-welcome-set-default-browser = Set { -brand-short-name } as your default browser
+zen-welcome-dont-set-default-browser = DON’T set { -brand-short-name } as your default browser
+zen-welcome-initial-essentials-title = Your Key Tabs, Always Within Reach
+zen-welcome-initial-essentials-description-1 = Keep your most important tabs easily accessible and always at hand, no matter how many you open.
+zen-welcome-initial-essentials-description-2 = Essential tabs are always visible, no matter what workspace you are in.
+zen-welcome-workspace-colors-title = Your Workspaces, Your Colors
+zen-welcome-workspace-colors-description = Personalize your browser by giving each workspace its own unique color identity.
 zen-welcome-start-browsing-title =
-    Totul este gata?<br/>
-    Haide să începem!
-zen-welcome-start-browsing-description-1 = Totul este pregătit. Dă click pe butonul de mai jos și începe navigarea cu { -brand-short-name }.
-zen-welcome-start-browsing = Începe acum!
-zen-welcome-default-search-title = Motorul Tău de Căutare Principal
-zen-welcome-default-search-description = Alege-ți motorul tău de căutare principal. Îl poți schimba oricând mai târziu!
-zen-welcome-skip-button = Treci peste
-zen-welcome-finished = Zen-ul tău a fost configurat corect!
+    All set?<br/>
+    Let’s get rolling!
+zen-welcome-start-browsing-description-1 = You’re all set up and ready to go. Click the button below to start browsing with { -brand-short-name }.
+zen-welcome-start-browsing = Dive in!
+zen-welcome-default-search-title = Your Default Search Engine
+zen-welcome-default-search-description = Choose your default search engine. You can always change it later!
+zen-welcome-skip-button = Skip
+zen-welcome-finished = Your Zen has been set up correctly!

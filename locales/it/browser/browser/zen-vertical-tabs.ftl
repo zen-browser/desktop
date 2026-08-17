@@ -41,7 +41,7 @@ tabbrowser-reset-pin-button =
         }
 zen-tab-sublabel =
     { $tabSubtitle ->
-        [zen-default-pinned] Torna all'url bloccato
-        [zen-default-pinned-cmd] Separa dalla scheda bloccata
+        [zen-default-pinned] Back to pinned url
+        [zen-default-pinned-cmd] Separate from pinned tab
        *[other] { $tabSubtitle }
     }

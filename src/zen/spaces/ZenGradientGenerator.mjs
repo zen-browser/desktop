@@ -1498,7 +1498,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
   getToolbarColor(isDarkMode = false, accentColor = undefined) {
     const opacity = 0.8;
     let baseColor = isDarkMode ? [255, 255, 255, opacity] : [0, 0, 0, opacity]; // Default toolbar
-    if (accentColor) {
+    if (accentColor && this.canBeTransparent) {
       // Blend a bit with the accent color to make it more visible
       baseColor = this.blendColors(
         accentColor,

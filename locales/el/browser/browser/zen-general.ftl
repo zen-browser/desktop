@@ -18,19 +18,13 @@ tab-context-zen-add-essential-badge = { $num } / { $max } γεμισμένες �
 tab-context-zen-remove-essential = 
     .label = Αφαίρεση από Απαραίτητα
     .accesskey = R
-tab-context-zen-edit-pinned-page = 
+tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Αντικατάσταση Απαραίτητης διεύθυνσής με την τωρινή
+           *[false] Αντικατάσταση Καρφιτσωμένης διεύθυνσής με την τωρινή
         }
-    .accesskey = P
-tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
     .accesskey = C
-tab-context-zen-edit-pinned-url = 
-    .label = Edit…
-    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Αλλαγή Ετικέτας...
 tab-context-zen-edit-icon = 
@@ -53,10 +47,6 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Επιβεβαίωση
 zen-pinned-tab-replaced = Το URL της καρφιτσωμένης καρτέλας έχει αντικατασταθεί από το τρέχον URL.
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Η καρτέλα μετονομάστηκε επιτυχώς!
 zen-background-tab-opened-toast = Άνοιξε νέα καρτέλα στο παρασκήνιο!
 zen-workspace-renamed-toast = Ο χώρος εργασίας μετονομάστηκε επιτυχώς!
@@ -75,8 +65,6 @@ zen-icons-picker-emoji =
     .label = Εμότζι
 zen-icons-picker-svg = 
     .label = Εικονίδια
-zen-emojis-picker-search = 
-    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Ενέργειες
 zen-site-data-settings = Ρυθμίσεις
 zen-generic-manage = Διαχείριση
@@ -128,9 +116,6 @@ zen-sidebar-notification-updated-heading = Η Ενημέρωση Ολοκληρ�
 zen-sidebar-notification-updated-label = Τι νέο υπάρχει στο { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Προβολή Σημειώσεων Έκδοσης
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
-zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Χάλασε κάτι;
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Επανεκκίνηση σε Ασφαλή Λειτουργία

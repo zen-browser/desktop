@@ -18,19 +18,13 @@ tab-context-zen-add-essential-badge = { $num } / { $max } zaplněných slotů
 tab-context-zen-remove-essential = 
     .label = Odstranit z Essentials
     .accesskey = R
-tab-context-zen-edit-pinned-page = 
+tab-context-zen-replace-pinned-url-with-current = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Nahradit Essential URL aktuální
+           *[false] Nahradit připnutou URL aktuální
         }
-    .accesskey = P
-tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
     .accesskey = C
-tab-context-zen-edit-pinned-url = 
-    .label = Edit…
-    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Změnit název...
 tab-context-zen-edit-icon = 
@@ -53,10 +47,6 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Potvrdit
 zen-pinned-tab-replaced = Připnutá URL adresa panelu byla nahrazena aktuální URL adresou.
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
 zen-tabs-renamed = Panel byl úspěšně přejmenován!
 zen-background-tab-opened-toast = Nový panel na pozadí byl otevřen!
 zen-workspace-renamed-toast = Pracovní prostor byl úspěšně přejmenován!
@@ -75,8 +65,6 @@ zen-icons-picker-emoji =
     .label = Emodži
 zen-icons-picker-svg = 
     .label = Ikony
-zen-emojis-picker-search = 
-    .placeholder = Search emojis
 urlbar-search-mode-zen_actions = Akce
 zen-site-data-settings = Nastavení
 zen-generic-manage = Spravovat
@@ -128,9 +116,6 @@ zen-sidebar-notification-updated-heading = Aktualizace byla dokončena!
 zen-sidebar-notification-updated-label = Co je nového v prohlížeči { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Zobrazit změny
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
-zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Něco se rozbilo?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Restartovat v Nouzovém Režimu

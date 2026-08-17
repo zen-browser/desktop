@@ -11,7 +11,7 @@ zen-boost-edit-reset =
 zen-boost-edit-delete = 
     .label = Boost löschen
 zen-boost-size = Größe
-zen-boost-case = Schreibweise
+zen-boost-case = Case
 zen-boost-zap = Zap
 zen-boost-code = Code
 zen-boost-back = Zurück
@@ -32,25 +32,25 @@ zen-boost-css-inspector =
 zen-boost-color-contrast = Kontrast
 zen-boost-color-brightness = Helligkeit
 zen-boost-color-original-saturation = Ausgangssättigung
-zen-add-zap-helper = Klicke auf Elemente der Seite, um sie zu <b>zappen</b>
-zen-remove-zap-helper = ← Klicken zum Entzappen
+zen-add-zap-helper = Klicke auf Elemente auf der Seite, um sie mit <b>Zap</b> zu markieren
+zen-remove-zap-helper = ← Erneut klicken zum Wiederherstellen
 zen-select-this = Selektor für dieses Element einfügen
 zen-select-related = Selektor für verwandte Elemente einfügen
 zen-select-cancel = Abbrechen
-zen-zap-this = Dieses Element zappen
-zen-zap-related = Alle verwandten Elemente zappen
+zen-zap-this = Dieses entfernen
+zen-zap-related = Alle verwandten Elemente entfernen
 zen-zap-cancel = Abbrechen
 zen-zap-done = Fertig
 zen-unzap-tooltip =
     { $elementCount ->
-        [0] Keine Elemente gezappt
-        [1] { $elementCount } Element gezappt
-       *[other] { $elementCount } Elemente gezappt
+        [0] Keine Elemente entfernt
+        [1] { $elementCount } Element entfernt
+       *[other] { $elementCount } Elemente entfernt
     }
 zen-boost-save = 
-    .label = Boost exportieren
+    .label = Export Boost
 zen-boost-load = 
-    .label = Boost importieren
+    .label = Import Boost
 zen-panel-ui-boosts-exported-message = Boost exportiert!
 zen-site-data-boosts = Boosts
 zen-site-data-create-boost = 

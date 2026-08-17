@@ -61,7 +61,6 @@ zen-workspace-creation-profile = Profil
     .tooltiptext = Profil (Kontainer) digunakan untuk memisahkan cookie dan data situs antar Ruang.
 zen-workspace-creation-header = Buat sebuah Ruang
 zen-workspace-creation-label = Ruang digunakan untuk mengorganisasikan tab dan sesi Anda.
-zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Hapus Ruang?
 zen-workspaces-delete-workspace-body = Apakah Anda yakin ingin menghapus { $name }? Tindakan ini tidak bisa dibatalkan.
 # Note that the html tag MUST not be changed or removed, as it is used to better

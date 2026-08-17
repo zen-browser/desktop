@@ -61,7 +61,6 @@ zen-workspace-creation-profile = Profil
     .tooltiptext = Profiler används för att separera kakor och webbplatsdata mellan arbetsytor.
 zen-workspace-creation-header = Skapa en arbetsyta
 zen-workspace-creation-label = Arbetsytor används för att organisera dina flikar och sessioner.
-zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Ta bort arbetsyta?
 zen-workspaces-delete-workspace-body = Är du säker på att du vill radera { $name }? den här åtgärden kan inte ångras.
 # Note that the html tag MUST not be changed or removed, as it is used to better

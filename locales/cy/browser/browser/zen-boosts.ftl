@@ -3,56 +3,56 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-boost-edit-rename = 
-    .label = Ailenwi Hwb
+    .label = Rename Boost
 zen-boost-edit-shuffle = 
-    .label = Shyfflo Vibes
+    .label = Shuffle Vibes
 zen-boost-edit-reset = 
-    .label = Ailosod Pob Golygiad
+    .label = Reset All Edits
 zen-boost-edit-delete = 
-    .label = Dileu Hwb
-zen-boost-size = Maint
-zen-boost-case = Maint Nod
-zen-boost-zap = Sap
-zen-boost-code = Côd
-zen-boost-back = Nôl
+    .label = Delete Boost
+zen-boost-size = Size
+zen-boost-case = Case
+zen-boost-zap = Zap
+zen-boost-code = Code
+zen-boost-back = Back
 zen-boost-shuffle = 
-    .tooltiptext = Syfflo Gosodiadau Hwb
+    .tooltiptext = Shuffle Boost Settings
 zen-boost-invert = 
-    .tooltiptext = Lliwiau Gwrthdroi Clyfar
+    .tooltiptext = Smart Invert Colors
 zen-boost-controls = 
-    .tooltiptext = Rheolyddion Lliw Uwch
+    .tooltiptext = Advanced Color Controls
 zen-boost-disable = 
-    .tooltiptext = Analluogi Addasiadau Lliw
+    .tooltiptext = Disable Color Adjustments
 zen-boost-text-case-toggle = 
-    .tooltiptext = Toglo Priflythreniad Testun
+    .tooltiptext = Toggle Text Case
 zen-boost-css-picker = 
-    .tooltiptext = Dewis Dewisydd
+    .tooltiptext = Pick Selector
 zen-boost-css-inspector = 
-    .tooltiptext = Agor Arolygydd
-zen-boost-color-contrast = Cyferbyniad
-zen-boost-color-brightness = Disgleirdeb
-zen-boost-color-original-saturation = Dirlawnder Gwreiddiol
-zen-add-zap-helper = Cliciwch elfennau ar y dudalen <b>i'w</b> Sapio
-zen-remove-zap-helper = ← Clicio i Ddadsapio
-zen-select-this = Mewnosod dewisydd ar gyfer hwn
-zen-select-related = Mewnosod dewisydd ar gyfer cysylltiedig
-zen-select-cancel = Na
-zen-zap-this = Sapio hwn
-zen-zap-related = Sapio pob elfen gysylltiedig
-zen-zap-cancel = Na
-zen-zap-done = Gorffen
+    .tooltiptext = Open Inspector
+zen-boost-color-contrast = Contrast
+zen-boost-color-brightness = Brightness
+zen-boost-color-original-saturation = Original Saturation
+zen-add-zap-helper = Click elements on the page to <b>Zap</b> them
+zen-remove-zap-helper = ← Click to Unzap
+zen-select-this = Insert selector for this
+zen-select-related = Insert selector for related
+zen-select-cancel = Cancel
+zen-zap-this = Zap this
+zen-zap-related = Zap all related elements
+zen-zap-cancel = Cancel
+zen-zap-done = Done
 zen-unzap-tooltip =
     { $elementCount ->
-        [0] Dim elfennau wedi'u sapio
-        [1] { $elementCount } elfen wedi'i sapio
-       *[other] { $elementCount } elfan wedi'u sapio
+        [0] No elements zapped
+        [1] { $elementCount } element zapped
+       *[other] { $elementCount } elements zapped
     }
 zen-boost-save = 
-    .label = Allforio Hwb
+    .label = Export Boost
 zen-boost-load = 
-    .label = Mewnforio Hwb
-zen-panel-ui-boosts-exported-message = Hwb wedi'i allforio!
-zen-site-data-boosts = Hybiau
+    .label = Import Boost
+zen-panel-ui-boosts-exported-message = Boost exported!
+zen-site-data-boosts = Boosts
 zen-site-data-create-boost = 
-    .tooltiptext = Creu hwb newydd
-zen-boost-rename-boost-prompt = Ailenwi Hwb?
+    .tooltiptext = Create new boost
+zen-boost-rename-boost-prompt = Rename Boost?

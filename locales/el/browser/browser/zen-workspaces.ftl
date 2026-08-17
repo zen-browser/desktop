@@ -61,7 +61,6 @@ zen-workspace-creation-profile = Προφίλ
     .tooltiptext = Τα προφίλ χρησιμοποιούνται για να διαχωρίζουν τα cookies και τα δεδομένα του ιστότοπου μεταξύ των χώρων.
 zen-workspace-creation-header = Δημιουργία Χώρου
 zen-workspace-creation-label = Οι χώροι χρησιμοποιούνται για την οργάνωση των καρτελών και των συνεδριών σας.
-zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Διαγραφή Χώρου Εργασίας;
 zen-workspaces-delete-workspace-body = Είστε σίγουροι ότι Θέλετε να διαγράψετε το { $name }; Αυτή η πράξη δεν μπορεί να αναιρεθεί.
 # Note that the html tag MUST not be changed or removed, as it is used to better

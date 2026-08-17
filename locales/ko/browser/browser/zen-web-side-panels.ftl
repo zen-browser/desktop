@@ -25,5 +25,5 @@ zen-web-side-panel-context-open-in-container-tab =
 zen-web-side-panel-context-add-to-panel = 
     .label = 웹 패널에 추가
     .accesskey = A
-zen-webpanel-introduction-title = 여기는 젠 웹 패널입니다
+zen-webpanel-introduction-title = 여기는 Astra 웹 패널입니다
 zen-webpanel-introduction-description = 웹 패널을 이용하면 좋아하는 웹사이트에 빠르게 접근할 수 있게 해줍니다.

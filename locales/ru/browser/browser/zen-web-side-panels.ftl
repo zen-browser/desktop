@@ -25,5 +25,5 @@ zen-web-side-panel-context-open-in-container-tab =
 zen-web-side-panel-context-add-to-panel = 
     .label = Добавить в веб-панели
     .accesskey = A
-zen-webpanel-introduction-title = Добро пожаловать в веб-панели Zen
+zen-webpanel-introduction-title = Добро пожаловать в веб-панели Astra
 zen-webpanel-introduction-description = Веб-панели — это способ держать любимые сайты под рукой.

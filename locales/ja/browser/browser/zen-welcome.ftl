@@ -23,4 +23,4 @@ zen-welcome-start-browsing = 飛び込んで！
 zen-welcome-default-search-title = 既定の検索エンジン
 zen-welcome-default-search-description = デフォルトの検索エンジンを選択してください。後でいつでも変更できます！
 zen-welcome-skip-button = スキップ
-zen-welcome-finished = Zenの設定が完了しました！
+zen-welcome-finished = Astraの設定が完了しました！

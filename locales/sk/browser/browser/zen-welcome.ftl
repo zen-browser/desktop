@@ -23,4 +23,4 @@ zen-welcome-start-browsing = Ponorte sa do toho!
 zen-welcome-default-search-title = Váš predvolený vyhľadávač
 zen-welcome-default-search-description = Vyberte si predvolený vyhľadávač. Neskôr ho môžete kedykoľvek zmeniť!
 zen-welcome-skip-button = Preskočiť
-zen-welcome-finished = Váš Zen bol úspešne nastavený!
+zen-welcome-finished = Váš Astra bol úspešne nastavený!

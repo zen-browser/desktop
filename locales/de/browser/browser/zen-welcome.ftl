@@ -23,4 +23,4 @@ zen-welcome-start-browsing = Los geht's!
 zen-welcome-default-search-title = Deine Standard-Suchmaschine
 zen-welcome-default-search-description = Wähle deine Standard-Suchmaschine. Du kannst sie jederzeit später ändern!
 zen-welcome-skip-button = Überspringen
-zen-welcome-finished = Dein Zen wurde erfolgreich eingerichtet!
+zen-welcome-finished = Dein Astra wurde erfolgreich eingerichtet!

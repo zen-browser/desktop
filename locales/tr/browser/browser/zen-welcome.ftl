@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-zen-welcome-title-line1 = Zen'e Hoş Geldiniz
+zen-welcome-title-line1 = Astra'ya Hoş Geldiniz
 zen-welcome-title-line2 = Daha Sakin Bir İnternet
 zen-welcome-import-title = Yeni Bir Başlangıç, Aynı Yer İmleri
 zen-welcome-import-description-1 = Yer imleriniz, geçmişiniz ve parolalarınız internetteki ekmek kırıntıları gibidir; onları geride bırakmayın!
@@ -23,4 +23,4 @@ zen-welcome-start-browsing = Keşfetmeye başla!
 zen-welcome-default-search-title = Varsayılan Arama Motorun
 zen-welcome-default-search-description = Varsayılan arama motorunu seç. Bu seçimi istediğin zaman değiştirebilirsin!
 zen-welcome-skip-button = Atla
-zen-welcome-finished = Zen başarıyla kuruldu ve ayarlandı!
+zen-welcome-finished = Astra başarıyla kuruldu ve ayarlandı!

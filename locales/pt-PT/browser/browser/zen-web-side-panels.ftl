@@ -25,5 +25,5 @@ zen-web-side-panel-context-open-in-container-tab =
 zen-web-side-panel-context-add-to-panel = 
     .label = Adicionar aos Painéis Web
     .accesskey = A
-zen-webpanel-introduction-title = Bem-vindo aos Painéis Web Zen
+zen-webpanel-introduction-title = Bem-vindo aos Painéis Web Astra
 zen-webpanel-introduction-description = Os Painéis Web são uma maneira de manter os seus sites favoritos na ponta dos seus dedos.

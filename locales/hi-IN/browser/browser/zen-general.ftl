@@ -165,7 +165,7 @@ zen-sidebar-notification-restart-safe-mode-tooltip =
     .title = सेफ मोड में रीस्टार्ट करें
 
 zen-window-sync-migration-dialog-title = अपनी विंडोज़ सिंक में रखें
-zen-window-sync-migration-dialog-message = अब Zen एक ही डिवाइस पर विंडोज़ सिंक करता है, जिससे एक विंडो में बदलाव तुरंत बाकी में भी दिखते हैं।
+zen-window-sync-migration-dialog-message = अब Astra एक ही डिवाइस पर विंडोज़ सिंक करता है, जिससे एक विंडो में बदलाव तुरंत बाकी में भी दिखते हैं।
 zen-window-sync-migration-dialog-learn-more = और जानें
 zen-window-sync-migration-dialog-accept = समझ गया
 

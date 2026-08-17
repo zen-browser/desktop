@@ -34,5 +34,5 @@ zen-welcome-default-search-description = अपना डिफ़ॉल्ट �
 
 zen-welcome-skip-button = छोड़ें
 
-zen-welcome-finished = आपका Zen सही तरीके से सेटअप हो गया है!
+zen-welcome-finished = आपका Astra सही तरीके से सेटअप हो गया है!
 

@@ -25,5 +25,5 @@ zen-web-side-panel-context-open-in-container-tab =
 zen-web-side-panel-context-add-to-panel = 
     .label = 添加到网页面板
     .accesskey = A
-zen-webpanel-introduction-title = 欢迎使用 Zen 网页面板
+zen-webpanel-introduction-title = 欢迎使用 Astra 网页面板
 zen-webpanel-introduction-description = 网页面板，让常用网站一触即达。

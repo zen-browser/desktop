@@ -23,4 +23,4 @@ zen-welcome-start-browsing = C’est parti !
 zen-welcome-default-search-title = Votre moteur de recherche par défaut
 zen-welcome-default-search-description = Sélectionnez votre moteur de recherche par défaut. Vous pouvez toujours le modifier plus tard !
 zen-welcome-skip-button = Ignorer
-zen-welcome-finished = Votre navigateur Zen a été configuré correctement !
+zen-welcome-finished = Votre navigateur Astra a été configuré correctement !

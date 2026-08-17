@@ -25,5 +25,5 @@ zen-web-side-panel-context-open-in-container-tab =
 zen-web-side-panel-context-add-to-panel = 
     .label = Pridėti prie saityno skydelių
     .accesskey = A
-zen-webpanel-introduction-title = Sveiki atvykę į „Zen“ saityno skydelius
+zen-webpanel-introduction-title = Sveiki atvykę į „Astra“ saityno skydelius
 zen-webpanel-introduction-description = Saityno skydeliai – tai būdas laikyti savo mėgstamas svetaines po ranka.

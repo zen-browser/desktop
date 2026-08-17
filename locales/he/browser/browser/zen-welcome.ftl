@@ -23,4 +23,4 @@ zen-welcome-start-browsing = מתחילים!
 zen-welcome-default-search-title = מנוע חיפוש ברירת מחדל
 zen-welcome-default-search-description = נא לבחור מנוע החיפוש ברירת מחדל. תמיד ניתן לשנות הגדרה זו!
 zen-welcome-skip-button = דילוג
-zen-welcome-finished = דפדפן Zen שלך הוגדר בהצלחה!
+zen-welcome-finished = דפדפן Astra שלך הוגדר בהצלחה!

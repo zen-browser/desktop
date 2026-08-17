@@ -25,5 +25,5 @@ zen-web-side-panel-context-open-in-container-tab =
 zen-web-side-panel-context-add-to-panel = 
     .label = 加到至網頁側版
     .accesskey = A
-zen-webpanel-introduction-title = 歡迎使用 Zen 網頁側版
-zen-webpanel-introduction-description = Zen 網頁側版可以讓您常用網站一觸可及。
+zen-webpanel-introduction-title = 歡迎使用 Astra 網頁側版
+zen-webpanel-introduction-description = Astra 網頁側版可以讓您常用網站一觸可及。

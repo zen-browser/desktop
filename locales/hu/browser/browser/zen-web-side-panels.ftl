@@ -25,5 +25,5 @@ zen-web-side-panel-context-open-in-container-tab =
 zen-web-side-panel-context-add-to-panel = 
     .label = Hozzáadás a webpanelekhez
     .accesskey = A
-zen-webpanel-introduction-title = Üdvözöljük a Zen webpaneleknél
+zen-webpanel-introduction-title = Üdvözöljük a Astra webpaneleknél
 zen-webpanel-introduction-description = A webpanelek segítségével kedvenc webhelyeit mindig kéznél tarthatja.

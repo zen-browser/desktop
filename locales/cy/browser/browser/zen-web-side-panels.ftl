@@ -25,5 +25,5 @@ zen-web-side-panel-context-open-in-container-tab =
 zen-web-side-panel-context-add-to-panel = 
     .label = Adio i'r Panel Gwe
     .accesskey = A
-zen-webpanel-introduction-title = Croeso i Paneli Gwe Zen
+zen-webpanel-introduction-title = Croeso i Paneli Gwe Astra
 zen-webpanel-introduction-description = Mae Paneli Gwe yn ffordd o gadw eich hoff wefannau ar flaenau eich bysedd.

@@ -25,5 +25,5 @@ zen-web-side-panel-context-open-in-container-tab =
 zen-web-side-panel-context-add-to-panel = 
     .label = Føj til webpaneler
     .accesskey = A
-zen-webpanel-introduction-title = Velkommen til Zen Webpaneler
+zen-webpanel-introduction-title = Velkommen til Astra Webpaneler
 zen-webpanel-introduction-description = Webpaneler er en måde at have dine yndlingssider lige ved hånden.

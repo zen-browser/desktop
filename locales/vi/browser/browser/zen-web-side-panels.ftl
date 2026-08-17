@@ -25,5 +25,5 @@ zen-web-side-panel-context-open-in-container-tab =
 zen-web-side-panel-context-add-to-panel = 
     .label = Thêm vào bảng điều khiển web
     .accesskey = A
-zen-webpanel-introduction-title = Chào mừng bạn tới Zen Web Panels
+zen-webpanel-introduction-title = Chào mừng bạn tới Astra Web Panels
 zen-webpanel-introduction-description = Web Panels giúp bạn truy cập nhanh các trang web yêu thích.

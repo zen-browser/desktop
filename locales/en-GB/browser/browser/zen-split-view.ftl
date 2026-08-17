@@ -13,6 +13,6 @@ tab-zen-split-tabs =
 zen-split-link = 
     .label = Split link to new tab
     .accesskey = S
-zen-split-view-modifier-header = Zen-split-view-modifier-header
+zen-split-view-modifier-header = Split View
 zen-split-view-modifier-activate-reallocation = 
     .label = Activate reallocation

@@ -23,4 +23,4 @@ zen-welcome-start-browsing = Sukella sisään!
 zen-welcome-default-search-title = Sinun Oletushakukone
 zen-welcome-default-search-description = Valitse oletushakukone. Voit aina muuttaa sitä myöhemmin!
 zen-welcome-skip-button = Ohita
-zen-welcome-finished = Zen on määritetty oikein!
+zen-welcome-finished = Astra on määritetty oikein!

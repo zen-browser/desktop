@@ -25,5 +25,5 @@ zen-web-side-panel-context-open-in-container-tab =
 zen-web-side-panel-context-add-to-panel = 
     .label = Dodaj do Paneli Web
     .accesskey = Pr
-zen-webpanel-introduction-title = Witaj w panelach internetowych Zen
+zen-webpanel-introduction-title = Witaj w panelach internetowych Astra
 zen-webpanel-introduction-description = Panele internetowe to sposób na zachowanie ulubionych stron na wyciągnięcie ręki.

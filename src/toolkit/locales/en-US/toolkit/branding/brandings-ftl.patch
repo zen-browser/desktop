@@ -1,0 +1,14 @@
+diff --git a/toolkit/locales/en-US/toolkit/branding/brandings.ftl b/toolkit/locales/en-US/toolkit/branding/brandings.ftl
+--- a/toolkit/locales/en-US/toolkit/branding/brandings.ftl
++++ b/toolkit/locales/en-US/toolkit/branding/brandings.ftl
+@@ -27,7 +27,7 @@
+ -firefox-suggest-brand-name = Firefox Suggest
+ 
+--firefox-home-brand-name = Firefox Home
++-firefox-home-brand-name = { -brand-short-name } Home
+ 
+--firefoxview-brand-name = Firefox View
++-firefoxview-brand-name = { -brand-short-name } View
+ 
+--firefoxlabs-brand-name = Firefox Labs
++-firefoxlabs-brand-name = { -brand-short-name } Labs

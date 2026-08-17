@@ -4,7 +4,7 @@
 
 zen-space-routing-settings =
     .label = Space Routing Settings
-zen-space-routing-rulepanel-placeholder = Routes let you choose where specific sites open inside Zen. For example, you can route YouTube links to always open inside your Personal space.
+zen-space-routing-rulepanel-placeholder = Routes let you choose where specific sites open inside Astra. For example, you can route YouTube links to always open inside your Personal space.
 zen-space-routing-dialog-title = Space Routing Settings
 zen-space-routing-external-default = Default route for external links
 zen-space-routing-new-route = New Route

@@ -25,5 +25,5 @@ zen-web-side-panel-context-open-in-container-tab =
 zen-web-side-panel-context-add-to-panel = 
     .label = Lisa veebipaneelide hulka
     .accesskey = L
-zen-webpanel-introduction-title = Tere tulemast Zen-i veebipaneelidesse
+zen-webpanel-introduction-title = Tere tulemast Astra veebipaneelidesse
 zen-webpanel-introduction-description = Veebipaneelid on viis kuidas hoida lemmikud veebilehed enda käeulatuses.

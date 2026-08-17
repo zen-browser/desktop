@@ -25,5 +25,5 @@ zen-web-side-panel-context-open-in-container-tab =
 zen-web-side-panel-context-add-to-panel = 
     .label = Přidat do webových panelů
     .accesskey = A
-zen-webpanel-introduction-title = Vítejte v Zen Webovém panelu
+zen-webpanel-introduction-title = Vítejte v Astra Webovém panelu
 zen-webpanel-introduction-description = Díky webovým panelům můžete mít vaše oblíbené webové stránky na dosah ruky.

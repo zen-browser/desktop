@@ -23,4 +23,4 @@ zen-welcome-start-browsing = Dyk in!
 zen-welcome-default-search-title = Din standardsökmotor
 zen-welcome-default-search-description = Välj din standardsökmotor. Du kan alltid ändra det senare!
 zen-welcome-skip-button = Hoppa över
-zen-welcome-finished = Din Zen har konfigurerats korrekt!
+zen-welcome-finished = Din Astra har konfigurerats korrekt!

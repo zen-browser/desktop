@@ -25,5 +25,5 @@ zen-web-side-panel-context-open-in-container-tab =
 zen-web-side-panel-context-add-to-panel = 
     .label = Προσθήκη σε Πίνακες Ιστού
     .accesskey = A
-zen-webpanel-introduction-title = Καλώς ήρθατε στους Πίνακες Ιστού Zen
+zen-webpanel-introduction-title = Καλώς ήρθατε στους Πίνακες Ιστού Astra
 zen-webpanel-introduction-description = Οι πίνακες Ιστού είναι ένας τρόπος για να κρατήσετε τις αγαπημένες σας ιστοσελίδες στα δάχτυλά σας.

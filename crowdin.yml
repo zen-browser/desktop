@@ -32,3 +32,5 @@ files:
     translation: browser/browser/zen-command-palette.ftl
   - source: en-US/browser/browser/zen-newtab.ftl
     translation: browser/browser/zen-newtab.ftl
+  - source: en-US/browser/browser/zen-aboutaddons.ftl
+    translation: browser/browser/zen-aboutaddons.ftl

@@ -7,10 +7,10 @@
 
 # Attributes-only Fluent for the real toolbarbutton (public widget id).
 astra-suraksha-button =
-    .label = Suraksha
-    .tooltiptext = Astra Suraksha
-    .aria-label = Astra Suraksha
+    .label = Privacy protections
+    .tooltiptext = Privacy protections
+    .aria-label = Privacy protections
 
-astra-suraksha-appmenu = Astra Suraksha
-    .label = Astra Suraksha
-    .aria-label = Astra Suraksha
+astra-suraksha-appmenu = Privacy protections
+    .label = Privacy protections
+    .aria-label = Privacy protections

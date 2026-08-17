@@ -371,6 +371,7 @@ zen-history-show-all-shortcut = Show All History
 zen-key-enter-full-screen = Enter Full Screen
 zen-key-exit-full-screen = Exit Full Screen
 zen-ai-chatbot-sidebar-shortcut = Toggle AI Chatbot Sidebar
+astra-open-suraksha-shortcut = Privacy protections
 zen-key-inspector-mac = Toggle Inspector (Mac)
 zen-toggle-sidebar-shortcut = Toggle Astra Sidebar
 zen-toggle-pin-tab-shortcut = Toggle Pin Tab

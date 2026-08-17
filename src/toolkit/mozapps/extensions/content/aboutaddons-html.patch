@@ -1,0 +1,11 @@
+diff --git a/toolkit/mozapps/extensions/content/aboutaddons.html b/toolkit/mozapps/extensions/content/aboutaddons.html
+--- a/toolkit/mozapps/extensions/content/aboutaddons.html
++++ b/toolkit/mozapps/extensions/content/aboutaddons.html
+@@ -33,6 +33,7 @@
+ 
+     <link rel="localization" href="branding/brand.ftl" />
++    <link rel="localization" href="browser/zen-aboutaddons.ftl" />
+     <link rel="localization" href="toolkit/about/aboutAddons.ftl" />
+     <link rel="localization" href="toolkit/global/extensionPermissions.ftl" />
+     <!-- TODO: move these strings into aboutAddons.ftl once promoted out of locales-preview -->
+     <link

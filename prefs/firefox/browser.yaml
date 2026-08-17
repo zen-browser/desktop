@@ -49,6 +49,12 @@
 - name: sidebar.openTabsPanel.enabled
   value: true
 
+# Firefox 153 enables AI chatbot in the sidebar launcher by default.
+# Keep the customize option available (do not hide the tool), but do not
+# check it out of the box — Astra deprioritizes AI-forward chrome.
+- name: sidebar.main.tools
+  value: "history,bookmarks,opentabs"
+
 - name: sidebar.verticalTabs
   value: false
   locked: true

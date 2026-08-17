@@ -12,7 +12,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 
 class nsZenUIMigration {
   PREF_NAME = "zen.ui.migration.version";
-  MIGRATION_VERSION = 8;
+  MIGRATION_VERSION = 9;
 
   init(isNewProfile) {
     if (!isNewProfile) {
@@ -186,6 +186,31 @@ class nsZenUIMigration {
     }
     parts.push("opentabs");
     Services.prefs.setStringPref(kTools, parts.join(","));
+  }
+
+  _migrateV9() {
+    // Firefox 153 defaulted the sidebar launcher to include "aichat".
+    // Astra keeps the customize checkbox but unchecks it for stock lists.
+    const kTools = "sidebar.main.tools";
+    if (!Services.prefs.prefHasUserValue(kTools)) {
+      return;
+    }
+    const current = Services.prefs.getStringPref(kTools, "");
+    const parts = current
+      .split(",")
+      .map(t => t.trim())
+      .filter(Boolean);
+    const stock = parts.join(",");
+    if (
+      stock !== "aichat,history,bookmarks,opentabs" &&
+      stock !== "aichat,history,bookmarks"
+    ) {
+      return;
+    }
+    Services.prefs.setStringPref(
+      kTools,
+      parts.filter(t => t !== "aichat").join(",")
+    );
   }
 }
 

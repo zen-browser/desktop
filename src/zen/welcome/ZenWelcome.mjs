@@ -1047,15 +1047,15 @@
       {
         stepNum: 4,
         totalSteps,
-        icon: "sparkles",
-        eyebrow: "zen-welcome-ai-eyebrow",
+        icon: "apps",
+        eyebrow: "zen-welcome-apphub-eyebrow",
         text: [
-          { id: "zen-welcome-ai-title" },
-          { id: "zen-welcome-ai-sub" },
+          { id: "zen-welcome-apphub-title" },
+          { id: "zen-welcome-apphub-sub" },
         ],
         decor: [
-          { icon: "translate", pos: "tl" },
-          { icon: "chat", pos: "tr" },
+          { icon: "folder", pos: "tl" },
+          { icon: "apps", pos: "tr" },
           { type: "dot", pos: "b" },
         ],
         buttons: [backButton, continueButton, skipButton],

@@ -24,10 +24,15 @@ zen-welcome-ublock-eyebrow = uBlock Origin
 zen-welcome-ublock-title = No ads. No trackers.
 zen-welcome-ublock-sub = Blocks intrusive ads and trackers automatically, right from your first tab.
 
-# Page 4 — AI Sidebar
-zen-welcome-ai-eyebrow = AI Sidebar
-zen-welcome-ai-title = Ask anything. Stay on the page.
-zen-welcome-ai-sub = Summarize, translate, and chat without ever leaving the tab you’re on.
+# Page 4 — App Hub
+zen-welcome-apphub-eyebrow = App Hub
+zen-welcome-apphub-title = Your apps, one click away.
+zen-welcome-apphub-sub = Open IRCTC, DigiLocker, Gmail, and more from the sidebar — no hunting through bookmarks.
+
+# Legacy AI Sidebar strings (kept so older locales still resolve)
+zen-welcome-ai-eyebrow = App Hub
+zen-welcome-ai-title = Your apps, one click away.
+zen-welcome-ai-sub = Open IRCTC, DigiLocker, Gmail, and more from the sidebar — no hunting through bookmarks.
 
 # Page 5 — Compact Mode
 zen-welcome-compact-eyebrow = Compact Mode

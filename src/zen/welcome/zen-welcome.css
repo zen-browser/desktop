@@ -279,6 +279,11 @@
   -webkit-mask-image: url("chrome://browser/skin/zen-icons/sparkles.svg");
 }
 
+.zen-welcome-icon[data-icon="apps"] {
+  mask-image: url("chrome://browser/skin/zen-icons/selectable/grid-3x3.svg");
+  -webkit-mask-image: url("chrome://browser/skin/zen-icons/selectable/grid-3x3.svg");
+}
+
 .zen-welcome-icon[data-icon="shield"] {
   mask-image: url("chrome://browser/skin/zen-icons/tracking-protection.svg");
   -webkit-mask-image: url("chrome://browser/skin/zen-icons/tracking-protection.svg");

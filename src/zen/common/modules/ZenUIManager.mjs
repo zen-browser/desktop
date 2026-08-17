@@ -622,6 +622,20 @@ window.gZenUIManager = {
       return false;
     }
 
+    // Search Hub is a real New Tab page; do not intercept it as the URL-bar overlay.
+    // Callers that pass overridePreferance (Glance / split view) still get the overlay.
+    try {
+      if (
+        !overridePreferance &&
+        Services.prefs.getStringPref("astra.newtab.layout", "minimal") ===
+          "search-hub"
+      ) {
+        return false;
+      }
+    } catch {
+      // Missing pref → keep the existing minimal New Tab behavior.
+    }
+
     const shouldOpenURLBar =
       overridePreferance ||
       (gZenVerticalTabsManager._canReplaceNewTab &&

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-hidden="true">
+  <!-- Single-color red Astra mark (not the tricolor brand logo). -->
+  <circle cx="32" cy="32" r="30" fill="none" stroke="#e11d2e" stroke-width="2.4"/>
+  <path
+    fill="#e11d2e"
+    d="M32 11.5 49.2 54h-8.4l-2.7-6.8H25.9L23.2 54h-8.4L32 11.5zm0 12.6-4.7 11.6h9.4L32 24.1z"
+  />
+  <path
+    fill="none"
+    stroke="#e11d2e"
+    stroke-width="2.2"
+    stroke-linecap="round"
+    d="M46.5 20.5c4.2 4.6 6.4 10.2 6.4 16.2"
+  />
+</svg>

@@ -20,6 +20,7 @@
     "chrome://browser/content/zen-components/ZenMods.mjs",
     "chrome://browser/content/zen-components/AstraTransparencyManager.mjs",
     "chrome://browser/content/zen-components/AstraAppHubBootstrap.mjs",
+    "chrome://browser/content/zen-components/ZenAstraNTP.mjs",
     "chrome://browser/content/zen-components/ZenKeyboardShortcuts.mjs",
     "chrome://browser/content/zen-components/ZenSessionStore.mjs",
     "chrome://browser/content/zen-components/ZenMediaController.mjs",

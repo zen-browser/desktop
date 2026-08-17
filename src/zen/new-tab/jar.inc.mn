@@ -1,0 +1,10 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+        content/browser/zen-components/ZenAstraNTP.mjs                         (../../zen/new-tab/ZenAstraNTP.mjs)
+        content/browser/zen-newtab/AstraSearchHubShortcuts.mjs                  (../../zen/new-tab/AstraSearchHubShortcuts.mjs)
+        content/browser/zen-newtab/astra-search-hub.mjs                         (../../zen/new-tab/astra-search-hub.mjs)
+        content/browser/zen-newtab/astra-search-hub.html                        (../../zen/new-tab/astra-search-hub.html)
+        content/browser/zen-newtab/astra-search-hub.css                         (../../zen/new-tab/astra-search-hub.css)
+        content/browser/zen-newtab/astra-logo-mono-red.svg                      (../../zen/new-tab/astra-logo-mono-red.svg)

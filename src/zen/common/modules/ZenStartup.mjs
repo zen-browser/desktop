@@ -106,6 +106,14 @@ class ZenStartup {
       this.#initRamSaver();
       this.#initAiWindowBookmarksFix();
       this.#initSidebarLauncherAutoHide();
+      try {
+        const { ZenAstraNTP } = ChromeUtils.importESModule(
+          "chrome://browser/content/zen-components/ZenAstraNTP.mjs"
+        );
+        ZenAstraNTP.apply();
+      } catch (e) {
+        console.error("[Astra] NTP apply failed:", e);
+      }
 
       setTimeout(() => {
         // Wait for the natural PlacesToolbar rebuild before invalidating, so

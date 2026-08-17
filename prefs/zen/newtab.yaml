@@ -1,0 +1,13 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# New Tab layout: "minimal" keeps Zen's URL-bar new-tab (default).
+# "search-hub" opens Astra's Search Hub chrome page instead.
+- name: astra.newtab.layout
+  value: "minimal"
+
+# JSON array of Search Hub shortcut objects {id, name, url, iconKey?}.
+# Empty string = built-in catalog defaults. Never fetched from the network.
+- name: astra.newtab.search-hub.shortcuts
+  value: ""

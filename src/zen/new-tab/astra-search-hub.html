@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="color-scheme" content="light dark" />
+    <!-- Block all remote loads. Icons are chrome: / data:; search navigates the tab. -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src chrome: resource:; style-src chrome: 'unsafe-inline'; script-src chrome:; img-src chrome: data:; connect-src 'none'; object-src 'none'; frame-src 'none'; form-action 'none'; base-uri 'none';"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-l10n-id="astra-search-hub-title">New Tab</title>
+    <link rel="icon" href="chrome://browser/content/zen-newtab/astra-logo-mono-red.svg" />
+    <link rel="localization" href="browser/zen-newtab.ftl" />
+    <!-- First-paint background matches zen-theme branding tokens (no white flash). -->
+    <style>
+      html,
+      body {
+        color-scheme: light dark;
+        background: light-dark(#e2e2e2, #101010);
+        color: light-dark(#1a1a1a, #f4f4f4);
+        margin: 0;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="chrome://browser/content/zen-newtab/astra-search-hub.css"
+    />
+    <script
+      type="module"
+      src="chrome://browser/content/zen-newtab/astra-search-hub.mjs"
+    ></script>
+  </head>
+  <body>
+    <div class="astra-search-hub" id="astra-search-hub">
+      <nav class="hub-dock" aria-label="Pinned shortcuts">
+        <div class="hub-dock-list" id="hub-dock-list"></div>
+        <button
+          type="button"
+          class="hub-settings"
+          id="hub-settings"
+          data-l10n-id="astra-search-hub-settings"
+          title="Settings"
+          aria-label="Settings"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              fill="currentColor"
+              d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.03 7.03 0 0 0-1.63-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54c-.59.24-1.13.56-1.63.94l-2.39-.96a.5.5 0 0 0-.6.22L2.71 8.84a.5.5 0 0 0 .12.64l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94L2.83 14.5a.5.5 0 0 0-.12.64l1.92 3.32c.14.24.43.34.68.22l2.39-.96c.5.38 1.04.7 1.63.94l.36 2.54c.05.24.26.42.5.42h3.84c.24 0 .45-.18.5-.42l.36-2.54c.59-.24 1.13-.56 1.63-.94l2.39.96c.25.12.54.02.68-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58zM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7z"
+            />
+          </svg>
+        </button>
+      </nav>
+
+      <main class="hub-main">
+        <section class="hub-hero">
+          <div class="hub-logo-badge" aria-hidden="true">
+            <img
+              class="hub-logo"
+              src="chrome://browser/content/zen-newtab/astra-logo-mono-red.svg"
+              alt=""
+            />
+          </div>
+          <ul class="hub-trust" aria-label="Privacy features">
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  stroke-linecap="round"
+                  d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"
+                />
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="2.6"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                />
+              </svg>
+              <span data-l10n-id="astra-search-hub-trust-confidential"
+                >Confidential Search</span
+              >
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  stroke-linejoin="round"
+                  d="M12 3.5 5 6.5v5.2c0 4.4 3 7.6 7 8.8 4-1.2 7-4.4 7-8.8V6.5z"
+                />
+                <path
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="m8.6 12.2 2.3 2.3 4.5-4.8"
+                />
+              </svg>
+              <span data-l10n-id="astra-search-hub-trust-trackers"
+                >Tracker Blocking</span
+              >
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect
+                  x="6"
+                  y="11"
+                  width="12"
+                  height="9"
+                  rx="2"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                />
+                <path
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  stroke-linecap="round"
+                  d="M8.5 11V8.4a3.5 3.5 0 0 1 7 0V11"
+                />
+              </svg>
+              <span data-l10n-id="astra-search-hub-trust-encryption"
+                >Site Encryption</span
+              >
+            </li>
+          </ul>
+          <form class="hub-search" id="hub-search" autocomplete="off">
+            <label class="visually-hidden" for="hub-search-input"
+              data-l10n-id="astra-search-hub-query-label"
+              >Search</label
+            >
+            <div class="hub-search-field">
+              <svg class="hub-search-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle
+                  cx="11"
+                  cy="11"
+                  r="6.5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                />
+                <path
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  d="m16 16 4 4"
+                />
+              </svg>
+              <input
+                id="hub-search-input"
+                name="q"
+                type="text"
+                enterkeyhint="search"
+                spellcheck="false"
+                autocomplete="off"
+                data-l10n-id="astra-search-hub-placeholder"
+                placeholder="What are you looking for today?"
+              />
+            </div>
+            <button
+              type="submit"
+              class="hub-search-submit"
+              data-l10n-id="astra-search-hub-submit"
+            >
+              Search
+            </button>
+          </form>
+        </section>
+
+        <section class="hub-grid-wrap" aria-label="Shortcuts">
+          <div class="hub-grid" id="hub-grid"></div>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="hub-dialog" id="hub-add-dialog">
+      <form method="dialog" id="hub-add-form">
+        <h2 data-l10n-id="astra-search-hub-add-title">Add shortcut</h2>
+        <label>
+          <span data-l10n-id="astra-search-hub-add-name">Name</span>
+          <input id="hub-add-name" type="text" maxlength="64" required />
+        </label>
+        <label>
+          <span data-l10n-id="astra-search-hub-add-url">HTTPS address</span>
+          <input
+            id="hub-add-url"
+            type="url"
+            inputmode="url"
+            placeholder="https://"
+            required
+          />
+        </label>
+        <p class="hub-dialog-error" id="hub-add-error" hidden></p>
+        <div class="hub-dialog-actions">
+          <button
+            type="button"
+            class="hub-dialog-cancel"
+            id="hub-add-cancel"
+            data-l10n-id="astra-search-hub-add-cancel"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="hub-dialog-save"
+            data-l10n-id="astra-search-hub-add-save"
+          >
+            Add
+          </button>
+        </div>
+      </form>
+    </dialog>
+  </body>
+</html>

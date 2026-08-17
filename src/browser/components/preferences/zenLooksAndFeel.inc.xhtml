@@ -40,6 +40,17 @@
                 data-l10n-id="zen-vertical-tabs-newtab-top-button-up"
                 preference="zen.view.show-newtab-button-top"/>
     </vbox>
+    <label><html:h2 data-l10n-id="zen-newtab-layout-header"/></label>
+    <description class="description-deemphasized" data-l10n-id="zen-newtab-layout-description" />
+    <hbox align="center">
+        <label data-l10n-id="zen-newtab-layout-label"/>
+        <menulist id="zenNewTabLayout" preference="astra.newtab.layout">
+            <menupopup>
+                <menuitem data-l10n-id="zen-newtab-layout-minimal" value="minimal"/>
+                <menuitem data-l10n-id="zen-newtab-layout-search-hub" value="search-hub"/>
+            </menupopup>
+        </menulist>
+    </hbox>
     <html:div data-l10n-id="preferences-web-appearance-footer">
         <html:a id="web-appearance-manage-themes-link" class="text-link" data-l10n-name="themes-link" href="about:addons" target="_blank" />
     </html:div>

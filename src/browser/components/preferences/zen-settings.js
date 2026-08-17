@@ -1520,6 +1520,11 @@ Preferences.addAll([
     default: true,
   },
   {
+    id: "astra.newtab.layout",
+    type: "string",
+    default: "minimal",
+  },
+  {
     id: "zen.view.show-newtab-button-top",
     type: "bool",
     default: true,

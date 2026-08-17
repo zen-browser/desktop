@@ -10,6 +10,7 @@ BROWSER_CHROME_MANIFESTS += [
     "glance/browser.toml",
     "live-folders/browser.toml",
     "media/browser.toml",
+    "newtab/browser.toml",
     "pinned/browser.toml",
     "popover/browser.toml",
     "site_control/browser.toml",

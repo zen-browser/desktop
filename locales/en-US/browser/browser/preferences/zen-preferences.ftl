@@ -210,6 +210,14 @@ zen-vertical-tabs-newtab-on-tab-list =
 zen-vertical-tabs-newtab-top-button-up =
     .label = Move the new tab button to the top
 
+zen-newtab-layout-header = New Tab
+zen-newtab-layout-description = Choose the page shown when you open a new tab. Minimal keeps the current URL-bar New Tab.
+zen-newtab-layout-label = Layout
+zen-newtab-layout-minimal =
+    .label = Minimal
+zen-newtab-layout-search-hub =
+    .label = Search Hub
+
 zen-vertical-tabs-expand-tabs-by-default = Expand Tabs by Default
 zen-vertical-tabs-dont-expand-tabs-by-default = Don't Expand Tabs by Default
 zen-vertical-tabs-expand-tabs-on-hover = Expand Tabs on Hover (Won't work on compact mode)

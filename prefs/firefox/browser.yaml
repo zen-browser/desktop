@@ -43,6 +43,12 @@
   value: true
   locked: false
 
+# Firefox 153 Open Tabs sidebar panel. firefox.js defaults this false
+# (Nimbus-gated upstream). New Astra profiles already get "opentabs" in
+# sidebar.main.tools; without this gate the launcher button stays hidden.
+- name: sidebar.openTabsPanel.enabled
+  value: true
+
 - name: sidebar.verticalTabs
   value: false
   locked: true

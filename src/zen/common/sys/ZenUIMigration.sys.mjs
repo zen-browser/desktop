@@ -12,7 +12,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 
 class nsZenUIMigration {
   PREF_NAME = "zen.ui.migration.version";
-  MIGRATION_VERSION = 7;
+  MIGRATION_VERSION = 8;
 
   init(isNewProfile) {
     if (!isNewProfile) {
@@ -159,6 +159,33 @@ class nsZenUIMigration {
     if (!Services.prefs.prefHasUserValue(kSingleToolbar)) {
       Services.prefs.setBoolPref(kSingleToolbar, true);
     }
+  }
+
+  _migrateV8() {
+    // Firefox 153 added "opentabs" to the default sidebar launcher. Existing
+    // 149-era profiles already have a customized sidebar.main.tools value
+    // (without opentabs). Append once; do not rewrite the rest of the list.
+    const kTools = "sidebar.main.tools";
+    const kPanel = "sidebar.openTabsPanel.enabled";
+    // The panel is gated separately and defaults false in 153 firefox.js.
+    // Enable it once so the launcher entry is actually visible. Do not
+    // overwrite an explicit user value.
+    if (!Services.prefs.prefHasUserValue(kPanel)) {
+      Services.prefs.setBoolPref(kPanel, true);
+    }
+    if (!Services.prefs.prefHasUserValue(kTools)) {
+      return;
+    }
+    const current = Services.prefs.getStringPref(kTools, "");
+    const parts = current
+      .split(",")
+      .map(t => t.trim())
+      .filter(Boolean);
+    if (!parts.length || parts.includes("opentabs")) {
+      return;
+    }
+    parts.push("opentabs");
+    Services.prefs.setStringPref(kTools, parts.join(","));
   }
 }
 

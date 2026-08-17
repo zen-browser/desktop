@@ -33,7 +33,7 @@
   value: false
 
 - name: zen.mediacontrols.enabled
-  value: false
+  value: true
 
 - name: zen.startup.smooth-scroll-in-tabs
   value: true

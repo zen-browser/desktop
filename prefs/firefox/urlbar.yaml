@@ -12,7 +12,21 @@
   value: false
 
 - name: browser.urlbar.quickactions.enabled
-  value: false
+  value: true
+
+# Firefox 153 only inserts Quick Actions into the default urlbar query when
+# Scotch Bonnet is on OR secondaryActions.featureGate is on. Astra keeps
+# Scotch Bonnet off (custom urlbar). These two prefs are the 153-equivalent
+# of "show mute / eyedropper / labs / translate when you type them".
+- name: browser.urlbar.suggest.quickactions
+  value: true
+
+- name: browser.urlbar.secondaryActions.featureGate
+  value: true
+
+# Required for the "translate" quick action (defaults false in 153).
+- name: browser.translations.quickAction.enabled
+  value: true
 
 - name: browser.urlbar.clipboard.featureGate
   value: true

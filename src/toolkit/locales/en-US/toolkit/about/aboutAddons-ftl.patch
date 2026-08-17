@@ -1,0 +1,27 @@
+diff --git a/toolkit/locales/en-US/toolkit/about/aboutAddons.ftl b/toolkit/locales/en-US/toolkit/about/aboutAddons.ftl
+--- a/toolkit/locales/en-US/toolkit/about/aboutAddons.ftl
++++ b/toolkit/locales/en-US/toolkit/about/aboutAddons.ftl
+@@ -4,8 +4,8 @@
+ addons-page-title = Add-ons Manager
+ 
+ search-header =
+-    .placeholder = Search addons.mozilla.org
++    .placeholder = Search add-ons
+     .searchbuttonlabel = Search
+ 
+ ## Variables
+ ## $domain - Domain name where add-ons are available (e.g. addons.mozilla.org)
+@@ -551,9 +551,9 @@ shortcuts-heading = Manage Extension Shortcuts
+ 
+ default-heading-search-label = Find more add-ons
+ addons-heading-search-input =
+-    .placeholder = Search addons.mozilla.org
++    .placeholder = Search add-ons
+ addons-heading-search-button =
+-    .title = Search addons.mozilla.org
+-    .aria-label = Search addons.mozilla.org
++    .title = Search add-ons
++    .aria-label = Search add-ons
+ 
+ addon-page-options-button =
+     .title = Tools for all add-ons

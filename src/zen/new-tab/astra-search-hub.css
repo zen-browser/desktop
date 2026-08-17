@@ -184,6 +184,10 @@ body {
   gap: 8px;
 }
 
+.hub-trust li[hidden] {
+  display: none !important;
+}
+
 .hub-trust svg {
   width: 16px;
   height: 16px;

@@ -45,11 +45,12 @@
         display: block;
       }
       .wordmark {
-        width: min(520px, 72vw);
-        height: auto;
-        display: block;
+        margin: 0;
+        font-size: clamp(2.8rem, 7vw, 4.6rem);
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        line-height: 1.05;
         color: var(--text);
-        -moz-context-properties: fill, fill-opacity;
       }
       .tag {
         margin: 0;
@@ -66,12 +67,8 @@
         src="chrome://branding/content/about-logo.svg"
         alt=""
       />
-      <img
-        class="wordmark"
-        src="chrome://branding/content/about-wordmark.svg"
-        alt="Astra Browser"
-      />
-      <p class="tag">Browser</p>
+      <h1 class="wordmark">Astra Browser</h1>
+      <p class="tag">Built for how you browse</p>
     </section>
   </body>
 </html>

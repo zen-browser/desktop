@@ -333,6 +333,16 @@ function bindAstraPopupShowingHook(panelId, panelName) {
     const popupHandler = () => {
       console.log(`Astra: ${panelName} popupshowing -> rebinding delegation`);
       attachAstraPanelDelegation();
+      if (panelId === "PanelUI-zen-india-gov") {
+        try {
+          const { paintIndiaServiceIcons } = ChromeUtils.importESModule(
+            "chrome://browser/content/zen-components/AstraIndiaServicesIcons.mjs"
+          );
+          void paintIndiaServiceIcons(panel);
+        } catch (error) {
+          console.error("Astra: India Services icon paint failed:", error);
+        }
+      }
     };
     panel.addEventListener("popupshowing", popupHandler);
     gAstraDelegationState.popupHandlers.set(panel, popupHandler);

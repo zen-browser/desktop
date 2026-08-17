@@ -953,141 +953,123 @@
       <label class="zen-app-launcher-section-title" value="🚂 Travel"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
+          data-app-id="irctc"
           data-url="https://www.irctc.co.in"
-          oncommand="window.gZenIndiaGov.openApp('https://www.irctc.co.in');"
-          style="list-style-image: url('https://www.irctc.co.in/favicon.ico')">
-          <image class="zen-app-launcher-item-icon"/>
+          oncommand="window.gZenIndiaGov.openApp('https://www.irctc.co.in');">
           <label class="zen-app-launcher-item-label" value="IRCTC"/>
         </toolbarbutton>
       </hbox>
       <label class="zen-app-launcher-section-title" value="🏛️ Government"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
+          data-app-id="digilocker"
           data-url="https://www.digilocker.gov.in"
-          oncommand="window.gZenIndiaGov.openApp('https://www.digilocker.gov.in');"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=digilocker.gov.in&amp;sz=32')">
-          <image class="zen-app-launcher-item-icon"/>
+          oncommand="window.gZenIndiaGov.openApp('https://www.digilocker.gov.in');">
           <label class="zen-app-launcher-item-label" value="DigiLocker"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
+          data-app-id="income-tax"
           data-url="https://www.incometax.gov.in"
-          oncommand="window.gZenIndiaGov.openApp('https://www.incometax.gov.in');"
-          style="list-style-image: url('https://www.incometax.gov.in/favicon.ico')">
-          <image class="zen-app-launcher-item-icon"/>
+          oncommand="window.gZenIndiaGov.openApp('https://www.incometax.gov.in');">
           <label class="zen-app-launcher-item-label" value="Income Tax"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
+          data-app-id="gst-portal"
           data-url="https://www.gst.gov.in"
-          oncommand="window.gZenIndiaGov.openApp('https://www.gst.gov.in');"
-          style="list-style-image: url('https://www.gst.gov.in/favicon.ico')">
-          <image class="zen-app-launcher-item-icon"/>
+          oncommand="window.gZenIndiaGov.openApp('https://www.gst.gov.in');">
           <label class="zen-app-launcher-item-label" value="GST Portal"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
+          data-app-id="epfo"
           data-url="https://epfindia.gov.in"
-          oncommand="window.gZenIndiaGov.openApp('https://epfindia.gov.in');"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=epfindia.gov.in&amp;sz=32')">
-          <image class="zen-app-launcher-item-icon"/>
+          oncommand="window.gZenIndiaGov.openApp('https://epfindia.gov.in');">
           <label class="zen-app-launcher-item-label" value="EPFO"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
+          data-app-id="aadhaar"
           data-url="https://uidai.gov.in"
-          oncommand="window.gZenIndiaGov.openApp('https://uidai.gov.in');"
-          style="list-style-image: url('https://uidai.gov.in/images/logo/uidai_logo_english.svg')">
-          <image class="zen-app-launcher-item-icon"/>
+          oncommand="window.gZenIndiaGov.openApp('https://uidai.gov.in');">
           <label class="zen-app-launcher-item-label" value="Aadhaar"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
+          data-app-id="parivahan"
           data-url="https://parivahan.gov.in"
-          oncommand="window.gZenIndiaGov.openApp('https://parivahan.gov.in');"
-          style="list-style-image: url('https://parivahan.gov.in/favicon.ico')">
-          <image class="zen-app-launcher-item-icon"/>
+          oncommand="window.gZenIndiaGov.openApp('https://parivahan.gov.in');">
           <label class="zen-app-launcher-item-label" value="Parivahan/RTO"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
+          data-app-id="pan-card"
           data-url="https://www.pan.utiitsl.com"
-          oncommand="window.gZenIndiaGov.openApp('https://www.pan.utiitsl.com');"
-          style="list-style-image: url('https://www.onlineservices.nsdl.com/favicon.ico')">
-          <image class="zen-app-launcher-item-icon"/>
+          oncommand="window.gZenIndiaGov.openApp('https://www.pan.utiitsl.com');">
           <label class="zen-app-launcher-item-label" value="PAN Card"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
+          data-app-id="passport"
           data-url="https://www.passportindia.gov.in"
-          oncommand="window.gZenIndiaGov.openApp('https://www.passportindia.gov.in');"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=passportindia.gov.in&amp;sz=32')">
-          <image class="zen-app-launcher-item-icon"/>
+          oncommand="window.gZenIndiaGov.openApp('https://www.passportindia.gov.in');">
           <label class="zen-app-launcher-item-label" value="Passport"/>
         </toolbarbutton>
       </hbox>
       <label class="zen-app-launcher-section-title" value="🎓 Education"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
+          data-app-id="nta"
           data-url="https://www.nta.ac.in"
-          oncommand="window.gZenIndiaGov.openApp('https://www.nta.ac.in');"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=nta.ac.in&amp;sz=32')">
-          <image class="zen-app-launcher-item-icon"/>
+          oncommand="window.gZenIndiaGov.openApp('https://www.nta.ac.in');">
           <label class="zen-app-launcher-item-label" value="NTA"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
+          data-app-id="cbse"
           data-url="https://www.cbse.gov.in"
-          oncommand="window.gZenIndiaGov.openApp('https://www.cbse.gov.in');"
-          style="list-style-image: url('https://www.cbse.gov.in/favicon.ico')">
-          <image class="zen-app-launcher-item-icon"/>
+          oncommand="window.gZenIndiaGov.openApp('https://www.cbse.gov.in');">
           <label class="zen-app-launcher-item-label" value="CBSE"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
+          data-app-id="upsc"
           data-url="https://www.upsc.gov.in"
-          oncommand="window.gZenIndiaGov.openApp('https://www.upsc.gov.in');"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=upsc.gov.in&amp;sz=32')">
-          <image class="zen-app-launcher-item-icon"/>
+          oncommand="window.gZenIndiaGov.openApp('https://www.upsc.gov.in');">
           <label class="zen-app-launcher-item-label" value="UPSC"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
+          data-app-id="ssc"
           data-url="https://ssc.gov.in"
-          oncommand="window.gZenIndiaGov.openApp('https://ssc.gov.in');"
-          style="list-style-image: url('https://ssc.nic.in/favicon.ico')">
-          <image class="zen-app-launcher-item-icon"/>
+          oncommand="window.gZenIndiaGov.openApp('https://ssc.gov.in');">
           <label class="zen-app-launcher-item-label" value="SSC"/>
         </toolbarbutton>
       </hbox>
       <label class="zen-app-launcher-section-title" value="💼 Jobs"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
+          data-app-id="ncs"
           data-url="https://www.ncs.gov.in"
-          oncommand="window.gZenIndiaGov.openApp('https://www.ncs.gov.in');"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=ncs.gov.in&amp;sz=32')">
-          <image class="zen-app-launcher-item-icon"/>
+          oncommand="window.gZenIndiaGov.openApp('https://www.ncs.gov.in');">
           <label class="zen-app-launcher-item-label" value="NCS Portal"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
+          data-app-id="epfo"
           data-url="https://unifiedportal-mem.epfindia.gov.in"
-          oncommand="window.gZenIndiaGov.openApp('https://unifiedportal-mem.epfindia.gov.in');"
-          style="list-style-image: url('https://unifiedportal-mem.epfindia.gov.in/favicon.ico')">
-          <image class="zen-app-launcher-item-icon"/>
+          oncommand="window.gZenIndiaGov.openApp('https://unifiedportal-mem.epfindia.gov.in');">
           <label class="zen-app-launcher-item-label" value="EPFO UAN"/>
         </toolbarbutton>
       </hbox>
       <label class="zen-app-launcher-section-title" value="🏥 Health"/>
       <hbox class="zen-app-launcher-grid">
         <toolbarbutton class="zen-app-launcher-item"
+          data-app-id="ayushman"
           data-url="https://pmjay.gov.in"
-          oncommand="window.gZenIndiaGov.openApp('https://pmjay.gov.in');"
-          style="list-style-image: url('https://pmjay.gov.in/favicon.ico')">
-          <image class="zen-app-launcher-item-icon"/>
+          oncommand="window.gZenIndiaGov.openApp('https://pmjay.gov.in');">
           <label class="zen-app-launcher-item-label" value="Ayushman Bharat"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
+          data-app-id="jan-aushadhi"
           data-url="https://janaushadhi.gov.in"
-          oncommand="window.gZenIndiaGov.openApp('https://janaushadhi.gov.in');"
-          style="list-style-image: url('https://www.google.com/s2/favicons?domain=janaushadhi.gov.in&amp;sz=32')">
-          <image class="zen-app-launcher-item-icon"/>
+          oncommand="window.gZenIndiaGov.openApp('https://janaushadhi.gov.in');">
           <label class="zen-app-launcher-item-label" value="Jan Aushadhi"/>
         </toolbarbutton>
         <toolbarbutton class="zen-app-launcher-item"
+          data-app-id="cowin"
           data-url="https://www.cowin.gov.in"
-          oncommand="window.gZenIndiaGov.openApp('https://www.cowin.gov.in');"
-          style="list-style-image: url('https://www.cowin.gov.in/favicon.ico')">
-          <image class="zen-app-launcher-item-icon"/>
+          oncommand="window.gZenIndiaGov.openApp('https://www.cowin.gov.in');">
           <label class="zen-app-launcher-item-label" value="CoWIN"/>
         </toolbarbutton>
       </hbox>

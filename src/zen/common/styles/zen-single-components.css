@@ -885,6 +885,10 @@ toolbaritem[id$="-browser-action"] {
   margin-bottom: 6px;
 }
 
+#PanelUI-zen-india-gov .zen-app-launcher-item {
+  list-style-image: none !important;
+}
+
 /* Loading progress bar */
 #zen-loading-progress-bar {
   --zen-loading-progress-bar-color: color-mix(in srgb, var(--zen-primary-color), light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.5)) 70%);

@@ -8,6 +8,7 @@ BROWSER_CHROME_MANIFESTS += [
     "container_essentials/browser.toml",
     "folders/browser.toml",
     "glance/browser.toml",
+    "india/browser.toml",
     "live-folders/browser.toml",
     "media/browser.toml",
     "newtab/browser.toml",

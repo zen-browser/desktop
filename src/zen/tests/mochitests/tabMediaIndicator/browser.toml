@@ -35,11 +35,11 @@ https_first_disabled = true
 
 ["browser_mute.js"]
 
+["browser_mute2.js"]
+
 ["browser_mute_persist_navigation.js"]
 
 ["browser_mute_restore_closed_audible_tab.js"]
-
-["browser_mute2.js"]
 
 ["browser_mute_webAudio.js"]
 

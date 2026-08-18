@@ -25,6 +25,6 @@ zen-space-routing-tab-routed-toast = Новая вкладка открыта в
 tab-context-zen-add-domain-to-sr = 
     .label =
         { $tabCount ->
-            [one] Add Route for Domain
-           *[other] Add Route for Domains
+            [one] Добавить маршрутизацию для домена
+           *[other] Добавить маршрутизацию для доменов
         }

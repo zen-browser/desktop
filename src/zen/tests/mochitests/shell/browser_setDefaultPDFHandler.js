@@ -42,6 +42,9 @@ const launchModernSettingsDialogDefaultAppsStub = sinon.stub();
 const shellStub = sinon.stub(ShellService, "shellService").value({
   setDefaultBrowser: setDefaultStub,
   queryCurrentDefaultHandlerFor: queryCurrentDefaultHandlerForStub,
+  // setAsDefaultPDFHandler samples this for the recorded telemetry; the value
+  // doesn't matter for these assertions.
+  isDefaultHandlerFor: sinon.stub(),
   launchSetDefaultAppPicker: launchSetDefaultAppPickerStub,
   launchModernSettingsDialogDefaultApps:
     launchModernSettingsDialogDefaultAppsStub,

@@ -215,20 +215,12 @@ SignAndPackage x86_64
 $files = Get-ChildItem .\windsign-temp\windows-x64-signed-x86_64, .\windsign-temp\windows-x64-signed-arm64 -Recurse -Include *.exe
 signtool.exe sign /n "$SignIdentity" /t http://time.certum.pl/ /fd sha256 /v $files
 
-# Compress each signed bundle into a single gzip tarball (`-C <dir> .` so it has
-# no top-level directory) and upload it as a release asset on the windows-binaries
-# repo, keyed to this build's run id. Release assets keep the bundles out of git
-# (they were too large to commit) while still living in the windows-binaries repo.
-# The gated release job downloads and expands these from that repo's releases.
 $binariesRepo = "zen-browser/windows-binaries"
 $stagingTag = "windows-signed-$GithubRunId"
 echo "Ensuring staging release $stagingTag exists on $binariesRepo"
-gh release view $stagingTag --repo $binariesRepo *> $null
+gh release create $stagingTag --repo $binariesRepo --prerelease --title "Windows signed bundles ($GithubRunId)" --notes "Signed Windows bundles for run $GithubRunId, consumed by the release workflow. Safe to delete."
 if ($LASTEXITCODE -ne 0) {
-    gh release create $stagingTag --repo $binariesRepo --prerelease --title "Windows signed bundles ($GithubRunId)" --notes "Signed Windows bundles for run $GithubRunId, consumed by the release workflow. Safe to delete."
-    if ($LASTEXITCODE -ne 0) {
-        throw "Failed to create staging release $stagingTag on $binariesRepo"
-    }
+    throw "Failed to create staging release $stagingTag on $binariesRepo"
 }
 
 foreach ($name in @("x86_64", "arm64")) {

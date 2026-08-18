@@ -253,7 +253,7 @@
   --zen-active-tab-scale: 0.985;
 
   /* Define tab hover background color */
-  --tab-hover-background-color: var(--toolbarbutton-hover-background);
+  --tab-background-color-hover: var(--toolbarbutton-hover-background);
 
   /* Sidebar Notifications */
   --zen-sidebar-notification-bg: color-mix(

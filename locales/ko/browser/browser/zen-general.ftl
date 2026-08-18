@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = { $num } / { $max }개 추가됨
 tab-context-zen-remove-essential = 
     .label = 에센셜에서 제거하기
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] 에센셜 탭을 현재 URL로 초기화
-           *[false] 고정된 탭을 현재 URL로 초기화
+            [true] 에센셜 URL 편집
+           *[false] 고정된 탭 URL 편집
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = 현재 URL로 변경
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = 편집…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = 라벨 편집...
 tab-context-zen-edit-icon = 
@@ -47,6 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = 확인
 zen-pinned-tab-replaced = 고정 URL이 현재 URL로 변경되었습니다!
+zen-pinned-tab-url-edited = 고정된 탭 URL이 변경되었습니다!
+zen-pinned-tab-url-invalid = 올바른 URL 형식이 아닙니다.
+zen-pinned-tab-edit-url-title = 고정된 탭 URL 편집
+zen-pinned-tab-edit-url-label = 이 고정된 탭이 고정할 URL을 입력하세요:
 zen-tabs-renamed = 탭의 이름이 성공적으로 변경되었습니다!
 zen-background-tab-opened-toast = 새 백그라운드 탭이 열렸습니다!
 zen-workspace-renamed-toast = 워크스페이스 이름이 변경되었습니다!
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = 이모티콘
 zen-icons-picker-svg = 
     .label = 아이콘
+zen-emojis-picker-search = 
+    .placeholder = 이모지 검색
 urlbar-search-mode-zen_actions = 액션
 zen-site-data-settings = 설정
 zen-generic-manage = 관리
@@ -116,6 +128,9 @@ zen-sidebar-notification-updated-heading = 업데이트 완료!
 zen-sidebar-notification-updated-label = { -brand-short-name }의 새로운 기능
 zen-sidebar-notification-updated-tooltip = 
     .title = 업데이트 기록 보기
+zen-sidebar-notification-donate-label = { -brand-short-name } 후원
+zen-sidebar-notification-donate-tooltip = 
+    .title = 프로젝트에 후원하기
 zen-sidebar-notification-restart-safe-mode-label = 무언가 고장났나요?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = 안전 모드로 다시 시작

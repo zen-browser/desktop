@@ -151,7 +151,7 @@ add_task(async function () {
       // Saves the file in ~/Pictures
       shellSvc.setDesktopBackground(image, 0, backgroundImage.leafName);
 
-      await BrowserTestUtils.waitForCondition(() => backgroundImage.exists());
+      await TestUtils.waitForCondition(() => backgroundImage.exists());
       info(`${backgroundImage.path} downloaded`);
       Assert.ok(
         FileUtils.File(backgroundImage.path).exists(),

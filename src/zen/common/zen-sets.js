@@ -160,6 +160,12 @@ document.addEventListener(
             }
             break;
           }
+          case "cmd_zenNextTab":
+            gBrowser.tabContainer.advanceSelectedTab(1, true);
+            break;
+          case "cmd_zenPreviousTab":
+            gBrowser.tabContainer.advanceSelectedTab(-1, true);
+            break;
           default:
             gZenGlanceManager.handleMainCommandSet(event);
             if (event.target.id.startsWith("cmd_zenWorkspaceSwitch")) {

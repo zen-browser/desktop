@@ -58,6 +58,8 @@ const defaultKeyboardGroups = {
     "zen-close-all-unpinned-tabs-shortcut",
     "zen-close-tab-shortcut",
     "zen-close-shortcut",
+    "zen-next-tab-shortcut",
+    "zen-previous-tab-shortcut",
     "id:key_selectTab1",
     "id:key_selectTab2",
     "id:key_selectTab3",
@@ -894,7 +896,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 20;
+  static LATEST_KBS_VERSION = 21;
 
   constructor() {}
 
@@ -1318,6 +1320,34 @@ class nsZenKeyboardShortcutsVersioner {
           shortcut.setDisabled(true);
         }
       }
+    }
+
+    if (version < 21) {
+      // Migrate from version 20 to 21.
+      // Add configurable Next Tab and Previous Tab shortcuts.
+      // Default: Accel+Alt+Down/Up (Cmd+Option on macOS, Ctrl+Alt on others).
+      data.push(
+        new KeyShortcut(
+          "zen-next-tab",
+          "",
+          "VK_DOWN",
+          "windowAndTabManagement",
+          nsKeyShortcutModifiers.fromObject({ alt: true, accel: true }),
+          "cmd_zenNextTab",
+          "zen-next-tab-shortcut"
+        )
+      );
+      data.push(
+        new KeyShortcut(
+          "zen-previous-tab",
+          "",
+          "VK_UP",
+          "windowAndTabManagement",
+          nsKeyShortcutModifiers.fromObject({ alt: true, accel: true }),
+          "cmd_zenPreviousTab",
+          "zen-previous-tab-shortcut"
+        )
+      );
     }
 
     return data;

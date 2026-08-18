@@ -32,9 +32,9 @@ diff --git a/browser/components/urlbar/UrlbarPrefs.sys.mjs b/browser/components/
    // or remote settings.
    ["flightStatus.minKeywordLength", 0],
  
-diff --git a/browser/components/urlbar/content/UrlbarView.mjs b/browser/components/urlbar/content/UrlbarView.mjs
---- a/browser/components/urlbar/content/UrlbarView.mjs
-+++ b/browser/components/urlbar/content/UrlbarView.mjs
+diff --git a/browser/components/urlbar/UrlbarView.sys.mjs b/browser/components/urlbar/UrlbarView.sys.mjs
+--- a/browser/components/urlbar/UrlbarView.sys.mjs
++++ b/browser/components/urlbar/UrlbarView.sys.mjs
 @@ -3909,10 +3909,16 @@
        }
      }
@@ -55,12 +55,11 @@ diff --git a/browser/components/urlbar/content/UrlbarView.mjs b/browser/componen
 diff --git a/browser/components/urlbar/content/UrlbarInput.mjs b/browser/components/urlbar/content/UrlbarInput.mjs
 --- a/browser/components/urlbar/content/UrlbarInput.mjs
 +++ b/browser/components/urlbar/content/UrlbarInput.mjs
-@@ -5460,11 +5460,17 @@
-   _on_blur(event) {
-     if (this.view.resultMenu.hasAttribute("open")) {
-       return;
+@@ -4783,10 +4783,16 @@
      }
+   }
  
+   _on_blur(event) {
      lazy.logger.debug("Blur Event");
 +    if (
 +      this.document.commandDispatcher.focusedElement == this.inputField &&

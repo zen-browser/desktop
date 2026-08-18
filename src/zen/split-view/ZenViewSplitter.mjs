@@ -1232,15 +1232,30 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   }
 
   /**
-   * Opens a URL in a new tab and splits it with the current tab.
+   * Opens a URL in a new tab and splits it with the tab it came from.
    *
    * @param {string} url - The URL to open in split view.
+   * @param {object} [options] - Options for the split.
+   * @param {nsIPrincipal} [options.triggeringPrincipal] - The principal to load
+   *   the URL with. Content-initiated splits must pass the link's own principal
+   *   so that the load does not happen with system privileges.
+   * @param {Tab} [options.sourceTab] - The tab the URL came from. Defaults to
+   *   the selected tab.
    */
-  splitLinkFromURL(url) {
+  splitLinkFromURL(url, { triggeringPrincipal = null, sourceTab = null } = {}) {
     const currentTab = gZenGlanceManager.getTabOrGlanceParent(
-      window.gBrowser.selectedTab
+      sourceTab ?? window.gBrowser.selectedTab
     );
-    const newTab = this.openAndSwitchToTab(url, { inBackground: false });
+    const group = this._data.find(g => g.tabs.includes(currentTab));
+    if (group?.tabs.length >= this.MAX_TABS) {
+      // Bail out before opening a tab that splitTabs would only reject.
+      gZenUIManager.showToast("zen-split-view-limit-toast");
+      return;
+    }
+    const newTab = this.openAndSwitchToTab(url, {
+      inBackground: false,
+      ...(triggeringPrincipal && { triggeringPrincipal }),
+    });
     this.splitTabs([currentTab, newTab], undefined, 1);
   }
 
@@ -1988,7 +2003,11 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   openAndSwitchToTab(url, options) {
     const parentWindow = window.ownerGlobal.parent;
     const targetWindow = parentWindow || window;
-    const tab = targetWindow.gBrowser.addTrustedTab(url, options);
+    // A triggering principal means the load was initiated by content, so it
+    // must not go through addTrustedTab, which loads with system privileges.
+    const tab = options?.triggeringPrincipal
+      ? targetWindow.gBrowser.addTab(url, options)
+      : targetWindow.gBrowser.addTrustedTab(url, options);
     targetWindow.gBrowser.selectedTab = tab;
     return tab;
   }

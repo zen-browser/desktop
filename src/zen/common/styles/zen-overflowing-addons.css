@@ -6,7 +6,7 @@
 
 #zen-overflow-extensions-list {
   display: none;
-  
+
   :root[zen-single-toolbar="true"] &:not(:empty) {
     --uei-icon-size: 14px;
     display: grid;

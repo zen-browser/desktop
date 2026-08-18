@@ -8,6 +8,12 @@
 - name: zen.splitView.enable-tab-click-split
   value: true
 
+- name: zen.splitView.enable-link-click-split
+  value: true
+
+- name: zen.splitView.link-activation-method
+  value: "shift" # ctrl, alt, shift, meta
+
 - name: zen.splitView.min-resize-width
   value: 7
 

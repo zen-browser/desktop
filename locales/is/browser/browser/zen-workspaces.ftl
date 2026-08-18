@@ -61,6 +61,7 @@ zen-workspace-creation-profile = Notkunarsnið
     .tooltiptext = Notkunarsnið eru til þess að aðskilja vefkökur og gögn vefsvæða á milli vinnusvæða.
 zen-workspace-creation-header = Búa til vinnusvæði
 zen-workspace-creation-label = Vinnusvæði eru notuð til að skipuleggja flipana þína og vafurlotur.
+zen-workspace-default-profile = Sjálfgefið
 zen-workspaces-delete-workspace-title = Eyða svæði?
 zen-workspaces-delete-workspace-body = Ertu viss um að þú viljir eyða { $name }? Þessi aðgerð er ekki afturkallanleg.
 # Note that the html tag MUST not be changed or removed, as it is used to better

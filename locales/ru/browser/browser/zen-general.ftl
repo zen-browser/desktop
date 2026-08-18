@@ -21,8 +21,8 @@ tab-context-zen-remove-essential =
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Изменить URL-адрес из важного
+           *[false] Изменить закрепленный URL-адрес
         }
     .accesskey = З
 tab-context-zen-replace-pinned-url-with-current = 

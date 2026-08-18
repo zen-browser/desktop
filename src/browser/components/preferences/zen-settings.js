@@ -693,6 +693,10 @@ var gZenLooksAndFeel = {
         if (layout.hasAttribute("disabled")) {
           return;
         }
+        let win = Services.wm.getMostRecentWindow("navigator:browser");
+        if (win && win.gZenVerticalTabsManager && win.gZenVerticalTabsManager._isUpdating) {
+          return;
+        }
 
         for (const el of document.getElementById("zenLayoutList").children) {
           el.classList.remove("selected");

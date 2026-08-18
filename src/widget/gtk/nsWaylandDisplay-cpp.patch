@@ -1,0 +1,47 @@
+diff --git a/widget/gtk/nsWaylandDisplay.cpp b/widget/gtk/nsWaylandDisplay.cpp
+index 9d71be8e8b..e19883be72 100644
+--- a/widget/gtk/nsWaylandDisplay.cpp
++++ b/widget/gtk/nsWaylandDisplay.cpp
+@@ -483,6 +483,22 @@ void nsWaylandDisplay::SetViewporter(wp_viewporter* aViewporter) {
+   mViewporter = aViewporter;
+ }
+ 
++static void background_effect_capabilities(
++    void* data, ext_background_effect_manager_v1* manager, uint32_t flags) {
++  auto* display = static_cast<nsWaylandDisplay*>(data);
++  display->SetBackgroundEffectCapabilities(flags);
++}
++
++static const struct ext_background_effect_manager_v1_listener
++    background_effect_listener = {background_effect_capabilities};
++
++void nsWaylandDisplay::SetBackgroundEffectManager(
++    ext_background_effect_manager_v1* aBackgroundEffectManager) {
++  mBackgroundEffectManager = aBackgroundEffectManager;
++  ext_background_effect_manager_v1_add_listener(
++      mBackgroundEffectManager, &background_effect_listener, this);
++}
++
+ void nsWaylandDisplay::SetRelativePointerManager(
+     zwp_relative_pointer_manager_v1* aRelativePointerManager) {
+   mRelativePointerManager = aRelativePointerManager;
+@@ -834,6 +850,10 @@ static void global_registry_handler(void* data, wl_registry* registry,
+     auto* viewporter = WaylandRegistryBind<wp_viewporter>(
+         registry, id, &wp_viewporter_interface, 1);
+     display->SetViewporter(viewporter);
++  } else if (iface.EqualsLiteral("ext_background_effect_manager_v1")) {
++    auto* manager = WaylandRegistryBind<ext_background_effect_manager_v1>(
++        registry, id, &ext_background_effect_manager_v1_interface, 1);
++    display->SetBackgroundEffectManager(manager);
+   } else if (iface.EqualsLiteral("zwp_linux_dmabuf_v1")) {
+     if (version < ZWP_LINUX_DMABUF_V1_MODIFIER_SINCE_VERSION) {
+       return;
+@@ -942,6 +962,8 @@ static const struct wl_registry_listener registry_listener = {
+ 
+ nsWaylandDisplay::~nsWaylandDisplay() {
+   g_list_free_full(mAsyncRoundtrips, (GDestroyNotify)wl_callback_destroy);
++  MozClearPointer(mBackgroundEffectManager,
++                  ext_background_effect_manager_v1_destroy);
+   MozClearPointer(mColorManager, wp_color_manager_v1_destroy);
+   MozClearPointer(mColorRepresentationManager,
+                   wp_color_representation_manager_v1_destroy);

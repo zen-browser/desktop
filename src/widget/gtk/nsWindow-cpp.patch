@@ -1,0 +1,33 @@
+diff --git a/widget/gtk/nsWindow.cpp b/widget/gtk/nsWindow.cpp
+index f746ea316a..038729e9e8 100644
+--- a/widget/gtk/nsWindow.cpp
++++ b/widget/gtk/nsWindow.cpp
+@@ -3803,6 +3803,14 @@ void nsWindow::RefreshScale(bool aRefreshScreen, bool aForceRefresh) {
+ #endif
+   mCeiledScaleFactor = ceiledScale;
+ 
++#ifdef MOZ_WAYLAND
++  if (scaleChanged) {
++    if (nsWindowWayland* waylandWindow = AsWayland()) {
++      waylandWindow->UpdateBackgroundEffect();
++    }
++  }
++#endif
++
+   if (!scaleChanged) {
+     return;
+   }
+@@ -4834,6 +4842,13 @@ void nsWindow::NativeMoveResize(bool aMoved, bool aResized) {
+     // Recompute the input region, in case the window grew or shrunk.
+     SetInputRegion(mInputRegion);
+   }
++#ifdef MOZ_WAYLAND
++  if (aMoved || aResized) {
++    if (nsWindowWayland* waylandWindow = AsWayland()) {
++      waylandWindow->UpdateBackgroundEffect();
++    }
++  }
++#endif
+ 
+   // Does it need to be shown because bounds were previously insane?
+   if (mNeedsShow && mIsShown && aResized) {

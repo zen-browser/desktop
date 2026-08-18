@@ -1,0 +1,161 @@
+diff --git a/widget/gtk/nsWindowWayland.cpp b/widget/gtk/nsWindowWayland.cpp
+index 08c8a9aa0b..a5be9a2d55 100644
+--- a/widget/gtk/nsWindowWayland.cpp
++++ b/widget/gtk/nsWindowWayland.cpp
+@@ -8,6 +8,7 @@
+ #include <gdk/gdkkeysyms-compat.h>
+ #include <gdk/gdkwayland.h>
+ 
++#include "WaylandSurface.h"
+ #include "WaylandVsyncSource.h"
+ #include "WidgetUtilsGtk.h"
+ #include "mozilla/Preferences.h"
+@@ -59,6 +60,97 @@ using namespace mozilla::widget;
+   for later restore.
+ */
+ 
++static constexpr auto kZenLinuxTransparencyPref =
++    "zen.widget.linux.transparency"_ns;
++
++static void ZenLinuxTransparencyPrefChanged(const char* aPref, void* aClosure) {
++  static_cast<nsWindowWayland*>(aClosure)->UpdateBackgroundEffect();
++}
++
++void nsWindowWayland::ClearBackgroundEffect() {
++  if (!mBackgroundEffect) {
++    mBackgroundEffectSurface = nullptr;
++    return;
++  }
++
++  wl_surface* surface = mBackgroundEffectSurface;
++  ext_background_effect_surface_v1_destroy(mBackgroundEffect);
++  mBackgroundEffect = nullptr;
++  mBackgroundEffectSurface = nullptr;
++
++  if (surface) {
++    wl_surface_commit(surface);
++  }
++}
++
++void nsWindowWayland::UpdateBackgroundEffect() {
++  const bool transparencyEnabled =
++      Preferences::GetBool(kZenLinuxTransparencyPref.get(), false);
++
++  if (mWindowType != WindowType::TopLevel || mPiPType != PiPType::NoPiP ||
++      !transparencyEnabled) {
++    ClearBackgroundEffect();
++    return;
++  }
++
++  GdkWindow* gdkWindow = GetToplevelGdkWindow();
++  if (!gdkWindow) {
++    ClearBackgroundEffect();
++    return;
++  }
++
++  wl_surface* gdkSurface = gdk_wayland_window_get_wl_surface(gdkWindow);
++  wl_surface* renderSurface = nullptr;
++  DesktopIntSize surfaceSize;
++  if (mSurface) {
++    WaylandSurfaceLock lock(mSurface);
++    renderSurface = mSurface->GetWlSurfaceLocked(lock);
++    surfaceSize = mSurface->GetSizeLocked(lock);
++  }
++  wl_surface* surface = renderSurface ? renderSurface : gdkSurface;
++
++  nsWaylandDisplay* display = WaylandDisplayGet();
++  if (!surface || !display || !display->GetCompositor() ||
++      !display->GetBackgroundEffectManager() ||
++      !display->BackgroundEffectSupportsBlur()) {
++    ClearBackgroundEffect();
++    return;
++  }
++
++  if (mBackgroundEffectSurface != surface) {
++    ClearBackgroundEffect();
++  }
++
++  if (!mBackgroundEffect) {
++    ext_background_effect_manager_v1* manager =
++        display->GetBackgroundEffectManager();
++    mBackgroundEffect = ext_background_effect_manager_v1_get_background_effect(
++        manager, surface);
++    mBackgroundEffectSurface = surface;
++  }
++
++  wl_region* region = wl_compositor_create_region(display->GetCompositor());
++  if (!region) {
++    ClearBackgroundEffect();
++    return;
++  }
++
++  const int gdkWidth = gdk_window_get_width(gdkWindow);
++  const int gdkHeight = gdk_window_get_height(gdkWindow);
++  const int width = renderSurface ? surfaceSize.width : gdkWidth;
++  const int height = renderSurface ? surfaceSize.height : gdkHeight;
++  if (width <= 0 || height <= 0) {
++    wl_region_destroy(region);
++    ClearBackgroundEffect();
++    return;
++  }
++
++  wl_region_add(region, 0, 0, width, height);
++  ext_background_effect_surface_v1_set_blur_region(mBackgroundEffect, region);
++  wl_surface_commit(surface);
++  wl_region_destroy(region);
++}
++
+ bool GenerateWorkspaceID(nsAString& aName) {
+   nsresult rv;
+   nsCOMPtr<nsIUUIDGenerator> uuidGenerator =
+@@ -2101,6 +2193,18 @@ bool nsWindowWayland::PIPResize(GdkWindowEdge aEdge) {
+ void nsWindowWayland::CreateNative() {
+   LOG("nsWindowWayland::CreateNative()");
+ 
++  if (mWindowType == WindowType::TopLevel) {
++    Preferences::RegisterCallback(ZenLinuxTransparencyPrefChanged,
++                                  kZenLinuxTransparencyPref, this);
++    if (mSurface) {
++      WaylandSurfaceLock lock(mSurface);
++      mSurface->SetMapCallbackLocked(
++          lock, [self = RefPtr{this}](WaylandSurfaceLock&) {
++            self->UpdateBackgroundEffect();
++          });
++    }
++  }
++
+   // Ensure that KeymapWrapper is created on Wayland as we need it for
+   // keyboard focus tracking.
+   KeymapWrapper::EnsureInstance();
+@@ -2172,6 +2276,15 @@ void nsWindowWayland::ConfigureToplevelWindowNative() {
+ 
+ void nsWindowWayland::DestroyNative() {
+   LOG("nsWindowWayland::DestroyNative()");
++  ClearBackgroundEffect();
++  if (mWindowType == WindowType::TopLevel) {
++    if (mSurface) {
++      WaylandSurfaceLock lock(mSurface);
++      mSurface->ClearMapCallbackLocked(lock);
++    }
++    Preferences::UnregisterCallback(ZenLinuxTransparencyPrefChanged,
++                                    kZenLinuxTransparencyPref, this);
++  }
+   if (mXdgToplevelRealizedID) {
+     g_signal_handler_disconnect(GetToplevelGdkWindow(), mXdgToplevelRealizedID);
+     mXdgToplevelRealizedID = 0;
+@@ -2226,6 +2339,7 @@ void nsWindowWayland::NativeShow(bool aAction) {
+       ShowWaylandPopupWindow();
+     } else {
+       ShowWaylandToplevelWindow();
++      UpdateBackgroundEffect();
+     }
+ 
+     SetUserTimeAndStartupTokenForActivatedWindow();
+@@ -2251,6 +2365,7 @@ void nsWindowWayland::NativeShow(bool aAction) {
+                                /* aRemoveFromPopupList */ true);
+       }
+     } else {
++      ClearBackgroundEffect();
+       HideWaylandToplevelWindow();
+     }
+   }

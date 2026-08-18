@@ -1,0 +1,20 @@
+diff --git a/widget/gtk/wayland/moz.build b/widget/gtk/wayland/moz.build
+index 6128862152..9c0c882699 100644
+--- a/widget/gtk/wayland/moz.build
++++ b/widget/gtk/wayland/moz.build
+@@ -8,6 +8,7 @@ with Files("**"):
+ SOURCES += [
+     "color-management-v1-protocol.c",
+     "color-representation-v1-protocol.c",
++    "ext-background-effect-v1-protocol.c",
+     "fractional-scale-v1-protocol.c",
+     "gtk-primary-selection-protocol.c",
+     "idle-inhibit-unstable-v1-protocol.c",
+@@ -29,6 +30,7 @@ SOURCES += [
+ EXPORTS.mozilla.widget += [
+     "color-management-v1-client-protocol.h",
+     "color-representation-v1-client-protocol.h",
++    "ext-background-effect-v1-client-protocol.h",
+     "fractional-scale-v1-client-protocol.h",
+     "gtk-primary-selection-client-protocol.h",
+     "idle-inhibit-unstable-v1-client-protocol.h",

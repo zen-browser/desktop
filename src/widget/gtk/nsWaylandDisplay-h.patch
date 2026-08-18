@@ -1,0 +1,48 @@
+diff --git a/widget/gtk/nsWaylandDisplay.h b/widget/gtk/nsWaylandDisplay.h
+index 5a20ed4313..780c315c57 100644
+--- a/widget/gtk/nsWaylandDisplay.h
++++ b/widget/gtk/nsWaylandDisplay.h
+@@ -16,6 +16,7 @@
+ #include "DMABufDevice.h"
+ #include "mozilla/widget/color-management-v1-client-protocol.h"
+ #include "mozilla/widget/color-representation-v1-client-protocol.h"
++#include "mozilla/widget/ext-background-effect-v1-client-protocol.h"
+ #include "mozilla/widget/fractional-scale-v1-client-protocol.h"
+ #include "mozilla/widget/gtk-primary-selection-client-protocol.h"
+ #include "mozilla/widget/idle-inhibit-unstable-v1-client-protocol.h"
+@@ -75,6 +76,14 @@ class nsWaylandDisplay {
+     return mIdleInhibitManager;
+   }
+   wp_viewporter* GetViewporter() { return mViewporter; };
++  ext_background_effect_manager_v1* GetBackgroundEffectManager() {
++    return mBackgroundEffectManager;
++  }
++  bool BackgroundEffectSupportsBlur() const {
++    return mBackgroundEffectManager &&
++           (mBackgroundEffectCapabilities &
++            EXT_BACKGROUND_EFFECT_MANAGER_V1_CAPABILITY_BLUR);
++  }
+   zwp_relative_pointer_manager_v1* GetRelativePointerManager() {
+     return mRelativePointerManager;
+   }
+@@ -119,6 +128,11 @@ class nsWaylandDisplay {
+       zwp_primary_selection_device_manager_v1* aPrimarySelectionDeviceManager);
+   void SetIdleInhibitManager(zwp_idle_inhibit_manager_v1* aIdleInhibitManager);
+   void SetViewporter(wp_viewporter* aViewporter);
++  void SetBackgroundEffectManager(
++      ext_background_effect_manager_v1* aBackgroundEffectManager);
++  void SetBackgroundEffectCapabilities(uint32_t aCapabilities) {
++    mBackgroundEffectCapabilities = aCapabilities;
++  }
+   void SetRelativePointerManager(
+       zwp_relative_pointer_manager_v1* aRelativePointerManager);
+   void SetPointerConstraints(zwp_pointer_constraints_v1* aPointerConstraints);
+@@ -223,6 +237,8 @@ class nsWaylandDisplay {
+   zwp_pointer_gestures_v1* mPointerGestures = nullptr;
+   zwp_pointer_gesture_hold_v1* mPointerGestureHold = nullptr;
+   wp_viewporter* mViewporter = nullptr;
++  ext_background_effect_manager_v1* mBackgroundEffectManager = nullptr;
++  uint32_t mBackgroundEffectCapabilities = 0;
+   bool mDmabufIsFeedback = false;
+   zwp_linux_dmabuf_v1* mDmabuf = nullptr;
+   xdg_activation_v1* mXdgActivation = nullptr;

@@ -1,0 +1,24 @@
+diff --git a/widget/gtk/WaylandSurface.h b/widget/gtk/WaylandSurface.h
+index 2a6a99cb8e..59aa75c281 100644
+--- a/widget/gtk/WaylandSurface.h
++++ b/widget/gtk/WaylandSurface.h
+@@ -90,6 +90,9 @@ class WaylandSurface final {
+ 
+   // Set WaylandSurface target size (viewport & ELG surface if it's present).
+   void SetSize(DesktopIntSize aSize);
++  DesktopIntSize GetSizeLocked(const WaylandSurfaceLock& aProofOfLock) const {
++    return mSize;
++  }
+ 
+   // Apply changes to EGLWindow size set by SetSize().
+   // ApplyEGLWindowSize() is called from compostor thread
+@@ -120,6 +123,9 @@ class WaylandSurface final {
+   bool IsOpaqueSurfaceHandlerSet() const { return mIsOpaqueSurfaceHandlerSet; }
+ 
+   bool HasBufferAttached() const { return mBufferAttached; }
++  wl_surface* GetWlSurfaceLocked(const WaylandSurfaceLock& aProofOfLock) const {
++    return mSurface;
++  }
+ 
+   // Mapped as direct surface of MozContainer
+   bool MapLocked(const WaylandSurfaceLock& aProofOfLock,

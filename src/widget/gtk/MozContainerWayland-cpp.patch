@@ -1,0 +1,40 @@
+diff --git a/widget/gtk/MozContainerWayland.cpp b/widget/gtk/MozContainerWayland.cpp
+index 987b7f518b..b1447e7211 100644
+--- a/widget/gtk/MozContainerWayland.cpp
++++ b/widget/gtk/MozContainerWayland.cpp
+@@ -56,6 +56,7 @@
+ #include "mozilla/gfx/gfxVars.h"
+ #include "nsGtkUtils.h"
+ #include "nsWaylandDisplay.h"
++#include "nsWindowWayland.h"
+ 
+ #undef LOGWAYLAND
+ #undef LOGCONTAINER
+@@ -173,8 +174,15 @@ void moz_container_wayland_size_allocate(GtkWidget* widget,
+     // when offset changes (GdkWindow is maximized for instance).
+     // see gtk-clutter-embed.c for reference.
+     auto pos = DesktopIntPoint(allocation->x, allocation->y);
+-    moz_container_wayland_ensure_surface(MOZ_CONTAINER(widget), &pos);
++    MozContainer* container = MOZ_CONTAINER(widget);
++    moz_container_wayland_ensure_surface(container, &pos);
+     MOZ_WL_CONTAINER(widget)->before_first_size_alloc = false;
++
++    if (nsWindow* window = moz_container_get_nsWindow(container)) {
++      if (auto* waylandWindow = window->AsWayland()) {
++        waylandWindow->UpdateBackgroundEffect();
++      }
++    }
+   }
+ }
+ 
+@@ -257,6 +265,10 @@ static bool moz_container_wayland_ensure_surface(MozContainer* container,
+   // We're set so run map callback now
+   surface->RunMapCallbackLocked(lock);
+ 
++  if (auto* waylandWindow = window->AsWayland()) {
++    waylandWindow->UpdateBackgroundEffect();
++  }
++
+   return true;
+ }
+ 

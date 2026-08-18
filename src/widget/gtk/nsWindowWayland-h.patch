@@ -1,0 +1,37 @@
+diff --git a/widget/gtk/nsWindowWayland.h b/widget/gtk/nsWindowWayland.h
+index dec0da692c..8e3198da22 100644
+--- a/widget/gtk/nsWindowWayland.h
++++ b/widget/gtk/nsWindowWayland.h
+@@ -7,6 +7,9 @@
+ 
+ #include "nsWindow.h"
+ 
++struct ext_background_effect_surface_v1;
++struct wl_surface;
++
+ namespace mozilla::widget {
+ 
+ class nsWindowWayland final : public nsWindow {
+@@ -49,6 +52,7 @@ class nsWindowWayland final : public nsWindow {
+                                             bool aFlippedX, bool aFlippedY);
+   void CreateNative() override;
+   void DestroyNative() override;
++  void UpdateBackgroundEffect();
+ 
+   void ConfigureToplevelWindowNative() override;
+ 
+@@ -60,10 +64,14 @@ class nsWindowWayland final : public nsWindow {
+ 
+   bool ApplyEnterLeaveMutterWorkaround();
+ 
++  void ClearBackgroundEffect();
++
+  protected:
+   virtual ~nsWindowWayland() = default;
+ 
+   RefPtr<mozilla::widget::WaylandSurface> mSurface;
++  ext_background_effect_surface_v1* mBackgroundEffect = nullptr;
++  wl_surface* mBackgroundEffectSurface = nullptr;
+ 
+   /*  Gkt creates popup in two incarnations - wl_subsurface and xdg_popup.
+    *  Kind of popup is choosen before GdkWindow is mapped so we can change

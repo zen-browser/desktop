@@ -799,7 +799,7 @@ export interface Modules {
   "resource://gre/modules/ContentPrefServiceChild.sys.mjs": typeof import("resource://gre/modules/ContentPrefServiceChild.sys.mjs");
   "resource://gre/modules/ContentPrefUtils.sys.mjs": typeof import("resource://gre/modules/ContentPrefUtils.sys.mjs");
   "resource://gre/modules/ContentRelevancyManager.sys.mjs": typeof import("resource://gre/modules/ContentRelevancyManager.sys.mjs");
-  "resource://gre/modules/ContextualIdentityService.sys.mjs": typeof import("resource://gre/modules/ContextualIdentityService.sys.mjs");
+  "moz-src:///toolkit/components/contextualidentity/ContextualIdentityService.sys.mjs": typeof import("moz-src:///toolkit/components/contextualidentity/ContextualIdentityService.sys.mjs");
   "resource://gre/modules/CoveragePing.sys.mjs": typeof import("resource://gre/modules/CoveragePing.sys.mjs");
   "resource://gre/modules/CrashManager.sys.mjs": typeof import("resource://gre/modules/CrashManager.sys.mjs");
   "resource://gre/modules/CrashMonitor.sys.mjs": typeof import("resource://gre/modules/CrashMonitor.sys.mjs");

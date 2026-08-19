@@ -12,8 +12,9 @@ const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
+  TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
   ContextualIdentityService:
-    "resource://gre/modules/ContextualIdentityService.sys.mjs",
+    "moz-src:///toolkit/components/contextualidentity/ContextualIdentityService.sys.mjs",
   ZenWindowSync: "resource:///modules/zen/ZenWindowSync.sys.mjs",
 });
 
@@ -225,13 +226,7 @@ class ZenSyncManager {
       return null;
     }
 
-    const currentURL = tab.linkedBrowser?.currentURI?.spec;
-    const currentEntry = currentURL
-      ? {
-          url: currentURL,
-          title: tab.linkedBrowser.contentTitle || tab.label || "",
-        }
-      : null;
+    const currentEntry = this.#getTabActiveEntry(tab);
 
     const pinned = !!(tab.pinned || isEssential);
     let entries = currentEntry ? [currentEntry] : [];
@@ -249,9 +244,13 @@ class ZenSyncManager {
       tab.getAttribute("image") ||
       tab.documentGlobal.gBrowser.getIcon(tab) ||
       "";
+    let group = tab.group;
+    if (group?.hasAttribute("split-view-group")) {
+      group = group.group;
+    }
     const syncTabData = {
       entries,
-      groupId: tab.group?.id || null,
+      groupId: group?.id || null,
       image,
       index,
       pinned,
@@ -267,6 +266,44 @@ class ZenSyncManager {
 
     this.#appendOptionalTabSyncData(syncTabData, tab, position);
     return syncTabData;
+  }
+
+  /**
+   * Returns the tab's active history entry for syncing. Unloaded and lazy
+   * browsers report about:blank as their current URI, so prefer the session
+   * history cache and never emit about:blank, which would blank the tab on
+   * every other device.
+   *
+   * @param {MozTabbrowserTab} tab
+   */
+  #getTabActiveEntry(tab) {
+    const cached = tab.linkedBrowser
+      ? lazy.TabStateCache.get(tab.linkedBrowser.permanentKey)?.history
+      : null;
+    if (cached?.entries?.length) {
+      const index = Math.min(
+        Math.max((cached.index || cached.entries.length) - 1, 0),
+        cached.entries.length - 1
+      );
+      const entry = cached.entries[index];
+      if (entry?.url && entry.url !== "about:blank") {
+        return { url: entry.url, title: entry.title || tab.label || "" };
+      }
+    }
+
+    const currentURL = tab.linkedBrowser?.currentURI?.spec;
+    if (currentURL && currentURL !== "about:blank") {
+      return {
+        url: currentURL,
+        title: tab.linkedBrowser.contentTitle || tab.label || "",
+      };
+    }
+
+    const initialEntry = tab._zenPinnedInitialState?.entry;
+    if (initialEntry?.url && initialEntry.url !== "about:blank") {
+      return { url: initialEntry.url, title: initialEntry.title || "" };
+    }
+    return null;
   }
 
   #appendOptionalTabSyncData(syncTabData, tab, position) {

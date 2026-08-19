@@ -300,22 +300,20 @@ export class ZenSpaceSyncResolver {
       }
     }
 
-    // Group/folder membership.
-    const currentGroupId = existingTab.group?.id || null;
-    const targetGroupId = tabData.groupId || null;
-    const targetGroup = targetGroupId
-      ? this.#win.document.getElementById(targetGroupId)
+    const splitGroup = existingTab.group?.hasAttribute("split-view-group")
+      ? existingTab.group
       : null;
-    if (
-      currentGroupId !== targetGroupId &&
-      !targetGroup?.hasAttribute("split-view-group")
-    ) {
-      if (targetGroupId) {
-        if (targetGroup?.isZenFolder) {
-          targetGroup.addTabs([existingTab]);
-        }
-      } else if (currentGroupId) {
-        this.#win.gBrowser.ungroupTab(existingTab);
+    const currentFolderId = (splitGroup ?? existingTab).group?.id || null;
+    const targetFolderId = tabData.groupId || null;
+    if (currentFolderId !== targetFolderId) {
+      const moveItem = splitGroup ?? existingTab;
+      const targetFolder = targetFolderId
+        ? this.#win.document.getElementById(targetFolderId)
+        : null;
+      if (targetFolder?.isZenFolder) {
+        targetFolder.addTabs([moveItem]);
+      } else if (!targetFolderId && currentFolderId) {
+        this.#win.gBrowser.ungroupTab(moveItem);
       }
     }
 
@@ -448,7 +446,12 @@ export class ZenSpaceSyncResolver {
     if (entries.length) {
       const entryIndex =
         typeof tabData.index === "number" ? Math.max(0, tabData.index - 1) : 0;
-      return entries[entryIndex] ?? entries[0] ?? null;
+      const entry = entries[entryIndex] ?? entries[0] ?? null;
+      // Older records may carry about:blank from unloaded tabs; treat it as
+      // no entry so the pinned initial state can take over.
+      if (entry?.url && entry.url !== "about:blank") {
+        return entry;
+      }
     }
     return tabData._zenPinnedInitialState?.entry || null;
   }
@@ -564,7 +567,11 @@ export class ZenSpaceSyncResolver {
 
   #applyIncomingTabNavigation(tab, tabData) {
     const incomingEntry = this.#getSyncedTabActiveEntry(tabData);
-    if (!incomingEntry?.url || tab.hasAttribute("zen-empty-tab")) {
+    if (
+      !incomingEntry?.url ||
+      incomingEntry.url === "about:blank" ||
+      tab.hasAttribute("zen-empty-tab")
+    ) {
       return;
     }
 

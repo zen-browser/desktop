@@ -32,8 +32,32 @@
     }
   }
 
-  #zen-sidebar-splitter {
-    display: none !important;
+  #zen-compact-sidebar-resize-handle {
+    display: block;
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: calc(var(--zen-toolbox-padding) / -2);
+    width: var(--zen-toolbox-padding);
+    z-index: 1;
+    visibility: hidden;
+    pointer-events: none;
+    cursor: ew-resize;
+    background: transparent;
+    transition:
+      background 0.2s ease-in-out,
+      opacity 0.2s ease-in-out;
+    -moz-window-dragging: no-drag;
+
+    :root[zen-right-side='true'] & {
+      inset-inline-start: calc(var(--zen-toolbox-padding) / -2);
+      inset-inline-end: auto;
+    }
+
+    &:hover,
+    &[state='dragging'] {
+      background: var(--zen-primary-color);
+      opacity: 1;
+    }
   }
 
   #zen-sidebar-top-buttons-customization-target {
@@ -119,6 +143,10 @@
   &[zen-right-side='true'] {
     & #navigator-toolbox:not([animate='true']) {
       right: calc(-1 * var(--actual-zen-sidebar-width) + var(--zen-element-separation) / 2 + 1px);
+
+      & #titlebar {
+        align-self: flex-end;
+      }
     }
 
     & .browserSidebarContainer:not([is-zen-split='true']) {
@@ -136,8 +164,16 @@
     }
     position: relative;
     min-width: var(--zen-toolbox-min-width);
-    transition: visibility 0.15s; /* Same as the toolbox */
+    transition:
+      visibility 0.15s,
+      opacity 0.15s; /* Same as the toolbox */
     visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+
+    & #urlbar {
+      visibility: hidden !important;
+    }
 
     :root[zen-sidebar-expanded='true'] & {
       width: calc(var(--zen-sidebar-width) + var(--zen-toolbox-padding));
@@ -149,12 +185,35 @@
   }
 
   #navigator-toolbox:is(
-    [zen-has-hover], [zen-user-show],
-    [zen-has-empty-tab], [flash-popup],
-    [has-popup-menu], [movingtab],
-    [zen-compact-mode-active]
+    [zen-has-hover],
+    [zen-user-show],
+    [zen-has-empty-tab],
+    [flash-popup],
+    [has-popup-menu],
+    [movingtab],
+    [zen-compact-mode-active],
+    :has(
+      #zen-compact-sidebar-resize-handle:is(
+        :hover,
+        [state='dragging']
+      )
+    )
   ),
   &[zen-renaming-tab='true'] #navigator-toolbox {
+    & #titlebar {
+      opacity: 1;
+      pointer-events: auto;
+
+      & #urlbar {
+        visibility: visible !important;
+      }
+    }
+
+    & #zen-compact-sidebar-resize-handle {
+      visibility: visible;
+      pointer-events: auto;
+    }
+
     &:not([animate='true']) {
       --zen-compact-mode-func: linear(
         0 0%,

@@ -55,8 +55,200 @@ async function testSidebarWidth() {
 
   gZenCompactModeManager.addEventListener(onCompactChanged);
 
-  gZenCompactModeManager.preference = true;
+  await gZenCompactModeManager.toggle();
   await promise;
+}
+
+async function setCompactMode(enabled) {
+  if (gZenCompactModeManager.preference === enabled) {
+    return;
+  }
+  const toggled = BrowserTestUtils.waitForEvent(
+    window,
+    "ZenCompactMode:Toggled",
+    false,
+    event => event.detail === enabled
+  );
+  await gZenCompactModeManager.toggle();
+  await toggled;
+}
+
+function dispatchMouseEvent(target, type, clientX, clientY) {
+  target.dispatchEvent(
+    new MouseEvent(type, {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      button: 0,
+      buttons: type === "mouseup" ? 0 : 1,
+      clientX,
+      clientY,
+      screenX: window.mozInnerScreenX + clientX,
+      screenY: window.mozInnerScreenY + clientY,
+    })
+  );
+}
+
+async function testResizeHandlePointer() {
+  await BrowserTestUtils.withNewTab(
+    "data:text/html,<!doctype html><title>Compact mode pointer test</title>",
+    async () => {
+      const originalWidth = gNavToolbox.getBoundingClientRect().width;
+      const handle = document.getElementById(
+        "zen-compact-sidebar-resize-handle"
+      );
+      await setCompactMode(true);
+      const positionProperty = gZenCompactModeManager.sidebarIsOnRight
+        ? "right"
+        : "left";
+      const opened = BrowserTestUtils.waitForEvent(
+        gNavToolbox,
+        "transitionend",
+        false,
+        event => event.propertyName === positionProperty
+      );
+      gNavToolbox.setAttribute("zen-has-hover", "true");
+      await opened;
+      await TestUtils.waitForCondition(
+        () => BrowserTestUtils.isVisible(handle),
+        "The compact sidebar resize handle should be visible"
+      );
+      const titlebarRect = document
+        .getElementById("titlebar")
+        .getBoundingClientRect();
+      const rootRect = document.documentElement.getBoundingClientRect();
+      const outerGap = gZenCompactModeManager.sidebarIsOnRight
+        ? rootRect.right - titlebarRect.right
+        : titlebarRect.left - rootRect.left;
+      const expectedOuterGap =
+        Number.parseFloat(getComputedStyle(gNavToolbox).paddingLeft) / 2;
+      Assert.lessOrEqual(
+        Math.abs(outerGap - expectedOuterGap),
+        1,
+        "The compact sidebar keeps the same outer gap on either side"
+      );
+
+      const minWidth = gZenCompactModeManager.sidebarMinWidth;
+      const maxWidth = Math.max(
+        minWidth,
+        Services.prefs.getIntPref("zen.view.sidebar-expanded.max-width")
+      );
+      const middleWidth = minWidth + (maxWidth - minWidth) / 2;
+      const direction = gZenCompactModeManager.sidebarIsOnRight ? -1 : 1;
+      gZenCompactModeManager._applySidebarWidth(middleWidth);
+
+      let handleRect = handle.getBoundingClientRect();
+      let startX = handleRect.left + handleRect.width / 2;
+      let pointerY = handleRect.top + handleRect.height / 2;
+      const growX = startX + direction * (maxWidth - middleWidth + 50);
+      dispatchMouseEvent(handle, "mousedown", startX, pointerY);
+      Assert.equal(
+        handle.getAttribute("state"),
+        "dragging",
+        "Pointer down starts compact sidebar resizing"
+      );
+      dispatchMouseEvent(
+        document.documentElement,
+        "mousemove",
+        growX,
+        pointerY
+      );
+      dispatchMouseEvent(document.documentElement, "mouseup", growX, pointerY);
+      Assert.equal(
+        Math.round(gNavToolbox.getBoundingClientRect().width),
+        maxWidth,
+        "Pointer dragging is clamped to the maximum width"
+      );
+      Assert.ok(
+        !!gZenCompactModeManager._sidebarHoverBufferListener,
+        "Releasing outside the sidebar starts the hover buffer"
+      );
+
+      dispatchMouseEvent(
+        document.documentElement,
+        "mousemove",
+        growX,
+        pointerY
+      );
+      Assert.ok(
+        gNavToolbox.hasAttribute("zen-has-hover"),
+        "The sidebar stays open until the pointer re-enters it"
+      );
+
+      const sidebarRect = document
+        .getElementById("titlebar")
+        .getBoundingClientRect();
+      const insideX = (sidebarRect.left + sidebarRect.right) / 2;
+      dispatchMouseEvent(
+        document.documentElement,
+        "mousemove",
+        insideX,
+        pointerY
+      );
+
+      const bufferedX = gZenCompactModeManager.sidebarIsOnRight
+        ? sidebarRect.left - 100
+        : sidebarRect.right + 100;
+      dispatchMouseEvent(
+        document.documentElement,
+        "mousemove",
+        bufferedX,
+        pointerY
+      );
+      Assert.ok(
+        gNavToolbox.hasAttribute("zen-has-hover"),
+        "The sidebar stays open inside the outside hover buffer"
+      );
+
+      const outsideOffset = Services.prefs.getIntPref(
+        "zen.view.compact.outside-window-edge-offset.horizontal"
+      );
+      const outsideX = gZenCompactModeManager.sidebarIsOnRight
+        ? sidebarRect.left - outsideOffset - 1
+        : sidebarRect.right + outsideOffset + 1;
+      dispatchMouseEvent(
+        document.documentElement,
+        "mousemove",
+        outsideX,
+        pointerY
+      );
+      Assert.ok(
+        !gNavToolbox.hasAttribute("zen-has-hover"),
+        "The sidebar hides after the pointer leaves the outside hover buffer"
+      );
+
+      gNavToolbox.setAttribute("zen-has-hover", "true");
+      gZenCompactModeManager._applySidebarWidth(maxWidth);
+      handleRect = handle.getBoundingClientRect();
+      startX = handleRect.left + handleRect.width / 2;
+      pointerY = handleRect.top + handleRect.height / 2;
+      const shrinkX = startX - direction * (maxWidth - minWidth + 50);
+      dispatchMouseEvent(handle, "mousedown", startX, pointerY);
+      dispatchMouseEvent(
+        document.documentElement,
+        "mousemove",
+        shrinkX,
+        pointerY
+      );
+      dispatchMouseEvent(
+        document.documentElement,
+        "mouseup",
+        shrinkX,
+        pointerY
+      );
+      Assert.equal(
+        Math.round(gNavToolbox.getBoundingClientRect().width),
+        minWidth,
+        "Pointer dragging is clamped to the minimum width"
+      );
+
+      gZenCompactModeManager._stopSidebarHoverBuffer();
+      gZenCompactModeManager._applySidebarWidth(originalWidth);
+      gZenCompactModeManager.getAndApplySidebarWidth({});
+      gNavToolbox.removeAttribute("zen-has-hover");
+      await setCompactMode(false);
+    }
+  );
 }
 
 add_task(async function test_Compact_Mode_Width() {
@@ -71,4 +263,98 @@ add_task(async function test_Compact_Mode_Hover() {
   gNavToolbox.setAttribute("zen-has-hover", true);
   await testSidebarWidth();
   gNavToolbox.removeAttribute("zen-has-hover");
+});
+
+add_task(async function test_Compact_Mode_Min_Width_Cache() {
+  gZenCompactModeManager._invalidateSidebarMinWidth();
+  const originalWidth = gNavToolbox.getBoundingClientRect().width;
+  const measuredWidth = await gZenCompactModeManager._ensureSidebarMinWidth();
+  Assert.equal(
+    gNavToolbox.getBoundingClientRect().width,
+    originalWidth,
+    "Measuring the minimum restores the original sidebar width"
+  );
+
+  let resizeEvents = 0;
+  const countResize = () => resizeEvents++;
+  window.addEventListener("resize", countResize);
+  const cachedWidth = await gZenCompactModeManager._ensureSidebarMinWidth();
+  window.removeEventListener("resize", countResize);
+  Assert.equal(cachedWidth, measuredWidth, "The cached minimum is reused");
+  Assert.equal(resizeEvents, 0, "A cache hit does not trigger window resize");
+});
+
+add_task(async function test_Compact_Mode_Resize_Handle_Pointer() {
+  await testResizeHandlePointer();
+});
+
+add_task(async function test_Compact_Mode_Resize_Handle_Pointer_Right_Side() {
+  await goToRightSideTabs(testResizeHandlePointer);
+});
+
+add_task(async function test_Compact_Mode_Empty_Tab_Hover_Priority() {
+  await BrowserTestUtils.withNewTab(
+    "data:text/html,<!doctype html><title>Compact mode navigation test</title>",
+    async browser => {
+      const loadedTab = gBrowser.getTabForBrowser(browser);
+      const emptyTab = gZenWorkspaces._emptyTab;
+      window.windowUtils.disableNonTestMouseEvents(true);
+
+      try {
+        gBrowser.selectedTab = emptyTab;
+        await TestUtils.waitForCondition(
+          () => gNavToolbox.hasAttribute("zen-has-empty-tab"),
+          "The sidebar should stay open for an empty tab"
+        );
+        await setCompactMode(true);
+
+        EventUtils.synthesizeMouseAtCenter(loadedTab, { type: "mousemove" });
+        await TestUtils.waitForCondition(
+          () =>
+            gNavToolbox.matches(":hover") &&
+            gNavToolbox.hasAttribute("zen-has-hover"),
+          "The sidebar should register pointer hover before tab selection"
+        );
+        EventUtils.synthesizeMouseAtCenter(loadedTab, {});
+        await TestUtils.waitForCondition(
+          () =>
+            gBrowser.selectedTab === loadedTab &&
+            !gNavToolbox.hasAttribute("zen-has-empty-tab"),
+          "Selecting a loaded tab should leave the empty-tab state"
+        );
+        Assert.ok(
+          gNavToolbox.hasAttribute("zen-has-hover"),
+          "The sidebar stays open when navigation starts from inside it"
+        );
+
+        gBrowser.selectedTab = emptyTab;
+        await TestUtils.waitForCondition(
+          () => gNavToolbox.hasAttribute("zen-has-empty-tab"),
+          "The empty-tab state should be restored"
+        );
+        EventUtils.synthesizeMouseAtCenter(gBrowser.tabpanels, {
+          type: "mousemove",
+        });
+        await TestUtils.waitForCondition(
+          () => !gNavToolbox.matches(":hover"),
+          "The pointer should be outside the sidebar"
+        );
+        gBrowser.selectedTab = loadedTab;
+        await TestUtils.waitForCondition(
+          () => !gNavToolbox.hasAttribute("zen-has-empty-tab"),
+          "Selecting a loaded tab should leave the empty-tab state"
+        );
+        Assert.ok(
+          !gNavToolbox.hasAttribute("zen-has-hover"),
+          "The sidebar hides when navigation starts from outside it"
+        );
+      } finally {
+        window.windowUtils.disableNonTestMouseEvents(false);
+        gZenCompactModeManager._unlockSidebarHover();
+        gZenCompactModeManager._stopSidebarHoverBuffer();
+        gNavToolbox.removeAttribute("zen-has-hover");
+        await setCompactMode(false);
+      }
+    }
+  );
 });

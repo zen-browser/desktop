@@ -88,11 +88,37 @@ window.gZenCompactModeManager = {
   init() {
     this.addMouseActions();
 
+    this._emptyTabObserver = new MutationObserver(() => {
+      if (this.preference && !this.sidebar.hasAttribute("zen-has-empty-tab")) {
+        if (this.sidebar.matches(":hover")) {
+          this._unlockSidebarHover();
+          this._setElementExpandAttribute(this.sidebar, true);
+          return;
+        }
+        this._lockSidebarHoverUntilPointerMove();
+        this._setElementExpandAttribute(this.sidebar, false);
+      }
+    });
+    this._emptyTabObserver.observe(this.sidebar, {
+      attributes: true,
+      attributeFilter: ["zen-has-empty-tab"],
+    });
+
     const tabIsRightObserver = this._updateSidebarIsOnRight.bind(this);
     Services.prefs.addObserver(
       "zen.tabs.vertical.right-side",
       tabIsRightObserver
     );
+    const sidebarLayoutPrefs = [
+      "zen.view.sidebar-expanded",
+      "zen.view.use-single-toolbar",
+    ];
+    const sidebarLayoutPrefObserver =
+      this._invalidateSidebarMinWidth.bind(this);
+    for (const pref of sidebarLayoutPrefs) {
+      Services.prefs.addObserver(pref, sidebarLayoutPrefObserver);
+    }
+    window.addEventListener("aftercustomization", sidebarLayoutPrefObserver);
 
     const outsideMouseTrackerExitObserver =
       this._onOutsideMouseTrackerExit.bind(this);
@@ -104,6 +130,16 @@ window.gZenCompactModeManager = {
     window.addEventListener(
       "unload",
       () => {
+        this._emptyTabObserver.disconnect();
+        this._unlockSidebarHover();
+        for (const pref of sidebarLayoutPrefs) {
+          Services.prefs.removeObserver(pref, sidebarLayoutPrefObserver);
+        }
+        window.removeEventListener(
+          "aftercustomization",
+          sidebarLayoutPrefObserver
+        );
+        this._stopSidebarHoverBuffer();
         this._stopTrackingMouseOutsideWindow();
         Services.obs.removeObserver(
           outsideMouseTrackerExitObserver,
@@ -148,7 +184,10 @@ window.gZenCompactModeManager = {
       });
     }
 
-    SessionStore.promiseAllWindowsRestored.then(() => {
+    SessionStore.promiseAllWindowsRestored.then(async () => {
+      if (this._wasInCompactMode) {
+        await this._ensureSidebarMinWidth();
+      }
       this.preference = this._wasInCompactMode;
     });
   },
@@ -188,8 +227,18 @@ window.gZenCompactModeManager = {
       return;
     }
     delete this._isTabBeingDragged;
+    this._stopSidebarHoverBuffer();
     this._stopTrackingMouseOutsideWindow();
     this.sidebar.removeAttribute("zen-user-show");
+    if (value) {
+      this.sidebar.style.setProperty(
+        "--zen-toolbox-min-width",
+        `${this.sidebarMinWidth}px`
+      );
+    } else {
+      this._unlockSidebarHover();
+      this.sidebar.style.removeProperty("--zen-toolbox-min-width");
+    }
     // We use this element in order to make it persis across restarts, by using the XULStore.
     // main-window can't store attributes other than window sizes, so we use this instead
     lazy.mainAppWrapper.setAttribute("zen-compact-mode", value);
@@ -212,6 +261,250 @@ window.gZenCompactModeManager = {
 
   get sidebar() {
     return gNavToolbox;
+  },
+
+  get sidebarMinWidth() {
+    if (Number.isFinite(this._sidebarMinWidth)) {
+      return this._sidebarMinWidth;
+    }
+
+    const inlineMinWidth = Number.parseFloat(
+      this.sidebar.style.getPropertyValue("--zen-toolbox-min-width")
+    );
+    return Number.isFinite(inlineMinWidth)
+      ? inlineMinWidth
+      : this.sidebar.getBoundingClientRect().width;
+  },
+
+  _invalidateSidebarMinWidth() {
+    delete this._sidebarMinWidth;
+  },
+
+  async _ensureSidebarMinWidth() {
+    if (Number.isFinite(this._sidebarMinWidth)) {
+      return this._sidebarMinWidth;
+    }
+    if (this._sidebarMinWidthPromise) {
+      return this._sidebarMinWidthPromise;
+    }
+
+    // The normal-mode minimum is only stable after CustomizableUI has moved
+    // optional top-bar buttons into overflow, so wait for that layout here.
+    this._sidebarMinWidthPromise = (async () => {
+      const win = this.sidebar.documentGlobal;
+      const style = this.sidebar.style;
+      const width = style.width;
+      const sidebarWidth = style.getPropertyValue("--zen-sidebar-width");
+      const actualWidth = style.getPropertyValue("--actual-zen-sidebar-width");
+      const inlineMinWidth = style.getPropertyValue("--zen-toolbox-min-width");
+      const customizationTarget = document.getElementById(
+        "zen-sidebar-top-buttons-customization-target"
+      );
+      const hasStableMinimumLayout = () =>
+        !!customizationTarget.children.length &&
+        [...customizationTarget.children].every(
+          element => element.getAttribute("overflows") === "false"
+        );
+
+      try {
+        style.width = "1px";
+        style.removeProperty("--zen-sidebar-width");
+        style.removeProperty("--actual-zen-sidebar-width");
+        style.removeProperty("--zen-toolbox-min-width");
+
+        if (!hasStableMinimumLayout()) {
+          await new Promise(resolve => {
+            let timeout;
+            const observer = new win.MutationObserver(() => {
+              if (hasStableMinimumLayout()) {
+                observer.disconnect();
+                win.clearTimeout(timeout);
+                resolve();
+              }
+            });
+            timeout = win.setTimeout(() => {
+              observer.disconnect();
+              resolve();
+            }, 1000);
+            observer.observe(customizationTarget, { childList: true });
+            win.dispatchEvent(new win.Event("resize"));
+          });
+        }
+
+        this._sidebarMinWidth = this.sidebar.getBoundingClientRect().width;
+      } finally {
+        style.width = width;
+        for (const [property, value] of [
+          ["--zen-sidebar-width", sidebarWidth],
+          ["--actual-zen-sidebar-width", actualWidth],
+          ["--zen-toolbox-min-width", inlineMinWidth],
+        ]) {
+          if (value) {
+            style.setProperty(property, value);
+          } else {
+            style.removeProperty(property);
+          }
+        }
+        win.dispatchEvent(new win.Event("resize"));
+      }
+      return this._sidebarMinWidth;
+    })();
+
+    try {
+      return await this._sidebarMinWidthPromise;
+    } finally {
+      delete this._sidebarMinWidthPromise;
+    }
+  },
+
+  _lockSidebarHoverUntilPointerMove() {
+    this._unlockSidebarHover();
+    this._sidebarHoverUnlockListener = () => {
+      this._unlockSidebarHover();
+      if (this.preference && this.sidebar.matches(":hover")) {
+        this._setElementExpandAttribute(this.sidebar, true);
+      }
+    };
+    window.addEventListener("mousemove", this._sidebarHoverUnlockListener, {
+      capture: true,
+      once: true,
+    });
+  },
+
+  _unlockSidebarHover() {
+    if (!this._sidebarHoverUnlockListener) {
+      return;
+    }
+    window.removeEventListener(
+      "mousemove",
+      this._sidebarHoverUnlockListener,
+      true
+    );
+    delete this._sidebarHoverUnlockListener;
+  },
+
+  _startSidebarHoverBuffer(waitForReentry = false) {
+    this._stopSidebarHoverBuffer();
+    const rect = document.getElementById("titlebar").getBoundingClientRect();
+    const resizeHandle = document.getElementById(
+      "zen-compact-sidebar-resize-handle"
+    );
+    let waitingForReentry = waitForReentry;
+    this._sidebarHoverBufferListener = event => {
+      const isInside =
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right &&
+        event.clientY >= rect.top &&
+        event.clientY <= rect.bottom;
+      if (isInside) {
+        waitingForReentry = false;
+        return;
+      }
+      if (
+        waitingForReentry ||
+        resizeHandle?.getAttribute("state") === "dragging"
+      ) {
+        return;
+      }
+
+      const distance = this.sidebarIsOnRight
+        ? rect.left - event.clientX
+        : event.clientX - rect.right;
+      if (distance <= lazy.COMPACT_MODE_OUTSIDE_WINDOW_HORIZONTAL_OFFSET) {
+        return;
+      }
+
+      this._stopSidebarHoverBuffer();
+      this._setElementExpandAttribute(this.sidebar, false);
+    };
+    window.addEventListener(
+      "mousemove",
+      this._sidebarHoverBufferListener,
+      true
+    );
+  },
+
+  _stopSidebarHoverBuffer() {
+    if (this._sidebarHoverBufferListener) {
+      window.removeEventListener(
+        "mousemove",
+        this._sidebarHoverBufferListener,
+        true
+      );
+      delete this._sidebarHoverBufferListener;
+    }
+  },
+
+  _applySidebarWidth(width) {
+    const minWidth = this.sidebarMinWidth;
+    const maxWidth = Math.max(
+      minWidth,
+      Services.prefs.getIntPref("zen.view.sidebar-expanded.max-width")
+    );
+    const appliedWidth = Math.max(minWidth, Math.min(maxWidth, width));
+    const cssWidth = `${appliedWidth}px`;
+
+    this.sidebar.style.setProperty("--zen-toolbox-min-width", `${minWidth}px`);
+    this.sidebar.style.setProperty("--zen-sidebar-width", cssWidth);
+    this.sidebar.style.setProperty("--actual-zen-sidebar-width", cssWidth);
+    this.sidebar.style.width = cssWidth;
+    this.sidebar.setAttribute("width", cssWidth);
+    return appliedWidth;
+  },
+
+  addSidebarResizeActions() {
+    const handle = document.createElementNS(
+      "http://www.w3.org/1999/xhtml",
+      "div"
+    );
+    handle.id = "zen-compact-sidebar-resize-handle";
+    document.getElementById("titlebar").append(handle);
+
+    handle.addEventListener("mousedown", event => {
+      if (event.button !== 0) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      handle.setAttribute("state", "dragging");
+
+      const startX = event.clientX;
+      const startWidth = this.sidebar.getBoundingClientRect().width;
+      const direction = this.sidebarIsOnRight ? -1 : 1;
+
+      const onMouseMove = moveEvent => {
+        this._applySidebarWidth(
+          startWidth + direction * (moveEvent.clientX - startX)
+        );
+      };
+
+      const finishResize = finishEvent => {
+        window.removeEventListener("mousemove", onMouseMove, true);
+        window.removeEventListener("mouseup", finishResize, true);
+        window.removeEventListener("blur", finishResize, true);
+        handle.removeAttribute("state");
+
+        this.getAndApplySidebarWidth({});
+
+        const rect = document
+          .getElementById("titlebar")
+          .getBoundingClientRect();
+        if (
+          finishEvent.type === "mouseup" &&
+          (finishEvent.clientX < rect.left ||
+            finishEvent.clientX > rect.right ||
+            finishEvent.clientY < rect.top ||
+            finishEvent.clientY > rect.bottom)
+        ) {
+          this._startSidebarHoverBuffer(true);
+        }
+      };
+
+      window.addEventListener("mousemove", onMouseMove, true);
+      window.addEventListener("mouseup", finishResize, true);
+      window.addEventListener("blur", finishResize, true);
+    });
   },
 
   addHasPolyfillObserver() {
@@ -659,16 +952,21 @@ window.gZenCompactModeManager = {
     }
   },
 
-  toggle(ignoreHover = false) {
+  async toggle(ignoreHover = false) {
     // Only ignore the next hover when we are enabling compact mode
-    this._ignoreNextHover = ignoreHover && !this.preference;
-    return (this.preference = !this.preference);
+    const enableCompactMode = !this.preference;
+    this._ignoreNextHover = ignoreHover && enableCompactMode;
+    if (enableCompactMode) {
+      await this._ensureSidebarMinWidth();
+    }
+    return (this.preference = enableCompactMode);
   },
 
   _updateSidebarIsOnRight() {
     this._sidebarIsOnRight = Services.prefs.getBoolPref(
       "zen.tabs.vertical.right-side"
     );
+    this._invalidateSidebarMinWidth();
   },
 
   toggleSidebar() {
@@ -763,6 +1061,9 @@ window.gZenCompactModeManager = {
       }
     } else {
       if (attr === "zen-has-hover") {
+        if (element === this.sidebar) {
+          this._stopSidebarHoverBuffer();
+        }
         if (element === this._outsideTrackedElement) {
           this._stopTrackingMouseOutsideWindow();
         }
@@ -783,6 +1084,7 @@ window.gZenCompactModeManager = {
   },
 
   addMouseActions() {
+    this.addSidebarResizeActions();
     gURLBar.addEventListener("mouseenter", event => {
       this.log("Mouse entered URL bar:", event.target);
       if (event.target.closest("#urlbar[zen-floating-urlbar]")) {
@@ -805,6 +1107,12 @@ window.gZenCompactModeManager = {
       }
 
       const onEnter = event => {
+        if (target === this.sidebar) {
+          this._stopSidebarHoverBuffer();
+          if (this._sidebarHoverUnlockListener) {
+            return;
+          }
+        }
         setTimeout(() => {
           if (event.type === "mouseenter" && !event.target.matches(":hover")) {
             return;
@@ -821,6 +1129,7 @@ window.gZenCompactModeManager = {
               ) === "true" ||
               this._hasHoveredUrlbar ||
               this._ignoreNextHover ||
+              (target === this.sidebar && this._sidebarHoverUnlockListener) ||
               target.hasAttribute("zen-has-hover")
             ) {
               return;
@@ -873,6 +1182,11 @@ window.gZenCompactModeManager = {
           }
 
           if (this._isTabBeingDragged) {
+            return;
+          }
+
+          if (target === this.sidebar && event.type === "mouseleave") {
+            this._startSidebarHoverBuffer();
             return;
           }
 
@@ -1037,6 +1351,7 @@ window.gZenCompactModeManager = {
   },
 
   _clearAllHoverStates() {
+    this._stopSidebarHoverBuffer();
     this._stopTrackingMouseOutsideWindow();
     // Clear hover attributes from all hoverable elements
     for (let entry of this.hoverableElements) {

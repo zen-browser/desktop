@@ -33,6 +33,10 @@
   }
 }
 
+#zen-compact-sidebar-resize-handle {
+  display: none;
+}
+
 :root[zen-compact-mode='true']:not([customizing]):not([inDOMFullscreen='true']) {
 
 %include ../tabs/zen-tabs/vertical-tabs-topbuttons-fix.css

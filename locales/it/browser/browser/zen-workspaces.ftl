@@ -64,6 +64,8 @@ zen-workspace-creation-label = Gli Spazi sono usati per organizzare le tue sched
 zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Eliminare Spazio?
 zen-workspaces-delete-workspace-body = Sei sicuro di voler cancellare { $name }? Questa azione non può essere annullata.
+zen-workspaces-remote-delete-title = Delete Synced Space?
+zen-workspaces-remote-delete-body = { $name } was deleted on another device. Delete it here too? Keeping it will restore it on your other devices.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Scheda chiusa! Usa <span>{ $shortcut }</span> per riaprirla.

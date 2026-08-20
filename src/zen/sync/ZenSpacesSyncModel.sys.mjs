@@ -36,6 +36,36 @@ const BUILTIN_GUID_PREFIX = "builtin-";
 const STORE_FILE_NAME = "zen-spaces-sync.json";
 const STORE_VERSION = 1;
 
+// Everything setIcon accepts without a loading principal.
+const LOCAL_ICON_PROTOCOLS = ["data:", "chrome:", "about:", "resource:"];
+
+/**
+ * Normalizes a tab icon for syncing. The image attribute can hold a
+ * moz-remote-image: wrapper around the actual (svg data:) favicon, carrying
+ * a per-process contentParentId that means nothing on another device — sync
+ * the wrapped URL instead. Anything else setIcon would reject as remote is
+ * dropped.
+ *
+ * @param {?string} icon
+ * @returns {string}
+ */
+export function syncableIconUrl(icon) {
+  if (!icon || typeof icon !== "string") {
+    return "";
+  }
+  if (icon.startsWith("moz-remote-image:")) {
+    try {
+      const uri = Services.io.newURI(icon);
+      icon = new URLSearchParams(uri.query).get("url") || "";
+    } catch (e) {
+      return "";
+    }
+  }
+  return LOCAL_ICON_PROTOCOLS.some(protocol => icon.startsWith(protocol))
+    ? icon
+    : "";
+}
+
 function sortedClone(value) {
   if (Array.isArray(value)) {
     return value.map(sortedClone);
@@ -201,7 +231,7 @@ class nsZenSpacesSyncModel {
     if (!url || url === "about:blank") {
       return null;
     }
-    const icon = initial?.image || tabData.image || "";
+    const icon = syncableIconUrl(initial?.image || tabData.image || "");
     return { url, title: title || "", icon };
   }
 
@@ -357,6 +387,7 @@ class nsZenSpacesSyncModel {
     }
 
     const map = new Map();
+    const pending = new Set();
     const ctx = this.#projectionContext(sidebar);
     const { tabs, folders, splits, splitIds, splitParents, splitWs } = ctx;
 
@@ -425,6 +456,10 @@ class nsZenSpacesSyncModel {
         } catch (e) {
           console.error("ZenSpacesSync: failed to project live folder", e);
         }
+        if (!live) {
+          pending.add(fid);
+          continue;
+        }
       }
       map.set(fid, {
         kind: RECORD_KINDS.FOLDER,
@@ -486,8 +521,18 @@ class nsZenSpacesSyncModel {
       });
     }
 
-    this.#cache = { stamp, map };
+    this.#cache = { stamp, map, pending };
     return map;
+  }
+
+  /**
+   * Ids that are locally present but deliberately not projected this cycle
+   * (live folders whose provider config isn't available yet). The diff must
+   * not read their absence as a deletion.
+   */
+  #pendingIds() {
+    this.projections();
+    return this.#cache.pending;
   }
 
   #digestCache = null;
@@ -536,6 +581,7 @@ class nsZenSpacesSyncModel {
   computeChangedIDs() {
     const uploaded = this.#data().uploaded;
     const current = this.#digestAll();
+    const pending = this.#pendingIds();
     const now = Date.now() / 1000;
     const changes = {};
     for (const [id, digest] of current) {
@@ -544,7 +590,7 @@ class nsZenSpacesSyncModel {
       }
     }
     for (const id of Object.keys(uploaded)) {
-      if (!current.has(id)) {
+      if (!current.has(id) && !pending.has(id)) {
         changes[id] = now;
       }
     }
@@ -554,13 +600,14 @@ class nsZenSpacesSyncModel {
   hasPendingChanges() {
     const uploaded = this.#data().uploaded;
     const current = this.#digestAll();
+    const pending = this.#pendingIds();
     for (const [id, digest] of current) {
       if (uploaded[id] !== digest) {
         return true;
       }
     }
     for (const id of Object.keys(uploaded)) {
-      if (!current.has(id)) {
+      if (!current.has(id) && !pending.has(id)) {
         return true;
       }
     }

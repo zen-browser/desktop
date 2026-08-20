@@ -6,6 +6,7 @@ import {
   canonicalJSON,
   LAYOUT_RECORD_ID,
   RECORD_KINDS,
+  syncableIconUrl,
   ZenSpacesSyncModel,
 } from "resource:///modules/zen/ZenSpacesSyncModel.sys.mjs";
 
@@ -379,6 +380,13 @@ class nsZenSpacesSyncApplier {
           folder.label = data.name;
         }
 
+        if (data.live && !folder.isLiveFolder) {
+          // The folder synced before its provider config was available and
+          // materialized as a plain folder; upgrade it so this profile
+          // projects the config too instead of clobbering it with live: null.
+          folder.isLiveFolder = true;
+        }
+
         if ((folder.iconURL || null) !== (data.icon || null)) {
           win.gZenFolders.setFolderUserIcon(folder, data.icon || null);
           // Window sync picks this up and mirrors the icon everywhere else.
@@ -508,7 +516,7 @@ class nsZenSpacesSyncApplier {
     lazy.ZenWindowSync.setPinnedInitialState(
       tab,
       { url: data.url, title: data.title || "" },
-      data.icon || undefined
+      syncableIconUrl(data.icon) || undefined
     );
   }
 
@@ -518,12 +526,15 @@ class nsZenSpacesSyncApplier {
     } else {
       tab.removeAttribute("zenDefaultUserContextId");
     }
+    // Records from before icon normalization can still carry wrapped or
+    // remote urls setIcon would refuse.
+    const icon = syncableIconUrl(data.icon);
     tab.zenStaticLabel =
       typeof data.staticLabel === "string" ? data.staticLabel : undefined;
-    tab.zenStaticIcon = data.hasStaticIcon && data.icon ? data.icon : undefined;
-    if (data.icon) {
+    tab.zenStaticIcon = data.hasStaticIcon && icon ? icon : undefined;
+    if (icon) {
       try {
-        win.gBrowser.setIcon(tab, data.icon);
+        win.gBrowser.setIcon(tab, icon);
         // The tab is lazy, so its session state cache keeps the (empty)
         // image it was created with: it is only cleared once a restore
         // finishes, which never happens for lazy tabs, and it would hide
@@ -547,15 +558,16 @@ class nsZenSpacesSyncApplier {
    * @param {object} data
    */
   #updateTabIdentity(win, tab, data) {
+    const icon = syncableIconUrl(data.icon);
     const initial = tab._zenPinnedInitialState;
     const identityChanged =
       initial?.entry?.url !== data.url ||
       (initial?.entry?.title || "") !== (data.title || "");
-    if (identityChanged || (initial?.image || "") !== (data.icon || "")) {
+    if (identityChanged || syncableIconUrl(initial?.image || "") !== icon) {
       lazy.ZenWindowSync.setPinnedInitialState(
         tab,
         { url: data.url, title: data.title || "" },
-        data.icon || undefined
+        icon || undefined
       );
     }
     if (identityChanged && !tab.linkedPanel) {
@@ -580,10 +592,12 @@ class nsZenSpacesSyncApplier {
         }
       }
     }
-    tab.zenStaticIcon = data.hasStaticIcon && data.icon ? data.icon : undefined;
-    if (data.icon && tab.getAttribute("image") !== data.icon) {
+    tab.zenStaticIcon = data.hasStaticIcon && icon ? icon : undefined;
+    // Compare normalized: setIcon rewraps svg data: icons into
+    // moz-remote-image urls when writing the attribute.
+    if (icon && syncableIconUrl(tab.getAttribute("image")) !== icon) {
       try {
-        win.gBrowser.setIcon(tab, data.icon);
+        win.gBrowser.setIcon(tab, icon);
       } catch (e) {
         console.error("ZenSpacesSync: failed to set tab icon", e);
       }
@@ -619,7 +633,7 @@ class nsZenSpacesSyncApplier {
         },
       ];
       state.index = 1;
-      state.image = data.icon || undefined;
+      state.image = syncableIconUrl(data.icon) || undefined;
       delete state.scroll;
       win.SessionStore.setTabState(tab, state);
     } catch (e) {

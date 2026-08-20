@@ -64,6 +64,8 @@ zen-workspace-creation-label = 스페이스는 탭과 세션을 정리하기 위
 zen-workspace-default-profile = 기본
 zen-workspaces-delete-workspace-title = 워크스페이스를 삭제하시겠습니까?
 zen-workspaces-delete-workspace-body = 정말 { $name }을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+zen-workspaces-remote-delete-title = 동기화된 스페이스를 삭제할까요?
+zen-workspaces-remote-delete-body = { $name }은 다른 기기에서 삭제되었습니다. 이 기기에서도 삭제하시겠습니까? 삭제하지 않을 경우 다른 기기에서도 복구됩니다.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = 탭을 닫았습니다! 되돌리려면 <span>{ $shortcut }</span>을 사용하세요.

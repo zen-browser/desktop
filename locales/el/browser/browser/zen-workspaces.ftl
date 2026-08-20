@@ -64,6 +64,8 @@ zen-workspace-creation-label = Οι χώροι χρησιμοποιούνται 
 zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Διαγραφή Χώρου Εργασίας;
 zen-workspaces-delete-workspace-body = Είστε σίγουροι ότι Θέλετε να διαγράψετε το { $name }; Αυτή η πράξη δεν μπορεί να αναιρεθεί.
+zen-workspaces-remote-delete-title = Delete Synced Space?
+zen-workspaces-remote-delete-body = { $name } was deleted on another device. Delete it here too? Keeping it will restore it on your other devices.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Οι καρτέλες έκλεισαν! Χρησιμοποιήστε <span>{ $shortcut }</span> για αναίρεσή.

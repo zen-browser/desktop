@@ -64,6 +64,8 @@ zen-workspace-creation-label = Không gian dùng để sắp xếp các thẻ v�
 zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Xóa không gian?
 zen-workspaces-delete-workspace-body = Bạn có chắc chắn muốn xóa { $name }? Thao tác này không thể hoàn tác.
+zen-workspaces-remote-delete-title = Delete Synced Space?
+zen-workspaces-remote-delete-body = { $name } was deleted on another device. Delete it here too? Keeping it will restore it on your other devices.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Đã đóng các thẻ! Nhấn <span>{ $shortcut }</span> để hoàn tác.

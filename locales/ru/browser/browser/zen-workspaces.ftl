@@ -64,6 +64,8 @@ zen-workspace-creation-label = Пространства используются
 zen-workspace-default-profile = По умолчанию
 zen-workspaces-delete-workspace-title = Удалить пространство?
 zen-workspaces-delete-workspace-body = Вы уверены, что хотите удалить { $name }? Это действие необратимо.
+zen-workspaces-remote-delete-title = Delete Synced Space?
+zen-workspaces-remote-delete-body = { $name } was deleted on another device. Delete it here too? Keeping it will restore it on your other devices.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Вкладки закрыты! Нажмите <span>{ $shortcut }</span> для отмены.

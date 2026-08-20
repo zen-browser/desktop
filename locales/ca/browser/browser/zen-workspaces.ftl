@@ -64,6 +64,8 @@ zen-workspace-creation-label = Els espais s'utilitzen per organitzar les pestany
 zen-workspace-default-profile = Per defecte
 zen-workspaces-delete-workspace-title = Voleu suprimir l'espai de treball?
 zen-workspaces-delete-workspace-body = Esteu segur que voleu suprimir { $name }? Aquesta acció no es pot desfer.
+zen-workspaces-remote-delete-title = Delete Synced Space?
+zen-workspaces-remote-delete-body = { $name } was deleted on another device. Delete it here too? Keeping it will restore it on your other devices.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Pestanyes tancades. Feu servir <span>{ $shortcut }</span> per desfer-ho.

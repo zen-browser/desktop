@@ -346,7 +346,7 @@ class ZenMediaCard {
 
   onToggle() {
     if (this.controller?.isPlaying) {
-      this.controller.pause();
+      this.controller.pause("user");
     } else {
       this.controller?.play();
     }
@@ -365,7 +365,7 @@ class ZenMediaCard {
   }
 
   onSeekDrag(event) {
-    this.controller?.pause();
+    this.controller?.pause("user");
     const newTime = (event.target.value / 100) * this.duration;
     this.currentTimeEl.textContent = this.formatSecondsToTime(newTime);
   }
@@ -408,7 +408,7 @@ class ZenMediaCard {
 
   onClose() {
     if (this.controller) {
-      this.controller.pause();
+      this.controller.pause("user");
     } else {
       const webRTC =
         this.browser.browsingContext.currentWindowGlobal.getActor("WebRTC");

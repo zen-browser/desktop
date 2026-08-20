@@ -64,6 +64,8 @@ zen-workspace-creation-label = Ruang digunakan untuk mengorganisasikan tab dan s
 zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Hapus Ruang?
 zen-workspaces-delete-workspace-body = Apakah Anda yakin ingin menghapus { $name }? Tindakan ini tidak bisa dibatalkan.
+zen-workspaces-remote-delete-title = Delete Synced Space?
+zen-workspaces-remote-delete-body = { $name } was deleted on another device. Delete it here too? Keeping it will restore it on your other devices.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Tab Ditutup! Gunakan <span>{ $shortcut }</span> untuk membatalkan.

@@ -64,6 +64,8 @@ zen-workspace-creation-label = Alanlar, sekme ve oturumlarınızı düzenlemek i
 zen-workspace-default-profile = Varsayılan
 zen-workspaces-delete-workspace-title = Alan Silinsin mi?
 zen-workspaces-delete-workspace-body = { $name } ögesini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+zen-workspaces-remote-delete-title = Eşitlenmiş alan silinsin mi?
+zen-workspaces-remote-delete-body = { $name } başka bir cihazda silindi. Buradan da silinsin mi? Saklarsanız diğer cihazlarınızda yeniden oluşturulur.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Sekmeler kapatıldı! Geri almak için <span>{ $shortcut }</span> tuşlarını kullan.

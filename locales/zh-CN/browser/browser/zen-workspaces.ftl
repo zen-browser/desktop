@@ -64,6 +64,8 @@ zen-workspace-creation-label = 工作区用于组织标签页和会话。
 zen-workspace-default-profile = 默认
 zen-workspaces-delete-workspace-title = 删除工作区？
 zen-workspaces-delete-workspace-body = 你确定要删除 { $name } 吗？这个操作无法撤销。
+zen-workspaces-remote-delete-title = Delete Synced Space?
+zen-workspaces-remote-delete-body = { $name } was deleted on another device. Delete it here too? Keeping it will restore it on your other devices.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = 标签页已关闭！按下 <span>{ $shortcut }</span> 以恢复关闭的标签页。

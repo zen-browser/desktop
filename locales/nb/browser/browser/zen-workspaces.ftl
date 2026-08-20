@@ -64,6 +64,8 @@ zen-workspace-creation-label = Områder er brukt til å organisere fanene og øk
 zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Slett Område?
 zen-workspaces-delete-workspace-body = Er du sikker på at du vil slette { $name }? Denne handlingen kan ikke angres.
+zen-workspaces-remote-delete-title = Delete Synced Space?
+zen-workspaces-remote-delete-body = { $name } was deleted on another device. Delete it here too? Keeping it will restore it on your other devices.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Faner lukket! Bruk <span>{ $shortcut }</span> for å angre.

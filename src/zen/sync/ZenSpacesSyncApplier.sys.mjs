@@ -22,6 +22,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
     "moz-src:///toolkit/components/contextualidentity/ContextualIdentityService.sys.mjs",
 });
 
+const FIRST_SYNC_ANIMATION_PREF = "zen.spaces-sync.first-sync-animation-shown";
+
 /**
  * Applies batches of incoming Spaces records to the local browser.
  */
@@ -112,6 +114,7 @@ class nsZenSpacesSyncApplier {
       }
     } else {
       await win.gZenWorkspaces.promiseInitialized;
+      this.#maybePlayFirstSyncAnimation(win);
       const removals = this.#routeTombstones(win, deletions);
       this.#deleteTabs(win, removals.tabs, fail);
       this.#deleteSplits(win, removals.splits, fail);
@@ -139,6 +142,20 @@ class nsZenSpacesSyncApplier {
       );
     }
     return [...failed];
+  }
+
+  /**
+   * Plays the update sweep animation over the window the first time
+   * incoming sync data lands on this profile.
+   *
+   * @param {Window} win
+   */
+  #maybePlayFirstSyncAnimation(win) {
+    if (Services.prefs.getBoolPref(FIRST_SYNC_ANIMATION_PREF, false)) {
+      return;
+    }
+    Services.prefs.setBoolPref(FIRST_SYNC_ANIMATION_PREF, true);
+    win.gZenStartup.playWindowSweepAnimation();
   }
 
   /**

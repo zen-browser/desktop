@@ -11,9 +11,6 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
-  ZenSyncStore: "resource:///modules/zen/ZenSyncManager.sys.mjs",
-  ZenSpaceSyncResolver: "resource:///modules/zen/ZenSpaceSyncResolver.sys.mjs",
-  XPCOMUtils: "resource://gre/modules/XPCOMUtils.sys.mjs",
 });
 
 ChromeUtils.defineLazyGetter(lazy, "browserBackgroundElement", () => {
@@ -95,31 +92,31 @@ class nsZenWorkspaces {
     }
 
     this.ownerWindow = window;
-    lazy.XPCOMUtils.defineLazyPreferenceGetter(
+    XPCOMUtils.defineLazyPreferenceGetter(
       this,
       "activationMethod",
       "zen.workspaces.scroll-modifier-key",
       "ctrl"
     );
-    lazy.XPCOMUtils.defineLazyPreferenceGetter(
+    XPCOMUtils.defineLazyPreferenceGetter(
       this,
       "naturalScroll",
       "zen.workspaces.natural-scroll",
       true
     );
-    lazy.XPCOMUtils.defineLazyPreferenceGetter(
+    XPCOMUtils.defineLazyPreferenceGetter(
       this,
       "shouldWrapAroundNavigation",
       "zen.workspaces.wrap-around-navigation",
       true
     );
-    lazy.XPCOMUtils.defineLazyPreferenceGetter(
+    XPCOMUtils.defineLazyPreferenceGetter(
       this,
       "shouldForceContainerTabsToWorkspace",
       "zen.workspaces.force-container-workspace",
       true
     );
-    lazy.XPCOMUtils.defineLazyPreferenceGetter(
+    XPCOMUtils.defineLazyPreferenceGetter(
       this,
       "shouldOpenNewTabIfLastUnpinnedTabIsClosed",
       "zen.workspaces.open-new-tab-if-last-unpinned-tab-is-closed",
@@ -173,20 +170,6 @@ class nsZenWorkspaces {
       /* eslint-disable no-console */
       console.debug(`[gZenWorkspaces]:`, ...args);
     }
-  }
-
-  /**
-   * Applies live sync changes: updates workspace cache, removes deleted items,
-   * then creates/updates pulled items.
-   *
-   * @param {{ spaces: Array, tabs: Array, folders: Array, splits: Array }} pulled  Reconcile-pulled items.
-   * @param {{ spaces: Array, tabs: Array, folders: Array, splits: Array }} removals  Items to remove.
-   */
-  async _applySyncChanges(pulled, removals = {}) {
-    await new lazy.ZenSpaceSyncResolver(this).applySyncChanges(
-      pulled,
-      removals
-    );
   }
 
   #afterLoadInit() {
@@ -821,10 +804,6 @@ class nsZenWorkspaces {
     })();
   }
 
-  #markWorkspaceChanged(workspaceId) {
-    lazy.ZenSyncStore.markSpaceChanged(workspaceId);
-  }
-
   async selectStartPage() {
     if (!this.workspaceEnabled || gZenUIManager.testingEnabled) {
       return;
@@ -1253,8 +1232,6 @@ class nsZenWorkspaces {
     } else {
       workspacesData.push(workspaceData);
     }
-    // mark item as changed for sync
-    this.#markWorkspaceChanged(workspaceData.uuid);
 
     this.#propagateWorkspaceData();
   }
@@ -1262,9 +1239,6 @@ class nsZenWorkspaces {
   removeWorkspace(windowID) {
     let { promise, resolve } = Promise.withResolvers();
     this.#deleteWorkspaceOwnedTabs(windowID);
-
-    // mark item as changed for sync
-    this.#markWorkspaceChanged(windowID);
 
     let workspacesData = this.getWorkspaces();
     // Remove the workspace from the cache
@@ -1326,10 +1300,6 @@ class nsZenWorkspaces {
     window.gZenWindowSync.propagateWorkspacesToAllWindows(
       aSpaceData ?? this._workspaceCache
     );
-  }
-
-  _propagateWorkspaceDataForSync(aSpaceData = null) {
-    this.#propagateWorkspaceData(aSpaceData);
   }
 
   propagateWorkspaces(aWorkspaces) {
@@ -1402,11 +1372,6 @@ class nsZenWorkspaces {
       return;
     }
     const workspaces = this.getWorkspaces();
-    // Track previous positions so we only notify observers for workspaces whose
-    // position changed during the reorder.
-    const previousPositions = new Map(
-      workspaces.map((workspace, index) => [workspace.uuid, index])
-    );
 
     const workspace = workspaces.find(w => w.uuid === id);
     if (!workspace) {
@@ -1435,15 +1400,6 @@ class nsZenWorkspaces {
     // Propagate the changes if the order has changed
     if (currentIndex !== newPosition) {
       this._workspaceCache = workspaces;
-
-      for (const [i, ws] of workspaces.entries()) {
-        if (previousPositions.get(ws.uuid) === i) {
-          continue;
-        }
-        // mark item as changed for sync
-        this.#markWorkspaceChanged(ws.uuid);
-      }
-
       this.#propagateWorkspaceData(workspaces);
     }
   }

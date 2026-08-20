@@ -8,7 +8,6 @@ ChromeUtils.defineESModuleGetters(lazy, {
   setTimeout: "resource://gre/modules/Timer.sys.mjs",
   TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
   ZenWindowSync: "resource:///modules/zen/ZenWindowSync.sys.mjs",
-  ZenSyncStore: "resource:///modules/zen/ZenSyncManager.sys.mjs",
   FeatureCallout: "resource:///modules/asrouter/FeatureCallout.sys.mjs",
 });
 
@@ -203,7 +202,8 @@ class nsZenLiveFoldersManager {
 
   /**
    * Returns the provider config needed to recreate this live folder on
-   * another device via Firefox Sync, or null for non-live folders.
+   * another device, or null for non-live folders. Fetch bookkeeping fields
+   * are stripped since they are device-local.
    *
    * @param {string} id - The folder ID.
    */
@@ -308,8 +308,6 @@ class nsZenLiveFoldersManager {
 
     liveFolder.start();
     this.saveState();
-
-    lazy.ZenSyncStore.markFolderChanged(folder.id);
 
     return folder.id;
   }
@@ -665,6 +663,7 @@ class nsZenLiveFoldersManager {
   async #restoreState() {
     let data = await this.#readStateFromDisk();
     if (!Array.isArray(data)) {
+      this.stateRestored.resolve();
       return;
     }
 

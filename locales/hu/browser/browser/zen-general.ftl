@@ -21,15 +21,15 @@ tab-context-zen-remove-essential =
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Alapvető URL módosítása
+           *[false] Rögzített URL módosítása
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = Csere az aktuális URL-re
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
+    .label = Módosítás…
     .accesskey = E
 tab-context-zen-edit-title = 
     .label = Címke módosítása...
@@ -53,10 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Megerősítés
 zen-pinned-tab-replaced = A rögzített lap URL címe helyébe az aktuális URL cím lépett!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = A rögzített lap URL-je frissült!
+zen-pinned-tab-url-invalid = Ez nem tűnik érvényes URL-nek.
+zen-pinned-tab-edit-url-title = Rögzített URL módosítása
+zen-pinned-tab-edit-url-label = Írja be azt az URL-címet, amelyre ennek a rögzített lapnak mutatnia kell:
 zen-tabs-renamed = A lap sikeresen át lett nevezve!
 zen-background-tab-opened-toast = Új lap megnyitva!
 zen-workspace-renamed-toast = A munkakörnyezet sikeresen át lett nevezve!
@@ -76,14 +76,14 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Ikonok
 zen-emojis-picker-search = 
-    .placeholder = Search emojis
+    .placeholder = Emojik keresése
 urlbar-search-mode-zen_actions = Műveletek
 zen-site-data-settings = Beállítások
 zen-generic-manage = Kezelés
 zen-generic-more = Több
 zen-generic-next = Következő
 zen-essentials-promo-label = Felvétel az alapvetőkbe
-zen-essentials-promo-sublabel = Tartsd kedvenc lapjaid egy kattintásnyira
+zen-essentials-promo-sublabel = Tartsa kedvenc lapjait egy kattintásra
 # These labels will be used for the site data panel settings
 zen-site-data-setting-allow = Engedélyezve
 zen-site-data-setting-block = Blokkolva
@@ -117,7 +117,7 @@ zen-site-data-setting-site-protection = Nyomkövetés védelem
 # Section: Feature callouts
 
 zen-site-data-panel-feature-callout-title = Új hely az add-onok, engedélyek és egyéb elemek számára
-zen-site-data-panel-feature-callout-subtitle = Kattints az ikonra a webhely beállításainak kezeléséhez, a biztonsági információk megtekintéséhez, a kiegészítők eléréséhez és a gyakori műveletek végrehajtásához.
+zen-site-data-panel-feature-callout-subtitle = Kattintson az ikonra a webhely beállításainak kezeléséhez, a biztonsági információk megtekintéséhez, a kiegészítők eléréséhez és a gyakori műveletek végrehajtásához.
 zen-open-link-in-glance = 
     .label = Link megnyitása a bepillantóban
     .accesskey = G
@@ -128,13 +128,13 @@ zen-sidebar-notification-updated-heading = Frissítés befejezve!
 zen-sidebar-notification-updated-label = { -brand-short-name } újdonságai
 zen-sidebar-notification-updated-tooltip = 
     .title = Változások listájának megtekintése
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-label = { -brand-short-name } támogatása
 zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
+    .title = Adományozás a projektnek
 zen-sidebar-notification-restart-safe-mode-label = Valami elromlott?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Újraindítás biztonságos módban
-zen-window-sync-migration-dialog-title = Tartsad szinkronban az ablakaid
+zen-window-sync-migration-dialog-title = Tartsa szinkronban az ablakait
 zen-window-sync-migration-dialog-message = A Zen mostantól szinkronizálja az ugyanazon eszközön található ablakokat, így az egyik ablakban végzett módosítások azonnal megjelennek a többiben is.
 zen-window-sync-migration-dialog-learn-more = Tudj meg többet
 zen-window-sync-migration-dialog-accept = Értettem

@@ -66,6 +66,8 @@ window.gZenCompactModeManager = {
   _eventListeners: [],
   _removeHoverFrames: {},
 
+  SIDEBAR_HOVER_BUFFER: 100,
+
   // Delay to avoid flickering when hovering over the sidebar
   HOVER_HACK_DELAY: Services.prefs.getIntPref(
     "zen.view.compact.hover-hack-delay",
@@ -90,7 +92,7 @@ window.gZenCompactModeManager = {
 
     this._emptyTabObserver = new MutationObserver(() => {
       if (this.preference && !this.sidebar.hasAttribute("zen-has-empty-tab")) {
-        if (this.sidebar.matches(":hover")) {
+        if (this._isPointerInsideSidebar()) {
           this._unlockSidebarHover();
           this._setElementExpandAttribute(this.sidebar, true);
           return;
@@ -361,7 +363,7 @@ window.gZenCompactModeManager = {
     this._unlockSidebarHover();
     this._sidebarHoverUnlockListener = () => {
       this._unlockSidebarHover();
-      if (this.preference && this.sidebar.matches(":hover")) {
+      if (this.preference && this._isPointerInsideSidebar()) {
         this._setElementExpandAttribute(this.sidebar, true);
       }
     };
@@ -369,6 +371,22 @@ window.gZenCompactModeManager = {
       capture: true,
       once: true,
     });
+  },
+
+  _isPointerInsideSidebar() {
+    const pointerX = {};
+    const pointerY = {};
+    window.windowUtils.getLastOverWindowPointerLocationInCSSPixels(
+      pointerX,
+      pointerY
+    );
+    const rect = document.getElementById("titlebar").getBoundingClientRect();
+    return (
+      pointerX.value >= rect.left &&
+      pointerX.value <= rect.right &&
+      pointerY.value >= rect.top &&
+      pointerY.value <= rect.bottom
+    );
   },
 
   _unlockSidebarHover() {
@@ -410,7 +428,7 @@ window.gZenCompactModeManager = {
       const distance = this.sidebarIsOnRight
         ? rect.left - event.clientX
         : event.clientX - rect.right;
-      if (distance <= lazy.COMPACT_MODE_OUTSIDE_WINDOW_HORIZONTAL_OFFSET) {
+      if (distance <= this.SIDEBAR_HOVER_BUFFER) {
         return;
       }
 

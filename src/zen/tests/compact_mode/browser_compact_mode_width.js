@@ -3,6 +3,10 @@
 
 "use strict";
 
+ChromeUtils.defineESModuleGetters(this, {
+  UrlbarTestUtils: "resource://testing-common/UrlbarTestUtils.sys.mjs",
+});
+
 function goToRightSideTabs(callback) {
   // eslint-disable-next-line no-async-promise-executor
   return new Promise(async resolve => {
@@ -186,9 +190,10 @@ async function testResizeHandlePointer() {
         pointerY
       );
 
+      const hoverBuffer = gZenCompactModeManager.SIDEBAR_HOVER_BUFFER;
       const bufferedX = gZenCompactModeManager.sidebarIsOnRight
-        ? sidebarRect.left - 100
-        : sidebarRect.right + 100;
+        ? sidebarRect.left - hoverBuffer
+        : sidebarRect.right + hoverBuffer;
       dispatchMouseEvent(
         document.documentElement,
         "mousemove",
@@ -200,12 +205,9 @@ async function testResizeHandlePointer() {
         "The sidebar stays open inside the outside hover buffer"
       );
 
-      const outsideOffset = Services.prefs.getIntPref(
-        "zen.view.compact.outside-window-edge-offset.horizontal"
-      );
       const outsideX = gZenCompactModeManager.sidebarIsOnRight
-        ? sidebarRect.left - outsideOffset - 1
-        : sidebarRect.right + outsideOffset + 1;
+        ? sidebarRect.left - hoverBuffer - 1
+        : sidebarRect.right + hoverBuffer + 1;
       dispatchMouseEvent(
         document.documentElement,
         "mousemove",
@@ -357,4 +359,68 @@ add_task(async function test_Compact_Mode_Empty_Tab_Hover_Priority() {
       }
     }
   );
+});
+
+add_task(async function test_Compact_Mode_Empty_Tab_Urlbar_Navigation() {
+  const emptyTab = gZenWorkspaces._emptyTab;
+  let openedTab;
+  window.windowUtils.disableNonTestMouseEvents(true);
+
+  try {
+    gBrowser.selectedTab = emptyTab;
+    await TestUtils.waitForCondition(
+      () => gNavToolbox.hasAttribute("zen-has-empty-tab"),
+      "The sidebar should stay open for an empty tab"
+    );
+    await setCompactMode(true);
+
+    document.getElementById("Browser:OpenLocation").doCommand();
+    await UrlbarTestUtils.promiseAutocompleteResultPopup({
+      window,
+      waitForFocus: SimpleTest.waitForFocus,
+      value: "https://example.com/",
+    });
+    const result = await UrlbarTestUtils.getDetailsOfResultAt(window, 0);
+    EventUtils.synthesizeMouseAtCenter(result.element.row, {
+      type: "mousemove",
+    });
+
+    const titlebarRect = document
+      .getElementById("titlebar")
+      .getBoundingClientRect();
+    const resultRect = result.element.row.getBoundingClientRect();
+    const resultCenterX = (resultRect.left + resultRect.right) / 2;
+    Assert.ok(
+      gZenCompactModeManager.sidebarIsOnRight
+        ? resultCenterX < titlebarRect.left
+        : resultCenterX > titlebarRect.right,
+      "The floating URL bar result should be outside the visible sidebar"
+    );
+
+    const tabOpened = BrowserTestUtils.waitForNewTab(
+      gBrowser,
+      "https://example.com/",
+      true
+    );
+    EventUtils.synthesizeMouseAtCenter(result.element.row, {});
+    openedTab = await tabOpened;
+    await TestUtils.waitForCondition(
+      () => !gNavToolbox.hasAttribute("zen-has-empty-tab"),
+      "URL bar navigation should leave the empty-tab state"
+    );
+    Assert.ok(
+      !gNavToolbox.hasAttribute("zen-has-hover"),
+      "The sidebar hides when URL bar navigation starts outside its bounds"
+    );
+  } finally {
+    window.windowUtils.disableNonTestMouseEvents(false);
+    await UrlbarTestUtils.promisePopupClose(window);
+    if (openedTab) {
+      await BrowserTestUtils.removeTab(openedTab);
+    }
+    gZenCompactModeManager._unlockSidebarHover();
+    gZenCompactModeManager._stopSidebarHoverBuffer();
+    gNavToolbox.removeAttribute("zen-has-hover");
+    await setCompactMode(false);
+  }
 });

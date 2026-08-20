@@ -64,6 +64,8 @@ zen-workspace-creation-label = Arbetsytor används för att organisera dina flik
 zen-workspace-default-profile = Standard
 zen-workspaces-delete-workspace-title = Ta bort arbetsyta?
 zen-workspaces-delete-workspace-body = Är du säker på att du vill radera { $name }? den här åtgärden kan inte ångras.
+zen-workspaces-remote-delete-title = Ta bort synkroniserad arbetsyta?
+zen-workspaces-remote-delete-body = { $name } har tagits bort på en annan enhet. Ta bort den här också? Att behålla den kommer att återställa den på dina andra enheter.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Flikar stängda! Använd <span>{ $shortcut }</span> för att ångra.

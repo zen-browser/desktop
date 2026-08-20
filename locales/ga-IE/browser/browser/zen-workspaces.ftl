@@ -64,6 +64,8 @@ zen-workspace-creation-label = Úsáidtear spásanna chun do chluaisíní agus d
 zen-workspace-default-profile = Réamhshocrú
 zen-workspaces-delete-workspace-title = Scrios an spás?
 zen-workspaces-delete-workspace-body = An bhfuil tú cinnte gur mian leat { $name } a scriosadh? Ní féidir an gníomh seo a chealú.
+zen-workspaces-remote-delete-title = Delete Synced Space?
+zen-workspaces-remote-delete-body = { $name } was deleted on another device. Delete it here too? Keeping it will restore it on your other devices.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Cluaisíní Dúnta! Úsáid <span>{ $shortcut }</span> chun é a chealú.

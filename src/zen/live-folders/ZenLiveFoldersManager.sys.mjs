@@ -368,7 +368,7 @@ class nsZenLiveFoldersManager {
               },
             ],
             content: {
-              width: "310px",
+              width: "312px",
               position: "callout",
               title_logo: {
                 imageURL: icon,

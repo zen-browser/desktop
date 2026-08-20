@@ -538,8 +538,7 @@
 
     :root[zen-single-toolbar="true"]:not([zen-has-empty-tab="true"]) & {
       & #urlbar:not([breakout-extend]) .urlbar-input-container {
-        padding-left: 8px;
-        padding-right: 4px;
+        padding-inline: 4px;
       }
     }
   }

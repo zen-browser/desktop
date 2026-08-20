@@ -61,12 +61,14 @@ zen-workspace-creation-profile = Profil
     .tooltiptext = A profilok arra szolgálnak, hogy a sütiket és a webhelyadatokat elkülönítsék a munkakörnyezetek között.
 zen-workspace-creation-header = Környezet létrehozása
 zen-workspace-creation-label = A munkakörnyezetek a lapok és munkamenetek rendszerezésére szolgálnak.
-zen-workspace-default-profile = Default
+zen-workspace-default-profile = Alapértelmezett
 zen-workspaces-delete-workspace-title = Munkakörnyezet törlése?
-zen-workspaces-delete-workspace-body = Biztosan törölni szeretnéd ezt: { $name }? Ez a művelet visszafordíthatatlan.
+zen-workspaces-delete-workspace-body = Biztosan törölni szeretné ezt: { $name }? Ez a művelet visszafordíthatatlan.
+zen-workspaces-remote-delete-title = Delete Synced Space?
+zen-workspaces-remote-delete-body = { $name } was deleted on another device. Delete it here too? Keeping it will restore it on your other devices.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
-zen-workspaces-close-all-unpinned-tabs-toast = Lapok bezárva! A visszavonáshoz használd a(z) <span>{ $shortcut }</span>.
+zen-workspaces-close-all-unpinned-tabs-toast = Lapok bezárva! A visszavonáshoz használja a(z) <span>{ $shortcut }</span>.
 zen-workspaces-close-all-unpinned-tabs-title = 
     .label = Törlés
     .tooltiptext = Összes rögzítetlen lap bezárása

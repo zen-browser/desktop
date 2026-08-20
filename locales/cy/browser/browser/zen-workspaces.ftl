@@ -64,6 +64,8 @@ zen-workspace-creation-label = Mae gofodau'n cael eu defnyddio i drefnu eich tab
 zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Dileu Gofod Gwaith?
 zen-workspaces-delete-workspace-body = Ydych chi'n siŵr eich bod chi eisiau dileu { $name }? Does dim modd dadwneud y weithred hon.
+zen-workspaces-remote-delete-title = Delete Synced Space?
+zen-workspaces-remote-delete-body = { $name } was deleted on another device. Delete it here too? Keeping it will restore it on your other devices.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Tabiau wedi'u Cau! Defnyddiwch <span>{ $shortcut }</span> i'w hailagor.

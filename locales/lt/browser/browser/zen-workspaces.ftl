@@ -64,6 +64,8 @@ zen-workspace-creation-label = Erdvės naudojamos tvarkyti jūsų korteles ir se
 zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Ištrinti erdvę?
 zen-workspaces-delete-workspace-body = Ar tikrai norite ištrinti „{ $name }“? Šio veiksmo anuliuoti negalima.
+zen-workspaces-remote-delete-title = Delete Synced Space?
+zen-workspaces-remote-delete-body = { $name } was deleted on another device. Delete it here too? Keeping it will restore it on your other devices.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Kortelės užvertos! Naudokite <span>{ $shortcut }</span>, kad atšauktumėte.

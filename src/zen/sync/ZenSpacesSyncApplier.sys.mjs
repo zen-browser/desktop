@@ -598,6 +598,11 @@ class nsZenSpacesSyncApplier {
     if (icon && syncableIconUrl(tab.getAttribute("image")) !== icon) {
       try {
         win.gBrowser.setIcon(tab, icon);
+        // As on creation: an unloaded tab's cached session image would
+        // otherwise override the icon set above at every collect.
+        lazy.TabStateCache.update(tab.linkedBrowser.permanentKey, {
+          image: null,
+        });
       } catch (e) {
         console.error("ZenSpacesSync: failed to set tab icon", e);
       }

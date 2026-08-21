@@ -2838,6 +2838,22 @@ class nsZenWorkspaces {
     return tab;
   }
 
+  selectTabToBlur(aTab, selectedTab) {
+    gBrowser.selectedTab = selectedTab;
+    if (aTab.closing && gBrowser.selectedTab === aTab) {
+      const replacementTab =
+        gBrowser.visibleTabs.find(
+          tab => tab !== aTab && !tab.closing && tab.linkedBrowser
+        ) ??
+        gBrowser.tabs.find(
+          tab => tab !== aTab && !tab.closing && tab.linkedBrowser
+        );
+      if (replacementTab) {
+        gBrowser.tabbox.selectedTab = replacementTab;
+      }
+    }
+  }
+
   async changeWorkspaceShortcut(
     offset = 1,
     whileScrolling = false,

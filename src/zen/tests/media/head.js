@@ -30,7 +30,7 @@ async function playVideoIn(tab) {
     }
   );
   // Wait for the browser to actually consider the tab "playing" — this is
-  // what drives DOMAudioPlaybackStarted into the media controller.
+  // what drives the soundplaying TabAttrModified into the media controller.
   await BrowserTestUtils.waitForCondition(
     () => tab.soundPlaying,
     "tab reports soundplaying"

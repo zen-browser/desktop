@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-folders-search-placeholder = 
-    .placeholder = { $folder-name } を検索
+    .placeholder = { $folder-name } を検索…
 zen-folders-panel-rename-folder = 
     .label = フォルダの名前を変更
 zen-folders-panel-unpack-folder = 

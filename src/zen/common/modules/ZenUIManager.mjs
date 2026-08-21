@@ -4,6 +4,7 @@
 
 import { nsZenMultiWindowFeature } from "chrome://browser/content/zen-components/ZenCommonUtils.mjs";
 import { nsZenMenuBar } from "chrome://browser/content/zen-components/ZenMenubar.mjs";
+import { UrlbarShared } from "chrome://browser/content/urlbar/UrlbarShared.mjs";
 
 window.gZenUIManager = {
   _popupTrackingElements: [],
@@ -467,7 +468,7 @@ window.gZenUIManager = {
     let searchMode = null;
     if (!currentSearchMode) {
       searchMode = {
-        source: UrlbarUtils.RESULT_SOURCE.ZEN_ACTIONS,
+        source: UrlbarShared.RESULT_SOURCE.ZEN_ACTIONS,
         isPreview: true,
       };
     }

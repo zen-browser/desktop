@@ -1,8 +1,8 @@
 diff --git a/browser/base/content/aboutDialog.js b/browser/base/content/aboutDialog.js
-index f6e1391baf12abb91c85a95107bb3923118746c0..cac04aa288e8a305d0c8b28e0c919abce87658e5 100644
+index a2fb4433c7044e7f5681d5762285314fa3e00a5c..dac1e79e86c534247a470ae062e59f7e7cba6e38 100644
 --- a/browser/base/content/aboutDialog.js
 +++ b/browser/base/content/aboutDialog.js
-@@ -52,7 +52,7 @@ function init() {
+@@ -58,7 +58,7 @@ function init() {
    ]);
    let versionIdKey = "base";
    let versionAttributes = {
@@ -11,7 +11,7 @@ index f6e1391baf12abb91c85a95107bb3923118746c0..cac04aa288e8a305d0c8b28e0c919abc
    };
  
    let arch = Services.sysinfo.get("arch");
-@@ -64,7 +64,7 @@ function init() {
+@@ -70,7 +70,7 @@ function init() {
    }
  
    let version = Services.appinfo.version;
@@ -20,7 +20,7 @@ index f6e1391baf12abb91c85a95107bb3923118746c0..cac04aa288e8a305d0c8b28e0c919abc
      versionIdKey += "-nightly";
      let buildID = Services.appinfo.appBuildID;
      let year = buildID.slice(0, 4);
-@@ -125,14 +125,6 @@ function init() {
+@@ -158,14 +158,6 @@ function init() {
        window.close();
      });
    if (AppConstants.MOZ_UPDATER) {

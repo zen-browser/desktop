@@ -346,7 +346,7 @@ class ZenMediaCard {
 
   onToggle() {
     if (this.controller?.isPlaying) {
-      this.controller.pause();
+      this.controller.pause("user");
     } else {
       this.controller?.play();
     }
@@ -365,7 +365,7 @@ class ZenMediaCard {
   }
 
   onSeekDrag(event) {
-    this.controller?.pause();
+    this.controller?.pause("user");
     const newTime = (event.target.value / 100) * this.duration;
     this.currentTimeEl.textContent = this.formatSecondsToTime(newTime);
   }
@@ -408,7 +408,7 @@ class ZenMediaCard {
 
   onClose() {
     if (this.controller) {
-      this.controller.pause();
+      this.controller.pause("user");
     } else {
       const webRTC =
         this.browser.browsingContext.currentWindowGlobal.getActor("WebRTC");
@@ -494,37 +494,47 @@ class nsZenMediaController {
     window.addEventListener("TabClose", onTabDiscardedOrClosed);
     window.addEventListener("TabBrowserDiscarded", onTabDiscardedOrClosed);
 
-    window.addEventListener("DOMAudioPlaybackStarted", event => {
-      const browser = event.target;
-      // The card is created right away (while the controller is fresh)
-      // but only shown if the media is still playing a moment later, so
-      // short sounds (e.g. notification pings) never reveal it.
-      setTimeout(() => {
-        const card = this.#cardForBrowser(browser);
-        if (!card || card.isSharing) {
-          return;
-        }
-        if (card.controller.isPlaying) {
-          card.refreshVisibility();
-        } else if (card.element.hidden) {
-          // The sound was over before ever being shown (e.g. a
-          // notification ping): drop the card instead of keeping a ghost
-          // around.
-          card.destroy();
-        }
-      }, 1000);
-
-      this.activateMediaControls(
-        browser.browsingContext.mediaController,
-        browser
-      );
-    });
-
-    window.addEventListener("DOMAudioPlaybackStopped", () => {
-      for (const card of this.#cards.values()) {
-        card.updateMuteState();
+    window.addEventListener("TabAttrModified", event => {
+      if (!event.detail.changed.includes("soundplaying")) {
+        return;
       }
+      const tab = event.target;
+      if (!tab.hasAttribute("soundplaying")) {
+        this.onAudioPlaybackStopped();
+        return;
+      }
+      this.onAudioPlaybackStarted(tab.linkedBrowser);
     });
+  }
+
+  onAudioPlaybackStarted(browser) {
+    // The card is created right away (while the controller is fresh) but
+    // only shown if the media is still playing a moment later, so short
+    // sounds (e.g. notification pings) never reveal it.
+    setTimeout(() => {
+      const card = this.#cardForBrowser(browser);
+      if (!card || card.isSharing) {
+        return;
+      }
+      if (card.controller.isPlaying) {
+        card.refreshVisibility();
+      } else if (card.element.hidden) {
+        // The sound was over before ever being shown (e.g. a notification
+        // ping): drop the card instead of keeping a ghost around.
+        card.destroy();
+      }
+    }, 1000);
+
+    this.activateMediaControls(
+      browser.browsingContext?.mediaController,
+      browser
+    );
+  }
+
+  onAudioPlaybackStopped() {
+    for (const card of this.#cards.values()) {
+      card.updateMuteState();
+    }
   }
 
   get frontCard() {
@@ -660,7 +670,7 @@ class nsZenMediaController {
     this.#cards.set(key, card);
     if (controller) {
       // Media cards start hidden and appear via the delayed check in
-      // DOMAudioPlaybackStarted or on tab switch, like the original bar;
+      // onAudioPlaybackStarted or on tab switch, like the original bar;
       // sharing cards show right away.
       card.element.hidden = true;
     } else {

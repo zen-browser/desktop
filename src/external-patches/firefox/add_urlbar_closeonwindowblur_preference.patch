@@ -55,11 +55,12 @@ diff --git a/browser/components/urlbar/content/UrlbarView.mjs b/browser/componen
 diff --git a/browser/components/urlbar/content/UrlbarInput.mjs b/browser/components/urlbar/content/UrlbarInput.mjs
 --- a/browser/components/urlbar/content/UrlbarInput.mjs
 +++ b/browser/components/urlbar/content/UrlbarInput.mjs
-@@ -4783,10 +4783,16 @@
-     }
-   }
- 
+@@ -5460,11 +5460,17 @@
    _on_blur(event) {
+     if (this.view.resultMenu.hasAttribute("open")) {
+       return;
+     }
+ 
      lazy.logger.debug("Blur Event");
 +    if (
 +      this.document.commandDispatcher.focusedElement == this.inputField &&

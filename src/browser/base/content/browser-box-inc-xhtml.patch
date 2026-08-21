@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/browser-box.inc.xhtml b/browser/base/content/browser-box.inc.xhtml
-index 4a16fe93daeefb88af024c1dac05bc1f518c3fcb..a420768e4047937c8becefb69c1017e13fc12231 100644
+index cf35762fdcc4716932c7af7cf4af4b2f72aea038..6c13e42806ce80accce464d7ec7e022a0d8e0078 100644
 --- a/browser/base/content/browser-box.inc.xhtml
 +++ b/browser/base/content/browser-box.inc.xhtml
 @@ -3,12 +3,22 @@
@@ -28,12 +28,12 @@ index 4a16fe93daeefb88af024c1dac05bc1f518c3fcb..a420768e4047937c8becefb69c1017e1
 @@ -25,7 +35,7 @@
      </stack>
    </vbox>
-   <splitter id="sidebar-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="sibling" resizeafter="none" hidden="true"/>
+   <splitter id="sidebar-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="sibling" resizeafter="none" hidden="true" role="separator" aria-controls="sidebar-box" data-l10n-id="sidebar-resize-splitter"/>
 -  <tabbox id="tabbrowser-tabbox" flex="1" tabcontainer="tabbrowser-tabs">
 +#include zen-tabbrowser-elements.inc.xhtml
      <tabpanels id="tabbrowser-tabpanels" flex="1" selectedIndex="0"/>
    </tabbox>
-   <splitter id="ai-window-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="none" resizeafter="sibling" collapsed="true"/>
+   <splitter id="ai-window-splitter" class="chromeclass-extrachrome sidebar-splitter" resizebefore="sibling" resizeafter="sibling" collapsed="true"/>
 @@ -34,3 +44,5 @@
      </stack>
    </vbox>

@@ -78,6 +78,13 @@ const STANDALONE_WINDOW_DISABLED_COMMANDS = [
 const STANDALONE_WINDOW_CASCADE_STEP = 28;
 const STANDALONE_WINDOW_CASCADE_LENGTH = 8;
 
+const STANDALONE_WINDOW_GEOMETRY_PREFS = Object.freeze({
+  width: "zen.standalone-window.last-width",
+  height: "zen.standalone-window.last-height",
+  left: "zen.standalone-window.last-screen-x",
+  top: "zen.standalone-window.last-screen-y",
+});
+
 // How recently the application must have been brought to the front for the
 // standalone window to count as the reason it was. Anything slower than this
 // was the user switching to Zen on their own, and closing a standalone window
@@ -101,8 +108,6 @@ const STANDALONE_WINDOW_FOCUS_SETTLE_MS = 1500;
 const STANDALONE_WINDOW_STRAY_WINDOW_WATCH_MS = 4000;
 
 class nsZenStandaloneWindowManager {
-  #cascadeIndex = 0;
-
   /**
    * Runs before the first browser window exists.
    *
@@ -447,19 +452,8 @@ class nsZenStandaloneWindowManager {
    * @returns {string} Comma-separated window feature string
    */
   getStandaloneWindowFeatures(request) {
-    const width = Services.prefs.getIntPref(
-      "zen.standalone-window.default-width",
-      1280
-    );
-    const height = Services.prefs.getIntPref(
-      "zen.standalone-window.default-height",
-      820
-    );
-    const { left, top } = this.#getCascadedPosition(
-      request.openerWindow,
-      width,
-      height
-    );
+    const { width, height, left, top } =
+      this.getStandaloneWindowBounds(request);
 
     // An ordinary window, deliberately. What makes a standalone window
     // particular is all above this layer: it carries no workspace chrome, it
@@ -482,37 +476,126 @@ class nsZenStandaloneWindowManager {
   }
 
   /**
-   * Places each standalone window slightly below and right of the previous one,
-   * starting from the centre of the opener's screen.
+   * Resolves the initial standalone rectangle. Once a user has moved or
+   * resized a standalone window, that normal-state rectangle replaces the
+   * defaults. It is clamped to the display it belongs to so a disconnected or
+   * resized monitor cannot strand the window off-screen.
    *
-   * @param {Window} openerWindow - Browser window that received the external open request
-   * @param {number} width - Standalone window width
-   * @param {number} height - Standalone window height
-   * @returns {{left: number, top: number}} Screen coordinates for the new window
+   * @param {object} request - Normalized standalone window request
+   * @returns {{width: number, height: number, left: number, top: number}}
    */
-  #getCascadedPosition(openerWindow, width, height) {
-    const offset =
-      STANDALONE_WINDOW_CASCADE_STEP *
-      (this.#cascadeIndex % STANDALONE_WINDOW_CASCADE_LENGTH);
-    this.#cascadeIndex++;
+  getStandaloneWindowBounds(request) {
+    const savedBounds = this.#getPersistedStandaloneWindowBounds();
+    if (savedBounds) {
+      const area = this.#getAvailableScreenAreaForRect(
+        savedBounds,
+        request.openerWindow
+      );
+      return this.#cascadeAndClampBounds(savedBounds, area);
+    }
 
-    const area = this.#getAvailableScreenArea(openerWindow);
-    const availLeft = area.left;
-    const availTop = area.top;
+    const width = Services.prefs.getIntPref(
+      "zen.standalone-window.default-width",
+      1280
+    );
+    const height = Services.prefs.getIntPref(
+      "zen.standalone-window.default-height",
+      820
+    );
+    const area = this.#getAvailableScreenArea(request.openerWindow);
     const availWidth = area.width > 0 ? area.width : width;
     const availHeight = area.height > 0 ? area.height : height;
 
+    return this.#cascadeAndClampBounds(
+      {
+        width,
+        height,
+        left: area.left + Math.max(0, Math.round((availWidth - width) / 2)),
+        top: area.top + Math.max(0, Math.round((availHeight - height) / 2)),
+      },
+      area
+    );
+  }
+
+  /**
+   * Places a standalone window slightly below and right of the saved/base
+   * rectangle when other standalone windows are already open, then keeps the
+   * complete rectangle inside the available display area.
+   *
+   * @param {{width: number, height: number, left: number, top: number}} bounds - Base rectangle
+   * @param {{left: number, top: number, width: number, height: number}} area - Available display area
+   * @returns {{width: number, height: number, left: number, top: number}} Clamped rectangle
+   */
+  #cascadeAndClampBounds(bounds, area) {
+    const standaloneWindowCount = [
+      ...Services.wm.getEnumerator("navigator:browser"),
+    ].filter(win => !win.closed && this.isStandaloneWindow(win)).length;
+    const offset =
+      STANDALONE_WINDOW_CASCADE_STEP *
+      (standaloneWindowCount % STANDALONE_WINDOW_CASCADE_LENGTH);
+    const availLeft = area.left;
+    const availTop = area.top;
+    const availWidth = area.width > 0 ? area.width : bounds.width;
+    const availHeight = area.height > 0 ? area.height : bounds.height;
+    const width = Math.min(bounds.width, availWidth);
+    const height = Math.min(bounds.height, availHeight);
+
     const maxLeft = availLeft + Math.max(0, availWidth - width);
     const maxTop = availTop + Math.max(0, availHeight - height);
-    const baseLeft =
-      availLeft + Math.max(0, Math.round((availWidth - width) / 2));
-    const baseTop =
-      availTop + Math.max(0, Math.round((availHeight - height) / 2));
 
     return {
-      left: Math.round(Math.min(baseLeft + offset, maxLeft)),
-      top: Math.round(Math.min(baseTop + offset, maxTop)),
+      width: Math.round(width),
+      height: Math.round(height),
+      left: Math.round(
+        Math.max(availLeft, Math.min(bounds.left + offset, maxLeft))
+      ),
+      top: Math.round(
+        Math.max(availTop, Math.min(bounds.top + offset, maxTop))
+      ),
     };
+  }
+
+  /**
+   * Reads the last valid standalone rectangle from its dedicated preferences.
+   * A zero width or height is the unset marker used by the default prefs.
+   *
+   * @returns {{width: number, height: number, left: number, top: number}|null}
+   */
+  #getPersistedStandaloneWindowBounds() {
+    const bounds = Object.fromEntries(
+      Object.entries(STANDALONE_WINDOW_GEOMETRY_PREFS).map(([key, pref]) => [
+        key,
+        Services.prefs.getIntPref(pref, 0),
+      ])
+    );
+
+    if (bounds.width <= 0 || bounds.height <= 0) {
+      return null;
+    }
+    return bounds;
+  }
+
+  /**
+   * Finds the display containing a saved rectangle. If platform screen lookup
+   * is unavailable, placement falls back to the opener/primary display.
+   *
+   * @param {{width: number, height: number, left: number, top: number}} bounds - Saved rectangle
+   * @param {Window} [openerWindow] - Browser window used as fallback context
+   * @returns {{left: number, top: number, width: number, height: number}} Available area
+   */
+  #getAvailableScreenAreaForRect(bounds, openerWindow) {
+    try {
+      const screen = Cc["@mozilla.org/gfx/screenmanager;1"]
+        .getService(Ci.nsIScreenManager)
+        .screenForRect(bounds.left, bounds.top, bounds.width, bounds.height);
+      return this.#getScreenAvailableArea(screen);
+    } catch (error) {
+      console.error(
+        "Cannot resolve the saved standalone window display",
+        error
+      );
+      return this.#getAvailableScreenArea(openerWindow);
+    }
   }
 
   /**
@@ -534,23 +617,34 @@ class nsZenStandaloneWindowManager {
     }
 
     try {
-      const left = {};
-      const top = {};
-      const width = {};
-      const height = {};
-      Cc["@mozilla.org/gfx/screenmanager;1"]
-        .getService(Ci.nsIScreenManager)
-        .primaryScreen.GetAvailRectDisplayPix(left, top, width, height);
-      return {
-        left: left.value,
-        top: top.value,
-        width: width.value,
-        height: height.value,
-      };
+      const primaryScreen = Cc["@mozilla.org/gfx/screenmanager;1"].getService(
+        Ci.nsIScreenManager
+      ).primaryScreen;
+      return this.#getScreenAvailableArea(primaryScreen);
     } catch (error) {
       console.error("Cannot read the available screen area", error);
       return { left: 0, top: 0, width: 0, height: 0 };
     }
+  }
+
+  /**
+   * Converts an nsIScreen's available rectangle to a plain object.
+   *
+   * @param {nsIScreen} screen - Platform screen
+   * @returns {{left: number, top: number, width: number, height: number}} Available area
+   */
+  #getScreenAvailableArea(screen) {
+    const left = {};
+    const top = {};
+    const width = {};
+    const height = {};
+    screen.GetAvailRectDisplayPix(left, top, width, height);
+    return {
+      left: left.value,
+      top: top.value,
+      width: width.value,
+      height: height.value,
+    };
   }
 
   /**
@@ -651,6 +745,8 @@ class nsZenStandaloneWindowManager {
       visitedNormalWindow: false,
       deactivateListener: null,
       commandListener: null,
+      initialNormalBounds: null,
+      geometryListeners: null,
     };
   }
 
@@ -1105,6 +1201,8 @@ class nsZenStandaloneWindowManager {
    * @param {Window} standaloneWindow - The created standalone window
    */
   registerStandaloneWindowLifecycle(standaloneWindow) {
+    this.registerStandaloneWindowGeometry(standaloneWindow);
+
     // Session store dispatches SSWindowClosing while the window's tab is still
     // alive, which is the only moment the page can be handed to another window.
     standaloneWindow.addEventListener(
@@ -1120,6 +1218,96 @@ class nsZenStandaloneWindowManager {
   }
 
   /**
+   * Watches native move/resize changes and stores the most recent normal-state
+   * rectangle. The close-time snapshot also covers platforms that do not emit
+   * a move event while a native window is being dragged.
+   *
+   * @param {Window} standaloneWindow - The standalone window to watch
+   */
+  registerStandaloneWindowGeometry(standaloneWindow) {
+    const state = standaloneWindow?.ZenExternalLinkStandalone;
+    if (!state || state.geometryListeners) {
+      return;
+    }
+
+    state.initialNormalBounds =
+      this.#readNormalStandaloneWindowBounds(standaloneWindow);
+    const persist = () =>
+      this.persistStandaloneWindowGeometry(standaloneWindow);
+    state.geometryListeners = [
+      [standaloneWindow, "resize", persist],
+      [standaloneWindow, "sizemodechange", persist],
+      [standaloneWindow.windowRoot, "MozUpdateWindowPos", persist],
+    ];
+    for (const [target, type, listener] of state.geometryListeners) {
+      target.addEventListener(type, listener);
+    }
+  }
+
+  /**
+   * Persists a standalone window's placement and size without touching normal
+   * browser session/XUL geometry. Maximized, minimized and fullscreen bounds
+   * are ignored because they describe the display rather than the user's
+   * reusable window rectangle.
+   *
+   * @param {Window} standaloneWindow - The standalone window to snapshot
+   * @returns {boolean} True when a rectangle was stored
+   */
+  persistStandaloneWindowGeometry(standaloneWindow) {
+    const bounds = this.#readNormalStandaloneWindowBounds(standaloneWindow);
+    if (!bounds) {
+      return false;
+    }
+
+    const initialBounds =
+      standaloneWindow.ZenExternalLinkStandalone?.initialNormalBounds;
+    if (
+      initialBounds &&
+      Object.keys(bounds).every(key => bounds[key] === initialBounds[key])
+    ) {
+      return false;
+    }
+
+    for (const [key, pref] of Object.entries(
+      STANDALONE_WINDOW_GEOMETRY_PREFS
+    )) {
+      Services.prefs.setIntPref(pref, bounds[key]);
+    }
+    return true;
+  }
+
+  /**
+   * Reads a native window's current reusable rectangle.
+   *
+   * @param {Window} standaloneWindow - Window to inspect
+   * @returns {{width: number, height: number, left: number, top: number}|null}
+   */
+  #readNormalStandaloneWindowBounds(standaloneWindow) {
+    if (
+      !standaloneWindow ||
+      standaloneWindow.closed ||
+      standaloneWindow.windowState !== standaloneWindow.STATE_NORMAL
+    ) {
+      return null;
+    }
+
+    const bounds = {
+      width: Math.round(standaloneWindow.outerWidth),
+      height: Math.round(standaloneWindow.outerHeight),
+      left: Math.round(standaloneWindow.screenX),
+      top: Math.round(standaloneWindow.screenY),
+    };
+    if (
+      !Object.values(bounds).every(Number.isFinite) ||
+      bounds.width <= 0 ||
+      bounds.height <= 0
+    ) {
+      return null;
+    }
+    return bounds;
+  }
+
+  /**
    * Handles a standalone window that is about to close.
    *
    * A standalone window is not part of the session, so nothing of it would
@@ -1131,6 +1319,7 @@ class nsZenStandaloneWindowManager {
    */
   onStandaloneWindowClosing(standaloneWindow) {
     const state = standaloneWindow?.ZenExternalLinkStandalone;
+    this.persistStandaloneWindowGeometry(standaloneWindow);
     if (!state || state.isKeeping || state.closedTabRecorded) {
       // The tab is moving to a real window; it is not being closed.
       return;
@@ -1240,6 +1429,10 @@ class nsZenStandaloneWindowManager {
     }
 
     const state = standaloneWindow.ZenExternalLinkStandalone;
+    this.persistStandaloneWindowGeometry(standaloneWindow);
+    for (const [target, type, listener] of state.geometryListeners ?? []) {
+      target.removeEventListener(type, listener);
+    }
     this.cleanupStandaloneToolbar(standaloneWindow);
     standaloneWindow.ZenExternalLinkStandalone = null;
 

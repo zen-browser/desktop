@@ -20,6 +20,11 @@ class ZenStartup {
       // Set before first paint so the standalone window never flashes the
       // sidebar and tab strip that its stylesheet hides.
       document.documentElement.setAttribute("zen-standalone-window", "true");
+      // browser.xhtml normally persists this root element's bounds for normal
+      // browser windows. Standalone windows have their own geometry store;
+      // leaving this enabled would make moving one relocate the next normal
+      // Zen window as well.
+      document.documentElement.removeAttribute("persist");
     }
     this.openWatermark();
     this.#zenInitBrowserLayout();

@@ -13,6 +13,21 @@
 - name: zen.standalone-window.default-height
   value: 820
 
+# Last normal (non-maximized/non-fullscreen) standalone window geometry. These
+# are separate from the browser window's XUL/session geometry so standalone
+# windows never change where a normal Zen window opens.
+- name: zen.standalone-window.last-width
+  value: 0
+
+- name: zen.standalone-window.last-height
+  value: 0
+
+- name: zen.standalone-window.last-screen-x
+  value: 0
+
+- name: zen.standalone-window.last-screen-y
+  value: 0
+
 # When Zen was brought to the front only to show a standalone window, closing
 # that window sends the user back to the application the link came from.
 - name: zen.standalone-window.return-focus-on-close

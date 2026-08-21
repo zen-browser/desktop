@@ -58,8 +58,84 @@ add_task(async function test_external_link_opens_standalone_window() {
       "Standalone window keeps the normal nav bar"
     );
     ok(urlBar && !urlBar.readOnly, "Standalone URL bar remains editable");
+    ok(
+      !standaloneWindow.document.documentElement.hasAttribute("persist"),
+      "Standalone bounds do not overwrite normal browser window geometry"
+    );
   } finally {
     await closeStandaloneWindow(standaloneWindow);
+  }
+});
+
+add_task(async function test_standalone_window_geometry_is_persistent() {
+  const prefs = {
+    width: "zen.standalone-window.last-width",
+    height: "zen.standalone-window.last-height",
+    left: "zen.standalone-window.last-screen-x",
+    top: "zen.standalone-window.last-screen-y",
+  };
+  await SpecialPowers.pushPrefEnv({
+    set: Object.values(prefs).map(pref => [pref, 0]),
+  });
+
+  try {
+    const savedBounds = {
+      width: Math.min(900, window.screen.availWidth),
+      height: Math.min(600, window.screen.availHeight),
+      left: window.screen.availLeft + 40,
+      top: window.screen.availTop + 40,
+    };
+    const fakeWindow = {
+      closed: false,
+      windowState: 0,
+      STATE_NORMAL: 0,
+      outerWidth: savedBounds.width,
+      outerHeight: savedBounds.height,
+      screenX: savedBounds.left,
+      screenY: savedBounds.top,
+      ZenExternalLinkStandalone: { initialNormalBounds: null },
+    };
+
+    ok(
+      gZenStandaloneWindowManager.persistStandaloneWindowGeometry(fakeWindow),
+      "A normal standalone rectangle is persisted"
+    );
+    for (const [key, pref] of Object.entries(prefs)) {
+      Assert.equal(
+        Services.prefs.getIntPref(pref),
+        savedBounds[key],
+        `The saved ${key} is kept in standalone-only preferences`
+      );
+    }
+
+    const features = Object.fromEntries(
+      gZenStandaloneWindowManager
+        .getStandaloneWindowFeatures({ openerWindow: window })
+        .split(",")
+        .map(feature => feature.split("="))
+    );
+    Assert.equal(
+      Number(features.width),
+      savedBounds.width,
+      "A subsequent standalone window restores the saved width"
+    );
+    Assert.equal(
+      Number(features.height),
+      savedBounds.height,
+      "A subsequent standalone window restores the saved height"
+    );
+    Assert.equal(
+      Number(features.left),
+      savedBounds.left,
+      "The first standalone window restores the saved horizontal placement"
+    );
+    Assert.equal(
+      Number(features.top),
+      savedBounds.top,
+      "The first standalone window restores the saved vertical placement"
+    );
+  } finally {
+    await SpecialPowers.popPrefEnv();
   }
 });
 

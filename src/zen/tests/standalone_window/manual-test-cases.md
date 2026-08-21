@@ -26,7 +26,14 @@ The feature must not ship unless all of these pass:
 5. Repeat close using the red traffic light and the menu Close command.
    - Expected: all three entry points have the same unload, recovery, cleanup,
      and focus behavior.
-6. Promote through the primary action and through a picker-selected space.
+6. Move and resize a standalone window, close it, then open another external
+   link.
+   - Expected: the new standalone restores the previous normal window size and
+     placement. If several standalone windows are open together, later windows
+     cascade from that saved placement.
+   - Expected: opening a regular Zen window still uses the regular window's own
+     last size and placement.
+7. Promote through the primary action and through a picker-selected space.
    - Expected: the existing UI and live-page move behavior remain unchanged.
 
 ## Cases

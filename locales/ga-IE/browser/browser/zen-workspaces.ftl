@@ -64,6 +64,8 @@ zen-workspace-creation-label = Úsáidtear spásanna chun do chluaisíní agus d
 zen-workspace-default-profile = Réamhshocrú
 zen-workspaces-delete-workspace-title = Scrios an spás?
 zen-workspaces-delete-workspace-body = An bhfuil tú cinnte gur mian leat { $name } a scriosadh? Ní féidir an gníomh seo a chealú.
+zen-workspaces-remote-delete-title = An bhfuil fonn ort spás sioncronaithe a scriosadh?
+zen-workspaces-remote-delete-body = Scriosadh { $name } ar ghléas eile. An bhfuil fonn ort é a scriosadh anseo freisin? Déanfaidh sé é a choinneáil ar ais ar do ghléasanna eile.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Cluaisíní Dúnta! Úsáid <span>{ $shortcut }</span> chun é a chealú.

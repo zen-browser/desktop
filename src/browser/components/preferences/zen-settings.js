@@ -731,7 +731,20 @@ var gZenWorkspacesSettings = {
       },
     };
 
+    const updateAutoUnloadDelayState = {
+      observe() {
+        const delay = document.getElementById("zenAutoUnloadTabsDelay");
+        if (delay) {
+          delay.disabled = !Services.prefs.getBoolPref(
+            "zen.tabs.auto-unload.enabled",
+            false
+          );
+        }
+      },
+    };
+
     toggleZenCycleByAttrWarning.observe(); // call it once on initial load
+    updateAutoUnloadDelayState.observe();
 
     Services.prefs.addObserver("zen.glance.enabled", tabsUnloaderPrefListener); // We can use the same listener for both prefs
     Services.prefs.addObserver("zen.workspaces.separate-essentials", tabsUnloaderPrefListener);
@@ -742,6 +755,10 @@ var gZenWorkspacesSettings = {
       toggleZenCycleByAttrWarning
     );
     Services.prefs.addObserver("browser.ctrlTab.sortByRecentlyUsed", toggleZenCycleByAttrWarning);
+    Services.prefs.addObserver(
+      "zen.tabs.auto-unload.enabled",
+      updateAutoUnloadDelayState
+    );
     window.addEventListener("unload", () => {
       Services.prefs.removeObserver("zen.glance.enabled", tabsUnloaderPrefListener);
       Services.prefs.removeObserver("zen.glance.activation-method", tabsUnloaderPrefListener);
@@ -757,6 +774,10 @@ var gZenWorkspacesSettings = {
       Services.prefs.removeObserver(
         "browser.ctrlTab.sortByRecentlyUsed",
         toggleZenCycleByAttrWarning
+      );
+      Services.prefs.removeObserver(
+        "zen.tabs.auto-unload.enabled",
+        updateAutoUnloadDelayState
       );
     });
   },

@@ -44,6 +44,34 @@
             preference="zen.tabs.select-recently-used-on-close"/>
 </groupbox>
 
+<hbox id="zenAutoUnloadTabsCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenTabManagement">
+      <html:h1 data-l10n-id="pane-zen-auto-unload-tabs-title"/>
+</hbox>
+
+<groupbox id="zenAutoUnloadTabsGroup" data-category="paneZenTabManagement" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-auto-unload-tabs-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-auto-unload-tabs-description" />
+
+      <checkbox id="zenAutoUnloadTabsEnabled"
+            data-l10n-id="zen-auto-unload-tabs-enabled"
+            preference="zen.tabs.auto-unload.enabled"/>
+      <hbox align="center">
+            <label data-l10n-id="zen-auto-unload-tabs-delay-label"/>
+            <menulist id="zenAutoUnloadTabsDelay" preference="zen.tabs.auto-unload.after-minutes">
+                  <menupopup>
+                        <menuitem data-l10n-id="zen-auto-unload-tabs-delay-5" value="5"/>
+                        <menuitem data-l10n-id="zen-auto-unload-tabs-delay-15" value="15"/>
+                        <menuitem data-l10n-id="zen-auto-unload-tabs-delay-30" value="30"/>
+                        <menuitem data-l10n-id="zen-auto-unload-tabs-delay-60" value="60"/>
+                        <menuitem data-l10n-id="zen-auto-unload-tabs-delay-120" value="120"/>
+                  </menupopup>
+            </menulist>
+      </hbox>
+</groupbox>
+
 <hbox id="zenPinnedTabsManagerCategory"
       class="subcategory"
       hidden="true"
@@ -78,5 +106,4 @@
 </groupbox>
 
 </html:template>
-
 

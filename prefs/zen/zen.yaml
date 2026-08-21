@@ -23,6 +23,12 @@
 - name: zen.tabs.select-recently-used-on-close
   value: true
 
+- name: zen.tabs.auto-unload.enabled
+  value: false
+
+- name: zen.tabs.auto-unload.after-minutes
+  value: 15
+
 - name: zen.tabs.folder-dragover-threshold-percent
   value: 20 # Percentage of folder height to trigger dragover
 

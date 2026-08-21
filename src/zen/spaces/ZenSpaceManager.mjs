@@ -9,7 +9,12 @@ import { ZenSpacesSwipe } from "resource:///modules/zen/ZenSpacesSwipe.mjs";
 
 const lazy = {};
 
+const AUTO_UNLOAD_CHECK_INTERVAL_MS = 60 * 1000;
+const AUTO_UNLOAD_BATCH_SIZE = 5;
+
 ChromeUtils.defineESModuleGetters(lazy, {
+  TabUnloader:
+    "moz-src:///browser/components/tabbrowser/TabUnloader.sys.mjs",
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
 });
 
@@ -48,6 +53,8 @@ class nsZenWorkspaces {
   _workspaceCache = [];
 
   #lastScrollTime = 0;
+  _autoUnloadTimer = null;
+  _autoUnloadInProgress = false;
   #currentSpaceSwitchContext = {
     promise: null,
     animations: [],
@@ -122,6 +129,20 @@ class nsZenWorkspaces {
       "zen.workspaces.open-new-tab-if-last-unpinned-tab-is-closed",
       false
     );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "autoUnloadTabsEnabled",
+      "zen.tabs.auto-unload.enabled",
+      false,
+      () => this._restartAutoUnloadTimer()
+    );
+    XPCOMUtils.defineLazyPreferenceGetter(
+      this,
+      "autoUnloadTabsAfterMinutes",
+      "zen.tabs.auto-unload.after-minutes",
+      15,
+      () => this._restartAutoUnloadTimer()
+    );
     this.containerSpecificEssentials = Services.prefs.getBoolPref(
       "zen.workspaces.separate-essentials",
       false
@@ -142,6 +163,9 @@ class nsZenWorkspaces {
     }
 
     window.addEventListener("resize", this.onWindowResize.bind(this));
+    window.addEventListener("unload", () => this._stopAutoUnloadTimer(), {
+      once: true,
+    });
     this.addPopupListeners();
 
     if (this.privateWindowOrDisabled) {
@@ -190,6 +214,115 @@ class nsZenWorkspaces {
     ) {
       this._swipeManager = new ZenSpacesSwipe();
       this.initializeWorkspaceNavigation();
+    }
+    this._restartAutoUnloadTimer();
+  }
+
+  _stopAutoUnloadTimer() {
+    if (this._autoUnloadTimer) {
+      window.clearInterval(this._autoUnloadTimer);
+      this._autoUnloadTimer = null;
+    }
+  }
+
+  _restartAutoUnloadTimer() {
+    this._stopAutoUnloadTimer();
+    if (!this.autoUnloadTabsEnabled || this.isPrivateWindow || window.closed) {
+      return;
+    }
+
+    this._autoUnloadTimer = window.setInterval(() => {
+      this.unloadInactiveTabs().catch(error =>
+        console.error("Failed to automatically unload inactive tabs", error)
+      );
+    }, AUTO_UNLOAD_CHECK_INTERVAL_MS);
+  }
+
+  _canAutoUnloadTab(tab) {
+    if (
+      !tab ||
+      tab.selected ||
+      tab.closing ||
+      tab.pinned ||
+      tab.undiscardable ||
+      tab.zenModeActive ||
+      tab.splitview?.hasActiveTab
+    ) {
+      return false;
+    }
+
+    const protectedAttributes = [
+      "pending",
+      "busy",
+      "multiselected",
+      "pictureinpicture",
+      "sharing",
+      "soundplaying",
+      "zen-empty-tab",
+      "zen-essential",
+      "zen-glance-tab",
+      "glance-id",
+    ];
+    if (protectedAttributes.some(attribute => tab.hasAttribute(attribute))) {
+      return false;
+    }
+
+    const browser = tab.linkedBrowser;
+    if (
+      !browser?.isConnected ||
+      !browser.isRemoteBrowser ||
+      (!browser.currentURI?.schemeIs("http") &&
+        !browser.currentURI?.schemeIs("https"))
+    ) {
+      return false;
+    }
+
+    return !(
+      window.webrtcUI.browserHasStreams(browser) ||
+      browser.browsingContext?.currentWindowGlobal?.hasActivePeerConnections()
+    );
+  }
+
+  async unloadInactiveTabs(now = Date.now()) {
+    if (
+      !this.autoUnloadTabsEnabled ||
+      this.isPrivateWindow ||
+      this._autoUnloadInProgress
+    ) {
+      return 0;
+    }
+
+    this._autoUnloadInProgress = true;
+    try {
+      const inactiveDuration =
+        Math.max(1, this.autoUnloadTabsAfterMinutes) * 60 * 1000;
+      const sortedTabs = await lazy.TabUnloader.getSortedTabs(inactiveDuration);
+      const tabsToUnload = sortedTabs
+        .filter(
+          tabInfo =>
+            tabInfo.gBrowser === gBrowser &&
+            tabInfo.weight === 0 &&
+            this._canAutoUnloadTab(tabInfo.tab) &&
+            now - tabInfo.tab.lastAccessed >= inactiveDuration
+        )
+        .map(tabInfo => tabInfo.tab)
+        .slice(0, AUTO_UNLOAD_BATCH_SIZE);
+
+      let unloadedCount = 0;
+      for (const tab of tabsToUnload) {
+        await gBrowser.prepareDiscardBrowser(tab);
+        if (
+          this._canAutoUnloadTab(tab) &&
+          now - tab.lastAccessed >= inactiveDuration &&
+          gBrowser.discardBrowser(tab)
+        ) {
+          tab.updateLastUnloadedByTabUnloader();
+          unloadedCount++;
+        }
+      }
+      return unloadedCount;
+    } finally {
+      this._autoUnloadInProgress = false;
     }
   }
 

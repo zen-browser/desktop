@@ -73,6 +73,23 @@ zen-tabs-cycle-ignore-pending-tabs =
   .label = Ignore Pending tabs when cycling with Ctrl+Tab
 zen-tabs-cycle-by-attribute-warning = Ctrl+Tab will cycle by recently used order, as it is enabled
 
+pane-zen-auto-unload-tabs-title = Tab Unloading
+zen-auto-unload-tabs-header = Automatically unload inactive tabs
+zen-auto-unload-tabs-description = Free memory used by inactive web tabs. Active, pinned, Essential, media, picture-in-picture, sharing, and internal browser tabs are protected.
+zen-auto-unload-tabs-enabled =
+    .label = Unload inactive tabs automatically
+zen-auto-unload-tabs-delay-label = Unload tabs after
+zen-auto-unload-tabs-delay-5 =
+    .label = 5 minutes
+zen-auto-unload-tabs-delay-15 =
+    .label = 15 minutes
+zen-auto-unload-tabs-delay-30 =
+    .label = 30 minutes
+zen-auto-unload-tabs-delay-60 =
+    .label = 1 hour
+zen-auto-unload-tabs-delay-120 =
+    .label = 2 hours
+
 zen-look-and-feel-compact-toolbar-themed =
     .label = Use themed background for compact toolbar
 

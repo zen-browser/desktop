@@ -231,7 +231,7 @@ class nsZenSpacesSyncModel {
     if (!url || url === "about:blank") {
       return null;
     }
-    const icon = syncableIconUrl(initial?.image || tabData.image || "");
+    const icon = syncableIconUrl(tabData.image || initial?.image || "");
     return { url, title: title || "", icon };
   }
 

@@ -1266,11 +1266,16 @@ window.gZenVerticalTabsManager = {
       const isVerticalTabs = this._prefsVerticalTabs || forCustomizableMode;
       const isSidebarExpanded = this._prefsSidebarExpanded || !isVerticalTabs;
       const isRightSide = this._prefsRightSide && isVerticalTabs;
+      // Single-toolbar mode moves the navigation bar and its buttons into the
+      // sidebar's titlebar area. A standalone window hides that area, so the
+      // mode would leave it with no address bar at all; it always keeps the
+      // navigation bar in its own top bar instead.
       const isSingleToolbar =
         ((this._prefsUseSingleToolbar && isVerticalTabs && isSidebarExpanded) ||
           !isVerticalTabs) &&
         !forCustomizableMode &&
-        !this.hidesTabsToolbar;
+        !this.hidesTabsToolbar &&
+        !window._zenStandaloneWindow;
       const titlebar = document.getElementById("titlebar");
 
       gBrowser.tabContainer.setAttribute(

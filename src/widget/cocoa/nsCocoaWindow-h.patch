@@ -1,0 +1,12 @@
+diff --git a/widget/cocoa/nsCocoaWindow.h b/widget/cocoa/nsCocoaWindow.h
+index 544a8a3f47..18bf2a1fb9 100644
+--- a/widget/cocoa/nsCocoaWindow.h
++++ b/widget/cocoa/nsCocoaWindow.h
+@@ -140,6 +140,7 @@ class TextInputHandler;
+   NSPopover* mPopover;
+   NSViewController* mPopoverViewController;
+   BOOL mUsePopover;
++  NSRect mLastPopoverRect;
+ }
+ 
+ - (id)initWithContentRect:(NSRect)contentRect

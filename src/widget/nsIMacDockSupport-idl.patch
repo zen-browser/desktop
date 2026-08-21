@@ -1,0 +1,46 @@
+diff --git a/widget/nsIMacDockSupport.idl b/widget/nsIMacDockSupport.idl
+index c7edfb5881..3553b4851b 100644
+--- a/widget/nsIMacDockSupport.idl
++++ b/widget/nsIMacDockSupport.idl
+@@ -8,6 +8,7 @@ interface nsIStandaloneNativeMenu;
+ interface nsISVGPaintContext;
+ interface imgIContainer;
+ interface nsIFile;
++interface nsIBaseWindow;
+ 
+ [scriptable, uuid(2cbde069-b80d-4e63-b7c7-c4dfe4617028)]
+ interface nsIAppBundleLaunchOptions : nsISupports {
+@@ -44,6 +45,33 @@ interface nsIMacDockSupport : nsISupports
+    */
+   void activateApplication(in boolean aIgnoreOtherApplications);
+ 
++  /**
++   * True while this application is the frontmost one.
++   */
++  readonly attribute boolean isApplicationActive;
++
++  /**
++   * Milliseconds elapsed since the application last became the frontmost one,
++   * or -1 when it has not been seen becoming active yet.
++   *
++   * Lets a caller tell an activation the user asked for from one another
++   * application caused by handing us something to open.
++   */
++  readonly attribute long long millisecondsSinceApplicationActivated;
++
++  /**
++   * Hide the application, exactly as the Hide menu item does. The application
++   * the user was in before this one was activated becomes frontmost again.
++   */
++  void hideApplication();
++
++  /**
++   * Make a window follow the user between Spaces instead of pulling the user
++   * to it: the window joins whichever Space is active when the application is
++   * activated, rather than the system switching Spaces to reach the window.
++   */
++  void makeWindowJoinActiveSpace(in nsIBaseWindow aWindow);
++
+   /**
+    * Text used to badge the dock tile. Setting this will remove any badge image.
+    */

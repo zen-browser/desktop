@@ -92,10 +92,12 @@ class nsZenSpaceRoutingManager {
     let targetRoute = null;
     let targetWorkspaceName = null;
 
-    if (
-      this.#shouldSkipProcessing(options, win) !=
-      nsZenSpaceRoutingManager.SKIP_TYPE.NONE
-    ) {
+    const skipType = this.#shouldSkipProcessing(options, win);
+
+    // Pinned, grouped and explicitly unrouted tabs keep their normal behaviour
+    // even when they arrive from outside Zen, so this guard alone blocks the
+    // standalone-window attempt below.
+    if (skipType == nsZenSpaceRoutingManager.SKIP_TYPE.SKIPPED_TAB) {
       return {
         shouldEarlyExit: false,
         userContextId,
@@ -105,16 +107,27 @@ class nsZenSpaceRoutingManager {
       };
     }
 
-    // Runs after the skip guard so pinned, grouped and explicitly unrouted tabs
-    // keep their normal behaviour even when they arrive from outside Zen. The
-    // first URL opened by the OS is added while gZenStartup is still settling,
-    // but it must follow the same standalone path as later opens.
+    // Standalone windows do not need spaces to be ready, so this still runs for
+    // a RESTORED_TAB (gZenStartup still settling) - which is exactly the case
+    // for the very first external link that launches Zen from a cold start.
+    // Without this, that first link would silently fall through to whatever
+    // space happens to be current once startup finishes.
     if (
       this.shouldOpenExternalLinkInStandaloneWindow(uriString, options, win) &&
       this.openExternalLinkInStandaloneWindow(uriString, options, win)
     ) {
       return {
         shouldEarlyExit: true,
+        userContextId,
+        isRouteFound,
+        targetRoute,
+        targetWorkspaceName,
+      };
+    }
+
+    if (skipType != nsZenSpaceRoutingManager.SKIP_TYPE.NONE) {
+      return {
+        shouldEarlyExit: false,
         userContextId,
         isRouteFound,
         targetRoute,

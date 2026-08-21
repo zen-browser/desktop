@@ -1,0 +1,28 @@
+diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
+index ebae2a976d..b8b32c4d99 100644
+--- a/widget/cocoa/nsCocoaWindow.mm
++++ b/widget/cocoa/nsCocoaWindow.mm
+@@ -5712,7 +5712,6 @@ bool nsCocoaWindow::ShouldShowAsNSPopover() const {
+   nsMenuPopupFrame* popupFrame = GetPopupFrame();
+   return [mWindow isKindOfClass:[PopupWindow class]] &&
+          [(PopupWindow*)mWindow usePopover] && popupFrame &&
+-         popupFrame->ShouldFollowAnchor() &&
+          !popupFrame->PopupElement().GetBoolAttr(nsGkAtoms::nonnative);
+ }
+ 
+@@ -8993,6 +8992,15 @@ static const NSUInteger kWindowShadowOptionsTooltip = 4;
+     return;
+   }
+ 
++  if (!positioningRect.size.width && !positioningRect.size.height &&
++      mLastPopoverRect.size.width && mLastPopoverRect.size.height) {
++    // Sometimes, specially when downloading addons from unofficial sources,
++    // the popover is shown in a very fast motion and the positioningRect is
++    // empty.
++    positioningRect = mLastPopoverRect;
++  }
++  mLastPopoverRect = positioningRect;
++
+   // Close existing popover if it's already shown
+   if (mPopover.shown) {
+     [mPopover close];

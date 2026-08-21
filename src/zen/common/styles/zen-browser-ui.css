@@ -356,12 +356,21 @@ body,
  This is attribute-driven rather than done by hiding individual nodes from JS,
  so it survives chrome being rebuilt and stays correct as Zen's markup moves. */
 :root[zen-standalone-window="true"] {
-  & #TabsToolbar,
-  & #tabbrowser-tabs,
-  & #zen-tabs-wrapper,
-  & #zen-essentials,
-  & #zen-workspaces-button,
-  & #zen-sidebar-foot-buttons,
+  /* Shared by the keep pill and the space picker so the collapse chevron in the
+   panel lands on the same column as the chevron that opened it. */
+  --zen-standalone-window-chevron-width: 26px;
+  --zen-standalone-window-keep-height: 26px;
+
+  /* Drives the radius of the pill and of the picker that opens on top of it, so
+   the closed and open states are the same box. Kept modest: at menu-corner
+   radius a 26px-tall control is almost a lozenge. */
+  --zen-standalone-window-keep-radius: 6px;
+
+  /* #navigator-toolbox is the sidebar itself and carries a persisted width, so
+   hiding only its contents would leave an empty column. #PersonalToolbar and
+   the sidebar boxes are siblings of it in #browser, so they need hiding too. */
+  & #navigator-toolbox,
+  & #zen-sidebar-splitter,
   & #sidebar-container,
   & #sidebar-launcher-splitter,
   & #sidebar-box,
@@ -372,34 +381,374 @@ body,
     display: none !important;
   }
 
+  /* The page fills the window: no separation margin, no inner radius, no
+   drop shadow. A standalone window is one page, not a framed workspace. */
+  & #zen-tabbox-wrapper {
+    margin: 0 !important;
+  }
+
+  & #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* The top bar is a single centred row: window controls, an optional back
+   arrow, the address bar and the keep action. Empty space drags the window,
+   since this bar is all the titlebar the window has. */
   & #zen-appcontent-navbar-wrapper {
-    position: relative;
+    display: flex;
+    -moz-window-dragging: drag;
+  }
+
+  /* Laid out here rather than inherited from single-toolbar mode: a standalone
+   window is never in that mode, since it hides the sidebar the mode moves the
+   navigation bar into. */
+  & #zen-appcontent-navbar-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 6px;
+    padding-inline-end: var(--zen-element-separation);
+  }
+
+  & #nav-bar {
+    flex: 1;
+    min-width: 0;
+    -moz-window-dragging: no-drag;
+  }
+
+  & #urlbar-container {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Everything the navigation bar normally carries belongs to a workspace, not
+   to one external page: forward, reload, home, the extension and account
+   buttons, the overflow chevron and the app menu all go. Only the back arrow
+   and the address bar stay, and the address bar keeps its own inner buttons. */
+  & #nav-bar > :not(#nav-bar-customization-target, .titlebar-buttonbox-container, #zen-standalone-window-toolbar),
+  & #nav-bar-customization-target > :not(#back-button, #urlbar-container) {
+    display: none !important;
+  }
+
+  /* The back arrow only earns its place once there is history behind the page.
+   Zen's back command carries `disabled` until then, and XUL forwards that onto
+   the button, so no JS has to watch navigation for this. */
+  & #back-button[disabled="true"] {
+    display: none !important;
   }
 
   & #zen-standalone-window-toolbar {
-    position: absolute;
-    inset-inline-end: calc(var(--zen-element-separation) + 4px);
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 2;
     -moz-window-dragging: no-drag;
+    flex: 0 0 auto;
+  }
+}
+
+/* "Open in <Space>" and its space-picker chevron read as one segmented pill.
+ The flat version sat on the toolbar background with nothing but hover to mark
+ it, which left the primary action of the window nearly invisible; a resting
+ fill and a hairline outline give it just enough contrast to be found without
+ turning the top bar into a busy row. The chevron is a segment of that pill,
+ divided by a hairline rather than parked beside it as a second control. */
+#zen-standalone-window-keep {
+  align-items: center;
+  gap: 0;
+  border-radius: var(--zen-standalone-window-keep-radius);
+  background: color-mix(in srgb, currentColor 9%, transparent);
+  /* An outline rather than an inset shadow: the segments paint their own hover
+   fill over the pill's background, which would swallow an inset edge. */
+  outline: 1px solid color-mix(in srgb, currentColor 13%, transparent);
+  outline-offset: -1px;
+
+  &:hover {
+    background: color-mix(in srgb, currentColor 13%, transparent);
+  }
+
+  & > [role="button"] {
+    align-items: center;
+    height: var(--zen-standalone-window-keep-height);
+
+    /* Only the outer corners are rounded, so the two segments share the pill
+     rather than each looking like a button of its own. */
+    &:first-child {
+      border-start-start-radius: var(--zen-standalone-window-keep-radius);
+      border-end-start-radius: var(--zen-standalone-window-keep-radius);
+    }
+
+    &:last-child {
+      border-start-end-radius: var(--zen-standalone-window-keep-radius);
+      border-end-end-radius: var(--zen-standalone-window-keep-radius);
+    }
+
+    &:hover {
+      background: color-mix(in srgb, currentColor 12%, transparent);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--focus-outline-color, AccentColor);
+      outline-offset: -2px;
+    }
+  }
+
+  & > #zen-standalone-window-open-in-space-button {
+    padding-inline: 10px 8px;
     gap: 4px;
 
-    & > toolbarbutton {
-      min-height: 28px;
-      padding-inline: 10px;
-      border-radius: 8px;
-      background: var(--toolbarbutton-hover-background);
+    & > label {
+      margin: 0;
+    }
 
-      & > .toolbarbutton-text {
-        display: flex;
+    & > .zen-standalone-window-keep-prefix {
+      opacity: 0.7;
+    }
+
+    & > .zen-standalone-window-keep-space {
+      font-weight: 600;
+    }
+
+    & > .zen-standalone-window-shortcut {
+      margin-inline-start: 4px;
+      opacity: 0.55;
+    }
+  }
+
+  & > #zen-standalone-window-space-picker-button {
+    box-sizing: border-box;
+    justify-content: center;
+    width: var(--zen-standalone-window-chevron-width);
+    border-inline-start: 1px solid color-mix(in srgb, currentColor 13%, transparent);
+
+    & > .zen-standalone-window-chevron {
+      width: 10px;
+      height: 10px;
+      opacity: 0.75;
+      -moz-context-properties: fill;
+      fill: currentColor;
+      list-style-image: url("chrome://global/skin/icons/arrow-down.svg");
+    }
+  }
+}
+
+/* The window controls are moved into the standalone top bar, since Zen parks
+ them in the sidebar this window does not have. They sit on the same baseline
+ as the address bar rather than being pinned to the top of the row. */
+#zen-appcontent-navbar-container[zen-standalone-window-has-buttons="true"] {
+  & > .titlebar-buttonbox-container {
+    order: -1;
+    align-self: center;
+    height: auto;
+    -moz-window-dragging: no-drag;
+
+    /* The container's own padding and the buttonbox's inline margin are left to
+     the shared rules on purpose. Under mono window controls macOS paints the
+     three empty slots as a percentage-positioned background on this container,
+     so shrinking its box slides the painted slots out from under the real
+     traffic lights, which is what knocked them out of alignment here. Insets go
+     on the container for the same reason: it moves with its own background,
+     where a margin on the buttonbox would slide the buttons off the slots.
+
+     Zen trims the buttonbox's leading margin to --zen-toolbox-padding because
+     the sidebar it normally lives in already supplies the rest of the inset.
+     A standalone window has no sidebar, so the top bar starts at the window
+     edge and the lights end up crammed into the corner. Adding the difference
+     back restores the 12px Firefox uses on macOS, which is what puts them where
+     the system draws them in every other window. The trailing side mirrors it,
+     minus the 6px the navbar container already contributes as its flex gap, so
+     the lights sit in their own margin instead of drifting into the address
+     bar. */
+    @media (-moz-platform: macos) {
+      margin-inline-start: calc(12px - var(--zen-toolbox-padding));
+      margin-inline-end: 6px;
+    }
+  }
+}
+
+/* Space picker for standalone windows. It is a selector rather than a menu: the
+ panel takes the width of the keep pill and is opened on top of it, so the
+ search row sits exactly where the button was and the collapse chevron replaces
+ the opening chevron in place. Width and the pull-up are set from JS, which is
+ the only place the pill's measured box is known.
+
+ The padding is deliberately tight. At menu spacing this panel was mostly empty
+ room around four short names, which is what made it feel like a dialog dropped
+ over the window instead of the control expanding.
+
+ The surface is painted here rather than left to the platform. `nonnative` keeps
+ the panel out of NSPopover, but Zen's macOS rules then hand it
+ -moz-default-appearance: menupopup, and that surface belongs to AppKit: its
+ corner radius cannot be matched to the pill, and its window mask is what was
+ shaving the first character of the search field and the edge of the collapse
+ button. Owning the background, border and radius is what lets the open state be
+ the same box as the closed one.
+
+ The extra attribute selectors carry no meaning beyond specificity: the rules
+ being overridden are !important and written against panel[type="arrow"], so a
+ plain id selector loses to them. */
+panel[type="arrow"][nonnative][orient]#PanelUI-zen-standalone-window-spaces {
+  appearance: none !important;
+  background-color: transparent !important;
+
+  --panel-padding: 0;
+  --panel-width: 200px;
+  --panel-background-color: var(--arrowpanel-background) !important;
+  --panel-border-color: color-mix(in srgb, currentColor 14%, transparent) !important;
+  --panel-border-radius: var(--zen-standalone-window-keep-radius, 6px);
+  --panel-box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28) !important;
+  --panel-box-shadow-margin: 0px !important;
+  --zen-standalone-window-space-tile-size: 20px;
+  --zen-standalone-window-picker-anchor-height: var(--zen-standalone-window-keep-height, 26px);
+
+  &::part(content) {
+    background-color: var(--arrowpanel-background) !important;
+  }
+
+  & #PanelUI-zen-standalone-window-spaces-header {
+    /* An exact height, not a minimum: the row has to be the pill, so a native
+     control inside it must not be allowed to push it taller. */
+    height: var(--zen-standalone-window-picker-anchor-height);
+    box-sizing: content-box;
+    padding-inline: 0;
+    border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+
+    & > #PanelUI-zen-standalone-window-spaces-search-icon {
+      width: var(--size-item-small, 16px);
+      height: var(--size-item-small, 16px);
+      margin-inline: 8px 6px;
+      opacity: 0.6;
+      -moz-context-properties: fill;
+      fill: currentColor;
+    }
+
+    & > #PanelUI-zen-standalone-window-spaces-search {
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      /* type="search" otherwise brings its own native decorations, which show
+       through as a stray glyph in the middle of the row. */
+      appearance: none !important;
+      background: transparent;
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      /* Zen rounds text inputs globally. On a field this short the corner arc
+       reaches into the text, which clipped the caret and the first character. */
+      border-radius: 0 !important;
+      font: inherit;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      &::placeholder {
+        opacity: 0.45;
       }
     }
 
-    & > #zen-standalone-window-space-picker-button,
-    & > #zen-standalone-window-close-button {
-      min-width: 28px;
-      padding-inline: 8px;
+    /* Same width and centring as the pill's chevron segment, so the two arrows
+     share a column and the panel opens and closes from one spot. Stripped back
+     to a bare icon: the native toolbarbutton surface drew a raised box around
+     the arrow that the panel's own corner then cut into. */
+    & > #PanelUI-zen-standalone-window-spaces-collapse {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      flex: 0 0 auto;
+      align-self: stretch;
+      width: var(--zen-standalone-window-chevron-width, 26px);
+      min-height: 0;
+      margin: 0;
+      padding: 0;
+      appearance: none !important;
+      background: none !important;
+      border: none !important;
+      box-shadow: none !important;
+      -moz-context-properties: fill;
+      fill: currentColor;
+      list-style-image: url("chrome://global/skin/icons/arrow-up.svg");
+
+      & > .toolbarbutton-icon {
+        width: 10px;
+        height: 10px;
+        opacity: 0.75;
+      }
+
+      &:hover > .toolbarbutton-icon {
+        opacity: 1;
+      }
+    }
+  }
+
+  & #PanelUI-zen-standalone-window-spaces-list {
+    padding: 4px;
+    max-height: 260px;
+    overflow-y: auto;
+
+    & > toolbarbutton[hidden="true"] {
+      display: none;
+    }
+  }
+
+  & #PanelUI-zen-standalone-window-spaces-empty {
+    padding: 10px 12px;
+    opacity: 0.5;
+  }
+
+  /* Scoped to the panel so these win over the shared .subviewbutton rules the
+   rows also carry. */
+  & .zen-standalone-window-space-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 6px;
+    border-radius: calc(var(--zen-standalone-window-keep-radius, 6px) - 2px);
+    /* A long space name must ellipsize rather than widen the panel past the
+     control it is standing in for. */
+    min-width: 0;
+    overflow: hidden;
+
+    &[active="true"] {
+      background: color-mix(in srgb, currentColor 7%, transparent);
+    }
+
+    &:hover,
+    &:focus-visible {
+      background: color-mix(in srgb, currentColor 12%, transparent);
+    }
+
+    & > .zen-standalone-window-space-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--zen-standalone-window-space-tile-size);
+      height: var(--zen-standalone-window-space-tile-size);
+      border-radius: 6px;
+      flex-shrink: 0;
+      /* The accent is set per row from the space's own gradient; the neutral
+       tile is what a space without a theme falls back to. */
+      background: var(--zen-standalone-window-space-accent, color-mix(in srgb, currentColor 14%, transparent));
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, black 12%, transparent);
+
+      & > .zen-standalone-window-space-icon-glyph {
+        margin: 0;
+        font-size: 11px;
+        line-height: 1;
+        text-transform: uppercase;
+      }
+
+      & > .zen-standalone-window-space-icon-image {
+        width: 12px;
+        height: 12px;
+        -moz-context-properties: fill;
+        fill: currentColor;
+      }
+    }
+
+    & > .zen-standalone-window-space-name {
+      margin: 0;
+      min-width: 0;
+      overflow: hidden;
+      font-weight: 500;
     }
   }
 }

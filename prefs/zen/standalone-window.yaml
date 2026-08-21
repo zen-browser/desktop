@@ -12,3 +12,8 @@
 
 - name: zen.standalone-window.default-height
   value: 820
+
+# When Zen was brought to the front only to show a standalone window, closing
+# that window sends the user back to the application the link came from.
+- name: zen.standalone-window.return-focus-on-close
+  value: true

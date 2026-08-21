@@ -1,0 +1,134 @@
+diff --git a/widget/cocoa/nsMacDockSupport.mm b/widget/cocoa/nsMacDockSupport.mm
+index 7f07ace0cd..69a5a2ee8b 100644
+--- a/widget/cocoa/nsMacDockSupport.mm
++++ b/widget/cocoa/nsMacDockSupport.mm
+@@ -18,6 +18,8 @@
+ #include "mozilla/SVGImageContext.h"
+ #include "nsISVGPaintContext.h"
+ #include "nsIFile.h"
++#include "nsIBaseWindow.h"
++#include "nsIWidget.h"
+ 
+ NS_IMPL_ISUPPORTS(nsMacDockSupport, nsIMacDockSupport, nsITaskbarProgress)
+ 
+@@ -75,13 +77,36 @@ NS_IMPL_ISUPPORTS(nsMacDockSupport, nsIMacDockSupport, nsITaskbarProgress)
+ 
+ @end
+ 
++// Time, on the reference-date clock, at which the application last became the
++// frontmost one. Negative until we have seen an activation.
++static NSTimeInterval sApplicationActivatedAt = -1.0;
++static id sApplicationActivationObserver = nil;
++
++// Registered once, from the first nsMacDockSupport instance. Anything that
++// wants to know whether an activation came from the user has to be listening
++// before that activation happens, so callers instantiate this service early.
++static void EnsureApplicationActivationObserver() {
++  if (sApplicationActivationObserver) {
++    return;
++  }
++  sApplicationActivationObserver = [[[NSNotificationCenter defaultCenter]
++      addObserverForName:NSApplicationDidBecomeActiveNotification
++                  object:nil
++                   queue:nil
++              usingBlock:^(NSNotification*) {
++                sApplicationActivatedAt = [NSDate timeIntervalSinceReferenceDate];
++              }] retain];
++}
++
+ nsMacDockSupport::nsMacDockSupport()
+     : mHasBadgeImage(false),
+       mDockTileWrapperView(nil),
+       mDockBadgeView(nil),
+       mProgressDockOverlayView(nil),
+       mProgressState(STATE_NO_PROGRESS),
+-      mProgressFraction(0.0) {}
++      mProgressFraction(0.0) {
++  EnsureApplicationActivationObserver();
++}
+ 
+ nsMacDockSupport::~nsMacDockSupport() {
+   if (mDockTileWrapperView) {
+@@ -122,6 +147,82 @@ nsMacDockSupport::ActivateApplication(bool aIgnoreOtherApplications) {
+   NS_OBJC_END_TRY_BLOCK_RETURN(NS_ERROR_FAILURE);
+ }
+ 
++NS_IMETHODIMP
++nsMacDockSupport::GetIsApplicationActive(bool* aIsActive) {
++  NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
++
++  *aIsActive = [[NSApplication sharedApplication] isActive];
++  return NS_OK;
++
++  NS_OBJC_END_TRY_BLOCK_RETURN(NS_ERROR_FAILURE);
++}
++
++NS_IMETHODIMP
++nsMacDockSupport::GetMillisecondsSinceApplicationActivated(int64_t* aElapsed) {
++  NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
++
++  EnsureApplicationActivationObserver();
++  if (sApplicationActivatedAt < 0.0) {
++    *aElapsed = -1;
++    return NS_OK;
++  }
++
++  NSTimeInterval elapsed =
++      [NSDate timeIntervalSinceReferenceDate] - sApplicationActivatedAt;
++  *aElapsed = elapsed <= 0.0 ? 0 : (int64_t)(elapsed * 1000.0);
++  return NS_OK;
++
++  NS_OBJC_END_TRY_BLOCK_RETURN(NS_ERROR_FAILURE);
++}
++
++NS_IMETHODIMP
++nsMacDockSupport::HideApplication() {
++  NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
++
++  [[NSApplication sharedApplication] hide:nil];
++  return NS_OK;
++
++  NS_OBJC_END_TRY_BLOCK_RETURN(NS_ERROR_FAILURE);
++}
++
++NS_IMETHODIMP
++nsMacDockSupport::MakeWindowJoinActiveSpace(nsIBaseWindow* aWindow) {
++  NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
++
++  if (!aWindow) {
++    return NS_ERROR_INVALID_ARG;
++  }
++
++  nsCOMPtr<nsIWidget> widget = aWindow->GetMainWidget();
++  if (!widget) {
++    return NS_ERROR_FAILURE;
++  }
++
++  NSWindow* nativeWindow = (NSWindow*)widget->GetNativeData(NS_NATIVE_WINDOW);
++  if (!nativeWindow) {
++    return NS_ERROR_FAILURE;
++  }
++
++  // MoveToActiveSpace is the point of this: the window goes to the user rather
++  // than the user being taken to the window. A window that follows the user
++  // has no business taking a Space of its own, so native fullscreen is swapped
++  // for the auxiliary behaviour. All four fullscreen bits are set explicitly,
++  // the way nsCocoaWindow::SetSupportsNativeFullscreen does, because leaving
++  // any of them unset lets AppKit fall back to a heuristic that is not stable.
++  NSWindowCollectionBehavior behavior = [nativeWindow collectionBehavior];
++  behavior &= ~(NSWindowCollectionBehaviorFullScreenPrimary |
++                NSWindowCollectionBehaviorFullScreenAuxiliary |
++                NSWindowCollectionBehaviorFullScreenAllowsTiling |
++                NSWindowCollectionBehaviorFullScreenDisallowsTiling);
++  behavior |= NSWindowCollectionBehaviorMoveToActiveSpace |
++              NSWindowCollectionBehaviorFullScreenAuxiliary |
++              NSWindowCollectionBehaviorFullScreenDisallowsTiling;
++  [nativeWindow setCollectionBehavior:behavior];
++  return NS_OK;
++
++  NS_OBJC_END_TRY_BLOCK_RETURN(NS_ERROR_FAILURE);
++}
++
+ NS_IMETHODIMP
+ nsMacDockSupport::SetBadgeText(const nsAString& aBadgeText) {
+   NS_OBJC_BEGIN_TRY_BLOCK_RETURN;

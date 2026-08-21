@@ -367,6 +367,20 @@ export class nsZenSessionManager {
     if (initialState?.savedGroups) {
       initialState.savedGroups = [];
     }
+    // Standalone external-link windows are never written to the session file
+    // any more, but a file written before that was true can still hold one,
+    // and a deferred-startup state can carry one in memory even when nothing
+    // was written at all. This has to run unconditionally - regardless of the
+    // window-sync setting below - so a standalone window can never come back
+    // from a restart.
+    if (initialState?.windows?.length) {
+      initialState.windows = initialState.windows.filter(win => {
+        if (win.isZenStandalone) {
+          this.log("Skipping standalone window during restore");
+        }
+        return !win.isZenStandalone;
+      });
+    }
     if (!lazy.gWindowSyncEnabled) {
       if (initialState?.windows?.length && this.#shouldRestoreOnlyPinned) {
         this.log("Window sync disabled, restoring only pinned tabs");

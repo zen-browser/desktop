@@ -1,8 +1,17 @@
 diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/components/BrowserContentHandler.sys.mjs
-index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09814422bf 100644
+index 64c325fc4646d2bd628b57f9b15c2bcffbdfecb2..4d0ce09c0726e967a144fcc315e264592136555c 100644
 --- a/browser/components/BrowserContentHandler.sys.mjs
 +++ b/browser/components/BrowserContentHandler.sys.mjs
-@@ -603,6 +603,28 @@ nsBrowserContentHandler.prototype = {
+@@ -27,6 +27,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
+   SpecialMessageActions:
+     "resource://messaging-system/lib/SpecialMessageActions.sys.mjs",
+   UpdatePing: "resource://gre/modules/UpdatePing.sys.mjs",
++  gZenStandaloneWindowManager:
++    "resource:///modules/zen/standalonewindow/ZenStandaloneWindowManager.sys.mjs",
+ });
+ 
+ /**
+@@ -641,6 +643,28 @@ nsBrowserContentHandler.prototype = {
        }
      }
  
@@ -31,7 +40,7 @@ index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09
      var searchParam = cmdLine.handleFlagWithParam("search", false);
      if (searchParam) {
        doSearch(searchParam, cmdLine);
-@@ -672,6 +694,7 @@ nsBrowserContentHandler.prototype = {
+@@ -710,6 +734,7 @@ nsBrowserContentHandler.prototype = {
        "  --new-window <url> Open <url> in a new window.\n" +
        "  --new-tab <url>    Open <url> in a new tab.\n" +
        "  --private-window [<url>] Open <url> in a new private window.\n";
@@ -39,3 +48,44 @@ index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09
      if (AppConstants.platform == "win") {
        info += "  --preferences      Open Options dialog.\n";
      } else {
+@@ -1311,6 +1336,17 @@ function handURIToExistingBrowser(
+     return;
+   }
+ 
++  // There is no window to load it in. An external link does not need one: it
++  // can have a standalone window of its own.
++  if (
++    !forcePrivate &&
++    lazy.gZenStandaloneWindowManager.openExternalLinksInStandaloneWindows([
++      uri.spec,
++    ])
++  ) {
++    return;
++  }
++
+   // if we couldn't load it in an existing window, open a new one
+   openBrowserWindow(cmdLine, triggeringPrincipal, uri.spec, null, forcePrivate);
+ }
+@@ -1717,6 +1753,22 @@ nsDefaultCommandLineHandler.prototype = {
+       // Can't open multiple URLs without using system principal.
+       var URLlist = urilist.filter(shouldLoadURI).map(u => u.spec);
+       if (URLlist.length) {
++        // Reached when there is no browser window to hand the URL to: either
++        // the application is starting up, or every window has been closed.
++        // A standalone window is a whole window, so it can be the first one,
++        // and the session is left for whenever the user opens Zen properly.
++        if (
++          lazy.gZenStandaloneWindowManager.openExternalLinksInStandaloneWindows(
++            URLlist
++          )
++        ) {
++          let blankWindow = Services.wm.getMostRecentWindow("navigator:blank");
++          if (blankWindow) {
++            blankWindow.close();
++          }
++          cmdLine.preventDefault = true;
++          return;
++        }
+         openBrowserWindow(cmdLine, lazy.gSystemPrincipal, URLlist);
+       }
+     } else if (!cmdLine.preventDefault) {

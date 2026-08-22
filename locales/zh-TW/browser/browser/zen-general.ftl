@@ -21,15 +21,15 @@ tab-context-zen-remove-essential =
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] 修改 Essential 的網址
+           *[false] 修改釘選分頁的網址
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = 以當前網址取代
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
+    .label = 修改為…
     .accesskey = E
 tab-context-zen-edit-title = 
     .label = 重新命名
@@ -51,10 +51,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = 確認
 zen-pinned-tab-replaced = 釘選分頁網址已替換為當前網址！
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = 已經更新釘選分頁的網址！
+zen-pinned-tab-url-invalid = 這看起來不像是有效網址。
+zen-pinned-tab-edit-url-title = 修改釘選分頁的網址
+zen-pinned-tab-edit-url-label = 輸入要指定給此釘選分頁的網址：
 zen-tabs-renamed = 成功重新命名分頁！
 zen-background-tab-opened-toast = 新分頁已在背景開啟！
 zen-workspace-renamed-toast = 成功重新命名工作區！
@@ -74,7 +74,7 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = 圖示
 zen-emojis-picker-search = 
-    .placeholder = Search emojis
+    .placeholder = 搜尋emoji
 urlbar-search-mode-zen_actions = 操作
 zen-site-data-settings = 設定
 zen-generic-manage = 管理
@@ -126,9 +126,9 @@ zen-sidebar-notification-updated-heading = 更新成功！
 zen-sidebar-notification-updated-label = { -brand-short-name } 更新了什麼
 zen-sidebar-notification-updated-tooltip = 
     .title = 查看版本資訊
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-label = 支持{ -brand-short-name }
 zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
+    .title = 捐款給此專案
 zen-sidebar-notification-restart-safe-mode-label = 有東西壞掉了嗎？
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = 在安全模式下重新啟動
@@ -137,4 +137,4 @@ zen-window-sync-migration-dialog-message = Zen現在能同步同裝置上的各�
 zen-window-sync-migration-dialog-learn-more = 了解更多
 zen-window-sync-migration-dialog-accept = 明白了
 zen-appmenu-new-blank-window = 
-    .label = 開新簡白視窗
+    .label = New Blank Window

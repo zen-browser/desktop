@@ -64,6 +64,8 @@ zen-workspace-creation-label = Spațiile sunt folosite pentru a organiza filele 
 zen-workspace-default-profile = Implicit
 zen-workspaces-delete-workspace-title = Ștergi Spațiul?
 zen-workspaces-delete-workspace-body = Ești sigur că vrei să ștergi { $name }? Această acțiune nu poate fi anulată.
+zen-workspaces-remote-delete-title = Ștergi spațiul sincronizat?
+zen-workspaces-remote-delete-body = { $name } a fost șters pe un alt dispozitiv. Vrei să îl ștergi și aici? Dacă îl vei păstra, va fi restaurat pe celelalte dispozitive.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = File închise! Apasă <span>{ $shortcut }</span> pentru a anula.

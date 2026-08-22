@@ -139,4 +139,4 @@ zen-window-sync-migration-dialog-message = Zen вече синхронизира
 zen-window-sync-migration-dialog-learn-more = Научи повече
 zen-window-sync-migration-dialog-accept = Добре
 zen-appmenu-new-blank-window = 
-    .label = New blank window
+    .label = New Blank Window

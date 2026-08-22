@@ -61,9 +61,11 @@ zen-workspace-creation-profile = 設定檔
     .tooltiptext = 設定檔用於隔離不同工作區的 Cookie 和網站資料。
 zen-workspace-creation-header = 建立工作區
 zen-workspace-creation-label = 工作區用於組織您的分頁與工作階段。
-zen-workspace-default-profile = Default
+zen-workspace-default-profile = 預設
 zen-workspaces-delete-workspace-title = 刪除工作區？
 zen-workspaces-delete-workspace-body = 您確定要刪除 { $name } 嗎？此操作無法復原。
+zen-workspaces-remote-delete-title = 刪除已同步的工作區？
+zen-workspaces-remote-delete-body = { $name } 工作區已於另一個裝置上被刪除。是否也在此裝置上刪除？若選擇保留，它將在另一裝置上恢復。
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = 分頁已關閉！使用 <span>{ $shortcut }</span> 來回復此動作。

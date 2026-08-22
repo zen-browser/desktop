@@ -137,4 +137,4 @@ zen-window-sync-migration-dialog-message = Zen עכשיו מסנכרן חלונ�
 zen-window-sync-migration-dialog-learn-more = מידע נוסף
 zen-window-sync-migration-dialog-accept = הבנתי
 zen-appmenu-new-blank-window = 
-    .label = חלון ריק חדש
+    .label = New Blank Window

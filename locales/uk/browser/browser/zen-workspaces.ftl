@@ -61,9 +61,11 @@ zen-workspace-creation-profile = Профіль
     .tooltiptext = Профілі використовуються для розділення файлів cookie і даних сайту між просторами.
 zen-workspace-creation-header = Створити простір
 zen-workspace-creation-label = Простори використовуються для організації ваших вкладок та сеансів.
-zen-workspace-default-profile = Default
+zen-workspace-default-profile = Типово
 zen-workspaces-delete-workspace-title = Видалити простір?
 zen-workspaces-delete-workspace-body = Упевнені, що хочете видалити { $name }? Цю дію неможливо скасувати.
+zen-workspaces-remote-delete-title = Видалити синхронізований простір?
+zen-workspaces-remote-delete-body = { $name } було видалено на іншому пристрої. Видалити його і тут? Якщо ви його залишите, він відновиться на інших ваших пристроях.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Вкладки закрито! Скористайтеся <span>{ $shortcut }</span>, аби повернути їх.

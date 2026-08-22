@@ -21,20 +21,20 @@ tab-context-zen-remove-essential =
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] EssentialのURLを編集
+           *[false] ピン留めされたURLを編集
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = 現在のURLに置き換えられます
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
+    .label = 編集…
     .accesskey = E
 tab-context-zen-edit-title = 
-    .label = ラベルを変更する...
+    .label = ラベルを変更する…
 tab-context-zen-edit-icon = 
-    .label = アイコンを変更する...
+    .label = アイコンを変更する…
 zen-themes-corrupted = { -brand-short-name }モッドファイルが文字化けしています。デフォルトのテーマにリセットされました。
 zen-shortcuts-corrupted = { -brand-short-name }ショートカットファイルが文字化けしています。デフォルトのショートカットにリセットされました。
 # note: Do not translate the "<br/>" tags in the following string
@@ -53,10 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = 確定
 zen-pinned-tab-replaced = 固定したタブのURLが現在のURLに置き換えられました！
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = ピン留めされたタブのURLを更新しました！
+zen-pinned-tab-url-invalid = このURLは有効が見えません。
+zen-pinned-tab-edit-url-title = ピン留めされたURLを編集
+zen-pinned-tab-edit-url-label = このピン留めされたタブのURLを入力してください：
 zen-tabs-renamed = タブの名前は無事に変更されました！
 zen-background-tab-opened-toast = 新しい背景タブが開きました！
 zen-workspace-renamed-toast = ワークスペースの名前が変更されました！
@@ -76,7 +76,7 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = アイコン
 zen-emojis-picker-search = 
-    .placeholder = Search emojis
+    .placeholder = 絵文字を検索
 urlbar-search-mode-zen_actions = アクション
 zen-site-data-settings = 設定
 zen-generic-manage = 管理
@@ -128,9 +128,9 @@ zen-sidebar-notification-updated-heading = アップデートが完了しまし�
 zen-sidebar-notification-updated-label = { -brand-short-name }の新機能
 zen-sidebar-notification-updated-tooltip = 
     .title = リリースノートを表示する
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-label = { -brand-short-name }に寄付
 zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
+    .title = プロジェクトに寄付
 zen-sidebar-notification-restart-safe-mode-label = 何か壊れましたか？
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = セーフモードで再起動する
@@ -139,4 +139,4 @@ zen-window-sync-migration-dialog-message = Zenは同一デバイス内のウィ�
 zen-window-sync-migration-dialog-learn-more = もっと詳しく
 zen-window-sync-migration-dialog-accept = わかりました
 zen-appmenu-new-blank-window = 
-    .label = 新しい空のウィンドウ
+    .label = New Blank Window

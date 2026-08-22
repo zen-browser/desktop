@@ -137,4 +137,4 @@ zen-window-sync-migration-dialog-message = Zen hiện đã đồng bộ hóa cá
 zen-window-sync-migration-dialog-learn-more = Tìm hiểu thêm
 zen-window-sync-migration-dialog-accept = Đã hiểu
 zen-appmenu-new-blank-window = 
-    .label = Cửa sổ trống mới
+    .label = New Blank Window

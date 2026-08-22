@@ -21,15 +21,15 @@ tab-context-zen-remove-essential =
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Редагувати основну URL-адресу
+           *[false] Редагувати закріплену URL-адресу
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = Замінити на поточну URL-адресу
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
+    .label = Редагувати…
     .accesskey = E
 tab-context-zen-edit-title = 
     .label = Змінити мітку...
@@ -53,10 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Підтвердити
 zen-pinned-tab-replaced = URL-адресу закріпленої вкладки замінено на поточну URL-адресу.
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = Оновлено URL-адресу закріпленої вкладки!
+zen-pinned-tab-url-invalid = Це не схоже на дійсну URL-адресу.
+zen-pinned-tab-edit-url-title = Редагувати закріплену URL-адресу
+zen-pinned-tab-edit-url-label = Введіть URL-адресу, на яку має посилатися ця закріплена вкладка:
 zen-tabs-renamed = Вкладку успішно перейменовано!
 zen-background-tab-opened-toast = Відкрито нову фонову вкладку!
 zen-workspace-renamed-toast = Робочий простір успішно перейменовано!
@@ -76,7 +76,7 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Значки
 zen-emojis-picker-search = 
-    .placeholder = Search emojis
+    .placeholder = Знайти емоджі
 urlbar-search-mode-zen_actions = Дії
 zen-site-data-settings = Налаштування
 zen-generic-manage = Керувати
@@ -128,9 +128,9 @@ zen-sidebar-notification-updated-heading = Оновлення завершено
 zen-sidebar-notification-updated-label = Що нового в { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Переглянути примітки до випуску
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-label = Підтримати { -brand-short-name }
 zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
+    .title = Пожертвуйте на проєкт
 zen-sidebar-notification-restart-safe-mode-label = Щось зламалося?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Перезапустити в безпечному режимі
@@ -139,4 +139,4 @@ zen-window-sync-migration-dialog-message = Zen тепер синхронізує
 zen-window-sync-migration-dialog-learn-more = Дізнатися більше
 zen-window-sync-migration-dialog-accept = Зрозуміло
 zen-appmenu-new-blank-window = 
-    .label = Нове несинхронізоване вікно
+    .label = Нове порожнє вікно

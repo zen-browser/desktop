@@ -139,4 +139,4 @@ zen-window-sync-migration-dialog-message = Το Zen άρα στην ίδια σ�
 zen-window-sync-migration-dialog-learn-more = Περισσότερα
 zen-window-sync-migration-dialog-accept = Κατάλαβα
 zen-appmenu-new-blank-window = 
-    .label = Νέο κενό παράθυρο
+    .label = New Blank Window

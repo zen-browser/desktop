@@ -139,4 +139,4 @@ zen-window-sync-migration-dialog-message = Zen kini menyinkronkan jendela pada p
 zen-window-sync-migration-dialog-learn-more = Pelajari Lebih Lanjut
 zen-window-sync-migration-dialog-accept = Oke!
 zen-appmenu-new-blank-window = 
-    .label = Jendela Kosong Baru
+    .label = New Blank Window

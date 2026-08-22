@@ -137,4 +137,4 @@ zen-window-sync-migration-dialog-message = Zen samstillir núna glugga á sama t
 zen-window-sync-migration-dialog-learn-more = Frekari upplýsingar
 zen-window-sync-migration-dialog-accept = Skilið
 zen-appmenu-new-blank-window = 
-    .label = Nýr auður gluggi
+    .label = New Blank Window

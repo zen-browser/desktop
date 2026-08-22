@@ -580,16 +580,28 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     return JSON.stringify({ x: Math.round(x), y: Math.round(y) });
   }
 
+  /**
+   * Where to drop a dot the user didn't place themselves. It's the same spot
+   * the single color presets use.
+   */
+  get #defaultDotPosition() {
+    const dotPad = this.panel.querySelector(".zen-theme-picker-gradient");
+    const rect = window.windowUtils.getBoundsWithoutFlushing(dotPad);
+    return { x: rect.width * 0.63, y: rect.height * 0.63 };
+  }
+
   createDot(color, fromWorkspace = false) {
-    const [r, g, b] = color.c;
+    // A color we can't read would throw and leave the space without any dot
+    // to edit, so just skip it instead.
+    if (!color?.c || (!color.isCustom && !Array.isArray(color.c))) {
+      return;
+    }
+    const [r, g, b] = color.isCustom ? [] : color.c;
     const dot = document.createElement("div");
     if (color.isPrimary) {
       dot.classList.add("primary");
     }
     if (color.isCustom) {
-      if (!color.c) {
-        return;
-      }
       dot.classList.add("custom");
       dot.style.opacity = 0;
       dot.style.setProperty("--zen-theme-picker-dot-color", color.c);
@@ -843,8 +855,11 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       dots.length + (action === "add" ? 1 : action === "remove" ? -1 : 0),
       this.dots
     );
+    if (!harmonyAngles) {
+      return dots;
+    }
     this.useAlgo = harmonyAngles.type;
-    if (!harmonyAngles || harmonyAngles.angles.length === 0) {
+    if (harmonyAngles.angles.length === 0) {
       return dots;
     }
 
@@ -967,6 +982,13 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       if (this.dots.length >= nsZenThemePicker.MAX_DOTS) {
         return;
       }
+      if (!this.dots.length) {
+        // There's no dot to derive the compliments from, so drop the first one
+        // ourselves, the same way clicking the wheel does.
+        this.spawnDot(this.#defaultDotPosition, true);
+        this.updateCurrentWorkspace(true);
+        return;
+      }
       let colorPositions = this.calculateCompliments(
         this.dots,
         "add",
@@ -979,6 +1001,9 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     } else if (target.id === "PanelUI-zen-gradient-generator-color-remove") {
       this.dots.sort((a, b) => a.ID - b.ID);
       if (this.dots.length === 0) {
+        // Only custom colors are left, and their list is hidden behind a pref,
+        // so remove them here to not leave the space stuck with them.
+        this.removeLastCustomColor();
         return;
       }
 
@@ -1650,17 +1675,22 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
             : "url(#PanelUI-zen-gradient-generator-slider-wave-gradient)";
       }
 
+      // Custom colors live in their own list instead of on the color wheel,
+      // so only the other ones tell us how many dots we are working with.
+      const dotColors = workspaceTheme.gradientColors.filter(
+        color => !color.isCustom
+      );
       for (const button of browser.document.querySelectorAll(
         "#PanelUI-zen-gradient-generator-color-actions button"
       )) {
-        // disable if there are no buttons
+        // disable if there's nothing to act on. Adding is the way out of a
+        // space without colors, so it stays enabled until the wheel is full.
         button.disabled =
-          workspaceTheme.gradientColors.length === 0 ||
           (button.id === "PanelUI-zen-gradient-generator-color-add"
-            ? workspaceTheme.gradientColors.length >= nsZenThemePicker.MAX_DOTS
-            : false) ||
+            ? dotColors.length >= nsZenThemePicker.MAX_DOTS
+            : workspaceTheme.gradientColors.length === 0) ||
           (button.id === "PanelUI-zen-gradient-generator-color-toggle-algo"
-            ? workspaceTheme.gradientColors.length < 2
+            ? dotColors.length < 2
             : false);
       }
       const clickToAdd = browser.document.getElementById(
@@ -1798,7 +1828,31 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     }
   }
 
+  /**
+   * A space can end up without a usable theme, for example when it comes from
+   * sync or from a session saved by an older version. Reading it as-is throws,
+   * which leaves the space painted with whatever was on screen before and
+   * impossible to theme, so fall back to an empty theme instead.
+   *
+   * @param {object} theme The theme to read.
+   * @returns {object} A theme we can render.
+   */
+  #normalizeTheme(theme) {
+    if (!theme || !Array.isArray(theme.gradientColors)) {
+      return nsZenThemePicker.getTheme([], theme?.opacity, theme?.texture);
+    }
+    // drop the colors we wouldn't be able to render anyway
+    const colors = theme.gradientColors.filter(color =>
+      color?.isCustom ? typeof color.c === "string" : Array.isArray(color?.c)
+    );
+    if (colors.length !== theme.gradientColors.length) {
+      theme.gradientColors = colors;
+    }
+    return theme;
+  }
+
   fixTheme(theme) {
+    theme = this.#normalizeTheme(theme);
     // add a primary color if there isn't one
     if (
       !theme.gradientColors.find(color => color.isPrimary) &&
@@ -1851,6 +1905,18 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       }
     }
     target.remove();
+    this.updateCurrentWorkspace();
+  }
+
+  removeLastCustomColor() {
+    const customDots = this.panel.querySelectorAll(
+      ".zen-theme-picker-dot.custom"
+    );
+    const lastDot = customDots[customDots.length - 1];
+    if (!lastDot) {
+      return;
+    }
+    (lastDot.closest(".zen-theme-picker-custom-list-item") ?? lastDot).remove();
     this.updateCurrentWorkspace();
   }
 
@@ -1990,7 +2056,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     }
     const previousOpacity = this.currentOpacity;
     const previousLightness = this.#currentLightness;
-    const theme = workspace.theme;
+    const theme = this.#normalizeTheme(workspace.theme);
     this.currentOpacity = theme.opacity ?? 0.5;
     this.#currentLightness = theme.lightness ?? 50;
     let gradient;

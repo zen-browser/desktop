@@ -139,4 +139,4 @@ zen-window-sync-migration-dialog-message = Zen synkroniserar nu fönster på sam
 zen-window-sync-migration-dialog-learn-more = Läs mer
 zen-window-sync-migration-dialog-accept = Jag förstår
 zen-appmenu-new-blank-window = 
-    .label = Nytt blankt fönster
+    .label = New Blank Window

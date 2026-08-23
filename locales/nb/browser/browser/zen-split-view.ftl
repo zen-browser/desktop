@@ -5,13 +5,13 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Fordelt fane
-            [1] Legg til delt visning
-           *[other] Spleis { $tabCount } faner
+            [-1] Split Out Tab
+            [1] Add Split View...
+           *[other] Join { $tabCount } Tabs
         }
     .accesskey = S
 zen-split-link = 
-    .label = Del opp lenke til ny fane
+    .label = Split Link to New Tab
     .accesskey = S
 zen-split-view-modifier-header = Splittet visning
 zen-split-view-modifier-activate-reallocation = 

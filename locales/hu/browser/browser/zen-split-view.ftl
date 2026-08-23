@@ -5,13 +5,13 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Lap kivétele
-            [1] Osztott nézethez adás...
-           *[other] { $tabCount } lap összevonása
+            [-1] Split Out Tab
+            [1] Add Split View...
+           *[other] Join { $tabCount } Tabs
         }
     .accesskey = S
 zen-split-link = 
-    .label = Hivatkozás felosztása új lapban
+    .label = Split Link to New Tab
     .accesskey = S
 zen-split-view-modifier-header = Osztott nézet
 zen-split-view-modifier-activate-reallocation = 

@@ -5,13 +5,13 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] 取消分屏标签页
-            [1] 添加分屏视图
-           *[other] 分屏 { $tabCount } 个标签页
+            [-1] Split Out Tab
+            [1] Add Split View...
+           *[other] Join { $tabCount } Tabs
         }
     .accesskey = S
 zen-split-link = 
-    .label = 拆分链接到新标签页
+    .label = Split Link to New Tab
     .accesskey = S
 zen-split-view-modifier-header = 分屏视图
 zen-split-view-modifier-activate-reallocation = 

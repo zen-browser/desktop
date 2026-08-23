@@ -39,5 +39,14 @@
     "type": "phabricator",
     "id": "D312091",
     "name": "Expose tiled attribute to all platforms"
+  },
+  {
+    "type": "phabricator",
+    "id": "D298708",
+    "name": "Issue 14990",
+    "replaces": {
+      "this._lastJsonLength = uncompressedBytes;": "this._lastJsonLength = uncompressedBytes.jsonLength;",
+      "          jsonLengthHint,": "          lengthHint: jsonLengthHint,"
+    }
   }
 ]

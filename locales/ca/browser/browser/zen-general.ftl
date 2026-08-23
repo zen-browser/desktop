@@ -18,13 +18,19 @@ tab-context-zen-add-essential-badge = { $num } / { $max }
 tab-context-zen-remove-essential = 
     .label = Elimina dels essencials
     .accesskey = R
-tab-context-zen-replace-pinned-url-with-current = 
+tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Substitueix l'URL essencial per l'actual
-           *[false] Substitueix l'URL fixat per l'actual
+            [true] Edita l'URL essencial
+           *[false] Edita l'URL fixada
         }
+    .accesskey = P
+tab-context-zen-replace-pinned-url-with-current = 
+    .label = Substitueix amb l'URL actual
     .accesskey = C
+tab-context-zen-edit-pinned-url = 
+    .label = Edita…
+    .accesskey = E
 tab-context-zen-edit-title = 
     .label = Canvia l'etiqueta...
 tab-context-zen-edit-icon = 
@@ -47,6 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Confirma
 zen-pinned-tab-replaced = L'URL de la pestanya fixada s'ha substituït per l'URL actual.
+zen-pinned-tab-url-edited = L'URL de la pestanya fixada s'ha actualitzat!
+zen-pinned-tab-url-invalid = Això no sembla una URL vàlida.
+zen-pinned-tab-edit-url-title = Edita l'URL fixada
+zen-pinned-tab-edit-url-label = Introduïu l'URL a la qual ha d'apuntar aquesta pestanya fixada:
 zen-tabs-renamed = S'ha canviat el nom de la pestanya correctament
 zen-background-tab-opened-toast = S'ha obert una nova pestanya de fons
 zen-workspace-renamed-toast = S'ha canviat el nom de l'espai de treball correctament
@@ -65,6 +75,8 @@ zen-icons-picker-emoji =
     .label = Emojis
 zen-icons-picker-svg = 
     .label = Icones
+zen-emojis-picker-search = 
+    .placeholder = Cerca emojis
 urlbar-search-mode-zen_actions = Accions
 zen-site-data-settings = Configuració
 zen-generic-manage = Gestiona
@@ -116,6 +128,9 @@ zen-sidebar-notification-updated-heading = Actualització completada!
 zen-sidebar-notification-updated-label = Novetats a { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Mostra les notes de la versió
+zen-sidebar-notification-donate-label = Ajudeu-nos { -brand-short-name }
+zen-sidebar-notification-donate-tooltip = 
+    .title = Feu una donació al projecte
 zen-sidebar-notification-restart-safe-mode-label = Alguna cosa no funciona?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Reinici en mode segur

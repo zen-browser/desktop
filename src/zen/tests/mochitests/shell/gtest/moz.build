@@ -7,8 +7,10 @@ if CONFIG["MOZ_WIDGET_TOOLKIT"] == "windows":
 
     UNIFIED_SOURCES += [
         "LimitedAccessFeatureTests.cpp",
-        "SetDefaultBrowserButtonTests.cpp",
         "ShellLinkTests.cpp",
+        "WindowsDefaultBrowserTests.cpp",
+        "WindowsUIElementTests.cpp",
+        "WindowsUIOverlayImageTests.cpp",
     ]
 
 FINAL_LIBRARY = "xul-gtest"

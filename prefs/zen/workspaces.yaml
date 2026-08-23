@@ -21,7 +21,7 @@
   value: 100
 
 - name: zen.workspaces.switch-animation-duration
-  value: 200
+  value: 250
 
 - name: zen.workspaces.wrap-around-navigation
   value: true

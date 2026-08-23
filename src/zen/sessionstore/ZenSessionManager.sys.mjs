@@ -10,7 +10,6 @@ const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   ZenLiveFoldersManager:
     "resource:///modules/zen/ZenLiveFoldersManager.sys.mjs",
-  ZenSyncStore: "resource:///modules/zen/ZenSyncManager.sys.mjs",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
   SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
   SessionStartup: "resource:///modules/sessionstore/SessionStartup.sys.mjs",
@@ -611,7 +610,9 @@ export class nsZenSessionManager {
       }
     );
     this.#collectWindowData(windows);
-    lazy.ZenSyncStore.notifyAboutChanges();
+    // Let interested consumers (e.g. Firefox Sync) know fresh sidebar data
+    // is available, without this module knowing anything about them.
+    Services.obs.notifyObservers(null, "zen-sidebar-data-collected");
     // This would save the data to disk asynchronously or when quitting the app.
     let sidebar = this.#sidebarWithoutCloning;
     this.#file.data = sidebar;

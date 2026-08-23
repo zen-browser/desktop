@@ -538,8 +538,7 @@
 
     :root[zen-single-toolbar="true"]:not([zen-has-empty-tab="true"]) & {
       & #urlbar:not([breakout-extend]) .urlbar-input-container {
-        padding-left: 8px;
-        padding-right: 4px;
+        padding-inline: 4px;
       }
     }
   }
@@ -1138,7 +1137,7 @@
   min-width: calc(100% + var(--zen-toolbox-padding) * 2);
   width: calc(100% + var(--zen-toolbox-padding) * 2);
   padding: 0 var(--zen-toolbox-padding);
-  display: grid;
+  display: grid !important; /* Override the hidden attribute */
 
   position: absolute;
 

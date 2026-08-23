@@ -102,3 +102,10 @@
 
 - name: browser.preonboarding.enabled
   value: false
+
+- name: browser.referrals.enabled
+  value: false
+  locked: true
+
+- name: browser.shell.customIcon.enabled
+  value: false # For now?

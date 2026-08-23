@@ -5,13 +5,13 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] 分割タブ
-            [1] 分割ビューを追加...
-           *[other] { $tabCount } 個のタブを結合するs
+            [-1] Split Out Tab
+            [1] Add Split View...
+           *[other] Join { $tabCount } Tabs
         }
     .accesskey = S
 zen-split-link = 
-    .label = リンクを新しいタブに分割する
+    .label = Split Link to New Tab
     .accesskey = S
 zen-split-view-modifier-header = 分割表示
 zen-split-view-modifier-activate-reallocation = 

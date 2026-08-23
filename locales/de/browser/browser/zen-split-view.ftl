@@ -5,13 +5,13 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Tab abtrennen
-            [1] Geteilte Ansicht hinzufügen…
-           *[other] { $tabCount } Tabs zusammenführen
+            [-1] Split Out Tab
+            [1] Add Split View...
+           *[other] Join { $tabCount } Tabs
         }
     .accesskey = S
 zen-split-link = 
-    .label = Link in geteilter Ansicht öffnen
+    .label = Split Link to New Tab
     .accesskey = G
 zen-split-view-modifier-header = Geteilte Ansicht
 zen-split-view-modifier-activate-reallocation = 

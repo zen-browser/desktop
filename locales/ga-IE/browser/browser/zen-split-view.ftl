@@ -5,13 +5,13 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Cluaisín scoilte
-            [1] Amharc scoilte a chur leis...
-           *[other] Ceangail le { $tabCount } Cluaisíní
+            [-1] Split Out Tab
+            [1] Add Split View...
+           *[other] Join { $tabCount } Tabs
         }
     .accesskey = S
 zen-split-link = 
-    .label = Scoilt nasc chuig cluaisín nua
+    .label = Split Link to New Tab
     .accesskey = S
 zen-split-view-modifier-header = Radharc Scoilte
 zen-split-view-modifier-activate-reallocation = 

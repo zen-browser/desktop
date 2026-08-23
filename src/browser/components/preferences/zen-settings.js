@@ -1028,7 +1028,7 @@ var gZenCKSSettings = {
     let shortcut;
     if (event.code && event.code.startsWith("Key")) {
       shortcut = event.code.slice(3);
-    } else if (event.code && event.code.startsWith("Digit")) {
+    } else if (!event.shiftKey && event.code && event.code.startsWith("Digit")) {
       shortcut = event.code.slice(5);
     } else {
       // Use physical key mapping for common symbols
@@ -1045,7 +1045,7 @@ var gZenCKSSettings = {
         Minus: "-",
         Equal: "=",
       };
-      shortcut = CODE_TO_KEY_MAP[event.code] || event.key;
+      shortcut = (!event.shiftKey && CODE_TO_KEY_MAP[event.code]) || event.key;
     }
 
     shortcut = shortcut.replace(/Ctrl|Control|Shift|Alt|Option|Cmd|Meta/, ""); // Remove all modifiers

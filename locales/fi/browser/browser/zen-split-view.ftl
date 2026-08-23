@@ -5,13 +5,13 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Split out tab
-            [1] Add split view...
+            [-1] Split Out Tab
+            [1] Add Split View...
            *[other] Join { $tabCount } Tabs
         }
     .accesskey = S
 zen-split-link = 
-    .label = Jaa linkki uuteen välilehteen
+    .label = Split Link to New Tab
     .accesskey = S
 zen-split-view-modifier-header = Jaettu Näkymä
 zen-split-view-modifier-activate-reallocation = 

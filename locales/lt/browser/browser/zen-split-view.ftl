@@ -5,16 +5,13 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Išskaidyti kortelę
-            [1] Įtraukti skaidymo rodinį
-            [one] Sujungti { $tabCount } kortelę
-            [few] Sujungti { $tabCount } korteles
-            [many] Sujungti { $tabCount } kortelės
-           *[other] Sujungti { $tabCount } kortelių
+            [-1] Split Out Tab
+            [1] Add Split View...
+           *[other] Join { $tabCount } Tabs
         }
     .accesskey = S
 zen-split-link = 
-    .label = Skaidyti nuorodą į naują kortelę
+    .label = Split Link to New Tab
     .accesskey = S
 zen-split-view-modifier-header = Skaidymo rodinys
 zen-split-view-modifier-activate-reallocation = 

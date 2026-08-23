@@ -5,13 +5,13 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Pestanya dividida
-            [1] Afegeix una vista dividida...
-           *[other] Uneix { $tabCount } pestanyes
+            [-1] Split Out Tab
+            [1] Add Split View...
+           *[other] Join { $tabCount } Tabs
         }
     .accesskey = S
 zen-split-link = 
-    .label = Divideix l'enllaç en una pestanya nova
+    .label = Split Link to New Tab
     .accesskey = S
 zen-split-view-modifier-header = Vista dividida
 zen-split-view-modifier-activate-reallocation = 

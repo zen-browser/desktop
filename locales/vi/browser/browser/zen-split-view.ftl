@@ -5,13 +5,13 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Tách thẻ
-            [1] Chia đôi màn hình...
-           *[other] Gộp { $tabCount } thẻ
+            [-1] Split Out Tab
+            [1] Add Split View...
+           *[other] Join { $tabCount } Tabs
         }
     .accesskey = S
 zen-split-link = 
-    .label = Mở liên kết ở chế độ chia khung
+    .label = Split Link to New Tab
     .accesskey = S
 zen-split-view-modifier-header = Chế độ chia khung
 zen-split-view-modifier-activate-reallocation = 

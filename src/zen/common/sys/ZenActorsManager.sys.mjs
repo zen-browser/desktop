@@ -59,6 +59,22 @@ let JSWINDOWACTORS = {
     safeForUntrustedWebProcess: true,
     enablePreference: "zen.glance.enabled",
   },
+  ZenSnap: {
+    parent: {
+      esModuleURI: "resource:///actors/ZenSnapParent.sys.mjs",
+    },
+    child: {
+      esModuleURI: "resource:///actors/ZenSnapChild.sys.mjs",
+      events: {
+        click: {
+          capture: true,
+        },
+      },
+    },
+    allFrames: true,
+    remoteTypes: ["web", "file"],
+    safeForUntrustedWebProcess: true,
+  },
   ZenWindowDrag: {
     parent: {
       esModuleURI: "resource:///actors/ZenWindowDragParent.sys.mjs",

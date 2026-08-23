@@ -5,13 +5,13 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Sekmeyi ayır
-            [1] Bölünmüş görünüme ekle...
-           *[other] { $tabCount } sekmeyi birleştir
+            [-1] Sekmeyi Ayır
+            [1] Bölünmüş Görünüm Ekle...
+           *[other] { $tabCount } Sekmeyi birleştir
         }
     .accesskey = S
 zen-split-link = 
-    .label = Bağlantıyı yeni sekmeye böl
+    .label = Bağlantıyı Yeni Sekmede Böl
     .accesskey = S
 zen-split-view-modifier-header = Bölünmüş Görünüm
 zen-split-view-modifier-activate-reallocation = 

@@ -92,7 +92,11 @@
   --in-content-accent-color-active: currentColor !important;
 
   /* This is like the secondary button */
-  --in-content-button-background: transparent !important;
+  --in-content-button-background: color-mix(
+    in srgb,
+    currentColor,
+    transparent 90%
+  ) !important;
   --in-content-button-text-color: var(--zen-secondary-btn-color) !important;
   --in-content-button-background-hover: color-mix(
     in srgb,

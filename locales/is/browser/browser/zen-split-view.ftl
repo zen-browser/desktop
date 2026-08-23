@@ -5,13 +5,13 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Kljúfa út flipa
-            [1] Bæta við klofnu yfirliti...
-           *[other] Sameina { $tabCount } flipa
+            [-1] Split Out Tab
+            [1] Add Split View...
+           *[other] Join { $tabCount } Tabs
         }
     .accesskey = S
 zen-split-link = 
-    .label = Kljúfa tengil í nýjan flipa
+    .label = Split Link to New Tab
     .accesskey = S
 zen-split-view-modifier-header = Klofið yfirlit
 zen-split-view-modifier-activate-reallocation = 

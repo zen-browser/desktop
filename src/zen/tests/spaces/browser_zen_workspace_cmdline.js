@@ -18,22 +18,22 @@ add_task(async function test_resolve_workspace_from_string() {
   });
 
   Assert.strictEqual(
-    gZenWorkspaces.resolveWorkspaceFromString(created.uuid)?.uuid,
+    gZenWorkspaces.resolveWorkspaceFromCLIString(created.uuid)?.uuid,
     created.uuid,
     "Workspaces should resolve by UUID."
   );
   Assert.strictEqual(
-    gZenWorkspaces.resolveWorkspaceFromString("cmdline space")?.uuid,
+    gZenWorkspaces.resolveWorkspaceFromCLIString("cmdline space")?.uuid,
     created.uuid,
     "Workspaces should resolve by name, case-insensitively."
   );
   Assert.strictEqual(
-    gZenWorkspaces.resolveWorkspaceFromString("does-not-exist"),
+    gZenWorkspaces.resolveWorkspaceFromCLIString("does-not-exist"),
     null,
     "Unknown workspaces should resolve to null."
   );
   Assert.strictEqual(
-    gZenWorkspaces.resolveWorkspaceFromString(null),
+    gZenWorkspaces.resolveWorkspaceFromCLIString(null),
     null,
     "Empty values should resolve to null."
   );

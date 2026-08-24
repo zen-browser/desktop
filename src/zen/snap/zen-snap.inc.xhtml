@@ -2,3 +2,34 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+<vbox id="zen-snap-modal" class="zen-snap-hidden" hidden="true">
+  <hbox class="zen-snap-header" align="center">
+    <hbox class="zen-snap-title-wrapper" align="center" flex="1">
+      <image class="zen-snap-icon" />
+      <label class="zen-snap-title" value="Zen Snap" />
+    </hbox>
+    <toolbarbutton id="zen-snap-close-btn" class="zen-snap-close-btn" label="×" tooltiptext="Close" />
+  </hbox>
+
+  <vbox class="zen-snap-body">
+    <vbox class="zen-snap-section">
+      <label class="zen-snap-section-title" value="Clipboard" />
+      <vbox id="zen-snap-clipboard-container" class="zen-snap-items-list">
+        <label id="zen-snap-clipboard-status" class="zen-snap-item-empty" value="No image or file in clipboard" />
+      </vbox>
+    </vbox>
+
+    <vbox class="zen-snap-section">
+      <label class="zen-snap-section-title" value="Recent Downloads" />
+      <vbox id="zen-snap-downloads-container" class="zen-snap-items-list">
+        <label id="zen-snap-downloads-status" class="zen-snap-item-empty" value="No recent downloads" />
+      </vbox>
+    </vbox>
+  </vbox>
+
+  <hbox class="zen-snap-footer" align="center">
+    <button id="zen-snap-browse-all-btn" class="zen-snap-browse-all-btn" label="Browse all files..." />
+  </hbox>
+</vbox>
+
+

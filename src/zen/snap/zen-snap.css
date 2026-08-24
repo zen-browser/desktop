@@ -3,3 +3,138 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
+#zen-snap-modal {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 2147483647;
+  min-width: 300px;
+  max-width: 360px;
+  padding: 16px;
+  background-color: var(--zen-colors-tertiary, #1e1e2e);
+  color: var(--zen-colors-text, #cdd6f4);
+  border: 1px solid var(--zen-colors-border, rgba(255, 255, 255, 0.12));
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  font-family: inherit;
+  font-size: 13px;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(16px) scale(0.96);
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#zen-snap-modal.zen-snap-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+#zen-snap-modal.zen-snap-hidden {
+  opacity: 0;
+  transform: translateY(16px) scale(0.96);
+  pointer-events: none;
+}
+
+.zen-snap-header {
+  margin-bottom: 12px;
+}
+
+.zen-snap-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--zen-colors-primary, #89b4fa);
+}
+
+.zen-snap-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--zen-colors-text, #a6adc8);
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.zen-snap-close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.zen-snap-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.zen-snap-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.zen-snap-section-title {
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--zen-colors-text, #a6adc8);
+  opacity: 0.8;
+}
+
+.zen-snap-items-list {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.zen-snap-item-empty {
+  font-size: 12px;
+  color: var(--zen-colors-text, #a6adc8);
+  opacity: 0.7;
+}
+
+.zen-snap-download-item {
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.zen-snap-download-item:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.zen-snap-download-name {
+  font-size: 12px;
+  color: var(--zen-colors-text, #cdd6f4);
+}
+
+.zen-snap-footer {
+  margin-top: 4px;
+}
+
+.zen-snap-browse-all-btn {
+  appearance: none;
+  background-color: var(--zen-colors-secondary, rgba(255, 255, 255, 0.08));
+  color: var(--zen-colors-text, #cdd6f4);
+  border: 1px solid var(--zen-colors-border, rgba(255, 255, 255, 0.1));
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.zen-snap-browse-all-btn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: var(--zen-colors-primary, #89b4fa);
+  color: #fff;
+}
+

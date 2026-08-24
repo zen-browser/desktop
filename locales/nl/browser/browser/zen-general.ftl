@@ -21,16 +21,16 @@ tab-context-zen-remove-essential =
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] URL van Essential aanpassen
+           *[false] URL van vastgezette tab aanpassen
         }
-    .accesskey = P
+    .accesskey = V
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = Vervang door huidige URL
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
-    .accesskey = E
+    .label = Bewerken…
+    .accesskey = B
 tab-context-zen-edit-title = 
     .label = Naam veranderen...
 tab-context-zen-edit-icon = 
@@ -53,10 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Bevestigen
 zen-pinned-tab-replaced = Vastgemaakte tabblad URL is vervangen met de huidige URL!
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = URL van vastgezette tab is bijgewerkt!
+zen-pinned-tab-url-invalid = Dat lijkt niet op een geldige URL.
+zen-pinned-tab-edit-url-title = Vastgezette URL bewerken
+zen-pinned-tab-edit-url-label = Voer de URL in waar dit vastgezette tabblad naar moet verwijzen:
 zen-tabs-renamed = Tabblad is succesvol hernoemd!
 zen-background-tab-opened-toast = Nieuw achtergrondtabblad geopend!
 zen-workspace-renamed-toast = Werkruimte succesvol is hernoemd!
@@ -76,7 +76,7 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Iconen
 zen-emojis-picker-search = 
-    .placeholder = Search emojis
+    .placeholder = Emoji zoeken
 urlbar-search-mode-zen_actions = Acties
 zen-site-data-settings = Instellingen
 zen-generic-manage = Beheren
@@ -128,9 +128,9 @@ zen-sidebar-notification-updated-heading = Update voltooid!
 zen-sidebar-notification-updated-label = Wat is er veranderd in { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Versie-informatie bekijken
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-label = Steun { -brand-short-name }
 zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
+    .title = Doneer aan het project
 zen-sidebar-notification-restart-safe-mode-label = Werkt er iets niet?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Herstarten in veilige modus
@@ -139,4 +139,4 @@ zen-window-sync-migration-dialog-message = Vanaf nu synchroniseert Zen alle vens
 zen-window-sync-migration-dialog-learn-more = Meer info
 zen-window-sync-migration-dialog-accept = Begrepen
 zen-appmenu-new-blank-window = 
-    .label = New Blank Window
+    .label = Nieuw blanco venster

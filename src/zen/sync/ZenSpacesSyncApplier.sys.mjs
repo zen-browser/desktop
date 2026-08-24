@@ -574,7 +574,7 @@ class nsZenSpacesSyncApplier {
       // An unloaded tab has no live state to lose: retarget its lazy session
       // state so the next activation loads the new canonical url directly
       // instead of whatever the tab was created with.
-      this.#retargetUnloadedTab(win, tab, data);
+      this.#retargetUnloadedTab(win, tab, data, initial?.entry?.url);
     }
 
     const staticLabel =
@@ -621,10 +621,26 @@ class nsZenSpacesSyncApplier {
    * @param {Window} win
    * @param {MozTabbrowserTab} tab
    * @param {object} data
+   * @param {?string} previousPinUrl - The pin url before this record applied.
    */
-  #retargetUnloadedTab(win, tab, data) {
+  #retargetUnloadedTab(win, tab, data, previousPinUrl) {
     try {
       const state = JSON.parse(win.SessionStore.getTabState(tab));
+      const entries = state.entries || [];
+      let currentUrl = null;
+      if (entries.length) {
+        const index = Math.min(
+          Math.max((state.index || entries.length) - 1, 0),
+          entries.length - 1
+        );
+        currentUrl = entries[index]?.url || null;
+      }
+      if (
+        currentUrl === data.url ||
+        (currentUrl && previousPinUrl && currentUrl !== previousPinUrl)
+      ) {
+        return;
+      }
       state.entries = [
         {
           url: data.url,

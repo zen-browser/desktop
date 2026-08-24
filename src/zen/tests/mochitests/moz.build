@@ -15,4 +15,7 @@ BROWSER_CHROME_MANIFESTS += [
 	"tooltiptext/browser.toml",
 ]
 XPCSHELL_TESTS_MANIFESTS += [
+	"remote-settings/xpcshell.toml",
+	"services-crypto/xpcshell.toml",
+	"sync/xpcshell.toml",
 ]

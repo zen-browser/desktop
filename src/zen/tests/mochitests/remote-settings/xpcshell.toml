@@ -1,0 +1,50 @@
+[DEFAULT]
+head = "../../../../services/common/tests/unit/head_global.js ../../../../services/common/tests/unit/head_helpers.js head_settings.js"
+firefox-appdir = "browser"
+tags = "remote-settings"
+support-files = ["test_remote_settings_signatures/**"]
+skip-if = [
+  "appname == 'thunderbird'", # Bug 1662758 - these tests don't pass if default bucket isn't "main".
+]
+
+["test_attachments_downloader.js"]
+support-files = ["test_attachments_downloader/**"]
+
+["test_remote_settings.js"]
+
+["test_remote_settings_dump_lastmodified.js"]
+
+["test_remote_settings_jexl_filters.js"]
+
+["test_remote_settings_offline.js"]
+
+["test_remote_settings_older_than_local.js"]
+
+["test_remote_settings_poll.js"]
+
+["test_remote_settings_recover_broken.js"]
+
+["test_remote_settings_release_prefs.js"]
+
+["test_remote_settings_signatures.js"]
+
+["test_remote_settings_startup_bundle.js"]
+support-files = ["test_remote_settings_startup_bundle/**"]
+
+["test_remote_settings_sync_history.js"]
+
+["test_remote_settings_utils.js"]
+
+["test_remote_settings_utils_telemetry.js"]
+skip-if = [
+  "os == 'android' && os_version == '14' && arch == 'x86_64'", # Bug 1739463
+]
+
+["test_remote_settings_worker.js"]
+
+["test_shutdown_handling.js"]
+
+["test_uptake_telemetry.js"]
+skip-if = [
+  "os == 'android'", # Bug 2042499
+]

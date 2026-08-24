@@ -675,18 +675,15 @@ class nsZenWorkspaces {
     }
   }
 
-  resolveWorkspaceFromString(value) {
+  resolveWorkspaceFromCLIString(value) {
     if (!value) {
       return null;
     }
     try {
       const workspaces = this.getWorkspaces();
       return (
-        workspaces.find(workspace => workspace.uuid === value) ||
-        workspaces.find(
-          workspace =>
-            workspace.name?.toLowerCase() === value.toLowerCase()
-        ) ||
+        workspaces.find(workspace => workspace.uuid === value || 
+          workspace.name?.toLowerCase() === value.toLowerCase()) ||
         null
       );
     } catch {
@@ -769,7 +766,7 @@ class nsZenWorkspaces {
       // window that restores its workspaces; private and unsynced windows
       // must not eat the pref.
       Services.prefs.clearUserPref("zen.workspaces.cmdline-initial-workspace");
-      const initialWorkspace = this.resolveWorkspaceFromString(cmdLineWorkspace);
+      const initialWorkspace = this.resolveWorkspaceFromCLIString(cmdLineWorkspace);
       if (initialWorkspace) {
         this.activeWorkspace = initialWorkspace.uuid;
       }
@@ -1661,7 +1658,7 @@ class nsZenWorkspaces {
    */
   async changeWorkspaceFromCommandLine(workspaceMatch) {
     await this.promiseInitialized;
-    const workspace = this.resolveWorkspaceFromString(workspaceMatch);
+    const workspace = this.resolveWorkspaceFromCLIString(workspaceMatch);
     if (workspace && workspace.uuid !== this.activeWorkspace) {
       await this.changeWorkspaceWithID(workspace.uuid);
     }

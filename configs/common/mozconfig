@@ -21,10 +21,9 @@ ac_add_options --with-distribution-id=org.mozilla.thunderbird
 # ac_add_options --enable-linker=gold
 
 # Misc
-# MOZ_SOURCE_REPO is left unset — thunderbird's comm tree implies its own
-# (hg.mozilla.org/releases/comm-release); exporting a conflicting value
-# fails configure with ConflictingOptionError.
-export MOZ_SOURCE_CHANGESET=${changeset}
+# MOZ_SOURCE_REPO / MOZ_SOURCE_CHANGESET are left unset — thunderbird's comm
+# tree implies its own values; exporting conflicting ones fails configure
+# with ConflictingOptionError.
 export MOZ_INCLUDE_SOURCE_INFO=1
 
 if test "$SCCACHE_GHA_ENABLED" = "true"; then

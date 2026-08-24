@@ -32,6 +32,7 @@ const SVG_ICONS = [
 
 class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
   #panel;
+  #emojiSearchTags = new WeakMap();
 
   #anchor;
   #emojiAsSVG = false;
@@ -146,25 +147,10 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
   #onSearchInput(event) {
     const input = event.target;
     const value = input.value.trim().toLowerCase();
-    // search for emojis.tags and order by emojis.order
-    const filteredEmojis = this.#emojis
-      .filter(emoji => {
-        return emoji.tags.some(tag => tag.toLowerCase().includes(value));
-      })
-      .sort((a, b) => a.order - b.order);
+
     for (const button of this.emojiList.children) {
-      const buttonEmoji = button.getAttribute("label");
-      const emojiObject = filteredEmojis.find(
-        emoji => emoji.emoji === buttonEmoji
-      );
-      if (emojiObject) {
-        button.hidden = !emojiObject.tags.some(tag =>
-          tag.toLowerCase().includes(value)
-        );
-        button.style.order = emojiObject.order;
-      } else {
-        button.hidden = true;
-      }
+      const tags = this.#emojiSearchTags.get(button);
+      button.hidden = !tags?.some(tag => tag.includes(value));
     }
   }
 
@@ -177,18 +163,26 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
     const allowEmojis = !this.#panel.hasAttribute("only-svg-icons");
     if (allowEmojis) {
       const emojiList = this.emojiList;
+      const emojiFragment = document.createDocumentFragment();
       for (const emoji of this.#emojis) {
         const item = document.createXULElement("toolbarbutton");
         item.className = "toolbarbutton-1 zen-emojis-picker-emoji";
         item.setAttribute("label", emoji.emoji);
         item.setAttribute("tooltiptext", "");
+        item.style.order = emoji.order;
+        this.#emojiSearchTags.set(
+          item,
+          emoji.tags.map(tag => tag.toLowerCase())
+        );
         item.addEventListener("command", () => {
           this.#selectEmoji(emoji.emoji);
         });
-        emojiList.appendChild(item);
+        emojiFragment.appendChild(item);
       }
+      emojiList.appendChild(emojiFragment);
     }
     const svgList = this.svgList;
+    const svgFragment = document.createDocumentFragment();
     for (const icon of SVG_ICONS) {
       const item = document.createXULElement("toolbarbutton");
       item.className = "toolbarbutton-1 zen-emojis-picker-svg";
@@ -199,8 +193,9 @@ class nsZenEmojiPicker extends nsZenDOMOperatedFeature {
       item.addEventListener("command", () => {
         this.#selectEmoji(this.getSVGURL(icon));
       });
-      svgList.appendChild(item);
+      svgFragment.appendChild(item);
     }
+    svgList.appendChild(svgFragment);
   }
 
   #onPopupShown(event) {

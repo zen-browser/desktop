@@ -74,6 +74,8 @@ export class ZenBoostsChild extends JSWindowActorChild {
     this.#applyBoostForPageIfAvailable();
   }
 
+  handleEvent() {}
+
   didDestroy() {
     if (this.#currentState === ZenBoostsChild.STATES.ZAP) {
       this.disableZapMode();

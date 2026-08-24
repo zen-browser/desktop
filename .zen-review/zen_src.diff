@@ -1,0 +1,2859 @@
+diff --git a/prefs/zen/standalone-window.yaml b/prefs/zen/standalone-window.yaml
+index bce130d2a..bf75eeca1 100644
+--- a/prefs/zen/standalone-window.yaml
++++ b/prefs/zen/standalone-window.yaml
+@@ -12,3 +12,8 @@
+ 
+ - name: zen.standalone-window.default-height
+   value: 820
++
++# When Zen was brought to the front only to show a standalone window, closing
++# that window sends the user back to the application the link came from.
++- name: zen.standalone-window.return-focus-on-close
++  value: true
+diff --git a/src/browser/base/content/zen-popupset.inc.xhtml b/src/browser/base/content/zen-popupset.inc.xhtml
+index 9d6e1c06c..a3178d398 100644
+--- a/src/browser/base/content/zen-popupset.inc.xhtml
++++ b/src/browser/base/content/zen-popupset.inc.xhtml
+@@ -6,5 +6,6 @@
+ #include zen-panels/emojis-picker.inc
+ #include zen-panels/folders-search.inc
+ #include zen-panels/site-data.inc
++#include zen-panels/standalone-window-spaces.inc
+ 
+ #include zen-panels/popups.inc
+diff --git a/src/browser/components/BrowserContentHandler-sys-mjs.patch b/src/browser/components/BrowserContentHandler-sys-mjs.patch
+index 84a6578af..4e27f0532 100644
+--- a/src/browser/components/BrowserContentHandler-sys-mjs.patch
++++ b/src/browser/components/BrowserContentHandler-sys-mjs.patch
+@@ -1,8 +1,17 @@
+ diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/components/BrowserContentHandler.sys.mjs
+-index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09814422bf 100644
++index 64c325fc4646d2bd628b57f9b15c2bcffbdfecb2..4d0ce09c0726e967a144fcc315e264592136555c 100644
+ --- a/browser/components/BrowserContentHandler.sys.mjs
+ +++ b/browser/components/BrowserContentHandler.sys.mjs
+-@@ -603,6 +603,28 @@ nsBrowserContentHandler.prototype = {
++@@ -27,6 +27,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
++   SpecialMessageActions:
++     "resource://messaging-system/lib/SpecialMessageActions.sys.mjs",
++   UpdatePing: "resource://gre/modules/UpdatePing.sys.mjs",
+++  gZenStandaloneWindowManager:
+++    "resource:///modules/zen/standalonewindow/ZenStandaloneWindowManager.sys.mjs",
++ });
++ 
++ /**
++@@ -641,6 +643,28 @@ nsBrowserContentHandler.prototype = {
+        }
+      }
+  
+@@ -31,7 +40,7 @@ index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09
+      var searchParam = cmdLine.handleFlagWithParam("search", false);
+      if (searchParam) {
+        doSearch(searchParam, cmdLine);
+-@@ -672,6 +694,7 @@ nsBrowserContentHandler.prototype = {
++@@ -710,6 +734,7 @@ nsBrowserContentHandler.prototype = {
+        "  --new-window <url> Open <url> in a new window.\n" +
+        "  --new-tab <url>    Open <url> in a new tab.\n" +
+        "  --private-window [<url>] Open <url> in a new private window.\n";
+@@ -39,3 +48,44 @@ index 4bfb4199dafac004486dfc61db954173742a010a..542c156432b9d7c2190c0d14ce9cfd09
+      if (AppConstants.platform == "win") {
+        info += "  --preferences      Open Options dialog.\n";
+      } else {
++@@ -1311,6 +1336,17 @@ function handURIToExistingBrowser(
++     return;
++   }
++ 
+++  // There is no window to load it in. An external link does not need one: it
+++  // can have a standalone window of its own.
+++  if (
+++    !forcePrivate &&
+++    lazy.gZenStandaloneWindowManager.openExternalLinksInStandaloneWindows([
+++      uri.spec,
+++    ])
+++  ) {
+++    return;
+++  }
+++
++   // if we couldn't load it in an existing window, open a new one
++   openBrowserWindow(cmdLine, triggeringPrincipal, uri.spec, null, forcePrivate);
++ }
++@@ -1717,6 +1753,22 @@ nsDefaultCommandLineHandler.prototype = {
++       // Can't open multiple URLs without using system principal.
++       var URLlist = urilist.filter(shouldLoadURI).map(u => u.spec);
++       if (URLlist.length) {
+++        // Reached when there is no browser window to hand the URL to: either
+++        // the application is starting up, or every window has been closed.
+++        // A standalone window is a whole window, so it can be the first one,
+++        // and the session is left for whenever the user opens Zen properly.
+++        if (
+++          lazy.gZenStandaloneWindowManager.openExternalLinksInStandaloneWindows(
+++            URLlist
+++          )
+++        ) {
+++          let blankWindow = Services.wm.getMostRecentWindow("navigator:blank");
+++          if (blankWindow) {
+++            blankWindow.close();
+++          }
+++          cmdLine.preventDefault = true;
+++          return;
+++        }
++         openBrowserWindow(cmdLine, lazy.gSystemPrincipal, URLlist);
++       }
++     } else if (!cmdLine.preventDefault) {
+diff --git a/src/browser/components/sessionstore/SessionStore-sys-mjs.patch b/src/browser/components/sessionstore/SessionStore-sys-mjs.patch
+index b421fd11b..c2971f715 100644
+--- a/src/browser/components/sessionstore/SessionStore-sys-mjs.patch
++++ b/src/browser/components/sessionstore/SessionStore-sys-mjs.patch
+@@ -1,5 +1,5 @@
+ diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
+-index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee4aa3be28 100644
++index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..1cef7f739bd3c3f9d930574bab629c22548d5103 100644
+ --- a/browser/components/sessionstore/SessionStore.sys.mjs
+ +++ b/browser/components/sessionstore/SessionStore.sys.mjs
+ @@ -129,6 +129,9 @@ const TAB_EVENTS = [
+@@ -21,7 +21,21 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+  });
+  
+  ChromeUtils.defineLazyGetter(lazy, "blankURI", () => {
+-@@ -1300,10 +1305,7 @@ var SessionStoreInternal = {
++@@ -647,6 +652,13 @@ export var SessionStore = {
++     SessionStoreInternal.maybeDontRestoreTabs(aWindow);
++   },
++ 
+++  recordClosedTabForOtherWindow(aTargetWindow, aTab) {
+++    return SessionStoreInternal.recordClosedTabForOtherWindow(
+++      aTargetWindow,
+++      aTab
+++    );
+++  },
+++
++   undoCloseWindow: function ss_undoCloseWindow(aIndex) {
++     return SessionStoreInternal.undoCloseWindow(aIndex);
++   },
++@@ -1300,10 +1312,7 @@ var SessionStoreInternal = {
+     */
+    get willAutoRestore() {
+      return (
+@@ -33,7 +47,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+      );
+    },
+  
+-@@ -1990,6 +1992,9 @@ var SessionStoreInternal = {
++@@ -1990,6 +1999,9 @@ var SessionStoreInternal = {
+        case "TabPinned":
+        case "TabUnpinned":
+        case "SwapDocShells":
+@@ -43,18 +57,28 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+          this.saveStateDelayed(win);
+          break;
+        case "TabGroupCreate":
+-@@ -2099,6 +2104,10 @@ var SessionStoreInternal = {
++@@ -2099,6 +2111,20 @@ var SessionStoreInternal = {
+        this._windows[aWindow.__SSi].isTaskbarTab = true;
+      }
+  
+ +    if (aWindow.document.documentElement.hasAttribute("zen-unsynced-window")) {
+ +      this._windows[aWindow.__SSi].isZenUnsynced = true;
+ +    }
+++
+++    // External-link standalone windows are transient: they hold one page the
+++    // user has not filed anywhere yet. They are marked from the window object
+++    // rather than from a chrome attribute, because that flag is set when the
+++    // window is opened and so is already there no matter which of the
+++    // browser-window-before-show observers runs first.
+++    if (aWindow._zenStandaloneWindow) {
+++      this._windows[aWindow.__SSi].isZenUnsynced = true;
+++      this._windows[aWindow.__SSi].isZenStandalone = true;
+++    }
+ +
+      if (lazy.AIWindow.isAIWindowActiveAndEnabled(aWindow)) {
+        this._windows[aWindow.__SSi].isAIWindow = true;
+      }
+-@@ -2135,7 +2144,7 @@ var SessionStoreInternal = {
++@@ -2135,7 +2161,7 @@ var SessionStoreInternal = {
+      let isTaskbarTab = this._windows[aWindow.__SSi].isTaskbarTab;
+      // A regular window is not a private window, taskbar tab window, or popup window
+      let isRegularWindow =
+@@ -63,16 +87,16 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+  
+      // perform additional initialization when the first window is loading
+      if (lazy.RunState.isStopped) {
+-@@ -2147,7 +2156,7 @@ var SessionStoreInternal = {
++@@ -2147,7 +2173,7 @@ var SessionStoreInternal = {
+          // to disk to NOW() to enforce a full interval before the next write.
+          lazy.SessionSaver.updateLastSaveTime();
+  
+ -        if (isPrivateWindow || isTaskbarTab) {
+-+        if (isPrivateWindow || isTaskbarTab || aWindow.document.documentElement.hasAttribute("zen-unsynced-window")) {
+++        if (isPrivateWindow || isTaskbarTab || aWindow._zenStandaloneWindow || aWindow.document.documentElement.hasAttribute("zen-unsynced-window")) {
+            this._log.debug(
+              "initializeWindow, the window is private or a web app. Saving SessionStartup.state for possibly restoring later"
+            );
+-@@ -2191,6 +2200,7 @@ var SessionStoreInternal = {
++@@ -2191,6 +2217,7 @@ var SessionStoreInternal = {
+            null,
+            "sessionstore-one-or-no-tab-restored"
+          );
+@@ -80,7 +104,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+          this._deferredAllWindowsRestored.resolve();
+        }
+        // this window was opened by _openWindowWithState
+-@@ -2240,7 +2250,6 @@ var SessionStoreInternal = {
++@@ -2240,7 +2267,6 @@ var SessionStoreInternal = {
+        if (closedWindowState) {
+          let newWindowState;
+          if (
+@@ -88,7 +112,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+            !lazy.SessionStartup.willRestore()
+          ) {
+            // We want to split the window up into pinned tabs and unpinned tabs.
+-@@ -2276,6 +2285,7 @@ var SessionStoreInternal = {
++@@ -2276,6 +2302,7 @@ var SessionStoreInternal = {
+          }
+  
+          if (newWindowState) {
+@@ -96,7 +120,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+            // Ensure that the window state isn't hidden
+            this._restoreCount = 1;
+            let state = { windows: [newWindowState] };
+-@@ -2312,6 +2322,9 @@ var SessionStoreInternal = {
++@@ -2312,6 +2339,9 @@ var SessionStoreInternal = {
+        });
+        this._shouldRestoreLastSession = false;
+      }
+@@ -106,7 +130,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+  
+      if (this._restoreLastWindow && aWindow.toolbar.visible) {
+        // always reset (if not a popup window)
+-@@ -2462,7 +2475,7 @@ var SessionStoreInternal = {
++@@ -2462,7 +2492,7 @@ var SessionStoreInternal = {
+  
+      var tabbrowser = aWindow.gBrowser;
+  
+@@ -115,7 +139,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+  
+      TAB_EVENTS.forEach(function (aEvent) {
+        tabbrowser.tabContainer.removeEventListener(aEvent, this, true);
+-@@ -2513,7 +2526,7 @@ var SessionStoreInternal = {
++@@ -2513,7 +2543,7 @@ var SessionStoreInternal = {
+  
+        let isLastRegularWindow =
+          Object.values(this._windows).filter(
+@@ -124,7 +148,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+          ).length == 1;
+        this._log.debug(
+          `onClose, closing window isLastRegularWindow? ${isLastRegularWindow}`
+-@@ -2570,8 +2583,8 @@ var SessionStoreInternal = {
++@@ -2570,8 +2600,8 @@ var SessionStoreInternal = {
+        // 2) Flush the window.
+        // 3) When the flush is complete, revisit our decision to store the window
+        //    in _closedWindows, and add/remove as necessary.
+@@ -135,7 +159,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+        }
+  
+        completionPromise = lazy.TabStateFlusher.flushWindow(aWindow).then(() => {
+-@@ -2591,8 +2604,9 @@ var SessionStoreInternal = {
++@@ -2591,8 +2621,9 @@ var SessionStoreInternal = {
+  
+          // Save non-private windows if they have at
+          // least one saveable tab or are the last window.
+@@ -147,7 +171,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+  
+            if (!isLastWindow && winData.closedId > -1) {
+              this._addClosedAction(
+-@@ -2668,7 +2682,7 @@ var SessionStoreInternal = {
++@@ -2668,7 +2699,7 @@ var SessionStoreInternal = {
+     *        to call this method again asynchronously (for example, after
+     *        a window flush).
+     */
+@@ -156,7 +180,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+      // Make sure SessionStore is still running, and make sure that we
+      // haven't chosen to forget this window.
+      if (
+-@@ -2685,6 +2699,7 @@ var SessionStoreInternal = {
++@@ -2685,6 +2716,7 @@ var SessionStoreInternal = {
+        // _closedWindows from a previous call to this function.
+        let winIndex = this._closedWindows.indexOf(winData);
+        let alreadyStored = winIndex != -1;
+@@ -164,7 +188,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+        // If sidebar command is truthy, i.e. sidebar is open, store sidebar settings
+        let shouldStore = hasSaveableTabs || isLastWindow;
+  
+-@@ -3507,7 +3522,7 @@ var SessionStoreInternal = {
++@@ -3507,7 +3539,7 @@ var SessionStoreInternal = {
+      if (!isPrivateWindow && tabState.isPrivate) {
+        return;
+      }
+@@ -173,7 +197,69 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+        return;
+      }
+  
+-@@ -4246,6 +4261,12 @@ var SessionStoreInternal = {
++@@ -3682,6 +3714,61 @@ var SessionStoreInternal = {
++    * @param {boolean} [saveAction=true]
++    *   Whether or not to add an action to the closed actions stack on save.
++    */
+++  /**
+++   * Records a tab as a closed tab of a window it never belonged to.
+++   *
+++   * Standalone external-link windows are not part of the session, so nothing
+++   * of them survives their own close. This lets the page they were showing be
+++   * handed to a normal window instead, where undo-close-tab reopens it as an
+++   * ordinary tab in whichever space is current.
+++   *
+++   * @param {Window} aTargetWindow
+++   *        The window that should own the closed tab.
+++   * @param {MozTabbrowserTab} aTab
+++   *        The tab being closed, still live.
+++   * @returns {boolean} True when the tab was recorded.
+++   */
+++  recordClosedTabForOtherWindow(aTargetWindow, aTab) {
+++    if (this._max_tabs_undo == 0 || !aTargetWindow?.__SSi) {
+++      return false;
+++    }
+++
+++    let winData = this._windows[aTargetWindow.__SSi];
+++    if (!winData || !aTab?.linkedBrowser) {
+++      return false;
+++    }
+++
+++    let tabState = lazy.TabState.collect(aTab, TAB_CUSTOM_VALUES.get(aTab));
+++    if (tabState.isPrivate || !this._shouldSaveTabState(tabState)) {
+++      return false;
+++    }
+++
+++    // The tab is arriving from a window with its own, unrelated notion of
+++    // spaces, pinning and syncing, so it is stripped back to a plain tab of
+++    // the space that is current when it is restored.
+++    tabState.pinned = false;
+++    tabState.zenEssential = false;
+++    tabState.zenSyncId = null;
+++    tabState.zenIsGlance = false;
+++    tabState.zenGlanceId = null;
+++    tabState.zenHasStaticLabel = false;
+++    tabState.zenWorkspace = null;
+++    tabState.groupId = null;
+++
+++    this.saveClosedTabData(winData, winData._closedTabs, {
+++      permanentKey: aTab.linkedBrowser.permanentKey,
+++      state: tabState,
+++      title: aTab.label,
+++      image: aTab.ownerGlobal.gBrowser.getIcon(aTab),
+++      pos: 0,
+++      closedAt: Date.now(),
+++      closedInGroup: false,
+++      closedInTabGroupId: null,
+++      sourceWindowId: aTargetWindow.__SSi,
+++    });
+++    return true;
+++  },
+++
++   saveClosedTabData(winData, closedTabs, tabData, saveAction = true) {
++     // Find the index of the first tab in the list
++     // of closed tabs that was closed before our tab.
++@@ -4246,6 +4333,12 @@ var SessionStoreInternal = {
+          Math.min(tabState.index, tabState.entries.length)
+        );
+        tabState.pinned = false;
+@@ -186,7 +272,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+  
+        if (inBackground === false) {
+          aWindow.gBrowser.selectedTab = newTab;
+-@@ -4679,6 +4700,8 @@ var SessionStoreInternal = {
++@@ -4679,6 +4772,8 @@ var SessionStoreInternal = {
+        // Append the tab if we're opening into a different window,
+        tabIndex: aSource == aTargetWindow ? pos : Infinity,
+        pinned: state.pinned,
+@@ -195,7 +281,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+        userContextId: state.userContextId,
+        skipLoad: true,
+        preferredRemoteType,
+-@@ -5176,9 +5199,10 @@ var SessionStoreInternal = {
++@@ -5176,9 +5271,10 @@ var SessionStoreInternal = {
+        if (activePageData.title && activePageData.title != activePageData.url) {
+          win.gBrowser.setInitialTabTitle(tab, activePageData.title, {
+            isContentTitle: true,
+@@ -207,7 +293,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+        }
+      }
+  
+-@@ -5543,7 +5567,7 @@ var SessionStoreInternal = {
++@@ -5543,7 +5639,7 @@ var SessionStoreInternal = {
+  
+      for (let i = tabbrowser.pinnedTabCount; i < tabbrowser.tabs.length; i++) {
+        let tab = tabbrowser.tabs[i];
+@@ -216,16 +302,19 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+          removableTabs.push(tab);
+        }
+      }
+-@@ -5656,7 +5680,7 @@ var SessionStoreInternal = {
++@@ -5656,8 +5752,9 @@ var SessionStoreInternal = {
+  
+      // collect the data for all windows
+      for (ix in this._windows) {
+ -      if (this._windows[ix]._restoring || this._windows[ix].isTaskbarTab) {
+-+      if (this._windows[ix]._restoring || this._windows[ix].isTaskbarTab && !this._windows[ix].isZenUnsynced) {
+-         // window data is still in _statesToRestore
++-        // window data is still in _statesToRestore
+++      if (this._windows[ix]._restoring || this._windows[ix].isZenStandalone || this._windows[ix].isTaskbarTab && !this._windows[ix].isZenUnsynced) {
+++        // window data is still in _statesToRestore, or belongs to a standalone
+++        // window, which is never part of a session
+          continue;
+        }
+-@@ -5800,11 +5824,12 @@ var SessionStoreInternal = {
++       total.push(this._windows[ix]);
++@@ -5800,11 +5897,12 @@ var SessionStoreInternal = {
+      }
+  
+      let tabbrowser = aWindow.gBrowser;
+@@ -239,7 +328,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+      // update the internal state data for this window
+      for (let tab of tabs) {
+        if (tab == aWindow.FirefoxViewHandler.tab) {
+-@@ -5815,6 +5840,9 @@ var SessionStoreInternal = {
++@@ -5815,6 +5913,9 @@ var SessionStoreInternal = {
+        tabsData.push(tabData);
+      }
+  
+@@ -249,7 +338,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+      // update tab group state for this window
+      winData.groups = [];
+      for (let tabGroup of aWindow.gBrowser.tabGroups) {
+-@@ -5831,7 +5859,7 @@ var SessionStoreInternal = {
++@@ -5831,7 +5932,7 @@ var SessionStoreInternal = {
+      // a window is closed, point to the first item in the tab strip instead (it will never be the Firefox View tab,
+      // since it's only inserted into the tab strip after it's selected).
+      if (aWindow.FirefoxViewHandler.tab?.selected) {
+@@ -258,7 +347,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+        winData.title = tabbrowser.tabs[0].label;
+      }
+      winData.selected = selectedIndex;
+-@@ -6033,8 +6061,8 @@ var SessionStoreInternal = {
++@@ -6033,8 +6134,8 @@ var SessionStoreInternal = {
+      // selectTab represents.
+      let selectTab = 0;
+      if (overwriteTabs) {
+@@ -269,7 +358,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+        selectTab = Math.min(selectTab, winData.tabs.length);
+      }
+  
+-@@ -6056,6 +6084,7 @@ var SessionStoreInternal = {
++@@ -6056,6 +6157,7 @@ var SessionStoreInternal = {
+      if (overwriteTabs) {
+        for (let i = tabbrowser.browsers.length - 1; i >= 0; i--) {
+          if (!tabbrowser.tabs[i].selected) {
+@@ -277,7 +366,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+            tabbrowser.removeTab(tabbrowser.tabs[i]);
+          }
+        }
+-@@ -6090,6 +6119,12 @@ var SessionStoreInternal = {
++@@ -6090,6 +6192,12 @@ var SessionStoreInternal = {
+          savedTabGroup => !openTabGroupIdsInWindow.has(savedTabGroup.id)
+        );
+      }
+@@ -290,7 +379,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+  
+      // Move the originally open tabs to the end.
+      if (initialTabs) {
+-@@ -6656,6 +6691,25 @@ var SessionStoreInternal = {
++@@ -6656,6 +6764,25 @@ var SessionStoreInternal = {
+  
+      // Most of tabData has been restored, now continue with restoring
+      // attributes that may trigger external events.
+@@ -316,7 +405,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+  
+      if (tabData.pinned) {
+        tabbrowser.pinTab(tab);
+-@@ -6838,6 +6892,9 @@ var SessionStoreInternal = {
++@@ -6838,6 +6965,9 @@ var SessionStoreInternal = {
+          aWindow.gURLBar.readOnly = false;
+        }
+      }
+@@ -326,7 +415,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+  
+      let promiseParts = Promise.withResolvers();
+      aWindow.setTimeout(() => {
+-@@ -7633,7 +7690,7 @@ var SessionStoreInternal = {
++@@ -7633,7 +7763,7 @@ var SessionStoreInternal = {
+  
+        let groupsToSave = new Map();
+        for (let tIndex = 0; tIndex < window.tabs.length; ) {
+@@ -335,7 +424,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+            // Adjust window.selected
+            if (tIndex + 1 < window.selected) {
+              window.selected -= 1;
+-@@ -7648,7 +7705,7 @@ var SessionStoreInternal = {
++@@ -7648,7 +7778,7 @@ var SessionStoreInternal = {
+            );
+            // We don't want to increment tIndex here.
+            continue;
+@@ -344,7 +433,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+            // Convert any open groups into saved groups.
+            let groupStateToSave = window.groups.find(
+              groupState => groupState.id == window.tabs[tIndex].groupId
+-@@ -8193,7 +8250,6 @@ var SessionStoreInternal = {
++@@ -8193,7 +8323,6 @@ var SessionStoreInternal = {
+      timer.initWithCallback(
+        function () {
+          if (beats <= 0) {
+@@ -352,7 +441,7 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..f995c3b297c53aa6ee2219bfc09515ee
+            Glean.sessionRestore.shutdownFlushAllOutcomes.timed_out.add(1);
+            deferred.resolve();
+          }
+-@@ -8671,6 +8727,7 @@ var SessionStoreInternal = {
++@@ -8671,6 +8800,7 @@ var SessionStoreInternal = {
+      if (
+        !savedTabGroupState.tabs.length ||
+        this.getSavedTabGroup(savedTabGroupState.id)
+diff --git a/src/zen/ZenComponents.manifest b/src/zen/ZenComponents.manifest
+index db0c69a49..e61047a7f 100644
+--- a/src/zen/ZenComponents.manifest
++++ b/src/zen/ZenComponents.manifest
+@@ -17,3 +17,4 @@ category app-startup nsBrowserGlue @mozilla.org/browser/browserglue;1 applicatio
+ #include sessionstore/SessionComponents.manifest
+ #include live-folders/LiveFoldersComponents.manifest
+ #include space-routing/SpaceRoutingComponents.manifest
++#include standalone-window/StandaloneWindowComponents.manifest
+diff --git a/src/zen/common/modules/ZenUIManager.mjs b/src/zen/common/modules/ZenUIManager.mjs
+index 13434de29..a4a57ac52 100644
+--- a/src/zen/common/modules/ZenUIManager.mjs
++++ b/src/zen/common/modules/ZenUIManager.mjs
+@@ -1266,11 +1266,16 @@ window.gZenVerticalTabsManager = {
+       const isVerticalTabs = this._prefsVerticalTabs || forCustomizableMode;
+       const isSidebarExpanded = this._prefsSidebarExpanded || !isVerticalTabs;
+       const isRightSide = this._prefsRightSide && isVerticalTabs;
++      // Single-toolbar mode moves the navigation bar and its buttons into the
++      // sidebar's titlebar area. A standalone window hides that area, so the
++      // mode would leave it with no address bar at all; it always keeps the
++      // navigation bar in its own top bar instead.
+       const isSingleToolbar =
+         ((this._prefsUseSingleToolbar && isVerticalTabs && isSidebarExpanded) ||
+           !isVerticalTabs) &&
+         !forCustomizableMode &&
+-        !this.hidesTabsToolbar;
++        !this.hidesTabsToolbar &&
++        !window._zenStandaloneWindow;
+       const titlebar = document.getElementById("titlebar");
+ 
+       gBrowser.tabContainer.setAttribute(
+diff --git a/src/zen/common/styles/zen-browser-ui.css b/src/zen/common/styles/zen-browser-ui.css
+index 109cd2581..7946b8943 100644
+--- a/src/zen/common/styles/zen-browser-ui.css
++++ b/src/zen/common/styles/zen-browser-ui.css
+@@ -356,12 +356,21 @@ body,
+  This is attribute-driven rather than done by hiding individual nodes from JS,
+  so it survives chrome being rebuilt and stays correct as Zen's markup moves. */
+ :root[zen-standalone-window="true"] {
+-  & #TabsToolbar,
+-  & #tabbrowser-tabs,
+-  & #zen-tabs-wrapper,
+-  & #zen-essentials,
+-  & #zen-workspaces-button,
+-  & #zen-sidebar-foot-buttons,
++  /* Shared by the keep pill and the space picker so the collapse chevron in the
++   panel lands on the same column as the chevron that opened it. */
++  --zen-standalone-window-chevron-width: 26px;
++  --zen-standalone-window-keep-height: 26px;
++
++  /* Drives the radius of the pill and of the picker that opens on top of it, so
++   the closed and open states are the same box. Kept modest: at menu-corner
++   radius a 26px-tall control is almost a lozenge. */
++  --zen-standalone-window-keep-radius: 6px;
++
++  /* #navigator-toolbox is the sidebar itself and carries a persisted width, so
++   hiding only its contents would leave an empty column. #PersonalToolbar and
++   the sidebar boxes are siblings of it in #browser, so they need hiding too. */
++  & #navigator-toolbox,
++  & #zen-sidebar-splitter,
+   & #sidebar-container,
+   & #sidebar-launcher-splitter,
+   & #sidebar-box,
+@@ -372,34 +381,374 @@ body,
+     display: none !important;
+   }
+ 
++  /* The page fills the window: no separation margin, no inner radius, no
++   drop shadow. A standalone window is one page, not a framed workspace. */
++  & #zen-tabbox-wrapper {
++    margin: 0 !important;
++  }
++
++  & #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
++    border-radius: 0 !important;
++    box-shadow: none !important;
++  }
++
++  /* The top bar is a single centred row: window controls, an optional back
++   arrow, the address bar and the keep action. Empty space drags the window,
++   since this bar is all the titlebar the window has. */
+   & #zen-appcontent-navbar-wrapper {
+-    position: relative;
++    display: flex;
++    -moz-window-dragging: drag;
++  }
++
++  /* Laid out here rather than inherited from single-toolbar mode: a standalone
++   window is never in that mode, since it hides the sidebar the mode moves the
++   navigation bar into. */
++  & #zen-appcontent-navbar-container {
++    display: flex;
++    align-items: center;
++    width: 100%;
++    gap: 6px;
++    padding-inline-end: var(--zen-element-separation);
++  }
++
++  & #nav-bar {
++    flex: 1;
++    min-width: 0;
++    -moz-window-dragging: no-drag;
++  }
++
++  & #urlbar-container {
++    flex: 1;
++    min-width: 0;
++  }
++
++  /* Everything the navigation bar normally carries belongs to a workspace, not
++   to one external page: forward, reload, home, the extension and account
++   buttons, the overflow chevron and the app menu all go. Only the back arrow
++   and the address bar stay, and the address bar keeps its own inner buttons. */
++  & #nav-bar > :not(#nav-bar-customization-target, .titlebar-buttonbox-container, #zen-standalone-window-toolbar),
++  & #nav-bar-customization-target > :not(#back-button, #urlbar-container) {
++    display: none !important;
++  }
++
++  /* The back arrow only earns its place once there is history behind the page.
++   Zen's back command carries `disabled` until then, and XUL forwards that onto
++   the button, so no JS has to watch navigation for this. */
++  & #back-button[disabled="true"] {
++    display: none !important;
+   }
+ 
+   & #zen-standalone-window-toolbar {
+-    position: absolute;
+-    inset-inline-end: calc(var(--zen-element-separation) + 4px);
+-    top: 50%;
+-    transform: translateY(-50%);
+-    z-index: 2;
+     -moz-window-dragging: no-drag;
++    flex: 0 0 auto;
++  }
++}
++
++/* "Open in <Space>" and its space-picker chevron read as one segmented pill.
++ The flat version sat on the toolbar background with nothing but hover to mark
++ it, which left the primary action of the window nearly invisible; a resting
++ fill and a hairline outline give it just enough contrast to be found without
++ turning the top bar into a busy row. The chevron is a segment of that pill,
++ divided by a hairline rather than parked beside it as a second control. */
++#zen-standalone-window-keep {
++  align-items: center;
++  gap: 0;
++  border-radius: var(--zen-standalone-window-keep-radius);
++  background: color-mix(in srgb, currentColor 9%, transparent);
++  /* An outline rather than an inset shadow: the segments paint their own hover
++   fill over the pill's background, which would swallow an inset edge. */
++  outline: 1px solid color-mix(in srgb, currentColor 13%, transparent);
++  outline-offset: -1px;
++
++  &:hover {
++    background: color-mix(in srgb, currentColor 13%, transparent);
++  }
++
++  & > [role="button"] {
++    align-items: center;
++    height: var(--zen-standalone-window-keep-height);
++
++    /* Only the outer corners are rounded, so the two segments share the pill
++     rather than each looking like a button of its own. */
++    &:first-child {
++      border-start-start-radius: var(--zen-standalone-window-keep-radius);
++      border-end-start-radius: var(--zen-standalone-window-keep-radius);
++    }
++
++    &:last-child {
++      border-start-end-radius: var(--zen-standalone-window-keep-radius);
++      border-end-end-radius: var(--zen-standalone-window-keep-radius);
++    }
++
++    &:hover {
++      background: color-mix(in srgb, currentColor 12%, transparent);
++    }
++
++    &:focus-visible {
++      outline: 2px solid var(--focus-outline-color, AccentColor);
++      outline-offset: -2px;
++    }
++  }
++
++  & > #zen-standalone-window-open-in-space-button {
++    padding-inline: 10px 8px;
+     gap: 4px;
+ 
+-    & > toolbarbutton {
+-      min-height: 28px;
+-      padding-inline: 10px;
+-      border-radius: 8px;
+-      background: var(--toolbarbutton-hover-background);
++    & > label {
++      margin: 0;
++    }
++
++    & > .zen-standalone-window-keep-prefix {
++      opacity: 0.7;
++    }
++
++    & > .zen-standalone-window-keep-space {
++      font-weight: 600;
++    }
++
++    & > .zen-standalone-window-shortcut {
++      margin-inline-start: 4px;
++      opacity: 0.55;
++    }
++  }
++
++  & > #zen-standalone-window-space-picker-button {
++    box-sizing: border-box;
++    justify-content: center;
++    width: var(--zen-standalone-window-chevron-width);
++    border-inline-start: 1px solid color-mix(in srgb, currentColor 13%, transparent);
++
++    & > .zen-standalone-window-chevron {
++      width: 10px;
++      height: 10px;
++      opacity: 0.75;
++      -moz-context-properties: fill;
++      fill: currentColor;
++      list-style-image: url("chrome://global/skin/icons/arrow-down.svg");
++    }
++  }
++}
++
++/* The window controls are moved into the standalone top bar, since Zen parks
++ them in the sidebar this window does not have. They sit on the same baseline
++ as the address bar rather than being pinned to the top of the row. */
++#zen-appcontent-navbar-container[zen-standalone-window-has-buttons="true"] {
++  & > .titlebar-buttonbox-container {
++    order: -1;
++    align-self: center;
++    height: auto;
++    -moz-window-dragging: no-drag;
++
++    /* The container's own padding and the buttonbox's inline margin are left to
++     the shared rules on purpose. Under mono window controls macOS paints the
++     three empty slots as a percentage-positioned background on this container,
++     so shrinking its box slides the painted slots out from under the real
++     traffic lights, which is what knocked them out of alignment here. Insets go
++     on the container for the same reason: it moves with its own background,
++     where a margin on the buttonbox would slide the buttons off the slots.
++
++     Zen trims the buttonbox's leading margin to --zen-toolbox-padding because
++     the sidebar it normally lives in already supplies the rest of the inset.
++     A standalone window has no sidebar, so the top bar starts at the window
++     edge and the lights end up crammed into the corner. Adding the difference
++     back restores the 12px Firefox uses on macOS, which is what puts them where
++     the system draws them in every other window. The trailing side mirrors it,
++     minus the 6px the navbar container already contributes as its flex gap, so
++     the lights sit in their own margin instead of drifting into the address
++     bar. */
++    @media (-moz-platform: macos) {
++      margin-inline-start: calc(12px - var(--zen-toolbox-padding));
++      margin-inline-end: 6px;
++    }
++  }
++}
++
++/* Space picker for standalone windows. It is a selector rather than a menu: the
++ panel takes the width of the keep pill and is opened on top of it, so the
++ search row sits exactly where the button was and the collapse chevron replaces
++ the opening chevron in place. Width and the pull-up are set from JS, which is
++ the only place the pill's measured box is known.
++
++ The padding is deliberately tight. At menu spacing this panel was mostly empty
++ room around four short names, which is what made it feel like a dialog dropped
++ over the window instead of the control expanding.
++
++ The surface is painted here rather than left to the platform. `nonnative` keeps
++ the panel out of NSPopover, but Zen's macOS rules then hand it
++ -moz-default-appearance: menupopup, and that surface belongs to AppKit: its
++ corner radius cannot be matched to the pill, and its window mask is what was
++ shaving the first character of the search field and the edge of the collapse
++ button. Owning the background, border and radius is what lets the open state be
++ the same box as the closed one.
++
++ The extra attribute selectors carry no meaning beyond specificity: the rules
++ being overridden are !important and written against panel[type="arrow"], so a
++ plain id selector loses to them. */
++panel[type="arrow"][nonnative][orient]#PanelUI-zen-standalone-window-spaces {
++  appearance: none !important;
++  background-color: transparent !important;
++
++  --panel-padding: 0;
++  --panel-width: 200px;
++  --panel-background-color: var(--arrowpanel-background) !important;
++  --panel-border-color: color-mix(in srgb, currentColor 14%, transparent) !important;
++  --panel-border-radius: var(--zen-standalone-window-keep-radius, 6px);
++  --panel-box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28) !important;
++  --panel-box-shadow-margin: 0px !important;
++  --zen-standalone-window-space-tile-size: 20px;
++  --zen-standalone-window-picker-anchor-height: var(--zen-standalone-window-keep-height, 26px);
++
++  &::part(content) {
++    background-color: var(--arrowpanel-background) !important;
++  }
++
++  & #PanelUI-zen-standalone-window-spaces-header {
++    /* An exact height, not a minimum: the row has to be the pill, so a native
++     control inside it must not be allowed to push it taller. */
++    height: var(--zen-standalone-window-picker-anchor-height);
++    box-sizing: content-box;
++    padding-inline: 0;
++    border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent);
++
++    & > #PanelUI-zen-standalone-window-spaces-search-icon {
++      width: var(--size-item-small, 16px);
++      height: var(--size-item-small, 16px);
++      margin-inline: 8px 6px;
++      opacity: 0.6;
++      -moz-context-properties: fill;
++      fill: currentColor;
++    }
++
++    & > #PanelUI-zen-standalone-window-spaces-search {
++      flex: 1;
++      min-width: 0;
++      height: 100%;
++      margin: 0;
++      padding: 0;
++      /* type="search" otherwise brings its own native decorations, which show
++       through as a stray glyph in the middle of the row. */
++      appearance: none !important;
++      background: transparent;
++      border: none !important;
++      outline: none !important;
++      box-shadow: none !important;
++      /* Zen rounds text inputs globally. On a field this short the corner arc
++       reaches into the text, which clipped the caret and the first character. */
++      border-radius: 0 !important;
++      font: inherit;
++      text-overflow: ellipsis;
++      white-space: nowrap;
++
++      &::placeholder {
++        opacity: 0.45;
++      }
++    }
++
++    /* Same width and centring as the pill's chevron segment, so the two arrows
++     share a column and the panel opens and closes from one spot. Stripped back
++     to a bare icon: the native toolbarbutton surface drew a raised box around
++     the arrow that the panel's own corner then cut into. */
++    & > #PanelUI-zen-standalone-window-spaces-collapse {
++      display: flex;
++      align-items: center;
++      justify-content: center;
++      box-sizing: border-box;
++      flex: 0 0 auto;
++      align-self: stretch;
++      width: var(--zen-standalone-window-chevron-width, 26px);
++      min-height: 0;
++      margin: 0;
++      padding: 0;
++      appearance: none !important;
++      background: none !important;
++      border: none !important;
++      box-shadow: none !important;
++      -moz-context-properties: fill;
++      fill: currentColor;
++      list-style-image: url("chrome://global/skin/icons/arrow-up.svg");
++
++      & > .toolbarbutton-icon {
++        width: 10px;
++        height: 10px;
++        opacity: 0.75;
++      }
++
++      &:hover > .toolbarbutton-icon {
++        opacity: 1;
++      }
++    }
++  }
++
++  & #PanelUI-zen-standalone-window-spaces-list {
++    padding: 4px;
++    max-height: 260px;
++    overflow-y: auto;
++
++    & > toolbarbutton[hidden="true"] {
++      display: none;
++    }
++  }
++
++  & #PanelUI-zen-standalone-window-spaces-empty {
++    padding: 10px 12px;
++    opacity: 0.5;
++  }
++
++  /* Scoped to the panel so these win over the shared .subviewbutton rules the
++   rows also carry. */
++  & .zen-standalone-window-space-row {
++    display: flex;
++    align-items: center;
++    gap: 8px;
++    padding: 4px 6px;
++    border-radius: calc(var(--zen-standalone-window-keep-radius, 6px) - 2px);
++    /* A long space name must ellipsize rather than widen the panel past the
++     control it is standing in for. */
++    min-width: 0;
++    overflow: hidden;
++
++    &[active="true"] {
++      background: color-mix(in srgb, currentColor 7%, transparent);
++    }
++
++    &:hover,
++    &:focus-visible {
++      background: color-mix(in srgb, currentColor 12%, transparent);
++    }
++
++    & > .zen-standalone-window-space-icon {
++      display: flex;
++      align-items: center;
++      justify-content: center;
++      width: var(--zen-standalone-window-space-tile-size);
++      height: var(--zen-standalone-window-space-tile-size);
++      border-radius: 6px;
++      flex-shrink: 0;
++      /* The accent is set per row from the space's own gradient; the neutral
++       tile is what a space without a theme falls back to. */
++      background: var(--zen-standalone-window-space-accent, color-mix(in srgb, currentColor 14%, transparent));
++      box-shadow: inset 0 0 0 1px color-mix(in srgb, black 12%, transparent);
++
++      & > .zen-standalone-window-space-icon-glyph {
++        margin: 0;
++        font-size: 11px;
++        line-height: 1;
++        text-transform: uppercase;
++      }
+ 
+-      & > .toolbarbutton-text {
+-        display: flex;
++      & > .zen-standalone-window-space-icon-image {
++        width: 12px;
++        height: 12px;
++        -moz-context-properties: fill;
++        fill: currentColor;
+       }
+     }
+ 
+-    & > #zen-standalone-window-space-picker-button,
+-    & > #zen-standalone-window-close-button {
+-      min-width: 28px;
+-      padding-inline: 8px;
++    & > .zen-standalone-window-space-name {
++      margin: 0;
++      min-width: 0;
++      overflow: hidden;
++      font-weight: 500;
+     }
+   }
+ }
+diff --git a/src/zen/sessionstore/ZenSessionManager.sys.mjs b/src/zen/sessionstore/ZenSessionManager.sys.mjs
+index 594ae490c..19836be2e 100644
+--- a/src/zen/sessionstore/ZenSessionManager.sys.mjs
++++ b/src/zen/sessionstore/ZenSessionManager.sys.mjs
+@@ -389,6 +389,16 @@ export class nsZenSessionManager {
+         return !win.isZenUnsynced;
+       });
+     }
++    // Standalone external-link windows are never written to the session file
++    // any more, but a file written before that was true can still hold one.
++    if (initialState?.windows?.length) {
++      initialState.windows = initialState.windows.filter(win => {
++        if (win.isZenStandalone) {
++          this.log("Skipping standalone window during restore");
++        }
++        return !win.isZenStandalone;
++      });
++    }
+     // If there are no windows, we create an empty one. By default,
+     // firefox would create simply a new empty window, but we want
+     // to make sure that the sidebar object is properly initialized.
+diff --git a/src/zen/standalone-window/ZenStandaloneWindowManager.sys.mjs b/src/zen/standalone-window/ZenStandaloneWindowManager.sys.mjs
+index e9d6fc5e6..59a32b04d 100644
+--- a/src/zen/standalone-window/ZenStandaloneWindowManager.sys.mjs
++++ b/src/zen/standalone-window/ZenStandaloneWindowManager.sys.mjs
+@@ -7,27 +7,96 @@ export const ZEN_STANDALONE_WINDOW_TYPE = "zen:external-link-standalone";
+ const lazy = {};
+ 
+ ChromeUtils.defineESModuleGetters(lazy, {
++  AppConstants: "resource://gre/modules/AppConstants.sys.mjs",
+   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
+   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
++  SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
++});
++
++ChromeUtils.defineLazyGetter(lazy, "MacDockSupport", () => {
++  if (lazy.AppConstants.platform !== "macosx") {
++    return null;
++  }
++  try {
++    return Cc["@mozilla.org/widget/macdocksupport;1"].getService(
++      Ci.nsIMacDockSupport
++    );
++  } catch (error) {
++    console.error(
++      "Zen standalone windows cannot reach macOS dock support",
++      error
++    );
++    return null;
++  }
+ });
+ 
+ const STANDALONE_WINDOW_TOOLBAR_ID = "zen-standalone-window-toolbar";
++const STANDALONE_WINDOW_KEEP_CONTROL_ID = "zen-standalone-window-keep";
+ const STANDALONE_WINDOW_OPEN_IN_SPACE_BUTTON_ID =
+   "zen-standalone-window-open-in-space-button";
+ const STANDALONE_WINDOW_SPACE_PICKER_BUTTON_ID =
+   "zen-standalone-window-space-picker-button";
+-const STANDALONE_WINDOW_SPACE_PICKER_POPUP_ID =
+-  "zen-standalone-window-space-picker-popup";
+-const STANDALONE_WINDOW_CLOSE_BUTTON_ID = "zen-standalone-window-close-button";
++const STANDALONE_WINDOW_SPACE_PICKER_PANEL_ID =
++  "PanelUI-zen-standalone-window-spaces";
++const STANDALONE_WINDOW_SPACE_PICKER_SEARCH_ID =
++  "PanelUI-zen-standalone-window-spaces-search";
++const STANDALONE_WINDOW_SPACE_PICKER_LIST_ID =
++  "PanelUI-zen-standalone-window-spaces-list";
++const STANDALONE_WINDOW_SPACE_PICKER_EMPTY_ID =
++  "PanelUI-zen-standalone-window-spaces-empty";
++const STANDALONE_WINDOW_SPACE_PICKER_COLLAPSE_ID =
++  "PanelUI-zen-standalone-window-spaces-collapse";
++
++// Only a floor against a control that has not been laid out yet. The picker is
++// otherwise exactly as wide as the control it opens over: any overhang reads as
++// a separate surface appearing rather than as the control expanding.
++const STANDALONE_WINDOW_SPACE_PICKER_MIN_WIDTH = 120;
++
++// Commands that act on the sidebar, spaces or the tab strip. A standalone
++// window has none of those, so leaving them live lets a stray shortcut drag
++// workspace chrome back into the window.
++const STANDALONE_WINDOW_DISABLED_COMMANDS = [
++  "cmd_zenCompactModeToggle",
++  "cmd_toggleCompactModeIgnoreHover",
++  "cmd_zenCompactModeShowSidebar",
++  "cmd_zenToggleSidebar",
++  "cmd_zenToggleTabsOnRight",
++  "cmd_zenWorkspaceForward",
++  "cmd_zenWorkspaceBackward",
++  "cmd_zenChangeWorkspaceTab",
++  "cmd_zenSplitViewGrid",
++  "cmd_zenSplitViewVertical",
++  "cmd_zenSplitViewHorizontal",
++  "cmd_zenSplitViewUnsplit",
++  "cmd_zenNewEmptySplit",
++];
+ 
+ // Successive standalone windows are offset from each other so that opening
+ // several external links in a row does not stack them in one spot.
+ const STANDALONE_WINDOW_CASCADE_STEP = 28;
+ const STANDALONE_WINDOW_CASCADE_LENGTH = 8;
+ 
++// How recently the application must have been brought to the front for the
++// standalone window to count as the reason it was. Anything slower than this
++// was the user switching to Zen on their own, and closing a standalone window
++// should then leave them in Zen rather than sending them back.
++const STANDALONE_WINDOW_ACTIVATION_WINDOW_MS = 2000;
++
+ class nsZenStandaloneWindowManager {
+   #cascadeIndex = 0;
+ 
++  /**
++   * Runs before the first browser window exists.
++   *
++   * Only instantiates the macOS dock service, which starts recording when the
++   * application is brought to the front. That has to be in place before the
++   * first external link arrives, because the activation it carries happens
++   * before the browser is told about the link.
++   */
++  init() {
++    void lazy.MacDockSupport;
++  }
++
+   /**
+    * Entry point for links opened from outside Zen.
+    *
+@@ -61,6 +130,46 @@ class nsZenStandaloneWindowManager {
+     return true;
+   }
+ 
++  /**
++   * Entry point for external links that arrive with no browser window to open
++   * them in: the application is starting up, or every window has been closed.
++   *
++   * The standalone window is a full browser window, so it can be the first one.
++   * Session store treats it the way it treats a lone private window and holds
++   * the session back until the user opens Zen itself, which is what keeps the
++   * user's spaces out of a window that is meant to hold one page.
++   *
++   * @param {Array<string>} uriStrings - External URLs to open
++   * @returns {boolean} True when every URL was handled as a standalone window
++   */
++  openExternalLinksInStandaloneWindows(uriStrings) {
++    if (
++      !Array.isArray(uriStrings) ||
++      !uriStrings.length ||
++      !Services.prefs.getBoolPref("zen.standalone-window.enabled", false) ||
++      lazy.PrivateBrowsingUtils.permanentPrivateBrowsing
++    ) {
++      return false;
++    }
++
++    let opened = 0;
++    for (const uriString of uriStrings) {
++      if (
++        this.openExternalLinkStandaloneWindow({
++          uriString,
++          options: { fromExternal: true },
++          openerWindow: null,
++        })
++      ) {
++        opened++;
++      }
++    }
++
++    // A partial result would leave the remaining URLs nowhere, so the caller is
++    // only told to skip its own handling when all of them were taken.
++    return opened === uriStrings.length;
++  }
++
+   /**
+    * Normalizes the external-link request into the data every later lifecycle
+    * step will receive.
+@@ -80,7 +189,7 @@ class nsZenStandaloneWindowManager {
+     options,
+     openerWindow,
+   }) {
+-    if (typeof uriString !== "string" || !uriString || !openerWindow) {
++    if (typeof uriString !== "string" || !uriString) {
+       return null;
+     }
+ 
+@@ -93,17 +202,34 @@ class nsZenStandaloneWindowManager {
+ 
+     return {
+       uriString,
+-      openerWindow,
++      openerWindow: openerWindow ?? null,
+       source: "external",
+-      isPrivate: lazy.PrivateBrowsingUtils.isWindowPrivate(openerWindow),
++      isPrivate: openerWindow
++        ? lazy.PrivateBrowsingUtils.isWindowPrivate(openerWindow)
++        : false,
+       triggeringPrincipal: options?.triggeringPrincipal ?? null,
+       referrerInfo: options?.referrerInfo ?? null,
+       policyContainer: options?.policyContainer ?? null,
+       userContextId: options?.userContextId ?? 0,
+       targetRoute: this.getDefaultKeepTargetRoute(openerWindow),
++      broughtApplicationForward: this.wasApplicationJustActivated(),
+     };
+   }
+ 
++  /**
++   * Whether the application became frontmost just now, which is what happens
++   * when another application hands Zen a link to open while the user is in it.
++   *
++   * @returns {boolean} True when this activation is the one that carried the link
++   */
++  wasApplicationJustActivated() {
++    const elapsed = lazy.MacDockSupport?.millisecondsSinceApplicationActivated;
++    if (typeof elapsed !== "number" || elapsed < 0) {
++      return false;
++    }
++    return elapsed <= STANDALONE_WINDOW_ACTIVATION_WINDOW_MS;
++  }
++
+   /**
+    * Constructs the standalone browser window.
+    *
+@@ -133,6 +259,7 @@ class nsZenStandaloneWindowManager {
+       standaloneWindow._zenStartupSyncFlag = "unsynced";
+       standaloneWindow.ZenExternalLinkStandaloneType =
+         ZEN_STANDALONE_WINDOW_TYPE;
++      this.makeWindowFollowTheUser(standaloneWindow);
+       if (request.userContextId) {
+         // Honoured by the Zen tabbrowser patch when the window opens its first
+         // tab, so an external link into a container keeps that container.
+@@ -147,6 +274,34 @@ class nsZenStandaloneWindowManager {
+     }
+   }
+ 
++  /**
++   * Asks the window to join whichever macOS Space is active when Zen is
++   * brought forward, instead of the system switching Spaces to reach it.
++   *
++   * Called before the window is shown, because the collection behaviour has to
++   * be in place by the time macOS decides where to put it.
++   *
++   * @param {Window} standaloneWindow - The created standalone window
++   */
++  makeWindowFollowTheUser(standaloneWindow) {
++    const dockSupport = lazy.MacDockSupport;
++    if (!dockSupport) {
++      return;
++    }
++
++    try {
++      const baseWindow = standaloneWindow.docShell.treeOwner.QueryInterface(
++        Ci.nsIBaseWindow
++      );
++      dockSupport.makeWindowJoinActiveSpace(baseWindow);
++    } catch (error) {
++      console.error(
++        "Failed to make a Zen standalone window join the active Space",
++        error
++      );
++    }
++  }
++
+   /**
+    * Builds the native window feature list for the standalone window.
+    *
+@@ -193,11 +348,11 @@ class nsZenStandaloneWindowManager {
+       (this.#cascadeIndex % STANDALONE_WINDOW_CASCADE_LENGTH);
+     this.#cascadeIndex++;
+ 
+-    const screen = openerWindow?.screen;
+-    const availLeft = screen?.availLeft ?? 0;
+-    const availTop = screen?.availTop ?? 0;
+-    const availWidth = screen?.availWidth ?? width;
+-    const availHeight = screen?.availHeight ?? height;
++    const area = this.#getAvailableScreenArea(openerWindow);
++    const availLeft = area.left;
++    const availTop = area.top;
++    const availWidth = area.width > 0 ? area.width : width;
++    const availHeight = area.height > 0 ? area.height : height;
+ 
+     const maxLeft = availLeft + Math.max(0, availWidth - width);
+     const maxTop = availTop + Math.max(0, availHeight - height);
+@@ -212,6 +367,47 @@ class nsZenStandaloneWindowManager {
+     };
+   }
+ 
++  /**
++   * The usable area of the screen the window should be placed on: the opener's
++   * screen, or the primary one when the link arrived with no window open.
++   *
++   * @param {Window} [openerWindow] - Browser window that received the external open request
++   * @returns {{left: number, top: number, width: number, height: number}} Available area
++   */
++  #getAvailableScreenArea(openerWindow) {
++    const screen = openerWindow?.screen;
++    if (screen) {
++      return {
++        left: screen.availLeft ?? 0,
++        top: screen.availTop ?? 0,
++        width: screen.availWidth ?? 0,
++        height: screen.availHeight ?? 0,
++      };
++    }
++
++    try {
++      const left = {};
++      const top = {};
++      const width = {};
++      const height = {};
++      Services.screenManager.primaryScreen.GetAvailRectDisplayPix(
++        left,
++        top,
++        width,
++        height
++      );
++      return {
++        left: left.value,
++        top: top.value,
++        width: width.value,
++        height: height.value,
++      };
++    } catch (error) {
++      console.error("Cannot read the available screen area", error);
++      return { left: 0, top: 0, width: 0, height: 0 };
++    }
++  }
++
+   /**
+    * Applies standalone-window state and UI once the window's chrome exists.
+    *
+@@ -224,8 +420,13 @@ class nsZenStandaloneWindowManager {
+     }
+ 
+     this.markStandaloneDocument(standaloneWindow);
++    // Applied a second time: the chrome document carries macnativefullscreen,
++    // which the app window turns into a fullscreen collection behaviour of its
++    // own once it has loaded, after the first call.
++    this.makeWindowFollowTheUser(standaloneWindow);
+     this.initializeStandaloneToolbar(standaloneWindow);
+     this.registerStandaloneWindowLifecycle(standaloneWindow);
++    this.watchForNormalWindowVisits(standaloneWindow);
+   }
+ 
+   /**
+@@ -290,6 +491,7 @@ class nsZenStandaloneWindowManager {
+       uriString: request.uriString,
+       openerWindow: request.openerWindow,
+       targetRoute: request.targetRoute,
++      broughtApplicationForward: !!request.broughtApplicationForward,
+       triggeringPrincipal: request.triggeringPrincipal,
+       referrerInfo: request.referrerInfo,
+       policyContainer: request.policyContainer,
+@@ -297,6 +499,8 @@ class nsZenStandaloneWindowManager {
+       toolbar: null,
+       isKeeping: false,
+       isClosing: false,
++      visitedNormalWindow: false,
++      deactivateListener: null,
+     };
+   }
+ 
+@@ -318,8 +522,8 @@ class nsZenStandaloneWindowManager {
+   }
+ 
+   /**
+-   * Adds the Arc-style standalone-window actions to the top-right of the
+-   * navigation bar.
++   * Adds the standalone-window keep actions to the trailing edge of the top
++   * bar, alongside the window controls, the back arrow and the address bar.
+    *
+    * @param {Window} standaloneWindow - The created standalone window
+    */
+@@ -332,84 +536,308 @@ class nsZenStandaloneWindowManager {
+       return;
+     }
+ 
+-    const anchor = document.getElementById("zen-appcontent-navbar-wrapper");
+-    if (!anchor) {
+-      console.error(
+-        "Zen standalone window has no navbar wrapper to anchor its toolbar to"
+-      );
+-      return;
+-    }
++    // The window controls have to be in place first, so the toolbar can be
++    // inserted relative to them rather than ending up outside the close button.
++    this.relocateStandaloneWindowButtons(standaloneWindow);
+ 
+     try {
++      const listeners = [];
++      const addListener = (target, type, handler) => {
++        target.addEventListener(type, handler);
++        listeners.push([target, type, handler]);
++      };
++
+       const toolbar = document.createXULElement("hbox");
+       toolbar.id = STANDALONE_WINDOW_TOOLBAR_ID;
+       toolbar.setAttribute("align", "center");
+ 
+-      const listeners = [];
+-      const addButton = (id, l10nId, handler) => {
+-        const button = document.createXULElement("toolbarbutton");
++      const keepControl = document.createXULElement("hbox");
++      keepControl.id = STANDALONE_WINDOW_KEEP_CONTROL_ID;
++      keepControl.setAttribute("align", "center");
++
++      // Built from plain boxes and labels rather than <toolbarbutton>, because
++      // the label has to mix weights ("Open in" plain, the space name bold)
++      // and MozToolbarbutton owns its own single-label content.
++      const makeButton = (id, onActivate) => {
++        const button = document.createXULElement("hbox");
+         button.id = id;
+-        button.setAttribute(
+-          "class",
+-          "toolbarbutton-1 chromeclass-toolbar-additional"
+-        );
+-        document.l10n.setAttributes(button, l10nId);
+-        button.addEventListener("command", handler);
+-        listeners.push([button, "command", handler]);
+-        toolbar.appendChild(button);
++        button.setAttribute("align", "center");
++        button.setAttribute("role", "button");
++        button.setAttribute("tabindex", "0");
++        // These are boxes, so `disabled` is inert unless it is checked here.
++        const activate = () => {
++          if (button.hasAttribute("disabled")) {
++            return;
++          }
++          onActivate();
++        };
++        addListener(button, "click", activate);
++        addListener(button, "keydown", event => {
++          if (event.key !== "Enter" && event.key !== " ") {
++            return;
++          }
++          event.preventDefault();
++          activate();
++        });
++        keepControl.appendChild(button);
+         return button;
+       };
+ 
+-      const actions = this.getStandaloneToolbarActions(standaloneWindow);
+-
+-      addButton(
++      const openInSpaceButton = makeButton(
+         STANDALONE_WINDOW_OPEN_IN_SPACE_BUTTON_ID,
+-        "zen-standalone-window-open-in-space",
+-        () => this.#runToolbarCommand(toolbar, actions.openInDefaultSpace)
++        () =>
++          this.#runToolbarCommand(toolbar, () =>
++            this.onOpenInDefaultSpaceCommand(standaloneWindow)
++          )
+       );
+ 
+-      const spacePickerButton = addButton(
+-        STANDALONE_WINDOW_SPACE_PICKER_BUTTON_ID,
+-        "zen-standalone-window-choose-space",
+-        () => actions.openSpacePicker()
+-      );
++      const prefixLabel = document.createXULElement("label");
++      prefixLabel.className = "zen-standalone-window-keep-prefix";
++      document.l10n.setAttributes(prefixLabel, "zen-standalone-window-open-in");
++      openInSpaceButton.appendChild(prefixLabel);
++
++      const spaceLabel = document.createXULElement("label");
++      spaceLabel.className = "zen-standalone-window-keep-space";
++      openInSpaceButton.appendChild(spaceLabel);
+ 
+-      addButton(
+-        STANDALONE_WINDOW_CLOSE_BUTTON_ID,
+-        "zen-standalone-window-close",
+-        () => actions.close()
++      const shortcutHint = document.createXULElement("label");
++      shortcutHint.className = "zen-standalone-window-shortcut";
++      shortcutHint.setAttribute("value", this.getKeepShortcutLabel());
++      openInSpaceButton.appendChild(shortcutHint);
++
++      this.#applyKeepButtonLabel(
++        standaloneWindow,
++        openInSpaceButton,
++        spaceLabel
+       );
+ 
+-      const spacePickerPopup = document.createXULElement("menupopup");
+-      spacePickerPopup.id = STANDALONE_WINDOW_SPACE_PICKER_POPUP_ID;
+-      const onSpacePickerCommand = event => {
+-        const workspaceId = event.target
+-          ?.closest?.("menuitem[zen-workspace-id]")
+-          ?.getAttribute("zen-workspace-id");
+-        if (!workspaceId) {
+-          return;
+-        }
+-        this.#runToolbarCommand(toolbar, () =>
+-          this.onOpenInSelectedSpaceCommand(standaloneWindow, workspaceId)
+-        );
+-      };
+-      spacePickerPopup.addEventListener("command", onSpacePickerCommand);
+-      listeners.push([spacePickerPopup, "command", onSpacePickerCommand]);
+-      toolbar.appendChild(spacePickerPopup);
++      const spacePickerButton = makeButton(
++        STANDALONE_WINDOW_SPACE_PICKER_BUTTON_ID,
++        () => this.openStandaloneSpacePicker(standaloneWindow)
++      );
++      document.l10n.setAttributes(
++        spacePickerButton,
++        "zen-standalone-window-choose-space"
++      );
++      const chevron = document.createXULElement("image");
++      chevron.className = "zen-standalone-window-chevron";
++      spacePickerButton.appendChild(chevron);
+ 
+-      anchor.appendChild(toolbar);
++      toolbar.appendChild(keepControl);
++      if (!this.insertStandaloneToolbar(standaloneWindow, toolbar)) {
++        return;
++      }
+ 
+       standaloneWindow.ZenExternalLinkStandalone.toolbar = {
+         root: toolbar,
++        keepControl,
++        openInSpaceButton,
+         spacePickerButton,
+-        spacePickerPopup,
+         listeners,
+       };
++
++      this.registerStandaloneShortcuts(standaloneWindow);
++      this.disableStandaloneWorkspaceCommands(standaloneWindow);
+     } catch (error) {
+       console.error("Failed to initialize Zen standalone toolbar", error);
+     }
+   }
+ 
++  /**
++   * Places the keep control on the trailing edge of the top bar.
++   *
++   * The toolbar is a flex item rather than an overlay, so it can no longer land
++   * on top of the address bar. On platforms where the window controls stay in
++   * the navigation bar it goes in ahead of them, so the close button keeps the
++   * corner it owns everywhere else in the OS.
++   *
++   * @param {Window} standaloneWindow - The standalone window
++   * @param {Element} toolbar - The toolbar to insert
++   * @returns {boolean} True when the toolbar was inserted
++   */
++  insertStandaloneToolbar(standaloneWindow, toolbar) {
++    const document = standaloneWindow.document;
++    const navBar = document.getElementById("nav-bar");
++    const inlineWindowButtons = navBar?.querySelector(
++      ":scope > .titlebar-buttonbox-container"
++    );
++
++    if (inlineWindowButtons) {
++      navBar.insertBefore(toolbar, inlineWindowButtons);
++      return true;
++    }
++
++    const container = document.getElementById(
++      "zen-appcontent-navbar-container"
++    );
++    if (!container) {
++      console.error(
++        "Zen standalone window has no navbar container to anchor its toolbar to"
++      );
++      return false;
++    }
++
++    container.appendChild(toolbar);
++    return true;
++  }
++
++  /**
++   * Turns off the commands that act on chrome a standalone window does not
++   * have. Without this, accel+S still toggles compact mode and brings the
++   * separation margin and sidebar controls back into a window that has neither.
++   *
++   * Zen builds its shortcuts as `<key command="...">`, so disabling the command
++   * disables the key and the matching context-menu items in one step.
++   *
++   * @param {Window} standaloneWindow - The standalone window
++   */
++  disableStandaloneWorkspaceCommands(standaloneWindow) {
++    for (const id of STANDALONE_WINDOW_DISABLED_COMMANDS) {
++      standaloneWindow.document
++        .getElementById(id)
++        ?.setAttribute("disabled", "true");
++    }
++  }
++
++  /**
++   * Labels the primary action with the space the page would be kept in, so the
++   * button reads "Open in Personal" rather than a generic "Open in Space".
++   *
++   * @param {Window} standaloneWindow - The standalone window
++   * @param {Element} button - The primary keep button
++   */
++  #applyKeepButtonLabel(standaloneWindow, button, spaceLabel) {
++    const document = standaloneWindow.document;
++    const space = this.resolveKeepTargetSpace(standaloneWindow);
++
++    if (space?.name) {
++      spaceLabel.removeAttribute("data-l10n-id");
++      spaceLabel.setAttribute("value", space.name);
++      document.l10n.setAttributes(
++        button,
++        "zen-standalone-window-keep-tooltip",
++        { space: space.name }
++      );
++      return;
++    }
++
++    // No resolvable space yet; the generic wording still reads correctly.
++    document.l10n.setAttributes(
++      spaceLabel,
++      "zen-standalone-window-generic-space"
++    );
++    document.l10n.setAttributes(
++      button,
++      "zen-standalone-window-keep-tooltip-generic"
++    );
++  }
++
++  /**
++   * Moves the window controls into the standalone top bar.
++   *
++   * On macOS, Zen relocates the traffic lights into the sidebar's top button
++   * area, which a standalone window hides. Without this they would be gone
++   * entirely, leaving no way to close the window with the mouse.
++   *
++   * @param {Window} standaloneWindow - The standalone window
++   */
++  relocateStandaloneWindowButtons(standaloneWindow) {
++    const document = standaloneWindow.document;
++    const container = document.getElementById(
++      "zen-appcontent-navbar-container"
++    );
++    const buttons =
++      standaloneWindow.gZenUIManager?.actualWindowButtons ??
++      document.querySelector(".titlebar-buttonbox-container");
++
++    // On platforms that keep the controls in #nav-bar they are already inside
++    // the top bar and must be left where they are.
++    if (!container || !buttons || !buttons.closest("#navigator-toolbox")) {
++      return;
++    }
++
++    container.prepend(buttons);
++    container.setAttribute("zen-standalone-window-has-buttons", "true");
++  }
++
++  /**
++   * Resolves the space the primary action would keep the page in.
++   *
++   * Falls back through the target window and then the opener, because the
++   * external link can arrive before the opener's workspaces have finished
++   * initialising, in which case the captured route is empty.
++   *
++   * @param {Window} standaloneWindow - The standalone window
++   * @returns {object|null} Workspace data, or null when none can be resolved
++   */
++  resolveKeepTargetSpace(standaloneWindow) {
++    const route = this.resolveKeepTargetRoute(standaloneWindow);
++    const candidates = [
++      this.getStandaloneKeepTargetWindow(standaloneWindow),
++      standaloneWindow.ZenExternalLinkStandalone?.openerWindow,
++    ];
++
++    for (const win of candidates) {
++      const workspaces = win?.gZenWorkspaces;
++      if (!workspaces) {
++        continue;
++      }
++
++      const space =
++        (route ? workspaces.getWorkspaceFromId?.(route) : null) ??
++        workspaces.getActiveWorkspaceFromCache?.();
++      if (space?.name) {
++        return space;
++      }
++    }
++
++    return null;
++  }
++
++  /**
++   * Platform-appropriate rendering of the keep shortcut.
++   *
++   * @returns {string} Shortcut hint shown on the primary button
++   */
++  getKeepShortcutLabel() {
++    return lazy.AppConstants.platform === "macosx" ? "⌘O" : "Ctrl+O";
++  }
++
++  /**
++   * Binds accel+O to the primary keep action for this window only.
++   *
++   * Uses a capturing keydown listener so it wins over the built-in Open File
++   * command, which is meaningless in a standalone window.
++   *
++   * @param {Window} standaloneWindow - The standalone window
++   */
++  registerStandaloneShortcuts(standaloneWindow) {
++    const state = standaloneWindow.ZenExternalLinkStandalone;
++    if (!state || state.keydownListener) {
++      return;
++    }
++
++    const onKeyDown = event => {
++      const accel =
++        lazy.AppConstants.platform === "macosx" ? event.metaKey : event.ctrlKey;
++      if (
++        !accel ||
++        event.altKey ||
++        event.shiftKey ||
++        event.key?.toLowerCase() !== "o"
++      ) {
++        return;
++      }
++
++      event.preventDefault();
++      event.stopPropagation();
++      this.onOpenInDefaultSpaceCommand(standaloneWindow);
++    };
++
++    standaloneWindow.addEventListener("keydown", onKeyDown, true);
++    state.keydownListener = onKeyDown;
++  }
++
+   /**
+    * Runs a toolbar command, keeping the buttons disabled while it is in flight
+    * so a double click cannot keep the same window twice.
+@@ -419,7 +847,10 @@ class nsZenStandaloneWindowManager {
+    * @returns {boolean} True when the command was handled
+    */
+   #runToolbarCommand(toolbar, command) {
+-    for (const button of toolbar.querySelectorAll("toolbarbutton")) {
++    // The controls are boxes with role="button", not <toolbarbutton>, so the
++    // in-flight guard has to select on the role.
++    const buttons = toolbar.querySelectorAll('[role="button"]');
++    for (const button of buttons) {
+       button.setAttribute("disabled", "true");
+     }
+ 
+@@ -428,7 +859,7 @@ class nsZenStandaloneWindowManager {
+       handled = !!command();
+     } finally {
+       if (!handled) {
+-        for (const button of toolbar.querySelectorAll("toolbarbutton")) {
++        for (const button of buttons) {
+           button.removeAttribute("disabled");
+         }
+       }
+@@ -436,28 +867,31 @@ class nsZenStandaloneWindowManager {
+     return handled;
+   }
+ 
+-  /**
+-   * Defines the actions the standalone-window toolbar exposes.
+-   *
+-   * @param {Window} standaloneWindow - The created standalone window
+-   * @returns {object} Toolbar action callbacks
+-   */
+-  getStandaloneToolbarActions(standaloneWindow) {
+-    return {
+-      openInDefaultSpace: () =>
+-        this.onOpenInDefaultSpaceCommand(standaloneWindow),
+-      openSpacePicker: () => this.openStandaloneSpacePicker(standaloneWindow),
+-      close: () => this.closeStandaloneWindow(standaloneWindow),
+-    };
+-  }
+-
+   /**
+    * Removes standalone toolbar controls and listeners.
+    *
+    * @param {Window} standaloneWindow - The standalone window
+    */
+   cleanupStandaloneToolbar(standaloneWindow) {
+-    const toolbar = standaloneWindow?.ZenExternalLinkStandalone?.toolbar;
++    const state = standaloneWindow?.ZenExternalLinkStandalone;
++    if (state?.deactivateListener) {
++      standaloneWindow.removeEventListener(
++        "deactivate",
++        state.deactivateListener,
++        true
++      );
++      state.deactivateListener = null;
++    }
++    if (state?.keydownListener) {
++      standaloneWindow.removeEventListener(
++        "keydown",
++        state.keydownListener,
++        true
++      );
++      state.keydownListener = null;
++    }
++
++    const toolbar = state?.toolbar;
+     if (!toolbar) {
+       return;
+     }
+@@ -466,7 +900,7 @@ class nsZenStandaloneWindowManager {
+       target.removeEventListener(type, handler);
+     }
+     toolbar.root?.remove();
+-    standaloneWindow.ZenExternalLinkStandalone.toolbar = null;
++    state.toolbar = null;
+   }
+ 
+   /**
+@@ -475,6 +909,13 @@ class nsZenStandaloneWindowManager {
+    * @param {Window} standaloneWindow - The created standalone window
+    */
+   registerStandaloneWindowLifecycle(standaloneWindow) {
++    // Session store dispatches SSWindowClosing while the window's tab is still
++    // alive, which is the only moment the page can be handed to another window.
++    standaloneWindow.addEventListener(
++      "SSWindowClosing",
++      () => this.onStandaloneWindowClosing(standaloneWindow),
++      { once: true }
++    );
+     standaloneWindow.addEventListener(
+       "unload",
+       () => this.onStandaloneWindowClosed(standaloneWindow),
+@@ -482,6 +923,39 @@ class nsZenStandaloneWindowManager {
+     );
+   }
+ 
++  /**
++   * Handles a standalone window that is about to close.
++   *
++   * A standalone window is not part of the session, so nothing of it would
++   * survive its own close. The page is instead recorded as a closed tab of the
++   * window that would have received it, so that undo-close-tab reopens it as
++   * an ordinary tab in the current space rather than as a standalone window.
++   *
++   * @param {Window} standaloneWindow - The standalone window being closed
++   */
++  onStandaloneWindowClosing(standaloneWindow) {
++    const state = standaloneWindow?.ZenExternalLinkStandalone;
++    if (!state || state.isKeeping) {
++      // The tab is moving to a real window; it is not being closed.
++      return;
++    }
++
++    const tab = standaloneWindow.gBrowser?.selectedTab;
++    const targetWindow = this.getStandaloneKeepTargetWindow(standaloneWindow);
++    if (!tab || !targetWindow) {
++      return;
++    }
++
++    try {
++      lazy.SessionStore.recordClosedTabForOtherWindow(targetWindow, tab);
++    } catch (error) {
++      console.error(
++        "Failed to remember a closed Zen standalone window page",
++        error
++      );
++    }
++  }
++
+   /**
+    * Handles standalone-window close without keeping it.
+    *
+@@ -566,8 +1040,100 @@ class nsZenStandaloneWindowManager {
+       return;
+     }
+ 
++    const state = standaloneWindow.ZenExternalLinkStandalone;
+     this.cleanupStandaloneToolbar(standaloneWindow);
+     standaloneWindow.ZenExternalLinkStandalone = null;
++
++    if (!state.isKeeping) {
++      this.maybeReturnFocusToPreviousApplication(standaloneWindow, state);
++    }
++  }
++
++  /**
++   * Sends the user back to the application the link came from.
++   *
++   * Zen is only hidden when it was brought to the front to show this window in
++   * the first place. If the user was already in Zen, or has been working in
++   * another Zen window since, closing the standalone window leaves them where
++   * they are, exactly as closing any other window does.
++   *
++   * @param {Window} standaloneWindow - The standalone window that just closed
++   * @param {object} state - Its transient standalone state
++   */
++  maybeReturnFocusToPreviousApplication(standaloneWindow, state) {
++    const dockSupport = lazy.MacDockSupport;
++    if (
++      !dockSupport ||
++      !state.broughtApplicationForward ||
++      !Services.prefs.getBoolPref(
++        "zen.standalone-window.return-focus-on-close",
++        true
++      )
++    ) {
++      return;
++    }
++
++    // Another standalone window would be hidden along with everything else.
++    for (const win of lazy.BrowserWindowTracker.orderedWindows) {
++      if (win !== standaloneWindow && this.isStandaloneWindow(win)) {
++        return;
++      }
++    }
++
++    // The user went to a normal Zen window at some point, so Zen is where they
++    // are working now and hiding it would take away the page they moved on to.
++    if (state.visitedNormalWindow) {
++      return;
++    }
++
++    try {
++      dockSupport.hideApplication();
++    } catch (error) {
++      console.error(
++        "Failed to return focus to the previous application",
++        error
++      );
++    }
++  }
++
++  /**
++   * Notices the user moving from the standalone window into a normal Zen
++   * window, which is what tells the close handler that Zen is now where the
++   * user is working rather than a window that was put in front of them.
++   *
++   * The active window is read on the next turn of the event loop, because at
++   * the time the standalone window is told it lost activation the focus
++   * manager has not yet been given the window that gained it.
++   *
++   * @param {Window} standaloneWindow - The standalone window
++   */
++  watchForNormalWindowVisits(standaloneWindow) {
++    const state = standaloneWindow.ZenExternalLinkStandalone;
++    if (!state || state.deactivateListener) {
++      return;
++    }
++
++    const onDeactivate = () => {
++      Services.tm.dispatchToMainThread(() => {
++        if (
++          standaloneWindow.closed ||
++          !standaloneWindow.ZenExternalLinkStandalone
++        ) {
++          return;
++        }
++        const activeWindow = Services.focus.activeWindow;
++        if (
++          activeWindow &&
++          activeWindow !== standaloneWindow &&
++          !this.isStandaloneWindow(activeWindow)
++        ) {
++          standaloneWindow.ZenExternalLinkStandalone.visitedNormalWindow = true;
++        }
++      });
++    };
++
++    standaloneWindow.addEventListener("deactivate", onDeactivate, true);
++    state.deactivateListener = onDeactivate;
+   }
+ 
+   /**
+@@ -593,8 +1159,14 @@ class nsZenStandaloneWindowManager {
+ 
+     const targetWindow = this.getStandaloneKeepTargetWindow(standaloneWindow);
+     if (!targetWindow) {
+-      console.error("No Zen window is available to keep the standalone URL in");
+-      return false;
++      // The link arrived while Zen was not running, so the standalone window is
++      // the only window there is. Opening a normal one also releases the
++      // session session store held back at startup, and the page is kept in it
++      // once it has spaces to be kept in.
++      return this.keepStandaloneWindowInNewWindow(
++        standaloneWindow,
++        targetRoute
++      );
+     }
+ 
+     const route = this.resolveKeepTargetRoute(standaloneWindow, targetRoute);
+@@ -638,6 +1210,43 @@ class nsZenStandaloneWindowManager {
+     }
+   }
+ 
++  /**
++   * Keeps a standalone window in a window that does not exist yet.
++   *
++   * @param {Window} standaloneWindow - The standalone window to keep
++   * @param {string} [targetRoute] - Workspace uuid, or null for the new window's current space
++   * @returns {boolean} True when opening the window was started
++   */
++  keepStandaloneWindowInNewWindow(standaloneWindow, targetRoute) {
++    const state = standaloneWindow.ZenExternalLinkStandalone;
++    const targetWindow = lazy.BrowserWindowTracker.openWindow({});
++    if (!targetWindow) {
++      console.error("No Zen window is available to keep the standalone URL in");
++      return false;
++    }
++
++    // Held across the wait so that closing the standalone window in the
++    // meantime is not mistaken for the user throwing the page away.
++    state.isKeeping = true;
++
++    this.#promiseDelayedStartup(targetWindow)
++      .then(async () => {
++        if (
++          targetWindow.closed ||
++          standaloneWindow.closed ||
++          !standaloneWindow.ZenExternalLinkStandalone
++        ) {
++          return;
++        }
++        await targetWindow.gZenWorkspaces?.promiseInitialized;
++        standaloneWindow.ZenExternalLinkStandalone.isKeeping = false;
++        this.keepStandaloneWindowInSpace(standaloneWindow, targetRoute);
++      })
++      .catch(console.error);
++
++    return true;
++  }
++
+   /**
+    * Moves the standalone window's live tab into the target window.
+    *
+@@ -751,60 +1360,229 @@ class nsZenStandaloneWindowManager {
+       return false;
+     }
+ 
+-    const toolbar = standaloneWindow.ZenExternalLinkStandalone?.toolbar;
+-    const popup = toolbar?.spacePickerPopup;
+-    const anchor = toolbar?.spacePickerButton;
++    const document = standaloneWindow.document;
++    const panel = document.getElementById(
++      STANDALONE_WINDOW_SPACE_PICKER_PANEL_ID
++    );
++    const list = document.getElementById(
++      STANDALONE_WINDOW_SPACE_PICKER_LIST_ID
++    );
++    const search = document.getElementById(
++      STANDALONE_WINDOW_SPACE_PICKER_SEARCH_ID
++    );
++    // Anchored on the whole keep control rather than on the chevron alone: the
++    // panel is meant to read as that control expanding in place, so it has to
++    // know the pill's box, not the box of the arrow that opened it.
++    const anchor =
++      standaloneWindow.ZenExternalLinkStandalone?.toolbar?.keepControl ??
++      standaloneWindow.ZenExternalLinkStandalone?.toolbar?.spacePickerButton;
+     const targetWindow = this.getStandaloneKeepTargetWindow(standaloneWindow);
+     const workspaces = targetWindow?.gZenWorkspaces?.getWorkspaces?.() ?? [];
+-    if (!popup || !anchor || !workspaces.length) {
++    if (!panel || !list || !anchor || !workspaces.length) {
+       return false;
+     }
+ 
+-    this.populateStandaloneSpacePicker(popup, workspaces);
+-    popup.openPopup(anchor, "after_end", 0, 0, false, false);
++    this.populateStandaloneSpacePicker(list, workspaces, targetWindow);
++
++    if (search) {
++      search.value = "";
++    }
++    this.filterStandaloneSpacePicker(list, "");
++
++    // The panel is shared chrome, so its handlers are bound per open and torn
++    // down on popuphidden rather than living for the window's lifetime.
++    const onCommand = event => {
++      if (event.target?.id === STANDALONE_WINDOW_SPACE_PICKER_COLLAPSE_ID) {
++        panel.hidePopup();
++        return;
++      }
++
++      const workspaceId = event.target
++        ?.closest?.("[zen-workspace-id]")
++        ?.getAttribute("zen-workspace-id");
++      if (!workspaceId) {
++        return;
++      }
++      panel.hidePopup();
++      this.onOpenInSelectedSpaceCommand(standaloneWindow, workspaceId);
++    };
++
++    const onInput = () => this.filterStandaloneSpacePicker(list, search?.value);
++
++    const onKeyDown = event => {
++      if (event.key !== "Enter") {
++        return;
++      }
++      const first = [...list.children].find(row => !row.hidden);
++      first?.doCommand();
++    };
++
++    const onShown = () => search?.focus({ preventScroll: true });
++
++    const onHidden = () => {
++      panel.removeEventListener("command", onCommand);
++      panel.removeEventListener("popupshown", onShown);
++      panel.removeEventListener("popuphidden", onHidden);
++      search?.removeEventListener("input", onInput);
++      search?.removeEventListener("keydown", onKeyDown);
++    };
++
++    panel.addEventListener("command", onCommand);
++    panel.addEventListener("popupshown", onShown);
++    panel.addEventListener("popuphidden", onHidden, { once: true });
++    search?.addEventListener("input", onInput);
++    search?.addEventListener("keydown", onKeyDown);
++
++    // Sized and placed onto the control instead of floating below it: the panel
++    // takes the pill's width and is pulled up by the pill's height, so its
++    // search row lands exactly on top of the button and the collapse chevron
++    // ends up where the opening chevron was. Anything narrower than the minimum
++    // would make the space rows unreadable, and "after_end" keeps the trailing
++    // edges aligned either way, so the chevrons still line up.
++    const anchorRect = anchor.getBoundingClientRect();
++    const width = Math.max(
++      Math.round(anchorRect.width),
++      STANDALONE_WINDOW_SPACE_PICKER_MIN_WIDTH
++    );
++    panel.style.setProperty("--panel-width", `${width}px`);
++    panel.style.setProperty(
++      "--zen-standalone-window-picker-anchor-height",
++      `${Math.round(anchorRect.height)}px`
++    );
++
++    panel.openPopup(
++      anchor,
++      "after_end",
++      0,
++      -Math.round(anchorRect.height),
++      false,
++      false
++    );
+     return true;
+   }
+ 
+   /**
+-   * Rebuilds the standalone space picker menu.
++   * Rebuilds the standalone space picker list.
++   *
++   * Each row is a real <toolbarbutton>, so the panel keeps its command and
++   * keyboard behaviour, but it carries its own children. MozToolbarbutton skips
++   * building its icon and text nodes as soon as a button has children of its
++   * own, which is what lets a row pair a coloured icon tile with the name.
+    *
+-   * @param {Element} popup - Standalone space picker popup
++   * @param {Element} list - Container for the space rows
+    * @param {Array<object>} workspaces - Workspaces available in the target window
++   * @param {Window} [targetWindow] - Window the spaces belong to
+    */
+-  populateStandaloneSpacePicker(popup, workspaces) {
+-    while (popup.firstChild) {
+-      popup.firstChild.remove();
++  populateStandaloneSpacePicker(list, workspaces, targetWindow) {
++    const document = list.ownerDocument;
++    while (list.firstChild) {
++      list.firstChild.remove();
+     }
+ 
++    const activeWorkspace = targetWindow?.gZenWorkspaces?.activeWorkspace;
++
+     for (const workspace of workspaces) {
+-      const item = popup.ownerDocument.createXULElement("menuitem");
+-      item.setAttribute("zen-workspace-id", workspace.uuid);
+-      item.setAttribute(
+-        "label",
+-        this.getStandaloneWorkspacePickerLabel(workspace)
+-      );
++      const row = document.createXULElement("toolbarbutton");
++      row.className = "subviewbutton zen-standalone-window-space-row";
++      row.setAttribute("zen-workspace-id", workspace.uuid);
++      row.setAttribute("zen-workspace-name", workspace.name ?? "");
++      if (workspace.uuid === activeWorkspace) {
++        row.setAttribute("active", "true");
++      }
++
++      const iconTile = document.createXULElement("hbox");
++      iconTile.className = "zen-standalone-window-space-icon";
++      iconTile.setAttribute("align", "center");
++      iconTile.setAttribute("pack", "center");
++
++      const accent = this.getStandaloneWorkspaceAccent(targetWindow, workspace);
++      if (accent) {
++        iconTile.style.setProperty(
++          "--zen-standalone-window-space-accent",
++          accent
++        );
++      }
+ 
+       if (workspace.icon?.endsWith?.(".svg")) {
+-        item.setAttribute("image", workspace.icon);
+-        item.classList.add("menuitem-iconic");
++        const image = document.createXULElement("image");
++        image.className = "zen-standalone-window-space-icon-image";
++        image.setAttribute("src", workspace.icon);
++        iconTile.appendChild(image);
++      } else if (workspace.icon) {
++        const glyph = document.createXULElement("label");
++        glyph.className = "zen-standalone-window-space-icon-glyph";
++        glyph.setAttribute("value", workspace.icon);
++        iconTile.appendChild(glyph);
++      } else {
++        // Initial of the name, so a space without an icon still reads as a tile
++        // rather than as an empty square.
++        const glyph = document.createXULElement("label");
++        glyph.className = "zen-standalone-window-space-icon-glyph";
++        glyph.setAttribute("value", (workspace.name ?? "?").trim().charAt(0));
++        iconTile.appendChild(glyph);
+       }
+ 
+-      popup.appendChild(item);
++      const name = document.createXULElement("label");
++      name.className = "zen-standalone-window-space-name";
++      name.setAttribute("value", workspace.name ?? "");
++      name.setAttribute("crop", "end");
++      name.setAttribute("flex", "1");
++
++      row.appendChild(iconTile);
++      row.appendChild(name);
++      list.appendChild(row);
+     }
+   }
+ 
+   /**
+-   * Builds the display label for a workspace picker item.
++   * Reads the accent colour a space paints its window with, so its row in the
++   * picker is recognisable at a glance.
++   *
++   * The gradient data lives on the target window's theme picker, and a space
++   * can predate it or carry no theme at all, so a failure here just falls back
++   * to the neutral tile the stylesheet paints.
+    *
++   * @param {Window} [targetWindow] - Window the spaces belong to
+    * @param {object} workspace - Workspace data
+-   * @returns {string} Menu item label
++   * @returns {string|null} A CSS colour, or null when the space has no accent
++   */
++  getStandaloneWorkspaceAccent(targetWindow, workspace) {
++    try {
++      return (
++        targetWindow?.gZenThemePicker?.getGradientForWorkspace?.(workspace, {
++          getGradient: false,
++        })?.primaryColor ?? null
++      );
++    } catch (error) {
++      console.error("Failed to read the accent colour of a Zen space", error);
++      return null;
++    }
++  }
++
++  /**
++   * Narrows the space list to rows matching the search query.
++   *
++   * @param {Element} list - Container for the space rows
++   * @param {string} [query] - Current search text
+    */
+-  getStandaloneWorkspacePickerLabel(workspace) {
+-    if (workspace.icon && !workspace.icon.endsWith?.(".svg")) {
+-      return `${workspace.icon}  ${workspace.name}`;
++  filterStandaloneSpacePicker(list, query) {
++    const needle = (query ?? "").trim().toLowerCase();
++    let matches = 0;
++
++    for (const row of list.children) {
++      const name = row.getAttribute("zen-workspace-name")?.toLowerCase() ?? "";
++      row.hidden = !!needle && !name.includes(needle);
++      if (!row.hidden) {
++        matches++;
++      }
+     }
+ 
+-    return workspace.name;
++    const empty = list.ownerDocument.getElementById(
++      STANDALONE_WINDOW_SPACE_PICKER_EMPTY_ID
++    );
++    if (empty) {
++      empty.hidden = matches > 0;
++    }
+   }
+ 
+   /**
+diff --git a/src/zen/tests/standalone_window/browser_external_link_standalone_window.js b/src/zen/tests/standalone_window/browser_external_link_standalone_window.js
+index b3cd4863c..3e247ef46 100644
+--- a/src/zen/tests/standalone_window/browser_external_link_standalone_window.js
++++ b/src/zen/tests/standalone_window/browser_external_link_standalone_window.js
+@@ -8,6 +8,10 @@ const { gZenStandaloneWindowManager, ZEN_STANDALONE_WINDOW_TYPE } =
+     "resource:///modules/zen/standalonewindow/ZenStandaloneWindowManager.sys.mjs"
+   );
+ 
++const { SessionWindowUI } = ChromeUtils.importESModule(
++  "resource:///modules/sessionstore/SessionWindowUI.sys.mjs"
++);
++
+ const TEST_URL_BASE = "https://example.com/zen-standalone-window-test";
+ 
+ add_setup(async function () {
+@@ -28,15 +32,21 @@ add_task(async function test_external_link_opens_standalone_window() {
+   try {
+     assertStandaloneWindow(standaloneWindow);
+     for (const id of [
++      "zen-standalone-window-keep",
+       "zen-standalone-window-open-in-space-button",
+       "zen-standalone-window-space-picker-button",
+-      "zen-standalone-window-close-button",
+     ]) {
+       ok(
+         standaloneWindow.document.getElementById(id),
+         `Standalone window has the ${id} control`
+       );
+     }
++    ok(
++      !standaloneWindow.document.getElementById(
++        "zen-standalone-window-close-button"
++      ),
++      "There is no Close button; the window closes from the titlebar"
++    );
+ 
+     const navBar = standaloneWindow.document.getElementById("nav-bar");
+     const urlBar = standaloneWindow.document.getElementById("urlbar");
+@@ -50,6 +60,89 @@ add_task(async function test_external_link_opens_standalone_window() {
+   }
+ });
+ 
++add_task(async function test_standalone_top_bar_is_stripped_down() {
++  const standaloneWindow = await openExternalLinkStandaloneWindow(
++    `${TEST_URL_BASE}?top-bar`
++  );
++
++  try {
++    const document = standaloneWindow.document;
++
++    // Everything below belongs to a workspace, not to a single external page.
++    for (const id of [
++      "forward-button",
++      "stop-reload-button",
++      "unified-extensions-button",
++      "fxa-toolbar-menu-button",
++      "nav-bar-overflow-button",
++      "PanelUI-button",
++    ]) {
++      const element = document.getElementById(id);
++      ok(
++        isEffectivelyHidden(element),
++        `${id} is hidden in a standalone window`
++      );
++    }
++
++    ok(
++      !isEffectivelyHidden(document.getElementById("urlbar-container")),
++      "The address bar is the only navigation-bar item left"
++    );
++    ok(
++      !isEffectivelyHidden(
++        document.getElementById("zen-standalone-window-keep")
++      ),
++      "The keep action is visible in the top bar"
++    );
++
++    const backButton = document.getElementById("back-button");
++    const backCommand = document.getElementById("Browser:Back");
++    Assert.equal(
++      isEffectivelyHidden(backButton),
++      backCommand.hasAttribute("disabled"),
++      "The back arrow is shown exactly when there is history to go back to"
++    );
++  } finally {
++    await closeStandaloneWindow(standaloneWindow);
++  }
++});
++
++add_task(async function test_standalone_back_arrow_appears_with_history() {
++  const standaloneWindow = await openExternalLinkStandaloneWindow(
++    `${TEST_URL_BASE}?back-arrow-first`
++  );
++
++  try {
++    const backButton = standaloneWindow.document.getElementById("back-button");
++    ok(
++      isEffectivelyHidden(backButton),
++      "A freshly opened standalone window shows no back arrow"
++    );
++
++    const browser = standaloneWindow.gBrowser.selectedBrowser;
++    BrowserTestUtils.startLoadingURIString(
++      browser,
++      `${TEST_URL_BASE}?back-arrow-second`
++    );
++    await BrowserTestUtils.browserLoaded(
++      browser,
++      false,
++      `${TEST_URL_BASE}?back-arrow-second`
++    );
++
++    await TestUtils.waitForCondition(
++      () => !isEffectivelyHidden(backButton),
++      "Waiting for the back arrow to appear once the window has history"
++    );
++    ok(
++      !isEffectivelyHidden(backButton),
++      "The back arrow appears once the standalone window has history"
++    );
++  } finally {
++    await closeStandaloneWindow(standaloneWindow);
++  }
++});
++
+ add_task(async function test_standalone_window_has_no_empty_tab() {
+   const standaloneWindow = await openExternalLinkStandaloneWindow(
+     `${TEST_URL_BASE}?no-empty-tab`
+@@ -165,17 +258,17 @@ add_task(async function test_browser_external_open_does_not_fallback_to_tab() {
+   await closeStandaloneWindow(standaloneWindow);
+ });
+ 
+-add_task(async function test_close_standalone_window_from_toolbar() {
++add_task(async function test_close_standalone_window_without_keeping() {
+   const initialTabCount = gBrowser.tabs.length;
+   const standaloneWindow = await openExternalLinkStandaloneWindow(
+     `${TEST_URL_BASE}?close`
+   );
+-  const closeButton = standaloneWindow.document.getElementById(
+-    "zen-standalone-window-close-button"
+-  );
+ 
+   const closed = BrowserTestUtils.domWindowClosed(standaloneWindow);
+-  closeButton.doCommand();
++  ok(
++    gZenStandaloneWindowManager.closeStandaloneWindow(standaloneWindow),
++    "The manager closes the standalone window"
++  );
+   await closed;
+ 
+   Assert.equal(
+@@ -185,6 +278,41 @@ add_task(async function test_close_standalone_window_from_toolbar() {
+   );
+ });
+ 
++add_task(async function test_keep_button_names_the_target_space() {
++  const standaloneWindow = await openExternalLinkStandaloneWindow(
++    `${TEST_URL_BASE}?named-space`
++  );
++
++  try {
++    const button = standaloneWindow.document.getElementById(
++      "zen-standalone-window-open-in-space-button"
++    );
++    await standaloneWindow.document.l10n.translateFragment(button);
++
++    const spaceName = gZenWorkspaces.getActiveWorkspaceFromCache()?.name;
++    Assert.equal(
++      button
++        .querySelector(".zen-standalone-window-keep-space")
++        ?.getAttribute("value"),
++      spaceName,
++      "The primary action names the space the page would be kept in"
++    );
++    Assert.equal(
++      button
++        .querySelector(".zen-standalone-window-keep-prefix")
++        ?.getAttribute("value"),
++      "Open in",
++      "The space name is preceded by the localized prefix"
++    );
++    ok(
++      button.querySelector(".zen-standalone-window-shortcut"),
++      "The primary action shows its keyboard shortcut alongside the label"
++    );
++  } finally {
++    await closeStandaloneWindow(standaloneWindow);
++  }
++});
++
+ add_task(async function test_keep_standalone_window_in_default_space() {
+   const url = `${TEST_URL_BASE}?keep-default`;
+   const standaloneWindow = await openExternalLinkStandaloneWindow(url);
+@@ -197,7 +325,7 @@ add_task(async function test_keep_standalone_window_in_default_space() {
+     "TabOpen"
+   );
+   const closed = BrowserTestUtils.domWindowClosed(standaloneWindow);
+-  button.doCommand();
++  clickKeepButton(standaloneWindow, button);
+ 
+   const tab = (await tabOpened).target;
+   await closed;
+@@ -234,9 +362,7 @@ add_task(async function test_keep_preserves_session_history() {
+     "TabOpen"
+   );
+   const closed = BrowserTestUtils.domWindowClosed(standaloneWindow);
+-  standaloneWindow.document
+-    .getElementById("zen-standalone-window-open-in-space-button")
+-    .doCommand();
++  clickKeepButton(standaloneWindow);
+ 
+   const tab = (await tabOpened).target;
+   await closed;
+@@ -258,6 +384,83 @@ add_task(async function test_keep_preserves_session_history() {
+   }
+ });
+ 
++add_task(async function test_space_picker_rows_show_a_named_icon_tile() {
++  const standaloneWindow = await openExternalLinkStandaloneWindow(
++    `${TEST_URL_BASE}?picker-rows`
++  );
++
++  try {
++    ok(
++      gZenStandaloneWindowManager.openStandaloneSpacePicker(standaloneWindow),
++      "The standalone space picker opens"
++    );
++
++    const document = standaloneWindow.document;
++    const panel = document.getElementById(
++      "PanelUI-zen-standalone-window-spaces"
++    );
++    await TestUtils.waitForCondition(
++      () => panel.state === "open",
++      "Waiting for the space picker to finish opening"
++    );
++
++    const activeWorkspace = gZenWorkspaces.getActiveWorkspace();
++    const row = document.querySelector(
++      `#PanelUI-zen-standalone-window-spaces-list [zen-workspace-id="${activeWorkspace.uuid}"]`
++    );
++    ok(row, "The active space has a row in the picker");
++    Assert.equal(
++      row.getAttribute("active"),
++      "true",
++      "The row for the current space is marked as active"
++    );
++
++    // MozToolbarbutton leaves a button with children of its own alone, which is
++    // what lets a row pair an icon tile with a separate name label.
++    ok(
++      !row.querySelector(":scope > .toolbarbutton-text"),
++      "The row keeps its own content instead of the default button content"
++    );
++    ok(
++      row.querySelector(".zen-standalone-window-space-icon"),
++      "The row leads with an icon tile"
++    );
++    Assert.equal(
++      row
++        .querySelector(".zen-standalone-window-space-name")
++        ?.getAttribute("value"),
++      activeWorkspace.name,
++      "The row is labelled with the space name"
++    );
++
++    const search = document.getElementById(
++      "PanelUI-zen-standalone-window-spaces-search"
++    );
++    const empty = document.getElementById(
++      "PanelUI-zen-standalone-window-spaces-empty"
++    );
++    ok(empty.hidden, "The empty state is hidden while spaces are listed");
++
++    search.value = "no space is called this";
++    search.dispatchEvent(new standaloneWindow.Event("input"));
++    ok(!empty.hidden, "A search with no matches shows the empty state");
++
++    search.value = "";
++    search.dispatchEvent(new standaloneWindow.Event("input"));
++    ok(empty.hidden, "Clearing the search hides the empty state again");
++
++    document
++      .getElementById("PanelUI-zen-standalone-window-spaces-collapse")
++      .doCommand();
++    await TestUtils.waitForCondition(
++      () => panel.state === "closed",
++      "Waiting for the collapse button to close the picker"
++    );
++  } finally {
++    await closeStandaloneWindow(standaloneWindow);
++  }
++});
++
+ add_task(async function test_keep_standalone_window_in_selected_space() {
+   const originalWorkspace = gZenWorkspaces.getActiveWorkspace();
+   const targetWorkspace = await gZenWorkspaces.createAndSaveWorkspace(
+@@ -267,8 +470,11 @@ add_task(async function test_keep_standalone_window_in_selected_space() {
+ 
+   const url = `${TEST_URL_BASE}?keep-selected`;
+   const standaloneWindow = await openExternalLinkStandaloneWindow(url);
+-  const pickerPopup = standaloneWindow.document.getElementById(
+-    "zen-standalone-window-space-picker-popup"
++  const pickerList = standaloneWindow.document.getElementById(
++    "PanelUI-zen-standalone-window-spaces-list"
++  );
++  const pickerSearch = standaloneWindow.document.getElementById(
++    "PanelUI-zen-standalone-window-spaces-search"
+   );
+ 
+   let tab;
+@@ -278,11 +484,21 @@ add_task(async function test_keep_standalone_window_in_selected_space() {
+       "The standalone space picker opens"
+     );
+ 
+-    const targetItem = pickerPopup.querySelector(
+-      `menuitem[zen-workspace-id="${targetWorkspace.uuid}"]`
++    const targetItem = pickerList.querySelector(
++      `[zen-workspace-id="${targetWorkspace.uuid}"]`
+     );
+     ok(targetItem, "The selected target workspace appears in the picker");
+-    pickerPopup.hidePopup();
++
++    // The search field narrows the list to matching space names.
++    pickerSearch.value = "Standalone Target";
++    pickerSearch.dispatchEvent(new standaloneWindow.Event("input"));
++    ok(!targetItem.hidden, "A matching space stays visible while searching");
++    ok(
++      [...pickerList.children].some(row => row.hidden),
++      "Non-matching spaces are filtered out"
++    );
++    pickerSearch.value = "";
++    pickerSearch.dispatchEvent(new standaloneWindow.Event("input"));
+ 
+     const tabOpened = BrowserTestUtils.waitForEvent(
+       gBrowser.tabContainer,
+@@ -315,6 +531,120 @@ add_task(async function test_keep_standalone_window_in_selected_space() {
+   }
+ });
+ 
++add_task(async function test_standalone_window_is_not_part_of_the_session() {
++  const standaloneWindow = await openExternalLinkStandaloneWindow(
++    `${TEST_URL_BASE}?session`
++  );
++
++  try {
++    const windowData = SessionStore.getWindowStateData(standaloneWindow);
++    ok(
++      windowData.isZenStandalone,
++      "Session store marks the window as standalone"
++    );
++    ok(
++      windowData.isZenUnsynced,
++      "A standalone window is never a synced window"
++    );
++
++    const state = JSON.parse(SessionStore.getBrowserState());
++    ok(
++      !state.windows.some(win => win.isZenStandalone),
++      "No standalone window is written into the session state"
++    );
++  } finally {
++    await closeStandaloneWindow(standaloneWindow);
++  }
++});
++
++add_task(async function test_closed_standalone_window_is_not_reopenable() {
++  const closedWindowCount = SessionStore.getClosedWindowCount();
++  const standaloneWindow = await openExternalLinkStandaloneWindow(
++    `${TEST_URL_BASE}?closed-window`
++  );
++
++  await closeStandaloneWindow(standaloneWindow);
++  await TestUtils.waitForTick();
++
++  Assert.equal(
++    SessionStore.getClosedWindowCount(),
++    closedWindowCount,
++    "A closed standalone window is not offered as a window to reopen"
++  );
++});
++
++add_task(async function test_closing_leaves_the_page_as_a_closed_tab() {
++  const url = `${TEST_URL_BASE}?undo-close`;
++  const standaloneWindow = await openExternalLinkStandaloneWindow(url);
++
++  await closeStandaloneWindow(standaloneWindow);
++  await TestUtils.waitForCondition(
++    () =>
++      SessionStore.getClosedTabDataForWindow(window).some(
++        tab => tab.state.entries.at(-1)?.url === url
++      ),
++    "Waiting for the standalone page to land in the closed tab list"
++  );
++
++  const closedTab = SessionStore.getClosedTabDataForWindow(window).find(
++    tab => tab.state.entries.at(-1)?.url === url
++  );
++  ok(
++    !closedTab.state.zenWorkspace,
++    "The closed tab carries no space of its own, so it reopens where the user is"
++  );
++
++  const restored = SessionWindowUI.undoCloseTab(window, 0);
++  await TestUtils.waitForCondition(
++    () => restored.linkedBrowser?.currentURI?.spec === url,
++    "Waiting for the reopened tab to carry the standalone page"
++  );
++
++  Assert.equal(
++    restored.ownerGlobal,
++    window,
++    "Undo close tab reopens the page as a tab of the normal window"
++  );
++  ok(
++    !gZenStandaloneWindowManager.isStandaloneWindow(restored.ownerGlobal),
++    "Undo close tab does not bring back a standalone window"
++  );
++
++  const restoredSpace = restored.getAttribute("zen-workspace-id");
++  Assert.equal(
++    restoredSpace || gZenWorkspaces.activeWorkspace,
++    gZenWorkspaces.activeWorkspace,
++    "The reopened page belongs to no space other than the current one"
++  );
++
++  BrowserTestUtils.removeTab(restored);
++});
++
++add_task(async function test_external_link_without_an_opener_window() {
++  const url = `${TEST_URL_BASE}?no-opener`;
++  const existingWindows = new Set(getStandaloneWindows());
++
++  ok(
++    gZenStandaloneWindowManager.openExternalLinksInStandaloneWindows([url]),
++    "An external link is handled with no window to open it from"
++  );
++
++  const standaloneWindow = await waitForNewStandaloneWindow(
++    existingWindows,
++    url
++  );
++  try {
++    assertStandaloneWindow(standaloneWindow);
++    Assert.equal(
++      standaloneWindow.ZenExternalLinkStandalone.openerWindow,
++      null,
++      "The window knows it was opened without an opener"
++    );
++  } finally {
++    await closeStandaloneWindow(standaloneWindow);
++  }
++});
++
+ function getStandaloneWindows() {
+   return [...Services.wm.getEnumerator("navigator:browser")].filter(
+     win =>
+@@ -323,6 +653,17 @@ function getStandaloneWindows() {
+   );
+ }
+ 
++// The keep control is built from boxes rather than <toolbarbutton>, so it is
++// activated with a real click instead of doCommand().
++function clickKeepButton(standaloneWindow, button) {
++  const target =
++    button ??
++    standaloneWindow.document.getElementById(
++      "zen-standalone-window-open-in-space-button"
++    );
++  EventUtils.synthesizeMouseAtCenter(target, {}, standaloneWindow);
++}
++
+ function isEffectivelyHidden(element) {
+   if (!element) {
+     return true;
+@@ -408,12 +749,41 @@ function assertStandaloneWindow(standaloneWindow) {
+   );
+   // Workspace chrome is hidden by the stylesheet keyed off that marker rather
+   // than by hiding individual nodes, so assert on the rendered result.
+-  for (const id of ["TabsToolbar", "sidebar-container", "PersonalToolbar"]) {
++  // #navigator-toolbox is the sidebar itself: hiding only its children would
++  // leave an empty column, since it carries a persisted width.
++  for (const id of [
++    "navigator-toolbox",
++    "sidebar-container",
++    "PersonalToolbar",
++  ]) {
+     ok(
+       isEffectivelyHidden(standaloneWindow.document.getElementById(id)),
+       `Standalone windows hide #${id}`
+     );
+   }
++
++  // Shortcuts that would drag workspace chrome back into the window are off.
++  for (const id of [
++    "cmd_toggleCompactModeIgnoreHover",
++    "cmd_zenToggleSidebar",
++    "cmd_zenCompactModeShowSidebar",
++  ]) {
++    Assert.equal(
++      standaloneWindow.document.getElementById(id)?.getAttribute("disabled"),
++      "true",
++      `${id} is disabled in standalone windows`
++    );
++  }
++
++  const tabboxWrapper =
++    standaloneWindow.document.getElementById("zen-tabbox-wrapper");
++  const margin =
++    standaloneWindow.getComputedStyle(tabboxWrapper).marginInlineStart;
++  Assert.equal(
++    margin,
++    "0px",
++    "The page sits flush against the window, with no separation margin"
++  );
+ }
+ 
+ async function closeStandaloneWindow(standaloneWindow) {
+diff --git a/src/zen/tests/standalone_window/manual-test-cases.md b/src/zen/tests/standalone_window/manual-test-cases.md
+index a51c90e70..3212d8167 100644
+--- a/src/zen/tests/standalone_window/manual-test-cases.md
++++ b/src/zen/tests/standalone_window/manual-test-cases.md
+@@ -13,39 +13,86 @@
+    - Expected: the standalone window has no sidebar, tab strip or bookmarks toolbar, and no sidebar flashes on the way in.
+    - Expected: the URL bar is present and editable.
+ 
+-2. Multiple standalone windows
++2. Top bar contents
++   - Look at the top bar of a fresh standalone window.
++   - Expected: window controls, then the address bar, then `Open in <Space> ⌘O` with a chevron. Nothing else.
++   - Expected: no forward, reload or home button, no extensions or account button, no overflow chevron, no app menu.
++   - Expected: the window controls sit on the same line as the address bar, vertically centred.
++   - Expected: dragging the empty part of the bar moves the window.
++
++3. Conditional back arrow
++   - On a fresh standalone window, look between the window controls and the address bar.
++   - Expected: no back arrow.
++   - Follow a link inside the window.
++   - Expected: a back arrow appears in that gap, and going back to the first page removes it again.
++
++4. Multiple standalone windows
+    - Open two different links from another app.
+    - Expected: two separate standalone windows, offset from each other rather than stacked.
+ 
+-3. Close without keeping
+-   - Open a standalone window and press `Close` in the toolbar.
++5. Close without keeping
++   - Open a standalone window and close it from the window controls.
+    - Expected: no new tab is added to any normal Zen workspace.
+ 
+-4. Keep in default space
++6. Keep in default space
+    - Open a standalone window, follow a couple of links inside it, then click `Open in Space`.
+    - Expected: the page opens as a selected normal tab in the space that was active when the link arrived.
+    - Expected: the page is not reloaded, and Back still walks the history built inside the standalone window.
+    - Expected: the standalone window closes.
+ 
+-5. Keep in selected space
++7. Space picker appearance
++   - Give two spaces different themes, then open the picker from the chevron.
++   - Expected: a borderless search row with a magnifier and a collapse button, then one row per space.
++   - Expected: each row leads with a rounded tile in that space's own accent colour, holding its emoji or icon.
++   - Expected: the current space's row is subtly highlighted, and the collapse button closes the panel.
++   - Type a string no space matches.
++   - Expected: the list empties and a "No spaces match that search" line appears.
++
++8. Keep in selected space
+    - Create at least two workspaces.
+    - Open a standalone window, click `Choose Space` and select a non-current workspace.
+    - Expected: the page becomes a tab assigned to the selected workspace, and Zen switches to it.
+    - Expected: the standalone window closes.
+ 
+-6. Pinned and routed external links
++9. Pinned and routed external links
+    - With a space routing rule matching the URL, open that URL from another app.
+    - Expected: the standalone window is used, and `Open in Space` still lands in a valid space.
+ 
+-7. Beforeunload
++10. Beforeunload
+    - Open a standalone window on a page with an unsaved-changes prompt.
+-   - Press `Close`.
++   - Close it from the window controls.
+    - Expected: exactly one prompt. Cancelling leaves the window open and usable.
+ 
+-8. Private browsing
++11. Private browsing
+    - Open an external link while only a private window is open.
+    - Expected: the standalone window is private, and keeping it lands in a window that can accept it.
+ 
+-9. No normal window available
++12. No normal window available
+    - Open a standalone window, close every other Zen window, then click `Open in Space`.
+-   - Expected: the action does nothing destructive and the buttons re-enable.
++   - Expected: a normal Zen window opens, carrying the session that was held back, and the page lands in it as a tab.
++
++13. Restart
++   - Open two standalone windows, then quit Zen with them open and start it again.
++   - Expected: the normal windows come back exactly as before. Neither standalone window reopens, in a "Default" space or anywhere else.
++
++14. Undo close
++   - Open a standalone window, close it from the window controls, then press cmd+shift+T in a normal window.
++   - Expected: the page comes back as an ordinary tab in the space that is current, not as a standalone window.
++   - Expected: pressing it again walks further back through normal closed tabs.
++
++15. Zen not running
++   - Quit Zen. From another app, open a link.
++   - Expected: Zen starts and shows the standalone window only. No normal window, and no space is restored behind it.
++   - Expected: `Open in Space` opens a normal window with the previous session in it and files the page there.
++
++16. Focus on open (macOS)
++   - With Zen in the background and another app in front, open a link from that app.
++   - Expected: the standalone window is what comes forward. Zen's normal windows are not pulled onto the current Space.
++
++17. Focus on close (macOS)
++   - Following on from case 16, close the standalone window from the window controls.
++   - Expected: the app the link came from is frontmost again, not Zen.
++   - Repeat, but click into a normal Zen window before closing the standalone one.
++   - Expected: Zen stays frontmost, because that is where the user was working.
++   - Repeat with two standalone windows open, closing only one.
++   - Expected: Zen stays frontmost and the other standalone window is still there.

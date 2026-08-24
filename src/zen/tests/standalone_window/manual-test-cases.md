@@ -122,7 +122,9 @@ The feature must not ship unless all of these pass:
 
 17. Focus on close (macOS)
    - Following on from case 16, close the standalone window from the window controls.
-   - Expected: the app the link came from is frontmost again, not Zen.
+   - Expected: the app the link came from is frontmost again.
+   - Repeat with a normal Zen window open, including while it is minimized or on another Space.
+   - Expected: focus still returns to the prior app, while the normal Nightly window is not hidden or removed from its desktop/Dock location.
    - Repeat, but click into a normal Zen window before closing the standalone one.
    - Expected: Zen stays frontmost, because that is where the user was working.
    - Repeat with two standalone windows open, closing only one.

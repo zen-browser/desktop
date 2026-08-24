@@ -62,6 +62,10 @@ add_task(async function test_external_link_opens_standalone_window() {
       !standaloneWindow.document.documentElement.hasAttribute("persist"),
       "Standalone bounds do not overwrite normal browser window geometry"
     );
+    ok(
+      !gZenStandaloneWindowManager.hasOtherStandaloneWindows(standaloneWindow),
+      "A normal window does not prevent returning focus to the previous app"
+    );
   } finally {
     await closeStandaloneWindow(standaloneWindow);
   }

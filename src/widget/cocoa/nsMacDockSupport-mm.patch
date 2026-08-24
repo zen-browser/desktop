@@ -11,7 +11,7 @@ index 7f07ace0cd..69a5a2ee8b 100644
  
  NS_IMPL_ISUPPORTS(nsMacDockSupport, nsIMacDockSupport, nsITaskbarProgress)
  
-@@ -75,13 +77,36 @@ NS_IMPL_ISUPPORTS(nsMacDockSupport, nsIMacDockSupport, nsITaskbarProgress)
+@@ -75,13 +77,61 @@ NS_IMPL_ISUPPORTS(nsMacDockSupport, nsIMacDockSupport, nsITaskbarProgress)
  
  @end
  
@@ -19,6 +19,19 @@ index 7f07ace0cd..69a5a2ee8b 100644
 +// frontmost one. Negative until we have seen an activation.
 +static NSTimeInterval sApplicationActivatedAt = -1.0;
 +static id sApplicationActivationObserver = nil;
++static id sWorkspaceActivationObserver = nil;
++static NSRunningApplication* sPreviousApplication = nil;
++
++static void RememberPreviousApplication(NSRunningApplication* aApplication) {
++  if (!aApplication ||
++      aApplication.processIdentifier ==
++          NSRunningApplication.currentApplication.processIdentifier) {
++    return;
++  }
++
++  [sPreviousApplication release];
++  sPreviousApplication = [aApplication retain];
++}
 +
 +// Registered once, from the first nsMacDockSupport instance. Anything that
 +// wants to know whether an activation came from the user has to be listening
@@ -32,7 +45,19 @@ index 7f07ace0cd..69a5a2ee8b 100644
 +                  object:nil
 +                   queue:nil
 +              usingBlock:^(NSNotification*) {
-+                sApplicationActivatedAt = [NSDate timeIntervalSinceReferenceDate];
++                sApplicationActivatedAt =
++                    [NSDate timeIntervalSinceReferenceDate];
++              }] retain];
++
++  NSWorkspace* workspace = [NSWorkspace sharedWorkspace];
++  RememberPreviousApplication(workspace.frontmostApplication);
++  sWorkspaceActivationObserver = [[workspace.notificationCenter
++      addObserverForName:NSWorkspaceDidActivateApplicationNotification
++                  object:nil
++                   queue:nil
++              usingBlock:^(NSNotification* aNotification) {
++                RememberPreviousApplication(
++                    aNotification.userInfo[NSWorkspaceApplicationKey]);
 +              }] retain];
 +}
 +
@@ -49,7 +74,7 @@ index 7f07ace0cd..69a5a2ee8b 100644
  
  nsMacDockSupport::~nsMacDockSupport() {
    if (mDockTileWrapperView) {
-@@ -122,6 +147,82 @@ nsMacDockSupport::ActivateApplication(bool aIgnoreOtherApplications) {
+@@ -122,6 +172,97 @@ nsMacDockSupport::ActivateApplication(bool aIgnoreOtherApplications) {
    NS_OBJC_END_TRY_BLOCK_RETURN(NS_ERROR_FAILURE);
  }
  
@@ -85,8 +110,23 @@ index 7f07ace0cd..69a5a2ee8b 100644
 +nsMacDockSupport::HideApplication() {
 +  NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
 +
-+  [[NSApplication sharedApplication] hide:nil];
-+  return NS_OK;
++  NSRunningApplication* previousApplication =
++      [[sPreviousApplication retain] autorelease];
++  if (!previousApplication || previousApplication.terminated) {
++    return NS_OK;
++  }
++
++  if (@available(macOS 14.0, *)) {
++    [[NSApplication sharedApplication]
++        yieldActivationToApplication:previousApplication];
++    return [previousApplication activateWithOptions:0] ? NS_OK
++                                                       : NS_ERROR_FAILURE;
++  }
++
++  return [previousApplication
++             activateWithOptions:NSApplicationActivateIgnoringOtherApps]
++             ? NS_OK
++             : NS_ERROR_FAILURE;
 +
 +  NS_OBJC_END_TRY_BLOCK_RETURN(NS_ERROR_FAILURE);
 +}

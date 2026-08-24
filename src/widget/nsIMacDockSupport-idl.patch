@@ -29,8 +29,8 @@ index c7edfb5881..3553b4851b 100644
 +  readonly attribute long long millisecondsSinceApplicationActivated;
 +
 +  /**
-+   * Hide the application, exactly as the Hide menu item does. The application
-+   * the user was in before this one was activated becomes frontmost again.
++   * Return focus to the most recently frontmost application other than this
++   * one without changing this application's window visibility.
 +   */
 +  void hideApplication();
 +

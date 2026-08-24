@@ -1,0 +1,722 @@
+diff --git a/widget/nsIMacDockSupport.idl b/widget/nsIMacDockSupport.idl
+index c7edfb5881..3553b4851b 100644
+--- a/widget/nsIMacDockSupport.idl
++++ b/widget/nsIMacDockSupport.idl
+@@ -8,6 +8,7 @@ interface nsIStandaloneNativeMenu;
+ interface nsISVGPaintContext;
+ interface imgIContainer;
+ interface nsIFile;
++interface nsIBaseWindow;
+ 
+ [scriptable, uuid(2cbde069-b80d-4e63-b7c7-c4dfe4617028)]
+ interface nsIAppBundleLaunchOptions : nsISupports {
+@@ -44,6 +45,33 @@ interface nsIMacDockSupport : nsISupports
+    */
+   void activateApplication(in boolean aIgnoreOtherApplications);
+ 
++  /**
++   * True while this application is the frontmost one.
++   */
++  readonly attribute boolean isApplicationActive;
++
++  /**
++   * Milliseconds elapsed since the application last became the frontmost one,
++   * or -1 when it has not been seen becoming active yet.
++   *
++   * Lets a caller tell an activation the user asked for from one another
++   * application caused by handing us something to open.
++   */
++  readonly attribute long long millisecondsSinceApplicationActivated;
++
++  /**
++   * Hide the application, exactly as the Hide menu item does. The application
++   * the user was in before this one was activated becomes frontmost again.
++   */
++  void hideApplication();
++
++  /**
++   * Make a window follow the user between Spaces instead of pulling the user
++   * to it: the window joins whichever Space is active when the application is
++   * activated, rather than the system switching Spaces to reach the window.
++   */
++  void makeWindowJoinActiveSpace(in nsIBaseWindow aWindow);
++
+   /**
+    * Text used to badge the dock tile. Setting this will remove any badge image.
+    */
+diff --git a/widget/cocoa/nsMacDockSupport.mm b/widget/cocoa/nsMacDockSupport.mm
+index 7f07ace0cd..69a5a2ee8b 100644
+--- a/widget/cocoa/nsMacDockSupport.mm
++++ b/widget/cocoa/nsMacDockSupport.mm
+@@ -18,6 +18,8 @@
+ #include "mozilla/SVGImageContext.h"
+ #include "nsISVGPaintContext.h"
+ #include "nsIFile.h"
++#include "nsIBaseWindow.h"
++#include "nsIWidget.h"
+ 
+ NS_IMPL_ISUPPORTS(nsMacDockSupport, nsIMacDockSupport, nsITaskbarProgress)
+ 
+@@ -75,13 +77,36 @@ NS_IMPL_ISUPPORTS(nsMacDockSupport, nsIMacDockSupport, nsITaskbarProgress)
+ 
+ @end
+ 
++// Time, on the reference-date clock, at which the application last became the
++// frontmost one. Negative until we have seen an activation.
++static NSTimeInterval sApplicationActivatedAt = -1.0;
++static id sApplicationActivationObserver = nil;
++
++// Registered once, from the first nsMacDockSupport instance. Anything that
++// wants to know whether an activation came from the user has to be listening
++// before that activation happens, so callers instantiate this service early.
++static void EnsureApplicationActivationObserver() {
++  if (sApplicationActivationObserver) {
++    return;
++  }
++  sApplicationActivationObserver = [[[NSNotificationCenter defaultCenter]
++      addObserverForName:NSApplicationDidBecomeActiveNotification
++                  object:nil
++                   queue:nil
++              usingBlock:^(NSNotification*) {
++                sApplicationActivatedAt = [NSDate timeIntervalSinceReferenceDate];
++              }] retain];
++}
++
+ nsMacDockSupport::nsMacDockSupport()
+     : mHasBadgeImage(false),
+       mDockTileWrapperView(nil),
+       mDockBadgeView(nil),
+       mProgressDockOverlayView(nil),
+       mProgressState(STATE_NO_PROGRESS),
+-      mProgressFraction(0.0) {}
++      mProgressFraction(0.0) {
++  EnsureApplicationActivationObserver();
++}
+ 
+ nsMacDockSupport::~nsMacDockSupport() {
+   if (mDockTileWrapperView) {
+@@ -122,6 +147,82 @@ nsMacDockSupport::ActivateApplication(bool aIgnoreOtherApplications) {
+   NS_OBJC_END_TRY_BLOCK_RETURN(NS_ERROR_FAILURE);
+ }
+ 
++NS_IMETHODIMP
++nsMacDockSupport::GetIsApplicationActive(bool* aIsActive) {
++  NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
++
++  *aIsActive = [[NSApplication sharedApplication] isActive];
++  return NS_OK;
++
++  NS_OBJC_END_TRY_BLOCK_RETURN(NS_ERROR_FAILURE);
++}
++
++NS_IMETHODIMP
++nsMacDockSupport::GetMillisecondsSinceApplicationActivated(int64_t* aElapsed) {
++  NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
++
++  EnsureApplicationActivationObserver();
++  if (sApplicationActivatedAt < 0.0) {
++    *aElapsed = -1;
++    return NS_OK;
++  }
++
++  NSTimeInterval elapsed =
++      [NSDate timeIntervalSinceReferenceDate] - sApplicationActivatedAt;
++  *aElapsed = elapsed <= 0.0 ? 0 : (int64_t)(elapsed * 1000.0);
++  return NS_OK;
++
++  NS_OBJC_END_TRY_BLOCK_RETURN(NS_ERROR_FAILURE);
++}
++
++NS_IMETHODIMP
++nsMacDockSupport::HideApplication() {
++  NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
++
++  [[NSApplication sharedApplication] hide:nil];
++  return NS_OK;
++
++  NS_OBJC_END_TRY_BLOCK_RETURN(NS_ERROR_FAILURE);
++}
++
++NS_IMETHODIMP
++nsMacDockSupport::MakeWindowJoinActiveSpace(nsIBaseWindow* aWindow) {
++  NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
++
++  if (!aWindow) {
++    return NS_ERROR_INVALID_ARG;
++  }
++
++  nsCOMPtr<nsIWidget> widget = aWindow->GetMainWidget();
++  if (!widget) {
++    return NS_ERROR_FAILURE;
++  }
++
++  NSWindow* nativeWindow = (NSWindow*)widget->GetNativeData(NS_NATIVE_WINDOW);
++  if (!nativeWindow) {
++    return NS_ERROR_FAILURE;
++  }
++
++  // MoveToActiveSpace is the point of this: the window goes to the user rather
++  // than the user being taken to the window. A window that follows the user
++  // has no business taking a Space of its own, so native fullscreen is swapped
++  // for the auxiliary behaviour. All four fullscreen bits are set explicitly,
++  // the way nsCocoaWindow::SetSupportsNativeFullscreen does, because leaving
++  // any of them unset lets AppKit fall back to a heuristic that is not stable.
++  NSWindowCollectionBehavior behavior = [nativeWindow collectionBehavior];
++  behavior &= ~(NSWindowCollectionBehaviorFullScreenPrimary |
++                NSWindowCollectionBehaviorFullScreenAuxiliary |
++                NSWindowCollectionBehaviorFullScreenAllowsTiling |
++                NSWindowCollectionBehaviorFullScreenDisallowsTiling);
++  behavior |= NSWindowCollectionBehaviorMoveToActiveSpace |
++              NSWindowCollectionBehaviorFullScreenAuxiliary |
++              NSWindowCollectionBehaviorFullScreenDisallowsTiling;
++  [nativeWindow setCollectionBehavior:behavior];
++  return NS_OK;
++
++  NS_OBJC_END_TRY_BLOCK_RETURN(NS_ERROR_FAILURE);
++}
++
+ NS_IMETHODIMP
+ nsMacDockSupport::SetBadgeText(const nsAString& aBadgeText) {
+   NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
+diff --git a/browser/components/sessionstore/SessionStore.sys.mjs b/browser/components/sessionstore/SessionStore.sys.mjs
+index 11191a82a0..1cef7f739b 100644
+--- a/browser/components/sessionstore/SessionStore.sys.mjs
++++ b/browser/components/sessionstore/SessionStore.sys.mjs
+@@ -129,6 +129,9 @@ const TAB_EVENTS = [
+   "TabSplitViewActivate",
+   "SplitViewRemoved",
+   "SplitViewCreated",
++  "TabAddedToEssentials",
++  "TabRemovedFromEssentials",
++  "ZenWorkspaceDataChanged",
+ ];
+ 
+ const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+@@ -201,6 +204,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
+   TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
+   TabStateFlusher: "resource:///modules/sessionstore/TabStateFlusher.sys.mjs",
+   setTimeout: "resource://gre/modules/Timer.sys.mjs",
++  ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
++  ZenWindowSync: "resource:///modules/zen/ZenWindowSync.sys.mjs",
+ });
+ 
+ ChromeUtils.defineLazyGetter(lazy, "blankURI", () => {
+@@ -647,6 +652,13 @@ export var SessionStore = {
+     SessionStoreInternal.maybeDontRestoreTabs(aWindow);
+   },
+ 
++  recordClosedTabForOtherWindow(aTargetWindow, aTab) {
++    return SessionStoreInternal.recordClosedTabForOtherWindow(
++      aTargetWindow,
++      aTab
++    );
++  },
++
+   undoCloseWindow: function ss_undoCloseWindow(aIndex) {
+     return SessionStoreInternal.undoCloseWindow(aIndex);
+   },
+@@ -1300,10 +1312,7 @@ var SessionStoreInternal = {
+    */
+   get willAutoRestore() {
+     return (
+-      !PrivateBrowsingUtils.permanentPrivateBrowsing &&
+-      (Services.prefs.getBoolPref("browser.sessionstore.resume_session_once") ||
+-        Services.prefs.getIntPref("browser.startup.page") ==
+-          BROWSER_STARTUP_RESUME_SESSION)
++      true
+     );
+   },
+ 
+@@ -1990,6 +1999,9 @@ var SessionStoreInternal = {
+       case "TabPinned":
+       case "TabUnpinned":
+       case "SwapDocShells":
++      case "TabRemovedFromEssentials":
++      case "TabAddedToEssentials":
++      case "ZenWorkspaceDataChanged":
+         this.saveStateDelayed(win);
+         break;
+       case "TabGroupCreate":
+@@ -2099,6 +2111,20 @@ var SessionStoreInternal = {
+       this._windows[aWindow.__SSi].isTaskbarTab = true;
+     }
+ 
++    if (aWindow.document.documentElement.hasAttribute("zen-unsynced-window")) {
++      this._windows[aWindow.__SSi].isZenUnsynced = true;
++    }
++
++    // External-link standalone windows are transient: they hold one page the
++    // user has not filed anywhere yet. They are marked from the window object
++    // rather than from a chrome attribute, because that flag is set when the
++    // window is opened and so is already there no matter which of the
++    // browser-window-before-show observers runs first.
++    if (aWindow._zenStandaloneWindow) {
++      this._windows[aWindow.__SSi].isZenUnsynced = true;
++      this._windows[aWindow.__SSi].isZenStandalone = true;
++    }
++
+     if (lazy.AIWindow.isAIWindowActiveAndEnabled(aWindow)) {
+       this._windows[aWindow.__SSi].isAIWindow = true;
+     }
+@@ -2135,7 +2161,7 @@ var SessionStoreInternal = {
+     let isTaskbarTab = this._windows[aWindow.__SSi].isTaskbarTab;
+     // A regular window is not a private window, taskbar tab window, or popup window
+     let isRegularWindow =
+-      !isPrivateWindow && !isTaskbarTab && aWindow.toolbar.visible;
++      !isPrivateWindow && !isTaskbarTab && aWindow.toolbar.visible && !this._windows[aWindow.__SSi].isZenUnsynced;
+ 
+     // perform additional initialization when the first window is loading
+     if (lazy.RunState.isStopped) {
+@@ -2147,7 +2173,7 @@ var SessionStoreInternal = {
+         // to disk to NOW() to enforce a full interval before the next write.
+         lazy.SessionSaver.updateLastSaveTime();
+ 
+-        if (isPrivateWindow || isTaskbarTab) {
++        if (isPrivateWindow || isTaskbarTab || aWindow._zenStandaloneWindow || aWindow.document.documentElement.hasAttribute("zen-unsynced-window")) {
+           this._log.debug(
+             "initializeWindow, the window is private or a web app. Saving SessionStartup.state for possibly restoring later"
+           );
+@@ -2191,6 +2217,7 @@ var SessionStoreInternal = {
+           null,
+           "sessionstore-one-or-no-tab-restored"
+         );
++        lazy.ZenSessionStore.onNewEmptySession(aWindow);
+         this._deferredAllWindowsRestored.resolve();
+       }
+       // this window was opened by _openWindowWithState
+@@ -2240,7 +2267,6 @@ var SessionStoreInternal = {
+       if (closedWindowState) {
+         let newWindowState;
+         if (
+-          AppConstants.platform == "macosx" ||
+           !lazy.SessionStartup.willRestore()
+         ) {
+           // We want to split the window up into pinned tabs and unpinned tabs.
+@@ -2276,6 +2302,7 @@ var SessionStoreInternal = {
+         }
+ 
+         if (newWindowState) {
++          lazy.ZenSessionStore.onRestoringClosedWindow(newWindowState);
+           // Ensure that the window state isn't hidden
+           this._restoreCount = 1;
+           let state = { windows: [newWindowState] };
+@@ -2312,6 +2339,9 @@ var SessionStoreInternal = {
+       });
+       this._shouldRestoreLastSession = false;
+     }
++    else if (!aInitialState && isRegularWindow) {
++      lazy.ZenSessionStore.restoreNewWindow(aWindow, this);
++    }
+ 
+     if (this._restoreLastWindow && aWindow.toolbar.visible) {
+       // always reset (if not a popup window)
+@@ -2462,7 +2492,7 @@ var SessionStoreInternal = {
+ 
+     var tabbrowser = aWindow.gBrowser;
+ 
+-    let browsers = Array.from(tabbrowser.browsers);
++    let browsers = aWindow.gZenWorkspaces.allUsedBrowsers;
+ 
+     TAB_EVENTS.forEach(function (aEvent) {
+       tabbrowser.tabContainer.removeEventListener(aEvent, this, true);
+@@ -2513,7 +2543,7 @@ var SessionStoreInternal = {
+ 
+       let isLastRegularWindow =
+         Object.values(this._windows).filter(
+-          wData => !wData.isPrivate && !wData.isTaskbarTab
++          wData => !wData.isPrivate && !wData.isTaskbarTab && !wData.isZenUnsynced
+         ).length == 1;
+       this._log.debug(
+         `onClose, closing window isLastRegularWindow? ${isLastRegularWindow}`
+@@ -2570,8 +2600,8 @@ var SessionStoreInternal = {
+       // 2) Flush the window.
+       // 3) When the flush is complete, revisit our decision to store the window
+       //    in _closedWindows, and add/remove as necessary.
+-      if (!winData.isPrivate && !winData.isTaskbarTab) {
+-        this.maybeSaveClosedWindow(winData, isLastWindow);
++      if (!winData.isPrivate && !winData.isTaskbarTab && !winData.isZenUnsynced) {
++        this.maybeSaveClosedWindow(winData, isLastWindow, isLastRegularWindow);
+       }
+ 
+       completionPromise = lazy.TabStateFlusher.flushWindow(aWindow).then(() => {
+@@ -2591,8 +2621,9 @@ var SessionStoreInternal = {
+ 
+         // Save non-private windows if they have at
+         // least one saveable tab or are the last window.
+-        if (!winData.isPrivate && !winData.isTaskbarTab) {
+-          this.maybeSaveClosedWindow(winData, isLastWindow);
++        lazy.ZenWindowSync.on_WindowCloseAndBrowserFlushed(browsers);
++        if (!winData.isPrivate && !winData.isTaskbarTab && !winData.isZenUnsynced) {
++          this.maybeSaveClosedWindow(winData, isLastWindow, isLastRegularWindow);
+ 
+           if (!isLastWindow && winData.closedId > -1) {
+             this._addClosedAction(
+@@ -2668,7 +2699,7 @@ var SessionStoreInternal = {
+    *        to call this method again asynchronously (for example, after
+    *        a window flush).
+    */
+-  maybeSaveClosedWindow(winData, isLastWindow) {
++  maybeSaveClosedWindow(winData, isLastWindow, isLastRegularWindow = false) {
+     // Make sure SessionStore is still running, and make sure that we
+     // haven't chosen to forget this window.
+     if (
+@@ -2685,6 +2716,7 @@ var SessionStoreInternal = {
+       // _closedWindows from a previous call to this function.
+       let winIndex = this._closedWindows.indexOf(winData);
+       let alreadyStored = winIndex != -1;
++      lazy.ZenSessionStore.maybeSaveClosedWindow(winData, isLastRegularWindow);
+       // If sidebar command is truthy, i.e. sidebar is open, store sidebar settings
+       let shouldStore = hasSaveableTabs || isLastWindow;
+ 
+@@ -3507,7 +3539,7 @@ var SessionStoreInternal = {
+     if (!isPrivateWindow && tabState.isPrivate) {
+       return;
+     }
+-    if (aTab == aWindow.FirefoxViewHandler.tab) {
++    if (aTab == aWindow.FirefoxViewHandler.tab || aTab.hasAttribute("zen-empty-tab")) {
+       return;
+     }
+ 
+@@ -3682,6 +3714,61 @@ var SessionStoreInternal = {
+    * @param {boolean} [saveAction=true]
+    *   Whether or not to add an action to the closed actions stack on save.
+    */
++  /**
++   * Records a tab as a closed tab of a window it never belonged to.
++   *
++   * Standalone external-link windows are not part of the session, so nothing
++   * of them survives their own close. This lets the page they were showing be
++   * handed to a normal window instead, where undo-close-tab reopens it as an
++   * ordinary tab in whichever space is current.
++   *
++   * @param {Window} aTargetWindow
++   *        The window that should own the closed tab.
++   * @param {MozTabbrowserTab} aTab
++   *        The tab being closed, still live.
++   * @returns {boolean} True when the tab was recorded.
++   */
++  recordClosedTabForOtherWindow(aTargetWindow, aTab) {
++    if (this._max_tabs_undo == 0 || !aTargetWindow?.__SSi) {
++      return false;
++    }
++
++    let winData = this._windows[aTargetWindow.__SSi];
++    if (!winData || !aTab?.linkedBrowser) {
++      return false;
++    }
++
++    let tabState = lazy.TabState.collect(aTab, TAB_CUSTOM_VALUES.get(aTab));
++    if (tabState.isPrivate || !this._shouldSaveTabState(tabState)) {
++      return false;
++    }
++
++    // The tab is arriving from a window with its own, unrelated notion of
++    // spaces, pinning and syncing, so it is stripped back to a plain tab of
++    // the space that is current when it is restored.
++    tabState.pinned = false;
++    tabState.zenEssential = false;
++    tabState.zenSyncId = null;
++    tabState.zenIsGlance = false;
++    tabState.zenGlanceId = null;
++    tabState.zenHasStaticLabel = false;
++    tabState.zenWorkspace = null;
++    tabState.groupId = null;
++
++    this.saveClosedTabData(winData, winData._closedTabs, {
++      permanentKey: aTab.linkedBrowser.permanentKey,
++      state: tabState,
++      title: aTab.label,
++      image: aTab.ownerGlobal.gBrowser.getIcon(aTab),
++      pos: 0,
++      closedAt: Date.now(),
++      closedInGroup: false,
++      closedInTabGroupId: null,
++      sourceWindowId: aTargetWindow.__SSi,
++    });
++    return true;
++  },
++
+   saveClosedTabData(winData, closedTabs, tabData, saveAction = true) {
+     // Find the index of the first tab in the list
+     // of closed tabs that was closed before our tab.
+@@ -4246,6 +4333,12 @@ var SessionStoreInternal = {
+         Math.min(tabState.index, tabState.entries.length)
+       );
+       tabState.pinned = false;
++      tabState.zenEssential = false;
++      tabState.zenSyncId = null;
++      tabState.zenIsGlance = false;
++      tabState.zenGlanceId = null;
++      tabState.zenHasStaticLabel = false;
++      tabState.zenWorkspace = aWindow.gZenWorkspaces.activeWorkspace;
+ 
+       if (inBackground === false) {
+         aWindow.gBrowser.selectedTab = newTab;
+@@ -4679,6 +4772,8 @@ var SessionStoreInternal = {
+       // Append the tab if we're opening into a different window,
+       tabIndex: aSource == aTargetWindow ? pos : Infinity,
+       pinned: state.pinned,
++      essential: state.zenEssential,
++      zenWorkspaceId: state.zenWorkspace,
+       userContextId: state.userContextId,
+       skipLoad: true,
+       preferredRemoteType,
+@@ -5176,9 +5271,10 @@ var SessionStoreInternal = {
+       if (activePageData.title && activePageData.title != activePageData.url) {
+         win.gBrowser.setInitialTabTitle(tab, activePageData.title, {
+           isContentTitle: true,
++          _zenChangeLabelFlag: true,
+         });
+       } else {
+-        win.gBrowser.setInitialTabTitle(tab, activePageData.url);
++        win.gBrowser.setInitialTabTitle(tab, activePageData.url, { _zenChangeLabelFlag: true });
+       }
+     }
+ 
+@@ -5543,7 +5639,7 @@ var SessionStoreInternal = {
+ 
+     for (let i = tabbrowser.pinnedTabCount; i < tabbrowser.tabs.length; i++) {
+       let tab = tabbrowser.tabs[i];
+-      if (homePages.includes(tab.linkedBrowser.currentURI.spec)) {
++      if (homePages.includes(tab.linkedBrowser.currentURI.spec) && !tab.hasAttribute("zen-empty-tab")) {
+         removableTabs.push(tab);
+       }
+     }
+@@ -5656,8 +5752,9 @@ var SessionStoreInternal = {
+ 
+     // collect the data for all windows
+     for (ix in this._windows) {
+-      if (this._windows[ix]._restoring || this._windows[ix].isTaskbarTab) {
+-        // window data is still in _statesToRestore
++      if (this._windows[ix]._restoring || this._windows[ix].isZenStandalone || this._windows[ix].isTaskbarTab && !this._windows[ix].isZenUnsynced) {
++        // window data is still in _statesToRestore, or belongs to a standalone
++        // window, which is never part of a session
+         continue;
+       }
+       total.push(this._windows[ix]);
+@@ -5800,11 +5897,12 @@ var SessionStoreInternal = {
+     }
+ 
+     let tabbrowser = aWindow.gBrowser;
+-    let tabs = tabbrowser.tabs;
++    let tabs = aWindow.gZenWorkspaces.allStoredTabs;
+     /** @type {WindowStateData} */
+     let winData = this._windows[aWindow.__SSi];
+     let tabsData = (winData.tabs = []);
+ 
++    winData.splitViewData = aWindow.gZenViewSplitter?.storeDataForSessionStore();
+     // update the internal state data for this window
+     for (let tab of tabs) {
+       if (tab == aWindow.FirefoxViewHandler.tab) {
+@@ -5815,6 +5913,9 @@ var SessionStoreInternal = {
+       tabsData.push(tabData);
+     }
+ 
++    winData.folders = aWindow.gZenFolders?.storeDataForSessionStore() || [];
++    winData.activeZenSpace = aWindow.gZenWorkspaces?.activeWorkspace || null;
++    winData.spaces = aWindow.gZenWorkspaces?.getWorkspacesForSessionStore();
+     // update tab group state for this window
+     winData.groups = [];
+     for (let tabGroup of aWindow.gBrowser.tabGroups) {
+@@ -5831,7 +5932,7 @@ var SessionStoreInternal = {
+     // a window is closed, point to the first item in the tab strip instead (it will never be the Firefox View tab,
+     // since it's only inserted into the tab strip after it's selected).
+     if (aWindow.FirefoxViewHandler.tab?.selected) {
+-      selectedIndex = 1;
++      selectedIndex = 0;
+       winData.title = tabbrowser.tabs[0].label;
+     }
+     winData.selected = selectedIndex;
+@@ -6033,8 +6134,8 @@ var SessionStoreInternal = {
+     // selectTab represents.
+     let selectTab = 0;
+     if (overwriteTabs) {
+-      selectTab = parseInt(winData.selected || 1, 10);
+-      selectTab = Math.max(selectTab, 1);
++      selectTab = parseInt(winData.selected || 0, 10);
++      selectTab = Math.max(selectTab, 0);
+       selectTab = Math.min(selectTab, winData.tabs.length);
+     }
+ 
+@@ -6056,6 +6157,7 @@ var SessionStoreInternal = {
+     if (overwriteTabs) {
+       for (let i = tabbrowser.browsers.length - 1; i >= 0; i--) {
+         if (!tabbrowser.tabs[i].selected) {
++          aWindow.gZenWorkspaces._shouldOverrideTabs = true;
+           tabbrowser.removeTab(tabbrowser.tabs[i]);
+         }
+       }
+@@ -6090,6 +6192,12 @@ var SessionStoreInternal = {
+         savedTabGroup => !openTabGroupIdsInWindow.has(savedTabGroup.id)
+       );
+     }
++    if (winData.isZenUnsynced) {
++      aWindow.document.documentElement.setAttribute("zen-unsynced-window", "true");
++    }
++    aWindow.gZenFolders?.restoreDataFromSessionStore(winData.folders);
++    aWindow.gZenWorkspaces?.restoreWorkspacesFromSessionStore(winData);
++    aWindow.gZenViewSplitter?.restoreDataFromSessionStore(winData.splitViewData);
+ 
+     // Move the originally open tabs to the end.
+     if (initialTabs) {
+@@ -6656,6 +6764,25 @@ var SessionStoreInternal = {
+ 
+     // Most of tabData has been restored, now continue with restoring
+     // attributes that may trigger external events.
++    if (tabData.zenEssential) {
++      tab.setAttribute("zen-essential", "true");
++      tabData.pinned = true; // Essential tabs are always pinned.
++    }
++    if (tabData.zenIsEmpty) {
++      tab.setAttribute("zen-empty-tab", "true");
++    }
++    if (typeof tabData.zenStaticLabel === "string") {
++      tab.zenStaticLabel = tabData.zenStaticLabel;
++    }
++    if (tabData.zenHasStaticIcon && tabData.image) {
++      tab.zenStaticIcon = tabData.image;
++    }
++    if (tabData.zenDefaultUserContextId) {
++      tab.setAttribute("zenDefaultUserContextId", true);
++    }
++    if (tabData.zenWorkspace) {
++      tab.setAttribute("zen-workspace-id", tabData.zenWorkspace);
++    }
+ 
+     if (tabData.pinned) {
+       tabbrowser.pinTab(tab);
+@@ -6838,6 +6965,9 @@ var SessionStoreInternal = {
+         aWindow.gURLBar.readOnly = false;
+       }
+     }
++    if (aWinData.isZenUnsynced) {
++      this._windows[aWindow.__SSi].isZenUnsynced = true;
++    }
+ 
+     let promiseParts = Promise.withResolvers();
+     aWindow.setTimeout(() => {
+@@ -7633,7 +7763,7 @@ var SessionStoreInternal = {
+ 
+       let groupsToSave = new Map();
+       for (let tIndex = 0; tIndex < window.tabs.length; ) {
+-        if (window.tabs[tIndex].pinned) {
++        if (window.tabs[tIndex].pinned && false) {
+           // Adjust window.selected
+           if (tIndex + 1 < window.selected) {
+             window.selected -= 1;
+@@ -7648,7 +7778,7 @@ var SessionStoreInternal = {
+           );
+           // We don't want to increment tIndex here.
+           continue;
+-        } else if (window.tabs[tIndex].groupId) {
++        } else if (window.tabs[tIndex].groupId && false) {
+           // Convert any open groups into saved groups.
+           let groupStateToSave = window.groups.find(
+             groupState => groupState.id == window.tabs[tIndex].groupId
+@@ -8193,7 +8323,6 @@ var SessionStoreInternal = {
+     timer.initWithCallback(
+       function () {
+         if (beats <= 0) {
+-          this._log.debug(`looseTimer of ${delay} timed out`);
+           Glean.sessionRestore.shutdownFlushAllOutcomes.timed_out.add(1);
+           deferred.resolve();
+         }
+@@ -8671,6 +8800,7 @@ var SessionStoreInternal = {
+     if (
+       !savedTabGroupState.tabs.length ||
+       this.getSavedTabGroup(savedTabGroupState.id)
++      && false
+     ) {
+       return;
+     }
+diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/components/BrowserContentHandler.sys.mjs
+index 64c325fc46..4d0ce09c07 100644
+--- a/browser/components/BrowserContentHandler.sys.mjs
++++ b/browser/components/BrowserContentHandler.sys.mjs
+@@ -27,6 +27,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
+   SpecialMessageActions:
+     "resource://messaging-system/lib/SpecialMessageActions.sys.mjs",
+   UpdatePing: "resource://gre/modules/UpdatePing.sys.mjs",
++  gZenStandaloneWindowManager:
++    "resource:///modules/zen/standalonewindow/ZenStandaloneWindowManager.sys.mjs",
+ });
+ 
+ /**
+@@ -641,6 +643,28 @@ nsBrowserContentHandler.prototype = {
+       }
+     }
+ 
++    try {
++      let blankWindowParam = cmdLine.handleFlagWithParam("blank-window", false);
++      if (blankWindowParam !== null) {
++        let { uri, principal } = resolveURIInternal(cmdLine, blankWindowParam);
++        if (shouldLoadURI(uri)) {
++          let win = openBrowserWindow(cmdLine, principal, uri.spec);
++          win._zenStartupSyncFlag = 'unsynced';
++          cmdLine.preventDefault = true;
++        }
++      }
++    } catch (e) {
++      if (e.result != Cr.NS_ERROR_INVALID_ARG) {
++        throw e;
++      }
++      if (cmdLine.handleFlag("blank-window", false)) {
++        let win = openBrowserWindow(cmdLine, null, null);
++        win._zenStartupSyncFlag = 'unsynced';
++        cmdLine.preventDefault = true;
++      }
++    }
++
++
+     var searchParam = cmdLine.handleFlagWithParam("search", false);
+     if (searchParam) {
+       doSearch(searchParam, cmdLine);
+@@ -710,6 +734,7 @@ nsBrowserContentHandler.prototype = {
+       "  --new-window <url> Open <url> in a new window.\n" +
+       "  --new-tab <url>    Open <url> in a new tab.\n" +
+       "  --private-window [<url>] Open <url> in a new private window.\n";
++    info += "  --blank-window [<url>]  Open the new blank window.\n";
+     if (AppConstants.platform == "win") {
+       info += "  --preferences      Open Options dialog.\n";
+     } else {
+@@ -1311,6 +1336,17 @@ function handURIToExistingBrowser(
+     return;
+   }
+ 
++  // There is no window to load it in. An external link does not need one: it
++  // can have a standalone window of its own.
++  if (
++    !forcePrivate &&
++    lazy.gZenStandaloneWindowManager.openExternalLinksInStandaloneWindows([
++      uri.spec,
++    ])
++  ) {
++    return;
++  }
++
+   // if we couldn't load it in an existing window, open a new one
+   openBrowserWindow(cmdLine, triggeringPrincipal, uri.spec, null, forcePrivate);
+ }
+@@ -1717,6 +1753,22 @@ nsDefaultCommandLineHandler.prototype = {
+       // Can't open multiple URLs without using system principal.
+       var URLlist = urilist.filter(shouldLoadURI).map(u => u.spec);
+       if (URLlist.length) {
++        // Reached when there is no browser window to hand the URL to: either
++        // the application is starting up, or every window has been closed.
++        // A standalone window is a whole window, so it can be the first one,
++        // and the session is left for whenever the user opens Zen properly.
++        if (
++          lazy.gZenStandaloneWindowManager.openExternalLinksInStandaloneWindows(
++            URLlist
++          )
++        ) {
++          let blankWindow = Services.wm.getMostRecentWindow("navigator:blank");
++          if (blankWindow) {
++            blankWindow.close();
++          }
++          cmdLine.preventDefault = true;
++          return;
++        }
+         openBrowserWindow(cmdLine, lazy.gSystemPrincipal, URLlist);
+       }
+     } else if (!cmdLine.preventDefault) {

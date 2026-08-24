@@ -1,0 +1,314 @@
+
+> zen-desktop@1.0.0 build:ui
+> surfer build --ui # surfer build - build fast
+
+00:00:00 Dynamic config 'brand not set, defaulting to 'unofficial'
+00:00:00 Applying mozconfig...
+00:00:00 Dynamic config 'brand not set, defaulting to 'unofficial'
+00:00:00 Dynamic config 'buildMode not set, defaulting to 'dev'
+00:00:00 Dynamic config 'brand not set, defaulting to 'unofficial'
+00:00:00 Dynamic config 'brand not set, defaulting to 'unofficial'
+00:00:00 Dynamic config 'buildMode not set, defaulting to 'dev'
+00:00:00 Building config based on a dev mode
+00:00:00 Config for this `macos` build:
+00:00:00 	--with-app-name=zen
+00:00:00 	--with-app-basename=Zen
+00:00:00 	--with-l10n-base="${topsrcdir}/browser/locales"
+00:00:00 	MOZ_APP_BASENAME=Zen
+00:00:00 	MOZ_BRANDING_DIRECTORY=browser/branding/unofficial
+00:00:00 	MOZ_OFFICIAL_BRANDING_DIRECTORY=browser/branding/unofficial
+00:00:00 	--with-distribution-id=app.zen-browser
+00:00:00 	MOZ_SOURCE_REPO=https://github.com/zen-browser/desktop
+00:00:00 	MOZ_SOURCE_CHANGESET=99453616fa0ab027e5c95c6ed25de710cebf09cf
+00:00:00 	MOZ_INCLUDE_SOURCE_INFO=1
+00:00:00 	--enable-application=browser
+00:00:00 	--enable-jxl
+00:00:00 	--with-unsigned-addon-scopes=app,system
+00:00:00 	MOZ_DATA_REPORTING=
+00:00:00 	MOZ_SERVICES_HEALTHREPORT=
+00:00:00 	MOZ_TELEMETRY_REPORTING=
+00:00:00 	MOZ_DATA_REPORTING=
+00:00:00 	MOZ_TELEMETRY_REPORTING=
+00:00:00 	MOZ_REQUIRE_SIGNING=
+00:00:00 	MOZ_REQUIRE_SIGNING=
+00:00:00 	--disable-dmd
+00:00:00 	--enable-eme=widevine
+00:00:00 	--disable-debug
+00:00:00 	--with-branding=browser/branding/unofficial
+00:00:00 	--enable-update-channel=unofficial
+00:00:00 	ACCEPTED_MAR_CHANNEL_IDS=unofficial
+00:00:00 	MAR_CHANNEL_ID=unofficial
+00:00:00 	ACCEPTED_MAR_CHANNEL_IDS=unofficial
+00:00:00 	ZEN_FIREFOX_VERSION=153.0.3
+00:00:00 	MOZ_APPUPDATE_HOST=updates.zen-browser.app
+00:00:00 	MOZ_MACBUNDLE_NAME="Nightly.app"
+00:00:00 Starting build...
+00:00:00 Building for "macos"...
+00:00:00 Dynamic config 'brand not set, defaulting to 'unofficial'
+00:00:00 Dynamic config 'brand not set, defaulting to 'unofficial'
+00:00:02 W Warnings in third-party code are being suppressed from the terminal output. Use --show-all-warnings or --verbose to see them.
+00:00:02 W All warnings will still be dumped to /Users/thomascottereau/Documents/lifehub/dev/tools/zen2/channa/engine/obj-aarch64-apple-darwin/.mozbuild/logs/build/warnings_*.json at the end of the build.
+00:00:02 Creating the 'build' site at /Users/thomascottereau/.mozbuild/srcdirs/engine-e671b14bc0da/_virtualenvs/build
+00:00:02 Clobber not needed.
+00:00:02 /Users/thomascottereau/Documents/lifehub/dev/tools/zen2/channa/engine/obj-aarch64-apple-darwin/config.status is out of date with respect to /Users/thomascottereau/Documents/lifehub/dev/tools/zen2/channa/engine/browser/config/version.txt
+00:00:03 Using Python 3.14.4 from /Users/thomascottereau/.mozbuild/srcdirs/engine-e671b14bc0da/_virtualenvs/build/bin/python
+00:00:03 Adding configure options from /Users/thomascottereau/Documents/lifehub/dev/tools/zen2/channa/engine/mozconfig
+00:00:03   --with-app-name=zen
+00:00:03   --with-app-basename=Zen
+00:00:03   --with-l10n-base=/Users/thomascottereau/Documents/lifehub/dev/tools/zen2/channa/engine/browser/locales
+00:00:03   --with-distribution-id=app.zen-browser
+00:00:03   --enable-application=browser
+00:00:03   --enable-jxl
+00:00:03   --with-unsigned-addon-scopes=app,system
+00:00:03   MOZ_DATA_REPORTING=
+00:00:03   MOZ_TELEMETRY_REPORTING=
+00:00:03   --disable-dmd
+00:00:03   --enable-eme=widevine
+00:00:03   --target=aarch64-apple-darwin
+00:00:03   --disable-debug
+00:00:03   --with-branding=browser/branding/unofficial
+00:00:03   --enable-update-channel=unofficial
+00:00:03   MOZ_APP_BASENAME=Zen
+00:00:03   MOZ_INCLUDE_SOURCE_INFO=1
+00:00:03   MOZ_SOURCE_REPO=https://github.com/zen-browser/desktop
+00:00:03   ZEN_FIREFOX_VERSION=153.0.3
+00:00:03   MOZ_OFFICIAL_BRANDING_DIRECTORY=browser/branding/unofficial
+00:00:03   MOZ_MACBUNDLE_NAME=Nightly.app
+00:00:03   MOZ_SOURCE_CHANGESET=99453616fa0ab027e5c95c6ed25de710cebf09cf
+00:00:03   MOZ_REQUIRE_SIGNING=
+00:00:03   MOZ_BRANDING_DIRECTORY=browser/branding/unofficial
+00:00:03   MOZ_APPUPDATE_HOST=updates.zen-browser.app
+00:00:03 checking for vcs source checkout... git
+00:00:03 checking for a shell... /bin/sh
+00:00:03 checking for host system type... aarch64-apple-darwin25.6.0
+00:00:03 checking for target system type... aarch64-apple-darwin
+00:00:03 checking whether cross compiling... yes
+00:00:03 checking if configuration file confvars.sh exists... /Users/thomascottereau/Documents/lifehub/dev/tools/zen2/channa/engine/browser/confvars.sh
+00:00:03 checking if configuration file configure.sh exists... /Users/thomascottereau/Documents/lifehub/dev/tools/zen2/channa/engine/browser/branding/unofficial/configure.sh
+00:00:03 checking for the target C compiler... /Users/thomascottereau/.mozbuild/clang/bin/clang
+00:00:03 checking for ccache... not found
+00:00:03 Using target sysroot in /Users/thomascottereau/.mozbuild/MacOSX26.5.sdk
+00:00:04 checking whether the target C compiler can be used... yes
+00:00:04 checking for the target C++ compiler... /Users/thomascottereau/.mozbuild/clang/bin/clang++
+00:00:04 checking whether the target C++ compiler can be used... yes
+00:00:04 checking for unwind.h... yes
+00:00:05 checking for target linker... lld
+00:00:05 checking for _Unwind_Backtrace... yes
+00:00:05 checking for Python 3... /Users/thomascottereau/.mozbuild/srcdirs/engine-e671b14bc0da/_virtualenvs/build/bin/python (3.14.4)
+00:00:05 checking for git... /usr/bin/git
+00:00:05 checking for Git version... 2.50.1 (Apple Git-155)
+00:00:05 Using host sysroot in /Users/thomascottereau/.mozbuild/MacOSX26.5.sdk
+00:00:05 checking the target C compiler version... 21.1.8
+00:00:05 checking the target C compiler works... yes
+00:00:05 checking the target C++ compiler version... 21.1.8
+00:00:05 checking the target C++ compiler works... yes
+00:00:05 checking for the host C compiler... /Users/thomascottereau/.mozbuild/clang/bin/clang
+00:00:05 checking whether the host C compiler can be used... yes
+00:00:05 checking the host C compiler version... 21.1.8
+00:00:05 checking the host C compiler works... yes
+00:00:05 checking for the host C++ compiler... /Users/thomascottereau/.mozbuild/clang/bin/clang++
+00:00:05 checking whether the host C++ compiler can be used... yes
+00:00:05 checking the host C++ compiler version... 21.1.8
+00:00:05 checking the host C++ compiler works... yes
+00:00:05 checking for host linker... lld
+00:00:05 checking for 64-bit OS... yes
+00:00:05 checking for __thread keyword for TLS variables... yes
+00:00:05 checking for the assembler... /Users/thomascottereau/.mozbuild/clang/bin/clang
+00:00:05 checking for llvm-objdump... /Users/thomascottereau/.mozbuild/clang/bin/llvm-objdump
+00:00:05 checking for ar... /Users/thomascottereau/.mozbuild/clang/bin/llvm-ar
+00:00:05 checking whether ar supports response files... yes
+00:00:05 checking for host_ar... /Users/thomascottereau/.mozbuild/clang/bin/llvm-ar
+00:00:05 checking for i8mm target feature... yes
+00:00:05 checking for ARM SVE2 target feature... yes
+00:00:05 checking for ARM dotprod target feature... yes
+00:00:05 checking for strndup... yes
+00:00:05 checking for posix_memalign... yes
+00:00:05 checking for memalign... no
+00:00:05 checking for malloc_usable_size... no
+00:00:05 checking for malloc.h... no
+00:00:05 checking for malloc_np.h... no
+00:00:05 checking for malloc/malloc.h... yes
+00:00:05 checking for stdint.h... yes
+00:00:05 checking for inttypes.h... yes
+00:00:05 checking for alloca.h... yes
+00:00:05 checking for sys/byteorder.h... no
+00:00:05 checking for getopt.h... yes
+00:00:05 checking for unistd.h... yes
+00:00:05 checking for nl_types.h... yes
+00:00:05 checking for cpuid.h... no
+00:00:05 checking for fts.h... yes
+00:00:05 checking for sys/statvfs.h... yes
+00:00:05 checking for sys/statfs.h... no
+00:00:05 checking for sys/vfs.h... no
+00:00:05 checking for sys/mount.h... yes
+00:00:05 checking for sys/quota.h... no
+00:00:05 checking for sys/queue.h... yes
+00:00:05 checking for sys/types.h... yes
+00:00:05 checking for netinet/in.h... yes
+00:00:05 checking for byteswap.h... no
+00:00:05 checking for memfd_create in sys/mman.h... no
+00:00:05 checking for clock_gettime(CLOCK_MONOTONIC)... yes
+00:00:05 checking for res_ninit()... no
+00:00:05 checking for dladdr... yes
+00:00:05 checking for gethostbyname_r in -lc_r... no
+00:00:05 checking for socket in -lsocket... no
+00:00:05 checking for pthread.h... yes
+00:00:05 checking whether the C compiler supports -pthread... yes
+00:00:05 checking whether 64-bits std::atomic requires -latomic... no
+00:00:05 checking whether the C++ compiler supports -Wdeprecated-literal-operator... yes
+00:00:05 checking whether the C compiler supports -Winvalid-utf8... yes
+00:00:05 checking whether the C++ compiler supports -Winvalid-utf8... yes
+00:00:05 checking whether the C compiler supports -Wduplicate-method-arg... yes
+00:00:05 checking whether the C++ compiler supports -Wduplicate-method-arg... yes
+00:00:05 checking whether the C compiler supports -Wduplicate-method-match... yes
+00:00:05 checking whether the C++ compiler supports -Wduplicate-method-match... yes
+00:00:05 checking whether the C compiler supports -Wmissing-method-return-type... yes
+00:00:05 checking whether the C++ compiler supports -Wmissing-method-return-type... yes
+00:00:05 checking whether the C compiler supports -Wobjc-signed-char-bool... yes
+00:00:05 checking whether the C++ compiler supports -Wobjc-signed-char-bool... yes
+00:00:05 checking whether the C compiler supports -Wsemicolon-before-method-body... yes
+00:00:05 checking whether the C++ compiler supports -Wsemicolon-before-method-body... yes
+00:00:05 checking whether the C compiler supports -Wsuper-class-method-mismatch... yes
+00:00:05 checking whether the C++ compiler supports -Wsuper-class-method-mismatch... yes
+00:00:05 checking whether the C compiler supports -Wformat... yes
+00:00:05 checking whether the C++ compiler supports -Wformat... yes
+00:00:05 checking whether the C++ compiler supports -fno-sized-deallocation... yes
+00:00:05 checking whether the C++ compiler supports -fno-aligned-new... yes
+00:00:05 checking whether the C compiler supports -fdiagnostics-absolute-paths... yes
+00:00:05 checking whether the C++ compiler supports -fdiagnostics-absolute-paths... yes
+00:00:05 checking whether the C linker supports -Wl,--build-id=sha1... no
+00:00:05 checking whether the C assembler supports -Wa,--noexecstack... yes
+00:00:05 checking whether the C linker supports -Wl,-z,noexecstack... no
+00:00:05 checking whether the C linker supports -Wl,-z,text... no
+00:00:05 checking whether the C linker supports -Wl,-z,relro... no
+00:00:05 checking whether the C linker supports -Wl,-z,now... no
+00:00:05 checking whether the C linker supports -Wl,-z,nocopyreloc... no
+00:00:05 checking whether the C linker supports -Wl,-dead_strip... yes
+00:00:05 checking whether the C assembler supports -fPIC... yes
+00:00:05 checking whether the C compiler supports -fPIC... yes
+00:00:05 checking whether the C++ compiler supports -fPIC... yes
+00:00:05 checking what kind of list files are supported by the linker... linkerlist
+00:00:05 checking for llvm_profdata... /Users/thomascottereau/.mozbuild/clang/bin/llvm-profdata
+00:00:05 checking for rustc... /Users/thomascottereau/.cargo/bin/rustc
+00:00:05 checking for cargo... /Users/thomascottereau/.cargo/bin/cargo
+00:00:07 Actually using '/Users/thomascottereau/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc'
+00:00:07 Actually using '/Users/thomascottereau/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo'
+00:00:07 checking rustc version... 1.91.0
+00:00:07 checking cargo version... 1.91.0
+00:00:07 checking for rust host triplet... aarch64-apple-darwin
+00:00:07 checking for rust target triplet... aarch64-apple-darwin
+00:00:07 checking for rustdoc... /Users/thomascottereau/.cargo/bin/rustdoc
+00:00:07 checking for cbindgen... /Users/thomascottereau/.mozbuild/cbindgen/cbindgen
+00:00:07 checking for rustfmt... /Users/thomascottereau/.cargo/bin/rustfmt
+00:00:07 checking for clang for bindgen... /Users/thomascottereau/.mozbuild/clang/bin/clang++
+00:00:08 checking for libclang for bindgen... /Users/thomascottereau/.mozbuild/clang/lib/libclang.dylib
+00:00:08 checking that libclang is new enough... yes
+00:00:08 checking bindgen cflags... ['-x', 'c++', '-fno-sized-deallocation', '-fno-aligned-new', '-DTRACING=1', '-DIMPL_LIBXUL', '-DMOZILLA_INTERNAL_API', '-DRUST_BINDGEN', '-isysroot', '/Users/thomascottereau/.mozbuild/MacOSX26.5.sdk', '-mmacosx-version-min=11.0', '-stdlib=libc++', '-std=gnu++20']
+00:00:08 checking for tm_zone and tm_gmtoff in struct tm... yes
+00:00:08 checking for getpagesize... yes
+00:00:08 checking for gmtime_r... yes
+00:00:08 checking for localtime_r... yes
+00:00:08 checking for gettid... no
+00:00:08 checking for setpriority... yes
+00:00:08 checking for syscall... yes
+00:00:08 checking for getc_unlocked... yes
+00:00:08 checking for pthread_getname_np... yes
+00:00:08 checking for pthread_get_name_np... no
+00:00:08 checking for nl_langinfo and CODESET... yes
+00:00:08 checking for __cxa_demangle... yes
+00:00:08 checking for _getc_nolock... no
+00:00:08 checking for localeconv... yes
+00:00:08 checking for nodejs... /Users/thomascottereau/.mozbuild/node/bin/node (22.16.0)
+00:00:08 checking for tar... /opt/homebrew/bin/gtar
+00:00:08 checking for unzip... /usr/bin/unzip
+00:00:08 checking for the Mozilla API key... no
+00:00:08 checking for the Google Location Service API key... no
+00:00:08 checking for the Google Safebrowsing API key... no
+00:00:08 checking for the Bing API key... no
+00:00:08 checking for the Adjust SDK key... no
+00:00:08 checking for the Leanplum SDK key... no
+00:00:08 checking for the Pocket API key... no
+00:00:08 checking for stat64... yes
+00:00:08 checking for lstat64... yes
+00:00:08 checking for truncate64... no
+00:00:08 checking for statvfs64... no
+00:00:08 checking for statvfs... yes
+00:00:08 checking for statfs64... yes
+00:00:08 checking for statfs... yes
+00:00:08 checking for lutimes... yes
+00:00:08 checking for posix_fadvise... no
+00:00:08 checking for posix_fallocate... no
+00:00:08 checking for eventfd... no
+00:00:08 checking for arc4random... yes
+00:00:08 checking for arc4random_buf... yes
+00:00:08 checking for mallinfo... no
+00:00:08 checking for sys/ioccom.h... yes
+00:00:08 checking for execinfo.h... yes
+00:00:08 checking for sys/single_threaded.h... no
+00:00:08 checking for vld1_s16_x3 in arm_neon.h... yes
+00:00:08 checking for vld1_u16_x2 in arm_neon.h... yes
+00:00:08 checking for vld1q_u8_x4 in arm_neon.h... yes
+00:00:08 Using wasi sysroot in /Users/thomascottereau/.mozbuild/sysroot-wasm32-wasi
+00:00:08 checking for the wasm C compiler... /Users/thomascottereau/.mozbuild/clang/bin/clang
+00:00:08 checking whether the wasm C compiler can be used... yes
+00:00:08 checking the wasm C compiler version... 21.1.8
+00:00:08 checking the wasm C compiler works... yes
+00:00:08 checking the wasm C compiler can find wasi headers... yes
+00:00:08 checking the wasm C linker can find wasi libraries... yes
+00:00:08 checking for the wasm C++ compiler... /Users/thomascottereau/.mozbuild/clang/bin/clang++
+00:00:08 checking whether the wasm C++ compiler can be used... yes
+00:00:08 checking the wasm C++ compiler version... 21.1.8
+00:00:08 checking the wasm C++ compiler works... yes
+00:00:08 checking the wasm C++ compiler can find wasi headers... yes
+00:00:08 checking the wasm C++ linker can find wasi libraries... yes
+00:00:08 checking for clock() in wasi sysroot... no
+00:00:08 checking for emulated clock() in wasi sysroot... yes
+00:00:08 checking for dump_syms... /Users/thomascottereau/.mozbuild/dump_syms/dump_syms
+00:00:08 checking for sin_len in struct sockaddr_in... yes
+00:00:08 checking for sin_len6 in struct sockaddr_in6... yes
+00:00:08 checking for sa_len in struct sockaddr... yes
+00:00:08 checking for pthread_cond_timedwait_monotonic_np... no
+00:00:08 checking ONNX install path... /Users/thomascottereau/.mozbuild/onnxruntime-aarch64-apple-darwin/libonnxruntime.dylib
+00:00:08 checking for valid C compiler optimization flags... yes
+00:00:08 checking for gmake... /usr/bin/make
+00:00:08 checking for gmake version... 3.81
+00:00:08 checking for watchman... not found
+00:00:08 checking for xargs... /usr/bin/xargs
+00:00:08 checking for mkfshfs... /sbin/newfs_hfs
+00:00:08 checking for hfs_tool... not found
+00:00:08 checking for dsymutil... /Users/thomascottereau/.mozbuild/clang/bin/dsymutil
+00:00:08 checking for otool... /Users/thomascottereau/.mozbuild/clang/bin/llvm-otool
+00:00:08 checking for strip... /Users/thomascottereau/.mozbuild/clang/bin/llvm-strip
+00:00:08 Creating config.status
+00:00:08 Reticulating splines...
+00:00:16 Finished reading 2735 moz.build files in 2.50s
+00:00:16 Read 57 gyp files in parallel contributing 0.00s to total wall time
+00:00:16 Processed into 20219 build config descriptors in 1.95s
+00:00:16 RecursiveMake backend executed in 2.12s
+00:00:16   5830 total backend files; 0 created; 3 updated; 5827 unchanged; 0 deleted; 24 -> 2209 Makefile
+00:00:16 FasterMake backend executed in 0.25s
+00:00:16   59 total backend files; 0 created; 2 updated; 57 unchanged; 0 deleted
+00:00:16 Clangd backend executed in 0.92s
+00:00:16   1352 total backend files; 0 created; 1 updated; 1351 unchanged; 0 deleted
+00:00:16 Total wall time: 7.95s; CPU time: 5.27s; Efficiency: 66%; Untracked: 0.20s
+00:00:17 Configure complete!
+00:00:17 Be sure to run |mach build| to pick up any changes
+00:00:17 Parallelism determined by memory: using 8 jobs for 8 cores based on 8.0 GiB RAM and estimated job size of 1.0 GiB
+00:00:17 /usr/bin/make -C faster -j8 -s
+00:00:18 Elapsed: 0.04s; From /Users/thomascottereau/Documents/lifehub/dev/tools/zen2/channa/engine/obj-aarch64-apple-darwin/dist/bin/gmp-clearkey/0.1: Kept 0 existing; Added/updated 1; Removed 0 files and 0 directories.
+00:00:19 Elapsed: 0.98s; From /Users/thomascottereau/Documents/lifehub/dev/tools/zen2/channa/engine/obj-aarch64-apple-darwin/dist/bin/browser: Kept 4907 existing; Added/updated 272; Removed 0 files and 0 directories.
+00:00:19 js/src/build/libjs_static.a
+00:00:20 Elapsed: 0.49s; From /Users/thomascottereau/Documents/lifehub/dev/tools/zen2/channa/engine/obj-aarch64-apple-darwin/dist/bin: Kept 2103 existing; Added/updated 24; Removed 0 files and 0 directories.
+00:00:23 W 1 warning generated.
+00:00:23 W 1 warning generated.
+00:00:24 TEST-PASS | check_spidermonkey_style.py | ok
+00:00:24 TEST-PASS | check_macroassembler_style.py | ok
+00:00:24 TEST-PASS | check_js_opcode.py | ok
+00:00:34 browser/app/zen
+00:00:39 W 2 compiler warnings present.
+00:00:39 W Overall system resources - Wall time: 37s; CPU: 51%; Read bytes: 3640500224; Write bytes: 1580093440; Read time: 260149; Write time: 1087
+00:00:39 W Swap in/out (MB): 2999.734375/34.640625
+00:00:39 W (suppressed 2 warnings in third-party code)
+00:00:39 To view a profile of the build, run |mach resource-usage|.
+00:00:39 Your build was successful!
+00:00:39 Streaming resource usage profile to: /Users/thomascottereau/Documents/lifehub/dev/tools/zen2/channa/engine/obj-aarch64-apple-darwin/.mozbuild/logs/build/profile_log_20260813_113236.json

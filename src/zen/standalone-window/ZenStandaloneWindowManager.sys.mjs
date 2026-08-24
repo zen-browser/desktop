@@ -20,9 +20,20 @@ ChromeUtils.defineLazyGetter(lazy, "MacDockSupport", () => {
     return null;
   }
   try {
-    return Cc["@mozilla.org/widget/macdocksupport;1"].getService(
+    const service = Cc["@mozilla.org/widget/macdocksupport;1"].getService(
       Ci.nsIMacDockSupport
     );
+    return {
+      get millisecondsSinceApplicationActivated() {
+        return service.millisecondsSinceApplicationActivated;
+      },
+      activatePreviousApplication() {
+        service.hideApplication();
+      },
+      makeWindowJoinActiveSpace(baseWindow) {
+        service.makeWindowJoinActiveSpace(baseWindow);
+      },
+    };
   } catch (error) {
     console.error(
       "Zen standalone windows cannot reach macOS dock support",
@@ -1444,10 +1455,9 @@ class nsZenStandaloneWindowManager {
   /**
    * Sends the user back to the application the link came from.
    *
-   * Zen is only hidden when it was brought to the front to show this window in
-   * the first place. If the user was already in Zen, or has been working in
-   * another Zen window since, closing the standalone window leaves them where
-   * they are, exactly as closing any other window does.
+   * Zen only yields focus when it was brought forward for this standalone in
+   * the first place. The native bridge activates the latest non-Zen application
+   * without changing the visibility of other browser windows.
    *
    * @param {Window} standaloneWindow - The standalone window that just closed
    * @param {object} state - Its transient standalone state
@@ -1465,11 +1475,10 @@ class nsZenStandaloneWindowManager {
       return;
     }
 
-    // Another standalone window would be hidden along with everything else.
-    for (const win of lazy.BrowserWindowTracker.orderedWindows) {
-      if (win !== standaloneWindow && this.isStandaloneWindow(win)) {
-        return;
-      }
+    // Returning to the opener while another standalone remains would take
+    // focus away from a window the user still expects to work in.
+    if (this.hasOtherStandaloneWindows(standaloneWindow)) {
+      return;
     }
 
     // The user went to a normal Zen window at some point, so Zen is where they
@@ -1479,13 +1488,32 @@ class nsZenStandaloneWindowManager {
     }
 
     try {
-      dockSupport.hideApplication();
+      dockSupport.activatePreviousApplication();
     } catch (error) {
       console.error(
         "Failed to return focus to the previous application",
         error
       );
     }
+  }
+
+  /**
+   * Checks whether another standalone window remains open.
+   *
+   * @param {Window} standaloneWindow - The window that is closing
+   * @returns {boolean} True when another standalone should retain Zen focus
+   */
+  hasOtherStandaloneWindows(standaloneWindow) {
+    for (const win of Services.wm.getEnumerator("navigator:browser")) {
+      if (
+        win !== standaloneWindow &&
+        !win.closed &&
+        this.isStandaloneWindow(win)
+      ) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**

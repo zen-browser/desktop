@@ -61,9 +61,11 @@ zen-workspace-creation-profile = Profiel
     .tooltiptext = Profielen worden gebruikt om cookies en site-gegevens tussen ruimtes te scheiden.
 zen-workspace-creation-header = Maak een ruimte
 zen-workspace-creation-label = Ruimtes worden gebruikt om je tabbladen en sessies te organiseren.
-zen-workspace-default-profile = Default
+zen-workspace-default-profile = Standaard
 zen-workspaces-delete-workspace-title = Ruimte verwijderen?
 zen-workspaces-delete-workspace-body = Weet je zeker dat je { $name } wilt verwijderen? Deze actie kan niet ongedaan gemaakt worden.
+zen-workspaces-remote-delete-title = Gesynchroniseerde ruimte verwijderen?
+zen-workspaces-remote-delete-body = { $name } is verwijderd op een ander apparaat. Hier ook verwijderen? Als je het behoudt, zal het ook op andere apparaten worden hersteld.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Tabbladen gesloten! Gebruik <span>{ $shortcut }</span> om ongedaan te maken.

@@ -139,4 +139,4 @@ zen-window-sync-migration-dialog-message = Déanann Zen sioncrónú ar fhuinneog
 zen-window-sync-migration-dialog-learn-more = Foghlaim Tuilleadh
 zen-window-sync-migration-dialog-accept = Tuigim é
 zen-appmenu-new-blank-window = 
-    .label = New Blank Window
+    .label = Fuinneog Nua Bán

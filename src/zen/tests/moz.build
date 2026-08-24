@@ -6,6 +6,7 @@ BROWSER_CHROME_MANIFESTS += [
     "boosts/browser.toml",
     "compact_mode/browser.toml",
     "container_essentials/browser.toml",
+    "customizable_ui/browser.toml",
     "folders/browser.toml",
     "glance/browser.toml",
     "live-folders/browser.toml",

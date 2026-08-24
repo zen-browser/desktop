@@ -21,6 +21,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   #glances = new Map();
   #currentGlanceID = null;
   #confirmationTimeout = null;
+  #observingQuitRequests = false;
 
   // Animation flags
   animatingOpen = false;
@@ -74,6 +75,8 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
   #setupObservers() {
     Services.obs.addObserver(this, "quit-application-requested");
+    this.#observingQuitRequests = true;
+    window.addEventListener("unload", () => this.uninit(), { once: true });
   }
 
   #insertIntoContextMenu() {
@@ -167,13 +170,27 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   }
 
   /**
+   * Release resources owned by this browser window
+   */
+  uninit() {
+    if (this.#observingQuitRequests) {
+      Services.obs.removeObserver(this, "quit-application-requested");
+      this.#observingQuitRequests = false;
+    }
+
+    for (const glanceID of [...this.#glances.keys()]) {
+      this.#deleteGlance(glanceID);
+    }
+  }
+
+  /**
    * Clean up all glances when the application is unloading
    */
   onUnload() {
-    for (const [, glance] of this.#glances) {
+    for (const [glanceID, glance] of [...this.#glances]) {
       gBrowser.removeTab(glance.tab, { animate: false });
+      this.#deleteGlance(glanceID);
     }
-    this.#glances.clear();
   }
 
   /**

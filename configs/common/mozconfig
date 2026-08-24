@@ -2,29 +2,30 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-# Browser branding
+# Thunderbird application
+ac_add_options --enable-application=comm/mail
+ac_add_options --enable-project=comm/mail
+
+# App identity (Foundation: vanilla thunderbird; sub-project 2 rebrands to Zenbird)
 ac_add_options --with-app-name=${binName}
-ac_add_options --with-app-basename=Zen
+ac_add_options --with-app-basename=Thunderbird
+export MOZ_APP_BASENAME=Thunderbird
 
 # Localization (Must be an absolute path)
-ac_add_options --with-l10n-base="${topsrcdir}/browser/locales"
+ac_add_options --with-l10n-base="${topsrcdir}/comm/mail/locales"
 
-export MOZ_APP_BASENAME=Zen
-export MOZ_BRANDING_DIRECTORY=${brandingDir}
-export MOZ_OFFICIAL_BRANDING_DIRECTORY=${brandingDir}
-
-ac_add_options --with-distribution-id=app.zen-browser
+ac_add_options --with-distribution-id=org.mozilla.thunderbird
 
 # Uncomment if builds are too resource hungry
 # mk_add_options MOZ_MAKE_FLAGS="-j4"
 # ac_add_options --enable-linker=gold
 
 # Misc
-export MOZ_SOURCE_REPO=https://github.com/zen-browser/desktop
+# MOZ_SOURCE_REPO is left unset — thunderbird's comm tree implies its own
+# (hg.mozilla.org/releases/comm-release); exporting a conflicting value
+# fails configure with ConflictingOptionError.
 export MOZ_SOURCE_CHANGESET=${changeset}
 export MOZ_INCLUDE_SOURCE_INFO=1
-
-ac_add_options --enable-application=browser
 
 if test "$SCCACHE_GHA_ENABLED" = "true"; then
   if test -x "$(command -v sccache)"; then
@@ -72,7 +73,6 @@ if test "$ZEN_RELEASE"; then
   if ! test "$ZEN_DISABLE_LTO"; then
     # only enable full LTO when ZEN_RELEASE_BRANCH is 'release'
     if test "$ZEN_RELEASE_BRANCH" = "release"; then
-      # TODO: make it "full" once we have the resources to build it
       export MOZ_LTO=cross,full
       ac_add_options --enable-lto=cross,full
     else
@@ -93,17 +93,9 @@ if test "$ZEN_RELEASE"; then
   ac_add_options --disable-crashreporter
 fi
 
-ac_add_options --enable-jxl
-
-ac_add_options --with-unsigned-addon-scopes=app,system
-
 mk_add_options MOZ_DATA_REPORTING=
 mk_add_options MOZ_SERVICES_HEALTHREPORT=
 mk_add_options MOZ_TELEMETRY_REPORTING=
 
 ac_add_options MOZ_DATA_REPORTING=
 ac_add_options MOZ_TELEMETRY_REPORTING=
-
-# Allow loading unsigned extensions
-export MOZ_REQUIRE_SIGNING=
-mk_add_options MOZ_REQUIRE_SIGNING=

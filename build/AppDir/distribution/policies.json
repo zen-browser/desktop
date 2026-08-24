@@ -1,8 +1,0 @@
-{
-  "policies": {
-    "DisableAppUpdate": true,
-    "AppAutoUpdate": false,
-    "ManualAppUpdateOnly": true,
-    "BackgroundAppUpdate": false
-  }
-}

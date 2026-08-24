@@ -471,7 +471,7 @@ class nsZenSpacesSyncApplier {
         }
         const existing = this.#itemIn(win, tabId);
         if (win.gBrowser.isTab(existing)) {
-          this.#updateTab(win, existing, tabId, data);
+          this.#updateTab(win, existing, data);
         } else {
           this.#createTab(win, tabId, data);
         }
@@ -496,7 +496,7 @@ class nsZenSpacesSyncApplier {
     // window sync treat this tab as already replicated.
     tab.id = tabId;
     tab._zenContentsVisible = true;
-    this.#applyTabDecorations(win, tab, data);
+    this.#updateTabIdentity(win, tab, data);
     if (data.essential) {
       win.gZenPinnedTabManager.addToEssentials(tab);
     } else {
@@ -513,40 +513,6 @@ class nsZenSpacesSyncApplier {
       }
     }
     lazy.ZenWindowSync.on_TabOpen({ target: tab }, { ignoreExistingId: true });
-    lazy.ZenWindowSync.setPinnedInitialState(
-      tab,
-      { url: data.url, title: data.title || "" },
-      syncableIconUrl(data.icon) || undefined
-    );
-  }
-
-  #applyTabDecorations(win, tab, data) {
-    if (data.defaultContainer) {
-      tab.setAttribute("zenDefaultUserContextId", "true");
-    } else {
-      tab.removeAttribute("zenDefaultUserContextId");
-    }
-    // Records from before icon normalization can still carry wrapped or
-    // remote urls setIcon would refuse.
-    const icon = syncableIconUrl(data.icon);
-    tab.zenStaticLabel =
-      typeof data.staticLabel === "string" ? data.staticLabel : undefined;
-    tab.zenStaticIcon = data.hasStaticIcon && icon ? icon : undefined;
-    if (icon) {
-      try {
-        win.gBrowser.setIcon(tab, icon);
-        // The tab is lazy, so its session state cache keeps the (empty)
-        // image it was created with: it is only cleared once a restore
-        // finishes, which never happens for lazy tabs, and it would hide
-        // the icon from every session collect. Drop it so the session
-        // saves the icon set above.
-        lazy.TabStateCache.update(tab.linkedBrowser.permanentKey, {
-          image: null,
-        });
-      } catch (e) {
-        console.error("ZenSpacesSync: failed to set tab icon", e);
-      }
-    }
   }
 
   /**
@@ -598,8 +564,6 @@ class nsZenSpacesSyncApplier {
     if (icon && syncableIconUrl(tab.getAttribute("image")) !== icon) {
       try {
         win.gBrowser.setIcon(tab, icon);
-        // As on creation: an unloaded tab's cached session image would
-        // otherwise override the icon set above at every collect.
         lazy.TabStateCache.update(tab.linkedBrowser.permanentKey, {
           image: null,
         });
@@ -662,7 +626,34 @@ class nsZenSpacesSyncApplier {
     }
   }
 
-  #updateTab(win, tab, tabId, data) {
+  /**
+   * Puts a tab or split group under the folder the record names, or back at
+   * top level when it names none.
+   *
+   * @param {Window} win
+   * @param {MozTabbrowserTab|MozTabbrowserTabGroup} item
+   * @param {?string} folderId
+   */
+  #applyFolderMembership(win, item, folderId) {
+    const currentFolder = item.group?.isZenFolder ? item.group.id : null;
+    const wantFolder = folderId || null;
+    if (currentFolder === wantFolder) {
+      return;
+    }
+    const target = wantFolder && this.#itemIn(win, wantFolder);
+    if (target?.isZenFolder) {
+      target.addTabs([item]);
+    } else if (!wantFolder && currentFolder) {
+      // ungroupTab pops a single nesting level. An item inside a subfolder
+      // lands inside the parent folder, so keep going until it is actually
+      // top-level.
+      while (win.gBrowser.isTabGroup(item.group) && item.group.isZenFolder) {
+        win.gBrowser.ungroupTab(item);
+      }
+    }
+  }
+
+  #updateTab(win, tab, data) {
     this.#updateTabIdentity(win, tab, data);
 
     const isEssential = tab.hasAttribute("zen-essential");
@@ -682,25 +673,9 @@ class nsZenSpacesSyncApplier {
       // The split record governs placement of its members.
       return;
     }
-    const currentFolder = tab.group?.isZenFolder ? tab.group.id : null;
-    const wantFolder = data.folderId || null;
-    if (currentFolder !== wantFolder) {
-      const target = wantFolder && this.#itemIn(win, wantFolder);
-      if (target?.isZenFolder) {
-        target.addTabs([tab]);
-      } else if (!wantFolder && currentFolder) {
-        // ungroupTab pops a single nesting level: a tab inside a subfolder
-        // lands inside the parent folder, so keep going until the tab is
-        // actually top-level. The isTabGroup check keeps the collapsed
-        // pinned-section pseudo-group (which the group getter also returns)
-        // from ever looping.
-        while (win.gBrowser.isTabGroup(tab.group) && tab.group.isZenFolder) {
-          win.gBrowser.ungroupTab(tab);
-        }
-      }
-    }
+    this.#applyFolderMembership(win, tab, data.folderId);
     if (
-      !wantFolder &&
+      !data.folderId &&
       data.workspaceUuid &&
       tab.getAttribute("zen-workspace-id") !== data.workspaceUuid
     ) {
@@ -756,28 +731,9 @@ class nsZenSpacesSyncApplier {
             groupFetchId: splitId,
           });
         }
-        // Folder membership, mirroring the tab flow in #updateTab: the
-        // record's folderId is authoritative for where the group lives.
         const group = this.#itemIn(win, splitId);
         if (group?.hasAttribute?.("split-view-group")) {
-          const currentFolder = group.group?.isZenFolder
-            ? group.group.id
-            : null;
-          const wantFolder = data.folderId || null;
-          if (currentFolder !== wantFolder) {
-            const target = wantFolder && this.#itemIn(win, wantFolder);
-            if (target?.isZenFolder) {
-              target.addTabs([group]);
-            } else if (!wantFolder && currentFolder) {
-              // Unwrap every folder level, not just the innermost one.
-              while (
-                win.gBrowser.isTabGroup(group.group) &&
-                group.group.isZenFolder
-              ) {
-                win.gBrowser.ungroupTab(group);
-              }
-            }
-          }
+          this.#applyFolderMembership(win, group, data.folderId);
         }
       } catch (e) {
         fail(record, e);

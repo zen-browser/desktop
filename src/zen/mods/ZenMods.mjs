@@ -358,6 +358,7 @@ class nsZenMods extends nsZenPreloadedFeature {
             url,
             e
           );
+          throw e;
         } else {
           console.warn(
             `[ZenMods]: Download failed (attempt ${attempt} of ${maxRetries}), retrying in ${retryDelayMs}ms...`,
@@ -674,27 +675,52 @@ class nsZenMods extends nsZenPreloadedFeature {
   }
 
   async installMod(mod) {
+    const modPath = PathUtils.join(this.modsRootPath, mod.id);
+    let stagingPath;
+
     try {
-      const modPath = PathUtils.join(this.modsRootPath, mod.id);
-      await IOUtils.makeDirectory(modPath, { ignoreExisting: true });
+      await IOUtils.makeDirectory(this.modsRootPath, { ignoreExisting: true });
+      stagingPath = await IOUtils.createUniqueDirectory(
+        this.modsRootPath,
+        ".installing-"
+      );
 
       await this.#downloadUrlToFile(
         mod.style,
-        PathUtils.join(modPath, "chrome.css")
+        PathUtils.join(stagingPath, "chrome.css")
       );
       await this.#downloadUrlToFile(
         mod.readme,
-        PathUtils.join(modPath, "readme.md")
+        PathUtils.join(stagingPath, "readme.md")
       );
 
       if (mod.preferences) {
         await this.#downloadUrlToFile(
           mod.preferences,
-          PathUtils.join(modPath, "preferences.json")
+          PathUtils.join(stagingPath, "preferences.json")
         );
       }
+
+      await IOUtils.move(stagingPath, modPath, { noOverwrite: true });
+      stagingPath = null;
     } catch (e) {
+      if (stagingPath) {
+        try {
+          await IOUtils.remove(stagingPath, {
+            recursive: true,
+            ignoreAbsent: true,
+          });
+        } catch (cleanupError) {
+          console.error(
+            "[ZenMods]: Error cleaning up failed mod installation",
+            mod.id,
+            cleanupError
+          );
+        }
+      }
+
       console.error("[ZenMods]: Error installing mod", mod.id, e);
+      throw e;
     }
   }
 

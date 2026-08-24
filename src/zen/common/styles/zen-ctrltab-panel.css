@@ -1,0 +1,82 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#ctrlTab-panel {
+  --panel-background-color: light-dark(rgb(248, 248, 250), rgb(24, 24, 25));
+  --panel-text-color: light-dark(rgb(34, 34, 38), rgb(247, 247, 249));
+  --panel-border-color: light-dark(
+    rgba(0, 0, 0, 0.18),
+    rgba(255, 255, 255, 0.22)
+  );
+  --panel-border-radius: 24px;
+  --panel-padding: 18px;
+  --panel-box-shadow-margin: 0;
+  -moz-window-shadow: menu;
+}
+
+#ctrlTab-previews {
+  gap: 4px;
+}
+
+.ctrlTab-preview {
+  min-width: 0;
+  padding: 0;
+  text-shadow: none;
+}
+
+.ctrlTab-preview-inner {
+  display: grid;
+  grid-template: auto 18px / 16px minmax(0, 1fr);
+  gap: 9px 7px;
+  align-items: center;
+  margin-top: 0;
+  padding: 10px;
+  border: 0;
+}
+
+.ctrlTab-canvas {
+  grid-area: 1 / 1 / 2 / -1;
+  width: max-content;
+  max-width: 100%;
+  justify-self: center;
+  margin-bottom: 0;
+  overflow: hidden;
+  color-scheme: light dark;
+  background-color: light-dark(rgb(255, 255, 255), rgb(17, 17, 18));
+  border-radius: 10px;
+  box-shadow: 0 7px 18px light-dark(rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.38));
+}
+
+.ctrlTab-canvas > :is(img, canvas) {
+  max-width: 100%;
+}
+
+.ctrlTab-favicon-container {
+  grid-area: 2 / 1;
+}
+
+.ctrlTab-favicon[src] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.ctrlTab-preview:focus > .ctrlTab-preview-inner {
+  background-color: light-dark(rgb(191, 193, 207), rgb(48, 51, 69));
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px
+    light-dark(rgba(47, 52, 72, 0.08), rgba(255, 255, 255, 0.05));
+}
+
+.ctrlTab-label {
+  grid-area: 2 / 2;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: start;
+}

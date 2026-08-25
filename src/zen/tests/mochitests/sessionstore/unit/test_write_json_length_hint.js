@@ -33,7 +33,11 @@ add_setup(async function () {
 });
 
 add_task(async function test_length_hint_updates_after_write() {
-  Assert.equal(SessionWriter._jsonLengthHint, 0, "Length hint starts at 0");
+  Assert.equal(
+    SessionWriter._jsonLengthHint,
+    0,
+    "Length hint starts at 0"
+  );
 
   await SessionFile.write({});
 
@@ -61,5 +65,9 @@ add_task(async function test_length_hint_resets_on_wipe() {
   Assert.greater(SessionWriter._jsonLengthHint, 0, "Hint is nonzero");
 
   await SessionFile.wipe();
-  Assert.equal(SessionWriter._jsonLengthHint, 0, "Hint resets to 0 after wipe");
+  Assert.equal(
+    SessionWriter._jsonLengthHint,
+    0,
+    "Hint resets to 0 after wipe"
+  );
 });

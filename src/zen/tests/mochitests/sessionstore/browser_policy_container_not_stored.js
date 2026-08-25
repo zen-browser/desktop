@@ -47,5 +47,5 @@ add_task(async function test_policy_container_only_for_inheriting_loads() {
     "about:blank subframe entry still stores its inherited policyContainer"
   );
 
-  BrowserTestUtils.removeTab(tab);
+  await BrowserTestUtils.removeTab(tab);
 });

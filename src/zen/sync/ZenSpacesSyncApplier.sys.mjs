@@ -576,9 +576,11 @@ class nsZenSpacesSyncApplier {
       }
     }
     tab.zenStaticIcon = data.hasStaticIcon && icon ? icon : undefined;
-    // Compare normalized: setIcon rewraps svg data: icons into
-    // moz-remote-image urls when writing the attribute.
-    if (icon && syncableIconUrl(tab.getAttribute("image")) !== icon) {
+    if (
+      icon &&
+      (data.hasStaticIcon || !tab.linkedPanel) &&
+      syncableIconUrl(tab.getAttribute("image")) !== icon
+    ) {
       try {
         win.gBrowser.setIcon(tab, icon);
         lazy.TabStateCache.update(tab.linkedBrowser.permanentKey, {

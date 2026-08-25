@@ -8,14 +8,6 @@
     "name": "Native MacOS popovers fix"
   },
   {
-    "type": "phabricator",
-    "id": "D284404",
-    "name": "Add urlbar closeOnWindowBlur preference",
-    "replaces": {
-      "\n\n": "\n     // may want to figure out a more robust way to detect abandonment."
-    }
-  },
-  {
     "type": "local",
     // TODO: Convert into https://phabricator.services.mozilla.com/D298079
     //    once it gets accepted.
@@ -47,6 +39,17 @@
     "replaces": {
       "this._lastJsonLength = uncompressedBytes;": "this._lastJsonLength = uncompressedBytes.jsonLength;",
       "          jsonLengthHint,": "          lengthHint: jsonLengthHint,"
+    }
+  },
+  {
+    "type": "phabricator",
+    "id": "D320897",
+    "name": "Bug 2011236",
+    "replaces": {
+      // The upstream patch context includes a MOZ_DIAGNOSTIC_ASSERT that
+      // doesn't exist yet in our Firefox version.
+      "@@ -59,11 +67,12 @@": "@@ -59,9 +67,10 @@",
+      "aLoadState->TypeHint())) {\n   MOZ_DIAGNOSTIC_ASSERT(!mURI->SchemeIs(\"javascript\"));\n \n   // Pull": "aLoadState->TypeHint())) {\n   // Pull"
     }
   }
 ]

@@ -1,0 +1,12 @@
+[DEFAULT]
+
+["browser_contentAreaClick_subframe_javascript.js"]
+support-files = [
+  "file_contentAreaClick_subframe_javascript.html"
+]
+
+["browser_javascript_links.js"]
+disabled="Disabled by import_external_tests.py"
+support-files = [
+  "file_javascript_links_subframe.html"
+]

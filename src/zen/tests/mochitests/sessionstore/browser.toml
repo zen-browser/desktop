@@ -1,0 +1,483 @@
+[DEFAULT]
+support-files = [
+  "head.js",
+  "browser_formdata_sample.html",
+  "browser_formdata_xpath_sample.html",
+  "browser_frametree_sample.html",
+  "browser_frametree_sample_frameset.html",
+  "browser_frametree_sample_iframes.html",
+  "browser_frame_history_index.html",
+  "browser_frame_history_index2.html",
+  "browser_frame_history_index_blank.html",
+  "browser_frame_history_a.html",
+  "browser_frame_history_b.html",
+  "browser_frame_history_c.html",
+  "browser_frame_history_c1.html",
+  "browser_frame_history_c2.html",
+  "browser_formdata_format_sample.html",
+  "browser_sessionHistory_slow.sjs",
+  "browser_policy_container_sample.html",
+  "browser_policy_container_sample_frame.html",
+  "browser_scrollPositions_sample.html",
+  "browser_scrollPositions_sample2.html",
+  "browser_scrollPositions_sample_frameset.html",
+  "browser_scrollPositions_readerModeArticle.html",
+  "browser_sessionStorage.html",
+  "browser_speculative_connect.html",
+  "coopHeaderCommon.sjs",
+  "restore_redirect_http.html",
+  "restore_redirect_http.html^headers^",
+  "restore_redirect_js.html",
+  "restore_redirect_target.html",
+  "empty.html",
+  "coop_coep.html",
+  "coop_coep.html^headers^",
+]
+# remove this after bug 1628486 is landed
+prefs = [
+  "zen.window-sync.enabled=false",
+  "network.cookie.cookieBehavior=5",
+  "gfx.font_rendering.fallback.async=false",
+  "browser.sessionstore.closedTabsFromAllWindows=true",
+  "browser.sessionstore.closedTabsFromClosedWindows=true",
+  # Override the test default, allowing the session restore infobar to be shown if necessary
+  "browser.startup.couldRestoreSession.count=0",
+]
+
+["browser_1933485_tab_groups_history.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_1953801_tab_groups_history_close_other.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_aboutPrivateBrowsing.js"]
+
+["browser_aboutRestartrequired_noRestore.js"]
+
+["browser_aboutSessionRestore.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_async_duplicate_tab.js"]
+support-files = ["file_async_duplicate_tab.html"]
+
+["browser_async_flushes.js"]
+support-files = ["file_async_flushes.html"]
+run-if = [
+  "crashreporter",
+]
+
+["browser_async_remove_tab.js"]
+skip-if = [
+  "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11' && opt", # Bug 1787024
+  "os == 'win' && os_version == '11.26100' && arch == 'x86_64' && asan", # Bug 1787024
+  "os == 'win' && os_version == '11.26200' && arch == 'x86_64' && asan", # Bug 1787024
+]
+
+["browser_async_window_flushing.js"]
+https_first_disabled = true
+skip-if = [
+  "os == 'mac' && os_version == '10.15' && arch == 'x86_64' && opt", # Bug 1775616
+  "os == 'win' && os_version == '11.26100' && arch == 'x86_64' && asan", # Bug 1775616
+  "os == 'win' && os_version == '11.26200' && arch == 'x86_64' && asan", # Bug 1775616
+  "os == 'win' && os_version == '11.26100' && arch == 'x86_64' && opt", # Bug 1775616
+  "os == 'win' && os_version == '11.26200' && arch == 'x86_64' && opt", # Bug 1775616
+]
+
+["browser_attributes.js"]
+
+["browser_background_tab_crash.js"]
+https_first_disabled = true
+run-if = [
+  "crashreporter",
+]
+tags = "os_integration"
+
+["browser_backup_recovery.js"]
+https_first_disabled = true
+tags = "os_integration"
+
+["browser_bfcache_telemetry.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_broadcast.js"]
+https_first_disabled = true
+
+["browser_capabilities.js"]
+
+["browser_cleaner.js"]
+
+["browser_closedId.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_closed_objects_changed_notifications_tabs.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_closed_objects_changed_notifications_windows.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_closed_tabs_closed_windows.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_closed_tabs_windows.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_cookies.js"]
+
+["browser_cookies_legacy.js"]
+
+["browser_cookies_partitioned.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_cookies_privacy.js"]
+
+["browser_cookies_sameSite.js"]
+
+["browser_crashedTabs.js"]
+disabled="Disabled by import_external_tests.py"
+https_first_disabled = true
+run-if = [
+  "crashreporter",
+]
+
+["browser_csp_policy_container_migration.js"]
+
+["browser_docshell_uuid_consistency.js"]
+
+["browser_duplicate_history.js"]
+
+["browser_duplicate_tab_in_new_window.js"]
+
+["browser_dying_cache.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_dynamic_frames.js"]
+
+["browser_firefoxView_restore.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_firefoxView_selected_restore.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_focus_after_restore.js"]
+tags = "os_integration"
+
+["browser_forget_async_closings.js"]
+
+["browser_forget_closed_tab_window_byId.js"]
+disabled="Disabled by import_external_tests.py"
+https_first_disabled = true
+
+["browser_formdata.js"]
+
+["browser_formdata_cc.js"]
+skip-if = [
+  "asan", # test runs too long
+]
+
+["browser_formdata_face.js"]
+
+["browser_formdata_format.js"]
+
+["browser_formdata_max_size.js"]
+
+["browser_formdata_password.js"]
+support-files = ["file_formdata_password.html"]
+
+["browser_formdata_xpath.js"]
+
+["browser_frame_history.js"]
+
+["browser_frametree.js"]
+https_first_disabled = true
+
+["browser_global_store.js"]
+
+["browser_history_persist.js"]
+
+["browser_ignore_updates_crashed_tabs.js"]
+https_first_disabled = true
+run-if = [
+  "crashreporter",
+]
+skip-if = [
+  "asan",
+]
+
+["browser_label_and_icon.js"]
+https_first_disabled = true
+skip-if = [
+  "os == 'mac' && os_version == '10.15' && arch == 'x86_64' && opt", # Bug 1638958
+  "os == 'mac' && os_version == '14.70' && arch == 'x86_64' && opt && socketprocess_networking", # Bug 1868915
+  "os == 'mac' && os_version == '15.30' && arch == 'aarch64'", # Disabled due to bleedover with other tests when run in regular suites; passes in "failures" jobs
+  "os == 'win' && os_version == '11.26100' && arch == 'x86_64' && opt", # Bug 1775605
+  "os == 'win' && os_version == '11.26200' && arch == 'x86_64' && opt", # Bug 1775605
+]
+
+["browser_movePendingTabToNewWindow.js"]
+disabled="Disabled by import_external_tests.py"
+https_first_disabled = true
+tags = "os_integration"
+
+["browser_multiple_navigateAndRestore.js"]
+
+["browser_multiple_select_after_load.js"]
+
+["browser_navigation_api_restore.js"]
+support-files = [
+  "empty_frame.html",
+  "entry1.html",
+  "entry2.html",
+  "entry3.html",
+]
+
+["browser_newtab_userTypedValue.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_not_collect_when_idle.js"]
+
+["browser_page_title.js"]
+
+["browser_parentProcessRestoreHash.js"]
+https_first_disabled = true
+tags = "openUILinkIn"
+
+["browser_pending_tabs.js"]
+
+["browser_pinned_tabs.js"]
+disabled="Disabled by import_external_tests.py"
+skip-if = [
+  "ccov", # Bug 1625525
+]
+
+["browser_policy_container_not_stored.js"]
+
+["browser_privatetabs.js"]
+
+["browser_purge_domaindata.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_purge_shistory.js"]
+
+["browser_remoteness_flip_on_restore.js"]
+
+["browser_reopen_all_windows.js"]
+disabled="Disabled by import_external_tests.py"
+https_first_disabled = true
+skip-if = [
+  "asan", # high memory
+]
+tags = "os_integration"
+
+["browser_replace_load.js"]
+skip-if = [
+  "true", # Bug 1646894
+]
+
+["browser_restoreLastActionCorrectOrder.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_restoreLastClosedTabOrWindowOrSession.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_restoreTabContainer.js"]
+
+["browser_restore_container_tabs_oa.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_restore_cookies_noOriginAttributes.js"]
+
+["browser_restore_pageProxyState.js"]
+
+["browser_restore_private_tab_os.js"]
+
+["browser_restore_redirect.js"]
+https_first_disabled = true
+
+["browser_restore_reversed_z_order.js"]
+skip-if = [
+  "true", # Bug 1455602
+]
+
+["browser_restore_srcdoc.js"]
+
+["browser_restore_tabless_window.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_restore_verticalPinnedTabs.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_restored_window_features.js"]
+disabled="Disabled by import_external_tests.py"
+skip-if = [
+  "os == 'win' && os_version == '11.26200' && asan", # Bug 2019745
+]
+
+["browser_revive_crashed_bg_tabs.js"]
+https_first_disabled = true
+run-if = [
+  "crashreporter",
+]
+
+["browser_scrollPositions.js"]
+disabled="Disabled by import_external_tests.py"
+https_first_disabled = true
+run-if = [
+  "fission",
+]
+
+["browser_scrollPositionsReaderMode.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_searchModeSwitcher_restore.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_sessionHistory.js"]
+https_first_disabled = true
+support-files = ["file_sessionHistory_hashchange.html"]
+
+["browser_sessionHistory_partitionedPrincipalToInherit.js"]
+
+["browser_sessionStorage.js"]
+tags = "os_integration"
+
+["browser_sessionStorage_size.js"]
+
+["browser_sessionStoreContainer.js"]
+
+["browser_should_restore_tab.js"]
+skip-if = [
+  "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11' && debug && socketprocess_networking", # Bug 1848488
+  "os == 'win' && os_version == '11.26100' && arch == 'x86' && debug && verify-standalone",
+  "os == 'win' && os_version == '11.26200' && arch == 'x86' && debug && verify-standalone",
+  "os == 'win' && os_version == '11.26100' && arch == 'x86_64' && debug", # Bug 1848488
+  "os == 'win' && os_version == '11.26200' && arch == 'x86_64' && debug", # Bug 1848488
+]
+
+["browser_sizemodeBeforeMinimized.js"]
+skip-if = [
+  "os == 'win' && os_version == '11.26200' && asan", # Bug 2019745
+]
+
+["browser_speculative_connect.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_splitview_integer_ids.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_splitview_restore_in_closed_window.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_splitview_string_migration.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_swapDocShells.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_switch_remoteness.js"]
+
+["browser_tab_groups_closed.js"]
+disabled="Disabled by import_external_tests.py"
+skip-if = [
+  "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11' && debug && socketprocess_networking", # Bug 1934803
+  "os == 'win' && os_version == '11.26100' && arch == 'x86_64' && debug", # Bug 1934803
+  "os == 'win' && os_version == '11.26200' && arch == 'x86_64' && debug", # Bug 1934803
+]
+
+["browser_tab_groups_closed_groups_in_closed_windows.js"]
+
+["browser_tab_groups_empty.js"]
+
+["browser_tab_groups_restore_closed_in_closed_window.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_tab_groups_restore_closed_in_open_window.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_tab_groups_restore_closed_many_tabs.js"]
+disabled="Disabled by import_external_tests.py"
+skip-if = [
+  "os == 'mac' && os_version == '15.30' && arch == 'aarch64' && opt", # Bug 1954300
+]
+
+["browser_tab_groups_restore_multiple.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_tab_groups_restore_saved.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_tab_groups_restore_simple.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_tab_groups_restore_to_group.js"]
+
+["browser_tab_groups_save_on_removeAllTabsBut.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_tab_groups_save_on_removeTabsToTheEnd.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_tab_groups_save_on_removeTabsToTheStart.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_tab_groups_save_on_window_close.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_tab_groups_saved.js"]
+skip-if = [
+  "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11' && opt", # Bug 1945957
+]
+
+["browser_tab_groups_state.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_tab_groups_undo.js"]
+disabled="Disabled by import_external_tests.py"
+
+skip-if = [
+  "os == 'mac' && os_version == '15.30' && arch == 'aarch64'", # Bug 2023967
+]
+["browser_tab_label_during_restore.js"]
+disabled="Disabled by import_external_tests.py"
+https_first_disabled = true
+
+["browser_tab_notes_canonicalurl.js"]
+
+["browser_tabicon_after_bg_tab_crash.js"]
+run-if = [
+  "crashreporter",
+]
+
+["browser_tabs_in_urlbar.js"]
+https_first_disabled = true
+
+["browser_undoCloseById.js"]
+disabled="Disabled by import_external_tests.py"
+skip-if = [
+  "debug",
+]
+
+["browser_undoCloseById_targetWindow.js"]
+
+["browser_unrestored_crashedTabs.js"]
+run-if = [
+  "crashreporter",
+]
+
+["browser_upgrade_backup.js"]
+skip-if = [
+  "asan",
+  "tsan",
+]
+
+["browser_urlbarSearchMode.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_userTyped_restored_after_discard.js"]
+
+["browser_windowRestore_perwindowpb.js"]
+
+["browser_windowStateContainer.js"]
+disabled="Disabled by import_external_tests.py"
+
+["browser_wireframe_basic.js"]
+disabled="Disabled by import_external_tests.py"

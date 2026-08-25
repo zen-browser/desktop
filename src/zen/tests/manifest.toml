@@ -3,6 +3,36 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+[alerts]
+source = "browser/base/content/test/alerts"
+is_direct_path = true
+
+[backforward]
+source = "browser/base/content/test/backforward"
+is_direct_path = true
+
+[caps]
+source = "browser/base/content/test/caps"
+is_direct_path = true
+
+[gesture]
+source = "browser/base/content/test/gesture"
+is_direct_path = true
+
+[gesture.replace-manifest]
+"[DEFAULT]" = '''[DEFAULT]
+prefs = [
+  "zen.window-sync.enabled=false",
+]'''
+
+[linkHandling]
+source = "browser/base/content/test/linkHandling"
+is_direct_path = true
+disable = [
+  # Glance opens with alt+click, firefox doesnt know that.
+  "browser_javascript_links.js",
+]
+
 [readermode]
 source = "toolkit/components/reader/tests/browser"
 is_direct_path = true
@@ -33,6 +63,68 @@ xpcshell = true
 [services-crypto.replace-manifest]
 "../../../" = "../../../../services/"
 
+[sessionstore]
+source = "browser/components/sessionstore/test"
+is_direct_path = true
+disable = [
+  "browser_1933485_tab_groups_history.js",
+  "browser_1953801_tab_groups_history_close_other.js",
+  "browser_aboutSessionRestore.js",
+  "browser_bfcache_telemetry.js",
+  "browser_closedId.js",
+  "browser_closed_objects_changed_notifications_tabs.js",
+  "browser_closed_objects_changed_notifications_windows.js",
+  "browser_closed_tabs_closed_windows.js",
+  "browser_closed_tabs_windows.js",
+  "browser_cookies_partitioned.js",
+  "browser_crashedTabs.js",
+  "browser_dying_cache.js",
+  "browser_firefoxView_restore.js",
+  "browser_firefoxView_selected_restore.js",
+  "browser_forget_closed_tab_window_byId.js",
+  "browser_movePendingTabToNewWindow.js",
+  "browser_newtab_userTypedValue.js",
+  "browser_pinned_tabs.js",
+  "browser_purge_domaindata.js",
+  "browser_reopen_all_windows.js",
+  "browser_restoreLastActionCorrectOrder.js",
+  "browser_restoreLastClosedTabOrWindowOrSession.js",
+  "browser_restore_container_tabs_oa.js",
+  "browser_restore_tabless_window.js",
+  "browser_restore_verticalPinnedTabs.js",
+  "browser_restored_window_features.js",
+  "browser_scrollPositions.js",
+  "browser_scrollPositionsReaderMode.js",
+  "browser_searchModeSwitcher_restore.js",
+  "browser_speculative_connect.js",
+  "browser_splitview_integer_ids.js",
+  "browser_splitview_restore_in_closed_window.js",
+  "browser_splitview_string_migration.js",
+  "browser_swapDocShells.js",
+  "browser_tab_groups_restore_closed_in_closed_window.js",
+  "browser_tab_groups_restore_closed_in_open_window.js",
+  "browser_tab_groups_restore_closed_many_tabs.js",
+  "browser_tab_groups_closed.js",
+  "browser_tab_groups_restore_multiple.js",
+  "browser_tab_groups_restore_saved.js",
+  "browser_tab_groups_restore_simple.js",
+  "browser_tab_groups_save_on_removeAllTabsBut.js",
+  "browser_tab_groups_save_on_removeTabsToTheEnd.js",
+  "browser_tab_groups_save_on_removeTabsToTheStart.js",
+  "browser_tab_groups_save_on_window_close.js",
+  "browser_tab_groups_state.js",
+  "browser_tab_groups_undo.js",
+  "browser_tab_label_during_restore.js",
+  "browser_undoCloseById.js",
+  "browser_urlbarSearchMode.js",
+  "browser_windowStateContainer.js",
+  "browser_wireframe_basic.js",
+]
+
+[sessionstore.replace-manifest]
+'prefs = [' = '''prefs = [
+  "zen.window-sync.enabled=false",'''
+
 [shell]
 source = "browser/components/shell/test"
 is_direct_path = true
@@ -59,3 +151,10 @@ source = "toolkit/components/tooltiptext"
 disable = [
   "browser_input_file_tooltips.js",
 ]
+
+[zoom]
+source = "browser/base/content/test/zoom"
+is_direct_path = true
+
+[zoom.replace-manifest]
+"../general/" = "../../../../browser/base/content/test/general/"

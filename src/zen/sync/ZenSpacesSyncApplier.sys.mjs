@@ -498,7 +498,7 @@ class nsZenSpacesSyncApplier {
     tab._zenContentsVisible = true;
     this.#updateTabIdentity(win, tab, data);
     if (data.essential) {
-      win.gZenPinnedTabManager.addToEssentials(tab);
+      win.gZenPinnedTabManager.addToEssentials(tab, { replicating: true });
     } else {
       if (data.workspaceUuid) {
         tab.setAttribute("zen-workspace-id", data.workspaceUuid);
@@ -658,7 +658,7 @@ class nsZenSpacesSyncApplier {
 
     const isEssential = tab.hasAttribute("zen-essential");
     if (data.essential && !isEssential) {
-      win.gZenPinnedTabManager.addToEssentials(tab);
+      win.gZenPinnedTabManager.addToEssentials(tab, { replicating: true });
       return;
     }
     if (!data.essential && isEssential) {

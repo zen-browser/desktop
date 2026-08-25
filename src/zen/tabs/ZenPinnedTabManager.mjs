@@ -503,7 +503,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
-  addToEssentials(tab) {
+  addToEssentials(tab, { replicating = false } = {}) {
     // eslint-disable-next-line no-nested-ternary
     const tabs = tab
       ? // if it's already an array, dont make it [tab]
@@ -518,7 +518,11 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       // eslint-disable-next-line no-shadow
       let tab = tabs[i];
       const section = gZenWorkspaces.getEssentialsSection(tab);
-      if (!this.canEssentialBeAdded(tab)) {
+      // canEssentialBeAdded gates user-initiated adds on the *active* space's
+      // container. A replicated add mirrors a decision already made in another
+      // window or on another device, always into the tab's own container
+      // section.
+      if (!replicating && !this.canEssentialBeAdded(tab)) {
         movedAll = false;
         continue;
       }

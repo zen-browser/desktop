@@ -53,13 +53,4 @@ interface nsIZenCommonUtils : nsISupports {
   void configureGlobalSearchPanel(in nsIBaseWindow window,
                                   in long width, in long height);
   boolean isGlobalSearchPanel(in nsIBaseWindow window);
-
-  /**
-   * Make the next top-level Cocoa window use the titled, resizable NSPanel
-   * subclass reserved for external-link standalone windows. Preparation is
-   * consumed by exactly one native window creation.
-   */
-  void prepareStandalonePanel();
-  void cancelPreparedStandalonePanel();
-  boolean isStandalonePanel(in nsIBaseWindow window);
 };

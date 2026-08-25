@@ -335,19 +335,12 @@ add_task(async function test_submission_creates_fresh_ordinary_standalone() {
     "global-search",
     "The existing standalone lifecycle records the global-search source"
   );
-  const standaloneBaseWindow = standalone.docShell.treeOwner.QueryInterface(
-    Ci.nsIBaseWindow
-  );
   Assert.ok(
-    !Services.zen.isGlobalSearchPanel(standaloneBaseWindow),
-    "The loaded standalone is distinct from the search panel"
+    !Services.zen.isGlobalSearchPanel(
+      standalone.docShell.treeOwner.QueryInterface(Ci.nsIBaseWindow)
+    ),
+    "The loaded standalone remains an ordinary NSWindow"
   );
-  if (!Services.env.get("MOZ_HEADLESS")) {
-    Assert.ok(
-      Services.zen.isStandalonePanel(standaloneBaseWindow),
-      "A search submission opens in the dedicated standalone NSPanel"
-    );
-  }
   standalone.skipNextCanClose = true;
   standalone.close();
 });

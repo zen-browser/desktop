@@ -2,8 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/* eslint-disable mozilla/valid-services -- Services.zen is Zen's custom XPCOM service. */
-
 export const ZEN_STANDALONE_WINDOW_TYPE = "zen:external-link-standalone";
 
 import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
@@ -165,7 +163,6 @@ class nsZenStandaloneWindowManager {
     }
 
     this.markWindowAsStandalone(standaloneWindow, request);
-    this.presentExternalStandaloneWindow(standaloneWindow);
     this.#initializeStandaloneWindow(standaloneWindow).catch(console.error);
     return standaloneWindow;
   }
@@ -500,7 +497,6 @@ class nsZenStandaloneWindowManager {
    * @returns {Window|null} The created standalone window, or null to fall back
    */
   constructStandaloneWindow(request) {
-    let nativePanelPrepared = false;
     try {
       const args = Cc["@mozilla.org/supports-string;1"].createInstance(
         Ci.nsISupportsString
@@ -513,11 +509,6 @@ class nsZenStandaloneWindowManager {
       args.data =
         request.source === "global-search" ? "about:blank" : request.uriString;
 
-      if (AppConstants.platform === "macosx") {
-        Services.zen.prepareStandalonePanel();
-        nativePanelPrepared = true;
-      }
-
       const standaloneWindow = lazy.BrowserWindowTracker.openWindow({
         private: request.isPrivate,
         features: this.getStandaloneWindowFeatures(request),
@@ -528,9 +519,6 @@ class nsZenStandaloneWindowManager {
         zenStandaloneWindow: true,
       });
       if (!standaloneWindow) {
-        if (nativePanelPrepared) {
-          Services.zen.cancelPreparedStandalonePanel();
-        }
         return null;
       }
 
@@ -538,6 +526,14 @@ class nsZenStandaloneWindowManager {
       standaloneWindow.ZenExternalLinkStandaloneType =
         ZEN_STANDALONE_WINDOW_TYPE;
       this.makeWindowFollowTheUser(standaloneWindow);
+      // macOS activates Zen (and can raise an existing normal window) before
+      // this window exists. Asserting focus here, as early as possible, keeps
+      // that window on screen for the shortest time this code can control.
+      try {
+        standaloneWindow.focus();
+      } catch (error) {
+        console.error("Failed to focus a new Zen standalone window", error);
+      }
       if (request.userContextId) {
         // Honoured by the Zen tabbrowser patch when the window opens its first
         // tab, so an external link into a container keeps that container.
@@ -547,31 +543,8 @@ class nsZenStandaloneWindowManager {
 
       return standaloneWindow;
     } catch (error) {
-      if (nativePanelPrepared) {
-        try {
-          Services.zen.cancelPreparedStandalonePanel();
-        } catch {}
-      }
       console.error("Failed to construct Zen standalone window", error);
       return null;
-    }
-  }
-
-  /**
-   * Makes an externally-opened standalone key after native construction.
-   *
-   * On macOS the native non-activating NSPanel overrides Gecko's normal
-   * makeKeyAndOrderFront path with orderFrontRegardless plus makeKeyWindow.
-   * AppKit can therefore show and focus only the panel over another app's
-   * fullscreen Space without an artificial application-activation handoff.
-   *
-   * @param {Window} standaloneWindow - The newly-created standalone
-   */
-  presentExternalStandaloneWindow(standaloneWindow) {
-    try {
-      standaloneWindow.focus();
-    } catch (error) {
-      console.error("Failed to focus a new Zen standalone window", error);
     }
   }
 
@@ -594,12 +567,6 @@ class nsZenStandaloneWindowManager {
       const baseWindow = standaloneWindow.docShell.treeOwner.QueryInterface(
         Ci.nsIBaseWindow
       );
-      // The dedicated NSPanel owns its cross-application/fullscreen collection
-      // behavior. Keep the older dock-service path only as a safe fallback if
-      // native panel construction was unavailable.
-      if (Services.zen.isStandalonePanel(baseWindow)) {
-        return;
-      }
       dockSupport.makeWindowJoinActiveSpace(baseWindow);
     } catch (error) {
       console.error(
@@ -619,9 +586,18 @@ class nsZenStandaloneWindowManager {
     const { width, height, left, top } =
       this.getStandaloneWindowBounds(request);
 
-    // BrowserWindowTracker owns chrome, dialog=no and all. The dedicated Cocoa
-    // panel class is selected separately during native construction, so this
-    // helper contributes only standalone sizing and placement.
+    // An ordinary window, deliberately. What makes a standalone window
+    // particular is all above this layer: it carries no workspace chrome, it
+    // follows the user between Spaces, it hands focus back to the application
+    // the link came from when it closes, and it is never part of a session.
+    // Nothing about how macOS stacks it is special, because everything that
+    // raised it above ordinary windows - a floating window level, whether set
+    // through the dock service or through a native window class - also took it
+    // out of Mission Control and the window list, and stopped the user putting
+    // any other window in front of it. A window the user is expected to read
+    // and type in has to be orderable like every other window.
+    // BrowserWindowTracker owns chrome, dialog=no and all; this helper only
+    // contributes standalone sizing and placement.
     return [
       `width=${width}`,
       `height=${height}`,

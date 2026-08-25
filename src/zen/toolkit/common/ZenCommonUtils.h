@@ -66,26 +66,20 @@ class ZenCommonUtils final : public nsIZenCommonUtils {
   static void UnregisterGlobalSearchHotkeyInternal() {}
   static void PrepareGlobalSearchPanelInternal() {}
   static void CancelPreparedGlobalSearchPanelInternal() {}
-  static void PrepareStandalonePanelInternal() {}
-  static void CancelPreparedStandalonePanelInternal() {}
   static nsresult ConfigureGlobalSearchPanelInternal(nsIBaseWindow*, int32_t,
                                                      int32_t) {
     return NS_ERROR_NOT_IMPLEMENTED;
   }
   static bool IsGlobalSearchPanelInternal(nsIBaseWindow*) { return false; }
-  static bool IsStandalonePanelInternal(nsIBaseWindow*) { return false; }
 #else
   static nsresult RegisterGlobalSearchHotkeyInternal(const nsAString&,
                                                      nsAString&);
   static void UnregisterGlobalSearchHotkeyInternal();
   static void PrepareGlobalSearchPanelInternal();
   static void CancelPreparedGlobalSearchPanelInternal();
-  static void PrepareStandalonePanelInternal();
-  static void CancelPreparedStandalonePanelInternal();
   static nsresult ConfigureGlobalSearchPanelInternal(nsIBaseWindow*, int32_t,
                                                      int32_t);
   static bool IsGlobalSearchPanelInternal(nsIBaseWindow*);
-  static bool IsStandalonePanelInternal(nsIBaseWindow*);
 #endif
 };
 

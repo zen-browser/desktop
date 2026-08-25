@@ -1,8 +1,6 @@
 /* Any copyright is dedicated to the Public Domain.
    https://creativecommons.org/publicdomain/zero/1.0/ */
 
-/* eslint-disable mozilla/valid-services -- Services.zen is Zen's custom XPCOM service. */
-
 "use strict";
 
 const { gZenStandaloneWindowManager, ZEN_STANDALONE_WINDOW_TYPE } =
@@ -64,25 +62,6 @@ add_task(async function test_external_link_opens_standalone_window() {
       !standaloneWindow.document.documentElement.hasAttribute("persist"),
       "Standalone bounds do not overwrite normal browser window geometry"
     );
-    if (
-      AppConstants.platform === "macosx" &&
-      !Services.env.get("MOZ_HEADLESS")
-    ) {
-      const baseWindow = standaloneWindow.docShell.treeOwner.QueryInterface(
-        Ci.nsIBaseWindow
-      );
-      ok(
-        Services.zen.isStandalonePanel(baseWindow),
-        "A macOS standalone uses the dedicated native NSPanel class"
-      );
-      const normalBaseWindow = window.docShell.treeOwner.QueryInterface(
-        Ci.nsIBaseWindow
-      );
-      ok(
-        !Services.zen.isStandalonePanel(normalBaseWindow),
-        "A normal browser window remains an ordinary native window"
-      );
-    }
     ok(
       !gZenStandaloneWindowManager.hasOtherStandaloneWindows(standaloneWindow),
       "A normal window does not prevent returning focus to the previous app"

@@ -358,7 +358,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     ) {
       return;
     }
-    const currentView = this._data[this._lastOpenedTab.splitViewValue];
+    const currentView = this._data.find(group =>
+      group.tabs.includes(this._lastOpenedTab)
+    );
     if (currentView?.tabs.length >= this.MAX_TABS) {
       return;
     }
@@ -543,7 +545,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const panelsWidth = panelsRect.width;
     const panelsHeight = panelsRect.height;
     let numOfTabsToDivide = 2;
-    const currentView = this._data[this._lastOpenedTab.splitViewValue];
+    const currentView = this._data.find(group =>
+      group.tabs.includes(this._lastOpenedTab)
+    );
     if (currentView) {
       numOfTabsToDivide = currentView.tabs.length + 1;
     }
@@ -1106,7 +1110,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    */
   resetTabState(tab, forUnsplit) {
     tab.splitView = false;
-    delete tab.splitViewValue;
     tab.removeAttribute("split-view");
     tab.linkedBrowser.zenModeActive = false;
     const container = tab.linkedBrowser.closest(".browserSidebarContainer");
@@ -1150,6 +1153,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
     if (this.currentView === groupIndex) {
       this.deactivateCurrentSplitView();
+    } else if (this.currentView > groupIndex) {
+      this.currentView--;
     }
     for (const tab of this._data[groupIndex].tabs) {
       this.resetTabState(tab, true);
@@ -1641,7 +1646,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   applyGridToTabs(tabs) {
     tabs.forEach(tab => {
       tab.splitView = true;
-      tab.splitViewValue = this.currentView;
       tab.setAttribute("split-view", "true");
       const container = tab.linkedBrowser?.closest(".browserSidebarContainer");
       container.setAttribute("is-zen-split", "true");

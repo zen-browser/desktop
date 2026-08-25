@@ -6,3 +6,6 @@
 # can arrive, so a standalone window knows whether it is the reason Zen was
 # brought to the front.
 category browser-before-ui-startup resource:///modules/zen/standalonewindow/ZenStandaloneWindowManager.sys.mjs gZenStandaloneWindowManager.init
+
+# Owns the macOS global-search shortcut and its transient NSPanel host.
+category browser-before-ui-startup resource:///modules/zen/standalonewindow/ZenGlobalSearchPanel.sys.mjs gZenGlobalSearchPanel.init

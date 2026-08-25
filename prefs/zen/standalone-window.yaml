@@ -5,6 +5,11 @@
 - name: zen.standalone-window.enabled
   value: false
 
+# Stable DOM KeyboardEvent-code serialization consumed by the native macOS
+# hotkey bridge. The activation switch remains the preference above.
+- name: zen.standalone-window.global-search-shortcut
+  value: "meta,alt|KeyT"
+
 # Size of a newly opened standalone window. Not surfaced in the settings UI;
 # these exist so the default can be tuned without a rebuild.
 - name: zen.standalone-window.default-width

@@ -4,6 +4,7 @@
 
 FINAL_LIBRARY = "xul"
 SOURCES += [
+    "ZenGlobalSearchPanel.mm",
     "ZenHapticFeedback.mm",
     "ZenShareInternal.mm",
 ]

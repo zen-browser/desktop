@@ -19761,6 +19761,16 @@ declare global {
     ): void;
     canShare(): boolean;
     playHapticFeedback(): void;
+    registerGlobalSearchHotkey(shortcut: string): string;
+    unregisterGlobalSearchHotkey(): void;
+    prepareGlobalSearchPanel(): void;
+    cancelPreparedGlobalSearchPanel(): void;
+    configureGlobalSearchPanel(
+      window: nsIBaseWindow,
+      width: i32,
+      height: i32
+    ): void;
+    isGlobalSearchPanel(window: nsIBaseWindow): boolean;
   }
 
   // https://searchfox.org/firefox-main/source/zen/drag-and-drop/nsIZenDragAndDrop.idl

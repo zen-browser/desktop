@@ -54,6 +54,7 @@ let JSWINDOWACTORS = {
       },
     },
     allFrames: true,
+    messageManagerGroups: ["browsers"],
     remoteTypes: ["web", "file"],
     enablePreference: "zen.glance.enabled",
   },
@@ -89,6 +90,7 @@ if (!Services.appinfo.inSafeMode) {
       },
     },
     allFrames: true,
+    messageManagerGroups: ["browsers"],
     remoteTypes: ["web", "file"],
     enablePreference: "zen.boosts.enabled",
   };

@@ -1,0 +1,233 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+:root {
+  appearance: none !important;
+  color-scheme: dark;
+  min-width: 0 !important;
+  min-height: 0 !important;
+
+  --zen-global-search-input-height: 62px;
+  --zen-global-search-input-inline-padding: 16px;
+  --zen-global-search-radius: var(--border-radius-medium, 8px);
+  --zen-global-search-surface: rgb(24 24 27);
+  --zen-global-search-divider: rgb(255 255 255 / 9%);
+  --zen-global-search-text: rgb(247 247 248);
+  --zen-global-search-muted: rgb(166 166 176);
+  --zen-global-search-selection: rgb(255 255 255 / 11%);
+  --zen-global-search-hover: rgb(255 255 255 / 7%);
+  background: transparent !important;
+}
+
+html,
+body {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: clip;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: var(--zen-global-search-radius) !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  clip-path: inset(0 round var(--zen-global-search-radius));
+}
+
+#navigator-toolbox,
+#nav-bar,
+#urlbar-container {
+  display: block !important;
+  position: static !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  appearance: none !important;
+}
+
+/* Make the browser toolbox itself the clipped window surface. This keeps
+ * inherited toolbar paint and macOS theme pseudo-elements from escaping the
+ * four rounded corners. */
+#navigator-toolbox {
+  overflow: clip !important;
+  background: var(--zen-global-search-surface) !important;
+  border-radius: var(--zen-global-search-radius) !important;
+  clip-path: inset(0 round var(--zen-global-search-radius));
+}
+
+#navigator-toolbox::before,
+#navigator-toolbox::after,
+#nav-bar::before,
+#nav-bar::after,
+#urlbar-container::before,
+#urlbar-container::after,
+body::before,
+body::after {
+  display: none !important;
+  content: none !important;
+}
+
+:root[zen-global-search-panel="true"] #urlbar[zen-floating-urlbar="true"] {
+  box-sizing: border-box !important;
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  transform: none !important;
+  translate: none !important;
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  color: var(--zen-global-search-text) !important;
+  font-size: 1rem !important;
+  background: var(--zen-global-search-surface) !important;
+  border: 0 !important;
+  border-radius: var(--zen-global-search-radius) !important;
+  clip-path: inset(0 round var(--zen-global-search-radius));
+  outline: 0 !important;
+  box-shadow: none !important;
+  --urlbar-container-height: var(--zen-global-search-input-height) !important;
+  --urlbar-height: var(--zen-global-search-input-height) !important;
+  --urlbar-margin-inline: 16px !important;
+  --urlbarView-results-padding: 8px !important;
+}
+
+/* The whole launcher is one surface. The inherited omnibox background would
+ * otherwise make the input look like a separate translucent card. */
+#urlbar > .urlbar-background {
+  inset: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: inherit !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+:root[zen-global-search-panel="true"] #urlbar[zen-floating-urlbar="true"] > .urlbar-input-container {
+  box-sizing: border-box !important;
+  min-height: var(--zen-global-search-input-height) !important;
+  height: var(--zen-global-search-input-height) !important;
+  padding-inline: var(--zen-global-search-input-inline-padding) !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--zen-global-search-divider) !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+}
+
+#urlbar .urlbar-input {
+  color: var(--zen-global-search-text) !important;
+  caret-color: var(--zen-global-search-text) !important;
+  font-size: 18px !important;
+  font-weight: 500 !important;
+  letter-spacing: -0.01em;
+}
+
+#urlbar .urlbar-input::placeholder {
+  color: var(--zen-global-search-muted) !important;
+  opacity: 1 !important;
+}
+
+#urlbar > .urlbarView {
+  max-height: calc(100% - var(--zen-global-search-input-height)) !important;
+  color: var(--zen-global-search-text) !important;
+  background: transparent !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+.urlbarView-body-outer {
+  box-sizing: border-box;
+  max-height: calc(100vh - var(--zen-global-search-input-height) - 22px);
+  padding: 8px 6px 10px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+#urlbar-results {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.urlbarView-row {
+  min-height: 44px !important;
+  margin-block: 2px !important;
+  color: var(--zen-global-search-text) !important;
+  border-radius: 9px !important;
+  --urlbarView-row-padding-inline: 10px;
+  --urlbarView-row-padding-block: 7px;
+}
+
+.urlbarView-row:hover:not([selected]) {
+  background: var(--zen-global-search-hover) !important;
+}
+
+.urlbarView-row[selected] {
+  background: var(--zen-global-search-selection) !important;
+}
+
+.urlbarView-row .urlbarView-title {
+  color: var(--zen-global-search-text) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.urlbarView-row .urlbarView-url,
+.urlbarView-row .urlbarView-action,
+.urlbarView-row .urlbarView-title-separator::before {
+  color: var(--zen-global-search-muted) !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+}
+
+.urlbarView-row .urlbarView-favicon {
+  width: 20px !important;
+  height: 20px !important;
+  margin-inline: 4px 12px !important;
+  padding: 0 !important;
+  border-radius: 5px !important;
+  background: transparent !important;
+}
+
+.urlbarView-row[selected] .urlbarView-shortcutContent {
+  color: var(--zen-global-search-muted) !important;
+  background: rgb(255 255 255 / 8%) !important;
+}
+
+#urlbar .search-one-offs {
+  margin-inline: 10px !important;
+  padding-block: 8px !important;
+  border-top: 1px solid var(--zen-global-search-divider) !important;
+}
+
+#urlbar .searchbar-engine-one-off-item {
+  color: var(--zen-global-search-muted) !important;
+  background: transparent !important;
+  border-radius: 8px !important;
+}
+
+#urlbar .searchbar-engine-one-off-item:hover,
+#urlbar .searchbar-engine-one-off-item[selected] {
+  color: var(--zen-global-search-text) !important;
+  background: var(--zen-global-search-selection) !important;
+}
+
+#zen-global-search-context-browser {
+  display: none !important;
+}

@@ -15,6 +15,16 @@ const { nsKeyShortcutModifiers } = ChromeUtils.importESModule(
   }
 );
 
+const {
+  ZEN_GLOBAL_SEARCH_DEFAULT_SHORTCUT,
+  ZEN_GLOBAL_SEARCH_SHORTCUT_PREF,
+  formatGlobalSearchShortcut,
+  parseGlobalSearchShortcut,
+  serializeGlobalSearchShortcut,
+} = ChromeUtils.importESModule(
+  "resource:///modules/zen/standalonewindow/ZenGlobalSearchPanel.sys.mjs"
+);
+
 var gZenMarketplaceManager = {
   async init() {
     const checkForUpdates = document.getElementById("zenThemeMarketplaceCheckForUpdates");
@@ -712,6 +722,7 @@ var gZenLooksAndFeel = {
 
 var gZenWorkspacesSettings = {
   init() {
+    this._initGlobalSearchShortcut();
     var tabsUnloaderPrefListener = {
       async observe() {
         let buttonIndex = await confirmRestartPrompt(true, 1, true, true);
@@ -759,6 +770,140 @@ var gZenWorkspacesSettings = {
         toggleZenCycleByAttrWarning
       );
     });
+  },
+
+  _initGlobalSearchShortcut() {
+    const input = document.getElementById("zenStandaloneGlobalSearchShortcutInput");
+    const saveButton = document.getElementById("zenStandaloneGlobalSearchShortcutSave");
+    const resetButton = document.getElementById("zenStandaloneGlobalSearchShortcutReset");
+    const error = document.getElementById("zenStandaloneGlobalSearchShortcutError");
+    if (!input || input._zenGlobalSearchInitialized) {
+      return;
+    }
+    input._zenGlobalSearchInitialized = true;
+
+    let candidate = null;
+    const showError = (l10nId) => {
+      error.hidden = !l10nId;
+      if (l10nId) {
+        document.l10n.setAttributes(error, l10nId);
+      }
+    };
+    const showStoredShortcut = () => {
+      const stored = Services.prefs.getStringPref(
+        ZEN_GLOBAL_SEARCH_SHORTCUT_PREF,
+        ZEN_GLOBAL_SEARCH_DEFAULT_SHORTCUT
+      );
+      input.value =
+        formatGlobalSearchShortcut(stored) ||
+        formatGlobalSearchShortcut(ZEN_GLOBAL_SEARCH_DEFAULT_SHORTCUT);
+      candidate = null;
+      saveButton.disabled = true;
+    };
+    const keyboardConflict = (serialized) => {
+      const parsed = parseGlobalSearchShortcut(serialized);
+      if (!parsed) {
+        return false;
+      }
+      const modifiers = nsKeyShortcutModifiers.fromObject({
+        ctrl: parsed.modifiers.includes("control"),
+        alt: parsed.modifiers.includes("alt"),
+        shift: parsed.modifiers.includes("shift"),
+        meta: parsed.modifiers.includes("meta"),
+      });
+      let key = parsed.code;
+      if (key.startsWith("Key")) {
+        key = key.slice(3);
+      } else if (key.startsWith("Digit")) {
+        key = key.slice(5);
+      }
+      try {
+        return !!nsZenMultiWindowFeature.currentBrowser.gZenKeyboardShortcutsManager.checkForConflicts(
+          key,
+          modifiers,
+          "zen-global-search"
+        ).hasConflicts;
+      } catch {
+        return false;
+      }
+    };
+
+    const onKeyDown = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.key === "Escape") {
+        showStoredShortcut();
+        showError(null);
+        input.blur();
+        return;
+      }
+      const serialized = serializeGlobalSearchShortcut(event);
+      if (!serialized) {
+        candidate = null;
+        saveButton.disabled = true;
+        showError("zen-standalone-window-global-search-shortcut-unsupported");
+        return;
+      }
+      if (keyboardConflict(serialized)) {
+        candidate = null;
+        saveButton.disabled = true;
+        showError("zen-standalone-window-global-search-shortcut-conflict");
+        return;
+      }
+      candidate = serialized;
+      input.value = formatGlobalSearchShortcut(candidate);
+      input.classList.add("zenCKSOption-input-editing");
+      saveButton.disabled = false;
+      showError(null);
+    };
+    const onStatus = (_subject, topic, data) => {
+      if (topic !== "zen-global-search-hotkey-status") {
+        return;
+      }
+      let status;
+      try {
+        status = JSON.parse(data);
+      } catch {
+        return;
+      }
+      input.classList.remove("zenCKSOption-input-editing");
+      showStoredShortcut();
+      if (status.ok || status.reason === "disabled") {
+        showError(null);
+      } else if (status.reason === "conflict") {
+        showError("zen-standalone-window-global-search-shortcut-native-conflict");
+      } else if (status.reason === "invalid") {
+        showError("zen-standalone-window-global-search-shortcut-unsupported");
+      } else {
+        showError("zen-standalone-window-global-search-shortcut-registration-failed");
+      }
+    };
+    const prefObserver = { observe: showStoredShortcut };
+
+    input.addEventListener("keydown", onKeyDown);
+    input.addEventListener("focus", () => input.select());
+    saveButton.addEventListener("command", () => {
+      if (candidate) {
+        Services.prefs.setStringPref(ZEN_GLOBAL_SEARCH_SHORTCUT_PREF, candidate);
+      }
+    });
+    resetButton.addEventListener("command", () => {
+      Services.prefs.setStringPref(
+        ZEN_GLOBAL_SEARCH_SHORTCUT_PREF,
+        ZEN_GLOBAL_SEARCH_DEFAULT_SHORTCUT
+      );
+    });
+    Services.obs.addObserver(onStatus, "zen-global-search-hotkey-status");
+    Services.prefs.addObserver(ZEN_GLOBAL_SEARCH_SHORTCUT_PREF, prefObserver);
+    window.addEventListener(
+      "unload",
+      () => {
+        Services.obs.removeObserver(onStatus, "zen-global-search-hotkey-status");
+        Services.prefs.removeObserver(ZEN_GLOBAL_SEARCH_SHORTCUT_PREF, prefObserver);
+      },
+      { once: true }
+    );
+    showStoredShortcut();
   },
 };
 
@@ -1178,6 +1323,11 @@ Preferences.addAll([
     id: "zen.standalone-window.enabled",
     type: "bool",
     default: false,
+  },
+  {
+    id: "zen.standalone-window.global-search-shortcut",
+    type: "string",
+    default: "meta,alt|KeyT",
   },
   {
     id: "zen.glance.activation-method",

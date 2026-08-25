@@ -10,6 +10,7 @@
 #include "nsIWindowMediator.h"
 #include "nsServiceManagerUtils.h"
 #include "nsISharePicker.h"
+#include "nsIBaseWindow.h"
 
 #include "mozilla/StaticPrefs_zen.h"
 
@@ -18,6 +19,8 @@
 #endif
 
 namespace zen {
+
+ZenCommonUtils::~ZenCommonUtils() { UnregisterGlobalSearchHotkeyInternal(); }
 
 // Use the macro to inject all of the definitions for nsISupports.
 NS_IMPL_ISUPPORTS(ZenCommonUtils, nsIZenCommonUtils)
@@ -67,6 +70,45 @@ ZenCommonUtils::PlayHapticFeedback() {
     return NS_OK;
   }
   return PlayHapticFeedbackInternal();
+}
+
+NS_IMETHODIMP
+ZenCommonUtils::RegisterGlobalSearchHotkey(const nsAString& aShortcut,
+                                           nsAString& aResult) {
+  return RegisterGlobalSearchHotkeyInternal(aShortcut, aResult);
+}
+
+NS_IMETHODIMP
+ZenCommonUtils::UnregisterGlobalSearchHotkey() {
+  UnregisterGlobalSearchHotkeyInternal();
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+ZenCommonUtils::PrepareGlobalSearchPanel() {
+  PrepareGlobalSearchPanelInternal();
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+ZenCommonUtils::CancelPreparedGlobalSearchPanel() {
+  CancelPreparedGlobalSearchPanelInternal();
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+ZenCommonUtils::ConfigureGlobalSearchPanel(nsIBaseWindow* aWindow,
+                                           int32_t aWidth, int32_t aHeight) {
+  return ConfigureGlobalSearchPanelInternal(aWindow, aWidth, aHeight);
+}
+
+NS_IMETHODIMP
+ZenCommonUtils::IsGlobalSearchPanel(nsIBaseWindow* aWindow, bool* aIsPanel) {
+  if (!aIsPanel) {
+    return NS_ERROR_INVALID_ARG;
+  }
+  *aIsPanel = IsGlobalSearchPanelInternal(aWindow);
+  return NS_OK;
 }
 
 NS_IMETHODIMP

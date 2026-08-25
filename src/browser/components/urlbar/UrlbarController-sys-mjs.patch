@@ -2,6 +2,23 @@ diff --git a/browser/components/urlbar/UrlbarController.sys.mjs b/browser/compon
 index a05894d593e4149097c473822a38f87b2220625f..1660106c2a6548920fdffd2656e5a1f12c2d548b 100644
 --- a/browser/components/urlbar/UrlbarController.sys.mjs
 +++ b/browser/components/urlbar/UrlbarController.sys.mjs
+@@ -74,9 +74,14 @@ export class UrlbarController {
+     if (!options.input.window) {
+       throw new Error("input is missing 'window' property.");
+     }
++    const isGlobalSearchPanel =
++      options.input.window.document.documentElement?.getAttribute(
++        "zen-global-search-panel"
++      ) == "true";
+     if (
+-      !options.input.window.location ||
+-      options.input.window.location.href != AppConstants.BROWSER_CHROME_URL
++      (!options.input.window.location ||
++        options.input.window.location.href != AppConstants.BROWSER_CHROME_URL) &&
++      !isGlobalSearchPanel
+     ) {
+       throw new Error("input.window should be an actual browser window.");
+     }
 @@ -305,7 +305,6 @@ export class UrlbarController {
      const isMac = AppConstants.platform == "macosx";
      // Handle readline/emacs-style navigation bindings on Mac.

@@ -8,3 +8,6 @@ prefs = [
 ]
 
 ["browser_external_link_standalone_window.js"]
+
+["browser_global_search_panel.js"]
+skip-if = ["os != 'mac'"]

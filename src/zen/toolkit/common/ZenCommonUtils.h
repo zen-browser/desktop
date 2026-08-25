@@ -11,6 +11,8 @@
 #include "nsGlobalWindowOuter.h"
 #include "nsIURI.h"
 
+class nsIBaseWindow;
+
 namespace zen {
 
 /**
@@ -24,7 +26,7 @@ class ZenCommonUtils final : public nsIZenCommonUtils {
   explicit ZenCommonUtils() = default;
 
  private:
-  ~ZenCommonUtils() = default;
+  ~ZenCommonUtils();
   /**
    * @brief Check if the current context can share data.
    * @param data The data to share.
@@ -53,6 +55,31 @@ class ZenCommonUtils final : public nsIZenCommonUtils {
   }
 #else
   static auto PlayHapticFeedbackInternal() -> nsresult;
+#endif
+
+#if !defined(XP_MACOSX)
+  static nsresult RegisterGlobalSearchHotkeyInternal(const nsAString&,
+                                                     nsAString& aResult) {
+    aResult.AssignLiteral(u"{\"ok\":false,\"reason\":\"unsupported\"}");
+    return NS_OK;
+  }
+  static void UnregisterGlobalSearchHotkeyInternal() {}
+  static void PrepareGlobalSearchPanelInternal() {}
+  static void CancelPreparedGlobalSearchPanelInternal() {}
+  static nsresult ConfigureGlobalSearchPanelInternal(nsIBaseWindow*, int32_t,
+                                                     int32_t) {
+    return NS_ERROR_NOT_IMPLEMENTED;
+  }
+  static bool IsGlobalSearchPanelInternal(nsIBaseWindow*) { return false; }
+#else
+  static nsresult RegisterGlobalSearchHotkeyInternal(const nsAString&,
+                                                     nsAString&);
+  static void UnregisterGlobalSearchHotkeyInternal();
+  static void PrepareGlobalSearchPanelInternal();
+  static void CancelPreparedGlobalSearchPanelInternal();
+  static nsresult ConfigureGlobalSearchPanelInternal(nsIBaseWindow*, int32_t,
+                                                     int32_t);
+  static bool IsGlobalSearchPanelInternal(nsIBaseWindow*);
 #endif
 };
 

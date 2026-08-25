@@ -2,6 +2,18 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 index ebae2a976d..b8b32c4d99 100644
 --- a/widget/cocoa/nsCocoaWindow.mm
 +++ b/widget/cocoa/nsCocoaWindow.mm
+@@ -108,3 +108,5 @@
++extern Class ZenConsumePreparedGlobalSearchPanelClass();
++
+ using namespace mozilla::widget;
+ using namespace mozilla::gl;
+ using namespace mozilla;
+@@ -5158,1 +5160,5 @@ nsresult nsCocoaWindow::CreateNativeWindow(const NSRect& aRect,
++  if (Class zenPanelClass = ZenConsumePreparedGlobalSearchPanelClass()) {
++    windowClass = zenPanelClass;
++  }
++
+   // Create the window
 @@ -5712,7 +5712,6 @@ bool nsCocoaWindow::ShouldShowAsNSPopover() const {
    nsMenuPopupFrame* popupFrame = GetPopupFrame();
    return [mWindow isKindOfClass:[PopupWindow class]] &&

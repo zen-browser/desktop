@@ -33,6 +33,9 @@ ChromeUtils.defineLazyGetter(lazy, "MacDockSupport", () => {
       makeWindowJoinActiveSpace(baseWindow) {
         service.makeWindowJoinActiveSpace(baseWindow);
       },
+      activateApplication() {
+        service.activateApplication(false);
+      },
     };
   } catch (error) {
     console.error(
@@ -160,6 +163,63 @@ class nsZenStandaloneWindowManager {
     }
 
     this.markWindowAsStandalone(standaloneWindow, request);
+    this.#initializeStandaloneWindow(standaloneWindow).catch(console.error);
+    return standaloneWindow;
+  }
+
+  /**
+   * Opens a URL already resolved by the global-search URL bar in a fresh
+   * instance of the existing standalone window. This intentionally shares the
+   * constructor and all later lifecycle code with external links.
+   *
+   * @param {object} params - Resolved URL-bar load data
+   * @param {string} params.uriString - Final URL/search submission URL
+   * @param {nsIPrincipal} [params.triggeringPrincipal] - Load principal
+   * @param {nsIReferrerInfo} [params.referrerInfo] - Referrer information
+   * @param {nsIPolicyContainer} [params.policyContainer] - Policy container
+   * @param {number} [params.userContextId] - Container identity
+   * @param {nsIInputStream} [params.postData] - Search POST data, when used
+   * @returns {Window|null} A newly-created standalone window
+   */
+  openGlobalSearchResultInStandalone({
+    uriString,
+    triggeringPrincipal = null,
+    referrerInfo = null,
+    policyContainer = null,
+    userContextId = 0,
+    postData = null,
+  }) {
+    if (
+      !Services.prefs.getBoolPref("zen.standalone-window.enabled", false) ||
+      lazy.PrivateBrowsingUtils.permanentPrivateBrowsing
+    ) {
+      return null;
+    }
+
+    const request = this.createGlobalSearchStandaloneWindowRequest({
+      uriString,
+      triggeringPrincipal,
+      referrerInfo,
+      policyContainer,
+      userContextId,
+      postData,
+    });
+    if (!request) {
+      return null;
+    }
+
+    const standaloneWindow = this.constructStandaloneWindow(request);
+    if (!standaloneWindow) {
+      return null;
+    }
+
+    this.markWindowAsStandalone(standaloneWindow, request);
+    try {
+      lazy.MacDockSupport?.activateApplication();
+      standaloneWindow.focus();
+    } catch (error) {
+      console.error("Failed to activate a global-search standalone", error);
+    }
     this.#initializeStandaloneWindow(standaloneWindow).catch(console.error);
     return standaloneWindow;
   }
@@ -363,6 +423,60 @@ class nsZenStandaloneWindowManager {
   }
 
   /**
+   * Normalizes a global-search result without assigning an opener workspace.
+   * The temporary panel is deliberately not used as an opener or geometry
+   * source, so its bounds and transient native identity cannot leak into the
+   * loaded standalone.
+   *
+   * @param {object} params - Resolved URL-bar load data
+   * @param {string} params.uriString - Final submission URL
+   * @param {nsIPrincipal} params.triggeringPrincipal - Load principal
+   * @param {nsIReferrerInfo} params.referrerInfo - Referrer information
+   * @param {nsIPolicyContainer} params.policyContainer - Policy container
+   * @param {number} params.userContextId - Container identity
+   * @param {nsIInputStream} params.postData - Optional search POST data
+   * @returns {object|null} A normalized request, or null for an invalid URL
+   */
+  createGlobalSearchStandaloneWindowRequest({
+    uriString,
+    triggeringPrincipal,
+    referrerInfo,
+    policyContainer,
+    userContextId,
+    postData,
+  }) {
+    if (typeof uriString !== "string" || !uriString) {
+      return null;
+    }
+    try {
+      Services.io.newURI(uriString);
+    } catch (error) {
+      console.error(
+        "Cannot open an invalid global-search URL in a standalone window",
+        error
+      );
+      return null;
+    }
+
+    return {
+      uriString,
+      openerWindow: null,
+      source: "global-search",
+      isPrivate: false,
+      triggeringPrincipal,
+      referrerInfo,
+      policyContainer,
+      userContextId,
+      postData,
+      targetRoute: this.getDefaultKeepTargetRoute(null),
+      // Submission is the point at which Zen is intentionally activated. The
+      // existing close-time focus policy should therefore return to the app
+      // that owned focus while the non-activating panel was being used.
+      broughtApplicationForward: true,
+    };
+  }
+
+  /**
    * Whether the application became frontmost just now, which is what happens
    * when another application hands Zen a link to open while the user is in it.
    *
@@ -387,7 +501,13 @@ class nsZenStandaloneWindowManager {
       const args = Cc["@mozilla.org/supports-string;1"].createInstance(
         Ci.nsISupportsString
       );
-      args.data = request.uriString;
+      // The browser-window supports-string argument cannot carry the URL bar's
+      // principal/referrer/policy context or POST stream. Global-search
+      // standalones therefore start at about:blank and perform exactly one
+      // deferred load when their browser exists. External links retain their
+      // established fast startup path.
+      args.data =
+        request.source === "global-search" ? "about:blank" : request.uriString;
 
       const standaloneWindow = lazy.BrowserWindowTracker.openWindow({
         private: request.isPrivate,
@@ -670,6 +790,7 @@ class nsZenStandaloneWindowManager {
     }
 
     this.markStandaloneDocument(standaloneWindow);
+    this.#loadDeferredGlobalSearchSubmission(standaloneWindow);
     // Applied a second time: the chrome document carries macnativefullscreen,
     // which the app window turns into a fullscreen collection behaviour of its
     // own once it has loaded, after the first call.
@@ -680,6 +801,30 @@ class nsZenStandaloneWindowManager {
     this.initializeStandaloneToolbar(standaloneWindow);
     this.registerStandaloneWindowLifecycle(standaloneWindow);
     this.watchForNormalWindowVisits(standaloneWindow);
+  }
+
+  #loadDeferredGlobalSearchSubmission(standaloneWindow) {
+    const state = standaloneWindow.ZenExternalLinkStandalone;
+    if (state?.source !== "global-search" || state.deferredSubmissionLoaded) {
+      return;
+    }
+    state.deferredSubmissionLoaded = true;
+    try {
+      standaloneWindow.gBrowser.selectedBrowser.loadURI(
+        Services.io.newURI(state.uriString),
+        {
+        triggeringPrincipal:
+          state.triggeringPrincipal ??
+          Services.scriptSecurityManager.getSystemPrincipal(),
+        referrerInfo: state.referrerInfo,
+        policyContainer: state.policyContainer,
+        postData: state.postData,
+        }
+      );
+    } catch (error) {
+      state.deferredSubmissionLoaded = false;
+      console.error("Failed to load a global-search submission", error);
+    }
   }
 
   /**
@@ -749,6 +894,8 @@ class nsZenStandaloneWindowManager {
       referrerInfo: request.referrerInfo,
       policyContainer: request.policyContainer,
       userContextId: request.userContextId,
+      postData: request.postData ?? null,
+      deferredSubmissionLoaded: false,
       toolbar: null,
       isKeeping: false,
       isClosing: false,

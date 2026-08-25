@@ -5,6 +5,8 @@
 #include "nsISupports.idl"
 #include "nsIURI.idl"
 
+interface nsIBaseWindow;
+
 /**
  * @brief Common utility functions for Zen.
  */
@@ -32,4 +34,23 @@ interface nsIZenCommonUtils : nsISupports {
    * @brief Play a single haptic feedback note if supported.
    */
   void playHapticFeedback();
+
+  /**
+   * Atomically register or replace the in-process macOS global-search hotkey.
+   * Returns a JSON status object with `ok` and a stable `reason` value.
+   */
+  AString registerGlobalSearchHotkey(in AString shortcut);
+  void unregisterGlobalSearchHotkey();
+
+  /**
+   * Make the next top-level Cocoa window use Zen's non-activating NSPanel
+   * subclass. Preparation is consumed by exactly one native window creation.
+   */
+  void prepareGlobalSearchPanel();
+  void cancelPreparedGlobalSearchPanel();
+
+  /** Position, size and show a prepared global-search panel on the active screen. */
+  void configureGlobalSearchPanel(in nsIBaseWindow window,
+                                  in long width, in long height);
+  boolean isGlobalSearchPanel(in nsIBaseWindow window);
 };

@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<html id="zen-global-search-panel"
+      xmlns:html="http://www.w3.org/1999/xhtml"
+      xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+      xmlns="http://www.w3.org/1999/xhtml"
+      windowtype="zen:global-search-panel"
+      zen-global-search-panel="true"
+      retargetdocumentfocus="urlbar-input"
+      scrolling="false"
+      data-l10n-sync="true">
+<head>
+  <meta http-equiv="Content-Security-Policy"
+        content="script-src chrome: moz-src: resource:;" />
+  <link rel="stylesheet" href="chrome://global/skin/global.css" />
+  <link rel="stylesheet" href="chrome://browser/skin/" />
+  <link rel="stylesheet"
+        href="chrome://browser/content/zen-styles/zen-theme.css" />
+  <link rel="stylesheet"
+        href="chrome://browser/content/zen-styles/zen-omnibox.css" />
+  <link rel="stylesheet"
+        href="chrome://browser/content/zen-styles/zen-global-search-panel.css" />
+
+  <link rel="localization" href="branding/brand.ftl" />
+  <link rel="localization" href="browser/browser.ftl" />
+  <link rel="localization" href="browser/openTabs.ftl" />
+  <link rel="localization" href="browser/search.ftl" />
+  <link rel="localization" href="toolkit/global/textActions.ftl" />
+
+  <script src="chrome://browser/content/zen-global-search-panel.js"></script>
+</head>
+<html:body>
+  <xul:toolbox id="navigator-toolbox">
+    <xul:toolbar id="nav-bar">
+      <xul:toolbaritem id="urlbar-container" class="urlbar-container" flex="1" />
+    </xul:toolbar>
+  </xul:toolbox>
+
+  <!-- UrlbarInput is window-bound and expects a selected browser for security
+       and container context. This browser is never painted and never loads a
+       result; it is not a tab and is not connected to SessionStore. -->
+  <xul:browser id="zen-global-search-context-browser"
+               type="content"
+               remote="false"
+               disablehistory="true"
+               hidden="true"
+               src="about:blank" />
+
+  <xul:tooltip id="aHTMLTooltip" page="true" />
+</html:body>
+</html>

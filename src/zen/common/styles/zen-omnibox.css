@@ -486,6 +486,7 @@
   top: var(--zen-urlbar-top) !important;
   translate: -50% 0%;
   left: 50% !important;
+  margin-left: 0 !important;
 
   #urlbar-container:has(&) {
     border-radius: var(--border-radius-medium);

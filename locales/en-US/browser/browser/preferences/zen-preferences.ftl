@@ -109,9 +109,21 @@ zen-settings-workspaces-hide-default-container-indicator =
     .label = Hide the default container indicator in the tab bar
 
 zen-standalone-window-header = Standalone windows
-zen-standalone-window-description = Control how links opened from outside Zen are handled.
+zen-standalone-window-description = Open external links in lightweight standalone windows and summon Zen search from anywhere on macOS.
 zen-standalone-window-enabled =
-    .label = Open external links in standalone windows
+    .label = Enable standalone windows and global search
+zen-standalone-window-global-search-shortcut-label = Global search shortcut
+zen-standalone-window-global-search-shortcut-input =
+    .aria-label = Global search shortcut recorder
+    .title = Focus this field and press a supported shortcut. Press Escape to cancel editing.
+zen-standalone-window-global-search-shortcut-save =
+    .label = Save
+zen-standalone-window-global-search-shortcut-reset =
+    .label = Reset to ⌘⌥T
+zen-standalone-window-global-search-shortcut-conflict = This shortcut conflicts with an editable Zen browser shortcut.
+zen-standalone-window-global-search-shortcut-unsupported = Use a letter, digit, or function key with Command, Option, or Control.
+zen-standalone-window-global-search-shortcut-native-conflict = macOS or another application already uses this shortcut. The previous shortcut remains active.
+zen-standalone-window-global-search-shortcut-registration-failed = Zen could not register this shortcut. The previous shortcut remains active.
 
 zen-key-unsaved = Unsaved shortcut! Please save it by clicking the "Escape" key after retyping it.
 zen-key-conflict = Conflicts with { $group } -> { $shortcut }

@@ -223,6 +223,20 @@ groupbox h2 {
   border-color: green;
 }
 
+.zen-global-search-shortcut-row {
+  gap: var(--space-small);
+  margin-block-start: var(--space-xsmall);
+}
+
+#zenStandaloneGlobalSearchShortcutInput {
+  min-width: 12em;
+}
+
+.zen-global-search-shortcut-error {
+  color: var(--text-color-error);
+  margin-block-start: var(--space-xsmall);
+}
+
 #zenCKSOption-wrapper > [data-group] {
   border-bottom: 1px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
   padding-top: 20px;

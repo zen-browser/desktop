@@ -47,6 +47,24 @@
       <checkbox id="zenStandaloneWindowEnabled"
             data-l10n-id="zen-standalone-window-enabled"
             preference="zen.standalone-window.enabled"/>
+      <vbox id="zenStandaloneGlobalSearchShortcut" class="indent">
+            <label control="zenStandaloneGlobalSearchShortcutInput"
+                  data-l10n-id="zen-standalone-window-global-search-shortcut-label"/>
+            <hbox align="center" class="zen-global-search-shortcut-row">
+                  <html:input id="zenStandaloneGlobalSearchShortcutInput"
+                        class="zenCKSOption-input"
+                        readonly="readonly"
+                        data-l10n-id="zen-standalone-window-global-search-shortcut-input"/>
+                  <button id="zenStandaloneGlobalSearchShortcutSave"
+                        data-l10n-id="zen-standalone-window-global-search-shortcut-save"
+                        disabled="true"/>
+                  <button id="zenStandaloneGlobalSearchShortcutReset"
+                        data-l10n-id="zen-standalone-window-global-search-shortcut-reset"/>
+            </hbox>
+            <description id="zenStandaloneGlobalSearchShortcutError"
+                  class="description-deemphasized zen-global-search-shortcut-error"
+                  hidden="true"/>
+      </vbox>
 </groupbox>
 
 <hbox id="zenPinnedTabsManagerCategory"
@@ -83,5 +101,4 @@
 </groupbox>
 
 </html:template>
-
 

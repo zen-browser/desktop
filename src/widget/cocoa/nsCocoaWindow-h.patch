@@ -1,8 +1,26 @@
 diff --git a/widget/cocoa/nsCocoaWindow.h b/widget/cocoa/nsCocoaWindow.h
-index 22a2a7ef3a5e9257c8bb00ba6a55e8d39d2abbd9..6d8353fd11921585f7101f5717bdb3dd8f2a5eae 100644
+index 22a2a7ef3a5e9257c8bb00ba6a55e8d39d2abbd9..e829b10260960a7c346cc95d4a5948e28f070390 100644
 --- a/widget/cocoa/nsCocoaWindow.h
 +++ b/widget/cocoa/nsCocoaWindow.h
-@@ -461,6 +461,10 @@ class nsCocoaWindow final : public nsIWidget {
+@@ -41,7 +41,16 @@ class TextInputHandler;
+ // We don't save shadow, transparency mode or background color because it's not
+ // worth the hassle - Gecko will reset them anyway as soon as the window is
+ // resized.
+-@interface BaseWindow : NSWindow {
++//
++// BaseWindow derives from NSPanel rather than NSWindow purely so that a window
++// can carry NSWindowStyleMaskNonactivatingPanel: AppKit silently strips that
++// style bit from any window whose class is not an NSPanel, and it is the bit
++// the WindowServer keys "float above another application's native-fullscreen
++// Space" off (bug 1688932). NSPanel is a strict subclass of NSWindow; the only
++// default behaviours it changes (-isReleasedWhenClosed, -hidesOnDeactivate,
++// -canBecomeMainWindow) are restored to NSWindow's below, so windows that do
++// not carry the bit behave exactly as before.
++@interface BaseWindow : NSPanel {
+   // Data Storage
+   NSMutableDictionary* mState;
+   BOOL mDrawsIntoWindowFrame;
+@@ -461,6 +470,10 @@ class nsCocoaWindow final : public nsIWidget {
    void SetHideTitlebarSeparator(bool) override;
    bool IsMacTitlebarDirectionRTL() override;
    void SetCustomTitlebar(bool) override;
@@ -13,7 +31,7 @@ index 22a2a7ef3a5e9257c8bb00ba6a55e8d39d2abbd9..6d8353fd11921585f7101f5717bdb3dd
    void UpdateThemeGeometries(
        const nsTArray<ThemeGeometry>& aThemeGeometries) override;
    void LockAspectRatio(bool aShouldLock) override;
-@@ -674,6 +678,7 @@ class nsCocoaWindow final : public nsIWidget {
+@@ -674,6 +687,7 @@ class nsCocoaWindow final : public nsIWidget {
    // show (e.g. a window created by detaching a tab from a fullscreen window).
    bool mIsInitialFullscreenSuppressed = false;
    bool mWasShown = false;

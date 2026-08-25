@@ -1,5 +1,5 @@
 diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
-index 2efd02e4a92433fd29bbfdb707aa81cfec45031e..3b763c3927f07e529c826f8e4f62bc80a324b247 100644
+index 887e4c052d5dd2b73d4c2059463529fb4b09dcab..28e3e31fd11099be6c334f8f0b3287aa474dfa80 100644
 --- a/widget/cocoa/nsCocoaWindow.mm
 +++ b/widget/cocoa/nsCocoaWindow.mm
 @@ -86,6 +86,7 @@
@@ -10,7 +10,7 @@ index 2efd02e4a92433fd29bbfdb707aa81cfec45031e..3b763c3927f07e529c826f8e4f62bc80
  #include "mozilla/WritingModes.h"
  #include "mozilla/dom/Document.h"
  #include "mozilla/layers/CompositorBridgeChild.h"
-@@ -1332,6 +1333,110 @@ - (NSRect)_opaqueRectForWindowMoveWhenInTitlebar {
+@@ -1332,6 +1333,133 @@ mozilla::VibrancyManager& nsCocoaWindow::EnsureVibrancyManager() {
  }
  @end
  
@@ -82,6 +82,29 @@ index 2efd02e4a92433fd29bbfdb707aa81cfec45031e..3b763c3927f07e529c826f8e4f62bc80
 +void nsCocoaWindow::SetWindowClass(const nsAString& aXulWinType,
 +                                   const nsAString& aXulWinClass,
 +                                   const nsAString& aXulWinName) {
++  if (mWindow && aXulWinType.EqualsLiteral("Toolkit:PictureInPicture") &&
++      StaticPrefs::zen_widget_macos_pip_over_fullscreen_enabled()) {
++    // Let the Picture-in-Picture player float above other applications'
++    // native-fullscreen Spaces (bug 1688932). Empirically (macOS 26) exactly
++    // two things are load-bearing: the window must carry
++    // NSWindowStyleMaskNonactivatingPanel -- which only sticks on an NSPanel,
++    // hence BaseWindow's superclass -- and it must not carry
++    // FullScreenPrimary. The window level is irrelevant. The bit can be added
++    // after creation, which is why this lives here rather than in
++    // CreateNativeWindow: the XUL windowtype is the cleanest identity we have.
++    // player.xhtml sets macnativefullscreen="false" so that
++    // SyncAttributesToWidget() does not put FullScreenPrimary back afterwards.
++    mWindow.styleMask |= NSWindowStyleMaskNonactivatingPanel;
++    mWindow.hidesOnDeactivate = NO;
++    mWindow.collectionBehavior =
++        (mWindow.collectionBehavior &
++         ~(NSWindowCollectionBehaviorFullScreenPrimary |
++           NSWindowCollectionBehaviorFullScreenAllowsTiling)) |
++        NSWindowCollectionBehaviorCanJoinAllSpaces |
++        NSWindowCollectionBehaviorFullScreenAuxiliary |
++        NSWindowCollectionBehaviorFullScreenDisallowsTiling;
++    return;
++  }
 +  if (mWindowType != WindowType::TopLevel || mIsBrowserWindow ||
 +      !aXulWinType.EqualsLiteral("navigator:browser")) {
 +    return;
@@ -121,7 +144,7 @@ index 2efd02e4a92433fd29bbfdb707aa81cfec45031e..3b763c3927f07e529c826f8e4f62bc80
  void nsCocoaWindow::UpdateWindowDraggingRegion(
      const LayoutDeviceIntRegion& aRegion) {
    // mChildView returns YES from mouseDownCanMoveWindow, so we need to put
-@@ -4919,6 +5024,10 @@ - (BOOL)wantsBestResolutionOpenGLSurface {
+@@ -4919,6 +5047,10 @@ void nsCocoaWindow::DestroyNativeWindow() {
  nsCocoaWindow::~nsCocoaWindow() {
    NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
  
@@ -132,3 +155,50 @@ index 2efd02e4a92433fd29bbfdb707aa81cfec45031e..3b763c3927f07e529c826f8e4f62bc80
    RemoveAllChildren();
    if (mWindow && mWindowMadeHere) {
      CancelAllTransitions();
+@@ -8111,9 +8243,46 @@ static NSMutableSet* gSwizzledFrameViewClasses = nil;
+   mTouchBar = nil;
+   mIsAnimationSuppressed = NO;
+ 
++  // BaseWindow is an NSPanel (see nsCocoaWindow.h). Restore the two NSWindow
++  // defaults NSPanel changes, via the setters -- AppKit reads its own internal
++  // state, so getter overrides would not be honoured.
++  // nsCocoaWindow::DestroyNativeWindow() asserts releasedWhenClosed and relies
++  // on -close to release the window; Gecko manages visibility itself and must
++  // never have windows vanish when the app deactivates.
++  self.releasedWhenClosed = YES;
++  self.hidesOnDeactivate = NO;
++
+   return self;
+ }
+ 
++// NSPanel's -canBecomeMainWindow unconditionally returns NO, and NSWindow's own
++// implementation refuses any NSPanel-derived instance, so it cannot simply be
++// forwarded to. Re-state NSWindow's documented rule instead: visible, and has
++// a title bar or a resizable border. A non-activating panel must never become
++// main -- that is what keeps a click on it from pulling the user out of another
++// application's fullscreen Space.
++- (BOOL)canBecomeMainWindow {
++  if (self.styleMask & NSWindowStyleMaskNonactivatingPanel) {
++    return NO;
++  }
++  return self.isVisible && (self.styleMask & (NSWindowStyleMaskTitled |
++                                              NSWindowStyleMaskResizable)) != 0;
++}
++
++// NSPanel closes itself on Escape when nothing consumes the key. Gecko owns
++// Escape (ChildView consumes keyDown:), so make this a no-op for every window.
++- (void)cancel:(id)sender {
++}
++
++// NSPanel reports AXDialog / AXSystemDialog as its accessibility subrole;
++// keep VoiceOver announcing ordinary windows as windows.
++- (NSAccessibilitySubrole)accessibilitySubrole {
++  if (self.styleMask & NSWindowStyleMaskNonactivatingPanel) {
++    return NSAccessibilityFloatingWindowSubrole;
++  }
++  return NSAccessibilityStandardWindowSubrole;
++}
++
+ static CGFloat GetMenuCornerRadius() {
+   return nsCocoaFeatures::OnTahoeOrLater() ? 12.0f : 6.0f;
+ }

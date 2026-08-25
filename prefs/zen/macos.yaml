@@ -35,3 +35,13 @@
 - name: zen.widget.macos.override-system-swipe-gestures
   value: true
   condition: "defined(XP_MACOSX)"
+
+# Let the Picture-in-Picture player float above other applications'
+# native-fullscreen Spaces. Requires BaseWindow to be an NSPanel; see
+# nsCocoaWindow::SetWindowClass in nsCocoaWindow.mm (bug 1688932).
+- name: zen.widget.macos.pip-over-fullscreen.enabled
+  value: true
+  condition: "defined(XP_MACOSX)"
+  cpptype: bool
+  mirror: always
+  type: static

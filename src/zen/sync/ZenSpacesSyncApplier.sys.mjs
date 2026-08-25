@@ -34,6 +34,25 @@ class nsZenSpacesSyncApplier {
   }
 
   /**
+   * Maps a record's container guid to the local userContextId. A guid with
+   * no local mapping (its container record hasn't applied here yet) throws,
+   * failing the record so it redelivers once the container exists .
+   *
+   * @param {?string} containerGuid
+   * @returns {number}
+   */
+  #resolveContainerId(containerGuid) {
+    if (!containerGuid) {
+      return 0;
+    }
+    const mapped = ZenSpacesSyncModel.contextIdForGuid(containerGuid);
+    if (mapped === null) {
+      throw new Error(`unknown container guid ${containerGuid}`);
+    }
+    return mapped;
+  }
+
+  /**
    * @param {Array} records - decrypted incoming records.
    * @returns {Array<string>} ids of records that failed to apply.
    */
@@ -259,8 +278,7 @@ class nsZenSpacesSyncApplier {
           name: data.name ?? "",
           icon: data.icon ?? undefined,
           theme: data.theme ?? null,
-          containerTabId:
-            ZenSpacesSyncModel.contextIdForGuid(data.containerGuid) ?? 0,
+          containerTabId: this.#resolveContainerId(data.containerGuid),
         };
         // A space record re-syncs whenever its child ordering changes, so
         // only propagate (and especially repaint) when its own fields did.
@@ -482,8 +500,7 @@ class nsZenSpacesSyncApplier {
   }
 
   #createTab(win, tabId, data) {
-    const userContextId =
-      ZenSpacesSyncModel.contextIdForGuid(data.containerGuid) ?? 0;
+    const userContextId = this.#resolveContainerId(data.containerGuid);
     const tab = win.gBrowser.addTrustedTab(data.url, {
       createLazyBrowser: true,
       inBackground: true,

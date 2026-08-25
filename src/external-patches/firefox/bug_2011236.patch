@@ -81,7 +81,7 @@ new file mode 100644
 +    "about:blank subframe entry still stores its inherited policyContainer"
 +  );
 +
-+  BrowserTestUtils.removeTab(tab);
++  await BrowserTestUtils.removeTab(tab);
 +});
 diff --git a/browser/components/sessionstore/test/browser_policy_container_sample.html b/browser/components/sessionstore/test/browser_policy_container_sample.html
 new file mode 100644

@@ -1,20 +1,24 @@
 diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
-index ebae2a976d..b8b32c4d99 100644
+index ebae2a976d..35302812ed 100644
 --- a/widget/cocoa/nsCocoaWindow.mm
 +++ b/widget/cocoa/nsCocoaWindow.mm
 @@ -108,3 +108,5 @@
-+extern Class ZenConsumePreparedGlobalSearchPanelClass();
++extern Class ZenConsumePreparedPanelClass();
 +
  using namespace mozilla::widget;
  using namespace mozilla::gl;
  using namespace mozilla;
+@@ -1219,2 +1221,2 @@ void nsCocoaWindow::UpdateThemeGeometries(
+-  if (![mChildView.window isKindOfClass:[ToolbarWindow class]]) {
++  if (![mChildView.window respondsToSelector:@selector(placeWindowButtons:)]) {
+     return;
 @@ -5158,1 +5160,5 @@ nsresult nsCocoaWindow::CreateNativeWindow(const NSRect& aRect,
-+  if (Class zenPanelClass = ZenConsumePreparedGlobalSearchPanelClass()) {
++  if (Class zenPanelClass = ZenConsumePreparedPanelClass()) {
 +    windowClass = zenPanelClass;
 +  }
 +
    // Create the window
-@@ -5712,7 +5712,6 @@ bool nsCocoaWindow::ShouldShowAsNSPopover() const {
+@@ -5712,7 +5716,6 @@ bool nsCocoaWindow::ShouldShowAsNSPopover() const {
    nsMenuPopupFrame* popupFrame = GetPopupFrame();
    return [mWindow isKindOfClass:[PopupWindow class]] &&
           [(PopupWindow*)mWindow usePopover] && popupFrame &&
@@ -22,7 +26,97 @@ index ebae2a976d..b8b32c4d99 100644
           !popupFrame->PopupElement().GetBoolAttr(nsGkAtoms::nonnative);
  }
  
-@@ -8993,6 +8992,15 @@ static const NSUInteger kWindowShadowOptionsTooltip = 4;
+@@ -7785,3 +7790,3 @@ void WindowDelegate::windowDidBecomeMain:(NSNotification*)aNotification {
+-  if ([window isKindOfClass:[ToolbarWindow class]]) {
+-    [(ToolbarWindow*)window windowMainStateChanged];
++  if ([window respondsToSelector:@selector(windowMainStateChanged)]) {
++    [(id)window windowMainStateChanged];
+   }
+@@ -7816,3 +7821,3 @@ void WindowDelegate::windowDidResignMain:(NSNotification*)aNotification {
+-  if ([window isKindOfClass:[ToolbarWindow class]]) {
+-    [(ToolbarWindow*)window windowMainStateChanged];
++  if ([window respondsToSelector:@selector(windowMainStateChanged)]) {
++    [(id)window windowMainStateChanged];
+   }
+@@ -7951,10 +7956,12 @@ @implementation NSView (FrameViewMethodSwizzling)
+ - (NSPoint)FrameView__closeButtonOrigin {
+-  if (![self.window isKindOfClass:[ToolbarWindow class]]) {
++  NSWindow* window = self.window;
++  if (![window respondsToSelector:@selector(windowButtonsRect)] ||
++      ![window respondsToSelector:@selector(drawsContentsIntoWindowFrame)]) {
+     return self.FrameView__closeButtonOrigin;
+   }
+-  auto* win = static_cast<ToolbarWindow*>(self.window);
+-  if (win.drawsContentsIntoWindowFrame &&
+-      !(win.styleMask & NSWindowStyleMaskFullScreen) &&
+-      (win.styleMask & NSWindowStyleMaskTitled)) {
+-    const NSRect buttonsRect = win.windowButtonsRect;
++  id win = window;
++  if ([win drawsContentsIntoWindowFrame] &&
++      !([win styleMask] & NSWindowStyleMaskFullScreen) &&
++      ([win styleMask] & NSWindowStyleMaskTitled)) {
++    const NSRect buttonsRect = [win windowButtonsRect];
+     if (NSIsEmptyRect(buttonsRect)) {
+@@ -7964,5 +7971,5 @@ - (NSPoint)FrameView__closeButtonOrigin {
+       // making them invisible.
+-      return NSMakePoint(buttonsRect.origin.x, win.frame.size.height);
++      return NSMakePoint(buttonsRect.origin.x, [win frame].size.height);
+     }
+-    if (win.windowTitlebarLayoutDirection ==
++    if ([win windowTitlebarLayoutDirection] ==
+         NSUserInterfaceLayoutDirectionRightToLeft) {
+@@ -7983,3 +7990,5 @@ - (CGFloat)FrameView__titlebarHeight {
+   CGFloat height = [self FrameView__titlebarHeight];
+-  if ([self.window isKindOfClass:[ToolbarWindow class]]) {
++  NSWindow* window = self.window;
++  if ([window respondsToSelector:@selector(windowButtonsRect)] &&
++      [window respondsToSelector:@selector(drawsContentsIntoWindowFrame)]) {
+     // Make sure that the titlebar height includes our shifted buttons.
+@@ -7987,10 +7996,11 @@ - (CGFloat)FrameView__titlebarHeight {
+     // the bottom left corner of the window.
+-    auto* win = static_cast<ToolbarWindow*>(self.window);
++    id win = window;
+     CGFloat frameHeight = self.frame.size.height;
+     CGFloat windowButtonY = frameHeight;
+-    if (!NSIsEmptyRect(win.windowButtonsRect) &&
+-        win.drawsContentsIntoWindowFrame &&
+-        !(win.styleMask & NSWindowStyleMaskFullScreen) &&
+-        (win.styleMask & NSWindowStyleMaskTitled)) {
+-      windowButtonY = win.windowButtonsRect.origin.y;
++    NSRect windowButtonsRect = [win windowButtonsRect];
++    if (!NSIsEmptyRect(windowButtonsRect) &&
++        [win drawsContentsIntoWindowFrame] &&
++        !([win styleMask] & NSWindowStyleMaskFullScreen) &&
++        ([win styleMask] & NSWindowStyleMaskTitled)) {
++      windowButtonY = windowButtonsRect.origin.y;
+     }
+@@ -8029,3 +8039,5 @@ @interface BaseWindow (Private)
+ @end
+-
++
++void ZenEnsureFrameViewClassIsSwizzled(Class frameViewClass);
++
+ @implementation BaseWindow
+@@ -8040,6 +8052,11 @@ + (Class)frameViewClassForStyleMask:(NSUInteger)styleMask {
++  ZenEnsureFrameViewClassIsSwizzled(frameViewClass);
++  return frameViewClass;
++}
++
++void ZenEnsureFrameViewClassIsSwizzled(Class frameViewClass) {
+   if (!gSwizzledFrameViewClasses) {
+     gSwizzledFrameViewClasses = [[NSMutableSet setWithCapacity:3] retain];
+     if (!gSwizzledFrameViewClasses) {
+-      return frameViewClass;
++      return;
+     }
+   }
+@@ -8074,5 +8091,3 @@ + (Class)frameViewClassForStyleMask:(NSUInteger)styleMask {
+     [gSwizzledFrameViewClasses addObject:frameViewClass];
+   }
+-
+-  return frameViewClass;
+ }
+@@ -8993,6 +9018,15 @@ static const NSUInteger kWindowShadowOptionsTooltip = 4;
      return;
    }
  

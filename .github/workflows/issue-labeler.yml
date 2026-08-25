@@ -1,7 +1,6 @@
 name: Issue labeler
 on:
-  issues:
-    types: [opened]
+  workflow_dispatch:
 
 permissions:
   contents: read

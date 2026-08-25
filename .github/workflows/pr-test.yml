@@ -3,9 +3,7 @@ permissions:
   contents: read
 
 on:
-  pull_request:
-    branches:
-      - dev
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

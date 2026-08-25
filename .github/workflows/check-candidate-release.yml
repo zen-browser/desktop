@@ -1,8 +1,6 @@
 name: Check Firefox Candidate Release
 
 on:
-  schedule:
-    - cron: "59 4 * * 2"
   workflow_dispatch:
 
 permissions:

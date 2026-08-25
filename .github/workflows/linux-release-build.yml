@@ -1,6 +1,25 @@
 name: Linux Release Build
 
 on:
+  workflow_dispatch:
+    inputs:
+      build-version:
+        description: "The version to build"
+        required: true
+        type: string
+      release-branch:
+        description: "The branch to build"
+        required: true
+        type: string
+      MOZ_BUILD_DATE:
+        type: string
+        required: true
+        default: ""
+      use-sccache:
+        description: "Use sccache"
+        required: true
+        type: boolean
+        default: false
   workflow_call:
     inputs:
       build-version:

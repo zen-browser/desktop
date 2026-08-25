@@ -1060,7 +1060,7 @@ window.gZenVerticalTabsManager = {
             easing: "easeOut",
           }
         )
-        .then(() => {})
+        .then(() => { })
         .catch(err => {
           console.error(err);
         })
@@ -1083,7 +1083,7 @@ window.gZenVerticalTabsManager = {
             easing: "easeOut",
           }
         )
-        .then(() => {})
+        .then(() => { })
         .catch(err => {
           console.error(err);
         })
@@ -1115,8 +1115,8 @@ window.gZenVerticalTabsManager = {
         ...(isLastItem
           ? {}
           : {
-              marginBottom: [`0px`, `-${height}px`],
-            }),
+            marginBottom: [`0px`, `-${height}px`],
+          }),
       },
       {
         duration: 0.1,
@@ -1217,7 +1217,12 @@ window.gZenVerticalTabsManager = {
     });
 
     if (nsZenMultiWindowFeature.isActiveWindow) {
-      this._updateEvent();
+      if (!this._pendingUpdateEvent) {
+        this._pendingUpdateEvent = true;
+        await Promise.resolve();
+        this._pendingUpdateEvent = false;
+        this._updateEvent();
+      }
       this._initWaitPromise();
     }
   },

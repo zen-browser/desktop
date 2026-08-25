@@ -74,7 +74,7 @@ index 7f07ace0cd..69a5a2ee8b 100644
  
  nsMacDockSupport::~nsMacDockSupport() {
    if (mDockTileWrapperView) {
-@@ -122,6 +172,97 @@ nsMacDockSupport::ActivateApplication(bool aIgnoreOtherApplications) {
+@@ -122,6 +172,112 @@ nsMacDockSupport::ActivateApplication(bool aIgnoreOtherApplications) {
    NS_OBJC_END_TRY_BLOCK_RETURN(NS_ERROR_FAILURE);
  }
  
@@ -163,6 +163,21 @@ index 7f07ace0cd..69a5a2ee8b 100644
 +  behavior |= NSWindowCollectionBehaviorMoveToActiveSpace |
 +              NSWindowCollectionBehaviorFullScreenAuxiliary |
 +              NSWindowCollectionBehaviorFullScreenDisallowsTiling;
++
++  // macOS 13 replaced those fullscreen bits with a three-way, mutually
++  // exclusive Stage Manager and fullscreen role. CanJoinAllApplications is
++  // the only one of the three that lets an ordinary window appear on the
++  // Space of another application's fullscreen window, which is exactly the
++  // case an external link opened from a fullscreen app lands in. It governs
++  // Space eligibility and nothing else: the window keeps a normal window
++  // level, so the user can still send it behind, move it, and leave it where
++  // they put it.
++  if (@available(macOS 13.0, *)) {
++    behavior &= ~(NSWindowCollectionBehaviorPrimary |
++                  NSWindowCollectionBehaviorAuxiliary);
++    behavior |= NSWindowCollectionBehaviorCanJoinAllApplications;
++  }
++
 +  [nativeWindow setCollectionBehavior:behavior];
 +  return NS_OK;
 +

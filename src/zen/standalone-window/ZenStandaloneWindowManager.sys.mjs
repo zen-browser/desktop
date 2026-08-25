@@ -551,6 +551,13 @@ class nsZenStandaloneWindowManager {
   /**
    * Asks the window to join whichever macOS Space is active when Zen is
    * brought forward, instead of the system switching Spaces to reach it.
+   * On macOS 13 and later that includes the Space of another application's
+   * fullscreen window, which is where an external link opened from a
+   * fullscreen app has to land.
+   *
+   * This only decides which Spaces the window is eligible for. It is still an
+   * ordinary window at an ordinary window level: the user can put another
+   * window in front of it, move it, and leave it wherever they left it.
    *
    * Called before the window is shown, because the collection behaviour has to
    * be in place by the time macOS decides where to put it.

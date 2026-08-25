@@ -1,8 +1,8 @@
 diff --git a/browser/components/tabbrowser/content/tab-context-menu.js b/browser/components/tabbrowser/content/tab-context-menu.js
-index 4a7cb33a4d9067d469bbe09d4cd8844581642f7a..2e2404b78deb428e57d01b8b929231f675a21323 100644
+index 4a7cb33a4d9067d469bbe09d4cd8844581642f7a..d7f75471a207cccac6ca3dec49037ac30dd76163 100644
 --- a/browser/components/tabbrowser/content/tab-context-menu.js
 +++ b/browser/components/tabbrowser/content/tab-context-menu.js
-@@ -839,7 +839,8 @@ var TabContextMenu = {
+@@ -839,13 +839,15 @@ var TabContextMenu = {
      );
      contextUnpinSelectedTabs.hidden =
        !this.contextTab.pinned || !this.multiselected;
@@ -12,3 +12,10 @@ index 4a7cb33a4d9067d469bbe09d4cd8844581642f7a..2e2404b78deb428e57d01b8b929231f6
      // Build Ask Chat items. The classic layout shows the full ask-chat submenu
      // (#context_askChat); the alt layout shows only a flat "Summarize Page" item
      // (#context_askChatSummarize). Hide whichever one this layout doesn't use so
+     // a pref toggle reverses cleanly.
+     if (!this._altTabContextMenu) {
+       document.getElementById("context_askChatSummarize").hidden = true;
++      document.getElementById("context_aiSeparator").hidden = true;
+       TabContextMenu.GenAI.buildTabMenu(
+         document.getElementById("context_askChat"),
+         this

@@ -13,9 +13,25 @@ disable = [
   "browser_readerMode_colorSchemePref.js",
 ]
 
+[remote-settings]
+source = "services/settings/test/unit"
+is_direct_path = true
+xpcshell = true
+
+[remote-settings.replace-manifest]
+"../../../" = "../../../../services/"
+
 [safebrowsing]
 source = "browser/components/safebrowsing/content/test"
 is_direct_path = true
+
+[services-crypto]
+source = "services/crypto/tests/unit"
+is_direct_path = true
+xpcshell = true
+
+[services-crypto.replace-manifest]
+"../../../" = "../../../../services/"
 
 [shell]
 source = "browser/components/shell/test"
@@ -24,6 +40,15 @@ disable = [
   "browser_1119088.js",
   "browser_setDesktopBackgroundPreview.js",
 ]
+
+[sync]
+source = "services/sync/tests/unit"
+is_direct_path = true
+xpcshell = true
+
+[sync.replace-manifest]
+"../../../" = "../../../../services/"
+'"identity.fxaccounts.enabled=true"' = '"identity.fxaccounts.enabled=true", "browser.formfill.enable=true"'
 
 [tabMediaIndicator]
 source = "browser/components/tabbrowser/test/browser/tabMediaIndicator"

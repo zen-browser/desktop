@@ -1,0 +1,29 @@
+diff --git a/toolkit/content/widgets/panel-list/panel-list.mjs b/toolkit/content/widgets/panel-list/panel-list.mjs
+index 68ad2fafc8b31dfff541cf8381d9b9533e376d1c..fa62fec6bfb33338091fc06d3736fb76fd5c47c4 100644
+--- a/toolkit/content/widgets/panel-list/panel-list.mjs
++++ b/toolkit/content/widgets/panel-list/panel-list.mjs
+@@ -223,7 +223,12 @@ export class PanelList extends HTMLElement {
+     this.setAttribute("showing", "true");
+     // Tell the host element to hide any overflow in case the panel extends off
+     // the page before the alignment is set.
+-    hostElement.style.overflow = "hidden";
++    const hostHidesOverflow = !getComputedStyle(hostElement)
++      .overflow.split(" ")
++      .includes("visible");
++    if (!hostHidesOverflow) {
++      hostElement.style.overflow = "hidden";
++    }
+ 
+     // Wait for a layout flush, then find the bounds.
+     let {
+@@ -344,7 +349,9 @@ export class PanelList extends HTMLElement {
+       // Set the alignments and show the panel.
+       this.setAttribute("align", align);
+       this.setAttribute("valign", valign);
+-      hostElement.style.overflow = "";
++      if (!hostHidesOverflow) {
++        hostElement.style.overflow = "";
++      }
+       // Decide positioning based on where this panel will be rendered
+       const offsetParentIsBody =
+         this.supportsPopover() ||

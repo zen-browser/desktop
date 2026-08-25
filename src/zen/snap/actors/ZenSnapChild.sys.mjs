@@ -2,8 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-let isBypassing = false;
-
 export class ZenSnapChild extends JSWindowActorChild {
   #activeInput = null;
 
@@ -43,11 +41,11 @@ export class ZenSnapChild extends JSWindowActorChild {
   }
 
   handleEvent(event) {
-    if (event.type === "click") {
-      if (isBypassing) {
-        return;
-      }
+    if (!Services.prefs.getBoolPref("zen.snap.enabled", true)) {
+      return;
+    }
 
+    if (event.type === "click") {
       let target = event.target;
 
       // Supports clicking on labels associated with file inputs

@@ -205,6 +205,12 @@ class nsZenSnapManager extends nsZenDOMOperatedFeature {
       }
     }
 
+    const position = Services.prefs.getStringPref(
+      "zen.snap.position",
+      "bottom-center"
+    );
+    this.#modalElement.setAttribute("data-position", position);
+
     this.#modalElement.hidden = false;
     this.#modalElement.classList.remove("zen-snap-hidden");
     this.#modalElement.classList.add("zen-snap-visible");

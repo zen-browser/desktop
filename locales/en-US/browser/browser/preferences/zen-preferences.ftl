@@ -37,6 +37,19 @@ zen-glance-trigger-shift-click =
 zen-glance-trigger-meta-click =
     .label = Meta (Command) + Click
 
+zen-snap-title = Snap
+zen-snap-header = General settings for snap
+zen-snap-description = Quick access to recent files and clipboard when uploading
+zen-snap-enabled =
+    .label = Enable Snap
+zen-snap-position-label = Modal position
+zen-snap-position-bottom-left =
+    .label = Bottom Left
+zen-snap-position-bottom-center =
+    .label = Bottom Center (Default)
+zen-snap-position-bottom-right =
+    .label = Bottom Right
+
 zen-look-and-feel-compact-view-header = Show in compact view
 zen-look-and-feel-compact-view-description = Only show the toolbars you use!
 zen-look-and-feel-compact-view-enabled =

@@ -7,7 +7,6 @@
 #zen-snap-modal {
   position: fixed;
   bottom: 24px;
-  left: 24px;
   z-index: 2147483647;
   min-width: 300px;
   max-width: 360px;
@@ -21,17 +20,62 @@
   font-size: 13px;
   pointer-events: auto;
   opacity: 0;
-  transform: translateY(16px) scale(0.96);
   transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-#zen-snap-modal.zen-snap-visible {
+/* Bottom Center (Default) */
+#zen-snap-modal[data-position="bottom-center"],
+#zen-snap-modal:not([data-position]) {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%) translateY(16px) scale(0.96);
+}
+
+#zen-snap-modal[data-position="bottom-center"].zen-snap-visible,
+#zen-snap-modal:not([data-position]).zen-snap-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+#zen-snap-modal[data-position="bottom-center"].zen-snap-hidden,
+#zen-snap-modal:not([data-position]).zen-snap-hidden {
+  opacity: 0;
+  transform: translateX(-50%) translateY(16px) scale(0.96);
+  pointer-events: none;
+}
+
+/* Bottom Left */
+#zen-snap-modal[data-position="bottom-left"] {
+  left: 24px;
+  right: auto;
+  transform: translateY(16px) scale(0.96);
+}
+
+#zen-snap-modal[data-position="bottom-left"].zen-snap-visible {
   opacity: 1;
   transform: translateY(0) scale(1);
 }
 
-#zen-snap-modal.zen-snap-hidden {
+#zen-snap-modal[data-position="bottom-left"].zen-snap-hidden {
+  opacity: 0;
+  transform: translateY(16px) scale(0.96);
+  pointer-events: none;
+}
+
+/* Bottom Right */
+#zen-snap-modal[data-position="bottom-right"] {
+  right: 24px;
+  left: auto;
+  transform: translateY(16px) scale(0.96);
+}
+
+#zen-snap-modal[data-position="bottom-right"].zen-snap-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+#zen-snap-modal[data-position="bottom-right"].zen-snap-hidden {
   opacity: 0;
   transform: translateY(16px) scale(0.96);
   pointer-events: none;

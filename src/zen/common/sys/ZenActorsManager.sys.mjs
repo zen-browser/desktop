@@ -74,6 +74,7 @@ let JSWINDOWACTORS = {
     allFrames: true,
     remoteTypes: ["web", "file"],
     safeForUntrustedWebProcess: true,
+    enablePreference: "zen.snap.enabled",
   },
   ZenWindowDrag: {
     parent: {

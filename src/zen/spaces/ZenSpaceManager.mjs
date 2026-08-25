@@ -1706,7 +1706,11 @@ class nsZenWorkspaces {
   }
 
   makeSureEmptyTabIsFirst() {
-    if (gZenUIManager.testingEnabled && this._emptyTab && (this._emptyTab.closing || !this._emptyTab.isConnected)) {
+    if (
+      gZenUIManager.testingEnabled &&
+      this._emptyTab &&
+      (this._emptyTab.closing || !this._emptyTab.isConnected)
+    ) {
       this._emptyTab = gBrowser.tabs.find(
         tab => tab.hasAttribute("zen-empty-tab") && !tab.closing
       );
@@ -3242,9 +3246,8 @@ class nsZenWorkspaces {
     }, 0);
 
     // Check if the total width exceeds the parent's width.
-    const parentWidth = window.windowUtils.getBoundsWithoutFlushing(
-      parent
-    ).width;
+    const parentWidth =
+      window.windowUtils.getBoundsWithoutFlushing(parent).width;
     if (totalWidth > parentWidth) {
       parent.setAttribute("icons-overflow", "true");
     } else {

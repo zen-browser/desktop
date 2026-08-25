@@ -1706,6 +1706,11 @@ class nsZenWorkspaces {
   }
 
   makeSureEmptyTabIsFirst() {
+    if (gZenUIManager.testingEnabled && this._emptyTab && (this._emptyTab.closing || !this._emptyTab.isConnected)) {
+      this._emptyTab = gBrowser.tabs.find(
+        tab => tab.hasAttribute("zen-empty-tab") && !tab.closing
+      );
+    }
     const emptyTab = this._emptyTab;
     if (emptyTab) {
       emptyTab.setAttribute("zen-workspace-id", this.activeWorkspace);
@@ -3236,8 +3241,11 @@ class nsZenWorkspaces {
       return width;
     }, 0);
 
-    // Check if the total width exceeds the parent's width
-    if (totalWidth > parent.clientWidth) {
+    // Check if the total width exceeds the parent's width.
+    const parentWidth = window.windowUtils.getBoundsWithoutFlushing(
+      parent
+    ).width;
+    if (totalWidth > parentWidth) {
       parent.setAttribute("icons-overflow", "true");
     } else {
       parent.removeAttribute("icons-overflow");
@@ -3245,7 +3253,7 @@ class nsZenWorkspaces {
 
     // Set the width of each icon to the maximum size they can fit on
     const widthPerButton = Math.max(
-      (parent.clientWidth - separation * (parent.children.length - 1)) /
+      (parentWidth - separation * (parent.children.length - 1)) /
         parent.children.length,
       minButtonSize
     );

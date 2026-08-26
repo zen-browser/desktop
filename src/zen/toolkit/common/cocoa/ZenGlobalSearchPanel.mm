@@ -128,6 +128,26 @@ bool ZenWindowActsAsMain(NSWindow* aWindow) {
   return YES;
 }
 
+// A standalone is never a fullscreen-primary window. It follows the user
+// between Spaces and takes no Space of its own, which is FullScreenAuxiliary.
+//
+// This has to be enforced here rather than set once, because the chrome
+// document carries macnativefullscreen and Gecko turns that into
+// FullScreenPrimary from SyncAttributesToWidget -- after the Space behaviour
+// is applied and before AppKit orders the window in. Primary and
+// CanJoinAllApplications are mutually exclusive, and a primary window belongs
+// to its application's Space, so the window was being ordered with
+// MoveToActiveSpace set and disregarded: AppKit moved the user to the window
+// instead of the window to the user.
+- (void)setCollectionBehavior:(NSWindowCollectionBehavior)aBehavior {
+  aBehavior &= ~(NSWindowCollectionBehaviorFullScreenPrimary |
+                 NSWindowCollectionBehaviorFullScreenAllowsTiling);
+  aBehavior |= NSWindowCollectionBehaviorMoveToActiveSpace |
+               NSWindowCollectionBehaviorFullScreenAuxiliary |
+               NSWindowCollectionBehaviorFullScreenDisallowsTiling;
+  [super setCollectionBehavior:aBehavior];
+}
+
 // Deliberately NO, which is NSPanel's own default. Staying auxiliary is what
 // makes AppKit place this window on the Space the user is looking at instead
 // of the one Zen's other windows live on; a panel that can become main places

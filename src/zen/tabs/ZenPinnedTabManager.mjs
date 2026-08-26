@@ -523,6 +523,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       // window or on another device, always into the tab's own container
       // section.
       if (!replicating && !this.canEssentialBeAdded(tab)) {
+        this.log(`addToEssentials rejected for ${tab.id}`);
         movedAll = false;
         continue;
       }
@@ -574,6 +575,13 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     for (let i = 0; i < tabs.length; i++) {
       // eslint-disable-next-line no-shadow
       const tab = tabs[i];
+      if (this._canLog) {
+        // eslint-disable-next-line no-console
+        console.trace(
+          `ZenPinnedTabManager: removing tab ${tab.id} from essentials ` +
+            `(unpin=${unpin})`
+        );
+      }
       tab.removeAttribute("zen-essential");
       if (
         gZenWorkspaces.workspaceEnabled &&

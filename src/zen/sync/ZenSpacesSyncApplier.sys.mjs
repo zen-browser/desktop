@@ -7,6 +7,7 @@ import {
   LAYOUT_RECORD_ID,
   RECORD_KINDS,
   syncableIconUrl,
+  syncLog,
   ZenSpacesSyncModel,
 } from "resource:///modules/zen/ZenSpacesSyncModel.sys.mjs";
 
@@ -110,6 +111,13 @@ class nsZenSpacesSyncApplier {
       handled.add(record);
     }
 
+    syncLog(
+      `incoming batch: ${incoming.containers.length} containers, ` +
+        `${incoming.spaces.length} spaces, ${incoming.tabs.length} tabs, ` +
+        `${incoming.folders.length} folders, ${incoming.splits.length} splits, ` +
+        `layout=${!!incoming.layout}, ${incoming.deleted.length} tombstones`
+    );
+
     const failed = new Set();
     const fail = (record, e) => {
       failed.add(record.id);
@@ -200,6 +208,21 @@ class nsZenSpacesSyncApplier {
       } else if (spaces.some(s => s.uuid === entry.key)) {
         routed.spaces.push(entry);
       }
+    }
+    if (deletions.length) {
+      const matched = new Set([
+        ...routed.tabs,
+        ...routed.folders,
+        ...routed.splits,
+        ...routed.spaces,
+      ]);
+      syncLog("tombstones routed:", {
+        tabs: routed.tabs.map(e => e.key),
+        folders: routed.folders.map(e => e.key),
+        splits: routed.splits.map(e => e.key),
+        spaces: routed.spaces.map(e => e.key),
+        unmatched: deletions.filter(e => !matched.has(e)).map(e => e.key),
+      });
     }
     return routed;
   }
@@ -292,6 +315,13 @@ class nsZenSpacesSyncApplier {
             canonicalJSON(fields.theme ?? null);
         const containerChanged =
           !current || (current.containerTabId ?? 0) !== fields.containerTabId;
+        if (containerChanged) {
+          syncLog(
+            `space ${data.uuid} containerTabId ` +
+              `${current?.containerTabId ?? 0} -> ${fields.containerTabId} ` +
+              `(guid ${data.containerGuid ?? "none"})`
+          );
+        }
         if (!current) {
           list.push(fields);
           changed = true;
@@ -501,6 +531,11 @@ class nsZenSpacesSyncApplier {
 
   #createTab(win, tabId, data) {
     const userContextId = this.#resolveContainerId(data.containerGuid);
+    syncLog(
+      `creating tab ${tabId} ` +
+        `(essential=${!!data.essential}, container=${userContextId})`,
+      data.url
+    );
     const tab = win.gBrowser.addTrustedTab(data.url, {
       createLazyBrowser: true,
       inBackground: true,
@@ -576,12 +611,14 @@ class nsZenSpacesSyncApplier {
       }
     }
     tab.zenStaticIcon = data.hasStaticIcon && icon ? icon : undefined;
-    if (
-      icon &&
-      (data.hasStaticIcon || !tab.linkedPanel) &&
-      syncableIconUrl(tab.getAttribute("image")) !== icon
-    ) {
+    const iconDiffers =
+      icon && syncableIconUrl(tab.getAttribute("image")) !== icon;
+    if (iconDiffers && (data.hasStaticIcon || !tab.linkedPanel)) {
       try {
+        syncLog(
+          `setting synced${data.hasStaticIcon ? " static" : ""} ` +
+            `icon on tab ${tab.id}`
+        );
         win.gBrowser.setIcon(tab, icon);
         lazy.TabStateCache.update(tab.linkedBrowser.permanentKey, {
           image: null,
@@ -677,10 +714,14 @@ class nsZenSpacesSyncApplier {
 
     const isEssential = tab.hasAttribute("zen-essential");
     if (data.essential && !isEssential) {
+      syncLog(`incoming record promotes tab ${tab.id} to essential`);
       win.gZenPinnedTabManager.addToEssentials(tab, { replicating: true });
       return;
     }
     if (!data.essential && isEssential) {
+      console.warn(
+        `ZenSpacesSync: incoming record demotes essential tab ${tab.id}`
+      );
       win.gZenPinnedTabManager.removeEssentials(tab, /* unpin */ false);
     }
     if (data.essential) {
@@ -717,6 +758,14 @@ class nsZenSpacesSyncApplier {
       try {
         const tab = this.#itemIn(win, tabId);
         if (win.gBrowser.isTab(tab)) {
+          if (tab.hasAttribute("zen-essential")) {
+            console.warn(
+              `ZenSpacesSync: incoming tombstone removes essential tab ${tabId}`,
+              tab.linkedBrowser?.currentURI?.spec ?? ""
+            );
+          } else {
+            syncLog(`incoming tombstone removes tab ${tabId}`);
+          }
           this.#removeTab(win, tab);
         }
       } catch (e) {

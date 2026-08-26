@@ -2,8 +2,9 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 index ebae2a976d..35302812ed 100644
 --- a/widget/cocoa/nsCocoaWindow.mm
 +++ b/widget/cocoa/nsCocoaWindow.mm
-@@ -108,3 +108,19 @@
+@@ -108,3 +108,20 @@
 +extern Class ZenConsumePreparedPanelClass();
++extern bool ZenWindowActsAsMain(NSWindow* aWindow);
 +
  using namespace mozilla::widget;
  using namespace mozilla::gl;
@@ -26,6 +27,24 @@ index ebae2a976d..35302812ed 100644
 -  if (![mChildView.window isKindOfClass:[ToolbarWindow class]]) {
 +  if (![mChildView.window respondsToSelector:@selector(placeWindowButtons:)]) {
      return;
+@@ -4851,11 +4852,16 @@
+       break;
+     default:
+       return YES;
+   }
+ 
+-  if (!topLevelWindow || ([topLevelWindow isMainWindow] && !aIsClickThrough) ||
++  // A Zen standalone window is an auxiliary NSPanel and never becomes main,
++  // so without this every left click and mouse move on it would be treated as
++  // landing on an inactive window and thrown away.
++  if (!topLevelWindow ||
++      (([topLevelWindow isMainWindow] || ZenWindowActsAsMain(topLevelWindow)) &&
++       !aIsClickThrough) ||
+       [aEvent type] == NSEventTypeOtherMouseDown ||
+       (([aEvent modifierFlags] & NSEventModifierFlagCommand) != 0 &&
+        [aEvent type] != NSEventTypeMouseMoved))
+     return YES;
+ 
 @@ -5158,1 +5160,5 @@ nsresult nsCocoaWindow::CreateNativeWindow(const NSRect& aRect,
 +  if (Class zenPanelClass = ZenConsumePreparedPanelClass()) {
 +    windowClass = zenPanelClass;
@@ -52,6 +71,25 @@ index ebae2a976d..35302812ed 100644
 +  if ([window respondsToSelector:@selector(windowMainStateChanged)]) {
 +    [(id)window windowMainStateChanged];
    }
+@@ -7841,10 +7847,18 @@
+   NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
+ 
+   RollUpPopups();
+   ChildViewMouseTracker::ReEvaluateMouseEnterState();
+ 
++  // windowDidBecomeMain: never runs for a Zen standalone window, so its menu
++  // bar would never be painted and its keyboard commands would go to whichever
++  // window was main before it. Paint it on key instead.
++  NSWindow* keyWindow = aNotification.object;
++  if (keyWindow && ZenWindowActsAsMain(keyWindow) && !NSApp._isRunningAppModal) {
++    [WindowDelegate paintMenubarForWindow:keyWindow];
++  }
++
+   if (!mGeckoWindow) {
+     return;
+   }
+   if (mGeckoWindow->GetInputContext().IsPasswordEditor()) {
+     TextInputHandler::EnableSecureEventInput();
 @@ -7951,10 +7956,12 @@ @implementation NSView (FrameViewMethodSwizzling)
  - (NSPoint)FrameView__closeButtonOrigin {
 -  if (![self.window isKindOfClass:[ToolbarWindow class]]) {

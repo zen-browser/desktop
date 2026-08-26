@@ -69,6 +69,12 @@ extern void ZenWindowMouseMoved(NSEvent* aEvent);
 }
 @end
 
+// Answers the three Gecko call sites that would otherwise require a main
+// window. See -canBecomeMainWindow below for why this window never is one.
+bool ZenWindowActsAsMain(NSWindow* aWindow) {
+  return [aWindow isKindOfClass:[ZenStandalonePanel class]];
+}
+
 @implementation ZenStandalonePanel
 
 + (Class)frameViewClassForStyleMask:(NSUInteger)aStyleMask {
@@ -122,14 +128,17 @@ extern void ZenWindowMouseMoved(NSEvent* aEvent);
   return YES;
 }
 
-// NSPanel returns NO here. That single default is what broke the first
-// attempt at this window: ChildViewMouseTracker::WindowAcceptsEvent only
-// accepts a left click on a top-level window that is main, and nsWindowMap's
-// windowBecameKey: only dispatches WindowActivated() for a window that is a
-// sheet or is main. Without it the page takes no clicks, no focus and no
-// keyboard input.
+// Deliberately NO, which is NSPanel's own default. Staying auxiliary is what
+// makes AppKit place this window on the Space the user is looking at instead
+// of the one Zen's other windows live on; a panel that can become main places
+// exactly like an ordinary window, which is the whole problem.
+//
+// Gecko gates mouse input, window activation and the menu bar on isMainWindow.
+// Those three call sites ask ZenWindowActsAsMain() below instead, so this
+// window behaves like a main window inside Gecko while remaining auxiliary to
+// AppKit.
 - (BOOL)canBecomeMainWindow {
-  return YES;
+  return NO;
 }
 
 - (void)setHidesOnDeactivate:(BOOL)aHides {

@@ -1,0 +1,34 @@
+diff --git a/widget/cocoa/nsWindowMap.mm b/widget/cocoa/nsWindowMap.mm
+--- a/widget/cocoa/nsWindowMap.mm
++++ b/widget/cocoa/nsWindowMap.mm
+@@ -6,6 +6,10 @@
+ #include "nsObjCExceptions.h"
+ #include "nsChildView.h"
+ #include "nsCocoaWindow.h"
++
++// A Zen standalone window is an auxiliary NSPanel, so AppKit never makes it
++// main. Ask Zen whether this is that window before deciding it is inactive.
++extern bool ZenWindowActsAsMain(NSWindow* aWindow);
+ 
+ @interface WindowDataMap (Private)
+ 
+@@ -236,7 +240,8 @@
+   id delegate = window.delegate;
+   if (!delegate || ![delegate isKindOfClass:[WindowDelegate class]]) {
+     [TopLevelWindowData activateInWindowViews:window];
+-  } else if (window.isSheet || window.isMainWindow) {
++  } else if (window.isSheet || window.isMainWindow ||
++             ZenWindowActsAsMain(window)) {
+     [TopLevelWindowData activateInWindow:window];
+   }
+ }
+@@ -247,7 +252,8 @@
+   id delegate = window.delegate;
+   if (!delegate || ![delegate isKindOfClass:[WindowDelegate class]]) {
+     [TopLevelWindowData deactivateInWindowViews:window];
+-  } else if (window.isSheet || window.isMainWindow) {
++  } else if (window.isSheet || window.isMainWindow ||
++             ZenWindowActsAsMain(window)) {
+     [TopLevelWindowData deactivateInWindow:window];
+   }
+ }

@@ -5,13 +5,13 @@
 tab-zen-split-tabs = 
     .label =
         { $tabCount ->
-            [-1] Split Out Tab
-            [1] Add Split View...
-           *[other] Join { $tabCount } Tabs
+            [-1] Відокремити вкладку
+            [1] Додати розділений вигляд...
+           *[other] Об’єднати { $tabCount } вкладок
         }
     .accesskey = S
 zen-split-link = 
-    .label = Split Link to New Tab
+    .label = Відкрити посилання в новій розділеній вкладці
     .accesskey = S
 zen-split-view-modifier-header = Розділений перегляд
 zen-split-view-modifier-activate-reallocation = 

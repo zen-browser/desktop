@@ -15,7 +15,13 @@
 #import <AppKit/AppKit.h>
 #import <Carbon/Carbon.h>
 
-static bool sPrepareGlobalSearchPanel = false;
+enum class ZenPreparedPanelKind : uint8_t {
+  None,
+  GlobalSearch,
+  Standalone,
+};
+
+static ZenPreparedPanelKind sPreparedPanelKind = ZenPreparedPanelKind::None;
 static EventHandlerRef sHotkeyHandler = nullptr;
 static EventHotKeyRef sHotkey = nullptr;
 static UInt32 sHotkeyID = 0;
@@ -24,6 +30,329 @@ static uint64_t sActiveGlobalSearchPanelGeneration = 0;
 static uint64_t sNextGlobalSearchPanelGeneration = 0;
 
 @class ChildView;
+
+// nsCocoaWindow uses this hook to install its frame-view overrides for each
+// native window class. NSPanel does not inherit BaseWindow's class method, so
+// the standalone panel must register the frame view it actually receives.
+extern void ZenEnsureFrameViewClassIsSwizzled(Class aFrameViewClass);
+
+// ChildViewMouseTracker is declared in widget/cocoa/nsChildView.h, which is
+// not exported. nsCocoaWindow.mm forwards these three for us.
+extern void ZenWindowMouseEntered(NSEvent* aEvent);
+extern void ZenWindowMouseExited(NSEvent* aEvent);
+extern void ZenWindowMouseMoved(NSEvent* aEvent);
+
+@interface NSWindow (ZenPrivateFrameView)
++ (Class)frameViewClassForStyleMask:(NSUInteger)aStyleMask;
+@end
+
+@interface NSView (ZenPrivateTitlebar)
+- (void)_tileTitlebarAndRedisplay:(BOOL)aRedisplay;
+@end
+
+/**
+ * A real NSPanel that still supplies the small BaseWindow selector surface
+ * nsCocoaWindow expects from a top-level Gecko host. Unlike the global-search
+ * panel, this is a titled, resizable browser window: it can become key without
+ * becoming main, owns normal traffic lights, and stays open when it loses
+ * focus.
+ */
+@interface ZenStandalonePanel : NSPanel {
+ @private
+  NSTrackingArea* _zenTrackingArea;
+  NSView* _zenViewWithTrackingArea;
+  BOOL _zenDrawsIntoWindowFrame;
+  BOOL _zenIsBeingShown;
+  BOOL _zenAnimationSuppressed;
+  NSRect _zenWindowButtonsRect;
+  mozilla::WindowShadow _zenShadowStyle;
+}
+@end
+
+@implementation ZenStandalonePanel
+
++ (Class)frameViewClassForStyleMask:(NSUInteger)aStyleMask {
+  Class frameViewClass = [super frameViewClassForStyleMask:aStyleMask];
+  ZenEnsureFrameViewClassIsSwizzled(frameViewClass);
+  return frameViewClass;
+}
+
+- (instancetype)initWithContentRect:(NSRect)aContentRect
+                          styleMask:(NSWindowStyleMask)aStyleMask
+                            backing:(NSBackingStoreType)aBackingType
+                              defer:(BOOL)aFlag {
+  // Preserve the standard browser controls while letting Gecko paint through
+  // the titlebar, just as ToolbarWindow does for an ordinary browser window.
+  NSWindowStyleMask style =
+      aStyleMask | NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
+      NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable |
+      NSWindowStyleMaskFullSizeContentView;
+  self = [super initWithContentRect:aContentRect
+                          styleMask:style
+                            backing:aBackingType
+                              defer:aFlag];
+  if (self) {
+    // Everything below turns the panel's auxiliary defaults back into
+    // ordinary window behaviour. What is deliberately NOT restored is
+    // `canBecomeMainWindow`-by-default: being auxiliary is what lets AppKit
+    // place this window on the Space the user is looking at instead of the
+    // one Zen's other windows live on, which is the whole reason this is a
+    // panel and not a ToolbarWindow.
+    self.floatingPanel = NO;
+    // A panel hides itself when the application deactivates. A standalone is
+    // a window the user leaves open and comes back to.
+    self.hidesOnDeactivate = NO;
+    self.worksWhenModal = YES;
+    self.becomesKeyOnlyIfNeeded = NO;
+    self.releasedWhenClosed = YES;
+    self.titleVisibility = NSWindowTitleVisible;
+    self.titlebarAppearsTransparent = NO;
+    _zenTrackingArea = nil;
+    _zenViewWithTrackingArea = nil;
+    _zenDrawsIntoWindowFrame = NO;
+    _zenIsBeingShown = NO;
+    _zenAnimationSuppressed = NO;
+    _zenWindowButtonsRect = NSZeroRect;
+    _zenShadowStyle = mozilla::WindowShadow::None;
+  }
+  return self;
+}
+
+- (BOOL)canBecomeKeyWindow {
+  return YES;
+}
+
+// NSPanel returns NO here. That single default is what broke the first
+// attempt at this window: ChildViewMouseTracker::WindowAcceptsEvent only
+// accepts a left click on a top-level window that is main, and nsWindowMap's
+// windowBecameKey: only dispatches WindowActivated() for a window that is a
+// sheet or is main. Without it the page takes no clicks, no focus and no
+// keyboard input.
+- (BOOL)canBecomeMainWindow {
+  return YES;
+}
+
+- (void)setHidesOnDeactivate:(BOOL)aHides {
+  [super setHidesOnDeactivate:NO];
+}
+
+- (NSRect)childViewRectForFrameRect:(NSRect)aFrameRect {
+  if (_zenDrawsIntoWindowFrame) {
+    return aFrameRect;
+  }
+  NSUInteger style = self.styleMask & ~NSWindowStyleMaskFullSizeContentView;
+  return [NSWindow contentRectForFrameRect:aFrameRect styleMask:style];
+}
+
+- (NSRect)frameRectForChildViewRect:(NSRect)aChildViewRect {
+  if (_zenDrawsIntoWindowFrame) {
+    return aChildViewRect;
+  }
+  NSUInteger style = self.styleMask & ~NSWindowStyleMaskFullSizeContentView;
+  return [NSWindow frameRectForContentRect:aChildViewRect styleMask:style];
+}
+
+- (NSRect)childViewFrameRectForCurrentBounds {
+  NSRect frame = self.frame;
+  NSRect rect = [self childViewRectForFrameRect:frame];
+  rect.origin.x -= frame.origin.x;
+  rect.origin.y -= frame.origin.y;
+  return rect;
+}
+
+- (ChildView*)mainChildView {
+  NSView* lastView = self.contentView.subviews.lastObject;
+  if ([lastView isKindOfClass:[ChildView class]]) {
+    return (ChildView*)lastView;
+  }
+  return nil;
+}
+
+- (void)updateChildViewFrameRect {
+  ((NSView*)self.mainChildView).frame = self.childViewFrameRectForCurrentBounds;
+}
+
+- (NSArray<NSView*>*)contentViewContents {
+  return [[self.contentView.subviews copy] autorelease];
+}
+
+- (void)setDrawsContentsIntoWindowFrame:(BOOL)aState {
+  if (_zenDrawsIntoWindowFrame == aState) {
+    return;
+  }
+  _zenDrawsIntoWindowFrame = aState;
+  self.titleVisibility = aState ? NSWindowTitleHidden : NSWindowTitleVisible;
+  self.titlebarAppearsTransparent = aState;
+  [self updateChildViewFrameRect];
+}
+
+- (BOOL)drawsContentsIntoWindowFrame {
+  return _zenDrawsIntoWindowFrame;
+}
+
+- (void)setIsBeingShown:(BOOL)aState {
+  _zenIsBeingShown = aState;
+}
+
+- (BOOL)isBeingShown {
+  return _zenIsBeingShown;
+}
+
+- (BOOL)isVisibleOrBeingShown {
+  return self.visible || _zenIsBeingShown;
+}
+
+- (void)setIsAnimationSuppressed:(BOOL)aState {
+  _zenAnimationSuppressed = aState;
+}
+
+- (BOOL)isAnimationSuppressed {
+  return _zenAnimationSuppressed;
+}
+
+- (NSTimeInterval)animationResizeTime:(NSRect)aNewFrame {
+  return _zenAnimationSuppressed ? 0.0 : [super animationResizeTime:aNewFrame];
+}
+
+- (void)disableSetNeedsDisplay {
+}
+- (void)enableSetNeedsDisplay {
+}
+// nsCocoaWindow::CreateNativeWindow calls createTrackingArea, and Gecko has
+// no other source of mouse-moved events for a top-level window: without a
+// tracking area ChildViewMouseTracker never learns the cursor is over this
+// window, so the page gets no hover, no cursor changes and no mouse moves.
+// This mirrors BaseWindow's implementation.
+- (NSView*)trackingAreaView {
+  NSView* contentView = self.contentView;
+  return contentView.superview ? contentView.superview : contentView;
+}
+
+- (void)createTrackingArea {
+  _zenViewWithTrackingArea = [self.trackingAreaView retain];
+  const NSTrackingAreaOptions options =
+      NSTrackingMouseEnteredAndExited | NSTrackingMouseMoved |
+      NSTrackingActiveAlways | NSTrackingInVisibleRect;
+  _zenTrackingArea =
+      [[NSTrackingArea alloc] initWithRect:_zenViewWithTrackingArea.bounds
+                                   options:options
+                                     owner:self
+                                  userInfo:nil];
+  [_zenViewWithTrackingArea addTrackingArea:_zenTrackingArea];
+}
+
+- (void)removeTrackingArea {
+  [_zenViewWithTrackingArea removeTrackingArea:_zenTrackingArea];
+  [_zenTrackingArea release];
+  _zenTrackingArea = nil;
+  [_zenViewWithTrackingArea release];
+  _zenViewWithTrackingArea = nil;
+}
+
+- (void)mouseEntered:(NSEvent*)aEvent {
+  ZenWindowMouseEntered(aEvent);
+}
+
+- (void)mouseExited:(NSEvent*)aEvent {
+  ZenWindowMouseExited(aEvent);
+}
+
+- (void)mouseMoved:(NSEvent*)aEvent {
+  ZenWindowMouseMoved(aEvent);
+}
+
+- (void)cursorUpdated:(NSEvent*)aEvent {
+  // Nothing to do, but NSTrackingArea requires the method to exist.
+}
+
+- (NSMutableDictionary*)exportState {
+  return [[@{
+    @"title" : self.title ?: @"",
+    @"drawsContentsIntoWindowFrame" : @(_zenDrawsIntoWindowFrame),
+    @"collectionBehavior" : @(self.collectionBehavior),
+  } mutableCopy] autorelease];
+}
+
+- (void)importState:(NSDictionary*)aState {
+  NSString* title = aState[@"title"];
+  if (title) {
+    self.title = title;
+  }
+  [self setDrawsContentsIntoWindowFrame:
+            [aState[@"drawsContentsIntoWindowFrame"] boolValue]];
+  NSNumber* behavior = aState[@"collectionBehavior"];
+  if (behavior) {
+    self.collectionBehavior = behavior.unsignedIntegerValue;
+  }
+}
+
+- (void)setEffectViewWrapperForStyle:(mozilla::WindowShadow)aStyle {
+  _zenShadowStyle = aStyle;
+}
+
+- (void)setShadowStyle:(mozilla::WindowShadow)aStyle {
+  _zenShadowStyle = aStyle;
+}
+
+- (mozilla::WindowShadow)shadowStyle {
+  return _zenShadowStyle;
+}
+
+- (void)updateTitlebarTransparency {
+  self.titlebarAppearsTransparent = _zenDrawsIntoWindowFrame;
+}
+
+- (void)releaseJSObjects {
+}
+
+// nsCocoaWindow supplies the desired traffic-light group rectangle through
+// theme geometry. Store it and ask AppKit to retile the titlebar, matching the
+// ToolbarWindow path instead of moving the three native buttons independently.
+- (void)placeWindowButtons:(NSRect)aRect {
+  if (!NSEqualRects(_zenWindowButtonsRect, aRect)) {
+    _zenWindowButtonsRect = aRect;
+    NSView* frameView = self.contentView.superview;
+    if ([frameView respondsToSelector:@selector(_tileTitlebarAndRedisplay:)]) {
+      [frameView _tileTitlebarAndRedisplay:NO];
+    }
+  }
+}
+
+- (NSRect)windowButtonsRect {
+  return _zenWindowButtonsRect;
+}
+
+- (void)windowMainStateChanged {
+  self.contentView.needsDisplay = YES;
+}
+
+// A panel with a close button closes itself on Escape. Hiding the selector
+// is how BaseWindow keeps the system from claiming that key (bug 613710);
+// here it also keeps Escape from destroying the user's window.
+- (BOOL)respondsToSelector:(SEL)aSelector {
+  if (aSelector == @selector(cancelOperation:)) {
+    return NO;
+  }
+  return [super respondsToSelector:aSelector];
+}
+
+// Like BaseWindow: don't let AppKit beep for commands Gecko handles itself.
+- (void)doCommandBySelector:(SEL)aSelector {
+  [self tryToPerform:aSelector with:nil];
+}
+
+- (NSRect)getAndResetNativeDirtyRect {
+  return NSZeroRect;
+}
+
+- (BOOL)performKeyEquivalent:(NSEvent*)aEvent {
+  NSWindow* retainedWindow = [self retain];
+  BOOL handled = [super performKeyEquivalent:aEvent];
+  [retainedWindow release];
+  return handled;
+}
+
+@end
 
 @interface ZenGlobalSearchPanel : NSPanel {
  @private
@@ -405,12 +734,17 @@ static void SetResult(nsAString& aResult, bool aOK, const char* aReason) {
 
 // Called synchronously by nsCocoaWindow::CreateNativeWindow. Preparation is
 // one-shot so no unrelated browser window can inherit the panel class.
-Class ZenConsumePreparedGlobalSearchPanelClass() {
-  if (!sPrepareGlobalSearchPanel) {
-    return Nil;
+Class ZenConsumePreparedPanelClass() {
+  ZenPreparedPanelKind preparedKind = sPreparedPanelKind;
+  sPreparedPanelKind = ZenPreparedPanelKind::None;
+  switch (preparedKind) {
+    case ZenPreparedPanelKind::GlobalSearch:
+      return [ZenGlobalSearchPanel class];
+    case ZenPreparedPanelKind::Standalone:
+      return [ZenStandalonePanel class];
+    case ZenPreparedPanelKind::None:
+      return Nil;
   }
-  sPrepareGlobalSearchPanel = false;
-  return [ZenGlobalSearchPanel class];
 }
 
 namespace zen {
@@ -466,12 +800,26 @@ void ZenCommonUtils::UnregisterGlobalSearchHotkeyInternal() {
 
 void ZenCommonUtils::PrepareGlobalSearchPanelInternal() {
   MOZ_ASSERT(NS_IsMainThread());
-  sPrepareGlobalSearchPanel = true;
+  sPreparedPanelKind = ZenPreparedPanelKind::GlobalSearch;
 }
 
 void ZenCommonUtils::CancelPreparedGlobalSearchPanelInternal() {
   MOZ_ASSERT(NS_IsMainThread());
-  sPrepareGlobalSearchPanel = false;
+  if (sPreparedPanelKind == ZenPreparedPanelKind::GlobalSearch) {
+    sPreparedPanelKind = ZenPreparedPanelKind::None;
+  }
+}
+
+void ZenCommonUtils::PrepareStandalonePanelInternal() {
+  MOZ_ASSERT(NS_IsMainThread());
+  sPreparedPanelKind = ZenPreparedPanelKind::Standalone;
+}
+
+void ZenCommonUtils::CancelPreparedStandalonePanelInternal() {
+  MOZ_ASSERT(NS_IsMainThread());
+  if (sPreparedPanelKind == ZenPreparedPanelKind::Standalone) {
+    sPreparedPanelKind = ZenPreparedPanelKind::None;
+  }
 }
 
 nsresult ZenCommonUtils::ConfigureGlobalSearchPanelInternal(
@@ -522,6 +870,10 @@ nsresult ZenCommonUtils::ConfigureGlobalSearchPanelInternal(
 
 bool ZenCommonUtils::IsGlobalSearchPanelInternal(nsIBaseWindow* aWindow) {
   return [NativeWindow(aWindow) isKindOfClass:[ZenGlobalSearchPanel class]];
+}
+
+bool ZenCommonUtils::IsStandalonePanelInternal(nsIBaseWindow* aWindow) {
+  return [NativeWindow(aWindow) isKindOfClass:[ZenStandalonePanel class]];
 }
 
 }  // namespace zen

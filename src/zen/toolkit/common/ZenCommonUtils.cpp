@@ -97,6 +97,18 @@ ZenCommonUtils::CancelPreparedGlobalSearchPanel() {
 }
 
 NS_IMETHODIMP
+ZenCommonUtils::PrepareStandalonePanel() {
+  PrepareStandalonePanelInternal();
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+ZenCommonUtils::CancelPreparedStandalonePanel() {
+  CancelPreparedStandalonePanelInternal();
+  return NS_OK;
+}
+
+NS_IMETHODIMP
 ZenCommonUtils::ConfigureGlobalSearchPanel(nsIBaseWindow* aWindow,
                                            int32_t aWidth, int32_t aHeight) {
   return ConfigureGlobalSearchPanelInternal(aWindow, aWidth, aHeight);
@@ -108,6 +120,15 @@ ZenCommonUtils::IsGlobalSearchPanel(nsIBaseWindow* aWindow, bool* aIsPanel) {
     return NS_ERROR_INVALID_ARG;
   }
   *aIsPanel = IsGlobalSearchPanelInternal(aWindow);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+ZenCommonUtils::IsStandalonePanel(nsIBaseWindow* aWindow, bool* aIsPanel) {
+  if (!aIsPanel) {
+    return NS_ERROR_INVALID_ARG;
+  }
+  *aIsPanel = IsStandalonePanelInternal(aWindow);
   return NS_OK;
 }
 

@@ -51,5 +51,10 @@
       "@@ -59,11 +67,12 @@": "@@ -59,9 +67,10 @@",
       "aLoadState->TypeHint())) {\n   MOZ_DIAGNOSTIC_ASSERT(!mURI->SchemeIs(\"javascript\"));\n \n   // Pull": "aLoadState->TypeHint())) {\n   // Pull"
     }
+  },
+  {
+    "type": "phabricator",
+    "id": "D321446",
+    "name": "Issue 14710"
   }
 ]

@@ -124,6 +124,11 @@ const STANDALONE_WINDOW_FOCUS_SETTLE_MS = 1500;
 const STANDALONE_WINDOW_STRAY_WINDOW_WATCH_MS = 4000;
 
 class nsZenStandaloneWindowManager {
+  // Deadline, in epoch milliseconds, until which a no-URL command line is
+  // taken to be the one macOS sends alongside an external link rather than a
+  // user opening Zen.
+  #emptyStartupSuppressedUntil = 0;
+
   /**
    * Runs before the first browser window exists.
    *
@@ -304,10 +309,30 @@ class nsZenStandaloneWindowManager {
     }
 
     if (createdWindows.length) {
+      this.#emptyStartupSuppressedUntil =
+        Date.now() + STANDALONE_WINDOW_STRAY_WINDOW_WATCH_MS;
       this.#closeStrayEmptyStartupWindows(createdWindows);
     }
 
     return true;
+  }
+
+  /**
+   * Whether a normal browser window opened by a command line carrying no URL
+   * should be suppressed.
+   *
+   * macOS reopens the application at the moment it hands Zen an external
+   * link, and that reopen arrives as its own empty command line. Zen's
+   * classic startup - the session, the spaces, the lot - belongs to the user
+   * opening Zen, not to a link they clicked in another application. If they
+   * want the page in their browser they promote it, and promotion opens a
+   * normal window then.
+   *
+   * @returns {boolean} True while an external link is accounting for this
+   *   activation
+   */
+  shouldSuppressEmptyStartupWindow() {
+    return Date.now() < this.#emptyStartupSuppressedUntil;
   }
 
   /**
@@ -336,21 +361,28 @@ class nsZenStandaloneWindowManager {
         win.closed ||
         exclude.has(win) ||
         win._zenStandaloneWindow ||
-        win.gZenStartup?.isReady ||
         lazy.PrivateBrowsingUtils.isWindowPrivate(win)
       ) {
         return;
       }
-      const tabs = win.gBrowser?.tabs;
-      if (tabs?.length === 1 && tabs[0].hasAttribute("zen-empty-tab")) {
-        try {
-          win.close();
-        } catch (error) {
-          console.error(
-            "Failed to close a stray empty Zen startup window",
-            error
-          );
+      // A window the no-URL command line opened for this same activation. It
+      // is recognised by the mark that branch left on it rather than by what
+      // it happens to contain, because when macOS reopens the application it
+      // restores a full session into it. Nothing else is ever closed on that
+      // basis.
+      if (!win._zenEmptyStartupWindow) {
+        if (win.gZenStartup?.isReady) {
+          return;
         }
+        const tabs = win.gBrowser?.tabs;
+        if (!(tabs?.length === 1 && tabs[0].hasAttribute("zen-empty-tab"))) {
+          return;
+        }
+      }
+      try {
+        win.close();
+      } catch (error) {
+        console.error("Failed to close a stray empty Zen startup window", error);
       }
     };
 

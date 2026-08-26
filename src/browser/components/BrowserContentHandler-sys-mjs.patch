@@ -1,8 +1,7 @@
 diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/components/BrowserContentHandler.sys.mjs
-index 64c325fc4646d2bd628b57f9b15c2bcffbdfecb2..4d0ce09c0726e967a144fcc315e264592136555c 100644
 --- a/browser/components/BrowserContentHandler.sys.mjs
 +++ b/browser/components/BrowserContentHandler.sys.mjs
-@@ -27,6 +27,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
+@@ -27,6 +27,8 @@
    SpecialMessageActions:
      "resource://messaging-system/lib/SpecialMessageActions.sys.mjs",
    UpdatePing: "resource://gre/modules/UpdatePing.sys.mjs",
@@ -11,7 +10,7 @@ index 64c325fc4646d2bd628b57f9b15c2bcffbdfecb2..4d0ce09c0726e967a144fcc315e26459
  });
  
  /**
-@@ -641,6 +643,28 @@ nsBrowserContentHandler.prototype = {
+@@ -641,6 +643,28 @@
        }
      }
  
@@ -40,7 +39,7 @@ index 64c325fc4646d2bd628b57f9b15c2bcffbdfecb2..4d0ce09c0726e967a144fcc315e26459
      var searchParam = cmdLine.handleFlagWithParam("search", false);
      if (searchParam) {
        doSearch(searchParam, cmdLine);
-@@ -710,6 +734,7 @@ nsBrowserContentHandler.prototype = {
+@@ -710,6 +734,7 @@
        "  --new-window <url> Open <url> in a new window.\n" +
        "  --new-tab <url>    Open <url> in a new tab.\n" +
        "  --private-window [<url>] Open <url> in a new private window.\n";
@@ -48,25 +47,31 @@ index 64c325fc4646d2bd628b57f9b15c2bcffbdfecb2..4d0ce09c0726e967a144fcc315e26459
      if (AppConstants.platform == "win") {
        info += "  --preferences      Open Options dialog.\n";
      } else {
-@@ -1311,6 +1336,17 @@ function handURIToExistingBrowser(
-     return;
-   }
+@@ -1285,6 +1310,23 @@
+     private: allowPrivate,
+   });
  
-+  // There is no window to load it in. An external link does not need one: it
-+  // can have a standalone window of its own.
++  // A standalone-eligible external link gets a window of its own directly,
++  // without first selecting, showing, or adding a tab to an existing browser
++  // window: routing through one at all - even briefly, even without calling
++  // focus() on it - is what pulls it in front of the standalone window that
++  // is about to exist. The current top window, if any, is passed along only
++  // as positioning/space context for the new window; it is never opened into
++  // or otherwise touched here.
 +  if (
 +    !forcePrivate &&
-+    lazy.gZenStandaloneWindowManager.openExternalLinksInStandaloneWindows([
-+      uri.spec,
-+    ])
++    lazy.gZenStandaloneWindowManager.openExternalLinksInStandaloneWindows(
++      [uri.spec],
++      navWin
++    )
 +  ) {
 +    return;
 +  }
 +
-   // if we couldn't load it in an existing window, open a new one
-   openBrowserWindow(cmdLine, triggeringPrincipal, uri.spec, null, forcePrivate);
- }
-@@ -1717,6 +1753,22 @@ nsDefaultCommandLineHandler.prototype = {
+   let openInWindow = ({ browserDOMWindow }) => {
+     browserDOMWindow.openURI(
+       uri,
+@@ -1717,6 +1759,22 @@
        // Can't open multiple URLs without using system principal.
        var URLlist = urilist.filter(shouldLoadURI).map(u => u.spec);
        if (URLlist.length) {
@@ -89,3 +94,26 @@ index 64c325fc4646d2bd628b57f9b15c2bcffbdfecb2..4d0ce09c0726e967a144fcc315e26459
          openBrowserWindow(cmdLine, lazy.gSystemPrincipal, URLlist);
        }
      } else if (!cmdLine.preventDefault) {
+@@ -1734,7 +1792,21 @@
+           return;
+         }
+       }
+-      openBrowserWindow(cmdLine, lazy.gSystemPrincipal);
++      // An external link that has gone to a standalone window brings an
++      // empty command line along with it, because macOS reopens the
++      // application at the same moment. That reopen must not drag Zen's
++      // classic startup on screen next to the standalone.
++      if (lazy.gZenStandaloneWindowManager.shouldSuppressEmptyStartupWindow()) {
++        cmdLine.preventDefault = true;
++        return;
++      }
++      let emptyStartupWindow = openBrowserWindow(cmdLine, lazy.gSystemPrincipal);
++      if (emptyStartupWindow) {
++        // Marked so that, when this command line is processed before the one
++        // carrying the link, the standalone manager can close exactly the
++        // window this branch opened instead of guessing from its contents.
++        emptyStartupWindow._zenEmptyStartupWindow = true;
++      }
+     } else {
+       // Need a better solution in the future to avoid opening the blank window
+       // when command line parameters say we are not going to show a browser

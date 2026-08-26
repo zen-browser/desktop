@@ -223,6 +223,13 @@ bool ZenWindowActsAsMain(NSWindow* aWindow) {
   return _zenAnimationSuppressed ? 0.0 : [super animationResizeTime:aNewFrame];
 }
 
+// BaseWindow implements this. Without it AppKit builds a default touch bar
+// and sends window messages down the responder chain to its container view,
+// which Gecko then reports as caught NSInvalidArgumentExceptions.
+- (NSTouchBar*)makeTouchBar {
+  return nil;
+}
+
 - (void)disableSetNeedsDisplay {
 }
 - (void)enableSetNeedsDisplay {

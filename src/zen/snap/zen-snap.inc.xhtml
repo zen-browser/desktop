@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+<box id="zen-snap-backdrop" class="zen-snap-backdrop zen-snap-hidden" hidden="true" />
 <vbox id="zen-snap-modal" class="zen-snap-hidden" hidden="true">
   <hbox class="zen-snap-header" align="center">
     <hbox class="zen-snap-title-wrapper" align="center" flex="1">
@@ -15,7 +16,14 @@
     <vbox class="zen-snap-section">
       <label class="zen-snap-section-title" value="Clipboard" />
       <vbox id="zen-snap-clipboard-container" class="zen-snap-items-list">
-        <label id="zen-snap-clipboard-status" class="zen-snap-item-empty" value="No image or file in clipboard" />
+        <label id="zen-snap-clipboard-status" class="zen-snap-item-empty" value="No image in clipboard" />
+        <hbox id="zen-snap-clipboard-card" class="zen-snap-clipboard-card" align="center" hidden="true">
+          <html:img id="zen-snap-clipboard-preview" class="zen-snap-clipboard-preview" />
+          <vbox class="zen-snap-clipboard-info" flex="1">
+            <label class="zen-snap-clipboard-title" value="Image from Clipboard" />
+            <label id="zen-snap-clipboard-subtitle" class="zen-snap-clipboard-subtitle" />
+          </vbox>
+        </hbox>
       </vbox>
     </vbox>
 

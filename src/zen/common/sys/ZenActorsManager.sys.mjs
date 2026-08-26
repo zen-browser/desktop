@@ -69,6 +69,9 @@ let JSWINDOWACTORS = {
         click: {
           capture: true,
         },
+        keydown: {
+          capture: true,
+        },
       },
     },
     allFrames: true,

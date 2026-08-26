@@ -9,6 +9,9 @@ export class ZenSnapParent extends JSWindowActorParent {
     if (message.name === "ZenSnap:InputClicked") {
       const win = this.browsingContext?.topChromeWindow;
       win?.gZenSnapManager?.onInputClicked(message.data, this);
+    } else if (message.name === "ZenSnap:Dismiss") {
+      const win = this.browsingContext?.topChromeWindow;
+      win?.gZenSnapManager?.hideModal();
     }
   }
 

@@ -45,6 +45,14 @@ export class ZenSnapChild extends JSWindowActorChild {
       return;
     }
 
+    if (event.type === "keydown") {
+      if (event.key === "Escape" && this.#activeInput) {
+        this.sendAsyncMessage("ZenSnap:Dismiss", {});
+        this.#activeInput = null;
+      }
+      return;
+    }
+
     if (event.type === "click") {
       let target = event.target;
 

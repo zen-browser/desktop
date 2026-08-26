@@ -81,6 +81,28 @@
   pointer-events: none;
 }
 
+.zen-snap-backdrop {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(1.5px);
+  z-index: 2147483646;
+  opacity: 0;
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: auto;
+}
+
+.zen-snap-backdrop.zen-snap-visible {
+  opacity: 1;
+}
+
+.zen-snap-backdrop.zen-snap-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .zen-snap-header {
   margin-bottom: 12px;
 }
@@ -139,6 +161,51 @@
   font-size: 12px;
   color: var(--zen-colors-text, #a6adc8);
   opacity: 0.7;
+}
+
+.zen-snap-clipboard-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--zen-colors-border, rgba(255, 255, 255, 0.08));
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.zen-snap-clipboard-card:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--zen-colors-primary, #89b4fa);
+  transform: translateY(-1px);
+}
+
+.zen-snap-clipboard-preview {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.zen-snap-clipboard-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.zen-snap-clipboard-title {
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--zen-colors-text, #cdd6f4);
+}
+
+.zen-snap-clipboard-subtitle {
+  font-size: 11px;
+  color: var(--zen-colors-text, #a6adc8);
+  opacity: 0.75;
 }
 
 .zen-snap-download-item {

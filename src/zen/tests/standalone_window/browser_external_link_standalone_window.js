@@ -984,6 +984,55 @@ add_task(async function test_external_link_without_an_opener_window() {
   }
 });
 
+add_task(async function test_startup_window_is_held_for_a_cold_external_link() {
+  // When Zen is not running, macOS can deliver a clicked link as its own
+  // command line just after the initial, URL-less one. The startup window is
+  // therefore held back for a moment, and dropped entirely once the link
+  // turns up, so a cold external open produces a standalone and nothing else.
+  let openedStartupWindow = false;
+  const held = gZenStandaloneWindowManager.deferStartupWindowForExternalLink(
+    () => {
+      openedStartupWindow = true;
+    }
+  );
+
+  if (AppConstants.platform !== "macosx") {
+    ok(!held, "Only macOS splits a cold external open across command lines");
+    return;
+  }
+
+  ok(held, "The classic startup window is held while a link could still come");
+  ok(
+    gZenStandaloneWindowManager.isHoldingStartupWindow,
+    "The manager owns the held window"
+  );
+
+  const url = `${TEST_URL_BASE}?cold-start`;
+  const existingWindows = new Set(getStandaloneWindows());
+  ok(
+    gZenStandaloneWindowManager.openExternalLinksInStandaloneWindows([url]),
+    "The link that launched Zen goes to a standalone window"
+  );
+
+  const standaloneWindow = await waitForNewStandaloneWindow(
+    existingWindows,
+    url
+  );
+  try {
+    ok(
+      !gZenStandaloneWindowManager.isHoldingStartupWindow,
+      "The link claims the launch, so the held window is dropped"
+    );
+    ok(openedStartupWindow === false, "Zen's classic startup never runs");
+    ok(
+      !gZenStandaloneWindowManager.deferStartupWindowForExternalLink(() => {}),
+      "Only the first window of a launch is ever held back"
+    );
+  } finally {
+    await closeStandaloneWindow(standaloneWindow);
+  }
+});
+
 function getStandaloneWindows() {
   return [...Services.wm.getEnumerator("navigator:browser")].filter(
     win =>

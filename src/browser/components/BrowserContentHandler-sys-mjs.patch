@@ -1,7 +1,8 @@
 diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/components/BrowserContentHandler.sys.mjs
+index 64c325fc4646d2bd628b57f9b15c2bcffbdfecb2..caa17770f9918d4d2bfc3b3bc3c225b9a74fe22f 100644
 --- a/browser/components/BrowserContentHandler.sys.mjs
 +++ b/browser/components/BrowserContentHandler.sys.mjs
-@@ -27,6 +27,8 @@
+@@ -27,6 +27,8 @@ ChromeUtils.defineESModuleGetters(lazy, {
    SpecialMessageActions:
      "resource://messaging-system/lib/SpecialMessageActions.sys.mjs",
    UpdatePing: "resource://gre/modules/UpdatePing.sys.mjs",
@@ -10,7 +11,7 @@ diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/componen
  });
  
  /**
-@@ -641,6 +643,28 @@
+@@ -641,6 +643,28 @@ nsBrowserContentHandler.prototype = {
        }
      }
  
@@ -39,7 +40,7 @@ diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/componen
      var searchParam = cmdLine.handleFlagWithParam("search", false);
      if (searchParam) {
        doSearch(searchParam, cmdLine);
-@@ -710,6 +734,7 @@
+@@ -710,6 +734,7 @@ nsBrowserContentHandler.prototype = {
        "  --new-window <url> Open <url> in a new window.\n" +
        "  --new-tab <url>    Open <url> in a new tab.\n" +
        "  --private-window [<url>] Open <url> in a new private window.\n";
@@ -47,10 +48,18 @@ diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/componen
      if (AppConstants.platform == "win") {
        info += "  --preferences      Open Options dialog.\n";
      } else {
-@@ -1285,6 +1310,23 @@
-     private: allowPrivate,
-   });
+@@ -1277,6 +1302,31 @@ function handURIToExistingBrowser(
+     return;
+   }
  
++  // Unless using a private window is forced, open external links in private
++  // windows only if we're in perma-private mode.
++  let allowPrivate =
++    forcePrivate || lazy.PrivateBrowsingUtils.permanentPrivateBrowsing;
++  let navWin = lazy.BrowserWindowTracker.getTopWindow({
++    private: allowPrivate,
++  });
++
 +  // A standalone-eligible external link gets a window of its own directly,
 +  // without first selecting, showing, or adding a tab to an existing browser
 +  // window: routing through one at all - even briefly, even without calling
@@ -71,7 +80,22 @@ diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/componen
    let openInWindow = ({ browserDOMWindow }) => {
      browserDOMWindow.openURI(
        uri,
-@@ -1717,6 +1759,22 @@
+@@ -1287,14 +1337,6 @@ function handURIToExistingBrowser(
+     );
+   };
+ 
+-  // Unless using a private window is forced, open external links in private
+-  // windows only if we're in perma-private mode.
+-  let allowPrivate =
+-    forcePrivate || lazy.PrivateBrowsingUtils.permanentPrivateBrowsing;
+-  let navWin = lazy.BrowserWindowTracker.getTopWindow({
+-    private: allowPrivate,
+-  });
+-
+   if (navWin) {
+     openInWindow(navWin);
+     return;
+@@ -1717,6 +1759,27 @@ nsDefaultCommandLineHandler.prototype = {
        // Can't open multiple URLs without using system principal.
        var URLlist = urilist.filter(shouldLoadURI).map(u => u.spec);
        if (URLlist.length) {
@@ -81,7 +105,12 @@ diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/componen
 +        // and the session is left for whenever the user opens Zen properly.
 +        if (
 +          lazy.gZenStandaloneWindowManager.openExternalLinksInStandaloneWindows(
-+            URLlist
++            URLlist,
++            null,
++            {
++              isApplicationLaunch:
++                cmdLine.state == Ci.nsICommandLine.STATE_INITIAL_LAUNCH,
++            }
 +          )
 +        ) {
 +          let blankWindow = Services.wm.getMostRecentWindow("navigator:blank");
@@ -94,7 +123,7 @@ diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/componen
          openBrowserWindow(cmdLine, lazy.gSystemPrincipal, URLlist);
        }
      } else if (!cmdLine.preventDefault) {
-@@ -1734,6 +1792,14 @@
+@@ -1734,6 +1797,28 @@ nsDefaultCommandLineHandler.prototype = {
            return;
          }
        }
@@ -103,6 +132,20 @@ diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/componen
 +      // application at the same moment. That reopen must not drag Zen's
 +      // classic startup on screen next to the standalone.
 +      if (lazy.gZenStandaloneWindowManager.shouldSuppressEmptyStartupWindow()) {
++        cmdLine.preventDefault = true;
++        return;
++      }
++      // Nothing is open yet, and this launch may still be about to be handed
++      // an external link: when Zen is not running, macOS can deliver the link
++      // as its own command line just after this one, by which point the
++      // classic window is already opening. Zen's classic startup waits a beat
++      // for that link, and never opens at all when one arrives.
++      if (
++        cmdLine.state == Ci.nsICommandLine.STATE_INITIAL_LAUNCH &&
++        lazy.gZenStandaloneWindowManager.deferStartupWindowForExternalLink(() =>
++          openBrowserWindow(cmdLine, lazy.gSystemPrincipal)
++        )
++      ) {
 +        cmdLine.preventDefault = true;
 +        return;
 +      }

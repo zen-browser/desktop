@@ -1,17 +1,18 @@
 diff --git a/widget/cocoa/nsMacDockSupport.mm b/widget/cocoa/nsMacDockSupport.mm
-index 7f07ace0cd..69a5a2ee8b 100644
+index 7f07ace0cdf81dea386ed3f36b020dbda23bfcd0..fe8f0ef21de209de3a1c3064ef4bf3fc5cebc9dd 100644
 --- a/widget/cocoa/nsMacDockSupport.mm
 +++ b/widget/cocoa/nsMacDockSupport.mm
-@@ -18,6 +18,8 @@
+@@ -18,6 +18,9 @@
  #include "mozilla/SVGImageContext.h"
  #include "nsISVGPaintContext.h"
  #include "nsIFile.h"
 +#include "nsIBaseWindow.h"
 +#include "nsIWidget.h"
++#include "mozilla/Preferences.h"
  
  NS_IMPL_ISUPPORTS(nsMacDockSupport, nsIMacDockSupport, nsITaskbarProgress)
  
-@@ -75,13 +77,61 @@ NS_IMPL_ISUPPORTS(nsMacDockSupport, nsIMacDockSupport, nsITaskbarProgress)
+@@ -75,13 +78,125 @@ NS_IMPL_ISUPPORTS(nsMacDockSupport, nsIMacDockSupport, nsITaskbarProgress)
  
  @end
  
@@ -21,6 +22,67 @@ index 7f07ace0cd..69a5a2ee8b 100644
 +static id sApplicationActivationObserver = nil;
 +static id sWorkspaceActivationObserver = nil;
 +static NSRunningApplication* sPreviousApplication = nil;
++
++// Whether this launch was started without an activation policy, and so still
++// owes the application one.
++static bool sZenLaunchActivationSuppressed = false;
++
++// Mirror of `zen.standalone-window.enabled`, kept in the application's user
++// defaults because the decision below is made before a profile exists and so
++// before any pref can be read. Written on every startup and whenever the pref
++// changes, which means enabling the feature reaches the next launch.
++static NSString* const kZenStandaloneWindowEnabledKey =
++    @"ZenStandaloneWindowEnabled";
++
++static void ZenMirrorStandaloneWindowPref(const char* /* aPref */,
++                                          void* /* aData */) {
++  [NSUserDefaults.standardUserDefaults
++      setBool:mozilla::Preferences::GetBool("zen.standalone-window.enabled",
++                                            false)
++       forKey:kZenStandaloneWindowEnabledKey];
++}
++
++// Called from nsAppShell::Init, before any event loop has run and so before
++// macOS can activate this application.
++//
++// An application macOS launches is activated, and activating an application
++// that has no window on the Space the user is looking at takes the user off
++// it - out of another application's fullscreen Space especially. That happens
++// before the launch has produced a window, so there is nothing to place and
++// nothing to follow the user: the user is simply moved. A launch that turns
++// out to be nothing more than an external link must not do that.
++//
++// Starting without an activation policy is how macOS is told not to activate
++// this launch. nsCocoaWindow::Show already restores the policy when the first
++// window appears, which is also where the withheld activation is either
++// handed over or dropped, depending on what that window turned out to be.
++bool ZenSuppressLaunchActivation() {
++  if (![NSUserDefaults.standardUserDefaults
++          boolForKey:kZenStandaloneWindowEnabledKey]) {
++    return false;
++  }
++
++  [NSApp setActivationPolicy:NSApplicationActivationPolicyAccessory];
++  sZenLaunchActivationSuppressed = true;
++  return true;
++}
++
++// Called from nsCocoaWindow::Show for the first window of a launch that was
++// held back, once its activation policy has been restored.
++//
++// A standalone window is the whole of what an external link asked for, and it
++// is a non-activating panel: it takes key, and keystrokes, with the
++// application still behind. Any other window is the user's own Zen, and gets
++// the activation the launch would have had.
++void ZenReleaseSuppressedLaunchActivation(bool aActivate) {
++  if (!sZenLaunchActivationSuppressed) {
++    return;
++  }
++  sZenLaunchActivationSuppressed = false;
++  if (aActivate) {
++    [NSApp activateIgnoringOtherApps:YES];
++  }
++}
 +
 +static void RememberPreviousApplication(NSRunningApplication* aApplication) {
 +  if (!aApplication ||
@@ -40,6 +102,9 @@ index 7f07ace0cd..69a5a2ee8b 100644
 +  if (sApplicationActivationObserver) {
 +    return;
 +  }
++
++  mozilla::Preferences::RegisterCallbackAndCall(
++      ZenMirrorStandaloneWindowPref, "zen.standalone-window.enabled");
 +  sApplicationActivationObserver = [[[NSNotificationCenter defaultCenter]
 +      addObserverForName:NSApplicationDidBecomeActiveNotification
 +                  object:nil
@@ -74,7 +139,7 @@ index 7f07ace0cd..69a5a2ee8b 100644
  
  nsMacDockSupport::~nsMacDockSupport() {
    if (mDockTileWrapperView) {
-@@ -122,6 +172,112 @@ nsMacDockSupport::ActivateApplication(bool aIgnoreOtherApplications) {
+@@ -122,6 +237,112 @@ nsMacDockSupport::ActivateApplication(bool aIgnoreOtherApplications) {
    NS_OBJC_END_TRY_BLOCK_RETURN(NS_ERROR_FAILURE);
  }
  

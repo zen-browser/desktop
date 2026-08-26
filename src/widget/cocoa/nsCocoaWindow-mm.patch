@@ -1,15 +1,19 @@
 diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
-index ebae2a976d..35302812ed 100644
+index ebae2a976d01dc2be70282d285cb902adc4e0547..e2bacada50b5c7e438f5ff3cffb410b73986fa21 100644
 --- a/widget/cocoa/nsCocoaWindow.mm
 +++ b/widget/cocoa/nsCocoaWindow.mm
-@@ -108,3 +108,20 @@
+@@ -104,10 +104,28 @@ class LayerManager;
+ }  // namespace layers
+ }  // namespace mozilla
+ using namespace mozilla::layers;
 +extern Class ZenConsumePreparedPanelClass();
 +extern bool ZenWindowActsAsMain(NSWindow* aWindow);
++extern void ZenReleaseSuppressedLaunchActivation(bool aActivate);
 +
  using namespace mozilla::widget;
  using namespace mozilla::gl;
  using namespace mozilla;
-+
+ 
 +// ZenStandalonePanel is not a BaseWindow, so it installs its own tracking
 +// area, and the handlers need ChildViewMouseTracker. That lives in
 +// widget/cocoa/nsChildView.h, which is not exported, so forward the three
@@ -23,13 +27,20 @@ index ebae2a976d..35302812ed 100644
 +void ZenWindowMouseMoved(NSEvent* aEvent) {
 +  ChildViewMouseTracker::MouseMoved(aEvent);
 +}
-@@ -1219,2 +1221,2 @@ void nsCocoaWindow::UpdateThemeGeometries(
++
+ BOOL sTouchBarIsInitialized = NO;
+ 
+ // defined in nsMenuBarX.mm
+@@ -1216,7 +1234,7 @@ void nsCocoaWindow::UpdateThemeGeometries(
+ 
+   UpdateVibrancy(aThemeGeometries);
+ 
 -  if (![mChildView.window isKindOfClass:[ToolbarWindow class]]) {
 +  if (![mChildView.window respondsToSelector:@selector(placeWindowButtons:)]) {
      return;
-@@ -4851,11 +4852,16 @@
-       break;
-     default:
+   }
+ 
+@@ -4837,7 +4855,12 @@ BOOL ChildViewMouseTracker::WindowAcceptsEvent(NSWindow* aWindow,
        return YES;
    }
  
@@ -43,15 +54,30 @@ index ebae2a976d..35302812ed 100644
        [aEvent type] == NSEventTypeOtherMouseDown ||
        (([aEvent modifierFlags] & NSEventModifierFlagCommand) != 0 &&
         [aEvent type] != NSEventTypeMouseMoved))
-     return YES;
+@@ -5157,6 +5180,10 @@ nsresult nsCocoaWindow::CreateNativeWindow(const NSRect& aRect,
+     windowClass = [BorderlessWindow class];
+   }
  
-@@ -5158,1 +5160,5 @@ nsresult nsCocoaWindow::CreateNativeWindow(const NSRect& aRect,
 +  if (Class zenPanelClass = ZenConsumePreparedPanelClass()) {
 +    windowClass = zenPanelClass;
 +  }
 +
    // Create the window
-@@ -5712,7 +5716,6 @@ bool nsCocoaWindow::ShouldShowAsNSPopover() const {
+   mWindow = [[windowClass alloc] initWithContentRect:contentRect
+                                            styleMask:features
+@@ -5493,6 +5520,11 @@ void nsCocoaWindow::Show(bool aState) {
+     if (NSApp.activationPolicy != NSApplicationActivationPolicyRegular) {
+       NSApp.activationPolicy = NSApplicationActivationPolicyRegular;
+       PR_SetEnv("MOZ_APP_NO_DOCK=");
++      // Zen: this is also where a launch that was held back from activating
++      // learns what it was for. A standalone window is an external link and
++      // nothing more, and is a non-activating panel that takes key on its
++      // own; anything else is the user's own Zen and gets the activation.
++      ZenReleaseSuppressedLaunchActivation(!ZenWindowActsAsMain(mWindow));
+     }
+ 
+     // Don't try to show a popup when the parent isn't visible or is minimized.
+@@ -5712,7 +5744,6 @@ bool nsCocoaWindow::ShouldShowAsNSPopover() const {
    nsMenuPopupFrame* popupFrame = GetPopupFrame();
    return [mWindow isKindOfClass:[PopupWindow class]] &&
           [(PopupWindow*)mWindow usePopover] && popupFrame &&
@@ -59,21 +85,29 @@ index ebae2a976d..35302812ed 100644
           !popupFrame->PopupElement().GetBoolAttr(nsGkAtoms::nonnative);
  }
  
-@@ -7785,3 +7790,3 @@ void WindowDelegate::windowDidBecomeMain:(NSNotification*)aNotification {
--  if ([window isKindOfClass:[ToolbarWindow class]]) {
--    [(ToolbarWindow*)window windowMainStateChanged];
-+  if ([window respondsToSelector:@selector(windowMainStateChanged)]) {
-+    [(id)window windowMainStateChanged];
+@@ -7782,8 +7813,8 @@ LayoutDeviceIntPoint nsCocoaWindow::GetNativeLockedPoint() {
+     [WindowDelegate paintMenubarForWindow:window];
    }
-@@ -7816,3 +7821,3 @@ void WindowDelegate::windowDidResignMain:(NSNotification*)aNotification {
--  if ([window isKindOfClass:[ToolbarWindow class]]) {
--    [(ToolbarWindow*)window windowMainStateChanged];
-+  if ([window respondsToSelector:@selector(windowMainStateChanged)]) {
-+    [(id)window windowMainStateChanged];
-   }
-@@ -7841,10 +7847,18 @@
-   NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
  
+-  if ([window isKindOfClass:[ToolbarWindow class]]) {
+-    [(ToolbarWindow*)window windowMainStateChanged];
++  if ([window respondsToSelector:@selector(windowMainStateChanged)]) {
++    [(id)window windowMainStateChanged];
+   }
+ 
+   NS_OBJC_END_TRY_IGNORE_BLOCK;
+@@ -7813,8 +7844,8 @@ LayoutDeviceIntPoint nsCocoaWindow::GetNativeLockedPoint() {
+   }
+ 
+   NSWindow* window = [aNotification object];
+-  if ([window isKindOfClass:[ToolbarWindow class]]) {
+-    [(ToolbarWindow*)window windowMainStateChanged];
++  if ([window respondsToSelector:@selector(windowMainStateChanged)]) {
++    [(id)window windowMainStateChanged];
+   }
+ }
+ 
+@@ -7824,6 +7855,14 @@ LayoutDeviceIntPoint nsCocoaWindow::GetNativeLockedPoint() {
    RollUpPopups();
    ChildViewMouseTracker::ReEvaluateMouseEnterState();
  
@@ -88,9 +122,9 @@ index ebae2a976d..35302812ed 100644
    if (!mGeckoWindow) {
      return;
    }
-   if (mGeckoWindow->GetInputContext().IsPasswordEditor()) {
-     TextInputHandler::EnableSecureEventInput();
-@@ -7951,10 +7956,12 @@ @implementation NSView (FrameViewMethodSwizzling)
+@@ -7949,22 +7988,24 @@ LayoutDeviceIntPoint nsCocoaWindow::GetNativeLockedPoint() {
+ @implementation NSView (FrameViewMethodSwizzling)
+ 
  - (NSPoint)FrameView__closeButtonOrigin {
 -  if (![self.window isKindOfClass:[ToolbarWindow class]]) {
 +  NSWindow* window = self.window;
@@ -109,7 +143,9 @@ index ebae2a976d..35302812ed 100644
 +      ([win styleMask] & NSWindowStyleMaskTitled)) {
 +    const NSRect buttonsRect = [win windowButtonsRect];
      if (NSIsEmptyRect(buttonsRect)) {
-@@ -7964,5 +7971,5 @@ - (NSPoint)FrameView__closeButtonOrigin {
+       // Empty rect. Let's hide the buttons.
+       // Position is in non-flipped window coordinates. Using frame's height
+       // for the vertical coordinate will move the buttons above the window,
        // making them invisible.
 -      return NSMakePoint(buttonsRect.origin.x, win.frame.size.height);
 +      return NSMakePoint(buttonsRect.origin.x, [win frame].size.height);
@@ -117,14 +153,18 @@ index ebae2a976d..35302812ed 100644
 -    if (win.windowTitlebarLayoutDirection ==
 +    if ([win windowTitlebarLayoutDirection] ==
          NSUserInterfaceLayoutDirectionRightToLeft) {
-@@ -7983,3 +7990,5 @@ - (CGFloat)FrameView__titlebarHeight {
+       // We're in RTL mode, which means that the close button is the rightmost
+       // button of the three window buttons. and buttonsRect.origin is the
+@@ -7981,18 +8022,21 @@ LayoutDeviceIntPoint nsCocoaWindow::GetNativeLockedPoint() {
+ - (CGFloat)FrameView__titlebarHeight {
+   // XXX: Shouldn't this be [super FrameView__titlebarHeight]?
    CGFloat height = [self FrameView__titlebarHeight];
 -  if ([self.window isKindOfClass:[ToolbarWindow class]]) {
 +  NSWindow* window = self.window;
 +  if ([window respondsToSelector:@selector(windowButtonsRect)] &&
 +      [window respondsToSelector:@selector(drawsContentsIntoWindowFrame)]) {
      // Make sure that the titlebar height includes our shifted buttons.
-@@ -7987,10 +7996,11 @@ - (CGFloat)FrameView__titlebarHeight {
+     // The following coordinates are in window space, with the origin being at
      // the bottom left corner of the window.
 -    auto* win = static_cast<ToolbarWindow*>(self.window);
 +    id win = window;
@@ -142,14 +182,21 @@ index ebae2a976d..35302812ed 100644
 +        ([win styleMask] & NSWindowStyleMaskTitled)) {
 +      windowButtonY = windowButtonsRect.origin.y;
      }
-@@ -8029,3 +8039,5 @@ @interface BaseWindow (Private)
+     height = std::max(height, frameHeight - windowButtonY);
+   }
+@@ -8012,6 +8056,8 @@ static NSMutableSet* gSwizzledFrameViewClasses = nil;
+ - (void)reflowTitlebarElements;
  @end
--
-+
+ 
 +void ZenEnsureFrameViewClassIsSwizzled(Class frameViewClass);
 +
  @implementation BaseWindow
-@@ -8040,6 +8052,11 @@ + (Class)frameViewClassForStyleMask:(NSUInteger)styleMask {
+ 
+ // The frame of a window is implemented using undocumented NSView subclasses.
+@@ -8023,10 +8069,15 @@ static NSMutableSet* gSwizzledFrameViewClasses = nil;
+ + (Class)frameViewClassForStyleMask:(NSUInteger)styleMask {
+   Class frameViewClass = [super frameViewClassForStyleMask:styleMask];
+ 
 +  ZenEnsureFrameViewClassIsSwizzled(frameViewClass);
 +  return frameViewClass;
 +}
@@ -162,13 +209,17 @@ index ebae2a976d..35302812ed 100644
 +      return;
      }
    }
-@@ -8074,5 +8091,3 @@ + (Class)frameViewClassForStyleMask:(NSUInteger)styleMask {
+ 
+@@ -8060,8 +8111,6 @@ static NSMutableSet* gSwizzledFrameViewClasses = nil;
+ 
      [gSwizzledFrameViewClasses addObject:frameViewClass];
    }
 -
 -  return frameViewClass;
  }
-@@ -8993,6 +9018,15 @@ static const NSUInteger kWindowShadowOptionsTooltip = 4;
+ 
+ - (id)initWithContentRect:(NSRect)aContentRect
+@@ -8993,6 +9042,15 @@ static const NSUInteger kWindowShadowOptionsTooltip = 4;
      return;
    }
  

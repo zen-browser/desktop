@@ -1,0 +1,27 @@
+diff --git a/widget/cocoa/nsAppShell.mm b/widget/cocoa/nsAppShell.mm
+index babd2d0d4bdef6934bfe942ccf2412b0116ddb3a..9e69861d63a7823cbbca3d4bc7e424fea167735d 100644
+--- a/widget/cocoa/nsAppShell.mm
++++ b/widget/cocoa/nsAppShell.mm
+@@ -364,6 +364,8 @@ void nsAppShell::OnRunLoopActivityChanged(CFRunLoopActivity aActivity) {
+ // interrupt the main native run loop.
+ //
+ // public
++extern bool ZenSuppressLaunchActivation();
++
+ nsresult nsAppShell::Init() {
+   NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
+ 
+@@ -374,6 +376,13 @@ nsresult nsAppShell::Init() {
+   char* mozAppNoDock = PR_GetEnv("MOZ_APP_NO_DOCK");
+   if (mozAppNoDock && strcmp(mozAppNoDock, "") != 0) {
+     [NSApp setActivationPolicy:NSApplicationActivationPolicyAccessory];
++  } else if (XRE_IsParentProcess()) {
++    // Zen: a launch that macOS may be about to hand an external link starts
++    // without an activation policy, so that the launch cannot take the user
++    // off the Space they are on before there is a window to place. The policy
++    // is restored, and the activation handed over or dropped, from
++    // nsCocoaWindow::Show when the first window of the launch appears.
++    ZenSuppressLaunchActivation();
+   }
+ 
+   // mAutoreleasePools is used as a stack of NSAutoreleasePool objects created

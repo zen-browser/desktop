@@ -15,6 +15,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
   SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
   setTimeout: "resource://gre/modules/Timer.sys.mjs",
+  clearTimeout: "resource://gre/modules/Timer.sys.mjs",
 });
 
 ChromeUtils.defineLazyGetter(lazy, "MacDockSupport", () => {
@@ -28,6 +29,9 @@ ChromeUtils.defineLazyGetter(lazy, "MacDockSupport", () => {
     return {
       get millisecondsSinceApplicationActivated() {
         return service.millisecondsSinceApplicationActivated;
+      },
+      get isApplicationActive() {
+        return service.isApplicationActive;
       },
       activatePreviousApplication() {
         service.hideApplication();
@@ -126,12 +130,34 @@ const STANDALONE_WINDOW_STRAY_WINDOW_WATCH_MS = 4000;
 // link that just arrived. macOS sends the reopen at the same moment, so this
 // only has to span the gap between two command lines being processed.
 const STANDALONE_WINDOW_EMPTY_STARTUP_SUPPRESS_MS = 1500;
+// How long Zen's classic startup waits, on a launch that carried no URL, for
+// macOS to hand the application an external link. When Zen is not running,
+// LaunchServices can deliver the link as its own command line a moment after
+// the initial one - too late for the standalone window to take the place of a
+// classic window that is already opening. Nothing is on screen during the
+// wait: macOS opens no early blank window, so on an ordinary launch this is
+// the entire cost. Overridable through
+// `zen.standalone-window.startup-link-grace-ms`.
+const STANDALONE_WINDOW_STARTUP_LINK_GRACE_MS = 500;
+// When to look back, after a launch that existed only to open a link, at
+// whether macOS activated Zen anyway. The activation a launch carries can
+// land after the window is already up, and an activation is what takes the
+// user off the Space - a fullscreen one especially - that they were on.
+const STANDALONE_WINDOW_LAUNCH_BACKGROUND_SETTLE_MS = [250, 750];
 
 class nsZenStandaloneWindowManager {
   // Deadline, in epoch milliseconds, until which a no-URL command line is
   // taken to be the one macOS sends alongside an external link rather than a
   // user opening Zen.
   #emptyStartupSuppressedUntil = 0;
+
+  // The timer holding Zen's classic startup window back while an external
+  // link still has time to claim this launch, and the call that opens that
+  // window once it has not.
+  #deferredStartupWindowTimer = null;
+  #deferredStartupWindowOpen = null;
+  #startupWindowDeferralUsed = false;
+  #inStartupWindowSurvivalArea = false;
 
   /**
    * Runs before the first browser window exists.
@@ -252,9 +278,17 @@ class nsZenStandaloneWindowManager {
    * @param {Window} [openerWindow] - The window to use as positioning/space
    *   context for the new window(s), if one exists. It is only ever read from
    *   here - never focused, shown, or otherwise changed.
+   * @param {object} [options] - Extra context about the request
+   * @param {boolean} [options.isApplicationLaunch] - True when this link is
+   *   what launched Zen, rather than arriving at an application already
+   *   running
    * @returns {boolean} True when every URL was handled as a standalone window
    */
-  openExternalLinksInStandaloneWindows(uriStrings, openerWindow = null) {
+  openExternalLinksInStandaloneWindows(
+    uriStrings,
+    openerWindow = null,
+    options = {}
+  ) {
     if (
       !Array.isArray(uriStrings) ||
       !uriStrings.length ||
@@ -278,6 +312,24 @@ class nsZenStandaloneWindowManager {
       )
     ) {
       return false;
+    }
+
+    // A link that launched Zen must not bring Zen forward. macOS takes the
+    // user off the Space they are on - out of another application's fullscreen
+    // Space especially - the moment a launching application activates, and it
+    // does that before any window of ours exists to be placed. Handing the
+    // activation straight back leaves the user where they were, and the
+    // standalone is a non-activating panel: it takes key, and keystrokes,
+    // while Zen itself stays behind.
+    const keepLaunchInBackground =
+      (options.isApplicationLaunch === true || this.isHoldingStartupWindow) &&
+      AppConstants.platform === "macosx" &&
+      Services.prefs.getBoolPref(
+        "zen.standalone-window.launch-stays-in-background",
+        true
+      );
+    if (keepLaunchInBackground) {
+      this.#handBackLaunchActivation();
     }
 
     const createdWindows = [];
@@ -313,12 +365,210 @@ class nsZenStandaloneWindowManager {
     }
 
     if (createdWindows.length) {
+      // The launch belonged to this link after all: Zen's classic startup
+      // window, if it is still being held, is dropped rather than opened.
+      this.#cancelDeferredStartupWindow();
       this.#emptyStartupSuppressedUntil =
         Date.now() + STANDALONE_WINDOW_EMPTY_STARTUP_SUPPRESS_MS;
       this.#closeStrayEmptyStartupWindows(createdWindows);
+      if (keepLaunchInBackground) {
+        this.#settleLaunchInBackground(
+          createdWindows[createdWindows.length - 1]
+        );
+      }
     }
 
     return true;
+  }
+
+  /**
+   * Returns the activation a launch carried to the application the user was
+   * actually in, and puts the standalone back in front of them.
+   *
+   * This is the same hand-back the close path uses, moved to the start of a
+   * standalone's life: a link that launched Zen is not the user asking for
+   * Zen, and an activation is what pulls them off their Space.
+   *
+   * @param {Window} [standaloneWindow] - The standalone to make key again
+   *   once the other application has taken the activation back
+   */
+  #handBackLaunchActivation(standaloneWindow = null) {
+    const dockSupport = lazy.MacDockSupport;
+    if (!dockSupport) {
+      return;
+    }
+
+    try {
+      dockSupport.activatePreviousApplication();
+    } catch (error) {
+      console.error("Failed to leave Zen's launch in the background", error);
+      return;
+    }
+
+    if (!standaloneWindow || standaloneWindow.closed) {
+      return;
+    }
+    try {
+      standaloneWindow.focus();
+    } catch (error) {
+      console.error(
+        "Failed to bring a backgrounded standalone window back to the front",
+        error
+      );
+    }
+  }
+
+  /**
+   * Watches for the activation a launch carries arriving late, after the
+   * standalone is already up, and hands that one back too.
+   *
+   * Nothing else can be activating Zen this soon after a link launched it:
+   * the standalone is non-activating, so neither showing it nor clicking in
+   * it brings the application forward.
+   *
+   * @param {Window} standaloneWindow - The standalone the link opened
+   */
+  #settleLaunchInBackground(standaloneWindow) {
+    for (const delay of STANDALONE_WINDOW_LAUNCH_BACKGROUND_SETTLE_MS) {
+      lazy.setTimeout(() => {
+        if (
+          standaloneWindow?.closed === false &&
+          lazy.MacDockSupport?.isApplicationActive
+        ) {
+          this.#handBackLaunchActivation(standaloneWindow);
+        }
+      }, delay);
+    }
+  }
+
+  /**
+   * Holds Zen's classic startup window back for a moment, on a launch whose
+   * command line carried no URL, in case macOS is about to hand this launch an
+   * external link.
+   *
+   * A link clicked while Zen is not running launches the application, and the
+   * URL can arrive either on the initial command line or as its own command
+   * line just after it. In the second case the classic window - the session,
+   * the spaces, the lot - is already opening by the time the link is known,
+   * and the standalone window ends up next to a browser the user never asked
+   * to open. Waiting a beat before opening it is what lets the link be treated
+   * differently: `openExternalLinksInStandaloneWindows` cancels the wait, and
+   * the classic window is never opened at all.
+   *
+   * Nothing is on screen while Zen waits - macOS opens no early blank window -
+   * so on an ordinary launch the only cost is that much delay before the
+   * window appears. Setting the grace period to 0 disables this entirely.
+   *
+   * @param {Function} openStartupWindow - Opens Zen's normal startup window.
+   *   Called at most once, and only when no link claimed the launch.
+   * @returns {boolean} True when the caller must leave the window to this
+   *   module rather than opening it itself
+   */
+  deferStartupWindowForExternalLink(openStartupWindow) {
+    if (
+      AppConstants.platform !== "macosx" ||
+      typeof openStartupWindow !== "function" ||
+      this.#startupWindowDeferralUsed ||
+      !Services.prefs.getBoolPref("zen.standalone-window.enabled", false) ||
+      lazy.PrivateBrowsingUtils.permanentPrivateBrowsing
+    ) {
+      return false;
+    }
+
+    const graceMs = Services.prefs.getIntPref(
+      "zen.standalone-window.startup-link-grace-ms",
+      STANDALONE_WINDOW_STARTUP_LINK_GRACE_MS
+    );
+    if (graceMs <= 0) {
+      return false;
+    }
+
+    // Only ever the first window of a launch, and only once.
+    this.#startupWindowDeferralUsed = true;
+    this.#deferredStartupWindowOpen = openStartupWindow;
+
+    // No window exists while Zen waits. Hold the application open across that
+    // gap rather than leaving it to the window count.
+    try {
+      Services.startup.enterLastWindowClosingSurvivalArea();
+      this.#inStartupWindowSurvivalArea = true;
+    } catch (error) {
+      console.error(
+        "Failed to hold Zen open while its startup window waits",
+        error
+      );
+    }
+
+    this.#deferredStartupWindowTimer = lazy.setTimeout(() => {
+      this.#deferredStartupWindowTimer = null;
+      const open = this.#deferredStartupWindowOpen;
+      this.#deferredStartupWindowOpen = null;
+      try {
+        // No link arrived, so this launch was the user opening Zen. A window
+        // that appeared in the meantime is that same startup arriving by
+        // another route, and a second one must not be opened next to it.
+        if (open && !Services.startup.shuttingDown && !this.#hasBrowserWindow) {
+          open();
+        }
+      } catch (error) {
+        console.error("Failed to open Zen's held startup window", error);
+      } finally {
+        this.#exitStartupWindowSurvivalArea();
+      }
+    }, graceMs);
+
+    return true;
+  }
+
+  /**
+   * Whether Zen's classic startup window is currently being held back waiting
+   * to see whether this launch belongs to an external link.
+   *
+   * @returns {boolean} True while the window is held
+   */
+  get isHoldingStartupWindow() {
+    return !!this.#deferredStartupWindowTimer;
+  }
+
+  /**
+   * Drops the held classic startup window. An external link has claimed this
+   * launch, and a link opens a standalone window and nothing else.
+   */
+  #cancelDeferredStartupWindow() {
+    if (!this.#deferredStartupWindowTimer) {
+      return;
+    }
+    lazy.clearTimeout(this.#deferredStartupWindowTimer);
+    this.#deferredStartupWindowTimer = null;
+    this.#deferredStartupWindowOpen = null;
+    this.#exitStartupWindowSurvivalArea();
+  }
+
+  /**
+   * Balances the survival area entered while the startup window was held.
+   */
+  #exitStartupWindowSurvivalArea() {
+    if (!this.#inStartupWindowSurvivalArea) {
+      return;
+    }
+    this.#inStartupWindowSurvivalArea = false;
+    try {
+      Services.startup.exitLastWindowClosingSurvivalArea();
+    } catch (error) {
+      console.error(
+        "Failed to release Zen after its startup window was decided",
+        error
+      );
+    }
+  }
+
+  /**
+   * Whether any browser window is currently open, standalone windows included.
+   *
+   * @returns {boolean} True when at least one browser window exists
+   */
+  get #hasBrowserWindow() {
+    return !!Services.wm.getMostRecentWindow("navigator:browser");
   }
 
   /**

@@ -115,6 +115,10 @@ The feature must not ship unless all of these pass:
    - Quit Zen. From another app, open a link.
    - Expected: Zen starts and shows the standalone window only. No normal window, and no space is restored behind it.
    - Expected: `Open in Space` opens a normal window with the previous session in it and files the page there.
+   - Repeat from an app occupying its own fullscreen Space, and from an extra desktop.
+   - Expected: the standalone appears on that Space. macOS does not take you to the main desktop, and Zen does not become the frontmost application - the menu bar still belongs to the app the link came from.
+   - Expected: the standalone still takes keystrokes; typing in its address bar goes to it and not to the app behind it.
+   - Compare with launching Zen normally from the Dock while on that Space, which is meant to bring Zen forward and take you with it.
 
 16. Focus on open (macOS)
    - With Zen in the background and another app in front, open a link from that app.

@@ -10,3 +10,6 @@
   value: false
   locked: true
   condition: "!@IS_TWILIGHT@"
+
+- name: zen.spaces-sync.debug
+  value: false

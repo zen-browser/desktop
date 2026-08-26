@@ -11,6 +11,7 @@ import { CryptoWrapper } from "resource://services-sync/record.sys.mjs";
 import { SCORE_INCREMENT_XLARGE } from "resource://services-sync/constants.sys.mjs";
 import {
   SIDEBAR_COLLECTED_TOPIC,
+  syncLog,
   ZenSpacesSyncModel,
 } from "resource:///modules/zen/ZenSpacesSyncModel.sys.mjs";
 
@@ -98,6 +99,7 @@ class ZenSpacesSyncTracker extends Tracker {
     }
     try {
       if (ZenSpacesSyncModel.hasPendingChanges()) {
+        syncLog(`tracker: pending changes after ${topic}, requesting sync`);
         this.score += SCORE_INCREMENT_XLARGE;
       }
     } catch (e) {

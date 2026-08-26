@@ -22,6 +22,8 @@
     "sync:raw": "surfer update",
     "sync:rc": "python3 scripts/update_ff.py --rc",
     "sync:l10n": "python3 scripts/update_ff.py --just-l10n",
+    "zenmod": "node tools/zen-mod-cli/bin/zenmod.mjs",
+    "test:zenmod": "npm --prefix tools/zen-mod-cli test",
     "lint": "cd engine && ./mach lint zen",
     "lint:fix": "npm run lint -- --fix",
     "reset-ff": "surfer reset",

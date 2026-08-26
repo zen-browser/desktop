@@ -1,0 +1,19 @@
+{
+  "name": "@zen-browser/zen-mod-cli",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Headless browser-chrome test CLI for local Zen mods",
+  "type": "module",
+  "bin": {
+    "zenmod": "bin/zenmod.mjs"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "dependencies": {
+    "zen-devtools-mcp": "0.2.0"
+  }
+}

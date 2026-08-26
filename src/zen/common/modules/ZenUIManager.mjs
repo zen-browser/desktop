@@ -493,6 +493,13 @@ window.gZenUIManager = {
   _clearTimeout: null,
   _lastTab: null,
 
+  _urlbarSessionCounter: 0,
+  _urlbarOwner: null,
+
+  _isOwner(closeSeq) {
+    return this._urlbarOwner === closeSeq;
+  },
+
   // Check if browser elements are in a valid state for tab operations
   _validateBrowserState() {
     // Check if browser window is still open
@@ -517,8 +524,15 @@ window.gZenUIManager = {
     werePassedURL,
     searchClipboard,
     where,
-    overridePreferance = false
+    overridePreferance = false,
+    closeToken = {}
   ) {
+    // Keep this here. It's better to make sure every
+    // call has a different token rather then forgetting
+    // to increment it in one of the early returns.
+    const closeSeq = ++this._urlbarSessionCounter;
+    closeToken.id = closeSeq;
+
     // Validate browser state first
     if (!this._validateBrowserState()) {
       console.warn("Browser state invalid for new tab operation");
@@ -542,7 +556,13 @@ window.gZenUIManager = {
 
     // Close the new tab popup on cmd/ctrl + t
     if (!overridePreferance && gURLBar.hasAttribute("zen-newtab")) {
-      this.handleUrlbarClose();
+      // The _zenHandleUrlbarClose holds a token in it's closure.
+      // Call that instead.
+      if (gURLBar._zenHandleUrlbarClose) {
+        gURLBar._zenHandleUrlbarClose();
+      } else {
+        this.handleUrlbarClose(closeSeq);
+      }
       return true;
     }
 
@@ -568,7 +588,9 @@ window.gZenUIManager = {
     this._prevUrlbarLabel = gURLBar._untrimmedValue || "";
 
     // Set up URL bar for new tab
-    gURLBar._zenHandleUrlbarClose = this.handleUrlbarClose.bind(this);
+    gURLBar._zenHandleUrlbarClose = (onSwitch, onElementPicked) =>
+      this.handleUrlbarClose(closeSeq, onSwitch, onElementPicked);
+    this._urlbarOwner = closeSeq;
     gURLBar.setAttribute("zen-newtab", true);
 
     // Update newtab buttons
@@ -582,10 +604,25 @@ window.gZenUIManager = {
       document.getElementById("Browser:OpenLocation").doCommand();
     } catch (e) {
       console.error("Error opening location in new tab:", e);
-      this.handleUrlbarClose(false);
+      this.handleUrlbarClose(closeSeq, false, false);
       return false;
     }
     return true;
+  },
+
+  /**
+   * Check whether the closeToken given by handleNewTab
+   * corresponds to a close event.
+   *
+   * @param {object} closeToken - Token previously passed to handleNewTab.
+   * @param {CustomEvent} event - A ZenURLBarClosed event.
+   * @returns {boolean}
+   */
+  matchesCloseToken(closeToken, event) {
+    return (
+      typeof closeToken?.id === "number" &&
+      event?.detail?.closeSeq === closeToken.id
+    );
   },
 
   clearUrlbarData() {
@@ -593,7 +630,7 @@ window.gZenUIManager = {
     this._lastSearch = "";
   },
 
-  handleUrlbarClose(onSwitch = false, onElementPicked = false) {
+  handleUrlbarClose(closeSeq, onSwitch = false, onElementPicked = false) {
     // Validate browser state first
     if (!this._validateBrowserState()) {
       console.warn("Browser state invalid for URL bar close operation");
@@ -607,59 +644,69 @@ window.gZenUIManager = {
 
     const isFocusedBefore = gURLBar.focused;
     setTimeout(() => {
-      // We use this attribute on Tabbrowser::addTab
-      gURLBar.removeAttribute("zen-newtab");
+      /* If someone else opened the url bar in the meantime don't be
+       * stingy and leave it open for them.*/
+      if (this._isOwner(closeSeq)) {
+        // We use this attribute on Tabbrowser::addTab
+        gURLBar.removeAttribute("zen-newtab");
 
-      // Safely restore tab visual state with proper validation
-      if (
-        this._lastTab &&
-        !this._lastTab.closing &&
-        this._lastTab.documentGlobal &&
-        !this._lastTab.documentGlobal.closed &&
-        gBrowser.selectedTab === this._lastTab
-      ) {
-        this._lastTab._visuallySelected = true;
-        this._lastTab = null;
-      }
-
-      // Reset newtab buttons
-      for (const button of this.newtabButtons) {
-        button.removeAttribute("in-urlbar");
-      }
-
-      // Handle search data
-      if (onSwitch) {
-        this.clearUrlbarData();
-      } else {
-        this._lastSearch = gURLBar._untrimmedValue || "";
-
-        if (this._clearTimeout) {
-          clearTimeout(this._clearTimeout);
+        // Safely restore tab visual state with proper validation
+        if (
+          this._lastTab &&
+          !this._lastTab.closing &&
+          this._lastTab.documentGlobal &&
+          !this._lastTab.documentGlobal.closed &&
+          gBrowser.selectedTab === this._lastTab
+        ) {
+          this._lastTab._visuallySelected = true;
+          this._lastTab = null;
         }
 
-        this._clearTimeout = setTimeout(() => {
+        // Reset newtab buttons
+        for (const button of this.newtabButtons) {
+          button.removeAttribute("in-urlbar");
+        }
+
+        // Handle search data
+        if (onSwitch) {
           this.clearUrlbarData();
-        }, this.urlbarWaitToClear);
-      }
+        } else {
+          this._lastSearch = gURLBar._untrimmedValue || "";
 
-      // Safely restore URL bar state with proper validation
-      if (this._prevUrlbarLabel) {
-        gURLBar.setURI({
-          uri: this._prevUrlbarLabel,
-          dueToTabSwitch: onSwitch,
-          isSameDocument: !onSwitch,
-        });
-      }
+          if (this._clearTimeout) {
+            clearTimeout(this._clearTimeout);
+          }
 
-      gURLBar.handleRevert();
+          this._clearTimeout = setTimeout(() => {
+            this.clearUrlbarData();
+          }, this.urlbarWaitToClear);
+        }
+
+        // Safely restore URL bar state with proper validation
+        if (this._prevUrlbarLabel) {
+          gURLBar.setURI({
+            uri: this._prevUrlbarLabel,
+            dueToTabSwitch: onSwitch,
+            isSameDocument: !onSwitch,
+          });
+        }
+
+        gURLBar.handleRevert();
+      }
 
       if (isFocusedBefore) {
         setTimeout(() => {
           window.dispatchEvent(
             new CustomEvent("ZenURLBarClosed", {
-              detail: { onSwitch, onElementPicked },
+              detail: { onSwitch, onElementPicked, closeSeq },
             })
           );
+
+          if (!this._isOwner(closeSeq)) {
+            return;
+          }
+          this._urlbarOwner = null;
+
           gURLBar.view.close({ elementPicked: onElementPicked });
           gURLBar.updateTextOverflow();
 
@@ -683,6 +730,8 @@ window.gZenUIManager = {
             }
           }
         }, 0);
+      } else if (this._isOwner(closeSeq)) {
+        this._urlbarOwner = null;
       }
     }, 0);
   },

@@ -11,7 +11,7 @@ tab-zen-split-tabs =
         }
     .accesskey = H
 zen-split-link = 
-    .label = Split Link to New Tab
+    .label = Rhannu Dolen i Dab Newydd
     .accesskey = D
 zen-split-view-modifier-header = Golwg Hollt
 zen-split-view-modifier-activate-reallocation = 

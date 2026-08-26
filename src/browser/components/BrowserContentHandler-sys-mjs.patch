@@ -94,11 +94,10 @@ diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/componen
          openBrowserWindow(cmdLine, lazy.gSystemPrincipal, URLlist);
        }
      } else if (!cmdLine.preventDefault) {
-@@ -1734,7 +1792,21 @@
+@@ -1734,6 +1792,14 @@
            return;
          }
        }
--      openBrowserWindow(cmdLine, lazy.gSystemPrincipal);
 +      // An external link that has gone to a standalone window brings an
 +      // empty command line along with it, because macOS reopens the
 +      // application at the same moment. That reopen must not drag Zen's
@@ -107,13 +106,6 @@ diff --git a/browser/components/BrowserContentHandler.sys.mjs b/browser/componen
 +        cmdLine.preventDefault = true;
 +        return;
 +      }
-+      let emptyStartupWindow = openBrowserWindow(cmdLine, lazy.gSystemPrincipal);
-+      if (emptyStartupWindow) {
-+        // Marked so that, when this command line is processed before the one
-+        // carrying the link, the standalone manager can close exactly the
-+        // window this branch opened instead of guessing from its contents.
-+        emptyStartupWindow._zenEmptyStartupWindow = true;
-+      }
+       openBrowserWindow(cmdLine, lazy.gSystemPrincipal);
      } else {
        // Need a better solution in the future to avoid opening the blank window
-       // when command line parameters say we are not going to show a browser

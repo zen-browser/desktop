@@ -122,6 +122,10 @@ const STANDALONE_WINDOW_FOCUS_SETTLE_MS = 1500;
 // how long to keep watching for that window if it has not appeared yet by
 // the time the standalone window is created.
 const STANDALONE_WINDOW_STRAY_WINDOW_WATCH_MS = 4000;
+// How long a no-URL command line is still taken to belong to the external
+// link that just arrived. macOS sends the reopen at the same moment, so this
+// only has to span the gap between two command lines being processed.
+const STANDALONE_WINDOW_EMPTY_STARTUP_SUPPRESS_MS = 1500;
 
 class nsZenStandaloneWindowManager {
   // Deadline, in epoch milliseconds, until which a no-URL command line is
@@ -310,7 +314,7 @@ class nsZenStandaloneWindowManager {
 
     if (createdWindows.length) {
       this.#emptyStartupSuppressedUntil =
-        Date.now() + STANDALONE_WINDOW_STRAY_WINDOW_WATCH_MS;
+        Date.now() + STANDALONE_WINDOW_EMPTY_STARTUP_SUPPRESS_MS;
       this.#closeStrayEmptyStartupWindows(createdWindows);
     }
 
@@ -365,19 +369,12 @@ class nsZenStandaloneWindowManager {
       ) {
         return;
       }
-      // A window the no-URL command line opened for this same activation. It
-      // is recognised by the mark that branch left on it rather than by what
-      // it happens to contain, because when macOS reopens the application it
-      // restores a full session into it. Nothing else is ever closed on that
-      // basis.
-      if (!win._zenEmptyStartupWindow) {
-        if (win.gZenStartup?.isReady) {
-          return;
-        }
-        const tabs = win.gBrowser?.tabs;
-        if (!(tabs?.length === 1 && tabs[0].hasAttribute("zen-empty-tab"))) {
-          return;
-        }
+      if (win.gZenStartup?.isReady) {
+        return;
+      }
+      const tabs = win.gBrowser?.tabs;
+      if (!(tabs?.length === 1 && tabs[0].hasAttribute("zen-empty-tab"))) {
+        return;
       }
       try {
         win.close();

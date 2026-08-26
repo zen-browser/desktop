@@ -11,6 +11,7 @@ import { CryptoWrapper } from "resource://services-sync/record.sys.mjs";
 import { SCORE_INCREMENT_XLARGE } from "resource://services-sync/constants.sys.mjs";
 import {
   SIDEBAR_COLLECTED_TOPIC,
+  syncLog,
   ZenSpacesSyncModel,
 } from "resource:///modules/zen/ZenSpacesSyncModel.sys.mjs";
 
@@ -98,6 +99,7 @@ class ZenSpacesSyncTracker extends Tracker {
     }
     try {
       if (ZenSpacesSyncModel.hasPendingChanges()) {
+        syncLog(`tracker: pending changes after ${topic}, requesting sync`);
         this.score += SCORE_INCREMENT_XLARGE;
       }
     } catch (e) {
@@ -141,12 +143,21 @@ export class ZenSpacesSyncEngine extends SyncEngine {
     return ZenSpacesSyncModel.computeChangedIDs();
   }
 
-  async _reconcile() {
+  async _reconcile(item) {
     // Incoming records always apply, and any local divergence re-uploads afterwards
     // (see ZenSpacesSyncModel.noteApplied). The base reconciliation would
     // instead drop incoming changes whenever the id is also in the local
     // changed set, because the snapshot diff stamps its changes with "now"
     // and the local side would always win the age comparison.
+    //
+    // An id we accept must also leave the outgoing set. Projections only
+    // reflect the applied state after the delayed session collection, so
+    // uploading the id later in this same sync would overwrite the record
+    // we just accepted with the stale pre-apply state (and the other
+    // device would then apply that, endlessly trading states back and
+    // forth). Divergence that survives the collection re-uploads on a
+    // later sync through the snapshot diff.
+    this._modified.delete(item.id);
     return true;
   }
 

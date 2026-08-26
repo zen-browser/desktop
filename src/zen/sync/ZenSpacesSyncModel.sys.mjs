@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { JSONFile } from "resource://gre/modules/JSONFile.sys.mjs";
+import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 
 const lazy = {};
 
@@ -13,6 +14,26 @@ ChromeUtils.defineESModuleGetters(lazy, {
   ContextualIdentityService:
     "moz-src:///toolkit/components/contextualidentity/ContextualIdentityService.sys.mjs",
 });
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "syncDebug",
+  "zen.spaces-sync.debug",
+  false
+);
+
+/**
+ * Debug logging for the whole Spaces sync pipeline.
+ *
+ * @param {string} message
+ * @param {...any} args
+ */
+export function syncLog(message, ...args) {
+  if (lazy.syncDebug) {
+    // eslint-disable-next-line no-console
+    console.debug(`ZenSpacesSync: ${message}`, ...args);
+  }
+}
 
 export const SIDEBAR_COLLECTED_TOPIC = "zen-sidebar-data-collected";
 
@@ -231,7 +252,11 @@ class nsZenSpacesSyncModel {
     if (!url || url === "about:blank") {
       return null;
     }
-    const icon = syncableIconUrl(tabData.image || initial?.image || "");
+    const icon = syncableIconUrl(
+      (tabData.zenHasStaticIcon
+        ? tabData.image
+        : initial?.image || tabData.image) || ""
+    );
     return { url, title: title || "", icon };
   }
 
@@ -594,6 +619,15 @@ class nsZenSpacesSyncModel {
         changes[id] = now;
       }
     }
+    if (lazy.syncDebug && Object.keys(changes).length) {
+      const map = this.projections();
+      syncLog(
+        "outgoing diff:",
+        Object.keys(changes).map(id =>
+          current.has(id) ? `${map.get(id)?.kind} ${id}` : `TOMBSTONE ${id}`
+        )
+      );
+    }
     return changes;
   }
 
@@ -630,6 +664,12 @@ class nsZenSpacesSyncModel {
         delete data.uploaded[id];
       }
     }
+    if (lazy.syncDebug && ids.length) {
+      syncLog(
+        "server acknowledged upload:",
+        ids.map(id => (current.has(id) ? id : `${id} (tombstone)`))
+      );
+    }
     this.#file.saveSoon();
   }
 
@@ -649,6 +689,9 @@ class nsZenSpacesSyncModel {
     } else {
       data.uploaded[id] = recordDigest(cleartext.kind, cleartext.data);
     }
+    syncLog(
+      `acknowledged incoming ${cleartext ? cleartext.kind : "tombstone"} ${id}`
+    );
     this.#file.saveSoon();
   }
 }

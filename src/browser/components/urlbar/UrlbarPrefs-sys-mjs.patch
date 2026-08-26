@@ -1,8 +1,18 @@
 diff --git a/browser/components/urlbar/UrlbarPrefs.sys.mjs b/browser/components/urlbar/UrlbarPrefs.sys.mjs
-index 2d21248256c6c2bfb8dac958133c10e3251ef564..f788bd10ec2c08e4b27b77cd3bb0489fb04e8b7a 100644
+index 89f0d44d462de3d7d0f581d6371606f475443822..0d45ce5f6455e9c7276c54f504906bade5b3d286 100644
 --- a/browser/components/urlbar/UrlbarPrefs.sys.mjs
 +++ b/browser/components/urlbar/UrlbarPrefs.sys.mjs
-@@ -462,6 +462,7 @@ const PREF_URLBAR_DEFAULTS = /** @type {PreferenceDefinition[]} */ ([
+@@ -163,6 +163,9 @@ const PREF_URLBAR_DEFAULTS = /** @type {PreferenceDefinition[]} */ ([
+   // Feature gate pref for flight status suggestions in the urlbar.
+   ["flightStatus.featureGate", false],
+ 
++  // Whether to close the urlbar when blurring the window while the urlbar is focused.
++  ["closeOnWindowBlur", true],
++
+   // The minimum prefix length of a flight status keyword the user must type to
+   // trigger the suggestion. 0 means the min length should be taken from Nimbus
+   // or remote settings.
+@@ -482,6 +485,7 @@ const PREF_URLBAR_DEFAULTS = /** @type {PreferenceDefinition[]} */ ([
    ["shortcuts.tabs", true],
    ["shortcuts.history", true],
    ["shortcuts.actions", true],
@@ -10,7 +20,7 @@ index 2d21248256c6c2bfb8dac958133c10e3251ef564..f788bd10ec2c08e4b27b77cd3bb0489f
  
    // Boolean to determine if the providers defined in `exposureResults`
    // should be displayed in search results. This can be set by a
-@@ -799,6 +800,8 @@ function makeDefaultResultGroups({ showSearchSuggestionsFirst }) {
+@@ -840,6 +844,8 @@ function makeDefaultResultGroups({
     */
    let rootGroup = {
      children: [

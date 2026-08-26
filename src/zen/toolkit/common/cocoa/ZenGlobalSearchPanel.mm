@@ -69,8 +69,10 @@ extern void ZenWindowMouseMoved(NSEvent* aEvent);
 }
 @end
 
-// Answers the three Gecko call sites that would otherwise require a main
-// window. See -canBecomeMainWindow below for why this window never is one.
+// Answers the three Gecko call sites that gate on isMainWindow. Kept now that
+// -canBecomeMainWindow returns YES, because a non-activating panel is main
+// only while its application is inactive, and AppKit reports isMainWindow as
+// NO for every window of an inactive application.
 bool ZenWindowActsAsMain(NSWindow* aWindow) {
   return [aWindow isKindOfClass:[ZenStandalonePanel class]];
 }
@@ -92,17 +94,18 @@ bool ZenWindowActsAsMain(NSWindow* aWindow) {
   NSWindowStyleMask style =
       aStyleMask | NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
       NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable |
-      NSWindowStyleMaskFullSizeContentView;
+      NSWindowStyleMaskFullSizeContentView |
+      NSWindowStyleMaskNonactivatingPanel;
   self = [super initWithContentRect:aContentRect
                           styleMask:style
                             backing:aBackingType
                               defer:aFlag];
   if (self) {
     // Everything below turns the panel's auxiliary defaults back into
-    // ordinary window behaviour. What is deliberately NOT restored is
-    // `canBecomeMainWindow`-by-default: being auxiliary is what lets AppKit
-    // place this window on the Space the user is looking at instead of the
-    // one Zen's other windows live on, which is the whole reason this is a
+    // ordinary window behaviour. What is deliberately kept is the
+    // non-activating role above: because the application is never activated,
+    // AppKit has no application Space to place this window on and puts it on
+    // the Space the user is looking at. That is the whole reason this is a
     // panel and not a ToolbarWindow.
     self.floatingPanel = NO;
     // A panel hides itself when the application deactivates. A standalone is
@@ -157,8 +160,20 @@ bool ZenWindowActsAsMain(NSWindow* aWindow) {
 // Those three call sites ask ZenWindowActsAsMain() below instead, so this
 // window behaves like a main window inside Gecko while remaining auxiliary to
 // AppKit.
+// A non-activating panel still takes key and main within its own
+// application. Accessibility inspection of Arc's Little Arc window shows
+// exactly that: main=YES, subrole=AXSystemDialog, with the application
+// inactive throughout. Gecko needs main for mouse input, activation and the
+// menu bar, so this must be YES; the first attempt at this window returned NO
+// and that is what made the page take no clicks.
 - (BOOL)canBecomeMainWindow {
-  return NO;
+  return YES;
+}
+
+// Gecko changes the style mask for fullscreen and chrome transitions. The
+// window must not lose its non-activating role when that happens.
+- (void)setStyleMask:(NSWindowStyleMask)aStyleMask {
+  [super setStyleMask:aStyleMask | NSWindowStyleMaskNonactivatingPanel];
 }
 
 - (void)setHidesOnDeactivate:(BOOL)aHides {

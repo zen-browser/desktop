@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-pane-zen-looks-title = Edrych a Theimlo
+pane-zen-looks-title = Golwg a Theimlad
 category-zen-looks = 
     .tooltiptext = { pane-zen-looks-title }
 zen-warning-language = Gall newid yr iaith rhagosodedig ei gwneud hi'n haws i Wefannau eich tracio.
@@ -38,10 +38,10 @@ zen-look-and-feel-compact-view-top-toolbar =
     .label = Cuddio'r bar offer uchaf hefyd yn y modd cryno
 zen-look-and-feel-compact-toolbar-flash-popup = 
     .label = Gwneud i'r bar offer ymddangos yn fyr wrth newid neu agor tabiau newydd yn y modd cryno
-zen-look-and-feel-window-drag-header = Window dragging
-zen-look-and-feel-window-drag-description = Move the window by dragging empty space at the top of websites, just like the titlebar.
+zen-look-and-feel-window-drag-header = Llusgo ffenestri
+zen-look-and-feel-window-drag-description = Symudwch y ffenestr trwy lusgo gofod gwag ar frig gwefannau, yn union fel y bar teitl.
 zen-window-drag-enabled = 
-    .label = Allow dragging the window from web pages
+    .label = Caniatáu llusgo'r ffenestr o dudalennau gwe
 pane-zen-tabs-title = Rheoli Tabiau
 category-zen-workspaces = 
     .tooltiptext = { pane-zen-tabs-title }
@@ -248,8 +248,8 @@ zen-page-info-shortcut = Gweld Manylion Tudalen
 zen-find-shortcut = Canfod ar y Dudalen
 zen-search-find-again-shortcut = Canfod Eto
 zen-search-find-again-shortcut-prev = Canfod y Blaenorol
-zen-search-find-again-shortcut-alt = Find Again (Alt)
-zen-search-find-again-shortcut-prev-alt = Find Previous (Alt)
+zen-search-find-again-shortcut-alt = Canfod Eto (Alt)
+zen-search-find-again-shortcut-prev-alt = Canfod y Blaenorol (Alt)
 zen-bookmark-this-page-shortcut = Gosod Nod Tudalen i'r Dudalen Hon
 zen-bookmark-show-library-shortcut = Dangos Llyfrgell Nodau Tudalen
 zen-key-stop = Stopio Llwytho

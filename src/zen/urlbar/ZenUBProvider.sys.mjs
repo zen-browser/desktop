@@ -7,6 +7,8 @@ import { ProvidersManager } from "moz-src:///browser/components/urlbar/UrlbarPro
 const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   /* eslint-disable mozilla/valid-lazy */
+  ZenUrlbarProviderEssentials:
+    "resource:///modules/ZenUBEssentialsProvider.sys.mjs",
   ZenUrlbarProviderGlobalActions:
     "resource:///modules/ZenUBActionsProvider.sys.mjs",
 });

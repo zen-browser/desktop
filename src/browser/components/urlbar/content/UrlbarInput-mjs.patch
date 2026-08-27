@@ -74,7 +74,61 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
      }
  
      if (isCanonized) {
-@@ -2974,6 +3007,42 @@ ${
+@@ -1692,10 +1725,11 @@ ${
+         // Behaviour is reversed with SecondaryActions, default behaviour is to navigate
+         // and button is provided to switch to tab.
+         if (
+-          this.hasAttribute("action-override") ||
+-          (lazy.UrlbarPrefs.get("secondaryActions.switchToTab") &&
+-            element?.dataset.action !== "tabswitch")
++          !result.payload.zenEssentialTarget &&
++          (this.hasAttribute("action-override") ||
++            (lazy.UrlbarPrefs.get("secondaryActions.switchToTab") &&
++              element?.dataset.action !== "tabswitch"))
+         ) {
+           where = "current";
+           break;
+         }
+@@ -1727,12 +1761,23 @@ ${
+-        let switched = this.window.switchToTabHavingURI(
+-          Services.io.newURI(url),
+-          true,
+-          loadOpts,
+-          lazy.UrlbarProviderOpenTabs.isNonPrivateUserContextId(
+-            result.payload.userContextId
+-          )
+-            ? result.payload.userContextId
+-            : null,
+-          activeSplitView
+-        );
++        const isZenEssentialResult = !!result.payload.zenEssentialTarget;
++        let switched;
++        if (isZenEssentialResult) {
++          switched = ChromeUtils.importESModule(
++            "resource:///modules/ZenUBEssentialsProvider.sys.mjs"
++          ).ZenUrlbarProviderEssentials.switchToTarget(
++            result.payload,
++            this.isPrivate
++          );
++        } else {
++          switched = this.window.switchToTabHavingURI(
++            Services.io.newURI(url),
++            true,
++            loadOpts,
++            lazy.UrlbarProviderOpenTabs.isNonPrivateUserContextId(
++              result.payload.userContextId
++            )
++              ? result.payload.userContextId
++              : null,
++            activeSplitView
++          );
++        }
+         if (switched && !activeSplitView && prevTab.isEmpty) {
+@@ -1753,2 +1798,2 @@ ${
+-        if (!switched) {
++        if (!switched && !isZenEssentialResult) {
+           console.error(`Tried to switch to non-existent tab: ${url}`);
+@@ -2974,6 +3019,42 @@ ${
      await this.#updateLayoutBreakoutDimensions();
    }
  
@@ -117,7 +171,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
    startLayoutExtend() {
      if (!this.#allowBreakout || this.hasAttribute("breakout-extend")) {
        // Do not expand if the Urlbar does not support being expanded or it is
-@@ -2988,6 +3057,13 @@ ${
+@@ -2988,6 +3069,13 @@ ${
      this.toggleAttribute("breakout-extend", true);
      this.#updateTextboxPosition();
  
@@ -131,7 +185,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
      // Enable the animation only after the first extend call to ensure it
      // doesn't run when opening a new window.
      if (!this.hasAttribute("breakout-extend-animate")) {
-@@ -3011,6 +3087,29 @@ ${
+@@ -3011,6 +3099,29 @@ ${
        return;
      }
  
@@ -161,7 +215,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
      this.toggleAttribute("breakout-extend", false);
      this.#updateTextboxPosition();
    }
-@@ -3049,7 +3148,7 @@ ${
+@@ -3049,7 +3160,7 @@ ${
      forceUnifiedSearchButtonAvailable = false
    ) {
      let prevState = this.getAttribute("pageproxystate");
@@ -170,7 +224,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
      this.setAttribute("pageproxystate", state);
      this._inputContainer.setAttribute("pageproxystate", state);
      this._identityBox?.setAttribute("pageproxystate", state);
-@@ -3332,10 +3431,12 @@ ${
+@@ -3332,10 +3443,12 @@ ${
      }
  
      this.style.top = px(
@@ -183,7 +237,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
      );
    }
  
-@@ -3394,9 +3495,10 @@ ${
+@@ -3394,9 +3507,10 @@ ${
            return;
          }
  
@@ -195,7 +249,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
          );
          this.style.setProperty(
            "--urlbar-height",
-@@ -3902,6 +4004,7 @@ ${
+@@ -3902,6 +4016,7 @@ ${
    }
  
    _toggleActionOverride(event) {
@@ -203,7 +257,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
      if (
        event.keyCode == KeyEvent.DOM_VK_SHIFT ||
        event.keyCode == KeyEvent.DOM_VK_ALT ||
-@@ -4014,8 +4117,8 @@ ${
+@@ -4014,8 +4129,8 @@ ${
      if (!this.#isAddressbar) {
        return val;
      }
@@ -214,7 +268,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
        : val;
      // Only trim value if the directionality doesn't change to RTL and we're not
      // showing a strikeout https protocol.
-@@ -4317,6 +4420,7 @@ ${
+@@ -4317,6 +4432,7 @@ ${
      browser = this.window.gBrowser.selectedBrowser,
      keepViewOpen = false
    ) {
@@ -222,7 +276,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
      if (this.#isAddressbar) {
        this.#prepareAddressbarLoad(
          url,
-@@ -4430,6 +4534,10 @@ ${
+@@ -4430,6 +4546,10 @@ ${
        }
        reuseEmpty = true;
      }
@@ -233,7 +287,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
      if (
        where == "tab" &&
        reuseEmpty &&
-@@ -4437,6 +4545,9 @@ ${
+@@ -4437,6 +4557,9 @@ ${
      ) {
        where = "current";
      }
@@ -243,7 +297,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
      return where;
    }
  
-@@ -4691,6 +4802,7 @@ ${
+@@ -4691,6 +4814,7 @@ ${
        this.setResultForCurrentValue(null);
        this.handleCommand();
        this.controller.clearLastQueryContextCache();
@@ -251,7 +305,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
  
        this._suppressStartQuery = false;
      });
-@@ -4698,7 +4810,6 @@ ${
+@@ -4698,7 +4822,6 @@ ${
      contextMenu.addEventListener("popupshowing", () => {
        // Close the results pane when the input field contextual menu is open,
        // because paste and go doesn't want a result selection.
@@ -259,7 +313,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
  
        let controller =
          this.document.commandDispatcher.getControllerForCommand("cmd_paste");
-@@ -4979,7 +5090,11 @@ ${
+@@ -4979,7 +5102,11 @@ ${
      if (!engineName && !source && !this.hasAttribute("searchmode")) {
        return;
      }
@@ -272,7 +326,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
      if (this._searchModeIndicatorTitle) {
        this._searchModeIndicatorTitle.textContent = "";
        this._searchModeIndicatorTitle.removeAttribute("data-l10n-id");
-@@ -5297,6 +5412,7 @@ ${
+@@ -5297,6 +5424,7 @@ ${
  
      this.document.l10n.setAttributes(
        this.inputField,
@@ -280,7 +334,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
        l10nId,
        l10nId == "urlbar-placeholder-with-name"
          ? { name: engineName }
-@@ -5347,6 +5463,12 @@ ${
+@@ -5347,6 +5475,12 @@ ${
      }
  
      lazy.logger.debug("Blur Event");
@@ -293,7 +347,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
      // We cannot count every blur events after a missed engagement as abandoment
      // because the user may have clicked on some view element that executes
      // a command causing a focus change. For example opening preferences from
-@@ -5424,6 +5546,11 @@ ${
+@@ -5424,6 +5558,11 @@ ${
    }
  
    _on_click(event) {
@@ -305,7 +359,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
      switch (event.target) {
        case this.inputField:
        case this._inputContainer:
-@@ -5513,10 +5640,11 @@ ${
+@@ -5513,10 +5652,11 @@ ${
        }
        if (untrim) {
          this.setValue(this._untrimmedValue);
@@ -318,7 +372,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
        this.view.autoOpen({ event });
      } else {
        if (this._untrimOnFocusAfterKeydown) {
-@@ -5556,9 +5684,16 @@ ${
+@@ -5556,9 +5696,16 @@ ${
    }
  
    _on_mousedown(event) {
@@ -336,7 +390,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
          if (
            event.composedTarget != this.inputField &&
            event.composedTarget != this._inputContainer
-@@ -5568,6 +5703,10 @@ ${
+@@ -5568,6 +5715,10 @@ ${
  
          this.focusedViaMousedown = !this.focused;
          this.#preventClickSelectsAll = this.focused;
@@ -347,7 +401,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
  
          // Keep the focus status, since the attribute may be changed
          // upon calling this.focus().
-@@ -5605,7 +5744,7 @@ ${
+@@ -5605,7 +5756,7 @@ ${
          // view open on tab switch, and the TabSelect event arrived earlier.
          // Also ignore mousedown on the urlbarView context menu: opening/closing the
          // view is already handled by the result opening flow.
@@ -356,7 +410,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c3964
            break;
          }
  
-@@ -5894,7 +6033,7 @@ ${
+@@ -5894,7 +6045,7 @@ ${
      // When we are in actions search mode we can show more results so
      // increase the limit.
      let maxResults =

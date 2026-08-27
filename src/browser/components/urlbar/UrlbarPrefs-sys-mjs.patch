@@ -20,10 +20,11 @@ index 89f0d44d462de3d7d0f581d6371606f475443822..0d45ce5f6455e9c7276c54f504906bad
  
    // Boolean to determine if the providers defined in `exposureResults`
    // should be displayed in search results. This can be set by a
-@@ -840,6 +844,8 @@ function makeDefaultResultGroups({
+@@ -840,6 +844,9 @@ function makeDefaultResultGroups({
     */
    let rootGroup = {
      children: [
++      { children: [{ group: lazy.UrlbarUtils.RESULT_GROUP.ZEN_ESSENTIAL }] },
 +      { children: [{ group: lazy.UrlbarUtils.RESULT_GROUP.ZEN_ACTION }] },
 +      { children: [{ group: lazy.UrlbarUtils.RESULT_GROUP.ZEN_WORKSPACE }] },
        // heuristic

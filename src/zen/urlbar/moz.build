@@ -5,6 +5,7 @@
 EXTRA_JS_MODULES += [
   "ZenSiteDataPanel.sys.mjs",
   "ZenUBActionsProvider.sys.mjs",
+  "ZenUBEssentialsProvider.sys.mjs",
   "ZenUBGlobalActions.sys.mjs",
   "ZenUBProvider.sys.mjs",
   "ZenUBResultsLearner.sys.mjs",

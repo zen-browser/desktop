@@ -2,16 +2,17 @@ diff --git a/browser/components/urlbar/UrlbarUtils.sys.mjs b/browser/components/
 index 78c76bde00b6b581184cee1cd0e1756e5f2da6a4..94c713470b1240729ef2350d090b0449f3801af4 100644
 --- a/browser/components/urlbar/UrlbarUtils.sys.mjs
 +++ b/browser/components/urlbar/UrlbarUtils.sys.mjs
-@@ -126,6 +126,8 @@ export var UrlbarUtils = {
+@@ -126,6 +126,9 @@ export var UrlbarUtils = {
      SEMANTIC_HISTORY: "semanticHistory",
      SUGGESTED_INDEX: "suggestedIndex",
      TAIL_SUGGESTION: "tailSuggestion",
 +    ZEN_ACTION: "zenAction",
++    ZEN_ESSENTIAL: "zenEssential",
 +    ZEN_WORKSPACE: "zenWorkspace",
    }),
  
    // Defines provider types.
-@@ -274,6 +276,14 @@ export var UrlbarUtils = {
+@@ -274,6 +277,14 @@ export var UrlbarUtils = {
          telemetryLabel: "actions",
          uiLabel: "urlbar-searchmode-actions3",
        },
@@ -26,7 +27,7 @@ index 78c76bde00b6b581184cee1cd0e1756e5f2da6a4..94c713470b1240729ef2350d090b0449
      ]);
    },
  
-@@ -566,6 +576,12 @@ export var UrlbarUtils = {
+@@ -566,6 +577,12 @@ export var UrlbarUtils = {
            return this.RESULT_GROUP.HEURISTIC_FALLBACK;
          case "UrlbarProviderHistoryUrlHeuristic":
            return this.RESULT_GROUP.HEURISTIC_HISTORY_URL;
@@ -39,3 +40,28 @@ index 78c76bde00b6b581184cee1cd0e1756e5f2da6a4..94c713470b1240729ef2350d090b0449
          case "UrlbarProviderOmnibox":
            return this.RESULT_GROUP.HEURISTIC_OMNIBOX;
          case "UrlbarProviderRestrictKeywordsAutofill":
+@@ -1881,7 +1898,8 @@ export var UrlbarUtils = {
+       }
+       // Semantic history results have their own group for sorting purposes but
+       // are reported as "general" results, as they were before the group split.
+       case this.RESULT_GROUP.GENERAL:
++      case this.RESULT_GROUP.ZEN_ESSENTIAL:
+       case this.RESULT_GROUP.SEMANTIC_HISTORY: {
+         return "general";
+       }
+@@ -2511,10 +2529,13 @@ UrlbarUtils.RESULT_PAYLOAD_SCHEMA = {
+       title: {
+         type: "string",
+       },
+       url: {
+         type: "string",
+       },
+       userContextId: {
+         type: "number",
+       },
++      zenEssentialTarget: {
++        type: "string",
++      },
+     },
+   },
+   [UrlbarShared.RESULT_TYPE.SEARCH]: {

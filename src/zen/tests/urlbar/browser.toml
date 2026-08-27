@@ -15,3 +15,11 @@ prefs = ["zen.workspaces.separate-essentials=true"]
 ["browser_floating_urlbar.js"]
 
 ["browser_issue_7385.js"]
+
+["browser_essential_tabs.js"]
+prefs = [
+  "browser.urlbar.suggest.openpage=true",
+  "privacy.userContext.enabled=true",
+  "privacy.userContext.ui.enabled=true",
+  "zen.workspaces.separate-essentials=true",
+]

@@ -1,0 +1,61 @@
+diff --git a/browser/components/urlbar/UrlbarProviderOpenTabs.sys.mjs b/browser/components/urlbar/UrlbarProviderOpenTabs.sys.mjs
+index e732e7a..b2386e6 100644
+--- a/browser/components/urlbar/UrlbarProviderOpenTabs.sys.mjs
++++ b/browser/components/urlbar/UrlbarProviderOpenTabs.sys.mjs
+@@ -15,7 +15,9 @@ import {
+ const lazy = {};
+ 
+ ChromeUtils.defineESModuleGetters(lazy, {
++  BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
+   PlacesUtils: "resource://gre/modules/PlacesUtils.sys.mjs",
++  PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
+   ProvidersManager:
+     "moz-src:///browser/components/urlbar/UrlbarProvidersManager.sys.mjs",
+   UrlbarResult: "chrome://browser/content/urlbar/UrlbarResult.mjs",
+@@ -139,6 +141,46 @@ export class UrlbarProviderOpenTabs extends UrlbarProvider {
+     return uniqueUrls;
+   }
+ 
++  /**
++   * Return the live title of an open tab.
++   *
++   * @param {string} url The tab URL
++   * @param {number|string} userContextId Containers user context id
++   * @param {?string} groupId The id of the group the tab belongs to
++   * @returns {?string} The matching tab title
++   */
++  static getOpenTabTitle(url, userContextId, groupId) {
++    userContextId = parseInt(`${userContextId}`);
++    groupId = groupId ?? null;
++    let isInPrivateWindow = userContextId == PRIVATE_USER_CONTEXT_ID;
++
++    for (let window of lazy.BrowserWindowTracker.orderedWindows) {
++      if (
++        lazy.PrivateBrowsingUtils.isWindowPrivate(window) != isInPrivateWindow
++      ) {
++        continue;
++      }
++
++      for (let tab of window.gBrowser.tabs) {
++        if (
++          tab.closing ||
++          (!isInPrivateWindow && tab.userContextId != userContextId) ||
++          (tab.group?.id ?? null) != groupId
++        ) {
++          continue;
++        }
++
++        let browser = tab.linkedBrowser;
++        let tabUrl =
++          browser?.registeredOpenURI?.spec ?? browser?.currentURI?.spec;
++        if (tabUrl == url) {
++          return tab.label || null;
++        }
++      }
++    }
++    return null;
++  }
++
+   /**
+    * Return urls registered in the memory table.
+    * This is mostly for testing purposes.

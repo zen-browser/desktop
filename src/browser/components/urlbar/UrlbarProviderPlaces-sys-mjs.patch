@@ -1,0 +1,17 @@
+diff --git a/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs b/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs
+index aa9a291..8814d89 100644
+--- a/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs
++++ b/browser/components/urlbar/UrlbarProviderPlaces.sys.mjs
+@@ -1225,6 +1225,12 @@ class Search {
+         return;
+       }
+       // Actions are enabled and the page is open.  Add a switch-to-tab result.
++      match.comment =
++        lazy.UrlbarProviderOpenTabs.getOpenTabTitle(
++          match.value,
++          match.userContextId,
++          match.tabGroup
++        ) || match.comment;
+       match.value = makeActionUrl("switchtab", { url: match.value });
+       match.style = "action switchtab";
+     } else if (

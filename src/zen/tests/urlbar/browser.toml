@@ -9,6 +9,8 @@ support-files = [
   "!/browser/components/urlbar/tests/browser/head.js",
 ]
 
+["browser_container_tab_titles.js"]
+
 ["browser_floating_urlbar.js"]
 
 ["browser_issue_7385.js"]

@@ -27,17 +27,10 @@ $token = gh auth token
 $env:SURFER_MOZCONFIG_ONLY="1"
 $env:SURFER_SIGNING_MODE=""
 
-# Fetch SignIdentity from the github repo secrets, with the name SURFER_CERT_PATCH_ISSUER
-$SignIdentityIssuer = (Invoke-RestMethod -Uri "https://api.github.com/repos/zen-browser/desktop/actions/secrets/SURFER_CERT_PATCH_ISSUER" -Headers @{Authorization = "Bearer $token"}).value
-$SignIdentity = (Invoke-RestMethod -Uri "https://api.github.com/repos/zen-browser/desktop/actions/secrets/SURFER_CERT_PATCH_NAME" -Headers @{Authorization = "Bearer $token"}).value
-$SignIndentityIssuerPrev = (Invoke-RestMethod -Uri "https://api.github.com/repos/zen-browser/desktop/actions/secrets/SURFER_CERT_PATCH_ISSUER_PREV" -Headers @{Authorization = "Bearer $token"}).value
-$SignIdentityPrev = (Invoke-RestMethod -Uri "https://api.github.com/repos/zen-browser/desktop/actions/secrets/SURFER_CERT_PATCH_NAME_PREV" -Headers @{Authorization = "Bearer $token"}).
-
-$env:SURFER_CERT_PATCH_ISSUER=$SignIdentityIssuer
-$env:SURFER_CERT_PATCH_NAME=$SignIdentity
-
-$env:SURFER_CERT_PATCH_NAME_PREV=$SignIdentityPrev
-$env:SURFER_CERT_PATCH_ISSUER_PREV=$SignIndentityIssuerPrev
+get-content "$PSScriptRoot/../.env" | foreach {
+    $name, $value = $_.split('=')
+    set-content env:\$name $value
+}
 
 Start-Job -Name "DownloadGitl10n" -ScriptBlock {
     param($PWD)

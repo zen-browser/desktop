@@ -230,7 +230,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       }
       this.removeGroup(groupIndex);
       if (changeTab) {
-        gBrowser.selectedTab = remainingTabs[0];
+        const tabToSelect = remainingTabs.find(remaining => remaining !== tab);
+        if (tabToSelect) {
+          gBrowser.selectedTab = tabToSelect;
+        }
         document
           .getElementById("cmd_zenNewEmptySplit")
           .removeAttribute("disabled");

@@ -81,6 +81,16 @@ class ZenSpacesSyncStore extends Store {
  * score is only bumped when something actually differs.
  */
 class ZenSpacesSyncTracker extends Tracker {
+  _ignoreAll = false;
+
+  get ignoreAll() {
+    return this._ignoreAll;
+  }
+
+  set ignoreAll(value) {
+    this._ignoreAll = value;
+  }
+
   onStart() {
     for (const topic of TRACKED_TOPICS) {
       Services.obs.addObserver(this, topic);
@@ -94,6 +104,9 @@ class ZenSpacesSyncTracker extends Tracker {
   }
 
   observe(subject, topic) {
+    if (this.ignoreAll) {
+      return;
+    }
     if (topic !== SIDEBAR_COLLECTED_TOPIC) {
       ZenSpacesSyncModel.invalidate();
     }

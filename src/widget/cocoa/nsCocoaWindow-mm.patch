@@ -2,7 +2,7 @@ diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
 index ebae2a976d01dc2be70282d285cb902adc4e0547..e2bacada50b5c7e438f5ff3cffb410b73986fa21 100644
 --- a/widget/cocoa/nsCocoaWindow.mm
 +++ b/widget/cocoa/nsCocoaWindow.mm
-@@ -104,10 +104,28 @@ class LayerManager;
+@@ -104,10 +104,31 @@ class LayerManager;
  }  // namespace layers
  }  // namespace mozilla
  using namespace mozilla::layers;
@@ -26,6 +26,9 @@ index ebae2a976d01dc2be70282d285cb902adc4e0547..e2bacada50b5c7e438f5ff3cffb410b7
 +}
 +void ZenWindowMouseMoved(NSEvent* aEvent) {
 +  ChildViewMouseTracker::MouseMoved(aEvent);
++}
++void ZenWindowDestroyed(NSWindow* aWindow) {
++  ChildViewMouseTracker::OnDestroyWindow(aWindow);
 +}
 +
  BOOL sTouchBarIsInitialized = NO;

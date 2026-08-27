@@ -182,6 +182,12 @@ index c42b1a1a8df6b38886c17f71ea88e5aaa7eebc80..76c60993d6fcaec2d085b84aef3c2ba1
  
        let browser = this.getBrowserForTab(aTab);
        browser.mIconURL = aIconURL;
+@@ -1456,4 +1456,4 @@
+    getIcon(aTab) {
+      let browser = aTab ? this.getBrowserForTab(aTab) : this.selectedBrowser;
+-      return browser.mIconURL;
++      return browser?.mIconURL ?? null;
+    }
 @@ -1703,7 +1785,6 @@
  
        // Preview mode should not reset the owner

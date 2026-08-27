@@ -41,6 +41,7 @@ extern void ZenEnsureFrameViewClassIsSwizzled(Class aFrameViewClass);
 extern void ZenWindowMouseEntered(NSEvent* aEvent);
 extern void ZenWindowMouseExited(NSEvent* aEvent);
 extern void ZenWindowMouseMoved(NSEvent* aEvent);
+extern void ZenWindowDestroyed(NSWindow* aWindow);
 
 @interface NSWindow (ZenPrivateFrameView)
 + (Class)frameViewClassForStyleMask:(NSUInteger)aStyleMask;
@@ -147,27 +148,37 @@ bool ZenWindowActsAsMain(NSWindow* aWindow) {
                  NSWindowCollectionBehaviorFullScreenAllowsTiling);
   aBehavior |= NSWindowCollectionBehaviorMoveToActiveSpace |
                NSWindowCollectionBehaviorFullScreenAuxiliary |
-               NSWindowCollectionBehaviorFullScreenDisallowsTiling;
+               NSWindowCollectionBehaviorFullScreenDisallowsTiling |
+               // NSPanel is excluded from Command-` window cycling unless it
+               // explicitly participates. Standalone pages are real browser
+               // windows, so they must be reachable after minimization too.
+               NSWindowCollectionBehaviorParticipatesInCycle;
   [super setCollectionBehavior:aBehavior];
 }
 
-// Deliberately NO, which is NSPanel's own default. Staying auxiliary is what
-// makes AppKit place this window on the Space the user is looking at instead
-// of the one Zen's other windows live on; a panel that can become main places
-// exactly like an ordinary window, which is the whole problem.
-//
-// Gecko gates mouse input, window activation and the menu bar on isMainWindow.
-// Those three call sites ask ZenWindowActsAsMain() below instead, so this
-// window behaves like a main window inside Gecko while remaining auxiliary to
-// AppKit.
-// A non-activating panel still takes key and main within its own
-// application. Accessibility inspection of Arc's Little Arc window shows
-// exactly that: main=YES, subrole=AXSystemDialog, with the application
-// inactive throughout. Gecko needs main for mouse input, activation and the
-// menu bar, so this must be YES; the first attempt at this window returned NO
-// and that is what made the page take no clicks.
+// Staying auxiliary is what makes AppKit place this window on the Space the
+// user is looking at instead of the one Zen's other windows live on. A
+// non-activating panel can still become key and main within its own
+// application, which Gecko needs for mouse input and menu routing while the
+// application itself remains inactive.
 - (BOOL)canBecomeMainWindow {
   return YES;
+}
+
+// AppKit normally deminiaturizes an NSWindow selected through the Window menu
+// or Command-` cycling. NSPanel's non-activating path can skip that step, so
+// make the restoration explicit while retaining the panel's auxiliary,
+// non-activating behavior.
+- (void)makeKeyAndOrderFront:(id)aSender {
+  [self orderFrontRegardless];
+  [self makeKeyWindow];
+}
+
+- (void)orderFrontRegardless {
+  if (self.miniaturized) {
+    [self deminiaturize:nil];
+  }
+  [super orderFrontRegardless];
 }
 
 // Gecko changes the style mask for fullscreen and chrome transitions. The
@@ -401,6 +412,11 @@ bool ZenWindowActsAsMain(NSWindow* aWindow) {
   BOOL handled = [super performKeyEquivalent:aEvent];
   [retainedWindow release];
   return handled;
+}
+
+- (void)dealloc {
+  ZenWindowDestroyed(self);
+  [super dealloc];
 }
 
 @end

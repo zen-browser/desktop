@@ -83,6 +83,12 @@ The feature must not ship unless all of these pass:
    - Create at least two workspaces.
    - Open a standalone window, click `Choose Space` and select a non-current workspace.
    - Expected: the page becomes a tab assigned to the selected workspace, and Zen switches to it.
+   - Leave the normal Zen window on desktop 1, move to desktop 2 or an app in its own fullscreen Space, and open a link from there.
+   - Expected: the standalone appears on the Space you are on, as in case 15.
+   - Promote from it, through both `Open in Space` and the picker.
+   - Expected: macOS takes you to the Space holding the normal Zen window, which is frontmost with the promoted tab selected in the right space. You are not left behind on the Space the standalone was used from, with the standalone gone and no page in front of you.
+   - Repeat with the normal window on the same Space as the standalone.
+   - Expected: no Space switch, and the normal window simply comes forward.
    - Expected: the standalone window closes.
 
 9. Pinned and routed external links

@@ -96,6 +96,122 @@ export function formatGlobalSearchShortcut(serialized) {
   return `${shortcut.modifiers.map(modifier => symbols[modifier]).join(" ")} ${key}`;
 }
 
+const BUILTIN_KEY_NAMES = new Map([
+  ["key_copy", "C"],
+  ["key_cut", "X"],
+  ["key_paste", "V"],
+  ["key_selectAll", "A"],
+  ["key_undo", "Z"],
+  ["key_redo", "Y"],
+]);
+
+function normalizeShortcutKey(value) {
+  if (!value) {
+    return "";
+  }
+  let key = value;
+  if (key.startsWith("Key")) {
+    key = key.slice(3);
+  } else if (key.startsWith("Digit")) {
+    key = key.slice(5);
+  } else if (key.startsWith("VK_")) {
+    key = key.slice(3);
+  }
+  return key.toUpperCase();
+}
+
+function normalizeShortcutModifiers(binding) {
+  const modifiers = new Set();
+  for (const modifier of binding?.split(",").filter(Boolean) ?? []) {
+    if (modifier === "accel") {
+      modifiers.add(AppConstants.platform === "macosx" ? "meta" : "control");
+    } else {
+      modifiers.add(modifier);
+    }
+  }
+  return modifiers;
+}
+
+/**
+ * Validates a global-search shortcut against browser chrome before native
+ * registration. Native Carbon registration can reject an OS-level conflict,
+ * but it cannot tell us that a browser key such as Command+C would be
+ * shadowed. The result is intentionally structured so settings and the
+ * startup controller share the same fail-closed policy.
+ *
+ * @param {string} serialized - Serialized shortcut (`meta,alt|KeyT`)
+ * @param {Window} [preferredWindow] - Window whose chrome should be checked first
+ * @returns {{ok: boolean, reason: string, conflict?: string}}
+ */
+export function validateGlobalSearchShortcut(
+  serialized,
+  preferredWindow = null
+) {
+  const parsed = parseGlobalSearchShortcut(serialized);
+  if (!parsed) {
+    return { ok: false, reason: "invalid" };
+  }
+
+  const candidateKey = normalizeShortcutKey(parsed.code);
+  const candidateModifiers = new Set(parsed.modifiers);
+  const windows = [];
+  if (preferredWindow && !preferredWindow.closed) {
+    windows.push(preferredWindow);
+  }
+  for (const win of Services.wm.getEnumerator("navigator:browser")) {
+    if (
+      win &&
+      !win.closed &&
+      !win._zenStandaloneWindow &&
+      !lazy.PrivateBrowsingUtils.isWindowPrivate(win) &&
+      !windows.includes(win)
+    ) {
+      windows.push(win);
+    }
+  }
+
+  for (const win of windows) {
+    const conflict = [
+      ...(win.document?.querySelectorAll("key[modifiers]") ?? []),
+    ].find(keyNode => {
+      const keyValue =
+        keyNode.getAttribute("key") ||
+        BUILTIN_KEY_NAMES.get(keyNode.id) ||
+        keyNode.getAttribute("keycode");
+      if (normalizeShortcutKey(keyValue) !== candidateKey) {
+        return false;
+      }
+      const modifiers = normalizeShortcutModifiers(
+        keyNode.getAttribute("modifiers")
+      );
+      return (
+        modifiers.size === candidateModifiers.size &&
+        [...modifiers].every(modifier => candidateModifiers.has(modifier))
+      );
+    });
+    if (conflict) {
+      return {
+        ok: false,
+        reason: "conflict",
+        conflict: conflict.id || candidateKey,
+      };
+    }
+  }
+
+  // These application-level commands are not guaranteed to have a XUL key
+  // element in every window (notably while browser chrome is starting).
+  const applicationKey = `${[...candidateModifiers].sort().join(",")}|${candidateKey}`;
+  const reserved =
+    AppConstants.platform === "macosx"
+      ? new Set(["meta|Q", "meta|W"])
+      : new Set(["control|Q", "control|W"]);
+  if (reserved.has(applicationKey)) {
+    return { ok: false, reason: "conflict", conflict: "application-command" };
+  }
+
+  return { ok: true, reason: "available" };
+}
+
 class ZenGlobalSearchPanelController {
   #panelWindow = null;
   #registeredShortcut = null;
@@ -402,6 +518,14 @@ class ZenGlobalSearchPanelController {
     const candidate = parseGlobalSearchShortcut(stored)
       ? stored
       : ZEN_GLOBAL_SEARCH_DEFAULT_SHORTCUT;
+    const validation = validateGlobalSearchShortcut(candidate);
+    if (!validation.ok) {
+      if (this.#registeredShortcut && stored !== this.#registeredShortcut) {
+        this.#replaceShortcutPreference(this.#registeredShortcut);
+      }
+      this.#setStatus({ ...validation, shortcut: this.#registeredShortcut });
+      return;
+    }
     let result;
     try {
       result = JSON.parse(Services.zen.registerGlobalSearchHotkey(candidate));

@@ -39,8 +39,8 @@ ChromeUtils.defineLazyGetter(lazy, "MacDockSupport", () => {
       makeWindowJoinActiveSpace(baseWindow) {
         service.makeWindowJoinActiveSpace(baseWindow);
       },
-      activateApplication() {
-        service.activateApplication(false);
+      activateApplication(ignoreOtherApplications = false) {
+        service.activateApplication(ignoreOtherApplications);
       },
     };
   } catch (error) {
@@ -78,6 +78,39 @@ const STANDALONE_WINDOW_SPACE_PICKER_MIN_WIDTH = 120;
 // window has none of those, so leaving them live lets a stray shortcut drag
 // workspace chrome back into the window.
 const STANDALONE_WINDOW_DISABLED_COMMANDS = [
+  // A standalone owns one page, not a tab strip. Disable both the command
+  // elements and their keyboard-only aliases so every new-tab/new-window path
+  // is kept out of this window.
+  "cmd_newNavigator",
+  "cmd_newNavigatorTab",
+  "cmd_newNavigatorTabNoEvent",
+  "cmd_newPrivateWindow",
+  "Tools:PrivateBrowsing",
+  "Browser:DuplicateTab",
+  "Browser:NextTab",
+  "Browser:PrevTab",
+  "Browser:ShowAllTabs",
+  "Browser:AddTabSplitView",
+  "Browser:SeparateTabSplitView",
+  "Browser:NewUserContextTab",
+  "Browser:OpenAboutContainers",
+  "Tools:ClassicWindow",
+  "History:UndoCloseTab",
+  "History:UndoCloseWindow",
+  "History:RestoreLastClosedTabOrWindowOrSession",
+  "viewBookmarksSidebarKb",
+  "viewBookmarksToolbarKb",
+  "viewGenaiChatSidebarKb",
+  "viewOpenTabsSidebarKb",
+  "toggleSidebarKb",
+  "key_gotoHistory",
+  "key_showAllTabs",
+  "key_addTabSplitView",
+  "key_separateTabSplitView",
+  "key_duplicateTab",
+  "key_undoCloseWindow",
+  "key_restoreLastClosedTabOrWindowOrSession",
+  "key_privatebrowsing",
   "cmd_zenCompactModeToggle",
   "cmd_toggleCompactModeIgnoreHover",
   "cmd_zenCompactModeShowSidebar",
@@ -145,7 +178,20 @@ const STANDALONE_WINDOW_STARTUP_LINK_GRACE_MS = 500;
 // user off the Space - a fullscreen one especially - that they were on.
 const STANDALONE_WINDOW_LAUNCH_BACKGROUND_SETTLE_MS = [250, 750];
 
-class nsZenStandaloneWindowManager {
+// How long promotion waits for the closing standalone window to leave the
+// screen before bringing the receiving window forward. Short and bounded: the
+// application still has to come forward on the gesture the user just made.
+const STANDALONE_WINDOW_CLOSE_SETTLE_MS = 16;
+const STANDALONE_WINDOW_CLOSE_SETTLE_ATTEMPTS = 10;
+// A Command+W key-up/auto-repeat can arrive after the transient window has
+// already been destroyed. Keep that tail from being delivered to the normal
+// browser window that was underneath it.
+const STANDALONE_CLOSE_GESTURE_SUPPRESS_MS = 500;
+
+export class nsZenStandaloneWindowManager {
+  #nextExternalRequestId = 0;
+  #standaloneWindows = new Set();
+
   // Deadline, in epoch milliseconds, until which a no-URL command line is
   // taken to be the one macOS sends alongside an external link rather than a
   // user opening Zen.
@@ -156,6 +202,7 @@ class nsZenStandaloneWindowManager {
   // window once it has not.
   #deferredStartupWindowTimer = null;
   #deferredStartupWindowOpen = null;
+  #deferredStartupWindow = null;
   #startupWindowDeferralUsed = false;
   #inStartupWindowSurvivalArea = false;
 
@@ -193,15 +240,38 @@ class nsZenStandaloneWindowManager {
     if (!request) {
       return null;
     }
+    this.#logExternalRequest(request, "validated");
 
     const standaloneWindow = this.constructStandaloneWindow(request);
     if (!standaloneWindow) {
+      this.#logExternalRequest(request, "failed", { reason: "native-create" });
       return null;
     }
 
     this.markWindowAsStandalone(standaloneWindow, request);
+    this.#logExternalRequest(request, "native-created", {
+      private: request.isPrivate,
+    });
     this.presentExternalStandaloneWindow(standaloneWindow);
-    this.#initializeStandaloneWindow(standaloneWindow).catch(console.error);
+    this.#initializeStandaloneWindow(standaloneWindow)
+      .then(() => {
+        if (
+          !standaloneWindow.closed &&
+          this.isStandaloneWindow(standaloneWindow)
+        ) {
+          this.#logExternalRequest(request, "initialized");
+        }
+      })
+      .catch(error => {
+        // Always release lifecycle waiters, even when chrome initialization
+        // fails.  The test and diagnostic callers can then report the actual
+        // initialization failure instead of hanging on a never-fired event.
+        this.#resolveStandaloneWindowReady(standaloneWindow);
+        this.#logExternalRequest(request, "failed", {
+          reason: "initialization",
+        });
+        console.error("Failed to initialize a Zen standalone window", error);
+      });
     return standaloneWindow;
   }
 
@@ -258,7 +328,10 @@ class nsZenStandaloneWindowManager {
     } catch (error) {
       console.error("Failed to activate a global-search standalone", error);
     }
-    this.#initializeStandaloneWindow(standaloneWindow).catch(console.error);
+    this.#initializeStandaloneWindow(standaloneWindow).catch(error => {
+      this.#resolveStandaloneWindowReady(standaloneWindow);
+      console.error(error);
+    });
     return standaloneWindow;
   }
 
@@ -302,11 +375,17 @@ class nsZenStandaloneWindowManager {
     // caller can only fall back for the batch as a whole, so discovering an
     // invalid URL after earlier windows were created would duplicate those
     // earlier pages when normal handling resumes.
+    const requestOptions = { fromExternal: true, ...options };
+    const requestOptionsByURL = uriStrings.map(() => ({
+      ...requestOptions,
+      requestId: this.#newExternalRequestId(),
+    }));
+
     if (
-      !uriStrings.every(uriString =>
+      !uriStrings.every((uriString, index) =>
         this.createExternalLinkStandaloneWindowRequest({
           uriString,
-          options: { fromExternal: true },
+          options: requestOptionsByURL[index],
           openerWindow,
         })
       )
@@ -333,10 +412,15 @@ class nsZenStandaloneWindowManager {
     }
 
     const createdWindows = [];
-    for (const uriString of uriStrings) {
+    // A timer can be holding startup before any classic window exists. Only
+    // sweep when this manager actually owns such a window; otherwise a fresh
+    // manager (as used by embedders and tests) could close another manager's
+    // unrelated startup window.
+    const hadDeferredStartupWindow = !!this.#deferredStartupWindow;
+    for (const [index, uriString] of uriStrings.entries()) {
       const standaloneWindow = this.openExternalLinkStandaloneWindow({
         uriString,
-        options: { fromExternal: true },
+        options: requestOptionsByURL[index],
         openerWindow,
       });
       if (!standaloneWindow) {
@@ -368,9 +452,17 @@ class nsZenStandaloneWindowManager {
       // The launch belonged to this link after all: Zen's classic startup
       // window, if it is still being held, is dropped rather than opened.
       this.#cancelDeferredStartupWindow();
+      this.#closeDeferredStartupWindow(createdWindows);
       this.#emptyStartupSuppressedUntil =
         Date.now() + STANDALONE_WINDOW_EMPTY_STARTUP_SUPPRESS_MS;
-      this.#closeStrayEmptyStartupWindows(createdWindows);
+      // A normal in-process open has no companion blank command line. The
+      // stray-window sweep is only safe for a launch generation that was
+      // explicitly held or marked as an application launch; sweeping every
+      // warm request can close the harness' hidden browser window and stall
+      // its lifecycle observer.
+      if (options.isApplicationLaunch === true || hadDeferredStartupWindow) {
+        this.#closeStrayEmptyStartupWindows(createdWindows);
+      }
       if (keepLaunchInBackground) {
         this.#settleLaunchInBackground(
           createdWindows[createdWindows.length - 1]
@@ -508,7 +600,11 @@ class nsZenStandaloneWindowManager {
         // that appeared in the meantime is that same startup arriving by
         // another route, and a second one must not be opened next to it.
         if (open && !Services.startup.shuttingDown && !this.#hasBrowserWindow) {
-          open();
+          const startupWindow = open();
+          if (startupWindow && !startupWindow.closed) {
+            startupWindow._zenDeferredStartupWindow = true;
+            this.#deferredStartupWindow = startupWindow;
+          }
         }
       } catch (error) {
         console.error("Failed to open Zen's held startup window", error);
@@ -542,6 +638,33 @@ class nsZenStandaloneWindowManager {
     this.#deferredStartupWindowTimer = null;
     this.#deferredStartupWindowOpen = null;
     this.#exitStartupWindowSurvivalArea();
+  }
+
+  /**
+   * Closes the exact normal window opened by the deferred startup callback.
+   * It can finish startup before the URL command line arrives, so the generic
+   * "empty and not ready" sweep is intentionally insufficient here.
+   *
+   * @param {Array<Window>} createdWindows - Windows created for this launch
+   */
+  #closeDeferredStartupWindow(createdWindows = []) {
+    const startupWindow = this.#deferredStartupWindow;
+    this.#deferredStartupWindow = null;
+    if (!startupWindow || startupWindow.closed) {
+      return;
+    }
+    // BrowserWindowTracker may reuse the held shell for the standalone when a
+    // cold launch has no normal window yet. It is already the desired window;
+    // closing it here would destroy the link we just delivered.
+    if (createdWindows.includes(startupWindow)) {
+      return;
+    }
+    startupWindow.skipNextCanClose = true;
+    try {
+      startupWindow.close();
+    } catch (error) {
+      console.error("Failed to close the deferred Zen startup window", error);
+    }
   }
 
   /**
@@ -608,15 +731,40 @@ class nsZenStandaloneWindowManager {
    */
   #closeStrayEmptyStartupWindows(excludeWindows) {
     const exclude = new Set(excludeWindows);
+    const isExcludedWindow = win =>
+      exclude.has(win) ||
+      [...exclude].some(
+        excluded =>
+          excluded?.browsingContext &&
+          win?.browsingContext === excluded.browsingContext
+      );
 
     const closeIfStray = win => {
       if (
         !win ||
         win.closed ||
-        exclude.has(win) ||
+        isExcludedWindow(win) ||
         win._zenStandaloneWindow ||
+        win.ZenExternalLinkStandaloneType === ZEN_STANDALONE_WINDOW_TYPE ||
         lazy.PrivateBrowsingUtils.isWindowPrivate(win)
       ) {
+        return;
+      }
+      if (win._zenDeferredStartupWindow) {
+        Services.tm.dispatchToMainThread(() => {
+          if (win.closed) {
+            return;
+          }
+          win.skipNextCanClose = true;
+          try {
+            win.close();
+          } catch (error) {
+            console.error(
+              "Failed to close the deferred Zen startup window",
+              error
+            );
+          }
+        });
         return;
       }
       if (win.gZenStartup?.isReady) {
@@ -626,11 +774,19 @@ class nsZenStandaloneWindowManager {
       if (!(tabs?.length === 1 && tabs[0].hasAttribute("zen-empty-tab"))) {
         return;
       }
-      try {
-        win.close();
-      } catch (error) {
-        console.error("Failed to close a stray empty Zen startup window", error);
-      }
+      Services.tm.dispatchToMainThread(() => {
+        if (win.closed) {
+          return;
+        }
+        try {
+          win.close();
+        } catch (error) {
+          console.error(
+            "Failed to close a stray empty Zen startup window",
+            error
+          );
+        }
+      });
     };
 
     for (const win of Services.wm.getEnumerator("navigator:browser")) {
@@ -688,20 +844,66 @@ class nsZenStandaloneWindowManager {
       return null;
     }
 
+    let isPrivate = false;
+    if (typeof options?.isPrivate === "boolean") {
+      isPrivate = options.isPrivate;
+    } else if (openerWindow) {
+      isPrivate = lazy.PrivateBrowsingUtils.isWindowPrivate(openerWindow);
+    }
+
+    // Window-mediator selection can still return a standalone while its
+    // native close is being torn down. Making that dying window the opener of
+    // the replacement lets AppKit destroy the replacement with it, so the
+    // first external request after a close appears to vanish. Preserve the
+    // privacy bit captured above, but do not retain a closing native parent.
+    const liveOpener =
+      !openerWindow?.closed &&
+      !openerWindow?.ZenExternalLinkStandalone?.isClosing
+        ? openerWindow
+        : null;
+
     return {
+      requestId: options?.requestId ?? this.#newExternalRequestId(),
+      deliverySource: options?.deliverySource ?? "external",
       uriString,
-      openerWindow: openerWindow ?? null,
+      openerWindow: liveOpener,
       source: "external",
-      isPrivate: openerWindow
-        ? lazy.PrivateBrowsingUtils.isWindowPrivate(openerWindow)
-        : false,
+      // The opener is normally the privacy owner. Keep an explicit privacy
+      // bit when a command-line or embedding caller has already resolved it,
+      // so a positioning-only opener cannot silently change the security
+      // boundary of the new page.
+      isPrivate,
       triggeringPrincipal: options?.triggeringPrincipal ?? null,
       referrerInfo: options?.referrerInfo ?? null,
       policyContainer: options?.policyContainer ?? null,
       userContextId: options?.userContextId ?? 0,
-      targetRoute: this.getDefaultKeepTargetRoute(openerWindow),
+      targetRoute: this.getDefaultKeepTargetRoute(liveOpener),
       broughtApplicationForward: this.wasApplicationJustActivated(),
     };
+  }
+
+  #newExternalRequestId() {
+    this.#nextExternalRequestId += 1;
+    return `zen-external-${Date.now().toString(36)}-${this.#nextExternalRequestId}`;
+  }
+
+  #logExternalRequest(request, phase, details = {}) {
+    if (!request?.requestId) {
+      return;
+    }
+    const fields = [
+      `request=${request.requestId}`,
+      `phase=${phase}`,
+      `source=${request.deliverySource ?? request.source ?? "unknown"}`,
+      `private=${request.isPrivate === true}`,
+      `container=${request.userContextId ?? 0}`,
+    ];
+    for (const [key, value] of Object.entries(details)) {
+      if (value !== undefined && value !== null) {
+        fields.push(`${key}=${value}`);
+      }
+    }
+    Services.console.logStringMessage(`[ZenStandalone] ${fields.join(" ")}`);
   }
 
   /**
@@ -872,7 +1074,10 @@ class nsZenStandaloneWindowManager {
    */
   makeWindowFollowTheUser(standaloneWindow) {
     const dockSupport = lazy.MacDockSupport;
-    if (!dockSupport) {
+    // The macOS dock service exists in headless mochitests, but there is no
+    // active Space to join and AppKit correctly returns NS_ERROR_FAILURE.
+    // Avoid turning that harness limitation into a product-looking error.
+    if (!dockSupport || Services.env.get("MOZ_HEADLESS")) {
       return;
     }
 
@@ -1092,6 +1297,7 @@ class nsZenStandaloneWindowManager {
   async #initializeStandaloneWindow(standaloneWindow) {
     await this.#promiseDelayedStartup(standaloneWindow);
     if (standaloneWindow.closed || !this.isStandaloneWindow(standaloneWindow)) {
+      this.#resolveStandaloneWindowReady(standaloneWindow);
       return;
     }
 
@@ -1107,6 +1313,40 @@ class nsZenStandaloneWindowManager {
     this.initializeStandaloneToolbar(standaloneWindow);
     this.registerStandaloneWindowLifecycle(standaloneWindow);
     this.watchForNormalWindowVisits(standaloneWindow);
+    // Polling a no-opener window through the window mediator can observe the
+    // native shell before its browser chrome exists. Publish one explicit
+    // readiness edge after the complete standalone lifecycle is installed so
+    // callers can wait without a timer-based race.
+    this.#resolveStandaloneWindowReady(standaloneWindow);
+  }
+
+  /**
+   * Publishes the standalone lifecycle edge exactly once.  A promise is kept
+   * on the window because a newly-created no-opener window can be discovered
+   * by the window mediator after this edge has already fired; an event alone
+   * would leave those callers waiting forever.
+   *
+   * @param {Window} standaloneWindow - The standalone window
+   */
+  #resolveStandaloneWindowReady(standaloneWindow) {
+    if (!standaloneWindow || standaloneWindow.ZenExternalLinkStandaloneReady) {
+      return;
+    }
+
+    standaloneWindow.ZenExternalLinkStandaloneReady = true;
+    const resolve = standaloneWindow.ZenExternalLinkStandaloneResolveReady;
+    delete standaloneWindow.ZenExternalLinkStandaloneResolveReady;
+    resolve?.();
+
+    try {
+      standaloneWindow.dispatchEvent(
+        new standaloneWindow.CustomEvent("zen-standalone-window-ready")
+      );
+    } catch (error) {
+      // The promise above is the authoritative signal.  A very early or
+      // already-closing native window may not expose DOM event constructors.
+      console.error("Failed to dispatch standalone readiness event", error);
+    }
   }
 
   #loadDeferredGlobalSearchSubmission(standaloneWindow) {
@@ -1119,12 +1359,12 @@ class nsZenStandaloneWindowManager {
       standaloneWindow.gBrowser.selectedBrowser.loadURI(
         Services.io.newURI(state.uriString),
         {
-        triggeringPrincipal:
-          state.triggeringPrincipal ??
-          Services.scriptSecurityManager.getSystemPrincipal(),
-        referrerInfo: state.referrerInfo,
-        policyContainer: state.policyContainer,
-        postData: state.postData,
+          triggeringPrincipal:
+            state.triggeringPrincipal ??
+            Services.scriptSecurityManager.getSystemPrincipal(),
+          referrerInfo: state.referrerInfo,
+          policyContainer: state.policyContainer,
+          postData: state.postData,
         }
       );
     } catch (error) {
@@ -1190,7 +1430,14 @@ class nsZenStandaloneWindowManager {
     }
 
     standaloneWindow.ZenExternalLinkStandaloneType = ZEN_STANDALONE_WINDOW_TYPE;
+    this.#standaloneWindows.add(standaloneWindow);
+    const ready = Promise.withResolvers();
+    standaloneWindow.ZenExternalLinkStandaloneReady = false;
+    standaloneWindow.ZenExternalLinkStandaloneReadyPromise = ready.promise;
+    standaloneWindow.ZenExternalLinkStandaloneResolveReady = ready.resolve;
     standaloneWindow.ZenExternalLinkStandalone = {
+      requestId: request.requestId,
+      deliverySource: request.deliverySource,
       source: request.source,
       uriString: request.uriString,
       openerWindow: request.openerWindow,
@@ -1212,6 +1459,28 @@ class nsZenStandaloneWindowManager {
       initialNormalBounds: null,
       geometryListeners: null,
     };
+  }
+
+  /**
+   * Returns a live standalone window owned by this manager for a URL.
+   *
+   * Window-mediator enumeration can expose a transient native shell wrapper
+   * during no-opener and cold-start launches. The manager's own reference is
+   * the stable object used by initialization and close handling.
+   *
+   * @param {string} uriString - URL carried by the standalone request
+   * @returns {Window|null} The matching standalone window, if still open
+   */
+  getStandaloneWindowForURL(uriString) {
+    for (const standaloneWindow of this.#standaloneWindows) {
+      if (
+        !standaloneWindow.closed &&
+        standaloneWindow.ZenExternalLinkStandalone?.uriString === uriString
+      ) {
+        return standaloneWindow;
+      }
+    }
+    return null;
   }
 
   /**
@@ -1531,12 +1800,32 @@ class nsZenStandaloneWindowManager {
     const onKeyDown = event => {
       const accel =
         AppConstants.platform === "macosx" ? event.metaKey : event.ctrlKey;
-      if (
-        !accel ||
-        event.altKey ||
-        event.shiftKey ||
-        event.key?.toLowerCase() !== "o"
-      ) {
+      if (!accel || event.altKey) {
+        return;
+      }
+
+      const key = event.key?.toLowerCase();
+      if (!event.shiftKey && key === "w") {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        this.closeStandaloneWindow(standaloneWindow);
+        return;
+      }
+
+      // Some Firefox key elements live in the browser keyset rather than in
+      // the standalone document. Block their physical shortcuts as a second
+      // line of defence so they cannot create hidden tabs, sidebars, or a
+      // private window when the command element is absent from this chrome.
+      const blocked =
+        (!event.shiftKey && ["t", "b"].includes(key)) ||
+        (event.shiftKey && key === "p");
+      if (blocked) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        return;
+      }
+
+      if (event.shiftKey || key !== "o") {
         return;
       }
 
@@ -1789,17 +2078,38 @@ class nsZenStandaloneWindowManager {
       return;
     }
 
+    this.#armTrailingCloseGestureSuppression(standaloneWindow);
+
     const tab = standaloneWindow.gBrowser?.selectedTab;
-    const targetWindow = this.getStandaloneKeepTargetWindow(standaloneWindow);
+    const targetWindow =
+      this.getStandaloneArchiveTargetWindow(standaloneWindow);
     if (!tab || !targetWindow) {
+      console.error(
+        "Cannot archive closed Zen standalone page",
+        JSON.stringify({
+          hasTab: !!tab,
+          hasTargetWindow: !!targetWindow,
+          hasBrowser: !!tab?.linkedBrowser,
+        })
+      );
       return;
     }
 
     // SSWindowClosing is registered once, but keep an explicit guard because
     // native, command and tab-removal close paths all converge here.
-    state.closedTabRecorded = true;
     try {
-      lazy.SessionStore.recordClosedTabForOtherWindow(targetWindow, tab);
+      const result = lazy.SessionStore.recordClosedTabForOtherWindow(
+        targetWindow,
+        tab
+      );
+      if (result?.ok) {
+        state.closedTabRecorded = true;
+      } else {
+        console.error(
+          "Session store rejected the closed Zen standalone page",
+          result?.reason ?? "unknown"
+        );
+      }
     } catch (error) {
       console.error(
         "Failed to remember a closed Zen standalone window page",
@@ -1829,6 +2139,7 @@ class nsZenStandaloneWindowManager {
     }
 
     state.isClosing = true;
+    this.#armTrailingCloseGestureSuppression(standaloneWindow);
     // The beforeunload check above stands in for the one window close would
     // otherwise run, so tell the window not to prompt a second time.
     standaloneWindow.skipNextCanClose = true;
@@ -1841,6 +2152,53 @@ class nsZenStandaloneWindowManager {
       console.error("Failed to close Zen standalone window", error);
       return false;
     }
+  }
+
+  /**
+   * Consumes a close-key tail that can be dispatched after this window has
+   * gone away. Native traffic-light/menu closes also pass through this method
+   * from SSWindowClosing, so all close routes get the same protection.
+   *
+   * @param {Window} standaloneWindow - The window that is closing
+   */
+  #armTrailingCloseGestureSuppression(standaloneWindow) {
+    if (AppConstants.platform !== "macosx") {
+      return;
+    }
+
+    const windows = [...Services.wm.getEnumerator("navigator:browser")].filter(
+      win => win && !win.closed && win !== standaloneWindow
+    );
+    if (!windows.length) {
+      return;
+    }
+
+    const onCloseGesture = event => {
+      const isClose =
+        event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey &&
+        !event.shiftKey &&
+        event.key?.toLowerCase() === "w";
+      if (!isClose) {
+        return;
+      }
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    };
+
+    for (const win of windows) {
+      win.addEventListener("keydown", onCloseGesture, true);
+      win.addEventListener("keyup", onCloseGesture, true);
+    }
+    lazy.setTimeout(() => {
+      for (const win of windows) {
+        if (!win.closed) {
+          win.removeEventListener("keydown", onCloseGesture, true);
+          win.removeEventListener("keyup", onCloseGesture, true);
+        }
+      }
+    }, STANDALONE_CLOSE_GESTURE_SUPPRESS_MS);
   }
 
   /**
@@ -1893,6 +2251,7 @@ class nsZenStandaloneWindowManager {
     }
 
     const state = standaloneWindow.ZenExternalLinkStandalone;
+    this.#standaloneWindows.delete(standaloneWindow);
     this.persistStandaloneWindowGeometry(standaloneWindow);
     for (const [target, type, listener] of state.geometryListeners ?? []) {
       target.removeEventListener(type, listener);
@@ -2079,12 +2438,19 @@ class nsZenStandaloneWindowManager {
         return false;
       }
 
-      this.#revealKeptTab(targetWindow, tab, targetWorkspace).catch(
-        console.error
-      );
-      // Adoption closes the standalone window with its last tab; this only has
-      // an effect on the re-open fallback path.
+      // Closed before the reveal, not after it. The standalone follows the
+      // user between Spaces, so for as long as it is on screen the application
+      // has a window on the Space the user is standing on, and bringing Zen
+      // forward raises that window instead of taking the user to the one that
+      // received the page. Adoption closes the standalone with its last tab;
+      // this also covers the re-open fallback path.
       this.closeStandaloneWindow(standaloneWindow);
+      this.#revealKeptTab(
+        targetWindow,
+        tab,
+        targetWorkspace,
+        standaloneWindow
+      ).catch(console.error);
       return true;
     } catch (error) {
       console.error("Failed to keep Zen standalone window in space", error);
@@ -2194,8 +2560,9 @@ class nsZenStandaloneWindowManager {
    * @param {Window} targetWindow - The window that received the tab
    * @param {MozTabbrowserTab} tab - The kept tab
    * @param {object|null} targetWorkspace - Workspace the tab should land in
+   * @param {Window} [standaloneWindow] - The standalone window being closed
    */
-  async #revealKeptTab(targetWindow, tab, targetWorkspace) {
+  async #revealKeptTab(targetWindow, tab, targetWorkspace, standaloneWindow) {
     const workspaces = targetWindow.gZenWorkspaces;
 
     if (targetWorkspace) {
@@ -2207,7 +2574,85 @@ class nsZenStandaloneWindowManager {
 
     if (!targetWindow.closed && !tab.closing) {
       targetWindow.gBrowser.selectedTab = tab;
+      await this.#presentKeepTargetWindow(targetWindow, standaloneWindow);
+    }
+  }
+
+  /**
+   * Waits for the standalone window to actually be off the screen.
+   *
+   * `close()` only asks. The native window is ordered out on a later turn of
+   * the event loop, and until it is, macOS still counts it as a window of this
+   * application sitting on the Space the user is on.
+   *
+   * @param {Window} [standaloneWindow] - The standalone window being closed
+   * @returns {Promise<void>} Resolves once it is gone, or once waiting expires
+   */
+  #promiseStandaloneWindowGone(standaloneWindow) {
+    return new Promise(resolve => {
+      let attemptsLeft = STANDALONE_WINDOW_CLOSE_SETTLE_ATTEMPTS;
+      const check = () => {
+        if (!standaloneWindow || standaloneWindow.closed || !attemptsLeft--) {
+          resolve();
+          return;
+        }
+        lazy.setTimeout(check, STANDALONE_WINDOW_CLOSE_SETTLE_MS);
+      };
+      check();
+    });
+  }
+
+  /**
+   * Brings the window that received the kept page to the user, including
+   * across macOS Spaces.
+   *
+   * Promotion is the moment the page stops being temporary, so the user is
+   * meant to end up looking at it in their normal browser. That has to survive
+   * the standalone window's own Space behaviour: the standalone is a
+   * non-activating panel that follows the user, so Zen is usually not the
+   * frontmost application while it is being used, and the receiving normal
+   * window is wherever the user left it, often on another Space. Ordering that
+   * window front without activating Zen first raises it on its own Space and
+   * leaves the user standing where they were, watching the standalone
+   * disappear with no page to show for it.
+   *
+   * Activation is what makes macOS follow the window: bringing the
+   * application forward with all of its windows leaves the system to switch to
+   * the Space the receiving window is on, and focusing it there makes it key.
+   * The order matters, and so does waiting for the standalone to be gone
+   * first - an application with a window on the Space the user is standing on
+   * is brought forward where it already is.
+   *
+   * This is deliberate here and only here: every other standalone path avoids
+   * stealing activation, and `ELW-022` already carves promotion out of the
+   * return-to-opener policy.
+   *
+   * @param {Window} targetWindow - The normal Zen window that received the tab
+   * @param {Window} [standaloneWindow] - The standalone window being closed
+   * @returns {Promise<void>} Resolves once the window has been presented
+   */
+  async #presentKeepTargetWindow(targetWindow, standaloneWindow) {
+    await this.#promiseStandaloneWindowGone(standaloneWindow);
+    if (targetWindow.closed) {
+      return;
+    }
+
+    try {
+      lazy.MacDockSupport?.activateApplication(true);
+    } catch (error) {
+      console.error(
+        "Failed to bring Zen forward for a kept standalone page",
+        error
+      );
+    }
+
+    try {
       targetWindow.focus();
+    } catch (error) {
+      console.error(
+        "Failed to focus the window keeping a standalone page",
+        error
+      );
     }
   }
 
@@ -2503,6 +2948,40 @@ class nsZenStandaloneWindowManager {
     }
 
     return null;
+  }
+
+  /**
+   * Finds a normal, same-privacy window that can own a closed-tab record.
+   *
+   * Archive capture runs during SSWindowClosing, before workspace startup has
+   * necessarily finished. Requiring workspaceEnabled here made the close
+   * record silently disappear in exactly the cold-start and rapid-close cases
+   * where Undo Close is most useful.
+   *
+   * @param {Window} standaloneWindow - The standalone window being closed
+   * @returns {Window|null} A session-store target window
+   */
+  getStandaloneArchiveTargetWindow(standaloneWindow) {
+    const sourcePrivate =
+      lazy.PrivateBrowsingUtils.isWindowPrivate(standaloneWindow);
+    const openerWindow =
+      standaloneWindow?.ZenExternalLinkStandalone?.openerWindow;
+    const candidates = [
+      openerWindow,
+      ...lazy.BrowserWindowTracker.orderedWindows,
+    ];
+    return (
+      candidates.find(
+        win =>
+          !!win &&
+          !win.closed &&
+          win !== standaloneWindow &&
+          !this.isStandaloneWindow(win) &&
+          !!win.gBrowser &&
+          lazy.PrivateBrowsingUtils.isWindowPrivate(win) === sourcePrivate &&
+          !!win.__SSi
+      ) ?? null
+    );
   }
 
   /**

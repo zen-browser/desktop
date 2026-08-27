@@ -48,7 +48,7 @@ index 64c325fc4646d2bd628b57f9b15c2bcffbdfecb2..caa17770f9918d4d2bfc3b3bc3c225b9
      if (AppConstants.platform == "win") {
        info += "  --preferences      Open Options dialog.\n";
      } else {
-@@ -1277,6 +1302,31 @@ function handURIToExistingBrowser(
+@@ -1277,6 +1302,47 @@ function handURIToExistingBrowser(
      return;
    }
  
@@ -59,6 +59,15 @@ index 64c325fc4646d2bd628b57f9b15c2bcffbdfecb2..caa17770f9918d4d2bfc3b3bc3c225b9
 +  let navWin = lazy.BrowserWindowTracker.getTopWindow({
 +    private: allowPrivate,
 +  });
++
++  // When the only browser window is private, the normal-window lookup above
++  // intentionally returns null. Keep that window as the standalone's opener
++  // context instead of silently creating a non-private standalone and losing
++  // the caller's privacy boundary.
++  let standaloneOpener = navWin;
++  if (!standaloneOpener && !forcePrivate) {
++    standaloneOpener = lazy.BrowserWindowTracker.getTopWindow({ private: true });
++  }
 +
 +  // A standalone-eligible external link gets a window of its own directly,
 +  // without first selecting, showing, or adding a tab to an existing browser
@@ -71,7 +80,14 @@ index 64c325fc4646d2bd628b57f9b15c2bcffbdfecb2..caa17770f9918d4d2bfc3b3bc3c225b9
 +    !forcePrivate &&
 +    lazy.gZenStandaloneWindowManager.openExternalLinksInStandaloneWindows(
 +      [uri.spec],
-+      navWin
++      standaloneOpener,
++      {
++        fromExternal: true,
++        triggeringPrincipal,
++        userContextId:
++          standaloneOpener?.gZenWorkspaces?.getCurrentSpaceContainerId?.() ??
++          0,
++      }
 +    )
 +  ) {
 +    return;

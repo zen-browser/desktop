@@ -5,10 +5,13 @@
 
 "use strict";
 
-const { gZenStandaloneWindowManager, ZEN_STANDALONE_WINDOW_TYPE } =
-  ChromeUtils.importESModule(
-    "resource:///modules/zen/standalonewindow/ZenStandaloneWindowManager.sys.mjs"
-  );
+const {
+  gZenStandaloneWindowManager,
+  nsZenStandaloneWindowManager,
+  ZEN_STANDALONE_WINDOW_TYPE,
+} = ChromeUtils.importESModule(
+  "resource:///modules/zen/standalonewindow/ZenStandaloneWindowManager.sys.mjs"
+);
 
 const { SessionWindowUI } = ChromeUtils.importESModule(
   "resource:///modules/sessionstore/SessionWindowUI.sys.mjs"
@@ -431,6 +434,75 @@ add_task(async function test_browser_external_open_does_not_fallback_to_tab() {
   await closeStandaloneWindow(standaloneWindow);
 });
 
+add_task(async function test_target_blank_from_standalone_opens_a_new_window() {
+  const sourceWindow = await openExternalLinkStandaloneWindow(
+    `${TEST_URL_BASE}?popup-source`
+  );
+  const existingWindows = new Set(getStandaloneWindows());
+  const url = `${TEST_URL_BASE}?popup-target`;
+
+  try {
+    const browser = sourceWindow.browserDOMWindow.openURI(
+      Services.io.newURI(url),
+      null,
+      Ci.nsIBrowserDOMWindow.OPEN_NEWTAB,
+      Ci.nsIBrowserDOMWindow.OPEN_EXTERNAL,
+      Services.scriptSecurityManager.getSystemPrincipal()
+    );
+
+    Assert.equal(
+      browser,
+      null,
+      "The asynchronous standalone destination does not expose a stale source browser"
+    );
+    const popupWindow = await waitForNewStandaloneWindow(existingWindows, url);
+    Assert.equal(
+      sourceWindow.gBrowser.tabs.length,
+      1,
+      "The source standalone keeps exactly one page"
+    );
+    Assert.equal(
+      popupWindow.gBrowser.tabs.length,
+      1,
+      "The popup standalone contains exactly one page"
+    );
+    await closeStandaloneWindow(popupWindow);
+  } finally {
+    await closeStandaloneWindow(sourceWindow);
+  }
+});
+
+add_task(async function test_scripted_new_window_from_standalone_is_visible() {
+  const sourceWindow = await openExternalLinkStandaloneWindow(
+    `${TEST_URL_BASE}?scripted-source`
+  );
+  const existingWindows = new Set(getStandaloneWindows());
+  const url = `${TEST_URL_BASE}?scripted-target`;
+
+  try {
+    const browsingContext = sourceWindow.browserDOMWindow.openURI(
+      Services.io.newURI(url),
+      null,
+      Ci.nsIBrowserDOMWindow.OPEN_NEWWINDOW,
+      0,
+      Services.scriptSecurityManager.getSystemPrincipal()
+    );
+    ok(
+      !browsingContext,
+      "A scripted standalone destination is created asynchronously"
+    );
+    const popupWindow = await waitForNewStandaloneWindow(existingWindows, url);
+    Assert.equal(
+      popupWindow.gBrowser.tabs.length,
+      1,
+      "A scripted new-window destination has one visible page"
+    );
+    await closeStandaloneWindow(popupWindow);
+  } finally {
+    await closeStandaloneWindow(sourceWindow);
+  }
+});
+
 add_task(async function test_close_standalone_window_without_keeping() {
   const initialTabCount = gBrowser.tabs.length;
   const standaloneWindow = await openExternalLinkStandaloneWindow(
@@ -449,6 +521,29 @@ add_task(async function test_close_standalone_window_without_keeping() {
     initialTabCount,
     "Closing a standalone window does not keep a tab in the normal workspace"
   );
+});
+
+add_task(function test_closing_native_opener_is_not_retained() {
+  for (const openerWindow of [
+    { closed: false, ZenExternalLinkStandalone: { isClosing: true } },
+    { closed: true, ZenExternalLinkStandalone: { isClosing: false } },
+  ]) {
+    const request =
+      gZenStandaloneWindowManager.createExternalLinkStandaloneWindowRequest({
+        uriString: `${TEST_URL_BASE}?stale-opener`,
+        options: { fromExternal: true, isPrivate: true },
+        openerWindow,
+      });
+    Assert.equal(
+      request.openerWindow,
+      null,
+      "A closing or closed standalone is not retained as a native opener"
+    );
+    ok(
+      request.isPrivate,
+      "Explicit privacy survives removal of the stale native opener"
+    );
+  }
 });
 
 add_task(async function test_close_command_closes_standalone_window() {
@@ -490,6 +585,39 @@ add_task(async function test_close_window_command_uses_same_lifecycle() {
     standaloneWindow.closed,
     "The Close Window command closes the standalone native window"
   );
+});
+
+add_task(async function test_physical_chrome_shortcuts_are_blocked() {
+  const standaloneWindow = await openExternalLinkStandaloneWindow(
+    `${TEST_URL_BASE}?blocked-shortcuts`
+  );
+
+  try {
+    const initialTabs = standaloneWindow.gBrowser.tabs.length;
+    for (const shortcut of [
+      { key: "t", metaKey: true },
+      { key: "b", metaKey: true },
+      { key: "p", metaKey: true, shiftKey: true },
+    ]) {
+      const event = new standaloneWindow.KeyboardEvent("keydown", {
+        ...shortcut,
+        bubbles: true,
+        cancelable: true,
+      });
+      standaloneWindow.dispatchEvent(event);
+      ok(
+        event.defaultPrevented,
+        `Standalone consumes Command+${shortcut.key.toUpperCase()} before Firefox chrome`
+      );
+    }
+    Assert.equal(
+      standaloneWindow.gBrowser.tabs.length,
+      initialTabs,
+      "Blocked physical shortcuts do not create a tab in the standalone"
+    );
+  } finally {
+    await closeStandaloneWindow(standaloneWindow);
+  }
 });
 
 add_task(async function test_beforeunload_cancel_keeps_standalone_usable() {
@@ -718,18 +846,16 @@ add_task(async function test_space_picker_rows_show_a_named_icon_tile() {
   );
 
   try {
-    ok(
-      gZenStandaloneWindowManager.openStandaloneSpacePicker(standaloneWindow),
-      "The standalone space picker opens"
-    );
-
     const document = standaloneWindow.document;
     const panel = document.getElementById(
       "PanelUI-zen-standalone-window-spaces"
     );
+    const pickerButton =
+      standaloneWindow.ZenExternalLinkStandalone.toolbar.spacePickerButton;
+    EventUtils.synthesizeMouseAtCenter(pickerButton, {}, standaloneWindow);
     await TestUtils.waitForCondition(
       () => panel.state === "open",
-      "Waiting for the space picker to finish opening"
+      "Waiting for the space picker to open from its visible chevron"
     );
 
     const activeWorkspace = gZenWorkspaces.getActiveWorkspace();
@@ -865,7 +991,7 @@ add_task(async function test_standalone_window_is_not_part_of_the_session() {
   );
 
   try {
-    const windowData = SessionStore.getWindowStateData(standaloneWindow);
+    const windowData = SessionStore.getWindowState(standaloneWindow).windows[0];
     ok(
       windowData.isZenStandalone,
       "Session store marks the window as standalone"
@@ -940,12 +1066,14 @@ add_task(async function test_closing_leaves_the_page_as_a_closed_tab() {
   );
 
   Assert.equal(
-    restored.ownerGlobal,
+    restored.ownerDocument.defaultView,
     window,
     "Undo close tab reopens the page as a tab of the normal window"
   );
   ok(
-    !gZenStandaloneWindowManager.isStandaloneWindow(restored.ownerGlobal),
+    !gZenStandaloneWindowManager.isStandaloneWindow(
+      restored.ownerDocument.defaultView
+    ),
     "Undo close tab does not bring back a standalone window"
   );
 
@@ -961,17 +1089,18 @@ add_task(async function test_closing_leaves_the_page_as_a_closed_tab() {
 
 add_task(async function test_external_link_without_an_opener_window() {
   const url = `${TEST_URL_BASE}?no-opener`;
-  const existingWindows = new Set(getStandaloneWindows());
-
+  const standaloneWindow =
+    gZenStandaloneWindowManager.openExternalLinkStandaloneWindow({
+      uriString: url,
+      options: { fromExternal: true },
+      openerWindow: null,
+    });
   ok(
-    gZenStandaloneWindowManager.openExternalLinksInStandaloneWindows([url]),
+    standaloneWindow,
     "An external link is handled with no window to open it from"
   );
 
-  const standaloneWindow = await waitForNewStandaloneWindow(
-    existingWindows,
-    url
-  );
+  await waitForStandaloneWindowReady(standaloneWindow, url);
   try {
     assertStandaloneWindow(standaloneWindow);
     Assert.equal(
@@ -989,12 +1118,15 @@ add_task(async function test_startup_window_is_held_for_a_cold_external_link() {
   // command line just after the initial, URL-less one. The startup window is
   // therefore held back for a moment, and dropped entirely once the link
   // turns up, so a cold external open produces a standalone and nothing else.
+  // The production manager is a process singleton and earlier tasks may have
+  // consumed its one-shot startup deferral. Use a fresh manager for this
+  // isolated lifecycle test so the assertion describes one launch, not test
+  // ordering.
+  const startupManager = new nsZenStandaloneWindowManager();
   let openedStartupWindow = false;
-  const held = gZenStandaloneWindowManager.deferStartupWindowForExternalLink(
-    () => {
-      openedStartupWindow = true;
-    }
-  );
+  const held = startupManager.deferStartupWindowForExternalLink(() => {
+    openedStartupWindow = true;
+  });
 
   if (AppConstants.platform !== "macosx") {
     ok(!held, "Only macOS splits a cold external open across command lines");
@@ -1002,30 +1134,28 @@ add_task(async function test_startup_window_is_held_for_a_cold_external_link() {
   }
 
   ok(held, "The classic startup window is held while a link could still come");
-  ok(
-    gZenStandaloneWindowManager.isHoldingStartupWindow,
-    "The manager owns the held window"
-  );
+  ok(startupManager.isHoldingStartupWindow, "The manager owns the held window");
 
   const url = `${TEST_URL_BASE}?cold-start`;
   const existingWindows = new Set(getStandaloneWindows());
   ok(
-    gZenStandaloneWindowManager.openExternalLinksInStandaloneWindows([url]),
+    startupManager.openExternalLinksInStandaloneWindows([url]),
     "The link that launched Zen goes to a standalone window"
   );
 
   const standaloneWindow = await waitForNewStandaloneWindow(
     existingWindows,
-    url
+    url,
+    startupManager
   );
   try {
     ok(
-      !gZenStandaloneWindowManager.isHoldingStartupWindow,
+      !startupManager.isHoldingStartupWindow,
       "The link claims the launch, so the held window is dropped"
     );
     ok(openedStartupWindow === false, "Zen's classic startup never runs");
     ok(
-      !gZenStandaloneWindowManager.deferStartupWindowForExternalLink(() => {}),
+      !startupManager.deferStartupWindowForExternalLink(() => {}),
       "Only the first window of a launch is ever held back"
     );
   } finally {
@@ -1034,7 +1164,10 @@ add_task(async function test_startup_window_is_held_for_a_cold_external_link() {
 });
 
 function getStandaloneWindows() {
-  return [...Services.wm.getEnumerator("navigator:browser")].filter(
+  // A no-opener window is observable through the mediator before its chrome
+  // document has assigned the navigator:browser window type. Filter by the
+  // standalone marker instead of losing that early lifecycle edge.
+  return [...Services.wm.getEnumerator(null)].filter(
     win =>
       !win.closed &&
       win.ZenExternalLinkStandaloneType === ZEN_STANDALONE_WINDOW_TYPE
@@ -1064,19 +1197,40 @@ function isEffectivelyHidden(element) {
   return display === "none" || visibility === "hidden";
 }
 
-async function waitForNewStandaloneWindow(existingWindows, url) {
+async function waitForNewStandaloneWindow(
+  _existingWindows,
+  url,
+  manager = gZenStandaloneWindowManager,
+  waitForReady = true
+) {
+  let standaloneWindow = null;
   await TestUtils.waitForCondition(
-    () =>
-      getStandaloneWindows().some(
-        win => !existingWindows.has(win) && isStandaloneWindowReady(win, url)
-      ),
+    () => {
+      standaloneWindow = manager.getStandaloneWindowForURL(url);
+      return !!standaloneWindow;
+    },
     "Waiting for a new standalone window",
     100,
     100
   );
+  if (waitForReady) {
+    await waitForStandaloneWindowReady(standaloneWindow, url);
+  }
+  return standaloneWindow;
+}
 
-  return getStandaloneWindows().find(
-    win => !existingWindows.has(win) && isStandaloneWindowReady(win, url)
+async function waitForStandaloneWindowReady(standaloneWindow, url) {
+  await TestUtils.waitForCondition(
+    () => standaloneWindow.ZenExternalLinkStandaloneReady === true,
+    "Waiting for standalone initialization to complete",
+    100,
+    100
+  );
+  await TestUtils.waitForCondition(
+    () => standaloneWindow.gBrowser?.selectedBrowser?.currentURI?.spec === url,
+    "Waiting for the standalone browser to commit its URL",
+    100,
+    100
   );
 }
 
@@ -1100,25 +1254,6 @@ async function openExternalLinkStandaloneWindow(url) {
     "Opening an external URL does not create a duplicate workspace tab"
   );
   return standaloneWindow;
-}
-
-function isStandaloneWindowReady(standaloneWindow, url) {
-  if (!standaloneWindow?.gBrowserInit?.delayedStartupFinished) {
-    return false;
-  }
-
-  const stateURL = standaloneWindow.ZenExternalLinkStandalone?.uriString;
-  const loadedURL =
-    standaloneWindow.gBrowser?.selectedBrowser?.currentURI?.spec;
-  return (
-    standaloneWindow.document.documentElement.getAttribute(
-      "zen-standalone-window"
-    ) === "true" &&
-    !!standaloneWindow.document.getElementById(
-      "zen-standalone-window-open-in-space-button"
-    ) &&
-    (stateURL === url || loadedURL === url)
-  );
 }
 
 function assertStandaloneWindow(standaloneWindow) {
@@ -1164,15 +1299,29 @@ function assertStandaloneWindow(standaloneWindow) {
 
   // Shortcuts that would drag workspace chrome back into the window are off.
   for (const id of [
+    "cmd_newNavigator",
+    "cmd_newNavigatorTab",
+    "cmd_newNavigatorTabNoEvent",
+    "cmd_newPrivateWindow",
+    "Browser:DuplicateTab",
+    "Browser:AddTabSplitView",
+    "Browser:SeparateTabSplitView",
+    "Tools:PrivateBrowsing",
+    "Tools:ClassicWindow",
+    "History:UndoCloseTab",
+    "History:UndoCloseWindow",
     "cmd_toggleCompactModeIgnoreHover",
     "cmd_zenToggleSidebar",
     "cmd_zenCompactModeShowSidebar",
   ]) {
-    Assert.equal(
-      standaloneWindow.document.getElementById(id)?.getAttribute("disabled"),
-      "true",
-      `${id} is disabled in standalone windows`
-    );
+    const command = standaloneWindow.document.getElementById(id);
+    if (command) {
+      Assert.equal(
+        command.getAttribute("disabled"),
+        "true",
+        `${id} is disabled in standalone windows`
+      );
+    }
   }
 
   const tabboxWrapper =

@@ -1,5 +1,5 @@
 diff --git a/widget/cocoa/nsMacDockSupport.mm b/widget/cocoa/nsMacDockSupport.mm
-index 7f07ace0cdf81dea386ed3f36b020dbda23bfcd0..fe8f0ef21de209de3a1c3064ef4bf3fc5cebc9dd 100644
+index 7f07ace0cdf81dea386ed3f36b020dbda23bfcd0..b34b66ceea47dd664ca05a72cb63fa669a8707f0 100644
 --- a/widget/cocoa/nsMacDockSupport.mm
 +++ b/widget/cocoa/nsMacDockSupport.mm
 @@ -18,6 +18,9 @@
@@ -139,10 +139,70 @@ index 7f07ace0cdf81dea386ed3f36b020dbda23bfcd0..fe8f0ef21de209de3a1c3064ef4bf3fc
  
  nsMacDockSupport::~nsMacDockSupport() {
    if (mDockTileWrapperView) {
-@@ -122,6 +237,112 @@ nsMacDockSupport::ActivateApplication(bool aIgnoreOtherApplications) {
-   NS_OBJC_END_TRY_BLOCK_RETURN(NS_ERROR_FAILURE);
+@@ -111,12 +226,165 @@ nsMacDockSupport::SetDockMenu(nsIStandaloneNativeMenu* aDockMenu) {
+   return NS_OK;
  }
  
++// Brings the application to the user rather than merely to the front of its
++// own layer, which is what every caller passing true is asking for: the
++// screen-sharing return button, the Dock activating a hidden window, and Zen
++// promoting a standalone page into a normal window.
++//
++// -[NSApplication activateIgnoringOtherApps:] no longer does that on its own.
++// macOS 14 deprecated it along with unilateral activation generally: an
++// application that is not frontmost cannot simply take the front, and the call
++// is dropped while another application owns it. The replacement is
++// cooperative - activation is requested from the application that currently
++// holds it - and the system grants it for an application the user is working
++// in, which is exactly the case here.
++//
++// Activating with all windows is also what leaves the Space change to macOS.
++// The system takes the user to wherever this application's windows are, so a
++// caller that wants the user brought to a particular window only has to focus
++// it afterwards.
++static void ZenActivateApplicationForUser() {
++  NSApplication* app = [NSApplication sharedApplication];
++  NSRunningApplication* current = [NSRunningApplication currentApplication];
++
++  // Activation shows a hidden application, but its windows stay hidden.
++  if ([app isHidden]) {
++    [app unhide:nil];
++  }
++
++  if (@available(macOS 14.0, *)) {
++    NSRunningApplication* frontmost =
++        [[NSWorkspace sharedWorkspace] frontmostApplication];
++    if (frontmost && ![frontmost isEqual:current] &&
++        [current activateFromApplication:frontmost
++                                 options:NSApplicationActivateAllWindows]) {
++      return;
++    }
++  }
++
++  // Older systems, and the case where the request to take activation over was
++  // refused. Still worth trying: it is honoured whenever this application is
++  // already the frontmost one, which covers activating from a normal window.
++  [app activateIgnoringOtherApps:YES];
++}
++
+ NS_IMETHODIMP
+ nsMacDockSupport::ActivateApplication(bool aIgnoreOtherApplications) {
+   NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
+ 
+-  [[NSApplication sharedApplication]
+-      activateIgnoringOtherApps:aIgnoreOtherApplications];
++  if (!aIgnoreOtherApplications) {
++    // Politely: come forward only when nothing else owns the front.
++    [[NSApplication sharedApplication] activateIgnoringOtherApps:NO];
++    return NS_OK;
++  }
++
++  ZenActivateApplicationForUser();
++  return NS_OK;
++
++  NS_OBJC_END_TRY_BLOCK_RETURN(NS_ERROR_FAILURE);
++}
++
 +NS_IMETHODIMP
 +nsMacDockSupport::GetIsApplicationActive(bool* aIsActive) {
 +  NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
@@ -244,11 +304,6 @@ index 7f07ace0cdf81dea386ed3f36b020dbda23bfcd0..fe8f0ef21de209de3a1c3064ef4bf3fc
 +  }
 +
 +  [nativeWindow setCollectionBehavior:behavior];
-+  return NS_OK;
-+
-+  NS_OBJC_END_TRY_BLOCK_RETURN(NS_ERROR_FAILURE);
-+}
-+
- NS_IMETHODIMP
- nsMacDockSupport::SetBadgeText(const nsAString& aBadgeText) {
-   NS_OBJC_BEGIN_TRY_BLOCK_RETURN;
+   return NS_OK;
+ 
+   NS_OBJC_END_TRY_BLOCK_RETURN(NS_ERROR_FAILURE);

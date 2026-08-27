@@ -160,59 +160,77 @@ export class nsZenSessionManager {
         "resource://gre/modules/PlacesUtils.sys.mjs"
       );
       const db = await PlacesUtils.promiseDBConnection();
+      // These tables belonged to the pre-session-manager schema. A fresh
+      // profile has never created them, so querying them directly only turns
+      // an expected first-run state into noisy "no such table" errors.
+      const legacyTables = new Set(
+        (
+          await db.execute(
+            "SELECT name FROM sqlite_master WHERE type = 'table' AND name IN ('zen_workspaces', 'zen_pins')"
+          )
+        ).map(row => row.getResultByName("name"))
+      );
       let data = {};
       let rows = [];
-      try {
-        rows = await db.execute(
-          "SELECT * FROM zen_workspaces ORDER BY created_at ASC"
-        );
-        data.spaces = rows.map(row => ({
-          uuid: row.getResultByName("uuid"),
-          name: row.getResultByName("name"),
-          icon: row.getResultByName("icon"),
-          containerTabId: row.getResultByName("container_id") ?? 0,
-          position: row.getResultByName("position"),
-          theme: row.getResultByName("theme_type")
-            ? {
-                type: row.getResultByName("theme_type"),
-                gradientColors: JSON.parse(row.getResultByName("theme_colors")),
-                opacity: row.getResultByName("theme_opacity"),
-                rotation: row.getResultByName("theme_rotation"),
-                texture: row.getResultByName("theme_texture"),
-              }
-            : null,
-        }));
-      } catch (e) {
-        /* ignore errors reading spaces data, as it is not critical and we want to migrate even if we fail to read it */
-        console.error(
-          "Failed to read spaces data from database during migration",
-          e
-        );
+      if (legacyTables.has("zen_workspaces")) {
+        try {
+          rows = await db.execute(
+            "SELECT * FROM zen_workspaces ORDER BY created_at ASC"
+          );
+          data.spaces = rows.map(row => ({
+            uuid: row.getResultByName("uuid"),
+            name: row.getResultByName("name"),
+            icon: row.getResultByName("icon"),
+            containerTabId: row.getResultByName("container_id") ?? 0,
+            position: row.getResultByName("position"),
+            theme: row.getResultByName("theme_type")
+              ? {
+                  type: row.getResultByName("theme_type"),
+                  gradientColors: JSON.parse(
+                    row.getResultByName("theme_colors")
+                  ),
+                  opacity: row.getResultByName("theme_opacity"),
+                  rotation: row.getResultByName("theme_rotation"),
+                  texture: row.getResultByName("theme_texture"),
+                }
+              : null,
+          }));
+        } catch (e) {
+          /* ignore errors reading spaces data, as it is not critical and we want to migrate even if we fail to read it */
+          console.error(
+            "Failed to read spaces data from database during migration",
+            e
+          );
+        }
       }
-      try {
-        rows = await db.execute("SELECT * FROM zen_pins ORDER BY position ASC");
-        data.pins = rows.map(row => ({
-          uuid: row.getResultByName("uuid"),
-          title: row.getResultByName("title"),
-          url: row.getResultByName("url"),
-          containerTabId: row.getResultByName("container_id"),
-          workspaceUuid: row.getResultByName("workspace_uuid"),
-          position: row.getResultByName("position"),
-          isEssential: Boolean(row.getResultByName("is_essential")),
-          isGroup: Boolean(row.getResultByName("is_group")),
-          parentUuid: row.getResultByName("folder_parent_uuid"),
-          editedTitle: Boolean(row.getResultByName("edited_title")),
-          folderIcon: row.getResultByName("folder_icon"),
-          isFolderCollapsed: Boolean(
-            row.getResultByName("is_folder_collapsed")
-          ),
-        }));
-      } catch (e) {
-        /* ignore errors reading pins data, as it is not critical and we want to migrate even if we fail to read it */
-        console.error(
-          "Failed to read pins data from database during migration",
-          e
-        );
+      if (legacyTables.has("zen_pins")) {
+        try {
+          rows = await db.execute(
+            "SELECT * FROM zen_pins ORDER BY position ASC"
+          );
+          data.pins = rows.map(row => ({
+            uuid: row.getResultByName("uuid"),
+            title: row.getResultByName("title"),
+            url: row.getResultByName("url"),
+            containerTabId: row.getResultByName("container_id"),
+            workspaceUuid: row.getResultByName("workspace_uuid"),
+            position: row.getResultByName("position"),
+            isEssential: Boolean(row.getResultByName("is_essential")),
+            isGroup: Boolean(row.getResultByName("is_group")),
+            parentUuid: row.getResultByName("folder_parent_uuid"),
+            editedTitle: Boolean(row.getResultByName("edited_title")),
+            folderIcon: row.getResultByName("folder_icon"),
+            isFolderCollapsed: Boolean(
+              row.getResultByName("is_folder_collapsed")
+            ),
+          }));
+        } catch (e) {
+          /* ignore errors reading pins data, as it is not critical and we want to migrate even if we fail to read it */
+          console.error(
+            "Failed to read pins data from database during migration",
+            e
+          );
+        }
       }
       try {
         data.recoveryData = await IOUtils.readJSON(
@@ -261,6 +279,9 @@ export class nsZenSessionManager {
       }
     } catch {
       for (const backupFile of await this.#getBackupRecoveryOrder()) {
+        if (!backupFile || !(await IOUtils.exists(backupFile))) {
+          continue;
+        }
         try {
           let data = await IOUtils.readJSON(backupFile, { decompress: true });
           this.log(`Recovered data from backup file ${backupFile}`);
@@ -271,7 +292,7 @@ export class nsZenSessionManager {
           break;
         } catch (e) {
           /* ignore errors reading backup files */
-          console.error(`Failed to read backup file ${backupFile}`, e);
+          console.error(`Failed to read existing backup file ${backupFile}`, e);
         }
       }
     }

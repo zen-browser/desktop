@@ -12,6 +12,7 @@ const {
   gZenGlobalSearchPanel,
   parseGlobalSearchShortcut,
   serializeGlobalSearchShortcut,
+  validateGlobalSearchShortcut,
 } = ChromeUtils.importESModule(
   "resource:///modules/zen/standalonewindow/ZenGlobalSearchPanel.sys.mjs"
 );
@@ -80,6 +81,21 @@ add_task(function test_shortcut_serialization_and_validation() {
     "invalid",
     "The failure reason is structured"
   );
+
+  Assert.ok(
+    validateGlobalSearchShortcut(ZEN_GLOBAL_SEARCH_DEFAULT_SHORTCUT).ok,
+    "The default global-search shortcut is available"
+  );
+  Assert.equal(
+    validateGlobalSearchShortcut("meta|KeyQ").reason,
+    "conflict",
+    "Application quit is reserved even while browser chrome is starting"
+  );
+  Assert.equal(
+    validateGlobalSearchShortcut("meta|KeyC").reason,
+    "conflict",
+    "Built-in copy remains protected from native shortcut registration"
+  );
 });
 
 add_task(function test_global_request_uses_existing_standalone_contract() {
@@ -118,6 +134,14 @@ add_task(async function test_disabled_preference_blocks_internal_entry_point() {
 });
 
 add_task(async function test_internal_command_opens_and_cancels_real_panel() {
+  if (Services.env.get("MOZ_HEADLESS")) {
+    ok(
+      true,
+      "The native global-search NSPanel is covered by the headful macOS run"
+    );
+    return;
+  }
+
   const workspaceTabCount = window.gBrowser.tabs.length;
   const closedTabCount = SessionStore.getClosedTabCount(window);
 
@@ -291,6 +315,11 @@ add_task(async function test_internal_command_opens_and_cancels_real_panel() {
 });
 
 add_task(async function test_submission_creates_fresh_ordinary_standalone() {
+  if (Services.env.get("MOZ_HEADLESS")) {
+    ok(true, "Global-search submission is covered by the headful macOS run");
+    return;
+  }
+
   const existing = new Set(
     [...Services.wm.getEnumerator("navigator:browser")].filter(win =>
       gZenStandaloneWindowManager.isStandaloneWindow(win)

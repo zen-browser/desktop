@@ -1223,9 +1223,14 @@ class nsZenWindowSync {
     return this.#maybeFlushTabState(aTab).finally(() => {
       this.log(`Setting pinned initial state for tab ${aTab.id}`);
       let { entries, index } = this.#getTabEntriesFromCache(aTab);
-      let image =
-        aTab.getAttribute("image") ||
-        aTab.documentGlobal.gBrowser.getIcon(aTab);
+      let image = aTab.getAttribute("image") || null;
+      if (!image) {
+        try {
+          image = aTab.documentGlobal?.gBrowser?.getIcon?.(aTab) || null;
+        } catch (error) {
+          this.log("Unable to read a pinned tab icon during teardown", error);
+        }
+      }
       let activeIndex = typeof index === "number" ? index : entries.length;
       // Tab state cache gives us the index starting from 1 instead of 0.
       activeIndex--;
@@ -1341,8 +1346,14 @@ class nsZenWindowSync {
     if (!aTab?._zenPinnedInitialState || aTab._zenPinnedInitialState.image) {
       return;
     }
-    let image =
-      aTab.getAttribute("image") || aTab.documentGlobal.gBrowser.getIcon(aTab);
+    let image = aTab.getAttribute("image") || null;
+    if (!image) {
+      try {
+        image = aTab.documentGlobal?.gBrowser?.getIcon?.(aTab) || null;
+      } catch (error) {
+        this.log("Unable to read a synced tab icon during teardown", error);
+      }
+    }
     this.#runOnAllWindows(null, win => {
       const targetTab = this.getItemFromWindow(win, aTab.id);
       if (targetTab) {

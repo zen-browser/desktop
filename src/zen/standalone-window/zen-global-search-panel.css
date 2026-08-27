@@ -76,7 +76,11 @@ body::after {
   content: none !important;
 }
 
-:root[zen-global-search-panel="true"] #urlbar[zen-floating-urlbar="true"] {
+:root[zen-global-search-panel="true"] #urlbar {
+  /* The browser URL-bar theme overrides --border-radius-medium on the
+   * element. Capture the panel root's eight-pixel radius explicitly so the
+   * input surface does not unexpectedly grow to the browser's 16px token. */
+  --zen-global-search-radius: 8px !important;
   box-sizing: border-box !important;
   position: absolute !important;
   top: 0 !important;

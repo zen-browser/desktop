@@ -21,6 +21,7 @@ const {
   formatGlobalSearchShortcut,
   parseGlobalSearchShortcut,
   serializeGlobalSearchShortcut,
+  validateGlobalSearchShortcut,
 } = ChromeUtils.importESModule(
   "resource:///modules/zen/standalonewindow/ZenGlobalSearchPanel.sys.mjs"
 );
@@ -805,6 +806,13 @@ var gZenWorkspacesSettings = {
       if (!parsed) {
         return false;
       }
+      const validation = validateGlobalSearchShortcut(
+        serialized,
+        nsZenMultiWindowFeature.currentBrowser?.ownerGlobal ?? null
+      );
+      if (!validation.ok) {
+        return true;
+      }
       const modifiers = nsKeyShortcutModifiers.fromObject({
         ctrl: parsed.modifiers.includes("control"),
         alt: parsed.modifiers.includes("alt"),
@@ -824,7 +832,11 @@ var gZenWorkspacesSettings = {
           "zen-global-search"
         ).hasConflicts;
       } catch {
-        return false;
+        // Conflict validation is the safety boundary before registering a
+        // native global shortcut. If the shortcut registry is unavailable,
+        // fail closed instead of allowing the candidate to shadow a browser
+        // or system key.
+        return true;
       }
     };
 

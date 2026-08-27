@@ -188,16 +188,51 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..1cef7f739bd3c3f9d930574bab629c22
        // If sidebar command is truthy, i.e. sidebar is open, store sidebar settings
        let shouldStore = hasSaveableTabs || isLastWindow;
  
-@@ -3507,7 +3539,7 @@ var SessionStoreInternal = {
+@@ -3370,3 +3402,12 @@ var SessionStoreInternal = {
+     // Get the latest data for this tab (generally, from the cache)
+-    let tabState = lazy.TabState.collect(aTab, TAB_CUSTOM_VALUES.get(aTab));
++    // Native standalone teardown can detach the browser between the close
++    // event and this callback, so a failed collect must not turn a close
++    // into an error.
++    let tabState;
++    try {
++      tabState = lazy.TabState.collect(aTab, TAB_CUSTOM_VALUES.get(aTab));
++    } catch (error) {
++      this._log.debug("Unable to collect a tab during close", error);
++      return;
++    }
+
+@@ -3507,7 +3549,11 @@ var SessionStoreInternal = {
++    if (!aTab?.linkedBrowser) {
++      return;
++    }
++
      if (!isPrivateWindow && tabState.isPrivate) {
        return;
      }
 -    if (aTab == aWindow.FirefoxViewHandler.tab) {
 +    if (aTab == aWindow.FirefoxViewHandler.tab || aTab.hasAttribute("zen-empty-tab")) {
-       return;
-     }
+      return;
+    }
  
-@@ -3682,6 +3714,61 @@ var SessionStoreInternal = {
+@@ -3514,9 +3546,15 @@ var SessionStoreInternal = {
+     let permanentKey = aTab.linkedBrowser.permanentKey;
+
++    let image = aTab.getAttribute("image") || null;
++    try {
++      image = aWindow.gBrowser.getIcon(aTab) || image;
++    } catch (error) {
++      this._log.debug("Unable to read a closed tab icon", error);
++    }
+
+     let tabData = {
+       permanentKey,
+       state: tabState,
+       title: aTab.label,
+-      image: aWindow.gBrowser.getIcon(aTab),
++      image,
+
+@@ -3682,6 +3714,121 @@ var SessionStoreInternal = {
     * @param {boolean} [saveAction=true]
     *   Whether or not to add an action to the closed actions stack on save.
     */
@@ -213,21 +248,70 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..1cef7f739bd3c3f9d930574bab629c22
 +   *        The window that should own the closed tab.
 +   * @param {MozTabbrowserTab} aTab
 +   *        The tab being closed, still live.
-+   * @returns {boolean} True when the tab was recorded.
++   * @returns {{ok: boolean, reason: string, closedId?: number}}
++   *   The outcome is structured so close-time callers can distinguish a
++   *   deliberate discard from a browser-detach or target failure.
 +   */
 +  recordClosedTabForOtherWindow(aTargetWindow, aTab) {
 +    if (this._max_tabs_undo == 0 || !aTargetWindow?.__SSi) {
-+      return false;
++      return { ok: false, reason: "undo-disabled-or-target-missing" };
 +    }
 +
 +    let winData = this._windows[aTargetWindow.__SSi];
-+    if (!winData || !aTab?.linkedBrowser) {
-+      return false;
++    if (
++      !winData ||
++      !aTab?.linkedBrowser ||
++      PrivateBrowsingUtils.isBrowserPrivate(aTab.linkedBrowser) !==
++        PrivateBrowsingUtils.isWindowPrivate(aTargetWindow)
++    ) {
++      let reason = "privacy-mismatch";
++      if (!winData) {
++        reason = "target-not-tracked";
++      } else if (!aTab?.linkedBrowser) {
++        reason = "source-browser-detached";
++      }
++      return {
++        ok: false,
++        reason,
++      };
 +    }
 +
-+    let tabState = lazy.TabState.collect(aTab, TAB_CUSTOM_VALUES.get(aTab));
-+    if (tabState.isPrivate || !this._shouldSaveTabState(tabState)) {
-+      return false;
++    let tabState;
++    try {
++      tabState = lazy.TabState.collect(aTab, TAB_CUSTOM_VALUES.get(aTab));
++    } catch (error) {
++      // SSWindowClosing can race the browser detach on native close. A failed
++      // collect must not abort the window close or leave a half-written record.
++      this._log.warn("Unable to collect a standalone tab before close", error);
++      return { ok: false, reason: "source-state-unavailable" };
++    }
++    // A standalone window is intentionally outside the normal session-store
++    // lifecycle, so its content-process history cache can still be empty at
++    // SSWindowClosing time. Preserve the loaded URI rather than dropping the
++    // page from Undo Close entirely.
++    if (!tabState.entries?.length) {
++      const uri = aTab.linkedBrowser.currentURI;
++      if (uri && uri.spec !== "about:blank") {
++        const triggeringPrincipal = aTab.linkedBrowser.contentPrincipal;
++        tabState.entries = [
++          {
++            url: uri.spec,
++            title: aTab.label,
++            triggeringPrincipal_base64:
++              (triggeringPrincipal &&
++                lazy.E10SUtils.serializePrincipal(triggeringPrincipal)) ||
++              lazy.E10SUtils.SERIALIZED_SYSTEMPRINCIPAL,
++          },
++        ];
++        tabState.index = 1;
++      }
++    }
++
++    if (tabState.isPrivate) {
++      return { ok: false, reason: "private-state" };
++    }
++    if (!this._shouldSaveTabState(tabState)) {
++      return { ok: false, reason: "unsaveable-state" };
 +    }
 +
 +    // The tab is arriving from a window with its own, unrelated notion of
@@ -242,18 +326,29 @@ index 11191a82a0f0dc6eee60f9de52a63bc6085c3981..1cef7f739bd3c3f9d930574bab629c22
 +    tabState.zenWorkspace = null;
 +    tabState.groupId = null;
 +
++    // The linked browser can lose its favicon during teardown. The tab's
++    // persisted image attribute is stable and is a sufficient fallback for
++    // Undo Close when getIcon() can no longer dereference the browser.
++    let image = aTab.getAttribute("image") || null;
++    try {
++      image = aTab.ownerGlobal?.gBrowser?.getIcon?.(aTab) || image;
++    } catch (error) {
++      this._log.debug("Unable to read a standalone tab icon before close", error);
++    }
++
++    const closedId = this._nextClosedId;
 +    this.saveClosedTabData(winData, winData._closedTabs, {
 +      permanentKey: aTab.linkedBrowser.permanentKey,
 +      state: tabState,
 +      title: aTab.label,
-+      image: aTab.ownerGlobal.gBrowser.getIcon(aTab),
++      image,
 +      pos: 0,
 +      closedAt: Date.now(),
 +      closedInGroup: false,
 +      closedInTabGroupId: null,
 +      sourceWindowId: aTargetWindow.__SSi,
 +    });
-+    return true;
++    return { ok: true, reason: "recorded", closedId };
 +  },
 +
    saveClosedTabData(winData, closedTabs, tabData, saveAction = true) {

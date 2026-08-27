@@ -6,18 +6,24 @@ index 7e2f1d2b9ca10bd48fa1a0cd1f175a99b4169b90..505d6fc5110b99c73a0054abbe098c15
        args = null,
        remote = undefined,
        fission = undefined,
-+    zenSyncedWindow = true,
-+    zenStandaloneWindow = false,
++      zenSyncedWindow = true,
++      zenStandaloneWindow = false,
      } = options;
  
      args = lazy.AIWindow.handleAIWindowOptions(options);
-@@ -386,6 +387,16 @@ export const BrowserWindowTracker = {
+@@ -386,6 +387,22 @@ export const BrowserWindowTracker = {
        windowFeatures,
        args
      );
-+    win._zenStartupSyncFlag = Services.prefs.getBoolPref("zen.window-sync.prefer-unsynced-windows")
-+      ? (zenSyncedWindow ? 'unsynced' : 'synced')
-+      : (zenSyncedWindow ? 'synced' : 'unsynced');
++    let preferredSyncFlag = zenSyncedWindow ? "synced" : "unsynced";
++    if (Services.prefs.getBoolPref("zen.window-sync.prefer-unsynced-windows")) {
++      preferredSyncFlag = zenSyncedWindow ? "unsynced" : "synced";
++    }
++    // Transient standalone windows are never part of the synced workspace
++    // session, regardless of the user's default preference for new windows.
++    win._zenStartupSyncFlag = zenStandaloneWindow
++      ? "unsynced"
++      : preferredSyncFlag;
 +    if (win._zenStartupSyncFlag === 'unsynced' && openerWindow) {
 +      win._zenStartupUnsyncedUserContextId =
 +        openerWindow.gZenWorkspaces?.getCurrentSpaceContainerId?.() ?? 0;

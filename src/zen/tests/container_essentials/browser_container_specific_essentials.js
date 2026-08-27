@@ -44,5 +44,61 @@ add_task(async function test_Check_Creation() {
     "No essential tabs should be found in the original workspace."
   );
 
+  await BrowserTestUtils.removeTab(newTab);
   await gZenWorkspaces.removeWorkspace(newWorkspaceUUID);
+});
+
+add_task(async function test_Remove_Orphaned_Container_Essentials() {
+  const workspaceContextIds = new Set(
+    gZenWorkspaces
+      .getWorkspaces()
+      .map(workspace => Number(workspace.containerTabId) || 0)
+  );
+  const orphanedContextId = [1, 2, 3].find(
+    contextId => !workspaceContextIds.has(contextId)
+  );
+  const validContextId =
+    Number(gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId) || 0;
+  const tabs = [
+    BrowserTestUtils.addTab(gBrowser, "about:blank", {
+      skipAnimation: true,
+      userContextId: validContextId,
+    }),
+    BrowserTestUtils.addTab(gBrowser, "about:blank", {
+      skipAnimation: true,
+      userContextId: orphanedContextId,
+    }),
+  ];
+
+  try {
+    for (const tab of tabs) {
+      gZenPinnedTabManager.addToEssentials(tab, { replicating: true });
+    }
+
+    ok(
+      gZenWorkspaces.allStoredTabs.includes(tabs[0]),
+      "The Essential for an existing workspace container should be stored."
+    );
+    ok(
+      gZenWorkspaces.allStoredTabs.includes(tabs[1]),
+      "The orphaned container Essential should initially be stored."
+    );
+
+    await gZenWorkspaces.clearAnyZombieTabs();
+
+    ok(
+      gZenWorkspaces.allStoredTabs.includes(tabs[0]),
+      "The Essential for an existing workspace container should remain."
+    );
+    ok(
+      !gZenWorkspaces.allStoredTabs.includes(tabs[1]),
+      "The Essential without a corresponding workspace container should be removed."
+    );
+  } finally {
+    for (const tab of tabs) {
+      if (gZenWorkspaces.allStoredTabs.includes(tab)) {
+        await BrowserTestUtils.removeTab(tab);
+      }
+    }
+  }
 });

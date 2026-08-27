@@ -783,7 +783,7 @@ class nsZenWorkspaces {
       this.#fixTabPositions();
       this.onWindowResize();
       this._resolveInitialized();
-      this.#clearAnyZombieTabs(); // Dont call with await
+      this.clearAnyZombieTabs(); // Dont call with await
       delete this._resolveInitialized;
 
       const tabUpdateListener = this.updateTabsContainers.bind(this);
@@ -983,15 +983,26 @@ class nsZenWorkspaces {
     );
   }
 
-  async #clearAnyZombieTabs() {
+  async clearAnyZombieTabs() {
     const tabs = this.allStoredTabs;
     const workspaces = this.getWorkspaces();
+    const workspaceContextIds = new Set(
+      workspaces.map(workspace => Number(workspace.containerTabId) || 0)
+    );
     for (let tab of tabs) {
       const workspaceID = tab.getAttribute("zen-workspace-id");
+      const isOrphanedEssential =
+        this.containerSpecificEssentials &&
+        !!workspaces.length &&
+        tab.hasAttribute("zen-essential") &&
+        !workspaceContextIds.has(
+          Number(tab.getAttribute("usercontextid")) || 0
+        );
       if (
         (workspaceID &&
           !tab.hasAttribute("zen-essential") &&
           !workspaces.find(workspace => workspace.uuid === workspaceID)) ||
+        isOrphanedEssential ||
         // Also remove empty tabs that are supposed to be from parent folders but
         // they dont exist anymore
         (tab.pinned && tab.hasAttribute("zen-empty-tab") && !tab.group)

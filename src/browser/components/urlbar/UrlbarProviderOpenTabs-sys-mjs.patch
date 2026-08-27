@@ -12,7 +12,7 @@ index e732e7a..b2386e6 100644
    ProvidersManager:
      "moz-src:///browser/components/urlbar/UrlbarProvidersManager.sys.mjs",
    UrlbarResult: "chrome://browser/content/urlbar/UrlbarResult.mjs",
-@@ -139,6 +141,46 @@ export class UrlbarProviderOpenTabs extends UrlbarProvider {
+@@ -139,6 +141,47 @@ export class UrlbarProviderOpenTabs extends UrlbarProvider {
      return uniqueUrls;
    }
  
@@ -36,7 +36,8 @@ index e732e7a..b2386e6 100644
 +        continue;
 +      }
 +
-+      for (let tab of window.gBrowser.tabs) {
++      let tabs = window.gZenWorkspaces?.allStoredTabs ?? window.gBrowser.tabs;
++      for (let tab of tabs) {
 +        if (
 +          tab.closing ||
 +          (!isInPrivateWindow && tab.userContextId != userContextId) ||

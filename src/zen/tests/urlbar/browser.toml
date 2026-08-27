@@ -10,6 +10,7 @@ support-files = [
 ]
 
 ["browser_container_tab_titles.js"]
+prefs = ["zen.workspaces.separate-essentials=true"]
 
 ["browser_floating_urlbar.js"]
 

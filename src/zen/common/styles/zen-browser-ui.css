@@ -66,6 +66,7 @@ body,
 
   &:is(.zen-toolbar-background) {
     &::after {
+      corner-shape: superellipse(var(--zen-squircle-value));
       background: var(--zen-main-browser-background-toolbar);
     }
   }
@@ -79,6 +80,7 @@ body,
 
   &:is(.zen-toolbar-background) {
     &::before {
+      corner-shape: superellipse(var(--zen-squircle-value));
       background: var(--zen-main-browser-background-toolbar-old);
     }
   }

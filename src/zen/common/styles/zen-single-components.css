@@ -601,6 +601,8 @@
       position: absolute;
       width: 100%;
       height: 100%;
+      corner-shape: superellipse(var(--zen-squircle-value));
+
       @media (-moz-platform: macos) {
         background: linear-gradient(to bottom, light-dark(rgb(255, 255, 255), rgb(34, 34, 34)), light-dark(rgb(246, 246, 246), rgb(21, 21, 21)));
 

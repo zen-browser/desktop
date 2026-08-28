@@ -13,6 +13,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
   SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
   SessionStartup: "resource:///modules/sessionstore/SessionStartup.sys.mjs",
+  TabStateFlusher: "resource:///modules/sessionstore/TabStateFlusher.sys.mjs",
   gWindowSyncEnabled: "resource:///modules/zen/ZenWindowSync.sys.mjs",
   gSyncOnlyPinnedTabs: "resource:///modules/zen/ZenWindowSync.sys.mjs",
   DeferredTask: "resource://gre/modules/DeferredTask.sys.mjs",
@@ -609,6 +610,9 @@ export class nsZenSessionManager {
       }
     );
     this.#collectWindowData(windows);
+    // Let interested consumers (e.g. Firefox Sync) know fresh sidebar data
+    // is available, without this module knowing anything about them.
+    Services.obs.notifyObservers(null, "zen-sidebar-data-collected");
     // This would save the data to disk asynchronously or when quitting the app.
     let sidebar = this.#sidebarWithoutCloning;
     this.#file.data = sidebar;
@@ -620,6 +624,15 @@ export class nsZenSessionManager {
     lazy.ZenLiveFoldersManager.saveState(soon);
     this.#debounceRegeneration();
     this.log(`Saving Zen session data with ${sidebar.tabs?.length || 0} tabs`);
+  }
+
+  /**
+   * Returns the sidebar data object.
+   *
+   * @returns {object}
+   */
+  getSidebarData() {
+    return this.#sidebarWithoutCloning;
   }
 
   /**
@@ -903,6 +916,79 @@ export class nsZenSessionManager {
     aWindow.__isNewZenWindow = true;
     SessionStoreInternal._deferredInitialState = newState;
     SessionStoreInternal.initializeWindow(aWindow, newState);
+    this.#refreshRestoredTabsState(aWindow, SessionStoreInternal).catch(e =>
+      console.error("ZenSessionManager: Failed to refresh restored tabs", e)
+    );
+  }
+
+  /**
+   * The state we clone into a new window comes from the parent process
+   * cache, which may lag behind the content processes (e.g. for a tab that
+   * was opened or navigated right before opening the new window). After the
+   * new window has been restored, flush the previous window and update each
+   * counterpart tab that hasn't started loading yet.
+   *
+   * @param {Window} aWindow
+   *        The newly restored window.
+   * @param {object} SessionStoreInternal
+   *        The SessionStore module instance.
+   */
+  async #refreshRestoredTabsState(aWindow, SessionStoreInternal) {
+    // Wait until the tabs have actually been created in the new window.
+    await aWindow.gZenWorkspaces.promiseInitialized;
+    if (aWindow.closed) {
+      return;
+    }
+    // Only refresh from the most recently used window: any other window
+    // already reported its state when it lost focus, so the cloned data
+    // is up to date for it.
+    let previousWindow = null;
+    for (const win of SessionStoreInternal._browserWindows) {
+      if (win !== aWindow && !win.closed) {
+        previousWindow = win;
+        break;
+      }
+    }
+    if (!previousWindow) {
+      return;
+    }
+    for (const tab of previousWindow.gZenWorkspaces.allStoredTabs) {
+      const syncId = tab.getAttribute("id");
+      // A tab that has never loaded has no state in the content process,
+      // so there's nothing newer to flush out of it.
+      if (!syncId || tab.closing || !tab.linkedPanel) {
+        continue;
+      }
+      const targetTab = aWindow.document.getElementById(syncId);
+      // Only refresh a tab that hasn't started loading: setting the state
+      // of a loaded tab would reload it.
+      if (
+        !aWindow.gBrowser.isTab(targetTab) ||
+        targetTab.linkedPanel ||
+        targetTab.closing
+      ) {
+        continue;
+      }
+      lazy.TabStateFlusher.flush(tab.linkedBrowser)
+        .then(() => {
+          // Things may have changed while the flush was in flight.
+          if (
+            aWindow.closed ||
+            tab.closing ||
+            targetTab.linkedPanel ||
+            targetTab.closing
+          ) {
+            return;
+          }
+          lazy.SessionStore.setTabState(
+            targetTab,
+            lazy.SessionStore.getTabState(tab)
+          );
+        })
+        .catch(e =>
+          console.error("ZenSessionManager: Failed to refresh tab state", e)
+        );
+    }
   }
 
   /**

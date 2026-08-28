@@ -287,7 +287,7 @@ jobs:
     with:
       use-sccache: ${{ inputs.use-sccache }}
       build-version: ${{ needs.build-data.outputs.version }}
-      generate-gpo: true
+      generate-pgo: true
       profile-data-path-archive: zen-windows-profile-data-and-jarlog.zip
       release-branch: ${{ inputs.update_branch }}
       MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
@@ -313,7 +313,7 @@ jobs:
     needs: [build-data, windows-step-2, start-self-host, buildid]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
-      generate-gpo: false
+      generate-pgo: false
       release-branch: ${{ inputs.update_branch }}
       MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
       use-sccache: ${{ inputs.use-sccache }}
@@ -331,15 +331,41 @@ jobs:
       MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
       use-sccache: ${{ inputs.use-sccache }}
 
-  mac:
-    name: macOS build
+  mac-step-1:
+    name: macOS build step 1 (PGO build)
+    uses: ./.github/workflows/macos-release-build.yml
+    needs: [build-data, buildid]
+    permissions:
+      contents: write
+    secrets: inherit
+    with:
+      use-sccache: ${{ inputs.use-sccache }}
+      build-version: ${{ needs.build-data.outputs.version }}
+      generate-pgo: true
+      release-branch: ${{ inputs.update_branch }}
+      MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
+
+  mac-step-2:
+    name: macOS build step 2 (Generate profile data)
+    uses: ./.github/workflows/macos-profile-build.yml
+    permissions:
+      contents: write
+    secrets: inherit
+    needs: [mac-step-1, build-data]
+    with:
+      build-version: ${{ needs.build-data.outputs.version }}
+      release-branch: ${{ inputs.update_branch }}
+
+  mac-step-3:
+    name: macOS build step 3 (build with profile data)
     uses: ./.github/workflows/macos-release-build.yml
     permissions:
       contents: write
     secrets: inherit
-    needs: [build-data, buildid]
+    needs: [build-data, mac-step-2, start-self-host, buildid]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
+      generate-pgo: false
       release-branch: ${{ inputs.update_branch }}
       MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
       use-sccache: ${{ inputs.use-sccache }}
@@ -350,7 +376,7 @@ jobs:
     permissions:
       contents: write
     secrets: inherit
-    needs: [build-data, mac]
+    needs: [build-data, mac-step-3]
     with:
       build-version: ${{ needs.build-data.outputs.version }}
       release-branch: ${{ inputs.update_branch }}
@@ -500,10 +526,24 @@ jobs:
           path: updates-server
           token: ${{ secrets.DEPLOY_KEY }}
 
-      - name: Download object files
+      - name: Download signed windows objects
         if: ${{ inputs.update_branch == 'release' }}
+        env:
+          GH_TOKEN: ${{ secrets.DEPLOY_KEY }}
         run: |
-          git clone https://github.com/zen-browser/windows-binaries.git .github/workflows/object --depth 1
+          mkdir -p .github/workflows/object
+          gh release download "windows-signed-${{ github.run_id }}" \
+            --repo zen-browser/windows-binaries \
+            --pattern 'windows-x64-signed-*.tar.gz' \
+            --dir .github/workflows/object
+
+          for arch in x86_64 arm64; do
+            archive=".github/workflows/object/windows-x64-signed-$arch.tar.gz"
+            dest=".github/workflows/object/windows-x64-signed-$arch"
+            echo "Expanding $archive"
+            mkdir -p "$dest"
+            tar -xvf "$archive" -C "$dest"
+          done
 
       - name: Sign MAR files
         env:
@@ -615,6 +655,17 @@ jobs:
             ./.github/workflows/object/windows-x64-signed-x86_64/zen.installer.exe
             ./.github/workflows/object/windows-x64-signed-arm64/zen.installer-arm64.exe
             ./zen.macos-universal.dmg/*
+
+      - name: Clean up signed windows staging release
+        if: ${{ inputs.update_branch == 'release' }}
+        env:
+          GH_TOKEN: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          # The per-run staging prerelease on windows-binaries has served its purpose
+          # now that the signed bundles are published in the real release. Never fail
+          # the release over this cleanup.
+          gh release delete "windows-signed-${{ github.run_id }}" \
+            --repo zen-browser/windows-binaries --cleanup-tag --yes || true
 
   prepare-flatpak:
     if: ${{ inputs.create_release && inputs.update_branch == 'release' }}

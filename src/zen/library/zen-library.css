@@ -97,7 +97,7 @@ zen-library[open] {
     content: "";
     position: absolute;
     inset: 0;
-    border-radius: 6px;
+    border-radius: 8px;
     transition: transform 0.1s ease-in-out;
   }
 
@@ -107,6 +107,10 @@ zen-library[open] {
 
   &[active]::before {
     background: color-mix(in srgb, currentColor 10%, transparent);
+  }
+
+  &:hover:active::before {
+    transform: scale(0.96);
   }
 
   & .zen-library-tab-icon {

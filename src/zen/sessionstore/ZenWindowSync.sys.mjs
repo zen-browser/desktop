@@ -606,7 +606,9 @@ class nsZenWindowSync {
     if (isTab) {
       if (originalIsEssential !== targetIsEssential) {
         if (originalIsEssential) {
-          gZenPinnedTabManager.addToEssentials(aTargetItem);
+          gZenPinnedTabManager.addToEssentials(aTargetItem, {
+            replicating: true,
+          });
         } else {
           gZenPinnedTabManager.removeEssentials(
             aTargetItem,
@@ -769,8 +771,8 @@ class nsZenWindowSync {
     const otherBrowser = aTab.linkedBrowser;
 
     // We aren't closing the other tab so, we also need to swap its tablisteners.
-    let filter = otherTabBrowser._tabFilters.get(aTab);
-    let tabListener = otherTabBrowser._tabListeners.get(aTab);
+    let filter = otherTabBrowser._getTabProgressFilter(aTab);
+    let tabListener = otherTabBrowser._getTabProgressListener(aTab);
     try {
       otherBrowser.webProgress.removeProgressListener(filter);
       filter.removeProgressListener(tabListener);
@@ -792,7 +794,7 @@ class nsZenWindowSync {
         true,
         false
       );
-      otherTabBrowser._tabListeners.set(aTab, tabListener);
+      otherTabBrowser._setTabProgressListener(aTab, tabListener);
 
       const notifyAll = Ci.nsIWebProgress.NOTIFY_ALL;
       filter.addProgressListener(tabListener, notifyAll);
@@ -1232,7 +1234,7 @@ class nsZenWindowSync {
       activeIndex = Math.min(activeIndex, entries.length - 1);
       activeIndex = Math.max(activeIndex, 0);
       let entryToUse = (entries[activeIndex] || entries[0]) ?? null;
-      this.#setPinnedInitialState(
+      this.setPinnedInitialState(
         aTab,
         { url: entryToUse?.url, title: entryToUse?.title },
         image
@@ -1250,14 +1252,22 @@ class nsZenWindowSync {
    */
   setPinnedUrl(aTab, aUrl, aImage) {
     this.log(`Setting pinned url for tab ${aTab.id}`);
-    this.#setPinnedInitialState(
+    this.setPinnedInitialState(
       aTab,
       { url: aUrl, title: aTab.zenStaticLabel },
       aImage
     );
   }
 
-  #setPinnedInitialState(aTab, aEntry, aImage) {
+  /**
+   * Sets the pinned initial state (canonical entry and icon) for a tab's
+   * instances across all windows.
+   *
+   * @param {object} aTab - Any window's instance of the tab.
+   * @param {object} aEntry - The canonical { url, title } entry.
+   * @param {string} [aImage] - Optional icon to store.
+   */
+  setPinnedInitialState(aTab, aEntry, aImage) {
     const initialState = { entry: aEntry, image: aImage };
     this.#runOnAllWindows(null, win => {
       const targetTab = this.getItemFromWindow(win, aTab.id);
@@ -1362,7 +1372,9 @@ class nsZenWindowSync {
       return;
     }
     tab._zenContentsVisible = true;
-    tab.id = this.#newTabSyncId;
+    if (!tab.id) {
+      tab.id = this.#newTabSyncId;
+    }
     if (lazy.gSyncOnlyPinnedTabs && !tab.pinned) {
       return;
     }
@@ -1373,6 +1385,7 @@ class nsZenWindowSync {
       const newTab = win.gBrowser.addTrustedTab("about:blank", {
         animate: true,
         createLazyBrowser: true,
+        userContextId: tab.userContextId,
         _forZenEmptyTab: tab.hasAttribute("zen-empty-tab"),
       });
       newTab.id = tab.id;
@@ -1488,9 +1501,16 @@ class nsZenWindowSync {
     const window = tab.documentGlobal;
     this.#runOnAllWindows(window, win => {
       const targetTab = this.getItemFromWindow(win, tab.id);
-      if (targetTab) {
-        win.gBrowser.removeTab(targetTab, { animate: true });
+      if (!targetTab) {
+        return;
       }
+      if (targetTab.splitView) {
+        win.gZenViewSplitter.removeTabFromGroup(targetTab, undefined, {
+          forUnsplit: true,
+          changeTab: false,
+        });
+      }
+      win.gBrowser.removeTab(targetTab, { animate: true });
     });
   }
 

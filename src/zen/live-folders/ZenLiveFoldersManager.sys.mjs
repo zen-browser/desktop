@@ -200,6 +200,50 @@ class nsZenLiveFoldersManager {
     return this.liveFolders.get(id);
   }
 
+  /**
+   * Returns the provider config needed to recreate this live folder on
+   * another device, or null for non-live folders. Fetch bookkeeping fields
+   * are stripped since they are device-local.
+   *
+   * @param {string} id - The folder ID.
+   */
+  getSyncableFolderData(id) {
+    const liveFolder = this.liveFolders.get(id);
+    if (!liveFolder) {
+      return null;
+    }
+    const state = { ...liveFolder.serialize().state };
+    delete state.lastFetched;
+    delete state.lastErrorId;
+    return { type: liveFolder.constructor.type, state };
+  }
+
+  /**
+   * Registers a live folder provider for a folder that arrived from
+   * Firefox Sync. The folder element must already exist.
+   *
+   * @param {string} id - The folder ID.
+   * @param {{ type: string, state: object }} config - Synced provider config.
+   */
+  async adoptSyncedFolder(id, { type, state } = {}) {
+    await this.stateRestored.promise;
+    if (this.liveFolders.has(id)) {
+      return;
+    }
+    const ProviderClass = this.registry.get(type);
+    if (!ProviderClass || !state) {
+      return;
+    }
+    const liveFolder = new ProviderClass({
+      id,
+      state: this.#applyDefaultStateValues({ ...state }),
+      manager: this,
+    });
+    this.liveFolders.set(id, liveFolder);
+    liveFolder.start();
+    this.saveState();
+  }
+
   async createFolder(type) {
     const [provider, providerType] = type.split(":");
     let ProviderClass = this.registry.get(provider);
@@ -324,7 +368,7 @@ class nsZenLiveFoldersManager {
               },
             ],
             content: {
-              width: "310px",
+              width: "312px",
               position: "callout",
               title_logo: {
                 imageURL: icon,
@@ -343,10 +387,6 @@ class nsZenLiveFoldersManager {
         ],
       },
     });
-
-    lazy.setTimeout(() => {
-      callout.endTour();
-    }, 10000);
   }
 
   deleteFolder(id, deleteFolder = true) {
@@ -623,6 +663,7 @@ class nsZenLiveFoldersManager {
   async #restoreState() {
     let data = await this.#readStateFromDisk();
     if (!Array.isArray(data)) {
+      this.stateRestored.resolve();
       return;
     }
 

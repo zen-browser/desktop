@@ -1,0 +1,55 @@
+diff --git a/browser/components/urlbar/content/UrlbarView.mjs b/browser/components/urlbar/content/UrlbarView.mjs
+index e465806c4ae4fc372d9aa2b71aa7f0e74c65d026..c0b3781901298bedee2736819a93edbf545507a7 100644
+--- a/browser/components/urlbar/content/UrlbarView.mjs
++++ b/browser/components/urlbar/content/UrlbarView.mjs
+@@ -803,7 +803,7 @@ export class UrlbarView {
+       !this.input.value ||
+       this.input.getAttribute("pageproxystate") == "valid"
+     ) {
+-      if (!this.isOpen && ["mousedown", "command"].includes(event.type)) {
++      if (!this.isOpen && ["mousedown", "click", "command"].includes(event.type)) {
+         // Try to reuse the cached top-sites context. If it's not cached, then
+         // there will be a gap of time between when the input is focused and
+         // when the view opens that can be perceived as flicker.
+@@ -941,10 +941,6 @@ export class UrlbarView {
+     }
+ 
+     // If search mode isn't active, close the view.
+-    if (!this.input.searchMode) {
+-      this.close();
+-      return;
+-    }
+ 
+     // Search mode is active.  If the one-offs should be shown, make sure they
+     // are enabled and show the view.
+@@ -3203,6 +3199,8 @@ export class UrlbarView {
+       if (row?.hasAttribute("row-selectable")) {
+         row?.toggleAttribute("selected", true);
+       }
++      // only scroll if its not already fully visible
++      element.scrollIntoView({ behavior: "smooth", block: "nearest" });
+       if (element != row) {
+         row?.toggleAttribute("descendant-selected", true);
+       }
+@@ -3715,7 +3713,7 @@ export class UrlbarView {
+   }
+ 
+   #enableOrDisableRowWrap() {
+-    let wrap = getBoundsWithoutFlushing(this.input).width < 650;
++    let wrap = false;
+     this.#rows.toggleAttribute("wrap", wrap);
+     this.oneOffSearchButtons?.container.toggleAttribute("wrap", wrap);
+   }
+@@ -4144,6 +4142,12 @@ export class UrlbarView {
+   }
+ 
+   on_blur() {
++    if (
++      this.document.commandDispatcher.focusedElement == this.input.inputField &&
++      !lazy.UrlbarPrefs.get("closeOnWindowBlur")
++    ) {
++      return;
++    }
+     // If the view is open without the input being focused, it will not close
+     // automatically when the window loses focus. We might be in this state
+     // after a Search Tip is shown on an engine homepage.

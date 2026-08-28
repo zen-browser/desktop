@@ -48,6 +48,11 @@ zen-look-and-feel-compact-view-top-toolbar =
 zen-look-and-feel-compact-toolbar-flash-popup =
     .label = Briefly make the toolbar popup when switching or opening new tabs in compact mode
 
+zen-look-and-feel-window-drag-header = Window dragging
+zen-look-and-feel-window-drag-description = Move the window by dragging empty space at the top of websites, just like the titlebar.
+zen-window-drag-enabled =
+    .label = Allow dragging the window from web pages
+
 pane-zen-tabs-title = Tab Management
 category-zen-workspaces =
     .tooltiptext = { pane-zen-tabs-title }
@@ -283,7 +288,8 @@ zen-page-info-shortcut = View Page Info
 zen-find-shortcut = Find on Page
 zen-search-find-again-shortcut = Find Again
 zen-search-find-again-shortcut-prev = Find Previous
-zen-search-find-again-shortcut-2 = Find Again (Alt)
+zen-search-find-again-shortcut-alt = Find Again (Alt)
+zen-search-find-again-shortcut-prev-alt = Find Previous (Alt)
 zen-bookmark-this-page-shortcut = Bookmark This Page
 zen-bookmark-show-library-shortcut = Show Bookmarks Library
 zen-key-stop = Stop Loading

@@ -87,3 +87,8 @@ library-downloads-state-downloading = Downloading…
 library-downloads-state-canceled = Canceled
 library-downloads-state-failed = Failed
 library-downloads-state-incomplete = Incomplete
+
+library-close-button =
+  .tooltiptext = Close Library
+library-donate-button =
+  .tooltiptext = Support Zen

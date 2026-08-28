@@ -27,7 +27,7 @@ body,
   }
 }
 
-:root[zen-before-loaded="true"] #browser > *:not(#zen-toast-container),
+:root[zen-before-loaded="true"] #browser > *:not(#zen-toast-container, #zen-browser-background),
 :root[zen-before-loaded="true"] #urlbar {
   opacity: 0 !important;
 }
@@ -113,15 +113,6 @@ body,
 }
 
 #zen-browser-background {
-  /* This is conceptually a background, but putting this on a pseudo-element
-    * avoids it from suppressing the chrome-content separator border, etc.
-    *
-    * See bugzilla's 1949528 and bug 1476281 (which would make this unnecessary). */
-  @media (-moz-platform: macos) {
-    -moz-default-appearance: -moz-sidebar;
-    appearance: auto;
-  }
-
   /*
    *  Important: We set the color to `AccentColor` so we can
    *  Compute the stylings and get the native accent color.
@@ -352,4 +343,12 @@ body,
 
 :root[zen-right-side="true"] #zen-appcontent-navbar-wrapper #PanelUI-button {
   order: 2;
+}
+
+/* See #14409: firefox 150's body paint containment prevents the right side compact
+ sidebar from remaining active at the screen edge in macOS fullscreen */
+@media (-moz-platform: macos) {
+  :root[macOSNativeFullscreen][zen-compact-mode][zen-right-side] body {
+    contain: none;
+  }
 }

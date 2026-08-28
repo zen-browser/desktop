@@ -9,6 +9,7 @@ let lazy = {};
 let gZenLibraryInstance = null;
 
 const PREVIOUS_TAB_PREF = "zen.library.previous-tab";
+const DONATE_URL = "https://zen-browser.app/donate/";
 
 ChromeUtils.defineESModuleGetters(
   lazy,
@@ -52,6 +53,7 @@ export class ZenLibrary extends MozLitElement {
     _content: "#zen-library-content",
     _tabs: { all: "#zen-library-sidebar-tabs > .library-tab" },
     _header: "#zen-library-sidebar-header",
+    _footer: "#zen-library-sidebar-footer",
   };
 
   createRenderRoot() {
@@ -117,9 +119,36 @@ export class ZenLibrary extends MozLitElement {
     this._header.appendChild(
       gZenVerticalTabsManager.actualWindowButtons.cloneNode(true)
     );
+    this.#buildFooterButtons();
     const activeTabEl = this.querySelector(".zen-library-tab[active]");
     if (activeTabEl) {
       this.#animateTabIcon(activeTabEl);
+    }
+  }
+
+  #buildFooterButtons() {
+    const buttons = [
+      {
+        l10nId: "library-close-button",
+        image: "chrome://browser/skin/zen-icons/back.svg",
+        command: () => ZenLibrary.toggle(),
+      },
+      {
+        l10nId: "library-donate-button",
+        image: "chrome://browser/skin/zen-icons/heart-circle-fill.svg",
+        command: () => {
+          window.openTrustedLinkIn(DONATE_URL, "tab");
+          ZenLibrary.toggle();
+        },
+      },
+    ];
+    for (const { l10nId, image, command } of buttons) {
+      const button = document.createXULElement("toolbarbutton");
+      button.className = "toolbarbutton-1";
+      button.setAttribute("image", image);
+      document.l10n.setAttributes(button, l10nId);
+      button.addEventListener("command", command);
+      this._footer.appendChild(button);
     }
   }
 
@@ -153,8 +182,10 @@ export class ZenLibrary extends MozLitElement {
                 ?active=${this.activeTab === Section.id}
                 data-section=${Section.id}
                 @click=${event => {
-                  this.activeTab = Section.id;
-                  this.#animateTabIcon(event.currentTarget);
+                  if (this.activeTab !== Section.id) {
+                    this.activeTab = Section.id;
+                    this.#animateTabIcon(event.currentTarget);
+                  }
                 }}
               >
                 <div class="zen-library-tab-icon">
@@ -165,7 +196,11 @@ export class ZenLibrary extends MozLitElement {
             `
           )}
         </vbox>
-        <vbox id="zen-library-sidebar-footer"></vbox>
+        <toolbar mode="icons"
+          fullscreentoolbar="true"
+          class="browser-toolbar chromeclass-location"
+          id="zen-library-sidebar-footer">
+        </toolbar>
       </vbox>
       <vbox
         id="zen-library-content"

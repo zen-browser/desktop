@@ -17,11 +17,11 @@ add_task(async function test_processAUMID() {
   // This function will trigger the relevant code paths that
   // incorrectly changes the process AUMID on MSIX, prior to
   // Bug 1950734 being fixed
-  await ShellService.checkPinCurrentAppToTaskbarAsync(false);
+  await ShellService.pinToTaskbar();
 
   is(
-    processAUMID,
     ShellService.checkCurrentProcessAUMIDForTesting(),
+    processAUMID,
     "The process AUMID should not be changed"
   );
 });

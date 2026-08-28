@@ -1,0 +1,55 @@
+diff --git a/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs b/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs
+--- a/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs
++++ b/toolkit/components/pictureinpicture/PictureInPicture.sys.mjs
+@@ -119,10 +119,19 @@
+       }
+       case "PictureInPicture:VideoTabHidden": {
+         if (!lazy.PIP_ENABLED || !lazy.PIP_WHEN_SWITCHING_TABS) {
+           break;
+         }
++
++        // Suppress auto-toggle if the user deliberately closed this PiP window
++        if (
++          PictureInPicture.weakAutoPipBrowserClosedDeliberately.has(browser)
++        ) {
++          PictureInPicture.weakAutoPipBrowserClosedDeliberately.delete(browser);
++          break;
++        }
++
+         // If the tab is still selected, then we can ignore this event
+         if (browser.documentGlobal.gBrowser.selectedBrowser == browser) {
+           break;
+         }
+         let actor = browsingContext.currentWindowGlobal.getActor(
+@@ -261,10 +270,12 @@
+   maxConcurrentPlayerCount: 0,
+ 
+   // Maps auto pip browser to PictureInPictureParent actor
+   weakAutoPipBrowserToParent: new WeakMap(),
+ 
++  weakAutoPipBrowserClosedDeliberately: new WeakSet(),
++
+   /**
+    * Returns the player window if one exists and if it hasn't yet been closed.
+    *
+    * @param {PictureInPictureParent} pipActorRef
+    *   Reference to the calling PictureInPictureParent actor
+@@ -899,10 +910,17 @@
+     const { reason, actorRef } = closeData;
+     const win = this.getWeakPipPlayer(actorRef);
+     if (!win) {
+       return;
+     }
++
++    const browser = this.weakWinToBrowser.get(win);
++
++    if (reason === "CloseButton") {
++      PictureInPicture.weakAutoPipBrowserClosedDeliberately.add(browser);
++    }
++
+     this.removePiPBrowserFromWeakMap(this.weakWinToBrowser.get(win));
+     this.weakAutoPipBrowserToParent.delete(this.weakWinToBrowser.get(win));
+ 
+     Glean.pictureinpicture["closedMethod" + reason].record();
+     await this.closePipWindow(win);
+

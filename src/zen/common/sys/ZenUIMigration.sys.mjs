@@ -15,7 +15,7 @@ class nsZenUIMigration {
   PREF_NAME = "zen.ui.migration.version";
   PREF_LIBRARY_REPLACED_DOWNLOADS =
     "zen.ui.migration.library-button-replaced-downloads";
-  MIGRATION_VERSION = 6;
+  MIGRATION_VERSION = 7;
 
   init(isNewProfile) {
     if (!isNewProfile) {
@@ -182,6 +182,20 @@ class nsZenUIMigration {
         }
       }, 1000);
     });
+  }
+
+  _migrateV7() {
+    if (
+      AppConstants.platform === "macosx" &&
+      Services.prefs.prefHasUserValue(
+        "widget.macos.sidebar-blend-mode.behind-window"
+      ) &&
+      !Services.prefs.getBoolPref(
+        "widget.macos.sidebar-blend-mode.behind-window"
+      )
+    ) {
+      Services.prefs.setBoolPref("zen.widget.macos.window-vibrancy", false);
+    }
   }
 }
 

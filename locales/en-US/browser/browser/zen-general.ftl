@@ -87,6 +87,8 @@ zen-icons-picker-emoji =
   .label = Emojis
 zen-icons-picker-svg =
   .label = Icons
+zen-emojis-picker-search =
+  .placeholder = Search emojis
 
 urlbar-search-mode-zen_actions = Actions
 zen-site-data-settings = Settings
@@ -149,6 +151,9 @@ zen-sidebar-notification-updated-heading = Update Complete!
 zen-sidebar-notification-updated-label = What's new in { -brand-short-name }
 zen-sidebar-notification-updated-tooltip =
     .title = View Release Notes
+zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-tooltip =
+    .title = Donate to the project
 zen-sidebar-notification-restart-safe-mode-label = Something broke?
 zen-sidebar-notification-restart-safe-mode-tooltip =
     .title = Restart in Safe Mode
@@ -159,5 +164,5 @@ zen-window-sync-migration-dialog-learn-more = Learn More
 zen-window-sync-migration-dialog-accept = Got It
 
 zen-appmenu-new-blank-window =
-    .label = New blank window
+    .label = New Blank Window
 

@@ -160,7 +160,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     if (groupIndex < 0) {
       return;
     }
-    this.removeTabFromGroup(tab, groupIndex, { forUnsplit: true });
+    this.removeTabFromGroup(tab, groupIndex, {
+      forUnsplit: true,
+      changeTab: groupIndex === this.currentView,
+    });
   }
 
   /**

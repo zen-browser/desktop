@@ -77,6 +77,18 @@
   }
 }
 
+.zen-sidebar-notification-progress {
+  height: 1px;
+  overflow: hidden;
+  transform: translateY(-1px);
+
+  & .zen-sidebar-notification-progress-bar {
+    height: 100%;
+    background: light-dark(color-mix(in srgb, var(--zen-primary-color) 50%, black), color-mix(in srgb, var(--zen-colors-primary) 15%, transparent 10%, #6b6b6b));
+    transform-origin: left center;
+  }
+}
+
 .zen-sidebar-notification-body {
   padding: 6px;
   display: flex;

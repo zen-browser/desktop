@@ -7,6 +7,7 @@ import createSidebarNotification from "chrome://browser/content/zen-components/Z
 const ZEN_UPDATE_PREF = "zen.updates.last-version";
 const ZEN_BUILD_ID_PREF = "zen.updates.last-build-id";
 const ZEN_UPDATE_SHOW = "zen.updates.show-update-notification";
+const ZEN_UPDATE_NOTIFICATION_TIMEOUT_MS = 15000;
 
 export default function checkForZenUpdates() {
   const version = Services.appinfo.version;
@@ -25,6 +26,7 @@ export default function checkForZenUpdates() {
   );
   createSidebarNotification({
     headingL10nId: "zen-sidebar-notification-updated-heading",
+    autoHideMs: ZEN_UPDATE_NOTIFICATION_TIMEOUT_MS,
     links: [
       {
         url: Services.urlFormatter.formatURL(
@@ -59,6 +61,14 @@ export async function createWindowUpdateAnimation() {
     return;
   }
   Services.prefs.setStringPref(ZEN_BUILD_ID_PREF, appID);
+  await playWindowSweepAnimation();
+}
+
+/**
+ * Plays the full-window sweep shown after updates. Also used the first
+ * time incoming sync data is applied on this profile.
+ */
+export async function playWindowSweepAnimation() {
   await gZenWorkspaces.promiseInitialized;
   const appWrapper = document.getElementById("zen-main-app-wrapper");
   const element = document.createElement("div");

@@ -1,0 +1,23 @@
+diff --git a/widget/cocoa/nsCocoaWindow.h b/widget/cocoa/nsCocoaWindow.h
+index 312011c1c2ac41e78affecbdef25d72766a7c882..e5865c7d6259f0a3df48edf7a26b1b75a23cdb3a 100644
+--- a/widget/cocoa/nsCocoaWindow.h
++++ b/widget/cocoa/nsCocoaWindow.h
+@@ -462,6 +462,10 @@ class nsCocoaWindow final : public nsIWidget {
+   void SetHideTitlebarSeparator(bool) override;
+   bool IsMacTitlebarDirectionRTL() override;
+   void SetCustomTitlebar(bool) override;
++  void SetWindowClass(const nsAString& aXulWinType,
++                      const nsAString& aXulWinClass,
++                      const nsAString& aXulWinName) override;
++  void UpdateWindowMaterial();
+   void UpdateThemeGeometries(
+       const nsTArray<ThemeGeometry>& aThemeGeometries) override;
+   void LockAspectRatio(bool aShouldLock) override;
+@@ -672,6 +676,7 @@ class nsCocoaWindow final : public nsIWidget {
+   bool mAspectRatioLocked = false;
+   bool mIsAlert = false;  // True if this is an non-native alert window.
+   bool mWasShown = false;
++  bool mIsBrowserWindow = false;
+ 
+   int32_t mNumModalDescendants = 0;
+ 

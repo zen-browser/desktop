@@ -5,6 +5,11 @@ run-if = [
 firefox-appdir = "browser"
 tags = "os_integration"
 
+["test_customIconManager.js"]
+run-if = [
+  "os == 'win'",
+]
+
 ["test_desktopEntryStatus.js"]
 run-if = [
   "os == 'linux'",

@@ -1,5 +1,5 @@
 diff --git a/layout/generic/nsTextPaintStyle.cpp b/layout/generic/nsTextPaintStyle.cpp
-index f741ab5eb83778ec2460a5d975757f09b3f2865e..f39a019c0d82db7ba9a122ce5269d0833ae04568 100644
+index 9dba72de611cd84ed07805f5ce40f882071240f0..782dea67f6d975ba5b7daa1e2e2ed862f7941952 100644
 --- a/layout/generic/nsTextPaintStyle.cpp
 +++ b/layout/generic/nsTextPaintStyle.cpp
 @@ -240,7 +240,7 @@ bool nsTextPaintStyle::GetTargetTextColor(nscolor* aForeColor) {
@@ -39,17 +39,14 @@ index f741ab5eb83778ec2460a5d975757f09b3f2865e..f39a019c0d82db7ba9a122ce5269d083
    return NS_GET_A(*aBackColor) != 0;
  }
  
-@@ -462,12 +463,12 @@ bool nsTextPaintStyle::InitSelectionColorsAndShadow() {
-     mSelectionPseudoStyle = std::move(style);
- 
-     if (nscolor bgColor = mSelectionPseudoStyle->GetVisitedDependentColor(
--            &nsStyleBackground::mBackgroundColor);
-+            &nsStyleBackground::mBackgroundColor, mFrame);
-         mSelectionPseudoStyle->HasAuthorSpecifiedTextColor() ||
-         NS_GET_A(bgColor) > 0) {
-       mSelectionBGColor = bgColor;
+@@ -463,9 +464,9 @@ bool nsTextPaintStyle::InitSelectionColorsAndShadow() {
+     if (mSelectionPseudoStyle->HasAuthorSpecifiedTextColor() ||
+         mSelectionPseudoStyle->HasAuthorSpecifiedBorderOrBackground()) {
+       mSelectionBGColor = mSelectionPseudoStyle->GetVisitedDependentColor(
+-          &nsStyleBackground::mBackgroundColor);
 -      mSelectionTextColor =
 -          mSelectionPseudoStyle->GetVisitedDependentColor(&nsStyleText::mColor);
++          &nsStyleBackground::mBackgroundColor, mFrame);
 +      mSelectionTextColor = mSelectionPseudoStyle->GetVisitedDependentColor(
 +          &nsStyleText::mColor, mFrame);
        return true;

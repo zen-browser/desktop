@@ -230,7 +230,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       }
       this.removeGroup(groupIndex);
       if (changeTab) {
-        gBrowser.selectedTab = remainingTabs[0];
+        const tabToSelect = remainingTabs.find(remaining => remaining !== tab);
+        if (tabToSelect) {
+          gBrowser.selectedTab = tabToSelect;
+        }
         document
           .getElementById("cmd_zenNewEmptySplit")
           .removeAttribute("disabled");
@@ -1398,7 +1401,12 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const tabIndexToUse = Math.max(0, initialIndex);
     return this.#withoutSplitViewTransition(() => {
       // TODO: Add support for splitting essential tabs
-      tabs = tabs.filter(t => !t.hidden && !t.hasAttribute("zen-empty-tab"));
+      tabs = tabs
+        .filter(t => !t.hidden && !t.hasAttribute("zen-empty-tab"))
+        // use glance parent tab instead of glance tab
+        .map(t => gZenGlanceManager.getTabOrGlanceParent(t))
+        // remove duplicates
+        .filter((t, i, arr) => arr.indexOf(t) === i);
       if (tabs.length < 2 || tabs.length > this.MAX_TABS) {
         return;
       }
@@ -1559,11 +1567,20 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     if (reset) {
       this.removeSplitters();
     }
-    splitData.tabs.forEach(tab => {
-      if (tab.hasAttribute("pending")) {
-        gBrowser.getBrowserForTab(tab).reload();
-      }
-    });
+    const pendingTabs = splitData.tabs.filter(tab =>
+      tab.hasAttribute("pending")
+    );
+    if (pendingTabs.length) {
+      pendingTabs.forEach(tab => gBrowser._insertBrowser(tab));
+      // SessionStore listens for this on the tab container and restores each
+      // tab's saved history, scroll position and form data. Kept non-bubbling
+      // so it doesn't reach tabbrowser, which tracks Firefox's own split view.
+      gBrowser.tabContainer.dispatchEvent(
+        new CustomEvent("TabSplitViewActivate", {
+          detail: { tabs: pendingTabs },
+        })
+      );
+    }
 
     // Apply grid to tabs first to set zen-split attribute on containers
     // before setting zen-split-view on parents. This prevents the black flash
@@ -2516,22 +2533,33 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       this.activateSplitView(data);
       gBrowser.selectedTab = emptyTab;
       setTimeout(() => {
+        const closeToken = {};
+        const controller = new AbortController();
+        const cleanup = (onSwitch = false, groupIndex = null) => {
+          if (groupIndex === null) {
+            groupIndex = this._data.findIndex(group =>
+              group.tabs.includes(emptyTab)
+            );
+          }
+          this.removeTabFromGroup(emptyTab, groupIndex, {
+            changeTab: !onSwitch,
+            forUnsplit: true,
+          });
+          const command = document.getElementById("cmd_zenNewEmptySplit");
+          command.removeAttribute("disabled");
+        };
         window.addEventListener(
           "ZenURLBarClosed",
           event => {
+            if (!gZenUIManager.matchesCloseToken(closeToken, event)) {
+              return;
+            }
+            controller.abort();
             const { onElementPicked, onSwitch } = event.detail;
             const groupIndex = this._data.findIndex(group =>
               group.tabs.includes(emptyTab)
             );
             const newSelectedTab = gBrowser.selectedTab;
-            const cleanup = () => {
-              this.removeTabFromGroup(emptyTab, groupIndex, {
-                changeTab: !onSwitch,
-                forUnsplit: true,
-              });
-              const command = document.getElementById("cmd_zenNewEmptySplit");
-              command.removeAttribute("disabled");
-            };
             if (onElementPicked) {
               if (
                 newSelectedTab === emptyTab ||
@@ -2539,7 +2567,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
                 selectedTab.getAttribute("zen-workspace-id") !==
                   newSelectedTab.getAttribute("zen-workspace-id")
               ) {
-                cleanup();
+                cleanup(onSwitch, groupIndex);
                 return;
               }
               this.removeTabFromGroup(emptyTab, groupIndex, {
@@ -2555,12 +2583,17 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
                 topOrLeft ? 0 : 1
               );
             } else {
-              cleanup();
+              cleanup(onSwitch, groupIndex);
             }
           },
-          { once: true }
+          { signal: controller.signal }
         );
-        gZenUIManager.handleNewTab(false, false, "tab", true);
+        if (
+          !gZenUIManager.handleNewTab(false, false, "tab", true, closeToken)
+        ) {
+          controller.abort();
+          cleanup();
+        }
       });
     });
   }

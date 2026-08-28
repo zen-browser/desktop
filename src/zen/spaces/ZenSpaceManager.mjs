@@ -11,7 +11,6 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
-  ZenSyncStore: "resource:///modules/zen/ZenSyncManager.sys.mjs",
 });
 
 ChromeUtils.defineLazyGetter(lazy, "browserBackgroundElement", () => {
@@ -171,63 +170,6 @@ class nsZenWorkspaces {
       /* eslint-disable no-console */
       console.debug(`[gZenWorkspaces]:`, ...args);
     }
-  }
-
-  /**
-   * Applies live sync changes: updates workspace cache, removes deleted items,
-   * then creates/updates pulled items.
-   *
-   * @param {{ spaces: Array}} pulled  Reconcile-pulled items.
-   * @param {{ spaces: Array}} removals  Items to remove.
-   */
-  async _applySyncChanges(pulled, removals = {}) {
-    if (!this.shouldHaveWorkspaces || this.privateWindowOrDisabled) {
-      return;
-    }
-    await this.promiseInitialized;
-
-    // 1. Update workspace cache (remove deleted, merge pulled)
-    const removedSpaceIds = new Set((removals.spaces || []).map(s => s.uuid));
-    if (removedSpaceIds.size || pulled.spaces?.length) {
-      const localMap = new Map(
-        this.getWorkspaces()
-          .filter(w => !removedSpaceIds.has(w.uuid))
-          .map(w => [w.uuid, w])
-      );
-      for (const space of pulled.spaces || []) {
-        if (!space?.uuid) {
-          continue;
-        }
-        const existing = localMap.get(space.uuid);
-        localMap.set(space.uuid, existing ? { ...existing, ...space } : space);
-      }
-      await this.propagateWorkspaces(
-        this.#getOrderedWorkspacesByPosition(Array.from(localMap.values()))
-      );
-      this.#propagateWorkspaceData();
-    }
-  }
-
-  #getOrderedWorkspacesByPosition(workspaces) {
-    return [...workspaces]
-      .map((workspace, index) => ({ workspace, index }))
-      .sort((a, b) => {
-        const aPosition =
-          typeof a.workspace.position === "number"
-            ? a.workspace.position
-            : a.index;
-        const bPosition =
-          typeof b.workspace.position === "number"
-            ? b.workspace.position
-            : b.index;
-        return aPosition - bPosition || a.index - b.index;
-      })
-      .map(({ workspace }) => {
-        // strip the position property that comes from pulled workspaces
-        const rest = { ...workspace };
-        delete rest.position;
-        return rest;
-      });
   }
 
   #afterLoadInit() {
@@ -649,6 +591,7 @@ class nsZenWorkspaces {
         if (Math.abs(delta) < scrollThreshold) {
           return;
         }
+        event.preventDefault();
 
         // Determine scroll direction
         let rawDirection = delta > 0 ? 1 : -1;
@@ -859,13 +802,6 @@ class nsZenWorkspaces {
 
       this.updateWorkspacesChangeContextMenu();
     })();
-  }
-
-  #markWorkspaceChanged(workspaceId) {
-    lazy.ZenSyncStore.markItemChanged({
-      type: "space",
-      id: workspaceId,
-    });
   }
 
   async selectStartPage() {
@@ -1296,8 +1232,6 @@ class nsZenWorkspaces {
     } else {
       workspacesData.push(workspaceData);
     }
-    // mark item as changed for sync
-    this.#markWorkspaceChanged(workspaceData.uuid);
 
     this.#propagateWorkspaceData();
   }
@@ -1305,9 +1239,6 @@ class nsZenWorkspaces {
   removeWorkspace(windowID) {
     let { promise, resolve } = Promise.withResolvers();
     this.#deleteWorkspaceOwnedTabs(windowID);
-
-    // mark item as changed for sync
-    this.#markWorkspaceChanged(windowID);
 
     let workspacesData = this.getWorkspaces();
     // Remove the workspace from the cache
@@ -1441,11 +1372,6 @@ class nsZenWorkspaces {
       return;
     }
     const workspaces = this.getWorkspaces();
-    // Track previous positions so we only notify observers for workspaces whose
-    // position changed during the reorder.
-    const previousPositions = new Map(
-      workspaces.map((workspace, index) => [workspace.uuid, index])
-    );
 
     const workspace = workspaces.find(w => w.uuid === id);
     if (!workspace) {
@@ -1474,15 +1400,6 @@ class nsZenWorkspaces {
     // Propagate the changes if the order has changed
     if (currentIndex !== newPosition) {
       this._workspaceCache = workspaces;
-
-      for (const [i, ws] of workspaces.entries()) {
-        if (previousPositions.get(ws.uuid) === i) {
-          continue;
-        }
-        // mark item as changed for sync
-        this.#markWorkspaceChanged(ws.uuid);
-      }
-
       this.#propagateWorkspaceData(workspaces);
     }
   }
@@ -1789,6 +1706,15 @@ class nsZenWorkspaces {
   }
 
   makeSureEmptyTabIsFirst() {
+    if (
+      gZenUIManager.testingEnabled &&
+      this._emptyTab &&
+      (this._emptyTab.closing || !this._emptyTab.isConnected)
+    ) {
+      this._emptyTab = gBrowser.tabs.find(
+        tab => tab.hasAttribute("zen-empty-tab") && !tab.closing
+      );
+    }
     const emptyTab = this._emptyTab;
     if (emptyTab) {
       emptyTab.setAttribute("zen-workspace-id", this.activeWorkspace);
@@ -1845,8 +1771,10 @@ class nsZenWorkspaces {
       )
     ) {
       delete this._alwaysAnimatePaddingTop;
-      const essentialsHeight =
-        window.windowUtils.getBoundsWithoutFlushing(essentialContainer).height;
+      const essentialsHeight = Math.max(
+        2,
+        window.windowUtils.getBoundsWithoutFlushing(essentialContainer).height
+      );
       requestAnimationFrame(() => {
         workspaceElement.style.paddingTop = essentialsHeight + "px";
       });
@@ -3317,8 +3245,10 @@ class nsZenWorkspaces {
       return width;
     }, 0);
 
-    // Check if the total width exceeds the parent's width
-    if (totalWidth > parent.clientWidth) {
+    // Check if the total width exceeds the parent's width.
+    const parentWidth =
+      window.windowUtils.getBoundsWithoutFlushing(parent).width;
+    if (totalWidth > parentWidth) {
       parent.setAttribute("icons-overflow", "true");
     } else {
       parent.removeAttribute("icons-overflow");
@@ -3326,7 +3256,7 @@ class nsZenWorkspaces {
 
     // Set the width of each icon to the maximum size they can fit on
     const widthPerButton = Math.max(
-      (parent.clientWidth - separation * (parent.children.length - 1)) /
+      (parentWidth - separation * (parent.children.length - 1)) /
         parent.children.length,
       minButtonSize
     );

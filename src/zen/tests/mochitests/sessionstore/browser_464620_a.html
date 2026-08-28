@@ -1,0 +1,54 @@
+<!-- Testcase originally by <moz_bug_r_a4@yahoo.com> -->
+
+<title>Test for bug 464620 (injection on input)</title>
+
+<iframe></iframe>
+<iframe onload="setup()"></iframe>
+
+<script>
+  var targetUrl = "http://mochi.test:8888/browser/" +
+    "browser/components/sessionstore/test/browser_464620_xd.html";
+  var firstPass;
+
+  function setup() {
+    if (firstPass !== undefined)
+      return;
+    firstPass = frames[1].location.href == "about:blank";
+    if (firstPass) {
+      frames[0].location = 'data:text/html;charset=utf-8,<body onload="if (parent.firstPass) parent.step();"><input id="x" oninput="parent.xss()">XXX</body>';
+    }
+    frames[1].location = targetUrl;
+  }
+
+  function step() {
+    var x = frames[0].document.getElementById("x");
+    if (x.value == "")
+      x.value = "ready";
+    x.style.display = "none";
+    frames[0].document.designMode = "on";
+  }
+
+  function xss() {
+    step();
+
+    var documentInjected = false;
+    document.getElementsByTagName("iframe")[0].onload =
+      function() { documentInjected = true; };
+    frames[0].location = targetUrl;
+
+    for (var c = 0; !documentInjected && c < 20; c++) {
+      var r = new XMLHttpRequest();
+      r.open("GET", location.href, false);
+      r.overrideMimeType("text/plain");
+      r.send(null);
+    }
+    document.getElementById("state").textContent = "done";
+
+    var event = new MessageEvent("464620_a", { bubbles: true, cancelable: false,
+                                               data: "done", origin: location.href,
+                                               source: window });
+    document.dispatchEvent(event);
+  }
+</script>
+
+<p id="state">pending</p>

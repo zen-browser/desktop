@@ -6,7 +6,7 @@ permissions:
 on:
   workflow_call:
     inputs:
-      generate-gpo:
+      generate-pgo:
         required: true
         type: boolean
         default: false
@@ -35,7 +35,7 @@ jobs:
   windows-build:
     name: Build Windows - ${{ matrix.arch }}
     # aarch64 does not need full 16x, and we also dont use full LTO when generating GPO
-    runs-on: ${{ (inputs.release-branch == 'release' && !inputs.generate-gpo && matrix.arch == 'x86_64') && 'self-hosted' || 'blacksmith-8vcpu-ubuntu-2404' }}
+    runs-on: ${{ (inputs.release-branch == 'release' && !inputs.generate-pgo && matrix.arch == 'x86_64') && 'self-hosted' || 'blacksmith-8vcpu-ubuntu-2404' }}
     env:
       SCCACHE_GHA_ENABLED: ${{ inputs.use-sccache && 'true' || 'false' }}
       CARGO_TERM_COLOR: always
@@ -48,7 +48,7 @@ jobs:
     steps:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
-        if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}
+        if: ${{ !(inputs.generate-pgo && matrix.arch == 'aarch64') }}
         with:
           tool-cache: false
 
@@ -91,7 +91,7 @@ jobs:
         run: npm run surfer -- ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
 
       - name: Download Firefox and dependencies
-        if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}
+        if: ${{ !(inputs.generate-pgo && matrix.arch == 'aarch64') }}
         run: npm run download
 
       - name: win-cross Cache
@@ -104,7 +104,7 @@ jobs:
           key: win-cross
 
       - name: Setup for Windows
-        if: steps.cache-win-cross.outputs.cache-hit != 'true' && !(inputs.generate-gpo && matrix.arch == 'aarch64')
+        if: steps.cache-win-cross.outputs.cache-hit != 'true' && !(inputs.generate-pgo && matrix.arch == 'aarch64')
         run: |
           set -x
           mkdir -p ~/win-cross
@@ -154,24 +154,26 @@ jobs:
             zlib1g-dev \
             aria2
           echo Setup wine
-          aria2c "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/dQz_aHy8Rl-Lt0xf2WlrMw/artifacts/public/build/wine.tar.zst" -o wine.tar.zst
+          aria2c "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/gecko.cache.level-3.toolchains.v3.linux64-wine.latest/artifacts/public/build/wine.tar.zst" -o wine.tar.zst
           tar --zstd -xf wine.tar.zst -C ~/win-cross
           rm wine.tar.zst
           echo Setup Visual Studio
           ./mach python --virtualenv build taskcluster/scripts/misc/get_vs.py build/vs/vs2026.yaml ~/win-cross/vs2026
 
       - name: Import
-        if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}
+        if: ${{ !(inputs.generate-pgo && matrix.arch == 'aarch64') }}
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
           SURFER_CERT_PATCH_ISSUER: ${{ secrets.SURFER_CERT_PATCH_ISSUER }}
           SURFER_CERT_PATCH_NAME: ${{ secrets.SURFER_CERT_PATCH_NAME }}
+          SURFER_CERT_PATCH_NAME_PREV: ${{ secrets.SURFER_CERT_PATCH_NAME_PREV }}
+          SURFER_CERT_PATCH_ISSUER_PREV: ${{ secrets.SURFER_CERT_PATCH_ISSUER_PREV }}
         run: |
           . "$HOME/.cargo/env"
           npm run import -- --verbose
 
       - name: Bootstrap
-        if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}
+        if: ${{ !(inputs.generate-pgo && matrix.arch == 'aarch64') }}
         run: |
           set -x
           cd engine/
@@ -189,7 +191,7 @@ jobs:
           ls ~/win-cross/vs2026 || true
 
       - name: Setup Rust
-        if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}
+        if: ${{ !(inputs.generate-pgo && matrix.arch == 'aarch64') }}
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain $(cat .rust-toolchain)
           source $HOME/.cargo/env
@@ -208,18 +210,18 @@ jobs:
           echo "export MOZ_WINDOWS_RS_DIR=$(pwd)/windows-$WINDOWS_RS_VERSION" >> ../configs/common/mozconfig
 
       - name: Build language packs
-        if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}
+        if: ${{ !(inputs.generate-pgo && matrix.arch == 'aarch64') }}
         run: sh scripts/download-language-packs.sh
 
       - name: Download artifact (if use profdata)
         uses: actions/download-artifact@v4
-        if: ${{ !inputs.generate-gpo && matrix.arch == 'x86_64' }}
+        if: ${{ !inputs.generate-pgo && matrix.arch == 'x86_64' }}
         with:
           path: ~/artifact
           name: windows-profdata-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}
 
       - name: Show artifact info
-        if: ${{ !inputs.generate-gpo && matrix.arch == 'x86_64' }}
+        if: ${{ !inputs.generate-pgo && matrix.arch == 'x86_64' }}
         run: |
           ls ~/artifact
           ls ~/artifact/en-US.log
@@ -228,7 +230,7 @@ jobs:
           chmod +x ~/artifact/merged.profdata
 
       - name: Build
-        if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}
+        if: ${{ !(inputs.generate-pgo && matrix.arch == 'aarch64') }}
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
           ZEN_RELEASE_BRANCH: ${{ inputs.release-branch }}
@@ -241,7 +243,7 @@ jobs:
           dos2unix configs/windows/mozconfig
           export SURFER_PLATFORM="win32"
           export ZEN_CROSS_COMPILING=1
-          if test ${{ inputs.generate-gpo }} = true; then
+          if test ${{ inputs.generate-pgo }} = true; then
             export ZEN_GA_GENERATE_PROFILE=1
           fi
           if [[ -n ${{ inputs.MOZ_BUILD_DATE }} ]];then
@@ -250,7 +252,7 @@ jobs:
           bash .github/workflows/src/release-build.sh
 
       - name: Package
-        if: ${{ !(inputs.generate-gpo && matrix.arch == 'aarch64') }}
+        if: ${{ !(inputs.generate-pgo && matrix.arch == 'aarch64') }}
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
           ZEN_GA_DISABLE_PGO: true
@@ -265,13 +267,13 @@ jobs:
           ls .
 
       - name: Move package for PGO upload
-        if: ${{ inputs.generate-gpo && matrix.arch == 'x86_64' }}
+        if: ${{ inputs.generate-pgo && matrix.arch == 'x86_64' }}
         run: |
           set -x
           mv ./zen.win64.zip ./zen.win64-pgo-stage-1.zip
 
       - name: Rename artifacts
-        if: ${{ !inputs.generate-gpo }}
+        if: ${{ !inputs.generate-pgo }}
         run: |
           mv ./zen.win64.zip zen.win-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}.zip
           mv ./dist/output.mar windows${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.mar
@@ -279,14 +281,14 @@ jobs:
 
       - name: Upload artifact (PGO)
         uses: actions/upload-artifact@v4
-        if: ${{ inputs.generate-gpo && matrix.arch == 'x86_64' }}
+        if: ${{ inputs.generate-pgo && matrix.arch == 'x86_64' }}
         with:
           retention-days: 2
           name: ${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}-${{ inputs.profile-data-path-archive }}
           path: ./zen.win64-pgo-stage-1.zip
 
       - name: Remove unnecessary files from obj
-        if: ${{ !inputs.generate-gpo }}
+        if: ${{ !inputs.generate-pgo }}
         run: |
           set -x
           mkdir obj-${{ matrix.arch }}-pc-windows-msvc/
@@ -301,7 +303,7 @@ jobs:
           cp -r --no-dereference engine/obj-${{ matrix.arch }}-pc-windows-msvc/* obj-${{ matrix.arch }}-pc-windows-msvc/ || true
 
       - name: Upload dist object
-        if: ${{ !inputs.generate-gpo }}
+        if: ${{ !inputs.generate-pgo }}
         uses: actions/upload-artifact@v4
         with:
           retention-days: 2
@@ -309,7 +311,7 @@ jobs:
           path: obj-${{ matrix.arch }}-pc-windows-msvc
 
       - name: Upload artifact (if Twilight branch, installer)
-        if: ${{ inputs.release-branch == 'twilight' && !inputs.generate-gpo }}
+        if: ${{ inputs.release-branch == 'twilight' && !inputs.generate-pgo }}
         uses: actions/upload-artifact@v4
         with:
           retention-days: 5
@@ -317,7 +319,7 @@ jobs:
           path: ./zen.installer${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.exe
 
       - name: Upload artifact (if Twilight branch, .mar)
-        if: ${{ inputs.release-branch == 'twilight' && !inputs.generate-gpo }}
+        if: ${{ inputs.release-branch == 'twilight' && !inputs.generate-pgo }}
         uses: actions/upload-artifact@v4
         with:
           retention-days: 5
@@ -325,7 +327,7 @@ jobs:
           path: ./windows${{ matrix.arch == 'aarch64' && '-arm64' || '' }}.mar
 
       - name: Upload artifact (if Twilight branch, update manifests)
-        if: ${{ inputs.release-branch == 'twilight' && !inputs.generate-gpo }}
+        if: ${{ inputs.release-branch == 'twilight' && !inputs.generate-pgo }}
         uses: actions/upload-artifact@v4
         with:
           retention-days: 5

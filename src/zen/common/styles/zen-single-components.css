@@ -46,8 +46,8 @@
   min-height: 30px;
 }
 
-/* Firefox View */
 #firefox-view-button,
+#ai-window-toggle,
 #wrapper-firefox-view-button {
   display: none !important;
 }

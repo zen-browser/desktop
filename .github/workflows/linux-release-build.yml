@@ -105,6 +105,8 @@ jobs:
           SURFER_COMPAT: ${{ matrix.arch }}
           SURFER_CERT_PATCH_ISSUER: ${{ secrets.SURFER_CERT_PATCH_ISSUER }}
           SURFER_CERT_PATCH_NAME: ${{ secrets.SURFER_CERT_PATCH_NAME }}
+          SURFER_CERT_PATCH_NAME_PREV: ${{ secrets.SURFER_CERT_PATCH_NAME_PREV }}
+          SURFER_CERT_PATCH_ISSUER_PREV: ${{ secrets.SURFER_CERT_PATCH_ISSUER_PREV }}
         run: |
           . "$HOME/.cargo/env"
           npm run import

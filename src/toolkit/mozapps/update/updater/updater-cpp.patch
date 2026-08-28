@@ -1,0 +1,45 @@
+diff --git a/toolkit/mozapps/update/updater/updater.cpp b/toolkit/mozapps/update/updater/updater.cpp
+index 5042328c0ee521300a6897b21849abf8dcbd9d45..a7898bcf5f2a15119b8c5cf9ae71f2a1a749e56d 100644
+--- a/toolkit/mozapps/update/updater/updater.cpp
++++ b/toolkit/mozapps/update/updater/updater.cpp
+@@ -2436,15 +2436,37 @@ bool LaunchWinPostProcess(const WCHAR* installationDir,
+   // N.b.: two null terminating characters!  The first terminates a non-existent
+   // key-value pair, the second (automatically added) terminates the block of
+   // key-value pairs.
+-  const WCHAR* emptyEnvironment = L"\0";
++  // %SystemRoot% must be preserved, however.  Without it the NSIS post-update
++  // helper cannot load its plugin DLLs, so
++  // ServicesHelper::PathToUniqueRegistryPath returns an empty string and
++  // AddMaintCertKeys silently does nothing.  That leaves the maintenance
++  // service's allowed-certificate registry keys stale forever, which means a
++  // code signing certificate rotation can never complete through updates.
++  const WCHAR* environment = L"\0";
++  WCHAR environmentBlock[MAX_PATH + 16] = {L'\0'};
++  WCHAR systemRoot[MAX_PATH + 1] = {L'\0'};
++  DWORD systemRootLen =
++      GetEnvironmentVariableW(L"SystemRoot", systemRoot, MAX_PATH + 1);
++  if (systemRootLen > 0 && systemRootLen <= MAX_PATH) {
++    // environmentBlock is zero initialized and oversized relative to
++    // "SystemRoot=" plus a MAX_PATH value, so the second terminating null
++    // character is already present after the string's own terminator.
++    wcsncpy(environmentBlock, L"SystemRoot=",
++            sizeof(environmentBlock) / sizeof(environmentBlock[0]) - 1);
++    wcscat(environmentBlock, systemRoot);
++    environment = environmentBlock;
++  } else {
++    LOG(("LaunchWinPostProcess could not read SystemRoot; the post update "
++         "process will not be able to load its plugins"));
++  }
+ 
+   bool ok =
+       CreateProcessW(exefullpath, cmdline,
+                      nullptr,  // no special security attributes
+                      nullptr,  // no special thread attributes
+                      false,    // don't inherit filehandles
+-                     0,        // No special process creation flags
+-                     (LPVOID)emptyEnvironment, workingDirectory, &si, &pi);
++                     CREATE_UNICODE_ENVIRONMENT, (LPVOID)environment,
++                     workingDirectory, &si, &pi);
+   free(cmdline);
+   if (ok) {
+     LOG(("LaunchWinPostProcess - Waiting for process to complete"));

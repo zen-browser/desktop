@@ -1282,7 +1282,6 @@ class ZenLibraryDownloadsSection extends ProgressiveSearchSection {
         <img
           class="library-download-progress-cancel"
           src="chrome://browser/skin/zen-icons/close.svg"
-          alt=""
         />
       </button>
     `;
@@ -1395,7 +1394,9 @@ class ZenLibraryDownloadsSection extends ProgressiveSearchSection {
       });
     }
 
-    items.push({ separator: true });
+    if (fileExists || !isActive) {
+      items.push({ separator: true });
+    }
 
     if (fileExists) {
       items.push({

@@ -144,6 +144,8 @@ document.addEventListener(
               { global: "current" }
             );
             ZenLibrary.toggle();
+            break;
+          }
           case "cmd_zenOpenSpaceRoutingSettings": {
             gZenSpaceRoutingManager.openSpaceRoutingDialog(window);
             break;

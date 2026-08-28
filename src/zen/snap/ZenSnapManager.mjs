@@ -15,13 +15,16 @@ class nsZenSnapManager extends nsZenDOMOperatedFeature {
   #backdropElement = null;
   #closeBtn = null;
   #browseAllBtn = null;
-  #clipboardStatus = null;
+  #emptyStatus = null;
   #clipboardCard = null;
   #clipboardPreview = null;
   #clipboardSubtitle = null;
   #currentClipboardImage = null;
-  #downloadsContainer = null;
-  #downloadsStatus = null;
+  #downloadCard = null;
+  #downloadPreview = null;
+  #downloadTitle = null;
+  #downloadSubtitle = null;
+  #currentDownload = null;
   #currentActor = null;
   #currentInputData = null;
   #dismissTimeout = null;
@@ -43,9 +46,7 @@ class nsZenSnapManager extends nsZenDOMOperatedFeature {
 
     this.#closeBtn = document.getElementById("zen-snap-close-btn");
     this.#browseAllBtn = document.getElementById("zen-snap-browse-all-btn");
-    this.#clipboardStatus = document.getElementById(
-      "zen-snap-clipboard-status"
-    );
+    this.#emptyStatus = document.getElementById("zen-snap-empty-status");
     this.#clipboardCard = document.getElementById("zen-snap-clipboard-card");
     this.#clipboardPreview = document.getElementById(
       "zen-snap-clipboard-preview"
@@ -53,11 +54,13 @@ class nsZenSnapManager extends nsZenDOMOperatedFeature {
     this.#clipboardSubtitle = document.getElementById(
       "zen-snap-clipboard-subtitle"
     );
-    this.#downloadsContainer = document.getElementById(
-      "zen-snap-downloads-container"
+    this.#downloadCard = document.getElementById("zen-snap-download-card");
+    this.#downloadPreview = document.getElementById(
+      "zen-snap-download-preview"
     );
-    this.#downloadsStatus = document.getElementById(
-      "zen-snap-downloads-status"
+    this.#downloadTitle = document.getElementById("zen-snap-download-title");
+    this.#downloadSubtitle = document.getElementById(
+      "zen-snap-download-subtitle"
     );
 
     this.#closeBtn?.addEventListener("command", () => this.hideModal());
@@ -66,6 +69,9 @@ class nsZenSnapManager extends nsZenDOMOperatedFeature {
     );
     this.#clipboardCard?.addEventListener("click", () =>
       this.#onClipboardCardClicked()
+    );
+    this.#downloadCard?.addEventListener("click", () =>
+      this.#onDownloadCardClicked()
     );
     this.#backdropElement?.addEventListener("click", () => this.hideModal());
 
@@ -135,6 +141,19 @@ class nsZenSnapManager extends nsZenDOMOperatedFeature {
     }
   }
 
+  #onDownloadCardClicked() {
+    if (this.#currentDownload?.target?.path) {
+      this.#selectFile(this.#currentDownload.target.path);
+    }
+  }
+
+  #isImageFile(path) {
+    if (!path) {
+      return false;
+    }
+    return /\.(png|jpe?g|gif|webp|svg|bmp|avif|ico)$/i.test(path);
+  }
+
   async #onClipboardImageClicked(clipboardData) {
     try {
       if (!clipboardData?.bytes) {
@@ -185,16 +204,39 @@ class nsZenSnapManager extends nsZenDOMOperatedFeature {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   }
 
-  async getRecentDownloads(limit = 5) {
+  async getRecentDownloads(limit = 1) {
     try {
       const Downloads = window.Downloads;
       const list = await Downloads.getList(Downloads.ALL);
       const allDownloads = await list.getAll();
 
-      return allDownloads
-        .filter(download => download.succeeded && download.target?.exists)
-        .slice(-limit)
-        .reverse();
+      const validDownloads = [];
+      for (const download of allDownloads) {
+        if (!download.succeeded) {
+          continue;
+        }
+        const path = download.target?.path;
+        if (!path) {
+          continue;
+        }
+        let exists = download.target?.exists;
+        if (exists === undefined) {
+          try {
+            exists = await IOUtils.exists(path);
+          } catch (e) {
+            exists = false;
+          }
+        }
+        if (exists) {
+          validDownloads.push(download);
+        }
+      }
+
+      console.warn(
+        "[ZenSnapManager] Found valid recent downloads:",
+        validDownloads.length
+      );
+      return validDownloads.slice(-limit).reverse();
     } catch (error) {
       console.error("[ZenSnapManager] Failed to fetch downloads:", error);
       return [];
@@ -273,11 +315,16 @@ class nsZenSnapManager extends nsZenDOMOperatedFeature {
         }
       }, 200);
     }
-    // Free clipboard preview memory immediately
+    // Free preview memory immediately
     if (this.#clipboardPreview) {
       this.#clipboardPreview.src = "";
     }
     this.#currentClipboardImage = null;
+
+    if (this.#downloadPreview) {
+      this.#downloadPreview.src = "";
+    }
+    this.#currentDownload = null;
 
     if (this.#dismissTimeout) {
       clearTimeout(this.#dismissTimeout);
@@ -286,7 +333,7 @@ class nsZenSnapManager extends nsZenDOMOperatedFeature {
   }
 
   #showModal(data, downloads, clipboardImage) {
-    if (!this.#modalElement) {
+    if (!this.#modalElement || !this.#downloadCard) {
       this.#setupElements();
     }
     if (!this.#modalElement) {
@@ -299,13 +346,13 @@ class nsZenSnapManager extends nsZenDOMOperatedFeature {
       this.#backdropElement.classList.add("zen-snap-visible");
     }
 
+    let hasItems = false;
+
     if (clipboardImage) {
       this.#currentClipboardImage = clipboardImage;
-      if (this.#clipboardStatus) {
-        this.#clipboardStatus.hidden = true;
-      }
       if (this.#clipboardCard) {
         this.#clipboardCard.hidden = false;
+        this.#clipboardCard.setAttribute("tooltiptext", "Image from Clipboard");
       }
       if (this.#clipboardPreview) {
         this.#clipboardPreview.src = clipboardImage.dataUrl;
@@ -320,11 +367,9 @@ class nsZenSnapManager extends nsZenDOMOperatedFeature {
           `${typeLabel} • ${sizeFormatted}`
         );
       }
+      hasItems = true;
     } else {
       this.#currentClipboardImage = null;
-      if (this.#clipboardStatus) {
-        this.#clipboardStatus.hidden = false;
-      }
       if (this.#clipboardCard) {
         this.#clipboardCard.hidden = true;
       }
@@ -333,47 +378,60 @@ class nsZenSnapManager extends nsZenDOMOperatedFeature {
       }
     }
 
-    if (this.#downloadsContainer) {
-      const existingItems = this.#downloadsContainer.querySelectorAll(
-        ".zen-snap-download-item"
-      );
-      for (const item of existingItems) {
-        item.remove();
+    if (downloads?.length) {
+      const dl = downloads[0];
+      this.#currentDownload = dl;
+      const filePath = dl.target?.path;
+      let fileName = "Downloaded file";
+      try {
+        fileName = PathUtils.filename(filePath);
+      } catch (e) {
+        fileName = filePath ? filePath.split("/").pop() : "Downloaded file";
+      }
+      const isImage = this.#isImageFile(filePath);
+
+      if (this.#downloadPreview) {
+        if (isImage) {
+          this.#downloadPreview.src = PathUtils.toFileURI(filePath);
+          this.#downloadPreview.classList.remove("is-icon");
+        } else {
+          this.#downloadPreview.src = `moz-icon://${filePath}?size=48`;
+          this.#downloadPreview.classList.add("is-icon");
+        }
       }
 
-      if (downloads.length) {
-        if (this.#downloadsStatus) {
-          this.#downloadsStatus.hidden = true;
-        }
-        for (const dl of downloads) {
-          const item = document.createXULElement("hbox");
-          item.className = "zen-snap-download-item";
-          item.setAttribute("align", "center");
+      if (this.#downloadTitle) {
+        this.#downloadTitle.setAttribute("value", fileName);
+      }
 
-          const nameLabel = document.createXULElement("label");
-          nameLabel.className = "zen-snap-download-name";
-          const fileName = dl.target?.path
-            ? dl.target.path.split("/").pop()
-            : "Downloaded file";
-          nameLabel.setAttribute("value", fileName);
-          nameLabel.setAttribute("crop", "end");
-          nameLabel.setAttribute("flex", "1");
-
-          item.appendChild(nameLabel);
-          if (dl.target?.path) {
-            item.addEventListener("click", () =>
-              this.#selectFile(dl.target.path)
-            );
-          }
-          this.#downloadsContainer.appendChild(item);
-        }
-      } else if (this.#downloadsStatus) {
-        this.#downloadsStatus.hidden = false;
-        this.#downloadsStatus.setAttribute(
+      if (this.#downloadSubtitle) {
+        const ext = filePath ? filePath.split(".").pop().toUpperCase() : "FILE";
+        const sizeFormatted = this.#formatBytes(
+          dl.totalBytes || dl.target?.size
+        );
+        this.#downloadSubtitle.setAttribute(
           "value",
-          "No recent downloads found"
+          `${ext} • ${sizeFormatted}`
         );
       }
+
+      if (this.#downloadCard) {
+        this.#downloadCard.hidden = false;
+        this.#downloadCard.setAttribute("tooltiptext", fileName);
+      }
+      hasItems = true;
+    } else {
+      this.#currentDownload = null;
+      if (this.#downloadCard) {
+        this.#downloadCard.hidden = true;
+      }
+      if (this.#downloadPreview) {
+        this.#downloadPreview.src = "";
+      }
+    }
+
+    if (this.#emptyStatus) {
+      this.#emptyStatus.hidden = hasItems;
     }
 
     const position = Services.prefs.getStringPref(

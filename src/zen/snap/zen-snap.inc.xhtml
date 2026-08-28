@@ -5,39 +5,31 @@
 <box id="zen-snap-backdrop" class="zen-snap-backdrop zen-snap-hidden" hidden="true" />
 <vbox id="zen-snap-modal" class="zen-snap-hidden" hidden="true">
   <hbox class="zen-snap-header" align="center">
-    <hbox class="zen-snap-title-wrapper" align="center" flex="1">
-      <image class="zen-snap-icon" />
-      <label class="zen-snap-title" value="Zen Snap" />
-    </hbox>
+    <toolbarbutton id="zen-snap-browse-all-btn" class="zen-snap-icon-btn zen-snap-browse-btn" tooltiptext="Browse all files..." />
+    <spacer flex="1" />
     <toolbarbutton id="zen-snap-close-btn" class="zen-snap-close-btn" label="×" tooltiptext="Close" />
   </hbox>
 
   <vbox class="zen-snap-body">
-    <vbox class="zen-snap-section">
-      <label class="zen-snap-section-title" value="Clipboard" />
-      <vbox id="zen-snap-clipboard-container" class="zen-snap-items-list">
-        <label id="zen-snap-clipboard-status" class="zen-snap-item-empty" value="No image in clipboard" />
-        <hbox id="zen-snap-clipboard-card" class="zen-snap-clipboard-card" align="center" hidden="true">
-          <html:img id="zen-snap-clipboard-preview" class="zen-snap-clipboard-preview" />
-          <vbox class="zen-snap-clipboard-info" flex="1">
-            <label class="zen-snap-clipboard-title" value="Image from Clipboard" />
-            <label id="zen-snap-clipboard-subtitle" class="zen-snap-clipboard-subtitle" />
-          </vbox>
-        </hbox>
+    <label id="zen-snap-empty-status" class="zen-snap-item-empty" value="No recent files found" hidden="true" />
+    <hbox id="zen-snap-items-container" class="zen-snap-items-horizontal" align="center">
+      <vbox id="zen-snap-clipboard-card" class="zen-snap-card" align="center" hidden="true">
+        <html:img id="zen-snap-clipboard-preview" class="zen-snap-preview" />
+        <vbox class="zen-snap-card-info" align="center">
+          <label class="zen-snap-card-title" value="Clipboard" crop="end" />
+          <label id="zen-snap-clipboard-subtitle" class="zen-snap-card-subtitle" crop="end" />
+        </vbox>
       </vbox>
-    </vbox>
 
-    <vbox class="zen-snap-section">
-      <label class="zen-snap-section-title" value="Recent Downloads" />
-      <vbox id="zen-snap-downloads-container" class="zen-snap-items-list">
-        <label id="zen-snap-downloads-status" class="zen-snap-item-empty" value="No recent downloads" />
+      <vbox id="zen-snap-download-card" class="zen-snap-card" align="center" hidden="true">
+        <html:img id="zen-snap-download-preview" class="zen-snap-preview" />
+        <vbox class="zen-snap-card-info" align="center">
+          <label id="zen-snap-download-title" class="zen-snap-card-title" crop="end" />
+          <label id="zen-snap-download-subtitle" class="zen-snap-card-subtitle" crop="end" />
+        </vbox>
       </vbox>
-    </vbox>
+    </hbox>
   </vbox>
-
-  <hbox class="zen-snap-footer" align="center">
-    <button id="zen-snap-browse-all-btn" class="zen-snap-browse-all-btn" label="Browse all files..." />
-  </hbox>
 </vbox>
 
 

@@ -1208,6 +1208,7 @@
         background-position: center;
         fill: currentColor;
         -moz-context-properties: fill, fill-opacity;
+        corner-shape: superellipse(var(--zen-squircle-value));
       }
 
       background: transparent;
@@ -1234,6 +1235,7 @@
         z-index: 0;
         content: "";
         transition: background 0.1s ease-in-out;
+        corner-shape: superellipse(var(--zen-squircle-value));
       }
     }
 

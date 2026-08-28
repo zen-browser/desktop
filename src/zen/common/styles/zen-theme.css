@@ -352,7 +352,9 @@
 %include zen-buttons.css
 
 @media (-moz-pref('layout.css.corner-shape.enabled')) {
-  *:not(.no-squircles) {
+  *:not(.no-squircles),
+  .zen-squircle-before::before,
+  .zen-squircle-after::after {
     corner-shape: superellipse(var(--zen-squircle-value));
   }
 }

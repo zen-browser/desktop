@@ -185,7 +185,7 @@
 .toolbarbutton-1:not(#tabs-newtab-button),
 .urlbar-page-action,
 .identity-box-button {
-  --tab-border-radius: 6px;
+  --tab-border-radius: 8px;
   --toolbarbutton-border-radius: var(--tab-border-radius);
   --toolbarbutton-padding-inner: 6px;
   --toolbarbutton-padding-outer: 1px;
@@ -601,6 +601,7 @@
       position: absolute;
       width: 100%;
       height: 100%;
+
       @media (-moz-platform: macos) {
         background: linear-gradient(to bottom, light-dark(rgb(255, 255, 255), rgb(34, 34, 34)), light-dark(rgb(246, 246, 246), rgb(21, 21, 21)));
 

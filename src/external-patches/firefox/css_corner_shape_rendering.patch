@@ -1,0 +1,3967 @@
+diff --git a/gfx/webrender_bindings/WebRenderAPI.cpp b/gfx/webrender_bindings/WebRenderAPI.cpp
+index 4a72a0eecf..31092b3c05 100644
+--- a/gfx/webrender_bindings/WebRenderAPI.cpp
++++ b/gfx/webrender_bindings/WebRenderAPI.cpp
+@@ -1448,11 +1448,12 @@ void DisplayListBuilder::PushRoundedRect(const wr::LayoutRect& aBounds,
+   wr::LayoutSideOffsets widths = {v, h, v, h};
+   wr::BorderRadius radii = {{h, v}, {h, v}, {h, v}, {h, v},
+                             1.0f,   1.0f,   1.0f,   1.0f};
++  wr::LayoutSideOffsets inset = EmptyLayoutSideOffsets();
+ 
+   // Anti-aliased borders are required for rounded borders.
+   wr_dp_push_border(mWrState, aBounds, aClip, aIsBackfaceVisible,
+                     &mCurrentSpaceAndClipChain, wr::AntialiasBorder::Yes,
+-                    widths, side, side, side, side, radii);
++                    widths, side, side, side, side, radii, inset);
+ }
+ 
+ void DisplayListBuilder::PushHitTest(
+@@ -1668,20 +1669,18 @@ void DisplayListBuilder::PushIFrame(const LayoutDeviceRect& aDevPxBounds,
+                     aIgnoreMissingPipeline);
+ }
+ 
+-void DisplayListBuilder::PushBorder(const wr::LayoutRect& aBounds,
+-                                    const wr::LayoutRect& aClip,
+-                                    bool aIsBackfaceVisible,
+-                                    const wr::LayoutSideOffsets& aWidths,
+-                                    const Range<const wr::BorderSide>& aSides,
+-                                    const wr::BorderRadius& aRadius,
+-                                    wr::AntialiasBorder aAntialias) {
++void DisplayListBuilder::PushBorder(
++    const wr::LayoutRect& aBounds, const wr::LayoutRect& aClip,
++    bool aIsBackfaceVisible, const wr::LayoutSideOffsets& aWidths,
++    const Range<const wr::BorderSide>& aSides, const wr::BorderRadius& aRadius,
++    const wr::LayoutSideOffsets& aInset, wr::AntialiasBorder aAntialias) {
+   MOZ_ASSERT(aSides.length() == 4);
+   if (aSides.length() != 4) {
+     return;
+   }
+   wr_dp_push_border(mWrState, aBounds, aClip, aIsBackfaceVisible,
+                     &mCurrentSpaceAndClipChain, aAntialias, aWidths, aSides[0],
+-                    aSides[1], aSides[2], aSides[3], aRadius);
++                    aSides[1], aSides[2], aSides[3], aRadius, aInset);
+ }
+ 
+ void DisplayListBuilder::PushBorderImage(const wr::LayoutRect& aBounds,
+diff --git a/gfx/webrender_bindings/WebRenderAPI.h b/gfx/webrender_bindings/WebRenderAPI.h
+index 30d4da889a..f464c2a626 100644
+--- a/gfx/webrender_bindings/WebRenderAPI.h
++++ b/gfx/webrender_bindings/WebRenderAPI.h
+@@ -753,11 +753,13 @@ class DisplayListBuilder final {
+ 
+   // XXX WrBorderSides are passed with Range.
+   // It is just to bypass compiler bug. See Bug 1357734.
+-  void PushBorder(const wr::LayoutRect& aBounds, const wr::LayoutRect& aClip,
+-                  bool aIsBackfaceVisible, const wr::LayoutSideOffsets& aWidths,
+-                  const Range<const wr::BorderSide>& aSides,
+-                  const wr::BorderRadius& aRadius,
+-                  wr::AntialiasBorder = wr::AntialiasBorder::Yes);
++  void PushBorder(
++      const wr::LayoutRect& aBounds, const wr::LayoutRect& aClip,
++      bool aIsBackfaceVisible, const wr::LayoutSideOffsets& aWidths,
++      const Range<const wr::BorderSide>& aSides,
++      const wr::BorderRadius& aRadius,
++      const wr::LayoutSideOffsets& aInset = EmptyLayoutSideOffsets(),
++      wr::AntialiasBorder = wr::AntialiasBorder::Yes);
+ 
+   void PushBorderImage(const wr::LayoutRect& aBounds,
+                        const wr::LayoutRect& aClip, bool aIsBackfaceVisible,
+diff --git a/gfx/webrender_bindings/WebRenderTypes.h b/gfx/webrender_bindings/WebRenderTypes.h
+index 5799ed46cf..db7dc93faa 100644
+--- a/gfx/webrender_bindings/WebRenderTypes.h
++++ b/gfx/webrender_bindings/WebRenderTypes.h
+@@ -485,40 +485,6 @@ static inline wr::BorderRadius ToBorderRadius(const nsRectCornerRadii& aRadii,
+   return br;
+ }
+ 
+-static inline wr::ComplexClipRegion ToComplexClipRegion(
+-    const nsRect& aRect, const nsRectCornerRadii& aRadii,
+-    int32_t aAppUnitsPerDevPixel) {
+-  wr::ComplexClipRegion ret;
+-  ret.rect =
+-      ToLayoutRect(LayoutDeviceRect::FromAppUnits(aRect, aAppUnitsPerDevPixel));
+-  ret.radii = ToBorderRadius(aRadii, aAppUnitsPerDevPixel);
+-  ret.mode = ClipMode::Clip;
+-  return ret;
+-}
+-
+-static inline wr::ComplexClipRegion ToComplexClipRegion(
+-    const gfx::RoundedRect& rect) {
+-  wr::ComplexClipRegion ret;
+-  ret.rect = ToLayoutRect(rect.rect);
+-  ret.radii = ToBorderRadius(rect.corners);
+-  ret.mode = wr::ClipMode::Clip;
+-  return ret;
+-}
+-
+-static inline wr::ComplexClipRegion SimpleRadii(const wr::LayoutRect& aRect,
+-                                                float aRadii) {
+-  wr::ComplexClipRegion ret;
+-  wr::LayoutSize radii{aRadii, aRadii};
+-  ret.rect = aRect;
+-  ret.radii = EmptyBorderRadius();
+-  ret.radii.top_left = radii;
+-  ret.radii.top_right = radii;
+-  ret.radii.bottom_left = radii;
+-  ret.radii.bottom_right = radii;
+-  ret.mode = wr::ClipMode::Clip;
+-  return ret;
+-}
+-
+ static inline wr::DeviceIntSideOffsets ToDeviceIntSideOffsets(int32_t top,
+                                                               int32_t right,
+                                                               int32_t bottom,
+@@ -548,6 +514,18 @@ static inline wr::LayoutSideOffsets ToLayoutSideOffsets(
+                              aMargin.left);
+ }
+ 
++static inline wr::LayoutSideOffsets ToLayoutSideOffsets(
++    const nsMargin& aMargin, int32_t aAppUnitsPerDevPixel) {
++  return ToLayoutSideOffsets(aMargin.top / float(aAppUnitsPerDevPixel),
++                             aMargin.right / float(aAppUnitsPerDevPixel),
++                             aMargin.bottom / float(aAppUnitsPerDevPixel),
++                             aMargin.left / float(aAppUnitsPerDevPixel));
++}
++
++static inline wr::LayoutSideOffsets EmptyLayoutSideOffsets() {
++  return ToLayoutSideOffsets(0.0f, 0.0f, 0.0f, 0.0f);
++}
++
+ static inline wr::LayoutSideOffsets ToBorderWidths(float top, float right,
+                                                    float bottom, float left) {
+   return ToLayoutSideOffsets(top, right, bottom, left);
+@@ -559,6 +537,55 @@ static inline wr::LayoutSideOffsets ToBorderWidths(const gfx::Margin& aMargin) {
+ 
+ wr::RepeatMode ToRepeatMode(StyleBorderImageRepeatKeyword);
+ 
++static inline wr::ComplexClipRegion SimpleRadii(const wr::LayoutRect& aRect,
++                                                float aRadii) {
++  wr::ComplexClipRegion ret;
++  wr::LayoutSize radii{aRadii, aRadii};
++  ret.rect = aRect;
++  ret.radii = EmptyBorderRadius();
++  ret.radii.top_left = radii;
++  ret.radii.top_right = radii;
++  ret.radii.bottom_left = radii;
++  ret.radii.bottom_right = radii;
++  ret.inset = EmptyLayoutSideOffsets();
++  ret.mode = wr::ClipMode::Clip;
++  return ret;
++}
++
++static inline wr::ComplexClipRegion ToComplexClipRegion(
++    const gfx::RoundedRect& rect) {
++  wr::ComplexClipRegion ret;
++  ret.rect = ToLayoutRect(rect.rect);
++  ret.radii = ToBorderRadius(rect.corners);
++  ret.inset = EmptyLayoutSideOffsets();
++  ret.mode = wr::ClipMode::Clip;
++  return ret;
++}
++
++static inline wr::ComplexClipRegion ToComplexClipRegion(
++    const nsRect& aRect, const nsRectCornerRadii& aRadii,
++    int32_t aAppUnitsPerDevPixel) {
++  wr::ComplexClipRegion ret;
++  ret.rect =
++      ToLayoutRect(LayoutDeviceRect::FromAppUnits(aRect, aAppUnitsPerDevPixel));
++  ret.radii = ToBorderRadius(aRadii, aAppUnitsPerDevPixel);
++  ret.inset = EmptyLayoutSideOffsets();
++  ret.mode = ClipMode::Clip;
++  return ret;
++}
++
++static inline wr::ComplexClipRegion ToComplexClipRegion(
++    const nsRect& aRect, const nsRectCornerRadii& aRadii,
++    const nsMargin& aInset, int32_t aAppUnitsPerDevPixel) {
++  wr::ComplexClipRegion ret;
++  ret.rect =
++      ToLayoutRect(LayoutDeviceRect::FromAppUnits(aRect, aAppUnitsPerDevPixel));
++  ret.radii = ToBorderRadius(aRadii, aAppUnitsPerDevPixel);
++  ret.inset = ToLayoutSideOffsets(aInset, aAppUnitsPerDevPixel);
++  ret.mode = ClipMode::Clip;
++  return ret;
++}
++
+ template <class S, class T>
+ static inline wr::WrTransformProperty ToWrTransformProperty(
+     uint64_t id, const gfx::Matrix4x4Typed<S, T>& transform) {
+diff --git a/gfx/webrender_bindings/src/bindings.rs b/gfx/webrender_bindings/src/bindings.rs
+index f76367a1f9..5f0b02097c 100644
+--- a/gfx/webrender_bindings/src/bindings.rs
++++ b/gfx/webrender_bindings/src/bindings.rs
+@@ -4037,6 +4037,7 @@ pub extern "C" fn wr_dp_push_border(
+     bottom: BorderSide,
+     left: BorderSide,
+     radius: BorderRadius,
++    inset: LayoutSideOffsets,
+ ) {
+     debug_assert!(unsafe { is_in_main_thread() });
+ 
+@@ -4046,6 +4047,7 @@ pub extern "C" fn wr_dp_push_border(
+         top,
+         bottom,
+         radius,
++        inset,
+         do_aa: do_aa == AntialiasBorder::Yes,
+     });
+ 
+diff --git a/gfx/wr/examples/animation.rs b/gfx/wr/examples/animation.rs
+index 11fcfe647c..55f688bc52 100644
+--- a/gfx/wr/examples/animation.rs
++++ b/gfx/wr/examples/animation.rs
+@@ -85,6 +85,7 @@ impl App {
+         let complex_clip = ComplexClipRegion {
+             rect: clip_bounds,
+             radii: BorderRadius::uniform(30.0),
++            inset: LayoutSideOffsets::zero(),
+             mode: ClipMode::Clip,
+         };
+         let clip_id = builder.define_clip_rounded_rect(
+diff --git a/gfx/wr/examples/basic.rs b/gfx/wr/examples/basic.rs
+index df2f322a43..1dfbef8d53 100644
+--- a/gfx/wr/examples/basic.rs
++++ b/gfx/wr/examples/basic.rs
+@@ -52,6 +52,7 @@ impl Example for App {
+         let complex = ComplexClipRegion::new(
+             (50, 50).to(150, 150),
+             BorderRadius::uniform(20.0),
++            LayoutSideOffsets::zero(),
+             ClipMode::Clip
+         );
+         let clip_id = builder.define_clip_rounded_rect(
+@@ -88,6 +89,7 @@ impl Example for App {
+             bottom: border_side,
+             left: border_side,
+             radius: BorderRadius::uniform(20.0),
++            inset: LayoutSideOffsets::zero(),
+             do_aa: true,
+         });
+ 
+diff --git a/gfx/wr/swgl/src/glsl.h b/gfx/wr/swgl/src/glsl.h
+index b9e7982948..533d891aaa 100644
+--- a/gfx/wr/swgl/src/glsl.h
++++ b/gfx/wr/swgl/src/glsl.h
+@@ -645,6 +645,9 @@ SI vec2 min(vec2 a, Float b) { return vec2(min(a.x, b), min(a.y, b)); }
+ SI vec2_scalar min(vec2_scalar a, vec2_scalar b) {
+   return vec2_scalar{min(a.x, b.x), min(a.y, b.y)};
+ }
++SI vec2_scalar min(vec2_scalar a, float b) {
++  return vec2_scalar{min(a.x, b), min(a.y, b)};
++}
+ 
+ SI vec2 if_then_else(I32 c, vec2 t, vec2 e) {
+   return vec2(if_then_else(c, t.x, e.x), if_then_else(c, t.y, e.y));
+@@ -1743,6 +1746,9 @@ SI vec3 min(vec3 a, Float b) {
+ SI vec3_scalar min(vec3_scalar a, vec3_scalar b) {
+   return vec3_scalar{min(a.x, b.x), min(a.y, b.y), min(a.z, b.z)};
+ }
++SI vec3_scalar min(vec3_scalar a, float b) {
++  return vec3_scalar{min(a.x, b), min(a.y, b), min(a.z, b)};
++}
+ 
+ SI vec3 max(vec3 a, vec3 b) {
+   return vec3(max(a.x, b.x), max(a.y, b.y), max(a.z, b.z));
+@@ -1753,6 +1759,9 @@ SI vec3 max(vec3 a, Float b) {
+ SI vec3_scalar max(vec3_scalar a, vec3_scalar b) {
+   return vec3_scalar{max(a.x, b.x), max(a.y, b.y), max(a.z, b.z)};
+ }
++SI vec3_scalar max(vec3_scalar a, float b) {
++  return vec3_scalar{max(a.x, b), max(a.y, b), max(a.z, b)};
++}
+ 
+ vec3 pow(vec3 x, vec3 y) {
+   return vec3(pow(x.x, y.x), pow(x.y, y.y), pow(x.z, y.z));
+@@ -2278,6 +2287,32 @@ vec4_scalar step(vec4_scalar edge, vec4_scalar x) {
+                      step(edge.w, x.w));
+ }
+ 
++SI vec4 min(vec4 a, vec4 b) {
++  return vec4(min(a.x, b.x), min(a.y, b.y), min(a.z, b.z), min(a.w, b.w));
++}
++SI vec4 min(vec4 a, Float b) {
++  return vec4(min(a.x, b), min(a.y, b), min(a.z, b), min(a.w, b));
++}
++SI vec4_scalar min(vec4_scalar a, vec4_scalar b) {
++  return vec4_scalar{min(a.x, b.x), min(a.y, b.y), min(a.z, b.z), min(a.w, b.w)};
++}
++SI vec4_scalar min(vec4_scalar a, float b) {
++  return vec4_scalar{min(a.x, b), min(a.y, b), min(a.z, b), min(a.w, b)};
++}
++
++SI vec4 max(vec4 a, vec4 b) {
++  return vec4(max(a.x, b.x), max(a.y, b.y), max(a.z, b.z), max(a.w, b.w));
++}
++SI vec4 max(vec4 a, Float b) {
++  return vec4(max(a.x, b), max(a.y, b), max(a.z, b), max(a.w, b));
++}
++SI vec4_scalar max(vec4_scalar a, vec4_scalar b) {
++  return vec4_scalar{max(a.x, b.x), max(a.y, b.y), max(a.z, b.z), max(a.w, b.w)};
++}
++SI vec4_scalar max(vec4_scalar a, float b) {
++  return vec4_scalar{max(a.x, b), max(a.y, b), max(a.z, b), max(a.w, b)};
++}
++
+ template <typename T>
+ auto lessThanEqual(T x, T y) -> decltype(x <= y) {
+   return x <= y;
+diff --git a/gfx/wr/webrender/res/border_shared.glsl b/gfx/wr/webrender/res/border_shared.glsl
+index 5981e53bde..313b51bcb0 100644
+--- a/gfx/wr/webrender/res/border_shared.glsl
++++ b/gfx/wr/webrender/res/border_shared.glsl
+@@ -21,6 +21,8 @@ PER_INSTANCE in int aGpuDataAddress;
+ PER_INSTANCE in vec4 aClipParams1;
+ PER_INSTANCE in vec4 aClipParams2;
+ 
++#endif
++
+ struct BorderInstanceGpuData {
+     vec4 rect;
+     vec4 color0;
+@@ -28,20 +30,22 @@ struct BorderInstanceGpuData {
+     vec2 widths;
+     vec2 radii;
+     float shape;
++    vec2 shape_offset;
++    vec2 inset;
+ };
+ 
+ BorderInstanceGpuData fetch_gpu_data(int index) {
+     BorderInstanceGpuData data;
+ 
+-    vec4 texels[5] = fetch_from_gpu_buffer_5f(index);
++    vec4 texels[6] = fetch_from_gpu_buffer_6f(index);
+     data.rect = texels[0];
+     data.color0 = texels[1];
+     data.color1 = texels[2];
+     data.widths = texels[3].xy;
+     data.radii = texels[3].zw;
+     data.shape = texels[4].x;
++    data.shape_offset = texels[4].yz;
++    data.inset = texels[5].xy;
+ 
+     return data;
+ }
+-
+-#endif
+diff --git a/gfx/wr/webrender/res/cs_border_segment.glsl b/gfx/wr/webrender/res/cs_border_segment.glsl
+index 066f63f62a..f9998badd6 100644
+--- a/gfx/wr/webrender/res/cs_border_segment.glsl
++++ b/gfx/wr/webrender/res/cs_border_segment.glsl
+@@ -15,10 +15,10 @@ flat varying mediump vec4 vColor11;
+ // transition occurs. Used for corners only.
+ flat varying highp vec4 vColorLine;
+ 
+-// x: segment, y: clip mode
++// x: segment, y: clip mode, z: gpu buffer data address
+ // We cast these to/from floats rather than using an ivec due to a driver bug
+ // on Adreno 3xx. See bug 1730458.
+-flat varying mediump vec2 vSegmentClipMode;
++flat varying highp vec3 vSegment_ClipMode_DataAddress;
+ // x, y: styles, z, w: edge axes
+ // We cast these to/from floats rather than using an ivec (and bitshifting)
+ // due to a driver bug on Adreno 3xx. See bug 1730458.
+@@ -32,6 +32,7 @@ flat varying highp vec4 vClipCenter_Sign;
+ // An outer and inner elliptical radii for border
+ // corner clipping.
+ flat varying highp vec4 vClipRadii;
++flat varying highp vec4 vClipOffsets;
+ 
+ // Reference point for determine edge clip lines.
+ flat varying highp vec4 vEdgeReference;
+@@ -181,7 +182,7 @@ void main(void) {
+             break;
+     }
+ 
+-    vSegmentClipMode = vec2(float(segment), float(clip_mode));
++    vSegment_ClipMode_DataAddress = vec3(float(segment), float(clip_mode), float(aGpuDataAddress));
+     vStyleEdgeAxis = vec4(float(style0), float(style1), float(edge_axis.x), float(edge_axis.y));
+ 
+     vPartialWidths = vec4(data.widths / 3.0, data.widths / 2.0);
+@@ -193,13 +194,23 @@ void main(void) {
+     vec4[2] color1 = get_colors_for_side(data.color1, style1);
+     vColor10 = color1[0];
+     vColor11 = color1[1];
+-    vClipCenter_Sign = vec4(outer + clip_sign * data.radii, clip_sign);
++    vClipCenter_Sign = vec4(outer + clip_sign * (data.radii + data.shape_offset), clip_sign);
+     vClipRadii = vec4(data.radii, max(data.radii - data.widths, 0.0));
++    vClipOffsets = vec4(0.0);
+     vColorLine = vec4(outer, data.widths.y * -clip_sign.y, data.widths.x * clip_sign.x);
+     vEdgeReference = vec4(edge_reference, edge_reference + data.widths);
+     vClipParams1 = aClipParams1;
+     vClipParams2 = aClipParams2;
+ 
++    if (data.shape != 1.0)
++    {
++        vec2 reference_radii = (data.radii == vec2(0.0)) ? vec2(0.0) : data.radii + data.inset;
++        vec4 contour1 = compute_contoured_superellipse(reference_radii, data.shape, data.inset);
++        vec4 contour2 = compute_contoured_superellipse(reference_radii, data.shape, data.inset + data.widths);
++        vClipOffsets = vec4(contour1.xy, contour2.xy);
++        vClipRadii = vec4(contour1.zw, contour2.zw);
++    }
++
+     // For the case of dot and dash clips, optimize the number of pixels that
+     // are hit to just include the dot itself.
+     if (clip_mode == CLIP_DOT) {
+@@ -231,6 +242,7 @@ void main(void) {
+ 
+ #ifdef WR_FRAGMENT_SHADER
+ vec4 evaluate_color_for_style_in_corner(
++    BorderInstanceGpuData data,
+     vec2 clip_relative_pos,
+     int style,
+     vec4 color0,
+@@ -246,24 +258,61 @@ vec4 evaluate_color_for_style_in_corner(
+             // also 0.67 of the radii. Use these to form a
+             // SDF subtraction which will clip out the inside
+             // third of the rounded edge.
+-            float d_radii_a = distance_to_ellipse(
+-                clip_relative_pos,
+-                clip_radii.xy - vPartialWidths.xy
+-            );
+-            float d_radii_b = distance_to_ellipse(
+-                clip_relative_pos,
+-                clip_radii.xy - 2.0 * vPartialWidths.xy
+-            );
++            float d_radii_a;
++            float d_radii_b;
++            if (data.shape == 1.0) {
++                d_radii_a = distance_to_ellipse(
++                    clip_relative_pos,
++                    clip_radii.xy - vPartialWidths.xy
++                );
++                d_radii_b = distance_to_ellipse(
++                    clip_relative_pos,
++                    clip_radii.xy - 2.0 * vPartialWidths.xy
++                );
++            } else {
++                d_radii_a = distance_to_superellipse(
++                    clip_relative_pos - mix(vClipOffsets.xy, vClipOffsets.zw, 1.0 / 3.0),
++                    mix(clip_radii.xy, clip_radii.zw, 1.0 / 3.0),
++                    data.shape
++                );
++                d_radii_b = distance_to_superellipse(
++                    clip_relative_pos - mix(vClipOffsets.xy, vClipOffsets.zw, 2.0 / 3.0),
++                    mix(clip_radii.xy, clip_radii.zw, 2.0 / 3.0),
++                    data.shape
++                );
++
++                // Clamp to the middle of the adjacent borders
++                vec2 included_region_a = data.radii - vPartialWidths.xy - clip_relative_pos;
++                d_radii_a = max(d_radii_a, -min(included_region_a.x, included_region_a.y));
++
++                vec2 included_region_b = data.radii - 2.0 * vPartialWidths.xy - clip_relative_pos;
++                d_radii_b = max(d_radii_b, -min(included_region_b.x, included_region_b.y));
++            }
++
+             float d = min(-d_radii_a, d_radii_b);
++
+             color0 *= distance_aa(aa_range, d);
+             break;
+         }
+         case BORDER_STYLE_GROOVE:
+         case BORDER_STYLE_RIDGE: {
+-            float d = distance_to_ellipse(
+-                clip_relative_pos,
+-                clip_radii.xy - vPartialWidths.zw
+-            );
++            float d;
++            if (data.shape == 1.0) {
++                d = distance_to_ellipse(
++                    clip_relative_pos,
++                    clip_radii.xy - vPartialWidths.zw
++                );
++            } else {
++                d = distance_to_superellipse(
++                    clip_relative_pos - mix(vClipOffsets.xy, vClipOffsets.zw, 0.5),
++                    mix(clip_radii.xy, clip_radii.zw, 0.5),
++                    data.shape
++                );
++
++                // Clamp to the middle of the adjacent borders
++                vec2 included_region = data.radii - vPartialWidths.zw - clip_relative_pos;
++                d = max(d, -min(included_region.x, included_region.y));
++            }
+             float alpha = distance_aa(aa_range, d);
+             float swizzled_factor;
+             switch (segment) {
+@@ -328,11 +377,14 @@ void main(void) {
+     float aa_range = compute_aa_range(vPos);
+     vec4 color0, color1;
+ 
+-    int segment = int(vSegmentClipMode.x);
+-    int clip_mode = int(vSegmentClipMode.y);
++    int segment = int(vSegment_ClipMode_DataAddress.x);
++    int clip_mode = int(vSegment_ClipMode_DataAddress.y);
++    int data_address = int(vSegment_ClipMode_DataAddress.z);
+     ivec2 style = ivec2(int(vStyleEdgeAxis.x), int(vStyleEdgeAxis.y));
+     ivec2 edge_axis = ivec2(int(vStyleEdgeAxis.z), int(vStyleEdgeAxis.w));
+ 
++    BorderInstanceGpuData data = fetch_gpu_data(data_address);
++
+     float mix_factor = 0.0;
+     if (edge_axis.x != edge_axis.y) {
+         float d_line = distance_to_line(vColorLine.xy, vColorLine.zw, vPos);
+@@ -382,12 +434,27 @@ void main(void) {
+     }
+ 
+     if (in_clip_region) {
+-        float d_radii_a = distance_to_ellipse(clip_relative_pos, vClipRadii.xy);
+-        float d_radii_b = distance_to_ellipse(clip_relative_pos, vClipRadii.zw);
++        float d_radii_a;
++        float d_radii_b;
++
++        if (data.shape == 1.0) {
++            d_radii_a = distance_to_ellipse(clip_relative_pos, vClipRadii.xy);
++            d_radii_b = distance_to_ellipse(clip_relative_pos, vClipRadii.zw);
++        } else {
++            clip_relative_pos = abs(clip_relative_pos) - data.shape_offset;
++            d_radii_a = distance_to_superellipse(clip_relative_pos - vClipOffsets.xy, vClipRadii.xy, data.shape);
++            d_radii_b = distance_to_superellipse(clip_relative_pos - vClipOffsets.zw, vClipRadii.zw, data.shape);
++
++            // exclude the straight border part from the subtracted region
++            vec2 included_region = data.radii - data.widths - clip_relative_pos;
++            d_radii_b = max(d_radii_b, -min(included_region.x, included_region.y));
++        }
++
+         float d_radii = max(d_radii_a, -d_radii_b);
+         d = max(d, d_radii);
+-
++        
+         color0 = evaluate_color_for_style_in_corner(
++            data,
+             clip_relative_pos,
+             style.x,
+             vColor00,
+@@ -398,6 +465,7 @@ void main(void) {
+             aa_range
+         );
+         color1 = evaluate_color_for_style_in_corner(
++            data,
+             clip_relative_pos,
+             style.y,
+             vColor10,
+diff --git a/gfx/wr/webrender/res/cs_border_solid.glsl b/gfx/wr/webrender/res/cs_border_solid.glsl
+index 90584346a4..a3ff0e887e 100644
+--- a/gfx/wr/webrender/res/cs_border_solid.glsl
++++ b/gfx/wr/webrender/res/cs_border_solid.glsl
+@@ -8,6 +8,10 @@
+ #define MIX_AA 1
+ #define MIX_NO_AA 2
+ 
++// Address of border data in the GPU Buffer.
++// Packed in to a vector to work around bug 1630356.
++flat varying highp ivec2 vGpuDataAddress;
++
+ // For edges, the colors are the same. For corners, these
+ // are the colors of each edge making up the corner.
+ flat varying mediump vec4 vColor0;
+@@ -29,6 +33,7 @@ flat varying highp vec4 vClipCenter_Sign;
+ // An outer and inner elliptical radii for border
+ // corner clipping.
+ flat varying highp vec4 vClipRadii;
++flat varying highp vec4 vClipOffsets;
+ 
+ // Position, scale, and radii of horizontally and vertically adjacent corner clips.
+ flat varying highp vec4 vHorizontalClipCenter_Sign;
+@@ -68,6 +73,7 @@ vec2 get_outer_corner_scale(int segment) {
+ 
+ void main(void) {
+     BorderInstanceGpuData data = fetch_gpu_data(aGpuDataAddress);
++    vGpuDataAddress.x = aGpuDataAddress;
+ 
+     int segment = aFlags & 0xff;
+     bool do_aa = ((aFlags >> 24) & 0xf0) != 0;
+@@ -96,10 +102,20 @@ void main(void) {
+ 
+     vColor0 = data.color0;
+     vColor1 = data.color1;
+-    vClipCenter_Sign = vec4(outer + clip_sign * data.radii, clip_sign);
++    vClipCenter_Sign = vec4(outer + clip_sign * (data.radii + data.shape_offset), clip_sign);
+     vClipRadii = vec4(data.radii, max(data.radii - data.widths, 0.0));
++    vClipOffsets = vec4(0.0);
+     vColorLine = vec4(outer, data.widths.y * -clip_sign.y, data.widths.x * clip_sign.x);
+ 
++    if (data.shape != 1.0)
++    {
++        vec2 reference_radii = (data.radii == vec2(0.0)) ? vec2(0.0) : data.radii + data.inset;
++        vec4 contour1 = compute_contoured_superellipse(reference_radii, data.shape, data.inset);
++        vec4 contour2 = compute_contoured_superellipse(reference_radii, data.shape, data.inset + data.widths);
++        vClipOffsets = vec4(contour1.xy, contour2.xy);
++        vClipRadii = vec4(contour1.zw, contour2.zw);
++    }
++
+     vec2 horizontal_clip_sign = vec2(-clip_sign.x, clip_sign.y);
+     vHorizontalClipCenter_Sign = vec4(aClipParams1.xy +
+                                       horizontal_clip_sign * aClipParams1.zw,
+@@ -118,6 +134,8 @@ void main(void) {
+ 
+ #ifdef WR_FRAGMENT_SHADER
+ void main(void) {
++    BorderInstanceGpuData data = fetch_gpu_data(vGpuDataAddress.x);
++
+     float aa_range = compute_aa_range(vPos);
+     bool do_aa = vMixColors.x != MIX_NO_AA;
+ 
+@@ -137,8 +155,22 @@ void main(void) {
+ 
+     float d = -1.0;
+     if (in_clip_region) {
+-        float d_radii_a = distance_to_ellipse(clip_relative_pos, vClipRadii.xy);
+-        float d_radii_b = distance_to_ellipse(clip_relative_pos, vClipRadii.zw);
++        float d_radii_a;
++        float d_radii_b;
++
++        if (data.shape == 1.0) {
++            d_radii_a = distance_to_ellipse(clip_relative_pos, vClipRadii.xy);
++            d_radii_b = distance_to_ellipse(clip_relative_pos, vClipRadii.zw);
++        } else {
++            clip_relative_pos = abs(clip_relative_pos) - data.shape_offset;
++            d_radii_a = distance_to_superellipse(clip_relative_pos - vClipOffsets.xy, vClipRadii.xy, data.shape);
++            d_radii_b = distance_to_superellipse(clip_relative_pos - vClipOffsets.zw, vClipRadii.zw, data.shape);
++
++            // exclude the straight border part from the subtracted region
++            vec2 included_region = data.radii - data.widths - clip_relative_pos;
++            d_radii_b = max(d_radii_b, -min(included_region.x, included_region.y));
++        }
++
+         d = max(d_radii_a, -d_radii_b);
+     }
+ 
+diff --git a/gfx/wr/webrender/res/ellipse.glsl b/gfx/wr/webrender/res/ellipse.glsl
+index 4c33057214..7ce1bcacb4 100644
+--- a/gfx/wr/webrender/res/ellipse.glsl
++++ b/gfx/wr/webrender/res/ellipse.glsl
+@@ -17,6 +17,184 @@ vec2 inverse_radii(vec2 radii) {
+     return 1.0 / max(radii, 1.0e-3);
+ }
+ 
++// Spec: https://drafts.csswg.org/css-borders/#normalized-superellipse-half-corner
++//
++// Contrary to the spec, the symmetric case (shape < 0) is handled in
++// compute_contoured_superellipse() instead of in this function.
++float compute_superellipse_half_corner(float shape) {
++    shape = min(1.0, abs(shape));
++
++    float n = exp2(shape);
++    float convex_half_corner = pow(0.5, 1.0 / n);
++
++    // Ensure the curve tends towards 0.75 (which will produce axis-aligned
++    // normals in compute_superellipse_normals()) when shape goes to 1 (round).
++    // This makes the curve continuous from subellipses (shape < 1) to
++    // superellipses (shape > 1).
++    // The original half corner (above) goes to 0.5^0.5 = sqrt(2) / 2 ~= 0.707,
++    // so the delta is about 6% at maximum.
++    const float delta = 0.04289321881345243; // = 0.75 - pow(0.5, 0.5)
++    float falloff = shape * shape; // quadratic falloff
++    convex_half_corner += delta * falloff;
++
++    return convex_half_corner;
++}
++
++// Super cheap approximation of the function above: the delta with quadratic
++// falloff actually makes it almost locally linear for shape values between
++// zero and one.
++float compute_superellipse_half_corner_approx(float shape) {
++    shape = min(1.0, abs(shape));
++    return 0.25 * shape + 0.5;
++}
++
++#if 0
++
++// Alternate method to find the normals of a superellipse
++// at the start and end points or the curve.
++//
++// Using implicit differentiation [1, 2], we find that for the superellipse
++// defined with this implicit formula:
++//
++// S(x, y) = (x/a)^n + (y/a)^n - 1 = 0
++//
++// where (a, b) are the radii and n is the order,
++// we find that the gradient at the point (x0, y0) is:
++//
++// dy/dx = -b^n * x0^(n-1) / a^n * y0^(n-1)
++//
++// Introducing an intermediate variable q, this simplifies to:
++//
++// let q = [(x0 / a)^(n-1); (y0 / b)^(n-1)]
++//
++// dy/dx = -b*qx / a*qy
++//
++// And, symmetrically:
++//
++// dx/dy = -a*qy / b*qx
++//
++// Using both derivatives is useful for numerical stabillty: as the two
++// normals (at start and end) tend towards orthogonality when the exponent
++// approches 2 (= circle), one of them is likely to go towards infinity.
++//
++// The exact start and end of the curve are discontinuities, so we pick
++// points that are technically not on the curve but very close to start
++// and end points, at a distance of 5% of the radii:
++//
++// Start gradient evaluated at: (0.05*a, b)
++// End gradient evaluated at: (a, 0.05*b)
++//
++// Using ratios of the radii simplifies the computation further:
++//
++// let x0 = 0.05*a
++// let y0 = b
++//
++// qx = (x0 / a)^(n-1)
++//    = (0.05*a / a)^(n-1)
++//    = 0.05^(n-1)
++//
++// qy = (b / b)^(n-1)
++//    = 1
++//
++// The same simplification applies symmetrically for the dx/dy calculation
++// at the end point.
++//
++// In the final form, we can compute a single q value (instead of a vector),
++// and derive the gradients from this and the radii ratios (see code below):
++//
++// let q = 0.05^(n-1)
++// dy/dx = -q * b / a
++// dx/dy = -q * a / b
++//
++// The tangents are then defined from the gradients:
++// let t1 = (1, dy/dx)
++// let t2 = (dx/dy, 1)
++//
++// And the normals are obtained by a simple 90° rotation of the tangents:
++// let n1 = (t1.y, -t1.x) = (dy/dx, -1)
++// let n2 = (-t2.y, t2.x) = (-1, dx/dy)
++//
++// Returns start and end normals in (x, y) and (z, w) respectively
++//
++// [1] https://www.kristakingmath.com/blog/equation-of-the-tangent-line-with-implicit-differentiation
++// [2] https://www.khanacademy.org/math/ap-calculus-bc/bc-differentiation-2-new/bc-3-2/v/implicit-differentiation-1
++//
++// Note: the points where we compute the gradients are technically not
++// on the curve. In practice, we found that it is not an issue unless the
++// curve is concave (n < 1). As the spec defines this case to be implemented
++// as a geometrical symmetry from the convex case (n > 1), it is never encountered
++// in this implementation.
++//
++// For reference, here is the full form that reprojects the point on the curve,
++// given a fixed x0:
++//
++// qx = (x0 / a)^(n-1)                  # Same as before
++// qy = (1 - x0 / a * qx)^((n-1) / n)   # Project the y coord on the curve
++//
++// Which yields:
++//
++// dy/dx = -b / a * qx * (1 - x0 / a * qx)^((1-n) / n) # Careful, exponent flipped
++//
++vec4 compute_superellipse_normals(vec2 radii, float shape) {
++    shape = min(1.0, abs(shape));
++
++    float n = exp2(shape);
++
++    // The damping factor makes q go to zero when shape approches one,
++    // ensuring continuity with higher-order superellipses (for shapes
++    // of 1 and above, the normals should always be axis-aligned)
++    float damping_factor = (1.0 - shape * shape);
++    float q = pow(0.05 * damping_factor, n - 1.0);
++
++    // x: dy/dx at (0.05 * radii.x, radii.y)
++    // y: dx/dy at (radii.x, 0.05 * radii.y)
++    vec2 grad = -q * radii.yx / max(radii.xy, 0.1);
++
++    vec2 n1 = normalize(vec2(grad.x, -1.0));
++    vec2 n2 = normalize(vec2(-1.0, grad.y));
++
++    return vec4(n1, n2);
++}
++
++#else
++
++// Spec: https://drafts.csswg.org/css-borders/#contour-path
++//
++// Returns start and end normals in (x, y) and (z, w) respectively
++vec4 compute_superellipse_normals(vec2 radii, float shape) {
++    float convex_half_corner = compute_superellipse_half_corner_approx(shape);
++    vec2 tangent = vec2(0.5 - 2.0 * convex_half_corner, 2.0 * convex_half_corner - 1.5);
++
++    // Avoid dividing by zero
++    radii = max(radii, 0.1);
++
++    vec2 n1 = normalize(radii.yx * tangent.yx);
++    vec2 n2 = normalize(radii.yx * tangent.xy);
++
++    return vec4(n1, n2);
++}
++
++#endif
++
++// Spec: https://drafts.csswg.org/css-borders/#contour-path
++//
++// Returns an offset (x,y), and new radii (zw)
++vec4 compute_contoured_superellipse(vec2 radii, float shape, vec2 inset) {
++    vec4 normals = compute_superellipse_normals(radii, shape);
++
++    // Flip x/y for symmetry
++    if (shape < 0.0) {
++        normals = normals.zwxy;
++    }
++
++    // Compute delta by extruding inset along the normals
++    vec4 delta = normals * inset.yyxx;
++
++    vec2 offset = vec2(delta.x, delta.w);
++    vec2 contourRadii = max(radii + vec2(delta.z, delta.y) - offset, 0.1);
++    return vec4(offset, contourRadii);
++}
++
+ #ifdef WR_FRAGMENT_SHADER
+ 
+ // One iteration of Newton's method on the 2D equation of an ellipse:
+@@ -134,8 +312,7 @@ float distance_to_superellipse_approx(vec2 p, vec2 inv_radii, float k) {
+     // +x,+y projection so the line distance matches geometry inside
+     // the box (where p has negative components).
+     if (k == 0.0) {
+-        vec2 pp = max(p, vec2(0.0));
+-        float g = dot(pp, inv_radii) - 1.0;
++        float g = dot(p, inv_radii) - 1.0;
+         return g * inversesqrt(dot(inv_radii, inv_radii));
+     }
+ 
+@@ -159,6 +336,21 @@ float distance_to_superellipse_approx(vec2 p, vec2 inv_radii, float k) {
+     // Divide by radii: normalize the position to [0, 1]
+     vec2 q = p * inv_radii;
+ 
++    // If position is outside the shaped region, extend along the curve tangents
++    if (any(lessThanEqual(q, vec2(0.0)))) {
++        vec2 radii = 1.0 / inv_radii;
++
++        vec4 normals = compute_superellipse_normals(radii, k);
++
++        float d1 = dot(p, normals.xy) - normals.y * radii.y;
++        float d2 = dot(p, normals.zw) - normals.z * radii.x;
++        if (k >= 0.0) {
++            return max(-d1, -d2);
++        } else {
++            return min(d1, d2);
++        }
++    }
++
+     // Compute the superellipse function
+     vec2 qn = pow(q, vec2(n));
+     qn = clamp(qn, 0.0, 1.0e3); // Clamp to avoid numerical overflow
+@@ -183,9 +375,21 @@ float distance_to_superellipse_approx(vec2 p, vec2 inv_radii, float k) {
+ }
+ 
+ float distance_to_superellipse(vec2 p, vec2 radii, float k) {
++    if (any(lessThan(radii, vec2(1.0)))) {
++        return -1.0;
++    }
++
+     return distance_to_superellipse_approx(p, inverse_radii(radii), k);
+ }
+ 
++float distance_to_shaped_corner(vec2 pos, vec2 inv_radii, float shape) {
++    if (shape == 1.0) {
++        return distance_to_ellipse_approx(pos, inv_radii, 1.0);
++    } else {
++        return distance_to_superellipse_approx(pos, inv_radii, shape);
++    }
++}
++
+ // Same as distance_to_rounded_rect but with per-corner shape values.
+ float distance_to_shaped_rect(
+     vec2 pos,
+@@ -194,56 +398,34 @@ float distance_to_shaped_rect(
+     vec4 center_radius_br,
+     vec4 center_radius_bl,
+     vec4 rect_bounds,
+-    vec4 corner_shapes
++    vec4 corner_shapes,
++    vec4 clamped_inset // always negative (i.e outset-only)
+ ) {
+-    vec2 corner_p = vec2(1.0e-6);
+-    vec2 corner_inv = vec2(1.0);
+-    float corner_k = 1.0;
+-
+-    float in_corner = 0.0;
++    float d = signed_distance_rect(pos, rect_bounds.xy, rect_bounds.zw);
+ 
+     vec2 p_tl = center_radius_tl.xy - pos;
+     vec2 p_tr = (center_radius_tr.xy - pos) * vec2(-1.0, 1.0);
+     vec2 p_br = pos - center_radius_br.xy;
+     vec2 p_bl = (center_radius_bl.xy - pos) * vec2(1.0, -1.0);
+ 
+-    if (p_tl.x >= 0.0 && p_tl.y >= 0.0) {
+-        corner_p = p_tl;
+-        corner_inv = center_radius_tl.zw;
+-        corner_k = corner_shapes.x;
+-        in_corner = 1.0;
+-    }
+-    if (p_tr.x >= 0.0 && p_tr.y >= 0.0) {
+-        corner_p = p_tr;
+-        corner_inv = center_radius_tr.zw;
+-        corner_k = corner_shapes.y;
+-        in_corner = 1.0;
+-    }
+-    if (p_br.x >= 0.0 && p_br.y >= 0.0) {
+-        corner_p = p_br;
+-        corner_inv = center_radius_br.zw;
+-        corner_k = corner_shapes.z;
+-        in_corner = 1.0;
+-    }
+-    if (p_bl.x >= 0.0 && p_bl.y >= 0.0) {
+-        corner_p = p_bl;
+-        corner_inv = center_radius_bl.zw;
+-        corner_k = corner_shapes.w;
+-        in_corner = 1.0;
+-    }
+-
+-    float d_corner;
+-    if (in_corner == 0.0) {
+-        // Not in any corner. let the rect SDF decide. Use a strongly
+-        // negative value so max() defers to the rect.
+-        d_corner = -1.0e6;
+-    } else if (corner_k == 1.0) {
+-        d_corner = distance_to_ellipse_approx(corner_p, corner_inv, 1.0);
+-    } else {
+-        d_corner = distance_to_superellipse_approx(corner_p, corner_inv, corner_k);
++    vec2 i_tl = (corner_shapes.x == 1.0) ? vec2(0.0) : clamped_inset.xw;
++    vec2 i_tr = (corner_shapes.y == 1.0) ? vec2(0.0) : clamped_inset.xy;
++    vec2 i_br = (corner_shapes.z == 1.0) ? vec2(0.0) : clamped_inset.zy;
++    vec2 i_bl = (corner_shapes.w == 1.0) ? vec2(0.0) : clamped_inset.zw;
++
++    if (p_tl.x >= i_tl.x && p_tl.y >= i_tl.y) {
++        d = max(d, distance_to_shaped_corner(p_tl, center_radius_tl.zw, corner_shapes.x));
++    }
++    if (p_tr.x >= i_tr.x && p_tr.y >= i_tr.y) {
++        d = max(d, distance_to_shaped_corner(p_tr, center_radius_tr.zw, corner_shapes.y));
++    }
++    if (p_br.x >= i_br.x && p_br.y >= i_br.y) {
++        d = max(d, distance_to_shaped_corner(p_br, center_radius_br.zw, corner_shapes.z));
++    }
++    if (p_bl.x >= i_bl.x && p_bl.y >= i_bl.y) {
++        d = max(d, distance_to_shaped_corner(p_bl, center_radius_bl.zw, corner_shapes.w));
+     }
+ 
+-    return max(d_corner,
+-               signed_distance_rect(pos, rect_bounds.xy, rect_bounds.zw));
++    return d;
+ }
+ #endif
+diff --git a/gfx/wr/webrender/res/gpu_buffer.glsl b/gfx/wr/webrender/res/gpu_buffer.glsl
+index b6f55a2c02..c649ab1807 100644
+--- a/gfx/wr/webrender/res/gpu_buffer.glsl
++++ b/gfx/wr/webrender/res/gpu_buffer.glsl
+@@ -44,6 +44,17 @@ vec4[5] fetch_from_gpu_buffer_5f_direct(ivec2 uv) {
+     );
+ }
+ 
++vec4[6] fetch_from_gpu_buffer_6f_direct(ivec2 uv) {
++    return vec4[6](
++        TEXEL_FETCH(sGpuBufferF, uv, 0, ivec2(0, 0)),
++        TEXEL_FETCH(sGpuBufferF, uv, 0, ivec2(1, 0)),
++        TEXEL_FETCH(sGpuBufferF, uv, 0, ivec2(2, 0)),
++        TEXEL_FETCH(sGpuBufferF, uv, 0, ivec2(3, 0)),
++        TEXEL_FETCH(sGpuBufferF, uv, 0, ivec2(4, 0)),
++        TEXEL_FETCH(sGpuBufferF, uv, 0, ivec2(5, 0))
++    );
++}
++
+ vec4 fetch_from_gpu_buffer_1f(HIGHP_FS_ADDRESS int address) {
+     ivec2 uv = get_gpu_buffer_uv(address);
+     return texelFetch(sGpuBufferF, uv, 0);
+@@ -69,6 +80,11 @@ vec4[5] fetch_from_gpu_buffer_5f(HIGHP_FS_ADDRESS int address) {
+     return fetch_from_gpu_buffer_5f_direct(uv);
+ }
+ 
++vec4[6] fetch_from_gpu_buffer_6f(HIGHP_FS_ADDRESS int address) {
++    ivec2 uv = get_gpu_buffer_uv(address);
++    return fetch_from_gpu_buffer_6f_direct(uv);
++}
++
+ vec4 fetch_from_gpu_buffer_1f_direct(ivec2 uv) {
+     return texelFetch(sGpuBufferF, uv, 0);
+ }
+diff --git a/gfx/wr/webrender/res/ps_quad_box_shadow.glsl b/gfx/wr/webrender/res/ps_quad_box_shadow.glsl
+index 3fb233cb17..baf1d92e7c 100644
+--- a/gfx/wr/webrender/res/ps_quad_box_shadow.glsl
++++ b/gfx/wr/webrender/res/ps_quad_box_shadow.glsl
+@@ -181,7 +181,8 @@ vec4 pattern_fragment(vec4 base_color) {
+             vec4(c_br, elem_shape.z == 1.0 ? inverse_radii_squared(r_br) : inverse_radii(r_br)),
+             vec4(c_bl, elem_shape.w == 1.0 ? inverse_radii_squared(r_bl) : inverse_radii(r_bl)),
+             elem_bounds,
+-            elem_shape
++            elem_shape,
++            vec4(0.0)
+         );
+     }
+ 
+diff --git a/gfx/wr/webrender/res/ps_quad_mask.glsl b/gfx/wr/webrender/res/ps_quad_mask.glsl
+index 47e79f7c4d..e065fff4f7 100644
+--- a/gfx/wr/webrender/res/ps_quad_mask.glsl
++++ b/gfx/wr/webrender/res/ps_quad_mask.glsl
+@@ -22,6 +22,7 @@ flat varying highp vec4 vClipPlane_B;
+ flat varying highp vec4 vClipPlane_C;
+ 
+ flat varying highp vec4 vClipShape;
++flat varying highp vec4 vClipClampedInset;
+ 
+ #endif
+ flat varying highp vec2 vClipMode;
+@@ -42,6 +43,7 @@ struct Clip {
+     vec4 radii_bottom;
+ 
+     vec4 shape;
++    vec4 inset;
+ #endif
+     float mode;
+     int space;
+@@ -58,23 +60,30 @@ Clip fetch_clip(int index) {
+     clip.radii = texels[1];
+     clip.mode = texels[2].x;
+ #else
+-    vec4 texels[5] = fetch_from_gpu_buffer_5f(index);
++    vec4 texels[6] = fetch_from_gpu_buffer_6f(index);
+     clip.rect = RectWithEndpoint(texels[0].xy, texels[0].zw);
+     clip.radii_top = texels[1];
+     clip.radii_bottom = texels[2];
+     clip.mode = texels[3].x;
+     clip.shape = texels[4];
++    clip.inset = texels[5];
+ #endif
+ 
+     return clip;
+ }
+ 
+-vec4 precalc_corner(vec2 center, vec2 radii, float k) {
++vec4 precalc_corner(vec2 center, vec2 radii, vec2 inset, vec2 clip_sign, float k) {
+     if (k == 1.0) {
+         // round/ellipse corner, precalc the ellipse parameters
+         return vec4(center, inverse_radii_squared(radii));
+     } else {
+         // superellipse, precalc the superellipse parameters
++        if (k < 1.0) {
++            vec2 reference_radii = (radii == vec2(0.0)) ? vec2(0.0) : radii + inset;
++            vec4 offset_radii = compute_contoured_superellipse(reference_radii, k, inset);
++            center += offset_radii.xy * clip_sign;
++            radii = offset_radii.zw;
++        }
+         return vec4(center, inverse_radii(radii));
+     }
+ }
+@@ -116,20 +125,28 @@ void pattern_vertex(PrimitiveInfo prim_info) {
+ 
+     vClipCenter_Radius_TL = precalc_corner(clip.rect.p0 + r_tl,
+                                            r_tl,
++                                           clip.inset.wx,
++                                           vec2(-1.0, -1.0),
+                                            clip.shape.x);
+ 
+     vClipCenter_Radius_TR = precalc_corner(vec2(clip.rect.p1.x - r_tr.x,
+                                                 clip.rect.p0.y + r_tr.y),
+                                            r_tr,
++                                           clip.inset.yx,
++                                           vec2(1.0, -1.0),
+                                            clip.shape.y);
+ 
+     vClipCenter_Radius_BR = precalc_corner(clip.rect.p1 - r_br,
+                                            r_br,
++                                           clip.inset.yz,
++                                           vec2(1.0, 1.0),
+                                            clip.shape.z);
+ 
+     vClipCenter_Radius_BL = precalc_corner(vec2(clip.rect.p0.x + r_bl.x,
+                                                 clip.rect.p1.y - r_bl.y),
+                                            r_bl,
++                                           clip.inset.wz,
++                                           vec2(-1.0, 1.0),
+                                            clip.shape.w);
+ 
+     // We need to know the half-spaces of the corners separate from the center
+@@ -156,6 +173,7 @@ void pattern_vertex(PrimitiveInfo prim_info) {
+     vClipPlane_C = vec4(br.z, bl.x, bl.y, bl.z);
+ 
+     vClipShape = clip.shape;
++    vClipClampedInset = min(clip.inset, 0.0);
+ #endif
+ 
+ }
+@@ -210,7 +228,8 @@ vec4 pattern_fragment(vec4 _base_color) {
+             vClipCenter_Radius_BR,
+             vClipCenter_Radius_BL,
+             vTransformBounds,
+-            vClipShape
++            vClipShape,
++            vClipClampedInset
+         );
+     }
+ #endif
+diff --git a/gfx/wr/webrender/src/border.rs b/gfx/wr/webrender/src/border.rs
+index dc456e85c3..2a591da08f 100644
+--- a/gfx/wr/webrender/src/border.rs
++++ b/gfx/wr/webrender/src/border.rs
+@@ -55,6 +55,8 @@ pub struct BorderSegmentCacheKey {
+     pub size: LayoutSizeAu,
+     pub radius: LayoutSizeAu,
+     pub shape: u32,
++    pub shape_offset: LayoutSizeAu,
++    pub inset: LayoutSizeAu,
+     pub side0: BorderSideAu,
+     pub side1: BorderSideAu,
+     pub segment: BorderSegment,
+@@ -560,22 +562,79 @@ pub fn create_border_segments(
+         widths.left - overlap.width / 2.0,
+     );
+ 
++    let inset_tl = LayoutSize::new(border.inset.left, border.inset.top);
++    let inset_tr = LayoutSize::new(border.inset.right, border.inset.top);
++    let inset_br = LayoutSize::new(border.inset.right, border.inset.bottom);
++    let inset_bl = LayoutSize::new(border.inset.left, border.inset.bottom);
++
++    let max_shape_offsets = LayoutSideOffsets::new(
++        rect.width() - border.radius.top_left.width - border.radius.top_right.width,
++        rect.height() - border.radius.top_right.height - border.radius.bottom_right.height,
++        rect.width() - border.radius.bottom_left.width - border.radius.bottom_right.width,
++        rect.height() - border.radius.top_left.height - border.radius.bottom_left.height,
++    );
++
++    let shape_offset_tl = if border.radius.shape_top_left < 1.0 {
++        LayoutSize::new(
++            non_overlapping_widths.top + inset_tl.height.max(0.0),
++            non_overlapping_widths.left + inset_tl.width.max(0.0),
++        ).min(LayoutSize::new(
++            max_shape_offsets.top,
++            max_shape_offsets.left,
++        ))
++    } else {
++        LayoutSize::zero()
++    };
++    let shape_offset_tr = if border.radius.shape_top_right < 1.0 {
++        LayoutSize::new(
++            non_overlapping_widths.top + inset_tr.height.max(0.0),
++           non_overlapping_widths.right + inset_tr.width.max(0.0),
++        ).min(LayoutSize::new(
++            max_shape_offsets.top,
++            max_shape_offsets.right,
++        ))
++    } else {
++        LayoutSize::zero()
++    };
++    let shape_offset_br = if border.radius.shape_bottom_right < 1.0 {
++        LayoutSize::new(
++            non_overlapping_widths.bottom + inset_br.height.max(0.0),
++           non_overlapping_widths.right + inset_br.width.max(0.0),
++        ).min(LayoutSize::new(
++            max_shape_offsets.bottom,
++            max_shape_offsets.right,
++        ))
++    } else {
++        LayoutSize::zero()
++    };
++    let shape_offset_bl = if border.radius.shape_bottom_left < 1.0 {
++        LayoutSize::new(
++            non_overlapping_widths.bottom + inset_bl.height.max(0.0),
++           non_overlapping_widths.left + inset_bl.width.max(0.0),
++        ).min(LayoutSize::new(
++            max_shape_offsets.bottom,
++            max_shape_offsets.left,
++        ))
++    } else {
++        LayoutSize::zero()
++    };
++
+     let local_size_tl = LayoutSize::new(
+         border.radius.top_left.width.max(widths.left),
+         border.radius.top_left.height.max(widths.top),
+-    );
++    ) + shape_offset_tl;
+     let local_size_tr = LayoutSize::new(
+         border.radius.top_right.width.max(widths.right),
+         border.radius.top_right.height.max(widths.top),
+-    );
++    ) + shape_offset_tr;
+     let local_size_br = LayoutSize::new(
+         border.radius.bottom_right.width.max(widths.right),
+         border.radius.bottom_right.height.max(widths.bottom),
+-    );
++    ) + shape_offset_br;
+     let local_size_bl = LayoutSize::new(
+         border.radius.bottom_left.width.max(widths.left),
+         border.radius.bottom_left.height.max(widths.bottom),
+-    );
++    ) + shape_offset_bl;
+ 
+     let top_edge_info = get_edge_info(
+         border.top.style,
+@@ -678,6 +737,8 @@ pub fn create_border_segments(
+         LayoutSize::new(widths.left, widths.top),
+         border.radius.top_left,
+         border.radius.shape_top_left,
++        shape_offset_tl,
++        inset_tl,
+         BorderSegment::TopLeft,
+         EdgeMask::TOP | EdgeMask::LEFT,
+         rect.top_right(),
+@@ -705,6 +766,8 @@ pub fn create_border_segments(
+         LayoutSize::new(widths.right, widths.top),
+         border.radius.top_right,
+         border.radius.shape_top_right,
++        shape_offset_tr,
++        inset_tr,
+         BorderSegment::TopRight,
+         EdgeMask::TOP | EdgeMask::RIGHT,
+         rect.min,
+@@ -732,6 +795,8 @@ pub fn create_border_segments(
+         LayoutSize::new(widths.right, widths.bottom),
+         border.radius.bottom_right,
+         border.radius.shape_bottom_right,
++        shape_offset_br,
++        inset_br,
+         BorderSegment::BottomRight,
+         EdgeMask::BOTTOM | EdgeMask::RIGHT,
+         rect.bottom_left(),
+@@ -759,6 +824,8 @@ pub fn create_border_segments(
+         LayoutSize::new(widths.left, widths.bottom),
+         border.radius.bottom_left,
+         border.radius.shape_bottom_left,
++        shape_offset_bl,
++        inset_bl,
+         BorderSegment::BottomLeft,
+         EdgeMask::BOTTOM | EdgeMask::LEFT,
+         rect.max,
+@@ -781,6 +848,8 @@ fn add_segment(
+     widths: DeviceSize,
+     radius: DeviceSize,
+     shape: f32,
++    shape_offset: DeviceSize,
++    inset: DeviceSize,
+     do_aa: bool,
+     h_adjacent_corner_outer: DevicePoint,
+     h_adjacent_corner_radius: DeviceSize,
+@@ -799,7 +868,9 @@ fn add_segment(
+         color1: color1.premultiplied(),
+         widths,
+         radius,
+-        shape
++        shape,
++        shape_offset,
++        inset,
+     };
+ 
+     let base_instance = BorderInstance {
+@@ -925,6 +996,8 @@ fn add_corner_segment(
+     widths: LayoutSize,
+     radius: LayoutSize,
+     shape: f32,
++    shape_offset: LayoutSize,
++    inset: LayoutSize,
+     segment: BorderSegment,
+     edge_flags: EdgeMask,
+     h_adjacent_corner_outer: LayoutPoint,
+@@ -1035,6 +1108,8 @@ fn add_corner_segment(
+             segment,
+             radius: radius.to_au(),
+             shape: shape.to_bits(),
++            shape_offset: shape_offset.to_au(),
++            inset: inset.to_au(),
+             size: widths.to_au(),
+             h_adjacent_corner_outer: (h_corner_outer - image_rect.min).to_point().to_au(),
+             h_adjacent_corner_radius: h_corner_radius.to_au(),
+@@ -1105,7 +1180,9 @@ fn add_edge_segment(
+             side0: side.into(),
+             side1: side.into(),
+             radius: LayoutSizeAu::zero(),
+-            shape: 0,
++            shape: 1.0f32.to_bits(),
++            shape_offset: LayoutSizeAu::zero(),
++            inset: LayoutSizeAu::zero(),
+             size: size.to_au(),
+             segment,
+             h_adjacent_corner_outer: LayoutPointAu::zero(),
+@@ -1156,12 +1233,20 @@ pub fn build_border_instances(
+     let widths = (LayoutSize::from_au(cache_key.size) * scale).ceil();
+     let radius = (LayoutSize::from_au(cache_key.radius) * scale).ceil();
+     let shape = f32::from_bits(cache_key.shape);
++    let shape_offset = (LayoutSize::from_au(cache_key.shape_offset) * scale).ceil();
++    let inset = (LayoutSize::from_au(cache_key.inset) * scale).ceil();
+ 
+     let h_corner_outer = (LayoutPoint::from_au(cache_key.h_adjacent_corner_outer) * scale).round();
+     let h_corner_radius = (LayoutSize::from_au(cache_key.h_adjacent_corner_radius) * scale).ceil();
+     let v_corner_outer = (LayoutPoint::from_au(cache_key.v_adjacent_corner_outer) * scale).round();
+     let v_corner_radius = (LayoutSize::from_au(cache_key.v_adjacent_corner_radius) * scale).ceil();
+ 
++    let shape_offset = if shape < 1.0 {
++        radius.max(widths) + shape_offset
++    } else {
++        DeviceSize::zero()
++    };
++
+     add_segment(
+         DeviceRect::from_size(cache_size.to_f32()),
+         style0,
+@@ -1173,6 +1258,8 @@ pub fn build_border_instances(
+         widths,
+         radius,
+         shape,
++        shape_offset,
++        inset,
+         border.do_aa,
+         h_corner_outer,
+         h_corner_radius,
+diff --git a/gfx/wr/webrender/src/box_shadow.rs b/gfx/wr/webrender/src/box_shadow.rs
+index 2e83acb366..27e9f9b9e1 100644
+--- a/gfx/wr/webrender/src/box_shadow.rs
++++ b/gfx/wr/webrender/src/box_shadow.rs
+@@ -121,6 +121,7 @@ pub struct BoxShadowCacheKey {
+     pub shape_bottom_left: u32,
+     pub shape_bottom_right: u32,
+     pub device_pixel_scale: Au,
++    pub spread_amount: u32,
+ }
+ 
+ impl<'a> SceneBuilder<'a> {
+diff --git a/gfx/wr/webrender/src/clip.rs b/gfx/wr/webrender/src/clip.rs
+index 11e279eab9..d26d421b5d 100644
+--- a/gfx/wr/webrender/src/clip.rs
++++ b/gfx/wr/webrender/src/clip.rs
+@@ -879,7 +879,7 @@ impl ClipTreeBuilder {
+ 
+                 match clip_info.key.kind {
+                     ClipItemKeyKind::Rectangle(ClipMode::Clip) => {}
+-                    ClipItemKeyKind::RoundedRectangle(_, ClipMode::Clip) => {
++                    ClipItemKeyKind::RoundedRectangle(_, _, ClipMode::Clip) => {
+                         if !spatial_tree.is_root_coord_system(clip_entry.spatial_node_index) {
+                             return false;
+                         }
+@@ -1123,9 +1123,10 @@ impl From<ClipItemKey> for ClipNode {
+             ClipItemKeyKind::Rectangle(mode) => {
+                 ClipItemKind::Rectangle { mode }
+             }
+-            ClipItemKeyKind::RoundedRectangle(radius, mode) => {
++            ClipItemKeyKind::RoundedRectangle(radius, inset, mode) => {
+                 ClipItemKind::RoundedRectangle {
+                     radius: radius.into(),
++                    inset: LayoutSideOffsets::from_au(inset),
+                     mode,
+                 }
+             }
+@@ -1651,10 +1652,10 @@ impl ClipStore {
+                 // Normal Clip rects are already handled by the clip-chain pic_coverage_rect,
+                 // no need to do anything here
+                 ClipItemKind::Rectangle { mode: ClipMode::Clip, .. } => {}
+-                ClipItemKind::RoundedRectangle { mode: ClipMode::Clip, radius } => {
++                ClipItemKind::RoundedRectangle { mode: ClipMode::Clip, radius, inset } => {
+                     // Get an inner rect for the rounded-rect clip
+                     let radius = clamped_radius(&radius, clip_instance.clip_rect.size());
+-                    let local_inner_rect = match extract_inner_rect_safe(&clip_instance.clip_rect, &radius) {
++                    let local_inner_rect = match extract_inner_rect_safe(&clip_instance.clip_rect, &radius, &inset) {
+                         Some(rect) => rect,
+                         None => return None,
+                     };
+@@ -1881,7 +1882,7 @@ impl Default for ClipStore {
+ #[cfg_attr(feature = "replay", derive(Deserialize))]
+ pub enum ClipItemKeyKind {
+     Rectangle(ClipMode),
+-    RoundedRectangle(BorderRadiusAu, ClipMode),
++    RoundedRectangle(BorderRadiusAu, LayoutSideOffsetsAu, ClipMode),
+     ImageMask(ImageKey, Option<PolygonDataHandle>),
+ }
+ 
+@@ -1890,12 +1891,13 @@ impl ClipItemKeyKind {
+         ClipItemKeyKind::Rectangle(mode)
+     }
+ 
+-    pub fn rounded_rect(radii: BorderRadius, mode: ClipMode) -> Self {
++    pub fn rounded_rect(radii: BorderRadius, inset: LayoutSideOffsets, mode: ClipMode) -> Self {
+         if radii.is_zero() {
+             ClipItemKeyKind::rectangle(mode)
+         } else {
+             ClipItemKeyKind::RoundedRectangle(
+                 radii.into(),
++                inset.to_au(),
+                 mode,
+             )
+         }
+@@ -1953,6 +1955,7 @@ pub enum ClipItemKind {
+     },
+     RoundedRectangle {
+         radius: BorderRadius,
++        inset: LayoutSideOffsets,
+         mode: ClipMode,
+     },
+     Image {
+@@ -2024,9 +2027,9 @@ impl ClipItemKind {
+             ClipItemKind::Rectangle { mode } => {
+                 (clip_rect, Some(clip_rect), mode)
+             }
+-            ClipItemKind::RoundedRectangle { ref radius, mode } => {
++            ClipItemKind::RoundedRectangle { ref radius, ref inset, mode } => {
+                 let clamped = clamped_radius(radius, clip_rect.size());
+-                let inner_clip_rect = extract_inner_rect_safe(&clip_rect, &clamped);
++                let inner_clip_rect = extract_inner_rect_safe(&clip_rect, &clamped, &inset);
+                 (clip_rect, inner_clip_rect, mode)
+             }
+             ClipItemKind::Image { .. } => {
+@@ -2104,7 +2107,7 @@ impl ClipItemKind {
+                     }
+                 }
+             }
+-            ClipItemKind::RoundedRectangle { ref radius, mode: ClipMode::Clip } => {
++            ClipItemKind::RoundedRectangle { ref radius, inset: _, mode: ClipMode::Clip } => {
+                 let rect = clip_rect;
+                 let radius = clamped_radius(radius, rect.size());
+                 // TODO(gw): Consider caching this in the ClipNode
+@@ -2122,7 +2125,7 @@ impl ClipItemKind {
+                     }
+                 }
+             }
+-            ClipItemKind::RoundedRectangle { ref radius, mode: ClipMode::ClipOut } => {
++            ClipItemKind::RoundedRectangle { ref radius, inset: _, mode: ClipMode::ClipOut } => {
+                 let rect = clip_rect;
+                 let radius = clamped_radius(radius, rect.size());
+                 // TODO(gw): Consider caching this in the ClipNode
+diff --git a/gfx/wr/webrender/src/composite.rs b/gfx/wr/webrender/src/composite.rs
+index a69214fb4a..ca899dea4b 100644
+--- a/gfx/wr/webrender/src/composite.rs
++++ b/gfx/wr/webrender/src/composite.rs
+@@ -8,7 +8,7 @@ use api::ColorDepth;
+ use crate::image_source::resolve_image;
+ use crate::picture::ResolvedSurfaceTexture;
+ use crate::renderer::GpuBufferBuilderF;
+-use euclid::Box2D;
++use euclid::{Box2D, SideOffsets2D};
+ use crate::gpu_types::{ZBufferId, ZBufferIdGenerator};
+ use crate::internal_types::{FrameAllocator, FrameMemory, FrameVec, TextureSource};
+ use crate::invalidation::compare::ImageDependency;
+@@ -854,6 +854,7 @@ impl CompositeState {
+                 let inner_rect = match extract_inner_rect_safe(
+                     &clip.rect,
+                     &clip.radius,
++                    &SideOffsets2D::<f32, DevicePixel>::zero()
+                 ) {
+                     Some(rect) => rect,
+                     None => return,
+diff --git a/gfx/wr/webrender/src/gpu_types.rs b/gfx/wr/webrender/src/gpu_types.rs
+index 5e949621c2..6303bb749b 100644
+--- a/gfx/wr/webrender/src/gpu_types.rs
++++ b/gfx/wr/webrender/src/gpu_types.rs
+@@ -192,16 +192,19 @@ pub struct BorderInstanceGpuData {
+     pub widths: DeviceSize,
+     pub radius: DeviceSize,
+     pub shape: f32,
++    pub shape_offset: DeviceSize,
++    pub inset: DeviceSize,
+ }
+ 
+ impl BorderInstanceGpuData {
+     pub fn write(&self, gpu_buffer_builder: &mut GpuBufferBuilderF) -> GpuBufferAddress {
+-        let mut writer = gpu_buffer_builder.write_blocks(5);
++        let mut writer = gpu_buffer_builder.write_blocks(6);
+         writer.push_one(self.local_rect);
+         writer.push_one(self.color0);
+         writer.push_one(self.color1);
+         writer.push_one([self.widths.width, self.widths.height, self.radius.width, self.radius.height]);
+-        writer.push_one([self.shape, 0.0, 0.0, 0.0]);
++        writer.push_one([self.shape, self.shape_offset.width, self.shape_offset.height, 0.0]);
++        writer.push_one([self.inset.width, self.inset.height, 0.0, 0.0]);
+ 
+         writer.finish()
+     }
+diff --git a/gfx/wr/webrender/src/hit_test.rs b/gfx/wr/webrender/src/hit_test.rs
+index 625bd74eae..81456200d6 100644
+--- a/gfx/wr/webrender/src/hit_test.rs
++++ b/gfx/wr/webrender/src/hit_test.rs
+@@ -87,7 +87,8 @@ impl HitTestClipNode {
+             ClipItemKeyKind::Rectangle(mode) => {
+                 HitTestRegion::Rectangle(clip_rect, mode)
+             }
+-            ClipItemKeyKind::RoundedRectangle(radius, mode) => {
++            ClipItemKeyKind::RoundedRectangle(radius, _, mode) => {
++                // TODO(wsmind): implement hit-testing for corner-shape
+                 HitTestRegion::RoundedRectangle(clip_rect, radius.into(), mode)
+             }
+             ClipItemKeyKind::ImageMask(_, polygon_handle) => {
+diff --git a/gfx/wr/webrender/src/prepare.rs b/gfx/wr/webrender/src/prepare.rs
+index b21fa8d7a5..bb2993d303 100644
+--- a/gfx/wr/webrender/src/prepare.rs
++++ b/gfx/wr/webrender/src/prepare.rs
+@@ -434,15 +434,22 @@ fn prepare_prim_for_render(
+ 
+             let blur_region = (BLUR_SAMPLE_SCALE * blur_radius).ceil();
+ 
+-            let max_corner_width = shadow_radius.top_left.width
++            let mut max_corner_width = shadow_radius.top_left.width
+                 .max(shadow_radius.bottom_left.width)
+                 .max(shadow_radius.top_right.width)
+                 .max(shadow_radius.bottom_right.width);
+-            let max_corner_height = shadow_radius.top_left.height
++            let mut max_corner_height = shadow_radius.top_left.height
+                 .max(shadow_radius.bottom_left.height)
+                 .max(shadow_radius.top_right.height)
+                 .max(shadow_radius.bottom_right.height);
+ 
++            if shadow_data.clip_mode == BoxShadowClipMode::Inset && !shadow_radius.shapes_all_round() {
++                // Add one extra pixel to avoid stretching the antialiasing tail
++                // in extreme cases (e.g corner-shape: notch with a blur radius of 1px).
++                max_corner_width -= shadow_data.spread_amount - 1.0;
++                max_corner_height -= shadow_data.spread_amount - 1.0;
++            }
++
+             let used_corner_width = max_corner_width.max(blur_region);
+             let used_corner_height = max_corner_height.max(blur_region);
+ 
+@@ -514,6 +521,14 @@ fn prepare_prim_for_render(
+                 content_scale.0,
+             );
+ 
++            // We only need the spread amount (-inset) in the cache key when using other
++            // corner shapes than 'round'
++            let cache_key_spread_amount = if !shadow_radius.shapes_all_round() {
++                shadow_data.spread_amount.to_bits()
++            } else {
++                0
++            };
++
+             let bs_cache_key = BoxShadowCacheKey {
+                 blur_radius_dp: Au::from_f32_px(blur_std_dev),
+                 clip_mode: shadow_data.clip_mode,
+@@ -527,6 +542,7 @@ fn prepare_prim_for_render(
+                 shape_bottom_right: shadow_radius.shape_bottom_right.to_bits(),
+                 shape_bottom_left: shadow_radius.shape_bottom_left.to_bits(),
+                 device_pixel_scale: Au::from_f32_px(content_scale.0),
++                spread_amount: cache_key_spread_amount,
+             };
+ 
+             // The shadow shape is offset by blur_region within the alloc task (local pixels).
+@@ -538,6 +554,8 @@ fn prepare_prim_for_render(
+             );
+             let device_pixel_scale_for_task = DevicePixelScale::new(content_scale.0);
+ 
++            let shadow_inset = LayoutSideOffsets::new_all_same(-shadow_data.spread_amount);
++
+             let task_id = frame_state.resource_cache.request_render_task(
+                 Some(RenderTaskCacheKey {
+                     origin: DeviceIntPoint::zero(),
+@@ -555,6 +573,7 @@ fn prepare_prim_for_render(
+                         RenderTaskKind::new_rounded_rect_mask(
+                             minimal_shadow_rect,
+                             shadow_radius,
++                            shadow_inset,
+                             ClipMode::Clip,
+                             device_pixel_scale_for_task,
+                         ),
+@@ -2323,20 +2342,20 @@ fn write_brush_segment_description(
+             continue;
+         }
+ 
+-        let (local_clip_rect, radius, mode) = match clip_node.item.kind {
+-            ClipItemKind::RoundedRectangle { radius, mode } => {
++        let (local_clip_rect, radius, inset, mode) = match clip_node.item.kind {
++            ClipItemKind::RoundedRectangle { radius, inset, mode } => {
+                 let radius = clamped_radius(&radius, clip_instance.clip_rect.size());
+-                (clip_instance.clip_rect, Some(radius), mode)
++                (clip_instance.clip_rect, Some(radius), Some(inset), mode)
+             }
+             ClipItemKind::Rectangle { mode } => {
+-                (clip_instance.clip_rect, None, mode)
++                (clip_instance.clip_rect, None, None, mode)
+             }
+             ClipItemKind::Image { .. } => {
+                 panic!("bug: masks not supported on old segment path");
+             }
+         };
+ 
+-        segment_builder.push_clip_rect(local_clip_rect, radius, mode);
++        segment_builder.push_clip_rect(local_clip_rect, radius, inset, mode);
+     }
+ 
+     true
+diff --git a/gfx/wr/webrender/src/prim_store/borders.rs b/gfx/wr/webrender/src/prim_store/borders.rs
+index 9e93764c31..f7cb517e4a 100644
+--- a/gfx/wr/webrender/src/prim_store/borders.rs
++++ b/gfx/wr/webrender/src/prim_store/borders.rs
+@@ -541,9 +541,9 @@ fn test_struct_sizes() {
+     //     test expectations and move on.
+     // (b) You made a structure larger. This is not necessarily a problem, but should only
+     //     be done with care, and after checking if talos performance regresses badly.
+-    assert_eq!(mem::size_of::<NormalBorderPrim>(), 100, "NormalBorderPrim size changed");
+-    assert_eq!(mem::size_of::<NormalBorderTemplate>(), 152, "NormalBorderTemplate size changed");
+-    assert_eq!(mem::size_of::<NormalBorderKey>(), 104, "NormalBorderKey size changed");
++    assert_eq!(mem::size_of::<NormalBorderPrim>(), 116, "NormalBorderPrim size changed");
++    assert_eq!(mem::size_of::<NormalBorderTemplate>(), 168, "NormalBorderTemplate size changed");
++    assert_eq!(mem::size_of::<NormalBorderKey>(), 120, "NormalBorderKey size changed");
+     assert_eq!(mem::size_of::<ImageBorder>(), 68, "ImageBorder size changed");
+     assert_eq!(mem::size_of::<ImageBorderTemplate>(), 72, "ImageBorderTemplate size changed");
+     assert_eq!(mem::size_of::<ImageBorderKey>(), 72, "ImageBorderKey size changed");
+diff --git a/gfx/wr/webrender/src/quad.rs b/gfx/wr/webrender/src/quad.rs
+index e07ec25550..fabe4ed46d 100644
+--- a/gfx/wr/webrender/src/quad.rs
++++ b/gfx/wr/webrender/src/quad.rs
+@@ -3,7 +3,7 @@
+  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+ 
+ use api::{BorderRadius, ClipMode, ColorF, units::*};
+-use euclid::{Scale, point2};
++use euclid::{Scale, SideOffsets2D, Size2D, point2};
+ 
+ use crate::ItemUid;
+ use crate::border::NinePatchDescriptorExt;
+@@ -1207,7 +1207,7 @@ fn prepare_tiles(
+                 let rect = transform.map_rect(&clip_instance.clip_rect);
+                 scratch.retained.quad_tile_classifier.add_clip_rect(rect, mode, applied_as_local_clip);
+             }
+-            ClipItemKind::RoundedRectangle { mode: ClipMode::Clip, ref radius } => {
++            ClipItemKind::RoundedRectangle { mode: ClipMode::Clip, ref radius, ref inset } => {
+                 // For rounded-rects with Clip mode, we need a mask for each corner,
+                 // and to add the clip rect itself (to cull tiles outside that rect)
+ 
+@@ -1222,31 +1222,54 @@ fn prepare_tiles(
+                 let r_br = transform.map_size(&radius.bottom_right).abs();
+                 let r_bl = transform.map_size(&radius.bottom_left).abs();
+ 
++                let inset: SideOffsets2D<f32, DevicePixel> = transform.map_side_offsets(&inset);
++
++                let i_tl = if radius.shape_top_left < 1.0 {
++                    Size2D::new(inset.top, inset.left)
++                } else {
++                    Size2D::zero()
++                };
++                let i_tr = if radius.shape_top_right < 1.0 {
++                    Size2D::new(inset.top, inset.right)
++                } else {
++                    Size2D::zero()
++                };
++                let i_br = if radius.shape_bottom_right < 1.0 {
++                    Size2D::new(inset.bottom, inset.right)
++                } else {
++                    Size2D::zero()
++                };
++                let i_bl = if radius.shape_bottom_left < 1.0 {
++                    Size2D::new(inset.bottom, inset.left)
++                } else {
++                    Size2D::zero()
++                };
++
+                 // Construct the mask regions for each corner
+                 let c_tl = DeviceRect::from_origin_and_size(
+                     clip_device_rect.min,
+-                    r_tl,
++                    r_tl + i_tl,
+                 );
+                 let c_tr = DeviceRect::from_origin_and_size(
+                     DevicePoint::new(
+                         clip_device_rect.max.x - r_tr.width,
+                         clip_device_rect.min.y,
+                     ),
+-                    r_tr,
++                    r_tr + i_tr,
+                 );
+                 let c_br = DeviceRect::from_origin_and_size(
+                     DevicePoint::new(
+                         clip_device_rect.max.x - r_br.width,
+                         clip_device_rect.max.y - r_br.height,
+                     ),
+-                    r_br,
++                    r_br + i_br,
+                 );
+                 let c_bl = DeviceRect::from_origin_and_size(
+                     DevicePoint::new(
+                         clip_device_rect.min.x,
+                         clip_device_rect.max.y - r_bl.height,
+                     ),
+-                    r_bl,
++                    r_bl + i_bl,
+                 );
+ 
+                 scratch.retained.quad_tile_classifier.add_clip_rect(clip_device_rect, ClipMode::Clip, applied_as_local_clip);
+@@ -1255,11 +1278,11 @@ fn prepare_tiles(
+                 scratch.retained.quad_tile_classifier.add_mask_region(c_br);
+                 scratch.retained.quad_tile_classifier.add_mask_region(c_bl);
+             }
+-            ClipItemKind::RoundedRectangle { mode: ClipMode::ClipOut, ref radius } => {
++            ClipItemKind::RoundedRectangle { mode: ClipMode::ClipOut, ref radius , ref inset } => {
+                 let radius = clamped_radius(radius, clip_instance.clip_rect.size());
+                 // Try to find an inner rect within the clip-out rounded rect that we can
+                 // use to cull inner tiles. If we can't, the entire rect needs to be masked
+-                match extract_inner_rect_k(&clip_instance.clip_rect, &radius, 0.5) {
++                match extract_inner_rect_k(&clip_instance.clip_rect, &radius, &inset, 0.5) {
+                     Some(ref inner_rect) => {
+                         let rect = transform.map_rect(inner_rect);
+                         scratch.retained.quad_tile_classifier.add_clip_rect(rect, ClipMode::ClipOut, false);
+@@ -1419,7 +1442,7 @@ fn get_prim_render_strategy(
+         let clip_instance = clip_store.get_instance_from_range(&clip_chain.clips_range, 0);
+         let clip_node = &interned_clips[clip_instance.handle];
+ 
+-        if let ClipItemKind::RoundedRectangle { ref radius, mode: ClipMode::Clip, .. } = clip_node.item.kind {
++        if let ClipItemKind::RoundedRectangle { ref radius, ref inset, mode: ClipMode::Clip } = clip_node.item.kind {
+             let size = clip_instance.clip_rect.size();
+             let radius = clamped_radius(radius, size);
+             let max_corner_width = radius.top_left.width
+@@ -1430,9 +1453,28 @@ fn get_prim_render_strategy(
+                                         .max(radius.bottom_left.height)
+                                         .max(radius.top_right.height)
+                                         .max(radius.bottom_right.height);
++            
++            let mut max_inset_width = 0.0f32;
++            let mut max_inset_height = 0.0f32;
++            if radius.shape_top_left < 1.0 {
++                max_inset_width = max_inset_width.max(inset.top);
++                max_inset_height = max_inset_height.max(inset.left);
++            }
++            if radius.shape_top_right < 1.0 {
++                max_inset_width = max_inset_width.max(inset.top);
++                max_inset_height = max_inset_height.max(inset.right);
++            }
++            if radius.shape_bottom_right < 1.0 {
++                max_inset_width = max_inset_width.max(inset.bottom);
++                max_inset_height = max_inset_height.max(inset.right);
++            }
++            if radius.shape_bottom_left < 1.0 {
++                max_inset_width = max_inset_width.max(inset.bottom);
++                max_inset_height = max_inset_height.max(inset.left);
++            }
+ 
+-            if max_corner_width <= 0.5 * size.width &&
+-                max_corner_height <= 0.5 * size.height {
++            if (max_corner_width + max_inset_width) <= 0.5 * size.width &&
++                (max_corner_height + max_inset_height) <= 0.5 * size.height {
+ 
+                 let clip_prim_coords_match = spatial_tree.is_matching_coord_system(
+                     prim_spatial_node_index,
+@@ -1449,7 +1491,7 @@ fn get_prim_render_strategy(
+ 
+                     if let Some(clip_rect) = map_clip_to_prim.map(&clip_instance.clip_rect) {
+                         let radius = map_clip_to_prim.map_vector(
+-                            LayoutVector2D::new(max_corner_width, max_corner_height)
++                            LayoutVector2D::new(max_corner_width + max_inset_width, max_corner_height + max_inset_height)
+                         );
+                         return QuadRenderStrategy::NinePatch {
+                             radius,
+@@ -1776,6 +1818,7 @@ pub fn write_rounded_rect_clip_blocks(
+     gpu_buffer: &mut GpuBufferBuilderF,
+     clip_rect: LayoutRect,
+     radius: &BorderRadius,
++    inset: LayoutSideOffsets,
+     mode: ClipMode,
+ ) -> (GpuBufferAddress, bool) {
+     let radius = clamped_radius(radius, clip_rect.size());
+@@ -1793,7 +1836,7 @@ pub fn write_rounded_rect_clip_blocks(
+ 
+         (writer.finish(), true)
+     } else {
+-        let mut writer = gpu_buffer.write_blocks(5);
++        let mut writer = gpu_buffer.write_blocks(6);
+         writer.push_one(clip_rect);
+         writer.push_one([
+             radius.top_left.width,
+@@ -1814,6 +1857,7 @@ pub fn write_rounded_rect_clip_blocks(
+             radius.shape_bottom_right,
+             radius.shape_bottom_left,
+         ]);
++        writer.push_one(inset);
+ 
+         (writer.finish(), false)
+     }
+@@ -1835,11 +1879,12 @@ pub fn prepare_clip_task(
+     sub_tasks: &mut SubTaskRange,
+ ) {
+     let (clip_address, fast_path) = match clip_item.kind {
+-        ClipItemKind::RoundedRectangle { radius, mode } => {
++        ClipItemKind::RoundedRectangle { radius, inset, mode } => {
+             write_rounded_rect_clip_blocks(
+                 gpu_buffer,
+                 clip_instance.clip_rect,
+                 &radius,
++                inset,
+                 mode,
+             )
+         }
+diff --git a/gfx/wr/webrender/src/render_target.rs b/gfx/wr/webrender/src/render_target.rs
+index 6213555e12..cd6bd0c4cc 100644
+--- a/gfx/wr/webrender/src/render_target.rs
++++ b/gfx/wr/webrender/src/render_target.rs
+@@ -451,6 +451,7 @@ impl RenderTarget {
+                     &mut gpu_buffer_builder.f32,
+                     region_task.clip_rect,
+                     &region_task.radius,
++                    region_task.inset,
+                     region_task.mode,
+                 );
+ 
+diff --git a/gfx/wr/webrender/src/render_task.rs b/gfx/wr/webrender/src/render_task.rs
+index 4759884e34..d97d6fa071 100644
+--- a/gfx/wr/webrender/src/render_task.rs
++++ b/gfx/wr/webrender/src/render_task.rs
+@@ -170,6 +170,7 @@ pub struct ImageRequestTask {
+ pub struct ClipRegionTask {
+     pub clip_rect: LayoutRect,
+     pub radius: BorderRadius,
++    pub inset: LayoutSideOffsets,
+     pub mode: ClipMode,
+     pub device_pixel_scale: DevicePixelScale,
+ }
+@@ -550,12 +551,14 @@ impl RenderTaskKind {
+     pub fn new_rounded_rect_mask(
+         clip_rect: LayoutRect,
+         radius: BorderRadius,
++        inset: LayoutSideOffsets,
+         mode: ClipMode,
+         device_pixel_scale: DevicePixelScale,
+     ) -> Self {
+         RenderTaskKind::ClipRegion(ClipRegionTask {
+             clip_rect,
+             radius,
++            inset,
+             mode,
+             device_pixel_scale,
+         })
+diff --git a/gfx/wr/webrender/src/renderer/composite.rs b/gfx/wr/webrender/src/renderer/composite.rs
+index bc59b72b37..276d7ad78c 100644
+--- a/gfx/wr/webrender/src/renderer/composite.rs
++++ b/gfx/wr/webrender/src/renderer/composite.rs
+@@ -806,6 +806,7 @@ impl Renderer {
+                     segment_builder.push_clip_rect(
+                         clip.rect.cast_unit(),
+                         Some(clip.radius),
++                        None,
+                         ClipMode::Clip,
+                     );
+                     segment_builder.build(|segment| {
+@@ -1060,6 +1061,7 @@ impl Renderer {
+                     segment_builder.push_clip_rect(
+                         clip.rect.cast_unit(),
+                         Some(clip.radius),
++                        None,
+                         ClipMode::Clip,
+                     );
+                     segment_builder.build(|segment| {
+diff --git a/gfx/wr/webrender/src/renderer/gpu_buffer.rs b/gfx/wr/webrender/src/renderer/gpu_buffer.rs
+index e20752544d..4cbedc3b4f 100644
+--- a/gfx/wr/webrender/src/renderer/gpu_buffer.rs
++++ b/gfx/wr/webrender/src/renderer/gpu_buffer.rs
+@@ -13,7 +13,7 @@ use crate::gpu_types::UvRectKind;
+ use crate::internal_types::{FrameId, FrameMemory, FrameVec, TextureSource, TextureSourceExternal};
+ use crate::renderer::MAX_VERTEX_TEXTURE_WIDTH;
+ use crate::util::ScaleOffset;
+-use api::units::{DeviceIntRect, DeviceIntSize, DevicePoint, DeviceRect, LayoutRect, PictureRect};
++use api::units::{DeviceIntRect, DeviceIntSize, DevicePoint, DeviceRect, LayoutRect, LayoutSideOffsets, PictureRect};
+ use api::{PremultipliedColorF, ImageFormat};
+ use crate::device::Texel;
+ use crate::render_task::{RenderTaskLocation, StaticRenderTaskSurface};
+@@ -196,6 +196,19 @@ impl Into<GpuBufferBlockF> for crate::quad::LayoutOrDeviceRect {
+     }
+ }
+ 
++impl Into<GpuBufferBlockF> for LayoutSideOffsets {
++    fn into(self) -> GpuBufferBlockF {
++        GpuBufferBlockF {
++            data: [
++                self.top,
++                self.right,
++                self.bottom,
++                self.left,
++            ],
++        }
++    }
++}
++
+ impl Into<GpuBufferBlockF> for ScaleOffset {
+     fn into(self) -> GpuBufferBlockF {
+         GpuBufferBlockF {
+diff --git a/gfx/wr/webrender/src/scene_building.rs b/gfx/wr/webrender/src/scene_building.rs
+index cb6f4c3ac6..71f058b90e 100644
+--- a/gfx/wr/webrender/src/scene_building.rs
++++ b/gfx/wr/webrender/src/scene_building.rs
+@@ -2710,6 +2710,7 @@ impl<'a> SceneBuilder<'a> {
+         let item = ClipItemKey {
+             kind: ClipItemKeyKind::rounded_rect(
+                 clip.radii,
++                clip.inset,
+                 clip.mode,
+             ),
+         };
+diff --git a/gfx/wr/webrender/src/segment.rs b/gfx/wr/webrender/src/segment.rs
+index dda042f81f..b2e5d3e7c2 100644
+--- a/gfx/wr/webrender/src/segment.rs
++++ b/gfx/wr/webrender/src/segment.rs
+@@ -263,8 +263,8 @@ impl SegmentBuilder {
+         self.inner_rect = inner_rect;
+         self.bounding_rect = Some(local_rect);
+ 
+-        self.push_clip_rect(local_rect, None, ClipMode::Clip);
+-        self.push_clip_rect(local_clip_rect, None, ClipMode::Clip);
++        self.push_clip_rect(local_rect, None, None, ClipMode::Clip);
++        self.push_clip_rect(local_clip_rect, None, None, ClipMode::Clip);
+ 
+         // This must be set after the push_clip_rect calls above, since we
+         // want to skip segment building if those are the only clips.
+@@ -366,6 +366,7 @@ impl SegmentBuilder {
+         &mut self,
+         rect: LayoutRect,
+         radius: Option<BorderRadius>,
++        inset: Option<LayoutSideOffsets>,
+         mode: ClipMode,
+     ) {
+         self.has_interesting_clips = true;
+@@ -383,7 +384,7 @@ impl SegmentBuilder {
+             Some(radius) => {
+                 // For a rounded rect, try to create a nine-patch where there
+                 // is a clip item for each corner, inner and edge region.
+-                match extract_inner_rect_safe(&rect, &radius) {
++                match extract_inner_rect_safe(&rect, &radius, &inset.unwrap_or_default()) {
+                     Some(inner) => {
+                         let p0 = rect.min;
+                         let p1 = inner.min;
+@@ -709,7 +710,8 @@ fn emit_segment_if_needed(
+ #[cfg(test)]
+ mod test {
+     use api::{BorderRadius, ClipMode};
+-    use api::units::{LayoutPoint, LayoutRect};
++    use api::units::{LayoutPoint, LayoutRect, LayoutSideOffsets, LayoutSize};
++
+     use super::{Segment, SegmentBuilder, EdgeMask};
+     use std::cmp;
+ 
+@@ -768,7 +770,7 @@ mod test {
+         local_rect: LayoutRect,
+         inner_rect: Option<LayoutRect>,
+         local_clip_rect: LayoutRect,
+-        clips: &[(LayoutRect, Option<BorderRadius>, ClipMode)],
++        clips: &[(LayoutRect, Option<BorderRadius>, Option<LayoutSideOffsets>, ClipMode)],
+         expected_segments: &mut [Segment]
+     ) {
+         let mut sb = SegmentBuilder::new();
+@@ -777,11 +779,11 @@ mod test {
+             inner_rect,
+             local_clip_rect,
+         );
+-        sb.push_clip_rect(local_rect, None, ClipMode::Clip);
+-        sb.push_clip_rect(local_clip_rect, None, ClipMode::Clip);
++        sb.push_clip_rect(local_rect, None, None, ClipMode::Clip);
++        sb.push_clip_rect(local_clip_rect, None, None, ClipMode::Clip);
+         let mut segments = Vec::new();
+-        for &(rect, radius, mode) in clips {
+-            sb.push_clip_rect(rect, radius, mode);
++        for &(rect, radius, inset, mode) in clips {
++            sb.push_clip_rect(rect, radius, inset, mode);
+         }
+         sb.build(|segment| {
+             segments.push(Segment {
+@@ -926,8 +928,8 @@ mod test {
+             None,
+             rect(-1000.0, -1000.0, 1000.0, 1000.0),
+             &[
+-                (rect(20.0, 20.0, 40.0, 40.0), None, ClipMode::Clip),
+-                (rect(40.0, 20.0, 60.0, 40.0), None, ClipMode::Clip),
++                (rect(20.0, 20.0, 40.0, 40.0), None, None, ClipMode::Clip),
++                (rect(40.0, 20.0, 60.0, 40.0), None, None, ClipMode::Clip),
+             ],
+             &mut [
+             ],
+@@ -941,7 +943,7 @@ mod test {
+             None,
+             rect(-1000.0, -1000.0, 1000.0, 1000.0),
+             &[
+-                (rect(20.0, 20.0, 60.0, 60.0), Some(BorderRadius::uniform(10.0)), ClipMode::Clip),
++                (rect(20.0, 20.0, 60.0, 60.0), Some(BorderRadius::uniform(10.0)), None, ClipMode::Clip),
+             ],
+             &mut [
+                 // corners
+@@ -962,6 +964,45 @@ mod test {
+         );
+     }
+ 
++    #[test]
++    fn segment_rounded_clip_inset() {
++        let radius = BorderRadius {
++            top_left: LayoutSize::new(10.0, 10.0),
++            top_right: LayoutSize::new(10.0, 10.0),
++            bottom_left: LayoutSize::new(10.0, 10.0),
++            bottom_right: LayoutSize::new(10.0, 10.0),
++            shape_top_left: 2.0,
++            shape_top_right: 1.0,
++            shape_bottom_left: 0.0,
++            shape_bottom_right: -1.0,
++        };
++        let inset = LayoutSideOffsets::new_all_same(5.0);
++        seg_test(
++            rect(0.0, 0.0, 100.0, 100.0),
++            None,
++            rect(-1000.0, -1000.0, 1000.0, 1000.0),
++            &[
++                (rect(20.0, 20.0, 60.0, 60.0), Some(radius), Some(inset), ClipMode::Clip),
++            ],
++            &mut [
++                // corners
++                seg(20.0, 20.0, 35.0, 30.0, true, Some(EdgeMask::LEFT | EdgeMask::TOP)),
++                seg(20.0, 45.0, 35.0, 60.0, true, Some(EdgeMask::LEFT | EdgeMask::BOTTOM)),
++                seg(45.0, 20.0, 60.0, 30.0, true, Some(EdgeMask::RIGHT | EdgeMask::TOP)),
++                seg(45.0, 45.0, 60.0, 60.0, true, Some(EdgeMask::RIGHT | EdgeMask::BOTTOM)),
++
++                // inner
++                seg(35.0, 30.0, 45.0, 45.0, false, None),
++
++                // edges
++                seg(35.0, 20.0, 45.0, 30.0, false, Some(EdgeMask::TOP)),
++                seg(35.0, 45.0, 45.0, 60.0, false, Some(EdgeMask::BOTTOM)),
++                seg(20.0, 30.0, 35.0, 45.0, false, Some(EdgeMask::LEFT)),
++                seg(45.0, 30.0, 60.0, 45.0, false, Some(EdgeMask::RIGHT)),
++            ],
++        );
++    }
++
+     #[test]
+     fn segment_clip_out() {
+         seg_test(
+@@ -969,7 +1010,7 @@ mod test {
+             None,
+             rect(-1000.0, -1000.0, 2000.0, 2000.0),
+             &[
+-                (rect(20.0, 20.0, 60.0, 60.0), None, ClipMode::ClipOut),
++                (rect(20.0, 20.0, 60.0, 60.0), None, None, ClipMode::ClipOut),
+             ],
+             &mut [
+                 seg(0.0, 0.0, 20.0, 20.0, false, Some(EdgeMask::TOP | EdgeMask::LEFT)),
+@@ -993,7 +1034,7 @@ mod test {
+             None,
+             rect(-1000.0, -1000.0, 2000.0, 2000.0),
+             &[
+-                (rect(20.0, 20.0, 60.0, 60.0), Some(BorderRadius::uniform(10.0)), ClipMode::ClipOut),
++                (rect(20.0, 20.0, 60.0, 60.0), Some(BorderRadius::uniform(10.0)), None, ClipMode::ClipOut),
+             ],
+             &mut [
+                 // top row
+@@ -1036,8 +1077,8 @@ mod test {
+             None,
+             rect(-1000.0, -1000.0, 2000.0, 2000.0),
+             &[
+-                (rect(20.0, 20.0, 60.0, 60.0), None, ClipMode::Clip),
+-                (rect(50.0, 50.0, 80.0, 80.0), None, ClipMode::ClipOut),
++                (rect(20.0, 20.0, 60.0, 60.0), None, None, ClipMode::Clip),
++                (rect(50.0, 50.0, 80.0, 80.0), None, None, ClipMode::ClipOut),
+             ],
+             &mut [
+                 seg(20.0, 20.0, 50.0, 50.0, false, Some(EdgeMask::LEFT | EdgeMask::TOP)),
+@@ -1054,8 +1095,8 @@ mod test {
+             None,
+             rect(0.0, 0.0, 100.0, 100.0),
+             &[
+-                (rect(0.0, 0.0, 10.0, 10.0), None, ClipMode::ClipOut),
+-                (rect(0.0, 0.0, 100.0, 100.0), Some(BorderRadius::uniform(10.0)), ClipMode::Clip),
++                (rect(0.0, 0.0, 10.0, 10.0), None, None, ClipMode::ClipOut),
++                (rect(0.0, 0.0, 100.0, 100.0), Some(BorderRadius::uniform(10.0)), None, ClipMode::Clip),
+             ],
+             &mut [
+                 // corners
+@@ -1082,8 +1123,8 @@ mod test {
+             None,
+             rect(0.0, 0.0, 100.0, 100.0),
+             &[
+-                (rect(10.0, 10.0, 90.0, 90.0), None, ClipMode::Clip),
+-                (rect(0.0, 0.0, 100.0, 100.0), Some(BorderRadius::uniform(10.0)), ClipMode::Clip),
++                (rect(10.0, 10.0, 90.0, 90.0), None, None, ClipMode::Clip),
++                (rect(0.0, 0.0, 100.0, 100.0), Some(BorderRadius::uniform(10.0)), None, ClipMode::Clip),
+             ],
+             &mut [
+                 seg(10.0, 10.0, 90.0, 90.0, false,
+@@ -1104,8 +1145,8 @@ mod test {
+             None,
+             rect(0.0, 0.0, 100.0, 100.0),
+             &[
+-                (rect(10.0, 10.0, 90.0, 90.0), None, ClipMode::Clip),
+-                (rect(10.0, 10.0, 90.0, 90.0), None, ClipMode::ClipOut),
++                (rect(10.0, 10.0, 90.0, 90.0), None, None, ClipMode::Clip),
++                (rect(10.0, 10.0, 90.0, 90.0), None, None, ClipMode::ClipOut),
+             ],
+             &mut [
+             ],
+@@ -1119,7 +1160,7 @@ mod test {
+             None,
+             rect(0.0, 0.0, 100.0, 100.0),
+             &[
+-                (rect(0.0, 0.0, 100.0, 90.0), None, ClipMode::ClipOut),
++                (rect(0.0, 0.0, 100.0, 90.0), None, None, ClipMode::ClipOut),
+             ],
+             &mut [
+                 seg(0.0, 90.0, 100.0, 100.0, false, Some(
+@@ -1224,7 +1265,7 @@ mod test {
+             Some(rect(20.0, 40.0, 60.0, 80.0)),
+             rect(0.0, 0.0, 100.0, 100.0),
+             &[
+-                (rect(0.0, 0.0, 100.0, 90.0), None, ClipMode::ClipOut),
++                (rect(0.0, 0.0, 100.0, 90.0), None, None, ClipMode::ClipOut),
+             ],
+             &mut [
+                 seg_region(
+@@ -1262,7 +1303,7 @@ mod test {
+             Some(rect(20.0, 20.0, 80.0, 80.0)),
+             rect(0.0, 0.0, 100.0, 100.0),
+             &[
+-                (rect(20.0, 20.0, 100.0, 100.0), None, ClipMode::ClipOut),
++                (rect(20.0, 20.0, 100.0, 100.0), None, None, ClipMode::ClipOut),
+             ],
+             &mut [
+                 seg_region(
+@@ -1315,7 +1356,7 @@ mod test {
+             Some(rect(20.0, 20.0, 80.0, 80.0)),
+             rect(0.0, 0.0, 100.0, 100.0),
+             &[
+-                (rect(10.0, 10.0, 30.0, 30.0), None, ClipMode::Clip),
++                (rect(10.0, 10.0, 30.0, 30.0), None, None, ClipMode::Clip),
+             ],
+             &mut [
+                 seg_region(
+diff --git a/gfx/wr/webrender/src/tile_cache/mod.rs b/gfx/wr/webrender/src/tile_cache/mod.rs
+index 3d08ff4dc3..927a8d465c 100644
+--- a/gfx/wr/webrender/src/tile_cache/mod.rs
++++ b/gfx/wr/webrender/src/tile_cache/mod.rs
+@@ -1141,7 +1141,7 @@ impl TileCacheInstance {
+                             .get_instance_from_range(&clip_chain.clips_range, i);
+                         let clip_node = &frame_state.data_stores.clip[clip_instance.handle];
+ 
+-                        if let ClipItemKind::RoundedRectangle { radius, mode } = clip_node.item.kind {
++                        if let ClipItemKind::RoundedRectangle { radius, inset: _, mode } = clip_node.item.kind {
+                             assert_eq!(mode, ClipMode::Clip);
+ 
+                             let radius = clamped_radius(&radius, clip_instance.clip_rect.size());
+diff --git a/gfx/wr/webrender/src/tile_cache/slice_builder.rs b/gfx/wr/webrender/src/tile_cache/slice_builder.rs
+index 595377d04d..4f29370636 100644
+--- a/gfx/wr/webrender/src/tile_cache/slice_builder.rs
++++ b/gfx/wr/webrender/src/tile_cache/slice_builder.rs
+@@ -569,11 +569,11 @@ fn create_tile_cache(
+             match clip_node_data.key.kind {
+                 ClipItemKeyKind::ImageMask(..) |
+                 ClipItemKeyKind::Rectangle(ClipMode::ClipOut) |
+-                ClipItemKeyKind::RoundedRectangle(_, ClipMode::ClipOut) => {
++                ClipItemKeyKind::RoundedRectangle(_, _, ClipMode::ClipOut) => {
+                     // Has an image-mask or clip-out clip, we can't handle this as a shared clip
+                     false
+                 }
+-                ClipItemKeyKind::RoundedRectangle(radius, ClipMode::Clip) => {
++                ClipItemKeyKind::RoundedRectangle(radius, _, ClipMode::Clip) => {
+                     // The shader and CoreAnimation rely on certain constraints such
+                     // as uniform radii to be able to apply the clip during compositing.
+                     let br = clamped_radius(&BorderRadius::from(radius), node.unsnapped_clip_rect.size());
+@@ -611,7 +611,7 @@ fn create_tile_cache(
+                 let can_combine = match (accumulated_rounded_rect, clip_node_data.key.kind) {
+                     (
+                         Some((acc_rect, acc_radius)),
+-                        ClipItemKeyKind::RoundedRectangle(radius, ClipMode::Clip),
++                        ClipItemKeyKind::RoundedRectangle(radius, _, ClipMode::Clip),
+                     ) => {
+                         let radius = clamped_radius(&BorderRadius::from(radius), node.unsnapped_clip_rect.size());
+                         intersect_rounded_rects(
+@@ -632,7 +632,7 @@ fn create_tile_cache(
+                     // Can't combine, drop children and keep only this clip.
+                     shared_clip_node_id = current_node_id;
+                     rounded_rect_count = 1;
+-                    if let ClipItemKeyKind::RoundedRectangle(radius, ClipMode::Clip) = clip_node_data.key.kind {
++                    if let ClipItemKeyKind::RoundedRectangle(radius, _, ClipMode::Clip) = clip_node_data.key.kind {
+                         let radius = clamped_radius(&BorderRadius::from(radius), node.unsnapped_clip_rect.size());
+                         accumulated_rounded_rect = Some((node.unsnapped_clip_rect, radius));
+                     }
+diff --git a/gfx/wr/webrender/src/util.rs b/gfx/wr/webrender/src/util.rs
+index 811549d1cb..b2da95259e 100644
+--- a/gfx/wr/webrender/src/util.rs
++++ b/gfx/wr/webrender/src/util.rs
+@@ -4,7 +4,7 @@
+ 
+ use api::BorderRadius;
+ use api::units::*;
+-use euclid::{Point2D, Rect, Box2D, Size2D, Vector2D, point2, point3};
++use euclid::{Point2D, Rect, Box2D, Size2D, SideOffsets2D, Vector2D, point2, point3};
+ use euclid::{default, Transform2D, Transform3D, Scale, approxeq::ApproxEq};
+ use plane_split::{Clipper, Polygon};
+ use std::{i32, f32, fmt, ptr};
+@@ -309,6 +309,15 @@ impl ScaleOffset {
+         )
+     }
+ 
++    pub fn map_side_offsets<F, T>(&self, side_offsets: &SideOffsets2D<f32, F>) -> SideOffsets2D<f32, T> {
++        SideOffsets2D::new(
++            side_offsets.top * self.scale.y.abs(),
++            side_offsets.right * self.scale.x.abs(),
++            side_offsets.bottom * self.scale.y.abs(),
++            side_offsets.left * self.scale.x.abs(),
++        )
++    }
++
+     pub fn unmap_vector<F, T>(&self, vector: &Vector2D<f32, F>) -> Vector2D<f32, T> {
+         Vector2D::new(
+             vector.x / self.scale.x,
+@@ -682,17 +691,49 @@ pub fn pack_as_float(value: u32) -> f32 {
+ fn extract_inner_rect_impl<U>(
+     rect: &Box2D<f32, U>,
+     radii: &BorderRadius,
++    inset: &SideOffsets2D<f32, U>,
+     k: f32,
+ ) -> Option<Box2D<f32, U>> {
+     // `k` defines how much border is taken into account
+     // We enforce the offsets to be rounded to pixel boundaries
+     // by `ceil`-ing and `floor`-ing them
+ 
+-    let xl = (k * radii.top_left.width.max(radii.bottom_left.width)).ceil();
+-    let xr = (rect.width() - k * radii.top_right.width.max(radii.bottom_right.width)).floor();
+-    let yt = (k * radii.top_left.height.max(radii.top_right.height)).ceil();
++    // In case of a corner shape below "round" (superellipse parameter < 1),
++    // we need to add the inset to the radii for correctness. This will slightly
++    // overestimate the corner area for sub-ellipses (-1 < parameter < 1), but
++    // keeps the computation cheap.
++
++    let mut top_left_width = radii.top_left.width;
++    let mut top_left_height = radii.top_left.height;
++    let mut top_right_width = radii.top_right.width;
++    let mut top_right_height = radii.top_right.height;
++    let mut bottom_left_width = radii.bottom_left.width;
++    let mut bottom_left_height = radii.bottom_left.height;
++    let mut bottom_right_width = radii.bottom_right.width;
++    let mut bottom_right_height = radii.bottom_right.height;
++
++    if radii.shape_top_left < 1.0 {
++        top_left_width += inset.top;
++        top_left_height += inset.left;
++    }
++    if radii.shape_top_right < 1.0 {
++        top_right_width += inset.top;
++        top_right_height += inset.right;
++    }
++    if radii.shape_bottom_left < 1.0 {
++        bottom_left_width += inset.bottom;
++        bottom_left_height += inset.left;
++    }
++    if radii.shape_bottom_right < 1.0 {
++        bottom_right_width += inset.bottom;
++        bottom_right_height += inset.right;
++    }
++
++    let xl = (k * top_left_width.max(bottom_left_width)).ceil();
++    let xr = (rect.width() - k * top_right_width.max(bottom_right_width)).floor();
++    let yt = (k * top_left_height.max(top_right_height)).ceil();
+     let yb =
+-        (rect.height() - k * radii.bottom_left.height.max(radii.bottom_right.height)).floor();
++        (rect.height() - k * bottom_left_height.max(bottom_right_height)).floor();
+ 
+     if xl <= xr && yt <= yb {
+         Some(Box2D::from_origin_and_size(
+@@ -709,10 +750,11 @@ fn extract_inner_rect_impl<U>(
+ pub fn extract_inner_rect_safe<U>(
+     rect: &Box2D<f32, U>,
+     radii: &BorderRadius,
++    inset: &SideOffsets2D<f32, U>,
+ ) -> Option<Box2D<f32, U>> {
+     // value of `k==1.0` is used for extraction of the corner rectangles
+     // see `SEGMENT_CORNER_*` in `clip_shared.glsl`
+-    extract_inner_rect_impl(rect, radii, 1.0)
++    extract_inner_rect_impl(rect, radii, inset, 1.0)
+ }
+ 
+ /// Return an aligned rectangle that is inside the clip region and doesn't intersect
+@@ -721,9 +763,18 @@ pub fn extract_inner_rect_safe<U>(
+ pub fn extract_inner_rect_k<U>(
+     rect: &Box2D<f32, U>,
+     radii: &BorderRadius,
++    inset: &SideOffsets2D<f32, U>,
+     k: f32,
+ ) -> Option<Box2D<f32, U>> {
+-    extract_inner_rect_impl(rect, radii, k)
++    // When using corner shape, corners can go inside the shape and create
++    // clipping issues, we need the 'safe' (k == 1.0) version in that case.
++    // This could be refined by computing the superellipse half corners but
++    // would make the calculation a bit more expensive.
++    if radii.shapes_all_round() {
++        extract_inner_rect_impl(rect, radii, inset, k)
++    } else {
++        extract_inner_rect_impl(rect, radii, inset, 1.0)
++    }
+ }
+ 
+ #[cfg(test)]
+diff --git a/gfx/wr/webrender_api/src/display_item.rs b/gfx/wr/webrender_api/src/display_item.rs
+index cc8b80a049..32b0f625f7 100644
+--- a/gfx/wr/webrender_api/src/display_item.rs
++++ b/gfx/wr/webrender_api/src/display_item.rs
+@@ -418,6 +418,17 @@ pub struct NormalBorder {
+     pub top: BorderSide,
+     pub bottom: BorderSide,
+     pub radius: BorderRadius,
++
++    /// Accumulated inset from the reference shape, in case of inflation/deflation.
++    /// The inset is expected to be already baked in rect and radii, but is necessary
++    /// for the correct computation of corner shapes.
++    ///
++    /// As borders have widths, this value should be calculated for the *outer* edge
++    /// of the border. For instance, a regular shape with a border will have an inset
++    /// of zero, but an outline of 5px, of which the outer edge is 5px away from the
++    /// original border-box, will have an inset of -5px.
++    pub inset: LayoutSideOffsets,
++
+     /// Whether to apply anti-aliasing on the border corners.
+     ///
+     /// Note that for this to be `false` and work, this requires the borders to
+@@ -2124,6 +2135,12 @@ pub struct ComplexClipRegion {
+     pub rect: LayoutRect,
+     /// Border radii of this rectangle.
+     pub radii: BorderRadius,
++    /// Accumulated inset from the reference shape, in case of inflation/deflation.
++    /// The inset is expected to be already baked in rect and radii, but is necessary
++    /// for the correct computation of corner shapes.
++    /// Example: a shape with a border of 10px should have a 10px inset applied on its
++    /// content mask.
++    pub inset: LayoutSideOffsets,
+     /// Whether we are clipping inside or outside
+     /// the region.
+     pub mode: ClipMode,
+@@ -2214,9 +2231,10 @@ impl ComplexClipRegion {
+     pub fn new(
+         rect: LayoutRect,
+         radii: BorderRadius,
++        inset: LayoutSideOffsets,
+         mode: ClipMode,
+     ) -> Self {
+-        ComplexClipRegion { rect, radii, mode }
++        ComplexClipRegion { rect, radii, inset, mode }
+     }
+ }
+ 
+diff --git a/gfx/wr/webrender_api/src/display_list.rs b/gfx/wr/webrender_api/src/display_list.rs
+index b676317c1f..c131db0eeb 100644
+--- a/gfx/wr/webrender_api/src/display_list.rs
++++ b/gfx/wr/webrender_api/src/display_list.rs
+@@ -1526,8 +1526,10 @@ impl DisplayListBuilder {
+             .inflate(spread_amount, spread_amount);
+         let spatial_id = common.spatial_id;
+ 
++        let shadow_inset = LayoutSideOffsets::new_all_same(-spread_amount);
++
+         let mut clips: Vec<di::ClipId> = Vec::with_capacity(2);
+-        let (final_prim_rect, clip_radius) = match clip_mode {
++        let (final_prim_rect, clip_radius, clip_inset) = match clip_mode {
+             BoxShadowClipMode::Outset => {
+                 if shadow_rect.is_empty() {
+                     return;
+@@ -1538,12 +1540,13 @@ impl DisplayListBuilder {
+                     ComplexClipRegion {
+                         rect: box_bounds,
+                         radii: border_radius,
++                        inset: LayoutSideOffsets::zero(),
+                         mode: ClipMode::ClipOut,
+                     },
+                     spread_radius,
+                 ));
+ 
+-                (shadow_rect, shadow_radius)
++                (shadow_rect, shadow_radius, shadow_inset)
+             }
+             BoxShadowClipMode::Inset => {
+                 if !shadow_rect.is_empty() {
+@@ -1552,13 +1555,14 @@ impl DisplayListBuilder {
+                         ComplexClipRegion {
+                             rect: shadow_rect,
+                             radii: shadow_radius,
++                            inset: shadow_inset,
+                             mode: ClipMode::ClipOut,
+                         },
+                         spread_radius,
+                     ));
+                 }
+ 
+-                (box_bounds, border_radius)
++                (box_bounds, border_radius, LayoutSideOffsets::zero())
+             }
+         };
+ 
+@@ -1568,6 +1572,7 @@ impl DisplayListBuilder {
+             ComplexClipRegion {
+                 rect: final_prim_rect,
+                 radii: clip_radius,
++                inset: clip_inset,
+                 mode: ClipMode::Clip,
+             },
+             0.0,
+diff --git a/gfx/wr/webrender_api/src/key_types.rs b/gfx/wr/webrender_api/src/key_types.rs
+index c170551247..0b1be8f29f 100644
+--- a/gfx/wr/webrender_api/src/key_types.rs
++++ b/gfx/wr/webrender_api/src/key_types.rs
+@@ -13,7 +13,7 @@
+ use crate::serde::{Serialize, Deserialize};
+ use crate::{ColorU, BorderRadius, BorderSide, BorderStyle, NormalBorder, RepeatMode, GradientStop, PrimitiveFlags};
+ use crate::{FillRule, GlyphIndex, POLYGON_CLIP_VERTEX_MAX};
+-use crate::units::{LayoutVector2D, WorldVector2D, LayoutPoint, PicturePoint, WorldPoint};
++use crate::units::{LayoutPoint, LayoutSideOffsetsAu, LayoutVector2D, PicturePoint, WorldPoint, WorldVector2D};
+ use crate::units::{LayoutSize, LayoutSizeAu, LayoutPointAu, AuHelpers, LayoutSideOffsets, DeviceIntSideOffsets};
+ use euclid::{Size2D, SideOffsets2D};
+ use peek_poke::PeekPoke;
+@@ -198,6 +198,7 @@ pub struct NormalBorderAu {
+     pub top: BorderSideAu,
+     pub bottom: BorderSideAu,
+     pub radius: BorderRadiusAu,
++    pub inset: LayoutSideOffsetsAu,
+     /// Whether to apply anti-aliasing on the border corners.
+     ///
+     /// Note that for this to be `false` and work, this requires the borders to
+@@ -225,6 +226,7 @@ impl From<NormalBorder> for NormalBorderAu {
+             top: border.top.into(),
+             bottom: border.bottom.into(),
+             radius: border.radius.into(),
++            inset: border.inset.to_au(),
+             do_aa: border.do_aa,
+         }
+     }
+@@ -238,6 +240,7 @@ impl From<NormalBorderAu> for NormalBorder {
+             top: border.top.into(),
+             bottom: border.bottom.into(),
+             radius: border.radius.into(),
++            inset: LayoutSideOffsets::from_au(border.inset),
+             do_aa: border.do_aa,
+         }
+     }
+diff --git a/gfx/wr/wrench/reftests/border/border-shape-2.png b/gfx/wr/wrench/reftests/border/border-shape-2.png
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/gfx/wr/wrench/reftests/border/border-shape-2.yaml b/gfx/wr/wrench/reftests/border/border-shape-2.yaml
+new file mode 100644
+index 0000000000..44f12d74f3
+--- /dev/null
++++ b/gfx/wr/wrench/reftests/border/border-shape-2.yaml
+@@ -0,0 +1,51 @@
++---
++root:
++  items:
++    - type: stacking-context
++      bounds: [0, 0, 480, 320 ]
++      items:
++        - type: rect
++          bounds: [0, 0, 480, 320 ]
++          color: black
++        - type: border
++          bounds: [ 20, 20, 120, 120 ]
++          width: 16
++          border-type: normal
++          style: solid
++          color: white
++          radius: [ 4, 4, 60, 40, 26.0, 2.0, 6.0, 9.0 ]
++        - type: border
++          bounds: [ 180, 20, 120, 120 ]
++          width: [16, 6.4, 12.8, 4]
++          border-type: normal
++          style: solid
++          color: white
++          radius: [ 24, 24, 24, 24, 2.0, 2.0, 2.0, 2.0 ]
++        - type: border
++          bounds: [ 340, 20, 120, 120 ]
++          width: [3.2, 6.4, 12.8, 4]
++          border-type: normal
++          style: solid
++          color: white
++          radius: [ 16, 16, 16, 16, 2.0, -2.0, 0.0, 2.0 ]
++        - type: border
++          bounds: [ 20, 180, 120, 120 ]
++          width: 16
++          border-type: normal
++          style: double
++          color: white
++          radius: [ 4, 4, 4, 4, 2.0, 2.0, 2.0, 2.0 ]
++        - type: border
++          bounds: [ 180, 180, 120, 120 ]
++          width: 16
++          border-type: normal
++          style: double
++          color: white
++          radius: [ 8, 8, 8, 8, 2.0, 2.0, 2.0, 2.0 ]
++        - type: border
++          bounds: [ 340, 180, 120, 120 ]
++          width: [16, 8, 3, 6.4]
++          border-type: normal
++          style: double
++          color: white
++          radius: [ 16, 16, 16, 16, 2.0, -2.0, 2.0, 2.0 ]
+diff --git a/gfx/wr/wrench/reftests/border/border-shape-3.png b/gfx/wr/wrench/reftests/border/border-shape-3.png
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/gfx/wr/wrench/reftests/border/border-shape-3.yaml b/gfx/wr/wrench/reftests/border/border-shape-3.yaml
+new file mode 100644
+index 0000000000..5085c083dc
+--- /dev/null
++++ b/gfx/wr/wrench/reftests/border/border-shape-3.yaml
+@@ -0,0 +1,16 @@
++---
++root:
++  items:
++    - type: stacking-context
++      bounds: [0, 0, 400, 400 ]
++      items:
++        - type: rect
++          bounds: [0, 0, 400, 400 ]
++          color: black
++        - type: border
++          bounds: [ 50, 50, 300, 300 ]
++          width: [40, 2, 20, 50]
++          border-type: normal
++          style: solid
++          color: white
++          radius: [ 60, 30, [100, 50], [100, 50], 0.2, 0.0, -Inf, -0.7 ]
+diff --git a/gfx/wr/wrench/reftests/border/border-shape-4.png b/gfx/wr/wrench/reftests/border/border-shape-4.png
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/gfx/wr/wrench/reftests/border/border-shape-4.yaml b/gfx/wr/wrench/reftests/border/border-shape-4.yaml
+new file mode 100644
+index 0000000000..27c9b2fd9d
+--- /dev/null
++++ b/gfx/wr/wrench/reftests/border/border-shape-4.yaml
+@@ -0,0 +1,25 @@
++---
++root:
++  items:
++    - type: stacking-context
++      bounds: [0, 0, 400, 300 ]
++      items:
++        - type: rect
++          bounds: [0, 0, 400, 300 ]
++          color: black
++        - type: clip
++          id: 2
++          complex:
++            - rect: [ 50, 50, 300, 200 ]
++              radius: [ 0, 30, 60, 0, 0.0, 0.0, 0.0, 0.0 ]
++        - type: rect
++          clip-chain: [2]
++          bounds: [ 50, 50, 300, 200 ]
++          color: white
++        - type: border
++          bounds: [ 50, 50, 300, 200 ]
++          width: [0, 0, 50, 50]
++          border-type: normal
++          style: solid
++          color: [[0, 1, 0, 0.2], [1, 0, 0, 0.3], [0, 0, 1, 0.2], [1, 1, 0, 0.3]]
++          radius: [ 0, 30, 60, 0, 0.0, 0.0, 0.0, 0.0 ]
+diff --git a/gfx/wr/wrench/reftests/border/border-shape-inset.png b/gfx/wr/wrench/reftests/border/border-shape-inset.png
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/gfx/wr/wrench/reftests/border/border-shape-inset.yaml b/gfx/wr/wrench/reftests/border/border-shape-inset.yaml
+new file mode 100644
+index 0000000000..4b6e51ee3e
+--- /dev/null
++++ b/gfx/wr/wrench/reftests/border/border-shape-inset.yaml
+@@ -0,0 +1,42 @@
++---
++root:
++  items:
++    - type: stacking-context
++      bounds: [ 0, 0, 320, 320 ]
++      items:
++        - type: rect
++          bounds: [ 0, 0, 320, 320 ]
++          color: black
++        - type: border
++          bounds: [ 20, 20, 280, 280 ]
++          width: [ 16, 2, 8, 20 ]
++          border-type: normal
++          style: solid
++          color: white
++          radius: [ 24, 12, 120, [80, 20], 0.2, 0.0, -Inf, -0.7 ]
++          inset: [ 0, 0, 0, 0 ]
++        - type: border
++          bounds: [ 12, 12, 296, 296 ]
++          width: [ 2, 2, 2, 2 ]
++          border-type: normal
++          style: solid
++          color: yellow
++          radius: [ 32, 20, 128, [88, 28], 0.2, 0.0, -Inf, -0.7 ]
++          inset: [ -8, -8, -8, -8 ]
++        - type: border
++          bounds: [ 24.8, 40, 251.2, 248 ]
++          width: [ 2, 2, 2, 2 ]
++          border-type: normal
++          style: solid
++          color: magenta
++          radius: {
++            top-left: [19.2, 4],
++            top-right: [0, 0],
++            bottom-left: [115, 108],
++            bottom-right: [56, 8],
++            shape-top-left: 0.2,
++            shape-top-right: 0.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: -0.7,
++          }
++          inset: [ 20, 24, 12, 4.8 ]
+diff --git a/gfx/wr/wrench/reftests/border/border-shape.png b/gfx/wr/wrench/reftests/border/border-shape.png
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/gfx/wr/wrench/reftests/border/border-shape.yaml b/gfx/wr/wrench/reftests/border/border-shape.yaml
+new file mode 100644
+index 0000000000..c0ac275110
+--- /dev/null
++++ b/gfx/wr/wrench/reftests/border/border-shape.yaml
+@@ -0,0 +1,419 @@
++---
++root:
++  items:
++    - type: stacking-context
++      bounds: [0, 0, 1000, 1000]
++      items:
++        - type: border
++          bounds: [ 10, 10, 100, 100 ]
++          width: [ 1, 1, 1, 1 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 20],
++            top-right: [10, 10],
++            bottom-left: [25, 25],
++            bottom-right: [0, 0],
++          }
++        - type: border
++          bounds: [ 120, 10, 100, 100 ]
++          width: [ 2, 2, 2, 2 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 20],
++            top-right: [10, 10],
++            bottom-left: [25, 25],
++            bottom-right: [0, 0],
++            shape-top-left: 2,
++            shape-top-right: -1.5,
++            shape-bottom-left: 0,
++            shape-bottom-right: +Inf,
++          }
++        - type: border
++          bounds: [ 230, 10, 100, 100 ]
++          width: [ 3, 3, 3, 3 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 20],
++            top-right: [10, 10],
++            bottom-left: [25, 25],
++            bottom-right: [0, 0],
++            shape-top-left: 2,
++            shape-top-right: -1.5,
++            shape-bottom-left: 0,
++            shape-bottom-right: +Inf,
++          }
++        - type: border
++          bounds: [ 340, 10, 100, 100 ]
++          width: [ 5, 5, 5, 5 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 20],
++            top-right: [10, 10],
++            bottom-left: [25, 25],
++            bottom-right: [0, 0],
++            shape-top-left: 2,
++            shape-top-right: -1.5,
++            shape-bottom-left: 0,
++            shape-bottom-right: +Inf,
++          }
++        - type: border
++          bounds: [ 450, 10, 100, 100 ]
++          width: [ 5, 5, 5, 5 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 20],
++            top-right: [10, 10],
++            bottom-left: [25, 25],
++            bottom-right: [0, 0],
++            shape-top-left: 2,
++            shape-top-right: -1.5,
++            shape-bottom-left: 0,
++            shape-bottom-right: +Inf,
++          }
++        - type: border
++          bounds: [ 560, 10, 100, 100 ]
++          width: [ 10, 10, 10, 10 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 20],
++            top-right: [10, 10],
++            bottom-left: [25, 25],
++            bottom-right: [0, 0],
++            shape-top-left: 2,
++            shape-top-right: -1.5,
++            shape-bottom-left: 0,
++            shape-bottom-right: +Inf,
++          }
++
++        - type: border
++          bounds: [ 10, 120, 100, 100 ]
++          width: 10
++          border-type: normal
++          style: inset
++          color: [ red, green, blue, black ]
++        - type: border
++          bounds: [ 120, 120, 100, 100 ]
++          width: 10
++          border-type: normal
++          style: outset
++          color: [ red, green, blue, black ]
++        - type: border
++          bounds: [ 230, 120, 100, 100 ]
++          width: 10
++          border-type: normal
++          style: inset
++          color: [ red, green, blue, black ]
++          radius: [10, 0.5]
++        - type: border
++          bounds: [ 340, 120, 100, 100 ]
++          width: 10
++          border-type: normal
++          style: outset
++          color: [ red, green, blue, black ]
++          radius: [20, -0.3]
++        - type: border
++          bounds: [ 450, 120, 100, 100 ]
++          width: 10
++          border-type: normal
++          style: outset
++          color: [ red, green, blue, black ]
++          radius: [35, 2.2]
++        - type: border
++          bounds: [ 560, 120, 100, 100 ]
++          width: 10
++          border-type: normal
++          style: outset
++          color: [ red, green, blue, black ]
++          radius: [50, -2.6]
++
++        - type: border
++          bounds: [ 10, 230, 100, 100 ]
++          width: [ 1, 1, 1, 1 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 120, 230, 100, 100 ]
++          width: [ 2, 2, 2, 2 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 230, 230, 100, 100 ]
++          width: [ 3, 3, 3, 3 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 340, 230, 100, 100 ]
++          width: [ 5, 5, 5, 5 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 450, 230, 100, 100 ]
++          width: [ 5, 5, 5, 5 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 560, 230, 100, 100 ]
++          width: [ 10, 10, 10, 10 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++
++        - type: border
++          bounds: [ 10, 340, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 120, 340, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 230, 340, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 340, 340, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 450, 340, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 560, 340, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++
++        - type: border
++          bounds: [ 10, 450, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: [0, -Inf]
++        - type: border
++          bounds: [ 120, 450, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: [10, -Inf]
++        - type: border
++          bounds: [ 230, 450, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: [20, -Inf]
++        - type: border
++          bounds: [ 340, 450, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: [30, -2.3]
++        - type: border
++          bounds: [ 450, 450, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: [40, -2.3]
++        - type: border
++          bounds: [ 560, 450, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: [50, -2.3]
++
++        - type: border
++          bounds: [ 10, 560, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: [0, -2.3]
++        - type: border
++          bounds: [ 120, 560, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: [10, -2.3]
++        - type: border
++          bounds: [ 230, 560, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: [20, -2.3]
++        - type: border
++          bounds: [ 340, 560, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: [30, -2.3]
++        - type: border
++          bounds: [ 450, 560, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: [40, -2.3]
++        - type: border
++          bounds: [ 560, 560, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: [50, -2.3]
+diff --git a/gfx/wr/wrench/reftests/border/reftest.list b/gfx/wr/wrench/reftests/border/reftest.list
+index 12fbb462d6..bbb793ebb1 100644
+--- a/gfx/wr/wrench/reftests/border/reftest.list
++++ b/gfx/wr/wrench/reftests/border/reftest.list
+@@ -37,3 +37,8 @@ platform(linux,mac) == border-dashed-dotted-caching.yaml border-dashed-dotted-ca
+ fuzzy(1,90) == no-aa.yaml green-square.yaml
+ fuzzy(1,20) skip_on(android,device) == border-double-1px.yaml border-double-1px-ref.yaml  # Fails on Pixel2
+ == max-scale.yaml max-scale-ref.yaml
++platform(linux,mac) == border-shape.yaml border-shape.png
++platform(linux,mac) == border-shape-2.yaml border-shape-2.png
++platform(linux,mac) == border-shape-3.yaml border-shape-3.png
++platform(linux,mac) == border-shape-4.yaml border-shape-4.png
++platform(linux,mac) == border-shape-inset.yaml border-shape-inset.png
+diff --git a/gfx/wr/wrench/reftests/boxshadow/box-shadow-spread-shape.png b/gfx/wr/wrench/reftests/boxshadow/box-shadow-spread-shape.png
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/gfx/wr/wrench/reftests/boxshadow/box-shadow-spread-shape.yaml b/gfx/wr/wrench/reftests/boxshadow/box-shadow-spread-shape.yaml
+new file mode 100644
+index 0000000000..a2c25ca419
+--- /dev/null
++++ b/gfx/wr/wrench/reftests/boxshadow/box-shadow-spread-shape.yaml
+@@ -0,0 +1,128 @@
++# Test box shadows with inset and outset superellipses.
++#
++# Some tests are disabled as they don't render correctly (yet).
++---
++root:
++  items:
++    - type: stacking-context
++      bounds: [0, 0, 1000, 1000]
++      items:
++        - type: box-shadow
++          bounds: [ 20, 20, 80, 80 ]
++          color: blue
++          clip-mode: inset
++          spread-radius: 10
++          border-radius: [ 0, 20, 20, 20, 1.0, -0.7, -Inf, 0.0 ]
++
++        - type: box-shadow
++          bounds: [ 120, 20, 80, 80 ]
++          color: blue
++          clip-mode: inset
++          spread-radius: 10
++          border-radius: [ [10, 40], [40, 10], 25, 25, 0.4, -0.7, -Inf, 0.0 ]
++
++        # - type: box-shadow
++        #   bounds: [ 220, 20, 80, 80 ]
++        #   color: blue
++        #   clip-mode: inset
++        #   spread-radius: 10
++        #   border-radius: [ 0, 10, 10, 10, 1.0, -0.7, -Inf, 0.0 ]
++
++        # - type: box-shadow
++        #   bounds: [ 320, 20, 80, 80 ]
++        #   color: blue
++        #   clip-mode: inset
++        #   spread-radius: 10
++        #   border-radius: [ 4, 4, 4, 4, 1.0, -0.7, -Inf, 0.0 ]
++
++        - type: box-shadow
++          bounds: [ 30, 130, 60, 60 ]
++          color: red
++          clip-mode: outset
++          spread-radius: 10
++          border-radius: [ 0, 20, 20, 20, 1.0, -0.7, -Inf, 0.0 ]
++
++        - type: box-shadow
++          bounds: [ 130, 130, 60, 60 ]
++          color: red
++          clip-mode: outset
++          spread-radius: 10
++          border-radius: [ [10, 40], [40, 10], 25, 25, 0.4, -0.7, -Inf, 0.0 ]
++
++        - type: box-shadow
++          bounds: [ 230, 130, 60, 60 ]
++          color: red
++          clip-mode: outset
++          spread-radius: 10
++          border-radius: [ 0, 10, 10, 10, 1.0, -0.7, -Inf, 0.0 ]
++
++        - type: box-shadow
++          bounds: [ 330, 130, 60, 60 ]
++          color: red
++          clip-mode: outset
++          spread-radius: 10
++          border-radius: [ 4, 4, 4, 4, 1.0, -0.7, -Inf, 0.0 ]
++
++        - type: box-shadow
++          bounds: [ 20, 220, 80, 80 ]
++          color: blue
++          clip-mode: inset
++          spread-radius: 10
++          blur-radius: 1
++          border-radius: [ 0, 20, 20, 20, 1.0, -0.7, -Inf, 0.0 ]
++
++        - type: box-shadow
++          bounds: [ 120, 220, 80, 80 ]
++          color: blue
++          clip-mode: inset
++          spread-radius: 10
++          blur-radius: 1
++          border-radius: [ 25, 25, 25, 25, 1.0, -0.7, -Inf, 0.0 ]
++
++        # - type: box-shadow
++        #   bounds: [ 220, 220, 80, 80 ]
++        #   color: blue
++        #   clip-mode: inset
++        #   spread-radius: 10
++        #   blur-radius: 1
++        #   border-radius: [ 0, 10, 10, 10, 1.0, -0.7, -Inf, 0.0 ]
++
++        # - type: box-shadow
++        #   bounds: [ 320, 220, 80, 80 ]
++        #   color: blue
++        #   clip-mode: inset
++        #   spread-radius: 10
++        #   blur-radius: 1
++        #   border-radius: [ 4, 4, 4, 4, 1.0, -0.7, -Inf, 0.0 ]
++
++        - type: box-shadow
++          bounds: [ 30, 330, 60, 60 ]
++          color: red
++          clip-mode: outset
++          spread-radius: 10
++          blur-radius: 1
++          border-radius: [ 0, 20, 20, 20, 1.0, -0.7, -Inf, 0.0 ]
++
++        - type: box-shadow
++          bounds: [ 130, 330, 60, 60 ]
++          color: red
++          clip-mode: outset
++          spread-radius: 10
++          blur-radius: 1
++          border-radius: [ 25, 25, 25, 25, 1.0, -0.7, -Inf, 0.0 ]
++
++        - type: box-shadow
++          bounds: [ 230, 330, 60, 60 ]
++          color: red
++          clip-mode: outset
++          spread-radius: 10
++          blur-radius: 1
++          border-radius: [ 0, 10, 10, 10, 1.0, -0.7, -Inf, 0.0 ]
++
++        - type: box-shadow
++          bounds: [ 330, 330, 60, 60 ]
++          color: red
++          clip-mode: outset
++          spread-radius: 10
++          blur-radius: 1
++          border-radius: [ 4, 4, 4, 4, 1.0, -0.7, -Inf, 0.0 ]
+diff --git a/gfx/wr/wrench/reftests/boxshadow/reftest.list b/gfx/wr/wrench/reftests/boxshadow/reftest.list
+index 19ac776670..f9e48b54e1 100644
+--- a/gfx/wr/wrench/reftests/boxshadow/reftest.list
++++ b/gfx/wr/wrench/reftests/boxshadow/reftest.list
+@@ -18,6 +18,7 @@ fuzzy(1,8) == box-shadow-large-blur-radius.yaml box-shadow-large-blur-radius-ref
+ fuzzy(1,6388) == rounding.yaml rounding-ref.yaml
+ platform(linux,mac) == box-shadow-border-radii.yaml box-shadow-border-radii.png
+ platform(linux,mac) == box-shadow-corner-shape.yaml box-shadow-corner-shape.png
++platform(linux,mac) == box-shadow-spread-shape.yaml box-shadow-spread-shape.png
+ skip_on(android) fuzzy-if(platform(swgl),9,34) == box-shadow-spread.yaml box-shadow-spread.png  # Too wide for Android
+ == box-shadow-spread-radii.yaml box-shadow-spread-radii-ref.yaml
+ == invalid.yaml invalid-ref.yaml
+diff --git a/gfx/wr/wrench/reftests/mask/reftest.list b/gfx/wr/wrench/reftests/mask/reftest.list
+index b3e837f887..0e4792f2c9 100644
+--- a/gfx/wr/wrench/reftests/mask/reftest.list
++++ b/gfx/wr/wrench/reftests/mask/reftest.list
+@@ -17,3 +17,5 @@ skip_on(android,device) fuzzy(2,1900) == checkerboard.yaml checkerboard-tiling.y
+ platform(linux) == scaled-filter-raster-root.yaml scaled-filter-raster-root.png
+ platform(linux,mac) == mask-multiple-coord-systems.yaml mask-multiple-coord-systems.png
+ fuzzy(1,10) fuzzy-if(platform(swgl),5,100) == shaped-corners.yaml shaped-corners.png
++platform(linux,mac) == shaped-corners-inset.yaml shaped-corners-inset.png
++platform(linux,mac) == shaped-corners-outset.yaml shaped-corners-outset.png
+diff --git a/gfx/wr/wrench/reftests/mask/shaped-corners-inset.png b/gfx/wr/wrench/reftests/mask/shaped-corners-inset.png
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/gfx/wr/wrench/reftests/mask/shaped-corners-inset.yaml b/gfx/wr/wrench/reftests/mask/shaped-corners-inset.yaml
+new file mode 100644
+index 0000000000..0ac5e071e9
+--- /dev/null
++++ b/gfx/wr/wrench/reftests/mask/shaped-corners-inset.yaml
+@@ -0,0 +1,22 @@
++---
++root:
++  items:
++    - type: clip
++      id: 2
++      complex:
++        - rect: [10, 10, 200, 200]
++          radius: [100, 100, 100, 100, 8.2, 0, -2.8, +Inf]
++    - type: rect
++      clip-chain: [2]
++      bounds: [10, 10, 200, 200]
++      color: blue
++    - type: clip
++      id: 4
++      complex:
++        - rect: [30, 30, 160, 160]
++          radius: [80, 80, 80, 80, 8.2, 0, -2.8, +Inf]
++          inset: [20, 20, 20, 20]
++    - type: rect
++      clip-chain: [4]
++      bounds: [30, 30, 160, 160]
++      color: cyan
+diff --git a/gfx/wr/wrench/reftests/mask/shaped-corners-outset.png b/gfx/wr/wrench/reftests/mask/shaped-corners-outset.png
+new file mode 100644
+index 0000000000..e69de29bb2
+diff --git a/gfx/wr/wrench/reftests/mask/shaped-corners-outset.yaml b/gfx/wr/wrench/reftests/mask/shaped-corners-outset.yaml
+new file mode 100644
+index 0000000000..0173a3be60
+--- /dev/null
++++ b/gfx/wr/wrench/reftests/mask/shaped-corners-outset.yaml
+@@ -0,0 +1,22 @@
++---
++root:
++  items:
++    - type: clip
++      id: 2
++      complex:
++        - rect: [10, 10, 200, 200]
++          radius: [100, 100, 100, 100, 8.2, 0, -2.8, +Inf]
++          inset: [-20, -20, -20, -20]
++    - type: rect
++      clip-chain: [2]
++      bounds: [10, 10, 200, 200]
++      color: cyan
++    - type: clip
++      id: 4
++      complex:
++        - rect: [30, 30, 160, 160]
++          radius: [80, 80, 80, 80, 8.2, 0, -2.8, +Inf]
++    - type: rect
++      clip-chain: [4]
++      bounds: [30, 30, 160, 160]
++      color: blue
+diff --git a/gfx/wr/wrench/reftests/mask/shaped-corners.yaml b/gfx/wr/wrench/reftests/mask/shaped-corners.yaml
+index 9e84cea937..7e96191039 100644
+--- a/gfx/wr/wrench/reftests/mask/shaped-corners.yaml
++++ b/gfx/wr/wrench/reftests/mask/shaped-corners.yaml
+@@ -5,7 +5,7 @@ root:
+       id: 2
+       complex:
+         - rect: [10, 10, 200, 200]
+-          radius: [200, 200, 200, 200, 8.2, 0, -2.8, +Inf]
++          radius: [100, 100, 100, 100, 8.2, 0, -2.8, +Inf]
+     - type: rect
+       clip-chain: [2]
+       bounds: [10, 10, 200, 200]
+diff --git a/gfx/wr/wrench/src/rawtest.rs b/gfx/wr/wrench/src/rawtest.rs
+index 9420b1a6a2..a09c5418dd 100644
+--- a/gfx/wr/wrench/src/rawtest.rs
++++ b/gfx/wr/wrench/src/rawtest.rs
+@@ -1359,6 +1359,7 @@ impl<'a> RawtestHarness<'a> {
+             ComplexClipRegion::new(
+                 *rect,
+                 BorderRadius::uniform_size(LayoutSize::new(radius, radius)),
++                LayoutSideOffsets::zero(),
+                 ClipMode::Clip
+             )
+         };
+diff --git a/gfx/wr/wrench/src/yaml_frame_reader.rs b/gfx/wr/wrench/src/yaml_frame_reader.rs
+index f6b638667e..fe128b87e1 100644
+--- a/gfx/wr/wrench/src/yaml_frame_reader.rs
++++ b/gfx/wr/wrench/src/yaml_frame_reader.rs
+@@ -1100,6 +1100,9 @@ impl YamlFrameReader {
+                     let radius = item["radius"]
+                         .as_border_radius()
+                         .unwrap_or_else(BorderRadius::zero);
++                    let inset = item["inset"]
++                        .as_side_offsets()
++                        .unwrap_or_else(LayoutSideOffsets::zero);
+ 
+                     let colors = broadcast(&colors, 4);
+                     let styles = broadcast(&styles, 4);
+@@ -1127,6 +1130,7 @@ impl YamlFrameReader {
+                         bottom,
+                         right,
+                         radius,
++                        inset,
+                         do_aa,
+                     }))
+                 }
+diff --git a/gfx/wr/wrench/src/yaml_helper.rs b/gfx/wr/wrench/src/yaml_helper.rs
+index 757e53f5ba..dbe57b63ec 100644
+--- a/gfx/wr/wrench/src/yaml_helper.rs
++++ b/gfx/wr/wrench/src/yaml_helper.rs
+@@ -20,6 +20,7 @@ pub trait YamlHelper {
+     fn as_pipeline_id(&self) -> Option<PipelineId>;
+     fn as_rect(&self) -> Option<LayoutRect>;
+     fn as_size(&self) -> Option<LayoutSize>;
++    fn as_side_offsets(&self) -> Option<LayoutSideOffsets>;
+     fn as_point(&self) -> Option<LayoutPoint>;
+     fn as_vector(&self) -> Option<LayoutVector2D>;
+     fn as_matrix4d(&self) -> Option<LayoutTransform>;
+@@ -290,6 +291,18 @@ impl YamlHelper for Yaml {
+         None
+     }
+ 
++    fn as_side_offsets(&self) -> Option<LayoutSideOffsets> {
++        self.as_vec_f32().and_then(|v| match v.as_slice() {
++            &[top, right, bottom, left] => Some(LayoutSideOffsets::new(
++                top,
++                right,
++                bottom,
++                left
++            )),
++            _ => None,
++        })
++    }
++
+     fn as_point(&self) -> Option<LayoutPoint> {
+         if self.is_badvalue() {
+             return None;
+@@ -1020,10 +1033,13 @@ impl YamlHelper for Yaml {
+         let radius = self["radius"]
+             .as_border_radius()
+             .unwrap_or_else(BorderRadius::zero);
++        let inset = self["inset"]
++            .as_side_offsets()
++            .unwrap_or_else(LayoutSideOffsets::zero);
+         let mode = self["clip-mode"]
+             .as_clip_mode()
+             .unwrap_or(ClipMode::Clip);
+-        ComplexClipRegion::new(rect, radius, mode)
++        ComplexClipRegion::new(rect, radius, inset, mode)
+     }
+ 
+     fn as_sticky_offset_bounds(&self) -> StickyOffsetBounds {
+diff --git a/layout/forms/nsFieldSetFrame.cpp b/layout/forms/nsFieldSetFrame.cpp
+index 94cf571c63..c04a5586c7 100644
+--- a/layout/forms/nsFieldSetFrame.cpp
++++ b/layout/forms/nsFieldSetFrame.cpp
+@@ -175,6 +175,7 @@ bool nsDisplayFieldSetBorder::CreateWebRenderCommands(
+           LayoutDeviceRect::FromAppUnits(legendRect, appUnitsPerDevPixel));
+       region.mode = wr::ClipMode::ClipOut;
+       region.radii = wr::EmptyBorderRadius();
++      region.inset = wr::EmptyLayoutSideOffsets();
+ 
+       std::array<wr::WrClipId, 2> clips = {
+           aBuilder.DefineRectClip(Nothing(), layoutRect),
+diff --git a/layout/generic/nsHTMLCanvasFrame.cpp b/layout/generic/nsHTMLCanvasFrame.cpp
+index ef576417f4..79e26bb9e9 100644
+--- a/layout/generic/nsHTMLCanvasFrame.cpp
++++ b/layout/generic/nsHTMLCanvasFrame.cpp
+@@ -446,13 +446,14 @@ void nsHTMLCanvasFrame::BuildDisplayList(nsDisplayListBuilder* aBuilder,
+   if (!clipAxes.isEmpty()) {
+     nsRect clipRect;
+     nsRectCornerRadii radii;
++    nsMargin inset;
+     bool haveRadii =
+-        ComputeOverflowClipRectRelativeToSelf(clipAxes, clipRect, radii);
++        ComputeOverflowClipRectRelativeToSelf(clipAxes, clipRect, radii, inset);
+     if (haveRadii ||
+         nsStyleUtil::ObjectPropsMightCauseOverflow(StylePosition())) {
+       clipState.ClipContainingBlockDescendants(
+           clipRect + aBuilder->ToReferenceFrame(this),
+-          haveRadii ? &radii : nullptr);
++          haveRadii ? &radii : nullptr, haveRadii ? &inset : nullptr);
+     }
+   }
+ 
+diff --git a/layout/generic/nsIFrame.cpp b/layout/generic/nsIFrame.cpp
+index 4cf6fc45bc..929b92cc0b 100644
+--- a/layout/generic/nsIFrame.cpp
++++ b/layout/generic/nsIFrame.cpp
+@@ -2758,11 +2758,12 @@ static void ApplyOverflowClipping(
+     DisplayListClipState::AutoClipMultiple& aClipState) {
+   nsRect clipRect;
+   nsRectCornerRadii radii;
+-  bool haveRadii =
+-      aFrame->ComputeOverflowClipRectRelativeToSelf(aClipAxes, clipRect, radii);
++  nsMargin inset;
++  bool haveRadii = aFrame->ComputeOverflowClipRectRelativeToSelf(
++      aClipAxes, clipRect, radii, inset);
+   aClipState.ClipContainingBlockDescendantsExtra(
+       clipRect + aBuilder->ToReferenceFrame(aFrame),
+-      haveRadii ? &radii : nullptr);
++      haveRadii ? &radii : nullptr, haveRadii ? &inset : nullptr);
+ }
+ 
+ static Sides ToSkipSides(PhysicalAxes aClipAxes) {
+@@ -2780,7 +2781,7 @@ static Sides ToSkipSides(PhysicalAxes aClipAxes) {
+ 
+ bool nsIFrame::ComputeOverflowClipRectRelativeToSelf(
+     const PhysicalAxes aClipAxes, nsRect& aOutRect,
+-    nsRectCornerRadii& aOutRadii) const {
++    nsRectCornerRadii& aOutRadii, nsMargin& aOutInset) const {
+   // Only 'clip' is handled here (and 'hidden' for table frames, and any
+   // non-'visible' value for blocks in a paginated context).
+   // We allow 'clip' to apply to any kind of frame. This is required by
+@@ -2789,6 +2790,7 @@ bool nsIFrame::ComputeOverflowClipRectRelativeToSelf(
+   MOZ_ASSERT(ShouldApplyOverflowClipping(StyleDisplay()) == aClipAxes);
+   auto boxMargin = OverflowClipMargin(aClipAxes, /* aAllowNegative = */ true);
+   boxMargin.ApplySkipSides(GetSkipSides() | ToSkipSides(aClipAxes));
++  aOutInset = -boxMargin;
+ 
+   aOutRect = nsRect(nsPoint(), GetSize());
+   aOutRect.Inflate(boxMargin);
+diff --git a/layout/generic/nsIFrame.h b/layout/generic/nsIFrame.h
+index 6adcd089bd..c21e362a3d 100644
+--- a/layout/generic/nsIFrame.h
++++ b/layout/generic/nsIFrame.h
+@@ -3268,7 +3268,7 @@ class nsIFrame : public nsQueryFrame {
+    */
+   bool ComputeOverflowClipRectRelativeToSelf(
+       const mozilla::PhysicalAxes aClipAxes, nsRect& aOutRect,
+-      nsRectCornerRadii& aOutRadii) const;
++      nsRectCornerRadii& aOutRadii, nsMargin& aOutInset) const;
+ 
+   // Returns the applicable overflow-clip-margin values relative to our
+   // border-box. If aAllowNegative is false, prevents us from returning margins
+diff --git a/layout/generic/nsImageFrame.cpp b/layout/generic/nsImageFrame.cpp
+index c370ac05df..6bd849615e 100644
+--- a/layout/generic/nsImageFrame.cpp
++++ b/layout/generic/nsImageFrame.cpp
+@@ -2652,11 +2652,12 @@ void nsImageFrame::BuildDisplayList(nsDisplayListBuilder* aBuilder,
+   if (!clipAxes.isEmpty()) {
+     nsRect clipRect;
+     nsRectCornerRadii radii;
++    nsMargin inset;
+     bool haveRadii =
+-        ComputeOverflowClipRectRelativeToSelf(clipAxes, clipRect, radii);
++        ComputeOverflowClipRectRelativeToSelf(clipAxes, clipRect, radii, inset);
+     clipState.ClipContainingBlockDescendants(
+         clipRect + aBuilder->ToReferenceFrame(this),
+-        haveRadii ? &radii : nullptr);
++        haveRadii ? &radii : nullptr, haveRadii ? &inset : nullptr);
+   }
+ 
+   if (!mComputedSize.IsEmpty()) {
+diff --git a/layout/generic/nsVideoFrame.cpp b/layout/generic/nsVideoFrame.cpp
+index 32c65b7e56..a06864a72d 100644
+--- a/layout/generic/nsVideoFrame.cpp
++++ b/layout/generic/nsVideoFrame.cpp
+@@ -726,8 +726,9 @@ void nsVideoFrame::BuildDisplayList(nsDisplayListBuilder* aBuilder,
+   if (!clipAxes.isEmpty()) {
+     nsRect clipRect;
+     nsRectCornerRadii radii;
++    nsMargin inset;
+     const bool haveRadii =
+-        ComputeOverflowClipRectRelativeToSelf(clipAxes, clipRect, radii);
++        ComputeOverflowClipRectRelativeToSelf(clipAxes, clipRect, radii, inset);
+     // NOTE: If we're displaying a poster image (instead of video data), we can
+     // trust the nsImageFrame to constrain its drawing to its content rect
+     // (which happens to be the same as our content rect).
+@@ -737,7 +738,7 @@ void nsVideoFrame::BuildDisplayList(nsDisplayListBuilder* aBuilder,
+     if (haveRadii || canOverflowWithoutRadii) {
+       clipState.ClipContainingBlockDescendants(
+           clipRect + aBuilder->ToReferenceFrame(this),
+-          haveRadii ? &radii : nullptr);
++          haveRadii ? &radii : nullptr, haveRadii ? &inset : nullptr);
+     }
+   }
+ 
+diff --git a/layout/painting/DisplayItemClip.cpp b/layout/painting/DisplayItemClip.cpp
+index b182e257b7..f0b911b62c 100644
+--- a/layout/painting/DisplayItemClip.cpp
++++ b/layout/painting/DisplayItemClip.cpp
+@@ -23,12 +23,14 @@ namespace mozilla {
+ void DisplayItemClip::SetTo(const nsRect& aRect) { SetTo(aRect, nullptr); }
+ 
+ void DisplayItemClip::SetTo(const nsRect& aRect,
+-                            const nsRectCornerRadii* aRadii) {
++                            const nsRectCornerRadii* aRadii,
++                            const nsMargin* aInset) {
+   mHaveClipRect = true;
+   mClipRect = aRect;
+   if (aRadii) {
+     mRoundedClipRects.Clear();
+-    mRoundedClipRects.AppendElement(RoundedRect{aRect, *aRadii});
++    mRoundedClipRects.AppendElement(
++        RoundedRect{aRect, *aRadii, aInset ? *aInset : nsMargin()});
+   } else {
+     mRoundedClipRects.Clear();
+   }
+@@ -480,8 +482,9 @@ void DisplayItemClip::ToComplexClipRegions(
+     int32_t aAppUnitsPerDevPixel,
+     nsTArray<wr::ComplexClipRegion>& aOutArray) const {
+   for (const auto& clipRect : mRoundedClipRects) {
+-    aOutArray.AppendElement(wr::ToComplexClipRegion(
+-        clipRect.mRect, clipRect.mRadii, aAppUnitsPerDevPixel));
++    aOutArray.AppendElement(
++        wr::ToComplexClipRegion(clipRect.mRect, clipRect.mRadii,
++                                clipRect.mInset, aAppUnitsPerDevPixel));
+   }
+ }
+ 
+diff --git a/layout/painting/DisplayItemClip.h b/layout/painting/DisplayItemClip.h
+index 9e9b394fc2..a068f0098c 100644
+--- a/layout/painting/DisplayItemClip.h
++++ b/layout/painting/DisplayItemClip.h
+@@ -6,6 +6,7 @@
+ #define DISPLAYITEMCLIP_H_
+ 
+ #include "mozilla/AlreadyAddRefed.h"
++#include "nsMargin.h"
+ #include "nsRect.h"
+ #include "nsTArray.h"
+ 
+@@ -45,6 +46,13 @@ class DisplayItemClip {
+     // Indices into mRadii are the HalfCorner values in gfx/2d/Types.h
+     nsRectCornerRadii mRadii;
+ 
++    // This is here to keep track of how much the rounded rect was
++    // inflated or shrunk relative to its reference frame. It is
++    // necessary for the correct computation of contoured superellipses
++    // used by CSS corner-shape (see bug 2058091).
++    // Spec: https://drafts.csswg.org/css-borders/#contour-path
++    nsMargin mInset;
++
+     RoundedRect operator+(const nsPoint& aOffset) const {
+       RoundedRect r = *this;
+       r.mRect += aOffset;
+@@ -68,7 +76,8 @@ class DisplayItemClip {
+   DisplayItemClip() : mHaveClipRect(false) {}
+ 
+   void SetTo(const nsRect& aRect);
+-  void SetTo(const nsRect& aRect, const nsRectCornerRadii* aRadii);
++  void SetTo(const nsRect& aRect, const nsRectCornerRadii* aRadii,
++             const nsMargin* aInset = nullptr);
+   void SetTo(const nsRect& aRect, const nsRect& aRoundedRect,
+              const nsRectCornerRadii* aRadii);
+   void IntersectWith(const DisplayItemClip& aOther);
+diff --git a/layout/painting/DisplayListClipState.cpp b/layout/painting/DisplayListClipState.cpp
+index ff3b8b42d5..27b5da6f79 100644
+--- a/layout/painting/DisplayListClipState.cpp
++++ b/layout/painting/DisplayListClipState.cpp
+@@ -66,9 +66,10 @@ static void ApplyClip(nsDisplayListBuilder* aBuilder,
+ 
+ void DisplayListClipState::ClipContainingBlockDescendants(
+     nsDisplayListBuilder* aBuilder, const nsRect& aRect,
+-    const nsRectCornerRadii* aRadii, DisplayItemClipChain& aClipChainOnStack) {
++    const nsRectCornerRadii* aRadii, const nsMargin* aInset,
++    DisplayItemClipChain& aClipChainOnStack) {
+   if (aRadii) {
+-    aClipChainOnStack.mClip.SetTo(aRect, aRadii);
++    aClipChainOnStack.mClip.SetTo(aRect, aRadii, aInset);
+   } else {
+     aClipChainOnStack.mClip.SetTo(aRect);
+   }
+@@ -142,7 +143,7 @@ void DisplayListClipState::ClipContainingBlockDescendantsToContentBox(
+   // If we have a border-radius, we have to clip our content to that
+   // radius.
+   ClipContainingBlockDescendants(aBuilder, clipRect,
+-                                 hasBorderRadius ? &radii : nullptr,
++                                 hasBorderRadius ? &radii : nullptr, nullptr,
+                                  aClipChainOnStack);
+ }
+ 
+diff --git a/layout/painting/DisplayListClipState.h b/layout/painting/DisplayListClipState.h
+index 5e1a8930b5..0e77f993a5 100644
+--- a/layout/painting/DisplayListClipState.h
++++ b/layout/painting/DisplayListClipState.h
+@@ -76,6 +76,7 @@ class DisplayListClipState {
+   void ClipContainingBlockDescendants(nsDisplayListBuilder* aBuilder,
+                                       const nsRect& aRect,
+                                       const nsRectCornerRadii* aRadii,
++                                      const nsMargin* aInset,
+                                       DisplayItemClipChain& aClipChainOnStack);
+ 
+   void ClipToDisplayPort(nsDisplayListBuilder* aBuilder, const nsRect& aRect,
+@@ -165,14 +166,16 @@ class DisplayListClipState::AutoSaveRestore {
+    * mClipContainingBlockDescendants and sets mClipContainingBlockDescendants to
+    * the result, stored in aClipOnStack.
+    */
+-  void ClipContainingBlockDescendants(
+-      const nsRect& aRect, const nsRectCornerRadii* aRadii = nullptr) {
++  void ClipContainingBlockDescendants(const nsRect& aRect,
++                                      const nsRectCornerRadii* aRadii = nullptr,
++                                      const nsMargin* aInset = nullptr) {
+     NS_ASSERTION(!mRestored, "Already restored!");
+     NS_ASSERTION(!mClipUsed, "mClip already used");
+ #ifdef DEBUG
+     mClipUsed = true;
+ #endif
+-    mState.ClipContainingBlockDescendants(mBuilder, aRect, aRadii, mClipChain);
++    mState.ClipContainingBlockDescendants(mBuilder, aRect, aRadii, aInset,
++                                          mClipChain);
+   }
+ 
+   void ClipToDisplayPort(const nsRect& aRect) {
+@@ -287,13 +290,14 @@ class DisplayListClipState::AutoClipMultiple : public AutoSaveRestore {
+    * the result, stored in aClipOnStack.
+    */
+   void ClipContainingBlockDescendantsExtra(const nsRect& aRect,
+-                                           const nsRectCornerRadii* aRadii) {
++                                           const nsRectCornerRadii* aRadii,
++                                           const nsMargin* aInset) {
+     NS_ASSERTION(!mRestored, "Already restored!");
+     NS_ASSERTION(!mExtraClipUsed, "mExtraClip already used");
+ #ifdef DEBUG
+     mExtraClipUsed = true;
+ #endif
+-    mState.ClipContainingBlockDescendants(mBuilder, aRect, aRadii,
++    mState.ClipContainingBlockDescendants(mBuilder, aRect, aRadii, aInset,
+                                           mExtraClipChain);
+   }
+ 
+diff --git a/layout/painting/nsCSSRendering.cpp b/layout/painting/nsCSSRendering.cpp
+index a1d5268ef6..523c1b0694 100644
+--- a/layout/painting/nsCSSRendering.cpp
++++ b/layout/painting/nsCSSRendering.cpp
+@@ -798,7 +798,8 @@ static nsCSSBorderRenderer ConstructBorderRenderer(
+ 
+   return nsCSSBorderRenderer(
+       aPresContext, aDrawTarget, dirtyRect, joinedBorderAreaPx, borderStyles,
+-      borderWidths, bgRadii, borderColors, !aForFrame->BackfaceIsHidden(),
++      borderWidths, bgRadii, /* aInset = */ Margin(), borderColors,
++      !aForFrame->BackfaceIsHidden(),
+       *aNeedsClip ? Some(NSRectToRect(aBorderArea, oneDevPixel)) : Nothing());
+ }
+ 
+@@ -984,6 +985,8 @@ nsCSSRendering::CreateBorderRendererForNonThemedOutline(
+       Float(width) / oneDevPixel, Float(width) / oneDevPixel,
+       Float(width) / oneDevPixel, Float(width) / oneDevPixel);
+ 
++  Margin outlineInset;
++
+   // convert the radii
+   nsRectCornerRadii twipsRadii;
+ 
+@@ -999,6 +1002,11 @@ nsCSSRendering::CreateBorderRendererForNonThemedOutline(
+                         outlineWidths.right + devPxOffset.Width(),
+                         outlineWidths.bottom + devPxOffset.Height(),
+                         outlineWidths.left + devPxOffset.Width());
++
++    // Pass down the computed inset for the correct rendering of
++    // corner-shape contoured superellipses.
++    outlineInset = -widths;
++
+     nsCSSBorderRenderer::ComputeOuterRadii(innerRadii, widths, &outlineRadii);
+   }
+ 
+@@ -1014,9 +1022,10 @@ nsCSSRendering::CreateBorderRendererForNonThemedOutline(
+ 
+   Rect dirtyRect = NSRectToRect(aDirtyRect, oneDevPixel);
+ 
+-  return Some(nsCSSBorderRenderer(
+-      aPresContext, aDrawTarget, dirtyRect, oRect, outlineStyles, outlineWidths,
+-      outlineRadii, outlineColors, !aForFrame->BackfaceIsHidden(), Nothing()));
++  return Some(nsCSSBorderRenderer(aPresContext, aDrawTarget, dirtyRect, oRect,
++                                  outlineStyles, outlineWidths, outlineRadii,
++                                  outlineInset, outlineColors,
++                                  !aForFrame->BackfaceIsHidden(), Nothing()));
+ }
+ 
+ void nsCSSRendering::PaintNonThemedOutline(nsPresContext* aPresContext,
+@@ -1064,8 +1073,9 @@ nsCSSBorderRenderer nsCSSRendering::GetBorderRendererForFocus(
+   // to a ComputedStyle and can use the same logic that PaintBorder
+   // and PaintOutline do.)
+   return nsCSSBorderRenderer(pc, aDrawTarget, focusRect, focusRect, focusStyles,
+-                             focusWidths, focusRadii, focusColors,
+-                             !aForFrame->BackfaceIsHidden(), Nothing());
++                             focusWidths, focusRadii, /* aInset = */ Margin(),
++                             focusColors, !aForFrame->BackfaceIsHidden(),
++                             Nothing());
+ }
+ 
+ // Thebes Border Rendering Code End
+diff --git a/layout/painting/nsCSSRenderingBorders.cpp b/layout/painting/nsCSSRenderingBorders.cpp
+index fd2524fd78..45a37eff1c 100644
+--- a/layout/painting/nsCSSRenderingBorders.cpp
++++ b/layout/painting/nsCSSRenderingBorders.cpp
+@@ -142,14 +142,16 @@ nsCSSBorderRenderer::nsCSSBorderRenderer(
+     nsPresContext* aPresContext, DrawTarget* aDrawTarget,
+     const Rect& aDirtyRect, Rect& aOuterRect,
+     const StyleBorderStyle* aBorderStyles, const Margin& aBorderWidths,
+-    RectCornerRadii& aBorderRadii, const nscolor* aBorderColors,
+-    bool aBackfaceIsVisible, const Maybe<Rect>& aClipRect)
++    RectCornerRadii& aBorderRadii, const Margin& aBorderInset,
++    const nscolor* aBorderColors, bool aBackfaceIsVisible,
++    const Maybe<Rect>& aClipRect)
+     : mPresContext(aPresContext),
+       mDrawTarget(aDrawTarget),
+       mDirtyRect(aDirtyRect),
+       mOuterRect(aOuterRect),
+       mBorderWidths(aBorderWidths),
+       mBorderRadii(aBorderRadii),
++      mBorderInset(aBorderInset),
+       mBackfaceIsVisible(aBackfaceIsVisible),
+       mLocalClip(aClipRect) {
+   PodCopy(mBorderStyles, aBorderStyles, 4);
+@@ -3292,7 +3294,9 @@ void nsCSSBorderRenderer::CreateWebRenderCommands(
+         wr::ToBorderSide(ToDeviceColor(mBorderColors[i]), mBorderStyles[i]);
+   }
+ 
++  wr::LayoutSideOffsets borderWidths = wr::ToBorderWidths(mBorderWidths);
+   wr::BorderRadius borderRadius = wr::ToBorderRadius(mBorderRadii);
++  wr::LayoutSideOffsets borderInset = wr::ToLayoutSideOffsets(mBorderInset);
+ 
+   if (mLocalClip) {
+     LayoutDeviceRect localClip =
+@@ -3301,8 +3305,8 @@ void nsCSSBorderRenderer::CreateWebRenderCommands(
+   }
+ 
+   Range<const wr::BorderSide> wrsides(side, 4);
+-  aBuilder.PushBorder(roundedRect, clipRect, mBackfaceIsVisible,
+-                      wr::ToBorderWidths(mBorderWidths), wrsides, borderRadius);
++  aBuilder.PushBorder(roundedRect, clipRect, mBackfaceIsVisible, borderWidths,
++                      wrsides, borderRadius, borderInset);
+ }
+ 
+ /* static */
+diff --git a/layout/painting/nsCSSRenderingBorders.h b/layout/painting/nsCSSRenderingBorders.h
+index 15157edd6e..c219b65f89 100644
+--- a/layout/painting/nsCSSRenderingBorders.h
++++ b/layout/painting/nsCSSRenderingBorders.h
+@@ -93,7 +93,7 @@ class nsCSSBorderRenderer final {
+                       const Rect& aDirtyRect, Rect& aOuterRect,
+                       const mozilla::StyleBorderStyle* aBorderStyles,
+                       const Margin& aBorderWidths,
+-                      RectCornerRadii& aBorderRadii,
++                      RectCornerRadii& aBorderRadii, const Margin& aBorderInset,
+                       const nscolor* aBorderColors, bool aBackfaceIsVisible,
+                       const mozilla::Maybe<Rect>& aClipRect);
+ 
+@@ -137,6 +137,7 @@ class nsCSSBorderRenderer final {
+   mozilla::StyleBorderStyle mBorderStyles[4];
+   Margin mBorderWidths;
+   RectCornerRadii mBorderRadii;
++  Margin mBorderInset;
+ 
+   // the colors for 'border-top-color' et. al.
+   nscolor mBorderColors[4];
+diff --git a/layout/tables/nsTableFrame.cpp b/layout/tables/nsTableFrame.cpp
+index 28e555c345..83c9b9ce2b 100644
+--- a/layout/tables/nsTableFrame.cpp
++++ b/layout/tables/nsTableFrame.cpp
+@@ -6458,7 +6458,7 @@ static void AdjustAndPushBevel(wr::DisplayListBuilder& aBuilder,
+   // be able bevel to sides of the same color without bleeding in the middle.
+   aBuilder.PushBorder(bevelRect, bevelRect, aBackfaceIsVisible, borderWidths,
+                       wrsides, wr::EmptyBorderRadius(),
+-                      wr::AntialiasBorder::No);
++                      wr::EmptyLayoutSideOffsets(), wr::AntialiasBorder::No);
+ }
+ 
+ static void CreateWRCommandsForBeveledBorder(
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-bevel.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-bevel.html.ini
+index 48f1f399ff..64de30993d 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-bevel.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-bevel.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-bevel.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch-mixed.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch-mixed.html.ini
+index e8f92f3417..0cef33e8c4 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch-mixed.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch-mixed.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-notch-mixed.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch.html.ini
+index e69fb19cc6..9cd5ad23a6 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-notch.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-scoop.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-scoop.html.ini
+new file mode 100644
+index 0000000000..bebaeb9706
+--- /dev/null
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-scoop.html.ini
+@@ -0,0 +1,3 @@
++[corner-shape-scoop.html]
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-mixed.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-mixed.html.ini
+new file mode 100644
+index 0000000000..e829d53044
+--- /dev/null
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-mixed.html.ini
+@@ -0,0 +1,3 @@
++[corner-shape-square-notch-mixed.html]
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-superellipse.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-superellipse.html.ini
+new file mode 100644
+index 0000000000..12d5bac673
+--- /dev/null
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-superellipse.html.ini
+@@ -0,0 +1,3 @@
++[corner-shape-square-notch-superellipse.html]
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square.html.ini
+index e9b1a330d2..5aca5449b0 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-square.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-squircle.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-squircle.html.ini
+new file mode 100644
+index 0000000000..79a10bee60
+--- /dev/null
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-squircle.html.ini
+@@ -0,0 +1,3 @@
++[corner-shape-squircle.html]
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-bevel.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-bevel.html.ini
+index 1a106e3e3c..f175e3fb97 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-bevel.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-bevel.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-superellipse-bevel.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-concave.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-concave.html.ini
+new file mode 100644
+index 0000000000..8e27df458c
+--- /dev/null
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-concave.html.ini
+@@ -0,0 +1,3 @@
++[corner-shape-superellipse-concave.html]
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-convex.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-convex.html.ini
+new file mode 100644
+index 0000000000..3a2ad3c584
+--- /dev/null
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-convex.html.ini
+@@ -0,0 +1,3 @@
++[corner-shape-superellipse-convex.html]
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-100.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-100.html.ini
+index df13a251a0..6a32def3ac 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-100.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-100.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-superellipse-negative-100.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-inf.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-inf.html.ini
+index c6a7827768..4c2ad71472 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-inf.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-inf.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-superellipse-negative-inf.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-scoop.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-scoop.html.ini
+new file mode 100644
+index 0000000000..fc98f5a2f2
+--- /dev/null
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-scoop.html.ini
+@@ -0,0 +1,3 @@
++[corner-shape-superellipse-scoop.html]
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-squircle.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-squircle.html.ini
+new file mode 100644
+index 0000000000..0ee4512987
+--- /dev/null
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-squircle.html.ini
+@@ -0,0 +1,3 @@
++[corner-shape-superellipse-squircle.html]
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/render-corner-shape.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/render-corner-shape.html.ini
+index 43ad75fc1a..53522770ee 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/render-corner-shape.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/render-corner-shape.html.ini
+@@ -1,12 +1,14 @@
+ [render-corner-shape.html?border-radius=50&corner-shape=0&shadow-spread=10]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+ 
+ [render-corner-shape.html?border-radius=40&corner-shape=3&shadow-spread=10]
+   expected:
+     if useDrawSnapshot: FAIL
+ 
+ [render-corner-shape.html?border-top-left-radius=50%&corner-shape=0.7&border-left-width=30&border-top-width=30]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+ 
+ [render-corner-shape.html?corner-shape=-2&border-radius=20%&border-width=20]
+   expected:
+@@ -33,7 +35,8 @@
+     if useDrawSnapshot: FAIL
+ 
+ [render-corner-shape.html?border-top-right-radius=100&corner-top-right-shape=0&shadow-spread=30]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+ 
+ [render-corner-shape.html?corner-top-left-shape=scoop&border-radius=40]
+   expected:
+@@ -52,24 +55,28 @@
+     if useDrawSnapshot: FAIL
+ 
+ [render-corner-shape.html?corner-top-left-shape=0&corner-top-right-shape=notch&corner-bottom-right-shape=2&corner-bottom-left-shape=-1&border-width=20&shadow-spread=20&border-radius=50]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+ 
+ [render-corner-shape.html?corner-shape=-7&border-radius=20%&border-width=20]
+   expected:
+     if useDrawSnapshot: FAIL
+ 
+ [render-corner-shape.html?border-radius=5&corner-top-left-shape=0.5&corner-bottom-right-shape=-0.5&shadow-spread=10]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+ 
+ [render-corner-shape.html?corner-top-left-shape=-4&border-radius=40]
+   expected:
+     if useDrawSnapshot: FAIL
+ 
+ [render-corner-shape.html?border-radius=40&corner-shape=-infinity&shadow-spread=10]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+ 
+ [render-corner-shape.html?border-radius=40&corner-shape=-1.5&shadow-spread=10]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+ 
+ [render-corner-shape.html?corner-shape=-2&border-top-left-radius=40%&border-width=20]
+   expected:
+diff --git a/widget/ThemeDrawing.cpp b/widget/ThemeDrawing.cpp
+index c2550d9c2d..ec7aa4bb1c 100644
+--- a/widget/ThemeDrawing.cpp
++++ b/widget/ThemeDrawing.cpp
+@@ -98,7 +98,11 @@ void ThemeDrawing::PaintRoundedRectWithRadius(
+       wr::BorderRadius radii = {{backgroundRadius, backgroundRadius},
+                                 {backgroundRadius, backgroundRadius},
+                                 {backgroundRadius, backgroundRadius},
+-                                {backgroundRadius, backgroundRadius}};
++                                {backgroundRadius, backgroundRadius},
++                                1.0f,
++                                1.0f,
++                                1.0f,
++                                1.0f};
+       aWrData.mBuilder.PushBorder(backgroundRect, clip, kBackfaceIsVisible,
+                                   widths, {sides, 4}, radii);
+     }

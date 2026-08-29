@@ -31,6 +31,7 @@
   & toolbarbutton {
     margin: 0;
     max-width: 28px;
+    border-radius: var(--toolbarbutton-border-radius);
     height: 28px;
     display: flex;
     justify-content: center;

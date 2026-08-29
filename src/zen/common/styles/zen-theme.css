@@ -217,6 +217,16 @@
   --toolbarbutton-border-radius: 6px;
   --urlbar-margin-inline: 1px !important;
 
+  --zen-squircle-value: 1.3;
+
+  @media (-moz-platform: windows) {
+    --zen-squircle-value: 2.1;
+  }
+
+  @media (-moz-platform: linux) {
+    --zen-squircle-value: 1.2;
+  }
+
   --tab-icon-overlay-stroke: light-dark(white, black) !important;
   --tab-close-button-padding: 4px !important;
 
@@ -348,3 +358,11 @@
 }
 
 %include zen-buttons.css
+
+@media (-moz-pref('layout.css.corner-shape.enabled')) {
+  *:not(.no-squircles),
+  .zen-squircle-before::before,
+  .zen-squircle-after::after {
+    corner-shape: superellipse(var(--zen-squircle-value));
+  }
+}

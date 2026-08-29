@@ -717,6 +717,10 @@
   display: none;
 }
 
+.urlbarView {
+  overflow: visible;
+}
+
 #urlbar-search-mode-indicator-title {
   font-weight: 600;
   padding: 0;

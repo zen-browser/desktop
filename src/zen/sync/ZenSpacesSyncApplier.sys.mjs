@@ -543,6 +543,7 @@ class nsZenSpacesSyncApplier {
       skipBackgroundNotify: true,
       lazyTabTitle: data.title || undefined,
       userContextId,
+      skipRoute: true,
     });
     // Setting the sync id before the queued TabOpen handler runs makes
     // window sync treat this tab as already replicated.

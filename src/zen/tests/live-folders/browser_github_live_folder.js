@@ -26,6 +26,7 @@ function getGithubProviderForTest(sandbox, customOptions = {}) {
     maxItems: 10,
     lastFetched: 0,
     type: customOptions.type,
+    host: customOptions.host,
     options: defaultOptions,
   };
 
@@ -65,7 +66,10 @@ add_task(async function test_fetch_items_url_construction() {
   const fetchedUrl = new URL(instance.fetch.firstCall.args[0]);
   const searchParams = fetchedUrl.searchParams;
 
-  Assert.ok(fetchedUrl.href.startsWith("https://github.com/pulls"));
+  Assert.ok(
+    fetchedUrl.href.startsWith("https://github.com/pulls"),
+    "PR type should use /pulls endpoint"
+  );
 
   const query = searchParams.get("q");
   Assert.ok(query.includes("is:open"), "Should include state:open");
@@ -214,6 +218,64 @@ add_task(async function test_no_filter_enabled_returns_error() {
   sandbox.restore();
 });
 
+add_task(async function test_custom_host_state_construction() {
+  info("should construct state correctly with custom host");
+
+  let sandbox = sinon.createSandbox();
+
+  // PR type
+  let prInstance = getGithubProviderForTest(sandbox, {
+    type: "pull-requests",
+    host: "https://github.corp.com",
+  });
+  Assert.equal(
+    prInstance.state.host,
+    "https://github.corp.com",
+    "Custom host should be preserved"
+  );
+  Assert.ok(
+    prInstance.state.url.startsWith("https://github.corp.com/pulls"),
+    "URL should use custom host for PRs"
+  );
+
+  // Issues type
+  let issueInstance = getGithubProviderForTest(sandbox, {
+    type: "issues",
+    host: "https://github.corp.com",
+  });
+  Assert.ok(
+    issueInstance.state.url.startsWith(
+      "https://github.corp.com/issues/assigned"
+    ),
+    "URL should use custom host for issues"
+  );
+
+  sandbox.restore();
+});
+
+add_task(async function test_non_2xx_triggers_auth_error() {
+  info("should treat non-2xx responses as auth errors for github.com");
+
+  let sandbox = sinon.createSandbox();
+  let instance = getGithubProviderForTest(sandbox, {
+    type: "pull-requests",
+  });
+
+  instance.fetch.resolves({
+    status: 403,
+    text: "<html>Forbidden</html>",
+  });
+
+  const errorId = await instance.fetchItems();
+  Assert.equal(
+    errorId,
+    "zen-live-folder-github-no-auth",
+    "Should return auth error for 403 status"
+  );
+
+  sandbox.restore();
+});
+
 add_task(async function test_404_returns_no_auth() {
   info("should treat a 404 as a missing-auth signal");
 
@@ -231,6 +293,62 @@ add_task(async function test_404_returns_no_auth() {
     result,
     "zen-live-folder-github-no-auth",
     "Should return the no-auth error id"
+  );
+
+  sandbox.restore();
+});
+
+add_task(async function test_empty_results_triggers_auth_error() {
+  info("should treat empty results as auth error (login page returned)");
+
+  let sandbox = sinon.createSandbox();
+  let instance = getGithubProviderForTest(sandbox);
+
+  instance.fetch.resolves({
+    status: 200,
+    text: "<html><body>Please log in</body></html>",
+  });
+
+  const errorId = await instance.fetchItems();
+  Assert.equal(
+    errorId,
+    "zen-live-folder-github-no-auth",
+    "Should return auth error when 200 but no items parsed"
+  );
+
+  sandbox.restore();
+});
+
+add_task(async function test_state_host_defaults() {
+  info("should default host to github.com when not specified");
+
+  let sandbox = sinon.createSandbox();
+
+  let instance = getGithubProviderForTest(sandbox, {
+    type: "pull-requests",
+  });
+  Assert.equal(
+    instance.state.host,
+    "https://github.com",
+    "Default host should be github.com"
+  );
+  Assert.ok(
+    instance.state.url.startsWith("https://github.com/pulls"),
+    "URL should use github.com for PRs"
+  );
+
+  let gheInstance = getGithubProviderForTest(sandbox, {
+    type: "issues",
+    host: "https://github.corp.com",
+  });
+  Assert.equal(
+    gheInstance.state.host,
+    "https://github.corp.com",
+    "Custom host should be preserved"
+  );
+  Assert.ok(
+    gheInstance.state.url.startsWith("https://github.corp.com/issues/assigned"),
+    "URL should use custom host for issues"
   );
 
   sandbox.restore();

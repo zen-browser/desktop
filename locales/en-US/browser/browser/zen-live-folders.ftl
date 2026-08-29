@@ -102,3 +102,23 @@ zen-live-folder-github-option-repo-list-note =
 
 zen-live-folders-promotion-title = Live Folder Created!
 zen-live-folders-promotion-description = Latest content from your RSS feeds or GitHub pull requests will appear here automatically.
+
+zen-live-folder-github-prompt-instance = Enter the GitHub instance URL
+
+zen-live-folder-github-option-instance =
+    .label = Instance: { $host }
+
+zen-live-folder-github-invalid-url-title = Invalid GitHub URL
+zen-live-folder-github-invalid-url-description = The URL must be a valid HTTPS address for a GitHub instance.
+
+zen-live-folder-github-prompt-token = Enter your GitHub Personal Access Token
+
+zen-live-folder-github-option-set-token =
+    .label = Set Access Token…
+
+zen-live-folder-github-option-remove-token =
+    .label = Remove Access Token
+
+zen-live-folder-github-token-expired =
+    .label = Access token expired
+    .tooltiptext = Your access token has expired or been revoked. Click to set a new one.

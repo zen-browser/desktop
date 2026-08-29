@@ -225,19 +225,9 @@
    ========================================================================== */
 #navigator-toolbox {
   /* Define theme variables, including platform specifics for native look */
-  --border-radius-medium: 10px;
-  --tab-border-radius: 6px;
   --zen-toolbox-min-width: 1px;
-
-  @media (-moz-platform: windows) {
-    --border-radius-medium: 6px;
-    --tab-border-radius: 4px;
-  }
-
-  @media (-moz-platform: macos) {
-    --border-radius-medium: 14px;
-    --tab-border-radius: 8px;
-  }
+  --border-radius-medium: 14px;
+  --tab-border-radius: 8px;
 
   min-width: var(--zen-toolbox-min-width);
   margin-top: 0 !important;
@@ -1208,6 +1198,7 @@
         background-position: center;
         fill: currentColor;
         -moz-context-properties: fill, fill-opacity;
+        /* stylelint-disable-next-line property-no-unknown */
         corner-shape: superellipse(var(--zen-squircle-value));
       }
 
@@ -1228,13 +1219,12 @@
         background: var(--zen-essential-tab-selected-bg);
         margin: var(--zen-essential-bg-margin);
         border-radius: calc(var(--border-radius-medium) - var(--zen-essential-bg-margin));
-        /* stylelint-disable-next-line property-no-unknown */
-        corner-shape: var(--zen-squircle-value);
         position: absolute;
         inset: 0;
         z-index: 0;
         content: "";
         transition: background 0.1s ease-in-out;
+        /* stylelint-disable-next-line property-no-unknown */
         corner-shape: superellipse(var(--zen-squircle-value));
       }
     }
@@ -1344,7 +1334,7 @@
 
 #tabs-newtab-button:not([in-urlbar="true"]) label,
 .zen-current-workspace-indicator-name {
-  opacity: 0.7;
+  color: color-mix(in srgb, currentColor 70%, transparent);
 }
 
 /* stylelint-disable-next-line media-query-no-invalid */

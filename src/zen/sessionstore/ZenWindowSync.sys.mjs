@@ -784,17 +784,57 @@ class nsZenWindowSync {
         this.log(`Cannot swap browsers, other tab ${aOtherTab.id} is closing`);
         return;
       }
-      await this.#styleSwapedBrowsers(aOurTab, aOtherTab, () => {
-        try {
-          this.#swapBrowserDocShellsInner(aOurTab, aOtherTab);
-        } catch (e) {
-          console.error(
-            `Error swapping browsers for tabs ${aOurTab.id} and ${aOtherTab.id}:`,
-            e
-          );
+      await this.#addPseudoImageForBrowser(aOtherTab);
+
+      const swapResult = { swappedOk: false };
+      try {
+        this.#swapBrowserDocShellsInner(aOurTab, aOtherTab, swapResult);
+      } catch (e) {
+        console.error(
+          `Error swapping browsers for tabs ${aOurTab.id} and ${aOtherTab.id}:`,
+          e
+        );
+      }
+      if (!swapResult.swappedOk) {
+        this.log(`Swap was refused for tab ${aOurTab.id}`);
+        this.#maybeRemovePseudoImageForBrowser(aOtherTab.linkedBrowser);
+        return;
+      }
+
+      /*Let the swap settle so the receiving tab has something to show.*/
+      await new Promise(resolve => lazy.setTimeout(resolve));
+
+      try {
+        this.#applyGhostState(aOtherTab);
+        this.#applyGhostState(aOurTab);
+        if (aOurTab._zenContentsVisible) {
+          aOurTab.linkedBrowser.focus();
         }
-      });
+      } catch (e) {
+        console.error(
+          `Error revealing swapped browsers for tabs ${aOurTab.id} and ${aOtherTab.id}:`,
+          e
+        );
+      }
+
     });
+  }
+
+  /**
+   * Show browser contents if tab is visible, show image still if it's not.
+   *
+   * @param {object} aTab - The tab
+   */
+  #applyGhostState(aTab) {
+    const browser = aTab.linkedBrowser;
+    if (!browser) {
+      return;
+    }
+    if (aTab._zenContentsVisible) {
+      this.#showBrowserContents(browser);
+    } else {
+      browser.setAttribute("zen-pseudo-hidden", "true");
+    }
   }
 
   /**
@@ -820,23 +860,19 @@ class nsZenWindowSync {
 
     try {
       callback();
-    } catch (e) {
-      console.error(e);
-    }
-
-    // Restore the listeners for the swapped in tab.
-    if (!onClose && filter) {
-      tabListener = new otherTabBrowser.zenTabProgressListener(
-        aTab,
-        otherBrowser,
-        true,
-        false
-      );
+    } finally {
+      if (!onClose && filter) {
+        tabListener = new otherTabBrowser.zenTabProgressListener(
+          aTab,
+          otherBrowser,
+          true,
+          false
+        );
       otherTabBrowser.zenSetTabProgressListener(aTab, tabListener);
-
-      const notifyAll = Ci.nsIWebProgress.NOTIFY_ALL;
-      filter.addProgressListener(tabListener, notifyAll);
-      otherBrowser.webProgress.addProgressListener(filter, notifyAll);
+        const notifyAll = Ci.nsIWebProgress.NOTIFY_ALL;
+        filter.addProgressListener(tabListener, notifyAll);
+        otherBrowser.webProgress.addProgressListener(filter, notifyAll);
+      }
     }
   }
 
@@ -882,6 +918,11 @@ class nsZenWindowSync {
    *
    * @param {object} aOurTab - The tab in the current window.
    * @param {object} aOtherTab - The tab in the other window.
+   * @param {object} aSwapResult - Out parameter.`aSwapResult.swappedOk` is set the
+   * moment the docshell swap is successful. Even if this function throws the caller is responsible
+   * for committing to the swap in case this is set and reverting to previous state if it is not
+   * if at all possible. Follow only this signal to determine whether to commit to a swap;
+   * the function returns nothing.
    * @param {object} options - Options object.
    * @param {boolean} options.focus - Indicates if the tab should be focused after the swap.
    * @param {boolean} options.onClose - Indicates if the swap is done during a tab close operation.
@@ -889,8 +930,10 @@ class nsZenWindowSync {
   #swapBrowserDocShellsInner(
     aOurTab,
     aOtherTab,
+    aSwapResult,
     { focus = true, onClose = false } = {}
   ) {
+    aSwapResult.swappedOk = false;
     // Can't swap between chrome and content processes.
     if (!this.#canSwapBrowsers(aOurTab, aOtherTab)) {
       this.log(
@@ -905,18 +948,21 @@ class nsZenWindowSync {
       aOtherTab,
       () => {
         this.log(`Swapping docshells between windows for tab ${aOurTab.id}`);
-        try {
-          aOurTab.documentGlobal.gBrowser.swapBrowsersAndCloseOther(
+        if (
+          !aOurTab.documentGlobal.gBrowser.swapBrowsersAndCloseOther(
             aOurTab,
             aOtherTab,
             false
-          );
-        } catch (e) {
-          console.error(
-            `Error swapping browsers for tabs ${aOurTab.id} and ${aOtherTab.id}:`,
-            e
-          );
+          )
+        ) {
+          return;
         }
+        delete aOtherTab._zenContentsVisible;
+        aOurTab._zenContentsVisible = true;
+        // The contents have changed hands. Say so before anything below runs,
+        // so that a failure in the work that follows can never be mistaken for
+        // a swap that did not happen.
+        aSwapResult.swappedOk = true;
 
         // Swap permanent keys
         if (!onClose) {
@@ -960,6 +1006,9 @@ class nsZenWindowSync {
       },
       onClose
     );
+    if (!aSwapResult.swappedOk) {
+      return;
+    }
     const kAttributesToRemove = [
       "muted",
       "soundplaying",
@@ -982,59 +1031,47 @@ class nsZenWindowSync {
   }
 
   /**
-   * Styles the swapped browsers to ensure proper visibility and layout.
+   * Captures a tab's current contents and lays a still image of them over its
+   * browser, so the window keeps showing the page once the docshell moves away.
    *
-   * @param {object} aOurTab - The tab in the current window.
-   * @param {object} aOtherTab - The tab in the other window.
-   * @param {Function|undefined} callback - The callback function to execute after styling.
+   * @param {object} aTab - The tab whose contents should be captured.
    */
-  #styleSwapedBrowsers(aOurTab, aOtherTab, callback = undefined) {
-    const ourBrowser = aOurTab.linkedBrowser;
-    const otherBrowser = aOtherTab.linkedBrowser;
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async resolve => {
-      if (callback) {
-        const browserBlob =
-          await aOtherTab.documentGlobal.PageThumbs.captureToBlob(
-            aOtherTab.linkedBrowser,
-            {
-              fullScale: true,
-              fullViewport: true,
-              backgroundColor: "transparent",
-            }
-          );
-
-        let mySrc = await new Promise(r => {
-          const reader = new FileReader();
-          if (!browserBlob) {
-            r("");
-            return;
-          }
-          reader.readAsDataURL(browserBlob);
-          reader.onloadend = function () {
-            // result includes identifier 'data:image/png;base64,' plus the base64 data
-            r(reader.result);
-          };
-          reader.onerror = function () {
-            r("");
-          };
-        });
-
-        await this.#createPseudoImageForBrowser(otherBrowser, mySrc);
-        callback();
-        lazy.setTimeout(() => {
-          otherBrowser.setAttribute("zen-pseudo-hidden", "true");
-          ourBrowser.removeAttribute("zen-pseudo-hidden");
-          this.#maybeRemovePseudoImageForBrowser(ourBrowser);
-          ourBrowser.focus();
-          resolve();
-        });
+  async #addPseudoImageForBrowser(aTab) {
+    const browser = aTab.linkedBrowser;
+    const browserBlob = await aTab.documentGlobal.PageThumbs.captureToBlob(
+      browser,
+      {
+        fullScale: true,
+        fullViewport: true,
+        backgroundColor: "transparent",
+      }
+    );
+    const src = await new Promise(resolve => {
+      const reader = new FileReader();
+      if (!browserBlob) {
+        resolve("");
         return;
       }
-      ourBrowser.removeAttribute("zen-pseudo-hidden");
-      this.#maybeRemovePseudoImageForBrowser(ourBrowser);
-      resolve();
+      reader.readAsDataURL(browserBlob);
+      reader.onloadend = function () {
+        // result includes identifier 'data:image/png;base64,' plus the base64 data
+        resolve(reader.result);
+      };
+      reader.onerror = function () {
+        resolve("");
+      };
     });
+    await this.#createPseudoImageForBrowser(browser, src);
+  }
+
+  /**
+   * Shows a browser's own contents again, dropping any still image covering it.
+   *
+   * @param {object} aBrowser - The browser element to show.
+   */
+  #showBrowserContents(aBrowser) {
+    aBrowser.removeAttribute("zen-pseudo-hidden");
+    this.#maybeRemovePseudoImageForBrowser(aBrowser);
   }
 
   /**
@@ -1123,13 +1160,12 @@ class nsZenWindowSync {
       const targetTab = this.getItemFromWindow(mostRecentWindow, tab.id);
       if (targetTab) {
         this.log(`Moving active tab ${tab.id} to most recent window on close`);
-        targetTab._zenContentsVisible = true;
         if (!tab.linkedBrowser) {
           continue;
         }
-        delete tab._zenContentsVisible;
+        const swapResult = { swappedOk: false };
         try {
-          this.#swapBrowserDocShellsInner(targetTab, tab, {
+          this.#swapBrowserDocShellsInner(targetTab, tab, swapResult, {
             focus: targetTab.selected,
             onClose: true,
           });
@@ -1139,6 +1175,9 @@ class nsZenWindowSync {
             e
           );
         }
+        if (!swapResult.swappedOk) {
+          continue;
+        }
         this.#swapedTabsEntriesForWC.set(
           tab.linkedBrowser.permanentKey,
           targetTab
@@ -1146,7 +1185,7 @@ class nsZenWindowSync {
         // We can animate later, whats important is to always stay on the same
         // process and avoid async operations here to avoid the closed window
         // being unloaded before the swap is done.
-        this.#styleSwapedBrowsers(targetTab, tab);
+        this.#showBrowserContents(targetTab.linkedBrowser);
       }
     }
   }
@@ -1183,8 +1222,6 @@ class nsZenWindowSync {
             t?.splitView ? t.group.tabs.some(st => st.selected) : t?.selected
         );
         if (otherTabToShow) {
-          otherTabToShow._zenContentsVisible = true;
-          delete tab._zenContentsVisible;
           await this.#swapBrowserDocShellsAsync(otherTabToShow, tab);
         }
       }
@@ -1201,12 +1238,12 @@ class nsZenWindowSync {
         aWindow,
         selectedTab.id
       );
-      selectedTab._zenContentsVisible = true;
       if (otherSelectedTab) {
-        delete otherSelectedTab._zenContentsVisible;
         promises.push(
           this.#swapBrowserDocShellsAsync(selectedTab, otherSelectedTab)
         );
+      } else {
+        selectedTab._zenContentsVisible = true;
       }
     }
     await Promise.all(promises);

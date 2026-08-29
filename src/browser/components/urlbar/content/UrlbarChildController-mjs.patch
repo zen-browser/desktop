@@ -1,8 +1,25 @@
 diff --git a/browser/components/urlbar/content/UrlbarChildController.mjs b/browser/components/urlbar/content/UrlbarChildController.mjs
-index a17a4de079b69d2818388b33a2c1746cc6148c73..745a36588341471099c4454eba26eef0c5fc9b2f 100644
+index a17a4de079b69d2818388b33a2c1746cc6148c73..4fee63a22919972af08716db2d2de1c7549ff100 100644
 --- a/browser/components/urlbar/content/UrlbarChildController.mjs
 +++ b/browser/components/urlbar/content/UrlbarChildController.mjs
-@@ -934,6 +934,10 @@ export class UrlbarChildController {
+@@ -438,7 +438,6 @@ export class UrlbarChildController {
+     const isMac = AppConstants.platform == "macosx";
+     // Handle readline/emacs-style navigation bindings on Mac.
+     if (
+-      isMac &&
+       this.view.isOpen &&
+       event.ctrlKey &&
+       (event.key == "n" || event.key == "p")
+@@ -630,6 +629,8 @@ export class UrlbarChildController {
+             });
+           }
+           event.preventDefault();
++        } else if (!this.input.value && !(event.ctrlKey || event.altKey || event.shiftKey)) {
++          this.window.gZenUIManager.enableCommandsMode(event);
+         }
+         break;
+       }
+@@ -934,6 +935,10 @@ export class UrlbarChildController {
        }
        reuseEmpty = true;
      }
@@ -13,7 +30,7 @@ index a17a4de079b69d2818388b33a2c1746cc6148c73..745a36588341471099c4454eba26eef0
      // The browser window exists only in chrome; a content-process input has no
      // tab to reuse, so `gBrowser` is absent and the reuse is skipped.
      if (
-@@ -943,6 +947,10 @@ export class UrlbarChildController {
+@@ -943,6 +948,10 @@ export class UrlbarChildController {
      ) {
        where = "current";
      }

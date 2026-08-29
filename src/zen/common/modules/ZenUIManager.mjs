@@ -1217,12 +1217,7 @@ window.gZenVerticalTabsManager = {
     });
 
     if (nsZenMultiWindowFeature.isActiveWindow) {
-      if (!this._pendingUpdateEvent) {
-        this._pendingUpdateEvent = true;
-        await Promise.resolve();
-        this._pendingUpdateEvent = false;
-        this._updateEvent();
-      }
+      this._updateEvent();
       this._initWaitPromise();
     }
   },

@@ -97,11 +97,11 @@ class nsZenWindowSync {
   };
 
   /**
-   * Promise|null that resolves when the current docshell swap operation is finished.
-   * Used to avoid multiple simultaneous swap operations that could interfere with each other.
-   * For example, when focusing a window AND selecting a tab at the same time.
+   * Tail of the docshell swap queue. Swaps run one at a time, in the order they
+   * were requested: each new swap is chained onto this promise, which is then
+   * replaced by the new one. It is never null and never rejects.
    */
-  #docShellSwitchPromise = null;
+  #swapQueue = Promise.resolve();
 
   /**
    * Map of sync handlers for different event types.
@@ -728,6 +728,19 @@ class nsZenWindowSync {
         flags
       );
     });
+  }
+
+  /**
+   * Queues a docshell swap. Only one docshell swap can run at a time.
+   *
+   * @param {Function} aCallback - The function performing the swap.
+   * @returns {Promise} Resolves with the callback's result once it has run.
+   */
+  #enqueueSwap(aCallback) {
+    const swap = this.#swapQueue.then(aCallback);
+    // Keep the queue running if a swap throws.
+    this.#swapQueue = swap.catch(console.error);
+    return swap;
   }
 
   /**
@@ -1528,46 +1541,21 @@ class nsZenWindowSync {
     ) {
       return;
     }
-    if (this.#docShellSwitchPromise) {
-      return;
-    }
-    const onTabSelect = event => {
-      if (event.detail?.previousTab === event.target) {
-        return;
-      }
-      this.#lastSelectedTab = null;
-      this.on_TabSelect(event, { ignorePromise: true });
-    };
     this.#lastFocusedWindow = new WeakRef(window);
     this.#lastSelectedTab = new WeakRef(window.gBrowser.selectedTab);
-    window.addEventListener("TabSelect", onTabSelect, { once: true });
-    // eslint-disable-next-line no-async-promise-executor
-    this.#docShellSwitchPromise = new Promise(async resolve => {
-      await this.#onTabSwitchOrWindowFocus(window);
-      window.removeEventListener("TabSelect", onTabSelect);
-      resolve();
-      this.#docShellSwitchPromise = null;
-    });
+    this.#enqueueSwap(() => this.#onTabSwitchOrWindowFocus(window));
   }
 
-  on_TabSelect(aEvent, { ignorePromise = false } = {}) {
+  on_TabSelect(aEvent) {
     const tab = aEvent.target;
     if (this.#lastSelectedTab?.deref() === tab) {
       return;
     }
     this.#lastSelectedTab = new WeakRef(tab);
     const previousTab = aEvent.detail.previousTab;
-    let promise = this.#docShellSwitchPromise;
-    if (promise && !ignorePromise) {
-      return;
-    }
-    // eslint-disable-next-line no-async-promise-executor
-    this.#docShellSwitchPromise = new Promise(async resolve => {
-      await promise;
-      await this.#onTabSwitchOrWindowFocus(tab.documentGlobal, previousTab);
-      resolve();
-      this.#docShellSwitchPromise = null;
-    });
+    this.#enqueueSwap(() =>
+      this.#onTabSwitchOrWindowFocus(tab.documentGlobal, previousTab)
+    );
   }
 
   on_SSWindowClosing(aEvent) {
@@ -1577,15 +1565,12 @@ class nsZenWindowSync {
       window.removeEventListener(eventName, this);
     }
     delete window.gZenWindowSync;
-    const { promise, resolve } = Promise.withResolvers();
-    this.#docShellSwitchPromise = promise;
+    // We cannot queue this. This swap needs to happen synchronously.
     try {
       this.#moveAllActiveTabsToOtherWindowsForClose(window);
     } catch (e) {
       console.error(`Error moving active tabs to other windows on close:`, e);
     }
-    resolve();
-    this.#docShellSwitchPromise = null;
   }
 
   on_WindowCloseAndBrowserFlushed(aBrowsers) {
@@ -1747,7 +1732,9 @@ class nsZenWindowSync {
 
     return new Promise(resolve => {
       lazy.setTimeout(() => {
-        this.#onTabSwitchOrWindowFocus(window, null).finally(resolve);
+        this.#enqueueSwap(() =>
+          this.#onTabSwitchOrWindowFocus(window, null)
+        ).finally(resolve);
       }, 0);
     });
   }

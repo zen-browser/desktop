@@ -181,10 +181,18 @@ class nsZenSpacesSyncModel {
     if (!Number.isSafeInteger(id) || id <= 0) {
       return null;
     }
+    const data = this.#data();
+    if (!lazy.ContextualIdentityService.getPublicIdentityFromId(id)) {
+      // A space or tab still pointing at a container that was deleted.
+      if (id in data.containers) {
+        delete data.containers[id];
+        this.#file.saveSoon();
+      }
+      return null;
+    }
     if (id <= BUILTIN_CONTAINER_MAX) {
       return `${BUILTIN_GUID_PREFIX}${id}`;
     }
-    const data = this.#data();
     const existing = data.containers[id];
     if (existing) {
       return existing;
@@ -202,16 +210,26 @@ class nsZenSpacesSyncModel {
     if (typeof guid !== "string" || !guid) {
       return null;
     }
+    const data = this.#data();
+    for (const [id, mapped] of Object.entries(data.containers)) {
+      if (mapped === guid) {
+        const contextId = Number(id);
+        if (lazy.ContextualIdentityService.getPublicIdentityFromId(contextId)) {
+          return contextId;
+        }
+        delete data.containers[id];
+        this.#file.saveSoon();
+        return null;
+      }
+    }
     if (guid.startsWith(BUILTIN_GUID_PREFIX)) {
       const id = Number(guid.slice(BUILTIN_GUID_PREFIX.length));
-      return Number.isSafeInteger(id) && id > 0 && id <= BUILTIN_CONTAINER_MAX
+      return Number.isSafeInteger(id) &&
+        id > 0 &&
+        id <= BUILTIN_CONTAINER_MAX &&
+        lazy.ContextualIdentityService.getPublicIdentityFromId(id)
         ? id
         : null;
-    }
-    for (const [id, mapped] of Object.entries(this.#data().containers)) {
-      if (mapped === guid) {
-        return Number(id);
-      }
     }
     return null;
   }
@@ -223,9 +241,6 @@ class nsZenSpacesSyncModel {
    * @param {number} userContextId
    */
   registerContainerGuid(guid, userContextId) {
-    if (guid.startsWith(BUILTIN_GUID_PREFIX)) {
-      return;
-    }
     this.#data().containers[userContextId] = guid;
     this.#file.saveSoon();
   }

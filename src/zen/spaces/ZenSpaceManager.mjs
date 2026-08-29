@@ -156,10 +156,27 @@ class nsZenWorkspaces {
         this._invalidateBookmarkContainers();
       };
       Services.obs.addObserver(observerFunction, "workspace-bookmarks-updated");
+      const onContainerDeleted = subject => {
+        const userContextId = subject?.wrappedJSObject?.userContextId;
+        for (const workspace of this.getWorkspaces()) {
+          if (workspace.containerTabId === userContextId) {
+            workspace.containerTabId = 0;
+            this.saveWorkspace(workspace);
+          }
+        }
+      };
+      Services.obs.addObserver(
+        onContainerDeleted,
+        "contextual-identity-deleted"
+      );
       window.addEventListener("unload", () => {
         Services.obs.removeObserver(
           observerFunction,
           "workspace-bookmarks-updated"
+        );
+        Services.obs.removeObserver(
+          onContainerDeleted,
+          "contextual-identity-deleted"
         );
       });
     }

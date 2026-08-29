@@ -1348,18 +1348,21 @@ window.gZenVerticalTabsManager = {
         document.documentElement.removeAttribute("zen-right-side");
       }
 
-      delete this._hadSidebarCollapse;
-      if (isSidebarExpanded) {
-        this._hadSidebarCollapse = !document.documentElement.hasAttribute(
-          "zen-sidebar-expanded"
-        );
-        this.navigatorToolbox.setAttribute("zen-sidebar-expanded", "true");
-        document.documentElement.setAttribute("zen-sidebar-expanded", "true");
-        gBrowser.tabContainer.setAttribute("expanded", "true");
-      } else {
-        this.navigatorToolbox.removeAttribute("zen-sidebar-expanded");
-        document.documentElement.removeAttribute("zen-sidebar-expanded");
-        gBrowser.tabContainer.removeAttribute("expanded");
+      const wasSidebarExpanded = document.documentElement.hasAttribute(
+        "zen-sidebar-expanded"
+      );
+      if (isSidebarExpanded !== wasSidebarExpanded) {
+        delete this._hadSidebarCollapse;
+        if (isSidebarExpanded) {
+          this._hadSidebarCollapse = true;
+          this.navigatorToolbox.setAttribute("zen-sidebar-expanded", "true");
+          document.documentElement.setAttribute("zen-sidebar-expanded", "true");
+          gBrowser.tabContainer.setAttribute("expanded", "true");
+        } else {
+          this.navigatorToolbox.removeAttribute("zen-sidebar-expanded");
+          document.documentElement.removeAttribute("zen-sidebar-expanded");
+          gBrowser.tabContainer.removeAttribute("expanded");
+        }
       }
 
       const appContentNavbarContaienr = document.getElementById(

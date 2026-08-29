@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/content/UrlbarInput.mjs b/browser/components/urlbar/content/UrlbarInput.mjs
-index e7e9495e56076cd112beafb8297dece4ae4cea58..330104d245ddd0956b95377082a6182579cbaf4d 100644
+index e7e9495e56076cd112beafb8297dece4ae4cea58..95e4333866a5f0d41fbdbe23910c396406a247e9 100644
 --- a/browser/components/urlbar/content/UrlbarInput.mjs
 +++ b/browser/components/urlbar/content/UrlbarInput.mjs
 @@ -101,6 +101,13 @@ const lazy = XPCOMUtils.declareLazy({
@@ -280,7 +280,20 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..330104d245ddd0956b95377082a61825
        l10nId,
        l10nId == "urlbar-placeholder-with-name"
          ? { name: engineName }
-@@ -5424,6 +5540,11 @@ ${
+@@ -5347,6 +5463,12 @@ ${
+     }
+ 
+     lazy.logger.debug("Blur Event");
++    if (
++      this.document.commandDispatcher.focusedElement == this.inputField &&
++      !lazy.UrlbarPrefs.get("closeOnWindowBlur")
++    ) {
++      return;
++    }
+     // We cannot count every blur events after a missed engagement as abandoment
+     // because the user may have clicked on some view element that executes
+     // a command causing a focus change. For example opening preferences from
+@@ -5424,6 +5546,11 @@ ${
    }
  
    _on_click(event) {
@@ -292,7 +305,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..330104d245ddd0956b95377082a61825
      switch (event.target) {
        case this.inputField:
        case this._inputContainer:
-@@ -5513,10 +5634,11 @@ ${
+@@ -5513,10 +5640,11 @@ ${
        }
        if (untrim) {
          this.setValue(this._untrimmedValue);
@@ -305,7 +318,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..330104d245ddd0956b95377082a61825
        this.view.autoOpen({ event });
      } else {
        if (this._untrimOnFocusAfterKeydown) {
-@@ -5556,9 +5678,16 @@ ${
+@@ -5556,9 +5684,16 @@ ${
    }
  
    _on_mousedown(event) {
@@ -323,7 +336,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..330104d245ddd0956b95377082a61825
          if (
            event.composedTarget != this.inputField &&
            event.composedTarget != this._inputContainer
-@@ -5568,6 +5697,10 @@ ${
+@@ -5568,6 +5703,10 @@ ${
  
          this.focusedViaMousedown = !this.focused;
          this.#preventClickSelectsAll = this.focused;
@@ -334,7 +347,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..330104d245ddd0956b95377082a61825
  
          // Keep the focus status, since the attribute may be changed
          // upon calling this.focus().
-@@ -5605,7 +5738,7 @@ ${
+@@ -5605,7 +5744,7 @@ ${
          // view open on tab switch, and the TabSelect event arrived earlier.
          // Also ignore mousedown on the urlbarView context menu: opening/closing the
          // view is already handled by the result opening flow.
@@ -343,7 +356,7 @@ index e7e9495e56076cd112beafb8297dece4ae4cea58..330104d245ddd0956b95377082a61825
            break;
          }
  
-@@ -5894,7 +6027,7 @@ ${
+@@ -5894,7 +6033,7 @@ ${
      // When we are in actions search mode we can show more results so
      // increase the limit.
      let maxResults =

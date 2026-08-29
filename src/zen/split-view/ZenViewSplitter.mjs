@@ -230,7 +230,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       }
       this.removeGroup(groupIndex);
       if (changeTab) {
-        gBrowser.selectedTab = remainingTabs[0];
+        const tabToSelect = remainingTabs.find(remaining => remaining !== tab);
+        if (tabToSelect) {
+          gBrowser.selectedTab = tabToSelect;
+        }
         document
           .getElementById("cmd_zenNewEmptySplit")
           .removeAttribute("disabled");
@@ -355,7 +358,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     ) {
       return;
     }
-    const currentView = this._data[this._lastOpenedTab.splitViewValue];
+    const currentView = this._data.find(group =>
+      group.tabs.includes(this._lastOpenedTab)
+    );
     if (currentView?.tabs.length >= this.MAX_TABS) {
       return;
     }
@@ -540,7 +545,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const panelsWidth = panelsRect.width;
     const panelsHeight = panelsRect.height;
     let numOfTabsToDivide = 2;
-    const currentView = this._data[this._lastOpenedTab.splitViewValue];
+    const currentView = this._data.find(group =>
+      group.tabs.includes(this._lastOpenedTab)
+    );
     if (currentView) {
       numOfTabsToDivide = currentView.tabs.length + 1;
     }
@@ -1103,7 +1110,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    */
   resetTabState(tab, forUnsplit) {
     tab.splitView = false;
-    delete tab.splitViewValue;
     tab.removeAttribute("split-view");
     tab.linkedBrowser.zenModeActive = false;
     const container = tab.linkedBrowser.closest(".browserSidebarContainer");
@@ -1147,6 +1153,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
     if (this.currentView === groupIndex) {
       this.deactivateCurrentSplitView();
+    } else if (this.currentView > groupIndex) {
+      this.currentView--;
     }
     for (const tab of this._data[groupIndex].tabs) {
       this.resetTabState(tab, true);
@@ -1638,7 +1646,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   applyGridToTabs(tabs) {
     tabs.forEach(tab => {
       tab.splitView = true;
-      tab.splitViewValue = this.currentView;
       tab.setAttribute("split-view", "true");
       const container = tab.linkedBrowser?.closest(".browserSidebarContainer");
       container.setAttribute("is-zen-split", "true");
@@ -2530,22 +2537,33 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       this.activateSplitView(data);
       gBrowser.selectedTab = emptyTab;
       setTimeout(() => {
+        const closeToken = {};
+        const controller = new AbortController();
+        const cleanup = (onSwitch = false, groupIndex = null) => {
+          if (groupIndex === null) {
+            groupIndex = this._data.findIndex(group =>
+              group.tabs.includes(emptyTab)
+            );
+          }
+          this.removeTabFromGroup(emptyTab, groupIndex, {
+            changeTab: !onSwitch,
+            forUnsplit: true,
+          });
+          const command = document.getElementById("cmd_zenNewEmptySplit");
+          command.removeAttribute("disabled");
+        };
         window.addEventListener(
           "ZenURLBarClosed",
           event => {
+            if (!gZenUIManager.matchesCloseToken(closeToken, event)) {
+              return;
+            }
+            controller.abort();
             const { onElementPicked, onSwitch } = event.detail;
             const groupIndex = this._data.findIndex(group =>
               group.tabs.includes(emptyTab)
             );
             const newSelectedTab = gBrowser.selectedTab;
-            const cleanup = () => {
-              this.removeTabFromGroup(emptyTab, groupIndex, {
-                changeTab: !onSwitch,
-                forUnsplit: true,
-              });
-              const command = document.getElementById("cmd_zenNewEmptySplit");
-              command.removeAttribute("disabled");
-            };
             if (onElementPicked) {
               if (
                 newSelectedTab === emptyTab ||
@@ -2553,7 +2571,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
                 selectedTab.getAttribute("zen-workspace-id") !==
                   newSelectedTab.getAttribute("zen-workspace-id")
               ) {
-                cleanup();
+                cleanup(onSwitch, groupIndex);
                 return;
               }
               this.removeTabFromGroup(emptyTab, groupIndex, {
@@ -2569,12 +2587,17 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
                 topOrLeft ? 0 : 1
               );
             } else {
-              cleanup();
+              cleanup(onSwitch, groupIndex);
             }
           },
-          { once: true }
+          { signal: controller.signal }
         );
-        gZenUIManager.handleNewTab(false, false, "tab", true);
+        if (
+          !gZenUIManager.handleNewTab(false, false, "tab", true, closeToken)
+        ) {
+          controller.abort();
+          cleanup();
+        }
       });
     });
   }

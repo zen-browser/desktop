@@ -5,4 +5,4 @@
 *.patch linguist-language=C++
 *.d.ts linguist-language=TypeScript
 
-src/zen/tests/* linguist-language=C++
+src/zen/tests/** linguist-language=C++

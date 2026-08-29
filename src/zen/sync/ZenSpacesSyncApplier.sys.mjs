@@ -7,6 +7,7 @@ import {
   LAYOUT_RECORD_ID,
   RECORD_KINDS,
   syncableIconUrl,
+  syncLog,
   ZenSpacesSyncModel,
 } from "resource:///modules/zen/ZenSpacesSyncModel.sys.mjs";
 
@@ -31,6 +32,25 @@ const FIRST_SYNC_ANIMATION_PREF = "zen.spaces-sync.first-sync-animation-shown";
 class nsZenSpacesSyncApplier {
   #itemIn(win, id) {
     return id ? win.document.getElementById(id) : null;
+  }
+
+  /**
+   * Maps a record's container guid to the local userContextId. A guid with
+   * no local mapping (its container record hasn't applied here yet) throws,
+   * failing the record so it redelivers once the container exists .
+   *
+   * @param {?string} containerGuid
+   * @returns {number}
+   */
+  #resolveContainerId(containerGuid) {
+    if (!containerGuid) {
+      return 0;
+    }
+    const mapped = ZenSpacesSyncModel.contextIdForGuid(containerGuid);
+    if (mapped === null) {
+      throw new Error(`unknown container guid ${containerGuid}`);
+    }
+    return mapped;
   }
 
   /**
@@ -90,6 +110,13 @@ class nsZenSpacesSyncApplier {
       }
       handled.add(record);
     }
+
+    syncLog(
+      `incoming batch: ${incoming.containers.length} containers, ` +
+        `${incoming.spaces.length} spaces, ${incoming.tabs.length} tabs, ` +
+        `${incoming.folders.length} folders, ${incoming.splits.length} splits, ` +
+        `layout=${!!incoming.layout}, ${incoming.deleted.length} tombstones`
+    );
 
     const failed = new Set();
     const fail = (record, e) => {
@@ -182,6 +209,21 @@ class nsZenSpacesSyncApplier {
         routed.spaces.push(entry);
       }
     }
+    if (deletions.length) {
+      const matched = new Set([
+        ...routed.tabs,
+        ...routed.folders,
+        ...routed.splits,
+        ...routed.spaces,
+      ]);
+      syncLog("tombstones routed:", {
+        tabs: routed.tabs.map(e => e.key),
+        folders: routed.folders.map(e => e.key),
+        splits: routed.splits.map(e => e.key),
+        spaces: routed.spaces.map(e => e.key),
+        unmatched: deletions.filter(e => !matched.has(e)).map(e => e.key),
+      });
+    }
     return routed;
   }
 
@@ -259,8 +301,7 @@ class nsZenSpacesSyncApplier {
           name: data.name ?? "",
           icon: data.icon ?? undefined,
           theme: data.theme ?? null,
-          containerTabId:
-            ZenSpacesSyncModel.contextIdForGuid(data.containerGuid) ?? 0,
+          containerTabId: this.#resolveContainerId(data.containerGuid),
         };
         // A space record re-syncs whenever its child ordering changes, so
         // only propagate (and especially repaint) when its own fields did.
@@ -274,6 +315,13 @@ class nsZenSpacesSyncApplier {
             canonicalJSON(fields.theme ?? null);
         const containerChanged =
           !current || (current.containerTabId ?? 0) !== fields.containerTabId;
+        if (containerChanged) {
+          syncLog(
+            `space ${data.uuid} containerTabId ` +
+              `${current?.containerTabId ?? 0} -> ${fields.containerTabId} ` +
+              `(guid ${data.containerGuid ?? "none"})`
+          );
+        }
         if (!current) {
           list.push(fields);
           changed = true;
@@ -482,8 +530,12 @@ class nsZenSpacesSyncApplier {
   }
 
   #createTab(win, tabId, data) {
-    const userContextId =
-      ZenSpacesSyncModel.contextIdForGuid(data.containerGuid) ?? 0;
+    const userContextId = this.#resolveContainerId(data.containerGuid);
+    syncLog(
+      `creating tab ${tabId} ` +
+        `(essential=${!!data.essential}, container=${userContextId})`,
+      data.url
+    );
     const tab = win.gBrowser.addTrustedTab(data.url, {
       createLazyBrowser: true,
       inBackground: true,
@@ -498,7 +550,7 @@ class nsZenSpacesSyncApplier {
     tab._zenContentsVisible = true;
     this.#updateTabIdentity(win, tab, data);
     if (data.essential) {
-      win.gZenPinnedTabManager.addToEssentials(tab);
+      win.gZenPinnedTabManager.addToEssentials(tab, { replicating: true });
     } else {
       if (data.workspaceUuid) {
         tab.setAttribute("zen-workspace-id", data.workspaceUuid);
@@ -559,10 +611,14 @@ class nsZenSpacesSyncApplier {
       }
     }
     tab.zenStaticIcon = data.hasStaticIcon && icon ? icon : undefined;
-    // Compare normalized: setIcon rewraps svg data: icons into
-    // moz-remote-image urls when writing the attribute.
-    if (icon && syncableIconUrl(tab.getAttribute("image")) !== icon) {
+    const iconDiffers =
+      icon && syncableIconUrl(tab.getAttribute("image")) !== icon;
+    if (iconDiffers && (data.hasStaticIcon || !tab.linkedPanel)) {
       try {
+        syncLog(
+          `setting synced${data.hasStaticIcon ? " static" : ""} ` +
+            `icon on tab ${tab.id}`
+        );
         win.gBrowser.setIcon(tab, icon);
         lazy.TabStateCache.update(tab.linkedBrowser.permanentKey, {
           image: null,
@@ -658,10 +714,14 @@ class nsZenSpacesSyncApplier {
 
     const isEssential = tab.hasAttribute("zen-essential");
     if (data.essential && !isEssential) {
-      win.gZenPinnedTabManager.addToEssentials(tab);
+      syncLog(`incoming record promotes tab ${tab.id} to essential`);
+      win.gZenPinnedTabManager.addToEssentials(tab, { replicating: true });
       return;
     }
     if (!data.essential && isEssential) {
+      console.warn(
+        `ZenSpacesSync: incoming record demotes essential tab ${tab.id}`
+      );
       win.gZenPinnedTabManager.removeEssentials(tab, /* unpin */ false);
     }
     if (data.essential) {
@@ -698,6 +758,14 @@ class nsZenSpacesSyncApplier {
       try {
         const tab = this.#itemIn(win, tabId);
         if (win.gBrowser.isTab(tab)) {
+          if (tab.hasAttribute("zen-essential")) {
+            console.warn(
+              `ZenSpacesSync: incoming tombstone removes essential tab ${tabId}`,
+              tab.linkedBrowser?.currentURI?.spec ?? ""
+            );
+          } else {
+            syncLog(`incoming tombstone removes tab ${tabId}`);
+          }
           this.#removeTab(win, tab);
         }
       } catch (e) {

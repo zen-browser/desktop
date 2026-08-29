@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { JSONFile } from "resource://gre/modules/JSONFile.sys.mjs";
+import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 
 const lazy = {};
 
@@ -13,6 +14,26 @@ ChromeUtils.defineESModuleGetters(lazy, {
   ContextualIdentityService:
     "moz-src:///toolkit/components/contextualidentity/ContextualIdentityService.sys.mjs",
 });
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "syncDebug",
+  "zen.spaces-sync.debug",
+  false
+);
+
+/**
+ * Debug logging for the whole Spaces sync pipeline.
+ *
+ * @param {string} message
+ * @param {...any} args
+ */
+export function syncLog(message, ...args) {
+  if (lazy.syncDebug) {
+    // eslint-disable-next-line no-console
+    console.debug(`ZenSpacesSync: ${message}`, ...args);
+  }
+}
 
 export const SIDEBAR_COLLECTED_TOPIC = "zen-sidebar-data-collected";
 
@@ -131,6 +152,16 @@ class nsZenSpacesSyncModel {
           data.version = STORE_VERSION;
           data.uploaded ||= {};
           data.containers ||= {};
+          // The container map used to be keyed by guid. It is keyed by
+          // userContextId now so that registering a guid replaces any
+          // previous one for the same container. Flip old stores over
+          // (old values are numeric ids, new values are guid strings).
+          for (const [key, value] of Object.entries(data.containers)) {
+            if (typeof value === "number") {
+              delete data.containers[key];
+              data.containers[value] = key;
+            }
+          }
           return data;
         },
       });
@@ -154,16 +185,15 @@ class nsZenSpacesSyncModel {
       return `${BUILTIN_GUID_PREFIX}${id}`;
     }
     const data = this.#data();
-    for (const [guid, mapped] of Object.entries(data.containers)) {
-      if (mapped === id) {
-        return guid;
-      }
+    const existing = data.containers[id];
+    if (existing) {
+      return existing;
     }
     if (!create) {
       return null;
     }
     const guid = Services.uuid.generateUUID().toString().slice(1, -1);
-    data.containers[guid] = id;
+    data.containers[id] = guid;
     this.#file.saveSoon();
     return guid;
   }
@@ -178,22 +208,36 @@ class nsZenSpacesSyncModel {
         ? id
         : null;
     }
-    return this.#data().containers[guid] ?? null;
+    for (const [id, mapped] of Object.entries(this.#data().containers)) {
+      if (mapped === guid) {
+        return Number(id);
+      }
+    }
+    return null;
   }
 
+  /**
+   * Adopts an incoming guid as the identity's synced name.
+   *
+   * @param {string} guid
+   * @param {number} userContextId
+   */
   registerContainerGuid(guid, userContextId) {
     if (guid.startsWith(BUILTIN_GUID_PREFIX)) {
       return;
     }
-    this.#data().containers[guid] = userContextId;
+    this.#data().containers[userContextId] = guid;
     this.#file.saveSoon();
   }
 
   forgetContainerGuid(guid) {
     const data = this.#data();
-    if (guid in data.containers) {
-      delete data.containers[guid];
-      this.#file.saveSoon();
+    for (const [id, mapped] of Object.entries(data.containers)) {
+      if (mapped === guid) {
+        delete data.containers[id];
+        this.#file.saveSoon();
+        return;
+      }
     }
   }
 
@@ -231,7 +275,11 @@ class nsZenSpacesSyncModel {
     if (!url || url === "about:blank") {
       return null;
     }
-    const icon = syncableIconUrl(tabData.image || initial?.image || "");
+    const icon = syncableIconUrl(
+      (tabData.zenHasStaticIcon
+        ? tabData.image
+        : initial?.image || tabData.image) || ""
+    );
     return { url, title: title || "", icon };
   }
 
@@ -594,6 +642,15 @@ class nsZenSpacesSyncModel {
         changes[id] = now;
       }
     }
+    if (lazy.syncDebug && Object.keys(changes).length) {
+      const map = this.projections();
+      syncLog(
+        "outgoing diff:",
+        Object.keys(changes).map(id =>
+          current.has(id) ? `${map.get(id)?.kind} ${id}` : `TOMBSTONE ${id}`
+        )
+      );
+    }
     return changes;
   }
 
@@ -630,6 +687,12 @@ class nsZenSpacesSyncModel {
         delete data.uploaded[id];
       }
     }
+    if (lazy.syncDebug && ids.length) {
+      syncLog(
+        "server acknowledged upload:",
+        ids.map(id => (current.has(id) ? id : `${id} (tombstone)`))
+      );
+    }
     this.#file.saveSoon();
   }
 
@@ -649,6 +712,9 @@ class nsZenSpacesSyncModel {
     } else {
       data.uploaded[id] = recordDigest(cleartext.kind, cleartext.data);
     }
+    syncLog(
+      `acknowledged incoming ${cleartext ? cleartext.kind : "tombstone"} ${id}`
+    );
     this.#file.saveSoon();
   }
 }

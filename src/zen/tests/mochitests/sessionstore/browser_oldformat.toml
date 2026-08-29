@@ -1,0 +1,301 @@
+[DEFAULT]
+support-files = [
+  "head.js",
+  "browser_formdata_sample.html",
+  "browser_formdata_xpath_sample.html",
+  "browser_frametree_sample.html",
+  "browser_frametree_sample_frameset.html",
+  "browser_frametree_sample_iframes.html",
+  "browser_frame_history_index.html",
+  "browser_frame_history_index2.html",
+  "browser_frame_history_index_blank.html",
+  "browser_frame_history_a.html",
+  "browser_frame_history_b.html",
+  "browser_frame_history_c.html",
+  "browser_frame_history_c1.html",
+  "browser_frame_history_c2.html",
+  "browser_formdata_format_sample.html",
+  "browser_sessionHistory_slow.sjs",
+  "browser_scrollPositions_sample.html",
+  "browser_scrollPositions_sample2.html",
+  "browser_scrollPositions_sample_frameset.html",
+  "browser_scrollPositions_readerModeArticle.html",
+  "browser_sessionStorage.html",
+  "browser_speculative_connect.html",
+  "browser_248970_b_sample.html",
+  "browser_339445_sample.html",
+  "browser_423132_sample.html",
+  "browser_447951_sample.html",
+  "browser_454908_sample.html",
+  "browser_456342_sample.xhtml",
+  "browser_463205_sample.html",
+  "browser_463206_sample.html",
+  "browser_466937_sample.html",
+  "browser_485482_sample.html",
+  "browser_637020_slow.sjs",
+  "browser_662743_sample.html",
+  "browser_739531_sample.html",
+  "browser_739531_frame.html",
+  "coopHeaderCommon.sjs",
+  "restore_redirect_http.html",
+  "restore_redirect_http.html^headers^",
+  "restore_redirect_js.html",
+  "restore_redirect_target.html",
+  "browser_1234021_page.html",
+  "browser_1284886_suspend_tab.html",
+  "browser_1284886_suspend_tab_2.html",
+  "empty.html",
+  "coop_coep.html",
+  "coop_coep.html^headers^",
+]
+# remove this after bug 1628486 is landed
+prefs = [
+  "network.cookie.cookieBehavior=5",
+  "gfx.font_rendering.fallback.async=false",
+  "browser.sessionstore.closedTabsFromAllWindows=true",
+  "browser.sessionstore.closedTabsFromClosedWindows=true",
+]
+
+#NB: the following are disabled
+#  browser_464620_a.html
+#  browser_464620_b.html
+#  browser_464620_xd.html
+
+#disabled-for-intermittent-failures--bug-766044, browser_459906_empty.html
+#disabled-for-intermittent-failures--bug-766044, browser_459906_sample.html
+#disabled-for-intermittent-failures--bug-765389, browser_461743_sample.html
+
+["browser_1234021.js"]
+
+["browser_1284886_suspend_tab.js"]
+
+["browser_1446343-windowsize.js"]
+skip-if = [
+  "os == 'linux' && os_version == '22.04' && arch == 'x86_64' && display == 'wayland'", # Bug 1600180
+  "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11'", # Bug 1600180
+]
+
+["browser_248970_b_perwindowpb.js"]
+# Disabled because of leaks.
+# Re-enabling and rewriting this test is tracked in bug 936919.
+skip-if = [
+  "true",
+]
+
+["browser_339445.js"]
+
+["browser_345898.js"]
+
+["browser_350525.js"]
+
+["browser_354894_perwindowpb.js"]
+skip-if = [
+  "os == 'win' && os_version == '11.26200' && asan", # Bug 2019745
+]
+
+["browser_367052.js"]
+
+["browser_393716.js"]
+skip-if = [
+  "debug", # Bug 1507747
+]
+
+["browser_394759_basic.js"]
+# Disabled for intermittent failures, bug 944372.
+skip-if = [
+  "true",
+]
+
+["browser_394759_behavior.js"]
+https_first_disabled = true
+
+["browser_394759_perwindowpb.js"]
+
+["browser_394759_purge.js"]
+
+["browser_423132.js"]
+
+["browser_447951.js"]
+
+["browser_454908.js"]
+
+["browser_456342.js"]
+skip-if = [
+  "verify-standalone",
+]
+
+["browser_461634.js"]
+
+["browser_463205.js"]
+
+["browser_463206.js"]
+
+["browser_464199.js"]
+# Disabled for frequent intermittent failures
+
+["browser_464620_a.js"]
+skip-if = [
+  "true",
+]
+
+["browser_464620_b.js"]
+skip-if = [
+  "true",
+]
+
+["browser_465215.js"]
+
+["browser_465223.js"]
+
+["browser_466937.js"]
+
+["browser_467409-backslashplosion.js"]
+
+["browser_477657.js"]
+skip-if = [
+  "os == 'linux' && os_version == '24.04' && arch == 'x86_64' && display == 'x11'", # Bug 1610668
+]
+
+["browser_480893.js"]
+
+["browser_485482.js"]
+
+["browser_485563.js"]
+
+["browser_490040.js"]
+
+["browser_491168.js"]
+
+["browser_491577.js"]
+
+["browser_495495.js"]
+
+["browser_500328.js"]
+
+["browser_514751.js"]
+
+["browser_522375.js"]
+
+["browser_522545.js"]
+skip-if = [
+  "true", # Bug 1380968
+]
+
+["browser_524745.js"]
+
+["browser_528776.js"]
+
+["browser_579868.js"]
+
+["browser_579879.js"]
+
+["browser_581937.js"]
+
+["browser_586068-apptabs.js"]
+
+["browser_586068-apptabs_ondemand.js"]
+
+["browser_586068-browser_state_interrupted.js"]
+
+["browser_586068-cascade.js"]
+
+["browser_586068-multi_window.js"]
+
+["browser_586068-reload.js"]
+https_first_disabled = true
+
+["browser_586068-select.js"]
+
+["browser_586068-window_state.js"]
+
+["browser_586068-window_state_override.js"]
+
+["browser_586147.js"]
+
+["browser_588426.js"]
+
+["browser_590268.js"]
+
+["browser_590563.js"]
+skip-if = [
+  "os == 'mac' && os_version == '15.30' && arch == 'aarch64'",
+]
+
+["browser_595601-restore_hidden.js"]
+
+["browser_597071.js"]
+
+["browser_600545.js"]
+
+["browser_601955.js"]
+
+["browser_607016.js"]
+
+["browser_615394-SSWindowState_events_duplicateTab.js"]
+
+["browser_615394-SSWindowState_events_setBrowserState.js"]
+
+["browser_615394-SSWindowState_events_setTabState.js"]
+
+["browser_615394-SSWindowState_events_setWindowState.js"]
+https_first_disabled = true
+
+["browser_615394-SSWindowState_events_undoCloseTab.js"]
+
+["browser_615394-SSWindowState_events_undoCloseWindow.js"]
+
+["browser_618151.js"]
+
+["browser_623779.js"]
+
+["browser_624727.js"]
+
+["browser_625016.js"]
+run-if = [
+  "os != 'mac'", # not running on macOS where closing all windows doesn't quit the application
+]
+
+["browser_628270.js"]
+
+["browser_635418.js"]
+
+["browser_636279.js"]
+
+["browser_637020.js"]
+
+["browser_645428.js"]
+
+["browser_659591.js"]
+
+["browser_662743.js"]
+
+["browser_662812.js"]
+
+["browser_665702-state_session.js"]
+
+["browser_682507.js"]
+
+["browser_687710.js"]
+
+["browser_687710_2.js"]
+https_first_disabled = true
+
+["browser_694378.js"]
+
+["browser_701377.js"]
+
+["browser_705597.js"]
+
+["browser_707862.js"]
+
+["browser_739531.js"]
+
+["browser_739805.js"]
+
+["browser_819510_perwindowpb.js"]
+skip-if = [
+  "true", # Bug 1284312, Bug 1341980, bug 1381451
+]
+
+["browser_906076_lazy_tabs.js"]
+https_first_disabled = true

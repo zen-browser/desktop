@@ -502,11 +502,13 @@
       opacity 0.12s ease-in-out;
   }
 
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
   .permission-popup-permission-item:hover &::before,
   .permission-popup-boost-item:hover:not(:has(.zen-permission-popup-boost-editor-button:hover)) &::before {
     transform: scale(1.05);
   }
 
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
   .permission-popup-permission-item:active:hover &::before,
   .permission-popup-boost-item:active:hover:not(:has(.zen-permission-popup-boost-editor-button:hover)) &::before {
     transform: scale(0.95);

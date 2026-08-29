@@ -178,6 +178,7 @@
         box-shadow: var(--zen-big-shadow);
       }
 
+      /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
       &:has(:checked) {
         box-shadow: var(--zen-big-shadow);
         border: 2px solid var(--zen-primary-color);
@@ -197,6 +198,7 @@
     }
 
     /* 3 or more engines */
+    /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
     &[select-engine="true"]:has(label:nth-of-type(3)) > label {
       height: 50%;
     }

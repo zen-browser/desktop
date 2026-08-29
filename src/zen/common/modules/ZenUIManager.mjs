@@ -1060,7 +1060,7 @@ window.gZenVerticalTabsManager = {
             easing: "easeOut",
           }
         )
-        .then(() => { })
+        .then(() => {})
         .catch(err => {
           console.error(err);
         })
@@ -1083,7 +1083,7 @@ window.gZenVerticalTabsManager = {
             easing: "easeOut",
           }
         )
-        .then(() => { })
+        .then(() => {})
         .catch(err => {
           console.error(err);
         })
@@ -1115,8 +1115,8 @@ window.gZenVerticalTabsManager = {
         ...(isLastItem
           ? {}
           : {
-            marginBottom: [`0px`, `-${height}px`],
-          }),
+              marginBottom: [`0px`, `-${height}px`],
+            }),
       },
       {
         duration: 0.1,

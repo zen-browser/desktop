@@ -1,0 +1,146 @@
+diff --git a/browser/components/preferences/config/containers.mjs b/browser/components/preferences/config/containers.mjs
+index bd93cf5a2f..eff9bf9fe2 100644
+--- a/browser/components/preferences/config/containers.mjs
++++ b/browser/components/preferences/config/containers.mjs
+@@ -11,6 +11,68 @@ ChromeUtils.defineESModuleGetters(lazy, {
+     "moz-src:///toolkit/components/contextualidentity/ContextualIdentityService.sys.mjs",
+ });
+ 
++const DOWNLOAD_FOLDERS_PREF = "zen.downloads.container-folders";
++const { FileUtils } = ChromeUtils.importESModule(
++  "resource://gre/modules/FileUtils.sys.mjs"
++);
++
++function readDownloadFolders() {
++  try {
++    const folders = JSON.parse(
++      Services.prefs.getStringPref(DOWNLOAD_FOLDERS_PREF, "{}")
++    );
++    return folders && typeof folders == "object" ? folders : {};
++  } catch (error) {
++    console.error("Invalid container download folder settings", error);
++    return {};
++  }
++}
++
++function writeDownloadFolders(folders) {
++  Services.prefs.setStringPref(DOWNLOAD_FOLDERS_PREF, JSON.stringify(folders));
++}
++
++function getDownloadFolder(userContextId) {
++  const folders = readDownloadFolders();
++  const folder = folders[String(userContextId)];
++  return typeof folder == "string" ? folder : "";
++}
++
++async function chooseDownloadFolder(userContextId) {
++  const title = await document.l10n.formatValue(
++    "zen-download-folder-choose"
++  );
++  const picker = Cc["@mozilla.org/filepicker;1"].createInstance(
++    Ci.nsIFilePicker
++  );
++  picker.init(window.browsingContext, title, Ci.nsIFilePicker.modeGetFolder);
++
++  const currentFolder = getDownloadFolder(userContextId);
++  if (currentFolder) {
++    try {
++      picker.displayDirectory = new FileUtils.File(currentFolder);
++    } catch (error) {
++      console.error("Failed to open the current download folder", error);
++    }
++  }
++
++  picker.open(result => {
++    if (result != Ci.nsIFilePicker.returnOK || !picker.file) {
++      return;
++    }
++
++    const folders = readDownloadFolders();
++    folders[String(userContextId)] = picker.file.path;
++    writeDownloadFolders(folders);
++  });
++}
++
++function clearDownloadFolder(userContextId) {
++  const folders = readDownloadFolders();
++  delete folders[String(userContextId)];
++  writeDownloadFolders(folders);
++}
++
+ const IDENTITY_CHANGE_TOPICS = [
+   "contextual-identity-created",
+   "contextual-identity-updated",
+@@ -82,4 +144,7 @@ Preferences.addSetting(
+     }
+ 
+     async getControlConfig() {
++      const defaultFolder = await document.l10n.formatValue(
++        "zen-download-folder-default"
++      );
+       let items = this.containers.map(container => {
+@@ -94,9 +159,32 @@ Preferences.addSetting(
+           ),
+           controlAttrs: {
+             label: containerName,
++            description:
++              getDownloadFolder(container.userContextId) || defaultFolder,
+             class: `containers-identity-item identity-color-${container.color}`,
+           },
+           options: [
++            {
++              control: "moz-button",
++              iconSrc: "chrome://global/skin/icons/folder.svg",
++              l10nId: "zen-download-folder-choose",
++              controlAttrs: {
++                slot: "actions",
++                action: "download-folder",
++                value: container.userContextId,
++              },
++            },
++            {
++              control: "moz-button",
++              iconSrc: "chrome://global/skin/icons/delete.svg",
++              l10nId: "zen-download-folder-clear",
++              disabled: !getDownloadFolder(container.userContextId),
++              controlAttrs: {
++                slot: "actions",
++                action: "clear-download-folder",
++                value: container.userContextId,
++              },
++            },
+             {
+               control: "moz-button",
+               iconSrc: "chrome://global/skin/icons/edit-outline.svg",
+@@ -126,6 +214,10 @@ Preferences.addSetting(
+     async onUserClick(e) {
+       const action = e.target.getAttribute("action");
+       const value = parseInt(e.target.getAttribute("value"), 10);
+-      if (action === "edit") {
++      if (action === "download-folder") {
++        await chooseDownloadFolder(value);
++      } else if (action === "clear-download-folder") {
++        clearDownloadFolder(value);
++      } else if (action === "edit") {
+         openContainerDialog(value);
+       } else if (action === "remove") {
+@@ -137,11 +229,19 @@ Preferences.addSetting(
+       for (const topic of IDENTITY_CHANGE_TOPICS) {
+         Services.obs.addObserver(this.emitChange, topic);
+       }
++      Services.prefs.addObserver(DOWNLOAD_FOLDERS_PREF, this);
+       return () => {
+         for (const topic of IDENTITY_CHANGE_TOPICS) {
+           Services.obs.removeObserver(this.emitChange, topic);
+         }
++        Services.prefs.removeObserver(DOWNLOAD_FOLDERS_PREF, this);
+       };
+     }
++
++    observe(subject, topic) {
++      if (topic == "nsPref:changed") {
++        this.emitChange();
++      }
++    }
+   }
+ );

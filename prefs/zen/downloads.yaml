@@ -15,4 +15,4 @@
   value: 0
 
 - name: zen.downloads.container-folders
-  value: "{}"
+  value: "{ }"

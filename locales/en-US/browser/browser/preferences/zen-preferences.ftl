@@ -105,12 +105,11 @@ zen-settings-workspaces-header = General settings for workspaces
 zen-settings-workspaces-description = With workspaces, you can have multiple browsing sessions at once!
 zen-settings-workspaces-enabled =
     .label = Enable Workspaces
-zen-download-folders-header = Container download folders
-zen-download-folders-description = Choose where downloads from each container are saved. The default folder is used when no folder is selected.
-zen-download-folder-row = { $container }
-zen-download-folder-default = Use the default download folder
-zen-download-folder-choose = Choose folder
-zen-download-folder-clear = Clear
+zen-download-folder-default = Default download folder
+zen-download-folder-choose =
+    .title = Choose download folder
+zen-download-folder-clear =
+    .title = Clear download folder
 zen-settings-workspaces-hide-default-container-indicator =
     .label = Hide the default container indicator in the tab bar
 

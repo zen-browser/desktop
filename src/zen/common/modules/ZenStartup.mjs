@@ -34,6 +34,7 @@ class ZenStartup {
     }
     this.#hasInitializedLayout = true;
     gZenKeyboardShortcutsManager.beforeInit();
+    gZenDownloadFolderManager.init();
     try {
       const kNavbarItems = ["nav-bar", "PersonalToolbar"];
       const kNewContainerId = "zen-appcontent-navbar-container";

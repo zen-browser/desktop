@@ -15,6 +15,13 @@ const { nsKeyShortcutModifiers } = ChromeUtils.importESModule(
   }
 );
 
+const { ContextualIdentityService } = ChromeUtils.importESModule(
+  "moz-src:///toolkit/components/contextualidentity/ContextualIdentityService.sys.mjs"
+);
+const { FileUtils } = ChromeUtils.importESModule(
+  "resource://gre/modules/FileUtils.sys.mjs"
+);
+
 var gZenMarketplaceManager = {
   async init() {
     const checkForUpdates = document.getElementById("zenThemeMarketplaceCheckForUpdates");
@@ -711,6 +718,13 @@ var gZenLooksAndFeel = {
 };
 
 var gZenWorkspacesSettings = {
+  _downloadFolderPref: "zen.downloads.container-folders",
+  _identityChangeTopics: [
+    "contextual-identity-created",
+    "contextual-identity-updated",
+    "contextual-identity-deleted",
+  ],
+
   init() {
     var tabsUnloaderPrefListener = {
       async observe() {
@@ -742,6 +756,11 @@ var gZenWorkspacesSettings = {
       toggleZenCycleByAttrWarning
     );
     Services.prefs.addObserver("browser.ctrlTab.sortByRecentlyUsed", toggleZenCycleByAttrWarning);
+    Services.prefs.addObserver(this._downloadFolderPref, this);
+    for (const topic of this._identityChangeTopics) {
+      Services.obs.addObserver(this, topic);
+    }
+    this.buildDownloadFolderList();
     window.addEventListener("unload", () => {
       Services.prefs.removeObserver("zen.glance.enabled", tabsUnloaderPrefListener);
       Services.prefs.removeObserver("zen.glance.activation-method", tabsUnloaderPrefListener);
@@ -758,6 +777,124 @@ var gZenWorkspacesSettings = {
         "browser.ctrlTab.sortByRecentlyUsed",
         toggleZenCycleByAttrWarning
       );
+      Services.prefs.removeObserver(this._downloadFolderPref, this);
+      for (const topic of this._identityChangeTopics) {
+        Services.obs.removeObserver(this, topic);
+      }
+    });
+  },
+
+  observe(subject, topic) {
+    if (
+      topic == "nsPref:changed" ||
+      this._identityChangeTopics.includes(topic)
+    ) {
+      this.buildDownloadFolderList();
+    }
+  },
+
+  _readDownloadFolders() {
+    try {
+      const folders = JSON.parse(
+        Services.prefs.getStringPref(this._downloadFolderPref, "{}")
+      );
+      return folders && typeof folders == "object" ? folders : {};
+    } catch (error) {
+      console.error("Invalid container download folder settings", error);
+      return {};
+    }
+  },
+
+  _writeDownloadFolders(folders) {
+    Services.prefs.setStringPref(
+      this._downloadFolderPref,
+      JSON.stringify(folders)
+    );
+  },
+
+  async buildDownloadFolderList() {
+    const list = document.getElementById("zenDownloadFoldersList");
+    if (!list) {
+      return;
+    }
+
+    const folders = this._readDownloadFolders();
+    const defaultContainer = await document.l10n.formatValue(
+      "zen-download-folder-default"
+    );
+    const identities = [
+      { userContextId: 0, name: defaultContainer },
+      ...ContextualIdentityService.getPublicIdentities(),
+    ];
+
+    list.replaceChildren();
+    for (const identity of identities) {
+      const row = document.createXULElement("hbox");
+      row.setAttribute("align", "center");
+      row.classList.add("zen-download-folder-row");
+
+      const label = document.createXULElement("label");
+      document.l10n.setAttributes(label, "zen-download-folder-row", {
+        container: identity.name,
+      });
+
+      const path = folders[String(identity.userContextId)] || "";
+      const pathBox = document.createXULElement("textbox");
+      pathBox.setAttribute("readonly", "true");
+      pathBox.setAttribute("flex", "1");
+      pathBox.setAttribute("value", path);
+      if (!path) {
+        pathBox.setAttribute("placeholder", defaultContainer);
+      }
+
+      const chooseButton = document.createXULElement("button");
+      document.l10n.setAttributes(chooseButton, "zen-download-folder-choose");
+      chooseButton.addEventListener("command", () =>
+        this.chooseDownloadFolder(identity.userContextId, pathBox)
+      );
+
+      const clearButton = document.createXULElement("button");
+      document.l10n.setAttributes(clearButton, "zen-download-folder-clear");
+      clearButton.disabled = !path;
+      clearButton.addEventListener("command", () => {
+        const updatedFolders = this._readDownloadFolders();
+        delete updatedFolders[String(identity.userContextId)];
+        this._writeDownloadFolders(updatedFolders);
+      });
+
+      row.append(label, pathBox, chooseButton, clearButton);
+      list.appendChild(row);
+    }
+
+    await document.l10n.translateFragment(list);
+  },
+
+  async chooseDownloadFolder(userContextId, pathBox) {
+    const title = await document.l10n.formatValue(
+      "zen-download-folder-choose"
+    );
+    const picker = Cc["@mozilla.org/filepicker;1"].createInstance(
+      Ci.nsIFilePicker
+    );
+    picker.init(window.browsingContext, title, Ci.nsIFilePicker.modeGetFolder);
+
+    const currentPath = pathBox.getAttribute("value");
+    if (currentPath) {
+      try {
+        picker.displayDirectory = new FileUtils.File(currentPath);
+      } catch (error) {
+        console.error("Failed to open the current download folder", error);
+      }
+    }
+
+    picker.open(result => {
+      if (result != Ci.nsIFilePicker.returnOK || !picker.file) {
+        return;
+      }
+
+      const folders = this._readDownloadFolders();
+      folders[String(userContextId)] = picker.file.path;
+      this._writeDownloadFolders(folders);
     });
   },
 };

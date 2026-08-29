@@ -13,3 +13,6 @@
   # 1: Left side always
   # 2: Right side always
   value: 0
+
+- name: zen.downloads.container-folders
+  value: "{}"

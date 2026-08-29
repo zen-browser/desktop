@@ -1,16 +1,16 @@
-diff --git a/widget/gtk/nsDragService.cpp b/widget/gtk/nsDragService.cpp
-index f760a6bb887b321376761431886c771f14fd03af..d52110ba52a95ef7c7bfb915e120b8dd636c9448 100644
---- a/widget/gtk/nsDragService.cpp
-+++ b/widget/gtk/nsDragService.cpp
-@@ -23,6 +23,7 @@
+diff --git a/widget/gtk/nsDragSessionSource.cpp b/widget/gtk/nsDragSessionSource.cpp
+index a5f67d700f8c80d513f08cc25405b57cf28a2a9a..58186470bcbb7b1eda34ee20a19e29d540ab052a 100644
+--- a/widget/gtk/nsDragSessionSource.cpp
++++ b/widget/gtk/nsDragSessionSource.cpp
+@@ -13,6 +13,7 @@
+ #include "mozilla/Services.h"
  #include "mozilla/StaticPrefs_widget.h"
- #include "mozilla/WidgetUtils.h"
  #include "mozilla/WidgetUtilsGtk.h"
 +#include "mozilla/nsZenDragAndDrop.h"
  #include "nsAppShell.h"
  #include "nsArrayUtils.h"
  #include "nsCRT.h"
-@@ -2304,11 +2305,15 @@ bool nsDragSession::SetAlphaPixmap(SourceSurface* aSurface,
+@@ -1196,11 +1197,15 @@ bool nsDragSessionSource::SetAlphaPixmap(SourceSurface* aSurface,
        cairo_image_surface_get_stride(surf), SurfaceFormat::B8G8R8A8);
    if (!dt) return false;
  

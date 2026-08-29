@@ -20,9 +20,9 @@
   --urlbarview-separator-color: light-dark(hsl(0, 0%, 80%), hsl(0, 0%, 20%));
   --urlbarview-background-color-hover: var(--toolbarbutton-hover-background);
   border-radius: calc(var(--toolbarbutton-border-radius) - 2px);
-  height: var(--urlbar-height);
   --urlbarView-results-padding: 10px !important;
   --urlbar-container-height: 48px !important;
+  --urlbar-input-container-border: none;
 
   --urlbar-margin-inline: 5px;
   --urlbar-container-padding: 4px;
@@ -326,6 +326,7 @@
     order: 2;
   }
 
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
   #notification-popup-box:not([open]):not(:has(> [showing="true"])) {
     margin-inline-start: calc(-10px - 2 * var(--urlbar-icon-padding));
     opacity: 0;
@@ -487,6 +488,7 @@
   translate: -50% 0%;
   left: 50% !important;
 
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
   #urlbar-container:has(&) {
     border-radius: var(--border-radius-medium);
     background: var(--toolbarbutton-hover-background);

@@ -44,13 +44,7 @@
   {
     "type": "phabricator",
     "id": "D320897",
-    "name": "Bug 2011236",
-    "replaces": {
-      // The upstream patch context includes a MOZ_DIAGNOSTIC_ASSERT that
-      // doesn't exist yet in our Firefox version.
-      "@@ -59,11 +67,12 @@": "@@ -59,9 +67,10 @@",
-      "aLoadState->TypeHint())) {\n   MOZ_DIAGNOSTIC_ASSERT(!mURI->SchemeIs(\"javascript\"));\n \n   // Pull": "aLoadState->TypeHint())) {\n   // Pull"
-    }
+    "name": "Bug 2011236"
   },
   {
     "type": "phabricator",
@@ -59,16 +53,6 @@
   },
   {
     "type": "local",
-    // CSS corner-shape rendering stack from bug 2047627 (borders),
-    // bug 2048908 (box shadows) and bug 2058091 (inset), squashed into a
-    // single patch: surfer's revert-then-apply on re-import only works for
-    // independently revertible patches, so a stack of separate files fails.
-    // Combined revisions, in stack order: D313684, D314332-D314337,
-    // D316301-D316304, D317056-D317058. The earlier revisions of these
-    // bugs (D306773-D306779, D308243, D311523) already landed in the
-    // current Firefox version and are omitted. D314332, D314336, D316301,
-    // D316303, D316304, D317057 and D317058 are hand-rebased onto
-    // Firefox 154 (the upstream diffs target a newer mozilla-central).
     "path": "firefox/css_corner_shape_rendering.patch"
   }
 ]

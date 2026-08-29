@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/drag-and-drop.js b/browser/components/tabbrowser/content/drag-and-drop.js
-index 8bb1219962a1368f50b53c61041f135c68e35f31..8e72441d26883cbef7a352b00c0fe2b15a030046 100644
+index 8bb1219962a1368f50b53c61041f135c68e35f31..c80fbb67f1f7ac8c729def8fe84338a081e107f1 100644
 --- a/browser/components/tabbrowser/content/drag-and-drop.js
 +++ b/browser/components/tabbrowser/content/drag-and-drop.js
 @@ -35,6 +35,9 @@
@@ -22,8 +22,12 @@ index 8bb1219962a1368f50b53c61041f135c68e35f31..8e72441d26883cbef7a352b00c0fe2b1
        if (
          (dropEffect == "move" || dropEffect == "copy") &&
          document == draggedTab.ownerDocument &&
-@@ -138,6 +144,7 @@
-           !draggedTab.group.collapsed
+@@ -135,9 +141,10 @@
+         // This is to avoid the dragged tab label container being positioned incorrectly.
+         if (
+           draggedTab._dragData.expandGroupOnDrop &&
+-          !draggedTab.group.collapsed
++          (!draggedTab.group.collapsed || (draggedTab.group.hasActiveTab && !draggedTab.group.activeCollapsed))
          ) {
            draggedTab.group.collapsed = true;
 +          gZenFolders.animateGroupMove(draggedTab.group);
@@ -190,7 +194,7 @@ index 8bb1219962a1368f50b53c61041f135c68e35f31..8e72441d26883cbef7a352b00c0fe2b1
          draggedTab._dragData?.expandGroupOnDrop
        ) {
 -        draggedTab.group.collapsed = false;
-+        draggedTab.group.collapsed = draggedTab.group.hasAttribute("has-active");
++        draggedTab.group.collapsed = draggedTab.group.hasActiveTab;
 +        gZenFolders.animateGroupMove(draggedTab.group, true);
        }
      }
@@ -216,7 +220,7 @@ index 8bb1219962a1368f50b53c61041f135c68e35f31..8e72441d26883cbef7a352b00c0fe2b1
        let isMovingInTabStrip = !fromTabList && dropEffect == "move";
        let collapseTabGroupDuringDrag =
 -        isMovingInTabStrip && isTabGroupLabel(tab) && !tab.group.collapsed;
-+        isMovingInTabStrip && isTabGroupLabel(tab) && (!tab.group.collapsed || tab.group.hasAttribute("has-active"));
++        isMovingInTabStrip && isTabGroupLabel(tab) && (!tab.group.collapsed || tab.group.hasActiveTab);
  
        tab._dragData = {
          offsetX: this._tabbrowserTabs.verticalMode

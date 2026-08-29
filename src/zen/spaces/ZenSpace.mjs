@@ -19,6 +19,16 @@ class nsZenCollapsiblePins extends nsZenFolder {
     return this.#spaceElement.pinnedTabsContainer;
   }
 
+  get groupContainerWrapper() {
+    return this.#spaceElement.pinnedTabsContainer.parentElement;
+  }
+
+  get groupActiveTabsContainer() {
+    return this.#spaceElement.querySelector(
+      ".zen-workspace-pinned-active-tabs-section"
+    );
+  }
+
   get groupStartElement() {
     // Fetch this instead of the tab-group-start since it is not guaranteed this
     // element will be the first child of the pinned tabs container.
@@ -61,14 +71,17 @@ export class nsZenWorkspace extends MozXULElement {
           <toolbarbutton class="toolbarbutton-1 chromeclass-toolbar-additional zen-workspaces-actions" context="zenWorkspaceMoreActions" />
         </vbox>
         <arrowscrollbox orient="vertical" class="workspace-arrowscrollbox">
-          <vbox class="zen-workspace-tabs-section zen-workspace-pinned-tabs-section" hide-separator="true">
-            <html:div class="zen-tab-group-start space-fake-collapsible-start" style="order: -9999;" />
+          <vbox class="zen-workspace-pinned-active-tabs-section" />
+          <vbox class="zen-workspace-pinned-tabs-section-wrapper" hide-separator="true">
+            <vbox class="zen-workspace-tabs-section zen-workspace-pinned-tabs-section">
+              <html:div class="zen-tab-group-start space-fake-collapsible-start" style="order: -9999;" />
+            </vbox>
             <hbox class="pinned-tabs-container-separator">
               <toolbarseparator flex="1" />
               <toolbarbutton command="cmd_zenCloseUnpinnedTabs"
-                             tooltip="dynamic-shortcut-tooltip"
-                             data-l10n-id="zen-workspaces-close-all-unpinned-tabs-title"
-                             class="zen-workspace-close-unpinned-tabs-button" />
+              tooltip="dynamic-shortcut-tooltip"
+                data-l10n-id="zen-workspaces-close-all-unpinned-tabs-title"
+                class="zen-workspace-close-unpinned-tabs-button" />
             </hbox>
           </vbox>
           <vbox class="zen-workspace-tabs-section zen-workspace-normal-tabs-section">
@@ -123,7 +136,10 @@ export class nsZenWorkspace extends MozXULElement {
     this.pinnedTabsContainer = this.querySelector(
       ".zen-workspace-pinned-tabs-section"
     );
-    this.pinnedTabsContainer.separatorElement =
+    this.pinnedTabsContainerWrapper = this.querySelector(
+      ".zen-workspace-pinned-tabs-section-wrapper"
+    );
+    this.pinnedTabsContainerWrapper.separatorElement =
       this.pinnedTabsContainer.querySelector(
         ".pinned-tabs-container-separator"
       );

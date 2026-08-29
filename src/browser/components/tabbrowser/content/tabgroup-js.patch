@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tabgroup.js b/browser/components/tabbrowser/content/tabgroup.js
-index 237950fb2c449ce088c204d33a70b1d95dae549b..af200a043dcd2e24393fcefe32493e356c9f8c6f 100644
+index 237950fb2c449ce088c204d33a70b1d95dae549b..fc5787b3631a9e6b5c57801436e5ea5880ddf2ac 100644
 --- a/browser/components/tabbrowser/content/tabgroup.js
 +++ b/browser/components/tabbrowser/content/tabgroup.js
 @@ -14,11 +14,11 @@
@@ -117,7 +117,17 @@ index 237950fb2c449ce088c204d33a70b1d95dae549b..af200a043dcd2e24393fcefe32493e35
              Services.obs.notifyObservers(
                this,
                "browser-tabgroup-removed-from-dom"
-@@ -223,7 +251,10 @@
+@@ -203,6 +231,9 @@
+           }
+           for (const mutation of mutations) {
+             for (const addedNode of mutation.addedNodes) {
++              if (this.isZenFolder) {
++                this.updateTabOrder();
++              }
+               if (gBrowser.isTab(addedNode)) {
+                 this.#updateTabAriaHidden(addedNode);
+               } else if (gBrowser.isSplitViewWrapper(addedNode)) {
+@@ -223,7 +254,10 @@
            }
          });
        }
@@ -129,7 +139,7 @@ index 237950fb2c449ce088c204d33a70b1d95dae549b..af200a043dcd2e24393fcefe32493e35
      }
  
      get color() {
-@@ -330,6 +361,9 @@
+@@ -330,6 +364,9 @@
      }
  
      set collapsed(val) {
@@ -139,7 +149,7 @@ index 237950fb2c449ce088c204d33a70b1d95dae549b..af200a043dcd2e24393fcefe32493e35
        if (!!val == this.collapsed) {
          return;
        }
-@@ -416,7 +450,6 @@
+@@ -416,7 +453,6 @@
            tabGroupName,
          })
          .then(result => {
@@ -147,7 +157,7 @@ index 237950fb2c449ce088c204d33a70b1d95dae549b..af200a043dcd2e24393fcefe32493e35
          });
      }
  
-@@ -491,13 +524,68 @@
+@@ -491,13 +527,70 @@
       * @returns {MozTabbrowserTab[]}
       */
      get tabs() {
@@ -162,9 +172,8 @@ index 237950fb2c449ce088c204d33a70b1d95dae549b..af200a043dcd2e24393fcefe32493e35
 +        tabsCollect.push(item);
 +        if (gBrowser.isTabGroup(item)) {
 +          tabsCollect.push(...item.tabs);
-         }
-       }
--      return childrenArray.filter(node => node.matches("tab"));
++        }
++      }
 +      return tabsCollect.filter(node => node.matches("tab"));
 +    }
 +
@@ -190,15 +199,18 @@ index 237950fb2c449ce088c204d33a70b1d95dae549b..af200a043dcd2e24393fcefe32493e35
 +            result.push(labelContainer);
 +          }
 +          result.push(...item.childGroupsAndTabs);
-+        }
-+      }
+         }
+       }
+-      return childrenArray.filter(node => node.matches("tab"));
 +      return result;
 +    }
 +
 +    get group() {
-+      if (gBrowser.isTabGroup(this.parentElement?.parentElement)) {
-+        return this.parentElement.parentElement;
-+      }
++      if (this.hasAttribute("split-view-group") && this._originalGroup) return this._originalGroup;
++      let group = this.parentElement?.parentElement; // FF groups and Split View
++      if (group && gBrowser.isTabGroup(group)) return this.parentElement.parentElement
++      group = this.parentElement?.parentElement?.parentElement; // Folders
++      if (group && gBrowser.isTabGroup(group)) return this.parentElement.parentElement.parentElement
 +      return null;
 +    }
 +
@@ -221,7 +233,7 @@ index 237950fb2c449ce088c204d33a70b1d95dae549b..af200a043dcd2e24393fcefe32493e35
      }
  
      /**
-@@ -617,9 +705,6 @@
+@@ -617,9 +710,6 @@
            });
          } else {
            if (tabOrSplitView.pinned) {
@@ -231,7 +243,7 @@ index 237950fb2c449ce088c204d33a70b1d95dae549b..af200a043dcd2e24393fcefe32493e35
            }
            let tabToMove =
              this.documentGlobal === tabOrSplitView.documentGlobal
-@@ -682,7 +767,7 @@
+@@ -682,7 +772,7 @@
       */
      on_click(event) {
        let isToggleElement =
@@ -240,7 +252,7 @@ index 237950fb2c449ce088c204d33a70b1d95dae549b..af200a043dcd2e24393fcefe32493e35
          event.target === this.#overflowCountLabel;
        if (isToggleElement && event.button === 0) {
          event.preventDefault();
-@@ -761,5 +846,6 @@
+@@ -761,5 +851,6 @@
      }
    }
  

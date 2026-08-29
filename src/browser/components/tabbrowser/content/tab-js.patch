@@ -1,5 +1,5 @@
 diff --git a/browser/components/tabbrowser/content/tab.js b/browser/components/tabbrowser/content/tab.js
-index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8c579171b 100644
+index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..809db7047c247c186c2b90622ddcfae97ecd9cc9 100644
 --- a/browser/components/tabbrowser/content/tab.js
 +++ b/browser/components/tabbrowser/content/tab.js
 @@ -21,6 +21,7 @@
@@ -52,7 +52,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
          return;
        }
  
-@@ -216,11 +219,25 @@
+@@ -216,11 +219,21 @@
      }
  
      get visible() {
@@ -64,15 +64,11 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
 +      if (!this.isOpen || this.hidden || this.hasAttribute("zen-empty-tab")) {
 +        return false;
 +      }
-+      // Selected tabs are always visible
-+      if (this.selected || this.multiselected) return true;
-+      // Recursively check all parent groups
-+      let currentParent = this.group;
-+      while (currentParent) {
-+        if (currentParent.collapsed && !currentParent.activeTabs?.includes(this)) {
-+          return false;
++      if (this.group) {
++        if (this.group.hasAttribute("split-view-group") && this.group?.group?.isZenFolder) {
++          return this.group.group.isTabVisibleInGroup(this);
 +        }
-+        currentParent = currentParent.group;
++        return this.group.isTabVisibleInGroup(this);
 +      }
 +      if (this.pinned && !this.hasAttribute("zen-essential") &&
 +          gZenWorkspaces.activeWorkspaceElement?.hasCollapsedPinnedTabs &&
@@ -83,7 +79,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
      }
  
      get hidden() {
-@@ -299,7 +316,7 @@
+@@ -299,7 +312,7 @@
          return false;
        }
  
@@ -92,7 +88,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
      }
  
      get lastAccessed() {
-@@ -384,7 +401,18 @@
+@@ -384,7 +397,24 @@
      }
  
      get group() {
@@ -100,8 +96,14 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
 +      if (typeof gBrowser === "undefined") {
 +        return null;
 +      }
-+      if (gBrowser.isTabGroup(this.parentElement?.parentElement)) {
-+        return this.parentElement.parentElement;
++      if (this._originalGroup && !this.splitView && (this.parentElement.classList.contains("tab-group-active-tabs-container") || this.parentElement.classList.contains("zen-workspace-pinned-active-tabs-section"))) return this._originalGroup;
++      let group = this.parentElement?.parentElement; // FF groups and Split View
++      if (group && gBrowser.isTabGroup(group)) {
++        return this.parentElement.parentElement
++      }
++      group = this.parentElement?.parentElement?.parentElement; // Folders
++      if (group && gBrowser.isTabGroup(group)) {
++        return this.parentElement.parentElement.parentElement
 +      }
 +      if (this.pinned && !this.hasAttribute('zen-essential')) {
 +        let collapsiblePins = gZenWorkspaces.workspaceElement(this.getAttribute('zen-workspace-id'))?.collapsiblePins;
@@ -112,7 +114,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
      }
  
      get splitview() {
-@@ -466,6 +494,10 @@
+@@ -466,6 +496,10 @@
          }
        }
  
@@ -123,7 +125,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
        // If the previous target wasn't part of this tab then this is a mouseenter event.
        if (!this.contains(event.relatedTarget)) {
          this._mouseenter();
-@@ -495,6 +527,7 @@
+@@ -495,6 +529,7 @@
        if (!this.contains(event.relatedTarget)) {
          this._mouseleave();
        }
@@ -131,7 +133,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
      }
  
      on_dragstart(event) {
-@@ -506,6 +539,7 @@
+@@ -506,6 +541,7 @@
        if (event.eventPhase == Event.CAPTURING_PHASE) {
          this.style.MozUserFocus = "";
        } else if (
@@ -139,7 +141,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
          event.target.classList?.contains("tab-close-button") ||
          gSharedTabWarning.willShowSharedTabWarning(this)
        ) {
-@@ -529,6 +563,8 @@
+@@ -529,6 +565,8 @@
          this.style.MozUserFocus = "ignore";
        } else if (
          event.target.classList.contains("tab-close-button") ||
@@ -148,7 +150,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
          event.target.classList.contains("tab-icon-overlay") ||
          event.target.classList.contains("tab-audio-button")
        ) {
-@@ -563,7 +599,7 @@
+@@ -563,7 +601,7 @@
            }
          } else if (
            event.altKey &&
@@ -157,7 +159,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
          ) {
            eventMaySelectTab = false;
          } else if (!this.selected && this.multiselected) {
-@@ -600,6 +636,10 @@
+@@ -600,6 +638,10 @@
        this.style.MozUserFocus = "";
      }
  
@@ -168,7 +170,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
      on_click(event) {
        if (event.button != 0) {
          return;
-@@ -623,14 +663,31 @@
+@@ -623,14 +665,31 @@
              trigger: "alt_click",
            });
          }
@@ -201,7 +203,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
          gBrowser.multiSelectedTabsCount > 0 &&
          !event.target.classList.contains("tab-close-button") &&
          !event.target.classList.contains("tab-icon-overlay") &&
-@@ -642,8 +699,9 @@
+@@ -642,8 +701,9 @@
        }
  
        if (
@@ -213,7 +215,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
        ) {
          if (this.activeMediaBlocked) {
            if (this.multiselected) {
-@@ -661,7 +719,7 @@
+@@ -661,7 +721,7 @@
          return;
        }
  
@@ -222,7 +224,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
          if (this.multiselected) {
            gBrowser.removeMultiSelectedTabs({
              metricsContext: lazy.TabMetrics.userTriggeredContext(
-@@ -681,6 +739,14 @@
+@@ -681,6 +741,14 @@
          // (see tabbrowser-tabs 'click' handler).
          gBrowser.tabContainer._blockDblClick = true;
        }
@@ -237,7 +239,7 @@ index 6fcef5bf0f4ac8c58515afd127c7065f26251c7c..0307d79923612b8f728bf41c13b39aa8
      }
  
      on_dblclick(event) {
-@@ -707,6 +773,8 @@
+@@ -707,6 +775,8 @@
              lazy.TabMetrics.METRIC_SOURCE.TAB_STRIP
            ),
          });

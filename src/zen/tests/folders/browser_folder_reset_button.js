@@ -33,14 +33,8 @@ add_task(async function test_Issue_() {
 
   Assert.equal(folder.activeTabs.length, 2, "Folder should have 2 active tabs");
 
-  ok(
-    tab1.hasAttribute("folder-active"),
-    "Tab 1 should be in the active folder"
-  );
-  ok(
-    tab2.hasAttribute("folder-active"),
-    "Tab 2 should be in the active folder"
-  );
+  ok(folder.activeTabs.includes(tab1), "Tab 1 should be in the active folder");
+  ok(folder.activeTabs.includes(tab2), "Tab 2 should be in the active folder");
 
   EventUtils.synthesizeMouseAtCenter(folder.resetButton, {});
 
@@ -48,11 +42,11 @@ add_task(async function test_Issue_() {
     /* eslint-disable mozilla/no-arbitrary-setTimeout */
     setTimeout(() => {
       ok(
-        !tab1.hasAttribute("folder-active"),
+        !folder.activeTabs.includes(tab1),
         "Tab 1 should not be in the active folder"
       );
       ok(
-        !tab2.hasAttribute("folder-active"),
+        !folder.activeTabs.includes(tab2),
         "Tab 2 should not be in the active folder"
       );
       resolve();

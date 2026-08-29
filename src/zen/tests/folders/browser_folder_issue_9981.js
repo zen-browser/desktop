@@ -33,25 +33,16 @@ add_task(async function test_Issue_9981() {
 
   Assert.equal(folder.activeTabs.length, 2, "Folder should have 2 active tabs");
 
-  ok(
-    tab1.hasAttribute("folder-active"),
-    "Tab 1 should be in the active folder"
-  );
-  ok(
-    tab2.hasAttribute("folder-active"),
-    "Tab 2 should be in the active folder"
-  );
+  ok(folder.activeTabs.includes(tab1), "Tab 1 should be in the active folder");
+  ok(folder.activeTabs.includes(tab2), "Tab 2 should be in the active folder");
 
   const tab2ResetButton = tab2.querySelector(".tab-reset-button");
   tab2ResetButton.style.display = "flex";
   EventUtils.synthesizeMouseAtCenter(tab2ResetButton, {});
 
+  ok(folder.activeTabs.includes(tab1), "Tab 1 should be in the active folder");
   ok(
-    tab1.hasAttribute("folder-active"),
-    "Tab 1 should be in the active folder"
-  );
-  ok(
-    !tab2.hasAttribute("folder-active"),
+    !folder.activeTabs.includes(tab2),
     "Tab 2 should not be in the active folder"
   );
 

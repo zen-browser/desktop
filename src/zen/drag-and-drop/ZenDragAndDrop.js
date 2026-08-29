@@ -635,7 +635,7 @@
     }
 
     get #dragShiftableItems() {
-      const separator = gZenWorkspaces.pinnedTabsContainer.querySelector(
+      const separator = gZenWorkspaces.pinnedTabsContainerWrapper.querySelector(
         ".pinned-tabs-container-separator"
       );
       // Make sure to always return the separator at the start of the array

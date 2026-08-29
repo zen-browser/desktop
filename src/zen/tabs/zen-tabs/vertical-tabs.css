@@ -166,7 +166,7 @@
       transform 0.1s ease-in-out;
   }
 
-  .zen-workspace-pinned-tabs-section[hide-separator] & {
+  .zen-workspace-pinned-tabs-section-wrapper[hide-separator] & {
     height: 0;
     opacity: 0;
     padding-bottom: 0;
@@ -894,11 +894,11 @@
 
 #tabbrowser-tabs {
   & .tabbrowser-tab {
-    &[pinned]:not([pending="true"]:not([folder-active="true"])) .tab-close-button {
+    &[pinned]:not([pending="true"]) .tab-close-button {
       display: none !important;
     }
 
-    &[pinned]:is(:not([pending="true"]), [folder-active="true"]):not([zen-essential]) {
+    &[pinned]:is(:not([pending="true"])):not([zen-essential]) {
       &:hover .tab-reset-button,
       &[visuallyselected] .tab-reset-button {
         display: block;

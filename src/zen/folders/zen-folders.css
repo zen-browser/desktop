@@ -28,7 +28,7 @@ zen-folder {
     background-color: var(--zen-toolbar-element-bg-hover);
   }
 
-  &[collapsed][has-active] {
+  &[collapsed][hasactivetab] {
     @media (prefers-reduced-motion: no-preference) {
       #tabbrowser-tabs[movingtab] &:not(:active) {
         transition: var(--tab-dragover-transition);
@@ -45,7 +45,20 @@ zen-folder {
     }
   }
 
-  & > .tab-group-container {
+  & .tab-group-container-wrapper {
+    display: grid;
+    position: relative;
+    z-index: 1;
+    overflow-y: clip;
+  }
+
+  & .tab-group-active-tabs-container {
+    z-index: 2;
+    overflow-y: visible;
+  }
+
+  & .tab-group-active-tabs-container, .tab-group-container-wrapper > .tab-group-container {
+    min-height: 0;
     :root[zen-sidebar-expanded] & > * {
       --zen-folder-indent: 14px; /* Can get overriden by the JS */
       margin-inline-start: var(--zen-folder-indent) !important;
@@ -205,7 +218,7 @@ zen-folder {
     }
   }
 
-  :root[zen-sidebar-expanded] &[has-active] > .tab-group-label-container {
+  :root[zen-sidebar-expanded] &[hasactivetab] > .tab-group-label-container {
     & .tab-reset-button {
       display: flex;
       opacity: 0;
@@ -217,9 +230,16 @@ zen-folder {
   }
 }
 
-zen-workspace[collapsedpinnedtabs] .zen-workspace-pinned-tabs-section,
-zen-folder[collapsed] > .tab-group-container {
-  overflow-y: clip;
+/* Zen Workspaces */ 
+zen-workspace .zen-workspace-pinned-tabs-section-wrapper {
+  display: grid;
+  & .zen-workspace-pinned-tabs-section {
+    min-height: 0;
+  }
+}
+
+.zen-workspace-pinned-active-tabs-section {
+  padding: 0 var(--zen-toolbox-padding);
 }
 
 /* Tabs popup */

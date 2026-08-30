@@ -1,0 +1,13 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Arc-like PiP corner snap + trackpad swipe (macOS). No-ops on other platforms.
+- name: zen.pip.corner-snap.enabled
+  value: true
+
+- name: zen.pip.corner-snap.swipe.enabled
+  value: true
+
+- name: zen.pip.corner-snap.animation-ms
+  value: 180

@@ -1,8 +1,59 @@
-diff --git a/toolkit/components/pictureinpicture/content/player.js b/toolkit/components/pictureinpicture/content/player.js
-index 34d92dcfba54de4752036d0e251243729b6c9626..20a0399e3bf6f9827f805ea6975b801ae269646d 100644
 --- a/toolkit/components/pictureinpicture/content/player.js
 +++ b/toolkit/components/pictureinpicture/content/player.js
-@@ -764,6 +764,11 @@ let Player = {
+@@ -30,6 +30,16 @@
+ const SEETHROUGH_MODE_ENABLED_PREF =
+   "media.videocontrols.picture-in-picture.seethrough-mode.enabled";
+ 
++// Zen: Arc-like corner snap + trackpad swipe (macOS)
++const ZEN_PIP_CORNER_SNAP_ENABLED_PREF = "zen.pip.corner-snap.enabled";
++const ZEN_PIP_CORNER_SNAP_SWIPE_ENABLED_PREF =
++  "zen.pip.corner-snap.swipe.enabled";
++const ZEN_PIP_CORNER_SNAP_ANIMATION_MS_PREF =
++  "zen.pip.corner-snap.animation-ms";
++const ZEN_PIP_CORNER_SNAP_DRAG_MIN_PX = 48;
++const ZEN_PIP_CORNER_SNAP_SWIPE_MIN_DELTA = 80;
++const ZEN_PIP_CORNER_SNAP_SWIPE_END_MS = 120;
++
+ /**
+  * The "showing" attribute means that we intentionally want to show controls
+  * on the PiP window. Examples include:
+@@ -165,6 +175,7 @@
+     "keydown",
+     "mouseup",
+     "mousemove",
++    "wheel",
+     "MozDOMFullscreen:Entered",
+     "MozDOMFullscreen:Exited",
+     "resize",
+@@ -195,7 +206,15 @@
+    */
+   oldMouseUpWindowX: window.screenX,
+   oldMouseUpWindowY: window.screenY,
++  // Zen corner-snap gesture session (macOS)
++  _zenPipHover: false,
++  _zenSwipeActive: false,
++  _zenSwipeDx: 0,
++  _zenSwipeDy: 0,
++  _zenSwipeEndTimer: null,
++  _zenSnapAnimFrame: null,
+ 
++
+   /**
+    * Used to determine if hovering the mouse cursor over the pip window or not.
+    * Gets updated whenever a new hover state is detected.
+@@ -488,6 +507,11 @@
+ 
+       case "mouseup": {
+         this.onMouseUp(event);
++        break;
++      }
++
++      case "wheel": {
++        this.onZenPipWheel(event);
+         break;
+       }
+ 
+@@ -785,6 +809,11 @@
          document.getElementById("large").click();
          break;
        }
@@ -14,3 +65,299 @@ index 34d92dcfba54de4752036d0e251243729b6c9626..20a0399e3bf6f9827f805ea6975b801a
      }
      // If the click came from a element that is not inside the subtitles settings panel
      // then we want to hide the panel
+@@ -976,6 +1005,234 @@
+       CAPTIONS_TOGGLE_ENABLED_PREF,
+       this.captionsToggleEnabled
+     );
++  },
++
++
++  /**
++   * Zen: distance moved since last recorded mouseup position.
++   */
++  _zenDragDistance() {
++    let deltaX = this.oldMouseUpWindowX - window.screenX;
++    let deltaY = this.oldMouseUpWindowY - window.screenY;
++    return Math.hypot(deltaX, deltaY);
++  },
++
++  /**
++   * Zen: whether corner-snap swipe handling is active.
++   */
++  _zenSwipeEnabled() {
++    return (
++      AppConstants.platform === "macosx" &&
++      Services.prefs.getBoolPref(ZEN_PIP_CORNER_SNAP_ENABLED_PREF, true) &&
++      Services.prefs.getBoolPref(ZEN_PIP_CORNER_SNAP_SWIPE_ENABLED_PREF, true)
++    );
++  },
++
++  /**
++   * Zen: map a movement vector to a screen corner (natural-scroll inverted).
++   */
++  _zenCornerFromVector(dx, dy) {
++    // Invert deltas so finger-swipe direction matches window travel.
++    let ix = -dx;
++    let iy = -dy;
++    let right = ix > 0;
++    let bottom = iy > 0;
++    if (!right && !bottom) {
++      return TOP_LEFT_QUADRANT;
++    }
++    if (right && !bottom) {
++      return TOP_RIGHT_QUADRANT;
++    }
++    if (!right && bottom) {
++      return BOTTOM_LEFT_QUADRANT;
++    }
++    return BOTTOM_RIGHT_QUADRANT;
++  },
++
++  /**
++   * Zen: animate window.moveTo toward a corner using existing move helpers.
++   */
++  _zenAnimateToCorner(quadrant) {
++    let endX;
++    let endY;
++    switch (quadrant) {
++      case TOP_RIGHT_QUADRANT:
++        endX =
++          window.screen.availLeft +
++          window.screen.availWidth -
++          window.innerWidth;
++        endY = window.screen.availTop;
++        break;
++      case TOP_LEFT_QUADRANT:
++        endX = window.screen.availLeft;
++        endY = window.screen.availTop;
++        break;
++      case BOTTOM_RIGHT_QUADRANT:
++        endX =
++          window.screen.availLeft +
++          window.screen.availWidth -
++          window.innerWidth;
++        endY =
++          window.screen.availTop +
++          window.screen.availHeight -
++          window.innerHeight;
++        break;
++      case BOTTOM_LEFT_QUADRANT:
++      default:
++        endX = window.screen.availLeft;
++        endY =
++          window.screen.availTop +
++          window.screen.availHeight -
++          window.innerHeight;
++        break;
++    }
++
++    if (this._zenSnapAnimFrame) {
++      cancelAnimationFrame(this._zenSnapAnimFrame);
++      this._zenSnapAnimFrame = null;
++    }
++
++    let duration = Services.prefs.getIntPref(
++      ZEN_PIP_CORNER_SNAP_ANIMATION_MS_PREF,
++      180
++    );
++    if (duration <= 0) {
++      window.moveTo(endX, endY);
++      this.oldMouseUpWindowX = window.screenX;
++      this.oldMouseUpWindowY = window.screenY;
++      return;
++    }
++
++    let startX = window.screenX;
++    let startY = window.screenY;
++    let start = performance.now();
++    let easeOutCubic = t => 1 - Math.pow(1 - t, 3);
++
++    let step = now => {
++      let t = Math.min(1, (now - start) / duration);
++      let e = easeOutCubic(t);
++      window.moveTo(
++        Math.round(startX + (endX - startX) * e),
++        Math.round(startY + (endY - startY) * e)
++      );
++      if (t < 1) {
++        this._zenSnapAnimFrame = requestAnimationFrame(step);
++      } else {
++        this._zenSnapAnimFrame = null;
++        this.oldMouseUpWindowX = window.screenX;
++        this.oldMouseUpWindowY = window.screenY;
++      }
++    };
++    this._zenSnapAnimFrame = requestAnimationFrame(step);
++  },
++
++  /**
++   * Zen: snap using the same quadrant/direction rules as Cmd+drag, with animation.
++   */
++  _zenSnapUsingDragRules(quadrant, dragAction, animate) {
++    let target = null;
++    switch (quadrant) {
++      case TOP_RIGHT_QUADRANT:
++        if (dragAction == "draggedRight" || dragAction == "draggedUp") {
++          target = TOP_RIGHT_QUADRANT;
++        } else if (dragAction == "draggedLeft") {
++          target = TOP_LEFT_QUADRANT;
++        } else if (dragAction == "draggedDown") {
++          target = BOTTOM_RIGHT_QUADRANT;
++        }
++        break;
++      case TOP_LEFT_QUADRANT:
++        if (dragAction == "draggedLeft" || dragAction == "draggedUp") {
++          target = TOP_LEFT_QUADRANT;
++        } else if (dragAction == "draggedRight") {
++          target = TOP_RIGHT_QUADRANT;
++        } else if (dragAction == "draggedDown") {
++          target = BOTTOM_LEFT_QUADRANT;
++        }
++        break;
++      case BOTTOM_LEFT_QUADRANT:
++        if (dragAction == "draggedLeft" || dragAction == "draggedDown") {
++          target = BOTTOM_LEFT_QUADRANT;
++        } else if (dragAction == "draggedRight") {
++          target = BOTTOM_RIGHT_QUADRANT;
++        } else if (dragAction == "draggedUp") {
++          target = TOP_LEFT_QUADRANT;
++        }
++        break;
++      case BOTTOM_RIGHT_QUADRANT:
++        if (dragAction == "draggedRight" || dragAction == "draggedDown") {
++          target = BOTTOM_RIGHT_QUADRANT;
++        } else if (dragAction == "draggedLeft") {
++          target = BOTTOM_LEFT_QUADRANT;
++        } else if (dragAction == "draggedUp") {
++          target = TOP_RIGHT_QUADRANT;
++        }
++        break;
++    }
++    if (target == null) {
++      return;
++    }
++    if (animate && AppConstants.platform === "macosx") {
++      this._zenAnimateToCorner(target);
++    } else {
++      switch (target) {
++        case TOP_RIGHT_QUADRANT:
++          this.moveToTopRight();
++          break;
++        case TOP_LEFT_QUADRANT:
++          this.moveToTopLeft();
++          break;
++        case BOTTOM_RIGHT_QUADRANT:
++          this.moveToBottomRight();
++          break;
++        case BOTTOM_LEFT_QUADRANT:
++          this.moveToBottomLeft();
++          break;
++      }
++    }
++  },
++
++  /**
++   * Zen: trackpad two-finger swipe → corner dock.
++   * Session starts on hover or first wheel over PiP; continues if gesture
++   * began on PiP even after pointer leaves the window.
++   */
++  onZenPipWheel(event) {
++    if (!this._zenSwipeEnabled() || this.isFullscreen) {
++      return;
++    }
++    if (!(this._zenPipHover || this._zenSwipeActive)) {
++      return;
++    }
++
++    this._zenSwipeActive = true;
++    this._zenSwipeDx += event.deltaX;
++    this._zenSwipeDy += event.deltaY;
++
++    if (this._zenSwipeEndTimer) {
++      clearTimeout(this._zenSwipeEndTimer);
++    }
++    this._zenSwipeEndTimer = setTimeout(() => {
++      this._zenSwipeEndTimer = null;
++      this._zenFinishSwipe();
++    }, ZEN_PIP_CORNER_SNAP_SWIPE_END_MS);
++
++    // Prevent the event from affecting underlying pages when over PiP chrome.
++    event.preventDefault();
++  },
++
++  _zenFinishSwipe() {
++    let dx = this._zenSwipeDx;
++    let dy = this._zenSwipeDy;
++    this._zenSwipeDx = 0;
++    this._zenSwipeDy = 0;
++    this._zenSwipeActive = false;
++
++    if (Math.hypot(dx, dy) < ZEN_PIP_CORNER_SNAP_SWIPE_MIN_DELTA) {
++      return;
++    }
++    let corner = this._zenCornerFromVector(dx, dy);
++    this._zenAnimateToCorner(corner);
+   },
+ 
+   /**
+@@ -1075,16 +1332,27 @@
+    */
+   onMouseUp(event) {
+     // Corner snapping changes start here.
+-    // Check if metakey pressed and macOS
+     let quadrant = this.determineCurrentQuadrant();
+     let dragAction = this.determineDirectionDragged();
+ 
+-    if (
++    const zenSnapEnabled =
++      AppConstants.platform === "macosx" &&
++      Services.prefs.getBoolPref(ZEN_PIP_CORNER_SNAP_ENABLED_PREF, true);
++
++    const modifierSnap =
+       ((event.ctrlKey && AppConstants.platform !== "macosx") ||
+         (event.metaKey && AppConstants.platform === "macosx")) &&
+-      dragAction
+-    ) {
+-      // Moving logic based on current quadrant and direction of drag.
++      dragAction;
++
++    // Zen: Arc-like flick/drag snap without requiring Cmd (macOS).
++    const zenDragSnap =
++      zenSnapEnabled &&
++      !modifierSnap &&
++      dragAction &&
++      this._zenDragDistance() >= ZEN_PIP_CORNER_SNAP_DRAG_MIN_PX;
++
++    if (modifierSnap) {
++      // Upstream behavior: instant snap with modifier key.
+       switch (quadrant) {
+         case TOP_RIGHT_QUADRANT:
+           switch (dragAction) {
+@@ -1151,7 +1419,11 @@
+           }
+           break;
+       } // Switch close.
+-    } // Metakey close.
++    } else if (zenDragSnap) {
++      this._zenSnapUsingDragRules(quadrant, dragAction, true);
++      // oldMouseUp* updated when animation completes.
++      return;
++    } // Metakey / Zen drag-snap close.
+     this.oldMouseUpWindowX = window.screenX;
+     this.oldMouseUpWindowY = window.screenY;
+   },
+@@ -1168,12 +1440,14 @@
+   onMouseEnter() {
+     if (!this.isFullscreen) {
+       this.isCurrentHover = true;
++      this._zenPipHover = true;
+       this.showVideoControls();
+     }
+   },
+ 
+   onMouseLeave() {
+     if (!this.isFullscreen) {
++      this._zenPipHover = false;
+       this.isCurrentHover = false;
+       if (
+         !this.controls.hasAttribute(SHOWING_ATTRIBUTE) &&

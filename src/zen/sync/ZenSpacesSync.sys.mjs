@@ -139,7 +139,7 @@ export class ZenSpacesSyncEngine extends SyncEngine {
   }
 
   get version() {
-    return 1;
+    return 3;
   }
 
   get syncPriority() {

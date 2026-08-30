@@ -1035,11 +1035,11 @@ class nsZenWindowSync {
       aOtherTab.removeAttribute(attr);
     }
     if (focus) {
+      aOurTab.linkedBrowser.docShellIsActive = true;
       // Recalculate the focus in order to allow the user to continue typing
       // inside the web content area without having to click outside and back in.
       aOurTab.linkedBrowser.blur();
       aOurTab.documentGlobal.gBrowser._adjustFocusAfterTabSwitch(aOurTab);
-      aOurTab.linkedBrowser.docShellIsActive = true;
     }
   }
 

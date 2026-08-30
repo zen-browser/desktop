@@ -774,17 +774,30 @@ class nsZenWindowSync {
    */
   async #swapBrowserDocShellsAsync(aOurTab, aOtherTab) {
     return this.#withTabSwapInFlight(aOurTab, async () => {
-      if (!this.#canSwapBrowsers(aOurTab, aOtherTab)) {
-        this.log(
-          `Cannot swap browsers between tabs ${aOurTab.id} and ${aOtherTab.id} due to process mismatch`
-        );
-        return;
-      }
-      if (aOtherTab.closing) {
-        this.log(`Cannot swap browsers, other tab ${aOtherTab.id} is closing`);
+      const canSwap = () => {
+        if (!this.#canSwapBrowsers(aOurTab, aOtherTab)) {
+          this.log(
+            `Cannot swap browsers between tabs ${aOurTab.id} and ${aOtherTab.id} due to process mismatch`
+          );
+          return false;
+        }
+        if (aOtherTab.closing) {
+          this.log(
+            `Cannot swap browsers, other tab ${aOtherTab.id} is closing`
+          );
+          return false;
+        }
+        return true;
+      };
+      if (!canSwap()) {
         return;
       }
       await this.#addPseudoImageForBrowser(aOtherTab);
+      if (!canSwap()) {
+        /*The contents moved on while we were away. Go back*/
+        this.#maybeRemovePseudoImageForBrowser(aOtherTab.linkedBrowser);
+        return;
+      }
 
       const swapResult = { swappedOk: false };
       try {
@@ -1109,7 +1122,7 @@ class nsZenWindowSync {
    * @param {object} aBrowser - The browser element to remove the pseudo image for.
    */
   #maybeRemovePseudoImageForBrowser(aBrowser) {
-    const elements = aBrowser.parentNode?.querySelectorAll(
+    const elements = aBrowser?.parentNode?.querySelectorAll(
       ".zen-pseudo-browser-image"
     );
     if (elements) {

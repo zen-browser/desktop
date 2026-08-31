@@ -721,7 +721,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     };
 
     const dot = document.createElement("div");
-    dot.classList.add("zen-theme-picker-dot");
+    dot.classList.add("zen-theme-picker-dot", "no-squircles");
 
     dot.style.left = `${dotData.x}px`;
     dot.style.top = `${dotData.y}px`;

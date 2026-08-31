@@ -4,23 +4,22 @@
 
 zen-welcome-title-line1 = ようこそ
 zen-welcome-title-line2 = 静かなインターネットへ
-zen-welcome-import-title = 新鮮なスタート、同じブックマーク
-zen-welcome-import-description-1 = ブックマーク、履歴、パスワードはインターネット上のパンくずの跡のようなものです。残さないでください！
-zen-welcome-import-description-2 = 別のブラウザから簡単に移行し、中断したところから再開できます。
-zen-welcome-import-button = 今すぐインポート
-zen-welcome-set-default-browser = { -brand-short-name }を既定ブラウザーに設定する
-zen-welcome-dont-set-default-browser = { -brand-short-name }を既定ブラウザに設定しないでください
-zen-welcome-initial-essentials-title = キータブは常に手の届く範囲にあります
-zen-welcome-initial-essentials-description-1 = いくつ開いても、最も重要なタブに簡単にアクセスでき、常に手元にあるようにします。
-zen-welcome-initial-essentials-description-2 = 重要なタブは、ワークスペースに関係なく常に表示されます。
-zen-welcome-workspace-colors-title = あなたのワークスペース、あなたの色
-zen-welcome-workspace-colors-description = 各ワークスペースに独自の色のアイデンティティを与えることで、ブラウザをパーソナライズします。
-zen-welcome-start-browsing-title =
-    準備完了？<br/>
-    さあ、始めましょう！
+zen-welcome-back = Back
+zen-welcome-skip = Skip for now
+zen-welcome-import-title = Bring your stuff along.
+zen-welcome-import-description = Import your bookmarks, history and passwords from another browser and pick up right where you left off.
+zen-welcome-import-yes = <strong>YES</strong>, import from another browser.
+zen-welcome-import-no = <strong>NO</strong>, start fresh.
+zen-welcome-default-browser-title = Make { -brand-short-name } your default?
+zen-welcome-default-browser-description = Links from other apps will open in { -brand-short-name }. You can always change this later.
+zen-welcome-set-default-browser = <strong>YES</strong>, make { -brand-short-name } default.
+zen-welcome-dont-set-default-browser = <strong>NO</strong>, still exploring my options.
+zen-welcome-default-search-title = Pick your search engine.
+zen-welcome-default-search-description = デフォルトの検索エンジンを選択してください。後でいつでも変更できます！
+zen-welcome-essentials-title = Choose the apps you use most.
+zen-welcome-essentials-description = Select your favorite apps to keep them handy in your sidebar.
+zen-welcome-workspace-colors-title = Your space, your colors.
+zen-welcome-workspace-colors-description = Personalize your browser by giving each space its own unique color identity.
+zen-welcome-start-browsing-title = All set? Let’s get rolling!
 zen-welcome-start-browsing-description-1 = 準備完了です。下のボタンをクリックして、{ -brand-short-name }でブラウズを開始してください。
 zen-welcome-start-browsing = 飛び込んで！
-zen-welcome-default-search-title = 既定の検索エンジン
-zen-welcome-default-search-description = デフォルトの検索エンジンを選択してください。後でいつでも変更できます！
-zen-welcome-skip-button = スキップ
-zen-welcome-finished = Zenの設定が完了しました！

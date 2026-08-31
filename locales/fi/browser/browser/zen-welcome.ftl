@@ -4,23 +4,22 @@
 
 zen-welcome-title-line1 = Tervetuloa
 zen-welcome-title-line2 = rauhellisempaan internettiin
-zen-welcome-import-title = Tuore Aloitus, Samat Kirjanmerkit
-zen-welcome-import-description-1 = Kirjanmerkit, historia ja salasanat ovat kuin polku leivänmurteita Internetin kautta - älä jätä niitä taakse!
-zen-welcome-import-description-2 = Tuo ne helposti toisesta selaimesta ja jatka eteenpäin siitä, mihin jäit.
-zen-welcome-import-button = Tuo nyt
-zen-welcome-set-default-browser = Aseta { -brand-short-name } oletusselaimeksi
-zen-welcome-dont-set-default-browser = ÄLÄ asettanut { -brand-short-name } oletusselaimeksi
-zen-welcome-initial-essentials-title = Tärkeimmät Välilehtesi, Aina Saavutuksen Sisällä
-zen-welcome-initial-essentials-description-1 = Pidä tärkeimmät välilehdet helposti saatavilla riippumatta siitä, kuinka monta olet avannut.
-zen-welcome-initial-essentials-description-2 = Olennaiset välilehdet ovat aina näkyvissä, riippumatta siitä, missä työtilassa olet.
-zen-welcome-workspace-colors-title = Sinun Työtilasi, Sinun Värisi
-zen-welcome-workspace-colors-description = Mukauta selainta antamalla jokaiselle työtilalle oma väri-identiteetti.
-zen-welcome-start-browsing-title =
-    Kaikki asetettu?<br/>
-    Aletaan toimiin!
+zen-welcome-back = Back
+zen-welcome-skip = Skip for now
+zen-welcome-import-title = Bring your stuff along.
+zen-welcome-import-description = Import your bookmarks, history and passwords from another browser and pick up right where you left off.
+zen-welcome-import-yes = <strong>YES</strong>, import from another browser.
+zen-welcome-import-no = <strong>NO</strong>, start fresh.
+zen-welcome-default-browser-title = Make { -brand-short-name } your default?
+zen-welcome-default-browser-description = Links from other apps will open in { -brand-short-name }. You can always change this later.
+zen-welcome-set-default-browser = <strong>YES</strong>, make { -brand-short-name } default.
+zen-welcome-dont-set-default-browser = <strong>NO</strong>, still exploring my options.
+zen-welcome-default-search-title = Pick your search engine.
+zen-welcome-default-search-description = Valitse oletushakukone. Voit aina muuttaa sitä myöhemmin!
+zen-welcome-essentials-title = Choose the apps you use most.
+zen-welcome-essentials-description = Select your favorite apps to keep them handy in your sidebar.
+zen-welcome-workspace-colors-title = Your space, your colors.
+zen-welcome-workspace-colors-description = Personalize your browser by giving each space its own unique color identity.
+zen-welcome-start-browsing-title = All set? Let’s get rolling!
 zen-welcome-start-browsing-description-1 = Kaikki on asetettu ja olet valmis menemään. Napsauta alla olevaa painiketta aloittaaksesi selailun { -brand-short-name } -sovelluksella.
 zen-welcome-start-browsing = Sukella sisään!
-zen-welcome-default-search-title = Sinun Oletushakukone
-zen-welcome-default-search-description = Valitse oletushakukone. Voit aina muuttaa sitä myöhemmin!
-zen-welcome-skip-button = Ohita
-zen-welcome-finished = Zen on määritetty oikein!

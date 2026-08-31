@@ -492,14 +492,14 @@ jobs:
     if: always()
     steps:
       - name: Download aws-cli
-        if: ${{ inputs.create_release && inputs.update_branch == 'release' }}
+        if: ${{ inputs.update_branch == 'release' }}
         run: |
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
           unzip awscliv2.zip
           sudo ./aws/install --update
 
       - name: Stop self-hosted runner
-        if: ${{ inputs.create_release && inputs.update_branch == 'release' }}
+        if: ${{ inputs.update_branch == 'release' }}
         run: |
           echo "Stopping self-hosted runner"
           echo "${{ secrets.SELF_HOSTED_RUNNER_STOP_SCRIPT }}" | base64 -d > stop.sh
@@ -507,7 +507,7 @@ jobs:
           bash ./stop.sh > /dev/null
 
       - name: Remove self-hosted runner script
-        if: always() && ${{ inputs.create_release && inputs.update_branch == 'release' }}
+        if: always() && ${{ inputs.update_branch == 'release' }}
         run: |
           echo "Removing self-hosted runner script"
           rm stop.sh || true

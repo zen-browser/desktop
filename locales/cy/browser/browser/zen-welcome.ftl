@@ -4,23 +4,22 @@
 
 zen-welcome-title-line1 = Croeso i
 zen-welcome-title-line2 = rhyngrwyd llonyddach
-zen-welcome-import-title = Dechrau Newydd, Yr Un Nodau Tudalen
-zen-welcome-import-description-1 = Mae eich nodau tudalen, hanes a chyfrineiriau fel llwybr o friwsion ar draws y rhyngrwyd—peidiwch eu gadael ar eich hôl!
-zen-welcome-import-description-2 = Dewch â nhw drosodd yn hawdd o borwr arall a phara ymlaen o le roeddech chi.
-zen-welcome-import-button = Mewnforio nawr
-zen-welcome-set-default-browser = Gosod { -brand-short-name } fel eich porwr arferol
-zen-welcome-dont-set-default-browser = PEIDIO gosod { -brand-short-name } fel eich porwr arferol
-zen-welcome-initial-essentials-title = Eich Tabiau Allweddol, Bob Tro o Fewn Gafael
-zen-welcome-initial-essentials-description-1 = Cadwch eich tabiau pwysicaf yn hawdd eu cyrraedd ac wrth law bob amser, faint bynnag rydych chi'n eu hagor.
-zen-welcome-initial-essentials-description-2 = Mae tabiau hanfodol bob amser yn weladwy, pa bynnag man gwaith rydych chi ynddo.
-zen-welcome-workspace-colors-title = Eich Mannau Gwaith, Eich Lliwiau
-zen-welcome-workspace-colors-description = Personolwch eich porwr trwy roi lliw unigryw i bob gweithle.
-zen-welcome-start-browsing-title =
-    Yn barod?<br/>
-    Ffwrdd â ni!
+zen-welcome-back = Back
+zen-welcome-skip = Skip for now
+zen-welcome-import-title = Bring your stuff along.
+zen-welcome-import-description = Import your bookmarks, history and passwords from another browser and pick up right where you left off.
+zen-welcome-import-yes = <strong>YES</strong>, import from another browser.
+zen-welcome-import-no = <strong>NO</strong>, start fresh.
+zen-welcome-default-browser-title = Make { -brand-short-name } your default?
+zen-welcome-default-browser-description = Links from other apps will open in { -brand-short-name }. You can always change this later.
+zen-welcome-set-default-browser = <strong>YES</strong>, make { -brand-short-name } default.
+zen-welcome-dont-set-default-browser = <strong>NO</strong>, still exploring my options.
+zen-welcome-default-search-title = Pick your search engine.
+zen-welcome-default-search-description = Dewiswch eich peiriant chwilio arferol. Gallwch chi ei newid yn nes ymlaen!
+zen-welcome-essentials-title = Choose the apps you use most.
+zen-welcome-essentials-description = Select your favorite apps to keep them handy in your sidebar.
+zen-welcome-workspace-colors-title = Your space, your colors.
+zen-welcome-workspace-colors-description = Personalize your browser by giving each space its own unique color identity.
+zen-welcome-start-browsing-title = All set? Let’s get rolling!
 zen-welcome-start-browsing-description-1 = Rydych chi wedi'ch paratoi ac yn barod i fynd. Cliciwch y botwm isod i ddechrau pori gyda { -brand-short-name }.
 zen-welcome-start-browsing = Ymlaen!
-zen-welcome-default-search-title = Eich Peiriant Chwilio Arferol
-zen-welcome-default-search-description = Dewiswch eich peiriant chwilio arferol. Gallwch chi ei newid yn nes ymlaen!
-zen-welcome-skip-button = Hepgor
-zen-welcome-finished = Mae eich Zen wedi'i osog yn gywir!

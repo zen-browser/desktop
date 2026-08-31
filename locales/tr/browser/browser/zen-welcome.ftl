@@ -4,23 +4,22 @@
 
 zen-welcome-title-line1 = Zen'e Hoş Geldiniz
 zen-welcome-title-line2 = Daha Sakin Bir İnternet
-zen-welcome-import-title = Yeni Bir Başlangıç, Aynı Yer İmleri
-zen-welcome-import-description-1 = Yer imleriniz, geçmişiniz ve parolalarınız internetteki ekmek kırıntıları gibidir; onları geride bırakmayın!
-zen-welcome-import-description-2 = Onları başka bir tarayıcıdan kolayca aktarın ve tam bıraktığınız yerden devam edin.
-zen-welcome-import-button = Şimdi içe aktar
-zen-welcome-set-default-browser = { -brand-short-name }'i varsayılan tarayıcı olarak ayarlayın
-zen-welcome-dont-set-default-browser = { -brand-short-name }'i varsayılan tarayıcı olarak AYARLAMAYIN
-zen-welcome-initial-essentials-title = Her Zamanki Sekmeleriniz, Her Zaman Yanınızda
-zen-welcome-initial-essentials-description-1 = Ne kadar çok sekme açarsanız açın, en önemli sekmelerinizi her zaman kolayca erişilebilir ve elinizin altında tutun.
-zen-welcome-initial-essentials-description-2 = Bulunduğunuz çalışma alanı ne olursa olsun, temel sekmeler her zaman görünür.
-zen-welcome-workspace-colors-title = Senin Çalışma Alanın, Senin Renklerin
-zen-welcome-workspace-colors-description = Her çalışma alanında ayrı renkler kullanarak tarayıcını kişiselleştir.
-zen-welcome-start-browsing-title =
-    Hazır mısın?<br/>
-    Hadi Başlayalım!
+zen-welcome-back = Back
+zen-welcome-skip = Skip for now
+zen-welcome-import-title = Bring your stuff along.
+zen-welcome-import-description = Import your bookmarks, history and passwords from another browser and pick up right where you left off.
+zen-welcome-import-yes = <strong>YES</strong>, import from another browser.
+zen-welcome-import-no = <strong>NO</strong>, start fresh.
+zen-welcome-default-browser-title = Make { -brand-short-name } your default?
+zen-welcome-default-browser-description = Links from other apps will open in { -brand-short-name }. You can always change this later.
+zen-welcome-set-default-browser = <strong>YES</strong>, make { -brand-short-name } default.
+zen-welcome-dont-set-default-browser = <strong>NO</strong>, still exploring my options.
+zen-welcome-default-search-title = Pick your search engine.
+zen-welcome-default-search-description = Varsayılan arama motorunu seç. Bu seçimi istediğin zaman değiştirebilirsin!
+zen-welcome-essentials-title = Choose the apps you use most.
+zen-welcome-essentials-description = Select your favorite apps to keep them handy in your sidebar.
+zen-welcome-workspace-colors-title = Your space, your colors.
+zen-welcome-workspace-colors-description = Personalize your browser by giving each space its own unique color identity.
+zen-welcome-start-browsing-title = All set? Let’s get rolling!
 zen-welcome-start-browsing-description-1 = Tamamen hazırsın. Aşağıdaki butona tıklayarak { -brand-short-name } ile aramaya başla.
 zen-welcome-start-browsing = Keşfetmeye başla!
-zen-welcome-default-search-title = Varsayılan Arama Motorun
-zen-welcome-default-search-description = Varsayılan arama motorunu seç. Bu seçimi istediğin zaman değiştirebilirsin!
-zen-welcome-skip-button = Atla
-zen-welcome-finished = Zen başarıyla kuruldu ve ayarlandı!

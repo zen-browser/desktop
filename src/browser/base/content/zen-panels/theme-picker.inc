@@ -14,14 +14,14 @@
     <panelview id="PanelUI-zen-gradient-generator-view" class="PanelUI-subView zen-theme-picker" role="document" mainview-with-header="true" has-custom-header="true">
       <hbox class="zen-theme-picker-gradient">
         <hbox id="PanelUI-zen-gradient-generator-scheme">
-          <button id="PanelUI-zen-gradient-generator-scheme-auto" class="subviewbutton"/>
-          <button id="PanelUI-zen-gradient-generator-scheme-light" class="subviewbutton"/>
-          <button id="PanelUI-zen-gradient-generator-scheme-dark" class="subviewbutton"/> 
+          <button id="PanelUI-zen-gradient-generator-scheme-auto" class="no-squircles subviewbutton"/>
+          <button id="PanelUI-zen-gradient-generator-scheme-light" class="no-squircles subviewbutton"/>
+          <button id="PanelUI-zen-gradient-generator-scheme-dark" class="no-squircles subviewbutton"/> 
         </hbox>
         <hbox id="PanelUI-zen-gradient-generator-color-actions">
-          <button id="PanelUI-zen-gradient-generator-color-add" class="subviewbutton" />
-          <button id="PanelUI-zen-gradient-generator-color-remove" class="subviewbutton" />
-          <button id="PanelUI-zen-gradient-generator-color-toggle-algo" class="subviewbutton" />
+          <button id="PanelUI-zen-gradient-generator-color-add" class="no-squircles subviewbutton" />
+          <button id="PanelUI-zen-gradient-generator-color-remove" class="no-squircles subviewbutton" />
+          <button id="PanelUI-zen-gradient-generator-color-toggle-algo" class="no-squircles subviewbutton" />
         </hbox>
         <label data-l10n-id="zen-panel-ui-gradient-click-to-add" id="PanelUI-zen-gradient-generator-color-click-to-add"></label>
       </hbox>

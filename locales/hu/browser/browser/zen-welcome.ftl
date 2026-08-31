@@ -4,23 +4,22 @@
 
 zen-welcome-title-line1 = Üdvözöljük
 zen-welcome-title-line2 = egy nyugodtabb interneten
-zen-welcome-import-title = Egy új kezdet, ugyanazok a könyvjelzők
-zen-welcome-import-description-1 = A könyvjelzői, előzményei és jelszavai olyanok, mint a kenyérmorzsák az interneten - ne hagyja hátra őket!
-zen-welcome-import-description-2 = Könnyedén áthozhatja őket egy másik böngészőből, és ott folytathatja, ahol abbahagyta..
-zen-welcome-import-button = Importálás most
-zen-welcome-set-default-browser = { -brand-short-name } beállítása alapértelmezett böngészőnek
-zen-welcome-dont-set-default-browser = NE állítsa be a { -brand-short-name } böngészőt alapértelmezett böngészőként
-zen-welcome-initial-essentials-title = A legfontosabb lapok, mindig kéznél
-zen-welcome-initial-essentials-description-1 = A legfontosabb lapokat könnyen elérhetővé és mindig kéznél tarthatja, függetlenül attól, hogy hányat nyit meg.
-zen-welcome-initial-essentials-description-2 = Az alapvető lapok mindig láthatóak, függetlenül attól, hogy milyen munkaterületen van.
-zen-welcome-workspace-colors-title = Az Ön munkakörnyezetei, az Ön színei
-zen-welcome-workspace-colors-description = Személyre szabhatja böngészőjét azáltal, hogy minden munkaterületnek saját, egyedi színt ad.
-zen-welcome-start-browsing-title =
-    Minden kész?<br/>
-    Kezdjük!
+zen-welcome-back = Back
+zen-welcome-skip = Skip for now
+zen-welcome-import-title = Bring your stuff along.
+zen-welcome-import-description = Import your bookmarks, history and passwords from another browser and pick up right where you left off.
+zen-welcome-import-yes = <strong>YES</strong>, import from another browser.
+zen-welcome-import-no = <strong>NO</strong>, start fresh.
+zen-welcome-default-browser-title = Make { -brand-short-name } your default?
+zen-welcome-default-browser-description = Links from other apps will open in { -brand-short-name }. You can always change this later.
+zen-welcome-set-default-browser = <strong>YES</strong>, make { -brand-short-name } default.
+zen-welcome-dont-set-default-browser = <strong>NO</strong>, still exploring my options.
+zen-welcome-default-search-title = Pick your search engine.
+zen-welcome-default-search-description = Válassza ki az alapértelmezett keresőmotort. Később bármikor megváltoztathatja!
+zen-welcome-essentials-title = Choose the apps you use most.
+zen-welcome-essentials-description = Select your favorite apps to keep them handy in your sidebar.
+zen-welcome-workspace-colors-title = Your space, your colors.
+zen-welcome-workspace-colors-description = Personalize your browser by giving each space its own unique color identity.
+zen-welcome-start-browsing-title = All set? Let’s get rolling!
 zen-welcome-start-browsing-description-1 = Minden előkészítve és készen áll az indulásra. Kattintson az alábbi gombra a böngészés megkezdéséhez a { -brand-short-name } használatával.
 zen-welcome-start-browsing = Merüljön el!
-zen-welcome-default-search-title = Az Ön alapértelmezett keresőmotorja
-zen-welcome-default-search-description = Válassza ki az alapértelmezett keresőmotort. Később bármikor megváltoztathatja!
-zen-welcome-skip-button = Kihagyás
-zen-welcome-finished = A Zen helyesen lett beállítva!

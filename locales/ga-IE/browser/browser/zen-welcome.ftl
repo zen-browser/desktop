@@ -4,23 +4,22 @@
 
 zen-welcome-title-line1 = Fáilte go
 zen-welcome-title-line2 = idirlíon níos ciúine
-zen-welcome-import-title = Tús Úr, Leabharmharcanna Céanna
-zen-welcome-import-description-1 = Tá do leabharmharcanna, do stair agus do phasfhocail cosúil le rian brioscaí aráin tríd an idirlíon—ná fág i do dhiaidh iad!
-zen-welcome-import-description-2 = Tabhair anonn iad go héasca ó bhrabhsálaí eile agus lean ar aghaidh díreach san áit ar fhág tú iad.
-zen-welcome-import-button = Iompórtáil anois
-zen-welcome-set-default-browser = Socraigh { -brand-short-name } mar do bhrabhsálaí réamhshocraithe
-zen-welcome-dont-set-default-browser = NÁ socraigh { -brand-short-name } mar do bhrabhsálaí réamhshocraithe
-zen-welcome-initial-essentials-title = D'Eochairchluaisíní, Laistigh de Shroicheann I gCónaí
-zen-welcome-initial-essentials-description-1 = Coinnigh do chluaisíní is tábhachtaí inrochtana go héasca agus i gcónaí ar láimh, is cuma cé mhéad a osclaíonn tú.
-zen-welcome-initial-essentials-description-2 = Bíonn cluaisíní riachtanacha le feiceáil i gcónaí, is cuma cén spás oibre ina bhfuil tú.
-zen-welcome-workspace-colors-title = Do Spásanna Oibre, Do Dathanna
-zen-welcome-workspace-colors-description = Pearsanaigh do bhrabhsálaí trí chéannacht datha uathúil a thabhairt do gach spás oibre.
-zen-welcome-start-browsing-title =
-    Réidh go léir?<br/>
-    Tosaímis ag obair!
+zen-welcome-back = Back
+zen-welcome-skip = Skip for now
+zen-welcome-import-title = Bring your stuff along.
+zen-welcome-import-description = Import your bookmarks, history and passwords from another browser and pick up right where you left off.
+zen-welcome-import-yes = <strong>YES</strong>, import from another browser.
+zen-welcome-import-no = <strong>NO</strong>, start fresh.
+zen-welcome-default-browser-title = Make { -brand-short-name } your default?
+zen-welcome-default-browser-description = Links from other apps will open in { -brand-short-name }. You can always change this later.
+zen-welcome-set-default-browser = <strong>YES</strong>, make { -brand-short-name } default.
+zen-welcome-dont-set-default-browser = <strong>NO</strong>, still exploring my options.
+zen-welcome-default-search-title = Pick your search engine.
+zen-welcome-default-search-description = Roghnaigh d'inneall cuardaigh réamhshocraithe. Is féidir leat é a athrú níos déanaí!
+zen-welcome-essentials-title = Choose the apps you use most.
+zen-welcome-essentials-description = Select your favorite apps to keep them handy in your sidebar.
+zen-welcome-workspace-colors-title = Your space, your colors.
+zen-welcome-workspace-colors-description = Personalize your browser by giving each space its own unique color identity.
+zen-welcome-start-browsing-title = All set? Let’s get rolling!
 zen-welcome-start-browsing-description-1 = Tá tú réidh le tosú. Cliceáil an cnaipe thíos chun tús a chur le brabhsáil le { -brand-short-name }.
 zen-welcome-start-browsing = Tum isteach!
-zen-welcome-default-search-title = D'Inneall Cuardaigh Réamhshocraithe
-zen-welcome-default-search-description = Roghnaigh d'inneall cuardaigh réamhshocraithe. Is féidir leat é a athrú níos déanaí!
-zen-welcome-skip-button = Scipeáil
-zen-welcome-finished = Tá do Zen socraithe i gceart!

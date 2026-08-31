@@ -5,7 +5,7 @@ index e02205136eb5401c4bf1175a73401c2b7571f6d0..537a3d2a428b42349f1744ff8f38dc9b
 @@ -414,6 +414,10 @@
    }
  }
- 
+
 +.urlbarView-row[zen-essential] > .urlbarView-row-inner > .urlbarView-type-icon {
 +  background-image: url(chrome://browser/skin/zen-icons/heart-circle-fill.svg);
 +}

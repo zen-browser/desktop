@@ -4,23 +4,22 @@
 
 zen-welcome-title-line1 = Přivítejte
 zen-welcome-title-line2 = klidnější internet
-zen-welcome-import-title = Nový začátek, stejné záložky
-zen-welcome-import-description-1 = Vaše záložky, historie a hesla jsou jako stopa drobků po internetu—nenechávejte je za sebou!
-zen-welcome-import-description-2 = Snadno je přeneste z jiného prohlížeče a pokračujte přesně tam, kde jste skončili..
-zen-welcome-import-button = Importovat nyní
-zen-welcome-set-default-browser = Nastavit { -brand-short-name } jako výchozí prohlížeč
-zen-welcome-dont-set-default-browser = NENASTAVOVAT { -brand-short-name } jako výchozí prohlížeč
-zen-welcome-initial-essentials-title = Vaše klíčové panely vždy na dosah
-zen-welcome-initial-essentials-description-1 = Mějte své nejdůležitější panely snadno dostupné a vždy po ruce, bez ohledu na to, kolik jich otevřete.
-zen-welcome-initial-essentials-description-2 = Essential panely jsou vždy viditelné, bez ohledu na to, ve kterém pracovním prostoru se nacházíte.
-zen-welcome-workspace-colors-title = Vaše pracovní prostory, vaše barvy
-zen-welcome-workspace-colors-description = Přizpůsobte si prohlížeč a dejte každému pracovnímu prostoru jeho vlastní barvu.
-zen-welcome-start-browsing-title =
-    Všechno připraveno?<br/> 
-    Tak pojďme na to!
+zen-welcome-back = Back
+zen-welcome-skip = Skip for now
+zen-welcome-import-title = Bring your stuff along.
+zen-welcome-import-description = Import your bookmarks, history and passwords from another browser and pick up right where you left off.
+zen-welcome-import-yes = <strong>YES</strong>, import from another browser.
+zen-welcome-import-no = <strong>NO</strong>, start fresh.
+zen-welcome-default-browser-title = Make { -brand-short-name } your default?
+zen-welcome-default-browser-description = Links from other apps will open in { -brand-short-name }. You can always change this later.
+zen-welcome-set-default-browser = <strong>YES</strong>, make { -brand-short-name } default.
+zen-welcome-dont-set-default-browser = <strong>NO</strong>, still exploring my options.
+zen-welcome-default-search-title = Pick your search engine.
+zen-welcome-default-search-description = Vyberte si svůj výchozí vyhledávač. Později jej můžete změnit!
+zen-welcome-essentials-title = Choose the apps you use most.
+zen-welcome-essentials-description = Select your favorite apps to keep them handy in your sidebar.
+zen-welcome-workspace-colors-title = Your space, your colors.
+zen-welcome-workspace-colors-description = Personalize your browser by giving each space its own unique color identity.
+zen-welcome-start-browsing-title = All set? Let’s get rolling!
 zen-welcome-start-browsing-description-1 = Všechno máte nastaveno a jste připraveni vyrazit. Klikněte na tlačítko níže a začněte prohlížet s prohlížečem { -brand-short-name }.
 zen-welcome-start-browsing = Pustit se do toho!
-zen-welcome-default-search-title = Váš výchozí vyhledávač
-zen-welcome-default-search-description = Vyberte si svůj výchozí vyhledávač. Později jej můžete změnit!
-zen-welcome-skip-button = Přeskočit
-zen-welcome-finished = Váš Zen byl úspěšně nastaven!

@@ -4,23 +4,22 @@
 
 zen-welcome-title-line1 = Sveiki atvykę į
 zen-welcome-title-line2 = ramesnį internetą
-zen-welcome-import-title = Nauja pradžia, tas pats adresynas
-zen-welcome-import-description-1 = Jūsų adresynas, istorija ir slaptažodžiai – tai tarsi duonos trupiniai per internetą. Nepalikite jų!
-zen-welcome-import-description-2 = Lengvai perkelkite juos iš kitos naršyklės ir tęskite ten, kur baigėte.
-zen-welcome-import-button = Importuoti dabar
-zen-welcome-set-default-browser = Nustatyti „{ -brand-short-name }“ kaip numatytąją naršyklę
-zen-welcome-dont-set-default-browser = Nenustatyti „{ -brand-short-name }“ kaip numatytąją naršyklę
-zen-welcome-initial-essentials-title = Jūsų pagrindinės kortelės, visada pasiekiamos
-zen-welcome-initial-essentials-description-1 = Laikykite svarbiausias korteles lengvai pasiekiamas ir visada po ranka, kad ir kiek jų atvertumėte.
-zen-welcome-initial-essentials-description-2 = Būtiniausios kortelės visada matomos, nesvarbu, kokioje darbo srityje esate.
-zen-welcome-workspace-colors-title = Jūsų darbo sritys, jūsų spalvos
-zen-welcome-workspace-colors-description = Suasmeninkite savo naršyklę, suteikdami kiekvienai darbo sričiai unikalią spalvą.
-zen-welcome-start-browsing-title =
-    Viskas parengta?<br/>
-    Pradėkime veikti!
+zen-welcome-back = Back
+zen-welcome-skip = Skip for now
+zen-welcome-import-title = Bring your stuff along.
+zen-welcome-import-description = Import your bookmarks, history and passwords from another browser and pick up right where you left off.
+zen-welcome-import-yes = <strong>YES</strong>, import from another browser.
+zen-welcome-import-no = <strong>NO</strong>, start fresh.
+zen-welcome-default-browser-title = Make { -brand-short-name } your default?
+zen-welcome-default-browser-description = Links from other apps will open in { -brand-short-name }. You can always change this later.
+zen-welcome-set-default-browser = <strong>YES</strong>, make { -brand-short-name } default.
+zen-welcome-dont-set-default-browser = <strong>NO</strong>, still exploring my options.
+zen-welcome-default-search-title = Pick your search engine.
+zen-welcome-default-search-description = Pasirinkite numatytąjį paieškos variklį. Vėliau visada galite ją pakeisti!
+zen-welcome-essentials-title = Choose the apps you use most.
+zen-welcome-essentials-description = Select your favorite apps to keep them handy in your sidebar.
+zen-welcome-workspace-colors-title = Your space, your colors.
+zen-welcome-workspace-colors-description = Personalize your browser by giving each space its own unique color identity.
+zen-welcome-start-browsing-title = All set? Let’s get rolling!
 zen-welcome-start-browsing-description-1 = Viskas parengta ir gali veikti. Spustelėkite žemiau esantį mygtuką, kad pradėtumėte naršyti su „{ -brand-short-name }“.
 zen-welcome-start-browsing = Pirmyn!
-zen-welcome-default-search-title = Jūsų numatytasis paieškos variklis
-zen-welcome-default-search-description = Pasirinkite numatytąjį paieškos variklį. Vėliau visada galite ją pakeisti!
-zen-welcome-skip-button = Praleisti
-zen-welcome-finished = Jūsų „Zen“ nustatytas teisingai!

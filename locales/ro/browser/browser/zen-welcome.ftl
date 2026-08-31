@@ -4,23 +4,22 @@
 
 zen-welcome-title-line1 = Bine ai venit la
 zen-welcome-title-line2 = un internet mai calm
-zen-welcome-import-title = Un Început Proaspăt, Aceleași Marcaje
-zen-welcome-import-description-1 = Marcajele, istoricul și parolele tale sunt ca un șir de firimituri care îți dezvăluie traseul pe internet — nu le lăsa în urmă!
-zen-welcome-import-description-2 = Adu-le cu ușurință din alt browser și continuă exact de unde ai rămas.
-zen-welcome-import-button = Importă acum
-zen-welcome-set-default-browser = Setează { -brand-short-name } ca browser principal
-zen-welcome-dont-set-default-browser = NU seta { -brand-short-name } ca browser principal
-zen-welcome-initial-essentials-title = Filele tale cheie, întotdeauna la îndemână
-zen-welcome-initial-essentials-description-1 = Păstrează-ți cele mai importante file ușor de accesat, indiferent de câte ai deschise.
-zen-welcome-initial-essentials-description-2 = Filele Esențiale sunt mereu vizibile, indiferent de Spațiul de Lucru în care te afli.
-zen-welcome-workspace-colors-title = Spațiul Tău de Lucru, Culorile Tale
-zen-welcome-workspace-colors-description = Personalizează-ți browser-ul dând fiecărui Spațiu de Lucru o culoare de identitate unică.
-zen-welcome-start-browsing-title =
-    Totul este gata?<br/>
-    Haide să începem!
+zen-welcome-back = Back
+zen-welcome-skip = Skip for now
+zen-welcome-import-title = Bring your stuff along.
+zen-welcome-import-description = Import your bookmarks, history and passwords from another browser and pick up right where you left off.
+zen-welcome-import-yes = <strong>YES</strong>, import from another browser.
+zen-welcome-import-no = <strong>NO</strong>, start fresh.
+zen-welcome-default-browser-title = Make { -brand-short-name } your default?
+zen-welcome-default-browser-description = Links from other apps will open in { -brand-short-name }. You can always change this later.
+zen-welcome-set-default-browser = <strong>YES</strong>, make { -brand-short-name } default.
+zen-welcome-dont-set-default-browser = <strong>NO</strong>, still exploring my options.
+zen-welcome-default-search-title = Pick your search engine.
+zen-welcome-default-search-description = Alege-ți motorul tău de căutare principal. Îl poți schimba oricând mai târziu!
+zen-welcome-essentials-title = Choose the apps you use most.
+zen-welcome-essentials-description = Select your favorite apps to keep them handy in your sidebar.
+zen-welcome-workspace-colors-title = Your space, your colors.
+zen-welcome-workspace-colors-description = Personalize your browser by giving each space its own unique color identity.
+zen-welcome-start-browsing-title = All set? Let’s get rolling!
 zen-welcome-start-browsing-description-1 = Totul este pregătit. Dă click pe butonul de mai jos și începe navigarea cu { -brand-short-name }.
 zen-welcome-start-browsing = Începe acum!
-zen-welcome-default-search-title = Motorul Tău de Căutare Principal
-zen-welcome-default-search-description = Alege-ți motorul tău de căutare principal. Îl poți schimba oricând mai târziu!
-zen-welcome-skip-button = Treci peste
-zen-welcome-finished = Zen-ul tău a fost configurat corect!

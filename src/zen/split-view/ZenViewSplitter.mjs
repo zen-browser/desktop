@@ -84,6 +84,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
   _lastOpenedTab = null;
 
+  #stagedPickPending = false;
+
   MAX_TABS = 4;
 
   init() {
@@ -1523,11 +1525,23 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   updateSplitView(tab) {
     const oldView = this.currentView;
     const newView = this._data.findIndex(group => group.tabs.includes(tab));
+    const stagingSplit = this.#stagedPickPending;
+    this.#stagedPickPending = false;
 
     if (newView === oldView && oldView < 0) {
       return;
     }
     if (newView < 0 && oldView >= 0) {
+      /* The tab for the staged split has arrived. Don't tear the
+       * group down or we will have to rebuild it which will cause a
+       * visual flash of the tabs expanding to full size and getting
+       * back into position.
+       * Park the tab where it's supposed to be in the split instead.
+       * */
+      if (stagingSplit) {
+        this.#parkInStagedPane(tab);
+        return;
+      }
       this.deactivateCurrentSplitView();
       return;
     }
@@ -1717,7 +1731,11 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       const browserContainer = splitNode.tab.linkedBrowser.closest(
         ".browserSidebarContainer"
       );
-      browserContainer.style.inset = `${nodeRootPosition.top}% ${nodeRootPosition.right}% ${nodeRootPosition.bottom}% ${nodeRootPosition.left}%`;
+      const inset = `${nodeRootPosition.top}% ${nodeRootPosition.right}% ${nodeRootPosition.bottom}% ${nodeRootPosition.left}%`;
+      browserContainer.style.inset = inset;
+      if (browserContainer.hasAttribute("zen-split-staged")) {
+        this.#setStagedPaneSlot(inset);
+      }
       this._tabToSplitNode.set(splitNode.tab, splitNode);
       return;
     }
@@ -1760,6 +1778,39 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       }
     });
     this.maybeDisableOpeningTabOnSplitView();
+  }
+
+  /**
+   * Set the rectangle of the staged split
+   *
+   * @param {?string} inset - The staged pane's inset, as written to its container.
+   */
+  #setStagedPaneSlot(inset) {
+    if (!inset) {
+      this.#stagedPickPending = false;
+      this.tabBrowserPanel.removeAttribute("zen-split-staging");
+      this.tabBrowserPanel.style.removeProperty("--zen-staged-pane-inset");
+      this.#parkInStagedPane(null);
+      return;
+    }
+    this.tabBrowserPanel.setAttribute("zen-split-staging", "true");
+    this.tabBrowserPanel.style.setProperty("--zen-staged-pane-inset", inset);
+  }
+
+  /**
+   * Parks a tab's container in the staged pane's rectangle so we don't
+   * get a full-bleed over the split before the pane commits.
+   *
+   * @param {?Tab} tab - The tab to park, or null to empty the slot.
+   */
+  #parkInStagedPane(tab) {
+    const container = tab?.linkedBrowser?.closest(".browserSidebarContainer");
+    const parked = this.tabBrowserPanel.querySelector("[zen-split-parked]");
+    if (parked === container) {
+      return;
+    }
+    parked?.removeAttribute("zen-split-parked");
+    container?.setAttribute("zen-split-parked", "true");
   }
 
   /**
@@ -1967,6 +2018,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    */
   resetContainerStyle(container, removeDeckSelected = false) {
     container.removeAttribute("zen-split");
+    if (container.hasAttribute("zen-split-staged")) {
+      container.removeAttribute("zen-split-staged");
+      this.#setStagedPaneSlot(null);
+    }
     if (removeDeckSelected) {
       container.classList.remove("deck-selected");
     }
@@ -2541,6 +2596,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     };
     this.#withoutSplitViewTransition(() => {
       this._data.push(data);
+      emptyTab.linkedBrowser
+        .closest(".browserSidebarContainer")
+        .setAttribute("zen-split-staged", "true");
       this.activateSplitView(data);
       gBrowser.selectedTab = emptyTab;
       setTimeout(() => {
@@ -2559,6 +2617,16 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           const command = document.getElementById("cmd_zenNewEmptySplit");
           command.removeAttribute("disabled");
         };
+        window.addEventListener(
+          "ZenURLBarAboutToClose",
+          event => {
+            if (!gZenUIManager.matchesCloseToken(closeToken, event)) {
+              return;
+            }
+            this.#stagedPickPending = event.detail.onElementPicked;
+          },
+          { signal: controller.signal }
+        );
         window.addEventListener(
           "ZenURLBarClosed",
           event => {

@@ -68,6 +68,22 @@
   margin-top: 0 !important;
 }
 
+/*
+ * Unfortunately the first rule here is needed, because in the case the tab already exists
+ * we don't get to set zen-split-parked before it's shown, which leads to the tab briefly
+ * covering the entire split before settling into position.
+ * */
+#tabbrowser-tabpanels[zen-split-view="true"][zen-split-staging="true"] > .browserSidebarContainer.deck-selected:not([zen-split="true"]):not(.zen-glance-overlay),
+#tabbrowser-tabpanels[zen-split-view="true"] > .browserSidebarContainer[zen-split-parked="true"] {
+  inset: var(--zen-staged-pane-inset);
+  margin: var(--zen-split-column-gap) var(--zen-split-row-gap);
+  margin-bottom: 0;
+  margin-left: 0;
+  overflow: hidden;
+  /*Make sure the real always comes above the staging tab.*/
+  z-index: 1;
+}
+
 #tabbrowser-tabpanels[zen-split-view="true"]:not(.zen-split-view-no-transition):not([zen-split-resizing]) > [zen-split="true"] {
   --zen-active-split-outline-color: light-dark(hsl(from var(--zen-primary-color) h s calc(l - 20)), var(--button-background-color-primary));
 

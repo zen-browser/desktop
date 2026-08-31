@@ -4,23 +4,22 @@
 
 zen-welcome-title-line1 = 歡迎使用
 zen-welcome-title-line2 = 更寧靜的網路體驗
-zen-welcome-import-title = 全新開始，書籤依舊
-zen-welcome-import-description-1 = 您的書籤、歷史記錄和密碼，是您網路足跡的珍貴紀錄——別把它們遺忘了！
-zen-welcome-import-description-2 = 輕鬆匯入其他瀏覽器的資料，無縫接續瀏覽體驗。
-zen-welcome-import-button = 立即匯入
-zen-welcome-set-default-browser = 將 { -brand-short-name } 設為您的預設瀏覽器
-zen-welcome-dont-set-default-browser = 不要將 { -brand-short-name } 設為您的預設瀏覽器
-zen-welcome-initial-essentials-title = 重要分頁，隨手可及
-zen-welcome-initial-essentials-description-1 = 無論開啟多少分頁，最重要的分頁將永遠顯示，讓您輕鬆存取。
-zen-welcome-initial-essentials-description-2 = 無論您在哪個工作區，Essential 分頁會永遠顯示。
-zen-welcome-workspace-colors-title = 您的工作區，您的色彩
-zen-welcome-workspace-colors-description = 為每個工作區賦予獨特的色彩，打造個人化瀏覽器。
-zen-welcome-start-browsing-title =
-    準備好了嗎？<br/>
-    馬上開始體驗吧！
+zen-welcome-back = Back
+zen-welcome-skip = Skip for now
+zen-welcome-import-title = Bring your stuff along.
+zen-welcome-import-description = Import your bookmarks, history and passwords from another browser and pick up right where you left off.
+zen-welcome-import-yes = <strong>YES</strong>, import from another browser.
+zen-welcome-import-no = <strong>NO</strong>, start fresh.
+zen-welcome-default-browser-title = Make { -brand-short-name } your default?
+zen-welcome-default-browser-description = Links from other apps will open in { -brand-short-name }. You can always change this later.
+zen-welcome-set-default-browser = <strong>YES</strong>, make { -brand-short-name } default.
+zen-welcome-dont-set-default-browser = <strong>NO</strong>, still exploring my options.
+zen-welcome-default-search-title = Pick your search engine.
+zen-welcome-default-search-description = 選擇您的預設搜尋引擎，您可以隨時更改它！
+zen-welcome-essentials-title = Choose the apps you use most.
+zen-welcome-essentials-description = Select your favorite apps to keep them handy in your sidebar.
+zen-welcome-workspace-colors-title = Your space, your colors.
+zen-welcome-workspace-colors-description = Personalize your browser by giving each space its own unique color identity.
+zen-welcome-start-browsing-title = All set? Let’s get rolling!
 zen-welcome-start-browsing-description-1 = 您已完成所有設定並準備就緒。點擊下方按鈕，開始使用 { -brand-short-name } 瀏覽網路吧。
 zen-welcome-start-browsing = 立即開始！
-zen-welcome-default-search-title = 您的預設搜尋引擎
-zen-welcome-default-search-description = 選擇您的預設搜尋引擎，您可以隨時更改它！
-zen-welcome-skip-button = 跳過
-zen-welcome-finished = 您的 Zen 瀏覽器已成功設定！

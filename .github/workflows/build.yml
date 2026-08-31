@@ -529,7 +529,6 @@ jobs:
           rm stop.sh || true
 
   release:
-    if: ${{ inputs.update_branch == 'twilight' }}
     permissions: write-all
     name: Release
     needs:

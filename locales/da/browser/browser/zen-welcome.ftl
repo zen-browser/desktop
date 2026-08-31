@@ -4,23 +4,22 @@
 
 zen-welcome-title-line1 = Velkommen til
 zen-welcome-title-line2 = et roligere internet
-zen-welcome-import-title = En frisk start, samme bogmærker
-zen-welcome-import-description-1 = Dine bogmærker, din historik og dine adgangskoder er som et spor af brødkrummer på internettet—efterlad dem ikke!
-zen-welcome-import-description-2 = Bring dem nemt over fra en anden browser og fortsæt, hvor du slap.
-zen-welcome-import-button = Importér nu
-zen-welcome-set-default-browser = Indstil { -brand-short-name } som din standardbrowser
-zen-welcome-dont-set-default-browser = Indstil IKKE { -brand-short-name } som din standardbrowser
-zen-welcome-initial-essentials-title = Dine vigtigste faner, altid lige ved hånden
-zen-welcome-initial-essentials-description-1 = Hold dine vigtigste faner let tilgængelige og altid lige ved hånden, uanset hvor mange du åbner.
-zen-welcome-initial-essentials-description-2 = Vigtige faner er altid synlige, uanset hvilket arbejdsområde du er i.
-zen-welcome-workspace-colors-title = Dine arbejdsområder, dine farver
-zen-welcome-workspace-colors-description = Tilpas din browser ved at give hvert arbejdsområde sin egen unikke farveidentitet.
-zen-welcome-start-browsing-title =
-    Er du klar?<br/>
-    Lad os komme i gang!
+zen-welcome-back = Back
+zen-welcome-skip = Skip for now
+zen-welcome-import-title = Bring your stuff along.
+zen-welcome-import-description = Import your bookmarks, history and passwords from another browser and pick up right where you left off.
+zen-welcome-import-yes = <strong>YES</strong>, import from another browser.
+zen-welcome-import-no = <strong>NO</strong>, start fresh.
+zen-welcome-default-browser-title = Make { -brand-short-name } your default?
+zen-welcome-default-browser-description = Links from other apps will open in { -brand-short-name }. You can always change this later.
+zen-welcome-set-default-browser = <strong>YES</strong>, make { -brand-short-name } default.
+zen-welcome-dont-set-default-browser = <strong>NO</strong>, still exploring my options.
+zen-welcome-default-search-title = Pick your search engine.
+zen-welcome-default-search-description = Vælg din standardsøgemaskine. Du kan altid ændre det senere!
+zen-welcome-essentials-title = Choose the apps you use most.
+zen-welcome-essentials-description = Select your favorite apps to keep them handy in your sidebar.
+zen-welcome-workspace-colors-title = Your space, your colors.
+zen-welcome-workspace-colors-description = Personalize your browser by giving each space its own unique color identity.
+zen-welcome-start-browsing-title = All set? Let’s get rolling!
 zen-welcome-start-browsing-description-1 = Du er klar til at gå i gang. Klik på knappen nedenfor for at browse med { -brand-short-name }.
 zen-welcome-start-browsing = Kom i gang!
-zen-welcome-default-search-title = Din standardsøgemaskine
-zen-welcome-default-search-description = Vælg din standardsøgemaskine. Du kan altid ændre det senere!
-zen-welcome-skip-button = Spring over
-zen-welcome-finished = Din Zen er blevet opsat korrekt!

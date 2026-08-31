@@ -71,7 +71,7 @@ fi
 
 timestamp="$(date +%Y-%m-%d-%H%M%S)"
 profile_backup="$HOME/Desktop/zen-backup-$timestamp"
-previous="$app.backup-$timestamp"
+previous="$app.backup"
 staged="$app.new"
 mount_dir="$(mktemp -d /tmp/zen-dmg.XXXXXX)"
 mounted=false
@@ -85,7 +85,6 @@ cleanup() {
 trap cleanup EXIT
 
 test ! -e "$profile_backup"
-test ! -e "$previous"
 test ! -e "$staged"
 
 hdiutil attach -nobrowse -readonly -mountpoint "$mount_dir" "$dmg" >/dev/null
@@ -120,6 +119,7 @@ test -d "$profile_root"
 ditto "$profile_root" "$profile_backup"
 
 if [[ -e "$app" ]]; then
+  rm -rf "$previous"
   mv "$app" "$previous"
 fi
 if ! mv "$staged" "$app"; then

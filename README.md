@@ -162,7 +162,7 @@ Quit every Zen window, then install:
 npm run install:macos
 ```
 
-The installer refuses to run while Zen is open. It validates the packaged localization and source commit, copies both Sine bootloader files into the staged app, backs up the profile to the Desktop, keeps the previous app under `/Applications`, and then relaunches Zen.
+The installer refuses to run while Zen is open. It validates the packaged localization and source commit, copies both Sine bootloader files into the staged app, backs up the profile to the Desktop, rotates one previous app at `/Applications/Zen.app.backup`, and then relaunches Zen.
 
 After launch, check `about:profiles` if Zen appears to be a fresh install. Select the existing profile rather than deleting or copying over profile files. The local app is unsigned, so macOS may require opening it through Control-click > Open, and automatic updates may not work.
 

@@ -4,23 +4,22 @@
 
 zen-welcome-title-line1 = Bienvenido a
 zen-welcome-title-line2 = un Internet más tranquilo
-zen-welcome-import-title = Un nuevo comienzo, los mismos marcadores
-zen-welcome-import-description-1 = Sus marcadores, historial, y contraseñas son como un rastro de migas de pan a través de Internet—¡no las deje atrás!
-zen-welcome-import-description-2 = Tráigalos fácilmente desde otro navegador y continúe justo donde lo dejó.
-zen-welcome-import-button = Importar ahora
-zen-welcome-set-default-browser = Establecer { -brand-short-name } como su navegador predeterminado
-zen-welcome-dont-set-default-browser = NO establecer { -brand-short-name } como su navegador predeterminado
-zen-welcome-initial-essentials-title = Sus pestañas esenciales, siempre a su alcance
-zen-welcome-initial-essentials-description-1 = Mantenga sus pestañas más importantes fácilmente accesibles y siempre a mano, sin importar cuantas abra.
-zen-welcome-initial-essentials-description-2 = Las pestañas esenciales están siempre a la vista, sin importar en que espacio de trabajo esté.
-zen-welcome-workspace-colors-title = Sus espacios de trabajo, sus colores
-zen-welcome-workspace-colors-description = Personalice su navegador dándole a cada espacio de trabajo su propia identidad de color única.
-zen-welcome-start-browsing-title =
-    ¿Listo?<br/>
-    ¡Pongámonos en marcha!
+zen-welcome-back = Back
+zen-welcome-skip = Skip for now
+zen-welcome-import-title = Bring your stuff along.
+zen-welcome-import-description = Import your bookmarks, history and passwords from another browser and pick up right where you left off.
+zen-welcome-import-yes = <strong>YES</strong>, import from another browser.
+zen-welcome-import-no = <strong>NO</strong>, start fresh.
+zen-welcome-default-browser-title = Make { -brand-short-name } your default?
+zen-welcome-default-browser-description = Links from other apps will open in { -brand-short-name }. You can always change this later.
+zen-welcome-set-default-browser = <strong>YES</strong>, make { -brand-short-name } default.
+zen-welcome-dont-set-default-browser = <strong>NO</strong>, still exploring my options.
+zen-welcome-default-search-title = Pick your search engine.
+zen-welcome-default-search-description = Elija su motor de búsqueda predeterminado. ¡Siempre puede cambiarlo más tarde!
+zen-welcome-essentials-title = Choose the apps you use most.
+zen-welcome-essentials-description = Select your favorite apps to keep them handy in your sidebar.
+zen-welcome-workspace-colors-title = Your space, your colors.
+zen-welcome-workspace-colors-description = Personalize your browser by giving each space its own unique color identity.
+zen-welcome-start-browsing-title = All set? Let’s get rolling!
 zen-welcome-start-browsing-description-1 = Está listo y preparado para continuar. Haga clic en el botón de abajo para comenzar a navegar con { -brand-short-name }.
 zen-welcome-start-browsing = ¡Comencemos!
-zen-welcome-default-search-title = Su motor de búsqueda predeterminado
-zen-welcome-default-search-description = Elija su motor de búsqueda predeterminado. ¡Siempre puede cambiarlo más tarde!
-zen-welcome-skip-button = Omitir
-zen-welcome-finished = ¡Su Zen se ha configurado correctamente!

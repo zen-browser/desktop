@@ -499,7 +499,10 @@
             () => {
               const panelRect = panel.getBoundingClientRect();
               // 20 is the shadow width * 2
-              anchor.style.height = panelRect.height - 20 + "px";
+              anchor.style.height =
+                panelRect.height -
+                (AppConstants.platform == "macosx" ? -72 : 20) +
+                "px";
               anchor.style.width = panelRect.width - 20 + "px";
             },
             { once: true }

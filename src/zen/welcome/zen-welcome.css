@@ -125,7 +125,7 @@
 
   #zen-welcome-title {
     text-align: center;
-    font-size: 6rem;
+    font-size: 5.2rem;
     font-weight: 700;
     line-height: 1.05;
     letter-spacing: -0.03em;
@@ -292,39 +292,15 @@
     &[page="search"] {
       justify-content: safe center;
       overflow-y: auto;
-      padding-top: 0;
-      padding-bottom: 0;
+      padding-top: 6rem;
+      padding-bottom: 6rem;
 
-      /* Sticky edge fades instead of a mask, so hovering a card doesn't
-       * re-render the whole list through an offscreen surface. */
-      &::before,
-      &::after {
-        content: "";
-        position: sticky;
-        z-index: 1;
-        flex-shrink: 0;
-        width: 100%;
-        height: 6rem;
-        pointer-events: none;
-      }
-
-      &::before {
-        top: 0;
-        margin-bottom: -2rem;
-        background: linear-gradient(
-          var(--zen-welcome-content-bg),
-          transparent
-        );
-      }
-
-      &::after {
-        bottom: 0;
-        margin-top: -2rem;
-        background: linear-gradient(
-          transparent,
-          var(--zen-welcome-content-bg)
-        );
-      }
+      mask-image: linear-gradient(
+        transparent,
+        black 6rem,
+        black calc(100% - 6rem),
+        transparent
+      );
 
       .zen-welcome-option {
         max-width: 24rem;
@@ -487,7 +463,7 @@
     #zen-welcome-essentials {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1.2rem;
+      gap: 1.5rem;
     }
 
     .zen-welcome-essential {

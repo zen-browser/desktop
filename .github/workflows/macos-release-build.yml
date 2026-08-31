@@ -32,6 +32,14 @@ on:
         required: true
         type: boolean
         default: false
+      force-candidate:
+        description: "Force building against the Firefox release candidate"
+        required: false
+        type: boolean
+        default: false
+
+env:
+  SURFER_FORCE_CANDIDATE: ${{ inputs.force-candidate && '1' || '' }}
 
 jobs:
   mac-build:

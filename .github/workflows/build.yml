@@ -113,14 +113,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download aws-cli
-        if: ${{ inputs.create_release && inputs.update_branch == 'release' }}
+        if: ${{ inputs.update_branch == 'release' }}
         run: |
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
           unzip awscliv2.zip
           sudo ./aws/install --update
 
       - name: Start self-hosted runner
-        if: ${{ inputs.create_release && inputs.update_branch == 'release' }}
+        if: ${{ inputs.update_branch == 'release' }}
         run: |
           echo "Starting self-hosted runner"
           echo "${{ secrets.SELF_HOSTED_RUNNER_START_SCRIPT }}" | base64 -d > start.sh
@@ -128,7 +128,7 @@ jobs:
           bash ./start.sh
 
       - name: Remove self-hosted runner script
-        if: always() && ${{ inputs.create_release && inputs.update_branch == 'release' }}
+        if: always() && ${{ inputs.update_branch == 'release' }}
         run: |
           echo "Removing self-hosted runner script"
           rm start.sh || true
@@ -513,7 +513,7 @@ jobs:
           rm stop.sh || true
 
   release:
-    if: ${{ inputs.create_release || inputs.update_branch == 'twilight' }}
+    if: ${{ inputs.update_branch == 'twilight' }}
     permissions: write-all
     name: Release
     needs:

@@ -1,0 +1,15 @@
+diff --git a/browser/themes/shared/urlbar/view-nova.css b/browser/themes/shared/urlbar/view-nova.css
+index e02205136eb5401c4bf1175a73401c2b7571f6d0..537a3d2a428b42349f1744ff8f38dc9b049457a4 100644
+--- a/browser/themes/shared/urlbar/view-nova.css
++++ b/browser/themes/shared/urlbar/view-nova.css
+@@ -414,6 +414,10 @@
+   }
+ }
+ 
++.urlbarView-row[zen-essential] > .urlbarView-row-inner > .urlbarView-type-icon {
++  background-image: url(chrome://browser/skin/zen-icons/heart-circle-fill.svg);
++}
++
+ /* `pinned` is currently only set on top sites, which have `type="top_site"`, so
+    this rule is mutually exclusive with the other badge rules. */
+ .urlbarView-row[pinned] > .urlbarView-row-inner {

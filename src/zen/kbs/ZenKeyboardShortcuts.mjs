@@ -894,7 +894,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 20;
+  static LATEST_KBS_VERSION = 21;
 
   constructor() {}
 
@@ -1318,6 +1318,31 @@ class nsZenKeyboardShortcutsVersioner {
           shortcut.setDisabled(true);
         }
       }
+    }
+
+    if (version < 21) {
+      // Migrate from version 20 to 21.
+      // Add unbound shortcuts for navigating tab selection history.
+      data.push(
+        new KeyShortcut(
+          "zen-tab-history-back",
+          "",
+          "",
+          "windowAndTabManagement",
+          nsKeyShortcutModifiers.fromObject({}),
+          "cmd_zenTabHistoryBack",
+          "zen-tab-history-back-shortcut"
+        ),
+        new KeyShortcut(
+          "zen-tab-history-forward",
+          "",
+          "",
+          "windowAndTabManagement",
+          nsKeyShortcutModifiers.fromObject({}),
+          "cmd_zenTabHistoryForward",
+          "zen-tab-history-forward-shortcut"
+        )
+      );
     }
 
     return data;

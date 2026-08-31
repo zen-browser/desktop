@@ -23,3 +23,6 @@ prefs = [
   "privacy.userContext.ui.enabled=true",
   "zen.workspaces.separate-essentials=true",
 ]
+
+["browser_essential_tab_history.js"]
+prefs = ["browser.urlbar.suggest.openpage=true"]

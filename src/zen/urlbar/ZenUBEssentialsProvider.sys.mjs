@@ -15,6 +15,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
   UrlbarResult: "chrome://browser/content/urlbar/UrlbarResult.mjs",
   UrlbarShared: "chrome://browser/content/urlbar/UrlbarShared.mjs",
+  gZenTabHistory: "resource:///modules/ZenTabHistory.sys.mjs",
 });
 
 const targets = new Map();
@@ -225,17 +226,21 @@ export class ZenUrlbarProviderEssentials extends UrlbarProvider {
     const entry = targets.get(payload.zenEssentialTarget);
     targets.delete(payload.zenEssentialTarget);
     const tab = entry?.tabRef.deref();
-    if (!entry || !isValidTarget(tab, entry, payload, isPrivate)) {
+    const sourceWindow = lazy.BrowserWindowTracker.getTopWindow({
+      private: isPrivate,
+    });
+    if (
+      !entry ||
+      !sourceWindow ||
+      sourceWindow.closed ||
+      lazy.PrivateBrowsingUtils.isWindowPrivate(sourceWindow) != isPrivate ||
+      !isValidTarget(tab, entry, payload, isPrivate)
+    ) {
       return false;
     }
 
     const targetWindow = entry.windowRef.deref();
-    targetWindow.focus();
-    void targetWindow.gZenWorkspaces.switchTabIfNeeded(tab).then(() => {
-      if (!targetWindow.closed) {
-        targetWindow.gBrowser.selectedBrowser.focus();
-      }
-    });
+    void lazy.gZenTabHistory.navigateTo(sourceWindow, targetWindow, tab);
     return true;
   }
 }

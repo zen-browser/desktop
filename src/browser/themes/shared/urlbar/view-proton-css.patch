@@ -1,5 +1,5 @@
 diff --git a/browser/themes/shared/urlbar/view-proton.css b/browser/themes/shared/urlbar/view-proton.css
-index 3620b33cb11f2e6bba189cbaf7532cca0e97cd3b..346c318ed178fb77a217b3b992b94706db6bf0ee 100644
+index 5f659996e75df9f45170fb51ec6fbad6c243da4e..13cdb371f4b2f30f7e4adc9068b5e23487fa1785 100644
 --- a/browser/themes/shared/urlbar/view-proton.css
 +++ b/browser/themes/shared/urlbar/view-proton.css
 @@ -12,7 +12,7 @@
@@ -11,11 +11,23 @@ index 3620b33cb11f2e6bba189cbaf7532cca0e97cd3b..346c318ed178fb77a217b3b992b94706
    --urlbarView-row-gutter: var(--space-xxsmall);
    --urlbarview-row-padding-block: 6px;
    --urlbarView-row-padding-inline: var(--urlbar-icon-padding);
-@@ -165,7 +165,6 @@
+@@ -164,9 +164,6 @@
+     :root:not([uidensity="compact"]) & {
        min-height: var(--urlbarview-row-min-height);
      }
-     :root[uidensity="touch"] & {
+-    :root[uidensity="touch"] & {
 -      padding-block: 11px;
-     }
+-    }
    }
  
+   &[type="rich-search"] {
+@@ -346,4 +343,9 @@
+   /* Favicon badges have this priority: pinned > bookmark. */
++  .urlbarView-row[zen-essential] > .urlbarView-row-inner > .urlbarView-no-wrap > & {
++    background-image: url(chrome://browser/skin/zen-icons/heart-circle-fill.svg);
++    fill: var(--toolbarbutton-icon-fill-attention);
++  }
++
+   .urlbarView-row[type="bookmark"] > .urlbarView-row-inner > .urlbarView-no-wrap > & {
+     background-image: url(chrome://browser/skin/bookmark-12.svg);
+     fill: var(--toolbarbutton-icon-fill-attention);

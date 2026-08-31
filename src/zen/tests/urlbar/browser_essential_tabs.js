@@ -91,6 +91,16 @@ add_task(async function test_essential_is_first_in_ordinary_search() {
       "The Essential ranks ahead of all ordinary results"
     );
     Assert.ok(
+      rows[0].hasAttribute("zen-essential"),
+      "The Essential result is marked for its UI badge"
+    );
+    Assert.ok(
+      getComputedStyle(
+        rows[0].querySelector(".urlbarView-type-icon")
+      ).backgroundImage.includes("heart-circle-fill.svg"),
+      "The Essential result shows the Essential heart badge"
+    );
+    Assert.ok(
       rows.some(
         ({ result }) => result.providerName == "ZenUrlbarProviderGlobalActions"
       ),
@@ -137,7 +147,7 @@ add_task(async function test_selection_uses_exact_essential_target() {
 
     await pickRow(
       window,
-      rows[0].row,
+      rows[0],
       () => gBrowser.selectedTab == essential,
       "The exact Essential tab should be selected"
     );
@@ -180,7 +190,7 @@ add_task(async function test_multiple_same_url_essentials_keep_identity() {
     Assert.equal(rows[0].result.providerName, PROVIDER_NAME);
     await pickRow(
       window,
-      rows[0].row,
+      rows[0],
       () => gBrowser.selectedTab == second,
       "The matching Essential instance should be selected"
     );
@@ -219,7 +229,7 @@ add_task(async function test_container_essential_switches_workspace() {
     Assert.equal(rows[0].result.payload.userContextId, 1);
     await pickRow(
       window,
-      rows[0].row,
+      rows[0],
       () =>
         gZenWorkspaces.activeWorkspace == containerWorkspace.uuid &&
         gBrowser.selectedTab == essential,
@@ -257,7 +267,7 @@ add_task(async function test_pending_essential_uses_session_state() {
     Assert.equal(rows[0].result.providerName, PROVIDER_NAME);
     await pickRow(
       window,
-      rows[0].row,
+      rows[0],
       () => gBrowser.selectedTab == essential,
       "The pending Essential should be selected"
     );
@@ -324,7 +334,7 @@ add_task(async function test_cross_window_switch_and_private_isolation() {
     Assert.equal(rows[0].result.providerName, PROVIDER_NAME);
     await pickRow(
       window,
-      rows[0].row,
+      rows[0],
       () => otherWin.gBrowser.selectedTab == crossWindowEssential,
       "The Essential's owning window should select it"
     );

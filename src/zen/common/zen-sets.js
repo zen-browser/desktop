@@ -26,6 +26,12 @@ document.addEventListener(
           case "cmd_zenWorkspaceBackward":
             gZenWorkspaces.changeWorkspaceShortcut(-1);
             break;
+          case "cmd_zenTabHistoryBack":
+            void gZenTabHistory.goBack(window);
+            break;
+          case "cmd_zenTabHistoryForward":
+            void gZenTabHistory.goForward(window);
+            break;
           case "cmd_zenSplitViewGrid":
             gZenViewSplitter.toggleShortcut("grid");
             break;

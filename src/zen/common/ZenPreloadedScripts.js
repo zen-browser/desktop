@@ -8,6 +8,7 @@
   ChromeUtils.defineESModuleGetters(this, {
     gZenSpaceRoutingManager:
       "resource:///modules/zen/spacerouting/ZenSpaceRoutingManager.sys.mjs",
+    gZenTabHistory: "resource:///modules/ZenTabHistory.sys.mjs",
   });
 
   Services.scriptloader.loadSubScript("chrome://browser/content/zen-components/ZenSpaceBookmarksStorage.js", this);

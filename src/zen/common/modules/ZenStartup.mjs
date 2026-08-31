@@ -55,6 +55,7 @@ class ZenStartup {
       document.getElementById("browser").prepend(deckTemplate);
 
       gZenWorkspaces.init().then(() => {
+        gZenTabHistory.registerWindow(window);
         gZenUIManager.init();
         this.#initUIComponents();
         this.#checkForWelcomePage();

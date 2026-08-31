@@ -1,17 +1,20 @@
 diff --git a/browser/components/urlbar/content/UrlbarView.mjs b/browser/components/urlbar/content/UrlbarView.mjs
-index e465806c4ae4fc372d9aa2b71aa7f0e74c65d026..c0b3781901298bedee2736819a93edbf545507a7 100644
+index e465806c4ae4fc372d9aa2b71aa7f0e74c65d026..2d9e13efa1c87190926a1b3eeb2be4b56b480f38 100644
 --- a/browser/components/urlbar/content/UrlbarView.mjs
 +++ b/browser/components/urlbar/content/UrlbarView.mjs
-@@ -803,7 +803,7 @@ export class UrlbarView {
+@@ -803,7 +803,10 @@ export class UrlbarView {
        !this.input.value ||
        this.input.getAttribute("pageproxystate") == "valid"
      ) {
 -      if (!this.isOpen && ["mousedown", "command"].includes(event.type)) {
-+      if (!this.isOpen && ["mousedown", "click", "command"].includes(event.type)) {
++      if (
++        !this.isOpen &&
++        ["mousedown", "click", "command"].includes(event.type)
++      ) {
          // Try to reuse the cached top-sites context. If it's not cached, then
          // there will be a gap of time between when the input is focused and
          // when the view opens that can be perceived as flicker.
-@@ -941,10 +941,6 @@ export class UrlbarView {
+@@ -941,10 +944,6 @@ export class UrlbarView {
      }
  
      // If search mode isn't active, close the view.
@@ -22,7 +25,12 @@ index e465806c4ae4fc372d9aa2b71aa7f0e74c65d026..c0b3781901298bedee2736819a93edbf
  
      // Search mode is active.  If the one-offs should be shown, make sure they
      // are enabled and show the view.
-@@ -3203,6 +3199,8 @@ export class UrlbarView {
+@@ -2307,3 +2306,3 @@ export class UrlbarView {
+     item.removeAttribute("feedback-acknowledgment");
+-
++    item.toggleAttribute("zen-essential", !!result.payload.zenEssentialTarget);
+     if (
+@@ -3203,6 +3202,8 @@ export class UrlbarView {
        if (row?.hasAttribute("row-selectable")) {
          row?.toggleAttribute("selected", true);
        }
@@ -31,7 +39,7 @@ index e465806c4ae4fc372d9aa2b71aa7f0e74c65d026..c0b3781901298bedee2736819a93edbf
        if (element != row) {
          row?.toggleAttribute("descendant-selected", true);
        }
-@@ -3715,7 +3713,7 @@ export class UrlbarView {
+@@ -3715,7 +3716,7 @@ export class UrlbarView {
    }
  
    #enableOrDisableRowWrap() {
@@ -40,7 +48,7 @@ index e465806c4ae4fc372d9aa2b71aa7f0e74c65d026..c0b3781901298bedee2736819a93edbf
      this.#rows.toggleAttribute("wrap", wrap);
      this.oneOffSearchButtons?.container.toggleAttribute("wrap", wrap);
    }
-@@ -4144,6 +4142,12 @@ export class UrlbarView {
+@@ -4144,6 +4145,12 @@ export class UrlbarView {
    }
  
    on_blur() {

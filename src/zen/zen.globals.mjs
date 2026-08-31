@@ -15,6 +15,7 @@ export default [
 
   "gZenWindowSync",
 
+  "gZenTabHistory",
   "gZenUIManager",
   "gZenVerticalTabsManager",
   "gZenStartup",

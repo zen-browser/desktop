@@ -169,6 +169,18 @@ const globalActionsTemplate = [
     icon: "chrome://browser/skin/zen-icons/reload.svg",
   },
   {
+    l10nId: "zen-action-tab-history-back",
+    command: "cmd_zenTabHistoryBack",
+    icon: "chrome://browser/skin/zen-icons/back.svg",
+    isAvailable: window => window.gZenTabHistory.canGoBack(window),
+  },
+  {
+    l10nId: "zen-action-tab-history-forward",
+    command: "cmd_zenTabHistoryForward",
+    icon: "chrome://browser/skin/zen-icons/forward.svg",
+    isAvailable: window => window.gZenTabHistory.canGoForward(window),
+  },
+  {
     l10nId: "zen-action-next-tab",
     command: "Browser:NextTab",
     icon: "chrome://browser/skin/zen-icons/forward.svg",

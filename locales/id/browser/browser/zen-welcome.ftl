@@ -4,23 +4,22 @@
 
 zen-welcome-title-line1 = Selamat datang di
 zen-welcome-title-line2 = internet yang lebih tenang
-zen-welcome-import-title = Permulaan baru, Bookmark tetap sama
-zen-welcome-import-description-1 = Bookmark, histori dan password anda adalah Jejak remah roti yang anda tinggalkan di internet--jangan tinggalkan begitu saja!
-zen-welcome-import-description-2 = Semudah mengambil dari peramban lain dan melanjutkan dari yang anda tinggalkan.
-zen-welcome-import-button = Impor sekarang
-zen-welcome-set-default-browser = Jadikan { -brand-short-name } sebagai peramban baku
-zen-welcome-dont-set-default-browser = Jangan jadikan { -brand-short-name } sebagai peramban baku
-zen-welcome-initial-essentials-title = Tab Penting Anda, Selalu dalam Jangkauan
-zen-welcome-initial-essentials-description-1 = Pastikan tab terpenting Anda mudah diakses dan selalu tersedia, berapa pun jumlah tab yang Anda buka.
-zen-welcome-initial-essentials-description-2 = Tab esensial selalu terlihat, di ruang kerja mana pun Anda berada.
-zen-welcome-workspace-colors-title = Ruang Kerja Anda, Warna Anda
-zen-welcome-workspace-colors-description = Atur peramban anda dengan memberikan warna tersendiri tiap ruang kerja.
-zen-welcome-start-browsing-title =
-    Semua Pengaturan selesai?<br/>
-    Mari mulai menjelajah!
+zen-welcome-back = Back
+zen-welcome-skip = Skip for now
+zen-welcome-import-title = Bring your stuff along.
+zen-welcome-import-description = Import your bookmarks, history and passwords from another browser and pick up right where you left off.
+zen-welcome-import-yes = <strong>YES</strong>, import from another browser.
+zen-welcome-import-no = <strong>NO</strong>, start fresh.
+zen-welcome-default-browser-title = Make { -brand-short-name } your default?
+zen-welcome-default-browser-description = Links from other apps will open in { -brand-short-name }. You can always change this later.
+zen-welcome-set-default-browser = <strong>YES</strong>, make { -brand-short-name } default.
+zen-welcome-dont-set-default-browser = <strong>NO</strong>, still exploring my options.
+zen-welcome-default-search-title = Pick your search engine.
+zen-welcome-default-search-description = Pilih mesin pencari default Anda. Anda selalu dapat mengubahnya nanti!
+zen-welcome-essentials-title = Choose the apps you use most.
+zen-welcome-essentials-description = Select your favorite apps to keep them handy in your sidebar.
+zen-welcome-workspace-colors-title = Your space, your colors.
+zen-welcome-workspace-colors-description = Personalize your browser by giving each space its own unique color identity.
+zen-welcome-start-browsing-title = All set? Let’s get rolling!
 zen-welcome-start-browsing-description-1 = Anda selesai melakukan pengaturan dan siap untuk mulai. Klik tombol di bawah ini untuk mulai menjelajah dengan { -brand-short-name }.
 zen-welcome-start-browsing = Ayo, mulai!
-zen-welcome-default-search-title = Mesin Pencari Default Anda
-zen-welcome-default-search-description = Pilih mesin pencari default Anda. Anda selalu dapat mengubahnya nanti!
-zen-welcome-skip-button = Lewati
-zen-welcome-finished = Anda berhasil mengatur Zen milik anda!

@@ -55,6 +55,8 @@ Thanks to all the partners of Zen for their support and contributions:
 
 This runbook builds the ARM64 app from source and replaces an existing DMG installation without replacing its profile. Zen stores profile data outside the app bundle at `~/Library/Application Support/zen/`.
 
+Run every command in this section from the repository root. Surfer resolves `surfer.json`, `src/`, and the generated `engine/` tree relative to the current directory. Running Surfer from `engine/` can make it look for a nonexistent `engine/src/`.
+
 #### First-time setup
 
 Install GNU Tar, then install the Node dependencies and initialize the Firefox source tree:
@@ -70,12 +72,28 @@ Run `npm run init` once per checkout. It downloads and initializes the Firefox s
 
 #### Build and package
 
+After switching branches, rebasing, or pulling changes that affect `src/` or generated preferences, refresh the engine:
+
+```sh
+npm run import
+```
+
+If English Zen localization changed, rerun `python3 scripts/copy_language_pack.py en-US` after the import.
+
 Configure the release brand and build mode:
 
 ```sh
 npm run surfer -- config brand release
 npm run surfer -- config buildMode release
 ```
+
+If the current object directory was previously built with another brand or build mode, clear its generated output before the release build:
+
+```sh
+./engine/mach clobber
+```
+
+This is required before the first release build after an unofficial or development build. A mixed object directory can leave incompatible generated WebIDL headers and fail with incomplete types such as `OwningArrayBufferViewOrArrayBuffer`. Clobbering removes build output, not source files, and the next build will be a full rebuild. It can be skipped when the object directory was already built with the same release configuration.
 
 Build with the local macOS settings:
 
@@ -84,7 +102,7 @@ ZEN_RELEASE=1 ZEN_GA_DISABLE_PGO=1 ZEN_DISABLE_LTO=1 npm run build
 npm run package
 ```
 
-For JavaScript-only changes after the first full build, `npm run build:ui` can be used instead of `npm run build`. Use the full build for native or core changes.
+For JavaScript-only changes after the first full build, `npm run build:ui` can be used instead of `npm run build`. Use the full build for native or core changes. Run a full build before browser-chrome tests because the UI build may not produce test-only programs such as `ssltunnel`.
 
 #### Choosing a build target
 
@@ -98,7 +116,7 @@ git diff --cached --name-only
 
 Use `npm run build:ui` only when the changes are limited to JavaScript in the UI layer. Use the full `npm run build` for changes to C++, Objective-C or Objective-C++, headers, Rust, Cargo files, build configuration, dependencies, Firefox versions, or any mixed or uncertain change set.
 
-If the Firefox source tree was recreated or is missing, run `npm run init` again. If patch files or generated preferences changed after initialization, rerun the relevant import step before building. If English Zen localization changed, rerun `python3 scripts/copy_language_pack.py en-US`. When in doubt, use the full build.
+If the Firefox source tree was recreated or is missing, run `npm run init` again. When in doubt, import again and use the full build.
 
 #### Compare the installed build with the source
 
@@ -130,64 +148,30 @@ If the installed SHA is not present in the local repository history, fetch the r
 
 #### Back up the profile and replace the app
 
-Quit every Zen window before copying the profile or replacing the app. Create a backup before each replacement:
+Install from the generated DMG with the guarded installer. Do not copy `engine/obj-aarch64-apple-darwin/dist/Zen.app`; that directory is an unpackaged build artifact with development links and an incomplete runtime resource layout.
 
 ```sh
-profile_backup="$HOME/Desktop/zen-backup-$(date +%Y-%m-%d-%H%M%S)"
-test ! -e "$profile_backup"
-ditto "$HOME/Library/Application Support/zen" "$profile_backup"
+npm run install:macos -- --check
 ```
 
-Install the app from the generated DMG. Do not copy `engine/obj-aarch64-apple-darwin/dist/Zen.app`; that directory is an unpackaged build artifact with development links and an incomplete runtime resource layout.
+The preflight checks that the DMG exists and verifies that Sine can survive the replacement. If a Zen profile contains Sine but the installed app is missing either bootloader file, the installer stops instead of silently disabling Sine.
+
+Quit every Zen window, then install:
 
 ```sh
-set -e
-version="$(node -p "require('./surfer.json').brands.release.release.displayVersion")"
-dmg="engine/obj-aarch64-apple-darwin/dist/zen-${version}.en-US.mac.dmg"
-mount_dir="$(mktemp -d /tmp/zen-dmg.XXXXXX)"
-staged="/Applications/Zen.app.new"
-previous="/Applications/Zen.app.backup-$(date +%Y-%m-%d-%H%M%S)"
-
-cleanup() {
-  hdiutil detach "$mount_dir" >/dev/null 2>&1 || true
-  rmdir "$mount_dir" 2>/dev/null || true
-}
-trap cleanup EXIT
-
-test -f "$dmg"
-test ! -e "$staged"
-test ! -e "$previous"
-hdiutil attach -nobrowse -readonly -mountpoint "$mount_dir" "$dmg"
-test -d "$mount_dir/Zen.app"
-unzip -p \
-  "$mount_dir/Zen.app/Contents/Resources/browser/omni.ja" \
-  "localization/en-US/browser/preferences/zen-preferences.ftl" \
-  >/dev/null
-ditto "$mount_dir/Zen.app" "$staged"
-
-sine_config="/Applications/Zen.app/Contents/Resources/config.js"
-sine_prefs="/Applications/Zen.app/Contents/Resources/defaults/pref/config-prefs.js"
-if [ -e "$sine_config" ] || [ -e "$sine_prefs" ]; then
-  test -f "$sine_config"
-  test -f "$sine_prefs"
-  mkdir -p "$staged/Contents/Resources/defaults/pref"
-  ditto "$sine_config" "$staged/Contents/Resources/config.js"
-  ditto "$sine_prefs" "$staged/Contents/Resources/defaults/pref/config-prefs.js"
-fi
-
-if [ -e /Applications/Zen.app ]; then
-  mv /Applications/Zen.app "$previous"
-fi
-mv "$staged" /Applications/Zen.app
-cleanup
-trap - EXIT
-open "/Applications/Zen.app"
+npm run install:macos
 ```
 
-The `unzip` check stops the replacement if the packaged app is missing Zen's English Settings localization. Sine stores its mods and their state in the Zen profile, but its startup loader uses `config.js` and `defaults/pref/config-prefs.js` inside the app bundle. The replacement script preserves both loader files when Sine is installed and aborts rather than copy a partial loader.
+The installer refuses to run while Zen is open. It validates the packaged localization and source commit, copies both Sine bootloader files into the staged app, backs up the profile to the Desktop, keeps the previous app under `/Applications`, and then relaunches Zen.
 
 After launch, check `about:profiles` if Zen appears to be a fresh install. Select the existing profile rather than deleting or copying over profile files. The local app is unsigned, so macOS may require opening it through Control-click > Open, and automatic updates may not work.
 
 #### Troubleshooting
 
-If initialization reports that GNU Tar is required, install it with `brew install gnu-tar` and rerun `npm run init`. If a release build reports that no adequate linker was found, use the `ZEN_RELEASE=1 ZEN_GA_DISABLE_PGO=1 ZEN_DISABLE_LTO=1` build command above. An `engine/.git/index.lock` warning can occur during Firefox source initialization; wait for any active Git process to finish before removing a stale lock or retrying.
+If initialization reports that GNU Tar is required, install it with `brew install gnu-tar` and rerun `npm run init`. If a release build reports that no adequate linker was found, use the `ZEN_RELEASE=1 ZEN_GA_DISABLE_PGO=1 ZEN_DISABLE_LTO=1` build command above.
+
+Incomplete-type errors in a generated binding header, especially `WebAuthenticationBinding.h`, usually mean the object directory was reused across build configurations. From the repository root, run `./engine/mach clobber`, then repeat the full release build. Do not run `surfer build` from inside `engine/`.
+
+A `FileExistsError` under `engine/obj-aarch64-apple-darwin/dist/xpi-stage/` also indicates stale generated output, often after an interrupted build. Run `./engine/mach clobber` and repeat the full build rather than removing files from the source tree.
+
+An `engine/.git/index.lock` warning can occur during Firefox source initialization. Wait for any active Git process to finish before removing a stale lock or retrying.

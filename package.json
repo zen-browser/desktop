@@ -18,6 +18,7 @@
     "download": "surfer download",
     "bootstrap": "surfer bootstrap",
     "package": "surfer package",
+    "install:macos": "bash scripts/install-local-macos.sh",
     "sync": "python3 scripts/update_ff.py",
     "sync:raw": "surfer update",
     "sync:rc": "python3 scripts/update_ff.py --rc",

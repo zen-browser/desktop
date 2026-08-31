@@ -812,7 +812,8 @@
 
 #toolbar-context-toggle-vertical-tabs,
 #toolbar-context-customize-sidebar,
-#sidebarRevampSeparator {
+#sidebarRevampSeparator,
+.fxa-menu-sign-in-promo-image {
   display: none !important;
 }
 

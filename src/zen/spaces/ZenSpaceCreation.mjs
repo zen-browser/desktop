@@ -10,6 +10,7 @@ ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
 
 class nsZenWorkspaceCreation extends MozXULElement {
   #wasInCollapsedMode = false;
+  #urlbarDimmed = false;
 
   promiseInitialized = new Promise(resolve => {
     this.resolveInitialized = resolve;
@@ -77,16 +78,56 @@ class nsZenWorkspaceCreation extends MozXULElement {
     return this.getAttribute("previous-workspace-id");
   }
 
-  get elementsToAnimate() {
-    return [
-      this.querySelector(".zen-workspace-creation-title"),
-      this.querySelector(".zen-workspace-creation-label").parentElement,
-      this.querySelector(".zen-workspace-creation-name-wrapper"),
-      this.querySelector(".zen-workspace-creation-profile-wrapper"),
-      this.querySelector(".zen-workspace-creation-edit-theme-button"),
-      this.createButton.parentNode,
-      this.cancelButton,
-    ];
+  get #spaceSwitchDuration() {
+    return (
+      Services.prefs.getIntPref("zen.workspaces.switch-animation-duration") /
+      1000
+    );
+  }
+
+  #dimUrlbar() {
+    if (this.#urlbarDimmed || !gZenVerticalTabsManager._hasSetSingleToolbar) {
+      return;
+    }
+    this.#urlbarDimmed = true;
+    const animation = gZenUIManager.motion.animate(
+      gURLBar,
+      {
+        opacity: [1, 0],
+      },
+      {
+        duration: this.#spaceSwitchDuration,
+        type: "spring",
+        bounce: 0,
+      }
+    );
+    if (gReduceMotion) {
+      animation.complete();
+    }
+  }
+
+  #restoreUrlbar() {
+    if (!this.#urlbarDimmed) {
+      return;
+    }
+    this.#urlbarDimmed = false;
+    const animation = gZenUIManager.motion.animate(
+      gURLBar,
+      {
+        opacity: [0, 1],
+      },
+      {
+        duration: this.#spaceSwitchDuration,
+        type: "spring",
+        bounce: 0,
+      }
+    );
+    if (gReduceMotion) {
+      animation.complete();
+    }
+    animation.then(() => {
+      gURLBar.style.removeProperty("opacity");
+    });
   }
 
   connectedCallback() {
@@ -109,10 +150,6 @@ class nsZenWorkspaceCreation extends MozXULElement {
       ".zen-workspace-creation-cancel-button"
     );
 
-    for (const element of this.elementsToAnimate) {
-      element.style.opacity = 0;
-    }
-
     this.#wasInCollapsedMode =
       document.documentElement.getAttribute("zen-sidebar-expanded") !== "true";
 
@@ -128,7 +165,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
       this.handleZenWorkspacesChange.bind(this);
 
     for (const element of this.parentElement.children) {
-      if (element !== this) {
+      if (element !== this && !element.hidden) {
         element.hidden = true;
         this.#hiddenElements.push(element);
       }
@@ -207,48 +244,15 @@ class nsZenWorkspaceCreation extends MozXULElement {
     document.getElementById("zen-sidebar-splitter").style.pointerEvents =
       "none";
 
-    gZenUIManager.motion
-      .animate(
-        [gBrowser.tabContainer, gURLBar],
-        {
-          opacity: [1, 0],
-        },
-        {
-          duration: 0.3,
-          type: "spring",
-          bounce: 0,
-        }
-      )
-      .then(() => {
-        gBrowser.tabContainer.style.visibility = "collapse";
-        if (gZenVerticalTabsManager._hasSetSingleToolbar) {
-          document.getElementById("nav-bar").style.visibility = "collapse";
-        }
-        this.style.visibility = "visible";
-        gZenCompactModeManager.getAndApplySidebarWidth({});
-        this.resolveInitialized();
-        let animation = gZenUIManager.motion.animate(
-          this.elementsToAnimate,
-          {
-            y: [20, 0],
-            opacity: [0, 1],
-            filter: ["blur(2px)", "blur(0)"],
-          },
-          {
-            duration: 0.6,
-            type: "spring",
-            bounce: 0,
-            delay: gZenUIManager.motion.stagger(0.05, { startDelay: 0.2 }),
-          }
-        );
-        if (gReduceMotion) {
-          animation.complete();
-        }
-        animation.then(() => {
-          this.inputName.focus();
-          gZenWorkspaces.workspaceElement(this.workspaceId).hidden = false;
-        });
-      });
+    gZenCompactModeManager.getAndApplySidebarWidth({});
+    this.#dimUrlbar();
+    this.resolveInitialized();
+  }
+
+  disconnectedCallback() {
+    if (gZenWorkspaces.creatingWorkspaceId === this.workspaceId) {
+      gZenWorkspaces.creatingWorkspaceId = null;
+    }
   }
 
   async onCreateButtonCommand() {
@@ -258,7 +262,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
     workspace.containerTabId = this.currentProfile;
     await gZenWorkspaces.saveWorkspace(workspace);
 
-    await this.#cleanup();
+    this.#cleanup();
 
     gZenWorkspaces._organizeWorkspaceStripLocations(workspace, true);
     gZenWorkspaces.updateTabsContainers();
@@ -268,6 +272,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
 
   async onCancelButtonCommand() {
     document.documentElement.removeAttribute("zen-creating-workspace");
+    this.#restoreUrlbar();
     await gZenWorkspaces.changeWorkspaceWithID(this.previousWorkspaceId);
   }
 
@@ -332,34 +337,18 @@ class nsZenWorkspaceCreation extends MozXULElement {
   }
 
   finishSetup() {
+    this.inputName.focus();
     gZenWorkspaces.addChangeListeners(this.handleZenWorkspacesChangeBind, {
       once: true,
     });
   }
 
   async handleZenWorkspacesChange() {
+    this.#cleanup();
     await gZenWorkspaces.removeWorkspace(this.workspaceId);
-    await this.#cleanup();
   }
 
-  async #cleanup() {
-    if (!gReduceMotion) {
-      await gZenUIManager.motion.animate(
-        this.elementsToAnimate.reverse(),
-        {
-          y: [0, 20],
-          opacity: [1, 0],
-          filter: ["blur(0)", "blur(2px)"],
-        },
-        {
-          duration: 0.4,
-          type: "spring",
-          bounce: 0,
-          delay: gZenUIManager.motion.stagger(0.05),
-        }
-      );
-    }
-
+  #cleanup() {
     document.getElementById("zen-sidebar-splitter").style.pointerEvents = "";
 
     gZenWorkspaces.removeChangeListeners(this.handleZenWorkspacesChangeBind);
@@ -377,41 +366,23 @@ class nsZenWorkspaceCreation extends MozXULElement {
 
     document.documentElement.removeAttribute("zen-creating-workspace");
 
-    gBrowser.tabContainer.style.visibility = "";
-    gBrowser.tabContainer.style.opacity = 0;
-    if (gZenVerticalTabsManager._hasSetSingleToolbar) {
-      document.getElementById("nav-bar").style.visibility = "";
-      gURLBar.style.opacity = 0;
-    }
-
     this.remove();
+    this.#restoreUrlbar();
 
-    const workspace = gZenWorkspaces.getActiveWorkspace();
-    gZenWorkspaces._organizeWorkspaceStripLocations(workspace);
-    gZenWorkspaces.updateTabsContainers();
-
-    await gZenUIManager.motion.animate(
-      [gBrowser.tabContainer, gURLBar],
-      {
-        opacity: [0, 1],
-      },
-      {
-        duration: 0.3,
-        type: "spring",
-        bounce: 0,
-      }
-    );
-
-    gBrowser.tabContainer.style.opacity = "";
-    if (gZenVerticalTabsManager._hasSetSingleToolbar) {
-      gURLBar.style.opacity = "";
-    }
-
-    for (const element of this.#hiddenElements) {
+    // Give the space back its own contents.
+    const revealedElements = this.#hiddenElements;
+    this.#hiddenElements = [];
+    for (const element of revealedElements) {
       element.hidden = false;
     }
 
-    this.#hiddenElements = [];
+    // Now that the form is gone the space owns its essentials again.
+    const workspace = gZenWorkspaces.getActiveWorkspace();
+    gZenWorkspaces._organizeWorkspaceStripLocations(workspace);
+    gZenWorkspaces.updateTabsContainers();
+    // The essentials slid away when we arrived, slide them back in.
+    gZenWorkspaces.restoreEssentialsPosition();
+
     gZenUIManager.updateTabsToolbar();
   }
 }

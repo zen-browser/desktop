@@ -543,6 +543,10 @@ window.gZenUIManager = {
       return false;
     }
 
+    if (document.documentElement.hasAttribute("zen-welcome-stage")) {
+      return false;
+    }
+
     const shouldOpenURLBar =
       overridePreferance ||
       (gZenVerticalTabsManager._canReplaceNewTab &&
@@ -1282,7 +1286,7 @@ window.gZenVerticalTabsManager = {
         if (!this._hasSetSingleToolbar) {
           height = AppConstants.platform == "macosx" ? 34 : 32;
         } else if (!gURLBar.hasAttribute("breakout-extend")) {
-          height = 36;
+          height = 38;
         }
         if (typeof height !== "undefined") {
           gURLBar.style.setProperty("--urlbar-height", `${height}px`);

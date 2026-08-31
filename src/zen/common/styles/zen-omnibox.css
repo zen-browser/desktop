@@ -136,6 +136,11 @@
 
   & #identity-box {
     margin-inline-end: 0 !important;
+
+    &[pageproxystate="invalid"] {
+      margin-inline-end: -4px !important;
+    }
+
     &.chromeUI:not([pageproxystate="invalid"]) #identity-icon-box {
       border-radius: 10px !important;
     }

@@ -300,64 +300,90 @@ class nsZenSpacesSyncModel {
 
   /**
    * Builds the ordered child id list for one parent (a space's pinned
-   * section or a folder). Tabs and splits are ordered by their position in
-   * the collected tab list; folders are spliced in next to their recorded
-   * previous sibling.
+   * section or a folder) from the collected tab list, which is in strip
+   * order.
    *
-   * @param {object} root0
-   * @param {Array<object>} root0.tabs
-   * @param {Array<object>} root0.folders
-   * @param {Set<string>} root0.splitIds
-   * @param {Map<string, ?string>} root0.splitParents
-   * @param {Map<string, ?string>} root0.splitWs
-   * @param {object} root0.scope
+   * @param {object} ctx - The projection context.
+   * @param {{space?: string, folder?: string}} scope
    */
-  #childSequence({ tabs, folders, splitIds, splitParents, splitWs, scope }) {
+  #childSequence(ctx, scope) {
     const seq = [];
-    const seenSplits = new Set();
-    for (const tab of tabs) {
+    const seen = new Set();
+    const push = id => {
+      if (!seen.has(id)) {
+        seen.add(id);
+        seq.push(id);
+      }
+    };
+    for (const tab of ctx.allTabs) {
       const groupId = tab.groupId || null;
-      if (groupId && splitIds.has(groupId)) {
+      if (!groupId) {
         if (
-          !seenSplits.has(groupId) &&
-          scope.matchSplit(
-            splitParents.get(groupId) ?? null,
-            splitWs.get(groupId) ?? null
-          )
+          scope.space &&
+          !tab.zenEssential &&
+          (tab.zenWorkspace || null) === scope.space &&
+          ctx.syncableTabIds.has(tab.zenSyncId)
         ) {
-          seenSplits.add(groupId);
-          seq.push(groupId);
+          push(tab.zenSyncId);
         }
         continue;
       }
-      if (scope.matchTab(tab, groupId)) {
-        seq.push(tab.zenSyncId);
-      }
-    }
-    for (const folder of folders) {
-      if (!scope.matchFolder(folder)) {
+      if (scope.folder && groupId === scope.folder) {
+        if (ctx.syncableTabIds.has(tab.zenSyncId)) {
+          push(tab.zenSyncId);
+        }
         continue;
       }
-      let index = seq.length;
-      const prev = folder.prevSiblingInfo;
-      if (!prev || prev.type === "start") {
-        // No stored sibling means the folder is the first child of its
-        // container (the section rebuild on startup places content before
-        // the fake start element, so the first item has no sibling at all).
-        index = 0;
-      } else if (prev.id) {
-        const at = seq.indexOf(prev.id);
-        if (at !== -1) {
-          index = at + 1;
-        } else if (prev.type === "tab") {
-          // An unsynced tab sibling (empty placeholders, live folder items)
-          // always sits at the start of its container.
-          index = 0;
+      if (ctx.splitIds.has(groupId) || ctx.splitParents.has(groupId)) {
+        const parent = ctx.splitParents.get(groupId) ?? null;
+        const isDirect = scope.folder ? parent === scope.folder : !parent;
+        if (isDirect) {
+          if (
+            ctx.splitIds.has(groupId) &&
+            (!scope.space || (ctx.splitWs.get(groupId) ?? null) === scope.space)
+          ) {
+            push(groupId);
+          }
+        } else if (parent) {
+          const child = this.#scopeChildFolder(ctx, scope, parent);
+          if (child) {
+            push(child);
+          }
+        }
+        continue;
+      }
+      if (ctx.folderById.has(groupId)) {
+        const child = this.#scopeChildFolder(ctx, scope, groupId);
+        if (child) {
+          push(child);
         }
       }
-      seq.splice(index, 0, folder.id);
     }
     return seq;
+  }
+
+  /**
+   * Walks a folder's parent chain up to the direct child of the given
+   * scope, or null when the chain leads somewhere else.
+   *
+   * @param {object} ctx - The projection context.
+   * @param {{space?: string, folder?: string}} scope
+   * @param {string} folderId
+   * @returns {?string}
+   */
+  #scopeChildFolder(ctx, scope, folderId) {
+    let current = ctx.folderById.get(folderId);
+    for (let depth = 0; current && depth < 10; depth++) {
+      const parentId = current.parentId || null;
+      if (scope.folder ? parentId === scope.folder : !parentId) {
+        if (scope.space && (current.workspaceId || null) !== scope.space) {
+          return null;
+        }
+        return current.id;
+      }
+      current = parentId ? ctx.folderById.get(parentId) : null;
+    }
+    return null;
   }
 
   /**
@@ -368,11 +394,13 @@ class nsZenSpacesSyncModel {
    * @param {object} sidebar
    */
   #projectionContext(sidebar) {
-    const tabs = (sidebar.tabs || []).filter(t => this.#isSyncableTab(t));
+    const allTabs = sidebar.tabs || [];
+    const tabs = allTabs.filter(t => this.#isSyncableTab(t));
     const folders = (sidebar.folders || []).filter(
       f => f?.id && !f.splitViewGroup
     );
     const folderIds = new Set(folders.map(f => f.id));
+    const folderById = new Map(folders.map(f => [f.id, f]));
     const allSplits = (sidebar.splitViewData || []).filter(g => g?.groupId);
     const splitParents = new Map();
     for (const entry of sidebar.folders || []) {
@@ -406,7 +434,18 @@ class nsZenSpacesSyncModel {
       }
       return folderIds.has(groupId) ? groupId : null;
     };
-    return { tabs, folders, splits, splitIds, splitParents, splitWs, folderOf };
+    return {
+      allTabs,
+      tabs,
+      folders,
+      folderById,
+      syncableTabIds,
+      splits,
+      splitIds,
+      splitParents,
+      splitWs,
+      folderOf,
+    };
   }
 
   /**
@@ -452,7 +491,7 @@ class nsZenSpacesSyncModel {
     const map = new Map();
     const pending = new Set();
     const ctx = this.#projectionContext(sidebar);
-    const { tabs, folders, splits, splitIds, splitParents, splitWs } = ctx;
+    const { tabs, folders, splits, splitParents, splitWs } = ctx;
 
     for (const identity of lazy.ContextualIdentityService.getPublicIdentities()) {
       if (!identity.name) {
@@ -491,21 +530,7 @@ class nsZenSpacesSyncModel {
           containerGuid: this.guidForContextId(space.containerTabId, {
             create: true,
           }),
-          children: this.#childSequence({
-            tabs,
-            folders,
-            splitIds,
-            splitParents,
-            splitWs,
-            scope: {
-              matchTab: (t, groupId) =>
-                !groupId &&
-                !t.zenEssential &&
-                (t.zenWorkspace || null) === uuid,
-              matchSplit: (parent, ws) => !parent && ws === uuid,
-              matchFolder: f => !f.parentId && (f.workspaceId || null) === uuid,
-            },
-          }),
+          children: this.#childSequence(ctx, { space: uuid }),
         },
       });
     }
@@ -533,18 +558,7 @@ class nsZenSpacesSyncModel {
           workspaceUuid: folder.workspaceId || null,
           parentFolderId: folder.parentId || null,
           live,
-          children: this.#childSequence({
-            tabs,
-            folders,
-            splitIds,
-            splitParents,
-            splitWs,
-            scope: {
-              matchTab: (t, groupId) => groupId === fid,
-              matchSplit: parent => parent === fid,
-              matchFolder: f => f.parentId === fid,
-            },
-          }),
+          children: this.#childSequence(ctx, { folder: fid }),
         },
       });
     }

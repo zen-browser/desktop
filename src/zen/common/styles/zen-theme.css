@@ -168,7 +168,7 @@
     --zen-toolbar-height-with-bookmarks: calc(var(--zen-toolbar-height) + 30px);
   }
 
-  --toolbarbutton-hover-background: var(--zen-toolbar-element-bg-hover) !important;
+  --toolbarbutton-background-color-hover: var(--zen-toolbar-element-bg-hover) !important;
   --zen-toolbar-button-size: 16px;
   @media (-moz-platform: macos) {
     --zen-toolbar-button-size: 17px;
@@ -181,7 +181,7 @@
     * background on the native theme. */
   --toolbar-background-color: light-dark(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.15));
 
-  --toolbarbutton-active-background: color-mix(
+  --toolbarbutton-background-color-active: color-mix(
     in srgb,
     var(--zen-branding-bg-reverse) 7%,
     transparent 93%
@@ -191,9 +191,9 @@
   --toolbox-textcolor-inactive: var(--toolbox-textcolor) !important;
 
   /* Other colors */
-  --urlbar-box-active-bgcolor: var(--toolbarbutton-hover-background) !important;
+  --urlbar-box-active-bgcolor: var(--toolbarbutton-background-color-hover) !important;
   --zen-input-border-color: light-dark(rgb(204, 204, 204), rgb(66, 65, 77));
-  --urlbar-box-hover-bgcolor: var(--toolbarbutton-hover-background) !important;
+  --urlbar-box-hover-bgcolor: var(--toolbarbutton-background-color-hover) !important;
   --input-text-background-color: light-dark(rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.2)) !important;
   --toolbar-field-focus-background-color: light-dark(
     rgba(255, 255, 255, 0.25),
@@ -267,7 +267,7 @@
   --zen-active-tab-scale: 0.985;
 
   /* Define tab hover background color */
-  --tab-background-color-hover: var(--toolbarbutton-hover-background);
+  --tab-background-color-hover: var(--toolbarbutton-background-color-hover);
 
   /* Sidebar Notifications */
   --zen-sidebar-notification-bg: color-mix(

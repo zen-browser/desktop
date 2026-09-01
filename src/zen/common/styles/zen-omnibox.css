@@ -18,7 +18,7 @@
 
 .urlbar {
   --urlbarview-separator-color: light-dark(hsl(0, 0%, 80%), hsl(0, 0%, 20%));
-  --urlbarview-background-color-hover: var(--toolbarbutton-hover-background);
+  --urlbarview-background-color-hover: var(--toolbarbutton-background-color-hover);
   border-radius: calc(var(--toolbarbutton-border-radius) - 2px);
   --urlbarView-results-padding: 10px !important;
   --urlbar-container-height: 48px !important;
@@ -351,7 +351,7 @@
       padding: 4px !important;
 
       &:hover {
-        background: var(--toolbarbutton-hover-background);
+        background: var(--toolbarbutton-background-color-hover);
         border-radius: var(--toolbarbutton-border-radius);
         overflow: visible;
       }
@@ -495,7 +495,7 @@
   /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
   #urlbar-container:has(&) {
     border-radius: var(--border-radius-medium);
-    background: var(--toolbarbutton-hover-background);
+    background: var(--toolbarbutton-background-color-hover);
     height: var(--urlbar-height) !important;
     margin-inline: 0.15rem !important;
     :root:not([zen-single-toolbar="true"]) & {

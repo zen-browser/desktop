@@ -143,16 +143,23 @@ class nsZenSpacesSyncApplier {
     } else {
       await win.gZenWorkspaces.promiseInitialized;
       this.#maybePlayFirstSyncAnimation(win);
-      const removals = this.#routeTombstones(win, deletions);
-      this.#deleteTabs(win, removals.tabs, fail);
-      this.#deleteSplits(win, removals.splits, fail);
-      await this.#applySpaces(win, incoming.spaces, fail);
-      await this.#applyFolders(win, incoming.folders, fail);
-      this.#applyTabs(win, incoming.tabs, fail);
-      this.#applySplits(win, incoming.splits, fail);
-      await this.#deleteFolders(win, removals.folders, fail);
-      await this.#deleteSpaces(win, removals.spaces, fail);
-      this.#applyOrdering(win, incoming, fail);
+      // A sync apply is a materialization just like session restore,
+      // so it must stay visually silent (gh-15089).
+      win.gZenFolders._sessionRestoring = true;
+      try {
+        const removals = this.#routeTombstones(win, deletions);
+        this.#deleteTabs(win, removals.tabs, fail);
+        this.#deleteSplits(win, removals.splits, fail);
+        await this.#applySpaces(win, incoming.spaces, fail);
+        await this.#applyFolders(win, incoming.folders, fail);
+        this.#applyTabs(win, incoming.tabs, fail);
+        this.#applySplits(win, incoming.splits, fail);
+        await this.#deleteFolders(win, removals.folders, fail);
+        await this.#deleteSpaces(win, removals.spaces, fail);
+        this.#applyOrdering(win, incoming, fail);
+      } finally {
+        delete win.gZenFolders._sessionRestoring;
+      }
       // Collect the session soon so the stored sidebar (and with it the
       // sync projections) reflects the applied state instead of re-uploading
       // the pre-apply one.
@@ -423,6 +430,7 @@ class nsZenSpacesSyncApplier {
             workspaceId:
               data.workspaceUuid || win.gZenWorkspaces.activeWorkspace,
             isLiveFolder: !!data.live,
+            collapsed: true,
           });
         } else if (data.name && folder.label !== data.name) {
           folder.label = data.name;

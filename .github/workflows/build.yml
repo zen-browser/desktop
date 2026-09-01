@@ -31,11 +31,6 @@ on:
         required: false
         type: "boolean"
         default: false
-      force-candidate:
-        description: "Force building against the Firefox release candidate"
-        required: false
-        type: "boolean"
-        default: false
   workflow_call:
     inputs:
       create_release:
@@ -63,9 +58,6 @@ on:
         required: false
         type: "boolean"
         default: false
-
-env:
-  SURFER_FORCE_CANDIDATE: ${{ !inputs.create_release && '1' || '' }}
 
 jobs:
   buildid:

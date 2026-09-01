@@ -61,9 +61,11 @@ zen-workspace-creation-profile = Perfil
     .tooltiptext = Os perfis são usados para separar cookies e dados de sites entre espaços.
 zen-workspace-creation-header = Criar um Espaço
 zen-workspace-creation-label = Os espaços são usados para organizar os seus separadores e sessões.
-zen-workspace-default-profile = Default
+zen-workspace-default-profile = Predefinido
 zen-workspaces-delete-workspace-title = Eliminar Espaço de Trabalho?
 zen-workspaces-delete-workspace-body = Tem certeza que deseja eliminar { $name }? Esta ação não pode ser desfeita.
+zen-workspaces-remote-delete-title = Excluir Espaço Sincronizado?
+zen-workspaces-remote-delete-body = { $name } foi excluído noutro dispositivo. Excluir aqui também? Mantê-lo restaurará nos seus outros dispositivos.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Separadores Fechados! Use <span>{ $shortcut }</span> para voltar atrás.

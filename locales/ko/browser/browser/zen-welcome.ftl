@@ -4,23 +4,22 @@
 
 zen-welcome-title-line1 = 환영합니다
 zen-welcome-title-line2 = 차분한 인터넷에 잘 오셨습니다
-zen-welcome-import-title = 새로운 시작, 여전한 북마크
-zen-welcome-import-description-1 = 당신의 북마크, 방문 기록, 비밀번호는 인터넷에 떨어진 빵 조각들의 길과 같습니다 - 뒤에 남겨두지 마세요!
-zen-welcome-import-description-2 = 간단하게 다른 브라우저에서 가져오고 마지막 지점에서 다시 시작할 수 있습니다..
-zen-welcome-import-button = 지금 불러오기
-zen-welcome-set-default-browser = { -brand-short-name }을 기본 브라우저로 설정하기
-zen-welcome-dont-set-default-browser = { -brand-short-name }을 기본 브라우저로 설정하지 않기
-zen-welcome-initial-essentials-title = 당신의 중요한 탭이 언제나 닿을 수 있도록
-zen-welcome-initial-essentials-description-1 = 당신의 중요한 탭들을 항상 쉽게 접근할 수 있도록 손 안에 두세요, 얼마나 많은지는 상관 없습니다.
-zen-welcome-initial-essentials-description-2 = 에센셜 탭은 워크스페이스에 관계없이 항상 볼 수 있습니다.
-zen-welcome-workspace-colors-title = 당신의 워크스페이스, 당신의 색깔
-zen-welcome-workspace-colors-description = 각 워크스페이스에 고유한 색깔을 입혀 당신의 브라우저를 꾸미세요.
-zen-welcome-start-browsing-title =
-    준비됐나요?<br/>
-    이제 시작합시다!
+zen-welcome-back = 뒤로 가기
+zen-welcome-skip = 건너뛰기
+zen-welcome-import-title = 당신의 것들을 가져오세요.
+zen-welcome-import-description = 북마크, 방문 기록, 비밀번호들을 다른 브라우저에서 가져오고, 떠난 곳에서 바로 다시 시작하세요.
+zen-welcome-import-yes = <strong>네</strong>, 다른 브라우저에서 불러오겠습니다.
+zen-welcome-import-no = <strong>아니오</strong>, 새로 시작하겠습니다.
+zen-welcome-default-browser-title = { -brand-short-name }를 기본으로 설정하시겠습니까?
+zen-welcome-default-browser-description = 다른 앱에서 링크를 열면 { -brand-short-name }에서 열리도록 합니다. 나중에 언제든 변경할 수 있습니다.
+zen-welcome-set-default-browser = <strong>네</strong>, { -brand-short-name }를 기본값으로 설정합니다.
+zen-welcome-dont-set-default-browser = <strong>아니오</strong>, 아직 고민하는 중입니다.
+zen-welcome-default-search-title = 검색 엔진을 선택하세요.
+zen-welcome-default-search-description = 기본 검색 엔진을 선택하세요. 나중에 언제든지 바꿀 수 있습니다!
+zen-welcome-essentials-title = 당신이 가장 많이 사용하는 앱을 고르세요.
+zen-welcome-essentials-description = 자주 사용하는 앱들을 선택해 사이드바에 편하게 올려놓으세요.
+zen-welcome-workspace-colors-title = 당신의 공간, 당신의 색.
+zen-welcome-workspace-colors-description = 각 스페이스에 고유한 색을 선택해 브라우저를 꾸미세요.
+zen-welcome-start-browsing-title = 준비됐나요? 이제 시작합시다!
 zen-welcome-start-browsing-description-1 = 브라우저가 준비되었습니다. 아래 버튼을 눌러 { -brand-short-name }과 브라우징을 시작하세요.
 zen-welcome-start-browsing = 시작하기!
-zen-welcome-default-search-title = 기본 검색 엔진
-zen-welcome-default-search-description = 기본 검색 엔진을 선택하세요. 나중에 언제든지 바꿀 수 있습니다!
-zen-welcome-skip-button = 건너뛰기
-zen-welcome-finished = Zen이 정상적으로 설정되었습니다!

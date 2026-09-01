@@ -21,15 +21,15 @@ tab-context-zen-remove-essential =
 tab-context-zen-edit-pinned-page = 
     .label =
         { $isEssential ->
-            [true] Edit Essential URL
-           *[false] Edit Pinned URL
+            [true] Editar URL Essencial
+           *[false] Editar URL Fixo
         }
     .accesskey = P
 tab-context-zen-replace-pinned-url-with-current = 
-    .label = Replace with Current URL
+    .label = Substituir por URL atual
     .accesskey = C
 tab-context-zen-edit-pinned-url = 
-    .label = Edit…
+    .label = Editar…
     .accesskey = E
 tab-context-zen-edit-title = 
     .label = Alterar etiqueta...
@@ -53,10 +53,10 @@ zen-general-cancel-label =
 zen-general-confirm = 
     .label = Confirmar
 zen-pinned-tab-replaced = O URL do separador fixado foi substituído pelo URL atual.
-zen-pinned-tab-url-edited = Pinned tab URL has been updated!
-zen-pinned-tab-url-invalid = That doesn't look like a valid URL.
-zen-pinned-tab-edit-url-title = Edit Pinned URL
-zen-pinned-tab-edit-url-label = Enter the URL this pinned tab should point to:
+zen-pinned-tab-url-edited = O URL do separador fixado foi atualizado!
+zen-pinned-tab-url-invalid = Isso não parece ser um URL válido.
+zen-pinned-tab-edit-url-title = Editar URL Fixado
+zen-pinned-tab-edit-url-label = Digite o URL que este separador fixo deve apontar para:
 zen-tabs-renamed = Nome do separador alterado com sucesso!
 zen-background-tab-opened-toast = Novo separador aberto em segundo plano!
 zen-workspace-renamed-toast = Nome do espaço de trabalho alterado com sucesso!
@@ -76,7 +76,7 @@ zen-icons-picker-emoji =
 zen-icons-picker-svg = 
     .label = Ícones
 zen-emojis-picker-search = 
-    .placeholder = Search emojis
+    .placeholder = Procurar emojis
 urlbar-search-mode-zen_actions = Ações
 zen-site-data-settings = Definições
 zen-generic-manage = Gerir
@@ -128,9 +128,9 @@ zen-sidebar-notification-updated-heading = Atualização Concluída!
 zen-sidebar-notification-updated-label = O que há de novo no { -brand-short-name }
 zen-sidebar-notification-updated-tooltip = 
     .title = Ver Notas de Lançamento
-zen-sidebar-notification-donate-label = Support { -brand-short-name }
+zen-sidebar-notification-donate-label = Apoie o { -brand-short-name }
 zen-sidebar-notification-donate-tooltip = 
-    .title = Donate to the project
+    .title = Doe para o projeto
 zen-sidebar-notification-restart-safe-mode-label = Falhou alguma coisa?
 zen-sidebar-notification-restart-safe-mode-tooltip = 
     .title = Reiniciar em Modo de Segurança
@@ -139,4 +139,4 @@ zen-window-sync-migration-dialog-message = Agora, o Zen sincroniza as janelas no
 zen-window-sync-migration-dialog-learn-more = Saber Mais
 zen-window-sync-migration-dialog-accept = Entendido
 zen-appmenu-new-blank-window = 
-    .label = Nova janela sem sincronização
+    .label = Nova Janela sem Sincronização

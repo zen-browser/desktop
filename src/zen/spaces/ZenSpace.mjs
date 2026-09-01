@@ -287,6 +287,12 @@ export class nsZenWorkspace extends MozXULElement {
 
     this.addEventListener("TabPinned", tabPinCallback);
     this.addEventListener("TabUnpinned", tabPinCallback);
+    this.addEventListener("TabGroupRemovedFromDOM", () => {
+      // Wait for the group to be removed from the DOM.
+      setTimeout(() => {
+        tabPinCallback();
+      });
+    });
     this.addEventListener("TabClose", event => {
       if (event.target.pinned) {
         tabPinCallback();

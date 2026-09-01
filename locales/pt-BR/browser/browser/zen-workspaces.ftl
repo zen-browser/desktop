@@ -64,6 +64,8 @@ zen-workspace-creation-label = Espaços são usados para organizar suas guias e 
 zen-workspace-default-profile = Padrão
 zen-workspaces-delete-workspace-title = Excluir Espaço?
 zen-workspaces-delete-workspace-body = Tem certeza que deseja excluir { $name }? Esta ação não pode ser desfeita.
+zen-workspaces-remote-delete-title = Excluir Espaço Sincronizado?
+zen-workspaces-remote-delete-body = { $name } foi excluído em outro dispositivo. Excluir aqui também? Mantê-lo restaurará em seus outros dispositivos.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Abas Fechadas! Use <span>{ $shortcut }</span> para desfazer.

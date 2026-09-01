@@ -1,0 +1,124 @@
+diff --git a/browser/installer/windows/nsis/shared.nsh b/browser/installer/windows/nsis/shared.nsh
+index b81c7ef59be0d25f67668215028008a451860df2..fa0ab8947e011289d25158cab17ff9388b5cab0d 100755
+--- a/browser/installer/windows/nsis/shared.nsh
++++ b/browser/installer/windows/nsis/shared.nsh
+@@ -873,50 +873,87 @@ FunctionEnd
+ !ifdef MOZ_MAINTENANCE_SERVICE
+ ; Adds maintenance service certificate keys for the install dir.
+ ; For the cert to work, it must also be signed by a trusted cert for the user.
++; Writes this application's allowed certificate values into _KEY, which must be
++; a maintenance service registry path such as the one returned by
++; ServicesHelper::PathToUniqueRegistryPath.
++!macro AddMaintCertKeyValues _KEY
++  ; PrefetchProcessName was originally used to experiment with deleting
++  ; Windows prefetch as a speed optimization.  It is no longer used though.
++  DeleteRegValue HKLM "${_KEY}" "prefetchProcessName"
++
++  ; Setting the Attempted value will ensure that a new Maintenance Service
++  ; install will never be attempted again after this from updates.  The value
++  ; is used only to see if updates should attempt new service installs.
++  WriteRegDWORD HKLM "Software\Mozilla\MaintenanceService" "Attempted" 1
++
++  ; More than one certificate can be specified in a different subfolder
++  ; for example: ${_KEY}\1, but each individual binary can be signed
++  ; with at most one certificate.  A fallback certificate can only be used
++  ; if the binary is replaced with a different certificate.
++  WriteRegStr HKLM "${_KEY}\0" "name" "${CERTIFICATE_NAME}"
++  WriteRegStr HKLM "${_KEY}\0" "issuer" "${CERTIFICATE_ISSUER}"
++  ; These values associate the allowed certificates for the previous
++  ;  installation, so that we can update from it cleanly using the
++  ;  old updater.exe (which will still have this signature).
++  WriteRegStr HKLM "${_KEY}\1" "name" "${CERTIFICATE_NAME_PREVIOUS}"
++  WriteRegStr HKLM "${_KEY}\1" "issuer" "${CERTIFICATE_ISSUER_PREVIOUS}"
++  ClearErrors
++!macroend
++
+ !macro AddMaintCertKeys
+   Push $R0
+   ; Allow main Mozilla cert information for updates
+   ; This call will push the needed key on the stack
+   ServicesHelper::PathToUniqueRegistryPath "$INSTDIR"
+   Pop $R0
++  Push $R1
++  Push $R2
++  Push $R3
++  ; We always use the 64bit registry for certs.
++  ${If} ${RunningX64}
++  ${OrIf} ${IsNativeARM64}
++    SetRegView 64
++  ${EndIf}
++
+   ${If} $R0 != ""
+-    ; More than one certificate can be specified in a different subfolder
+-    ; for example: $R0\1, but each individual binary can be signed
+-    ; with at most one certificate.  A fallback certificate can only be used
+-    ; if the binary is replaced with a different certificate.
+-    ; We always use the 64bit registry for certs.
+-    ${If} ${RunningX64}
+-    ${OrIf} ${IsNativeARM64}
+-      SetRegView 64
+-    ${EndIf}
++    !insertmacro AddMaintCertKeyValues "$R0"
++  ${Else}
++    ; ServicesHelper could not be loaded.  This happens when PostUpdate is run
++    ; by the updater, which launches it with an environment too minimal for
++    ; NSIS to load its plugins, leaving the unique registry path uncomputable.
++    ; Fall back to refreshing every key that already records one of our own
++    ; certificate names, so that any installation of this application is kept
++    ; current rather than only the first one found.  Keys belonging to other
++    ; applications record a different name and are left alone.
++    StrCpy $R1 0
++    ${Do}
++      EnumRegKey $R2 HKLM "Software\Mozilla\MaintenanceService" $R1
++      ${If} $R2 == ""
++        ${ExitDo}
++      ${EndIf}
++      ReadRegStr $R3 HKLM "Software\Mozilla\MaintenanceService\$R2\0" "name"
++      ${If} $R3 == "${CERTIFICATE_NAME}"
++      ${OrIf} $R3 == "${CERTIFICATE_NAME_PREVIOUS}"
++        StrCpy $R0 "Software\Mozilla\MaintenanceService\$R2"
++        !insertmacro AddMaintCertKeyValues "$R0"
++      ${EndIf}
++      IntOp $R1 $R1 + 1
++    ${Loop}
++    StrCpy $R0 ""
++  ${EndIf}
+ 
+-    ; PrefetchProcessName was originally used to experiment with deleting
+-    ; Windows prefetch as a speed optimization.  It is no longer used though.
+-    DeleteRegValue HKLM "$R0" "prefetchProcessName"
+-
+-    ; Setting the Attempted value will ensure that a new Maintenance Service
+-    ; install will never be attempted again after this from updates.  The value
+-    ; is used only to see if updates should attempt new service installs.
+-    WriteRegDWORD HKLM "Software\Mozilla\MaintenanceService" "Attempted" 1
+-
+-    ; These values associate the allowed certificates for the current
+-    ; installation.
+-    WriteRegStr HKLM "$R0\0" "name" "${CERTIFICATE_NAME}"
+-    WriteRegStr HKLM "$R0\0" "issuer" "${CERTIFICATE_ISSUER}"
+-    ; These values associate the allowed certificates for the previous
+-    ;  installation, so that we can update from it cleanly using the
+-    ;  old updater.exe (which will still have this signature).
+-    WriteRegStr HKLM "$R0\1" "name" "${CERTIFICATE_NAME_PREVIOUS}"
+-    WriteRegStr HKLM "$R0\1" "issuer" "${CERTIFICATE_ISSUER_PREVIOUS}"
+-    ${If} ${RunningX64}
+-    ${OrIf} ${IsNativeARM64}
+-      SetRegView lastused
+-    ${EndIf}
+-    ClearErrors
++  ${If} ${RunningX64}
++  ${OrIf} ${IsNativeARM64}
++    SetRegView lastused
+   ${EndIf}
++
++  Pop $R3
++  Pop $R2
++  Pop $R1
+   ; Restore the previously used value back
+   Pop $R0
+ !macroend
++
+ !define AddMaintCertKeys "!insertmacro AddMaintCertKeys"
+ !endif
+ 

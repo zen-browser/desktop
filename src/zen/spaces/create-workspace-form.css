@@ -6,9 +6,10 @@
 
 zen-workspace-creation {
   flex: 1;
-  max-width: calc(var(--zen-sidebar-width) - var(--zen-toolbox-padding));
-  padding: 3px;
-  visibility: collapse;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+  padding: 3px var(--zen-toolbox-padding);
 
   & .zen-workspace-creation {
     justify-content: center;
@@ -51,7 +52,7 @@ zen-workspace-creation {
 
       & .zen-workspace-creation-name-wrapper {
         padding: 9px 6px;
-        border-radius: 8px !important;
+        border-radius: calc(8px * var(--zen-squircle-value)) !important;
         margin: 0;
         background-color: var(--input-text-background-color);
         gap: 8px;
@@ -118,7 +119,7 @@ zen-workspace-creation {
 
       & .zen-workspace-creation-profile-wrapper {
         padding: 4px;
-        border-radius: 8px !important;
+        border-radius: calc(8px * var(--zen-squircle-value)) !important;
         margin: 0;
         background-color: var(--input-text-background-color);
         gap: 4px;
@@ -147,7 +148,7 @@ zen-workspace-creation {
       }
 
       & .zen-workspace-creation-edit-theme-button {
-        border-radius: 8px !important;
+        border-radius: calc(8px * var(--zen-squircle-value)) !important;
         margin: 0;
         background-color: var(--input-text-background-color);
         justify-content: center;

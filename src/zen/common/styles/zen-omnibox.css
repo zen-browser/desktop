@@ -60,6 +60,9 @@
 .urlbar-background {
   background: var(--zen-toolbar-element-bg) !important;
   border-radius: var(--border-radius-medium);
+  :root:not([zen-single-toolbar="true"]) & {
+    border-radius: calc(var(--border-radius-medium) * var(--zen-squircle-value));
+  }
   outline: none !important;
 
   #urlbar:not([breakout-extend]) & {
@@ -136,8 +139,13 @@
 
   & #identity-box {
     margin-inline-end: 0 !important;
+
+    :root[zen-has-empty-tab="true"] &[pageproxystate="invalid"]:not(.chromeUI) {
+      margin-inline-end: -4px !important;
+    }
+
     &.chromeUI:not([pageproxystate="invalid"]) #identity-icon-box {
-      border-radius: 10px !important;
+      border-radius: calc(10px * var(--zen-squircle-value)) !important;
     }
   }
 
@@ -166,12 +174,8 @@
 }
 
 :root:not([zen-single-toolbar="true"]):not([zen-has-empty-tab="true"]) #urlbar:not([breakout-extend]) .urlbar-input-container {
-  padding: 2px 3px;
+  padding: 2px 5px;
   gap: 2px;
-
-  & .urlbar-page-action {
-    height: 100%;
-  }
 
   & #zen-copy-url-button {
     order: -1;
@@ -291,7 +295,7 @@
 
   &,
   .urlbar-background {
-    border-radius: 12px !important;
+    border-radius: calc(12px * var(--zen-squircle-value)) !important;
   }
 
   &[breakout-extend][animate-searchmode="true"]::before {
@@ -406,7 +410,7 @@
 }
 
 #notification-popup-box {
-  border-radius: 10px !important;
+  border-radius: calc(10px * var(--zen-squircle-value)) !important;
 }
 
 /* Border radius on hover */
@@ -701,7 +705,7 @@
 
 :root:not([zen-single-toolbar="true"]) #urlbar[breakout-extend]:not([zen-floating-urlbar="true"]) {
   & .urlbar-background {
-    border-radius: 10px !important;
+    border-radius: calc(10px * var(--zen-squircle-value)) !important;
   }
 
   #urlbar-results {

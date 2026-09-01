@@ -103,7 +103,7 @@
   /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
   & #urlbar-container[breakout="true"]:has(#urlbar[zen-floating-urlbar="true"]) {
     --urlbar-container-height: 36px !important;
-    --urlbar-height: 36px !important;
+    --urlbar-height: 38px !important;
   }
 
   & #nav-bar {
@@ -284,8 +284,12 @@
 
   --focus-outline-color: transparent;
 
+  @media (-moz-platform: windows) {
+    font-size: 14px;
+  }
+
   @media (-moz-platform: macos) {
-    font-size: 1.25rem; /* Slightly larger font on macOS */
+    font-size: 1.25rem;
   }
 
   --tab-inner-inline-margin: 0;
@@ -558,7 +562,7 @@
   }
 
   & #zen-essentials {
-    --tab-min-height: 44px;
+    --tab-min-height: 46px;
   }
 
   &[zen-right-side="true"] {
@@ -1149,8 +1153,7 @@
   }
 }
 
-.tabbrowser-tab[zen-essential="true"],
-#zen-welcome-initial-essentials-browser-sidebar-essentials .tabbrowser-tab {
+.tabbrowser-tab[zen-essential="true"] {
   --toolbarbutton-padding-inner: 0;
   max-width: unset;
   width: 100% !important;

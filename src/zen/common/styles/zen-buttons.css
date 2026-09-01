@@ -27,7 +27,7 @@ dialog::part(dialog-button) {
 
   position: relative;
   border: none;
-  border-radius: 10px;
+  border-radius: calc(10px * var(--zen-squircle-value));
 }
 
 @media (-moz-platform: macos) {

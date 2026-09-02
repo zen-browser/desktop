@@ -11,7 +11,7 @@ tab-zen-split-tabs =
         }
     .accesskey = S
 zen-split-link = 
-    .label = Kljúfa tengil í nýjan flipa
+    .label = Kljúfa tengil yfir í nýjan flipa
     .accesskey = S
 zen-split-view-modifier-header = Klofið yfirlit
 zen-split-view-modifier-activate-reallocation = 

@@ -298,7 +298,6 @@ jobs:
     secrets: inherit
     with:
       use-sccache: ${{ inputs.use-sccache }}
-      force-candidate: ${{ !inputs.create_release }}
       build-version: ${{ needs.build-data.outputs.version }}
       generate-pgo: true
       profile-data-path-archive: zen-windows-profile-data-and-jarlog.zip
@@ -314,7 +313,6 @@ jobs:
     secrets: inherit
     needs: [windows-step-1, build-data]
     with:
-      force-candidate: ${{ !inputs.create_release }}
       build-version: ${{ needs.build-data.outputs.version }}
       profile-data-path-archive: zen.win64-pgo-stage-1.zip
       release-branch: ${{ inputs.update_branch }}
@@ -329,7 +327,6 @@ jobs:
     if: ${{ !failure() && !cancelled() }}
     needs: [build-data, windows-step-2, start-self-host, buildid]
     with:
-      force-candidate: ${{ !inputs.create_release }}
       build-version: ${{ needs.build-data.outputs.version }}
       generate-pgo: false
       disable-pgo: ${{ inputs.disable-pgo }}
@@ -345,7 +342,6 @@ jobs:
     secrets: inherit
     needs: [build-data, start-self-host, buildid]
     with:
-      force-candidate: ${{ !inputs.create_release }}
       build-version: ${{ needs.build-data.outputs.version }}
       release-branch: ${{ inputs.update_branch }}
       MOZ_BUILD_DATE: ${{needs.buildid.outputs.buildids}}
@@ -362,7 +358,6 @@ jobs:
     secrets: inherit
     with:
       use-sccache: ${{ inputs.use-sccache }}
-      force-candidate: ${{ !inputs.create_release }}
       build-version: ${{ needs.build-data.outputs.version }}
       generate-pgo: true
       release-branch: ${{ inputs.update_branch }}
@@ -377,7 +372,6 @@ jobs:
     secrets: inherit
     needs: [mac-step-1, build-data]
     with:
-      force-candidate: ${{ !inputs.create_release }}
       build-version: ${{ needs.build-data.outputs.version }}
       release-branch: ${{ inputs.update_branch }}
 
@@ -391,7 +385,6 @@ jobs:
     if: ${{ !failure() && !cancelled() }}
     needs: [build-data, mac-step-2, start-self-host, buildid]
     with:
-      force-candidate: ${{ !inputs.create_release }}
       build-version: ${{ needs.build-data.outputs.version }}
       generate-pgo: false
       disable-pgo: ${{ inputs.disable-pgo }}
@@ -407,7 +400,6 @@ jobs:
     secrets: inherit
     needs: [build-data, mac-step-3]
     with:
-      force-candidate: ${{ !inputs.create_release }}
       build-version: ${{ needs.build-data.outputs.version }}
       release-branch: ${{ inputs.update_branch }}
 

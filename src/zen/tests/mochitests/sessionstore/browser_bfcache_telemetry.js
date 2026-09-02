@@ -1,44 +1,26 @@
 const URL1 = "data:text/html;charset=utf-8,<body><p>Hello1</p></body>";
 const URL2 = "data:text/html;charset=utf-8,<body><p>Hello2</p></body>";
 
-async function getBFCacheComboTelemetry(probeInParent) {
-  let bfcacheCombo;
-  await TestUtils.waitForCondition(() => {
-    let histograms;
-    if (probeInParent) {
-      histograms = Services.telemetry.getSnapshotForHistograms(
-        "main",
-        false /* clear */
-      ).parent;
-    } else {
-      histograms = Services.telemetry.getSnapshotForHistograms(
-        "main",
-        false /* clear */
-      ).content;
-    }
-    bfcacheCombo = histograms.BFCACHE_COMBO;
-    return bfcacheCombo;
-  });
-  return bfcacheCombo;
+async function getBFCacheComboValue(label) {
+  await Services.fog.testFlushAllChildren();
+  return Glean.bfcache.combo[label].testGetValue();
 }
 
-async function test_bfcache_telemetry(probeInParent) {
-  Services.telemetry.getHistogramById("BFCACHE_COMBO").clear();
+add_task(async () => {
+  await Services.fog.testFlushAllChildren();
+  Services.fog.testResetFOG();
 
   let tab = await BrowserTestUtils.openNewForegroundTab(gBrowser, URL1);
 
   BrowserTestUtils.startLoadingURIString(tab.linkedBrowser, URL2);
   await BrowserTestUtils.browserLoaded(tab.linkedBrowser);
 
-  let bfcacheCombo = await getBFCacheComboTelemetry(probeInParent);
+  await TestUtils.waitForCondition(
+    async () => (await getBFCacheComboValue("BFCache_Success")) !== null,
+    "Waiting for bfcache.combo 'BFCache_Success' to be recorded"
+  );
 
-  is(bfcacheCombo.values[0], 1, "1 bfcache success");
+  is(await getBFCacheComboValue("BFCache_Success"), 1, "1 bfcache success");
 
   gBrowser.removeTab(tab);
-}
-
-add_task(async () => {
-  await test_bfcache_telemetry(
-    Services.prefs.getBoolPref("fission.bfcacheInParent")
-  );
 });

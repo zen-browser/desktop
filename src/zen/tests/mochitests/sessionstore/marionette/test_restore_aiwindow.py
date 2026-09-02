@@ -385,3 +385,64 @@ class TestSmartWindowDefaultManualRestore(
             tab_count,
             msg="Tab count should be preserved after restore",
         )
+
+
+class TestSmartWindowDefaultManualRestoreOverwritesNewTab(
+    SmartWindowDefaultMixin, SessionStoreTestCase
+):
+    """With Smart Window as default (startup.page=1), the startup window opens
+    showing the Smart new tab. Restoring a previously Smart session via
+    "Restore previous session" reuses that startup window (the types match),
+    and the restored tabs must *overwrite* the Smart new tab rather than being
+    appended alongside it."""
+
+    def test_smart_session_restored_overwrites_smart_new_tab(self):
+        self.marionette.execute_script(
+            """
+            Services.prefs.setBoolPref("browser.sessionstore.persist_closed_tabs_between_sessions", true);
+            """
+        )
+
+        self.wait_for_windows(
+            self.all_windows, "Not all requested windows have been opened"
+        )
+
+        # Make the saved session a Smart Window with the 3 content tabs from
+        # setUp (Tab 1/2/3), which are real pages, not the Smart new tab.
+        self.toggle_ai_window(True)
+        self.assertTrue(
+            self.is_ai_window(), msg="Window should be Smart before the restart"
+        )
+        tab_count = self.get_tab_count()
+        self.assertEqual(tab_count, 3, msg="Saved session should have 3 tabs")
+
+        self.marionette.quit()
+        self.marionette.start_session()
+        self.marionette.set_context("chrome")
+
+        # The new startup window opens Smart (Smart Window is the default) and
+        # shows a single Smart new tab.
+        self.assertTrue(
+            self.is_ai_window(),
+            msg="Startup window should open Smart when Smart Window is the default",
+        )
+
+        self.restore_last_session()
+
+        self.assertEqual(
+            len(self.marionette.chrome_window_handles),
+            1,
+            msg="Smart session should restore into the existing startup window",
+        )
+        self.assertTrue(
+            self.is_ai_window(),
+            msg="Restored window should stay Smart",
+        )
+
+        # Asserts if Smart new tab was overwritten, not appended to.
+        self.assertEqual(
+            self.get_tab_count(),
+            tab_count,
+            msg="Restored tabs should overwrite the Smart new tab, not be "
+            "appended alongside it",
+        )

@@ -295,7 +295,7 @@
 
   &,
   .urlbar-background {
-    border-radius: calc(12px * var(--zen-squircle-value)) !important;
+    border-radius: 12px !important;
   }
 
   &[breakout-extend][animate-searchmode="true"]::before {
@@ -639,7 +639,7 @@
 
 #urlbar-label-box,
 #urlbar-search-mode-indicator {
-  --urlbar-basic-component-size: 18px;
+  --urlbar-basic-component-size: auto;
   background-color: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%) !important;
   color: white;
   padding: 4px 8px;

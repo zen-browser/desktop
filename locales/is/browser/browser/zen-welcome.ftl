@@ -4,23 +4,22 @@
 
 zen-welcome-title-line1 = Velkomin í
 zen-welcome-title-line2 = rólegra internet
-zen-welcome-import-title = Ný byrjun, sömu bókamerkin
-zen-welcome-import-description-1 = Bókamerkin þín, vafurferillinn þinn og lykilorð eru eins og brauðmolaslóð út um internetið - ekki skilja þá eftir fyrir úlfana!
-zen-welcome-import-description-2 = Flyttu á einfaldan hátt inn gögn frá öðrum vafra og haltu áfram þar sem þú skildir við síðast.
-zen-welcome-import-button = Flytja inn núna
-zen-welcome-set-default-browser = Setja { -brand-short-name } sem sjálfgefna vafrann þinn
-zen-welcome-dont-set-default-browser = EKKI setja { -brand-short-name } sem sjálfgefna vafrann þinn
-zen-welcome-initial-essentials-title = Þörfustu fliparnir þinir, alltaf innan seilingar
-zen-welcome-initial-essentials-description-1 = Haltu mikilvægustu flipunum þínum við hendina, alveg sama hvað þeir eru margir.
-zen-welcome-initial-essentials-description-2 = Mikilvægt-fliparnir eru alltaf sjáanlegir, sama hvaða vinnusvæði þú ert á.
-zen-welcome-workspace-colors-title = Vinnusvæðin þín, litirnir þínir
+zen-welcome-back = Til baka
+zen-welcome-skip = Sleppa núna
+zen-welcome-import-title = Taktu dótið þitt með þér.
+zen-welcome-import-description = Þú getur flutt inn bókamerkin þín, lykilorð og feril úr öðrum vafra og haldið áfram þar sem frá var horfið.
+zen-welcome-import-yes = <strong>JÁ</strong>, flytja inn úr öðrum vafra.
+zen-welcome-import-no = <strong>NEI</strong>, byrja með hreint borð.
+zen-welcome-default-browser-title = Á að gera { -brand-short-name } að sjálfgefnum vafra?
+zen-welcome-default-browser-description = Tenglar úr öðrum forritum munu opnast í { -brand-short-name }. Þú getur alltaf breytt þessu síðar.
+zen-welcome-set-default-browser = <strong>JÁ</strong>, gera { -brand-short-name } sjálfgefinn.
+zen-welcome-dont-set-default-browser = <strong>NEI</strong>, er enn að skoða málið.
+zen-welcome-default-search-title = Veldu þér leitarvél.
+zen-welcome-default-search-description = Veldu þér sjálfgefna leitarvél. Þú getur alltaf breytt þessu síðar.
+zen-welcome-essentials-title = Veldu forritin sem þú notar mest.
+zen-welcome-essentials-description = Veldu eftirlætisforritin þín til að hafa við hendina í hliðarstikunni þinni.
+zen-welcome-workspace-colors-title = Þitt vinnusvæði, með þinum litum.
 zen-welcome-workspace-colors-description = Aðlagaðu vafrann að þínum þörfum með því að gefa hverju vinnusvæði sinn einstaka lit.
-zen-welcome-start-browsing-title =
-    Allt klárt?<br/>
-    Hefjumst handa!
+zen-welcome-start-browsing-title = Allt klárt? Hefjumst handa!
 zen-welcome-start-browsing-description-1 = Þú hefur stillt allt sem þarf og getur farið af stað. Smelltu á hnappinn hér fyrir neðan til að fara að vafra með { -brand-short-name }.
 zen-welcome-start-browsing = Dýfðu þér í djúpu laugina!
-zen-welcome-default-search-title = Sjálfgefna leitarvélin þín
-zen-welcome-default-search-description = Veldu þér sjálfgefna leitarvél. Þú getur alltaf breytt þessu síðar.
-zen-welcome-skip-button = Sleppa
-zen-welcome-finished = Zen-vafrinn þinn hefur verið uppsettur með tilhlýðilegum hætti!

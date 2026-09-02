@@ -41,7 +41,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
             </vbox>
             <vbox class="zen-workspace-creation-form">
               <hbox class="zen-workspace-creation-name-wrapper">
-                <toolbarbutton class="zen-workspace-creation-icon-label" />
+                <toolbarbutton class="zen-workspace-creation-icon-label zen-squircle-before" />
                 <html:input
                   class="zen-workspace-creation-name"
                   type="text"
@@ -76,6 +76,18 @@ class nsZenWorkspaceCreation extends MozXULElement {
 
   get previousWorkspaceId() {
     return this.getAttribute("previous-workspace-id");
+  }
+
+  get elementsToAnimate() {
+    return [
+      this.querySelector(".zen-workspace-creation-title"),
+      this.querySelector(".zen-workspace-creation-label").parentElement,
+      this.querySelector(".zen-workspace-creation-name-wrapper"),
+      this.querySelector(".zen-workspace-creation-profile-wrapper"),
+      this.querySelector(".zen-workspace-creation-edit-theme-button"),
+      this.createButton.parentNode,
+      this.cancelButton,
+    ];
   }
 
   get #spaceSwitchDuration() {
@@ -160,6 +172,10 @@ class nsZenWorkspaceCreation extends MozXULElement {
       .QueryInterface(Ci.nsIInterfaceRequestor)
       .getInterface(Ci.nsIAppWindow)
       .rollupAllPopups();
+
+    gURLBar.view.close();
+    gURLBar.handleRevert();
+    gURLBar.blur();
 
     this.handleZenWorkspacesChangeBind =
       this.handleZenWorkspacesChange.bind(this);
@@ -262,7 +278,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
     workspace.containerTabId = this.currentProfile;
     await gZenWorkspaces.saveWorkspace(workspace);
 
-    this.#cleanup();
+    await this.#cleanup();
 
     gZenWorkspaces._organizeWorkspaceStripLocations(workspace, true);
     gZenWorkspaces.updateTabsContainers();
@@ -344,11 +360,30 @@ class nsZenWorkspaceCreation extends MozXULElement {
   }
 
   async handleZenWorkspacesChange() {
-    this.#cleanup();
+    // The space we were living in has already slid away, no need to animate
+    // ourselves out of it.
+    await this.#cleanup({ animateOut: false });
     await gZenWorkspaces.removeWorkspace(this.workspaceId);
   }
 
-  #cleanup() {
+  async #cleanup({ animateOut = true } = {}) {
+    if (animateOut && !gReduceMotion && this.isConnected) {
+      await gZenUIManager.motion.animate(
+        this.elementsToAnimate.reverse(),
+        {
+          y: [0, 20],
+          opacity: [1, 0],
+          filter: ["blur(0)", "blur(2px)"],
+        },
+        {
+          duration: 0.3,
+          type: "spring",
+          bounce: 0,
+          delay: gZenUIManager.motion.stagger(0.03),
+        }
+      );
+    }
+
     document.getElementById("zen-sidebar-splitter").style.pointerEvents = "";
 
     gZenWorkspaces.removeChangeListeners(this.handleZenWorkspacesChangeBind);
@@ -376,12 +411,38 @@ class nsZenWorkspaceCreation extends MozXULElement {
       element.hidden = false;
     }
 
-    // Now that the form is gone the space owns its essentials again.
+    // Now that the form is gone the space owns its essentials again, so let
+    // it lay itself out before we fade everything back in.
     const workspace = gZenWorkspaces.getActiveWorkspace();
     gZenWorkspaces._organizeWorkspaceStripLocations(workspace);
     gZenWorkspaces.updateTabsContainers();
-    // The essentials slid away when we arrived, slide them back in.
-    gZenWorkspaces.restoreEssentialsPosition();
+    // The essentials were parked off screen while we were up, put them back.
+    gZenWorkspaces.resetEssentialsPosition();
+
+    if (animateOut && !gReduceMotion) {
+      const elementsToReveal = revealedElements.filter(
+        element => element?.isConnected
+      );
+      if (elementsToReveal.length) {
+        gZenUIManager.motion
+          .animate(
+            elementsToReveal,
+            {
+              opacity: [0, 1],
+            },
+            {
+              duration: 0.3,
+              type: "spring",
+              bounce: 0,
+            }
+          )
+          .then(() => {
+            for (const element of elementsToReveal) {
+              element.style.removeProperty("opacity");
+            }
+          });
+      }
+    }
 
     gZenUIManager.updateTabsToolbar();
   }

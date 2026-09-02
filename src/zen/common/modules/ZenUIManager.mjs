@@ -868,7 +868,6 @@ window.gZenUIManager = {
   },
 
   panelUIPosition(panel, anchor) {
-    void panel;
     // The alignment position of the panel is determined during the "popuppositioned" event
     // when the panel opens. The alignment positions help us determine in which orientation
     // the panel is anchored to the screen space.

@@ -103,7 +103,7 @@
   /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
   & #urlbar-container[breakout="true"]:has(#urlbar[zen-floating-urlbar="true"]) {
     --urlbar-container-height: 36px !important;
-    --urlbar-height: 38px !important;
+    --urlbar-height: 36px !important;
   }
 
   & #nav-bar {
@@ -114,6 +114,11 @@
 
   & #zen-sidebar-top-buttons {
     margin: calc(var(--zen-toolbox-padding) / 2) 0;
+
+    &[overflowing] .toolbarbutton-1 {
+      --toolbarbutton-padding-outer: 0px;
+    }
+
     :root[zen-right-side="true"]:not([zen-window-buttons-reversed="true"]) & {
       margin-top: 0;
     }
@@ -598,7 +603,7 @@
       }
 
       &:is([open], [checked]) {
-        background: var(--toolbarbutton-active-background) !important;
+        background: var(--toolbarbutton-background-color-hover) !important;
         & image,
         label {
           background: transparent !important;
@@ -606,7 +611,7 @@
       }
 
       &:hover {
-        background: var(--toolbarbutton-hover-background);
+        background: var(--toolbarbutton-background-color-hover);
         & image,
         label {
           background: transparent !important;

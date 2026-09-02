@@ -1939,36 +1939,13 @@ class nsZenWorkspaces {
   }
 
   /**
-   * Slide the essentials back from wherever a creation form parked them.
+   * Drop the offset a creation form parked the essentials at.
    */
-  restoreEssentialsPosition() {
-    const duration =
-      Services.prefs.getIntPref("zen.workspaces.switch-animation-duration") /
-      1000;
+  resetEssentialsPosition() {
     for (const container of document.querySelectorAll(
       "#zen-essentials .zen-essentials-container"
     )) {
-      const existingTransform = container.style.transform;
-      const parkedOffset = parseFloat(existingTransform.split("(")[1]) || 0;
-      if (!parkedOffset || gReduceMotion) {
-        container.style.removeProperty("transform");
-        continue;
-      }
-      gZenUIManager.motion
-        .animate(
-          container,
-          {
-            transform: [existingTransform, "translateX(0%)"],
-          },
-          {
-            type: "spring",
-            bounce: 0,
-            duration,
-          }
-        )
-        .then(() => {
-          container.style.removeProperty("transform");
-        });
+      container.style.removeProperty("transform");
     }
   }
 

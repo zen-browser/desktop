@@ -372,8 +372,11 @@ class nsZenSpacesSyncModel {
    * @returns {?string}
    */
   #scopeChildFolder(ctx, scope, folderId) {
+    // The seen set only guards against a corrupt parentId cycle.
+    const seen = new Set();
     let current = ctx.folderById.get(folderId);
-    for (let depth = 0; current && depth < 10; depth++) {
+    while (current && !seen.has(current.id)) {
+      seen.add(current.id);
       const parentId = current.parentId || null;
       if (scope.folder ? parentId === scope.folder : !parentId) {
         if (scope.space && (current.workspaceId || null) !== scope.space) {

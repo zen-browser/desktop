@@ -408,9 +408,12 @@ class nsZenSpacesSyncApplier {
     // Parents before children so nesting targets exist.
     const depths = new Map(folders.map(f => [f.key, f.data.parentFolderId]));
     const depthOf = key => {
+      // The seen set only guards against a corrupt parentId cycle.
+      const seen = new Set([key]);
       let depth = 0;
       let parent = depths.get(key);
-      while (parent && depths.has(parent) && depth < 10) {
+      while (parent && depths.has(parent) && !seen.has(parent)) {
+        seen.add(parent);
         depth++;
         parent = depths.get(parent);
       }

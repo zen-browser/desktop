@@ -16,6 +16,8 @@ support-files = [
   "browser_frame_history_c2.html",
   "browser_formdata_format_sample.html",
   "browser_sessionHistory_slow.sjs",
+  "browser_policy_container_sample.html",
+  "browser_policy_container_sample_frame.html",
   "browser_scrollPositions_sample.html",
   "browser_scrollPositions_sample2.html",
   "browser_scrollPositions_sample_frameset.html",
@@ -246,6 +248,8 @@ disabled="Disabled by import_external_tests.py"
 skip-if = [
   "ccov", # Bug 1625525
 ]
+
+["browser_policy_container_not_stored.js"]
 
 ["browser_privatetabs.js"]
 

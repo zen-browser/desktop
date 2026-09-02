@@ -189,7 +189,7 @@
       document.getElementById("zen-welcome-start").remove();
       const pages = document.getElementById("zen-welcome-pages");
       pages.style.display = "flex";
-      animate(pages, { opacity: [0, 1] }, { ...kFade, duration: 0.2 });
+      animate(pages, { opacity: [0, 1] }, { ...kFade, duration: 0.45 });
       this.backButton.addEventListener("click", () => this.back());
     }
 
@@ -501,7 +501,7 @@
               // 20 is the shadow width * 2
               anchor.style.height =
                 panelRect.height -
-                (AppConstants.platform == "macosx" ? -72 : 20) +
+                (AppConstants.platform == "macosx" ? -90 : 20) +
                 "px";
               anchor.style.width = panelRect.width - 20 + "px";
             },
@@ -687,7 +687,7 @@
       chars,
       { opacity: [0, 1], y: [50, 0] },
       {
-        delay: getMotion().stagger(0.035, { startDelay: 0.2 }),
+        delay: getMotion().stagger(0.035, { startDelay: 0.8 }),
         type: "spring",
         bounce: 0.3,
         visualDuration: 0.45,
@@ -700,7 +700,11 @@
         await animate(
           "#zen-welcome-title .zen-welcome-char, #zen-welcome-start-button",
           { opacity: [1, 0], y: [0, -14] },
-          { ...kSpring, delay: getMotion().stagger(0.012) }
+          {
+            duration: 0.3,
+            ease: "easeIn",
+            delay: getMotion().stagger(0.012),
+          }
         );
         new nsZenWelcomePages(getWelcomePages());
       },

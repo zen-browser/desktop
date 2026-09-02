@@ -1476,14 +1476,19 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
    * @returns {string} The primary color in hex format.
    */
   getAccentColorForUI(accentColor, isDarkMode) {
-    const [h, s, l] = this.rgbToHsl(...accentColor);
+    let [r, g, b] = accentColor;
     if (isDarkMode) {
-      return `rgb(${accentColor[0]}, ${accentColor[1]}, ${accentColor[2]})`;
+      return `rgb(${r}, ${g}, ${b})`;
     }
+    // gh-15142: Special case for grayscale colors
+    if (r == g && g == b) {
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+    const [h, s, l] = this.rgbToHsl(...accentColor);
     const saturation = Math.min(1, s + 0.3);
     const targetLightness = this.isDarkMode ? 0.62 : 0.42;
     const lightness = l * 0.4 + targetLightness * 0.6;
-    const [r, g, b] = this.hslToRgb(h / 360, saturation, lightness);
+    [r, g, b] = this.hslToRgb(h / 360, saturation, lightness);
     return `rgb(${r}, ${g}, ${b})`;
   }
 
@@ -1504,7 +1509,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       baseColor = this.blendColors(
         accentColor,
         baseColor.slice(0, 3),
-        this.canBeTransparent ? 15 : 5
+        this.canBeTransparent ? 25 : 5
       ).concat(opacity);
     }
     return baseColor;

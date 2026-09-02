@@ -18,14 +18,6 @@ on:
         description: "The branch to build"
         required: true
         type: string
-      force-candidate:
-        description: "Force building against the Firefox release candidate"
-        required: false
-        type: boolean
-        default: false
-
-env:
-  SURFER_FORCE_CANDIDATE: ${{ inputs.force-candidate && '1' || '' }}
 
 jobs:
   windows-profile-build:

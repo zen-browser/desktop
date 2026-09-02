@@ -3,13 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 - name: services.sync.engine.spaces
-  value: true
+  value: "@cond"
   condition: "@IS_TWILIGHT@"
-
-- name: services.sync.engine.spaces
-  value: false
-  locked: true
-  condition: "!@IS_TWILIGHT@"
 
 - name: zen.spaces-sync.debug
   value: false

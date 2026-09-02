@@ -3,10 +3,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/* Here, we contain all the theme related variables, for example theme
- * colors, border radius, etc.
- * We have `--zen-border-radius` and `--zen-primary-color` as variables.
- */
 
 :host(:is(.anonymous-content-host, notification-message)),
 :root {
@@ -168,7 +164,11 @@
     --zen-toolbar-height-with-bookmarks: calc(var(--zen-toolbar-height) + 30px);
   }
 
-  --toolbarbutton-background-color-hover: var(--zen-toolbar-element-bg-hover) !important;
+  --toolbarbutton-background-color-hover: color-mix(
+    in srgb,
+    var(--zen-branding-bg-reverse) 7%,
+    transparent
+  ) !important;
   --zen-toolbar-button-size: 16px;
   @media (-moz-platform: macos) {
     --zen-toolbar-button-size: 17px;
@@ -183,8 +183,8 @@
 
   --toolbarbutton-background-color-active: color-mix(
     in srgb,
-    var(--zen-branding-bg-reverse) 7%,
-    transparent 93%
+    var(--zen-branding-bg-reverse) 10%,
+    transparent
   ) !important;
 
   --toolbar-color: var(--toolbox-textcolor) !important;
@@ -221,10 +221,6 @@
 
   @media (-moz-platform: windows) {
     --zen-squircle-value: 2.1;
-  }
-
-  @media (-moz-platform: linux) {
-    --zen-squircle-value: 1.2;
   }
 
   --tab-icon-overlay-stroke: light-dark(white, black) !important;

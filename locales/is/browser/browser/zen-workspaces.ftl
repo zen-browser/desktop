@@ -64,6 +64,8 @@ zen-workspace-creation-label = Vinnusvæði eru notuð til að skipuleggja flipa
 zen-workspace-default-profile = Sjálfgefið
 zen-workspaces-delete-workspace-title = Eyða svæði?
 zen-workspaces-delete-workspace-body = Ertu viss um að þú viljir eyða { $name }? Þessi aðgerð er ekki afturkallanleg.
+zen-workspaces-remote-delete-title = Eyða samstilltu vinnusvæði?
+zen-workspaces-remote-delete-body = { $name } var eytt á öðru tæki. Á að eyða því hérna líka? Sé því haldið mun það endurheimtast á hinum tækjunum þínum.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Flipum lokað! Notaðu <span>{ $shortcut }</span> til að afturkalla.

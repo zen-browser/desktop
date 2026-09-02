@@ -16,8 +16,6 @@ support-files = [
   "browser_frame_history_c2.html",
   "browser_formdata_format_sample.html",
   "browser_sessionHistory_slow.sjs",
-  "browser_policy_container_sample.html",
-  "browser_policy_container_sample_frame.html",
   "browser_scrollPositions_sample.html",
   "browser_scrollPositions_sample2.html",
   "browser_scrollPositions_sample_frameset.html",
@@ -249,8 +247,6 @@ skip-if = [
   "ccov", # Bug 1625525
 ]
 
-["browser_policy_container_not_stored.js"]
-
 ["browser_privatetabs.js"]
 
 ["browser_purge_domaindata.js"]
@@ -355,6 +351,7 @@ skip-if = [
 
 ["browser_sizemodeBeforeMinimized.js"]
 skip-if = [
+  "os == 'linux' && os_version == '22.04' && arch == 'x86_64' && opt && nova", # Bug 2057856
   "os == 'win' && os_version == '11.26200' && asan", # Bug 2019745
 ]
 
@@ -436,6 +433,7 @@ disabled="Disabled by import_external_tests.py"
 skip-if = [
   "os == 'mac' && os_version == '15.30' && arch == 'aarch64'", # Bug 2023967
 ]
+
 ["browser_tab_label_during_restore.js"]
 disabled="Disabled by import_external_tests.py"
 https_first_disabled = true

@@ -4,9 +4,9 @@
 "use strict";
 
 add_task(async function test_multidomain_global_zoom() {
-  // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+  // eslint-disable-next-line sdl/no-insecure-url
   const TEST_PAGE_URL_1 = "http://example.com/";
-  // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+  // eslint-disable-next-line sdl/no-insecure-url
   const TEST_PAGE_URL_2 = "http://example.org/";
 
   // Prepare the test tabs
@@ -95,9 +95,9 @@ add_task(async function test_multidomain_global_zoom() {
 });
 
 add_task(async function test_site_specific_global_zoom() {
-  // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+  // eslint-disable-next-line sdl/no-insecure-url
   const TEST_PAGE_URL_1 = "http://example.net/";
-  // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+  // eslint-disable-next-line sdl/no-insecure-url
   const TEST_PAGE_URL_2 = "http://example.net/";
 
   // Prepare the test tabs

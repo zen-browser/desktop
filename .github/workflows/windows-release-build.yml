@@ -207,8 +207,10 @@ jobs:
           fi
           # Stored in build/windows/.windows-rs-version
           WINDOWS_RS_VERSION=$(cat build/windows/.windows-rs-version)
+          curl -fsSL "https://static.crates.io/crates/cargo-download/cargo-download-0.1.2.crate" | tar xz -C /tmp
+          (cd /tmp/cargo-download-0.1.2 && cargo generate-lockfile && cargo update tinyvec --precise 1.12.0)
+          RUSTFLAGS="--cap-lints=allow" cargo install --path /tmp/cargo-download-0.1.2 --locked
           cd engine/
-          cargo install cargo-download --locked
           cargo download -x windows=$WINDOWS_RS_VERSION
           export CARGO_INCREMENTAL=0
           echo "" >> ../configs/common/mozconfig

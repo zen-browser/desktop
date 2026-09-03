@@ -54,5 +54,9 @@
   {
     "type": "local",
     "path": "firefox/css_corner_shape_rendering.patch"
+  },
+  {
+    "type": "local",
+    "path": "firefox/override_cert_checks_temp.patch"
   }
 ]

@@ -4,7 +4,9 @@
 
 EXTRA_JS_MODULES.zen += [
     "providers/GithubLiveFolder.sys.mjs",
+    "providers/RestAPILiveFolder.sys.mjs",
     "providers/RssLiveFolder.sys.mjs",
+    "RestLiveFolderDialog.sys.mjs",
     "ZenLiveFolder.sys.mjs",
     "ZenLiveFoldersManager.sys.mjs",
 ]

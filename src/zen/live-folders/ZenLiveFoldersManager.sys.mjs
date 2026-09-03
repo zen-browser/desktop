@@ -27,6 +27,10 @@ const providers = [
     path: "resource:///modules/zen/GithubLiveFolder.sys.mjs",
     module: "nsGithubLiveFolderProvider",
   },
+  {
+    path: "resource:///modules/zen/RestAPILiveFolder.sys.mjs",
+    module: "nsRestAPILiveFolderProvider",
+  },
 ];
 
 class nsZenLiveFoldersManager {
@@ -34,9 +38,7 @@ class nsZenLiveFoldersManager {
   #saveFilename = "zen-live-folders.jsonlz4";
   #file = null;
 
-  #boundHandleEvent = null;
   stateRestored = Promise.withResolvers();
-
   constructor() {
     this.liveFolders = new Map();
     this.registry = new Map();
@@ -53,9 +55,7 @@ class nsZenLiveFoldersManager {
     }
 
     for (const provider of providers) {
-      const module = ChromeUtils.importESModule(provider.path, {
-        global: "current",
-      });
+      const module = ChromeUtils.importESModule(provider.path, { global: "current" });
       const ProviderClass = module[provider.module];
       this.registry.set(ProviderClass.type, ProviderClass);
     }
@@ -65,48 +65,10 @@ class nsZenLiveFoldersManager {
     this.#isInitialized = true;
   }
 
-  uninit() {
-    if (!this.#isInitialized) {
-      return;
-    }
-
-    Services.obs.removeObserver(this, "wake_notification");
-    if (this.#boundHandleEvent) {
-      lazy.ZenWindowSync.removeSyncHandler(this.#boundHandleEvent);
-      this.#boundHandleEvent = null;
-    }
-
-    for (const liveFolder of this.liveFolders.values()) {
-      liveFolder.stop();
-    }
-
-    this.registry.clear();
-    this.liveFolders.clear();
-    this.dismissedItems.clear();
-
-    this.#isInitialized = false;
-  }
-
   // Event Handling
   // --------------
   #initEventListeners() {
-    Services.obs.addObserver(this, "wake_notification");
-
-    this.#boundHandleEvent = this.handleEvent.bind(this);
-    lazy.ZenWindowSync.addSyncHandler(this.#boundHandleEvent);
-  }
-
-  observe(_subject, topic, _data) {
-    switch (topic) {
-      case "wake_notification": {
-        // Woke from sleep, re-schedule all fetch
-        for (const liveFolder of this.liveFolders.values()) {
-          liveFolder.stop();
-          liveFolder.start();
-        }
-        break;
-      }
-    }
+    lazy.ZenWindowSync.addSyncHandler(this.handleEvent.bind(this));
   }
 
   handleEvent(aEvent) {
@@ -131,11 +93,12 @@ class nsZenLiveFoldersManager {
     }
   }
 
-  #onCommand(event) {
+  async #onCommand(event) {
     switch (event.target.id) {
       case "cmd_zenNewLiveFolder": {
-        const target = event.sourceEvent.target;
-        switch (target.getAttribute("data-l10n-id")) {
+        const target = event.sourceEvent?.target;
+        const l10nId = target?.getAttribute("data-l10n-id");
+        switch (l10nId) {
           case "zen-live-folder-github-pull-requests": {
             this.createFolder("github:pull-requests");
             break;
@@ -148,6 +111,14 @@ class nsZenLiveFoldersManager {
             this.createFolder("rss");
             break;
           }
+          case "zen-live-folder-rest-custom": {
+            const { openRestLiveFolderDialog } = ChromeUtils.importESModule(
+              "resource:///modules/zen/RestLiveFolderDialog.sys.mjs",
+              { global: "current" }
+            );
+            await openRestLiveFolderDialog(this.window);
+            break;
+          }
         }
       }
     }
@@ -156,8 +127,7 @@ class nsZenLiveFoldersManager {
   #onTabDismiss(event) {
     const itemIdAttr = "zen-live-folder-item-id";
     const itemId =
-      event.target.getAttribute(itemIdAttr) ||
-      event.detail?.getAttribute?.(itemIdAttr);
+      event.target.getAttribute(itemIdAttr) || event.detail?.getAttribute?.(itemIdAttr);
 
     if (itemId) {
       if (event.type === "TabUngrouped") {
@@ -182,9 +152,7 @@ class nsZenLiveFoldersManager {
 
   #onActionButtonClick(event) {
     const liveFolderId = event.target.getAttribute("live-folder-action");
-    this.getFolder(liveFolderId)?.onActionButtonClick(
-      event.target.getAttribute("data-l10n-id")
-    );
+    this.getFolder(liveFolderId)?.onActionButtonClick(event.target.getAttribute("data-l10n-id"));
   }
 
   #onTabGroupRemoved(event) {
@@ -312,6 +280,95 @@ class nsZenLiveFoldersManager {
     return folder.id;
   }
 
+  async createFolderFromRestConfig(win, config) {
+    const { url, params, mapping, label, icon, headers, maxItems } = config;
+    if (!url || !mapping) {
+      return -1;
+    }
+
+    const ProviderClass = this.registry.get("rest");
+    if (!ProviderClass) {
+      return -1;
+    }
+
+    const metadataLabel = label || url || "REST API";
+    const paramsObj =
+      params && typeof params === "object" && !Array.isArray(params) ? params : {};
+    const displayIcon = await ProviderClass.resolveFolderIcon(icon, url, paramsObj);
+
+    const folder = win.gZenFolders.createFolder([], {
+      label: metadataLabel,
+      isLiveFolder: true,
+      collapsed: true,
+    });
+
+    this.#maybeShowPromotion(folder, displayIcon);
+    win.gZenFolders.setFolderUserIcon(folder, displayIcon);
+
+    const stateConfig = {
+      url,
+      params:
+        params && typeof params === "object" && !Array.isArray(params) ? params : {},
+      mapping,
+      label: metadataLabel,
+      icon: icon || "",
+      headers: headers && typeof headers === "object" ? headers : {},
+    };
+    if (maxItems != null && Number.isFinite(maxItems)) {
+      stateConfig.maxItems = maxItems;
+    }
+    const state = this.#applyDefaultStateValues(stateConfig);
+
+    const liveFolder = new ProviderClass({
+      state,
+      manager: this,
+      id: folder.id,
+    });
+
+    this.liveFolders.set(folder.id, liveFolder);
+    liveFolder.start();
+    this.saveState();
+
+    return folder.id;
+  }
+
+  async updateFolderFromRestConfig(liveFolderId, config) {
+    const liveFolder = this.liveFolders.get(liveFolderId);
+    if (!liveFolder || liveFolder.constructor.type !== "rest") {
+      return false;
+    }
+
+    const { url, params, mapping, label, icon, headers, maxItems } = config;
+    if (!url || !mapping) {
+      return false;
+    }
+
+    liveFolder.state.url = url;
+    liveFolder.state.params =
+      params && typeof params === "object" && !Array.isArray(params) ? params : {};
+    liveFolder.state.mapping = mapping;
+    liveFolder.state.label = label || url || "REST API";
+    liveFolder.state.icon = icon ?? "";
+    liveFolder.state.headers =
+      headers && typeof headers === "object" && !Array.isArray(headers) ? headers : {};
+    if (maxItems != null && Number.isFinite(maxItems)) {
+      liveFolder.state.maxItems = maxItems;
+    }
+
+    const folder = this.getFolderForLiveFolder(liveFolder);
+    if (folder) {
+      const metadata = await liveFolder.getMetadata();
+      folder.label = metadata.label;
+      if (metadata.icon) {
+        this.window.gZenFolders.setFolderUserIcon(folder, metadata.icon);
+      }
+    }
+
+    liveFolder.refresh();
+    this.saveState();
+    return true;
+  }
+
   #maybeShowPromotion(folder, icon) {
     let labelElement = folder.labelElement;
     labelElement.setAttribute("live-folder-animation", "true");
@@ -402,9 +459,7 @@ class nsZenLiveFoldersManager {
 
     // Remove the dismissed items associated with the folder from the set
     this.dismissedItems = new Set(
-      Array.from(this.dismissedItems).filter(
-        itemId => !itemId.startsWith(prefix)
-      )
+      Array.from(this.dismissedItems).filter((itemId) => !itemId.startsWith(prefix))
     );
 
     if (deleteFolder) {
@@ -438,9 +493,7 @@ class nsZenLiveFoldersManager {
     }
 
     // itemid -> id:itemid
-    const itemIds = new Set(
-      items.map(item => this.#makeCompositeId(liveFolder.id, item.id))
-    );
+    const itemIds = new Set(items.map((item) => this.#makeCompositeId(liveFolder.id, item.id)));
 
     const outdatedTabs = [];
     const existingItemIds = new Set();
@@ -464,18 +517,10 @@ class nsZenLiveFoldersManager {
       animate: !folder.collapsed,
     });
 
-    // Remove the dismissed items that are no longer in the given list.
-    // Only do this when the fetch returned results — an empty list may
-    // indicate a transient failure (e.g. auth expired, HTML changed)
-    // and we must not wipe all dismissals in that case.
-    if (itemIds.size > 0) {
-      for (const dismissedItemId of this.dismissedItems) {
-        if (
-          dismissedItemId.startsWith(`${liveFolder.id}:`) &&
-          !itemIds.has(dismissedItemId)
-        ) {
-          this.dismissedItems.delete(dismissedItemId);
-        }
+    // Remove the dismissed items that are no longer in the given list
+    for (const dismissedItemId of this.dismissedItems) {
+      if (dismissedItemId.startsWith(`${liveFolder.id}:`) && !itemIds.has(dismissedItemId)) {
+        this.dismissedItems.delete(dismissedItemId);
       }
     }
 
@@ -489,14 +534,11 @@ class nsZenLiveFoldersManager {
 
     // Only add the items that are not already in the folder and was not dismissed by the user
     const newItems = items
-      .filter(item => {
+      .filter((item) => {
         const compositeId = this.#makeCompositeId(liveFolder.id, item.id);
-        return (
-          !existingItemIds.has(compositeId) &&
-          !this.dismissedItems.has(compositeId)
-        );
+        return !existingItemIds.has(compositeId) && !this.dismissedItems.has(compositeId);
       })
-      .map(item => {
+      .map((item) => {
         const tab = this.window.gBrowser.addTrustedTab(item.url, {
           createLazyBrowser: true,
           inBackground: true,
@@ -507,9 +549,6 @@ class nsZenLiveFoldersManager {
         });
         // createLazyBrowser can't be pinned by default
         this.window.gBrowser.pinTab(tab);
-        if (userContextId) {
-          tab.setAttribute("zenDefaultUserContextId", "true");
-        }
         if (item.icon) {
           this.window.gBrowser.setIcon(tab, item.icon);
           if (tab.linkedBrowser) {
@@ -518,10 +557,7 @@ class nsZenLiveFoldersManager {
             });
           }
         }
-        tab.setAttribute(
-          "zen-live-folder-item-id",
-          this.#makeCompositeId(liveFolder.id, item.id)
-        );
+        tab.setAttribute("zen-live-folder-item-id", this.#makeCompositeId(liveFolder.id, item.id));
         if (item.subtitle) {
           tab.setAttribute("zen-show-sublabel", item.subtitle);
           const tabLabel = tab.querySelector(".zen-tab-sublabel");
@@ -574,10 +610,7 @@ class nsZenLiveFoldersManager {
     if (!this.window) {
       return null;
     }
-    const folder = lazy.ZenWindowSync.getItemFromWindow(
-      this.window,
-      liveFolder.id
-    );
+    const folder = lazy.ZenWindowSync.getItemFromWindow(this.window, liveFolder.id);
     if (folder?.isZenFolder) {
       return folder;
     }
@@ -622,7 +655,7 @@ class nsZenLiveFoldersManager {
     let data = [];
     for (let [id, liveFolder] of this.liveFolders) {
       const prefix = `${id}:`;
-      const dismissedItems = Array.from(this.dismissedItems).filter(itemId =>
+      const dismissedItems = Array.from(this.dismissedItems).filter((itemId) =>
         itemId.startsWith(prefix)
       );
 
@@ -675,7 +708,7 @@ class nsZenLiveFoldersManager {
         continue;
       }
 
-      const folder = folders.find(x => x.id === entry.id);
+      const folder = folders.find((x) => x.id === entry.id);
       if (!folder) {
         // No point restore if the live folder can't find its folder
         continue;
@@ -692,7 +725,7 @@ class nsZenLiveFoldersManager {
       liveFolder.tabsState = entry.tabsState || [];
       liveFolder.state.lastErrorId = entry.data.state.lastErrorId;
       if (entry.dismissedItems && Array.isArray(entry.dismissedItems)) {
-        entry.dismissedItems.forEach(id => this.dismissedItems.add(id));
+        entry.dismissedItems.forEach((id) => this.dismissedItems.add(id));
       }
 
       liveFolder.start();

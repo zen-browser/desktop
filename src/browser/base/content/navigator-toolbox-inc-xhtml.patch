@@ -19,7 +19,7 @@ index dd2f391096968564086911c532f696dc7ffb8ae1..c3e809a543397ab360fb83b3f61ef52d
    </toolbar>
  
 +<hbox id="titlebar">
-+  <html:div id="zen-toolbar-background" class="zen-toolbar-background zen-browser-generic-background">
++  <html:div id="zen-toolbar-background" class="zen-toolbar-background zen-squircle-before zen-squircle-after zen-browser-generic-background">
 +    <html:div class="zen-browser-grain" />
 +  </html:div>
 +  <box id="zen-overflow-extensions-list" skipintoolbarset="true" contextmenu="toolbar-context-menu" />

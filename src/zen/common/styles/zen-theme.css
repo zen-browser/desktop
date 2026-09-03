@@ -3,10 +3,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/* Here, we contain all the theme related variables, for example theme
- * colors, border radius, etc.
- * We have `--zen-border-radius` and `--zen-primary-color` as variables.
- */
 
 :host(:is(.anonymous-content-host, notification-message)),
 :root {
@@ -168,7 +164,11 @@
     --zen-toolbar-height-with-bookmarks: calc(var(--zen-toolbar-height) + 30px);
   }
 
-  --toolbarbutton-hover-background: var(--zen-toolbar-element-bg-hover) !important;
+  --toolbarbutton-background-color-hover: color-mix(
+    in srgb,
+    var(--zen-branding-bg-reverse) 7%,
+    transparent
+  ) !important;
   --zen-toolbar-button-size: 16px;
   @media (-moz-platform: macos) {
     --zen-toolbar-button-size: 17px;
@@ -181,19 +181,19 @@
     * background on the native theme. */
   --toolbar-background-color: light-dark(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.15));
 
-  --toolbarbutton-active-background: color-mix(
+  --toolbarbutton-background-color-active: color-mix(
     in srgb,
-    var(--zen-branding-bg-reverse) 7%,
-    transparent 93%
+    var(--zen-branding-bg-reverse) 10%,
+    transparent
   ) !important;
 
   --toolbar-color: var(--toolbox-textcolor) !important;
   --toolbox-textcolor-inactive: var(--toolbox-textcolor) !important;
 
   /* Other colors */
-  --urlbar-box-active-bgcolor: var(--toolbarbutton-hover-background) !important;
+  --urlbar-box-active-bgcolor: var(--toolbarbutton-background-color-hover) !important;
   --zen-input-border-color: light-dark(rgb(204, 204, 204), rgb(66, 65, 77));
-  --urlbar-box-hover-bgcolor: var(--toolbarbutton-hover-background) !important;
+  --urlbar-box-hover-bgcolor: var(--toolbarbutton-background-color-hover) !important;
   --input-text-background-color: light-dark(rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.2)) !important;
   --toolbar-field-focus-background-color: light-dark(
     rgba(255, 255, 255, 0.25),
@@ -216,6 +216,12 @@
 
   --toolbarbutton-border-radius: 6px;
   --urlbar-margin-inline: 1px !important;
+
+  --zen-squircle-value: 1.3;
+
+  @media (-moz-platform: windows) {
+    --zen-squircle-value: 2.1;
+  }
 
   --tab-icon-overlay-stroke: light-dark(white, black) !important;
   --tab-close-button-padding: 4px !important;
@@ -257,7 +263,7 @@
   --zen-active-tab-scale: 0.985;
 
   /* Define tab hover background color */
-  --tab-background-color-hover: var(--toolbarbutton-hover-background);
+  --tab-background-color-hover: var(--toolbarbutton-background-color-hover);
 
   /* Sidebar Notifications */
   --zen-sidebar-notification-bg: color-mix(
@@ -276,7 +282,7 @@
        * 1. If the native radius - the separation is less than 4px, use 4px.
        * 2. Otherwise, use the the calculated value (inner radius = outer radius - separation).
      */
-      max(5px, calc(var(--zen-border-radius) - var(--zen-element-separation) / 2))
+      max(5px, calc((var(--zen-border-radius) - var(--zen-element-separation) / 2) * var(--zen-squircle-value)))
   );
 
   /** Other theme-related styles */
@@ -348,3 +354,11 @@
 }
 
 %include zen-buttons.css
+
+@media (-moz-pref('layout.css.corner-shape.enabled')) {
+  *:not(.no-squircles),
+  .zen-squircle-before::before,
+  .zen-squircle-after::after {
+    corner-shape: superellipse(var(--zen-squircle-value));
+  }
+}

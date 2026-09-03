@@ -26,7 +26,8 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
       const hasAnyFilterEnabled =
         (this.state.options.authorMe ?? false) ||
         (this.state.options.assignedMe ?? true) ||
-        (this.state.options.reviewRequested ?? false);
+        (this.state.options.reviewRequested ?? false) ||
+        (this.state.options.includeDrafts ?? true);
 
       if (!hasAnyFilterEnabled) {
         return "zen-live-folder-github-no-filter";

@@ -39,7 +39,7 @@ function test() {
   (async function () {
     gTestTab = BrowserTestUtils.addTab(gBrowser);
     await FullZoomHelper.selectTabAndWaitForLocationChange(gTestTab);
-    // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+    // eslint-disable-next-line sdl/no-insecure-url
     await FullZoomHelper.load(gTestTab, "http://example.org" + TEST_PAGE);
   })().then(testInitialZoom, FullZoomHelper.failAndContinue(finish));
 }

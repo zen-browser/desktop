@@ -52,7 +52,7 @@ export class nsZenWorkspace extends MozXULElement {
 
   static get markup() {
     return `
-        <vbox class="zen-workspace-tabs-section zen-current-workspace-indicator zen-drop-target" flex="1" context="zenWorkspaceMoreActions">
+        <vbox class="zen-workspace-tabs-section zen-current-workspace-indicator zen-squircle-before zen-drop-target" flex="1" context="zenWorkspaceMoreActions">
           <stack class="zen-current-workspace-indicator-stack">
             <image class="zen-current-workspace-indicator-chevron" />
             <hbox class="zen-current-workspace-indicator-icon" />
@@ -287,6 +287,12 @@ export class nsZenWorkspace extends MozXULElement {
 
     this.addEventListener("TabPinned", tabPinCallback);
     this.addEventListener("TabUnpinned", tabPinCallback);
+    this.addEventListener("TabGroupRemovedFromDOM", () => {
+      // Wait for the group to be removed from the DOM.
+      setTimeout(() => {
+        tabPinCallback();
+      });
+    });
     this.addEventListener("TabClose", event => {
       if (event.target.pinned) {
         tabPinCallback();

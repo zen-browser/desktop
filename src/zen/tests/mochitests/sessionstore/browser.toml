@@ -355,6 +355,7 @@ skip-if = [
 
 ["browser_sizemodeBeforeMinimized.js"]
 skip-if = [
+  "os == 'linux' && os_version == '22.04' && arch == 'x86_64' && opt && nova", # Bug 2057856
   "os == 'win' && os_version == '11.26200' && asan", # Bug 2019745
 ]
 
@@ -436,6 +437,7 @@ disabled="Disabled by import_external_tests.py"
 skip-if = [
   "os == 'mac' && os_version == '15.30' && arch == 'aarch64'", # Bug 2023967
 ]
+
 ["browser_tab_label_during_restore.js"]
 disabled="Disabled by import_external_tests.py"
 https_first_disabled = true

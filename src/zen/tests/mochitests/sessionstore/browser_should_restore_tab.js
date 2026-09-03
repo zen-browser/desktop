@@ -18,8 +18,14 @@ async function check_tab_close_notification(openedTab, expectNotification) {
   }
   Services.obs.addObserver(topicObserver, NOTIFY_CLOSED_OBJECTS_CHANGED);
 
+  // (Bug 2058570) Intermittently, the tab state wasn't fully up to date before closing the tab.
+  // This caused test_navigated_about_home to think there was no meaningful history beyond about:home.
+  // Try flushing the tab state and then waiting for a notification if one is expected.
+  let flushedPromise = TabStateFlusher.flush(openedTab.linkedBrowser);
+
   BrowserTestUtils.removeTab(openedTab);
   await tabClosed;
+  await flushedPromise;
   // SessionStore does a setTimeout(notify, 0) to notifyObservers when it handles TabClose
   // We need to wait long enough to be confident the observer would have been notified
   // if it was going to be.

@@ -20,6 +20,11 @@ on:
         required: true
         type: boolean
         default: false
+      disable-pgo:
+        description: "Build without PGO at all"
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build-linux:
@@ -122,7 +127,7 @@ jobs:
           cd ..
 
       - name: Build (PGO stage 1 - generate)
-        if: ${{ matrix.arch == 'x86_64' }}
+        if: ${{ matrix.arch == 'x86_64' && !inputs.disable-pgo }}
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
           ZEN_RELEASE_BRANCH: ${{ inputs.release-branch }}
@@ -139,7 +144,7 @@ jobs:
           bash .github/workflows/src/release-build.sh
 
       - name: Generate PGO profile data
-        if: ${{ matrix.arch == 'x86_64' }}
+        if: ${{ matrix.arch == 'x86_64' && !inputs.disable-pgo }}
         run: |
           set -x
           export DISPLAY=:2
@@ -157,6 +162,7 @@ jobs:
         env:
           SURFER_COMPAT: ${{ matrix.arch }}
           ZEN_RELEASE_BRANCH: ${{ inputs.release-branch }}
+          ZEN_GA_DISABLE_PGO: ${{ inputs.disable-pgo && '1' || '' }}
           ZEN_SAFEBROWSING_API_KEY: ${{ secrets.ZEN_SAFEBROWSING_API_KEY }}
           ZEN_MOZILLA_API_KEY: ${{ secrets.ZEN_MOZILLA_API_KEY }}
           ZEN_GOOGLE_LOCATION_SERVICE_API_KEY: ${{ secrets.ZEN_GOOGLE_LOCATION_SERVICE_API_KEY }}

@@ -88,32 +88,32 @@ add_task(async function test_contentPrincipal() {
   */
   let tests = [
     {
-      // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+      // eslint-disable-next-line sdl/no-insecure-url
       input: { uri: "http://example.com/", OA: {} },
       expected: `{"${contentId}":{"${content}":"http://example.com/"}}`,
     },
     {
-      // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+      // eslint-disable-next-line sdl/no-insecure-url
       input: { uri: "http://mozilla1.com/", OA: {} },
       expected: `{"${contentId}":{"${content}":"http://mozilla1.com/"}}`,
     },
     {
-      // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+      // eslint-disable-next-line sdl/no-insecure-url
       input: { uri: "http://mozilla2.com/", OA: { userContextId: 0 } },
       expected: `{"${contentId}":{"${content}":"http://mozilla2.com/"}}`,
     },
     {
-      // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+      // eslint-disable-next-line sdl/no-insecure-url
       input: { uri: "http://mozilla3.com/", OA: { userContextId: 2 } },
       expected: `{"${contentId}":{"${content}":"http://mozilla3.com/","${suffix}":"^userContextId=2"}}`,
     },
     {
-      // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+      // eslint-disable-next-line sdl/no-insecure-url
       input: { uri: "http://mozilla4.com/", OA: { privateBrowsingId: 1 } },
       expected: `{"${contentId}":{"${content}":"http://mozilla4.com/","${suffix}":"^privateBrowsingId=1"}}`,
     },
     {
-      // eslint-disable-next-line @microsoft/sdl/no-insecure-url
+      // eslint-disable-next-line sdl/no-insecure-url
       input: { uri: "http://mozilla5.com/", OA: { privateBrowsingId: 0 } },
       expected: `{"${contentId}":{"${content}":"http://mozilla5.com/"}}`,
     },

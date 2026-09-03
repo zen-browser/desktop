@@ -58,7 +58,7 @@
     :root[zen-no-padding='true'] & {
       --zen-compact-float: 10px;
       --zen-compact-top-toolbar-hidden-fix: var(--zen-compact-float);
-      --zen-compact-mode-no-padding-radius-fix: 2px;
+      --zen-compact-mode-no-padding-radius-fix: 6px;
     }
 
     /* Initial padding for when we are animating */

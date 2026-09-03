@@ -353,7 +353,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     // Add elements in a circular pattern, where the center is the center of the wrapper
     for (let i = 0; i < 16; i++) {
       const dot = document.createElement("div");
-      dot.classList.add("zen-theme-picker-texture-dot");
+      dot.classList.add("zen-theme-picker-texture-dot", "no-squircles");
       const position = (i / 16) * Math.PI * 2 + wrapperWidth;
       dot.style.left = `${Math.cos(position) * 50 + 50}%`;
       dot.style.top = `${Math.sin(position) * 50 + 50}%`;
@@ -361,6 +361,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     }
     this._textureHandler = document.createElement("div");
     this._textureHandler.id = "PanelUI-zen-gradient-generator-texture-handler";
+    this._textureHandler.classList.add("no-squircles");
     this._textureHandler.addEventListener(
       "mousedown",
       this.onTextureHandlerMouseDown.bind(this)
@@ -598,7 +599,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         color.position || this.calculateInitialPosition([r, g, b]);
       const dotPad = this.panel.querySelector(".zen-theme-picker-gradient");
 
-      dot.classList.add("zen-theme-picker-dot");
+      dot.classList.add("zen-theme-picker-dot", "no-squircles");
 
       dot.style.left = `${x}px`;
       dot.style.top = `${y}px`;
@@ -720,7 +721,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     };
 
     const dot = document.createElement("div");
-    dot.classList.add("zen-theme-picker-dot");
+    dot.classList.add("zen-theme-picker-dot", "no-squircles");
 
     dot.style.left = `${dotData.x}px`;
     dot.style.top = `${dotData.y}px`;
@@ -1475,14 +1476,19 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
    * @returns {string} The primary color in hex format.
    */
   getAccentColorForUI(accentColor, isDarkMode) {
-    const [h, s, l] = this.rgbToHsl(...accentColor);
+    let [r, g, b] = accentColor;
     if (isDarkMode) {
-      return `rgb(${accentColor[0]}, ${accentColor[1]}, ${accentColor[2]})`;
+      return `rgb(${r}, ${g}, ${b})`;
     }
+    // gh-15142: Special case for grayscale colors
+    if (r == g && g == b) {
+      return `rgb(${r}, ${g}, ${b})`;
+    }
+    const [h, s, l] = this.rgbToHsl(...accentColor);
     const saturation = Math.min(1, s + 0.3);
     const targetLightness = this.isDarkMode ? 0.62 : 0.42;
     const lightness = l * 0.4 + targetLightness * 0.6;
-    const [r, g, b] = this.hslToRgb(h / 360, saturation, lightness);
+    [r, g, b] = this.hslToRgb(h / 360, saturation, lightness);
     return `rgb(${r}, ${g}, ${b})`;
   }
 
@@ -1503,7 +1509,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       baseColor = this.blendColors(
         accentColor,
         baseColor.slice(0, 3),
-        this.canBeTransparent ? 15 : 5
+        this.canBeTransparent ? 25 : 5
       ).concat(opacity);
     }
     return baseColor;

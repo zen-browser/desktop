@@ -160,7 +160,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     if (groupIndex < 0) {
       return;
     }
-    this.removeTabFromGroup(tab, groupIndex, { forUnsplit: true });
+    this.removeTabFromGroup(tab, groupIndex, {
+      forUnsplit: true,
+    });
   }
 
   /**
@@ -203,15 +205,20 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * @param {object} [options={}] - Additional options.
    * @param {boolean} [options.forUnsplit=false] - Whether the removal is for unsplitting.
    * @param {boolean} [options.dontRebuildGrid=false] - Whether to skip rebuilding the grid layout.
-   * @param {boolean} [options.changeTab=true] - Whether to change the selected tab.
+   * @param {boolean} [options.changeTab=undefined] - Whether to change the selected tab. If left unspecified,
+   * change the selected tab only if the current view is the group the removed tab was in.
    */
   removeTabFromGroup(
     tab,
     groupIndex = undefined,
-    { forUnsplit = false, dontRebuildGrid = false, changeTab = true } = {}
+    { forUnsplit = false, dontRebuildGrid = false, changeTab = undefined } = {}
   ) {
     if (typeof groupIndex === "undefined") {
       groupIndex = this._data.findIndex(group => group.tabs.includes(tab));
+    }
+
+    if (typeof changeTab === "undefined") {
+      changeTab = groupIndex === this.currentView;
     }
     // If groupIndex === -1, so `this._data.findIndex` couldn't find the split group
     if (groupIndex < 0) {
@@ -358,7 +365,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     ) {
       return;
     }
-    const currentView = this._data[this._lastOpenedTab.splitViewValue];
+    const currentView = this._data.find(group =>
+      group.tabs.includes(this._lastOpenedTab)
+    );
     if (currentView?.tabs.length >= this.MAX_TABS) {
       return;
     }
@@ -543,7 +552,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const panelsWidth = panelsRect.width;
     const panelsHeight = panelsRect.height;
     let numOfTabsToDivide = 2;
-    const currentView = this._data[this._lastOpenedTab.splitViewValue];
+    const currentView = this._data.find(group =>
+      group.tabs.includes(this._lastOpenedTab)
+    );
     if (currentView) {
       numOfTabsToDivide = currentView.tabs.length + 1;
     }
@@ -1106,7 +1117,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    */
   resetTabState(tab, forUnsplit) {
     tab.splitView = false;
-    delete tab.splitViewValue;
     tab.removeAttribute("split-view");
     tab.linkedBrowser.zenModeActive = false;
     const container = tab.linkedBrowser.closest(".browserSidebarContainer");
@@ -1150,6 +1160,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
     if (this.currentView === groupIndex) {
       this.deactivateCurrentSplitView();
+    } else if (this.currentView > groupIndex) {
+      this.currentView--;
     }
     for (const tab of this._data[groupIndex].tabs) {
       this.resetTabState(tab, true);
@@ -1641,7 +1653,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   applyGridToTabs(tabs) {
     tabs.forEach(tab => {
       tab.splitView = true;
-      tab.splitViewValue = this.currentView;
       tab.setAttribute("split-view", "true");
       const container = tab.linkedBrowser?.closest(".browserSidebarContainer");
       container.setAttribute("is-zen-split", "true");

@@ -1,8 +1,8 @@
 diff --git a/widget/cocoa/nsCocoaWindow.h b/widget/cocoa/nsCocoaWindow.h
-index 312011c1c2ac41e78affecbdef25d72766a7c882..e5865c7d6259f0a3df48edf7a26b1b75a23cdb3a 100644
+index 22a2a7ef3a5e9257c8bb00ba6a55e8d39d2abbd9..6d8353fd11921585f7101f5717bdb3dd8f2a5eae 100644
 --- a/widget/cocoa/nsCocoaWindow.h
 +++ b/widget/cocoa/nsCocoaWindow.h
-@@ -462,6 +462,10 @@ class nsCocoaWindow final : public nsIWidget {
+@@ -461,6 +461,10 @@ class nsCocoaWindow final : public nsIWidget {
    void SetHideTitlebarSeparator(bool) override;
    bool IsMacTitlebarDirectionRTL() override;
    void SetCustomTitlebar(bool) override;
@@ -13,9 +13,9 @@ index 312011c1c2ac41e78affecbdef25d72766a7c882..e5865c7d6259f0a3df48edf7a26b1b75
    void UpdateThemeGeometries(
        const nsTArray<ThemeGeometry>& aThemeGeometries) override;
    void LockAspectRatio(bool aShouldLock) override;
-@@ -672,6 +676,7 @@ class nsCocoaWindow final : public nsIWidget {
-   bool mAspectRatioLocked = false;
-   bool mIsAlert = false;  // True if this is an non-native alert window.
+@@ -674,6 +678,7 @@ class nsCocoaWindow final : public nsIWidget {
+   // show (e.g. a window created by detaching a tab from a fullscreen window).
+   bool mIsInitialFullscreenSuppressed = false;
    bool mWasShown = false;
 +  bool mIsBrowserWindow = false;
  

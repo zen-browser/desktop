@@ -3,7 +3,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 {
-  let _tabsToPinEssentials = [];
   let lazy = {};
 
   ChromeUtils.defineESModuleGetters(lazy, {
@@ -14,6 +13,23 @@
     "zen-browser-background",
     "zen-toast-container",
   ];
+
+  const kEssentialApps = [
+    { url: "https://obsidian.md", icon: "obsidian", color: "#7c3aed" },
+    { url: "https://discord.com", icon: "discord", color: "#5865f2" },
+    { url: "https://trello.com", icon: "trello", color: "#0052cc" },
+    { url: "https://slack.com", icon: "slack", color: "#e01e5a" },
+    { url: "https://github.com", icon: "github", color: "#57606a" },
+    { url: "https://app.tuta.com/", icon: "tuta", color: "#c00002" },
+    { url: "https://notion.com", icon: "notion", color: "#37352f" },
+    { url: "https://calendar.google.com", icon: "calendar", color: "#4285f4" },
+    { url: "https://figma.com", icon: "figma", color: "#f24e1e" },
+  ];
+
+  const gChoices = {
+    setDefaultBrowser: false,
+    essentials: new Set(),
+  };
 
   function clearBrowserElements() {
     for (const element of document.getElementById("browser").children) {
@@ -28,33 +44,39 @@
     return gZenUIManager.motion;
   }
 
-  async function animate(...args) {
+  function animate(...args) {
     return getMotion().animate(...args);
+  }
+
+  function parseXUL(xul) {
+    return window.MozXULElement.parseXULToFragment(xul);
   }
 
   function initializeZenWelcome() {
     document.documentElement.setAttribute("zen-welcome-stage", "true");
     const XUL = `
+      <html:video id="zen-welcome-video" autoplay="" loop="" muted=""
+                    disablepictureinpicture="" tabindex="-1"
+                    src="chrome://browser/content/zen-videos/welcome-background.mp4"></html:video>
       <html:div id="zen-welcome">
         <html:div id="zen-welcome-start">
-          <html:h1 class="zen-branding-title" id="zen-welcome-title"></html:h1>
+          <html:h1 id="zen-welcome-title"></html:h1>
           <button class="footer-button primary" id="zen-welcome-start-button">
           </button>
         </html:div>
-        <hbox id="zen-welcome-pages">
-          <vbox id="zen-welcome-page-sidebar">
-            <vbox id="zen-welcome-page-sidebar-content">
-            </vbox>
-            <vbox id="zen-welcome-page-sidebar-buttons">
-            </vbox>
-          </vbox>
-          <html:div id="zen-welcome-page-content">
+        <html:div id="zen-welcome-pages">
+          <html:div id="zen-welcome-page-sidebar">
+            <html:button id="zen-welcome-back" data-l10n-id="zen-welcome-back"></html:button>
+            <html:div id="zen-welcome-page-sidebar-content"></html:div>
+            <html:div id="zen-welcome-page-sidebar-buttons"></html:div>
           </html:div>
-        </hbox>
+          <html:div id="zen-welcome-page-content"></html:div>
+        </html:div>
       </html:div>
     `;
-    const fragment = window.MozXULElement.parseXULToFragment(XUL);
-    document.getElementById("browser").appendChild(fragment);
+    document.getElementById("browser").appendChild(parseXUL(XUL));
+    const video = document.getElementById("zen-welcome-video");
+    video.play().catch(() => {});
     window.MozXULElement.insertFTLIfNeeded("browser/zen-welcome.ftl");
   }
 
@@ -82,175 +104,212 @@
     return data;
   }
 
+  function createOption({ id, group, checked, l10n, text, extra }) {
+    const label = document.createElement("label");
+    label.className = "zen-welcome-option";
+    label.setAttribute("for", id);
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.id = id;
+    input.name = group;
+    input.checked = !!checked;
+    label.appendChild(input);
+    const radio = document.createElement("span");
+    radio.className = "zen-welcome-option-radio no-squircles";
+    label.appendChild(radio);
+    if (extra) {
+      label.appendChild(extra);
+    }
+    const labelText = document.createElement("span");
+    labelText.className = "zen-welcome-option-label";
+    if (l10n) {
+      document.l10n.setAttributes(labelText, l10n);
+    } else {
+      labelText.textContent = text;
+    }
+    label.appendChild(labelText);
+    return label;
+  }
+
+  function removeVideoBackground() {
+    const video = document.getElementById("zen-welcome-video");
+    if (!video) {
+      return;
+    }
+    animate(video, { opacity: 0 }, { duration: 0.6, ease: "easeOut" }).then(
+      () => {
+        video.pause();
+        video.remove();
+      }
+    );
+  }
+
+  const kSpring = { type: "spring", bounce: 0.35, visualDuration: 0.35 };
+  const kExit = { duration: 0.12, ease: "easeIn" };
+  const kFade = { duration: 0.25, ease: "easeOut" };
+
   class nsZenWelcomePages {
+    #index = -1;
+    #pages;
+    #content = null;
+    #renderToken = 0;
+    #buttonsToken = 0;
+
     constructor(pages) {
-      this._currentPage = -1;
-      this._pages = pages;
+      this.#pages = pages;
       this.init();
       this.next();
     }
 
+    get textContainer() {
+      return document.getElementById("zen-welcome-page-sidebar-content");
+    }
+
+    get contentContainer() {
+      return document.getElementById("zen-welcome-page-content");
+    }
+
+    get buttonsContainer() {
+      return document.getElementById("zen-welcome-page-sidebar-buttons");
+    }
+
+    get backButton() {
+      return document.getElementById("zen-welcome-back");
+    }
+
+    get currentPage() {
+      return this.#pages[this.#index];
+    }
+
+    get content() {
+      return this.#content;
+    }
+
     init() {
-      document.getElementById("zen-welcome-pages").style.display = "flex";
       document.getElementById("zen-welcome-start").remove();
-      window.maximize();
-      animate(
-        "#zen-welcome-pages",
-        { opacity: [0, 1] },
-        { delay: 0.2, duration: 0.1 }
-      );
+      const pages = document.getElementById("zen-welcome-pages");
+      pages.style.display = "flex";
+      animate(pages, { opacity: [0, 1] }, { ...kFade, duration: 0.45 });
+      this.backButton.addEventListener("click", () => this.back());
     }
 
-    async fadeInTitles(page) {
-      const [title1, description1, description2] =
-        await document.l10n.formatValues(page.text);
-      const titleElement = document.getElementById(
-        "zen-welcome-page-sidebar-content"
-      );
-      /* eslint-disable no-unsanitized/property */
-      titleElement.innerHTML =
-        `<html:h1>${title1}</html:h1><html:p>${description1}</html:p>` +
-        (description2 ? `<html:p>${description2}</html:p>` : "");
-      await animate(
-        "#zen-welcome-page-sidebar-content > *",
-        { x: ["150%", 0] },
-        {
-          delay: getMotion().stagger(0.05),
-          type: "spring",
-          bounce: 0.2,
-        }
-      );
+    next() {
+      this.currentPage?.commit?.(this.#content);
+      this.#show(this.#index + 1, 1);
     }
 
-    async fadeInButtons(page) {
-      const buttons = document.getElementById(
-        "zen-welcome-page-sidebar-buttons"
-      );
-      let i = 0;
-      const insertedButtons = [];
-      for (const button of page.buttons) {
-        const buttonElement = document.createXULElement("button");
-        document.l10n.setAttributes(buttonElement, button.l10n);
-        if (i++ === 0) {
-          buttonElement.classList.add("primary");
-        }
-        buttonElement.classList.add("footer-button");
-        buttonElement.addEventListener("click", async () => {
-          const shouldSkip = await button.onclick();
-          if (shouldSkip) {
-            this.next();
-          }
-        });
-        buttonElement.style.pointerEvents = "none"; // Disable pointer events until animation is done
-        insertedButtons.push(buttonElement);
-        buttons.appendChild(buttonElement);
+    back() {
+      if (this.#index <= 0) {
+        return;
       }
-      await animate(
-        "#zen-welcome-page-sidebar-buttons button",
-        { x: ["150%", 0] },
-        {
-          delay: getMotion().stagger(0.1, { startDelay: 0.4 }),
-          type: "spring",
-          bounce: 0.2,
-        }
-      );
-      for (const button of insertedButtons) {
-        button.style.pointerEvents = ""; // Enable pointer events after animation
-      }
+      this.#show(this.#index - 1, -1);
     }
 
-    async fadeInContent() {
-      await animate(
-        "#zen-welcome-page-content > *",
-        { opacity: [0, 1] },
-        {
-          delay: getMotion().stagger(0.1),
-          type: "spring",
-          bounce: 0.2,
-        }
-      );
-    }
-
-    async fadeOutButtons() {
-      await animate(
-        "#zen-welcome-page-sidebar-buttons button",
-        { x: [0, "-150%"] },
-        {
-          type: "spring",
-          bounce: 0,
-          delay: getMotion().stagger(0.1, { startDelay: 0.4 }),
-        }
-      );
-      document.getElementById("zen-welcome-page-sidebar-buttons").innerHTML =
-        "";
-      document.getElementById("zen-welcome-page-sidebar-content").innerHTML =
-        "";
-    }
-
-    async fadeOutTitles() {
-      await animate(
-        "#zen-welcome-page-sidebar-content > *",
-        { x: [0, "-150%"] },
-        {
-          delay: getMotion().stagger(0.05, { startDelay: 0.3 }),
-          type: "spring",
-          bounce: 0,
-        }
-      );
-    }
-
-    async fadeOutContent() {
-      await animate(
-        "#zen-welcome-page-content > *",
-        { opacity: [1, 0] },
-        {
-          delay: getMotion().stagger(0.05, { startDelay: 0.3 }),
-          type: "spring",
-          bounce: 0,
-          duration: 0.1,
-        }
-      );
-    }
-
-    async next() {
-      if (this._currentPage !== -1) {
-        const previousPage = this._pages[this._currentPage];
-        const promises = [this.fadeOutTitles(), this.fadeOutButtons()];
-        if (!previousPage.dontFadeOut) {
-          promises.push(this.fadeOutContent());
-        }
-        await Promise.all(promises);
-        await previousPage.fadeOut();
-        document.getElementById("zen-welcome-page-content").innerHTML = "";
-      }
-      this._currentPage++;
-      const currentPage = this._pages[this._currentPage];
-      if (!currentPage) {
+    #show(index, direction) {
+      const previous = this.currentPage;
+      this.#index = index;
+      const page = this.currentPage;
+      if (!page) {
         this.finish();
         return;
       }
-      await Promise.all([
-        this.fadeInTitles(currentPage),
-        this.fadeInButtons(currentPage),
-      ]);
-      await currentPage.fadeIn();
-      await this.fadeInContent();
+      previous?.leave?.();
+      this.#exit(this.textContainer, { x: [0, -80 * direction] });
+      this.#exit(this.contentContainer, {});
+      this.backButton.toggleAttribute("disabled", index === 0);
+      this.updateButtons();
+      this.#renderText(page, direction);
+      this.#renderContent(page);
+    }
+
+    #exit(container, keyframes) {
+      for (const element of container.children) {
+        if (element.hasAttribute("exiting")) {
+          continue;
+        }
+        element.setAttribute("exiting", "");
+        animate(element, { opacity: [1, 0], ...keyframes }, kExit).then(() =>
+          element.remove()
+        );
+      }
+    }
+
+    async #renderText(page, direction) {
+      const token = ++this.#renderToken;
+      const text = document.createElement("div");
+      text.className = "zen-welcome-text";
+      const title = document.createElement("h1");
+      document.l10n.setAttributes(title, page.title);
+      text.appendChild(title);
+      for (const id of page.descriptions ?? []) {
+        const p = document.createElement("p");
+        document.l10n.setAttributes(p, id);
+        text.appendChild(p);
+      }
+      await document.l10n.translateFragment(text);
+      if (token !== this.#renderToken) {
+        return;
+      }
+      this.textContainer.appendChild(text);
+      animate(
+        [...text.children],
+        { opacity: [0, 1], x: [120 * direction, 0] },
+        {
+          ...kSpring,
+          bounce: 0.4,
+          visualDuration: 0.3,
+          delay: getMotion().stagger(0.03),
+        }
+      );
+    }
+
+    #renderContent(page) {
+      const content = document.createElement("div");
+      content.className = "zen-welcome-page";
+      if (page.id) {
+        content.setAttribute("page", page.id);
+      }
+      page.render(content);
+      this.contentContainer.appendChild(content);
+      this.#content = content;
+      animate(content, { opacity: [0, 1] }, kFade);
+    }
+
+    async updateButtons() {
+      const token = ++this.#buttonsToken;
+      const fragment = document.createDocumentFragment();
+      for (const button of this.currentPage.buttons) {
+        const element = document.createElement("button");
+        element.className = button.primary
+          ? "zen-welcome-button primary"
+          : "zen-welcome-button";
+        document.l10n.setAttributes(element, button.l10n);
+        element.addEventListener("click", () => {
+          if (button.onclick?.(this) !== false) {
+            this.next();
+          }
+        });
+        fragment.appendChild(element);
+      }
+      await document.l10n.translateFragment(fragment);
+      if (token === this.#buttonsToken) {
+        this.buttonsContainer.replaceChildren(fragment);
+      }
     }
 
     async finish() {
-      _iconToData = undefined; // Unload icon data
+      ++this.#buttonsToken;
+      this.buttonsContainer.replaceChildren();
+      this.backButton.toggleAttribute("disabled", true);
       gZenWorkspaces.reorganizeTabsAfterWelcome();
-      await animate(
-        "#zen-welcome-page-content",
-        { x: [0, "100%"] },
-        { bounce: 0 }
-      );
-      document.getElementById("zen-welcome-page-content").remove();
-      await this.animHeart();
-      await this.#pinRemainingTabs();
-      await animate("#zen-welcome-pages", { opacity: [1, 0] });
+      const promises = [this.#applyChoices()];
+      await animate("#zen-welcome", { opacity: [1, 0] });
+      this.contentContainer.remove();
+      await Promise.all(promises);
+      _iconToData = undefined; // Unload icon data
       document.getElementById("zen-welcome").remove();
       document.documentElement.removeAttribute("zen-welcome-stage");
+      unlockWindowSize();
       for (const element of document.getElementById("browser").children) {
         if (kZenElementsToIgnore.includes(element.id)) {
           continue;
@@ -265,14 +324,10 @@
       await animate(`#browser > *:not(${elementsToIgnore})`, {
         opacity: [0, 1],
       });
-      gZenUIManager.showToast("zen-welcome-finished");
     }
 
-    async #pinRemainingTabs() {
-      for (const tab of _tabsToPinEssentials) {
-        tab.removeAttribute("pending"); // Make it appear loaded
-        gZenPinnedTabManager.addToEssentials(tab);
-      }
+    async #applyChoices() {
+      await this.#pinEssentials();
       let tabsToGroup = [];
       if (!gBrowser.selectedTab.hasAttribute("zen-empty-tab")) {
         tabsToGroup.push(gBrowser.selectedTab);
@@ -283,22 +338,39 @@
       });
     }
 
-    async animHeart() {
-      const heart = document.createElement("div");
-      heart.id = "zen-welcome-heart";
-      const sidebar = document.getElementById("zen-welcome-page-sidebar");
-      sidebar.style.width = "100%";
-      sidebar.appendChild(heart);
-      sidebar.setAttribute("animate-heart", "true");
-      await animate(
-        "#zen-welcome-heart",
-        { opacity: [0, 1, 1, 1, 0], scale: [0.5, 1, 1.2, 1, 1.2] },
-        {
-          duration: 1.5,
-          delay: 0.2,
-          bounce: 0,
-        }
+    async #pinEssentials() {
+      const apps = kEssentialApps.filter(app =>
+        gChoices.essentials.has(app.url)
       );
+      if (!apps.length) {
+        return;
+      }
+      await PlacesUtils.history.insertMany(
+        apps.map(app => ({
+          url: app.url,
+          visits: [{ transition: PlacesUtils.history.TRANSITIONS.TYPED }],
+        }))
+      );
+      const { TabStateCache } = ChromeUtils.importESModule(
+        "resource:///modules/sessionstore/TabStateCache.sys.mjs"
+      );
+      for (const app of apps) {
+        const tab = window.gBrowser.addTrustedTab(app.url, {
+          inBackground: true,
+          createLazyBrowser: true,
+        });
+        const icon = await getIconData(
+          `chrome://browser/content/zen-images/favicons/${app.icon}.svg`
+        );
+        // Update the persistent tab state cache with |tabData| information.
+        TabStateCache.update(tab.linkedBrowser.permanentKey, {
+          history: { entries: [{ url: app.url }], index: 0 },
+          image: icon,
+        });
+        gBrowser.setIcon(tab, icon);
+        tab.removeAttribute("pending"); // Make it appear loaded
+        gZenPinnedTabManager.addToEssentials(tab);
+      }
     }
   }
 
@@ -362,363 +434,230 @@
     }
   }
 
+  const kNextButton = { l10n: "zen-generic-next", primary: true };
+
+  async function setDefaultBrowser() {
+    const shellSvc =
+      AppConstants.HAVE_SHELL_SERVICE && window.getShellService();
+    if (!shellSvc) {
+      return;
+    }
+    try {
+      await shellSvc.setDefaultBrowser(false);
+    } catch (ex) {
+      console.error(ex);
+    }
+  }
+
   function getWelcomePages() {
     return [
       {
-        text: [
-          {
-            id: "zen-welcome-import-title",
-          },
-          {
-            id: "zen-welcome-import-description-1",
-          },
-          {
-            id: "zen-welcome-import-description-2",
-          },
-        ],
-        buttons: [
-          {
-            l10n: "zen-welcome-import-button",
-            onclick: async () => {
-              MigrationUtils.showMigrationWizard(window, {
-                isStartupMigration: true,
-              });
-              document
-                .querySelector("#zen-welcome-page-sidebar-buttons button")
-                .remove();
-              const newButton = document.querySelector(
-                "#zen-welcome-page-sidebar-buttons button"
-              );
-              newButton.classList.add("primary");
-              document.l10n.setAttributes(newButton, "zen-generic-next");
-              return false;
-            },
-          },
-          {
-            l10n: "zen-welcome-skip-button",
-            onclick: async () => {
-              return true;
-            },
-          },
-        ],
-        fadeIn() {
-          const xul = `
-            <html:label for="zen-welcome-set-default-browser">
-              <html:input type="radio" id="zen-welcome-set-default-browser" name="zen-welcome-set-default-browser"></html:input>
-              <html:span data-l10n-id="zen-welcome-set-default-browser"></html:span>
-            </html:label>
-            <html:label for="zen-welcome-dont-set-default-browser">
-              <html:input checked="true" type="radio" id="zen-welcome-dont-set-default-browser" name="zen-welcome-set-default-browser"></html:input>
-              <html:span data-l10n-id="zen-welcome-dont-set-default-browser"></html:span>
-            </html:label>
-          `;
-          const fragment = window.MozXULElement.parseXULToFragment(xul);
-          document
-            .getElementById("zen-welcome-page-content")
-            .appendChild(fragment);
-        },
-        async fadeOut() {
-          const shouldSetDefault = document.getElementById(
-            "zen-welcome-set-default-browser"
-          ).checked;
-          if (AppConstants.HAVE_SHELL_SERVICE && shouldSetDefault) {
-            let shellSvc = window.getShellService();
-            if (!shellSvc) {
-              return;
-            }
-
-            try {
-              await shellSvc.setDefaultBrowser(false);
-            } catch (ex) {
-              console.error(ex);
-            }
-          }
-        },
-      },
-      {
-        text: [
-          {
-            id: "zen-welcome-default-search-title",
-          },
-          {
-            id: "zen-welcome-default-search-description",
-          },
-        ],
-        buttons: [
-          {
-            l10n: "zen-generic-next",
-            onclick: async () => {
-              return true;
-            },
-          },
-        ],
-        async fadeIn() {
-          const content = document.getElementById("zen-welcome-page-content");
-          const engineStore = new ZenSearchEngineStore();
-          engineStore.init();
-
-          content.setAttribute("select-engine", "true");
-
-          const defaultEngine = await lazy.SearchService.getDefault();
-          const promises = [];
-          engineStore.getEngines().forEach(engine => {
-            const label = document.createElement("label");
-            const engineId = engine.name.replace(/\s+/g, "-").toLowerCase();
-            label.setAttribute("for", engineId);
-            const input = document.createElement("input");
-            input.setAttribute("type", "radio");
-            input.setAttribute("id", engineId);
-            input.setAttribute("name", "zen-welcome-set-default-browser");
-            input.setAttribute("hidden", "true");
-            if (engine.name === defaultEngine.name) {
-              input.setAttribute("checked", true);
-            }
-            label.appendChild(input);
-            const engineLabel = document.createXULElement("label");
-            engineLabel.textContent = engine.name;
-            const icon = document.createElement("img");
-            promises.push(
-              (async () => {
-                icon.setAttribute(
-                  "src",
-                  await engine.originalEngine.getIconURL()
-                );
-              })()
-            );
-            icon.setAttribute("width", "32");
-            icon.setAttribute("height", "32");
-            icon.setAttribute("class", "engine-icon");
-            label.appendChild(icon);
-            label.appendChild(engineLabel);
-            content.appendChild(label);
-            label.addEventListener("click", async () => {
-              const selectedEngine = engineStore.getEngineByName(engine.name);
-              if (selectedEngine) {
-                await engineStore.setDefaultEngine(selectedEngine);
-              }
-            });
+        id: "import",
+        title: "zen-welcome-import-title",
+        descriptions: ["zen-welcome-import-description"],
+        buttons: [kNextButton],
+        render(content) {
+          const yes = createOption({
+            id: "zen-welcome-import-yes",
+            group: "zen-welcome-import",
+            l10n: "zen-welcome-import-yes",
           });
-          await Promise.all(promises);
-        },
-        async fadeOut() {
-          document
-            .getElementById("zen-welcome-page-content")
-            .removeAttribute("select-engine");
-        },
-      },
-      {
-        text: [
-          {
-            id: "zen-welcome-initial-essentials-title",
-          },
-          {
-            id: "zen-welcome-initial-essentials-description-1",
-          },
-          {
-            id: "zen-welcome-initial-essentials-description-2",
-          },
-        ],
-        buttons: [
-          {
-            l10n: "zen-generic-next",
-            onclick: async () => {
-              return true;
-            },
-          },
-        ],
-        fadeIn() {
-          const xul = `
-            <hbox id="zen-welcome-initial-essentials-browser">
-              <vbox id="zen-welcome-initial-essentials-browser-sidebar">
-                <hbox id="zen-welcome-initial-essentials-browser-sidebar-win-buttons">
-                  <html:div></html:div>
-                  <html:div></html:div>
-                  <html:div></html:div>
-                </hbox>
-                <html:div id="zen-welcome-initial-essentials-browser-sidebar-essentials">
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://obsidian.md" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/obsidian.svg');">
-                    <stack class="tab-stack">
-                      <html:div class="tab-background"></html:div>
-                    </stack>
-                  </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://discord.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/discord.svg');">
-                    <stack class="tab-stack">
-                      <html:div class="tab-background"></html:div>
-                    </stack>
-                  </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://trello.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/trello.svg');">
-                    <stack class="tab-stack">
-                      <html:div class="tab-background"></html:div>
-                    </stack>
-                  </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://slack.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/slack.svg');">
-                    <stack class="tab-stack">
-                      <html:div class="tab-background"></html:div>
-                    </stack>
-                  </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://github.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/github.svg');">
-                    <stack class="tab-stack">
-                      <html:div class="tab-background"></html:div>
-                    </stack>
-                  </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://app.tuta.com/" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/tuta.svg');">
-                    <stack class="tab-stack">
-                      <html:div class="tab-background"></html:div>
-                    </stack>
-                  </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://notion.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/notion.svg');">
-                    <stack class="tab-stack">
-                      <html:div class="tab-background"></html:div>
-                    </stack>
-                  </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://calendar.google.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/calendar.svg');">
-                    <stack class="tab-stack">
-                      <html:div class="tab-background"></html:div>
-                    </stack>
-                  </html:div>
-                  <html:div class="tabbrowser-tab" fadein="" data-url="https://figma.com" style="--zen-essential-tab-icon: url('chrome://browser/content/zen-images/favicons/figma.svg');">
-                    <stack class="tab-stack">
-                      <html:div class="tab-background"></html:div>
-                    </stack>
-                  </html:div>
-                  <html:div class="extra-tab"></html:div>
-                  <html:div class="extra-tab"></html:div>
-                </html:div>
-              </vbox>
-            </hbox>
-          `;
-          const fragment = window.MozXULElement.parseXULToFragment(xul);
-          document
-            .getElementById("zen-welcome-page-content")
-            .appendChild(fragment);
-          document
-            .getElementById(
-              "zen-welcome-initial-essentials-browser-sidebar-essentials"
-            )
-            .addEventListener("click", async event => {
-              const tab = event.target.closest(".tabbrowser-tab");
-              if (!tab) {
-                return;
-              }
-              tab.toggleAttribute("visuallyselected");
-            });
-        },
-        async fadeOut() {
-          const selectedTabs = document
-            .getElementById(
-              "zen-welcome-initial-essentials-browser-sidebar-essentials"
-            )
-            .querySelectorAll(".tabbrowser-tab[visuallyselected]");
-
-          if (selectedTabs.length) {
-            await PlacesUtils.history.insertMany(
-              [...selectedTabs].map(tab => ({
-                url: tab.getAttribute("data-url"),
-                visits: [
-                  {
-                    transition: PlacesUtils.history.TRANSITIONS.TYPED,
-                  },
-                ],
-              }))
-            );
-          }
-
-          const { TabStateCache } = ChromeUtils.importESModule(
-            "resource:///modules/sessionstore/TabStateCache.sys.mjs"
+          content.appendChild(yes);
+          content.appendChild(
+            createOption({
+              id: "zen-welcome-import-no",
+              group: "zen-welcome-import",
+              l10n: "zen-welcome-import-no",
+              checked: true,
+            })
           );
-          for (const tab of selectedTabs) {
-            const url = tab.getAttribute("data-url");
-            const createdTab = window.gBrowser.addTrustedTab(url, {
-              inBackground: true,
-              createLazyBrowser: true,
+        },
+        commit(content) {
+          if (content.querySelector("#zen-welcome-import-yes").checked) {
+            MigrationUtils.showMigrationWizard(window, {
+              isStartupMigration: true,
             });
-            let essentialIconUrl = tab.style.getPropertyValue(
-              "--zen-essential-tab-icon"
-            );
-            // Remove url() from the icon URL
-            essentialIconUrl = essentialIconUrl
-              .replace(/url\(['"]?/, "")
-              .replace(/['"]?\)/, "");
-            essentialIconUrl = await getIconData(essentialIconUrl);
-            // Update the persistent tab state cache with |tabData| information.
-            TabStateCache.update(createdTab.linkedBrowser.permanentKey, {
-              history: { entries: [{ url }], index: 0 },
-              image: essentialIconUrl,
-            });
-            gBrowser.setIcon(createdTab, essentialIconUrl);
-            _tabsToPinEssentials.push(createdTab);
           }
         },
       },
       {
-        text: [
-          {
-            id: "zen-welcome-workspace-colors-title",
-          },
-          {
-            id: "zen-welcome-workspace-colors-description",
-          },
-        ],
-        buttons: [
-          {
-            l10n: "zen-generic-next",
-            onclick: async () => {
-              return true;
-            },
-          },
-        ],
-        fadeIn() {
+        id: "colors",
+        title: "zen-welcome-workspace-colors-title",
+        descriptions: ["zen-welcome-workspace-colors-description"],
+        buttons: [kNextButton],
+        render(content) {
+          removeVideoBackground();
           const anchor = document.createElement("div");
           anchor.id = "zen-welcome-workspace-colors-anchor";
-          document
-            .getElementById("zen-welcome-page-content")
-            .appendChild(anchor);
-          gZenThemePicker.panel.setAttribute("noautohide", "true");
-          gZenThemePicker.panel.setAttribute("consumeoutsideclicks", "false");
-          gZenThemePicker.panel.setAttribute("nonnative", "");
-          gZenThemePicker.panel.addEventListener(
+          content.appendChild(anchor);
+          const panel = gZenThemePicker.panel;
+          panel.setAttribute("noautohide", "true");
+          panel.setAttribute("consumeoutsideclicks", "false");
+          panel.setAttribute("nonnative", "");
+          panel.addEventListener(
             "popupshowing",
             () => {
-              const panelRect = gZenThemePicker.panel.getBoundingClientRect();
+              const panelRect = panel.getBoundingClientRect();
               // 20 is the shadow width * 2
-              anchor.style.height = panelRect.height - 20 + "px";
+              anchor.style.height =
+                panelRect.height -
+                (AppConstants.platform == "macosx" ? -90 : 20) +
+                "px";
               anchor.style.width = panelRect.width - 20 + "px";
             },
             { once: true }
           );
-          PanelMultiView.openPopup(gZenThemePicker.panel, anchor, {
-            position: "overlap",
-          });
+          PanelMultiView.openPopup(panel, anchor, { position: "overlap" });
         },
-        dontFadeOut: true,
-        async fadeOut() {
-          gZenThemePicker.panel.removeAttribute("noautohide");
-          gZenThemePicker.panel.removeAttribute("consumeoutsideclicks");
-          gZenThemePicker.panel.removeAttribute("nonnative");
-          await animate(gZenThemePicker.panel, { opacity: [1, 0] });
-          gZenThemePicker.panel.hidePopup();
-          gZenThemePicker.panel.removeAttribute("style");
+        leave() {
+          const panel = gZenThemePicker.panel;
+          panel.removeAttribute("noautohide");
+          panel.removeAttribute("consumeoutsideclicks");
+          panel.removeAttribute("nonnative");
+          animate(panel, { opacity: [1, 0] }, kExit).then(() => {
+            panel.hidePopup();
+            panel.removeAttribute("style");
+          });
         },
       },
       {
-        text: [
-          {
-            id: "zen-welcome-start-browsing-title",
-          },
-          {
-            id: "zen-welcome-start-browsing-description-1",
-          },
-        ],
+        id: "search",
+        title: "zen-welcome-default-search-title",
+        descriptions: ["zen-welcome-default-search-description"],
+        buttons: [kNextButton],
+        async render(content) {
+          const engineStore = new ZenSearchEngineStore();
+          await engineStore.init();
+          const defaultEngine = await lazy.SearchService.getDefault();
+          for (const engine of engineStore.getEngines()) {
+            const iconWrapper = document.createElement("div");
+            iconWrapper.className = "engine-icon-wrapper";
+            const iconBackdrop = document.createElement("img");
+            iconBackdrop.className = "engine-icon-backdrop";
+            const icon = document.createElement("img");
+            icon.className = "engine-icon";
+            icon.width = icon.height = 40;
+            iconWrapper.append(iconBackdrop, icon);
+            engine.originalEngine.getIconURL(96).then(url => {
+              icon.src = url;
+              iconBackdrop.src = url;
+            });
+            const option = createOption({
+              id: "zen-welcome-engine-" + engine.name.replace(/\s+/g, "-"),
+              group: "zen-welcome-search-engine",
+              text: engine.name,
+              checked: engine.name === defaultEngine.name,
+              extra: iconWrapper,
+            });
+            option
+              .querySelector("input")
+              .addEventListener("change", () =>
+                engineStore.setDefaultEngine(engine)
+              );
+            content.appendChild(option);
+          }
+        },
+      },
+      {
+        id: "essentials",
+        title: "zen-welcome-essentials-title",
+        descriptions: ["zen-welcome-essentials-description"],
         buttons: [
+          kNextButton,
           {
-            l10n: "zen-welcome-start-browsing",
-            onclick: async () => {
-              return true;
+            l10n: "zen-welcome-skip",
+            onclick(pages) {
+              for (const button of pages.content.querySelectorAll(
+                ".zen-welcome-essential[selected]"
+              )) {
+                button.removeAttribute("selected");
+              }
             },
           },
         ],
-        fadeIn() {},
-        fadeOut() {},
+        render(content) {
+          content.appendChild(
+            parseXUL(`
+              <html:div class="zen-welcome-mock-browser">
+                <html:div class="zen-welcome-mock-browser-sidebar">
+                  <html:div class="zen-welcome-mock-browser-dots">
+                    <html:div class="no-squircles"></html:div>
+                    <html:div class="no-squircles"></html:div>
+                    <html:div class="no-squircles"></html:div>
+                  </html:div>
+                  <html:div id="zen-welcome-essentials"></html:div>
+                  <html:div class="zen-welcome-mock-tab"></html:div>
+                  <html:div class="zen-welcome-mock-tab"></html:div>
+                </html:div>
+              </html:div>
+            `)
+          );
+          const grid = content.querySelector("#zen-welcome-essentials");
+          for (const app of kEssentialApps) {
+            const button = document.createElement("button");
+            button.className = "zen-welcome-essential";
+            button.dataset.url = app.url;
+            button.style.setProperty(
+              "--zen-welcome-app-icon",
+              `url("chrome://browser/content/zen-images/favicons/${app.icon}.svg")`
+            );
+            button.style.setProperty("--zen-welcome-app-color", app.color);
+            button.toggleAttribute(
+              "selected",
+              gChoices.essentials.has(app.url)
+            );
+            button.addEventListener("click", () => {
+              button.toggleAttribute("selected");
+            });
+            grid.appendChild(button);
+          }
+        },
+        commit(content) {
+          gChoices.essentials = new Set(
+            [
+              ...content.querySelectorAll(".zen-welcome-essential[selected]"),
+            ].map(button => button.dataset.url)
+          );
+        },
+      },
+      {
+        id: "default-browser",
+        title: "zen-welcome-default-browser-title",
+        descriptions: ["zen-welcome-default-browser-description"],
+        buttons: [kNextButton],
+        render(content) {
+          content.appendChild(
+            createOption({
+              id: "zen-welcome-set-default-browser",
+              group: "zen-welcome-default-browser",
+              l10n: "zen-welcome-set-default-browser",
+              checked: gChoices.setDefaultBrowser,
+            })
+          );
+          content.appendChild(
+            createOption({
+              id: "zen-welcome-dont-set-default-browser",
+              group: "zen-welcome-default-browser",
+              l10n: "zen-welcome-dont-set-default-browser",
+              checked: !gChoices.setDefaultBrowser,
+            })
+          );
+        },
+        commit(content) {
+          gChoices.setDefaultBrowser = content.querySelector(
+            "#zen-welcome-set-default-browser"
+          ).checked;
+          if (gChoices.setDefaultBrowser) {
+            setDefaultBrowser();
+          }
+        },
+      },
+      {
+        id: "finish",
+        title: "zen-welcome-start-browsing-title",
+        descriptions: ["zen-welcome-start-browsing-description-1"],
+        buttons: [{ l10n: "zen-welcome-start-browsing", primary: true }],
+        render() {},
       },
     ];
   }
@@ -729,33 +668,48 @@
       { id: "zen-welcome-title-line2" },
     ]);
     const titleElement = document.getElementById("zen-welcome-title");
-    /* eslint-disable no-unsanitized/property */
-    titleElement.innerHTML = `<html:span>${title1}</html:span><html:span>${title2}</html:span>`;
+    for (const line of [title1, title2]) {
+      const lineElement = document.createElement("span");
+      for (const char of line) {
+        if (char === " ") {
+          lineElement.append(" ");
+          continue;
+        }
+        const charElement = document.createElement("span");
+        charElement.className = "zen-welcome-char";
+        charElement.textContent = char;
+        lineElement.appendChild(charElement);
+      }
+      titleElement.appendChild(lineElement);
+    }
+    const chars = titleElement.querySelectorAll(".zen-welcome-char");
     await animate(
-      "#zen-welcome-title span",
-      { opacity: [0, 1], y: [20, 0], filter: ["blur(2px)", "blur(0px)"] },
+      chars,
+      { opacity: [0, 1], y: [50, 0] },
       {
-        delay: getMotion().stagger(0.6, { startDelay: 0.2 }),
+        delay: getMotion().stagger(0.035, { startDelay: 0.8 }),
         type: "spring",
-        stiffness: 300,
-        damping: 20,
-        mass: 1.8,
+        bounce: 0.3,
+        visualDuration: 0.45,
       }
     );
     const button = document.getElementById("zen-welcome-start-button");
-    button.addEventListener("click", async () => {
-      await animate(
-        "#zen-welcome-title span, #zen-welcome-start-button",
-        { opacity: [1, 0], y: [0, -10], filter: ["blur(0px)", "blur(2px)"] },
-        {
-          type: "spring",
-          ease: [0.755, 0.05, 0.855, 0.06],
-          bounce: 0.4,
-          delay: getMotion().stagger(0.4),
-        }
-      );
-      new nsZenWelcomePages(getWelcomePages());
-    });
+    button.addEventListener(
+      "click",
+      async () => {
+        await animate(
+          "#zen-welcome-title .zen-welcome-char, #zen-welcome-start-button",
+          { opacity: [1, 0], y: [0, -14] },
+          {
+            duration: 0.3,
+            ease: "easeIn",
+            delay: getMotion().stagger(0.012),
+          }
+        );
+        new nsZenWelcomePages(getWelcomePages());
+      },
+      { once: true }
+    );
     await animate(
       button,
       { opacity: [0, 1], y: [20, 0], filter: ["blur(2px)", "blur(0px)"] },
@@ -769,20 +723,45 @@
     );
   }
 
+  const kSizeLockProperties = [
+    "min-width",
+    "max-width",
+    "min-height",
+    "max-height",
+  ];
+
+  function lockWindowSize(width, height) {
+    const style = document.documentElement.style;
+    style.setProperty("min-width", `${width}px`, "important");
+    style.setProperty("max-width", `${width}px`, "important");
+    style.setProperty("min-height", `${height}px`, "important");
+    style.setProperty("max-height", `${height}px`, "important");
+  }
+
+  function unlockWindowSize() {
+    const style = document.documentElement.style;
+    for (const property of kSizeLockProperties) {
+      style.removeProperty(property);
+    }
+  }
+
   function centerWindowOnScreen() {
     window.addEventListener(
       "MozAfterPaint",
       function () {
-        window.resizeTo(875, 560);
+        const width = Math.min(1200, screen.availWidth);
+        const height = Math.min(720, screen.availHeight);
+        window.resizeTo(width, height);
         window.focus();
         const appWin = window.docShell.treeOwner
           .QueryInterface(Ci.nsIInterfaceRequestor)
           .getInterface(Ci.nsIAppWindow);
         appWin.rollupAllPopups();
         window.moveTo(
-          screen.availLeft + (screen.availWidth - outerWidth) / 2,
-          screen.availTop + (screen.availHeight - outerHeight) / 2
+          screen.availLeft + (screen.availWidth - width) / 2,
+          screen.availTop + (screen.availHeight - height) / 2
         );
+        lockWindowSize(width, height);
       },
       { once: true }
     );

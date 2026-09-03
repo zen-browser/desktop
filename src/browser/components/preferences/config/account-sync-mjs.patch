@@ -1,8 +1,8 @@
 diff --git a/browser/components/preferences/config/account-sync.mjs b/browser/components/preferences/config/account-sync.mjs
-index b503987a08e2ce64bfc01c4e3a21e5e19ef834f0..b1c03a0b219fd3eddd93c1deaeb18ab79c85f168 100644
+index b01fd4bb163ad53139fcbd8e79e12ef994d1fa13..dd60be4fe268618d6596cd5cfac3342975bd241a 100644
 --- a/browser/components/preferences/config/account-sync.mjs
 +++ b/browser/components/preferences/config/account-sync.mjs
-@@ -42,6 +42,7 @@ Preferences.addAll([
+@@ -46,6 +46,7 @@ Preferences.addAll([
    { id: "services.sync.engine.creditcards", type: "bool" },
    { id: "services.sync.engine.addons", type: "bool" },
    { id: "services.sync.engine.prefs", type: "bool" },
@@ -10,7 +10,7 @@ index b503987a08e2ce64bfc01c4e3a21e5e19ef834f0..b1c03a0b219fd3eddd93c1deaeb18ab7
  ]);
  
  /**
-@@ -546,6 +547,7 @@ const SYNC_ENGINE_SETTINGS = [
+@@ -557,6 +558,7 @@ const SYNC_ENGINE_SETTINGS = [
      type: "payments",
    },
    { id: "syncAddons", pref: "services.sync.engine.addons", type: "addons" },
@@ -18,3 +18,37 @@ index b503987a08e2ce64bfc01c4e3a21e5e19ef834f0..b1c03a0b219fd3eddd93c1deaeb18ab7
    { id: "syncSettings", pref: "services.sync.engine.prefs", type: "settings" },
  ];
  
+@@ -564,6 +566,12 @@ SYNC_ENGINE_SETTINGS.forEach(({ id, pref }) => {
+   Preferences.addSetting({ id, pref });
+ });
+ 
++Preferences.addSetting({ id: "zenSyncWorkspacesGroup" });
++Preferences.addSetting({
++  id: "zenSyncWorkspaces",
++  pref: "services.sync.engine.spaces",
++});
++
+ Preferences.addSetting({
+   id: "syncEngines",
+   deps: SYNC_ENGINE_SETTINGS.map(({ id }) => id),
+@@ -995,6 +1003,20 @@ SettingGroupManager.registerGroups({
+             id: "syncEnginesList",
+             control: "sync-engines-list",
+           },
++          {
++            id: "zenSyncWorkspacesGroup",
++            control: "moz-box-item",
++            items: [
++              {
++                id: "zenSyncWorkspaces",
++                l10nId: "zen-settings-workspaces-sync",
++                control: "moz-toggle",
++                controlAttrs: {
++                  inputlayout: "inline-end",
++                },
++              },
++            ],
++          },
+           {
+             id: "syncChangeOptions",
+             control: "moz-box-button",

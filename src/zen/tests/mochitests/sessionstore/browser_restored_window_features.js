@@ -8,7 +8,6 @@ const BARPROP_NAMES = [
   "menubar",
   "personalbar",
   "scrollbars",
-  "statusbar",
   "toolbar",
 ];
 
@@ -45,7 +44,6 @@ add_task(async function testRestoredWindowFeatures() {
     menubar: true,
     personalbar: true,
     scrollbars: true,
-    statusbar: true,
     toolbar: true,
   };
   const TESTS = [

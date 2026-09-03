@@ -965,14 +965,20 @@ class nsZenWorkspaces {
   }
 
   changeWorkspaceIcon() {
-    let anchor = this.activeWorkspaceIndicator?.querySelector(
-      ".zen-current-workspace-indicator-icon"
-    );
-    if (this.#contextMenuData?.workspaceId) {
-      anchor = this.#contextMenuData.originalTarget;
+    let workspaceId;
+    let anchor;
+    if (this.#contextMenuData) {
+      workspaceId = this.#contextMenuData.workspaceId;
+      anchor =
+        this.#contextMenuData.originalTarget?.querySelector(
+          ".zen-current-workspace-indicator-icon"
+        ) || this.#contextMenuData.originalTarget;
+    } else {
+      workspaceId = this.activeWorkspace;
+      anchor = this.activeWorkspaceIndicator?.querySelector(
+        ".zen-current-workspace-indicator-icon"
+      );
     }
-    const workspaceId =
-      this.#contextMenuData?.workspaceId || this.activeWorkspace;
     if (!anchor) {
       return;
     }
@@ -1101,12 +1107,10 @@ class nsZenWorkspaces {
       "popupshowing",
       this.updateWorkspaceActionsMenu.bind(this)
     );
-    workspaceActions.addEventListener("popuphidden", () => {
-      setTimeout(() => {
-        setTimeout(() => {
-          this.#contextMenuData = null;
-        }, 0);
-      }, 0); // Delay to ensure the context menu data is cleared after the popup is hidden
+    workspaceActions.addEventListener("popuphidden", event => {
+      if (event.target === workspaceActions) {
+        this.#contextMenuData = null;
+      }
     });
 
     const contextChangeContainerTabMenu = document.getElementById(
@@ -1161,15 +1165,10 @@ class nsZenWorkspaces {
     } else {
       openInContainerMenuItem.setAttribute("hidden", "true");
     }
-    // Call parent node as on windows, the text can be double clicked
-    let target;
-    try {
-      target = event.explicitOriginalTarget?.closest("toolbarbutton");
-    } catch (e) {
-      console.error("Error getting explicitOriginalTarget in context menu:", e);
-    }
-    this.#contextMenuData = {
-      workspaceId: target?.getAttribute("zen-workspace-id"),
+    const target = event.target.triggerNode?.closest?.("[zen-workspace-id]");
+    const contextWorkspaceId = target?.getAttribute("zen-workspace-id");
+    this.#contextMenuData = target && {
+      workspaceId: contextWorkspaceId,
       originalTarget: target,
     };
     const workspaceName = document.getElementById("context_zenEditWorkspace");
@@ -1182,19 +1181,15 @@ class nsZenWorkspaces {
       "zen.view.sidebar-expanded"
     );
     workspaceName.hidden =
-      isCollapsed ||
-      (this.#contextMenuData.workspaceId &&
-        this.#contextMenuData.workspaceId !== this.activeWorkspace);
-    themePicker.hidden =
-      this.#contextMenuData.workspaceId &&
-      this.#contextMenuData.workspaceId !== this.activeWorkspace;
+      isCollapsed || contextWorkspaceId !== this.activeWorkspace;
+    themePicker.hidden = contextWorkspaceId !== this.activeWorkspace;
     const separator = document.getElementById("context_zenWorkspacesSeparator");
     for (const item of event.target.querySelectorAll(
       ".zen-workspace-context-menu-item"
     )) {
       item.remove();
     }
-    if (!this.#contextMenuData.workspaceId) {
+    if (!contextWorkspaceId) {
       separator.hidden = false;
       for (const workspace of this.getWorkspaces().reverse()) {
         const item = this.generateMenuItemForWorkspace(workspace);
@@ -1208,13 +1203,6 @@ class nsZenWorkspaces {
     } else {
       separator.hidden = true;
     }
-    event.target.addEventListener(
-      "popuphidden",
-      () => {
-        this.#contextMenuData = null;
-      },
-      { once: true }
-    );
   }
 
   updateWorkspaceActionsMenuContainer(event) {

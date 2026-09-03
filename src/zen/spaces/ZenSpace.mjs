@@ -388,7 +388,7 @@ export class nsZenWorkspace extends MozXULElement {
       popup.removeEventListener("popuphidden", handlePopupHidden);
     };
     popup.addEventListener("popuphidden", handlePopupHidden);
-    popup.openPopup(event.target, "after_start");
+    popup.openPopup(event.target, "after_start", 0, 0, false, false, event);
   }
 
   get newTabButton() {

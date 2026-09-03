@@ -654,11 +654,23 @@ class nsZenSpacesSyncModel {
   }
 
   /**
+   * Before the session file is read the sidebar reads as empty. Diffing that
+   * against the uploaded snapshot would tombstone every synced item. An
+   * initialized sidebar always holds at least one space.
+   */
+  #sidebarReady() {
+    return !!lazy.ZenSessionStore.getSidebarData()?.spaces?.length;
+  }
+
+  /**
    * Changes = diff between the current projections and the last state the
    * server acknowledged. Ids present locally with different content are
    * modified; ids only present in the uploaded snapshot are deletions.
    */
   computeChangedIDs() {
+    if (!this.#sidebarReady()) {
+      return {};
+    }
     const uploaded = this.#data().uploaded;
     const current = this.#digestAll();
     const pending = this.#pendingIds();
@@ -687,6 +699,9 @@ class nsZenSpacesSyncModel {
   }
 
   hasPendingChanges() {
+    if (!this.#sidebarReady()) {
+      return false;
+    }
     const uploaded = this.#data().uploaded;
     const current = this.#digestAll();
     const pending = this.#pendingIds();

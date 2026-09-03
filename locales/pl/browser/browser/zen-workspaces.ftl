@@ -27,7 +27,7 @@ zen-workspaces-panel-unload =
 zen-workspaces-panel-unload-others = 
     .label = Wyładuj wszystkie inne przestrzenie
 zen-workspaces-how-to-reorder-title = Jak przesuwać przestrzenie
-zen-workspaces-how-to-reorder-desc = Przesuwaj ikony przestrzeni na dole paska, aby zmienić ich kolejność
+zen-workspaces-how-to-reorder-desc = Przesuwaj ikony przestrzeni na dole panelu, aby zmienić ich kolejność
 zen-workspaces-change-theme = 
     .label = Edytuj motyw
 zen-workspaces-panel-context-open = 
@@ -64,6 +64,8 @@ zen-workspace-creation-label = Przestrzenie są wykorzystywane do zorganizowania
 zen-workspace-default-profile = Domyślny
 zen-workspaces-delete-workspace-title = Usunąć przestrzeń?
 zen-workspaces-delete-workspace-body = Czy na pewno chcesz usunąć { $name }? Tej czynności nie można cofnąć.
+zen-workspaces-remote-delete-title = Usunąć zsynchronizowaną przestrzeń?
+zen-workspaces-remote-delete-body = Przestrzeń { $name } została usunięta na innym urządzeniu. Czy usunąć ją również tutaj? Jeśli ją zachowasz, zostanie przywrócona na pozostałych urządzeniach.
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.
 zen-workspaces-close-all-unpinned-tabs-toast = Zamknięto karty! Użyj <span>{ $shortcut }</span> aby przywrócić.

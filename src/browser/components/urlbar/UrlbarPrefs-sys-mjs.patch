@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/UrlbarPrefs.sys.mjs b/browser/components/urlbar/UrlbarPrefs.sys.mjs
-index e48f0295d803ba9eac5ab9d01ebb3b3dacbc9d4b..cb78b74230f63a47479404767b5ab5883278dfba 100644
+index e48f0295d803ba9eac5ab9d01ebb3b3dacbc9d4b..e0f19b7e892bf86e733a4ea4aadcd91b7cb4c5ae 100644
 --- a/browser/components/urlbar/UrlbarPrefs.sys.mjs
 +++ b/browser/components/urlbar/UrlbarPrefs.sys.mjs
 @@ -161,6 +161,9 @@ const PREF_URLBAR_DEFAULTS = /** @type {PreferenceDefinition[]} */ ([
@@ -20,10 +20,11 @@ index e48f0295d803ba9eac5ab9d01ebb3b3dacbc9d4b..cb78b74230f63a47479404767b5ab588
  
    // Boolean to determine if the providers defined in `exposureResults`
    // should be displayed in search results. This can be set by a
-@@ -854,6 +858,8 @@ function makeDefaultResultGroups({
+@@ -854,6 +858,9 @@ function makeDefaultResultGroups({
     */
    let rootGroup = {
      children: [
++      { children: [{ group: lazy.UrlbarShared.RESULT_GROUP.ZEN_PINNED_TAB }] },
 +      { children: [{ group: lazy.UrlbarShared.RESULT_GROUP.ZEN_ACTION }] },
 +      { children: [{ group: lazy.UrlbarShared.RESULT_GROUP.ZEN_WORKSPACE }] },
        // heuristic

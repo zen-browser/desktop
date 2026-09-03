@@ -1,8 +1,16 @@
 diff --git a/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs b/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs
-index 65bd41b2ea14c26d490632d4a5348d6cf33ee9dd..80fbd685156949b6c7e93ed9d0ef56350dd1a0fe 100644
+index 82c9d771ed1fb5c98a4a594db5f1badbafa284ba..b03be688dc4153b1b2eb05a0f7ada50f811e9e3c 100644
 --- a/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs
 +++ b/browser/components/urlbar/UrlbarMuxerStandard.sys.mjs
-@@ -925,11 +925,16 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
+@@ -119,6 +119,7 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
+       urlToTabResultType: new Map(),
+       addedRemoteTabUrls: new Set(),
+       addedSwitchTabUrls: new Set(),
++      zenPinnedTabUrls: new Set(),
+       addedResultUrls: new Set(),
+       canShowPrivateSearch: unsortedResults.length > 1,
+       canShowTailSuggestions: true,
+@@ -919,11 +920,16 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
        result.providerName == "UrlbarProviderHeuristicFallback" &&
        state.context.heuristicResult?.providerName !=
          "UrlbarProviderHeuristicFallback"
@@ -19,11 +27,49 @@ index 65bd41b2ea14c26d490632d4a5348d6cf33ee9dd..80fbd685156949b6c7e93ed9d0ef5635
        // Discard the result if a tab-to-search result was added already.
        if (!state.canAddTabToSearch) {
          return false;
-@@ -1593,7 +1598,9 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
+@@ -1022,6 +1028,20 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
+       }
+     }
+ 
++    // Zen: discard switch-to-tab and history rows that point at the same page
++    // as a pinned tab result, so a loaded pin is not listed twice.
++    if (
++      state.zenPinnedTabUrls.size &&
++      !result.heuristic &&
++      result.providerName != "ZenUrlbarProviderPinnedTabs" &&
++      (result.type == lazy.UrlbarShared.RESULT_TYPE.TAB_SWITCH ||
++        result.type == lazy.UrlbarShared.RESULT_TYPE.URL) &&
++      result.payload.url &&
++      state.zenPinnedTabUrls.has(stripUrlForDedupe(result.payload.url))
++    ) {
++      return false;
++    }
++
+     // Discard switch-to-tab results that dupes another switch-to-tab result.
+     if (
+       result.type == lazy.UrlbarShared.RESULT_TYPE.TAB_SWITCH &&
+@@ -1205,6 +1225,16 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
+       return;
+     }
+ 
++    // Zen: remember the pages pinned tab results point at, used by
++    // _canAddResult to drop native rows for the same page.
++    if (result.providerName == "ZenUrlbarProviderPinnedTabs") {
++      for (let url of [result.payload.pinnedUrl, result.payload.tabUrl]) {
++        if (url) {
++          state.zenPinnedTabUrls.add(stripUrlForDedupe(url));
++        }
++      }
++    }
++
+     // Keep track of the largest heuristic result span.
+     if (result.heuristic && this._canAddResult(result, state)) {
+       state.maxHeuristicResultSpan = Math.max(
+@@ -1582,7 +1612,9 @@ class MuxerUnifiedComplete extends UrlbarMuxer {
        usedLimits.maxResultCount++;
      }
  
-+    if (!(result.heuristic && result.source == lazy.UrlbarShared.RESULT_SOURCE.ZEN_ACTIONS)) {
++    if (!(result.heuristic && (result.source == lazy.UrlbarShared.RESULT_SOURCE.ZEN_ACTIONS || result.source == lazy.UrlbarShared.RESULT_SOURCE.ZEN_PINNED_TABS))) {
      state.usedResultSpan += span;
 +    }
      this._updateStatePostAdd(result, state);

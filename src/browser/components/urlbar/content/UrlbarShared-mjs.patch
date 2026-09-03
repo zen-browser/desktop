@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/content/UrlbarShared.mjs b/browser/components/urlbar/content/UrlbarShared.mjs
-index 4e67dad66ae006842abc6eed547e4a244320d57a..393b61b4d2543c73e60afd334a353f36119ae73e 100644
+index 4e67dad66ae006842abc6eed547e4a244320d57a..a7d26259a481b206176de0d51e989ecd5eecaeab 100644
 --- a/browser/components/urlbar/content/UrlbarShared.mjs
 +++ b/browser/components/urlbar/content/UrlbarShared.mjs
 @@ -100,6 +100,7 @@ export const UrlbarShared = {
@@ -18,25 +18,27 @@ index 4e67dad66ae006842abc6eed547e4a244320d57a..393b61b4d2543c73e60afd334a353f36
    }),
  
    // Defines UrlbarResult types.
-@@ -165,6 +167,8 @@ export const UrlbarShared = {
+@@ -165,6 +167,9 @@ export const UrlbarShared = {
      OTHER_NETWORK: 6,
      ADDON: 7,
      ACTIONS: 8,
 +    ZEN_ACTIONS: 9,
 +    WORKSPACES: 10,
++    ZEN_PINNED_TABS: 11,
    }),
  
    // Results are categorized into groups to help the muxer compose them.  See
-@@ -200,6 +204,8 @@ export const UrlbarShared = {
+@@ -200,6 +205,9 @@ export const UrlbarShared = {
      SEMANTIC_HISTORY: "semanticHistory",
      SUGGESTED_INDEX: "suggestedIndex",
      TAIL_SUGGESTION: "tailSuggestion",
 +    ZEN_ACTION: "zenAction",
 +    ZEN_WORKSPACE: "zenWorkspace",
++    ZEN_PINNED_TAB: "zenPinnedTab",
    }),
  
    // Defines provider types.
-@@ -385,6 +391,14 @@ export const UrlbarShared = {
+@@ -385,6 +393,14 @@ export const UrlbarShared = {
          telemetryLabel: "actions",
          uiLabel: "urlbar-searchmode-actions3",
        },
@@ -51,7 +53,7 @@ index 4e67dad66ae006842abc6eed547e4a244320d57a..393b61b4d2543c73e60afd334a353f36
      ]);
    },
  
-@@ -402,6 +416,7 @@ export const UrlbarShared = {
+@@ -402,6 +418,7 @@ export const UrlbarShared = {
      if (UrlbarPrefs.get("scotchBonnet.enableOverride")) {
        keys.push(this.RESTRICT_TOKENS.ACTION);
      }

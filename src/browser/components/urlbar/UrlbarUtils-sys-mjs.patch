@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/UrlbarUtils.sys.mjs b/browser/components/urlbar/UrlbarUtils.sys.mjs
-index 178cd5e84fda74a28b2de59b671b3399cc28fac4..b03c6e06de4ee9a95dcb4d33d7ac9f0b053be4e1 100644
+index 178cd5e84fda74a28b2de59b671b3399cc28fac4..8a02b9b0781b848e306e9aae3330405c0052fad1 100644
 --- a/browser/components/urlbar/UrlbarUtils.sys.mjs
 +++ b/browser/components/urlbar/UrlbarUtils.sys.mjs
-@@ -214,6 +214,11 @@ export var UrlbarUtils = {
+@@ -214,6 +214,13 @@ export var UrlbarUtils = {
            return UrlbarShared.RESULT_GROUP.HEURISTIC_FALLBACK;
          case "UrlbarProviderHistoryUrlHeuristic":
            return UrlbarShared.RESULT_GROUP.HEURISTIC_HISTORY_URL;
@@ -11,6 +11,8 @@ index 178cd5e84fda74a28b2de59b671b3399cc28fac4..b03c6e06de4ee9a95dcb4d33d7ac9f0b
 +            return UrlbarShared.RESULT_GROUP.ZEN_WORKSPACE;
 +          }
 +          return UrlbarShared.RESULT_GROUP.ZEN_ACTION;
++        case "ZenUrlbarProviderPinnedTabs":
++          return UrlbarShared.RESULT_GROUP.ZEN_PINNED_TAB;
          case "UrlbarProviderOmnibox":
            return UrlbarShared.RESULT_GROUP.HEURISTIC_OMNIBOX;
          case "UrlbarProviderRestrictKeywordsAutofill":

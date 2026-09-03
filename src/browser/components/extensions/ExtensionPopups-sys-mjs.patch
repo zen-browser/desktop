@@ -1,0 +1,13 @@
+diff --git a/browser/components/extensions/ExtensionPopups.sys.mjs b/browser/components/extensions/ExtensionPopups.sys.mjs
+index 1cd35175507bd442aae6857e65015cfed00058e3..c7f9c5a4de05cfa476b89137798061ce36ef2f40 100644
+--- a/browser/components/extensions/ExtensionPopups.sys.mjs
++++ b/browser/components/extensions/ExtensionPopups.sys.mjs
+@@ -418,6 +418,8 @@ export class BasePopup {
+       this.browser.style.minWidth = `${width}px`;
+       this.browser.style.height = `${height}px`;
+       this.browser.style.minHeight = `${height}px`;
++
++      this.lastCalculatedInViewHeight = Math.max(height, this.viewHeight);
+     }
+ 
+     let event = new this.window.CustomEvent("WebExtPopupResized", { detail });

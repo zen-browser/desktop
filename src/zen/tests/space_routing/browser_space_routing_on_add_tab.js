@@ -4,10 +4,15 @@
 "use strict";
 
 const TARGET_WS = { uuid: "ws-target", containerTabId: 7 };
+let savedDefaultExternalRoute;
 
 add_setup(async function () {
+  savedDefaultExternalRoute = gZenSpaceRoutingManager.getDefaultExternalRoute();
   clearAllRoutes();
-  registerCleanupFunction(() => clearAllRoutes());
+  registerCleanupFunction(() => {
+    clearAllRoutes();
+    gZenSpaceRoutingManager.setDefaultExternalRoute(savedDefaultExternalRoute);
+  });
 });
 
 add_task(async function test_onBeforeAddTab_resolves_container_for_match() {
@@ -138,6 +143,29 @@ add_task(async function test_onBeforeAddTab_skips_until_startup_ready() {
       targetRoute: null,
     },
     "While gZenStartup.isReady is false (session restore), routing is skipped"
+  );
+});
+
+add_task(async function test_onBeforeAddTab_routes_external_during_startup() {
+  clearAllRoutes();
+  gZenSpaceRoutingManager.setDefaultExternalRoute(TARGET_WS.uuid);
+  const win = makeFakeWindow({ ready: false, workspaces: [TARGET_WS] });
+
+  const result = gZenSpaceRoutingManager.onBeforeAddTab(
+    "https://example.com",
+    { fromExternal: true },
+    win
+  );
+
+  Assert.deepEqual(
+    result,
+    {
+      shouldEarlyExit: false,
+      userContextId: TARGET_WS.containerTabId,
+      isRouteFound: true,
+      targetRoute: TARGET_WS.uuid,
+    },
+    "An external link is routed while session restore is still in progress"
   );
 });
 

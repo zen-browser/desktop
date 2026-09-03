@@ -253,3 +253,4 @@ add_task(async function test_kill_notification_closes_dialog() {
     "A 'zen-space-routing-kill' notification closes the dialog"
   );
 });
+

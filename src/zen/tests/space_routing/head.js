@@ -33,9 +33,20 @@ function makeFakeWindow({
   ready = true,
   workspaces = [],
   workspaceEnabled = true,
+  tabs = [],
 } = {}) {
   return {
     gZenStartup: { isReady: ready },
+    gBrowser: {
+      tabs,
+      _selectedTab: null,
+      get selectedTab() {
+        return this._selectedTab;
+      },
+      set selectedTab(tab) {
+        this._selectedTab = tab;
+      },
+    },
     gZenWorkspaces: {
       workspaceEnabled,
       moveCalls: [],
@@ -51,6 +62,20 @@ function makeFakeWindow({
         this.changeCalls.push(workspace);
         return Promise.resolve();
       },
+    },
+  };
+}
+
+function makeFakeTab(url, workspaceId = null) {
+  return {
+    linkedBrowser: {
+      currentURI: Services.io.newURI(url),
+    },
+    getAttribute(name) {
+      if (name === "zen-workspace-id") {
+        return workspaceId;
+      }
+      return null;
     },
   };
 }

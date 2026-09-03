@@ -71,6 +71,52 @@ class nsZenSpaceRoutingManager {
   }
 
   /**
+   * Searches for an existing tab whose URL matches the given URI string.
+   *
+   * @param {string} uriString - The URI to search for
+   * @param {Window} win - The browser window to search in
+   * @returns {Element|null} The matching tab element, or null
+   */
+  #findExistingTabForUri(uriString, win) {
+    if (!win?.gBrowser?.tabs) {
+      return null;
+    }
+
+    const normalizedUri = uriString.replace(/#.*$/, "").replace(/\/+$/, "").toLowerCase();
+
+    for (const tab of win.gBrowser.tabs) {
+      const tabUri = tab.linkedBrowser?.currentURI?.spec;
+      if (tabUri && tabUri.replace(/#.*$/, "").replace(/\/+$/, "").toLowerCase() === normalizedUri) {
+        return tab;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Focuses an existing tab and switches to its workspace if needed.
+   *
+   * @param {Element} tab - The tab to focus
+   * @param {Window} win - The browser window
+   */
+  async #focusTab(tab, win) {
+    try {
+      win.gBrowser.selectedTab = tab;
+
+      const workspaceId = tab.getAttribute("zen-workspace-id");
+      if (workspaceId && win.gZenWorkspaces) {
+        const workspace = win.gZenWorkspaces.getWorkspaceFromId(workspaceId);
+        if (workspace) {
+          await win.gZenWorkspaces.changeWorkspace(workspace);
+        }
+      }
+    } catch (err) {
+      console.error("[ZenSpaceRouting]: Error focusing existing tab:", err);
+    }
+  }
+
+  /**
    * Callback that will be executed from tabbrowser.js
    * This method can be used to stop the tab from being created.
    *
@@ -96,6 +142,20 @@ class nsZenSpaceRoutingManager {
         targetRoute,
         targetWorkspaceName,
       };
+    }
+
+    if (options.fromExternal && this.getFocusExistingTab()) {
+      const existingTab = this.#findExistingTabForUri(uriString, win);
+      if (existingTab) {
+        this.#focusTab(existingTab, win);
+        return {
+          shouldEarlyExit: true,
+          userContextId: null,
+          isRouteFound: false,
+          targetRoute: null,
+          targetWorkspaceName: null,
+        };
+      }
     }
 
     targetRoute = this.routeUri(uriString, options);
@@ -472,6 +532,20 @@ class nsZenSpaceRoutingManager {
    */
   setDefaultExternalRoute(routeType) {
     this.#file.data.defaultRouteExternal = routeType;
+  }
+
+  /**
+   * @returns {boolean} Whether to focus an existing tab instead of opening a new one
+   */
+  getFocusExistingTab() {
+    return Services.prefs.getBoolPref("zen.tabs.focus-existing-tab", false);
+  }
+
+  /**
+   * @param {boolean} value - Enable or disable focusing existing tabs
+   */
+  setFocusExistingTab(value) {
+    Services.prefs.setBoolPref("zen.tabs.focus-existing-tab", !!value);
   }
 
   /**

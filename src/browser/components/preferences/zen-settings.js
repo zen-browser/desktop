@@ -1245,6 +1245,11 @@ Preferences.addAll([
     default: true,
   },
   {
+    id: "zen.tabs.focus-existing-tab",
+    type: "bool",
+    default: false,
+  },
+  {
     id: "zen.window-sync.sync-only-pinned-tabs",
     type: "bool",
     default: false,

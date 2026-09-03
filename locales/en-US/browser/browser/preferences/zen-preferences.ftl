@@ -64,6 +64,9 @@ zen-tabs-select-recently-used-on-close =
 zen-tabs-close-on-back-with-no-history =
     .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
 
+zen-tabs-focus-existing-tab =
+    .label = Focus an existing tab instead of opening a new one when clicking links from external apps
+
 zen-settings-workspaces-sync =
     .label = Sync your sidebar across devices
     .description = Keep your workspaces, pinned tabs and folders in sync on all your devices through your Mozilla account.

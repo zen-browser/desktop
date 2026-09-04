@@ -809,8 +809,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
      }
  
      _blurTab(aTab) {
--      this.selectedTab = this._findTabToBlurTo(aTab);
-+      gZenWorkspaces.selectTabToBlur(aTab, this._findTabToBlurTo(aTab));
+       this.selectedTab = this._findTabToBlurTo(aTab);
      }
  
      /**

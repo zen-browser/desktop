@@ -480,6 +480,16 @@ add_task(
         "The routed tab becomes selected in its target workspace"
       );
 
+      ok(
+        gZenWorkspaces.getTabsToExclude(routedTab).includes(sourceTab),
+        "The owner in another workspace is excluded as a blur target"
+      );
+      Assert.notEqual(
+        gBrowser._findTabToBlurTo(routedTab),
+        sourceTab,
+        "Closing a routed tab does not blur to its owner in another workspace"
+      );
+
       gBrowser.removeTab(routedTab, { animate: true });
       await gZenWorkspaces.changeWorkspace(sourceWorkspace);
       await TestUtils.waitForCondition(

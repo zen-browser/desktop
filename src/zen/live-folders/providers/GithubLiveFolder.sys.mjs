@@ -198,45 +198,36 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
     }
 
     const document = new DOMParser().parseFromString(text, "text/html");
-    const issues = document.querySelectorAll(
-      "div[class^=IssueItem-module__defaultRepoContainer]"
+    const links = document.querySelectorAll(
+      'a[data-testid="issue-listitem-title-link"]'
     );
     const items = [];
     const activeRepos = new Set();
 
-    if (issues.length) {
-      const authors = document.querySelectorAll(
-        "a[class^=IssueItem-module__authorCreatedLink]"
+    for (const link of links) {
+      const issueUrl = new URL(link.getAttribute("href"), this.state.url);
+      const pathMatch = issueUrl.pathname.match(
+        /^\/([^/]+\/[^/]+)\/(?:issues|pull)\/([0-9]+)/
       );
-      const titles = document.querySelectorAll(
-        "div[class^=Title-module__container]"
-      );
-      const links = document.querySelectorAll(
-        '[data-testid="issue-pr-title-link"]'
-      );
-
-      for (let i = 0; i < issues.length; i++) {
-        const [rawRepo, rawNumber] = issues[i].childNodes;
-        const author = authors[i]?.textContent;
-        const title = titles[i]?.textContent;
-        const issueUrl = links[i]?.href;
-
-        const repo = rawRepo.textContent?.trim();
-        if (repo) {
-          activeRepos.add(repo);
-        }
-
-        const numberMatch = rawNumber?.textContent?.match(/[0-9]+/);
-        const number = numberMatch?.[0] ?? "";
-
-        items.push({
-          title,
-          subtitle: author,
-          icon: "chrome://browser/content/zen-images/favicons/github.svg",
-          url: "https://github.com" + issueUrl,
-          id: `${repo}#${number}`,
-        });
+      if (!pathMatch) {
+        continue;
       }
+
+      const [, repo, number] = pathMatch;
+      activeRepos.add(repo);
+
+      const author = link
+        .closest("li")
+        ?.querySelector('[data-testid="author-filter-link"]')
+        ?.lastChild?.textContent.trim();
+
+      items.push({
+        title: link.textContent.trim(),
+        subtitle: author,
+        icon: "chrome://browser/content/zen-images/favicons/github.svg",
+        url: issueUrl.href,
+        id: `${repo}#${number}`,
+      });
     }
 
     return {

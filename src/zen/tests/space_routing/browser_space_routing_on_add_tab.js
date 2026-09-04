@@ -377,6 +377,11 @@ add_task(
         originalTab,
         "The routed tab is not selected before its target workspace starts changing"
       );
+      Assert.equal(
+        routedTab.owner,
+        null,
+        "A deferred routed tab does not inherit an owner from another workspace"
+      );
 
       Assert.equal(
         routedTab.userContextId,

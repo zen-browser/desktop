@@ -306,8 +306,8 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
 +        return null;
 +      }
 +
-+      let hasZenDefaultUserContextId = false;
-+      let zenForcedWorkspaceId = undefined;
++      const initiallyInBackground = inBackground || gZenSpaceRoutingManager.shouldDeferTabSelection(beforeRouteResult, window);
++      let hasZenDefaultUserContextId = false, zenForcedWorkspaceId = undefined;
 +      if (beforeRouteResult.isRouteFound && (typeof userContextId === "undefined" || fromExternal)) {
 +        userContextId = beforeRouteResult.userContextId;
 +        hasZenDefaultUserContextId = true;
@@ -321,7 +321,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
  
 +      if (!gURLBar.hasAttribute("zen-newtab")) {
        // If we're opening a foreground tab, set the owner by default.
-       ownerTab ??= inBackground ? null : this.selectedTab;
+       ownerTab ??= initiallyInBackground ? null : this.selectedTab;
  
 @@ -3399,6 +3507,7 @@
        if (this.selectedTab.owner) {
@@ -388,7 +388,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        gSharedTabWarning.tabAdded(t);
  
 -      if (!inBackground) {
-+      if (!inBackground && !gZenSpaceRoutingManager.shouldDeferTabSelection(beforeRouteResult, window)) {
++      if (!initiallyInBackground) {
          this.selectedTab = t;
        }
 +

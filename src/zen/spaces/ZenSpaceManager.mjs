@@ -40,6 +40,13 @@ class nsZenWorkspaces {
   #inChangingWorkspace = false;
   draggedElement = null;
 
+  /**
+   * The space currently showing the creation form, if any. It shows the form
+   * instead of tabs and essentials, so it never owns an essentials section.
+   * Cleared by the form element once it is removed from the DOM.
+   */
+  creatingWorkspaceId = null;
+
   #hasInitialized = false;
 
   #canDebug = Services.prefs.getBoolPref("zen.workspaces.debug", false);
@@ -156,10 +163,27 @@ class nsZenWorkspaces {
         this._invalidateBookmarkContainers();
       };
       Services.obs.addObserver(observerFunction, "workspace-bookmarks-updated");
+      const onContainerDeleted = subject => {
+        const userContextId = subject?.wrappedJSObject?.userContextId;
+        for (const workspace of this.getWorkspaces()) {
+          if (workspace.containerTabId === userContextId) {
+            workspace.containerTabId = 0;
+            this.saveWorkspace(workspace);
+          }
+        }
+      };
+      Services.obs.addObserver(
+        onContainerDeleted,
+        "contextual-identity-deleted"
+      );
       window.addEventListener("unload", () => {
         Services.obs.removeObserver(
           observerFunction,
           "workspace-bookmarks-updated"
+        );
+        Services.obs.removeObserver(
+          onContainerDeleted,
+          "contextual-identity-deleted"
         );
       });
     }
@@ -328,10 +352,7 @@ class nsZenWorkspaces {
   }
 
   get shouldAnimateEssentials() {
-    return (
-      this.containerSpecificEssentials ||
-      document.documentElement.hasAttribute("zen-creating-workspace")
-    );
+    return this.containerSpecificEssentials || !!this.creatingWorkspaceId;
   }
 
   get activeWorkspaceElement() {
@@ -441,9 +462,6 @@ class nsZenWorkspaces {
       workspaceWrapper.active = true;
     }
 
-    if (document.documentElement.hasAttribute("zen-creating-workspace")) {
-      workspaceWrapper.hidden = true; // Hide workspace while creating it
-    }
     container.appendChild(workspaceWrapper);
     this.#organizeTabsToWorkspaceSections(workspace, workspaceWrapper, tabs);
     workspaceWrapper.checkPinsExistence();
@@ -894,6 +912,9 @@ class nsZenWorkspaces {
     // Wait for the next event loop to ensure that the startup focus logic by
     // firefox has finished doing it's thing.
     setTimeout(() => {
+      if (document.documentElement.hasAttribute("zen-welcome-stage")) {
+        return;
+      }
       if (gZenVerticalTabsManager._canReplaceNewTab && shownEmptyTab) {
         BrowserCommands.openTab();
       } else if (shownEmptyTab || initialTabWasEmpty) {
@@ -1219,7 +1240,7 @@ class nsZenWorkspaces {
     }
   }
 
-  saveWorkspace(workspaceData) {
+  saveWorkspace(workspaceData, { insertAfterId = null } = {}) {
     if (this.privateWindowOrDisabled) {
       return;
     }
@@ -1227,8 +1248,13 @@ class nsZenWorkspaces {
     const index = workspacesData.findIndex(
       ws => ws.uuid === workspaceData.uuid
     );
+    const insertAfterIndex = insertAfterId
+      ? workspacesData.findIndex(ws => ws.uuid === insertAfterId)
+      : -1;
     if (index !== -1) {
       workspacesData[index] = workspaceData;
+    } else if (insertAfterIndex !== -1) {
+      workspacesData.splice(insertAfterIndex + 1, 0, workspaceData);
     } else {
       workspacesData.push(workspaceData);
     }
@@ -1409,6 +1435,7 @@ class nsZenWorkspaces {
     const previousWorkspace = this.getActiveWorkspace();
     document.documentElement.setAttribute("zen-creating-workspace", "true");
     await this.createAndSaveWorkspace("Space", undefined, false, 0, {
+      insertAfterId: previousWorkspace?.uuid,
       beforeChangeCallback: async workspace => {
         createForm = document.createXULElement("zen-workspace-creation");
         createForm.setAttribute("workspace-id", workspace.uuid);
@@ -1416,7 +1443,18 @@ class nsZenWorkspaces {
           "previous-workspace-id",
           previousWorkspace?.uuid || ""
         );
-        gBrowser.tabContainer.after(createForm);
+        this.creatingWorkspaceId = workspace.uuid;
+        const spaceElement = this.workspaceElement(workspace.uuid);
+        // No essentials sit above the form, so there's no room to reserve for
+        // them. The switch animation needs a value to
+        // animate the padding from.
+        spaceElement.style.paddingTop = "0px";
+        spaceElement.appendChild(createForm);
+        // Keep the strip sitting on the previous space so that the new one,
+        // together with its creation form, slides in like any other space.
+        if (previousWorkspace) {
+          this._organizeWorkspaceStripLocations(previousWorkspace, true);
+        }
         await createForm.promiseInitialized;
       },
     });
@@ -1706,6 +1744,15 @@ class nsZenWorkspaces {
   }
 
   makeSureEmptyTabIsFirst() {
+    if (
+      gZenUIManager.testingEnabled &&
+      this._emptyTab &&
+      (this._emptyTab.closing || !this._emptyTab.isConnected)
+    ) {
+      this._emptyTab = gBrowser.tabs.find(
+        tab => tab.hasAttribute("zen-empty-tab") && !tab.closing
+      );
+    }
     const emptyTab = this._emptyTab;
     if (emptyTab) {
       emptyTab.setAttribute("zen-workspace-id", this.activeWorkspace);
@@ -1777,10 +1824,6 @@ class nsZenWorkspaces {
     justMove = false,
     offsetPixels = 0
   ) {
-    if (document.documentElement.hasAttribute("zen-creating-workspace")) {
-      // If we are creating a workspace, we don't want to animate the strip
-      return;
-    }
     this._organizingWorkspaceStrip = true;
     const workspaces = this.getWorkspaces();
     let workspaceIndex = workspaces.findIndex(w => w.uuid === workspace.uuid);
@@ -1801,6 +1844,7 @@ class nsZenWorkspaces {
     }
     const workspaceContextId = workspace.containerTabId;
     const nextWorkspaceContextId = workspaces[nextSpaceIdx]?.containerTabId;
+    const isCreatingWorkspace = workspace.uuid === this.creatingWorkspaceId;
     for (const otherWorkspace of workspaces) {
       const element = this.workspaceElement(otherWorkspace.uuid);
       let diff = workspaces.indexOf(otherWorkspace) - workspaceIndex;
@@ -1817,8 +1861,9 @@ class nsZenWorkspaces {
       // Get the next workspace contextId, if it's the same, dont apply offsetPixels
       // if it's not we do apply it
       if (
-        container.getAttribute("container") != workspace.containerTabId &&
-        this.shouldAnimateEssentials
+        isCreatingWorkspace ||
+        (container.getAttribute("container") != workspace.containerTabId &&
+          this.shouldAnimateEssentials)
       ) {
         container.setAttribute("hidden", "true");
       } else {
@@ -1891,6 +1936,17 @@ class nsZenWorkspaces {
       delete this._hasAnimatedBackgrounds;
     }
     delete this._organizingWorkspaceStrip;
+  }
+
+  /**
+   * Drop the offset a creation form parked the essentials at.
+   */
+  resetEssentialsPosition() {
+    for (const container of document.querySelectorAll(
+      "#zen-essentials .zen-essentials-container"
+    )) {
+      container.style.removeProperty("transform");
+    }
   }
 
   updateWorkspaceIndicator(currentWorkspace, workspaceIndicator) {
@@ -1966,17 +2022,21 @@ class nsZenWorkspaces {
     const isGoingLeft = diff < 0;
     const essentialsAnimData = [];
     if (shouldAnimate && this.shouldAnimateEssentials && previousWorkspace) {
-      const containerIds = new Map();
+      const creatingWorkspaceId = this.creatingWorkspaceId;
+      const essentialsElements = new Map();
       for (const workspace of workspaces) {
-        const containerId = workspace.containerTabId;
-        if (!containerIds.has(containerId)) {
-          containerIds.set(containerId, []);
+        if (workspace.uuid === creatingWorkspaceId) {
+          continue;
         }
-        containerIds.get(containerId).push(workspace);
+        const element = this.getEssentialsSection(workspace.containerTabId);
+        if (!essentialsElements.has(element)) {
+          essentialsElements.set(element, []);
+        }
+        essentialsElements.get(element).push(workspace);
       }
-      for (const [containerId, spaces] of containerIds) {
+      for (const [element, spaces] of essentialsElements) {
         essentialsAnimData.push({
-          element: this.getEssentialsSection(containerId),
+          element,
           workspaces: spaces,
         });
       }
@@ -2117,6 +2177,7 @@ class nsZenWorkspaces {
           existingOffset = currentTransform || (isGoingLeft ? -100 : 100);
           newOffset = 0;
         }
+        data.finalOffset = newOffset;
         const newTransform = `translateX(${newOffset}%)`;
         let existingTransform = `translateX(${existingOffset}%)`;
         if (shouldAnimate) {
@@ -2155,6 +2216,12 @@ class nsZenWorkspaces {
     document.documentElement.removeAttribute("animating-background");
     if (shouldAnimate) {
       for (const data of essentialsAnimData) {
+        if (this.creatingWorkspaceId && data.finalOffset) {
+          // The space being created has no essentials of its own, leave the
+          // ones we just slid away parked off screen instead of snapping them
+          // back under the creation form.
+          continue;
+        }
         data.element.style.removeProperty("transform");
       }
       this._alwaysAnimatePaddingTop = true;
@@ -2483,7 +2550,7 @@ class nsZenWorkspaces {
         "Default";
       name = this.isPrivateWindow ? "Incognito" : label;
       if (this.isPrivateWindow) {
-        icon = gZenEmojiPicker.getSVGURL("eye.svg");
+        icon = "chrome://browser/skin/zen-icons/private-window-small.svg";
       }
     }
     let workspace = {
@@ -2501,7 +2568,9 @@ class nsZenWorkspaces {
     icon = undefined,
     dontChange = false,
     containerTabId = 0,
-    { beforeChangeCallback } = { beforeChangeCallback: null } // Callback to run before changing workspace
+    // beforeChangeCallback runs before changing workspace, insertAfterId places
+    // the new space right after an existing one instead of at the end.
+    { beforeChangeCallback = null, insertAfterId = null } = {}
   ) {
     if (!this.workspaceEnabled) {
       return null;
@@ -2522,7 +2591,7 @@ class nsZenWorkspaces {
       this.#createWorkspaceTabsSection(workspaceData, extraTabs);
       this._organizeWorkspaceStripLocations(workspaceData);
     }
-    this.saveWorkspace(workspaceData);
+    this.saveWorkspace(workspaceData, { insertAfterId });
     if (!dontChange) {
       if (beforeChangeCallback) {
         try {
@@ -2644,6 +2713,11 @@ class nsZenWorkspaces {
         workspacesIds.push(originalWorkspaceId);
       }
       for (const workspaceId of workspacesIds) {
+        if (workspaceId === this.creatingWorkspaceId) {
+          // The space being created shows the creation form instead of its
+          // essentials, so it doesn't reserve any room for them.
+          continue;
+        }
         const workspaceElement = this.workspaceElement(workspaceId);
         const workspaceObject = this.getWorkspaceFromId(workspaceId);
         if (!workspaceElement || !workspaceObject) {
@@ -3240,8 +3314,10 @@ class nsZenWorkspaces {
       return width;
     }, 0);
 
-    // Check if the total width exceeds the parent's width
-    if (totalWidth > parent.clientWidth) {
+    // Check if the total width exceeds the parent's width.
+    const parentWidth =
+      window.windowUtils.getBoundsWithoutFlushing(parent).width;
+    if (totalWidth > parentWidth) {
       parent.setAttribute("icons-overflow", "true");
     } else {
       parent.removeAttribute("icons-overflow");
@@ -3249,7 +3325,7 @@ class nsZenWorkspaces {
 
     // Set the width of each icon to the maximum size they can fit on
     const widthPerButton = Math.max(
-      (parent.clientWidth - separation * (parent.children.length - 1)) /
+      (parentWidth - separation * (parent.children.length - 1)) /
         parent.children.length,
       minButtonSize
     );

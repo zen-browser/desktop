@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { JSONFile } from "resource://gre/modules/JSONFile.sys.mjs";
+import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
 
 const lazy = {};
 
@@ -13,6 +14,26 @@ ChromeUtils.defineESModuleGetters(lazy, {
   ContextualIdentityService:
     "moz-src:///toolkit/components/contextualidentity/ContextualIdentityService.sys.mjs",
 });
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "syncDebug",
+  "zen.spaces-sync.debug",
+  false
+);
+
+/**
+ * Debug logging for the whole Spaces sync pipeline.
+ *
+ * @param {string} message
+ * @param {...any} args
+ */
+export function syncLog(message, ...args) {
+  if (lazy.syncDebug) {
+    // eslint-disable-next-line no-console
+    console.debug(`ZenSpacesSync: ${message}`, ...args);
+  }
+}
 
 export const SIDEBAR_COLLECTED_TOPIC = "zen-sidebar-data-collected";
 
@@ -131,6 +152,16 @@ class nsZenSpacesSyncModel {
           data.version = STORE_VERSION;
           data.uploaded ||= {};
           data.containers ||= {};
+          // The container map used to be keyed by guid. It is keyed by
+          // userContextId now so that registering a guid replaces any
+          // previous one for the same container. Flip old stores over
+          // (old values are numeric ids, new values are guid strings).
+          for (const [key, value] of Object.entries(data.containers)) {
+            if (typeof value === "number") {
+              delete data.containers[key];
+              data.containers[value] = key;
+            }
+          }
           return data;
         },
       });
@@ -150,20 +181,27 @@ class nsZenSpacesSyncModel {
     if (!Number.isSafeInteger(id) || id <= 0) {
       return null;
     }
+    const data = this.#data();
+    if (!lazy.ContextualIdentityService.getPublicIdentityFromId(id)) {
+      // A space or tab still pointing at a container that was deleted.
+      if (id in data.containers) {
+        delete data.containers[id];
+        this.#file.saveSoon();
+      }
+      return null;
+    }
     if (id <= BUILTIN_CONTAINER_MAX) {
       return `${BUILTIN_GUID_PREFIX}${id}`;
     }
-    const data = this.#data();
-    for (const [guid, mapped] of Object.entries(data.containers)) {
-      if (mapped === id) {
-        return guid;
-      }
+    const existing = data.containers[id];
+    if (existing) {
+      return existing;
     }
     if (!create) {
       return null;
     }
     const guid = Services.uuid.generateUUID().toString().slice(1, -1);
-    data.containers[guid] = id;
+    data.containers[id] = guid;
     this.#file.saveSoon();
     return guid;
   }
@@ -172,28 +210,49 @@ class nsZenSpacesSyncModel {
     if (typeof guid !== "string" || !guid) {
       return null;
     }
+    const data = this.#data();
+    for (const [id, mapped] of Object.entries(data.containers)) {
+      if (mapped === guid) {
+        const contextId = Number(id);
+        if (lazy.ContextualIdentityService.getPublicIdentityFromId(contextId)) {
+          return contextId;
+        }
+        delete data.containers[id];
+        this.#file.saveSoon();
+        return null;
+      }
+    }
     if (guid.startsWith(BUILTIN_GUID_PREFIX)) {
       const id = Number(guid.slice(BUILTIN_GUID_PREFIX.length));
-      return Number.isSafeInteger(id) && id > 0 && id <= BUILTIN_CONTAINER_MAX
+      return Number.isSafeInteger(id) &&
+        id > 0 &&
+        id <= BUILTIN_CONTAINER_MAX &&
+        lazy.ContextualIdentityService.getPublicIdentityFromId(id)
         ? id
         : null;
     }
-    return this.#data().containers[guid] ?? null;
+    return null;
   }
 
+  /**
+   * Adopts an incoming guid as the identity's synced name.
+   *
+   * @param {string} guid
+   * @param {number} userContextId
+   */
   registerContainerGuid(guid, userContextId) {
-    if (guid.startsWith(BUILTIN_GUID_PREFIX)) {
-      return;
-    }
-    this.#data().containers[guid] = userContextId;
+    this.#data().containers[userContextId] = guid;
     this.#file.saveSoon();
   }
 
   forgetContainerGuid(guid) {
     const data = this.#data();
-    if (guid in data.containers) {
-      delete data.containers[guid];
-      this.#file.saveSoon();
+    for (const [id, mapped] of Object.entries(data.containers)) {
+      if (mapped === guid) {
+        delete data.containers[id];
+        this.#file.saveSoon();
+        return;
+      }
     }
   }
 
@@ -231,70 +290,103 @@ class nsZenSpacesSyncModel {
     if (!url || url === "about:blank") {
       return null;
     }
-    const icon = syncableIconUrl(tabData.image || initial?.image || "");
+    const icon = syncableIconUrl(
+      (tabData.zenHasStaticIcon
+        ? tabData.image
+        : initial?.image || tabData.image) || ""
+    );
     return { url, title: title || "", icon };
   }
 
   /**
    * Builds the ordered child id list for one parent (a space's pinned
-   * section or a folder). Tabs and splits are ordered by their position in
-   * the collected tab list; folders are spliced in next to their recorded
-   * previous sibling.
+   * section or a folder) from the collected tab list, which is in strip
+   * order.
    *
-   * @param {object} root0
-   * @param {Array<object>} root0.tabs
-   * @param {Array<object>} root0.folders
-   * @param {Set<string>} root0.splitIds
-   * @param {Map<string, ?string>} root0.splitParents
-   * @param {Map<string, ?string>} root0.splitWs
-   * @param {object} root0.scope
+   * @param {object} ctx - The projection context.
+   * @param {{space?: string, folder?: string}} scope
    */
-  #childSequence({ tabs, folders, splitIds, splitParents, splitWs, scope }) {
+  #childSequence(ctx, scope) {
     const seq = [];
-    const seenSplits = new Set();
-    for (const tab of tabs) {
+    const seen = new Set();
+    const push = id => {
+      if (!seen.has(id)) {
+        seen.add(id);
+        seq.push(id);
+      }
+    };
+    for (const tab of ctx.allTabs) {
       const groupId = tab.groupId || null;
-      if (groupId && splitIds.has(groupId)) {
+      if (!groupId) {
         if (
-          !seenSplits.has(groupId) &&
-          scope.matchSplit(
-            splitParents.get(groupId) ?? null,
-            splitWs.get(groupId) ?? null
-          )
+          scope.space &&
+          !tab.zenEssential &&
+          (tab.zenWorkspace || null) === scope.space &&
+          ctx.syncableTabIds.has(tab.zenSyncId)
         ) {
-          seenSplits.add(groupId);
-          seq.push(groupId);
+          push(tab.zenSyncId);
         }
         continue;
       }
-      if (scope.matchTab(tab, groupId)) {
-        seq.push(tab.zenSyncId);
-      }
-    }
-    for (const folder of folders) {
-      if (!scope.matchFolder(folder)) {
+      if (scope.folder && groupId === scope.folder) {
+        if (ctx.syncableTabIds.has(tab.zenSyncId)) {
+          push(tab.zenSyncId);
+        }
         continue;
       }
-      let index = seq.length;
-      const prev = folder.prevSiblingInfo;
-      if (!prev || prev.type === "start") {
-        // No stored sibling means the folder is the first child of its
-        // container (the section rebuild on startup places content before
-        // the fake start element, so the first item has no sibling at all).
-        index = 0;
-      } else if (prev.id) {
-        const at = seq.indexOf(prev.id);
-        if (at !== -1) {
-          index = at + 1;
-        } else if (prev.type === "tab") {
-          // An unsynced tab sibling (empty placeholders, live folder items)
-          // always sits at the start of its container.
-          index = 0;
+      if (ctx.splitIds.has(groupId) || ctx.splitParents.has(groupId)) {
+        const parent = ctx.splitParents.get(groupId) ?? null;
+        const isDirect = scope.folder ? parent === scope.folder : !parent;
+        if (isDirect) {
+          if (
+            ctx.splitIds.has(groupId) &&
+            (!scope.space || (ctx.splitWs.get(groupId) ?? null) === scope.space)
+          ) {
+            push(groupId);
+          }
+        } else if (parent) {
+          const child = this.#scopeChildFolder(ctx, scope, parent);
+          if (child) {
+            push(child);
+          }
+        }
+        continue;
+      }
+      if (ctx.folderById.has(groupId)) {
+        const child = this.#scopeChildFolder(ctx, scope, groupId);
+        if (child) {
+          push(child);
         }
       }
-      seq.splice(index, 0, folder.id);
     }
     return seq;
+  }
+
+  /**
+   * Walks a folder's parent chain up to the direct child of the given
+   * scope, or null when the chain leads somewhere else.
+   *
+   * @param {object} ctx - The projection context.
+   * @param {{space?: string, folder?: string}} scope
+   * @param {string} folderId
+   * @returns {?string}
+   */
+  #scopeChildFolder(ctx, scope, folderId) {
+    // The seen set only guards against a corrupt parentId cycle.
+    const seen = new Set();
+    let current = ctx.folderById.get(folderId);
+    while (current && !seen.has(current.id)) {
+      seen.add(current.id);
+      const parentId = current.parentId || null;
+      if (scope.folder ? parentId === scope.folder : !parentId) {
+        if (scope.space && (current.workspaceId || null) !== scope.space) {
+          return null;
+        }
+        return current.id;
+      }
+      current = parentId ? ctx.folderById.get(parentId) : null;
+    }
+    return null;
   }
 
   /**
@@ -305,11 +397,13 @@ class nsZenSpacesSyncModel {
    * @param {object} sidebar
    */
   #projectionContext(sidebar) {
-    const tabs = (sidebar.tabs || []).filter(t => this.#isSyncableTab(t));
+    const allTabs = sidebar.tabs || [];
+    const tabs = allTabs.filter(t => this.#isSyncableTab(t));
     const folders = (sidebar.folders || []).filter(
       f => f?.id && !f.splitViewGroup
     );
     const folderIds = new Set(folders.map(f => f.id));
+    const folderById = new Map(folders.map(f => [f.id, f]));
     const allSplits = (sidebar.splitViewData || []).filter(g => g?.groupId);
     const splitParents = new Map();
     for (const entry of sidebar.folders || []) {
@@ -343,7 +437,18 @@ class nsZenSpacesSyncModel {
       }
       return folderIds.has(groupId) ? groupId : null;
     };
-    return { tabs, folders, splits, splitIds, splitParents, splitWs, folderOf };
+    return {
+      allTabs,
+      tabs,
+      folders,
+      folderById,
+      syncableTabIds,
+      splits,
+      splitIds,
+      splitParents,
+      splitWs,
+      folderOf,
+    };
   }
 
   /**
@@ -389,7 +494,7 @@ class nsZenSpacesSyncModel {
     const map = new Map();
     const pending = new Set();
     const ctx = this.#projectionContext(sidebar);
-    const { tabs, folders, splits, splitIds, splitParents, splitWs } = ctx;
+    const { tabs, folders, splits, splitParents, splitWs } = ctx;
 
     for (const identity of lazy.ContextualIdentityService.getPublicIdentities()) {
       if (!identity.name) {
@@ -428,21 +533,7 @@ class nsZenSpacesSyncModel {
           containerGuid: this.guidForContextId(space.containerTabId, {
             create: true,
           }),
-          children: this.#childSequence({
-            tabs,
-            folders,
-            splitIds,
-            splitParents,
-            splitWs,
-            scope: {
-              matchTab: (t, groupId) =>
-                !groupId &&
-                !t.zenEssential &&
-                (t.zenWorkspace || null) === uuid,
-              matchSplit: (parent, ws) => !parent && ws === uuid,
-              matchFolder: f => !f.parentId && (f.workspaceId || null) === uuid,
-            },
-          }),
+          children: this.#childSequence(ctx, { space: uuid }),
         },
       });
     }
@@ -470,18 +561,7 @@ class nsZenSpacesSyncModel {
           workspaceUuid: folder.workspaceId || null,
           parentFolderId: folder.parentId || null,
           live,
-          children: this.#childSequence({
-            tabs,
-            folders,
-            splitIds,
-            splitParents,
-            splitWs,
-            scope: {
-              matchTab: (t, groupId) => groupId === fid,
-              matchSplit: parent => parent === fid,
-              matchFolder: f => f.parentId === fid,
-            },
-          }),
+          children: this.#childSequence(ctx, { folder: fid }),
         },
       });
     }
@@ -574,11 +654,23 @@ class nsZenSpacesSyncModel {
   }
 
   /**
+   * Before the session file is read the sidebar reads as empty. Diffing that
+   * against the uploaded snapshot would tombstone every synced item. An
+   * initialized sidebar always holds at least one space.
+   */
+  #sidebarReady() {
+    return !!lazy.ZenSessionStore.getSidebarData()?.spaces?.length;
+  }
+
+  /**
    * Changes = diff between the current projections and the last state the
    * server acknowledged. Ids present locally with different content are
    * modified; ids only present in the uploaded snapshot are deletions.
    */
   computeChangedIDs() {
+    if (!this.#sidebarReady()) {
+      return {};
+    }
     const uploaded = this.#data().uploaded;
     const current = this.#digestAll();
     const pending = this.#pendingIds();
@@ -594,10 +686,22 @@ class nsZenSpacesSyncModel {
         changes[id] = now;
       }
     }
+    if (lazy.syncDebug && Object.keys(changes).length) {
+      const map = this.projections();
+      syncLog(
+        "outgoing diff:",
+        Object.keys(changes).map(id =>
+          current.has(id) ? `${map.get(id)?.kind} ${id}` : `TOMBSTONE ${id}`
+        )
+      );
+    }
     return changes;
   }
 
   hasPendingChanges() {
+    if (!this.#sidebarReady()) {
+      return false;
+    }
     const uploaded = this.#data().uploaded;
     const current = this.#digestAll();
     const pending = this.#pendingIds();
@@ -630,6 +734,12 @@ class nsZenSpacesSyncModel {
         delete data.uploaded[id];
       }
     }
+    if (lazy.syncDebug && ids.length) {
+      syncLog(
+        "server acknowledged upload:",
+        ids.map(id => (current.has(id) ? id : `${id} (tombstone)`))
+      );
+    }
     this.#file.saveSoon();
   }
 
@@ -649,6 +759,9 @@ class nsZenSpacesSyncModel {
     } else {
       data.uploaded[id] = recordDigest(cleartext.kind, cleartext.data);
     }
+    syncLog(
+      `acknowledged incoming ${cleartext ? cleartext.kind : "tombstone"} ${id}`
+    );
     this.#file.saveSoon();
   }
 }

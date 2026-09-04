@@ -1,8 +1,8 @@
 diff --git a/browser/components/tabbrowser/content/tabbrowser.js b/browser/components/tabbrowser/content/tabbrowser.js
-index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490fb403b65 100644
+index 4318048..ae0f23d 100644
 --- a/browser/components/tabbrowser/content/tabbrowser.js
 +++ b/browser/components/tabbrowser/content/tabbrowser.js
-@@ -513,6 +513,7 @@
+@@ -514,6 +514,7 @@
       * @type {MozBrowser[]}
       */
      get splitViewBrowsers() {
@@ -10,7 +10,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        const browsers = [];
        if (this.#activeSplitView) {
          for (const tab of this.#activeSplitView.tabs) {
-@@ -611,15 +612,66 @@
+@@ -612,15 +613,66 @@
        return this.tabContainer.visibleTabs;
      }
  
@@ -79,7 +79,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
      setSelectedTab(val, metricsContext = null) {
        if (this.selectedTab === val) {
          return;
-@@ -632,6 +684,9 @@
+@@ -633,6 +685,9 @@
        ) {
          return;
        }
@@ -89,7 +89,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        // Update the tab
        this.tabbox.selectedTab = val;
  
-@@ -708,6 +763,10 @@
+@@ -709,6 +764,10 @@
          userContextId = parseInt(tabArgument.getAttribute("usercontextid"), 10);
        }
  
@@ -100,7 +100,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        if (openWindowInfo) {
          userContextId = openWindowInfo.originAttributes.userContextId;
        }
-@@ -809,6 +868,8 @@
+@@ -810,6 +869,8 @@
        this.tabpanels.appendChild(panel);
  
        let tab = this.tabs[0];
@@ -109,7 +109,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        tab.linkedPanel = uniqueId;
        this._selectedTab = tab;
        this._selectedBrowser = browser;
-@@ -1178,18 +1239,24 @@
+@@ -1179,18 +1240,24 @@
       *   The context for the operation for telemetry purposes, defaults to an unknown context.
       */
      pinTab(aTab, { metricsContext = this.TabMetrics.UNKNOWN_CONTEXT } = {}) {
@@ -135,7 +135,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
  
        aTab.setAttribute("pinned", "true");
        this._updateTabBarForPinnedTabs();
-@@ -1206,16 +1273,25 @@
+@@ -1207,16 +1274,25 @@
       *   The context for the operation for telemetry purposes, defaults to an unknown context.
       */
      unpinTab(aTab, { metricsContext = this.TabMetrics.UNKNOWN_CONTEXT } = {}) {
@@ -162,7 +162,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        });
  
        aTab.style.marginInlineStart = "";
-@@ -1430,6 +1506,9 @@
+@@ -1432,6 +1508,9 @@
  
        let LOCAL_PROTOCOLS = ["chrome:", "about:", "resource:", "data:"];
  
@@ -172,7 +172,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        if (
          aIconURL &&
          !LOCAL_PROTOCOLS.some(protocol => aIconURL.startsWith(protocol))
-@@ -1439,6 +1518,9 @@
+@@ -1441,6 +1520,9 @@
          );
          return;
        }
@@ -182,7 +182,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
  
        let browser = this.getBrowserForTab(aTab);
        browser.mIconURL = aIconURL;
-@@ -1761,7 +1843,6 @@
+@@ -1763,7 +1845,6 @@
  
        // Preview mode should not reset the owner
        if (!this.#previewMode && !oldTab.selected) {
@@ -190,7 +190,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        }
  
        let lastRelatedTab = this.#lastRelatedTabMap.get(oldTab);
-@@ -1852,6 +1933,7 @@
+@@ -1854,6 +1935,7 @@
        if (!this.#previewMode) {
          newTab.recordTimeFromUnloadToReload();
          newTab.updateLastAccessed();
@@ -198,7 +198,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
          oldTab.updateLastAccessed();
          // if this is the foreground window, update the last-seen timestamps.
          if (this.documentGlobal == BrowserWindowTracker.getTopWindow()) {
-@@ -2066,6 +2148,9 @@
+@@ -2068,6 +2150,9 @@
        }
  
        let activeEl = document.activeElement;
@@ -208,7 +208,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        // If focus is on the old tab, move it to the new tab.
        if (activeEl == oldTab) {
          newTab.focus();
-@@ -2104,7 +2189,7 @@
+@@ -2106,7 +2191,7 @@
        // Focus the location bar if it was previously focused for that tab.
        // In full screen mode, only bother making the location bar visible
        // if the tab is a blank one.
@@ -217,7 +217,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
          let selectURL = () => {
            if (this._asyncTabSwitching) {
              // Set _awaitingSetURI flag to suppress popup notification
-@@ -2392,7 +2477,12 @@
+@@ -2394,7 +2479,12 @@
        return this._setTabLabel(aTab, aLabel);
      }
  
@@ -231,7 +231,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        if (!aLabel || (isURL && /^about:reader\?url=/.test(aLabel))) {
          return false;
        }
-@@ -2518,7 +2608,7 @@
+@@ -2520,7 +2610,7 @@
          newIndex = this.selectedTab._tPos + 1;
        }
  
@@ -240,7 +240,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
          if (this.isTabGroupLabel(targetTab)) {
            throw new Error(
              "Replacing a tab group label with a tab is not supported"
-@@ -2793,6 +2883,7 @@
+@@ -2795,6 +2885,7 @@
        uriIsAboutBlank,
        userContextId,
        skipLoad,
@@ -248,7 +248,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
      } = {}) {
        let b = document.createXULElement("browser");
        // Use the JSM global to create the permanentKey, so that if the
-@@ -2866,8 +2957,7 @@
+@@ -2868,8 +2959,7 @@
          // we use a different attribute name for this?
          b.setAttribute("name", name);
        }
@@ -258,7 +258,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
          b.setAttribute("transparent", "true");
        }
  
-@@ -3022,7 +3112,7 @@
+@@ -3024,7 +3114,7 @@
  
        let panel = this.getPanel(browser);
        let uniqueId = this._generateUniquePanelID();
@@ -267,7 +267,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        aTab.linkedPanel = uniqueId;
  
        // Inject the <browser> into the DOM if necessary.
-@@ -3082,8 +3172,8 @@
+@@ -3084,8 +3174,8 @@
        // If we transitioned from one browser to two browsers, we need to set
        // hasSiblings=false on both the existing browser and the new browser.
        if (this.tabs.length == 2) {
@@ -278,7 +278,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        } else {
          aTab.linkedBrowser.browsingContext.hasSiblings = this.tabs.length > 1;
        }
-@@ -3268,7 +3358,6 @@
+@@ -3270,7 +3360,6 @@
              this.selectedTab = this.addTrustedTab(BROWSER_NEW_TAB_URL, {
                tabIndex: tab._tPos + 1,
                userContextId: tab.userContextId,
@@ -286,7 +286,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
                focusUrlBar: true,
              });
              resolve(this.selectedBrowser);
-@@ -3378,6 +3467,10 @@
+@@ -3380,6 +3469,10 @@
          schemelessInput,
          hasValidUserGestureActivation = false,
          textDirectiveUserActivation = false,
@@ -297,7 +297,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        } = {}
      ) {
        // all callers of addTab that pass a params object need to pass
-@@ -3388,10 +3481,25 @@
+@@ -3390,17 +3483,33 @@
          );
        }
  
@@ -321,9 +321,10 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
  
 +      if (!gURLBar.hasAttribute("zen-newtab")) {
        // If we're opening a foreground tab, set the owner by default.
-       ownerTab ??= initiallyInBackground ? null : this.selectedTab;
+-      ownerTab ??= inBackground ? null : this.selectedTab;
++      ownerTab ??= initiallyInBackground ? null : this.selectedTab;
  
-@@ -3399,6 +3507,7 @@
+       // if we're adding tabs, we're past interrupt mode, ditch the owner
        if (this.selectedTab.owner) {
          this.selectedTab.owner = null;
        }
@@ -331,7 +332,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
  
        // Find the tab that opened this one, if any. This is used for
        // determining positioning, and inherited attributes such as the
-@@ -3451,6 +3560,22 @@
+@@ -3453,6 +3562,22 @@
            noInitialLabel,
            skipBackgroundNotify,
          });
@@ -354,7 +355,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
          if (insertTab) {
            // Insert the tab into the tab container in the correct position.
            this.#insertTabAtIndex(t, {
-@@ -3459,6 +3584,7 @@
+@@ -3461,6 +3586,7 @@
              ownerTab,
              openerTab,
              pinned,
@@ -362,7 +363,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
              bulkOrderedOpen,
              tabGroup: tabGroup ?? openerTab?.group,
            });
-@@ -3477,6 +3603,7 @@
+@@ -3479,6 +3605,7 @@
            openWindowInfo,
            skipLoad,
            triggeringRemoteType,
@@ -370,7 +371,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
          }));
  
          if (focusUrlBar) {
-@@ -3601,6 +3728,12 @@
+@@ -3603,6 +3730,12 @@
          }
        }
  
@@ -383,7 +384,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        // Additionally send pinned tab events
        if (pinned) {
          this.#notifyPinnedStatus(t);
-@@ -3608,9 +3741,18 @@
+@@ -3610,9 +3743,18 @@
  
        gSharedTabWarning.tabAdded(t);
  
@@ -403,7 +404,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        return t;
      }
  
-@@ -3834,6 +3976,7 @@
+@@ -3836,6 +3978,7 @@
          insertBefore = null,
          isAdoptingGroup = false,
          metricsContext = this.TabMetrics.UNKNOWN_CONTEXT,
@@ -411,7 +412,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        } = {}
      ) {
        if (
-@@ -3844,9 +3987,6 @@
+@@ -3846,9 +3989,6 @@
              !this.isSplitViewWrapper(tabOrSplitView)
          )
        ) {
@@ -421,7 +422,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        }
  
        if (!color) {
-@@ -3867,9 +4007,14 @@
+@@ -3869,9 +4009,14 @@
          label,
          isAdoptingGroup
        );
@@ -438,7 +439,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        );
        group.addTabs(tabsAndSplitViews, metricsContext);
  
-@@ -3973,7 +4118,7 @@
+@@ -3975,7 +4120,7 @@
        }
  
        this.#handleTabMove(tab, () =>
@@ -447,7 +448,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        );
      }
  
-@@ -4059,6 +4204,7 @@
+@@ -4061,6 +4206,7 @@
          color: group.color,
          insertBefore: newTabs[0],
          isAdoptingGroup: true,
@@ -455,7 +456,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        });
      }
  
-@@ -4269,6 +4415,7 @@
+@@ -4271,6 +4417,7 @@
          openWindowInfo,
          skipLoad,
          triggeringRemoteType,
@@ -463,7 +464,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        }
      ) {
        // If we don't have a preferred remote type (or it is `NOT_REMOTE`), and
-@@ -4329,6 +4476,7 @@
+@@ -4331,6 +4478,7 @@
            openWindowInfo,
            name,
            skipLoad,
@@ -471,7 +472,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
          });
        }
  
-@@ -4542,9 +4690,9 @@
+@@ -4544,9 +4692,9 @@
          }
  
          // Add a new tab if needed.
@@ -483,7 +484,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
  
            let url = "about:blank";
            if (tabData.entries?.length) {
-@@ -4577,8 +4725,10 @@
+@@ -4579,8 +4727,10 @@
              insertTab: false,
              skipLoad: true,
              preferredRemoteType,
@@ -495,7 +496,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
            if (select) {
              tabToSelect = tab;
            }
-@@ -4600,7 +4750,8 @@
+@@ -4602,7 +4752,8 @@
            this.pinTab(tab);
            // Then ensure all the tab open/pinning information is sent.
            this._fireTabOpen(tab, {});
@@ -505,7 +506,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
            let { groupId } = tabData;
            const tabGroup = tabGroupWorkingData.get(groupId);
            // if a tab refers to a tab group we don't know, skip any group
-@@ -4620,7 +4771,10 @@
+@@ -4622,7 +4773,10 @@
                  tabGroup.stateData.id,
                  tabGroup.stateData.color,
                  tabGroup.stateData.collapsed,
@@ -517,7 +518,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
                );
                tabsFragment.appendChild(tabGroup.node);
              }
-@@ -4675,9 +4829,21 @@
+@@ -4677,9 +4831,21 @@
        // to remove the old selected tab.
        if (tabToSelect) {
          let leftoverTab = this.selectedTab;
@@ -539,7 +540,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
  
        if (tabs.length > 1 || !tabs[0].selected) {
          this._updateTabsAfterInsert();
-@@ -4882,11 +5048,17 @@
+@@ -4884,11 +5050,17 @@
        if (ownerTab) {
          tab.owner = ownerTab;
        }
@@ -558,7 +559,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
          if (
            !bulkOrderedOpen &&
            ((openerTab &&
-@@ -4898,7 +5070,7 @@
+@@ -4900,7 +5072,7 @@
            let lastRelatedTab =
              openerTab && this.#lastRelatedTabMap.get(openerTab);
            let previousTab = lastRelatedTab || openerTab || this.selectedTab;
@@ -567,7 +568,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
              tabGroup = previousTab.group;
            }
            if (
-@@ -4914,7 +5086,7 @@
+@@ -4916,7 +5088,7 @@
                  previousTab.splitview
                ) + 1;
            } else if (previousTab.visible) {
@@ -576,7 +577,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
            } else if (previousTab == FirefoxViewHandler.tab) {
              elementIndex = 0;
            }
-@@ -4942,14 +5114,14 @@
+@@ -4944,14 +5116,14 @@
        }
        // Ensure index is within bounds.
        if (tab.pinned) {
@@ -595,7 +596,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
  
        if (pinned && !itemAfter?.pinned) {
          itemAfter = null;
-@@ -4966,7 +5138,7 @@
+@@ -4968,7 +5140,7 @@
  
        this.tabContainer._invalidateCachedTabs();
  
@@ -604,7 +605,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
          if (
            (this.isTab(itemAfter) && itemAfter.group == tabGroup) ||
            this.isSplitViewWrapper(itemAfter)
-@@ -4997,7 +5169,11 @@
+@@ -4999,7 +5171,11 @@
          const tabContainer = pinned
            ? this.tabContainer.pinnedTabsContainer
            : this.tabContainer;
@@ -616,7 +617,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        }
  
        if (tab.group?.collapsed) {
-@@ -5012,6 +5188,7 @@
+@@ -5014,6 +5190,7 @@
        if (pinned) {
          this._updateTabBarForPinnedTabs();
        }
@@ -624,7 +625,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
  
        TabBarVisibility.update();
      }
-@@ -5568,6 +5745,7 @@
+@@ -5577,6 +5754,7 @@
          metricsContext,
        } = {}
      ) {
@@ -632,7 +633,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        // When 'closeWindowWithLastTab' pref is enabled, closing all tabs
        // can be considered equivalent to closing the window.
        if (
-@@ -5678,6 +5856,7 @@
+@@ -5687,6 +5865,7 @@
              closedTabCount -= 1;
            }
          }
@@ -640,7 +641,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
  
          if (closedTabCount > 0) {
            this.recordTabMetrics(
-@@ -5730,6 +5909,14 @@
+@@ -5761,6 +5940,14 @@
          return;
        }
  
@@ -655,7 +656,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        let isVisibleTab = aTab.visible;
        // We have to sample the tab width now, since _beginRemoveTab might
        // end up modifying the DOM in such a way that aTab gets a new
-@@ -5737,6 +5924,9 @@
+@@ -5768,6 +5955,9 @@
        // state).
        let tabWidth = window.windowUtils.getBoundsWithoutFlushing(aTab).width;
        let isLastTab = this.#isLastTabInWindow(aTab);
@@ -665,7 +666,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        if (
          !this._beginRemoveTab(aTab, {
            closeWindowFastpath: true,
-@@ -5747,13 +5937,14 @@
+@@ -5778,13 +5968,14 @@
            metricsContext,
          })
        ) {
@@ -681,7 +682,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        let lockTabSizing =
          !this.tabContainer.verticalMode &&
          !aTab.pinned &&
-@@ -5784,7 +5975,13 @@
+@@ -5815,7 +6006,13 @@
          // We're not animating, so we can cancel the animation stopwatch.
          Glean.browserTabclose.timeAnim.cancel(aTab._closeTimeAnimTimerId);
          aTab._closeTimeAnimTimerId = null;
@@ -696,7 +697,18 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
          return;
        }
  
-@@ -5827,7 +6024,7 @@
+@@ -5855,7 +6052,9 @@
+     get #shouldCloseWindowWithLastTab() {
+       return (
+         !window.toolbar.visible ||
+-        Services.prefs.getBoolPref("browser.tabs.closeWindowWithLastTab")
++        (Services.prefs.getBoolPref("browser.tabs.closeWindowWithLastTab") &&
++          !gZenWorkspaces._isClosingWindow &&
++          !gZenWorkspaces._removedByStartupPage)
+       );
+     }
+ 
+@@ -5871,7 +6070,7 @@
       */
      #isLastTabInWindow(tab) {
        for (const otherTab of this.tabs) {
@@ -705,16 +717,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
            return false;
          }
        }
-@@ -5917,7 +6114,7 @@
-           closeWindowWithLastTab != null
-             ? closeWindowWithLastTab
-             : !window.toolbar.visible ||
--              Services.prefs.getBoolPref("browser.tabs.closeWindowWithLastTab");
-+              Services.prefs.getBoolPref("browser.tabs.closeWindowWithLastTab") && !gZenWorkspaces._isClosingWindow && !gZenWorkspaces._removedByStartupPage;
- 
-         if (closeWindow) {
-           // We've already called beforeunload on all the relevant tabs if we get here,
-@@ -5941,6 +6138,7 @@
+@@ -5982,6 +6181,7 @@
  
          newTab = true;
        }
@@ -722,8 +725,8 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        aTab._endRemoveArgs = [closeWindow, newTab];
  
        // swapBrowsersAndCloseOther will take care of closing the window without animation.
-@@ -5982,13 +6180,7 @@
-       aTab._mouseleave();
+@@ -6029,13 +6229,7 @@
+       }
  
        if (newTab) {
 -        this.addTrustedTab(BROWSER_NEW_TAB_URL, {
@@ -737,7 +740,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        } else {
          TabBarVisibility.update();
        }
-@@ -6128,6 +6320,7 @@
+@@ -6192,6 +6386,7 @@
          this.tabs[i]._tPos = i;
        }
  
@@ -745,7 +748,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        if (!this.#windowIsClosing) {
          // update tab close buttons state
          this.tabContainer._updateCloseButtons();
-@@ -6313,6 +6506,7 @@
+@@ -6377,6 +6572,7 @@
          memory_after: await getTotalMemoryUsage(),
          time_to_unload_in_ms: timeElapsed,
        });
@@ -753,7 +756,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
      }
  
      /**
-@@ -6358,6 +6552,7 @@
+@@ -6422,6 +6618,7 @@
        }
  
        let excludeTabs = new Set(aExcludeTabs);
@@ -761,7 +764,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
  
        // If this tab has a successor, it should be selectable, since
        // hiding or closing a tab removes that tab as a successor.
-@@ -6370,13 +6565,13 @@
+@@ -6434,13 +6631,13 @@
          !excludeTabs.has(aTab.owner) &&
          Services.prefs.getBoolPref("browser.tabs.selectOwnerOnClose")
        ) {
@@ -777,7 +780,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        );
  
        if (Services.prefs.getBoolPref("browser.tabs.selectMRUOnClose", false)) {
-@@ -6392,6 +6587,13 @@
+@@ -6456,6 +6653,13 @@
          }
        }
  
@@ -791,7 +794,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        let tab = this.tabContainer.findNextTab(aTab, {
          direction: 1,
          filter: _tab => remainingTabs.includes(_tab),
-@@ -6405,7 +6607,7 @@
+@@ -6469,7 +6673,7 @@
        }
  
        if (tab) {
@@ -800,7 +803,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        }
  
        // If no qualifying visible tab was found, see if there is a tab in
-@@ -6426,18 +6628,18 @@
+@@ -6490,7 +6694,7 @@
          });
        }
  
@@ -809,10 +812,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
      }
  
      _blurTab(aTab) {
-       this.selectedTab = this._findTabToBlurTo(aTab);
-     }
- 
-     /**
+@@ -6501,7 +6705,7 @@
       * @returns {boolean}
       *   False if swapping isn't permitted, true otherwise.
       */
@@ -821,7 +821,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        // Do not allow transfering a private tab to a non-private window
        // and vice versa.
        if (
-@@ -6491,6 +6693,7 @@
+@@ -6555,6 +6759,7 @@
        // fire the beforeunload event in the process.  Close the other
        // window if this was its last tab.
        if (
@@ -829,7 +829,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
          !remoteBrowser._beginRemoveTab(aOtherTab, {
            adoptedByTab: aOurTab,
            closeWindowWithLastTab: true,
-@@ -6502,7 +6705,7 @@
+@@ -6566,7 +6771,7 @@
        // If this is the last tab of the window, hide the window
        // immediately without animation before the docshell swap, to avoid
        // about:blank being painted.
@@ -838,7 +838,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        if (closeWindow) {
          let win = aOtherTab.documentGlobal;
          win.windowUtils.suppressAnimation(true);
-@@ -6636,11 +6839,13 @@
+@@ -6700,11 +6905,13 @@
        }
  
        // Finish tearing down the tab that's going away.
@@ -852,7 +852,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
  
        this.setTabTitle(aOurTab);
  
-@@ -6860,10 +7065,10 @@
+@@ -6928,10 +7135,10 @@
        SessionStore.deleteCustomTabValue(aTab, "hiddenBy");
      }
  
@@ -865,7 +865,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
          aTab.selected ||
          aTab.closing ||
          // Tabs that are sharing the screen, microphone or camera cannot be hidden.
-@@ -6923,7 +7128,8 @@
+@@ -6991,7 +7198,8 @@
       * @param {object} [aOptions={}]
       *   Key-value pairs that will be serialized into the features string.
       */
@@ -875,7 +875,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        if (this.tabs.length == 1) {
          return null;
        }
-@@ -6940,7 +7146,7 @@
+@@ -7008,7 +7216,7 @@
        // tell a new window to take the "dropped" tab
        let args = Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray);
        args.appendElement(aTab.splitview ?? aTab);
@@ -884,7 +884,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
          private: PrivateBrowsingUtils.isWindowPrivate(window),
          features: Object.entries(aOptions)
            .map(([key, value]) => `${key}=${value}`)
-@@ -6948,6 +7154,8 @@
+@@ -7016,6 +7224,8 @@
          openerWindow: window,
          args,
        });
@@ -893,7 +893,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
      }
  
      /**
-@@ -7074,7 +7282,7 @@
+@@ -7142,7 +7352,7 @@
       *   `true` if element is a `<tab-group>`
       */
      isTabGroup(element) {
@@ -902,7 +902,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
      }
  
      /**
-@@ -7146,8 +7354,8 @@
+@@ -7214,8 +7424,8 @@
        }
  
        // Don't allow mixing pinned and unpinned tabs.
@@ -913,7 +913,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        } else {
          tabIndex = Math.max(tabIndex, this.pinnedTabCount);
        }
-@@ -7193,8 +7401,8 @@
+@@ -7261,8 +7471,8 @@
        this.#handleTabMove(
          element,
          () => {
@@ -924,7 +924,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
              neighbor = neighbor.group;
            }
            if (neighbor?.splitview) {
-@@ -7205,6 +7413,12 @@
+@@ -7273,6 +7483,12 @@
                return;
              }
            }
@@ -937,7 +937,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
  
            if (movingForwards && neighbor) {
              neighbor.after(element);
-@@ -7278,23 +7492,31 @@
+@@ -7346,23 +7562,31 @@
      ) {
        if (this.isTabGroupLabel(targetElement)) {
          targetElement = targetElement.group;
@@ -975,7 +975,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        } else if (!element.pinned && targetElement && targetElement.pinned) {
          // If the caller asks to move an unpinned element next to a pinned
          // tab, move the unpinned element to be the first unpinned element
-@@ -7307,12 +7529,35 @@
+@@ -7375,12 +7599,35 @@
          //    move the tab group right before the first unpinned tab.
          // 4. Moving a tab group and the first unpinned tab is grouped:
          //    move the tab group right before the first unpinned tab's tab group.
@@ -1012,7 +1012,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
  
        // We want to include the splitview wrapper if it's the targetElement, but
        // not in the case where we want to reverse tabs within the same splitview.
-@@ -7321,6 +7566,7 @@
+@@ -7389,6 +7636,7 @@
        }
  
        let getContainer = () =>
@@ -1020,7 +1020,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
          element.pinned
            ? this.tabContainer.pinnedTabsContainer
            : this.tabContainer;
-@@ -7329,11 +7575,15 @@
+@@ -7397,11 +7645,15 @@
          element,
          () => {
            if (moveBefore) {
@@ -1037,7 +1037,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
            }
          },
          { metricsContext }
-@@ -7411,11 +7661,15 @@
+@@ -7479,11 +7731,15 @@
       *   The context for the operation for telemetry purposes.
       */
      moveTabToExistingGroup(aTab, aGroup, { metricsContext } = {}) {
@@ -1056,7 +1056,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        }
        if (aTab.group && aTab.group.id === aGroup.id) {
          return;
-@@ -7489,6 +7743,7 @@
+@@ -7557,6 +7813,7 @@
  
        let state = {
          tabIndex: tab._tPos,
@@ -1064,7 +1064,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        };
        if (tab.visible) {
          state.elementIndex = tab.elementIndex;
-@@ -7527,7 +7782,7 @@
+@@ -7595,7 +7852,7 @@
        let changedSplitView =
          previousTabState.splitViewId != currentTabState.splitViewId;
  
@@ -1073,7 +1073,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
          tab.dispatchEvent(
            new CustomEvent("TabMove", {
              bubbles: true,
-@@ -7579,6 +7834,10 @@
+@@ -7647,6 +7904,10 @@
  
        moveActionCallback();
  
@@ -1084,7 +1084,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        // Clear tabs cache after moving nodes because the order of tabs may have
        // changed.
        this.tabContainer._invalidateCachedTabs();
-@@ -7626,7 +7885,22 @@
+@@ -7694,7 +7955,22 @@
       * @returns {object}
       *    The new tab in the current window, null if the tab couldn't be adopted.
       */
@@ -1108,7 +1108,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        // Swap the dropped tab with a new one we create and then close
        // it in the other window (making it seem to have moved between
        // windows). We also ensure that the tab we create to swap into has
-@@ -7669,6 +7943,8 @@
+@@ -7737,6 +8013,8 @@
        }
        params.skipLoad = true;
        let newTab = this.addWebTab("about:blank", params);
@@ -1117,7 +1117,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
  
        aTab.container.tabDragAndDrop.finishAnimateTabMove();
  
-@@ -8448,7 +8724,7 @@
+@@ -8516,7 +8794,7 @@
          // preventDefault(). It will still raise the window if appropriate.
          return;
        }
@@ -1126,7 +1126,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        window.focus();
        aEvent.preventDefault();
      }
-@@ -8465,7 +8741,6 @@
+@@ -8533,7 +8811,6 @@
  
      on_TabGroupCollapse(aEvent) {
        aEvent.target.tabs.forEach(tab => {
@@ -1134,7 +1134,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
        });
      }
  
-@@ -8819,7 +9094,9 @@
+@@ -8887,7 +9164,9 @@
  
          let filter = this.#tabFilters.get(tab);
          if (filter) {
@@ -1144,7 +1144,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
  
            let listener = this.#tabListeners.get(tab);
            if (listener) {
-@@ -9604,6 +9881,7 @@
+@@ -9676,6 +9955,7 @@
              aWebProgress.isTopLevel
            ) {
              this._tab.setAttribute("busy", "true");
@@ -1152,7 +1152,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
              gBrowser._tabAttrModified(this._tab, ["busy"]);
              this._tab._notselectedsinceload = !this._tab.selected;
            }
-@@ -9684,6 +9962,7 @@
+@@ -9756,6 +10036,7 @@
          // known defaults. Note we use the original URL since about:newtab
          // redirects to a prerendered page.
          const shouldRemoveFavicon =
@@ -1160,7 +1160,7 @@ index 39b5babee5942427a82a7a64ad69e1b16efebcc1..a54fb94611a848530c6a010d7ee4d490
            !this._browser.mIconURL &&
            !ignoreBlank &&
            !(originalLocation.spec in FAVICON_DEFAULTS);
-@@ -9858,13 +10137,6 @@
+@@ -9930,13 +10211,6 @@
              this._browser.originalURI = aRequest.originalURI;
            }
  

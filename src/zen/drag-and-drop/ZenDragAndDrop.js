@@ -183,10 +183,10 @@
           if (tabClone.hasAttribute("visuallyselected")) {
             tabClone.style.transform = "translate(-50%, -50%)";
           }
-        } else if (AppConstants.platform !== "macosx" && !tab.isZenFolder) {
-          // On windows and linux, we still don't add some extra opaqueness
-          // for the tab to be more visible. This is a hacky workaround.
-          // TODO: Make windows and linux DnD use nsZenDragAndDrop::mDragImageOpacity
+        } else if (AppConstants.platform == "win" && !tab.isZenFolder) {
+          // On windows, the shell applies its own translucency to the drag
+          // image which we can't control, so force some extra contrast for
+          // the tab to be more visible. This is a hacky workaround.
           tabClone.style.colorScheme = "light";
           tabClone.style.setProperty("--tab-selected-textcolor", "black");
         }

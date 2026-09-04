@@ -27,7 +27,7 @@ class nsZenSpaceRoutingManager {
     const element = window.MozXULElement.parseXULToFragment(`
         <menuseparator/>
         <menuitem id="context_zen-add-domain-to-routing"
-                  data-lazy-l10n-id="tab-context-zen-add-domain-to-sr"
+                  data-l10n-id="tab-context-zen-add-domain-to-sr"
                   data-l10n-args='{"tabCount": 1}'/>
       `);
     window.document.getElementById("context_undoCloseTab").after(element);

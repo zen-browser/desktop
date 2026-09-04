@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/UrlbarProviderHeuristicFallback.sys.mjs b/browser/components/urlbar/UrlbarProviderHeuristicFallback.sys.mjs
-index f611d8e44af518aa1adc7505c5021235f55b49de..0eca20cb869626dfa6ace02acc00cad84462d54f 100644
+index cfc232f038cd491db32e0c0ca35622360dd9dec5..4806a725ddefa9d0709020d537eae5464249a294 100644
 --- a/browser/components/urlbar/UrlbarProviderHeuristicFallback.sys.mjs
 +++ b/browser/components/urlbar/UrlbarProviderHeuristicFallback.sys.mjs
-@@ -78,22 +78,26 @@ export class UrlbarProviderHeuristicFallback extends UrlbarProvider {
+@@ -77,22 +77,26 @@ export class UrlbarProviderHeuristicFallback extends UrlbarProvider {
          // Since we can't tell if this is a real URL and whether the user wants
          // to visit or search for it, we provide an alternative searchengine
          // match if the string looks like an alphanumeric origin or an e-mail.
@@ -17,7 +17,7 @@ index f611d8e44af518aa1adc7505c5021235f55b49de..0eca20cb869626dfa6ace02acc00cad8
 -              lazy.UrlUtils.REGEXP_COMMON_EMAIL.test(str))
 -          ) {
 +        let trimmedSearchString = queryContext.trimmedSearchString;
-+        let [searchCandidate] = UrlbarUtils.stripPrefixAndTrim(
++        let [searchCandidate] = lazy.UrlbarShared.stripPrefixAndTrim(
 +          trimmedSearchString,
 +          {
 +            trimSlash: true,

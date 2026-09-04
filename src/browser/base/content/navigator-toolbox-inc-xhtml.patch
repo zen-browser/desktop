@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/navigator-toolbox.inc.xhtml b/browser/base/content/navigator-toolbox.inc.xhtml
-index dd2f391096968564086911c532f696dc7ffb8ae1..3de617bf4fb7fa35f7d4d7b618e4673b72b953ee 100644
+index dd2f391096968564086911c532f696dc7ffb8ae1..c968e5f0ebb5f0151fb124bafe10d8d5361e060f 100644
 --- a/browser/base/content/navigator-toolbox.inc.xhtml
 +++ b/browser/base/content/navigator-toolbox.inc.xhtml
 @@ -2,7 +2,7 @@
@@ -19,7 +19,7 @@ index dd2f391096968564086911c532f696dc7ffb8ae1..3de617bf4fb7fa35f7d4d7b618e4673b
    </toolbar>
  
 +<hbox id="titlebar">
-+  <html:div id="zen-toolbar-background" class="zen-toolbar-background zen-browser-generic-background">
++  <html:div id="zen-toolbar-background" class="zen-toolbar-background zen-squircle-before zen-squircle-after zen-browser-generic-background">
 +    <html:div class="zen-browser-grain" />
 +  </html:div>
 +  <box id="zen-overflow-extensions-list" skipintoolbarset="true" contextmenu="toolbar-context-menu" />

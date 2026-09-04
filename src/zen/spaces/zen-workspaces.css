@@ -31,6 +31,7 @@
   & toolbarbutton {
     margin: 0;
     max-width: 28px;
+    border-radius: var(--toolbarbutton-border-radius);
     height: 28px;
     display: flex;
     justify-content: center;
@@ -323,7 +324,10 @@ zen-workspace {
   overflow: hidden;
   color: var(--toolbox-textcolor);
 
-  --tab-background-color-selected: color-mix(in srgb, light-dark(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.18)) 95%, var(--zen-primary-color)) !important;
+  --tab-background-color-selected: light-dark(
+    color-mix(in srgb, rgba(255, 255, 255, 0.8) 98%, var(--zen-primary-color)),
+    color-mix(in srgb, rgba(255, 255, 255, 0.18) 95%, var(--zen-primary-color))
+  ) !important;
   --tab-box-shadow-selected: 0 0.8px 1.5px 0px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.05)) !important;
   --tab-selected-textcolor: color-mix(in srgb, var(--toolbox-textcolor) 95%, var(--zen-primary-color)) !important;
 

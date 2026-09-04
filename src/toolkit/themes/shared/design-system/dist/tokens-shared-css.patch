@@ -1,5 +1,5 @@
 diff --git a/toolkit/themes/shared/design-system/dist/tokens-shared.css b/toolkit/themes/shared/design-system/dist/tokens-shared.css
-index 15c0d98a18b4f19e7f2e03d2b78066b0353f416a..b32f6244c7a07e93894bab422691a605456034a1 100644
+index 63c641f560d4c0ce06b40a652ca99d1c48cd6941..39c81e773a442870763396e68fb57bd336e3625a 100644
 --- a/toolkit/themes/shared/design-system/dist/tokens-shared.css
 +++ b/toolkit/themes/shared/design-system/dist/tokens-shared.css
 @@ -7,6 +7,8 @@
@@ -11,7 +11,22 @@ index 15c0d98a18b4f19e7f2e03d2b78066b0353f416a..b32f6244c7a07e93894bab422691a605
  @layer tokens-foundation {
    :root,
    :host(.anonymous-content-host) {
-@@ -424,8 +426,8 @@
+@@ -28,10 +30,10 @@
+     --border-color-selected: var(--color-accent-primary);
+     --border-color-transparent: transparent;
+     --border-radius-circle: 9999px;
+-    --border-radius-xsmall: 2px;
+-    --border-radius-small: 4px;
+-    --border-radius-medium: 8px;
+-    --border-radius-large: 16px;
++    --border-radius-xsmall: calc(2px * var(--zen-squircle-value));
++    --border-radius-small: calc(4px * var(--zen-squircle-value));
++    --border-radius-medium: calc(8px * var(--zen-squircle-value));
++    --border-radius-large: calc(16px * var(--zen-squircle-value));
+     --border-width: 1px;
+ 
+     /** box-shadow **/
+@@ -477,8 +479,8 @@
      --panel-background-color-dimmed-further: var(--background-color-dimmed-further);
      --panel-border-color: light-dark(rgb(240, 240, 244), rgb(82, 82, 94));
      --panel-border-radius: var(--border-radius-medium);

@@ -44,6 +44,7 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
   #popup = null;
   #popupTimer = null;
   #mouseTimer = null;
+  #collapsedRelayoutQueue = new Set();
   #lastHighlightedGroup = null;
 
   #lastFolderContextMenu = null;
@@ -339,13 +340,29 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
       group.setAttribute("had-zen-pinned-changed", true);
     }
 
-    if (group.collapsed && !this._sessionRestoring && !group.isLiveFolder) {
+    if (this._sessionRestoring) {
+      // The margins hiding collapsed content are computed at collapse time;
+      // content materializing quietly under a collapsed folder must refresh
+      // them.
+      const owner = group.isZenFolder ? group : group.group;
+      const collapsedRoot = owner?.rootMostCollapsedFolder;
+      if (collapsedRoot) {
+        this.#queueCollapsedRelayout(collapsedRoot);
+      }
+    } else if (group.collapsed && !group.isLiveFolder) {
       group.collapsed = group.hasAttribute("has-active");
     }
   }
 
   on_FolderGrouped(event) {
     if (this._sessionRestoring) {
+      const parentFolder = event.target;
+      if (!groupIsCollapsiblePins(parentFolder)) {
+        const collapsedRoot = parentFolder?.rootMostCollapsedFolder;
+        if (collapsedRoot) {
+          this.#queueCollapsedRelayout(collapsedRoot);
+        }
+      }
       return;
     }
     const folder = event.detail;
@@ -471,6 +488,47 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     }
 
     await this.animateCollapse(group);
+  }
+
+  #queueCollapsedRelayout(group) {
+    if (this.#collapsedRelayoutQueue.size === 0) {
+      requestAnimationFrame(() => this.#flushCollapsedRelayout());
+    }
+    this.#collapsedRelayoutQueue.add(group);
+  }
+
+  #flushCollapsedRelayout() {
+    if (this.#animationCount) {
+      // A collapse/expand animation is mid-flight and writes margins when it
+      // settles, retry once it is done.
+      requestAnimationFrame(() => this.#flushCollapsedRelayout());
+      return;
+    }
+    const groups = [...this.#collapsedRelayoutQueue];
+    this.#collapsedRelayoutQueue.clear();
+    for (const group of groups) {
+      if (
+        !group.isConnected ||
+        !group.isZenFolder ||
+        !group.collapsed ||
+        group.hasAttribute("has-active")
+      ) {
+        continue;
+      }
+      const container = group.groupContainer;
+      const groupStart = group.groupStartElement;
+      const wasHidden = container.hasAttribute("hidden");
+      container.removeAttribute("hidden");
+      groupStart.style.marginTop = "0px";
+      let height = container.getBoundingClientRect().height;
+      if (container.separatorElement) {
+        height -= container.separatorElement.getBoundingClientRect().height;
+      }
+      groupStart.style.marginTop = `${-(height + 4)}px`;
+      if (wasHidden) {
+        container.setAttribute("hidden", true);
+      }
+    }
   }
 
   async on_TabGroupExpand(event) {

@@ -268,12 +268,6 @@ export class nsZenWorkspace extends MozXULElement {
 
     this.#updateOverflow();
 
-    this.onGradientCacheChanged = this.#onGradientCacheChanged.bind(this);
-    window.addEventListener(
-      "ZenGradientCacheChanged",
-      this.onGradientCacheChanged
-    );
-
     this.pinnedTabsContainer.addEventListener("TabPinned", () => {
       // If a tab is pinned and the pinned tabs section is collapsed, uncollapse it.
       if (this.collapsiblePins.collapsed) {
@@ -298,13 +292,6 @@ export class nsZenWorkspace extends MozXULElement {
         tabPinCallback();
       }
     });
-  }
-
-  disconnectedCallback() {
-    window.removeEventListener(
-      "ZenGradientCacheChanged",
-      this.onGradientCacheChanged
-    );
   }
 
   get active() {
@@ -395,7 +382,7 @@ export class nsZenWorkspace extends MozXULElement {
     return this.querySelector("#tabs-newtab-button");
   }
 
-  #onGradientCacheChanged() {
+  onGradientCacheChanged() {
     const { isDarkMode, isExplicitMode, toolbarColor, primaryColor } =
       gZenThemePicker.getGradientForWorkspace(
         gZenWorkspaces.getWorkspaceFromId(this.workspaceUuid),

@@ -1509,7 +1509,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       baseColor = this.blendColors(
         accentColor,
         baseColor.slice(0, 3),
-        this.canBeTransparent ? 25 : 5
+        this.canBeTransparent ? 20 : 5
       ).concat(opacity);
     }
     return baseColor;
@@ -1538,14 +1538,14 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         return;
       }
 
+      if (theme === null) {
+        browser.gZenThemePicker.invalidateGradientCache(uuid);
+      }
+
       // Do not rebuild if the workspace is not the same as the current one
       const windowWorkspace = browser.gZenWorkspaces.getActiveWorkspace();
       if (windowWorkspace.uuid !== uuid) {
         return;
-      }
-
-      if (theme === null) {
-        browser.gZenThemePicker.invalidateGradientCache(uuid);
       }
 
       // get the theme from the window
@@ -1983,9 +1983,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
 
   invalidateGradientCache(uuid) {
     delete this.#gradientsCache[uuid];
-    window.dispatchEvent(
-      new Event("ZenGradientCacheChanged", { bubbles: true })
-    );
+    gZenWorkspaces.workspaceElement(uuid)?.onGradientCacheChanged();
   }
 
   getGradientForWorkspace(workspace, { getGradient = true } = {}) {

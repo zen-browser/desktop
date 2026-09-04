@@ -29,7 +29,7 @@
   &,
   &::before,
   &::after {
-    border-radius: calc(var(--zen-native-inner-radius) - var(--zen-compact-mode-no-padding-radius-fix, 0px));
+    border-radius: calc((var(--zen-native-inner-radius) - var(--zen-compact-mode-no-padding-radius-fix, 0px)) * var(--zen-squircle-value));
   }
 }
 

@@ -45,6 +45,8 @@ https_first_disabled = true
 
 ["browser_sound_indicator_silent_video.js"]
 
+["browser_sound_indicator_tab_move.js"]
+
 ["browser_webAudio_hideSoundPlayingIcon.js"]
 
 ["browser_webAudio_silentData.js"]

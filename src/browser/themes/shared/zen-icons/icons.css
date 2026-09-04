@@ -435,10 +435,6 @@
   list-style-image: url("arrow-left.svg") !important;
 }
 
-#appmenu-moreTools-button {
-  list-style-image: url("customize.svg") !important;
-}
-
 #zen-copy-current-url-button,
 #share-tab-button,
 #zen-site-data-header-share {
@@ -812,7 +808,8 @@
 
 #toolbar-context-toggle-vertical-tabs,
 #toolbar-context-customize-sidebar,
-#sidebarRevampSeparator {
+#sidebarRevampSeparator,
+.fxa-menu-sign-in-promo-image {
   display: none !important;
 }
 
@@ -879,7 +876,7 @@
   border-radius: var(--tab-border-radius);
 
   &:hover {
-    background: var(--toolbarbutton-hover-background);
+    background: var(--toolbarbutton-background-color-hover);
   }
 
   & image {

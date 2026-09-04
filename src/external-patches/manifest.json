@@ -44,17 +44,19 @@
   {
     "type": "phabricator",
     "id": "D320897",
-    "name": "Bug 2011236",
-    "replaces": {
-      // The upstream patch context includes a MOZ_DIAGNOSTIC_ASSERT that
-      // doesn't exist yet in our Firefox version.
-      "@@ -59,11 +67,12 @@": "@@ -59,9 +67,10 @@",
-      "aLoadState->TypeHint())) {\n   MOZ_DIAGNOSTIC_ASSERT(!mURI->SchemeIs(\"javascript\"));\n \n   // Pull": "aLoadState->TypeHint())) {\n   // Pull"
-    }
+    "name": "Bug 2011236"
   },
   {
     "type": "phabricator",
     "id": "D321446",
     "name": "Issue 14710"
+  },
+  {
+    "type": "local",
+    "path": "firefox/css_corner_shape_rendering.patch"
+  },
+  {
+    "type": "local",
+    "path": "firefox/override_cert_checks_temp.patch"
   }
 ]

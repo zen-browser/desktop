@@ -41,8 +41,3 @@ skip-if = [
 ]
 
 ["test_startup_session_async.js"]
-
-["test_write_json_length_hint.js"]
-support-files = [
-  "data/sessionstore_complete.json",
-]

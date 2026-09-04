@@ -31,16 +31,12 @@ class nsZenSnapManager extends nsZenDOMOperatedFeature {
 
   init() {
     this.#setupElements();
-    console.warn("[ZenSnapManager] Initialized successfully.");
   }
 
   #setupElements() {
     this.#modalElement = document.getElementById("zen-snap-modal");
     this.#backdropElement = document.getElementById("zen-snap-backdrop");
     if (!this.#modalElement) {
-      console.warn(
-        "[ZenSnapManager] #zen-snap-modal element not found in DOM."
-      );
       return;
     }
 
@@ -111,10 +107,6 @@ class nsZenSnapManager extends nsZenDOMOperatedFeature {
   }
 
   #onBrowseAllClicked() {
-    console.warn(
-      "[ZenSnapManager] Browse all clicked. Calling actor:",
-      this.#currentActor
-    );
     if (this.#currentActor) {
       this.#currentActor.openNativeFilePicker(
         this.#currentInputData?.accept,
@@ -175,15 +167,14 @@ class nsZenSnapManager extends nsZenDOMOperatedFeature {
         uint8[i] = clipboardData.bytes.charCodeAt(i);
       }
       await IOUtils.write(tempPath, uint8);
-      console.warn("[ZenSnapManager] Saved clipboard image to temp:", tempPath);
       this.#selectFile(tempPath);
 
       // Auto-cleanup: remove temporary file after the webpage has processed it
       setTimeout(async () => {
         try {
           await IOUtils.remove(tempPath, { ignoreAbsent: true });
-        } catch (e) {
-          console.warn("[ZenSnapManager] Error cleaning up temp file:", e);
+        } catch {
+          // Ignore temp cleanup error
         }
       }, 15000);
     } catch (e) {
@@ -232,10 +223,6 @@ class nsZenSnapManager extends nsZenDOMOperatedFeature {
         }
       }
 
-      console.warn(
-        "[ZenSnapManager] Found valid recent downloads:",
-        validDownloads.length
-      );
       return validDownloads.slice(-limit).reverse();
     } catch (error) {
       console.error("[ZenSnapManager] Failed to fetch downloads:", error);
@@ -456,7 +443,6 @@ class nsZenSnapManager extends nsZenDOMOperatedFeature {
 
     this.#currentActor = actor;
     this.#currentInputData = data;
-    console.warn("[ZenSnapManager] Input click intercepted:", data);
 
     const clipboardImage = this.getClipboardImageData();
     const downloads = await this.getRecentDownloads();

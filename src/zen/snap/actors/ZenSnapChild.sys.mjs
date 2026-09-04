@@ -31,10 +31,6 @@ export class ZenSnapChild extends JSWindowActorChild {
           new win.Event("change", { bubbles: true, composed: true })
         );
       }
-      console.warn(
-        "[ZenSnapChild] Assigned files to input successfully:",
-        fileObjects.length
-      );
     } catch (error) {
       console.error("[ZenSnapChild] Failed to assign files to input:", error);
     }
@@ -75,7 +71,6 @@ export class ZenSnapChild extends JSWindowActorChild {
         event.stopPropagation();
 
         this.#activeInput = target;
-        console.warn("[ZenSnapChild] Input click intercepted:", target.type);
 
         const rect = target.getBoundingClientRect?.();
         this.sendAsyncMessage("ZenSnap:InputClicked", {

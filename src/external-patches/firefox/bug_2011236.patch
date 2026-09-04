@@ -150,8 +150,8 @@ diff --git a/docshell/shistory/SessionHistoryEntry.cpp b/docshell/shistory/Sessi
            aLoadState->TypeHint())) {
    MOZ_DIAGNOSTIC_ASSERT(!mURI->SchemeIs("javascript"));
  
-   // Verify the documented purpose of mBaseURI.
-@@ -130,11 +139,12 @@
+   // Pull the upload stream off of the channel instead of the load state, as
+@@ -124,11 +133,12 @@
    loadInfo->GetPrincipalToInherit(
        getter_AddRefs(mSharedState.Get()->mPrincipalToInherit));
  

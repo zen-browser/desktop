@@ -70,6 +70,134 @@ class nsSplitNode extends nsSplitLeafNode {
   }
 }
 
+/**
+ * @typedef {object} nsSplitViewGesture
+ * @property {Function} begin - gesture start
+ * @property {Function} cancel - gesture stop
+ */
+
+/**
+ * @implements {nsSplitViewGesture}
+ */
+class nsSplitterDrag {
+  /**
+   * The slot this gesture occupies in nsZenViewSplitter._gestures.
+   *
+   * @type {string}
+   */
+  static GESTURE = "splitterDrag";
+
+  _controller = new AbortController();
+
+  /**
+   * The node whose children the splitter sits between.
+   *
+   * @type {nsSplitNode}
+   */
+  node;
+  /**
+   * Sizes of node.children at mousedown.
+   *
+   * @type {number[]}
+   */
+  originalSizes;
+  /**
+   * Which pair of panes the dragged splitter separates: it sits between
+   * node.children[gridIdx] and node.children[gridIdx + 1].
+   *
+   * @type {number}
+   */
+  gridIdx;
+  /**
+   * Pointer position on the dragged axis at mousedown.
+   *
+   * @type {number}
+   */
+  startPosition;
+  /**
+   * The root's extent divided by node's along the dragged axis
+   *
+   * @type {number}
+   */
+  rootToNodeSize;
+  /**
+   * @type {boolean}
+   */
+  isVertical;
+  /**
+   * The tabpanels, which carries the marks begin() puts on screen.
+   *
+   * @type {Element}
+   */
+  _panel;
+
+  /**
+   * @param {object} options
+   * @param {Element} options.panel - The tabpanels
+   * @param {Element} options.splitter - The splitter under the pointer.
+   * @param {MouseEvent} options.event - The mousedown that began the drag.
+   */
+  constructor({ panel, splitter, event }) {
+    this._panel = panel;
+    this.node = splitter.parentSplitNode;
+    this.gridIdx = parseInt(splitter.getAttribute("gridIdx"));
+    this.isVertical = splitter.getAttribute("orient") === "vertical";
+    this.startPosition = event[this.clientAxis];
+    this.originalSizes = this.node.children.map(c => c.sizeInParent);
+    const { top, right, bottom, left } = this.node.positionToRoot;
+    this.rootToNodeSize = this.isVertical
+      ? 100 / (100 - right - left)
+      : 100 / (100 - bottom - top);
+  }
+
+  /**
+   * @type {string}
+   */
+  get dimension() {
+    return this.isVertical ? "width" : "height";
+  }
+
+  /**
+   * @type {string}
+   */
+  get clientAxis() {
+    return this.isVertical ? "clientX" : "clientY";
+  }
+
+  /**
+   * Can be used to abort the drag prematurely.
+   *
+   * @type {AbortSignal}
+   */
+  get signal() {
+    return this._controller.signal;
+  }
+
+  /**
+   * @type {boolean}
+   */
+  get cancelled() {
+    return this._controller.signal.aborted;
+  }
+
+  begin() {
+    this._panel.setAttribute("zen-split-resizing", true);
+    window.setCursor(this.isVertical ? "ew-resize" : "ns-resize");
+  }
+
+  cancel() {
+    this._controller.abort();
+    this._panel.removeAttribute("zen-split-resizing");
+    window.setCursor("auto");
+  }
+
+  resetSizes() {
+    this.originalSizes.forEach(
+      (size, i) => (this.node.children[i].sizeInParent = size)
+    );
+  }
+}
+
 class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   currentView = -1;
   _data = [];
@@ -83,6 +211,11 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   minResizeWidth;
 
   _lastOpenedTab = null;
+
+  /**
+   * @type {{splitterDrag: ?nsSplitterDrag}}
+   */
+  _gestures = { [nsSplitterDrag.GESTURE]: null };
 
   MAX_TABS = 4;
 
@@ -675,11 +808,42 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   }
 
   /**
+   * Takes over a gesture slot, calling off whatever was in it.
+   *
+   * @param {string} name - Key into _gestures.
+   * @param {nsSplitViewGesture} gesture
+   * @returns {nsSplitViewGesture} The same gesture, begun.
+   * @private
+   */
+  _beginGesture(name, gesture) {
+    this._cancelGesture(name);
+    this._gestures[name] = gesture;
+    gesture.begin();
+    return gesture;
+  }
+
+  /**
+   * Calls off the gesture in a slot, if there is one.
+   *
+   * @param {string} name - Key into _gestures.
+   * @private
+   */
+  _cancelGesture(name) {
+    const gesture = this._gestures[name];
+    if (!gesture) {
+      return;
+    }
+    this._gestures[name] = null;
+    gesture.cancel();
+  }
+
+  /**
    * @param {object} node
    * @param {boolean} recursive
    * @private
    */
   _removeNodeSplitters(node, recursive) {
+    this._cancelGesture(nsSplitterDrag.GESTURE);
     this.getSplitters(node)?.forEach(s => s.remove());
     this._splitNodeToSplitters.delete(node);
     if (!recursive) {
@@ -1809,6 +1973,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   }
 
   removeSplitters() {
+    this._cancelGesture(nsSplitterDrag.GESTURE);
     [...this.overlay.children]
       .filter(c => c.classList.contains("zen-split-view-splitter"))
       .forEach(s => s.remove());
@@ -1851,36 +2016,30 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   };
 
   handleSplitterMouseDown = event => {
-    this.tabBrowserPanel.setAttribute("zen-split-resizing", true);
-    const isVertical = event.target.getAttribute("orient") === "vertical";
-    const dimension = isVertical ? "width" : "height";
-    const clientAxis = isVertical ? "clientX" : "clientY";
-
-    const gridIdx = parseInt(event.target.getAttribute("gridIdx"));
-    const startPosition = event[clientAxis];
-    const splitNode = event.target.parentSplitNode;
-    let rootToNodeSize;
-    if (isVertical) {
-      rootToNodeSize =
-        100 /
-        (100 - splitNode.positionToRoot.right - splitNode.positionToRoot.left);
-    } else {
-      rootToNodeSize =
-        100 /
-        (100 - splitNode.positionToRoot.bottom - splitNode.positionToRoot.top);
-    }
-    const originalSizes = splitNode.children.map(c => c.sizeInParent);
+    const drag = this._beginGesture(
+      nsSplitterDrag.GESTURE,
+      new nsSplitterDrag({
+        panel: this.tabBrowserPanel,
+        splitter: event.target,
+        event,
+      })
+    );
+    const { node, originalSizes, gridIdx } = drag;
 
     const dragFunc = dEvent => {
       requestAnimationFrame(() => {
-        originalSizes.forEach(
-          (s, i) => (splitNode.children[i].sizeInParent = s)
-        ); // reset changes
+        // The split can be torn down mid-gesture, between the mousemove and the
+        // frame it asked for.
+        if (drag.cancelled) {
+          return;
+        }
+        drag.resetSizes();
 
-        const movement = dEvent[clientAxis] - startPosition;
+        const movement = dEvent[drag.clientAxis] - drag.startPosition;
         let movementPercent =
-          (movement / this.tabBrowserPanel.getBoundingClientRect()[dimension]) *
-          rootToNodeSize *
+          (movement /
+            this.tabBrowserPanel.getBoundingClientRect()[drag.dimension]) *
+          drag.rootToNodeSize *
           100;
 
         let reducingMovement = Math.max(movementPercent, -movementPercent);
@@ -1894,7 +2053,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
             this.minResizeWidth,
             current - reducingMovement
           );
-          splitNode.children[i].sizeInParent = newSize;
+          node.children[i].sizeInParent = newSize;
           const amountReduced = current - newSize;
           reducingMovement -= amountReduced;
           if (reducingMovement <= 0) {
@@ -1904,22 +2063,17 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
         const increasingMovement =
           Math.max(movementPercent, -movementPercent) - reducingMovement;
         const increaseIndex = gridIdx + (movementPercent < 0 ? 1 : 0);
-        splitNode.children[increaseIndex].sizeInParent =
+        node.children[increaseIndex].sizeInParent =
           originalSizes[increaseIndex] + increasingMovement;
-        this.applyGridLayout(splitNode);
+        this.applyGridLayout(node);
       });
     };
 
-    window.setCursor(isVertical ? "ew-resize" : "ns-resize");
-    document.addEventListener("mousemove", dragFunc);
+    document.addEventListener("mousemove", dragFunc, { signal: drag.signal });
     document.addEventListener(
       "mouseup",
-      () => {
-        document.removeEventListener("mousemove", dragFunc);
-        window.setCursor("auto");
-        this.tabBrowserPanel.removeAttribute("zen-split-resizing");
-      },
-      { once: true }
+      () => this._cancelGesture(nsSplitterDrag.GESTURE),
+      { signal: drag.signal }
     );
   };
 

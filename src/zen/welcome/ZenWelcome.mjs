@@ -768,6 +768,15 @@
   }
 
   function startZenWelcome() {
+    try {
+      let { installFirefoxProfileScanner } = ChromeUtils.importESModule(
+        "chrome://browser/content/zen-components/ZenExternalFirefoxProfileScanner.sys.mjs"
+      );
+      installFirefoxProfileScanner();
+    } catch (e) {
+      console.error(e);
+    }
+
     clearBrowserElements();
     centerWindowOnScreen();
     initializeZenWelcome();

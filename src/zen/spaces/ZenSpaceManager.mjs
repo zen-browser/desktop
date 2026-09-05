@@ -1046,6 +1046,12 @@ class nsZenWorkspaces {
       return null;
     }
 
+    // If the tab being closed is not selected, we don't need to select
+    // a new empty tab (as the active selection is already on a different tab).
+    if (!tab.selected) {
+      return null;
+    }
+
     let workspaceID = tab.getAttribute("zen-workspace-id");
     if (!workspaceID) {
       return null;

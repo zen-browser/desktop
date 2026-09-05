@@ -1715,7 +1715,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
   openGlanceForBookmark(event) {
     const activationMethod = Services.prefs.getStringPref(
       "zen.glance.activation-method",
-      "ctrl"
+      "shift"
     );
 
     if (!this.#isActivationKeyPressed(event, activationMethod)) {

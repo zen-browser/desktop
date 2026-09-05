@@ -1177,7 +1177,12 @@ Preferences.addAll([
   {
     id: "zen.glance.activation-method",
     type: "string",
-    default: "ctrl",
+    default: "shift",
+  },
+  {
+    id: "zen.content-link-handling.split-activation-method",
+    type: "string",
+    default: "alt",
   },
   {
     id: "zen.glance.enabled",

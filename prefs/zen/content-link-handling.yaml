@@ -2,4 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-TESTING_JS_MODULES += ["tests/GlanceTestUtils.sys.mjs"]
+- name: zen.glance.activation-method
+  value: "shift" # ctrl, alt, shift, meta
+
+- name: zen.content-link-handling.split-activation-method
+  value: "alt" # ctrl, alt, shift, meta, none

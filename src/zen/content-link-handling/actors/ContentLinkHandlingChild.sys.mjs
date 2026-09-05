@@ -17,12 +17,32 @@ XPCOMUtils.defineLazyPreferenceGetter(
   true
 );
 
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "glanceEnabled",
+  "zen.glance.enabled",
+  true
+);
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "glanceActivationMethod",
+  "zen.glance.activation-method",
+  "shift"
+);
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "splitActivationMethod",
+  "zen.content-link-handling.split-activation-method",
+  "alt"
+);
+
 // A small threshold to allow for minor mouse jitter during a normal click.
 // Anything beyond this is likely an intentional drag (like selecting text).
 const CLICK_DRAG_THRESHOLD_PX = 4;
 
-export class ZenGlanceChild extends JSWindowActorChild {
-  #activationMethod;
+export class ContentLinkHandlingChild extends JSWindowActorChild {
   #mouseDownX = null;
   #mouseDownY = null;
 
@@ -37,18 +57,8 @@ export class ZenGlanceChild extends JSWindowActorChild {
     }
   }
 
-  async #initActivationMethod() {
-    this.#activationMethod = await this.sendQuery(
-      "ZenGlance:GetActivationMethod"
-    );
-  }
-
-  #ensureOnlyKeyModifiers(event) {
-    return !(event.ctrlKey ^ event.altKey ^ event.shiftKey ^ event.metaKey);
-  }
-
   #openGlance(href, principal) {
-    this.sendAsyncMessage("ZenGlance:OpenGlance", {
+    this.sendAsyncMessage("ContentLinkHandling:OpenGlance", {
       url: href,
       triggeringPrincipal: principal,
     });
@@ -74,7 +84,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
     }
     // Change the rect to make sure we take into account zoom.
     const zoom = this.browsingContext.fullZoom;
-    this.sendAsyncMessage("ZenGlance:RecordLinkClickData", {
+    this.sendAsyncMessage("ContentLinkHandling:RecordLinkClickData", {
       clientX: rect.left * zoom,
       clientY: rect.top * zoom,
       width: rect.width * zoom,
@@ -126,7 +136,9 @@ export class ZenGlanceChild extends JSWindowActorChild {
     // when clicking on a link with a different domain where glance would open.
     // The problem is that at that stage we don't know the rect or even what
     // element has been clicked, so we send the data here.
-    this.#sendClickDataToParent(node, event.target);
+    if (lazy.glanceEnabled) {
+      this.#sendClickDataToParent(node, event.target);
+    }
 
     this.#mouseDownX = event.clientX;
     this.#mouseDownY = event.clientY;
@@ -147,23 +159,24 @@ export class ZenGlanceChild extends JSWindowActorChild {
       }
     }
 
-    const { node, href, principal } = this.#getTargetFromEvent(event);
+    const { href, principal } = this.#getTargetFromEvent(event);
     if (
+      !event.isTrusted ||
       event.button !== 0 ||
-      !node ||
+      !href ||
       event.defaultPrevented ||
-      this.#ensureOnlyKeyModifiers(event)
+      [event.ctrlKey, event.altKey, event.shiftKey, event.metaKey].filter(
+        Boolean
+      ).length !== 1
     ) {
       return;
     }
-    const activationMethod = this.#activationMethod;
-    if (activationMethod === "ctrl" && !event.ctrlKey) {
+    const openGlance =
+      lazy.glanceEnabled && event[`${lazy.glanceActivationMethod}Key`] === true;
+    if (!openGlance && event[`${lazy.splitActivationMethod}Key`] !== true) {
       return;
-    } else if (activationMethod === "alt" && !event.altKey) {
-      return;
-    } else if (activationMethod === "shift" && !event.shiftKey) {
-      return;
-    } else if (activationMethod === "meta" && !event.metaKey) {
+    }
+    if (!openGlance && Services.io.extractScheme(href) === "javascript") {
       return;
     }
     if (this.#checkSecurity(href, principal)) {
@@ -171,21 +184,25 @@ export class ZenGlanceChild extends JSWindowActorChild {
     }
     event.preventDefault();
     event.stopPropagation();
-    this.#openGlance(href, principal);
+    if (openGlance) {
+      this.#openGlance(href, principal);
+    } else {
+      this.sendAsyncMessage("ContentLinkHandling:OpenSplitLink", { url: href });
+    }
   }
 
   on_keydown(event) {
-    if (event.defaultPrevented || event.key !== "Escape") {
+    if (
+      !lazy.glanceEnabled ||
+      event.defaultPrevented ||
+      event.key !== "Escape"
+    ) {
       return;
     }
-    this.sendAsyncMessage("ZenGlance:CloseGlance", {
+    this.sendAsyncMessage("ContentLinkHandling:CloseGlance", {
       hasFocused:
         this.contentWindow.document.activeElement !==
         this.contentWindow.document.body,
     });
-  }
-
-  async on_DOMContentLoaded() {
-    await this.#initActivationMethod();
   }
 }

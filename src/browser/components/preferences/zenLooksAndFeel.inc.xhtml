@@ -72,22 +72,21 @@
       </vbox>
 </groupbox>
 
-<hbox id="zenGlanceCategory"
+<hbox id="zenContentLinkHandlingCategory"
       class="subcategory"
       hidden="true"
       data-category="paneZenLooks">
-<html:h1 data-l10n-id="zen-glance-title"/>
+<html:h1 data-l10n-id="zen-content-link-handling-title"/>
 </hbox>
 
-<groupbox id="zenGlanceGroup" data-category="paneZenLooks" hidden="true" class="highlighting-group">
-      <label><html:h2 data-l10n-id="zen-glance-header"/></label>
-      <description class="description-deemphasized" data-l10n-id="zen-glance-description" />
+<groupbox id="zenContentLinkHandlingGroup" data-category="paneZenLooks" hidden="true" class="highlighting-group">
+      <description class="description-deemphasized" data-l10n-id="zen-content-link-handling-description" />
 
       <checkbox id="zenLooksAndFeelGlanceEnabled"
             data-l10n-id="zen-glance-enabled"
             preference="zen.glance.enabled"/>
       <hbox align="center">
-            <label id="zenGlanceTriggerLabel" data-l10n-id="zen-glance-trigger-label"/>
+            <label id="zenGlanceTriggerLabel" control="zenGlanceTrigger" data-l10n-id="zen-content-link-handling-glance-label"/>
             <menulist id="zenGlanceTrigger" preference="zen.glance.activation-method">
                   <menupopup>
                         <menuitem data-l10n-id="zen-glance-trigger-ctrl-click" value="ctrl"/>
@@ -99,6 +98,21 @@
                   </menupopup>
             </menulist>
         </hbox>
+      <hbox align="center">
+            <label id="zenSplitTriggerLabel" control="zenSplitTrigger" data-l10n-id="zen-content-link-handling-split-label"/>
+            <menulist id="zenSplitTrigger" preference="zen.content-link-handling.split-activation-method">
+                  <menupopup>
+                        <menuitem data-l10n-id="zen-content-link-handling-disabled" value="none"/>
+                        <menuitem data-l10n-id="zen-glance-trigger-ctrl-click" value="ctrl"/>
+                        <menuitem data-l10n-id="zen-glance-trigger-alt-click" value="alt"/>
+                        <menuitem data-l10n-id="zen-glance-trigger-shift-click" value="shift"/>
+#ifdef XP_MACOSX
+                        <menuitem data-l10n-id="zen-glance-trigger-meta-click" value="meta"/>
+#endif
+                  </menupopup>
+            </menulist>
+        </hbox>
+      <description class="description-deemphasized" data-l10n-id="zen-content-link-handling-conflict"/>
 </groupbox>
 
 <hbox id="zenUrlBarCategory"

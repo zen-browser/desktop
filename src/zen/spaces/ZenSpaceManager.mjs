@@ -2341,9 +2341,13 @@ class nsZenWorkspaces {
       )
     ) {
       tabToSelect = lastSelectedTab;
+    } else if (!onInit && !tabToSelect) {
+      // Create new tab if needed and no suitable tab was found
+      tabToSelect = this._emptyTab;
     }
     // Find first suitable tab
-    else {
+    // If we found a tab to select, select it
+    if (!tabToSelect || tabToSelect.closing) {
       tabToSelect = gBrowser.visibleTabs.find(tab => !tab.pinned);
       if (!tabToSelect && gBrowser.visibleTabs.length) {
         tabToSelect = gBrowser.visibleTabs[gBrowser.visibleTabs.length - 1];
@@ -2354,12 +2358,6 @@ class nsZenWorkspaces {
       }
     }
 
-    // If we found a tab to select, select it
-    if (!onInit && !tabToSelect) {
-      // Create new tab if needed and no suitable tab was found
-      const newTab = this.selectEmptyTab();
-      tabToSelect = newTab;
-    }
     if (tabToSelect && !onInit) {
       tabToSelect._visuallySelected = true;
     }

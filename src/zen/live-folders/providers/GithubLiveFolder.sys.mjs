@@ -93,7 +93,22 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         }
       }
 
-      this.state.repos = combinedActiveRepos;
+      // A 200 with an empty result set is indistinguishable from a session that
+      // lost access to the repositories, so only trust a second empty fetch.
+      if (
+        !combinedItems.size &&
+        this.state.repos.size &&
+        this.state.lastErrorId !== "zen-live-folder-github-no-auth"
+      ) {
+        return "zen-live-folder-github-no-auth";
+      }
+
+      // Never drop the known repositories on an empty fetch, or the repository
+      // filter submenu stays disabled until some later fetch returns items.
+      if (combinedActiveRepos.size) {
+        this.state.repos = combinedActiveRepos;
+      }
+
       return Array.from(combinedItems.values());
     } catch (error) {
       console.error("Error fetching or parsing GitHub issues:", error);

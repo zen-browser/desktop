@@ -48,6 +48,11 @@ zen-look-and-feel-compact-view-top-toolbar =
 zen-look-and-feel-compact-toolbar-flash-popup =
     .label = Briefly make the toolbar popup when switching or opening new tabs in compact mode
 
+zen-look-and-feel-window-drag-header = Window dragging
+zen-look-and-feel-window-drag-description = Move the window by dragging empty space at the top of websites, just like the titlebar.
+zen-window-drag-enabled =
+    .label = Allow dragging the window from web pages
+
 pane-zen-tabs-title = Tab Management
 category-zen-workspaces =
     .tooltiptext = { pane-zen-tabs-title }
@@ -58,6 +63,10 @@ zen-tabs-select-recently-used-on-close =
 
 zen-tabs-close-on-back-with-no-history =
     .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
+
+zen-settings-workspaces-sync =
+    .label = Sync your sidebar across devices
+    .description = Keep your workspaces, pinned tabs and folders in sync on all your devices through your Mozilla account.
 
 zen-settings-workspaces-sync-unpinned-tabs =
     .label = Sync only pinned tabs in workspaces

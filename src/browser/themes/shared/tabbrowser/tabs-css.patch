@@ -1,17 +1,17 @@
 diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
-index 24ad9ab050a67d4a375eb1d05261a7f7c267d7d1..b2f2ae8e765ad1f052aa07ab1d47f285062fbbcc 100644
+index 61c0b8382c78f63ad9113af55a6236c4a29bc45b..0ab463c768d4fb3f45d22e753f408c46b61c0480 100644
 --- a/browser/themes/shared/tabbrowser/tabs.css
 +++ b/browser/themes/shared/tabbrowser/tabs.css
-@@ -33,7 +33,7 @@
+@@ -46,7 +46,7 @@
    --tab-group-line-thickness: 2px;
    --tab-group-line-toolbar-border-distance: 1px;
    /* Collapsed tabs should be square, so set width to match the min height */
 -  --tab-collapsed-background-width: var(--tab-min-height);
 +  --tab-collapsed-background-width: 48px;
    --tab-collapsed-width: calc(var(--tab-collapsed-background-width) + 2 * var(--tab-inner-inline-margin));
+   --tab-collapsed-split-pill-offset: 0px;
    --tab-pinned-min-width-expanded: calc(var(--tab-pinned-expanded-background-width) + 2 * var(--tab-pinned-margin-inline-expanded));
-   --tab-note-icon-end-margin: var(--dimension-4);
-@@ -282,7 +282,6 @@ tab-split-view-wrapper[dragtarget] {
+@@ -308,7 +308,6 @@ tab-split-view-wrapper[dragtarget] {
    }
  
    :root:not([uidensity="compact"], [sidebar-expand-on-hover]) &[pinned] {
@@ -19,7 +19,7 @@ index 24ad9ab050a67d4a375eb1d05261a7f7c267d7d1..b2f2ae8e765ad1f052aa07ab1d47f285
    }
  
    &:is([selected], [multiselected]) {
-@@ -296,6 +295,7 @@ tab-split-view-wrapper[dragtarget] {
+@@ -322,6 +321,7 @@ tab-split-view-wrapper[dragtarget] {
      border-radius: inherit;
      position: relative;
      overflow: hidden;
@@ -27,7 +27,7 @@ index 24ad9ab050a67d4a375eb1d05261a7f7c267d7d1..b2f2ae8e765ad1f052aa07ab1d47f285
  
      &::before {
        position: absolute;
-@@ -493,10 +493,6 @@ tab-split-view-wrapper[dragtarget] {
+@@ -519,10 +519,6 @@ tab-split-view-wrapper[dragtarget] {
  
    @media -moz-pref("browser.tabs.fadeOutUnloadedTabs") {
      &[pending] {
@@ -38,7 +38,7 @@ index 24ad9ab050a67d4a375eb1d05261a7f7c267d7d1..b2f2ae8e765ad1f052aa07ab1d47f285
        opacity: 0.5;
        /* Fade the favicon out */
        transition-property: filter, opacity;
-@@ -512,10 +508,6 @@ tab-split-view-wrapper[dragtarget] {
+@@ -538,10 +534,6 @@ tab-split-view-wrapper[dragtarget] {
  
    @media -moz-pref("browser.tabs.fadeOutExplicitlyUnloadedTabs") {
      &[pending][discarded] {
@@ -49,7 +49,7 @@ index 24ad9ab050a67d4a375eb1d05261a7f7c267d7d1..b2f2ae8e765ad1f052aa07ab1d47f285
        opacity: 0.5;
        /* Fade the favicon out */
        transition-property: filter, opacity;
-@@ -589,7 +581,7 @@ tab-split-view-wrapper[dragtarget] {
+@@ -615,7 +607,7 @@ tab-split-view-wrapper[dragtarget] {
    }
  
    #tabbrowser-tabs[orient="vertical"] & {
@@ -58,7 +58,7 @@ index 24ad9ab050a67d4a375eb1d05261a7f7c267d7d1..b2f2ae8e765ad1f052aa07ab1d47f285
    }
  
    &[crashed] {
-@@ -597,7 +589,7 @@ tab-split-view-wrapper[dragtarget] {
+@@ -623,7 +615,7 @@ tab-split-view-wrapper[dragtarget] {
    }
  
    #tabbrowser-tabs[orient="vertical"]:not([expanded]) &:not([crashed]),
@@ -67,7 +67,7 @@ index 24ad9ab050a67d4a375eb1d05261a7f7c267d7d1..b2f2ae8e765ad1f052aa07ab1d47f285
      &[soundplaying] {
        list-style-image: url("chrome://browser/skin/tabbrowser/tab-audio-playing-small.svg");
      }
-@@ -651,7 +643,7 @@ tab-split-view-wrapper[dragtarget] {
+@@ -677,7 +669,7 @@ tab-split-view-wrapper[dragtarget] {
      }
    }
  
@@ -76,7 +76,7 @@ index 24ad9ab050a67d4a375eb1d05261a7f7c267d7d1..b2f2ae8e765ad1f052aa07ab1d47f285
    &[crashed] {
      display: revert;
    }
-@@ -811,7 +803,7 @@ tab-split-view-wrapper[dragtarget] {
+@@ -837,7 +829,7 @@ tab-split-view-wrapper[dragtarget] {
        has not been added to root. There are certain scenarios when that attribute is temporarily
        removed from root such as when toggling the sidebar to expand with the toolbar button. */
      #tabbrowser-tabs[orient="horizontal"] &:not([pinned]):not([crashed]),
@@ -85,7 +85,7 @@ index 24ad9ab050a67d4a375eb1d05261a7f7c267d7d1..b2f2ae8e765ad1f052aa07ab1d47f285
        &:is([soundplaying], [muted], [activemedia-blocked]) {
          display: flex;
        }
-@@ -1031,7 +1023,6 @@ tab-split-view-wrapper[dragtarget] {
+@@ -1151,7 +1143,6 @@ tab-split-view-wrapper[dragtarget] {
  .tabbrowser-tab:is([image], [pinned]) > .tab-stack > .tab-content[attention]:not([selected]),
  .tabbrowser-tab > .tab-stack > .tab-content[pinned][titlechanged]:not([selected]),
  #tabbrowser-tabs[orient="vertical"] .tabbrowser-tab > .tab-stack > .tab-content[titlechanged]:not([selected]) {
@@ -93,7 +93,7 @@ index 24ad9ab050a67d4a375eb1d05261a7f7c267d7d1..b2f2ae8e765ad1f052aa07ab1d47f285
    background-position: center bottom 6.5px;
    background-size: 4px 4px;
    background-repeat: no-repeat;
-@@ -1780,7 +1771,7 @@ tab-group {
+@@ -1904,7 +1895,7 @@ tab-group {
  }
  
  #tabbrowser-tabs[orient="vertical"][expanded] {
@@ -102,7 +102,7 @@ index 24ad9ab050a67d4a375eb1d05261a7f7c267d7d1..b2f2ae8e765ad1f052aa07ab1d47f285
    &[movingtab][movingtab-addToGroup]:not([movingtab-group], [movingtab-ungroup]) .tabbrowser-tab:is(:active, [multiselected]) {
      margin-inline-start: var(--space-medium);
    }
-@@ -2335,7 +2326,7 @@ tab-group {
+@@ -2504,7 +2495,7 @@ tab-group {
    }
  }
  
@@ -111,8 +111,8 @@ index 24ad9ab050a67d4a375eb1d05261a7f7c267d7d1..b2f2ae8e765ad1f052aa07ab1d47f285
  #vertical-tabs-newtab-button {
    appearance: none;
    min-height: var(--tab-min-height);
-@@ -2346,7 +2337,7 @@ tab-group {
-   margin-inline: var(--tab-inner-inline-margin);
+@@ -2524,7 +2515,7 @@ tab-group {
+   }
  
    #tabbrowser-tabs[orient="vertical"]:not([expanded]) & > .toolbarbutton-text {
 -    display: none;
@@ -120,16 +120,16 @@ index 24ad9ab050a67d4a375eb1d05261a7f7c267d7d1..b2f2ae8e765ad1f052aa07ab1d47f285
    }
  
    &:hover {
-@@ -2370,7 +2361,7 @@ tab-group {
+@@ -2548,7 +2539,7 @@ tab-group {
   * flex container. #tabs-newtab-button is a child of the arrowscrollbox where
   * we don't want a gap (between tabs), so we have to add some margin.
   */
 -#tabbrowser-arrowscrollbox[orient="vertical"] > #tabbrowser-arrowscrollbox-periphery > #tabs-newtab-button {
 +#tabbrowser-arrowscrollbox[orient="vertical"] #tabbrowser-arrowscrollbox-periphery > #tabs-newtab-button {
-   margin-block: var(--tab-block-margin);
+   margin-block: var(--tab-margin-block);
  }
  
-@@ -2560,7 +2551,6 @@ tab-group {
+@@ -2740,7 +2731,6 @@ tab-group {
  
    &:not([expanded]) {
      .tabbrowser-tab[pinned] {
@@ -137,7 +137,7 @@ index 24ad9ab050a67d4a375eb1d05261a7f7c267d7d1..b2f2ae8e765ad1f052aa07ab1d47f285
      }
  
      .tab-background {
-@@ -2599,8 +2589,8 @@ tab-group {
+@@ -2779,8 +2769,8 @@ tab-group {
        display: block;
        position: absolute;
        inset: auto;
@@ -148,7 +148,7 @@ index 24ad9ab050a67d4a375eb1d05261a7f7c267d7d1..b2f2ae8e765ad1f052aa07ab1d47f285
  
        &:-moz-window-inactive {
          background-image:
-@@ -2698,9 +2688,6 @@ tab-group {
+@@ -2878,9 +2868,6 @@ tab-group {
    ~ #tabbrowser-tabs[orient="horizontal"]::before {
      display: flex;
      content: "";
@@ -158,7 +158,7 @@ index 24ad9ab050a67d4a375eb1d05261a7f7c267d7d1..b2f2ae8e765ad1f052aa07ab1d47f285
    }
  }
  
-@@ -2733,7 +2720,6 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
+@@ -2913,7 +2900,6 @@ toolbar:not(#TabsToolbar) #firefox-view-button {
    list-style-image: url(chrome://global/skin/icons/plus.svg);
  }
  

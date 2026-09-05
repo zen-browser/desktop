@@ -4,6 +4,7 @@
 
 import checkForZenUpdates, {
   createWindowUpdateAnimation,
+  playWindowSweepAnimation,
 } from "chrome://browser/content/ZenUpdates.mjs";
 
 class ZenStartup {
@@ -194,6 +195,14 @@ class ZenStartup {
   async #createUpdateAnimation() {
     checkForZenUpdates();
     return await createWindowUpdateAnimation();
+  }
+
+  /**
+   * Entry point for privileged modules (e.g. the sync applier) to play the
+   * update sweep animation in this window.
+   */
+  playWindowSweepAnimation() {
+    return playWindowSweepAnimation();
   }
 }
 

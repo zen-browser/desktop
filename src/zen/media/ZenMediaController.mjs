@@ -46,6 +46,10 @@ class ZenMediaCard {
     this.#initListeners();
 
     if (controller) {
+      // Queried before anything is wired up: it throws if the controller
+      // went away in the meantime, and the caller drops the card.
+      const positionState = controller.getPositionState();
+
       this.#controllerListeners = {
         positionstatechange: this.#onPositionstateChange.bind(this),
         playbackstatechange: this.#onPlaybackstateChange.bind(this),
@@ -62,7 +66,7 @@ class ZenMediaCard {
 
       this.element.classList.toggle("playing", controller.isPlaying);
       this.updateMetadata();
-      this.updatePositionState(controller.getPositionState());
+      this.updatePositionState(positionState);
       this.updateSupportedKeys();
     } else {
       this.element.setAttribute("media-sharing", "");
@@ -164,11 +168,33 @@ class ZenMediaCard {
   }
 
   setHidden(hidden) {
-    if (this.element.hidden === hidden) {
+    if (!hidden) {
+      // Showing cancels a hide that may still be animating.
+      this.element.removeAttribute("zen-hiding");
+      if (this.element.hidden) {
+        this.element.hidden = false;
+        this.manager.onCardVisibilityChanged();
+      }
       return;
     }
-    this.element.hidden = hidden;
-    this.manager.onCardVisibilityChanged();
+
+    if (this.element.hidden || this.element.hasAttribute("zen-hiding")) {
+      return;
+    }
+    this.element.setAttribute("zen-hiding", "true");
+    Promise.allSettled(
+      this.element.getAnimations().map(animation => animation.finished)
+    ).then(() => {
+      if (!this.element.hasAttribute("zen-hiding")) {
+        return;
+      }
+      this.element.removeAttribute("zen-hiding");
+      if (this.shouldBeVisible) {
+        return;
+      }
+      this.element.hidden = true;
+      this.manager.onCardVisibilityChanged();
+    });
   }
 
   // Mirrors the original bar behavior: hide instantly when the card's own
@@ -320,7 +346,7 @@ class ZenMediaCard {
 
   onToggle() {
     if (this.controller?.isPlaying) {
-      this.controller.pause();
+      this.controller.pause("user");
     } else {
       this.controller?.play();
     }
@@ -339,7 +365,7 @@ class ZenMediaCard {
   }
 
   onSeekDrag(event) {
-    this.controller?.pause();
+    this.controller?.pause("user");
     const newTime = (event.target.value / 100) * this.duration;
     this.currentTimeEl.textContent = this.formatSecondsToTime(newTime);
   }
@@ -382,7 +408,7 @@ class ZenMediaCard {
 
   onClose() {
     if (this.controller) {
-      this.controller.pause();
+      this.controller.pause("user");
     } else {
       const webRTC =
         this.browser.browsingContext.currentWindowGlobal.getActor("WebRTC");
@@ -468,37 +494,47 @@ class nsZenMediaController {
     window.addEventListener("TabClose", onTabDiscardedOrClosed);
     window.addEventListener("TabBrowserDiscarded", onTabDiscardedOrClosed);
 
-    window.addEventListener("DOMAudioPlaybackStarted", event => {
-      const browser = event.target;
-      // The card is created right away (while the controller is fresh)
-      // but only shown if the media is still playing a moment later, so
-      // short sounds (e.g. notification pings) never reveal it.
-      setTimeout(() => {
-        const card = this.#cardForBrowser(browser);
-        if (!card || card.isSharing) {
-          return;
-        }
-        if (card.controller.isPlaying) {
-          card.refreshVisibility();
-        } else if (card.element.hidden) {
-          // The sound was over before ever being shown (e.g. a
-          // notification ping): drop the card instead of keeping a ghost
-          // around.
-          card.destroy();
-        }
-      }, 1000);
-
-      this.activateMediaControls(
-        browser.browsingContext.mediaController,
-        browser
-      );
-    });
-
-    window.addEventListener("DOMAudioPlaybackStopped", () => {
-      for (const card of this.#cards.values()) {
-        card.updateMuteState();
+    window.addEventListener("TabAttrModified", event => {
+      if (!event.detail.changed.includes("soundplaying")) {
+        return;
       }
+      const tab = event.target;
+      if (!tab.hasAttribute("soundplaying")) {
+        this.onAudioPlaybackStopped();
+        return;
+      }
+      this.onAudioPlaybackStarted(tab.linkedBrowser);
     });
+  }
+
+  onAudioPlaybackStarted(browser) {
+    // The card is created right away (while the controller is fresh) but
+    // only shown if the media is still playing a moment later, so short
+    // sounds (e.g. notification pings) never reveal it.
+    setTimeout(() => {
+      const card = this.#cardForBrowser(browser);
+      if (!card || card.isSharing) {
+        return;
+      }
+      if (card.controller.isPlaying) {
+        card.refreshVisibility();
+      } else if (card.element.hidden) {
+        // The sound was over before ever being shown (e.g. a notification
+        // ping): drop the card instead of keeping a ghost around.
+        card.destroy();
+      }
+    }, 1000);
+
+    this.activateMediaControls(
+      browser.browsingContext?.mediaController,
+      browser
+    );
+  }
+
+  onAudioPlaybackStopped() {
+    for (const card of this.#cards.values()) {
+      card.updateMuteState();
+    }
   }
 
   get frontCard() {
@@ -622,11 +658,19 @@ class nsZenMediaController {
 
   #addCard(key, browser, controller = null) {
     const element = this.#createCardElement();
-    const card = new ZenMediaCard(this, element, browser, controller);
+    let card;
+    try {
+      card = new ZenMediaCard(this, element, browser, controller);
+    } catch (e) {
+      console.error("Failed to create media card", e);
+      // The controller went away while the card was being set up.
+      element.remove();
+      return null;
+    }
     this.#cards.set(key, card);
     if (controller) {
       // Media cards start hidden and appear via the delayed check in
-      // DOMAudioPlaybackStarted or on tab switch, like the original bar;
+      // onAudioPlaybackStarted or on tab switch, like the original bar;
       // sharing cards show right away.
       card.element.hidden = true;
     } else {

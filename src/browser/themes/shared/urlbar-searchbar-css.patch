@@ -1,19 +1,19 @@
 diff --git a/browser/themes/shared/urlbar-searchbar.css b/browser/themes/shared/urlbar-searchbar.css
-index cc595de7e3839f7e688122552bca95f9f9ad3988..da4b1e1b5013d7a1a9af3d45d94db7194a1826f7 100644
+index 149f123e26cd79e89432dfeb504ca7218ee04810..7e0e6d981d6c2aa53bc2a76d82d2078419659065 100644
 --- a/browser/themes/shared/urlbar-searchbar.css
 +++ b/browser/themes/shared/urlbar-searchbar.css
 @@ -19,8 +19,8 @@
  
    @media not -moz-pref("browser.nova.enabled") {
-     --urlbar-basic-component-size: calc(var(--urlbar-min-height) - 2 * (var(--urlbar-input-container-border-width) + var(--urlbar-input-container-padding)));
--    --urlbar-icon-padding: calc((var(--urlbar-min-height) - 2px /* border */ - 2px /* padding */ - 16px /* icon */) / 2);
+     --urlbar-basic-component-size: calc(var(--urlbar-height) - 2 * (var(--urlbar-input-container-border-width) + var(--urlbar-input-container-padding)));
+-    --urlbar-icon-padding: calc((var(--urlbar-height) - 2px /* border */ - 2px /* padding */ - 16px /* icon */) / 2);
 -    --urlbar-input-container-padding: round(up, 1px, env(hairline));
-+    --urlbar-icon-padding: calc((var(--urlbar-min-height) - 2px /* border */ - 14px /* icon */) / 2);
++    --urlbar-icon-padding: calc((var(--urlbar-height) - 2px /* border */ - 14px /* icon */) / 2);
 +    --urlbar-input-container-padding: 2px;
    }
    @media (max-width: 770px) {
      --urlbar-container-min-width: 240px;
-@@ -114,7 +114,7 @@ toolbar[inactive="true"] .urlbar,
+@@ -127,7 +127,7 @@ toolbar[inactive="true"] .urlbar,
  .urlbar:not([usertyping]) > .urlbar-input-container > .urlbar-go-button,
  .urlbar:not(#searchbar-new, [focused]) > .urlbar-input-container > .urlbar-go-button,
  #urlbar-revert-button-container {
@@ -22,29 +22,31 @@ index cc595de7e3839f7e688122552bca95f9f9ad3988..da4b1e1b5013d7a1a9af3d45d94db719
  }
  
  /* Document Picture-in-Picture API window */
-@@ -350,6 +350,10 @@ toolbar[inactive="true"] .urlbar,
+@@ -405,6 +405,10 @@ toolbar[inactive="true"] .urlbar,
+   .urlbar:not([focused])[textoverflow="left"][domaindir="rtl"] > .urlbar-input-container > .urlbar-input-box > & {
      mask-image: linear-gradient(to right, transparent var(--urlbar-scheme-size), black calc(var(--urlbar-scheme-size) + 3ch));
    }
- 
++
 +  #navigator-toolbox[zen-has-implicit-hover="true"] .urlbar:not([focused])[textoverflow="left"] > .urlbar-input-container > .urlbar-input-box > & {
 +    mask-image: linear-gradient(to right, transparent, black 3ch, black calc(100% - 3ch), transparent);
 +  }
-+
-   &::selection {
-     border-radius: var(--urlbar-selection-border-radius);
+ }
+ 
+ #urlbar-scheme {
+@@ -476,10 +480,15 @@ toolbar[inactive="true"] .urlbar,
    }
-@@ -464,10 +468,14 @@ toolbar[inactive="true"] .urlbar,
  
    .urlbar[breakout][breakout-extend] {
-     height: auto;
+-    margin-left: calc(-1 * var(--urlbar-margin-inline));
 +    align-items: center;
-+    :root:not([zen-single-toolbar='true']) & {
-     margin-left: calc(-1 * var(--urlbar-margin-inline));
-+    }
      width: calc(var(--urlbar-width) + 2 * var(--urlbar-margin-inline));
  
++    :root:not([zen-single-toolbar="true"]) & {
++      margin-left: calc(-1 * var(--urlbar-margin-inline));
++    }
++
      > .urlbar-input-container {
 +      align-items: center;
        height: var(--urlbar-container-height);
-       padding-block: calc((var(--urlbar-container-height) - var(--urlbar-height)) / 2 + var(--urlbar-input-container-padding));
+       padding-block: calc((var(--urlbar-container-height) - var(--urlbar-height)) / 2);
        padding-inline: calc(var(--urlbar-margin-inline) + var(--urlbar-input-container-padding));

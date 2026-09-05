@@ -1,5 +1,5 @@
 diff --git a/layout/svg/SVGImageContext.cpp b/layout/svg/SVGImageContext.cpp
-index 384401ae2cb80a1bf438b1fb3d849254de100210..e5ef332bc529e6588c33b507993880ca9def51d1 100644
+index 4d43db157aa9447105eeb5459cad74de6cef01d6..327d8e4f7e21783824616800fa821218c8c848e8 100644
 --- a/layout/svg/SVGImageContext.cpp
 +++ b/layout/svg/SVGImageContext.cpp
 @@ -10,6 +10,7 @@
@@ -39,20 +39,17 @@ index 384401ae2cb80a1bf438b1fb3d849254de100210..e5ef332bc529e6588c33b507993880ca
    const nsStyleSVG* style = aStyle.StyleSVG();
    if (!style->ExposesContextProperties()) {
      // Content must have '-moz-context-properties' set to the names of the
-@@ -64,12 +80,14 @@ void SVGImageContext::MaybeStoreContextPaint(SVGImageContext& aContext,
+@@ -62,11 +78,11 @@ void SVGImageContext::MaybeStoreContextPaint(SVGImageContext& aContext,
+ 
    if ((style->mMozContextProperties.bits & StyleContextPropertyBits::FILL) &&
        style->mFill.kind.IsColor()) {
-     haveContextPaint = true;
--    contextPaint->SetFill(style->mFill.kind.AsColor().CalcColor(aStyle));
-+    contextPaint->SetFill(
-+        style->mFill.kind.AsColor().CalcColor(aStyle, nullptr));
+-    fill = Some(style->mFill.kind.AsColor().CalcColor(aStyle));
++    fill = Some(style->mFill.kind.AsColor().CalcColor(aStyle, nullptr));
    }
    if ((style->mMozContextProperties.bits & StyleContextPropertyBits::STROKE) &&
        style->mStroke.kind.IsColor()) {
-     haveContextPaint = true;
--    contextPaint->SetStroke(style->mStroke.kind.AsColor().CalcColor(aStyle));
-+    contextPaint->SetStroke(
-+        style->mStroke.kind.AsColor().CalcColor(aStyle, nullptr));
+-    stroke = Some(style->mStroke.kind.AsColor().CalcColor(aStyle));
++    stroke = Some(style->mStroke.kind.AsColor().CalcColor(aStyle, nullptr));
    }
-   if (style->mMozContextProperties.bits &
-       StyleContextPropertyBits::FILL_OPACITY) {
+   if ((style->mMozContextProperties.bits &
+        StyleContextPropertyBits::FILL_OPACITY) &&

@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/content/UrlbarShared.mjs b/browser/components/urlbar/content/UrlbarShared.mjs
-index 5522d8a8c8d9549453c1700ff6fec40be52747ce..7b8ad33cc337907249749074057254bf7e316994 100644
+index 4e67dad66ae006842abc6eed547e4a244320d57a..393b61b4d2543c73e60afd334a353f36119ae73e 100644
 --- a/browser/components/urlbar/content/UrlbarShared.mjs
 +++ b/browser/components/urlbar/content/UrlbarShared.mjs
-@@ -32,6 +32,7 @@ export const UrlbarShared = {
+@@ -100,6 +100,7 @@ export const UrlbarShared = {
      // `looksLikeOrigin()` returned `LOOKS_LIKE_ORIGIN.OTHER` for this token.
      // It may or may not be an origin.
      POSSIBLE_ORIGIN_BUT_SEARCH_ALLOWED: 12,
@@ -10,19 +10,52 @@ index 5522d8a8c8d9549453c1700ff6fec40be52747ce..7b8ad33cc337907249749074057254bf
    }),
  
    /**
-@@ -52,6 +53,7 @@ export const UrlbarShared = {
+@@ -120,6 +121,7 @@ export const UrlbarShared = {
      TITLE: "#",
      URL: "$",
      ACTION: ">",
 +    WORKSPACE: "`",
    }),
  
-   /**
-@@ -68,6 +70,7 @@ export const UrlbarShared = {
-     if (lazy.UrlbarPrefs.get("scotchBonnet.enableOverride")) {
+   // Defines UrlbarResult types.
+@@ -165,6 +167,8 @@ export const UrlbarShared = {
+     OTHER_NETWORK: 6,
+     ADDON: 7,
+     ACTIONS: 8,
++    ZEN_ACTIONS: 9,
++    WORKSPACES: 10,
+   }),
+ 
+   // Results are categorized into groups to help the muxer compose them.  See
+@@ -200,6 +204,8 @@ export const UrlbarShared = {
+     SEMANTIC_HISTORY: "semanticHistory",
+     SUGGESTED_INDEX: "suggestedIndex",
+     TAIL_SUGGESTION: "tailSuggestion",
++    ZEN_ACTION: "zenAction",
++    ZEN_WORKSPACE: "zenWorkspace",
+   }),
+ 
+   // Defines provider types.
+@@ -385,6 +391,14 @@ export const UrlbarShared = {
+         telemetryLabel: "actions",
+         uiLabel: "urlbar-searchmode-actions3",
+       },
++      {
++        source: this.RESULT_SOURCE.WORKSPACES,
++        restrict: this.RESTRICT_TOKENS.WORKSPACE,
++        icon: "chrome://browser/skin/zen-icons/selectable/layers.svg",
++        pref: "shortcuts.workspaces",
++        telemetryLabel: "workspaces",
++        uiLabel: "urlbar-search-mode-workspaces",
++      },
+     ]);
+   },
+ 
+@@ -402,6 +416,7 @@ export const UrlbarShared = {
+     if (UrlbarPrefs.get("scotchBonnet.enableOverride")) {
        keys.push(this.RESTRICT_TOKENS.ACTION);
      }
 +    keys.push(this.RESTRICT_TOKENS.WORKSPACE);
      return new Set(keys);
    },
- };
+ 

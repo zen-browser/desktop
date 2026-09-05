@@ -89,7 +89,7 @@
       animation: zen-back-and-forth-text 10s infinite ease-in-out;
     }
 
-    & .zen-media-card:not([zen-removing]) {
+    & .zen-media-card:not([zen-removing], [zen-hiding]) {
       transform: none;
       opacity: 1;
     }
@@ -138,6 +138,9 @@
   width: 100%;
   padding: 4px 6px;
   border-radius: var(--border-radius-medium);
+  @media (-moz-platform: macos) {
+    border-radius: calc(var(--border-radius-medium) - 2px);
+  }
   outline: var(--zen-sidebar-notification-outline);
   outline-offset: -1.5px;
   box-shadow: var(--zen-sidebar-notification-shadow);
@@ -168,11 +171,9 @@
     transition: none;
   }
 
-  &[zen-removing] {
-    position: absolute;
-    left: 0;
-    width: 100%;
-    transform: none;
+  /* Removed and hiding cards sink down behind the stack while fading out */
+  &[zen-removing],
+  &[zen-hiding] {
     translate: 0 0.5rem;
     opacity: 0;
     filter: blur(2px);
@@ -181,6 +182,16 @@
       translate 0.3s var(--zen-media-stack-easing),
       opacity 0.3s var(--zen-media-stack-easing),
       filter 0.3s var(--zen-media-stack-easing);
+  }
+
+  /* Removed cards additionally leave the flex flow instantly (bottom is
+     set inline to where the card was), so only translate/opacity/filter
+     animate; hiding cards stay in flow until the animation finishes. */
+  &[zen-removing] {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    transform: none;
   }
 
   &[stack-overflow] {

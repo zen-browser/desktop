@@ -61,6 +61,7 @@ zen-workspace-creation-profile = Profilis
     .tooltiptext = Profiliai naudojami atskirti slapukus ir svetainės duomenis tarp erdvių.
 zen-workspace-creation-header = Kurti erdvę
 zen-workspace-creation-label = Erdvės naudojamos tvarkyti jūsų korteles ir seansus.
+zen-workspace-default-profile = Default
 zen-workspaces-delete-workspace-title = Ištrinti erdvę?
 zen-workspaces-delete-workspace-body = Ar tikrai norite ištrinti „{ $name }“? Šio veiksmo anuliuoti negalima.
 # Note that the html tag MUST not be changed or removed, as it is used to better

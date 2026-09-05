@@ -6,6 +6,8 @@ support-files = [
   "audio.ogg",
   "audioEndedDuringPlaying.webm",
   "file_almostSilentAudioTrack.html",
+  "file_audiblechange_iframe.html",
+  "file_audiblechange_iframe_inner.html",
   "file_autoplay_media.html",
   "file_empty.html",
   "file_mediaPlayback.html",
@@ -20,6 +22,8 @@ support-files = [
   "silentAudioTrack.webm",
 ]
 
+["browser_audiblechange_iframe.js"]
+
 ["browser_destroy_iframe.js"]
 https_first_disabled = true
 
@@ -33,9 +37,15 @@ https_first_disabled = true
 
 ["browser_mute2.js"]
 
+["browser_mute_persist_navigation.js"]
+
+["browser_mute_restore_closed_audible_tab.js"]
+
 ["browser_mute_webAudio.js"]
 
 ["browser_sound_indicator_silent_video.js"]
+
+["browser_sound_indicator_tab_move.js"]
 
 ["browser_webAudio_hideSoundPlayingIcon.js"]
 

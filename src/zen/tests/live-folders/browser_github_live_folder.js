@@ -70,6 +70,7 @@ add_task(async function test_fetch_items_url_construction() {
   const query = searchParams.get("q");
   Assert.ok(query.includes("is:open"), "Should include state:open");
   Assert.ok(query.includes("is:pr"), "Should include is:PR");
+  Assert.ok(query.includes("archived:false"), "Should include archived:false");
   Assert.ok(query.includes("author:@me"), "Should include author:@me");
   Assert.ok(!query.includes("assignee:@me"), "Should NOT include assignee:@me");
   Assert.ok(

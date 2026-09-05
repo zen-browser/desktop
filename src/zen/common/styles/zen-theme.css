@@ -220,7 +220,7 @@
   --zen-squircle-value: 1.3;
 
   @media (-moz-platform: windows) {
-    --zen-squircle-value: 2.1;
+    --zen-squircle-value: 2.3;
   }
 
   --tab-icon-overlay-stroke: light-dark(white, black) !important;

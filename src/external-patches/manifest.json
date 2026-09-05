@@ -4,6 +4,11 @@
 [
   {
     "type": "phabricator",
+    "id": "D315665",
+    "name": "Use native scrolling in vertical arrowscrollboxes"
+  },
+  {
+    "type": "phabricator",
     "id": "D299584",
     "name": "Native MacOS popovers fix"
   },

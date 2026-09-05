@@ -1,0 +1,433 @@
+diff --git a/browser/components/tabbrowser/content/tabs.js b/browser/components/tabbrowser/content/tabs.js
+--- a/browser/components/tabbrowser/content/tabs.js
++++ b/browser/components/tabbrowser/content/tabs.js
+@@ -65,11 +65,10 @@
+       this.startupTime = Services.startup.getStartupInfo().start.getTime();
+ 
+       this.arrowScrollbox = document.getElementById(
+         "tabbrowser-arrowscrollbox"
+       );
+-      this.arrowScrollbox.addEventListener("wheel", this, true);
+       this.arrowScrollbox.addEventListener("underflow", this);
+       this.arrowScrollbox.addEventListener("overflow", this);
+       this.pinnedTabsContainer = document.getElementById(
+         "pinned-tabs-container"
+       );
+@@ -185,10 +184,13 @@
+         "_closeTabByDblclick",
+         "browser.tabs.closeTabByDblclick",
+         false
+       );
+ 
++      // The base class set these up before we had the arrowscrollbox.
++      this.updateWheelListeners();
++
+       XPCOMUtils.defineLazyPreferenceGetter(
+         this,
+         "_sidebarVisibility",
+         "sidebar.visibility",
+         "always-show"
+@@ -747,15 +749,31 @@
+ 
+     on_dragleave(event) {
+       this.tabDragAndDrop.handle_dragleave(event);
+     }
+ 
++    /**
++     * Only reached while switching tabs by scrolling is enabled, since that's
++     * when the listener exists.
++     */
+     on_wheel(event) {
+-      if (
+-        Services.prefs.getBoolPref("toolkit.tabbox.switchByScrolling", false)
+-      ) {
+-        event.stopImmediatePropagation();
++      // The tabs are switched from the legacy scroll event in tabbox.js. Keep
++      // the arrowscrollbox from scrolling on top of that.
++      event.stopImmediatePropagation();
++    }
++
++    updateWheelListeners() {
++      super.updateWheelListeners();
++
++      if (!this.arrowScrollbox) {
++        // Called from the base class constructor, before init().
++        return;
++      }
++      if (this.switchByScrolling) {
++        this.arrowScrollbox.addEventListener("wheel", this, true);
++      } else {
++        this.arrowScrollbox.removeEventListener("wheel", this, true);
+       }
+     }
+ 
+     on_overflow(event) {
+       // Ignore overflow events from nested scrollable elements
+diff --git a/browser/components/tabbrowser/test/browser/tabs/browser_scroll_size_determination.js b/browser/components/tabbrowser/test/browser/tabs/browser_scroll_size_determination.js
+--- a/browser/components/tabbrowser/test/browser/tabs/browser_scroll_size_determination.js
++++ b/browser/components/tabbrowser/test/browser/tabs/browser_scroll_size_determination.js
+@@ -49,35 +49,40 @@
+     gBrowser.tabs.indexOf(arrowScrollbox._elementFromPoint(firstPoint)),
+     gBrowser.tabs.indexOf(firstScrollableTab),
+     "First tab should be scrolled into view."
+   );
+ 
+-  // Scroll.
+-  EventUtils.synthesizeWheel(
+-    arrowScrollbox,
+-    10,
+-    10,
+-    {
+-      wheel: true,
+-      deltaY: 1,
+-      deltaMode: WheelEvent.DOM_DELTA_LINE,
+-    },
+-    win
+-  );
++  let startPosition = arrowScrollbox.scrollPosition;
++
++  // Scroll. A horizontal arrowscrollbox only lets a vertical wheel scroll it
++  // once the last two wheel events were on the same axis, so send several.
++  for (let i = 0; i < 3; i++) {
++    EventUtils.synthesizeWheel(
++      arrowScrollbox,
++      10,
++      10,
++      {
++        wheel: true,
++        deltaY: 1,
++        deltaMode: WheelEvent.DOM_DELTA_LINE,
++      },
++      win
++    );
++  }
+ 
+-  // Check that some other tab is scrolled into view.
++  // Check that the tab strip scrolled.
+   try {
+-    await TestUtils.waitForCondition(() => {
+-      return arrowScrollbox._elementFromPoint(firstPoint) != firstScrollableTab;
+-    });
++    await TestUtils.waitForCondition(
++      () => arrowScrollbox.scrollPosition > startPosition
++    );
+   } catch (ex) {
+     Assert.ok(false, `Failed to see scroll, error: ${ex}`);
+   }
+-  Assert.notEqual(
+-    win.gBrowser.tabs.indexOf(arrowScrollbox._elementFromPoint(firstPoint)),
+-    win.gBrowser.tabs.indexOf(firstScrollableTab),
+-    "First tab should be scrolled out of view."
++  Assert.greater(
++    arrowScrollbox.scrollPosition,
++    startPosition,
++    "Tab strip should have scrolled."
+   );
+ 
+   await SpecialPowers.popPrefEnv();
+ 
+   await BrowserTestUtils.closeWindow(win);
+diff --git a/browser/themes/shared/tabbrowser/tabs.css b/browser/themes/shared/tabbrowser/tabs.css
+--- a/browser/themes/shared/tabbrowser/tabs.css
++++ b/browser/themes/shared/tabbrowser/tabs.css
+@@ -2491,11 +2491,11 @@
+   }
+ 
+   &::part(scrollbox) {
+     scrollbar-width: thin;
+     scrollbar-color: var(--tab-vertical-scrollbar-color);
+-    overflow-y: auto;
++    overscroll-behavior-y: contain;
+   }
+ }
+ 
+ #tabs-newtab-button,
+ #vertical-tabs-newtab-button {
+@@ -2581,11 +2581,11 @@
+   }
+ 
+   &::part(scrollbox) {
+     scrollbar-width: thin;
+     scrollbar-color: var(--tab-vertical-scrollbar-color);
+-    overflow-y: auto;
++    overscroll-behavior-y: contain;
+   }
+ 
+   .tabbrowser-tab:not(:hover) > .tab-stack > .tab-background:not([selected], [multiselected]) {
+     background-color: color-mix(in srgb, currentColor 7%, transparent);
+   }
+diff --git a/gfx/layers/apz/test/mochitest/browser_test_popup_menu_in_position_fixed.js b/gfx/layers/apz/test/mochitest/browser_test_popup_menu_in_position_fixed.js
+--- a/gfx/layers/apz/test/mochitest/browser_test_popup_menu_in_position_fixed.js
++++ b/gfx/layers/apz/test/mochitest/browser_test_popup_menu_in_position_fixed.js
+@@ -88,12 +88,11 @@
+   await promiseApzFlushedRepaints(popup);
+ 
+   // Do a hit test inside the popup.
+   checkHitResult(
+     hitTest({ x: 50, y: 50 }, popup),
+-    // There's a wheel event listener in arrowscrollbox.js which is used for popup.
+-    APZHitResultFlags.VISIBLE | APZHitResultFlags.APZ_AWARE_LISTENERS,
++    APZHitResultFlags.VISIBLE,
+     SpecialPowers.DOMWindowUtils.getViewId(popup),
+     SpecialPowers.DOMWindowUtils.getLayersId(popup),
+     "`position:fixed` popup"
+   );
+ 
+diff --git a/toolkit/content/tests/chrome/test_mousescroll.xhtml b/toolkit/content/tests/chrome/test_mousescroll.xhtml
+--- a/toolkit/content/tests/chrome/test_mousescroll.xhtml
++++ b/toolkit/content/tests/chrome/test_mousescroll.xhtml
+@@ -151,10 +151,17 @@
+   var arrowscrollbox = document.getElementById(id);
+   var scrollbox = arrowscrollbox.scrollbox;
+   var orient = scrollbox.getAttribute("orient");
+   var orientIsHorizontal = (orient == "horizontal");
+ 
++  // Vertical arrowscrollboxes scroll natively, so how far a wheel event scrolls
++  // them is up to the platform. Those cases pass a predicate rather than an
++  // exact position.
++  function matches(aExpected, aPos) {
++    return typeof aExpected == "function" ? aExpected(aPos) : aPos == aExpected;
++  }
++
+   function* helper(aStart, aDelta, aDeltaMode, aExpected)
+   {
+     var lineOrPageDelta = (aDeltaMode == WheelEvent.DOM_DELTA_PIXEL) ? aDelta / 10 : aDelta;
+ 
+     scrollbox.scrollTo(aStart, aStart);
+@@ -171,25 +178,25 @@
+       let retry = 0;
+       yield sendWheelAndWait(scrollbox, 5, 5,
+                              { deltaMode: aDeltaMode, deltaY: aDelta,
+                                lineOrPageDeltaY: lineOrPageDelta },
+                              ()=>{
+-                                if (getPos() == expected) {
++                                if (matches(expected, getPos())) {
+                                   return true;
+                                 }
+                                 if (oldPos == getPos()) {
+                                   // If scroll stopped completely, let's continue the test.
+                                   return ++retry == MAX_RETRY_COUNT;
+                                 }
+                                 oldPos = getPos();
+                                 retry = 0;
+                                 return false;
+                              });
+-      is(getPos(), expected,
++      ok(matches(expected, getPos()),
+          "testArrowScrollbox(" + id +  "): vertical, starting " + aStart +
+            " delta " + aDelta + " lineOrPageDelta " + lineOrPageDelta +
+-           " aDeltaMode " + aDeltaMode);
++           " aDeltaMode " + aDeltaMode + ", got " + getPos());
+     }
+ 
+     scrollbox.scrollTo(aStart, aStart);
+     for (let i = orientIsHorizontal ? 2 : 0; i >= 0; i--) {
+       // horizontal mouse scrolling is never allowed to scroll vertical
+@@ -203,25 +210,25 @@
+       let retry = 0;
+       yield sendWheelAndWait(scrollbox, 5, 5,
+                              { deltaMode: aDeltaMode, deltaX: aDelta,
+                                lineOrPageDeltaX: lineOrPageDelta },
+                              ()=>{
+-                                if (getPos() == expected) {
++                                if (matches(expected, getPos())) {
+                                   return true;
+                                 }
+                                 if (oldPos == getPos()) {
+                                   // If scroll stopped completely, let's continue the test.
+                                   return ++retry == MAX_RETRY_COUNT;
+                                 }
+                                 oldPos = getPos();
+                                 retry = 0;
+                                 return false;
+                              });
+-      is(getPos(), expected,
++      ok(matches(expected, getPos()),
+          "testArrowScrollbox(" + id +  "): horizontal, starting " + aStart +
+            " delta " + aDelta + " lineOrPageDelta " + lineOrPageDelta +
+-           " aDeltaMode " + aDeltaMode);
++           " aDeltaMode " + aDeltaMode + ", got " + getPos());
+     }
+   }
+ 
+   var line = arrowscrollbox.lineScrollAmount;
+   var scrolledWidth = scrollbox.scrollWidth;
+@@ -231,16 +238,22 @@
+   var scrollMax = orientIsHorizontal ? scrollMaxX : scrollMaxY;
+ 
+   for (let deltaMode of deltaModes) {
+     const start = 50;
+     const delta = 1000;
+-    let expectedNegative = 0;
+-    let expectedPositive = scrollMax;
+-    if (deltaMode == WheelEvent.DOM_DELTA_LINE) {
++    let expectedNegative, expectedPositive;
++    if (!orientIsHorizontal) {
++      // A single wheel event never scrolls further than one page.
++      expectedNegative = pos => pos >= 0 && pos < start;
++      expectedPositive = pos => pos > start && pos <= scrollMax;
++    } else if (deltaMode == WheelEvent.DOM_DELTA_LINE) {
+       let maxDelta = Math.floor(Math.max(1, arrowscrollbox.scrollClientSize / line)) * line;
+       expectedNegative = Math.max(0, start - maxDelta);
+       expectedPositive = Math.min(scrollMax, start + maxDelta);
++    } else {
++      expectedNegative = 0;
++      expectedPositive = scrollMax;
+     }
+     yield* helper(start, -delta, deltaMode, expectedNegative);
+     yield* helper(start,  delta, deltaMode, expectedPositive);
+   }
+ }
+diff --git a/toolkit/content/widgets/arrowscrollbox.js b/toolkit/content/widgets/arrowscrollbox.js
+--- a/toolkit/content/widgets/arrowscrollbox.js
++++ b/toolkit/content/widgets/arrowscrollbox.js
+@@ -82,14 +82,11 @@
+       this._touchStart = -1;
+       this._isScrolling = false;
+       this._destination = 0;
+       this._direction = 0;
+ 
+-      this.addEventListener("wheel", this);
+-      this.addEventListener("touchstart", this);
+-      this.addEventListener("touchmove", this);
+-      this.addEventListener("touchend", this);
++      this.#updateInputListeners();
+       this.shadowRoot.addEventListener("click", this);
+       this.shadowRoot.addEventListener("mousedown", this);
+       this.shadowRoot.addEventListener("mouseover", this);
+       this.shadowRoot.addEventListener("mouseup", this);
+       this.shadowRoot.addEventListener("mouseout", this);
+@@ -144,10 +141,33 @@
+ 
+       this.initializeAttributeInheritance();
+       this.#updateScrollButtonsDisabledState();
+     }
+ 
++    attributeChangedCallback(name, oldValue, newValue) {
++      super.attributeChangedCallback(name, oldValue, newValue);
++
++      if (name == "orient" && oldValue != newValue) {
++        this.#updateInputListeners();
++      }
++    }
++
++    /**
++     * Wheel and touch listeners exist for horizontal mode only. Vertical mode
++     * must not register them at all: an APZ-aware listener here would make APZ
++     * wait for the main thread before it can scroll.
++     */
++    #updateInputListeners() {
++      for (let type of ["wheel", "touchstart", "touchmove", "touchend"]) {
++        if (this.#verticalMode) {
++          this.removeEventListener(type, this);
++        } else {
++          this.addEventListener(type, this);
++        }
++      }
++    }
++
+     get overflowing() {
+       return this.hasAttribute("overflowing");
+     }
+ 
+     get fragment() {
+diff --git a/toolkit/content/widgets/tabbox.js b/toolkit/content/widgets/tabbox.js
+--- a/toolkit/content/widgets/tabbox.js
++++ b/toolkit/content/widgets/tabbox.js
+@@ -14,10 +14,11 @@
+   let imports = {};
+   ChromeUtils.defineESModuleGetters(imports, {
+     DeferredTask: "resource://gre/modules/DeferredTask.sys.mjs",
+     KeyboardLockUtils: "resource://gre/modules/KeyboardLockUtils.sys.mjs",
+     ShortcutUtils: "resource://gre/modules/ShortcutUtils.sys.mjs",
++    XPCOMUtils: "resource://gre/modules/XPCOMUtils.sys.mjs",
+   });
+ 
+   const DIRECTION_BACKWARD = -1;
+   const DIRECTION_FORWARD = 1;
+ 
+@@ -812,23 +813,47 @@
+   customElements.define("tab", MozElements.MozTab);
+ 
+   const ARIA_FOCUSED_CLASS_NAME = "tablist-keyboard-focus";
+ 
+   class TabsBase extends MozElements.BaseControl {
++    #scrollHandler = event => {
++      if (event.detail > 0) {
++        this.advanceSelectedTab(DIRECTION_FORWARD, false, event);
++      } else {
++        this.advanceSelectedTab(DIRECTION_BACKWARD, false, event);
++      }
++      // Preventing the default action of the legacy event also prevents it for
++      // the wheel event it came from, so the tabs don't scroll as well.
++      event.preventDefault();
++      event.stopPropagation();
++    };
++
+     constructor() {
+       super();
+ 
+-      this.addEventListener("DOMMouseScroll", event => {
+-        if (Services.prefs.getBoolPref("toolkit.tabbox.switchByScrolling")) {
+-          if (event.detail > 0) {
+-            this.advanceSelectedTab(DIRECTION_FORWARD, false);
+-          } else {
+-            this.advanceSelectedTab(DIRECTION_BACKWARD, false);
+-          }
+-          event.stopPropagation();
+-        }
+-      });
++      imports.XPCOMUtils.defineLazyPreferenceGetter(
++        this,
++        "switchByScrolling",
++        "toolkit.tabbox.switchByScrolling",
++        false,
++        () => this.updateWheelListeners()
++      );
++      this.updateWheelListeners();
++    }
++
++    /**
++     * Wheel-type listeners are registered only while switching tabs by scrolling
++     * is enabled, because they are APZ-aware: registering them unconditionally
++     * would make APZ wait for the main thread before it can scroll. A subclass
++     * that has wheel-type listeners of its own extends this.
++     */
++    updateWheelListeners() {
++      if (this.switchByScrolling) {
++        this.addEventListener("DOMMouseScroll", this.#scrollHandler);
++      } else {
++        this.removeEventListener("DOMMouseScroll", this.#scrollHandler);
++      }
+     }
+ 
+     // to be called from derived class connectedCallback
+     baseConnect() {
+       this._tabbox = null;
+diff --git a/toolkit/themes/shared/arrowscrollbox.css b/toolkit/themes/shared/arrowscrollbox.css
+--- a/toolkit/themes/shared/arrowscrollbox.css
++++ b/toolkit/themes/shared/arrowscrollbox.css
+@@ -9,10 +9,22 @@
+ }
+ 
+ scrollbox {
+   min-width: 0;
+   min-height: 0;
++
++  /* Vertical mode scrolls natively. Horizontal mode is scrolled from script,
++   * see arrowscrollbox.js.
++   *
++   * Only a box with something to scroll becomes a scroll container, so that one
++   * that fits doesn't get an APZ scroll frame. The scrollbar and the overscroll
++   * effect are off by default; a consumer can opt into either. */
++  :host([orient="vertical"][overflowing]) > & {
++    overflow-y: auto;
++    overscroll-behavior-y: none;
++    scrollbar-width: none;
++  }
+ }
+ 
+ slot {
+   display: flex;
+   flex: 1 0 0;
+

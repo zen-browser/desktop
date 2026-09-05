@@ -1334,10 +1334,14 @@
         dropElement = dragData.dropElement;
         dropBefore = dragData.dropBefore;
       }
-      // Essentials should be properly handled by ::animateVerticalPinnedGridDragOver
-      if (!dropElement || dropElement.hasAttribute("zen-essential")) {
+      if (!dropElement) {
         this.clearDragOverVisuals();
-        // If dropElement is null or essential, dropElement should be the empty tab
+        return [undefined, null];
+      }
+      // Essentials should be properly handled by ::animateVerticalPinnedGridDragOver
+      if (dropElement.hasAttribute("zen-essential")) {
+        this.clearDragOverVisuals();
+        // If dropElement is essential, dropElement should be the empty tab
         return [dropBefore, gZenWorkspaces._emptyTab];
       }
       if (dropElement.hasAttribute("zen-empty-tab") && dropElement.group) {

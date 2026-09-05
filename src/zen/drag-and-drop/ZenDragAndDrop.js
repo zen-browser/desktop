@@ -988,8 +988,23 @@
         ) {
           if (isTab(draggedTab)) {
             const movingTabs = draggedTab._dragData?.movingTabs || [draggedTab];
-            for (let tab of movingTabs) {
-              tab.setAttribute("zen-workspace-id", activeWorkspace);
+            for (let i = 0; i < movingTabs.length; i++) {
+              const tab = movingTabs[i];
+              // Reopen the tab in the destination space's container (if it has
+              // one) instead of leaving it in its previous container.
+              const reopenedTab =
+                gZenWorkspaces.reopenTabInWorkspaceContainerIfNeeded(
+                  tab,
+                  activeWorkspace
+                );
+              if (reopenedTab !== tab) {
+                movingTabs[i] = reopenedTab;
+                if (tab === draggedTab) {
+                  draggedTab = reopenedTab;
+                }
+              } else {
+                tab.setAttribute("zen-workspace-id", activeWorkspace);
+              }
             }
             gBrowser.selectedTab = draggedTab;
           } else if (isTabGroupLabel(draggedTab)) {
@@ -1001,6 +1016,7 @@
         }
       }
       gZenWorkspaces.updateTabsContainers();
+      gZenWorkspaces.updateTabContainerIndicators();
     }
 
     #handle_dropCreateSplit(event) {

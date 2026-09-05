@@ -1,5 +1,5 @@
 diff --git a/browser/components/urlbar/content/UrlbarInput.mjs b/browser/components/urlbar/content/UrlbarInput.mjs
-index 319fb6870ec18d87b9f1263bd960edaa39b0447c..554cc90fb2307450ddc68033968cefd1a95e28b8 100644
+index e7e9495e56076cd112beafb8297dece4ae4cea58..afdc80c034e2a3c9a50e6e5d2cc650e59bf2eb91 100644
 --- a/browser/components/urlbar/content/UrlbarInput.mjs
 +++ b/browser/components/urlbar/content/UrlbarInput.mjs
 @@ -88,6 +88,13 @@ const lazy = XPCOMUtils.declareLazy({
@@ -117,7 +117,8 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..554cc90fb2307450ddc68033968cefd1
    startLayoutExtend() {
      if (!this.#allowBreakout || this.hasAttribute("breakout-extend")) {
        // Do not expand if the Urlbar does not support being expanded or it is
-@@ -3030,6 +3099,13 @@ ${
+@@ -2988,6 +3057,14 @@ ${
++    this.setAttribute("popover", "manual");
      this.toggleAttribute("breakout-extend", true);
      this.#updateTextboxPosition();
  
@@ -131,7 +132,7 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..554cc90fb2307450ddc68033968cefd1
      // Enable the animation only after the first extend call to ensure it
      // doesn't run when opening a new window.
      if (!this.hasAttribute("breakout-extend-animate")) {
-@@ -3053,6 +3129,29 @@ ${
+@@ -3011,6 +3088,30 @@ ${
        return;
      }
  
@@ -159,6 +160,7 @@ index 319fb6870ec18d87b9f1263bd960edaa39b0447c..554cc90fb2307450ddc68033968cefd1
 +    this.removeAttribute("zen-floating-urlbar");
 +
      this.toggleAttribute("breakout-extend", false);
++    this.removeAttribute("popover");
      this.#updateTextboxPosition();
    }
 @@ -3091,7 +3190,7 @@ ${

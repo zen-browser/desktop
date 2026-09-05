@@ -7,11 +7,14 @@ import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
+  CustomizableUI: "moz-src:///browser/components/customizableui/CustomizableUI.sys.mjs",
   SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
 });
 
 class nsZenUIMigration {
   PREF_NAME = "zen.ui.migration.version";
+  PREF_LIBRARY_REPLACED_DOWNLOADS =
+    "zen.ui.migration.library-button-replaced-downloads";
   MIGRATION_VERSION = 7;
 
   init(isNewProfile) {
@@ -21,6 +24,14 @@ class nsZenUIMigration {
       } catch (e) {
         console.error("ZenUIMigration: Error during migration", e);
       }
+    }
+    try {
+      this.#maybeReplaceDownloadsWithLibrary(isNewProfile);
+    } catch (e) {
+      console.error(
+        "ZenUIMigration: Error replacing downloads with library button",
+        e
+      );
     }
     this.clearVariables();
     if (this.shouldRestart) {
@@ -48,6 +59,28 @@ class nsZenUIMigration {
 
   clearVariables() {
     this._migrationVersion = this.MIGRATION_VERSION;
+  }
+
+  #maybeReplaceDownloadsWithLibrary(isNewProfile) {
+    if (
+      Services.prefs.getBoolPref(this.PREF_LIBRARY_REPLACED_DOWNLOADS, false)
+    ) {
+      return;
+    }
+    if (!isNewProfile) {
+      const placement =
+        lazy.CustomizableUI.getPlacementOfWidget("downloads-button");
+      if (placement?.area === "zen-sidebar-foot-buttons") {
+        const { position } = placement;
+        lazy.CustomizableUI.removeWidgetFromArea("downloads-button");
+        lazy.CustomizableUI.addWidgetToArea(
+          "zen-library-button",
+          "zen-sidebar-foot-buttons",
+          position
+        );
+      }
+    }
+    Services.prefs.setBoolPref(this.PREF_LIBRARY_REPLACED_DOWNLOADS, true);
   }
 
   _migrateV1() {

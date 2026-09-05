@@ -20,6 +20,7 @@ DIRS += [
     "sessionstore",
     "share",
     "spaces",
+    "library",
     "space-routing",
     "sync",
     "window-drag",

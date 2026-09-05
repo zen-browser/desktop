@@ -147,10 +147,20 @@ class nsZenDownloadAnimationElement extends HTMLElement {
     return Services.prefs.getBoolPref("zen.tabs.vertical.right-side");
   }
 
+  get #downloadButton() {
+    const ids = ["zen-library-button", "downloads-button"];
+    for (const id of ids) {
+      const button = document.getElementById(id);
+      if (button && this.#isElementVisible(button)) {
+        return button;
+      }
+    }
+    return null;
+  }
+
   #determineEndPosition() {
-    const downloadsButton = document.getElementById("downloads-button");
-    const isDownloadButtonVisible =
-      downloadsButton && this.#isElementVisible(downloadsButton);
+    const downloadsButton = this.#downloadButton;
+    const isDownloadButtonVisible = downloadsButton !== null;
 
     let endPosition = { clientX: 0, clientY: 0 };
 

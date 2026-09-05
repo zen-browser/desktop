@@ -1,0 +1,36 @@
+#filter dumbComments emptyLines substitution
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+<svg class="zen-downloads-icon" width="28" height="28" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @keyframes zenDownloadsArrowBounce {
+      0% { transform: translateY(0px); d: path('M 64 45 L 64 83 M 50 69 L 64 83 L 78 69'); animation-timing-function: cubic-bezier(0.33, 0, 0.7, 1.28); }
+      31.43% { transform: translateY(10px); d: path('M 64 57 L 64 83 M 50 69 L 64 83 L 78 69'); animation-timing-function: cubic-bezier(0.44, 0.2, 0.44, 0.98); }
+      54.29% { transform: translateY(-10.83px); d: path('M 64 45 L 64 83 M 50 69 L 64 83 L 78 69'); animation-timing-function: cubic-bezier(0.45, -0.03, 0.83, 0.9); }
+      85.71% { transform: translateY(0.66px); d: path('M 64 45 L 64 83 M 50 69 L 64 83 L 78 69'); animation-timing-function: cubic-bezier(0.17, -0.98, 0.83, 0.83); }
+      100% { transform: translateY(0px); d: path('M 64 45 L 64 83 M 50 69 L 64 83 L 78 69'); }
+    }
+    @keyframes zenDownloadsCircleBounce {
+      0% { transform: translateY(0px); animation-timing-function: cubic-bezier(0.33, 0, 0.71, 2.31); }
+      31.43% { transform: translateY(2.5px); animation-timing-function: cubic-bezier(0.23, 0.15, 0.36, 0.97); }
+      54.29% { transform: translateY(-11.46px); animation-timing-function: cubic-bezier(0.48, -0.04, 0.83, 0.89); }
+      85.71% { transform: translateY(0.85px); animation-timing-function: cubic-bezier(0.17, -0.70, 0.83, 0.83); }
+      100% { transform: translateY(0px); }
+    }
+    .zen-downloads-circle-translate { animation: zenDownloadsCircleBounce 0.583s forwards; }
+    .zen-downloads-arrow { animation: zenDownloadsArrowBounce 0.583s forwards; }
+  </style>
+  <defs>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-downloads-grad-front">
+      <stop offset="0" stop-color="context-fill"/>
+      <stop offset="1" stop-color="context-stroke"/>
+    </linearGradient>
+  </defs>
+  <g class="zen-downloads-circle-translate" style="transform-origin: 64px 64px;">
+    <circle class="zen-downloads-bg" cx="64" cy="64" r="47.5" fill="context-fill" fill-opacity="1"/>
+    <circle class="zen-downloads-gradient" cx="64" cy="64" r="47.5" fill="url(#zen-downloads-grad-front)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+    <circle class="zen-downloads-border" cx="64" cy="64" r="47.5" fill="none" stroke="context-stroke" stroke-width="7.1"/>
+  </g>
+  <path class="zen-downloads-arrow" d="M 64 45 L 64 83 M 50 69 L 64 83 L 78 69" stroke="context-stroke" stroke-width="7.1" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

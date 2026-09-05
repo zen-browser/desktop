@@ -1,0 +1,56 @@
+#filter dumbComments emptyLines substitution
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+<svg class="zen-spaces-icon" width="28" height="28" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @keyframes zenSpacesBackBounce {
+      0% { transform: translate(51.28px, 61.69px) rotate(-17.5deg) translate(-35.022px, -44.68px); animation-timing-function: cubic-bezier(0.21, 0, 0.56, 1); }
+      34.28% { transform: translate(56.28px, 72.19px) rotate(6deg) translate(-35.022px, -44.68px); animation-timing-function: cubic-bezier(0.38, 0, 0.55, 1); }
+      62.86% { transform: translate(51.28px, 55.52px) rotate(-27.83deg) translate(-35.022px, -44.68px); animation-timing-function: cubic-bezier(0.73, 0, 0.63, 1); }
+      100% { transform: translate(51.28px, 61.69px) rotate(-17.5deg) translate(-35.022px, -44.68px); }
+    }
+    @keyframes zenSpacesFrontBounce {
+      0% { transform: translate(77.02px, 75.93px) rotate(0deg) translate(-35.022px, -44.68px); animation-timing-function: cubic-bezier(0.21, 0, 0.56, 1); }
+      31.43% { transform: translate(77.02px, 78.18px) rotate(-5deg) translate(-35.022px, -44.68px); animation-timing-function: cubic-bezier(0.38, 0, 0.55, 1); }
+      54.28% { transform: translate(77.02px, 55.71px) rotate(28.96deg) translate(-35.022px, -44.68px); animation-timing-function: cubic-bezier(0.73, 0, 0.63, 1); }
+      100% { transform: translate(77.02px, 75.93px) rotate(0deg) translate(-35.022px, -44.68px); }
+    }
+    .zen-spaces-back-card { animation: zenSpacesBackBounce 0.583s forwards; }
+    .zen-spaces-front-card { animation: zenSpacesFrontBounce 0.583s forwards; }
+  </style>
+  <defs>
+    <mask id="zen-spaces-mask">
+      <rect x="-10" y="-10" width="148" height="148" fill="white"/>
+      <g class="zen-spaces-front-card" style="transform-origin: 0 0; transform: translate(77.02px, 75.93px) rotate(0deg) translate(-35.022px, -44.68px);">
+        <rect x="0" y="0" width="70.04" height="89.36" rx="14" fill="black"/>
+      </g>
+    </mask>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-back">
+      <stop offset="0" stop-color="context-fill"/>
+      <stop offset="1" stop-color="context-stroke"/>
+    </linearGradient>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="64" y1="20" x2="64" y2="148" id="zen-spaces-grad-front">
+      <stop offset="0" stop-color="context-fill"/>
+      <stop offset="1" stop-color="context-stroke"/>
+    </linearGradient>
+  </defs>
+  <g class="zen-spaces-back-wrapper" mask="url(#zen-spaces-mask)">
+    <g class="zen-spaces-back-card" style="transform-origin: 0 0; transform: translate(51.28px, 61.69px) rotate(-17.5deg) translate(-35.022px, -44.68px);">
+      <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
+            fill="context-fill" fill-opacity="1"/>
+      <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
+            fill="url(#zen-spaces-grad-back)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+      <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
+            fill="none" stroke="context-stroke" stroke-width="7.1"/>
+    </g>
+  </g>
+  <g class="zen-spaces-front-card" style="transform-origin: 0 0; transform: translate(77.02px, 75.93px) rotate(0deg) translate(-35.022px, -44.68px);">
+    <rect class="zen-spaces-bg" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
+          fill="context-fill" fill-opacity="1"/>
+    <rect class="zen-spaces-gradient" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
+          fill="url(#zen-spaces-grad-front)" style="mix-blend-mode: overlay; opacity: 0.1;"/>
+    <rect class="zen-spaces-border" x="3.55" y="3.55" width="62.94" height="82.26" rx="10.45"
+          fill="none" stroke="context-stroke" stroke-width="7.1"/>
+  </g>
+</svg>

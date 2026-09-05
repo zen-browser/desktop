@@ -1,0 +1,677 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+zen-library {
+
+  @media (-moz-platform: windows) {
+    --border-radius-medium: 6px;
+    --tab-border-radius: 4px;
+  }
+
+  @media (-moz-platform: macos) {
+    --border-radius-medium: 14px;
+    --tab-border-radius: 8px;
+    font-size: 1rem; /* Slightly larger font on macOS */
+  }
+
+  display: flex;
+  position: absolute;
+  height: 100%;
+  transform: translateX(-100%);
+  opacity: 0;
+  will-change: transform, opacity;
+  z-index: 2;
+}
+
+zen-library[open] {
+  transform: translateX(0);
+  opacity: 1;
+  z-index: 9;
+}
+
+/* Layout Components */
+
+#zen-library-sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 84px;
+  height: 100%;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: rgba(0, 0, 0, 0.1) 0 10px 50px;
+  border-right: 1px solid rgba(0,0,0,.08);
+  -moz-window-dragging: drag;
+}
+
+#zen-library-content {
+  display: flex;
+  width: 27rem;
+  max-width: 80vh;
+  overflow: hidden;
+  transition: width 0.15s ease-in-out;
+
+  &[large-content] {
+    width: 75rem;
+  }
+
+  & > * {
+    /*
+     * Fixed width so inner content does not stretch or squish while the
+     * outer container animates. flex-shrink: 0 prevents flexbox from
+     * compressing it below this value during the width transition.
+     */
+    display: flex;
+    flex-direction: column;
+    width: 27rem;
+    min-width: 27rem;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+}
+
+/* Sidebar Tabs */
+
+#zen-library-sidebar-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  -moz-window-dragging: no-drag;
+}
+
+.zen-library-tab {
+  display: flex;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 0;
+  background: transparent;
+  font-weight: 600;
+  flex-direction: column;
+  gap: 4px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    transition: transform 0.1s ease-in-out;
+  }
+
+  &:hover::before {
+    background: color-mix(in srgb, currentColor 5%, transparent);
+  }
+
+  &[active]::before {
+    background: color-mix(in srgb, currentColor 10%, transparent);
+  }
+
+  &:hover:active::before {
+    transform: scale(0.96);
+  }
+
+  & .zen-library-tab-icon {
+    width: 28px;
+    height: 28px;
+    overflow: clip;
+  }
+
+  & .zen-library-tab-icon-image {
+    width: calc(36 * 28px);
+    height: 28px;
+    fill: rgba(255, 255, 255, 0.8);
+    stroke: var(--zen-colors-primary);
+    -moz-context-properties: fill, stroke;
+    transform: translateX(0);
+  }
+
+  &[data-section="history"] .zen-library-tab-icon-image {
+    background-image: url("chrome://browser/skin/zen-icons/library/library-history-sprite.svg");
+  }
+
+  &[data-section="downloads"] .zen-library-tab-icon-image {
+    background-image: url("chrome://browser/skin/zen-icons/library/library-downloads-sprite.svg");
+  }
+
+  &[data-section="boosts"] .zen-library-tab-icon-image {
+    background-image: url("chrome://browser/skin/zen-icons/library/library-boosts-sprite.svg");
+  }
+
+  &[data-section="spaces"] .zen-library-tab-icon-image {
+    background-image: url("chrome://browser/skin/zen-icons/library/library-spaces-sprite.svg");
+  }
+
+  &[data-section="media"] .zen-library-tab-icon-image {
+    background-image: url("chrome://browser/skin/zen-icons/library/library-media-sprite.svg");
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    &[animate] .zen-library-tab-icon-image {
+      animation: zen-library-tab-icon-play 0.583s steps(36, jump-none);
+    }
+  }
+}
+
+@keyframes zen-library-tab-icon-play {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(35 * -28px));
+  }
+}
+
+/* Search Bar */
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 4px;
+  margin: 8px 6px;
+  padding: 0;
+
+  @media (-moz-platform: macos) {
+    font-size: 1rem; /* Slightly larger font on macOS */
+  }
+}
+
+.search-urlbar {
+  display: flex;
+  position: relative;
+  flex: 1;
+  align-items: stretch;
+  min-width: 0;
+  height: 38px;
+  margin-inline: 2px;
+  background: transparent;
+  border-radius: var(--border-radius-medium);
+}
+
+.search-urlbar-background {
+  position: absolute;
+  inset: 0;
+  background: var(--zen-toolbar-element-bg);
+  border-radius: var(--border-radius-medium);
+  pointer-events: none;
+}
+
+.search-urlbar:hover .search-urlbar-background {
+  background: var(--zen-toolbar-element-bg-hover);
+}
+
+.search-input-container {
+  display: flex;
+  position: relative;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+  gap: 0;
+  padding-inline: var(--urlbar-icon-padding, 9px);
+  padding-block: var(--urlbar-padding-block, 4px);
+  overflow: hidden;
+
+  & .search-icon {
+    width: 18px;
+    height: 18px;
+    margin-inline-end: 6px;
+    padding: 4px;
+    flex-shrink: 0;
+    fill: currentColor;
+    opacity: 0.5;
+    -moz-context-properties: fill, fill-opacity;
+  }
+
+  & .search-input {
+    flex: 1;
+    min-width: 0;
+    height: calc(var(--urlbar-height, 38px) - 2 * var(--urlbar-padding-block, 4px));
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--toolbar-field-color, rgba(0,0,0,0.8));
+    font-weight: 500;
+    line-height: var(--tab-label-line-height);
+
+    &::placeholder {
+      color: inherit;
+      opacity: 0.5;
+    }
+  }
+
+  &:focus-within .search-input {
+    color: var(--toolbar-field-focus-color, light-dark(black, rgb(251,251,254)));
+  }
+}
+
+.search-filter-button {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 4px;
+  height: var(--urlbar-height, 38px);
+  margin-inline: 2px;
+  padding: 0 8px;
+  background: var(--zen-toolbar-element-bg);
+  border: none;
+  border-radius: var(--border-radius-medium);
+  color: inherit;
+  font-weight: 500;
+  line-height: var(--tab-label-line-height);
+  fill: currentColor;
+  fill-opacity: 0.5;
+  -moz-context-properties: fill, fill-opacity;
+
+  & label {
+    opacity: .8;
+  }
+
+  &:hover,
+  &[open] {
+    background: var(--zen-toolbar-element-bg-hover);
+  }
+
+  &:active {
+    background: var(--toolbarbutton-active-background, color-mix(in srgb, light-dark(#101010,#e2e2e2) 7%, transparent 93%));
+  }
+}
+
+/* List */
+
+.search-results {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 10px;
+  padding-top: 0 !important;
+  overflow-y: auto;
+  scrollbar-width: auto;
+  scrollbar-color: color-mix(in srgb, currentColor 35%, transparent 65%) transparent;
+  -moz-window-dragging: drag;
+
+  @media (-moz-platform: macos) {
+    font-size: 1.25rem; /* Slightly larger font on macOS */
+  }
+
+  &:not([scrolled-to-top]) {
+    box-shadow: inset 0 10px 10px -10px var(--zen-toolbar-element-bg);
+  }
+}
+
+/* unfinished */
+.library-date-separator {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 8px;
+  padding: 4px;
+  padding-top: 12px;
+  font-size: .9em;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  opacity: 0.65;
+
+  /* I am not sure if we should keep the separator line or not, I'll ask cheffy later */
+  /*&::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    opacity: 0.5;
+    background: var(--toolbarseparator-color);
+  }*/
+}
+
+.library-item {
+  --tab-label-mask-size: 1em;
+
+  display: flex;
+  align-items: stretch;
+  appearance: none;
+  background-color: transparent;
+  border-width: 0;
+  border-radius: 0;
+  color: inherit;
+  color-scheme: unset;
+  overflow: clip;
+}
+
+.library-item-stack {
+  display: grid;
+  position: relative;
+  width: 100%;
+  -moz-window-dragging: no-drag;
+}
+
+.library-item-background {
+  position: absolute;
+  inset: 0;
+  min-height: var(--tab-min-height);
+  background-color: transparent;
+  border-radius: var(--border-radius-medium) !important;
+  outline: var(--tab-outline);
+  outline-offset: var(--tab-outline-offset);
+  overflow: hidden;
+}
+
+.library-item:hover .library-item-background {
+  background-color: var(--tab-hover-background-color);
+  outline-color: var(--tab-hover-outline-color);
+}
+
+.library-item-content {
+  display: flex;
+  position: relative;
+  align-items: center;
+  min-width: 0;
+  padding: 0 10px;
+  overflow: clip;
+  height: 56px;
+}
+
+.library-item-icon-stack {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+}
+
+.library-item-icon-image {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-inline-start: calc(var(--toolbarbutton-padding-inner) / 2);
+  margin-inline-end: calc(var(--toolbarbutton-padding-inner) * 1.5);
+  padding: 0;
+  border-radius: 4px;
+  fill: currentColor;
+  -moz-context-properties: fill, stroke;
+}
+
+.library-download-progress {
+  display: flex;
+  position: relative;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-inline-start: calc(var(--toolbarbutton-padding-inner) / 2);
+  margin-inline-end: calc(var(--toolbarbutton-padding-inner) * 1.5);
+  padding: 0;
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: currentColor;
+
+  .library-item-stack:hover & {
+    color: var(--zen-colors-primary);
+  }
+
+  & > svg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transition: opacity 0.12s ease;
+  }
+}
+
+.library-download-progress-ring .track {
+  fill: none;
+  stroke: color-mix(in srgb, currentColor 22%, transparent);
+  stroke-width: 1.8;
+}
+
+.library-download-progress-ring .arc {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  transition: stroke-dashoffset 0.25s linear;
+}
+
+.library-download-progress[data-progress="indeterminate"] .arc {
+  stroke-dasharray: 14 50 !important;
+  animation: zen-library-download-spin 1.2s linear infinite;
+}
+
+@keyframes zen-library-download-spin {
+  from {
+    transform: rotate(-90deg);
+  }
+  to {
+    transform: rotate(270deg);
+  }
+}
+
+.library-download-progress-cancel {
+  opacity: 0;
+  -moz-context-properties: fill;
+  fill: var(--toolbox-textcolor);
+}
+
+.library-item-stack:hover .library-download-progress-ring .arc,
+.library-item-stack:hover .library-download-progress-ring .track {
+  opacity: 0;
+}
+
+.library-item-stack:hover .library-download-progress-cancel {
+  opacity: 1;
+}
+
+.library-item-label-container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  opacity: 1;
+  direction: ltr;
+  mask-image: linear-gradient(to left, transparent, black var(--tab-label-mask-size));
+  overflow: hidden;
+  gap: 4px;
+}
+
+.library-item-label {
+  margin-inline: 0;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.library-item[file-missing] .library-item-label {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+/* finished (i hope so) */
+.library-item-sublabel {
+  margin: 0;
+  font-size: 11px;
+  white-space: nowrap;
+  opacity: 0.6; /* what opacity should i keep? */
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.library-item-side {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  margin-inline-start: 8px;
+  padding-inline-end: 4px;
+  text-align: end;
+  white-space: nowrap;
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.library-item-side-top {
+  font-size: 0.85em;
+}
+
+.library-item-side-bottom {
+  font-size: x-small;
+  opacity: 0.85;
+}
+
+.library-item-actions {
+  display: none;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+  margin-inline-start: 8px;
+}
+
+.library-item:hover .library-item-actions,
+.library-item:focus-within .library-item-actions {
+  display: flex;
+}
+
+.library-item-action-button {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-small);
+  color: inherit;
+  fill: currentColor;
+  -moz-context-properties: fill, fill-opacity;
+
+  & img {
+    width: 18px;
+    height: 18px;
+    opacity: 0.75;
+    pointer-events: none;
+  }
+
+  &:hover {
+    background: color-mix(in srgb, currentColor 12%, transparent);
+  }
+
+  &:hover img {
+    opacity: 1;
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  font-size: 2em;
+  font-weight: 600;
+  opacity: 0.5;
+}
+
+/* Boosts section */
+
+.library-boost-item .library-item-content {
+  gap: 6px;
+}
+
+.library-boost-icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-inline-end: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.library-boost-icon-image {
+  width: 24px;
+  height: 24px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.05);
+  padding: 7.5px;
+}
+
+/* Slashed-out look when inactive — mirrors the screenshot's first row. */
+.library-boost-icon[inactive] {
+  opacity: 0.5;
+}
+
+.library-boost-icon[inactive]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom right,
+    transparent calc(50% - 1px),
+    currentColor calc(50% - 1px),
+    currentColor calc(50% + 1px),
+    transparent calc(50% + 1px)
+  );
+  pointer-events: none;
+}
+
+.library-boost-toggle {
+  display: inline-flex;
+  position: relative;
+  flex-shrink: 0;
+  align-items: center;
+  width: 36px;
+  height: 22px;
+  padding: 2px;
+  appearance: none;
+  background: color-mix(in srgb, currentColor 18%, transparent);
+  border: none;
+  border-radius: 999px;
+  opacity: 0;
+  transition:
+    background-color 0.18s ease,
+    opacity 0.12s ease;
+}
+
+/* Stays visible while it represents an "on" state so the user still sees
+ * which boosts are enabled at a glance; otherwise reveal on row hover. */
+.library-boost-item:hover .library-boost-toggle,
+.library-boost-toggle:focus-visible {
+  opacity: 1;
+}
+
+.library-boost-item .library-item-content {
+  padding-left: 6px;
+}
+
+.library-boost-toggle[checked] {
+  background: var(--zen-colors-primary);
+}
+
+.library-boost-toggle-thumb {
+  display: block;
+  width: 18px;
+  height: 18px;
+  background: light-dark(white, rgba(255, 255, 255, 0.95));
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: transform 0.18s cubic-bezier(0.32, 0.72, 0, 1);
+  pointer-events: none;
+}
+
+.library-boost-toggle[checked] .library-boost-toggle-thumb {
+  transform: translateX(14px);
+}

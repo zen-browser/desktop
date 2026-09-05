@@ -456,6 +456,11 @@
 *  skin/classic/browser/zen-icons/zoom-out.svg                      (../shared/zen-icons/nucleo/zoom-out.svg) 
 #endif
 *  skin/classic/browser/zen-icons/urlbar-arrow.svg                      (../shared/zen-icons/common/urlbar-arrow.svg) 
+  skin/classic/browser/zen-icons/library/library-boosts-sprite.svg          (../shared/zen-icons/common/library/library-boosts-sprite.svg)
+  skin/classic/browser/zen-icons/library/library-downloads-sprite.svg          (../shared/zen-icons/common/library/library-downloads-sprite.svg)
+  skin/classic/browser/zen-icons/library/library-history-sprite.svg          (../shared/zen-icons/common/library/library-history-sprite.svg)
+  skin/classic/browser/zen-icons/library/library-media-sprite.svg          (../shared/zen-icons/common/library/library-media-sprite.svg)
+  skin/classic/browser/zen-icons/library/library-spaces-sprite.svg          (../shared/zen-icons/common/library/library-spaces-sprite.svg)
 *  skin/classic/browser/zen-icons/selectable/airplane.svg          (../shared/zen-icons/common/selectable/airplane.svg) 
 *  skin/classic/browser/zen-icons/selectable/american-football.svg          (../shared/zen-icons/common/selectable/american-football.svg) 
 *  skin/classic/browser/zen-icons/selectable/baseball.svg          (../shared/zen-icons/common/selectable/baseball.svg) 

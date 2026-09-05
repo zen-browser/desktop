@@ -800,3 +800,162 @@
     display: none;
   }
 }
+
+#zen-library-button {
+  position: relative;
+}
+
+#zen-library-button::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background:
+    conic-gradient(
+      var(--zen-colors-primary, currentColor)
+        calc(var(--zen-library-button-progress, 0) * 360deg),
+      color-mix(in srgb, currentColor 25%, transparent) 0
+    );
+  mask: radial-gradient(circle, transparent 3.5px, black 4px);
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+#zen-library-button[downloading]::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@keyframes zen-library-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+#zen-library-button[downloading-indeterminate]::after {
+  background: conic-gradient(
+    var(--zen-colors-primary, currentColor) 0deg 90deg,
+    color-mix(in srgb, currentColor 20%, transparent) 90deg 360deg
+  );
+  animation: zen-library-button-spin 1.05s linear infinite;
+}
+
+#zen-library-button[downloading]::before {
+  content: "";
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--zen-colors-primary, currentColor);
+  pointer-events: none;
+}
+
+/*
+ * Stack of recent download tiles inserted just before
+ * #zen-sidebar-foot-buttons. Visible only while hovering the library button
+ * (or the stack itself). Anchored to the bottom of #navigator-toolbox so it
+ * floats above the tab strip without pushing layout.
+ */
+#navigator-toolbox {
+  position: relative;
+}
+
+.zen-library-button-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--zen-library-stack-bottom-offset, 42px);
+  z-index: 2;
+  padding: 6px 8px;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+}
+
+.zen-library-button-panel[data-state="open"] {
+  pointer-events: auto;
+}
+
+/* Fade the bottom of the tab strip so it doesn't visually collide with
+ * the floating download stack. The fade region scales with the actual
+ * stack height (published from JS as --zen-library-stack-height). */
+#tabbrowser-tabs[zen-library-stack-open="true"] {
+  mask-image: linear-gradient(to bottom, black var(--zen-library-stack-height), black 50%, transparent calc(100% - var(--zen-library-stack-height) + 20px));
+  transition: mask-image 0.18s ease;
+}
+
+.zen-library-button-panel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.zen-library-button-panel-empty {
+  padding: 12px 10px;
+  text-align: center;
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+.zen-library-button-panel-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.zen-library-button-panel-row:hover {
+  background: color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.zen-library-button-panel-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+}
+
+.zen-library-button-panel-labels {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.zen-library-button-panel-name {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.zen-library-button-panel-row[data-file-deleted] .zen-library-button-panel-name {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.zen-library-button-panel-status {
+  margin: 0;
+  font-size: 10.5px;
+  opacity: 0.65;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}

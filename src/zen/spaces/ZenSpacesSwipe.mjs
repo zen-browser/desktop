@@ -22,6 +22,25 @@ export class ZenSpacesSwipe {
   constructor() {
     this.#attachWorkspaceSwipeGestures(gNavToolbox);
     this._popupOpenHandler = this._popupOpenHandler.bind(this);
+    this.#attachGestureAbortTriggers();
+  }
+
+  #attachGestureAbortTriggers() {
+    const abort = this.#abortGesture.bind(this);
+    window.addEventListener("deactivate", abort, true);
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        abort();
+      }
+    });
+  }
+
+  #abortGesture() {
+    if (!this.isGestureActive) {
+      return;
+    }
+    gZenWorkspaces._cancelSwipeAnimation();
+    this.onSwipeGestureAnimationEnd();
   }
 
   get #stripWidth() {
@@ -202,7 +221,7 @@ export class ZenSpacesSwipe {
   }
 
   _popupOpenHandler() {
-    this.onSwipeGestureAnimationEnd();
+    this.#abortGesture();
   }
 
   get isGestureActive() {

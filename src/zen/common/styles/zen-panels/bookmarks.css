@@ -68,3 +68,8 @@ hbox.editBMPanel_folderRow {
 #PersonalToolbar {
   background: transparent;
 }
+
+/* Also a .subviewbutton unlike its siblings, so it gets arrowpanel padding */
+menupopup > #BMB_mobileBookmarks {
+  padding: var(--menuitem-padding);
+}

@@ -84,6 +84,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
   _lastOpenedTab = null;
 
+  #stagedPickPending = false;
+
   MAX_TABS = 4;
 
   init() {
@@ -1523,11 +1525,23 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   updateSplitView(tab) {
     const oldView = this.currentView;
     const newView = this._data.findIndex(group => group.tabs.includes(tab));
+    const stagingSplit = this.#stagedPickPending;
+    this.#stagedPickPending = false;
 
     if (newView === oldView && oldView < 0) {
       return;
     }
     if (newView < 0 && oldView >= 0) {
+      /* The tab for the staged split has arrived. Don't tear the
+       * group down or we will have to rebuild it which will cause a
+       * visual flash of the tabs expanding to full size and getting
+       * back into position.
+       * Park the tab where it's supposed to be in the split instead.
+       * */
+      if (stagingSplit) {
+        this.#parkInStagedPane(tab);
+        return;
+      }
       this.deactivateCurrentSplitView();
       return;
     }
@@ -1717,7 +1731,11 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       const browserContainer = splitNode.tab.linkedBrowser.closest(
         ".browserSidebarContainer"
       );
-      browserContainer.style.inset = `${nodeRootPosition.top}% ${nodeRootPosition.right}% ${nodeRootPosition.bottom}% ${nodeRootPosition.left}%`;
+      const inset = `${nodeRootPosition.top}% ${nodeRootPosition.right}% ${nodeRootPosition.bottom}% ${nodeRootPosition.left}%`;
+      browserContainer.style.inset = inset;
+      if (browserContainer.hasAttribute("zen-split-staged")) {
+        this.#setStagedPaneSlot(inset);
+      }
       this._tabToSplitNode.set(splitNode.tab, splitNode);
       return;
     }
@@ -1760,6 +1778,39 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       }
     });
     this.maybeDisableOpeningTabOnSplitView();
+  }
+
+  /**
+   * Set the rectangle of the staged split
+   *
+   * @param {?string} inset - The staged pane's inset, as written to its container.
+   */
+  #setStagedPaneSlot(inset) {
+    if (!inset) {
+      this.#stagedPickPending = false;
+      this.tabBrowserPanel.removeAttribute("zen-split-staging");
+      this.tabBrowserPanel.style.removeProperty("--zen-staged-pane-inset");
+      this.#parkInStagedPane(null);
+      return;
+    }
+    this.tabBrowserPanel.setAttribute("zen-split-staging", "true");
+    this.tabBrowserPanel.style.setProperty("--zen-staged-pane-inset", inset);
+  }
+
+  /**
+   * Parks a tab's container in the staged pane's rectangle so we don't
+   * get a full-bleed over the split before the pane commits.
+   *
+   * @param {?Tab} tab - The tab to park, or null to empty the slot.
+   */
+  #parkInStagedPane(tab) {
+    const container = tab?.linkedBrowser?.closest(".browserSidebarContainer");
+    const parked = this.tabBrowserPanel.querySelector("[zen-split-parked]");
+    if (parked === container) {
+      return;
+    }
+    parked?.removeAttribute("zen-split-parked");
+    container?.setAttribute("zen-split-parked", "true");
   }
 
   /**
@@ -1967,6 +2018,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    */
   resetContainerStyle(container, removeDeckSelected = false) {
     container.removeAttribute("zen-split");
+    if (container.hasAttribute("zen-split-staged")) {
+      container.removeAttribute("zen-split-staged");
+      this.#setStagedPaneSlot(null);
+    }
     if (removeDeckSelected) {
       container.classList.remove("deck-selected");
     }
@@ -2528,6 +2583,66 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
   }
 
+  /**
+   * Adopt tabs into a given group without disolving the group.
+   * This assumes the count of the passed tabs and the count of the tabs in
+   * the group is the same, because it works by swapping the tabs of each split node
+   * in the group.
+   *
+   * @param {object} group - The group
+   * @param {Array<Tab>} tabs - The tabs to end up with, in the group's order.
+   * @returns {boolean} False if the split has to be rebuilt instead.
+   * That can be done with {@link nsZenViewSplitter#splitTabs}
+   */
+  #adoptStagedPane(group, tabs) {
+    if (group?.tabs.length !== tabs.length) {
+      return false;
+    }
+    if (tabs.some(tab => tab.splitView && !group.tabs.includes(tab))) {
+      // The pick already holds a pane elsewhere, which is a merge, not an
+      // adoption. splitTabs is the one that knows how to do that.
+      return false;
+    }
+    const pinned = tabs.filter(tab => tab.pinned).length;
+    if (
+      (pinned && pinned !== tabs.length) ||
+      tabs.some(tab => tab.hasAttribute("zen-live-folder-item-id"))
+    ) {
+      // if we have to duplicate it defeats the purpose
+      return false;
+    }
+    const nodes = group.tabs.map(tab => this.getSplitNodeFromTab(tab));
+    if (nodes.some(node => !node)) {
+      return false;
+    }
+    const splitGroup = this._getSplitViewGroup(tabs);
+    if (!splitGroup) {
+      return false;
+    }
+    this.#withoutSplitViewTransition(() => {
+      group.tabs.forEach((oldTab, i) => {
+        const newTab = tabs[i];
+        if (oldTab === newTab) {
+          return;
+        }
+        nodes[i].tab = newTab;
+        this._tabToSplitNode.delete(oldTab);
+        this._tabToSplitNode.set(newTab, nodes[i]);
+        group.tabs[i] = newTab;
+        this.resetTabState(oldTab, false);
+      });
+      for (const tab of tabs) {
+        if (tab.group !== splitGroup) {
+          gBrowser.moveTabToExistingGroup(tab, splitGroup);
+        }
+      }
+      group.groupId = splitGroup.id;
+      this.activateSplitView(group, true);
+    });
+    this.#dispatchItemEvent("ZenSplitViewTabsSplit", splitGroup);
+    return true;
+  }
+
   createEmptySplit(side = "right") {
     const selectedTab = gBrowser.selectedTab;
     const emptyTab = gZenWorkspaces._emptyTab;
@@ -2541,6 +2656,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     };
     this.#withoutSplitViewTransition(() => {
       this._data.push(data);
+      emptyTab.linkedBrowser
+        .closest(".browserSidebarContainer")
+        .setAttribute("zen-split-staged", "true");
       this.activateSplitView(data);
       gBrowser.selectedTab = emptyTab;
       setTimeout(() => {
@@ -2559,6 +2677,16 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
           const command = document.getElementById("cmd_zenNewEmptySplit");
           command.removeAttribute("disabled");
         };
+        window.addEventListener(
+          "ZenURLBarAboutToClose",
+          event => {
+            if (!gZenUIManager.matchesCloseToken(closeToken, event)) {
+              return;
+            }
+            this.#stagedPickPending = event.detail.onElementPicked;
+          },
+          { signal: controller.signal }
+        );
         window.addEventListener(
           "ZenURLBarClosed",
           event => {
@@ -2581,18 +2709,17 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
                 cleanup(onSwitch, groupIndex);
                 return;
               }
-              this.removeTabFromGroup(emptyTab, groupIndex, {
-                forUnsplit: true,
-              });
-              gBrowser.selectedTab = selectedTab;
-              this.resetTabState(emptyTab, false);
-              this.splitTabs(
-                topOrLeft
-                  ? [newSelectedTab, selectedTab]
-                  : [selectedTab, newSelectedTab],
-                gridType,
-                topOrLeft ? 0 : 1
-              );
+              const tabs = topOrLeft
+                ? [newSelectedTab, selectedTab]
+                : [selectedTab, newSelectedTab];
+              if (!this.#adoptStagedPane(this._data[groupIndex], tabs)) {
+                this.removeTabFromGroup(emptyTab, groupIndex, {
+                  forUnsplit: true,
+                });
+                gBrowser.selectedTab = selectedTab;
+                this.resetTabState(emptyTab, false);
+                this.splitTabs(tabs, gridType, topOrLeft ? 0 : 1);
+              }
             } else {
               cleanup(onSwitch, groupIndex);
             }

@@ -619,7 +619,7 @@ window.gZenUIManager = {
    * corresponds to a close event.
    *
    * @param {object} closeToken - Token previously passed to handleNewTab.
-   * @param {CustomEvent} event - A ZenURLBarClosed event.
+   * @param {CustomEvent} event - A ZenURLBarAboutToClose or ZenURLBarClosed event.
    * @returns {boolean}
    */
   matchesCloseToken(closeToken, event) {
@@ -647,6 +647,13 @@ window.gZenUIManager = {
     }
 
     const isFocusedBefore = gURLBar.focused;
+
+    window.dispatchEvent(
+      new CustomEvent("ZenURLBarAboutToClose", {
+        detail: { onSwitch, onElementPicked, closeSeq },
+      })
+    );
+
     setTimeout(() => {
       /* If someone else opened the url bar in the meantime don't be
        * stingy and leave it open for them.*/

@@ -31,7 +31,11 @@ zen-glance-enabled =
 zen-glance-trigger-ctrl-click =
     .label = Ctrl + Click
 zen-glance-trigger-alt-click =
-    .label = Alt + Click
+    .label =
+        { PLATFORM() ->
+            [macos] Option + Click
+           *[other] Alt + Click
+        }
 zen-glance-trigger-shift-click =
     .label = Shift + Click
 zen-glance-trigger-meta-click =
@@ -370,3 +374,11 @@ zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs
 zen-new-unsynced-window-shortcut = New Blank Window
 zen-duplicate-tab-shortcut = Duplicate Tab
 zen-key-find-selection = Find Selection
+
+zen-content-link-handling-title = Content Link Handling
+zen-content-link-handling-glance-label = Open in Glance
+zen-content-link-handling-split-label = Open in Split View
+zen-content-link-handling-disabled =
+    .label = Disabled
+zen-content-link-handling-conflict = If both actions use the same shortcut, Glance takes priority while enabled.
+zen-content-link-handling-description = Choose a modifier key to preview links in Glance or open them beside the current tab in Split View.

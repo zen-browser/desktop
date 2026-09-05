@@ -1238,13 +1238,15 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       window.gContextMenu.mediaURL ||
       window.gContextMenu.contentData.docLocation ||
       window.gContextMenu.target.ownerDocument.location.href;
-    const currentTab = gZenGlanceManager.getTabOrGlanceParent(
-      window.gBrowser.selectedTab
-    );
+    this.openLinkInSplit(url, window.gContextMenu.principal);
+  }
+
+  openLinkInSplit(url, triggeringPrincipal, sourceTab = gBrowser.selectedTab) {
+    const currentTab = gZenGlanceManager.getTabOrGlanceParent(sourceTab);
     const newTab = this.openAndSwitchToTab(url, {
       skipRoute: true,
       inBackground: false,
-      triggeringPrincipal: window.gContextMenu.principal,
+      triggeringPrincipal,
     });
     if (!newTab) {
       return;

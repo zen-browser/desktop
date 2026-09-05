@@ -3016,15 +3016,19 @@ class nsZenWorkspaces {
   getTabsToExclude(aTab) {
     const tabWorkspaceId = aTab.getAttribute("zen-workspace-id");
     const containerId = aTab.getAttribute("usercontextid") ?? "0";
-    // Return all tabs that are not on the same workspace
-    return gBrowser.tabs.filter(
+    // Return all tabs that are not on the same workspace. gBrowser.tabs only
+    // contains tabs in the active workspace, so it cannot exclude an owner or
+    // successor that lives in another workspace.
+    return this.allStoredTabs.filter(
       tab =>
+        tab.getAttribute("zen-workspace-id") !== tabWorkspaceId &&
         !this._shouldShowTab(
           tab,
           tabWorkspaceId,
           containerId,
           this._workspaceCache
-        ) && !tab.hasAttribute("zen-empty-tab")
+        ) &&
+        !tab.hasAttribute("zen-empty-tab")
     );
   }
 

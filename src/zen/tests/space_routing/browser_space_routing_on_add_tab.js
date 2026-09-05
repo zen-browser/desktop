@@ -3,7 +3,24 @@
 
 "use strict";
 
-const TARGET_WS = { uuid: "ws-target", containerTabId: 7 };
+const TARGET_WS = {
+  uuid: "ws-target",
+  containerTabId: 7,
+  name: "Target Workspace",
+};
+
+async function withZenTestingDisabled(callback) {
+  const originalTestingEnabled = gZenUIManager.testingEnabled;
+
+  // Browser tests enable Zen testing mode, where selectEmptyTab() is a no-op.
+  // Disable it while setting up a real workspace selection lifecycle.
+  gZenUIManager.testingEnabled = false;
+  try {
+    return await callback();
+  } finally {
+    gZenUIManager.testingEnabled = originalTestingEnabled;
+  }
+}
 
 add_setup(async function () {
   clearAllRoutes();
@@ -32,6 +49,7 @@ add_task(async function test_onBeforeAddTab_resolves_container_for_match() {
       userContextId: TARGET_WS.containerTabId,
       isRouteFound: true,
       targetRoute: TARGET_WS.uuid,
+      targetWorkspaceName: TARGET_WS.name,
     },
     "A matching route resolves to the workspace's containerTabId"
   );
@@ -54,6 +72,7 @@ add_task(async function test_onBeforeAddTab_no_match_returns_no_route() {
       userContextId: null,
       isRouteFound: false,
       targetRoute: "most-recent-space",
+      targetWorkspaceName: null,
     },
     "An unmatched URL (most-recent-space) reports no container and no route"
   );
@@ -81,6 +100,7 @@ add_task(async function test_onBeforeAddTab_route_to_missing_workspace() {
       userContextId: null,
       isRouteFound: false,
       targetRoute: "ws-does-not-exist",
+      targetWorkspaceName: null,
     },
     "A route to a non-existent workspace yields no container and no route"
   );
@@ -108,6 +128,7 @@ add_task(async function test_onBeforeAddTab_skips_special_tab_options() {
         userContextId: null,
         isRouteFound: false,
         targetRoute: null,
+        targetWorkspaceName: null,
       },
       `Option '${skipOption}' skips routing even though a rule matches`
     );
@@ -136,6 +157,7 @@ add_task(async function test_onBeforeAddTab_skips_until_startup_ready() {
       userContextId: null,
       isRouteFound: false,
       targetRoute: null,
+      targetWorkspaceName: null,
     },
     "While gZenStartup.isReady is false (session restore), routing is skipped"
   );
@@ -289,6 +311,229 @@ add_task(async function test_onAfterAddTab_ignores_missing_before_result() {
     "Without a beforeResult there is no precomputed route, so nothing is moved"
   );
 });
+
+add_task(
+  async function test_routed_foreground_tab_waits_for_workspace_change() {
+    clearAllRoutes();
+    await gZenWorkspaces.promiseInitialized;
+
+    const originalWorkspace = gZenWorkspaces.getActiveWorkspace();
+    const targetIdentity = ContextualIdentityService.getPublicIdentities().find(
+      identity => identity.userContextId !== originalWorkspace.containerTabId
+    );
+    if (!targetIdentity) {
+      ok(
+        true,
+        "No second container is available for the routing regression test"
+      );
+      return;
+    }
+
+    const target = await withZenTestingDisabled(async () => {
+      const workspace = await gZenWorkspaces.createAndSaveWorkspace(
+        "SR Selection Order Test",
+        undefined,
+        false,
+        targetIdentity.userContextId
+      );
+      await gZenWorkspaces.changeWorkspace(originalWorkspace);
+      return workspace;
+    });
+
+    const originalTab = gBrowser.selectedTab;
+    ok(
+      originalTab?.linkedBrowser,
+      "Precondition: setup leaves a valid selected browser"
+    );
+
+    addRoute({
+      reference: "routing-order.invalid",
+      matchType: "contains",
+      openIn: target.uuid,
+    });
+
+    const ws = window.gZenWorkspaces;
+    const originalChangeWorkspace = ws.changeWorkspace;
+    let selectedWhenWorkspaceChangeStarted = null;
+    ws.changeWorkspace = async function (workspace, ...args) {
+      selectedWhenWorkspaceChangeStarted = gBrowser.selectedTab;
+      return originalChangeWorkspace.call(this, workspace, ...args);
+    };
+
+    let routedTab = null;
+    try {
+      routedTab = gBrowser.addTab("https://routing-order.invalid/", {
+        inBackground: false,
+        triggeringPrincipal:
+          Services.scriptSecurityManager.getSystemPrincipal(),
+      });
+
+      await TestUtils.waitForCondition(
+        () => selectedWhenWorkspaceChangeStarted,
+        "The routed tab started a workspace change"
+      );
+      Assert.equal(
+        selectedWhenWorkspaceChangeStarted,
+        originalTab,
+        "The routed tab is not selected before its target workspace starts changing"
+      );
+      Assert.equal(
+        routedTab.owner,
+        null,
+        "A deferred routed tab does not inherit an owner from another workspace"
+      );
+
+      Assert.equal(
+        routedTab.userContextId,
+        targetIdentity.userContextId,
+        "The routed tab uses the target workspace's container"
+      );
+      await TestUtils.waitForCondition(
+        () => gZenWorkspaces.activeWorkspace === target.uuid,
+        "The target workspace became active"
+      );
+      await TestUtils.waitForCondition(
+        () => gBrowser.selectedTab === routedTab,
+        "The routed tab became selected after the workspace change"
+      );
+
+      await BrowserTestUtils.removeTab(routedTab);
+      routedTab = null;
+      if (gBrowser._switcher) {
+        await TestUtils.waitForCondition(
+          () => !gBrowser._switcher,
+          "The tab switcher finishes after closing the routed tab"
+        );
+      }
+      await TestUtils.waitForCondition(
+        () => gBrowser.selectedTab?.linkedBrowser,
+        "Closing the routed tab leaves a selectable browser"
+      );
+      ok(
+        gBrowser.selectedTab.linkedBrowser,
+        "The selected tab retains a browser after the routed tab closes"
+      );
+    } finally {
+      ws.changeWorkspace = originalChangeWorkspace;
+      clearAllRoutes();
+      if (routedTab?.isConnected) {
+        BrowserTestUtils.removeTab(routedTab);
+      }
+      if (originalWorkspace) {
+        await gZenWorkspaces.changeWorkspace(originalWorkspace);
+      }
+      await gZenWorkspaces.removeWorkspace(target.uuid);
+    }
+  }
+);
+
+add_task(
+  async function test_routed_tab_close_does_not_leave_stale_workspace_selection() {
+    clearAllRoutes();
+    await gZenWorkspaces.promiseInitialized;
+
+    const sourceWorkspace = gZenWorkspaces.getActiveWorkspace();
+    const targetIdentity = ContextualIdentityService.getPublicIdentities().find(
+      identity => identity.userContextId !== sourceWorkspace.containerTabId
+    );
+    if (!targetIdentity) {
+      ok(
+        true,
+        "No second container is available for the close regression test"
+      );
+      return;
+    }
+
+    const targetWorkspace = await withZenTestingDisabled(async () => {
+      const workspace = await gZenWorkspaces.createAndSaveWorkspace(
+        "SR Close Test",
+        undefined,
+        false,
+        targetIdentity.userContextId
+      );
+      await gZenWorkspaces.changeWorkspace(sourceWorkspace);
+      return workspace;
+    });
+
+    const sourceTab = gBrowser.addTab("https://example.com/", {
+      inBackground: false,
+      triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+    });
+    await TestUtils.waitForCondition(
+      () => gBrowser.selectedTab === sourceTab,
+      "A regular source tab is selected in the source workspace"
+    );
+
+    let routedTab = null;
+    try {
+      addRoute({
+        reference: "routing-close.invalid",
+        matchType: "contains",
+        openIn: targetWorkspace.uuid,
+      });
+
+      routedTab = gBrowser.addTab("https://routing-close.invalid/", {
+        inBackground: false,
+        ownerTab: sourceTab,
+        triggeringPrincipal:
+          Services.scriptSecurityManager.getSystemPrincipal(),
+      });
+      await TestUtils.waitForCondition(
+        () =>
+          gZenWorkspaces.activeWorkspace === targetWorkspace.uuid &&
+          gBrowser.selectedTab === routedTab,
+        "The routed tab becomes selected in its target workspace"
+      );
+
+      ok(
+        gZenWorkspaces.getTabsToExclude(routedTab).includes(sourceTab),
+        "The owner in another workspace is excluded as a blur target"
+      );
+      Assert.notEqual(
+        gBrowser._findTabToBlurTo(routedTab),
+        sourceTab,
+        "Closing a routed tab does not blur to its owner in another workspace"
+      );
+
+      gBrowser.removeTab(routedTab, { animate: true });
+      await gZenWorkspaces.changeWorkspace(sourceWorkspace);
+      await TestUtils.waitForCondition(
+        () => !routedTab.isConnected,
+        "The routed tab finishes closing after the workspace change"
+      );
+
+      ok(
+        gZenWorkspaces.lastSelectedWorkspaceTabs[targetWorkspace.uuid] !==
+          routedTab,
+        "Returning to the target workspace clears its stale closed selection"
+      );
+      ok(
+        gBrowser.selectedTab !== routedTab,
+        "The closed routed tab is not selected again"
+      );
+      ok(
+        gBrowser.selectedTab?.isConnected,
+        "The selected tab remains connected after returning to the target workspace"
+      );
+      ok(
+        gBrowser.selectedTab?.linkedBrowser,
+        "The selected tab retains a browser after returning to the target workspace"
+      );
+    } finally {
+      clearAllRoutes();
+      if (routedTab?.isConnected) {
+        BrowserTestUtils.removeTab(routedTab);
+      }
+      if (sourceWorkspace) {
+        await gZenWorkspaces.changeWorkspace(sourceWorkspace);
+      }
+      if (sourceTab?.isConnected) {
+        BrowserTestUtils.removeTab(sourceTab);
+      }
+      await gZenWorkspaces.removeWorkspace(targetWorkspace.uuid);
+    }
+  }
+);
 
 add_task(async function test_onAfterAddTab_activates_workspace_on_origin() {
   clearAllRoutes();

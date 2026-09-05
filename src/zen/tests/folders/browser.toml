@@ -26,6 +26,8 @@ support-files = [
 
 ["browser_folder_multiselected.js"]
 
+["browser_folder_new_tabs.js"]
+
 ["browser_folder_owner_tabs.js"]
 
 ["browser_folder_reset_button.js"]

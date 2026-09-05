@@ -101,6 +101,32 @@
         </hbox>
 </groupbox>
 
+<hbox id="zenSnapCategory"
+      class="subcategory"
+      hidden="true"
+      data-category="paneZenLooks">
+<html:h1 data-l10n-id="zen-snap-title"/>
+</hbox>
+
+<groupbox id="zenSnapGroup" data-category="paneZenLooks" hidden="true" class="highlighting-group">
+      <label><html:h2 data-l10n-id="zen-snap-header"/></label>
+      <description class="description-deemphasized" data-l10n-id="zen-snap-description" />
+
+      <checkbox id="zenLooksAndFeelSnapEnabled"
+            data-l10n-id="zen-snap-enabled"
+            preference="zen.snap.enabled"/>
+      <hbox align="center">
+            <label id="zenSnapPositionLabel" data-l10n-id="zen-snap-position-label"/>
+            <menulist id="zenSnapPosition" preference="zen.snap.position">
+                  <menupopup>
+                        <menuitem data-l10n-id="zen-snap-position-bottom-left" value="bottom-left"/>
+                        <menuitem data-l10n-id="zen-snap-position-bottom-center" value="bottom-center"/>
+                        <menuitem data-l10n-id="zen-snap-position-bottom-right" value="bottom-right"/>
+                  </menupopup>
+            </menulist>
+      </hbox>
+</groupbox>
+
 <hbox id="zenUrlBarCategory"
       class="subcategory"
       hidden="true"

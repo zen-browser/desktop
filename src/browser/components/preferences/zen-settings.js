@@ -1185,6 +1185,16 @@ Preferences.addAll([
     default: true,
   },
   {
+    id: "zen.snap.enabled",
+    type: "bool",
+    default: true,
+  },
+  {
+    id: "zen.snap.position",
+    type: "string",
+    default: "bottom-center",
+  },
+  {
     id: "zen.view.drag-window-from-content",
     type: "bool",
     default: true,

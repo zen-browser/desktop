@@ -1,0 +1,237 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+#zen-snap-modal {
+  position: fixed;
+  bottom: 24px;
+  z-index: 2147483647;
+  min-width: 540px;
+  max-width: 600px;
+  padding: 12px 14px;
+  background-color: var(--zen-colors-tertiary, #1e1e2e);
+  color: var(--zen-colors-text, #cdd6f4);
+  border: 1px solid var(--zen-colors-border, rgba(255, 255, 255, 0.12));
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  font-family: inherit;
+  font-size: 13px;
+  pointer-events: auto;
+  opacity: 0;
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Bottom Center (Default) */
+#zen-snap-modal[data-position="bottom-center"],
+#zen-snap-modal:not([data-position]) {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%) translateY(16px) scale(0.96);
+}
+
+#zen-snap-modal[data-position="bottom-center"].zen-snap-visible,
+#zen-snap-modal:not([data-position]).zen-snap-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+#zen-snap-modal[data-position="bottom-center"].zen-snap-hidden,
+#zen-snap-modal:not([data-position]).zen-snap-hidden {
+  opacity: 0;
+  transform: translateX(-50%) translateY(16px) scale(0.96);
+  pointer-events: none;
+}
+
+/* Bottom Left */
+#zen-snap-modal[data-position="bottom-left"] {
+  left: 24px;
+  right: auto;
+  transform: translateY(16px) scale(0.96);
+}
+
+#zen-snap-modal[data-position="bottom-left"].zen-snap-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+#zen-snap-modal[data-position="bottom-left"].zen-snap-hidden {
+  opacity: 0;
+  transform: translateY(16px) scale(0.96);
+  pointer-events: none;
+}
+
+/* Bottom Right */
+#zen-snap-modal[data-position="bottom-right"] {
+  right: 24px;
+  left: auto;
+  transform: translateY(16px) scale(0.96);
+}
+
+#zen-snap-modal[data-position="bottom-right"].zen-snap-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+#zen-snap-modal[data-position="bottom-right"].zen-snap-hidden {
+  opacity: 0;
+  transform: translateY(16px) scale(0.96);
+  pointer-events: none;
+}
+
+.zen-snap-backdrop {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(1.5px);
+  z-index: 2147483646;
+  opacity: 0;
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: auto;
+}
+
+.zen-snap-backdrop.zen-snap-visible {
+  opacity: 1;
+}
+
+.zen-snap-backdrop.zen-snap-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.zen-snap-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+
+.zen-snap-browse-btn {
+  appearance: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  width: 24px;
+  height: 24px;
+  list-style-image: url("chrome://browser/skin/zen-icons/folder.svg");
+  -moz-context-properties: fill, fill-opacity;
+  fill: var(--zen-colors-text, #a6adc8);
+  transition: background-color 0.15s ease, fill 0.15s ease;
+}
+
+.zen-snap-browse-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  fill: var(--zen-colors-primary, #89b4fa);
+}
+
+
+.zen-snap-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--zen-colors-text, #a6adc8);
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.zen-snap-close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.zen-snap-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.zen-snap-items-horizontal {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+  min-height: 110px;
+  box-sizing: border-box;
+  overflow-x: auto;
+}
+
+.zen-snap-item-empty {
+  font-size: 12px;
+  color: var(--zen-colors-text, #a6adc8);
+  opacity: 0.7;
+  text-align: center;
+  padding: 16px 0;
+  width: 100%;
+}
+
+.zen-snap-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 96px;
+  min-width: 96px;
+  max-width: 96px;
+  padding: 8px 6px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--zen-colors-border, rgba(255, 255, 255, 0.08));
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  box-sizing: border-box;
+}
+
+.zen-snap-card:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--zen-colors-primary, #89b4fa);
+  transform: translateY(-2px);
+}
+
+.zen-snap-preview {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background-color: rgba(0, 0, 0, 0.25);
+  margin-bottom: 6px;
+}
+
+.zen-snap-preview.is-icon {
+  object-fit: contain;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.zen-snap-card-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.zen-snap-card-title {
+  font-weight: 500;
+  font-size: 11px;
+  color: var(--zen-colors-text, #cdd6f4);
+  text-align: center;
+  width: 100%;
+}
+
+.zen-snap-card-subtitle {
+  font-size: 10px;
+  color: var(--zen-colors-text, #a6adc8);
+  opacity: 0.75;
+  text-align: center;
+  width: 100%;
+}
+

@@ -1,0 +1,35 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+<box id="zen-snap-backdrop" class="zen-snap-backdrop zen-snap-hidden" hidden="true" />
+<vbox id="zen-snap-modal" class="zen-snap-hidden" hidden="true">
+  <hbox class="zen-snap-header" align="center">
+    <toolbarbutton id="zen-snap-browse-all-btn" class="zen-snap-icon-btn zen-snap-browse-btn" tooltiptext="Browse all files..." />
+    <spacer flex="1" />
+    <toolbarbutton id="zen-snap-close-btn" class="zen-snap-close-btn" label="×" tooltiptext="Close" />
+  </hbox>
+
+  <vbox class="zen-snap-body">
+    <label id="zen-snap-empty-status" class="zen-snap-item-empty" value="No recent files found" hidden="true" />
+    <hbox id="zen-snap-items-container" class="zen-snap-items-horizontal" align="center">
+      <vbox id="zen-snap-clipboard-card" class="zen-snap-card" align="center" hidden="true">
+        <html:img id="zen-snap-clipboard-preview" class="zen-snap-preview" />
+        <vbox class="zen-snap-card-info" align="center">
+          <label class="zen-snap-card-title" value="Clipboard" crop="end" />
+          <label id="zen-snap-clipboard-subtitle" class="zen-snap-card-subtitle" crop="end" />
+        </vbox>
+      </vbox>
+
+      <vbox id="zen-snap-download-card" class="zen-snap-card" align="center" hidden="true">
+        <html:img id="zen-snap-download-preview" class="zen-snap-preview" />
+        <vbox class="zen-snap-card-info" align="center">
+          <label id="zen-snap-download-title" class="zen-snap-card-title" crop="end" />
+          <label id="zen-snap-download-subtitle" class="zen-snap-card-subtitle" crop="end" />
+        </vbox>
+      </vbox>
+    </hbox>
+  </vbox>
+</vbox>
+
+

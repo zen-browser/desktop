@@ -3,11 +3,20 @@
 
 "use strict";
 
-const TARGET_WS = { uuid: "ws-target", containerTabId: 7 };
+const TARGET_WS = {
+  uuid: "ws-target",
+  name: "Target Workspace",
+  containerTabId: 7,
+};
+let savedDefaultExternalRoute;
 
 add_setup(async function () {
+  savedDefaultExternalRoute = gZenSpaceRoutingManager.getDefaultExternalRoute();
   clearAllRoutes();
-  registerCleanupFunction(() => clearAllRoutes());
+  registerCleanupFunction(() => {
+    clearAllRoutes();
+    gZenSpaceRoutingManager.setDefaultExternalRoute(savedDefaultExternalRoute);
+  });
 });
 
 add_task(async function test_onBeforeAddTab_resolves_container_for_match() {
@@ -32,6 +41,7 @@ add_task(async function test_onBeforeAddTab_resolves_container_for_match() {
       userContextId: TARGET_WS.containerTabId,
       isRouteFound: true,
       targetRoute: TARGET_WS.uuid,
+      targetWorkspaceName: TARGET_WS.name,
     },
     "A matching route resolves to the workspace's containerTabId"
   );
@@ -54,6 +64,7 @@ add_task(async function test_onBeforeAddTab_no_match_returns_no_route() {
       userContextId: null,
       isRouteFound: false,
       targetRoute: "most-recent-space",
+      targetWorkspaceName: null,
     },
     "An unmatched URL (most-recent-space) reports no container and no route"
   );
@@ -81,6 +92,7 @@ add_task(async function test_onBeforeAddTab_route_to_missing_workspace() {
       userContextId: null,
       isRouteFound: false,
       targetRoute: "ws-does-not-exist",
+      targetWorkspaceName: null,
     },
     "A route to a non-existent workspace yields no container and no route"
   );
@@ -108,6 +120,7 @@ add_task(async function test_onBeforeAddTab_skips_special_tab_options() {
         userContextId: null,
         isRouteFound: false,
         targetRoute: null,
+        targetWorkspaceName: null,
       },
       `Option '${skipOption}' skips routing even though a rule matches`
     );
@@ -136,8 +149,90 @@ add_task(async function test_onBeforeAddTab_skips_until_startup_ready() {
       userContextId: null,
       isRouteFound: false,
       targetRoute: null,
+      targetWorkspaceName: null,
     },
     "While gZenStartup.isReady is false (session restore), routing is skipped"
+  );
+});
+
+add_task(async function test_onBeforeAddTab_routes_external_during_startup() {
+  clearAllRoutes();
+  gZenSpaceRoutingManager.setDefaultExternalRoute(TARGET_WS.uuid);
+  const win = makeFakeWindow({ ready: false, workspaces: [TARGET_WS] });
+
+  const result = gZenSpaceRoutingManager.onBeforeAddTab(
+    "https://example.com",
+    { fromExternal: true },
+    win
+  );
+
+  Assert.deepEqual(
+    result,
+    {
+      shouldEarlyExit: false,
+      userContextId: TARGET_WS.containerTabId,
+      isRouteFound: true,
+      targetRoute: TARGET_WS.uuid,
+      targetWorkspaceName: TARGET_WS.name,
+    },
+    "An external link is routed while session restore is still in progress"
+  );
+});
+
+add_task(async function test_external_startup_open_disposition() {
+  clearAllRoutes();
+  gZenSpaceRoutingManager.setDefaultExternalRoute(TARGET_WS.uuid);
+  const win = makeFakeWindow({ ready: false, workspaces: [TARGET_WS] });
+
+  Assert.ok(
+    gZenSpaceRoutingManager.shouldOpenExternalInNewTab(
+      "https://example.com",
+      true,
+      win
+    ),
+    "A cold-start external URI with a specific default route opens in a new tab"
+  );
+  Assert.ok(
+    !gZenSpaceRoutingManager.shouldOpenExternalInNewTab(
+      "https://example.com",
+      false,
+      win
+    ),
+    "A non-external startup URI keeps Firefox's current-tab behavior"
+  );
+
+  gZenSpaceRoutingManager.setDefaultExternalRoute("most-recent-space");
+  Assert.ok(
+    !gZenSpaceRoutingManager.shouldOpenExternalInNewTab(
+      "https://example.com",
+      true,
+      win
+    ),
+    "The most-recent-space external default keeps the current-tab behavior"
+  );
+
+  addRoute({
+    reference: "github.com",
+    matchType: "contains",
+    openIn: TARGET_WS.uuid,
+  });
+  Assert.ok(
+    gZenSpaceRoutingManager.shouldOpenExternalInNewTab(
+      "https://github.com/zen",
+      true,
+      win
+    ),
+    "A matching explicit route also sends a cold-start external URI through addTab"
+  );
+
+  gZenSpaceRoutingManager.setDefaultExternalRoute("ws-does-not-exist");
+  Assert.ok(
+    !gZenSpaceRoutingManager.shouldOpenExternalInNewTab(
+      "https://example.com",
+      true,
+      win
+    ),
+    "A stale external destination does not create an unnecessary startup tab"
   );
 });
 

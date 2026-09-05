@@ -124,6 +124,32 @@ class nsZenSpaceRoutingManager {
   }
 
   /**
+   * Returns whether a URI supplied by an external application during browser
+   * startup needs to open in a new tab so it can flow through addTab() routing.
+   *
+   * Firefox normally loads a single startup URI into the current restored tab,
+   * bypassing addTab(). Keep that behavior when the configured destination is
+   * the most-recent space, but use a new tab when Space Routing has a specific
+   * destination.
+   *
+   * @param {string} uriString - The startup URI
+   * @param {boolean} fromExternal - Whether the URI came from another application
+   * @param {Window} win - The browser window receiving the startup URI
+   * @returns {boolean} True when the URI should open in a routed tab
+   */
+  shouldOpenExternalInNewTab(uriString, fromExternal, win) {
+    if (!fromExternal) {
+      return false;
+    }
+
+    const targetRoute = this.routeUri(uriString, { fromExternal: true });
+    return (
+      targetRoute !== "most-recent-space" &&
+      !!win?.gZenWorkspaces?.getWorkspaceFromId?.(targetRoute)
+    );
+  }
+
+  /**
    * Callback that will be executed from tabbrowser.js
    *
    * @param {string} uriString - The URI as a string

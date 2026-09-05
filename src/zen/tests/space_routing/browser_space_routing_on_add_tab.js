@@ -179,6 +179,63 @@ add_task(async function test_onBeforeAddTab_routes_external_during_startup() {
   );
 });
 
+add_task(async function test_external_startup_open_disposition() {
+  clearAllRoutes();
+  gZenSpaceRoutingManager.setDefaultExternalRoute(TARGET_WS.uuid);
+  const win = makeFakeWindow({ ready: false, workspaces: [TARGET_WS] });
+
+  Assert.ok(
+    gZenSpaceRoutingManager.shouldOpenExternalInNewTab(
+      "https://example.com",
+      true,
+      win
+    ),
+    "A cold-start external URI with a specific default route opens in a new tab"
+  );
+  Assert.ok(
+    !gZenSpaceRoutingManager.shouldOpenExternalInNewTab(
+      "https://example.com",
+      false,
+      win
+    ),
+    "A non-external startup URI keeps Firefox's current-tab behavior"
+  );
+
+  gZenSpaceRoutingManager.setDefaultExternalRoute("most-recent-space");
+  Assert.ok(
+    !gZenSpaceRoutingManager.shouldOpenExternalInNewTab(
+      "https://example.com",
+      true,
+      win
+    ),
+    "The most-recent-space external default keeps the current-tab behavior"
+  );
+
+  addRoute({
+    reference: "github.com",
+    matchType: "contains",
+    openIn: TARGET_WS.uuid,
+  });
+  Assert.ok(
+    gZenSpaceRoutingManager.shouldOpenExternalInNewTab(
+      "https://github.com/zen",
+      true,
+      win
+    ),
+    "A matching explicit route also sends a cold-start external URI through addTab"
+  );
+
+  gZenSpaceRoutingManager.setDefaultExternalRoute("ws-does-not-exist");
+  Assert.ok(
+    !gZenSpaceRoutingManager.shouldOpenExternalInNewTab(
+      "https://example.com",
+      true,
+      win
+    ),
+    "A stale external destination does not create an unnecessary startup tab"
+  );
+});
+
 add_task(async function test_onAfterAddTab_moves_tab_on_non_origin_window() {
   clearAllRoutes();
   addRoute({

@@ -1,0 +1,17 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+[DEFAULT]
+prefs = [
+  "zen.window-sync.enabled=true",
+  "zen.urlbar.replace-newtab=false",
+  "zen.spaces-sync.first-sync-animation-shown=true",
+]
+support-files = [
+  "head.js",
+]
+
+["browser_normal_tabs_apply.js"]
+
+["browser_normal_tabs_projection.js"]

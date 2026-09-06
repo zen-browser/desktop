@@ -361,4 +361,6 @@
   .zen-squircle-after::after {
     corner-shape: superellipse(var(--zen-squircle-value));
   }
+
+%include squircle-exclusions.inc.css
 }

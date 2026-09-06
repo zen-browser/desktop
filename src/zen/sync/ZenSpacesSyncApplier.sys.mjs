@@ -11,7 +11,16 @@ import {
   ZenSpacesSyncModel,
 } from "resource:///modules/zen/ZenSpacesSyncModel.sys.mjs";
 
+import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
+
 const lazy = {};
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "syncNormalTabs",
+  "zen.spaces-sync.normal-tabs",
+  false
+);
 
 ChromeUtils.defineESModuleGetters(lazy, {
   SessionSaver: "resource:///modules/sessionstore/SessionSaver.sys.mjs",
@@ -82,6 +91,11 @@ class nsZenSpacesSyncApplier {
       }
       const data = record.cleartext?.data;
       if (!data) {
+        continue;
+      }
+      if (data.pinned === false && !lazy.syncNormalTabs) {
+        // Normal-tab syncing is off here: leave the record untouched and
+        // unacknowledged, like an unknown kind.
         continue;
       }
       const entry = { key: record.id, data, record };
@@ -567,7 +581,9 @@ class nsZenSpacesSyncApplier {
       if (data.workspaceUuid) {
         tab.setAttribute("zen-workspace-id", data.workspaceUuid);
       }
-      win.gBrowser.pinTab(tab);
+      if (data.pinned !== false) {
+        win.gBrowser.pinTab(tab);
+      }
       if (data.workspaceUuid) {
         win.gZenWorkspaces.moveTabToWorkspace(tab, data.workspaceUuid);
       }
@@ -593,7 +609,10 @@ class nsZenSpacesSyncApplier {
     const identityChanged =
       initial?.entry?.url !== data.url ||
       (initial?.entry?.title || "") !== (data.title || "");
-    if (identityChanged || syncableIconUrl(initial?.image || "") !== icon) {
+    if (
+      data.pinned !== false &&
+      (identityChanged || syncableIconUrl(initial?.image || "") !== icon)
+    ) {
       lazy.ZenWindowSync.setPinnedInitialState(
         tab,
         { url: data.url, title: data.title || "" },
@@ -744,6 +763,17 @@ class nsZenSpacesSyncApplier {
     if (inSplit) {
       // The split record governs placement of its members.
       return;
+    }
+    const wantPinned = data.pinned !== false;
+    if (wantPinned !== tab.pinned) {
+      if (wantPinned) {
+        win.gBrowser.pinTab(tab);
+      } else {
+        win.gBrowser.unpinTab(tab);
+        // Pin identity would otherwise freeze the projection of what is now
+        // a normal tab.
+        delete tab._zenPinnedInitialState;
+      }
     }
     this.#applyFolderMembership(win, tab, data.folderId);
     if (

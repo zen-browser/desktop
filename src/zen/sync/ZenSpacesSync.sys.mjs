@@ -75,10 +75,9 @@ class ZenSpacesSyncStore extends Store {
 }
 
 /**
- * Tracker for the Spaces engine. There is no per-event bookkeeping: every
- * time fresh sidebar data is collected (or a container changes), the model
- * diffs the current projections against the last-uploaded snapshot; the
- * score is only bumped when something actually differs.
+ * Tracker for the Spaces engine. The model diffs the current projections 
+ * against the last-uploaded snapshot. The score is only bumped when
+ * something actually differs.
  */
 class ZenSpacesSyncTracker extends Tracker {
   _ignoreAll = false;

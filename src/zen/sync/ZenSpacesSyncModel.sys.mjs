@@ -22,6 +22,13 @@ XPCOMUtils.defineLazyPreferenceGetter(
   false
 );
 
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "syncNormalTabs",
+  "zen.spaces-sync.normal-tabs",
+  false
+);
+
 /**
  * Debug logging for the whole Spaces sync pipeline.
  *
@@ -258,19 +265,31 @@ class nsZenSpacesSyncModel {
 
   /* Mark: projections */
 
-  #isSyncableTab(tabData) {
+  #isTabRecordMaterial(tabData) {
     return !!(
       tabData &&
       tabData.zenSyncId &&
-      (tabData.pinned || tabData.zenEssential) &&
       !tabData.zenIsEmpty &&
       !tabData.zenIsGlance &&
       !tabData.zenLiveFolderItemId
     );
   }
 
+  #isSyncableTab(tabData) {
+    return (
+      this.#isTabRecordMaterial(tabData) &&
+      (!!tabData.pinned || !!tabData.zenEssential || lazy.syncNormalTabs)
+    );
+  }
+
   #tabIdentity(tabData) {
-    const initial = tabData._zenPinnedInitialState;
+    // Pin identity freezes url/title at pin time. A normal tab's identity
+    // follows its live entry (a leftover initial state from a past pin must
+    // not shadow it).
+    const initial =
+      tabData.pinned || tabData.zenEssential
+        ? tabData._zenPinnedInitialState
+        : null;
     let url = initial?.entry?.url;
     let title = initial?.entry?.title;
     if (!url || url === "about:blank") {
@@ -473,6 +492,7 @@ class nsZenSpacesSyncModel {
             create: true,
           }),
           essential,
+          pinned: !!(tab.pinned || tab.zenEssential),
           workspaceUuid: essential ? null : tab.zenWorkspace || null,
           folderId: ctx.folderOf(tab.groupId || null),
           staticLabel:
@@ -495,6 +515,28 @@ class nsZenSpacesSyncModel {
     const pending = new Set();
     const ctx = this.#projectionContext(sidebar);
     const { tabs, folders, splits, splitParents, splitWs } = ctx;
+
+    if (!lazy.syncNormalTabs) {
+      // Items excluded only by the normal-tabs option are held back, not
+      // deleted. Flipping the option off must not tombstone them remotely.
+      const held = new Set();
+      for (const tab of ctx.allTabs) {
+        if (this.#isTabRecordMaterial(tab) && !this.#isSyncableTab(tab)) {
+          held.add(tab.zenSyncId);
+          pending.add(tab.zenSyncId);
+        }
+      }
+      for (const split of sidebar.splitViewData || []) {
+        if (
+          split?.groupId &&
+          !ctx.splitIds.has(split.groupId) &&
+          Array.isArray(split.tabs) &&
+          split.tabs.some(id => held.has(id))
+        ) {
+          pending.add(split.groupId);
+        }
+      }
+    }
 
     for (const identity of lazy.ContextualIdentityService.getPublicIdentities()) {
       if (!identity.name) {
@@ -568,12 +610,15 @@ class nsZenSpacesSyncModel {
 
     this.#projectTabs(map, ctx);
 
+    const tabById = new Map(tabs.map(t => [t.zenSyncId, t]));
     for (const split of splits) {
+      const member = tabById.get(split.tabs[0]);
       map.set(split.groupId, {
         kind: RECORD_KINDS.SPLIT,
         data: {
           splitId: split.groupId,
           gridType: split.gridType || "grid",
+          pinned: !!(member?.pinned || member?.zenEssential),
           tabs: [...split.tabs],
           workspaceUuid: splitWs.get(split.groupId) ?? null,
           folderId: splitParents.get(split.groupId) || null,

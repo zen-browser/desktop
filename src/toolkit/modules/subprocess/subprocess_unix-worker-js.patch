@@ -1,0 +1,16 @@
+diff --git a/toolkit/modules/subprocess/subprocess_unix.worker.js b/toolkit/modules/subprocess/subprocess_unix.worker.js
+--- a/toolkit/modules/subprocess/subprocess_unix.worker.js
++++ b/toolkit/modules/subprocess/subprocess_unix.worker.js
+@@ -351,9 +351,9 @@
+         our_pipes.push(new OutputPipe(this, fds[1]));
+       }
+ 
+-      libc.fcntl(fds[0], LIBC.F_SETFD, LIBC.FD_CLOEXEC);
+-      libc.fcntl(fds[1], LIBC.F_SETFD, LIBC.FD_CLOEXEC);
+-      libc.fcntl(fds[1], LIBC.F_SETFL, LIBC.O_NONBLOCK);
++      libc.fcntl(fds[0], LIBC.F_SETFD, ctypes.int(LIBC.FD_CLOEXEC));
++      libc.fcntl(fds[1], LIBC.F_SETFD, ctypes.int(LIBC.FD_CLOEXEC));
++      libc.fcntl(fds[1], LIBC.F_SETFL, ctypes.int(LIBC.O_NONBLOCK));
+ 
+       return fds[0];
+     };

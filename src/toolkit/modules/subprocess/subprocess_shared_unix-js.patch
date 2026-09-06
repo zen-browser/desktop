@@ -1,0 +1,18 @@
+diff --git a/toolkit/modules/subprocess/subprocess_shared_unix.js b/toolkit/modules/subprocess/subprocess_shared_unix.js
+--- a/toolkit/modules/subprocess/subprocess_shared_unix.js
++++ b/toolkit/modules/subprocess/subprocess_shared_unix.js
+@@ -54,12 +54,13 @@
+ 
+   dup: [ctypes.default_abi, ctypes.int, ctypes.int],
+ 
++  // Variadic arguments use a different calling convention on Apple silicon.
+   fcntl: [
+     ctypes.default_abi,
+     ctypes.int,
+     ctypes.int /* fildes */,
+     ctypes.int /* cmd */,
+-    ctypes.int /* ... */,
++    "...",
+   ],
+ 
+   getcwd: [

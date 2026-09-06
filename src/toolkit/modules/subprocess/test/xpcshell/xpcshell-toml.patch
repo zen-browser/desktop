@@ -1,0 +1,11 @@
+diff --git a/toolkit/modules/subprocess/test/xpcshell/xpcshell.toml b/toolkit/modules/subprocess/test/xpcshell/xpcshell.toml
+--- a/toolkit/modules/subprocess/test/xpcshell/xpcshell.toml
++++ b/toolkit/modules/subprocess/test/xpcshell/xpcshell.toml
+@@ -27,4 +27,7 @@
+ ["test_subprocess_perf.js"]
+ requesttimeoutfactor = 2  # Slow on Windows
+ 
++["test_subprocess_pipe_flags.js"]
++run-if = ["os == 'mac'"]
++
+ ["test_subprocess_polling.js"]

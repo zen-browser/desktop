@@ -1,0 +1,36 @@
+diff --git a/gfx/layers/wr/AsyncImagePipelineManager.h b/gfx/layers/wr/AsyncImagePipelineManager.h
+index 47d64a09a4f40a0bd6ead72a6dd1cc723167f5eb..75d5c6617c30738e752bf47da4d81750d46d5e10 100644
+--- a/gfx/layers/wr/AsyncImagePipelineManager.h
++++ b/gfx/layers/wr/AsyncImagePipelineManager.h
+@@ -146,6 +146,7 @@ class AsyncImagePipelineManager final {
+   TextureFactoryIdentifier GetTextureFactoryIdentifier() const {
+     return mTextureFactoryIdentifier;
+   }
++  uint32_t GetIdNamespaceHandle() const { return mIdNamespace.mHandle; }
+ 
+  private:
+   void ProcessPipelineRendered(const wr::PipelineId& aPipelineId,
+@@ -221,6 +222,11 @@ class AsyncImagePipelineManager final {
+     nsTArray<wr::ImageKey> mKeys;
+     wr::DisplayListBuilder mDLBuilder;
+     bool mVideoOverlayDisabled = false;
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++    Maybe<wr::ImageKey> mSuperResolutionKey;
++    bool mSuperResolutionActive = false;
++    bool mSuperResolutionForceTextured = false;
++#endif
+   };
+ 
+   void ApplyAsyncImageForPipeline(const wr::Epoch& aEpoch,
+@@ -237,6 +243,11 @@ class AsyncImagePipelineManager final {
+   Maybe<TextureHost::ResourceUpdateOp> UpdateWithoutExternalImage(
+       TextureHost* aTexture, wr::ImageKey aKey, TextureHost::ResourceUpdateOp,
+       wr::TransactionBuilder& aTxn);
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++  bool EnsureSuperResolutionKey(AsyncImagePipeline* aPipeline,
++                                wr::TransactionBuilder& aSceneBuilderTxn,
++                                bool aActive, uint64_t aPipelineId);
++#endif
+ 
+   void CheckForTextureHostsNotUsedByGPU();
+ 

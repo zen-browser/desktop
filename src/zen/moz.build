@@ -24,3 +24,6 @@ DIRS += [
     "sync",
     "window-drag",
 ]
+
+if CONFIG["OS_TARGET"] == "Linux" and CONFIG["MOZ_WIDGET_TOOLKIT"] == "gtk":
+    DIRS += ["video-super-resolution"]

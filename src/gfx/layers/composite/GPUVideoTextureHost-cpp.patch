@@ -1,0 +1,19 @@
+diff --git a/gfx/layers/composite/GPUVideoTextureHost.cpp b/gfx/layers/composite/GPUVideoTextureHost.cpp
+index f8a4e6ecb1195ac9e7e8c4d24f77567abc076849..73db98d330a79284a8a72b1d8e2518a29aa66910 100644
+--- a/gfx/layers/composite/GPUVideoTextureHost.cpp
++++ b/gfx/layers/composite/GPUVideoTextureHost.cpp
+@@ -268,5 +268,14 @@ bool GPUVideoTextureHost::NeedsYFlip() const {
+   return mWrappedTextureHost->NeedsYFlip();
+ }
+ 
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++uint64_t GPUVideoTextureHost::GetVideoSourceIdentity() const {
++  if (!mWrappedTextureHost) {
++    return 0;
++  }
++  return mWrappedTextureHost->GetVideoSourceIdentity();
++}
++#endif
++
+ }  // namespace layers
+ }  // namespace mozilla

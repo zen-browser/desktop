@@ -1,0 +1,15 @@
+diff --git a/gfx/layers/composite/RemoteTextureHostWrapper.h b/gfx/layers/composite/RemoteTextureHostWrapper.h
+index bc260cc420f8831b09e130c235b22a728275927a..a1498021a76a98dc11580638f4e7fcbcc12d3813 100644
+--- a/gfx/layers/composite/RemoteTextureHostWrapper.h
++++ b/gfx/layers/composite/RemoteTextureHostWrapper.h
+@@ -37,6 +37,10 @@ class RemoteTextureHostWrapper : public TextureHost {
+ 
+   gfx::IntSize GetSize() const override;
+ 
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++  uint64_t GetVideoSourceIdentity() const override;
++#endif
++
+   bool IsValid() override;
+ 
+ #ifdef MOZ_LAYERS_HAVE_LOG

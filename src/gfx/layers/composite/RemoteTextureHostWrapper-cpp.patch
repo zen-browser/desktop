@@ -1,0 +1,20 @@
+diff --git a/gfx/layers/composite/RemoteTextureHostWrapper.cpp b/gfx/layers/composite/RemoteTextureHostWrapper.cpp
+index cd9132cd68ba849ad3abd4e01d3ea79f5868a083..3dbe4904519353657b0eb10836eee7bc925d19d8 100644
+--- a/gfx/layers/composite/RemoteTextureHostWrapper.cpp
++++ b/gfx/layers/composite/RemoteTextureHostWrapper.cpp
+@@ -86,6 +86,15 @@ gfx::IntSize RemoteTextureHostWrapper::GetSize() const {
+   return mRemoteTexture->GetSize();
+ }
+ 
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++uint64_t RemoteTextureHostWrapper::GetVideoSourceIdentity() const {
++  if (!mRemoteTexture) {
++    return 0;
++  }
++  return mRemoteTexture->GetVideoSourceIdentity();
++}
++#endif
++
+ gfx::SurfaceFormat RemoteTextureHostWrapper::GetFormat() const {
+   MOZ_ASSERT(mRemoteTexture, "TextureHost isn't valid yet");
+   if (!mRemoteTexture) {

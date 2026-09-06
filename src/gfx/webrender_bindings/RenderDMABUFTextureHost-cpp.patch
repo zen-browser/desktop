@@ -1,0 +1,75 @@
+diff --git a/gfx/webrender_bindings/RenderDMABUFTextureHost.cpp b/gfx/webrender_bindings/RenderDMABUFTextureHost.cpp
+index 4728ccfc9995452e421645ca8d44f6065e851b78..32c4aec29d9e969544f06688e13a6f5f3389b876 100644
+--- a/gfx/webrender_bindings/RenderDMABUFTextureHost.cpp
++++ b/gfx/webrender_bindings/RenderDMABUFTextureHost.cpp
+@@ -7,16 +7,35 @@
+ #include "GLContextEGL.h"
+ #include "ScopedGLHelpers.h"
+ #include "mozilla/gfx/Logging.h"
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++#include "mozilla/StaticPrefs_zen.h"
++#include "mozilla/zen/VideoSuperResolutionTexturePool.h"
++#endif
+ 
+ namespace mozilla::wr {
+ 
+ RenderDMABUFTextureHost::RenderDMABUFTextureHost(DMABufSurface* aSurface)
+     : mSurface(aSurface) {
+   MOZ_COUNT_CTOR_INHERITED(RenderDMABUFTextureHost, RenderTextureHost);
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++  if (mSurface && mSurface->GetUID()) {
++    const uint64_t id = (static_cast<uint64_t>(mSurface->GetPID()) << 32) |
++                        static_cast<uint64_t>(mSurface->GetUID());
++    zen::VideoSuperResolutionTexturePool::Get().RegisterSourceSurface(id,
++                                                                        mSurface);
++  }
++#endif
+ }
+ 
+ RenderDMABUFTextureHost::~RenderDMABUFTextureHost() {
+   MOZ_COUNT_DTOR_INHERITED(RenderDMABUFTextureHost, RenderTextureHost);
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++  if (mSurface && mSurface->GetUID()) {
++    const uint64_t id = (static_cast<uint64_t>(mSurface->GetPID()) << 32) |
++                        static_cast<uint64_t>(mSurface->GetUID());
++    zen::VideoSuperResolutionTexturePool::Get().UnregisterSourceSurface(id, mSurface);
++  }
++#endif
+   DeleteTextureHandle();
+ }
+ 
+@@ -59,6 +78,34 @@ wr::WrExternalImage RenderDMABUFTextureHost::Lock(uint8_t aChannelIndex,
+     mSurface->MaybeSemaphoreWait(texture);
+   }
+ 
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++  if (aChannelIndex == 0 &&
++      StaticPrefs::zen_video_super_resolution_enabled()) {
++    if (mSurface->GetUID()) {
++      const uint64_t id =
++          (static_cast<uint64_t>(mSurface->GetPID()) << 32) |
++          static_cast<uint64_t>(mSurface->GetUID());
++      zen::VideoSuperResolutionTexturePool::Get().RegisterSourceSurface(id,
++                                                                         mSurface);
++    }
++    const int planeCount = mSurface->GetTextureCount();
++    for (int i = 0; i < planeCount; ++i) {
++      if (!mSurface->GetTexture(i)) {
++        if (!mSurface->CreateTexture(mGL, i)) {
++          break;
++        }
++        ActivateBindAndTexParameteri(mGL, LOCAL_GL_TEXTURE0,
++                                     LOCAL_GL_TEXTURE_2D,
++                                     mSurface->GetTexture(i));
++      }
++    }
++    for (int i = 0; i < planeCount; ++i) {
++      if (auto texture = mSurface->GetTexture(i)) {
++        mSurface->MaybeSemaphoreWait(texture);
++      }
++    }
++  }
++#endif
+   return NativeTextureToWrExternalImage(
+       mSurface->GetTexture(aChannelIndex), 0.0, 0.0,
+       static_cast<float>(size.width), static_cast<float>(size.height));

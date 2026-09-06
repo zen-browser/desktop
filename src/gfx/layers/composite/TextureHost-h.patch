@@ -1,0 +1,46 @@
+diff --git a/gfx/layers/composite/TextureHost.h b/gfx/layers/composite/TextureHost.h
+index 97242d426d0cff4738de086ef62224a0828e380c..b07e3866bcd30518ba5ed8051f15a87969bb68ab 100644
+--- a/gfx/layers/composite/TextureHost.h
++++ b/gfx/layers/composite/TextureHost.h
+@@ -744,6 +744,29 @@ class TextureHost : public AtomicRefCountedWithFinalize<TextureHost> {
+     mDestroyedCallback = std::move(aDestroyedCallback);
+   }
+ 
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++  void SetVideoFrameIdentity(uint32_t aProducer, int32_t aFrame) {
++    mVideoProducerId = aProducer;
++    mVideoFrameId = aFrame;
++    mHasVideoFrameIdentity = true;
++  }
++
++  bool GetVideoFrameIdentity(uint32_t* aProducer, int32_t* aFrame) const {
++    if (!mHasVideoFrameIdentity) {
++      return false;
++    }
++    if (aProducer) {
++      *aProducer = mVideoProducerId;
++    }
++    if (aFrame) {
++      *aFrame = mVideoFrameId;
++    }
++    return true;
++  }
++
++  virtual uint64_t GetVideoSourceIdentity() const { return 0; }
++#endif
++
+  protected:
+   virtual void ReadUnlock();
+ 
+@@ -770,6 +793,11 @@ class TextureHost : public AtomicRefCountedWithFinalize<TextureHost> {
+   uint64_t mFwdTransactionId;
+   bool mReadLocked;
+   wr::MaybeExternalImageId mExternalImageId;
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++  uint32_t mVideoProducerId = 0;
++  int32_t mVideoFrameId = 0;
++  bool mHasVideoFrameIdentity = false;
++#endif
+ 
+   std::function<void()> mDestroyedCallback;
+ 

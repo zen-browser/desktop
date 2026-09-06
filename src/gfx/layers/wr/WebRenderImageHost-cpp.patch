@@ -1,0 +1,111 @@
+diff --git a/gfx/layers/wr/WebRenderImageHost.cpp b/gfx/layers/wr/WebRenderImageHost.cpp
+index 20441740bff4a633bebfe8b10b20ba1301da6a9c..c300fdf29fb158a0a5b6bad9dbbb5d63f5723e5c 100644
+--- a/gfx/layers/wr/WebRenderImageHost.cpp
++++ b/gfx/layers/wr/WebRenderImageHost.cpp
+@@ -19,6 +19,13 @@
+ #include "mozilla/layers/RemoteTextureMap.h"
+ #include "mozilla/layers/WebRenderBridgeParent.h"
+ #include "mozilla/layers/WebRenderTextureHost.h"
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++#include "GLContext.h"
++#include "mozilla/webrender/RenderThread.h"
++#include "mozilla/webrender/RendererOGL.h"
++#include "mozilla/webrender/WebRenderAPI.h"
++#include "mozilla/zen/VideoSuperResolutionTexturePool.h"
++#endif
+ #include "nsAString.h"
+ #include "nsDebug.h"          // for NS_WARNING, NS_ASSERTION
+ #include "nsPrintfCString.h"  // for nsPrintfCString
+@@ -37,6 +44,25 @@ namespace layers {
+ 
+ class ISurfaceAllocator;
+ 
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++class SuperResolutionPollEvent final : public wr::RendererEvent {
++ public:
++  void Run(wr::RenderThread& aRenderThread, wr::WindowId aWindowId) override {
++    if (aRenderThread.IsDestroyed(aWindowId)) {
++      return;
++    }
++    auto* renderer = aRenderThread.GetRenderer(aWindowId);
++    auto* gl = renderer ? renderer->gl() : nullptr;
++    if (gl && gl->MakeCurrent()) {
++      zen::VideoSuperResolutionTexturePool::Get().ProcessPendingSnapshots(gl);
++      zen::VideoSuperResolutionTexturePool::Get().PollVfxResults(gl);
++    }
++  }
++
++  const char* Name() override { return "SuperResolutionPollEvent"; }
++};
++#endif
++
+ WebRenderImageHost::WebRenderImageHost(const TextureInfo& aTextureInfo)
+     : CompositableHost(aTextureInfo), mCurrentAsyncImageManager(nullptr) {}
+ 
+@@ -367,6 +393,11 @@ TextureHost* WebRenderImageHost::GetAsTextureHostForComposite(
+       PROFILER_MARKER_TEXT("WebRenderImageHost", GRAPHICS, {}, str);
+     }
+   }
++#endif
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++  if (texture) {
++    texture->SetVideoFrameIdentity(img->mProducerID, img->mFrameID);
++  }
+ #endif
+   SetCurrentTextureHost(texture);
+ 
+@@ -423,5 +454,54 @@ void WebRenderImageHost::ClearWrBridge(const wr::PipelineId& aPipelineId,
+   SetCurrentTextureHost(nullptr);
+ }
+ 
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++bool WebRenderImageHost::RequestSuperResolutionRenderPoll() {
++  if (!CompositorThreadHolder::IsInCompositorThread()) {
++    RefPtr<WebRenderImageHost> self = this;
++    nsresult rv = CompositorThread()->Dispatch(NS_NewRunnableFunction(
++        "WebRenderImageHost::RequestSuperResolutionRenderPoll",
++        [self] { self->RequestSuperResolutionRenderPoll(); }));
++    return NS_SUCCEEDED(rv);
++  }
++  auto* renderThread = wr::RenderThread::Get();
++  if (!renderThread) {
++    return false;
++  }
++  bool requested = false;
++  for (const auto& it : mWrBridges) {
++    RefPtr<WebRenderBridgeParent> wrBridge = it.second->WrBridge();
++    if (!wrBridge) {
++      continue;
++    }
++    RefPtr<wr::WebRenderAPI> api = wrBridge->GetWebRenderAPI();
++    if (!api) {
++      continue;
++    }
++    renderThread->PostEvent(api->GetId(), MakeUnique<SuperResolutionPollEvent>());
++    requested = true;
++  }
++  return requested;
++}
++
++void WebRenderImageHost::RequestSuperResolutionComposition() {
++  if (!CompositorThreadHolder::IsInCompositorThread()) {
++    RefPtr<WebRenderImageHost> self = this;
++    if (NS_FAILED(CompositorThread()->Dispatch(NS_NewRunnableFunction(
++            "WebRenderImageHost::RequestSuperResolutionComposition",
++            [self] { self->RequestSuperResolutionComposition(); })))) {
++      return;
++    }
++    return;
++  }
++  for (const auto& it : mWrBridges) {
++    RefPtr<WebRenderBridgeParent> wrBridge = it.second->WrBridge();
++    if (wrBridge && wrBridge->CompositorScheduler()) {
++      wrBridge->CompositorScheduler()->ScheduleComposition(
++          wr::RenderReasons::ASYNC_IMAGE);
++    }
++  }
++}
++#endif
++
+ }  // namespace layers
+ }  // namespace mozilla

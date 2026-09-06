@@ -1,0 +1,15 @@
+diff --git a/gfx/layers/composite/GPUVideoTextureHost.h b/gfx/layers/composite/GPUVideoTextureHost.h
+index 1fb7d286fca956dd334cad29b83432cbcf0f1973..b9a835fcc4911ad21a80dcf98b709892416c8f2c 100644
+--- a/gfx/layers/composite/GPUVideoTextureHost.h
++++ b/gfx/layers/composite/GPUVideoTextureHost.h
+@@ -34,6 +34,10 @@ class GPUVideoTextureHost final : public TextureHost {
+ 
+   bool NeedsYFlip() const override;
+ 
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++  uint64_t GetVideoSourceIdentity() const override;
++#endif
++
+   gfx::IntSize GetSize() const override;
+ 
+   bool IsValid() override;

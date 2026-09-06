@@ -1,0 +1,38 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+EXPORTS.mozilla.zen += [
+    "CudaGlInterop.h",
+    "NvidiaVfxLoader.h",
+    "NvidiaVfxSession.h",
+    "VideoSuperResolutionCapability.h",
+    "VideoSuperResolutionCoordinator.h",
+    "VideoSuperResolutionOwnerPolicy.h",
+    "VideoSuperResolutionProfiler.h",
+    "VideoSuperResolutionScalePolicy.h",
+    "VideoSuperResolutionTexturePool.h",
+    "VideoSuperResolutionTypes.h",
+]
+
+SOURCES += [
+    "CudaGlInterop.cpp",
+    "NvidiaVfxLoader.cpp",
+    "NvidiaVfxSession.cpp",
+    "VideoSuperResolutionCapability.cpp",
+    "VideoSuperResolutionCoordinator.cpp",
+    "VideoSuperResolutionOwnerPolicy.cpp",
+    "VideoSuperResolutionScalePolicy.cpp",
+    "VideoSuperResolutionTexturePool.cpp",
+]
+
+LOCAL_INCLUDES += [
+    "/gfx/gl",
+    "/gfx/layers",
+    "/gfx/webrender_bindings",
+    "/widget/gtk",
+]
+
+include("/ipc/chromium/chromium-config.mozbuild")
+
+FINAL_LIBRARY = "xul"

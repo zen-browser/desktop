@@ -1,0 +1,38 @@
+diff --git a/gfx/webrender_bindings/RendererOGL.cpp b/gfx/webrender_bindings/RendererOGL.cpp
+index bdc8146983a873ebefdc8b0efc0e8985fe7a601a..2a3bc8799d48439a2f622f3ddaa35948a2a30253 100644
+--- a/gfx/webrender_bindings/RendererOGL.cpp
++++ b/gfx/webrender_bindings/RendererOGL.cpp
+@@ -19,6 +19,10 @@
+ #include "mozilla/webrender/RenderCompositor.h"
+ #include "mozilla/webrender/RenderTextureHost.h"
+ #include "mozilla/widget/CompositorWidget.h"
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++#include "mozilla/layers/AsyncImagePipelineManager.h"
++#include "mozilla/zen/VideoSuperResolutionTexturePool.h"
++#endif
+ 
+ #ifdef MOZ_WIDGET_ANDROID
+ #  include "GLContextEGL.h"
+@@ -137,13 +141,21 @@ RendererOGL::~RendererOGL() {
+     mPendingScreenPixelsRequest->mPromise->Reject(NS_ERROR_ABORT, __func__);
+   }
+ #endif
+-  if (!mCompositor->MakeCurrent()) {
++  const bool glCurrent = mCompositor->MakeCurrent();
++  if (!glCurrent) {
+     gfxCriticalNote
+         << "Failed to make render context current during destroying.";
+     // Leak resources!
+   } else {
+     wr_renderer_delete(mRenderer);
+   }
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++  if (RefPtr<layers::AsyncImagePipelineManager> manager =
++          mBridge->GetAsyncImagePipelineManager()) {
++    zen::VideoSuperResolutionTexturePool::Get().OnRendererDestroyed(
++        manager->GetIdNamespaceHandle(), glCurrent ? mCompositor->gl() : nullptr);
++  }
++#endif
+ }
+ 
+ wr::WrExternalImageHandler RendererOGL::GetExternalImageHandler() {

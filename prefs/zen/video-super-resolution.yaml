@@ -1,0 +1,28 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+- name: zen.video.super-resolution.enabled
+  value: false
+  condition: "defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)"
+  mirror: always
+  cpptype: RelaxedAtomicBool
+  type: static
+- name: zen.video.super-resolution.scale-mode
+  value: 0
+  condition: "defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)"
+  mirror: always
+  cpptype: RelaxedAtomicUint32
+  type: static
+- name: zen.video.super-resolution.scale
+  value: 200
+  condition: "defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)"
+  mirror: always
+  cpptype: RelaxedAtomicUint32
+  type: static
+- name: zen.video.super-resolution.quality
+  value: 3
+  condition: "defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)"
+  mirror: always
+  cpptype: RelaxedAtomicUint32
+  type: static

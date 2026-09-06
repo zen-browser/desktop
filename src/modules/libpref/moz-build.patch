@@ -1,8 +1,8 @@
 diff --git a/modules/libpref/moz.build b/modules/libpref/moz.build
-index fa05921295e8f028c4893c3cc224415d1251b877..acfcecaf6b0ae5f0aef5b540d9e60a3f5ffd02f4 100644
+index 2c8b218c618f8fa73ab4b21f4155d5f063bc1bb4..e8b525665d41e10309b4bb1779547d4b47e08f90 100644
 --- a/modules/libpref/moz.build
 +++ b/modules/libpref/moz.build
-@@ -91,6 +91,7 @@ pref_groups = [
+@@ -90,6 +90,7 @@ pref_groups = [
      "view_source",
      "webgl",
      "widget",
@@ -10,3 +10,13 @@ index fa05921295e8f028c4893c3cc224415d1251b877..acfcecaf6b0ae5f0aef5b540d9e60a3f
      "zoom",
  ]
  if CONFIG["OS_TARGET"] == "Android":
+@@ -140,8 +141,8 @@ GeneratedFile(
+     script="init/generate_static_pref_list.py",
+     entry_point="emit_code",
+     inputs=gen_inputs,
++    extra_deps=["init/zen-static-prefs.inc"],
+ )
+-
+ PYTHON_UNITTEST_MANIFESTS += [
+     "test/python.toml",
+ ]

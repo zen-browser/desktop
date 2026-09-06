@@ -1,0 +1,15 @@
+diff --git a/gfx/layers/opengl/DMABUFTextureHostOGL.h b/gfx/layers/opengl/DMABUFTextureHostOGL.h
+index c4f95d6317b006ef712d367d6f0e7ec06266ca09..646bffd946bda51aee5a60de47a16b38f65e5693 100644
+--- a/gfx/layers/opengl/DMABUFTextureHostOGL.h
++++ b/gfx/layers/opengl/DMABUFTextureHostOGL.h
+@@ -44,6 +44,10 @@ class DMABUFTextureHostOGL : public TextureHost {
+   gfx::ColorRange GetColorRange() const override;
+   gfx::TransferFunction GetTransferFunction() const override;
+ 
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++  uint64_t GetVideoSourceIdentity() const override;
++#endif
++
+   void CreateRenderTexture(
+       const wr::ExternalImageId& aExternalImageId) override;
+ 

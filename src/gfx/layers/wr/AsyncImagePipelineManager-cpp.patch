@@ -1,0 +1,347 @@
+diff --git a/gfx/layers/wr/AsyncImagePipelineManager.cpp b/gfx/layers/wr/AsyncImagePipelineManager.cpp
+index 48819d982fae25c959e7a08dff56fae8998b997e..b8410a7989010bc4a58b8f6ac85f0591ffcaa5d2 100644
+--- a/gfx/layers/wr/AsyncImagePipelineManager.cpp
++++ b/gfx/layers/wr/AsyncImagePipelineManager.cpp
+@@ -21,10 +21,15 @@
+ #include "mozilla/webrender/RenderThread.h"
+ #include "mozilla/webrender/WebRenderAPI.h"
+ #include "mozilla/webrender/WebRenderTypes.h"
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++#include "mozilla/zen/VideoSuperResolutionCoordinator.h"
++#include "mozilla/zen/VideoSuperResolutionProfiler.h"
++#include "mozilla/zen/VideoSuperResolutionScalePolicy.h"
++#include "mozilla/zen/VideoSuperResolutionTexturePool.h"
++#endif
+ 
+ namespace mozilla {
+ namespace layers {
+-
+ AsyncImagePipelineManager::ForwardingExternalImage::~ForwardingExternalImage() {
+   DebugOnly<bool> released = SharedSurfacesParent::Release(mImageId);
+   MOZ_ASSERT(released);
+@@ -195,6 +200,13 @@ void AsyncImagePipelineManager::RemoveAsyncImagePipeline(
+     for (wr::ImageKey key : holder->mKeys) {
+       aTxn.DeleteImage(key);
+     }
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++    if (holder->mSuperResolutionKey.isSome()) {
++      aTxn.DeleteImage(holder->mSuperResolutionKey.ref());
++    }
++    zen::VideoSuperResolutionCoordinator::Get().InvalidatePipeline(id);
++    zen::VideoSuperResolutionTexturePool::Get().ReleasePipeline(id, epoch.mHandle);
++#endif
+     entry.Remove();
+     RemovePipeline(aPipelineId, epoch);
+   }
+@@ -216,6 +228,36 @@ void AsyncImagePipelineManager::UpdateAsyncImagePipeline(
+   pipeline->Update(aScBounds, aRotation, aFilter, aMixBlendMode);
+ }
+ 
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++bool AsyncImagePipelineManager::EnsureSuperResolutionKey(
++    AsyncImagePipeline* aPipeline, wr::TransactionBuilder& aSceneBuilderTxn,
++    bool aActive, uint64_t aPipelineId) {
++  if (!aActive ||
++      !zen::VideoSuperResolutionTexturePool::Get().EnsureInitialized()) {
++    if (aPipeline->mSuperResolutionKey.isSome()) {
++      aSceneBuilderTxn.DeleteImage(aPipeline->mSuperResolutionKey.ref());
++      aPipeline->mSuperResolutionKey.reset();
++    }
++    return false;
++  }
++  const bool isAdd = aPipeline->mSuperResolutionKey.isNothing();
++  if (isAdd) {
++    aPipeline->mSuperResolutionKey = Some(GenerateImageKey());
++  }
++  if (!zen::VideoSuperResolutionTexturePool::Get().EnsureKeyResource(
++          aSceneBuilderTxn, isAdd, aPipeline->mSuperResolutionKey.ref(), aPipelineId)) {
++    if (isAdd) {
++      aPipeline->mSuperResolutionKey.reset();
++    } else {
++      aSceneBuilderTxn.DeleteImage(aPipeline->mSuperResolutionKey.ref());
++      aPipeline->mSuperResolutionKey.reset();
++    }
++    return false;
++  }
++  return !isAdd;
++}
++#endif
++
+ Maybe<TextureHost::ResourceUpdateOp> AsyncImagePipelineManager::UpdateImageKeys(
+     const wr::Epoch& aEpoch, const wr::PipelineId& aPipelineId,
+     AsyncImagePipeline* aPipeline, TextureHost* aTexture,
+@@ -432,9 +474,145 @@ void AsyncImagePipelineManager::ApplyAsyncImageForPipeline(
+   auto op = UpdateImageKeys(aEpoch, aPipelineId, aPipeline, aTexture, keys,
+                             aSceneBuilderTxn, aMaybeFastTxn);
+ 
++  bool superResolutionSelected = false;
++  bool forceTextured = false;
++  bool superResolutionChanged = false;
++  bool directCompositionChanged = false;
++
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++  bool wantSuperResolution = false;
++  bool superResolutionFailed = false;
++  zen::SuperResolutionFrameToken currentToken;
++  const uint64_t pipelineId = wr::AsUint64(aPipelineId);
++  auto& superResolutionPool = zen::VideoSuperResolutionTexturePool::Get();
++  const bool superResolutionEnabled = superResolutionPool.VfxEnabled();
++  uint64_t configGen = 0;
++  if (superResolutionEnabled && aPipeline->mUseExternalImage && aTexture &&
++      aTexture->GetFormat() == gfx::SurfaceFormat::NV12 &&
++      aTexture->GetColorRange() == gfx::ColorRange::LIMITED &&
++      aTexture->GetTransferFunction() == gfx::TransferFunction::BT709) {
++    configGen = zen::VideoSuperResolutionCoordinator::Get().SyncConfigFromPrefs();
++    const bool isHardware =
++        aSceneBuilderTxn.GetCapabilities().mBackendType !=
++        WebRenderBackend::SOFTWARE;
++    wantSuperResolution = superResolutionPool.ShouldActivate(isHardware);
++    if (wantSuperResolution &&
++        superResolutionPool.HasFailed()) {
++      wantSuperResolution = false;
++      superResolutionFailed = true;
++    }
++    if (wantSuperResolution) {
++      uint32_t producer = 0;
++      int32_t frame = 0;
++      if (aTexture->GetVideoFrameIdentity(&producer, &frame)) {
++        const gfx::IntSize size = aTexture->GetSize();
++        const auto targetDecision =
++            zen::VideoSuperResolutionScalePolicy::EvaluateTarget(
++                size, aPipeline->mScBounds.Width(),
++                aPipeline->mScBounds.Height());
++
++        if (targetDecision.eligible &&
++            superResolutionPool.CanClaimOwner(
++                pipelineId, aPipeline->mScBounds.Width(),
++                aPipeline->mScBounds.Height())) {
++          currentToken.producer = producer;
++          currentToken.frame = frame;
++          currentToken.sessionGeneration =
++              superResolutionPool.GetSessionGeneration();
++          currentToken.configGeneration = configGen;
++          currentToken.contextGeneration =
++              superResolutionPool.GetContextGeneration(
++                  pipelineId);
++          currentToken.sourceWidth = size.width;
++          currentToken.sourceHeight = size.height;
++          currentToken.outputWidth = targetDecision.outputWidth;
++          currentToken.outputHeight = targetDecision.outputHeight;
++          zen::VideoSuperResolutionCoordinator::Get().NoteSelected(
++              wr::AsUint64(aPipelineId), currentToken);
++          superResolutionPool.BindPipelineImageHost(
++              wr::AsUint64(aPipelineId), aPipeline->mImageHost,
++              mIdNamespace.mHandle);
++        } else {
++          wantSuperResolution = false;
++        }
++      } else {
++        wantSuperResolution = false;
++      }
++    }
++  }
++  if (wantSuperResolution) {
++    superResolutionPool.EnsureInitialized();
++    superResolutionPool.RequestSnapshot(
++        currentToken, pipelineId,
++        aPipeline->mCurrentTexture->GetVideoSourceIdentity());
++  } else if (superResolutionEnabled || aPipeline->mSuperResolutionActive ||
++             aPipeline->mSuperResolutionForceTextured ||
++             aPipeline->mSuperResolutionKey.isSome()) {
++    zen::VideoSuperResolutionCoordinator::Get().InvalidatePipeline(pipelineId);
++    superResolutionPool.ReleasePipeline(pipelineId, aEpoch.mHandle);
++  }
++  zen::SuperResolutionFrameToken matchedToken;
++  const bool tokenMatched =
++      wantSuperResolution &&
++      zen::VideoSuperResolutionCoordinator::Get().LookupReady(
++          pipelineId, currentToken, &matchedToken);
++  int slot = -1;
++  if (tokenMatched &&
++      zen::VideoSuperResolutionTexturePool::Get().EnsureInitialized()) {
++    slot = zen::VideoSuperResolutionTexturePool::Get().FindReadySlot(
++        matchedToken, mIdNamespace.mHandle);
++  }
++  const bool published =
++      slot >= 0 &&
++      zen::VideoSuperResolutionTexturePool::Get().Publish(
++          pipelineId, slot, matchedToken, nullptr);
++  const bool wasActiveBefore = aPipeline->mSuperResolutionActive;
++  zen::SuperResolutionFrameToken heldToken;
++  const bool held =
++      !published && wantSuperResolution && wasActiveBefore &&
++      zen::VideoSuperResolutionTexturePool::Get().TryHoldPublished(
++          pipelineId, currentToken, &heldToken);
++  const bool wantSelected = published || held;
++  superResolutionSelected = EnsureSuperResolutionKey(
++      aPipeline, aSceneBuilderTxn, wantSelected, pipelineId);
++  superResolutionChanged = superResolutionSelected != wasActiveBefore;
++  aPipeline->mSuperResolutionActive = superResolutionSelected;
++  if (superResolutionSelected && published) {
++    zen::VideoSuperResolutionCoordinator::Get().NotePresented(pipelineId,
++                                                              matchedToken);
++  } else if (superResolutionSelected && held) {
++    zen::VideoSuperResolutionCoordinator::Get().NotePresented(pipelineId,
++                                                              heldToken);
++  }
++  if (!wantSelected) {
++    zen::VideoSuperResolutionTexturePool::Get().Unpublish(pipelineId);
++  }
++
++  forceTextured = wantSuperResolution;
++  directCompositionChanged =
++      forceTextured != aPipeline->mSuperResolutionForceTextured;
++  MOZ_ASSERT(!superResolutionSelected || wantSuperResolution);
++  MOZ_ASSERT(!superResolutionSelected || aPipeline->mSuperResolutionKey.isSome());
++  if (superResolutionChanged || directCompositionChanged) {
++    const zen::SuperResolutionCompositionReason transition =
++        superResolutionSelected
++            ? zen::SuperResolutionCompositionReason::OwnerActivated
++            : !wantSuperResolution
++                  ? (superResolutionFailed
++                         ? zen::SuperResolutionCompositionReason::Failure
++                         : zen::SuperResolutionCompositionReason::OwnerLost)
++                  : zen::SuperResolutionCompositionReason::OwnerSelected;
++    const char* reasonStr =
++        zen::SuperResolutionCompositionReasonToString(transition);
++    zen::MarkComposition(pipelineId, superResolutionSelected, reasonStr);
++  }
++
++#endif
++
+   bool updateDisplayList =
+       aPipeline->mInitialised &&
+-      (aPipeline->mIsChanged || op == Some(TextureHost::ADD_IMAGE)) &&
++      (aPipeline->mIsChanged || op == Some(TextureHost::ADD_IMAGE) ||
++       superResolutionChanged || directCompositionChanged) &&
+       !!aPipeline->mCurrentTexture;
+ 
+   if (!updateDisplayList) {
+@@ -445,6 +623,11 @@ void AsyncImagePipelineManager::ApplyAsyncImageForPipeline(
+     // Use transaction of scene builder thread to notify epoch.
+     // It is for making epoch update consistent.
+     aSceneBuilderTxn.UpdateEpoch(aPipelineId, aEpoch);
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++    zen::VideoSuperResolutionTexturePool::Get().NoteTransaction(
++        pipelineId, aEpoch.mHandle);
++    zen::VideoSuperResolutionTexturePool::Get().NotePipelineComposite(pipelineId);
++#endif
+     if (aPipeline->mCurrentTexture) {
+       HoldExternalImage(aPipelineId, aEpoch, aPipeline->mCurrentTexture);
+     }
+@@ -453,6 +636,9 @@ void AsyncImagePipelineManager::ApplyAsyncImageForPipeline(
+ 
+   aPipeline->mIsChanged = false;
+   // A single image at integral coordinates: no normalization to be exact about.
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++  aPipeline->mSuperResolutionForceTextured = forceTextured;
++#endif
+   aPipeline->mDLBuilder.Begin(AppUnitsPerCSSPixel());
+ 
+   float opacity = 1.0f;
+@@ -462,7 +648,8 @@ void AsyncImagePipelineManager::ApplyAsyncImageForPipeline(
+ 
+   wr::WrComputedTransformData computedTransform;
+   computedTransform.vertical_flip =
+-      aPipeline->mCurrentTexture && aPipeline->mCurrentTexture->NeedsYFlip();
++      !superResolutionSelected && aPipeline->mCurrentTexture &&
++      aPipeline->mCurrentTexture->NeedsYFlip();
+   computedTransform.scale_from = {
+       float(aPipeline->mCurrentTexture->GetSize().width),
+       float(aPipeline->mCurrentTexture->GetSize().height)};
+@@ -488,6 +675,40 @@ void AsyncImagePipelineManager::ApplyAsyncImageForPipeline(
+ 
+     if (aPipeline->mUseExternalImage) {
+       MOZ_ASSERT(aPipeline->mCurrentTexture->AsWebRenderTextureHost());
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++      if (superResolutionSelected && aPipeline->mSuperResolutionKey.isSome()) {
++        const wr::LayoutRect bounds = wr::ToLayoutRect(rect);
++        aPipeline->mDLBuilder.PushImage(
++            bounds, bounds, true, false, aPipeline->mFilter,
++            aPipeline->mSuperResolutionKey.ref(), true,
++            wr::ColorF{1.0f, 1.0f, 1.0f, 1.0f}, false, false);
++        HoldExternalImage(aPipelineId, aEpoch, aPipeline->mCurrentTexture);
++      } else {
++        Range<wr::ImageKey> range_keys(&keys[0], keys.Length());
++        TextureHost::PushDisplayItemFlagSet flags;
++        if (!forceTextured) {
++          flags += TextureHost::PushDisplayItemFlag::PREFER_COMPOSITOR_SURFACE;
++        }
++        if (forceTextured) {
++          flags +=
++              TextureHost::PushDisplayItemFlag::EXTERNAL_COMPOSITING_DISABLED;
++        }
++        if (aPipeline->mVideoOverlayDisabled &&
++            aPipeline->mDLBuilder.GetBackendType() !=
++                WebRenderBackend::SOFTWARE) {
++          flags +=
++              TextureHost::PushDisplayItemFlag::EXTERNAL_COMPOSITING_DISABLED;
++        }
++        if (mApi->GetCapabilities().mSupportsExternalBufferTextures) {
++          flags += TextureHost::PushDisplayItemFlag::
++              SUPPORTS_EXTERNAL_BUFFER_TEXTURES;
++        }
++        aPipeline->mCurrentTexture->PushDisplayItems(
++            aPipeline->mDLBuilder, wr::ToLayoutRect(rect),
++            wr::ToLayoutRect(rect), aPipeline->mFilter, range_keys, flags);
++        HoldExternalImage(aPipelineId, aEpoch, aPipeline->mCurrentTexture);
++      }
++#else
+       Range<wr::ImageKey> range_keys(&keys[0], keys.Length());
+       TextureHost::PushDisplayItemFlagSet flags;
+       flags += TextureHost::PushDisplayItemFlag::PREFER_COMPOSITOR_SURFACE;
+@@ -505,6 +726,7 @@ void AsyncImagePipelineManager::ApplyAsyncImageForPipeline(
+           aPipeline->mDLBuilder, wr::ToLayoutRect(rect), wr::ToLayoutRect(rect),
+           aPipeline->mFilter, range_keys, flags);
+       HoldExternalImage(aPipelineId, aEpoch, aPipeline->mCurrentTexture);
++#endif
+     } else {
+       MOZ_ASSERT(keys.Length() == 1);
+       aPipeline->mDLBuilder.PushImage(wr::ToLayoutRect(rect),
+@@ -521,6 +743,11 @@ void AsyncImagePipelineManager::ApplyAsyncImageForPipeline(
+ 
+   aSceneBuilderTxn.SetDisplayList(aEpoch, mIdNamespace, aPipelineId, dl.dl_desc,
+                                   dl.dl_items, dl.dl_spatial_tree);
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++  zen::VideoSuperResolutionTexturePool::Get().NoteTransaction(
++      pipelineId, aEpoch.mHandle);
++  zen::VideoSuperResolutionTexturePool::Get().NotePipelineComposite(pipelineId);
++#endif
+ }
+ 
+ void AsyncImagePipelineManager::ApplyAsyncImageForPipeline(
+@@ -671,6 +898,10 @@ void AsyncImagePipelineManager::NotifyPipelinesUpdated(
+   MOZ_ASSERT(aLatestFrameId.IsValid());
+ 
+   mLastCompletedFrameId = aLastCompletedFrameId.mId;
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++  zen::VideoSuperResolutionTexturePool::Get().NoteCompletedRender(
++      mIdNamespace.mHandle, aLastCompletedFrameId.mId);
++#endif
+ 
+   {
+     // We need to lock for mRenderSubmittedUpdates because it can be accessed
+@@ -727,6 +958,11 @@ void AsyncImagePipelineManager::ProcessPipelineUpdates() {
+ void AsyncImagePipelineManager::ProcessPipelineRendered(
+     const wr::PipelineId& aPipelineId, const wr::Epoch& aEpoch,
+     wr::RenderedFrameId aRenderedFrameId) {
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++  zen::VideoSuperResolutionTexturePool::Get().NotePipelineRendered(
++      wr::AsUint64(aPipelineId), aEpoch.mHandle, aRenderedFrameId.mId,
++      mIdNamespace.mHandle, mLastCompletedFrameId);
++#endif
+   if (auto entry = mPipelineTexturesHolders.Lookup(wr::AsUint64(aPipelineId))) {
+     const auto& holder = entry.Data();
+     // For TextureHosts that can be released on render submission, using aEpoch
+@@ -796,6 +1032,11 @@ void AsyncImagePipelineManager::ProcessPipelineRendered(
+ void AsyncImagePipelineManager::ProcessPipelineRemoved(
+     const wr::RemovedPipeline& aRemovedPipeline,
+     wr::RenderedFrameId aRenderedFrameId) {
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++  zen::VideoSuperResolutionTexturePool::Get().NotePipelineRemoved(
++      wr::AsUint64(aRemovedPipeline.pipeline_id), aRenderedFrameId.mId,
++      mIdNamespace.mHandle, mLastCompletedFrameId);
++#endif
+   if (mDestroyed) {
+     return;
+   }

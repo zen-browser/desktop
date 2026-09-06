@@ -1,0 +1,17 @@
+diff --git a/gfx/layers/wr/WebRenderTextureHost.h b/gfx/layers/wr/WebRenderTextureHost.h
+index baaf5f4a09b0a05b0bd63c08724b57a1ccad6f08..ca26855938563515e5414f17c0106090daff5ee7 100644
+--- a/gfx/layers/wr/WebRenderTextureHost.h
++++ b/gfx/layers/wr/WebRenderTextureHost.h
+@@ -51,6 +51,12 @@ class WebRenderTextureHost final : public TextureHost {
+ 
+   bool NeedsYFlip() const override;
+ 
++#if defined(XP_LINUX) && defined(MOZ_WIDGET_GTK)
++  uint64_t GetVideoSourceIdentity() const override {
++    return mWrappedTextureHost->GetVideoSourceIdentity();
++  }
++#endif
++
+   gfx::IntSize GetSize() const override;
+ 
+ #ifdef MOZ_LAYERS_HAVE_LOG

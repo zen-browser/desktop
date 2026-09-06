@@ -183,6 +183,9 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
         case "context_zenFolderChangeIcon":
           this.changeFolderUserIcon(this.#lastFolderContextMenu);
           break;
+        case "context_zenShareFolder":
+          gZenShareManager.shareFolder(this.#lastFolderContextMenu);
+          break;
       }
     });
   }

@@ -514,30 +514,52 @@ class nsZenSpacesSyncModel {
     const map = new Map();
     const pending = new Set();
     const ctx = this.#projectionContext(sidebar);
-    const { tabs, folders, splits, splitParents, splitWs } = ctx;
+    const spaces = sidebar.spaces || [];
 
-    if (!lazy.syncNormalTabs) {
-      // Items excluded only by the normal-tabs option are held back, not
-      // deleted. Flipping the option off must not tombstone them remotely.
-      const held = new Set();
-      for (const tab of ctx.allTabs) {
-        if (this.#isTabRecordMaterial(tab) && !this.#isSyncableTab(tab)) {
-          held.add(tab.zenSyncId);
-          pending.add(tab.zenSyncId);
-        }
-      }
-      for (const split of sidebar.splitViewData || []) {
-        if (
-          split?.groupId &&
-          !ctx.splitIds.has(split.groupId) &&
-          Array.isArray(split.tabs) &&
-          split.tabs.some(id => held.has(id))
-        ) {
-          pending.add(split.groupId);
-        }
+    this.#collectHeldIds(ctx, sidebar, pending);
+    this.#projectContainers(map);
+    this.#projectSpaces(map, ctx, spaces);
+    this.#projectFolders(map, ctx, pending);
+    this.#projectTabs(map, ctx);
+    this.#projectSplits(map, ctx);
+    this.#projectLayout(map, ctx, spaces);
+
+    this.#cache = { stamp, map, pending };
+    return map;
+  }
+
+  /**
+   * Items excluded only by the normal-tabs option are held back, not
+   * deleted. Flipping the option off must not tombstone them remotely.
+   *
+   * @param {object} ctx - The projection context.
+   * @param {object} sidebar - The collected sidebar data.
+   * @param {Set<string>} pending - Receives the held-back ids.
+   */
+  #collectHeldIds(ctx, sidebar, pending) {
+    if (lazy.syncNormalTabs) {
+      return;
+    }
+    const held = new Set();
+    for (const tab of ctx.allTabs) {
+      if (this.#isTabRecordMaterial(tab) && !this.#isSyncableTab(tab)) {
+        held.add(tab.zenSyncId);
+        pending.add(tab.zenSyncId);
       }
     }
+    for (const split of sidebar.splitViewData || []) {
+      if (
+        split?.groupId &&
+        !ctx.splitIds.has(split.groupId) &&
+        Array.isArray(split.tabs) &&
+        split.tabs.some(id => held.has(id))
+      ) {
+        pending.add(split.groupId);
+      }
+    }
+  }
 
+  #projectContainers(map) {
     for (const identity of lazy.ContextualIdentityService.getPublicIdentities()) {
       if (!identity.name) {
         continue;
@@ -558,8 +580,9 @@ class nsZenSpacesSyncModel {
         },
       });
     }
+  }
 
-    const spaces = sidebar.spaces || [];
+  #projectSpaces(map, ctx, spaces) {
     for (const space of spaces) {
       if (!space?.uuid) {
         continue;
@@ -579,8 +602,10 @@ class nsZenSpacesSyncModel {
         },
       });
     }
+  }
 
-    for (const folder of folders) {
+  #projectFolders(map, ctx, pending) {
+    for (const folder of ctx.folders) {
       const fid = folder.id;
       let live = null;
       if (folder.isLiveFolder) {
@@ -607,11 +632,11 @@ class nsZenSpacesSyncModel {
         },
       });
     }
+  }
 
-    this.#projectTabs(map, ctx);
-
-    const tabById = new Map(tabs.map(t => [t.zenSyncId, t]));
-    for (const split of splits) {
+  #projectSplits(map, ctx) {
+    const tabById = new Map(ctx.tabs.map(t => [t.zenSyncId, t]));
+    for (const split of ctx.splits) {
       const member = tabById.get(split.tabs[0]);
       map.set(split.groupId, {
         kind: RECORD_KINDS.SPLIT,
@@ -620,34 +645,33 @@ class nsZenSpacesSyncModel {
           gridType: split.gridType || "grid",
           pinned: !!(member?.pinned || member?.zenEssential),
           tabs: [...split.tabs],
-          workspaceUuid: splitWs.get(split.groupId) ?? null,
-          folderId: splitParents.get(split.groupId) || null,
+          workspaceUuid: ctx.splitWs.get(split.groupId) ?? null,
+          folderId: ctx.splitParents.get(split.groupId) || null,
         },
       });
     }
+  }
 
-    if (spaces.length) {
-      const essentials = {};
-      for (const tab of tabs) {
-        if (!tab.zenEssential) {
-          continue;
-        }
-        const key =
-          this.guidForContextId(tab.userContextId, { create: true }) ||
-          "default";
-        (essentials[key] ||= []).push(tab.zenSyncId);
+  #projectLayout(map, ctx, spaces) {
+    if (!spaces.length) {
+      return;
+    }
+    const essentials = {};
+    for (const tab of ctx.tabs) {
+      if (!tab.zenEssential) {
+        continue;
       }
-      map.set(LAYOUT_RECORD_ID, {
-        kind: RECORD_KINDS.LAYOUT,
-        data: {
-          spaces: spaces.map(s => s.uuid).filter(Boolean),
-          essentials,
-        },
-      });
+      const key =
+        this.guidForContextId(tab.userContextId, { create: true }) || "default";
+      (essentials[key] ||= []).push(tab.zenSyncId);
     }
-
-    this.#cache = { stamp, map, pending };
-    return map;
+    map.set(LAYOUT_RECORD_ID, {
+      kind: RECORD_KINDS.LAYOUT,
+      data: {
+        spaces: spaces.map(s => s.uuid).filter(Boolean),
+        essentials,
+      },
+    });
   }
 
   /**

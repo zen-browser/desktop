@@ -40,14 +40,7 @@
 }
 
 #zen-welcome {
-  --zen-welcome-accent: light-dark(
-    oklch(from var(--zen-primary-color) clamp(0.35, l, 0.6) c h),
-    oklch(from var(--zen-primary-color) clamp(0.7, l, 0.85) c h)
-  );
-  --zen-welcome-accent-button: light-dark(
-    oklch(from var(--zen-primary-color) clamp(0.35, l, 0.6) c h),
-    oklch(from var(--zen-primary-color) clamp(0.55, l, 0.7) c h)
-  );
+  --zen-welcome-accent: var(--zen-accent-button-color);
   --zen-welcome-sidebar-bg: light-dark(#ffffff, #1c1c1e);
   --zen-welcome-content-bg: light-dark(#f6f6f8f5, #2b2b30ed);
   --zen-welcome-surface-bg: light-dark(#ffffff, #1c1c1e);
@@ -60,39 +53,6 @@
     rgba(0, 0, 0, 0.6),
     rgba(255, 255, 255, 0.6)
   );
-}
-
-.zen-welcome-button {
-  appearance: none;
-  border: none;
-  border-radius: 12px;
-  padding: 1.2rem 1rem;
-  background: transparent;
-  color: var(--zen-welcome-accent);
-  font: inherit;
-  font-size: 1.2rem;
-  font-weight: 600;
-  cursor: pointer;
-  will-change: transform;
-  transition: scale 0.15s ease-out;
-
-  &:hover {
-    scale: 1.03;
-    filter: brightness(1.1);
-  }
-
-  &:active {
-    scale: 1;
-  }
-
-  &.primary {
-    background: var(--zen-welcome-accent-button);
-    color: white;
-
-    &:hover {
-      filter: brightness(1.1);
-    }
-  }
 }
 
 #zen-welcome-start {

@@ -329,7 +329,6 @@ zen-workspace {
     color-mix(in srgb, rgba(255, 255, 255, 0.18) 95%, var(--zen-primary-color))
   ) !important;
   --tab-box-shadow-selected: 0 0.8px 1.5px 0px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.05)) !important;
-  --tab-selected-textcolor: color-mix(in srgb, var(--toolbox-textcolor) 95%, var(--zen-primary-color)) !important;
 
   @media not (prefers-reduced-motion: reduce) {
     transition: padding-top 0.1s;

@@ -68,6 +68,10 @@ zen-settings-workspaces-sync =
     .label = Sync your sidebar across devices
     .description = Keep your workspaces, pinned tabs and folders in sync on all your devices through your Mozilla account.
 
+zen-settings-normal-tabs-sync =
+    .label = Include unpinned tabs
+    .description = Also sync the regular tabs of each space, not just your pinned tabs and folders.
+
 zen-settings-workspaces-sync-unpinned-tabs =
     .label = Sync only pinned tabs in workspaces
 

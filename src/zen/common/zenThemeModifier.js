@@ -125,7 +125,7 @@
           // Windows defaults to 8px
           document.documentElement.style.setProperty(
             "--zen-border-radius",
-            "8px"
+            "9px"
           );
         }
       } else {

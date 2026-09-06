@@ -1,7 +1,8 @@
 diff --git a/toolkit/modules/subprocess/subprocess_unix.sys.mjs b/toolkit/modules/subprocess/subprocess_unix.sys.mjs
+index f4c7f1bd3eb097c8261cdc65a2eb15d651389edd..1606d4d4fb352ef1e6e5234d1bc95b56734caec4 100644
 --- a/toolkit/modules/subprocess/subprocess_unix.sys.mjs
 +++ b/toolkit/modules/subprocess/subprocess_unix.sys.mjs
-@@ -36,9 +36,9 @@
+@@ -36,9 +36,9 @@ class UnixPromiseWorker extends PromiseWorker {
  
      this.signalFd = fds[1];
  

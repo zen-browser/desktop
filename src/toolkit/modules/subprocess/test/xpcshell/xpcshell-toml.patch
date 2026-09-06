@@ -1,7 +1,8 @@
 diff --git a/toolkit/modules/subprocess/test/xpcshell/xpcshell.toml b/toolkit/modules/subprocess/test/xpcshell/xpcshell.toml
+index 9249030461ca0981b392e3bd9408db313bc4a406..ef901f4ea1191aba9e1fa7e2606181033175226b 100644
 --- a/toolkit/modules/subprocess/test/xpcshell/xpcshell.toml
 +++ b/toolkit/modules/subprocess/test/xpcshell/xpcshell.toml
-@@ -27,4 +27,7 @@
+@@ -27,4 +27,7 @@ skip-if = [
  ["test_subprocess_perf.js"]
  requesttimeoutfactor = 2  # Slow on Windows
  

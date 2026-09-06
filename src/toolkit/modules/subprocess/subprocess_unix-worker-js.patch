@@ -1,7 +1,8 @@
 diff --git a/toolkit/modules/subprocess/subprocess_unix.worker.js b/toolkit/modules/subprocess/subprocess_unix.worker.js
+index 5aa734cf876267c3b8506ff58f7ae2311172801a..6cf9e0a8ecce85b4b5f2014ae9fe61f9e87d5240 100644
 --- a/toolkit/modules/subprocess/subprocess_unix.worker.js
 +++ b/toolkit/modules/subprocess/subprocess_unix.worker.js
-@@ -351,9 +351,9 @@
+@@ -351,9 +351,9 @@ class Process extends BaseProcess {
          our_pipes.push(new OutputPipe(this, fds[1]));
        }
  

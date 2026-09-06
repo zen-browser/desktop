@@ -1,7 +1,8 @@
 diff --git a/toolkit/modules/subprocess/subprocess_shared_unix.js b/toolkit/modules/subprocess/subprocess_shared_unix.js
+index afa2b92eee680d9e2deb44a805904dccd85fb526..2900bf133987728a73db75a0704f9e77fc6b3494 100644
 --- a/toolkit/modules/subprocess/subprocess_shared_unix.js
 +++ b/toolkit/modules/subprocess/subprocess_shared_unix.js
-@@ -54,12 +54,13 @@
+@@ -54,12 +54,13 @@ var libc = new Library("libc", LIBC_CHOICES, {
  
    dup: [ctypes.default_abi, ctypes.int, ctypes.int],
  

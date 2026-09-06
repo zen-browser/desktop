@@ -281,8 +281,8 @@
       for (const button of this.currentPage.buttons) {
         const element = document.createElement("button");
         element.className = button.primary
-          ? "zen-welcome-button primary"
-          : "zen-welcome-button";
+          ? "zen-big-accent-button primary"
+          : "zen-big-accent-button";
         document.l10n.setAttributes(element, button.l10n);
         element.addEventListener("click", () => {
           if (button.onclick?.(this) !== false) {

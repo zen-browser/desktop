@@ -22,19 +22,8 @@
       "oneOf": [
         { "$ref": "#/$defs/space" },
         { "$ref": "#/$defs/folder" },
-        { "$ref": "#/$defs/splitView" },
-        { "$ref": "#/$defs/gradientPreset" }
+        { "$ref": "#/$defs/splitView" }
       ]
-    },
-
-    "gradientPreset": {
-      "type": "object",
-      "properties": {
-        "type": { "const": "gradientPreset" },
-        "theme": { "$ref": "#/$defs/theme" }
-      },
-      "required": ["type", "theme"],
-      "additionalProperties": false
     },
 
     "space": {
@@ -144,11 +133,19 @@
     },
 
     "spaceItem": {
-      "oneOf": [{ "$ref": "#/$defs/tab" }, { "$ref": "#/$defs/folder" }]
+      "oneOf": [
+        { "$ref": "#/$defs/tab" },
+        { "$ref": "#/$defs/folder" },
+        { "$ref": "#/$defs/splitView" }
+      ]
     },
 
     "folderItem": {
-      "oneOf": [{ "$ref": "#/$defs/tab" }, { "$ref": "#/$defs/folder" }]
+      "oneOf": [
+        { "$ref": "#/$defs/tab" },
+        { "$ref": "#/$defs/folder" },
+        { "$ref": "#/$defs/splitView" }
+      ]
     }
   }
 }

@@ -1612,6 +1612,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       );
     }
 
+    this.applyGridLayout(splitData.layoutTree);
+
     // Apply grid to tabs first to set zen-split attribute on containers
     // before setting zen-split-view on parents. This prevents the black flash
     // caused by CSS rules that hide containers without zen-split attribute
@@ -1623,7 +1625,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       .getElementById("tabbrowser-tabbox")
       .setAttribute("zen-split-view", "true");
 
-    this.applyGridLayout(splitData.layoutTree);
     this.setTabsDocShellState(splitData.tabs, true);
     this.toggleWrapperDisplay(true);
     window.dispatchEvent(new CustomEvent("ZenViewSplitter:SplitViewActivated"));
@@ -1723,6 +1724,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
   /**
    * Apply grid layout to tabBrowserPanel
+   *
+   * This should be invoked before {@link nsZenViewSplitter#applyGridToTabs} to
+   * make sure all tabs are in the correct position before they are shown.
    *
    * @param {nsSplitNode} splitNode nsSplitNode
    */

@@ -2526,9 +2526,13 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     try {
       return callback();
     } finally {
+      // Flush the new geometry now. Otherwise, because requestAnimationFrame
+      // runs before style computations, the zen-split-view-no-transition class
+      // is never even seen and we get a transition anyway.
+      this.tabBrowserPanel.getBoundingClientRect();
       requestAnimationFrame(() => {
         this.tabBrowserPanel.classList.remove("zen-split-view-no-transition");
-      }, 0);
+      });
     }
   }
 

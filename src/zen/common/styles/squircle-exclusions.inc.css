@@ -1,0 +1,31 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+/* Upstream elements that take their radius from --border-radius-circle (9999px).
+   They are meant to read as circles or pills, so a superellipse only makes them
+   look lumpy. */
+.tab-icon-overlay:not([crashed]):is([soundplaying], [muted], [activemedia-blocked]),
+.tab-note-icon-overlay,
+.tab-group-overflow-count,
+.tab-group-editor-swatch,
+.tab-preview-container-indicator,
+#tabbrowser-tabs[orient='vertical']:not([expanded]) .tab-close-button,
+.all-tabs-item > toolbarbutton.all-tabs-container-indicator::before,
+.urlbarView-button,
+.downloadButton,
+#downloads-indicator-progress-inner,
+#smartwindow-ask-button-inner,
+#PanelUI-fxa-menu-manage-account-button,
+.fxa-menu-manage-account-avatar,
+[fxastatus='signedin'] #fxa-avatar-image,
+#profile-icon-image,
+.appMenu-update-banner-pulse-ring,
+:is(#appMenu-zoomReduce-button2, #appMenu-zoomEnlarge-button2) > .toolbarbutton-icon,
+.color-swatches .userContext-icon,
+.reusable-relay-masks > button,
+.radio-check {
+  corner-shape: round;
+}

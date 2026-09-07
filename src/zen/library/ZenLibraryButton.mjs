@@ -13,18 +13,6 @@ class nsZenLibraryButton extends nsZenDOMOperatedFeature {
       return;
     }
 
-    this.#button.addEventListener("command", () => {
-      if (window.ZenLibrary?.toggle) {
-        window.ZenLibrary.toggle();
-        return;
-      }
-
-      const library = document.querySelector("zen-library");
-      if (library) {
-        library.toggleAttribute("open");
-      }
-    });
-
     this.#button.setAttribute("tooltiptext", "Library");
     this.#button.setAttribute("aria-label", "Library");
   }

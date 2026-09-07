@@ -3287,7 +3287,7 @@ class nsZenWorkspaces {
     if (!(!event || event.target === window)) {
       return;
     }
-    gZenUIManager.updateTabsToolbar();
+    gZenUIManager.updateTabsToolbar(!!event);
     // Check if workspace icons overflow the parent container
     let parent = this.workspaceIcons;
     if (!parent || this._processingResize) {

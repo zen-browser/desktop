@@ -32,9 +32,7 @@ zen-share-import-error-toast = Couldn't import this share
 zen-share-import-error-dead-description = The link has expired or doesn't exist
 zen-share-import-error-invalid-description = The shared data is invalid
 
-zen-share-confirm-window =
-    .title = Share with your buds
-zen-share-confirm-title = Share with your buds
+zen-share-confirm-title = Share link
 zen-share-confirm-dialog =
     .buttonlabelaccept = Share
 zen-share-confirm-description = Zen uploads a copy of these tabs to the share server and copies a link anyone can open. The link expires after 30 days.

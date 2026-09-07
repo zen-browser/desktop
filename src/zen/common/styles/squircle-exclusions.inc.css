@@ -16,6 +16,7 @@
 .all-tabs-item > toolbarbutton.all-tabs-container-indicator::before,
 .urlbarView-button,
 .downloadButton,
+.titlebar-button,
 #downloads-indicator-progress-inner,
 #smartwindow-ask-button-inner,
 #PanelUI-fxa-menu-manage-account-button,

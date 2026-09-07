@@ -38,9 +38,16 @@ var gZenMarketplaceManager = {
 
     this.__hasInitializedEvents = true;
 
-    await this._buildModsList();
-
     Services.prefs.addObserver(gZenMods.updatePref, this);
+    window.addEventListener(
+      "unload",
+      () => {
+        Services.prefs.removeObserver(gZenMods.updatePref, this);
+      },
+      { once: true }
+    );
+
+    await this._buildModsList();
 
     const checkForUpdateClick = (event) => {
       if (event.target === checkForUpdates) {
@@ -69,7 +76,6 @@ var gZenMarketplaceManager = {
     });
 
     window.addEventListener("unload", () => {
-      Services.prefs.removeObserver(gZenMods.updatePref, this);
       this.__hasInitializedEvents = false;
 
       document.removeEventListener("ZenModsMarketplace:CheckForUpdatesFinished", this);

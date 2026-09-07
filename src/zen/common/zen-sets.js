@@ -163,6 +163,10 @@ document.addEventListener(
             }
             break;
           }
+          case "cmd_zenToggleLibrary": {
+            // Library button
+            break;
+          }
           default:
             gZenGlanceManager.handleMainCommandSet(event);
             if (event.target.id.startsWith("cmd_zenWorkspaceSwitch")) {

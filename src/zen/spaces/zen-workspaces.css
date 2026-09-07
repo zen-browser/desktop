@@ -403,7 +403,7 @@ zen-workspace {
   }
 
   :root:not(:is([animating-background], [swipe-gesture])) #navigator-toolbox:not([movingtab]) &:not([active]) {
-    -moz-subtree-hidden-only-visually: 1;
+    display: none;
   }
 }
 

@@ -1,0 +1,150 @@
+diff --git a/browser/components/migration/FirefoxProfileMigrator.sys.mjs b/browser/components/migration/FirefoxProfileMigrator.sys.mjs
+--- a/browser/components/migration/FirefoxProfileMigrator.sys.mjs
++++ b/browser/components/migration/FirefoxProfileMigrator.sys.mjs
+@@ -25,10 +25,12 @@
+ ChromeUtils.defineESModuleGetters(lazy, {
+   FileUtils: "resource://gre/modules/FileUtils.sys.mjs",
++  IOUtils: "resource://gre/modules/IOUtils.sys.mjs",
++  PathUtils: "resource://gre/modules/PathUtils.sys.mjs",
+   PlacesBackups: "resource://gre/modules/PlacesBackups.sys.mjs",
+   ProfileAge: "resource://gre/modules/ProfileAge.sys.mjs",
+   SessionMigration: "resource:///modules/sessionstore/SessionMigration.sys.mjs",
+ });
+ 
+ /**
+  * Firefox profile migrator. Currently, this class only does "pave over"
+@@ -82,10 +84,11 @@
+     let allProfiles = new Map();
+     let profileService = Cc[
+       "@mozilla.org/toolkit-profile-service;1"
+     ].getService(Ci.nsIToolkitProfileService);
++
+     for (let profile of profileService.profiles) {
+       let rootDir = profile.rootDir;
+       let path = rootDir.path;
+       if (
+@@ -92,10 +95,16 @@
+         rootDir.exists() &&
+         rootDir.isReadable() &&
+         !rootDir.equals(MigrationUtils.profileStartup.directory)
+       ) {
+         allProfiles.set(path, {
+           id: path,
+           name: profile.name,
+           rootDir,
+         });
+       }
+     }
++
++    let externalProfiles = await this._getExternalFirefoxProfiles();
++    for (let [path, profile] of externalProfiles) {
++      if (!allProfiles.has(path)) {
++        allProfiles.set(path, profile);
++      }
++    }
++
+     return allProfiles;
+   }
+ 
++  async _getExternalFirefoxProfiles() {
++    let profiles = new Map();
++
++    let profilesIniPath;
++    try {
++      if (AppConstants.platform === "win") {
++        let appData = Services.dirsvc.get("AppData", Ci.nsIFile);
++        profilesIniPath = lazy.PathUtils.join(
++          appData.path, "Mozilla", "Firefox", "profiles.ini"
++        );
++      } else if (AppConstants.platform === "macosx") {
++        let home = Services.dirsvc.get("Home", Ci.nsIFile);
++        profilesIniPath = lazy.PathUtils.join(
++          home.path, "Library", "Application Support", "Firefox", "profiles.ini"
++        );
++      } else {
++        let home = Services.dirsvc.get("Home", Ci.nsIFile);
++        profilesIniPath = lazy.PathUtils.join(
++          home.path, ".mozilla", "firefox", "profiles.ini"
++        );
++      }
++    } catch (e) {
++      console.error(e);
++      return profiles;
++    }
++
++    let data;
++    try {
++      if (!(await lazy.IOUtils.exists(profilesIniPath))) {
++        return profiles;
++      }
++      data = await lazy.IOUtils.readUTF8(profilesIniPath);
++    } catch (e) {
++      console.error(e);
++      return profiles;
++    }
++
++    let baseDir = lazy.PathUtils.parent(profilesIniPath);
++    let profileEntries = [];
++    let currentEntry = null;
++
++    for (let line of data.split("\n")) {
++      line = line.trim();
++      if (!line || line.startsWith(";") || line.startsWith("#")) {
++        continue;
++      }
++
++      if (line.startsWith("[") && line.endsWith("]")) {
++        if (currentEntry && currentEntry.name && currentEntry.path !== undefined) {
++          profileEntries.push(currentEntry);
++        }
++        currentEntry = line.slice(1, -1).startsWith("Profile") ? {} : null;
++      } else if (currentEntry) {
++        let eqIdx = line.indexOf("=");
++        if (eqIdx > 0) {
++          let key = line.substring(0, eqIdx).trim();
++          let value = line.substring(eqIdx + 1).trim();
++          switch (key) {
++            case "Name": currentEntry.name = value; break;
++            case "Path": currentEntry.path = value; break;
++            case "IsRelative": currentEntry.isRelative = value === "1"; break;
++          }
++        }
++      }
++    }
++    if (currentEntry && currentEntry.name && currentEntry.path !== undefined) {
++      profileEntries.push(currentEntry);
++    }
++
++    for (let entry of profileEntries) {
++      try {
++        let profilePath = entry.isRelative
++          ? lazy.PathUtils.join(baseDir, entry.path)
++          : entry.path;
++
++        let rootDir = Cc["@mozilla.org/file/local;1"].createInstance(
++          Ci.nsIFile
++        );
++        rootDir.initWithPath(profilePath);
++
++        if (
++          rootDir.exists() &&
++          rootDir.isReadable() &&
++          !rootDir.equals(MigrationUtils.profileStartup.directory)
++        ) {
++          profiles.set(profilePath, {
++            id: profilePath,
++            name: entry.name,
++            rootDir,
++          });
++        }
++      } catch (e) {
++        console.error(e);
++      }
++    }
++
++    return profiles;
++  }
++
+   async getSourceProfiles() {
+     let sorter = (a, b) => {
+       return a.name

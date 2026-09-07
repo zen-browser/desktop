@@ -3,5 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
         content/browser/zen-components/ZenWelcome.mjs                           (../../zen/welcome/ZenWelcome.mjs)
+        content/browser/zen-components/ZenExternalFirefoxProfileScanner.sys.mjs (../../zen/welcome/ZenExternalFirefoxProfileScanner.sys.mjs)
         content/browser/zen-styles/zen-welcome.css                              (../../zen/welcome/zen-welcome.css)
         content/browser/zen-videos/welcome-background.mp4                       (../../zen/welcome/welcome-background.mp4)

@@ -98,7 +98,7 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
     }
     try {
       const created = await lazy.ZenShareClient.createShare(
-        { version: SHARE_DOCUMENT_VERSION, shared: [item] },
+        { version: SHARE_DOCUMENT_VERSION, shared: item },
         { name: this.#displayName() }
       );
       Cc["@mozilla.org/widget/clipboardhelper;1"]
@@ -383,7 +383,7 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
     };
     try {
       const { doc } = await lazy.ZenShareClient.fetchSharePreview(share);
-      item = doc.shared.find(entry => entry.type === "splitView");
+      item = doc.shared?.type === "splitView" ? doc.shared : null;
     } catch (e) {
       console.error("ZenShare: could not load shared split view:", e);
       const descriptions = {
@@ -498,7 +498,7 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
       return;
     }
     const { doc, name: sharerName } = preview;
-    const first = doc.shared[0];
+    const first = doc.shared;
     const type = first.type;
 
     badgeTitle.textContent = first.name;
@@ -649,18 +649,17 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
   }
 
   async #importDocument(doc) {
-    for (const item of doc.shared) {
-      switch (item.type) {
-        case "space":
-          await this.#importSpace(item);
-          break;
-        case "folder":
-          this.#importFolder(item, gZenWorkspaces.activeWorkspace);
-          break;
-        case "splitView":
-          this.#importSplitView(item);
-          break;
-      }
+    const item = doc.shared;
+    switch (item.type) {
+      case "space":
+        await this.#importSpace(item);
+        break;
+      case "folder":
+        this.#importFolder(item, gZenWorkspaces.activeWorkspace);
+        break;
+      case "splitView":
+        this.#importSplitView(item);
+        break;
     }
   }
 

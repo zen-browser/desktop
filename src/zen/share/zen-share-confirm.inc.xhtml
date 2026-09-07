@@ -13,8 +13,6 @@
   xmlns:html="http://www.w3.org/1999/xhtml"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   id="zenShareConfirmDialog"
-  data-l10n-id="zen-share-confirm-window"
-  data-l10n-attrs="title"
 >
   <dialog
     buttons="accept,cancel"
@@ -37,7 +35,7 @@
 
     <script src="chrome://browser/content/zen-components/windows/zen-share-confirm.js"></script>
 
-    <vbox>
+    <vbox style="padding-inline: 12px;">
       <html:h2
         data-l10n-id="zen-share-confirm-title"
       ></html:h2>
@@ -47,6 +45,7 @@
         data-l10n-id="zen-share-confirm-anonymous"
       />
       <html:input
+        style="margin-bottom: 12px;"
         id="zen-share-confirm-name"
         type="text"
         maxlength="200"

@@ -7,11 +7,7 @@
       "type": "string"
     },
     "shared": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "$ref": "#/$defs/shareable"
-      }
+      "$ref": "#/$defs/shareable"
     }
   },
   "required": ["shared"],

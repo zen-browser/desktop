@@ -83,6 +83,8 @@ zen-library[open] {
 }
 
 .zen-library-tab {
+  --zen-library-sprite-size: 28px;
+
   display: flex;
   position: relative;
   justify-content: center;
@@ -114,54 +116,56 @@ zen-library[open] {
   }
 
   & .zen-library-tab-icon {
-    width: 28px;
-    height: 28px;
+    width: var(--zen-library-sprite-size);
+    height: var(--zen-library-sprite-size);
     overflow: clip;
-  }
-
-  & .zen-library-tab-icon-image {
-    width: calc(36 * 28px);
-    height: 28px;
-    fill: rgba(255, 255, 255, 0.8);
-    stroke: var(--zen-colors-primary);
-    -moz-context-properties: fill, stroke;
-    transform: translateX(0);
-  }
-
-  &[data-section="history"] .zen-library-tab-icon-image {
-    background-image: url("chrome://browser/skin/zen-icons/library/library-history-sprite.svg");
-  }
-
-  &[data-section="downloads"] .zen-library-tab-icon-image {
-    background-image: url("chrome://browser/skin/zen-icons/library/library-downloads-sprite.svg");
-  }
-
-  &[data-section="boosts"] .zen-library-tab-icon-image {
-    background-image: url("chrome://browser/skin/zen-icons/library/library-boosts-sprite.svg");
-  }
-
-  &[data-section="spaces"] .zen-library-tab-icon-image {
-    background-image: url("chrome://browser/skin/zen-icons/library/library-spaces-sprite.svg");
-  }
-
-  &[data-section="media"] .zen-library-tab-icon-image {
-    background-image: url("chrome://browser/skin/zen-icons/library/library-media-sprite.svg");
   }
 
   @media (prefers-reduced-motion: no-preference) {
     &[animate] .zen-library-tab-icon-image {
-      animation: zen-library-tab-icon-play 0.583s steps(36, jump-none);
+      animation: zen-library-sprite-play 0.583s steps(36, jump-none);
     }
   }
 }
 
-@keyframes zen-library-tab-icon-play {
+.zen-library-tab-icon-image,
+.empty-state-icon-image {
+  width: calc(36 * var(--zen-library-sprite-size));
+  height: var(--zen-library-sprite-size);
+  background-size: 100% 100%;
+  fill: rgba(255, 255, 255, 0.8);
+  stroke: var(--zen-colors-primary);
+  -moz-context-properties: fill, stroke;
+  transform: translateX(0);
+}
+
+[data-section="history"] :is(.zen-library-tab-icon-image, .empty-state-icon-image) {
+  background-image: url("chrome://browser/skin/zen-icons/library/library-history-sprite.svg");
+}
+
+[data-section="downloads"] :is(.zen-library-tab-icon-image, .empty-state-icon-image) {
+  background-image: url("chrome://browser/skin/zen-icons/library/library-downloads-sprite.svg");
+}
+
+[data-section="boosts"] :is(.zen-library-tab-icon-image, .empty-state-icon-image) {
+  background-image: url("chrome://browser/skin/zen-icons/library/library-boosts-sprite.svg");
+}
+
+[data-section="spaces"] :is(.zen-library-tab-icon-image, .empty-state-icon-image) {
+  background-image: url("chrome://browser/skin/zen-icons/library/library-spaces-sprite.svg");
+}
+
+[data-section="media"] :is(.zen-library-tab-icon-image, .empty-state-icon-image) {
+  background-image: url("chrome://browser/skin/zen-icons/library/library-media-sprite.svg");
+}
+
+@keyframes zen-library-sprite-play {
   from {
     transform: translateX(0);
   }
 
   to {
-    transform: translateX(calc(35 * -28px));
+    transform: translateX(calc(35 * -1 * var(--zen-library-sprite-size)));
   }
 }
 
@@ -361,7 +365,7 @@ zen-library[open] {
 }
 
 .library-item:hover .library-item-background {
-  background-color: var(--tab-hover-background-color);
+  background-color: var(--tab-background-color-hover);
   outline-color: var(--tab-hover-outline-color);
 }
 
@@ -573,11 +577,36 @@ zen-library[open] {
 .empty-state {
   display: flex;
   flex: 1;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 16px;
   font-size: 2em;
   font-weight: 600;
   opacity: 0.5;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: zen-library-empty-state-enter 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+
+    & .empty-state-icon-image {
+      animation: zen-library-sprite-play 0.583s steps(36, jump-none);
+    }
+  }
+}
+
+@keyframes zen-library-empty-state-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+
+.empty-state-icon {
+  --zen-library-sprite-size: 56px;
+
+  width: var(--zen-library-sprite-size);
+  height: var(--zen-library-sprite-size);
+  overflow: clip;
 }
 
 /* Boosts section */

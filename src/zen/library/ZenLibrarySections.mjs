@@ -475,21 +475,18 @@ class SearchSection extends LibrarySection {
   }
 
   /**
-   * Open `url` in a Glance overlay anchored to the clicked item.
+   * Open `url` in a Glance overlay.
    *
-   * @param {Event} event
    * @param {string} url
    */
-  _openInGlance(event, url) {
-    const itemEl = event.currentTarget;
-    const rect = window.windowUtils.getBoundsWithoutFlushing(itemEl);
+  _openInGlance(url) {
     const tabPanelRect = window.windowUtils.getBoundsWithoutFlushing(
       window.gBrowser.tabpanels
     );
     window.gZenGlanceManager.openGlance({
       url,
-      clientX: rect.left - tabPanelRect.left,
-      clientY: rect.top - tabPanelRect.top,
+      clientX: window.innerWidth / 2 - tabPanelRect.left,
+      clientY: window.innerHeight / 2 - tabPanelRect.top,
       width: 0,
       height: 0,
       triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
@@ -513,6 +510,26 @@ class SearchSection extends LibrarySection {
 
   renderSearchResults() {
     return html``;
+  }
+
+  /**
+   * Shared empty-state markup: the section's sprite icon above the localized
+   * message. The [data-section] attribute picks the sprite strip, see
+   * zen-library.css.
+   *
+   * @param {string} emptyL10nId - message shown when the section has no data.
+   */
+  _renderEmptyState(emptyL10nId) {
+    return html`
+      <div class="empty-state" data-section=${this.constructor.id}>
+        <div class="empty-state-icon">
+          <div class="empty-state-icon-image"></div>
+        </div>
+        <label
+          data-l10n-id=${this.searchTerm ? "library-search-no-results" : emptyL10nId}
+        ></label>
+      </div>
+    `;
   }
 
   render() {
@@ -917,12 +934,7 @@ class ZenLibraryHistorySection extends ProgressiveSearchSection {
       return html``;
     }
     if (this.isEmpty) {
-      return html`
-        <div
-          class="empty-state"
-          data-l10n-id=${this.searchTerm ? "library-search-no-results" : "library-history-empty"}
-        ></div>
-      `;
+      return this._renderEmptyState("library-history-empty");
     }
 
     const slice = this._getRenderedSlice();
@@ -960,9 +972,7 @@ class ZenLibraryHistorySection extends ProgressiveSearchSection {
   }
 
   /**
-   * Plain click on a history row opens the page in a Glance overlay; holding
-   * Ctrl (or any other modifier / middle-click) falls back to the standard
-   * "where to open" routing.
+   * Clicking a history row opens the page in a new tab.
    *
    * @param {Event} event
    * @param {object} item
@@ -975,21 +985,6 @@ class ZenLibraryHistorySection extends ProgressiveSearchSection {
       return;
     }
     event.preventDefault();
-
-    const hasModifier =
-      event.ctrlKey || event.metaKey || event.shiftKey || event.altKey;
-    const isMiddleClick = event.button === 1;
-
-    if (
-      !hasModifier &&
-      !isMiddleClick &&
-      Services.prefs.getBoolPref("zen.glance.enabled", true)
-    ) {
-      // Glance overlays on top of the library; keep the library open so the
-      // user can fire another glance without re-opening it.
-      this._openInGlance(event, item.url);
-      return;
-    }
 
     const where = lazy.BrowserUtils.whereToOpenLink(event, false, true);
     window.openTrustedLinkIn(item.url, where === "current" ? "tab" : where);
@@ -1029,15 +1024,6 @@ class ZenLibraryHistorySection extends ProgressiveSearchSection {
         onClick: () => {
           window.openTrustedLinkIn(item.url, "tab");
           this._closeLibrary();
-        },
-      },
-      {
-        l10nId: "library-item-context-open-glance",
-        onClick: () => {
-          // Use the section element as the anchor — context menu opens at
-          // the cursor and the original item element isn't tracked here.
-          const fakeEvent = { currentTarget: this };
-          this._openInGlance(fakeEvent, item.url);
         },
       },
       {
@@ -1177,12 +1163,7 @@ class ZenLibraryDownloadsSection extends ProgressiveSearchSection {
     const slice = this._getRenderedSlice();
 
     if (this.isEmpty) {
-      return html`
-        <div
-          class="empty-state"
-          data-l10n-id=${this.searchTerm ? "library-search-no-results" : "library-downloads-empty"}
-        ></div>
-      `;
+      return this._renderEmptyState("library-downloads-empty");
     }
 
     const groups = this.#groupByDate(slice);
@@ -1313,7 +1294,7 @@ class ZenLibraryDownloadsSection extends ProgressiveSearchSection {
       const previewUrl =
         dl.source.referrerInfo?.originalReferrer?.spec || dl.source.url;
       if (previewUrl) {
-        this._openInGlance(event, previewUrl);
+        this._openInGlance(previewUrl);
       }
       return;
     }
@@ -1631,12 +1612,7 @@ class ZenLibraryBoostsSection extends SearchSection {
   renderSearchResults() {
     const boosts = this.#getBoosts();
     if (boosts.length === 0) {
-      return html`
-        <div
-          class="empty-state"
-          data-l10n-id=${this.searchTerm ? "library-search-no-results" : "library-boosts-empty"}
-        ></div>
-      `;
+      return this._renderEmptyState("library-boosts-empty");
     }
     return html`${boosts.map(b => this.#renderBoost(b))}`;
   }
@@ -1647,7 +1623,7 @@ class ZenLibraryBoostsSection extends SearchSection {
         class="library-item library-boost-item"
         data-key=${`${boost.domain}|${boost.id}`}
         ?active=${boost.isActive}
-        @click=${e => this.#openBoost(e, boost)}
+        @click=${() => this.#openBoost(boost)}
         @contextmenu=${e => this._onItemContextMenu(e, boost)}
       >
         <div class="library-item-stack">
@@ -1693,12 +1669,11 @@ class ZenLibraryBoostsSection extends SearchSection {
    * Open the boost's domain in a Glance overlay and pop the boost editor
    * window next to it so the user can tweak the boost while previewing.
    *
-   * @param {Event} event
    * @param {object} boost
    */
-  #openBoost(event, boost) {
+  #openBoost(boost) {
     const url = `https://${boost.domain}/`;
-    this._openInGlance(event, url);
+    this._openInGlance(url);
     try {
       const stored = lazy.gZenBoostsManager.loadBoostFromStore(
         boost.domain,

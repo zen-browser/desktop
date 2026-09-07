@@ -86,11 +86,18 @@ export class ZenLibrary extends MozLitElement {
     this.addEventListener("animationend", this);
     // Add connected call back and make `appContentWrapper` transform translate the oposite of this element
     this.#resizeObserver = new ResizeObserver(() => {
+      if (this._swipeActive) {
+        this._swipeWrapperTargetPx = this.#computeWrapperTargetPx();
+        ZenLibrary.updateSwipeProgress(this._swipeProgress ?? 0);
+        return;
+      }
       if (gZenWorkspaces._swipeManager._swipeState.librarySwiping) {
         return;
       }
       let translateX = this.#computeWrapperTargetPx();
-      lazy.appContentWrapper.style.transform = `translateX(${translateX}px)`;
+      requestAnimationFrame(() => {
+        lazy.appContentWrapper.style.transform = `translateX(${translateX}px)`;
+      });
     });
     this.#resizeObserver.observe(this);
     for (const Section of Object.values(lazy.ZenLibrarySections)) {
@@ -221,7 +228,7 @@ export class ZenLibrary extends MozLitElement {
         break;
       }
       case "animationend": {
-        if (event.animationName === "zen-library-tab-icon-play") {
+        if (event.animationName === "zen-library-sprite-play") {
           event.target.closest(".zen-library-tab")?.removeAttribute("animate");
         }
         break;
@@ -313,9 +320,12 @@ export class ZenLibrary extends MozLitElement {
    */
   #computeWrapperTargetPx() {
     const isRightSide = gZenVerticalTabsManager._prefsRightSide;
-    let translateX = this.getBoundingClientRect()[
-        isRightSide ? "left" : "right"
-      ];
+    const selfTransform = getComputedStyle(this).transform;
+    const selfOffset =
+      selfTransform === "none" ? 0 : new DOMMatrix(selfTransform).m41;
+    let translateX =
+      this.getBoundingClientRect()[isRightSide ? "left" : "right"] -
+      selfOffset;
     const contentPosition = window.windowUtils.getBoundsWithoutFlushing(
       lazy.appContentWrapper
     )[isRightSide ? "right" : "left"];
@@ -396,21 +406,11 @@ export class ZenLibrary extends MozLitElement {
     instance.#cancelActiveAnimations();
     const wasOpen = instance.hasAttribute("open");
     if (wasOpen) {
-      // Library is already open; the wrapper's current inline transform IS
-      // the target — no remeasure needed.
       instance._swipeWrapperTargetPx =
         new DOMMatrix(lazy.appContentWrapper.style.transform).m41 ||
         instance.#computeWrapperTargetPx();
     } else {
-      // Measure the open-state wrapper target without flashing: temporarily
-      // mark [open] so layout reflects the open position, then revert.
-      instance.setAttribute("open", "true");
-      instance.style.visibility = "hidden";
-      await new Promise(r => requestAnimationFrame(r));
       instance._swipeWrapperTargetPx = instance.#computeWrapperTargetPx();
-      instance.style.visibility = "";
-      instance.removeAttribute("open");
-      lazy.appContentWrapper.style.transform = "";
     }
     instance._swipeActive = true;
     // Initialize visual state to match the current attribute.

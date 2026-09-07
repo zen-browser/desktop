@@ -2,8 +2,19 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-- name: zen.glance.activation-method
-  value: "shift" # ctrl, alt, shift, meta
+- name: zen.content-link-handling.glance-activation-method
+  value: "none"
 
 - name: zen.content-link-handling.split-activation-method
-  value: "alt" # ctrl, alt, shift, meta, none
+  value: "none"
+
+- name: zen.content-link-handling.tab-activation-method
+  value: "meta"
+  condition: "defined(XP_MACOSX)"
+
+- name: zen.content-link-handling.tab-activation-method
+  value: "ctrl"
+  condition: "!defined(XP_MACOSX)"
+
+- name: zen.content-link-handling.window-activation-method
+  value: "shift"

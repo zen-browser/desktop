@@ -1714,8 +1714,8 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    */
   openGlanceForBookmark(event) {
     const activationMethod = Services.prefs.getStringPref(
-      "zen.glance.activation-method",
-      "shift"
+      "zen.content-link-handling.glance-activation-method",
+      "none"
     );
 
     if (!this.#isActivationKeyPressed(event, activationMethod)) {
@@ -1744,7 +1744,8 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
       meta: event.metaKey,
     };
 
-    return keyMap[activationMethod] || false;
+    return activationMethod !== "none" &&
+      Object.keys(keyMap).filter(key => keyMap[key]).join("+") === activationMethod;
   }
 
   /**

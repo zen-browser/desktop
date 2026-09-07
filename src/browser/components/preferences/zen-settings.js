@@ -652,6 +652,7 @@ var gZenLooksAndFeel = {
     }
     this.__hasInitialized = true;
     gZenMarketplaceManager.init();
+    gZenContentLinkHandling.init();
     for (const pref of [kZenExtendedSidebar, kZenSingleToolbar]) {
       Services.prefs.addObserver(pref, this);
     }
@@ -733,9 +734,7 @@ var gZenWorkspacesSettings = {
 
     toggleZenCycleByAttrWarning.observe(); // call it once on initial load
 
-    Services.prefs.addObserver("zen.glance.enabled", tabsUnloaderPrefListener); // We can use the same listener for both prefs
     Services.prefs.addObserver("zen.workspaces.separate-essentials", tabsUnloaderPrefListener);
-    Services.prefs.addObserver("zen.glance.activation-method", tabsUnloaderPrefListener);
     Services.prefs.addObserver("zen.window-sync.sync-only-pinned-tabs", tabsUnloaderPrefListener);
     Services.prefs.addObserver(
       "zen.tabs.ctrl-tab.ignore-essential-tabs",
@@ -743,8 +742,6 @@ var gZenWorkspacesSettings = {
     );
     Services.prefs.addObserver("browser.ctrlTab.sortByRecentlyUsed", toggleZenCycleByAttrWarning);
     window.addEventListener("unload", () => {
-      Services.prefs.removeObserver("zen.glance.enabled", tabsUnloaderPrefListener);
-      Services.prefs.removeObserver("zen.glance.activation-method", tabsUnloaderPrefListener);
       Services.prefs.removeObserver("zen.workspaces.separate-essentials", tabsUnloaderPrefListener);
       Services.prefs.removeObserver(
         "zen.window-sync.sync-only-pinned-tabs",
@@ -1175,21 +1172,6 @@ Preferences.addAll([
     default: true,
   },
   {
-    id: "zen.glance.activation-method",
-    type: "string",
-    default: "shift",
-  },
-  {
-    id: "zen.content-link-handling.split-activation-method",
-    type: "string",
-    default: "alt",
-  },
-  {
-    id: "zen.glance.enabled",
-    type: "bool",
-    default: true,
-  },
-  {
     id: "zen.view.drag-window-from-content",
     type: "bool",
     default: true,
@@ -1260,3 +1242,200 @@ Preferences.addSetting({
   id: "zenWorkspaceContinueWhereLeftOff",
   pref: "zen.workspaces.continue-where-left-off",
 });
+
+
+var gZenContentLinkHandling = {
+  init() {
+    this.config = ChromeUtils.importESModule(
+      "resource:///actors/ContentLinkHandling.sys.mjs"
+    ).ContentLinkHandling;
+    this.fields = new Map();
+    const container = document.getElementById("zenContentLinkHandlingShortcuts");
+    for (const action of this.config.actions) {
+      const wrapper = document.createXULElement("vbox");
+      const row = document.createXULElement("hbox");
+      row.className = "zen-content-link-shortcut-row";
+      const label = document.createXULElement("label");
+      const input = document.createElementNS("http://www.w3.org/1999/xhtml", "input");
+      input.id = `zenContentLinkHandling-${action.id}`;
+      input.readOnly = true;
+      input.className = "zenCKSOption-input";
+      input.setAttribute("aria-describedby", "zenContentLinkHandlingInstructions");
+      label.setAttribute("control", input.id);
+      document.l10n.setAttributes(label, `zen-content-link-handling-${action.id}-label`);
+      const clear = document.createXULElement("button");
+      document.l10n.setAttributes(clear, "zen-content-link-handling-clear");
+      clear.addEventListener("command", () => this.change(action, "none"));
+      const conflict = document.createXULElement("vbox");
+      conflict.hidden = true;
+      conflict.className = "zen-content-link-shortcut-conflict";
+      const message = document.createXULElement("description");
+      message.id = `${input.id}-conflict`;
+      message.setAttribute("role", "alert");
+      const buttons = document.createXULElement("hbox");
+      const swap = document.createXULElement("button");
+      document.l10n.setAttributes(swap, "zen-content-link-handling-swap-button");
+      swap.addEventListener("command", () => this.swap());
+      const cancel = document.createXULElement("button");
+      document.l10n.setAttributes(cancel, "zen-content-link-handling-cancel");
+      cancel.addEventListener("command", () => this.cancel());
+      buttons.append(swap, cancel);
+      conflict.append(message, buttons);
+      row.append(label, input, clear);
+      wrapper.append(row, conflict);
+      container.append(wrapper);
+      this.fields.set(action.id, { input, conflict, message, buttons });
+      input.addEventListener("focus", () => this.startRecording(action));
+      input.addEventListener("blur", () => {
+        this.recording = null;
+        this.observe();
+      });
+      input.addEventListener("keydown", event => this.record(event, action));
+      input.addEventListener("keyup", event => this.record(event, action));
+      Services.prefs.addObserver(action.pref, this);
+    }
+    document.getElementById("zenContentLinkHandlingRestore").addEventListener("command", () => {
+      this.cancel();
+      for (const action of this.config.actions) {
+        Services.prefs.clearUserPref(action.pref);
+      }
+    });
+    window.addEventListener("unload", () => {
+      for (const action of this.config.actions) {
+        Services.prefs.removeObserver(action.pref, this);
+      }
+    }, { once: true });
+    this.observe();
+  },
+
+  startRecording(action) {
+    this.pending = null;
+    this.recording = { action, shortcut: null };
+    this.observe();
+  },
+
+  record(event, action) {
+    if (event.key === "Tab" && !event.ctrlKey && !event.altKey && !event.metaKey) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.type === "keydown") {
+      if (event.key === "Escape") {
+        this.cancel();
+        this.fields.get(action.id).input.blur();
+        return;
+      }
+      if (event.key === "Backspace" || event.key === "Delete") {
+        this.change(action, "none");
+        return;
+      }
+      if (!this.recording) {
+        this.startRecording(action);
+      }
+      if (!["Control", "Alt", "Shift", "Meta"].includes(event.key)) {
+        this.recording.shortcut = null;
+        this.observe();
+        return;
+      }
+      this.recording.shortcut = this.config.shortcut(event);
+      this.observe();
+    } else if (this.recording && this.config.shortcut(event) === "none") {
+      const shortcut = this.recording.shortcut;
+      this.recording = null;
+      if (shortcut && shortcut !== "none") {
+        this.change(action, shortcut);
+      } else {
+        this.observe();
+      }
+    }
+  },
+
+  async observe() {
+    const revision = this.revision = (this.revision || 0) + 1;
+    const assignments = this.config.assignments();
+    if (this.pending && JSON.stringify(this.pending.assignments) !== JSON.stringify(assignments)) {
+      this.pending = null;
+    }
+    for (const action of assignments) {
+      const field = this.fields.get(action.id);
+      const recording = this.recording?.action.id === action.id;
+      const pending = this.pending?.action.id === action.id;
+      const shortcut = recording ? this.recording.shortcut : pending ? this.pending.shortcut : action.shortcut;
+      const modifier = shortcut?.split("+").map(key => ({
+        ctrl: "Ctrl", alt: AppConstants.platform === "macosx" ? "Option" : "Alt",
+        shift: "Shift", meta: "Cmd",
+      })[key]).join(" + ");
+      const value = await document.l10n.formatValue(
+        recording && !shortcut ? "zen-content-link-handling-recording" :
+          shortcut === "none" ? "zen-content-link-handling-off" : "zen-content-link-handling-recorded",
+        { modifier: modifier || "" }
+      );
+      if (revision !== this.revision) {
+        return;
+      }
+      field.input.value = value;
+      field.input.classList.toggle("zenCKSOption-input-editing", recording);
+      const conflicts = assignments.filter(other => other.id !== action.id &&
+        shortcut && shortcut !== "none" && other.shortcut === shortcut);
+      field.conflict.hidden = !conflicts.length;
+      field.buttons.hidden = !pending;
+      field.input.classList.toggle("zenCKSOption-input-invalid", !!conflicts.length);
+      field.input.setAttribute("aria-invalid", String(!!conflicts.length));
+      field.input.setAttribute("aria-describedby", "zenContentLinkHandlingInstructions" +
+        (conflicts.length ? ` ${field.message.id}` : ""));
+      if (conflicts.length) {
+        const names = await document.l10n.formatValues(conflicts.map(other => ({
+          id: `zen-content-link-handling-${other.id}-label`,
+        })));
+        if (revision !== this.revision) {
+          return;
+        }
+        document.l10n.setAttributes(field.message, "zen-content-link-handling-inline-conflict", {
+          action: names.join(", "),
+        });
+      }
+    }
+    document.getElementById("zenContentLinkHandlingConflict").hidden = !assignments.some(action =>
+      action.shortcut !== "none" && assignments.some(other =>
+        other.id !== action.id && other.shortcut === action.shortcut));
+  },
+
+  change(action, shortcut) {
+    this.recording = null;
+    this.pending = null;
+    const assignments = this.config.assignments();
+    const conflicts = assignments.filter(other => other.id !== action.id &&
+      shortcut !== "none" && other.shortcut === shortcut);
+    if (conflicts.length) {
+      this.pending = { action, shortcut, assignments };
+    } else {
+      Services.prefs.setStringPref(action.pref, shortcut);
+    }
+    return this.observe();
+  },
+
+  cancel() {
+    this.recording = null;
+    this.pending = null;
+    return this.observe();
+  },
+
+  swap() {
+    const pending = this.pending;
+    if (!pending || JSON.stringify(pending.assignments) !== JSON.stringify(this.config.assignments())) {
+      return this.cancel();
+    }
+    this.pending = null;
+    const { action, shortcut, assignments } = pending;
+    const previous = assignments.find(item => item.id === action.id).shortcut;
+    const conflicts = assignments.filter(item => item.id !== action.id && item.shortcut === shortcut);
+    for (const [index, conflict] of conflicts.entries()) {
+      const available = !assignments.some(item => item.id !== action.id &&
+        item.id !== conflict.id && item.shortcut === previous);
+      Services.prefs.setStringPref(conflict.pref, index === 0 && available ? previous : "none");
+    }
+    Services.prefs.setStringPref(action.pref, shortcut);
+    return this.observe();
+  },
+};

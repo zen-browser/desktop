@@ -82,37 +82,11 @@
 <groupbox id="zenContentLinkHandlingGroup" data-category="paneZenLooks" hidden="true" class="highlighting-group">
       <description class="description-deemphasized" data-l10n-id="zen-content-link-handling-description" />
 
-      <checkbox id="zenLooksAndFeelGlanceEnabled"
-            data-l10n-id="zen-glance-enabled"
-            preference="zen.glance.enabled"/>
-      <hbox align="center">
-            <label id="zenGlanceTriggerLabel" control="zenGlanceTrigger" data-l10n-id="zen-content-link-handling-glance-label"/>
-            <menulist id="zenGlanceTrigger" preference="zen.glance.activation-method">
-                  <menupopup>
-                        <menuitem data-l10n-id="zen-glance-trigger-ctrl-click" value="ctrl"/>
-                        <menuitem data-l10n-id="zen-glance-trigger-alt-click" value="alt"/>
-                        <menuitem data-l10n-id="zen-glance-trigger-shift-click" value="shift"/>
-#ifdef XP_MACOSX
-                        <menuitem data-l10n-id="zen-glance-trigger-meta-click" value="meta"/>
-#endif
-                  </menupopup>
-            </menulist>
-        </hbox>
-      <hbox align="center">
-            <label id="zenSplitTriggerLabel" control="zenSplitTrigger" data-l10n-id="zen-content-link-handling-split-label"/>
-            <menulist id="zenSplitTrigger" preference="zen.content-link-handling.split-activation-method">
-                  <menupopup>
-                        <menuitem data-l10n-id="zen-content-link-handling-disabled" value="none"/>
-                        <menuitem data-l10n-id="zen-glance-trigger-ctrl-click" value="ctrl"/>
-                        <menuitem data-l10n-id="zen-glance-trigger-alt-click" value="alt"/>
-                        <menuitem data-l10n-id="zen-glance-trigger-shift-click" value="shift"/>
-#ifdef XP_MACOSX
-                        <menuitem data-l10n-id="zen-glance-trigger-meta-click" value="meta"/>
-#endif
-                  </menupopup>
-            </menulist>
-        </hbox>
-      <description class="description-deemphasized" data-l10n-id="zen-content-link-handling-conflict"/>
+      <description id="zenContentLinkHandlingInstructions" data-l10n-id="zen-content-link-handling-recording-help"/>
+      <vbox id="zenContentLinkHandlingShortcuts"/>
+      <description id="zenContentLinkHandlingConflict" role="alert" hidden="true"
+                   data-l10n-id="zen-content-link-handling-conflict"/>
+      <hbox><button id="zenContentLinkHandlingRestore" data-l10n-id="zen-content-link-handling-restore"/></hbox>
 </groupbox>
 
 <hbox id="zenUrlBarCategory"

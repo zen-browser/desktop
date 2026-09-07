@@ -507,3 +507,24 @@ html|setting-group:is([data-subcategory="layout"], [groupid="support"], [groupid
     display: none !important;
   }
 }
+
+.zen-content-link-shortcut-row {
+  align-items: center;
+  margin-block: 4px;
+
+  > label {
+    flex: 1;
+  }
+
+  > input {
+    width: 16em;
+  }
+}
+
+.zen-content-link-shortcut-conflict {
+  align-items: end;
+
+  > description {
+    color: var(--text-color-error, #c50042);
+  }
+}

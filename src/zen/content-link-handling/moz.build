@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 FINAL_TARGET_FILES.actors += [
+  "actors/ContentLinkHandling.sys.mjs",
   "actors/ContentLinkHandlingChild.sys.mjs",
   "actors/ContentLinkHandlingParent.sys.mjs",
 ]

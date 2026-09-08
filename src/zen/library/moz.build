@@ -4,5 +4,9 @@
 
 MOZ_SRC_FILES += [
   "ZenLibrary.mjs",
+  "ZenLibraryBoostsSection.mjs",
   "ZenLibraryButton.mjs",
+  "ZenLibraryDownloadsSection.mjs",
+  "ZenLibraryHistorySection.mjs",
+  "ZenLibrarySpacesSection.mjs",
 ]

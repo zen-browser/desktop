@@ -7,6 +7,21 @@ import { MozLitElement } from "chrome://global/content/lit-utils.mjs";
 
 let lazy = {};
 
+ChromeUtils.defineESModuleGetters(
+  lazy,
+  {
+    ZenLibraryHistorySection:
+      "moz-src:///zen/library/ZenLibraryHistorySection.mjs",
+    ZenLibraryDownloadsSection:
+      "moz-src:///zen/library/ZenLibraryDownloadsSection.mjs",
+    ZenLibraryBoostsSection:
+      "moz-src:///zen/library/ZenLibraryBoostsSection.mjs",
+    ZenLibrarySpacesSection:
+      "moz-src:///zen/library/ZenLibrarySpacesSection.mjs",
+  },
+  { global: "current" }
+);
+
 ChromeUtils.defineLazyGetter(lazy, "appContentWrapper", function () {
   return document.getElementById("zen-appcontent-wrapper");
 });
@@ -29,9 +44,36 @@ export class ZenLibrary extends MozLitElement {
     _footer: "#zen-library-footer",
   };
 
-  static tabs = [
-    ["downloads", "pathtoicon", ""]
-  ]
+  static properties = {
+    _activeTab: { type: String },
+  };
+
+  constructor() {
+    super();
+    // TODO: Save last tab
+    this.activeTab = "history";
+    this.zenLibrarySections = {
+      history: lazy.ZenLibraryHistorySection,
+      downloads: lazy.ZenLibraryDownloadsSection,
+      boosts: lazy.ZenLibraryBoostsSection,
+      spaces: lazy.ZenLibrarySpacesSection,
+    };
+  }
+
+  set activeTab(value) {
+    if (this._activeTab === value) {
+      return;
+    }
+    this._activeTab = value;
+  }
+
+  get activeTab() {
+    return this._activeTab;
+  }
+
+  get activeSection() {
+    return this.zenLibrarySections[this.activeTab];
+  }
 
   set openProgress(value) {
     const p = value;
@@ -206,6 +248,20 @@ export class ZenLibrary extends MozLitElement {
     }
   }
 
+  /**
+   * Plays a tab's icon sprite animation, reload-to-stop style: the [animate]
+   * attribute starts the strip's steps() animation (see zen-library.css) and
+   * the animationend handler removes it again. Restarts if mid-animation.
+   *
+   * @param {Element} tab
+   */
+  #animateTabIcon(tab) {
+    tab.removeAttribute("animate");
+    // Flush styles so re-adding the attribute restarts the animation.
+    void tab.offsetWidth;
+    tab.setAttribute("animate", "true");
+  }
+
   render() {
     return html`
       <link
@@ -216,7 +272,7 @@ export class ZenLibrary extends MozLitElement {
         <vbox id="zen-library-side">
           <vbox id="zen-library-header"></vbox>
           <vbox id="zen-library-sidebar-tabs">
-            ${Object.values(lazy.ZenLibrarySections).map(
+            ${Object.values(this.zenLibrarySections).map(
               Section => html`
                 <vbox
                   class="zen-library-tab"
@@ -232,7 +288,7 @@ export class ZenLibrary extends MozLitElement {
                   <div class="zen-library-tab-icon">
                     <div class="zen-library-tab-icon-image"></div>
                   </div>
-                  <label>${lazy.l10n.formatValueSync(Section.label)}</label>
+                  <label>${Section.label}</label>
                 </vbox>
               `
             )}
@@ -244,7 +300,9 @@ export class ZenLibrary extends MozLitElement {
             fullscreentoolbar="true"
           ></toolbar>
         </vbox>
-        <vbox id="zen-library-content"></vbox>
+        <vbox id="zen-library-content">
+          ${this.activeSection?.render?.()}
+        </vbox>
       </hbox>
     `;
   }

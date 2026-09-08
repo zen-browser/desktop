@@ -122,12 +122,13 @@ zen-library[open] {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  -moz-window-dragging: no-drag;
+  margin-top: auto;
 }
 
 .zen-library-tab {
   --zen-library-sprite-size: 28px;
 
+  margin: 8px;
   display: flex;
   position: relative;
   justify-content: center;
@@ -137,6 +138,10 @@ zen-library[open] {
   font-weight: 600;
   flex-direction: column;
   gap: 4px;
+
+  & label {  
+    text-align: center;
+  }
 
   &::before {
     content: "";

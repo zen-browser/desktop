@@ -151,8 +151,8 @@ export class ZenLibrary extends MozLitElement {
     if (super.connectedCallback) {
       super.connectedCallback();
     }
-    this._onKeyDown = this._onKeyDown.bind(this);
-    document.addEventListener("keydown", this._onKeyDown, true);
+    this.onKeyDown = this.onKeyDown.bind(this);
+    document.addEventListener("keydown", this.onKeyDown, true);
   }
 
   disconnectedCallback() {
@@ -165,7 +165,7 @@ export class ZenLibrary extends MozLitElement {
     this.#restoreWindowButtons();
 
     super.disconnectedCallback();
-    document.removeEventListener("keydown", this._onKeyDown, true);
+    document.removeEventListener("keydown", this.onKeyDown, true);
   }
 
   onKeyDown(e) {

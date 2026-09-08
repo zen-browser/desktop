@@ -1,0 +1,22 @@
+#filter dumbComments emptyLines substitution
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+<svg class="zen-media-icon" width="28" height="28" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <mask id="zen-media-mask-inactive">
+      <rect x="-10" y="-10" width="148" height="148" fill="white"/>
+      <g transform="translate(78.827, 77.737) translate(-46.27, -36.445)">
+        <rect x="0" y="0" width="92.539" height="72.891" rx="12.812" fill="black"/>
+      </g>
+    </mask>
+  </defs>
+  <g mask="url(#zen-media-mask-inactive)">
+    <g transform="translate(54.799, 57.743) rotate(-7) translate(-46.27, -36.445)">
+      <rect x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262" fill="none" stroke="context-stroke" stroke-width="7.1"/>
+    </g>
+  </g>
+  <g transform="translate(78.827, 77.737) translate(-46.27, -36.445)">
+    <rect x="3.55" y="3.55" width="85.439" height="65.791" rx="9.262" fill="none" stroke="context-stroke" stroke-width="7.1"/>
+  </g>
+</svg>

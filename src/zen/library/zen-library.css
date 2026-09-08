@@ -4,12 +4,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-:host {
-  --library-progress: 0;
-  transform: translateX(calc((-1 + var(--library-progress)) * 100%));
-  opacity: calc(var(--library-progress));
-}
-
 #zen-appcontent-wrapper {
   --library-progress: 0;
   --library-wrapper-target-px: 0px;
@@ -118,5 +112,102 @@ zen-library[open] {
 
   & toolbarbutton label {
     display: none;
+  }
+}
+
+/* Tabs */
+
+
+#zen-library-sidebar-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  -moz-window-dragging: no-drag;
+}
+
+.zen-library-tab {
+  --zen-library-sprite-size: 28px;
+
+  display: flex;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 0;
+  background: transparent;
+  font-weight: 600;
+  flex-direction: column;
+  gap: 4px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    transition: transform 0.1s ease-in-out;
+  }
+
+  &:hover::before {
+    background: color-mix(in srgb, currentColor 5%, transparent);
+  }
+
+  &[active]::before {
+    background: color-mix(in srgb, currentColor 10%, transparent);
+  }
+
+  &:hover:active::before {
+    transform: scale(0.96);
+  }
+
+  & .zen-library-tab-icon {
+    width: var(--zen-library-sprite-size);
+    height: var(--zen-library-sprite-size);
+    overflow: clip;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    &[animate] .zen-library-tab-icon-image {
+      animation: zen-library-sprite-play 0.583s steps(36, jump-none);
+    }
+  }
+}
+
+.zen-library-tab-icon-image,
+.empty-state-icon-image {
+  width: calc(36 * var(--zen-library-sprite-size));
+  height: var(--zen-library-sprite-size);
+  background-size: 100% 100%;
+  fill: rgba(255, 255, 255, 0.8);
+  stroke: var(--zen-colors-primary);
+  -moz-context-properties: fill, stroke;
+  transform: translateX(0);
+}
+
+[data-section="history"] :is(.zen-library-tab-icon-image, .empty-state-icon-image) {
+  background-image: url("chrome://browser/skin/zen-icons/library/library-history-sprite.svg");
+}
+
+[data-section="downloads"] :is(.zen-library-tab-icon-image, .empty-state-icon-image) {
+  background-image: url("chrome://browser/skin/zen-icons/library/library-downloads-sprite.svg");
+}
+
+[data-section="boosts"] :is(.zen-library-tab-icon-image, .empty-state-icon-image) {
+  background-image: url("chrome://browser/skin/zen-icons/library/library-boosts-sprite.svg");
+}
+
+[data-section="spaces"] :is(.zen-library-tab-icon-image, .empty-state-icon-image) {
+  background-image: url("chrome://browser/skin/zen-icons/library/library-spaces-sprite.svg");
+}
+
+[data-section="media"] :is(.zen-library-tab-icon-image, .empty-state-icon-image) {
+  background-image: url("chrome://browser/skin/zen-icons/library/library-media-sprite.svg");
+}
+
+@keyframes zen-library-sprite-play {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(35 * -1 * var(--zen-library-sprite-size)));
   }
 }

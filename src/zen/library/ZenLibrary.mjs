@@ -29,6 +29,10 @@ export class ZenLibrary extends MozLitElement {
     _footer: "#zen-library-footer",
   };
 
+  static tabs = [
+    ["downloads", "pathtoicon", ""]
+  ]
+
   set openProgress(value) {
     const p = value;
     const stealWindowButtonsPastPoint = 0.6;
@@ -211,6 +215,28 @@ export class ZenLibrary extends MozLitElement {
       <hbox id="zen-library-panel">
         <vbox id="zen-library-side">
           <vbox id="zen-library-header"></vbox>
+          <vbox id="zen-library-sidebar-tabs">
+            ${Object.values(lazy.ZenLibrarySections).map(
+              Section => html`
+                <vbox
+                  class="zen-library-tab"
+                  ?active=${this.activeTab === Section.id}
+                  data-section=${Section.id}
+                  @click=${event => {
+                    if (this.activeTab !== Section.id) {
+                      this.activeTab = Section.id;
+                      this.#animateTabIcon(event.currentTarget);
+                    }
+                  }}
+                >
+                  <div class="zen-library-tab-icon">
+                    <div class="zen-library-tab-icon-image"></div>
+                  </div>
+                  <label>${lazy.l10n.formatValueSync(Section.label)}</label>
+                </vbox>
+              `
+            )}
+          </vbox>
           <toolbar
             id="zen-library-footer"
             class="chromeclass-location"
@@ -218,7 +244,7 @@ export class ZenLibrary extends MozLitElement {
             fullscreentoolbar="true"
           ></toolbar>
         </vbox>
-        <vbox id="zen-library-content"> </vbox>
+        <vbox id="zen-library-content"></vbox>
       </hbox>
     `;
   }

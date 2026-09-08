@@ -25,7 +25,9 @@ export class ZenLibrary extends MozLitElement {
   static instance = null;
   #progress = 0;
 
-  // Track the original location of the native buttons so we can restore them
+  #springTarget = 0;
+  #springControls = null;
+
   #originalButtonsParent = null;
   #originalButtonsNextSibling = null;
 

@@ -13,6 +13,15 @@ ChromeUtils.defineLazyGetter(lazy, "appContentWrapper", function () {
   return document.getElementById("zen-appcontent-wrapper");
 });
 
+ChromeUtils.defineLazyGetter(lazy, "motion", () => {
+  Services.scriptloader.loadSubScript(
+    "chrome://browser/content/zen-vendor/motion.min.mjs",
+    window
+  );
+  const motion = window.Motion;
+  delete window.Motion;
+  return motion;
+});
 
 export class ZenLibrary extends MozLitElement {
   static instance = null;
@@ -41,7 +50,6 @@ export class ZenLibrary extends MozLitElement {
     return this.#progress;
   }
 
-  // TEMPORARY spring based library toggle animation
   static toggle() {
     const lib = this.getInstance();
     lib._springTarget = lib._springAnimating
@@ -51,57 +59,21 @@ export class ZenLibrary extends MozLitElement {
       : lib.hasAttribute("open")
         ? 0
         : 1;
-
-    if (!lib._spring) {
-      const speed = 4.0;
-      const invSpringy = 1 / 1.35;
-      lib._spring = {
-        y: lib.openProgress ?? 0,
-        yd: 0,
-        k1: invSpringy / (Math.PI * speed),
-        k2: 1 / (2 * Math.PI * speed) ** 2,
-        k3: 0,
-      };
+    
+    if (lib._springControls) {
+      lib._springControls.stop();
     }
-    if (lib._springFrameId !== undefined) {
-      cancelAnimationFrame(lib._springFrameId);
-    }
-    const animationId = (lib._springAnimationId ?? 0) + 1;
-    lib._springAnimationId = animationId;
-    lib._springAnimating = true;
 
-    let lastTime = performance.now();
-    const animate = now => {
-      if (lib._springAnimationId !== animationId) {
-        return;
+    lib._springControls = lazy.motion.animate(lib.openProgress, lib._springTarget, {
+      type: "spring",
+      stiffness: 630,
+      damping: 47,
+      mass: 1.3,
+      onUpdate: (latest) => {
+        lib.openProgress = latest;
+        lib._springControls = null;
       }
-
-      const spring = lib._spring;
-      const target = lib._springTarget;
-      const deltaTime = Math.min((now - lastTime) / 1000, 0.1);
-      lastTime = now;
-      const stepSize = deltaTime / Math.min(Math.ceil(deltaTime / 0.016), 5);
-
-      for (let i = Math.min(Math.ceil(deltaTime / 0.016), 5); i--; ) {
-        const k2Stable = Math.max(
-          spring.k2,
-          Math.max((stepSize * stepSize + stepSize * spring.k1) / 2, stepSize * spring.k1)
-        );
-        spring.y += spring.yd * stepSize;
-        spring.yd += (stepSize * (target - spring.y - spring.k1 * spring.yd)) / k2Stable;
-      }
-      lib.openProgress = spring.y;
-
-      if (Math.abs(target - spring.y) < 0.001 && Math.abs(spring.yd) < 0.001) {
-        lib.openProgress = spring.y = target;
-        spring.yd = 0;
-        lib._springAnimating = false;
-        lib._springFrameId = undefined;
-        return;
-      }
-      lib._springFrameId = requestAnimationFrame(animate);
-    };
-    lib._springFrameId = requestAnimationFrame(animate);
+    })
   }
 
   static getInstance() {

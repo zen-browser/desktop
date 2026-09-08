@@ -3,20 +3,48 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #ctrlTab-panel {
-  --panel-background-color: light-dark(rgb(248, 248, 250), rgb(24, 24, 25));
-  --panel-text-color: light-dark(rgb(34, 34, 38), rgb(247, 247, 249));
-  --panel-border-color: light-dark(
-    rgba(0, 0, 0, 0.18),
-    rgba(255, 255, 255, 0.22)
+  --ctrlTab-thumbnail-width: 156px;
+  --ctrlTab-thumbnail-height: 106px;
+  --ctrlTab-preview-padding: 8px;
+  --panel-background-color: transparent;
+  --panel-text-color: light-dark(#555, #bfbfbf);
+  --panel-border-color: transparent;
+  --ctrlTab-estimated-canvas-height: round(
+    round(up, 85vw / 7, 1px) * 19 / 28,
+    1px
   );
-  --panel-border-radius: 24px;
-  --panel-padding: 18px;
-  --panel-box-shadow-margin: 0;
+  --panel-padding: calc(
+      (var(--ctrlTab-estimated-canvas-height) * 1.25 - 95px) / 2
+    )
+    0;
+  --panel-box-shadow-margin: 0px;
+  --panel-box-shadow: none;
   -moz-window-shadow: menu;
 }
 
 #ctrlTab-previews {
-  gap: 4px;
+  grid-template-columns: repeat(
+    var(--ctrlTab-previews-per-row),
+    minmax(
+      0,
+      calc(var(--ctrlTab-thumbnail-width) + 2 * var(--ctrlTab-preview-padding))
+    )
+  );
+  gap: 0;
+  width: max-content;
+  max-width: 100%;
+  margin: auto;
+  padding: 8px;
+  background: light-dark(#f4f4f4, #2a2a2a);
+  border: 1px solid light-dark(#c3c3c3, #3e3e3e);
+  border-radius: 24px;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 16%);
+}
+
+#ctrlTab-previews,
+.ctrlTab-preview-inner,
+.ctrlTab-canvas {
+  corner-shape: superellipse(var(--zen-squircle-value));
 }
 
 .ctrlTab-preview {
@@ -27,56 +55,74 @@
 
 .ctrlTab-preview-inner {
   display: grid;
-  grid-template: auto 18px / 16px minmax(0, 1fr);
-  gap: 9px 7px;
+  grid-template: var(--ctrlTab-thumbnail-height) 20px / 16px minmax(0, 1fr);
+  gap: 8px 7px;
   align-items: center;
-  margin-top: 0;
-  padding: 10px;
+  margin: 0;
+  padding: var(--ctrlTab-preview-padding);
   border: 0;
+  border-radius: 14px;
 }
 
 .ctrlTab-canvas {
   grid-area: 1 / 1 / 2 / -1;
-  width: max-content;
+  width: var(--ctrlTab-thumbnail-width);
+  height: var(--ctrlTab-thumbnail-height);
   max-width: 100%;
-  justify-self: center;
-  margin-bottom: 0;
+  margin: 0;
   overflow: hidden;
-  color-scheme: light dark;
-  background-color: light-dark(rgb(255, 255, 255), rgb(17, 17, 18));
-  border-radius: 10px;
-  box-shadow: 0 7px 18px light-dark(rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.38));
+  color-scheme: inherit;
+  background: light-dark(white, #121212);
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px light-dark(rgb(0 0 0 / 7%), #363636);
 }
 
 .ctrlTab-canvas > :is(img, canvas) {
+  min-width: 100%;
   max-width: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  object-fit: cover;
 }
 
 .ctrlTab-favicon-container {
   grid-area: 2 / 1;
+  margin-left: 4px;
 }
 
-.ctrlTab-favicon[src] {
+.ctrlTab-favicon-container,
+#ctrlTab-panel .ctrlTab-favicon {
   width: 16px;
   height: 16px;
+}
+
+#ctrlTab-panel .ctrlTab-favicon {
   margin: 0;
   padding: 0;
-  background-color: transparent;
+  border-radius: 3px;
+  background: transparent;
   box-shadow: none;
 }
 
-.ctrlTab-preview:focus > .ctrlTab-preview-inner {
-  background-color: light-dark(rgb(191, 193, 207), rgb(48, 51, 69));
-  border-radius: 8px;
-  box-shadow: inset 0 0 0 1px
-    light-dark(rgba(47, 52, 72, 0.08), rgba(255, 255, 255, 0.05));
+#ctrlTab-panel .ctrlTab-favicon:not([src]),
+#ctrlTab-panel .ctrlTab-favicon[src=""] {
+  background: #aaa;
+}
+
+#ctrlTab-panel .ctrlTab-preview:focus > .ctrlTab-preview-inner {
+  background: var(--color-accent-primary);
+  color: contrast-color(var(--color-accent-primary));
+  border-radius: 14px;
+  box-shadow: none;
+}
+
+#ctrlTab-panel .ctrlTab-preview:focus .ctrlTab-canvas {
+  box-shadow: 0 0 0 1px light-dark(rgb(0 0 0 / 7%), transparent);
 }
 
 .ctrlTab-label {
   grid-area: 2 / 2;
-  min-width: 0;
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 18px;
+  margin: 0 0 0 4px;
+  font: 500 14px/20px -apple-system;
   text-align: start;
 }

@@ -64,6 +64,14 @@ zen-tabs-select-recently-used-on-close =
 zen-tabs-close-on-back-with-no-history =
     .label = Close tab and switch to its owner tab (or most recently used tab) when going back with no history
 
+zen-settings-workspaces-sync =
+    .label = Sync your sidebar across devices
+    .description = Keep your workspaces, pinned tabs and folders in sync on all your devices through your Mozilla account.
+
+zen-settings-normal-tabs-sync =
+    .label = Include unpinned tabs
+    .description = Also sync the regular tabs of each space, not just your pinned tabs and folders.
+
 zen-settings-workspaces-sync-unpinned-tabs =
     .label = Sync only pinned tabs in workspaces
 

@@ -10,6 +10,11 @@ on:
         required: true
         type: boolean
         default: false
+      disable-pgo:
+        description: "Build without PGO at all"
+        required: false
+        type: boolean
+        default: false
       build-version:
         description: "The version to build"
         required: true
@@ -166,6 +171,8 @@ jobs:
           SURFER_COMPAT: ${{ matrix.arch }}
           SURFER_CERT_PATCH_ISSUER: ${{ secrets.SURFER_CERT_PATCH_ISSUER }}
           SURFER_CERT_PATCH_NAME: ${{ secrets.SURFER_CERT_PATCH_NAME }}
+          SURFER_CERT_PATCH_NAME_PREV: ${{ secrets.SURFER_CERT_PATCH_NAME_PREV }}
+          SURFER_CERT_PATCH_ISSUER_PREV: ${{ secrets.SURFER_CERT_PATCH_ISSUER_PREV }}
         run: |
           . "$HOME/.cargo/env"
           npm run import -- --verbose
@@ -200,8 +207,10 @@ jobs:
           fi
           # Stored in build/windows/.windows-rs-version
           WINDOWS_RS_VERSION=$(cat build/windows/.windows-rs-version)
+          curl -fsSL "https://static.crates.io/crates/cargo-download/cargo-download-0.1.2.crate" | tar xz -C /tmp
+          (cd /tmp/cargo-download-0.1.2 && cargo generate-lockfile && cargo update tinyvec --precise 1.12.0)
+          RUSTFLAGS="--cap-lints=allow" cargo install --path /tmp/cargo-download-0.1.2 --locked
           cd engine/
-          cargo install cargo-download --locked
           cargo download -x windows=$WINDOWS_RS_VERSION
           export CARGO_INCREMENTAL=0
           echo "" >> ../configs/common/mozconfig
@@ -213,13 +222,13 @@ jobs:
 
       - name: Download artifact (if use profdata)
         uses: actions/download-artifact@v4
-        if: ${{ !inputs.generate-pgo && matrix.arch == 'x86_64' }}
+        if: ${{ !inputs.generate-pgo && !inputs.disable-pgo && matrix.arch == 'x86_64' }}
         with:
           path: ~/artifact
           name: windows-profdata-${{ matrix.arch == 'aarch64' && 'arm64' || matrix.arch }}
 
       - name: Show artifact info
-        if: ${{ !inputs.generate-pgo && matrix.arch == 'x86_64' }}
+        if: ${{ !inputs.generate-pgo && !inputs.disable-pgo && matrix.arch == 'x86_64' }}
         run: |
           ls ~/artifact
           ls ~/artifact/en-US.log
@@ -243,6 +252,9 @@ jobs:
           export ZEN_CROSS_COMPILING=1
           if test ${{ inputs.generate-pgo }} = true; then
             export ZEN_GA_GENERATE_PROFILE=1
+          fi
+          if test ${{ inputs.disable-pgo }} = true; then
+            export ZEN_GA_DISABLE_PGO=1
           fi
           if [[ -n ${{ inputs.MOZ_BUILD_DATE }} ]];then
             export MOZ_BUILD_DATE=${{ inputs.MOZ_BUILD_DATE }}

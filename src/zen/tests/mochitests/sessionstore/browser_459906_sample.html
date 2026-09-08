@@ -1,0 +1,41 @@
+<!-- Testcase originally by David Bloom <bloom@google.com> -->
+
+<!DOCTYPE html>
+<title>Test for bug 459906</title>
+
+<body>
+<iframe src="data:text/html;charset=utf-8,not_on_localhost"></iframe>
+<iframe></iframe>
+
+<script type="application/javascript">
+  var loadCount = 0;
+  frames[0].addEventListener("DOMContentLoaded", handleLoad);
+  frames[1].addEventListener("DOMContentLoaded", handleLoad);
+  function handleLoad() {
+    if (++loadCount < 2)
+      return;
+    frames[0].removeEventListener("DOMContentLoaded", handleLoad);
+    frames[1].removeEventListener("DOMContentLoaded", handleLoad);
+    frames[0].document.designMode = "on";
+    frames[0].document.__defineGetter__("designMode", function() {
+      // inject a cross domain file ...
+      var documentInjected = false;
+      document.getElementsByTagName("iframe")[0].onload =
+        function() { documentInjected = true; };
+      frames[0].location = "browser_459906_empty.html";
+
+      // ... and ensure that it has time to load
+      for (var c = 0; !documentInjected && c < 20; c++) {
+        var r = new XMLHttpRequest();
+        r.open("GET", location.href, false);
+        r.overrideMimeType("text/plain");
+        r.send(null);
+      }
+
+      return "on";
+    });
+
+    frames[1].document.designMode = "on";
+  }
+</script>
+</body>

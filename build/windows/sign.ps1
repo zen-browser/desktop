@@ -3,8 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 param(
-    [string][Parameter(Mandatory=$true)]$SignIdentity,
-    [string][Parameter(Mandatory=$true)]$SignIdentityIssuer,
     [string][Parameter(Mandatory=$true)]$GithubRunId
 )
 
@@ -24,11 +22,15 @@ mkdir windsign-temp -ErrorAction SilentlyContinue
 #    echo "Downloaded git objects repo to"
 #} -Verbose -ArgumentList $PWD -Debug
 
+$token = gh auth token
+
 $env:SURFER_MOZCONFIG_ONLY="1"
 $env:SURFER_SIGNING_MODE=""
 
-$env:SURFER_CERT_PATCH_ISSUER=$SignIdentityIssuer
-$env:SURFER_CERT_PATCH_NAME=$SignIdentity
+get-content "$PSScriptRoot/../.env" | foreach {
+    $name, $value = $_.split('=')
+    set-content env:\$name $value
+}
 
 Start-Job -Name "DownloadGitl10n" -ScriptBlock {
     param($PWD)
@@ -46,7 +48,6 @@ npm run build
 
 echo "Downloading artifacts info"
 $artifactsInfo=gh api repos/zen-browser/desktop/actions/runs/$GithubRunId/artifacts
-$token = gh auth token
 
 function New-TemporaryDirectory {
     $tmp = [System.IO.Path]::GetTempPath() # Not $env:TEMP, see https://stackoverflow.com/a/946017

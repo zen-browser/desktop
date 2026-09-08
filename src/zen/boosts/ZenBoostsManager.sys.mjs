@@ -649,9 +649,10 @@ class nsZenBoostsManager {
     );
 
     // Close the editor if the tab is switched
+    const onTabSelect = editor.close.bind(editor);
     parentWindow.gBrowser.tabContainer.addEventListener(
       "TabSelect",
-      editor.close.bind(editor),
+      onTabSelect,
       {
         once: true,
       }
@@ -661,12 +662,23 @@ class nsZenBoostsManager {
       onLocationChange: webProgress => {
         if (webProgress.isTopLevel) {
           editor.close();
-          parentWindow.gBrowser.removeTabsProgressListener(progressListener);
         }
       },
     };
 
     parentWindow.gBrowser.addProgressListener(progressListener);
+
+    editor.addEventListener(
+      "unload",
+      () => {
+        parentWindow.gBrowser.tabContainer.removeEventListener(
+          "TabSelect",
+          onTabSelect
+        );
+        parentWindow.gBrowser.removeProgressListener(progressListener);
+      },
+      { once: true }
+    );
 
     // Give the domain
     editor.domain = domain;

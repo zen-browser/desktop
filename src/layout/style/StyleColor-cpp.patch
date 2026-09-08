@@ -1,16 +1,16 @@
 diff --git a/layout/style/StyleColor.cpp b/layout/style/StyleColor.cpp
-index bbee32af30f35525730a10d0b242c0e8a8fe4695..a590fff105b30bc96fa7a0d8a8d3b1d5aa997e08 100644
+index f922f7fdacc7e1a14beb8da77b48aef3f6ae0b2b..47d19242baaf2a1f25ee07c6e210c839cc7b5089 100644
 --- a/layout/style/StyleColor.cpp
 +++ b/layout/style/StyleColor.cpp
-@@ -9,6 +9,7 @@
- #include "mozilla/dom/BindingDeclarations.h"
+@@ -8,6 +8,7 @@
+ #include "mozilla/StyleColorInlines.h"
  #include "nsIFrame.h"
  #include "nsStyleStruct.h"
 +#include "mozilla/nsZenBoostsBackend.h"
+ #include "nsStyleUtil.h"
  
  namespace mozilla {
- 
-@@ -96,23 +97,24 @@ StyleAbsoluteColor StyleColor::ResolveColor(
+@@ -98,23 +99,24 @@ StyleAbsoluteColor StyleColor::ResolveColor(
  
  template <>
  nscolor StyleColor::CalcColor(nscolor aColor) const {
@@ -40,7 +40,7 @@ index bbee32af30f35525730a10d0b242c0e8a8fe4695..a590fff105b30bc96fa7a0d8a8d3b1d5
  }
  
  StyleAbsoluteColor StyleAbsoluteColor::ToColorSpace(
-@@ -120,7 +122,7 @@ StyleAbsoluteColor StyleAbsoluteColor::ToColorSpace(
+@@ -122,7 +124,7 @@ StyleAbsoluteColor StyleAbsoluteColor::ToColorSpace(
    return Servo_ConvertColorSpace(this, aColorSpace);
  }
  
@@ -49,7 +49,7 @@ index bbee32af30f35525730a10d0b242c0e8a8fe4695..a590fff105b30bc96fa7a0d8a8d3b1d5
    constexpr StyleColorSpace DEST_COLOR_SPACE = StyleColorSpace::Srgb;
  
    constexpr float MIN = 0.0f;
-@@ -162,11 +164,13 @@ nscolor StyleAbsoluteColor::ToColor() const {
+@@ -164,11 +166,13 @@ nscolor StyleAbsoluteColor::ToColor() const {
      }
    }
  

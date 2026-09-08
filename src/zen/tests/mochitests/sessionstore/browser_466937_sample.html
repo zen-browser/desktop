@@ -1,0 +1,20 @@
+<!-- Testcase originally by <moz_bug_r_a4@yahoo.com> -->
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test for bug 466937</title>
+
+<input id="thief" value="/home/user/secret">
+<input type="file" id="reverse_thief">
+<input type="file" id="bystander">
+
+<script>
+  window.addEventListener("DOMContentLoaded", function() {
+    if (!document.location.hash) {
+      document.location.hash = "#ready";
+    } else {
+      document.getElementById("thief").type = "file";
+      document.getElementById("reverse_thief").type = "text";
+    }
+  }, {once: true});
+</script>

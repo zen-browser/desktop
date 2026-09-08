@@ -18,11 +18,11 @@
 
 .urlbar {
   --urlbarview-separator-color: light-dark(hsl(0, 0%, 80%), hsl(0, 0%, 20%));
-  --urlbarview-background-color-hover: var(--toolbarbutton-hover-background);
+  --urlbarview-background-color-hover: var(--toolbarbutton-background-color-hover);
   border-radius: calc(var(--toolbarbutton-border-radius) - 2px);
-  height: var(--urlbar-height);
   --urlbarView-results-padding: 10px !important;
   --urlbar-container-height: 48px !important;
+  --urlbar-input-container-border: none;
 
   --urlbar-margin-inline: 5px;
   --urlbar-container-padding: 4px;
@@ -60,6 +60,9 @@
 .urlbar-background {
   background: var(--zen-toolbar-element-bg) !important;
   border-radius: var(--border-radius-medium);
+  :root:not([zen-single-toolbar="true"]) & {
+    border-radius: calc(var(--border-radius-medium) * var(--zen-squircle-value));
+  }
   outline: none !important;
 
   #urlbar:not([breakout-extend]) & {
@@ -136,8 +139,13 @@
 
   & #identity-box {
     margin-inline-end: 0 !important;
+
+    :root[zen-has-empty-tab="true"] &[pageproxystate="invalid"]:not(.chromeUI) {
+      margin-inline-end: -4px !important;
+    }
+
     &.chromeUI:not([pageproxystate="invalid"]) #identity-icon-box {
-      border-radius: 10px !important;
+      border-radius: calc(10px * var(--zen-squircle-value)) !important;
     }
   }
 
@@ -166,12 +174,8 @@
 }
 
 :root:not([zen-single-toolbar="true"]):not([zen-has-empty-tab="true"]) #urlbar:not([breakout-extend]) .urlbar-input-container {
-  padding: 2px 3px;
+  padding: 2px 5px;
   gap: 2px;
-
-  & .urlbar-page-action {
-    height: 100%;
-  }
 
   & #zen-copy-url-button {
     order: -1;
@@ -326,6 +330,7 @@
     order: 2;
   }
 
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
   #notification-popup-box:not([open]):not(:has(> [showing="true"])) {
     margin-inline-start: calc(-10px - 2 * var(--urlbar-icon-padding));
     opacity: 0;
@@ -346,7 +351,7 @@
       padding: 4px !important;
 
       &:hover {
-        background: var(--toolbarbutton-hover-background);
+        background: var(--toolbarbutton-background-color-hover);
         border-radius: var(--toolbarbutton-border-radius);
         overflow: visible;
       }
@@ -405,7 +410,7 @@
 }
 
 #notification-popup-box {
-  border-radius: 10px !important;
+  border-radius: calc(10px * var(--zen-squircle-value)) !important;
 }
 
 /* Border radius on hover */
@@ -487,9 +492,10 @@
   translate: -50% 0%;
   left: 50% !important;
 
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
   #urlbar-container:has(&) {
     border-radius: var(--border-radius-medium);
-    background: var(--toolbarbutton-hover-background);
+    background: var(--toolbarbutton-background-color-hover);
     height: var(--urlbar-height) !important;
     margin-inline: 0.15rem !important;
     :root:not([zen-single-toolbar="true"]) & {
@@ -633,6 +639,7 @@
 
 #urlbar-label-box,
 #urlbar-search-mode-indicator {
+  --urlbar-basic-component-size: auto;
   background-color: color-mix(in srgb, var(--zen-primary-color) 50%, light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.2)) 50%) !important;
   color: white;
   padding: 4px 8px;
@@ -698,7 +705,7 @@
 
 :root:not([zen-single-toolbar="true"]) #urlbar[breakout-extend]:not([zen-floating-urlbar="true"]) {
   & .urlbar-background {
-    border-radius: 10px !important;
+    border-radius: calc(10px * var(--zen-squircle-value)) !important;
   }
 
   #urlbar-results {
@@ -715,6 +722,10 @@
 .urlbar[noresults] .urlbarView > .urlbarView-body-outer > .urlbarView-body-inner,
 #urlbar-search-mode-indicator-close {
   display: none;
+}
+
+.urlbarView {
+  overflow: visible;
 }
 
 #urlbar-search-mode-indicator-title {

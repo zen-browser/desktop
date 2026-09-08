@@ -37,6 +37,9 @@ ChromeUtils.defineESModuleGetters(lazy, {
 });
 
 const PREF_ICON_ID = "browser.shell.customIcon.id";
+const PREF_ENABLED = "browser.shell.customIcon.enabled";
+const PREF_PER_USER_START_MENU_SHORTCUT_CREATED =
+  "browser.shell.customIcon.perUserStartMenuShortcutCreated";
 const TEST_AUMID = "Test.Firefox.AUMID";
 const TEST_SHORTCUTS = ["C:\\fake\\Desktop\\Nightly.lnk"];
 const RETRO_RESOURCE_ID = ICON_CATALOG.retro2004.iconResourceId;
@@ -54,6 +57,19 @@ function skipOnMsix() {
 
 function exePath() {
   return Services.dirsvc.get("XREExeF", Ci.nsIFile).path;
+}
+
+// A shortcut path in the folder holding the user's pinned taskbar shortcuts.
+function pinnedShortcut() {
+  return PathUtils.join(
+    Services.dirsvc.get("AppData", Ci.nsIFile).path,
+    "Microsoft",
+    "Internet Explorer",
+    "Quick Launch",
+    "User Pinned",
+    "TaskBar",
+    "Nightly.lnk"
+  );
 }
 
 let shellServiceMock = {
@@ -78,8 +94,13 @@ let winTaskbarMock = {
 // the real profiles machinery.
 let spsInitStub;
 
-// Reset stub history + default behaviour, clear the pref, and drop any recorded
-// Glean values before each task.
+// hasSystemWideStartMenuShortcut() does real filesystem/environment-variable
+// work so here we stub it to isolate maybeCreatePerUserStartMenuShortcut()'s
+// own branching logic from that.
+let hasSystemWideStartMenuShortcutStub;
+
+// Reset stub history + default behaviour, clear the prefs, and drop any
+// recorded Glean values before each task.
 function resetMocks() {
   shellServiceMock.enumerateInstallShortcuts.reset();
   shellServiceMock.enumerateInstallShortcuts.resolves(TEST_SHORTCUTS.slice());
@@ -91,7 +112,11 @@ function resetMocks() {
   winTaskbarMock.refreshTaskbarButtons.reset();
   spsInitStub.reset();
   spsInitStub.resolves();
+  hasSystemWideStartMenuShortcutStub.reset();
+  hasSystemWideStartMenuShortcutStub.resolves(true);
   Services.prefs.clearUserPref(PREF_ICON_ID);
+  Services.prefs.setBoolPref(PREF_ENABLED, true);
+  Services.prefs.clearUserPref(PREF_PER_USER_START_MENU_SHORTCUT_CREATED);
   Services.fog.testResetFOG();
 }
 
@@ -138,12 +163,19 @@ add_setup(function () {
   );
 
   spsInitStub = sinon.stub(lazy.SelectableProfileService, "init").resolves();
+  hasSystemWideStartMenuShortcutStub = sinon.stub(
+    CustomIconManager,
+    "hasSystemWideStartMenuShortcut"
+  );
 
   registerCleanupFunction(() => {
     spsInitStub.restore();
+    hasSystemWideStartMenuShortcutStub.restore();
     MockRegistrar.unregister(taskbarCid);
     MockRegistrar.unregister(shellCid);
     Services.prefs.clearUserPref(PREF_ICON_ID);
+    Services.prefs.clearUserPref(PREF_ENABLED);
+    Services.prefs.clearUserPref(PREF_PER_USER_START_MENU_SHORTCUT_CREATED);
   });
 });
 
@@ -739,12 +771,12 @@ add_task(skipOnMsix(), async function test_theme_change_reapplies_variant() {
 });
 
 /**
- * This test verifies that ensureShortcutInPerUserStartMenu() does not create a
+ * This test verifies that maybeCreatePerUserStartMenuShortcut() does not create a
  * shortcut when one already exists in the per-user Start Menu Programs folder.
  */
 add_task(
   skipOnMsix(),
-  async function test_ensureShortcutInPerUserStartMenu_already_exists() {
+  async function test_maybeCreatePerUserStartMenuShortcut_already_exists() {
     resetMocks();
 
     let programsPath = Services.dirsvc.get("Progs", Ci.nsIFile).path;
@@ -752,27 +784,34 @@ add_task(
       programsPath + "\\Nightly.lnk",
     ]);
 
-    await CustomIconManager.ensureShortcutInPerUserStartMenu();
+    await CustomIconManager.maybeCreatePerUserStartMenuShortcut();
 
     Assert.ok(
       shellServiceMock.createShortcut.notCalled,
       "createShortcut not called when a per-user Start Menu shortcut already exists"
     );
+    Assert.ok(
+      Services.prefs.getBoolPref(
+        PREF_PER_USER_START_MENU_SHORTCUT_CREATED,
+        false
+      ),
+      "the created pref is set once an existing shortcut is found"
+    );
   }
 );
 
 /**
- * This test verifies that ensureShortcutInPerUserStartMenu() creates a shortcut
+ * This test verifies that maybeCreatePerUserStartMenuShortcut() creates a shortcut
  * in the Programs folder when none is found among the enumerated shortcuts.
  */
 add_task(
   skipOnMsix(),
-  async function test_ensureShortcutInPerUserStartMenu_creates_shortcut() {
+  async function test_maybeCreatePerUserStartMenuShortcut_creates_shortcut() {
     resetMocks();
     // TEST_SHORTCUTS ("C:\\fake\\Desktop\\Nightly.lnk") does not live in
     // the Programs dir, so the method must create the missing shortcut.
 
-    await CustomIconManager.ensureShortcutInPerUserStartMenu();
+    await CustomIconManager.maybeCreatePerUserStartMenuShortcut();
 
     Assert.ok(
       shellServiceMock.createShortcut.calledOnce,
@@ -799,23 +838,107 @@ add_task(
       "shortcut placed in the Programs location"
     );
     Assert.ok(name.endsWith(".lnk"), "shortcut filename ends with .lnk");
+    Assert.ok(
+      Services.prefs.getBoolPref(
+        PREF_PER_USER_START_MENU_SHORTCUT_CREATED,
+        false
+      ),
+      "the created pref is set once the shortcut is successfully created"
+    );
+  }
+);
+
+/**
+ * This test verifies that maybeCreatePerUserStartMenuShortcut() does nothing
+ * when the custom icon feature is disabled.
+ */
+add_task(
+  skipOnMsix(),
+  async function test_maybeCreatePerUserStartMenuShortcut_disabled_feature() {
+    resetMocks();
+    Services.prefs.setBoolPref(PREF_ENABLED, false);
+
+    await CustomIconManager.maybeCreatePerUserStartMenuShortcut();
+
+    Assert.ok(
+      shellServiceMock.createShortcut.notCalled,
+      "createShortcut not called when the feature is disabled"
+    );
+  }
+);
+
+/**
+ * This test verifies that maybeCreatePerUserStartMenuShortcut() is a no-op once
+ * the created pref has already been set by a prior run, even if the user has
+ * since deleted the shortcut.
+ */
+add_task(
+  skipOnMsix(),
+  async function test_maybeCreatePerUserStartMenuShortcut_skips_once_created() {
+    resetMocks();
+    Services.prefs.setBoolPref(PREF_PER_USER_START_MENU_SHORTCUT_CREATED, true);
+
+    await CustomIconManager.maybeCreatePerUserStartMenuShortcut();
+
+    Assert.ok(
+      shellServiceMock.createShortcut.notCalled,
+      "createShortcut not called once the created pref is set"
+    );
+  }
+);
+
+/**
+ * This test verifies that maybeCreatePerUserStartMenuShortcut() does not create
+ * a shortcut when there is no system-wide Start Menu shortcut to mirror.
+ */
+add_task(
+  skipOnMsix(),
+  async function test_maybeCreatePerUserStartMenuShortcut_no_system_wide_shortcut() {
+    resetMocks();
+    hasSystemWideStartMenuShortcutStub.resolves(false);
+
+    await CustomIconManager.maybeCreatePerUserStartMenuShortcut();
+
+    Assert.ok(
+      shellServiceMock.createShortcut.notCalled,
+      "createShortcut not called when there is no system-wide shortcut to mirror"
+    );
+  }
+);
+
+/**
+ * This test verifies that once a per-user shortcut has been successfully
+ * created, a later call does not attempt to create another one.
+ */
+add_task(
+  skipOnMsix(),
+  async function test_maybeCreatePerUserStartMenuShortcut_second_call_is_noop() {
+    resetMocks();
+
+    await CustomIconManager.maybeCreatePerUserStartMenuShortcut();
+    await CustomIconManager.maybeCreatePerUserStartMenuShortcut();
+
+    Assert.ok(
+      shellServiceMock.createShortcut.calledOnce,
+      "the second call does not attempt to recreate a user-deleted shortcut"
+    );
   }
 );
 
 /**
  * This test verifies that when enumerateInstallShortcuts rejects,
- * ensureShortcutInPerUserStartMenu() swallows the error and does not attempt
+ * maybeCreatePerUserStartMenuShortcut() swallows the error and does not attempt
  * to create a shortcut.
  */
 add_task(
   skipOnMsix(),
-  async function test_ensureShortcutInPerUserStartMenu_enumeration_failure() {
+  async function test_maybeCreatePerUserStartMenuShortcut_enumeration_failure() {
     resetMocks();
     shellServiceMock.enumerateInstallShortcuts.rejects(
       Components.Exception("mock enum failure", Cr.NS_ERROR_FAILURE)
     );
 
-    await CustomIconManager.ensureShortcutInPerUserStartMenu();
+    await CustomIconManager.maybeCreatePerUserStartMenuShortcut();
 
     Assert.ok(
       shellServiceMock.createShortcut.notCalled,
@@ -826,35 +949,42 @@ add_task(
 
 /**
  * This test verifies that when createShortcut rejects,
- * ensureShortcutInPerUserStartMenu() swallows the error and does not throw.
+ * maybeCreatePerUserStartMenuShortcut() swallows the error and does not throw.
  */
 add_task(
   skipOnMsix(),
-  async function test_ensureShortcutInPerUserStartMenu_create_failure() {
+  async function test_maybeCreatePerUserStartMenuShortcut_create_failure() {
     resetMocks();
     shellServiceMock.createShortcut.rejects(
       Components.Exception("mock create failure", Cr.NS_ERROR_FAILURE)
     );
 
-    await CustomIconManager.ensureShortcutInPerUserStartMenu();
+    await CustomIconManager.maybeCreatePerUserStartMenuShortcut();
 
     Assert.ok(
       shellServiceMock.createShortcut.calledOnce,
       "createShortcut was attempted despite the eventual failure"
     );
+    Assert.ok(
+      !Services.prefs.getBoolPref(
+        PREF_PER_USER_START_MENU_SHORTCUT_CREATED,
+        false
+      ),
+      "the created pref is left unset after a failed attempt"
+    );
   }
 );
 
 /**
- * This test verifies that ensureShortcutInPerUserStartMenu() is a no-op on
+ * This test verifies that maybeCreatePerUserStartMenuShortcut() is a no-op on
  * MSIX (packaged) builds where shortcut creation is unsupported.
  */
 add_task(
   { skip_if: () => !ON_MSIX },
-  async function test_ensureShortcutInPerUserStartMenu_noop_on_msix() {
+  async function test_maybeCreatePerUserStartMenuShortcut_noop_on_msix() {
     resetMocks();
 
-    await CustomIconManager.ensureShortcutInPerUserStartMenu();
+    await CustomIconManager.maybeCreatePerUserStartMenuShortcut();
 
     Assert.ok(
       shellServiceMock.enumerateInstallShortcuts.notCalled,
@@ -864,6 +994,103 @@ add_task(
       shellServiceMock.createShortcut.notCalled,
       "no shortcut creation on MSIX"
     );
+  }
+);
+
+/**
+ * This test verifies that the feature stays enabled while our per-user Start
+ * Menu shortcut is still present: it shadows the system-wide one, so we can
+ * still write the shortcut the taskbar takes its icon from.
+ */
+add_task(skipOnMsix(), async function test_shouldDisable_shortcut_present() {
+  resetMocks();
+  Services.prefs.setBoolPref(PREF_PER_USER_START_MENU_SHORTCUT_CREATED, true);
+  hasSystemWideStartMenuShortcutStub.resolves(true);
+  shellServiceMock.enumerateInstallShortcuts.resolves([
+    Services.dirsvc.get("Progs", Ci.nsIFile).path + "\\Nightly.lnk",
+  ]);
+
+  Assert.ok(
+    !(await CustomIconManager.shouldDisableForMissingShortcut()),
+    "does not disable while the per-user Start Menu shortcut is present"
+  );
+});
+
+/**
+ * This test verifies that once our per-user Start Menu shortcut is gone, the
+ * feature is disabled when the system-wide shortcut governs the taskbar icon,
+ * since that lives in an all-users directory we cannot write.
+ */
+add_task(skipOnMsix(), async function test_shouldDisable_system_wide_governs() {
+  resetMocks();
+  Services.prefs.setBoolPref(PREF_PER_USER_START_MENU_SHORTCUT_CREATED, true);
+  hasSystemWideStartMenuShortcutStub.resolves(true);
+
+  Assert.ok(
+    await CustomIconManager.shouldDisableForMissingShortcut(),
+    "disables when the unwritable system-wide shortcut governs the taskbar"
+  );
+});
+
+/**
+ * This test verifies that a remaining taskbar pin keeps the feature enabled
+ * even alongside a system-wide shortcut, since we can still write the pin.
+ */
+add_task(skipOnMsix(), async function test_shouldDisable_pin_still_writable() {
+  resetMocks();
+  Services.prefs.setBoolPref(PREF_PER_USER_START_MENU_SHORTCUT_CREATED, true);
+  hasSystemWideStartMenuShortcutStub.resolves(true);
+  shellServiceMock.enumerateInstallShortcuts.resolves([pinnedShortcut()]);
+
+  Assert.ok(
+    !(await CustomIconManager.shouldDisableForMissingShortcut()),
+    "does not disable while a writable taskbar pin remains"
+  );
+});
+
+/**
+ * This test verifies that with no system-wide shortcut to take over, the
+ * feature stays enabled: the taskbar falls back to the window icon, which we
+ * set at runtime.
+ */
+add_task(
+  skipOnMsix(),
+  async function test_shouldDisable_window_icon_fallback() {
+    resetMocks();
+    Services.prefs.setBoolPref(PREF_PER_USER_START_MENU_SHORTCUT_CREATED, true);
+    hasSystemWideStartMenuShortcutStub.resolves(false);
+
+    Assert.ok(
+      !(await CustomIconManager.shouldDisableForMissingShortcut()),
+      "does not disable when the taskbar falls back to the window icon"
+    );
+  }
+);
+
+/**
+ * This test verifies that ensureAppliedOrRevert() acts on the decision above
+ * instead of reconciling as usual. With a custom icon recorded but the taskbar
+ * no longer overridable, it turns the feature off.
+ */
+add_task(
+  skipOnMsix(),
+  async function test_ensureAppliedOrRevert_disables_feature() {
+    resetMocks();
+    Services.prefs.setStringPref(PREF_ICON_ID, "retro2004");
+    Services.prefs.setBoolPref(PREF_PER_USER_START_MENU_SHORTCUT_CREATED, true);
+    hasSystemWideStartMenuShortcutStub.resolves(true);
+
+    await CustomIconManager.ensureAppliedOrRevert();
+
+    Assert.ok(
+      !Services.prefs.getBoolPref(PREF_ENABLED, false),
+      "the feature is disabled"
+    );
+    Assert.ok(
+      winTaskbarMock.setAllWindowIcons.calledOnceWithExactly(0),
+      "the runtime icon is reverted to the default rather than applied"
+    );
+    Assert.ok(!Services.prefs.prefHasUserValue(PREF_ICON_ID), "pref cleared");
   }
 );
 

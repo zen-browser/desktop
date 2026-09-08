@@ -1,19 +1,19 @@
 diff --git a/browser/themes/shared/urlbar-searchbar.css b/browser/themes/shared/urlbar-searchbar.css
-index 22d624d718a289dd7b84ffc2f04dd35893dfbe95..4f57f7853f3043e3ad01d893aa928b9d2e6f3c16 100644
+index 149f123e26cd79e89432dfeb504ca7218ee04810..7e0e6d981d6c2aa53bc2a76d82d2078419659065 100644
 --- a/browser/themes/shared/urlbar-searchbar.css
 +++ b/browser/themes/shared/urlbar-searchbar.css
 @@ -19,8 +19,8 @@
  
    @media not -moz-pref("browser.nova.enabled") {
-     --urlbar-basic-component-size: calc(var(--urlbar-min-height) - 2 * (var(--urlbar-input-container-border-width) + var(--urlbar-input-container-padding)));
--    --urlbar-icon-padding: calc((var(--urlbar-min-height) - 2px /* border */ - 2px /* padding */ - 16px /* icon */) / 2);
+     --urlbar-basic-component-size: calc(var(--urlbar-height) - 2 * (var(--urlbar-input-container-border-width) + var(--urlbar-input-container-padding)));
+-    --urlbar-icon-padding: calc((var(--urlbar-height) - 2px /* border */ - 2px /* padding */ - 16px /* icon */) / 2);
 -    --urlbar-input-container-padding: round(up, 1px, env(hairline));
-+    --urlbar-icon-padding: calc((var(--urlbar-min-height) - 2px /* border */ - 14px /* icon */) / 2);
++    --urlbar-icon-padding: calc((var(--urlbar-height) - 2px /* border */ - 14px /* icon */) / 2);
 +    --urlbar-input-container-padding: 2px;
    }
    @media (max-width: 770px) {
      --urlbar-container-min-width: 240px;
-@@ -126,7 +126,7 @@ toolbar[inactive="true"] .urlbar,
+@@ -127,7 +127,7 @@ toolbar[inactive="true"] .urlbar,
  .urlbar:not([usertyping]) > .urlbar-input-container > .urlbar-go-button,
  .urlbar:not(#searchbar-new, [focused]) > .urlbar-input-container > .urlbar-go-button,
  #urlbar-revert-button-container {
@@ -22,7 +22,7 @@ index 22d624d718a289dd7b84ffc2f04dd35893dfbe95..4f57f7853f3043e3ad01d893aa928b9d
  }
  
  /* Document Picture-in-Picture API window */
-@@ -403,6 +403,10 @@ toolbar[inactive="true"] .urlbar,
+@@ -405,6 +405,10 @@ toolbar[inactive="true"] .urlbar,
    .urlbar:not([focused])[textoverflow="left"][domaindir="rtl"] > .urlbar-input-container > .urlbar-input-box > & {
      mask-image: linear-gradient(to right, transparent var(--urlbar-scheme-size), black calc(var(--urlbar-scheme-size) + 3ch));
    }
@@ -33,16 +33,18 @@ index 22d624d718a289dd7b84ffc2f04dd35893dfbe95..4f57f7853f3043e3ad01d893aa928b9d
  }
  
  #urlbar-scheme {
-@@ -492,10 +496,14 @@ toolbar[inactive="true"] .urlbar,
+@@ -476,10 +480,15 @@ toolbar[inactive="true"] .urlbar,
+   }
  
    .urlbar[breakout][breakout-extend] {
-     height: auto;
+-    margin-left: calc(-1 * var(--urlbar-margin-inline));
 +    align-items: center;
-+    :root:not([zen-single-toolbar='true']) & {
-     margin-left: calc(-1 * var(--urlbar-margin-inline));
-+    }
      width: calc(var(--urlbar-width) + 2 * var(--urlbar-margin-inline));
  
++    :root:not([zen-single-toolbar="true"]) & {
++      margin-left: calc(-1 * var(--urlbar-margin-inline));
++    }
++
      > .urlbar-input-container {
 +      align-items: center;
        height: var(--urlbar-container-height);

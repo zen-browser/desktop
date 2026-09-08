@@ -40,7 +40,7 @@ html|dialog {
 }
 
 groupbox button {
-  border-radius: 5px !important;
+  border-radius: calc(5px * var(--zen-squircle-value)) !important;
 }
 
 groupbox button,

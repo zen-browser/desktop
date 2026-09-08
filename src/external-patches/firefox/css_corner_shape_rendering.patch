@@ -1,0 +1,2121 @@
+diff --git a/gfx/wr/webrender/res/border_shared.glsl b/gfx/wr/webrender/res/border_shared.glsl
+index f385449fa7..76eba024bd 100644
+--- a/gfx/wr/webrender/res/border_shared.glsl
++++ b/gfx/wr/webrender/res/border_shared.glsl
+@@ -21,31 +21,39 @@ PER_INSTANCE in int aGpuDataAddress;
+ PER_INSTANCE in vec4 aClipParams1;
+ PER_INSTANCE in vec4 aClipParams2;
+ 
++#endif
++
+ struct BorderInstanceGpuData {
+     vec4 rect;
+     vec4 color0;
+     vec4 color1;
+     vec2 widths;
+     vec2 radii;
++#ifdef WR_FEATURE_SUPERELLIPSE
+     float shape;
+     vec2 shape_offset;
+     vec2 inset;
++#endif
+ };
+ 
+ BorderInstanceGpuData fetch_gpu_data(int index) {
+     BorderInstanceGpuData data;
+ 
++#ifdef WR_FEATURE_SUPERELLIPSE
+     vec4 texels[6] = fetch_from_gpu_buffer_6f(index);
++#else
++    vec4 texels[4] = fetch_from_gpu_buffer_4f(index);
++#endif
+     data.rect = texels[0];
+     data.color0 = texels[1];
+     data.color1 = texels[2];
+     data.widths = texels[3].xy;
+     data.radii = texels[3].zw;
++#ifdef WR_FEATURE_SUPERELLIPSE
+     data.shape = texels[4].x;
+     data.shape_offset = texels[4].yz;
+     data.inset = texels[5].xy;
++#endif
+ 
+     return data;
+ }
+-
+-#endif
+diff --git a/gfx/wr/webrender/res/cs_border_segment.glsl b/gfx/wr/webrender/res/cs_border_segment.glsl
+index 6a94117405..51c9318b31 100644
+--- a/gfx/wr/webrender/res/cs_border_segment.glsl
++++ b/gfx/wr/webrender/res/cs_border_segment.glsl
+@@ -15,10 +15,10 @@ flat varying mediump vec4 vColor11;
+ // transition occurs. Used for corners only.
+ flat varying highp vec4 vColorLine;
+ 
+-// x: segment, y: clip mode
++// x: segment, y: clip mode, z: gpu buffer data address
+ // We cast these to/from floats rather than using an ivec due to a driver bug
+ // on Adreno 3xx. See bug 1730458.
+-flat varying mediump vec2 vSegmentClipMode;
++flat varying highp vec3 vSegment_ClipMode_DataAddress;
+ // x, y: styles, z, w: edge axes
+ // We cast these to/from floats rather than using an ivec (and bitshifting)
+ // due to a driver bug on Adreno 3xx. See bug 1730458.
+@@ -32,6 +32,9 @@ flat varying highp vec4 vClipCenter_Sign;
+ // An outer and inner elliptical radii for border
+ // corner clipping.
+ flat varying highp vec4 vClipRadii;
++#ifdef WR_FEATURE_SUPERELLIPSE
++flat varying highp vec4 vClipOffsets;
++#endif
+ 
+ // Reference point for determine edge clip lines.
+ flat varying highp vec4 vEdgeReference;
+@@ -181,7 +184,7 @@ void main(void) {
+             break;
+     }
+ 
+-    vSegmentClipMode = vec2(float(segment), float(clip_mode));
++    vSegment_ClipMode_DataAddress = vec3(float(segment), float(clip_mode), float(aGpuDataAddress));
+     vStyleEdgeAxis = vec4(float(style0), float(style1), float(edge_axis.x), float(edge_axis.y));
+ 
+     vPartialWidths = vec4(data.widths / 3.0, data.widths / 2.0);
+@@ -193,13 +196,31 @@ void main(void) {
+     vec4[2] color1 = get_colors_for_side(data.color1, style1);
+     vColor10 = color1[0];
+     vColor11 = color1[1];
++#ifdef WR_FEATURE_SUPERELLIPSE
++    vClipCenter_Sign = vec4(outer + clip_sign * (data.radii + data.shape_offset), clip_sign);
++#else
+     vClipCenter_Sign = vec4(outer + clip_sign * data.radii, clip_sign);
++#endif
+     vClipRadii = vec4(data.radii, max(data.radii - data.widths, 0.0));
++#ifdef WR_FEATURE_SUPERELLIPSE
++    vClipOffsets = vec4(0.0);
++#endif
+     vColorLine = vec4(outer, data.widths.y * -clip_sign.y, data.widths.x * clip_sign.x);
+     vEdgeReference = vec4(edge_reference, edge_reference + data.widths);
+     vClipParams1 = aClipParams1;
+     vClipParams2 = aClipParams2;
+ 
++#ifdef WR_FEATURE_SUPERELLIPSE
++    if (data.shape != 1.0)
++    {
++        vec2 reference_radii = (data.radii == vec2(0.0)) ? vec2(0.0) : data.radii + data.inset;
++        vec4 contour1 = compute_contoured_superellipse(reference_radii, data.shape, data.inset);
++        vec4 contour2 = compute_contoured_superellipse(reference_radii, data.shape, data.inset + data.widths);
++        vClipOffsets = vec4(contour1.xy, contour2.xy);
++        vClipRadii = vec4(contour1.zw, contour2.zw);
++    }
++#endif
++
+     // For the case of dot and dash clips, optimize the number of pixels that
+     // are hit to just include the dot itself.
+     if (clip_mode == CLIP_DOT) {
+@@ -231,6 +252,7 @@ void main(void) {
+ 
+ #ifdef WR_FRAGMENT_SHADER
+ vec4 evaluate_color_for_style_in_corner(
++    BorderInstanceGpuData data,
+     vec2 clip_relative_pos,
+     int style,
+     vec4 color0,
+@@ -246,24 +268,69 @@ vec4 evaluate_color_for_style_in_corner(
+             // also 0.67 of the radii. Use these to form a
+             // SDF subtraction which will clip out the inside
+             // third of the rounded edge.
+-            float d_radii_a = distance_to_ellipse(
+-                clip_relative_pos,
+-                clip_radii.xy - vPartialWidths.xy
+-            );
+-            float d_radii_b = distance_to_ellipse(
+-                clip_relative_pos,
+-                clip_radii.xy - 2.0 * vPartialWidths.xy
+-            );
++            float d_radii_a;
++            float d_radii_b;
++#ifdef WR_FEATURE_SUPERELLIPSE
++            if (data.shape == 1.0) {
++#endif
++                d_radii_a = distance_to_ellipse(
++                    clip_relative_pos,
++                    clip_radii.xy - vPartialWidths.xy
++                );
++                d_radii_b = distance_to_ellipse(
++                    clip_relative_pos,
++                    clip_radii.xy - 2.0 * vPartialWidths.xy
++                );
++#ifdef WR_FEATURE_SUPERELLIPSE
++            } else {
++                d_radii_a = distance_to_superellipse(
++                    clip_relative_pos - mix(vClipOffsets.xy, vClipOffsets.zw, 1.0 / 3.0),
++                    mix(clip_radii.xy, clip_radii.zw, 1.0 / 3.0),
++                    data.shape
++                );
++                d_radii_b = distance_to_superellipse(
++                    clip_relative_pos - mix(vClipOffsets.xy, vClipOffsets.zw, 2.0 / 3.0),
++                    mix(clip_radii.xy, clip_radii.zw, 2.0 / 3.0),
++                    data.shape
++                );
++
++                // Clamp to the middle of the adjacent borders
++                vec2 included_region_a = data.radii - vPartialWidths.xy - clip_relative_pos;
++                d_radii_a = max(d_radii_a, -min(included_region_a.x, included_region_a.y));
++
++                vec2 included_region_b = data.radii - 2.0 * vPartialWidths.xy - clip_relative_pos;
++                d_radii_b = max(d_radii_b, -min(included_region_b.x, included_region_b.y));
++            }
++#endif
++
+             float d = min(-d_radii_a, d_radii_b);
++
+             color0 *= distance_aa(aa_range, d);
+             break;
+         }
+         case BORDER_STYLE_GROOVE:
+         case BORDER_STYLE_RIDGE: {
+-            float d = distance_to_ellipse(
+-                clip_relative_pos,
+-                clip_radii.xy - vPartialWidths.zw
+-            );
++            float d;
++#ifdef WR_FEATURE_SUPERELLIPSE
++            if (data.shape == 1.0) {
++#endif
++                d = distance_to_ellipse(
++                    clip_relative_pos,
++                    clip_radii.xy - vPartialWidths.zw
++                );
++#ifdef WR_FEATURE_SUPERELLIPSE
++            } else {
++                d = distance_to_superellipse(
++                    clip_relative_pos - mix(vClipOffsets.xy, vClipOffsets.zw, 0.5),
++                    mix(clip_radii.xy, clip_radii.zw, 0.5),
++                    data.shape
++                );
++
++                // Clamp to the middle of the adjacent borders
++                vec2 included_region = data.radii - vPartialWidths.zw - clip_relative_pos;
++                d = max(d, -min(included_region.x, included_region.y));
++            }
++#endif
+             float alpha = distance_aa(aa_range, d);
+             float swizzled_factor;
+             switch (segment) {
+@@ -328,11 +395,14 @@ void main(void) {
+     float aa_range = compute_aa_range(vPos);
+     vec4 color0, color1;
+ 
+-    int segment = int(vSegmentClipMode.x);
+-    int clip_mode = int(vSegmentClipMode.y);
++    int segment = int(vSegment_ClipMode_DataAddress.x);
++    int clip_mode = int(vSegment_ClipMode_DataAddress.y);
++    int data_address = int(vSegment_ClipMode_DataAddress.z);
+     ivec2 style = ivec2(int(vStyleEdgeAxis.x), int(vStyleEdgeAxis.y));
+     ivec2 edge_axis = ivec2(int(vStyleEdgeAxis.z), int(vStyleEdgeAxis.w));
+ 
++    BorderInstanceGpuData data = fetch_gpu_data(data_address);
++
+     float mix_factor = 0.0;
+     if (edge_axis.x != edge_axis.y) {
+         float d_line = distance_to_line(vColorLine.xy, vColorLine.zw, vPos);
+@@ -382,12 +452,31 @@ void main(void) {
+     }
+ 
+     if (in_clip_region) {
+-        float d_radii_a = distance_to_ellipse(clip_relative_pos, vClipRadii.xy);
+-        float d_radii_b = distance_to_ellipse(clip_relative_pos, vClipRadii.zw);
++        float d_radii_a;
++        float d_radii_b;
++
++#ifdef WR_FEATURE_SUPERELLIPSE
++        if (data.shape == 1.0) {
++#endif
++            d_radii_a = distance_to_ellipse(clip_relative_pos, vClipRadii.xy);
++            d_radii_b = distance_to_ellipse(clip_relative_pos, vClipRadii.zw);
++#ifdef WR_FEATURE_SUPERELLIPSE
++        } else {
++            clip_relative_pos = abs(clip_relative_pos) - data.shape_offset;
++            d_radii_a = distance_to_superellipse(clip_relative_pos - vClipOffsets.xy, vClipRadii.xy, data.shape);
++            d_radii_b = distance_to_superellipse(clip_relative_pos - vClipOffsets.zw, vClipRadii.zw, data.shape);
++
++            // exclude the straight border part from the subtracted region
++            vec2 included_region = data.radii - data.widths - clip_relative_pos;
++            d_radii_b = max(d_radii_b, -min(included_region.x, included_region.y));
++        }
++#endif
++
+         float d_radii = max(d_radii_a, -d_radii_b);
+         d = max(d, d_radii);
+-
++        
+         color0 = evaluate_color_for_style_in_corner(
++            data,
+             clip_relative_pos,
+             style.x,
+             vColor00,
+@@ -398,6 +487,7 @@ void main(void) {
+             aa_range
+         );
+         color1 = evaluate_color_for_style_in_corner(
++            data,
+             clip_relative_pos,
+             style.y,
+             vColor10,
+diff --git a/gfx/wr/webrender/res/cs_border_solid.glsl b/gfx/wr/webrender/res/cs_border_solid.glsl
+index 90584346a4..05d314571e 100644
+--- a/gfx/wr/webrender/res/cs_border_solid.glsl
++++ b/gfx/wr/webrender/res/cs_border_solid.glsl
+@@ -8,6 +8,10 @@
+ #define MIX_AA 1
+ #define MIX_NO_AA 2
+ 
++// Address of border data in the GPU Buffer.
++// Packed in to a vector to work around bug 1630356.
++flat varying highp ivec2 vGpuDataAddress;
++
+ // For edges, the colors are the same. For corners, these
+ // are the colors of each edge making up the corner.
+ flat varying mediump vec4 vColor0;
+@@ -29,6 +33,9 @@ flat varying highp vec4 vClipCenter_Sign;
+ // An outer and inner elliptical radii for border
+ // corner clipping.
+ flat varying highp vec4 vClipRadii;
++#ifdef WR_FEATURE_SUPERELLIPSE
++flat varying highp vec4 vClipOffsets;
++#endif
+ 
+ // Position, scale, and radii of horizontally and vertically adjacent corner clips.
+ flat varying highp vec4 vHorizontalClipCenter_Sign;
+@@ -68,9 +75,10 @@ vec2 get_outer_corner_scale(int segment) {
+ 
+ void main(void) {
+     BorderInstanceGpuData data = fetch_gpu_data(aGpuDataAddress);
++    vGpuDataAddress.x = aGpuDataAddress;
+ 
+     int segment = aFlags & 0xff;
+-    bool do_aa = ((aFlags >> 24) & 0xf0) != 0;
++    bool do_aa = ((aFlags >> 28) & 0x1) != 0;
+ 
+     vec2 outer_scale = get_outer_corner_scale(segment);
+     vec2 size = data.rect.zw - data.rect.xy;
+@@ -96,10 +104,28 @@ void main(void) {
+ 
+     vColor0 = data.color0;
+     vColor1 = data.color1;
++#ifdef WR_FEATURE_SUPERELLIPSE
++    vClipCenter_Sign = vec4(outer + clip_sign * (data.radii + data.shape_offset), clip_sign);
++#else
+     vClipCenter_Sign = vec4(outer + clip_sign * data.radii, clip_sign);
++#endif
+     vClipRadii = vec4(data.radii, max(data.radii - data.widths, 0.0));
++#ifdef WR_FEATURE_SUPERELLIPSE
++    vClipOffsets = vec4(0.0);
++#endif
+     vColorLine = vec4(outer, data.widths.y * -clip_sign.y, data.widths.x * clip_sign.x);
+ 
++#ifdef WR_FEATURE_SUPERELLIPSE
++    if (data.shape != 1.0)
++    {
++        vec2 reference_radii = (data.radii == vec2(0.0)) ? vec2(0.0) : data.radii + data.inset;
++        vec4 contour1 = compute_contoured_superellipse(reference_radii, data.shape, data.inset);
++        vec4 contour2 = compute_contoured_superellipse(reference_radii, data.shape, data.inset + data.widths);
++        vClipOffsets = vec4(contour1.xy, contour2.xy);
++        vClipRadii = vec4(contour1.zw, contour2.zw);
++    }
++#endif
++
+     vec2 horizontal_clip_sign = vec2(-clip_sign.x, clip_sign.y);
+     vHorizontalClipCenter_Sign = vec4(aClipParams1.xy +
+                                       horizontal_clip_sign * aClipParams1.zw,
+@@ -118,6 +144,8 @@ void main(void) {
+ 
+ #ifdef WR_FRAGMENT_SHADER
+ void main(void) {
++    BorderInstanceGpuData data = fetch_gpu_data(vGpuDataAddress.x);
++
+     float aa_range = compute_aa_range(vPos);
+     bool do_aa = vMixColors.x != MIX_NO_AA;
+ 
+@@ -137,8 +165,26 @@ void main(void) {
+ 
+     float d = -1.0;
+     if (in_clip_region) {
+-        float d_radii_a = distance_to_ellipse(clip_relative_pos, vClipRadii.xy);
+-        float d_radii_b = distance_to_ellipse(clip_relative_pos, vClipRadii.zw);
++        float d_radii_a;
++        float d_radii_b;
++
++#ifdef WR_FEATURE_SUPERELLIPSE
++        if (data.shape == 1.0) {
++#endif
++            d_radii_a = distance_to_ellipse(clip_relative_pos, vClipRadii.xy);
++            d_radii_b = distance_to_ellipse(clip_relative_pos, vClipRadii.zw);
++#ifdef WR_FEATURE_SUPERELLIPSE
++        } else {
++            clip_relative_pos = abs(clip_relative_pos) - data.shape_offset;
++            d_radii_a = distance_to_superellipse(clip_relative_pos - vClipOffsets.xy, vClipRadii.xy, data.shape);
++            d_radii_b = distance_to_superellipse(clip_relative_pos - vClipOffsets.zw, vClipRadii.zw, data.shape);
++
++            // exclude the straight border part from the subtracted region
++            vec2 included_region = data.radii - data.widths - clip_relative_pos;
++            d_radii_b = max(d_radii_b, -min(included_region.x, included_region.y));
++        }
++#endif
++
+         d = max(d_radii_a, -d_radii_b);
+     }
+ 
+diff --git a/gfx/wr/webrender/res/ellipse.glsl b/gfx/wr/webrender/res/ellipse.glsl
+index cb7d5d89af..7ce1bcacb4 100644
+--- a/gfx/wr/webrender/res/ellipse.glsl
++++ b/gfx/wr/webrender/res/ellipse.glsl
+@@ -27,9 +27,27 @@ float compute_superellipse_half_corner(float shape) {
+     float n = exp2(shape);
+     float convex_half_corner = pow(0.5, 1.0 / n);
+ 
++    // Ensure the curve tends towards 0.75 (which will produce axis-aligned
++    // normals in compute_superellipse_normals()) when shape goes to 1 (round).
++    // This makes the curve continuous from subellipses (shape < 1) to
++    // superellipses (shape > 1).
++    // The original half corner (above) goes to 0.5^0.5 = sqrt(2) / 2 ~= 0.707,
++    // so the delta is about 6% at maximum.
++    const float delta = 0.04289321881345243; // = 0.75 - pow(0.5, 0.5)
++    float falloff = shape * shape; // quadratic falloff
++    convex_half_corner += delta * falloff;
++
+     return convex_half_corner;
+ }
+ 
++// Super cheap approximation of the function above: the delta with quadratic
++// falloff actually makes it almost locally linear for shape values between
++// zero and one.
++float compute_superellipse_half_corner_approx(float shape) {
++    shape = min(1.0, abs(shape));
++    return 0.25 * shape + 0.5;
++}
++
+ #if 0
+ 
+ // Alternate method to find the normals of a superellipse
+@@ -118,8 +136,15 @@ float compute_superellipse_half_corner(float shape) {
+ // dy/dx = -b / a * qx * (1 - x0 / a * qx)^((1-n) / n) # Careful, exponent flipped
+ //
+ vec4 compute_superellipse_normals(vec2 radii, float shape) {
+-    float n = exp2(abs(shape));
+-    float q = pow(0.05, n - 1.0);
++    shape = min(1.0, abs(shape));
++
++    float n = exp2(shape);
++
++    // The damping factor makes q go to zero when shape approches one,
++    // ensuring continuity with higher-order superellipses (for shapes
++    // of 1 and above, the normals should always be axis-aligned)
++    float damping_factor = (1.0 - shape * shape);
++    float q = pow(0.05 * damping_factor, n - 1.0);
+ 
+     // x: dy/dx at (0.05 * radii.x, radii.y)
+     // y: dx/dy at (radii.x, 0.05 * radii.y)
+@@ -137,8 +162,7 @@ vec4 compute_superellipse_normals(vec2 radii, float shape) {
+ //
+ // Returns start and end normals in (x, y) and (z, w) respectively
+ vec4 compute_superellipse_normals(vec2 radii, float shape) {
+-
+-    float convex_half_corner = compute_superellipse_half_corner(shape);
++    float convex_half_corner = compute_superellipse_half_corner_approx(shape);
+     vec2 tangent = vec2(0.5 - 2.0 * convex_half_corner, 2.0 * convex_half_corner - 1.5);
+ 
+     // Avoid dividing by zero
+diff --git a/gfx/wr/webrender/res/ps_quad_box_shadow.glsl b/gfx/wr/webrender/res/ps_quad_box_shadow.glsl
+index 1153b21193..73514b7c4e 100644
+--- a/gfx/wr/webrender/res/ps_quad_box_shadow.glsl
++++ b/gfx/wr/webrender/res/ps_quad_box_shadow.glsl
+@@ -51,7 +51,9 @@ flat varying highp vec4 vElemCenter_Radius_TR;
+ flat varying highp vec4 vElemCenter_Radius_BR;
+ flat varying highp vec4 vElemCenter_Radius_BL;
+ 
++#ifdef WR_FEATURE_SUPERELLIPSE
+ flat varying highp vec4 vElemShape;
++#endif
+ 
+ #ifdef WR_VERTEX_SHADER
+ 
+@@ -62,7 +64,9 @@ void pattern_vertex(PrimitiveInfo info) {
+     vec4 data3 = fetch_from_gpu_buffer_1f(info.pattern_input.x + 3);
+     vec4 data4 = fetch_from_gpu_buffer_1f(info.pattern_input.x + 4);
+     vec4 data5 = fetch_from_gpu_buffer_1f(info.pattern_input.x + 5);
++#ifdef WR_FEATURE_SUPERELLIPSE
+     vec4 data6 = fetch_from_gpu_buffer_1f(info.pattern_input.x + 6);
++#endif
+ 
+     vec2 alloc_size     = data0.xy;
+     vec2 dest_rect_size = data0.zw;
+@@ -86,7 +90,7 @@ void pattern_vertex(PrimitiveInfo info) {
+     // allocation is rounded up from content_device_size, so this edge always lies
+     // inside the entry; using it keeps the mapping stable to sub-texel precision as
+     // the blur animates (bug 2002194).
+-    vec2 content_device_size = data6.xy;
++    vec2 content_device_size = data5.xy;
+     vec2 texture_size = vec2(TEX_SIZE(sColor0));
+     vec2 uv_p0 = info.segment.uv_rect.p0;
+     vec2 uv_p1 = uv_p0 + content_device_size;
+@@ -112,7 +116,9 @@ void pattern_vertex(PrimitiveInfo info) {
+     vElemCenter_Radius_BR = vec4(elem_p1 - r_br, r_br);
+     vElemCenter_Radius_BL = vec4(elem_p0.x + r_bl.x, elem_p1.y - r_bl.y, r_bl);
+ 
+-    vElemShape = data5;
++#ifdef WR_FEATURE_SUPERELLIPSE
++    vElemShape = data6;
++#endif
+ }
+ 
+ #endif
+@@ -172,10 +178,11 @@ vec4 pattern_fragment(vec4 base_color) {
+     // Reconstruct the element rect bounds from the TL and BR corner data.
+     vec4 elem_bounds = vec4(c_tl - r_tl, c_br + r_br);
+ 
+-    vec4 elem_shape = vElemShape;
+-
+     float elem_dist;
++#ifdef WR_FEATURE_SUPERELLIPSE
++    vec4 elem_shape = vElemShape;
+     if (elem_shape == vec4(1.0)) {
++#endif
+         elem_dist = distance_to_rounded_rect(
+             local_pos,
+             elem_plane_tl, vec4(c_tl, inverse_radii_squared(r_tl)),
+@@ -184,6 +191,7 @@ vec4 pattern_fragment(vec4 base_color) {
+             elem_plane_bl, vec4(c_bl, inverse_radii_squared(r_bl)),
+             elem_bounds
+         );
++#ifdef WR_FEATURE_SUPERELLIPSE
+     } else {
+         elem_dist = distance_to_shaped_rect(
+             local_pos,
+@@ -196,6 +204,7 @@ vec4 pattern_fragment(vec4 base_color) {
+             vec4(0.0)
+         );
+     }
++#endif
+ 
+     // Outset (inset=0): dist < 0 = inside element → should be clipped out → use -elem_dist.
+     // Inset (inset=1): dist < 0 = inside element → should be kept → use elem_dist.
+diff --git a/gfx/wr/webrender/res/ps_quad_mask.glsl b/gfx/wr/webrender/res/ps_quad_mask.glsl
+index 6949a343a1..351f300fbc 100644
+--- a/gfx/wr/webrender/res/ps_quad_mask.glsl
++++ b/gfx/wr/webrender/res/ps_quad_mask.glsl
+@@ -21,8 +21,10 @@ flat varying highp vec4 vClipPlane_A;
+ flat varying highp vec4 vClipPlane_B;
+ flat varying highp vec4 vClipPlane_C;
+ 
++#ifdef WR_FEATURE_SUPERELLIPSE
+ flat varying highp vec4 vClipShape;
+ flat varying highp vec4 vClipClampedInset;
++#endif
+ 
+ #endif
+ flat varying highp vec2 vClipMode;
+@@ -42,8 +44,10 @@ struct Clip {
+     vec4 radii_top;
+     vec4 radii_bottom;
+ 
++#ifdef WR_FEATURE_SUPERELLIPSE
+     vec4 shape;
+     vec4 inset;
++#endif
+ #endif
+     float mode;
+     int space;
+@@ -60,18 +64,25 @@ Clip fetch_clip(int index) {
+     clip.radii = texels[1];
+     clip.mode = texels[2].x;
+ #else
++#ifdef WR_FEATURE_SUPERELLIPSE
+     vec4 texels[6] = fetch_from_gpu_buffer_6f(index);
++#else
++    vec4 texels[4] = fetch_from_gpu_buffer_4f(index);
++#endif
+     clip.rect = RectWithEndpoint(texels[0].xy, texels[0].zw);
+     clip.radii_top = texels[1];
+     clip.radii_bottom = texels[2];
+     clip.mode = texels[3].x;
++#ifdef WR_FEATURE_SUPERELLIPSE
+     clip.shape = texels[4];
+     clip.inset = texels[5];
++#endif
+ #endif
+ 
+     return clip;
+ }
+ 
++#ifdef WR_FEATURE_SUPERELLIPSE
+ vec4 precalc_corner(vec2 center, vec2 radii, vec2 inset, vec2 clip_sign, float k) {
+     if (k == 1.0) {
+         // round/ellipse corner, precalc the ellipse parameters
+@@ -87,6 +98,7 @@ vec4 precalc_corner(vec2 center, vec2 radii, vec2 inset, vec2 clip_sign, float k
+         return vec4(center, inverse_radii(radii));
+     }
+ }
++#endif
+ 
+ void pattern_vertex(PrimitiveInfo prim_info) {
+ 
+@@ -123,6 +135,7 @@ void pattern_vertex(PrimitiveInfo prim_info) {
+     vec2 r_br = clip.radii_bottom.zw;
+     vec2 r_bl = clip.radii_bottom.xy;
+ 
++#ifdef WR_FEATURE_SUPERELLIPSE
+     vClipCenter_Radius_TL = precalc_corner(clip.rect.p0 + r_tl,
+                                            r_tl,
+                                            clip.inset.wx,
+@@ -148,6 +161,21 @@ void pattern_vertex(PrimitiveInfo prim_info) {
+                                            clip.inset.wz,
+                                            vec2(-1.0, 1.0),
+                                            clip.shape.w);
++#else
++    vClipCenter_Radius_TL = vec4(clip.rect.p0 + r_tl,
++                                 inverse_radii_squared(r_tl));
++
++    vClipCenter_Radius_TR = vec4(clip.rect.p1.x - r_tr.x,
++                                 clip.rect.p0.y + r_tr.y,
++                                 inverse_radii_squared(r_tr));
++
++    vClipCenter_Radius_BR = vec4(clip.rect.p1 - r_br,
++                                 inverse_radii_squared(r_br));
++
++    vClipCenter_Radius_BL = vec4(clip.rect.p0.x + r_bl.x,
++                                 clip.rect.p1.y - r_bl.y,
++                                 inverse_radii_squared(r_bl));
++#endif
+ 
+     // We need to know the half-spaces of the corners separate from the center
+     // and radius. We compute a point that falls on the diagonal (which is just
+@@ -172,9 +200,11 @@ void pattern_vertex(PrimitiveInfo prim_info) {
+     vClipPlane_B = vec4(tr.y, tr.z, br.x, br.y);
+     vClipPlane_C = vec4(br.z, bl.x, bl.y, bl.z);
+ 
++#ifdef WR_FEATURE_SUPERELLIPSE
+     vClipShape = clip.shape;
+     vClipClampedInset = min(clip.inset, 0.0);
+ #endif
++#endif
+ 
+ }
+ #endif
+@@ -207,7 +237,9 @@ vec4 pattern_fragment(vec4 _base_color) {
+     vec3 plane_bl = vec3(vClipPlane_C.y, vClipPlane_C.z, vClipPlane_C.w);
+ 
+     float dist;
++#ifdef WR_FEATURE_SUPERELLIPSE
+     if (vClipShape == vec4(1.0)) {
++#endif
+         dist = distance_to_rounded_rect(
+             clip_local_pos,
+             plane_tl,
+@@ -220,6 +252,7 @@ vec4 pattern_fragment(vec4 _base_color) {
+             vClipCenter_Radius_BL,
+             vTransformBounds
+         );
++#ifdef WR_FEATURE_SUPERELLIPSE
+     } else {
+         dist = distance_to_shaped_rect(
+             clip_local_pos,
+@@ -232,6 +265,7 @@ vec4 pattern_fragment(vec4 _base_color) {
+             vClipClampedInset
+         );
+     }
++#endif
+ #endif
+ 
+     // Compute AA for the given dist and range.
+@@ -286,8 +320,26 @@ void swgl_drawSpanR8() {
+     vec4 clip_dist =
+         mix(clip_rect, clip_rect.zwxy, lessThan(local_step, vec2(0.0)).xyxy)
+             - local_pos0.xyxy;
++
++    // Half-width, in local units, of the band around an edge over which
++    // distance_aa() produces partial coverage.
++    float aa_band = 0.5 * recip(aa_range);
++    // An axis the span does not step along has the same distance to its two
++    // edges for every pixel of the span, so the inside/outside test below
++    // cannot resolve an edge that runs parallel to the span and coverage ends
++    // up quantized to whole spans. Grow the rect by the AA band so that a span
++    // landing inside the band counts as inside, which leaves the corner
++    // selection below unchanged, and remember that the span is only partially
++    // covered so the opaque run can be dropped further down.
++    // `inset` is the distance from the span to the nearer of an axis' two
++    // edges, positive when the span is between them.
++    vec2 inset = min(-clip_dist.xy, clip_dist.zw);
++    bvec2 flat_axis = equal(local_step, vec2(0.0));
++    bvec2 partial = lessThan(inset, vec2(aa_band));
++    bool aa_span = (flat_axis.x && partial.x) || (flat_axis.y && partial.y);
++
+     clip_dist =
+-        mix(1.0e6 * step(0.0, clip_dist),
++        mix(1.0e6 * step(0.0, clip_dist - vec4(aa_band, aa_band, -aa_band, -aa_band)),
+             clip_dist * recip(local_step).xyxy,
+             notEqual(local_step, vec2(0.0)).xyxy);
+ 
+@@ -342,9 +394,9 @@ void swgl_drawSpanR8() {
+     #else
+         // The span fast path only handles elliptical corners. For superellipse
+         // shapes, bail out and let SWGL fall back to the fragment shader.
+-        if (vClipShape != vec4(1.0)) {
++        #ifdef WR_FEATURE_SUPERELLIPSE
+             return;
+-        }
++        #endif
+ 
+         // Unpack the corner half-spaces packed into vClipPlane_A/B/C.
+         vec3 plane_tl = vec3(vClipPlane_A.x, vClipPlane_A.y, vClipPlane_A.z);
+@@ -372,6 +424,12 @@ void swgl_drawSpanR8() {
+     aa_start -= aa_margin;
+     aa_end += aa_margin;
+ 
++    if (aa_span) {
++        // No pixel of the span is fully covered, so collapse the opaque run and
++        // let the anti-aliased runs on either side of it cover the whole span.
++        opaque_end = min(opaque_end, opaque_start);
++    }
++
+     ivec4 steps = ivec4(clamp(
+         swgl_SpanLength -
+             swgl_StepSize *
+diff --git a/gfx/wr/webrender/src/batch.rs b/gfx/wr/webrender/src/batch.rs
+index e137afd807..eb5de7a9fb 100644
+--- a/gfx/wr/webrender/src/batch.rs
++++ b/gfx/wr/webrender/src/batch.rs
+@@ -1225,9 +1225,11 @@ impl BatchBuilder {
+ #[cfg_attr(feature = "replay", derive(Deserialize))]
+ pub struct ClipMaskInstanceList {
+     pub mask_instances_fast: FrameVec<MaskInstance>,
++    pub mask_instances_superellipse: FrameVec<MaskInstance>,
+     pub mask_instances_slow: FrameVec<MaskInstance>,
+ 
+     pub mask_instances_fast_with_scissor: FastHashMap<DeviceIntRect, FrameVec<MaskInstance>>,
++    pub mask_instances_superellipse_with_scissor: FastHashMap<DeviceIntRect, FrameVec<MaskInstance>>,
+     pub mask_instances_slow_with_scissor: FastHashMap<DeviceIntRect, FrameVec<MaskInstance>>,
+ 
+     pub image_mask_instances: FastHashMap<TextureSource, FrameVec<PrimitiveInstanceData>>,
+@@ -1238,8 +1240,10 @@ impl ClipMaskInstanceList {
+     pub fn new(memory: &FrameMemory) -> Self {
+         ClipMaskInstanceList {
+             mask_instances_fast: memory.new_vec(),
++            mask_instances_superellipse: memory.new_vec(),
+             mask_instances_slow: memory.new_vec(),
+             mask_instances_fast_with_scissor: FastHashMap::default(),
++            mask_instances_superellipse_with_scissor: FastHashMap::default(),
+             mask_instances_slow_with_scissor: FastHashMap::default(),
+             image_mask_instances: FastHashMap::default(),
+             image_mask_instances_with_scissor: FastHashMap::default(),
+@@ -1251,16 +1255,20 @@ impl ClipMaskInstanceList {
+         // a new member is added.
+         let ClipMaskInstanceList {
+             mask_instances_fast,
++            mask_instances_superellipse,
+             mask_instances_slow,
+             mask_instances_fast_with_scissor,
++            mask_instances_superellipse_with_scissor,
+             mask_instances_slow_with_scissor,
+             image_mask_instances,
+             image_mask_instances_with_scissor,
+         } = self;
+ 
+         mask_instances_fast.is_empty()
++            && mask_instances_superellipse.is_empty()
+             && mask_instances_slow.is_empty()
+             && mask_instances_fast_with_scissor.is_empty()
++            && mask_instances_superellipse_with_scissor.is_empty()
+             && mask_instances_slow_with_scissor.is_empty()
+             && image_mask_instances.is_empty()
+             && image_mask_instances_with_scissor.is_empty()
+diff --git a/gfx/wr/webrender/src/border.rs b/gfx/wr/webrender/src/border.rs
+index eb9381f7d1..b6158fde38 100644
+--- a/gfx/wr/webrender/src/border.rs
++++ b/gfx/wr/webrender/src/border.rs
+@@ -857,10 +857,13 @@ fn add_segment(
+     v_adjacent_corner_radius: DeviceSize,
+     gpu_buffer_builder: &mut GpuBufferBuilderF,
+ ) {
++    let superellipse = shape != 1.0;
++
+     let base_flags = (segment as i32) |
+                      ((style0 as i32) << 8) |
+                      ((style1 as i32) << 16) |
+-                     ((do_aa as i32) << 28);
++                     ((do_aa as i32) << 28) |
++                     ((superellipse as i32) << 29);
+ 
+     let instance_gpu_data = BorderInstanceGpuData {
+         local_rect: task_rect,
+@@ -877,7 +880,7 @@ fn add_segment(
+         task_origin: DevicePoint::zero(),
+         flags: base_flags,
+         clip_params: [0.0; 8],
+-        gpu_data_address: instance_gpu_data.write(gpu_buffer_builder)
++        gpu_data_address: instance_gpu_data.write(superellipse, gpu_buffer_builder)
+     };
+ 
+     match segment {
+diff --git a/gfx/wr/webrender/src/gpu_types.rs b/gfx/wr/webrender/src/gpu_types.rs
+index a53058b470..6373884471 100644
+--- a/gfx/wr/webrender/src/gpu_types.rs
++++ b/gfx/wr/webrender/src/gpu_types.rs
+@@ -194,14 +194,17 @@ pub struct BorderInstanceGpuData {
+ }
+ 
+ impl BorderInstanceGpuData {
+-    pub fn write(&self, gpu_buffer_builder: &mut GpuBufferBuilderF) -> GpuBufferAddress {
+-        let mut writer = gpu_buffer_builder.write_blocks(6);
++    pub fn write(&self, superellipse: bool, gpu_buffer_builder: &mut GpuBufferBuilderF) -> GpuBufferAddress {
++        let block_count = if superellipse { 6 } else { 4 };
++        let mut writer = gpu_buffer_builder.write_blocks(block_count);
+         writer.push_one(self.local_rect);
+         writer.push_one(self.color0);
+         writer.push_one(self.color1);
+         writer.push_one([self.widths.width, self.widths.height, self.radius.width, self.radius.height]);
+-        writer.push_one([self.shape, self.shape_offset.width, self.shape_offset.height, 0.0]);
+-        writer.push_one([self.inset.width, self.inset.height, 0.0, 0.0]);
++        if superellipse {
++            writer.push_one([self.shape, self.shape_offset.width, self.shape_offset.height, 0.0]);
++            writer.push_one([self.inset.width, self.inset.height, 0.0, 0.0]);
++        }
+ 
+         writer.finish()
+     }
+diff --git a/gfx/wr/webrender/src/pattern/box_shadow.rs b/gfx/wr/webrender/src/pattern/box_shadow.rs
+index 1cee87e980..6d0cb1797d 100644
+--- a/gfx/wr/webrender/src/pattern/box_shadow.rs
++++ b/gfx/wr/webrender/src/pattern/box_shadow.rs
+@@ -43,7 +43,10 @@ impl PatternBuilder for BoxShadowPatternData {
+         _ctx: &PatternBuilderContext,
+         state: &mut PatternBuilderState,
+     ) -> Pattern {
+-        let mut writer = state.frame_gpu_data.f32.write_blocks(7);
++        let superellipse = !self.element_radius.shapes_all_round();
++
++        let block_count = if superellipse { 7 } else { 6 };
++        let mut writer = state.frame_gpu_data.f32.write_blocks(block_count);
+         writer.push_one([
+             self.shadow_rect_alloc_size.width,
+             self.shadow_rect_alloc_size.height,
+@@ -74,22 +77,24 @@ impl PatternBuilder for BoxShadowPatternData {
+             self.element_radius.bottom_left.width,
+             self.element_radius.bottom_left.height,
+         ]);
+-        writer.push_one([
+-            self.element_radius.shape_top_left,
+-            self.element_radius.shape_top_right,
+-            self.element_radius.shape_bottom_right,
+-            self.element_radius.shape_bottom_left,
+-        ]);
+         writer.push_one([
+             self.content_device_size.width,
+             self.content_device_size.height,
+             0.0,
+             0.0,
+         ]);
++        if superellipse {
++            writer.push_one([
++                self.element_radius.shape_top_left,
++                self.element_radius.shape_top_right,
++                self.element_radius.shape_bottom_right,
++                self.element_radius.shape_bottom_left,
++            ]);
++        }
+         let addr = writer.finish();
+ 
+         Pattern {
+-            kind: PatternKind::BoxShadow,
++            kind: if superellipse { PatternKind::BoxShadowSuperellipse } else { PatternKind::BoxShadow },
+             shader_input: PatternShaderInput(addr.as_int(), 0),
+             texture_input: PatternTextureInput::new(self.render_task),
+             base_color: self.color,
+diff --git a/gfx/wr/webrender/src/pattern/mod.rs b/gfx/wr/webrender/src/pattern/mod.rs
+index e3c1d9c771..8fb3d66f74 100644
+--- a/gfx/wr/webrender/src/pattern/mod.rs
++++ b/gfx/wr/webrender/src/pattern/mod.rs
+@@ -31,32 +31,33 @@ pub enum PatternKind {
+ 
+     Mask = 3,
+     BoxShadow = 4,
++    BoxShadowSuperellipse = 5,
+     // Variants of ColorOrTexture that use a non-default sampler type
+     // (samplerExternalOES / __samplerExternal2DY2YEXT / sampler2DRect). The
+     // quad shader is compiled in matching per-kind variants; see
+     // ps_quad_textured.glsl.
+-    TextureExternal = 5,
+-    TextureExternalBT709 = 6,
+-    TextureRect = 7,
++    TextureExternal = 6,
++    TextureExternalBT709 = 7,
++    TextureRect = 8,
+     // Samples up to three planes (sColor0/1/2) and converts from YUV to RGB.
+     // Like ColorOrTexture, the YUV pattern comes in sampler-type-specific
+     // variants so that the planes are sampled with the matching sColor
+     // declaration; see ps_quad_yuv.glsl. `Yuv` is the default (TEXTURE_2D).
+-    Yuv = 8,
+-    YuvTextureExternal = 9,
+-    YuvTextureExternalBT709 = 10,
+-    YuvTextureRect = 11,
++    Yuv = 9,
++    YuvTextureExternal = 10,
++    YuvTextureExternalBT709 = 11,
++    YuvTextureRect = 12,
+     // Samples a captured backdrop texture using a (bilerp) 4-corner uv quad.
+-    Backdrop = 12,
++    Backdrop = 13,
+     // Applies a filter to a sampled source texture; see ps_quad_blend.glsl.
+-    Blend = 13,
++    Blend = 14,
+     // Composites a picture over its backdrop with a software mix-blend-mode;
+     // samples two textures (backdrop + source). See ps_quad_mix_blend.glsl.
+-    MixBlend = 14,
++    MixBlend = 15,
+     // When adding patterns, don't forget to update the NUM_PATTERNS constant.
+ }
+ 
+-pub const NUM_PATTERNS: u32 = 15;
++pub const NUM_PATTERNS: u32 = 16;
+ 
+ impl PatternKind {
+     pub fn from_u32(val: u32) -> Self {
+diff --git a/gfx/wr/webrender/src/quad.rs b/gfx/wr/webrender/src/quad.rs
+index 1a5d92bf6d..185f6e3ee6 100644
+--- a/gfx/wr/webrender/src/quad.rs
++++ b/gfx/wr/webrender/src/quad.rs
+@@ -1809,7 +1809,7 @@ pub fn write_rounded_rect_clip_blocks(
+     radius: &BorderRadius,
+     inset: LayoutSideOffsets,
+     mode: ClipMode,
+-) -> (GpuBufferAddress, bool) {
++) -> (GpuBufferAddress, bool, bool) {
+     let radius = clamped_radius(radius, clip_rect.size());
+ 
+     if radius.can_use_fast_path_in(&clip_rect) {
+@@ -1823,9 +1823,11 @@ pub fn write_rounded_rect_clip_blocks(
+         ]);
+         writer.push_one([mode as i32 as f32, 0.0, 0.0, 0.0]);
+ 
+-        (writer.finish(), true)
++        (writer.finish(), true, false)
+     } else {
+-        let mut writer = gpu_buffer.write_blocks(6);
++        let superellipse = !radius.shapes_all_round();
++        let block_count = if superellipse { 6 } else { 4 };
++        let mut writer = gpu_buffer.write_blocks(block_count);
+         writer.push_one(clip_rect);
+         writer.push_one([
+             radius.top_left.width,
+@@ -1840,15 +1842,17 @@ pub fn write_rounded_rect_clip_blocks(
+             radius.bottom_right.height,
+         ]);
+         writer.push_one([mode as i32 as f32, 0.0, 0.0, 0.0]);
+-        writer.push_one([
+-            radius.shape_top_left,
+-            radius.shape_top_right,
+-            radius.shape_bottom_right,
+-            radius.shape_bottom_left,
+-        ]);
+-        writer.push_one(inset);
++        if superellipse {
++            writer.push_one([
++                radius.shape_top_left,
++                radius.shape_top_right,
++                radius.shape_bottom_right,
++                radius.shape_bottom_left,
++            ]);
++            writer.push_one(inset);
++        }
+ 
+-        (writer.finish(), false)
++        (writer.finish(), false, superellipse)
+     }
+ }
+ 
+@@ -1867,7 +1871,7 @@ pub fn prepare_clip_task(
+     rg_builder: &mut RenderTaskGraphBuilder,
+     sub_tasks: &mut SubTaskRange,
+ ) {
+-    let (clip_address, fast_path) = match clip_item.kind {
++    let (clip_address, fast_path, superellipse) = match clip_item.kind {
+         ClipItemKind::RoundedRectangle { radius, inset, mode } => {
+             write_rounded_rect_clip_blocks(
+                 gpu_buffer,
+@@ -1884,7 +1888,7 @@ pub fn prepare_clip_task(
+             writer.push_one([mode as i32 as f32, 0.0, 0.0, 0.0]);
+             let clip_address = writer.finish();
+ 
+-            (clip_address, true)
++            (clip_address, true, false)
+         }
+         ClipItemKind::Image { .. } => {
+             let transform_id = transforms.gpu.get_id_with_post_scale(
+@@ -2035,6 +2039,7 @@ pub fn prepare_clip_task(
+             clip_space,
+             needs_scissor_rect,
+             rounded_rect_fast_path: fast_path,
++            rounded_rect_superellipse: superellipse,
+         }),
+     );
+ }
+diff --git a/gfx/wr/webrender/src/render_target.rs b/gfx/wr/webrender/src/render_target.rs
+index d393c99a72..21853655a9 100644
+--- a/gfx/wr/webrender/src/render_target.rs
++++ b/gfx/wr/webrender/src/render_target.rs
+@@ -35,6 +35,7 @@ use crate::spatial_tree::SpatialNodeIndex;
+ 
+ const STYLE_SOLID: i32 = ((BorderStyle::Solid as i32) << 8) | ((BorderStyle::Solid as i32) << 16);
+ const STYLE_MASK: i32 = 0x00FF_FF00;
++const SUPERELLIPSE_MASK: i32 = 1 << 29;
+ 
+ /// A tag used to identify the output format of a `RenderTarget`.
+ #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+@@ -165,6 +166,8 @@ pub struct RenderTarget {
+ 
+     pub border_segments_complex: FrameVec<BorderInstance>,
+     pub border_segments_solid: FrameVec<BorderInstance>,
++    pub border_segments_complex_superellipse: FrameVec<BorderInstance>,
++    pub border_segments_solid_superellipse: FrameVec<BorderInstance>,
+     pub line_decorations: FrameVec<LineDecorationJob>,
+ 
+     // Clearing render targets has a fair amount of special cases.
+@@ -225,6 +228,8 @@ impl RenderTarget {
+             clip_masks: ClipMaskInstanceList::new(memory),
+             border_segments_complex: memory.new_vec(),
+             border_segments_solid: memory.new_vec(),
++            border_segments_complex_superellipse: memory.new_vec(),
++            border_segments_solid_superellipse: memory.new_vec(),
+             clears: memory.new_vec(),
+             line_decorations: memory.new_vec(),
+         }
+@@ -443,7 +448,7 @@ impl RenderTarget {
+ 
+                 let device_rect = DeviceRect::from_size(target_rect.size().to_f32());
+ 
+-                let (clip_address, fast_path) = quad::write_rounded_rect_clip_blocks(
++                let (clip_address, fast_path, superellipse) = quad::write_rounded_rect_clip_blocks(
+                     &mut gpu_buffer_builder.f32,
+                     region_task.clip_rect,
+                     &region_task.radius,
+@@ -497,6 +502,8 @@ impl RenderTarget {
+ 
+                         if fast_path {
+                             self.clip_masks.mask_instances_fast.push(instance);
++                        } else if superellipse {
++                            self.clip_masks.mask_instances_superellipse.push(instance);
+                         } else {
+                             self.clip_masks.mask_instances_slow.push(instance);
+                         }
+@@ -547,10 +554,19 @@ impl RenderTarget {
+                     // TODO(gw): It may be better to store the task origin in
+                     //           the render task data instead of per instance.
+                     instance.task_origin = task_origin;
++                    let superellipse = (instance.flags & SUPERELLIPSE_MASK) != 0;
+                     if instance.flags & STYLE_MASK == STYLE_SOLID {
+-                        self.border_segments_solid.push(instance);
++                        if superellipse {
++                            self.border_segments_solid_superellipse.push(instance);
++                        } else {
++                            self.border_segments_solid.push(instance);
++                        }
+                     } else {
+-                        self.border_segments_complex.push(instance);
++                        if superellipse {
++                            self.border_segments_complex_superellipse.push(instance);
++                        } else {
++                            self.border_segments_complex.push(instance);
++                        }
+                     }
+                 }
+             }
+@@ -927,6 +943,11 @@ fn add_rect_clip_task_to_batch(
+                             .entry(*target_rect)
+                             .or_insert_with(|| memory.new_vec())
+                             .push(instance);
++                } else if task.rounded_rect_superellipse {
++                    results.mask_instances_superellipse_with_scissor
++                            .entry(*target_rect)
++                            .or_insert_with(|| memory.new_vec())
++                            .push(instance);
+                 } else {
+                     results.mask_instances_slow_with_scissor
+                             .entry(*target_rect)
+@@ -936,6 +957,8 @@ fn add_rect_clip_task_to_batch(
+             } else {
+                 if task.rounded_rect_fast_path {
+                     results.mask_instances_fast.push(instance);
++                } else if task.rounded_rect_superellipse {
++                    results.mask_instances_superellipse.push(instance);
+                 } else {
+                     results.mask_instances_slow.push(instance);
+                 }
+diff --git a/gfx/wr/webrender/src/render_task.rs b/gfx/wr/webrender/src/render_task.rs
+index 4501e2de8b..b4e1478192 100644
+--- a/gfx/wr/webrender/src/render_task.rs
++++ b/gfx/wr/webrender/src/render_task.rs
+@@ -2242,6 +2242,7 @@ pub struct RectangleClipSubTask {
+     pub quad_flags: QuadFlags,
+     pub needs_scissor_rect: bool,
+     pub rounded_rect_fast_path: bool,
++    pub rounded_rect_superellipse: bool,
+ }
+ 
+ /// An clip applied to a render task using the multiply blend mode on top of
+diff --git a/gfx/wr/webrender/src/renderer/mod.rs b/gfx/wr/webrender/src/renderer/mod.rs
+index 024e1b63c4..d177263096 100644
+--- a/gfx/wr/webrender/src/renderer/mod.rs
++++ b/gfx/wr/webrender/src/renderer/mod.rs
+@@ -253,6 +253,7 @@ impl BatchKind {
+             BatchKind::Quad(PatternKind::Gradient) => GPU_TAG_GRADIENT,
+             BatchKind::Quad(PatternKind::Repeat) => GPU_TAG_REPEAT,
+             BatchKind::Quad(PatternKind::BoxShadow) => GPU_TAG_PRIMITIVE,
++            BatchKind::Quad(PatternKind::BoxShadowSuperellipse) => GPU_TAG_PRIMITIVE,
+             BatchKind::Quad(PatternKind::Yuv) => GPU_TAG_BRUSH_YUV_IMAGE,
+             BatchKind::Quad(PatternKind::YuvTextureExternal) => GPU_TAG_BRUSH_YUV_IMAGE,
+             BatchKind::Quad(PatternKind::YuvTextureExternalBT709) => GPU_TAG_BRUSH_YUV_IMAGE,
+@@ -2452,6 +2453,50 @@ impl Renderer {
+                 self.device.disable_scissor();
+             }
+ 
++            if !masks.mask_instances_superellipse.is_empty() {
++                self.shaders.borrow_mut().ps_mask_superellipse().bind(
++                    &mut self.device,
++                    projection,
++                    None,
++                    &mut self.renderer_errors,
++                    &mut self.profile,
++                    &mut self.command_log,
++                );
++
++                self.draw_instanced_batch(
++                    &masks.mask_instances_superellipse,
++                    VertexArrayKind::Mask,
++                    &BatchTextures::empty(),
++                    stats,
++                );
++            }
++
++            if !masks.mask_instances_superellipse_with_scissor.is_empty() {
++                self.shaders.borrow_mut().ps_mask_superellipse().bind(
++                    &mut self.device,
++                    projection,
++                    None,
++                    &mut self.renderer_errors,
++                    &mut self.profile,
++                    &mut self.command_log,
++                );
++
++                self.device.enable_scissor();
++
++                for (scissor_rect, instances) in &masks.mask_instances_superellipse_with_scissor {
++                    self.device.set_scissor_rect(draw_target.to_framebuffer_rect(*scissor_rect));
++
++                    self.draw_instanced_batch(
++                        instances,
++                        VertexArrayKind::Mask,
++                        &BatchTextures::empty(),
++                        stats,
++                    );
++                }
++
++                self.device.disable_scissor();
++            }
++
+             if !masks.image_mask_instances.is_empty() {
+                 self.shaders.borrow_mut().ps_quad_textured().bind(
+                     &mut self.device,
+@@ -3351,7 +3396,9 @@ impl Renderer {
+ 
+         // Draw any borders for this target.
+         if !target.border_segments_solid.is_empty() ||
+-           !target.border_segments_complex.is_empty()
++           !target.border_segments_complex.is_empty() ||
++           !target.border_segments_solid_superellipse.is_empty() ||
++           !target.border_segments_complex_superellipse.is_empty()
+         {
+             let _timer = self.gpu_profiler.start_timer(GPU_TAG_CACHE_BORDER);
+ 
+@@ -3394,6 +3441,42 @@ impl Renderer {
+                 );
+             }
+ 
++            if !target.border_segments_solid_superellipse.is_empty() {
++                self.shaders.borrow_mut().cs_border_solid_superellipse().bind(
++                    &mut self.device,
++                    &projection,
++                    None,
++                    &mut self.renderer_errors,
++                    &mut self.profile,
++                    &mut self.command_log,
++                );
++
++                self.draw_instanced_batch(
++                    &target.border_segments_solid_superellipse,
++                    VertexArrayKind::Border,
++                    &BatchTextures::empty(),
++                    stats,
++                );
++            }
++
++            if !target.border_segments_complex_superellipse.is_empty() {
++                self.shaders.borrow_mut().cs_border_segment_superellipse().bind(
++                    &mut self.device,
++                    &projection,
++                    None,
++                    &mut self.renderer_errors,
++                    &mut self.profile,
++                    &mut self.command_log,
++                );
++
++                self.draw_instanced_batch(
++                    &target.border_segments_complex_superellipse,
++                    VertexArrayKind::Border,
++                    &BatchTextures::empty(),
++                    stats,
++                );
++            }
++
+             self.set_blend(false, FramebufferKind::Other);
+         }
+ 
+diff --git a/gfx/wr/webrender/src/renderer/shade.rs b/gfx/wr/webrender/src/renderer/shade.rs
+index 0a88c76bf8..575275d3b4 100644
+--- a/gfx/wr/webrender/src/renderer/shade.rs
++++ b/gfx/wr/webrender/src/renderer/shade.rs
+@@ -67,6 +67,7 @@ pub const IMAGE_BUFFER_KINDS: [ImageBufferKind; 4] = [
+ const DITHERING_FEATURE: &str = "DITHERING";
+ const DUAL_SOURCE_FEATURE: &str = "DUAL_SOURCE_BLENDING";
+ const FAST_PATH_FEATURE: &str = "FAST_PATH";
++const SUPERELLIPSE_FEATURE: &str = "SUPERELLIPSE";
+ 
+ pub(crate) enum ShaderKind {
+     Primitive,
+@@ -414,6 +415,8 @@ pub struct Shaders {
+     cs_blur_rgba8: ShaderHandle,
+     cs_border_segment: ShaderHandle,
+     cs_border_solid: ShaderHandle,
++    cs_border_segment_superellipse: ShaderHandle,
++    cs_border_solid_superellipse: ShaderHandle,
+     cs_scale: Vec<Option<ShaderHandle>>,
+     cs_line_decoration: ShaderHandle,
+     cs_svg_filter_node: ShaderHandle,
+@@ -439,6 +442,7 @@ pub struct Shaders {
+     ps_quad_repeat: ShaderHandle,
+     ps_quad_gradient: ShaderHandle,
+     ps_quad_box_shadow: ShaderHandle,
++    ps_quad_box_shadow_superellipse: ShaderHandle,
+     // ps_quad_yuv, like ps_quad_textured, comes in sampler-type-specific
+     // variants so the YUV planes are sampled with the matching sColor
+     // declaration. The variant is selected via PatternKind.
+@@ -451,6 +455,7 @@ pub struct Shaders {
+     ps_quad_mix_blend: ShaderHandle,
+     ps_mask: ShaderHandle,
+     ps_mask_fast: ShaderHandle,
++    ps_mask_superellipse: ShaderHandle,
+     ps_clear: ShaderHandle,
+     ps_copy: ShaderHandle,
+ 
+@@ -516,6 +521,13 @@ impl Shaders {
+             &shader_list,
+         )?;
+ 
++        let ps_mask_superellipse = loader.create_shader(
++            ShaderKind::Cache(VertexArrayKind::Mask),
++            "ps_quad_mask",
++            &[SUPERELLIPSE_FEATURE],
++            &shader_list,
++        )?;
++
+         let mut cs_scale = Vec::new();
+         let scale_shader_num = IMAGE_BUFFER_KINDS.len();
+         // PrimitiveShader is not clonable. Use push() to initialize the vec.
+@@ -644,6 +656,13 @@ impl Shaders {
+             &shader_list,
+         )?;
+ 
++        let ps_quad_box_shadow_superellipse = loader.create_shader(
++            ShaderKind::Primitive,
++            "ps_quad_box_shadow",
++            &[SUPERELLIPSE_FEATURE],
++            &shader_list,
++        )?;
++
+         let ps_quad_yuv = loader.create_shader(
+             ShaderKind::Primitive,
+             "ps_quad_yuv",
+@@ -759,6 +778,20 @@ impl Shaders {
+             &shader_list,
+         )?;
+ 
++        let cs_border_segment_superellipse = loader.create_shader(
++            ShaderKind::Cache(VertexArrayKind::Border),
++            "cs_border_segment",
++             &[SUPERELLIPSE_FEATURE],
++            &shader_list,
++        )?;
++
++        let cs_border_solid_superellipse = loader.create_shader(
++            ShaderKind::Cache(VertexArrayKind::Border),
++            "cs_border_solid",
++            &[SUPERELLIPSE_FEATURE],
++            &shader_list,
++        )?;
++
+         let composite = CompositorShaders::new(device, gl_type, &mut loader)?;
+ 
+         Ok(Shaders {
+@@ -766,8 +799,10 @@ impl Shaders {
+ 
+             cs_blur_rgba8,
+             cs_border_segment,
+-            cs_line_decoration,
+             cs_border_solid,
++            cs_border_segment_superellipse,
++            cs_border_solid_superellipse,
++            cs_line_decoration,
+             cs_scale,
+             cs_svg_filter_node,
+             ps_text_run,
+@@ -779,6 +814,7 @@ impl Shaders {
+             ps_quad_repeat,
+             ps_quad_gradient,
+             ps_quad_box_shadow,
++            ps_quad_box_shadow_superellipse,
+             ps_quad_yuv,
+             ps_quad_yuv_external,
+             ps_quad_yuv_external_bt709,
+@@ -788,6 +824,7 @@ impl Shaders {
+             ps_quad_mix_blend,
+             ps_mask,
+             ps_mask_fast,
++            ps_mask_superellipse,
+             ps_split_composite,
+             ps_clear,
+             ps_copy,
+@@ -859,6 +896,7 @@ impl Shaders {
+             PatternKind::Gradient => self.ps_quad_gradient,
+             PatternKind::Repeat => self.ps_quad_repeat,
+             PatternKind::BoxShadow => self.ps_quad_box_shadow,
++            PatternKind::BoxShadowSuperellipse => self.ps_quad_box_shadow_superellipse,
+             PatternKind::Yuv => self.ps_quad_yuv,
+             PatternKind::YuvTextureExternal => self.ps_quad_yuv_external
+                 .expect("bug: ps_quad_yuv TEXTURE_EXTERNAL variant not loaded"),
+@@ -915,6 +953,9 @@ impl Shaders {
+             BatchKind::Quad(PatternKind::BoxShadow) => {
+                 self.ps_quad_box_shadow
+             }
++            BatchKind::Quad(PatternKind::BoxShadowSuperellipse) => {
++                self.ps_quad_box_shadow_superellipse
++            }
+             BatchKind::Quad(PatternKind::Yuv) => {
+                 self.ps_quad_yuv
+             }
+@@ -958,6 +999,8 @@ impl Shaders {
+     pub fn cs_blur_rgba8(&mut self) -> &mut LazilyCompiledShader { self.loader.get(self.cs_blur_rgba8) }
+     pub fn cs_border_segment(&mut self) -> &mut LazilyCompiledShader { self.loader.get(self.cs_border_segment) }
+     pub fn cs_border_solid(&mut self) -> &mut LazilyCompiledShader { self.loader.get(self.cs_border_solid) }
++    pub fn cs_border_segment_superellipse(&mut self) -> &mut LazilyCompiledShader { self.loader.get(self.cs_border_segment_superellipse) }
++    pub fn cs_border_solid_superellipse(&mut self) -> &mut LazilyCompiledShader { self.loader.get(self.cs_border_solid_superellipse) }
+     pub fn cs_line_decoration(&mut self) -> &mut LazilyCompiledShader { self.loader.get(self.cs_line_decoration) }
+     pub fn cs_svg_filter_node(&mut self) -> &mut LazilyCompiledShader { self.loader.get(self.cs_svg_filter_node) }
+     pub fn ps_quad_textured(&mut self) -> &mut LazilyCompiledShader {
+@@ -965,6 +1008,7 @@ impl Shaders {
+     }
+     pub fn ps_mask(&mut self) -> &mut LazilyCompiledShader { self.loader.get(self.ps_mask) }
+     pub fn ps_mask_fast(&mut self) -> &mut LazilyCompiledShader { self.loader.get(self.ps_mask_fast) }
++    pub fn ps_mask_superellipse(&mut self) -> &mut LazilyCompiledShader { self.loader.get(self.ps_mask_superellipse) }
+     pub fn ps_clear(&mut self) -> &mut LazilyCompiledShader { self.loader.get(self.ps_clear) }
+     pub fn ps_copy(&mut self) -> &mut LazilyCompiledShader { self.loader.get(self.ps_copy) }
+ 
+diff --git a/gfx/wr/webrender_build/src/shader_features.rs b/gfx/wr/webrender_build/src/shader_features.rs
+index 87a60097a6..873f413557 100644
+--- a/gfx/wr/webrender_build/src/shader_features.rs
++++ b/gfx/wr/webrender_build/src/shader_features.rs
+@@ -67,17 +67,22 @@ pub fn get_shader_features(flags: ShaderFeatureFlags) -> ShaderFeatures {
+     // Cache shaders
+     shaders.insert("cs_blur", vec!["ALPHA_TARGET".to_string(), "COLOR_TARGET".to_string()]);
+ 
+-    shaders.insert("ps_quad_mask", vec![String::new(), "FAST_PATH".to_string()]);
++    shaders.insert("ps_quad_mask", vec![String::new(), "FAST_PATH".to_string(), "SUPERELLIPSE".to_string()]);
+ 
+     for name in &[
+         "cs_line_decoration",
+-        "cs_border_segment",
+-        "cs_border_solid",
+         "cs_svg_filter_node",
+     ] {
+         shaders.insert(name, vec![String::new()]);
+     }
+ 
++    for name in &[
++        "cs_border_segment",
++        "cs_border_solid",
++    ] {
++        shaders.insert(name, vec![String::new(), "SUPERELLIPSE".to_string()]);
++    }
++
+     let mut base_prim_features = FeatureList::new();
+ 
+     let mut texture_types = vec!["TEXTURE_2D"];
+@@ -168,7 +173,7 @@ pub fn get_shader_features(flags: ShaderFeatureFlags) -> ShaderFeatures {
+ 
+     shaders.insert("ps_quad_repeat", vec![base_prim_features.finish()]);
+ 
+-    shaders.insert("ps_quad_box_shadow", vec![base_prim_features.finish()]);
++    shaders.insert("ps_quad_box_shadow", vec![base_prim_features.finish(), "SUPERELLIPSE".to_string()]);
+ 
+     // Like ps_quad_textured, ps_quad_yuv needs per-texture-kind variants so that
+     // the YUV planes are sampled with the correct sampler type.
+diff --git a/gfx/wr/wrench/reftests/border/border-shape-2.yaml b/gfx/wr/wrench/reftests/border/border-shape-2.yaml
+new file mode 100644
+index 0000000000..44f12d74f3
+--- /dev/null
++++ b/gfx/wr/wrench/reftests/border/border-shape-2.yaml
+@@ -0,0 +1,51 @@
++---
++root:
++  items:
++    - type: stacking-context
++      bounds: [0, 0, 480, 320 ]
++      items:
++        - type: rect
++          bounds: [0, 0, 480, 320 ]
++          color: black
++        - type: border
++          bounds: [ 20, 20, 120, 120 ]
++          width: 16
++          border-type: normal
++          style: solid
++          color: white
++          radius: [ 4, 4, 60, 40, 26.0, 2.0, 6.0, 9.0 ]
++        - type: border
++          bounds: [ 180, 20, 120, 120 ]
++          width: [16, 6.4, 12.8, 4]
++          border-type: normal
++          style: solid
++          color: white
++          radius: [ 24, 24, 24, 24, 2.0, 2.0, 2.0, 2.0 ]
++        - type: border
++          bounds: [ 340, 20, 120, 120 ]
++          width: [3.2, 6.4, 12.8, 4]
++          border-type: normal
++          style: solid
++          color: white
++          radius: [ 16, 16, 16, 16, 2.0, -2.0, 0.0, 2.0 ]
++        - type: border
++          bounds: [ 20, 180, 120, 120 ]
++          width: 16
++          border-type: normal
++          style: double
++          color: white
++          radius: [ 4, 4, 4, 4, 2.0, 2.0, 2.0, 2.0 ]
++        - type: border
++          bounds: [ 180, 180, 120, 120 ]
++          width: 16
++          border-type: normal
++          style: double
++          color: white
++          radius: [ 8, 8, 8, 8, 2.0, 2.0, 2.0, 2.0 ]
++        - type: border
++          bounds: [ 340, 180, 120, 120 ]
++          width: [16, 8, 3, 6.4]
++          border-type: normal
++          style: double
++          color: white
++          radius: [ 16, 16, 16, 16, 2.0, -2.0, 2.0, 2.0 ]
+diff --git a/gfx/wr/wrench/reftests/border/border-shape-3.yaml b/gfx/wr/wrench/reftests/border/border-shape-3.yaml
+new file mode 100644
+index 0000000000..5085c083dc
+--- /dev/null
++++ b/gfx/wr/wrench/reftests/border/border-shape-3.yaml
+@@ -0,0 +1,16 @@
++---
++root:
++  items:
++    - type: stacking-context
++      bounds: [0, 0, 400, 400 ]
++      items:
++        - type: rect
++          bounds: [0, 0, 400, 400 ]
++          color: black
++        - type: border
++          bounds: [ 50, 50, 300, 300 ]
++          width: [40, 2, 20, 50]
++          border-type: normal
++          style: solid
++          color: white
++          radius: [ 60, 30, [100, 50], [100, 50], 0.2, 0.0, -Inf, -0.7 ]
+diff --git a/gfx/wr/wrench/reftests/border/border-shape-4.yaml b/gfx/wr/wrench/reftests/border/border-shape-4.yaml
+new file mode 100644
+index 0000000000..27c9b2fd9d
+--- /dev/null
++++ b/gfx/wr/wrench/reftests/border/border-shape-4.yaml
+@@ -0,0 +1,25 @@
++---
++root:
++  items:
++    - type: stacking-context
++      bounds: [0, 0, 400, 300 ]
++      items:
++        - type: rect
++          bounds: [0, 0, 400, 300 ]
++          color: black
++        - type: clip
++          id: 2
++          complex:
++            - rect: [ 50, 50, 300, 200 ]
++              radius: [ 0, 30, 60, 0, 0.0, 0.0, 0.0, 0.0 ]
++        - type: rect
++          clip-chain: [2]
++          bounds: [ 50, 50, 300, 200 ]
++          color: white
++        - type: border
++          bounds: [ 50, 50, 300, 200 ]
++          width: [0, 0, 50, 50]
++          border-type: normal
++          style: solid
++          color: [[0, 1, 0, 0.2], [1, 0, 0, 0.3], [0, 0, 1, 0.2], [1, 1, 0, 0.3]]
++          radius: [ 0, 30, 60, 0, 0.0, 0.0, 0.0, 0.0 ]
+diff --git a/gfx/wr/wrench/reftests/border/border-shape-inset.yaml b/gfx/wr/wrench/reftests/border/border-shape-inset.yaml
+new file mode 100644
+index 0000000000..4b6e51ee3e
+--- /dev/null
++++ b/gfx/wr/wrench/reftests/border/border-shape-inset.yaml
+@@ -0,0 +1,42 @@
++---
++root:
++  items:
++    - type: stacking-context
++      bounds: [ 0, 0, 320, 320 ]
++      items:
++        - type: rect
++          bounds: [ 0, 0, 320, 320 ]
++          color: black
++        - type: border
++          bounds: [ 20, 20, 280, 280 ]
++          width: [ 16, 2, 8, 20 ]
++          border-type: normal
++          style: solid
++          color: white
++          radius: [ 24, 12, 120, [80, 20], 0.2, 0.0, -Inf, -0.7 ]
++          inset: [ 0, 0, 0, 0 ]
++        - type: border
++          bounds: [ 12, 12, 296, 296 ]
++          width: [ 2, 2, 2, 2 ]
++          border-type: normal
++          style: solid
++          color: yellow
++          radius: [ 32, 20, 128, [88, 28], 0.2, 0.0, -Inf, -0.7 ]
++          inset: [ -8, -8, -8, -8 ]
++        - type: border
++          bounds: [ 24.8, 40, 251.2, 248 ]
++          width: [ 2, 2, 2, 2 ]
++          border-type: normal
++          style: solid
++          color: magenta
++          radius: {
++            top-left: [19.2, 4],
++            top-right: [0, 0],
++            bottom-left: [115, 108],
++            bottom-right: [56, 8],
++            shape-top-left: 0.2,
++            shape-top-right: 0.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: -0.7,
++          }
++          inset: [ 20, 24, 12, 4.8 ]
+diff --git a/gfx/wr/wrench/reftests/border/border-shape.yaml b/gfx/wr/wrench/reftests/border/border-shape.yaml
+new file mode 100644
+index 0000000000..c0ac275110
+--- /dev/null
++++ b/gfx/wr/wrench/reftests/border/border-shape.yaml
+@@ -0,0 +1,419 @@
++---
++root:
++  items:
++    - type: stacking-context
++      bounds: [0, 0, 1000, 1000]
++      items:
++        - type: border
++          bounds: [ 10, 10, 100, 100 ]
++          width: [ 1, 1, 1, 1 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 20],
++            top-right: [10, 10],
++            bottom-left: [25, 25],
++            bottom-right: [0, 0],
++          }
++        - type: border
++          bounds: [ 120, 10, 100, 100 ]
++          width: [ 2, 2, 2, 2 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 20],
++            top-right: [10, 10],
++            bottom-left: [25, 25],
++            bottom-right: [0, 0],
++            shape-top-left: 2,
++            shape-top-right: -1.5,
++            shape-bottom-left: 0,
++            shape-bottom-right: +Inf,
++          }
++        - type: border
++          bounds: [ 230, 10, 100, 100 ]
++          width: [ 3, 3, 3, 3 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 20],
++            top-right: [10, 10],
++            bottom-left: [25, 25],
++            bottom-right: [0, 0],
++            shape-top-left: 2,
++            shape-top-right: -1.5,
++            shape-bottom-left: 0,
++            shape-bottom-right: +Inf,
++          }
++        - type: border
++          bounds: [ 340, 10, 100, 100 ]
++          width: [ 5, 5, 5, 5 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 20],
++            top-right: [10, 10],
++            bottom-left: [25, 25],
++            bottom-right: [0, 0],
++            shape-top-left: 2,
++            shape-top-right: -1.5,
++            shape-bottom-left: 0,
++            shape-bottom-right: +Inf,
++          }
++        - type: border
++          bounds: [ 450, 10, 100, 100 ]
++          width: [ 5, 5, 5, 5 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 20],
++            top-right: [10, 10],
++            bottom-left: [25, 25],
++            bottom-right: [0, 0],
++            shape-top-left: 2,
++            shape-top-right: -1.5,
++            shape-bottom-left: 0,
++            shape-bottom-right: +Inf,
++          }
++        - type: border
++          bounds: [ 560, 10, 100, 100 ]
++          width: [ 10, 10, 10, 10 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 20],
++            top-right: [10, 10],
++            bottom-left: [25, 25],
++            bottom-right: [0, 0],
++            shape-top-left: 2,
++            shape-top-right: -1.5,
++            shape-bottom-left: 0,
++            shape-bottom-right: +Inf,
++          }
++
++        - type: border
++          bounds: [ 10, 120, 100, 100 ]
++          width: 10
++          border-type: normal
++          style: inset
++          color: [ red, green, blue, black ]
++        - type: border
++          bounds: [ 120, 120, 100, 100 ]
++          width: 10
++          border-type: normal
++          style: outset
++          color: [ red, green, blue, black ]
++        - type: border
++          bounds: [ 230, 120, 100, 100 ]
++          width: 10
++          border-type: normal
++          style: inset
++          color: [ red, green, blue, black ]
++          radius: [10, 0.5]
++        - type: border
++          bounds: [ 340, 120, 100, 100 ]
++          width: 10
++          border-type: normal
++          style: outset
++          color: [ red, green, blue, black ]
++          radius: [20, -0.3]
++        - type: border
++          bounds: [ 450, 120, 100, 100 ]
++          width: 10
++          border-type: normal
++          style: outset
++          color: [ red, green, blue, black ]
++          radius: [35, 2.2]
++        - type: border
++          bounds: [ 560, 120, 100, 100 ]
++          width: 10
++          border-type: normal
++          style: outset
++          color: [ red, green, blue, black ]
++          radius: [50, -2.6]
++
++        - type: border
++          bounds: [ 10, 230, 100, 100 ]
++          width: [ 1, 1, 1, 1 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 120, 230, 100, 100 ]
++          width: [ 2, 2, 2, 2 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 230, 230, 100, 100 ]
++          width: [ 3, 3, 3, 3 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 340, 230, 100, 100 ]
++          width: [ 5, 5, 5, 5 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 450, 230, 100, 100 ]
++          width: [ 5, 5, 5, 5 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 560, 230, 100, 100 ]
++          width: [ 10, 10, 10, 10 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++
++        - type: border
++          bounds: [ 10, 340, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 120, 340, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 230, 340, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 340, 340, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 450, 340, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 560, 340, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++
++        - type: border
++          bounds: [ 10, 450, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: [0, -Inf]
++        - type: border
++          bounds: [ 120, 450, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: [10, -Inf]
++        - type: border
++          bounds: [ 230, 450, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: [20, -Inf]
++        - type: border
++          bounds: [ 340, 450, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: [30, -2.3]
++        - type: border
++          bounds: [ 450, 450, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: [40, -2.3]
++        - type: border
++          bounds: [ 560, 450, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: [50, -2.3]
++
++        - type: border
++          bounds: [ 10, 560, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: [0, -2.3]
++        - type: border
++          bounds: [ 120, 560, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: [10, -2.3]
++        - type: border
++          bounds: [ 230, 560, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: [20, -2.3]
++        - type: border
++          bounds: [ 340, 560, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: [30, -2.3]
++        - type: border
++          bounds: [ 450, 560, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: [40, -2.3]
++        - type: border
++          bounds: [ 560, 560, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: [50, -2.3]
+diff --git a/gfx/wr/wrench/reftests/border/reftest.list b/gfx/wr/wrench/reftests/border/reftest.list
+index 98550ba96a..8813005879 100644
+--- a/gfx/wr/wrench/reftests/border/reftest.list
++++ b/gfx/wr/wrench/reftests/border/reftest.list
+@@ -39,3 +39,8 @@ scale(*) != small-inset-outset.yaml small-inset-outset-notref.yaml
+ fuzzy(1,90) == no-aa.yaml green-square.yaml
+ fuzzy(1,20) skip_on(android,device) == border-double-1px.yaml border-double-1px-ref.yaml  # Fails on Pixel2
+ == max-scale.yaml max-scale-ref.yaml
++platform(linux,mac) == border-shape.yaml border-shape.png
++platform(linux,mac) == border-shape-2.yaml border-shape-2.png
++platform(linux,mac) == border-shape-3.yaml border-shape-3.png
++platform(linux,mac) == border-shape-4.yaml border-shape-4.png
++platform(linux,mac) == border-shape-inset.yaml border-shape-inset.png
+diff --git a/layout/painting/nsDisplayList.cpp b/layout/painting/nsDisplayList.cpp
+index 9aed0b1841..221e296ade 100644
+--- a/layout/painting/nsDisplayList.cpp
++++ b/layout/painting/nsDisplayList.cpp
+@@ -4601,8 +4601,8 @@ bool nsDisplayBoxShadowOuter::CreateWebRenderCommands(
+     nscoord spread = shadow.spread.ToAppUnits();
+     float spreadRadius = float(spread) / float(appUnitsPerDevPixel);
+ 
+-    wr::BorderRadius borderRadius{};
+-    wr::BorderRadius shadowRadius{};
++    wr::BorderRadius borderRadius = wr::EmptyBorderRadius();
++    wr::BorderRadius shadowRadius = wr::EmptyBorderRadius();
+     if (hasBorderRadius) {
+       borderRadius = wr::ToBorderRadius(borderRadii);
+       if (spreadRadius) {
+@@ -4722,8 +4722,8 @@ void nsDisplayBoxShadowInner::CreateInsetBoxShadowWebRenderCommands(
+     nscoord spread = shadow.spread.ToAppUnits();
+     float spreadRadius = spread / float(appUnitsPerDevPixel);
+ 
+-    wr::BorderRadius borderRadius{};
+-    wr::BorderRadius shadowRadius{};
++    wr::BorderRadius borderRadius = wr::EmptyBorderRadius();
++    wr::BorderRadius shadowRadius = wr::EmptyBorderRadius();
+     if (hasBorderRadius) {
+       borderRadius = wr::ToBorderRadius(innerRadii);
+       if (spreadRadius) {
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-bevel.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-bevel.html.ini
+index 48f1f399ff..64de30993d 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-bevel.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-bevel.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-bevel.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch-mixed.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch-mixed.html.ini
+index e8f92f3417..0cef33e8c4 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch-mixed.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch-mixed.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-notch-mixed.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch.html.ini
+index e69fb19cc6..9cd5ad23a6 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-notch.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-scoop.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-scoop.html.ini
+index b8df36dfff..bebaeb9706 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-scoop.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-scoop.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-scoop.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-mixed.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-mixed.html.ini
+index d33e0df628..e829d53044 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-mixed.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-mixed.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-square-notch-mixed.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-superellipse.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-superellipse.html.ini
+index d66f06741d..12d5bac673 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-superellipse.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-superellipse.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-square-notch-superellipse.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square.html.ini
+index e9b1a330d2..5aca5449b0 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-square.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-bevel.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-bevel.html.ini
+index 1a106e3e3c..f175e3fb97 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-bevel.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-bevel.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-superellipse-bevel.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-100.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-100.html.ini
+index df13a251a0..6a32def3ac 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-100.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-100.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-superellipse-negative-100.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-inf.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-inf.html.ini
+index c6a7827768..4c2ad71472 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-inf.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-inf.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-superellipse-negative-inf.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-scoop.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-scoop.html.ini
+index f3e23852d0..fc98f5a2f2 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-scoop.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-scoop.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-superellipse-scoop.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/render-corner-shape.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/render-corner-shape.html.ini
+index 84c9fe0339..6c121825bb 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/render-corner-shape.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/render-corner-shape.html.ini
+@@ -7,7 +7,8 @@
+     if useDrawSnapshot: FAIL
+ 
+ [render-corner-shape.html?border-top-left-radius=50%&corner-shape=0.7&border-left-width=30&border-top-width=30]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+ 
+ [render-corner-shape.html?corner-shape=-2&border-radius=20%&border-width=20]
+   expected:
+diff --git a/widget/ThemeDrawing.cpp b/widget/ThemeDrawing.cpp
+index c2550d9c2d..ec7aa4bb1c 100644
+--- a/widget/ThemeDrawing.cpp
++++ b/widget/ThemeDrawing.cpp
+@@ -98,7 +98,11 @@ void ThemeDrawing::PaintRoundedRectWithRadius(
+       wr::BorderRadius radii = {{backgroundRadius, backgroundRadius},
+                                 {backgroundRadius, backgroundRadius},
+                                 {backgroundRadius, backgroundRadius},
+-                                {backgroundRadius, backgroundRadius}};
++                                {backgroundRadius, backgroundRadius},
++                                1.0f,
++                                1.0f,
++                                1.0f,
++                                1.0f};
+       aWrData.mBuilder.PushBorder(backgroundRect, clip, kBackfaceIsVisible,
+                                   widths, {sides, 4}, radii);
+     }

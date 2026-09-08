@@ -1,5 +1,5 @@
 diff --git a/browser/components/preferences/preferences.js b/browser/components/preferences/preferences.js
-index a76699af75252bec31e17b562463c37236cbbfe5..6355a6ee92754846ffcdd123ac49545d520470c7 100644
+index 94612d8e28af58fcb04914440348b899a0a1e08f..da3b1ffd09745d09589283356d1001dbfb76a468 100644
 --- a/browser/components/preferences/preferences.js
 +++ b/browser/components/preferences/preferences.js
 @@ -132,6 +132,7 @@ ChromeUtils.defineLazyGetter(this, "gSubDialog", function () {
@@ -10,7 +10,7 @@ index a76699af75252bec31e17b562463c37236cbbfe5..6355a6ee92754846ffcdd123ac49545d
        ],
        resizeCallback: async ({ title, frame }) => {
          // Search within main document and highlight matched keyword.
-@@ -462,6 +463,8 @@ const CONFIG_PANES = Object.freeze({
+@@ -471,6 +472,8 @@ const CONFIG_PANES = Object.freeze({
    tabsBrowsing: {
      l10nId: "tabs-browsing-section",
      groupIds: [
@@ -19,7 +19,7 @@ index a76699af75252bec31e17b562463c37236cbbfe5..6355a6ee92754846ffcdd123ac49545d
        "browserLayout",
        "tabs",
        "pageNavigation",
-@@ -509,7 +512,7 @@ function register_module(categoryName, categoryObject) {
+@@ -518,7 +521,7 @@ function register_module(categoryName, categoryObject) {
        }
        this._initted = true;
        let template = document.getElementById("template-" + categoryName);
@@ -28,7 +28,7 @@ index a76699af75252bec31e17b562463c37236cbbfe5..6355a6ee92754846ffcdd123ac49545d
          // Replace the template element with the nodes inside of it.
          template.replaceWith(template.content);
  
-@@ -553,6 +556,10 @@ function init_all() {
+@@ -562,6 +565,10 @@ function init_all() {
    register_module("paneHome", gHomePane);
    register_module("paneSearch", gSearchPane);
    register_module("panePrivacy", gPrivacyPane);

@@ -26,6 +26,7 @@ panel[type="arrow"]:not(#feature-callout) {
        * way to properly animate the popup without having the mica
        * backdrop staying still while the popup animates */
       animation: none !important;
+      border-radius: 0;
     }
   }
 

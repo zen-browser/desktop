@@ -5,6 +5,7 @@
  */
 :root:not([inDOMFullscreen="true"]):not([chromehidden~="location"]):not([chromehidden~="toolbar"]) {
   & #tabbrowser-tabbox #tabbrowser-tabpanels .browserSidebarContainer {
+    --zen-transparent-browser-background: light-dark(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.1));
     overflow: clip;
 
     :root:not([zen-no-padding="true"]) &:not(.zen-glance-overlay) {
@@ -18,7 +19,7 @@
       }
 
       &[transparent="true"] {
-        background: light-dark(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.1));
+        background: var(--zen-transparent-browser-background);
       }
     }
 

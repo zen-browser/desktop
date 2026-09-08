@@ -30,6 +30,11 @@ support-files = [
 ]
 tags = ["portal"]
 
+["test_isOneClickSetDefaultEnabled.js"]
+run-if = [
+  "os == 'win'",
+]
+
 ["test_linuxDesktopEntry.js"]
 run-if = [
   "os == 'linux'",
@@ -43,6 +48,11 @@ run-if = [
 ["test_secondaryTileJs.js"]
 run-if = [
   "os == 'win'"
+]
+
+["test_taskbarPinningPolicy.js"]
+run-if = [
+  "os == 'win'",
 ]
 
 ["test_writeShortcutIcon.js"]

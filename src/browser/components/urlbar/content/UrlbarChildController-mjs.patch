@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/content/UrlbarChildController.mjs b/browser/components/urlbar/content/UrlbarChildController.mjs
-index a8e9d3093d046612650a17970330a8279f55833f..063a3e8adf009d6c0ddc60430bc0e7485e812b8a 100644
+index a17a4de079b69d2818388b33a2c1746cc6148c73..4fee63a22919972af08716db2d2de1c7549ff100 100644
 --- a/browser/components/urlbar/content/UrlbarChildController.mjs
 +++ b/browser/components/urlbar/content/UrlbarChildController.mjs
-@@ -258,7 +258,6 @@ export class UrlbarChildController {
+@@ -438,7 +438,6 @@ export class UrlbarChildController {
      const isMac = AppConstants.platform == "macosx";
      // Handle readline/emacs-style navigation bindings on Mac.
      if (
@@ -10,7 +10,7 @@ index a8e9d3093d046612650a17970330a8279f55833f..063a3e8adf009d6c0ddc60430bc0e748
        this.view.isOpen &&
        event.ctrlKey &&
        (event.key == "n" || event.key == "p")
-@@ -450,6 +449,8 @@ export class UrlbarChildController {
+@@ -630,6 +629,8 @@ export class UrlbarChildController {
              });
            }
            event.preventDefault();
@@ -19,3 +19,25 @@ index a8e9d3093d046612650a17970330a8279f55833f..063a3e8adf009d6c0ddc60430bc0e748
          }
          break;
        }
+@@ -934,6 +935,10 @@ export class UrlbarChildController {
+       }
+       reuseEmpty = true;
+     }
++    if (this.#input.hasAttribute?.("zen-newtab")) {
++      where = "tab";
++      reuseEmpty = true;
++    }
+     // The browser window exists only in chrome; a content-process input has no
+     // tab to reuse, so `gBrowser` is absent and the reuse is skipped.
+     if (
+@@ -943,6 +948,10 @@ export class UrlbarChildController {
+     ) {
+       where = "current";
+     }
++    if (this.window.gBrowser?.selectedTab.hasAttribute("zen-empty-tab")) {
++      // Always open in a new tab if the current tab is our empty tab.
++      return "tab";
++    }
+     return where;
+   }
+ 

@@ -231,6 +231,13 @@
     width: var(--zen-thumb-width);
     cursor: pointer;
     border: none;
+    transform: scale(1);
+    transform-origin: center;
+    transition: transform 0.5s;
+  }
+
+  &:hover::-moz-range-thumb {
+    transform: scale(1.1);
   }
 
   &::-moz-range-track {
@@ -338,7 +345,7 @@
       display: none;
     }
 
-    &:hover {
+    &:not([disabled]):hover {
       background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
     }
 

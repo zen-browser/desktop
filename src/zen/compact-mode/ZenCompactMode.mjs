@@ -832,8 +832,9 @@ window.gZenCompactModeManager = {
 
       const onLeave = event => {
         if (AppConstants.platform == "macosx") {
-          const buttonRect =
-            gZenVerticalTabsManager.actualWindowButtons.getBoundingClientRect();
+          const buttonRect = window.windowUtils.getBoundsWithoutFlushing(
+            gZenVerticalTabsManager.actualWindowButtons
+          );
           const MAC_WINDOW_BUTTONS_X_BORDER = buttonRect.width + buttonRect.x;
           const MAC_WINDOW_BUTTONS_Y_BORDER = buttonRect.height + buttonRect.y;
           if (

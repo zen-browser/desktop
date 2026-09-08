@@ -1,8 +1,8 @@
 diff --git a/browser/components/urlbar/content/UrlbarShared.mjs b/browser/components/urlbar/content/UrlbarShared.mjs
-index 5b45afb747bfcdbd06782186737669aa2c4c634d..f68bd009f70415b5fb513abdfe19b4427ceefbfc 100644
+index 4e67dad66ae006842abc6eed547e4a244320d57a..393b61b4d2543c73e60afd334a353f36119ae73e 100644
 --- a/browser/components/urlbar/content/UrlbarShared.mjs
 +++ b/browser/components/urlbar/content/UrlbarShared.mjs
-@@ -47,6 +47,7 @@ export const UrlbarShared = {
+@@ -100,6 +100,7 @@ export const UrlbarShared = {
      // `looksLikeOrigin()` returned `LOOKS_LIKE_ORIGIN.OTHER` for this token.
      // It may or may not be an origin.
      POSSIBLE_ORIGIN_BUT_SEARCH_ALLOWED: 12,
@@ -10,7 +10,7 @@ index 5b45afb747bfcdbd06782186737669aa2c4c634d..f68bd009f70415b5fb513abdfe19b442
    }),
  
    /**
-@@ -67,6 +68,7 @@ export const UrlbarShared = {
+@@ -120,6 +121,7 @@ export const UrlbarShared = {
      TITLE: "#",
      URL: "$",
      ACTION: ">",
@@ -18,7 +18,7 @@ index 5b45afb747bfcdbd06782186737669aa2c4c634d..f68bd009f70415b5fb513abdfe19b442
    }),
  
    // Defines UrlbarResult types.
-@@ -112,6 +114,8 @@ export const UrlbarShared = {
+@@ -165,6 +167,8 @@ export const UrlbarShared = {
      OTHER_NETWORK: 6,
      ADDON: 7,
      ACTIONS: 8,
@@ -26,9 +26,33 @@ index 5b45afb747bfcdbd06782186737669aa2c4c634d..f68bd009f70415b5fb513abdfe19b442
 +    WORKSPACES: 10,
    }),
  
-   /**
-@@ -128,6 +132,7 @@ export const UrlbarShared = {
-     if (lazy.UrlbarPrefs.get("scotchBonnet.enableOverride")) {
+   // Results are categorized into groups to help the muxer compose them.  See
+@@ -200,6 +204,8 @@ export const UrlbarShared = {
+     SEMANTIC_HISTORY: "semanticHistory",
+     SUGGESTED_INDEX: "suggestedIndex",
+     TAIL_SUGGESTION: "tailSuggestion",
++    ZEN_ACTION: "zenAction",
++    ZEN_WORKSPACE: "zenWorkspace",
+   }),
+ 
+   // Defines provider types.
+@@ -385,6 +391,14 @@ export const UrlbarShared = {
+         telemetryLabel: "actions",
+         uiLabel: "urlbar-searchmode-actions3",
+       },
++      {
++        source: this.RESULT_SOURCE.WORKSPACES,
++        restrict: this.RESTRICT_TOKENS.WORKSPACE,
++        icon: "chrome://browser/skin/zen-icons/selectable/layers.svg",
++        pref: "shortcuts.workspaces",
++        telemetryLabel: "workspaces",
++        uiLabel: "urlbar-search-mode-workspaces",
++      },
+     ]);
+   },
+ 
+@@ -402,6 +416,7 @@ export const UrlbarShared = {
+     if (UrlbarPrefs.get("scotchBonnet.enableOverride")) {
        keys.push(this.RESTRICT_TOKENS.ACTION);
      }
 +    keys.push(this.RESTRICT_TOKENS.WORKSPACE);

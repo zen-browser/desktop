@@ -1594,6 +1594,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       );
     }
 
+    this.applyGridLayout(splitData.layoutTree);
+
     // Apply grid to tabs first to set zen-split attribute on containers
     // before setting zen-split-view on parents. This prevents the black flash
     // caused by CSS rules that hide containers without zen-split attribute
@@ -1605,7 +1607,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       .getElementById("tabbrowser-tabbox")
       .setAttribute("zen-split-view", "true");
 
-    this.applyGridLayout(splitData.layoutTree);
     this.setTabsDocShellState(splitData.tabs, true);
     this.toggleWrapperDisplay(true);
     window.dispatchEvent(new CustomEvent("ZenViewSplitter:SplitViewActivated"));
@@ -1705,6 +1706,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
 
   /**
    * Apply grid layout to tabBrowserPanel
+   *
+   * This should be invoked before {@link nsZenViewSplitter#applyGridToTabs} to
+   * make sure all tabs are in the correct position before they are shown.
    *
    * @param {nsSplitNode} splitNode nsSplitNode
    */
@@ -2522,10 +2526,74 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     try {
       return callback();
     } finally {
+      // Flush the new geometry now. Otherwise, because requestAnimationFrame
+      // runs before style computations, the zen-split-view-no-transition class
+      // is never even seen and we get a transition anyway.
+      this.tabBrowserPanel.getBoundingClientRect();
       requestAnimationFrame(() => {
         this.tabBrowserPanel.classList.remove("zen-split-view-no-transition");
-      }, 0);
+      });
     }
+  }
+
+  /**
+   * Adopt tabs into a given group without dissolving the group.
+   * This assumes the count of the passed tabs and the count of the tabs in
+   * the group is the same, because it works by swapping the tabs of each split
+   * node in the group.
+   *
+   * @param {object} group - The group.
+   * @param {Array<Tab>} tabs - The tabs to end up with, in the group's order.
+   * @returns {boolean} False if the split has to be rebuilt instead.
+   * That can be done with {@link nsZenViewSplitter#splitTabs}
+   */
+  #adoptStagedPane(group, tabs) {
+    if (group?.tabs.length !== tabs.length) {
+      return false;
+    }
+    if (tabs.some(tab => tab.splitView && !group.tabs.includes(tab))) {
+      // The pick already holds a pane elsewhere, which is a merge, not an
+      // adoption. splitTabs is the one that knows how to do that.
+      return false;
+    }
+    const pinned = tabs.filter(tab => tab.pinned).length;
+    if (
+      (pinned && pinned !== tabs.length) ||
+      tabs.some(tab => tab.hasAttribute("zen-live-folder-item-id"))
+    ) {
+      // if we have to duplicate it defeats the purpose
+      return false;
+    }
+    const nodes = group.tabs.map(tab => this.getSplitNodeFromTab(tab));
+    if (nodes.some(node => !node)) {
+      return false;
+    }
+    const splitGroup = this._getSplitViewGroup(tabs);
+    if (!splitGroup) {
+      return false;
+    }
+    this.#withoutSplitViewTransition(() => {
+      group.tabs.forEach((oldTab, i) => {
+        const newTab = tabs[i];
+        if (oldTab === newTab) {
+          return;
+        }
+        nodes[i].tab = newTab;
+        this._tabToSplitNode.delete(oldTab);
+        this._tabToSplitNode.set(newTab, nodes[i]);
+        group.tabs[i] = newTab;
+        this.resetTabState(oldTab, false);
+      });
+      for (const tab of tabs) {
+        if (tab.group !== splitGroup) {
+          gBrowser.moveTabToExistingGroup(tab, splitGroup);
+        }
+      }
+      group.groupId = splitGroup.id;
+      this.activateSplitView(group, true);
+    });
+    this.#dispatchItemEvent("ZenSplitViewTabsSplit", splitGroup);
+    return true;
   }
 
   createEmptySplit(side = "right") {
@@ -2566,35 +2634,45 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
               return;
             }
             controller.abort();
-            const { onElementPicked, onSwitch } = event.detail;
+            const {
+              onElementPicked,
+              onSwitch,
+              tab: newSelectedTab,
+            } = event.detail;
             const groupIndex = this._data.findIndex(group =>
               group.tabs.includes(emptyTab)
             );
-            const newSelectedTab = gBrowser.selectedTab;
-            if (onElementPicked) {
-              if (
-                newSelectedTab === emptyTab ||
-                newSelectedTab === selectedTab ||
-                selectedTab.getAttribute("zen-workspace-id") !==
-                  newSelectedTab.getAttribute("zen-workspace-id")
-              ) {
-                cleanup(onSwitch, groupIndex);
-                return;
-              }
-              this.removeTabFromGroup(emptyTab, groupIndex, {
-                forUnsplit: true,
-              });
-              gBrowser.selectedTab = selectedTab;
-              this.resetTabState(emptyTab, false);
-              this.splitTabs(
-                topOrLeft
-                  ? [newSelectedTab, selectedTab]
-                  : [selectedTab, newSelectedTab],
-                gridType,
-                topOrLeft ? 0 : 1
-              );
-            } else {
+            if (groupIndex < 0) {
+              document
+                .getElementById("cmd_zenNewEmptySplit")
+                .removeAttribute("disabled");
+              return;
+            }
+            if (!onElementPicked || !onSwitch || !newSelectedTab) {
               cleanup(onSwitch, groupIndex);
+              return;
+            }
+            if (
+              newSelectedTab === emptyTab ||
+              newSelectedTab === selectedTab ||
+              selectedTab.getAttribute("zen-workspace-id") !==
+                newSelectedTab.getAttribute("zen-workspace-id")
+            ) {
+              cleanup(onSwitch, groupIndex);
+              return;
+            }
+            const tabs = topOrLeft
+              ? [newSelectedTab, selectedTab]
+              : [selectedTab, newSelectedTab];
+            if (!this.#adoptStagedPane(this._data[groupIndex], tabs)) {
+              setTimeout(() => {
+                this.removeTabFromGroup(emptyTab, groupIndex, {
+                  forUnsplit: true,
+                });
+                gBrowser.selectedTab = selectedTab;
+                this.resetTabState(emptyTab, false);
+                this.splitTabs(tabs, gridType, topOrLeft ? 0 : 1);
+              });
             }
           },
           { signal: controller.signal }

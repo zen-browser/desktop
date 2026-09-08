@@ -1,5 +1,5 @@
 diff --git a/browser/modules/URILoadingHelper.sys.mjs b/browser/modules/URILoadingHelper.sys.mjs
-index b60820ef0cc62c27a8bab127218d625012153791..04cdd58ed4426af802f2868310140a8a33ec092b 100644
+index b0f17c20bcca640c519b547149179cc03a86aa54..6cf34eda8f36d344dc9c8273cc4b5a041ff4b655 100644
 --- a/browser/modules/URILoadingHelper.sys.mjs
 +++ b/browser/modules/URILoadingHelper.sys.mjs
 @@ -231,6 +231,7 @@ function openInWindow(url, params, sourceWindow) {
@@ -19,7 +19,7 @@ index b60820ef0cc62c27a8bab127218d625012153791..04cdd58ed4426af802f2868310140a8a
          where = "tab";
          targetBrowser = null;
        } else if (
-@@ -981,7 +982,7 @@ export const URILoadingHelper = {
+@@ -978,7 +979,7 @@ export const URILoadingHelper = {
          ignoreQueryString || replaceQueryString,
          ignoreFragmentWhenComparing
        );
@@ -28,11 +28,22 @@ index b60820ef0cc62c27a8bab127218d625012153791..04cdd58ed4426af802f2868310140a8a
        for (let i = 0; i < browsers.length; i++) {
          let browser = browsers[i];
          let browserCompare = cleanURL(
-@@ -1037,7 +1038,7 @@ export const URILoadingHelper = {
+@@ -1034,7 +1035,18 @@ export const URILoadingHelper = {
                }
                aSplitView.documentGlobal.focus();
              } else {
 -              aWindow.gBrowser.tabContainer.selectedIndex = i;
++              if (
++                aWindow == window &&
++                window.gURLBar?._zenPickPending &&
++                window.gURLBar._zenHandleUrlbarClose
++              ) {
++                window.gURLBar._zenHandleUrlbarClose(
++                  true,
++                  true,
++                  aWindow.gBrowser.getTabForBrowser(browser)
++                );
++              }
 +              aWindow.gZenWorkspaces.switchIfNeeded(browser);
              }
            }

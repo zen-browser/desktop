@@ -7,10 +7,6 @@ import { MozLitElement } from "chrome://global/content/lit-utils.mjs";
 
 let lazy = {};
 
-ChromeUtils.defineLazyGetter(lazy, "l10n", function () {
-  return new Localization(["browser/zen-library.ftl"], true);
-});
-
 ChromeUtils.defineLazyGetter(lazy, "appContentWrapper", function () {
   return document.getElementById("zen-appcontent-wrapper");
 });
@@ -18,7 +14,7 @@ ChromeUtils.defineLazyGetter(lazy, "appContentWrapper", function () {
 ChromeUtils.defineLazyGetter(lazy, "motion", () => {
   Services.scriptloader.loadSubScript(
     "chrome://browser/content/zen-vendor/motion.min.mjs",
-    window,
+    window
   );
   const motion = window.Motion;
   delete window.Motion;
@@ -30,7 +26,10 @@ export class ZenLibrary extends MozLitElement {
   #progress = 0;
   #libraryOnRight = false;
 
-  // Track the original location of the native buttons so we can restore them
+  #springTarget = 0;
+  #springControls = null;
+
+  // Capture original button location
   #originalButtonsParent = null;
   #originalButtonsNextSibling = null;
 
@@ -55,9 +54,9 @@ export class ZenLibrary extends MozLitElement {
 
     lazy.appContentWrapper?.style.setProperty(
       "--library-wrapper-target-px",
-      `${webOffset}px`,
+      `${webOffset}px`
     );
-    [this, lazy.appContentWrapper, gNavToolbox].forEach((elem) => {
+    [this, lazy.appContentWrapper, gNavToolbox].forEach(elem => {
       elem?.style.setProperty("--library-progress", String(p));
     });
 
@@ -69,12 +68,12 @@ export class ZenLibrary extends MozLitElement {
 
     // Window buttons
     if (isPastWindowButtonSwitchPoint && !wasPastWindowButtonSwitchPoint) {
-      this._adoptWindowButtons();
+      this.#adoptWindowButtons();
     } else if (
       !isPastWindowButtonSwitchPoint &&
       wasPastWindowButtonSwitchPoint
     ) {
-      this._restoreWindowButtons();
+      this.#restoreWindowButtons();
     }
   }
 
@@ -82,9 +81,11 @@ export class ZenLibrary extends MozLitElement {
     return this.#progress;
   }
 
-  _adoptWindowButtons() {
+  #adoptWindowButtons() {
     const realButtons = gZenVerticalTabsManager?.actualWindowButtons;
-    if (!realButtons) return;
+    if (!realButtons) {
+      return;
+    }
 
     if (!this.#originalButtonsParent) {
       this.#originalButtonsParent = realButtons.parentNode;
@@ -94,49 +95,42 @@ export class ZenLibrary extends MozLitElement {
     this._header.appendChild(realButtons);
   }
 
-  _restoreWindowButtons() {
+  #restoreWindowButtons() {
     const realButtons = gZenVerticalTabsManager?.actualWindowButtons;
-    if (!realButtons || !this.#originalButtonsParent) return;
+    if (!realButtons || !this.#originalButtonsParent) {
+      return;
+    }
 
     this.#originalButtonsParent.insertBefore(
       realButtons,
-      this.#originalButtonsNextSibling,
+      this.#originalButtonsNextSibling
     );
   }
 
   static toggle() {
     const lib = this.getInstance();
-    lib._springTarget = lib._springAnimating
-      ? lib._springTarget === 1
-        ? 0
-        : 1
-      : lib.hasAttribute("open")
-        ? 0
-        : 1;
+    lib.#springTarget = lib.#springTarget === 1 ? 0 : 1;
 
-    if (lib._springControls) {
-      lib._springControls.stop();
+    if (lib.#springControls) {
+      lib.#springControls.stop();
     }
 
-    lib._springAnimating = true;
-
-    lib._springControls = lazy.motion.animate(
+    lib.#springControls = lazy.motion.animate(
       lib.openProgress,
-      lib._springTarget,
+      lib.#springTarget,
       {
         type: "spring",
         stiffness: 630,
         damping: 47,
         mass: 1.3,
-        onUpdate: (latest) => {
+        onUpdate: latest => {
           lib.openProgress = latest;
         },
         onComplete: () => {
-          lib.openProgress = lib._springTarget; // Snap exactly to 0 or 1
-          lib._springControls = null; // Corrected: Clear reference at the end, not mid-animation
-          lib._springAnimating = false;
+          lib.openProgress = lib.#springTarget;
+          lib.#springControls = null;
         },
-      },
+      }
     );
   }
 
@@ -152,7 +146,7 @@ export class ZenLibrary extends MozLitElement {
   }
 
   addTabsOnRightListener() {
-    const update = (value) => {
+    const update = value => {
       this.#libraryOnRight = value;
       if (value) {
         this.setAttribute("right", "");
@@ -180,31 +174,29 @@ export class ZenLibrary extends MozLitElement {
     if (super.connectedCallback) {
       super.connectedCallback();
     }
-    this._onDocClick = this._onDocClick.bind(this);
-    this._onKeyDown = this._onKeyDown.bind(this);
-    document.addEventListener("click", this._onDocClick, true);
-    document.addEventListener("keydown", this._onKeyDown, true);
+    this.onDocClick = this.onDocClick.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
+    document.addEventListener("click", this.onDocClick, true);
+    document.addEventListener("keydown", this.onKeyDown, true);
   }
 
   disconnectedCallback() {
-    if (this._springFrameId !== undefined) {
-      cancelAnimationFrame(this._springFrameId);
-      this._springFrameId = undefined;
+    if (this.#springControls) {
+      this.#springControls.stop();
+      this.#springControls = null;
     }
-    this._springAnimationId = (this._springAnimationId ?? 0) + 1;
-    this._springAnimating = false;
 
-    // Safety check: ensure buttons are restored if library is forcefully destroyed
-    this._restoreWindowButtons();
+    // Restore button pos before library is destroyed
+    this.#restoreWindowButtons();
 
     if (super.disconnectedCallback) {
       super.disconnectedCallback();
     }
-    document.removeEventListener("click", this._onDocClick, true);
-    document.removeEventListener("keydown", this._onKeyDown, true);
+    document.removeEventListener("click", this.onDocClick, true);
+    document.removeEventListener("keydown", this.onKeyDown, true);
   }
 
-  _onDocClick(e) {
+  onDocClick(e) {
     if (!this.hasAttribute("open")) {
       return;
     }
@@ -214,7 +206,7 @@ export class ZenLibrary extends MozLitElement {
     }
   }
 
-  _onKeyDown(e) {
+  onKeyDown(e) {
     if (!this.hasAttribute("open")) {
       return;
     }

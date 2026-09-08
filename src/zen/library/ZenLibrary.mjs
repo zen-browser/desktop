@@ -39,7 +39,7 @@ export class ZenLibrary extends MozLitElement {
 
   set openProgress(value) {
     const p = value;
-    const stealWindowButtonsPastPoint = 0.95;
+    const stealWindowButtonsPastPoint = 0.6;
     const wasPastWindowButtonSwitchPoint =
       this.#progress > stealWindowButtonsPastPoint;
     const wasOpen = this.#progress > 0;
@@ -118,9 +118,9 @@ export class ZenLibrary extends MozLitElement {
       lib.#springTarget,
       {
         type: "spring",
-        stiffness: 630,
+        stiffness: 720,
         damping: 47,
-        mass: 1.3,
+        mass: 1.2,
         onUpdate: latest => {
           lib.openProgress = latest;
         },

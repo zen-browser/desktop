@@ -17,8 +17,10 @@
 }
 
 #navigator-toolbox {
-  transform: scale(calc(1 - var(--library-progress) * 0.04));
-  opacity: calc(1 - var(--library-progress));
+  --toolbox-progress: min(1, calc(var(--library-progress) * 2));
+
+  transform: scale(calc(1 - var(--toolbox-progress) * 0.04));
+  opacity: calc(1 - var(--toolbox-progress));
 }
 
 zen-library {

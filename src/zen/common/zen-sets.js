@@ -41,6 +41,9 @@ document.addEventListener(
           case "cmd_zenSplitViewContextMenu":
             gZenViewSplitter.contextSplitTabs();
             break;
+          case "cmd_zenCtxShareSplitView":
+            gZenViewSplitter.contextShareSplitView();
+            break;
           case "cmd_zenCopyCurrentURLMarkdown":
             gZenCommonActions.copyCurrentURLAsMarkdownToClipboard();
             break;

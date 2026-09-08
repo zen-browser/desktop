@@ -4,14 +4,14 @@
 
 import { html } from "chrome://global/content/vendor/lit.all.mjs";
 
-export class ZenLibraryHistorySection {
-  static id = "history";
-  static label = "library-history-section-title";
+export class ZenLibraryDownloadsSection {
+  static id = "downloads";
+  static label = "library-downloads-section-title";
 
   static render() {
     return html`
       <div class="zen-library-section" data-section=${this.id}>
-        <h1>${this.label}</h1>
+        <h1 data-l10n-id=${this.label}></h1>
       </div>
     `;
   }

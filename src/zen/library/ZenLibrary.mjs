@@ -11,13 +11,13 @@ ChromeUtils.defineESModuleGetters(
   lazy,
   {
     ZenLibraryHistorySection:
-      "moz-src:///zen/library/ZenLibraryHistorySection.mjs",
+      "moz-src:///zen/library/sections/ZenLibraryHistorySection.mjs",
     ZenLibraryDownloadsSection:
-      "moz-src:///zen/library/ZenLibraryDownloadsSection.mjs",
+      "moz-src:///zen/library/sections/ZenLibraryDownloadsSection.mjs",
     ZenLibraryBoostsSection:
-      "moz-src:///zen/library/ZenLibraryBoostsSection.mjs",
+      "moz-src:///zen/library/sections/ZenLibraryBoostsSection.mjs",
     ZenLibrarySpacesSection:
-      "moz-src:///zen/library/ZenLibrarySpacesSection.mjs",
+      "moz-src:///zen/library/sections/ZenLibrarySpacesSection.mjs",
   },
   { global: "current" }
 );
@@ -85,9 +85,9 @@ export class ZenLibrary extends MozLitElement {
     const isPastWindowButtonSwitchPoint = p > stealWindowButtonsPastPoint;
     const isOpen = p > 0;
 
-    // TODO: Change from arbitrary value to actual
     let libraryWidth = window.windowUtils.getBoundsWithoutFlushing(this).width;
-    let webOffset = (this.#libraryOnRight ? -1 : 1) * (libraryWidth - this.#toolboxWidth);
+    let webOffset =
+      (this.#libraryOnRight ? -1 : 1) * (libraryWidth - this.#toolboxWidth);
 
     lazy.appContentWrapper?.style.setProperty(
       "--library-wrapper-target-px",
@@ -103,7 +103,6 @@ export class ZenLibrary extends MozLitElement {
       this.removeAttribute("open");
     }
 
-    // Window buttons
     if (isPastWindowButtonSwitchPoint && !wasPastWindowButtonSwitchPoint) {
       this.#adoptWindowButtons();
     } else if (
@@ -140,8 +139,45 @@ export class ZenLibrary extends MozLitElement {
     this.#originalButtonsClone = null;
   }
 
-  static toggle() {
+  #stylesLoaded = null;
+
+  #whenStylesLoaded() {
+    this.#stylesLoaded ??= this.updateComplete.then(() => {
+      const link = this.querySelector("link[rel='stylesheet']");
+      if (!link || link.sheet) {
+        return undefined;
+      }
+      return new Promise(resolve => {
+        link.addEventListener("load", resolve, { once: true });
+        link.addEventListener("error", resolve, { once: true });
+      });
+    });
+    return this.#stylesLoaded;
+  }
+
+  #idleCleanup = null;
+
+  #scheduleIdleCleanup() {
+    this.#idleCleanup = window.requestIdleCallback(() => {
+      this.#idleCleanup = null;
+      this.#stylesLoaded = null;
+      ZenLibrary.instance = null;
+      this.remove();
+    });
+  }
+
+  #cancelIdleCleanup() {
+    if (this.#idleCleanup) {
+      window.cancelIdleCallback(this.#idleCleanup);
+      this.#idleCleanup = null;
+    }
+  }
+
+  static async toggle() {
     const lib = this.getInstance();
+    lib.#cancelIdleCleanup();
+    await lib.#whenStylesLoaded();
+    await window.promiseDocumentFlushed(() => {});
     lib.#springTarget = lib.#springTarget === 1 ? 0 : 1;
 
     if (lib.#springControls) {
@@ -149,9 +185,16 @@ export class ZenLibrary extends MozLitElement {
     }
 
     if (lib.#springTarget === 1) {
-      lib.#toolboxWidth = window.windowUtils.getBoundsWithoutFlushing(gNavToolbox).width;
+      lib.#toolboxWidth =
+        window.windowUtils.getBoundsWithoutFlushing(gNavToolbox).width;
+      if (document.documentElement.hasAttribute("zen-sidebar-expanded")) {
+        lib.#toolboxWidth += window.windowUtils.getBoundsWithoutFlushing(
+          document.getElementById("zen-sidebar-splitter")
+        ).width;
+      }
     }
 
+    lib.setAttribute("transitioning", "true");
     lib.#springControls = gZenUIManager.motion.animate(
       lib.openProgress,
       lib.#springTarget,
@@ -166,6 +209,10 @@ export class ZenLibrary extends MozLitElement {
         onComplete: () => {
           lib.openProgress = lib.#springTarget;
           lib.#springControls = null;
+          lib.removeAttribute("transitioning");
+          if (lib.#springTarget === 0) {
+            lib.#scheduleIdleCleanup();
+          }
         },
       }
     );
@@ -197,12 +244,12 @@ export class ZenLibrary extends MozLitElement {
   }
 
   disconnectedCallback() {
+    this.#cancelIdleCleanup();
     if (this.#springControls) {
       this.#springControls.stop();
       this.#springControls = null;
     }
 
-    // Restore button pos before library is destroyed
     this.#restoreWindowButtons();
 
     super.disconnectedCallback();
@@ -235,7 +282,10 @@ export class ZenLibrary extends MozLitElement {
       },
       {
         image: "chrome://browser/skin/zen-icons/heart-circle-fill.svg",
-        command: () => {},
+        command: () => {
+          window.openTrustedLinkIn("https://www.zen-browser.app/donate", "tab");
+          ZenLibrary.toggle();
+        },
       },
     ];
 
@@ -248,13 +298,6 @@ export class ZenLibrary extends MozLitElement {
     }
   }
 
-  /**
-   * Plays a tab's icon sprite animation, reload-to-stop style: the [animate]
-   * attribute starts the strip's steps() animation (see zen-library.css) and
-   * the animationend handler removes it again. Restarts if mid-animation.
-   *
-   * @param {Element} tab
-   */
   #animateTabIcon(tab) {
     tab.removeAttribute("animate");
     // Flush styles so re-adding the attribute restarts the animation.
@@ -288,7 +331,7 @@ export class ZenLibrary extends MozLitElement {
                   <div class="zen-library-tab-icon">
                     <div class="zen-library-tab-icon-image"></div>
                   </div>
-                  <label>${Section.label}</label>
+                  <label data-l10n-id=${Section.label}></label>
                 </vbox>
               `
             )}
@@ -301,7 +344,7 @@ export class ZenLibrary extends MozLitElement {
           ></toolbar>
         </vbox>
         <vbox id="zen-library-content">
-          ${this.activeSection?.render?.()}
+          ${this.activeSection.render(this)}
         </vbox>
       </hbox>
     `;

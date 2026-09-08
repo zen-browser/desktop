@@ -11,7 +11,7 @@ export class ZenLibraryBoostsSection {
   static render() {
     return html`
       <div class="zen-library-section" data-section=${this.id}>
-        <h1>${this.label}</h1>
+        <h1 data-l10n-id=${this.label}></h1>
       </div>
     `;
   }

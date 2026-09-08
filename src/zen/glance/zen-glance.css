@@ -41,11 +41,11 @@
 
     &:hover {
       background: light-dark(rgb(41, 41, 41), rgb(204, 204, 204));
-      scale: 1.05;
+      scale: 1.02;
     }
 
     &:hover:active {
-      scale: 0.95;
+      scale: 0.98;
     }
 
     & label {

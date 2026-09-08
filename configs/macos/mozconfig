@@ -7,7 +7,21 @@ unset MOZ_STDCXX_COMPAT
 ac_add_options --disable-dmd
 ac_add_options --enable-eme=widevine
 
-if test "$ZEN_RELEASE"; then
+if test "$ZEN_CROSS_COMPILING"; then
+  ZEN_MAC_CROSS="$HOME/mac-cross"
+
+  mk_add_options "export PATH=$ZEN_MAC_CROSS/cctools/bin:$PATH"
+  mk_add_options "export LD_LIBRARY_PATH=$HOME/.mozbuild/clang/lib:$LD_LIBRARY_PATH"
+
+  export MKFSHFS=$ZEN_MAC_CROSS/hfsplus/newfs_hfs
+  export DMG_TOOL=$ZEN_MAC_CROSS/dmg/dmg
+  export HFS_TOOL=$ZEN_MAC_CROSS/dmg/hfsplus
+
+  if test "$ZEN_RELEASE"; then
+    export MOZ_LD64_KNOWN_GOOD=1
+    ac_add_options --enable-linker=ld64
+  fi
+elif test "$ZEN_RELEASE"; then
   ALLOWED_SDKS="26.5 26.4"
   for SDK in $ALLOWED_SDKS; do
     if [ -d "/Library/Developer/CommandLineTools/SDKs/MacOSX${SDK}.sdk" ]; then
@@ -52,13 +66,3 @@ else
     export CXXFLAGS="$CXXFLAGS -mcpu=apple-m1"
   fi
 fi
-
-# Keep using ld64 on PGO/LTO builds because of performance regressions when using lld.
-# Mozilla sets "MOZ_LD64_KNOWN_GOOD" to true when they do automated builds with PGO/LTO on macOS.
-# See https://searchfox.org/firefox-main/rev/e61d59b5c9a651fd7bf28043f87c0dc669833496/build/moz.configure/lto-pgo.configure#261
-# export MOZ_LD64_KNOWN_GOOD=1
-# ac_add_options --enable-linker=ld64
-# 
-# if test "$ZEN_RELEASE"; then
-#   mk_add_options MOZ_MAKE_FLAGS="-j4"
-# fi

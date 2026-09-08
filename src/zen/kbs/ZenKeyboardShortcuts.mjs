@@ -85,9 +85,10 @@ const defaultKeyboardGroups = {
     "zen-search-focus-shortcut",
     "zen-search-focus-shortcut-alt",
     "zen-find-shortcut",
-    "zen-search-find-again-shortcut-2",
     "zen-search-find-again-shortcut",
+    "zen-search-find-again-shortcut-alt",
     "zen-search-find-again-shortcut-prev",
+    "zen-search-find-again-shortcut-prev-alt",
   ],
   pageOperations: [
     "zen-text-action-copy-url-markdown-shortcut",
@@ -305,6 +306,29 @@ export class nsKeyShortcutModifiers {
 }
 
 class KeyShortcut {
+  static SHIFTED_SYMBOLS = {
+    1: "!",
+    2: "@",
+    3: "#",
+    4: "$",
+    5: "%",
+    6: "^",
+    7: "&",
+    8: "*",
+    9: "(",
+    0: ")",
+    "`": "~",
+    "-": "_",
+    "=": "+",
+    "[": "{",
+    "]": "}",
+    "\\": "|",
+    ";": ":",
+    "'": '"',
+    ",": "<",
+    ".": ">",
+    "/": "?",
+  };
   #id = "";
   #key = "";
   #keycode = "";
@@ -430,13 +454,35 @@ class KeyShortcut {
 
   replaceWithChild(key) {
     key.id = this.#id;
+
+    // When shift is pressed and the char changes when shifted (like 1 -> !),
+    // the XUL matches the shifted character so we need to emit the shifted character
+    // and drop the shift modifier so XUL can match
+    // This problem is also windows specific
+    let keyName = this.#key;
+    let modifiers = this.#modifiers;
+
+    if (AppConstants.platform == "win") {
+      const shiftedKey = KeyShortcut.SHIFTED_SYMBOLS[keyName];
+      if (shiftedKey && modifiers.shift) {
+        keyName = shiftedKey;
+        modifiers = new nsKeyShortcutModifiers(
+          modifiers.control,
+          modifiers.alt,
+          false, // -> for shift key
+          modifiers.meta,
+          modifiers.accel
+        );
+      }
+    }
+
     if (this.#keycode) {
       key.setAttribute("keycode", this.#keycode);
       key.removeAttribute("key");
-    } else if (this.#key) {
+    } else if (keyName) {
       // note to "mr. macos": Better use setAttribute, because without it, there's a
       //  risk of malforming the XUL element.
-      key.setAttribute("key", this.#key);
+      key.setAttribute("key", keyName);
       key.removeAttribute("keycode");
     } else {
       key.removeAttribute("key");
@@ -451,7 +497,7 @@ class KeyShortcut {
     if (this.#l10nId) {
       // key.setAttribute('data-l10n-id', this.#l10nId);
     }
-    key.setAttribute("modifiers", this.#modifiers.toString());
+    key.setAttribute("modifiers", modifiers.toString());
     if (this.#action) {
       key.setAttribute("command", this.#action);
     }
@@ -848,7 +894,7 @@ class nsZenKeyboardShortcutsLoader {
 }
 
 class nsZenKeyboardShortcutsVersioner {
-  static LATEST_KBS_VERSION = 19;
+  static LATEST_KBS_VERSION = 20;
 
   constructor() {}
 
@@ -1252,6 +1298,24 @@ class nsZenKeyboardShortcutsVersioner {
           shortcut.shouldBeEmpty = true;
           shortcut.setDisabled(true);
           break;
+        }
+      }
+    }
+
+    if (version < 20) {
+      // Migrate from version 19 to 20.
+      // - Disable "key_addTabSplitView" and "key_separateTabSplitView"
+      // since we already had "cmd_zenNewEmptySplit" and "cmd_zenSplitViewUnsplit" before Firefox 153.
+      // - Disable firefox's "viewOpenTabsSidebarKb" as it depends on firefox's native sidebar feature
+      const shouldBeDisabledShortcuts = [
+        "key_addTabSplitView",
+        "key_separateTabSplitView",
+        "viewOpenTabsSidebarKb",
+      ];
+      for (let shortcut of data) {
+        if (shouldBeDisabledShortcuts.includes(shortcut.getID())) {
+          shortcut.shouldBeEmpty = true;
+          shortcut.setDisabled(true);
         }
       }
     }

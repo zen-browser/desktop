@@ -1,0 +1,907 @@
+{
+  "version": ["sessionrestore", 1],
+  "windows": [
+    {
+      "tabs": [
+        {
+          "entries": [
+            {
+              "url": "about:home",
+              "title": "New Tab",
+              "cacheKey": 0,
+              "ID": 889527166,
+              "docshellUUID": "{1c51a53b-d2b5-4484-8deb-aef7bd44abc4}",
+              "resultPrincipalURI": null,
+              "principalToInherit_base64": "{\"0\":{\"0\":\"moz-nullprincipal:{6ec4bec4-5873-4b33-b269-be6653e318d8}\"}}",
+              "hasUserInteraction": true,
+              "triggeringPrincipal_base64": "{\"3\":{}}",
+              "docIdentifier": 12,
+              "transient": false,
+              "navigationKey": "{d0185d51-bd9f-4f90-afb2-f40547ac08a8}",
+              "navigationId": "{08e9abae-27f4-4cbb-8eb6-1524776e7327}"
+            },
+            {
+              "url": "about:mozilla",
+              "title": "The Book of Mozilla, 6:27",
+              "cacheKey": 0,
+              "ID": 889527167,
+              "docshellUUID": "{1c51a53b-d2b5-4484-8deb-aef7bd44abc4}",
+              "resultPrincipalURI": null,
+              "principalToInherit_base64": "{\"0\":{\"0\":\"moz-nullprincipal:{b5d58330-101d-4601-9291-6435ebcb854e}\"}}",
+              "hasUserInteraction": true,
+              "triggeringPrincipal_base64": "{\"3\":{}}",
+              "docIdentifier": 13,
+              "transient": false,
+              "navigationKey": "{e546bd8d-4813-4a8a-8e90-0cdde6b5ab72}",
+              "navigationId": "{7fd8f06e-2863-4f78-85f4-a4684c635086}"
+            }
+          ],
+          "lastAccessed": 1770416063211,
+          "hidden": false,
+          "groupId": "1770415115529-1",
+          "searchMode": null,
+          "userContextId": 0,
+          "attributes": {},
+          "index": 2,
+          "requestedIndex": 0,
+          "image": null
+        },
+        {
+          "entries": [
+            {
+              "url": "about:newtab",
+              "title": "New Tab",
+              "cacheKey": 0,
+              "ID": 889527170,
+              "docshellUUID": "{739fd540-1ff5-4d46-8e55-896b64d6cfb3}",
+              "resultPrincipalURI": null,
+              "hasUserInteraction": true,
+              "triggeringPrincipal_base64": "{\"3\":{}}",
+              "docIdentifier": 14,
+              "transient": false,
+              "navigationKey": "{c3718cd7-fac1-4ca7-b728-73b028e8e26a}",
+              "navigationId": "{b0b9cd99-3b46-4b98-b032-2d9ab1d649c0}"
+            },
+            {
+              "url": "about:support",
+              "title": "Troubleshooting Information",
+              "cacheKey": 0,
+              "ID": 889527171,
+              "docshellUUID": "{739fd540-1ff5-4d46-8e55-896b64d6cfb3}",
+              "resultPrincipalURI": null,
+              "principalToInherit_base64": "{\"0\":{\"0\":\"moz-nullprincipal:{675de4b7-6fd5-47d4-a538-50bbcdca4c6c}\"}}",
+              "hasUserInteraction": true,
+              "triggeringPrincipal_base64": "{\"3\":{}}",
+              "docIdentifier": 15,
+              "transient": false,
+              "navigationKey": "{f8decd0b-ac89-4e55-892e-3e8ed627ba0e}",
+              "navigationId": "{ad8b07d9-29bf-4281-806a-c3534fc58d84}"
+            },
+            {
+              "url": "about:preferences",
+              "title": "Settings",
+              "cacheKey": 0,
+              "ID": 889527172,
+              "docshellUUID": "{739fd540-1ff5-4d46-8e55-896b64d6cfb3}",
+              "originalURI": "about:preferences",
+              "resultPrincipalURI": null,
+              "principalToInherit_base64": "{\"0\":{\"0\":\"moz-nullprincipal:{a6850bcd-5678-4594-9311-0affec22d009}\"}}",
+              "hasUserInteraction": true,
+              "triggeringPrincipal_base64": "{\"3\":{}}",
+              "docIdentifier": 16,
+              "structuredCloneState": "AgAAAAAA8f8LAACABAD//3BhbmVHZW5lcmFsAAAAAAA=",
+              "structuredCloneVersion": 8,
+              "children": [
+                {
+                  "url": "about:blank",
+                  "title": "about:blank",
+                  "cacheKey": 0,
+                  "ID": 889527173,
+                  "docshellUUID": "{5cdf1a82-9508-4a80-8884-312cb35c4b5a}",
+                  "resultPrincipalURI": null,
+                  "hasUserInteraction": true,
+                  "triggeringPrincipal_base64": "{\"3\":{}}",
+                  "policyContainer": "ydqGXsPXSqGicQ9XHwE8MAAAAAAAAAAAwAAAAAAAAEYAAAABAQnZ7Rrl1EAEv+Anzrkj2awdYyAIbJdIrqUcFuLaoPT2AeDaHXAvexHTjNAAYLD8FKOSBzpUbXhPMJE6uHGBMgjGAAAAAAVhYm91dAAAAAtwcmVmZXJlbmNlcwAAAAAACHsiMyI6e319AAAAAQAAAI8AZABlAGYAYQB1AGwAdAAtAHMAcgBjACAAYwBoAHIAbwBtAGUAOgA7ACAAaQBtAGcALQBzAHIAYwAgAGMAaAByAG8AbQBlADoAIABtAG8AegAtAGkAYwBvAG4AOgAgAG0AbwB6AC0AcgBlAG0AbwB0AGUALQBpAG0AYQBnAGUAOgAgAGgAdAB0AHAAcwA6ACAAYgBsAG8AYgA6ACAAZABhAHQAYQA6ADsAIABzAHQAeQBsAGUALQBzAHIAYwAgAGMAaAByAG8AbQBlADoAIABkAGEAdABhADoAIAAnAHUAbgBzAGEAZgBlAC0AaQBuAGwAaQBuAGUAJwA7ACAAbwBiAGoAZQBjAHQALQBzAHIAYwAgACcAbgBvAG4AZQAnAAEAAUgS/zIb/0I7l/xApWltrSJIEv8yG/9CO5f8QKVpba0iAAAAAQAA",
+                  "docIdentifier": 17,
+                  "transient": true,
+                  "navigationKey": "{d292a0e0-a212-4147-a523-7196c1d82c09}",
+                  "navigationId": "{72db572a-c072-4aa9-b282-e22fdb01150d}"
+                },
+                {
+                  "url": "about:blank",
+                  "title": "about:blank",
+                  "cacheKey": 0,
+                  "ID": 20,
+                  "docshellUUID": "{99483b7c-4429-4610-970d-8e43b680cda6}",
+                  "resultPrincipalURI": null,
+                  "hasUserInteraction": true,
+                  "triggeringPrincipal_base64": "{\"3\":{}}",
+                  "policyContainer": "ydqGXsPXSqGicQ9XHwE8MAAAAAAAAAAAwAAAAAAAAEYAAAABAQnZ7Rrl1EAEv+Anzrkj2awdYyAIbJdIrqUcFuLaoPT2AeDaHXAvexHTjNAAYLD8FKOSBzpUbXhPMJE6uHGBMgjGAAAAAAVhYm91dAAAAAtwcmVmZXJlbmNlcwAAAAAACHsiMyI6e319AAAAAQAAAI8AZABlAGYAYQB1AGwAdAAtAHMAcgBjACAAYwBoAHIAbwBtAGUAOgA7ACAAaQBtAGcALQBzAHIAYwAgAGMAaAByAG8AbQBlADoAIABtAG8AegAtAGkAYwBvAG4AOgAgAG0AbwB6AC0AcgBlAG0AbwB0AGUALQBpAG0AYQBnAGUAOgAgAGgAdAB0AHAAcwA6ACAAYgBsAG8AYgA6ACAAZABhAHQAYQA6ADsAIABzAHQAeQBsAGUALQBzAHIAYwAgAGMAaAByAG8AbQBlADoAIABkAGEAdABhADoAIAAnAHUAbgBzAGEAZgBlAC0AaQBuAGwAaQBuAGUAJwA7ACAAbwBiAGoAZQBjAHQALQBzAHIAYwAgACcAbgBvAG4AZQAnAAEAAUgS/zIb/0I7l/xApWltrSJIEv8yG/9CO5f8QKVpba0iAAAAAQAA",
+                  "docIdentifier": 22,
+                  "transient": true,
+                  "navigationKey": "{6dfc5997-9767-471e-a092-3d3cb72d5c18}",
+                  "navigationId": "{949e9fde-2b4d-4588-8bfe-807a46c38f02}"
+                }
+              ],
+              "transient": false,
+              "navigationKey": "{f8241c63-5204-446f-82f4-9a200b7a57eb}",
+              "navigationId": "{86153ed4-da40-4d2a-8017-8268fc40158f}"
+            }
+          ],
+          "lastAccessed": 1770416070546,
+          "hidden": false,
+          "splitViewId": 1,
+          "searchMode": null,
+          "userContextId": 0,
+          "attributes": {},
+          "index": 3,
+          "requestedIndex": 0,
+          "formdata": {
+            "url": "about:preferences",
+            "id": {
+              "searchInput": {
+                "state": "",
+                "value": ""
+              },
+              "browserRestoreSession": {
+                "state": "on",
+                "value": "on"
+              },
+              "windowsLaunchOnLogin": {
+                "state": "on",
+                "value": "on"
+              },
+              "alwaysCheckDefault": {
+                "state": "on",
+                "value": "on"
+              },
+              "linkTargeting": {
+                "state": "on",
+                "value": "on"
+              },
+              "switchToNewTabs": {
+                "state": "on",
+                "value": "on"
+              },
+              "openAppLinksNextToActiveTab": {
+                "state": "on",
+                "value": "on"
+              },
+              "warnOpenMany": {
+                "state": "on",
+                "value": "on"
+              },
+              "ctrlTabRecentlyUsedOrder": {
+                "state": "on",
+                "value": "on"
+              },
+              "tabPreviewShowThumbnails": {
+                "state": "on",
+                "value": "on"
+              },
+              "tabGroupSuggestions": {
+                "state": "on",
+                "value": "on"
+              },
+              "showTabsInTaskbar": {
+                "state": "on",
+                "value": "on"
+              },
+              "browserContainersCheckbox": {
+                "state": "on",
+                "value": "on"
+              },
+              "warnCloseMultiple": {
+                "state": "on",
+                "value": "on"
+              },
+              "warnOnQuitKey": {
+                "state": "on",
+                "value": "on"
+              },
+              "browserLayoutRadioGroup": {
+                "state": "false",
+                "value": "false"
+              },
+              "browserLayoutShowSidebar": {
+                "state": "on",
+                "value": "on"
+              },
+              "web-appearance-chooser": {
+                "state": "auto",
+                "value": "auto"
+              },
+              "contrastControlSettings": {
+                "state": "1",
+                "value": "1"
+              },
+              "contrastSettingsAuto": {
+                "state": "0",
+                "value": "0"
+              },
+              "contrastSettingsOff": {
+                "state": "1",
+                "value": "1"
+              },
+              "contrastSettingsOn": {
+                "state": "2",
+                "value": "2"
+              },
+              "defaultZoom": {
+                "state": "100",
+                "value": "100"
+              },
+              "zoomText": {
+                "state": "on",
+                "value": "on"
+              },
+              "chooseFolder": {
+                "state": "/home/sfoster/Downloads",
+                "value": "/home/sfoster/Downloads"
+              },
+              "alwaysAsk": {
+                "state": "on",
+                "value": "on"
+              },
+              "deletePrivate": {
+                "state": "on",
+                "value": "on"
+              },
+              "filter": {
+                "state": "",
+                "value": ""
+              },
+              "playDRMContent": {
+                "state": "on",
+                "value": "on"
+              },
+              "useRecommendedPerformanceSettings": {
+                "state": "on",
+                "value": "on"
+              },
+              "allowHWAccel": {
+                "state": "on",
+                "value": "on"
+              },
+              "useAutoScroll": {
+                "state": "on",
+                "value": "on"
+              },
+              "useSmoothScrolling": {
+                "state": "on",
+                "value": "on"
+              },
+              "useOverlayScrollbars": {
+                "state": "on",
+                "value": "on"
+              },
+              "useOnScreenKeyboard": {
+                "state": "on",
+                "value": "on"
+              },
+              "useCursorNavigation": {
+                "state": "on",
+                "value": "on"
+              },
+              "useFullKeyboardNavigation": {
+                "state": "on",
+                "value": "on"
+              },
+              "alwaysUnderlineLinks": {
+                "state": "on",
+                "value": "on"
+              },
+              "searchStartTyping": {
+                "state": "on",
+                "value": "on"
+              },
+              "pictureInPictureToggleEnabled": {
+                "state": "on",
+                "value": "on"
+              },
+              "pictureInPictureEnableWhenSwitchingTabs": {
+                "state": "on",
+                "value": "on"
+              },
+              "mediaControlToggleEnabled": {
+                "state": "on",
+                "value": "on"
+              },
+              "cfrRecommendations": {
+                "state": "on",
+                "value": "on"
+              },
+              "cfrRecommendations-features": {
+                "state": "on",
+                "value": "on"
+              },
+              "linkPreviewEnabled": {
+                "state": "on",
+                "value": "on"
+              },
+              "linkPreviewKeyPoints": {
+                "state": "on",
+                "value": "on"
+              },
+              "linkPreviewLongPress": {
+                "state": "on",
+                "value": "on"
+              },
+              "defaultEngineNormal": {
+                "state": "google",
+                "value": "google"
+              },
+              "searchShowSearchTermCheckbox": {
+                "state": "on",
+                "value": "on"
+              },
+              "browserSeparateDefaultEngine": {
+                "state": "on",
+                "value": "on"
+              },
+              "defaultPrivateEngine": {
+                "state": "google",
+                "value": "google"
+              },
+              "suggestionsInSearchFieldsCheckbox": {
+                "state": "on",
+                "value": "on"
+              },
+              "urlBarSuggestionCheckbox": {
+                "state": "on",
+                "value": "on"
+              },
+              "showSearchSuggestionsFirstCheckbox": {
+                "state": "on",
+                "value": "on"
+              },
+              "showSearchSuggestionsPrivateWindowsCheckbox": {
+                "state": "on",
+                "value": "on"
+              },
+              "showTrendingSuggestionsCheckbox": {
+                "state": "on",
+                "value": "on"
+              },
+              "historySuggestion": {
+                "state": "on",
+                "value": "on"
+              },
+              "bookmarkSuggestion": {
+                "state": "on",
+                "value": "on"
+              },
+              "clipboardSuggestion": {
+                "state": "on",
+                "value": "on"
+              },
+              "openpageSuggestion": {
+                "state": "on",
+                "value": "on"
+              },
+              "topSitesSuggestion": {
+                "state": "on",
+                "value": "on"
+              },
+              "enableRecentSearches": {
+                "state": "on",
+                "value": "on"
+              },
+              "enginesSuggestion": {
+                "state": "on",
+                "value": "on"
+              },
+              "enableQuickActions": {
+                "state": "on",
+                "value": "on"
+              },
+              "firefoxSuggestAll": {
+                "state": "on",
+                "value": "on"
+              },
+              "firefoxSuggestSponsored": {
+                "state": "on",
+                "value": "on"
+              },
+              "firefoxSuggestOnlineEnabledToggle": {
+                "state": "on",
+                "value": "on"
+              },
+              "contentBlockingBaselineExceptionsStrict": {
+                "state": "on",
+                "value": "on"
+              },
+              "contentBlockingConvenienceExceptionsStrict": {
+                "state": "on",
+                "value": "on"
+              },
+              "contentBlockingBaselineExceptionsCustom": {
+                "state": "on",
+                "value": "on"
+              },
+              "contentBlockingConvenienceExceptionsCustom": {
+                "state": "on",
+                "value": "on"
+              },
+              "gpcEnabled": {
+                "state": "on",
+                "value": "on"
+              },
+              "ipProtectionAutoStartCheckbox": {
+                "state": "on",
+                "value": "on"
+              },
+              "ipProtectionAutoStartPrivateCheckbox": {
+                "state": "on",
+                "value": "on"
+              },
+              "deleteOnClose": {
+                "state": "on",
+                "value": "on"
+              },
+              "saveAndFillPayments": {
+                "state": "on",
+                "value": "on"
+              },
+              "requireOSAuthForPayments": {
+                "state": "on",
+                "value": "on"
+              },
+              "saveAndFillAddresses": {
+                "state": "on",
+                "value": "on"
+              },
+              "historyMode": {
+                "state": "remember",
+                "value": "remember"
+              },
+              "privateBrowsingAutoStart": {
+                "state": "on",
+                "value": "on"
+              },
+              "rememberHistory": {
+                "state": "on",
+                "value": "on"
+              },
+              "rememberForms": {
+                "state": "on",
+                "value": "on"
+              },
+              "alwaysClear": {
+                "state": "on",
+                "value": "on"
+              },
+              "popupPolicy": {
+                "state": "on",
+                "value": "on"
+              },
+              "warnAddonInstall": {
+                "state": "on",
+                "value": "on"
+              },
+              "notificationsDoNotDisturb": {
+                "state": "on",
+                "value": "on"
+              },
+              "enableSafeBrowsing": {
+                "state": "on",
+                "value": "on"
+              },
+              "blockDownloads": {
+                "state": "on",
+                "value": "on"
+              },
+              "blockUncommonUnwanted": {
+                "state": "on",
+                "value": "on"
+              },
+              "certEnableThirdPartyToggle": {
+                "state": "on",
+                "value": "on"
+              },
+              "httpsOnlyRadioGroup": {
+                "state": "disabled",
+                "value": "disabled"
+              },
+              "httpsOnlyRadioEnabled": {
+                "state": "enabled",
+                "value": "enabled"
+              },
+              "httpsOnlyRadioEnabledPBM": {
+                "state": "privateOnly",
+                "value": "privateOnly"
+              },
+              "httpsOnlyRadioDisabled": {
+                "state": "disabled",
+                "value": "disabled"
+              },
+              "firefox-labs-urlbar-ime-search": {
+                "state": "on",
+                "value": "on"
+              },
+              "copyProfileSelect": {
+                "state": "",
+                "value": ""
+              },
+              "aiControlTranslationsSelect": {
+                "state": "available",
+                "value": "available"
+              },
+              "aiControlPdfjsAltTextSelect": {
+                "state": "available",
+                "value": "available"
+              },
+              "aiControlSmartTabGroupsSelect": {
+                "state": "available",
+                "value": "available"
+              },
+              "aiControlLinkPreviewKeyPointsSelect": {
+                "state": "available",
+                "value": "available"
+              },
+              "aiControlSidebarChatbotSelect": {
+                "state": "available",
+                "value": "available"
+              },
+              "learnFromChatActivity": {
+                "state": "on",
+                "value": "on"
+              },
+              "learnFromBrowsingActivity": {
+                "state": "on",
+                "value": "on"
+              }
+            }
+          },
+          "image": "chrome://global/skin/icons/settings.svg"
+        },
+        {
+          "entries": [
+            {
+              "url": "about:newtab",
+              "title": "New Tab",
+              "cacheKey": 0,
+              "ID": 889527170,
+              "docshellUUID": "{b164ef01-b988-4cf7-96c3-1caaa1dd02c3}",
+              "resultPrincipalURI": null,
+              "hasUserInteraction": true,
+              "triggeringPrincipal_base64": "{\"3\":{}}",
+              "docIdentifier": 18,
+              "transient": false,
+              "navigationKey": "{5cb78b82-cd07-4aa0-8a5d-0c63b1e58ba1}",
+              "navigationId": "{a5ff9eb9-724a-4c8a-8dcf-9f2655731aba}"
+            },
+            {
+              "url": "about:robots",
+              "title": "Gort! Klaatu barada nikto!",
+              "cacheKey": 0,
+              "ID": 889527171,
+              "docshellUUID": "{b164ef01-b988-4cf7-96c3-1caaa1dd02c3}",
+              "resultPrincipalURI": null,
+              "principalToInherit_base64": "{\"0\":{\"0\":\"moz-nullprincipal:{eccd56de-0975-43ff-bda3-8740fea45548}\"}}",
+              "hasUserInteraction": true,
+              "triggeringPrincipal_base64": "{\"3\":{}}",
+              "docIdentifier": 19,
+              "transient": false,
+              "navigationKey": "{39e9956c-07d7-4ed5-81f9-375f71a24981}",
+              "navigationId": "{4116d9c7-01a3-45d7-ac56-c59caef156c6}"
+            }
+          ],
+          "lastAccessed": 1770415081903,
+          "hidden": false,
+          "splitViewId": 1,
+          "searchMode": null,
+          "userContextId": 0,
+          "attributes": {},
+          "index": 2,
+          "requestedIndex": 0,
+          "image": "chrome://browser/content/robot.ico"
+        }
+      ],
+      "groups": [
+        {
+          "id": "1770415115529-1",
+          "name": "Abouts",
+          "color": "blue",
+          "collapsed": false,
+          "saveOnWindowClose": true,
+          "saved": true,
+          "closedAt": 1770416070547,
+          "windowClosedId": 7,
+          "tabs": [
+            {
+              "state": {
+                "entries": [
+                  {
+                    "url": "about:home",
+                    "title": "New Tab",
+                    "cacheKey": 0,
+                    "ID": 889527166,
+                    "docshellUUID": "{1c51a53b-d2b5-4484-8deb-aef7bd44abc4}",
+                    "resultPrincipalURI": null,
+                    "principalToInherit_base64": "{\"0\":{\"0\":\"moz-nullprincipal:{6ec4bec4-5873-4b33-b269-be6653e318d8}\"}}",
+                    "hasUserInteraction": true,
+                    "triggeringPrincipal_base64": "{\"3\":{}}",
+                    "docIdentifier": 12,
+                    "transient": false,
+                    "navigationKey": "{d0185d51-bd9f-4f90-afb2-f40547ac08a8}",
+                    "navigationId": "{08e9abae-27f4-4cbb-8eb6-1524776e7327}"
+                  },
+                  {
+                    "url": "about:mozilla",
+                    "title": "The Book of Mozilla, 6:27",
+                    "cacheKey": 0,
+                    "ID": 889527167,
+                    "docshellUUID": "{1c51a53b-d2b5-4484-8deb-aef7bd44abc4}",
+                    "resultPrincipalURI": null,
+                    "principalToInherit_base64": "{\"0\":{\"0\":\"moz-nullprincipal:{b5d58330-101d-4601-9291-6435ebcb854e}\"}}",
+                    "hasUserInteraction": true,
+                    "triggeringPrincipal_base64": "{\"3\":{}}",
+                    "docIdentifier": 13,
+                    "transient": false,
+                    "navigationKey": "{e546bd8d-4813-4a8a-8e90-0cdde6b5ab72}",
+                    "navigationId": "{7fd8f06e-2863-4f78-85f4-a4684c635086}"
+                  }
+                ],
+                "lastAccessed": 1770416063211,
+                "hidden": false,
+                "groupId": "1770415115529-1",
+                "searchMode": null,
+                "userContextId": 0,
+                "attributes": {},
+                "index": 2,
+                "requestedIndex": 0,
+                "image": null
+              },
+              "title": "The Book of Mozilla, 6:27",
+              "image": null,
+              "closedAt": 1770416070547,
+              "closedId": 8
+            }
+          ],
+          "splitViews": []
+        }
+      ],
+      "closedGroups": [],
+      "selected": 2,
+      "_closedTabs": [
+        {
+          "state": {
+            "entries": [
+              {
+                "url": "https://www.mozilla.org/en-US/privacy/firefox/",
+                "title": "Firefox Privacy Notice \u2014 Mozilla",
+                "cacheKey": 0,
+                "ID": 9,
+                "docshellUUID": "{1f248ec8-bd6a-422d-b6b7-29a954883cf5}",
+                "originalURI": "https://www.mozilla.org/privacy/firefox/",
+                "resultPrincipalURI": "https://www.mozilla.org/en-US/privacy/firefox/",
+                "loadReplace": true,
+                "loadReplace2": true,
+                "contentType": "text/html",
+                "principalToInherit_base64": "{\"0\":{\"0\":\"moz-nullprincipal:{273498ac-3366-4117-aadb-8d6cf137c161}?https://www.mozilla.org\"}}",
+                "hasUserInteraction": false,
+                "triggeringPrincipal_base64": "{\"3\":{}}",
+                "docIdentifier": 13,
+                "transient": false,
+                "navigationKey": "{866447d8-1c36-4f56-a99d-9fc7ae3d47a7}",
+                "navigationId": "{e95f717f-9e82-4278-8985-816681a20a95}"
+              }
+            ],
+            "lastAccessed": 1770415063435,
+            "hidden": false,
+            "searchMode": null,
+            "userContextId": 0,
+            "attributes": {},
+            "index": 1,
+            "requestedIndex": 0,
+            "storage": {
+              "https://www.mozilla.org": {
+                "tcms": "1"
+              }
+            },
+            "image": "data:image/x-icon;base64,AAABAAMAAAAAAAEAIACPAAAANgAAAAAAAAABACAAHgEAAMUAAAAAAAAAAQAgACsCAADjAQAAiVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAVklEQVQ4T2NUV1H9z0ABYBx8Blis0mQ4EXYdzkYHMDkYwGkAskEwgE0MpwHIAOYSdHEQIGgAOh8dEDQABChyATLAJofTAJit6IBoA4gFg9AAUsHAGwAAReJNAc+NKZcAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAIAAAACAIBgAAAHN6evQAAADlSURBVFhHY1RXUf3PMICAcdQBow4YdQAhB1is0gTTJ8KuQ0UgACZOCKDrQwdDzwHofGyAVYOdwbhJCczGpw4EqOYARgEmBj4LXgYxMz4GYR0euDi6OnRAsgOQAYcRFwO/NheDhDk/A6cYG1z899e/DC9PfmR4vu0dw99Hv+Hi2ABFDoDJwQDY0v0fGH6c+wYXIwSo6oC3V74wPNv/nuHb5W8M/z/8g4vjAxQ5AFcUgAAoNF6d+sTw9fAXuBg2QJEDkMGAJEJcgC7ZkFgw/BxAbTDqgFEHjDqAoANoDUYdMOqAAXcAAIu1rwGq2kmfAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAB8klEQVR4Xu3ZO0/CYBTG8bdcowW8JcawKDI7qzOuxq/iqrORD2FcdTauMKuzsxoHGZiI0ADlojkmPaltofSWvqHPf+pbkXB+9qYq1d29H5HgFAAAAAAA4FUCAwAAAAAAAPAqgQEgCMDb4zpvG5Uve2Lldcxra/2DjGhdF3gdRtXTDm97DQAAAEC0AK36/2EnqiLU5xGvvdat5cR4O8VrSmoAp9f4/cB09LTPV5MFQMN2zvJCO8raBjfy8n7WpASYqoronuTEdy0n9Eqa98/K7f3mJQ0ADU0/Ze04K7TDLO+fV+5jIkpNXaw9DHmf1yIHoPPWmvXrdGGj4QnBLWNo9WkkMu0p7/db5ADz+rwtzTyvzdGgxaYuSg09lKHNxQrg9P1GNCjdLmnw/PuE94edtAAb9wOxeTfgdVRJC0CFfb47FSsAPdR4vfgVG7pIab4/sq1YASg/tz/1ZfR3VNA1IihG7ADm6I5AEIs+AFGEsXOl8dprUgGYG+6n+fnA7Vbp9GC1aNICmHN7WFp6ACMa/qtesJ0eUgNY/x4QtGElbTsKpAZwek3YAQAAEgOEfQ1wqnzR422vRQ4gewAAAAAAAABeeQwAAAAAbxsBAAAAAEBiAJx+1d266Uf6v7ywCwSwDAEAAAAAAAB4lcAAAAAAJBvgF12b0JDX5aCIAAAAAElFTkSuQmCC"
+          },
+          "title": "Firefox Privacy Notice \u2014 Mozilla",
+          "image": "data:image/x-icon;base64,AAABAAMAAAAAAAEAIACPAAAANgAAAAAAAAABACAAHgEAAMUAAAAAAAAAAQAgACsCAADjAQAAiVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAVklEQVQ4T2NUV1H9z0ABYBx8Blis0mQ4EXYdzkYHMDkYwGkAskEwgE0MpwHIAOYSdHEQIGgAOh8dEDQABChyATLAJofTAJit6IBoA4gFg9AAUsHAGwAAReJNAc+NKZcAAAAASUVORK5CYIKJUE5HDQoaCgAAAA1JSERSAAAAIAAAACAIBgAAAHN6evQAAADlSURBVFhHY1RXUf3PMICAcdQBow4YdQAhB1is0gTTJ8KuQ0UgACZOCKDrQwdDzwHofGyAVYOdwbhJCczGpw4EqOYARgEmBj4LXgYxMz4GYR0euDi6OnRAsgOQAYcRFwO/NheDhDk/A6cYG1z899e/DC9PfmR4vu0dw99Hv+Hi2ABFDoDJwQDY0v0fGH6c+wYXIwSo6oC3V74wPNv/nuHb5W8M/z/8g4vjAxQ5AFcUgAAoNF6d+sTw9fAXuBg2QJEDkMGAJEJcgC7ZkFgw/BxAbTDqgFEHjDqAoANoDUYdMOqAAXcAAIu1rwGq2kmfAAAAAElFTkSuQmCCiVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAB8klEQVR4Xu3ZO0/CYBTG8bdcowW8JcawKDI7qzOuxq/iqrORD2FcdTauMKuzsxoHGZiI0ADlojkmPaltofSWvqHPf+pbkXB+9qYq1d29H5HgFAAAAAAA4FUCAwAAAAAAAPAqgQEgCMDb4zpvG5Uve2Lldcxra/2DjGhdF3gdRtXTDm97DQAAAEC0AK36/2EnqiLU5xGvvdat5cR4O8VrSmoAp9f4/cB09LTPV5MFQMN2zvJCO8raBjfy8n7WpASYqoronuTEdy0n9Eqa98/K7f3mJQ0ADU0/Ze04K7TDLO+fV+5jIkpNXaw9DHmf1yIHoPPWmvXrdGGj4QnBLWNo9WkkMu0p7/db5ADz+rwtzTyvzdGgxaYuSg09lKHNxQrg9P1GNCjdLmnw/PuE94edtAAb9wOxeTfgdVRJC0CFfb47FSsAPdR4vfgVG7pIab4/sq1YASg/tz/1ZfR3VNA1IihG7ADm6I5AEIs+AFGEsXOl8dprUgGYG+6n+fnA7Vbp9GC1aNICmHN7WFp6ACMa/qtesJ0eUgNY/x4QtGElbTsKpAZwek3YAQAAEgOEfQ1wqnzR422vRQ4gewAAAAAAAABeeQwAAAAAbxsBAAAAAEBiAJx+1d266Uf6v7ywCwSwDAEAAAAAAAB4lcAAAAAAJBvgF12b0JDX5aCIAAAAAElFTkSuQmCC",
+          "pos": 1,
+          "closedAt": 1770415063436,
+          "closedInTabGroupId": null,
+          "sourceWindowId": "window0",
+          "closedId": 6,
+          "_originalStateIndex": 0
+        }
+      ],
+      "_lastClosedTabGroupCount": -1,
+      "lastClosedTabGroupId": null,
+      "chromeFlags": 2150633470,
+      "sizemodeBeforeMinimized": "normal",
+      "splitViews": [
+        {
+          "id": 1,
+          "numberOfTabs": 2
+        }
+      ],
+      "width": 1332,
+      "height": 1024,
+      "screenX": 24,
+      "screenY": 27,
+      "sizemode": "normal",
+      "sidebar": {
+        "command": "",
+        "panelOpen": false,
+        "launcherWidth": 0,
+        "launcherExpanded": false,
+        "launcherVisible": false
+      },
+      "isAIWindow": false,
+      "zIndex": 1,
+      "title": "Settings",
+      "_shouldRestore": true,
+      "closedAt": 1770416070547,
+      "closedId": 7
+    }
+  ],
+  "selectedWindow": 0,
+  "_closedWindows": [],
+  "savedGroups": [
+    {
+      "id": "1770415115529-1",
+      "name": "Abouts",
+      "color": "blue",
+      "collapsed": false,
+      "saveOnWindowClose": true,
+      "saved": true,
+      "closedAt": 1770416070547,
+      "windowClosedId": 7,
+      "tabs": [
+        {
+          "state": {
+            "entries": [
+              {
+                "url": "about:home",
+                "title": "New Tab",
+                "cacheKey": 0,
+                "ID": 889527166,
+                "docshellUUID": "{1c51a53b-d2b5-4484-8deb-aef7bd44abc4}",
+                "resultPrincipalURI": null,
+                "principalToInherit_base64": "{\"0\":{\"0\":\"moz-nullprincipal:{6ec4bec4-5873-4b33-b269-be6653e318d8}\"}}",
+                "hasUserInteraction": true,
+                "triggeringPrincipal_base64": "{\"3\":{}}",
+                "docIdentifier": 12,
+                "transient": false,
+                "navigationKey": "{d0185d51-bd9f-4f90-afb2-f40547ac08a8}",
+                "navigationId": "{08e9abae-27f4-4cbb-8eb6-1524776e7327}"
+              },
+              {
+                "url": "about:mozilla",
+                "title": "The Book of Mozilla, 6:27",
+                "cacheKey": 0,
+                "ID": 889527167,
+                "docshellUUID": "{1c51a53b-d2b5-4484-8deb-aef7bd44abc4}",
+                "resultPrincipalURI": null,
+                "principalToInherit_base64": "{\"0\":{\"0\":\"moz-nullprincipal:{b5d58330-101d-4601-9291-6435ebcb854e}\"}}",
+                "hasUserInteraction": true,
+                "triggeringPrincipal_base64": "{\"3\":{}}",
+                "docIdentifier": 13,
+                "transient": false,
+                "navigationKey": "{e546bd8d-4813-4a8a-8e90-0cdde6b5ab72}",
+                "navigationId": "{7fd8f06e-2863-4f78-85f4-a4684c635086}"
+              }
+            ],
+            "lastAccessed": 1770416063211,
+            "hidden": false,
+            "groupId": "1770415115529-1",
+            "searchMode": null,
+            "userContextId": 0,
+            "attributes": {},
+            "index": 2,
+            "requestedIndex": 0,
+            "image": null
+          },
+          "title": "The Book of Mozilla, 6:27",
+          "image": null,
+          "closedAt": 1770416070547,
+          "closedId": 8
+        }
+      ],
+      "splitViews": []
+    }
+  ],
+  "maxSplitViewId": 1,
+  "session": {
+    "lastUpdate": 1770416070757,
+    "startTime": 1770415040600,
+    "recentCrashes": 0
+  },
+  "global": {},
+  "cookies": [
+    {
+      "host": "addons.mozilla.org",
+      "value": "ef51d7121d46a4fd86e874d8a850d58e7ef917a047014268bf1d3be112b72b77",
+      "path": "/",
+      "name": "taarId",
+      "secure": true,
+      "httponly": true,
+      "originAttributes": {
+        "firstPartyDomain": "",
+        "geckoViewSessionContextId": "",
+        "partitionKey": "",
+        "privateBrowsingId": 0,
+        "userContextId": 3
+      },
+      "sameSite": 1,
+      "schemeMap": 2
+    },
+    {
+      "host": "addons.mozilla.org",
+      "value": "ef51d7121d46a4fd86e874d8a850d58e7ef917a047014268bf1d3be112b72b77",
+      "path": "/",
+      "name": "taarId",
+      "secure": true,
+      "httponly": true,
+      "originAttributes": {
+        "firstPartyDomain": "",
+        "geckoViewSessionContextId": "",
+        "partitionKey": "",
+        "privateBrowsingId": 0,
+        "userContextId": 4
+      },
+      "sameSite": 1,
+      "schemeMap": 2
+    },
+    {
+      "host": "addons.mozilla.org",
+      "value": "ef51d7121d46a4fd86e874d8a850d58e7ef917a047014268bf1d3be112b72b77",
+      "path": "/",
+      "name": "taarId",
+      "secure": true,
+      "httponly": true,
+      "originAttributes": {
+        "firstPartyDomain": "",
+        "geckoViewSessionContextId": "",
+        "partitionKey": "",
+        "privateBrowsingId": 0,
+        "userContextId": 0
+      },
+      "sameSite": 1,
+      "schemeMap": 2
+    },
+    {
+      "host": "addons.mozilla.org",
+      "value": "ef51d7121d46a4fd86e874d8a850d58e7ef917a047014268bf1d3be112b72b77",
+      "path": "/",
+      "name": "taarId",
+      "secure": true,
+      "httponly": true,
+      "originAttributes": {
+        "firstPartyDomain": "",
+        "geckoViewSessionContextId": "",
+        "partitionKey": "",
+        "privateBrowsingId": 0,
+        "userContextId": 1
+      },
+      "sameSite": 1,
+      "schemeMap": 2
+    },
+    {
+      "host": "addons.mozilla.org",
+      "value": "ef51d7121d46a4fd86e874d8a850d58e7ef917a047014268bf1d3be112b72b77",
+      "path": "/",
+      "name": "taarId",
+      "secure": true,
+      "httponly": true,
+      "originAttributes": {
+        "firstPartyDomain": "",
+        "geckoViewSessionContextId": "",
+        "partitionKey": "",
+        "privateBrowsingId": 0,
+        "userContextId": 2
+      },
+      "sameSite": 1,
+      "schemeMap": 2
+    }
+  ],
+  "browserConsole": false,
+  "browserToolbox": false
+}

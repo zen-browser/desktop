@@ -3,44 +3,44 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-boost-edit-rename = 
-    .label = Rename Boost
+    .label = Přejmenovat Boost
 zen-boost-edit-shuffle = 
-    .label = Shuffle Vibes
+    .label = Zamíchat náladu
 zen-boost-edit-reset = 
-    .label = Reset All Edits
+    .label = Obnovit všechny úpravy
 zen-boost-edit-delete = 
-    .label = Delete Boost
-zen-boost-size = Size
+    .label = Odstranit Boost
+zen-boost-size = Velikost
 zen-boost-case = Case
 zen-boost-zap = Zap
 zen-boost-code = Code
-zen-boost-back = Back
+zen-boost-back = Zpět
 zen-boost-shuffle = 
     .tooltiptext = Shuffle Boost Settings
 zen-boost-invert = 
     .tooltiptext = Smart Invert Colors
 zen-boost-controls = 
-    .tooltiptext = Advanced Color Controls
+    .tooltiptext = Pokročilé nastavení barev
 zen-boost-disable = 
-    .tooltiptext = Disable Color Adjustments
+    .tooltiptext = Zakázat úpravy barev
 zen-boost-text-case-toggle = 
     .tooltiptext = Toggle Text Case
 zen-boost-css-picker = 
     .tooltiptext = Pick Selector
 zen-boost-css-inspector = 
-    .tooltiptext = Open Inspector
-zen-boost-color-contrast = Contrast
-zen-boost-color-brightness = Brightness
-zen-boost-color-original-saturation = Original Saturation
+    .tooltiptext = Otevřít inspektor
+zen-boost-color-contrast = Kontrast
+zen-boost-color-brightness = Jas
+zen-boost-color-original-saturation = Původní sytost
 zen-add-zap-helper = Click elements on the page to <b>Zap</b> them
 zen-remove-zap-helper = ← Click to Unzap
 zen-select-this = Insert selector for this
 zen-select-related = Insert selector for related
-zen-select-cancel = Cancel
+zen-select-cancel = Zrušit
 zen-zap-this = Zap this
 zen-zap-related = Zap all related elements
-zen-zap-cancel = Cancel
-zen-zap-done = Done
+zen-zap-cancel = Zrušit
+zen-zap-done = Hotovo
 zen-unzap-tooltip =
     { $elementCount ->
         [0] No elements zapped
@@ -48,11 +48,11 @@ zen-unzap-tooltip =
        *[other] { $elementCount } elements zapped
     }
 zen-boost-save = 
-    .label = Export Boost
+    .label = Exportovat Boost
 zen-boost-load = 
     .label = Import Boost
-zen-panel-ui-boosts-exported-message = Boost exported!
-zen-site-data-boosts = Boosts
+zen-panel-ui-boosts-exported-message = Boost exportován!
+zen-site-data-boosts = Boosty
 zen-site-data-create-boost = 
-    .tooltiptext = Create new boost
-zen-boost-rename-boost-prompt = Rename Boost?
+    .tooltiptext = Vytvořit nový Boost
+zen-boost-rename-boost-prompt = Přejmenovat Boost?

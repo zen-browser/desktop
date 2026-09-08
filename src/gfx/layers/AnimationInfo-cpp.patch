@@ -1,16 +1,16 @@
 diff --git a/gfx/layers/AnimationInfo.cpp b/gfx/layers/AnimationInfo.cpp
-index b4941588bfbd94a337f2e848c659021723e1500d..8f91ca5b2fcca6ff04aa2c0af5ba26dd9fe7df0e 100644
+index 538808aa15d1902fc517f79e3a6d62f4d7fd9d37..4b0760b7be9d872a926f99716d16f3f64dcb2378 100644
 --- a/gfx/layers/AnimationInfo.cpp
 +++ b/gfx/layers/AnimationInfo.cpp
-@@ -14,6 +14,7 @@
- #include "mozilla/MotionPathUtils.h"
- #include "mozilla/PresShell.h"
- #include "mozilla/ScrollContainerFrame.h"
+@@ -18,6 +18,7 @@
+ #include "mozilla/layers/AnimationStorageData.h"
+ #include "mozilla/layers/CompositorThread.h"
+ #include "mozilla/layers/WebRenderLayerManager.h"
 +#include "mozilla/nsZenBoostsBackend.h"
  #include "nsIContent.h"
  #include "nsLayoutUtils.h"
  #include "nsRefreshDriver.h"
-@@ -341,9 +342,13 @@ static void SetAnimatable(NonCustomCSSPropertyId aProperty,
+@@ -367,9 +368,13 @@ static void SetAnimatable(NonCustomCSSPropertyId aProperty,
      case eCSSProperty_background_color: {
        // We don't support color animation on the compositor yet so that we can
        // resolve currentColor at this moment.

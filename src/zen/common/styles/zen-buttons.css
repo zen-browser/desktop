@@ -27,7 +27,7 @@ dialog::part(dialog-button) {
 
   position: relative;
   border: none;
-  border-radius: 10px;
+  border-radius: calc(10px * var(--zen-squircle-value));
 }
 
 @media (-moz-platform: macos) {
@@ -76,5 +76,54 @@ dialog::part(dialog-button) {
   transition: scale 0.2s;
   &:active {
     scale: 0.98;
+  }
+}
+
+:root {
+  --zen-accent-button-color: light-dark(
+    oklch(from var(--zen-primary-color) clamp(0.35, l, 0.6) c h),
+    oklch(from var(--zen-primary-color) clamp(0.7, l, 0.85) c h)
+  );
+  --zen-accent-button-background: light-dark(
+    oklch(from var(--zen-primary-color) clamp(0.35, l, 0.6) c h),
+    oklch(from var(--zen-primary-color) clamp(0.55, l, 0.7) c h)
+  );
+}
+
+.zen-big-accent-button {
+  appearance: none;
+  border: none;
+  border-radius: 12px;
+  padding: 1.2rem 1rem;
+  background: transparent;
+  color: var(--zen-accent-button-color);
+  font: inherit;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  will-change: transform;
+  transition: scale 0.15s ease-out;
+
+  &:hover {
+    scale: 1.03;
+    filter: brightness(1.1);
+  }
+
+  &:active:hover {
+    scale: 1;
+    color: color-mix(in srgb, var(--zen-accent-button-color) 80%, transparent);
+  }
+
+  &.primary {
+    background: var(--zen-accent-button-background);
+    color: white;
+
+    &:hover {
+      filter: brightness(1.1);
+    }
+
+    &:active:hover {
+      color: rgba(255, 255, 255, 0.8);
+    }
   }
 }

@@ -104,6 +104,11 @@ skip-if = [
   "tsan", # Bug 1429950, Bug 1583315, Bug 1696109, Bug 1701449
 ]
 
+["browser_pinToTaskbarTelemetry.js"]
+run-if = [
+  "os == 'win'",
+]
+
 ["browser_processAUMID.js"]
 run-if = [
   "os == 'win'",
@@ -118,7 +123,25 @@ run-if = [
 ]
 tags = "os_integration"
 
+["browser_setDefaultPDFHandler_mac.js"]
+run-if = [
+  "os == 'mac'",
+]
+tags = "os_integration"
+
+["browser_setDefaultProtocolHandler.js"]
+run-if = [
+  "os == 'win'",
+]
+tags = "os_integration"
+
 ["browser_setDesktopBackgroundPreview.js"]
 disabled="Disabled by import_external_tests.py"
-support-files = ["large.png"]
+support-files = ["large.png", "canvas.html"]
+tags = "os_integration"
+
+["browser_windowsSetDefaultAppCmdHandler.js"]
+run-if = [
+  "os == 'win'",
+]
 tags = "os_integration"

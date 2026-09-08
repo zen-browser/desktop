@@ -1,5 +1,5 @@
 diff --git a/layout/svg/SVGImageContext.h b/layout/svg/SVGImageContext.h
-index 159d9cbbd0711076ee6c2a71a3da04bd92a0102c..daefc40590c4d7d7fac9db25c6ec4ba2424dded5 100644
+index ad833c7c2ee6a4c4984efdb0d59e3576c2d1bc19..36864a34badc0cbfe44d6295798622fd6178f9e3 100644
 --- a/layout/svg/SVGImageContext.h
 +++ b/layout/svg/SVGImageContext.h
 @@ -6,6 +6,7 @@
@@ -44,12 +44,12 @@ index 159d9cbbd0711076ee6c2a71a3da04bd92a0102c..daefc40590c4d7d7fac9db25c6ec4ba2
    const Maybe<SVGPreserveAspectRatio>& GetPreserveAspectRatio() const {
      return mPreserveAspectRatio;
    }
-@@ -107,7 +128,11 @@ class SVGImageContext {
- 
+@@ -110,7 +131,11 @@ class SVGImageContext {
      return contextPaintIsEqual && mViewportSize == aOther.mViewportSize &&
             mPreserveAspectRatio == aOther.mPreserveAspectRatio &&
--           mColorScheme == aOther.mColorScheme;
-+           mColorScheme == aOther.mColorScheme &&
+            mColorScheme == aOther.mColorScheme &&
+-           mLinkParameters == aOther.mLinkParameters;
++           mLinkParameters == aOther.mLinkParameters &&
 +           mZenBoostsAccent == aOther.mZenBoostsAccent &&
 +           mZenBoostsComplementaryRotation ==
 +               aOther.mZenBoostsComplementaryRotation &&
@@ -57,21 +57,20 @@ index 159d9cbbd0711076ee6c2a71a3da04bd92a0102c..daefc40590c4d7d7fac9db25c6ec4ba2
    }
  
    bool operator!=(const SVGImageContext&) const = default;
-@@ -119,7 +144,9 @@ class SVGImageContext {
-     }
-     return HashGeneric(hash, mViewportSize.map(HashSize).valueOr(0),
-                        mPreserveAspectRatio.map(HashPAR).valueOr(0),
--                       mColorScheme.map(HashColorScheme).valueOr(0));
-+                       mColorScheme.map(HashColorScheme).valueOr(0),
-+                       mZenBoostsAccent, mZenBoostsComplementaryRotation,
-+                       mZenBoostsInverted);
+@@ -123,7 +148,8 @@ class SVGImageContext {
+     return AddToHash(hash, mViewportSize.map(HashSize).valueOr(0),
+                      mPreserveAspectRatio.map(HashPAR).valueOr(0),
+                      mColorScheme.map(HashColorScheme).valueOr(0),
+-                     HashLinkParameters(mLinkParameters));
++                     HashLinkParameters(mLinkParameters), mZenBoostsAccent,
++                     mZenBoostsComplementaryRotation, mZenBoostsInverted);
    }
  
   private:
-@@ -138,6 +165,9 @@ class SVGImageContext {
-   Maybe<CSSIntSize> mViewportSize;
+@@ -156,6 +182,9 @@ class SVGImageContext {
    Maybe<SVGPreserveAspectRatio> mPreserveAspectRatio;
    Maybe<ColorScheme> mColorScheme;
+   StyleLinkParameters mLinkParameters;
 +  nscolor mZenBoostsAccent = 0;
 +  float mZenBoostsComplementaryRotation = 0.0f;
 +  bool mZenBoostsInverted = false;

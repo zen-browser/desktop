@@ -503,7 +503,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
-  addToEssentials(tab) {
+  addToEssentials(tab, { replicating = false } = {}) {
     // eslint-disable-next-line no-nested-ternary
     const tabs = tab
       ? // if it's already an array, dont make it [tab]
@@ -518,7 +518,12 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       // eslint-disable-next-line no-shadow
       let tab = tabs[i];
       const section = gZenWorkspaces.getEssentialsSection(tab);
-      if (!this.canEssentialBeAdded(tab)) {
+      // canEssentialBeAdded gates user-initiated adds on the *active* space's
+      // container. A replicated add mirrors a decision already made in another
+      // window or on another device, always into the tab's own container
+      // section.
+      if (!replicating && !this.canEssentialBeAdded(tab)) {
+        this.log(`addToEssentials rejected for ${tab.id}`);
         movedAll = false;
         continue;
       }
@@ -570,6 +575,13 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     for (let i = 0; i < tabs.length; i++) {
       // eslint-disable-next-line no-shadow
       const tab = tabs[i];
+      if (this._canLog) {
+        // eslint-disable-next-line no-console
+        console.trace(
+          `ZenPinnedTabManager: removing tab ${tab.id} from essentials ` +
+            `(unpin=${unpin})`
+        );
+      }
       tab.removeAttribute("zen-essential");
       if (
         gZenWorkspaces.workspaceEnabled &&
@@ -835,6 +847,16 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         let isRegularTabs = false;
         // Check for essentials container
         if (essentialTabsTarget) {
+          if (gZenWorkspaces.containerSpecificEssentials) {
+            const targetContainerId =
+              gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId || 0;
+            const sameContextId =
+              (tab.getAttribute("usercontextid") || 0) == targetContainerId;
+            if (!sameContextId && tab.hasAttribute("zen-essential")) {
+              this.removeEssentials(tab, false);
+              moved = true;
+            }
+          }
           if (
             !tab.hasAttribute("zen-essential") &&
             !tab?.group?.hasAttribute("split-view-group")
@@ -1009,12 +1031,15 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
   }
 
   canEssentialBeAdded(tab) {
+    const isExistingEssentialTab = tab.hasAttribute("zen-essential");
     return (
       !(
         (tab.getAttribute("usercontextid") || 0) !=
-          gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId &&
+          (gZenWorkspaces.getActiveWorkspaceFromCache().containerTabId || 0) &&
         gZenWorkspaces.containerSpecificEssentials
-      ) && gBrowser._numZenEssentials < this.maxEssentialTabs
+      ) &&
+      (isExistingEssentialTab ||
+        gBrowser._numZenEssentials < this.maxEssentialTabs)
     );
   }
 

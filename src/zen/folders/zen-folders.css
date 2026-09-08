@@ -8,14 +8,16 @@
   display: none !important;
 }
 
+:root {
+  --zen-folder-behind-bgcolor: light-dark(color-mix(in srgb, var(--zen-primary-color) 60%, gray), color-mix(in srgb, var(--zen-primary-color) 60%, #c1c1c1));
+  --zen-folder-front-bgcolor: light-dark(color-mix(in srgb, var(--zen-primary-color), white 70%), color-mix(in srgb, var(--zen-primary-color), black 40%));
+  --zen-folder-stroke: light-dark(color-mix(in srgb, var(--zen-primary-color) 50%, black), color-mix(in srgb, var(--zen-colors-primary) 15%, #ebebeb));
+}
+
 zen-folder {
   display: flex;
   flex-direction: column;
   visibility: visible;
-
-  --zen-folder-behind-bgcolor: light-dark(color-mix(in srgb, var(--zen-primary-color) 60%, gray), color-mix(in srgb, var(--zen-primary-color) 60%, #c1c1c1));
-  --zen-folder-front-bgcolor: light-dark(color-mix(in srgb, var(--zen-primary-color), white 70%), color-mix(in srgb, var(--zen-primary-color), black 40%));
-  --zen-folder-stroke: light-dark(color-mix(in srgb, var(--zen-primary-color) 50%, black), color-mix(in srgb, var(--zen-colors-primary) 15%, #ebebeb));
 
   -moz-window-dragging: no-drag;
   transition: var(--zen-tabbox-element-indent-transition);
@@ -60,7 +62,7 @@ zen-folder {
     }
   }
 
-  margin: 0 var(--tab-block-margin);
+  margin: 0 var(--tab-margin-block);
   margin-inline-end: 0;
 
   & > .tab-group-label-container {
@@ -70,7 +72,7 @@ zen-folder {
     --tab-group-color: transparent !important;
     padding-block-end: 0 !important;
     margin: 0 !important;
-    height: calc(var(--tab-block-margin) * 2 + var(--tab-min-height));
+    height: calc(var(--tab-margin-block) * 2 + var(--tab-min-height));
     padding-inline: var(--tab-group-label-padding);
 
     :root[zen-sidebar-expanded="true"] & {
@@ -114,21 +116,7 @@ zen-folder {
           transform: translate(8.5px, 10.5px);
         }
 
-        & g,
-        & rect,
-        & path {
-          transition:
-            transform 0.3s cubic-bezier(0.42, 0, 0, 1),
-            opacity 0.3s cubic-bezier(0.42, 0, 0, 1);
-        }
-
-        &[state="open"] .back {
-          transform: skewX(16deg) translate(-4px, 2px) scale(0.85);
-        }
-
-        &[state="open"] :is(.front, .dots, .icon) {
-          transform: skewX(-16deg) translate(8px, 2px) scale(0.85);
-        }
+%include zen-folder-icon.inc.css
 
         & .icon {
           opacity: 1;
@@ -161,7 +149,7 @@ zen-folder {
     }
 
     &:hover::before {
-      background-color: var(--tab-hover-background-color) !important;
+      background-color: var(--tab-background-color-hover) !important;
     }
 
     &:after {

@@ -3,13 +3,13 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-boost-edit-rename = 
-    .label = Boost’u yeniden adlandır
+    .label = Boostu yeniden adlandır
 zen-boost-edit-shuffle = 
     .label = Vibe'ları karıştır
 zen-boost-edit-reset = 
     .label = Tüm düzenlemeleri sıfırla
 zen-boost-edit-delete = 
-    .label = Boost’u sil
+    .label = Boostu sil
 zen-boost-size = Boyut
 zen-boost-case = Büyük/küçük harf
 zen-boost-zap = Zap
@@ -48,11 +48,11 @@ zen-unzap-tooltip =
        *[other] { $elementCount } öge Zap’lenmiş
     }
 zen-boost-save = 
-    .label = Boost’u dışa aktar
+    .label = Boostu dışa aktar
 zen-boost-load = 
-    .label = Boost’u içe aktar
+    .label = Boostu içe aktar
 zen-panel-ui-boosts-exported-message = Boost dışa aktarıldı!
-zen-site-data-boosts = Boost'lar
+zen-site-data-boosts = Boostlar
 zen-site-data-create-boost = 
-    .tooltiptext = Yeni Boost oluştur
+    .tooltiptext = Yeni boost oluştur
 zen-boost-rename-boost-prompt = Boost yeniden adlandırılsın mı?

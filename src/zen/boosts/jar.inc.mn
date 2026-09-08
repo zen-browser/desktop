@@ -9,6 +9,7 @@
 
         # Windows
 *       content/browser/zen-components/windows/zen-boost-editor.xhtml           (../../zen/boosts/zen-boost-editor.inc.xhtml)
+        content/browser/zen-components/windows/zen-boost-editor.js              (../../zen/boosts/zen-boost-editor.js)
 
         # Images
         content/browser/zen-images/boost-indicator.svg                          (../../zen/images/boost-indicator.svg)

@@ -1,0 +1,41 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "nsISupports.idl"
+
+interface mozIDOMWindowProxy;
+
+/**
+ * @brief Tracks the OS pointer for windows the pointer has left.
+ *   Once the pointer either crosses the window bounds on the
+ *   axis perpendicular to the registered edge, or moves further than the
+ *   given offset past that edge, the "zen-mouse-tracker:exited" observer
+ *   notification is fired with the window as subject and tracking for that
+ *   window stops.
+ */
+[scriptable, uuid(023e85e6-44e1-46b3-9cfb-6f3c7fa075f8)]
+interface nsIZenMouseTracker : nsISupports {
+  /**
+   * @brief Start tracking the pointer for the given window.
+   *
+   * Re-registering a window updates its edge and offset. Tracking is
+   * automatically cleared when the window is closed.
+   *
+   * @param window The window the pointer just left.
+   * @param screenEdge The edge the pointer left through, one of "left",
+   *   "right", "top" or "bottom".
+   * @param maxEdgeOffset How far (in CSS pixels) the pointer may travel past
+   *   screenEdge before the exit notification is fired.
+   * @throws NS_ERROR_NOT_AVAILABLE when the platform cannot track the global
+   *   pointer position (e.g. on Linux).
+   */
+  void registerWindow(in mozIDOMWindowProxy window, in ACString screenEdge,
+                      in float maxEdgeOffset);
+
+  /**
+   * @brief Stop tracking the pointer for the given window. No-op if the
+   *   window isn't being tracked.
+   */
+  void unregisterWindow(in mozIDOMWindowProxy window);
+};

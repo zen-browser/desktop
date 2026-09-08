@@ -44,9 +44,9 @@ zen-zap-done = Gotowe
 zen-unzap-tooltip =
     { $elementCount ->
         [0] Nie ukryto żadnych elementów
-        [1] Ukryto {$elementCount} element
-        [few] Ukryto {$elementCount} elementy
-       *[other] Ukryto {$elementCount} elementów
+        [1] Ukryto { $elementCount } element
+        [few] Ukryto { $elementCount } elementy
+       *[other] Ukryto { $elementCount } elementów
     }
 zen-boost-save = 
     .label = Eksportuj Boosta

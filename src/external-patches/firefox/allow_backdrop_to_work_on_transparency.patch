@@ -31,12 +31,13 @@ diff --git a/gfx/webrender_bindings/src/bindings.rs b/gfx/webrender_bindings/src
  
      // Ensure the WR profiler callbacks are hooked up to the Gecko profiler.
      set_profiler_hooks(Some(&PROFILER_HOOKS));
-@@ -2164,10 +2165,11 @@
+@@ -2164,11 +2165,12 @@
          texture_cache_config,
          reject_software_rasterizer,
          low_quality_pinch_zoom,
          max_shared_surface_size,
          enable_dithering,
+         enable_shared_instance_buffer,
 +        opaque_backdrop_fallback,
          ..Default::default()
      };
@@ -73,8 +74,9 @@ diff --git a/gfx/wr/webrender/src/renderer/init.rs b/gfx/wr/webrender/src/render
 +    /// See explanation of `gfx.webrender.opaque-backdrop-fallback`.
 +    pub opaque_backdrop_fallback: bool,
  }
-@@ -277,9 +279,10 @@
+@@ -277,10 +279,11 @@
              enable_instancing: true,
+             enable_shared_instance_buffer: false,
              reject_software_rasterizer: false,
              low_quality_pinch_zoom: false,
              max_shared_surface_size: 2048,
@@ -84,12 +86,13 @@ diff --git a/gfx/wr/webrender/src/renderer/init.rs b/gfx/wr/webrender/src/render
      }
  }
  
-@@ -802,10 +805,11 @@
+@@ -802,11 +805,12 @@
          allocated_native_surfaces: FastHashSet::default(),
          debug_overlay_state: DebugOverlayState::new(),
          buffer_damage_tracker: BufferDamageTracker::default(),
          max_primitive_instance_count,
          enable_instancing: options.enable_instancing,
+         use_shared_instance_buffer,
 +        opaque_backdrop_fallback: options.opaque_backdrop_fallback,
          consecutive_oom_frames: 0,
          target_frame_publish_id: None,
@@ -99,11 +102,14 @@ diff --git a/gfx/wr/webrender/src/renderer/init.rs b/gfx/wr/webrender/src/render
 diff --git a/gfx/wr/webrender/src/renderer/mod.rs b/gfx/wr/webrender/src/renderer/mod.rs
 --- a/gfx/wr/webrender/src/renderer/mod.rs
 +++ b/gfx/wr/webrender/src/renderer/mod.rs
-@@ -867,10 +867,12 @@
+@@ -867,13 +867,15 @@
      buffer_damage_tracker: BufferDamageTracker,
  
      max_primitive_instance_count: usize,
      enable_instancing: bool,
+     /// If true, stream instance data into large buffers shared by multiple
+     /// draws, rather than allocating a new instance buffer for each draw.
+     use_shared_instance_buffer: bool,
  
 +    opaque_backdrop_fallback: bool,
 +

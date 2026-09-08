@@ -11,7 +11,7 @@ zen-boost-edit-reset =
 zen-boost-edit-delete = 
     .label = 删除 Boost
 zen-boost-size = 尺寸
-zen-boost-case = Case
+zen-boost-case = 大小写
 zen-boost-zap = 屏蔽
 zen-boost-code = 代码
 zen-boost-back = 返回
@@ -48,9 +48,9 @@ zen-unzap-tooltip =
        *[other] 已屏蔽 { $elementCount } 个元素
     }
 zen-boost-save = 
-    .label = Export Boost
+    .label = 导出 Boost
 zen-boost-load = 
-    .label = Import Boost
+    .label = 导入 Boost
 zen-panel-ui-boosts-exported-message = Boost 已导出！
 zen-site-data-boosts = Boost
 zen-site-data-create-boost = 

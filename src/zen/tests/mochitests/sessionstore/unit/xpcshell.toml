@@ -1,0 +1,48 @@
+[DEFAULT]
+run-if = [
+  "os != 'android'",
+]
+head = "head.js"
+tags = "condprof"
+firefox-appdir = "browser"
+support-files = [
+  "data/sessionCheckpoints_all.json",
+  "data/sessionstore_invalid.js",
+  "data/sessionstore_valid.js",
+]
+
+["test_backup_once.js"]
+skip-if = [
+  "condprof", # Bug 1769154
+]
+
+["test_final_write_cleanup.js"]
+
+["test_histogram_corrupt_files.js"]
+
+["test_migration_lz4compression.js"]
+skip-if = [
+  "condprof", # Bug 1769154
+]
+
+["test_session_schema.js"]
+support-files = [
+  "data/sessionstore_complete.json",
+]
+
+["test_startup_invalid_session.js"]
+skip-if = [
+  "condprof", # Bug 1769154
+]
+
+["test_startup_nosession_async.js"]
+skip-if = [
+  "condprof", # Bug 1769154
+]
+
+["test_startup_session_async.js"]
+
+["test_write_json_length_hint.js"]
+support-files = [
+  "data/sessionstore_complete.json",
+]

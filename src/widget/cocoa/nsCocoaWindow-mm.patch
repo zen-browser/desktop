@@ -1,0 +1,134 @@
+diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
+index 2efd02e4a92433fd29bbfdb707aa81cfec45031e..3b763c3927f07e529c826f8e4f62bc80a324b247 100644
+--- a/widget/cocoa/nsCocoaWindow.mm
++++ b/widget/cocoa/nsCocoaWindow.mm
+@@ -86,6 +86,7 @@
+ #include "mozilla/StaticPrefs_gfx.h"
+ #include "mozilla/StaticPrefs_ui.h"
+ #include "mozilla/StaticPrefs_widget.h"
++#include "mozilla/StaticPrefs_zen.h"
+ #include "mozilla/WritingModes.h"
+ #include "mozilla/dom/Document.h"
+ #include "mozilla/layers/CompositorBridgeChild.h"
+@@ -1332,6 +1333,110 @@ - (NSRect)_opaqueRectForWindowMoveWhenInTitlebar {
+ }
+ @end
+ 
++@interface ZenWindowMaterialView : NSVisualEffectView
++- (void)prefChanged;
++@end
++
++static void ZenWindowMaterialPrefChanged(const char* aPref, void* aClosure) {
++  [static_cast<ZenWindowMaterialView*>(aClosure) prefChanged];
++}
++
++static constexpr nsLiteralCString kZenWindowMaterialPrefs[] = {
++    "zen.widget.macos.window-material"_ns,
++    "zen.view.grey-out-inactive-windows"_ns,
++};
++
++static NSVisualEffectMaterial ZenWindowMaterial() {
++  switch (StaticPrefs::zen_widget_macos_window_material()) {
++    case 1:
++      return NSVisualEffectMaterialHUDWindow;
++    case 2:
++      return NSVisualEffectMaterialFullScreenUI;
++    case 3:
++      return NSVisualEffectMaterialPopover;
++    case 4:
++      return NSVisualEffectMaterialMenu;
++    case 5:
++      return NSVisualEffectMaterialToolTip;
++    case 6:
++      return NSVisualEffectMaterialHeaderView;
++    case 7:
++    default:
++      return NSVisualEffectMaterialUnderWindowBackground;
++  }
++}
++
++@implementation ZenWindowMaterialView
++- (instancetype)initWithFrame:(NSRect)aRect {
++  self = [super initWithFrame:aRect];
++  self.appearance = nil;
++  self.emphasized = NO;
++  self.blendingMode = NSVisualEffectBlendingModeBehindWindow;
++  [self prefChanged];
++  for (const auto& pref : kZenWindowMaterialPrefs) {
++    Preferences::RegisterCallback(ZenWindowMaterialPrefChanged, pref, self);
++  }
++  return self;
++}
++
++- (void)dealloc {
++  for (const auto& pref : kZenWindowMaterialPrefs) {
++    Preferences::UnregisterCallback(ZenWindowMaterialPrefChanged, pref, self);
++  }
++  [super dealloc];
++}
++
++- (void)prefChanged {
++  self.state = StaticPrefs::zen_view_grey_out_inactive_windows()
++                   ? NSVisualEffectStateFollowsWindowActiveState
++                   : NSVisualEffectStateActive;
++  self.material = ZenWindowMaterial();
++}
++@end
++
++static void ZenWindowVibrancyPrefChanged(const char* aPref, void* aClosure) {
++  static_cast<nsCocoaWindow*>(aClosure)->UpdateWindowMaterial();
++}
++
++void nsCocoaWindow::SetWindowClass(const nsAString& aXulWinType,
++                                   const nsAString& aXulWinClass,
++                                   const nsAString& aXulWinName) {
++  if (mWindowType != WindowType::TopLevel || mIsBrowserWindow ||
++      !aXulWinType.EqualsLiteral("navigator:browser")) {
++    return;
++  }
++  mIsBrowserWindow = true;
++  Preferences::RegisterCallback(ZenWindowVibrancyPrefChanged,
++                                "zen.widget.macos.window-vibrancy", this);
++  UpdateWindowMaterial();
++}
++
++void nsCocoaWindow::UpdateWindowMaterial() {
++  NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
++
++  if (!mWindow) {
++    return;
++  }
++  bool wanted = StaticPrefs::zen_widget_macos_window_vibrancy();
++  if (wanted ==
++      [mWindow.contentView isKindOfClass:[ZenWindowMaterialView class]]) {
++    return;
++  }
++
++  NSRect frame = mWindow.contentView.frame;
++  NSView* wrapper = wanted ? [[ZenWindowMaterialView alloc] initWithFrame:frame]
++                           : [[NSView alloc] initWithFrame:frame];
++  wrapper.wantsLayer = YES;
++  for (NSView* view in [mWindow contentViewContents]) {
++    [view removeFromSuperviewWithoutNeedingDisplay];
++    [wrapper addSubview:view];
++  }
++  mWindow.contentView = wrapper;
++  [wrapper release];
++
++  NS_OBJC_END_TRY_IGNORE_BLOCK;
++}
++
+ void nsCocoaWindow::UpdateWindowDraggingRegion(
+     const LayoutDeviceIntRegion& aRegion) {
+   // mChildView returns YES from mouseDownCanMoveWindow, so we need to put
+@@ -4919,6 +5024,10 @@ - (BOOL)wantsBestResolutionOpenGLSurface {
+ nsCocoaWindow::~nsCocoaWindow() {
+   NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
+ 
++  if (mIsBrowserWindow) {
++    Preferences::UnregisterCallback(ZenWindowVibrancyPrefChanged,
++                                    "zen.widget.macos.window-vibrancy", this);
++  }
+   RemoveAllChildren();
+   if (mWindow && mWindowMadeHere) {
+     CancelAllTransitions();

@@ -1,0 +1,111 @@
+name: macOS PGO Builds
+
+permissions:
+  contents: read
+
+on:
+  workflow_call:
+    inputs:
+      build-version:
+        description: "The version to build"
+        required: true
+        type: string
+      release-branch:
+        description: "The branch to build"
+        required: true
+        type: string
+
+jobs:
+  macos-profile-build:
+    name: |
+      macOS Profile Build - ${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [x86_64, aarch64]
+
+    runs-on: ${{ matrix.arch == 'x86_64' && 'macos-15-intel' || 'macos-26' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+
+      - name: Setup Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Setup Rust
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain $(cat .rust-toolchain)
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Load Surfer CI setup
+        run: npm run surfer -- ci --brand ${{ inputs.release-branch }} --display-version ${{ inputs.build-version }}
+
+      - name: Download instrumented app
+        uses: actions/download-artifact@v4
+        with:
+          path: ~/instrumented
+          name: macos-pgo-stage1-${{ matrix.arch }}
+
+      - name: Download Firefox and dependencies
+        run: npm run download
+
+      - name: Import patches
+        env:
+          SURFER_NO_BRANDING_PATCH: true
+        run: |
+          . "$HOME/.cargo/env"
+          npm run import
+
+      - name: Bootstrap
+        run: |
+          cd engine
+          export SURFER_PLATFORM="darwin"
+          ./mach --no-interactive bootstrap --application-choice browser --exclude macos-sdk || true
+
+      - name: Extract instrumented app
+        run: |
+          set -ex
+          cd engine
+          ./mach python -m mozbuild.action.unpack_dmg \
+            "$HOME/instrumented/zen-macos-pgo-stage1-${{ matrix.arch }}.dmg" \
+            "$HOME/instrumented/app"
+          APP=$(find "$HOME/instrumented/app" -maxdepth 1 -name "*.app" -type d | head -1)
+          codesign --force --deep --sign - "$APP" || true
+
+      - name: Generate profile data
+        run: |
+          set -ex
+          export LLVM_PROFDATA="$HOME/.mozbuild/clang/bin/llvm-profdata"
+          export JARLOG_FILE=en-US.log
+          BINARY=$(find "$HOME/instrumented" -type f -path "*/Contents/MacOS/zen" | head -1)
+          test -n "$BINARY"
+          cd engine
+          ./mach python ../scripts/download_pgo_extended_corpus.py
+          ./mach python build/pgo/profileserver.py --binary "$BINARY" --extended-corpus ./pgo-extended-corpus
+
+      - name: Move profile data
+        run: |
+          mv engine/merged.profdata merged.profdata
+          mv engine/en-US.log en-US.log
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          retention-days: 1
+          path: |
+            merged.profdata
+            en-US.log
+          name: macos-profdata-${{ matrix.arch }}

@@ -2,8 +2,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+const lazy = {};
+
+ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
+  return new Localization(["browser/zen-workspaces.ftl"], true);
+});
+
 class nsZenWorkspaceCreation extends MozXULElement {
   #wasInCollapsedMode = false;
+  #urlbarDimmed = false;
 
   promiseInitialized = new Promise(resolve => {
     this.resolveInitialized = resolve;
@@ -34,7 +41,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
             </vbox>
             <vbox class="zen-workspace-creation-form">
               <hbox class="zen-workspace-creation-name-wrapper">
-                <toolbarbutton class="zen-workspace-creation-icon-label" />
+                <toolbarbutton class="zen-workspace-creation-icon-label zen-squircle-before" />
                 <html:input
                   class="zen-workspace-creation-name"
                   type="text"
@@ -83,6 +90,58 @@ class nsZenWorkspaceCreation extends MozXULElement {
     ];
   }
 
+  get #spaceSwitchDuration() {
+    return (
+      Services.prefs.getIntPref("zen.workspaces.switch-animation-duration") /
+      1000
+    );
+  }
+
+  #dimUrlbar() {
+    if (this.#urlbarDimmed || !gZenVerticalTabsManager._hasSetSingleToolbar) {
+      return;
+    }
+    this.#urlbarDimmed = true;
+    const animation = gZenUIManager.motion.animate(
+      gURLBar,
+      {
+        opacity: [1, 0],
+      },
+      {
+        duration: this.#spaceSwitchDuration,
+        type: "spring",
+        bounce: 0,
+      }
+    );
+    if (gReduceMotion) {
+      animation.complete();
+    }
+  }
+
+  #restoreUrlbar() {
+    if (!this.#urlbarDimmed) {
+      return;
+    }
+    this.#urlbarDimmed = false;
+    const animation = gZenUIManager.motion.animate(
+      gURLBar,
+      {
+        opacity: [0, 1],
+      },
+      {
+        duration: this.#spaceSwitchDuration,
+        type: "spring",
+        bounce: 0,
+      }
+    );
+    if (gReduceMotion) {
+      animation.complete();
+    }
+    animation.then(() => {
+      gURLBar.style.removeProperty("opacity");
+    });
+  }
+
   connectedCallback() {
     if (this.delayConnectedCallback()) {
       // If we are not ready yet, or if we have already connected, we
@@ -103,10 +162,6 @@ class nsZenWorkspaceCreation extends MozXULElement {
       ".zen-workspace-creation-cancel-button"
     );
 
-    for (const element of this.elementsToAnimate) {
-      element.style.opacity = 0;
-    }
-
     this.#wasInCollapsedMode =
       document.documentElement.getAttribute("zen-sidebar-expanded") !== "true";
 
@@ -118,11 +173,15 @@ class nsZenWorkspaceCreation extends MozXULElement {
       .getInterface(Ci.nsIAppWindow)
       .rollupAllPopups();
 
+    gURLBar.view.close();
+    gURLBar.handleRevert();
+    gURLBar.blur();
+
     this.handleZenWorkspacesChangeBind =
       this.handleZenWorkspacesChange.bind(this);
 
     for (const element of this.parentElement.children) {
-      if (element !== this) {
+      if (element !== this && !element.hidden) {
         element.hidden = true;
         this.#hiddenElements.push(element);
       }
@@ -192,7 +251,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
 
       this.currentProfile = {
         id: 0,
-        name: ContextualIdentityService.formatContextLabel("user-context-none"),
+        name: lazy.l10n.formatValueSync("zen-workspace-default-profile"),
       };
     } else {
       this.inputProfile.parentNode.hidden = true;
@@ -201,48 +260,15 @@ class nsZenWorkspaceCreation extends MozXULElement {
     document.getElementById("zen-sidebar-splitter").style.pointerEvents =
       "none";
 
-    gZenUIManager.motion
-      .animate(
-        [gBrowser.tabContainer, gURLBar],
-        {
-          opacity: [1, 0],
-        },
-        {
-          duration: 0.3,
-          type: "spring",
-          bounce: 0,
-        }
-      )
-      .then(() => {
-        gBrowser.tabContainer.style.visibility = "collapse";
-        if (gZenVerticalTabsManager._hasSetSingleToolbar) {
-          document.getElementById("nav-bar").style.visibility = "collapse";
-        }
-        this.style.visibility = "visible";
-        gZenCompactModeManager.getAndApplySidebarWidth({});
-        this.resolveInitialized();
-        let animation = gZenUIManager.motion.animate(
-          this.elementsToAnimate,
-          {
-            y: [20, 0],
-            opacity: [0, 1],
-            filter: ["blur(2px)", "blur(0)"],
-          },
-          {
-            duration: 0.6,
-            type: "spring",
-            bounce: 0,
-            delay: gZenUIManager.motion.stagger(0.05, { startDelay: 0.2 }),
-          }
-        );
-        if (gReduceMotion) {
-          animation.complete();
-        }
-        animation.then(() => {
-          this.inputName.focus();
-          gZenWorkspaces.workspaceElement(this.workspaceId).hidden = false;
-        });
-      });
+    gZenCompactModeManager.getAndApplySidebarWidth({});
+    this.#dimUrlbar();
+    this.resolveInitialized();
+  }
+
+  disconnectedCallback() {
+    if (gZenWorkspaces.creatingWorkspaceId === this.workspaceId) {
+      gZenWorkspaces.creatingWorkspaceId = null;
+    }
   }
 
   async onCreateButtonCommand() {
@@ -262,6 +288,7 @@ class nsZenWorkspaceCreation extends MozXULElement {
 
   async onCancelButtonCommand() {
     document.documentElement.removeAttribute("zen-creating-workspace");
+    this.#restoreUrlbar();
     await gZenWorkspaces.changeWorkspaceWithID(this.previousWorkspaceId);
   }
 
@@ -297,10 +324,19 @@ class nsZenWorkspaceCreation extends MozXULElement {
   }
 
   onProfilePopupShowing(event) {
-    return window.createUserContextMenu(event, {
+    window.createUserContextMenu(event, {
       isContextMenu: true,
       showDefaultTab: true,
+      showManageContainers: false,
     });
+
+    const defaultItem = event.target.querySelector('[data-usercontextid="0"]');
+    if (defaultItem) {
+      defaultItem.removeAttribute("data-l10n-id");
+      defaultItem.label = lazy.l10n.formatValueSync(
+        "zen-workspace-default-profile"
+      );
+    }
   }
 
   onProfilePopupCommand(event) {
@@ -317,18 +353,21 @@ class nsZenWorkspaceCreation extends MozXULElement {
   }
 
   finishSetup() {
+    this.inputName.focus();
     gZenWorkspaces.addChangeListeners(this.handleZenWorkspacesChangeBind, {
       once: true,
     });
   }
 
   async handleZenWorkspacesChange() {
+    // The space we were living in has already slid away, no need to animate
+    // ourselves out of it.
+    await this.#cleanup({ animateOut: false });
     await gZenWorkspaces.removeWorkspace(this.workspaceId);
-    await this.#cleanup();
   }
 
-  async #cleanup() {
-    if (!gReduceMotion) {
+  async #cleanup({ animateOut = true } = {}) {
+    if (animateOut && !gReduceMotion && this.isConnected) {
       await gZenUIManager.motion.animate(
         this.elementsToAnimate.reverse(),
         {
@@ -337,10 +376,10 @@ class nsZenWorkspaceCreation extends MozXULElement {
           filter: ["blur(0)", "blur(2px)"],
         },
         {
-          duration: 0.4,
+          duration: 0.3,
           type: "spring",
           bounce: 0,
-          delay: gZenUIManager.motion.stagger(0.05),
+          delay: gZenUIManager.motion.stagger(0.03),
         }
       );
     }
@@ -362,42 +401,50 @@ class nsZenWorkspaceCreation extends MozXULElement {
 
     document.documentElement.removeAttribute("zen-creating-workspace");
 
-    gBrowser.tabContainer.style.visibility = "";
-    gBrowser.tabContainer.style.opacity = 0;
-    if (gZenVerticalTabsManager._hasSetSingleToolbar) {
-      document.getElementById("nav-bar").style.visibility = "";
-      gURLBar.style.opacity = 0;
-    }
-
     this.remove();
-    gZenUIManager.updateTabsToolbar();
+    this.#restoreUrlbar();
 
-    const workspace = gZenWorkspaces.getActiveWorkspace();
-    gZenWorkspaces._organizeWorkspaceStripLocations(workspace);
-    gZenWorkspaces.updateTabsContainers();
-
-    await gZenUIManager.motion.animate(
-      [gBrowser.tabContainer, gURLBar],
-      {
-        opacity: [0, 1],
-      },
-      {
-        duration: 0.3,
-        type: "spring",
-        bounce: 0,
-      }
-    );
-
-    gBrowser.tabContainer.style.opacity = "";
-    if (gZenVerticalTabsManager._hasSetSingleToolbar) {
-      gURLBar.style.opacity = "";
-    }
-
-    for (const element of this.#hiddenElements) {
+    // Give the space back its own contents.
+    const revealedElements = this.#hiddenElements;
+    this.#hiddenElements = [];
+    for (const element of revealedElements) {
       element.hidden = false;
     }
 
-    this.#hiddenElements = [];
+    // Now that the form is gone the space owns its essentials again, so let
+    // it lay itself out before we fade everything back in.
+    const workspace = gZenWorkspaces.getActiveWorkspace();
+    gZenWorkspaces._organizeWorkspaceStripLocations(workspace);
+    gZenWorkspaces.updateTabsContainers();
+    // The essentials were parked off screen while we were up, put them back.
+    gZenWorkspaces.resetEssentialsPosition();
+
+    if (animateOut && !gReduceMotion) {
+      const elementsToReveal = revealedElements.filter(
+        element => element?.isConnected
+      );
+      if (elementsToReveal.length) {
+        gZenUIManager.motion
+          .animate(
+            elementsToReveal,
+            {
+              opacity: [0, 1],
+            },
+            {
+              duration: 0.3,
+              type: "spring",
+              bounce: 0,
+            }
+          )
+          .then(() => {
+            for (const element of elementsToReveal) {
+              element.style.removeProperty("opacity");
+            }
+          });
+      }
+    }
+
+    gZenUIManager.updateTabsToolbar();
   }
 }
 

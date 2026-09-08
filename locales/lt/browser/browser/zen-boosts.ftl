@@ -3,56 +3,58 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 zen-boost-edit-rename = 
-    .label = Rename Boost
+    .label = Pervadinti apipavidalinimą
 zen-boost-edit-shuffle = 
-    .label = Shuffle Vibes
+    .label = Maišyti vaibus
 zen-boost-edit-reset = 
     .label = Atkurti visus redagavimus
 zen-boost-edit-delete = 
-    .label = Delete Boost
+    .label = Ištrinti apipavidalinimą
 zen-boost-size = Dydis
-zen-boost-case = Case
-zen-boost-zap = Zap
+zen-boost-case = Raidžių lygis
+zen-boost-zap = Šalinti
 zen-boost-code = Kodas
-zen-boost-back = Back
+zen-boost-back = Atgal
 zen-boost-shuffle = 
-    .tooltiptext = Shuffle Boost Settings
+    .tooltiptext = Maišymo apipavidalinimo nustatymai
 zen-boost-invert = 
-    .tooltiptext = Smart Invert Colors
+    .tooltiptext = Išmanusis spalvų inversija
 zen-boost-controls = 
-    .tooltiptext = Advanced Color Controls
+    .tooltiptext = Išplėstiniai spalvų valdymai
 zen-boost-disable = 
-    .tooltiptext = Disable Color Adjustments
+    .tooltiptext = Išjungti spalvų priderinimą
 zen-boost-text-case-toggle = 
-    .tooltiptext = Toggle Text Case
+    .tooltiptext = Perjungti teksto raidžių lygį
 zen-boost-css-picker = 
-    .tooltiptext = Pick Selector
+    .tooltiptext = Pasirinkimo parinkiklis
 zen-boost-css-inspector = 
-    .tooltiptext = Open Inspector
+    .tooltiptext = Atverti inspektorių
 zen-boost-color-contrast = Kontrastas
 zen-boost-color-brightness = Šviesumas
-zen-boost-color-original-saturation = Original Saturation
-zen-add-zap-helper = Click elements on the page to <b>Zap</b> them
-zen-remove-zap-helper = ← Click to Unzap
-zen-select-this = Insert selector for this
-zen-select-related = Insert selector for related
+zen-boost-color-original-saturation = Originali grynis
+zen-add-zap-helper = Spustelėkite elementus puslapyje, kad juos <b>pašalintumėte</b> („nutrūkčioti“).
+zen-remove-zap-helper = ← Spustelėkite, kad atkurtumėte
+zen-select-this = Įterpti pasirinkiklį šiam
+zen-select-related = Įterpti pasirinkiklį susijusiems
 zen-select-cancel = Atsisakyti
-zen-zap-this = Zap this
-zen-zap-related = Zap all related elements
-zen-zap-cancel = Cancel
-zen-zap-done = Done
+zen-zap-this = Šalinti šį
+zen-zap-related = Šalinti visus susijusius elementus
+zen-zap-cancel = Atsisakyti
+zen-zap-done = Atlikta
 zen-unzap-tooltip =
     { $elementCount ->
-        [0] No elements zapped
-        [1] { $elementCount } element zapped
-       *[other] { $elementCount } elements zapped
+        [0] Jokių elementų nepašalinta.
+        [1] { $elementCount } elementas pašalintas.
+        [few] { $elementCount } elementai pašalinti.
+        [many] { $elementCount } elemento pašalinta.
+       *[other] { $elementCount } elementų pašalinta.
     }
 zen-boost-save = 
-    .label = Export Boost
+    .label = Eksportuoti apipavidalinimą
 zen-boost-load = 
-    .label = Import Boost
-zen-panel-ui-boosts-exported-message = Boost exported!
-zen-site-data-boosts = Boosts
+    .label = Importuoti apipavidalinimą
+zen-panel-ui-boosts-exported-message = Apipavidalinimas eksportuotas.
+zen-site-data-boosts = Apipavidalinimai
 zen-site-data-create-boost = 
-    .tooltiptext = Create new boost
-zen-boost-rename-boost-prompt = Rename Boost?
+    .tooltiptext = Kurti naują apipavidalinimą
+zen-boost-rename-boost-prompt = Pervadinti apipavidalinimą?

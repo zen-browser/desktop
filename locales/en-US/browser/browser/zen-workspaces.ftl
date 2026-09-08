@@ -82,9 +82,12 @@ zen-workspace-creation-profile = Profile
     .tooltiptext = Profiles are used to separate cookies and site data between spaces.
 zen-workspace-creation-header = Create a Space
 zen-workspace-creation-label = Spaces are used to organize your tabs and sessions.
+zen-workspace-default-profile = Default
 
 zen-workspaces-delete-workspace-title = Delete Space?
 zen-workspaces-delete-workspace-body = Are you sure you want to delete { $name }? This action cannot be undone.
+zen-workspaces-remote-delete-title = Delete Synced Space?
+zen-workspaces-remote-delete-body = { $name } was deleted on another device. Delete it here too? Keeping it will restore it on your other devices.
 
 # Note that the html tag MUST not be changed or removed, as it is used to better
 # display the shortcut in the toast notification.

@@ -91,11 +91,6 @@ if test "$ZEN_RELEASE"; then
   export MOZ_PACKAGE_JSSHELL=1
 
   ac_add_options --disable-crashreporter
-
-  # Experimental flag, enabled only on nightly for Firefox.
-  # Should bring in some nice performance improvements, 
-  # but may cause stability issues.
-  ac_add_options --enable-replace-malloc
 fi
 
 ac_add_options --enable-jxl

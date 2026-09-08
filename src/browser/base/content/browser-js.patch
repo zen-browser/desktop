@@ -1,16 +1,16 @@
 diff --git a/browser/base/content/browser.js b/browser/base/content/browser.js
-index 1026474bb1bc026987be01a8c18fa0927cb911bc..60294e0587147d86ace8e6d6985d8c6eae8248b6 100644
+index 4960f4baed32a9e9f523262591eb93550ca9c4b0..9ee825057b1b3b5a08e1d2b2c1036f1be2088da6 100644
 --- a/browser/base/content/browser.js
 +++ b/browser/base/content/browser.js
 @@ -34,6 +34,7 @@ ChromeUtils.defineESModuleGetters(this, {
-     "resource://gre/modules/ContextualIdentityService.sys.mjs",
+     "moz-src:///toolkit/components/contextualidentity/ContextualIdentityService.sys.mjs",
    CustomizableUI:
      "moz-src:///browser/components/customizableui/CustomizableUI.sys.mjs",
 +  ZenCustomizableUI: "resource:///modules/ZenCustomizableUI.sys.mjs",
    DevToolsSocketStatus:
      "resource://devtools/shared/security/DevToolsSocketStatus.sys.mjs",
    DownloadUtils: "resource://gre/modules/DownloadUtils.sys.mjs",
-@@ -816,7 +817,12 @@ function UpdateBackForwardCommands(aWebNavigation) {
+@@ -831,7 +832,12 @@ function UpdateBackForwardCommands(aWebNavigation) {
  
    var backDisabled = backCommand.hasAttribute("disabled");
    var forwardDisabled = forwardCommand.hasAttribute("disabled");
@@ -24,7 +24,7 @@ index 1026474bb1bc026987be01a8c18fa0927cb911bc..60294e0587147d86ace8e6d6985d8c6e
      if (backDisabled) {
        backCommand.removeAttribute("disabled");
      } else {
-@@ -3719,7 +3725,7 @@ function warnAboutClosingWindow() {
+@@ -3973,7 +3979,7 @@ function warnAboutClosingWindow() {
  
    if (!isPBWindow && !toolbar.visible) {
      return gBrowser.warnAboutClosingTabs(
@@ -33,7 +33,7 @@ index 1026474bb1bc026987be01a8c18fa0927cb911bc..60294e0587147d86ace8e6d6985d8c6e
        gBrowser.closingTabsEnum.ALL
      );
    }
-@@ -3759,7 +3765,7 @@ function warnAboutClosingWindow() {
+@@ -4013,7 +4019,7 @@ function warnAboutClosingWindow() {
      return (
        isPBWindow ||
        gBrowser.warnAboutClosingTabs(
@@ -42,7 +42,7 @@ index 1026474bb1bc026987be01a8c18fa0927cb911bc..60294e0587147d86ace8e6d6985d8c6e
          gBrowser.closingTabsEnum.ALL
        )
      );
-@@ -3784,7 +3790,7 @@ function warnAboutClosingWindow() {
+@@ -4038,7 +4044,7 @@ function warnAboutClosingWindow() {
      AppConstants.platform != "macosx" ||
      isPBWindow ||
      gBrowser.warnAboutClosingTabs(
@@ -51,7 +51,7 @@ index 1026474bb1bc026987be01a8c18fa0927cb911bc..60294e0587147d86ace8e6d6985d8c6e
        gBrowser.closingTabsEnum.ALL
      )
    );
-@@ -4744,6 +4750,16 @@ var ConfirmationHint = {
+@@ -4998,6 +5004,16 @@ var ConfirmationHint = {
      }
  
      document.l10n.setAttributes(this._message, messageId, l10nArgs);

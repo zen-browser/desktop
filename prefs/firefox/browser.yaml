@@ -95,7 +95,20 @@
 - name: browser.search.widget.new
   value: true
 
+- name: layout.css.corner-shape.enabled
+  value: true
+
 # Disabled from https://searchfox.org/firefox-main/rev/d6bfff43852356ca98af848b4705d37f8d41856f/modules/libpref/init/StaticPrefList.yaml#2008
 # Only enabled for windows, doesn't really fit inside Zen.
 - name: browser.startup.preXulSkeletonUI
   value: false
+
+- name: browser.preonboarding.enabled
+  value: false
+
+- name: browser.referrals.enabled
+  value: false
+  locked: true
+
+- name: browser.shell.customIcon.enabled
+  value: false # For now?

@@ -1,5 +1,5 @@
 diff --git a/browser/base/content/aboutDialog.xhtml b/browser/base/content/aboutDialog.xhtml
-index 3ffd464b960a4299a7dd0cd87e4fc2f781b9d593..7a831c8ee2b73bb89bf8a82ac24958b55c16a5aa 100644
+index 067eaf8d4e23f76a2423d01a1d9fa71d9ef3c65f..e0badae05d1da7e6de43e1d517539d4b09ec90f5 100644
 --- a/browser/base/content/aboutDialog.xhtml
 +++ b/browser/base/content/aboutDialog.xhtml
 @@ -102,10 +102,6 @@
@@ -13,7 +13,7 @@ index 3ffd464b960a4299a7dd0cd87e4fc2f781b9d593..7a831c8ee2b73bb89bf8a82ac24958b5
              </vbox>
  #endif
            </hbox>
-@@ -120,26 +116,22 @@
+@@ -120,12 +116,12 @@
            <vbox id="experimental" hidden="true">
              <description class="text-blurb" id="warningDesc" data-l10n-id="warningDesc-version"></description>
              <description class="text-blurb" id="communityExperimentalDesc" data-l10n-id="community-exp">
@@ -27,13 +27,8 @@ index 3ffd464b960a4299a7dd0cd87e4fc2f781b9d593..7a831c8ee2b73bb89bf8a82ac24958b5
 +            <label is="text-link" href="https://github.com/zen-browser/desktop" data-l10n-name="community-mozillaLink"/>
              <label is="text-link" useoriginprincipal="true" href="about:credits" data-l10n-name="community-creditsLink"/>
            </description>
--          <description class="text-blurb" id="contributeDesc" data-l10n-id="helpus">
--            <label is="text-link" href="https://foundation.mozilla.org/?form=firefox-about" data-l10n-name="helpus-donateLink"/>
--            <label is="text-link" href="https://www.mozilla.org/contribute/?utm_source=firefox-browser&#38;utm_medium=firefox-desktop&#38;utm_campaign=about-dialog" data-l10n-name="helpus-getInvolvedLink"/>
--          </description>
-         </vbox>
-       </vbox>
-     </hbox>
+           <description class="text-blurb" id="contributeDesc" data-l10n-id="helpus">
+@@ -144,8 +140,8 @@
      <vbox id="bottomBox">
        <hbox pack="center">
          <label is="text-link" class="bottom-link" useoriginprincipal="true" href="about:license" data-l10n-id="bottomLinks-license"/>

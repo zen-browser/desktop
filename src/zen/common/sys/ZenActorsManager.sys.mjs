@@ -29,6 +29,7 @@ let JSWINDOWACTORS = {
         DOMContentLoaded: {},
       },
     },
+    safeForUntrustedWebProcess: true,
     matches: [
       ...Services.prefs.getStringPref("zen.injections.match-urls").split(","),
       "about:preferences",
@@ -55,7 +56,25 @@ let JSWINDOWACTORS = {
     },
     allFrames: true,
     remoteTypes: ["web", "file"],
+    safeForUntrustedWebProcess: true,
     enablePreference: "zen.glance.enabled",
+  },
+  ZenWindowDrag: {
+    parent: {
+      esModuleURI: "resource:///actors/ZenWindowDragParent.sys.mjs",
+    },
+    child: {
+      esModuleURI: "resource:///actors/ZenWindowDragChild.sys.mjs",
+      events: {
+        mousedown: {
+          mozSystemGroup: true,
+        },
+      },
+    },
+    messageManagerGroups: ["browsers"],
+    remoteTypes: ["web", "file"],
+    safeForUntrustedWebProcess: true,
+    enablePreference: "zen.view.drag-window-from-content",
   },
 };
 
@@ -72,6 +91,7 @@ if (!Services.appinfo.inSafeMode) {
         DOMWindowCreated: {},
       },
     },
+    safeForUntrustedWebProcess: true,
     allFrames: true,
     remoteTypes: ["web", "file"],
     enablePreference: "zen.boosts.enabled",

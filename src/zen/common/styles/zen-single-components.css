@@ -46,8 +46,8 @@
   min-height: 30px;
 }
 
-/* Firefox View */
 #firefox-view-button,
+#ai-window-toggle,
 #wrapper-firefox-view-button {
   display: none !important;
 }
@@ -185,7 +185,7 @@
 .toolbarbutton-1:not(#tabs-newtab-button),
 .urlbar-page-action,
 .identity-box-button {
-  --tab-border-radius: 6px;
+  --tab-border-radius: 8px;
   --toolbarbutton-border-radius: var(--tab-border-radius);
   --toolbarbutton-padding-inner: 6px;
   --toolbarbutton-padding-outer: 1px;
@@ -291,7 +291,7 @@
   --panel-width: 234px;
   --menu-panel-width-wide: calc(var(--panel-width) - var(--panel-padding) * 2);
   --uei-icon-size: 16px;
-  --arrowpanel-menuitem-border-radius: 10px;
+  --arrowpanel-menuitem-border-radius: calc(10px * var(--zen-squircle-value));
 }
 
 #unified-extensions-empty-state,
@@ -500,13 +500,16 @@
     transition:
       transform 0.12s ease-in-out,
       opacity 0.12s ease-in-out;
+    will-change: transform;
   }
 
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
   .permission-popup-permission-item:hover &::before,
   .permission-popup-boost-item:hover:not(:has(.zen-permission-popup-boost-editor-button:hover)) &::before {
     transform: scale(1.05);
   }
 
+  /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */
   .permission-popup-permission-item:active:hover &::before,
   .permission-popup-boost-item:active:hover:not(:has(.zen-permission-popup-boost-editor-button:hover)) &::before {
     transform: scale(0.95);
@@ -601,6 +604,8 @@
       position: absolute;
       width: 100%;
       height: 100%;
+      will-change: transform;
+
       @media (-moz-platform: macos) {
         background: linear-gradient(to bottom, light-dark(rgb(255, 255, 255), rgb(34, 34, 34)), light-dark(rgb(246, 246, 246), rgb(21, 21, 21)));
 

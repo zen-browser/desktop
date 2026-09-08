@@ -1,6 +1,3 @@
-// This Source Code Form is subject to the terms of the Mozilla Public
-// License, v. 2.0. If a copy of the MPL was not distributed with this
-// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 /**
  * NOTE: Do not modify this file by hand.
  * Content was generated from source XPCOM .idl files.
@@ -8,7 +5,7 @@
  */
 
 declare global {
-  // https://searchfox.org/mozilla-central/source/toolkit/components/aboutthirdparty/nsIAboutThirdParty.idl
+  // https://searchfox.org/firefox-main/source/toolkit/components/aboutthirdparty/nsIAboutThirdParty.idl
 
   interface nsIInstalledApplication extends nsISupports {
     readonly name: string;
@@ -31,7 +28,7 @@ declare global {
     loadModuleForTesting(aModulePath: string): void;
   }
 
-  // https://searchfox.org/mozilla-central/source/toolkit/components/aboutwindowsmessages/nsIAboutWindowsMessages.idl
+  // https://searchfox.org/firefox-main/source/toolkit/components/aboutwindowsmessages/nsIAboutWindowsMessages.idl
 
   interface nsIAboutWindowsMessages extends nsISupports {
     getMessages(
@@ -41,7 +38,7 @@ declare global {
     ): void;
   }
 
-  // https://searchfox.org/mozilla-central/source/toolkit/components/alerts/nsIWindowsAlertsService.idl
+  // https://searchfox.org/firefox-main/source/toolkit/components/alerts/nsIWindowsAlertsService.idl
 } // global
 
 declare enum nsIWindowsAlertNotification_ImagePlacement {
@@ -71,7 +68,7 @@ declare global {
     removeAllNotificationsForInstall(): void;
   }
 
-  // https://searchfox.org/mozilla-central/source/toolkit/mozapps/defaultagent/nsIDefaultAgent.idl
+  // https://searchfox.org/firefox-main/source/toolkit/mozapps/defaultagent/nsIDefaultAgent.idl
 
   interface nsIDefaultAgent extends nsISupports {
     registerTask(aUniqueToken: string): void;
@@ -105,7 +102,7 @@ declare global {
     agentDisabled(): boolean;
   }
 
-  // https://searchfox.org/mozilla-central/source/toolkit/mozapps/defaultagent/nsIWindowsMutex.idl
+  // https://searchfox.org/firefox-main/source/toolkit/mozapps/defaultagent/nsIWindowsMutex.idl
 
   interface nsIWindowsMutex extends nsISupports {
     tryLock(): void;
@@ -117,15 +114,15 @@ declare global {
     createMutex(aName: string): nsIWindowsMutex;
   }
 
-  // https://searchfox.org/mozilla-central/source/dom/geolocation/nsIGeolocationUIUtilsWin.idl
+  // https://searchfox.org/firefox-main/source/dom/geolocation/nsIGeolocationUIUtilsWin.idl
 
   interface nsIGeolocationUIUtilsWin extends nsISupports {
     dismissPrompts(aBC: BrowsingContext): void;
   }
 
-  // https://searchfox.org/mozilla-central/source/netwerk/socket/nsINamedPipeService.idl
+  // https://searchfox.org/firefox-main/source/netwerk/socket/nsINamedPipeService.idl
 
-  // https://searchfox.org/mozilla-central/source/browser/components/shell/nsIWindowsShellService.idl
+  // https://searchfox.org/firefox-main/source/browser/components/shell/nsIWindowsShellService.idl
 } // global
 
 declare enum nsIWindowsShellService_LaunchOnLoginEnabledEnumerator {
@@ -185,7 +182,7 @@ declare global {
     queryCurrentDefaultHandlerFor(aFileExtensionOrProtocol: string): string;
   }
 
-  // https://searchfox.org/mozilla-central/source/toolkit/components/taskscheduler/nsIWinTaskSchedulerService.idl
+  // https://searchfox.org/firefox-main/source/toolkit/components/taskscheduler/nsIWinTaskSchedulerService.idl
 
   interface nsIWinTaskSchedulerService extends nsISupports {
     registerTask(
@@ -203,7 +200,7 @@ declare global {
     deleteFolder(aParentFolderName: string, aSubFolderName: string): void;
   }
 
-  // https://searchfox.org/mozilla-central/source/widget/nsIJumpListBuilder.idl
+  // https://searchfox.org/firefox-main/source/widget/nsIJumpListBuilder.idl
 
   interface nsIJumpListBuilder extends nsISupports {
     obtainAndCacheFavicon(faviconURL: nsIURI): string;
@@ -218,9 +215,9 @@ declare global {
     clearJumpList(): Promise<any>;
   }
 
-  // https://searchfox.org/mozilla-central/source/widget/nsIPrintSettingsWin.idl
+  // https://searchfox.org/firefox-main/source/widget/nsIPrintSettingsWin.idl
 
-  // https://searchfox.org/mozilla-central/source/widget/nsITaskbarOverlayIconController.idl
+  // https://searchfox.org/firefox-main/source/widget/nsITaskbarOverlayIconController.idl
 
   interface nsITaskbarOverlayIconController extends nsISupports {
     setOverlayIcon(
@@ -230,7 +227,7 @@ declare global {
     ): void;
   }
 
-  // https://searchfox.org/mozilla-central/source/widget/nsITaskbarPreview.idl
+  // https://searchfox.org/firefox-main/source/widget/nsITaskbarPreview.idl
 
   interface nsITaskbarPreview extends nsISupports {
     controller: nsITaskbarPreviewController;
@@ -240,7 +237,7 @@ declare global {
     invalidate(): void;
   }
 
-  // https://searchfox.org/mozilla-central/source/widget/nsITaskbarPreviewButton.idl
+  // https://searchfox.org/firefox-main/source/widget/nsITaskbarPreviewButton.idl
 
   interface nsITaskbarPreviewButton extends nsISupports {
     tooltip: string;
@@ -251,7 +248,7 @@ declare global {
     visible: boolean;
   }
 
-  // https://searchfox.org/mozilla-central/source/widget/nsITaskbarPreviewController.idl
+  // https://searchfox.org/firefox-main/source/widget/nsITaskbarPreviewController.idl
 
   type nsITaskbarPreviewCallback = Callable<{
     done(aCanvas: nsISupports, aDrawBorder: boolean): void;
@@ -272,7 +269,7 @@ declare global {
     onClick(button: nsITaskbarPreviewButton): void;
   }
 
-  // https://searchfox.org/mozilla-central/source/widget/nsITaskbarProgress.idl
+  // https://searchfox.org/firefox-main/source/widget/nsITaskbarProgress.idl
 
   interface nsITaskbarProgress extends nsISupports {
     readonly STATE_NO_PROGRESS?: 0;
@@ -288,7 +285,7 @@ declare global {
     ): void;
   }
 
-  // https://searchfox.org/mozilla-central/source/widget/nsITaskbarTabPreview.idl
+  // https://searchfox.org/firefox-main/source/widget/nsITaskbarTabPreview.idl
 
   interface nsITaskbarTabPreview extends nsITaskbarPreview {
     title: string;
@@ -296,7 +293,7 @@ declare global {
     move(aNext: nsITaskbarTabPreview): void;
   }
 
-  // https://searchfox.org/mozilla-central/source/widget/nsITaskbarWindowPreview.idl
+  // https://searchfox.org/firefox-main/source/widget/nsITaskbarWindowPreview.idl
 
   interface nsITaskbarWindowPreview extends nsITaskbarPreview {
     readonly NUM_TOOLBAR_BUTTONS?: 7;
@@ -305,7 +302,7 @@ declare global {
     enableCustomDrawing: boolean;
   }
 
-  // https://searchfox.org/mozilla-central/source/widget/nsIWinTaskbar.idl
+  // https://searchfox.org/firefox-main/source/widget/nsIWinTaskbar.idl
 
   interface nsIWinTaskbar extends nsISupports {
     readonly available: boolean;
@@ -325,7 +322,7 @@ declare global {
     setGroupIdForWindow(aParent: mozIDOMWindow, aIdentifier: string): void;
   }
 
-  // https://searchfox.org/mozilla-central/source/widget/nsIWindowsUIUtils.idl
+  // https://searchfox.org/firefox-main/source/widget/nsIWindowsUIUtils.idl
 
   interface nsIWindowsUIUtils extends nsISupports {
     readonly systemSmallIconSize: i32;
@@ -346,7 +343,7 @@ declare global {
     shareUrl(urlToShare: string, shareTitle: string): void;
   }
 
-  // https://searchfox.org/mozilla-central/source/toolkit/system/windowsPackageManager/nsIWindowsPackageManager.idl
+  // https://searchfox.org/firefox-main/source/toolkit/system/windowsPackageManager/nsIWindowsPackageManager.idl
 
   interface nsIWindowsPackageManager extends nsISupports {
     findUserInstalledPackages(prefix: string[]): string[];
@@ -354,7 +351,7 @@ declare global {
     campaignId(): Promise<any>;
   }
 
-  // https://searchfox.org/mozilla-central/source/xpcom/ds/nsIWindowsRegKey.idl
+  // https://searchfox.org/firefox-main/source/xpcom/ds/nsIWindowsRegKey.idl
 
   interface nsIWindowsRegKey extends nsISupports {
     readonly ROOT_KEY_CLASSES_ROOT?: 2147483648;
@@ -401,7 +398,7 @@ declare global {
     writeBinaryValue(name: string, data: string): void;
   }
 
-  // https://searchfox.org/mozilla-central/source/toolkit/xre/nsIWinAppHelper.idl
+  // https://searchfox.org/firefox-main/source/toolkit/xre/nsIWinAppHelper.idl
 
   interface nsIWinAppHelper extends nsISupports {
     readonly userCanElevate: boolean;

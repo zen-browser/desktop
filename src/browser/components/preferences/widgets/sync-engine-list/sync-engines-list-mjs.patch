@@ -1,0 +1,15 @@
+diff --git a/browser/components/preferences/widgets/sync-engine-list/sync-engines-list.mjs b/browser/components/preferences/widgets/sync-engine-list/sync-engines-list.mjs
+index 9359a485ed6212c7df49a8d4b1e4a8febbc1c9b6..132fea440cfa535e78b35f706e7ef2d6881f9ba6 100644
+--- a/browser/components/preferences/widgets/sync-engine-list/sync-engines-list.mjs
++++ b/browser/components/preferences/widgets/sync-engine-list/sync-engines-list.mjs
+@@ -50,6 +50,10 @@ const engineTypeToMetadata = {
+     iconSrc: "chrome://global/skin/icons/settings.svg",
+     l10nId: "sync-currently-syncing-settings",
+   },
++  workspaces: {
++    iconSrc: "chrome://devtools/skin/images/tool-storage.svg",
++    l10nId: "sync-currently-syncing-workspaces",
++  },
+ };
+ 
+ /**

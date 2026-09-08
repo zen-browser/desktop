@@ -10,643 +10,281 @@ XPCOMUtils.defineLazyPreferenceGetter(
   true
 );
 
+// Maximum number of cards shown in the stack; extra cards stay hidden until
+// a slot frees up.
+const MAX_STACKED_CARDS = 3;
+// How many background cards visually peek out at the top of the stack.
+// Deeper cards hide perfectly behind the last peeking one, so the stack
+// doesn't take more room with every extra card.
+const MAX_PEEK_LEVELS = 2;
+
 /**
- * Zen Media Controller, handles the small media control bar UI and interactions
- * located at the bottom of the sidebar.
+ * A single card in the sidebar media stack: the full control UI for one
+ * media controller, or for a WebRTC sharing session when `controller` is
+ * null.
  */
-class nsZenMediaController {
-  _currentMediaController = null;
-  _currentBrowser = null;
-  _mediaUpdateInterval = null;
+class ZenMediaCard {
+  #updateInterval = null;
+  #tabTimeout = null;
+  #controllerListeners = null;
 
-  mediaTitle = null;
-  mediaArtist = null;
-  mediaControlBar = null;
-  mediaProgressBar = null;
-  mediaCurrentTime = null;
-  mediaDuration = null;
-  mediaFocusButton = null;
-  mediaProgressBarContainer = null;
+  static supportedKeys = ["playpause", "previoustrack", "nexttrack"];
 
-  supportedKeys = ["playpause", "previoustrack", "nexttrack"];
-  mediaControllersMap = new Map();
+  constructor(manager, element, browser, controller = null) {
+    this.manager = manager;
+    this.element = element;
+    this.browser = browser;
+    this.controller = controller;
 
-  _tabTimeout = null;
-  _controllerSwitchTimeout = null;
+    this.titleEl = element.querySelector(".zen-media-title");
+    this.artistEl = element.querySelector(".zen-media-artist");
+    this.progressBar = element.querySelector(".zen-media-progress-bar");
+    this.currentTimeEl = element.querySelector(".zen-media-current-time");
+    this.durationEl = element.querySelector(".zen-media-duration");
+    this.focusButton = element.querySelector(".zen-media-focus-button");
 
-  #isSeeking = false;
+    this.#initListeners();
 
-  init() {
-    if (!Services.prefs.getBoolPref("zen.mediacontrols.enabled", true)) {
-      return;
+    if (controller) {
+      // Queried before anything is wired up: it throws if the controller
+      // went away in the meantime, and the caller drops the card.
+      const positionState = controller.getPositionState();
+
+      this.#controllerListeners = {
+        positionstatechange: this.#onPositionstateChange.bind(this),
+        playbackstatechange: this.#onPlaybackstateChange.bind(this),
+        supportedkeyschange: this.#onSupportedKeysChange.bind(this),
+        metadatachange: this.#onMetadataChange.bind(this),
+        deactivated: this.#onDeactivated.bind(this),
+        pictureinpicturemodechange: this.#onPipModeChange.bind(this),
+      };
+      for (const [event, listener] of Object.entries(
+        this.#controllerListeners
+      )) {
+        controller.addEventListener(event, listener);
+      }
+
+      this.element.classList.toggle("playing", controller.isPlaying);
+      this.updateMetadata();
+      this.updatePositionState(positionState);
+      this.updateSupportedKeys();
+    } else {
+      this.element.setAttribute("media-sharing", "");
+      this.element.setAttribute("media-position-hidden", "true");
+      this.titleEl.textContent =
+        window.gBrowser.getTabForBrowser(browser)?.label || "";
+      this.artistEl.textContent = "";
+      this.updateIcon();
     }
 
-    this.mediaTitle = document.querySelector("#zen-media-title");
-    this.mediaArtist = document.querySelector("#zen-media-artist");
-    this.mediaControlBar = document.querySelector(
-      "#zen-media-controls-toolbar"
-    );
-    this.mediaProgressBar = document.querySelector("#zen-media-progress-bar");
-    this.mediaCurrentTime = document.querySelector("#zen-media-current-time");
-    this.mediaDuration = document.querySelector("#zen-media-duration");
-    this.mediaFocusButton = document.querySelector("#zen-media-focus-button");
-    this.mediaProgressBarContainer = document.querySelector(
-      "#zen-media-progress-hbox"
-    );
-
-    this.onPositionstateChange = this._onPositionstateChange.bind(this);
-    this.onPlaybackstateChange = this._onPlaybackstateChange.bind(this);
-    this.onSupportedKeysChange = this._onSupportedKeysChange.bind(this);
-    this.onMetadataChange = this._onMetadataChange.bind(this);
-    this.onDeactivated = this._onDeactivated.bind(this);
-    this.onPipModeChange = this._onPictureInPictureModeChange.bind(this);
-
-    this.#initEventListeners();
+    this.updatePipButton();
+    this.updateMuteState();
   }
 
-  #initEventListeners() {
-    this.mediaControlBar.addEventListener("mousedown", event => {
-      if (event.target.closest(":is(toolbarbutton,#zen-media-progress-hbox)")) {
+  get isSharing() {
+    return !this.controller;
+  }
+
+  get shouldBeVisible() {
+    if (this.isSharing) {
+      return true;
+    }
+    if (this.controller.isBeingUsedInPIPModeOrFullscreen) {
+      return false;
+    }
+    return gBrowser.selectedBrowser.browserId !== this.browser.browserId;
+  }
+
+  #initListeners() {
+    this.element.addEventListener("mousedown", event => {
+      if (event.target.closest(":is(toolbarbutton,.zen-media-progress-hbox)")) {
         return;
       }
-      this.onMediaFocus();
+      this.onFocus();
     });
 
-    this.mediaControlBar.addEventListener("command", event => {
+    this.element.addEventListener("command", event => {
       const button = event.target.closest("toolbarbutton");
       if (!button) {
         return;
       }
-      switch (button.id) {
-        case "zen-media-pip-button":
-          this.onMediaPip();
-          break;
-        case "zen-media-close-button":
-          this.onControllerClose();
-          break;
-        case "zen-media-focus-button":
-          this.onMediaFocus();
-          break;
-        case "zen-media-mute-button":
-          this.onMediaMute();
-          break;
-        case "zen-media-previoustrack-button":
-          this.onMediaPlayPrev();
-          break;
-        case "zen-media-nexttrack-button":
-          this.onMediaPlayNext();
-          break;
-        case "zen-media-playpause-button":
-          this.onMediaToggle();
-          break;
-        case "zen-media-mute-mic-button":
-          this.onMicrophoneMuteToggle();
-          break;
-        case "zen-media-mute-camera-button":
-          this.onCameraMuteToggle();
-          break;
+      if (button.matches(".zen-media-pip-button")) {
+        this.onPip();
+      } else if (button.matches(".zen-media-close-button")) {
+        this.onClose();
+      } else if (button.matches(".zen-media-focus-button")) {
+        this.onFocus();
+      } else if (button.matches(".zen-media-mute-button")) {
+        this.onMute();
+      } else if (button.matches(".zen-media-previoustrack-button")) {
+        this.onPlayPrev();
+      } else if (button.matches(".zen-media-nexttrack-button")) {
+        this.onPlayNext();
+      } else if (button.matches(".zen-media-playpause-button")) {
+        this.onToggle();
+      } else if (button.matches(".zen-media-mute-mic-button")) {
+        this.onMicrophoneMuteToggle();
+      } else if (button.matches(".zen-media-mute-camera-button")) {
+        this.onCameraMuteToggle();
       }
     });
 
-    this.mediaProgressBar.addEventListener(
-      "input",
-      this.onMediaSeekDrag.bind(this)
-    );
-    this.mediaProgressBar.addEventListener(
-      "change",
-      this.onMediaSeekComplete.bind(this)
-    );
-
-    window.addEventListener("TabSelect", event => {
-      if (this.isSharing) {
-        return;
-      }
-
-      const linkedBrowser = event.target.linkedBrowser;
-      this.switchController();
-
-      if (this._currentBrowser) {
-        if (linkedBrowser.browserId === this._currentBrowser.browserId) {
-          if (this._tabTimeout) {
-            clearTimeout(this._tabTimeout);
-            this._tabTimeout = null;
-          }
-
-          this.hideMediaControls();
-        } else {
-          this._tabTimeout = setTimeout(() => {
-            if (!this.mediaControlBar.hasAttribute("pip")) {
-              this.showMediaControls();
-            } else {
-              this._tabTimeout = null;
-            }
-          }, 500);
-        }
-      }
-    });
-
-    const onTabDiscardedOrClosed = this.onTabDiscardedOrClosed.bind(this);
-
-    window.addEventListener("TabClose", onTabDiscardedOrClosed);
-    window.addEventListener("TabBrowserDiscarded", onTabDiscardedOrClosed);
-
-    window.addEventListener("DOMAudioPlaybackStarted", event => {
-      setTimeout(() => {
-        if (
-          this._currentMediaController?.isPlaying &&
-          this.mediaControlBar.hasAttribute("hidden") &&
-          !this.mediaControlBar.hasAttribute("pip")
-        ) {
-          const { selectedBrowser } = gBrowser;
-          if (selectedBrowser.browserId !== this._currentBrowser.browserId) {
-            this.showMediaControls();
-          }
-        }
-      }, 1000);
-
-      this.activateMediaControls(
-        event.target.browsingContext.mediaController,
-        event.target
-      );
-    });
-
-    window.addEventListener("DOMAudioPlaybackStopped", () =>
-      this.updateMuteState()
-    );
+    this.progressBar.addEventListener("input", this.onSeekDrag.bind(this));
+    this.progressBar.addEventListener("change", this.onSeekComplete.bind(this));
   }
 
-  onTabDiscardedOrClosed(event) {
-    const { linkedBrowser } = event.target;
-    const isCurrentBrowser =
-      linkedBrowser?.browserId === this._currentBrowser?.browserId;
-
-    if (isCurrentBrowser) {
-      this.isSharing = false;
-      this.hideMediaControls();
-    }
-
-    if (linkedBrowser?.browsingContext?.mediaController) {
-      this.deinitMediaController(
-        linkedBrowser.browsingContext.mediaController,
-        true,
-        isCurrentBrowser,
-        true
-      );
-    }
+  #onPositionstateChange(event) {
+    this.updatePositionState(event);
   }
 
-  async deinitMediaController(
-    mediaController,
-    shouldForget = true,
-    shouldOverride = true,
-    shouldHide = true
-  ) {
-    if (shouldForget && mediaController) {
-      mediaController.removeEventListener(
-        "pictureinpicturemodechange",
-        this.onPipModeChange
-      );
-      mediaController.removeEventListener(
-        "positionstatechange",
-        this.onPositionstateChange
-      );
-      mediaController.removeEventListener(
-        "playbackstatechange",
-        this.onPlaybackstateChange
-      );
-      mediaController.removeEventListener(
-        "supportedkeyschange",
-        this.onSupportedKeysChange
-      );
-      mediaController.removeEventListener(
-        "metadatachange",
-        this.onMetadataChange
-      );
-      mediaController.removeEventListener("deactivated", this.onDeactivated);
-
-      this.mediaControllersMap.delete(mediaController.id);
-    }
-
-    if (shouldOverride) {
-      this._currentMediaController = null;
-      this._currentBrowser = null;
-
-      if (this._mediaUpdateInterval) {
-        clearInterval(this._mediaUpdateInterval);
-        this._mediaUpdateInterval = null;
-      }
-
-      if (shouldHide) {
-        await this.hideMediaControls();
-      }
-      this.mediaControlBar.removeAttribute("muted");
-      this.mediaControlBar.classList.remove("playing");
-    }
+  #onPlaybackstateChange() {
+    this.element.classList.toggle("playing", this.controller.isPlaying);
+    this.updatePosition();
   }
 
-  get isSharing() {
-    return this.mediaControlBar.hasAttribute("media-sharing");
+  #onSupportedKeysChange() {
+    this.updateSupportedKeys();
   }
 
-  set isSharing(value) {
-    if (this._currentBrowser?.browsingContext && !value) {
-      const webRTC =
-        this._currentBrowser.browsingContext.currentWindowGlobal.getActor(
-          "WebRTC"
-        );
-      webRTC.sendAsyncMessage("webrtc:UnmuteMicrophone");
-      webRTC.sendAsyncMessage("webrtc:UnmuteCamera");
-    }
-
-    if (!value) {
-      this.mediaControlBar.removeAttribute("mic-muted");
-      this.mediaControlBar.removeAttribute("camera-muted");
-    } else {
-      this.mediaControlBar.setAttribute("media-position-hidden", "");
-      this.mediaControlBar.setAttribute("media-sharing", "");
-    }
-  }
-
-  hideMediaControls() {
-    if (this.mediaControlBar.hasAttribute("hidden")) {
-      return;
-    }
-
-    gZenUIManager.motion
-      .animate(
-        this.mediaControlBar,
-        {
-          opacity: [1, 0],
-          y: [0, 10],
-        },
-        {
-          duration: 0.1,
-        }
-      )
-      .then(() => {
-        this.mediaControlBar.setAttribute("hidden", "true");
-        this.mediaControlBar.removeAttribute("media-sharing");
-        gZenUIManager.updateTabsToolbar();
-      });
-  }
-
-  showMediaControls() {
-    if (!this.mediaControlBar.hasAttribute("hidden")) {
-      return;
-    }
-
-    if (!this.isSharing) {
-      if (!this._currentMediaController) {
-        return;
-      }
-      if (this._currentMediaController.isBeingUsedInPIPModeOrFullscreen) {
-        this.hideMediaControls();
-        return;
-      }
-
-      this.updatePipButton();
-    }
-
-    const mediaInfoElements = [this.mediaTitle, this.mediaArtist];
-    for (const element of mediaInfoElements) {
-      element.removeAttribute("overflow"); // So we can properly recalculate the overflow
-    }
-
-    this.mediaControlBar.removeAttribute("hidden");
-    window.requestAnimationFrame(() => {
-      this.mediaControlBar.style.height =
-        this.mediaControlBar
-          .querySelector("toolbaritem")
-          .getBoundingClientRect().height + "px";
-      this.mediaControlBar.style.opacity = 0;
-      gZenUIManager.updateTabsToolbar();
-      gZenUIManager.motion.animate(
-        this.mediaControlBar,
-        {
-          opacity: [0, 1],
-          y: [10, 0],
-        },
-        {}
-      );
-      this.addLabelOverflows(mediaInfoElements);
-    });
-  }
-
-  addLabelOverflows(elements) {
-    for (const element of elements) {
-      // eslint-disable-next-line no-shadow
-      const parent = element.parentElement;
-      if (element.scrollWidth > parent.clientWidth) {
-        element.setAttribute("overflow", "");
-      } else {
-        element.removeAttribute("overflow");
-      }
-    }
-  }
-
-  setupMediaController(mediaController, browser) {
-    this._currentMediaController = mediaController;
-    this._currentBrowser = browser;
-
+  #onMetadataChange() {
+    this.updateMetadata();
     this.updatePipButton();
   }
 
-  setupMediaControlUI(metadata, positionState) {
-    this.updatePipButton();
+  #onDeactivated() {
+    this.destroy();
+  }
 
-    if (
-      !this.mediaControlBar.classList.contains("playing") &&
-      this._currentMediaController.isPlaying
-    ) {
-      this.mediaControlBar.classList.add("playing");
+  #onPipModeChange() {
+    this.element.toggleAttribute(
+      "pip",
+      this.controller.isBeingUsedInPIPModeOrFullscreen
+    );
+    this.refreshVisibility();
+  }
+
+  refreshVisibility() {
+    this.setHidden(!this.shouldBeVisible);
+  }
+
+  setHidden(hidden) {
+    if (!hidden) {
+      // Showing cancels a hide that may still be animating.
+      this.element.removeAttribute("zen-hiding");
+      if (this.element.hidden) {
+        this.element.hidden = false;
+        this.manager.onCardVisibilityChanged();
+      }
+      return;
     }
 
+    if (this.element.hidden || this.element.hasAttribute("zen-hiding")) {
+      return;
+    }
+    this.element.setAttribute("zen-hiding", "true");
+    Promise.allSettled(
+      this.element.getAnimations().map(animation => animation.finished)
+    ).then(() => {
+      if (!this.element.hasAttribute("zen-hiding")) {
+        return;
+      }
+      this.element.removeAttribute("zen-hiding");
+      if (this.shouldBeVisible) {
+        return;
+      }
+      this.element.hidden = true;
+      this.manager.onCardVisibilityChanged();
+    });
+  }
+
+  // Mirrors the original bar behavior: hide instantly when the card's own
+  // tab is selected, reappear on a small delay when switching away.
+  onTabSelect() {
+    if (this.#tabTimeout) {
+      clearTimeout(this.#tabTimeout);
+      this.#tabTimeout = null;
+    }
+
+    if (!this.shouldBeVisible) {
+      this.setHidden(true);
+    } else if (this.element.hidden) {
+      this.#tabTimeout = setTimeout(() => {
+        this.#tabTimeout = null;
+        this.refreshVisibility();
+      }, 500);
+    }
+  }
+
+  updateMetadata() {
+    const metadata = this.controller.getMetadata();
+    this.titleEl.textContent = metadata.title || "";
+    this.artistEl.textContent = metadata.artist || "";
+    this.updateIcon();
+    this.updateLabelOverflows();
+  }
+
+  updateIcon() {
     const iconURL =
-      this._currentBrowser.mIconURL ||
-      `page-icon:${this._currentBrowser.currentURI.spec}`;
-    this.mediaFocusButton.style.listStyleImage = `url(${iconURL})`;
-
-    this.mediaTitle.textContent = metadata.title || "";
-    this.mediaArtist.textContent = metadata.artist || "";
-
-    gZenUIManager.updateTabsToolbar();
-
-    this._currentPosition = positionState.position;
-    this._currentDuration = positionState.duration;
-    this._currentPlaybackRate = positionState.playbackRate;
-
-    this.updateMediaPosition();
-
-    for (const key of this.supportedKeys) {
-      const button = this.mediaControlBar.querySelector(
-        `#zen-media-${key}-button`
-      );
-      button.disabled =
-        !this._currentMediaController.supportedKeys.includes(key);
-    }
+      this.browser.mIconURL || `page-icon:${this.browser.currentURI.spec}`;
+    this.focusButton.style.listStyleImage = `url(${iconURL})`;
   }
 
-  activateMediaControls(mediaController, browser) {
-    this.updateMuteState();
-    this.switchController();
-
-    if (
-      !mediaController.isActive ||
-      this._currentBrowser?.browserId === browser.browserId
-    ) {
-      return;
-    }
-
-    const metadata = mediaController.getMetadata();
-    const positionState = mediaController.getPositionState();
-    this.mediaControllersMap.set(mediaController.id, {
-      controller: mediaController,
-      browser,
-      position: positionState.position,
-      duration: positionState.duration,
-      playbackRate: positionState.playbackRate,
-      lastUpdated: Date.now(),
-    });
-
-    if (!this._currentBrowser && !this.isSharing) {
-      this.setupMediaController(mediaController, browser);
-      this.setupMediaControlUI(metadata, positionState);
-    }
-
-    mediaController.addEventListener(
-      "pictureinpicturemodechange",
-      this.onPipModeChange
-    );
-    mediaController.addEventListener(
-      "positionstatechange",
-      this.onPositionstateChange
-    );
-    mediaController.addEventListener(
-      "playbackstatechange",
-      this.onPlaybackstateChange
-    );
-    mediaController.addEventListener(
-      "supportedkeyschange",
-      this.onSupportedKeysChange
-    );
-    mediaController.addEventListener("metadatachange", this.onMetadataChange);
-    mediaController.addEventListener("deactivated", this.onDeactivated);
-  }
-
-  activateMediaDeviceControls(browser) {
-    if (
-      browser?.browsingContext.currentWindowGlobal.hasActivePeerConnections()
-    ) {
-      this.mediaControlBar.removeAttribute("can-pip");
-      this._currentBrowser = browser;
-
-      const tab = window.gBrowser.getTabForBrowser(browser);
-      const iconURL =
-        browser.mIconURL || `page-icon:${browser.currentURI.spec}`;
-
-      this.isSharing = true;
-
-      this.mediaFocusButton.style.listStyleImage = `url(${iconURL})`;
-      this.mediaTitle.textContent = tab.label;
-      this.mediaArtist.textContent = "";
-
-      this.showMediaControls();
-    }
-  }
-
-  updateMediaSharing(data) {
-    const { windowId, showCameraIndicator, showMicrophoneIndicator } = data;
-
-    for (const browser of window.gBrowser.browsers) {
-      const isMatch = browser.innerWindowID === windowId;
-      const isCurrentBrowser =
-        this._currentBrowser?.browserId === browser.browserId;
-      const shouldShow = showCameraIndicator || showMicrophoneIndicator;
-
-      if (!isMatch) {
-        continue;
+  updateLabelOverflows() {
+    for (const label of [this.titleEl, this.artistEl]) {
+      label.removeAttribute("overflow"); // So we can properly recalculate the overflow
+      if (label.scrollWidth > label.parentElement.clientWidth) {
+        label.setAttribute("overflow", "");
       }
-      if (shouldShow && !(isCurrentBrowser && this.isSharing)) {
-        const webRTC =
-          browser.browsingContext.currentWindowGlobal.getActor("WebRTC");
-        webRTC.sendAsyncMessage("webrtc:UnmuteMicrophone");
-        webRTC.sendAsyncMessage("webrtc:UnmuteCamera");
+    }
+  }
 
-        if (this._currentBrowser) {
-          this.isSharing = false;
+  updateSupportedKeys() {
+    for (const key of ZenMediaCard.supportedKeys) {
+      const button = this.element.querySelector(`.zen-media-${key}-button`);
+      button.disabled = !this.controller.supportedKeys.includes(key);
+    }
+  }
+
+  updatePositionState(positionState) {
+    this.position = positionState.position;
+    this.duration = positionState.duration;
+    this.playbackRate = positionState.playbackRate;
+    this.updatePosition();
+  }
+
+  updatePosition() {
+    if (this.#updateInterval) {
+      clearInterval(this.#updateInterval);
+      this.#updateInterval = null;
+    }
+
+    if (this.duration >= 900_000) {
+      this.element.setAttribute("media-position-hidden", "true");
+      return;
+    }
+    this.element.removeAttribute("media-position-hidden");
+
+    if (!this.duration) {
+      return;
+    }
+
+    this.currentTimeEl.textContent = this.formatSecondsToTime(this.position);
+    this.durationEl.textContent = this.formatSecondsToTime(this.duration);
+    this.progressBar.value = (this.position / this.duration) * 100;
+
+    this.#updateInterval = setInterval(() => {
+      if (this.controller?.isPlaying) {
+        this.position += 1 * this.playbackRate;
+        if (this.position > this.duration) {
+          this.position = this.duration;
         }
-        if (this._currentMediaController) {
-          this._currentMediaController.pause();
-          this.deinitMediaController(
-            this._currentMediaController,
-            true,
-            true
-          ).then(() => this.activateMediaDeviceControls(browser));
-        } else {
-          this.activateMediaDeviceControls(browser);
-        }
-      } else if (!shouldShow && isCurrentBrowser && this.isSharing) {
-        this.isSharing = false;
-        this._currentBrowser = null;
-        this.hideMediaControls();
-      }
-
-      break;
-    }
-  }
-
-  _onDeactivated(event) {
-    this.deinitMediaController(
-      event.target,
-      true,
-      event.target.id === this._currentMediaController.id,
-      true
-    );
-    this.switchController();
-  }
-
-  _onPlaybackstateChange() {
-    if (this._currentMediaController?.isPlaying) {
-      this.mediaControlBar.classList.add("playing");
-    } else {
-      this.switchController();
-      this.mediaControlBar.classList.remove("playing");
-    }
-  }
-
-  _onSupportedKeysChange(event) {
-    if (event.target.id !== this._currentMediaController?.id) {
-      return;
-    }
-    for (const key of this.supportedKeys) {
-      const button = this.mediaControlBar.querySelector(
-        `#zen-media-${key}-button`
-      );
-      button.disabled = !event.target.supportedKeys.includes(key);
-    }
-  }
-
-  _onPositionstateChange(event) {
-    const mediaController = this.mediaControllersMap.get(event.target.id);
-    this.mediaControllersMap.set(event.target.id, {
-      ...mediaController,
-      position: event.position,
-      duration: event.duration,
-      playbackRate: event.playbackRate,
-      lastUpdated: Date.now(),
-    });
-
-    if (event.target.id !== this._currentMediaController?.id) {
-      return;
-    }
-
-    this._currentPosition = event.position;
-    this._currentDuration = event.duration;
-    this._currentPlaybackRate = event.playbackRate;
-
-    this.updateMediaPosition();
-  }
-
-  switchController(force = false) {
-    let timeout = 3000;
-
-    if (this.isSharing) {
-      return;
-    }
-    if (this.#isSeeking) {
-      return;
-    }
-
-    if (this._controllerSwitchTimeout) {
-      clearTimeout(this._controllerSwitchTimeout);
-      this._controllerSwitchTimeout = null;
-    }
-
-    if (this.mediaControllersMap.size === 1) {
-      timeout = 0;
-    }
-    this._controllerSwitchTimeout = setTimeout(() => {
-      if (!this._currentMediaController?.isPlaying || force) {
-        const nextController = Array.from(this.mediaControllersMap.values())
-          .filter(
-            ctrl =>
-              ctrl.controller.isPlaying &&
-              gBrowser.selectedBrowser.browserId !== ctrl.browser.browserId &&
-              ctrl.controller.id !== this._currentMediaController?.id
-          )
-          .sort((a, b) => b.lastUpdated - a.lastUpdated)
-          .shift();
-
-        if (nextController) {
-          this.deinitMediaController(
-            this._currentMediaController,
-            false,
-            true
-          ).then(() => {
-            this.setupMediaController(
-              nextController.controller,
-              nextController.browser
-            );
-            const elapsedTime = Math.floor(
-              (Date.now() - nextController.lastUpdated) / 1000
-            );
-
-            this.setupMediaControlUI(nextController.controller.getMetadata(), {
-              position:
-                nextController.position +
-                (nextController.controller.isPlaying ? elapsedTime : 0),
-              duration: nextController.duration,
-              playbackRate: nextController.playbackRate,
-            });
-
-            this.showMediaControls();
-          });
-        }
-      }
-
-      this._controllerSwitchTimeout = null;
-    }, timeout);
-  }
-
-  updateMediaPosition() {
-    if (this._mediaUpdateInterval) {
-      clearInterval(this._mediaUpdateInterval);
-      this._mediaUpdateInterval = null;
-    }
-
-    if (this._currentDuration >= 900_000) {
-      this.mediaControlBar.setAttribute("media-position-hidden", "true");
-      return;
-    }
-    this.mediaControlBar.removeAttribute("media-position-hidden");
-
-    if (!this._currentDuration) {
-      return;
-    }
-
-    this.mediaCurrentTime.textContent = this.formatSecondsToTime(
-      this._currentPosition
-    );
-    this.mediaDuration.textContent = this.formatSecondsToTime(
-      this._currentDuration
-    );
-    this.mediaProgressBar.value =
-      (this._currentPosition / this._currentDuration) * 100;
-
-    this._mediaUpdateInterval = setInterval(() => {
-      if (this._currentMediaController?.isPlaying) {
-        this._currentPosition += 1 * this._currentPlaybackRate;
-        if (this._currentPosition > this._currentDuration) {
-          this._currentPosition = this._currentDuration;
-        }
-        this.mediaCurrentTime.textContent = this.formatSecondsToTime(
-          this._currentPosition
+        this.currentTimeEl.textContent = this.formatSecondsToTime(
+          this.position
         );
-        this.mediaProgressBar.value =
-          (this._currentPosition / this._currentDuration) * 100;
+        this.progressBar.value = (this.position / this.duration) * 100;
       } else {
-        clearInterval(this._mediaUpdateInterval);
-        this._mediaUpdateInterval = null;
+        clearInterval(this.#updateInterval);
+        this.#updateInterval = null;
       }
     }, 1000);
   }
@@ -668,171 +306,494 @@ class nsZenMediaController {
     return `${minutes}:${secs.padStart(2, "0")}`;
   }
 
-  _onMetadataChange(event) {
-    if (event.target.id !== this._currentMediaController?.id) {
-      return;
-    }
-    this.updatePipButton();
-
-    const metadata = event.target.getMetadata();
-    this.mediaTitle.textContent = metadata.title || "";
-    this.mediaArtist.textContent = metadata.artist || "";
-
-    const mediaInfoElements = [this.mediaTitle, this.mediaArtist];
-    for (const element of mediaInfoElements) {
-      element.removeAttribute("overflow");
-    }
-
-    this.addLabelOverflows(mediaInfoElements);
+  updateMuteState() {
+    this.element.toggleAttribute("muted", this.browser.audioMuted);
   }
 
-  _onPictureInPictureModeChange(event) {
-    if (event.target.id !== this._currentMediaController?.id) {
+  updatePipButton() {
+    if (this.isSharing) {
+      this.element.removeAttribute("can-pip");
       return;
     }
-    if (event.target.isBeingUsedInPIPModeOrFullscreen) {
-      this.hideMediaControls();
-      this.mediaControlBar.setAttribute("pip", "");
+
+    const { totalPipCount, totalPipDisabled } =
+      PictureInPicture.getEligiblePipVideoCount(this.browser);
+    const canPip =
+      totalPipCount === 1 ||
+      (totalPipDisabled > 0 && lazy.RESPECT_PIP_DISABLED);
+
+    this.element.toggleAttribute("can-pip", canPip);
+  }
+
+  onFocus() {
+    if (this.controller) {
+      this.controller.focus();
     } else {
-      const { selectedBrowser } = gBrowser;
-      if (selectedBrowser.browserId !== this._currentBrowser.browserId) {
-        this.showMediaControls();
-      }
-
-      this.mediaControlBar.removeAttribute("pip");
-    }
-  }
-
-  onMediaPlayPrev() {
-    if (this._currentMediaController?.supportedKeys.includes("previoustrack")) {
-      this._currentMediaController.prevTrack();
-    }
-  }
-
-  onMediaPlayNext() {
-    if (this._currentMediaController?.supportedKeys.includes("nexttrack")) {
-      this._currentMediaController.nextTrack();
-    }
-  }
-
-  onMediaSeekDrag(event) {
-    this.#isSeeking = true;
-
-    this._currentMediaController?.pause();
-    const newTime = (event.target.value / 100) * this._currentDuration;
-    this.mediaCurrentTime.textContent = this.formatSecondsToTime(newTime);
-  }
-
-  onMediaSeekComplete(event) {
-    const newPosition = (event.target.value / 100) * this._currentDuration;
-    if (this._currentMediaController?.supportedKeys.includes("seekto")) {
-      this._currentMediaController.seekTo(newPosition);
-      this._currentMediaController.play();
-    }
-
-    this.#isSeeking = false;
-  }
-
-  onMediaFocus() {
-    if (!this._currentBrowser) {
-      return;
-    }
-
-    if (this._currentMediaController) {
-      this._currentMediaController.focus();
-    } else if (this._currentBrowser) {
-      const tab = window.gBrowser.getTabForBrowser(this._currentBrowser);
+      const tab = window.gBrowser.getTabForBrowser(this.browser);
       if (tab) {
         window.gZenWorkspaces.switchTabIfNeeded(tab);
       }
     }
   }
 
-  onMediaMute() {
-    const tab = window.gBrowser.getTabForBrowser(this._currentBrowser);
+  onMute() {
+    const tab = window.gBrowser.getTabForBrowser(this.browser);
     if (tab) {
       tab.toggleMuteAudio();
       this.updateMuteState();
     }
   }
 
-  onMediaToggle() {
-    if (this.mediaControlBar.classList.contains("playing")) {
-      this._currentMediaController?.pause();
+  onToggle() {
+    if (this.controller?.isPlaying) {
+      this.controller.pause("user");
     } else {
-      this._currentMediaController?.play();
+      this.controller?.play();
     }
   }
 
-  onControllerClose() {
-    if (this._currentMediaController) {
-      this._currentMediaController.pause();
-      this.deinitMediaController(this._currentMediaController);
-    } else if (this.isSharing) {
-      this.isSharing = false;
+  onPlayPrev() {
+    if (this.controller?.supportedKeys.includes("previoustrack")) {
+      this.controller.prevTrack();
     }
-
-    this.hideMediaControls();
-    this.switchController(true);
   }
 
-  onMediaPip() {
-    this._currentBrowser.browsingContext.currentWindowGlobal
+  onPlayNext() {
+    if (this.controller?.supportedKeys.includes("nexttrack")) {
+      this.controller.nextTrack();
+    }
+  }
+
+  onSeekDrag(event) {
+    this.controller?.pause("user");
+    const newTime = (event.target.value / 100) * this.duration;
+    this.currentTimeEl.textContent = this.formatSecondsToTime(newTime);
+  }
+
+  onSeekComplete(event) {
+    const newPosition = (event.target.value / 100) * this.duration;
+    if (this.controller?.supportedKeys.includes("seekto")) {
+      this.controller.seekTo(newPosition);
+      this.controller.play();
+    }
+  }
+
+  onPip() {
+    this.browser.browsingContext.currentWindowGlobal
       .getActor("PictureInPictureLauncher")
       .sendAsyncMessage("PictureInPicture:KeyToggle");
   }
 
   onMicrophoneMuteToggle() {
-    if (this._currentBrowser) {
-      const shouldMute = this.mediaControlBar.hasAttribute("mic-muted")
-        ? "webrtc:UnmuteMicrophone"
-        : "webrtc:MuteMicrophone";
+    const shouldMute = this.element.hasAttribute("mic-muted")
+      ? "webrtc:UnmuteMicrophone"
+      : "webrtc:MuteMicrophone";
 
-      this._currentBrowser.browsingContext.currentWindowGlobal
-        .getActor("WebRTC")
-        .sendAsyncMessage(shouldMute);
-      this.mediaControlBar.toggleAttribute("mic-muted");
-    }
+    this.browser.browsingContext.currentWindowGlobal
+      .getActor("WebRTC")
+      .sendAsyncMessage(shouldMute);
+    this.element.toggleAttribute("mic-muted");
   }
 
   onCameraMuteToggle() {
-    if (this._currentBrowser) {
-      const shouldMute = this.mediaControlBar.hasAttribute("camera-muted")
-        ? "webrtc:UnmuteCamera"
-        : "webrtc:MuteCamera";
+    const shouldMute = this.element.hasAttribute("camera-muted")
+      ? "webrtc:UnmuteCamera"
+      : "webrtc:MuteCamera";
 
-      this._currentBrowser.browsingContext.currentWindowGlobal
-        .getActor("WebRTC")
-        .sendAsyncMessage(shouldMute);
-      this.mediaControlBar.toggleAttribute("camera-muted");
-    }
+    this.browser.browsingContext.currentWindowGlobal
+      .getActor("WebRTC")
+      .sendAsyncMessage(shouldMute);
+    this.element.toggleAttribute("camera-muted");
   }
 
-  updateMuteState() {
-    if (!this._currentBrowser) {
+  onClose() {
+    if (this.controller) {
+      this.controller.pause("user");
+    } else {
+      const webRTC =
+        this.browser.browsingContext.currentWindowGlobal.getActor("WebRTC");
+      webRTC.sendAsyncMessage("webrtc:UnmuteMicrophone");
+      webRTC.sendAsyncMessage("webrtc:UnmuteCamera");
+    }
+
+    this.destroy();
+  }
+
+  destroy() {
+    if (this.controller && this.#controllerListeners) {
+      for (const [event, listener] of Object.entries(
+        this.#controllerListeners
+      )) {
+        this.controller.removeEventListener(event, listener);
+      }
+      this.#controllerListeners = null;
+    }
+
+    if (this.#updateInterval) {
+      clearInterval(this.#updateInterval);
+      this.#updateInterval = null;
+    }
+    if (this.#tabTimeout) {
+      clearTimeout(this.#tabTimeout);
+      this.#tabTimeout = null;
+    }
+
+    const { element } = this;
+    if (element.hidden) {
+      element.remove();
+    } else {
+      // Animate the card out instead of popping it away. It leaves the
+      // flex flow immediately (so the remaining cards re-slot right away)
+      // but stays anchored where it currently is while it sinks and fades.
+      const barBottom =
+        this.manager.mediaControlBar.getBoundingClientRect().bottom;
+      element.style.bottom =
+        barBottom - element.getBoundingClientRect().bottom + "px";
+      element.setAttribute("zen-removing", "true");
+      // Resolves once the exit transitions finish or get cancelled, and
+      // immediately if they never start (e.g. reduced motion).
+      Promise.allSettled(
+        element.getAnimations().map(animation => animation.finished)
+      ).then(() => element.remove());
+    }
+
+    this.manager.onCardDestroyed(this);
+  }
+}
+
+/**
+ * Zen Media Controller, handles the stack of media control cards located at
+ * the bottom of the sidebar. Each active media controller (and WebRTC
+ * sharing session) gets its own card; cards stack behind each other and
+ * expand upwards when hovering the container.
+ */
+class nsZenMediaController {
+  #cards = new Map();
+  #cardTemplate = null;
+
+  mediaControlBar = null;
+
+  init() {
+    if (!Services.prefs.getBoolPref("zen.mediacontrols.enabled", true)) {
       return;
     }
-    this.mediaControlBar.toggleAttribute(
-      "muted",
-      this._currentBrowser.audioMuted
+
+    this.mediaControlBar = document.querySelector(
+      "#zen-media-controls-toolbar"
+    );
+    this.#cardTemplate = document.querySelector("#zen-media-card-template");
+
+    window.addEventListener("TabSelect", () => {
+      for (const card of this.#cards.values()) {
+        card.onTabSelect();
+      }
+    });
+
+    const onTabDiscardedOrClosed = this.onTabDiscardedOrClosed.bind(this);
+
+    window.addEventListener("TabClose", onTabDiscardedOrClosed);
+    window.addEventListener("TabBrowserDiscarded", onTabDiscardedOrClosed);
+
+    window.addEventListener("TabAttrModified", event => {
+      if (!event.detail.changed.includes("soundplaying")) {
+        return;
+      }
+      const tab = event.target;
+      if (!tab.hasAttribute("soundplaying")) {
+        this.onAudioPlaybackStopped();
+        return;
+      }
+      this.onAudioPlaybackStarted(tab.linkedBrowser);
+    });
+  }
+
+  onAudioPlaybackStarted(browser) {
+    // The card is created right away (while the controller is fresh) but
+    // only shown if the media is still playing a moment later, so short
+    // sounds (e.g. notification pings) never reveal it.
+    setTimeout(() => {
+      const card = this.#cardForBrowser(browser);
+      if (!card || card.isSharing) {
+        return;
+      }
+      if (card.controller.isPlaying) {
+        card.refreshVisibility();
+      } else if (card.element.hidden) {
+        // The sound was over before ever being shown (e.g. a notification
+        // ping): drop the card instead of keeping a ghost around.
+        card.destroy();
+      }
+    }, 1000);
+
+    this.activateMediaControls(
+      browser.browsingContext?.mediaController,
+      browser
     );
   }
 
-  updatePipButton() {
-    if (!this._currentBrowser) {
-      return;
+  onAudioPlaybackStopped() {
+    for (const card of this.#cards.values()) {
+      card.updateMuteState();
     }
-    if (this.isSharing) {
+  }
+
+  get frontCard() {
+    return this.#orderedCards.find(card => !card.element.hidden) ?? null;
+  }
+
+  get #orderedCards() {
+    // Newest media sits at the front of the stack.
+    return Array.from(this.#cards.values()).reverse();
+  }
+
+  get #hasVisibleCards() {
+    return Array.from(this.#cards.values()).some(card => !card.element.hidden);
+  }
+
+  get #sharingCard() {
+    return (
+      Array.from(this.#cards.values()).find(card => card.isSharing) ?? null
+    );
+  }
+
+  #cardForBrowser(browser) {
+    return (
+      Array.from(this.#cards.values()).find(
+        card => card.browser.browserId === browser.browserId
+      ) ?? null
+    );
+  }
+
+  activateMediaControls(mediaController, browser) {
+    if (
+      !mediaController?.isActive ||
+      this.#cards.has(mediaController.id) ||
+      // Never stack more than one card for the same browser: sites that
+      // activate a fresh controller for every sound they play (e.g.
+      // notification pings) keep their one card.
+      this.#cardForBrowser(browser)
+    ) {
       return;
     }
 
-    const { totalPipCount, totalPipDisabled } =
-      PictureInPicture.getEligiblePipVideoCount(this._currentBrowser);
-    const canPip =
-      totalPipCount === 1 ||
-      (totalPipDisabled > 0 && lazy.RESPECT_PIP_DISABLED);
+    this.#addCard(mediaController.id, browser, mediaController);
+  }
 
-    this.mediaControlBar.toggleAttribute("can-pip", canPip);
+  activateMediaDeviceControls(browser) {
+    if (
+      !browser?.browsingContext.currentWindowGlobal.hasActivePeerConnections()
+    ) {
+      return;
+    }
+
+    this.#sharingCard?.destroy();
+    this.#addCard(`sharing-${browser.browserId}`, browser);
+  }
+
+  updateMediaSharing(data) {
+    if (!this.mediaControlBar) {
+      return;
+    }
+
+    const { windowId, showCameraIndicator, showMicrophoneIndicator } = data;
+    const shouldShow = showCameraIndicator || showMicrophoneIndicator;
+
+    for (const browser of window.gBrowser.browsers) {
+      if (browser.innerWindowID !== windowId) {
+        continue;
+      }
+
+      const sharingCard = this.#sharingCard;
+      const isSharingBrowser =
+        sharingCard?.browser.browserId === browser.browserId;
+
+      if (shouldShow && !isSharingBrowser) {
+        const webRTC =
+          browser.browsingContext.currentWindowGlobal.getActor("WebRTC");
+        webRTC.sendAsyncMessage("webrtc:UnmuteMicrophone");
+        webRTC.sendAsyncMessage("webrtc:UnmuteCamera");
+
+        this.activateMediaDeviceControls(browser);
+      } else if (!shouldShow && isSharingBrowser) {
+        sharingCard.destroy();
+      }
+
+      break;
+    }
+  }
+
+  onTabDiscardedOrClosed(event) {
+    const { linkedBrowser } = event.target;
+    if (!linkedBrowser) {
+      return;
+    }
+
+    for (const card of Array.from(this.#cards.values())) {
+      if (card.browser.browserId === linkedBrowser.browserId) {
+        card.destroy();
+      }
+    }
+  }
+
+  closeAllCards() {
+    for (const card of Array.from(this.#cards.values())) {
+      card.destroy();
+    }
+  }
+
+  onCardVisibilityChanged() {
+    this.#updateStack();
+    this.#refreshToolbarVisibility();
+  }
+
+  onCardDestroyed(card) {
+    for (const [key, existing] of this.#cards) {
+      if (existing === card) {
+        this.#cards.delete(key);
+        break;
+      }
+    }
+    this.onCardVisibilityChanged();
+  }
+
+  #addCard(key, browser, controller = null) {
+    const element = this.#createCardElement();
+    let card;
+    try {
+      card = new ZenMediaCard(this, element, browser, controller);
+    } catch (e) {
+      console.error("Failed to create media card", e);
+      // The controller went away while the card was being set up.
+      element.remove();
+      return null;
+    }
+    this.#cards.set(key, card);
+    if (controller) {
+      // Media cards start hidden and appear via the delayed check in
+      // onAudioPlaybackStarted or on tab switch, like the original bar;
+      // sharing cards show right away.
+      card.element.hidden = true;
+    } else {
+      card.refreshVisibility();
+    }
+    this.onCardVisibilityChanged();
+    return card;
+  }
+
+  #createCardElement() {
+    const fragment = this.#cardTemplate.content.cloneNode(true);
+    const element = fragment.firstElementChild;
+    this.mediaControlBar.appendChild(fragment);
+    return element;
+  }
+
+  #updateStack() {
+    const visibleCards = this.#orderedCards.filter(
+      card => !card.element.hidden
+    );
+
+    // Re-slot the indices without transitions first: the index transform
+    // only compensates the flex-order shift, so a reindexed card keeps
+    // its visual position through this step.
+    visibleCards.forEach((card, index) => {
+      card.element.toggleAttribute(
+        "stack-overflow",
+        index >= MAX_STACKED_CARDS
+      );
+      card.element.toggleAttribute("stacked-behind", index > 0);
+      card.element.setAttribute("zen-reindexing", "true");
+      card.element.style.setProperty("--zen-media-card-index", index);
+      card.element.style.zIndex = 100 - index;
+    });
+
+    // Flush styles so the re-slotting lands instantly...
+    this.mediaControlBar.getBoundingClientRect();
+
+    // ...then animate only the peek level: demoted cards slide up from
+    // behind the front card instead of dropping in from above.
+    visibleCards.forEach((card, index) => {
+      card.element.removeAttribute("zen-reindexing");
+      card.element.style.setProperty(
+        "--zen-media-card-peek-level",
+        Math.min(index, MAX_PEEK_LEVELS)
+      );
+    });
+
+    const stackedCount = Math.min(visibleCards.length, MAX_STACKED_CARDS);
+    this.mediaControlBar.style.setProperty(
+      "--zen-media-stack-behind",
+      Math.max(Math.min(stackedCount - 1, MAX_PEEK_LEVELS), 0)
+    );
+
+    gZenUIManager.updateTabsToolbar();
+  }
+
+  #refreshToolbarVisibility() {
+    if (this.#hasVisibleCards) {
+      this.showMediaControls();
+    } else {
+      this.hideMediaControls();
+    }
+  }
+
+  hideMediaControls() {
+    if (this.mediaControlBar.hasAttribute("hidden")) {
+      return;
+    }
+
+    gZenUIManager.motion
+      .animate(
+        this.mediaControlBar,
+        {
+          opacity: [1, 0],
+          y: [0, 10],
+        },
+        {
+          duration: 0.1,
+        }
+      )
+      .then(() => {
+        if (this.#hasVisibleCards) {
+          // A card re-appeared while the hide animation was running.
+          return;
+        }
+        this.mediaControlBar.setAttribute("hidden", "true");
+        gZenUIManager.updateTabsToolbar();
+      });
+  }
+
+  showMediaControls() {
+    if (!this.mediaControlBar.hasAttribute("hidden")) {
+      return;
+    }
+
+    this.mediaControlBar.removeAttribute("hidden");
+    window.requestAnimationFrame(() => {
+      const front = this.frontCard;
+      if (!front) {
+        this.mediaControlBar.setAttribute("hidden", "true");
+        return;
+      }
+
+      this.mediaControlBar.style.setProperty(
+        "--zen-media-collapsed-height",
+        front.element.getBoundingClientRect().height + "px"
+      );
+      this.mediaControlBar.style.opacity = 0;
+      gZenUIManager.updateTabsToolbar();
+      gZenUIManager.motion.animate(
+        this.mediaControlBar,
+        {
+          opacity: [0, 1],
+          y: [10, 0],
+        },
+        {}
+      );
+
+      for (const card of this.#cards.values()) {
+        card.updateLabelOverflows();
+      }
+    });
   }
 }
 

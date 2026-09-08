@@ -30,7 +30,7 @@ async function playVideoIn(tab) {
     }
   );
   // Wait for the browser to actually consider the tab "playing" — this is
-  // what drives DOMAudioPlaybackStarted into the media controller.
+  // what drives the soundplaying TabAttrModified into the media controller.
   await BrowserTestUtils.waitForCondition(
     () => tab.soundPlaying,
     "tab reports soundplaying"
@@ -63,12 +63,21 @@ async function waitForMediaBarVisible() {
   );
 }
 
-// Click a toolbarbutton on the media bar. We dispatch a "command" event
-// directly because that's what the controller listens for and it sidesteps
-// the flakiness of synthesizing a mouse click on a small toolbar button.
-function clickMediaButton(id) {
-  const button = document.getElementById(id);
-  ok(button, `media bar button ${id} exists`);
+function frontMediaCard() {
+  return gZenMediaController.frontCard;
+}
+
+function visibleMediaCards() {
+  return [...mediaBar().querySelectorAll(".zen-media-card")].filter(
+    card => !card.hidden
+  );
+}
+
+function clickMediaButton(className) {
+  const card = frontMediaCard();
+  ok(card, "front media card exists");
+  const button = card.element.querySelector(`.${className}`);
+  ok(button, `media bar button ${className} exists`);
   button.dispatchEvent(new Event("command", { bubbles: true }));
 }
 

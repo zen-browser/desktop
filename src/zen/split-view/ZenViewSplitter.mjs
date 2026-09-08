@@ -160,7 +160,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     if (groupIndex < 0) {
       return;
     }
-    this.removeTabFromGroup(tab, groupIndex, { forUnsplit: true });
+    this.removeTabFromGroup(tab, groupIndex, {
+      forUnsplit: true,
+    });
   }
 
   /**
@@ -203,15 +205,20 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    * @param {object} [options={}] - Additional options.
    * @param {boolean} [options.forUnsplit=false] - Whether the removal is for unsplitting.
    * @param {boolean} [options.dontRebuildGrid=false] - Whether to skip rebuilding the grid layout.
-   * @param {boolean} [options.changeTab=true] - Whether to change the selected tab.
+   * @param {boolean} [options.changeTab=undefined] - Whether to change the selected tab. If left unspecified,
+   * change the selected tab only if the current view is the group the removed tab was in.
    */
   removeTabFromGroup(
     tab,
     groupIndex = undefined,
-    { forUnsplit = false, dontRebuildGrid = false, changeTab = true } = {}
+    { forUnsplit = false, dontRebuildGrid = false, changeTab = undefined } = {}
   ) {
     if (typeof groupIndex === "undefined") {
       groupIndex = this._data.findIndex(group => group.tabs.includes(tab));
+    }
+
+    if (typeof changeTab === "undefined") {
+      changeTab = groupIndex === this.currentView;
     }
     // If groupIndex === -1, so `this._data.findIndex` couldn't find the split group
     if (groupIndex < 0) {
@@ -230,7 +237,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       }
       this.removeGroup(groupIndex);
       if (changeTab) {
-        gBrowser.selectedTab = remainingTabs[0];
+        const tabToSelect = remainingTabs.find(remaining => remaining !== tab);
+        if (tabToSelect) {
+          gBrowser.selectedTab = tabToSelect;
+        }
         document
           .getElementById("cmd_zenNewEmptySplit")
           .removeAttribute("disabled");
@@ -355,7 +365,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     ) {
       return;
     }
-    const currentView = this._data[this._lastOpenedTab.splitViewValue];
+    const currentView = this._data.find(group =>
+      group.tabs.includes(this._lastOpenedTab)
+    );
     if (currentView?.tabs.length >= this.MAX_TABS) {
       return;
     }
@@ -540,7 +552,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const panelsWidth = panelsRect.width;
     const panelsHeight = panelsRect.height;
     let numOfTabsToDivide = 2;
-    const currentView = this._data[this._lastOpenedTab.splitViewValue];
+    const currentView = this._data.find(group =>
+      group.tabs.includes(this._lastOpenedTab)
+    );
     if (currentView) {
       numOfTabsToDivide = currentView.tabs.length + 1;
     }
@@ -1103,7 +1117,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
    */
   resetTabState(tab, forUnsplit) {
     tab.splitView = false;
-    delete tab.splitViewValue;
     tab.removeAttribute("split-view");
     tab.linkedBrowser.zenModeActive = false;
     const container = tab.linkedBrowser.closest(".browserSidebarContainer");
@@ -1147,6 +1160,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     }
     if (this.currentView === groupIndex) {
       this.deactivateCurrentSplitView();
+    } else if (this.currentView > groupIndex) {
+      this.currentView--;
     }
     for (const tab of this._data[groupIndex].tabs) {
       this.resetTabState(tab, true);
@@ -1398,7 +1413,12 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     const tabIndexToUse = Math.max(0, initialIndex);
     return this.#withoutSplitViewTransition(() => {
       // TODO: Add support for splitting essential tabs
-      tabs = tabs.filter(t => !t.hidden && !t.hasAttribute("zen-empty-tab"));
+      tabs = tabs
+        .filter(t => !t.hidden && !t.hasAttribute("zen-empty-tab"))
+        // use glance parent tab instead of glance tab
+        .map(t => gZenGlanceManager.getTabOrGlanceParent(t))
+        // remove duplicates
+        .filter((t, i, arr) => arr.indexOf(t) === i);
       if (tabs.length < 2 || tabs.length > this.MAX_TABS) {
         return;
       }
@@ -1559,11 +1579,20 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     if (reset) {
       this.removeSplitters();
     }
-    splitData.tabs.forEach(tab => {
-      if (tab.hasAttribute("pending")) {
-        gBrowser.getBrowserForTab(tab).reload();
-      }
-    });
+    const pendingTabs = splitData.tabs.filter(tab =>
+      tab.hasAttribute("pending")
+    );
+    if (pendingTabs.length) {
+      pendingTabs.forEach(tab => gBrowser._insertBrowser(tab));
+      // SessionStore listens for this on the tab container and restores each
+      // tab's saved history, scroll position and form data. Kept non-bubbling
+      // so it doesn't reach tabbrowser, which tracks Firefox's own split view.
+      gBrowser.tabContainer.dispatchEvent(
+        new CustomEvent("TabSplitViewActivate", {
+          detail: { tabs: pendingTabs },
+        })
+      );
+    }
 
     // Apply grid to tabs first to set zen-split attribute on containers
     // before setting zen-split-view on parents. This prevents the black flash
@@ -1624,7 +1653,6 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
   applyGridToTabs(tabs) {
     tabs.forEach(tab => {
       tab.splitView = true;
-      tab.splitViewValue = this.currentView;
       tab.setAttribute("split-view", "true");
       const container = tab.linkedBrowser?.closest(".browserSidebarContainer");
       container.setAttribute("is-zen-split", "true");
@@ -2516,22 +2544,33 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       this.activateSplitView(data);
       gBrowser.selectedTab = emptyTab;
       setTimeout(() => {
+        const closeToken = {};
+        const controller = new AbortController();
+        const cleanup = (onSwitch = false, groupIndex = null) => {
+          if (groupIndex === null) {
+            groupIndex = this._data.findIndex(group =>
+              group.tabs.includes(emptyTab)
+            );
+          }
+          this.removeTabFromGroup(emptyTab, groupIndex, {
+            changeTab: !onSwitch,
+            forUnsplit: true,
+          });
+          const command = document.getElementById("cmd_zenNewEmptySplit");
+          command.removeAttribute("disabled");
+        };
         window.addEventListener(
           "ZenURLBarClosed",
           event => {
+            if (!gZenUIManager.matchesCloseToken(closeToken, event)) {
+              return;
+            }
+            controller.abort();
             const { onElementPicked, onSwitch } = event.detail;
             const groupIndex = this._data.findIndex(group =>
               group.tabs.includes(emptyTab)
             );
             const newSelectedTab = gBrowser.selectedTab;
-            const cleanup = () => {
-              this.removeTabFromGroup(emptyTab, groupIndex, {
-                changeTab: !onSwitch,
-                forUnsplit: true,
-              });
-              const command = document.getElementById("cmd_zenNewEmptySplit");
-              command.removeAttribute("disabled");
-            };
             if (onElementPicked) {
               if (
                 newSelectedTab === emptyTab ||
@@ -2539,7 +2578,7 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
                 selectedTab.getAttribute("zen-workspace-id") !==
                   newSelectedTab.getAttribute("zen-workspace-id")
               ) {
-                cleanup();
+                cleanup(onSwitch, groupIndex);
                 return;
               }
               this.removeTabFromGroup(emptyTab, groupIndex, {
@@ -2555,12 +2594,17 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
                 topOrLeft ? 0 : 1
               );
             } else {
-              cleanup();
+              cleanup(onSwitch, groupIndex);
             }
           },
-          { once: true }
+          { signal: controller.signal }
         );
-        gZenUIManager.handleNewTab(false, false, "tab", true);
+        if (
+          !gZenUIManager.handleNewTab(false, false, "tab", true, closeToken)
+        ) {
+          controller.abort();
+          cleanup();
+        }
       });
     });
   }

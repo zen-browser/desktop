@@ -11,7 +11,6 @@ const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
   ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
-  ZenSyncStore: "resource:///modules/zen/ZenSyncManager.sys.mjs",
 });
 
 ChromeUtils.defineLazyGetter(lazy, "browserBackgroundElement", () => {
@@ -20,6 +19,10 @@ ChromeUtils.defineLazyGetter(lazy, "browserBackgroundElement", () => {
 
 ChromeUtils.defineLazyGetter(lazy, "toolbarBackgroundElement", () => {
   return document.getElementById("zen-toolbar-background");
+});
+
+ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
+  return new Localization(["browser/zen-workspaces.ftl"], true);
 });
 
 /**
@@ -36,6 +39,13 @@ class nsZenWorkspaces {
   lastSelectedWorkspaceTabs = {};
   #inChangingWorkspace = false;
   draggedElement = null;
+
+  /**
+   * The space currently showing the creation form, if any. It shows the form
+   * instead of tabs and essentials, so it never owns an essentials section.
+   * Cleared by the form element once it is removed from the DOM.
+   */
+  creatingWorkspaceId = null;
 
   #hasInitialized = false;
 
@@ -153,10 +163,27 @@ class nsZenWorkspaces {
         this._invalidateBookmarkContainers();
       };
       Services.obs.addObserver(observerFunction, "workspace-bookmarks-updated");
+      const onContainerDeleted = subject => {
+        const userContextId = subject?.wrappedJSObject?.userContextId;
+        for (const workspace of this.getWorkspaces()) {
+          if (workspace.containerTabId === userContextId) {
+            workspace.containerTabId = 0;
+            this.saveWorkspace(workspace);
+          }
+        }
+      };
+      Services.obs.addObserver(
+        onContainerDeleted,
+        "contextual-identity-deleted"
+      );
       window.addEventListener("unload", () => {
         Services.obs.removeObserver(
           observerFunction,
           "workspace-bookmarks-updated"
+        );
+        Services.obs.removeObserver(
+          onContainerDeleted,
+          "contextual-identity-deleted"
         );
       });
     }
@@ -167,63 +194,6 @@ class nsZenWorkspaces {
       /* eslint-disable no-console */
       console.debug(`[gZenWorkspaces]:`, ...args);
     }
-  }
-
-  /**
-   * Applies live sync changes: updates workspace cache, removes deleted items,
-   * then creates/updates pulled items.
-   *
-   * @param {{ spaces: Array}} pulled  Reconcile-pulled items.
-   * @param {{ spaces: Array}} removals  Items to remove.
-   */
-  async _applySyncChanges(pulled, removals = {}) {
-    if (!this.shouldHaveWorkspaces || this.privateWindowOrDisabled) {
-      return;
-    }
-    await this.promiseInitialized;
-
-    // 1. Update workspace cache (remove deleted, merge pulled)
-    const removedSpaceIds = new Set((removals.spaces || []).map(s => s.uuid));
-    if (removedSpaceIds.size || pulled.spaces?.length) {
-      const localMap = new Map(
-        this.getWorkspaces()
-          .filter(w => !removedSpaceIds.has(w.uuid))
-          .map(w => [w.uuid, w])
-      );
-      for (const space of pulled.spaces || []) {
-        if (!space?.uuid) {
-          continue;
-        }
-        const existing = localMap.get(space.uuid);
-        localMap.set(space.uuid, existing ? { ...existing, ...space } : space);
-      }
-      await this.propagateWorkspaces(
-        this.#getOrderedWorkspacesByPosition(Array.from(localMap.values()))
-      );
-      this.#propagateWorkspaceData();
-    }
-  }
-
-  #getOrderedWorkspacesByPosition(workspaces) {
-    return [...workspaces]
-      .map((workspace, index) => ({ workspace, index }))
-      .sort((a, b) => {
-        const aPosition =
-          typeof a.workspace.position === "number"
-            ? a.workspace.position
-            : a.index;
-        const bPosition =
-          typeof b.workspace.position === "number"
-            ? b.workspace.position
-            : b.index;
-        return aPosition - bPosition || a.index - b.index;
-      })
-      .map(({ workspace }) => {
-        // strip the position property that comes from pulled workspaces
-        const rest = { ...workspace };
-        delete rest.position;
-        return rest;
-      });
   }
 
   #afterLoadInit() {
@@ -382,10 +352,7 @@ class nsZenWorkspaces {
   }
 
   get shouldAnimateEssentials() {
-    return (
-      this.containerSpecificEssentials ||
-      document.documentElement.hasAttribute("zen-creating-workspace")
-    );
+    return this.containerSpecificEssentials || !!this.creatingWorkspaceId;
   }
 
   get activeWorkspaceElement() {
@@ -460,16 +427,19 @@ class nsZenWorkspaces {
       document
         .getElementById("zen-essentials")
         .appendChild(essentialsContainer);
-
-      // Set an initial hidden state if the essentials section is not supposed
-      // to be shown on the current workspace
-      if (
-        this.containerSpecificEssentials &&
-        this.getActiveWorkspaceFromCache()?.containerTabId != container
-      ) {
-        essentialsContainer.setAttribute("hidden", "true");
-      }
     }
+
+    // Set a hidden state if the essentials section is not supposed
+    // to be shown on the current workspace, else remove the hidden state
+    if (
+      this.containerSpecificEssentials &&
+      this.getActiveWorkspaceFromCache()?.containerTabId != container
+    ) {
+      essentialsContainer.setAttribute("hidden", "true");
+    } else {
+      essentialsContainer.removeAttribute("hidden");
+    }
+
     return essentialsContainer;
   }
 
@@ -492,9 +462,6 @@ class nsZenWorkspaces {
       workspaceWrapper.active = true;
     }
 
-    if (document.documentElement.hasAttribute("zen-creating-workspace")) {
-      workspaceWrapper.hidden = true; // Hide workspace while creating it
-    }
     container.appendChild(workspaceWrapper);
     this.#organizeTabsToWorkspaceSections(workspace, workspaceWrapper, tabs);
     workspaceWrapper.checkPinsExistence();
@@ -642,6 +609,7 @@ class nsZenWorkspaces {
         if (Math.abs(delta) < scrollThreshold) {
           return;
         }
+        event.preventDefault();
 
         // Determine scroll direction
         let rawDirection = delta > 0 ? 1 : -1;
@@ -772,6 +740,7 @@ class nsZenWorkspaces {
 
   restoreWorkspacesFromSessionStore(aWinData = {}) {
     if (this.#hasInitialized || !this.workspaceEnabled) {
+      this._resolveInitialized?.();
       return Promise.resolve();
     }
     const spacesFromStore = aWinData.spaces || [];
@@ -851,13 +820,6 @@ class nsZenWorkspaces {
 
       this.updateWorkspacesChangeContextMenu();
     })();
-  }
-
-  #markWorkspaceChanged(workspaceId) {
-    lazy.ZenSyncStore.markItemChanged({
-      type: "space",
-      id: workspaceId,
-    });
   }
 
   async selectStartPage() {
@@ -950,6 +912,9 @@ class nsZenWorkspaces {
     // Wait for the next event loop to ensure that the startup focus logic by
     // firefox has finished doing it's thing.
     setTimeout(() => {
+      if (document.documentElement.hasAttribute("zen-welcome-stage")) {
+        return;
+      }
       if (gZenVerticalTabsManager._canReplaceNewTab && shownEmptyTab) {
         BrowserCommands.openTab();
       } else if (shownEmptyTab || initialTabWasEmpty) {
@@ -1161,6 +1126,9 @@ class nsZenWorkspaces {
     const item = document.createXULElement("menuitem");
     item.className = "zen-workspace-context-menu-item";
     item.setAttribute("zen-workspace-id", workspace.uuid);
+    if (AppConstants.platform === "linux") {
+      disableCurrent = true;
+    }
     if (!disableCurrent) {
       item.setAttribute("type", "radio");
     }
@@ -1257,14 +1225,22 @@ class nsZenWorkspaces {
       workspace = this.getActiveWorkspaceFromCache();
     }
     let containerTabId = workspace.containerTabId;
-    return window.createUserContextMenu(event, {
+    window.createUserContextMenu(event, {
       isContextMenu: true,
       excludeUserContextId: containerTabId,
       showDefaultTab: true,
     });
+
+    const defaultItem = event.target.querySelector('[data-usercontextid="0"]');
+    if (defaultItem) {
+      defaultItem.removeAttribute("data-l10n-id");
+      defaultItem.label = lazy.l10n.formatValueSync(
+        "zen-workspace-default-profile"
+      );
+    }
   }
 
-  saveWorkspace(workspaceData) {
+  saveWorkspace(workspaceData, { insertAfterId = null } = {}) {
     if (this.privateWindowOrDisabled) {
       return;
     }
@@ -1272,13 +1248,16 @@ class nsZenWorkspaces {
     const index = workspacesData.findIndex(
       ws => ws.uuid === workspaceData.uuid
     );
+    const insertAfterIndex = insertAfterId
+      ? workspacesData.findIndex(ws => ws.uuid === insertAfterId)
+      : -1;
     if (index !== -1) {
       workspacesData[index] = workspaceData;
+    } else if (insertAfterIndex !== -1) {
+      workspacesData.splice(insertAfterIndex + 1, 0, workspaceData);
     } else {
       workspacesData.push(workspaceData);
     }
-    // mark item as changed for sync
-    this.#markWorkspaceChanged(workspaceData.uuid);
 
     this.#propagateWorkspaceData();
   }
@@ -1286,9 +1265,6 @@ class nsZenWorkspaces {
   removeWorkspace(windowID) {
     let { promise, resolve } = Promise.withResolvers();
     this.#deleteWorkspaceOwnedTabs(windowID);
-
-    // mark item as changed for sync
-    this.#markWorkspaceChanged(windowID);
 
     let workspacesData = this.getWorkspaces();
     // Remove the workspace from the cache
@@ -1422,11 +1398,6 @@ class nsZenWorkspaces {
       return;
     }
     const workspaces = this.getWorkspaces();
-    // Track previous positions so we only notify observers for workspaces whose
-    // position changed during the reorder.
-    const previousPositions = new Map(
-      workspaces.map((workspace, index) => [workspace.uuid, index])
-    );
 
     const workspace = workspaces.find(w => w.uuid === id);
     if (!workspace) {
@@ -1455,15 +1426,6 @@ class nsZenWorkspaces {
     // Propagate the changes if the order has changed
     if (currentIndex !== newPosition) {
       this._workspaceCache = workspaces;
-
-      for (const [i, ws] of workspaces.entries()) {
-        if (previousPositions.get(ws.uuid) === i) {
-          continue;
-        }
-        // mark item as changed for sync
-        this.#markWorkspaceChanged(ws.uuid);
-      }
-
       this.#propagateWorkspaceData(workspaces);
     }
   }
@@ -1473,6 +1435,7 @@ class nsZenWorkspaces {
     const previousWorkspace = this.getActiveWorkspace();
     document.documentElement.setAttribute("zen-creating-workspace", "true");
     await this.createAndSaveWorkspace("Space", undefined, false, 0, {
+      insertAfterId: previousWorkspace?.uuid,
       beforeChangeCallback: async workspace => {
         createForm = document.createXULElement("zen-workspace-creation");
         createForm.setAttribute("workspace-id", workspace.uuid);
@@ -1480,7 +1443,18 @@ class nsZenWorkspaces {
           "previous-workspace-id",
           previousWorkspace?.uuid || ""
         );
-        gBrowser.tabContainer.after(createForm);
+        this.creatingWorkspaceId = workspace.uuid;
+        const spaceElement = this.workspaceElement(workspace.uuid);
+        // No essentials sit above the form, so there's no room to reserve for
+        // them. The switch animation needs a value to
+        // animate the padding from.
+        spaceElement.style.paddingTop = "0px";
+        spaceElement.appendChild(createForm);
+        // Keep the strip sitting on the previous space so that the new one,
+        // together with its creation form, slides in like any other space.
+        if (previousWorkspace) {
+          this._organizeWorkspaceStripLocations(previousWorkspace, true);
+        }
         await createForm.promiseInitialized;
       },
     });
@@ -1583,6 +1557,11 @@ class nsZenWorkspaces {
   }
 
   moveTabsToWorkspace(tabs, workspaceID) {
+    const newTabPlacement = Services.prefs.getBoolPref(
+      "zen.view.show-newtab-button-top",
+      false
+    );
+    tabs = newTabPlacement ? tabs.reverse() : tabs;
     for (let tab of tabs) {
       const workspaceContainer = this.workspaceElement(workspaceID);
       const container = tab.pinned
@@ -1597,14 +1576,11 @@ class nsZenWorkspaces {
       }
 
       if (container) {
-        const newtabPlacement = Services.prefs.getBoolPref(
-          "zen.view.show-newtab-button-top",
-          false
-        );
-        const insertElement = newtabPlacement
+        const insertElement = newTabPlacement
           ? container.firstChild
           : container.lastChild;
 
+        const previousWorkspaceID = tab.getAttribute("zen-workspace-id");
         if (tab.group?.hasAttribute("split-view-group")) {
           gBrowser.zenHandleTabMove(tab.group, () => {
             for (const subTab of tab.group.tabs) {
@@ -1618,6 +1594,12 @@ class nsZenWorkspaces {
           tab.setAttribute("zen-workspace-id", workspaceID);
           container.insertBefore(tab, insertElement);
         });
+
+        if (this.lastSelectedWorkspaceTabs[previousWorkspaceID] === tab) {
+          // This tab is no longer the last selected tab in the previous workspace because it's being moved to
+          // the current workspace
+          delete this.lastSelectedWorkspaceTabs[previousWorkspaceID];
+        }
       }
       // also change glance tab if it's the same tab
       const glanceTab = tab.querySelector(".tabbrowser-tab[zen-glance-tab]");
@@ -1690,6 +1672,7 @@ class nsZenWorkspaces {
     try {
       this.log("Changing workspace to", workspace?.uuid);
       await this.#performWorkspaceChange(workspace, ...args);
+      this.updateWorkspacesChangeContextMenu();
     } catch (e) {
       console.error("gZenWorkspaces: Error changing workspace", e);
     }
@@ -1761,6 +1744,15 @@ class nsZenWorkspaces {
   }
 
   makeSureEmptyTabIsFirst() {
+    if (
+      gZenUIManager.testingEnabled &&
+      this._emptyTab &&
+      (this._emptyTab.closing || !this._emptyTab.isConnected)
+    ) {
+      this._emptyTab = gBrowser.tabs.find(
+        tab => tab.hasAttribute("zen-empty-tab") && !tab.closing
+      );
+    }
     const emptyTab = this._emptyTab;
     if (emptyTab) {
       emptyTab.setAttribute("zen-workspace-id", this.activeWorkspace);
@@ -1817,8 +1809,10 @@ class nsZenWorkspaces {
       )
     ) {
       delete this._alwaysAnimatePaddingTop;
-      const essentialsHeight =
-        window.windowUtils.getBoundsWithoutFlushing(essentialContainer).height;
+      const essentialsHeight = Math.max(
+        2,
+        window.windowUtils.getBoundsWithoutFlushing(essentialContainer).height
+      );
       requestAnimationFrame(() => {
         workspaceElement.style.paddingTop = essentialsHeight + "px";
       });
@@ -1830,10 +1824,6 @@ class nsZenWorkspaces {
     justMove = false,
     offsetPixels = 0
   ) {
-    if (document.documentElement.hasAttribute("zen-creating-workspace")) {
-      // If we are creating a workspace, we don't want to animate the strip
-      return;
-    }
     this._organizingWorkspaceStrip = true;
     const workspaces = this.getWorkspaces();
     let workspaceIndex = workspaces.findIndex(w => w.uuid === workspace.uuid);
@@ -1854,6 +1844,7 @@ class nsZenWorkspaces {
     }
     const workspaceContextId = workspace.containerTabId;
     const nextWorkspaceContextId = workspaces[nextSpaceIdx]?.containerTabId;
+    const isCreatingWorkspace = workspace.uuid === this.creatingWorkspaceId;
     for (const otherWorkspace of workspaces) {
       const element = this.workspaceElement(otherWorkspace.uuid);
       let diff = workspaces.indexOf(otherWorkspace) - workspaceIndex;
@@ -1864,19 +1855,15 @@ class nsZenWorkspaces {
       }
       const newTransform = diff * 100;
       element.style.transform = `translateX(${newTransform + offsetPixels / 2}%)`;
-      // A special case for two spaces
-      if (spaceLen === 2 && diff !== 0) {
-        const side = offsetPixels > 0 ? -100 : 100;
-        element.style.transform = `translateX(${side + offsetPixels / 2}%)`;
-      }
     }
     // Hide other essentials with different containerTabId
     for (const container of otherContainersEssentials) {
       // Get the next workspace contextId, if it's the same, dont apply offsetPixels
       // if it's not we do apply it
       if (
-        container.getAttribute("container") != workspace.containerTabId &&
-        this.shouldAnimateEssentials
+        isCreatingWorkspace ||
+        (container.getAttribute("container") != workspace.containerTabId &&
+          this.shouldAnimateEssentials)
       ) {
         container.setAttribute("hidden", "true");
       } else {
@@ -1949,6 +1936,17 @@ class nsZenWorkspaces {
       delete this._hasAnimatedBackgrounds;
     }
     delete this._organizingWorkspaceStrip;
+  }
+
+  /**
+   * Drop the offset a creation form parked the essentials at.
+   */
+  resetEssentialsPosition() {
+    for (const container of document.querySelectorAll(
+      "#zen-essentials .zen-essentials-container"
+    )) {
+      container.style.removeProperty("transform");
+    }
   }
 
   updateWorkspaceIndicator(currentWorkspace, workspaceIndicator) {
@@ -2024,17 +2022,21 @@ class nsZenWorkspaces {
     const isGoingLeft = diff < 0;
     const essentialsAnimData = [];
     if (shouldAnimate && this.shouldAnimateEssentials && previousWorkspace) {
-      const containerIds = new Map();
+      const creatingWorkspaceId = this.creatingWorkspaceId;
+      const essentialsElements = new Map();
       for (const workspace of workspaces) {
-        const containerId = workspace.containerTabId;
-        if (!containerIds.has(containerId)) {
-          containerIds.set(containerId, []);
+        if (workspace.uuid === creatingWorkspaceId) {
+          continue;
         }
-        containerIds.get(containerId).push(workspace);
+        const element = this.getEssentialsSection(workspace.containerTabId);
+        if (!essentialsElements.has(element)) {
+          essentialsElements.set(element, []);
+        }
+        essentialsElements.get(element).push(workspace);
       }
-      for (const [containerId, spaces] of containerIds) {
+      for (const [element, spaces] of essentialsElements) {
         essentialsAnimData.push({
-          element: this.getEssentialsSection(containerId),
+          element,
           workspaces: spaces,
         });
       }
@@ -2099,12 +2101,6 @@ class nsZenWorkspaces {
         offset += spaceLen;
       }
       offset = offset * 100;
-      // A special case for two spaces
-      if (spaceLen === 2 && offset !== 0) {
-        const currentTransform =
-          parseFloat(element.style.transform.split("(")[1]) || 0;
-        offset = currentTransform >= 0 ? 100 : -100;
-      }
       const newTransform = `translateX(${offset}%)`;
       // Only animate the workspace that is coming in, to avoid having multiple workspaces
       // animating off-screen at the same time which can cause performance issues. With an off
@@ -2181,17 +2177,7 @@ class nsZenWorkspaces {
           existingOffset = currentTransform || (isGoingLeft ? -100 : 100);
           newOffset = 0;
         }
-
-        if (spaceLen === 2) {
-          if (containsPrev && !containsNew) {
-            existingOffset = currentTransform;
-            newOffset = currentTransform >= 0 ? 100 : -100;
-          } else {
-            existingOffset = currentTransform >= 0 ? 100 : -100;
-            newOffset = 0;
-          }
-        }
-
+        data.finalOffset = newOffset;
         const newTransform = `translateX(${newOffset}%)`;
         let existingTransform = `translateX(${existingOffset}%)`;
         if (shouldAnimate) {
@@ -2230,6 +2216,12 @@ class nsZenWorkspaces {
     document.documentElement.removeAttribute("animating-background");
     if (shouldAnimate) {
       for (const data of essentialsAnimData) {
+        if (this.creatingWorkspaceId && data.finalOffset) {
+          // The space being created has no essentials of its own, leave the
+          // ones we just slid away parked off screen instead of snapping them
+          // back under the creation form.
+          continue;
+        }
         data.element.style.removeProperty("transform");
       }
       this._alwaysAnimatePaddingTop = true;
@@ -2349,9 +2341,13 @@ class nsZenWorkspaces {
       )
     ) {
       tabToSelect = lastSelectedTab;
+    } else if (!onInit && !tabToSelect) {
+      // Create new tab if needed and no suitable tab was found
+      tabToSelect = this._emptyTab;
     }
     // Find first suitable tab
-    else {
+    // If we found a tab to select, select it
+    if (!tabToSelect || tabToSelect.closing) {
       tabToSelect = gBrowser.visibleTabs.find(tab => !tab.pinned);
       if (!tabToSelect && gBrowser.visibleTabs.length) {
         tabToSelect = gBrowser.visibleTabs[gBrowser.visibleTabs.length - 1];
@@ -2362,12 +2358,6 @@ class nsZenWorkspaces {
       }
     }
 
-    // If we found a tab to select, select it
-    if (!onInit && !tabToSelect) {
-      // Create new tab if needed and no suitable tab was found
-      const newTab = this.selectEmptyTab();
-      tabToSelect = newTab;
-    }
     if (tabToSelect && !onInit) {
       tabToSelect._visuallySelected = true;
     }
@@ -2489,9 +2479,12 @@ class nsZenWorkspaces {
     if (gZenWorkspaces.privateWindowOrDisabled) {
       return;
     }
-    const workspaces = this.getWorkspaces();
+    const workspaces = this.getWorkspaces().filter(
+      w => w.uuid !== this.activeWorkspace
+    );
     const ctxCommand = document.getElementById("cmd_zenCtxDeleteWorkspace");
-    if (workspaces.length <= 1) {
+    const hasMultipleWorkspaces = !!workspaces.length;
+    if (!hasMultipleWorkspaces) {
       ctxCommand.setAttribute("disabled", "true");
     } else {
       ctxCommand.removeAttribute("disabled");
@@ -2510,6 +2503,9 @@ class nsZenWorkspaces {
         ".zen-workspace-context-menu-item"
       )) {
         item.remove();
+      }
+      if (!hasMultipleWorkspaces) {
+        continue;
       }
       const separator = document.createXULElement("menuseparator");
       separator.classList.add("zen-workspace-context-menu-item");
@@ -2552,7 +2548,7 @@ class nsZenWorkspaces {
         "Default";
       name = this.isPrivateWindow ? "Incognito" : label;
       if (this.isPrivateWindow) {
-        icon = gZenEmojiPicker.getSVGURL("eye.svg");
+        icon = "chrome://browser/skin/zen-icons/private-window-small.svg";
       }
     }
     let workspace = {
@@ -2570,7 +2566,9 @@ class nsZenWorkspaces {
     icon = undefined,
     dontChange = false,
     containerTabId = 0,
-    { beforeChangeCallback } = { beforeChangeCallback: null } // Callback to run before changing workspace
+    // beforeChangeCallback runs before changing workspace, insertAfterId places
+    // the new space right after an existing one instead of at the end.
+    { beforeChangeCallback = null, insertAfterId = null } = {}
   ) {
     if (!this.workspaceEnabled) {
       return null;
@@ -2591,7 +2589,7 @@ class nsZenWorkspaces {
       this.#createWorkspaceTabsSection(workspaceData, extraTabs);
       this._organizeWorkspaceStripLocations(workspaceData);
     }
-    this.saveWorkspace(workspaceData);
+    this.saveWorkspace(workspaceData, { insertAfterId });
     if (!dontChange) {
       if (beforeChangeCallback) {
         try {
@@ -2713,6 +2711,11 @@ class nsZenWorkspaces {
         workspacesIds.push(originalWorkspaceId);
       }
       for (const workspaceId of workspacesIds) {
+        if (workspaceId === this.creatingWorkspaceId) {
+          // The space being created shows the creation form instead of its
+          // essentials, so it doesn't reserve any room for them.
+          continue;
+        }
         const workspaceElement = this.workspaceElement(workspaceId);
         const workspaceObject = this.getWorkspaceFromId(workspaceId);
         if (!workspaceElement || !workspaceObject) {
@@ -2885,6 +2888,12 @@ class nsZenWorkspaces {
     });
   }
 
+  contextShareWorkspace() {
+    const workspaceId =
+      this.#contextMenuData?.workspaceId || this.activeWorkspace;
+    gZenShareManager.shareSpace(workspaceId);
+  }
+
   async contextDeleteWorkspace() {
     const workspaceId =
       this.#contextMenuData?.workspaceId || this.activeWorkspace;
@@ -2952,15 +2961,7 @@ class nsZenWorkspaces {
       ? gBrowser.selectedTabs
       : [TabContextMenu.contextTab];
     document.getElementById("tabContextMenu").hidePopup();
-    for (let tab of tabs) {
-      const previousWorkspaceID = tab.getAttribute("zen-workspace-id");
-      this.moveTabToWorkspace(tab, workspaceID);
-      if (this.lastSelectedWorkspaceTabs[previousWorkspaceID] === tab) {
-        // This tab is no longer the last selected tab in the previous workspace because it's being moved to
-        // the current workspace
-        delete this.lastSelectedWorkspaceTabs[previousWorkspaceID];
-      }
-    }
+    this.moveTabsToWorkspace(tabs, workspaceID);
     // Make sure we select the last tab in the new workspace
     this.lastSelectedWorkspaceTabs[workspaceID] =
       gZenGlanceManager.getTabOrGlanceParent(tabs[tabs.length - 1]);
@@ -3286,7 +3287,7 @@ class nsZenWorkspaces {
     if (!(!event || event.target === window)) {
       return;
     }
-    gZenUIManager.updateTabsToolbar();
+    gZenUIManager.updateTabsToolbar(!!event);
     // Check if workspace icons overflow the parent container
     let parent = this.workspaceIcons;
     if (!parent || this._processingResize) {
@@ -3313,8 +3314,10 @@ class nsZenWorkspaces {
       return width;
     }, 0);
 
-    // Check if the total width exceeds the parent's width
-    if (totalWidth > parent.clientWidth) {
+    // Check if the total width exceeds the parent's width.
+    const parentWidth =
+      window.windowUtils.getBoundsWithoutFlushing(parent).width;
+    if (totalWidth > parentWidth) {
       parent.setAttribute("icons-overflow", "true");
     } else {
       parent.removeAttribute("icons-overflow");
@@ -3322,7 +3325,7 @@ class nsZenWorkspaces {
 
     // Set the width of each icon to the maximum size they can fit on
     const widthPerButton = Math.max(
-      (parent.clientWidth - separation * (parent.children.length - 1)) /
+      (parentWidth - separation * (parent.children.length - 1)) /
         parent.children.length,
       minButtonSize
     );

@@ -13,14 +13,17 @@ BROWSER_CHROME_MANIFESTS += [
     "media/browser.toml",
     "pinned/browser.toml",
     "popover/browser.toml",
+    "share/browser.toml",
     "site_control/browser.toml",
     "space_routing/browser.toml",
     "spaces/browser.toml",
+    "spaces_sync/browser.toml",
     "split_view/browser.toml",
     "tabs/browser.toml",
     "ub-actions/browser.toml",
     "urlbar/browser.toml",
     "welcome/browser.toml",
+    "window_drag/browser.toml",
     "window_sync/browser.toml",
 ]
 

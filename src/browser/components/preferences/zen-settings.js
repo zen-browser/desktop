@@ -38,9 +38,16 @@ var gZenMarketplaceManager = {
 
     this.__hasInitializedEvents = true;
 
-    await this._buildModsList();
-
     Services.prefs.addObserver(gZenMods.updatePref, this);
+    window.addEventListener(
+      "unload",
+      () => {
+        Services.prefs.removeObserver(gZenMods.updatePref, this);
+      },
+      { once: true }
+    );
+
+    await this._buildModsList();
 
     const checkForUpdateClick = (event) => {
       if (event.target === checkForUpdates) {
@@ -69,7 +76,6 @@ var gZenMarketplaceManager = {
     });
 
     window.addEventListener("unload", () => {
-      Services.prefs.removeObserver(gZenMods.updatePref, this);
       this.__hasInitializedEvents = false;
 
       document.removeEventListener("ZenModsMarketplace:CheckForUpdatesFinished", this);
@@ -803,6 +809,7 @@ const zenMissingKeyboardShortcutL10n = {
 
   key_inspectorMac: "zen-key-inspector-mac",
   key_findSelection: "zen-key-find-selection",
+  key_findPrevious2: "zen-search-find-again-shortcut-prev-alt",
 
   // Devtools
   key_toggleToolbox: "zen-devtools-toggle-shortcut",
@@ -826,6 +833,9 @@ var zenIgnoreKeyboardShortcutIDs = [
   "key_exitFullScreen_old",
   "key_exitFullScreen_compat",
   "key_duplicateTab",
+  "key_addTabSplitView",
+  "key_separateTabSplitView",
+  "viewOpenTabsSidebarKb",
 ];
 
 var zenIgnoreKeyboardShortcutL10n = [
@@ -1177,6 +1187,11 @@ Preferences.addAll([
   },
   {
     id: "zen.glance.enabled",
+    type: "bool",
+    default: true,
+  },
+  {
+    id: "zen.view.drag-window-from-content",
     type: "bool",
     default: true,
   },

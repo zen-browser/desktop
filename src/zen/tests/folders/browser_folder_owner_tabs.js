@@ -98,3 +98,30 @@ add_task(async function test_Duplicate_Tab_Inside_Folder() {
   await removeFolder(folder);
   await SpecialPowers.popPrefEnv();
 });
+
+add_task(async function test_Duplicate_Tab_Outside_Folder() {
+  await SpecialPowers.pushPrefEnv({
+    set: [["zen.folders.owned-tabs-in-folder", false]],
+  });
+  const selectedTab = gBrowser.selectedTab;
+  const tab = BrowserTestUtils.addTab(gBrowser, "about:blank");
+  const folder = await gZenFolders.createFolder([tab], {
+    renameFolder: false,
+  });
+  gBrowser.selectedTab = tab;
+
+  const newTab = gBrowser.duplicateTab(tab);
+  await BrowserTestUtils.waitForEvent(newTab, "SSTabRestored");
+
+  Assert.equal(
+    folder.tabs.length,
+    2,
+    "Folder contains its empty tab and original tab"
+  );
+  ok(!newTab.group, "Duplicated tab remains outside the folder");
+
+  gBrowser.selectedTab = selectedTab;
+  BrowserTestUtils.removeTab(newTab);
+  await removeFolder(folder);
+  await SpecialPowers.popPrefEnv();
+});

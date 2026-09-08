@@ -73,7 +73,7 @@ add_task(async function test_Owned_Tab_Inside_Folder_Unpinned() {
   await SpecialPowers.popPrefEnv();
 });
 
-add_task(async function test_Duplicate_Tab_Inside_Folder() {
+add_task(async function test_Duplicate_Tab_Inside_Folder_Pref_Enabled() {
   await SpecialPowers.pushPrefEnv({
     set: [["zen.folders.owned-tabs-in-folder", true]],
   });
@@ -99,7 +99,7 @@ add_task(async function test_Duplicate_Tab_Inside_Folder() {
   await SpecialPowers.popPrefEnv();
 });
 
-add_task(async function test_Duplicate_Tab_Outside_Folder() {
+add_task(async function test_Duplicate_Tab_Inside_Folder_Pref_Disabled() {
   await SpecialPowers.pushPrefEnv({
     set: [["zen.folders.owned-tabs-in-folder", false]],
   });

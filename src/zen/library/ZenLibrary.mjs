@@ -32,12 +32,13 @@ export class ZenLibrary extends MozLitElement {
     const p = value;
     this.#progress = p;
 
+    // TODO: Change from arbitrary value to actual
     let webOffset = this.#libraryOnRight ? -150 : 150;
 
-    this.style.setProperty("--library-progress", String(p));
     lazy.appContentWrapper?.style.setProperty("--library-wrapper-target-px", `${webOffset}px`);
-    lazy.appContentWrapper?.style.setProperty("--library-progress", String(p));
-    gNavToolbox?.style.setProperty("--library-progress", String(p));
+    [this, lazy.appContentWrapper, gNavToolbox].forEach(elem => {
+      elem?.style.setProperty("--library-progress", String(p));
+    });
 
     if (p > 0) {
       this.setAttribute("open", "true");

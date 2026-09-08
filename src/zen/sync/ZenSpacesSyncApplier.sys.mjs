@@ -24,6 +24,7 @@ XPCOMUtils.defineLazyPreferenceGetter(
 
 ChromeUtils.defineESModuleGetters(lazy, {
   SessionSaver: "resource:///modules/sessionstore/SessionSaver.sys.mjs",
+  SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
   E10SUtils: "resource://gre/modules/E10SUtils.sys.mjs",
   TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
   ZenWindowSync: "resource:///modules/zen/ZenWindowSync.sys.mjs",
@@ -155,6 +156,7 @@ class nsZenSpacesSyncApplier {
         fail(entry.record, noWindow);
       }
     } else {
+      await lazy.SessionStore.promiseAllWindowsRestored;
       await win.gZenWorkspaces.promiseInitialized;
       this.#maybePlayFirstSyncAnimation(win);
       // A sync apply is a materialization just like session restore,

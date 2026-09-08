@@ -414,7 +414,10 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
       return tab;
     });
     gZenViewSplitter.splitTabs(tabs, "grid", 0);
-    gBrowser.removeTab(shareTab, { closeWindowWithLastTab: false });
+    gBrowser.removeTab(shareTab, {
+      closeWindowWithLastTab: false,
+      skipSessionStore: true,
+    });
     // Shake the new split group in the sidebar.
     const group = tabs[0]?.group;
     if (group?.hasAttribute("split-view-group")) {
@@ -422,8 +425,8 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
         gZenUIManager.motion
           .animate(
             group,
-            { x: [-14, 0] },
-            { type: "spring", bounce: 0.8, duration: 1.2 }
+            { x: [-28, 0] },
+            { type: "spring", bounce: 0.9, duration: 1.4 }
           )
           .then(() => {
             group.style.removeProperty("transform");
@@ -543,7 +546,10 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
         gZenUIManager.showToast("zen-share-imported-toast");
         const tab = gBrowser.getTabForBrowser(browser);
         if (tab) {
-          gBrowser.removeTab(tab, { closeWindowWithLastTab: false });
+          gBrowser.removeTab(tab, {
+            closeWindowWithLastTab: false,
+            skipSessionStore: true,
+          });
         }
       } catch (e) {
         console.error("ZenShare: could not import share:", e);

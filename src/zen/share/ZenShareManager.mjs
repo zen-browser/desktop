@@ -24,6 +24,15 @@ const FOLDER_ICON_RE = /^chrome:\/\//;
  */
 class nsZenShareManager extends nsZenDOMOperatedFeature {
   init() {
+    if (!this.#enabledInThisWindow) {
+      for (const id of [
+        "context_zenShareWorkspace",
+        "context_zenShareFolder",
+      ]) {
+        document.getElementById(id)?.setAttribute("hidden", "true");
+      }
+      return;
+    }
     this.#insertSplitViewMenuItem();
     delayedStartupPromise.then(() => {
       gBrowser.addTabsProgressListener({
@@ -32,6 +41,10 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
         },
       });
     });
+  }
+
+  get #enabledInThisWindow() {
+    return !gZenWorkspaces.privateWindowOrDisabled;
   }
 
   // Mark: sharing
@@ -93,6 +106,9 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
   }
 
   async #createAndCopyLink(item) {
+    if (!this.#enabledInThisWindow) {
+      return;
+    }
     if (!(await this.#confirmShare())) {
       return;
     }

@@ -40,7 +40,7 @@ zen-library {
   }
 
   transform: translateX(calc(-100% * (1 - var(--library-progress, 0))));
-  &[right] {
+  :root[zen-right-side="true"] {
     transform: translateX(calc(100% * (1 - var(--library-progress, 0))));
     left: auto;
     right: 0;
@@ -69,7 +69,7 @@ zen-library {
     height: 100%;
   }
 
-  &[right] #zen-library-side {
+  &[zen-right-side="true"] #zen-library-side {
     box-shadow: -9px 0 17px rgba(0, 0, 0, 0.04);
   }
 }

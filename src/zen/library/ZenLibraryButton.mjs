@@ -18,4 +18,4 @@ class nsZenLibraryButton extends nsZenDOMOperatedFeature {
   }
 }
 
-new nsZenLibraryButton();
+export const ZenLibraryButton = new nsZenLibraryButton();

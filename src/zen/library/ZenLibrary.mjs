@@ -28,7 +28,6 @@ ChromeUtils.defineLazyGetter(lazy, "motion", () => {
 export class ZenLibrary extends MozLitElement {
   static instance = null;
   #progress = 0;
-  #libraryOnRight = false;
 
   // Track the original location of the native buttons so we can restore them
   #originalButtonsParent = null;
@@ -145,31 +144,12 @@ export class ZenLibrary extends MozLitElement {
       this.instance = new ZenLibrary();
       const mountRoot = document.documentElement || document.body;
       mountRoot.appendChild(this.instance);
-
-      this.instance.addTabsOnRightListener();
     }
     return this.instance;
   }
 
-  addTabsOnRightListener() {
-    const update = (value) => {
-      this.#libraryOnRight = value;
-      if (value) {
-        this.setAttribute("right", "");
-      } else {
-        this.removeAttribute("right");
-      }
-    };
-
-    const prefObserver = (subject, topic, prefName) => {
-      if (prefName === "zen.tabs.vertical.right-side") {
-        const isRightSide = Services.prefs.getBoolPref(prefName);
-        update(isRightSide);
-      }
-    };
-
-    update(Services.prefs.getBoolPref("zen.tabs.vertical.right-side"));
-    Services.prefs.addObserver("zen.tabs.vertical.right-side", prefObserver);
+  get #libraryOnRight() {
+    return gZenVerticalTabsManager._prefsRightSide;
   }
 
   createRenderRoot() {
@@ -180,9 +160,7 @@ export class ZenLibrary extends MozLitElement {
     if (super.connectedCallback) {
       super.connectedCallback();
     }
-    this._onDocClick = this._onDocClick.bind(this);
     this._onKeyDown = this._onKeyDown.bind(this);
-    document.addEventListener("click", this._onDocClick, true);
     document.addEventListener("keydown", this._onKeyDown, true);
   }
 
@@ -197,21 +175,8 @@ export class ZenLibrary extends MozLitElement {
     // Safety check: ensure buttons are restored if library is forcefully destroyed
     this._restoreWindowButtons();
 
-    if (super.disconnectedCallback) {
-      super.disconnectedCallback();
-    }
-    document.removeEventListener("click", this._onDocClick, true);
+    super.disconnectedCallback();
     document.removeEventListener("keydown", this._onKeyDown, true);
-  }
-
-  _onDocClick(e) {
-    if (!this.hasAttribute("open")) {
-      return;
-    }
-    const panel = this.querySelector("#zen-library-panel");
-    if (panel && !panel.contains(e.target)) {
-      ZenLibrary.toggle();
-    }
   }
 
   _onKeyDown(e) {

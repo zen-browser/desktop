@@ -75,7 +75,7 @@ class ZenSpacesSyncStore extends Store {
 }
 
 /**
- * Tracker for the Spaces engine. The model diffs the current projections 
+ * Tracker for the Spaces engine. The model diffs the current projections
  * against the last-uploaded snapshot. The score is only bumped when
  * something actually differs.
  */

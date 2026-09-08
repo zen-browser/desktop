@@ -2888,6 +2888,12 @@ class nsZenWorkspaces {
     });
   }
 
+  contextShareWorkspace() {
+    const workspaceId =
+      this.#contextMenuData?.workspaceId || this.activeWorkspace;
+    gZenShareManager.shareSpace(workspaceId);
+  }
+
   async contextDeleteWorkspace() {
     const workspaceId =
       this.#contextMenuData?.workspaceId || this.activeWorkspace;
@@ -3281,7 +3287,7 @@ class nsZenWorkspaces {
     if (!(!event || event.target === window)) {
       return;
     }
-    gZenUIManager.updateTabsToolbar();
+    gZenUIManager.updateTabsToolbar(!!event);
     // Check if workspace icons overflow the parent container
     let parent = this.workspaceIcons;
     if (!parent || this._processingResize) {

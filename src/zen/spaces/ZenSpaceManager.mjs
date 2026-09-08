@@ -872,7 +872,7 @@ class nsZenWorkspaces {
       ) {
         this.log(`Found tab to select: ${this._tabToSelect}, ${tabs.length}`);
         let tabToUse = gZenGlanceManager.getTabOrGlanceParent(
-          tabs[this._tabToSelect + 1] || this._emptyTab
+          tabs[this._tabToSelect] || this._emptyTab
         );
         gBrowser.selectedTab = tabToUse;
         this._removedByStartupPage = true;

@@ -1184,6 +1184,8 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
     document.l10n.setAttributes(splitTabCommand, "tab-zen-split-tabs", {
       tabCount: isExistingSplitView ? -1 : selectedTabs.length,
     });
+    document.getElementById("context_zenShareSplitView").hidden =
+      !gZenShareManager.enabled || !isExistingSplitView;
     if (isExistingSplitView) {
       splitTabCommand.removeAttribute("hidden");
       return;
@@ -1204,6 +1206,10 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
                 data-lazy-l10n-id="tab-zen-split-tabs"
                 data-l10n-args='{"tabCount": 1}'
                 command="cmd_zenSplitViewContextMenu"/>
+      <menuitem id="context_zenShareSplitView"
+                data-lazy-l10n-id="zen-share-split-view"
+                hidden="true"
+                command="cmd_zenCtxShareSplitView"/>
     `);
     document.getElementById("context_moveTabToSplitView").before(element);
   }
@@ -1250,6 +1256,16 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       return;
     }
     this.splitTabs([currentTab, newTab], undefined, 1);
+  }
+
+  /**
+   * Shares the split view of the context tab.
+   */
+  contextShareSplitView() {
+    const group = TabContextMenu.contextTab?.group;
+    if (group?.hasAttribute("split-view-group")) {
+      gZenShareManager.shareSplitView(group);
+    }
   }
 
   /**

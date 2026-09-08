@@ -24,7 +24,15 @@ const FOLDER_ICON_RE = /^chrome:\/\//;
  */
 class nsZenShareManager extends nsZenDOMOperatedFeature {
   init() {
-    this.#insertSplitViewMenuItem();
+    if (!this.enabled) {
+      for (const id of [
+        "context_zenShareWorkspace",
+        "context_zenShareFolder",
+      ]) {
+        document.getElementById(id)?.setAttribute("hidden", "true");
+      }
+      return;
+    }
     delayedStartupPromise.then(() => {
       gBrowser.addTabsProgressListener({
         onLocationChange: (browser, webProgress, request, aLocation) => {
@@ -32,6 +40,10 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
         },
       });
     });
+  }
+
+  get enabled() {
+    return !gZenWorkspaces.privateWindowOrDisabled;
   }
 
   // Mark: sharing
@@ -93,6 +105,9 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
   }
 
   async #createAndCopyLink(item) {
+    if (!this.enabled) {
+      return;
+    }
     if (!(await this.#confirmShare())) {
       return;
     }
@@ -800,37 +815,6 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
       }
     }
     return tab;
-  }
-
-  // Mark: split view context menu
-
-  #insertSplitViewMenuItem() {
-    const fragment = window.MozXULElement.parseXULToFragment(`
-      <menuitem id="context_zenShareSplitView"
-                data-lazy-l10n-id="zen-share-split-view"
-                hidden="true"/>
-    `);
-    document.getElementById("context_moveTabToSplitView").before(fragment);
-    const menuItem = document.getElementById("context_zenShareSplitView");
-    menuItem.addEventListener("command", () => {
-      const group = TabContextMenu.contextTab?.group;
-      if (group?.hasAttribute("split-view-group")) {
-        this.shareSplitView(group);
-      }
-    });
-    document
-      .getElementById("tabContextMenu")
-      .addEventListener("popupshowing", () => {
-        const contextTab = TabContextMenu.contextTab;
-        const selectedTabs = contextTab?.multiselected
-          ? gBrowser.selectedTabs
-          : [contextTab];
-        menuItem.hidden =
-          !contextTab ||
-          !selectedTabs.every(tab =>
-            tab?.group?.hasAttribute("split-view-group")
-          );
-      });
   }
 }
 

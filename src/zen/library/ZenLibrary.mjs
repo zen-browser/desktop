@@ -11,16 +11,6 @@ ChromeUtils.defineLazyGetter(lazy, "appContentWrapper", function () {
   return document.getElementById("zen-appcontent-wrapper");
 });
 
-ChromeUtils.defineLazyGetter(lazy, "motion", () => {
-  Services.scriptloader.loadSubScript(
-    "chrome://browser/content/zen-vendor/motion.min.mjs",
-    window
-  );
-  const motion = window.Motion;
-  delete window.Motion;
-  return motion;
-});
-
 export class ZenLibrary extends MozLitElement {
   static instance = null;
   #progress = 0;
@@ -28,7 +18,9 @@ export class ZenLibrary extends MozLitElement {
   #springTarget = 0;
   #springControls = null;
 
-  #originalButtonsParent = null;
+  #toolboxWidth = 0;
+
+  #originalButtonsClone = null;
   #originalButtonsNextSibling = null;
 
   static queries = {
@@ -48,7 +40,8 @@ export class ZenLibrary extends MozLitElement {
     const isOpen = p > 0;
 
     // TODO: Change from arbitrary value to actual
-    let webOffset = this.#libraryOnRight ? -150 : 150;
+    let libraryWidth = window.windowUtils.getBoundsWithoutFlushing(this).width;
+    let webOffset = (this.#libraryOnRight ? -1 : 1) * (libraryWidth - this.#toolboxWidth);
 
     lazy.appContentWrapper?.style.setProperty(
       "--library-wrapper-target-px",
@@ -80,29 +73,25 @@ export class ZenLibrary extends MozLitElement {
   }
 
   #adoptWindowButtons() {
-    const realButtons = gZenVerticalTabsManager?.actualWindowButtons;
-    if (!realButtons) {
-      return;
-    }
-
-    if (!this.#originalButtonsParent) {
-      this.#originalButtonsParent = realButtons.parentNode;
+    const realButtons = gZenVerticalTabsManager.actualWindowButtons;
+    if (!this.#originalButtonsClone) {
+      this.#originalButtonsClone = realButtons.cloneNode(true);
       this.#originalButtonsNextSibling = realButtons.nextSibling;
     }
 
     this._header.appendChild(realButtons);
+    this.#originalButtonsNextSibling.before(this.#originalButtonsClone);
   }
 
   #restoreWindowButtons() {
-    const realButtons = gZenVerticalTabsManager?.actualWindowButtons;
-    if (!realButtons || !this.#originalButtonsParent) {
+    const realButtons = gZenVerticalTabsManager.actualWindowButtons;
+    if (!this.#originalButtonsClone) {
       return;
     }
 
-    this.#originalButtonsParent.insertBefore(
-      realButtons,
-      this.#originalButtonsNextSibling
-    );
+    this.#originalButtonsNextSibling.before(realButtons);
+    this.#originalButtonsClone.remove();
+    this.#originalButtonsClone = null;
   }
 
   static toggle() {
@@ -113,7 +102,11 @@ export class ZenLibrary extends MozLitElement {
       lib.#springControls.stop();
     }
 
-    lib.#springControls = lazy.motion.animate(
+    if (lib.#springTarget === 1) {
+      lib.#toolboxWidth = window.windowUtils.getBoundsWithoutFlushing(gNavToolbox).width;
+    }
+
+    lib.#springControls = gZenUIManager.motion.animate(
       lib.openProgress,
       lib.#springTarget,
       {
@@ -135,8 +128,8 @@ export class ZenLibrary extends MozLitElement {
   static getInstance() {
     if (!this.instance) {
       this.instance = new ZenLibrary();
-      const mountRoot = document.documentElement || document.body;
-      mountRoot.appendChild(this.instance);
+      const mountRoot = document.getElementById("zen-main-app-wrapper");
+      mountRoot.prepend(this.instance);
     }
     return this.instance;
   }
@@ -196,7 +189,7 @@ export class ZenLibrary extends MozLitElement {
       },
       {
         image: "chrome://browser/skin/zen-icons/heart-circle-fill.svg",
-        command: () => ZenLibrary.toggle(),
+        command: () => {},
       },
     ];
 

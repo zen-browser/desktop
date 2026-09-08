@@ -152,7 +152,7 @@ body,
   }
 
   & > * {
-    z-index: 1;
+    z-index: var(--zen-main-app-child-z-index, 1);
   }
 
   /* stylelint-disable-next-line media-query-no-invalid */

@@ -218,7 +218,7 @@ export class ZenLibrary extends MozLitElement {
       <link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-library.css" />
       <div id="zen-library-panel">
         <div id="zen-library-side">
-          <toolbar id="zen-library-footer" class="browser-toolbar chromeclass-location" mode="icons" fullscreentoolbar="true"></toolbar>
+          <toolbar id="zen-library-footer" class="chromeclass-location" mode="icons" fullscreentoolbar="true"></toolbar>
         </div>
         <div id="zen-library-content">
         </div>

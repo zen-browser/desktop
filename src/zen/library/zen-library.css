@@ -63,6 +63,7 @@ zen-library {
     box-shadow: 9px 0 17px rgba(0, 0, 0, 0.04);
     
     display: flex;
+    flex-direction: column;
     
     width: 115px;
     height: 100%;
@@ -87,12 +88,14 @@ zen-library[open] {
   pointer-events: auto;
 }
 
+#zen-library-header,
 #zen-library-footer {
   display: flex;
   padding: 8px;
-  margin-top: auto;
+}
 
-  width: 100%;
+#zen-library-footer {
+  margin-top: auto;
 
   & > :last-child {
     margin-left: auto;

@@ -5,6 +5,8 @@
 import { html } from "chrome://global/content/vendor/lit.all.mjs";
 import { MozLitElement } from "chrome://global/content/lit-utils.mjs";
 
+let lazy = {};
+
 ChromeUtils.defineLazyGetter(lazy, "l10n", function () {
   return new Localization(["browser/zen-library.ftl"], true);
 });
@@ -16,7 +18,7 @@ ChromeUtils.defineLazyGetter(lazy, "appContentWrapper", function () {
 ChromeUtils.defineLazyGetter(lazy, "motion", () => {
   Services.scriptloader.loadSubScript(
     "chrome://browser/content/zen-vendor/motion.min.mjs",
-    window
+    window,
   );
   const motion = window.Motion;
   delete window.Motion;
@@ -28,27 +30,78 @@ export class ZenLibrary extends MozLitElement {
   #progress = 0;
   #libraryOnRight = false;
 
+  // Track the original location of the native buttons so we can restore them
+  #originalButtonsParent = null;
+  #originalButtonsNextSibling = null;
+
+  static queries = {
+    _content: "#zen-library-content",
+    _header: "#zen-library-header",
+    _footer: "#zen-library-footer",
+  };
+
   set openProgress(value) {
     const p = value;
+    const stealWindowButtonsPastPoint = 0.95;
+    const wasPastWindowButtonSwitchPoint =
+      this.#progress > stealWindowButtonsPastPoint;
+    const wasOpen = this.#progress > 0;
     this.#progress = p;
+    const isPastWindowButtonSwitchPoint = p > stealWindowButtonsPastPoint;
+    const isOpen = p > 0;
 
     // TODO: Change from arbitrary value to actual
     let webOffset = this.#libraryOnRight ? -150 : 150;
 
-    lazy.appContentWrapper?.style.setProperty("--library-wrapper-target-px", `${webOffset}px`);
-    [this, lazy.appContentWrapper, gNavToolbox].forEach(elem => {
+    lazy.appContentWrapper?.style.setProperty(
+      "--library-wrapper-target-px",
+      `${webOffset}px`,
+    );
+    [this, lazy.appContentWrapper, gNavToolbox].forEach((elem) => {
       elem?.style.setProperty("--library-progress", String(p));
     });
 
-    if (p > 0) {
+    if (isOpen && !wasOpen) {
       this.setAttribute("open", "true");
-    } else if (p <= 0) {
+    } else if (!isOpen && wasOpen) {
       this.removeAttribute("open");
+    }
+
+    // Window buttons
+    if (isPastWindowButtonSwitchPoint && !wasPastWindowButtonSwitchPoint) {
+      this._adoptWindowButtons();
+    } else if (
+      !isPastWindowButtonSwitchPoint &&
+      wasPastWindowButtonSwitchPoint
+    ) {
+      this._restoreWindowButtons();
     }
   }
 
   get openProgress() {
     return this.#progress;
+  }
+
+  _adoptWindowButtons() {
+    const realButtons = gZenVerticalTabsManager?.actualWindowButtons;
+    if (!realButtons) return;
+
+    if (!this.#originalButtonsParent) {
+      this.#originalButtonsParent = realButtons.parentNode;
+      this.#originalButtonsNextSibling = realButtons.nextSibling;
+    }
+
+    this._header.appendChild(realButtons);
+  }
+
+  _restoreWindowButtons() {
+    const realButtons = gZenVerticalTabsManager?.actualWindowButtons;
+    if (!realButtons || !this.#originalButtonsParent) return;
+
+    this.#originalButtonsParent.insertBefore(
+      realButtons,
+      this.#originalButtonsNextSibling,
+    );
   }
 
   static toggle() {
@@ -60,21 +113,31 @@ export class ZenLibrary extends MozLitElement {
       : lib.hasAttribute("open")
         ? 0
         : 1;
-    
+
     if (lib._springControls) {
       lib._springControls.stop();
     }
 
-    lib._springControls = lazy.motion.animate(lib.openProgress, lib._springTarget, {
-      type: "spring",
-      stiffness: 630,
-      damping: 47,
-      mass: 1.3,
-      onUpdate: (latest) => {
-        lib.openProgress = latest;
-        lib._springControls = null;
-      }
-    })
+    lib._springAnimating = true;
+
+    lib._springControls = lazy.motion.animate(
+      lib.openProgress,
+      lib._springTarget,
+      {
+        type: "spring",
+        stiffness: 630,
+        damping: 47,
+        mass: 1.3,
+        onUpdate: (latest) => {
+          lib.openProgress = latest;
+        },
+        onComplete: () => {
+          lib.openProgress = lib._springTarget; // Snap exactly to 0 or 1
+          lib._springControls = null; // Corrected: Clear reference at the end, not mid-animation
+          lib._springAnimating = false;
+        },
+      },
+    );
   }
 
   static getInstance() {
@@ -89,7 +152,7 @@ export class ZenLibrary extends MozLitElement {
   }
 
   addTabsOnRightListener() {
-    const update = value => {
+    const update = (value) => {
       this.#libraryOnRight = value;
       if (value) {
         this.setAttribute("right", "");
@@ -130,6 +193,10 @@ export class ZenLibrary extends MozLitElement {
     }
     this._springAnimationId = (this._springAnimationId ?? 0) + 1;
     this._springAnimating = false;
+
+    // Safety check: ensure buttons are restored if library is forcefully destroyed
+    this._restoreWindowButtons();
+
     if (super.disconnectedCallback) {
       super.disconnectedCallback();
     }
@@ -165,7 +232,7 @@ export class ZenLibrary extends MozLitElement {
 
   #buildFooterButtons() {
     const footer = this.querySelector("#zen-library-footer");
-    
+
     const buttons = [
       {
         image: "chrome://browser/skin/zen-icons/back.svg",
@@ -188,14 +255,22 @@ export class ZenLibrary extends MozLitElement {
 
   render() {
     return html`
-      <link rel="stylesheet" href="chrome://browser/content/zen-styles/zen-library.css" />
-      <div id="zen-library-panel">
-        <div id="zen-library-side">
-          <toolbar id="zen-library-footer" class="chromeclass-location" mode="icons" fullscreentoolbar="true"></toolbar>
-        </div>
-        <div id="zen-library-content">
-        </div>
-      </div>
+      <link
+        rel="stylesheet"
+        href="chrome://browser/content/zen-styles/zen-library.css"
+      />
+      <hbox id="zen-library-panel">
+        <vbox id="zen-library-side">
+          <vbox id="zen-library-header"></vbox>
+          <toolbar
+            id="zen-library-footer"
+            class="chromeclass-location"
+            mode="icons"
+            fullscreentoolbar="true"
+          ></toolbar>
+        </vbox>
+        <vbox id="zen-library-content"> </vbox>
+      </hbox>
     `;
   }
 }

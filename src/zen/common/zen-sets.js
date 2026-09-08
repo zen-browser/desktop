@@ -164,7 +164,11 @@ document.addEventListener(
             break;
           }
           case "cmd_zenToggleLibrary": {
-            // Library button
+            const { ZenLibrary } = ChromeUtils.importESModule(
+              "moz-src:///zen/library/ZenLibrary.mjs",
+              { global: "current" }
+            );
+            ZenLibrary.toggle();
             break;
           }
           default:

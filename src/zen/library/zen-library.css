@@ -3,3 +3,122 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
+:host {
+  --library-progress: 0;
+  transform: translateX(calc((-1 + var(--library-progress)) * 100%));
+  opacity: calc(var(--library-progress));
+}
+
+#zen-appcontent-wrapper {
+  --library-progress: 0;
+  --library-wrapper-target-px: 0px;
+  transform: translateX(calc(var(--library-progress) * var(--library-wrapper-target-px)));
+}
+
+#navigator-toolbox {
+  transform: scale(calc(1 - var(--library-progress) * 0.04));
+  opacity: calc(1 - var(--library-progress));
+}
+
+zen-library {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 360px;
+  display: flex;
+  z-index: 9;
+
+  visibility: hidden;
+  pointer-events: none;
+
+  left: 0;
+
+  & #zen-library-panel {
+    flex-direction: row;
+  }
+
+  transform: translateX(calc(-100% * (1 - var(--library-progress, 0))));
+  &[right] {
+    transform: translateX(calc(100% * (1 - var(--library-progress, 0))));
+    left: auto;
+    right: 0;
+    
+    & #zen-library-panel {
+      flex-direction: row-reverse;
+    }
+  }
+
+  opacity: var(--library-progress, 0);
+}
+
+#zen-library-content {
+  flex-grow: 1;
+}
+
+zen-library {
+  & #zen-library-side {
+    box-shadow: 24px 0 32px rgba(0, 0, 0, 0.06);
+    border: 0 solid rgba(255, 255, 255, 0.1);
+    
+    display: flex;
+    
+    width: 115px;
+    height: 100%;
+  }
+
+  &[right] #zen-library-side {
+    box-shadow: -24px 0 32px rgba(0, 0, 0, 0.06);
+  }
+}
+
+zen-library[right] #zen-library-side {
+  border-left-width: 1px;
+}
+
+zen-library:not([right]) #zen-library-side {
+  border-right-width: 1px;
+}
+
+#zen-library-panel {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 360px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+zen-library[open] {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+#zen-library-footer {
+  display: flex;
+  padding: 8px;
+  margin-top: auto;
+
+  width: 100%;
+
+  & > :last-child {
+    margin-left: auto;
+  }
+}
+
+#zen-library-body {
+  padding: 16px;
+  color: var(--toolbar-color, #fff);
+}
+
+#zen-library-footer .toolbarbutton-1 {
+  appearance: none;
+}
+
+#zen-library-footer {
+  background: none;
+
+  & toolbarbutton label {
+    display: none;
+  }
+}

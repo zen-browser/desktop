@@ -40,6 +40,10 @@ export class ZenLibrary extends MozLitElement {
   #originalButtonsClone = null;
   #originalButtonsNextSibling = null;
 
+  #resizeObserver = new ResizeObserver(() => {
+    this.openProgress = this.#progress;
+  });
+
   static queries = {
     _content: "#zen-library-content",
     _header: "#zen-library-header",
@@ -246,6 +250,7 @@ export class ZenLibrary extends MozLitElement {
     }
     this.onKeyDown = this.onKeyDown.bind(this);
     document.addEventListener("keydown", this.onKeyDown, true);
+    this.#resizeObserver.observe(this);
   }
 
   disconnectedCallback() {
@@ -259,6 +264,7 @@ export class ZenLibrary extends MozLitElement {
 
     super.disconnectedCallback();
     document.removeEventListener("keydown", this.onKeyDown, true);
+    this.#resizeObserver.disconnect();
   }
 
   onKeyDown(e) {

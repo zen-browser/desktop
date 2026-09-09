@@ -26,7 +26,7 @@ zen-library {
   top: 0;
   bottom: 0;
   left: 0;
-  width: 38rem;
+  width: clamp(38rem, var(--zen-library-content-width, 0px), 95vw);
   display: flex;
   z-index: 9;
 
@@ -72,6 +72,7 @@ zen-library[open] {
   visibility: visible;
   pointer-events: auto;
   -moz-window-dragging: drag;
+  transition: width 0.1s ease-out;
 }
 
 zen-library[transitioning] #zen-library-content {
@@ -80,8 +81,7 @@ zen-library[transitioning] #zen-library-content {
 
 #zen-library-panel {
   position: absolute;
-  inset: 0 auto 0 0;
-  width: 38rem;
+  inset: 0;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -563,3 +563,218 @@ zen-library:not([open])
   }
 }
 
+.zen-library-spaces {
+  --zen-library-space-width: 242px;
+  --zen-library-space-gap: 24px;
+
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: var(--zen-library-space-gap);
+  padding: 45px 25px;
+  overflow-x: auto;
+  -moz-window-dragging: no-drag;
+  user-select: none;
+}
+
+.zen-library-space {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 var(--zen-library-space-width);
+  /* The shift transforms assume the card is exactly this wide. */
+  box-sizing: border-box;
+  min-height: 0;
+  padding: 14px;
+  color: var(--toolbox-textcolor);
+  transition:
+    translate 0.2s ease,
+    opacity 0.2s ease;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: 14px;
+    background: var(--zen-library-space-gradient);
+    background-blend-mode: screen;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  &[dragging] {
+    z-index: 1;
+
+    &::before {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  &[dragging],
+  .zen-library-spaces[no-transition] & {
+    transition: none;
+  }
+
+  &[shift="left"] {
+    translate: calc(-1 * (var(--zen-library-space-width) + var(--zen-library-space-gap))) 0;
+  }
+
+  &[shift="right"] {
+    translate: calc(var(--zen-library-space-width) + var(--zen-library-space-gap)) 0;
+  }
+}
+
+.zen-library-space-header,
+.zen-library-space-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zen-library-space-header {
+  position: relative;
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.85;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -4px -6px;
+    z-index: -1;
+    border-radius: var(--border-radius-medium);
+    background: transparent;
+    pointer-events: none;
+  }
+
+  &:hover::before {
+    background: var(--tab-background-color-hover);
+  }
+}
+
+.zen-library-space-body {
+  flex: 1;
+}
+
+.zen-library-space-footer {
+  justify-content: space-between;
+  opacity: 0.7;
+}
+
+.zen-library-space-icon,
+.zen-library-space-name,
+.zen-library-space-name-input,
+.zen-library-space-button,
+.zen-library-space-actions {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  appearance: none;
+}
+
+.zen-library-space-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  font-size: 15px;
+  -moz-context-properties: fill;
+  fill: currentColor;
+
+  &:hover {
+    background: color-mix(in srgb, currentColor 14%, transparent);
+  }
+
+  & img {
+    width: 16px;
+    height: 16px;
+  }
+
+  &[no-icon] {
+    border: 1px dashed light-dark(rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.5));
+    box-sizing: border-box;
+    position: absolute;
+    inset-inline-start: 0;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+
+    .zen-library-space-header:hover & {
+      opacity: 1;
+    }
+  }
+}
+
+.zen-library-space-name,
+.zen-library-space-name-input {
+  flex: 1;
+  min-width: 0;
+  text-align: start;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.zen-library-space-icon[no-icon] ~ :is(.zen-library-space-name, .zen-library-space-name-input) {
+  transition:
+    translate 0.15s ease,
+    margin 0.15s ease;
+
+  .zen-library-space-header:hover & {
+    translate: 28px 0;
+    margin-inline-end: 28px;
+  }
+}
+
+.zen-library-space-name-input {
+  width: 100%;
+  height: auto;
+  line-height: inherit;
+  outline: none;
+  box-shadow: none;
+  border-radius: 0;
+  -moz-appearance: none;
+}
+
+.zen-library-space-button,
+.zen-library-space-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+
+  &:hover {
+    background: color-mix(in srgb, currentColor 14%, transparent);
+  }
+
+  & img {
+    width: 14px;
+    height: 14px;
+    -moz-context-properties: fill;
+    fill: currentColor;
+    pointer-events: none;
+  }
+}
+
+.zen-library-space-footer :is(.zen-library-space-button, .zen-library-space-actions) {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+}
+
+.zen-library-space-handle {
+  cursor: grab;
+  touch-action: none;
+
+  .zen-library-space[dragging] & {
+    cursor: grabbing;
+  }
+}

@@ -751,7 +751,7 @@ index 43180487a2fac15b7a65fac94f233eeed9094990..ef6d30eb681caeae48d15280687b3bc3
      }
  
      /**
-@@ -6422,6 +6618,7 @@
+@@ -6422,11 +6618,12 @@
        }
  
        let excludeTabs = new Set(aExcludeTabs);
@@ -759,6 +759,12 @@ index 43180487a2fac15b7a65fac94f233eeed9094990..ef6d30eb681caeae48d15280687b3bc3
  
        // If this tab has a successor, it should be selectable, since
        // hiding or closing a tab removes that tab as a successor.
+       if (aTab.successor && !excludeTabs.has(aTab.successor)) {
+-        return aTab.successor;
++        return gZenWorkspaces.findTabToBlur(aTab.successor);
+       }
+ 
+       if (
 @@ -6434,13 +6631,13 @@
          !excludeTabs.has(aTab.owner) &&
          Services.prefs.getBoolPref("browser.tabs.selectOwnerOnClose")

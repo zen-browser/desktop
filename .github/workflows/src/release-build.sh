@@ -37,6 +37,8 @@ bash ./scripts/mar_sign.sh -i
 
 ulimit -n 4096
 
+export ZEN_DISABLE_BOOTSTRAP=1
+
 if command -v Xvfb &> /dev/null; then
   if ! test "$ZEN_CROSS_COMPILING"; then
     Xvfb :2 -nolisten tcp -noreset -screen 0 1024x768x24 &

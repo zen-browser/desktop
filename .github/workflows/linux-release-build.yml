@@ -124,6 +124,7 @@ jobs:
         run: |
           cd engine
           export SURFER_PLATFORM="linux"
+          unset MOZ_AUTOMATION
           ./mach --no-interactive bootstrap --application-choice browser
           cd ..
 

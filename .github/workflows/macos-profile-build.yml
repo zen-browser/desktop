@@ -75,6 +75,7 @@ jobs:
         run: |
           cd engine
           export SURFER_PLATFORM="darwin"
+          unset MOZ_AUTOMATION
           ./mach --no-interactive bootstrap --application-choice browser --exclude macos-sdk || true
 
       - name: Extract instrumented app

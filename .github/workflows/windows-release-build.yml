@@ -186,6 +186,7 @@ jobs:
           chmod -R +x "$(echo ~)/win-cross/vs2026" || true
           cd ..
           export SURFER_PLATFORM="win32"
+          unset MOZ_AUTOMATION
           npm run bootstrap
           cd engine/
           ls ~/.mozbuild/clang/lib/clang/

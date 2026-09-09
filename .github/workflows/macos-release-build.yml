@@ -140,6 +140,7 @@ jobs:
         run: |
           set -x
           export SURFER_PLATFORM="darwin"
+          unset MOZ_AUTOMATION
           npm run bootstrap
 
       - name: Build language packs

@@ -432,8 +432,9 @@ class nsZenWorkspaces {
     // Set a hidden state if the essentials section is not supposed
     // to be shown on the current workspace, else remove the hidden state
     if (
-      this.containerSpecificEssentials &&
-      this.getActiveWorkspaceFromCache()?.containerTabId != container
+      this.activeWorkspace === this.creatingWorkspaceId ||
+      (this.containerSpecificEssentials &&
+        this.getActiveWorkspaceFromCache()?.containerTabId != container)
     ) {
       essentialsContainer.setAttribute("hidden", "true");
     } else {

@@ -166,3 +166,13 @@ zen-window-sync-migration-dialog-accept = Got It
 zen-appmenu-new-blank-window =
     .label = New Blank Window
 
+zen-screenshots-heading = Screenshots
+zen-screenshots-description = Choose your screenshots folder to show recent images here. Drag a file to share it, or select it to show it in its folder.
+zen-screenshots-choose-folder = Choose screenshots folder…
+zen-screenshots-change-folder = Change folder…
+zen-screenshots-disconnect = Disconnect
+zen-screenshots-picker-title = Choose your screenshots folder
+zen-screenshots-empty = No screenshots found. Recent images will appear here after they are saved.
+zen-screenshots-unavailable = This folder cannot be read. Choose an accessible screenshots folder with at most 2,000 items.
+zen-screenshots-file =
+    .title = Drag to share, or select to show in folder

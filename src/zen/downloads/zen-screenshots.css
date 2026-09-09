@@ -1,0 +1,60 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#zen-screenshots {
+  border-block-start: 1px solid var(--panel-separator-color);
+  padding: 8px 12px;
+  min-width: 0;
+  max-width: 34em;
+  box-sizing: border-box;
+
+  h2 {
+    font-size: 1em;
+    margin: 0 0 8px;
+  }
+
+  p {
+    max-width: 32em;
+    margin: 0 0 8px;
+  }
+
+  button {
+    color: inherit;
+    font: inherit;
+    border: 1px solid transparent;
+    border-radius: var(--border-radius-small);
+    padding: 6px 8px;
+    background: transparent;
+
+    &:hover {
+      background: var(--button-background-color-hover);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--focus-outline-color);
+      outline-offset: -2px;
+    }
+  }
+}
+
+#zen-screenshots-files {
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.zen-screenshot-file {
+  display: block;
+  width: 100%;
+  text-align: start;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: grab;
+}
+
+.zen-screenshots-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}

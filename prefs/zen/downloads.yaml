@@ -5,6 +5,10 @@
 - name: zen.downloads.download-animation
   value: true
 
+# Local-only, explicitly selected through the downloads panel. Empty disables it.
+- name: zen.downloads.screenshots.folder
+  value: ""
+
 - name: zen.downloads.download-animation-duration
   value: 1000 # ms
 

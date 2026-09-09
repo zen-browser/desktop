@@ -434,7 +434,7 @@ class nsZenWorkspaces {
     if (
       this.activeWorkspace === this.creatingWorkspaceId ||
       (this.containerSpecificEssentials &&
-        this.getActiveWorkspaceFromCache()?.containerTabId != container)
+        this.getActiveWorkspaceFromCache()?.containerTabId + 0 != container)
     ) {
       essentialsContainer.setAttribute("hidden", "true");
     } else {

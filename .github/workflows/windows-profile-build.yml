@@ -27,6 +27,8 @@ jobs:
       fail-fast: false
       matrix:
         arch: [x86_64, aarch64]
+    env:
+      MOZ_AUTOMATION: 1
 
     runs-on: ${{ inputs.release-branch == 'release' && 'windows-latest' || 'windows-latest' }}
 

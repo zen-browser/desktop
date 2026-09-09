@@ -2,8 +2,6 @@
 
 set -xe
 
-export MOZ_AUTOMATION=1
-
 if command -v apt-get &> /dev/null; then
   sudo apt-get install python3-launchpadlib
   sudo apt-get update

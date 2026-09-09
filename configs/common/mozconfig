@@ -53,7 +53,7 @@ fi
 if test "$ZEN_RELEASE"; then
 
   ac_add_options --enable-clang-plugin
-  ac_add_options --enable-bootstrap=-sccache
+  ac_add_options --enable-bootstrap=no-update
 
   ac_add_options --enable-optimize
 

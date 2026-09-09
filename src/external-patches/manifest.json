@@ -53,7 +53,14 @@
   },
   {
     "type": "local",
-    "path": "firefox/css_corner_shape_rendering.patch"
+    // Sorts before bug_2063169/ on purpose: D319869 builds on the border
+    // shader hunks in here, and surfer applies patches in path order.
+    "path": "firefox/bug_2047627_corner_shape_borders.patch"
+  },
+  {
+    "type": "phabricator",
+    "ids": ["D319577", "D319796", "D319869", "D320211", "D320568", "D321282"],
+    "name": "Bug 2063169"
   },
   {
     "type": "local",

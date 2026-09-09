@@ -1,0 +1,1089 @@
+diff --git a/gfx/wr/webrender/res/border_shared.glsl b/gfx/wr/webrender/res/border_shared.glsl
+index f385449fa7..313b51bcb0 100644
+--- a/gfx/wr/webrender/res/border_shared.glsl
++++ b/gfx/wr/webrender/res/border_shared.glsl
+@@ -21,6 +21,8 @@ PER_INSTANCE in int aGpuDataAddress;
+ PER_INSTANCE in vec4 aClipParams1;
+ PER_INSTANCE in vec4 aClipParams2;
+ 
++#endif
++
+ struct BorderInstanceGpuData {
+     vec4 rect;
+     vec4 color0;
+@@ -47,5 +49,3 @@ BorderInstanceGpuData fetch_gpu_data(int index) {
+ 
+     return data;
+ }
+-
+-#endif
+diff --git a/gfx/wr/webrender/res/cs_border_segment.glsl b/gfx/wr/webrender/res/cs_border_segment.glsl
+index 6a94117405..56175c4ec2 100644
+--- a/gfx/wr/webrender/res/cs_border_segment.glsl
++++ b/gfx/wr/webrender/res/cs_border_segment.glsl
+@@ -15,10 +15,10 @@ flat varying mediump vec4 vColor11;
+ // transition occurs. Used for corners only.
+ flat varying highp vec4 vColorLine;
+ 
+-// x: segment, y: clip mode
++// x: segment, y: clip mode, z: gpu buffer data address
+ // We cast these to/from floats rather than using an ivec due to a driver bug
+ // on Adreno 3xx. See bug 1730458.
+-flat varying mediump vec2 vSegmentClipMode;
++flat varying highp vec3 vSegment_ClipMode_DataAddress;
+ // x, y: styles, z, w: edge axes
+ // We cast these to/from floats rather than using an ivec (and bitshifting)
+ // due to a driver bug on Adreno 3xx. See bug 1730458.
+@@ -32,6 +32,7 @@ flat varying highp vec4 vClipCenter_Sign;
+ // An outer and inner elliptical radii for border
+ // corner clipping.
+ flat varying highp vec4 vClipRadii;
++flat varying highp vec4 vClipOffsets;
+ 
+ // Reference point for determine edge clip lines.
+ flat varying highp vec4 vEdgeReference;
+@@ -181,7 +182,7 @@ void main(void) {
+             break;
+     }
+ 
+-    vSegmentClipMode = vec2(float(segment), float(clip_mode));
++    vSegment_ClipMode_DataAddress = vec3(float(segment), float(clip_mode), float(aGpuDataAddress));
+     vStyleEdgeAxis = vec4(float(style0), float(style1), float(edge_axis.x), float(edge_axis.y));
+ 
+     vPartialWidths = vec4(data.widths / 3.0, data.widths / 2.0);
+@@ -193,13 +194,23 @@ void main(void) {
+     vec4[2] color1 = get_colors_for_side(data.color1, style1);
+     vColor10 = color1[0];
+     vColor11 = color1[1];
+-    vClipCenter_Sign = vec4(outer + clip_sign * data.radii, clip_sign);
++    vClipCenter_Sign = vec4(outer + clip_sign * (data.radii + data.shape_offset), clip_sign);
+     vClipRadii = vec4(data.radii, max(data.radii - data.widths, 0.0));
++    vClipOffsets = vec4(0.0);
+     vColorLine = vec4(outer, data.widths.y * -clip_sign.y, data.widths.x * clip_sign.x);
+     vEdgeReference = vec4(edge_reference, edge_reference + data.widths);
+     vClipParams1 = aClipParams1;
+     vClipParams2 = aClipParams2;
+ 
++    if (data.shape != 1.0)
++    {
++        vec2 reference_radii = (data.radii == vec2(0.0)) ? vec2(0.0) : data.radii + data.inset;
++        vec4 contour1 = compute_contoured_superellipse(reference_radii, data.shape, data.inset);
++        vec4 contour2 = compute_contoured_superellipse(reference_radii, data.shape, data.inset + data.widths);
++        vClipOffsets = vec4(contour1.xy, contour2.xy);
++        vClipRadii = vec4(contour1.zw, contour2.zw);
++    }
++
+     // For the case of dot and dash clips, optimize the number of pixels that
+     // are hit to just include the dot itself.
+     if (clip_mode == CLIP_DOT) {
+@@ -231,6 +242,7 @@ void main(void) {
+ 
+ #ifdef WR_FRAGMENT_SHADER
+ vec4 evaluate_color_for_style_in_corner(
++    BorderInstanceGpuData data,
+     vec2 clip_relative_pos,
+     int style,
+     vec4 color0,
+@@ -246,24 +258,61 @@ vec4 evaluate_color_for_style_in_corner(
+             // also 0.67 of the radii. Use these to form a
+             // SDF subtraction which will clip out the inside
+             // third of the rounded edge.
+-            float d_radii_a = distance_to_ellipse(
+-                clip_relative_pos,
+-                clip_radii.xy - vPartialWidths.xy
+-            );
+-            float d_radii_b = distance_to_ellipse(
+-                clip_relative_pos,
+-                clip_radii.xy - 2.0 * vPartialWidths.xy
+-            );
++            float d_radii_a;
++            float d_radii_b;
++            if (data.shape == 1.0) {
++                d_radii_a = distance_to_ellipse(
++                    clip_relative_pos,
++                    clip_radii.xy - vPartialWidths.xy
++                );
++                d_radii_b = distance_to_ellipse(
++                    clip_relative_pos,
++                    clip_radii.xy - 2.0 * vPartialWidths.xy
++                );
++            } else {
++                d_radii_a = distance_to_superellipse(
++                    clip_relative_pos - mix(vClipOffsets.xy, vClipOffsets.zw, 1.0 / 3.0),
++                    mix(clip_radii.xy, clip_radii.zw, 1.0 / 3.0),
++                    data.shape
++                );
++                d_radii_b = distance_to_superellipse(
++                    clip_relative_pos - mix(vClipOffsets.xy, vClipOffsets.zw, 2.0 / 3.0),
++                    mix(clip_radii.xy, clip_radii.zw, 2.0 / 3.0),
++                    data.shape
++                );
++
++                // Clamp to the middle of the adjacent borders
++                vec2 included_region_a = data.radii - vPartialWidths.xy - clip_relative_pos;
++                d_radii_a = max(d_radii_a, -min(included_region_a.x, included_region_a.y));
++
++                vec2 included_region_b = data.radii - 2.0 * vPartialWidths.xy - clip_relative_pos;
++                d_radii_b = max(d_radii_b, -min(included_region_b.x, included_region_b.y));
++            }
++
+             float d = min(-d_radii_a, d_radii_b);
++
+             color0 *= distance_aa(aa_range, d);
+             break;
+         }
+         case BORDER_STYLE_GROOVE:
+         case BORDER_STYLE_RIDGE: {
+-            float d = distance_to_ellipse(
+-                clip_relative_pos,
+-                clip_radii.xy - vPartialWidths.zw
+-            );
++            float d;
++            if (data.shape == 1.0) {
++                d = distance_to_ellipse(
++                    clip_relative_pos,
++                    clip_radii.xy - vPartialWidths.zw
++                );
++            } else {
++                d = distance_to_superellipse(
++                    clip_relative_pos - mix(vClipOffsets.xy, vClipOffsets.zw, 0.5),
++                    mix(clip_radii.xy, clip_radii.zw, 0.5),
++                    data.shape
++                );
++
++                // Clamp to the middle of the adjacent borders
++                vec2 included_region = data.radii - vPartialWidths.zw - clip_relative_pos;
++                d = max(d, -min(included_region.x, included_region.y));
++            }
+             float alpha = distance_aa(aa_range, d);
+             float swizzled_factor;
+             switch (segment) {
+@@ -328,11 +377,14 @@ void main(void) {
+     float aa_range = compute_aa_range(vPos);
+     vec4 color0, color1;
+ 
+-    int segment = int(vSegmentClipMode.x);
+-    int clip_mode = int(vSegmentClipMode.y);
++    int segment = int(vSegment_ClipMode_DataAddress.x);
++    int clip_mode = int(vSegment_ClipMode_DataAddress.y);
++    int data_address = int(vSegment_ClipMode_DataAddress.z);
+     ivec2 style = ivec2(int(vStyleEdgeAxis.x), int(vStyleEdgeAxis.y));
+     ivec2 edge_axis = ivec2(int(vStyleEdgeAxis.z), int(vStyleEdgeAxis.w));
+ 
++    BorderInstanceGpuData data = fetch_gpu_data(data_address);
++
+     float mix_factor = 0.0;
+     if (edge_axis.x != edge_axis.y) {
+         float d_line = distance_to_line(vColorLine.xy, vColorLine.zw, vPos);
+@@ -382,12 +434,27 @@ void main(void) {
+     }
+ 
+     if (in_clip_region) {
+-        float d_radii_a = distance_to_ellipse(clip_relative_pos, vClipRadii.xy);
+-        float d_radii_b = distance_to_ellipse(clip_relative_pos, vClipRadii.zw);
++        float d_radii_a;
++        float d_radii_b;
++
++        if (data.shape == 1.0) {
++            d_radii_a = distance_to_ellipse(clip_relative_pos, vClipRadii.xy);
++            d_radii_b = distance_to_ellipse(clip_relative_pos, vClipRadii.zw);
++        } else {
++            clip_relative_pos = abs(clip_relative_pos) - data.shape_offset;
++            d_radii_a = distance_to_superellipse(clip_relative_pos - vClipOffsets.xy, vClipRadii.xy, data.shape);
++            d_radii_b = distance_to_superellipse(clip_relative_pos - vClipOffsets.zw, vClipRadii.zw, data.shape);
++
++            // exclude the straight border part from the subtracted region
++            vec2 included_region = data.radii - data.widths - clip_relative_pos;
++            d_radii_b = max(d_radii_b, -min(included_region.x, included_region.y));
++        }
++
+         float d_radii = max(d_radii_a, -d_radii_b);
+         d = max(d, d_radii);
+-
++        
+         color0 = evaluate_color_for_style_in_corner(
++            data,
+             clip_relative_pos,
+             style.x,
+             vColor00,
+@@ -398,6 +465,7 @@ void main(void) {
+             aa_range
+         );
+         color1 = evaluate_color_for_style_in_corner(
++            data,
+             clip_relative_pos,
+             style.y,
+             vColor10,
+diff --git a/gfx/wr/webrender/res/cs_border_solid.glsl b/gfx/wr/webrender/res/cs_border_solid.glsl
+index 90584346a4..a3ff0e887e 100644
+--- a/gfx/wr/webrender/res/cs_border_solid.glsl
++++ b/gfx/wr/webrender/res/cs_border_solid.glsl
+@@ -8,6 +8,10 @@
+ #define MIX_AA 1
+ #define MIX_NO_AA 2
+ 
++// Address of border data in the GPU Buffer.
++// Packed in to a vector to work around bug 1630356.
++flat varying highp ivec2 vGpuDataAddress;
++
+ // For edges, the colors are the same. For corners, these
+ // are the colors of each edge making up the corner.
+ flat varying mediump vec4 vColor0;
+@@ -29,6 +33,7 @@ flat varying highp vec4 vClipCenter_Sign;
+ // An outer and inner elliptical radii for border
+ // corner clipping.
+ flat varying highp vec4 vClipRadii;
++flat varying highp vec4 vClipOffsets;
+ 
+ // Position, scale, and radii of horizontally and vertically adjacent corner clips.
+ flat varying highp vec4 vHorizontalClipCenter_Sign;
+@@ -68,6 +73,7 @@ vec2 get_outer_corner_scale(int segment) {
+ 
+ void main(void) {
+     BorderInstanceGpuData data = fetch_gpu_data(aGpuDataAddress);
++    vGpuDataAddress.x = aGpuDataAddress;
+ 
+     int segment = aFlags & 0xff;
+     bool do_aa = ((aFlags >> 24) & 0xf0) != 0;
+@@ -96,10 +102,20 @@ void main(void) {
+ 
+     vColor0 = data.color0;
+     vColor1 = data.color1;
+-    vClipCenter_Sign = vec4(outer + clip_sign * data.radii, clip_sign);
++    vClipCenter_Sign = vec4(outer + clip_sign * (data.radii + data.shape_offset), clip_sign);
+     vClipRadii = vec4(data.radii, max(data.radii - data.widths, 0.0));
++    vClipOffsets = vec4(0.0);
+     vColorLine = vec4(outer, data.widths.y * -clip_sign.y, data.widths.x * clip_sign.x);
+ 
++    if (data.shape != 1.0)
++    {
++        vec2 reference_radii = (data.radii == vec2(0.0)) ? vec2(0.0) : data.radii + data.inset;
++        vec4 contour1 = compute_contoured_superellipse(reference_radii, data.shape, data.inset);
++        vec4 contour2 = compute_contoured_superellipse(reference_radii, data.shape, data.inset + data.widths);
++        vClipOffsets = vec4(contour1.xy, contour2.xy);
++        vClipRadii = vec4(contour1.zw, contour2.zw);
++    }
++
+     vec2 horizontal_clip_sign = vec2(-clip_sign.x, clip_sign.y);
+     vHorizontalClipCenter_Sign = vec4(aClipParams1.xy +
+                                       horizontal_clip_sign * aClipParams1.zw,
+@@ -118,6 +134,8 @@ void main(void) {
+ 
+ #ifdef WR_FRAGMENT_SHADER
+ void main(void) {
++    BorderInstanceGpuData data = fetch_gpu_data(vGpuDataAddress.x);
++
+     float aa_range = compute_aa_range(vPos);
+     bool do_aa = vMixColors.x != MIX_NO_AA;
+ 
+@@ -137,8 +155,22 @@ void main(void) {
+ 
+     float d = -1.0;
+     if (in_clip_region) {
+-        float d_radii_a = distance_to_ellipse(clip_relative_pos, vClipRadii.xy);
+-        float d_radii_b = distance_to_ellipse(clip_relative_pos, vClipRadii.zw);
++        float d_radii_a;
++        float d_radii_b;
++
++        if (data.shape == 1.0) {
++            d_radii_a = distance_to_ellipse(clip_relative_pos, vClipRadii.xy);
++            d_radii_b = distance_to_ellipse(clip_relative_pos, vClipRadii.zw);
++        } else {
++            clip_relative_pos = abs(clip_relative_pos) - data.shape_offset;
++            d_radii_a = distance_to_superellipse(clip_relative_pos - vClipOffsets.xy, vClipRadii.xy, data.shape);
++            d_radii_b = distance_to_superellipse(clip_relative_pos - vClipOffsets.zw, vClipRadii.zw, data.shape);
++
++            // exclude the straight border part from the subtracted region
++            vec2 included_region = data.radii - data.widths - clip_relative_pos;
++            d_radii_b = max(d_radii_b, -min(included_region.x, included_region.y));
++        }
++
+         d = max(d_radii_a, -d_radii_b);
+     }
+ 
+diff --git a/gfx/wr/webrender/res/ellipse.glsl b/gfx/wr/webrender/res/ellipse.glsl
+index cb7d5d89af..7ce1bcacb4 100644
+--- a/gfx/wr/webrender/res/ellipse.glsl
++++ b/gfx/wr/webrender/res/ellipse.glsl
+@@ -27,9 +27,27 @@ float compute_superellipse_half_corner(float shape) {
+     float n = exp2(shape);
+     float convex_half_corner = pow(0.5, 1.0 / n);
+ 
++    // Ensure the curve tends towards 0.75 (which will produce axis-aligned
++    // normals in compute_superellipse_normals()) when shape goes to 1 (round).
++    // This makes the curve continuous from subellipses (shape < 1) to
++    // superellipses (shape > 1).
++    // The original half corner (above) goes to 0.5^0.5 = sqrt(2) / 2 ~= 0.707,
++    // so the delta is about 6% at maximum.
++    const float delta = 0.04289321881345243; // = 0.75 - pow(0.5, 0.5)
++    float falloff = shape * shape; // quadratic falloff
++    convex_half_corner += delta * falloff;
++
+     return convex_half_corner;
+ }
+ 
++// Super cheap approximation of the function above: the delta with quadratic
++// falloff actually makes it almost locally linear for shape values between
++// zero and one.
++float compute_superellipse_half_corner_approx(float shape) {
++    shape = min(1.0, abs(shape));
++    return 0.25 * shape + 0.5;
++}
++
+ #if 0
+ 
+ // Alternate method to find the normals of a superellipse
+@@ -118,8 +136,15 @@ float compute_superellipse_half_corner(float shape) {
+ // dy/dx = -b / a * qx * (1 - x0 / a * qx)^((1-n) / n) # Careful, exponent flipped
+ //
+ vec4 compute_superellipse_normals(vec2 radii, float shape) {
+-    float n = exp2(abs(shape));
+-    float q = pow(0.05, n - 1.0);
++    shape = min(1.0, abs(shape));
++
++    float n = exp2(shape);
++
++    // The damping factor makes q go to zero when shape approches one,
++    // ensuring continuity with higher-order superellipses (for shapes
++    // of 1 and above, the normals should always be axis-aligned)
++    float damping_factor = (1.0 - shape * shape);
++    float q = pow(0.05 * damping_factor, n - 1.0);
+ 
+     // x: dy/dx at (0.05 * radii.x, radii.y)
+     // y: dx/dy at (radii.x, 0.05 * radii.y)
+@@ -137,8 +162,7 @@ vec4 compute_superellipse_normals(vec2 radii, float shape) {
+ //
+ // Returns start and end normals in (x, y) and (z, w) respectively
+ vec4 compute_superellipse_normals(vec2 radii, float shape) {
+-
+-    float convex_half_corner = compute_superellipse_half_corner(shape);
++    float convex_half_corner = compute_superellipse_half_corner_approx(shape);
+     vec2 tangent = vec2(0.5 - 2.0 * convex_half_corner, 2.0 * convex_half_corner - 1.5);
+ 
+     // Avoid dividing by zero
+diff --git a/gfx/wr/wrench/reftests/border/border-shape-2.yaml b/gfx/wr/wrench/reftests/border/border-shape-2.yaml
+new file mode 100644
+index 0000000000..44f12d74f3
+--- /dev/null
++++ b/gfx/wr/wrench/reftests/border/border-shape-2.yaml
+@@ -0,0 +1,51 @@
++---
++root:
++  items:
++    - type: stacking-context
++      bounds: [0, 0, 480, 320 ]
++      items:
++        - type: rect
++          bounds: [0, 0, 480, 320 ]
++          color: black
++        - type: border
++          bounds: [ 20, 20, 120, 120 ]
++          width: 16
++          border-type: normal
++          style: solid
++          color: white
++          radius: [ 4, 4, 60, 40, 26.0, 2.0, 6.0, 9.0 ]
++        - type: border
++          bounds: [ 180, 20, 120, 120 ]
++          width: [16, 6.4, 12.8, 4]
++          border-type: normal
++          style: solid
++          color: white
++          radius: [ 24, 24, 24, 24, 2.0, 2.0, 2.0, 2.0 ]
++        - type: border
++          bounds: [ 340, 20, 120, 120 ]
++          width: [3.2, 6.4, 12.8, 4]
++          border-type: normal
++          style: solid
++          color: white
++          radius: [ 16, 16, 16, 16, 2.0, -2.0, 0.0, 2.0 ]
++        - type: border
++          bounds: [ 20, 180, 120, 120 ]
++          width: 16
++          border-type: normal
++          style: double
++          color: white
++          radius: [ 4, 4, 4, 4, 2.0, 2.0, 2.0, 2.0 ]
++        - type: border
++          bounds: [ 180, 180, 120, 120 ]
++          width: 16
++          border-type: normal
++          style: double
++          color: white
++          radius: [ 8, 8, 8, 8, 2.0, 2.0, 2.0, 2.0 ]
++        - type: border
++          bounds: [ 340, 180, 120, 120 ]
++          width: [16, 8, 3, 6.4]
++          border-type: normal
++          style: double
++          color: white
++          radius: [ 16, 16, 16, 16, 2.0, -2.0, 2.0, 2.0 ]
+diff --git a/gfx/wr/wrench/reftests/border/border-shape-3.yaml b/gfx/wr/wrench/reftests/border/border-shape-3.yaml
+new file mode 100644
+index 0000000000..5085c083dc
+--- /dev/null
++++ b/gfx/wr/wrench/reftests/border/border-shape-3.yaml
+@@ -0,0 +1,16 @@
++---
++root:
++  items:
++    - type: stacking-context
++      bounds: [0, 0, 400, 400 ]
++      items:
++        - type: rect
++          bounds: [0, 0, 400, 400 ]
++          color: black
++        - type: border
++          bounds: [ 50, 50, 300, 300 ]
++          width: [40, 2, 20, 50]
++          border-type: normal
++          style: solid
++          color: white
++          radius: [ 60, 30, [100, 50], [100, 50], 0.2, 0.0, -Inf, -0.7 ]
+diff --git a/gfx/wr/wrench/reftests/border/border-shape-4.yaml b/gfx/wr/wrench/reftests/border/border-shape-4.yaml
+new file mode 100644
+index 0000000000..27c9b2fd9d
+--- /dev/null
++++ b/gfx/wr/wrench/reftests/border/border-shape-4.yaml
+@@ -0,0 +1,25 @@
++---
++root:
++  items:
++    - type: stacking-context
++      bounds: [0, 0, 400, 300 ]
++      items:
++        - type: rect
++          bounds: [0, 0, 400, 300 ]
++          color: black
++        - type: clip
++          id: 2
++          complex:
++            - rect: [ 50, 50, 300, 200 ]
++              radius: [ 0, 30, 60, 0, 0.0, 0.0, 0.0, 0.0 ]
++        - type: rect
++          clip-chain: [2]
++          bounds: [ 50, 50, 300, 200 ]
++          color: white
++        - type: border
++          bounds: [ 50, 50, 300, 200 ]
++          width: [0, 0, 50, 50]
++          border-type: normal
++          style: solid
++          color: [[0, 1, 0, 0.2], [1, 0, 0, 0.3], [0, 0, 1, 0.2], [1, 1, 0, 0.3]]
++          radius: [ 0, 30, 60, 0, 0.0, 0.0, 0.0, 0.0 ]
+diff --git a/gfx/wr/wrench/reftests/border/border-shape-inset.yaml b/gfx/wr/wrench/reftests/border/border-shape-inset.yaml
+new file mode 100644
+index 0000000000..4b6e51ee3e
+--- /dev/null
++++ b/gfx/wr/wrench/reftests/border/border-shape-inset.yaml
+@@ -0,0 +1,42 @@
++---
++root:
++  items:
++    - type: stacking-context
++      bounds: [ 0, 0, 320, 320 ]
++      items:
++        - type: rect
++          bounds: [ 0, 0, 320, 320 ]
++          color: black
++        - type: border
++          bounds: [ 20, 20, 280, 280 ]
++          width: [ 16, 2, 8, 20 ]
++          border-type: normal
++          style: solid
++          color: white
++          radius: [ 24, 12, 120, [80, 20], 0.2, 0.0, -Inf, -0.7 ]
++          inset: [ 0, 0, 0, 0 ]
++        - type: border
++          bounds: [ 12, 12, 296, 296 ]
++          width: [ 2, 2, 2, 2 ]
++          border-type: normal
++          style: solid
++          color: yellow
++          radius: [ 32, 20, 128, [88, 28], 0.2, 0.0, -Inf, -0.7 ]
++          inset: [ -8, -8, -8, -8 ]
++        - type: border
++          bounds: [ 24.8, 40, 251.2, 248 ]
++          width: [ 2, 2, 2, 2 ]
++          border-type: normal
++          style: solid
++          color: magenta
++          radius: {
++            top-left: [19.2, 4],
++            top-right: [0, 0],
++            bottom-left: [115, 108],
++            bottom-right: [56, 8],
++            shape-top-left: 0.2,
++            shape-top-right: 0.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: -0.7,
++          }
++          inset: [ 20, 24, 12, 4.8 ]
+diff --git a/gfx/wr/wrench/reftests/border/border-shape.yaml b/gfx/wr/wrench/reftests/border/border-shape.yaml
+new file mode 100644
+index 0000000000..c0ac275110
+--- /dev/null
++++ b/gfx/wr/wrench/reftests/border/border-shape.yaml
+@@ -0,0 +1,419 @@
++---
++root:
++  items:
++    - type: stacking-context
++      bounds: [0, 0, 1000, 1000]
++      items:
++        - type: border
++          bounds: [ 10, 10, 100, 100 ]
++          width: [ 1, 1, 1, 1 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 20],
++            top-right: [10, 10],
++            bottom-left: [25, 25],
++            bottom-right: [0, 0],
++          }
++        - type: border
++          bounds: [ 120, 10, 100, 100 ]
++          width: [ 2, 2, 2, 2 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 20],
++            top-right: [10, 10],
++            bottom-left: [25, 25],
++            bottom-right: [0, 0],
++            shape-top-left: 2,
++            shape-top-right: -1.5,
++            shape-bottom-left: 0,
++            shape-bottom-right: +Inf,
++          }
++        - type: border
++          bounds: [ 230, 10, 100, 100 ]
++          width: [ 3, 3, 3, 3 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 20],
++            top-right: [10, 10],
++            bottom-left: [25, 25],
++            bottom-right: [0, 0],
++            shape-top-left: 2,
++            shape-top-right: -1.5,
++            shape-bottom-left: 0,
++            shape-bottom-right: +Inf,
++          }
++        - type: border
++          bounds: [ 340, 10, 100, 100 ]
++          width: [ 5, 5, 5, 5 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 20],
++            top-right: [10, 10],
++            bottom-left: [25, 25],
++            bottom-right: [0, 0],
++            shape-top-left: 2,
++            shape-top-right: -1.5,
++            shape-bottom-left: 0,
++            shape-bottom-right: +Inf,
++          }
++        - type: border
++          bounds: [ 450, 10, 100, 100 ]
++          width: [ 5, 5, 5, 5 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 20],
++            top-right: [10, 10],
++            bottom-left: [25, 25],
++            bottom-right: [0, 0],
++            shape-top-left: 2,
++            shape-top-right: -1.5,
++            shape-bottom-left: 0,
++            shape-bottom-right: +Inf,
++          }
++        - type: border
++          bounds: [ 560, 10, 100, 100 ]
++          width: [ 10, 10, 10, 10 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 20],
++            top-right: [10, 10],
++            bottom-left: [25, 25],
++            bottom-right: [0, 0],
++            shape-top-left: 2,
++            shape-top-right: -1.5,
++            shape-bottom-left: 0,
++            shape-bottom-right: +Inf,
++          }
++
++        - type: border
++          bounds: [ 10, 120, 100, 100 ]
++          width: 10
++          border-type: normal
++          style: inset
++          color: [ red, green, blue, black ]
++        - type: border
++          bounds: [ 120, 120, 100, 100 ]
++          width: 10
++          border-type: normal
++          style: outset
++          color: [ red, green, blue, black ]
++        - type: border
++          bounds: [ 230, 120, 100, 100 ]
++          width: 10
++          border-type: normal
++          style: inset
++          color: [ red, green, blue, black ]
++          radius: [10, 0.5]
++        - type: border
++          bounds: [ 340, 120, 100, 100 ]
++          width: 10
++          border-type: normal
++          style: outset
++          color: [ red, green, blue, black ]
++          radius: [20, -0.3]
++        - type: border
++          bounds: [ 450, 120, 100, 100 ]
++          width: 10
++          border-type: normal
++          style: outset
++          color: [ red, green, blue, black ]
++          radius: [35, 2.2]
++        - type: border
++          bounds: [ 560, 120, 100, 100 ]
++          width: 10
++          border-type: normal
++          style: outset
++          color: [ red, green, blue, black ]
++          radius: [50, -2.6]
++
++        - type: border
++          bounds: [ 10, 230, 100, 100 ]
++          width: [ 1, 1, 1, 1 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 120, 230, 100, 100 ]
++          width: [ 2, 2, 2, 2 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 230, 230, 100, 100 ]
++          width: [ 3, 3, 3, 3 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 340, 230, 100, 100 ]
++          width: [ 5, 5, 5, 5 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 450, 230, 100, 100 ]
++          width: [ 5, 5, 5, 5 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 560, 230, 100, 100 ]
++          width: [ 10, 10, 10, 10 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++
++        - type: border
++          bounds: [ 10, 340, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 120, 340, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 230, 340, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 340, 340, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 450, 340, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++        - type: border
++          bounds: [ 560, 340, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: {
++            top-left: [20, 40],
++            top-right: [30, 10],
++            bottom-left: [21, 7],
++            bottom-right: [0, 5],
++            shape-top-left: -1.2,
++            shape-top-right: 4.0,
++            shape-bottom-left: -Inf,
++            shape-bottom-right: 8.0,
++          }
++
++        - type: border
++          bounds: [ 10, 450, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: [0, -Inf]
++        - type: border
++          bounds: [ 120, 450, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: [10, -Inf]
++        - type: border
++          bounds: [ 230, 450, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: [20, -Inf]
++        - type: border
++          bounds: [ 340, 450, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: [30, -2.3]
++        - type: border
++          bounds: [ 450, 450, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: [40, -2.3]
++        - type: border
++          bounds: [ 560, 450, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: solid
++          color: [ red, green, blue, black ]
++          radius: [50, -2.3]
++
++        - type: border
++          bounds: [ 10, 560, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: [0, -2.3]
++        - type: border
++          bounds: [ 120, 560, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: [10, -2.3]
++        - type: border
++          bounds: [ 230, 560, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: [20, -2.3]
++        - type: border
++          bounds: [ 340, 560, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: [30, -2.3]
++        - type: border
++          bounds: [ 450, 560, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: [40, -2.3]
++        - type: border
++          bounds: [ 560, 560, 100, 100 ]
++          width: [ 20, 20, 20, 20 ]
++          border-type: normal
++          style: double
++          color: [ red, green, blue, black ]
++          radius: [50, -2.3]
+diff --git a/gfx/wr/wrench/reftests/border/reftest.list b/gfx/wr/wrench/reftests/border/reftest.list
+index 98550ba96a..8813005879 100644
+--- a/gfx/wr/wrench/reftests/border/reftest.list
++++ b/gfx/wr/wrench/reftests/border/reftest.list
+@@ -39,3 +39,8 @@ scale(*) != small-inset-outset.yaml small-inset-outset-notref.yaml
+ fuzzy(1,90) == no-aa.yaml green-square.yaml
+ fuzzy(1,20) skip_on(android,device) == border-double-1px.yaml border-double-1px-ref.yaml  # Fails on Pixel2
+ == max-scale.yaml max-scale-ref.yaml
++platform(linux,mac) == border-shape.yaml border-shape.png
++platform(linux,mac) == border-shape-2.yaml border-shape-2.png
++platform(linux,mac) == border-shape-3.yaml border-shape-3.png
++platform(linux,mac) == border-shape-4.yaml border-shape-4.png
++platform(linux,mac) == border-shape-inset.yaml border-shape-inset.png
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-bevel.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-bevel.html.ini
+index 48f1f399ff..64de30993d 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-bevel.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-bevel.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-bevel.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch-mixed.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch-mixed.html.ini
+index e8f92f3417..0cef33e8c4 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch-mixed.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch-mixed.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-notch-mixed.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch.html.ini
+index e69fb19cc6..9cd5ad23a6 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-notch.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-notch.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-scoop.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-scoop.html.ini
+index b8df36dfff..bebaeb9706 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-scoop.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-scoop.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-scoop.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-mixed.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-mixed.html.ini
+index d33e0df628..e829d53044 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-mixed.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-mixed.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-square-notch-mixed.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-superellipse.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-superellipse.html.ini
+index d66f06741d..12d5bac673 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-superellipse.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square-notch-superellipse.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-square-notch-superellipse.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square.html.ini
+index e9b1a330d2..5aca5449b0 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-square.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-square.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-bevel.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-bevel.html.ini
+index 1a106e3e3c..f175e3fb97 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-bevel.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-bevel.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-superellipse-bevel.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-100.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-100.html.ini
+index df13a251a0..6a32def3ac 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-100.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-100.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-superellipse-negative-100.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-inf.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-inf.html.ini
+index c6a7827768..4c2ad71472 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-inf.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-negative-inf.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-superellipse-negative-inf.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-scoop.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-scoop.html.ini
+index f3e23852d0..fc98f5a2f2 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-scoop.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/corner-shape-superellipse-scoop.html.ini
+@@ -1,2 +1,3 @@
+ [corner-shape-superellipse-scoop.html]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+diff --git a/testing/web-platform/meta/css/css-borders/corner-shape/render-corner-shape.html.ini b/testing/web-platform/meta/css/css-borders/corner-shape/render-corner-shape.html.ini
+index 84c9fe0339..6c121825bb 100644
+--- a/testing/web-platform/meta/css/css-borders/corner-shape/render-corner-shape.html.ini
++++ b/testing/web-platform/meta/css/css-borders/corner-shape/render-corner-shape.html.ini
+@@ -7,7 +7,8 @@
+     if useDrawSnapshot: FAIL
+ 
+ [render-corner-shape.html?border-top-left-radius=50%&corner-shape=0.7&border-left-width=30&border-top-width=30]
+-  expected: FAIL
++  expected:
++    if useDrawSnapshot: FAIL
+ 
+ [render-corner-shape.html?corner-shape=-2&border-radius=20%&border-width=20]
+   expected:
+diff --git a/widget/ThemeDrawing.cpp b/widget/ThemeDrawing.cpp
+index c2550d9c2d..ec7aa4bb1c 100644
+--- a/widget/ThemeDrawing.cpp
++++ b/widget/ThemeDrawing.cpp
+@@ -98,7 +98,11 @@ void ThemeDrawing::PaintRoundedRectWithRadius(
+       wr::BorderRadius radii = {{backgroundRadius, backgroundRadius},
+                                 {backgroundRadius, backgroundRadius},
+                                 {backgroundRadius, backgroundRadius},
+-                                {backgroundRadius, backgroundRadius}};
++                                {backgroundRadius, backgroundRadius},
++                                1.0f,
++                                1.0f,
++                                1.0f,
++                                1.0f};
+       aWrData.mBuilder.PushBorder(backgroundRect, clip, kBackfaceIsVisible,
+                                   widths, {sides, 4}, radii);
+     }

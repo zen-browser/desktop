@@ -105,6 +105,10 @@
 .browserSidebarContainer.zen-glance-background,
 .browserSidebarContainer.zen-glance-overlay .browserContainer:not([fade-out="true"]) {
   border-radius: var(--zen-native-inner-radius);
+  @media not (-moz-pref("zen.theme.squircle-browser-view")) {
+    corner-shape: round;
+    border-radius: calc(var(--zen-native-inner-radius) / var(--zen-squircle-value));
+  }
 }
 
 .browserSidebarContainer.zen-glance-overlay {
@@ -144,6 +148,10 @@
       border-radius: var(--zen-native-inner-radius);
       overflow: hidden;
       box-shadow: var(--zen-big-shadow);
+      @media not (-moz-pref("zen.theme.squircle-browser-view")) {
+        corner-shape: round;
+        border-radius: calc(var(--zen-native-inner-radius) / var(--zen-squircle-value));
+      }
     }
 
     & browser {

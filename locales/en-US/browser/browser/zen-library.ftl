@@ -58,3 +58,13 @@ library-downloads-type-archives = Archives
 library-downloads-type-apps = Apps
 library-downloads-retry-button =
     .title = Retry download
+
+library-boosts-search-placeholder =
+    .placeholder = Search Boost…
+
+library-boost-context-edit = 
+    .label = Edit
+library-boost-context-export = 
+    .label = Export
+library-boost-context-delete = 
+    .label = Delete

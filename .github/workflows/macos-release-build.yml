@@ -41,7 +41,6 @@ jobs:
       SCCACHE_GHA_ENABLED: ${{ inputs.use-sccache && 'true' || 'false' }}
       CARGO_TERM_COLOR: always
       CARGO_INCREMENTAL: 0
-      MOZ_AUTOMATION: 1
     strategy:
       fail-fast: false
       matrix:
@@ -109,7 +108,6 @@ jobs:
           set -ex
           mkdir -p ~/mac-cross
           cd engine/
-          unset MOZ_AUTOMATION
           ./mach artifact toolchain --from-build linux64-cctools-port linux64-libdmg linux64-hfsplus
           mv cctools dmg hfsplus ~/mac-cross/
           ls ~/mac-cross/cctools/bin/x86_64-apple-darwin-ld ~/mac-cross/cctools/bin/aarch64-apple-darwin-ld ~/mac-cross/dmg/dmg ~/mac-cross/hfsplus/newfs_hfs
@@ -140,7 +138,6 @@ jobs:
         run: |
           set -x
           export SURFER_PLATFORM="darwin"
-          unset MOZ_AUTOMATION
           npm run bootstrap
 
       - name: Build language packs

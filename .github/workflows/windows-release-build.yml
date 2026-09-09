@@ -45,7 +45,6 @@ jobs:
       SCCACHE_GHA_ENABLED: ${{ inputs.use-sccache && 'true' || 'false' }}
       CARGO_TERM_COLOR: always
       CARGO_INCREMENTAL: 0
-      MOZ_AUTOMATION: 1
     strategy:
       fail-fast: false
       matrix:
@@ -186,7 +185,6 @@ jobs:
           chmod -R +x "$(echo ~)/win-cross/vs2026" || true
           cd ..
           export SURFER_PLATFORM="win32"
-          unset MOZ_AUTOMATION
           npm run bootstrap
           cd engine/
           ls ~/.mozbuild/clang/lib/clang/

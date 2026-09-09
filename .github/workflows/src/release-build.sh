@@ -37,10 +37,6 @@ bash ./scripts/mar_sign.sh -i
 
 ulimit -n 4096
 
-cd engine
-env -u MOZ_AUTOMATION ./mach configure --enable-bootstrap=no-update
-cd ..
-
 export ZEN_DISABLE_BOOTSTRAP=1
 
 if command -v Xvfb &> /dev/null; then

@@ -41,6 +41,8 @@ cd engine
 ./mach configure --enable-bootstrap=no-update
 cd ..
 
+export ZEN_DISABLE_BOOTSTRAP=1
+
 if command -v Xvfb &> /dev/null; then
   if ! test "$ZEN_CROSS_COMPILING"; then
     Xvfb :2 -nolisten tcp -noreset -screen 0 1024x768x24 &

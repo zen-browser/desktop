@@ -180,19 +180,26 @@ export class ZenLibrary extends MozLitElement {
     }
   }
 
-  static async toggle() {
+  static toggle() {
+    const lib = this.getInstance();
+    lib.#springTarget = lib.#springTarget === 1 ? 0 : 1;
+    this.animateProgress(lib.#springTarget);
+  }
+
+  static async animateProgress(target) {
     const lib = this.getInstance();
     lib.#cancelIdleCleanup();
     await lib.#whenStylesLoaded();
     lib.style.visibility = "";
     await window.promiseDocumentFlushed(() => {});
-    lib.#springTarget = lib.#springTarget === 1 ? 0 : 1;
-
-    if (lib.hasAttribute("transitioning")) {
-      return;
+    
+    if (lib.#springControls) {
+      lib.#springControls.stop();
+      lib.#springControls = null;
     }
 
-    if (lib.#springTarget === 1) {
+    if (target === 1) {
+      gURLBar.view.close();
       lib.#toolboxWidth =
         window.windowUtils.getBoundsWithoutFlushing(gNavToolbox).width;
       if (document.documentElement.hasAttribute("zen-sidebar-expanded")) {
@@ -205,7 +212,7 @@ export class ZenLibrary extends MozLitElement {
     lib.setAttribute("transitioning", "true");
     lib.#springControls = gZenUIManager.motion.animate(
       lib.openProgress,
-      lib.#springTarget,
+      target,
       {
         type: "spring",
         stiffness: 720,
@@ -215,10 +222,10 @@ export class ZenLibrary extends MozLitElement {
           lib.openProgress = latest;
         },
         onComplete: () => {
-          lib.openProgress = lib.#springTarget;
+          lib.openProgress = target;
           lib.#springControls = null;
           lib.removeAttribute("transitioning");
-          if (lib.#springTarget === 0) {
+          if (target === 0) {
             lib.#scheduleIdleCleanup();
           }
         },
@@ -272,7 +279,7 @@ export class ZenLibrary extends MozLitElement {
       return;
     }
     if (e.key === "Escape") {
-      ZenLibrary.toggle();
+      ZenLibrary.animateProgress(0);
     }
   }
 

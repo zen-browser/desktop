@@ -22,6 +22,8 @@ ChromeUtils.defineESModuleGetters(
   { global: "current" }
 );
 
+const LAST_TAB_PREF = "zen.library.last-tab";
+
 ChromeUtils.defineLazyGetter(lazy, "appContentWrapper", function () {
   return document.getElementById("zen-appcontent-wrapper");
 });
@@ -50,14 +52,14 @@ export class ZenLibrary extends MozLitElement {
 
   constructor() {
     super();
-    // TODO: Save last tab
-    this.activeTab = "history";
     this.zenLibrarySections = {
       history: lazy.ZenLibraryHistorySection,
       downloads: lazy.ZenLibraryDownloadsSection,
       boosts: lazy.ZenLibraryBoostsSection,
       spaces: lazy.ZenLibrarySpacesSection,
     };
+    const lastTab = Services.prefs.getStringPref(LAST_TAB_PREF, "history");
+    this.activeTab = lastTab in this.zenLibrarySections ? lastTab : "history";
   }
 
   set activeTab(value) {
@@ -65,6 +67,7 @@ export class ZenLibrary extends MozLitElement {
       return;
     }
     this._activeTab = value;
+    Services.prefs.setStringPref(LAST_TAB_PREF, value);
   }
 
   get activeTab() {
@@ -177,11 +180,12 @@ export class ZenLibrary extends MozLitElement {
     const lib = this.getInstance();
     lib.#cancelIdleCleanup();
     await lib.#whenStylesLoaded();
+    lib.style.visibility = "";
     await window.promiseDocumentFlushed(() => {});
     lib.#springTarget = lib.#springTarget === 1 ? 0 : 1;
 
-    if (lib.#springControls) {
-      lib.#springControls.stop();
+    if (lib.hasAttribute("transitioning")) {
+      return;
     }
 
     if (lib.#springTarget === 1) {
@@ -221,6 +225,7 @@ export class ZenLibrary extends MozLitElement {
   static getInstance() {
     if (!this.instance) {
       this.instance = new ZenLibrary();
+      this.instance.style.visibility = "collapse";
       const mountRoot = document.getElementById("zen-main-app-wrapper");
       mountRoot.prepend(this.instance);
     }

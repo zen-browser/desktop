@@ -3,7 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { html, repeat } from "chrome://global/content/vendor/lit.all.mjs";
-import { ZenLibrarySearchSection } from "moz-src:///zen/library/sections/ZenLibrarySearchSection.mjs";
+import {
+  MS_PER_DAY,
+  PAGE_SIZE,
+  ZenLibrarySearchSection,
+  whenFilterGroup,
+} from "moz-src:///zen/library/sections/ZenLibrarySearchSection.mjs";
 
 let lazy = {};
 
@@ -24,10 +29,7 @@ ChromeUtils.defineLazyGetter(
   () => new Intl.DateTimeFormat(undefined, { dateStyle: "medium" })
 );
 
-const PAGE_SIZE = 100;
 const HISTORY_DAYS_OLD = 120;
-const MS_PER_DAY = 86400000;
-const WHEN_DAYS = { today: 1, week: 7, month: 30 };
 const SORT_OPTIONS = ["date", "site", "mostvisited", "lastvisited"];
 
 const visitKey = visit => `${visit.guid}-${visit.date.getTime()}`;
@@ -84,16 +86,7 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
 
   get filterGroups() {
     return [
-      {
-        id: "when",
-        titleL10nId: "library-history-filter-when",
-        exclusive: true,
-        options: [
-          { id: "today", l10nId: "library-history-filter-today" },
-          { id: "week", l10nId: "library-history-filter-week" },
-          { id: "month", l10nId: "library-history-filter-month" },
-        ],
-      },
+      whenFilterGroup("library-history-filter-when"),
       {
         id: "sort",
         titleL10nId: "library-history-filter-sort",
@@ -109,12 +102,7 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
   }
 
   get #activeDaysOld() {
-    for (const [id, days] of Object.entries(WHEN_DAYS)) {
-      if (this.isFilterActive("when", id)) {
-        return days;
-      }
-    }
-    return HISTORY_DAYS_OLD;
+    return this.activeWhenDays ?? HISTORY_DAYS_OLD;
   }
 
   get #activeSort() {
@@ -258,24 +246,15 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
 
   #renderVisit(visit) {
     return html`
-      <div
-        class="zen-library-history-row"
-        @click=${() => this.#openVisit(visit)}
-      >
-        <img
-          class="zen-library-history-favicon"
-          src="page-icon:${visit.url}"
-          alt=""
-        />
-        <div class="zen-library-history-text">
-          <span class="zen-library-history-title"
-            >${visit.title || visit.url}</span
-          >
-          <span class="zen-library-history-url"
+      <div class="zen-library-row" @click=${() => this.#openVisit(visit)}>
+        <img class="zen-library-row-icon" src="page-icon:${visit.url}" alt="" />
+        <div class="zen-library-row-text">
+          <span class="zen-library-row-title">${visit.title || visit.url}</span>
+          <span class="zen-library-row-subtitle"
             >${this.#formatUrl(visit.url)}</span
           >
         </div>
-        <div class="zen-library-history-actions">
+        <div class="zen-library-row-actions">
           <button
             data-l10n-id="library-history-forget-button"
             @click=${event => {
@@ -330,9 +309,7 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
         return this.#renderEmpty();
       }
       return html`
-        <div class="zen-library-history-group">
-          ${this.#renderVisits(this.visits)}
-        </div>
+        <div class="zen-library-group">${this.#renderVisits(this.visits)}</div>
       `;
     }
     if (!this.visits.size) {
@@ -342,7 +319,7 @@ export class ZenLibraryHistorySection extends ZenLibrarySearchSection {
       this.visits.entries(),
       ([key]) => key,
       ([key, groupVisits]) => html`
-        <div class="zen-library-history-group">
+        <div class="zen-library-group">
           ${this.#renderGroupHeader(key)} ${this.#renderVisits(groupVisits)}
         </div>
       `

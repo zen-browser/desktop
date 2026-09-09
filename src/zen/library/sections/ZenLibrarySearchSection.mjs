@@ -7,6 +7,27 @@ import { MozLitElement } from "chrome://global/content/lit-utils.mjs";
 
 const SEARCH_DEBOUNCE_MS = 250;
 
+export const PAGE_SIZE = 100;
+export const MS_PER_DAY = 86400000;
+const WHEN_DAYS = { today: 1, week: 7, month: 30 };
+
+/**
+ * Builds the exclusive "when" filter group shared by time-based sections.
+ *
+ * @param {string} titleL10nId - Fluent id of the group title
+ */
+export function whenFilterGroup(titleL10nId) {
+  return {
+    id: "when",
+    titleL10nId,
+    exclusive: true,
+    options: Object.keys(WHEN_DAYS).map(id => ({
+      id,
+      l10nId: `library-filter-${id}`,
+    })),
+  };
+}
+
 export class ZenLibrarySearchSection extends MozLitElement {
   static properties = {
     searchQuery: { type: String, state: true },
@@ -59,6 +80,19 @@ export class ZenLibrarySearchSection extends MozLitElement {
 
   isFilterActive(groupId, optionId) {
     return this.activeFilters.has(`${groupId}:${optionId}`);
+  }
+
+  /**
+   * Number of days selected in the "when" filter group, or null when no
+   * option is active.
+   */
+  get activeWhenDays() {
+    for (const [id, days] of Object.entries(WHEN_DAYS)) {
+      if (this.isFilterActive("when", id)) {
+        return days;
+      }
+    }
+    return null;
   }
 
   disconnectedCallback() {

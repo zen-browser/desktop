@@ -96,10 +96,15 @@ zen-library[transitioning] #zen-library-content {
   contain: content;
 }
 
-#zen-library-header,
 #zen-library-footer {
   display: flex;
   padding: 8px;
+}
+
+@media (-moz-platform: macos) {
+  #zen-library-header {
+    padding: 12px 0 0 9px;
+  }
 }
 
 #zen-library-footer {
@@ -416,14 +421,14 @@ zen-library:not([open])
   opacity: 0.6;
 }
 
-.zen-library-history-group h3 {
+.zen-library-group h3 {
   margin: 10px 8px 5px;
   font-size: 12px;
   font-weight: 700;
   opacity: 0.6;
 }
 
-.zen-library-history-row {
+.zen-library-row {
   display: flex;
   align-items: center;
   gap: 14px;
@@ -435,14 +440,16 @@ zen-library:not([open])
   }
 }
 
-.zen-library-history-favicon {
+.zen-library-row-icon {
   width: 16px;
   height: 16px;
   border-radius: 4px;
   margin-inline: 2px 1px;
+  -moz-context-properties: fill;
+  fill: currentColor;
 }
 
-.zen-library-history-text {
+.zen-library-row-text {
   flex: 1;
   min-width: 0;
   display: flex;
@@ -456,26 +463,22 @@ zen-library:not([open])
   }
 }
 
-.zen-library-history-title {
+.zen-library-row-title {
   font-size: 14px;
   font-weight: 500;
 }
 
-.zen-library-history-url {
+.zen-library-row-subtitle {
   font-size: 12px;
   opacity: 0.6;
 }
 
-.zen-library-history-actions {
-  display: none;
+.zen-library-row-actions {
+  display: flex;
   gap: 4px;
 
-  .zen-library-history-row:hover & {
-    display: flex;
-  }
-
   & button {
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
@@ -487,11 +490,15 @@ zen-library:not([open])
     background: transparent;
     color: inherit;
 
+    .zen-library-row:is(:hover, [menu-open]) & {
+      display: flex;
+    }
+
     &:hover {
       background: color-mix(in srgb, currentColor 14%, transparent);
     }
 
-    & img {
+    & :is(img, svg) {
       display: block;
       width: 18px;
       height: 18px;
@@ -501,3 +508,58 @@ zen-library:not([open])
     }
   }
 }
+
+.zen-library-download-url {
+  display: none;
+}
+
+.zen-library-row:hover:not([opening], [pending]) {
+  & .zen-library-download-status {
+    display: none;
+  }
+
+  & .zen-library-download-url {
+    display: inline;
+  }
+}
+
+.zen-library-row[pending]:not(:hover) .zen-library-download-status {
+  display: none;
+}
+
+.zen-library-row[pending]:not(:hover) .zen-library-row-subtitle::before {
+  content: "";
+  display: block;
+  height: 4px;
+  margin-block: calc((1lh - 4px) / 2);
+  border-radius: 2px;
+  background:
+    linear-gradient(var(--color-accent-primary), var(--color-accent-primary)) 0 0 /
+      var(--zen-library-download-progress, 0%) 100% no-repeat,
+    color-mix(in srgb, currentColor 12%, transparent);
+  transition: background-size 0.2s ease;
+}
+
+.zen-library-row[paused] .zen-library-row-subtitle::before {
+  background-image: linear-gradient(
+    color-mix(in srgb, var(--color-accent-primary) 50%, transparent),
+    color-mix(in srgb, var(--color-accent-primary) 50%, transparent)
+  );
+}
+
+.zen-library-row[indeterminate] .zen-library-row-subtitle::before {
+  background-size: 40% 100%;
+  transition: none;
+  animation: zen-library-progress-indeterminate 1.2s ease-in-out infinite;
+}
+
+@keyframes zen-library-progress-indeterminate {
+  from {
+    background-position-x: -70%;
+  }
+
+  to {
+    background-position-x: 170%;
+  }
+}
+

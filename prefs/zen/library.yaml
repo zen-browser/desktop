@@ -4,3 +4,6 @@
 
 - name: zen.library.enabled
   value: false
+
+- name: zen.library.last-tab
+  value: "history"

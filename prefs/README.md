@@ -4,4 +4,4 @@ This directory contains configuration files for Zen. They are divided by folder 
 
 - `firefox/`: Preferences to override Firefox defaults.
 - `zen/`: Preferences to configure Zen-specific features.
-- `privatefox/` & `fastfox/`: _Some_ of the preferences got extracted from [Betterfox](https://github.com/yokoffing/Betterfox).
+- `privatefox/`: _Some_ of the preferences got extracted from [Betterfox](https://github.com/yokoffing/Betterfox).

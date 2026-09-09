@@ -11,9 +11,6 @@
 - name: zen.glance.open-essential-external-links
   value: true
 
-- name: zen.glance.activation-method
-  value: "alt" # ctrl, alt, shift
-
 - name: zen.glance.animation-duration
   value: 350 # in milliseconds
 

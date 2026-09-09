@@ -31,7 +31,11 @@ zen-glance-enabled =
 zen-glance-trigger-ctrl-click =
     .label = Ctrl + Click
 zen-glance-trigger-alt-click =
-    .label = Alt + Click
+    .label =
+        { PLATFORM() ->
+            [macos] Option + Click
+           *[other] Alt + Click
+        }
 zen-glance-trigger-shift-click =
     .label = Shift + Click
 zen-glance-trigger-meta-click =
@@ -374,3 +378,27 @@ zen-close-all-unpinned-tabs-shortcut = Close All Unpinned Tabs
 zen-new-unsynced-window-shortcut = New Blank Window
 zen-duplicate-tab-shortcut = Duplicate Tab
 zen-key-find-selection = Find Selection
+
+zen-content-link-handling-title = Content Link Handling
+zen-content-link-handling-glance-label = Open in Glance
+zen-content-link-handling-split-label = Open in Split View
+zen-content-link-handling-disabled =
+    .label = Disabled
+zen-content-link-handling-conflict = Some actions share a shortcut. Choose different shortcuts to enable them.
+zen-content-link-handling-description = Choose what happens when you hold modifier keys and click a link. Changes apply immediately. Disabled shortcuts do not affect context menu actions.
+
+zen-content-link-handling-tab-label = Open in New Tab
+zen-content-link-handling-window-label = Open in New Window
+zen-content-link-handling-restore =
+    .label = Restore defaults
+zen-content-link-handling-recording-help = Select a field, then press and release your modifier keys. Escape cancels; Backspace or Delete disables the shortcut.
+zen-content-link-handling-recording = Press modifier keys…
+zen-content-link-handling-off = Disabled
+zen-content-link-handling-recorded = { $modifier } + Click
+zen-content-link-handling-clear =
+    .label = Clear
+zen-content-link-handling-inline-conflict = Conflicts with { $action }.
+zen-content-link-handling-swap-button =
+    .label = Swap shortcuts
+zen-content-link-handling-cancel =
+    .label = Cancel

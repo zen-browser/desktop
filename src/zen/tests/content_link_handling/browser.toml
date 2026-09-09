@@ -1,0 +1,4 @@
+[DEFAULT]
+support-files = ["head.js", "!/zen/tests/split_view/head.js", "!/zen/tests/glance/head.js"]
+
+["browser_content_link_handling.js"]

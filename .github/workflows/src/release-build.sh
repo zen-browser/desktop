@@ -37,6 +37,10 @@ bash ./scripts/mar_sign.sh -i
 
 ulimit -n 4096
 
+cd engine
+./mach configure --enable-bootstrap=no-update
+cd ..
+
 if command -v Xvfb &> /dev/null; then
   if ! test "$ZEN_CROSS_COMPILING"; then
     Xvfb :2 -nolisten tcp -noreset -screen 0 1024x768x24 &

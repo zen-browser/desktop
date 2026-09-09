@@ -106,6 +106,7 @@
 .browserSidebarContainer.zen-glance-overlay .browserContainer:not([fade-out="true"]) {
   border-radius: var(--zen-native-inner-radius);
   @media not (-moz-pref("zen.theme.squircle-browser-view")) {
+    /* stylelint-disable-next-line property-no-unknown */
     corner-shape: round;
     border-radius: calc(var(--zen-native-inner-radius) / var(--zen-squircle-value));
   }
@@ -149,6 +150,7 @@
       overflow: hidden;
       box-shadow: var(--zen-big-shadow);
       @media not (-moz-pref("zen.theme.squircle-browser-view")) {
+        /* stylelint-disable-next-line property-no-unknown */
         corner-shape: round;
         border-radius: calc(var(--zen-native-inner-radius) / var(--zen-squircle-value));
       }

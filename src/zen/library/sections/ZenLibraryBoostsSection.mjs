@@ -217,12 +217,14 @@ export class ZenLibraryBoostsSection extends ZenLibrarySearchSection {
           this.#openMenu(boost, event.currentTarget, event);
         }}
       >
-        <img
-          class="zen-library-row-icon"
-          src="page-icon:https://${boost.domain}/"
-          alt=""
-          ?inactive=${!boost.isActive}
-        />
+        <span class="zen-library-row-icon-wrapper">
+          <img
+            class="zen-library-row-icon"
+            src="page-icon:https://${boost.domain}/"
+            alt=""
+            ?inactive=${!boost.isActive}
+          />
+        </span>
         <div class="zen-library-row-text">
           <span class="zen-library-row-title"
             >${boost.name || boost.domain}</span

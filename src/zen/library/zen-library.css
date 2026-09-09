@@ -440,11 +440,13 @@ zen-library:not([open])
   }
 }
 
-.library-boost-item {
-  padding-top: 6px;
-  padding-bottom: 6px;
-  padding-left: 4px;
-  border-radius: 18px;
+.zen-library-row-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  margin-inline: 2px 1px;
+  -moz-context-properties: fill;
+  fill: currentColor;
 }
 
 .zen-library-row-text {

@@ -59,6 +59,28 @@ library-downloads-type-apps = Apps
 library-downloads-retry-button =
     .title = Retry download
 
+library-spaces-theme-button =
+    .title = Change theme
+library-spaces-move-button =
+    .title = Drag to reorder
+library-spaces-actions-button =
+    .tooltiptext = More options
+library-spaces-icon-button =
+    .title = Change icon
+library-spaces-name-button =
+    .title = Rename space
+
+library-spaces-theme-button =
+    .title = Change theme
+library-spaces-move-button =
+    .title = Drag to reorder
+library-spaces-actions-button =
+    .tooltiptext = More options
+library-spaces-icon-button =
+    .title = Change icon
+library-spaces-name-button =
+    .title = Rename space
+
 library-boosts-search-placeholder =
     .placeholder = Search Boost…
 

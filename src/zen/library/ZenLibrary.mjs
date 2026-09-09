@@ -189,6 +189,7 @@ export class ZenLibrary extends MozLitElement {
     }
 
     if (lib.#springTarget === 1) {
+      gURLBar.view.close();
       lib.#toolboxWidth =
         window.windowUtils.getBoundsWithoutFlushing(gNavToolbox).width;
       if (document.documentElement.hasAttribute("zen-sidebar-expanded")) {

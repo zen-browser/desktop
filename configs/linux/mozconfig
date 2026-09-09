@@ -9,6 +9,9 @@ if test "$ZEN_RELEASE"; then
 
         # Enable Profile Guided Optimization
         if ! test "$ZEN_GA_DISABLE_PGO"; then
+            export MOZ_LTO=cross,full
+            ac_add_options --enable-lto=cross,full
+
             if test "$ZEN_GA_GENERATE_PROFILE"; then
                 mk_add_options "export MOZ_AUTOMATION_PACKAGE_GENERATED_SOURCES=0"
                 ac_add_options --enable-profile-generate=cross

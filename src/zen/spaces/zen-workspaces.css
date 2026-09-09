@@ -30,9 +30,9 @@
 
   & toolbarbutton {
     margin: 0;
-    max-width: 28px;
+    max-width: 30px;
     border-radius: var(--toolbarbutton-border-radius);
-    height: 28px;
+    height: 30px;
     display: flex;
     justify-content: center;
     padding: 0 !important;
@@ -58,8 +58,8 @@
       }
 
       &[no-icon='true'] {
-        width: 6px;
-        height: 6px;
+        width: 8px;
+        height: 8px;
         background: light-dark(rgba(0, 0, 0, 0.4), rgba(255, 255, 255, 0.4));
         border-radius: 50%;
       }

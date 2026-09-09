@@ -38,7 +38,7 @@ bash ./scripts/mar_sign.sh -i
 ulimit -n 4096
 
 cd engine
-./mach configure --enable-bootstrap=no-update
+env -u MOZ_AUTOMATION ./mach configure --enable-bootstrap=no-update
 cd ..
 
 export ZEN_DISABLE_BOOTSTRAP=1

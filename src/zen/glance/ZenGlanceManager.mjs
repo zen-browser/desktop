@@ -31,7 +31,7 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
 
   // Click handling
   #lastLinkClickData = { clientX: 0, clientY: 0, height: 0, width: 0 };
-
+  #bookmarkMouseDownTime = null;
   // Arc animation configuration
   #ARC_CONFIG = Object.freeze({
     ARC_STEPS: 80, // Browser interpolates between keyframes natively
@@ -61,6 +61,18 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
     document
       .getElementById("tabbrowser-tabpanels")
       .addEventListener("click", this.onOverlayClick.bind(this));
+
+    window.addEventListener(
+      "mousedown",
+      event => {
+        if (event.button === 0 && event.target.closest?.(".bookmark-item")) {
+          this.#bookmarkMouseDownTime = event.timeStamp;
+        } else {
+          this.#bookmarkMouseDownTime = null;
+        }
+      },
+      true
+    );
   }
 
   #setupPreferences() {
@@ -1741,6 +1753,19 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * @returns {boolean} True if key is pressed
    */
   #isActivationKeyPressed(event, activationMethod) {
+    if (activationMethod === "long-press") {
+      if (this.#bookmarkMouseDownTime !== null) {
+        const duration = event.timeStamp - this.#bookmarkMouseDownTime;
+        this.#bookmarkMouseDownTime = null;
+        const threshold = Services.prefs.getIntPref(
+          "zen.glance.long-press-duration",
+          300
+        );
+        return duration >= threshold;
+      }
+      return false;
+    }
+
     const keyMap = {
       ctrl: event.ctrlKey,
       alt: event.altKey,

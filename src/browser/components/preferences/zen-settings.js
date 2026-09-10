@@ -765,6 +765,7 @@ var gZenWorkspacesSettings = {
     toggleZenCycleByAttrWarning.observe(); // call it once on initial load
 
     Services.prefs.addObserver("zen.glance.enabled", updateGlancePreferencesVisibility);
+    Services.prefs.addObserver("zen.glance.activation-method", updateGlancePreferencesVisibility);
     Services.prefs.addObserver("zen.workspaces.separate-essentials", tabsUnloaderPrefListener);
     Services.prefs.addObserver("zen.window-sync.sync-only-pinned-tabs", tabsUnloaderPrefListener);
     Services.prefs.addObserver(
@@ -774,6 +775,7 @@ var gZenWorkspacesSettings = {
     Services.prefs.addObserver("browser.ctrlTab.sortByRecentlyUsed", toggleZenCycleByAttrWarning);
     window.addEventListener("unload", () => {
       Services.prefs.removeObserver("zen.glance.enabled", updateGlancePreferencesVisibility);
+      Services.prefs.removeObserver("zen.glance.activation-method", updateGlancePreferencesVisibility);
       Services.prefs.removeObserver("zen.workspaces.separate-essentials", tabsUnloaderPrefListener);
       Services.prefs.removeObserver(
         "zen.window-sync.sync-only-pinned-tabs",

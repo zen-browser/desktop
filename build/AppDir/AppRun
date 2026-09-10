@@ -4,7 +4,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 CURRENTDIR="$(dirname "$(readlink -f "$0")")"
-export PATH="${CURRENTDIR}:${PATH}"
 export MOZ_LEGACY_PROFILES=1          # Prevent per installation profiles
 export MOZ_APP_LAUNCHER="${APPIMAGE}" # Allows setting as default browser
-exec "${CURRENTDIR}/zen" "$@"
+exec "${CURRENTDIR}/bin/zen" "$@"

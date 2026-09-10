@@ -69,3 +69,11 @@ library-spaces-icon-button =
     .title = Change icon
 library-spaces-name-button =
     .title = Rename space
+
+library-boosts-search-placeholder =
+    .placeholder = Search Boosts…
+library-boosts-empty = No boosts yet
+library-boosts-toggle =
+    .aria-label = Enable boost
+library-boosts-menu-edit =
+    .label = Edit Boost

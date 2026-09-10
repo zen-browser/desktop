@@ -37,6 +37,7 @@ export class ZenLibrarySpacesSection extends MozLitElement {
   #dragIndex = -1;
   #dropIndex = -1;
   #dragStartX = 0;
+  #dragCenterX = 0;
   #dragStartScroll = 0;
   #lastPointerX = 0;
   #scrollFrame = null;
@@ -168,6 +169,8 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     this.#dragStartX = event.clientX;
     this.#lastPointerX = event.clientX;
     this.#dragStartScroll = this.#list.scrollLeft;
+    const cardRect = window.windowUtils.getBoundsWithoutFlushing(card);
+    this.#dragCenterX = cardRect.left + cardRect.width / 2;
     this.#slotCenters = cards
       .filter((other, i) => i !== this.#dragIndex)
       .map(other => {
@@ -197,8 +200,8 @@ export class ZenLibrarySpacesSection extends MozLitElement {
     const scrolled = this.#list.scrollLeft - this.#dragStartScroll;
     const travel = this.#lastPointerX - this.#dragStartX + scrolled;
     cards[this.#dragIndex].style.translate = `${travel}px 0`;
-    const pointerX = this.#lastPointerX + scrolled;
-    const index = this.#slotCenters.filter(center => pointerX > center).length;
+    const centerX = this.#dragCenterX + travel;
+    const index = this.#slotCenters.filter(center => centerX > center).length;
     if (index !== this.#dropIndex) {
       this.#dropIndex = index;
       this.#shiftCards(cards);

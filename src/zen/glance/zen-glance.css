@@ -103,11 +103,12 @@
 }
 
 .browserSidebarContainer.zen-glance-background,
-.browserSidebarContainer.zen-glance-overlay .browserContainer:not([fade-out="true"]) {
+:is(.browserSidebarContainer.zen-glance-overlay, #zen-glance-detached)
+  .browserContainer:not([fade-out="true"]) {
   border-radius: var(--zen-native-inner-radius);
 }
 
-.browserSidebarContainer.zen-glance-overlay {
+:is(.browserSidebarContainer.zen-glance-overlay, #zen-glance-detached) {
   box-shadow: none !important;
   visibility: inherit;
   z-index: 1;
@@ -186,5 +187,21 @@
     width: 100%;
     max-width: 100%;
     max-height: 100%;
+  }
+}
+
+#zen-main-app-wrapper > #zen-glance-detached {
+  position: fixed;
+  inset: 24px;
+  z-index: 100;
+  display: flex;
+
+  &[hidden] {
+    display: none;
+  }
+
+  & .zen-glance-detached-backdrop {
+    position: fixed;
+    inset: 0;
   }
 }

@@ -4,6 +4,12 @@
 
 import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
 
+const lazy = {};
+ChromeUtils.defineESModuleGetters(lazy, {
+  CustomizableWidgets:
+    "moz-src:///browser/components/customizableui/CustomizableWidgets.sys.mjs",
+});
+
 export const ZenCustomizableUI = new (class {
   constructor() {}
 
@@ -42,6 +48,7 @@ export const ZenCustomizableUI = new (class {
   init(window) {
     this.#addSidebarButtons(window);
     this.#modifyToolbarButtons(window);
+    this.#addWidgets(window);
   }
 
   #addSidebarButtons(window) {
@@ -151,6 +158,26 @@ export const ZenCustomizableUI = new (class {
         false /* attributesOverride */,
         event
       );
+    });
+  }
+
+  #addWidgets(window) {
+    const ZenWidgets = [
+      {
+        id: "zen-library-button",
+        l10nId: "zen-library-button",
+        onCreated(aNode) {
+          aNode.setAttribute("command", "cmd_zenToggleLibrary");
+        },
+      },
+    ];
+
+    ZenWidgets.forEach(widget => {
+      window.CustomizableUI.createWidget(
+        widget,
+        window.CustomizableUI.SOURCE_BUILTIN
+      );
+      lazy.CustomizableWidgets.push(widget);
     });
   }
 

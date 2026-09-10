@@ -4,6 +4,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+@keyframes zen-library-sprite-hover {
+  from {
+    background-position-x: 0%;
+  }
+
+  to {
+    background-position-x: 100%;
+  }
+}
+
+@keyframes zen-library-sprite-unhover {
+  from {
+    background-position-x: 100%;
+  }
+
+  to {
+    background-position-x: 0%;
+  }
+}
+
 @keyframes zen-back-and-forth-text {
   0%,
   10% {

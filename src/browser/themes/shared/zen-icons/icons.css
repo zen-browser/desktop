@@ -309,8 +309,7 @@
   display: none;
 }
 
-#library-button,
-#zen-library-button {
+#library-button {
   list-style-image: url("library.svg") !important;
 }
 

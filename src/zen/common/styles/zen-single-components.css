@@ -800,3 +800,23 @@
     display: none;
   }
 }
+
+#zen-library-button {
+  --zen-library-sprite-size: 18px;
+  &::before {
+    content: "";
+    position: absolute;
+    width: var(--zen-library-sprite-size);
+    height: var(--zen-library-sprite-size);
+    background-image: url("chrome://browser/skin/zen-icons/library/library-sprite.svg");
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    &::before {
+      animation: zen-library-sprite-unhover 0.3s steps(36, jump-none);
+    }
+    &:hover::before {
+      animation: zen-library-sprite-hover 0.35s steps(36, jump-none) forwards;
+    }
+  }
+}

@@ -11,6 +11,11 @@
     :root:not([zen-no-padding="true"]) &:not(.zen-glance-overlay) {
       border-radius: var(--zen-native-inner-radius);
       box-shadow: var(--zen-big-shadow);
+      @media not (-moz-pref("zen.theme.squircle-browser-view")) {
+        /* stylelint-disable-next-line property-no-unknown */
+        corner-shape: round;
+        border-radius: calc(var(--zen-native-inner-radius) / var(--zen-squircle-value));
+      }
     }
 
     & browser[type="content"] {

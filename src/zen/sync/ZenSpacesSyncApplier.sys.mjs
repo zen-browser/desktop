@@ -654,7 +654,7 @@ class nsZenSpacesSyncApplier {
         );
         win.gBrowser.setIcon(tab, icon);
         lazy.TabStateCache.update(tab.linkedBrowser.permanentKey, {
-          image: null,
+          image: icon || null,
         });
       } catch (e) {
         console.error("ZenSpacesSync: failed to set tab icon", e);

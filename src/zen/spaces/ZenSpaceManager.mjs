@@ -432,8 +432,9 @@ class nsZenWorkspaces {
     // Set a hidden state if the essentials section is not supposed
     // to be shown on the current workspace, else remove the hidden state
     if (
-      this.containerSpecificEssentials &&
-      this.getActiveWorkspaceFromCache()?.containerTabId != container
+      this.activeWorkspace === this.creatingWorkspaceId ||
+      (this.containerSpecificEssentials &&
+        this.getActiveWorkspaceFromCache()?.containerTabId + 0 != container)
     ) {
       essentialsContainer.setAttribute("hidden", "true");
     } else {
@@ -2910,7 +2911,10 @@ class nsZenWorkspaces {
   }
 
   findTabToBlur(tab) {
-    if ((!this._shouldChangeToTab(tab) || !tab) && this._emptyTab) {
+    if (
+      (!tab || !this._shouldChangeToTab(tab) || !gBrowser.tabs.includes(tab)) &&
+      this._emptyTab
+    ) {
       return this._emptyTab;
     }
     return tab;

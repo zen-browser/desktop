@@ -8,6 +8,11 @@
     "name": "Native MacOS popovers fix"
   },
   {
+    "type": "phabricator",
+    "id": "D323933",
+    "name": "Issue 15123"
+  },
+  {
     "type": "local",
     // TODO: Convert into https://phabricator.services.mozilla.com/D298079
     //    once it gets accepted.

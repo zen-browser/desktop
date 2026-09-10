@@ -17,6 +17,27 @@ XPCOMUtils.defineLazyPreferenceGetter(
   true
 );
 
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "activationMethod",
+  "zen.glance.activation-method",
+  "ctrl"
+);
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "longPressDuration",
+  "zen.glance.long-press-duration",
+  300
+);
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "glanceEnabled",
+  "zen.glance.enabled",
+  true
+);
+
 // A small threshold to allow for minor mouse jitter during a normal click.
 // Anything beyond this is likely an intentional drag (like selecting text).
 const CLICK_DRAG_THRESHOLD_PX = 4;
@@ -32,20 +53,22 @@ export class ZenGlanceChild extends JSWindowActorChild {
 
   get #isGlanceEnabled() {
     return (
-      Services.cpmm.sharedData.get(GLANCE_CONFIG_KEY)?.glanceEnabled ?? true
+      Services.cpmm.sharedData.get(GLANCE_CONFIG_KEY)?.glanceEnabled ??
+      lazy.glanceEnabled
     );
   }
 
   get #currentActivationMethod() {
     return (
       Services.cpmm.sharedData.get(GLANCE_CONFIG_KEY)?.activationMethod ??
-      "ctrl"
+      lazy.activationMethod
     );
   }
 
   get #currentLongPressDuration() {
     return (
-      Services.cpmm.sharedData.get(GLANCE_CONFIG_KEY)?.longPressDuration ?? 300
+      Services.cpmm.sharedData.get(GLANCE_CONFIG_KEY)?.longPressDuration ??
+      lazy.longPressDuration
     );
   }
 
@@ -58,10 +81,6 @@ export class ZenGlanceChild extends JSWindowActorChild {
     if (typeof handler === "function") {
       await handler.call(this, event);
     }
-  }
-
-  async #initActivationMethod() {
-    await this.sendQuery("ZenGlance:GetActivationConfig");
   }
 
   #cancelLongPress() {
@@ -268,9 +287,5 @@ export class ZenGlanceChild extends JSWindowActorChild {
         this.contentWindow.document.activeElement !==
         this.contentWindow.document.body,
     });
-  }
-
-  async on_DOMContentLoaded() {
-    await this.#initActivationMethod();
   }
 }

@@ -54,10 +54,6 @@ export class ZenGlanceParent extends JSWindowActorParent {
 
   async receiveMessage(message) {
     switch (message.name) {
-      case "ZenGlance:GetActivationConfig": {
-        // It's need for lazy load JSWindowActorChild
-        break;
-      }
       case "ZenGlance:OpenGlance": {
         if (this.isGlanceTab) {
           return;

@@ -34,6 +34,20 @@ XPCOMUtils.defineLazyPreferenceGetter(
   true
 );
 
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "COMPACT_MODE_TOUCH_SWIPE_REVEAL",
+  "zen.view.compact.touch-swipe-reveal",
+  true
+);
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "COMPACT_MODE_TOUCH_SWIPE_AUTO_HIDE_DURATION",
+  "zen.view.compact.touch-swipe-auto-hide.duration",
+  4000
+);
+
 // Distance (in CSS pixels) the mouse can travel past the window bounds after
 // leaving the window before the hovered element is collapsed
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -66,6 +80,13 @@ window.gZenCompactModeManager = {
   _eventListeners: [],
   _removeHoverFrames: {},
 
+  // Distance (in CSS pixels) a touch gesture must travel from the screen edge
+  // to reveal the sidebar, and to dismiss it once revealed
+  TOUCH_SWIPE_EDGE_SIZE: 18,
+  TOUCH_SWIPE_MIN_DISTANCE: 36,
+  TOUCH_SWIPE_DIRECTION_RATIO: 1.25,
+  TOUCH_SWIPE_DISMISS_DISTANCE: 64,
+
   // Delay to avoid flickering when hovering over the sidebar
   HOVER_HACK_DELAY: Services.prefs.getIntPref(
     "zen.view.compact.hover-hack-delay",
@@ -87,6 +108,7 @@ window.gZenCompactModeManager = {
 
   init() {
     this.addMouseActions();
+    this.addTouchActions();
 
     const tabIsRightObserver = this._updateSidebarIsOnRight.bind(this);
     Services.prefs.addObserver(
@@ -131,7 +153,10 @@ window.gZenCompactModeManager = {
 
     // Hide any element kept open by the outside mouse tracking as soon as the
     // window loses focus
-    window.addEventListener("deactivate", () => this._collapseTrackedElement());
+    window.addEventListener("deactivate", () => {
+      this._collapseTrackedElement();
+      this._hideTouchRevealedSidebar();
+    });
 
     this._canShowBackgroundTabToast = Services.prefs.getBoolPref(
       "zen.view.compact.show-background-tab-toast",
@@ -965,6 +990,246 @@ window.gZenCompactModeManager = {
         }, 10);
       }, 0);
     });
+  },
+
+  addTouchActions() {
+    if (navigator.maxTouchPoints === 0) {
+      return;
+    }
+
+    this._touchSwipeState = { active: false, id: -1, startX: 0, startY: 0 };
+    this._touchRevealedSidebar = false;
+
+    this._touchSwipeZone = document.createXULElement("box");
+    this._touchSwipeZone.id = "zen-compact-mode-touch-zone";
+    this._touchSwipeZone.style.width = `${this.TOUCH_SWIPE_EDGE_SIZE}px`;
+    lazy.mainAppWrapper.appendChild(this._touchSwipeZone);
+
+    this._touchSwipeZone.addEventListener(
+      "pointerdown",
+      this._onTouchSwipeStart.bind(this),
+      true
+    );
+    this._touchSwipeZone.addEventListener(
+      "pointermove",
+      this._onTouchSwipeMove.bind(this),
+      true
+    );
+    this._touchSwipeZone.addEventListener(
+      "pointerup",
+      this._onTouchSwipeEnd.bind(this),
+      true
+    );
+    this._touchSwipeZone.addEventListener(
+      "pointercancel",
+      this._onTouchSwipeEnd.bind(this),
+      true
+    );
+
+    this.sidebar.addEventListener(
+      "pointerdown",
+      this._onSidebarTouchStart.bind(this),
+      true
+    );
+    this.sidebar.addEventListener(
+      "pointermove",
+      this._onSidebarTouchMove.bind(this),
+      true
+    );
+    this.sidebar.addEventListener(
+      "pointerup",
+      this._onSidebarTouchEnd.bind(this),
+      true
+    );
+    this.sidebar.addEventListener(
+      "pointercancel",
+      this._onSidebarTouchEnd.bind(this),
+      true
+    );
+
+    const updateTouchSwipeZone = this._updateTouchSwipeZone.bind(this);
+    Services.prefs.addObserver(
+      "zen.tabs.vertical.right-side",
+      updateTouchSwipeZone
+    );
+    Services.prefs.addObserver(
+      "zen.view.compact.hide-tabbar",
+      updateTouchSwipeZone
+    );
+    Services.prefs.addObserver(
+      "zen.view.compact.touch-swipe-reveal",
+      updateTouchSwipeZone
+    );
+
+    this._touchSwipeObserver = new MutationObserver(updateTouchSwipeZone);
+    this._touchSwipeObserver.observe(this.sidebar, {
+      attributes: true,
+      attributeFilter: [
+        "zen-has-hover",
+        "zen-user-show",
+        "zen-has-empty-tab",
+        "zen-compact-mode-active",
+      ],
+    });
+    this._touchSwipeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["zen-compact-mode"],
+    });
+
+    window.addEventListener(
+      "unload",
+      () => {
+        Services.prefs.removeObserver(
+          "zen.tabs.vertical.right-side",
+          updateTouchSwipeZone
+        );
+        Services.prefs.removeObserver(
+          "zen.view.compact.hide-tabbar",
+          updateTouchSwipeZone
+        );
+        Services.prefs.removeObserver(
+          "zen.view.compact.touch-swipe-reveal",
+          updateTouchSwipeZone
+        );
+        this._touchSwipeObserver.disconnect();
+        this._clearTouchSidebarHideTimeout();
+      },
+      { once: true }
+    );
+
+    this._updateTouchSwipeZone();
+  },
+
+  _updateTouchSwipeZone() {
+    const zone = this._touchSwipeZone;
+    if (!zone) {
+      return;
+    }
+    if (
+      this._touchRevealedSidebar &&
+      !this.sidebar.hasAttribute("zen-user-show")
+    ) {
+      this._touchRevealedSidebar = false;
+      this._clearTouchSidebarHideTimeout();
+    }
+    const active =
+      lazy.COMPACT_MODE_TOUCH_SWIPE_REVEAL &&
+      this.preference &&
+      this.canHideSidebar &&
+      !this.isSidebarPotentiallyOpen();
+    zone.setAttribute("active", String(active));
+  },
+
+  _onTouchSwipeStart(event) {
+    if (
+      event.pointerType !== "touch" ||
+      !this._touchSwipeZone.hasAttribute("active") ||
+      this._touchSwipeState.active
+    ) {
+      return;
+    }
+    this._touchSwipeState = {
+      active: true,
+      id: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+    };
+  },
+
+  _onTouchSwipeMove(event) {
+    const state = this._touchSwipeState;
+    if (!state.active || state.id !== event.pointerId) {
+      return;
+    }
+    const deltaX = event.clientX - state.startX;
+    const deltaY = event.clientY - state.startY;
+    const inward = this.sidebarIsOnRight ? -deltaX : deltaX;
+    if (
+      inward >= this.TOUCH_SWIPE_MIN_DISTANCE &&
+      Math.abs(deltaX) >= Math.abs(deltaY) * this.TOUCH_SWIPE_DIRECTION_RATIO
+    ) {
+      state.active = false;
+      this._revealSidebarFromTouch();
+    }
+  },
+
+  _onTouchSwipeEnd(event) {
+    if (
+      this._touchSwipeState.active &&
+      this._touchSwipeState.id === event.pointerId
+    ) {
+      this._touchSwipeState.active = false;
+    }
+  },
+
+  _onSidebarTouchStart(event) {
+    if (event.pointerType !== "touch" || !this._touchRevealedSidebar) {
+      return;
+    }
+    this._sidebarTouchState = {
+      active: true,
+      id: event.pointerId,
+      startX: event.clientX,
+    };
+    this._scheduleTouchSidebarHide();
+  },
+
+  _onSidebarTouchMove(event) {
+    const state = this._sidebarTouchState;
+    if (!state?.active || state.id !== event.pointerId) {
+      return;
+    }
+    const deltaX = event.clientX - state.startX;
+    const outward = this.sidebarIsOnRight ? deltaX : -deltaX;
+    if (outward >= this.TOUCH_SWIPE_DISMISS_DISTANCE) {
+      this._sidebarTouchState = null;
+      this._hideTouchRevealedSidebar();
+    }
+  },
+
+  _onSidebarTouchEnd(event) {
+    if (
+      this._sidebarTouchState?.active &&
+      this._sidebarTouchState.id === event.pointerId
+    ) {
+      this._sidebarTouchState = null;
+      if (this._touchRevealedSidebar) {
+        this._scheduleTouchSidebarHide();
+      }
+    }
+  },
+
+  _revealSidebarFromTouch() {
+    if (this._touchRevealedSidebar) {
+      return;
+    }
+    this._touchRevealedSidebar = true;
+    this.sidebar.setAttribute("zen-user-show", "true");
+    this._scheduleTouchSidebarHide();
+  },
+
+  _scheduleTouchSidebarHide() {
+    this._clearTouchSidebarHideTimeout();
+    this._touchSidebarHideTimeout = setTimeout(() => {
+      this._touchSidebarHideTimeout = null;
+      this._hideTouchRevealedSidebar();
+    }, lazy.COMPACT_MODE_TOUCH_SWIPE_AUTO_HIDE_DURATION);
+  },
+
+  _clearTouchSidebarHideTimeout() {
+    if (this._touchSidebarHideTimeout) {
+      clearTimeout(this._touchSidebarHideTimeout);
+      this._touchSidebarHideTimeout = null;
+    }
+  },
+
+  _hideTouchRevealedSidebar() {
+    this._clearTouchSidebarHideTimeout();
+    if (!this._touchRevealedSidebar) {
+      return;
+    }
+    this._touchRevealedSidebar = false;
+    this.sidebar.removeAttribute("zen-user-show");
   },
 
   _getCrossedEdge(

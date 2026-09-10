@@ -40,6 +40,12 @@
 - name: zen.view.compact.debug
   value: false
 
+- name: zen.view.compact.touch-swipe-reveal
+  value: true
+
+- name: zen.view.compact.touch-swipe-auto-hide.duration
+  value: 4000
+
 # Do not edit manually
 - name: zen.view.compact.enable-at-startup
   hidden: true

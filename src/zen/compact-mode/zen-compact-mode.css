@@ -49,3 +49,24 @@
 %include toolbar.inc.css
   }
 }
+
+#zen-compact-mode-touch-zone {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  background: transparent;
+  pointer-events: none;
+
+  &[active='true'] {
+    pointer-events: auto;
+  }
+}
+
+:root:not([zen-right-side='true']) #zen-compact-mode-touch-zone {
+  left: 0;
+}
+
+:root[zen-right-side='true'] #zen-compact-mode-touch-zone {
+  right: 0;
+}

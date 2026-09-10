@@ -273,8 +273,14 @@
       border: 1px solid rgba(225, 225, 225, 0.15) !important;
       padding: 4px 8px 5px 8px !important;
       font-weight: 600 !important;
-      background: color-mix(in srgb, var(--zen-primary-color), black 70%) !important;
-      color: rgba(255, 255, 255, 0.8) !important;
+      background: light-dark(
+        var(--zen-colors-tertiary),
+        color-mix(in srgb, var(--zen-primary-color), black 70%)
+      ) !important;
+      color: light-dark(
+        var(--zen-colors-primary-foreground),
+        rgba(255, 255, 255, 0.8)
+      ) !important;
     }
   }
 }

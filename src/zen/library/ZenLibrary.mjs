@@ -40,6 +40,8 @@ export class ZenLibrary extends MozLitElement {
   #originalButtonsClone = null;
   #originalButtonsNextSibling = null;
 
+  #canSwipe = false;
+
   #resizeObserver = new ResizeObserver(() => {
     this.openProgress = this.#progress;
   });
@@ -199,14 +201,7 @@ export class ZenLibrary extends MozLitElement {
     }
 
     if (target === 1) {
-      gURLBar.view.close();
-      lib.#toolboxWidth =
-        window.windowUtils.getBoundsWithoutFlushing(gNavToolbox).width;
-      if (document.documentElement.hasAttribute("zen-sidebar-expanded")) {
-        lib.#toolboxWidth += window.windowUtils.getBoundsWithoutFlushing(
-          document.getElementById("zen-sidebar-splitter")
-        ).width;
-      }
+      lib.#onOpenLibrary();
     }
 
     lib.setAttribute("transitioning", "true");
@@ -231,6 +226,56 @@ export class ZenLibrary extends MozLitElement {
         },
       }
     );
+  }
+
+  static async startSwipe() {
+    const lib = this.getInstance();
+    lib.#cancelIdleCleanup();
+    await lib.#whenStylesLoaded();
+    lib.style.visibility = "";
+    await window.promiseDocumentFlushed(() => {});
+    lib.#canSwipe = true;
+
+    lib.#onOpenLibrary();
+
+    if (lib.#springControls) {
+      lib.#springControls.stop();
+      lib.#springControls = null;
+    }
+
+    lib.style.setProperty("pointer-events", "none");
+  }
+
+  static stopSwipe(direction) {
+    const lib = this.getInstance();
+    lib.style.setProperty("pointer-events", "unset");
+    lib.#canSwipe = false;
+
+    const target = Math.max(-direction, 0);
+    this.animateProgress(target);
+
+    // Return library open state
+    return target === 1;
+  }
+
+  static swipeProgress(target) {
+    const lib = this.getInstance();
+    if (!lib.#canSwipe) {
+      return;
+    }
+
+    lib.openProgress = target;
+  }
+
+  #onOpenLibrary() {
+    gURLBar.view.close();
+    this.#toolboxWidth =
+      window.windowUtils.getBoundsWithoutFlushing(gNavToolbox).width;
+    if (document.documentElement.hasAttribute("zen-sidebar-expanded")) {
+      this.#toolboxWidth += window.windowUtils.getBoundsWithoutFlushing(
+        document.getElementById("zen-sidebar-splitter")
+      ).width;
+    }
   }
 
   static getInstance() {
@@ -258,6 +303,8 @@ export class ZenLibrary extends MozLitElement {
     this.onKeyDown = this.onKeyDown.bind(this);
     document.addEventListener("keydown", this.onKeyDown, true);
     this.#resizeObserver.observe(this);
+
+    window.gZenWorkspaces._swipeManager.attachWorkspaceSwipeGestures(this);
   }
 
   disconnectedCallback() {
@@ -296,13 +343,13 @@ export class ZenLibrary extends MozLitElement {
     const buttons = [
       {
         image: "chrome://browser/skin/zen-icons/back.svg",
-        command: () => ZenLibrary.toggle(),
+        command: () => ZenLibrary.animateProgress(0),
       },
       {
         image: "chrome://browser/skin/zen-icons/heart-circle-fill.svg",
         command: () => {
           window.openTrustedLinkIn("https://www.zen-browser.app/donate", "tab");
-          ZenLibrary.toggle();
+          ZenLibrary.animateProgress(0);
         },
       },
     ];

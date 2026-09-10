@@ -12,6 +12,12 @@ ChromeUtils.defineLazyGetter(lazy, "toolbarBackgroundElement", () => {
   return document.getElementById("zen-toolbar-background");
 });
 
+ChromeUtils.defineESModuleGetters(
+  lazy,
+  { ZenLibrary: "moz-src:///zen/library/ZenLibrary.mjs" },
+  { global: "current" }
+);
+
 export class ZenSpacesSwipe {
   _swipeState = {
     isGestureActive: false,
@@ -19,8 +25,10 @@ export class ZenSpacesSwipe {
     direction: null,
   };
 
+  #libraryOpen = false;
+
   constructor() {
-    this.#attachWorkspaceSwipeGestures(gNavToolbox);
+    this.attachWorkspaceSwipeGestures(gNavToolbox);
     this._popupOpenHandler = this._popupOpenHandler.bind(this);
   }
 
@@ -35,7 +43,14 @@ export class ZenSpacesSwipe {
     );
   }
 
-  #attachWorkspaceSwipeGestures(element) {
+  #readySwipeOpenLibrary() {
+    const spaces = gZenWorkspaces.getWorkspaces();
+    const current = gZenWorkspaces.getActiveWorkspaceFromCache();
+    const libraryEnabled = Services.prefs.getBoolPref("zen.library.enabled");
+    return spaces.indexOf(current) === 0 && libraryEnabled;
+  }
+
+  attachWorkspaceSwipeGestures(element) {
     element.addEventListener(
       "MozSwipeGestureMayStart",
       this._handleSwipeMayStart.bind(this),
@@ -115,6 +130,8 @@ export class ZenSpacesSwipe {
       isGestureActive: true,
       lastDelta: 0,
       direction: null,
+      isSwipingLibrary: false,
+      beforeLibraryState: 0,
     };
     Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", true);
   }
@@ -154,6 +171,51 @@ export class ZenSpacesSwipe {
       this._swipeState.direction = delta > 0 ? "left" : "right";
     }
 
+    const libraryOpen = this.#libraryOpen;
+    const couldClose = libraryOpen;
+    const wantsOpen =
+      !libraryOpen && translateX > 0 && this.#readySwipeOpenLibrary();
+
+    if (wantsOpen || couldClose || this._swipeState.isSwipingLibrary) {
+      if (!this._swipeState.isSwipingLibrary) {
+        this._swipeState.isSwipingLibrary = true;
+        this._swipeState.beforeLibraryState = libraryOpen ? 1 : 0;
+        lazy.ZenLibrary.startSwipe();
+      }
+
+      const rubberBand = function (offset, dimension, constant = 0.55) {
+        if (offset === 0 || dimension === 0) {
+          return 0;
+        }
+        return (
+          dimension *
+          (1 - Math.exp(-(Math.abs(offset) * constant) / dimension)) *
+          Math.sign(offset)
+        );
+      };
+
+      const DAMPING_DIMENSION = 0.06;
+      const RUBBER_BAND_CONSTANT = 0.05;
+
+      const LIBRARY_SWIPE_FULL = 1.65;
+      const deltaProgress = (translateX / stripWidth) * LIBRARY_SWIPE_FULL;
+      const progress = this._swipeState.beforeLibraryState + deltaProgress;
+
+      let progressDamped;
+      if (progress < 0) {
+        progressDamped =
+          0 + rubberBand(progress, DAMPING_DIMENSION, RUBBER_BAND_CONSTANT);
+      } else if (progress > 1) {
+        progressDamped =
+          1 + rubberBand(progress - 1, DAMPING_DIMENSION, RUBBER_BAND_CONSTANT);
+      } else {
+        progressDamped = progress;
+      }
+
+      lazy.ZenLibrary.swipeProgress(progressDamped);
+      return;
+    }
+
     // Apply a translateX to the tab strip to give the user feedback on the swipe
     const currentWorkspace = ws.getActiveWorkspaceFromCache();
     ws._organizeWorkspaceStripLocations(currentWorkspace, true, translateX);
@@ -173,6 +235,12 @@ export class ZenSpacesSwipe {
 
     const rawDirection = moveForward ? 1 : -1;
     const direction = ws.naturalScroll ? -1 : 1;
+
+    if (this._swipeState.isSwipingLibrary) {
+      this.#libraryOpen = lazy.ZenLibrary.stopSwipe(rawDirection * direction);
+      return;
+    }
+
     await ws.changeWorkspaceShortcut(rawDirection * direction, true);
   }
 

@@ -41,6 +41,7 @@ export class ZenLibrary extends MozLitElement {
   #originalButtonsNextSibling = null;
 
   #canSwipe = false;
+  #isOpen = false;
 
   #resizeObserver = new ResizeObserver(() => {
     this.openProgress = this.#progress;
@@ -66,6 +67,11 @@ export class ZenLibrary extends MozLitElement {
     };
     const lastTab = Services.prefs.getStringPref(LAST_TAB_PREF, "history");
     this.activeTab = lastTab in this.zenLibrarySections ? lastTab : "history";
+  }
+
+  static get isLibraryOpen() {
+    const lib = this.getInstance();
+    return lib.#isOpen;
   }
 
   set activeTab(value) {
@@ -202,6 +208,9 @@ export class ZenLibrary extends MozLitElement {
 
     if (target === 1) {
       lib.#onOpenLibrary();
+      lib.#isOpen = true;
+    } else if (target === 0) {
+      lib.#isOpen = false;
     }
 
     lib.setAttribute("transitioning", "true");
@@ -255,7 +264,7 @@ export class ZenLibrary extends MozLitElement {
     this.animateProgress(target);
 
     // Return library open state
-    return target === 1;
+    return lib.#isOpen;
   }
 
   static swipeProgress(target) {

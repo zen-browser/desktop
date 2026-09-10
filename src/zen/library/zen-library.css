@@ -193,7 +193,7 @@ zen-library[transitioning] #zen-library-content {
 
 @media (max-height: 38rem) {
   #zen-library-sidebar-tabs {
-    gap: 0px;
+    gap: 0;
   }
   .zen-library-tab {
     padding: 10px 0;

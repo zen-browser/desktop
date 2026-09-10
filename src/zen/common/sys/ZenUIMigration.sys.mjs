@@ -12,7 +12,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
 
 class nsZenUIMigration {
   PREF_NAME = "zen.ui.migration.version";
-  MIGRATION_VERSION = 8;
+  MIGRATION_VERSION = 7;
 
   init(isNewProfile) {
     if (!isNewProfile) {
@@ -162,18 +162,6 @@ class nsZenUIMigration {
       )
     ) {
       Services.prefs.setBoolPref("zen.widget.macos.window-vibrancy", false);
-    }
-  }
-
-  _migrateV8() {
-    // A version mismatch in the downloadable gfx blocklist wrongly blocked
-    // video overlays for every Windows user. The status pref persists in the
-    // profile and short-circuits the blocklist evaluation, so clear it (and
-    // its failure id) and restart, since gfx is already initialized by now.
-    if (Services.prefs.prefHasUserValue("gfx.blacklist.video-overlay")) {
-      Services.prefs.clearUserPref("gfx.blacklist.video-overlay");
-      Services.prefs.clearUserPref("gfx.blacklist.video-overlay.failureid");
-      this.shouldRestart = true;
     }
   }
 }

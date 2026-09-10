@@ -239,7 +239,7 @@ window.gZenCompactModeManager = {
         {
           selector:
             ":where([panelopen], [open], #urlbar:focus-within, [breakout-extend])" +
-            ":not(.zen-compact-mode-ignore)",
+            ":not(#urlbar[zen-floating-urlbar='true']):not(.zen-compact-mode-ignore)",
         },
       ],
       "zen-compact-mode-active",

@@ -62,9 +62,10 @@ do_common_icons() {
   done
   for filename in common/library/*.svg; do
     # remove the os/ prefix
+    add_header_to_file $filename
     filename=$(basename $filename)
     echo "Working on $filename"
-    echo "  skin/classic/browser/zen-icons/library/$filename          (../shared/zen-icons/common/library/$filename) " >> jar.inc.mn
+    echo "*  skin/classic/browser/zen-icons/library/$filename          (../shared/zen-icons/common/library/$filename) " >> jar.inc.mn
   done
 }
 

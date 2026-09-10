@@ -526,9 +526,6 @@ class nsZenSpacesSyncApplier {
         if (!folder?.isZenFolder) {
           continue;
         }
-        // Members without their own tombstone survive: unpack, then delete
-        // the (now empty) folder.
-        await folder.unpackTabs();
         await folder.delete();
       } catch (e) {
         fail(record, e);

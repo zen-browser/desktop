@@ -336,7 +336,9 @@ class nsZenViewSplitter extends nsZenDOMOperatedFeature {
       if (
         !gBrowser.isTab(draggedTab) ||
         gBrowser.selectedTab.hasAttribute("zen-empty-tab") ||
-        draggedTab.documentGlobal !== window
+        draggedTab.documentGlobal !== window ||
+        // See gh-15329.
+        draggedTab.multiselected
       ) {
         return;
       }

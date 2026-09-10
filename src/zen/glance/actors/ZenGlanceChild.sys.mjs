@@ -17,13 +17,6 @@ XPCOMUtils.defineLazyPreferenceGetter(
   true
 );
 
-XPCOMUtils.defineLazyPreferenceGetter(
-  lazy,
-  "activationMethod",
-  "zen.glance.activation-method",
-  "ctrl"
-);
-
 // A small threshold to allow for minor mouse jitter during a normal click.
 // Anything beyond this is likely an intentional drag (like selecting text).
 const CLICK_DRAG_THRESHOLD_PX = 4;
@@ -275,5 +268,9 @@ export class ZenGlanceChild extends JSWindowActorChild {
         this.contentWindow.document.activeElement !==
         this.contentWindow.document.body,
     });
+  }
+
+  async on_DOMContentLoaded() {
+    await this.#initActivationMethod();
   }
 }

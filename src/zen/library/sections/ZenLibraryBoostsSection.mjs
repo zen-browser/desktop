@@ -88,8 +88,7 @@ export class ZenLibraryBoostsSection extends ZenLibrarySearchSection {
       }
     }
     return boosts.sort(
-      (a, b) =>
-        a.name.localeCompare(b.name) || a.domain.localeCompare(b.domain)
+      (a, b) => a.name.localeCompare(b.name) || a.domain.localeCompare(b.domain)
     );
   }
 
@@ -179,10 +178,7 @@ export class ZenLibraryBoostsSection extends ZenLibrarySearchSection {
           }
         },
       };
-      browser.addProgressListener(
-        listener,
-        Ci.nsIWebProgress.NOTIFY_LOCATION
-      );
+      browser.addProgressListener(listener, Ci.nsIWebProgress.NOTIFY_LOCATION);
     });
   }
 
@@ -280,7 +276,10 @@ export class ZenLibraryBoostsSection extends ZenLibrarySearchSection {
     const boosts = this.#boosts();
     if (!boosts.length) {
       return html`
-        <div class="zen-library-empty" data-l10n-id="library-boosts-empty"></div>
+        <div
+          class="zen-library-empty"
+          data-l10n-id="library-boosts-empty"
+        ></div>
       `;
     }
     return html`

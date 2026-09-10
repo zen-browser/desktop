@@ -22,6 +22,11 @@ const { TestUtils } = ChromeUtils.importESModule(
 const { E10SUtils } = ChromeUtils.importESModule(
   "resource://gre/modules/E10SUtils.sys.mjs"
 );
+const { PromiseTestUtils } = ChromeUtils.importESModule(
+  "resource://testing-common/PromiseTestUtils.sys.mjs"
+);
+
+PromiseTestUtils.allowMatchingRejectionsGlobally(/menu-bookmark-tab/);
 
 const NORMAL_TABS_PREF = "zen.spaces-sync.normal-tabs";
 
@@ -47,7 +52,13 @@ async function openSyncableTab(url, { pinned = false } = {}) {
 
 function tabRecord(
   id,
-  { pinned, url = "https://example.com/", current = null, workspaceUuid } = {}
+  {
+    pinned,
+    url = "https://example.com/",
+    current = null,
+    workspaceUuid,
+    folderId = null,
+  } = {}
 ) {
   return {
     id,
@@ -64,11 +75,34 @@ function tabRecord(
         essential: false,
         pinned,
         workspaceUuid: workspaceUuid ?? gZenWorkspaces.activeWorkspace,
-        folderId: null,
+        folderId,
         staticLabel: null,
         hasStaticIcon: false,
         defaultContainer: false,
       },
     },
   };
+}
+
+function folderRecord(id, { name = "Synced folder", workspaceUuid } = {}) {
+  return {
+    id,
+    deleted: false,
+    cleartext: {
+      kind: "folder",
+      data: {
+        folderId: id,
+        name,
+        icon: null,
+        workspaceUuid: workspaceUuid ?? gZenWorkspaces.activeWorkspace,
+        parentFolderId: null,
+        live: null,
+        children: [],
+      },
+    },
+  };
+}
+
+function tombstone(id) {
+  return { id, deleted: true };
 }

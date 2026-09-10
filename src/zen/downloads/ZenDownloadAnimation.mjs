@@ -148,7 +148,9 @@ class nsZenDownloadAnimationElement extends HTMLElement {
   }
 
   #determineEndPosition() {
-    const downloadsButton = document.getElementById("zen-library-button") || document.getElementById("downloads-button");
+    const downloadsButton =
+      document.getElementById("zen-library-button") ||
+      document.getElementById("downloads-button");
     const isDownloadButtonVisible =
       downloadsButton && this.#isElementVisible(downloadsButton);
 

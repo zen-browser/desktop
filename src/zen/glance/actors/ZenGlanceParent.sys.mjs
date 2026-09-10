@@ -3,36 +3,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 /* eslint-disable consistent-return */
-const GLANCE_CONFIG_KEY = "zen:glance:config";
-
-function updateSharedConfig() {
-  Services.ppmm.sharedData.set(GLANCE_CONFIG_KEY, {
-    glanceEnabled: Services.prefs.getBoolPref("zen.glance.enabled", true),
-    longPressDuration: Services.prefs.getIntPref(
-      "zen.glance.long-press-duration",
-      300
-    ),
-    activationMethod: Services.prefs.getStringPref(
-      "zen.glance.activation-method",
-      "ctrl"
-    ),
-  });
-  Services.ppmm.sharedData.flush();
-}
-
-const prefObserver = () => updateSharedConfig();
-
-Services.prefs.addObserver("zen.glance.enabled", prefObserver);
-Services.prefs.addObserver("zen.glance.long-press-duration", prefObserver);
-Services.prefs.addObserver("zen.glance.activation-method", prefObserver);
-
-Services.obs.addObserver(function quitObserver() {
-  Services.obs.removeObserver(quitObserver, "quit-application-granted");
-  Services.prefs.removeObserver("zen.glance.enabled", prefObserver);
-  Services.prefs.removeObserver("zen.glance.long-press-duration", prefObserver);
-  Services.prefs.removeObserver("zen.glance.activation-method", prefObserver);
-}, "quit-application-granted");
-updateSharedConfig();
 
 export class ZenGlanceParent extends JSWindowActorParent {
   constructor() {

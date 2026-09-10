@@ -42,35 +42,12 @@ XPCOMUtils.defineLazyPreferenceGetter(
 // Anything beyond this is likely an intentional drag (like selecting text).
 const CLICK_DRAG_THRESHOLD_PX = 4;
 
-const GLANCE_CONFIG_KEY = "zen:glance:config";
-
 export class ZenGlanceChild extends JSWindowActorChild {
   #mouseDownX = null;
   #mouseDownY = null;
   #longPressTimer = null;
   #longPressReady = false;
   #longPressTarget = null;
-
-  get #isGlanceEnabled() {
-    return (
-      Services.cpmm.sharedData.get(GLANCE_CONFIG_KEY)?.glanceEnabled ??
-      lazy.glanceEnabled
-    );
-  }
-
-  get #currentActivationMethod() {
-    return (
-      Services.cpmm.sharedData.get(GLANCE_CONFIG_KEY)?.activationMethod ??
-      lazy.activationMethod
-    );
-  }
-
-  get #currentLongPressDuration() {
-    return (
-      Services.cpmm.sharedData.get(GLANCE_CONFIG_KEY)?.longPressDuration ??
-      lazy.longPressDuration
-    );
-  }
 
   constructor() {
     super();
@@ -172,7 +149,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
 
   on_mousedown(event) {
     this.#cancelLongPress();
-    if (!this.#isGlanceEnabled) {
+    if (!lazy.glanceEnabled) {
       return;
     }
 
@@ -186,7 +163,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
 
     this.#mouseDownX = event.clientX;
     this.#mouseDownY = event.clientY;
-    if (this.#currentActivationMethod === "long-press") {
+    if (lazy.activationMethod === "long-press") {
       if (
         event.button !== 0 ||
         event.ctrlKey ||
@@ -204,7 +181,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
         this.#longPressTimer = null;
         this.#longPressReady = true;
         this.#longPressTarget = { href, principal };
-      }, this.#currentLongPressDuration);
+      }, lazy.longPressDuration);
     }
   }
 
@@ -219,7 +196,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
   }
 
   on_click(event) {
-    if (!this.#isGlanceEnabled) {
+    if (!lazy.glanceEnabled) {
       this.#cancelLongPress();
       return;
     }
@@ -257,7 +234,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
     ) {
       return;
     }
-    const activationMethod = this.#currentActivationMethod;
+    const activationMethod = lazy.activationMethod;
     if (activationMethod === "ctrl" && !event.ctrlKey) {
       return;
     } else if (activationMethod === "alt" && !event.altKey) {

@@ -210,7 +210,9 @@ body,
 
   /* stylelint-disable-next-line media-query-no-invalid */
   @media -moz-pref("zen.widget.mac.mono-window-controls") {
-    :root:not([window-modal-open="true"]) .titlebar-buttonbox-container {
+    /* Inactive: mono gray placeholders until hover reveals native buttons */
+    :root:not([window-modal-open="true"]):-moz-window-inactive
+      .titlebar-buttonbox-container {
       color: var(--toolbox-textcolor);
 
       --zen-traffic-light-size: 6px;
@@ -232,6 +234,16 @@ body,
 
       &:not([zen-has-hover="true"]) > .titlebar-buttonbox {
         opacity: 0;
+      }
+    }
+
+    /* Active: always show native colored traffic lights */
+    :root:not([window-modal-open="true"]):not(:-moz-window-inactive)
+      .titlebar-buttonbox-container {
+      background-image: none;
+
+      & > .titlebar-buttonbox {
+        opacity: 1;
       }
     }
   }

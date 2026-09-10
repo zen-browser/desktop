@@ -21,7 +21,7 @@ XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
   "activationMethod",
   "zen.glance.activation-method",
-  "ctrl"
+  "alt"
 );
 
 XPCOMUtils.defineLazyPreferenceGetter(

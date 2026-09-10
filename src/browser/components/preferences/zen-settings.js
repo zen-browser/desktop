@@ -739,7 +739,7 @@ var gZenWorkspacesSettings = {
     let updateGlancePreferencesVisibility = {
       observe() {
         const glanceEnabled = Services.prefs.getBoolPref("zen.glance.enabled", true);
-        const activationMethod = Services.prefs.getStringPref("zen.glance.activation-method", "ctrl");
+        const activationMethod = Services.prefs.getStringPref("zen.glance.activation-method", "alt");
 
         const triggerWrapper = document.getElementById("zenGlanceTriggerWrapper");
         if (triggerWrapper) {
@@ -1206,7 +1206,7 @@ Preferences.addAll([
   {
     id: "zen.glance.activation-method",
     type: "string",
-    default: "ctrl",
+    default: "alt",
   },
   {
     id: "zen.glance.long-press-duration",

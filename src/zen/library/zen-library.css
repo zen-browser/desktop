@@ -72,7 +72,7 @@ zen-library[open] {
   visibility: visible;
   pointer-events: auto;
   -moz-window-dragging: drag;
-  transition: width 0.1s ease-out;
+  transition: width 0.18s ease-in-out;
 }
 
 zen-library[transitioning] #zen-library-content {
@@ -232,6 +232,10 @@ zen-library[transitioning] #zen-library-content {
   flex: 1;
   min-height: 0;
   font-size: 14px;
+
+  &:not([data-section="spaces"]) {
+    max-width: calc(38rem - 10rem);
+  }
 }
 
 zen-library:not([open])
@@ -505,6 +509,105 @@ zen-library:not([open])
       -moz-context-properties: fill;
       fill: currentColor;
       opacity: 0.85;
+    }
+  }
+}
+
+/* Boosts */
+
+.zen-library-row-actions moz-toggle {
+  --toggle-width: 44px;
+  --toggle-height: 24px;
+  --toggle-dot-margin: 2px;
+  --toggle-border-width: 0px;
+  --toggle-background-color: color-mix(
+    in srgb,
+    var(--zen-primary-color) 15%,
+    transparent
+  );
+  --toggle-background-color-hover: color-mix(
+    in srgb,
+    var(--zen-primary-color) 25%,
+    transparent
+  );
+  --toggle-background-color-active: var(--toggle-background-color-hover);
+  --toggle-dot-background-color: light-dark(white, rgb(235, 235, 235));
+
+  display: none;
+
+  .zen-library-row:is(:hover, [menu-open]) & {
+    display: block;
+  }
+}
+
+.zen-library-boost-row {
+  padding: 6px 12px 6px 4px;
+  border-radius: 18px;
+}
+
+.zen-library-boost-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 46px;
+  height: 46px;
+  margin-inline: 2px 1px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+    border-radius: 10px;
+    border: 3px solid white;
+    background: #edededaa;
+    box-shadow: 0 0 6px 1px rgba(0, 0, 0, .1);
+  }
+
+  & img {
+    position: relative;
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    -moz-context-properties: fill;
+    fill: currentColor;
+  }
+}
+
+.zen-library-boost-row[disabled] {
+  & .zen-library-row-text,
+  & .zen-library-boost-icon img {
+    opacity: 0.5;
+  }
+
+  & .zen-library-boost-icon {
+    &::before,
+    & img {
+      mask-image: linear-gradient(
+        45deg,
+        black calc(50% - 5px),
+        transparent calc(50% - 5px),
+        transparent calc(50% + 5px),
+        black calc(50% + 5px)
+      );
+      mask-size: 200% 200%;
+      mask-position: center;
+      mask-repeat: no-repeat;
+      mask-clip: no-clip;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 135%;
+      height: 4px;
+      border-radius: 10px;
+      background: light-dark(rgba(255,255,255,.8), rgba(255,255,255,.5));
+      transform: translate(-50%, -50%) rotate(45deg);
+      pointer-events: none;
     }
   }
 }

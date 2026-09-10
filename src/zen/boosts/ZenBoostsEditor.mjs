@@ -69,7 +69,9 @@ export class nsZenBoostEditor {
    * @returns {ZenBoostsParent} Boost JSActor parent
    */
   get zenBoostsParent() {
-    const linkedBrowser = this.openerWindow.gBrowser.selectedTab.linkedBrowser;
+    const linkedBrowser =
+      this.editorWindow.browser ??
+      this.openerWindow.gBrowser.selectedTab.linkedBrowser;
     const actor =
       linkedBrowser.browsingContext.currentWindowGlobal.getActor("ZenBoosts");
     return actor;

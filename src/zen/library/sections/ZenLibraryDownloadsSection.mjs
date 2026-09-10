@@ -488,7 +488,6 @@ export class ZenLibraryDownloadsSection extends ZenLibrarySearchSection {
       this.#menuDownload = null;
     });
     document.getElementById("mainPopupSet").appendChild(menu);
-    document.l10n.translateFragment(menu).catch(console.error);
     return menu;
   }
 

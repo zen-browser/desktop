@@ -192,7 +192,7 @@ export class ZenLibrary extends MozLitElement {
     await lib.#whenStylesLoaded();
     lib.style.visibility = "";
     await window.promiseDocumentFlushed(() => {});
-    
+
     if (lib.#springControls) {
       lib.#springControls.stop();
       lib.#springControls = null;

@@ -70,23 +70,10 @@ library-spaces-icon-button =
 library-spaces-name-button =
     .title = Rename space
 
-library-spaces-theme-button =
-    .title = Change theme
-library-spaces-move-button =
-    .title = Drag to reorder
-library-spaces-actions-button =
-    .tooltiptext = More options
-library-spaces-icon-button =
-    .title = Change icon
-library-spaces-name-button =
-    .title = Rename space
-
 library-boosts-search-placeholder =
-    .placeholder = Search Boost…
-
-library-boost-context-edit = 
-    .label = Edit
-library-boost-context-export = 
-    .label = Export
-library-boost-context-delete = 
-    .label = Delete
+    .placeholder = Search Boosts…
+library-boosts-empty = No boosts yet
+library-boosts-toggle =
+    .aria-label = Enable boost
+library-boosts-menu-edit =
+    .label = Edit Boost

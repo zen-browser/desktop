@@ -21,10 +21,33 @@ XPCOMUtils.defineLazyPreferenceGetter(
 // Anything beyond this is likely an intentional drag (like selecting text).
 const CLICK_DRAG_THRESHOLD_PX = 4;
 
+const GLANCE_CONFIG_KEY = "zen:glance:config";
+
 export class ZenGlanceChild extends JSWindowActorChild {
-  #activationMethod;
   #mouseDownX = null;
   #mouseDownY = null;
+  #longPressTimer = null;
+  #longPressReady = false;
+  #longPressTarget = null;
+
+  get #isGlanceEnabled() {
+    return (
+      Services.cpmm.sharedData.get(GLANCE_CONFIG_KEY)?.glanceEnabled ?? true
+    );
+  }
+
+  get #currentActivationMethod() {
+    return (
+      Services.cpmm.sharedData.get(GLANCE_CONFIG_KEY)?.activationMethod ??
+      "ctrl"
+    );
+  }
+
+  get #currentLongPressDuration() {
+    return (
+      Services.cpmm.sharedData.get(GLANCE_CONFIG_KEY)?.longPressDuration ?? 300
+    );
+  }
 
   constructor() {
     super();
@@ -38,9 +61,18 @@ export class ZenGlanceChild extends JSWindowActorChild {
   }
 
   async #initActivationMethod() {
-    this.#activationMethod = await this.sendQuery(
-      "ZenGlance:GetActivationMethod"
-    );
+    await this.sendQuery("ZenGlance:GetActivationConfig");
+  }
+
+  #cancelLongPress() {
+    if (this.#longPressTimer !== null) {
+      if (this.contentWindow) {
+        this.contentWindow.clearTimeout(this.#longPressTimer);
+      }
+      this.#longPressTimer = null;
+    }
+    this.#longPressReady = false;
+    this.#longPressTarget = null;
   }
 
   #ensureOnlyKeyModifiers(event) {
@@ -120,7 +152,12 @@ export class ZenGlanceChild extends JSWindowActorChild {
   }
 
   on_mousedown(event) {
-    const { node } = this.#getTargetFromEvent(event);
+    this.#cancelLongPress();
+    if (!this.#isGlanceEnabled) {
+      return;
+    }
+
+    const { node, href, principal } = this.#getTargetFromEvent(event);
     // We record the link data anyway, even if the glance may be invoked
     // or not. We have some cases where glance would open, for example,
     // when clicking on a link with a different domain where glance would open.
@@ -130,9 +167,54 @@ export class ZenGlanceChild extends JSWindowActorChild {
 
     this.#mouseDownX = event.clientX;
     this.#mouseDownY = event.clientY;
+    if (this.#currentActivationMethod === "long-press") {
+      if (
+        event.button !== 0 ||
+        event.ctrlKey ||
+        event.altKey ||
+        event.shiftKey ||
+        event.metaKey ||
+        !node ||
+        !href ||
+        this.#checkSecurity(href, principal)
+      ) {
+        return;
+      }
+
+      this.#longPressTimer = this.contentWindow?.setTimeout(() => {
+        this.#longPressTimer = null;
+        this.#longPressReady = true;
+        this.#longPressTarget = { href, principal };
+      }, this.#currentLongPressDuration);
+    }
+  }
+
+  on_mouseup() {
+    if (this.#longPressTimer !== null) {
+      this.#cancelLongPress();
+    }
+  }
+
+  on_dragstart() {
+    this.#cancelLongPress();
   }
 
   on_click(event) {
+    if (!this.#isGlanceEnabled) {
+      this.#cancelLongPress();
+      return;
+    }
+
+    if (this.#longPressReady && this.#longPressTarget) {
+      const { href, principal } = this.#longPressTarget;
+      this.#cancelLongPress();
+      event.preventDefault();
+      event.stopPropagation();
+      this.#openGlance(href, principal);
+      return;
+    }
+
+    this.#cancelLongPress();
     // If the user drags to select text inside a link, we shouldn't open glance.
     if (this.#mouseDownX !== null && this.#mouseDownY !== null) {
       const deltaX = Math.abs(event.clientX - this.#mouseDownX);
@@ -156,7 +238,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
     ) {
       return;
     }
-    const activationMethod = this.#activationMethod;
+    const activationMethod = this.#currentActivationMethod;
     if (activationMethod === "ctrl" && !event.ctrlKey) {
       return;
     } else if (activationMethod === "alt" && !event.altKey) {
@@ -164,6 +246,8 @@ export class ZenGlanceChild extends JSWindowActorChild {
     } else if (activationMethod === "shift" && !event.shiftKey) {
       return;
     } else if (activationMethod === "meta" && !event.metaKey) {
+      return;
+    } else if (activationMethod === "long-press") {
       return;
     }
     if (this.#checkSecurity(href, principal)) {
@@ -175,6 +259,7 @@ export class ZenGlanceChild extends JSWindowActorChild {
   }
 
   on_keydown(event) {
+    this.#cancelLongPress();
     if (event.defaultPrevented || event.key !== "Escape") {
       return;
     }

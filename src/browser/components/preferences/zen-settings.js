@@ -736,12 +736,37 @@ var gZenWorkspacesSettings = {
         );
       },
     };
+    let updateGlancePreferencesVisibility = {
+      observe() {
+        const glanceEnabled = Services.prefs.getBoolPref("zen.glance.enabled", true);
+        const activationMethod = Services.prefs.getStringPref("zen.glance.activation-method", "ctrl");
+
+        const triggerWrapper = document.getElementById("zenGlanceTriggerWrapper");
+        if (triggerWrapper) {
+          triggerWrapper.hidden = !glanceEnabled;
+        }
+
+        const durationWrapper = document.getElementById("zenGlanceLongPressDurationWrapper");
+        if (durationWrapper) {
+          durationWrapper.hidden = !glanceEnabled || activationMethod !== "long-press";
+        }
+      },
+    };
+
+    updateGlancePreferencesVisibility.observe();
+    // Validate long press duration input
+    let durationInput = document.getElementById("zenGlanceLongPressDuration");
+    if (durationInput) {
+      durationInput.addEventListener("change", () => {
+        durationInput.value = Math.min(2000, Math.max(250, durationInput.valueAsNumber || 250));
+      });
+    }
 
     toggleZenCycleByAttrWarning.observe(); // call it once on initial load
 
-    Services.prefs.addObserver("zen.glance.enabled", tabsUnloaderPrefListener); // We can use the same listener for both prefs
+    Services.prefs.addObserver("zen.glance.enabled", updateGlancePreferencesVisibility);
+    Services.prefs.addObserver("zen.glance.activation-method", updateGlancePreferencesVisibility);
     Services.prefs.addObserver("zen.workspaces.separate-essentials", tabsUnloaderPrefListener);
-    Services.prefs.addObserver("zen.glance.activation-method", tabsUnloaderPrefListener);
     Services.prefs.addObserver("zen.window-sync.sync-only-pinned-tabs", tabsUnloaderPrefListener);
     Services.prefs.addObserver(
       "zen.tabs.ctrl-tab.ignore-essential-tabs",
@@ -749,8 +774,8 @@ var gZenWorkspacesSettings = {
     );
     Services.prefs.addObserver("browser.ctrlTab.sortByRecentlyUsed", toggleZenCycleByAttrWarning);
     window.addEventListener("unload", () => {
-      Services.prefs.removeObserver("zen.glance.enabled", tabsUnloaderPrefListener);
-      Services.prefs.removeObserver("zen.glance.activation-method", tabsUnloaderPrefListener);
+      Services.prefs.removeObserver("zen.glance.enabled", updateGlancePreferencesVisibility);
+      Services.prefs.removeObserver("zen.glance.activation-method", updateGlancePreferencesVisibility);
       Services.prefs.removeObserver("zen.workspaces.separate-essentials", tabsUnloaderPrefListener);
       Services.prefs.removeObserver(
         "zen.window-sync.sync-only-pinned-tabs",
@@ -1184,6 +1209,11 @@ Preferences.addAll([
     id: "zen.glance.activation-method",
     type: "string",
     default: "ctrl",
+  },
+  {
+    id: "zen.glance.long-press-duration",
+    type: "int",
+    default: 300,
   },
   {
     id: "zen.glance.enabled",

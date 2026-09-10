@@ -383,6 +383,10 @@ class nsZenGlanceManager extends nsZenDOMOperatedFeature {
    * @param {Tab} ownerTab - The tab that owns this glance
    */
   openGlance(data, existingTab = null, ownerTab = null) {
+    if (!Services.prefs.getBoolPref("zen.glance.enabled", true)) {
+      return Promise.resolve(null);
+    }
+
     if (this.#currentBrowser) {
       return Promise.resolve(this.#currentTab);
     }

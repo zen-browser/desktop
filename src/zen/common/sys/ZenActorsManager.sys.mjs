@@ -46,6 +46,12 @@ let JSWINDOWACTORS = {
         mousedown: {
           capture: true,
         },
+        mouseup: {
+          capture: true,
+        },
+        dragstart: {
+          capture: true,
+        },
         keydown: {
           capture: true,
         },

@@ -86,7 +86,7 @@
       <checkbox id="zenLooksAndFeelGlanceEnabled"
             data-l10n-id="zen-glance-enabled"
             preference="zen.glance.enabled"/>
-      <hbox align="center">
+      <hbox align="center" id="zenGlanceTriggerWrapper">
             <label id="zenGlanceTriggerLabel" data-l10n-id="zen-glance-trigger-label"/>
             <menulist id="zenGlanceTrigger" preference="zen.glance.activation-method">
                   <menupopup>
@@ -96,9 +96,19 @@
 #ifdef XP_MACOSX
                         <menuitem data-l10n-id="zen-glance-trigger-meta-click" value="meta"/>
 #endif
+                        <menuitem data-l10n-id="zen-glance-trigger-long-press" value="long-press"/>
                   </menupopup>
             </menulist>
-        </hbox>
+      </hbox>
+      <hbox align="center" id="zenGlanceLongPressDurationWrapper" hidden="true">
+            <label id="zenGlanceLongPressDurationLabel" data-l10n-id="zen-glance-long-press-duration-label" control="zenGlanceLongPressDuration"/>
+            <html:input id="zenGlanceLongPressDuration"
+                  type="number"
+                  min="250"
+                  max="2000"
+                  step="50"
+                  preference="zen.glance.long-press-duration"/>
+      </hbox>
 </groupbox>
 
 <hbox id="zenUrlBarCategory"

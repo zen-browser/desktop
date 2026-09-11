@@ -39,7 +39,10 @@ export class ZenLibrary extends MozLitElement {
 
   #originalButtonsClone = null;
   #originalButtonsNextSibling = null;
-  #hasAdoptedButtons = false;
+  
+  get #hasAdoptedButtons() {
+    return this.#originalButtonsClone !== null;
+  }
 
   #canSwipe = false;
   #isOpen = false;
@@ -154,7 +157,6 @@ export class ZenLibrary extends MozLitElement {
 
     this._header.appendChild(realButtons);
     this.#originalButtonsNextSibling.before(this.#originalButtonsClone);
-    this.#hasAdoptedButtons = true;
   }
 
   #restoreWindowButtons() {
@@ -170,7 +172,6 @@ export class ZenLibrary extends MozLitElement {
     this.#originalButtonsNextSibling.before(realButtons);
     this.#originalButtonsClone.remove();
     this.#originalButtonsClone = null;
-    this.#hasAdoptedButtons = false;
   }
 
   #stylesLoaded = null;

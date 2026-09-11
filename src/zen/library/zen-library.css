@@ -81,7 +81,7 @@ zen-library[open] {
   visibility: visible;
   pointer-events: auto;
   -moz-window-dragging: drag;
-  transition: width 0.18s ease-in-out;
+  transition: width 0.3s cubic-bezier(.36,.06,0,.94);
 }
 
 zen-library[transitioning] #zen-library-content {

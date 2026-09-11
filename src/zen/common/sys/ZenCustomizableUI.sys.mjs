@@ -174,13 +174,11 @@ export const ZenCustomizableUI = new (class {
     ];
 
     ZenWidgets.forEach(widget => {
-      if (Services.prefs.getBoolPref(widget._introducedByPref)) {
-        window.CustomizableUI.createWidget(
-          widget,
-          window.CustomizableUI.SOURCE_BUILTIN
-        );
-        lazy.CustomizableWidgets.push(widget);
-      }
+      window.CustomizableUI.createWidget(
+        widget,
+        window.CustomizableUI.SOURCE_BUILTIN
+      );
+      lazy.CustomizableWidgets.push(widget);
     });
   }
 

@@ -306,7 +306,7 @@ add_task(async function test_pull_requests_json_api_parsing() {
   Assert.equal(items.length, 2, "Should parse two PRs from the JSON payload");
   Assert.equal(items[0].id, "zen-browser/desktop#42");
   Assert.equal(items[0].title, "Add live folders");
-  Assert.equal(items[0].subtitle, "alice");
+  Assert.equal(items[0].subtitle, "alice • zen-browser/desktop");
   Assert.equal(items[0].url, "https://github.com/zen-browser/desktop/pull/42");
   Assert.equal(items[1].id, "zen-browser/desktop#43");
   Assert.ok(

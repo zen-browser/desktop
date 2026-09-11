@@ -135,7 +135,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
         items.push({
           id: `${pr.repoNameWithOwner}#${pr.number}`,
           title: pr.title,
-          subtitle: pr.author.displayLogin,
+          subtitle: `${pr.author.displayLogin} • ${pr.repoNameWithOwner}`,
           icon: "chrome://browser/content/zen-images/favicons/github.svg",
           url: pr.permalink,
         });
@@ -173,7 +173,7 @@ export class nsGithubLiveFolderProvider extends nsZenLiveFolderProvider {
 
         items.push({
           title,
-          subtitle: author,
+          subtitle: `${author} • ${repo}`,
           icon: "chrome://browser/content/zen-images/favicons/github.svg",
           url: new URL(titles[i].href, this.state.url),
           id: `${repo}${idMatch}`,

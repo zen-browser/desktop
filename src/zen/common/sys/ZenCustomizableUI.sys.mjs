@@ -166,6 +166,7 @@ export const ZenCustomizableUI = new (class {
       {
         id: "zen-library-button",
         l10nId: "zen-library-button",
+        _introducedByPref: "zen.library.enabled",
         onCreated(aNode) {
           aNode.setAttribute("command", "cmd_zenToggleLibrary");
         },
@@ -173,11 +174,13 @@ export const ZenCustomizableUI = new (class {
     ];
 
     ZenWidgets.forEach(widget => {
-      window.CustomizableUI.createWidget(
-        widget,
-        window.CustomizableUI.SOURCE_BUILTIN
-      );
-      lazy.CustomizableWidgets.push(widget);
+      if (Services.prefs.getBoolPref(widget._introducedByPref)) {
+        window.CustomizableUI.createWidget(
+          widget,
+          window.CustomizableUI.SOURCE_BUILTIN
+        );
+        lazy.CustomizableWidgets.push(widget);
+      }
     });
   }
 

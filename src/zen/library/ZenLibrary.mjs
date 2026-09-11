@@ -192,6 +192,10 @@ export class ZenLibrary extends MozLitElement {
   }
 
   static toggle() {
+    if (!Services.prefs.getBoolPref("zen.library.enabled")) {
+      return;
+    }
+
     const lib = this.getInstance();
     lib.#springTarget = lib.#springTarget === 1 ? 0 : 1;
     this.animateProgress(lib.#springTarget);

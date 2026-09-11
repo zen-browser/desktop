@@ -11,5 +11,4 @@ MOZ_SRC_FILES += [
 
   "ZenLibrary.mjs",
   "ZenLibraryButton.mjs",
-  "ZenLibraryDragAndDrop.mjs",
 ]

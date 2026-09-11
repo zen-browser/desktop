@@ -774,50 +774,7 @@ zen-library:not([open])
 }
 
 .zen-library-space-body {
-  display: flex;
-  flex-direction: column;
   flex: 1;
-  min-height: 0;
-
-  /* It borrows the toolbox's expanded-sidebar tab styling (see
-   * vertical-tabs.css); undo the toolbox's own box rules from that block. */
-  #zen-library-panel &[zen-sidebar-expanded] {
-    min-width: 0;
-    padding: 0;
-  }
-}
-
-/* The copy of the space's tab strip. */
-.zen-library-space-tabs {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  scrollbar-width: none;
-
-  &::after,
-  & #tabbrowser-arrowscrollbox-periphery-copy {
-    display: none !important;
-  }
-
-  /* Copies are rebuilt whenever the strip changes; they must not replay the
-   * originals' enter animations each time. Transitions only run on change,
-   * so they can stay for the in-place collapse and expand. */
-  & * {
-    animation: none !important;
-  }
-
-  /* The strip's drop indicator is placed in here so it scrolls along. */
-  position: relative;
-
-  & > #zen-drag-indicator {
-    position: absolute;
-  }
-
-  & .tab-group-label-container[dragover] {
-    background: color-mix(in srgb, var(--zen-primary-color) 25%, transparent);
-  }
 }
 
 .zen-library-space-footer {

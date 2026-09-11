@@ -1,0 +1,128 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#ctrlTab-panel {
+  --ctrlTab-thumbnail-width: 156px;
+  --ctrlTab-thumbnail-height: 106px;
+  --ctrlTab-preview-padding: 8px;
+  --panel-background-color: transparent;
+  --panel-text-color: light-dark(#555, #bfbfbf);
+  --panel-border-color: transparent;
+  --ctrlTab-estimated-canvas-height: round(
+    round(up, 85vw / 7, 1px) * 19 / 28,
+    1px
+  );
+  --panel-padding: calc(
+      (var(--ctrlTab-estimated-canvas-height) * 1.25 - 95px) / 2
+    )
+    0;
+  --panel-box-shadow-margin: 0px;
+  --panel-box-shadow: none;
+  -moz-window-shadow: menu;
+}
+
+#ctrlTab-previews {
+  grid-template-columns: repeat(
+    var(--ctrlTab-previews-per-row),
+    minmax(
+      0,
+      calc(var(--ctrlTab-thumbnail-width) + 2 * var(--ctrlTab-preview-padding))
+    )
+  );
+  gap: 0;
+  width: max-content;
+  max-width: 100%;
+  margin: auto;
+  padding: 8px;
+  background: light-dark(#f4f4f4, #2a2a2a);
+  border: 1px solid light-dark(#c3c3c3, #3e3e3e);
+  border-radius: 24px;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 16%);
+}
+
+#ctrlTab-previews,
+.ctrlTab-preview-inner,
+.ctrlTab-canvas {
+  corner-shape: superellipse(var(--zen-squircle-value));
+}
+
+.ctrlTab-preview {
+  min-width: 0;
+  padding: 0;
+  text-shadow: none;
+}
+
+.ctrlTab-preview-inner {
+  display: grid;
+  grid-template: var(--ctrlTab-thumbnail-height) 20px / 16px minmax(0, 1fr);
+  gap: 8px 7px;
+  align-items: center;
+  margin: 0;
+  padding: var(--ctrlTab-preview-padding);
+  border: 0;
+  border-radius: 14px;
+}
+
+.ctrlTab-canvas {
+  grid-area: 1 / 1 / 2 / -1;
+  width: var(--ctrlTab-thumbnail-width);
+  height: var(--ctrlTab-thumbnail-height);
+  max-width: 100%;
+  margin: 0;
+  overflow: hidden;
+  color-scheme: inherit;
+  background: light-dark(white, #121212);
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px light-dark(rgb(0 0 0 / 7%), #363636);
+}
+
+.ctrlTab-canvas > :is(img, canvas) {
+  min-width: 100%;
+  max-width: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  object-fit: cover;
+}
+
+.ctrlTab-favicon-container {
+  grid-area: 2 / 1;
+  margin-left: 4px;
+}
+
+.ctrlTab-favicon-container,
+#ctrlTab-panel .ctrlTab-favicon {
+  width: 16px;
+  height: 16px;
+}
+
+#ctrlTab-panel .ctrlTab-favicon {
+  margin: 0;
+  padding: 0;
+  border-radius: 3px;
+  background: transparent;
+  box-shadow: none;
+}
+
+#ctrlTab-panel .ctrlTab-favicon:not([src]),
+#ctrlTab-panel .ctrlTab-favicon[src=""] {
+  background: #aaa;
+}
+
+#ctrlTab-panel .ctrlTab-preview:focus > .ctrlTab-preview-inner {
+  background: var(--color-accent-primary);
+  color: contrast-color(var(--color-accent-primary));
+  border-radius: 14px;
+  box-shadow: none;
+}
+
+#ctrlTab-panel .ctrlTab-preview:focus .ctrlTab-canvas {
+  box-shadow: 0 0 0 1px light-dark(rgb(0 0 0 / 7%), transparent);
+}
+
+.ctrlTab-label {
+  grid-area: 2 / 2;
+  margin: 0 0 0 4px;
+  font: 500 14px/20px -apple-system;
+  text-align: start;
+}

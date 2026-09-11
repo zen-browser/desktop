@@ -8,3 +8,9 @@
 
 - name: zen.spaces-sync.debug
   value: false
+
+- name: zen.spaces-sync.normal-tabs
+  value: false
+
+- name: services.sync.prefs.sync.zen.spaces-sync.normal-tabs
+  value: true

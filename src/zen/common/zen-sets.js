@@ -41,6 +41,9 @@ document.addEventListener(
           case "cmd_zenSplitViewContextMenu":
             gZenViewSplitter.contextSplitTabs();
             break;
+          case "cmd_zenCtxShareSplitView":
+            gZenViewSplitter.contextShareSplitView();
+            break;
           case "cmd_zenCopyCurrentURLMarkdown":
             gZenCommonActions.copyCurrentURLAsMarkdownToClipboard();
             break;
@@ -89,6 +92,9 @@ document.addEventListener(
             break;
           case "cmd_zenCtxDeleteWorkspace":
             gZenWorkspaces.contextDeleteWorkspace(event);
+            break;
+          case "cmd_zenCtxShareWorkspace":
+            gZenWorkspaces.contextShareWorkspace();
             break;
           case "cmd_zenChangeWorkspaceName":
             gZenVerticalTabsManager.renameTabStart({

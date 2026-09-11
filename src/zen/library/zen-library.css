@@ -42,16 +42,6 @@ zen-library {
     flex-direction: row;
   }
 
-  :root[zen-right-side="true"] {
-    transform: translateX(calc(100% * (1 - var(--library-progress, 0))));
-    left: auto;
-    right: 0;
-
-    & #zen-library-panel {
-      flex-direction: row-reverse;
-    }
-  }
-
   & #zen-library-side {
     display: flex;
     flex-direction: column;
@@ -61,9 +51,28 @@ zen-library {
     background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.08));
     box-shadow: 9px 0 17px rgba(0, 0, 0, 0.04);
   }
+}
 
-  &[zen-right-side="true"] #zen-library-side {
+:root[zen-right-side="true"] zen-library {
+  transform: translateX(calc(100% * (1 - var(--library-progress, 0))));
+  left: auto;
+  right: 0;
+
+  & #zen-library-panel {
+    flex-direction: row-reverse;
+  }
+
+  & #zen-library-side {
+    background: linear-gradient(to left, transparent, rgba(255, 255, 255, 0.08));
     box-shadow: -9px 0 17px rgba(0, 0, 0, 0.04);
+  }
+  
+  & #zen-library-footer {
+    flex-direction: row-reverse;
+    
+    & toolbarbutton:first-child {
+      rotate:180deg;
+    }
   }
 }
 

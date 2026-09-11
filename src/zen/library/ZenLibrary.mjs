@@ -39,6 +39,7 @@ export class ZenLibrary extends MozLitElement {
 
   #originalButtonsClone = null;
   #originalButtonsNextSibling = null;
+  #hasAdoptedButtons = false;
 
   #canSwipe = false;
   #isOpen = false;
@@ -121,11 +122,16 @@ export class ZenLibrary extends MozLitElement {
       this.removeAttribute("open");
     }
 
-    if (isPastWindowButtonSwitchPoint && !wasPastWindowButtonSwitchPoint) {
+    if (
+      isPastWindowButtonSwitchPoint &&
+      !wasPastWindowButtonSwitchPoint &&
+      !this.#libraryOnRight
+    ) {
       this.#adoptWindowButtons();
     } else if (
       !isPastWindowButtonSwitchPoint &&
-      wasPastWindowButtonSwitchPoint
+      wasPastWindowButtonSwitchPoint &&
+      (!this.#libraryOnRight || this.#hasAdoptedButtons)
     ) {
       this.#restoreWindowButtons();
     }
@@ -136,6 +142,10 @@ export class ZenLibrary extends MozLitElement {
   }
 
   #adoptWindowButtons() {
+    if (this.#hasAdoptedButtons) {
+      return;
+    }
+
     const realButtons = gZenVerticalTabsManager.actualWindowButtons;
     if (!this.#originalButtonsClone) {
       this.#originalButtonsClone = realButtons.cloneNode(true);
@@ -144,9 +154,14 @@ export class ZenLibrary extends MozLitElement {
 
     this._header.appendChild(realButtons);
     this.#originalButtonsNextSibling.before(this.#originalButtonsClone);
+    this.#hasAdoptedButtons = true;
   }
 
   #restoreWindowButtons() {
+    if (!this.#hasAdoptedButtons) {
+      return;
+    }
+
     const realButtons = gZenVerticalTabsManager.actualWindowButtons;
     if (!this.#originalButtonsClone) {
       return;
@@ -155,6 +170,7 @@ export class ZenLibrary extends MozLitElement {
     this.#originalButtonsNextSibling.before(realButtons);
     this.#originalButtonsClone.remove();
     this.#originalButtonsClone = null;
+    this.#hasAdoptedButtons = false;
   }
 
   #stylesLoaded = null;
@@ -269,6 +285,10 @@ export class ZenLibrary extends MozLitElement {
     lib.style.setProperty("pointer-events", "unset");
     lib.#canSwipe = false;
 
+    if (lib.#libraryOnRight) {
+      direction = direction * -1;
+    }
+
     if (direction) {
       const target = Math.max(-direction, 0);
       this.animateProgress(target);
@@ -340,6 +360,11 @@ export class ZenLibrary extends MozLitElement {
 
   get #libraryOnRight() {
     return gZenVerticalTabsManager._prefsRightSide;
+  }
+
+  static get libraryOnRight() {
+    const lib = this.getInstance();
+    return lib.#libraryOnRight;
   }
 
   createRenderRoot() {

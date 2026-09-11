@@ -47,7 +47,11 @@ export class ZenSpacesSwipe {
     const spaces = gZenWorkspaces.getWorkspaces();
     const current = gZenWorkspaces.getActiveWorkspaceFromCache();
     const libraryEnabled = Services.prefs.getBoolPref("zen.library.enabled");
-    return spaces.indexOf(current) === 0 && libraryEnabled;
+    const libraryOnRight = lazy.ZenLibrary.libraryOnRight;
+    return (
+      spaces.indexOf(current) === (libraryOnRight ? spaces.length - 1 : 0) &&
+      libraryEnabled
+    );
   }
 
   attachWorkspaceSwipeGestures(element) {
@@ -211,10 +215,13 @@ export class ZenSpacesSwipe {
       this._swipeState.direction = delta > 0 ? "left" : "right";
     }
 
+    const libraryOnRight = lazy.ZenLibrary.libraryOnRight;
     const libraryOpen = lazy.ZenLibrary.isLibraryOpen;
     const couldClose = libraryOpen;
     const wantsOpen =
-      !libraryOpen && translateX > 0 && this.#readySwipeOpenLibrary();
+      !libraryOpen &&
+      (libraryOnRight ? translateX < 0 : translateX > 0) &&
+      this.#readySwipeOpenLibrary();
 
     if (wantsOpen || couldClose || this._swipeState.isSwipingLibrary) {
       if (!this._swipeState.isSwipingLibrary) {
@@ -238,7 +245,8 @@ export class ZenSpacesSwipe {
       const RUBBER_BAND_CONSTANT = 0.08;
 
       const LIBRARY_SWIPE_FULL = 1.4;
-      const deltaProgress = (translateX / stripWidth) * LIBRARY_SWIPE_FULL;
+      const translation = libraryOnRight ? -translateX : translateX;
+      const deltaProgress = (translation / stripWidth) * LIBRARY_SWIPE_FULL;
       const progress = this._swipeState.beforeLibraryState + deltaProgress;
 
       let progressDamped;

@@ -25,6 +25,9 @@ window.gZenUIManager = {
 
     document.addEventListener("popupshowing", this.onPopupShowing.bind(this));
     document.addEventListener("popuphidden", this.onPopupHidden.bind(this));
+    window.addEventListener("DOMModalDialogClosed", () =>
+      this._clearDeferredPopupTrackingAttribute()
+    );
 
     document.addEventListener(
       "mousedown",
@@ -334,6 +337,15 @@ window.gZenUIManager = {
     this._popupTrackingElements.remove(element);
   },
 
+  _clearDeferredPopupTrackingAttribute() {
+    const removeAttribute = this.__removeHasPopupAttribute;
+    if (!removeAttribute) {
+      return;
+    }
+    document.removeEventListener("mousemove", removeAttribute);
+    removeAttribute();
+  },
+
   // On macOS, the app menu panel is displayed as a native NSPopover which
   // silently clips content beyond the screen without informing Firefox's
   // layout engine. This makes bottom menu items unreachable by scrolling.
@@ -379,7 +391,7 @@ window.gZenUIManager = {
       ) {
         continue;
       }
-      document.removeEventListener("mousemove", this.__removeHasPopupAttribute);
+      this._clearDeferredPopupTrackingAttribute();
       gZenCompactModeManager._setElementExpandAttribute(
         el,
         true,
@@ -403,15 +415,18 @@ window.gZenUIManager = {
         "has-popup-menu"
       );
     } else {
-      this.__removeHasPopupAttribute = () =>
+      const removeAttribute = () => {
+        if (this.__removeHasPopupAttribute === removeAttribute) {
+          this.__removeHasPopupAttribute = null;
+        }
         gZenCompactModeManager._setElementExpandAttribute(
           element,
           false,
           "has-popup-menu"
         );
-      document.addEventListener("mousemove", this.__removeHasPopupAttribute, {
-        once: true,
-      });
+      };
+      this.__removeHasPopupAttribute = removeAttribute;
+      document.addEventListener("mousemove", removeAttribute, { once: true });
     }
     this.__currentPopup = null;
     this.__currentPopupTrackElement = null;

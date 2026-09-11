@@ -30,6 +30,13 @@ panel[type="arrow"]:not(#feature-callout) {
     }
   }
 
+  @media (-moz-platform: linux) or ((-moz-platform: windows) and (not (-moz-windows-mica-popups))) {
+    &::part(content) {
+      corner-shape: round; 
+      border-radius: calc(var(--panel-border-radius) / var(--zen-squircle-value));
+    }
+  }
+
   @media (-moz-platform: macos) {
     &:is([nonnative], :not([type="arrow"])) {
       appearance: auto !important;

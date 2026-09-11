@@ -278,8 +278,14 @@ export class ZenLibrary extends MozLitElement {
 
   #onOpenLibrary() {
     gURLBar.view.close();
-    this.#toolboxWidth =
-      window.windowUtils.getBoundsWithoutFlushing(gNavToolbox).width;
+    // Get the width from the css property,
+    // getBoundsWithoutFlushing will fail as it takes the
+    // toolbox transformation during the animation into account
+    this.#toolboxWidth = parseFloat(
+      gNavToolbox.style
+        .getPropertyValue("--actual-zen-sidebar-width")
+        .replace("/\D/g", "")
+    );
     if (document.documentElement.hasAttribute("zen-sidebar-expanded")) {
       this.#toolboxWidth += window.windowUtils.getBoundsWithoutFlushing(
         document.getElementById("zen-sidebar-splitter")

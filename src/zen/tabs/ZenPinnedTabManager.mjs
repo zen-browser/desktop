@@ -956,7 +956,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     if (!initialState?.entry?.url) {
       window.gZenWindowSync.setPinnedInitialState(
         tab,
-        { url: location, title: initialState?.entry?.title || tab.label },
+        { url: location, title: initialState?.entry?.title },
         initialState?.image ??
           tab.getAttribute("image") ??
           gBrowser.getIcon(tab)
@@ -1181,7 +1181,15 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
-  onTabLabelChanged(tab) {
+  onTabLabelChanged(tab, label, { isContentTitle = false } = {}) {
+    if (
+      isContentTitle &&
+      !tab.zenStaticLabel &&
+      label &&
+      tab._zenPinnedInitialState?.entry?.url
+    ) {
+      window.gZenWindowSync.setPinnedTitle(tab, label);
+    }
     tab.dispatchEvent(
       new CustomEvent("ZenTabLabelChanged", { bubbles: true, detail: { tab } })
     );

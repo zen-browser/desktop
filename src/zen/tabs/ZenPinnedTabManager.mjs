@@ -460,7 +460,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     const state = this.#getTabState(tab);
 
     const initialState = tab._zenPinnedInitialState;
-    if (!initialState?.entry?.url) {
+    if (!initialState?.entry) {
       return;
     }
 
@@ -954,7 +954,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
     const initialState = tab._zenPinnedInitialState;
     if (!initialState?.entry?.url) {
-      window.gZenWindowSync?.setPinnedInitialState(
+      window.gZenWindowSync.setPinnedInitialState(
         tab,
         { url: location, title: initialState?.entry?.title || tab.label },
         initialState?.image ??

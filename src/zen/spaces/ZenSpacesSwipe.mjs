@@ -23,6 +23,8 @@ export class ZenSpacesSwipe {
     isGestureActive: false,
     lastDelta: 0,
     direction: null,
+    isSwipingLibrary: false,
+    beforeLibraryState: 0,
   };
 
   constructor() {
@@ -285,11 +287,18 @@ export class ZenSpacesSwipe {
   onSwipeGestureAnimationEnd() {
     const ws = gZenWorkspaces;
 
+    if (this._swipeState.isSwipingLibrary) {
+      lazy.ZenLibrary.stopSwipe(null);
+      return;
+    }
+
     // Reset swipe state
     this._swipeState = {
       isGestureActive: false,
       lastDelta: 0,
       direction: null,
+      isSwipingLibrary: false,
+      beforeLibraryState: 0,
     };
 
     Services.prefs.setBoolPref("zen.swipe.is-fast-swipe", false);

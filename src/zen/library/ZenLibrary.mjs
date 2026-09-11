@@ -265,8 +265,10 @@ export class ZenLibrary extends MozLitElement {
     lib.style.setProperty("pointer-events", "unset");
     lib.#canSwipe = false;
 
-    const target = Math.max(-direction, 0);
-    this.animateProgress(target);
+    if (direction) {
+      const target = Math.max(-direction, 0);
+      this.animateProgress(target);
+    }
     lib.#detachWrapperOfSwipe();
 
     // Return library open state
@@ -294,13 +296,14 @@ export class ZenLibrary extends MozLitElement {
   }
 
   #detachWrapperOfSwipe() {
-    if (this.#isWrapperSwipeAttached) {
+    if (this.#isWrapperSwipeAttached || this.#wrapperGestureControl) {
       const appWrapper = document.getElementById("zen-main-app-wrapper");
       window.gZenWorkspaces._swipeManager.detachWorkspaceSwipeGestures(
         appWrapper,
         this.#wrapperGestureControl
       );
-      this.#isWrapperSwipeAttached = true;
+      this.#wrapperGestureControl = null;
+      this.#isWrapperSwipeAttached = false;
     }
   }
 

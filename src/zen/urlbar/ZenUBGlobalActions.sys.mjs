@@ -42,30 +42,6 @@ const globalActionsTemplate = [
     icon: "chrome://browser/skin/zen-icons/split.svg",
   },
   {
-    l10nId: "zen-action-split-tabs-vertically",
-    command: "cmd_zenSplitViewVertical",
-    icon: "chrome://browser/skin/zen-icons/split.svg",
-    isAvailable: window => {
-      return window.gBrowser.visibleTabs.length > 1;
-    },
-  },
-  {
-    l10nId: "zen-action-split-tabs-horizontally",
-    command: "cmd_zenSplitViewHorizontal",
-    icon: "chrome://browser/skin/zen-icons/split.svg",
-    isAvailable: window => {
-      return window.gBrowser.visibleTabs.length > 1;
-    },
-  },
-  {
-    l10nId: "zen-action-split-tabs-grid",
-    command: "cmd_zenSplitViewGrid",
-    icon: "chrome://browser/skin/zen-icons/split.svg",
-    isAvailable: window => {
-      return window.gBrowser.visibleTabs.length > 1;
-    },
-  },
-  {
     l10nId: "zen-action-unsplit-view",
     command: "cmd_zenSplitViewUnsplit",
     icon: "chrome://browser/skin/zen-icons/split.svg",
@@ -77,11 +53,6 @@ const globalActionsTemplate = [
     l10nId: "zen-action-new-space",
     command: "cmd_zenOpenWorkspaceCreation",
     icon: "chrome://browser/skin/zen-icons/plus.svg",
-  },
-  {
-    l10nId: "zen-action-unload-space",
-    command: "cmd_zenUnloadWorkspace",
-    icon: "chrome://browser/skin/zen-icons/forget.svg",
   },
   {
     l10nId: "zen-action-new-folder",
@@ -230,18 +201,6 @@ const globalActionsTemplate = [
     },
   },
   {
-    l10nId: "zen-action-replace-pinned-url",
-    command: window =>
-      window.gZenPinnedTabManager.replacePinnedUrlWithCurrent(
-        window.gBrowser.selectedTab
-      ),
-    icon: "chrome://browser/skin/zen-icons/pin.svg",
-    isAvailable: window => {
-      const tab = window.gBrowser.selectedTab;
-      return tab.pinned && tab.hasAttribute("zen-pinned-changed");
-    },
-  },
-  {
     l10nId: "zen-action-reload-tab",
     command: "Browser:Reload",
     icon: "chrome://browser/skin/zen-icons/reload.svg",
@@ -339,11 +298,6 @@ const globalActionsTemplate = [
     isAvailable: window => {
       return isNotEmptyTab(window);
     },
-  },
-  {
-    l10nId: "zen-action-show-all-history",
-    command: "Browser:ShowAllHistory",
-    icon: "chrome://browser/skin/zen-icons/history.svg",
   },
 ];
 

@@ -25,8 +25,6 @@ export class ZenSpacesSwipe {
     direction: null,
   };
 
-  #libraryOpen = false;
-
   constructor() {
     this.attachWorkspaceSwipeGestures(gNavToolbox);
     this._popupOpenHandler = this._popupOpenHandler.bind(this);
@@ -171,7 +169,7 @@ export class ZenSpacesSwipe {
       this._swipeState.direction = delta > 0 ? "left" : "right";
     }
 
-    const libraryOpen = this.#libraryOpen;
+    const libraryOpen = lazy.ZenLibrary.isLibraryOpen;
     const couldClose = libraryOpen;
     const wantsOpen =
       !libraryOpen && translateX > 0 && this.#readySwipeOpenLibrary();
@@ -237,7 +235,7 @@ export class ZenSpacesSwipe {
     const direction = ws.naturalScroll ? -1 : 1;
 
     if (this._swipeState.isSwipingLibrary) {
-      this.#libraryOpen = lazy.ZenLibrary.stopSwipe(rawDirection * direction);
+      lazy.ZenLibrary.stopSwipe(rawDirection * direction);
       return;
     }
 

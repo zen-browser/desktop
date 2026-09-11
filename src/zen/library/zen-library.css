@@ -128,8 +128,7 @@ zen-library[transitioning] #zen-library-content {
   flex-direction: column;
   gap: 8px;
   justify-content: space-between;
-  max-height: 30rem;
-  height: 100%;
+  height: min-content;
 }
 
 .zen-library-tab {
@@ -181,6 +180,24 @@ zen-library[transitioning] #zen-library-content {
     &[animate] .zen-library-tab-icon-image {
       animation: zen-library-sprite-play 0.583s steps(36, jump-none);
     }
+  }
+}
+
+@media (max-height: 45rem) {
+  .zen-library-tab {
+    & label {
+      display: none;
+    }
+  }
+}
+
+@media (max-height: 38rem) {
+  #zen-library-sidebar-tabs {
+    gap: 0;
+  }
+  .zen-library-tab {
+    padding: 10px 0;
+    margin: 4px 8px;
   }
 }
 

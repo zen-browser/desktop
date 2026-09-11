@@ -228,7 +228,6 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     window.addEventListener("FolderGrouped", this);
     window.addEventListener("FolderUngrouped", this);
     window.addEventListener("TabSelect", this);
-    window.addEventListener("TabOpen", this);
     const onNewFolder = this.#onNewFolder.bind(this);
     document
       .getElementById("zen-context-menu-new-folder")
@@ -412,21 +411,6 @@ class nsZenFolders extends nsZenDOMOperatedFeature {
     collapsedRoot.setAttribute("has-active", "true");
     await this.animateSelect(collapsedRoot);
     gBrowser.tabContainer._invalidateCachedTabs();
-  }
-
-  on_TabOpen(event) {
-    const tab = event.target;
-    const group = tab.group;
-    if (!group?.isZenFolder || tab.pinned) {
-      return;
-    }
-    // Edge case: In occations where we add a tab with an ownerTab
-    // inside a folder, the tab gets added into the folder in an
-    // unpinned state. We need to pin it and re-add it into the folder.
-    if (Services.prefs.getBoolPref("zen.folders.owned-tabs-in-folder")) {
-      gBrowser.pinTab(tab);
-      group.addTabs([tab]);
-    }
   }
 
   async on_TabUngrouped(event) {

@@ -37,11 +37,10 @@ export class ZenLibrary extends MozLitElement {
 
   #toolboxWidth = 0;
 
-  #originalButtonsClone = null;
   #originalButtonsNextSibling = null;
 
   get #hasAdoptedButtons() {
-    return this.#originalButtonsClone !== null;
+    return this.#originalButtonsNextSibling !== null;
   }
 
   #canSwipe = false;
@@ -81,6 +80,13 @@ export class ZenLibrary extends MozLitElement {
     return lib.#isOpen;
   }
 
+  static get isLibrarySlightlyOpen() {
+    const lib = this.getInstance();
+    // Due to calculation inaccuracies assume
+    // that openProgress never goes back to 0
+    return lib.openProgress > 0.001;
+  }
+
   set activeTab(value) {
     if (this._activeTab === value) {
       return;
@@ -100,16 +106,21 @@ export class ZenLibrary extends MozLitElement {
   set openProgress(value) {
     const p = value;
     const stealWindowButtonsPastPoint = 0.6;
-    const wasPastWindowButtonSwitchPoint =
-      this.#progress > stealWindowButtonsPastPoint;
     const wasOpen = this.#progress > 0;
     this.#progress = p;
     const isPastWindowButtonSwitchPoint = p > stealWindowButtonsPastPoint;
     const isOpen = p > 0;
 
     let libraryWidth = window.windowUtils.getBoundsWithoutFlushing(this).width;
+    const compactModeOffsetDirection = this.#libraryOnRight
+      ? -this.#toolboxWidth
+      : this.#toolboxWidth;
+    const compactModeOffset = this.#isCompactMode
+      ? compactModeOffsetDirection
+      : 0;
     let webOffset =
-      (this.#libraryOnRight ? -1 : 1) * (libraryWidth - this.#toolboxWidth);
+      (this.#libraryOnRight ? -1 : 1) * (libraryWidth - this.#toolboxWidth) +
+      compactModeOffset;
 
     lazy.appContentWrapper?.style.setProperty(
       "--library-wrapper-target-px",
@@ -125,15 +136,10 @@ export class ZenLibrary extends MozLitElement {
       this.removeAttribute("open");
     }
 
-    if (
-      isPastWindowButtonSwitchPoint &&
-      !wasPastWindowButtonSwitchPoint &&
-      !this.#libraryOnRight
-    ) {
+    if (isPastWindowButtonSwitchPoint && !this.#libraryOnRight) {
       this.#adoptWindowButtons();
     } else if (
       !isPastWindowButtonSwitchPoint &&
-      wasPastWindowButtonSwitchPoint &&
       (!this.#libraryOnRight || this.#hasAdoptedButtons)
     ) {
       this.#restoreWindowButtons();
@@ -150,13 +156,13 @@ export class ZenLibrary extends MozLitElement {
     }
 
     const realButtons = gZenVerticalTabsManager.actualWindowButtons;
-    if (!this.#originalButtonsClone) {
-      this.#originalButtonsClone = realButtons.cloneNode(true);
-      this.#originalButtonsNextSibling = realButtons.nextSibling;
+    if (!this.#originalButtonsNextSibling) {
+      this.#originalButtonsNextSibling = {
+        isNext: realButtons.nextSibling,
+        sibling: realButtons.nextSibling || realButtons.previousSibling,
+      };
+      this._header.appendChild(realButtons);
     }
-
-    this._header.appendChild(realButtons);
-    this.#originalButtonsNextSibling.before(this.#originalButtonsClone);
   }
 
   #restoreWindowButtons() {
@@ -165,13 +171,14 @@ export class ZenLibrary extends MozLitElement {
     }
 
     const realButtons = gZenVerticalTabsManager.actualWindowButtons;
-    if (!this.#originalButtonsClone) {
-      return;
+    if (this.#originalButtonsNextSibling) {
+      if (this.#originalButtonsNextSibling.isNext) {
+        this.#originalButtonsNextSibling.sibling.before(realButtons);
+      } else {
+        this.#originalButtonsNextSibling.sibling.after(realButtons);
+      }
+      this.#originalButtonsNextSibling = null;
     }
-
-    this.#originalButtonsNextSibling.before(realButtons);
-    this.#originalButtonsClone.remove();
-    this.#originalButtonsClone = null;
   }
 
   #stylesLoaded = null;
@@ -403,6 +410,13 @@ export class ZenLibrary extends MozLitElement {
       window.removeEventListener("TabOpen", this._tabOpen);
       this._tabOpen = null;
     }
+  }
+
+  get #isCompactMode() {
+    return (
+      window.gZenCompactModeManager.preference &&
+      Services.prefs.getBoolPref("zen.view.compact.hide-tabbar")
+    );
   }
 
   onTabOpen() {

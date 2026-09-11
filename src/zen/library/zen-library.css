@@ -17,6 +17,19 @@
   opacity: calc(1 - var(--toolbox-progress));
 }
 
+#zen-main-app-wrapper[zen-compact-mode="true"] #navigator-toolbox {
+  @media -moz-pref('zen.view.compact.hide-tabbar') {
+    transform: translateX(calc(var(--toolbox-progress) * -100%));
+    opacity: 1;
+  }
+}
+
+:root[zen-right-side="true"] #zen-main-app-wrapper[zen-compact-mode="true"] #navigator-toolbox {
+  @media -moz-pref('zen.view.compact.hide-tabbar') {
+    transform: translateX(calc(var(--toolbox-progress) * 100%));
+  }
+}
+
 zen-library {
   --zen-library-pill-bg: color-mix(in srgb, currentColor 7%, transparent);
   --zen-library-pill-hover-bg: color-mix(in srgb, currentColor 12%, transparent);

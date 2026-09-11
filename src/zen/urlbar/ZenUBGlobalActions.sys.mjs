@@ -17,6 +17,10 @@ ChromeUtils.defineLazyGetter(lazy, "l10n", () => {
   return new Localization(["browser/zen-command-palette.ftl"], true);
 });
 
+ChromeUtils.defineESModuleGetters(lazy, {
+  SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
+});
+
 function isNotEmptyTab(window) {
   return !window.gBrowser.selectedTab.hasAttribute("zen-empty-tab");
 }
@@ -156,6 +160,14 @@ const globalActionsTemplate = [
     icon: "chrome://browser/skin/zen-icons/close.svg",
     isAvailable: window => {
       return isNotEmptyTab(window);
+    },
+  },
+  {
+    l10nId: "zen-action-reopen-closed-tab",
+    command: "History:RestoreLastClosedTabOrWindowOrSession",
+    icon: "chrome://browser/skin/zen-icons/history.svg",
+    isAvailable: window => {
+      return lazy.SessionStore.getClosedTabCount(window) > 0;
     },
   },
   {

@@ -18,6 +18,12 @@ const MAX_RECENT_ACTIONS = 5;
 const MINIMUM_QUERY_SCORE = 92;
 const MINIMUM_PREFIXED_QUERY_SCORE = 30;
 
+// Query words that may be skipped when they don't match anything, as long as
+// at least one other word matched. Kept deliberately small.
+const STOP_WORDS = new Set(["a", "an", "the", "to", "in", "on", "of", "for"]);
+// Keyword matches rank slightly below equally good label matches.
+const KEYWORD_SCORE_FACTOR = 0.9;
+
 ChromeUtils.defineESModuleGetters(lazy, {
   UrlbarResult: "chrome://browser/content/urlbar/UrlbarResult.mjs",
   BrowserWindowTracker: "resource:///modules/BrowserWindowTracker.sys.mjs",
@@ -254,7 +260,7 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
         continue;
       }
       const label = action.extraPayload?.prettyName || action.label;
-      const score = this.#calculateFuzzyScore(label, query);
+      const score = this.#scoreAction(label, action.keywords, query);
       if (
         score >
         (isPrefixed ? MINIMUM_PREFIXED_QUERY_SCORE : MINIMUM_QUERY_SCORE)
@@ -271,6 +277,68 @@ export class ZenUrlbarProviderGlobalActions extends UrlbarProvider {
       return results.map(r => r.action);
     }
     return results.slice(0, MAX_RECENT_ACTIONS).map(r => r.action);
+  }
+
+  /**
+   * Scores an action against the query. The whole label is scored as today,
+   * and additionally the query is matched word by word against the label
+   * words and the action's keywords, in any order. The best of the two wins,
+   * so queries that already match keep their score.
+   *
+   * @param {string} label The action's label.
+   * @param {string[]} keywords Optional keyword phrases for the action.
+   * @param {string} query The user's search query.
+   * @returns {number} A score representing the match quality.
+   */
+  #scoreAction(label, keywords, query) {
+    const wholeScore = this.#calculateFuzzyScore(label, query);
+    const queryWords = query.toLowerCase().split(/\s+/).filter(Boolean);
+    if (!queryWords.length) {
+      return wholeScore;
+    }
+    const labelWords = label.toLowerCase().split(/\s+/).filter(Boolean);
+    const keywordWords = (keywords || [])
+      .flatMap(keyword => keyword.toLowerCase().split(/\s+/))
+      .filter(Boolean);
+    const keywordPhrases = (keywords || []).map(keyword =>
+      keyword.toLowerCase()
+    );
+
+    let total = 0;
+    let matched = 0;
+    let skipped = 0;
+    for (const queryWord of queryWords) {
+      let best = 0;
+      for (const labelWord of labelWords) {
+        best = Math.max(best, this.#calculateFuzzyScore(labelWord, queryWord));
+      }
+      for (const keywordWord of keywordWords) {
+        best = Math.max(
+          best,
+          this.#calculateFuzzyScore(keywordWord, queryWord) *
+            KEYWORD_SCORE_FACTOR
+        );
+      }
+      if (best > 0) {
+        total += best;
+        matched++;
+      } else if (STOP_WORDS.has(queryWord)) {
+        skipped++;
+      } else {
+        // A meaningful query word matched nothing: not a match.
+        return wholeScore;
+      }
+    }
+    if (!matched || skipped === queryWords.length) {
+      return wholeScore;
+    }
+    let wordScore = total / matched;
+    // The whole query equals a keyword phrase: nearly as good as an exact
+    // label match.
+    if (keywordPhrases.includes(queryWords.join(" "))) {
+      wordScore = Math.max(wordScore, 200 * KEYWORD_SCORE_FACTOR);
+    }
+    return Math.max(wholeScore, wordScore);
   }
 
   /**

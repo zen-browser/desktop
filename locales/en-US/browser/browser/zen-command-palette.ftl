@@ -4,11 +4,15 @@
 
 zen-action-toggle-compact-mode = Toggle Compact Mode
 zen-action-open-theme-picker = Open Theme Picker
+zen-action-open-theme-picker-keywords = change theme, pick theme, appearance
 zen-action-new-split-view = New Split View
 zen-action-new-folder = New Folder
 zen-action-copy-current-url = Copy Current URL
+zen-action-copy-current-url-keywords = copy link, copy address
 zen-action-settings = Settings
+zen-action-settings-keywords = preferences, options
 zen-action-open-private-window = Open Private Window
+zen-action-open-private-window-keywords = incognito, private browsing
 zen-action-open-new-window = Open New Window
 zen-action-new-blank-window = New Blank Window
 zen-action-pin-tab = Pin Tab
@@ -27,6 +31,7 @@ zen-action-toggle-tabs-on-right = Toggle Tabs on right
 zen-action-add-to-essentials = Add to Essentials
 zen-action-remove-from-essentials = Remove from Essentials
 zen-action-find-in-page = Find in Page
+zen-action-find-in-page-keywords = find on page, search page, search in page
 zen-action-manage-extensions = Manage Extensions
 zen-action-switch-to-automatic-appearance = Switch to Automatic Appearance
 zen-action-switch-to-light-mode = Switch to Light Mode

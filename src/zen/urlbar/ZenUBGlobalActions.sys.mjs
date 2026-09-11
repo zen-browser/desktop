@@ -29,6 +29,7 @@ const globalActionsTemplate = [
   },
   {
     l10nId: "zen-action-open-theme-picker",
+    keywordsL10nId: "zen-action-open-theme-picker-keywords",
     command: "cmd_zenOpenZenThemePicker",
     icon: "chrome://browser/skin/zen-icons/edit-theme.svg",
   },
@@ -44,16 +45,19 @@ const globalActionsTemplate = [
   },
   {
     l10nId: "zen-action-copy-current-url",
+    keywordsL10nId: "zen-action-copy-current-url-keywords",
     command: "cmd_zenCopyCurrentURL",
     icon: "chrome://browser/skin/zen-icons/link.svg",
   },
   {
     l10nId: "zen-action-settings",
+    keywordsL10nId: "zen-action-settings-keywords",
     command: window => window.openPreferences(),
     icon: "chrome://browser/skin/zen-icons/settings.svg",
   },
   {
     l10nId: "zen-action-open-private-window",
+    keywordsL10nId: "zen-action-open-private-window-keywords",
     command: "Tools:PrivateBrowsing",
     icon: "chrome://browser/skin/zen-icons/private-window.svg",
   },
@@ -214,6 +218,7 @@ const globalActionsTemplate = [
   },
   {
     l10nId: "zen-action-find-in-page",
+    keywordsL10nId: "zen-action-find-in-page-keywords",
     command: "cmd_find",
     icon: "chrome://browser/skin/zen-icons/search-page.svg",
     isAvailable: window => {
@@ -275,5 +280,15 @@ export const globalActions = globalActionsTemplate.map(action => ({
   ...action,
   get label() {
     return lazy.l10n.formatValueSync(action.l10nId);
+  },
+  get keywords() {
+    if (!action.keywordsL10nId) {
+      return [];
+    }
+    return lazy.l10n
+      .formatValueSync(action.keywordsL10nId)
+      .split(",")
+      .map(keyword => keyword.trim())
+      .filter(Boolean);
   },
 }));

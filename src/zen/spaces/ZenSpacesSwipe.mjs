@@ -232,10 +232,10 @@ export class ZenSpacesSwipe {
         );
       };
 
-      const DAMPING_DIMENSION = 0.06;
-      const RUBBER_BAND_CONSTANT = 0.05;
+      const DAMPING_DIMENSION = 0.2;
+      const RUBBER_BAND_CONSTANT = 0.08;
 
-      const LIBRARY_SWIPE_FULL = 1.65;
+      const LIBRARY_SWIPE_FULL = 1.4;
       const deltaProgress = (translateX / stripWidth) * LIBRARY_SWIPE_FULL;
       const progress = this._swipeState.beforeLibraryState + deltaProgress;
 

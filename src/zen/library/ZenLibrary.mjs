@@ -39,7 +39,7 @@ export class ZenLibrary extends MozLitElement {
 
   #originalButtonsClone = null;
   #originalButtonsNextSibling = null;
-  
+
   get #hasAdoptedButtons() {
     return this.#originalButtonsClone !== null;
   }
@@ -381,6 +381,9 @@ export class ZenLibrary extends MozLitElement {
     this.#resizeObserver.observe(this);
 
     window.gZenWorkspaces._swipeManager.attachWorkspaceSwipeGestures(this);
+
+    this._tabOpen = this.onTabOpen.bind(this);
+    window.addEventListener("TabOpen", this._tabOpen);
   }
 
   disconnectedCallback() {
@@ -395,6 +398,17 @@ export class ZenLibrary extends MozLitElement {
     super.disconnectedCallback();
     document.removeEventListener("keydown", this.onKeyDown, true);
     this.#resizeObserver.disconnect();
+
+    if (this._tabOpen) {
+      window.removeEventListener("TabOpen", this._tabOpen);
+      this._tabOpen = null;
+    }
+  }
+
+  onTabOpen() {
+    if (this.#isOpen) {
+      ZenLibrary.animateProgress(0);
+    }
   }
 
   onKeyDown(e) {

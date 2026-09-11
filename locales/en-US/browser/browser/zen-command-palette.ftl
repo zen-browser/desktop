@@ -18,6 +18,7 @@ zen-action-new-boost = New Boost
 zen-action-next-space = Next Space
 zen-action-previous-space = Previous Space
 zen-action-close-tab = Close Tab
+zen-action-reopen-closed-tab = Reopen Closed Tab
 zen-action-reload-tab = Reload Tab
 zen-action-reload-tab-without-cache = Reload Tab Without Cache
 zen-action-next-tab = Next Tab

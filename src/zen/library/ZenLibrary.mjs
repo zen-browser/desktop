@@ -43,6 +43,9 @@ export class ZenLibrary extends MozLitElement {
   #canSwipe = false;
   #isOpen = false;
 
+  #isWrapperSwipeAttached = false;
+  #wrapperGestureControl = null;
+
   #resizeObserver = new ResizeObserver(() => {
     this.openProgress = this.#progress;
   });
@@ -196,6 +199,7 @@ export class ZenLibrary extends MozLitElement {
 
   static async animateProgress(target) {
     const lib = this.getInstance();
+    lib.#detachWrapperOfSwipe();
     lib.#cancelIdleCleanup();
     await lib.#whenStylesLoaded();
     lib.style.visibility = "";
@@ -253,6 +257,7 @@ export class ZenLibrary extends MozLitElement {
     }
 
     lib.style.setProperty("pointer-events", "none");
+    lib.#attachWrapperToSwipe();
   }
 
   static stopSwipe(direction) {
@@ -262,6 +267,7 @@ export class ZenLibrary extends MozLitElement {
 
     const target = Math.max(-direction, 0);
     this.animateProgress(target);
+    lib.#detachWrapperOfSwipe();
 
     // Return library open state
     return lib.#isOpen;
@@ -274,6 +280,28 @@ export class ZenLibrary extends MozLitElement {
     }
 
     lib.openProgress = target;
+  }
+
+  #attachWrapperToSwipe() {
+    if (!this.#isWrapperSwipeAttached) {
+      const appWrapper = document.getElementById("zen-main-app-wrapper");
+      this.#wrapperGestureControl =
+        window.gZenWorkspaces._swipeManager.attachWorkspaceSwipeGestures(
+          appWrapper
+        );
+      this.#isWrapperSwipeAttached = true;
+    }
+  }
+
+  #detachWrapperOfSwipe() {
+    if (this.#isWrapperSwipeAttached) {
+      const appWrapper = document.getElementById("zen-main-app-wrapper");
+      window.gZenWorkspaces._swipeManager.detachWorkspaceSwipeGestures(
+        appWrapper,
+        this.#wrapperGestureControl
+      );
+      this.#isWrapperSwipeAttached = true;
+    }
   }
 
   #onOpenLibrary() {

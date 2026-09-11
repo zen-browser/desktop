@@ -49,19 +49,27 @@ export class ZenSpacesSwipe {
   }
 
   attachWorkspaceSwipeGestures(element) {
+    const gestureControl = {
+      _handleSwipeMayStart: this._handleSwipeMayStart.bind(this),
+      _handleSwipeStart: this._handleSwipeStart.bind(this),
+      _handleSwipeUpdate: this._handleSwipeUpdate.bind(this),
+      _handleSwipeEnd: this._handleSwipeEnd.bind(this),
+      _handleSwipeAnimationEnd: this.onSwipeGestureAnimationEnd.bind(this),
+    };
+
     element.addEventListener(
       "MozSwipeGestureMayStart",
-      this._handleSwipeMayStart.bind(this),
+      gestureControl._handleSwipeMayStart,
       true
     );
     element.addEventListener(
       "MozSwipeGestureStart",
-      this._handleSwipeStart.bind(this),
+      gestureControl._handleSwipeStart,
       true
     );
     element.addEventListener(
       "MozSwipeGestureUpdate",
-      this._handleSwipeUpdate.bind(this),
+      gestureControl._handleSwipeUpdate,
       true
     );
 
@@ -69,15 +77,47 @@ export class ZenSpacesSwipe {
     // while MozSwipeGesture is fired immediately after swipe ends.
     element.addEventListener(
       "MozSwipeGesture",
-      this._handleSwipeEnd.bind(this),
+      gestureControl._handleSwipeEnd,
       true
     );
 
     element.addEventListener(
       "MozSwipeGestureEnd",
-      () => {
-        this.onSwipeGestureAnimationEnd();
-      },
+      gestureControl._handleSwipeAnimationEnd,
+      true
+    );
+
+    return gestureControl;
+  }
+
+  detachWorkspaceSwipeGestures(element, gestureControl) {
+    element.removeEventListener(
+      "MozSwipeGestureMayStart",
+      gestureControl._handleSwipeMayStart,
+      true
+    );
+    element.removeEventListener(
+      "MozSwipeGestureStart",
+      gestureControl._handleSwipeStart,
+      true
+    );
+    element.removeEventListener(
+      "MozSwipeGestureUpdate",
+      gestureControl._handleSwipeUpdate,
+      true
+    );
+
+    // Use MozSwipeGesture instead of MozSwipeGestureEnd because MozSwipeGestureEnd is fired after animation ends,
+    // while MozSwipeGesture is fired immediately after swipe ends.
+    element.removeEventListener(
+      "MozSwipeGesture",
+      gestureControl._handleSwipeEnd,
+      true
+    );
+
+    element.removeEventListener(
+      "MozSwipeGestureEnd",
+      gestureControl._handleSwipeAnimationEnd,
       true
     );
   }

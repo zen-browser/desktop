@@ -1047,10 +1047,21 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     clickedDot = this.dots.find(dot => dot.element === clickedElement);
 
     if (clickedDot) {
-      // TODO: this doesnt work and needs to be fixed
-      existingPrimaryDot.ID = clickedDot.ID;
+      // Already the primary accent color — nothing to do.
+      if (clickedDot.ID === 0) {
+        return;
+      }
+
+      const previousId = clickedDot.ID;
       clickedDot.ID = 0;
+      clickedDot.element.classList.add("primary");
       clickedDot.element.style.zIndex = 999;
+
+      if (existingPrimaryDot) {
+        existingPrimaryDot.ID = previousId;
+        existingPrimaryDot.element.classList.remove("primary");
+        existingPrimaryDot.element.style.zIndex = "";
+      }
 
       let colorPositions = this.calculateCompliments(
         this.dots,
@@ -1058,6 +1069,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
         this.useAlgo
       );
       this.handleColorPositions(colorPositions);
+      this.updateCurrentWorkspace();
       return;
     }
 
@@ -1116,6 +1128,7 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
       this.dragging = true;
       this.draggedDot = event.target;
       this.draggedDot.classList.add("dragging");
+      this._dotDidMove = false;
     }
 
     // Store the starting position of the drag
@@ -1158,21 +1171,36 @@ export class nsZenThemePicker extends nsZenMultiWindowFeature {
     if (this.dragging) {
       event.preventDefault();
       event.stopPropagation();
+      const didMove = this._dotDidMove;
       this.dragging = false;
       this.draggedDot.classList.remove("dragging");
       this.draggedDot = null;
       this.dragStartPosition = null; // Reset the drag start position
+      this._dotDidMove = false;
 
-      this.recentlyDragged = true;
-      setTimeout(() => {
-        this.recentlyDragged = false;
-      }, 100);
+      // Only suppress the following click when the pointer actually moved.
+      // Otherwise clicks can promote a non-primary dot to primary.
+      if (didMove) {
+        this.recentlyDragged = true;
+        setTimeout(() => {
+          this.recentlyDragged = false;
+        }, 100);
+      }
     }
   }
 
   onDotMouseMove(event) {
     if (this.dragging) {
       event.preventDefault();
+      if (!this._dotDidMove && this.dragStartPosition) {
+        const dx = event.clientX - this.dragStartPosition.x;
+        const dy = event.clientY - this.dragStartPosition.y;
+        // Ignore tiny jitter so a click is not treated as a drag.
+        if (dx * dx + dy * dy <= 9) {
+          return;
+        }
+        this._dotDidMove = true;
+      }
       const rect = window.windowUtils.getBoundsWithoutFlushing(
         this.panel.querySelector(".zen-theme-picker-gradient")
       );

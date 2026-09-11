@@ -283,7 +283,9 @@ export class ZenLibrary extends MozLitElement {
       this.instance = new ZenLibrary();
       this.instance.style.visibility = "collapse";
       const mountRoot = document.getElementById("zen-main-app-wrapper");
-      mountRoot.prepend(this.instance);
+      // After #browser, so ids the space cards share with the sidebar (see
+      // the spaces section) never win getElementById over the real ones.
+      mountRoot.append(this.instance);
     }
     return this.instance;
   }

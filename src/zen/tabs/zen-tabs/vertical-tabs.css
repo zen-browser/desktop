@@ -83,7 +83,8 @@
   height: 100%;
 }
 
-#browser {
+#browser,
+zen-library {
   --zen-min-toolbox-padding: 5px;
   @media (-moz-platform: macos) {
     --zen-min-toolbox-padding: 6px;
@@ -229,7 +230,10 @@
 /* ==========================================================================
    Navigator Toolbox (Main Sidebar Container) Base Styles
    ========================================================================== */
-#navigator-toolbox {
+/* Library space cards show copies of the tab strips, so they share the
+ * toolbox's tab styling. */
+#navigator-toolbox,
+.zen-library-space-body {
   /* Define theme variables, including platform specifics for native look */
   --zen-toolbox-min-width: 1px;
   --border-radius-medium: 14px;
@@ -504,7 +508,7 @@
   }
 }
 
-#navigator-toolbox[zen-sidebar-expanded="true"] {
+:is(#navigator-toolbox, .zen-library-space-body)[zen-sidebar-expanded="true"] {
   --zen-toolbox-min-width: fit-content;
 
   padding: var(--zen-toolbox-padding);

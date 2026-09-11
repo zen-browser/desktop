@@ -150,7 +150,7 @@
         tab,
         draggingTabs
       );
-      const dragImage = this.#createDragImageForTabs(draggingTabs);
+      const dragImage = this._createDragImageForTabs(draggingTabs);
       this.originalDragImageArgs = [dragImage, offsetX, offsetY];
       dt.setDragImage(...this.originalDragImageArgs);
       if (tab.hasAttribute("zen-essential")) {
@@ -158,7 +158,7 @@
       }
     }
 
-    #createDragImageForTabs(movingTabs) {
+    _createDragImageForTabs(movingTabs) {
       const periphery = gZenWorkspaces.activeWorkspaceElement.querySelector(
         "#tabbrowser-arrowscrollbox-periphery"
       );
@@ -650,7 +650,7 @@
         return;
       }
       this.#handle_sidebarDragOver(event);
-      this.#handle_tabDragOverToSplit(event);
+      this._handle_tabDragOverToSplit(event);
     }
 
     #shouldSwitchSpace(event) {
@@ -777,7 +777,22 @@
       });
     }
 
-    #handle_tabDragOverToSplit(event) {
+    /**
+     * The element a drop on `element` acts on. The tab strip drops on the
+     * elements themselves; strips showing stand-ins for tabs map them back.
+     *
+     * @param {Element} element
+     * @returns {Element}
+     */
+    _targetForDrop(element) {
+      return element;
+    }
+
+    get _splitDropReady() {
+      return !!this.#dragOverSplit.canDrop;
+    }
+
+    _handle_tabDragOverToSplit(event) {
       if (!this._dndSplitEnabled) {
         return;
       }
@@ -806,7 +821,7 @@
       }
 
       if (
-        movingTabsSet.has(dropElement) ||
+        movingTabsSet.has(this._targetForDrop(dropElement)) ||
         !isTab(draggedTab) ||
         draggedTab?.group?.hasAttribute("split-view-group") ||
         draggedTab.hasAttribute("zen-live-folder-item-id") ||
@@ -973,7 +988,7 @@
       super.handle_drop(event);
       this.#maybeClearVerticalPinnedGridDragOver();
       this.#handle_dropSwitchSpace(event);
-      this.#handle_dropCreateSplit(event);
+      this._handle_dropCreateSplit(event);
       this._clearDragOverSplit();
     }
 
@@ -1003,9 +1018,14 @@
       gZenWorkspaces.updateTabsContainers();
     }
 
-    #handle_dropCreateSplit(event) {
+    /**
+     * @param {DragEvent} event
+     * @returns {boolean} Whether the drop split the dragged tab with the tab
+     *   it was held over
+     */
+    _handle_dropCreateSplit(event) {
       if (!this.#dragOverSplit.canDrop) {
-        return;
+        return false;
       }
 
       const dragData = this.#dragOverSplit.data;
@@ -1013,11 +1033,11 @@
       const draggedTab = dt.mozGetDataAt(TAB_DROP_TYPE, 0);
 
       if (!dragData || !draggedTab) {
-        return;
+        return false;
       }
 
       this._dontAnimateTabMove = true;
-      const droppedOnTab = dragData.dropElement;
+      const droppedOnTab = this._targetForDrop(dragData.dropElement);
       const dropSide = dragData.dropSide;
 
       // Clear any visuals and timer
@@ -1029,6 +1049,7 @@
         "vsep",
         isLeft ? 0 : 1
       );
+      return true;
     }
 
     handle_drop_transition(dropElement, draggedTab, movingTabs, dropBefore) {

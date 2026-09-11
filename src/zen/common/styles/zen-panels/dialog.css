@@ -21,3 +21,96 @@
     transform: translateY(-10%);
   }
 }
+
+.zen-rest-live-folder-dialog .zen-rest-dialog-title {
+  margin: 0 0 16px;
+  font-size: 1.25em;
+}
+
+.zen-rest-live-folder-dialog .zen-rest-dialog-hint {
+  margin: 8px 0 0;
+  font-size: 0.9em;
+  color: var(--input-placeholder-color, light-dark(#8f8f9d, #737373));
+}
+
+.zen-rest-live-folder-dialog {
+  padding: 20px;
+  min-width: 400px;
+  max-width: 90vw;
+  background: var(--arrowpanel-background, light-dark(#fff, #1c1b22));
+  color: var(--panel-color, light-dark(#15141b, #fbfbfe));
+  border-radius: 12px;
+  border: 1px solid var(--panel-border-color, light-dark(#cfcfd8, #43434a));
+  box-shadow: var(--panel-shadow, 0 4px 16px rgba(0, 0, 0, 0.2));
+}
+
+.zen-rest-live-folder-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.zen-rest-live-folder-dialog label {
+  display: block;
+  margin-block-end: 4px;
+  font-weight: 500;
+  color: inherit;
+}
+
+.zen-rest-live-folder-dialog input,
+.zen-rest-live-folder-dialog textarea {
+  display: block;
+  width: 100%;
+  margin-block-end: 16px;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  background: var(--input-bgcolor, light-dark(#fff, #2b2a33));
+  color: var(--input-color, light-dark(#15141b, #fbfbfe));
+  border: 1px solid var(--input-border-color, light-dark(#8f8f9d, #52525e));
+  border-radius: 6px;
+  font: inherit;
+}
+
+.zen-rest-live-folder-dialog input::placeholder,
+.zen-rest-live-folder-dialog textarea::placeholder {
+  color: var(--input-placeholder-color, light-dark(#8f8f9d, #737373));
+}
+
+.zen-rest-live-folder-dialog textarea {
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace;
+  font-size: 13px;
+  min-height: 120px;
+  resize: vertical;
+}
+
+.zen-rest-dialog-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-block-start: 16px;
+}
+
+.zen-rest-dialog-create {
+  padding: 8px 16px;
+  cursor: pointer;
+  background: var(--zen-colors-primary, #0060df);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.zen-rest-dialog-create:hover {
+  background: var(--zen-colors-primary-hover, #0250bb);
+}
+
+.zen-rest-dialog-cancel {
+  padding: 8px 16px;
+  cursor: pointer;
+  background: transparent;
+  color: var(--panel-color, inherit);
+  border: 1px solid var(--input-border-color, light-dark(#8f8f9d, #52525e));
+  border-radius: 6px;
+}
+
+.zen-rest-dialog-cancel:hover {
+  background: var(--input-bgcolor, light-dark(rgba(12, 12, 13, 0.07), rgba(255, 255, 255, 0.08)));
+}

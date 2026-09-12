@@ -73,6 +73,7 @@ export class ZenLibrary extends MozLitElement {
     };
     const lastTab = Services.prefs.getStringPref(LAST_TAB_PREF, "history");
     this.activeTab = lastTab in this.zenLibrarySections ? lastTab : "history";
+    this.#hijackFirefoxCommands();
   }
 
   static get isLibraryOpen() {
@@ -148,6 +149,17 @@ export class ZenLibrary extends MozLitElement {
 
   get openProgress() {
     return this.#progress;
+  }
+
+  #hijackFirefoxCommands() {
+    document
+      .getElementById("Browser:ShowAllHistory")
+      .addEventListener("command", event => {
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        ZenLibrary.showHistory();
+      });
   }
 
   #adoptWindowButtons() {
@@ -267,6 +279,16 @@ export class ZenLibrary extends MozLitElement {
         },
       }
     );
+  }
+
+  static showHistory() {
+    const lib = this.getInstance();
+    this.animateProgress(1);
+
+    const history = lib.zenLibrarySections.history;
+    if (lib.activeTab !== history.id) {
+      lib.activeTab = history.id;
+    }
   }
 
   static async startSwipe() {

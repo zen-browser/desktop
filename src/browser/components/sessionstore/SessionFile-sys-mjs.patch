@@ -1,16 +1,16 @@
 diff --git a/browser/components/sessionstore/SessionFile.sys.mjs b/browser/components/sessionstore/SessionFile.sys.mjs
-index 5580838acd72bf0e1189d367984859529d89f5b4..e5fa6076a9cc6ada016ccc4e129cad455010a522 100644
+index 370e5c105c3d9bee05c2d9d7b63d0ee45b8331e1..1c37c19794ebe863a25f780e9a74d63526b929d7 100644
 --- a/browser/components/sessionstore/SessionFile.sys.mjs
 +++ b/browser/components/sessionstore/SessionFile.sys.mjs
-@@ -22,6 +22,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
-   RunState: "resource:///modules/sessionstore/RunState.sys.mjs",
-   SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
-   SessionWriter: "resource:///modules/sessionstore/SessionWriter.sys.mjs",
+@@ -25,6 +25,7 @@ const lazy = XPCOMUtils.declareLazy({
+     "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs",
+   SessionWriter:
+     "moz-src:///browser/components/sessionstore/SessionWriter.sys.mjs",
 +  ZenSessionStore: "resource:///modules/zen/ZenSessionManager.sys.mjs",
  });
  
  const PREF_UPGRADE_BACKUP = "browser.sessionstore.upgradeBackup.latestBuildID";
-@@ -381,7 +382,7 @@ var SessionFileInternal = {
+@@ -384,7 +385,7 @@ var SessionFileInternal = {
      this._readOrigin = result.origin;
  
      result.noFilesFound = noFilesFound;

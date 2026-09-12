@@ -96,7 +96,7 @@ add_task(async function test_EditPinnedUrl_ActiveTabNavigates() {
   const favicons = mockFavicons("data:image/png;base64,iVBORw0KGgo=");
   try {
     await gZenPinnedTabManager.editPinnedUrl(tab);
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => tab.linkedBrowser.currentURI.spec === editedUrl,
       "the active pinned tab to navigate to the edited URL"
     );

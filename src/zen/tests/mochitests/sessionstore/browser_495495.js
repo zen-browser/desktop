@@ -17,7 +17,7 @@ add_task(async function test_urlbarFocus() {
   newWin = openDialog(
     location,
     "_blank",
-    "chrome,extrachrome,menubar,resizable,scrollbars,status,toolbar=no,location,personal,directories,dialog=no"
+    "chrome,resizable,toolbar=no,dialog=no"
   );
   await promiseWindowLoaded(newWin);
   let state2 = ss.getWindowState(newWin);

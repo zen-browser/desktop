@@ -3,7 +3,7 @@
 
 "use strict";
 
-const TARGET_WS = { uuid: "ws-target", containerTabId: 7 };
+const TARGET_WS = { uuid: "ws-target", containerTabId: 7, name: "Target" };
 
 add_setup(async function () {
   clearAllRoutes();
@@ -32,6 +32,7 @@ add_task(async function test_onBeforeAddTab_resolves_container_for_match() {
       userContextId: TARGET_WS.containerTabId,
       isRouteFound: true,
       targetRoute: TARGET_WS.uuid,
+      targetWorkspaceName: TARGET_WS.name,
     },
     "A matching route resolves to the workspace's containerTabId"
   );
@@ -54,6 +55,7 @@ add_task(async function test_onBeforeAddTab_no_match_returns_no_route() {
       userContextId: null,
       isRouteFound: false,
       targetRoute: "most-recent-space",
+      targetWorkspaceName: null,
     },
     "An unmatched URL (most-recent-space) reports no container and no route"
   );
@@ -81,6 +83,7 @@ add_task(async function test_onBeforeAddTab_route_to_missing_workspace() {
       userContextId: null,
       isRouteFound: false,
       targetRoute: "ws-does-not-exist",
+      targetWorkspaceName: null,
     },
     "A route to a non-existent workspace yields no container and no route"
   );
@@ -108,6 +111,7 @@ add_task(async function test_onBeforeAddTab_skips_special_tab_options() {
         userContextId: null,
         isRouteFound: false,
         targetRoute: null,
+        targetWorkspaceName: null,
       },
       `Option '${skipOption}' skips routing even though a rule matches`
     );
@@ -136,6 +140,7 @@ add_task(async function test_onBeforeAddTab_skips_until_startup_ready() {
       userContextId: null,
       isRouteFound: false,
       targetRoute: null,
+      targetWorkspaceName: null,
     },
     "While gZenStartup.isReady is false (session restore), routing is skipped"
   );

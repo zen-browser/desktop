@@ -5,7 +5,7 @@
 
 add_task(async function test_media_bar_shows_when_switching_off_playing_tab() {
   gZenMediaController.closeAllCards();
-  await BrowserTestUtils.waitForCondition(
+  await TestUtils.waitForCondition(
     () => !isMediaBarVisible(),
     "media bar hides again once the playing tab regains focus"
   );
@@ -31,7 +31,7 @@ add_task(async function test_media_bar_shows_when_switching_off_playing_tab() {
     // timer; wait for the visibility flip rather than racing it.
     await BrowserTestUtils.switchTab(gBrowser, originalTab);
     await new Promise(r => setTimeout(r, 1000));
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       isMediaBarVisible,
       "media bar becomes visible after switching off the playing tab"
     );
@@ -44,7 +44,7 @@ add_task(async function test_media_bar_shows_when_switching_off_playing_tab() {
 
     await BrowserTestUtils.switchTab(gBrowser, mediaTab);
     await new Promise(r => setTimeout(r, 1000));
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => !isMediaBarVisible(),
       "media bar hides again once the playing tab regains focus"
     );

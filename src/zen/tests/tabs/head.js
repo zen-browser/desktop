@@ -323,11 +323,11 @@ async function dragAndDrop(
   // Ensure dnd suppression is cleared.
   EventUtils.synthesizeMouseAtCenter(tab2, { type: "mouseup" }, destWindow);
   if (!copy && destWindow == origWindow) {
-    await BrowserTestUtils.waitForCondition(() => {
+    await TestUtils.waitForCondition(() => {
       return tab1.elementIndex != originalIndex;
     }, "Waiting for tab position to be updated");
   } else if (destWindow != origWindow) {
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => tab1.closing,
       "Waiting for tab closing"
     );

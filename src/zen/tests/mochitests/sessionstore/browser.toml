@@ -293,6 +293,8 @@ disabled="Disabled by import_external_tests.py"
 ["browser_restore_redirect.js"]
 https_first_disabled = true
 
+["browser_restore_respects_pending_minimize.js"]
+
 ["browser_restore_reversed_z_order.js"]
 skip-if = [
   "true", # Bug 1455602
@@ -355,7 +357,7 @@ skip-if = [
 
 ["browser_sizemodeBeforeMinimized.js"]
 skip-if = [
-  "os == 'linux' && os_version == '22.04' && arch == 'x86_64' && opt && nova", # Bug 2057856
+  "os == 'linux' && os_version == '22.04' && arch == 'x86_64'", # Bug 2057856
   "os == 'win' && os_version == '11.26200' && asan", # Bug 2019745
 ]
 

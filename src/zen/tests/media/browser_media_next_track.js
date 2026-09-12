@@ -21,7 +21,7 @@ add_task(async function test_next_track_relays_to_page() {
 
     // supportedkeyschange propagates asynchronously; wait for the bar's
     // next-track button to become enabled before clicking.
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => !nextButton.disabled,
       "next-track button becomes enabled once the page registers a handler"
     );

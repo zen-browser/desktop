@@ -64,6 +64,6 @@ function test_duplicateTab() {
   window.addEventListener("SSWindowStateReady", onSSWindowStateReady);
   gBrowser.tabContainer.addEventListener("SSTabRestoring", onSSTabRestoring);
 
-  gBrowser._insertBrowser(tab);
+  gBrowser.insertBrowser(tab);
   newTab = ss.duplicateTab(window, tab);
 }

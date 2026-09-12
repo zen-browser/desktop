@@ -64,7 +64,7 @@ class TestTaskbarTabSessionState(SessionStoreTestCase):
             self.marionette.execute_script(
                 """
                 const { _LastSession } = ChromeUtils.importESModule(
-                    "resource:///modules/sessionstore/SessionStore.sys.mjs"
+                    "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs"
                     );
                 return _LastSession.getState().windows.length
             """
@@ -77,7 +77,7 @@ class TestTaskbarTabSessionState(SessionStoreTestCase):
             self.marionette.execute_script(
                 """
                 const { _LastSession } = ChromeUtils.importESModule(
-                    "resource:///modules/sessionstore/SessionStore.sys.mjs"
+                    "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs"
                     );
                 return _LastSession.getState().windows[0].tabs.length
             """

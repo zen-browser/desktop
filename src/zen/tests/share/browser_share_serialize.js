@@ -72,11 +72,7 @@ add_task(async function test_space_serialization() {
 
   const [folderItem, pinnedItem, splitItem, normalItem] = item.items;
   Assert.equal(folderItem.name, "Docs");
-  Assert.equal(
-    folderItem.icon,
-    "chrome://browser/skin/zen-icons/selectable/star.svg",
-    "the custom folder icon is shared"
-  );
+  Assert.ok(!("icon" in folderItem), "folder icons are not shared");
   Assert.equal(folderItem.items.length, 1, "folder keeps its tab");
   Assert.ok(pinnedItem.isPinned, "loose pinned tabs carry isPinned");
   Assert.ok(

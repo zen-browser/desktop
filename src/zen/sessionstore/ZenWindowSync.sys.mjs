@@ -1580,7 +1580,6 @@ class nsZenWindowSync {
       window.removeEventListener(eventName, this);
     }
     delete window.gZenWindowSync;
-    // We cannot queue this. This swap needs to happen synchronously.
     try {
       this.#moveAllActiveTabsToOtherWindowsForClose(window);
     } catch (e) {

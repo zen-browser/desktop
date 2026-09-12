@@ -116,11 +116,11 @@ class nsZenWindowSync {
   #lastFocusedWindow = null;
 
   /**
-   * Last selected tab.
-   * Used to determine if we should run another sync operation
-   * when switching browser views.
+   * Tabs whose docshell swap is currently in flight.
+   * Used to make sure we don't schedule a swap for the tabs
+   * that are already being swapped.
    */
-  #lastSelectedTab = null;
+  #inflightSwapTabs = new WeakSet();
 
   /**
    * A list containing all swaped tabs with their respective browser permanent
@@ -744,31 +744,48 @@ class nsZenWindowSync {
   }
 
   /**
+   * Runs aCallback with aOurTab inside #inflightSwapTabs
+   *
+   * @param {object} aOurTab - The tab whose swap is in flight.
+   * @param {Function} aCallback
+   */
+  async #withTabSwapInFlight(aOurTab, aCallback) {
+    this.#inflightSwapTabs.add(aOurTab);
+    try {
+      return await aCallback();
+    } finally {
+      this.#inflightSwapTabs.delete(aOurTab);
+    }
+  }
+
+  /**
    * Swaps the browser docshells between two tabs.
    *
    * @param {object} aOurTab - The tab in the current window.
    * @param {object} aOtherTab - The tab in the other window.
    */
   async #swapBrowserDocShellsAsync(aOurTab, aOtherTab) {
-    if (!this.#canSwapBrowsers(aOurTab, aOtherTab)) {
-      this.log(
-        `Cannot swap browsers between tabs ${aOurTab.id} and ${aOtherTab.id} due to process mismatch`
-      );
-      return;
-    }
-    if (aOtherTab.closing) {
-      this.log(`Cannot swap browsers, other tab ${aOtherTab.id} is closing`);
-      return;
-    }
-    await this.#styleSwapedBrowsers(aOurTab, aOtherTab, () => {
-      try {
-        this.#swapBrowserDocShellsInner(aOurTab, aOtherTab);
-      } catch (e) {
-        console.error(
-          `Error swapping browsers for tabs ${aOurTab.id} and ${aOtherTab.id}:`,
-          e
+    return this.#withTabSwapInFlight(aOurTab, async () => {
+      if (!this.#canSwapBrowsers(aOurTab, aOtherTab)) {
+        this.log(
+          `Cannot swap browsers between tabs ${aOurTab.id} and ${aOtherTab.id} due to process mismatch`
         );
+        return;
       }
+      if (aOtherTab.closing) {
+        this.log(`Cannot swap browsers, other tab ${aOtherTab.id} is closing`);
+        return;
+      }
+      await this.#styleSwapedBrowsers(aOurTab, aOtherTab, () => {
+        try {
+          this.#swapBrowserDocShellsInner(aOurTab, aOtherTab);
+        } catch (e) {
+          console.error(
+            `Error swapping browsers for tabs ${aOurTab.id} and ${aOtherTab.id}:`,
+            e
+          );
+        }
+      });
     });
   }
 
@@ -1542,16 +1559,14 @@ class nsZenWindowSync {
       return;
     }
     this.#lastFocusedWindow = new WeakRef(window);
-    this.#lastSelectedTab = new WeakRef(window.gBrowser.selectedTab);
     this.#enqueueSwap(() => this.#onTabSwitchOrWindowFocus(window));
   }
 
   on_TabSelect(aEvent) {
     const tab = aEvent.target;
-    if (this.#lastSelectedTab?.deref() === tab) {
+    if (this.#inflightSwapTabs.has(tab)) {
       return;
     }
-    this.#lastSelectedTab = new WeakRef(tab);
     const previousTab = aEvent.detail.previousTab;
     this.#enqueueSwap(() =>
       this.#onTabSwitchOrWindowFocus(tab.documentGlobal, previousTab)

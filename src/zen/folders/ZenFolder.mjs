@@ -136,9 +136,6 @@ export class nsZenFolder extends MozTabbrowserTabGroup {
   }
 
   rename() {
-    if (!document.documentElement.hasAttribute("zen-sidebar-expanded")) {
-      return;
-    }
     gZenVerticalTabsManager.renameTabStart({
       target: this.labelElement,
       explicit: true,

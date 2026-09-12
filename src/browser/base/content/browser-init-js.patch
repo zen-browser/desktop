@@ -1,20 +1,50 @@
 diff --git a/browser/base/content/browser-init.js b/browser/base/content/browser-init.js
-index 0aa4baea8e5e6d742fc6cd3333068e7eb64b5bbc..057bb2386420edd31154979338e71d00a51a7266 100644
+index 7694c598c35dc464fbdd8290d8a4d2c00c84acd4..861fc6af7d00e1a74dd7c65277988f4d6cfbcb6f 100644
 --- a/browser/base/content/browser-init.js
 +++ b/browser/base/content/browser-init.js
-@@ -307,6 +307,7 @@ var gBrowserInit = {
+@@ -269,6 +269,7 @@
    },
- 
+
    onLoad() {
 +    Services.scriptloader.loadSubScript("chrome://browser/content/zenThemeModifier.js", window);
      gBrowser.addEventListener("DOMUpdateBlockedPopups", e =>
        PopupAndRedirectBlockerObserver.handleEvent(e)
      );
-@@ -501,6 +502,7 @@ var gBrowserInit = {
- 
+@@ -450,6 +451,7 @@
+
      this._handleURIToLoad();
- 
+
 +    gZenWorkspaces.selectStartPage();
      Services.obs.addObserver(gIdentityHandler, "perm-changed");
      Services.obs.addObserver(gRemoteControl, "devtools-socket");
      Services.obs.addObserver(gRemoteControl, "marionette-listening");
+@@ -792,7 +794,7 @@
+   },
+
+   _handleURIToLoad() {
+-    this._callWithURIToLoad(uriToLoad => {
++    this._callWithURIToLoad(async uriToLoad => {
+       if (!uriToLoad) {
+         // We don't check whether window.arguments[5] (userContextId) is set
+         // because tabbrowser.js takes care of that for the initial tab.
+@@ -896,7 +898,19 @@
+         }
+
+         try {
+-          openLinkIn(uriToLoad, "current", {
++          const zenOpenWhere =
++            fromExternal &&
++            (await gZenSpaceRoutingManager.shouldOpenExternalInNewTab(
++              uriToLoad,
++              fromExternal,
++              window
++            ))
++              ? "tab"
++              : "current";
++          if (window.closed) {
++            return;
++          }
++          openLinkIn(uriToLoad, zenOpenWhere, {
+             referrerInfo: window.arguments[2] || null,
+             postData: window.arguments[3] || null,
+             allowThirdPartyFixup: window.arguments[4] || false,

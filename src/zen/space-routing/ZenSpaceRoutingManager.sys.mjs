@@ -124,6 +124,39 @@ class nsZenSpaceRoutingManager {
   }
 
   /**
+   * Returns whether a URI supplied by an external application during browser
+   * startup needs to open in a new tab so it can flow through addTab() routing.
+   *
+   * Firefox normally loads a single startup URI into the current restored tab,
+   * bypassing addTab(). Keep that behavior when the configured destination is
+   * the most-recent space, but use a new tab when Space Routing has a specific
+   * destination.
+   *
+   * @param {string} uriString - The startup URI
+   * @param {boolean} fromExternal - Whether the URI came from another application
+   * @param {Window} win - The browser window receiving the startup URI
+   * @returns {Promise<boolean>} True when the URI should open in a routed tab
+   */
+  async shouldOpenExternalInNewTab(uriString, fromExternal, win) {
+    if (!fromExternal) {
+      return false;
+    }
+
+    // The manager exists before delayed startup, but SessionStore may not have
+    // populated its workspace data yet.
+    await win.gZenWorkspaces.promiseInitialized;
+    if (win.closed) {
+      return false;
+    }
+
+    const targetRoute = this.routeUri(uriString, { fromExternal });
+    return (
+      targetRoute !== "most-recent-space" &&
+      !!win.gZenWorkspaces.getWorkspaceFromId(targetRoute)
+    );
+  }
+
+  /**
    * Callback that will be executed from tabbrowser.js
    *
    * @param {string} uriString - The URI as a string
@@ -209,10 +242,10 @@ class nsZenSpaceRoutingManager {
       return nsZenSpaceRoutingManager.SKIP_TYPE.SKIPPED_TAB;
     }
 
-    // addTab() is being called when the session restores.
-    // To avoid automatically routing these tabs,
-    // a check if the restore is already complete is needed
-    if (!win.gZenStartup.isReady) {
+    // addTab() is called for restored tabs before startup is ready, but an
+    // external link can also arrive during that window. Keep restored tabs in
+    // their saved spaces while still honoring routing for external links.
+    if (!win.gZenStartup.isReady && !options.fromExternal) {
       return nsZenSpaceRoutingManager.SKIP_TYPE.RESTORED_TAB;
     }
 

@@ -240,11 +240,14 @@ index 568f3a7cc7051ff8cb569f6bcb8018a5212f7072..b9a1cfe3a4a5035d9b06b0b3826a97c5
        selectedTab._notselectedsinceload = false;
      }
  
-@@ -1386,7 +1423,7 @@
+@@ -1386,7 +1423,10 @@
       * @param {boolean} [shouldScrollInstantly=false]
       */
      #ensureTabIsVisible(tab, shouldScrollInstantly = false) {
 -      let arrowScrollbox = tab.closest("arrowscrollbox");
++      if (document.documentElement.hasAttribute("inDOMFullscreen")) {
++        return;
++      }
 +      let arrowScrollbox = this.arrowScrollbox;
        if (arrowScrollbox?.overflowing) {
          arrowScrollbox.ensureElementIsVisible(tab, shouldScrollInstantly);

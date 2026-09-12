@@ -15,6 +15,15 @@
   .tabbrowser-tab[zenDefaultUserContextId='true'] .tab-context-line {
     display: none !important;
   }
+
+  /* A container-less tab living in a space that has a default container: there
+     is no container colour to show, so render a neutral marker to signal the
+     tab is outside the space's default container. */
+  .tabbrowser-tab[zen-neutral-container-marker='true'] .tab-context-line {
+    display: revert !important;
+    background-color: light-dark(rgb(120, 120, 130), rgb(170, 170, 180)) !important;
+    opacity: 1 !important;
+  }
 }
 
 /* ==========================================================================

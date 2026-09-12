@@ -160,7 +160,7 @@ document.addEventListener(
           }
           case "cmd_zenDuplicateTab": {
             const selectedTabs = gBrowser.selectedTabs;
-            let insertAt = selectedTabs.at(-1)._tPos + 1;
+            let insertAt = selectedTabs.at(-1).index + 1;
             for (const tab of selectedTabs) {
               gBrowser.duplicateTab(tab, true, { tabIndex: insertAt++ });
             }

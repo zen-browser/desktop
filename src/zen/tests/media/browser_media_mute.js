@@ -24,7 +24,7 @@ add_task(async function test_mute_from_media_bar() {
     );
 
     clickMediaButton("zen-media-mute-button");
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => mediaTab.linkedBrowser.audioMuted,
       "tab becomes muted after clicking the media bar mute button"
     );
@@ -34,7 +34,7 @@ add_task(async function test_mute_from_media_bar() {
     );
 
     clickMediaButton("zen-media-mute-button");
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => !mediaTab.linkedBrowser.audioMuted,
       "clicking again unmutes the tab"
     );

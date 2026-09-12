@@ -34,7 +34,7 @@ add_task(async function test_panel_lists_installed_addons() {
   try {
     await openSiteDataPanel();
 
-    await BrowserTestUtils.waitForCondition(() => {
+    await TestUtils.waitForCondition(() => {
       const ids = Array.from(addonItemsInPanel()).map(el =>
         el.getAttribute("data-extensionid")
       );
@@ -85,7 +85,7 @@ add_task(async function test_panel_drops_uninstalled_addon() {
 
   try {
     await openSiteDataPanel();
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () =>
         siteDataPanel().querySelector(
           `.unified-extensions-item[data-extensionid="${ext.id}"]`

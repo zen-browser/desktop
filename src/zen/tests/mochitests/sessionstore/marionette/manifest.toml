@@ -48,6 +48,10 @@ skip-if = [
   "os == 'win' && os_version == '11.26200' && arch == 'x86_64'", # Bug 1727691
 ]
 
+["test_shutdown_flush_timeout.py"]
+
+["test_splitview_hidden.py"]
+
 ["test_splitview_restore.py"]
 
 ["test_tabgroups_restore.py"]

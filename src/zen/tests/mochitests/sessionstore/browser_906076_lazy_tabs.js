@@ -100,7 +100,7 @@ add_task(async function test() {
     !gBrowser.browsers[1].isConnected,
     "The browser that we're attempting to insert is indeed lazy"
   );
-  gBrowser._insertBrowser(gBrowser.tabs[1]);
+  gBrowser.insertBrowser(gBrowser.tabs[1]);
   is(countNonLazyTabs(), 2, "Window now has 2 non-lazy tabs");
 
   // Check if any lazy tabs got inserted when window closes.
@@ -122,7 +122,7 @@ add_task(async function test() {
           !newWindow.gBrowser.browsers[1].isConnected,
           "The browser that we're attempting to insert is indeed lazy"
         );
-        newWindow.gBrowser._insertBrowser(newWindow.gBrowser.tabs[1]);
+        newWindow.gBrowser.insertBrowser(newWindow.gBrowser.tabs[1]);
         is(
           countNonLazyTabs(newWindow),
           1,

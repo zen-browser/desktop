@@ -34,7 +34,8 @@ class ZenPinnedTabsObserver {
     ChromeUtils.defineESModuleGetters(lazy, {
       // eslint-disable-next-line mozilla/valid-lazy
       E10SUtils: "resource://gre/modules/E10SUtils.sys.mjs",
-      TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
+      TabStateCache:
+        "moz-src:///browser/components/sessionstore/TabStateCache.sys.mjs",
     });
     this.#listenPinnedTabEvents();
   }

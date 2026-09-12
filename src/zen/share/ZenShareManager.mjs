@@ -8,7 +8,8 @@ import { nsZenThemePicker } from "resource:///modules/zen/ZenGradientGenerator.m
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
-  TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
+  TabStateCache:
+    "moz-src:///browser/components/sessionstore/TabStateCache.sys.mjs",
   ZenShareClient: "resource:///modules/zen/share/ZenShareClient.sys.mjs",
   ZenShareError: "resource:///modules/zen/share/ZenShareClient.sys.mjs",
 });

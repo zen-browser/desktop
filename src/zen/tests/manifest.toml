@@ -146,6 +146,12 @@ xpcshell = true
 source = "browser/components/tabbrowser/test/browser/tabMediaIndicator"
 is_direct_path = true
 
+[tabMediaIndicator.replace-manifest]
+"[DEFAULT]" = """[DEFAULT]
+prefs = [
+  "zen.window-sync.enabled=false",
+]"""
+
 [tooltiptext]
 source = "toolkit/components/tooltiptext"
 disable = [

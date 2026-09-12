@@ -100,7 +100,7 @@ async function ensureNotOverflowing() {
     window.resizeBy(0, increaseBy);
   }
 
-  await BrowserTestUtils.waitForCondition(
+  await TestUtils.waitForCondition(
     () => !gBrowser.tabContainer.arrowScrollbox.overflowing,
     "tabs scrollbox should not be overflowing",
     100,

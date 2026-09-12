@@ -1,5 +1,5 @@
 diff --git a/layout/svg/SVGImageContext.h b/layout/svg/SVGImageContext.h
-index ad833c7c2ee6a4c4984efdb0d59e3576c2d1bc19..36864a34badc0cbfe44d6295798622fd6178f9e3 100644
+index 63f3c4926cfdb8b12e9e4a38016fc66f50cf3129..5ba3f2c07f521905a086ee6eea87975d5a3441ec 100644
 --- a/layout/svg/SVGImageContext.h
 +++ b/layout/svg/SVGImageContext.h
 @@ -6,6 +6,7 @@
@@ -7,10 +7,10 @@ index ad833c7c2ee6a4c4984efdb0d59e3576c2d1bc19..36864a34badc0cbfe44d6295798622fd
  
  #include "Units.h"
 +#include "nsColor.h"
+ #include "mozilla/Casting.h"
  #include "mozilla/Maybe.h"
  #include "mozilla/SVGContextPaint.h"
- #include "mozilla/SVGPreserveAspectRatio.h"
-@@ -63,6 +64,11 @@ class SVGImageContext {
+@@ -64,6 +65,11 @@ class SVGImageContext {
                                       nsISVGPaintContext* aPaintContext,
                                       imgIContainer* aImgContainer);
  
@@ -19,10 +19,10 @@ index ad833c7c2ee6a4c4984efdb0d59e3576c2d1bc19..36864a34badc0cbfe44d6295798622fd
 +  static void MaybeStoreZenBoosts(SVGImageContext& aContext,
 +                                  const nsPresContext& aPresContext);
 +
-   const Maybe<CSSIntSize>& GetViewportSize() const { return mViewportSize; }
+   const Maybe<CSSSize>& GetViewportSize() const { return mViewportSize; }
  
-   void SetViewportSize(const Maybe<CSSIntSize>& aSize) {
-@@ -75,6 +81,21 @@ class SVGImageContext {
+   void SetViewportSize(const Maybe<CSSSize>& aSize) { mViewportSize = aSize; }
+@@ -74,6 +80,21 @@ class SVGImageContext {
      mColorScheme = aScheme;
    }
  
@@ -44,7 +44,7 @@ index ad833c7c2ee6a4c4984efdb0d59e3576c2d1bc19..36864a34badc0cbfe44d6295798622fd
    const Maybe<SVGPreserveAspectRatio>& GetPreserveAspectRatio() const {
      return mPreserveAspectRatio;
    }
-@@ -110,7 +131,11 @@ class SVGImageContext {
+@@ -109,7 +130,11 @@ class SVGImageContext {
      return contextPaintIsEqual && mViewportSize == aOther.mViewportSize &&
             mPreserveAspectRatio == aOther.mPreserveAspectRatio &&
             mColorScheme == aOther.mColorScheme &&
@@ -56,8 +56,8 @@ index ad833c7c2ee6a4c4984efdb0d59e3576c2d1bc19..36864a34badc0cbfe44d6295798622fd
 +           mZenBoostsInverted == aOther.mZenBoostsInverted;
    }
  
-   bool operator!=(const SVGImageContext&) const = default;
-@@ -123,7 +148,8 @@ class SVGImageContext {
+   PLDHashNumber Hash() const {
+@@ -120,7 +145,8 @@ class SVGImageContext {
      return AddToHash(hash, mViewportSize.map(HashSize).valueOr(0),
                       mPreserveAspectRatio.map(HashPAR).valueOr(0),
                       mColorScheme.map(HashColorScheme).valueOr(0),
@@ -67,7 +67,7 @@ index ad833c7c2ee6a4c4984efdb0d59e3576c2d1bc19..36864a34badc0cbfe44d6295798622fd
    }
  
   private:
-@@ -156,6 +182,9 @@ class SVGImageContext {
+@@ -154,6 +180,9 @@ class SVGImageContext {
    Maybe<SVGPreserveAspectRatio> mPreserveAspectRatio;
    Maybe<ColorScheme> mColorScheme;
    StyleLinkParameters mLinkParameters;

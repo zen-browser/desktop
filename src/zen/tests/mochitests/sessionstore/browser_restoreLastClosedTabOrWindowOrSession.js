@@ -4,7 +4,7 @@
 "use strict";
 
 const { _LastSession, _lastClosedActions } = ChromeUtils.importESModule(
-  "resource:///modules/sessionstore/SessionStore.sys.mjs"
+  "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs"
 );
 
 async function testLastClosedActionsEntries() {

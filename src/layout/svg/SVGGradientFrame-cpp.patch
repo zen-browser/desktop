@@ -1,8 +1,8 @@
 diff --git a/layout/svg/SVGGradientFrame.cpp b/layout/svg/SVGGradientFrame.cpp
-index b0d38b0fab01797328af0b1f1f48af8fb5eebe4d..953feffdc96143dc2d8f8e57f8bb4a6aeb33f0c5 100644
+index eebcced86ec1e9010b761d5df4a92684dde44009..4dc018a73a979f50ac7842e4a3f3fcf9d0071b56 100644
 --- a/layout/svg/SVGGradientFrame.cpp
 +++ b/layout/svg/SVGGradientFrame.cpp
-@@ -229,8 +229,9 @@ class MOZ_STACK_CLASS SVGColorStopInterpolator
+@@ -228,8 +228,9 @@ class MOZ_STACK_CLASS SVGColorStopInterpolator
    SVGColorStopInterpolator(
        gfxPattern* aGradient, const nsTArray<ColorStop>& aStops,
        const StyleColorInterpolationMethod& aStyleColorInterpolationMethod,
@@ -14,8 +14,8 @@ index b0d38b0fab01797328af0b1f1f48af8fb5eebe4d..953feffdc96143dc2d8f8e57f8bb4a6a
          mGradient(aGradient) {}
  
    void CreateStop(float aPosition, DeviceColor aColor) {
-@@ -270,7 +271,8 @@ already_AddRefed<gfxPattern> SVGGradientFrame::GetPaintServerPattern(
-   if (nStops == 1 || GradientVectorLengthIsZero()) {
+@@ -269,7 +270,8 @@ already_AddRefed<gfxPattern> SVGGradientFrame::GetPaintServerPattern(
+   if (nStops == 1 || GradientVectorLengthIsZero(gradientUnits)) {
      // The gradient paints a single colour, using the stop-color of the last
      // gradient step if there are more than one.
 -    return MakeAndAddRef<gfxPattern>(ToDeviceColor(stops.LastElement().mColor));

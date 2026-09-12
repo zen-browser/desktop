@@ -295,17 +295,24 @@
         min-height: 22px;
         padding: 6px 8px;
       }
+    }
 
+    :root[zen-sidebar-expanded='true'] &.zen-move-tabs-to-workspace-button {
       .toolbarbutton-icon {
         display: none;
       }
     }
   }
 
-  :root[zen-unsynced-window='true']
+  :root[zen-unsynced-window='true'][zen-sidebar-expanded='true']
     #navigator-toolbox[zen-has-implicit-hover='true']
     & .zen-workspaces-actions,
-  :root:not([zen-unsynced-window]) &:hover .zen-workspaces-actions,
+  :root[zen-unsynced-window='true'] &:hover .zen-workspaces-actions,
+  :root[zen-sidebar-expanded='true']:not([zen-unsynced-window])
+    &:hover .zen-workspaces-actions,
+  :root:not([zen-sidebar-expanded='true']):not([zen-unsynced-window])
+    &:hover
+    .zen-workspaces-actions:not(.zen-move-tabs-to-workspace-button),
   & .zen-workspaces-actions[open='true'] {
     visibility: visible;
     pointer-events: auto;

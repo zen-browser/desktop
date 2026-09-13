@@ -182,19 +182,21 @@ class nsZenMods extends nsZenPreloadedFeature {
       ({ enabled, preferences, name }) => ({
         enabled,
         sanitizedName: this.sanitizeModName(name),
-        prefs: preferences.map(({ property, type }) => ({
-          property,
-          type,
-          sanitizedProperty: property?.replaceAll(DOT_RE, "-"),
-          value:
-            enabled === undefined || enabled
-              ? type === "checkbox"
-                ? Services.prefs.getBoolPref(property, false)
-                : Services.prefs.getStringPref(property, "")
-              : type === "checkbox"
-                ? false
-                : "",
-        })),
+        prefs: preferences.map(({ property, type }) => {
+          const isEnabled = enabled === undefined || enabled;
+          const getPref =
+            type === "checkbox"
+              ? Services.prefs.getBoolPref
+              : Services.prefs.getStringPref;
+          const fallback = type === "checkbox" ? false : "";
+
+          return {
+            property,
+            type,
+            sanitizedProperty: property?.replaceAll(DOT_RE, "-"),
+            value: isEnabled ? getPref(property, fallback) : fallback,
+          };
+        }),
       })
     );
 

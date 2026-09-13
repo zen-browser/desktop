@@ -356,7 +356,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
         alwaysUnload &&
         ["close", "reset", "switch", "reset-switch"].includes(behavior)
       ) {
-        behavior = behavior.contains("reset")
+        behavior = behavior.includes("reset")
           ? "reset-unload-switch"
           : "unload-switch";
       }
@@ -680,7 +680,7 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
             }
             gBrowser.setIcon(tab, icon);
             lazy.TabStateCache.update(tab.permanentKey, {
-              image: null,
+              image: icon || null,
             });
           },
         });

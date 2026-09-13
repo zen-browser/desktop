@@ -1,0 +1,34 @@
+diff --git a/layout/painting/nsDisplayList.cpp b/layout/painting/nsDisplayList.cpp
+--- a/layout/painting/nsDisplayList.cpp
++++ b/layout/painting/nsDisplayList.cpp
+@@ -4606,12 +4606,12 @@
+     wr::LayoutRect deviceClipRect = wr::ToLayoutRect(clipRect);
+ 
+     nscoord spread = shadow.spread.ToAppUnits();
+     float spreadRadius = float(spread) / float(appUnitsPerDevPixel);
+ 
+-    wr::BorderRadius borderRadius{};
+-    wr::BorderRadius shadowRadius{};
++    wr::BorderRadius borderRadius = wr::EmptyBorderRadius();
++    wr::BorderRadius shadowRadius = wr::EmptyBorderRadius();
+     if (hasBorderRadius) {
+       borderRadius = wr::ToBorderRadius(borderRadii);
+       if (spreadRadius) {
+         auto shadowRadii = borderRadii;
+         shadowRadii.AdjustOutwards(
+@@ -4727,12 +4727,12 @@
+         float(shadow.base.blur.ToAppUnits()) / float(appUnitsPerDevPixel);
+ 
+     nscoord spread = shadow.spread.ToAppUnits();
+     float spreadRadius = spread / float(appUnitsPerDevPixel);
+ 
+-    wr::BorderRadius borderRadius{};
+-    wr::BorderRadius shadowRadius{};
++    wr::BorderRadius borderRadius = wr::EmptyBorderRadius();
++    wr::BorderRadius shadowRadius = wr::EmptyBorderRadius();
+     if (hasBorderRadius) {
+       borderRadius = wr::ToBorderRadius(innerRadii);
+       if (spreadRadius) {
+         RectCornerRadii shadowRadii = innerRadii;
+         shadowRadii.AdjustInwards(
+

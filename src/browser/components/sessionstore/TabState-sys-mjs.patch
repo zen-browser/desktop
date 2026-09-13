@@ -1,5 +1,5 @@
 diff --git a/browser/components/sessionstore/TabState.sys.mjs b/browser/components/sessionstore/TabState.sys.mjs
-index a33deeb5b587d6a950960a1a4781176e4e730ad7..e96cfb9a5ffbe4feccdffa8b6d18ececb48d4c52 100644
+index a33deeb5b587d6a950960a1a4781176e4e730ad7..7927471d389f2626e4cc1b0e7a6eab6446dca432 100644
 --- a/browser/components/sessionstore/TabState.sys.mjs
 +++ b/browser/components/sessionstore/TabState.sys.mjs
 @@ -8,6 +8,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
@@ -39,3 +39,14 @@ index a33deeb5b587d6a950960a1a4781176e4e730ad7..e96cfb9a5ffbe4feccdffa8b6d18ecec
  
      tabData.userContextId = tab.userContextId || 0;
  
+@@ -132,6 +151,10 @@ class _TabState {
+       tabData.image = tabbrowser.getIcon(tab);
+     }
+ 
++    if (tab.zenStaticIcon) {
++      tabData.image = tab.zenStaticIcon;
++    }
++
+     // If there is a userTypedValue set, then either the user has typed something
+     // in the URL bar, or a new tab was opened with a URI to load.
+     // If so, we also track whether we were still in the process of loading something.

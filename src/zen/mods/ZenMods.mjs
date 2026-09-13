@@ -524,13 +524,20 @@ class nsZenMods extends nsZenPreloadedFeature {
       console.error("[ZenMods]: Error loading Zen Mods:", e);
     }
 
-    Services.prefs.addObserver(
-      this.updatePref,
-      this.#rebuildModsStylesheet.bind(this)
-    );
-    Services.prefs.addObserver(
-      "zen.themes.disable-all",
-      this.#handleDisableMods.bind(this)
+    const rebuildObserver = this.#rebuildModsStylesheet.bind(this);
+    const disableObserver = this.#handleDisableMods.bind(this);
+    Services.prefs.addObserver(this.updatePref, rebuildObserver);
+    Services.prefs.addObserver("zen.themes.disable-all", disableObserver);
+    window.addEventListener(
+      "unload",
+      () => {
+        Services.prefs.removeObserver(this.updatePref, rebuildObserver);
+        Services.prefs.removeObserver(
+          "zen.themes.disable-all",
+          disableObserver
+        );
+      },
+      { once: true }
     );
   }
 

@@ -1,0 +1,558 @@
+diff --git a/gfx/wr/webrender/res/ps_quad_mask.glsl b/gfx/wr/webrender/res/ps_quad_mask.glsl
+--- a/gfx/wr/webrender/res/ps_quad_mask.glsl
++++ b/gfx/wr/webrender/res/ps_quad_mask.glsl
+@@ -19,12 +19,14 @@
+ // We pack 4 vec3 clip planes into 3 vec4 to save a varying slot.
+ flat varying highp vec4 vClipPlane_A;
+ flat varying highp vec4 vClipPlane_B;
+ flat varying highp vec4 vClipPlane_C;
+ 
++#ifdef WR_FEATURE_SUPERELLIPSE
+ flat varying highp vec4 vClipShape;
+ flat varying highp vec4 vClipClampedInset;
++#endif
+ 
+ #endif
+ flat varying highp vec2 vClipMode;
+ 
+ #ifdef WR_VERTEX_SHADER
+@@ -40,12 +42,14 @@
+     vec4 radii;
+ #else
+     vec4 radii_top;
+     vec4 radii_bottom;
+ 
++#ifdef WR_FEATURE_SUPERELLIPSE
+     vec4 shape;
+     vec4 inset;
++#endif
+ #endif
+     float mode;
+     int space;
+ };
+ 
+@@ -58,22 +62,29 @@
+     vec4 texels[3] = fetch_from_gpu_buffer_3f(index);
+     clip.rect = RectWithEndpoint(texels[0].xy, texels[0].zw);
+     clip.radii = texels[1];
+     clip.mode = texels[2].x;
+ #else
++#ifdef WR_FEATURE_SUPERELLIPSE
+     vec4 texels[6] = fetch_from_gpu_buffer_6f(index);
++#else
++    vec4 texels[4] = fetch_from_gpu_buffer_4f(index);
++#endif
+     clip.rect = RectWithEndpoint(texels[0].xy, texels[0].zw);
+     clip.radii_top = texels[1];
+     clip.radii_bottom = texels[2];
+     clip.mode = texels[3].x;
++#ifdef WR_FEATURE_SUPERELLIPSE
+     clip.shape = texels[4];
+     clip.inset = texels[5];
++#endif
+ #endif
+ 
+     return clip;
+ }
+ 
++#ifdef WR_FEATURE_SUPERELLIPSE
+ vec4 precalc_corner(vec2 center, vec2 radii, vec2 inset, vec2 clip_sign, float k) {
+     if (k == 1.0) {
+         // round/ellipse corner, precalc the ellipse parameters
+         return vec4(center, inverse_radii_squared(radii));
+     } else {
+@@ -85,10 +96,11 @@
+             radii = offset_radii.zw;
+         }
+         return vec4(center, inverse_radii(radii));
+     }
+ }
++#endif
+ 
+ void pattern_vertex(PrimitiveInfo prim_info) {
+ 
+     Clip clip = fetch_clip(aClipData.y);
+     Transform clip_transform = fetch_transform(aClipData.x);
+@@ -121,10 +133,11 @@
+     vec2 r_tl = clip.radii_top.xy;
+     vec2 r_tr = clip.radii_top.zw;
+     vec2 r_br = clip.radii_bottom.zw;
+     vec2 r_bl = clip.radii_bottom.xy;
+ 
++#ifdef WR_FEATURE_SUPERELLIPSE
+     vClipCenter_Radius_TL = precalc_corner(clip.rect.p0 + r_tl,
+                                            r_tl,
+                                            clip.inset.wx,
+                                            vec2(-1.0, -1.0),
+                                            clip.shape.x);
+@@ -146,10 +159,25 @@
+                                                 clip.rect.p1.y - r_bl.y),
+                                            r_bl,
+                                            clip.inset.wz,
+                                            vec2(-1.0, 1.0),
+                                            clip.shape.w);
++#else
++    vClipCenter_Radius_TL = vec4(clip.rect.p0 + r_tl,
++                                 inverse_radii_squared(r_tl));
++
++    vClipCenter_Radius_TR = vec4(clip.rect.p1.x - r_tr.x,
++                                 clip.rect.p0.y + r_tr.y,
++                                 inverse_radii_squared(r_tr));
++
++    vClipCenter_Radius_BR = vec4(clip.rect.p1 - r_br,
++                                 inverse_radii_squared(r_br));
++
++    vClipCenter_Radius_BL = vec4(clip.rect.p0.x + r_bl.x,
++                                 clip.rect.p1.y - r_bl.y,
++                                 inverse_radii_squared(r_bl));
++#endif
+ 
+     // We need to know the half-spaces of the corners separate from the center
+     // and radius. We compute a point that falls on the diagonal (which is just
+     // an inner vertex pushed out along one axis, but not on both) to get the
+     // plane offset of the half-space. We also compute the direction vector of
+@@ -170,13 +198,15 @@
+ 
+     vClipPlane_A = vec4(tl.x, tl.y, tl.z, tr.x);
+     vClipPlane_B = vec4(tr.y, tr.z, br.x, br.y);
+     vClipPlane_C = vec4(br.z, bl.x, bl.y, bl.z);
+ 
++#ifdef WR_FEATURE_SUPERELLIPSE
+     vClipShape = clip.shape;
+     vClipClampedInset = min(clip.inset, 0.0);
+ #endif
++#endif
+ 
+ }
+ #endif
+ 
+ #ifdef WR_FRAGMENT_SHADER
+@@ -205,11 +235,13 @@
+     vec3 plane_tr = vec3(vClipPlane_A.w, vClipPlane_B.x, vClipPlane_B.y);
+     vec3 plane_br = vec3(vClipPlane_B.z, vClipPlane_B.w, vClipPlane_C.x);
+     vec3 plane_bl = vec3(vClipPlane_C.y, vClipPlane_C.z, vClipPlane_C.w);
+ 
+     float dist;
++#ifdef WR_FEATURE_SUPERELLIPSE
+     if (vClipShape == vec4(1.0)) {
++#endif
+         dist = distance_to_rounded_rect(
+             clip_local_pos,
+             plane_tl,
+             vClipCenter_Radius_TL,
+             plane_tr,
+@@ -218,10 +250,11 @@
+             vClipCenter_Radius_BR,
+             plane_bl,
+             vClipCenter_Radius_BL,
+             vTransformBounds
+         );
++#ifdef WR_FEATURE_SUPERELLIPSE
+     } else {
+         dist = distance_to_shaped_rect(
+             clip_local_pos,
+             vClipCenter_Radius_TL,
+             vClipCenter_Radius_TR,
+@@ -230,10 +263,11 @@
+             vTransformBounds,
+             vClipShape,
+             vClipClampedInset
+         );
+     }
++#endif
+ #endif
+ 
+     // Compute AA for the given dist and range.
+     float alpha = distance_aa(aa_range, dist);
+ 
+@@ -340,13 +374,13 @@
+         #define AA_RECT(local_pos) \
+             sd_round_box(local_pos, v_clip_size, v_clip_radii)
+     #else
+         // The span fast path only handles elliptical corners. For superellipse
+         // shapes, bail out and let SWGL fall back to the fragment shader.
+-        if (vClipShape != vec4(1.0)) {
++        #ifdef WR_FEATURE_SUPERELLIPSE
+             return;
+-        }
++        #endif
+ 
+         // Unpack the corner half-spaces packed into vClipPlane_A/B/C.
+         vec3 plane_tl = vec3(vClipPlane_A.x, vClipPlane_A.y, vClipPlane_A.z);
+         vec3 plane_tr = vec3(vClipPlane_A.w, vClipPlane_B.x, vClipPlane_B.y);
+         vec3 plane_br = vec3(vClipPlane_B.z, vClipPlane_B.w, vClipPlane_C.x);
+diff --git a/gfx/wr/webrender/src/batch.rs b/gfx/wr/webrender/src/batch.rs
+--- a/gfx/wr/webrender/src/batch.rs
++++ b/gfx/wr/webrender/src/batch.rs
+@@ -1224,25 +1224,29 @@
+ /// A list of clip instances to be drawn into a target.
+ #[cfg_attr(feature = "capture", derive(Serialize))]
+ #[cfg_attr(feature = "replay", derive(Deserialize))]
+ pub struct ClipMaskInstanceList {
+     pub mask_instances_fast: FrameVec<MaskInstance>,
++    pub mask_instances_superellipse: FrameVec<MaskInstance>,
+     pub mask_instances_slow: FrameVec<MaskInstance>,
+ 
+     pub mask_instances_fast_with_scissor: FastHashMap<DeviceIntRect, FrameVec<MaskInstance>>,
++    pub mask_instances_superellipse_with_scissor: FastHashMap<DeviceIntRect, FrameVec<MaskInstance>>,
+     pub mask_instances_slow_with_scissor: FastHashMap<DeviceIntRect, FrameVec<MaskInstance>>,
+ 
+     pub image_mask_instances: FastHashMap<TextureSource, FrameVec<PrimitiveInstanceData>>,
+     pub image_mask_instances_with_scissor: FastHashMap<(DeviceIntRect, TextureSource), FrameVec<PrimitiveInstanceData>>,
+ }
+ 
+ impl ClipMaskInstanceList {
+     pub fn new(memory: &FrameMemory) -> Self {
+         ClipMaskInstanceList {
+             mask_instances_fast: memory.new_vec(),
++            mask_instances_superellipse: memory.new_vec(),
+             mask_instances_slow: memory.new_vec(),
+             mask_instances_fast_with_scissor: FastHashMap::default(),
++            mask_instances_superellipse_with_scissor: FastHashMap::default(),
+             mask_instances_slow_with_scissor: FastHashMap::default(),
+             image_mask_instances: FastHashMap::default(),
+             image_mask_instances_with_scissor: FastHashMap::default(),
+         }
+     }
+@@ -1250,20 +1254,24 @@
+     pub fn is_empty(&self) -> bool {
+         // Destructure self to make sure we don't forget to update this method if
+         // a new member is added.
+         let ClipMaskInstanceList {
+             mask_instances_fast,
++            mask_instances_superellipse,
+             mask_instances_slow,
+             mask_instances_fast_with_scissor,
++            mask_instances_superellipse_with_scissor,
+             mask_instances_slow_with_scissor,
+             image_mask_instances,
+             image_mask_instances_with_scissor,
+         } = self;
+ 
+         mask_instances_fast.is_empty()
++            && mask_instances_superellipse.is_empty()
+             && mask_instances_slow.is_empty()
+             && mask_instances_fast_with_scissor.is_empty()
++            && mask_instances_superellipse_with_scissor.is_empty()
+             && mask_instances_slow_with_scissor.is_empty()
+             && image_mask_instances.is_empty()
+             && image_mask_instances_with_scissor.is_empty()
+     }
+ }
+diff --git a/gfx/wr/webrender/src/quad.rs b/gfx/wr/webrender/src/quad.rs
+--- a/gfx/wr/webrender/src/quad.rs
++++ b/gfx/wr/webrender/src/quad.rs
+@@ -1807,11 +1807,11 @@
+     gpu_buffer: &mut GpuBufferBuilderF,
+     clip_rect: LayoutRect,
+     radius: &BorderRadius,
+     inset: LayoutSideOffsets,
+     mode: ClipMode,
+-) -> (GpuBufferAddress, bool) {
++) -> (GpuBufferAddress, bool, bool) {
+     let radius = clamped_radius(radius, clip_rect.size());
+ 
+     if radius.can_use_fast_path_in(&clip_rect) {
+         let mut writer = gpu_buffer.write_blocks(3);
+         writer.push_one(clip_rect);
+@@ -1821,13 +1821,15 @@
+             radius.bottom_left.width,
+             radius.top_left.width,
+         ]);
+         writer.push_one([mode as i32 as f32, 0.0, 0.0, 0.0]);
+ 
+-        (writer.finish(), true)
++        (writer.finish(), true, false)
+     } else {
+-        let mut writer = gpu_buffer.write_blocks(6);
++        let superellipse = !radius.shapes_all_round();
++        let block_count = if superellipse { 6 } else { 4 };
++        let mut writer = gpu_buffer.write_blocks(block_count);
+         writer.push_one(clip_rect);
+         writer.push_one([
+             radius.top_left.width,
+             radius.top_left.height,
+             radius.top_right.width,
+@@ -1838,19 +1840,21 @@
+             radius.bottom_left.height,
+             radius.bottom_right.width,
+             radius.bottom_right.height,
+         ]);
+         writer.push_one([mode as i32 as f32, 0.0, 0.0, 0.0]);
+-        writer.push_one([
+-            radius.shape_top_left,
+-            radius.shape_top_right,
+-            radius.shape_bottom_right,
+-            radius.shape_bottom_left,
+-        ]);
+-        writer.push_one(inset);
++        if superellipse {
++            writer.push_one([
++                radius.shape_top_left,
++                radius.shape_top_right,
++                radius.shape_bottom_right,
++                radius.shape_bottom_left,
++            ]);
++            writer.push_one(inset);
++        }
+ 
+-        (writer.finish(), false)
++        (writer.finish(), false, superellipse)
+     }
+ }
+ 
+ pub fn prepare_clip_task(
+     clip_instance: &ClipNodeInstance,
+@@ -1865,11 +1869,11 @@
+     gpu_buffer: &mut GpuBufferBuilderF,
+     transforms: &mut TransformPalette,
+     rg_builder: &mut RenderTaskGraphBuilder,
+     sub_tasks: &mut SubTaskRange,
+ ) {
+-    let (clip_address, fast_path) = match clip_item.kind {
++    let (clip_address, fast_path, superellipse) = match clip_item.kind {
+         ClipItemKind::RoundedRectangle { radius, inset, mode } => {
+             write_rounded_rect_clip_blocks(
+                 gpu_buffer,
+                 clip_instance.clip_rect,
+                 &radius,
+@@ -1882,11 +1886,11 @@
+             writer.push_one(clip_instance.clip_rect);
+             writer.push_one([0.0, 0.0, 0.0, 0.0]);
+             writer.push_one([mode as i32 as f32, 0.0, 0.0, 0.0]);
+             let clip_address = writer.finish();
+ 
+-            (clip_address, true)
++            (clip_address, true, false)
+         }
+         ClipItemKind::Image { .. } => {
+             let transform_id = transforms.gpu.get_id_with_post_scale(
+                 clip_instance.spatial_node_index,
+                 raster_spatial_node_index,
+@@ -2033,10 +2037,11 @@
+             clip_transform_id,
+             quad_flags,
+             clip_space,
+             needs_scissor_rect,
+             rounded_rect_fast_path: fast_path,
++            rounded_rect_superellipse: superellipse,
+         }),
+     );
+ }
+ 
+ fn create_quad_primitive(
+diff --git a/gfx/wr/webrender/src/render_target.rs b/gfx/wr/webrender/src/render_target.rs
+--- a/gfx/wr/webrender/src/render_target.rs
++++ b/gfx/wr/webrender/src/render_target.rs
+@@ -441,11 +441,11 @@
+                 // so the target must be initialized to one.
+                 self.clears.push((target_rect, ColorF::WHITE));
+ 
+                 let device_rect = DeviceRect::from_size(target_rect.size().to_f32());
+ 
+-                let (clip_address, fast_path) = quad::write_rounded_rect_clip_blocks(
++                let (clip_address, fast_path, superellipse) = quad::write_rounded_rect_clip_blocks(
+                     &mut gpu_buffer_builder.f32,
+                     region_task.clip_rect,
+                     &region_task.radius,
+                     region_task.inset,
+                     region_task.mode,
+@@ -495,10 +495,12 @@
+                             unused: 0,
+                         };
+ 
+                         if fast_path {
+                             self.clip_masks.mask_instances_fast.push(instance);
++                        } else if superellipse {
++                            self.clip_masks.mask_instances_superellipse.push(instance);
+                         } else {
+                             self.clip_masks.mask_instances_slow.push(instance);
+                         }
+                     },
+                 );
+@@ -925,19 +927,26 @@
+                 if task.rounded_rect_fast_path {
+                     results.mask_instances_fast_with_scissor
+                             .entry(*target_rect)
+                             .or_insert_with(|| memory.new_vec())
+                             .push(instance);
++                } else if task.rounded_rect_superellipse {
++                    results.mask_instances_superellipse_with_scissor
++                            .entry(*target_rect)
++                            .or_insert_with(|| memory.new_vec())
++                            .push(instance);
+                 } else {
+                     results.mask_instances_slow_with_scissor
+                             .entry(*target_rect)
+                             .or_insert_with(|| memory.new_vec())
+                             .push(instance);
+                 }
+             } else {
+                 if task.rounded_rect_fast_path {
+                     results.mask_instances_fast.push(instance);
++                } else if task.rounded_rect_superellipse {
++                    results.mask_instances_superellipse.push(instance);
+                 } else {
+                     results.mask_instances_slow.push(instance);
+                 }
+             }
+         }
+diff --git a/gfx/wr/webrender/src/render_task.rs b/gfx/wr/webrender/src/render_task.rs
+--- a/gfx/wr/webrender/src/render_task.rs
++++ b/gfx/wr/webrender/src/render_task.rs
+@@ -2240,10 +2240,11 @@
+     /// Transform from the quad primitive's space to the clip's local space.
+     pub clip_transform_id: GpuTransformId,
+     pub quad_flags: QuadFlags,
+     pub needs_scissor_rect: bool,
+     pub rounded_rect_fast_path: bool,
++    pub rounded_rect_superellipse: bool,
+ }
+ 
+ /// An clip applied to a render task using the multiply blend mode on top of
+ /// the content being clipped.
+ #[derive(Debug)]
+diff --git a/gfx/wr/webrender/src/renderer/mod.rs b/gfx/wr/webrender/src/renderer/mod.rs
+--- a/gfx/wr/webrender/src/renderer/mod.rs
++++ b/gfx/wr/webrender/src/renderer/mod.rs
+@@ -2450,10 +2450,54 @@
+                 }
+ 
+                 self.device.disable_scissor();
+             }
+ 
++            if !masks.mask_instances_superellipse.is_empty() {
++                self.shaders.borrow_mut().ps_mask_superellipse().bind(
++                    &mut self.device,
++                    projection,
++                    None,
++                    &mut self.renderer_errors,
++                    &mut self.profile,
++                    &mut self.command_log,
++                );
++
++                self.draw_instanced_batch(
++                    &masks.mask_instances_superellipse,
++                    VertexArrayKind::Mask,
++                    &BatchTextures::empty(),
++                    stats,
++                );
++            }
++
++            if !masks.mask_instances_superellipse_with_scissor.is_empty() {
++                self.shaders.borrow_mut().ps_mask_superellipse().bind(
++                    &mut self.device,
++                    projection,
++                    None,
++                    &mut self.renderer_errors,
++                    &mut self.profile,
++                    &mut self.command_log,
++                );
++
++                self.device.enable_scissor();
++
++                for (scissor_rect, instances) in &masks.mask_instances_superellipse_with_scissor {
++                    self.device.set_scissor_rect(draw_target.to_framebuffer_rect(*scissor_rect));
++
++                    self.draw_instanced_batch(
++                        instances,
++                        VertexArrayKind::Mask,
++                        &BatchTextures::empty(),
++                        stats,
++                    );
++                }
++
++                self.device.disable_scissor();
++            }
++
+             if !masks.image_mask_instances.is_empty() {
+                 self.shaders.borrow_mut().ps_quad_textured().bind(
+                     &mut self.device,
+                     projection,
+                     None,
+diff --git a/gfx/wr/webrender/src/renderer/shade.rs b/gfx/wr/webrender/src/renderer/shade.rs
+--- a/gfx/wr/webrender/src/renderer/shade.rs
++++ b/gfx/wr/webrender/src/renderer/shade.rs
+@@ -65,10 +65,11 @@
+ ];
+ 
+ const DITHERING_FEATURE: &str = "DITHERING";
+ const DUAL_SOURCE_FEATURE: &str = "DUAL_SOURCE_BLENDING";
+ const FAST_PATH_FEATURE: &str = "FAST_PATH";
++const SUPERELLIPSE_FEATURE: &str = "SUPERELLIPSE";
+ 
+ pub(crate) enum ShaderKind {
+     Primitive,
+     Cache(VertexArrayKind),
+     Text,
+@@ -449,10 +450,11 @@
+     ps_quad_backdrop: ShaderHandle,
+     ps_quad_blend: ShaderHandle,
+     ps_quad_mix_blend: ShaderHandle,
+     ps_mask: ShaderHandle,
+     ps_mask_fast: ShaderHandle,
++    ps_mask_superellipse: ShaderHandle,
+     ps_clear: ShaderHandle,
+     ps_copy: ShaderHandle,
+ 
+     composite: CompositorShaders,
+ }
+@@ -514,10 +516,17 @@
+             "ps_quad_mask",
+             &[FAST_PATH_FEATURE],
+             &shader_list,
+         )?;
+ 
++        let ps_mask_superellipse = loader.create_shader(
++            ShaderKind::Cache(VertexArrayKind::Mask),
++            "ps_quad_mask",
++            &[SUPERELLIPSE_FEATURE],
++            &shader_list,
++        )?;
++
+         let mut cs_scale = Vec::new();
+         let scale_shader_num = IMAGE_BUFFER_KINDS.len();
+         // PrimitiveShader is not clonable. Use push() to initialize the vec.
+         for _ in 0 .. scale_shader_num {
+             cs_scale.push(None);
+@@ -786,10 +795,11 @@
+             ps_quad_backdrop,
+             ps_quad_blend,
+             ps_quad_mix_blend,
+             ps_mask,
+             ps_mask_fast,
++            ps_mask_superellipse,
+             ps_split_composite,
+             ps_clear,
+             ps_copy,
+             composite,
+         })
+@@ -963,10 +973,11 @@
+     pub fn ps_quad_textured(&mut self) -> &mut LazilyCompiledShader {
+         self.loader.get(self.ps_quad_textured)
+     }
+     pub fn ps_mask(&mut self) -> &mut LazilyCompiledShader { self.loader.get(self.ps_mask) }
+     pub fn ps_mask_fast(&mut self) -> &mut LazilyCompiledShader { self.loader.get(self.ps_mask_fast) }
++    pub fn ps_mask_superellipse(&mut self) -> &mut LazilyCompiledShader { self.loader.get(self.ps_mask_superellipse) }
+     pub fn ps_clear(&mut self) -> &mut LazilyCompiledShader { self.loader.get(self.ps_clear) }
+     pub fn ps_copy(&mut self) -> &mut LazilyCompiledShader { self.loader.get(self.ps_copy) }
+ 
+     pub fn deinit(self, device: &mut Device) {
+         self.loader.deinit(device);
+diff --git a/gfx/wr/webrender_build/src/shader_features.rs b/gfx/wr/webrender_build/src/shader_features.rs
+--- a/gfx/wr/webrender_build/src/shader_features.rs
++++ b/gfx/wr/webrender_build/src/shader_features.rs
+@@ -65,11 +65,11 @@
+     let mut shaders = ShaderFeatures::new();
+ 
+     // Cache shaders
+     shaders.insert("cs_blur", vec!["ALPHA_TARGET".to_string(), "COLOR_TARGET".to_string()]);
+ 
+-    shaders.insert("ps_quad_mask", vec![String::new(), "FAST_PATH".to_string()]);
++    shaders.insert("ps_quad_mask", vec![String::new(), "FAST_PATH".to_string(), "SUPERELLIPSE".to_string()]);
+ 
+     for name in &[
+         "cs_line_decoration",
+         "cs_border_segment",
+         "cs_border_solid",
+

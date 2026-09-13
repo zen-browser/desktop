@@ -1,0 +1,307 @@
+diff --git a/gfx/wr/webrender/res/ps_quad_box_shadow.glsl b/gfx/wr/webrender/res/ps_quad_box_shadow.glsl
+--- a/gfx/wr/webrender/res/ps_quad_box_shadow.glsl
++++ b/gfx/wr/webrender/res/ps_quad_box_shadow.glsl
+@@ -49,22 +49,26 @@
+ flat varying highp vec4 vElemCenter_Radius_TL;
+ flat varying highp vec4 vElemCenter_Radius_TR;
+ flat varying highp vec4 vElemCenter_Radius_BR;
+ flat varying highp vec4 vElemCenter_Radius_BL;
+ 
++#ifdef WR_FEATURE_SUPERELLIPSE
+ flat varying highp vec4 vElemShape;
++#endif
+ 
+ #ifdef WR_VERTEX_SHADER
+ 
+ void pattern_vertex(PrimitiveInfo info) {
+     vec4 data0 = fetch_from_gpu_buffer_1f(info.pattern_input.x);
+     vec4 data1 = fetch_from_gpu_buffer_1f(info.pattern_input.x + 1);
+     vec4 data2 = fetch_from_gpu_buffer_1f(info.pattern_input.x + 2);
+     vec4 data3 = fetch_from_gpu_buffer_1f(info.pattern_input.x + 3);
+     vec4 data4 = fetch_from_gpu_buffer_1f(info.pattern_input.x + 4);
+     vec4 data5 = fetch_from_gpu_buffer_1f(info.pattern_input.x + 5);
++#ifdef WR_FEATURE_SUPERELLIPSE
+     vec4 data6 = fetch_from_gpu_buffer_1f(info.pattern_input.x + 6);
++#endif
+ 
+     vec2 alloc_size     = data0.xy;
+     vec2 dest_rect_size = data0.zw;
+     vec2 dest_rect_off  = data1.xy;
+     v_uv_scale_inset    = vec4(vec2(1.0) / alloc_size, data1.z, 0.0);
+@@ -84,11 +88,11 @@
+     // Map nine-patch UV=1.0 to the true content edge (uv_p0 + content_device_size)
+     // rather than the rounded atlas entry edge (info.segment.uv_rect.p1). The atlas
+     // allocation is rounded up from content_device_size, so this edge always lies
+     // inside the entry; using it keeps the mapping stable to sub-texel precision as
+     // the blur animates (bug 2002194).
+-    vec2 content_device_size = data6.xy;
++    vec2 content_device_size = data5.xy;
+     vec2 texture_size = vec2(TEX_SIZE(sColor0));
+     vec2 uv_p0 = info.segment.uv_rect.p0;
+     vec2 uv_p1 = uv_p0 + content_device_size;
+     v_uv_rect = vec4(uv_p0, uv_p1) / texture_size.xyxy;
+     v_uv_bounds = vec4(
+@@ -110,11 +114,13 @@
+     vElemCenter_Radius_TL = vec4(elem_p0 + r_tl, r_tl);
+     vElemCenter_Radius_TR = vec4(elem_p1.x - r_tr.x, elem_p0.y + r_tr.y, r_tr);
+     vElemCenter_Radius_BR = vec4(elem_p1 - r_br, r_br);
+     vElemCenter_Radius_BL = vec4(elem_p0.x + r_bl.x, elem_p1.y - r_bl.y, r_bl);
+ 
+-    vElemShape = data5;
++#ifdef WR_FEATURE_SUPERELLIPSE
++    vElemShape = data6;
++#endif
+ }
+ 
+ #endif
+ 
+ #ifdef WR_FRAGMENT_SHADER
+@@ -170,22 +176,24 @@
+     vec3 elem_plane_bl = vec3(n_bl, dot(n_bl, vec2(c_bl.x,          c_bl.y + r_bl.y)));
+ 
+     // Reconstruct the element rect bounds from the TL and BR corner data.
+     vec4 elem_bounds = vec4(c_tl - r_tl, c_br + r_br);
+ 
+-    vec4 elem_shape = vElemShape;
+-
+     float elem_dist;
++#ifdef WR_FEATURE_SUPERELLIPSE
++    vec4 elem_shape = vElemShape;
+     if (elem_shape == vec4(1.0)) {
++#endif
+         elem_dist = distance_to_rounded_rect(
+             local_pos,
+             elem_plane_tl, vec4(c_tl, inverse_radii_squared(r_tl)),
+             elem_plane_tr, vec4(c_tr, inverse_radii_squared(r_tr)),
+             elem_plane_br, vec4(c_br, inverse_radii_squared(r_br)),
+             elem_plane_bl, vec4(c_bl, inverse_radii_squared(r_bl)),
+             elem_bounds
+         );
++#ifdef WR_FEATURE_SUPERELLIPSE
+     } else {
+         elem_dist = distance_to_shaped_rect(
+             local_pos,
+             vec4(c_tl, elem_shape.x == 1.0 ? inverse_radii_squared(r_tl) : inverse_radii(r_tl)),
+             vec4(c_tr, elem_shape.y == 1.0 ? inverse_radii_squared(r_tr) : inverse_radii(r_tr)),
+@@ -194,10 +202,11 @@
+             elem_bounds,
+             elem_shape,
+             vec4(0.0)
+         );
+     }
++#endif
+ 
+     // Outset (inset=0): dist < 0 = inside element → should be clipped out → use -elem_dist.
+     // Inset (inset=1): dist < 0 = inside element → should be kept → use elem_dist.
+     float element_clip = distance_aa(aa_range, mix(-elem_dist, elem_dist, inset));
+ 
+diff --git a/gfx/wr/webrender/src/pattern/box_shadow.rs b/gfx/wr/webrender/src/pattern/box_shadow.rs
+--- a/gfx/wr/webrender/src/pattern/box_shadow.rs
++++ b/gfx/wr/webrender/src/pattern/box_shadow.rs
+@@ -41,11 +41,14 @@
+         _sub_rect: Option<DeviceRect>,
+         _offset: LayoutVector2D,
+         _ctx: &PatternBuilderContext,
+         state: &mut PatternBuilderState,
+     ) -> Pattern {
+-        let mut writer = state.frame_gpu_data.f32.write_blocks(7);
++        let superellipse = !self.element_radius.shapes_all_round();
++
++        let block_count = if superellipse { 7 } else { 6 };
++        let mut writer = state.frame_gpu_data.f32.write_blocks(block_count);
+         writer.push_one([
+             self.shadow_rect_alloc_size.width,
+             self.shadow_rect_alloc_size.height,
+             self.dest_rect_size.width,
+             self.dest_rect_size.height,
+@@ -72,26 +75,28 @@
+             self.element_radius.bottom_right.width,
+             self.element_radius.bottom_right.height,
+             self.element_radius.bottom_left.width,
+             self.element_radius.bottom_left.height,
+         ]);
+-        writer.push_one([
+-            self.element_radius.shape_top_left,
+-            self.element_radius.shape_top_right,
+-            self.element_radius.shape_bottom_right,
+-            self.element_radius.shape_bottom_left,
+-        ]);
+         writer.push_one([
+             self.content_device_size.width,
+             self.content_device_size.height,
+             0.0,
+             0.0,
+         ]);
++        if superellipse {
++            writer.push_one([
++                self.element_radius.shape_top_left,
++                self.element_radius.shape_top_right,
++                self.element_radius.shape_bottom_right,
++                self.element_radius.shape_bottom_left,
++            ]);
++        }
+         let addr = writer.finish();
+ 
+         Pattern {
+-            kind: PatternKind::BoxShadow,
++            kind: if superellipse { PatternKind::BoxShadowSuperellipse } else { PatternKind::BoxShadow },
+             shader_input: PatternShaderInput(addr.as_int(), 0),
+             texture_input: PatternTextureInput::new(self.render_task),
+             base_color: self.color,
+             is_opaque: false,
+             blend_mode: BlendMode::PremultipliedAlpha,
+diff --git a/gfx/wr/webrender/src/pattern/mod.rs b/gfx/wr/webrender/src/pattern/mod.rs
+--- a/gfx/wr/webrender/src/pattern/mod.rs
++++ b/gfx/wr/webrender/src/pattern/mod.rs
+@@ -29,36 +29,37 @@
+     Gradient = 1,
+     Repeat = 2,
+ 
+     Mask = 3,
+     BoxShadow = 4,
++    BoxShadowSuperellipse = 5,
+     // Variants of ColorOrTexture that use a non-default sampler type
+     // (samplerExternalOES / __samplerExternal2DY2YEXT / sampler2DRect). The
+     // quad shader is compiled in matching per-kind variants; see
+     // ps_quad_textured.glsl.
+-    TextureExternal = 5,
+-    TextureExternalBT709 = 6,
+-    TextureRect = 7,
++    TextureExternal = 6,
++    TextureExternalBT709 = 7,
++    TextureRect = 8,
+     // Samples up to three planes (sColor0/1/2) and converts from YUV to RGB.
+     // Like ColorOrTexture, the YUV pattern comes in sampler-type-specific
+     // variants so that the planes are sampled with the matching sColor
+     // declaration; see ps_quad_yuv.glsl. `Yuv` is the default (TEXTURE_2D).
+-    Yuv = 8,
+-    YuvTextureExternal = 9,
+-    YuvTextureExternalBT709 = 10,
+-    YuvTextureRect = 11,
++    Yuv = 9,
++    YuvTextureExternal = 10,
++    YuvTextureExternalBT709 = 11,
++    YuvTextureRect = 12,
+     // Samples a captured backdrop texture using a (bilerp) 4-corner uv quad.
+-    Backdrop = 12,
++    Backdrop = 13,
+     // Applies a filter to a sampled source texture; see ps_quad_blend.glsl.
+-    Blend = 13,
++    Blend = 14,
+     // Composites a picture over its backdrop with a software mix-blend-mode;
+     // samples two textures (backdrop + source). See ps_quad_mix_blend.glsl.
+-    MixBlend = 14,
++    MixBlend = 15,
+     // When adding patterns, don't forget to update the NUM_PATTERNS constant.
+ }
+ 
+-pub const NUM_PATTERNS: u32 = 15;
++pub const NUM_PATTERNS: u32 = 16;
+ 
+ impl PatternKind {
+     pub fn from_u32(val: u32) -> Self {
+         assert!(val < NUM_PATTERNS);
+         unsafe { std::mem::transmute(val) }
+diff --git a/gfx/wr/webrender/src/renderer/mod.rs b/gfx/wr/webrender/src/renderer/mod.rs
+--- a/gfx/wr/webrender/src/renderer/mod.rs
++++ b/gfx/wr/webrender/src/renderer/mod.rs
+@@ -251,10 +251,11 @@
+             BatchKind::Quad(PatternKind::TextureExternalBT709) => GPU_TAG_PRIMITIVE,
+             BatchKind::Quad(PatternKind::TextureRect) => GPU_TAG_PRIMITIVE,
+             BatchKind::Quad(PatternKind::Gradient) => GPU_TAG_GRADIENT,
+             BatchKind::Quad(PatternKind::Repeat) => GPU_TAG_REPEAT,
+             BatchKind::Quad(PatternKind::BoxShadow) => GPU_TAG_PRIMITIVE,
++            BatchKind::Quad(PatternKind::BoxShadowSuperellipse) => GPU_TAG_PRIMITIVE,
+             BatchKind::Quad(PatternKind::Yuv) => GPU_TAG_BRUSH_YUV_IMAGE,
+             BatchKind::Quad(PatternKind::YuvTextureExternal) => GPU_TAG_BRUSH_YUV_IMAGE,
+             BatchKind::Quad(PatternKind::YuvTextureExternalBT709) => GPU_TAG_BRUSH_YUV_IMAGE,
+             BatchKind::Quad(PatternKind::YuvTextureRect) => GPU_TAG_BRUSH_YUV_IMAGE,
+             BatchKind::Quad(PatternKind::Backdrop) => GPU_TAG_PRIMITIVE,
+diff --git a/gfx/wr/webrender/src/renderer/shade.rs b/gfx/wr/webrender/src/renderer/shade.rs
+--- a/gfx/wr/webrender/src/renderer/shade.rs
++++ b/gfx/wr/webrender/src/renderer/shade.rs
+@@ -438,10 +438,11 @@
+     ps_quad_textured_external_bt709: Option<ShaderHandle>,
+     ps_quad_textured_rect: Option<ShaderHandle>,
+     ps_quad_repeat: ShaderHandle,
+     ps_quad_gradient: ShaderHandle,
+     ps_quad_box_shadow: ShaderHandle,
++    ps_quad_box_shadow_superellipse: ShaderHandle,
+     // ps_quad_yuv, like ps_quad_textured, comes in sampler-type-specific
+     // variants so the YUV planes are sampled with the matching sColor
+     // declaration. The variant is selected via PatternKind.
+     ps_quad_yuv: ShaderHandle,
+     ps_quad_yuv_external: Option<ShaderHandle>,
+@@ -651,10 +652,17 @@
+             "ps_quad_box_shadow",
+             &[],
+             &shader_list,
+         )?;
+ 
++        let ps_quad_box_shadow_superellipse = loader.create_shader(
++            ShaderKind::Primitive,
++            "ps_quad_box_shadow",
++            &[SUPERELLIPSE_FEATURE],
++            &shader_list,
++        )?;
++
+         let ps_quad_yuv = loader.create_shader(
+             ShaderKind::Primitive,
+             "ps_quad_yuv",
+             &["TEXTURE_2D"],
+             &shader_list,
+@@ -786,10 +794,11 @@
+             ps_quad_textured_external_bt709,
+             ps_quad_textured_rect,
+             ps_quad_repeat,
+             ps_quad_gradient,
+             ps_quad_box_shadow,
++            ps_quad_box_shadow_superellipse,
+             ps_quad_yuv,
+             ps_quad_yuv_external,
+             ps_quad_yuv_external_bt709,
+             ps_quad_yuv_rect,
+             ps_quad_backdrop,
+@@ -867,10 +876,11 @@
+             PatternKind::TextureRect => self.ps_quad_textured_rect
+                 .expect("bug: ps_quad_textured TEXTURE_RECT variant not loaded"),
+             PatternKind::Gradient => self.ps_quad_gradient,
+             PatternKind::Repeat => self.ps_quad_repeat,
+             PatternKind::BoxShadow => self.ps_quad_box_shadow,
++            PatternKind::BoxShadowSuperellipse => self.ps_quad_box_shadow_superellipse,
+             PatternKind::Yuv => self.ps_quad_yuv,
+             PatternKind::YuvTextureExternal => self.ps_quad_yuv_external
+                 .expect("bug: ps_quad_yuv TEXTURE_EXTERNAL variant not loaded"),
+             PatternKind::YuvTextureExternalBT709 => self.ps_quad_yuv_external_bt709
+                 .expect("bug: ps_quad_yuv TEXTURE_EXTERNAL_BT709 variant not loaded"),
+@@ -923,10 +933,13 @@
+                 self.ps_quad_repeat
+             }
+             BatchKind::Quad(PatternKind::BoxShadow) => {
+                 self.ps_quad_box_shadow
+             }
++            BatchKind::Quad(PatternKind::BoxShadowSuperellipse) => {
++                self.ps_quad_box_shadow_superellipse
++            }
+             BatchKind::Quad(PatternKind::Yuv) => {
+                 self.ps_quad_yuv
+             }
+             BatchKind::Quad(PatternKind::YuvTextureExternal) => {
+                 self.ps_quad_yuv_external
+diff --git a/gfx/wr/webrender_build/src/shader_features.rs b/gfx/wr/webrender_build/src/shader_features.rs
+--- a/gfx/wr/webrender_build/src/shader_features.rs
++++ b/gfx/wr/webrender_build/src/shader_features.rs
+@@ -166,11 +166,11 @@
+     }
+     shaders.insert("ps_quad_textured", ps_quad_textured_features);
+ 
+     shaders.insert("ps_quad_repeat", vec![base_prim_features.finish()]);
+ 
+-    shaders.insert("ps_quad_box_shadow", vec![base_prim_features.finish()]);
++    shaders.insert("ps_quad_box_shadow", vec![base_prim_features.finish(), "SUPERELLIPSE".to_string()]);
+ 
+     // Like ps_quad_textured, ps_quad_yuv needs per-texture-kind variants so that
+     // the YUV planes are sampled with the correct sampler type.
+     let mut ps_quad_yuv_features: Vec<String> = vec!["TEXTURE_2D".to_string()];
+     if flags.contains(ShaderFeatureFlags::GL) {
+

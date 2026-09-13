@@ -64,6 +64,10 @@ hbox.editBMPanel_folderRow {
   margin-right: 10px;
 }
 
+#editBMPanel_workspaceSummary .workspace-trigger {
+  margin-inline-end: 16px;
+}
+
 /* Bookmarks in toolbar */
 #PersonalToolbar {
   background: transparent;

@@ -4,4 +4,6 @@
 
 EXTRA_JS_MODULES.zen.share += [
   "share.schema.json",
+  "ZenShareClient.sys.mjs",
+  "ZenShareManager.mjs",
 ]

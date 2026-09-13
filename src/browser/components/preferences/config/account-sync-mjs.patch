@@ -1,16 +1,17 @@
 diff --git a/browser/components/preferences/config/account-sync.mjs b/browser/components/preferences/config/account-sync.mjs
-index b01fd4bb163ad53139fcbd8e79e12ef994d1fa13..dd60be4fe268618d6596cd5cfac3342975bd241a 100644
+index b01fd4bb163ad53139fcbd8e79e12ef994d1fa13..7e3c2f6852b77192b4505bb3d5a7b58586da6548 100644
 --- a/browser/components/preferences/config/account-sync.mjs
 +++ b/browser/components/preferences/config/account-sync.mjs
-@@ -46,6 +46,7 @@ Preferences.addAll([
+@@ -46,6 +46,8 @@ Preferences.addAll([
    { id: "services.sync.engine.creditcards", type: "bool" },
    { id: "services.sync.engine.addons", type: "bool" },
    { id: "services.sync.engine.prefs", type: "bool" },
 +  { id: "services.sync.engine.spaces", type: "bool" },
++  { id: "zen.spaces-sync.normal-tabs", type: "bool" },
  ]);
  
  /**
-@@ -557,6 +558,7 @@ const SYNC_ENGINE_SETTINGS = [
+@@ -557,6 +559,7 @@ const SYNC_ENGINE_SETTINGS = [
      type: "payments",
    },
    { id: "syncAddons", pref: "services.sync.engine.addons", type: "addons" },
@@ -18,7 +19,7 @@ index b01fd4bb163ad53139fcbd8e79e12ef994d1fa13..dd60be4fe268618d6596cd5cfac33429
    { id: "syncSettings", pref: "services.sync.engine.prefs", type: "settings" },
  ];
  
-@@ -564,6 +566,12 @@ SYNC_ENGINE_SETTINGS.forEach(({ id, pref }) => {
+@@ -564,6 +567,18 @@ SYNC_ENGINE_SETTINGS.forEach(({ id, pref }) => {
    Preferences.addSetting({ id, pref });
  });
  
@@ -27,11 +28,17 @@ index b01fd4bb163ad53139fcbd8e79e12ef994d1fa13..dd60be4fe268618d6596cd5cfac33429
 +  id: "zenSyncWorkspaces",
 +  pref: "services.sync.engine.spaces",
 +});
++Preferences.addSetting({
++  id: "zenSyncNormalTabs",
++  pref: "zen.spaces-sync.normal-tabs",
++  deps: ["zenSyncWorkspaces"],
++  visible: deps => !!deps.zenSyncWorkspaces.value,
++});
 +
  Preferences.addSetting({
    id: "syncEngines",
    deps: SYNC_ENGINE_SETTINGS.map(({ id }) => id),
-@@ -995,6 +1003,20 @@ SettingGroupManager.registerGroups({
+@@ -995,6 +1010,27 @@ SettingGroupManager.registerGroups({
              id: "syncEnginesList",
              control: "sync-engines-list",
            },
@@ -46,6 +53,13 @@ index b01fd4bb163ad53139fcbd8e79e12ef994d1fa13..dd60be4fe268618d6596cd5cfac33429
 +                controlAttrs: {
 +                  inputlayout: "inline-end",
 +                },
++                items: [
++                  {
++                    id: "zenSyncNormalTabs",
++                    l10nId: "zen-settings-normal-tabs-sync",
++                    control: "moz-checkbox",
++                  },
++                ],
 +              },
 +            ],
 +          },

@@ -52,7 +52,7 @@
     --zen-compact-float: var(--zen-element-separation);
 
     @media (-moz-mac-tahoe-theme) {
-      --zen-compact-mode-no-padding-radius-fix: -2px;
+      --zen-compact-mode-no-padding-radius-fix: -4px;
     }
 
     :root[zen-no-padding='true'] & {

@@ -1,16 +1,17 @@
 diff --git a/widget/cocoa/nsCocoaWindow.mm b/widget/cocoa/nsCocoaWindow.mm
-index 2efd02e4a92433fd29bbfdb707aa81cfec45031e..3b763c3927f07e529c826f8e4f62bc80a324b247 100644
+index 887e4c052d5dd2b73d4c2059463529fb4b09dcab..36da18e19018b1b216576c299f938e75093546d3 100644
 --- a/widget/cocoa/nsCocoaWindow.mm
 +++ b/widget/cocoa/nsCocoaWindow.mm
-@@ -86,6 +86,7 @@
+@@ -86,6 +86,8 @@
  #include "mozilla/StaticPrefs_gfx.h"
  #include "mozilla/StaticPrefs_ui.h"
  #include "mozilla/StaticPrefs_widget.h"
 +#include "mozilla/StaticPrefs_zen.h"
++#include "mozilla/nsZenDragAndDrop.h"
  #include "mozilla/WritingModes.h"
  #include "mozilla/dom/Document.h"
  #include "mozilla/layers/CompositorBridgeChild.h"
-@@ -1332,6 +1333,110 @@ - (NSRect)_opaqueRectForWindowMoveWhenInTitlebar {
+@@ -1332,6 +1334,110 @@ - (NSRect)_opaqueRectForWindowMoveWhenInTitlebar {
  }
  @end
  
@@ -121,7 +122,28 @@ index 2efd02e4a92433fd29bbfdb707aa81cfec45031e..3b763c3927f07e529c826f8e4f62bc80
  void nsCocoaWindow::UpdateWindowDraggingRegion(
      const LayoutDeviceIntRegion& aRegion) {
    // mChildView returns YES from mouseDownCanMoveWindow, so we need to put
-@@ -4919,6 +5024,10 @@ - (BOOL)wantsBestResolutionOpenGLSurface {
+@@ -3858,7 +3964,9 @@ - (NSDragOperation)draggingEntered:(id<NSDraggingInfo>)sender {
+ // NSDraggingDestination
+ - (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender {
+   MOZ_LOG(sCocoaLog, LogLevel::Info, ("ChildView draggingUpdated: entered\n"));
+-  return [self doDragAction:eDragOver sender:sender];
++  NSDragOperation operation = [self doDragAction:eDragOver sender:sender];
++  zen::PrepareDropLanding(sender);
++  return operation;
+ }
+ 
+ // NSDraggingDestination
+@@ -3874,6 +3982,9 @@ - (void)draggingExited:(id<NSDraggingInfo>)sender {
+ - (BOOL)performDragOperation:(id<NSDraggingInfo>)sender {
+   nsAutoRetainCocoaObject kungFuDeathGrip(self);
+   BOOL handled = [self doDragAction:eDrop sender:sender] != NSDragOperationNone;
++  if (handled) {
++    zen::LandDrop(sender);
++  }
+   NS_IF_RELEASE(mDragService);
+   return handled;
+ }
+@@ -4919,6 +5030,10 @@ - (BOOL)wantsBestResolutionOpenGLSurface {
  nsCocoaWindow::~nsCocoaWindow() {
    NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
  

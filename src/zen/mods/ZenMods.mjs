@@ -187,9 +187,13 @@ class nsZenMods extends nsZenPreloadedFeature {
           type,
           sanitizedProperty: property?.replaceAll(DOT_RE, "-"),
           value:
-            (enabled === undefined || enabled) && type !== "checkbox"
-              ? Services.prefs.getStringPref(property, "")
-              : "",
+            enabled === undefined || enabled
+              ? type === "checkbox"
+                ? Services.prefs.getBoolPref(property, false)
+                : Services.prefs.getStringPref(property, "")
+              : type === "checkbox"
+                ? false
+                : "",
         })),
       })
     );

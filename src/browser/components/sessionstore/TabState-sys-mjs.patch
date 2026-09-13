@@ -1,16 +1,16 @@
 diff --git a/browser/components/sessionstore/TabState.sys.mjs b/browser/components/sessionstore/TabState.sys.mjs
-index a33deeb5b587d6a950960a1a4781176e4e730ad7..7927471d389f2626e4cc1b0e7a6eab6446dca432 100644
+index bb7bd8c7ca88f776188fce64e0c85beb5ceb27a5..bdec77ba26172fe1b41369b1d45d5a6f9d52ae25 100644
 --- a/browser/components/sessionstore/TabState.sys.mjs
 +++ b/browser/components/sessionstore/TabState.sys.mjs
-@@ -8,6 +8,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
-   PrivacyFilter: "resource://gre/modules/sessionstore/PrivacyFilter.sys.mjs",
-   TabAttributes: "resource:///modules/sessionstore/TabAttributes.sys.mjs",
-   TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
+@@ -10,6 +10,7 @@ const lazy = XPCOMUtils.declareLazy({
+     "moz-src:///browser/components/sessionstore/TabAttributes.sys.mjs",
+   TabStateCache:
+     "moz-src:///browser/components/sessionstore/TabStateCache.sys.mjs",
 +  UrlbarShared: "chrome://browser/content/urlbar/UrlbarShared.mjs",
-   sessionStoreLogger: "resource:///modules/sessionstore/SessionLogger.sys.mjs",
+   sessionStoreLogger:
+     "moz-src:///browser/components/sessionstore/SessionLogger.sys.mjs",
  });
- 
-@@ -103,10 +104,28 @@ class _TabState {
+@@ -106,10 +107,28 @@ class _TabState {
        }
      }
  
@@ -39,7 +39,7 @@ index a33deeb5b587d6a950960a1a4781176e4e730ad7..7927471d389f2626e4cc1b0e7a6eab64
  
      tabData.userContextId = tab.userContextId || 0;
  
-@@ -132,6 +151,10 @@ class _TabState {
+@@ -135,6 +154,10 @@ class _TabState {
        tabData.image = tabbrowser.getIcon(tab);
      }
  

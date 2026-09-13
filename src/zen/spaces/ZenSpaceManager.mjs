@@ -1773,10 +1773,10 @@ class nsZenWorkspaces {
     if (this.tabContainer) {
       this.tabContainer._invalidateCachedTabs();
     }
-    // Fix tabs _tPos values relative to the actual order
+    // Fix tabs _index values relative to the actual order
     const tabs = gBrowser.tabs;
     const usedGroups = new Set();
-    let tPos = 0; // _tPos is used for the session store, not needed for folders
+    let tPos = 0; // _index is used for the session store, not needed for folders
     let pPos = 0; // _pPos is used for the pinned tabs manager
     const recurseFolder = tab => {
       if (tab.group) {
@@ -1789,7 +1789,7 @@ class nsZenWorkspaces {
     };
     for (const tab of tabs) {
       recurseFolder(tab);
-      tab._tPos = tPos++;
+      tab._index = tPos++;
       if (!tab.hasAttribute("zen-empty-tab")) {
         tab._pPos = pPos++;
       }

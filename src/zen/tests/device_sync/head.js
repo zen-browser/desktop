@@ -11,10 +11,10 @@ const { ZenSpacesSyncApplier } = ChromeUtils.importESModule(
   "resource:///modules/zen/ZenSpacesSyncApplier.sys.mjs"
 );
 const { SessionSaver } = ChromeUtils.importESModule(
-  "resource:///modules/sessionstore/SessionSaver.sys.mjs"
+  "moz-src:///browser/components/sessionstore/SessionSaver.sys.mjs"
 );
 const { TabStateFlusher } = ChromeUtils.importESModule(
-  "resource:///modules/sessionstore/TabStateFlusher.sys.mjs"
+  "moz-src:///browser/components/sessionstore/TabStateFlusher.sys.mjs"
 );
 const { TestUtils } = ChromeUtils.importESModule(
   "resource://testing-common/TestUtils.sys.mjs"

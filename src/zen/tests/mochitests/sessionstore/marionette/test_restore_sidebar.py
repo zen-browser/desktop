@@ -97,7 +97,7 @@ class TestSessionRestore(SessionStoreTestCase):
                 """
                 const lazy = {};
                 ChromeUtils.defineESModuleGetters(lazy, {
-                    SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
+                    SessionStore: "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs",
                 });
                 let state = SessionStore.getCurrentState();
                 return state.windows[0].sidebar.command;

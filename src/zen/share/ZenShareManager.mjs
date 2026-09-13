@@ -8,7 +8,8 @@ import { nsZenThemePicker } from "resource:///modules/zen/ZenGradientGenerator.m
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
-  TabStateCache: "resource:///modules/sessionstore/TabStateCache.sys.mjs",
+  TabStateCache:
+    "moz-src:///browser/components/sessionstore/TabStateCache.sys.mjs",
   ZenShareClient: "resource:///modules/zen/share/ZenShareClient.sys.mjs",
   ZenShareError: "resource:///modules/zen/share/ZenShareClient.sys.mjs",
 });
@@ -440,8 +441,8 @@ class nsZenShareManager extends nsZenDOMOperatedFeature {
         gZenUIManager.motion
           .animate(
             group,
-            { x: [-28, 0] },
-            { type: "spring", bounce: 0.9, duration: 1.4 }
+            { x: [-32, 0] },
+            { type: "spring", bounce: 0.5, duration: 1.5 }
           )
           .then(() => {
             group.style.removeProperty("transform");

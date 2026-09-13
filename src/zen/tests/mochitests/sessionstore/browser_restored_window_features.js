@@ -3,13 +3,7 @@
 
 "use strict";
 
-const BARPROP_NAMES = [
-  "locationbar",
-  "menubar",
-  "personalbar",
-  "scrollbars",
-  "toolbar",
-];
+const BARPROP_NAMES = ["locationbar", "menubar", "personalbar", "toolbar"];
 
 function testFeatures(win, test) {
   for (let name of BARPROP_NAMES) {
@@ -43,14 +37,13 @@ add_task(async function testRestoredWindowFeatures() {
     locationbar: true,
     menubar: true,
     personalbar: true,
-    scrollbars: true,
     toolbar: true,
   };
   const TESTS = [
     {
       url: "http://example.com/browser/" + DUMMY_PAGE,
       features: "menubar=0,resizable",
-      barprops: { scrollbars: true },
+      barprops: { locationbar: true },
       chromeFlags: Ci.nsIWebBrowserChrome.CHROME_WINDOW_RESIZE,
       unsetFlags: Ci.nsIWebBrowserChrome.CHROME_OPENAS_DIALOG,
     },
@@ -58,14 +51,14 @@ add_task(async function testRestoredWindowFeatures() {
       url: "data:,", // title should be empty
       checkContentTitleEmpty: true,
       features: "location,resizable",
-      barprops: { locationbar: true, scrollbars: true },
+      barprops: { locationbar: true },
       chromeFlags: Ci.nsIWebBrowserChrome.CHROME_WINDOW_RESIZE,
       unsetFlags: Ci.nsIWebBrowserChrome.CHROME_OPENAS_DIALOG,
     },
     {
       url: "http://example.com/browser/" + DUMMY_PAGE,
       features: "dialog,resizable",
-      barprops: { scrollbars: true },
+      barprops: { locationbar: true },
       chromeFlags:
         Ci.nsIWebBrowserChrome.CHROME_OPENAS_DIALOG |
         Ci.nsIWebBrowserChrome.CHROME_WINDOW_RESIZE,

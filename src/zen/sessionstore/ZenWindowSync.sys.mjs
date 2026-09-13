@@ -1234,11 +1234,21 @@ class nsZenWindowSync {
       activeIndex = Math.min(activeIndex, entries.length - 1);
       activeIndex = Math.max(activeIndex, 0);
       let entryToUse = (entries[activeIndex] || entries[0]) ?? null;
-      this.setPinnedInitialState(
-        aTab,
-        { url: entryToUse?.url, title: entryToUse?.title },
-        image
-      );
+      let url = entryToUse?.url;
+      if (
+        !url &&
+        aTab.linkedBrowser?.currentURI?.spec &&
+        aTab.linkedBrowser.currentURI.spec !== "about:blank"
+      ) {
+        url = aTab.linkedBrowser.currentURI.spec;
+      }
+      if (url) {
+        this.setPinnedInitialState(
+          aTab,
+          { url, title: entryToUse?.title },
+          image
+        );
+      }
     });
   }
 
@@ -1260,6 +1270,31 @@ class nsZenWindowSync {
   }
 
   /**
+   * Updates the canonical title for a pinned tab across all windows.
+   *
+   * @param {object} aTab - Any window's instance of the tab.
+   * @param {string} aTitle - The loaded page title.
+   */
+  setPinnedTitle(aTab, aTitle) {
+    if (!aTitle) {
+      return;
+    }
+    this.#runOnAllWindows(null, win => {
+      const targetTab = this.getItemFromWindow(win, aTab.id);
+      const initialState = targetTab?._zenPinnedInitialState;
+      if (!initialState?.entry?.url || initialState.titleCaptured) {
+        return;
+      }
+      if (initialState.entry.title) {
+        initialState.titleCaptured = true;
+        return;
+      }
+      initialState.entry.title = aTitle;
+      initialState.titleCaptured = true;
+    });
+  }
+
+  /**
    * Sets the pinned initial state (canonical entry and icon) for a tab's
    * instances across all windows.
    *
@@ -1268,7 +1303,11 @@ class nsZenWindowSync {
    * @param {string} [aImage] - Optional icon to store.
    */
   setPinnedInitialState(aTab, aEntry, aImage) {
-    const initialState = { entry: aEntry, image: aImage };
+    const initialState = {
+      entry: aEntry,
+      image: aImage,
+      titleCaptured: Boolean(aEntry?.title),
+    };
     this.#runOnAllWindows(null, win => {
       const targetTab = this.getItemFromWindow(win, aTab.id);
       if (targetTab) {

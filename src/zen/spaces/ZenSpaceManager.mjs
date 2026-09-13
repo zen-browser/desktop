@@ -3348,6 +3348,12 @@ class nsZenWorkspaces {
         essentialsSection.appendChild(tab);
       }
     } else if (tab.pinned) {
+      if (
+        tab?.group?.isZenFolder &&
+        Services.prefs.getBoolPref("zen.folders.owned-tabs-in-folder", false)
+      ) {
+        return;
+      }
       // Pinned tabs should always be inserted at the end of the pinned tabs container
       const pinnedContainer = this.pinnedTabsContainer;
       if (pinnedContainer) {

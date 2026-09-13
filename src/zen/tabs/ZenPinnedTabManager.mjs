@@ -949,16 +949,22 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
       return;
     }
     const tab = gBrowser.getTabForBrowser(aBrowser);
-    if (
-      !tab ||
-      !tab.pinned ||
-      tab.hasAttribute("zen-essential") ||
-      !tab._zenPinnedInitialState?.entry
-    ) {
+    if (!tab || !tab.pinned || tab.hasAttribute("zen-essential")) {
+      return;
+    }
+    const initialState = tab._zenPinnedInitialState;
+    if (!initialState?.entry?.url) {
+      window.gZenWindowSync.setPinnedInitialState(
+        tab,
+        { url: location, title: initialState?.entry?.title },
+        initialState?.image ??
+          tab.getAttribute("image") ??
+          gBrowser.getIcon(tab)
+      );
       return;
     }
     // Remove # from the URL
-    const pinUrl = tab._zenPinnedInitialState.entry.url.split("#")[0];
+    const pinUrl = initialState.entry.url.split("#")[0];
     const currentUrl = location.split("#")[0];
     // Add an indicator that the pin has been changed
     if (
@@ -1175,7 +1181,15 @@ class nsZenPinnedTabManager extends nsZenDOMOperatedFeature {
     }
   }
 
-  onTabLabelChanged(tab) {
+  onTabLabelChanged(tab, label, { isContentTitle = false } = {}) {
+    if (
+      isContentTitle &&
+      !tab.zenStaticLabel &&
+      label &&
+      tab._zenPinnedInitialState?.entry?.url
+    ) {
+      window.gZenWindowSync.setPinnedTitle(tab, label);
+    }
     tab.dispatchEvent(
       new CustomEvent("ZenTabLabelChanged", { bubbles: true, detail: { tab } })
     );

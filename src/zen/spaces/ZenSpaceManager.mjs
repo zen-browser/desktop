@@ -3033,8 +3033,7 @@ class nsZenWorkspaces {
           tabWorkspaceId,
           containerId,
           this._workspaceCache
-        ) &&
-        !tab.hasAttribute("zen-empty-tab")
+        ) && !tab.hasAttribute("zen-empty-tab")
     );
   }
 

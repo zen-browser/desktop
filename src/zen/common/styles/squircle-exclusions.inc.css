@@ -25,6 +25,7 @@
 [fxastatus='signedin'] #fxa-avatar-image,
 #profile-icon-image,
 .appMenu-update-banner-pulse-ring,
+.urlbarView-favicon,
 :is(#appMenu-zoomReduce-button2, #appMenu-zoomEnlarge-button2) > .toolbarbutton-icon,
 .color-swatches .userContext-icon,
 .reusable-relay-masks > button,

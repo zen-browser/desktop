@@ -9,7 +9,7 @@
 function run_test() {
   let profd = do_get_profile();
   var SessionFile = ChromeUtils.importESModule(
-    "resource:///modules/sessionstore/SessionFile.sys.mjs"
+    "moz-src:///browser/components/sessionstore/SessionFile.sys.mjs"
   ).SessionFile;
 
   let sourceSession = do_get_file("data/sessionstore_valid.js");

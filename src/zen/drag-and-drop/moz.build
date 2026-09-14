@@ -16,7 +16,10 @@ SOURCES += [
 ]
 
 if CONFIG["MOZ_WIDGET_TOOLKIT"] == "cocoa":
-    SOURCES += ["nsZenNativeWindowMove.mm"]
+    SOURCES += [
+        "nsZenDropLandingCocoa.mm",
+        "nsZenNativeWindowMove.mm",
+    ]
 elif CONFIG["MOZ_WIDGET_TOOLKIT"] == "gtk":
     CXXFLAGS += CONFIG["MOZ_GTK3_CFLAGS"]
 

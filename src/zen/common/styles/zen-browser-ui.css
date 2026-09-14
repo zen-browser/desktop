@@ -20,7 +20,7 @@ body,
   position: inherit;
 }
 
-:root:is([inDOMFullscreen="true"], [chromehidden~="location"], [chromehidden~="toolbar"]) {
+:root:is([inDOMFullscreen="true"], [popup-window]) {
   #navigator-toolbox,
   #zen-sidebar-splitter {
     visibility: collapse;
@@ -170,7 +170,7 @@ body,
   min-width: 1px;
 }
 
-:root:not([inDOMFullscreen="true"]):not([chromehidden~="location"]):not([chromehidden~="toolbar"]) {
+:root:not([inDOMFullscreen="true"]):not([popup-window]) {
   & #zen-tabbox-wrapper {
     margin: var(--zen-element-separation);
     margin-top: 0;

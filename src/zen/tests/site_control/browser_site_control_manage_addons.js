@@ -31,7 +31,7 @@ add_task(async function test_manage_addons_opens_addons_manager() {
       "about:addons opened in a new tab"
     );
 
-    await BrowserTestUtils.waitForCondition(
+    await TestUtils.waitForCondition(
       () => siteDataPanel().state === "closed",
       "panel auto-closes after opening the addons manager"
     );

@@ -1,8 +1,10 @@
 const lazy = {};
 ChromeUtils.defineESModuleGetters(lazy, {
   BrowserTestUtils: "resource://testing-common/BrowserTestUtils.sys.mjs",
-  SessionStore: "resource:///modules/sessionstore/SessionStore.sys.mjs",
-  TabStateFlusher: "resource:///modules/sessionstore/TabStateFlusher.sys.mjs",
+  SessionStore:
+    "moz-src:///browser/components/sessionstore/SessionStore.sys.mjs",
+  TabStateFlusher:
+    "moz-src:///browser/components/sessionstore/TabStateFlusher.sys.mjs",
   TestUtils: "resource://testing-common/TestUtils.sys.mjs",
 });
 
@@ -89,7 +91,7 @@ export var SessionStoreTestUtils = {
       "browser.sessionstore.restore_hidden_tabs"
     );
     // This should match the |restoreTabsLazily| value that
-    // SessionStore.restoreWindow() uses.
+    // SessionStore's #restoreWindow() uses.
     let restoreTabsLazily =
       Services.prefs.getBoolPref("browser.sessionstore.restore_on_demand") &&
       Services.prefs.getBoolPref("browser.sessionstore.restore_tabs_lazily");

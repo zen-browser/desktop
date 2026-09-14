@@ -1,0 +1,40 @@
+diff --git a/browser/components/urlbar/content/UrlbarInputBase.mjs b/browser/components/urlbar/content/UrlbarInputBase.mjs
+index 170cffbdd12a72dab15976cdab9207dc4292d4e6..0627565ef71a1ec0b9f61fd0d5ac01ab0c0432c8 100644
+--- a/browser/components/urlbar/content/UrlbarInputBase.mjs
++++ b/browser/components/urlbar/content/UrlbarInputBase.mjs
+@@ -1779,7 +1779,16 @@ ${
+    *   Defaults to the parent resolving the selected browser at load time.
+    */
+   // eslint-disable-next-line complexity
+-  pickResult({ result, event, element = null, browserId = null }) {
++
++  pickResult(options) {
++    try {
++      return this.#zenPickResult(options);
++    } finally {
++      this._zenSettlePick?.();
++    }
++  }
++
++  #zenPickResult({ result, event, element = null, browserId = null }) {
+     if (element?.classList.contains("urlbarView-button-menu")) {
+       this.view.openResultMenu(result, element);
+       return;
+@@ -1916,7 +1925,7 @@ ${
+ 
+     if (!this.#providesSearchMode(result) && !keepViewOpen) {
+       if (this._zenHandleUrlbarClose) {
+-        this._zenHandleUrlbarClose(true, true);
++        this._zenOnPickStart();
+       } else {
+         this.window.setTimeout(() => this.view.close({ elementPicked: true }), 0);
+       }
+@@ -3296,7 +3305,7 @@ ${
+       return;
+     }
+ 
+-    if (this._zenHandleUrlbarClose) {
++    if (this._zenHandleUrlbarClose && !this._zenPickPending) {
+       this._zenHandleUrlbarClose();
+     } else if (!this._untrimmedValue || (this.#isAddressbar && (this.searchMode || this.window.gZenVerticalTabsManager._hasSetSingleToolbar))) {
+       // Restore the current page URL when the urlbar is empty on blur

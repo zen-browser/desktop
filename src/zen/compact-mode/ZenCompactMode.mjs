@@ -165,9 +165,7 @@ window.gZenCompactModeManager = {
   },
 
   get shouldBeCompact() {
-    return !document.documentElement
-      .getAttribute("chromehidden")
-      ?.includes("toolbar");
+    return !document.documentElement.hasAttribute("popup-window");
   },
 
   set preference(value) {
@@ -864,7 +862,6 @@ window.gZenCompactModeManager = {
               "supress-primary-adjustment"
             ) === "true" &&
               gZenVerticalTabsManager._hasSetSingleToolbar) ||
-            this._hasHoveredUrlbar ||
             this._ignoreNextHover ||
             (event.type === "dragleave" &&
               event.explicitOriginalTarget !== target &&
@@ -877,7 +874,10 @@ window.gZenCompactModeManager = {
             return;
           }
 
-          if (this.hoverableElements[i].keepHoverDuration) {
+          if (
+            this.hoverableElements[i].keepHoverDuration &&
+            !this._hasHoveredUrlbar
+          ) {
             this.flashElement(
               target,
               this.hoverableElements[i].keepHoverDuration,

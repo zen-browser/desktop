@@ -1,4 +1,7 @@
 [DEFAULT]
+prefs = [
+  "zen.window-sync.enabled=false",
+]
 subsuite = "media-bc"
 tags = "audiochannel"
 support-files = [

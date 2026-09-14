@@ -94,6 +94,7 @@ Remote APIs can return any JSON, but the Live Folder must provide a mapping conf
 {
   "type": "rest",
   "url": "https://api.example.com/posts",
+  "params": {},
   "mapping": {
     "items": "data.posts",
     "id": "id",
@@ -103,6 +104,8 @@ Remote APIs can return any JSON, but the Live Folder must provide a mapping conf
 }
 ```
 
+`params` (optional): Object for URL template substitution (`{key}` → `params.key`) and query parameters (unused keys appended as `?key=value`).
+
 ### Installation of REST API Live Folder
 
 These schemas would be stored inside a marketplace on Zen's web platform, allowing users to easily discover and integrate new REST API Live Folders into their workspace.
@@ -110,3 +113,38 @@ These schemas would be stored inside a marketplace on Zen's web platform, allowi
 If the user wants to create a new REST API Live Folder, they can do so by providing the necessary schema and configuration through the marketplace interface. This will enable them to customize the folder's behavior and data mapping according to their specific needs.
 
 If it's a custom API and the schema is not publicly available, users can still create a Live Folder by defining their own mapping configuration. This allows them to integrate with proprietary APIs while adhering to Zen's Live Folder standards. This mapping configuration will be fetched via `https://example.com/zen-live-folder.schema.json`.
+
+---
+
+## Example Configurations
+
+### Gitea
+
+Uses the [Gitea Issues API](https://docs.gitea.com/api/#tag/issue). Replace `gitea.example.com`, `owner`, and `repo` with your Gitea instance, org/user, and repository. Use `type: "issues"` or `type: "pulls"` for issues vs pull requests. For private repos, add `"Authorization": "token YOUR_TOKEN"` to `headers`; otherwise use `"headers": {}` to rely on session cookies when logged in.
+
+**Issues:**
+
+```json
+{
+  "url": "https://gitea.example.com/api/v1/repos/{owner}/{repo}/issues",
+  "params": {
+    "owner": "my-org",
+    "repo": "my-project",
+    "state": "open",
+    "type": "issues"
+  },
+  "label": "Gitea Issues",
+  "icon": "favicon",
+  "headers": {},
+  "mapping": {
+    "items": "",
+    "id": "id",
+    "title": "title",
+    "url": "html_url",
+    "subtitle": "user.login"
+  },
+  "maxItems": 50
+}
+```
+
+**Pull requests:** change `params.type` to `"pulls"` and the label to `"Gitea Pull Requests"`.

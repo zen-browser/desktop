@@ -1040,12 +1040,16 @@
       }
       this.clearSpaceSwitchTimer();
       gZenFolders.highlightGroupOnDragOver(null);
+      // A drop into a split merges the tab away; nothing lands on it.
+      const toSplit = !!this.#dragOverSplit.canDrop;
       super.handle_drop(event);
       this.#maybeClearVerticalPinnedGridDragOver();
       this.#handle_dropSwitchSpace(event);
       this.#handle_dropCreateSplit(event);
       this._clearDragOverSplit();
-      this.#landDragImage(event);
+      if (!toSplit) {
+        this.#landDragImage(event);
+      }
     }
 
     /**
@@ -1130,6 +1134,7 @@
       );
     }
 
+    // eslint-disable-next-line complexity
     handle_drop_transition(dropElement, draggedTab, movingTabs, dropBefore) {
       if (
         dropElement?.hasAttribute("zen-empty-tab") &&
@@ -1155,6 +1160,7 @@
       try {
         if (
           this.#isAnimatingTabMove ||
+          this.#dragOverSplit.canDrop ||
           !gZenStartup.isReady ||
           gReduceMotion ||
           !dropElement ||

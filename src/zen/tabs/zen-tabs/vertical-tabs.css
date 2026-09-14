@@ -329,8 +329,8 @@
       display: none;
     }
 
-    &[drag-image] {
-      border-radius: calc(var(--border-radius-medium) / var(--zen-squircle-value));
+    &[drag-image] .tab-background {
+      border-radius: calc(var(--border-radius-medium) / var(--zen-squircle-value)) !important;
     }
 
     /* stylelint-disable-next-line stylelint-plugin-mozilla/no-has-selector */

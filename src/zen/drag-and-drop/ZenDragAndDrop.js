@@ -1062,25 +1062,15 @@
       if (draggedTab?.documentGlobal !== window || gReduceMotion) {
         return;
       }
-      const elements = (this._dragImageTabs ?? [draggedTab])
-        .map(elementToMove)
-        .filter(element => element?.isConnected);
-      if (!elements.length) {
-        return;
-      }
-      for (const tab of this._dragImageTabs ?? [draggedTab]) {
-        const element = elementToMove(tab);
-        const rect = (
-          element?.isConnected ? element : elements[0]
-        ).getBoundingClientRect();
-        this.ZenDragAndDropService.addDropLandingRect(
-          Math.round(window.mozInnerScreenX + rect.left),
-          Math.round(window.mozInnerScreenY + rect.top),
-          Math.round(rect.width),
-          Math.round(rect.height)
-        );
-      }
+      const elements = (this._dragImageTabs ?? [draggedTab]).map(elementToMove);
       for (const element of elements) {
+        const { width, height } = element.getBoundingClientRect();
+        this.ZenDragAndDropService.addDropLandingRect(
+          Math.round(element.screenX),
+          Math.round(element.screenY),
+          Math.round(width),
+          Math.round(height)
+        );
         element.style.visibility = "hidden";
       }
       this._landingElements = elements;
